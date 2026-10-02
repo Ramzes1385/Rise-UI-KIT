@@ -122,6 +122,7 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseEventCalendar',
 	'BaseTag',
 	'BaseTagGroup',
+	'BasePresentationPlayer',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */
@@ -216,6 +217,7 @@ const LOADING_COMPONENTS = new Set([
 	'BaseSlider',
 	'BaseDadataInput',
 	'BaseMap',
+	'BasePresentationPlayer',
 ])
 
 const EMPTY_COMPONENTS = new Set([

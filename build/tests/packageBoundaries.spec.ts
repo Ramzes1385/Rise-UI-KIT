@@ -102,7 +102,8 @@ describe('границы npm-пакета', () => {
 /** Входы кита, через которые плеер (отдельный вход `/media`, позже — отдельный пакет) может брать его код */
 const KIT_ENTRIES = ['index.ts', 'components/index.ts', 'composables/index.ts', 'utils/index.ts', 'icons/index.ts']
 
-const MEDIA_DIR = join(SRC, 'components/BaseMediaPlayer')
+/** Папки отдельного пакета плеера: сам плеер и презентация на его ядре; друг из друга они берут код напрямую */
+const MEDIA_DIRS = ['components/BaseMediaPlayer', 'components/BasePresentationPlayer'].map(dir => join(SRC, dir))
 
 function kitPublicNames(): Set<string> {
 	const host = { ...ts.sys, onUnRecoverableConfigFileDiagnostic: () => undefined }
@@ -137,7 +138,7 @@ function importedNames(clause: ts.ImportClause | undefined, exportClause: ts.Nam
 
 /** Импорты папки плеера из остального кита: файл, модуль и импортируемые имена */
 function mediaKitImports(): Array<{ file: string; specifier: string; name: string }> {
-	return listSources(MEDIA_DIR).flatMap(file => {
+	return MEDIA_DIRS.flatMap(listSources).flatMap(file => {
 		let source = readFileSync(file, 'utf8')
 		if (file.endsWith('.vue')) source = [...source.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(match => match[1]).join('\n')
 		const tree = ts.createSourceFile(file, source, ts.ScriptTarget.Latest)
@@ -145,7 +146,7 @@ function mediaKitImports(): Array<{ file: string; specifier: string; name: strin
 			if (!(ts.isImportDeclaration(statement) || ts.isExportDeclaration(statement)) || !statement.moduleSpecifier) return []
 			const specifier = (statement.moduleSpecifier as ts.StringLiteral).text
 			const target = resolveSpecifier(specifier, file)
-			if (!target || target.startsWith(MEDIA_DIR + sep)) return []
+			if (!target || MEDIA_DIRS.some(dir => target.startsWith(dir + sep))) return []
 			const names = ts.isImportDeclaration(statement)
 				? importedNames(statement.importClause, undefined)
 				: importedNames(undefined, statement.exportClause)

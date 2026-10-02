@@ -4,6 +4,7 @@ import { enData } from './data'
 import { enForms } from './forms'
 import { enMedia } from './media'
 import { enPlural } from './plural'
+import { enPresentation } from './presentation'
 import { enEventCalendar } from './eventCalendar'
 import type { UiKitLocale } from '../types/locales.types'
 
@@ -15,6 +16,7 @@ export const en: UiKitLocale = {
 	...enBase,
 	...enForms,
 	...enMedia,
+	...enPresentation,
 	...enChat,
 	...enData,
 	...enEventCalendar,
