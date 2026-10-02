@@ -1,6 +1,6 @@
 import type { ComputedRef, ShallowRef } from 'vue'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
-import type { CalendarAgendaDay, CalendarTimeSegment, CalendarWeekSegment, NormalizedCalendarEvent } from '@utils/calendar/eventUtils'
+import type { CalendarTimeSegment, CalendarWeekSegment, NormalizedCalendarEvent } from '@utils/calendar/eventUtils'
 import type { BaseEventCalendarEmits, BaseEventCalendarProps, EventCalendarPeriod, EventCalendarView } from './BaseEventCalendar.types'
 
 /** Пропсы после `withDefaults`: значения по умолчанию заданы в `ui/BaseEventCalendar.vue` */
@@ -64,9 +64,6 @@ export interface EventCalendarTimeSlot {
 	label: string
 	isHour: boolean
 }
-
-/** Дни вида «Список» */
-export type EventCalendarAgenda = CalendarAgendaDay[]
 
 /** Слот события по приоритету: `event-<id>`, `category-<категория>`, `event` */
 export type EventSlotName = 'event' | `event-${string}` | `category-${string}`

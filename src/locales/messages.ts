@@ -108,5 +108,8 @@ export const UI_COMMENT_THREAD = localized('commentThread')
 /** Загрузка файлов BaseFileUpload */
 export const UI_FILE_UPLOAD = localized('fileUpload')
 
+/** Календарь событий */
+export const UI_EVENT_CALENDAR = localized('eventCalendar')
+
 /** Предупреждения в консоли */
 export const UI_WARNINGS = localized('warnings')

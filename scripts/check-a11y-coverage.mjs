@@ -119,6 +119,7 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseMap',
 	'BaseChart',
 	'BaseBottomNav',
+	'BaseEventCalendar',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */
@@ -235,6 +236,7 @@ const EMPTY_COMPONENTS = new Set([
 	'BaseDadataInput',
 	'BaseChart',
 	'BaseDescriptions',
+	'BaseEventCalendar',
 ])
 
 const LONG_CONTENT_COMPONENTS = new Set([

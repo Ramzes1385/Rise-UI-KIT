@@ -62,6 +62,7 @@ export interface UiKitLocale {
 	notificationCenter: Section<'notificationCenter'>
 	commentThread: Section<'commentThread'>
 	countdown: Section<'countdown'>
+	eventCalendar: Section<'eventCalendar'>
 	warnings: Section<'warnings'>
 	plural: { readonly [P in keyof Base['plural']]: PluralForms }
 }

@@ -157,6 +157,29 @@ panel.style.top = `${trigger.getBoundingClientRect().bottom - origin.y}px`
 
 ---
 
+## eventUtils, recurrenceUtils, icsUtils
+
+Календарь событий (BaseEventCalendar): разбор дат событий, повторы и iCalendar — без зависимостей.
+
+```ts
+import { getEventsInRange, layoutWeek, layoutDay, expandRecurrence, parseRecurrenceRule, parseIcs, toIcs } from '@ramzes1385/rise-ui-kit/utils'
+
+const range = { start: new Date(2026, 9, 1), end: new Date(2026, 10, 1) }
+const items = getEventsInRange(events, range) // разобранные события периода, повторы — только в нём
+const weekRow = layoutWeek(items, new Date(2026, 8, 28)) // полосы недели: column, span, lane
+const dayColumn = layoutDay(items, new Date(2026, 9, 2), { startMinute: 480, endMinute: 1200 }) // top, height, column, columns
+
+const file = toIcs(events, { name: 'Команда' }) // текст .ics: CRLF, перенос по 75 байт, время в UTC
+const imported = parseIcs(file) // VEVENT → события; RRULE и EXDATE остаются правилом
+```
+
+- `parseEventDate` — `ГГГГ-ММ-ДД` (день, местное время), `ГГГГ-ММ-ДДTЧЧ:ММ` (местное время), ISO с поясом, Date. `normalizeEvent` — даты события, конец по умолчанию (день или час), конец события на весь день — полночь.
+- `getEventsInRange(events, range)`, `groupByDay(items, range)` — события периода и дни для списка; `layoutWeek(items, start, days?)` — ряды полос, `layoutDay(items, day, window?)` — колонки пересекающихся событий. Помощники: `addDays`, `startOfDay`, `startOfWeek`, `daysBetween`, `toDayKey`.
+- `parseRecurrenceRule` / `formatRecurrenceRule` — подмножество RRULE: `FREQ` (DAILY, WEEKLY, MONTHLY, YEARLY), `INTERVAL`, `BYDAY` (у MONTHLY — с номером: `2MO`, `-1FR`), `COUNT`, `UNTIL`, `WKST`. `expandRecurrence({ start, end, rule, rangeStart, rangeEnd, exdates?, isAllDay? })` — повторы в периоде; 31-е число пропускает короткие месяцы, как в RFC 5545. `parseIcsDate`, `formatIcsDate` — даты iCalendar.
+- `parseIcs(text)` — VEVENT с DTSTART: UID, SUMMARY, DESCRIPTION, CATEGORIES (первая), DTSTART, DTEND, RRULE, EXDATE; `TZID` не пересчитывается — время считается местным. `toIcs(events, { name?, productId?, now? })`.
+
+---
+
 ## Список utils
 
 ```txt
@@ -166,9 +189,11 @@ dadataUtils
 dateUtils
 domUtils
 editorDomUtils
+eventUtils
 fileUtils
 formUtils
 htmlUtils
+icsUtils
 iconUtils
 idUtils
 imageUtils
@@ -179,6 +204,7 @@ numberInputUtils
 paginationUtils
 rangeUtils
 ratingUtils
+recurrenceUtils
 scriptUtils
 structuredDataUtils
 subtitleUtils

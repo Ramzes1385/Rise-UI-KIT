@@ -122,6 +122,7 @@
 - `BaseQrCode` — QR-код со своим кодировщиком без зависимостей: версии 1–10, уровни коррекции L/M/Q/H, SVG и имя для скринридера; `encodeQr` — матрица модулей (порция Н.3б). Логотип в центре, формы модулей и «глазков», цвет «глазков» (порция Д.3).
 - `BaseSignaturePad` — поле для подписи пером, пальцем и мышью с отменой штриха и файлами SVG и PNG; `BaseAvatarCropper` — кадрирование аватара кругом или квадратом с перетаскиванием, масштабом, клавиатурой и картинкой в Blob (порция Н.3в).
 - `BaseNotificationCenter` — центр уведомлений с непрочитанными, «Прочитать все» и фильтром; `BaseCommentThread` — ветка комментариев с ответами, «Нравится» и полем ответа; `formatRelativeTime` в utils (порция Н.4).
+- `BaseEventCalendar` — календарь событий: месяц, неделя, день и список, многодневные события, повторы (подмножество RRULE), динамические слоты дня, события и категории; утилиты `.ics` — раздел [«Задача new-event-calendar»](#задача-new-event-calendar-календарь-событий-baseeventcalendar).
 
 **Доступность и клавиатура**
 
@@ -1429,3 +1430,11 @@ FOLLOW_UPS № 38, № 39, № 13 и № 15 (медиа).
 - `BaseDescriptions` — список «поле — значение» на `dl`/`dt`/`dd`: `items` (`key`, `label`, `value`, `span`, `isCopyable`, `copyText`), `title`, `columns` и `minItemWidth` (колонки по ширине контейнера), `layout` (`horizontal`, `vertical`), `labelWidth`, `isCopyable`, `emptyValue`, `emptyText`; событие `copy` (`{ item, text }`); слоты `title`, `extra`, `label`, `value`, `label-<key>`, `value-<key>`, `empty`.
 - Экспорт: `BaseDescriptions`, `DESCRIPTIONS_VARIANTS`, `DESCRIPTIONS_LAYOUTS`, типы `BaseDescriptionsProps`, `BaseDescriptionsEmits`, `BaseDescriptionsSlots`, `DescriptionsItem`, `DescriptionsCopyEvent`, `DescriptionsItemSlotProps`, `DescriptionsLayout`.
 - Строки словаря (ru, en): раздел `descriptions` (`UI_DESCRIPTIONS`) — `EMPTY_VALUE`, `EMPTY`, `COPY`, `COPIED`, `COPY_FAILED`. Свой язык через `defineLocale` должен перевести новый раздел.
+
+## Задача new-event-calendar: календарь событий BaseEventCalendar
+
+Новый компонент и утилиты, изменений в существующих нет.
+
+- `BaseEventCalendar` — виды `month`, `week`, `day`, `list`; `v-model:view`, `v-model:date`; `events` (`end` не входит в событие, как DTEND iCalendar), `views`, `slotDuration`, `workHours`, `firstDayOfWeek`, `maxEventsPerDay`, `hasNowIndicator`, `today`; события `period-change` и `event-click`; динамические слоты `day-<ГГГГ-ММ-ДД>`, `event-<id>`, `category-<категория>` и слоты `toolbar`, `day`, `event`, `time-slot`, `header-day`, `all-day`, `empty`. Справочник — docs/reference/COMPONENTS.md.
+- Утилиты `eventUtils`, `recurrenceUtils`, `icsUtils` (`@ramzes1385/rise-ui-kit/utils`): события периода и их раскладка, подмножество RRULE, импорт и экспорт `.ics`. Новые общие имена в `utils`: `addDays`, `startOfDay`, `startOfWeek`, `daysBetween`, `toDayKey`.
+- Раздел словаря `eventCalendar` (ru, en); свой язык — `defineLocale(en, { eventCalendar: { … } })`.

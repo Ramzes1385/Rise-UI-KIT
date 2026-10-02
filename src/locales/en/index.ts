@@ -4,6 +4,7 @@ import { enData } from './data'
 import { enForms } from './forms'
 import { enMedia } from './media'
 import { enPlural } from './plural'
+import { enEventCalendar } from './eventCalendar'
 import type { UiKitLocale } from '../types/locales.types'
 
 /** Английский словарь кита. Ключи и места для значений — как в русском (`ru/`) */
@@ -16,5 +17,6 @@ export const en: UiKitLocale = {
 	...enMedia,
 	...enChat,
 	...enData,
+	...enEventCalendar,
 	plural: enPlural,
 }
