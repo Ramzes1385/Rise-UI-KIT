@@ -2649,6 +2649,34 @@ import { BaseAnimation } from '@ramzes1385/rise-ui-kit'
 
 ---
 
+## BaseAnchor
+
+Оглавление страницы: ссылки на разделы, текущий раздел подсвечивается при прокрутке.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseAnchor } from '@ramzes1385/rise-ui-kit'
+
+const current = ref<string>()
+</script>
+
+<template>
+	<aside>
+		<BaseAnchor v-model:active="current" content="#article" :offset="64" />
+	</aside>
+	<article id="article">
+		<h2 id="intro">Введение</h2>
+		…
+		<h3 id="install-npm">Через npm</h3>
+	</article>
+</template>
+```
+
+Пункты — `items` (`{ id, label, children? }`) или заголовки `headings` (по умолчанию `h2, h3`) внутри `content`; заголовку без id присваивается id. `target` — прокручиваемый контейнер (по умолчанию окно); `offset` — высота закреплённой шапки. Текущий раздел — последний, чей верх выше линии `offset`; следит IntersectionObserver, обработчика прокрутки нет. Клик — плавная прокрутка (без анимации при `prefers-reduced-motion`), фокус на разделе, адрес `#id` через `history.replaceState` (`isHashSynced`); клик с Ctrl, Cmd, Shift, Alt или средней кнопкой работает как обычная ссылка. Доступность: `<nav>` с именем «Содержание» (`label`), `aria-current="location"` у текущего пункта. `direction`: `vertical`, `horizontal`; варианты `default`, `soft`; слот `item` (`{ item, isActive }`); методы `refresh()` — после смены заголовков на странице, `scrollTo(id)`. Нет пунктов — компонент ничего не выводит.
+
+---
+
 ## BaseMarquee
 
 Бегущая строка: новости, акции, логотипы партнёров. Содержимое — слот default или `items` со слотами `item` и `separator`.
@@ -2747,6 +2775,7 @@ BaseAccordion
 BaseAddressInput
 BaseAiMessage
 BaseAlert
+BaseAnchor
 BaseAnimation
 BaseApp
 BaseAudioPlayer

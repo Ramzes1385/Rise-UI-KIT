@@ -1111,3 +1111,11 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 Исправление 02.10 (замечания Storybook, контраст WCAG AA в обеих темах): числа дней соседнего месяца — `--rise-text-muted` (было `--rise-text-dimmed`); дни недели, заголовки дней, подписи шкалы и «Весь день», «+N ещё», «Нет событий» — `--rise-text-toned` (было `--rise-text-muted`: 4,4 к 1 на фоне варианта `soft`); время в событии — цветом текста события (было `--rise-text-muted`); тексты и фоны сетки следуют `color` (`--custom-text`, `--custom-bg`); событие короче полутора шагов сетки — одна строка «название время» с многоточием, название и время в блоке не переносятся.
 
 Истории (сессия Storybook): `data-baseeventcalendar--` `default`, `variants`, `sizes`, `custom-color`, `month`, `week`, `day`, `list`, `multi-day`, `recurring`, `dynamic-slots`, `empty`, `long-content`, `switch-view`; только в сайдбаре (`!autodocs`) — `locale` (язык кита `en`), `keyboard`. Даты — октябрь 2026, `today` = 2 октября 10:30 задан явно: снимки не зависят от дня. В скриншот-тесты (`BaseEventCalendar.visual.spec.ts`, высота окна 720) добавлены `month`, `week`, `list` к заготовкам `variants`, `sizes` — эталонов нет, их создаёт владелец. Витрины `variants` и `sizes` — календари столбиком (`story-stack`), а не рядом: месяц не помещается в ряд.
+
+## Задача new-anchor: BaseAnchor
+
+Новый компонент — у прежних историй и снимков вид не меняется. Эталонов нет: `BaseAnchor.visual.spec.ts` (истории `variants`, `sizes`, `horizontal`, `long-content`, обе темы) ждёт снимков владельца. Превью — `.rise-transfer\review\new-anchor.html`.
+
+- Вертикальный `default` — линия `--rise-border` слева, у текущего пункта отметка 2px `--rise-primary` поверх линии, текст `--rise-primary-text` и полужирный (`--rise-font-weight-medium`); `soft` — заливка `--rise-primary-soft` и радиус `--rise-radius-sm`. Вложенные пункты сдвинуты на 12px на уровень.
+- Горизонтальный — строка с переносом, у `default` линия снизу и отметка под текущим пунктом.
+- Текст пунктов `--rise-text-muted`, при наведении `--rise-text`; кольцо фокуса `focus-ring`; смена цвета — `transition-colors` (при reduced motion — мгновенно).

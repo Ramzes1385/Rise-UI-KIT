@@ -58,6 +58,8 @@ export const ruBase = {
 		SIDEBAR_NAVIGATION: 'Основная навигация',
 		BREADCRUMBS: 'Навигация',
 		BREADCRUMBS_NAV: 'Хлебные крошки',
+		/** Оглавление BaseAnchor */
+		ANCHOR_NAV: 'Содержание',
 		PAGINATION_PREV: 'Предыдущая страница',
 		PAGINATION_NEXT: 'Следующая страница',
 		/** Ориентир навигации BasePagination */

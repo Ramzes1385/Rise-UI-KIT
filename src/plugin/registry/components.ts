@@ -31,6 +31,7 @@ import { BaseInput } from '../../components/BaseInput'
 import { BaseModal } from '../../components/BaseModal'
 import { BaseRadio } from '../../components/BaseRadio'
 import { BaseRange } from '../../components/BaseRange'
+import { BaseAnchor } from '../../components/BaseAnchor'
 import { BaseAvatar } from '../../components/BaseAvatar'
 import { BaseButton } from '../../components/BaseButton'
 import { BaseDrawer } from '../../components/BaseDrawer'
@@ -128,6 +129,7 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseAddressInput,
 	BaseAiMessage,
 	BaseAlert,
+	BaseAnchor,
 	BaseAnimation,
 	BaseApp,
 	BaseAudioPlayer,

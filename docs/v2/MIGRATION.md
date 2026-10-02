@@ -1438,3 +1438,11 @@ FOLLOW_UPS № 38, № 39, № 13 и № 15 (медиа).
 - `BaseEventCalendar` — виды `month`, `week`, `day`, `list`; `v-model:view`, `v-model:date`; `events` (`end` не входит в событие, как DTEND iCalendar), `views`, `slotDuration`, `workHours`, `firstDayOfWeek`, `maxEventsPerDay`, `hasNowIndicator`, `today`; события `period-change` и `event-click`; динамические слоты `day-<ГГГГ-ММ-ДД>`, `event-<id>`, `category-<категория>` и слоты `toolbar`, `day`, `event`, `time-slot`, `header-day`, `all-day`, `empty`. Справочник — docs/reference/COMPONENTS.md.
 - Утилиты `eventUtils`, `recurrenceUtils`, `icsUtils` (`@ramzes1385/rise-ui-kit/utils`): события периода и их раскладка, подмножество RRULE, импорт и экспорт `.ics`. Новые общие имена в `utils`: `addDays`, `startOfDay`, `startOfWeek`, `daysBetween`, `toDayKey`.
 - Раздел словаря `eventCalendar` (ru, en); свой язык — `defineLocale(en, { eventCalendar: { … } })`.
+
+## Новые компоненты: BaseAnchor (задача new-anchor)
+
+Новый компонент, изменений в существующих нет.
+
+- `BaseAnchor` — оглавление с подсветкой текущего раздела: `items` (`AnchorItem`: `id`, `label`, `children`) или заголовки `headings` внутри `content`, `target`, `offset`, `v-model:active`, `direction` (`vertical`, `horizontal`), `label`, `isHashSynced`, варианты `default`, `soft`, слот `item`, событие `click`, методы `refresh`, `scrollTo`. Константы `ANCHOR_VARIANTS`, `ANCHOR_DIRECTIONS`; типы `AnchorItem`, `AnchorLink`, `AnchorDirection`, `BaseAnchorExpose`.
+- Заголовку без id компонент присваивает id (`rise-anchor…-<номер>`): приложение, которое само задаёт id, этого не заметит.
+- Строка словаря (ru, en): `aria.ANCHOR_NAV` — «Содержание» / «On this page».

@@ -54,6 +54,8 @@ export const enBase = {
 		SIDEBAR_NAVIGATION: 'Main navigation',
 		BREADCRUMBS: 'Navigation',
 		BREADCRUMBS_NAV: 'Breadcrumbs',
+		/** Оглавление BaseAnchor */
+		ANCHOR_NAV: 'On this page',
 		PAGINATION_PREV: 'Previous page',
 		PAGINATION_NEXT: 'Next page',
 		/** Ориентир навигации BasePagination */

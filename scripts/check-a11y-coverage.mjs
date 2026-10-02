@@ -237,6 +237,7 @@ const EMPTY_COMPONENTS = new Set([
 	'BaseChart',
 	'BaseDescriptions',
 	'BaseEventCalendar',
+	'BaseAnchor',
 ])
 
 const LONG_CONTENT_COMPONENTS = new Set([
@@ -273,6 +274,7 @@ const LONG_CONTENT_COMPONENTS = new Set([
 	'BaseConfirm',
 	'BaseDadataInput',
 	'BaseDescriptions',
+	'BaseAnchor',
 ])
 
 const REQUIRED_STORIES_INTERACTIVE = ['Default', 'Disabled']
