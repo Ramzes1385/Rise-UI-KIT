@@ -119,4 +119,12 @@ export const enForms = {
 		ZOOM: 'Zoom',
 		ERROR: 'The photo could not be loaded',
 	},
+	/** Console warnings about invalid numeric props: what came in and what is used instead */
+	valueWarnings: {
+		NOT_FINITE: '{component}: `{prop}` = {value} is not a finite number, {fallback} is used',
+		NOT_POSITIVE: '{component}: `{prop}` = {value} must be greater than 0, {fallback} is used',
+		NOT_INTEGER: '{component}: `{prop}` = {value} is not an integer, {fallback} is used',
+		NEGATIVE: '{component}: `{prop}` = {value} is below 0 and is ignored',
+		MAX_BELOW_MIN: '{component}: `max` = {max} is less than `min` = {min}, the range is collapsed to {min}',
+	},
 }

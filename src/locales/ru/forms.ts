@@ -123,4 +123,12 @@ export const ruForms = {
 		ZOOM: 'Масштаб',
 		ERROR: 'Не удалось загрузить фото',
 	},
+	/** Предупреждения в консоли о недопустимых числовых пропсах: что пришло и что используется вместо */
+	valueWarnings: {
+		NOT_FINITE: '{component}: `{prop}` = {value} — не конечное число, используется {fallback}',
+		NOT_POSITIVE: '{component}: `{prop}` = {value} — должно быть больше 0, используется {fallback}',
+		NOT_INTEGER: '{component}: `{prop}` = {value} — не целое число, используется {fallback}',
+		NEGATIVE: '{component}: `{prop}` = {value} — меньше 0, не применяется',
+		MAX_BELOW_MIN: '{component}: `max` = {max} меньше `min` = {min} — диапазон сведён к {min}',
+	},
 }

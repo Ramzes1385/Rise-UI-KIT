@@ -1,13 +1,14 @@
 import { computed, ref } from 'vue'
 import type { ComputedRef } from 'vue'
+import { ratingBounds } from './ratingBounds'
 import { UI_RATING } from '@/locales/messages'
 import { formatNumber } from '@/locales/state'
 import { useFormField } from '@composables/form/useFormField'
 import { useFormDisabled } from '@composables/form/useFormContext'
 import type { StructuredData } from '@utils/seo/structuredDataUtils'
 import { useStructuredData } from '@composables/seo/useStructuredData'
-import type { BaseRatingEmits, RatingProps } from '../types/BaseRating.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import type { BaseRatingEmits, RatingBounds, RatingProps } from '../types/BaseRating.types'
 import { rawValueFromPointer, snapRating, starFillPercent, stepDecimals, valueFromPointer } from '@utils/form/ratingUtils'
 
 function pointerRatio(event: MouseEvent): number {
@@ -18,64 +19,72 @@ function pointerRatio(event: MouseEvent): number {
 
 const VALUE_MAX_DECIMALS = 4
 
-function ratingSchema(props: RatingProps): StructuredData | null {
-	if (props.modelValue <= 0) return null
-	return { '@type': 'AggregateRating', ratingValue: props.modelValue, bestRating: props.max, worstRating: Math.min(1, props.step) }
+function ratingSchema(bounds: RatingBounds): StructuredData | null {
+	if (bounds.value <= 0) return null
+	return { '@type': 'AggregateRating', ratingValue: bounds.value, bestRating: bounds.max, worstRating: Math.min(1, bounds.step) }
 }
 
 function formatRatingValue(value: number, minimumFractionDigits = 0): string {
 	return formatNumber(value, { minimumFractionDigits, maximumFractionDigits: Math.max(minimumFractionDigits, VALUE_MAX_DECIMALS) })
 }
 
-function ratingAria(props: RatingProps, isDisabled: boolean) {
-	const valueText = `${formatRatingValue(props.modelValue)} ${UI_RATING.OF} ${props.max}`
+function ratingAria(props: RatingProps, bounds: RatingBounds, isDisabled: boolean) {
+	const valueText = `${formatRatingValue(bounds.value)} ${UI_RATING.OF} ${bounds.max}`
 	if (props.isReadonly && !isDisabled) return { role: 'img', 'aria-label': `${UI_RATING.LABEL} ${valueText}` }
 	return {
 		role: 'slider',
 		tabindex: isDisabled ? undefined : 0,
-		'aria-label': `${UI_RATING.ARIA_PREFIX} ${props.max}`,
+		'aria-label': `${UI_RATING.ARIA_PREFIX} ${bounds.max}`,
 		'aria-valuemin': 0,
-		'aria-valuemax': props.max,
-		'aria-valuenow': props.modelValue,
+		'aria-valuemax': bounds.max,
+		'aria-valuenow': bounds.value,
 		'aria-valuetext': valueText,
 		'aria-disabled': isDisabled ? ('true' as const) : undefined,
 	}
 }
 
-function createKeyActions(props: RatingProps, commit: (value: number) => void): Record<string, () => void> {
-	const changeBy = (delta: number): void => commit(snapRating(props.modelValue + delta, props.step, props.max))
-	const wholeStar = Math.max(1, props.step)
+function createKeyActions(bounds: ComputedRef<RatingBounds>, commit: (value: number) => void): Record<string, () => void> {
+	const changeBy = (steps: number): void => {
+		const { value, step, max } = bounds.value
+		commit(snapRating(value + steps * step, step, max))
+	}
+	const wholeStar = (): number => Math.max(1, bounds.value.step) / bounds.value.step
 	return {
-		ArrowRight: () => changeBy(props.step),
-		ArrowUp: () => changeBy(props.step),
-		ArrowLeft: () => changeBy(-props.step),
-		ArrowDown: () => changeBy(-props.step),
-		PageUp: () => changeBy(wholeStar),
-		PageDown: () => changeBy(-wholeStar),
+		ArrowRight: () => changeBy(1),
+		ArrowUp: () => changeBy(1),
+		ArrowLeft: () => changeBy(-1),
+		ArrowDown: () => changeBy(-1),
+		PageUp: () => changeBy(wholeStar()),
+		PageDown: () => changeBy(-wholeStar()),
 		Home: () => commit(0),
-		End: () => commit(props.max),
+		End: () => commit(bounds.value.max),
 	}
 }
 
-function usePointerValue(props: RatingProps) {
+function usePointerValue(props: RatingProps, bounds: ComputedRef<RatingBounds>) {
 	const steppedValueAt = (event: MouseEvent, star: number): number =>
-		valueFromPointer({ star, ratio: pointerRatio(event), step: props.step, max: props.max })
+		valueFromPointer({ star, ratio: pointerRatio(event), step: bounds.value.step, max: bounds.value.max })
 	return {
 		steppedValueAt,
 		previewValueAt: (event: MouseEvent, star: number): number =>
-			props.isHoverSmooth ? rawValueFromPointer(star, pointerRatio(event), props.max) : steppedValueAt(event, star),
+			props.isHoverSmooth ? rawValueFromPointer(star, pointerRatio(event), bounds.value.max) : steppedValueAt(event, star),
 	}
 }
 
-function useRatingInput(props: RatingProps, emit: BaseRatingEmits, isInteractive: ComputedRef<boolean>) {
+function useRatingInput(
+	props: RatingProps,
+	emit: BaseRatingEmits,
+	state: { bounds: ComputedRef<RatingBounds>; isInteractive: ComputedRef<boolean> },
+) {
+	const { bounds, isInteractive } = state
 	const hoverValue = ref(0)
 	const hoverStepValue = ref(0)
-	const { steppedValueAt, previewValueAt } = usePointerValue(props)
+	const { steppedValueAt, previewValueAt } = usePointerValue(props, bounds)
 	const commit = (value: number): void => {
 		emit('update:modelValue', value)
 		emit('change', value)
 	}
-	const keyActions = createKeyActions(props, commit)
+	const keyActions = createKeyActions(bounds, commit)
 	const clearHover = (): void => {
 		hoverValue.value = 0
 		hoverStepValue.value = 0
@@ -114,24 +123,26 @@ export function useBaseRating(props: RatingProps, emit: BaseRatingEmits) {
 	const formField = useFormField({ value: () => props.modelValue })
 	const standard = useStandardBaseComponent('base-rating', props, ['root', 'icon', 'iconFilled', 'value'])
 	const isInteractive = computed((): boolean => !props.isReadonly && !isControlDisabled.value)
-	const input = useRatingInput(props, emit, isInteractive)
-	const displayValue = computed((): number => (input.hoverValue.value > 0 ? input.hoverValue.value : props.modelValue))
-	const labelValue = computed((): number => (input.hoverStepValue.value > 0 ? input.hoverStepValue.value : props.modelValue))
+	const bounds = computed((): RatingBounds => ratingBounds(props))
+	const input = useRatingInput(props, emit, { bounds, isInteractive })
+	const displayValue = computed((): number => (input.hoverValue.value > 0 ? input.hoverValue.value : bounds.value.value))
+	const labelValue = computed((): number => (input.hoverStepValue.value > 0 ? input.hoverStepValue.value : bounds.value.value))
 
 	return {
 		...standard,
 		isControlDisabled,
 		rootRef,
 		isInteractive,
+		starCount: computed((): number => bounds.value.max),
 		filledIcon: computed((): string => props.iconFilled || (props.icon === 'star' ? 'star-filled' : props.icon)),
-		ariaAttrs: computed(() => ratingAria(props, isControlDisabled.value)),
+		ariaAttrs: computed(() => ratingAria(props, bounds.value, isControlDisabled.value)),
 		fillPercent: (star: number): number => starFillPercent(star, displayValue.value),
-		valueLabel: computed((): string => formatRatingValue(labelValue.value, stepDecimals(props.step))),
+		valueLabel: computed((): string => formatRatingValue(labelValue.value, stepDecimals(bounds.value.step))),
 		...input,
 		...useStructuredData(
 			'BaseRating',
 			() => props.seo,
-			() => ratingSchema(props),
+			() => ratingSchema(bounds.value),
 		),
 		exposed: {
 			rootRef,

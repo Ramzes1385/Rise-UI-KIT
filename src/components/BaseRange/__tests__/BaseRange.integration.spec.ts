@@ -695,4 +695,128 @@ describe('BaseRange integration', () => {
 			})
 		})
 	})
+
+	describe('клавиатура APG Slider: Home, End, PageUp, PageDown', () => {
+		it.each([
+			['Home', 0],
+			['End', 100],
+			['PageUp', 55],
+			['PageDown', 35],
+		])('%s ставит одиночный ползунок в %s и эмитит change', async (key, expected) => {
+			const { container, emitted } = render(BaseRange, {
+				props: { modelValue: 45, min: 0, max: 100, step: 1 },
+				global: globalComponents,
+			})
+
+			const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true })
+			container.querySelector('.base-range__thumb')!.dispatchEvent(event)
+
+			expect(event.defaultPrevented).toBe(true)
+			expect(emitted('update:modelValue')).toEqual([[expected]])
+			expect(emitted('change')).toEqual([[expected]])
+		})
+
+		it('PageUp у края не выходит за max', async () => {
+			const { container, emitted } = render(BaseRange, {
+				props: { modelValue: 95, min: 0, max: 100, step: 1 },
+				global: globalComponents,
+			})
+
+			await fireEvent.keyDown(container.querySelector('.base-range__thumb')!, { key: 'PageUp' })
+
+			expect(emitted('update:modelValue')).toEqual([[100]])
+		})
+
+		it('Home и End у диапазона упираются в соседний ползунок', async () => {
+			const { container, emitted } = render(BaseRange, {
+				props: { rangeValue: [20, 60], min: 0, max: 100, step: 5 },
+				global: globalComponents,
+			})
+			const thumbs = container.querySelectorAll('.base-range__thumb')
+
+			await fireEvent.keyDown(thumbs[1], { key: 'Home' })
+			await fireEvent.keyDown(thumbs[0], { key: 'End' })
+
+			expect(emitted('update:rangeValue')).toEqual([[[20, 20]], [[60, 60]]])
+		})
+
+		it('End при шаге, который не делит диапазон, ставит последнее значение шага', async () => {
+			const { container, emitted } = render(BaseRange, {
+				props: { modelValue: 0, min: 0, max: 10, step: 3 },
+				global: globalComponents,
+			})
+
+			await fireEvent.keyDown(container.querySelector('.base-range__thumb')!, { key: 'End' })
+
+			expect(emitted('update:modelValue')).toEqual([[9]])
+		})
+
+		it('Home в min не эмитит change', async () => {
+			const { container, emitted } = render(BaseRange, {
+				props: { modelValue: 0, min: 0, max: 100 },
+				global: globalComponents,
+			})
+
+			await fireEvent.keyDown(container.querySelector('.base-range__thumb')!, { key: 'Home' })
+
+			expect(emitted('change')).toBeUndefined()
+		})
+	})
+
+	describe('проверка min, max, step и значения', () => {
+		let warnSpy: ReturnType<typeof vi.spyOn>
+
+		beforeEach(() => {
+			warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+		})
+
+		afterEach(() => {
+			warnSpy.mockRestore()
+		})
+
+		it('step = 0 заменяется на 1: стрелка двигает на 1, а не даёт NaN', async () => {
+			const { container, emitted } = render(BaseRange, {
+				props: { modelValue: 10, step: 0 },
+				global: globalComponents,
+			})
+
+			await fireEvent.keyDown(container.querySelector('.base-range__thumb')!, { key: 'ArrowRight' })
+
+			expect(emitted('update:modelValue')).toEqual([[11]])
+			expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('BaseRange: `step` = 0'))
+		})
+
+		it('значение больше max: aria-valuenow и подпись — max', () => {
+			const { container } = render(BaseRange, {
+				props: { modelValue: 500, max: 100, hasLabel: true },
+				global: globalComponents,
+			})
+
+			expect(container.querySelector('.base-range__thumb')).toHaveAttribute('aria-valuenow', '100')
+			expect(container.querySelector('.base-range__label-value')?.textContent).toBe('100')
+		})
+
+		it('max меньше min: границы и подписи сведены к min', () => {
+			const { container } = render(BaseRange, {
+				props: { modelValue: 5, min: 10, max: 0, hasLabel: true },
+				global: globalComponents,
+			})
+			const thumb = container.querySelector('.base-range__thumb')
+
+			expect(thumb).toHaveAttribute('aria-valuemin', '10')
+			expect(thumb).toHaveAttribute('aria-valuemax', '10')
+			expect(thumb).toHaveAttribute('aria-valuenow', '10')
+			expect(container.querySelector('.base-range__label-max')?.textContent).toBe('10')
+			expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('`max` = 0 меньше `min` = 10'))
+		})
+
+		it('NaN в max: используется 100', () => {
+			const { container } = render(BaseRange, {
+				props: { modelValue: 30, max: Number.NaN },
+				global: globalComponents,
+			})
+
+			expect(container.querySelector('.base-range__thumb')).toHaveAttribute('aria-valuemax', '100')
+		})
+	})
 })

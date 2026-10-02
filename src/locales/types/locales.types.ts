@@ -53,6 +53,7 @@ export interface UiKitLocale {
 	qrCode: Section<'qrCode'>
 	signaturePad: Section<'signaturePad'>
 	avatarCropper: Section<'avatarCropper'>
+	valueWarnings: Section<'valueWarnings'>
 	notificationCenter: Section<'notificationCenter'>
 	commentThread: Section<'commentThread'>
 	warnings: Section<'warnings'>

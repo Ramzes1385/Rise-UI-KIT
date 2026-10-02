@@ -693,4 +693,85 @@ describe('BaseRating unit', () => {
 			}
 		})
 	})
+
+	describe('проверка max, step и оценки', () => {
+		let warnSpy: ReturnType<typeof vi.spyOn>
+
+		beforeEach(() => {
+			warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+		})
+
+		afterEach(() => {
+			warnSpy.mockRestore()
+		})
+
+		it('оценка больше max: aria-valuenow = max, звёзды заполнены целиком', () => {
+			const { container } = render(BaseRating, { props: { modelValue: 9, max: 5 } })
+			const slider = screen.getByRole('slider')
+
+			expect(slider).toHaveAttribute('aria-valuenow', '5')
+			expect(slider).toHaveAttribute('aria-valuetext', '5 из 5')
+			expect(getStars(container).map(fillWidth)).toEqual(['100%', '100%', '100%', '100%', '100%'])
+			expect(warnSpy).not.toHaveBeenCalled()
+		})
+
+		it('отрицательная оценка показывается как 0', () => {
+			render(BaseRating, { props: { modelValue: -2 } })
+			expect(screen.getByRole('slider')).toHaveAttribute('aria-valuenow', '0')
+		})
+
+		it('NaN в оценке — 0 с предупреждением', () => {
+			render(BaseRating, { props: { modelValue: Number.NaN } })
+			expect(screen.getByRole('slider')).toHaveAttribute('aria-valuenow', '0')
+			expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('BaseRating: `modelValue` = NaN'))
+		})
+
+		it.each([0, -1, Number.NaN])('step = %s заменяется на 1: стрелка даёт следующую целую оценку, а не NaN', async step => {
+			const { emitted } = render(BaseRating, { props: { modelValue: 2, step } })
+
+			await fireEvent.keyDown(screen.getByRole('slider'), { key: 'ArrowRight' })
+
+			expect(emitted('update:modelValue')).toEqual([[3]])
+			expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('BaseRating: `step`'))
+		})
+
+		it('step = 0: клик по звезде даёт число', async () => {
+			const { container, emitted } = render(BaseRating, { props: { step: 0 } })
+			const star = getStars(container)[2]
+			mockStarRect(star)
+
+			await fireEvent.click(star, { clientX: 5 })
+
+			expect(emitted('update:modelValue')).toEqual([[3]])
+		})
+
+		it('дробный max округляется до целого числа звёзд', () => {
+			const { container } = render(BaseRating, { props: { modelValue: 4, max: 4.6 } })
+
+			expect(getStars(container)).toHaveLength(5)
+			expect(screen.getByRole('slider')).toHaveAttribute('aria-valuemax', '5')
+			expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('BaseRating: `max` = 4.6 — не целое число, используется 5'))
+		})
+
+		it('max = 0 заменяется на 5 звёзд', () => {
+			const { container } = render(BaseRating, { props: { max: 0 } })
+			expect(getStars(container)).toHaveLength(5)
+		})
+
+		it('End ставит проверенный max', async () => {
+			const { emitted } = render(BaseRating, { props: { modelValue: 1, max: 2.8 } })
+
+			await fireEvent.keyDown(screen.getByRole('slider'), { key: 'End' })
+
+			expect(emitted('update:modelValue')).toEqual([[3]])
+		})
+
+		it('PageDown от оценки больше max считает от max', async () => {
+			const { emitted } = render(BaseRating, { props: { modelValue: 12, max: 5 } })
+
+			await fireEvent.keyDown(screen.getByRole('slider'), { key: 'PageDown' })
+
+			expect(emitted('update:modelValue')).toEqual([[4]])
+		})
+	})
 })

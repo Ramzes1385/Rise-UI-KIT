@@ -1,8 +1,9 @@
 /** Composable: значения, стили и сегменты заполнения range-слайдера */
 import { computed } from 'vue'
+import { boundedValue, rangeBounds } from './rangeBounds'
 import { snapToStep, toPercent } from '@utils/form/rangeUtils'
 import { buildFillSegments, positionStyle } from './rangeStyles'
-import type { RangeEmitContext, RangeMode, UseRangeValuesOptions, UseRangeValuesReturn } from './types/useRangeValues.types'
+import type { RangeBounds, RangeEmitContext, RangeMode, UseRangeValuesOptions, UseRangeValuesReturn } from './types/useRangeValues.types'
 
 /** Описание: режим по заданным props: points — несколько точек, rangeValue — диапазон, иначе — одно значение */
 function rangeMode(props: UseRangeValuesOptions['props']): RangeMode {
@@ -11,11 +12,11 @@ function rangeMode(props: UseRangeValuesOptions['props']): RangeMode {
 	return 'single'
 }
 
-/** Описание: значения точек в порядке ползунков */
-function rangePointValues(props: UseRangeValuesOptions['props']): number[] {
-	if (props.points) return props.points
-	if (props.rangeValue) return [props.rangeValue[0], props.rangeValue[1]]
-	return [props.modelValue]
+/** Описание: значения точек в порядке ползунков, каждое — в границах диапазона */
+function rangePointValues(props: UseRangeValuesOptions['props'], bounds: RangeBounds): number[] {
+	if (props.points) return props.points.map(value => boundedValue(value, 'points', bounds))
+	if (props.rangeValue) return props.rangeValue.slice(0, 2).map(value => boundedValue(value, 'rangeValue', bounds))
+	return [boundedValue(props.modelValue, 'modelValue', bounds)]
 }
 
 /** Описание: эмитит update:* после изменения одной точки — в форме v-model текущего режима */
@@ -37,28 +38,28 @@ function emitRangeChange({ emit, mode, values }: RangeEmitContext): void {
 /** Описание: вычисляет значения, стили и сегменты заполнения range-слайдера, обеспечивает установку значений ползунков и эмит изменений */
 function useRangeValues({ props, emit }: UseRangeValuesOptions): UseRangeValuesReturn {
 	const mode = computed((): RangeMode => rangeMode(props))
-	const pointValues = computed((): number[] => rangePointValues(props))
+	const bounds = computed((): RangeBounds => rangeBounds(props))
+	const pointValues = computed((): number[] => rangePointValues(props, bounds.value))
 
 	function percent(value: number): number {
-		return toPercent({ value, min: props.min, max: props.max })
+		return toPercent({ value, min: bounds.value.min, max: bounds.value.max })
 	}
 
 	function thumbMin(index: number): number {
-		return index > 0 ? pointValues.value[index - 1] : props.min
+		return index > 0 ? pointValues.value[index - 1] : bounds.value.min
 	}
 
 	function thumbMax(index: number): number {
 		const next = pointValues.value[index + 1]
-		return next === undefined ? props.max : next
+		return next === undefined ? bounds.value.max : next
 	}
 
 	function snapToStepValue(value: number): number {
-		const snapped = snapToStep({ value, min: props.min, max: props.max, step: props.step })
-		return Math.max(props.min, Math.min(props.max, snapped))
+		return snapToStep({ value, ...bounds.value })
 	}
 
 	function setPointValue(index: number, rawValue: number): void {
-		const value = Math.max(props.min, Math.min(props.max, rawValue))
+		const value = Math.max(bounds.value.min, Math.min(bounds.value.max, rawValue))
 		emitPointUpdate(
 			{ emit, mode: mode.value, values: pointValues.value },
 			index,
@@ -76,8 +77,9 @@ function useRangeValues({ props, emit }: UseRangeValuesOptions): UseRangeValuesR
 
 	return {
 		mode,
+		bounds,
 		pointValues,
-		labelText: computed((): string => (mode.value === 'single' ? String(props.modelValue) : pointValues.value.join(' — '))),
+		labelText: computed((): string => pointValues.value.join(' — ')),
 		tooltipPosition: computed((): 'top' | 'right' => (props.isVertical ? 'right' : 'top')),
 		fillSegments: computed((): Record<string, string>[] =>
 			buildFillSegments(pointValues.value.map(percent), mode.value === 'single', props.isVertical),

@@ -1,7 +1,7 @@
 /** Composable: drag-взаимодействие ползунков range-слайдера */
 import { ref } from 'vue'
 import { useRangeDragListeners } from './useRangeDragListeners'
-import { keyDirection, nearestIndex, trackRatio } from './rangeDragUtils'
+import { keyTarget, nearestIndex, trackRatio } from './rangeDragUtils'
 import type { UseRangeDragOptions, UseRangeDragReturn } from './types/useRangeDrag.types'
 
 /** Описание: обрабатывает drag-взаимодействие ползунков range-слайдера — mouse/touch перетаскивание, клик по треку и клавиатурная навигация */
@@ -41,12 +41,12 @@ function useRangeDrag(options: UseRangeDragOptions): UseRangeDragReturn {
 	function handleThumbKeydown(payload: { event: KeyboardEvent; index: number }): void {
 		if (isDisabled()) return
 		const { event, index } = payload
-		const direction = keyDirection(event.key)
-		if (direction === 0) return
+		const current = pointValues.value[index]
+		const key = keyTarget(event.key, current, { min: min(), max: max(), step: options.step() })
+		if (key === null) return
 		event.preventDefault()
 
-		const current = pointValues.value[index]
-		const target = snapToStepValue(current + direction * options.step())
+		const target = snapToStepValue(key)
 		setPointValue(index, target)
 
 		// Клавиатурный шаг — завершённое изменение, как отпускание ползунка, поэтому эмитим change.

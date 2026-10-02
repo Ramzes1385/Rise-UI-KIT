@@ -153,6 +153,37 @@ describe('useRangeDrag', () => {
 		expect(options.emitChange).toHaveBeenCalledWith(values)
 	})
 
+	it.each([
+		['PageUp', 0, 120, 'плюс 10 шагов'],
+		['PageDown', 1, -40, 'минус 10 шагов'],
+		['Home', 1, 0, 'min'],
+		['End', 0, 100, 'max'],
+	])('клавиша %s у ползунка %i даёт %i (%s); соседей учитывает setPointValue', (key, index, target) => {
+		const { drag, options } = setup({ snapToStepValue: value => value })
+		const event = new KeyboardEvent('keydown', { key, cancelable: true })
+		drag.handleThumbKeydown({ event, index })
+
+		expect(event.defaultPrevented).toBe(true)
+		expect(options.setPointValue).toHaveBeenCalledWith(index, target)
+	})
+
+	it('PageUp эмитит change со значением, ограниченным соседом', () => {
+		const { drag, options } = setup({ snapToStepValue: value => value })
+		drag.handleThumbKeydown({ event: new KeyboardEvent('keydown', { key: 'PageUp' }), index: 0 })
+
+		expect(options.emitChange).toHaveBeenCalledWith([60, 60])
+	})
+
+	it('Home у первого ползунка в min не даёт change', () => {
+		const { drag, options } = setup({ pointValues: { value: [0, 60] } })
+		const event = new KeyboardEvent('keydown', { key: 'Home', cancelable: true })
+		drag.handleThumbKeydown({ event, index: 0 })
+
+		expect(event.defaultPrevented).toBe(true)
+		expect(options.setPointValue).toHaveBeenCalledWith(0, 0)
+		expect(options.emitChange).not.toHaveBeenCalled()
+	})
+
 	it('упор в соседний ползунок не даёт change', () => {
 		const { drag, options } = setup({ pointValues: { value: [60, 60] } })
 		const event = new KeyboardEvent('keydown', { key: 'ArrowRight', cancelable: true })

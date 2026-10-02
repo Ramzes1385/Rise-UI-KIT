@@ -1,4 +1,5 @@
-/** Утилиты: положение указателя на треке range-слайдера, ближайший ползунок и шаг клавиатуры */
+/** Утилиты: положение указателя на треке range-слайдера, ближайший ползунок и значение по клавише */
+import type { RangeKeyBounds } from './types/useRangeDrag.types'
 
 /** Описание: доля трека под указателем, 0…1; у вертикального трека 0 — внизу */
 function trackRatio(event: MouseEvent | TouchEvent, rect: DOMRect, isVertical: boolean): number {
@@ -21,11 +22,29 @@ function nearestIndex(values: number[], value: number): number {
 	return best
 }
 
-/** Описание: направление шага по клавише: вправо и вверх — 1, влево и вниз — −1, другая клавиша — 0 */
-function keyDirection(key: string): number {
-	if (key === 'ArrowRight' || key === 'ArrowUp') return 1
-	if (key === 'ArrowLeft' || key === 'ArrowDown') return -1
-	return 0
+/** Крупный шаг PageUp/PageDown — в шагах `step` (APG Slider: «на величину больше шага») */
+const PAGE_STEPS = 10
+
+/** Сдвиг значения по клавише в шагах: стрелки — ±1, PageUp/PageDown — ±PAGE_STEPS */
+const KEY_STEPS: Record<string, number> = {
+	ArrowRight: 1,
+	ArrowUp: 1,
+	ArrowLeft: -1,
+	ArrowDown: -1,
+	PageUp: PAGE_STEPS,
+	PageDown: -PAGE_STEPS,
 }
 
-export { keyDirection, nearestIndex, trackRatio }
+/**
+ * Описание: значение после клавиши по APG Slider: стрелки — на шаг, PageUp/PageDown — на 10 шагов,
+ * Home и End — к границам `min` и `max`; другая клавиша — `null`
+ */
+function keyTarget(key: string, value: number, bounds: RangeKeyBounds): number | null {
+	if (key === 'Home') return bounds.min
+	if (key === 'End') return bounds.max
+	const steps = KEY_STEPS[key]
+	if (steps === undefined) return null
+	return value + steps * bounds.step
+}
+
+export { keyTarget, nearestIndex, trackRatio }

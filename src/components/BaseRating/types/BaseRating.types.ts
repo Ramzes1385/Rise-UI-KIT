@@ -37,4 +37,14 @@ export interface BaseRatingEmits {
 /** Слотов нет: содержимое строится из props */
 export type BaseRatingSlots = Record<never, never>
 
+/** Число звёзд, шаг и оценка после проверки пропсов: `max` — целое ≥ 1, `step` > 0, оценка — в пределах 0…max */
+export interface RatingBounds {
+	/** Число звёзд */
+	max: number
+	/** Шаг выбора и округления */
+	step: number
+	/** Оценка в пределах 0…max */
+	value: number
+}
+
 export type RatingProps = PropsWithDefaults<BaseRatingProps, 'modelValue' | 'max' | 'step' | 'icon'>

@@ -1,4 +1,6 @@
 .base-separator {
+	--sep-spacing: 0px;
+
 	display: flex;
 	align-items: center;
 
@@ -28,6 +30,14 @@
 	&--vertical &__line {
 		min-height: 0;
 		border-left-width: var(--sep-thickness, 1px);
+	}
+
+	&--horizontal:not(.base-separator--with-content) {
+		padding-block: sz(var(--sep-spacing));
+	}
+
+	&--vertical:not(.base-separator--with-content) {
+		padding-inline: sz(var(--sep-spacing));
 	}
 
 	&--dashed &__line {

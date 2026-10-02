@@ -10,8 +10,17 @@ export interface UseRangeValuesOptions {
 	emit: BaseRangeEmits
 }
 
+/** Проверенные границы и шаг: конечные числа, `max ≥ min`, `step > 0` */
+export interface RangeBounds {
+	min: number
+	max: number
+	step: number
+}
+
 export interface UseRangeValuesReturn {
 	mode: ComputedRef<RangeMode>
+	/** Границы и шаг после проверки пропсов: ими пользуются подписи, aria и клавиатура */
+	bounds: ComputedRef<RangeBounds>
 	pointValues: ComputedRef<number[]>
 	labelText: ComputedRef<string>
 	tooltipPosition: ComputedRef<'top' | 'right'>

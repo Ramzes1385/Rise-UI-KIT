@@ -41,3 +41,10 @@ export interface UseRangeDragListenersReturn {
 	/** Подписать документ на движение и отпускание указателя выбранного вида */
 	addListeners: (kind: RangeDragKind) => void
 }
+
+/** Границы и шаг для клавиатуры ползунка: Home — `min`, End — `max`, стрелки и PageUp/PageDown — от `step` */
+export interface RangeKeyBounds {
+	min: number
+	max: number
+	step: number
+}

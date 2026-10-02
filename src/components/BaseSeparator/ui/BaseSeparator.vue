@@ -1,7 +1,7 @@
 <template>
 	<div
 		class="base-separator"
-		:style="[thicknessStyle, sizeScaleStyle, customColorStyle]"
+		:style="[rootStyle, sizeScaleStyle, customColorStyle]"
 		:class="[
 			`base-separator--${orientation}`,
 			{
@@ -46,5 +46,5 @@ const props = withDefaults(
 )
 defineSlots<BaseSeparatorSlots>()
 
-const { classes, sizeScaleStyle, customColorStyle, contentId, spacingStyle, thicknessStyle } = useBaseSeparator(props)
+const { classes, sizeScaleStyle, customColorStyle, contentId, spacingStyle, rootStyle } = useBaseSeparator(props)
 </script>

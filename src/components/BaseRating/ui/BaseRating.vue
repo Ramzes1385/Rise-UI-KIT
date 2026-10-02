@@ -16,7 +16,7 @@
 		@mouseleave="clearHover"
 		@keydown="handleKeydown">
 		<span
-			v-for="star in max"
+			v-for="star in starCount"
 			:key="star"
 			class="base-rating__star"
 			@click="handleClick($event, star)"
@@ -67,6 +67,7 @@ const {
 	isControlDisabled,
 	rootRef,
 	isInteractive,
+	starCount,
 	filledIcon,
 	ariaAttrs,
 	fillPercent,

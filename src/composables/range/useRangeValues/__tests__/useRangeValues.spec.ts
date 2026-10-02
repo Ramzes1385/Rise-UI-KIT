@@ -118,4 +118,73 @@ describe('useRangeValues', () => {
 		expect(range.snapToStepValue(96)).toBe(95)
 		expect(range.snapToStepValue(-20)).toBe(0)
 	})
+
+	describe('проверка пропсов', () => {
+		let warnSpy: ReturnType<typeof vi.spyOn>
+
+		beforeEach(() => {
+			warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+		})
+
+		afterEach(() => {
+			warnSpy.mockRestore()
+		})
+
+		it('корректные пропсы проходят без предупреждений', () => {
+			const { range } = setup({ min: -10, max: 10, step: 0.5, modelValue: 2.5 })
+			expect(range.bounds.value).toEqual({ min: -10, max: 10, step: 0.5 })
+			expect(range.pointValues.value).toEqual([2.5])
+			expect(warnSpy).not.toHaveBeenCalled()
+		})
+
+		it.each([
+			[0, 1],
+			[-5, 1],
+			[Number.NaN, 1],
+			[Number.POSITIVE_INFINITY, 1],
+		])('step = %s заменяется на %s с предупреждением', (step, expected) => {
+			const { range } = setup({ step })
+			expect(range.bounds.value.step).toBe(expected)
+			expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('BaseRange: `step`'))
+		})
+
+		it('не числовые min и max заменяются на 0 и 100', () => {
+			const { range } = setup({ min: Number.NaN, max: Number.NEGATIVE_INFINITY, modelValue: 50 })
+			expect(range.bounds.value).toEqual({ min: 0, max: 100, step: 10 })
+			expect(warnSpy).toHaveBeenCalledTimes(2)
+		})
+
+		it('max меньше min сводит диапазон к min', () => {
+			const { range } = setup({ min: 50, max: 10, modelValue: 30 })
+			expect(range.bounds.value).toEqual({ min: 50, max: 50, step: 10 })
+			expect(range.pointValues.value).toEqual([50])
+			expect(range.fillSegments.value).toEqual([{ left: '0%', width: '0%' }])
+			expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('`max` = 10'))
+		})
+
+		it('значение вне границ показывается на ближайшей границе без предупреждения', () => {
+			const { range } = setup({ modelValue: 150 })
+			expect(range.pointValues.value).toEqual([100])
+			expect(range.labelText.value).toBe('100')
+			expect(warnSpy).not.toHaveBeenCalled()
+		})
+
+		it('не числовое значение показывается как min с предупреждением', () => {
+			const { range } = setup({ min: 10, modelValue: Number.NaN })
+			expect(range.pointValues.value).toEqual([10])
+			expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('`modelValue` = NaN'))
+		})
+
+		it('точки и диапазон ограничиваются границами', () => {
+			expect(setup({ points: [-20, 50, 300] }).range.pointValues.value).toEqual([0, 50, 100])
+			expect(setup({ rangeValue: [-20, 300] }).range.pointValues.value).toEqual([0, 100])
+			expect(setup({ rangeValue: [Number.NaN, 30] }).range.pointValues.value).toEqual([0, 30])
+		})
+
+		it('шаг и границы клавиатуры и привязки — проверенные', () => {
+			const { range } = setup({ step: 0, max: 5 })
+			expect(range.snapToStepValue(2.4)).toBe(2)
+			expect(range.thumbMax(0)).toBe(5)
+		})
+	})
 })

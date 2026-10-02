@@ -84,6 +84,8 @@ export const UI_TEXT_DIFF = localized('textDiff')
 export const UI_QR_CODE = localized('qrCode')
 export const UI_SIGNATURE_PAD = localized('signaturePad')
 export const UI_AVATAR_CROPPER = localized('avatarCropper')
+/** Предупреждения о недопустимых числовых пропсах */
+export const UI_VALUE_WARNINGS = localized('valueWarnings')
 export const UI_NOTIFICATION_CENTER = localized('notificationCenter')
 export const UI_COMMENT_THREAD = localized('commentThread')
 

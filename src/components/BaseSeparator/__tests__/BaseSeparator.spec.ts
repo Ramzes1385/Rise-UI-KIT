@@ -208,4 +208,55 @@ describe('BaseSeparator unit', () => {
 			expect(container.querySelector('.base-separator__content')).toHaveClass('custom-content')
 		})
 	})
+
+	describe('проверка thickness и spacing', () => {
+		let warnSpy: ReturnType<typeof vi.spyOn>
+
+		beforeEach(() => {
+			warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+		})
+
+		afterEach(() => {
+			warnSpy.mockRestore()
+		})
+
+		function rootStyle(container: Element): string {
+			return container.querySelector('.base-separator')?.getAttribute('style') ?? ''
+		}
+
+		it.each([0, -2, Number.NaN])('thickness = %s заменяется на 1px с предупреждением — линия не пропадает', thickness => {
+			const { container } = render(BaseSeparator, { props: { thickness } })
+
+			expect(rootStyle(container)).toContain('--sep-thickness: 1px')
+			expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('BaseSeparator: `thickness`'))
+		})
+
+		it('дробная толщина больше 0 применяется как есть', () => {
+			const { container } = render(BaseSeparator, { props: { thickness: 0.5 } })
+
+			expect(rootStyle(container)).toContain('--sep-thickness: 0.5px')
+			expect(warnSpy).not.toHaveBeenCalled()
+		})
+
+		it('spacing без подписи задаёт отступ поперёк линии (--sep-spacing на корне)', () => {
+			const { container } = render(BaseSeparator, { props: { spacing: 16 } })
+
+			expect(rootStyle(container)).toContain('--sep-spacing: 16px')
+		})
+
+		it('spacing = 0 применяется', () => {
+			const { container } = render(BaseSeparator, { props: { spacing: 0, label: 'или' } })
+
+			expect(rootStyle(container)).toContain('--sep-spacing: 0px')
+			expect(container.querySelector('.base-separator__content')?.getAttribute('style')).toContain('--sep-pad-x: 0px')
+		})
+
+		it.each([-4, Number.NaN])('spacing = %s не применяется и даёт предупреждение', spacing => {
+			const { container } = render(BaseSeparator, { props: { spacing, label: 'или' } })
+
+			expect(rootStyle(container)).not.toContain('--sep-spacing')
+			expect(container.querySelector('.base-separator__content')?.getAttribute('style') ?? '').not.toContain('--sep-pad')
+			expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('BaseSeparator: `spacing`'))
+		})
+	})
 })

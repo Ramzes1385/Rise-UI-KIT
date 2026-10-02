@@ -2,9 +2,15 @@ import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export interface BaseSkeletonProps extends Omit<BaseComponentProps<string, 'root'>, 'color'> {
-	/** Ширина: число — пиксели, строка — любая длина CSS (`'100%'`, `'12rem'`). Масштабируется `sizeScale`. */
+	/**
+	 * Ширина: число — пиксели (0 и больше), строка — любая длина CSS (`'100%'`, `'12rem'`). Масштабируется `sizeScale`;
+	 * ключевые слова (`'auto'`, `'fit-content'`) — без масштаба. Отрицательное число и NaN не применяются.
+	 */
 	width?: string | number
-	/** Высота: число — пиксели, строка — любая длина CSS. У `text` по умолчанию 16px; `rect` и `circle` без высоты не видны. */
+	/**
+	 * Высота: число — пиксели, строка — любая длина CSS, правила те же, что у `width`. У `text` по умолчанию 16px;
+	 * `circle` без высоты — круг по ширине; `rect` без высоты не виден (растягивается только во flex и grid).
+	 */
 	height?: string | number
 	/** Форма: `text` — строка текста, `rect` — блок со скруглением, `circle` — круг (аватар). */
 	shape?: 'text' | 'circle' | 'rect'

@@ -12,11 +12,11 @@
 		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<div v-if="hasLabel" class="base-range__label" :class="classes.label">
-			<BaseText tag="span" class="base-range__label-min" :custom-class="classes.labelMin">{{ min }}</BaseText>
+			<BaseText tag="span" class="base-range__label-min" :custom-class="classes.labelMin">{{ bounds.min }}</BaseText>
 			<BaseText tag="span" class="base-range__label-value" :weight="TEXT_WEIGHT.MEDIUM" :custom-class="classes.labelValue">{{
 				labelText
 			}}</BaseText>
-			<BaseText tag="span" class="base-range__label-max" :custom-class="classes.labelMax">{{ max }}</BaseText>
+			<BaseText tag="span" class="base-range__label-max" :custom-class="classes.labelMax">{{ bounds.max }}</BaseText>
 		</div>
 
 		<div class="base-range__body" :class="classes.body">
@@ -120,6 +120,7 @@ const {
 	rootRef,
 	trackRef,
 	hasThumbSlot,
+	bounds,
 	pointValues,
 	labelText,
 	tooltipPosition,
