@@ -160,8 +160,10 @@ function copyElement(source: Element): Element | null {
 	return target
 }
 
+const HREF_NAMES = new Set(['href', 'xlink:href'])
+
 function prefixReference(name: string, value: string, prefix: string): string {
-	if (name === 'href') return value.replace(/^#/, `#${prefix}`)
+	if (HREF_NAMES.has(name.toLowerCase())) return value.replace(/^#/, `#${prefix}`)
 	return value.replace(/url\(\s*(['"]?)#/gi, `url($1#${prefix}`)
 }
 

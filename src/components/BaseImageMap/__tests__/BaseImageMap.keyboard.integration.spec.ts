@@ -70,6 +70,25 @@ describe('BaseImageMap клавиатура — панорама окна', () =
 		expect(screen.getByRole('group', { name: 'Увеличенная карта: стрелки сдвигают вид' })).toBe(viewport)
 	})
 
+	it('масштаб вернулся к 1 с фокусом на окне — фокус на объект карты, а не в body', async () => {
+		const user = userEvent.setup()
+		const { container, viewport } = await renderMap()
+		await user.click(screen.getByRole('button', { name: 'Увеличить' }))
+		viewport.focus()
+		await user.keyboard('0')
+		expect(viewport).not.toHaveAttribute('tabindex')
+		expect(document.activeElement).not.toBe(document.body)
+		expect(document.activeElement).toBe(objectElement(container, 'a'))
+	})
+
+	it('масштаб вернулся к 1 кнопкой — фокус остаётся на кнопке', async () => {
+		const user = userEvent.setup()
+		await renderMap()
+		await user.click(screen.getByRole('button', { name: 'Увеличить' }))
+		await user.click(screen.getByRole('button', { name: 'Сбросить масштаб' }))
+		expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Сбросить масштаб' }))
+	})
+
 	it('стрелки на окне сдвигают вид на 10% окна в пределах краёв', async () => {
 		const user = userEvent.setup()
 		const { container, viewport } = await renderMap()

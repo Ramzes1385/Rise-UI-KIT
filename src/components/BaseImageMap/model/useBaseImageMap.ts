@@ -1,7 +1,7 @@
-import { computed, ref, shallowRef } from 'vue'
 import { UI_IMAGE_MAP } from '@/locales/messages'
 import { useImageMapSvg } from './svg/useImageMapSvg'
 import { useImageMapPan } from './zoom/useImageMapPan'
+import { computed, ref, shallowRef, watch } from 'vue'
 import { useImageMapData } from './data/useImageMapData'
 import { useImageMapView } from './zoom/useImageMapView'
 import { useImageMapObjects } from './useImageMapObjects'
@@ -111,10 +111,21 @@ function useObjectsPart(props: ImageMapProps, core: ReturnType<typeof useMapCore
 	})
 }
 
+function useViewportFocus(core: ReturnType<typeof useMapCore>): void {
+	const { refs, zoom, focus } = core
+	watch(
+		() => zoom.isMinZoom.value,
+		isMinZoom => {
+			if (isMinZoom && document.activeElement === refs.viewportRef.value) focus.focusObject(focus.tabbableId.value)
+		},
+	)
+}
+
 export function useBaseImageMap(props: ImageMapProps, emit: BaseImageMapEmits) {
 	const core = useMapCore(props, emit)
 	const { refs, data, zoom, overlay, actions, focus, gestures } = core
 	const objects = useObjectsPart(props, core)
+	useViewportFocus(core)
 	const svg = useImageMapSvg({
 		getLayer: () => data.currentLayer.value,
 		containerRef: refs.svgContainerRef,

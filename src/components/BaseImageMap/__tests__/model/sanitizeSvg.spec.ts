@@ -101,6 +101,15 @@ describe('sanitizeSvg', () => {
 		expect(result).not.toContain('xlink')
 	})
 
+	it('href с буквами в другом регистре (Href) тоже получает префикс', () => {
+		const result = sanitizeSvg(wrap('<use Href="#x"/>'), PREFIX)
+		expect(result).toContain(`="#${PREFIX}x"`)
+		expect(result).not.toContain('"#x"')
+		const host = document.createElement('div')
+		host.innerHTML = result
+		expect(host.querySelector('use')?.getAttribute('href')).toBe(`#${PREFIX}x`)
+	})
+
 	it('небезопасный xlink:href не переезжает, существующий href не перезаписывается', () => {
 		const root = parse(
 			sanitizeSvg(

@@ -13,7 +13,8 @@
 				v-for="row in hours.schedule"
 				:key="row.day"
 				class="base-image-map-card__schedule-row"
-				:class="{ 'base-image-map-card__schedule-row--today': row.isToday }">
+				:class="{ 'base-image-map-card__schedule-row--today': row.isToday }"
+				:aria-current="row.isToday ? 'date' : undefined">
 				<dt>{{ row.day }}</dt>
 				<dd>{{ row.text }}</dd>
 			</div>

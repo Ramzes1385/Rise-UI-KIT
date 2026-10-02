@@ -76,6 +76,8 @@ describe('BaseImageMap — часы работы', () => {
 			'вс' + UI_IMAGE_MAP.DAY_OFF,
 		])
 		expect(rows[4]).toHaveClass('base-image-map-card__schedule-row--today')
+		expect(rows[4]).toHaveAttribute('aria-current', 'date')
+		expect(rows.filter(row => row.hasAttribute('aria-current'))).toHaveLength(1)
 	})
 
 	it('фильтр «Открыто сейчас» прячет закрытые и объекты без часов — в списке и на карте', async () => {
