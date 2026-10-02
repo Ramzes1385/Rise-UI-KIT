@@ -1,7 +1,7 @@
 /** Утилиты: подсветка кода без зависимостей — фрагменты по языку, строки для номеров, названия языков */
 import { runRules } from './codeTokenizer'
+import { tokenizeStyle } from './grammars/styleGrammar'
 import { tokenizeMarkup } from './grammars/markupGrammar'
-import { CSS_RULES, SCSS_RULES } from './grammars/styleGrammar'
 import { JSON_RULES, scriptRules } from './grammars/scriptGrammar'
 import { BASH_RULES, PYTHON_RULES } from './grammars/shellGrammar'
 import type { CodeLanguage, CodeRule, CodeToken } from './types/codeHighlightUtils.types'
@@ -52,12 +52,10 @@ const LANGUAGE_ALIASES: Readonly<Record<string, CodeLanguage>> = {
 	py3: 'python',
 }
 
-const RULES: Readonly<Record<Exclude<CodeLanguage, 'html' | 'vue'>, CodeRule[]>> = {
+const RULES: Readonly<Record<Exclude<CodeLanguage, 'html' | 'vue' | 'css' | 'scss'>, CodeRule[]>> = {
 	javascript: scriptRules(false),
 	typescript: scriptRules(true),
 	json: JSON_RULES,
-	css: CSS_RULES,
-	scss: SCSS_RULES,
 	bash: BASH_RULES,
 	python: PYTHON_RULES,
 }
@@ -79,6 +77,7 @@ function getCodeLanguageName(language: string | null | undefined): string {
 
 function tokenizeKnown(code: string, language: CodeLanguage): CodeToken[] {
 	if (language === 'html' || language === 'vue') return tokenizeMarkup(code, language === 'vue', tokenizeKnown)
+	if (language === 'css' || language === 'scss') return tokenizeStyle(code, language === 'scss')
 	return runRules(code, RULES[language])
 }
 
