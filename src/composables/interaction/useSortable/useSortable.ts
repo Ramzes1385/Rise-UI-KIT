@@ -11,15 +11,19 @@ import type { UseSortableOptions, UseSortableReturn } from './types/useSortable.
  *
  * @example
  * ```ts
+ * const index = (id: string): number => items.value.findIndex(item => item.id === id)
  * const sortable = useSortable<Item, number>({
  *   rootRef,
  *   itemId: item => item.id,
  *   isDisabled: () => props.isDisabled,
- *   locate: id => shown.value.findIndex(item => item.id === id),
+ *   locate: id => (index(id) < 0 ? null : index(id)),
  *   isSamePlace: (a, b) => a === b,
- *   stepPlace: (id, key) => (key === 'ArrowUp' ? index(id) - 1 : index(id) + 1),
+ *   stepPlace: (id, key) => {
+ *     const next = index(id) + (key === 'ArrowUp' ? -1 : 1)
+ *     return next < 0 || next >= items.value.length ? null : next
+ *   },
  *   dropPlace: point => indexUnder(point),
- *   itemElement: id => rootRef.value?.querySelector(`[data-id="${id}"]`) ?? null,
+ *   itemElement: id => rootRef.value?.querySelector<HTMLElement>(`[data-id="${id}"]`) ?? null,
  *   onStart: () => (draft.value = [...items.value]),
  *   onPreview: (id, index) => (draft.value = moveTo(draft.value, id, index)),
  *   onDrop: (move, done) => { commit(); done() },

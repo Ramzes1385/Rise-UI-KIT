@@ -28,13 +28,9 @@ function useListParts<T extends ListItem>(props: ListProps<T>, emit: BaseListEmi
 	const viewportRef = ref<HTMLElement | null>(null)
 	const order = useListOrder(props, emit)
 	const selection = useListSelection(props, emit, order.shown)
-	const scroll = { toIndex: (index: number): number => index }
-	const focus = useListFocus(listRef, order.shown, { isSelected: selection.isSelected, scrollToIndex: index => scroll.toIndex(index) })
+	const scrollToIndex = (index: number): void => rows.scrollToIndex(index)
+	const focus = useListFocus(listRef, order.shown, { isSelected: selection.isSelected, scrollToIndex })
 	const rows = useListRows(props, viewportRef, { shown: order.shown, activeIndex: () => focus.activeIndex.value })
-	scroll.toIndex = (index: number): number => {
-		rows.scrollToIndex(index)
-		return index
-	}
 	const sortable = useListSortable(props, listRef, { order, focusItem: focus.focusItem })
 	const keyboard = useListKeyboard(props, { shown: order.shown, emit, focus, selection, sortable, order })
 	return { listRef, viewportRef, order, selection, focus, rows, sortable, keyboard }

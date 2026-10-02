@@ -101,7 +101,8 @@
 		@include disabled-state;
 	}
 
-	&__item--grabbed {
+	&__item--grabbed,
+	&__item--grabbed:focus-visible {
 		outline: 2px dashed var(--rise-primary);
 		outline-offset: -2px;
 		background-color: var(--rise-bg-elevated);

@@ -43,8 +43,8 @@ export function setup() {
 
 	function dropPlace(point: SortablePoint): number | null {
 		const rows = [...(rootRef.value?.querySelectorAll<HTMLElement>('[data-step-id]') ?? [])]
-		const index = rows.findIndex(row => point.y < row.getBoundingClientRect().bottom)
-		return index === -1 ? rows.length - 1 : index
+		const below = rows.findIndex(row => point.y < row.getBoundingClientRect().bottom)
+		return below === -1 ? rows.length - 1 : below
 	}
 
 	function announce(kind: SortableAnnouncement, id: string): void {

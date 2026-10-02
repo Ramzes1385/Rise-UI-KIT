@@ -150,7 +150,7 @@ export interface ListKeyboardDeps<T extends ListItem = ListItem> {
 	shown: ComputedRef<readonly T[]>
 	emit: BaseListEmits<T>
 	focus: { focusItem: (id: string) => void; typeahead: (key: string) => void }
-	selection: { toggle: (item: T) => void; selectRange: (item: T) => void; toggleAll: () => void }
+	selection: { toggle: (item: T) => void; selectRange: (item: T) => void; selectBetween: (from: T, to: T) => void; toggleAll: () => void }
 	sortable: { grab: (item: T) => void; handleGrabbedKeydown: (event: KeyboardEvent) => boolean }
 	order: { preview: (id: string, index: number) => void; finish: (move: SortableMove<number>, done: () => void) => void }
 }

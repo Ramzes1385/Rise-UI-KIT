@@ -8,6 +8,8 @@ const NAV_TARGETS: Record<string, (index: number, size: number) => number> = {
 	End: (_, size) => size - 1,
 }
 
+const EDGE_KEYS = { Home: true, End: true }
+
 const MOVE_STEPS: Record<string, number> = { ArrowUp: -1, ArrowDown: 1 }
 
 const isPrintable = (event: KeyboardEvent): boolean =>
@@ -38,7 +40,9 @@ function useListActions<T extends ListItem>(props: ListProps<T>, deps: ListKeybo
 			const index = indexOfId(deps.shown.value, item.id)
 			const target = deps.shown.value[NAV_TARGETS[event.key](index, deps.shown.value.length)]
 			deps.focus.focusItem(target.id)
-			if (event.shiftKey && props.selectionMode === 'multiple' && target.id !== item.id) deps.selection.toggle(target)
+			if (!event.shiftKey || props.selectionMode !== 'multiple' || target.id === item.id) return
+			if (event.key in EDGE_KEYS) deps.selection.selectBetween(item, target)
+			else deps.selection.toggle(target)
 		},
 	}
 }
@@ -50,9 +54,9 @@ export function useListKeyboard<T extends ListItem>(props: ListProps<T>, deps: L
 		if (event.key in NAV_TARGETS) actions.navigate(event, item)
 		else if (event.key === ' ') actions.space(event, item)
 		else if (event.key === 'Enter') actions.enter(item)
-		else if (event.key.toLowerCase() === 'a' && (event.ctrlKey || event.metaKey) && props.selectionMode === 'multiple')
-			deps.selection.toggleAll()
-		else return false
+		else if (event.key.toLowerCase() === 'a' && (event.ctrlKey || event.metaKey)) {
+			if (props.selectionMode === 'multiple') deps.selection.toggleAll()
+		} else return false
 		return true
 	}
 	return {

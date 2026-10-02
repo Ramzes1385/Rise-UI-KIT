@@ -8,13 +8,11 @@ const DRAG_THRESHOLD = 5
 const SETTLE_DURATION = 180
 
 /** Одно нажатие: до порога — ничего, после — «призрак» и предварительный перенос под курсором */
-function createPointerSession<TItem, TPlace>(options: UseSortableOptions<TItem, TPlace>, press: SortablePress<TItem>) {
+function createPointerSession<TItem, TPlace>(options: UseSortableOptions<TItem, TPlace>, press: SortablePress<TItem>, origin: TPlace) {
 	const drag = shallowRef<SortableDrag<TItem> | null>(null)
 	const id = options.itemId(press.item)
-	let origin: TPlace | null = null
 	const start = (): void => {
 		const rect = press.element.getBoundingClientRect()
-		origin = options.locate(id)
 		drag.value = {
 			item: press.item,
 			x: press.x,
@@ -34,7 +32,7 @@ function createPointerSession<TItem, TPlace>(options: UseSortableOptions<TItem, 
 			const place = options.dropPlace({ x: event.clientX, y: event.clientY }, id)
 			if (place !== null && !options.isSamePlace(place, options.locate(id))) options.onPreview(id, place)
 		},
-		end: (): SortableMove<TPlace> => ({ id, origin: origin as TPlace }),
+		end: (): SortableMove<TPlace> => ({ id, origin }),
 	}
 }
 
@@ -57,11 +55,13 @@ function windowListeners(handlers: SortableWindowHandlers) {
 			window.addEventListener('pointermove', handlers.move)
 			window.addEventListener('pointerup', handlers.up)
 			window.addEventListener('keydown', handlers.key)
+			window.addEventListener('pointercancel', handlers.cancel)
 		},
 		unlisten(): void {
 			window.removeEventListener('pointermove', handlers.move)
 			window.removeEventListener('pointerup', handlers.up)
 			window.removeEventListener('keydown', handlers.key)
+			window.removeEventListener('pointercancel', handlers.cancel)
 		},
 	}
 }
@@ -92,7 +92,7 @@ export function useSortablePointer<TItem, TPlace>(options: UseSortableOptions<TI
 	const ghostRef = ref<HTMLElement | null>(null)
 	let session: ReturnType<typeof createPointerSession<TItem, TPlace>> | null = null
 	const clickGuard = createClickGuard()
-	const listeners = windowListeners({ move: handleMove, up: handleUp, key: handleKey })
+	const listeners = windowListeners({ move: handleMove, up: handleUp, key: handleKey, cancel: handleCancel })
 	const stop = (): void => {
 		listeners.unlisten()
 		session = null
@@ -112,11 +112,14 @@ export function useSortablePointer<TItem, TPlace>(options: UseSortableOptions<TI
 		const end = session.end()
 		options.onDrop(end, settle(end.id))
 	}
-	function handleKey(event: KeyboardEvent): void {
-		if (event.key !== 'Escape' || !drag.value) return
-		event.preventDefault()
+	function handleCancel(event?: Event): void {
+		if (!drag.value) return stop()
+		event?.preventDefault()
 		const id = options.itemId(drag.value.item)
 		options.onCancel(id, settle(id))
+	}
+	function handleKey(event: KeyboardEvent): void {
+		if (event.key === 'Escape' && drag.value) handleCancel(event)
 	}
 	onBeforeUnmount(stop)
 	return {
@@ -126,12 +129,10 @@ export function useSortablePointer<TItem, TPlace>(options: UseSortableOptions<TI
 		ghostStyle: computed(() => ghostStyle(drag.value)),
 		handlePointerDown(event: PointerEvent, item: TItem): void {
 			if (options.isDisabled() || event.button !== 0 || event.pointerType === 'touch' || drag.value) return
-			session = createPointerSession(options, {
-				item,
-				x: event.clientX,
-				y: event.clientY,
-				element: event.currentTarget as HTMLElement,
-			})
+			const origin = options.locate(options.itemId(item))
+			if (origin === null) return
+			const press = { item, x: event.clientX, y: event.clientY, element: event.currentTarget as HTMLElement }
+			session = createPointerSession(options, press, origin)
 			listeners.listen()
 		},
 	}

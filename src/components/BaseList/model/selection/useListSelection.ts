@@ -23,12 +23,15 @@ export function useListSelection<T extends ListItem>(props: ListProps<T>, emit: 
 		else next.add(item.id)
 		emitMany(next)
 	}
-	const selectRange = (item: T): void => {
-		if (props.selectionMode !== 'multiple' || !canSelect(item)) return toggle(item)
-		const from = indexOfId(shown.value, anchorId.value ?? item.id)
+	const addRange = (fromId: string, item: T): void => {
+		const from = indexOfId(shown.value, fromId)
 		const to = indexOfId(shown.value, item.id)
 		const range = shown.value.slice(Math.min(from, to), Math.max(from, to) + 1).filter(isSelectable)
 		emitMany(new Set([...selected.value, ...range.map(entry => entry.id)]))
+	}
+	const selectRange = (item: T): void => {
+		if (props.selectionMode !== 'multiple' || !canSelect(item)) return toggle(item)
+		addRange(anchorId.value ?? item.id, item)
 	}
 	const selectAll = (): void => {
 		if (props.selectionMode !== 'multiple' || props.isDisabled) return
@@ -39,6 +42,9 @@ export function useListSelection<T extends ListItem>(props: ListProps<T>, emit: 
 		isSelected: (item: T): boolean => selected.value.has(item.id),
 		toggle,
 		selectRange,
+		selectBetween(from: T, to: T): void {
+			if (props.selectionMode === 'multiple' && !props.isDisabled) addRange(from.id, to)
+		},
 		selectAll,
 		clearSelection,
 		toggleAll(): void {

@@ -11,9 +11,10 @@ function useTypeahead<T extends ListItem>(shown: ComputedRef<readonly T[]>) {
 		clearTimeout(resetTimer)
 		resetTimer = setTimeout(() => (query = ''), TYPEAHEAD_RESET)
 		query += key.toLocaleLowerCase()
-		const start = shown.value.findIndex(item => item.id === fromId)
-		const ordered = [...shown.value.slice(start + 1), ...shown.value.slice(0, start + 1)]
 		const isSame = [...query].every(char => char === query[0])
+		const current = shown.value.findIndex(item => item.id === fromId)
+		const start = isSame ? current + 1 : Math.max(current, 0)
+		const ordered = [...shown.value.slice(start), ...shown.value.slice(0, start)]
 		const prefix = isSame ? query[0] : query
 		return ordered.find(item => item.title.toLocaleLowerCase().startsWith(prefix))
 	}

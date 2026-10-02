@@ -35,6 +35,8 @@ export interface SortableWindowHandlers {
 	move: (event: PointerEvent) => void
 	up: () => void
 	key: (event: KeyboardEvent) => void
+	/** Браузер отменил указатель (`pointercancel`): перенос отменяется, как по Escape */
+	cancel: () => void
 }
 
 /** Что объявить скринридеру во время перестановки с клавиатуры: элемент взят или сдвинут на шаг */
