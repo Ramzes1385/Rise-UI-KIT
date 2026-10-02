@@ -1,0 +1,87 @@
+.base-card-input {
+	display: flex;
+	flex-direction: column;
+	gap: sz(6px);
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+	border: 0;
+
+	&__legend {
+		margin-bottom: sz(4px);
+		padding: 0;
+		@include field-label;
+
+		&--hidden {
+			@include visually-hidden;
+		}
+	}
+
+	&__fields {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: sz(12px);
+	}
+
+	&__number,
+	&__holder {
+		grid-column: 1 / -1;
+	}
+
+	&--inline &__fields {
+		grid-template-columns: minmax(0, 1fr) sz(96px) sz(96px);
+	}
+
+	&--inline &__number {
+		grid-column: auto;
+	}
+
+	.base-input__field {
+		font-variant-numeric: tabular-nums;
+	}
+
+	&__brand {
+		display: inline-flex;
+		flex-shrink: 0;
+		align-items: center;
+		margin-inline-end: sz(8px);
+		color: var(--rise-text-muted);
+	}
+
+	&__brand-icon {
+		width: auto;
+		height: sz(22px);
+	}
+
+	&__brand-image {
+		width: auto;
+		height: sz(22px);
+	}
+
+	&__brand-name {
+		padding: sz(1px 6px);
+		border: 1px solid var(--rise-border);
+		border-radius: sz(var(--rise-radius-sm));
+		font-size: sz(var(--rise-font-size-xs));
+		white-space: nowrap;
+	}
+
+	&__live {
+		@include visually-hidden;
+	}
+
+	&__error {
+		color: var(--rise-error);
+		font-size: sz(var(--rise-font-size-xs));
+	}
+}
+
+@media (max-width: 480px) {
+	.base-card-input--inline .base-card-input__fields {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.base-card-input--inline .base-card-input__number {
+		grid-column: 1 / -1;
+	}
+}

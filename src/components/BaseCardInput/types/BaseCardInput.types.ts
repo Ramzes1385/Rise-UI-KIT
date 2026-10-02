@@ -1,0 +1,122 @@
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
+import type { InputVariant } from '@components/BaseInput/types/BaseInput.types'
+import type { CardBrand, CardBrandOptions, CardBrandRef, CardExpiry } from '@utils/form/cardUtils'
+
+/** Варианты оформления — как у BaseInput: каждое поле карты — BaseInput */
+export const CARD_INPUT_VARIANTS = [
+	'default',
+	'ghost',
+	'outline',
+	'shadow',
+	'soft',
+	'filled',
+	'underline',
+] as const satisfies readonly InputVariant[]
+
+/** Раскладка: `stacked` — номер и имя во всю ширину, срок и код рядом; `inline` — номер, срок и код в одну строку */
+export const CARD_INPUT_LAYOUTS = ['stacked', 'inline'] as const
+
+/** Раскладка полей карты */
+export type CardInputLayout = (typeof CARD_INPUT_LAYOUTS)[number]
+
+/** Поля карты по порядку перехода */
+export const CARD_INPUT_FIELDS = ['number', 'expiry', 'code', 'holder'] as const
+
+/** Поле карты */
+export type CardInputField = (typeof CARD_INPUT_FIELDS)[number]
+
+/**
+ * Значение `v-model` — сводка без номера и кода: её можно хранить в состоянии формы и проверять схемой BaseForm.
+ * Сами данные карты отдаёт только `getCardData()` или адаптер `tokenize`
+ */
+export interface CardInputValue {
+	/** Id марки (`visa`, `mir`) или `null`, пока марка не определена */
+	brand: string | null
+	/** Последние 4 цифры полного номера, иначе пустая строка */
+	last4: string
+	/** Срок, если введён полностью и верно */
+	expiry: CardExpiry | null
+	/** Имя владельца латиницей */
+	holder: string
+	/** Все поля заполнены верно и марка принимается: можно оплачивать */
+	isComplete: boolean
+}
+
+/** Данные карты для эквайера — только из `getCardData()` и только в `tokenize` */
+export interface CardData {
+	/** Номер — только цифры */
+	number: string
+	expiry: CardExpiry
+	/** Код безопасности */
+	code: string
+	holder: string
+	brand: CardBrand | undefined
+}
+
+/** Адаптер эквайера: данные карты → криптограмма или токен для оплаты на сервере */
+export type CardTokenizer = (data: CardData) => Promise<string>
+
+/**
+ * Пропсы компонента BaseCardInput
+ */
+export interface BaseCardInputProps extends BaseComponentProps<
+	InputVariant,
+	'root' | 'legend' | 'number' | 'expiry' | 'code' | 'holder' | 'brand' | 'error'
+> {
+	/** Сводка о карте (`v-model`): марка, последние 4 цифры, срок, имя, `isComplete` — без номера и кода */
+	modelValue?: CardInputValue | null
+	/** Раскладка: `stacked` (по умолчанию) или `inline` */
+	layout?: CardInputLayout
+	/**
+	 * Принимаемые марки: id из `CARD_BRAND_IDS` или свои (`defineCardBrand`). Карта другой марки — ошибка
+	 * «Карты … не принимаются». Не задано — принимаются все марки
+	 */
+	brands?: readonly CardBrandRef[]
+	/** Официальные знаки марок от приложения: id марки → адрес картинки. Сильнее встроенных значков */
+	brandIcons?: Readonly<Record<string, string>>
+	/** Поле имени владельца (по умолчанию есть) */
+	hasHolder?: boolean
+	/** Адаптер эквайера для метода `tokenize()` */
+	tokenize?: CardTokenizer
+	/** Подпись группы полей; без неё группа называется подписью BaseFormField или скрытым «Банковская карта» */
+	label?: string
+	/** Общая ошибка под полями (например, от эквайера) */
+	error?: string
+	/** Все поля обязательны (`aria-required`) */
+	isRequired?: boolean
+	/** Отключает поля */
+	isDisabled?: boolean
+}
+
+/**
+ * События компонента BaseCardInput
+ */
+export interface BaseCardInputEmits {
+	/** Сводка о карте при любом изменении полей */
+	(event: 'update:modelValue', value: CardInputValue): void
+	/** Все поля заполнены верно: можно вызывать `tokenize()` */
+	(event: 'complete', value: CardInputValue): void
+}
+
+/** Методы BaseCardInput через `ref` */
+export interface BaseCardInputExpose {
+	/** Данные карты или `null`, если поля заполнены не полностью или неверно. Нигде не сохраняются */
+	getCardData: () => CardData | null
+	/** Передать данные карты адаптеру `tokenize`; без адаптера или с неполными данными — ошибка (Promise отклоняется) */
+	tokenize: () => Promise<string>
+	/** Показать ошибки всех полей; `true` — карта готова к оплате */
+	validate: () => boolean
+	/** Очистить поля и ошибки */
+	reset: () => void
+	/** Фокус на поле (по умолчанию — первое незаполненное) */
+	focus: (field?: CardInputField) => void
+}
+
+/** Что нужно для проверки полей: марка номера, марки для разбора, принимаемые id (`null` — все), есть ли имя, текущая дата */
+export interface CardCheckContext {
+	brand: CardBrand | undefined
+	options: CardBrandOptions
+	acceptedIds: ReadonlySet<string> | null
+	hasHolder: boolean
+	now: Date
+}

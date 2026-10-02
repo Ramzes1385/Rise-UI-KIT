@@ -1,4 +1,5 @@
 import { ruBase } from './base'
+import { ruCard } from './card'
 import { ruChat } from './chat'
 import { ruData } from './data'
 import { ruForms } from './forms'
@@ -15,6 +16,7 @@ export const ru = {
 	firstDayOfWeek: 1,
 	...ruBase,
 	...ruForms,
+	...ruCard,
 	...ruMedia,
 	...ruPresentation,
 	...ruChat,

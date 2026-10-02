@@ -1,4 +1,5 @@
 import { enBase } from './base'
+import { enCard } from './card'
 import { enChat } from './chat'
 import { enData } from './data'
 import { enForms } from './forms'
@@ -15,6 +16,7 @@ export const en: UiKitLocale = {
 	firstDayOfWeek: 0,
 	...enBase,
 	...enForms,
+	...enCard,
 	...enMedia,
 	...enPresentation,
 	...enChat,

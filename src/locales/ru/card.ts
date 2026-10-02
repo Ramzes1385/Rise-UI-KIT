@@ -1,0 +1,26 @@
+/** Банковская карта: поля BaseCardInput и ошибки */
+export const ruCard = {
+	card: {
+		GROUP: 'Банковская карта',
+		NUMBER: 'Номер карты',
+		EXPIRY: 'Срок действия',
+		EXPIRY_PLACEHOLDER: 'ММ/ГГ',
+		CODE: 'Код',
+		HOLDER: 'Имя владельца',
+		HOLDER_PLACEHOLDER: 'IVAN IVANOV',
+		/** Ошибки полей; `{brand}` — название марки */
+		NUMBER_INVALID: 'Проверьте номер карты',
+		BRAND_NOT_ACCEPTED: 'Карты {brand} не принимаются',
+		EXPIRY_INVALID: 'Укажите срок в виде ММ/ГГ',
+		EXPIRY_PAST: 'Срок действия карты истёк',
+		CODE_INVALID: 'Код — {count} цифры с оборота карты',
+		HOLDER_INVALID: 'Имя латиницей, как на карте',
+		/** Марка в поле номера для чтения с экрана */
+		BRAND: 'Марка карты: {brand}',
+		/** Переводы названий марок; остальные — латиницей из таблицы */
+		BRAND_MIR: 'Мир',
+		/** Ошибка `tokenize()` без адаптера */
+		NO_TOKENIZER: 'BaseCardInput: не задан tokenize — данные карты некуда передать',
+		INCOMPLETE: 'BaseCardInput: данные карты заполнены не полностью',
+	},
+}

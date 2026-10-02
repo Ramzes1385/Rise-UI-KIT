@@ -117,5 +117,8 @@ export const UI_FILE_UPLOAD = localized('fileUpload')
 /** Календарь событий */
 export const UI_EVENT_CALENDAR = localized('eventCalendar')
 
+/** Банковская карта: поля и ошибки BaseCardInput */
+export const UI_CARD = localized('card')
+
 /** Предупреждения в консоли */
 export const UI_WARNINGS = localized('warnings')

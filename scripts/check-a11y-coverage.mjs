@@ -124,6 +124,7 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseTagGroup',
 	'BasePresentationPlayer',
 	'BaseImageMap',
+	'BaseCardInput',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */
@@ -179,6 +180,7 @@ const INTERACTIVE_WITH_DISABLED = new Set([
 	'BaseTag',
 	'BaseTagGroup',
 	'BaseImageMap',
+	'BaseCardInput',
 ])
 
 /** Формовые компоненты, требующие story Error */
@@ -207,6 +209,7 @@ const FORM_COMPONENTS = new Set([
 	'BaseAddressInput',
 	'BaseSignaturePad',
 	'BaseDadataInput',
+	'BaseCardInput',
 ])
 
 const LOADING_COMPONENTS = new Set([

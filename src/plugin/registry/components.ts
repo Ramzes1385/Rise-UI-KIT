@@ -77,6 +77,7 @@ import { BaseAccordion } from '../../components/BaseAccordion'
 import { BaseAiMessage } from '../../components/BaseAiMessage'
 import { BaseAnimation } from '../../components/BaseAnimation'
 import { BaseBottomNav } from '../../components/BaseBottomNav'
+import { BaseCardInput } from '../../components/BaseCardInput'
 import { BaseChecklist } from '../../components/BaseChecklist'
 import { BaseContainer } from '../../components/BaseContainer'
 import { BaseCountdown } from '../../components/BaseCountdown'
@@ -148,6 +149,7 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseButtonGroup,
 	BaseCard,
 	BaseChart,
+	BaseCardInput,
 	BaseCheckbox,
 	BaseCheckboxGroup,
 	BaseChecklist,
