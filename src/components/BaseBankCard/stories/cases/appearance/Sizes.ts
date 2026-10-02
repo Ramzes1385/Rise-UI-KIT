@@ -1,6 +1,6 @@
-import type meta from '../BaseBankCard.stories'
-import BaseBankCard from '../../ui/BaseBankCard.vue'
+import type meta from '../../BaseBankCard.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
+import BaseBankCard from '../../../ui/BaseBankCard.vue'
 import { literal, SIZE_PRESETS, sizeLabel, storySource, useStorySetup } from '@/stories/helpers'
 
 const presets = SIZE_PRESETS.map(preset => ({ name: preset.name, sizeScale: preset.sizeScale, label: sizeLabel(preset) }))

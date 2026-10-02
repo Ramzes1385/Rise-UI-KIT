@@ -8,6 +8,8 @@ export const argTypes = {
 	modelValue: { control: 'object', table: propGroup(ARG_GROUP.content) },
 	label: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	layout: { control: 'inline-radio', options: CARD_INPUT_LAYOUTS, table: propGroup(ARG_GROUP.appearance) },
+	hasPreview: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
+	previewBackground: { control: 'text', table: propGroup(ARG_GROUP.appearance) },
 	error: { control: 'text', table: propGroup(ARG_GROUP.state) },
 	isDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 } satisfies Meta<typeof BaseCardInput>['argTypes']

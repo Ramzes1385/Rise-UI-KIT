@@ -4,7 +4,7 @@ import type BaseBankCard from '../ui/BaseBankCard.vue'
 export const args = {
 	brand: 'visa',
 	last4: '4242',
-	expiry: '12/30',
+	expiry: '12/34',
 	holder: 'IVAN IVANOV',
 	label: 'Основная',
 	isCompact: false,
