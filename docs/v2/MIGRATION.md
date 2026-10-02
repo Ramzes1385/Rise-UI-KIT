@@ -1753,3 +1753,23 @@ API кита не меняется. В Storybook добавлены пример
 - В `layer.svg` (открытие SVG, «Импорт JSON») и в «Экспорт JSON» уходит очищенный SVG: без скриптов, обработчиков и внешних ссылок, с `xmlns` и исходными размерами.
 - «Объекты из SVG» ищут уже связанные элементы только на текущем слое; занятый id — `svg-<elementId>`, затем `svg-<elementId>-N`.
 - Внутреннее: `cleanSvg` в `BaseImageMap/model/svg/sanitizeSvg.ts`, `attributeSelector` в `useImageMapSvg.ts` (поиск элемента по `id` с кавычками и `\`).
+
+## Задача small-fixes-9a: кнопки-шаги на пределе остаются в фокусе
+
+- **BaseButton — новый проп `isFocusableWhenDisabled`** (по умолчанию `false`, можно включить через `defaults` плагина). Отключённая кнопка остаётся в фокусе и в порядке Tab: `aria-disabled="true"` вместо `disabled`, класс `base-button--disabled` прежний; клик, Enter и Space не эмитят `click`, не отправляют форму (`type="submit"`) и не всплывают к предкам. Для кнопок, которые отключаются от собственного нажатия: фокус не уходит в `body`.
+  ```vue
+  <BaseButton :is-disabled="page >= total" is-focusable-when-disabled @click="page++">Вперёд</BaseButton>
+  ```
+- **BaseButton `isDisabled` без нового пропа:** поведение прежнее (нативный `disabled`). Клик по отключённой кнопке теперь ещё и гасится (`preventDefault` + `stopPropagation`), как при `isLoading`.
+- **Кнопки-шаги кита на пределе — `aria-disabled` вместо `disabled`** и остаются в порядке Tab:
+  - BaseImage (окно масштаба): «Уменьшить» / «Увеличить» на минимуме и максимуме;
+  - BasePagination: «Предыдущая страница» / «Следующая страница» на первой и последней странице (и при `total = 0`);
+  - BaseSlider: стрелки без `isLoop` на первом и последнем слайде; удержание стрелки на пределе больше не запускает повтор;
+  - BaseCalendar: «Предыдущий» / «Следующий» месяц (год, годы) у `constraints.minDate` / `maxDate`;
+  - BaseMediaPlayer, панель скорости: «Медленнее» / «Быстрее» на 0,25× и 4× (нативные кнопки: `aria-disabled` и проверка предела в обработчике);
+  - BaseTransfer: кнопки переноса, пока в панели нет отмеченных строк;
+  - BaseSignaturePad: «Отменить штрих» и «Очистить» у пустой подписи;
+  - BaseNotificationCenter: «Прочитать все», когда непрочитанных нет.
+  BaseImageMap и BaseImageMapEditor — задача small-fixes-9b.
+- **Отключение всего компонента** (`isDisabled` у BaseCalendar, BaseTransfer, BaseSignaturePad; у BaseSignaturePad — и отключённая форма) — по-прежнему нативный `disabled` у этих кнопок.
+- **Приложениям:** селекторы `button:disabled` и проверки `toBeDisabled()` / `disabled` для перечисленных кнопок на пределе замените на `[aria-disabled='true']` (`toHaveAttribute('aria-disabled', 'true')`) или класс `.base-button--disabled`. `toBeDisabled()` Testing Library на `aria-disabled` не срабатывает.

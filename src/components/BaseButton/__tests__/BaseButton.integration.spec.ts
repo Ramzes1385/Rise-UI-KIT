@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/vitest'
+import { mount } from '@vue/test-utils'
 import BaseButton from '../ui/BaseButton.vue'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
@@ -239,13 +240,18 @@ describe('BaseButton integration', () => {
 			expect(document.activeElement).toBe(button)
 		})
 
-		it('метод focus() работает у отключённой кнопки', async () => {
-			const { container } = renderFocusable()
-			const button = container.querySelector('button') as HTMLButtonElement
+		it('методы focus() и blur() через ref работают у отключённой кнопки', () => {
+			const wrapper = mount(BaseButton, {
+				props: { isDisabled: true, isFocusableWhenDisabled: true },
+				slots: { default: 'Вперёд' },
+				attachTo: document.body,
+			})
 
-			button.focus()
-
-			expect(document.activeElement).toBe(button)
+			wrapper.vm.focus()
+			expect(document.activeElement).toBe(wrapper.element)
+			wrapper.vm.blur()
+			expect(document.activeElement).not.toBe(wrapper.element)
+			wrapper.unmount()
 		})
 
 		it('без isDisabled кнопка обычная: нет aria-disabled, клик эмитится', async () => {

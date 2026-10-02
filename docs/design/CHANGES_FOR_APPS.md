@@ -211,6 +211,12 @@
 | BaseSlider, миниатюры | alt слайда или «Video thumbnail» | `alt=""` |
 | BaseRating, readonly | `slider` | `img` |
 
+**Кнопки-шаги на пределе (small-fixes-9a/9b)**
+
+- Кнопки, которые отключаются от собственного нажатия, на пределе получают `aria-disabled="true"` вместо `disabled` и остаются в фокусе и в порядке Tab: масштаб BaseImage, BaseImageMap и BaseImageMapEditor, «Назад»/«Вперёд» BasePagination и BaseCalendar, стрелки BaseSlider, скорость BaseMediaPlayer, перенос BaseTransfer, «Отменить штрих»/«Очистить» BaseSignaturePad, «Прочитать все» BaseNotificationCenter. Раньше фокус с такой кнопки уходил в `body`.
+- Тесты приложений, которые проверяли `toBeDisabled()` или атрибут `disabled` у этих кнопок, — теперь `toHaveAttribute('aria-disabled', 'true')`; CSS `button:disabled` — `[aria-disabled='true']` или `.base-button--disabled`. При `isDisabled` всего компонента — по-прежнему `disabled`.
+- Свои кнопки так же: `<BaseButton :is-disabled="…" is-focusable-when-disabled>` (MIGRATION, small-fixes-9a).
+
 ## Новое в API
 
 - **BaseRange:** необязательный проп `ariaLabel`.

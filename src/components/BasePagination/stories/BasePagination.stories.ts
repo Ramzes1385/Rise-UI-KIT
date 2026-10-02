@@ -26,3 +26,4 @@ export const OutOfRange = cases.OutOfRange
 export const ManyPages = cases.ManyPages
 export const WithoutLastPage = cases.WithoutLastPage
 export const Keyboard = cases.Keyboard
+export const KeyboardAtEdge = cases.KeyboardAtEdge

@@ -168,6 +168,7 @@
    - Наведение — `@include hover`. Не срабатывает на отключённых элементах и на тач-экранах.
    - Нажатие — `@include active`.
    - Отключённое — `@include disabled-state` (opacity `--rise-disabled-opacity` + `cursor: not-allowed`).
+   - Кнопка, которая может отключиться от собственного нажатия (предел шага, исчерпанная история, пустой выбор), — BaseButton `isFocusableWhenDisabled`: `aria-disabled` вместо `disabled`, фокус и место в порядке Tab сохраняются. Отключение всего компонента (`isDisabled`) — нативный `disabled`. У `[aria-disabled='true']:focus-visible` корень без `opacity` — кольцо фокуса полной яркости, тусклое только содержимое.
    - Никаких `filter: brightness()`, `transform: translateY()` и `scale()` на hover/active: состояния меняют цвет фона, рамки и тень.
 7. **Анимации.**
    - Переходы цветов — `@include transition-colors`.

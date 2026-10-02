@@ -1,6 +1,6 @@
-import { expect } from 'storybook/test'
 import { tabTo } from '@/stories/helpers'
 import type meta from '../../BaseButton.stories'
+import { expect, waitFor } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
 
 export const FocusableWhenDisabled: StoryObj<typeof meta> = {
@@ -22,7 +22,7 @@ export const FocusableWhenDisabled: StoryObj<typeof meta> = {
 		await expect(button).not.toHaveAttribute('disabled')
 		await tabTo(button, userEvent)
 		await expect(button).toHaveFocus()
-		await expect(getComputedStyle(button).opacity).toBe('1')
+		await waitFor(() => expect(getComputedStyle(button).opacity).toBe('1'))
 		await expect(getComputedStyle(button).outlineStyle).toBe('solid')
 		await userEvent.keyboard('{Enter}')
 		await userEvent.keyboard(' ')
