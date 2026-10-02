@@ -1,4 +1,7 @@
+import { ref } from 'vue'
+import type { Ref } from 'vue'
 import type { CalendarEvent } from '@utils/calendar/eventUtils'
+import type { EventCalendarChange } from '../types/BaseEventCalendar.types'
 
 export const STORY_EVENTS: CalendarEvent[] = [
 	{ id: 'vacation', title: 'Отпуск', start: '2026-10-01', end: '2026-10-08', color: 'var(--rise-success)' },
@@ -13,4 +16,30 @@ export const STORY_EVENTS: CalendarEvent[] = [
 
 export function getDay(canvasElement: HTMLElement, key: string): HTMLElement {
 	return canvasElement.querySelector(`[data-day="${key}"]`) as HTMLElement
+}
+
+export const EDIT_EVENTS: CalendarEvent[] = [
+	{ id: 'standup', title: 'Встреча с командой', start: '2026-10-02T10:00', end: '2026-10-02T11:00', category: 'meeting' },
+	{ id: 'call', title: 'Созвон с подрядчиком', start: '2026-10-01T13:00', end: '2026-10-01T13:30', category: 'meeting' },
+	{ id: 'review', title: 'Ревью дизайна', start: '2026-09-30T15:00', end: '2026-09-30T16:00', color: 'var(--rise-info)' },
+	{ id: 'vacation', title: 'Отпуск', start: '2026-09-28', end: '2026-09-30', color: 'var(--rise-success)' },
+]
+
+export const MOVE_SCRIPT = `
+function move({ event, start, end }: EventCalendarChange): void {
+	events.value = events.value.map(item => (item.id === event.id ? { ...item, start, end } : item))
+}
+`
+
+export function useMovableEvents(initial: CalendarEvent[] = EDIT_EVENTS): {
+	events: Ref<CalendarEvent[]>
+	move: (change: EventCalendarChange) => void
+} {
+	const events = ref<CalendarEvent[]>(structuredClone(initial))
+	return {
+		events,
+		move: ({ event, start, end }) => {
+			events.value = events.value.map(item => (item.id === event.id ? { ...item, start, end } : item))
+		},
+	}
 }

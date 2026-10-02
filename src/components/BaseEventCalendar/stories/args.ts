@@ -10,6 +10,9 @@ export const args = {
 	today: '2026-10-02T10:30',
 	'onEvent-click': fn(),
 	'onPeriod-change': fn(),
+	onSelect: fn(),
+	onCreate: fn(),
+	'onEvent-change': fn(),
 	variant: 'default',
 	sizeScale: 100,
 } satisfies Meta<typeof BaseEventCalendar>['args']

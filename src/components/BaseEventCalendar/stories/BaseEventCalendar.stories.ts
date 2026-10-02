@@ -33,3 +33,7 @@ export const Empty = cases.Empty
 export const LongContent = cases.LongContent
 export const SwitchView = cases.SwitchView
 export const Keyboard = cases.Keyboard
+export const Selectable = cases.Selectable
+export const DragAndDrop = cases.DragAndDrop
+export const CanMove = cases.CanMove
+export const RecurringEdit = cases.RecurringEdit
