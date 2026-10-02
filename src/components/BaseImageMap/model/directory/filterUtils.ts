@@ -29,7 +29,9 @@ export function matchesFilters(object: ImageMapObject, filters: ImageMapFilter[]
 }
 
 export function initialFilterValues(filters: ImageMapFilter[]): ImageMapFilterValues {
-	return Object.fromEntries(filters.filter(filter => filter.value?.length).map(filter => [filter.id, [...(filter.value ?? [])]]))
+	return Object.fromEntries(
+		filters.flatMap((filter): [string, string[]][] => (filter.value?.length ? [[filter.id, [...filter.value]]] : [])),
+	)
 }
 
 export function searchText(item: ResolvedImageMapObject): string {

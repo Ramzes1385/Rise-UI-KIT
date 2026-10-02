@@ -9,7 +9,9 @@ import type { ResolvedImageMapObject } from '../../types/imageMapModel.types'
 import type { ImageMapDirectoryEntry, ImageMapFilterControl } from '../../types/ImageMapDirectory.types'
 
 function useDirectoryEntries(props: ImageMapProps, context: DirectoryContext) {
-	const layerTitles = computed(() => new Map(props.data.layers.map(layer => [layer.id, layer.shortTitle ?? layer.title])))
+	const layerTitles = computed(
+		() => new Map<string | undefined, string>(props.data.layers.map(layer => [layer.id, layer.shortTitle ?? layer.title])),
+	)
 	const isMultiLayer = computed(() => props.directoryScope === 'all' && props.data.layers.length > 1)
 
 	const indexed = computed(() =>
@@ -31,7 +33,7 @@ function useDirectoryEntries(props: ImageMapProps, context: DirectoryContext) {
 	const entries = computed((): ImageMapDirectoryEntry[] =>
 		matched.value.map(item => ({
 			item,
-			layerTitle: isMultiLayer.value ? layerTitles.value.get(context.layerOf(item.object.id) ?? '') : undefined,
+			layerTitle: isMultiLayer.value ? layerTitles.value.get(context.layerOf(item.object.id)) : undefined,
 			isActive: context.getActive() === item.object.id,
 			isHovered: context.getHover() === item.object.id,
 		})),

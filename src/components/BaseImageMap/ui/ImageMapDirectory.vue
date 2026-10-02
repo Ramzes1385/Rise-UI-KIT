@@ -6,7 +6,7 @@
 			:model-value="search"
 			:aria-label="UI_IMAGE_MAP.SEARCH"
 			:placeholder="UI_IMAGE_MAP.SEARCH_PLACEHOLDER"
-			@update:model-value="$emit('update:search', String($event ?? ''))">
+			@update:model-value="$emit('update:search', $event)">
 			<template #prefix><BaseIcon name="search" /></template>
 		</BaseInput>
 		<div
