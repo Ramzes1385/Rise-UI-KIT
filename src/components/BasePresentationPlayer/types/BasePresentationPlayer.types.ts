@@ -6,6 +6,16 @@ export const PRESENTATION_PLAYER_VARIANTS = ['default'] as const
 /** Варианты оформления */
 export type PresentationPlayerVariant = (typeof PRESENTATION_PLAYER_VARIANTS)[number]
 
+/**
+ * Режимы листания: `free` — свободно; `linear` — вперёд только после прохождения слайда (кончилась озвучка и прошло
+ * `minDuration`), назад — свободно; `strict` — как `linear`, плюс скорость не выше `maxRate`, без перемотки озвучки вперёд
+ * внутри слайда и пауза, когда вкладка скрыта
+ */
+export const PRESENTATION_NAVIGATION_MODES = ['free', 'linear', 'strict'] as const
+
+/** Режим листания */
+export type PresentationNavigation = (typeof PRESENTATION_NAVIGATION_MODES)[number]
+
 /** Слайд презентации */
 export interface PresentationSlide {
 	/** Ключ слайда: события, сохранённый прогресс, переход между слайдами */
@@ -27,6 +37,37 @@ export interface PresentationSlide {
 	 * пока его не перелистнут
 	 */
 	duration?: number
+	/**
+	 * Сколько секунд слайд должен быть на экране в режимах `linear` и `strict`, прежде чем откроется следующий: время идёт,
+	 * только пока вкладка видна и идёт показ. Слайд пройден, когда кончилась озвучка и прошло это время — что позже
+	 */
+	minDuration?: number
+}
+
+/** Данные события `slide-complete` */
+export interface PresentationSlideComplete {
+	/** Ключ слайда */
+	id: string
+	/** Номер слайда с нуля */
+	index: number
+	/** Время прохождения, мс от 1970 (`Date.now()`): по нему сервер проверяет, не слишком ли быстро пройдены слайды */
+	at: number
+}
+
+/** Данные события `progress` */
+export interface PresentationProgress {
+	/** Пройдено слайдов */
+	completed: number
+	/** Всего слайдов */
+	total: number
+}
+
+/** Что хранится в localStorage по `storageKey` */
+export interface PresentationSavedProgress {
+	/** Номер слайда, с которого продолжить */
+	index: number
+	/** Ключи пройденных слайдов */
+	completed: string[]
 }
 
 /** Данные слайда для слота `slide` */
@@ -62,6 +103,15 @@ export interface BasePresentationPlayerProps extends BaseComponentProps<Presenta
 	idleTimeout?: number
 	/** Атрибут `crossorigin` картинок, видео и озвучки */
 	crossorigin?: 'anonymous' | 'use-credentials'
+	/** Режим листания: свободно, по порядку или строго */
+	navigation?: PresentationNavigation
+	/** Наибольшая скорость в режиме `strict` */
+	maxRate?: number
+	/**
+	 * Ключ в localStorage: место и пройденные слайды сохраняются, при следующем открытии — «Продолжить со слайда 5?».
+	 * Это удобство для зрителя, а не контроль: строгий учёт — на сервере по событиям `slide-complete`
+	 */
+	storageKey?: string
 }
 
 /** События компонента BasePresentationPlayer */
@@ -72,6 +122,12 @@ export interface BasePresentationPlayerEmits {
 	(event: 'play'): void
 	/** Показ на паузе */
 	(event: 'pause'): void
+	/** Слайд пройден: кончилась озвучка или показ по `duration` и прошло `minDuration`; у каждого слайда — один раз */
+	(event: 'slide-complete', value: PresentationSlideComplete): void
+	/** Сколько слайдов пройдено: после каждого `slide-complete` */
+	(event: 'progress', value: PresentationProgress): void
+	/** Пройдены все слайды */
+	(event: 'complete'): void
 }
 
 /** Слоты компонента BasePresentationPlayer */

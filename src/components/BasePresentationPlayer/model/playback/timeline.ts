@@ -1,5 +1,5 @@
 import { DOWNLOAD_PROTOCOLS, isSafeUrl } from '@utils/data/urlUtils'
-import type { PresentationSlide } from '../types/BasePresentationPlayer.types'
+import type { PresentationSlide } from '../../types/BasePresentationPlayer.types'
 
 export function safeUrl(url: string | undefined): string | undefined {
 	return url && isSafeUrl(url, DOWNLOAD_PROTOCOLS) ? url : undefined

@@ -1,9 +1,9 @@
 import { computed, ref, watch } from 'vue'
 import { useSlideTimer } from './useSlideTimer'
 import { indexAtTime, safeUrl, slideSpan, trackStarts } from './timeline'
-import type { SlidePlaybackOptions } from '../types/PresentationModel.types'
-import type { BasePresentationPlayerProps } from '../types/BasePresentationPlayer.types'
+import type { SlidePlaybackOptions } from '../../types/PresentationModel.types'
 import { useMediaElement } from '@components/BaseMediaPlayer/model/core/useMediaElement'
+import type { BasePresentationPlayerProps } from '../../types/BasePresentationPlayer.types'
 
 function useSlideSources(props: BasePresentationPlayerProps, options: SlidePlaybackOptions) {
 	const slide = computed(() => props.slides[options.index.value])
@@ -14,7 +14,8 @@ function useSlideSources(props: BasePresentationPlayerProps, options: SlidePlayb
 		if (isShared.value || audioSrc.value) return options.audioRef.value
 		return videoSrc.value ? options.videoRef.value : null
 	})
-	return { slide, isShared, audioSrc, videoSrc, media }
+	const hasClock = computed(() => Boolean(audioSrc.value || videoSrc.value || (slide.value?.duration ?? 0) > 0))
+	return { slide, isShared, audioSrc, videoSrc, media, hasClock }
 }
 
 function useSettings() {
@@ -145,7 +146,7 @@ export function useSlidePlayback(props: BasePresentationPlayerProps, options: Sl
 	const timer = useSlideTimer({
 		duration: () => (sources.media.value ? Number.NaN : (sources.slide.value?.duration ?? Number.NaN)),
 		rate: () => sound.rate.value,
-		isRunning: () => options.isPlaying.value,
+		isRunning: () => options.isPlaying.value && options.isVisible.value,
 		onEnd: options.onSlideEnd,
 	})
 	watch(options.index, () => timer.seek(0))

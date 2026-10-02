@@ -1,9 +1,9 @@
 import { computed, onMounted, ref } from 'vue'
-import { clampIndex, fraction } from './timeline'
+import { clampIndex, fraction } from '../playback/timeline'
 import { UI_PLAYER } from '@components/BaseMediaPlayer/model/messages'
 import { UI_PRESENTATION, formatMessage, formatNumber } from './messages'
-import type { PresentationControlsSource } from '../types/PresentationModel.types'
-import type { BasePresentationPlayerProps } from '../types/BasePresentationPlayer.types'
+import type { PresentationControlsSource } from '../../types/PresentationModel.types'
+import type { BasePresentationPlayerProps } from '../../types/BasePresentationPlayer.types'
 import type { MediaMenuList } from '@components/BaseMediaPlayer/types/menus/MediaMenu.types'
 import type { MediaIconName } from '@components/BaseMediaPlayer/types/controls/MediaIcon.types'
 
@@ -37,13 +37,13 @@ function useSlideSlider(props: BasePresentationPlayerProps, source: Presentation
 	}
 }
 
-function useSpeedMenu(props: BasePresentationPlayerProps, source: PresentationControlsSource) {
+function useSpeedMenu(source: PresentationControlsSource) {
 	const label = (rate: number): string => `${formatNumber(rate)}×`
 	return {
 		rateText: computed(() => label(source.rate())),
 		speedMenu: computed<MediaMenuList>(() => ({
 			title: UI_PLAYER.SPEED_MENU,
-			items: (props.playbackRates ?? []).map(rate => ({
+			items: source.rates().map(rate => ({
 				id: String(rate),
 				label: label(rate),
 				isChecked: Math.abs(rate - source.rate()) < 0.001,
@@ -58,7 +58,7 @@ export function usePresentationControls(props: BasePresentationPlayerProps, sour
 		UI_PLAYER,
 		UI_PRESENTATION,
 		...useSlideSlider(props, source),
-		...useSpeedMenu(props, source),
+		...useSpeedMenu(source),
 		playLabel: computed(() => (source.isPlaying() ? UI_PLAYER.PAUSE : UI_PLAYER.PLAY)),
 		muteLabel: computed(() => (source.isMuted() ? UI_PLAYER.UNMUTE : UI_PLAYER.MUTE)),
 		volumeIcon: computed(() => volumeIcon(source.volume(), source.isMuted())),

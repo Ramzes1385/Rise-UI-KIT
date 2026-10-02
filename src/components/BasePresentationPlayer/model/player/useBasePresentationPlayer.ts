@@ -1,14 +1,14 @@
 import type { Ref } from 'vue'
-import { safeUrl } from './timeline'
-import { computed, ref, watch } from 'vue'
-import { UI_PRESENTATION } from './messages'
-import { useSlidePlayback } from './useSlidePlayback'
+import { computed, ref } from 'vue'
+import { safeUrl } from '../playback/timeline'
+import { UI_PRESENTATION, formatMessage } from './messages'
+import { usePresentationFlow } from './usePresentationFlow'
 import { usePresentationScreen } from './usePresentationScreen'
 import { usePresentationControls } from './usePresentationControls'
-import { usePresentationNavigation } from './usePresentationNavigation'
+import { usePresentationLock } from '../progress/usePresentationLock'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { MediaIconName } from '@components/BaseMediaPlayer/types/controls/MediaIcon.types'
-import type { BasePresentationPlayerEmits, BasePresentationPlayerProps } from '../types/BasePresentationPlayer.types'
+import type { BasePresentationPlayerEmits, BasePresentationPlayerProps } from '../../types/BasePresentationPlayer.types'
 
 const CLASS_KEYS = ['root', 'stage', 'controls']
 
@@ -21,64 +21,7 @@ function nextRate(rates: number[], current: number, direction: 1 | -1): number {
 	return candidates[0] ?? current
 }
 
-function useElements() {
-	return {
-		rootRef: ref<HTMLElement | null>(null),
-		audioRef: ref<HTMLAudioElement | null>(null),
-		videoRef: ref<HTMLVideoElement | null>(null),
-	}
-}
-
-function usePlaybackFlow(props: BasePresentationPlayerProps, emit: BasePresentationPlayerEmits, elements: ReturnType<typeof useElements>) {
-	const navigation = usePresentationNavigation(props, emit)
-	const isPlaying = ref(false)
-	const isFinished = ref(false)
-	const hasStarted = ref(false)
-	const playback = useSlidePlayback(props, {
-		index: navigation.index,
-		isPlaying,
-		audioRef: elements.audioRef,
-		videoRef: elements.videoRef,
-		onSlideEnd: () => {
-			if (navigation.index.value < navigation.count.value - 1) return navigation.setIndex(navigation.index.value + 1)
-			isPlaying.value = false
-			isFinished.value = true
-		},
-		onTrackSlide: navigation.setIndex,
-	})
-	const goTo = (index: number): void => {
-		isFinished.value = false
-		if (index === navigation.index.value) playback.seekInSlide(0)
-		navigation.setIndex(index)
-	}
-	const play = (): void => {
-		if (isFinished.value) goTo(0)
-		hasStarted.value = true
-		isPlaying.value = true
-	}
-
-	watch(isPlaying, value => (value ? emit('play') : emit('pause')))
-
-	return {
-		...navigation,
-		playback,
-		isPlaying,
-		isFinished,
-		hasStarted,
-		goTo,
-		play,
-		pause: (): void => void (isPlaying.value = false),
-		togglePlay: (): void => (isPlaying.value ? void (isPlaying.value = false) : play()),
-		next: (): void => {
-			if (navigation.index.value < navigation.count.value - 1) goTo(navigation.index.value + 1)
-		},
-		previous: (): void => {
-			if (navigation.index.value > 0) goTo(navigation.index.value - 1)
-		},
-	}
-}
-
-function useStageView(flow: ReturnType<typeof usePlaybackFlow>, playLabel: Readonly<Ref<string>>) {
+function useStageView(flow: ReturnType<typeof usePresentationFlow>, playLabel: Readonly<Ref<string>>) {
 	const { playback } = flow
 	return {
 		slide: playback.slide,
@@ -87,7 +30,7 @@ function useStageView(flow: ReturnType<typeof usePlaybackFlow>, playLabel: Reado
 		isVideoMuted: computed(() => playback.isShared.value || Boolean(playback.audioSrc.value)),
 		imageSrc: computed(() => safeUrl(playback.slide.value?.image)),
 		isWaiting: computed(() => flow.isPlaying.value && playback.state.isWaiting),
-		isStartScreen: computed(() => !flow.isPlaying.value && (!flow.hasStarted.value || flow.isFinished.value)),
+		isStartScreen: computed(() => !flow.isPlaying.value && !flow.hasStarted.value && flow.storage.resumeIndex.value === null),
 		playIcon: computed<MediaIconName>(() => {
 			if (flow.isPlaying.value) return 'pause'
 			return flow.isFinished.value ? 'replay' : 'play'
@@ -103,22 +46,61 @@ function useStageView(flow: ReturnType<typeof usePlaybackFlow>, playLabel: Reado
 	}
 }
 
+function useProgressView(props: BasePresentationPlayerProps, flow: ReturnType<typeof usePresentationFlow>) {
+	const { progress, storage } = flow
+	return {
+		isDoneScreen: computed(() => flow.isFinished.value && !flow.isPlaying.value),
+		doneTitle: computed(() =>
+			progress.completedCount.value === props.slides.length ? UI_PRESENTATION.DONE : UI_PRESENTATION.FINISHED,
+		),
+		doneText: computed(() =>
+			formatMessage(UI_PRESENTATION.DONE_TEXT, { completed: progress.completedCount.value, total: props.slides.length }),
+		),
+		resumeIndex: storage.resumeIndex,
+		resumeText: computed(() =>
+			storage.resumeIndex.value === null ? '' : formatMessage(UI_PRESENTATION.RESUME, { n: storage.resumeIndex.value + 1 }),
+		),
+		resume: storage.resume,
+		dismissResume: storage.dismissResume,
+	}
+}
+
+function useLock(flow: ReturnType<typeof usePresentationFlow>) {
+	const { playback, progress } = flow
+	return usePresentationLock({
+		index: () => flow.index.value,
+		count: () => flow.count.value,
+		slideTime: () => playback.slideTime.value,
+		slideDuration: () => playback.slideDuration.value,
+		rate: () => playback.rate.value,
+		watched: () => progress.watched.value,
+		minDuration: () => progress.minDuration.value,
+		isMediaDone: () => progress.isMediaDone.value,
+		canGoTo: progress.canGoTo,
+		next: flow.next,
+	})
+}
+
 export function useBasePresentationPlayer(props: BasePresentationPlayerProps, emit: BasePresentationPlayerEmits) {
-	const elements = useElements()
-	const flow = usePlaybackFlow(props, emit, elements)
+	const elements = {
+		rootRef: ref<HTMLElement | null>(null),
+		audioRef: ref<HTMLAudioElement | null>(null),
+		videoRef: ref<HTMLVideoElement | null>(null),
+	}
+	const flow = usePresentationFlow(props, emit, elements)
 	const { playback } = flow
-	const stepRate = (direction: 1 | -1): void => playback.setRate(nextRate(props.playbackRates ?? [], playback.rate.value, direction))
+	const lock = useLock(flow)
 	const screen = usePresentationScreen(props, elements.rootRef, {
 		media: () => playback.media.value,
 		isPlaying: () => flow.isPlaying.value,
 		volume: () => playback.volume.value,
 		togglePlay: flow.togglePlay,
-		next: flow.next,
+		next: lock.next,
 		previous: flow.previous,
-		goTo: flow.goTo,
+		goTo: index => void flow.goTo(index),
 		setVolume: playback.setVolume,
 		toggleMute: playback.toggleMute,
-		stepRate,
+		stepRate: direction => flow.setRate(nextRate(flow.rates(), playback.rate.value, direction)),
 	})
 	const controls = usePresentationControls(props, {
 		index: () => flow.index.value,
@@ -128,10 +110,11 @@ export function useBasePresentationPlayer(props: BasePresentationPlayerProps, em
 		isMuted: () => playback.isMuted.value,
 		volume: () => playback.volume.value,
 		rate: () => playback.rate.value,
+		rates: flow.rates,
 		isFullscreen: () => screen.isFullscreen.value,
-		goTo: flow.goTo,
-		seekInSlide: playback.seekInSlide,
-		setRate: playback.setRate,
+		goTo: index => void flow.goTo(index),
+		seekInSlide: flow.seekInSlide,
+		setRate: flow.setRate,
 	})
 
 	return {
@@ -140,7 +123,10 @@ export function useBasePresentationPlayer(props: BasePresentationPlayerProps, em
 		...flow,
 		...screen,
 		...controls,
+		...lock,
 		...useStageView(flow, controls.playLabel),
+		...useProgressView(props, flow),
+		statusText: computed(() => lock.flash.value || controls.statusText.value),
 		rootStyle: computed(() => ({ aspectRatio: props.aspectRatio })),
 	}
 }

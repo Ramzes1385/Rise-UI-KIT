@@ -1,5 +1,5 @@
 import { onBeforeUnmount, ref, watch } from 'vue'
-import type { SlideTimerOptions } from '../types/PresentationModel.types'
+import type { SlideTimerOptions } from '../../types/PresentationModel.types'
 
 const TICK_MS = 100
 

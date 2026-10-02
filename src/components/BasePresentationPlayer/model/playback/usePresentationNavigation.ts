@@ -1,6 +1,6 @@
 import { clampIndex } from './timeline'
 import { computed, ref, watch } from 'vue'
-import type { BasePresentationPlayerEmits, BasePresentationPlayerProps } from '../types/BasePresentationPlayer.types'
+import type { BasePresentationPlayerEmits, BasePresentationPlayerProps } from '../../types/BasePresentationPlayer.types'
 
 export function usePresentationNavigation(props: BasePresentationPlayerProps, emit: BasePresentationPlayerEmits) {
 	const count = computed(() => props.slides.length)

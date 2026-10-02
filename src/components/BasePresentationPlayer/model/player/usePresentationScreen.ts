@@ -1,8 +1,8 @@
 import { computed } from 'vue'
-import type { BasePresentationPlayerProps } from '../types/BasePresentationPlayer.types'
 import { useMediaHotkeys } from '@components/BaseMediaPlayer/model/input/useMediaHotkeys'
-import type { ElementRef, PresentationScreenSource } from '../types/PresentationModel.types'
+import type { BasePresentationPlayerProps } from '../../types/BasePresentationPlayer.types'
 import { useIdleControls } from '@components/BaseMediaPlayer/model/controls/useIdleControls'
+import type { ElementRef, PresentationScreenSource } from '../../types/PresentationModel.types'
 import { useMediaFullscreen } from '@components/BaseMediaPlayer/model/screen/useMediaFullscreen'
 
 export function usePresentationScreen(

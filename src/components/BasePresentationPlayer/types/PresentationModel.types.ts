@@ -21,6 +21,8 @@ export interface SlidePlaybackOptions {
 	index: Readonly<Ref<number>>
 	/** Показ запущен: озвучка или таймер слайда идут */
 	isPlaying: Ref<boolean>
+	/** Вкладка видна: таймер слайда без озвучки идёт только тогда */
+	isVisible: Readonly<Ref<boolean>>
 	/** Элемент озвучки */
 	audioRef: ElementRef<HTMLAudioElement>
 	/** Видео текущего слайда */
@@ -45,6 +47,8 @@ export interface PresentationControlsSource {
 	volume: () => number
 	/** Скорость показа */
 	rate: () => number
+	/** Скорости меню: в режиме `strict` — не выше `maxRate` */
+	rates: () => number[]
 	isFullscreen: () => boolean
 	/** Перейти к началу слайда */
 	goTo: (index: number) => void
@@ -69,4 +73,64 @@ export interface PresentationScreenSource {
 	toggleMute: () => void
 	/** Соседняя скорость из списка: 1 — быстрее, -1 — медленнее */
 	stepRate: (direction: 1 | -1) => void
+}
+
+/** Элементы плеера */
+export interface PresentationElements {
+	rootRef: ElementRef<HTMLElement>
+	audioRef: ElementRef<HTMLAudioElement>
+	videoRef: ElementRef<HTMLVideoElement>
+}
+
+/** Откуда учёт прохождения берёт состояние показа и как переводит слайды */
+export interface PresentationProgressSource {
+	/** Номер текущего слайда */
+	index: () => number
+	isPlaying: () => boolean
+	/** Вкладка видна */
+	isVisible: () => boolean
+	/** У слайда есть озвучка, видео или `duration`: без них слайд пройден по `minDuration` */
+	hasClock: () => boolean
+	/** Перейти к слайду после прохождения; `resume` — продолжить показ, остановленный на границе общей дорожки */
+	advanceTo: (index: number, resume: boolean) => void
+	/** Остановить показ */
+	pause: () => void
+}
+
+/** Откуда сохранение в localStorage берёт место и пройденные слайды */
+export interface PresentationStorageSource {
+	/** Номер текущего слайда */
+	index: () => number
+	/** Ключи пройденных слайдов */
+	completed: () => string[]
+	/** Показ дошёл до конца: сохраняется начало */
+	isFinished: () => boolean
+	/** Вернуть пройденные слайды из сохранения */
+	restore: (ids: string[]) => void
+	/** Перейти к слайду; false — переход закрыт режимом */
+	goTo: (index: number) => boolean
+}
+
+/** Откуда кнопка «Следующий слайд» берёт, закрыт ли переход и сколько ждать */
+export interface PresentationLockSource {
+	/** Номер текущего слайда */
+	index: () => number
+	/** Число слайдов */
+	count: () => number
+	/** Позиция внутри слайда, секунды */
+	slideTime: () => number
+	/** Длительность слайда, секунды; NaN — неизвестна */
+	slideDuration: () => number
+	/** Скорость показа */
+	rate: () => number
+	/** Сколько секунд слайд был на экране во время показа */
+	watched: () => number
+	/** `minDuration` текущего слайда */
+	minDuration: () => number
+	/** Озвучка, видео или показ по `duration` кончились */
+	isMediaDone: () => boolean
+	/** Можно ли перейти к слайду */
+	canGoTo: (index: number) => boolean
+	/** Следующий слайд; false — переход закрыт */
+	next: () => boolean
 }

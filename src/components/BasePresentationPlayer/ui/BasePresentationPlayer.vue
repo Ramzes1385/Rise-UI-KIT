@@ -64,9 +64,24 @@
 			</Transition>
 			<div v-if="isStartScreen" class="base-media-player__start">
 				<button type="button" class="base-media-player__big-play" tabindex="-1" aria-hidden="true" @click="play">
-					<MediaIcon :name="isFinished ? 'replay' : 'play'" />
+					<MediaIcon name="play" />
 				</button>
 			</div>
+			<div v-if="isDoneScreen" class="base-presentation-player__done">
+				<MediaIcon class="base-presentation-player__done-icon" name="trophy" />
+				<p class="base-presentation-player__done-title">{{ doneTitle }}</p>
+				<p class="base-presentation-player__done-text">{{ doneText }}</p>
+				<BaseButton variant="soft" :size-scale="sizeScale" @click="play">{{ UI_PRESENTATION.REPLAY }}</BaseButton>
+			</div>
+			<Transition name="base-media-player__resume">
+				<div v-if="resumeIndex !== null" class="base-media-player__resume">
+					<span>{{ resumeText }}</span>
+					<BaseButton variant="soft" :size-scale="sizeScale" @click="resume">{{ UI_PRESENTATION.RESUME_YES }}</BaseButton>
+					<BaseButton variant="ghost" class="base-media-player__button" :size-scale="sizeScale" @click="dismissResume">
+						{{ UI_PRESENTATION.RESUME_NO }}
+					</BaseButton>
+				</div>
+			</Transition>
 			<div class="base-media-player__controls" :class="classes.controls">
 				<MediaSlider
 					class="base-media-player__seek"
@@ -87,11 +102,23 @@
 							:aria-disabled="index === 0 || undefined"
 							@click="previous" />
 						<MediaControlButton :icon="playIcon" :label="playLabel" @click="togglePlay" />
-						<MediaControlButton
-							icon="next"
-							:label="UI_PRESENTATION.NEXT"
-							:aria-disabled="index >= count - 1 || undefined"
-							@click="next" />
+						<span
+							class="base-presentation-player__next"
+							:class="{ 'base-presentation-player__next--locked': isNextLocked }"
+							:style="{ '--presentation-lock': lockPercent }">
+							<MediaControlButton
+								icon="next"
+								:label="UI_PRESENTATION.NEXT"
+								:tooltip="isNextLocked ? lockText : undefined"
+								:aria-disabled="index >= count - 1 || isNextLocked || undefined"
+								:aria-describedby="isNextLocked ? lockHintId : undefined"
+								@click="next" />
+							<svg v-if="isNextLocked" class="base-presentation-player__ring" viewBox="0 0 36 36" aria-hidden="true">
+								<circle class="base-presentation-player__ring-track" cx="18" cy="18" r="16" />
+								<circle class="base-presentation-player__ring-fill" cx="18" cy="18" r="16" pathLength="100" />
+							</svg>
+							<span v-if="isNextLocked" :id="lockHintId" class="base-media-player__visually-hidden">{{ lockText }}</span>
+						</span>
 						<div class="base-media-player__volume-group">
 							<MediaControlButton :icon="volumeIcon" :label="muteLabel" @click="toggleMute" />
 							<div class="base-media-player__volume-popover">
@@ -144,12 +171,13 @@ import '@components/BaseMediaPlayer/styles/MediaControls.style.scss'
 import '@components/BaseMediaPlayer/styles/MediaMenus.style.scss'
 import '@components/BaseMediaPlayer/styles/MediaOverlays.style.scss'
 import '@components/BaseMediaPlayer/styles/MediaPanels.style.scss'
+import { BaseButton } from '@components/BaseButton'
 import { kitDefaults } from '@composables/base/useDefaults'
 import MediaIcon from '@components/BaseMediaPlayer/ui/controls/MediaIcon.vue'
-import { useBasePresentationPlayer } from '../model/useBasePresentationPlayer'
 import MediaPopover from '@components/BaseMediaPlayer/ui/menus/MediaPopover.vue'
 import MediaSlider from '@components/BaseMediaPlayer/ui/controls/MediaSlider.vue'
 import MediaMenuPanel from '@components/BaseMediaPlayer/ui/menus/MediaMenuPanel.vue'
+import { useBasePresentationPlayer } from '../model/player/useBasePresentationPlayer'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import MediaControlButton from '@components/BaseMediaPlayer/ui/controls/MediaControlButton.vue'
 import type {
@@ -172,6 +200,9 @@ const props = withDefaults(
 		aspectRatio: '16 / 9',
 		idleTimeout: 3000,
 		crossorigin: undefined,
+		navigation: 'free',
+		maxRate: 1,
+		storageKey: undefined,
 	}),
 )
 
@@ -196,8 +227,18 @@ const {
 	videoSrc,
 	imageSrc,
 	isVideoMuted,
-	isFinished,
 	playIcon,
+	isNextLocked,
+	lockText,
+	lockHintId,
+	lockPercent,
+	isDoneScreen,
+	doneTitle,
+	doneText,
+	resumeIndex,
+	resumeText,
+	resume,
+	dismissResume,
 	isWaiting,
 	isStartScreen,
 	isIdle,
