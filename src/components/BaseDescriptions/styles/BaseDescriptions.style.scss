@@ -1,0 +1,129 @@
+.base-descriptions {
+	--base-descriptions-gap-x: #{sz(24px)};
+	--base-descriptions-gap-y: #{sz(12px)};
+
+	position: relative;
+	box-sizing: border-box;
+	min-width: 0;
+	padding: sz(16px);
+	border: 1px solid var(--rise-border);
+	border-radius: sz(var(--rise-radius-lg));
+	@include text-size(sm);
+	@include custom-bg(background-color, var(--rise-bg));
+	@include custom-text(color, var(--rise-text));
+
+	&--soft {
+		border-color: transparent;
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+	}
+
+	&--outline {
+		border-color: var(--rise-border-accented);
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--ghost {
+		padding: 0;
+		border-color: transparent;
+		@include custom-bg(background-color, transparent);
+	}
+
+	&__header {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: sz(8px) sz(16px);
+		margin-bottom: sz(12px);
+	}
+
+	&__title {
+		min-width: 0;
+		color: var(--rise-text-highlighted);
+		font-weight: var(--rise-font-weight-semibold);
+		@include text-size(md);
+	}
+
+	&__extra {
+		display: flex;
+		flex-wrap: wrap;
+		gap: sz(8px);
+		margin-left: auto;
+	}
+
+	&__list {
+		--base-descriptions-track: calc(
+			(100% - (var(--base-descriptions-columns) - 1) * var(--base-descriptions-gap-x)) / var(--base-descriptions-columns)
+		);
+
+		display: grid;
+		grid-template-columns: repeat(
+			auto-fit,
+			minmax(min(100%, max(var(--base-descriptions-min-item-width), var(--base-descriptions-track))), 1fr)
+		);
+		gap: var(--base-descriptions-gap-y) var(--base-descriptions-gap-x);
+		margin: 0;
+	}
+
+	&__item {
+		display: flex;
+		flex-wrap: wrap;
+		gap: sz(2px) sz(12px);
+		min-width: 0;
+	}
+
+	&--vertical &__item {
+		flex-direction: column;
+	}
+
+	&__label {
+		flex: 0 1 var(--base-descriptions-label-width, 40%);
+		min-width: 0;
+		color: var(--rise-text-muted);
+		overflow-wrap: anywhere;
+	}
+
+	&__value {
+		display: flex;
+		flex: 1 1 sz(120px);
+		align-items: flex-start;
+		gap: sz(4px);
+		min-width: 0;
+		margin: 0;
+		color: var(--rise-text-highlighted);
+	}
+
+	&--vertical &__label,
+	&--vertical &__value {
+		flex: none;
+	}
+
+	&__content {
+		min-width: 0;
+		overflow-wrap: anywhere;
+		white-space: pre-line;
+	}
+
+	&__empty-value {
+		color: var(--rise-text-muted);
+	}
+
+	& &__copy {
+		flex: none;
+		margin-block: sz(-4px);
+		color: var(--rise-text-muted);
+	}
+
+	&__copy .base-icon__svg {
+		width: sz(14px);
+		height: sz(14px);
+	}
+
+	&__empty {
+		color: var(--rise-text-muted);
+	}
+
+	&__status {
+		@include visually-hidden;
+	}
+}
