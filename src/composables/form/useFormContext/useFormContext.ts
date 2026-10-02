@@ -45,7 +45,7 @@ export function useFieldControl(options: UseFieldControlOptions = {}): UseFieldC
 	const field = inject(FORM_FIELD_CONTEXT_KEY, null)
 	const ownId = useId()
 	const id = computed(() => options.id?.() || ownId)
-	const unregister = field?.register(() => id.value, options.isLabelable ?? true)
+	const unregister = options.hasOwnLabel ? undefined : field?.register(() => id.value, options.isLabelable ?? true)
 	if (unregister) onScopeDispose(unregister)
 	const isInField = Boolean(unregister)
 

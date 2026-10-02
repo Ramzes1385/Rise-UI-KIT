@@ -43,11 +43,16 @@ function useSelectField(props: SelectProps) {
 	const formField = useFormField({ value: () => props.modelValue, error: () => props.error, isRequired: () => props.isRequired })
 	const isControlDisabled = useFormDisabled(() => props.isDisabled)
 	const control = useFieldControl({
+		id: () => props.triggerAttrs?.id as string | undefined,
 		isLabelable: false,
-		describedBy: () => (formField.error ? errorId : undefined),
+		describedBy: () =>
+			[formField.error ? errorId : undefined, props.triggerAttrs?.['aria-describedby']].filter(Boolean).join(' ') || undefined,
 		hasError: () => Boolean(formField.error),
 		isRequired: () => props.isRequired,
 	})
+
+	const triggerLabelledBy = computed(() => (props.label ? labelId : control.fieldLabelId.value))
+	const unlabelledName = computed(() => props.ariaLabel || props.placeholder || UI_TEXT.SELECT_PLACEHOLDER)
 
 	return {
 		labelId,
@@ -57,7 +62,15 @@ function useSelectField(props: SelectProps) {
 		isControlDisabled,
 		control,
 		getOptionId: (index: number): string => `${listboxId}-option-${index}`,
-		triggerLabelledBy: computed(() => (props.label ? labelId : control.fieldLabelId.value)),
+		triggerLabelledBy,
+		unlabelledName,
+		triggerAttrs: computed(() => ({
+			...props.triggerAttrs,
+			id: control.id.value,
+			'aria-labelledby': triggerLabelledBy.value,
+			'aria-label': triggerLabelledBy.value ? undefined : unlabelledName.value,
+			...control.aria.value,
+		})),
 	}
 }
 

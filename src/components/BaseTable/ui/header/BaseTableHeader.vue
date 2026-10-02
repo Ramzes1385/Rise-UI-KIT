@@ -4,8 +4,7 @@
 			<th v-if="isSelectable" class="base-table__th base-table__th--check" :class="thClass">
 				<BaseCheckbox
 					:model-value="isAllSelected"
-					:label="TABLE_TEXT.SELECT_ALL"
-					:custom-class="hiddenCheckboxLabel"
+					:aria-label="TABLE_TEXT.SELECT_ALL"
 					:size-scale="sizeScale"
 					@update:model-value="emit('toggle-all')" />
 			</th>
@@ -69,5 +68,5 @@ const emit = defineEmits<BaseTableHeaderEmits>()
 
 defineSlots<BaseTableHeaderSlots>()
 
-const { hiddenCheckboxLabel, idPrefix, getAriaSort, getSortIcon, getSortPriority } = useBaseTableHeader(props)
+const { idPrefix, getAriaSort, getSortIcon, getSortPriority } = useBaseTableHeader(props)
 </script>

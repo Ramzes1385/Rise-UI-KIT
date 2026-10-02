@@ -6,52 +6,55 @@
 			classes.root,
 			variantClass,
 			{
-				'base-switch--error': formField.error,
+				'base-switch--error': control.hasError.value,
 				'base-switch--disabled': isDisabled,
 				'base-switch--reverse': reverse,
 			},
 		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
-		<label class="base-switch__row" :class="classes.row" :for="inputId">
+		<div class="base-switch__row" :class="classes.row" @click="handleRowClick">
 			<span class="base-switch__wrapper" :class="classes.wrapper">
 				<input
-					:id="inputId"
+					v-bind="nativeAttrs"
+					ref="inputRef"
 					type="checkbox"
 					role="switch"
 					class="base-switch__input"
 					:class="classes.input"
 					:checked="modelValue"
 					:disabled="isDisabled"
-					:aria-required="isRequired ? 'true' : undefined"
-					:aria-invalid="formField.error ? 'true' : undefined"
-					:aria-describedby="formField.error ? errorId : undefined"
 					@change="handleChange" />
 				<span class="base-switch__slider" :class="classes.slider" aria-hidden="true">
 					<span class="base-switch__handle" :class="classes.handle"></span>
 				</span>
 			</span>
 			<span class="base-switch__content" :class="classes.content">
-				<slot name="label">
-					<FormFieldLabel
-						v-if="label"
+				<label v-if="hasCaption || isRequired" class="base-switch__caption" :class="classes.caption" :for="inputId">
+					<slot name="label">
+						<FormFieldLabel
+							v-if="label"
+							tag="span"
+							:label="label"
+							class-name="base-switch__label"
+							:custom-class="classes.label"
+							:size-scale="sizeScale" />
+					</slot>
+					<BaseText
+						v-if="isRequired"
 						tag="span"
-						:label="label"
-						class-name="base-switch__label"
-						:custom-class="classes.label"
-						:size-scale="sizeScale" />
-				</slot>
-				<BaseText
-					v-if="isRequired"
-					tag="span"
-					class="base-switch__required"
-					:custom-class="classes.required"
-					:size-scale="sizeScale"
-					aria-hidden="true"
-					>*</BaseText
-				>
-				<slot />
+						class="base-switch__required"
+						:custom-class="classes.required"
+						:size-scale="sizeScale"
+						aria-hidden="true"
+						>*</BaseText
+					>
+					<slot v-if="!hasLabel" />
+				</label>
+				<span v-if="hasDescription" :id="descriptionId" class="base-switch__description" :class="classes.description">
+					<slot />
+				</span>
 			</span>
-		</label>
+		</div>
 		<div :id="errorId" class="base-switch__error">
 			<slot name="error">
 				<FormFieldError
@@ -96,9 +99,17 @@ const {
 	classes,
 	inputId,
 	errorId,
+	descriptionId,
+	hasLabel,
+	hasDescription,
+	hasCaption,
 	rootRef,
+	inputRef,
 	formField,
+	control,
+	nativeAttrs,
 	handleChange,
+	handleRowClick,
 	exposed,
 } = useBaseSwitch(props, emit)
 

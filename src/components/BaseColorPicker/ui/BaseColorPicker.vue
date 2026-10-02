@@ -8,14 +8,14 @@
 		class="base-color-picker">
 		<template #trigger>
 			<button
+				v-bind="triggerAttrs"
 				ref="swatchRef"
 				type="button"
 				class="base-color-picker__swatch"
 				:class="[{ 'base-color-picker__swatch--translucent': !hasTransparentSwatch && alphaPercent < 100 }, classes.swatch]"
 				:style="hasTransparentSwatch ? undefined : { backgroundColor: swatchColor, '--picker-swatch-color': swatchColor }"
 				:disabled="isDisabled"
-				:aria-expanded="isOpen ? 'true' : 'false'"
-				:aria-label="`${UI_COLOR_PICKER.SELECTED_COLOR} ${picker.value.value}`">
+				:aria-expanded="isOpen ? 'true' : 'false'">
 				<slot name="trigger" />
 			</button>
 		</template>
@@ -195,6 +195,7 @@ const {
 	swatchRef,
 	isOpen,
 	picker,
+	triggerAttrs,
 	areaRef,
 	handleAreaPointerDown,
 	handleAreaKeydown,

@@ -1,7 +1,9 @@
 import type { Ref } from 'vue'
 import { computed, ref } from 'vue'
 import { useEyeDropper } from './useEyeDropper'
+import { formatMessage } from '@/locales/state'
 import { useRecentColors } from './useRecentColors'
+import { UI_COLOR_PICKER } from '@/locales/messages'
 import { useColorPickerArea } from './useColorPickerArea'
 import { useColorPickerFields } from './useColorPickerFields'
 import { useFormField } from '@composables/form/useFormField'
@@ -30,6 +32,15 @@ function useSwatchSelection(picker: UseColorPickerReturn, emit: BaseColorPickerE
 	}
 }
 
+function useTriggerAttrs(props: ColorPickerProps, picker: UseColorPickerReturn) {
+	return computed(() => ({
+		...props.triggerAttrs,
+		'aria-label': props.ariaLabel
+			? formatMessage(UI_COLOR_PICKER.NAMED_TRIGGER, { label: props.ariaLabel, color: picker.value.value })
+			: `${UI_COLOR_PICKER.SELECTED_COLOR} ${picker.value.value}`,
+	}))
+}
+
 function usePicker(props: ColorPickerProps, emit: BaseColorPickerEmits): UseColorPickerReturn {
 	return useColorPicker({
 		getValue: () => props.modelValue,
@@ -55,6 +66,7 @@ export function useBaseColorPicker(props: ColorPickerProps, emit: BaseColorPicke
 		swatchRef,
 		isOpen,
 		picker,
+		triggerAttrs: useTriggerAttrs(props, picker),
 		...useColorPickerArea(picker),
 		...useColorPickerFields(props, picker),
 		...recent,

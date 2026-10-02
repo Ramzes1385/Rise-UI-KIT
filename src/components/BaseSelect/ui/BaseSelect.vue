@@ -45,9 +45,7 @@
 				:aria-expanded="isOpen ? 'true' : 'false'"
 				:aria-controls="isOpen ? listboxId : undefined"
 				:aria-activedescendant="isOpen && activeIndex >= 0 ? getOptionId(activeIndex) : undefined"
-				:aria-labelledby="triggerLabelledBy"
-				:aria-label="triggerLabelledBy ? undefined : resolvedPlaceholder"
-				v-bind="control.aria.value"
+				v-bind="triggerAttrs"
 				:aria-disabled="isControlDisabled ? 'true' : undefined"
 				@click="toggleDropdown"
 				@keydown="handleTriggerKeydown">
@@ -138,8 +136,8 @@
 				:classes="classes"
 				:size-scale-style="sizeScaleStyle"
 				:listbox-id="listboxId"
-				:labelledby="label ? labelId : undefined"
-				:listbox-label="resolvedPlaceholder"
+				:labelledby="triggerLabelledBy"
+				:listbox-label="unlabelledName"
 				:active-index="activeIndex"
 				:get-option-id="getOptionId"
 				@select="handleSelect"
@@ -209,6 +207,8 @@ const {
 	control,
 	getOptionId,
 	triggerLabelledBy,
+	unlabelledName,
+	triggerAttrs,
 	resolvedPlaceholder,
 	selectRef,
 	isOpen,

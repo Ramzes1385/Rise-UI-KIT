@@ -1,7 +1,7 @@
 import { computed, useId } from 'vue'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
-import { useFieldControl, useFormDisabled } from '@composables/form/useFormContext'
 import type { BaseCheckboxGroupEmits, CheckboxGroupProps } from '../types/BaseCheckboxGroup.types'
+import { isolateFormField, useFieldControl, useFormDisabled } from '@composables/form/useFormContext'
 
 const GROUP_ELEMENTS = ['root', 'label', 'required', 'options', 'checkbox', 'error']
 
@@ -14,6 +14,7 @@ function useGroupField(props: CheckboxGroupProps) {
 		describedBy: () => (props.error ? errorId : undefined),
 		hasError: () => Boolean(props.error),
 	})
+	isolateFormField()
 
 	return {
 		labelId,

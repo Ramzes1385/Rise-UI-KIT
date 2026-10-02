@@ -4,7 +4,7 @@ import { UI_TEXT } from '@/locales/messages'
 import type { UseFormFieldOptions, UseFormFieldReturn } from './types/useFormField.types'
 
 function isEmptyValue(value: unknown): boolean {
-	return value === null || value === undefined || value === ''
+	return value === null || value === undefined || value === '' || (Array.isArray(value) && value.length === 0)
 }
 
 /** Первая ошибка проверки значения (обязательность, затем правила по порядку); null — значение верно */

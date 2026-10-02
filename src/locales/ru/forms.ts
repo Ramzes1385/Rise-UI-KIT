@@ -17,6 +17,8 @@ export const ruForms = {
 	},
 	colorPicker: {
 		SELECTED_COLOR: 'Выбранный цвет',
+		/** Имя кнопки выбора с `ariaLabel`: «Цвет фона, выбран #ff0000» */
+		NAMED_TRIGGER: '{label}, выбран {color}',
 		SATURATION_BRIGHTNESS: 'Насыщенность и яркость',
 		HUE: 'Тон',
 		HEX_VALUE: 'HEX-значение',

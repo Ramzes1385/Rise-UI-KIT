@@ -1,34 +1,95 @@
-import { ref, useId } from 'vue'
-import { toHTMLInputElement } from '@utils/dom/domUtils'
+import { computed, ref, useId, useSlots } from 'vue'
 import { useFormField } from '@composables/form/useFormField'
+import { useFieldControl } from '@composables/form/useFormContext'
+import { toHTMLElement, toHTMLInputElement } from '@utils/dom/domUtils'
 import type { BaseSwitchEmits, SwitchProps } from '../types/BaseSwitch.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 
-const SWITCH_ELEMENTS = ['root', 'row', 'wrapper', 'input', 'slider', 'handle', 'content', 'label', 'required', 'errorText']
+const SWITCH_ELEMENTS = [
+	'root',
+	'row',
+	'wrapper',
+	'input',
+	'slider',
+	'handle',
+	'content',
+	'caption',
+	'label',
+	'required',
+	'description',
+	'errorText',
+]
+
+const OWN_CLICK_TARGETS = 'label, input, a, button, select, textarea, summary, [tabindex], [contenteditable]'
+
+function useSwitchControl(props: SwitchProps) {
+	const slots = useSlots()
+	const baseId = useId()
+	const errorId = `${baseId}-error`
+	const descriptionId = `${baseId}-description`
+	const hasLabel = computed(() => Boolean(props.label || slots.label))
+	const hasDescription = computed(() => hasLabel.value && Boolean(slots.default))
+	const formField = useFormField({ value: () => props.modelValue, error: () => props.error, isRequired: () => props.isRequired })
+	const control = useFieldControl({
+		id: () => props.inputAttrs?.id as string | undefined,
+		hasOwnLabel: hasLabel.value,
+		describedBy: () =>
+			[
+				formField.error ? errorId : undefined,
+				hasDescription.value ? descriptionId : undefined,
+				props.inputAttrs?.['aria-describedby'],
+			]
+				.filter(Boolean)
+				.join(' ') || undefined,
+		hasError: () => Boolean(formField.error),
+		isRequired: () => props.isRequired,
+	})
+
+	return {
+		errorId,
+		descriptionId,
+		hasLabel,
+		hasDescription,
+		hasCaption: computed(() => hasLabel.value || Boolean(slots.default)),
+		formField,
+		control,
+		inputId: control.id,
+		nativeAttrs: computed(() => ({
+			...props.inputAttrs,
+			...(props.ariaLabel ? { 'aria-label': props.ariaLabel } : {}),
+			...control.aria.value,
+			id: control.id.value,
+		})),
+	}
+}
 
 export function useBaseSwitch(props: SwitchProps, emit: BaseSwitchEmits) {
-	const inputId = useId()
 	const rootRef = ref<HTMLElement | null>(null)
-	const formField = useFormField({ value: () => props.modelValue, error: () => props.error, isRequired: () => props.isRequired })
+	const inputRef = ref<HTMLInputElement | null>(null)
+	const field = useSwitchControl(props)
 
 	return {
 		...useStandardBaseComponent('base-switch', props, SWITCH_ELEMENTS),
-		inputId,
-		errorId: `${inputId}-error`,
+		...field,
 		rootRef,
-		formField,
+		inputRef,
 		handleChange(event: Event): void {
 			const target = toHTMLInputElement(event.target)
 			if (!target) return
 			emit('update:modelValue', target.checked)
 			emit('change', target.checked)
 		},
+		handleRowClick(event: MouseEvent): void {
+			const ownTarget = toHTMLElement(event.target)?.closest(OWN_CLICK_TARGETS)
+			if (ownTarget && toHTMLElement(event.currentTarget)?.contains(ownTarget)) return
+			inputRef.value?.click()
+		},
 		exposed: {
 			rootRef,
-			focus: () => rootRef.value?.querySelector('input')?.focus(),
-			blur: () => rootRef.value?.querySelector('input')?.blur(),
-			validate: formField.validate,
-			reset: formField.reset,
+			focus: () => inputRef.value?.focus(),
+			blur: () => inputRef.value?.blur(),
+			validate: field.formField.validate,
+			reset: field.formField.reset,
 		},
 	}
 }

@@ -1,11 +1,12 @@
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
+import type { FieldInputAttrs } from '@composables/form/useFormContext'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export const SWITCH_VARIANTS = ['default', 'outline', 'shadow'] as const
 
 export interface BaseSwitchProps extends BaseComponentProps<
 	(typeof SWITCH_VARIANTS)[number],
-	'root' | 'row' | 'wrapper' | 'input' | 'slider' | 'handle' | 'content' | 'label' | 'required' | 'errorText'
+	'root' | 'row' | 'wrapper' | 'input' | 'slider' | 'handle' | 'content' | 'caption' | 'label' | 'required' | 'description' | 'errorText'
 > {
 	/** Состояние */
 	modelValue?: boolean
@@ -19,6 +20,10 @@ export interface BaseSwitchProps extends BaseComponentProps<
 	isDisabled?: boolean
 	/** Обратный порядок (контент слева, переключатель справа) */
 	reverse?: boolean
+	/** Имя переключателя без видимой подписи (`aria-label`) */
+	ariaLabel?: string
+	/** Атрибуты нативного `<input>`: `name`, `value`, `aria-*`, `data-*`; `id` — свой id переключателя */
+	inputAttrs?: FieldInputAttrs
 }
 
 export interface BaseSwitchEmits {
@@ -27,7 +32,10 @@ export interface BaseSwitchEmits {
 }
 
 export interface BaseSwitchSlots {
-	/** Контент рядом с переключателем */
+	/**
+	 * Описание рядом с подписью: связано с переключателем через `aria-describedby`, клик по нему переключает.
+	 * Без `label` и слота `label` содержимое становится подписью
+	 */
 	default?: () => unknown
 	/** Кастомный заголовок поля */
 	label?: () => unknown

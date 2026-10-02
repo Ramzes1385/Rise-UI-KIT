@@ -1165,3 +1165,27 @@
 - Без `isMultiple` открытие другого пункта теперь эмитит и закрытие прежнего: `toggle(прежний, false)`, затем `toggle(новый, true)`.
 
 **Что сделать.** Обновите тесты и стили, завязанные на прежние теги и `role="button"`: шаг BaseStepper и заголовок BaseAccordion ищите по роли `button`, номер страницы — по имени «Страница N». Если в слоте `item` BaseStepper есть интерактивные элементы — вынесите их из слота. Обработчик `toggle` BaseAccordion, который считал, что закрытие приходит только по клику на открытый пункт, проверьте на новое событие закрытия.
+
+## Задача fu-forms: имена и контекст полей форм
+
+**Что нового.**
+
+- `ariaLabel` — имя поля без видимой подписи — у BaseCheckbox, BaseSwitch, BaseSelect, BaseRadio (имя `radiogroup`) и BaseColorPicker (кнопка-образец называется «Цвет фона, выбран #ff0000»). Атрибуты нативного контрола — `inputAttrs` у BaseCheckbox и BaseSwitch (как у BaseInput и BaseTextarea), атрибуты триггера — `triggerAttrs` у BaseSelect и BaseColorPicker. `id` из них заменяет сгенерированный, `aria-describedby` добавляется к описаниям кита.
+- BaseCheckbox, BaseSwitch и BaseRadio внутри BaseFormField берут из него описание или ошибку (`aria-describedby`), `aria-invalid`, `aria-required` и цвет ошибки — как BaseInput и BaseSelect. Без собственной подписи флажок и переключатель называются подписью обёртки (`<label for>`), BaseRadio — `aria-labelledby` на неё. Со своей подписью они обёртку не занимают: она остаётся группой (`role="group"`) со своей подписью.
+- Опция `hasOwnLabel` у `useFieldControl` (`@ramzes1385/rise-ui-kit/composables`) — контрол со своей подписью не занимает подпись BaseFormField.
+
+**Что изменилось.**
+
+| Компонент | Было | Стало |
+|---|---|---|
+| BaseSwitch | `.base-switch__row` — `<label>` вокруг переключателя, подписи и слота `default`: текст слота входил в имя переключателя | `.base-switch__row` — `<div>`; подпись и `*` — в `<label class="base-switch__caption" for>`, слот `default` — в `span.base-switch__description`, связанном через `aria-describedby`. Клик по описанию и пустому месту строки по-прежнему переключает (кроме ссылок, кнопок и полей внутри). Без `label` и слота `label` слот `default` остаётся подписью. Новые ключи `customClass`: `caption`, `description` |
+| BaseSelect | список (`listbox`) без `label` назывался плейсхолдером, даже внутри BaseFormField с подписью | список и триггер называются подписью BaseFormField; без неё — `ariaLabel`, затем плейсхолдер. Пустой `placeholder=""` больше не даёт пустое имя |
+| BaseSelect (`isMultiple` + `isRequired`) | пустой массив `[]` проходил проверку | `[]` — незаполненное поле: `validate()` возвращает `false`, ошибка «Обязательное поле». То же для любого поля на `useFormField` с массивом |
+| BaseCheckboxGroup | — | флажки внутри группы не берут контекст BaseFormField (его получает сама группа) |
+| BaseTable | флажки выбора строк и «выбрать все» назывались скрытым `label` (`span.base-table__visually-hidden` в `customClass`) | `ariaLabel` флажка; скрытого `span` больше нет |
+
+**Что сделать.**
+
+- Скрытую подпись через `customClass` (`label: 'visually-hidden'`) у BaseCheckbox замените на `aria-label="…"`.
+- Стили и тесты, которые искали `label.base-switch__row` или брали имя переключателя вместе с описанием, переведите на `.base-switch__row` (теперь `div`) и `getByRole('switch', { name: 'Подпись' })`; описание проверяйте через `aria-describedby`.
+- Формы, где обязательный мультиселект намеренно принимал `[]`, — уберите `isRequired`.

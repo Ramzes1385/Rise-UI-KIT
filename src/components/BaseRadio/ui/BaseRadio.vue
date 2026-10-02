@@ -4,17 +4,14 @@
 		class="base-radio"
 		:class="[
 			{
-				'base-radio--error': formField.error,
+				'base-radio--error': control.hasError.value,
 			},
 			variantClass,
 			classes.root,
 		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		role="radiogroup"
-		:aria-labelledby="label ? labelId : undefined"
-		:aria-required="isRequired ? 'true' : undefined"
-		:aria-invalid="formField.error ? 'true' : undefined"
-		:aria-describedby="formField.error ? errorId : undefined">
+		v-bind="groupAttrs">
 		<FormFieldLabel
 			v-if="label"
 			:id="labelId"
@@ -35,7 +32,7 @@
 				:class="[
 					{
 						'base-radio-item--disabled': option.isDisabled,
-						'base-radio-item--error': formField.error,
+						'base-radio-item--error': control.hasError.value,
 					},
 					classes.radio,
 				]">
@@ -100,6 +97,8 @@ const {
 	labelId,
 	errorId,
 	formField,
+	control,
+	groupAttrs,
 	handleChange,
 	exposed,
 } = useBaseRadio(props, emit)

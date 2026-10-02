@@ -1,4 +1,5 @@
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
+import type { FieldInputAttrs } from '@composables/form/useFormContext'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export const SELECT_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft', 'underline'] as const
@@ -54,6 +55,10 @@ export interface BaseSelectProps extends BaseComponentProps<
 	placeholder?: string
 	/** Заголовок поля */
 	label?: string
+	/** Имя поля без видимой подписи (`aria-label` триггера); без него имя — плейсхолдер */
+	ariaLabel?: string
+	/** Атрибуты триггера (`role="combobox"`): `aria-*`, `data-*`; `id` — свой id триггера, `aria-describedby` добавляется к описаниям кита */
+	triggerAttrs?: FieldInputAttrs
 	/** Обязательное поле */
 	isRequired?: boolean
 	/** Мультивыбор */

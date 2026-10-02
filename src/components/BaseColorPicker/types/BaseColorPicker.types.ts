@@ -1,4 +1,5 @@
 import type { ColorFormat } from '@utils/data/colorUtils'
+import type { FieldInputAttrs } from '@composables/form/useFormContext'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /** Позиция всплывающей панели относительно триггера */
@@ -49,6 +50,10 @@ export interface BaseColorPickerProps extends BaseComponentProps<string, 'root' 
 	hasTransparentSwatch?: boolean
 	/** Отключённое состояние: образец не открывает панель */
 	isDisabled?: boolean
+	/** Что выбирает цвет — имя кнопки-образца без видимой подписи: «Цвет фона, выбран #ff0000» */
+	ariaLabel?: string
+	/** Атрибуты кнопки-образца: `id`, `aria-*`, `data-*` */
+	triggerAttrs?: FieldInputAttrs
 }
 
 export interface BaseColorPickerEmits {

@@ -21,6 +21,8 @@ export interface BaseRadioProps extends BaseComponentProps<
 	name: string
 	/** Заголовок группы */
 	label?: string
+	/** Имя группы без видимого заголовка (`aria-label`) */
+	ariaLabel?: string
 	/** Обязательное поле */
 	isRequired?: boolean
 	/** Вертикальное расположение */

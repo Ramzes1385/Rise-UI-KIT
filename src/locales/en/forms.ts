@@ -15,6 +15,7 @@ export const enForms = {
 	},
 	colorPicker: {
 		SELECTED_COLOR: 'Selected color',
+		NAMED_TRIGGER: '{label}, selected {color}',
 		SATURATION_BRIGHTNESS: 'Saturation and brightness',
 		HUE: 'Hue',
 		HEX_VALUE: 'HEX value',

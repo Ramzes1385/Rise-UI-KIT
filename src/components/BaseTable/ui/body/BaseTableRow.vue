@@ -17,8 +17,7 @@
 			<BaseCheckbox
 				:model-value="isSelected"
 				:is-disabled="!!row.isDisabled"
-				:label="`${TABLE_TEXT.SELECT_ROW} ${rowNumber}`"
-				:custom-class="hiddenCheckboxLabel"
+				:aria-label="`${TABLE_TEXT.SELECT_ROW} ${rowNumber}`"
 				:size-scale="sizeScale"
 				@update:model-value="emit('toggle-row', row)" />
 		</td>
@@ -71,5 +70,5 @@ const emit = defineEmits<BaseTableRowEmits>()
 
 defineSlots<BaseTableRowSlots>()
 
-const { hiddenCheckboxLabel, expandButtonPadding, isExpandable } = useBaseTableRow(props)
+const { expandButtonPadding, isExpandable } = useBaseTableRow(props)
 </script>

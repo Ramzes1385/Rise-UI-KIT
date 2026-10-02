@@ -6,7 +6,7 @@
 			variantClass,
 			{
 				'base-checkbox--disabled': isDisabled,
-				'base-checkbox--error': formField.error,
+				'base-checkbox--error': control.hasError.value,
 			},
 			classes.root,
 		]"
@@ -14,14 +14,13 @@
 		<label class="base-checkbox__label-wrapper" :class="classes.labelWrapper">
 			<span class="base-checkbox__wrapper" :class="classes.wrapper">
 				<input
+					v-bind="nativeAttrs"
 					type="checkbox"
 					class="base-checkbox__input"
 					:class="classes.input"
 					:checked="modelValue"
 					:indeterminate="isIndeterminate"
 					:disabled="isDisabled"
-					:aria-invalid="formField.error ? 'true' : undefined"
-					:aria-describedby="formField.error ? errorId : undefined"
 					@change="handleChange" />
 				<span class="base-checkbox__box" :class="classes.box" aria-hidden="true">
 					<BaseIcon
@@ -77,8 +76,20 @@ const props = withDefaults(
 const emit = defineEmits<BaseCheckboxEmits>()
 defineSlots<BaseCheckboxSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, errorId, formField, rootRef, handleChange, exposed } =
-	useBaseCheckbox(props, emit)
+const {
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	errorId,
+	formField,
+	control,
+	nativeAttrs,
+	rootRef,
+	handleChange,
+	exposed,
+} = useBaseCheckbox(props, emit)
 
 defineExpose(exposed)
 </script>
