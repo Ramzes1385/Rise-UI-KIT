@@ -32,7 +32,7 @@ function createPointerSession<TItem, TPlace>(options: UseSortableOptions<TItem, 
 			if (!drag.value) start()
 			drag.value = { ...(drag.value as SortableDrag<TItem>), x: event.clientX, y: event.clientY }
 			const place = options.dropPlace({ x: event.clientX, y: event.clientY }, id)
-			if (place && !options.isSamePlace(place, options.locate(id))) options.onPreview(id, place)
+			if (place !== null && !options.isSamePlace(place, options.locate(id))) options.onPreview(id, place)
 		},
 		end: (): SortableMove<TPlace> => ({ id, origin: origin as TPlace }),
 	}

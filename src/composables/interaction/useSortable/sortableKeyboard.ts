@@ -19,7 +19,7 @@ export function useSortableKeyboard<TItem, TPlace>(options: UseSortableOptions<T
 	}
 	const step = (key: string, id: string): void => {
 		const place = options.stepPlace(id, key)
-		if (!place) return
+		if (place === null) return
 		options.onPreview(id, place)
 		options.onAnnounce('MOVED', id)
 		options.focusItem(id)
