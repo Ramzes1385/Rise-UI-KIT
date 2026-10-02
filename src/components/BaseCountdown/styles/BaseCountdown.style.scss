@@ -1,0 +1,75 @@
+.base-countdown {
+	position: relative;
+	display: inline-flex;
+	max-width: 100%;
+	color: var(--rise-text);
+	@include text-size(sm);
+
+	&__spoken {
+		@include visually-hidden;
+	}
+
+	&__display {
+		display: flex;
+		flex-wrap: wrap;
+		gap: sz(8px);
+	}
+
+	&__unit {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: sz(2px);
+		box-sizing: border-box;
+		min-width: sz(64px);
+		padding: sz(8px) sz(10px);
+		border: 1px solid var(--rise-border);
+		border-radius: sz(var(--rise-radius-md));
+		@include custom-bg(background-color, var(--rise-bg));
+	}
+
+	&__value {
+		font-weight: var(--rise-font-weight-semibold);
+		font-variant-numeric: tabular-nums;
+		@include text-size(2xl);
+		@include custom-text(color, var(--rise-text-highlighted));
+	}
+
+	&__caption {
+		@include text-size(xs);
+		@include custom-text(color, var(--rise-text-muted));
+	}
+
+	&--soft &__unit {
+		border-color: transparent;
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+	}
+
+	&--soft &__caption {
+		@include custom-text(color, var(--rise-text-toned));
+	}
+
+	&--outline &__unit {
+		border-color: var(--rise-border-accented);
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--ghost &__unit {
+		min-width: 0;
+		padding: 0;
+		border-color: transparent;
+		@include custom-bg(background-color, transparent);
+	}
+
+	&__clock {
+		font-weight: var(--rise-font-weight-semibold);
+		font-variant-numeric: tabular-nums;
+		@include text-size(lg);
+		@include custom-text(color, var(--rise-text-highlighted));
+	}
+
+	&--finished &__value,
+	&--finished &__clock {
+		color: var(--rise-text-muted);
+	}
+}
