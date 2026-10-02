@@ -247,6 +247,11 @@
 		pointer-events: none;
 	}
 
+	&__anchor-trigger {
+		width: 100%;
+		height: 100%;
+	}
+
 	&__tooltip {
 		max-width: sz(280px);
 		padding: sz(10px) sz(12px);

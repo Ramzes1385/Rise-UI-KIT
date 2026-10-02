@@ -128,7 +128,7 @@
 			:style="anchorStyle"
 			:is-open="true"
 			position="top"
-			:custom-class="{ inner: classes.tooltip }"
+			:custom-class="{ inner: classes.tooltip, trigger: 'base-image-map__anchor-trigger' }"
 			@close="overlay.hideTooltip">
 			<div class="base-image-map__tooltip" @mouseenter="overlay.cancelHide" @mouseleave="overlay.scheduleHide">
 				<slot name="tooltip" :object="overlay.tooltipItem.value.object" :group="overlay.tooltipItem.value.group">

@@ -125,15 +125,17 @@ function cleanTree(parent: Element): void {
 	}
 }
 
-function prefixReference(value: string, prefix: string): string {
-	return value.replace(/#([\w.:-]+)/g, `#${prefix}$1`)
+function prefixReference(name: string, value: string, prefix: string): string {
+	if (name === 'href' || name === 'xlink:href') return value.replace(/^\s*#/, `#${prefix}`)
+	return value.replace(/url\(\s*(['"]?)#/gi, `url($1#${prefix}`)
 }
 
 function prefixIds(root: Element, prefix: string): void {
 	for (const element of [root, ...root.querySelectorAll('*')]) {
 		for (const attribute of [...element.attributes]) {
 			if (attribute.name === 'id') element.setAttribute('id', `${prefix}${attribute.value}`)
-			else if (attribute.value.includes('#')) element.setAttribute(attribute.name, prefixReference(attribute.value, prefix))
+			else if (attribute.value.includes('#'))
+				element.setAttribute(attribute.name, prefixReference(attribute.name, attribute.value, prefix))
 		}
 	}
 }

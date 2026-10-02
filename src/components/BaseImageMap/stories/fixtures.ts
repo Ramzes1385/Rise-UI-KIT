@@ -4,7 +4,7 @@ import type { ImageMapData, ImageMapObject } from '../types/imageMapData.types'
 const PLAN_WIDTH = 1000
 const PLAN_HEIGHT = 600
 const SHOPS_PER_ROW = 4
-const SHOP_WIDTH = 200
+const SHOP_WIDTH = 190
 const SHOP_HEIGHT = 200
 const SHOP_GAP = 20
 const ROW_TOP = [40, 360]
