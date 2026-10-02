@@ -225,6 +225,7 @@ export const ruBase = {
 	warnings: {
 		BOTTOM_NAV_ITEM_COUNT:
 			'BaseBottomNav: пунктов {count} — нижняя навигация рассчитана на {min}–{max}; остальное вынесите в пункт «Ещё»',
+		CRYPTOPRO_NO_TSA: 'BaseCryptoProSign: для уровня подписи «{level}» нужен адрес службы штампов времени tsaAddress',
 		UNKNOWN_LOCALE: 'Неизвестный язык «{locale}». Встроенные: {locales}; свой — defineLocale()',
 		TOAST_WITHOUT_APP: 'useToast: не найден <BaseApp> — уведомление не показано. Оберните приложение в <BaseApp>.',
 		OVERLAY_WITHOUT_APP: 'useOverlay: не найден <BaseApp> — оверлей не показан. Оберните приложение в <BaseApp>.',

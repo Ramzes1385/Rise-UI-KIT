@@ -2792,6 +2792,58 @@ const code = "import { ref } from 'vue'\nconst count = ref(0)"
 
 Блоки кода BaseMarkdown подсвечиваются тем же токенизатором.
 
+## BaseCryptoProSign
+
+Электронная подпись через КриптоПро ЭЦП Browser plug-in (на `useCryptoPro`): диагностика с подсказками и ссылками на установку, выбор сертификата, подпись текста или файла — присоединённая или отсоединённая, CAdES-BES, CAdES-T и CAdES-X Long Type 1, — и проверка подписи (`mode="verify"`).
+
+**Что поставить пользователю.** КриптоПро CSP 5.0 или новее (лицензия или пробный период), КриптоПро ЭЦП Browser plug-in и расширение для браузера (Chrome, Edge, Яндекс Браузер, Firefox), сертификат с закрытым ключом в личном хранилище («Личное» текущего пользователя; ключ на токене — драйвер токена). Компонент сам проверяет шаги по порядку — расширение, плагин, CSP, объекты подписи — и при ошибке показывает, что поставить, со ссылками на страницы загрузки КриптоПро.
+
+**Что сделать приложению.** Скрипт `cadesplugin_api.js` скачивается с сайта КриптоПро и раздаётся приложением — кит его не содержит. Подключите его на странице или передайте адрес в `script-url` (один раз для всех — `createUiKitPlugin({ defaults: { BaseCryptoProSign: { scriptUrl: '/cades/cadesplugin_api.js' } } })`): компонент загрузит скрипт после монтирования. До монтирования компонент не трогает `window` и `document` (SSR).
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseCryptoProSign, type CryptoProSignResult } from '@ramzes1385/rise-ui-kit'
+
+const thumbprint = ref('')
+const detached = ref(true)
+
+async function send(result: CryptoProSignResult) {
+	await api.saveSignature({ file: result.fileName, signature: result.signature, detached: result.detached })
+}
+</script>
+
+<template>
+	<BaseCryptoProSign
+		v-model:thumbprint="thumbprint"
+		v-model:detached="detached"
+		:data="file"
+		level="t"
+		tsa-address="http://testca2012.cryptopro.ru/tsp/tsp.srf"
+		@signed="send"
+		@error="error => console.warn(error.code, error.detail)" />
+
+	<BaseCryptoProSign
+		mode="verify"
+		:signature="signatureBase64"
+		:data="file"
+		@verified="result => (isValid = result.isValid)" />
+</template>
+```
+
+- **Что подписываем:** `data` — текст (подписываются его байты UTF-8) или `File`/`Blob`; без `data` пользователь выбирает файл сам (BaseFileUpload). Имя файла подписи — `<имя файла>.sig`, для текста — `<fileName>.sig` (`fileName`, по умолчанию `document`).
+- **Сертификаты** — BaseSelect: ФИО, организация, ИНН, срок («действует до …», за 30 дней — «истекает через N дней»). Просроченные, не прошедшие проверку плагина и без закрытого ключа видны, но недоступны. Первый действующий выбирается сам (`update:thumbprint`).
+- **Присоединённая или отсоединённая** — BaseSegmented, `v-model:detached`.
+- **Большие файлы.** Плагин передаёт данные через расширение браузера, и большой файл целиком не проходит (ограничение есть и на демостранице КриптоПро). Файл больше `hashThreshold` (по умолчанию 10 МБ) подписывается по хэшу: `CAdESCOM.HashedData` считает ГОСТ Р 34.11-2012 256 или 512 по алгоритму ключа сертификата, файл читается частями по 768 КБ, ход — полосой BaseProgress; подпись `SignHash` — только отсоединённая, вариант «Присоединённая» недоступен с пояснением. Такую подпись проверяет любой инструмент CAdES вместе с файлом.
+- **Уровень** `level`: `bes` (по умолчанию), `t` — со штампом времени, `xlt1` — CAdES-X Long Type 1 (штамп и доказательства действительности сертификата, «усовершенствованная» подпись). Для `t` и `xlt1` нужна служба штампов времени `tsaAddress` — без неё предупреждение в консоли и ошибка плагина. Во всех уровнях подпись содержит время подписи (`signingTime`).
+- **Результат подписи** — событие `signed`: `{ signature, detached, isHash, level, certificate, fileName }`, `signature` — Base64 без переносов. Кнопка «Скачать подпись» (`hasDownload`) сохраняет `.sig` в DER (двоичный CMS, как у КриптоАРМ и `cryptcp`).
+- **Проверка** `mode="verify"`: подпись — `signature` (Base64) или файл, который выберет пользователь (`.sig`, `.sgn`, `.p7s`: DER, Base64 или PEM); данные отсоединённой подписи — `data` или файл. `VerifyCades`, для файла больше `hashThreshold` — `VerifyHash` (сначала хэш 256, затем 512). Событие `verified`: `{ isValid, isDetached, isHash, signers, error }`; у подписанта — ФИО, организация, ИНН, время подписи, время штампа, срок и состояние сертификата.
+- **Ошибки** — событие `error` с `CryptoProFailure` (`code`, `message`, `detail`; коды — `useCryptoPro`, docs/reference/COMPOSABLES.md). Неверная подпись — не ошибка, а `verified` с `isValid: false`.
+- **Методы** через `ref` (`BaseCryptoProSignExpose`): `check()` — повторная диагностика и чтение сертификатов, `sign()`, `verify()`.
+- **Доступность:** корень — область с именем «Электронная подпись» или «Проверка электронной подписи»; шаги диагностики — список с состоянием словами для скринридера; итог подписи и проверки объявляется скрытой областью `role="status"`, ошибки — BaseAlert `role="alert"`; на время работы — `aria-busy`.
+- **Эмуляция** для историй, тестов и демо приложения — `createCryptoProSignEmulation(options)`: всё из `createCryptoProEmulation` (сценарии `ready`, `noExtension`, `noPlugin`, `noCsp`, `noCertificates`, `cancel`, сертификаты, `now`, `delay`) и подпись хэша, уровни, время подписи, проверка; `keys512` — отпечатки сертификатов с ключом 512 бит. Подпись фиктивная: её проверяет только эмуляция, данные, изменённые после подписи, проверку не проходят.
+- **Ограничения.** Настоящую подпись CI не проверяет — только эмуляция; вторая подпись к документу (`CoSignCades`, `CoSignHash`) пока не поддерживается. Плагин работает только в браузерах с расширением КриптоПро; в мобильных браузерах его нет.
+
 ---
 
 ## BaseMarquee
@@ -3097,6 +3149,7 @@ BaseCommentThread
 BaseConfirm
 BaseContainer
 BaseContextMenu
+BaseCryptoProSign
 BaseDadataInput
 BaseDatePicker
 BaseDescriptions

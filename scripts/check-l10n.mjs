@@ -55,6 +55,10 @@ const ALLOWED = [
 		file: 'src/composables/crypto/useCryptoPro/emulation/emulatedObjects.ts',
 		reason: 'тексты ошибок эмуляции КриптоПро — как их отдаёт getLastError плагина на русской системе',
 	},
+	{
+		file: 'src/components/BaseCryptoProSign/model/emulation/emulatedSignature.ts',
+		reason: 'тексты ошибок эмуляции подписи и проверки КриптоПро — как их отдаёт getLastError плагина на русской системе',
+	},
 ]
 
 function listFiles(dir) {

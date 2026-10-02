@@ -203,6 +203,7 @@ export const enBase = {
 	warnings: {
 		BOTTOM_NAV_ITEM_COUNT:
 			'BaseBottomNav: {count} items — bottom navigation is designed for {min}–{max}; move the rest to a “More” item',
+		CRYPTOPRO_NO_TSA: 'BaseCryptoProSign: the "{level}" signature level needs a timestamp service address, tsaAddress',
 		UNKNOWN_LOCALE: 'Unknown locale "{locale}". Built-in: {locales}; for your own use defineLocale()',
 		TOAST_WITHOUT_APP: 'useToast: <BaseApp> not found — the notification was not shown. Wrap the app in <BaseApp>.',
 		OVERLAY_WITHOUT_APP: 'useOverlay: <BaseApp> not found — the overlay was not shown. Wrap the app in <BaseApp>.',

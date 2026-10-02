@@ -123,6 +123,7 @@ import { BaseSignaturePad } from '../../components/BaseSignaturePad'
 import { BaseAvatarCropper } from '../../components/BaseAvatarCropper'
 import { BaseCheckboxGroup } from '../../components/BaseCheckboxGroup'
 import { BaseCommentThread } from '../../components/BaseCommentThread'
+import { BaseCryptoProSign } from '../../components/BaseCryptoProSign'
 import { BaseEventCalendar } from '../../components/BaseEventCalendar'
 import { BaseFilterBuilder } from '../../components/BaseFilterBuilder'
 import { BaseVoiceRecorder } from '../../components/BaseVoiceRecorder'
@@ -171,6 +172,7 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseContainer,
 	BaseContextMenu,
 	BaseCountdown,
+	BaseCryptoProSign,
 	BaseDadataInput,
 	BaseDescriptions,
 	BaseDrawer,

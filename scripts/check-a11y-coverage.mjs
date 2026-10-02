@@ -129,6 +129,7 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseTransfer',
 	'BaseTreeSelect',
 	'BaseCascader',
+	'BaseCryptoProSign',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */
@@ -189,6 +190,7 @@ const INTERACTIVE_WITH_DISABLED = new Set([
 	'BaseTransfer',
 	'BaseTreeSelect',
 	'BaseCascader',
+	'BaseCryptoProSign',
 ])
 
 /** Формовые компоненты, требующие story Error */
@@ -237,6 +239,7 @@ const LOADING_COMPONENTS = new Set([
 	'BasePresentationPlayer',
 	'BaseTreeSelect',
 	'BaseCascader',
+	'BaseCryptoProSign',
 ])
 
 const EMPTY_COMPONENTS = new Set([
@@ -268,6 +271,7 @@ const EMPTY_COMPONENTS = new Set([
 	'BaseTreeSelect',
 	'BaseCascader',
 	'BaseCode',
+	'BaseCryptoProSign',
 ])
 
 const LONG_CONTENT_COMPONENTS = new Set([

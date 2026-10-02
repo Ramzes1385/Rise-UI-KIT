@@ -68,6 +68,7 @@
 | 42 | Асинхронный родитель v-model откатывает DOM и сбивает каретку. В тулбаре 21 остановка Tab. Меню медиа открывается только правым кликом. У «Блок кода» и «Режим кода» одна иконка. `isEmpty` не учитывает медиа (EDT-14). Цвет по умолчанию `#000000` не виден в тёмной теме. Нет `isDisabled`/`error`/`label` (EDT-10). Enter вставляет `<br>`. Разделитель групп переносится в начало строки | BaseEditor | Логика и API вне редизайна | patch, minor | M |
 | 43 | `weight` по умолчанию (400) пишется inline и перебивает `strong`, `h1–h6` и CSS потребителя. Предложение — дефолт `undefined` | BaseText | Меняет публичное поведение и тесты | major | S |
 | 60 | `useScrollableRegion` на обёртке BaseTable в виртуальном режиме: MutationObserver с `subtree` срабатывает на каждую перерисовку строк при прокрутке и каждый раз пересчитывает, можно ли прокручивать. Если в профиле это будет заметно — копить изменения и пересчитывать через `requestAnimationFrame` раз на кадр | `src/composables/interaction/useScrollableRegion/useScrollableRegion.ts`, BaseTable (`isVirtual`) | Замечание проверки check-scroll-expand (мелочь): без замера в профиле выигрыш не доказан | perf | S |
+| 62 | Вторая подпись к документу (`CoSignCades`, `CoSignHash`) и подпись нескольких файлов за раз (new-cryptopro-ui) | BaseCryptoProSign, `useCryptoPro` | Не уместилось в порцию new-cryptopro-ui; нужна ручная проверка владельца с настоящим КриптоПро | minor | S |
 
 ## API-гигиена
 

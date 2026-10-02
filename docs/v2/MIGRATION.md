@@ -1675,3 +1675,12 @@ API кита не меняется. В Storybook добавлены пример
 - Эмуляция плагина — внутренняя (тесты и истории кита), из входа `composables` не экспортируется. Подпись в приложении проверяйте с настоящим плагином, в тестах приложения — своей подменой `window.cadesplugin` или моком `useCryptoPro`. Код работы с плагином загружается отдельным чанком при первой проверке.
 - Словарь: раздел `cryptopro` (ru, en) — шаги диагностики и тексты ошибок; свой язык — `defineLocale(en, { cryptopro: { … } })`.
 - `cadesplugin_api.js` в кит не входит: приложение подключает его само или передаёт адрес в `scriptUrl`.
+
+## Задача new-cryptopro-ui: BaseCryptoProSign
+
+Новый компонент, изменений в существующих нет.
+
+- `BaseCryptoProSign` — подпись и проверка подписи через КриптоПро ЭЦП Browser plug-in на `useCryptoPro`: диагностика, выбор сертификата, присоединённая и отсоединённая подпись, хэш больших файлов (`hashThreshold`), уровни `bes`, `t`, `xlt1` со службой штампов `tsaAddress`, `mode="verify"`. Справочник — docs/reference/COMPONENTS.md, «BaseCryptoProSign».
+- Экспорт: `BaseCryptoProSign`, `createCryptoProSignEmulation`, `CRYPTO_PRO_SIGN_LEVELS`, `CRYPTO_PRO_SIGN_MODES`, `CRYPTO_PRO_SIGN_VARIANTS`, типы `CryptoProSignResult`, `CryptoProVerifyResult`, `CryptoProVerifySigner`, `CryptoProSignLevel`, `CryptoProSignMode`, `CryptoProSignSource`, `CryptoProSignEmulationOptions`, `BaseCryptoProSignExpose`.
+- Словарь: в раздел `cryptopro` (ru, en) добавлены тексты компонента; в `plural` — `CRYPTOPRO_EXPIRES`; в `warnings` — `CRYPTOPRO_NO_TSA`. Свой язык — `defineLocale(en, { cryptopro: { … } })`.
+- `scriptUrl` можно задать один раз: `createUiKitPlugin({ defaults: { BaseCryptoProSign: { scriptUrl } } })`.
