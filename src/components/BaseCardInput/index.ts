@@ -16,5 +16,5 @@ export type {
 	CloudPaymentsTokenizerOptions,
 } from './types/cloudPayments.types'
 export { createCloudPaymentsTokenizer } from './model/tokenizers/cloudPayments'
-export { CARD_BRAND_BACKGROUNDS } from './types/cardFace.types'
+export { CARD_BRAND_BACKGROUNDS } from './model/face/cardFaceBackgrounds'
 export { default as BaseCardInput } from './ui/BaseCardInput.vue'

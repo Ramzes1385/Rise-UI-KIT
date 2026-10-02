@@ -1,5 +1,5 @@
 import type { CardBrand } from '@utils/form/cardUtils'
-import { CARD_BRAND_BACKGROUNDS, CARD_FACE_DEFAULT_BACKGROUND } from '../../types/cardFace.types'
+import { CARD_BRAND_BACKGROUNDS, CARD_FACE_DEFAULT_BACKGROUND } from './cardFaceBackgrounds'
 
 const DEFAULT_GAPS: readonly number[] = [4, 8, 12, 16]
 const DEFAULT_LENGTH = 16
@@ -11,8 +11,9 @@ function groupCardChars(chars: string, brand: CardBrand | undefined): string {
 }
 
 function cardFaceLength(brand: CardBrand | undefined): number {
-	if (!brand || brand.lengths.includes(DEFAULT_LENGTH)) return DEFAULT_LENGTH
-	return brand.lengths[0] ?? DEFAULT_LENGTH
+	const [shortest] = brand?.lengths ?? []
+	if (shortest === undefined || brand?.lengths.includes(DEFAULT_LENGTH)) return DEFAULT_LENGTH
+	return shortest
 }
 
 export function maskedCardNumber(digits: string, brand: CardBrand | undefined): string {
