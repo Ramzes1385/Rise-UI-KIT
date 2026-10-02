@@ -30,6 +30,71 @@ class FakeObserver {
 	}
 }
 
+class LayoutObserver {
+	static instances: LayoutObserver[] = []
+	private readonly states = new Map<Element, number>()
+	private readonly callback: ObserverCallback
+	private readonly options: IntersectionObserverInit
+
+	constructor(callback: ObserverCallback, options: IntersectionObserverInit) {
+		this.callback = callback
+		this.options = options
+		LayoutObserver.instances.push(this)
+	}
+
+	observe(element: Element): void {
+		this.states.set(element, this.bucket(element))
+	}
+
+	disconnect(): void {
+		this.states.clear()
+	}
+
+	check(): void {
+		const changed = [...this.states].filter(([element, state]) => this.bucket(element) !== state)
+		for (const [element] of changed) this.states.set(element, this.bucket(element))
+		if (changed.length > 0) this.callback(changed.map(([target]) => ({ target }) as IntersectionObserverEntry))
+	}
+
+	private bucket(element: Element): number {
+		const root = this.options.root as HTMLElement | null
+		const area = root ? root.getBoundingClientRect() : { top: 0, bottom: window.innerHeight }
+		const margin = Number(/^-(\d+)px/.exec(this.options.rootMargin!)![1])
+		const { top, bottom } = element.getBoundingClientRect()
+		const visible = Math.min(bottom, area.bottom) - Math.max(top, area.top + margin)
+		if (visible <= 0) return 0
+		return visible >= bottom - top ? 2 : 1
+	}
+}
+
+const SECTION_HEIGHT = 40
+
+function createPage(positions: Record<string, number>, box?: HTMLElement) {
+	const elements = Object.entries(positions).map(([id]) => addSection(id, 0, { parent: box ?? document.body }))
+	const place = (y: number): void => {
+		const rootTop = box ? box.getBoundingClientRect().top : 0
+		for (const element of elements) {
+			const top = rootTop + positions[element.id]! - y
+			element.getBoundingClientRect = () => ({ top, bottom: top + SECTION_HEIGHT }) as DOMRect
+		}
+	}
+	place(0)
+	return {
+		scrollTo(y: number): void {
+			if (box) box.scrollTop = y
+			else Object.defineProperty(window, 'scrollY', { value: y, configurable: true })
+			place(y)
+			;(box ?? window).dispatchEvent(new Event('scroll'))
+			for (const observer of LayoutObserver.instances) observer.check()
+		},
+		scrollBy(from: number, to: number): void {
+			const step = to > from ? 10 : -10
+			for (let y = from + step; step > 0 ? y < to : y > to; y += step) this.scrollTo(y)
+			this.scrollTo(to)
+		},
+	}
+}
+
 const ITEMS: AnchorItem[] = [
 	{ id: 'intro', label: 'Введение' },
 	{ id: 'setup', label: 'Установка', children: [{ id: 'setup-npm', label: 'Через npm' }] },
@@ -170,7 +235,7 @@ describe('BaseAnchor', () => {
 			const { emitted } = render(BaseAnchor, { props: { items: ITEMS, offset: 64 } })
 			await nextTick()
 			const observer = lastObserver()
-			expect(observer.options).toEqual({ root: null, rootMargin: '-64px 0px 0px 0px', threshold: [0, 1] })
+			expect(observer.options).toEqual({ root: null, rootMargin: '-72px 0px 0px 0px', threshold: [0, 1] })
 			expect(observer.observed.map(element => element.id)).toEqual(['intro', 'setup', 'setup-npm', 'usage'])
 			expect(link('Введение')).toHaveAttribute('aria-current', 'location')
 			setTop('setup', 70)
@@ -330,6 +395,107 @@ describe('BaseAnchor', () => {
 			const count = FakeObserver.instances.length
 			exposed!.refresh()
 			expect(FakeObserver.instances).toHaveLength(count + 1)
+		})
+	})
+
+	describe('прокрутка: сигналы наблюдателя как в браузере', () => {
+		const sections = { intro: 0, setup: 400, 'setup-npm': 800, usage: 1500 }
+		const items = ITEMS.slice()
+
+		beforeEach(() => {
+			LayoutObserver.instances = []
+			vi.stubGlobal('IntersectionObserver', LayoutObserver)
+			Object.defineProperty(document.documentElement, 'scrollHeight', { value: 1600, configurable: true })
+		})
+
+		afterEach(() => {
+			Reflect.deleteProperty(document.documentElement, 'scrollHeight')
+			Object.defineProperty(window, 'scrollY', { value: 0, configurable: true })
+		})
+
+		it('граница линии offset + 8 — та же, что у наблюдателя: верх на линии — ещё нет, на 1 px выше — текущий', async () => {
+			const page = createPage(sections)
+			render(BaseAnchor, { props: { items } })
+			await nextTick()
+			expect(LayoutObserver.instances.at(-1)!['options'].rootMargin).toBe('-8px 0px 0px 0px')
+			page.scrollBy(0, 392)
+			await nextTick()
+			expect(link('Введение')).toHaveAttribute('aria-current', 'location')
+			page.scrollTo(393)
+			await nextTick()
+			expect(link('Установка')).toHaveAttribute('aria-current', 'location')
+		})
+
+		it('прокрутка вверх: заголовок ушёл ниже линии — текущим снова становится предыдущий раздел (без scrollend)', async () => {
+			const page = createPage(sections)
+			const { emitted } = render(BaseAnchor, { props: { items, offset: 20 } })
+			await nextTick()
+			page.scrollBy(0, 385)
+			await nextTick()
+			expect(link('Установка')).toHaveAttribute('aria-current', 'location')
+			page.scrollBy(385, 355)
+			await nextTick()
+			expect(link('Введение')).toHaveAttribute('aria-current', 'location')
+			expect(emitted()['update:active']).toEqual([['intro'], ['setup'], ['intro']])
+		})
+
+		it('прокрутка в конец: короткий последний раздел становится текущим по scrollend; вверх — снова предыдущий', async () => {
+			const page = createPage(sections)
+			render(BaseAnchor, { props: { items } })
+			await nextTick()
+			page.scrollBy(0, 820)
+			await nextTick()
+			expect(link('Через npm')).toHaveAttribute('aria-current', 'location')
+			page.scrollBy(820, 832)
+			window.dispatchEvent(new Event('scrollend'))
+			await nextTick()
+			expect(link('Использование')).toHaveAttribute('aria-current', 'location')
+			page.scrollBy(832, 812)
+			window.dispatchEvent(new Event('scrollend'))
+			await nextTick()
+			expect(link('Через npm')).toHaveAttribute('aria-current', 'location')
+		})
+
+		describe('браузер без scrollend', () => {
+			let descriptor: PropertyDescriptor | undefined
+
+			beforeEach(() => {
+				descriptor = Object.getOwnPropertyDescriptor(window, 'onscrollend')
+				Reflect.deleteProperty(window, 'onscrollend')
+				vi.useFakeTimers()
+			})
+
+			afterEach(() => {
+				Object.defineProperty(window, 'onscrollend', descriptor!)
+			})
+
+			it('контейнер: конец прокрутки — пауза 100 мс в событиях scroll; размонтирование снимает слушатель', async () => {
+				const box = document.createElement('div')
+				box.getBoundingClientRect = () => ({ top: 100, bottom: 400 }) as DOMRect
+				Object.defineProperty(box, 'clientHeight', { value: 300 })
+				Object.defineProperty(box, 'scrollHeight', { value: 1600 })
+				document.body.append(box)
+				const page = createPage(sections, box)
+				const onUpdate = vi.fn()
+				const { unmount } = render(BaseAnchor, { props: { items, target: box, 'onUpdate:active': onUpdate } })
+				await nextTick()
+				page.scrollBy(0, 1300)
+				vi.advanceTimersByTime(99)
+				await nextTick()
+				expect(link('Через npm')).toHaveAttribute('aria-current', 'location')
+				vi.advanceTimersByTime(1)
+				await nextTick()
+				expect(link('Использование')).toHaveAttribute('aria-current', 'location')
+				page.scrollBy(1300, 1280)
+				vi.advanceTimersByTime(100)
+				await nextTick()
+				expect(link('Через npm')).toHaveAttribute('aria-current', 'location')
+				const count = onUpdate.mock.calls.length
+				page.scrollTo(1300)
+				unmount()
+				vi.advanceTimersByTime(100)
+				expect(onUpdate).toHaveBeenCalledTimes(count)
+			})
 		})
 	})
 

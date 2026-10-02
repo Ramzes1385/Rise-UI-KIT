@@ -36,12 +36,21 @@ function rootTop(target: ScrollTarget): number {
 	return target === window ? 0 : (target as HTMLElement).getBoundingClientRect().top
 }
 
+export const SECTION_LINE_GAP = 8
+
+function isScrolledToEnd(target: ScrollTarget): boolean {
+	const element = target === window ? document.documentElement : (target as HTMLElement)
+	const [scrollTop, viewport] = target === window ? [window.scrollY, window.innerHeight] : [element.scrollTop, element.clientHeight]
+	return scrollTop > 0 && element.scrollHeight > viewport && scrollTop + viewport >= element.scrollHeight - 1
+}
+
 export function findCurrent(links: AnchorLink[], target: ScrollTarget, offset: number): string | undefined {
-	const line = rootTop(target) + offset + 8
+	const elements = links.map(link => document.getElementById(link.id)).filter(element => element !== null)
+	if (elements.length > 0 && isScrolledToEnd(target)) return elements[elements.length - 1]!.id
+	const line = rootTop(target) + offset + SECTION_LINE_GAP
 	let current = links[0]?.id
-	for (const link of links) {
-		const element = document.getElementById(link.id)
-		if (element && element.getBoundingClientRect().top <= line) current = link.id
+	for (const element of elements) {
+		if (element.getBoundingClientRect().top < line) current = element.id
 	}
 	return current
 }
