@@ -42,14 +42,15 @@ function pickVoice(voices: SpeechSynthesisVoice[], options: SlideSpeechOptions):
 export function useSlideSpeech(options: SlideSpeechOptions) {
 	const { voices, isReady, isMissing } = useVoices()
 	const utterance = shallowRef<SpeechSynthesisUtterance | null>(null)
-	const hasText = computed(() => Boolean(options.text()?.trim()))
+	const text = computed(() => options.text() ?? '')
+	const hasText = computed(() => Boolean(text.value.trim()))
 	const isAvailable = computed(() => hasText.value && isReady.value)
 	const stop = (): void => {
 		utterance.value = null
 		synth()?.cancel()
 	}
 	const speak = (): void => {
-		const next = new SpeechSynthesisUtterance(options.text() ?? '')
+		const next = new SpeechSynthesisUtterance(text.value)
 		const voice = pickVoice(voices.value, options)
 		next.lang = voice?.lang ?? options.lang()
 		if (voice) next.voice = voice
