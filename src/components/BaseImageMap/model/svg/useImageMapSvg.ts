@@ -28,9 +28,9 @@ function useSvgMarkup(getLayer: () => ImageMapLayer | undefined, prefix: string)
 		() => [getLayer()?.svg, getLayer()?.svgUrl],
 		([svg, svgUrl]) => {
 			request++
-			hasError.value = false
 			isLoading.value = false
 			markup.value = svg ? sanitizeSvg(svg, prefix) : ''
+			hasError.value = Boolean(svg) && !markup.value
 			if (!svg && svgUrl) void load(svgUrl, request)
 		},
 		{ immediate: true },
@@ -58,8 +58,7 @@ export function useImageMapSvg(options: SvgOptions) {
 		const container = options.containerRef.value
 		if (!container || !markup.value) return
 		for (const binding of options.getBindings()) {
-			const object = binding.item.object
-			const element = object.type === 'svg' ? container.querySelector(`[id="${prefix}${object.elementId}"]`) : null
+			const element = container.querySelector(`[id="${prefix}${binding.elementId}"]`)
 			if (element) applyAttributes(element, binding)
 		}
 	})

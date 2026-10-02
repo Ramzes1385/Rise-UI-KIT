@@ -60,10 +60,11 @@ function usePresentation(props: ImageMapProps, data: ReturnType<typeof useImageM
 			if (props.height) return { height: props.height }
 			return layer ? { aspectRatio: `${layer.width} / ${layer.height}` } : {}
 		}),
-		anchorStyle: computed((): Record<string, string> | null => {
-			const box = overlay.anchorBox.value
-			if (!box) return null
-			return { left: `${box.left}px`, top: `${box.top}px`, width: `${box.width}px`, height: `${box.height}px` }
+		tooltipView: computed(() => {
+			const tooltip = overlay.tooltip.value
+			if (!tooltip) return null
+			const { left, top, width, height } = tooltip.box
+			return { item: tooltip.item, style: { left: `${left}px`, top: `${top}px`, width: `${width}px`, height: `${height}px` } }
 		}),
 	}
 }
@@ -76,6 +77,7 @@ export function useBaseImageMap(props: ImageMapProps, emit: BaseImageMapEmits) {
 			isTabbable: focus.tabbableId.value === item.object.id,
 			isActive: actions.localActive.value === item.object.id,
 			isHovered: overlay.hoverId.value === item.object.id,
+			describedBy: overlay.tooltipId.value === item.object.id ? overlay.tooltipDomId : undefined,
 			isPulsing: props.isPulsing || Boolean(item.object.type === 'point' && item.object.isPulsing),
 		}),
 	})

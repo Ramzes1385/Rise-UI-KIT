@@ -1,8 +1,8 @@
 import { computed } from 'vue'
 import { shapeGeometry } from './data/shapeGeometry'
-import type { ImageMapPoint } from '../types/imageMapData.types'
 import { objectAttributes, objectClasses } from './data/objectAttributes'
 import type { ResolvedImageMapObject } from '../types/imageMapModel.types'
+import type { ImageMapPoint, ImageMapSvgObject } from '../types/imageMapData.types'
 import type { ObjectState, ObjectsOptions, PointView, ShapeView } from '../types/imageMapInternal.types'
 
 const POINT_SIZE = 28
@@ -42,7 +42,12 @@ export function useImageMapObjects(options: ObjectsOptions) {
 				.filter(item => item.object.type === 'svg')
 				.map(item => {
 					const state = options.getState(item)
-					return { item, attributes: objectAttributes(item, state, false), classes: objectClasses(item, state) }
+					return {
+						item,
+						elementId: (item.object as ImageMapSvgObject).elementId,
+						attributes: objectAttributes(item, state, false),
+						classes: objectClasses(item, state),
+					}
 				}),
 		),
 	}

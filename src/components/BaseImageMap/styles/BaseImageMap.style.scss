@@ -252,9 +252,14 @@
 		height: 100%;
 	}
 
+	&__tooltip-panel.base-dropdown__panel {
+		overflow: visible;
+	}
+
 	&__tooltip {
 		max-width: sz(280px);
-		padding: sz(10px) sz(12px);
+		padding: sz(12px) sz(16px);
+		overflow-wrap: anywhere;
 	}
 }
 

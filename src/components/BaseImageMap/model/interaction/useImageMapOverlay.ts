@@ -1,7 +1,7 @@
-import { computed, nextTick, onBeforeUnmount, ref } from 'vue'
-import type { ImageMapBox } from '../../types/imageMapModel.types'
 import { IMAGE_MAP_OBJECT_ATTR } from '../../types/imageMapModel.types'
 import type { OverlayOptions } from '../../types/imageMapInternal.types'
+import { computed, nextTick, onBeforeUnmount, ref, shallowRef, useId } from 'vue'
+import type { ImageMapBox, ResolvedImageMapObject } from '../../types/imageMapModel.types'
 
 const HIDE_DELAY = 150
 
@@ -11,8 +11,7 @@ function findElement(stage: HTMLElement | null, id: string): Element | null {
 
 function useTooltip(options: OverlayOptions) {
 	const hoverId = ref<string | null>(null)
-	const tooltipId = ref<string | null>(null)
-	const anchorBox = ref<ImageMapBox | null>(null)
+	const tooltip = shallowRef<{ item: ResolvedImageMapObject; box: ImageMapBox } | null>(null)
 	let hideTimer: ReturnType<typeof setTimeout> | undefined
 
 	function measure(id: string): ImageMapBox | null {
@@ -26,24 +25,22 @@ function useTooltip(options: OverlayOptions) {
 
 	function hideTooltip(): void {
 		clearTimeout(hideTimer)
-		tooltipId.value = null
-		anchorBox.value = null
+		tooltip.value = null
 	}
 
 	function showTooltip(id: string): void {
 		clearTimeout(hideTimer)
 		const item = options.findObject(id)
 		if (!options.hasTooltip() || !item || item.object.isTooltipHidden) return hideTooltip()
-		anchorBox.value = measure(id)
-		tooltipId.value = anchorBox.value ? id : null
+		const box = measure(id)
+		tooltip.value = box ? { item, box } : null
 	}
 
 	onBeforeUnmount(() => clearTimeout(hideTimer))
 
 	return {
 		hoverId,
-		tooltipId,
-		anchorBox,
+		tooltip,
 		showTooltip,
 		hideTooltip,
 		scheduleHide(): void {
@@ -64,7 +61,8 @@ export function useImageMapOverlay(options: OverlayOptions) {
 		findObject: options.findObject,
 		popupId,
 		isSheet,
-		tooltipItem: computed(() => options.findObject(tooltip.tooltipId.value)),
+		tooltipDomId: `rise-image-map-tooltip-${useId()}`,
+		tooltipId: computed(() => (tooltip.tooltip.value ? tooltip.tooltip.value.item.object.id : null)),
 		popupItem: computed(() => options.findObject(popupId.value)),
 		openPopup(id: string): void {
 			tooltip.hideTooltip()

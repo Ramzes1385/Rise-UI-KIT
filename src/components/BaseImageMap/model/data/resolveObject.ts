@@ -22,7 +22,7 @@ function objectStyle(object: ImageMapObject, data: ImageMapData): ImageMapStyle 
 	return object.style ?? {}
 }
 
-function mergeStyles(base: ImageMapStyle, own: ImageMapStyle): ImageMapStyle {
+function mergeStyles(base: ImageMapStyle, own: ImageMapStyle): Required<ImageMapStyle> {
 	return {
 		base: { ...base.base, ...own.base },
 		hover: { ...base.hover, ...own.hover },
@@ -39,8 +39,8 @@ function stateVariables(state: ImageMapStateStyle, suffix: string): Record<strin
 	return variables
 }
 
-function toVariables(style: ImageMapStyle): Record<string, string> {
-	return Object.assign({}, ...STATES.map(state => stateVariables(style[state] ?? {}, state === 'base' ? '' : `-${state}`)))
+function toVariables(style: Required<ImageMapStyle>): Record<string, string> {
+	return Object.assign({}, ...STATES.map(state => stateVariables(style[state], state === 'base' ? '' : `-${state}`)))
 }
 
 function resolveAction(object: ImageMapObject, defaultAction: ImageMapAction, data: ImageMapData): ImageMapAction {

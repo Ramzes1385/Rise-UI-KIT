@@ -83,7 +83,6 @@ const ALLOWED_ATTRIBUTES = new Set([
 	'vector-effect',
 	'style',
 	'href',
-	'xlink:href',
 ])
 
 const LOCAL_URL_RE = /url\(\s*['"]?#[\w.:-]+['"]?\s*\)/gi
@@ -103,14 +102,21 @@ function isSafeHref(tag: string, value: string): boolean {
 function isAllowedAttribute(tag: string, name: string, value: string): boolean {
 	if (name.startsWith('data-')) return isSafeValue(value)
 	if (!ALLOWED_ATTRIBUTES.has(name)) return false
-	if (name === 'href' || name === 'xlink:href') return isSafeHref(tag, value)
+	if (name === 'href') return isSafeHref(tag, value)
 	return isSafeValue(value)
+}
+
+function moveXlinkHref(element: Element, tag: string, attribute: Attr): void {
+	element.removeAttribute(attribute.name)
+	if (!element.hasAttribute('href') && isSafeHref(tag, attribute.value)) element.setAttribute('href', attribute.value)
 }
 
 function cleanAttributes(element: Element): void {
 	const tag = element.tagName.toLowerCase()
 	for (const attribute of [...element.attributes]) {
-		if (!isAllowedAttribute(tag, attribute.name.toLowerCase(), attribute.value)) element.removeAttribute(attribute.name)
+		const name = attribute.name.toLowerCase()
+		if (name === 'xlink:href') moveXlinkHref(element, tag, attribute)
+		else if (!isAllowedAttribute(tag, name, attribute.value)) element.removeAttribute(attribute.name)
 	}
 }
 
@@ -126,7 +132,7 @@ function cleanTree(parent: Element): void {
 }
 
 function prefixReference(name: string, value: string, prefix: string): string {
-	if (name === 'href' || name === 'xlink:href') return value.replace(/^\s*#/, `#${prefix}`)
+	if (name === 'href') return value.replace(/^\s*#/, `#${prefix}`)
 	return value.replace(/url\(\s*(['"]?)#/gi, `url($1#${prefix}`)
 }
 

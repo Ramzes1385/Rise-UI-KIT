@@ -121,21 +121,35 @@
 			<div v-if="gestures.isWheelHintVisible.value" class="base-image-map__hint" aria-hidden="true">{{ wheelHint }}</div>
 		</div>
 
-		<BasePopover
-			v-if="overlay.tooltipItem.value && anchorStyle"
-			:key="overlay.tooltipItem.value.object.id"
+		<BaseDropdown
+			v-if="tooltipView"
+			:key="tooltipView.item.object.id"
 			class="base-image-map__anchor"
-			:style="anchorStyle"
+			:style="tooltipView.style"
 			:is-open="true"
 			position="top"
-			:custom-class="{ inner: classes.tooltip, trigger: 'base-image-map__anchor-trigger' }"
+			:gap="10"
+			:match-width="false"
+			:prevent-mousedown="false"
+			:padding="0"
+			:show-arrow="true"
+			panel-class="base-image-map__tooltip-panel"
 			@close="overlay.hideTooltip">
-			<div class="base-image-map__tooltip" @mouseenter="overlay.cancelHide" @mouseleave="overlay.scheduleHide">
-				<slot name="tooltip" :object="overlay.tooltipItem.value.object" :group="overlay.tooltipItem.value.group">
-					<ImageMapCard :item="overlay.tooltipItem.value" />
-				</slot>
-			</div>
-		</BasePopover>
+			<div class="base-image-map__anchor-trigger" />
+			<template #dropdown>
+				<div
+					:id="overlay.tooltipDomId"
+					class="base-image-map__tooltip"
+					:class="classes.tooltip"
+					role="tooltip"
+					@mouseenter="overlay.cancelHide"
+					@mouseleave="overlay.scheduleHide">
+					<slot name="tooltip" :object="tooltipView.item.object" :group="tooltipView.item.group">
+						<ImageMapCard :item="tooltipView.item" />
+					</slot>
+				</div>
+			</template>
+		</BaseDropdown>
 
 		<component
 			:is="overlay.isSheet.value ? BaseDrawer : BaseModal"
@@ -160,7 +174,7 @@ import { BaseIcon } from '@components/BaseIcon'
 import { BaseModal } from '@components/BaseModal'
 import { BaseButton } from '@components/BaseButton'
 import { BaseDrawer } from '@components/BaseDrawer'
-import { BasePopover } from '@components/BasePopover'
+import { BaseDropdown } from '@components/BaseDropdown'
 import { BaseSegmented } from '@components/BaseSegmented'
 import { useBaseImageMap } from '../model/useBaseImageMap'
 import { UI_ARIA, UI_IMAGE_MAP } from '@/locales/messages'
@@ -215,7 +229,7 @@ const {
 	layerOptions,
 	mapLabel,
 	viewportStyle,
-	anchorStyle,
+	tooltipView,
 	wheelHint,
 	svgMarkup,
 	isSvgLoading,

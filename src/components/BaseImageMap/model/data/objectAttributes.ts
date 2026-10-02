@@ -31,5 +31,6 @@ export function objectAttributes(item: ResolvedImageMapObject, state: ObjectStat
 		'aria-disabled': item.isDisabled ? 'true' : undefined,
 		'aria-current': state.isActive ? 'true' : undefined,
 		'aria-haspopup': item.action === 'popup' ? 'dialog' : undefined,
+		'aria-describedby': state.describedBy,
 	}
 }

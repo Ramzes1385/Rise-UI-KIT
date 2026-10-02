@@ -70,6 +70,7 @@ export interface MapFocusOptions {
 
 export interface SvgBinding {
 	item: ResolvedImageMapObject
+	elementId: string
 	attributes: Record<string, string | undefined>
 	classes: Record<string, boolean>
 }
@@ -87,6 +88,7 @@ export interface ShapeGeometry {
 
 export interface ObjectState {
 	isTabbable: boolean
+	describedBy?: string
 	isActive: boolean
 	isHovered: boolean
 	isPulsing: boolean

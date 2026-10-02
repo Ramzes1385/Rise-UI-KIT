@@ -21,9 +21,9 @@ function elementArea(stage: HTMLElement | null, id: string): ImageMapArea | unde
 }
 
 function navigate(item: ResolvedImageMapObject): void {
-	if (!item.href) return
-	if (item.object.isLinkExternal) window.open(item.href, '_blank', 'noopener,noreferrer')
-	else window.location.assign(item.href)
+	const href = String(item.href)
+	if (item.object.isLinkExternal) window.open(href, '_blank', 'noopener,noreferrer')
+	else window.location.assign(href)
 }
 
 function useActiveModel(props: ImageMapProps, emit: BaseImageMapEmits) {
