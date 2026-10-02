@@ -265,6 +265,7 @@
       "src/composables/index.ts",
       "src/utils/index.ts",
       "src/icons/index.ts",
+      "src/components/BaseCryptoProSign/model/emulation/cryptoProSignEmulation.ts",
       "src/components/BaseMediaPlayer/index.ts",
       "src/composables/crypto/useCryptoPro/emulation/index.ts",
       "scripts/*.mjs",

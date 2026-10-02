@@ -1,5 +1,9 @@
 import type { CadesPlugin } from '@composables/crypto/useCryptoPro/types/cadesplugin.types'
-import type { CryptoProEmulationCall, CryptoProEmulationOptions, CryptoProEmulatedCertificate } from '@composables/crypto/useCryptoPro'
+import type {
+	CryptoProEmulationCall,
+	CryptoProEmulationOptions,
+	CryptoProEmulatedCertificate,
+} from '@composables/crypto/useCryptoPro/types/cryptoProEmulation.types'
 
 /** Настройки эмуляции BaseCryptoProSign: всё из `createCryptoProEmulation` и алгоритмы ключей */
 export interface CryptoProSignEmulationOptions extends CryptoProEmulationOptions {

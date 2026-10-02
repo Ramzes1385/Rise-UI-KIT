@@ -1,9 +1,11 @@
 import type { CadesWindow } from '@composables/crypto/useCryptoPro/types/cadesplugin.types'
 import { EMULATED_ERRORS } from '@composables/crypto/useCryptoPro/emulation/emulatedObjects'
+import { emulatedCertificates } from '@composables/crypto/useCryptoPro/emulation/emulatedCertificates'
 import { attribute, hashedData, record, signedData, signer, storeWithKeys } from './emulatedSignObjects'
+import { createCryptoProEmulation } from '@composables/crypto/useCryptoPro/emulation/cryptoProEmulation'
 import type { CadesSignObjectName, CadesSignObjects, CadesSignPlugin } from '../../types/cadesSign.types'
+import type { CryptoProEmulation } from '@composables/crypto/useCryptoPro/types/cryptoProEmulation.types'
 import type { EmulatedSignContext, CryptoProSignEmulationOptions } from '../../types/cryptoProSignEmulation.types'
-import { createCryptoProEmulation, emulatedCertificates, type CryptoProEmulation } from '@composables/crypto/useCryptoPro'
 
 const OWN: { [K in CadesSignObjectName]?: (context: EmulatedSignContext) => CadesSignObjects[K] } = {
 	'CAdESCOM.CPSigner': context => signer(context),
