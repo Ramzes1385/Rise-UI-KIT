@@ -8,6 +8,10 @@ export interface UseTourLogicOptions {
 
 export interface UseTourLogicReturn {
 	geometry: Ref<TourGeometry | null>
+	/** Цели шага нет на странице (или у шага нет цели) — карточка по центру экрана */
+	isCentered: Ref<boolean>
+	/** Элемент цели текущего шага или `null` */
+	getTarget: () => HTMLElement | null
 	currentStep: ComputedRef<TourStep | undefined>
 	isFirst: ComputedRef<boolean>
 	isLast: ComputedRef<boolean>

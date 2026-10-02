@@ -1,3 +1,4 @@
+import type { Ref } from 'vue'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
@@ -7,14 +8,22 @@ export const TOUR_PLACEMENTS = ['top', 'bottom', 'left', 'right', 'auto'] as con
 export type TourPlacement = (typeof TOUR_PLACEMENTS)[number]
 
 export interface TourStep {
-	/** CSS-селектор целевого элемента, который нужно подсветить */
-	target: string
+	/**
+	 * CSS-селектор целевого элемента, который нужно подсветить. Без цели, с неверным селектором или если элемента нет
+	 * на странице — карточка по центру экрана, фон затемнён целиком. Цель, появившаяся позже, подсвечивается сразу
+	 */
+	target?: string
 	/** Заголовок шага */
 	title?: string
 	/** Текст-описание шага */
 	content?: string
 	/** Предпочтительная сторона размещения карточки для шага */
 	placement?: TourPlacement
+	/**
+	 * Можно ли нажимать на подсвеченный элемент и переходить к нему клавишей Tab на этом шаге. Без значения —
+	 * `behavior.allowTargetInteraction`
+	 */
+	isTargetInteractive?: boolean
 }
 
 /** Вычисленные координаты подсветки и карточки */
@@ -47,6 +56,13 @@ export interface TourBehavior {
 	lockScroll?: boolean
 	/** Прокручивать целевой элемент в зону видимости */
 	scrollIntoView?: boolean
+	/**
+	 * Подсвеченный элемент доступен: на него можно нажать мышью, а Tab из карточки доходит до него и возвращается
+	 * в карточку. Окно тура тогда не модальное (`aria-modal="false"`), чтобы экранный диктор не скрывал цель.
+	 * `false` — цель закрыта затемнением, клик по ней — как по фону. По умолчанию `true`; шаг меняет это
+	 * своим `isTargetInteractive`
+	 */
+	allowTargetInteraction?: boolean
 }
 
 export interface BaseTourProps extends BaseComponentProps<
@@ -143,3 +159,10 @@ export interface BaseTourSlots {
 }
 
 export type TourProps = PropsWithDefaults<BaseTourProps, 'isOpen' | 'step'>
+
+/** Внутреннее: данные шага для доступности цели и объявлений */
+export interface TourTargetOptions {
+	props: TourProps
+	currentStep: Ref<TourStep | undefined>
+	geometry: Ref<TourGeometry | null>
+}

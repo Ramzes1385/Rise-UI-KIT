@@ -21,6 +21,7 @@ function setup(props: Partial<BaseTourProps> = {}, stepCount = 3) {
 	const activeIndex = computed(() => internalIndex.value)
 	const geometry = ref<TourGeometry | null>(geometryValue)
 	const isMobile = ref(false)
+	const isCentered = ref(false)
 	const recalculate = vi.fn<() => Promise<void>>().mockResolvedValue()
 	const tour = useTourCoordination({
 		props: { steps, ...props } as BaseTourProps,
@@ -32,10 +33,11 @@ function setup(props: Partial<BaseTourProps> = {}, stepCount = 3) {
 		isLast: computed(() => internalIndex.value === steps.length - 1),
 		total: computed(() => steps.length),
 		geometry,
+		isCentered,
 		isMobile,
 		recalculate,
 	})
-	return { tour, emit, internalIndex, geometry, isMobile, recalculate }
+	return { tour, emit, internalIndex, geometry, isMobile, isCentered, recalculate }
 }
 
 afterEach(() => {
@@ -190,6 +192,22 @@ describe('useTourCoordination', () => {
 
 			expect(tour.spotlightStyle.value).toMatchObject({ borderRadius: '0px' })
 			expect(tour.cardStyle.value).toEqual({})
+		})
+
+		it('без цели — карточка по центру, на мобильном прижата к низу', () => {
+			const { tour, geometry, isCentered, isMobile } = setup()
+
+			expect(tour.cardPlacement.value).toBe('bottom')
+			geometry.value = null
+			isCentered.value = true
+
+			expect(tour.spotlightStyle.value).toBeNull()
+			expect(tour.cardStyle.value).toEqual({ top: '50%', left: '50%' })
+			expect(tour.cardPlacement.value).toBe('center')
+
+			isMobile.value = true
+			expect(tour.cardStyle.value).toEqual({})
+			expect(tour.cardPlacement.value).toBe('mobile')
 		})
 	})
 

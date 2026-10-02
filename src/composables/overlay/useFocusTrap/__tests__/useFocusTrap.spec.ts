@@ -283,3 +283,103 @@ describe('useFocusTrap', () => {
 		nestedPanel.remove()
 	})
 })
+
+describe('useFocusTrap: связанные элементы (getLinkedElements)', () => {
+	function createLinkedHost(dialogContent: string, getLinked: () => HTMLElement[]) {
+		return defineComponent({
+			setup() {
+				const dialogRef = ref<HTMLElement | null>(null)
+				const isOpen = ref(false)
+				useFocusTrap({ containerRef: dialogRef, isActive: () => isOpen.value, getLinkedElements: getLinked })
+				return { dialogRef, isOpen }
+			},
+			template: `
+				<div>
+					<button v-if="!isOpen" type="button" @click="isOpen = true">Открыть</button>
+					<div v-if="isOpen" ref="dialogRef" role="dialog" aria-label="Диалог">${dialogContent}</div>
+				</div>
+			`,
+		})
+	}
+
+	afterEach(() => {
+		document.body.innerHTML = ''
+	})
+
+	function addOutside(html: string): HTMLElement {
+		const wrapper = document.createElement('div')
+		wrapper.innerHTML = html
+		document.body.prepend(wrapper)
+		return wrapper.firstElementChild as HTMLElement
+	}
+
+	it('Tab обходит контейнер, затем связанный элемент и его потомков, по кругу', async () => {
+		const linked = addOutside('<div tabindex="0" aria-label="Цель"><button type="button">Внутри цели</button></div>')
+		render(createLinkedHost('<button type="button">Первая</button><button type="button">Вторая</button>', () => [linked]))
+		await userEvent.click(screen.getByRole('button', { name: 'Открыть' }))
+		await waitFor(() => expect(screen.getByRole('button', { name: 'Первая' })).toHaveFocus())
+
+		await userEvent.tab()
+		expect(screen.getByRole('button', { name: 'Вторая' })).toHaveFocus()
+		await userEvent.tab()
+		expect(linked).toHaveFocus()
+		await userEvent.tab()
+		expect(screen.getByRole('button', { name: 'Внутри цели' })).toHaveFocus()
+		await userEvent.tab()
+		expect(screen.getByRole('button', { name: 'Первая' })).toHaveFocus()
+		await userEvent.tab({ shift: true })
+		expect(screen.getByRole('button', { name: 'Внутри цели' })).toHaveFocus()
+		await userEvent.tab({ shift: true })
+		expect(linked).toHaveFocus()
+	})
+
+	it('фокус на body — Tab на первый элемент, Shift+Tab — на последний', async () => {
+		const linked = addOutside('<button type="button">Цель</button>')
+		render(createLinkedHost('<button type="button">Первая</button>', () => [linked]))
+		await userEvent.click(screen.getByRole('button', { name: 'Открыть' }))
+		await waitFor(() => expect(screen.getByRole('button', { name: 'Первая' })).toHaveFocus())
+
+		;(document.activeElement as HTMLElement).blur()
+		await userEvent.tab()
+		expect(screen.getByRole('button', { name: 'Первая' })).toHaveFocus()
+		;(document.activeElement as HTMLElement).blur()
+		await userEvent.tab({ shift: true })
+		expect(screen.getByRole('button', { name: 'Цель' })).toHaveFocus()
+	})
+
+	it('фокус в чужом слое (не в контейнере и не в связанных) — Tab не перехватывается', async () => {
+		const linked = addOutside('<button type="button">Цель</button>')
+		const other = addOutside('<input aria-label="Чужой слой" />')
+		render(createLinkedHost('<button type="button">Первая</button>', () => [linked]))
+		await userEvent.click(screen.getByRole('button', { name: 'Открыть' }))
+		await waitFor(() => expect(screen.getByRole('button', { name: 'Первая' })).toHaveFocus())
+
+		other.focus()
+		const event = new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true })
+		document.dispatchEvent(event)
+		expect(event.defaultPrevented).toBe(false)
+	})
+
+	it('без фокусируемых элементов фокус остаётся на контейнере', async () => {
+		const linked = addOutside('<div>Не фокусируемая цель</div>')
+		render(createLinkedHost('<p>Текст</p>', () => [linked]))
+		await userEvent.click(screen.getByRole('button', { name: 'Открыть' }))
+		const dialog = screen.getByRole('dialog')
+		await waitFor(() => expect(dialog).toHaveFocus())
+
+		const event = new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true })
+		document.dispatchEvent(event)
+		expect(event.defaultPrevented).toBe(true)
+		expect(dialog).toHaveFocus()
+	})
+
+	it('отсоединённый связанный элемент не учитывается — обычный обход контейнера', async () => {
+		const detached = document.createElement('button')
+		render(createLinkedHost('<button type="button">Первая</button><button type="button">Вторая</button>', () => [detached]))
+		await userEvent.click(screen.getByRole('button', { name: 'Открыть' }))
+		await waitFor(() => expect(screen.getByRole('button', { name: 'Первая' })).toHaveFocus())
+
+		await userEvent.tab({ shift: true })
+		expect(screen.getByRole('button', { name: 'Вторая' })).toHaveFocus()
+	})
+})

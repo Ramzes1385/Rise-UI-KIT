@@ -27,7 +27,7 @@ function createTourLabels(props: BaseTourProps) {
 	}
 }
 
-/** Описание: подсветка — по геометрии цели или на всё окно при фокусировке; карточка — по геометрии, на мобильных без позиции */
+/** Описание: подсветка — по геометрии цели или на всё окно при фокусировке; карточка — по геометрии, без цели по центру, на мобильных без позиции */
 function createTourStyles(options: UseTourCoordinationOptions, focusFromViewport: Ref<boolean>) {
 	const { props, geometry, isMobile } = options
 
@@ -58,12 +58,18 @@ function createTourStyles(options: UseTourCoordinationOptions, focusFromViewport
 
 	const cardStyle = computed((): Record<string, string> | null => {
 		const value = geometry.value
-		if (!value) return null
+		if (!value && !options.isCentered.value) return null
 		if (isMobile.value) return {}
+		if (!value) return { top: '50%', left: '50%' }
 		return { top: `${value.card.top}px`, left: `${value.card.left}px` }
 	})
 
-	return { spotlightStyle, cardStyle }
+	const cardPlacement = computed((): string => {
+		if (isMobile.value) return 'mobile'
+		return geometry.value?.placement ?? 'center'
+	})
+
+	return { spotlightStyle, cardStyle, cardPlacement }
 }
 
 /** Описание: контекст слота карточки, наличие заголовка, точки или полоса прогресса */

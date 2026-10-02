@@ -5,14 +5,24 @@ const DEFAULT_GAP = 12
 const DEFAULT_PADDING = 8
 const DEFAULT_RADIUS = 8
 
-function readTargetRect(selector: string): DOMRect | null {
-	const element = document.querySelector(selector)
+/** Цель шага по селектору: без селектора или с неверным селектором — `null`, тур показывает карточку по центру */
+function findTarget(selector: string | undefined): HTMLElement | null {
+	if (!selector) return null
+	try {
+		return document.querySelector<HTMLElement>(selector)
+	} catch {
+		return null
+	}
+}
+
+function readTargetRect(selector: string | undefined): DOMRect | null {
+	const element = findTarget(selector)
 	if (!element) return null
 	return element.getBoundingClientRect()
 }
 
-function scrollTargetIntoView(selector: string): void {
-	const element = document.querySelector(selector)
+function scrollTargetIntoView(selector: string | undefined): void {
+	const element = findTarget(selector)
 	if (!element || typeof element.scrollIntoView !== 'function') return
 	element.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' })
 }
@@ -58,4 +68,13 @@ function buildTourGeometry(rect: DOMRect, step: TourStep, props: BaseTourProps):
 	}
 }
 
-export { DEFAULT_GAP, DEFAULT_PADDING, DEFAULT_RADIUS, readTargetRect, scrollTargetIntoView, resolvePlacement, buildTourGeometry }
+export {
+	DEFAULT_GAP,
+	DEFAULT_PADDING,
+	DEFAULT_RADIUS,
+	findTarget,
+	readTargetRect,
+	scrollTargetIntoView,
+	resolvePlacement,
+	buildTourGeometry,
+}

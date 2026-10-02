@@ -11,6 +11,8 @@ export interface UseTourCoordinationOptions {
 	isLast: ComputedRef<boolean>
 	total: ComputedRef<number>
 	geometry: Ref<TourGeometry | null>
+	/** Цели шага нет — карточка по центру экрана */
+	isCentered: Ref<boolean>
 	isMobile: Ref<boolean>
 	recalculate: () => Promise<void>
 }

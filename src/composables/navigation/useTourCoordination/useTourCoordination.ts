@@ -8,7 +8,7 @@ import { createTourLabels, createTourStepView, createTourStyles } from './useTou
 function useTourCoordination(options: UseTourCoordinationOptions) {
 	const { isFocusing, focusFromViewport, stopFocus, startFocus } = createTourFocus(options.recalculate)
 	const labels = createTourLabels(options.props)
-	const { spotlightStyle, cardStyle } = createTourStyles(options, focusFromViewport)
+	const { spotlightStyle, cardStyle, cardPlacement } = createTourStyles(options, focusFromViewport)
 	const navigation = createTourNavigation(options, labels.resolvedCloseOnOverlayClick)
 	const { goNext, goPrev, handleSkip, handleFinish } = navigation
 	const { slotContext, hasHeader, useDots, progressPercent } = createTourStepView(options, {
@@ -23,6 +23,7 @@ function useTourCoordination(options: UseTourCoordinationOptions) {
 		focusFromViewport,
 		spotlightStyle,
 		cardStyle,
+		cardPlacement,
 		slotContext,
 		hasHeader,
 		useDots,

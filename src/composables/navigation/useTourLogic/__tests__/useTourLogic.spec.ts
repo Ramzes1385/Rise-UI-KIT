@@ -64,6 +64,34 @@ describe('useTourLogic unit', () => {
 		Object.defineProperty(window, 'innerHeight', { value: originalInnerHeight, configurable: true })
 	})
 
+	describe('шаг без цели (TOUR-3)', () => {
+		it.each([
+			['без селектора', undefined],
+			['неверный селектор', '###'],
+			['элемента нет', '#missing'],
+		])('%s — геометрии нет, карточка по центру', async (_, target) => {
+			const logic = runLogic({ steps: [{ target, title: 'A' }] } as BaseTourProps)
+			await logic.recalculate()
+			expect(logic.geometry.value).toBeNull()
+			expect(logic.isCentered.value).toBe(true)
+			expect(logic.getTarget()).toBeNull()
+		})
+
+		it('цель есть — getTarget возвращает её, карточка не по центру', async () => {
+			const logic = runLogic({ steps: [{ target: '#t' }] } as BaseTourProps)
+			await logic.recalculate()
+			expect(logic.isCentered.value).toBe(false)
+			expect(logic.getTarget()).toBe(document.querySelector('#t'))
+		})
+
+		it('шага нет — не по центру и без геометрии', async () => {
+			const logic = runLogic({ steps: [] } as unknown as BaseTourProps)
+			await logic.recalculate()
+			expect(logic.isCentered.value).toBe(false)
+			expect(logic.geometry.value).toBeNull()
+		})
+	})
+
 	describe('resolvePlacement', () => {
 		it('возвращает заданную сторону без расчётов, если placement не auto', () => {
 			expect(resolvePlacement(rectAt(100, 100), 'left')).toBe('left')

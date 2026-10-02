@@ -8,6 +8,14 @@
 	position: fixed;
 	inset: 0;
 	cursor: pointer;
+
+	&--dim {
+		background-color: var(--rise-overlay);
+	}
+}
+
+.base-tour__status {
+	@include visually-hidden;
 }
 
 .base-tour__spotlight {
@@ -49,6 +57,11 @@
 	&--right {
 		transform: translate(0, calc(-50% + var(--tour-card-shift, 0px)));
 		transform-origin: left center;
+	}
+
+	&--center {
+		transform: translate(-50%, -50%);
+		transform-origin: center;
 	}
 
 	&--mobile {

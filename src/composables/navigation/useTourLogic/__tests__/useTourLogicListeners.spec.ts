@@ -39,3 +39,57 @@ describe('createTourListeners', () => {
 		])
 	})
 })
+
+describe('createTourListeners: наблюдение за DOM', () => {
+	afterEach(() => {
+		vi.restoreAllMocks()
+		vi.unstubAllGlobals()
+		document.body.innerHTML = ''
+	})
+
+	it('изменение страницы вызывает onDomChange раз за кадр, после отписки — нет', async () => {
+		const onDomChange = vi.fn()
+		const { attachListeners, detachListeners } = createTourListeners(vi.fn<() => Promise<void>>().mockResolvedValue(), onDomChange)
+
+		attachListeners()
+		attachListeners()
+		document.body.append(document.createElement('div'))
+		await Promise.resolve()
+		document.body.append(document.createElement('div'))
+		await vi.waitFor(() => expect(onDomChange).toHaveBeenCalledTimes(1))
+
+		detachListeners()
+		document.body.append(document.createElement('div'))
+		await new Promise(resolve => setTimeout(resolve, 50))
+		expect(onDomChange).toHaveBeenCalledTimes(1)
+	})
+
+	it('отписка отменяет запланированный кадр', async () => {
+		const cancel = vi.spyOn(window, 'cancelAnimationFrame')
+		const onDomChange = vi.fn()
+		const { attachListeners, detachListeners } = createTourListeners(vi.fn<() => Promise<void>>().mockResolvedValue(), onDomChange)
+
+		attachListeners()
+		document.body.append(document.createElement('div'))
+		await Promise.resolve()
+		detachListeners()
+		expect(cancel).toHaveBeenCalledTimes(1)
+		await new Promise(resolve => setTimeout(resolve, 50))
+		expect(onDomChange).not.toHaveBeenCalled()
+	})
+
+	it('без onDomChange и без MutationObserver подписка работает', async () => {
+		const { attachListeners, detachListeners } = createTourListeners(vi.fn<() => Promise<void>>().mockResolvedValue())
+		attachListeners()
+		document.body.append(document.createElement('div'))
+		await new Promise(resolve => setTimeout(resolve, 50))
+		detachListeners()
+
+		vi.stubGlobal('MutationObserver', undefined)
+		const other = createTourListeners(vi.fn<() => Promise<void>>().mockResolvedValue())
+		expect(() => {
+			other.attachListeners()
+			other.detachListeners()
+		}).not.toThrow()
+	})
+})

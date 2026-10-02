@@ -6,9 +6,14 @@
 			:class="classes.root"
 			:style="layerStyle"
 			role="dialog"
-			aria-modal="true"
-			:aria-label="currentStep.title || UI_TOUR.TITLE">
-			<div class="base-tour__overlay" :class="classes.overlay" @click="handleOverlayClick" />
+			:aria-modal="isModal ? 'true' : 'false'"
+			v-bind="dialogAria">
+			<div
+				class="base-tour__overlay"
+				:class="[{ 'base-tour__overlay--dim': !spotlightStyle }, classes.overlay]"
+				:style="overlayStyle"
+				@click="handleOverlayClick" />
+			<span class="base-tour__status" role="status">{{ announcement }}</span>
 
 			<div
 				v-if="spotlightStyle"
@@ -18,14 +23,10 @@
 
 			<Transition name="base-tour-card">
 				<div
-					v-if="cardStyle && slotContext && geometry && !isFocusing"
+					v-if="isCardShown && slotContext"
 					ref="cardRef"
 					class="base-tour__card"
-					:class="[
-						isMobile ? 'base-tour__card--mobile' : `base-tour__card--${geometry.placement}`,
-						arrowSide && `base-tour__card--arrow-${arrowSide}`,
-						classes.card,
-					]"
+					:class="[`base-tour__card--${cardPlacement}`, arrowSide && `base-tour__card--arrow-${arrowSide}`, classes.card]"
 					:style="[cardStyle, arrowStyle]">
 					<span v-if="arrowSide" class="base-tour__arrow" :class="classes.arrow" aria-hidden="true" />
 					<slot v-bind="slotContext">
@@ -34,6 +35,7 @@
 								<slot v-if="hasHeader" name="title" :step="currentStep" :index="activeIndex">
 									<BaseText
 										v-if="currentStep.title"
+										:id="titleId"
 										tag="h3"
 										:weight="TEXT_WEIGHT.SEMIBOLD"
 										class="base-tour__title"
@@ -53,9 +55,14 @@
 							</div>
 
 							<slot name="content" :step="currentStep" :index="activeIndex">
-								<BaseText v-if="currentStep.content" tag="p" class="base-tour__content" :custom-class="classes.content">{{
-									currentStep.content
-								}}</BaseText>
+								<BaseText
+									v-if="currentStep.content"
+									:id="contentId"
+									tag="p"
+									class="base-tour__content"
+									:custom-class="classes.content"
+									>{{ currentStep.content }}</BaseText
+								>
 							</slot>
 
 							<div class="base-tour__footer" :class="classes.footer">
@@ -126,8 +133,6 @@ const {
 	layerStyle,
 	classes,
 	activeIndex,
-	isMobile,
-	geometry,
 	currentStep,
 	isFirst,
 	isLast,
@@ -138,6 +143,14 @@ const {
 	isFocusing,
 	spotlightStyle,
 	cardStyle,
+	cardPlacement,
+	isCardShown,
+	isModal,
+	overlayStyle,
+	titleId,
+	contentId,
+	dialogAria,
+	announcement,
 	slotContext,
 	hasHeader,
 	useDots,

@@ -8,6 +8,7 @@ import {
 	DEFAULT_GAP,
 	DEFAULT_PADDING,
 	DEFAULT_RADIUS,
+	findTarget,
 	buildTourGeometry,
 	readTargetRect,
 	resolvePlacement,
@@ -18,38 +19,34 @@ function useTourLogic(options: UseTourLogicOptions): UseTourLogicReturn {
 	const { props, getIndex } = options
 
 	const geometry = ref<TourGeometry | null>(null)
+	const isCentered = ref(false)
 
 	const total = computed((): number => props.steps.length)
 	const currentStep = computed((): TourStep | undefined => props.steps[getIndex()])
 	const isFirst = computed((): boolean => getIndex() <= 0)
 	const isLast = computed((): boolean => getIndex() >= total.value - 1)
 
+	function measure(): void {
+		const step = currentStep.value
+		const rect = step ? readTargetRect(step.target) : null
+		isCentered.value = Boolean(step) && !rect
+		geometry.value = step && rect ? buildTourGeometry(rect, step, props) : null
+	}
+
 	async function recalculate(): Promise<void> {
 		await nextTick()
 		const step = currentStep.value
-		if (!step) {
-			geometry.value = null
-			return
-		}
-
-		if (props.behavior?.scrollIntoView !== false) {
+		if (step && props.behavior?.scrollIntoView !== false) {
 			scrollTargetIntoView(step.target)
 			await nextTick()
 		}
-
-		const rect = readTargetRect(step.target)
-		if (!rect) {
-			geometry.value = null
-			return
-		}
-
-		geometry.value = buildTourGeometry(rect, step, props)
+		measure()
 	}
 
-	const { attachListeners, detachListeners } = createTourListeners(recalculate)
+	const { attachListeners, detachListeners } = createTourListeners(recalculate, measure)
 
 	watch(
-		() => getIndex(),
+		() => [getIndex(), currentStep.value?.target],
 		() => {
 			void recalculate()
 		},
@@ -63,6 +60,8 @@ function useTourLogic(options: UseTourLogicOptions): UseTourLogicReturn {
 
 	return {
 		geometry,
+		isCentered,
+		getTarget: () => findTarget(currentStep.value?.target),
 		currentStep,
 		isFirst,
 		isLast,

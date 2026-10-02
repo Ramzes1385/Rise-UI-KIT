@@ -137,6 +137,8 @@ export const enBase = {
 		PREV: 'Back',
 		FINISH: 'Finish',
 		TITLE: 'Interface tour',
+		STEP_STATUS: 'Step {current} of {total}',
+		STEP_STATUS_TITLED: 'Step {current} of {total}: {title}',
 	},
 	stepper: {
 		OPTIONAL: 'Optional',

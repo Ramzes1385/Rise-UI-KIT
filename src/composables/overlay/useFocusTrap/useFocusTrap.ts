@@ -55,6 +55,31 @@ function getWrapTarget(event: KeyboardEvent, container: HTMLElement, edges: [HTM
 	return isOutside || active === last ? first : null
 }
 
+/** Элементы, достижимые по Tab: сам элемент (если фокусируемый) и его потомки */
+function getTabbableWithSelf(element: HTMLElement): HTMLElement[] {
+	const self = element.matches(FOCUSABLE_SELECTOR) && element.tabIndex >= 0 ? [element] : []
+	return [...self, ...getTabbableElements(element)]
+}
+
+/**
+ * Tab / Shift+Tab по контейнеру и связанным элементам (цель тура): обход по кругу в порядке «контейнер, затем
+ * связанные», не в порядке документа — карточка телепортирована в конец body, а цель стоит раньше
+ */
+function cycleLinkedFocus(event: KeyboardEvent, container: HTMLElement, linked: HTMLElement[]): void {
+	const active = document.activeElement
+	const areas = [container, ...linked]
+	if (!areas.some(area => area.contains(active)) && active !== null && active !== document.body) return
+
+	const tabbable = areas.flatMap(area => (area === container ? getTabbableElements(area) : getTabbableWithSelf(area)))
+	const index = tabbable.indexOf(active as HTMLElement)
+	const lastIndex = tabbable.length - 1
+	const forward = index === -1 || index === lastIndex ? 0 : index + 1
+	const backward = index <= 0 ? lastIndex : index - 1
+	const next = tabbable[event.shiftKey ? backward : forward] ?? container
+	event.preventDefault()
+	next.focus()
+}
+
 /** Обработать Tab / Shift+Tab: удержать фокус внутри контейнера, переходя с края на край */
 function cycleTabFocus(event: KeyboardEvent, container: HTMLElement): void {
 	const active = document.activeElement
@@ -96,7 +121,7 @@ function cycleTabFocus(event: KeyboardEvent, container: HTMLElement): void {
  * ```
  */
 function useFocusTrap(options: UseFocusTrapOptions): void {
-	const { containerRef, isActive } = options
+	const { containerRef, isActive, getLinkedElements } = options
 
 	/** Элемент, с которого открыли окно: на него вернётся фокус после закрытия */
 	let returnFocusTarget: HTMLElement | null = null
@@ -105,7 +130,13 @@ function useFocusTrap(options: UseFocusTrapOptions): void {
 	function handleKeydown(event: KeyboardEvent): void {
 		const container = containerRef.value
 		// Контейнер не отрендерен (например, не найдена цель Teleport) — удерживать фокус негде
-		if (event.key === 'Tab' && container) cycleTabFocus(event, container)
+		if (event.key !== 'Tab' || !container) return
+		const linked = getLinkedElements?.().filter(element => element.isConnected) ?? []
+		if (linked.length > 0) {
+			cycleLinkedFocus(event, container, linked)
+			return
+		}
+		cycleTabFocus(event, container)
 	}
 
 	/** Включить ловушку. Вызывается только при переходе в активное состояние, дважды подряд не срабатывает */

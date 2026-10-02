@@ -28,7 +28,7 @@ export const Keyboard: StoryObj<typeof meta> = {
 		docs: {
 			description: {
 				story: [
-					'Клавиатура: Enter на кнопке запускает тур, фокус переходит на «Далее»; Tab обходит кнопки карточки по кругу,',
+					'Клавиатура: Enter на кнопке запускает тур, фокус переходит на «Далее»; Tab обходит кнопки карточки и подсвеченную цель по кругу,',
 					'Enter переходит к следующему шагу, Escape пропускает тур и возвращает фокус на кнопку запуска.',
 				].join('\n'),
 			},
@@ -50,6 +50,8 @@ export const Keyboard: StoryObj<typeof meta> = {
 		const next = await within(dialog).findByRole('button', { name: 'Далее' })
 		await waitFor(() => expect(next).toHaveFocus())
 
+		await userEvent.tab()
+		await expect(canvas.getByRole('button', { name: 'Создать проект' })).toHaveFocus()
 		await userEvent.tab()
 		await expect(within(dialog).getByRole('button', { name: 'Пропустить тур' })).toHaveFocus()
 		await userEvent.tab()

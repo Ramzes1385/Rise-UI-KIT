@@ -152,6 +152,9 @@ export const ruBase = {
 		PREV: 'Назад',
 		FINISH: 'Завершить',
 		TITLE: 'Тур по интерфейсу',
+		/** Объявление смены шага для экранного диктора */
+		STEP_STATUS: 'Шаг {current} из {total}',
+		STEP_STATUS_TITLED: 'Шаг {current} из {total}: {title}',
 	},
 	stepper: {
 		/** Подпись под заголовком необязательного шага */
