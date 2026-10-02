@@ -61,6 +61,7 @@
 		display: inline-flex;
 		flex-shrink: 0;
 		align-items: center;
+		gap: sz(6px);
 		white-space: nowrap;
 	}
 
@@ -126,10 +127,6 @@
 	}
 
 	@include motion-reduce {
-		&__viewport {
-			overflow: auto;
-		}
-
 		&__group {
 			animation: none;
 		}

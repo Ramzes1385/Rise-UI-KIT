@@ -3,8 +3,16 @@ import type meta from '../BaseMarquee.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 
 export const Default: StoryObj<typeof meta> = {
-	parameters: { docs: { description: { story: 'Песочница: меняйте props в панели Controls.' } } },
+	parameters: {
+		docs: {
+			description: {
+				story: 'Песочница: направление, скорость, отступ и затухание — в Controls. Наведите указатель — лента остановится.',
+			},
+		},
+	},
 	play: async ({ canvas }) => {
-		await expect(canvas.getByText('Пример')).toBeVisible()
+		const marquee = canvas.getByRole('marquee', { name: 'Бегущая строка' })
+		await expect(marquee).toBeVisible()
+		await expect(canvas.getAllByText(/Скидка 20%/)[0]).toBeVisible()
 	},
 }

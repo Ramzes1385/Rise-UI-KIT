@@ -1,8 +1,15 @@
+import { fn } from 'storybook/test'
+import type { MarqueeStoryArgs } from './shared'
 import type { Meta } from '@storybook/vue3-vite'
-import type BaseMarquee from '../ui/BaseMarquee.vue'
 
 export const args = {
-	label: 'Пример',
+	direction: 'left',
+	speed: 50,
+	gap: 32,
+	hasFade: false,
+	hasPauseButton: true,
+	isPaused: false,
 	variant: 'default',
 	sizeScale: 100,
-} satisfies Meta<typeof BaseMarquee>['args']
+	'onUpdate:isPaused': fn(),
+} satisfies Meta<MarqueeStoryArgs>['args']
