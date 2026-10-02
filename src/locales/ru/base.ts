@@ -191,6 +191,11 @@ export const ruBase = {
 		LABEL: 'QR-код: {value}',
 		TOO_LONG: 'Текст слишком длинный для QR-кода',
 	},
+	marquee: {
+		LABEL: 'Бегущая строка',
+		PAUSE: 'Остановить бегущую строку',
+		PLAY: 'Запустить бегущую строку',
+	},
 	notificationCenter: {
 		TITLE: 'Уведомления',
 		READ_ALL: 'Прочитать все',

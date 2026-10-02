@@ -171,6 +171,11 @@ export const enBase = {
 		LABEL: 'QR code: {value}',
 		TOO_LONG: 'The text is too long for a QR code',
 	},
+	marquee: {
+		LABEL: 'Scrolling ticker',
+		PAUSE: 'Pause the ticker',
+		PLAY: 'Play the ticker',
+	},
 	notificationCenter: {
 		TITLE: 'Notifications',
 		READ_ALL: 'Mark all as read',

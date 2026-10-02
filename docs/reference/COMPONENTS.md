@@ -2520,6 +2520,32 @@ import { BaseAnimation } from '@ramzes1385/rise-ui-kit'
 
 ---
 
+## BaseMarquee
+
+Бегущая строка: новости, акции, логотипы партнёров. Содержимое — слот default или `items` со слотами `item` и `separator`.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseMarquee } from '@ramzes1385/rise-ui-kit'
+
+const news = ['Курс рубля укрепился', 'Новая линия метро открыта']
+const isPaused = ref(false)
+</script>
+
+<template>
+	<BaseMarquee v-model:is-paused="isPaused" :items="news" label="Новости" has-fade>
+		<template #separator>•</template>
+	</BaseMarquee>
+</template>
+```
+
+`direction` — `left` (по умолчанию), `right`, `up`, `down`; `speed` — пикселей в секунду: длительность круга считается по размеру содержимого (ResizeObserver), поэтому длинная и короткая ленты движутся одинаково быстро. `gap` — отступ между элементами и повторами, px. Бесшовный круг — копиями содержимого с `aria-hidden` и `inert`, движение — CSS `transform`.
+
+Доступность: роль `marquee` с именем `label` (по умолчанию «Бегущая строка»); лента стоит под указателем и при фокусе внутри; кнопка паузы (`has-pause-button`, по умолчанию есть) и `v-model:is-paused` — WCAG 2.2.2. При `prefers-reduced-motion` лента не движется, а длинная прокручивается, в том числе с клавиатуры. Вертикальная лента — высота области 160 px, своя — через `customClass.viewport`.
+
+---
+
 ## Список компонентов
 
 ```txt
@@ -2585,6 +2611,7 @@ BaseLink
 BaseLoader
 BaseMap
 BaseMarkdown
+BaseMarquee
 BaseMediaPlayer  # вход @ramzes1385/rise-ui-kit/media
 BaseMegaMenu
 BaseMention

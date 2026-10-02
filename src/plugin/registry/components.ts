@@ -47,6 +47,7 @@ import { BaseBackTop } from '../../components/BaseBackTop'
 import { BaseConfirm } from '../../components/BaseConfirm'
 import { BaseHeatmap } from '../../components/BaseHeatmap'
 import { BaseInplace } from '../../components/BaseInplace'
+import { BaseMarquee } from '../../components/BaseMarquee'
 import { BaseMention } from '../../components/BaseMention'
 import { BasePopover } from '../../components/BasePopover'
 import { BaseSideBar } from '../../components/BaseSideBar'
@@ -174,6 +175,7 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseLoader,
 	BaseMap,
 	BaseMarkdown,
+	BaseMarquee,
 	BaseMegaMenu,
 	BaseMention,
 	BaseMenu,

@@ -1004,3 +1004,10 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 - Новые истории (в скриншот-тесты не добавлены): `form-baseformfield--toggle-controls` (флажок, переключатель и радиогруппа в обёртке), `form-basecheckbox--aria-label`, `form-baseselect--aria-label`, `form-basecolorpicker--aria-label`.
 
 Страница со снимками — `.rise-transfer\review\fu-forms.html`. Эталоны не трогались.
+
+## Задача new-marquee: BaseMarquee — бегущая строка
+
+Новый компонент, существующие истории и эталоны не затронуты. Страница с превью — `.rise-transfer\review\new-marquee.html`.
+
+- **BaseMarquee** — лента без фона и рамки (`default`), с мягким фоном (`soft`) или рамкой (`outline`); справа кнопка паузы ghost со значком `pause`/`play`; `hasFade` — края ленты растворяются маской (48 px при `sizeScale` 100); вертикальная лента — высота области 160 px.
+- Новые истории: `element-basemarquee--default`, `--variants`, `--sizes`, `--news`, `--logos`, `--directions`, `--vertical`, `--custom-color`, `--keyboard`, `--reduced-motion`. В скриншот-тесты добавлены `variants`, `sizes`, `directions`, `logos` (обе темы, движение снимается остановленным в начале круга) — эталонов нет, их делает владелец.

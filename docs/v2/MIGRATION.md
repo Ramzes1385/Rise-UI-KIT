@@ -1192,3 +1192,15 @@
 - Если на корне этих компонентов стояли `aria-label` вместе с `role="group"` (имя группы) — уберите `role`: имя теперь у самого контрола. Тесты, которые искали такую группу по имени, ищут контрол: `getByRole('button', { name: /^Цвет фона/ })`.
 - Стили и тесты, которые искали `label.base-switch__row` или брали имя переключателя вместе с описанием, переведите на `.base-switch__row` (теперь `div`) и `getByRole('switch', { name: 'Подпись' })`; описание проверяйте через `aria-describedby`.
 - Формы, где обязательный мультиселект намеренно принимал `[]`, — уберите `isRequired`.
+
+## Задача new-marquee: BaseMarquee — бегущая строка
+
+Новый компонент, изменений в существующих нет.
+
+- `BaseMarquee` — бегущая строка: содержимое — слот default или `items` со слотами `item` (`{ item, index }`) и `separator`; `direction` (`left` по умолчанию, `right`, `up`, `down`), `speed` — пикселей в секунду (длительность круга считается по размеру содержимого), `gap` (px, масштабируется `sizeScale`), `hasFade`, `label` (имя роли `marquee`, по умолчанию «Бегущая строка»), варианты `default`, `soft`, `outline`.
+- Пауза: лента стоит под указателем и при фокусе внутри; кнопка паузы `hasPauseButton` (по умолчанию есть) и `v-model:is-paused` — WCAG 2.2.2. При `prefers-reduced-motion: reduce` лента не движется, не копируется и не показывает кнопку; длинная лента прокручивается и получает `tabindex="0"`.
+- Копии для бесшовного круга — `aria-hidden="true"` и `inert`: ссылки в ленте дают одну остановку Tab, скринридер читает ленту один раз.
+- Экспорт: `BaseMarquee`, `MARQUEE_VARIANTS`, `MARQUEE_DIRECTIONS`, типы `BaseMarqueeProps`, `BaseMarqueeEmits`, `BaseMarqueeSlots`, `MarqueeDirection`.
+- Строки словаря (ru, en): раздел `marquee` — `LABEL`, `PAUSE`, `PLAY` (`UI_MARQUEE`).
+
+**Что сделать.** Ничего: только добавление.

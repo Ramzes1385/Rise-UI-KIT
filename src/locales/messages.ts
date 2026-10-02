@@ -82,6 +82,10 @@ export const UI_TEXT_DIFF = localized('textDiff')
 
 /** QR-код */
 export const UI_QR_CODE = localized('qrCode')
+
+/** Бегущая строка */
+export const UI_MARQUEE = localized('marquee')
+
 export const UI_SIGNATURE_PAD = localized('signaturePad')
 export const UI_AVATAR_CROPPER = localized('avatarCropper')
 /** Предупреждения о недопустимых числовых пропсах */

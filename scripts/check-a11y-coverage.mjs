@@ -33,6 +33,7 @@ function readStories(storyPath) {
 /** Интерактивные компоненты, требующие keyboard navigation */
 const INTERACTIVE_COMPONENTS = new Set([
 	'BaseImageCompare',
+	'BaseMarquee',
 	'BaseCommandPalette',
 	'BaseButton',
 	'BaseInput',
