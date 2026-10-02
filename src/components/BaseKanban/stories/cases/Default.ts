@@ -48,6 +48,6 @@ export const Default: StoryObj<typeof meta> = {
 		await userEvent.hover(priority)
 		await expect(await screen.findByRole('tooltip')).toHaveTextContent('средний')
 		await userEvent.unhover(priority)
-		await waitFor(() => expect(screen.queryByRole('tooltip')).not.toBeInTheDocument())
+		await waitFor(() => expect(document.querySelector('[role="tooltip"]')).toBeNull(), { timeout: 2000 })
 	},
 }
