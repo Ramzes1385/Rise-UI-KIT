@@ -46,10 +46,15 @@ export interface BaseAvatarProps extends BaseComponentProps<
 	mascot?: (typeof AVATAR_MASCOTS)[number]
 	/** Только с `mascot`: персонаж закрывает глаза — например, пока пользователь вводит пароль. */
 	isEyesClosed?: boolean
+	/** Выключенный аватар: `click` не приходит; с обработчиком `@click` — `aria-disabled="true"` и без фокуса */
+	isDisabled?: boolean
 }
 
 export interface BaseAvatarEmits {
-	/** Событие клика по аватару */
+	/**
+	 * Клик по аватару. С обработчиком аватар работает как кнопка: `role="button"`, фокус с Tab, Enter и Space
+	 * вызывают тот же `click`; имя кнопки — `alt`, иначе `name`, иначе «Аватар» из словаря
+	 */
 	(event: 'click', payload: MouseEvent): void
 }
 
@@ -63,4 +68,6 @@ export interface AvatarMascotProps {
 	label?: string
 	/** Персонаж закрывает глаза. */
 	isEyesClosed?: boolean
+	/** Выключенный аватар: `click` не приходит; с обработчиком `@click` — `aria-disabled="true"` и без фокуса */
+	isDisabled?: boolean
 }

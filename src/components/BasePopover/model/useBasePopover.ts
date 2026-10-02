@@ -3,6 +3,9 @@ import { useCustomClass } from '@composables/base/useCustomClass'
 import type { BasePopoverEmits, PopoverProps } from '../types/BasePopover.types'
 import { useTriggerAttributes } from '@composables/overlay/useTriggerAttributes'
 
+const FALLBACK_TRIGGER_ATTRIBUTES = { role: 'button', tabindex: '0' }
+const ACTIVATION_KEYS = new Set(['Enter', ' '])
+
 function usePopoverOpen(props: PopoverProps, emit: BasePopoverEmits) {
 	const isOpenLocal = ref(props.isOpen)
 	watch(
@@ -36,10 +39,10 @@ export function useBasePopover(props: PopoverProps, emit: BasePopoverEmits) {
 		'aria-expanded': open.isOpenLocal.value ? 'true' : 'false',
 		'aria-controls': open.isOpenLocal.value ? panelId : undefined,
 	}))
-	const { triggerId } = useTriggerAttributes(
+	const { triggerId, getTrigger, isFallbackTrigger } = useTriggerAttributes(
 		() => triggerRef.value,
 		() => triggerAttributes.value,
-		{ withId: true },
+		{ withId: true, fallbackAttributes: FALLBACK_TRIGGER_ATTRIBUTES },
 	)
 
 	return {
@@ -49,6 +52,11 @@ export function useBasePopover(props: PopoverProps, emit: BasePopoverEmits) {
 		panelId,
 		triggerAttributes,
 		triggerId,
+		handleTriggerKeydown(event: KeyboardEvent): void {
+			if (!ACTIVATION_KEYS.has(event.key) || !isFallbackTrigger() || event.target !== getTrigger()) return
+			event.preventDefault()
+			if (!event.repeat) open.toggle()
+		},
 		rootClass: computed(() => ['base-popover', classes.value.root].filter(Boolean).join(' ')),
 		arrowClass: computed(() => ['base-popover__arrow', classes.value.arrow].filter(Boolean).join(' ')),
 		panelClasses: computed(() => `base-popover__panel base-popover__panel--${props.variant}`),

@@ -22,6 +22,10 @@ export interface BaseChipProps extends BaseComponentProps<(typeof CHIP_VARIANTS)
 }
 
 export interface BaseChipEmits {
+	/**
+	 * Клик по индикатору. С обработчиком индикатор работает как кнопка: `role="button"`, фокус с Tab,
+	 * Enter и Space; имя — «Индикатор: 5» из словаря (`UI_ARIA.CHIP_BADGE`)
+	 */
 	(event: 'click-badge'): void
 }
 

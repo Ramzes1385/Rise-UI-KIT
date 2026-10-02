@@ -1,2 +1,2 @@
 export { useTriggerAttributes } from './useTriggerAttributes'
-export type { TriggerAttributes } from './types/useTriggerAttributes.types'
+export type { TriggerAttributes, UseTriggerAttributesOptions } from './types/useTriggerAttributes.types'

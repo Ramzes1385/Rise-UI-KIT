@@ -48,6 +48,11 @@
 		}
 	}
 
+	&__badge--clickable {
+		cursor: pointer;
+		@include focus-ring;
+	}
+
 	&--soft &__badge {
 		@include custom-bg(background-color, var(--rise-primary-soft));
 		@include custom-text(color, var(--rise-primary-text));

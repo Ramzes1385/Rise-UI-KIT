@@ -1,4 +1,7 @@
 import { computed } from 'vue'
+import { formatMessage } from '@/locales'
+import { UI_ARIA } from '@/locales/messages'
+import { useClickable } from '@composables/interaction/useClickable'
 import type { BaseChipEmits, ChipProps } from '../types/BaseChip.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 
@@ -10,17 +13,23 @@ function toNumber(content: ChipProps['content']): number | null {
 
 export function useBaseChip(props: ChipProps, emit: BaseChipEmits) {
 	const numericValue = computed(() => toNumber(props.content))
+	const clickable = useClickable({ listener: 'onClickBadge' })
+	const displayContent = computed((): string => {
+		if (numericValue.value !== null && props.hasOverflow && numericValue.value > props.maxValue) return `${props.maxValue}+`
+		return String(props.content)
+	})
 
 	return {
+		...clickable,
 		...useStandardBaseComponent('base-chip', props, ['root', 'badge']),
 		isVisible: computed((): boolean => {
 			if (props.content === undefined || props.content === '') return false
 			return !(props.isHiddenOnZero && numericValue.value === 0)
 		}),
-		displayContent: computed((): string => {
-			if (numericValue.value !== null && props.hasOverflow && numericValue.value > props.maxValue) return `${props.maxValue}+`
-			return String(props.content)
-		}),
+		displayContent,
+		badgeLabel: computed(() =>
+			clickable.isClickable.value ? formatMessage(UI_ARIA.CHIP_BADGE, { value: displayContent.value }) : undefined,
+		),
 		handleBadgeClick: () => emit('click-badge'),
 	}
 }

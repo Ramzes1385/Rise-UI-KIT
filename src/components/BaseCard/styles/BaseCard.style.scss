@@ -44,6 +44,10 @@
 		}
 	}
 
+	&--disabled {
+		@include disabled-state;
+	}
+
 	&--shadow#{&}--hoverable {
 		@include hover {
 			box-shadow: var(--rise-shadow-md);

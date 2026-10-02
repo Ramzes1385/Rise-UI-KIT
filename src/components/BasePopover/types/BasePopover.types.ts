@@ -30,7 +30,8 @@ export interface BasePopoverEmits {
 export interface BasePopoverSlots {
 	/**
 	 * Триггер. Кит ставит `aria-haspopup`, `aria-expanded` и `aria-controls` на первый фокусируемый элемент в слоте;
-	 * `triggerProps` нужен, если он вложен глубже
+	 * `triggerProps` нужен, если он вложен глубже. Без фокусируемого элемента (в слоте `span`, `BaseAvatar`) первый
+	 * элемент слота получает `role="button"` и `tabindex="0"`, Enter и Space открывают поповер
 	 */
 	trigger?: (props: { isOpen: boolean; triggerProps: Record<string, string | undefined> }) => unknown
 	/** Содержимое поповера */

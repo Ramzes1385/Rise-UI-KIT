@@ -38,6 +38,15 @@
 		@include custom-text(color, var(--rise-text-highlighted));
 	}
 
+	&--clickable {
+		cursor: pointer;
+		@include focus-ring;
+	}
+
+	&--disabled {
+		@include disabled-state;
+	}
+
 	&__text {
 		min-width: 0;
 		@include truncate;

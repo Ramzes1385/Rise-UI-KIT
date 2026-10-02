@@ -1,9 +1,18 @@
 <template>
 	<div
 		class="base-avatar"
-		:class="[`base-avatar--${shape}`, ringClass, variantClass, classes.root]"
+		:class="[
+			`base-avatar--${shape}`,
+			ringClass,
+			variantClass,
+			{ 'base-avatar--clickable': isClickable, 'base-avatar--disabled': isDisabled },
+			classes.root,
+		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
-		@click="handleClick">
+		v-bind="clickableAttributes"
+		:aria-label="buttonLabel"
+		@click="handleClick"
+		@keydown="handleKeydown">
 		<div class="base-avatar__content" :class="classes.content">
 			<slot>
 				<AvatarMascot v-if="mascot !== 'none'" :label="alt" :is-eyes-closed="isEyesClosed" :class="classes.mascot" />
@@ -42,6 +51,7 @@ const props = withDefaults(
 		ring: 'none',
 		mascot: 'none',
 		isEyesClosed: false,
+		isDisabled: false,
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )
@@ -59,6 +69,10 @@ const {
 	hasImageError,
 	initials,
 	handleImageError,
+	isClickable,
+	clickableAttributes,
+	buttonLabel,
 	handleClick,
+	handleKeydown,
 } = useBaseAvatar(props, emit)
 </script>

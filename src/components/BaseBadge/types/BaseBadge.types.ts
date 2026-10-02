@@ -10,10 +10,15 @@ export const BADGE_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] 
 export interface BaseBadgeProps extends BaseComponentProps<(typeof BADGE_VARIANTS)[number], 'root' | 'text'> {
 	/** Текст */
 	label?: string
+	/** Выключенный бейдж: `click` не приходит; с обработчиком `@click` — `aria-disabled="true"` и без фокуса */
+	isDisabled?: boolean
 }
 
 export interface BaseBadgeEmits {
-	/** Событие клика по бейджу */
+	/**
+	 * Клик по бейджу. С обработчиком бейдж работает как кнопка: `role="button"`, фокус с Tab,
+	 * Enter и Space вызывают тот же `click`
+	 */
 	(event: 'click', e: MouseEvent): void
 }
 

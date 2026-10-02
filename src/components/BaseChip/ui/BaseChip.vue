@@ -4,9 +4,12 @@
 		<span
 			v-if="isVisible"
 			class="base-chip__badge"
-			:class="[`base-chip__badge--${placement}`, classes.badge]"
+			:class="[`base-chip__badge--${placement}`, { 'base-chip__badge--clickable': isClickable }, classes.badge]"
 			:style="customColorStyle"
-			@click="handleBadgeClick">
+			v-bind="clickableAttributes"
+			:aria-label="badgeLabel"
+			@click="handleBadgeClick"
+			@keydown="handleKeydown">
 			{{ displayContent }}
 		</span>
 	</div>
@@ -34,8 +37,18 @@ const props = withDefaults(
 const emit = defineEmits<BaseChipEmits>()
 defineSlots<BaseChipSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, isVisible, displayContent, handleBadgeClick } = useBaseChip(
-	props,
-	emit,
-)
+const {
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	isVisible,
+	displayContent,
+	isClickable,
+	clickableAttributes,
+	badgeLabel,
+	handleBadgeClick,
+	handleKeydown,
+} = useBaseChip(props, emit)
 </script>

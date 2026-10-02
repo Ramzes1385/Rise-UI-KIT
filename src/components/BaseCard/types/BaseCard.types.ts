@@ -17,10 +17,12 @@ export interface BaseCardProps extends BaseComponentProps<
 	/** Подзаголовок */
 	subtitle?: string
 	/**
-	 * Интерактивная карточка: курсор-указатель, при наведении — рамка accented и тень.
-	 * Кольцо фокуса появляется, если карточка фокусируемая (`tabindex="0"`).
+	 * Вид интерактивной карточки: курсор-указатель, при наведении — рамка accented и тень. Только вид:
+	 * кнопкой с фокусом и клавишами карточку делает обработчик `@click`, он же включает этот вид.
 	 */
 	isHoverable?: boolean
+	/** Выключенная карточка: `click` не приходит; с обработчиком `@click` — `aria-disabled="true"` и без фокуса */
+	isDisabled?: boolean
 	/**
 	 * Внутренние отступы шапки, тела и подвала. Число (px): Y = значение, X = значение × 2.
 	 * Объект { x, y, top, right, bottom, left } задаёт оси напрямую без умножения
@@ -50,4 +52,11 @@ export interface BaseCardSlots {
 	actions?: (props: BaseCardSlotBindings) => unknown
 }
 
-export type BaseCardEmits = Record<string, never>
+export interface BaseCardEmits {
+	/**
+	 * Клик по карточке. С обработчиком карточка работает как кнопка: `role="button"`, фокус с Tab, Enter и Space
+	 * вызывают тот же `click`, имя кнопки — `title`. Кнопки и ссылки внутри такой карточки недоступны скринридеру
+	 * как отдельные элементы — для карточки с действиями сделайте кнопкой или ссылкой заголовок, а не всю карточку
+	 */
+	(event: 'click', payload: MouseEvent): void
+}

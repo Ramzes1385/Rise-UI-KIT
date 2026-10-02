@@ -5,6 +5,10 @@
 	&__trigger {
 		display: flex;
 		cursor: pointer;
+
+		> [role='button'] {
+			@include focus-ring;
+		}
 	}
 
 	&__panel.base-dropdown__panel {

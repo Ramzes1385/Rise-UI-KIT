@@ -86,6 +86,9 @@ export const enBase = {
 		GALLERY_NEXT: 'Next image',
 		SEARCH: 'Search',
 		CONTEXT_MENU: 'Context menu',
+		/** fu-keyboard: имя кликабельного BaseAvatar без alt и name; имя кликабельного индикатора BaseChip */
+		AVATAR: 'Avatar',
+		CHIP_BADGE: 'Badge: {value}',
 		RANGE_VALUE: 'Value',
 		RANGE_MIN: 'Minimum',
 		RANGE_MAX: 'Maximum',

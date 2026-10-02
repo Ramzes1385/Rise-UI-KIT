@@ -14,7 +14,7 @@
 		:show-arrow="variant !== 'ghost'"
 		:custom-class="{ root: rootClass, panel: classes.panel, arrow: arrowClass }"
 		@close="handleClose">
-		<div ref="triggerRef" class="base-popover__trigger" :class="classes.trigger" @click="toggle">
+		<div ref="triggerRef" class="base-popover__trigger" :class="classes.trigger" @click="toggle" @keydown="handleTriggerKeydown">
 			<slot name="trigger" :is-open="isOpenLocal" :trigger-props="triggerAttributes" />
 		</div>
 
@@ -52,6 +52,7 @@ const {
 	classes,
 	isOpenLocal,
 	toggle,
+	handleTriggerKeydown,
 	handleClose,
 	triggerRef,
 	panelId,

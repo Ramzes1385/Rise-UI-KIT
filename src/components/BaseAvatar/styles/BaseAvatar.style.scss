@@ -8,6 +8,14 @@
 	vertical-align: middle;
 	@include focus-ring;
 
+	&--clickable {
+		cursor: pointer;
+	}
+
+	&--disabled {
+		@include disabled-state;
+	}
+
 	&--square {
 		border-radius: sz(var(--rise-radius-md));
 	}

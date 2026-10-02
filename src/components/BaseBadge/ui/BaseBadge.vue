@@ -1,9 +1,11 @@
 <template>
 	<span
 		class="base-badge"
-		:class="[variantClass, classes.root]"
+		:class="[variantClass, { 'base-badge--clickable': isClickable, 'base-badge--disabled': isDisabled }, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
-		@click="handleClick">
+		v-bind="clickableAttributes"
+		@click="handleClick"
+		@keydown="handleKeydown">
 		<slot>
 			<span class="base-badge__text" :class="classes.text">{{ label }}</span>
 		</slot>
@@ -21,6 +23,7 @@ const props = withDefaults(
 	defineProps<BaseBadgeProps>(),
 	kitDefaults('BaseBadge', {
 		variant: DEFAULT_VARIANT,
+		isDisabled: false,
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )
@@ -28,5 +31,15 @@ const props = withDefaults(
 const emit = defineEmits<BaseBadgeEmits>()
 defineSlots<BaseBadgeSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, handleClick } = useBaseBadge(props, emit)
+const {
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	isClickable,
+	clickableAttributes,
+	handleClick,
+	handleKeydown,
+} = useBaseBadge(props, emit)
 </script>

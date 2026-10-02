@@ -1,7 +1,7 @@
 import type { Ref } from 'vue'
-import type { TriggerAttributes } from './types/useTriggerAttributes.types'
 /** Composable: ARIA-атрибуты на элементе-триггере из слота (кнопка внутри обёртки компонента) */
 import { onBeforeUnmount, onMounted, onUpdated, ref, useId, watch } from 'vue'
+import type { TriggerAttributes, UseTriggerAttributesOptions } from './types/useTriggerAttributes.types'
 
 /**
  * Фокусируемые элементы: триггером считается первый из них внутри обёртки. Ссылки — только `a` и `area`:
@@ -51,6 +51,9 @@ function removeAttributes(element: HTMLElement, attributes: TriggerAttributes, o
  * `withId: true` — триггеру нужен id (панель называется по нему через `aria-labelledby`): без своего id
  * элемент получает сгенерированный. `triggerId` — id триггера.
  *
+ * `fallbackAttributes` — атрибуты для триггера, в котором нет фокусируемого элемента (в слоте `span` или `div`):
+ * `{ role: 'button', tabindex: '0' }` делает его доступным с клавиатуры. `isFallbackTrigger()` — сейчас так.
+ *
  * @example
  * const { triggerId } = useTriggerAttributes(() => triggerRef.value, () => ({
  *   'aria-haspopup': 'dialog',
@@ -60,11 +63,11 @@ function removeAttributes(element: HTMLElement, attributes: TriggerAttributes, o
 export function useTriggerAttributes(
 	getContainer: () => HTMLElement | null | undefined,
 	getAttributes: () => TriggerAttributes,
-	options: { withId?: boolean } = {},
-): { triggerId: Ref<string | undefined>; getTrigger: () => HTMLElement | null } {
+	options: UseTriggerAttributesOptions = {},
+): { triggerId: Ref<string | undefined>; getTrigger: () => HTMLElement | null; isFallbackTrigger: () => boolean } {
 	const generatedId = `rise-trigger-${useId()}`
 	const triggerId = ref<string | undefined>()
-	let applied: { element: HTMLElement; attributes: TriggerAttributes; ownId: boolean } | null = null
+	let applied: { element: HTMLElement; attributes: TriggerAttributes; ownId: boolean; isFallback: boolean } | null = null
 
 	function getTrigger(): HTMLElement | null {
 		const container = getContainer()
@@ -79,6 +82,12 @@ export function useTriggerAttributes(
 		applied = null
 	}
 
+	/** Триггер без фокусируемого элемента: решение принимается один раз, свой `tabindex` его не меняет */
+	function isFallbackElement(element: HTMLElement): boolean {
+		if (applied) return applied.isFallback
+		return Boolean(options.fallbackAttributes) && !element.matches(FOCUSABLE_SELECTOR)
+	}
+
 	function apply(): void {
 		const element = getTrigger()
 		release(element)
@@ -87,13 +96,14 @@ export function useTriggerAttributes(
 			return
 		}
 
-		const attributes = getAttributes()
+		const isFallback = isFallbackElement(element)
+		const attributes = isFallback ? { ...getAttributes(), ...options.fallbackAttributes } : getAttributes()
 		writeAttributes(element, attributes, applied?.attributes ?? {})
 
 		const ownId = applied?.ownId ?? (Boolean(options.withId) && !element.id)
 		if (ownId) element.id = generatedId
 		triggerId.value = element.id || undefined
-		applied = { element, attributes, ownId }
+		applied = { element, attributes, ownId, isFallback }
 	}
 
 	watch(getAttributes, apply, { flush: 'post' })
@@ -101,5 +111,5 @@ export function useTriggerAttributes(
 	onUpdated(apply)
 	onBeforeUnmount(() => release(null))
 
-	return { triggerId, getTrigger }
+	return { triggerId, getTrigger, isFallbackTrigger: () => Boolean(applied?.isFallback) }
 }

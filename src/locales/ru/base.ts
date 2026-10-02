@@ -90,6 +90,9 @@ export const ruBase = {
 		GALLERY_NEXT: 'Следующее изображение',
 		SEARCH: 'Поиск',
 		CONTEXT_MENU: 'Контекстное меню',
+		/** fu-keyboard: имя кликабельного BaseAvatar без alt и name; имя кликабельного индикатора BaseChip */
+		AVATAR: 'Аватар',
+		CHIP_BADGE: 'Индикатор: {value}',
 		/** Имена ползунков BaseRange без ariaLabel: одно значение, границы диапазона, точки */
 		RANGE_VALUE: 'Значение',
 		RANGE_MIN: 'Минимум',
