@@ -5,8 +5,8 @@
 			"budget": 432128
 		},
 		"composables.js": {
-			"gzip": 91233,
-			"budget": 101376
+			"gzip": 103050,
+			"budget": 113664
 		},
 		"icons.js": {
 			"gzip": 3062,
@@ -17,8 +17,8 @@
 			"budget": 6144
 		},
 		"index.js": {
-			"gzip": 401990,
-			"budget": 442368
+			"gzip": 442992,
+			"budget": 487424
 		},
 		"media.js": {
 			"gzip": 133524,
