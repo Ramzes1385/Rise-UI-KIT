@@ -980,3 +980,16 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 - Вид компонентов при корректных пропсах не менялся. Меняется при недопустимых: BaseSeparator с `thickness` 0/NaN — линия 1px вместо пропавшей; BaseRange и BaseRating со значением больше `max` — ползунок и звёзды на границе, а не за шкалой; BaseSkeleton с `width`/`height` 0 — `0px`, с `'auto'` при `sizeScale` ≠ 100 — `auto` вместо отброшенного `calc`; `circle` только с шириной — круг (`aspect-ratio: 1`), раньше не был виден.
 
 Новые истории (в скриншот-тесты не добавлены): `form-baserange--range-keyboard` (Home/End/PageUp/PageDown у диапазона — до соседнего ползунка), `form-baserange--out-of-bounds` (значение 140 при `max` 100 — на границе), `form-baserating--out-of-bounds` (оценка 7 из 5 — пять полных звёзд), `element-baseskeleton--size-values` (круг по ширине, `width="auto"` при `sizeScale` 150).
+
+## Задача fu-nav — доступность навигации
+
+Сверка попиксельно: Storybook с `4513198d` (два прохода — нестабильные снимки отсеяны) и с ветки `epic/fu-nav`; 50 историй BaseBreadcrumbs, BasePagination, BaseStepper, BaseAccordion и BaseTable Pagination × 2 темы, окно 800×500, снимок после play. Совпали 90 из 100 снимков, в том числе все истории BaseAccordion (заголовок `<h3>` + `<button>` вместо `div`) и BaseStepper, кроме Errors. Страница со снимками — `.rise-transfer\review\fu-nav.html`.
+
+- **BaseBreadcrumbs Collapsed** — кнопка «…» после раскрытия остаётся на месте значком «‹» (с отступом до первой крошки) и сворачивает путь обратно; в конце play путь снова свёрнут (раньше история заканчивалась раскрытым путём).
+- **BasePagination WithoutLastPage** — при `showLastPage: false` окно на одну кнопку шире (номера 1–7) и справа «…» (PG-4).
+- **BaseStepper Errors** — 5–6 пикселей на краях текста (сглаживание: шаг теперь `<button>`), глазом не видно.
+- Без видимых изменений: BasePagination (корень `nav`, имена «Страница N»), BaseStepper (`ol`/`li`/`button`), BaseAccordion, BaseTable Pagination.
+
+Эталоны скриншот-тестов, которые это затронет: `navigation-basepagination--without-last-page`, если она есть в `BasePagination.visual.spec.ts`, и `navigation-basestepper--errors` (на уровне сглаживания). Эталоны не трогались.
+
+Новые истории (в скриншот-тесты не добавлены): `navigation-basestepper--clickable`, `data-baseaccordion--open-model`.

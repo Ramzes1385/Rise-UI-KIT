@@ -1,5 +1,5 @@
 <template>
-	<nav class="base-pagination" :class="classes.root" :style="[sizeScaleStyle, customColorStyle]" :aria-label="UI_ARIA.PAGINATION">
+	<nav class="base-pagination" :class="classes.root" :style="[sizeScaleStyle, customColorStyle]" :aria-label="navLabel">
 		<BaseButton
 			:variant="inactivePageVariant"
 			class="base-pagination__arrow"
@@ -76,6 +76,7 @@ const {
 	inactivePageVariant,
 	isPrevDisabled,
 	isNextDisabled,
+	navLabel,
 	pageLabel,
 	changePage,
 	goToPrevPage,

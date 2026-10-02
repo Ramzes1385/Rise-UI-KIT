@@ -10,4 +10,5 @@ export const argTypes = {
 	pageSize: { control: { type: 'number', min: 1 }, table: propGroup(ARG_GROUP.content) },
 	maxVisible: { control: { type: 'number', min: 3, max: 15 }, table: propGroup(ARG_GROUP.behavior) },
 	showLastPage: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+	ariaLabel: { control: 'text', table: propGroup(ARG_GROUP.a11y) },
 } satisfies Meta<typeof BasePagination>['argTypes']

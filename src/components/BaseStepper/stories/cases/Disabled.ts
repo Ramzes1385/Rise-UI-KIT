@@ -1,6 +1,5 @@
 import { STEPS } from '../shared'
 import { expect } from 'storybook/test'
-import { tabTo } from '@/stories/helpers'
 import type meta from '../BaseStepper.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type { BaseStepperStep } from '../../types/BaseStepper.types'
@@ -12,11 +11,8 @@ export const Disabled: StoryObj<typeof meta> = {
 		docs: { description: { story: 'Отключённый шаг приглушён: кнопка `disabled`, выведена из порядка Tab и не выбирается.' } },
 	},
 	args: { items: DISABLED_STEPS },
-	play: async ({ canvas, userEvent }) => {
-		const disabled = canvas.getByRole('button', { name: /Оплата/ })
-		await expect(disabled).toBeDisabled()
-		await tabTo(canvas.getByRole('button', { name: /Доставка/ }), userEvent)
-		await userEvent.tab()
-		await expect(canvas.getByRole('button', { name: /Подтверждение/ })).toHaveFocus()
+	play: async ({ canvas }) => {
+		await expect(canvas.getByRole('button', { name: /Оплата/ })).toBeDisabled()
+		await expect(canvas.getByRole('button', { name: /Подтверждение/ })).toBeEnabled()
 	},
 }

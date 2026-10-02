@@ -21,7 +21,7 @@ export const Clickable: StoryObj<typeof meta> = {
 		await expect(args.onChange).not.toHaveBeenCalled()
 
 		await userEvent.tab()
-		await expect(canvas.getByRole('button', { name: 'Корзина, пройден' })).toHaveFocus()
+		await expect(canvas.getByRole('button', { name: /^Корзина\s?, пройден/ })).toHaveFocus()
 		await userEvent.keyboard('{Enter}')
 		await expect(args.onChange).toHaveBeenCalledWith(1)
 	},

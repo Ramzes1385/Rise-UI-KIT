@@ -17,6 +17,8 @@ export interface BasePaginationProps extends BaseComponentProps<
 	maxVisible?: number
 	/** Показывать последнюю страницу всегда */
 	showLastPage?: boolean
+	/** Имя ориентира `<nav>`. По умолчанию «Пагинация»; задайте своё, если пагинаций на странице несколько: «Страницы заказов» */
+	ariaLabel?: string
 }
 
 export interface BasePaginationEmits {

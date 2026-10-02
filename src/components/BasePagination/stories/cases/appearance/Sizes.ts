@@ -14,7 +14,7 @@ const template = `
 	<div class="story-stack">
 		<div v-for="preset in presets" :key="preset.name" class="story-col">
 			<span class="story-label">{{ preset.label }}</span>
-			<BasePagination v-bind="args" v-model="pages[preset.name]" :size-scale="preset.sizeScale" />
+			<BasePagination v-bind="args" v-model="pages[preset.name]" :size-scale="preset.sizeScale" :aria-label="'Пагинация ' + preset.label" />
 		</div>
 	</div>
 `

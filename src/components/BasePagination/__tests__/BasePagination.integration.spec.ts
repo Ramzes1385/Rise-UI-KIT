@@ -195,6 +195,12 @@ describe('BasePagination integration', () => {
 			expect(screen.getByRole('button', { name: 'Страница 5' })).not.toHaveAttribute('aria-current')
 		})
 
+		it('ariaLabel заменяет имя ориентира: две пагинации на странице различимы', () => {
+			render(BasePagination, { props: { modelValue: 1, total: 50, ariaLabel: 'Страницы заказов' } })
+
+			expect(screen.getByRole('navigation', { name: 'Страницы заказов' })).toBeInTheDocument()
+		})
+
 		it('клик по текущей странице не эмитит событий', async () => {
 			const user = userEvent.setup()
 			const { emitted } = render(BasePagination, { props: { modelValue: 2, total: 50, pageSize: 10 } })

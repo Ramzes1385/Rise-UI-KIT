@@ -13,7 +13,7 @@ const template = `
 	<div class="story-stack">
 		<div v-for="variant in PAGINATION_VARIANTS" :key="variant" class="story-col">
 			<span class="story-label">{{ variant }}</span>
-			<BasePagination v-bind="args" v-model="pages[variant]" :variant="variant" />
+			<BasePagination v-bind="args" v-model="pages[variant]" :variant="variant" :aria-label="'Пагинация ' + variant" />
 		</div>
 	</div>
 `

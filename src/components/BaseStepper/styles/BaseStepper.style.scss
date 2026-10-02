@@ -62,6 +62,10 @@
 		font: inherit;
 		text-align: start;
 		@include focus-ring;
+
+		&:disabled {
+			color: inherit;
+		}
 	}
 
 	&__trigger--clickable {

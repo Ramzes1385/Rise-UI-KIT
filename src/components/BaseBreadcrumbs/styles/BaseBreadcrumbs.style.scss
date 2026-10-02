@@ -50,6 +50,10 @@
 		letter-spacing: 0.05em;
 	}
 
+	&__ellipsis-btn--expanded {
+		margin-inline-end: var(--breadcrumbs-gap);
+	}
+
 	&__text {
 		min-width: 0;
 		overflow-wrap: anywhere;

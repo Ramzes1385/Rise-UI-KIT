@@ -31,6 +31,7 @@ export function useBasePagination(props: PaginationProps, emit: BasePaginationEm
 		inactivePageVariant: computed(() => (props.variant === DEFAULT_VARIANT ? 'ghost' : props.variant)),
 		isPrevDisabled: computed(() => props.modelValue <= 1 || totalPages.value < 1),
 		isNextDisabled: computed(() => props.modelValue >= totalPages.value),
+		navLabel: computed(() => props.ariaLabel ?? UI_ARIA.PAGINATION),
 		pageLabel: (page: number): string => formatMessage(UI_ARIA.PAGINATION_PAGE, { page }),
 		changePage,
 		goToPrevPage: () => changePage(Math.min(props.modelValue - 1, totalPages.value)),
