@@ -31,5 +31,7 @@ export const ruEventCalendar = {
 		DROPPED: 'Событие «{title}» перенесено: {range}',
 		CANCELLED: 'Перенос отменён, событие «{title}» на прежнем месте',
 		BLOCKED: 'Сюда событие «{title}» положить нельзя',
+		RESOURCE_COLUMN: '{resource}, {day}',
+		EVENT_RESOURCE: '{event}, {resource}',
 	},
 }

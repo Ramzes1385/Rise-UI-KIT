@@ -1593,3 +1593,15 @@ API кита не меняется. В Storybook добавлены пример
 - `BaseCascader` (Form) — выбор из иерархии колонками: `items` (`BaseCascaderNode`: `id`, `label`, `description`, `icon`, `children`, `isLeaf`, `isDisabled`), `v-model` — путь id (`string[]`), при `isMultiple` — список путей (`string[][]`); `load` (промис детей уровня), `isLoading`, `isAnyLevel`, `isSearchable`, `separator`, `label`, `placeholder`, `ariaLabel`, `triggerAttrs`, `isRequired`, `isDisabled`, `error`; события `update:modelValue`, `change`, `load-error`; слоты `selected`, `option`, `empty`; методы `focus`, `blur`, `validate`, `reset`.
 - Экспорт: `BaseCascader`, `CASCADER_VARIANTS`, типы `BaseCascaderProps`, `BaseCascaderEmits`, `BaseCascaderSlots`, `BaseCascaderNode`, `CascaderLoad`, `CascaderPath`, `CascaderValue`.
 - Новых строк словаря нет: «Загрузка...», «Не удалось загрузить», «Повторить», «Нет данных», «Ничего не найдено», «Поиск...» — общие строки `text`.
+
+## Задача new-event-calendar-3: ресурсы и iCalendar в BaseEventCalendar
+
+Новые возможности; без `resources` вид и поведение не меняются.
+
+- `resources` (`EventCalendarResource[]`: `{ id, title, color? }`) — в неделе и дне колонки по ресурсам, в неделе у каждого ресурса свои дни. Событие показано в колонке своего `resourceId` (сравнение строкой: `1` и `'1'` — один ресурс); событие без ресурса в неделе и дне с ресурсами не видно, в месяце и списке — как раньше. Цвет ресурса — цвет его событий без своего `color`.
+- `select` и `create` при ресурсах — ещё `resourceId` колонки (`EventCalendarSelection.resourceId`); выделение не выходит за колонки одного ресурса. `event-change` при ресурсах — ещё `resourceId` и `oldResourceId`; перенос в колонку другого ресурса — `type: 'move'`.
+- Слоты `resource` и `resource-<id>` — заголовок ресурса (`{ resource, days }`).
+- Клавиатура при ресурсах: ←/→ в колонке и у взятого события — соседняя колонка (дни ресурса, затем дни следующего ресурса). Точка Tab — одна колонка: сегодняшний день первого ресурса или последней колонки в фокусе.
+- DOM: у колонок недели и дня `data-day` — по-прежнему день, новые `data-column` (`<ресурс>|<ГГГГ-ММ-ДД>` или день) и `data-resource`; имя колонки и события дополнено названием ресурса.
+- Утилиты iCalendar: `parseIcs` пересчитывает время с `TZID` из пояса IANA (было — время считалось местным; пояс не из IANA — как раньше), читает `DURATION` без `DTEND` и `RESOURCES` (первый — `resourceId` строкой); `toIcs` пишет `RESOURCES` из `resourceId`. Новые `readIcsFile(file)`, `downloadIcs(events, fileName?, options?)`, `parseIcsDuration(value)`.
+- Словарь `eventCalendar`: новые ключи `RESOURCE_COLUMN`, `EVENT_RESOURCE` — свой язык дополните ими.

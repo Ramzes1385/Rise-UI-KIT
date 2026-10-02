@@ -2874,6 +2874,29 @@ const isPaused = ref(false)
 - `can-move(change)` — вернуть `false`, чтобы событие нельзя было положить: мышью место помечается (пунктир `--rise-error`), отпускание ничего не меняет; клавиатура объявляет «Сюда событие … положить нельзя» и не двигает событие.
 - `event-change` — `{ type: 'move' | 'resize', event, start, end, allDay, oldStart, oldEnd }`. У повторяющегося события — время этого повтора: приложение решает, менять всю серию или добавить исключение (`exdates`) и отдельное событие. Анимаций переноса нет — `prefers-reduced-motion` соблюдается.
 
+Ресурсы (new-event-calendar-3) — комнаты, люди, оборудование: в неделе и дне у каждого ресурса свои колонки.
+
+```vue
+<BaseEventCalendar
+	v-model:view="view"
+	:events="events"
+	:resources="[
+		{ id: 'room-1', title: 'Переговорная 1', color: 'var(--rise-success)' },
+		{ id: 'room-2', title: 'Переговорная 2' },
+	]"
+	is-selectable
+	is-editable
+	@create="({ start, end, resourceId }) => openNewEvent(start, end, resourceId)"
+	@event-change="({ event, start, end, resourceId }) => saveEvent(event.id, start, end, resourceId)">
+	<template #resource="{ resource }">{{ resource.title }}</template>
+</BaseEventCalendar>
+```
+
+- Событие лежит в колонке своего `resourceId`; без ресурса в неделе и дне оно не видно (в месяце и списке — как обычно). Цвет ресурса — цвет его событий без своего `color`.
+- `select`, `create` — ещё `resourceId` колонки; выделение не выходит за колонки ресурса. `event-change` — ещё `resourceId` и `oldResourceId`: перенос мышью или ←/→ с клавиатуры в колонку другого ресурса.
+- Слоты `resource` и `resource-<id>` (`{ resource, days }`) — заголовок ресурса. Имена колонок и событий для скринридера дополнены названием ресурса.
+- Импорт и экспорт: `readIcsFile(file)` → события для `events` (RESOURCES → `resourceId`), `downloadIcs(events, 'команда')` — файл `.ics`.
+
 Событие остаётся кнопкой — в слотах события не нужны свои кнопки и ссылки. Утилиты календаря (`getEventsInRange`, `layoutWeek`, `layoutDay`, `expandRecurrence`, `parseIcs`, `toIcs` и др.) — docs/reference/UTILS.md.
 
 ## BaseTag и BaseTagGroup

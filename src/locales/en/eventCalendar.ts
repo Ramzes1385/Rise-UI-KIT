@@ -31,5 +31,7 @@ export const enEventCalendar = {
 		DROPPED: 'Event “{title}” moved: {range}',
 		CANCELLED: 'Move cancelled, event “{title}” is back in place',
 		BLOCKED: 'Event “{title}” cannot be dropped here',
+		RESOURCE_COLUMN: '{resource}, {day}',
+		EVENT_RESOURCE: '{event}, {resource}',
 	},
 }
