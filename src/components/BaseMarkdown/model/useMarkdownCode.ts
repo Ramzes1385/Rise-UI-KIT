@@ -1,4 +1,5 @@
-import { onBeforeUnmount, ref } from 'vue'
+import { computed, onBeforeUnmount, ref } from 'vue'
+import { tokenizeCode } from '@utils/data/codeHighlightUtils'
 import type { MarkdownCodeProps } from '../types/MarkdownParts.types'
 
 const COPIED_DURATION = 2000
@@ -17,6 +18,7 @@ export function useMarkdownCode(props: MarkdownCodeProps) {
 	onBeforeUnmount(() => clearTimeout(timer))
 	return {
 		isCopied,
+		tokens: computed(() => tokenizeCode(props.block.value, props.block.lang)),
 		async copy(): Promise<void> {
 			if (!(await writeClipboard(props.block.value))) return
 			isCopied.value = true

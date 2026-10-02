@@ -196,6 +196,16 @@
 		}
 	}
 
+	@each $type in keyword, string, number, comment, function, tag, attribute, property, variable {
+		&__token--#{$type} {
+			color: var(--rise-code-#{$type});
+		}
+	}
+
+	&__token--comment {
+		font-style: italic;
+	}
+
 	&__pre {
 		margin: 0;
 		padding: sz(12px) sz(16px);

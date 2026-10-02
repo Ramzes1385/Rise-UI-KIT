@@ -82,6 +82,19 @@ describe('BaseMarkdown', () => {
 		expect(container.querySelector('p')).toHaveTextContent('раз два')
 	})
 
+	it('блок кода подсвечивается по языку; неизвестный язык и разметка в коде — простой текст', () => {
+		const source = '```ts\nconst a = 1 // c\n```\n\n```txt\n<b>x</b>\n```'
+		const { container } = render(BaseMarkdown, { props: { source } })
+		const [ts, plain] = container.querySelectorAll('pre')
+		expect(ts!.querySelector('.base-markdown__token--keyword')).toHaveTextContent('const')
+		expect(ts!.querySelector('.base-markdown__token--number')).toHaveTextContent('1')
+		expect(ts!.querySelector('.base-markdown__token--comment')).toHaveTextContent('// c')
+		expect(ts).toHaveTextContent('const a = 1 // c')
+		expect(plain!.querySelector('.base-markdown__token')).toBeNull()
+		expect(plain!.querySelector('b')).toBeNull()
+		expect(plain).toHaveTextContent('<b>x</b>')
+	})
+
 	it('«Копировать» у блока кода: «Скопировано» на 2 с; без буфера обмена надпись не меняется', async () => {
 		vi.useFakeTimers()
 		const writeText = vi.fn(async (_text: string) => undefined)
