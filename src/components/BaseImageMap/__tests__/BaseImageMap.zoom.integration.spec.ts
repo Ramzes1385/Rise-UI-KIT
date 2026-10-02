@@ -94,12 +94,17 @@ describe('BaseImageMap zoom — кнопки и клавиши', () => {
 		expect(stageTransform(container)).toBe('translate(0px, 0px) scale(1)')
 	})
 
-	it('+ на объекте тоже масштабирует, а стрелка на объекте — нет', async () => {
+	it('+ и − на объекте масштабируют вокруг его центра, 0 — сбрасывает, стрелка на объекте — не масштабирует', async () => {
 		const { container } = await renderMap()
 		await fireEvent.keyDown(objectElement(container, 'a'), { key: '+' })
-		expect(stageTransform(container)).toBe(ZOOMED)
+		expect(stageTransform(container)).toBe('translate(-2.5px, -2.5px) scale(1.5)')
 		await fireEvent.keyDown(objectElement(container, 'a'), { key: 'ArrowRight' })
-		expect(stageTransform(container)).toBe(ZOOMED)
+		expect(stageTransform(container)).toBe('translate(-2.5px, -2.5px) scale(1.5)')
+		await fireEvent.keyDown(objectElement(container, 'a'), { key: '-' })
+		expect(stageTransform(container)).toBe('translate(0px, 0px) scale(1)')
+		await fireEvent.keyDown(objectElement(container, 'a'), { key: '+' })
+		await fireEvent.keyDown(objectElement(container, 'a'), { key: '0' })
+		expect(stageTransform(container)).toBe('translate(0px, 0px) scale(1)')
 	})
 
 	it('initArea задаёт начальный вид и цель «Сбросить»', async () => {

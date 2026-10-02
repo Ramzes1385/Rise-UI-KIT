@@ -5,7 +5,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { Frame, ScreenPoint, ViewOptions } from '../../types/imageMapInternal.types'
 import { clampScale, clampView, fitArea, fitStage, scaleForArea, zoomAround } from './viewGeometry'
 
-const ZOOM_STEP = 1.5
+export const ZOOM_STEP = 1.5
 const OBJECT_SHARE = 1 / 3
 const POINT_ZOOM = 2
 

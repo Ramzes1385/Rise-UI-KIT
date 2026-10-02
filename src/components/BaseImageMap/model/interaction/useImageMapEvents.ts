@@ -40,6 +40,11 @@ function handleObjectKey(event: KeyboardEvent, id: string, context: EventContext
 	}
 }
 
+function handleZoomKey(action: 'zoomIn' | 'zoomOut' | 'resetZoom', focused: Element | null, context: EventContext): void {
+	if (focused && action !== 'resetZoom') context.pan.zoomAtElement(action === 'zoomIn', focused)
+	else context.zoom[action]()
+}
+
 export function useImageMapEvents(emit: BaseImageMapEmits, context: EventContext) {
 	const setHover = useHover(emit, context.overlay)
 
@@ -76,7 +81,7 @@ export function useImageMapEvents(emit: BaseImageMapEmits, context: EventContext
 			if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey) return
 			if (ZOOM_KEYS[event.key]) {
 				event.preventDefault()
-				context.zoom[ZOOM_KEYS[event.key]]()
+				handleZoomKey(ZOOM_KEYS[event.key], id ? (event.target as Element) : null, context)
 			} else if (event.target === event.currentTarget && context.pan.isPanKey(event.key)) {
 				event.preventDefault()
 				context.pan.panByKey(event.key)

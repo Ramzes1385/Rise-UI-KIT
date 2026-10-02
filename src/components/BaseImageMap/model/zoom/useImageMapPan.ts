@@ -1,4 +1,5 @@
 import type { Ref } from 'vue'
+import { ZOOM_STEP } from './useImageMapView'
 import { revealOffset } from './viewGeometry'
 import type { useImageMapView } from './useImageMapView'
 
@@ -20,6 +21,12 @@ export function useImageMapPan(zoom: ReturnType<typeof useImageMapView>, viewpor
 			if (!offset.x && !offset.y) return false
 			shift(offset.x, offset.y)
 			return true
+		},
+		zoomAtElement(isZoomIn: boolean, element: Element): void {
+			const rect = element.getBoundingClientRect()
+			const box = (viewportRef.value as HTMLElement).getBoundingClientRect()
+			const point = { x: rect.left + rect.width / 2 - box.left, y: rect.top + rect.height / 2 - box.top }
+			zoom.zoomBy(isZoomIn ? ZOOM_STEP : 1 / ZOOM_STEP, point)
 		},
 		isPanKey: (key: string): boolean => key in PAN_KEYS,
 		panByKey(key: string): void {

@@ -30,15 +30,15 @@ async function renderMap(rects = {}) {
 describe('BaseImageMap клавиатура — фокус при увеличении', () => {
 	afterEach(() => vi.restoreAllMocks())
 
-	it('фокус на объекте за краем окна сдвигает вид без анимации, подсказка — после сдвига', async () => {
+	it('+ на объекте масштабирует вокруг него; фокус на объекте за краем окна сдвигает вид без анимации, подсказка — после сдвига', async () => {
 		const user = userEvent.setup()
 		const { container } = await renderMap(OUTSIDE)
 		objectElement(container, 'a').focus()
 		await fireEvent.keyDown(document.activeElement as Element, { key: '+' })
-		expect(stageTransform(container)).toBe(ZOOMED)
+		expect(stageTransform(container)).toBe('translate(-155px, -125px) scale(1.5)')
 		await user.keyboard('{End}')
 		expect(objectElement(container, 'b')).toHaveFocus()
-		expect(stageTransform(container)).toBe('translate(-336px, -125px) scale(1.5)')
+		expect(stageTransform(container)).toBe('translate(-291px, -125px) scale(1.5)')
 		expect(container.querySelector('.base-image-map__stage')).not.toHaveClass('base-image-map__stage--animated')
 		await waitFor(() => expect(objectElement(container, 'b')).toHaveAttribute('aria-describedby'))
 	})
@@ -50,9 +50,10 @@ describe('BaseImageMap клавиатура — фокус при увеличе
 		await user.keyboard('{End}')
 		expect(stageTransform(container)).toBe('translate(0px, 0px) scale(1)')
 		await fireEvent.keyDown(document.activeElement as Element, { key: '+' })
+		expect(stageTransform(container)).toBe('translate(-400px, -125px) scale(1.5)')
 		await user.keyboard('{Home}')
 		expect(objectElement(container, 'a')).toHaveFocus()
-		expect(stageTransform(container)).toBe(ZOOMED)
+		expect(stageTransform(container)).toBe('translate(-400px, -125px) scale(1.5)')
 	})
 })
 
