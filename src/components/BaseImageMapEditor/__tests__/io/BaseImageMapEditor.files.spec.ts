@@ -166,6 +166,7 @@ describe('BaseImageMapEditor файлы: объекты из SVG', () => {
 		const map = makeSvgMap()
 		map.objects.push({ type: 'point', id: 'shop', title: 'Точка магазина', x: 0.5, y: 0.5 })
 		const { container, emitted } = renderEditor({ modelValue: map })
+		await nextTick()
 		await fireEvent.click(screen.getByRole('button', { name: 'Объекты из SVG' }))
 		await nextTick()
 		expect(lastModel(emitted).objects.slice(2)).toEqual([
@@ -176,9 +177,11 @@ describe('BaseImageMapEditor файлы: объекты из SVG', () => {
 		expect(container.querySelectorAll('.base-image-map-editor__svg-object')).toHaveLength(3)
 	})
 
-	it('importSvgObjects возвращает число новых объектов', () => {
+	it('importSvgObjects возвращает число новых объектов', async () => {
 		const wrapper = mount(BaseImageMapEditor, { props: { modelValue: makeSvgMap() } })
 		const api = wrapper.vm as unknown as BaseImageMapEditorExpose
+		expect(api.importSvgObjects()).toBe(0)
+		await nextTick()
 		expect(api.importSvgObjects()).toBe(2)
 		expect(api.importSvgObjects()).toBe(0)
 	})

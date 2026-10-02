@@ -97,10 +97,9 @@ function usePresentation(props: ImageMapProps, data: ReturnType<typeof useImageM
 	}
 }
 
-export function useBaseImageMap(props: ImageMapProps, emit: BaseImageMapEmits) {
-	const core = useMapCore(props, emit)
-	const { refs, data, zoom, overlay, actions, focus, gestures } = core
-	const objects = useImageMapObjects({
+function useObjectsPart(props: ImageMapProps, core: ReturnType<typeof useMapCore>) {
+	const { data, overlay, actions, focus } = core
+	return useImageMapObjects({
 		getView: () => data.view.value,
 		getState: (item: ResolvedImageMapObject) => ({
 			isTabbable: focus.tabbableId.value === item.object.id,
@@ -110,6 +109,12 @@ export function useBaseImageMap(props: ImageMapProps, emit: BaseImageMapEmits) {
 			isPulsing: props.isPulsing || Boolean(item.object.type === 'point' && item.object.isPulsing),
 		}),
 	})
+}
+
+export function useBaseImageMap(props: ImageMapProps, emit: BaseImageMapEmits) {
+	const core = useMapCore(props, emit)
+	const { refs, data, zoom, overlay, actions, focus, gestures } = core
+	const objects = useObjectsPart(props, core)
 	const svg = useImageMapSvg({
 		getLayer: () => data.currentLayer.value,
 		containerRef: refs.svgContainerRef,

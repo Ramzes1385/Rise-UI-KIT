@@ -1,7 +1,7 @@
 import type { Ref } from 'vue'
 import type { useMapCore } from '../model/useBaseImageMap'
-import type { useImageMapPan } from '../model/zoom/useImageMapPan'
 import type { ImageMapHoursState } from './ImageMapHours.types'
+import type { useImageMapPan } from '../model/zoom/useImageMapPan'
 import type { useImageMapView } from '../model/zoom/useImageMapView'
 import type { ImageMapDirectoryEntry } from './ImageMapDirectory.types'
 import type { useImageMapFocus } from '../model/interaction/useImageMapFocus'
