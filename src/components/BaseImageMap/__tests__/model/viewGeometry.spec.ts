@@ -1,4 +1,4 @@
-import { clampScale, clampView, fitArea, fitStage, scaleForArea, zoomAround } from '../../model/zoom/viewGeometry'
+import { clampScale, clampView, fitArea, fitStage, revealOffset, scaleForArea, zoomAround } from '../../model/zoom/viewGeometry'
 
 const FRAME = { viewportWidth: 400, viewportHeight: 200, stageWidth: 400, stageHeight: 200 }
 
@@ -43,5 +43,13 @@ describe('viewGeometry', () => {
 		expect(scaleForArea({ x: 0, y: 0, width: 0, height: 0.5 }, FRAME, 1)).toBe(2)
 		expect(scaleForArea({ x: 0, y: 0, width: 0.25, height: 0 }, FRAME, 1)).toBe(4)
 		expect(scaleForArea({ x: 0, y: 0, width: 0, height: 0 }, FRAME, 1)).toBe(Infinity)
+	})
+
+	it('revealOffset сдвигает минимально, чтобы объект с отступом попал в окно; больший окна — к началу', () => {
+		const viewport = { left: 0, top: 0, right: 400, bottom: 200 }
+		expect(revealOffset({ left: 100, top: 50, right: 120, bottom: 70 }, viewport, 10)).toEqual({ x: 0, y: 0 })
+		expect(revealOffset({ left: -50, top: -30, right: -30, bottom: -10 }, viewport, 10)).toEqual({ x: 60, y: 40 })
+		expect(revealOffset({ left: 420, top: 250, right: 440, bottom: 270 }, viewport, 10)).toEqual({ x: -50, y: -80 })
+		expect(revealOffset({ left: 300, top: 0, right: 900, bottom: 20 }, viewport, 10)).toEqual({ x: -290, y: 10 })
 	})
 })

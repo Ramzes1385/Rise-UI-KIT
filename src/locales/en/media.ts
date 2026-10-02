@@ -242,7 +242,7 @@ export const enMedia = {
 		LAYERS: 'Floors',
 		ZOOM: 'Zoom',
 		FULLSCREEN: 'Full screen',
-		EXIT_FULLSCREEN: 'Exit full screen',
+		VIEWPORT: 'Zoomed map: use arrow keys to pan',
 		WHEEL_HINT: 'Use Ctrl + scroll to zoom the map',
 		WHEEL_HINT_MAC: 'Use ⌘ + scroll to zoom the map',
 		LOADING: 'Loading map…',

@@ -142,7 +142,8 @@ function copyAttributes(source: Element, target: Element, tag: string): void {
 }
 
 function copyNode(node: Node, isTextOnly: boolean): Node | null {
-	if (node.nodeType === Node.TEXT_NODE || node.nodeType === Node.CDATA_SECTION_NODE) return document.createTextNode(node.nodeValue ?? '')
+	if (node.nodeType === Node.TEXT_NODE || node.nodeType === Node.CDATA_SECTION_NODE)
+		return document.createTextNode(String(node.nodeValue))
 	if (node.nodeType !== Node.ELEMENT_NODE || isTextOnly) return null
 	return copyElement(node as Element)
 }

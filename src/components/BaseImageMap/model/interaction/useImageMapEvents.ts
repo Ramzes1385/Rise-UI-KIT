@@ -1,3 +1,4 @@
+import { nextTick } from 'vue'
 import type { EventContext } from '../../types/imageMapInternal.types'
 import type { BaseImageMapEmits } from '../../types/BaseImageMap.types'
 import { IMAGE_MAP_OBJECT_ATTR } from '../../types/imageMapModel.types'
@@ -32,7 +33,8 @@ function handleObjectKey(event: KeyboardEvent, id: string, context: EventContext
 		context.focus.moveFocus(id, event.key)
 		return
 	}
-	if ((event.key === 'Enter' || event.key === ' ') && !isNativeControl(event.target)) {
+	const isSpaceOnLink = event.key === ' ' && (event.target as Element).getAttribute('role') === 'link'
+	if ((event.key === 'Enter' || event.key === ' ') && !isSpaceOnLink && !isNativeControl(event.target)) {
 		event.preventDefault()
 		context.actions.activate(id, event)
 	}
@@ -47,6 +49,11 @@ export function useImageMapEvents(emit: BaseImageMapEmits, context: EventContext
 			if (context.consumeDrag()) return event.preventDefault()
 			if (id) context.actions.activate(id, event)
 		},
+		handleStageAuxClick(event: MouseEvent): void {
+			const id = objectIdOf(event.target)
+			const isScriptLink = id && context.overlay.findObject(id)?.action === 'link' && !isNativeControl(event.target)
+			if (event.button === 1 && isScriptLink) context.actions.activate(id, event)
+		},
 		handleStagePointerOver(event: PointerEvent): void {
 			if (event.pointerType !== 'touch') setHover(objectIdOf(event.target))
 		},
@@ -55,8 +62,10 @@ export function useImageMapEvents(emit: BaseImageMapEmits, context: EventContext
 		},
 		handleStageFocusIn(event: FocusEvent): void {
 			const id = objectIdOf(event.target)
-			if (id) context.focus.focusId.value = id
-			setHover(id)
+			if (!id) return setHover(null)
+			context.focus.focusId.value = id
+			if (context.pan.revealElement(event.target as Element)) void nextTick(() => setHover(id))
+			else setHover(id)
 		},
 		handleStageFocusOut(event: FocusEvent): void {
 			if (!objectIdOf(event.relatedTarget)) setHover(null)
@@ -64,9 +73,14 @@ export function useImageMapEvents(emit: BaseImageMapEmits, context: EventContext
 		handleViewportKeydown(event: KeyboardEvent): void {
 			const id = objectIdOf(event.target)
 			if (id) handleObjectKey(event, id, context)
-			if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey || !ZOOM_KEYS[event.key]) return
-			event.preventDefault()
-			context.zoom[ZOOM_KEYS[event.key]]()
+			if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey) return
+			if (ZOOM_KEYS[event.key]) {
+				event.preventDefault()
+				context.zoom[ZOOM_KEYS[event.key]]()
+			} else if (event.target === event.currentTarget && context.pan.isPanKey(event.key)) {
+				event.preventDefault()
+				context.pan.panByKey(event.key)
+			}
 		},
 	}
 }

@@ -92,7 +92,7 @@ describe('BaseImageMap integration — клавиатура', () => {
 		expect(emitted().select).toHaveLength(1)
 	})
 
-	it('Home/End и стрелки не падают на объектах без элемента в разметке', async () => {
+	it('объект svg без элемента в разметке не участвует в Tab и Home/End', async () => {
 		const missing: ImageMapData = {
 			...SIMPLE_DATA,
 			objects: [...SIMPLE_DATA.objects, { id: 'ghost', type: 'svg', title: 'Нет элемента', elementId: 'nope' }],
@@ -100,7 +100,10 @@ describe('BaseImageMap integration — клавиатура', () => {
 		const user = userEvent.setup()
 		const { container } = render(BaseImageMap, { props: { data: missing, ...BASE_PROPS } })
 		await user.tab()
+		expect(screen.getByRole('button', { name: 'Точка А' })).toHaveFocus()
 		await user.keyboard('{End}')
+		expect(screen.getByRole('button', { name: 'Точка Б' })).toHaveFocus()
+		await user.keyboard('{Home}')
 		expect(screen.getByRole('button', { name: 'Точка А' })).toHaveFocus()
 		const stray = document.createElement('span')
 		stray.setAttribute('data-image-map-object', 'stray')
@@ -122,7 +125,7 @@ describe('BaseImageMap integration — подсказка и hover', () => {
 		expect(within(card).getByText('Вершина')).toBeInTheDocument()
 		expect(within(card).getByText('Сервис')).toBeInTheDocument()
 		expect(within(card).getByText(/Смотровая площадка/)).toBeInTheDocument()
-		expect(within(card).getByRole('link', { name: 'Расписание' })).toHaveAttribute('href', '#schedule')
+		expect(within(card).queryByRole('link')).toBeNull()
 		await fireEvent.pointerLeave(stage)
 		expect(emitted().hover[1]).toEqual([null])
 		expect(tooltip()).not.toBeNull()

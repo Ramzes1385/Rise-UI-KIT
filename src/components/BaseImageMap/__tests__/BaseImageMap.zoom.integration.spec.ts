@@ -318,7 +318,7 @@ describe('BaseImageMap — полный экран', () => {
 		Reflect.deleteProperty(document, 'exitFullscreen')
 	})
 
-	it('кнопка переключает режим: aria-pressed, подпись и класс корня', async () => {
+	it('кнопка переключает режим: aria-pressed и класс корня, подпись постоянная', async () => {
 		if (!('fullscreenEnabled' in document))
 			Object.defineProperty(document, 'fullscreenEnabled', { configurable: true, get: () => false })
 		if (!('fullscreenElement' in document))
@@ -330,7 +330,7 @@ describe('BaseImageMap — полный экран', () => {
 		expect(button).toHaveAttribute('aria-pressed', 'false')
 		await user.click(button)
 		await waitFor(() => expect(container.querySelector('.base-image-map')).toHaveClass('base-image-map--fullscreen'))
-		const exit = screen.getByRole('button', { name: 'Выйти из полноэкранного режима' })
+		const exit = screen.getByRole('button', { name: 'Во весь экран' })
 		expect(exit).toHaveAttribute('aria-pressed', 'true')
 		await user.click(exit)
 		await waitFor(() => expect(container.querySelector('.base-image-map')).not.toHaveClass('base-image-map--fullscreen'))

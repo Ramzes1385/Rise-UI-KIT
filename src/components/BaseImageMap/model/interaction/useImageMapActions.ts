@@ -8,8 +8,8 @@ import type { BaseImageMapEmits, ImageMapProps } from '../../types/BaseImageMap.
 
 function elementArea(stage: HTMLElement | null, id: string): ImageMapArea | undefined {
 	const element = stage?.querySelector(`[${IMAGE_MAP_OBJECT_ATTR}="${id}"]`)
-	if (!stage || !element) return undefined
-	const box = stage.getBoundingClientRect()
+	if (!element) return undefined
+	const box = (stage as HTMLElement).getBoundingClientRect()
 	const rect = element.getBoundingClientRect()
 	if (!box.width || !box.height) return undefined
 	return {
@@ -20,9 +20,13 @@ function elementArea(stage: HTMLElement | null, id: string): ImageMapArea | unde
 	}
 }
 
-function navigate(item: ResolvedImageMapObject): void {
+function isNewTabClick(event: Event | undefined): boolean {
+	return event instanceof MouseEvent && (event.ctrlKey || event.metaKey || event.shiftKey || event.button === 1)
+}
+
+function navigate(item: ResolvedImageMapObject, event: Event | undefined): void {
 	const href = String(item.href)
-	if (item.object.isLinkExternal) window.open(href, '_blank', 'noopener,noreferrer')
+	if (item.object.isLinkExternal || isNewTabClick(event)) window.open(href, '_blank', 'noopener,noreferrer')
 	else window.location.assign(href)
 }
 
@@ -64,10 +68,11 @@ export function useImageMapActions(props: ImageMapProps, emit: BaseImageMapEmits
 		if (area) context.zoomToArea(area, item.object.zoom)
 	}
 
-	function runAction(item: ResolvedImageMapObject, isNativeLink: boolean): void {
+	function runAction(item: ResolvedImageMapObject, event: Event | undefined): void {
+		const isNativeLink = event?.target instanceof Element && event.target.closest('a[href]') instanceof HTMLAnchorElement
 		if (item.action === 'popup') context.openPopup(item.object.id)
-		if (item.action === 'layer' && item.object.targetLayer) setLayer(item.object.targetLayer)
-		if (item.action === 'link' && !isNativeLink) navigate(item)
+		if (item.action === 'layer') setLayer(item.object.targetLayer as string)
+		if (item.action === 'link' && !isNativeLink) navigate(item, event)
 	}
 
 	return {
@@ -81,7 +86,7 @@ export function useImageMapActions(props: ImageMapProps, emit: BaseImageMapEmits
 			emit('select', item.object)
 			setActive(id)
 			if (props.hasZoomToActive && item.action !== 'layer') void zoomToObject(id)
-			runAction(item, event?.target instanceof Element && event.target.closest('a[href]') instanceof HTMLAnchorElement)
+			runAction(item, event)
 		},
 	}
 }

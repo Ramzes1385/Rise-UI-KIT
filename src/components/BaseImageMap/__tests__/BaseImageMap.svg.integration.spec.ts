@@ -41,7 +41,7 @@ describe('BaseImageMap svg — встроенный план', () => {
 		expect(shop.tagName).toBe('rect')
 		expect(shop).toHaveAttribute('data-image-map-object', 'f1-shop-1')
 		expect(shop).toHaveAttribute('aria-haspopup', 'dialog')
-		expect(shop).toHaveAttribute('tabindex', '0')
+		await waitFor(() => expect(shop).toHaveAttribute('tabindex', '0'))
 		expect(shop).toHaveClass('base-image-map__object', 'base-image-map__object--svg')
 		expect(shop.style.getPropertyValue('--im-fill')).toBe('var(--rise-primary)')
 		expect(shop.id).toMatch(/^rise-im-.+-f1-shop-1$/)

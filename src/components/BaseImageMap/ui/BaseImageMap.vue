@@ -37,7 +37,7 @@
 				<BaseButton
 					v-if="hasFullscreen && isFullscreenSupported"
 					variant="ghost"
-					:aria-label="isFullscreen ? UI_IMAGE_MAP.EXIT_FULLSCREEN : UI_IMAGE_MAP.FULLSCREEN"
+					:aria-label="UI_IMAGE_MAP.FULLSCREEN"
 					:aria-pressed="isFullscreen"
 					@click="toggleFullscreen">
 					<template #left><BaseIcon :name="isFullscreen ? 'fullscreen-exit' : 'fullscreen'" /></template>
@@ -56,6 +56,9 @@
 				},
 			]"
 			:style="viewportStyle"
+			:tabindex="zoom.isMinZoom.value ? undefined : 0"
+			:role="zoom.isMinZoom.value ? undefined : 'group'"
+			:aria-label="zoom.isMinZoom.value ? undefined : UI_IMAGE_MAP.VIEWPORT"
 			@pointerdown="gestures.handlePointerDown"
 			@pointermove="gestures.handlePointerMove"
 			@pointerup="gestures.handlePointerUp"
@@ -68,6 +71,7 @@
 				:class="[classes.stage, { 'base-image-map__stage--animated': zoom.isAnimated.value }]"
 				:style="zoom.stageStyle.value"
 				@click="handleStageClick"
+				@auxclick="handleStageAuxClick"
 				@pointerover="handleStagePointerOver"
 				@pointerleave="handleStagePointerLeave"
 				@focusin="handleStageFocusIn"
@@ -222,6 +226,7 @@ const {
 	points,
 	shapes,
 	handleStageClick,
+	handleStageAuxClick,
 	handleStagePointerOver,
 	handleStagePointerLeave,
 	handleStageFocusIn,

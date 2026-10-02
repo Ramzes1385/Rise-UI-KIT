@@ -52,15 +52,32 @@ function applyAttributes(element: Element, binding: SvgBinding): void {
 	for (const [name, value] of Object.entries(binding.item.style)) style.setProperty(name, value)
 }
 
+function findElement(container: HTMLElement, prefix: string, binding: SvgBinding): Element | null {
+	return container.querySelector(`[id="${prefix}${binding.elementId}"]`)
+}
+
+function isSameSet(left: ReadonlySet<string>, right: ReadonlySet<string>): boolean {
+	return left.size === right.size && [...left].every(id => right.has(id))
+}
+
 export function useImageMapSvg(options: SvgOptions) {
 	const prefix = `rise-im-${useId()}-`
 	const { markup, isLoading, hasError } = useSvgMarkup(options.getLayer, prefix)
 
 	watchPostEffect(() => {
 		const container = options.containerRef.value
+		const bindings = container && markup.value ? options.getBindings() : []
+		const rendered = new Set(
+			bindings.filter(binding => findElement(container as HTMLElement, prefix, binding)).map(binding => binding.item.object.id),
+		)
+		if (!isSameSet(rendered, options.renderedIds.value)) options.renderedIds.value = rendered
+	})
+
+	watchPostEffect(() => {
+		const container = options.containerRef.value
 		if (!container || !markup.value) return
 		for (const binding of options.getBindings()) {
-			const element = container.querySelector(`[id="${prefix}${binding.elementId}"]`)
+			const element = findElement(container, prefix, binding)
 			if (element) applyAttributes(element, binding)
 		}
 	})

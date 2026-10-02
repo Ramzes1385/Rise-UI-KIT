@@ -5,7 +5,7 @@
 		<BaseText v-if="item.object.group && item.group" tag="p" class="base-image-map-card__group">{{ item.group.title }}</BaseText>
 		<BaseText v-if="item.object.description" tag="p" class="base-image-map-card__text">{{ item.object.description }}</BaseText>
 		<video v-if="isFull && item.object.video" class="base-image-map-card__video" :src="item.object.video" controls preload="metadata" />
-		<div v-if="item.object.links?.length" class="base-image-map-card__links">
+		<div v-if="isFull && item.object.links?.length" class="base-image-map-card__links">
 			<BaseLink
 				v-for="link in item.object.links"
 				:key="link.href + link.label"

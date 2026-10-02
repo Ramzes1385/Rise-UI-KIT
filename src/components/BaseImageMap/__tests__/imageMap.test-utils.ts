@@ -38,6 +38,7 @@ export function mockRects(rects: Record<string, TestRect>, stage: TestRect = { l
 		const id = this.getAttribute('data-image-map-object')
 		if (id && rects[id]) return toDomRect(rects[id])
 		if (this.classList.contains('base-image-map__stage')) return toDomRect(stage)
+		if (this.classList.contains('base-image-map__viewport')) return toDomRect({ left: 0, top: 0, ...VIEWPORT })
 		return toDomRect({ left: 0, top: 0, width: 10, height: 10 })
 	})
 }

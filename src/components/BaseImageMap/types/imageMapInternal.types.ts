@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
 import type { ImageMapWheelMode } from './BaseImageMap.types'
+import type { useImageMapPan } from '../model/zoom/useImageMapPan'
 import type { useImageMapView } from '../model/zoom/useImageMapView'
 import type { useImageMapFocus } from '../model/interaction/useImageMapFocus'
 import type { useImageMapActions } from '../model/interaction/useImageMapActions'
@@ -36,6 +37,7 @@ export interface EventContext {
 	focus: ReturnType<typeof useImageMapFocus>
 	actions: ReturnType<typeof useImageMapActions>
 	zoom: ReturnType<typeof useImageMapView>
+	pan: ReturnType<typeof useImageMapPan>
 	consumeDrag: () => boolean
 }
 
@@ -66,6 +68,7 @@ export interface MapFocusOptions {
 	stageRef: Ref<HTMLElement | null>
 	getView: () => ImageMapLayerView | undefined
 	getActive: () => string | null
+	getRenderedSvgIds: () => ReadonlySet<string>
 }
 
 export interface SvgBinding {
@@ -79,6 +82,7 @@ export interface SvgOptions {
 	getLayer: () => ImageMapLayer | undefined
 	containerRef: Ref<HTMLElement | null>
 	getBindings: () => SvgBinding[]
+	renderedIds: Ref<ReadonlySet<string>>
 }
 
 export interface ShapeGeometry {
@@ -130,4 +134,11 @@ export interface ViewOptions {
 	getLayer: () => ImageMapLayer | undefined
 	getMaxZoom: () => number
 	getInitArea: () => ImageMapArea | undefined
+}
+
+export interface ScreenBox {
+	left: number
+	top: number
+	right: number
+	bottom: number
 }

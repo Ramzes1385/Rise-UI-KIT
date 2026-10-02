@@ -1,6 +1,6 @@
 import type { ImageMapArea } from '../../types/imageMapData.types'
 import type { ImageMapView } from '../../types/imageMapModel.types'
-import type { Frame, ScreenPoint } from '../../types/imageMapInternal.types'
+import type { Frame, ScreenBox, ScreenPoint } from '../../types/imageMapInternal.types'
 
 export function fitStage(
 	viewport: { width: number; height: number },
@@ -43,4 +43,19 @@ export function scaleForArea(area: ImageMapArea, frame: Frame, share: number): n
 	const byWidth = area.width ? (frame.viewportWidth * share) / (area.width * frame.stageWidth) : Infinity
 	const byHeight = area.height ? (frame.viewportHeight * share) / (area.height * frame.stageHeight) : Infinity
 	return Math.min(byWidth, byHeight)
+}
+
+function revealAxis(target: [number, number], bounds: [number, number]): number {
+	const [start, end] = target
+	const [min, max] = bounds
+	if (start < min) return min - start
+	if (end > max) return Math.max(max - end, min - start)
+	return 0
+}
+
+export function revealOffset(target: ScreenBox, viewport: ScreenBox, margin: number): ScreenPoint {
+	return {
+		x: revealAxis([target.left, target.right], [viewport.left + margin, viewport.right - margin]),
+		y: revealAxis([target.top, target.bottom], [viewport.top + margin, viewport.bottom - margin]),
+	}
 }

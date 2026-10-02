@@ -15,7 +15,12 @@ describe('composables BaseImageMap без слоя', () => {
 	})
 
 	it('useImageMapFocus без слоя: нет объекта для Tab, переходы ничего не делают', () => {
-		const focus = useImageMapFocus({ stageRef: ref(null), getView: () => undefined, getActive: () => null })
+		const focus = useImageMapFocus({
+			stageRef: ref(null),
+			getView: () => undefined,
+			getActive: () => null,
+			getRenderedSvgIds: () => new Set(),
+		})
 		expect(focus.tabbableId.value).toBeUndefined()
 		focus.moveFocus('a', 'Home')
 		focus.moveFocus('a', 'ArrowRight')

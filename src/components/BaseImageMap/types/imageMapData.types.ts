@@ -149,6 +149,7 @@ export interface ImageMapObjectBase {
 
 /** Точка (метка) */
 export interface ImageMapPoint extends ImageMapObjectBase {
+	/** Вид объекта: точка */
 	type: 'point'
 	/** Центр метки по горизонтали, доля ширины */
 	x: number
@@ -168,6 +169,7 @@ export interface ImageMapPoint extends ImageMapObjectBase {
 
 /** Прямоугольник */
 export interface ImageMapRect extends ImageMapObjectBase {
+	/** Вид объекта: прямоугольник */
 	type: 'rect'
 	/** Левый край, доля ширины */
 	x: number
@@ -183,6 +185,7 @@ export interface ImageMapRect extends ImageMapObjectBase {
 
 /** Эллипс */
 export interface ImageMapEllipse extends ImageMapObjectBase {
+	/** Вид объекта: эллипс */
 	type: 'ellipse'
 	/** Центр по горизонтали, доля ширины */
 	x: number
@@ -196,6 +199,7 @@ export interface ImageMapEllipse extends ImageMapObjectBase {
 
 /** Многоугольник */
 export interface ImageMapPolygon extends ImageMapObjectBase {
+	/** Вид объекта: многоугольник */
 	type: 'polygon'
 	/** Вершины `[x, y]` в долях картинки, не меньше трёх */
 	points: [number, number][]
@@ -203,6 +207,7 @@ export interface ImageMapPolygon extends ImageMapObjectBase {
 
 /** Элемент SVG слоя (`svg` или `svgUrl`) по его `id`: магазин на плане этажа */
 export interface ImageMapSvgObject extends ImageMapObjectBase {
+	/** Вид объекта: элемент SVG слоя */
 	type: 'svg'
 	/** Id элемента в SVG слоя */
 	elementId: string

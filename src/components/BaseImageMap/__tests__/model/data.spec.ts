@@ -158,6 +158,12 @@ describe('objectAttributes и objectClasses', () => {
 		})
 	})
 
+	it('describedBy становится aria-describedby', () => {
+		const item = resolveObject(point(), DATA, 'popup')
+		expect(objectAttributes(item, { ...STATE, describedBy: 'tip-1' }, false)['aria-describedby']).toBe('tip-1')
+		expect(objectAttributes(item, STATE, false)['aria-describedby']).toBeUndefined()
+	})
+
 	it('нативная ссылка: href, внешняя — target и rel', () => {
 		const inner = resolveObject(point({ action: 'link', link: '/a' }), DATA, 'none')
 		expect(objectAttributes(inner, STATE, true)).toMatchObject({

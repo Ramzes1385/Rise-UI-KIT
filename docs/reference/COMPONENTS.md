@@ -2842,6 +2842,32 @@ const remove = (item: TagGroupItem) => (tags.value = tags.value.filter(tag => ta
 
 ---
 
+## BaseImageMap
+
+Интерактивная картинка и карта этажей: точки и фигуры на картинке или плане, подсказки, окна, этажи, масштаб. Данные — свой JSON (`ImageMapData`, версия 1).
+
+```vue
+<BaseImageMap v-model:active="activeId" v-model:layer="floor" :data="mallMap" :init-area="{ x: 0.2, y: 0.1, width: 0.6, height: 0.8 }" @select="track" />
+```
+
+```ts
+const mallMap: ImageMapData = {
+	layers: [{ id: 'f1', title: 'Этаж 1', shortTitle: '1', svg: floor1Svg, width: 1000, height: 600 }],
+	groups: [{ id: 'food', title: 'Кафе', color: 'var(--rise-warning)', icon: 'star' }],
+	objects: [
+		{ id: 'cafe', type: 'svg', elementId: 'shop-12', title: 'Кафе «Липа»', group: 'food', description: 'До 22:00' },
+		{ id: 'info', type: 'point', x: 0.5, y: 0.5, title: 'Справочная', icon: 'info', action: 'none' },
+		{ id: 'parking', type: 'rect', x: 0.8, y: 0.7, width: 0.15, height: 0.2, title: 'Парковка', action: 'link', link: '/parking' },
+	],
+}
+```
+
+- **Слои** — картинка (`image`) или SVG (`svg` строкой, `svgUrl` по адресу); `width` и `height` задают пропорции. SVG очищается по белому списку элементов и атрибутов: без скриптов, `<style>`, комментариев, обработчиков, `data-*`, внешних ссылок в атрибутах и `style`; id получают префикс, поэтому два одинаковых плана на странице не конфликтуют.
+- **Объекты** — `point` (значок, подпись, размер постоянный на экране или `isScaled`, `isPulsing`), `rect`, `ellipse`, `polygon` (координаты в долях картинки) и `svg` — элемент SVG слоя по `elementId`. Группы дают цвет и значок; стили `base`, `hover`, `active` — в `styles` по имени или прямо в объекте, цвета лучше токенами.
+- **Действия** (`action`, по умолчанию `defaultAction` = `popup`): `popup` — окно BaseModal (на экране уже `sheetBreakpoint` — нижняя панель BaseDrawer) с картинкой, описанием, видео и ссылками (ссылки — только в окне, не в подсказке); `link` — переход (небезопасный адрес отключает действие); `layer` — переход на этаж `targetLayer`; `none`. Подсказка при наведении и фокусе — панель BaseDropdown с `role="tooltip"`, объект ссылается на неё `aria-describedby`; слоты `tooltip`, `popup`, `point`.
+- **Масштаб** — кнопки «+», «−», «Сбросить», перетаскивание, щипок; колесо — с Ctrl или ⌘ (`wheelZoom: 'ctrl'`, без него страница прокручивается и появляется подсказка), `always` или `none`; `maxZoom`, `initArea`, `hasZoomToActive`; полный экран (`hasFullscreen`). Методы через ref: `zoomIn`, `zoomOut`, `resetZoom`, `zoomToObject(id)`, `setLayer(id)`.
+- **Доступность** — объекты — кнопки или ссылки с именем `title`, одна остановка Tab, стрелки — к ближайшему объекту в направлении, Home/End, Enter и пробел (у ссылок — только Enter); при увеличении фокус на объекте за краем сдвигает вид к нему, а окно карты получает фокус — стрелки на нём сдвигают вид; окно возвращает фокус на объект; кнопки масштаба подписаны. Список объектов для скринридера и поиска — следующая часть (new-image-map-2).
+
 ## Список компонентов
 
 ```txt
@@ -2972,30 +2998,3 @@ BaseWaveform
 ```
 
 ---
-
-## BaseImageMap
-
-Интерактивная картинка и карта этажей: точки и фигуры на картинке или плане, подсказки, окна, этажи, масштаб. Своя реализация по возможностям Image Map Pro и Mapplic, данные — свой JSON (`ImageMapData`, версия 1).
-
-```vue
-<BaseImageMap v-model:active="activeId" v-model:layer="floor" :data="mallMap" :init-area="{ x: 0.2, y: 0.1, width: 0.6, height: 0.8 }" @select="track" />
-```
-
-```ts
-const mallMap: ImageMapData = {
-	layers: [{ id: 'f1', title: 'Этаж 1', shortTitle: '1', svg: floor1Svg, width: 1000, height: 600 }],
-	groups: [{ id: 'food', title: 'Кафе', color: 'var(--rise-warning)', icon: 'star' }],
-	objects: [
-		{ id: 'cafe', type: 'svg', elementId: 'shop-12', title: 'Кафе «Липа»', group: 'food', description: 'До 22:00' },
-		{ id: 'info', type: 'point', x: 0.5, y: 0.5, title: 'Справочная', icon: 'info', action: 'none' },
-		{ id: 'parking', type: 'rect', x: 0.8, y: 0.7, width: 0.15, height: 0.2, title: 'Парковка', action: 'link', link: '/parking' },
-	],
-}
-```
-
-- **Слои** — картинка (`image`) или SVG (`svg` строкой, `svgUrl` по адресу); `width` и `height` задают пропорции. SVG очищается по белому списку: без скриптов, `<style>`, обработчиков, внешних ссылок; id получают префикс, поэтому два одинаковых плана на странице не конфликтуют.
-- **Объекты** — `point` (значок, подпись, размер постоянный на экране или `isScaled`, `isPulsing`), `rect`, `ellipse`, `polygon` (координаты в долях картинки) и `svg` — элемент SVG слоя по `elementId`. Группы дают цвет и значок; стили `base`, `hover`, `active` — в `styles` по имени или прямо в объекте, цвета лучше токенами.
-- **Действия** (`action`, по умолчанию `defaultAction` = `popup`): `popup` — окно BaseModal (на экране уже `sheetBreakpoint` — нижняя панель BaseDrawer) с картинкой, описанием, видео и ссылками; `link` — переход (небезопасный адрес отключает действие); `layer` — переход на этаж `targetLayer`; `none`. Подсказка при наведении и фокусе — панель BaseDropdown с `role="tooltip"`, объект ссылается на неё `aria-describedby`; слоты `tooltip`, `popup`, `point`.
-- **Масштаб** — кнопки «+», «−», «Сбросить», перетаскивание, щипок; колесо — с Ctrl или ⌘ (`wheelZoom: 'ctrl'`, без него страница прокручивается и появляется подсказка), `always` или `none`; `maxZoom`, `initArea`, `hasZoomToActive`; полный экран (`hasFullscreen`). Методы через ref: `zoomIn`, `zoomOut`, `resetZoom`, `zoomToObject(id)`, `setLayer(id)`.
-- **Доступность** — объекты — кнопки или ссылки с именем `title`, одна остановка Tab, стрелки — к ближайшему объекту в направлении, Home/End, Enter и пробел; окно возвращает фокус на объект; кнопки масштаба подписаны. Список объектов для скринридера и поиска — следующая часть (new-image-map-2).
-

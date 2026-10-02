@@ -18,7 +18,9 @@ export function useImageMapFocus(options: MapFocusOptions) {
 	const focusId = ref<string | null>(null)
 
 	const enabledIds = computed((): string[] =>
-		(options.getView()?.objects ?? []).filter(item => !item.isDisabled).map(item => item.object.id),
+		(options.getView()?.objects ?? [])
+			.filter(item => !item.isDisabled && (item.object.type !== 'svg' || options.getRenderedSvgIds().has(item.object.id)))
+			.map(item => item.object.id),
 	)
 
 	const tabbableId = computed((): string | undefined => {
@@ -28,10 +30,9 @@ export function useImageMapFocus(options: MapFocusOptions) {
 	})
 
 	function focusObject(id: string | undefined): void {
-		if (!id) return
-		const element = objectElements(options.stageRef.value).get(id)
-		if (!(element instanceof HTMLElement || element instanceof SVGElement)) return
-		focusId.value = id
+		const element = (id ? objectElements(options.stageRef.value).get(id) : undefined) as HTMLElement | undefined
+		if (!element) return
+		focusId.value = id as string
 		element.focus({ preventScroll: true })
 	}
 

@@ -1,6 +1,7 @@
-import { computed, ref } from 'vue'
+import { computed, ref, shallowRef } from 'vue'
 import { UI_IMAGE_MAP } from '@/locales/messages'
 import { useImageMapSvg } from './svg/useImageMapSvg'
+import { useImageMapPan } from './zoom/useImageMapPan'
 import { useImageMapData } from './data/useImageMapData'
 import { useImageMapView } from './zoom/useImageMapView'
 import { useImageMapObjects } from './useImageMapObjects'
@@ -22,6 +23,7 @@ function useRefs() {
 		viewportRef: ref<HTMLElement | null>(null),
 		stageRef: ref<HTMLElement | null>(null),
 		svgContainerRef: ref<HTMLElement | null>(null),
+		renderedSvgIds: shallowRef<ReadonlySet<string>>(new Set()),
 	}
 }
 
@@ -46,7 +48,12 @@ function useMapCore(props: ImageMapProps, emit: BaseImageMapEmits) {
 		getSheetBreakpoint: () => props.sheetBreakpoint,
 	})
 	const actions = useImageMapActions(props, emit, { ...refs, ...data, openPopup: overlay.openPopup, zoomToArea: zoom.zoomToArea })
-	const focus = useImageMapFocus({ ...refs, getView: () => data.view.value, getActive: () => actions.localActive.value })
+	const focus = useImageMapFocus({
+		...refs,
+		getView: () => data.view.value,
+		getActive: () => actions.localActive.value,
+		getRenderedSvgIds: () => refs.renderedSvgIds.value,
+	})
 	const gestures = useImageMapGestures({ ...refs, getWheelMode: () => props.wheelZoom, onInteract: overlay.hideTooltip }, zoom)
 	return { refs, data, zoom, overlay, actions, focus, gestures }
 }
@@ -85,8 +92,10 @@ export function useBaseImageMap(props: ImageMapProps, emit: BaseImageMapEmits) {
 		getLayer: () => data.currentLayer.value,
 		containerRef: refs.svgContainerRef,
 		getBindings: () => objects.svgBindings.value,
+		renderedIds: refs.renderedSvgIds,
 	})
-	const events = useImageMapEvents(emit, { overlay, focus, actions, zoom, consumeDrag: gestures.consumeDrag })
+	const pan = useImageMapPan(zoom, refs.viewportRef)
+	const events = useImageMapEvents(emit, { overlay, focus, actions, zoom, pan, consumeDrag: gestures.consumeDrag })
 
 	return {
 		...useStandardBaseComponent('base-image-map', props, CLASS_KEYS),
