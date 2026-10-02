@@ -1,0 +1,11 @@
+.base-tag-group {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: sz(6px);
+	min-width: 0;
+
+	&:focus {
+		outline: none;
+	}
+}
