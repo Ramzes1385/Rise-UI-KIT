@@ -85,3 +85,11 @@ export interface CadesWindow {
 	/** Вызывается скриптом, когда расширение браузера ответило */
 	cadesplugin_extension_loaded_callback?: () => void
 }
+
+/**
+ * Обёртка над `cadesplugin`: сам он — обещание (thenable), поэтому его нельзя вернуть из async-функции или передать в `resolve` —
+ * `await` развернёт его в `undefined`
+ */
+export interface CadesPluginHandle {
+	plugin: CadesPlugin
+}
