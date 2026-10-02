@@ -177,9 +177,7 @@ function buildPanelContext(
 		hoverResult: index => {
 			if (!search.results.value[index]?.isDisabled) search.activeResult.value = index
 		},
-		retry: column => {
-			if (column.parent) void nav.expand(column.level - 1, column.parent, true)
-		},
+		retry: column => void nav.expand(column.level - 1, column.parent as BaseCascaderNode, true),
 		handleSearchKeydown: keys.handleSearchKeydown,
 		...aria,
 	}

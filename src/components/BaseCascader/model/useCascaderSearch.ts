@@ -22,9 +22,7 @@ export function useCascaderSearch(props: CascaderProps, levels: CascaderLevels) 
 		isSearching,
 		results,
 		moveResult(step: 1 | -1): void {
-			const current = activeResult.value
-			const origin = current === -1 ? 0 : current + step
-			const position = findEnabled(results.value, origin, step)
+			const position = findEnabled(results.value, activeResult.value + step, step)
 			if (position !== -1) activeResult.value = position
 		},
 	}

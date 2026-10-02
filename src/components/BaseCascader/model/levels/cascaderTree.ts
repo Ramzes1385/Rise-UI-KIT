@@ -7,8 +7,8 @@ export function pathKey(path: CascaderPath): string {
 	return path.join(KEY_SEPARATOR)
 }
 
-export function toPathList(value: CascaderValue | undefined, isMultiple: boolean): CascaderPath[] {
-	const items: unknown[] = value ?? []
+export function toPathList(value: CascaderValue, isMultiple: boolean): CascaderPath[] {
+	const items: unknown[] = value
 	const paths = items.some(item => Array.isArray(item))
 		? items.filter((item): item is CascaderPath => Array.isArray(item) && item.length > 0)
 		: [items as CascaderPath].filter(path => path.length > 0)
@@ -44,7 +44,6 @@ function pathTo(index: TreeIndex, id: string): CascaderPath {
 
 export function searchCascader(index: TreeIndex, query: string, isSelectable: (node: BaseCascaderNode) => boolean): CascaderSearchResult[] {
 	const needle = query.trim().toLowerCase()
-	if (!needle) return []
 	const results: CascaderSearchResult[] = []
 	for (const id of index.order) {
 		const node = index.nodes.get(id) as BaseCascaderNode
