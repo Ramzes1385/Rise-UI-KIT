@@ -1,6 +1,6 @@
 /*! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0) Copyright 2026 Fonticons, Inc. */
 /**
- * Значки марок в поле номера — контуры Font Awesome Free 7.3.1 Brands (Fonticons, Inc.), лицензия CC BY 4.0
+ * Значки марок в поле номера и на лице карты — контуры Font Awesome Free 7.3.1 Brands (Fonticons, Inc.), лицензия CC BY 4.0
  * (https://creativecommons.org/licenses/by/4.0/), поле 576×512, без изменений. Товарные знаки принадлежат владельцам.
  * У остальных марок значка нет: официальный знак даёт приложение (`brandIcons`), иначе — плашка с названием
  */

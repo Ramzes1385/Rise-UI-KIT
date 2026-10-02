@@ -10,9 +10,9 @@
 
 <script setup lang="ts">
 import '../styles/CardBrandMark.style.scss'
-import { useCardBrandMark } from '../model/face/useCardBrandMark'
-import type { CardBrandMarkProps } from '../types/cardFace.types'
-import { CARD_BRAND_ICON_VIEW_BOX } from '../types/cardBrandIcons.types'
+import { useCardBrandMark } from '../model/useCardBrandMark'
+import { CARD_BRAND_ICON_VIEW_BOX } from '@utils/form/cardFaceUtils'
+import type { CardBrandMarkProps } from '../types/cardBrandMark.types'
 
 const props = defineProps<CardBrandMarkProps>()
 

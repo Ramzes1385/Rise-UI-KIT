@@ -3,8 +3,7 @@ import { UI_CARD } from '@/locales/messages'
 import { formatMessage } from '@/locales/state'
 import type { BaseBankCardProps } from '../types/BaseBankCard.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
-import { cardBrandName } from '@components/BaseCardInput/model/card/cardErrors'
-import { CARD_FACE_DOT, cardFaceBackground } from '@components/BaseCardInput/model/face/cardFace'
+import { cardBrandName, CARD_FACE_DOT, cardFaceBackground } from '@utils/form/cardFaceUtils'
 import { CARD_BRANDS, type CardBrand, type CardExpiry, parseCardExpiry } from '@utils/form/cardUtils'
 
 const MASK_LENGTH = 4

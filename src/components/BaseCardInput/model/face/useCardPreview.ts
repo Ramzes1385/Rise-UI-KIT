@@ -2,8 +2,8 @@ import { computed, ref } from 'vue'
 import { UI_CARD } from '@/locales/messages'
 import { cardDigits } from '@utils/form/cardUtils'
 import type { useCardFields } from '../useCardFields'
-import { CARD_FACE_DOT, cardFaceBackground, maskedCardNumber } from './cardFace'
 import type { BaseCardInputProps, CardInputField } from '../../types/BaseCardInput.types'
+import { CARD_FACE_DOT, cardFaceBackground, maskedCardNumber } from '@utils/form/cardFaceUtils'
 
 export function useCardPreview(props: BaseCardInputProps, fields: ReturnType<typeof useCardFields>) {
 	const focused = ref<CardInputField | null>(null)

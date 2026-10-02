@@ -4,7 +4,7 @@ import { createUiKitPlugin } from '@/plugin'
 import BaseBankCard from '../ui/BaseBankCard.vue'
 import { render, screen } from '@testing-library/vue'
 import { defineCardBrand } from '@utils/form/cardUtils'
-import { CARD_BRAND_BACKGROUNDS, CARD_FACE_DEFAULT_BACKGROUND } from '@components/BaseCardInput/model/face/cardFaceBackgrounds'
+import { CARD_BRAND_BACKGROUNDS, CARD_FACE_DEFAULT_BACKGROUND } from '@utils/form/cardFaceUtils'
 
 describe('BaseBankCard unit', () => {
 	it('рендерит label', () => {

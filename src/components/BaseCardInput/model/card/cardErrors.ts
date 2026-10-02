@@ -1,15 +1,11 @@
 import { codeLength } from './cardText'
 import { formatMessage } from '@/locales/state'
 import { UI_CARD, UI_TEXT } from '@/locales/messages'
-import type { CardBrand } from '@utils/form/cardUtils'
+import { cardBrandName } from '@utils/form/cardFaceUtils'
 import type { CardCheckContext, CardInputField } from '../../types/BaseCardInput.types'
 import { cardDigits, isValidCardNumber, isValidExpiry, parseCardExpiry } from '@utils/form/cardUtils'
 
 const HOLDER_PATTERN = /^[A-Z][A-Z .'-]*$/
-
-export function cardBrandName(brand: CardBrand): string {
-	return brand.id === 'mir' ? UI_CARD.BRAND_MIR : brand.name
-}
 
 function numberError(text: string, context: CardCheckContext): string | null {
 	const { brand, acceptedIds } = context

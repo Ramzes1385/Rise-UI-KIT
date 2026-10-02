@@ -1,7 +1,6 @@
 import { computed } from 'vue'
-import { cardBrandName } from '../card/cardErrors'
-import type { CardBrandMarkProps } from '../../types/cardFace.types'
-import { CARD_BRAND_ICON_PATHS } from '../../types/cardBrandIcons.types'
+import type { CardBrandMarkProps } from '../types/cardBrandMark.types'
+import { cardBrandName, CARD_BRAND_ICON_PATHS } from '@utils/form/cardFaceUtils'
 
 export function useCardBrandMark(props: CardBrandMarkProps) {
 	return {

@@ -89,12 +89,12 @@
 <script setup lang="ts">
 import '../styles/BaseCardInput.style.scss'
 import { UI_CARD } from '@/locales/messages'
-import CardBrandMark from './CardBrandMark.vue'
 import { BaseInput } from '@components/BaseInput'
 import { FormFieldError } from '@components/BaseFormField'
 import { kitDefaults } from '@composables/base/useDefaults'
 import { useBaseCardInput } from '../model/useBaseCardInput'
-import { CARD_BRAND_ICON_VIEW_BOX } from '../types/cardBrandIcons.types'
+import { CARD_BRAND_ICON_VIEW_BOX } from '@utils/form/cardFaceUtils'
+import CardBrandMark from '@components/BaseBankCard/ui/CardBrandMark.vue'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseCardInputEmits, BaseCardInputProps } from '../types/BaseCardInput.types'
 

@@ -1,7 +1,7 @@
 import type { CardBrand } from '@utils/form/cardUtils'
 
 /**
- * Пропсы значка марки CardBrandMark (внутренний компонент превью BaseCardInput и BaseBankCard)
+ * Пропсы значка марки CardBrandMark (внутренний компонент BaseBankCard, общий с превью BaseCardInput)
  */
 export interface CardBrandMarkProps {
 	/** Марка карты */

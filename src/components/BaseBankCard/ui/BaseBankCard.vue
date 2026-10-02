@@ -27,9 +27,9 @@
 <script setup lang="ts">
 import '../styles/BaseBankCard.style.scss'
 import { UI_CARD } from '@/locales/messages'
+import CardBrandMark from './CardBrandMark.vue'
 import { useBaseBankCard } from '../model/useBaseBankCard'
 import { kitDefaults } from '@composables/base/useDefaults'
-import CardBrandMark from '@components/BaseCardInput/ui/CardBrandMark.vue'
 import type { BaseBankCardProps, BaseBankCardSlots } from '../types/BaseBankCard.types'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 
