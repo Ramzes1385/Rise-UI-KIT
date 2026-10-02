@@ -146,6 +146,15 @@ describe('BaseImageMapEditor файлы: JSON', () => {
 		expect(screen.queryByRole('alert')).toBeNull()
 	})
 
+	it('объект без геометрии по типу — «Это не JSON карты», редактор остаётся', async () => {
+		const { container, emitted } = renderEditor()
+		const text = '{"layers":[{"id":"l","width":10,"height":10}],"objects":[{"id":"a","type":"polygon"}]}'
+		await chooseFile(jsonInput(container), new File([text], 'map.json'))
+		await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent(/Это не JSON карты/))
+		expect(emitted()['update:modelValue']).toBeUndefined()
+		expect(screen.getByRole('button', { name: /^Зал\s*Прямоугольник$/ })).toBeInTheDocument()
+	})
+
 	it('«Экспорт JSON» скачивает файл fileName', async () => {
 		const createObjectURL = vi.fn(() => 'blob:map')
 		const revokeObjectURL = vi.fn()

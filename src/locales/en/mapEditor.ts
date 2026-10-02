@@ -120,7 +120,7 @@ export const enMapEditor = {
 		IMPORTED: 'Map loaded from JSON',
 		SVG_IMPORTED: 'Objects added from SVG: {n}',
 		LAYER_DELETED: 'Floor deleted',
-		INVALID_JSON: 'Not a map JSON: layers and objects arrays are required',
+		INVALID_JSON: 'Not a map JSON: check layers, objects and their coordinates',
 		INVALID_IMAGE: 'Could not open the image',
 		ID_REQUIRED: 'Enter an id',
 		ID_TAKEN: 'This id is already used',

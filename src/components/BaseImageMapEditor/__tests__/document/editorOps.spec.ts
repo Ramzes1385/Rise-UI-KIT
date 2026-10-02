@@ -14,6 +14,7 @@ import {
 	removeGroup,
 	removeLayer,
 	removeObject,
+	renameObject,
 } from '../../model/document/editorOps'
 
 function makeData(): ImageMapData {
@@ -31,6 +32,25 @@ function makeData(): ImageMapData {
 			{ id: 'group-1', title: 'Кафе', color: 'red' },
 			{ id: 'group-2', title: 'Магазины' },
 		],
+	}
+}
+
+function withRoutes(): ImageMapData {
+	return {
+		...makeData(),
+		routes: {
+			nodes: [
+				{ id: 'a', x: 0.1, y: 0.1, object: 'rect-1' },
+				{ id: 'b', x: 0.5, y: 0.5 },
+				{ id: 'c', x: 0.5, y: 0.5, layer: 'floor-2', object: 'svg-1' },
+				{ id: 'd', x: 0.6, y: 0.5, layer: 'floor-2' },
+			],
+			edges: [
+				['a', 'b'],
+				['c', 'd'],
+			],
+			transitions: [{ id: 'stairs', nodes: ['b', 'c'] }],
+		},
 	}
 }
 
@@ -70,6 +90,26 @@ describe('editorOps: id и поиск', () => {
 })
 
 describe('editorOps: объекты', () => {
+	it('removeObject снимает объект с узлов маршрутов', () => {
+		const data = withRoutes()
+		removeObject(data, 'rect-1')
+		expect(data.routes?.nodes.find(node => node.id === 'a')?.object).toBeUndefined()
+		expect(data.routes?.nodes).toHaveLength(4)
+	})
+
+	it('renameObject меняет id объекта и ссылки узлов; чужой и тот же id — ничего', () => {
+		const data = withRoutes()
+		renameObject(data, 'rect-1', 'shop')
+		expect(allIds(data)).toContain('shop')
+		expect(data.routes?.nodes.find(node => node.id === 'a')?.object).toBe('shop')
+		renameObject(data, 'missing', 'x')
+		renameObject(data, 'shop', 'shop')
+		const plain = makeData()
+		renameObject(plain, 'point-1', 'p')
+		expect(allIds(plain)).toEqual(['p', 'rect-1', 'svg-1'])
+		expect(allIds(data)).toEqual(['point-1', 'shop', 'svg-1'])
+	})
+
 	it('removeObject удаляет по id', () => {
 		const data = makeData()
 		removeObject(data, 'rect-1')
@@ -143,6 +183,44 @@ describe('editorOps: слои', () => {
 		moveLayer(data, 'floor-2', -1)
 		expect(data.layers.map(layer => layer.id)).toEqual(['floor-2', 'floor-1'])
 		expect(data.objects.map(object => object.layer)).toEqual(['floor-1', 'floor-1', 'floor-2'])
+	})
+
+	it('removeLayer убирает узлы этажа, рёбра к ним и узлы переходов', () => {
+		const data = withRoutes()
+		data.objects[0]!.targetLayer = 'floor-2'
+		removeLayer(data, 'floor-2')
+		expect(data.routes?.nodes.map(node => node.id)).toEqual(['a', 'b'])
+		expect(data.routes?.edges).toEqual([['a', 'b']])
+		expect(data.routes?.transitions).toEqual([])
+		expect(data.objects[0]?.targetLayer).toBeUndefined()
+	})
+
+	it('removeLayer первого слоя: узлы без слоя уходят, узел с пустым слоем получает новый первый', () => {
+		const data = withRoutes()
+		data.routes?.nodes.push({ id: 'e', x: 0, y: 0, layer: '' })
+		data.routes?.transitions?.push({ id: 'lift', nodes: ['c', 'd', 'e'] })
+		removeLayer(data, 'floor-1')
+		expect(data.routes?.nodes.map(node => [node.id, node.layer])).toEqual([
+			['c', 'floor-2'],
+			['d', 'floor-2'],
+			['e', 'floor-2'],
+		])
+		expect(data.routes?.edges).toEqual([['c', 'd']])
+		expect(data.routes?.transitions).toEqual([{ id: 'lift', nodes: ['c', 'd', 'e'] }])
+	})
+
+	it('removeLayer: маршруты без переходов', () => {
+		const data = withRoutes()
+		delete data.routes?.transitions
+		removeLayer(data, 'floor-2')
+		expect(data.routes?.transitions).toBeUndefined()
+		expect(data.routes?.edges).toEqual([['a', 'b']])
+	})
+
+	it('moveLayer фиксирует слой узлов маршрутов', () => {
+		const data = withRoutes()
+		moveLayer(data, 'floor-2', -1)
+		expect(data.routes?.nodes.map(node => node.layer)).toEqual(['floor-1', 'floor-1', 'floor-2', 'floor-2'])
 	})
 
 	it('moveLayer вне границ и с чужим id — без изменений', () => {

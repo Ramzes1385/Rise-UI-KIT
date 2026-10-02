@@ -15,6 +15,7 @@ import {
 	removeGroup,
 	removeLayer,
 	removeObject,
+	renameObject,
 } from '../document/editorOps'
 
 function useObjectFields(ctx: EditorContext) {
@@ -42,7 +43,8 @@ function useObjectFields(ctx: EditorContext) {
 			const object = findObject(draft, id)
 			if (!object) return
 			if (key === 'geo.points' && object.type === 'polygon') object.points = parsePoints(String(value)) ?? object.points
-			else applyField(object, key, typeof value === 'string' && key === 'id' ? value.trim() : value)
+			else if (key === 'id') renameObject(draft, id, String(value).trim())
+			else applyField(object, key, value)
 		}, `${key}:${id}`)
 	}
 

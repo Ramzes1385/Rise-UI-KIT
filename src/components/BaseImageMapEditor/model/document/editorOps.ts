@@ -1,4 +1,5 @@
 import { translateObject } from '../geometry/editorGeometry'
+import type { ImageMapRoutes } from '@components/BaseImageMap/types/ImageMapRoutes.types'
 import type { ImageMapData, ImageMapGroup, ImageMapLayer, ImageMapObject } from '@components/BaseImageMap/types/imageMapData.types'
 
 const DUPLICATE_OFFSET = 0.02
@@ -28,6 +29,14 @@ export function layerObjects(data: ImageMapData, layerId: string | undefined): I
 
 export function removeObject(data: ImageMapData, id: string): void {
 	data.objects = data.objects.filter(object => object.id !== id)
+	for (const node of data.routes?.nodes ?? []) if (node.object === id) delete node.object
+}
+
+export function renameObject(data: ImageMapData, id: string, nextId: string): void {
+	const object = findObject(data, id)
+	if (!object || id === nextId) return
+	object.id = nextId
+	for (const node of data.routes?.nodes ?? []) if (node.object === id) node.object = nextId
 }
 
 export function duplicateObject(data: ImageMapData, id: string): ImageMapObject | undefined {
@@ -57,12 +66,29 @@ export function addLayer(data: ImageMapData, layer: Omit<ImageMapLayer, 'id'>): 
 	return created
 }
 
+function removeLayerRoutes(routes: ImageMapRoutes, isRemoved: (layer: string | undefined) => boolean): void {
+	routes.nodes = routes.nodes.filter(node => !isRemoved(node.layer))
+	const kept = new Set(routes.nodes.map(node => node.id))
+	routes.edges = routes.edges.filter(([from, to]) => kept.has(from) && kept.has(to))
+	if (routes.transitions) {
+		for (const transition of routes.transitions) transition.nodes = transition.nodes.filter(node => kept.has(node))
+		routes.transitions = routes.transitions.filter(transition => transition.nodes.length > 1)
+	}
+}
+
+function layered(data: ImageMapData): { layer?: string }[] {
+	return [...data.objects, ...(data.routes?.nodes ?? [])]
+}
+
 export function removeLayer(data: ImageMapData, id: string): void {
 	const firstId = data.layers[0]?.id
-	data.objects = data.objects.filter(object => (object.layer ?? firstId) !== id)
+	const isRemoved = (layer: string | undefined) => (layer ?? firstId) === id
+	data.objects = data.objects.filter(object => !isRemoved(object.layer))
 	data.layers = data.layers.filter(layer => layer.id !== id)
+	for (const object of data.objects) if (object.targetLayer === id) delete object.targetLayer
+	if (data.routes) removeLayerRoutes(data.routes, isRemoved)
 	const nextFirst = data.layers[0]?.id
-	if (firstId === id) for (const object of data.objects) if (!object.layer) object.layer = nextFirst
+	if (firstId === id) for (const item of layered(data)) if (!item.layer) item.layer = nextFirst
 }
 
 export function moveLayer(data: ImageMapData, id: string, delta: number): void {
@@ -70,7 +96,7 @@ export function moveLayer(data: ImageMapData, id: string, delta: number): void {
 	const to = from + delta
 	if (from < 0 || to < 0 || to >= data.layers.length) return
 	const firstId = data.layers[0]?.id
-	for (const object of data.objects) object.layer ??= firstId
+	for (const item of layered(data)) item.layer ??= firstId
 	const [layer] = data.layers.splice(from, 1)
 	data.layers.splice(to, 0, layer as ImageMapLayer)
 }

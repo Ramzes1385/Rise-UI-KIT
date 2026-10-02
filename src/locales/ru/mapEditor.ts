@@ -135,7 +135,7 @@ export const ruMapEditor = {
 		SVG_IMPORTED: 'Добавлено объектов из SVG: {n}',
 		LAYER_DELETED: 'Этаж удалён',
 		/** Ошибки */
-		INVALID_JSON: 'Это не JSON карты: нужны массивы layers и objects',
+		INVALID_JSON: 'Это не JSON карты: проверьте слои, объекты и их координаты',
 		INVALID_IMAGE: 'Не удалось открыть картинку',
 		ID_REQUIRED: 'Укажите id',
 		ID_TAKEN: 'Такой id уже есть',

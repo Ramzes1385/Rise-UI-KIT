@@ -49,8 +49,57 @@ function isLayer(value: unknown): value is ImageMapLayer {
 	return isRecord(value) && typeof value.id === 'string' && Number(value.width) > 0 && Number(value.height) > 0
 }
 
+function isNumber(value: unknown): value is number {
+	return typeof value === 'number' && Number.isFinite(value)
+}
+
+function hasNumbers(value: Record<string, unknown>, keys: string[]): boolean {
+	return keys.every(key => isNumber(value[key]))
+}
+
+function isPair(value: unknown): boolean {
+	return Array.isArray(value) && value.length === 2 && value.every(isNumber)
+}
+
+const SHAPE_CHECKS: Record<string, (value: Record<string, unknown>) => boolean> = {
+	point: value => hasNumbers(value, ['x', 'y']),
+	rect: value => hasNumbers(value, ['x', 'y', 'width', 'height']),
+	ellipse: value => hasNumbers(value, ['x', 'y', 'rx', 'ry']),
+	polygon: value => Array.isArray(value.points) && value.points.length >= 3 && value.points.every(isPair),
+	svg: value => typeof value.elementId === 'string' && value.elementId !== '',
+}
+
 function isObject(value: unknown): boolean {
-	return isRecord(value) && typeof value.id === 'string' && (IMAGE_MAP_OBJECT_TYPES as readonly unknown[]).includes(value.type)
+	if (!isRecord(value) || typeof value.id !== 'string' || !(IMAGE_MAP_OBJECT_TYPES as readonly unknown[]).includes(value.type))
+		return false
+	return SHAPE_CHECKS[value.type as string]?.(value) === true
+}
+
+function isUnique(items: unknown[]): boolean {
+	const ids = items.map(item => (item as { id: string }).id)
+	return new Set(ids).size === ids.length
+}
+
+function isRouteNode(value: unknown): boolean {
+	return isRecord(value) && typeof value.id === 'string' && hasNumbers(value, ['x', 'y'])
+}
+
+function isRouteEdge(value: unknown): boolean {
+	return Array.isArray(value) && value.length === 2 && value.every(item => typeof item === 'string')
+}
+
+function isTransition(value: unknown): boolean {
+	return (
+		isRecord(value) && typeof value.id === 'string' && Array.isArray(value.nodes) && value.nodes.every(item => typeof item === 'string')
+	)
+}
+
+function isRoutes(value: unknown): boolean {
+	if (value === undefined) return true
+	if (!isRecord(value) || !Array.isArray(value.nodes) || !Array.isArray(value.edges)) return false
+	const transitions = value.transitions ?? []
+	if (!Array.isArray(transitions)) return false
+	return value.nodes.every(isRouteNode) && isUnique(value.nodes) && value.edges.every(isRouteEdge) && transitions.every(isTransition)
 }
 
 export function parseMap(text: string): ImageMapData | undefined {
@@ -62,6 +111,7 @@ export function parseMap(text: string): ImageMapData | undefined {
 	}
 	if (!isRecord(value) || !Array.isArray(value.layers) || !Array.isArray(value.objects)) return undefined
 	if (!value.layers.every(isLayer) || !value.objects.every(isObject)) return undefined
+	if (!isUnique(value.layers) || !isUnique(value.objects) || !isRoutes(value.routes)) return undefined
 	return value as unknown as ImageMapData
 }
 

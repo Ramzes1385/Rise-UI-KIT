@@ -351,3 +351,14 @@ describe('BaseImageMapEditor панель: группы', () => {
 		expect(lastModel(emitted).groups).toEqual([{ id: 'group-1', title: 'Группа 1' }])
 	})
 })
+
+describe('BaseImageMapEditor панель: маршруты', () => {
+	it('смена id объекта переписывает узлы маршрутов', async () => {
+		const map = makeMap()
+		map.routes = { nodes: [{ id: 'n1', x: 0.1, y: 0.1, object: 'r1' }], edges: [] }
+		const { emitted } = renderEditor({ modelValue: map, selected: 'r1' })
+		await fireEvent.update(screen.getByLabelText('Id'), 'hall')
+		expect(lastModel(emitted)?.routes?.nodes[0]?.object).toBe('hall')
+		expect(modelObject(emitted, 'hall')).toBeDefined()
+	})
+})

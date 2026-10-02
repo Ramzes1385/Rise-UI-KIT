@@ -134,6 +134,81 @@ describe('editorFiles: parseMap', () => {
 		expect(parseMap(JSON.stringify({ layers: [layer], objects: [{ ...object, id: 5 }] }))).toBeUndefined()
 		expect(parseMap(JSON.stringify({ layers: [layer], objects: [null] }))).toBeUndefined()
 	})
+
+	it('геометрия по типу: без координат, rx, ry, вершин или elementId — undefined', () => {
+		const bad = [
+			{ id: 'a', type: 'polygon' },
+			{
+				id: 'a',
+				type: 'polygon',
+				points: [
+					[0, 0],
+					[1, 1],
+				],
+			},
+			{ id: 'a', type: 'polygon', points: [[0, 0], [1, 1], [1]] },
+			{
+				id: 'a',
+				type: 'polygon',
+				points: [
+					[0, 0],
+					[1, 1],
+					['1', 0],
+				],
+			},
+			{ id: 'a', type: 'polygon', points: 'x' },
+			{ id: 'a', type: 'point', x: 0 },
+			{ id: 'a', type: 'point', x: Number.NaN, y: 0 },
+			{ id: 'a', type: 'rect', x: 0, y: 0, width: 1 },
+			{ id: 'a', type: 'ellipse', x: 0, y: 0, rx: 1 },
+			{ id: 'a', type: 'svg' },
+			{ id: 'a', type: 'svg', elementId: '' },
+		]
+		for (const item of bad) expect(parseMap(JSON.stringify({ layers: [layer], objects: [item] }))).toBeUndefined()
+	})
+
+	it('геометрия по типу: верные фигуры принимаются', () => {
+		const objects = [
+			{ id: 'r', type: 'rect', x: 0, y: 0, width: 1, height: 1 },
+			{ id: 'e', type: 'ellipse', x: 0, y: 0, rx: 1, ry: 1 },
+			{
+				id: 'g',
+				type: 'polygon',
+				points: [
+					[0, 0],
+					[1, 0],
+					[1, 1],
+				],
+			},
+			{ id: 's', type: 'svg', elementId: 'shop' },
+		]
+		expect(parseMap(JSON.stringify({ layers: [layer], objects }))?.objects).toHaveLength(4)
+	})
+
+	it('повтор id слоя или объекта — undefined', () => {
+		expect(parseMap(JSON.stringify({ layers: [layer], objects: [object, object] }))).toBeUndefined()
+		expect(parseMap(JSON.stringify({ layers: [layer, layer], objects: [] }))).toBeUndefined()
+	})
+
+	it('routes: верные принимаются, неверные — undefined', () => {
+		const map = (routes: unknown) => parseMap(JSON.stringify({ layers: [layer], objects: [object], routes }))
+		const node = { id: 'n', x: 0, y: 0 }
+		expect(map({ nodes: [node], edges: [['n', 'n']], transitions: [{ id: 't', nodes: ['n'] }] })).toBeDefined()
+		expect(map({ nodes: [], edges: [] })).toBeDefined()
+		for (const routes of [
+			null,
+			{ nodes: [] },
+			{ edges: [] },
+			{ nodes: [{ id: 'n' }], edges: [] },
+			{ nodes: [node, node], edges: [] },
+			{ nodes: [], edges: [['n']] },
+			{ nodes: [], edges: [[1, 2]] },
+			{ nodes: [], edges: [], transitions: {} },
+			{ nodes: [], edges: [], transitions: [{ id: 't' }] },
+			{ nodes: [], edges: [], transitions: [{ id: 't', nodes: [1] }] },
+		])
+			expect(map(routes)).toBeUndefined()
+	})
 })
 
 describe('editorFiles: downloadText', () => {
