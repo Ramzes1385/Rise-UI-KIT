@@ -26,6 +26,18 @@ interface UseImageZoomOptions {
 
 export type { UseImageZoomOptions }
 
+/** Границы и шаг масштаба зума */
+export interface ZoomScales {
+	/** Начальный масштаб */
+	initialScale: number
+	/** Шаг изменения масштаба */
+	zoomStep: number
+	/** Минимальный масштаб */
+	minScale: number
+	/** Максимальный масштаб */
+	maxScale: number
+}
+
 /** Ширина и высота, px */
 export interface Size {
 	width: number

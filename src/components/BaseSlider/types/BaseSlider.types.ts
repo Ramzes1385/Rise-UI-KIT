@@ -36,22 +36,26 @@ export type SliderNavigation = 'dots' | 'thumbnails' | 'both' | 'none'
 
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
-export interface BaseSliderProps extends BaseComponentProps<
-	string,
-	| 'root'
-	| 'arrows'
-	| 'arrow'
-	| 'viewport'
-	| 'track'
-	| 'slide'
-	| 'caption'
-	| 'title'
-	| 'desc'
-	| 'navigation'
-	| 'dots'
-	| 'dot'
-	| 'thumbs'
-	| 'thumb'
+export interface BaseSliderProps extends Omit<
+	BaseComponentProps<
+		string,
+		| 'root'
+		| 'arrows'
+		| 'arrow'
+		| 'rotation'
+		| 'viewport'
+		| 'track'
+		| 'slide'
+		| 'caption'
+		| 'title'
+		| 'desc'
+		| 'navigation'
+		| 'dots'
+		| 'dot'
+		| 'thumbs'
+		| 'thumb'
+	>,
+	'variant' | 'color'
 > {
 	/** Элементы слайдера */
 	items: SliderItem[]
@@ -62,7 +66,10 @@ export interface BaseSliderProps extends BaseComponentProps<
 	animation?: SliderAnimation
 	/** Тип навигации */
 	navigation?: SliderNavigation
-	/** Автоматическое воспроизведение */
+	/**
+	 * Автопрокрутка (APG Carousel): первой в порядке Tab появляется кнопка «Остановить/Запустить автопрокрутку».
+	 * Пауза под указателем; фокус на слайде или стрелке, запуск видео и `prefers-reduced-motion` останавливают прокрутку до кнопки
+	 */
 	isAutoplay?: boolean
 	/** Интервал автопроигрывания (мс) */
 	autoplayInterval?: number
@@ -88,6 +95,22 @@ export interface BaseSliderProps extends BaseComponentProps<
 	hasCaption?: boolean
 	/** Включить зум картинок по клику */
 	isZoomable?: boolean
+	/** Имя карусели для скринридера (`aria-label` области); по умолчанию «Карусель» из словаря */
+	label?: string
+}
+
+/** Методы экземпляра BaseSlider (`ref`) */
+export interface BaseSliderExpose {
+	/** Перейти к слайду; номер за краем — к краю */
+	goTo: (index: number) => void
+	/** Следующий слайд */
+	goNext: () => void
+	/** Предыдущий слайд */
+	goPrev: () => void
+	/** Остановить автопрокрутку (как кнопка «Остановить») */
+	stopAutoplay: () => void
+	/** Запустить автопрокрутку снова */
+	playAutoplay: () => void
 }
 
 export interface BaseSliderEmits {

@@ -1,36 +1,35 @@
-/** Composable: управление галереей изображений (навигация, текущий src) */
-import { computed, ref } from 'vue'
-import type { UseImageGalleryOptions, UseImageGalleryReturn } from './types/useImageGallery.types'
+/** Composable: управление галереей изображений (навигация, текущий src и alt) */
+import { computed, ref, watch } from 'vue'
+import type { ImageGalleryItem, ImageGallerySource, UseImageGalleryOptions, UseImageGalleryReturn } from './types/useImageGallery.types'
 
-/** Описание: управляет галереей изображений — навигация вперёд/назад, переход к конкретному индексу и текущий src с учётом zoom */
+/** Описание: элемент галереи объектом — строка становится `{ src }` */
+function toGalleryItem(source: ImageGallerySource): ImageGalleryItem {
+	return typeof source === 'string' ? { src: source } : source
+}
+
+/**
+ * Описание: управляет галереей изображений — навигация вперёд/назад, переход к конкретному индексу, текущие src и alt с учётом zoom.
+ * Галерея сократилась — номер текущего изображения остаётся в её границах.
+ */
 function useImageGallery(options: UseImageGalleryOptions): UseImageGalleryReturn {
 	const { gallery, src, resetZoom } = options
 
 	const galleryIndex = ref(0)
-	const galleryList = computed((): string[] => gallery() ?? [])
+	const items = computed((): ImageGalleryItem[] => (gallery() ?? []).map(toGalleryItem))
+	const galleryList = computed((): string[] => items.value.map(item => item.src))
 	const hasGallery = computed((): boolean => galleryList.value.length > 1)
 	const hasGalleryPrev = computed((): boolean => hasGallery.value && galleryIndex.value > 0)
 	const hasGalleryNext = computed((): boolean => hasGallery.value && galleryIndex.value < galleryList.value.length - 1)
-	const currentZoomSrc = computed((): string => {
-		if (hasGallery.value) return galleryList.value[galleryIndex.value] ?? src()
-		return src()
-	})
+	const currentItem = computed((): ImageGalleryItem | undefined => (hasGallery.value ? items.value[galleryIndex.value] : undefined))
 
-	function handleGalleryPrev(): void {
-		if (!hasGalleryPrev.value) return
-		galleryIndex.value--
-		resetZoom()
-	}
+	watch(
+		() => galleryList.value.length,
+		length => {
+			if (galleryIndex.value >= length) galleryIndex.value = Math.max(0, length - 1)
+		},
+	)
 
-	function handleGalleryNext(): void {
-		if (!hasGalleryNext.value) return
-		galleryIndex.value++
-		resetZoom()
-	}
-
-	function handleGalleryGo(index: number): void {
-		/* istanbul ignore next -- defensive guard: index всегда в пределах thumbnails (v-for на galleryList), out-of-bounds недостижим из UI */
-		if (index < 0 || index >= galleryList.value.length) return
+	function go(index: number): void {
 		galleryIndex.value = index
 		resetZoom()
 	}
@@ -41,10 +40,17 @@ function useImageGallery(options: UseImageGalleryOptions): UseImageGalleryReturn
 		hasGallery,
 		hasGalleryPrev,
 		hasGalleryNext,
-		currentZoomSrc,
-		handleGalleryPrev,
-		handleGalleryNext,
-		handleGalleryGo,
+		currentZoomSrc: computed((): string => currentItem.value?.src ?? src()),
+		currentAlt: computed((): string | undefined => currentItem.value?.alt),
+		handleGalleryPrev: (): void => {
+			if (hasGalleryPrev.value) go(galleryIndex.value - 1)
+		},
+		handleGalleryNext: (): void => {
+			if (hasGalleryNext.value) go(galleryIndex.value + 1)
+		},
+		handleGalleryGo: (index: number): void => {
+			if (index >= 0 && index < galleryList.value.length) go(index)
+		},
 	}
 }
 

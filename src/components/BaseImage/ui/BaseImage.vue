@@ -29,7 +29,7 @@
 
 		<component
 			:is="resolvedHasZoom ? 'button' : 'div'"
-			v-if="!hasError"
+			v-if="!hasError && currentSrc"
 			class="base-image__frame"
 			v-bind="zoomTriggerAttrs"
 			@click="handleImageClick">
@@ -38,6 +38,7 @@
 				<source v-if="webpSrc" :srcset="webpSrc" type="image/webp" />
 				<img
 					ref="imgRef"
+					v-bind="imgAttrs"
 					:src="currentSrc"
 					:srcset="srcsetValue"
 					:sizes="sizesValue"
@@ -73,7 +74,7 @@ import { BaseIcon } from '@components/BaseIcon'
 import { useBaseImage } from '../model/useBaseImage'
 import { kitDefaults } from '@composables/base/useDefaults'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
-import type { BaseImageEmits, BaseImageProps, BaseImageSlots } from '../types/BaseImage.types'
+import type { BaseImageEmits, BaseImageExpose, BaseImageProps, BaseImageSlots } from '../types/BaseImage.types'
 
 const props = withDefaults(
 	defineProps<BaseImageProps>(),
@@ -118,5 +119,8 @@ const {
 	radiusStyle,
 	handleImageClick,
 	structuredData,
+	exposed,
 } = useBaseImage(props, emit)
+
+defineExpose<BaseImageExpose>(exposed)
 </script>

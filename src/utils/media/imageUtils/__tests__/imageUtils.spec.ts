@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom/vitest'
-import { buildOptimizedSrc, buildSrcset, isExternalImage, replaceExtension } from '../imageUtils'
+import { buildOptimizedSrc, buildSizes, buildSrcset, isExternalImage, replaceExtension } from '../imageUtils'
 
 describe('imageUtils', () => {
 	describe('isExternalImage', () => {
@@ -104,6 +104,36 @@ describe('imageUtils', () => {
 
 		it('возвращает undefined при srcWidth=0', () => {
 			expect(buildSrcset('img.png', 0)).toBeUndefined()
+		})
+	})
+
+	describe('fu-media: IMG-9, IMG-12', () => {
+		it('isExternalImage: protocol-relative и схема в любом регистре', () => {
+			expect(isExternalImage('//cdn.example.com/a.png')).toBe(true)
+			expect(isExternalImage('HTTPS://example.com/a.png')).toBe(true)
+			expect(isExternalImage('Data:image/png;base64,abc')).toBe(true)
+		})
+
+		it('buildOptimizedSrc и buildSrcset без адреса не падают', () => {
+			expect(buildOptimizedSrc(undefined, 400)).toBe('')
+			expect(buildOptimizedSrc('', 400)).toBe('')
+			expect(buildSrcset(undefined, 400)).toBeUndefined()
+			expect(buildSrcset('', 400)).toBeUndefined()
+		})
+
+		it('buildSrcset при существующем query добавляет параметр через &', () => {
+			expect(buildSrcset('img.jpg?v=1', 400)).toBe('img.jpg?v=1&w=400 1x, img.jpg?v=1&w=800 2x')
+		})
+
+		it('buildSizes: число — px, единицы длины — как есть, остальное — 100vw', () => {
+			expect(buildSizes(320)).toBe('320px')
+			expect(buildSizes(0)).toBe('100vw')
+			expect(buildSizes('320px')).toBe('320px')
+			expect(buildSizes(' 50vw ')).toBe('50vw')
+			expect(buildSizes('20rem')).toBe('20rem')
+			expect(buildSizes('100%')).toBe('100vw')
+			expect(buildSizes('auto')).toBe('100vw')
+			expect(buildSizes(undefined)).toBe('100vw')
 		})
 	})
 })

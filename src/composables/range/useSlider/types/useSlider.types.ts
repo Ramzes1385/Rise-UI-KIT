@@ -1,4 +1,4 @@
-import type { ComputedRef, Ref } from 'vue'
+import type { ComputedRef, DeepReadonly, Ref } from 'vue'
 import type { SliderAnimation } from '@components/BaseSlider/types/BaseSlider.types'
 
 interface UseSliderOptions {
@@ -59,16 +59,30 @@ interface UseSliderReturn {
 	goPrev: () => void
 	/** Перейти к странице навигации */
 	goToPage: (page: number) => void
-	/** Пауза автопроигрывания */
+	/**
+	 * Автопрокрутка остановлена: кнопкой (`stopAutoplay`), фокусом на слайде или стрелке, запуском видео, reduced motion.
+	 * Подпись кнопки «Остановить/Запустить» — по этому флагу (APG Carousel)
+	 */
+	isAutoplayStopped: DeepReadonly<Ref<boolean>>
+	/** Слайды сейчас листаются сами: на это время live-регион слайдов выключен (`aria-live="off"`) */
+	isRotating: DeepReadonly<Ref<boolean>>
+	/** Временная пауза таймера (флаги паузы не меняет; `resumeAutoplay` запустит снова) */
 	pauseAutoplay: () => void
-	/** Возобновление автопроигрывания */
+	/** Перезапуск таймера, если ничто не держит паузу */
 	resumeAutoplay: () => void
+	/** Остановить автопрокрутку до `playAutoplay` (кнопка «Остановить») */
+	stopAutoplay: () => void
+	/** Запустить автопрокрутку снова (кнопка «Запустить»); указатель над слайдером по-прежнему держит паузу */
+	playAutoplay: () => void
 	/** Обработчик mouseenter корня: пауза автопроигрывания, пока указатель над слайдером */
 	onMouseEnter: () => void
 	/** Обработчик mouseleave корня: возобновление, если фокус не внутри слайдера */
 	onMouseLeave: () => void
-	/** Обработчик focusin корня: пауза автопроигрывания, пока фокус внутри слайдера */
-	onFocusIn: () => void
+	/**
+	 * Обработчик focusin корня: фокус на слайде или стрелке останавливает автопрокрутку до кнопки «Запустить» (APG);
+	 * фокус на кнопке с атрибутом `data-slider-rotation` — нет
+	 */
+	onFocusIn: (event: FocusEvent) => void
 	/** Обработчик focusout корня: возобновление, когда фокус покинул слайдер и указатель не над ним */
 	onFocusOut: (event: FocusEvent) => void
 	/** Обработчик touchstart */
@@ -77,7 +91,9 @@ interface UseSliderReturn {
 	onTouchMove: (event: TouchEvent) => void
 	/** Обработчик touchend */
 	onTouchEnd: (event: TouchEvent) => void
-	/** Обработчик начала перетаскивания мышью */
+	/** Обработчик touchcancel: жест прерван, слайд не меняется */
+	onTouchCancel: () => void
+	/** Обработчик mousedown viewport: перетаскивание только левой кнопкой и не с полей ввода и видео */
 	onDragStart: (event: MouseEvent) => void
 	/** Обработчик click в фазе захвата: гасит click, которым заканчивается перетаскивание мышью */
 	onClickCapture: (event: MouseEvent) => void
@@ -112,8 +128,25 @@ type UseSliderNavigationReturn = Pick<
 /** Возврат useSliderAutoplay: управление автопрокруткой и обработчики корня, ставящие её на паузу */
 type UseSliderAutoplayReturn = Pick<
 	UseSliderReturn,
-	'pauseAutoplay' | 'resumeAutoplay' | 'onMouseEnter' | 'onMouseLeave' | 'onFocusIn' | 'onFocusOut'
+	| 'isAutoplayStopped'
+	| 'isRotating'
+	| 'pauseAutoplay'
+	| 'resumeAutoplay'
+	| 'stopAutoplay'
+	| 'playAutoplay'
+	| 'onMouseEnter'
+	| 'onMouseLeave'
+	| 'onFocusIn'
+	| 'onFocusOut'
 >
+
+/** Что нужно автопрокрутке от навигации */
+interface SliderAutoplayControls {
+	/** Следующий слайд */
+	goNext: () => void
+	/** Есть куда листать (больше одного экрана слайдов) */
+	canRotate: () => boolean
+}
 
 /** Возврат useSliderViewport */
 interface UseSliderViewportReturn {
@@ -127,6 +160,7 @@ interface UseSliderViewportReturn {
 
 export type {
 	ResolvedSliderOptions,
+	SliderAutoplayControls,
 	SliderTrackStyleInput,
 	UseSliderAutoplayReturn,
 	UseSliderNavigationReturn,

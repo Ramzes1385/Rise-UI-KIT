@@ -87,8 +87,14 @@ describe('useImageState', () => {
 			})
 		})
 
-		it('пропорции важнее ширины и высоты', () => {
+		it('пропорции вместе с шириной: высота считается от ширины, height не применяется (IMG-13)', () => {
 			const { state } = setup({ aspectRatio: () => '4/3', width: () => 320, height: () => 240 })
+
+			expect(state.containerStyle.value).toEqual({ 'aspect-ratio': '4/3', width: 'calc(320px * var(--size-scale, 1))' })
+		})
+
+		it('пропорции без ширины — только aspect-ratio', () => {
+			const { state } = setup({ aspectRatio: () => '4/3', height: () => 240 })
 
 			expect(state.containerStyle.value).toEqual({ 'aspect-ratio': '4/3' })
 		})
@@ -206,6 +212,18 @@ describe('useImageState', () => {
 
 			vi.advanceTimersByTime(1)
 			expect(state.hasError.value).toBe(true)
+		})
+
+		it('пустой src: таймаут не запускается, ошибки нет — показывается заглушка (IMG-9)', async () => {
+			vi.useFakeTimers()
+			const { state, src } = setup({ timeout: () => 1000 })
+
+			src.value = ''
+			await nextTick()
+			vi.advanceTimersByTime(5000)
+
+			expect(state.hasError.value).toBe(false)
+			expect(state.currentSrc.value).toBe('')
 		})
 
 		it('загрузка до таймаута отменяет его', () => {

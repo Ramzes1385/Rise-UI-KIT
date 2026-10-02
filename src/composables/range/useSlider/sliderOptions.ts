@@ -43,9 +43,10 @@ function maxSlideIndex(settings: ResolvedSliderOptions): number {
 	return Math.max(0, settings.itemCount() - perView(settings))
 }
 
-/** Описание: индекс в границах 0…maxSlideIndex */
+/** Описание: целый индекс в границах 0…maxSlideIndex; NaN и бесконечность — 0 */
 function clampSlideIndex(settings: ResolvedSliderOptions, index: number): number {
-	return Math.max(0, Math.min(index, maxSlideIndex(settings)))
+	if (!Number.isFinite(index)) return 0
+	return Math.max(0, Math.min(Math.trunc(index), maxSlideIndex(settings)))
 }
 
 export { clampSlideIndex, maxSlideIndex, perGroup, perView, resolveSliderOptions }

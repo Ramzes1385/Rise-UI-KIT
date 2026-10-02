@@ -41,7 +41,8 @@ function useImageState(options: UseImageStateOptions) {
 			isLoaded.value = false
 			hasError.value = false
 			isUsingFallback.value = false
-			loadingTimeout.arm()
+			if (options.src()) loadingTimeout.arm()
+			else loadingTimeout.stop()
 		},
 		{ immediate: true },
 	)

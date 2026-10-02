@@ -139,6 +139,30 @@ function createDragSession(options: UseSwipeOptions): SwipeDragSession {
 			options.onDragOffset?.(0)
 			return delta
 		},
+		abort: () => {
+			scheduler.cancel()
+			isDragging.value = false
+			dragOffset.value = 0
+			options.onDragOffset?.(0)
+		},
+	}
+}
+
+/** Обработчики касаний: начало, движение (смещение не чаще кадра), отпускание и прерывание системой (touchcancel — без свайпа) */
+function createTouchHandlers(session: SwipeDragSession) {
+	return {
+		onTouchStart: (event: TouchEvent): void => session.begin(toPoint(event.touches[0])),
+		onTouchMove: (event: TouchEvent): void => {
+			if (!session.isDragging.value) return
+			const offset = session.offsetAt(toPoint(event.touches[0]))
+			session.scheduleOffset(() => offset)
+		},
+		onTouchEnd: (event: TouchEvent): void => {
+			if (session.isDragging.value) session.finish(toPoint(event.changedTouches[0]))
+		},
+		onTouchCancel: (): void => {
+			if (session.isDragging.value) session.abort()
+		},
 	}
 }
 
@@ -163,21 +187,8 @@ function useSwipe(options: UseSwipeOptions) {
 	const clickGuard = createClickGuard()
 	const mouseListeners = createMouseListeners()
 
-	function onTouchStart(event: TouchEvent): void {
-		session.begin(toPoint(event.touches[0]))
-	}
-
-	function onTouchMove(event: TouchEvent): void {
-		if (!isDragging.value) return
-		const offset = session.offsetAt(toPoint(event.touches[0]))
-		session.scheduleOffset(() => offset)
-	}
-
-	function onTouchEnd(event: TouchEvent): void {
-		if (isDragging.value) session.finish(toPoint(event.changedTouches[0]))
-	}
-
 	function onDragStart(event: MouseEvent): void {
+		mouseListeners.remove()
 		session.begin(toPoint(event))
 		clickGuard.reset()
 		let pendingOffset = 0
@@ -204,9 +215,7 @@ function useSwipe(options: UseSwipeOptions) {
 	return {
 		isDragging,
 		dragOffset: session.dragOffset,
-		onTouchStart,
-		onTouchMove,
-		onTouchEnd,
+		...createTouchHandlers(session),
 		onDragStart,
 		onClickCapture: clickGuard.onClickCapture,
 	}

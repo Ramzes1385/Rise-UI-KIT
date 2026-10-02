@@ -255,4 +255,18 @@ export const ruMedia = {
 		AFTER: 'После',
 		HANDLE: 'Граница между «{before}» и «{after}»',
 	},
+	/** Окно просмотра изображения BaseImage: имя меняется при листании галереи */
+	imageViewer: {
+		TITLE_NAMED: 'Просмотр изображения: {alt}',
+		TITLE_POSITION: '{title}, изображение {current} из {total}',
+	},
+	/** Карусель BaseSlider (APG Carousel): имя и роль области, роль и номер слайда, управление автопрокруткой */
+	carousel: {
+		LABEL: 'Карусель',
+		ROLE: 'карусель',
+		SLIDE_ROLE: 'слайд',
+		SLIDE: '{current} из {total}',
+		PAUSE: 'Остановить автопрокрутку',
+		PLAY: 'Запустить автопрокрутку',
+	},
 }

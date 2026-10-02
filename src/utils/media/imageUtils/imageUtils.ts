@@ -1,8 +1,13 @@
 /** Утилиты: проверка и обработка изображений */
 
-/** Проверить, является ли URL внешним (http/https), blob или data-url */
+/** Проверить, является ли URL внешним (http/https в любом регистре, protocol-relative `//`), blob или data-url */
 function isExternalImage(src: string): boolean {
-	return src.startsWith('http://') || src.startsWith('https://') || src.startsWith('blob:') || src.startsWith('data:')
+	return /^(?:https?:\/\/|\/\/|blob:|data:)/i.test(src)
+}
+
+/** Описание: разделитель query-параметра — `&`, если в адресе уже есть `?` */
+function querySeparator(src: string): string {
+	return src.includes('?') ? '&' : '?'
 }
 
 /** Индекс начала пути: у абсолютного и protocol-relative URL путь идёт после хоста (-1 — пути нет) */
@@ -26,17 +31,25 @@ function replaceExtension(src: string, newExt: string): string {
 	return basePath.substring(0, dotIndex) + newExt + suffix
 }
 
-function buildOptimizedSrc(src: string, srcWidth?: number): string {
+/** Адрес с параметром ширины `w`; без адреса — пустая строка */
+function buildOptimizedSrc(src: string | undefined, srcWidth?: number): string {
+	if (!src) return ''
 	if (!srcWidth) return src
-	const separator = src.includes('?') ? '&' : '?'
-	return `${src}${separator}w=${srcWidth}`
+	return `${src}${querySeparator(src)}w=${srcWidth}`
 }
 
-function buildSrcset(src: string, srcWidth?: number): string | undefined {
-	if (!srcWidth) return undefined
-	const w1x = srcWidth
-	const w2x = srcWidth * 2
-	return `${src}?w=${w1x} 1x, ${src}?w=${w2x} 2x`
+/** srcset для 1x и 2x по параметру ширины `w`; без адреса или ширины — `undefined` */
+function buildSrcset(src: string | undefined, srcWidth?: number): string | undefined {
+	if (!src || !srcWidth) return undefined
+	const separator = querySeparator(src)
+	return `${src}${separator}w=${srcWidth} 1x, ${src}${separator}w=${srcWidth * 2} 2x`
 }
 
-export { buildOptimizedSrc, buildSrcset, isExternalImage, replaceExtension }
+/** Атрибут `sizes` по ширине: число — пиксели, строка в px, vw, em или rem — как есть, иначе (проценты, auto) — `100vw` */
+function buildSizes(width: number | string | undefined): string {
+	if (typeof width === 'number') return width > 0 ? `${width}px` : '100vw'
+	if (width && /^\d+(?:\.\d+)?(?:px|vw|r?em)$/.test(width.trim())) return width.trim()
+	return '100vw'
+}
+
+export { buildOptimizedSrc, buildSizes, buildSrcset, isExternalImage, replaceExtension }

@@ -1,6 +1,8 @@
 import { h, nextTick, ref } from 'vue'
 import { mount } from '@vue/test-utils'
 import { useSlider } from '../useSlider'
+import { buildTrackStyle } from '../sliderStyles'
+import { resolveSliderOptions } from '../sliderOptions'
 import type { UseSliderReturn } from '../types/useSlider.types'
 
 /** Захват callbacks из useSwipe для тестирования handleDragEnd */
@@ -8,6 +10,8 @@ const swipeCallbacks = vi.hoisted(() => ({
 	onDragEnd: null as ((delta: { main: number; cross: number }) => void) | null,
 	onDragOffset: null as ((offset: number) => void) | null,
 	isDragging: { value: false } as { value: boolean },
+	onDragStart: vi.fn(),
+	onTouchCancel: vi.fn(),
 }))
 
 vi.mock('@composables/interaction/useSwipe', () => ({
@@ -19,7 +23,8 @@ vi.mock('@composables/interaction/useSwipe', () => ({
 			onTouchStart: vi.fn(),
 			onTouchMove: vi.fn(),
 			onTouchEnd: vi.fn(),
-			onDragStart: vi.fn(),
+			onTouchCancel: swipeCallbacks.onTouchCancel,
+			onDragStart: swipeCallbacks.onDragStart,
 		}
 	},
 }))
@@ -125,7 +130,24 @@ describe('useSlider', () => {
 			expect(slider.currentIndex.value).toBe(0)
 
 			slider.goTo(10)
+			expect(slider.currentIndex.value).toBe(4)
+		})
+
+		it('goTo на текущий слайд, NaN и бесконечность не вызывают onChange', () => {
+			const onChange = vi.fn()
+			const slider = withSetup(() => useSlider(createOptions({ onChange })))
+
+			slider.goTo(0)
+			slider.goTo(Number.NaN)
+			slider.goTo(Number.POSITIVE_INFINITY)
+
+			expect(onChange).not.toHaveBeenCalled()
 			expect(slider.currentIndex.value).toBe(0)
+		})
+
+		it('дробный и NaN initialIndex приводятся к целому в границах', () => {
+			expect(withSetup(() => useSlider(createOptions({ initialIndex: () => 2.7 }))).currentIndex.value).toBe(2)
+			expect(withSetup(() => useSlider(createOptions({ initialIndex: () => Number.NaN }))).currentIndex.value).toBe(0)
 		})
 	})
 
@@ -258,12 +280,16 @@ describe('useSlider', () => {
 		const AUTOPLAY = { isAutoplay: () => true, autoplayInterval: () => 1000 }
 
 		/** Корень с вложенной кнопкой: focusout диспатчится на корне, чтобы задать currentTarget */
-		function createRoot(slider: UseSliderReturn): { root: HTMLElement; inner: HTMLButtonElement } {
+		function createRoot(slider: UseSliderReturn): { root: HTMLElement; inner: HTMLButtonElement; rotation: HTMLButtonElement } {
 			const root = document.createElement('div')
 			const inner = document.createElement('button')
-			root.appendChild(inner)
+			const rotation = document.createElement('button')
+			rotation.setAttribute('data-slider-rotation', '')
+			root.append(inner, rotation)
+			root.addEventListener('focusin', slider.onFocusIn)
 			root.addEventListener('focusout', slider.onFocusOut)
-			return { root, inner }
+			document.body.appendChild(root)
+			return { root, inner, rotation }
 		}
 
 		/** Мок MediaQueryList с управляемым событием change */
@@ -291,40 +317,55 @@ describe('useSlider', () => {
 			vi.unstubAllGlobals()
 		})
 
-		it('должен ставить на паузу при focusin и возобновлять, когда фокус ушёл наружу', () => {
-			vi.useFakeTimers()
-			const slider = withSetup(() => useSlider(createOptions(AUTOPLAY)))
-			const { root } = createRoot(slider)
-
-			slider.onFocusIn()
-			vi.advanceTimersByTime(3000)
-			expect(slider.currentIndex.value).toBe(0)
-
-			root.dispatchEvent(new FocusEvent('focusout', { relatedTarget: document.body }))
-			vi.advanceTimersByTime(1000)
-			expect(slider.currentIndex.value).toBe(1)
-		})
-
-		it('не должен возобновлять, если фокус перешёл на другой элемент внутри слайдера', () => {
+		it('фокус на слайде останавливает автопрокрутку до playAutoplay; уход фокуса её не возобновляет (APG)', () => {
 			vi.useFakeTimers()
 			const slider = withSetup(() => useSlider(createOptions(AUTOPLAY)))
 			const { root, inner } = createRoot(slider)
 
-			slider.onFocusIn()
-			root.dispatchEvent(new FocusEvent('focusout', { relatedTarget: inner }))
+			inner.focus()
+			expect(slider.isAutoplayStopped.value).toBe(true)
+			expect(slider.isRotating.value).toBe(false)
 			vi.advanceTimersByTime(3000)
-
 			expect(slider.currentIndex.value).toBe(0)
+
+			root.dispatchEvent(new FocusEvent('focusout', { relatedTarget: document.body }))
+			vi.advanceTimersByTime(3000)
+			expect(slider.currentIndex.value).toBe(0)
+
+			slider.playAutoplay()
+			vi.advanceTimersByTime(1000)
+			expect(slider.currentIndex.value).toBe(1)
+			expect(slider.isRotating.value).toBe(true)
+			root.remove()
 		})
 
-		it('не должен возобновлять при уходе мыши, пока фокус внутри', () => {
+		it('фокус на кнопке автопрокрутки не останавливает её и снимает паузу фокуса', () => {
 			vi.useFakeTimers()
 			const slider = withSetup(() => useSlider(createOptions(AUTOPLAY)))
-			const { root } = createRoot(slider)
+			const { root, inner, rotation } = createRoot(slider)
 
-			slider.onMouseEnter()
-			slider.onFocusIn()
-			slider.onMouseLeave()
+			rotation.focus()
+			expect(slider.isAutoplayStopped.value).toBe(false)
+			vi.advanceTimersByTime(1000)
+			expect(slider.currentIndex.value).toBe(1)
+
+			inner.focus()
+			rotation.focus()
+			expect(slider.isAutoplayStopped.value).toBe(true)
+			slider.playAutoplay()
+			vi.advanceTimersByTime(1000)
+			expect(slider.currentIndex.value).toBe(2)
+			root.remove()
+		})
+
+		it('переход фокуса внутри слайдера не снимает паузу фокуса', () => {
+			vi.useFakeTimers()
+			const slider = withSetup(() => useSlider(createOptions(AUTOPLAY)))
+			const { root, inner } = createRoot(slider)
+
+			slider.onFocusIn(new FocusEvent('focusin'))
+			slider.playAutoplay()
+			root.dispatchEvent(new FocusEvent('focusout', { relatedTarget: inner }))
 			vi.advanceTimersByTime(3000)
 			expect(slider.currentIndex.value).toBe(0)
 
@@ -333,17 +374,56 @@ describe('useSlider', () => {
 			expect(slider.currentIndex.value).toBe(1)
 		})
 
-		it('не должен возобновлять при уходе фокуса, пока указатель над слайдером', () => {
+		it('указатель над слайдером держит паузу, пока не ушёл; stopAutoplay и playAutoplay', () => {
 			vi.useFakeTimers()
 			const slider = withSetup(() => useSlider(createOptions(AUTOPLAY)))
-			const { root } = createRoot(slider)
 
 			slider.onMouseEnter()
-			slider.onFocusIn()
-			root.dispatchEvent(new FocusEvent('focusout', { relatedTarget: null }))
 			vi.advanceTimersByTime(3000)
-
 			expect(slider.currentIndex.value).toBe(0)
+			slider.onMouseLeave()
+			vi.advanceTimersByTime(1000)
+			expect(slider.currentIndex.value).toBe(1)
+
+			slider.stopAutoplay()
+			vi.advanceTimersByTime(3000)
+			expect(slider.currentIndex.value).toBe(1)
+			expect(slider.isAutoplayStopped.value).toBe(true)
+		})
+
+		it('один экран слайдов: автопрокрутки нет и onChange не вызывается (SLD-8)', () => {
+			vi.useFakeTimers()
+			const onChange = vi.fn()
+			const slider = withSetup(() => useSlider(createOptions({ ...AUTOPLAY, itemCount: () => 1, onChange })))
+
+			vi.advanceTimersByTime(5000)
+			slider.goNext()
+			slider.goPrev()
+
+			expect(onChange).not.toHaveBeenCalled()
+			expect(slider.isRotating.value).toBe(false)
+		})
+
+		it('смена интервала и выключение autoplay перезапускают таймер', async () => {
+			vi.useFakeTimers()
+			const interval = ref(1000)
+			const enabled = ref(true)
+			const slider = withSetup(() =>
+				useSlider(createOptions({ isAutoplay: () => enabled.value, autoplayInterval: () => interval.value })),
+			)
+
+			interval.value = 3000
+			await nextTick()
+			vi.advanceTimersByTime(2000)
+			expect(slider.currentIndex.value).toBe(0)
+			vi.advanceTimersByTime(1000)
+			expect(slider.currentIndex.value).toBe(1)
+
+			enabled.value = false
+			await nextTick()
+			vi.advanceTimersByTime(6000)
+			expect(slider.currentIndex.value).toBe(1)
+			expect(slider.isRotating.value).toBe(false)
 		})
 
 		it('не должен запускать autoplay при prefers-reduced-motion и должен реагировать на смену настройки', () => {
@@ -834,6 +914,55 @@ describe('useSlider', () => {
 
 			// Восстанавливаем глобальный мок из beforeAll
 			vi.stubGlobal('ResizeObserver', MockResizeObserver)
+		})
+	})
+
+	describe('перетаскивание мышью и touchcancel (SLD-7)', () => {
+		function mouseDown(button: number, target: Element): MouseEvent {
+			const event = new MouseEvent('mousedown', { button, bubbles: true, cancelable: true })
+			Object.defineProperty(event, 'target', { value: target })
+			return event
+		}
+
+		beforeEach(() => swipeCallbacks.onDragStart.mockClear())
+
+		it('левая кнопка на картинке начинает перетаскивание и гасит выделение', () => {
+			const slider = withSetup(() => useSlider(createOptions()))
+			const event = mouseDown(0, document.createElement('img'))
+
+			slider.onDragStart(event)
+
+			expect(swipeCallbacks.onDragStart).toHaveBeenCalledWith(event)
+			expect(event.defaultPrevented).toBe(true)
+		})
+
+		it('правая кнопка, поле ввода и видео не тянут ленту', () => {
+			const slider = withSetup(() => useSlider(createOptions()))
+			const label = document.createElement('label')
+			const input = document.createElement('input')
+			label.appendChild(input)
+			const events = [mouseDown(2, document.createElement('img')), mouseDown(0, input), mouseDown(0, document.createElement('video'))]
+
+			events.forEach(event => slider.onDragStart(event))
+
+			expect(swipeCallbacks.onDragStart).not.toHaveBeenCalled()
+			expect(events.some(event => event.defaultPrevented)).toBe(false)
+		})
+
+		it('touchcancel передаётся useSwipe', () => {
+			const slider = withSetup(() => useSlider(createOptions()))
+
+			slider.onTouchCancel()
+
+			expect(swipeCallbacks.onTouchCancel).toHaveBeenCalledOnce()
+		})
+
+		it('перетаскивание вправо на первом слайде даёт положительный сдвиг, а не «--5%» (SLD-10)', () => {
+			const settings = resolveSliderOptions(createOptions())
+			const input = { settings, currentIndex: 0, viewportSize: 1000, dragOffset: 50, isDragging: true }
+
+			expect(buildTrackStyle(input).transform).toBe('translateX(5%)')
+			expect(buildTrackStyle({ ...input, currentIndex: 1, dragOffset: -100 }).transform).toBe('translateX(-110%)')
 		})
 	})
 })

@@ -1,6 +1,6 @@
 import type BaseImage from '../ui/BaseImage.vue'
 import type { Meta } from '@storybook/vue3-vite'
-import { baseArgTypes, hiddenArgTypes, propGroup, ARG_GROUP, STORY_IMAGES, BROKEN_IMAGE_SRC } from '@/stories/helpers'
+import { baseArgTypes, propGroup, ARG_GROUP, STORY_IMAGES, BROKEN_IMAGE_SRC } from '@/stories/helpers'
 
 const IMAGE_OPTIONS: Record<string, string> = {
 	...Object.fromEntries(STORY_IMAGES.map(image => [image.alt, image.src])),
@@ -9,7 +9,6 @@ const IMAGE_OPTIONS: Record<string, string> = {
 
 export const argTypes = {
 	...baseArgTypes(),
-	...hiddenArgTypes('variant'),
 	src: {
 		control: 'select',
 		options: Object.keys(IMAGE_OPTIONS),
@@ -29,6 +28,7 @@ export const argTypes = {
 	timeout: { control: 'number', table: propGroup(ARG_GROUP.behavior) },
 	zoomConfig: { control: 'object', table: propGroup(ARG_GROUP.behavior) },
 	srcWidth: { control: 'number', table: propGroup(ARG_GROUP.behavior) },
+	imgAttrs: { control: 'object', table: propGroup(ARG_GROUP.behavior) },
 	convertToWebp: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	convertToAvif: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	placeholder: { control: false },

@@ -47,6 +47,8 @@ export interface UiKitLocale {
 	commandPalette: Section<'commandPalette'>
 	charts: Section<'charts'>
 	imageCompare: Section<'imageCompare'>
+	imageViewer: Section<'imageViewer'>
+	carousel: Section<'carousel'>
 	jsonViewer: Section<'jsonViewer'>
 	map: Section<'map'>
 	textDiff: Section<'textDiff'>

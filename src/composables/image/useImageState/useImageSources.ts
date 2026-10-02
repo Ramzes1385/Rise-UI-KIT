@@ -2,7 +2,7 @@
 import type { Ref } from 'vue'
 import { computed } from 'vue'
 import type { UseImageStateOptions } from './types/useImageState.types'
-import { buildOptimizedSrc, buildSrcset, replaceExtension } from '@utils/media/imageUtils'
+import { buildOptimizedSrc, buildSizes, buildSrcset, replaceExtension } from '@utils/media/imageUtils'
 
 /** Описание: src, srcset и sizes изображения; пока показывается fallbackSrc, производные источники убираются */
 function useImageSources(options: UseImageStateOptions, isUsingFallback: Readonly<Ref<boolean>>) {
@@ -39,11 +39,7 @@ function useImageSources(options: UseImageStateOptions, isUsingFallback: Readonl
 		return buildSrcset(options.src(), options.srcWidth?.())
 	})
 
-	const sizesValue = computed((): string => {
-		const width = options.width?.()
-		if (width) return `${width}px`
-		return '100vw'
-	})
+	const sizesValue = computed((): string => buildSizes(options.width?.()))
 
 	return { currentSrc, avifSrc, webpSrc, srcsetValue, sizesValue }
 }

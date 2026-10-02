@@ -1,6 +1,8 @@
 import '@testing-library/jest-dom/vitest'
 import BaseImage from '../ui/BaseImage.vue'
 import userEvent from '@testing-library/user-event'
+import { defineComponent, h, nextTick, ref } from 'vue'
+import type { BaseImageExpose } from '../types/BaseImage.types'
 import BaseSlider from '@components/BaseSlider/ui/BaseSlider.vue'
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
 import ChatSlideoverMedia from '@components/BaseChat/ui/ChatSlideover/ChatSlideoverMedia.vue'
@@ -372,6 +374,128 @@ describe('BaseImage integration', () => {
 			await fireEvent.click(image)
 
 			expect(document.body.querySelector('.base-image__zoom')).toBeInTheDocument()
+		})
+	})
+
+	describe('fu-media: имя просмотра, клавиши, события, методы', () => {
+		const GALLERY = [{ src: 'img1.jpg', alt: 'Закат' }, 'img2.jpg', { src: 'img3.jpg', alt: 'Рассвет' }]
+
+		it('имя окна просмотра меняется при листании: alt элемента и «изображение N из M» (IMG-4)', async () => {
+			const user = userEvent.setup()
+			render(BaseImage, { props: { src: 'img1.jpg', alt: 'Альбом', zoomConfig: { hasZoom: true }, gallery: GALLERY } })
+
+			await user.click(screen.getByRole('button', { name: 'Альбом' }))
+			const dialog = screen.getByRole('dialog', { name: 'Просмотр изображения: Закат, изображение 1 из 3' })
+
+			await user.keyboard('{ArrowRight}')
+			expect(dialog).toHaveAccessibleName('Просмотр изображения: Альбом, изображение 2 из 3')
+			expect(within(dialog).getByRole('img', { name: 'Альбом' })).toBeInTheDocument()
+
+			await user.click(within(dialog).getByRole('button', { name: 'Изображение 3 из 3' }))
+			expect(dialog).toHaveAccessibleName('Просмотр изображения: Рассвет, изображение 3 из 3')
+		})
+
+		it('без alt у изображения и элемента имя — «Просмотр изображения» с номером', async () => {
+			render(BaseImage, { props: { src: 'img2.jpg', alt: '', zoomConfig: { hasZoom: true }, gallery: ['img1.jpg', 'img2.jpg'] } })
+
+			await fireEvent.click(screen.getByRole('button', { name: 'Просмотр изображения' }))
+
+			expect(screen.getByRole('dialog', { name: 'Просмотр изображения, изображение 2 из 2' })).toBeInTheDocument()
+		})
+
+		it('клавиши зума работают только в окне просмотра: «+» в поле на странице масштаб не меняет (IMG-10)', async () => {
+			const user = userEvent.setup()
+			const zoomEvents: number[] = []
+			render(BaseImage, {
+				props: { src: 'img1.jpg', alt: 'Закат', zoomConfig: { hasZoom: true }, onZoom: (scale: number) => zoomEvents.push(scale) },
+			})
+			const field = document.createElement('input')
+			document.body.appendChild(field)
+
+			await user.click(screen.getByRole('button', { name: 'Закат' }))
+			const dialog = screen.getByRole('dialog')
+			await user.keyboard('+')
+			expect(within(dialog).getByText('125%')).toBeInTheDocument()
+
+			await fireEvent.keyDown(document, { key: '+' })
+			await fireEvent.keyDown(field, { key: '+' })
+			expect(within(dialog).getByText('125%')).toBeInTheDocument()
+			await user.keyboard('0')
+			expect(zoomEvents).toEqual([1.25, 1])
+			field.remove()
+		})
+
+		it('события zoom-open и zoom-close, методы openZoom и closeZoom (IMG-15)', async () => {
+			const imageRef = ref<BaseImageExpose | null>(null)
+			const onOpen = vi.fn()
+			const onClose = vi.fn()
+			render(
+				defineComponent({
+					setup: () => () =>
+						h(BaseImage, {
+							ref: imageRef,
+							src: 'img1.jpg',
+							alt: 'Закат',
+							zoomConfig: { hasZoom: true },
+							onZoomOpen: onOpen,
+							onZoomClose: onClose,
+						}),
+				}),
+			)
+
+			imageRef.value!.openZoom()
+			await nextTick()
+			expect(screen.getByRole('dialog')).toBeInTheDocument()
+			expect(onOpen).toHaveBeenCalledOnce()
+
+			imageRef.value!.closeZoom()
+			await nextTick()
+			expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+			expect(onClose).toHaveBeenCalledOnce()
+		})
+
+		it('openZoom без zoomConfig.hasZoom ничего не открывает', async () => {
+			const imageRef = ref<BaseImageExpose | null>(null)
+			render(defineComponent({ setup: () => () => h(BaseImage, { ref: imageRef, src: 'img1.jpg', alt: 'Закат' }) }))
+
+			imageRef.value!.openZoom()
+			await nextTick()
+
+			expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+		})
+
+		it('imgAttrs уходят на сам <img>', () => {
+			render(BaseImage, {
+				props: {
+					src: 'img1.jpg',
+					alt: 'Закат',
+					imgAttrs: { crossorigin: 'anonymous', referrerpolicy: 'no-referrer', fetchpriority: 'high' },
+				},
+			})
+			const img = screen.getByRole('img', { name: 'Закат' })
+
+			expect(img).toHaveAttribute('crossorigin', 'anonymous')
+			expect(img).toHaveAttribute('referrerpolicy', 'no-referrer')
+			expect(img).toHaveAttribute('fetchpriority', 'high')
+		})
+
+		it('пустой src — заглушка без запроса, без ошибки (IMG-9)', () => {
+			const { container } = render(BaseImage, { props: { src: '', alt: 'Нет фото', srcWidth: 400 } })
+
+			expect(container.querySelector('img')).toBeNull()
+			expect(container.querySelector('.base-image__placeholder')).toBeInTheDocument()
+			expect(container.querySelector('.base-image__error')).toBeNull()
+		})
+
+		it('просмотр показывает fallbackSrc, если основное изображение не загрузилось (IMG-14)', async () => {
+			const { container } = render(BaseImage, {
+				props: { src: 'broken.jpg', fallbackSrc: 'fallback.jpg', alt: 'Закат', zoomConfig: { hasZoom: true } },
+			})
+
+			await fireEvent.error(container.querySelector('.base-image__img')!)
+			await fireEvent.click(screen.getByRole('button', { name: 'Закат' }))
+
+			expect(within(screen.getByRole('dialog')).getByRole('img', { name: 'Закат' })).toHaveAttribute('src', 'fallback.jpg')
 		})
 	})
 })

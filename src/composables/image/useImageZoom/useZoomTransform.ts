@@ -60,11 +60,13 @@ function useZoomTransform(options: UseImageZoomOptions, layout: ZoomLayout) {
 		options.onZoom?.(currentScale.value)
 	}
 
+	/** Сброс масштаба, сдвига и поворота; `onZoom` — только если масштаб изменился */
 	function resetZoom(): void {
+		const previous = currentScale.value
 		currentScale.value = options.initialScale()
 		rotation.value = 0
 		resetPosition()
-		options.onZoom?.(currentScale.value)
+		if (currentScale.value !== previous) options.onZoom?.(currentScale.value)
 	}
 
 	return {

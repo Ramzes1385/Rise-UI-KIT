@@ -254,11 +254,11 @@ describe('useImageZoom', () => {
 		const zoom = withSetup(() => useImageZoom(createOptions()))
 
 		zoom.openZoom()
-		document.dispatchEvent(new KeyboardEvent('keydown', { key: '+' }))
+		zoom.handleKeydown(new KeyboardEvent('keydown', { key: '+' }))
 
 		expect(zoom.scalePercent.value).toBe(125)
 
-		document.dispatchEvent(new KeyboardEvent('keydown', { key: '=' }))
+		zoom.handleKeydown(new KeyboardEvent('keydown', { key: '=' }))
 
 		expect(zoom.scalePercent.value).toBe(150)
 	})
@@ -268,7 +268,7 @@ describe('useImageZoom', () => {
 
 		zoom.openZoom()
 		zoom.zoomIn() // 1.25
-		document.dispatchEvent(new KeyboardEvent('keydown', { key: '-' }))
+		zoom.handleKeydown(new KeyboardEvent('keydown', { key: '-' }))
 
 		expect(zoom.scalePercent.value).toBe(100)
 	})
@@ -279,7 +279,7 @@ describe('useImageZoom', () => {
 		zoom.openZoom()
 		zoom.zoomIn()
 		zoom.zoomIn()
-		document.dispatchEvent(new KeyboardEvent('keydown', { key: '0' }))
+		zoom.handleKeydown(new KeyboardEvent('keydown', { key: '0' }))
 
 		expect(zoom.scalePercent.value).toBe(100)
 	})
@@ -287,7 +287,7 @@ describe('useImageZoom', () => {
 	it('не должен обрабатывать клавиши когда зум закрыт', () => {
 		const zoom = withSetup(() => useImageZoom(createOptions()))
 
-		document.dispatchEvent(new KeyboardEvent('keydown', { key: '+' }))
+		zoom.handleKeydown(new KeyboardEvent('keydown', { key: '+' }))
 
 		expect(zoom.scalePercent.value).toBe(100)
 	})
@@ -625,9 +625,9 @@ describe('useImageZoom', () => {
 		zoom.openZoom()
 		const prevScale = zoom.scalePercent.value
 
-		document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }))
-		document.dispatchEvent(new KeyboardEvent('keydown', { key: 'a' }))
-		document.dispatchEvent(new KeyboardEvent('keydown', { key: ' ' }))
+		zoom.handleKeydown(new KeyboardEvent('keydown', { key: 'Enter' }))
+		zoom.handleKeydown(new KeyboardEvent('keydown', { key: 'a' }))
+		zoom.handleKeydown(new KeyboardEvent('keydown', { key: ' ' }))
 
 		expect(zoom.scalePercent.value).toBe(prevScale)
 		expect(zoom.isZoomOpen.value).toBe(true)
@@ -652,8 +652,8 @@ describe('useImageZoom', () => {
 			const zoom = withSetup(() => useImageZoom(createOptions({ onArrowLeft, onArrowRight })))
 			zoom.openZoom()
 
-			document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }))
-			document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }))
+			zoom.handleKeydown(new KeyboardEvent('keydown', { key: 'ArrowLeft' }))
+			zoom.handleKeydown(new KeyboardEvent('keydown', { key: 'ArrowRight' }))
 
 			expect(onArrowLeft).toHaveBeenCalledOnce()
 			expect(onArrowRight).toHaveBeenCalledOnce()
@@ -663,8 +663,8 @@ describe('useImageZoom', () => {
 			const zoom = withSetup(() => useImageZoom(createOptions()))
 			zoom.openZoom()
 
-			expect(() => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }))).not.toThrow()
-			expect(() => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }))).not.toThrow()
+			expect(() => zoom.handleKeydown(new KeyboardEvent('keydown', { key: 'ArrowLeft' }))).not.toThrow()
+			expect(() => zoom.handleKeydown(new KeyboardEvent('keydown', { key: 'ArrowRight' }))).not.toThrow()
 		})
 
 		it('клик по миникарте без элемента-цели не двигает изображение', () => {
@@ -684,6 +684,110 @@ describe('useImageZoom', () => {
 			} finally {
 				vi.unstubAllGlobals()
 			}
+		})
+	})
+
+	describe('fu-media: клавиши на окне, колесо, границы масштаба', () => {
+		it('клавиши на document при открытом зуме масштаб не меняют (IMG-10)', () => {
+			const zoom = withSetup(() => useImageZoom(createOptions()))
+			zoom.openZoom()
+
+			document.dispatchEvent(new KeyboardEvent('keydown', { key: '+' }))
+			document.dispatchEvent(new KeyboardEvent('keydown', { key: '-' }))
+
+			expect(zoom.scalePercent.value).toBe(100)
+		})
+
+		it('клавиши с Ctrl, Alt и Meta остаются браузеру', () => {
+			const zoom = withSetup(() => useImageZoom(createOptions()))
+			zoom.openZoom()
+
+			zoom.handleKeydown(new KeyboardEvent('keydown', { key: '+', ctrlKey: true }))
+			zoom.handleKeydown(new KeyboardEvent('keydown', { key: '-', altKey: true }))
+			zoom.handleKeydown(new KeyboardEvent('keydown', { key: '+', metaKey: true }))
+
+			expect(zoom.scalePercent.value).toBe(100)
+		})
+
+		it('горизонтальная прокрутка (deltaY 0) масштаб не меняет; мелкие события копятся до шага (IMG-8)', () => {
+			const zoom = withSetup(() => useImageZoom(createOptions()))
+
+			zoom.handleWheel(new WheelEvent('wheel', { deltaX: 80, deltaY: 0 }))
+			expect(zoom.scalePercent.value).toBe(100)
+
+			zoom.handleWheel(new WheelEvent('wheel', { deltaY: -20 }))
+			zoom.handleWheel(new WheelEvent('wheel', { deltaY: -20 }))
+			expect(zoom.scalePercent.value).toBe(100)
+			zoom.handleWheel(new WheelEvent('wheel', { deltaY: -20 }))
+			expect(zoom.scalePercent.value).toBe(125)
+		})
+
+		it('прокрутка строками и страницами переводится в пиксели', () => {
+			const zoom = withSetup(() => useImageZoom(createOptions()))
+
+			zoom.handleWheel(new WheelEvent('wheel', { deltaY: -4, deltaMode: 1 }))
+			expect(zoom.scalePercent.value).toBe(125)
+			zoom.handleWheel(new WheelEvent('wheel', { deltaY: 1, deltaMode: 2 }))
+			expect(zoom.scalePercent.value).toBe(100)
+		})
+
+		it('неверные границы масштаба исправляются: min > max, шаг ≤ 0, NaN (IMG-16)', () => {
+			const zoom = withSetup(() =>
+				useImageZoom(createOptions({ minScale: () => 4, maxScale: () => 2, zoomStep: () => 0, initialScale: () => Number.NaN })),
+			)
+
+			expect(zoom.scalePercent.value).toBe(200)
+			zoom.zoomIn()
+			expect(zoom.scalePercent.value).toBe(225)
+			zoom.resetZoom()
+			zoom.zoomOut()
+			expect(zoom.scalePercent.value).toBe(200)
+			expect(zoom.isMinScale.value).toBe(true)
+		})
+
+		it('NaN в границах и отрицательный минимум заменяются значениями по умолчанию и нижней границей', () => {
+			const zoom = withSetup(() =>
+				useImageZoom(createOptions({ minScale: () => -1, maxScale: () => Number.NaN, zoomStep: () => Number.NaN })),
+			)
+
+			zoom.zoomOut()
+			zoom.zoomOut()
+			zoom.zoomOut()
+			zoom.zoomOut()
+			zoom.zoomOut()
+			expect(zoom.scalePercent.value).toBe(5)
+			for (let step = 0; step < 40; step++) zoom.zoomIn()
+			expect(zoom.scalePercent.value).toBe(500)
+		})
+
+		it('resize слушается только пока зум открыт', async () => {
+			const addSpy = vi.spyOn(window, 'addEventListener')
+			const removeSpy = vi.spyOn(window, 'removeEventListener')
+			const zoom = withSetup(() => useImageZoom(createOptions()))
+
+			expect(addSpy).not.toHaveBeenCalledWith('resize', expect.any(Function))
+			zoom.openZoom()
+			await nextTick()
+			expect(addSpy).toHaveBeenCalledWith('resize', expect.any(Function))
+			zoom.closeZoom()
+			await nextTick()
+			expect(removeSpy).toHaveBeenCalledWith('resize', expect.any(Function))
+
+			addSpy.mockRestore()
+			removeSpy.mockRestore()
+		})
+
+		it('сброс без изменения масштаба не вызывает onZoom (IMG-15)', () => {
+			const onZoom = vi.fn()
+			const zoom = withSetup(() => useImageZoom(createOptions({ onZoom })))
+
+			zoom.openZoom()
+			zoom.closeZoom()
+			expect(onZoom).not.toHaveBeenCalled()
+
+			zoom.zoomIn()
+			zoom.resetZoom()
+			expect(onZoom).toHaveBeenLastCalledWith(1)
 		})
 	})
 })

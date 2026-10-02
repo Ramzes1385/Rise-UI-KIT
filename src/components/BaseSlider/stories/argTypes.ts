@@ -5,9 +5,10 @@ import { baseArgTypes, hiddenArgTypes, propGroup, ARG_GROUP } from '@/stories/he
 
 export const argTypes = {
 	...baseArgTypes(),
-	...hiddenArgTypes('variant', 'color'),
+	...hiddenArgTypes('color'),
 	items: { control: 'object', table: propGroup(ARG_GROUP.content) },
 	hasCaption: { control: 'boolean', table: propGroup(ARG_GROUP.content) },
+	label: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	height: { control: 'text', table: propGroup(ARG_GROUP.appearance) },
 	navigation: { control: 'inline-radio', options: ['dots', 'thumbnails', 'both', 'none'], table: propGroup(ARG_GROUP.appearance) },
 	hasArrows: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },

@@ -1,12 +1,3 @@
-$media-backdrop: color-mix(in srgb, black 88%, transparent);
-$media-surface: color-mix(in srgb, black 60%, transparent);
-$media-surface-hover: color-mix(in srgb, black 80%, transparent);
-$media-control-hover: color-mix(in srgb, white 16%, transparent);
-$media-control-active: color-mix(in srgb, white 24%, transparent);
-$media-border: color-mix(in srgb, white 20%, transparent);
-$media-text: white;
-$media-text-muted: color-mix(in srgb, white 72%, transparent);
-
 .base-image {
 	position: relative;
 	display: inline-block;
@@ -130,8 +121,8 @@ $media-text-muted: color-mix(in srgb, white 72%, transparent);
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background-color: $media-backdrop;
-	color: $media-text;
+	background-color: var(--rise-media-backdrop);
+	color: var(--rise-media-text);
 	font-family: var(--rise-font-sans);
 
 	&-toolbar {
@@ -144,7 +135,7 @@ $media-text-muted: color-mix(in srgb, white 72%, transparent);
 		gap: sz(4px);
 		padding: sz(4px);
 		border-radius: var(--rise-radius-full);
-		background-color: $media-surface;
+		background-color: var(--rise-media-surface);
 		backdrop-filter: blur(8px);
 		transform: translateX(-50%);
 	}
@@ -152,9 +143,9 @@ $media-text-muted: color-mix(in srgb, white 72%, transparent);
 	&-btn.base-button,
 	&-nav.base-button {
 		--custom-bg: transparent;
-		--custom-bg-hover: #{$media-control-hover};
-		--custom-bg-active: #{$media-control-active};
-		--custom-text: #{$media-text};
+		--custom-bg-hover: var(--rise-media-control-hover);
+		--custom-bg-active: var(--rise-media-control-active);
+		--custom-text: var(--rise-media-text);
 		--btn-pad-top: 5px;
 		--btn-pad-right: 5px;
 		--btn-pad-bottom: 5px;
@@ -177,13 +168,13 @@ $media-text-muted: color-mix(in srgb, white 72%, transparent);
 		width: 1px;
 		height: sz(20px);
 		margin: 0 sz(4px);
-		background-color: $media-border;
+		background-color: var(--rise-media-border);
 	}
 
 	&-nav.base-button {
-		--custom-bg: #{$media-surface};
-		--custom-bg-hover: #{$media-surface-hover};
-		--custom-bg-active: #{$media-surface-hover};
+		--custom-bg: var(--rise-media-surface);
+		--custom-bg-hover: var(--rise-media-surface-hover);
+		--custom-bg-active: var(--rise-media-surface-hover);
 		--btn-pad-top: 9px;
 		--btn-pad-right: 9px;
 		--btn-pad-bottom: 9px;
@@ -192,7 +183,7 @@ $media-text-muted: color-mix(in srgb, white 72%, transparent);
 		position: absolute;
 		top: 50%;
 		z-index: 1;
-		box-shadow: inset 0 0 0 1px $media-border;
+		box-shadow: inset 0 0 0 1px var(--rise-media-border);
 		transform: translateY(-50%);
 	}
 
@@ -247,7 +238,7 @@ $media-text-muted: color-mix(in srgb, white 72%, transparent);
 		padding: sz(6px);
 		overflow-x: auto;
 		border-radius: sz(var(--rise-radius-lg));
-		background-color: $media-surface;
+		background-color: var(--rise-media-surface);
 		backdrop-filter: blur(8px);
 		scrollbar-width: none;
 	}
@@ -272,7 +263,7 @@ $media-text-muted: color-mix(in srgb, white 72%, transparent);
 			position: absolute;
 			inset: 0;
 			border-radius: inherit;
-			box-shadow: inset 0 0 0 1px $media-border;
+			box-shadow: inset 0 0 0 1px var(--rise-media-border);
 		}
 
 		@include hover {
@@ -297,7 +288,7 @@ $media-text-muted: color-mix(in srgb, white 72%, transparent);
 
 	&-counter {
 		@include text-size(xs);
-		color: $media-text-muted;
+		color: var(--rise-media-text-muted);
 		font-variant-numeric: tabular-nums;
 	}
 }
@@ -310,9 +301,9 @@ $media-text-muted: color-mix(in srgb, white 72%, transparent);
 	width: sz(200px);
 	height: sz(150px);
 	overflow: hidden;
-	border: 1px solid $media-border;
+	border: 1px solid var(--rise-media-border);
 	border-radius: sz(var(--rise-radius-md));
-	background-color: $media-surface;
+	background-color: var(--rise-media-surface);
 	cursor: pointer;
 }
 

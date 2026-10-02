@@ -1,1 +1,1 @@
-export { buildOptimizedSrc, buildSrcset, isExternalImage, replaceExtension } from './imageUtils'
+export { buildOptimizedSrc, buildSizes, buildSrcset, isExternalImage, replaceExtension } from './imageUtils'

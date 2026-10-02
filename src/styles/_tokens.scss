@@ -140,6 +140,19 @@ $light-main-shade: (
 	--rise-ease: cubic-bezier(0.4, 0, 0.2, 1);
 	--rise-ease-out: cubic-bezier(0, 0, 0.2, 1);
 	--rise-ease-in: cubic-bezier(0.4, 0, 1, 1);
+
+	// Медиа: подложки и текст поверх фото и видео — одни и те же в светлой и тёмной теме (контраст считается к изображению, не к фону темы)
+	--rise-media-backdrop: color-mix(in srgb, #000 88%, transparent);
+	--rise-media-surface: color-mix(in srgb, #000 60%, transparent);
+	--rise-media-surface-hover: color-mix(in srgb, #000 80%, transparent);
+	--rise-media-scrim: color-mix(in srgb, #000 64%, transparent);
+	--rise-media-scrim-light: color-mix(in srgb, #000 32%, transparent);
+	--rise-media-control-hover: color-mix(in srgb, #fff 16%, transparent);
+	--rise-media-control-active: color-mix(in srgb, #fff 24%, transparent);
+	--rise-media-border: color-mix(in srgb, #fff 20%, transparent);
+	--rise-media-text: #fff;
+	--rise-media-text-toned: color-mix(in srgb, #fff 85%, transparent);
+	--rise-media-text-muted: color-mix(in srgb, #fff 72%, transparent);
 }
 
 @mixin derived-tokens {

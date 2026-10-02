@@ -788,4 +788,44 @@ describe('useSwipe', () => {
 			expect(click.stopPropagation).not.toHaveBeenCalled()
 		})
 	})
+
+	describe('touchcancel и повторный mousedown (SLD-7)', () => {
+		it('touchcancel сбрасывает жест без свайпа и обнуляет смещение', () => {
+			const onSwipeNext = vi.fn()
+			const onDragEnd = vi.fn()
+			const onDragOffset = vi.fn()
+			const swipe = withSetup(() => useSwipe({ isVertical: () => false, onSwipeNext, onDragEnd, onDragOffset }))
+
+			swipe.onTouchStart(createTouchEvent('touchstart', [{ clientX: 200, clientY: 100 }]))
+			swipe.onTouchCancel()
+
+			expect(swipe.isDragging.value).toBe(false)
+			expect(swipe.dragOffset.value).toBe(0)
+			expect(onDragOffset).toHaveBeenLastCalledWith(0)
+			expect(onSwipeNext).not.toHaveBeenCalled()
+			expect(onDragEnd).not.toHaveBeenCalled()
+		})
+
+		it('touchcancel без жеста ничего не делает', () => {
+			const onDragOffset = vi.fn()
+			const swipe = withSetup(() => useSwipe({ isVertical: () => false, onDragOffset }))
+
+			swipe.onTouchCancel()
+
+			expect(onDragOffset).not.toHaveBeenCalled()
+		})
+
+		it('повторный mousedown без mouseup снимает прежние слушатели document', () => {
+			const removeSpy = vi.spyOn(document, 'removeEventListener')
+			const swipe = withSetup(() => useSwipe({ isVertical: () => false }))
+
+			swipe.onDragStart(createMouseEvent('mousedown', 100, 100))
+			removeSpy.mockClear()
+			swipe.onDragStart(createMouseEvent('mousedown', 120, 100))
+
+			expect(removeSpy).toHaveBeenCalledWith('mousemove', expect.any(Function))
+			expect(removeSpy).toHaveBeenCalledWith('mouseup', expect.any(Function))
+			removeSpy.mockRestore()
+		})
+	})
 })

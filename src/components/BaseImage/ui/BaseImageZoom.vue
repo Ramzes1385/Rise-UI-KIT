@@ -7,6 +7,7 @@
 			role="dialog"
 			aria-modal="true"
 			:aria-label="dialogLabel"
+			@keydown="zoom.handleKeydown"
 			@wheel.prevent="zoom.handleWheel"
 			@click.self="zoom.handleOverlayClick">
 			<div class="base-image__zoom-toolbar">
@@ -88,7 +89,7 @@
 				<img
 					ref="zoomImgRef"
 					:src="gallery.currentZoomSrc.value"
-					:alt="alt"
+					:alt="imageAlt"
 					class="base-image__zoom-img"
 					:style="zoom.zoomImageStyle.value"
 					draggable="false"
@@ -142,7 +143,8 @@ import type { BaseImageZoomProps } from '../types/BaseImageZoom.types'
 
 const props = defineProps<BaseImageZoomProps>()
 
-const { teleportTarget, dialogLabel, thumbLabel, dialogRef, zoomImgRef, minimapImgRef, handleImageLoad, exposed } = useBaseImageZoom(props)
+const { teleportTarget, imageAlt, dialogLabel, thumbLabel, dialogRef, zoomImgRef, minimapImgRef, handleImageLoad, exposed } =
+	useBaseImageZoom(props)
 
 defineExpose(exposed)
 </script>

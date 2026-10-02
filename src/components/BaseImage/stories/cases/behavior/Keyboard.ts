@@ -10,6 +10,7 @@ export const Keyboard: StoryObj<typeof meta> = {
 			description: {
 				story: [
 					'Клавиатура: Tab до изображения (кольцо фокуса), Enter открывает просмотр с фокусом на «Закрыть»,',
+					'«+» и «-» меняют масштаб, «0» сбрасывает его — только пока фокус в окне просмотра (не перехватываются у полей страницы);',
 					'Tab не выходит за пределы просмотра, Esc закрывает его и возвращает фокус на изображение.',
 				].join('\n'),
 			},
@@ -26,6 +27,11 @@ export const Keyboard: StoryObj<typeof meta> = {
 		const dialog = await screen.findByRole('dialog')
 		const close = screen.getByRole('button', { name: 'Закрыть' })
 		await waitFor(() => expect(close).toHaveFocus())
+
+		await userEvent.keyboard('+')
+		await expect(dialog).toHaveTextContent('125%')
+		await userEvent.keyboard('0')
+		await expect(dialog).toHaveTextContent('100%')
 
 		await userEvent.tab()
 		await expect(dialog).toContainElement(document.activeElement as HTMLElement)

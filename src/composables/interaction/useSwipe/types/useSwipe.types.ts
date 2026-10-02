@@ -50,6 +50,8 @@ interface SwipeDragSession {
 	cancel: () => void
 	/** Отпускание в точке: onDragEnd, свайп по порогу, сброс смещения; возвращает дельту жеста */
 	finish: (point: SwipePoint) => SwipeDelta
+	/** Прервать жест без решения о свайпе (touchcancel): смещение — 0 */
+	abort: () => void
 }
 
 /** Подавление click, которым завершилось перетаскивание мышью */

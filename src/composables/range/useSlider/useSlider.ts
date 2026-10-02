@@ -8,6 +8,15 @@ import { useSwipe } from '@composables/interaction/useSwipe'
 import { buildSlideStyle, buildTrackStyle } from './sliderStyles'
 import type { UseSliderOptions, UseSliderReturn } from './types/useSlider.types'
 
+/** Элементы в слайде, с которых мышь не тянет ленту: выделение текста, ползунок видео, поля */
+const NO_DRAG_SELECTOR = 'input, textarea, select, video, audio, [contenteditable="true"]'
+
+/** Описание: перетаскивание мышью — только левой кнопкой и не с полей ввода и медиа */
+function canStartMouseDrag(event: MouseEvent): boolean {
+	if (event.button !== 0) return false
+	return !(event.target instanceof Element && event.target.closest(NO_DRAG_SELECTOR))
+}
+
 /**
  * Composable для логики слайдера.
  * Навигация, autoplay, drag, snap, trackStyle, ResizeObserver.
@@ -56,11 +65,16 @@ function useSlider(options: UseSliderOptions): UseSliderReturn {
 			})
 		}),
 		slideStyle: computed((): Record<string, string> => (isSlideMode() ? buildSlideStyle(settings, viewportSize.value) : {})),
-		...useSliderAutoplay(settings, navigation.goNext),
+		...useSliderAutoplay(settings, { goNext: navigation.goNext, canRotate: () => navigation.maxIndex.value > 0 }),
 		onTouchStart: swipe.onTouchStart,
 		onTouchMove: swipe.onTouchMove,
 		onTouchEnd: swipe.onTouchEnd,
-		onDragStart: swipe.onDragStart,
+		onTouchCancel: swipe.onTouchCancel,
+		onDragStart: (event: MouseEvent): void => {
+			if (!canStartMouseDrag(event)) return
+			event.preventDefault()
+			swipe.onDragStart(event)
+		},
 		onClickCapture: swipe.onClickCapture,
 	}
 }

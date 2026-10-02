@@ -1,6 +1,8 @@
+import type { ImgHTMLAttributes } from 'vue'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { SeoComponentProps } from '@composables/seo/useStructuredData'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
+import type { ImageGallerySource } from '@composables/image/useImageGallery'
 
 export type ImageFit = 'cover' | 'contain' | 'fill' | 'none'
 
@@ -26,30 +28,33 @@ export interface ImageZoomConfig {
 export interface BaseImageProps
 	extends
 		SeoComponentProps,
-		BaseComponentProps<
-			string,
-			| 'root'
-			| 'placeholder'
-			| 'error'
-			| 'img'
-			| 'zoomOutButton'
-			| 'zoomOutIcon'
-			| 'zoomScale'
-			| 'zoomInButton'
-			| 'zoomInIcon'
-			| 'zoomResetButton'
-			| 'zoomResetIcon'
-			| 'rotateLeftButton'
-			| 'rotateLeftIcon'
-			| 'rotateRightButton'
-			| 'rotateRightIcon'
-			| 'zoomCloseButton'
-			| 'zoomCloseIcon'
-			| 'galleryPrevButton'
-			| 'galleryPrevIcon'
-			| 'galleryNextButton'
-			| 'galleryNextIcon'
-			| 'galleryCounter'
+		Omit<
+			BaseComponentProps<
+				string,
+				| 'root'
+				| 'placeholder'
+				| 'error'
+				| 'img'
+				| 'zoomOutButton'
+				| 'zoomOutIcon'
+				| 'zoomScale'
+				| 'zoomInButton'
+				| 'zoomInIcon'
+				| 'zoomResetButton'
+				| 'zoomResetIcon'
+				| 'rotateLeftButton'
+				| 'rotateLeftIcon'
+				| 'rotateRightButton'
+				| 'rotateRightIcon'
+				| 'zoomCloseButton'
+				| 'zoomCloseIcon'
+				| 'galleryPrevButton'
+				| 'galleryPrevIcon'
+				| 'galleryNextButton'
+				| 'galleryNextIcon'
+				| 'galleryCounter'
+			>,
+			'variant'
 		> {
 	/** URL изображения */
 	src: string
@@ -91,14 +96,35 @@ export interface BaseImageProps
 	 * Включайте, только если рядом с изображением на сервере лежит .avif-копия.
 	 */
 	convertToAvif?: boolean
-	/** Галерея изображений для навигации в режиме зума */
-	gallery?: string[]
+	/**
+	 * Галерея изображений для навигации в режиме зума: адреса строками или `{ src, alt }`.
+	 * Свой `alt` элемента озвучивается в имени окна просмотра при листании; без него — `alt` изображения.
+	 */
+	gallery?: ImageGallerySource[]
+	/**
+	 * Атрибуты самого `<img>`: `crossorigin`, `fetchpriority`, `referrerpolicy` и др.
+	 * Атрибуты на компоненте (`class`, `style`, `data-*`) уходят на корневой блок.
+	 */
+	imgAttrs?: ImgHTMLAttributes
 }
 
 export interface BaseImageEmits {
 	(event: 'load'): void
 	(event: 'error'): void
+	/** Масштаб в окне просмотра изменился */
 	(event: 'zoom', scale: number): void
+	/** Окно просмотра открылось */
+	(event: 'zoom-open'): void
+	/** Окно просмотра закрылось */
+	(event: 'zoom-close'): void
+}
+
+/** Методы экземпляра BaseImage (`ref`) */
+export interface BaseImageExpose {
+	/** Открыть окно просмотра (только при `zoomConfig.hasZoom`) */
+	openZoom: () => void
+	/** Закрыть окно просмотра */
+	closeZoom: () => void
 }
 
 export interface BaseImageSlots {

@@ -10,21 +10,21 @@ function watchIndexBounds(settings: ResolvedSliderOptions, currentIndex: Ref<num
 		currentIndex.value = clampSlideIndex(settings, newIndex)
 	})
 
-	watch(settings.itemCount, () => {
-		if (currentIndex.value >= settings.itemCount()) {
-			currentIndex.value = clampSlideIndex(settings, currentIndex.value)
-		}
+	watch([settings.itemCount, settings.slidesPerView], () => {
+		if (currentIndex.value > maxSlideIndex(settings)) currentIndex.value = maxSlideIndex(settings)
 	})
 }
 
-/** Описание: текущий слайд и страницы; переход на slidesPerGroup, за краем — на другой край при loop */
+/** Описание: текущий слайд и страницы; переход на slidesPerGroup, за краем — на другой край при loop; один экран слайдов — переходов нет */
 function useSliderNavigation(settings: ResolvedSliderOptions): UseSliderNavigationReturn {
 	const currentIndex = ref(clampSlideIndex(settings, settings.initialIndex()))
 
+	/** Переход к слайду; индекс за краем — к краю (миниатюра последних слайдов при slidesPerView > 1); тот же слайд — без `onChange` */
 	function goTo(index: number): void {
-		if (index < 0 || index > maxSlideIndex(settings)) return
-		currentIndex.value = index
-		settings.onChange?.(index)
+		const target = clampSlideIndex(settings, index)
+		if (target === currentIndex.value) return
+		currentIndex.value = target
+		settings.onChange?.(target)
 	}
 
 	function goNext(): void {

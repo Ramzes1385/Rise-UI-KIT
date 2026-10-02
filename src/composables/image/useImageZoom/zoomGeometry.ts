@@ -1,5 +1,11 @@
 /** Утилиты: геометрия зума — вписывание изображения в рамку, ограничение сдвига, миникарта */
-import type { ContainedSize, MinimapViewportAxis, Size } from './types/useImageZoom.types'
+import type { ContainedSize, MinimapViewportAxis, Size, ZoomScales } from './types/useImageZoom.types'
+
+/** Значения масштаба, которыми заменяются неверные настройки (NaN, шаг ≤ 0) */
+const ZOOM_SCALE_DEFAULTS: Readonly<ZoomScales> = { initialScale: 1, zoomStep: 0.25, minScale: 0.5, maxScale: 5 }
+
+/** Наименьший допустимый масштаб: при 0 и меньше изображение исчезает */
+const ZOOM_SCALE_FLOOR = 0.05
 
 /** Наименьший размер рамки видимой области на миникарте, px */
 const MINIMAP_VIEWPORT_MIN = 10
@@ -41,4 +47,21 @@ function minimapViewportAxis(axis: MinimapViewportAxis): { size: number; offset:
 	return { size, offset: Math.min(Math.max(offset, 0), axis.mmFrame - size) }
 }
 
-export { calcContain, clampTranslate, minimapRatio, minimapViewportAxis }
+/** Описание: число или запасное значение, если число не конечное (NaN, Infinity) */
+function finiteOr(value: number, fallback: number): number {
+	return Number.isFinite(value) ? value : fallback
+}
+
+/** Описание: границы масштаба без ошибок настройки — min не больше max, шаг больше 0, начальный масштаб внутри границ */
+function normalizeZoomScales(raw: ZoomScales): ZoomScales {
+	const minScale = finiteOr(raw.minScale, ZOOM_SCALE_DEFAULTS.minScale)
+	const maxScale = finiteOr(raw.maxScale, ZOOM_SCALE_DEFAULTS.maxScale)
+	const low = Math.max(Math.min(minScale, maxScale), ZOOM_SCALE_FLOOR)
+	const high = Math.max(minScale, maxScale, low)
+	const step = finiteOr(raw.zoomStep, ZOOM_SCALE_DEFAULTS.zoomStep)
+	const zoomStep = step > 0 ? step : ZOOM_SCALE_DEFAULTS.zoomStep
+	const initialScale = Math.min(Math.max(finiteOr(raw.initialScale, ZOOM_SCALE_DEFAULTS.initialScale), low), high)
+	return { minScale: low, maxScale: high, zoomStep, initialScale }
+}
+
+export { calcContain, clampTranslate, minimapRatio, minimapViewportAxis, normalizeZoomScales }

@@ -71,6 +71,12 @@ export const UI_CHARTS = localized('charts')
 /** Сравнение картинок */
 export const UI_IMAGE_COMPARE = localized('imageCompare')
 
+/** Окно просмотра изображения */
+export const UI_IMAGE_VIEWER = localized('imageViewer')
+
+/** Карусель BaseSlider */
+export const UI_CAROUSEL = localized('carousel')
+
 /** Просмотр JSON */
 export const UI_JSON_VIEWER = localized('jsonViewer')
 

@@ -12,6 +12,9 @@
 			classes.root,
 		]"
 		:style="[{ height: height }, sizeScaleStyle]"
+		role="region"
+		:aria-roledescription="UI_CAROUSEL.ROLE"
+		:aria-label="carouselLabel"
 		@mouseenter="onMouseEnter"
 		@mouseleave="onMouseLeave"
 		@focusin="onFocusIn"
@@ -19,6 +22,17 @@
 		<slot name="header" />
 
 		<div class="base-slider__stage">
+			<BaseButton
+				v-if="hasRotationControl"
+				variant="ghost"
+				class="base-slider__rotation"
+				:class="classes.rotation"
+				:aria-label="rotationLabel"
+				:size-scale="sizeScale"
+				data-slider-rotation
+				@click="toggleRotation">
+				<BaseIcon :name="isAutoplayStopped ? 'play' : 'pause'" />
+			</BaseButton>
 			<div v-if="hasArrows && canNavigate" class="base-slider__arrows" :class="classes.arrows">
 				<BaseButton
 					:variant="arrowVariant"
@@ -27,12 +41,11 @@
 					:aria-label="UI_ARIA.SLIDER_PREV"
 					:is-disabled="!isLoop && currentIndex === 0"
 					:size-scale="sizeScale"
-					@click="goPrev"
-					@mousedown="startHold('prev')"
-					@mouseup="stopHold"
-					@mouseleave="stopHold"
-					@touchstart.prevent="startHold('prev')"
-					@touchend="stopHold">
+					@click="onArrowClick('prev')"
+					@pointerdown="startHold('prev', $event)"
+					@pointerup="stopHold"
+					@pointerleave="stopHold"
+					@pointercancel="stopHold">
 					<BaseIcon :name="isVertical ? 'chevron-up' : 'chevron-left'" />
 				</BaseButton>
 				<BaseButton
@@ -42,12 +55,11 @@
 					:aria-label="UI_ARIA.SLIDER_NEXT"
 					:is-disabled="!isLoop && currentIndex >= maxIndex"
 					:size-scale="sizeScale"
-					@click="goNext"
-					@mousedown="startHold('next')"
-					@mouseup="stopHold"
-					@mouseleave="stopHold"
-					@touchstart.prevent="startHold('next')"
-					@touchend="stopHold">
+					@click="onArrowClick('next')"
+					@pointerdown="startHold('next', $event)"
+					@pointerup="stopHold"
+					@pointerleave="stopHold"
+					@pointercancel="stopHold">
 					<BaseIcon :name="isVertical ? 'chevron-down' : 'chevron-right'" />
 				</BaseButton>
 			</div>
@@ -59,16 +71,20 @@
 				@touchstart="onTouchStart"
 				@touchmove="onTouchMove"
 				@touchend="onTouchEnd"
-				@mousedown.prevent="onDragStart"
+				@touchcancel="onTouchCancel"
+				@mousedown="onDragStart"
 				@click.capture="onClickCapture"
 				@dragstart.prevent>
-				<div class="base-slider__track" :class="classes.track" :style="trackStyle">
+				<div class="base-slider__track" :class="classes.track" :style="trackStyle" :aria-live="liveMode">
 					<div
 						v-for="(item, index) in items"
 						:key="index"
 						class="base-slider__slide"
 						:class="[{ 'base-slider__slide--active': index === currentIndex }, classes.slide]"
 						:style="[slideStyle, slideEffectStyle(index)]"
+						role="group"
+						:aria-roledescription="UI_CAROUSEL.SLIDE_ROLE"
+						:aria-label="slideGroupLabel(index)"
 						:inert="isSlideVisible(index) ? undefined : true">
 						<slot :item="item" :index="index">
 							<video
@@ -79,7 +95,8 @@
 								controls
 								muted
 								loop
-								playsinline></video>
+								playsinline
+								@play="onVideoPlay"></video>
 							<BaseImage
 								v-else
 								:src="item.src"
@@ -141,15 +158,15 @@
 
 <script setup lang="ts">
 import '../styles/BaseSlider.style.scss'
-import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseButton } from '@components/BaseButton'
 import { useBaseSlider } from '../model/useBaseSlider'
 import { calcIconScale } from '@utils/media/iconUtils'
+import { UI_ARIA, UI_CAROUSEL } from '@/locales/messages'
 import { kitDefaults } from '@composables/base/useDefaults'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
-import type { BaseSliderEmits, BaseSliderProps, BaseSliderSlots } from '../types/BaseSlider.types'
+import type { BaseSliderEmits, BaseSliderExpose, BaseSliderProps, BaseSliderSlots } from '../types/BaseSlider.types'
 
 const props = withDefaults(
 	defineProps<BaseSliderProps>(),
@@ -172,6 +189,7 @@ const props = withDefaults(
 		slidesPerGroup: 1,
 		hasCaption: true,
 		isZoomable: false,
+		label: undefined,
 	}),
 )
 const emit = defineEmits<BaseSliderEmits>()
@@ -189,8 +207,6 @@ const {
 	pageCount,
 	currentPage,
 	goTo,
-	goNext,
-	goPrev,
 	goToPage,
 	onMouseEnter,
 	onMouseLeave,
@@ -199,6 +215,7 @@ const {
 	onTouchStart,
 	onTouchMove,
 	onTouchEnd,
+	onTouchCancel,
 	onDragStart,
 	onClickCapture,
 	hasNavigation,
@@ -208,7 +225,19 @@ const {
 	isSlideVisible,
 	slideEffectStyle,
 	slideLabel,
+	slideGroupLabel,
+	carouselLabel,
+	liveMode,
+	hasRotationControl,
+	rotationLabel,
+	toggleRotation,
+	isAutoplayStopped,
+	onVideoPlay,
 	startHold,
 	stopHold,
+	onArrowClick,
+	exposed,
 } = useBaseSlider(props, emit)
+
+defineExpose<BaseSliderExpose>(exposed)
 </script>

@@ -1,5 +1,5 @@
 import type { Ref } from 'vue'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
 import type BaseImageZoom from '../ui/BaseImageZoom.vue'
 import { useSizeScale } from '@composables/base/useSizeScale'
@@ -37,10 +37,14 @@ const IMAGE_ELEMENTS = [
 	'galleryCounter',
 ]
 
-function useZoomViewer(props: ImageProps, emit: BaseImageEmits, zoomRef: Ref<InstanceType<typeof BaseImageZoom> | null>) {
+function useZoomViewer(
+	props: ImageProps,
+	emit: BaseImageEmits,
+	{ zoomRef, zoomSrc }: { zoomRef: Ref<InstanceType<typeof BaseImageZoom> | null>; zoomSrc: () => string },
+) {
 	const gallery = useImageGallery({
 		gallery: () => props.gallery,
-		src: () => props.src,
+		src: zoomSrc,
 		resetZoom: () => zoom.resetZoom(),
 	})
 	const zoom = useImageZoom({
@@ -54,6 +58,10 @@ function useZoomViewer(props: ImageProps, emit: BaseImageEmits, zoomRef: Ref<Ins
 		getMinimapImgEl: () => zoomRef.value?.minimapImgRef ?? null,
 		onArrowLeft: () => gallery.handleGalleryPrev(),
 		onArrowRight: () => gallery.handleGalleryNext(),
+	})
+	watch(zoom.isZoomOpen, opened => {
+		if (opened) emit('zoom-open')
+		else emit('zoom-close')
 	})
 	return { gallery, zoom }
 }
@@ -88,8 +96,18 @@ export function useBaseImage(props: ImageProps, emit: BaseImageEmits) {
 	const resolvedHasZoom = computed((): boolean => props.zoomConfig?.hasZoom ?? false)
 	const zoomRef = ref<InstanceType<typeof BaseImageZoom> | null>(null)
 	const imgRef = ref<HTMLImageElement | null>(null)
-	const { gallery, zoom } = useZoomViewer(props, emit, zoomRef)
 	const { borderRadiusStyle, ...state } = useLoadState(props, emit, imgRef)
+	const isShowingFallback = (): boolean => !!props.fallbackSrc && state.currentSrc.value === props.fallbackSrc
+	const { gallery, zoom } = useZoomViewer(props, emit, {
+		zoomRef,
+		zoomSrc: () => (isShowingFallback() ? props.fallbackSrc! : props.src),
+	})
+	function openZoom(): void {
+		if (!resolvedHasZoom.value) return
+		const foundIndex = gallery.galleryList.value.indexOf(props.src)
+		gallery.galleryIndex.value = foundIndex >= 0 ? foundIndex : 0
+		zoom.openZoom()
+	}
 
 	return {
 		classes,
@@ -112,11 +130,7 @@ export function useBaseImage(props: ImageProps, emit: BaseImageEmits) {
 			({ url }) => imageSchema(props, url),
 		),
 		radiusStyle: computed(() => (props.borderRadius === undefined ? undefined : borderRadiusStyle.value)),
-		handleImageClick(): void {
-			if (!resolvedHasZoom.value) return
-			const foundIndex = gallery.galleryList.value.indexOf(props.src)
-			gallery.galleryIndex.value = foundIndex >= 0 ? foundIndex : 0
-			zoom.openZoom()
-		},
+		handleImageClick: openZoom,
+		exposed: { openZoom, closeZoom: (): void => zoom.closeZoom() },
 	}
 }

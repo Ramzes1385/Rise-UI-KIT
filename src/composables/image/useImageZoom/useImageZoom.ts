@@ -2,50 +2,104 @@
 import type { Ref } from 'vue'
 import { useZoomLayout } from './useZoomLayout'
 import { useZoomMinimap } from './useZoomMinimap'
+import { normalizeZoomScales } from './zoomGeometry'
 import { useZoomTransform } from './useZoomTransform'
 import { useEscapeKey } from '@composables/overlay/useEscapeKey'
+import { computed, nextTick, onUnmounted, ref, watch } from 'vue'
 import { useScrollLock } from '@composables/overlay/useScrollLock'
-import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import type { UseImageZoomOptions } from './types/useImageZoom.types'
 
-/** Описание: клавиши открытого зума — «+»/«=» и «-» масштаб, «0» сброс, стрелки — соседние изображения галереи */
-function handleZoomKey(event: KeyboardEvent, options: UseImageZoomOptions, transform: ReturnType<typeof useZoomTransform>): void {
-	if (event.key === '+' || event.key === '=') transform.zoomIn()
-	if (event.key === '-') transform.zoomOut()
-	if (event.key === '0') transform.resetZoom()
-	if (event.key === 'ArrowLeft') options.onArrowLeft?.()
-	if (event.key === 'ArrowRight') options.onArrowRight?.()
+/** Прокрутка колеса на один шаг масштаба, px: тачпад присылает много мелких событий, мышь — около 100 px на щелчок */
+const WHEEL_STEP_PX = 50
+/** Пикселей в строке и в странице — для событий колеса в строках (`deltaMode` 1) и страницах (2) */
+const WHEEL_LINE_PX = 16
+const WHEEL_PAGE_PX = 800
+
+/** Описание: действие клавиши открытого зума — «+»/«=» и «-» масштаб, «0» сброс, стрелки — соседние изображения галереи */
+function zoomKeyAction(
+	key: string,
+	options: UseImageZoomOptions,
+	transform: ReturnType<typeof useZoomTransform>,
+): (() => void) | undefined {
+	const actions: Record<string, (() => void) | undefined> = {
+		'+': transform.zoomIn,
+		'=': transform.zoomIn,
+		'-': transform.zoomOut,
+		'0': transform.resetZoom,
+		ArrowLeft: options.onArrowLeft,
+		ArrowRight: options.onArrowRight,
+	}
+	return actions[key]
 }
 
-/** Описание: блокировка прокрутки страницы, пока зум открыт; общий счётчик не снимает блокировку модалки под зумом */
-function useZoomScrollLock(isZoomOpen: Ref<boolean>): () => void {
+/** Описание: клавиши открытого зума; с Ctrl, Alt и Meta — клавиши браузера */
+function handleZoomKey(event: KeyboardEvent, options: UseImageZoomOptions, transform: ReturnType<typeof useZoomTransform>): void {
+	if (event.ctrlKey || event.altKey || event.metaKey) return
+	zoomKeyAction(event.key, options, transform)?.()
+}
+
+/** Описание: прокрутка колеса в пикселях с учётом единиц события */
+function wheelPixels(event: WheelEvent): number {
+	if (event.deltaMode === 1) return event.deltaY * WHEEL_LINE_PX
+	if (event.deltaMode === 2) return event.deltaY * WHEEL_PAGE_PX
+	return event.deltaY
+}
+
+/** Описание: масштаб колесом — прокрутка копится до шага; горизонтальная прокрутка (`deltaY` 0) масштаб не меняет */
+function useZoomWheel(transform: ReturnType<typeof useZoomTransform>) {
+	let accumulated = 0
+	return (event: WheelEvent): void => {
+		accumulated += wheelPixels(event)
+		if (Math.abs(accumulated) < WHEEL_STEP_PX) return
+		if (accumulated < 0) transform.zoomIn()
+		else transform.zoomOut()
+		accumulated = 0
+	}
+}
+
+/** Описание: блокировка прокрутки и подстройка под размер окна, пока зум открыт; общий счётчик не снимает блокировку модалки под зумом */
+function useOpenZoomEffects(isZoomOpen: Ref<boolean>, syncSizes: () => void): () => void {
 	const { lock, unlock } = useScrollLock()
+	function release(): void {
+		unlock()
+		window.removeEventListener('resize', syncSizes)
+	}
 	watch(
 		() => isZoomOpen.value,
 		(opened: boolean) => {
-			if (opened) lock()
-			else unlock()
+			if (!opened) return release()
+			lock()
+			window.addEventListener('resize', syncSizes)
 		},
 	)
-	return unlock
+	return release
 }
 
-/** Описание: клавиатура и изменение размера окна, пока компонент смонтирован; `cleanup` — при размонтировании */
-function useZoomListeners(handleKeydown: (event: KeyboardEvent) => void, syncSizes: () => void, cleanup: () => void): void {
-	onMounted(() => {
-		document.addEventListener('keydown', handleKeydown)
-		window.addEventListener('resize', syncSizes)
-	})
-
-	onUnmounted(() => {
-		document.removeEventListener('keydown', handleKeydown)
-		window.removeEventListener('resize', syncSizes)
-		cleanup()
-	})
+/** Описание: настройки зума с исправленными границами масштаба (min ≤ max, шаг > 0, без NaN) */
+function useNormalizedOptions(options: UseImageZoomOptions): UseImageZoomOptions {
+	const scales = computed(() =>
+		normalizeZoomScales({
+			initialScale: options.initialScale(),
+			zoomStep: options.zoomStep(),
+			minScale: options.minScale(),
+			maxScale: options.maxScale(),
+		}),
+	)
+	return {
+		...options,
+		initialScale: () => scales.value.initialScale,
+		zoomStep: () => scales.value.zoomStep,
+		minScale: () => scales.value.minScale,
+		maxScale: () => scales.value.maxScale,
+	}
 }
 
-/** Описание: зум изображения — открытие и закрытие, масштаб, сдвиг, поворот, клавиатура и миникарта */
-function useImageZoom(options: UseImageZoomOptions) {
+/**
+ * Описание: зум изображения — открытие и закрытие, масштаб, сдвиг, поворот, клавиатура и миникарта.
+ * Клавиши — `handleKeydown` на окне просмотра (`@keydown`), не на `document`: при фокусе вне зума «+», «-» и «0» не перехватываются.
+ */
+function useImageZoom(rawOptions: UseImageZoomOptions) {
+	const options = useNormalizedOptions(rawOptions)
 	const isZoomOpen = ref(false)
 	const { layout, measure } = useZoomLayout(options)
 	const transform = useZoomTransform(options, layout)
@@ -71,16 +125,12 @@ function useImageZoom(options: UseImageZoomOptions) {
 	// Escape — через стек слоёв: зум, открытый из окна, закрывается первым, окно — следующим нажатием
 	useEscapeKey({ isActive: () => isZoomOpen.value, callback: () => closeZoom() })
 
-	function handleKeydown(event: KeyboardEvent): void {
-		if (isZoomOpen.value) handleZoomKey(event, options, transform)
-	}
-
 	const minimap = useZoomMinimap({ ...transform, ...layout })
-	const unlockScroll = useZoomScrollLock(isZoomOpen)
+	const releaseOpenEffects = useOpenZoomEffects(isZoomOpen, syncSizes)
 
-	useZoomListeners(handleKeydown, syncSizes, () => {
+	onUnmounted(() => {
 		minimap.cleanupDragListeners()
-		unlockScroll()
+		releaseOpenEffects()
 	})
 
 	return {
@@ -90,10 +140,10 @@ function useImageZoom(options: UseImageZoomOptions) {
 		syncSizes,
 		openZoom,
 		closeZoom,
-		handleWheel: (event: WheelEvent): void => {
-			if (event.deltaY < 0) transform.zoomIn()
-			else transform.zoomOut()
+		handleKeydown: (event: KeyboardEvent): void => {
+			if (isZoomOpen.value) handleZoomKey(event, options, transform)
 		},
+		handleWheel: useZoomWheel(transform),
 		handleOverlayClick: (): void => {
 			if (options.closeOnOverlay()) closeZoom()
 		},

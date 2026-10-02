@@ -215,4 +215,18 @@ export const enMedia = {
 		AFTER: 'After',
 		HANDLE: 'Divider between “{before}” and “{after}”',
 	},
+	/** Окно просмотра изображения BaseImage: имя меняется при листании галереи */
+	imageViewer: {
+		TITLE_NAMED: 'Image viewer: {alt}',
+		TITLE_POSITION: '{title}, image {current} of {total}',
+	},
+	/** Карусель BaseSlider (APG Carousel): имя и роль области, роль и номер слайда, управление автопрокруткой */
+	carousel: {
+		LABEL: 'Carousel',
+		ROLE: 'carousel',
+		SLIDE_ROLE: 'slide',
+		SLIDE: '{current} of {total}',
+		PAUSE: 'Stop automatic slide show',
+		PLAY: 'Start automatic slide show',
+	},
 }

@@ -1,7 +1,8 @@
 import '@testing-library/jest-dom/vitest'
 import BaseSlider from '../ui/BaseSlider.vue'
-import type { SliderItem } from '../types/BaseSlider.types'
+import { defineComponent, h, nextTick, ref } from 'vue'
 import { fireEvent, render, screen } from '@testing-library/vue'
+import type { BaseSliderExpose, SliderItem } from '../types/BaseSlider.types'
 
 const ITEMS: SliderItem[] = [
 	{ src: 'slide1.jpg', alt: 'Слайд 1', type: 'image' },
@@ -471,18 +472,40 @@ describe('BaseSlider unit', () => {
 			vi.useRealTimers()
 		})
 
-		it('листает с интервалом, пока стрелка зажата, и останавливается, когда её отпустили', async () => {
+		it('после задержки листает с интервалом, пока стрелка зажата; click после повтора не делает лишний шаг (SLD-2)', async () => {
 			vi.useFakeTimers()
 			const items: SliderItem[] = [1, 2, 3, 4, 5].map(n => ({ src: `slide${n}.jpg`, alt: `Слайд ${n}` }))
 			const { emitted } = render(BaseSlider, { props: { items, isLoop: false } })
 			const next = screen.getByRole('button', { name: 'Следующий слайд' })
 
-			await fireEvent.mouseDown(next)
-			await vi.advanceTimersByTimeAsync(3 * 150)
-			await fireEvent.mouseUp(next)
+			await fireEvent.pointerDown(next)
+			await vi.advanceTimersByTimeAsync(399)
+			expect(emitted().change).toBeUndefined()
+			await vi.advanceTimersByTimeAsync(1 + 3 * 150)
+			await fireEvent.pointerUp(next)
+			await fireEvent.click(next)
 			await vi.advanceTimersByTimeAsync(3 * 150)
 
 			expect(emitted().change).toEqual([[1], [2], [3]])
+		})
+
+		it('короткое нажатие и касание листают ровно на один слайд (SLD-3)', async () => {
+			vi.useFakeTimers()
+			const items: SliderItem[] = [1, 2, 3].map(n => ({ src: `slide${n}.jpg`, alt: `Слайд ${n}` }))
+			const { emitted } = render(BaseSlider, { props: { items, isLoop: false } })
+			const next = screen.getByRole('button', { name: 'Следующий слайд' })
+			const prev = screen.getByRole('button', { name: 'Предыдущий слайд' })
+
+			await fireEvent.pointerDown(next)
+			await vi.advanceTimersByTimeAsync(200)
+			await fireEvent.pointerUp(next)
+			await fireEvent.click(next)
+			await fireEvent.pointerDown(prev, { button: 2 })
+			await vi.advanceTimersByTimeAsync(1000)
+			await fireEvent.pointerCancel(prev)
+			await fireEvent.click(prev)
+
+			expect(emitted().change).toEqual([[1], [0]])
 		})
 	})
 
@@ -504,7 +527,7 @@ describe('BaseSlider unit', () => {
 			expect(emitted().change).toBeUndefined()
 		})
 
-		it('должен возобновлять автопрокрутку, когда фокус покидает слайдер', () => {
+		it('фокус на стрелке останавливает автопрокрутку до кнопки «Запустить»; уход фокуса её не возобновляет (APG)', async () => {
 			vi.useFakeTimers()
 			const { container, emitted } = render(BaseSlider, { props: AUTOPLAY_PROPS })
 			const outside = document.createElement('button')
@@ -512,8 +535,13 @@ describe('BaseSlider unit', () => {
 
 			container.querySelector<HTMLButtonElement>('.base-slider__arrow--next')!.focus()
 			outside.focus()
-			vi.advanceTimersByTime(1000)
+			await vi.advanceTimersByTimeAsync(3000)
+			expect(emitted().change).toBeUndefined()
 
+			await fireEvent.click(screen.getByRole('button', { name: 'Запустить автопрокрутку' }))
+			expect(screen.getByRole('button', { name: 'Остановить автопрокрутку' })).toBeInTheDocument()
+			outside.focus()
+			vi.advanceTimersByTime(1000)
 			expect(emitted().change).toEqual([[1]])
 			outside.remove()
 		})
@@ -641,6 +669,113 @@ describe('BaseSlider unit', () => {
 			expect(container.querySelector('.base-slider__dot')?.classList.contains('custom-slider-dot')).toBe(true)
 			expect(container.querySelector('.base-slider__thumbs')?.classList.contains('custom-slider-thumbs')).toBe(true)
 			expect(container.querySelector('.base-slider__thumb')?.classList.contains('custom-slider-thumb')).toBe(true)
+		})
+	})
+
+	describe('APG Carousel (fu-media)', () => {
+		afterEach(() => {
+			vi.useRealTimers()
+		})
+
+		it('корень — область с ролью «карусель» и именем; своё имя — пропом label (SLD-5)', async () => {
+			const { rerender } = render(BaseSlider, { props: { items: ITEMS } })
+			const region = screen.getByRole('region', { name: 'Карусель' })
+
+			expect(region).toHaveAttribute('aria-roledescription', 'карусель')
+			await rerender({ items: ITEMS, label: 'Новинки' })
+			expect(screen.getByRole('region', { name: 'Новинки' })).toBe(region)
+		})
+
+		it('слайд — группа с ролью «слайд» и номером «N из M»', () => {
+			render(BaseSlider, { props: { items: ITEMS } })
+			const slides = screen.getAllByRole('group', { hidden: true })
+
+			expect(slides).toHaveLength(2)
+			expect(slides[0]).toHaveAttribute('aria-roledescription', 'слайд')
+			expect(slides[1]).toHaveAccessibleName('2 из 2')
+		})
+
+		it('без autoplay и с одним слайдом кнопки автопрокрутки нет', async () => {
+			const { rerender } = render(BaseSlider, { props: { items: ITEMS } })
+			expect(screen.queryByRole('button', { name: 'Остановить автопрокрутку' })).toBeNull()
+
+			await rerender({ items: [ITEMS[0]], isAutoplay: true })
+			expect(screen.queryByRole('button', { name: 'Остановить автопрокрутку' })).toBeNull()
+		})
+
+		it('кнопка автопрокрутки первая в порядке Tab, переключает прокрутку; live-регион выключен, пока слайды листаются (SLD-1)', async () => {
+			vi.useFakeTimers()
+			const { container, emitted } = render(BaseSlider, { props: { items: ITEMS, isAutoplay: true, autoplayInterval: 1000 } })
+			const track = container.querySelector('.base-slider__track')!
+			const rotation = screen.getByRole('button', { name: 'Остановить автопрокрутку' })
+
+			await nextTick()
+			expect(container.querySelector('button')).toBe(rotation)
+			expect(track).toHaveAttribute('aria-live', 'off')
+
+			await fireEvent.click(rotation)
+			expect(rotation).toHaveAccessibleName('Запустить автопрокрутку')
+			expect(track).toHaveAttribute('aria-live', 'polite')
+			await vi.advanceTimersByTimeAsync(3000)
+			expect(emitted().change).toBeUndefined()
+
+			await fireEvent.click(rotation)
+			expect(track).toHaveAttribute('aria-live', 'off')
+			await vi.advanceTimersByTimeAsync(1000)
+			expect(emitted().change).toEqual([[1]])
+		})
+
+		it('без autoplay live-регион вежливый: смена слайда озвучивается', () => {
+			const { container } = render(BaseSlider, { props: { items: ITEMS } })
+
+			expect(container.querySelector('.base-slider__track')).toHaveAttribute('aria-live', 'polite')
+		})
+
+		it('видео неактивного слайда ставится на паузу; запуск видео останавливает автопрокрутку (SLD-6)', async () => {
+			const items: SliderItem[] = [
+				{ src: 'a.mp4', type: 'video' },
+				{ src: 'b.jpg', alt: 'Б' },
+			]
+			const { container } = render(BaseSlider, { props: { items, isAutoplay: true } })
+			const video = container.querySelector('video')!
+			const pause = vi.spyOn(video, 'pause').mockImplementation(() => undefined)
+
+			await fireEvent.play(video)
+			expect(screen.getByRole('button', { name: 'Запустить автопрокрутку' })).toBeInTheDocument()
+
+			await fireEvent.click(screen.getByRole('button', { name: 'Следующий слайд' }))
+			await nextTick()
+			expect(pause).toHaveBeenCalled()
+		})
+
+		it('методы экземпляра: goTo, goNext, goPrev, stopAutoplay, playAutoplay (SLD-9)', async () => {
+			const sliderRef = ref<BaseSliderExpose | null>(null)
+			const items: SliderItem[] = [1, 2, 3].map(n => ({ src: `s${n}.jpg`, alt: `С${n}` }))
+			const onChange = vi.fn()
+			render(
+				defineComponent({
+					setup: () => () => h(BaseSlider, { ref: sliderRef, items, isAutoplay: true, isLoop: false, onChange }),
+				}),
+			)
+
+			sliderRef.value!.goTo(2)
+			sliderRef.value!.goPrev()
+			sliderRef.value!.goNext()
+			sliderRef.value!.stopAutoplay()
+			await nextTick()
+			expect(screen.getByRole('button', { name: 'Запустить автопрокрутку' })).toBeInTheDocument()
+			sliderRef.value!.playAutoplay()
+			await nextTick()
+
+			expect(onChange.mock.calls).toEqual([[2], [1], [2]])
+			expect(screen.getByRole('button', { name: 'Остановить автопрокрутку' })).toBeInTheDocument()
+		})
+
+		it('без items не падает и не показывает навигацию (SLD-8)', () => {
+			const { container } = render(BaseSlider, { props: { items: undefined as unknown as SliderItem[] } })
+
+			expect(container.querySelector('.base-slider__slide')).toBeNull()
+			expect(container.querySelector('.base-slider__arrows')).toBeNull()
 		})
 	})
 })

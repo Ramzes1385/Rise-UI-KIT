@@ -1,8 +1,3 @@
-$media-scrim: color-mix(in srgb, black 64%, transparent);
-$media-scrim-light: color-mix(in srgb, black 32%, transparent);
-$media-text: white;
-$media-text-muted: color-mix(in srgb, white 85%, transparent);
-
 .base-slider {
 	position: relative;
 	display: flex;
@@ -229,8 +224,8 @@ $media-text-muted: color-mix(in srgb, white 85%, transparent);
 		bottom: 0;
 		left: 0;
 		padding: sz(32px 16px 16px);
-		background-image: linear-gradient(to top, $media-scrim, transparent);
-		color: $media-text;
+		background-image: linear-gradient(to top, var(--rise-media-scrim), transparent);
+		color: var(--rise-media-text);
 		pointer-events: none;
 		@include reset-custom-color;
 	}
@@ -248,13 +243,30 @@ $media-text-muted: color-mix(in srgb, white 85%, transparent);
 	&__title {
 		@include text-size(base);
 		font-weight: var(--rise-font-weight-semibold);
-		color: $media-text;
+		color: var(--rise-media-text);
 	}
 
 	&__desc {
 		margin-top: sz(2px);
 		@include text-size(sm);
-		color: $media-text-muted;
+		color: var(--rise-media-text-toned);
+	}
+
+	&__rotation.base-button {
+		--btn-pad-top: 5px;
+		--btn-pad-right: 5px;
+		--btn-pad-bottom: 5px;
+		--btn-pad-left: 5px;
+		--custom-bg: var(--rise-media-surface);
+		--custom-bg-hover: var(--rise-media-surface-hover);
+		--custom-bg-active: var(--rise-media-surface-hover);
+		--custom-text: var(--rise-media-text);
+
+		position: absolute;
+		top: sz(12px);
+		left: sz(12px);
+		z-index: 2;
+		border-radius: var(--rise-radius-full);
 	}
 
 	&__arrows {
@@ -436,8 +448,8 @@ $media-text-muted: color-mix(in srgb, white 85%, transparent);
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background-color: $media-scrim-light;
-		color: $media-text;
+		background-color: var(--rise-media-scrim-light);
+		color: var(--rise-media-text);
 		pointer-events: none;
 	}
 }

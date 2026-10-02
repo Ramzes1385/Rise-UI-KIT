@@ -15,15 +15,14 @@ function hasCustomDimensions(options: UseImageStateOptions): boolean {
 	return !!options.width?.() || !!options.height?.() || !!options.aspectRatio?.()
 }
 
-/** Описание: стили размеров из width, height и aspectRatio; пропорции важнее ширины и высоты */
+/** Описание: стили размеров из width, height и aspectRatio; с пропорциями высота считается от ширины, `height` не применяется */
 function buildDimensionStyle(options: UseImageStateOptions): Record<string, string> {
 	const aspectRatio = options.aspectRatio?.()
-	if (aspectRatio) return { 'aspect-ratio': aspectRatio }
-	const styles: Record<string, string> = {}
 	const width = options.width?.()
 	const height = options.height?.()
+	const styles: Record<string, string> = aspectRatio ? { 'aspect-ratio': aspectRatio } : {}
 	if (width) styles.width = scaledSize(width)
-	if (height) styles.height = scaledSize(height)
+	if (height && !aspectRatio) styles.height = scaledSize(height)
 	return styles
 }
 
