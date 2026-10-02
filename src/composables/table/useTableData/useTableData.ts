@@ -1,5 +1,4 @@
 /** Composable: сортировка, фильтрация, пагинация и поиск таблицы */
-import { watch } from 'vue'
 import { useTableSort } from '@composables/table/useTableSort'
 import { useTableProcessedRows } from './useTableProcessedRows'
 import { createTableDataActions } from './createTableDataActions'
@@ -33,7 +32,8 @@ import type { UseTableDataOptions, UseTableDataReturn } from './types/useTableDa
  * ```
  */
 function useTableData(options: UseTableDataOptions): UseTableDataReturn {
-	const { rows, columns, loadMode, pageSize, isMultiSort, searchDebounce, onSearch, onSort, onFilter, onPageSizeChange } = options
+	const { rows, columns, loadMode, pageSize, hasMore, isMultiSort, searchDebounce, onSearch, onSort, onFilter, onPageSizeChange } =
+		options
 
 	const { searchQuery, handleSearchInput } = useTableSearch({ searchDebounce, onSearch })
 
@@ -50,7 +50,7 @@ function useTableData(options: UseTableDataOptions): UseTableDataReturn {
 	const processedRows = useTableProcessedRows({ rows, columns, searchQuery, activeFilters, sortStates })
 
 	const { currentPage, localPageSize, displayedRows, totalPages, visiblePages, hasMoreRows, loadMore, resetPage, handlePageSizeChange } =
-		useTablePagination({ processedRows, loadMode, pageSize, onPageSizeChange })
+		useTablePagination({ processedRows, loadMode, pageSize, hasMore, onPageSizeChange })
 
 	const { addFilter, removeFilter, handleSearchInputWithReset } = createTableDataActions({
 		baseAddFilter,
@@ -58,14 +58,6 @@ function useTableData(options: UseTableDataOptions): UseTableDataReturn {
 		handleSearchInput,
 		resetPage,
 	})
-
-	/** Сброс страницы при изменении данных */
-	watch(
-		() => rows.value,
-		() => {
-			resetPage()
-		},
-	)
 
 	return {
 		searchQuery,

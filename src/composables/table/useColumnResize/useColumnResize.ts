@@ -2,6 +2,7 @@
 import { onBeforeUnmount, ref } from 'vue'
 import { useResizeDrag } from './useResizeDrag'
 import { toHTMLElement } from '@utils/dom/domUtils'
+import { createKeyboardResize } from './createKeyboardResize'
 import type { ResizeColumn, ResizeState, UseColumnResizeParams } from './types/useColumnResize.types'
 import { applyResizeWidths, createIdleResizeState, findSiblingKey, measureSiblingWidth } from './useColumnResizeUtils'
 
@@ -13,6 +14,7 @@ function useColumnResize<TColumn extends ResizeColumn>({
 	onColumnsChange,
 }: UseColumnResizeParams<TColumn>) {
 	const resizeState = ref<ResizeState>(createIdleResizeState())
+	const resizeBy = createKeyboardResize({ columns, visibleColumns, minWidth, onColumnResize, onColumnsChange })
 
 	const drag = useResizeDrag({ onMove: handleMouseMove, onEnd: stopResize })
 
@@ -39,6 +41,7 @@ function useColumnResize<TColumn extends ResizeColumn>({
 	}
 
 	function startResize(event: MouseEvent, columnKey: string): void {
+		if (event.button > 0) return
 		const target = toHTMLElement(event.target)
 		const th = target?.closest('th') ?? null
 		/* istanbul ignore next -- defensive: resize-handle всегда внутри th */
@@ -70,9 +73,7 @@ function useColumnResize<TColumn extends ResizeColumn>({
 		drag.release()
 	})
 
-	return {
-		startResize,
-	}
+	return { startResize, resizeBy }
 }
 
 export { useColumnResize }

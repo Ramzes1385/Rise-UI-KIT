@@ -7,6 +7,10 @@ export interface BaseTableBodyProps {
 	columns: TableColumn[]
 	/** Текст при пустой таблице */
 	emptyText: string
+	/** Строки есть, но поиск или фильтры скрыли все */
+	isFiltered?: boolean
+	/** Строки активируются с клавиатуры: у них roving tabindex, Enter и пробел дают `row-click` */
+	isRowInteractive?: boolean
 	/** Флаг загрузки данных */
 	isLoading: boolean
 	/** Количество строк-скелетонов при загрузке */
@@ -58,7 +62,7 @@ export interface BaseTableBodyEmits {
 
 export interface BaseTableBodySlots {
 	/** Контент при пустой таблице */
-	empty?: () => unknown
+	empty?: (props: { isFiltered: boolean }) => unknown
 	/** Контент раскрытой строки */
 	'expanded-content'?: (props: { row: TableRow }) => unknown
 	/** Кастомный рендер ячейки по ключу колонки (`cell-<columnKey>`) */

@@ -62,4 +62,14 @@ describe('useTableSort', () => {
 		expect(onSort).toHaveBeenCalledTimes(1)
 		expect(onSort.mock.calls[0][0]).toHaveLength(1)
 	})
+
+	it('TBL-16: событие sort получает копию состояния, которую таблица потом не меняет', () => {
+		const onSort = vi.fn()
+		const { handleSort } = useTableSort({ isMultiSort: () => true, onSort })
+		const column = { key: 'name', label: 'Имя', isSortable: true }
+		handleSort(column)
+		const first = onSort.mock.calls[0][0]
+		handleSort(column)
+		expect(first).toEqual([{ key: 'name', direction: 'asc' }])
+	})
 })

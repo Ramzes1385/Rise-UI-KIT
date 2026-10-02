@@ -35,17 +35,18 @@ describe('useTableSearch', () => {
 		vi.useRealTimers()
 	})
 
-	it('вызывает resetPage перед onSearch', () => {
+	it('вызывает resetPage сразу при вводе, onSearch — после debounce', () => {
 		vi.useFakeTimers()
 		const onSearch = vi.fn()
 		const resetPage = vi.fn()
 		const { handleSearchInput } = useTableSearch({ searchDebounce: () => 100, onSearch })
 
 		handleSearchInput('запрос', resetPage)
-		expect(resetPage).not.toHaveBeenCalled()
+		expect(resetPage).toHaveBeenCalledTimes(1)
+		expect(onSearch).not.toHaveBeenCalled()
 
 		vi.advanceTimersByTime(100)
-		expect(resetPage).toHaveBeenCalled()
+		expect(resetPage).toHaveBeenCalledTimes(1)
 		expect(onSearch).toHaveBeenCalledWith('запрос')
 
 		vi.useRealTimers()
@@ -61,6 +62,28 @@ describe('useTableSearch', () => {
 		vi.advanceTimersByTime(100)
 
 		expect(onSearch).not.toHaveBeenCalled()
+		vi.useRealTimers()
+	})
+
+	it('без resetPage ввод только откладывает onSearch', () => {
+		vi.useFakeTimers()
+		const onSearch = vi.fn()
+		const { handleSearchInput, searchQuery } = useTableSearch({ searchDebounce: () => 100, onSearch })
+		handleSearchInput('запрос')
+		expect(searchQuery.value).toBe('запрос')
+		vi.advanceTimersByTime(100)
+		expect(onSearch).toHaveBeenCalledWith('запрос')
+		vi.useRealTimers()
+	})
+
+	it('без onSearch запрос применяется и после debounce ничего не падает', () => {
+		vi.useFakeTimers()
+		const resetPage = vi.fn()
+		const { handleSearchInput, searchQuery } = useTableSearch({ searchDebounce: () => 50 })
+		handleSearchInput('а', resetPage)
+		vi.advanceTimersByTime(50)
+		expect(searchQuery.value).toBe('а')
+		expect(resetPage).toHaveBeenCalledTimes(1)
 		vi.useRealTimers()
 	})
 })

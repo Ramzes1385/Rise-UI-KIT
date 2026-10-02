@@ -17,7 +17,8 @@ export const Keyboard: StoryObj<typeof meta> = {
 			description: {
 				story: [
 					'Клавиатура: Tab переводит фокус на кнопку сортировки (кольцо фокуса), Enter и Space меняют направление (`aria-sort`);',
-					'Space отмечает чекбокс строки; Enter на кнопке раскрытия показывает содержимое строки.',
+					'Space отмечает чекбокс строки; Enter на кнопке раскрытия показывает содержимое строки. Со слушателем `row-click`',
+					'строки — одна точка Tab: ↑/↓, Home и End переходят между строками, Enter и Space дают `row-click`.',
 				].join('\n'),
 			},
 			source: storySource({
@@ -38,7 +39,7 @@ export const Keyboard: StoryObj<typeof meta> = {
 		setup: useStorySetup(args, { data: { columns: args.columns }, slots: ['default', 'columns'] }),
 		template,
 	}),
-	play: async ({ canvas, userEvent }) => {
+	play: async ({ canvas, userEvent, args }) => {
 		const sortButton = canvas.getByRole('button', { name: 'Покупатель' })
 		const header = canvas.getByRole('columnheader', { name: 'Покупатель' })
 		await tabTo(sortButton, userEvent)
@@ -57,5 +58,13 @@ export const Keyboard: StoryObj<typeof meta> = {
 		await tabTo(expandButton, userEvent)
 		await userEvent.keyboard('{Enter}')
 		await expect(expandButton).toHaveAttribute('aria-expanded', 'true')
+
+		const rows = canvas.getAllByRole('row').filter(row => row.hasAttribute('data-row-interactive'))
+		rows[0].focus()
+		await userEvent.keyboard('{ArrowDown}')
+		await expect(rows[1]).toHaveFocus()
+		await expect(rows[1]).toHaveAttribute('tabindex', '0')
+		await userEvent.keyboard('{Enter}')
+		await expect(args['onRow-click']).toHaveBeenLastCalledWith(expect.objectContaining({ id: 2 }))
 	},
 }

@@ -12,7 +12,7 @@ function useTableProcessedRows(options: UseTableProcessedRowsOptions) {
 		let result = [...rows.value]
 
 		if (searchQuery.value) {
-			result = filterRowsBySearch(result, searchQuery.value)
+			result = filterRowsBySearch(result, searchQuery.value, columns.value)
 		}
 
 		for (const filter of activeFilters.value) {

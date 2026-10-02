@@ -145,3 +145,34 @@
 		height: sz(20px);
 	}
 }
+
+.base-table__table--sticky-service {
+	.base-table__td--check,
+	.base-table__td--number,
+	.base-table__td--expand {
+		position: sticky;
+		z-index: 1;
+		background-color: var(--tbl-row-bg, var(--tbl-bg));
+	}
+
+	.base-table__th--check,
+	.base-table__th--number,
+	.base-table__th--expand {
+		z-index: 3;
+	}
+
+	.base-table__th--check,
+	.base-table__td--check {
+		left: var(--tbl-sticky-check, 0);
+	}
+
+	.base-table__th--number,
+	.base-table__td--number {
+		left: var(--tbl-sticky-number, 0);
+	}
+
+	.base-table__th--expand,
+	.base-table__td--expand {
+		left: var(--tbl-sticky-expand, 0);
+	}
+}

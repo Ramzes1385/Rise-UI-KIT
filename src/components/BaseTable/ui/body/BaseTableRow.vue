@@ -12,7 +12,11 @@
 			trClass,
 		]"
 		:aria-disabled="row.isDisabled ? 'true' : undefined"
-		@click="emit('row-click', row)">
+		:tabindex="isInteractive ? tabIndex : undefined"
+		:data-row-interactive="isInteractive ? '' : undefined"
+		@click="onClick"
+		@keydown="onKeydown"
+		@focus="emit('row-focus', row)">
 		<td v-if="isSelectable" class="base-table__td base-table__td--check" :class="tdClass" @click.stop>
 			<BaseCheckbox
 				:model-value="isSelected"
@@ -70,5 +74,5 @@ const emit = defineEmits<BaseTableRowEmits>()
 
 defineSlots<BaseTableRowSlots>()
 
-const { expandButtonPadding, isExpandable } = useBaseTableRow(props)
+const { expandButtonPadding, isExpandable, onClick, onKeydown } = useBaseTableRow(props, emit)
 </script>

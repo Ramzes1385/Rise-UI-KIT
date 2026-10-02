@@ -13,6 +13,8 @@ export interface BaseTableHeaderProps {
 	hasExpandableRows: boolean
 	/** Все ли строки выбраны */
 	isAllSelected: boolean
+	/** Выбрана часть строк: «Выбрать все» в частичном состоянии */
+	isSomeSelected: boolean
 	/** Масштаб размера (базовая единица sizeScale) */
 	sizeScale: number
 	/** Включена ли множественная сортировка */
@@ -37,9 +39,10 @@ export interface BaseTableHeaderEmits {
 	(event: 'toggle-all'): void
 	(event: 'sort', column: TableColumn): void
 	(event: 'resize-start', value: MouseEvent, column: TableColumn): void
+	(event: 'resize-by', handle: HTMLElement, column: TableColumn, delta: number): void
 }
 
 export interface BaseTableHeaderSlots {
 	/** Кастомный рендер заголовка колонки (`header-<columnKey>`) */
-	[name: `header-${string}`]: (props: { column: TableColumn }) => unknown
+	[name: `header-${string}`]: (props: { column: TableColumn; sortDirection: SortDirection }) => unknown
 }

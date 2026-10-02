@@ -39,7 +39,7 @@ function useTableExpand(options: UseTableExpandOptions): UseTableExpandReturn {
 
 	function handleRowClick(row: TableRow): void {
 		emit('row-click', row)
-		if (row.isExpandable || row.children?.length) {
+		if (!row.isDisabled && (row.isExpandable || row.children?.length)) {
 			toggleExpand(row)
 		}
 	}

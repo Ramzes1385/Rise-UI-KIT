@@ -6,6 +6,7 @@ export interface UseTableCompositionOptions {
 	columns: ComputedRef<TableColumn[]>
 	loadMode: ComputedRef<string>
 	pageSize: ComputedRef<number>
+	hasMore?: ComputedRef<boolean>
 	isMultiSort: ComputedRef<boolean>
 	searchDebounce: ComputedRef<number>
 	isResizable: ComputedRef<boolean>

@@ -148,4 +148,64 @@ describe('useTableSelection', () => {
 			expect(isSelected(rows.value[1])).toBe(true)
 		})
 	})
+
+	describe('TBL-3: смена rows', () => {
+		it('выбор пользователя сохраняется, если родитель передал новый массив с теми же строками', async () => {
+			const rows = ref<TableRow[]>([
+				{ id: '1', data: {} },
+				{ id: '2', data: {} },
+			])
+			const onSelect = vi.fn()
+			const { isSelected, toggleRow } = useTableSelection({ rows, onSelect })
+			toggleRow(rows.value[0])
+			onSelect.mockClear()
+			rows.value = rows.value.map(row => ({ ...row }))
+			await nextTick()
+			expect(isSelected(rows.value[0])).toBe(true)
+			expect(onSelect).not.toHaveBeenCalled()
+		})
+
+		it('исчезнувшие строки выпадают из выбора, и select сообщает оставшийся выбор', async () => {
+			const rows = ref<TableRow[]>([
+				{ id: '1', data: {} },
+				{ id: '2', data: {} },
+			])
+			const onSelect = vi.fn()
+			const { selectedIds, toggleRow } = useTableSelection({ rows, onSelect })
+			toggleRow(rows.value[0])
+			toggleRow(rows.value[1])
+			onSelect.mockClear()
+			rows.value.splice(0, 1)
+			await nextTick()
+			expect([...selectedIds.value]).toEqual(['2'])
+			expect(onSelect).toHaveBeenCalledWith([rows.value[0]])
+		})
+
+		it('изменённый родителем isSelected применяется, новые строки берут isSelected', async () => {
+			const rows = ref<TableRow[]>([{ id: '1', data: {}, isSelected: true }])
+			const { isSelected } = useTableSelection({ rows })
+			rows.value = [
+				{ id: '1', data: {}, isSelected: false },
+				{ id: '2', data: {}, isSelected: true },
+				{ id: '3', data: {} },
+			]
+			await nextTick()
+			expect(rows.value.map(row => isSelected(row))).toEqual([false, true, false])
+		})
+	})
+
+	it('№ 7: isSomeSelected — выбрана часть доступных строк отфильтрованного набора', () => {
+		const rows = ref<TableRow[]>([
+			{ id: '1', data: {} },
+			{ id: '2', data: {} },
+			{ id: '3', data: {}, isDisabled: true, isSelected: true },
+		])
+		const { isSomeSelected, isAllSelected, toggleRow } = useTableSelection({ rows })
+		expect(isSomeSelected.value).toBe(false)
+		toggleRow(rows.value[0])
+		expect(isSomeSelected.value).toBe(true)
+		toggleRow(rows.value[1])
+		expect(isAllSelected.value).toBe(true)
+		expect(isSomeSelected.value).toBe(false)
+	})
 })

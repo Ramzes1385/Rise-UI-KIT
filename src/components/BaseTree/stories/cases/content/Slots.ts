@@ -60,7 +60,7 @@ export const Slots: StoryObj<typeof meta> = {
 		await waitFor(() => expect(getComputedStyle(actions).opacity).toBe('1'))
 		await expect(nodeHeader(canvasElement, 'README.md').querySelector('button')).toHaveAttribute('tabindex', '-1')
 
-		const folder = nodeHeader(canvasElement, 'public')
+		const folder = canvas.getByRole('treeitem', { name: /^public/ })
 		await userEvent.keyboard('{ArrowUp}')
 		await expect(folder).toHaveFocus()
 		await userEvent.tab()

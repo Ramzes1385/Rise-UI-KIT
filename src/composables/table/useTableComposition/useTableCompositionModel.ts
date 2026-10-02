@@ -7,7 +7,7 @@ import { useTableSelection } from '@composables/table/useTableSelection'
 import type { UseTableCompositionOptions } from './types/useTableComposition.types'
 
 function useTableCompositionModel(options: UseTableCompositionOptions) {
-	const { rows, columns, loadMode, pageSize, isMultiSort, searchDebounce, emit, slots } = options
+	const { rows, columns, loadMode, pageSize, hasMore, isMultiSort, searchDebounce, emit, slots } = options
 	const { isResizable, hasRowNumber, isSelectable, hasSearch, hasFilters, hasColumnSettings } = options
 
 	const tableColumns = useTableColumns({
@@ -26,6 +26,7 @@ function useTableCompositionModel(options: UseTableCompositionOptions) {
 		columns: localColumns,
 		loadMode: () => loadMode.value,
 		pageSize,
+		hasMore: () => hasMore?.value ?? false,
 		isMultiSort: () => isMultiSort.value,
 		searchDebounce: () => searchDebounce.value,
 		onSearch: (q: string) => emit('search', q),

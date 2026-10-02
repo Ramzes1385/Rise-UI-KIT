@@ -12,6 +12,8 @@ export const enData = {
 		COLLAPSE_ROW: 'Collapse row',
 		PAGE_SIZE: 'Rows per page',
 		SORT_PRIORITY: 'Sort priority',
+		EMPTY_FILTERED: 'No matching rows',
+		RESIZE_COLUMN: 'Column width',
 	},
 	kanban: {
 		BOARD: 'Task board',

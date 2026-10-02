@@ -183,6 +183,36 @@ describe('useTableComposition', () => {
 		wrapper.unmount()
 	})
 
+	it('resizeColumnBy меняет ширину колонки по ручке и сообщает column-resize', () => {
+		const { api, emit, wrapper } = setup()
+		const tr = document.createElement('tr')
+		const ths = [120, 100].map(width => {
+			const th = document.createElement('th')
+			Object.defineProperty(th, 'offsetWidth', { value: width })
+			th.appendChild(document.createElement('div'))
+			tr.appendChild(th)
+			return th
+		})
+		document.body.appendChild(tr)
+
+		api.resizeColumnBy(ths[0].firstElementChild as HTMLElement, COLUMNS[0], 10)
+
+		expect(emit).toHaveBeenCalledWith('column-resize', 'name', 130)
+		tr.remove()
+		wrapper.unmount()
+	})
+
+	it('клик по отключённой строке сообщает row-click, но не раскрывает её', () => {
+		const { api, emit, wrapper } = setup()
+		const row: TableRow = { id: 'x', data: {}, isExpandable: true, isDisabled: true }
+
+		api.handleRowClick(row)
+
+		expect(emit).toHaveBeenCalledWith('row-click', row)
+		expect(emit).not.toHaveBeenCalledWith('expand', expect.anything())
+		wrapper.unmount()
+	})
+
 	it('раскрытие строки по клику сообщает row-click и expand', () => {
 		const { api, emit, wrapper } = setup()
 		const row: TableRow = { id: 'x', data: {}, isExpandable: true }

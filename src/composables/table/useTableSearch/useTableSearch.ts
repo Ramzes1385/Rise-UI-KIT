@@ -11,13 +11,13 @@ function useTableSearch(options: UseTableSearchOptions): UseTableSearchReturn {
 	/** Ввод поиска с дебаунсом */
 	function handleSearchInput(value: string, resetPage?: () => void): void {
 		searchQuery.value = value
+		if (resetPage) resetPage()
 
 		if (searchTimeout.value) {
 			clearTimeout(searchTimeout.value)
 		}
 
 		searchTimeout.value = setTimeout(() => {
-			if (resetPage) resetPage()
 			if (onSearch) onSearch(searchQuery.value)
 		}, searchDebounce())
 	}

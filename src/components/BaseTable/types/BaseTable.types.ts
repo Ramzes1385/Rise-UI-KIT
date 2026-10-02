@@ -1,4 +1,4 @@
-import type { InjectionKey } from 'vue'
+import type { InjectionKey, Ref } from 'vue'
 import type { PaddingProp } from '@composables/base/usePadding'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
@@ -175,8 +175,10 @@ export interface BaseTableProps extends BaseComponentProps<
 	rows: TableRow[]
 	/** Загрузка */
 	isLoading?: boolean
-	/** Пустое сообщение */
+	/** Пустое сообщение: строк нет */
 	emptyText?: string
+	/** Пустое сообщение, когда строки есть, но поиск или фильтры скрыли все: по умолчанию «Ничего не найдено» */
+	emptyFilteredText?: string
 	/** Высота таблицы (для фиксированного заголовка) */
 	height?: string
 	/** Размер страницы */
@@ -185,6 +187,12 @@ export interface BaseTableProps extends BaseComponentProps<
 	pageSizeOptions?: number[]
 	/** Режим подгрузки */
 	loadMode?: LoadMode
+	/**
+	 * Есть строки, которые родитель ещё не передал (серверная подгрузка): в режимах `button` и `infinite` кнопка
+	 * «Загрузить ещё» и подгрузка прокруткой работают и после показа всех переданных строк. Родитель дописывает
+	 * строки в `rows` по `load-more` и снимает флаг, когда данных больше нет
+	 */
+	hasMore?: boolean
 	/** Дебаунс поиска (мс) */
 	searchDebounce?: number
 	/** Конфиг вложенной таблицы */
@@ -243,8 +251,11 @@ export interface BaseTableSlots {
 	header?: () => unknown
 	/** Под таблицей и пагинацией */
 	footer?: () => unknown
-	/** Строка «нет данных» вместо `emptyText`, когда строк нет или фильтр ничего не нашёл */
-	empty?: () => unknown
+	/**
+	 * Строка «нет данных» вместо `emptyText`, когда строк нет или фильтр ничего не нашёл: `isFiltered` — строки есть,
+	 * но поиск или фильтры скрыли все
+	 */
+	empty?: (props: { isFiltered: boolean }) => unknown
 	/** Начало панели инструментов — перед поиском и фильтрами */
 	'toolbar-prepend'?: () => unknown
 	/** Конец панели инструментов — после поиска, фильтров и настроек колонок */
@@ -266,12 +277,15 @@ export interface BaseTableSlots {
 		handlePageSizeChange: (value: string | number) => void
 	}) => unknown
 	/**
-	 * Заголовок одной колонки по её `key`: `header-status` — колонка `status`. Имя можно собрать в шаблоне:
+	 * Подпись заголовка одной колонки по её `key`. У сортируемой колонки слот рисуется внутри кнопки сортировки
+	 * (её значок и приоритет остаются), поэтому в нём не должно быть своих кнопок и ссылок: `header-status` — колонка `status`. Имя можно собрать в шаблоне:
 	 * ``#[`header-${key}`]`` в `v-for`
 	 */
 	[key: `header-${string}`]: (props: {
 		/** Колонка из `columns` */
 		column: TableColumn
+		/** Направление сортировки колонки: `asc`, `desc` или `null` */
+		sortDirection: SortDirection
 	}) => unknown
 	/**
 	 * Ячейки одной колонки по её `key`: `cell-status` — колонка `status`. Одинаковые ячейки нескольких колонок —
@@ -291,5 +305,22 @@ export interface BaseTableSlots {
 
 export type TableProps = PropsWithDefaults<
 	BaseTableProps,
-	'isLoading' | 'height' | 'pageSize' | 'pageSizeOptions' | 'loadMode' | 'searchDebounce' | 'isVirtual' | 'rowHeight'
+	'isLoading' | 'hasMore' | 'height' | 'pageSize' | 'pageSizeOptions' | 'loadMode' | 'searchDebounce' | 'isVirtual' | 'rowHeight'
 >
+
+/** Смещения закреплённых колонок, px: служебные колонки по типу, колонки слева и справа по `key` */
+export interface StickyOffsets {
+	service: Record<string, number>
+	left: Record<string, number>
+	right: Record<string, number>
+}
+
+/** Параметры расчёта смещений закреплённых колонок */
+export interface TableStickyOptions {
+	/** Обёртка таблицы: в ней ищутся ячейки заголовка */
+	wrapperRef: Ref<HTMLElement | null>
+	/** Видимые колонки по порядку */
+	visibleColumns: Ref<TableColumn[]>
+	/** Служебные колонки слева по порядку: `check`, `number`, `expand` */
+	serviceKeys: Ref<string[]>
+}

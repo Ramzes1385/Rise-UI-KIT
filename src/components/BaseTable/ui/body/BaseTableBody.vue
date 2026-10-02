@@ -27,7 +27,7 @@
 
 		<tr v-else-if="!isLoading && rows.length === 0" :class="trClass">
 			<td :colspan="totalColumns" class="base-table__td base-table__td--empty" :class="tdClass">
-				<slot name="empty">
+				<slot name="empty" :is-filtered="isFiltered">
 					<BaseEmpty variant="ghost" :title="emptyText" :custom-class="emptyClasses" :size-scale="sizeScale" />
 				</slot>
 			</td>
@@ -55,7 +55,10 @@
 					:td-class="tdClass"
 					:get-column-style="getColumnStyle"
 					:format-cell-value="formatCellValue"
+					:is-interactive="isRowInteractive"
+					:tab-index="getRowTabIndex(row)"
 					@row-click="emit('row-click', $event)"
+					@row-focus="setActiveRow"
 					@toggle-row="emit('toggle-row', $event)"
 					@toggle-expand="emit('toggle-expand', $event)">
 					<template v-for="column in columns" #[`cell-${column.key}`]="slotProps" :key="column.key">
@@ -116,11 +119,18 @@ import BaseTableExpandedRow from './BaseTableExpandedRow.vue'
 import { useBaseTableBody } from '../../model/useBaseTableBody'
 import type { BaseTableBodyEmits, BaseTableBodyProps, BaseTableBodySlots } from '../../types/body/BaseTableBody.types'
 
-withDefaults(defineProps<BaseTableBodyProps>(), { isVirtual: false, indexOffset: 0, paddingStart: 0, paddingEnd: 0 })
+const props = withDefaults(defineProps<BaseTableBodyProps>(), {
+	isVirtual: false,
+	indexOffset: 0,
+	paddingStart: 0,
+	paddingEnd: 0,
+	isFiltered: false,
+	isRowInteractive: false,
+})
 
 const emit = defineEmits<BaseTableBodyEmits>()
 
 defineSlots<BaseTableBodySlots>()
 
-const { emptyClasses, loadingMoreClasses, getSkeletonWidth } = useBaseTableBody()
+const { emptyClasses, loadingMoreClasses, getSkeletonWidth, getRowTabIndex, setActiveRow } = useBaseTableBody(props)
 </script>

@@ -4,6 +4,7 @@
 			<th v-if="isSelectable" class="base-table__th base-table__th--check" :class="thClass">
 				<BaseCheckbox
 					:model-value="isAllSelected"
+					:is-indeterminate="isSomeSelected"
 					:aria-label="TABLE_TEXT.SELECT_ALL"
 					:size-scale="sizeScale"
 					@update:model-value="emit('toggle-all')" />
@@ -28,26 +29,33 @@
 				]"
 				:style="getColumnStyle(column)"
 				:aria-sort="getAriaSort(column)"
+				:aria-label="isColumnResizable(column) ? column.label : undefined"
 				@click="emit('sort', column)">
-				<slot :name="`header-${column.key}`" :column="column">
-					<template v-if="column.isSortable">
-						<button
-							type="button"
-							class="base-table__sort-btn"
-							:aria-describedby="getSortPriority(column) ? `${idPrefix}-${column.key}-priority` : undefined">
+				<template v-if="column.isSortable">
+					<button
+						type="button"
+						class="base-table__sort-btn"
+						:aria-describedby="getSortPriority(column) ? `${idPrefix}-${column.key}-priority` : undefined">
+						<slot :name="`header-${column.key}`" :column="column" :sort-direction="getSortDirection(column.key)">
 							<span class="base-table__th-label">{{ column.label }}</span>
-							<span class="base-table__sort-icon" aria-hidden="true">
-								<BaseIcon :name="getSortIcon(column)" :size-scale="calcIconScale('sm', sizeScale)" />
-								<span v-if="getSortPriority(column)" class="base-table__sort-index">{{ getSortPriority(column) }}</span>
-							</span>
-						</button>
-						<span v-if="getSortPriority(column)" :id="`${idPrefix}-${column.key}-priority`" hidden>
-							{{ TABLE_TEXT.SORT_PRIORITY }}: {{ getSortPriority(column) }}
+						</slot>
+						<span class="base-table__sort-icon" aria-hidden="true">
+							<BaseIcon :name="getSortIcon(column)" :size-scale="calcIconScale('sm', sizeScale)" />
+							<span v-if="getSortPriority(column)" class="base-table__sort-index">{{ getSortPriority(column) }}</span>
 						</span>
-					</template>
-					<span v-else class="base-table__th-label">{{ column.label }}</span>
+					</button>
+					<span v-if="getSortPriority(column)" :id="`${idPrefix}-${column.key}-priority`" hidden>
+						{{ TABLE_TEXT.SORT_PRIORITY }}: {{ getSortPriority(column) }}
+					</span>
+				</template>
+				<slot v-else :name="`header-${column.key}`" :column="column" :sort-direction="null">
+					<span class="base-table__th-label">{{ column.label }}</span>
 				</slot>
-				<BaseTableResizeHandle v-if="isColumnResizable(column)" @resize-start="event => emit('resize-start', event, column)" />
+				<BaseTableResizeHandle
+					v-if="isColumnResizable(column)"
+					:column="column"
+					@resize-start="event => emit('resize-start', event, column)"
+					@resize-by="(handle, delta) => emit('resize-by', handle, column, delta)" />
 			</th>
 		</tr>
 	</thead>

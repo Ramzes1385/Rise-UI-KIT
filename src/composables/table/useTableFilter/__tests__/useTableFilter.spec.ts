@@ -44,4 +44,13 @@ describe('useTableFilter', () => {
 		const { getFilterLabel } = useTableFilter({ columns: testColumns })
 		expect(getFilterLabel({ key: 'unknown', operator: 'eq', value: 'x' })).toBe('unknown = x')
 	})
+
+	it('TBL-16: событие filter получает копию, которую таблица потом не меняет', () => {
+		const onFilter = vi.fn()
+		const { addFilter, activeFilters } = useTableFilter({ columns: testColumns, onFilter })
+		addFilter(ref('city'), ref('eq'), ref('Москва'))
+		const payload = onFilter.mock.calls[0][0]
+		expect(payload).not.toBe(activeFilters.value)
+		expect(payload[0]).not.toBe(activeFilters.value[0])
+	})
 })

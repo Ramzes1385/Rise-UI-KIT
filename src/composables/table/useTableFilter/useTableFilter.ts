@@ -9,6 +9,10 @@ function useTableFilter(options: UseTableFilterOptions): UseTableFilterReturn {
 
 	const activeFilters = ref<ColumnFilter[]>([])
 
+	function emitFilters(): void {
+		if (onFilter) onFilter(activeFilters.value.map(filter => ({ ...filter })))
+	}
+
 	function addFilter(filterColumn: Ref<string | number>, filterOperator: Ref<string | number>, filterValue: Ref<string>): void {
 		if (!filterColumn.value || !filterValue.value) return
 		activeFilters.value.push({
@@ -17,12 +21,12 @@ function useTableFilter(options: UseTableFilterOptions): UseTableFilterReturn {
 			value: filterValue.value,
 		})
 		filterValue.value = ''
-		if (onFilter) onFilter(activeFilters.value)
+		emitFilters()
 	}
 
 	function removeFilter(index: number): void {
 		activeFilters.value.splice(index, 1)
-		if (onFilter) onFilter(activeFilters.value)
+		emitFilters()
 	}
 
 	function getFilterLabel(filter: ColumnFilter): string {

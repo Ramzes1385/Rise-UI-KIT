@@ -20,10 +20,21 @@ export interface UseTableSelectionReturn {
 	selectedRows: ComputedRef<TableRow[]>
 	/** Все ли доступные строки отфильтрованного набора выбраны */
 	isAllSelected: ComputedRef<boolean>
+	/** Выбрана часть доступных строк отфильтрованного набора (частичное состояние «Выбрать все») */
+	isSomeSelected: ComputedRef<boolean>
 	/** Проверить, выбрана ли строка */
 	isSelected: (row: TableRow) => boolean
 	/** Переключить выбор строки */
 	toggleRow: (row: TableRow) => void
 	/** Выбрать/снять выбор со всех строк отфильтрованного набора */
 	toggleAll: () => void
+}
+
+export interface SelectionSyncState {
+	/** Строки данных */
+	rows: Ref<TableRow[]>
+	/** ID выбранных строк */
+	selectedIds: Ref<Set<string | number>>
+	/** Выбор потерял строки, которых больше нет в rows */
+	onSelectionLost: () => void
 }

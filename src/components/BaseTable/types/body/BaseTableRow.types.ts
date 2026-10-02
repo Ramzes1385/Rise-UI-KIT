@@ -29,12 +29,17 @@ export interface BaseTableRowProps {
 	getColumnStyle: (column: TableColumn) => Record<string, string>
 	/** Форматирование значения ячейки */
 	formatCellValue: (column: TableColumn, row: TableRow) => string
+	/** Строка активируется с клавиатуры: tabindex и Enter/пробел */
+	isInteractive?: boolean
+	/** tabindex строки при `isInteractive`: 0 у текущей, -1 у остальных */
+	tabIndex?: number
 }
 
 export interface BaseTableRowEmits {
 	(event: 'row-click', row: TableRow): void
 	(event: 'toggle-row', row: TableRow): void
 	(event: 'toggle-expand', row: TableRow): void
+	(event: 'row-focus', row: TableRow): void
 }
 
 export interface BaseTableRowSlots {

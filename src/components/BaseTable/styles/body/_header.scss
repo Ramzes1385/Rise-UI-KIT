@@ -124,5 +124,7 @@
 				background-color: var(--rise-primary);
 			}
 		}
+
+		@include focus-ring(-2px);
 	}
 }

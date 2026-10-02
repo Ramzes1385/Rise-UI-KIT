@@ -9,6 +9,8 @@ export interface UseTablePaginationOptions {
 	loadMode: () => string
 	/** Размер страницы */
 	pageSize: Ref<number>
+	/** Есть ли строки, которые родитель ещё не передал: «Загрузить ещё» и infinite работают и после показа всех строк */
+	hasMore?: () => boolean
 	/** Callback при изменении размера страницы */
 	onPageSizeChange?: (size: number) => void
 }

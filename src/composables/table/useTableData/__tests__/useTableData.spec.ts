@@ -65,7 +65,7 @@ describe('useTableData', () => {
 			expect(processedRows.value).toHaveLength(4)
 		})
 
-		it('сбрасывает currentPage в 1 после debounce', () => {
+		it('TBL-9: сбрасывает currentPage в 1 сразу при вводе, не дожидаясь debounce', () => {
 			vi.useFakeTimers()
 			const { currentPage, handleSearchInput } = useTableData(
 				createDefaultOptions({
@@ -76,9 +76,6 @@ describe('useTableData', () => {
 			currentPage.value = 2
 
 			handleSearchInput('тест')
-			expect(currentPage.value).toBe(2)
-
-			vi.advanceTimersByTime(300)
 			expect(currentPage.value).toBe(1)
 
 			vi.useRealTimers()
@@ -514,7 +511,7 @@ describe('useTableData', () => {
 	})
 
 	describe('Жизненный цикл (watchers, onBeforeUnmount)', () => {
-		it('изменение rows.value.length сбрасывает loadedCount', async () => {
+		it('TBL-4: догрузка строк родителем не сворачивает уже показанные строки', async () => {
 			const rows = ref<TableRow[]>([
 				{ id: 1, data: { name: 'Анна' } },
 				{ id: 2, data: { name: 'Борис' } },
@@ -540,8 +537,10 @@ describe('useTableData', () => {
 
 			await nextTick()
 
-			// loadedCount сбрасывается в effectivePageSize (1)
-			expect(displayedRows.value).toHaveLength(1)
+			expect(displayedRows.value).toHaveLength(2)
+
+			loadMore()
+			expect(displayedRows.value).toHaveLength(3)
 		})
 
 		it('изменение pageSize синхронизирует localPageSize', async () => {

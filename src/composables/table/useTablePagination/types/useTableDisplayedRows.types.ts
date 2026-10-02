@@ -12,4 +12,6 @@ export interface UseTableDisplayedRowsOptions {
 	localPageSize: Ref<number>
 	/** Количество загруженных строк для button/infinite режимов */
 	loadedCount: Ref<number>
+	/** Есть ли строки, которые родитель ещё не передал (серверная подгрузка) */
+	hasMore?: () => boolean
 }

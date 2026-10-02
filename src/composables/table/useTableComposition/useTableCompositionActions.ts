@@ -39,7 +39,7 @@ function useTableCompositionActions(options: UseTableCompositionOptions, parts: 
 		}
 	}
 
-	const { startResize: startColumnResize } = useColumnResize({
+	const { startResize: startColumnResize, resizeBy } = useColumnResize({
 		columns: localColumns,
 		visibleColumns,
 		minWidth: MIN_COL_WIDTH,
@@ -52,7 +52,11 @@ function useTableCompositionActions(options: UseTableCompositionOptions, parts: 
 		startColumnResize(event, column.key)
 	}
 
-	return { toggleRow, toggleAll, handleLoadMore, handleScroll, startResize }
+	function resizeColumnBy(handle: HTMLElement, column: TableColumn, delta: number): void {
+		resizeBy(handle.closest('th') as HTMLElement, column.key, delta)
+	}
+
+	return { toggleRow, toggleAll, handleLoadMore, handleScroll, startResize, resizeColumnBy }
 }
 
 export { useTableCompositionActions }

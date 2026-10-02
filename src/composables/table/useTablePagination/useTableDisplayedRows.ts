@@ -4,7 +4,7 @@ import type { TableRow } from '@components/BaseTable/types/BaseTable.types'
 import type { UseTableDisplayedRowsOptions } from './types/useTableDisplayedRows.types'
 
 function useTableDisplayedRows(options: UseTableDisplayedRowsOptions) {
-	const { processedRows, loadMode, currentPage, localPageSize, loadedCount } = options
+	const { processedRows, loadMode, currentPage, localPageSize, loadedCount, hasMore = () => false } = options
 
 	const displayedRows = computed((): TableRow[] => {
 		const mode = loadMode()
@@ -22,7 +22,7 @@ function useTableDisplayedRows(options: UseTableDisplayedRowsOptions) {
 	const hasMoreRows = computed((): boolean => {
 		const mode = loadMode()
 		if (mode === 'button' || mode === 'infinite') {
-			return loadedCount.value < processedRows.value.length
+			return hasMore() || loadedCount.value < processedRows.value.length
 		}
 		return false
 	})

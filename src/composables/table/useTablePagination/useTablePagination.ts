@@ -7,7 +7,7 @@ import type { VisiblePageItem } from '@utils/navigation/paginationUtils/types/pa
 import type { UseTablePaginationOptions, UseTablePaginationReturn } from './types/useTablePagination.types'
 
 function useTablePagination(options: UseTablePaginationOptions): UseTablePaginationReturn {
-	const { processedRows, loadMode, pageSize, onPageSizeChange } = options
+	const { processedRows, loadMode, pageSize, hasMore = () => false, onPageSizeChange } = options
 
 	const currentPage = ref(1)
 	const localPageSize = ref(pageSize.value)
@@ -19,15 +19,14 @@ function useTablePagination(options: UseTablePaginationOptions): UseTablePaginat
 	/** Количество загруженных строк для button/infinite режимов */
 	const loadedCount = ref(effectivePageSize.value)
 
-	/** Сброс счётчика при изменении исходных данных */
-	watch(
-		() => processedRows.value.length,
-		() => {
-			loadedCount.value = effectivePageSize.value
-		},
-	)
-
-	const { displayedRows, hasMoreRows } = useTableDisplayedRows({ processedRows, loadMode, currentPage, localPageSize, loadedCount })
+	const { displayedRows, hasMoreRows } = useTableDisplayedRows({
+		processedRows,
+		loadMode,
+		currentPage,
+		localPageSize,
+		loadedCount,
+		hasMore,
+	})
 
 	const totalPages = computed((): number => {
 		return calcTotalPages(processedRows.value.length, localPageSize.value)
@@ -46,8 +45,14 @@ function useTablePagination(options: UseTablePaginationOptions): UseTablePaginat
 		onPageSizeChange,
 	})
 
+	watch(totalPages, total => {
+		if (currentPage.value > total) currentPage.value = Math.max(total, 1)
+	})
+
 	watch(pageSize, newSize => {
 		localPageSize.value = newSize
+		currentPage.value = 1
+		loadedCount.value = effectivePageSize.value
 	})
 
 	return {

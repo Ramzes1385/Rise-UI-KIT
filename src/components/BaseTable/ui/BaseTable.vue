@@ -53,7 +53,11 @@
 					@scroll="handleScroll">
 					<table
 						class="base-table__table"
-						:class="[classes.table, { 'base-table__table--fixed': useFixedLayout }]"
+						:class="[
+							classes.table,
+							{ 'base-table__table--fixed': useFixedLayout, 'base-table__table--sticky-service': hasStickyService },
+						]"
+						:style="stickyServiceStyle"
 						:aria-busy="isLoading ? 'true' : undefined"
 						:aria-rowcount="isVirtualMode ? displayedRows.length + 1 : undefined">
 						<colgroup>
@@ -69,6 +73,7 @@
 							:has-row-number="hasRowNumber"
 							:has-expandable-rows="hasExpandableRows"
 							:is-all-selected="isAllSelected"
+							:is-some-selected="isSomeSelected"
 							:size-scale="sizeScale"
 							:is-multi-sort="isMultiSort"
 							:thead-class="classes.thead"
@@ -80,7 +85,8 @@
 							:get-column-style="getColumnStyle"
 							@toggle-all="toggleAll"
 							@sort="handleSort"
-							@resize-start="startResize">
+							@resize-start="startResize"
+							@resize-by="resizeColumnBy">
 							<template v-for="column in visibleColumns" #[`header-${column.key}`]="slotProps" :key="column.key">
 								<slot v-if="$slots[`header-${column.key}`]" :name="`header-${column.key}`" v-bind="slotProps"></slot>
 							</template>
@@ -93,7 +99,9 @@
 							:padding-start="virtual.paddingStart.value"
 							:padding-end="virtual.paddingEnd.value"
 							:columns="visibleColumns"
-							:empty-text="emptyText ?? UI_TEXT.EMPTY"
+							:empty-text="bodyEmptyText"
+							:is-filtered="isFiltered"
+							:is-row-interactive="isRowInteractive"
 							:is-loading="isLoading"
 							:skeleton-rows="skeletonRows"
 							:is-selectable="isSelectable"
@@ -117,8 +125,8 @@
 							<template v-for="column in visibleColumns" #[`cell-${column.key}`]="slotProps" :key="column.key">
 								<slot v-if="$slots[`cell-${column.key}`]" :name="`cell-${column.key}`" v-bind="slotProps"></slot>
 							</template>
-							<template #empty>
-								<slot name="empty"></slot>
+							<template #empty="slotProps">
+								<slot name="empty" v-bind="slotProps"></slot>
 							</template>
 							<template #expanded-content="slotProps">
 								<slot name="expanded-content" v-bind="slotProps"></slot>
@@ -214,6 +222,7 @@ const props = withDefaults(
 		padding: undefined,
 		isVirtual: false,
 		rowHeight: 44,
+		hasMore: false,
 	}),
 )
 const emit = defineEmits<BaseTableEmits>()
@@ -255,6 +264,7 @@ const {
 	toggleColumnVisibility,
 	formatCellValue,
 	isAllSelected,
+	isSomeSelected,
 	isSelected,
 	isExpanded,
 	toggleExpand,
@@ -284,6 +294,7 @@ const {
 	handleLoadMore,
 	handleScroll,
 	startResize,
+	resizeColumnBy,
 	hasPageSizeControl,
 	hasPagination,
 	tableWrapperRef,
@@ -291,5 +302,10 @@ const {
 	isVirtualMode,
 	virtual,
 	bodyRows,
+	hasStickyService,
+	stickyServiceStyle,
+	isFiltered,
+	bodyEmptyText,
+	isRowInteractive,
 } = useBaseTable(props, emit)
 </script>

@@ -1,6 +1,5 @@
 import { expect } from 'storybook/test'
 import { nodeHeader } from '../../shared'
-import { tabTo } from '@/stories/helpers'
 import type meta from '../../BaseTree.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type { TreeNode } from '../../../types/BaseTree.types'
@@ -51,7 +50,9 @@ export const Cascade: StoryObj<typeof meta> = {
 		await expect(src).toHaveAttribute('aria-checked', 'mixed')
 		await expect(components).toHaveAttribute('aria-checked', 'mixed')
 
-		await tabTo(nodeHeader(canvasElement, 'AppHeader.vue'), userEvent)
+		const appHeader = nodeHeader(canvasElement, 'AppHeader.vue')
+		await expect(appHeader).toHaveAttribute('tabindex', '0')
+		appHeader.focus()
 		await userEvent.keyboard('{ArrowDown}{ }')
 		await expect(nodeHeader(canvasElement, 'UserCard.vue')).toHaveAttribute('aria-checked', 'true')
 		await expect(components).toHaveAttribute('aria-checked', 'true')

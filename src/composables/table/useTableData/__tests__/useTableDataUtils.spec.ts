@@ -14,9 +14,41 @@ function filter(key: string, operator: ColumnFilter['operator'], value: string):
 }
 
 describe('useTableDataUtils', () => {
-	it('filterRowsBySearch ищет без учёта регистра по всем значениям', () => {
-		expect(filterRowsBySearch(rows, 'АННА').map(r => r.id)).toEqual([2])
-		expect(filterRowsBySearch(rows, '30').map(r => r.id)).toEqual([1, 3])
+	const searchColumns: TableColumn[] = [
+		{ key: 'name', label: 'Имя' },
+		{ key: 'age', label: 'Возраст' },
+	]
+
+	it('filterRowsBySearch ищет без учёта регистра по видимым колонкам', () => {
+		expect(filterRowsBySearch(rows, 'АННА', searchColumns).map(r => r.id)).toEqual([2])
+		expect(filterRowsBySearch(rows, '30', searchColumns).map(r => r.id)).toEqual([1, 3])
+	})
+
+	it('filterRowsBySearch: пробелы по краям запроса не мешают, пустой запрос возвращает все строки', () => {
+		expect(filterRowsBySearch(rows, '  вика ', searchColumns).map(r => r.id)).toEqual([3])
+		expect(filterRowsBySearch(rows, '   ', searchColumns)).toBe(rows)
+	})
+
+	it('filterRowsBySearch не ищет по скрытым колонкам, полям вне колонок и пустым значениям', () => {
+		const data: TableRow[] = [
+			{ id: 1, data: { name: 'Ёжик', secret: 'пароль', note: null } },
+			{ id: 2, data: { name: 'Кот', secret: 'ёлка' } },
+		]
+		const columns: TableColumn[] = [
+			{ key: 'name', label: 'Имя' },
+			{ key: 'secret', label: 'Секрет', isHidden: true },
+			{ key: 'note', label: 'Заметка' },
+		]
+		expect(filterRowsBySearch(data, 'пароль', columns)).toEqual([])
+		expect(filterRowsBySearch(data, 'null', columns)).toEqual([])
+		expect(filterRowsBySearch(data, 'ежик', columns).map(r => r.id)).toEqual([1])
+	})
+
+	it('filterRowsBySearch находит и исходное значение, и текст formatter', () => {
+		const data: TableRow[] = [{ id: 1, data: { price: 1500 } }]
+		const columns: TableColumn[] = [{ key: 'price', label: 'Цена', formatter: value => `${value} ₽` }]
+		expect(filterRowsBySearch(data, '₽', columns)).toHaveLength(1)
+		expect(filterRowsBySearch(data, '1500', columns)).toHaveLength(1)
 	})
 
 	it.each([

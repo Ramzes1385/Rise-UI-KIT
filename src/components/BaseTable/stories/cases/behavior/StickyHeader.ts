@@ -27,7 +27,8 @@ export const StickyHeader: StoryObj<typeof meta> = {
 				story: [
 					"Закреплённые шапка и колонки: `height` ограничивает высоту — строки прокручиваются под шапкой; `isSticky: 'left'`",
 					"и `'right'` закрепляют колонки при горизонтальной прокрутке широкой таблицы. Прокручиваемая область получает",
-					'фокус с клавиатуры (Tab), её можно прокрутить стрелками.',
+					'фокус с клавиатуры (Tab), её можно прокрутить стрелками. Колонка выбора закрепляется вместе с колонками слева,',
+					'а закреплённые колонки встают за ней и не перекрывают чекбоксы.',
 				].join('\n'),
 			},
 			source: storySource({
@@ -42,6 +43,7 @@ export const StickyHeader: StoryObj<typeof meta> = {
 		height: '260px',
 		rows: ALL_ROWS,
 		columns,
+		behavior: { selectable: true },
 	},
 	render: args => ({
 		components: { BaseTable },
@@ -55,5 +57,13 @@ export const StickyHeader: StoryObj<typeof meta> = {
 		scroller.scrollTop = 120
 		const header = canvas.getByRole('columnheader', { name: 'Заказ' })
 		await waitFor(() => expect(Math.round(header.getBoundingClientRect().top)).toBe(Math.round(scroller.getBoundingClientRect().top)))
+
+		scroller.scrollLeft = 300
+		const checkCell = canvas.getByRole('checkbox', { name: 'Выбрать все строки' }).closest('th') as HTMLElement
+		const customer = canvas.getByRole('columnheader', { name: 'Покупатель' })
+		await waitFor(() =>
+			expect(Math.round(checkCell.getBoundingClientRect().left)).toBe(Math.round(scroller.getBoundingClientRect().left)),
+		)
+		await expect(Math.round(customer.getBoundingClientRect().left)).toBe(Math.round(checkCell.getBoundingClientRect().right))
 	},
 }

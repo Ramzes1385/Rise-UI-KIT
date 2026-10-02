@@ -1,4 +1,5 @@
 import { expect } from 'storybook/test'
+import { tabTo } from '@/stories/helpers'
 import type meta from '../../BaseTable.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 
@@ -9,6 +10,7 @@ export const ResizableColumns: StoryObj<typeof meta> = {
 				story: [
 					'Ресайз колонок: с `behavior.resizable` (или `isResizable` у колонки) ширину меняют перетаскиванием ручки у правого',
 					'края заголовка. Событие `column-resize` получает ключ и новую ширину в px, `columns-change` — копию колонок.',
+					'С клавиатуры: Tab до ручки (`role="separator"`, «Ширина колонки: …»), ← и → меняют ширину на 10px, с Shift — на 50px.',
 				].join('\n'),
 			},
 		},
@@ -28,5 +30,12 @@ export const ResizableColumns: StoryObj<typeof meta> = {
 		])
 		await expect(args['onColumn-resize']).toHaveBeenCalledWith('number', expect.any(Number))
 		await expect(header.getBoundingClientRect().width).toBeGreaterThan(widthBefore)
+
+		const keyboardHandle = canvas.getByRole('separator', { name: 'Ширина колонки: Заказ' })
+		await tabTo(keyboardHandle, userEvent)
+		const widthBeforeKey = header.getBoundingClientRect().width
+		await userEvent.keyboard('{ArrowRight}')
+		await expect(Math.round(header.getBoundingClientRect().width)).toBe(Math.round(widthBeforeKey + 10))
+		await expect(keyboardHandle).toHaveAttribute('aria-valuenow', String(Math.round(widthBeforeKey + 10)))
 	},
 }

@@ -11,6 +11,8 @@ export interface UseTableDataOptions {
 	loadMode: () => string
 	/** Размер страницы */
 	pageSize: Ref<number>
+	/** Есть ли строки, которые родитель ещё не передал (серверная подгрузка в режимах button и infinite) */
+	hasMore?: () => boolean
 	/** Множественная сортировка */
 	isMultiSort: () => boolean
 	/** Дебаунс поиска (мс) */

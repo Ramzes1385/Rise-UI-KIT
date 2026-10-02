@@ -54,7 +54,7 @@ function useTableSort(options: UseTableSortOptions): UseTableSortReturn {
 			}
 		}
 
-		if (onSort) onSort(sortStates.value)
+		if (onSort) onSort(sortStates.value.map(state => ({ ...state })))
 	}
 
 	return {

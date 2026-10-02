@@ -1,14 +1,16 @@
 import type { ComputedRef, Ref } from 'vue'
+import { TABLE_TEXT, UI_TEXT } from '@/locales/messages'
 import { usePadding } from '@composables/base/usePadding'
+import { useTableStickyOffsets } from './useTableStickyOffsets'
 import { isolateFormField } from '@composables/form/useFormContext'
 import { TABLE_EXPAND_TRANSITION_KEY } from '../types/BaseTable.types'
 import { useVirtualList } from '@composables/interaction/useVirtualList'
-import type { BaseTableEmits, TableProps } from '../types/BaseTable.types'
 import { useTableComposition } from '@composables/table/useTableComposition'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
-import { computed, onBeforeUnmount, provide, ref, useSlots, watch } from 'vue'
 import { useExpandTransition } from '@composables/interaction/useExpandTransition'
 import { useScrollableRegion } from '@composables/interaction/useScrollableRegion'
+import type { BaseTableEmits, TableColumn, TableProps } from '../types/BaseTable.types'
+import { computed, getCurrentInstance, onBeforeUnmount, provide, ref, useSlots, watch } from 'vue'
 
 const SETTINGS_MAX_HEIGHT = 'min(320px, 50vh)'
 const PAGINATION_MAX_VISIBLE = 4
@@ -70,6 +72,7 @@ function useComposition(props: TableProps, emit: BaseTableEmits, features: Retur
 		columns: computed(() => props.columns),
 		loadMode: computed(() => props.loadMode),
 		pageSize: computed(() => props.pageSize),
+		hasMore: computed(() => props.hasMore),
 		isMultiSort: features.isMultiSort,
 		searchDebounce: computed(() => props.searchDebounce),
 		isResizable: features.isResizable,
@@ -136,6 +139,42 @@ function useTableVirtual(
 	return { isVirtualMode, virtual, bodyRows }
 }
 
+function useTableSticky(
+	wrapperRef: Ref<HTMLElement | null>,
+	table: ReturnType<typeof useTableComposition>,
+	features: ReturnType<typeof useTableFeatures>,
+) {
+	const serviceKeys = computed(() =>
+		[features.isSelectable.value && 'check', features.hasRowNumber.value && 'number', table.hasExpandableRows.value && 'expand'].filter(
+			(key): key is string => Boolean(key),
+		),
+	)
+	const sticky = useTableStickyOffsets({ wrapperRef, visibleColumns: table.visibleColumns, serviceKeys })
+	return {
+		hasStickyService: sticky.hasStickyService,
+		stickyServiceStyle: sticky.stickyServiceStyle,
+		getColumnStyle: (column: TableColumn): Record<string, string> => ({
+			...table.getColumnStyle(column),
+			...sticky.getStickyStyle(column),
+		}),
+	}
+}
+
+function useEmptyState(props: TableProps, table: ReturnType<typeof useTableComposition>) {
+	const isFiltered = computed(() => props.rows.length > 0 && table.processedRows.value.length === 0)
+	return {
+		isFiltered,
+		bodyEmptyText: computed(() =>
+			isFiltered.value ? (props.emptyFilteredText ?? TABLE_TEXT.EMPTY_FILTERED) : (props.emptyText ?? UI_TEXT.EMPTY),
+		),
+	}
+}
+
+function hasRowClickListener(): boolean {
+	const vnodeProps = getCurrentInstance()?.vnode.props ?? {}
+	return Boolean(vnodeProps.onRowClick || vnodeProps['onRow-click'])
+}
+
 export function useBaseTable(props: TableProps, emit: BaseTableEmits) {
 	isolateFormField()
 	const standard = useStandardBaseComponent('base-table', props, TABLE_ELEMENTS)
@@ -159,5 +198,8 @@ export function useBaseTable(props: TableProps, emit: BaseTableEmits) {
 		tableWrapperRef,
 		isScrollable,
 		...useTableVirtual(props, table.displayedRows, tableWrapperRef),
+		...useTableSticky(tableWrapperRef, table, features),
+		...useEmptyState(props, table),
+		isRowInteractive: hasRowClickListener(),
 	}
 }

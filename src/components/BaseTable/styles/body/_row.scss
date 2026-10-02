@@ -25,6 +25,11 @@
 			cursor: pointer;
 		}
 
+		&[data-row-interactive] {
+			cursor: pointer;
+			@include focus-ring(-2px);
+		}
+
 		&--child {
 			--tbl-row-bg: var(--rise-bg-muted);
 		}

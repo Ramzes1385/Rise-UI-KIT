@@ -367,4 +367,47 @@ describe('useColumnResize — перетаскивание по реальной
 		document.dispatchEvent(new MouseEvent('mouseup'))
 		expect(ctx.onColumnResize).not.toHaveBeenCalled()
 	})
+
+	it('TBL-12: правая и средняя кнопки мыши ресайз не начинают', () => {
+		const { table, ths } = buildHeader([100, 150])
+		const ctx = setup([
+			{ key: 'a', width: '100px' },
+			{ key: 'b', width: '150px' },
+		])
+		cleanup = () => {
+			ctx.wrapper.unmount()
+			table.remove()
+		}
+		ctx.result.startResize({ target: ths[0].handle, pageX: 0, button: 2 } as unknown as MouseEvent, 'a')
+		expect(document.body.style.cursor).toBe('')
+	})
+
+	it('resizeBy меняет ширину колонки и соседа на шаг клавиатуры и сообщает итог', () => {
+		const { table, ths } = buildHeader([100, 150, 200])
+		const ctx = setup([
+			{ key: 'a', width: '100px' },
+			{ key: 'b', width: '150px' },
+			{ key: 'c', width: '200px' },
+		])
+		cleanup = () => {
+			ctx.wrapper.unmount()
+			table.remove()
+		}
+		ctx.result.resizeBy(ths[0].th, 'a', 10)
+		expect(ctx.columns.value.map(column => column.width)).toEqual(['110px', '140px', '200px'])
+		expect(ctx.onColumnResize).toHaveBeenCalledWith('a', 110)
+		expect(ctx.onColumnsChange).toHaveBeenCalledTimes(1)
+	})
+
+	it('resizeBy у колонки без ширины берёт ширину ячейки, у единственной колонки соседа нет', () => {
+		const { table, ths } = buildHeader([120])
+		const ctx = setup([{ key: 'a' }])
+		cleanup = () => {
+			ctx.wrapper.unmount()
+			table.remove()
+		}
+		ctx.result.resizeBy(ths[0].th, 'a', -100)
+		expect(ctx.columns.value[0].width).toBe('50px')
+		expect(ctx.onColumnResize).toHaveBeenCalledWith('a', 50)
+	})
 })
