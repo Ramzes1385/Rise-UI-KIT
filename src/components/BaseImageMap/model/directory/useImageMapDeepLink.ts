@@ -10,11 +10,30 @@ function writeParam(param: string, id: string | null): void {
 	window.history.replaceState(window.history.state, '', url)
 }
 
+function openFromLink(context: DeepLinkContext, id: string): void {
+	const item = context.findObject(id)
+	if (item && !item.isDisabled && context.isShown(item)) context.activateFromLink(id)
+}
+
+function openWhenLoaded(context: DeepLinkContext, id: string): void {
+	if (context.findObject(id)) {
+		openFromLink(context, id)
+		return
+	}
+	const stop = watch(
+		() => context.findObject(id),
+		() => {
+			stop()
+			openFromLink(context, id)
+		},
+	)
+}
+
 export function useImageMapDeepLink(props: ImageMapProps, context: DeepLinkContext) {
 	onMounted(() => {
 		if (!props.hasDeepLinking) return
 		const id = new URL(window.location.href).searchParams.get(props.deepLinkParam)
-		if (id && context.findObject(id) && !context.findObject(id)?.isDisabled) context.activateFromLink(id)
+		if (id) openWhenLoaded(context, id)
 	})
 
 	watch(context.getActive, id => {

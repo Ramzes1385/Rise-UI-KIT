@@ -168,7 +168,7 @@
 				@toggle-filter="toggleFilter"
 				@select="selectFromDirectory"
 				@hover="hoverFromDirectory"
-				@clear="clearFilters">
+				@clear="clearFromDirectory">
 				<template v-if="$slots['directory-item']" #item="slotProps">
 					<slot name="directory-item" v-bind="slotProps" />
 				</template>
@@ -318,7 +318,7 @@ const {
 	toggleFilter,
 	selectFromDirectory,
 	hoverFromDirectory,
-	clearFilters,
+	clearFromDirectory,
 	exposed,
 } = useBaseImageMap(props, emit)
 

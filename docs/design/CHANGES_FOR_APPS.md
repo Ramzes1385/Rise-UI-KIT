@@ -141,6 +141,9 @@
   - `input[type=file]` скрыт визуально и доступен по Tab;
   - изображение вставляется с `alt=""`;
   - у корня `overflow: hidden`.
+- **BaseImageMap** (new-image-map-2):
+  - панель (`__toolbar`) и окно карты (`__viewport`) теперь внутри `.base-image-map__layout > .base-image-map__main` — селекторы вида `.base-image-map > .base-image-map__viewport` перестанут работать, используйте `.base-image-map .base-image-map__viewport` или `customClass`;
+  - на корне `container: base-image-map / inline-size`: корень больше не растягивается по содержимому — в контейнере без явной ширины (flex-элемент с `width: auto`, `inline-block`) задайте ширину карте.
 
 ## Доступность
 

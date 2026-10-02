@@ -69,7 +69,7 @@ export function useImageMapDirectory(props: ImageMapProps, context: DirectoryCon
 			const count = entries.value.length
 			return count ? pluralize(getLocale().plural.SEARCH_RESULTS, count) : UI_TEXT.NO_RESULTS
 		}),
-		hasClear: computed(() => Boolean(filters.search.value) || filters.hasSelection.value),
+		hasClear: computed(() => Boolean(filters.search.value.trim()) || filters.hasSelection.value),
 		legend: computed(() => (props.hasLegend ? (props.data.groups ?? []) : [])),
 	}
 }

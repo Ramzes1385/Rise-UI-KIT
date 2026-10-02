@@ -22,18 +22,18 @@ function useSearchModel(props: ImageMapProps, emit: BaseImageMapEmits) {
 }
 
 function useValuesModel(props: ImageMapProps, emit: BaseImageMapEmits) {
-	const values = ref<ImageMapFilterValues>(props.filters ?? initialFilterValues(props.data.filters ?? []))
+	const local = ref<ImageMapFilterValues | null>(props.filters ?? null)
 	watch(
 		() => props.filters,
 		value => {
-			if (value) values.value = value
+			if (value) local.value = value
 		},
 	)
 	function commit(next: ImageMapFilterValues): void {
-		values.value = next
+		local.value = next
 		emit('update:filters', next)
 	}
-	return { values, commit }
+	return { values: computed(() => local.value ?? initialFilterValues(props.data.filters ?? [])), commit }
 }
 
 export function useImageMapFilters(props: ImageMapProps, emit: BaseImageMapEmits) {
@@ -45,7 +45,7 @@ export function useImageMapFilters(props: ImageMapProps, emit: BaseImageMapEmits
 		search,
 		setSearch,
 		values,
-		hasSelection: computed(() => Object.values(values.value).some(list => list.length > 0)),
+		hasSelection: computed(() => activeFilters.value.some(filter => Boolean(values.value[filter.id]?.length))),
 		isShown: (object: ImageMapObject): boolean => matchesFilters(object, activeFilters.value, values.value),
 		setFilter(id: string, next: string[]): void {
 			commit({ ...values.value, [id]: next })

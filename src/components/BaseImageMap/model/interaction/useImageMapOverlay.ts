@@ -52,7 +52,7 @@ function useTooltip(options: OverlayOptions) {
 }
 
 function outsideOpener(stage: HTMLElement | null): HTMLElement | null {
-	const element = typeof document === 'undefined' ? null : document.activeElement
+	const element = document.activeElement
 	return element instanceof HTMLElement && element !== document.body && !stage?.contains(element) ? element : null
 }
 

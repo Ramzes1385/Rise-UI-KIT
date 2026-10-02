@@ -1634,3 +1634,9 @@ API кита не меняется. В Storybook добавлены пример
 - Поведение: скрытые фильтром точки и фигуры не рисуются, элементы SVG слоя получают класс `base-image-map__object--filtered`, теряют роль, `tabindex` и `data-image-map-object`; окно объекта, открытое из списка, возвращает фокус в строку списка.
 - Экспорт: `IMAGE_MAP_DIRECTORY_VIEWS`, `IMAGE_MAP_DIRECTORY_GROUPINGS`, `IMAGE_MAP_DIRECTORY_SCOPES`, `IMAGE_MAP_DIRECTORY_POSITIONS`, `IMAGE_MAP_FILTER_TYPES`, `IMAGE_MAP_FILTER_LOGIC` и типы `ImageMapDirectoryView`, `ImageMapDirectoryGrouping`, `ImageMapDirectoryScope`, `ImageMapDirectoryPosition`, `ImageMapFilterValues`, `ImageMapFilterType`, `ImageMapFilterLogic`.
 - Строки словаря (ru, en), раздел `imageMap`: `DIRECTORY`, `SEARCH`, `SEARCH_PLACEHOLDER`, `FILTERS`, `ALL`, `CLEAR_FILTERS`, `LEGEND`, `OTHER_GROUP`; число найденного — `plural.SEARCH_RESULTS`, пусто — `UI_TEXT.NO_RESULTS`.
+- Исправление по проверке (02.10, 11:59):
+  - DOM у всех карт: панель и окно карты — внутри `.base-image-map__layout > .base-image-map__main`, на корне `container: base-image-map / inline-size` (подробно — CHANGES_FOR_APPS, «Изменения DOM»).
+  - «Сбросить фильтры» переводит фокус в поле поиска (без поиска — в первую строку списка); если выбранная строка исчезла (`directoryScope="layer"` и `action: 'layer'`), фокус — в первую строку нового списка.
+  - Ссылка на объект (`hasDeepLinking`) не открывает объект, скрытый фильтром или выключенный; если `data` пришла после монтирования, ссылка применяется, когда объект появится.
+  - Начальные значения фильтров (`filter.value`) берутся из текущей `data`, пока пользователь не менял фильтры и не задан `filters`.
+  - «Найдено N» и «Сбросить фильтры» учитывают только действующие фильтры: при `hasFilters=false` и для ключей, которых нет в `data.filters`, выбора нет; поиск из одних пробелов не показывает кнопку сброса.

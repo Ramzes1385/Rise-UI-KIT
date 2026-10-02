@@ -167,6 +167,7 @@ export type MapCore = ReturnType<typeof useMapCore>
 
 export interface DeepLinkContext {
 	findObject: (id: string | null) => ResolvedImageMapObject | undefined
+	isShown: (item: ResolvedImageMapObject) => boolean
 	getActive: () => string | null
 	activateFromLink: (id: string) => void
 }
