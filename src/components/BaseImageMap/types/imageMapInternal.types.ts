@@ -1,12 +1,15 @@
 import type { Ref } from 'vue'
-import type { ImageMapWheelMode } from './BaseImageMap.types'
+import type { useMapCore } from '../model/useBaseImageMap'
 import type { useImageMapPan } from '../model/zoom/useImageMapPan'
 import type { useImageMapView } from '../model/zoom/useImageMapView'
+import type { ImageMapDirectoryEntry } from './ImageMapDirectory.types'
 import type { useImageMapFocus } from '../model/interaction/useImageMapFocus'
+import type { useImageMapFilters } from '../model/directory/useImageMapFilters'
 import type { useImageMapActions } from '../model/interaction/useImageMapActions'
 import type { useImageMapOverlay } from '../model/interaction/useImageMapOverlay'
-import type { ImageMapArea, ImageMapLayer, ImageMapPoint } from './imageMapData.types'
+import type { ImageMapDirectoryGrouping, ImageMapWheelMode } from './BaseImageMap.types'
 import type { ImageMapLayerView, ImageMapView, ResolvedImageMapObject } from './imageMapModel.types'
+import type { ImageMapArea, ImageMapGroup, ImageMapLayer, ImageMapPoint } from './imageMapData.types'
 
 /** Внутренние типы модели BaseImageMap: параметры composable и представления объектов для шаблона */
 
@@ -141,4 +144,29 @@ export interface ScreenBox {
 	top: number
 	right: number
 	bottom: number
+}
+
+export interface SectionsInput {
+	entries: ImageMapDirectoryEntry[]
+	groupBy: ImageMapDirectoryGrouping
+	groups: ImageMapGroup[]
+	locale: string
+	otherTitle: string
+}
+
+export interface DirectoryContext {
+	resolved: () => ResolvedImageMapObject[]
+	layerOf: (id: string) => string | undefined
+	getLayer: () => ImageMapLayer | undefined
+	getActive: () => string | null
+	getHover: () => string | null
+	filters: ReturnType<typeof useImageMapFilters>
+}
+
+export type MapCore = ReturnType<typeof useMapCore>
+
+export interface DeepLinkContext {
+	findObject: (id: string | null) => ResolvedImageMapObject | undefined
+	getActive: () => string | null
+	activateFromLink: (id: string) => void
 }

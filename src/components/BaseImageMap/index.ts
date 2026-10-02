@@ -1,10 +1,28 @@
-export { IMAGE_MAP_VARIANTS, IMAGE_MAP_WHEEL_MODES } from './types/BaseImageMap.types'
-export { IMAGE_MAP_ACTIONS, IMAGE_MAP_DATA_VERSION, IMAGE_MAP_OBJECT_TYPES } from './types/imageMapData.types'
+export {
+	IMAGE_MAP_DIRECTORY_GROUPINGS,
+	IMAGE_MAP_DIRECTORY_POSITIONS,
+	IMAGE_MAP_DIRECTORY_SCOPES,
+	IMAGE_MAP_DIRECTORY_VIEWS,
+	IMAGE_MAP_VARIANTS,
+	IMAGE_MAP_WHEEL_MODES,
+} from './types/BaseImageMap.types'
+export {
+	IMAGE_MAP_ACTIONS,
+	IMAGE_MAP_DATA_VERSION,
+	IMAGE_MAP_FILTER_LOGIC,
+	IMAGE_MAP_FILTER_TYPES,
+	IMAGE_MAP_OBJECT_TYPES,
+} from './types/imageMapData.types'
 export type {
 	BaseImageMapEmits,
 	BaseImageMapExpose,
 	BaseImageMapProps,
 	BaseImageMapSlots,
+	ImageMapDirectoryGrouping,
+	ImageMapDirectoryPosition,
+	ImageMapDirectoryScope,
+	ImageMapDirectoryView,
+	ImageMapFilterValues,
 	ImageMapSlotProps,
 	ImageMapVariant,
 	ImageMapWheelMode,
@@ -15,7 +33,9 @@ export type {
 	ImageMapData,
 	ImageMapEllipse,
 	ImageMapFilter,
+	ImageMapFilterLogic,
 	ImageMapFilterOption,
+	ImageMapFilterType,
 	ImageMapGroup,
 	ImageMapLayer,
 	ImageMapObject,

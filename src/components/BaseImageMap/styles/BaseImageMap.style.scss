@@ -6,6 +6,7 @@
 	box-sizing: border-box;
 	width: 100%;
 	min-width: 0;
+	container: base-image-map / inline-size;
 	padding: sz(8px);
 	border: 1px solid var(--rise-border);
 	border-radius: sz(var(--rise-radius-lg));
@@ -266,6 +267,234 @@
 		max-width: sz(280px);
 		padding: sz(12px) sz(16px);
 		overflow-wrap: anywhere;
+	}
+
+	&__layout,
+	&__main {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		gap: sz(8px);
+		min-width: 0;
+		min-height: 0;
+	}
+
+	&__legend {
+		display: flex;
+		flex-wrap: wrap;
+		gap: sz(6px 14px);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		@include text-size(sm);
+	}
+
+	&__legend-item {
+		display: inline-flex;
+		align-items: center;
+		gap: sz(6px);
+	}
+
+	&__swatch {
+		display: inline-flex;
+		flex: none;
+		align-items: center;
+		justify-content: center;
+		width: sz(20px);
+		height: sz(20px);
+		border-radius: 50%;
+		background-color: var(--im-swatch, var(--rise-primary));
+		color: var(--rise-text-inverted);
+		font-size: sz(12px);
+	}
+
+	&__directory {
+		display: flex;
+		flex-direction: column;
+		gap: sz(8px);
+		min-width: 0;
+		max-height: sz(420px);
+	}
+
+	&__filters {
+		display: flex;
+		flex-direction: column;
+		gap: sz(10px);
+	}
+
+	&__filter {
+		margin: 0;
+		padding: 0;
+		border: 0;
+	}
+
+	&__filter-title {
+		margin-bottom: sz(6px);
+		padding: 0;
+		color: var(--rise-text-muted);
+		@include text-size(sm);
+	}
+
+	&__filter-options {
+		display: flex;
+		flex-direction: column;
+		gap: sz(6px);
+
+		&--tags {
+			flex-flow: row wrap;
+		}
+	}
+
+	&__results {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: sz(8px);
+		min-height: sz(24px);
+		color: var(--rise-text-muted);
+		@include text-size(sm);
+	}
+
+	&__list {
+		overflow: auto;
+		flex: 1;
+		min-height: 0;
+		@include scrollbar-thin;
+	}
+
+	&__section + &__section {
+		margin-top: sz(10px);
+	}
+
+	&__section-title {
+		margin: 0 0 sz(4px);
+		padding: sz(0 8px);
+		color: var(--rise-text-muted);
+		font-weight: 600;
+		@include text-size(xs);
+	}
+
+	&__entries {
+		display: flex;
+		flex-direction: column;
+		gap: sz(2px);
+		margin: 0;
+		padding: sz(2px);
+		list-style: none;
+	}
+
+	&__list--grid &__entries {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(sz(120px), 1fr));
+		gap: sz(8px);
+	}
+
+	&__entry {
+		display: flex;
+		align-items: center;
+		gap: sz(10px);
+		box-sizing: border-box;
+		width: 100%;
+		margin: 0;
+		padding: sz(6px 8px);
+		border: 1px solid transparent;
+		border-radius: sz(var(--rise-radius-md));
+		background: none;
+		color: var(--rise-text);
+		font: inherit;
+		text-align: start;
+		text-decoration: none;
+		cursor: pointer;
+		@include text-size(sm);
+		@include transition-colors;
+		@include focus-ring(0);
+
+		&--hover {
+			background-color: var(--rise-bg-elevated);
+		}
+
+		@include hover {
+			background-color: var(--rise-bg-elevated);
+		}
+
+		&--active {
+			border-color: var(--rise-primary);
+			background-color: var(--rise-bg-elevated);
+		}
+
+		&--disabled {
+			@include disabled-state;
+		}
+	}
+
+	&__list--grid &__entry {
+		flex-direction: column;
+		align-items: stretch;
+		height: 100%;
+		padding: sz(6px);
+		border-color: var(--rise-border);
+	}
+
+	&__thumb {
+		display: block;
+		width: 100%;
+		aspect-ratio: 4 / 3;
+		border-radius: sz(var(--rise-radius-sm));
+		object-fit: cover;
+	}
+
+	&__entry-text {
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+	}
+
+	&__entry-title {
+		overflow-wrap: anywhere;
+	}
+
+	&__entry-meta {
+		color: var(--rise-text-muted);
+		@include text-size(xs);
+	}
+
+	&__list-empty {
+		padding: sz(16px 8px);
+		color: var(--rise-text-muted);
+		text-align: center;
+		@include text-size(sm);
+	}
+}
+
+@container base-image-map (min-width: 641px) {
+	.base-image-map__layout--with-directory {
+		display: grid;
+		grid-template-columns: minmax(sz(220px), 1fr) minmax(0, 2.6fr);
+		align-items: stretch;
+
+		.base-image-map__main {
+			grid-column: 2;
+			grid-row: 1;
+		}
+
+		.base-image-map__directory {
+			contain: size;
+			grid-column: 1;
+			grid-row: 1;
+			max-height: none;
+		}
+	}
+
+	.base-image-map__layout--end {
+		grid-template-columns: minmax(0, 2.6fr) minmax(sz(220px), 1fr);
+
+		.base-image-map__main {
+			grid-column: 1;
+		}
+
+		.base-image-map__directory {
+			grid-column: 2;
+		}
 	}
 }
 

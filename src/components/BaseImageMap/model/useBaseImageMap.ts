@@ -5,8 +5,10 @@ import { useImageMapPan } from './zoom/useImageMapPan'
 import { useImageMapData } from './data/useImageMapData'
 import { useImageMapView } from './zoom/useImageMapView'
 import { useImageMapObjects } from './useImageMapObjects'
+import { useDirectoryPart } from './directory/useDirectoryPart'
 import { useImageMapGestures } from './zoom/useImageMapGestures'
 import { useImageMapFocus } from './interaction/useImageMapFocus'
+import { useImageMapFilters } from './directory/useImageMapFilters'
 import { useImageMapEvents } from './interaction/useImageMapEvents'
 import { useImageMapFullscreen } from './zoom/useImageMapFullscreen'
 import { useImageMapActions } from './interaction/useImageMapActions'
@@ -15,7 +17,21 @@ import type { ResolvedImageMapObject } from '../types/imageMapModel.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseImageMapEmits, BaseImageMapExpose, ImageMapProps } from '../types/BaseImageMap.types'
 
-const CLASS_KEYS = ['root', 'toolbar', 'layers', 'zoom', 'viewport', 'stage', 'object', 'point', 'tooltip', 'popup']
+const CLASS_KEYS = [
+	'root',
+	'toolbar',
+	'layers',
+	'zoom',
+	'viewport',
+	'stage',
+	'object',
+	'point',
+	'tooltip',
+	'popup',
+	'directory',
+	'filters',
+	'legend',
+]
 
 function useRefs() {
 	return {
@@ -32,9 +48,10 @@ function wheelHint(): string {
 	return isMac ? UI_IMAGE_MAP.WHEEL_HINT_MAC : UI_IMAGE_MAP.WHEEL_HINT
 }
 
-function useMapCore(props: ImageMapProps, emit: BaseImageMapEmits) {
+export function useMapCore(props: ImageMapProps, emit: BaseImageMapEmits) {
 	const refs = useRefs()
-	const data = useImageMapData(props)
+	const filters = useImageMapFilters(props, emit)
+	const data = useImageMapData(props, filters.isShown)
 	const zoom = useImageMapView({
 		viewportRef: refs.viewportRef,
 		getLayer: () => data.currentLayer.value,
@@ -55,7 +72,7 @@ function useMapCore(props: ImageMapProps, emit: BaseImageMapEmits) {
 		getRenderedSvgIds: () => refs.renderedSvgIds.value,
 	})
 	const gestures = useImageMapGestures({ ...refs, getWheelMode: () => props.wheelZoom, onInteract: overlay.hideTooltip }, zoom)
-	return { refs, data, zoom, overlay, actions, focus, gestures }
+	return { refs, filters, data, zoom, overlay, actions, focus, gestures }
 }
 
 function usePresentation(props: ImageMapProps, data: ReturnType<typeof useImageMapData>, overlay: ReturnType<typeof useImageMapOverlay>) {
@@ -77,7 +94,8 @@ function usePresentation(props: ImageMapProps, data: ReturnType<typeof useImageM
 }
 
 export function useBaseImageMap(props: ImageMapProps, emit: BaseImageMapEmits) {
-	const { refs, data, zoom, overlay, actions, focus, gestures } = useMapCore(props, emit)
+	const core = useMapCore(props, emit)
+	const { refs, data, zoom, overlay, actions, focus, gestures } = core
 	const objects = useImageMapObjects({
 		getView: () => data.view.value,
 		getState: (item: ResolvedImageMapObject) => ({
@@ -96,6 +114,7 @@ export function useBaseImageMap(props: ImageMapProps, emit: BaseImageMapEmits) {
 	})
 	const pan = useImageMapPan(zoom, refs.viewportRef)
 	const events = useImageMapEvents(emit, { overlay, focus, actions, zoom, pan, consumeDrag: gestures.consumeDrag })
+	const directory = useDirectoryPart(props, emit, core)
 
 	return {
 		...useStandardBaseComponent('base-image-map', props, CLASS_KEYS),
@@ -104,6 +123,7 @@ export function useBaseImageMap(props: ImageMapProps, emit: BaseImageMapEmits) {
 		...objects,
 		...events,
 		...usePresentation(props, data, overlay),
+		...directory,
 		view: data.view,
 		wheelHint: wheelHint(),
 		svgMarkup: svg.markup,
@@ -119,6 +139,7 @@ export function useBaseImageMap(props: ImageMapProps, emit: BaseImageMapEmits) {
 			resetZoom: () => zoom.resetZoom(),
 			zoomToObject: (id: string) => void actions.zoomToObject(id),
 			setLayer: actions.setLayer,
+			clearFilters: core.filters.clearFilters,
 		} satisfies BaseImageMapExpose,
 	}
 }

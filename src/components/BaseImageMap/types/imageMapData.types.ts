@@ -87,14 +87,39 @@ export interface ImageMapFilterOption {
 	label: string
 }
 
-/** Фильтр объектов. Показ и логика фильтров — во второй части BaseImageMap; поле зарезервировано форматом */
+/**
+ * Вид фильтра в списке объектов: checkbox — флажки; tags — метки-переключатели; select — выпадающий список с одним
+ * значением; switch — переключатели
+ */
+export const IMAGE_MAP_FILTER_TYPES = ['checkbox', 'tags', 'select', 'switch'] as const
+
+/** Вид фильтра */
+export type ImageMapFilterType = (typeof IMAGE_MAP_FILTER_TYPES)[number]
+
+/** Как сочетаются выбранные варианты одного фильтра: or — объект подходит под любой; and — под все сразу */
+export const IMAGE_MAP_FILTER_LOGIC = ['or', 'and'] as const
+
+/** Логика вариантов фильтра */
+export type ImageMapFilterLogic = (typeof IMAGE_MAP_FILTER_LOGIC)[number]
+
+/**
+ * Фильтр объектов (вторая часть BaseImageMap). Разные фильтры сочетаются по «и»; варианты одного — по `logic`.
+ * Без `options` фильтр — по группам: варианты — `groups`, объект подходит по своему `group`.
+ * С `options` объект подходит по своим `tags`.
+ */
 export interface ImageMapFilter {
-	/** Уникальный id фильтра */
+	/** Уникальный id фильтра: ключ в `v-model:filters` */
 	id: string
 	/** Подпись фильтра */
 	title: string
 	/** Варианты; без них фильтр — по группам */
 	options?: ImageMapFilterOption[]
+	/** Вид: `checkbox` (по умолчанию), `tags`, `select`, `switch` */
+	type?: ImageMapFilterType
+	/** Логика вариантов: `or` (по умолчанию) или `and`; у `select` выбран один вариант */
+	logic?: ImageMapFilterLogic
+	/** Выбранные при открытии карты значения */
+	value?: string[]
 }
 
 /** Ссылка-кнопка в подсказке и окне объекта */
@@ -143,6 +168,12 @@ export interface ImageMapObjectBase {
 	isDisabled?: boolean
 	/** Масштаб при приближении к объекту (`hasZoomToActive`); по умолчанию — чтобы объект занял треть окна */
 	zoom?: number
+	/** Метки объекта для фильтров с `options`: значения вариантов */
+	tags?: string[]
+	/** Дополнительные слова для поиска в списке объектов: синонимы, номер павильона */
+	keywords?: string[]
+	/** Объект не показывается в списке объектов (лестницы, лифты); на карте остаётся */
+	isHiddenInDirectory?: boolean
 	/** Свои данные приложения: доступны в слотах `tooltip` и `popup` */
 	data?: Record<string, unknown>
 }
@@ -226,7 +257,7 @@ export interface ImageMapData {
 	objects: ImageMapObject[]
 	/** Группы (категории) */
 	groups?: ImageMapGroup[]
-	/** Фильтры — для второй части BaseImageMap */
+	/** Фильтры списка объектов */
 	filters?: ImageMapFilter[]
 	/** Именованные стили: объект или группа ссылаются на них по ключу */
 	styles?: Record<string, ImageMapStyle>

@@ -142,6 +142,7 @@ describe('objectAttributes и objectClasses', () => {
 			'base-image-map__object--hover': true,
 			'base-image-map__object--disabled': true,
 			'base-image-map__object--pulsing': true,
+			'base-image-map__object--filtered': false,
 		})
 	})
 
