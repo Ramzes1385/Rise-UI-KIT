@@ -1,17 +1,19 @@
 import { setup } from './Sign.setup'
 import setupSource from './Sign.setup.ts?raw'
-import type meta from '../useCryptoPro.stories'
 import { expect, waitFor } from 'storybook/test'
 import { BaseAlert } from '@components/BaseAlert'
 import { BaseRadio } from '@components/BaseRadio'
+import type meta from '../../useCryptoPro.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
+import { STORY_DATE, emulate } from '../../emulation'
 import { BaseTextarea } from '@components/BaseTextarea'
 import { BaseSegmented } from '@components/BaseSegmented'
-import { COMPOSABLES, signTemplate as template } from '../shared'
+import { COMPOSABLES, signTemplate as template } from '../../shared'
 import { scriptSource, staticStorySource, useStorySetup } from '@/stories/helpers'
 
 export const Sign: StoryObj<typeof meta> = {
+	beforeEach: emulate({ scenario: 'ready', now: STORY_DATE, delay: 300 }),
 	parameters: {
 		docs: {
 			description: {

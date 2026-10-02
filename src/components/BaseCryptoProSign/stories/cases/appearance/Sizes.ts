@@ -1,6 +1,6 @@
-import type meta from '../BaseCryptoProSign.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import BaseCryptoProSign from '../../ui/BaseCryptoProSign.vue'
+import type meta from '../../BaseCryptoProSign.stories'
+import BaseCryptoProSign from '../../../ui/BaseCryptoProSign.vue'
 import { literal, SIZE_PRESETS, storySource, useStorySetup } from '@/stories/helpers'
 
 const presets = SIZE_PRESETS.map(preset => ({ name: preset.name, sizeScale: preset.sizeScale }))

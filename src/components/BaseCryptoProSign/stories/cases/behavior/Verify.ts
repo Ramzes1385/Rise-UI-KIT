@@ -1,8 +1,8 @@
 import { tabTo } from '@/stories/helpers'
-import { ATTACHED_SIGNATURE } from '../shared'
 import { expect, waitFor } from 'storybook/test'
-import type meta from '../BaseCryptoProSign.stories'
+import { ATTACHED_SIGNATURE } from '../../shared'
 import type { StoryObj } from '@storybook/vue3-vite'
+import type meta from '../../BaseCryptoProSign.stories'
 
 export const Verify: StoryObj<typeof meta> = {
 	parameters: {

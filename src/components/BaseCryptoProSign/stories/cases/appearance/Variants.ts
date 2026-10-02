@@ -1,8 +1,8 @@
-import type meta from '../BaseCryptoProSign.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import BaseCryptoProSign from '../../ui/BaseCryptoProSign.vue'
+import type meta from '../../BaseCryptoProSign.stories'
 import { storySource, useStorySetup } from '@/stories/helpers'
-import { CRYPTO_PRO_SIGN_VARIANTS } from '../../types/BaseCryptoProSign.types'
+import BaseCryptoProSign from '../../../ui/BaseCryptoProSign.vue'
+import { CRYPTO_PRO_SIGN_VARIANTS } from '../../../types/BaseCryptoProSign.types'
 
 const template = `<div class="story-row"><BaseCryptoProSign v-for="variant in CRYPTO_PRO_SIGN_VARIANTS" :key="variant" v-bind="args" :variant="variant" :aria-label="'Электронная подпись, ' + variant" /></div>`
 

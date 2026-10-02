@@ -1,5 +1,3 @@
-import { onMounted } from 'vue'
-import { createCryptoProEmulation } from '@composables/crypto/useCryptoPro/emulation'
 import { useCryptoPro, type CryptoProStepId, type CryptoProStepState } from '@composables/crypto/useCryptoPro'
 
 const STEP_LABELS: Record<CryptoProStepId, string> = {
@@ -17,17 +15,7 @@ const STATE_LABELS: Record<CryptoProStepState, string> = {
 }
 
 export function setup() {
-	const emulation = createCryptoProEmulation({ scenario: 'noExtension' })
-	const { status, check } = useCryptoPro({ checkOnMount: false })
-
-	function checkPlugin(): Promise<boolean> {
-		const restore = emulation.install()
-		const checking = check()
-		restore()
-		return checking
-	}
-
-	onMounted(checkPlugin)
+	const { status, check: checkPlugin } = useCryptoPro()
 
 	return { STEP_LABELS, STATE_LABELS, status, checkPlugin }
 }

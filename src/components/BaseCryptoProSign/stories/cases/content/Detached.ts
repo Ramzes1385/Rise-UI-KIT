@@ -1,7 +1,7 @@
 import { tabTo } from '@/stories/helpers'
 import { expect, waitFor } from 'storybook/test'
-import type meta from '../BaseCryptoProSign.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
+import type meta from '../../BaseCryptoProSign.stories'
 
 export const Detached: StoryObj<typeof meta> = {
 	parameters: {

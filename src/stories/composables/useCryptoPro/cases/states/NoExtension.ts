@@ -1,15 +1,17 @@
+import { emulate } from '../../emulation'
 import { setup } from './NoExtension.setup'
-import type meta from '../useCryptoPro.stories'
 import { BaseAlert } from '@components/BaseAlert'
 import { BaseBadge } from '@components/BaseBadge'
+import type meta from '../../useCryptoPro.stories'
 import { BaseButton } from '@components/BaseButton'
 import setupSource from './NoExtension.setup.ts?raw'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { expect, waitFor, within } from 'storybook/test'
-import { COMPOSABLES, diagnosticsTemplate as template } from '../shared'
+import { COMPOSABLES, diagnosticsTemplate as template } from '../../shared'
 import { scriptSource, staticStorySource, useStorySetup } from '@/stories/helpers'
 
 export const NoExtension: StoryObj<typeof meta> = {
+	beforeEach: emulate({ scenario: 'noExtension' }),
 	parameters: {
 		docs: {
 			story: { inline: false, height: '380px' },
@@ -26,7 +28,6 @@ export const NoExtension: StoryObj<typeof meta> = {
 				importsFrom: {
 					[COMPOSABLES]: ['useCryptoPro', 'type CryptoProStepId', 'type CryptoProStepState'],
 				},
-				vue: ['onMounted'],
 				script: scriptSource(setupSource),
 			}),
 		},

@@ -1,12 +1,12 @@
 import { setup } from './NoScript.setup'
-import type meta from '../useCryptoPro.stories'
 import setupSource from './NoScript.setup.ts?raw'
 import { BaseAlert } from '@components/BaseAlert'
 import { BaseBadge } from '@components/BaseBadge'
+import type meta from '../../useCryptoPro.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { expect, waitFor, within } from 'storybook/test'
-import { COMPOSABLES, diagnosticsTemplate as template } from '../shared'
+import { COMPOSABLES, diagnosticsTemplate as template } from '../../shared'
 import { scriptSource, staticStorySource, useStorySetup } from '@/stories/helpers'
 
 export const NoScript: StoryObj<typeof meta> = {

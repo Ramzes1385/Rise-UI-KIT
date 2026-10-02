@@ -1,8 +1,8 @@
-import { emulate } from '../shared'
+import { emulate } from '../../shared'
 import { tabTo } from '@/stories/helpers'
 import { expect, waitFor } from 'storybook/test'
-import type meta from '../BaseCryptoProSign.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
+import type meta from '../../BaseCryptoProSign.stories'
 
 export const Loading: StoryObj<typeof meta> = {
 	parameters: {

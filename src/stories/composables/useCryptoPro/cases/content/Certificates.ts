@@ -1,15 +1,17 @@
 import { setup } from './Certificates.setup'
-import type meta from '../useCryptoPro.stories'
 import { expect, within } from 'storybook/test'
 import { BaseAlert } from '@components/BaseAlert'
 import { BaseBadge } from '@components/BaseBadge'
+import type meta from '../../useCryptoPro.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
+import { STORY_DATE, emulate } from '../../emulation'
 import setupSource from './Certificates.setup.ts?raw'
-import { COMPOSABLES, certificatesTemplate as template } from '../shared'
+import { COMPOSABLES, certificatesTemplate as template } from '../../shared'
 import { scriptSource, staticStorySource, useStorySetup } from '@/stories/helpers'
 
 export const Certificates: StoryObj<typeof meta> = {
+	beforeEach: emulate({ scenario: 'ready', now: STORY_DATE }),
 	parameters: {
 		docs: {
 			description: {
@@ -23,7 +25,6 @@ export const Certificates: StoryObj<typeof meta> = {
 				template,
 				imports: ['BaseAlert', 'BaseBadge', 'BaseButton'],
 				importsFrom: { [COMPOSABLES]: ['useCryptoPro'] },
-				vue: ['onMounted'],
 				script: scriptSource(setupSource),
 			}),
 		},

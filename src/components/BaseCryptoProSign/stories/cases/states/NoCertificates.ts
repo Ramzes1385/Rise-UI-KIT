@@ -1,7 +1,7 @@
-import { emulate } from '../shared'
+import { emulate } from '../../shared'
 import { expect } from 'storybook/test'
-import type meta from '../BaseCryptoProSign.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
+import type meta from '../../BaseCryptoProSign.stories'
 
 export const NoCertificates: StoryObj<typeof meta> = {
 	parameters: {

@@ -1,6 +1,6 @@
 import { expect } from 'storybook/test'
-import type meta from '../BaseCryptoProSign.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
+import type meta from '../../BaseCryptoProSign.stories'
 
 export const Disabled: StoryObj<typeof meta> = {
 	parameters: {

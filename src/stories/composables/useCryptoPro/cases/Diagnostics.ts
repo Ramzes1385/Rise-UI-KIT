@@ -1,3 +1,4 @@
+import { emulate } from '../emulation'
 import { setup } from './Diagnostics.setup'
 import type meta from '../useCryptoPro.stories'
 import { BaseAlert } from '@components/BaseAlert'
@@ -10,6 +11,7 @@ import { COMPOSABLES, diagnosticsTemplate as template } from '../shared'
 import { scriptSource, staticStorySource, useStorySetup } from '@/stories/helpers'
 
 export const Diagnostics: StoryObj<typeof meta> = {
+	beforeEach: emulate({ scenario: 'ready' }),
 	parameters: {
 		docs: {
 			description: {
@@ -24,7 +26,6 @@ export const Diagnostics: StoryObj<typeof meta> = {
 				importsFrom: {
 					[COMPOSABLES]: ['useCryptoPro', 'type CryptoProStepId', 'type CryptoProStepState'],
 				},
-				vue: ['onMounted'],
 				script: scriptSource(setupSource),
 			}),
 		},
