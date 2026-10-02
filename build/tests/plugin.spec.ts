@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { mount } from '@vue/test-utils'
 import { setLocale } from '@/locales/state'
 import { defineComponent, h, inject } from 'vue'
@@ -7,6 +9,13 @@ import { TELEPORT_TARGET_KEY } from '@composables/app/useTeleportTarget/useTelep
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseLink } from '@components/BaseLink'
+
+/** Компоненты пакета: `export * from './BaseX'` в src/components/index.ts — реестр плагина должен совпадать с ними (без числа: новые компоненты не правят тест). */
+const EXPORTED_COMPONENTS = [
+	...readFileSync(join(process.cwd(), 'src/components/index.ts'), 'utf8').matchAll(/^export \* from '\.\/(Base\w+)'/gm),
+]
+	.map(([, name]) => name)
+	.sort()
 
 const RouterLinkStub = defineComponent({
 	name: 'RouterLinkStub',
@@ -68,7 +77,7 @@ describe('createUiKitPlugin', () => {
 		const wrapper = mount({ template: '<BaseButton>Сохранить</BaseButton>' }, { global: { plugins: [uiKitPlugin] } })
 
 		expect(wrapper.get('button').classes()).toContain('base-button')
-		expect(Object.keys(UI_COMPONENTS)).toHaveLength(115)
+		expect(Object.keys(UI_COMPONENTS).sort()).toEqual(EXPORTED_COMPONENTS)
 		expect(
 			Object.entries(UI_COMPONENTS)
 				.filter(([, component]) => '__asyncLoader' in component)
