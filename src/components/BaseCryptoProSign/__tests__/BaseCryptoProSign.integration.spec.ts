@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
+import { fireEvent, screen, waitFor } from '@testing-library/vue'
 import type { CryptoProFailure } from '@composables/crypto/useCryptoPro'
-import { fireEvent, screen, waitFor, within } from '@testing-library/vue'
 import { digestOf, encodeSignature } from '../model/emulation/emulatedSignature'
 import type { CryptoProSignResult, CryptoProVerifyResult } from '../types/BaseCryptoProSign.types'
 import {
@@ -61,6 +61,12 @@ async function upload(label: string, file: File): Promise<void> {
 
 async function removeUploaded(name: string): Promise<void> {
 	await userEvent.click(await screen.findByRole('button', { name: new RegExp(`${name}$`) }))
+}
+
+function liveRegion(): HTMLElement {
+	const region = document.querySelector<HTMLElement>('.base-crypto-pro-sign__live')
+	if (!region) throw new Error('нет .base-crypto-pro-sign__live')
+	return region
 }
 
 function verifyButton(): HTMLElement {
@@ -193,7 +199,7 @@ describe('BaseCryptoProSign integration', () => {
 			expect(signer).toHaveTextContent('Сертификат действует до 11.09.2026')
 			expect(signer).not.toHaveTextContent('Штамп времени')
 			expect(screen.getByText('Подпись верна', { selector: '.base-crypto-pro-sign-result__title' })).toBeInTheDocument()
-			expect(screen.getByRole('status')).toHaveTextContent('Подпись верна')
+			expect(liveRegion()).toHaveTextContent('Подпись верна')
 			expect(screen.queryByRole('button', { name: 'Скачать подпись' })).not.toBeInTheDocument()
 		})
 
@@ -223,7 +229,7 @@ describe('BaseCryptoProSign integration', () => {
 			expect(emitted().error).toBeUndefined()
 			expect(screen.getByText('Подпись не прошла проверку', { selector: '.base-crypto-pro-sign-result__title' })).toBeInTheDocument()
 			expect(screen.getByText(new RegExp(code), { selector: '.base-crypto-pro-sign-result__detail' })).toBeInTheDocument()
-			expect(screen.getByRole('status')).toHaveTextContent('Подпись не прошла проверку')
+			expect(liveRegion()).toHaveTextContent('Подпись не прошла проверку')
 		})
 
 		it('не подпись эмуляции — неверный формат', async () => {
@@ -325,9 +331,10 @@ describe('BaseCryptoProSign integration', () => {
 			await waitFor(() => expect(emitted().error).toBeTruthy())
 			expect(lastEmitted<CryptoProFailure>(emitted(), 'error').code).toBe('noPlugin')
 			expect(emitted().verified).toBeUndefined()
-			expect(
-				within(screen.getByRole('alert')).getByText('КриптоПро ЭЦП Browser plug-in не установлен или недоступен'),
-			).toBeInTheDocument()
+			const alerts = screen.getAllByRole('alert')
+			expect(alerts.some(alert => alert.textContent?.includes('КриптоПро ЭЦП Browser plug-in не установлен или недоступен'))).toBe(
+				true,
+			)
 		})
 
 		it('expose verify() отдаёт результат', async () => {

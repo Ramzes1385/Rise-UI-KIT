@@ -65,9 +65,7 @@ export function useBaseCryptoProSign(props: BaseCryptoProSignProps, emit: BaseCr
 	const isVerify = computed(() => props.mode === 'verify')
 	const canRun = computed(() => {
 		if (props.isDisabled || actions.isBusy.value || !crypto.isReady.value) return false
-		return isVerify.value
-			? source.hasSignature.value
-			: Boolean(certificates.selectedCertificate.value && source.source.value !== undefined)
+		return isVerify.value ? source.hasSignature.value : certificates.isSelectedUsable.value && source.source.value !== undefined
 	})
 	return {
 		...useStandardBaseComponent('base-crypto-pro-sign', props, ['root']),

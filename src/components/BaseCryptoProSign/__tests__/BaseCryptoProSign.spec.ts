@@ -350,12 +350,14 @@ describe('BaseCryptoProSign unit', () => {
 	})
 
 	describe('ошибки подписи', () => {
-		it('сертификат без ключа — noPrivateKey до плагина', async () => {
-			const { emitted, emulation } = await renderReady({ props: { data: 'x', thumbprint: THUMBPRINTS.smirnov } })
-			await waitFor(() => expect(signButton()).toBeEnabled())
+		it('сертификат без ключа — «Подписать» недоступна, sign() — noPrivateKey до плагина', async () => {
+			const onError = vi.fn()
+			const { api, emulation } = renderExposed({ data: 'x', thumbprint: THUMBPRINTS.smirnov, onError })
+			await waitFor(() => expect(screen.getByRole('combobox')).toHaveTextContent(/Смирнов/))
+			expect(signButton()).toBeDisabled()
 			const from = emulation.calls.length
-			await userEvent.click(signButton())
-			expect((await failure(emitted)).code).toBe('noPrivateKey')
+			expect(await api().sign()).toBeNull()
+			expect((onError.mock.calls[0]?.[0] as CryptoProFailure).code).toBe('noPrivateKey')
 			expect(createdObjects(emulation, from)).toEqual([])
 			const alert = screen.getByRole('alert')
 			expect(alert).toHaveTextContent('У сертификата нет закрытого ключа')
@@ -363,10 +365,13 @@ describe('BaseCryptoProSign unit', () => {
 			expect(screen.getByRole('status')).toHaveTextContent('У сертификата нет закрытого ключа')
 		})
 
-		it('просроченный сертификат — certificateInvalid', async () => {
-			const { emitted } = await renderReady({ props: { data: 'x', thumbprint: THUMBPRINTS.sidorova } })
-			await clickSign()
-			expect((await failure(emitted)).code).toBe('certificateInvalid')
+		it('просроченный сертификат — «Подписать» недоступна, sign() — certificateInvalid', async () => {
+			const onError = vi.fn()
+			const { api } = renderExposed({ data: 'x', thumbprint: THUMBPRINTS.sidorova, onError })
+			await waitFor(() => expect(screen.getByRole('combobox')).toHaveTextContent(/Сидорова/))
+			expect(signButton()).toBeDisabled()
+			expect(await api().sign()).toBeNull()
+			expect((onError.mock.calls[0]?.[0] as CryptoProFailure).code).toBe('certificateInvalid')
 		})
 
 		it('отмена в окне ПИН-кода — cancelled', async () => {

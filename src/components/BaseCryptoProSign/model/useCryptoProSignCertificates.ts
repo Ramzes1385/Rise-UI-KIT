@@ -27,6 +27,7 @@ export function useCryptoProSignCertificates(
 	return {
 		thumbprintValue: localThumbprint,
 		selectedCertificate,
+		isSelectedUsable: computed(() => selectedCertificate.value !== null && isUsable(selectedCertificate.value, new Date())),
 		certificateOptions: computed(() => certificates.value.map(item => certificateOption(item, new Date()))),
 		selectCertificate: select,
 	}
