@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { defineCardBrand } from '@utils/form/cardUtils'
 import css from '../styles/BaseCardInput.style.scss?inline'
 import { fireEvent, render, screen } from '@testing-library/vue'
-import { CARD_BRAND_BACKGROUNDS, CARD_FACE_DEFAULT_BACKGROUND } from '../types/cardFace.types'
+import { CARD_BRAND_BACKGROUNDS, CARD_FACE_DEFAULT_BACKGROUND } from '../model/face/cardFaceBackgrounds'
 
 type PreviewProps = Record<string, unknown>
 
