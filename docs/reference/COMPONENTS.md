@@ -2,7 +2,7 @@
 
 Справочник компонентов `@ramzes1385/rise-ui-kit`: назначение, основные props и события, примеры. Все состояния вживую и полная таблица props, событий и слотов — в [Storybook](https://ramzes1385.github.io/Rise-UI-KIT/); установка и подключение — в [README](../../README.md).
 
-Видеоплеер `BaseMediaPlayer` подключается отдельным входом `@ramzes1385/rise-ui-kit/media`; остальные компоненты — из корня пакета.
+Видеоплеер `BaseMediaPlayer` и презентация `BasePresentationPlayer` подключаются отдельным входом `@ramzes1385/rise-ui-kit/media`; остальные компоненты — из корня пакета.
 
 ---
 
@@ -1505,6 +1505,39 @@ const icon: MediaIconName = 'share'
 
 ---
 
+## BasePresentationPlayer
+
+Презентация с озвучкой в виде плеера: обучающие и ознакомительные слайды, которые идут сами по голосу — тот же вид, панель, клавиши, скорость и полный экран, что у BaseMediaPlayer. Вход — `@ramzes1385/rise-ui-kit/media`.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BasePresentationPlayer } from '@ramzes1385/rise-ui-kit/media'
+import type { PresentationSlide, PresentationSlideComplete } from '@ramzes1385/rise-ui-kit/media'
+
+const slide = ref(0)
+const slides: PresentationSlide[] = [
+	{ id: 'intro', title: 'Кто мы', image: '/course/1.webp', audio: '/course/1.opus', minDuration: 20 },
+	{ id: 'rules', title: 'Правила', image: '/course/2.webp', audio: '/course/2.opus' },
+	{ id: 'map', title: 'Схема офиса', image: '/course/3.webp', duration: 15 },
+]
+
+function report(event: PresentationSlideComplete) {
+	// отправить на сервер: сервер сверяет время между slide-complete с длительностью озвучки
+}
+</script>
+
+<template>
+	<BasePresentationPlayer v-model:slide="slide" :slides="slides" title="Вводный курс" navigation="linear" storage-key="intro-course" @slide-complete="report" />
+</template>
+```
+
+- **Слайд** — `image` или `video` (или слот `slide` со своим HTML), `alt`, `title`. Время слайда: своя озвучка `audio` → видео слайда → `duration` (секунды) → без них слайд стоит, пока его не перелистнут. Общая дорожка на всю презентацию — проп `audio` и начала слайдов `slides[].at`.
+- **Переход дальше** — по концу озвучки, видео или `duration`. «Предыдущий» и «Следующий слайд», шкала из отрезков-слайдов, ←/→ (также J/L, PageUp/PageDown, Shift+N/P), Space/K — пауза, F — полный экран, M — звук, ↑/↓ — громкость. «Слайд 3 из 12: Название» — в `role="status"`.
+- **Режимы** (`navigation`): `free` — свободно; `linear` — вперёд только после прохождения слайда: кончилась озвучка и прошло `minDuration` (что позже), «Следующий слайд» — `aria-disabled` с кольцом отсчёта и подсказкой «Доступно через 12 с»; шкала, клавиши и кнопки не пускают дальше первого непройденного слайда, назад — свободно. `strict` — то же, плюс скорость не выше `maxRate` (1), без перемотки озвучки вперёд внутри непройденного слайда, показ встаёт на паузу, когда вкладка скрыта. Время `minDuration` засчитывается, только пока вкладка видна и идёт показ.
+- **Учёт** — события `slide-complete` (`{ id, index, at }`, `at` — `Date.now()`), `progress` (`{ completed, total }`), `complete`; после последнего слайда — экран «Пройдено». `storageKey` сохраняет в localStorage место и пройденные слайды и предлагает «Продолжить со слайда 5?».
+- **Что не делает.** Не разбирает .pptx и .pdf — экспортируйте слайды в картинки. Не отправляет данные в LMS и не заменяет проверку на сервере: localStorage и режимы — удобство зрителя, строгий учёт — на сервере по времени `slide-complete`.
+
 ## BaseAudioPlayer
 
 Компактный аудиоплеер: голосовые сообщения, подкасты, короткие записи. Кнопка пуска, волна с перемоткой, время (до запуска — длительность, после — позиция) и скорость по кругу (`playback-rates`, по умолчанию 1×, 1,5×, 2×). По умолчанию на странице играет один такой плеер: запуск ставит остальные на паузу (`:is-exclusive="false"` отключает).
@@ -2880,6 +2913,7 @@ BasePieChart
 BasePin
 BasePopconfirm
 BasePopover
+BasePresentationPlayer  # вход @ramzes1385/rise-ui-kit/media
 BaseProgress
 BasePromptInput
 BaseQrCode

@@ -58,10 +58,14 @@ export type { MediaShareEvent, MediaShareNetwork } from './types/panels/MediaSha
 export type { MediaIconName, MediaIconProps } from './types/controls/MediaIcon.types'
 export { default as MediaIcon } from './ui/controls/MediaIcon.vue'
 export { default as BaseMediaPlayer } from './ui/BaseMediaPlayer.vue'
-export { PRESENTATION_PLAYER_VARIANTS } from '@components/BasePresentationPlayer'
+export { PRESENTATION_NAVIGATION_MODES, PRESENTATION_PLAYER_VARIANTS } from '@components/BasePresentationPlayer'
 export type {
 	PresentationSlide,
+	PresentationProgress,
+	PresentationNavigation,
+	PresentationSlideComplete,
 	PresentationPlayerVariant,
+	PresentationSavedProgress,
 	PresentationSlideSlotProps,
 	BasePresentationPlayerEmits,
 	BasePresentationPlayerProps,

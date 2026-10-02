@@ -1458,3 +1458,14 @@ FOLLOW_UPS № 38, № 39, № 13 и № 15 (медиа).
 - `BaseTagGroup` — метки по `items` (`{ value, label, icon?, tone?, isDisabled?, isRemovable? }`) в `role="group"` с именем `label` (по умолчанию «Метки»); `selectionMode`: `none` (по умолчанию), `single` (`v-model` — значение или `null`, повторное нажатие снимает выбор), `multiple` (массив); `isRemovable`, `tone`, `variant`, `color`, `sizeScale` передаются меткам; слот `tag` (`{ item, isSelected }`). Событие `remove` (`item`, `index`): если приложение убрало метку из `items` сразу, фокус переходит на следующую метку, у последней — на предыдущую, у пустой группы — на саму группу.
 - Словарь: раздел `tag` (`REMOVE`, `REMOVE_UNNAMED`, `GROUP`) и `UI_TAG`; приложения со своим словарём (`defineLocale`) добавляют эти ключи.
 - Экспорт: `BaseTag`, `TAG_VARIANTS`, `TAG_TONES`, типы `BaseTagProps`, `BaseTagEmits`, `BaseTagSlots`, `TagTone`; `BaseTagGroup`, `TAG_GROUP_SELECTION_MODES`, типы `BaseTagGroupProps`, `BaseTagGroupEmits`, `BaseTagGroupSlots`, `TagGroupItem`, `TagGroupModelValue`, `TagGroupSelectionMode`, `TagValue`.
+
+## Задача new-presentation: BasePresentationPlayer (Новые компоненты)
+
+Новый компонент, изменений в существующих нет.
+
+- `BasePresentationPlayer` (вход `@ramzes1385/rise-ui-kit/media`, как BaseMediaPlayer) — презентация с озвучкой в виде плеера: `slides` (`{ id, title, image | video, alt, audio?, at?, duration?, minDuration? }`) и слот `slide`; озвучка — файл на слайд или общая дорожка `audio` с `slides[].at`; переход дальше — по концу озвучки, видео или `duration`; `v-model:slide`; шкала из отрезков-слайдов, «Предыдущий» и «Следующий слайд», клавиши плеера, скорость, громкость, полный экран.
+- Режимы `navigation`: `free`, `linear` (вперёд — после прохождения слайда: конец озвучки и `minDuration`), `strict` (ещё скорость не выше `maxRate`, без перемотки вперёд внутри слайда, пауза при скрытой вкладке). `storageKey` — место и пройденные слайды в localStorage.
+- События `update:slide`, `play`, `pause`, `slide-complete` (`{ id, index, at }`), `progress` (`{ completed, total }`), `complete`; методы `play`, `pause`, `next`, `previous`, `goTo`.
+- Типы: `PresentationSlide`, `PresentationSlideSlotProps`, `PresentationSlideComplete`, `PresentationProgress`, `PresentationSavedProgress`, `PresentationNavigation`, `PresentationPlayerVariant`, `BasePresentationPlayerProps`, `…Emits`, `…Slots`, `…Expose`; константы `PRESENTATION_PLAYER_VARIANTS`, `PRESENTATION_NAVIGATION_MODES`.
+- Раздел словаря `presentation` (ru, en): `PREVIOUS`, `NEXT`, `SLIDES`, `STATUS`, `SLIDE_HINT`, `REPLAY`, `LOCKED`, `LOCKED_AUDIO`, `RESUME`, `RESUME_YES`, `RESUME_NO`, `DONE`, `FINISHED`, `DONE_TEXT`. Свой язык через `defineLocale` должен задать и этот раздел.
+- Отдельный пакет плеера (`build/media-package/extract.mjs`) теперь несёт и презентацию — `src/presentation/`.
