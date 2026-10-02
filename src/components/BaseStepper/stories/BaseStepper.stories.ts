@@ -28,4 +28,5 @@ export const LongContent = cases.LongContent
 export const WithIcons = cases.WithIcons
 export const CustomItem = cases.CustomItem
 export const Wizard = cases.Wizard
+export const Clickable = cases.Clickable
 export const Keyboard = cases.Keyboard

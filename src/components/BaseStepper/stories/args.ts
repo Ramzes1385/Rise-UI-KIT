@@ -8,6 +8,8 @@ export const args = {
 	items: STEPS,
 	orientation: 'horizontal',
 	shape: 'circle',
+	isLinear: false,
+	clickable: 'all',
 	variant: 'default',
 	sizeScale: 100,
 	'onUpdate:modelValue': fn(),

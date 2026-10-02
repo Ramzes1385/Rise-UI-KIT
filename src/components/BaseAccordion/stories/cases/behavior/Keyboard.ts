@@ -7,13 +7,17 @@ export const Keyboard: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
 			description: {
-				story: 'Клавиатура: Tab переводит фокус между заголовками (видно кольцо фокуса), Enter и Space раскрывают и закрывают пункт.',
+				story: [
+					'Клавиатура: Tab переводит фокус между заголовками (видно кольцо фокуса), Enter и Space раскрывают и закрывают пункт.',
+					'Кнопка пункта — нативная `<button>` внутри заголовка `<h3>`: скринридер находит пункты в списке заголовков.',
+				].join('\n'),
 			},
 		},
 	},
 	tags: ['!autodocs'],
 	play: async ({ canvas, userEvent, args }) => {
 		const first = canvas.getByRole('button', { name: 'Как оформить заказ?' })
+		await expect(canvas.getAllByRole('heading', { level: 3 })[0]).toContainElement(first)
 		await tabTo(first, userEvent)
 		await expect(getComputedStyle(first).outlineStyle).toBe('solid')
 

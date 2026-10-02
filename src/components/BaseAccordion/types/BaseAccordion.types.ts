@@ -16,6 +16,11 @@ export const ACCORDION_DIVIDERS = ['solid', 'dashed', 'none'] as const
 /** Плотность: высота заголовка и отступы содержимого */
 export const ACCORDION_DENSITIES = ['compact', 'default', 'comfortable'] as const
 
+/** Уровень заголовка пункта: `<h2>`…`<h6>` */
+export const ACCORDION_HEADING_LEVELS = [2, 3, 4, 5, 6] as const
+
+export type AccordionHeadingLevel = (typeof ACCORDION_HEADING_LEVELS)[number]
+
 export type AccordionArrowPosition = (typeof ACCORDION_ARROW_POSITIONS)[number]
 
 export type AccordionDivider = (typeof ACCORDION_DIVIDERS)[number]
@@ -23,6 +28,8 @@ export type AccordionDivider = (typeof ACCORDION_DIVIDERS)[number]
 export type AccordionDensity = (typeof ACCORDION_DENSITIES)[number]
 
 export interface BaseAccordionItem {
+	/** Ключ пункта для `v-model:open` и для сохранения открытых пунктов при смене `items`. По умолчанию — `label` */
+	id?: string
 	/** Заголовок */
 	label: string
 	/** Пояснение под заголовком: одна строка приглушённым цветом */
@@ -37,7 +44,7 @@ export interface BaseAccordionItem {
 	icon?: string
 	/** Отключен ли элемент */
 	isDisabled?: boolean
-	/** Открыт ли по умолчанию */
+	/** Открыт ли по умолчанию. Без `isMultiple` открывается только первый такой пункт */
 	defaultOpen?: boolean
 }
 
@@ -46,12 +53,27 @@ export interface BaseAccordionProps
 		SeoComponentProps,
 		BaseComponentProps<
 			(typeof ACCORDION_VARIANTS)[number],
-			'root' | 'item' | 'header' | 'icon' | 'label' | 'description' | 'arrow' | 'arrowIcon' | 'collapse' | 'content' | 'contentText'
+			| 'root'
+			| 'item'
+			| 'heading'
+			| 'header'
+			| 'icon'
+			| 'label'
+			| 'description'
+			| 'arrow'
+			| 'arrowIcon'
+			| 'collapse'
+			| 'content'
+			| 'contentText'
 		> {
 	/** Список элементов */
 	items: BaseAccordionItem[]
 	/** Возможность открывать несколько элементов */
 	isMultiple?: boolean
+	/** Открытые пункты — ключи (`id`, иначе `label`), `v-model:open`. Без него открытием управляет сам аккордеон, начиная с `defaultOpen` */
+	open?: string[]
+	/** Уровень заголовка пункта (`<h3>` по умолчанию): кнопка пункта — внутри заголовка, как в шаблоне Accordion WAI-ARIA */
+	headingLevel?: AccordionHeadingLevel
 	/** Сторона стрелки: `end` — справа (по умолчанию), `start` — перед заголовком, закрытый пункт — стрелка вправо */
 	arrowPosition?: AccordionArrowPosition
 	/** Показывать стрелку. Без неё пункт раскрывается так же — кликом по заголовку */
@@ -69,7 +91,10 @@ export interface BaseAccordionProps
 }
 
 export interface BaseAccordionEmits {
+	/** Пункт открыт или закрыт; при открытии другого пункта без `isMultiple` сначала приходит закрытие прежнего */
 	(event: 'toggle', index: number, isOpen: boolean): void
+	/** Новый список открытых пунктов (`v-model:open`) */
+	(event: 'update:open', value: string[]): void
 }
 
 export interface BaseAccordionSlots {

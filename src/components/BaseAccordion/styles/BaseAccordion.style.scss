@@ -17,10 +17,20 @@
 		}
 	}
 
+	&__heading {
+		margin: 0;
+		font: inherit;
+	}
+
 	&__header {
 		display: flex;
 		align-items: center;
 		gap: sz(6px);
+		width: 100%;
+		margin: 0;
+		border: 0;
+		font-family: inherit;
+		text-align: start;
 		padding: sz(var(--accordion-pad-y)) sz(var(--accordion-pad-x));
 		border-radius: sz(var(--rise-radius-md));
 		@include text-size(sm);

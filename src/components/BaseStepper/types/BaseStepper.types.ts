@@ -40,13 +40,32 @@ export const STEPPER_VARIANTS = ['default', 'animated'] as const
 
 export type StepperVariant = (typeof STEPPER_VARIANTS)[number]
 
+/**
+ * Какие шаги можно выбрать кликом: `all` — любой (с учётом `isLinear` и `isDisabled`);
+ * `completed` — только шаги до текущего; `none` — ни один, степпер только показывает прогресс
+ */
+export const STEPPER_CLICKABLE = ['all', 'completed', 'none'] as const
+
+export type StepperClickable = (typeof STEPPER_CLICKABLE)[number]
+
 export const STEPPER_ORIENTATIONS = ['horizontal', 'vertical'] as const
 
 export type StepperOrientation = (typeof STEPPER_ORIENTATIONS)[number]
 
 export interface BaseStepperProps extends BaseComponentProps<
 	StepperVariant,
-	'root' | 'header' | 'items' | 'step' | 'indicatorWrapper' | 'indicator' | 'check' | 'content' | 'label' | 'description' | 'footer'
+	| 'root'
+	| 'header'
+	| 'items'
+	| 'step'
+	| 'trigger'
+	| 'indicatorWrapper'
+	| 'indicator'
+	| 'check'
+	| 'content'
+	| 'label'
+	| 'description'
+	| 'footer'
 > {
 	/** Текущий шаг (1-based) */
 	modelValue: number
@@ -61,6 +80,11 @@ export interface BaseStepperProps extends BaseComponentProps<
 	 * к пройденным шагам можно вернуться
 	 */
 	isLinear?: boolean
+	/**
+	 * Какие шаги можно выбрать кликом и с клавиатуры: такой шаг — кнопка `<button>`, остальные — текст.
+	 * Текущий шаг тоже кнопка (фокус не теряется после выбора), но клик по нему ничего не эмитит. По умолчанию `all`
+	 */
+	clickable?: StepperClickable
 }
 
 export interface BaseStepperEmits {
@@ -71,7 +95,7 @@ export interface BaseStepperEmits {
 export interface BaseStepperSlots {
 	/** Заголовок степпера */
 	header?: () => unknown
-	/** Кастомный рендер шага */
+	/** Кастомный рендер шага: он внутри `<button>` выбираемого шага, поэтому без ссылок, кнопок и полей */
 	item?: (props: BaseStepperItemSlot) => unknown
 	/** Подвал степпера */
 	footer?: () => unknown

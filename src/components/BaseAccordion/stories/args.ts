@@ -6,6 +6,7 @@ import type BaseAccordion from '../ui/BaseAccordion.vue'
 export const args = {
 	items: ITEMS,
 	isMultiple: false,
+	headingLevel: 3,
 	variant: 'default',
 	sizeScale: 100,
 	onToggle: fn(),

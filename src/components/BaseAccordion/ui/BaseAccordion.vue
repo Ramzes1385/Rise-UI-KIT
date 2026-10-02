@@ -7,7 +7,7 @@
 
 		<div
 			v-for="(item, index) in items"
-			:key="index"
+			:key="itemKey(index)"
 			class="base-accordion__item"
 			:class="[
 				{
@@ -16,43 +16,44 @@
 				},
 				classes.item,
 			]">
-			<div
-				:id="getHeaderId(index)"
-				class="base-accordion__header"
-				:class="classes.header"
-				role="button"
-				tabindex="0"
-				:aria-expanded="isOpen(index)"
-				:aria-controls="getPanelId(index)"
-				:aria-labelledby="`${getHeaderId(index)}-label`"
-				:aria-describedby="item.description ? `${getHeaderId(index)}-description` : undefined"
-				:aria-disabled="item.isDisabled || undefined"
-				@click="toggleItem(index)"
-				@keydown.enter.prevent="toggleItem(index)"
-				@keydown.space.prevent="toggleItem(index)">
-				<BaseIcon
-					v-if="item.icon"
-					:name="item.icon"
-					:size-scale="calcIconScale('sm', sizeScale)"
-					class="base-accordion__icon"
-					:custom-class="classes.icon" />
-				<span class="base-accordion__title">
-					<span :id="`${getHeaderId(index)}-label`" class="base-accordion__label" :class="classes.label">{{ item.label }}</span>
-					<span
-						v-if="item.description"
-						:id="`${getHeaderId(index)}-description`"
-						class="base-accordion__description"
-						:class="classes.description"
-						>{{ item.description }}</span
-					>
-				</span>
-				<span v-if="hasArrow" class="base-accordion__arrow" :class="classes.arrow">
+			<component :is="`h${headingLevel}`" class="base-accordion__heading" :class="classes.heading">
+				<button
+					:id="getHeaderId(index)"
+					type="button"
+					class="base-accordion__header"
+					:class="classes.header"
+					:aria-expanded="isOpen(index)"
+					:aria-controls="getPanelId(index)"
+					:aria-labelledby="`${getHeaderId(index)}-label`"
+					:aria-describedby="item.description ? `${getHeaderId(index)}-description` : undefined"
+					:aria-disabled="item.isDisabled || undefined"
+					@click="toggleItem(index)">
 					<BaseIcon
-						:name="arrowIconName(isOpen(index))"
-						:size-scale="calcIconScale('md', sizeScale)"
-						:custom-class="classes.arrowIcon" />
-				</span>
-			</div>
+						v-if="item.icon"
+						:name="item.icon"
+						:size-scale="calcIconScale('sm', sizeScale)"
+						class="base-accordion__icon"
+						:custom-class="classes.icon" />
+					<span class="base-accordion__title">
+						<span :id="`${getHeaderId(index)}-label`" class="base-accordion__label" :class="classes.label">{{
+							item.label
+						}}</span>
+						<span
+							v-if="item.description"
+							:id="`${getHeaderId(index)}-description`"
+							class="base-accordion__description"
+							:class="classes.description"
+							>{{ item.description }}</span
+						>
+					</span>
+					<span v-if="hasArrow" class="base-accordion__arrow" :class="classes.arrow">
+						<BaseIcon
+							:name="arrowIconName(isOpen(index))"
+							:size-scale="calcIconScale('md', sizeScale)"
+							:custom-class="classes.arrowIcon" />
+					</span>
+				</button>
+			</component>
 
 			<div
 				:id="getPanelId(index)"
@@ -86,6 +87,7 @@ const props = withDefaults(
 	kitDefaults('BaseAccordion', {
 		variant: DEFAULT_VARIANT,
 		isMultiple: false,
+		headingLevel: 3,
 		arrowPosition: 'end',
 		showArrow: true,
 		expandIcon: 'chevron-down',
@@ -108,6 +110,7 @@ const {
 	appearanceClass,
 	hasArrow,
 	arrowIconName,
+	itemKey,
 	isOpen,
 	toggleItem,
 	getHeaderId,

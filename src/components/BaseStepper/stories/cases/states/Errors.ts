@@ -48,7 +48,7 @@ export const Errors: StoryObj<typeof meta> = {
 
 		await userEvent.click(canvas.getByRole('button', { name: /^Доставка\s?, пройден/ }))
 		await waitFor(() => expect(canvas.getByRole('button', { name: /Доставка/ })).toHaveAttribute('aria-current', 'step'))
-		await expect(canvas.getByRole('button', { name: /Отзыв/ })).toHaveAttribute('aria-disabled', 'true')
+		await expect(canvas.getByRole('button', { name: /Отзыв/ })).toBeDisabled()
 		await expect(args.onChange).toHaveBeenCalledWith(2)
 	},
 }

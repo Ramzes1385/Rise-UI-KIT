@@ -1,10 +1,11 @@
-export { STEPPER_ORIENTATIONS, STEPPER_SHAPES, STEPPER_VARIANTS } from './types/BaseStepper.types'
+export { STEPPER_CLICKABLE, STEPPER_ORIENTATIONS, STEPPER_SHAPES, STEPPER_VARIANTS } from './types/BaseStepper.types'
 export type {
 	BaseStepperEmits,
 	BaseStepperItemSlot,
 	BaseStepperProps,
 	BaseStepperSlots,
 	BaseStepperStep,
+	StepperClickable,
 	StepperOrientation,
 	StepperShape,
 	StepperVariant,

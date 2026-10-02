@@ -8,6 +8,7 @@ const STEPPER_ELEMENTS = [
 	'header',
 	'items',
 	'step',
+	'trigger',
 	'indicatorWrapper',
 	'indicator',
 	'check',
@@ -32,6 +33,12 @@ function stepState(props: BaseStepperProps, index: number) {
 	}
 }
 
+function isStepClickable(props: BaseStepperProps, index: number): boolean {
+	const step = index + 1
+	if (props.clickable === 'none') return false
+	return props.clickable !== 'completed' || step <= props.modelValue
+}
+
 function statusText(state: ReturnType<typeof stepState>): string {
 	if (state.isError) return UI_STEPPER.ERROR
 	return state.isCompleted ? UI_STEPPER.COMPLETED : ''
@@ -51,8 +58,9 @@ export function useBaseStepper(props: BaseStepperProps, emit: BaseStepperEmits) 
 		optionalLabel: computed(() => UI_STEPPER.OPTIONAL),
 		stepState: (index: number) => stepState(props, index),
 		statusText: (index: number): string => statusText(stepState(props, index)),
+		isStepClickable: (index: number): boolean => isStepClickable(props, index),
 		handleStepClick(step: number): void {
-			if (isStepLocked(props, step - 1)) return
+			if (step === props.modelValue || !isStepClickable(props, step - 1) || isStepLocked(props, step - 1)) return
 			emit('update:modelValue', step)
 			emit('change', step)
 		},

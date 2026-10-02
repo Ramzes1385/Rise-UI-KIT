@@ -1,4 +1,4 @@
-import { computed, onMounted, ref, useId } from 'vue'
+import { computed, ref, useId, watch } from 'vue'
 import type { StructuredData } from '@utils/seo/structuredDataUtils'
 import { useStructuredData } from '@composables/seo/useStructuredData'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
@@ -7,6 +7,7 @@ import type { BaseAccordionEmits, BaseAccordionItem, BaseAccordionProps } from '
 const ACCORDION_ELEMENTS = [
 	'root',
 	'item',
+	'heading',
 	'header',
 	'icon',
 	'label',
@@ -49,29 +50,68 @@ function useAccordionAppearance(props: BaseAccordionProps) {
 	}
 }
 
-function useOpenItems(props: BaseAccordionProps, emit: BaseAccordionEmits) {
-	const openIndexes = ref<number[]>([])
-	onMounted(() => {
-		props.items.forEach((item, index) => {
-			if (item.defaultOpen) openIndexes.value.push(index)
-		})
+function accordionKeys(items: BaseAccordionItem[]): string[] {
+	const seen = new Set<string>()
+	return items.map((item, index) => {
+		const key = item.id ?? item.label
+		const unique = seen.has(key) ? `${key}#${index}` : key
+		seen.add(unique)
+		return unique
+	})
+}
+
+function defaultOpenKeys(items: BaseAccordionItem[], keys: string[]): string[] {
+	return keys.filter((_, index) => items[index]?.defaultOpen)
+}
+
+function useOpenState(props: BaseAccordionProps, emit: BaseAccordionEmits) {
+	const keys = computed(() => accordionKeys(props.items))
+	const normalize = (list: readonly string[]): string[] => (props.isMultiple ? [...list] : list.slice(0, 1))
+	const openKeys = ref<string[]>(normalize(props.open ?? defaultOpenKeys(props.items, keys.value)))
+
+	const setOpen = (next: string[]): void => {
+		openKeys.value = next
+		emit('update:open', next)
+	}
+
+	watch(
+		() => props.open,
+		value => {
+			if (value) openKeys.value = normalize(value)
+		},
+	)
+
+	watch(keys, (next, previous) => {
+		if (props.open) return
+		const added = defaultOpenKeys(props.items, next).filter(key => !previous.includes(key))
+		if (added.length && (props.isMultiple || !openKeys.value.some(key => next.includes(key))))
+			setOpen(normalize([...openKeys.value.filter(key => next.includes(key)), ...added]))
 	})
 
+	return { keys, openKeys, setOpen }
+}
+
+function useOpenItems(props: BaseAccordionProps, emit: BaseAccordionEmits) {
+	const { keys, openKeys, setOpen } = useOpenState(props, emit)
+	const isOpen = (index: number): boolean => openKeys.value.includes(keys.value[index]!)
+
 	const open = (index: number): void => {
-		openIndexes.value = props.isMultiple ? [...openIndexes.value, index] : [index]
+		const closed = props.isMultiple ? [] : keys.value.flatMap((key, i) => (openKeys.value.includes(key) ? [i] : []))
+		setOpen(props.isMultiple ? [...openKeys.value, keys.value[index]!] : [keys.value[index]!])
+		closed.forEach(i => emit('toggle', i, false))
 		emit('toggle', index, true)
 	}
 
 	return {
-		isOpen: (index: number): boolean => openIndexes.value.includes(index),
+		itemKey: (index: number): string => keys.value[index]!,
+		isOpen,
 		toggleItem(index: number): void {
-			if (props.items[index].isDisabled) return
-			const position = openIndexes.value.indexOf(index)
-			if (position === -1) {
+			if (props.items[index]?.isDisabled) return
+			if (!isOpen(index)) {
 				open(index)
 				return
 			}
-			openIndexes.value.splice(position, 1)
+			setOpen(openKeys.value.filter(key => key !== keys.value[index]))
 			emit('toggle', index, false)
 		},
 	}

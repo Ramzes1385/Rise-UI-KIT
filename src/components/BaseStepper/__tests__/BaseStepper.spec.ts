@@ -255,7 +255,7 @@ describe('BaseStepper unit', () => {
 				props: { modelValue: 1, items: ITEMS },
 			})
 
-			const step = container.querySelectorAll('.base-stepper__step')[1]
+			const step = container.querySelectorAll('.base-stepper__trigger')[1]
 			await fireEvent.click(step!)
 
 			expect(emitted()['update:modelValue']).toBeTruthy()
@@ -267,7 +267,7 @@ describe('BaseStepper unit', () => {
 				props: { modelValue: 1, items: ITEMS },
 			})
 
-			const step = container.querySelectorAll('.base-stepper__step')[1]
+			const step = container.querySelectorAll('.base-stepper__trigger')[1]
 			await fireEvent.click(step!)
 
 			expect(emitted().change).toBeTruthy()
@@ -369,10 +369,10 @@ describe('BaseStepper unit', () => {
 		it('пройденный шаг и шаг с ошибкой озвучивают состояние; ошибка не отмечается пройденной', () => {
 			const { container } = render(BaseStepper, { props: { modelValue: 4, items: FLOW } })
 
-			expect(screen.getByRole('button', { name: 'Корзина, пройден' })).toHaveClass('base-stepper__step--completed')
+			expect(screen.getByRole('button', { name: 'Корзина, пройден' }).closest('li')).toHaveClass('base-stepper__step--completed')
 			const payment = screen.getByRole('button', { name: /^Оплата, ошибка/ })
-			expect(payment).toHaveClass('base-stepper__step--error')
-			expect(payment).not.toHaveClass('base-stepper__step--completed')
+			expect(payment.closest('li')).toHaveClass('base-stepper__step--error')
+			expect(payment.closest('li')).not.toHaveClass('base-stepper__step--completed')
 			expect(payment.querySelector('.base-stepper__error-mark')).toHaveTextContent('!')
 			expect(container.querySelector('.base-stepper__optional')).toHaveTextContent('Необязательно')
 		})
@@ -381,8 +381,7 @@ describe('BaseStepper unit', () => {
 			const { emitted } = render(BaseStepper, { props: { modelValue: 1, items: FLOW, isLinear: true } })
 
 			const far = screen.getByRole('button', { name: /^Оплата/ })
-			expect(far).toHaveAttribute('aria-disabled', 'true')
-			expect(far).toHaveAttribute('tabindex', '-1')
+			expect(far).toBeDisabled()
 			await fireEvent.click(far)
 			expect(emitted('update:modelValue')).toBeUndefined()
 

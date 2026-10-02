@@ -57,34 +57,82 @@ describe('BaseStepper integration', () => {
 		})
 	})
 	describe('клавиатура и семантика', () => {
-		it('шаг — кнопка в порядке Tab, текущий помечен aria-current="step"', () => {
+		it('шаги — список <ol>, шаг — кнопка, текущий помечен aria-current="step", пройденный озвучивает «пройден» (ST-2)', () => {
 			render(BaseStepper, { props: { modelValue: 2, items: ITEMS } })
 
-			const [first, second, third] = screen.getAllByRole('button')
-			expect(first).toHaveAttribute('tabindex', '0')
-			expect(first).not.toHaveAttribute('aria-current')
-			expect(second).toHaveAttribute('aria-current', 'step')
-			expect(third).toHaveAttribute('aria-disabled', 'true')
-			expect(third).toHaveAttribute('tabindex', '-1')
+			expect(screen.getByRole('list')).toContainElement(screen.getByText('Данные'))
+			expect(screen.getAllByRole('listitem')).toHaveLength(3)
+			const [done, current, disabled] = screen.getAllByRole('button')
+			expect(done).toHaveAccessibleName('Данные, пройден')
+			expect(done).not.toHaveAttribute('aria-current')
+			expect(current).toHaveAccessibleName('Адрес')
+			expect(current).toHaveAttribute('aria-current', 'step')
+			expect(disabled).toHaveAccessibleName('Оплата')
+			expect(disabled).toBeDisabled()
 		})
 
-		it('Enter и Space на шаге делают его текущим, как клик', async () => {
-			const { emitted } = render(BaseStepper, { props: { modelValue: 1, items: ITEMS } })
+		it('Tab проходит выбираемые шаги, Enter и Space делают шаг текущим', async () => {
+			const user = userEvent.setup()
+			const items = [{ label: 'Данные' }, { label: 'Адрес' }, { label: 'Оплата' }]
+			const { emitted } = render(BaseStepper, { props: { modelValue: 2, items } })
 
-			const [first, second] = screen.getAllByRole('button')
-			await fireEvent.keyDown(second, { key: 'Enter' })
-			await fireEvent.keyDown(first, { key: ' ' })
+			await user.tab()
+			expect(screen.getByRole('button', { name: 'Данные, пройден' })).toHaveFocus()
+			await user.keyboard('{Enter}')
+			await user.tab()
+			expect(screen.getByRole('button', { name: 'Адрес' })).toHaveFocus()
+			await user.tab()
+			expect(screen.getByRole('button', { name: 'Оплата' })).toHaveFocus()
+			await user.keyboard(' ')
 
-			expect(emitted()['update:modelValue']).toEqual([[2], [1]])
-			expect(emitted().change).toEqual([[2], [1]])
+			expect(emitted('update:modelValue')).toEqual([[1], [3]])
+			expect(emitted('change')).toEqual([[1], [3]])
 		})
 
-		it('отключённый шаг не реагирует на Enter', async () => {
-			const { emitted } = render(BaseStepper, { props: { modelValue: 1, items: ITEMS } })
+		it('отключённый шаг пропускается в порядке Tab', async () => {
+			const user = userEvent.setup()
+			render(BaseStepper, { props: { modelValue: 1, items: ITEMS } })
 
-			await fireEvent.keyDown(screen.getAllByRole('button')[2], { key: 'Enter' })
+			await user.tab()
+			await user.tab()
+			expect(screen.getByRole('button', { name: 'Адрес' })).toHaveFocus()
+			await user.tab()
+			expect(document.body).toHaveFocus()
+		})
+	})
 
+	describe('clickable (ST-3)', () => {
+		it('клик и Enter по текущему шагу не эмитят событий, фокус остаётся на нём', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseStepper, { props: { modelValue: 2, items: ITEMS } })
+
+			await user.click(screen.getByText('Адрес'))
+			await user.keyboard('{Enter}')
+			expect(screen.getByRole('button', { name: 'Адрес' })).toHaveFocus()
+
+			expect(emitted()).not.toHaveProperty('change')
 			expect(emitted()).not.toHaveProperty('update:modelValue')
+		})
+
+		it('completed — кнопки только у пройденных и текущего, клик по будущему не эмитит', async () => {
+			const items = [{ label: 'Данные' }, { label: 'Адрес' }, { label: 'Оплата' }]
+			const { emitted } = render(BaseStepper, { props: { modelValue: 2, items, clickable: 'completed' } })
+
+			expect(screen.getAllByRole('button')).toHaveLength(2)
+			expect(screen.getByRole('button', { name: 'Адрес' })).toHaveAttribute('aria-current', 'step')
+			await fireEvent.click(screen.getByText('Оплата'))
+			expect(emitted()).not.toHaveProperty('change')
+
+			await fireEvent.click(screen.getByRole('button', { name: 'Данные, пройден' }))
+			expect(emitted('change')).toEqual([[1]])
+		})
+
+		it('none — кнопок нет, клики не эмитят', async () => {
+			const { emitted } = render(BaseStepper, { props: { modelValue: 2, items: ITEMS, clickable: 'none' } })
+
+			expect(screen.queryAllByRole('button')).toHaveLength(0)
+			await fireEvent.click(screen.getByText('Данные'))
+			expect(emitted()).not.toHaveProperty('change')
 		})
 	})
 
