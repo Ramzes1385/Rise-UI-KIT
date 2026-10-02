@@ -1,10 +1,11 @@
-import { computed, ref, watch } from 'vue'
 import type { ComputedRef, Ref } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
+import { computed, nextTick, ref, watch } from 'vue'
 import { useTreeSelectKeys } from './useTreeSelectKeys'
 import { useTreeSelectTree } from './useTreeSelectTree'
 import { useTreeSelectField } from './useTreeSelectField'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import type { BaseDropdownExpose } from '@components/BaseDropdown/types/BaseDropdown.types'
 import type { BaseTreeSelectEmits, TreeSelectProps, TreeSelectRow } from '../types/BaseTreeSelect.types'
 
 const TREE_SELECT_ELEMENTS = [
@@ -75,9 +76,19 @@ function useTreeSelectActions(props: TreeSelectProps, model: ReturnType<typeof u
 	}
 }
 
+function useDropdownReposition(model: ReturnType<typeof useTreeSelectTree>) {
+	const dropdownRef = ref<BaseDropdownExpose | null>(null)
+	watch(
+		() => model.valueNodes.value.length,
+		() => nextTick(() => dropdownRef.value?.updatePosition()),
+	)
+	return dropdownRef
+}
+
 function useTreeSelectDisplay(props: TreeSelectProps, model: ReturnType<typeof useTreeSelectTree>, treeId: string) {
 	const { valueNodes } = model
 	return {
+		dropdownRef: useDropdownReposition(model),
 		popupId: computed(() => (model.rows.value.length && !props.isLoading ? treeId : `${treeId}-panel`)),
 		selectedNode: computed(() => (props.isMultiple ? undefined : valueNodes.value[0])),
 		tagNodes: computed(() => (props.isMultiple ? valueNodes.value.slice(0, props.maxTagCount ?? valueNodes.value.length) : [])),

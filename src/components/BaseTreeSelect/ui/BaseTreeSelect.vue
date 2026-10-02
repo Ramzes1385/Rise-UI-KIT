@@ -1,5 +1,6 @@
 <template>
 	<BaseDropdown
+		ref="dropdownRef"
 		v-model:is-open="isOpen"
 		class="base-tree-select__dropdown"
 		position="bottom-start"
@@ -215,6 +216,7 @@ const {
 	tagNodes,
 	moreCount,
 	triggerRef,
+	dropdownRef,
 	isOpen,
 	searchQuery,
 	rows,
