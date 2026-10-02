@@ -102,10 +102,12 @@ function applyProperty(event: IcsEventDraft, property: IcsProperty): void {
 			event.category = unescapeText(property.value.split(/(?<!\\),/)[0])
 		},
 		DTSTART: () => {
-			event.start = propertyDate(property) ?? undefined
+			const date = propertyDate(property)
+			if (date) event.start = date
 		},
 		DTEND: () => {
-			event.end = propertyDate(property) ?? undefined
+			const date = propertyDate(property)
+			if (date) event.end = date
 		},
 		DURATION: () => {
 			event.duration = parseIcsDuration(property.value) ?? undefined
@@ -126,10 +128,11 @@ function applyProperty(event: IcsEventDraft, property: IcsProperty): void {
 
 const DURATION = /^([+-])?P(?:(\d+)W)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?)?$/
 
-/** Длительность RFC 5545 (`PT1H30M`, `P1D`, `P2W`) — дни и миллисекунды; неверная или отрицательная — null */
+/** Длительность RFC 5545 (`PT1H30M`, `P1D`, `P2W`) — дни и миллисекунды; неверная (`P`, `PT`) или отрицательная — null */
 function parseIcsDuration(value: string): IcsDuration | null {
 	const match = DURATION.exec(value.trim())
-	if (!match || match[1] === '-' || value.trim().endsWith('T')) return null
+	// RFC 5545 (3.3.6): нужна хотя бы одна часть — `P` и `PT` без чисел неверны, `P1DT` — тоже
+	if (!match || match[1] === '-' || !match.slice(2).some(Boolean) || value.trim().endsWith('T')) return null
 	const [weeks, days, hours, minutes, seconds] = match.slice(2).map(part => Number(part ?? 0))
 	return { days: weeks * 7 + days, ms: ((hours * 60 + minutes) * 60 + seconds) * 1000 }
 }
@@ -137,6 +140,7 @@ function parseIcsDuration(value: string): IcsDuration | null {
 /** Конец по DURATION: дни — по календарю (через переход на летнее время), часы и минуты — точным временем */
 function endByDuration(start: CalendarEventDate, duration: IcsDuration): CalendarEventDate | undefined {
 	const item = normalizeEvent({ id: 0, title: '', start })
+	// Защита: начало приходит из propertyDate и всегда разбирается — ветка нужна только типам normalizeEvent
 	if (!item) return undefined
 	const { start: date } = item
 	const shifted = new Date(
