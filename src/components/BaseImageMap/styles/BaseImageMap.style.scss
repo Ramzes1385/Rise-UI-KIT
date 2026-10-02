@@ -347,10 +347,10 @@
 
 	&__results {
 		display: flex;
+		flex-wrap: wrap;
 		align-items: center;
 		justify-content: space-between;
-		gap: sz(8px);
-		min-height: sz(24px);
+		gap: sz(4px 8px);
 		color: var(--rise-text-muted);
 		@include text-size(sm);
 	}
