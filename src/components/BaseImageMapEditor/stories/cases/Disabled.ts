@@ -3,9 +3,20 @@ import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../BaseImageMapEditor.stories'
 
 export const Disabled: StoryObj<typeof meta> = {
-	parameters: { docs: { description: { story: 'Отключённое поле: не получает фокус и не реагирует на ввод.' } } },
+	parameters: {
+		docs: {
+			description: {
+				story: 'Только просмотр: инструменты, правка, файлы и поля панели отключены, экспорт JSON доступен. Объект можно выбрать в списке «Объекты слоя».',
+			},
+		},
+	},
 	args: { isDisabled: true },
 	play: async ({ canvas }) => {
-		await expect(canvas.getByLabelText('Название')).toBeDisabled()
+		await expect(canvas.getByRole('radio', { name: 'Прямоугольник' })).toBeDisabled()
+		await expect(canvas.getByRole('button', { name: 'Импорт JSON' })).toBeDisabled()
+		await expect(canvas.getByRole('button', { name: 'Экспорт JSON' })).toBeEnabled()
+		await expect(canvas.getByRole('application', { name: 'Холст карты' })).toHaveAccessibleDescription(
+			'Только просмотр: правка отключена.',
+		)
 	},
 }

@@ -1,30 +1,22 @@
 import { expect } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../BaseImageMapEditor.stories'
-import { storySource, useStorySetup } from '@/stories/helpers'
-import BaseImageMapEditor from '../../ui/BaseImageMapEditor.vue'
-
-const models = { value: 'modelValue' }
-
-const template = `<BaseImageMapEditor v-bind="args" v-model="value" />`
 
 export const Default: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
-			description: { story: 'Песочница: v-model связан с Controls — введённый текст появляется в панели.' },
-			source: storySource({ template, imports: ['BaseImageMapEditor'], models }),
+			description: {
+				story: 'Песочница: карта с точками и фигурами связана с Controls через `v-model`. Выберите объект в списке и правьте его свойства в панели.',
+			},
 		},
 	},
-	render: args => ({
-		components: { BaseImageMapEditor },
-		setup: useStorySetup(args, { models }),
-		template,
-	}),
 	play: async ({ canvas, userEvent }) => {
-		const field = canvas.getByLabelText('Название')
-		await userEvent.tab()
-		await expect(field).toHaveFocus()
-		await userEvent.type(field, 'Отчёт')
-		await expect(field).toHaveValue('Отчёт')
+		await userEvent.click(canvas.getByRole('button', { name: /^Озеро/ }))
+		await expect(canvas.getByRole('button', { name: /^Озеро/ })).toHaveAttribute('aria-current', 'true')
+		const title = canvas.getByLabelText('Название')
+		await expect(title).toHaveValue('Озеро')
+		await userEvent.clear(title)
+		await userEvent.type(title, 'Горное озеро')
+		await expect(canvas.getByRole('button', { name: /^Горное озеро/ })).toHaveAttribute('aria-current', 'true')
 	},
 }
