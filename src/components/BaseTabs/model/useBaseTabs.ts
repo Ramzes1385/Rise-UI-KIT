@@ -100,6 +100,9 @@ function useDragScroll(listRef: Ref<HTMLElement | null>) {
 	let dragStartX = 0
 	let dragStartScrollLeft = 0
 	let hasDragMoved = false
+	const resetDragMove = (): void => {
+		hasDragMoved = false
+	}
 
 	return {
 		isDragging,
@@ -111,7 +114,7 @@ function useDragScroll(listRef: Ref<HTMLElement | null>) {
 		handlePointerDown(event: PointerEvent): void {
 			hasDragMoved = false
 			const el = listRef.value
-			if (event.pointerType === 'touch' || !el || el.scrollWidth <= el.clientWidth) return
+			if (event.button !== 0 || event.pointerType === 'touch' || !el || el.scrollWidth <= el.clientWidth) return
 			isPressed = true
 			dragStartX = event.clientX
 			dragStartScrollLeft = el.scrollLeft
@@ -127,6 +130,7 @@ function useDragScroll(listRef: Ref<HTMLElement | null>) {
 		handlePointerUp(): void {
 			isPressed = false
 			isDragging.value = false
+			if (hasDragMoved) setTimeout(resetDragMove, 0)
 		},
 	}
 }
@@ -164,7 +168,7 @@ export function useBaseTabs(props: BaseTabsProps, emit: BaseTabsEmits) {
 		handleTabClick(id: string): void {
 			if (drag.consumeDragMove()) return
 			const tab = props.items.find(item => item.id === id)
-			if (tab?.isDisabled) return
+			if (tab?.isDisabled || id === props.modelValue) return
 			select(id)
 		},
 		handleListKeydown: createListKeydown(props, listRef, select),

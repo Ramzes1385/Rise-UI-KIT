@@ -45,7 +45,11 @@
 					:tabindex="index === rovingIndex ? 0 : -1"
 					:size-scale="sizeScale"
 					@click="handleTabClick(item.id)">
-					<span v-if="item.icon" class="base-tabs__icon" :class="classes.icon" v-html="item.icon"></span>
+					<span v-if="item.icon || $slots.icon" class="base-tabs__icon" :class="classes.icon" aria-hidden="true">
+						<slot name="icon" :item="item">
+							<BaseIcon v-if="item.icon" :name="item.icon" :size-scale="sizeScale" />
+						</slot>
+					</span>
 					<span class="base-tabs__label" :class="classes.label">{{ item.label }}</span>
 				</BaseButton>
 			</div>

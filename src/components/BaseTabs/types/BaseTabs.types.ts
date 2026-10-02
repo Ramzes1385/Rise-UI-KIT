@@ -7,7 +7,10 @@ export interface TabItem {
 	id: string
 	/** Текст таба */
 	label: string
-	/** Иконка (опционально) */
+	/**
+	 * Имя иконки BaseIcon перед текстом (`'settings'`). Значок декоративный: имя вкладки — только `label`.
+	 * Своя разметка значка — слот `icon`
+	 */
 	icon?: string
 	/** Отключен ли таб */
 	isDisabled?: boolean
@@ -42,4 +45,6 @@ export interface BaseTabsSlots {
 	 * у вкладки без своего слота — `default`
 	 */
 	[name: `panel-${string}`]: (() => unknown) | undefined
+	/** Свой значок вкладки вместо BaseIcon по `item.icon`; показывается у каждой вкладки. Обёртка значка — `aria-hidden` */
+	icon?: (props: { item: TabItem }) => unknown
 }

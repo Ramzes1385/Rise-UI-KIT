@@ -10,7 +10,8 @@ export const Keyboard: StoryObj<typeof meta> = {
 			description: {
 				story: [
 					'Клавиатура (APG Tabs): Tab попадает только на выбранную вкладку, → переносит фокус и выбор на следующую,',
-					'End — на последнюю доступную (отключённая «Доставка» пропускается), Home — на первую.',
+					'End — на последнюю доступную (отключённая «Доставка» пропускается), Home — на первую. Enter на уже выбранной',
+					'вкладке не эмитит `change`.',
 				].join('\n'),
 			},
 		},
@@ -33,5 +34,9 @@ export const Keyboard: StoryObj<typeof meta> = {
 		await userEvent.keyboard('{Home}')
 		await expect(overview).toHaveFocus()
 		await waitFor(() => expect(overview).toHaveAttribute('aria-selected', 'true'))
+
+		const changes = (args.onChange as unknown as { mock: { calls: unknown[] } }).mock.calls.length
+		await userEvent.keyboard('{Enter}')
+		await expect(args.onChange).toHaveBeenCalledTimes(changes)
 	},
 }

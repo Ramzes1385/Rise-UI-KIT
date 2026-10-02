@@ -271,7 +271,7 @@ describe('BaseTabs unit', () => {
 				const { container } = render(BaseTabs, {
 					props: {
 						modelValue: 'info',
-						items: [{ id: 'info', label: 'Информация', icon: '<span class="test-icon"></span>' }],
+						items: [{ id: 'info', label: 'Информация', icon: 'home' }],
 						isScrollable: true,
 						customClass: {
 							root: 'custom-root',

@@ -1291,3 +1291,29 @@ FOLLOW_UPS № 38, № 39, № 13 и № 15 (медиа).
 - **BaseSlideover: проп `variant` работает** (SLD-4). Раньше был объявлен и ни на что не влиял. Варианты — как у BaseModal: `default` (рамка и тень, как раньше), `shadow` (только тень), `ghost` (без фона, рамки и тени). Новые экспорты `SLIDEOVER_VARIANTS`, `SlideoverVariant`. Приложение, передававшее в `variant` другую строку, получит ошибку типов — уберите проп.
 - **BaseTable: панель «Колонки» — меню BaseDropdownMenu с флажками** (`menuitemcheckbox`) вместо группы BaseCheckbox. API таблицы не менялся. Классы `base-table__settings-list`, `base-table__settings-item`, `base-table__settings-option` удалены; у панели остался класс `base-table__settings-panel`. Высота меню — 320px, как у других меню (раньше `min(320px, 50vh)`). Фокус при открытии мышью — на меню, с клавиатуры — на первый пункт (APG Menu Button); Enter на флажке отмечает его и закрывает меню, Space и клик — отмечают без закрытия.
 - **Composables:** `usePopup` — опция `escapeScope` (немодальное окно: Escape, только когда фокус внутри); `useEscapeKey` — опция `isTarget`; `useLayer` — опция `handlesEscape` (слой пропускает Escape слою ниже).
+
+## Задача fu-tour-tabs: BaseTour и BaseTabs (FOLLOW_UPS № 22, № 26)
+
+**BaseTour — подсвеченная цель доступна (TOUR-2).** Новое: `behavior.allowTargetInteraction` (по умолчанию `true`) и у шага `isTargetInteractive` (важнее `behavior`). Подсвеченный элемент теперь можно нажать мышью — раньше клик по нему попадал в подложку и пропускал тур; Tab из карточки доходит до цели и возвращается в карточку. Пока цель доступна, окно не модальное (`aria-modal="false"`): иначе экранный диктор скрыл бы цель. Нужно прежнее поведение — `:behavior="{ allowTargetInteraction: false }"` или `isTargetInteractive: false` у шага.
+
+**BaseTour — шаг без цели (TOUR-3).** `TourStep.target` стал необязательным. Шаг без цели, с неверным селектором или с целью, которой нет на странице, показывает карточку по центру экрана (класс `base-tour__card--center`, подложка затемнена целиком — `base-tour__overlay--dim`); раньше карточка не появлялась, а тур оставался открытым с заблокированной прокруткой. Цель, появившаяся позже, подсвечивается сразу.
+
+**BaseTour — имя, описание, объявление (TOUR-4).** Окно названо заголовком шага через `aria-labelledby` и описано текстом через `aria-describedby` (при своих слотах `title`/`content`/по умолчанию — прежний `aria-label` с заголовком шага). Смена шага объявляется в скрытом `role="status"`: «Шаг 2 из 3: Импорт» (словарь `tour.STEP_STATUS`, `tour.STEP_STATUS_TITLED`). Тесты, искавшие окно по `aria-label`, ищите по роли и имени: `getByRole('dialog', { name: 'Импорт' })`.
+
+**useFocusTrap.** Новая необязательная опция `getLinkedElements` — элементы вне контейнера, до которых доходит Tab. Без неё поведение прежнее.
+
+**BaseTabs — значок вкладки через BaseIcon (TAB-3), несовместимо.** `TabItem.icon` — теперь имя иконки BaseIcon (`'settings'`), а не HTML-строка: строка больше не вставляется через `v-html`, вставка разметки из данных невозможна. Своя разметка значка — слот `icon` (`{ item }`):
+
+```vue
+<!-- было -->
+<BaseTabs :items="[{ id: 'a', label: 'Профиль', icon: '<svg>…</svg>' }]" v-model="tab" />
+<!-- стало -->
+<BaseTabs :items="[{ id: 'a', label: 'Профиль', icon: 'home' }]" v-model="tab" />
+<BaseTabs :items="items" v-model="tab">
+	<template #icon="{ item }"><MySvg :name="item.id" /></template>
+</BaseTabs>
+```
+
+Значок декоративный (`aria-hidden`): имя вкладки — только `label`.
+
+**BaseTabs — события (TAB-6, TAB-8).** Клик по уже выбранной вкладке больше не эмитит `change` и `update:modelValue`. После перетаскивания списка вкладок мышью следующий клик или Enter по вкладке больше не теряется; перетаскивание начинается только основной кнопкой мыши.

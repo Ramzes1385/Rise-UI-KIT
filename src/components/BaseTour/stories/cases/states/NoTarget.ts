@@ -24,9 +24,9 @@ export const NoTarget: StoryObj<typeof meta> = {
 	},
 	play: async ({ userEvent }) => {
 		const dialog = await screen.findByRole('dialog', { name: 'Добро пожаловать' })
-		await expect(dialog).toHaveAccessibleDescription('Шаг без цели: карточка по центру экрана, фон затемнён целиком.')
 		const next = await within(dialog).findByRole('button', { name: 'Далее' })
 		await waitFor(() => expect(next).toHaveFocus())
+		await expect(dialog).toHaveAccessibleDescription('Шаг без цели: карточка по центру экрана, фон затемнён целиком.')
 
 		await userEvent.keyboard('{Enter}')
 		await expect(await screen.findByRole('dialog', { name: 'Цели нет' })).toBeInTheDocument()
