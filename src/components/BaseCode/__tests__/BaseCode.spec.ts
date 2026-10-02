@@ -101,10 +101,10 @@ describe('BaseCode: заголовок', () => {
 		expect(title()).toHaveTextContent('main.py')
 	})
 
-	it('слоты title и actions', () => {
+	it('слоты header и actions', () => {
 		render(BaseCode, {
 			props: { code: 'a', title: 'x' },
-			slots: { title: '<strong>Из слота</strong>', actions: '<button type="button">Открыть</button>' },
+			slots: { header: '<strong>Из слота</strong>', actions: '<button type="button">Открыть</button>' },
 		})
 		expect(screen.getByText('Из слота')).toBeInTheDocument()
 		expect(screen.queryByText('x')).toBeNull()

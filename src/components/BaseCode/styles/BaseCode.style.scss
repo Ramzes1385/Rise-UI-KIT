@@ -63,6 +63,7 @@ $code-token-types: keyword, string, number, comment, function, tag, attribute, p
 		font-family: var(--rise-font-mono);
 		@include text-size(xs);
 		line-height: 1.6;
+		tab-size: 4;
 		@include focus-ring(-2px);
 		@include scrollbar-thin;
 	}
@@ -75,6 +76,13 @@ $code-token-types: keyword, string, number, comment, function, tag, attribute, p
 
 	&--wrapped &__code {
 		min-width: 0;
+	}
+
+	&__line,
+	&__number,
+	&__text,
+	&__token {
+		font-family: inherit;
 	}
 
 	&__line {

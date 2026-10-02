@@ -5,7 +5,7 @@
 		:style="[sizeScaleStyle, variantStyle, customColorStyle, numberWidth]">
 		<div v-if="hasHeader" class="base-code__header" :class="classes.header">
 			<span class="base-code__title">
-				<slot name="title">{{ title || languageName }}</slot>
+				<slot name="header">{{ title || languageName }}</slot>
 			</span>
 			<slot name="actions" />
 			<BaseButton v-if="hasCopyButton && !isEmpty" variant="ghost" class="base-code__copy" :size-scale="sizeScale" @click="copy">

@@ -47,8 +47,8 @@ export interface BaseCodeEmits {
  * Слоты компонента BaseCode
  */
 export interface BaseCodeSlots {
-	/** Заголовок вместо `title` и названия языка */
-	title?: () => unknown
+	/** Название в заголовке вместо `title` и названия языка; кнопки остаются */
+	header?: () => unknown
 	/** Свои кнопки в заголовке перед «Копировать» — например «Открыть в песочнице» */
 	actions?: () => unknown
 }

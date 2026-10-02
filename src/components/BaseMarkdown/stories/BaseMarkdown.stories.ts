@@ -18,6 +18,7 @@ export default meta
 export const Default = cases.Default
 export const Streaming = cases.Streaming
 export const Safety = cases.Safety
+export const CodeBlocks = cases.CodeBlocks
 export const Variants = cases.Variants
 export const Sizes = cases.Sizes
 export const CustomColor = cases.CustomColor
