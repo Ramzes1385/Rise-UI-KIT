@@ -1,6 +1,7 @@
 import { UI_MARQUEE } from '@/locales/messages'
+import { useMarqueeSize } from './useMarqueeSize'
 import { computed, nextTick, ref, watch } from 'vue'
-import { useMarqueeSize, useReducedMotion } from './useMarqueeMotion'
+import { useReducedMotion } from '@composables/app/useReducedMotion'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseMarqueeEmits, MarqueeProps } from '../types/BaseMarquee.types'
 import { useScrollableRegion } from '@composables/interaction/useScrollableRegion'
@@ -51,7 +52,7 @@ export function useBaseMarquee(props: MarqueeProps, emit: BaseMarqueeEmits) {
 		viewportTabindex: computed(() => (isReducedMotion.value && isScrollable.value ? 0 : undefined)),
 		motionStyle: computed(() => ({
 			'--marquee-gap': `${props.gap}px`,
-			'--marquee-duration': `${groupSize.value / props.speed}s`,
+			...(isRunning.value && { '--marquee-duration': `${groupSize.value / props.speed}s` }),
 		})),
 		rootLabel: computed(() => props.label || UI_MARQUEE.LABEL),
 	}

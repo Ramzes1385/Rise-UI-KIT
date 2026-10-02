@@ -12,7 +12,6 @@ import { useScrollableRegion } from '@composables/interaction/useScrollableRegio
 import type { BaseTableEmits, TableColumn, TableProps } from '../types/BaseTable.types'
 import { computed, getCurrentInstance, onBeforeUnmount, provide, ref, useSlots, watch } from 'vue'
 
-const SETTINGS_MAX_HEIGHT = 'min(320px, 50vh)'
 const PAGINATION_MAX_VISIBLE = 4
 const EXPAND_DURATION_MS = 300
 const INFINITE_SCROLL_THRESHOLD = 50
@@ -187,7 +186,6 @@ export function useBaseTable(props: TableProps, emit: BaseTableEmits) {
 
 	return {
 		...standard,
-		settingsMaxHeight: SETTINGS_MAX_HEIGHT,
 		paginationMaxVisible: PAGINATION_MAX_VISIBLE,
 		paddingStyle: computed(() => (props.padding === undefined ? undefined : paddingStyle.value)),
 		expand,

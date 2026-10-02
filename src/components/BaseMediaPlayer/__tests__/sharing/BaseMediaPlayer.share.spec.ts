@@ -181,7 +181,11 @@ describe('BaseMediaPlayer: «Поделиться»', () => {
 				}
 			},
 		)
-		vi.stubGlobal('matchMedia', (query: string) => ({ matches: query.includes('reduce') }))
+		vi.stubGlobal('matchMedia', (query: string) => ({
+			matches: query.includes('reduce'),
+			addEventListener: vi.fn(),
+			removeEventListener: vi.fn(),
+		}))
 		const { wrapper } = await setup()
 		const dialog = await open(wrapper)
 		const element = dialog.get('.base-media-player__share-list').element as HTMLElement

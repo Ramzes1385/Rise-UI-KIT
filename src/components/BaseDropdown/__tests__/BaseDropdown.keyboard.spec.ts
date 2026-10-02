@@ -57,17 +57,17 @@ async function openWithTrigger(user: ReturnType<typeof userEvent.setup>): Promis
 
 describe('BaseDropdown: клавиатура панели (APG Menu Button, Disclosure, Dialog)', () => {
 	describe('Tab из панели-списка', () => {
-		it('Tab с последнего элемента закрывает панель и возвращает фокус на триггер', async () => {
+		it('Tab с последнего элемента закрывает панель и переводит фокус к элементу после триггера', async () => {
 			const user = userEvent.setup()
 			const { onClose } = renderHost(FORM_PANEL, { preventMousedown: false })
-			const trigger = await openWithTrigger(user)
+			await openWithTrigger(user)
 			screen.getByRole('button', { name: 'Вторая' }).focus()
 
 			await user.tab()
 
 			expect(onClose).toHaveBeenCalledOnce()
 			expect(screen.queryByRole('button', { name: 'Вторая' })).not.toBeInTheDocument()
-			expect(trigger).toHaveFocus()
+			expect(screen.getByRole('button', { name: 'После' })).toHaveFocus()
 		})
 
 		it('Shift+Tab с первого элемента закрывает панель и возвращает фокус на триггер', async () => {
@@ -140,13 +140,13 @@ describe('BaseDropdown: клавиатура панели (APG Menu Button, Disc
 		it('Tab с пункта меню (tabindex="-1") после последнего элемента закрывает панель', async () => {
 			const user = userEvent.setup()
 			const { onClose } = renderHost(MENU_PANEL.replace('<input aria-label="Фильтр" />', ''), { preventMousedown: false })
-			const trigger = await openWithTrigger(user)
+			await openWithTrigger(user)
 			screen.getByRole('menuitem', { name: 'Копировать' }).focus()
 
 			await user.tab()
 
 			expect(onClose).toHaveBeenCalledOnce()
-			expect(trigger).toHaveFocus()
+			expect(screen.getByRole('button', { name: 'После' })).toHaveFocus()
 		})
 
 		it('Tab с пункта меню переходит к полю панели после него и не закрывает её', async () => {
@@ -174,17 +174,17 @@ describe('BaseDropdown: клавиатура панели (APG Menu Button, Disc
 			expect(screen.getByRole('button', { name: 'Добавить' })).toHaveFocus()
 		})
 
-		it('Tab с последней кнопки после поля закрывает панель и возвращает фокус на триггер', async () => {
+		it('Tab с последней кнопки после поля закрывает панель и переводит фокус к элементу после триггера', async () => {
 			const user = userEvent.setup()
 			const { onClose } = renderHost('<input aria-label="Метка" /><button type="button">Добавить</button>')
-			const trigger = await openWithTrigger(user)
+			await openWithTrigger(user)
 			await user.click(screen.getByRole('textbox', { name: 'Метка' }))
 			await user.tab()
 
 			await user.tab()
 
 			expect(onClose).toHaveBeenCalledOnce()
-			expect(trigger).toHaveFocus()
+			expect(screen.getByRole('button', { name: 'После' })).toHaveFocus()
 		})
 	})
 

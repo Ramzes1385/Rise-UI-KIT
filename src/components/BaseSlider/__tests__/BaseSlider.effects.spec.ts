@@ -34,6 +34,16 @@ describe('BaseSlider: пространственные эффекты', () => {
 		expect(slides[5].style.zIndex).toBe('3')
 	})
 
+	it('по кругу с последнего слайда: первые слайды идут следом, «Следующий» переходит на первый', async () => {
+		const { container, getByRole, emitted } = renderSlider('cube', { initialIndex: 6 })
+
+		expect(offsets(container)).toEqual(['1', '2', '3', '-3', '-2', '-1', '0'])
+		await fireEvent.click(getByRole('button', { name: 'Следующий слайд' }))
+
+		expect(emitted().change).toEqual([[0]])
+		expect(offsets(container)).toEqual(['0', '1', '2', '3', '-3', '-2', '-1'])
+	})
+
 	it('при двух слайдах по кругу не переносит', () => {
 		const { container } = render(BaseSlider, { props: { items: ITEMS.slice(0, 2), animation: 'cube', initialIndex: 1 } })
 

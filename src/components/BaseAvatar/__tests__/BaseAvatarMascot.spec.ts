@@ -8,7 +8,7 @@ const RECT = { left: 0, top: 0, width: 40, height: 40, right: 40, bottom: 40, x:
 function stubReducedMotion(matches: boolean): void {
 	vi.stubGlobal(
 		'matchMedia',
-		vi.fn(() => ({ matches })),
+		vi.fn(() => ({ matches, addEventListener: vi.fn(), removeEventListener: vi.fn() })),
 	)
 }
 
@@ -121,5 +121,34 @@ describe('BaseAvatar: обводка и персонаж', () => {
 
 		movePointer(10, 10)
 		expect(frames).toHaveLength(0)
+	})
+
+	it('включение уменьшения движения на лету: персонаж смотрит прямо и не следит; выключение — снова следит', async () => {
+		let notify: (event: { matches: boolean }) => void = () => undefined
+		vi.stubGlobal(
+			'matchMedia',
+			vi.fn(() => ({
+				matches: false,
+				addEventListener: (_type: string, listener: typeof notify) => (notify = listener),
+				removeEventListener: vi.fn(),
+			})),
+		)
+		const frames = stubFrames()
+		const { container } = render(BaseAvatar, { props: { mascot: 'sprout' } })
+		movePointer(1000, 20)
+		frames.shift()?.()
+		await Promise.resolve()
+		expect(pupils(container)).toHaveAttribute('transform', `translate(${AVATAR_MASCOT_PUPIL_RANGE} 0)`)
+
+		notify({ matches: true })
+		await Promise.resolve()
+		expect(pupils(container)).toHaveAttribute('transform', 'translate(0 0)')
+		movePointer(1000, 20)
+		expect(frames).toHaveLength(0)
+
+		notify({ matches: false })
+		await Promise.resolve()
+		movePointer(1000, 20)
+		expect(frames).toHaveLength(1)
 	})
 })

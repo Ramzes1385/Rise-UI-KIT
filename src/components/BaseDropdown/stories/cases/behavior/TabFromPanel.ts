@@ -35,8 +35,8 @@ export const TabFromPanel: StoryObj<typeof meta> = {
 			description: {
 				story: [
 					'Tab из панели: панель телепортируется в конец страницы, и Tab с её последнего элемента ушёл бы туда незаметно.',
-					'Поэтому Tab, уводящий фокус из панели (и Shift+Tab с первого элемента), закрывает её и возвращает фокус на триггер —',
-					'следующий Tab ведёт к элементу после триггера. Внутри панели Tab работает как обычно.',
+					'Поэтому Tab с последнего элемента закрывает панель и переводит фокус к элементу после триггера,',
+					'а Shift+Tab с первого — закрывает и возвращает фокус на триггер. Внутри панели Tab работает как обычно.',
 				].join('\n'),
 			},
 			source: storySource({ template, imports: ['BaseDropdown', 'BaseButton', 'BaseIcon', 'BaseInput'], state, omit: HIDDEN_ARGS }),
@@ -60,9 +60,12 @@ export const TabFromPanel: StoryObj<typeof meta> = {
 
 		await userEvent.tab()
 		await waitFor(() => expect(screen.queryByTestId('panel')).not.toBeInTheDocument())
-		await expect(trigger).toHaveFocus()
-
-		await userEvent.tab()
 		await expect(canvas.getByRole('button', { name: 'Сохранить задачу' })).toHaveFocus()
+
+		await userEvent.click(trigger)
+		await userEvent.click(within(await screen.findByTestId('panel')).getByLabelText('Новая метка'))
+		await userEvent.tab({ shift: true })
+		await waitFor(() => expect(screen.queryByTestId('panel')).not.toBeInTheDocument())
+		await expect(trigger).toHaveFocus()
 	},
 }

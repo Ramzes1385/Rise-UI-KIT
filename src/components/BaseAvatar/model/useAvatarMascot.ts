@@ -1,8 +1,7 @@
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { useReducedMotion } from '@composables/app/useReducedMotion'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { AvatarMascotProps, AvatarPupilOffset } from '../types/BaseAvatar.types'
 import { AVATAR_MASCOT_PUPIL_RANGE, AVATAR_MASCOT_REACH } from '../types/BaseAvatar.types'
-
-const isMotionReduced = (): boolean => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches
 
 const round = (value: number): number => Math.round(value * 100) / 100
 
@@ -18,6 +17,7 @@ function toPupilOffset(rect: DOMRect, point: { x: number; y: number }): AvatarPu
 export function useAvatarMascot(props: AvatarMascotProps) {
 	const mascotRef = ref<SVGSVGElement | null>(null)
 	const pupil = ref<AvatarPupilOffset>({ x: 0, y: 0 })
+	const isReducedMotion = useReducedMotion()
 	let frame = 0
 	let pointer = { x: 0, y: 0 }
 
@@ -31,14 +31,24 @@ export function useAvatarMascot(props: AvatarMascotProps) {
 		if (!frame) frame = requestAnimationFrame(update)
 	}
 
-	onMounted(() => {
-		if (!isMotionReduced()) document.addEventListener('pointermove', handlePointerMove, { passive: true })
-	})
-
-	onBeforeUnmount(() => {
+	const stopTracking = (): void => {
 		document.removeEventListener('pointermove', handlePointerMove)
 		cancelAnimationFrame(frame)
-	})
+		frame = 0
+	}
+
+	const syncTracking = (): void => {
+		stopTracking()
+		if (!isReducedMotion.value) {
+			document.addEventListener('pointermove', handlePointerMove, { passive: true })
+			return
+		}
+		pupil.value = { x: 0, y: 0 }
+	}
+
+	onMounted(syncTracking)
+	watch(isReducedMotion, syncTracking)
+	onBeforeUnmount(stopTracking)
 
 	return {
 		mascotRef,

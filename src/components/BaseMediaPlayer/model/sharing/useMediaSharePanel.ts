@@ -5,6 +5,7 @@ import { UI_PLAYER, formatMessage } from '../messages'
 import { formatMediaTime } from '@utils/media/mediaUtils'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { usePlayerContext } from '../player/usePlayerContext'
+import { useReducedMotion } from '@composables/app/useReducedMotion'
 import { MEDIA_SHARE_NETWORKS } from '../../types/panels/MediaShare.types'
 import type { MediaShareEvent } from '../../types/panels/MediaShare.types'
 import type { MediaPlayerContext } from '../../types/BaseMediaPlayer.types'
@@ -13,11 +14,8 @@ const COPIED_DURATION = 2000
 
 const SCROLL_PAGE = 0.8
 
-function scrollBehavior(): 'auto' | 'smooth' {
-	return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
-}
-
 function useShareScroller() {
+	const isReducedMotion = useReducedMotion()
 	const listRef = ref<HTMLElement | null>(null)
 	const canScrollBack = ref(false)
 	const canScrollForward = ref(false)
@@ -40,7 +38,7 @@ function useShareScroller() {
 		updateScroll: (event: Event): void => measure(event.currentTarget as Element),
 		scrollNetworks(direction: number): void {
 			const list = listRef.value
-			list?.scrollBy({ left: direction * list.clientWidth * SCROLL_PAGE, behavior: scrollBehavior() })
+			list?.scrollBy({ left: direction * list.clientWidth * SCROLL_PAGE, behavior: isReducedMotion.value ? 'auto' : 'smooth' })
 		},
 	}
 }

@@ -94,12 +94,10 @@ function useHold(goNext: () => void, goPrev: () => void) {
 				}, HOLD_INTERVAL_MS)
 			}, HOLD_DELAY_MS)
 		},
-		onArrowClick(direction: 'prev' | 'next'): void {
-			if (hasRepeated) {
-				hasRepeated = false
-				return
-			}
-			step(direction)
+		onArrowClick(direction: 'prev' | 'next', event: MouseEvent): void {
+			const isAfterRepeat = hasRepeated && event.detail > 0
+			hasRepeated = false
+			if (!isAfterRepeat) step(direction)
 		},
 	}
 }

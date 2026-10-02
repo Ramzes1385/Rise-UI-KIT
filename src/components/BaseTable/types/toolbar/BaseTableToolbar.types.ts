@@ -29,8 +29,6 @@ export interface BaseTableToolbarProps {
 	isSettingsOpen: boolean
 	/** Масштаб размера (базовая единица sizeScale) */
 	sizeScale: number
-	/** Максимальная высота панели настроек колонок. Не используется: «Колонки» — BaseDropdownMenu с высотой меню (fu-overlays) */
-	settingsMaxHeight: string
 	/** CSS-класс для тулбара */
 	toolbarClass?: string
 	/** CSS-класс для блока поиска */
@@ -52,8 +50,6 @@ export interface BaseTableToolbarEmits {
 	(event: 'update:filter-value', value: string): void
 	(event: 'add-filter'): void
 	(event: 'remove-filter', index: number): void
-	/** Не эмитится: меню «Колонки» открывает и закрывает BaseDropdownMenu, состояние — `update:is-settings-open` (fu-overlays) */
-	(event: 'toggle-settings'): void
 	(event: 'update:is-settings-open', value: boolean): void
 	(event: 'toggle-column-visibility', column: TableColumn): void
 }

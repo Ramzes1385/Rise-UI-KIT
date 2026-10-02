@@ -288,6 +288,7 @@ useLoadingBar
 usePadding
 usePasswordVisibility
 usePopup
+useReducedMotion
 useRemoteSuggestions
 useScrollLock
 useScrollableRegion
@@ -396,3 +397,21 @@ const sortable = useSortable<Item, number>({
 - Мышь и перо (`handlePointerDown`): порог 5px, «призрак» (`drag`, `ghostRef`, `ghostStyle`), посадка на место, Escape отменяет; касание не перехватывается. `consumeClick()` — пропустить клик сразу после перетаскивания.
 - `flip` — элементы плавно едут на новое место, контейнеры меняют высоту; при `prefers-reduced-motion` анимации нет.
 
+---
+
+## useReducedMotion
+
+Задача small-fixes-7c. Реактивный признак системной настройки «уменьшить движение» (`prefers-reduced-motion: reduce`) — для анимаций в JS, плавной прокрутки и эффектов за указателем. CSS-анимации кита гасит сам (`motion-safe`, токены `--rise-duration*`).
+
+```ts
+import { useReducedMotion } from '@ramzes1385/rise-ui-kit/composables'
+
+const isReducedMotion = useReducedMotion()
+
+function scrollToTop(): void {
+	window.scrollTo({ top: 0, behavior: isReducedMotion.value ? 'auto' : 'smooth' })
+}
+```
+
+- Возвращает `Readonly<Ref<boolean>>`. До монтирования и без `matchMedia` (SSR) — `false`; после монтирования — текущее значение, дальше меняется вместе с настройкой. Подписка снимается при размонтировании.
+- Вызывается в `setup` компонента. Им пользуются BaseAvatar (персонаж), BaseBackTop, BaseMarquee и окно «Поделиться» BaseMediaPlayer.

@@ -1,5 +1,6 @@
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useCustomClass } from '@composables/base/useCustomClass'
+import { useReducedMotion } from '@composables/app/useReducedMotion'
 import type { BackTopProps, BaseBackTopEmits } from '../types/BaseBackTop.types'
 
 function resolveElement(value: string | HTMLElement): HTMLElement | null {
@@ -48,14 +49,14 @@ function useScrollVisibility(props: BackTopProps) {
 
 export function useBaseBackTop(props: BackTopProps, emit: BaseBackTopEmits) {
 	const { isVisible, getScrollTarget } = useScrollVisibility(props)
+	const isReducedMotion = useReducedMotion()
 
 	return {
 		...useCustomClass({ getClass: () => props.customClass, elementKeys: ['root', 'icon', 'label'] }),
 		isVisible,
 		handleClick(event: MouseEvent): void {
 			const target = getScrollTarget()
-			const isReducedMotion = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-			target.scrollTo({ top: 0, behavior: isReducedMotion ? 'auto' : 'smooth' })
+			target.scrollTo({ top: 0, behavior: isReducedMotion.value ? 'auto' : 'smooth' })
 			focusTop(target, props.focusTarget)
 			emit('click', event)
 		},

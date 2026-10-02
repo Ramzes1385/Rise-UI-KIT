@@ -95,10 +95,13 @@ describe('BaseMarquee', () => {
 		expect(groups(container)).toHaveLength(2)
 	})
 
-	it('скорость 0 — лента стоит', () => {
+	it.each([0, -20])('скорость %d — лента стоит, длительность круга не выводится', async speed => {
 		stubSizes({ offset: 100, client: 300 })
-		render(BaseMarquee, { props: { speed: 0 }, slots: { default: 'Текст' } })
+		render(BaseMarquee, { props: { speed, gap: 20 }, slots: { default: 'Текст' } })
+		await nextTick()
 		expect(root()).not.toHaveClass('base-marquee--running')
+		expect(root().style.getPropertyValue('--marquee-duration')).toBe('')
+		expect(root().style.getPropertyValue('--marquee-gap')).toBe('20px')
 	})
 
 	it('вертикальная лента меряется по высоте и перемеряется при смене направления', async () => {

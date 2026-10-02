@@ -37,6 +37,12 @@ function findTrigger(refs: DropdownKeyboardRefs): HTMLElement | null {
 	return wrapper ? (getTabbableElements(wrapper)[0] ?? null) : null
 }
 
+function findNextAfter(trigger: HTMLElement, panel: HTMLElement): HTMLElement | null {
+	const isAfterTrigger = (element: HTMLElement): boolean =>
+		!trigger.contains(element) && (trigger.compareDocumentPosition(element) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0
+	return getTabbableElements(document.body).find(element => !panel.contains(element) && isAfterTrigger(element)) ?? null
+}
+
 export function useDropdownKeyboard(props: DropdownProps, close: () => void, refs: DropdownKeyboardRefs) {
 	const isDialog = (): boolean => props.trapFocus === true
 
@@ -45,7 +51,9 @@ export function useDropdownKeyboard(props: DropdownProps, close: () => void, ref
 	function handleTab(event: KeyboardEvent, panel: HTMLElement): void {
 		if (isDialog() || !isLeavingPanel(event, panel)) return
 		event.preventDefault()
-		findTrigger(refs)?.focus()
+		const trigger = findTrigger(refs)
+		const target = event.shiftKey || !trigger ? trigger : (findNextAfter(trigger, panel) ?? trigger)
+		target?.focus()
 		close()
 	}
 

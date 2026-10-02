@@ -483,10 +483,25 @@ describe('BaseSlider unit', () => {
 			expect(emitted().change).toBeUndefined()
 			await vi.advanceTimersByTimeAsync(1 + 3 * 150)
 			await fireEvent.pointerUp(next)
-			await fireEvent.click(next)
+			await fireEvent.click(next, { detail: 1 })
 			await vi.advanceTimersByTimeAsync(3 * 150)
 
 			expect(emitted().change).toEqual([[1], [2], [3]])
+		})
+
+		it('после повтора и ухода указателя со стрелки первое нажатие с клавиатуры не проглатывается', async () => {
+			vi.useFakeTimers()
+			const items: SliderItem[] = [1, 2, 3, 4, 5, 6].map(n => ({ src: `slide${n}.jpg`, alt: `Слайд ${n}` }))
+			const { emitted } = render(BaseSlider, { props: { items, isLoop: false } })
+			const next = screen.getByRole('button', { name: 'Следующий слайд' })
+
+			await fireEvent.pointerDown(next)
+			await vi.advanceTimersByTimeAsync(400 + 2 * 150)
+			await fireEvent.pointerLeave(next)
+			await fireEvent.click(next, { detail: 0 })
+			await fireEvent.click(next, { detail: 1 })
+
+			expect(emitted().change).toEqual([[1], [2], [3], [4]])
 		})
 
 		it('короткое нажатие и касание листают ровно на один слайд (SLD-3)', async () => {

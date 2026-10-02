@@ -1,5 +1,6 @@
-import { disposeItem } from './fileUploadItems'
 /** Composable: состояние загрузки файлов — валидация, лимит, drag-and-drop, загрузка функцией приложения */
+
+import { disposeItem } from './fileUploadItems'
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { createUploadTransfer } from './fileUploadTransfer'
 import type { UploadedFile } from '@components/BaseFileUpload/types/BaseFileUpload.types'

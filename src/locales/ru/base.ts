@@ -20,7 +20,6 @@ export const ruBase = {
 		IMAGE_ERROR: 'Ошибка загрузки',
 		FILE_STATUS_DONE: 'Загружено',
 		FILE_STATUS_ERROR: 'Ошибка',
-		FILE_STATUS_PENDING: 'Ожидание',
 		DELETE: 'Удалить',
 		NO_COLOR: 'Без цвета',
 		CANCEL: 'Отмена',
@@ -39,7 +38,6 @@ export const ruBase = {
 		FILE_DROP: 'Перетащите файлы сюда',
 		FILE_MAX_SIZE_PREFIX: 'до',
 		FILE_MAX_SIZE_SUFFIX: 'МБ',
-		FILE_MAX_COUNT_PREFIX: 'Максимум файлов:',
 		/** Строка страниц пагинации: «1–10 из 100» */
 		PAGE_RANGE: '{from}–{to} из {total}',
 		SIZE_B: 'Б',

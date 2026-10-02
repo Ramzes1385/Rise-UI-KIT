@@ -70,9 +70,17 @@ describe('BaseModal: closeOnEscape (APG Dialog)', () => {
 		expect(onDropdownClose).not.toHaveBeenCalled()
 	})
 
-	it('событие confirm не объявлено и не эмитится', () => {
+	it('событие confirm не объявлено: Escape закрывает окно событием close, без confirm', async () => {
+		const user = userEvent.setup()
 		const { emitted } = render(BaseModal, { props: { isOpen: true, title: 'Окно' } })
+		await screen.findByRole('dialog', { name: 'Окно' })
 
+		await user.keyboard('{Escape}')
+
+		const declared = (BaseModal as { emits?: string[] }).emits
+		expect(declared).toContain('close')
+		expect(declared).not.toContain('confirm')
+		expect(emitted()).toHaveProperty('close')
 		expect(emitted()).not.toHaveProperty('confirm')
 	})
 })
