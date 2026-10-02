@@ -1,7 +1,7 @@
 import { expect } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
-import type meta from '../BaseImageMapEditor.stories'
-import { pointAt, stageOf, statusOf } from '../shared'
+import type meta from '../../BaseImageMapEditor.stories'
+import { pointAt, stageOf, statusOf } from '../../shared'
 
 export const MouseEditing: StoryObj<typeof meta> = {
 	tags: ['!autodocs'],

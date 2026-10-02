@@ -1,8 +1,8 @@
 import { expect } from 'storybook/test'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import type meta from '../BaseImageMapEditor.stories'
-import BaseImageMapEditor from '../../ui/BaseImageMapEditor.vue'
+import type meta from '../../BaseImageMapEditor.stories'
+import BaseImageMapEditor from '../../../ui/BaseImageMapEditor.vue'
 import { storySource, tabTo, useStorySetup } from '@/stories/helpers'
 
 const models = { map: 'modelValue' }
@@ -19,7 +19,7 @@ export const CustomToolbar: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
 			description: {
-				story: 'Слот `toolbar` добавляет свои кнопки в конец панели инструментов: «Сохранить», «Опубликовать». JSON для сохранения — значение `v-model`.',
+				story: 'Слот `toolbar` добавляет свои кнопки в конец панели инструментов — здесь «Опубликовать». JSON, который отправит такая кнопка, — значение `v-model`.',
 			},
 			source: storySource({
 				template,

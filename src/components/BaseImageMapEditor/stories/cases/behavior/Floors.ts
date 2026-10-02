@@ -1,7 +1,7 @@
-import { statusOf } from '../shared'
+import { statusOf } from '../../shared'
 import { expect } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
-import type meta from '../BaseImageMapEditor.stories'
+import type meta from '../../BaseImageMapEditor.stories'
 import { IMAGE_MAP_FLOORS } from '@components/BaseImageMap/stories/fixtures'
 
 export const Floors: StoryObj<typeof meta> = {

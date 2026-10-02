@@ -6,6 +6,8 @@ const LONG_TITLES: Record<string, string> = {
 	lake: 'Озеро у нижней станции подъёмника: прокат лодок, сапов и катамаранов',
 }
 
+export const LONG_GROUP_TITLE = 'Кафе, рестораны, кофейни и точки уличной еды на склоне'
+
 export const LONG_LAYER_TITLE = 'Горнолыжный курорт «Северный склон» — схема трасс, подъёмников, кафе и пунктов проката'
 
 export const LONG_CONTENT_MAP: ImageMapData = {
@@ -14,9 +16,7 @@ export const LONG_CONTENT_MAP: ImageMapData = {
 		...layer,
 		title: LONG_LAYER_TITLE,
 	})),
-	groups: IMAGE_MAP_HOTSPOTS.groups?.map(group =>
-		group.id === 'food' ? { ...group, title: 'Кафе, рестораны, кофейни и точки уличной еды на склоне' } : group,
-	),
+	groups: IMAGE_MAP_HOTSPOTS.groups?.map(group => (group.id === 'food' ? { ...group, title: LONG_GROUP_TITLE } : group)),
 	objects: IMAGE_MAP_HOTSPOTS.objects.map(object => (LONG_TITLES[object.id] ? { ...object, title: LONG_TITLES[object.id] } : object)),
 }
 

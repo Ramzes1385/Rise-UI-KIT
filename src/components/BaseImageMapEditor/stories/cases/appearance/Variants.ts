@@ -1,8 +1,8 @@
 import type { StoryObj } from '@storybook/vue3-vite'
-import type meta from '../BaseImageMapEditor.stories'
+import type meta from '../../BaseImageMapEditor.stories'
 import { storySource, useStorySetup } from '@/stories/helpers'
-import BaseImageMapEditor from '../../ui/BaseImageMapEditor.vue'
-import { IMAGE_MAP_EDITOR_VARIANTS } from '../../types/BaseImageMapEditor.types'
+import BaseImageMapEditor from '../../../ui/BaseImageMapEditor.vue'
+import { IMAGE_MAP_EDITOR_VARIANTS } from '../../../types/BaseImageMapEditor.types'
 
 const template = `<div class="story-stack"><BaseImageMapEditor v-for="variant in IMAGE_MAP_EDITOR_VARIANTS" :key="variant" v-bind="args" :variant="variant" :label="'Редактор карты: ' + variant" /></div>`
 

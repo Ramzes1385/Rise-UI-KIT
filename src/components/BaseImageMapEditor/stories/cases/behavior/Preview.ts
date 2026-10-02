@@ -1,6 +1,6 @@
 import { expect } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
-import type meta from '../BaseImageMapEditor.stories'
+import type meta from '../../BaseImageMapEditor.stories'
 
 export const Preview: StoryObj<typeof meta> = {
 	parameters: {

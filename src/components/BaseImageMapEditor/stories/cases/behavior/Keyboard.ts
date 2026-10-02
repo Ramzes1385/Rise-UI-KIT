@@ -1,8 +1,8 @@
 import { expect } from 'storybook/test'
 import { tabTo } from '@/stories/helpers'
-import { stageOf, statusOf } from '../shared'
+import { stageOf, statusOf } from '../../shared'
 import type { StoryObj } from '@storybook/vue3-vite'
-import type meta from '../BaseImageMapEditor.stories'
+import type meta from '../../BaseImageMapEditor.stories'
 
 export const Keyboard: StoryObj<typeof meta> = {
 	tags: ['!autodocs'],
