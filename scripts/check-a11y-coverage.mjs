@@ -123,6 +123,7 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseTag',
 	'BaseTagGroup',
 	'BasePresentationPlayer',
+	'BaseImageMap',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */
@@ -177,6 +178,7 @@ const INTERACTIVE_WITH_DISABLED = new Set([
 	'BaseBottomNav',
 	'BaseTag',
 	'BaseTagGroup',
+	'BaseImageMap',
 ])
 
 /** Формовые компоненты, требующие story Error */

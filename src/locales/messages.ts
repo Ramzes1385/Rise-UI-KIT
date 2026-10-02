@@ -83,6 +83,9 @@ export const UI_CAROUSEL = localized('carousel')
 /** Список «поле — значение» */
 export const UI_DESCRIPTIONS = localized('descriptions')
 
+/** Интерактивная картинка и карта этажей */
+export const UI_IMAGE_MAP = localized('imageMap')
+
 /** Просмотр JSON */
 export const UI_JSON_VIEWER = localized('jsonViewer')
 

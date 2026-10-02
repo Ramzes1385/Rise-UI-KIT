@@ -236,4 +236,17 @@ export const enMedia = {
 		RETRY: 'Retry uploading “{name}”',
 		MAX_COUNT: 'The file limit is {count}; the rest were not added',
 	},
+	/** Interactive image and floor map BaseImageMap */
+	imageMap: {
+		LABEL: 'Interactive map',
+		LAYERS: 'Floors',
+		ZOOM: 'Zoom',
+		FULLSCREEN: 'Full screen',
+		EXIT_FULLSCREEN: 'Exit full screen',
+		WHEEL_HINT: 'Use Ctrl + scroll to zoom the map',
+		WHEEL_HINT_MAC: 'Use ⌘ + scroll to zoom the map',
+		LOADING: 'Loading map…',
+		ERROR: 'Could not load the map',
+		EMPTY: 'No map layers',
+	},
 }

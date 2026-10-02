@@ -60,6 +60,7 @@ import { BaseToolbar } from '../../components/BaseToolbar'
 import { BaseTooltip } from '../../components/BaseTooltip'
 import { BaseCheckbox } from '../../components/BaseCheckbox'
 import { BaseDropdown } from '../../components/BaseDropdown'
+import { BaseImageMap } from '../../components/BaseImageMap'
 import { BaseMarkdown } from '../../components/BaseMarkdown'
 import { BaseMegaMenu } from '../../components/BaseMegaMenu'
 import { BasePieChart } from '../../components/BasePieChart'
@@ -177,6 +178,7 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseIcon,
 	BaseImage,
 	BaseImageCompare,
+	BaseImageMap,
 	BaseInfiniteScroll,
 	BaseInplace,
 	BaseInput,
