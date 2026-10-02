@@ -98,6 +98,7 @@ import { BasePhoneInput } from '../../components/BasePhoneInput'
 import { BasePopconfirm } from '../../components/BasePopconfirm'
 import { BaseScrollArea } from '../../components/BaseScrollArea'
 import { BaseTimePicker } from '../../components/BaseTimePicker'
+import { BaseTreeSelect } from '../../components/BaseTreeSelect'
 import { BaseAudioPlayer } from '../../components/BaseAudioPlayer'
 import { BaseAvatarGroup } from '../../components/BaseAvatarGroup'
 import { BaseBreadcrumbs } from '../../components/BaseBreadcrumbs'
@@ -252,6 +253,7 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseTour,
 	BaseTransfer,
 	BaseTree,
+	BaseTreeSelect,
 	BaseUser,
 	BaseVirtualList,
 	BaseVoiceRecorder,
