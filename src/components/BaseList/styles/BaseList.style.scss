@@ -1,0 +1,211 @@
+.base-list {
+	display: flex;
+	flex-direction: column;
+	gap: sz(6px);
+	width: 100%;
+	min-width: 0;
+	@include text-size(sm);
+	@include custom-text(color, var(--rise-text));
+
+	&__label {
+		@include field-label;
+	}
+
+	&__viewport {
+		box-sizing: border-box;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		border: 1px solid var(--rise-border);
+		border-radius: sz(var(--rise-radius-md));
+		@include custom-bg(background-color, var(--rise-bg));
+		@include scrollbar-thin;
+	}
+
+	&--soft &__viewport {
+		border-color: transparent;
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+	}
+
+	&--outline &__viewport {
+		border-color: var(--rise-border-accented);
+	}
+
+	&--ghost &__viewport {
+		border-color: transparent;
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--error &__viewport {
+		border-color: var(--rise-error);
+	}
+
+	&__list {
+		position: relative;
+		margin: 0;
+		padding: sz(4px);
+		list-style: none;
+	}
+
+	&--virtual &__list {
+		box-sizing: content-box;
+		padding: 0;
+	}
+
+	&__item {
+		display: flex;
+		align-items: center;
+		gap: sz(10px);
+		box-sizing: border-box;
+		min-height: sz(40px);
+		padding: sz(8px 10px);
+		border-radius: sz(var(--rise-radius-sm));
+		cursor: pointer;
+		@include custom-text(color, var(--rise-text));
+		user-select: none;
+		outline: none;
+		@include transition-colors;
+		@include focus-ring(-2px);
+
+		@include hover {
+			background-color: var(--rise-bg-elevated);
+		}
+	}
+
+	&--virtual &__item {
+		position: absolute;
+		top: 0;
+		right: 0;
+		left: 0;
+		border-radius: 0;
+	}
+
+	&--sortable &__item {
+		cursor: grab;
+		touch-action: pan-y;
+	}
+
+	&--dragging &__item {
+		cursor: grabbing;
+	}
+
+	&__item--selected {
+		background-color: var(--rise-primary-soft);
+		@include custom-text(color, var(--rise-text-highlighted));
+
+		@include hover {
+			background-color: var(--rise-primary-soft-hover);
+		}
+	}
+
+	&__item--disabled {
+		@include disabled-state;
+	}
+
+	&__item--grabbed {
+		outline: 2px dashed var(--rise-primary);
+		outline-offset: -2px;
+		background-color: var(--rise-bg-elevated);
+	}
+
+	&__item--placeholder {
+		opacity: 0.4;
+	}
+
+	&__grip {
+		flex: none;
+		@include custom-text(color, var(--rise-text-dimmed));
+	}
+
+	&__prefix {
+		display: flex;
+		flex: none;
+		align-items: center;
+		@include custom-text(color, var(--rise-text-toned));
+	}
+
+	&__text {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		gap: sz(2px);
+		min-width: 0;
+	}
+
+	&__title {
+		overflow-wrap: anywhere;
+		@include custom-text(color, var(--rise-text-highlighted));
+		font-weight: var(--rise-font-weight-medium);
+	}
+
+	&__description {
+		overflow-wrap: anywhere;
+		@include custom-text(color, var(--rise-text-toned));
+		@include text-size(xs);
+	}
+
+	&__meta {
+		flex: none;
+		@include custom-text(color, var(--rise-text-toned));
+		@include text-size(xs);
+	}
+
+	&__check {
+		flex: none;
+		color: var(--rise-primary);
+		visibility: hidden;
+	}
+
+	&__item--selected &__check {
+		visibility: visible;
+	}
+
+	&__actions {
+		display: flex;
+		flex: none;
+		gap: sz(4px);
+		cursor: auto;
+	}
+
+	&__empty {
+		padding: sz(24px 16px);
+		color: var(--rise-text-toned);
+		text-align: center;
+	}
+
+	&__error {
+		margin: 0;
+		@include field-error;
+	}
+
+	&--disabled &__viewport {
+		@include disabled-state;
+	}
+
+	&__ghost {
+		position: fixed;
+		top: 0;
+		left: 0;
+		z-index: var(--rise-z-overlay);
+		box-sizing: border-box;
+		@include text-size(sm);
+		pointer-events: none;
+	}
+
+	&__ghost-item {
+		display: flex;
+		align-items: center;
+		gap: sz(10px);
+		box-sizing: border-box;
+		padding: sz(8px 10px);
+		border: 1px solid var(--rise-border);
+		border-radius: sz(var(--rise-radius-sm));
+		background-color: var(--rise-bg);
+		color: var(--rise-text);
+		box-shadow: var(--rise-shadow-lg);
+	}
+
+	&__hint,
+	&__status {
+		@include visually-hidden;
+	}
+}
