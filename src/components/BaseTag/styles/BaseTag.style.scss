@@ -55,7 +55,7 @@
 		}
 	}
 
-	&--disabled {
+	&--disabled#{&}--interactive {
 		@include disabled-state;
 	}
 
@@ -121,7 +121,11 @@
 		}
 
 		&:disabled {
-			cursor: not-allowed;
+			@include disabled-state;
 		}
+	}
+
+	&--disabled#{&}--interactive &__remove:disabled {
+		opacity: 1;
 	}
 }
