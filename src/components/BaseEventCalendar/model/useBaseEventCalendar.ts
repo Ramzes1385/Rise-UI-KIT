@@ -4,6 +4,7 @@ import { UI_EVENT_CALENDAR } from '@/locales/messages'
 import { groupByDay } from '@utils/calendar/eventUtils'
 import { useEventCalendarMonth } from './useEventCalendarMonth'
 import { useEventCalendarEvents } from './useEventCalendarEvents'
+import { useEventCalendarEdit } from './edit/useEventCalendarEdit'
 import { useEventCalendarContext } from './useEventCalendarContext'
 import { useEventCalendarToolbar } from './useEventCalendarToolbar'
 import { useEventCalendarTimeGrid } from './useEventCalendarTimeGrid'
@@ -16,6 +17,7 @@ export function useBaseEventCalendar(props: EventCalendarProps, emit: BaseEventC
 	const context = useEventCalendarContext(props, emit)
 	const month = useEventCalendarMonth(context)
 	const select = useEventCalendarSelect(context)
+	const events = useEventCalendarEvents(context)
 	return {
 		...useStandardBaseComponent('base-event-calendar', props, ['root', 'toolbar', 'event']),
 		...useEventCalendarToolbar(context),
@@ -24,7 +26,8 @@ export function useBaseEventCalendar(props: EventCalendarProps, emit: BaseEventC
 		handleGridKeydown: (event: KeyboardEvent): void => select.handleMonthKeydown(event, month.handleGridKeydown),
 		rootRef: context.rootRef,
 		...useEventCalendarTimeGrid(context),
-		...useEventCalendarEvents(context),
+		...events,
+		...useEventCalendarEdit(context, events.handleEventClick),
 		currentView: context.view,
 		agenda: computed(() => groupByDay(context.items.value, context.period.value)),
 		formatFullDate,

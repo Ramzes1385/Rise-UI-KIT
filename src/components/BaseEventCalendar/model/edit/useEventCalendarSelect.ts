@@ -11,13 +11,13 @@ import {
 	TIME_COLUMN,
 	atMinute,
 	dayOf,
-	elementAtPoint,
 	focusIn,
 	formatPosition,
 	formatRange,
 	isSameTime,
 	minuteAt,
 	minuteOf,
+	slotLocator,
 } from './eventCalendarEditDom'
 import type {
 	EventCalendarContext,
@@ -95,22 +95,14 @@ function useSelectPointer(context: EventCalendarContext, api: EventCalendarSelec
 		handleMonthPointerDown(event: PointerEvent): void {
 			const day = target(event, DAY_CELL)
 			const date = day && dayOf(day)
-			if (!date) return
-			start({ anchor: date, focus: date, allDay: true }, point => {
-				const cell = elementAtPoint(context.rootRef.value, DAY_CELL, point)
-				return cell && dayOf(cell)
-			})
+			if (date) start({ anchor: date, focus: date, allDay: true }, slotLocator(context, 'month'))
 		},
 		handleTimePointerDown(event: PointerEvent): void {
 			const column = target(event, TIME_COLUMN)
 			const date = column && dayOf(column)
 			if (!column || !date) return
 			const anchor = atMinute(date, minuteAt(column, event.clientY, context.step.value))
-			start({ anchor, focus: anchor, allDay: false }, point => {
-				const found = elementAtPoint(context.rootRef.value, TIME_COLUMN, point)
-				const day = found && dayOf(found)
-				return found && day && atMinute(day, minuteAt(found, point.y, context.step.value))
-			})
+			start({ anchor, focus: anchor, allDay: false }, slotLocator(context, 'time'))
 		},
 	}
 }
@@ -179,7 +171,7 @@ function useSelectKeyboard(context: EventCalendarContext, api: EventCalendarSele
 			if (NAV_KEYS.has(event.key)) api.update(event.shiftKey ? { anchor, focus: date.value, allDay: true } : null)
 		},
 		handleColumnKeydown(event: KeyboardEvent, day: EventCalendarTimeDay): void {
-			if (!props.isSelectable) return
+			if (!props.isSelectable || event.target !== event.currentTarget) return
 			const point = pointOf(day.date)
 			if (handleAction(api, event, { anchor: point, focus: point, allDay: false })) return
 			const next = stepTime(context, event.key, point)

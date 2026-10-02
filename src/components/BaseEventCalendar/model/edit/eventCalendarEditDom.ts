@@ -2,9 +2,9 @@ import { nextTick } from 'vue'
 import { formatMessage } from '@/locales/state'
 import { UI_EVENT_CALENDAR } from '@/locales/messages'
 import { formatDayLabel, formatTime } from '../eventCalendarFormat'
-import type { ScreenPoint } from '../../types/BaseEventCalendarModel.types'
 import { addDays, parseEventDate, startOfDay } from '@utils/calendar/eventUtils'
 import type { EventCalendarSelection } from '../../types/BaseEventCalendar.types'
+import type { EventCalendarContext, EventCalendarEditKind, ScreenPoint } from '../../types/BaseEventCalendarModel.types'
 
 const MINUTES_PER_DAY = 1440
 
@@ -20,7 +20,7 @@ function contains(element: HTMLElement, point: ScreenPoint, isColumn: boolean): 
 	return isColumn ? inX : inX && point.y >= rect.top && point.y < rect.bottom
 }
 
-export function elementAtPoint(root: HTMLElement | null, selector: string, point: ScreenPoint): HTMLElement | null {
+function elementAtPoint(root: HTMLElement | null, selector: string, point: ScreenPoint): HTMLElement | null {
 	const elements = Array.from(root?.querySelectorAll<HTMLElement>(selector) ?? [])
 	return elements.find(element => contains(element, point, selector === TIME_COLUMN)) ?? null
 }
@@ -38,6 +38,15 @@ export function minuteAt(element: HTMLElement, y: number, step: number): number 
 
 export function atMinute(day: Date, minute: number): Date {
 	return new Date(day.getFullYear(), day.getMonth(), day.getDate(), 0, minute)
+}
+
+export function slotLocator(context: EventCalendarContext, kind: EventCalendarEditKind): (point: ScreenPoint) => Date | null {
+	return point => {
+		const element = elementAtPoint(context.rootRef.value, kind === 'month' ? DAY_CELL : TIME_COLUMN, point)
+		const day = element && dayOf(element)
+		if (!element || !day) return null
+		return kind === 'time' ? atMinute(day, minuteAt(element, point.y, context.step.value)) : day
+	}
 }
 
 export function minuteOf(date: Date): number {

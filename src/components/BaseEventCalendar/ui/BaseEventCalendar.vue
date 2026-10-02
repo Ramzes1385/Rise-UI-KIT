@@ -30,6 +30,7 @@
 		</slot>
 		<div class="base-event-calendar__status" role="status">{{ status }}</div>
 		<span v-if="isSelectable" :id="selectHintId" hidden>{{ text.SELECT_HINT }}</span>
+		<span v-if="isEditable" :id="editHintId" hidden>{{ text.EDIT_HINT }}</span>
 
 		<div
 			v-if="currentView === 'month'"
@@ -83,11 +84,16 @@
 									'base-event-calendar__event--continued': !segment.isStart,
 									'base-event-calendar__event--continuing': !segment.isEnd,
 								},
+								editClass(segment.item),
 							]"
 							:style="[eventStyle(segment.item), { '--lane': segment.lane, '--span': segment.span }]"
 							:tabindex="isSegmentFocusable(segment, week) ? 0 : -1"
 							:aria-label="eventLabel(segment.item)"
-							@click="handleEventClick(segment.item)">
+							:aria-describedby="isEditable ? editHintId : undefined"
+							:data-event-key="segment.item.key"
+							@click="handleEventClick(segment.item)"
+							@pointerdown="handleEventPointerDown($event, segment.item, 'month')"
+							@keydown="handleEventKeydown($event, segment.item, 'month')">
 							<slot v-if="eventSlot(segment.item)" :name="eventSlot(segment.item)!" v-bind="eventSlotProps(segment.item)" />
 							<template v-else>
 								<span v-if="eventStart(segment.item)" class="base-event-calendar__event-time">{{
@@ -95,6 +101,7 @@
 								}}</span>
 								<span class="base-event-calendar__event-title">{{ segment.item.event.title }}</span>
 							</template>
+							<span v-if="canResizeBar(segment)" class="base-event-calendar__resize" aria-hidden="true"></span>
 						</button>
 						<BasePopover
 							v-if="day.hidden"
@@ -190,12 +197,18 @@
 								'base-event-calendar__event--continued': !segment.isStart,
 								'base-event-calendar__event--continuing': !segment.isEnd,
 							},
+							editClass(segment.item),
 						]"
 						:style="[eventStyle(segment.item), allDayStyle(segment)]"
 						:aria-label="eventLabel(segment.item)"
-						@click="handleEventClick(segment.item)">
+						:aria-describedby="isEditable ? editHintId : undefined"
+						:data-event-key="segment.item.key"
+						@click="handleEventClick(segment.item)"
+						@pointerdown="handleEventPointerDown($event, segment.item, 'all-day')"
+						@keydown="handleEventKeydown($event, segment.item, 'all-day')">
 						<slot v-if="eventSlot(segment.item)" :name="eventSlot(segment.item)!" v-bind="eventSlotProps(segment.item)" />
 						<span v-else class="base-event-calendar__event-title">{{ segment.item.event.title }}</span>
+						<span v-if="canResizeBar(segment)" class="base-event-calendar__resize" aria-hidden="true"></span>
 					</button>
 				</div>
 			</div>
@@ -233,15 +246,20 @@
 							:key="segment.item.key"
 							type="button"
 							class="base-event-calendar__event base-event-calendar__event--block"
-							:class="[classes.event, { 'base-event-calendar__event--compact': isCompact(segment) }]"
+							:class="[classes.event, editClass(segment.item), { 'base-event-calendar__event--compact': isCompact(segment) }]"
 							:style="[eventStyle(segment.item), timedStyle(segment)]"
 							:aria-label="eventLabel(segment.item)"
-							@click="handleEventClick(segment.item)">
+							:aria-describedby="isEditable ? editHintId : undefined"
+							:data-event-key="segment.item.key"
+							@click="handleEventClick(segment.item)"
+							@pointerdown="handleEventPointerDown($event, segment.item, 'time')"
+							@keydown="handleEventKeydown($event, segment.item, 'time')">
 							<slot v-if="eventSlot(segment.item)" :name="eventSlot(segment.item)!" v-bind="eventSlotProps(segment.item)" />
 							<template v-else>
 								<span class="base-event-calendar__event-title">{{ segment.item.event.title }}</span>
 								<span class="base-event-calendar__event-time">{{ timedTime(segment) }}</span>
 							</template>
+							<span v-if="canResizeBlock(segment)" class="base-event-calendar__resize" aria-hidden="true"></span>
 						</button>
 					</div>
 				</div>
@@ -348,5 +366,11 @@ const {
 	handleColumnBlur,
 	selectionStyle,
 	cursorStyle,
+	editHintId,
+	editClass,
+	canResizeBar,
+	canResizeBlock,
+	handleEventPointerDown,
+	handleEventKeydown,
 } = useBaseEventCalendar(props, emit)
 </script>

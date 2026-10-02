@@ -434,6 +434,40 @@
 		background-color: color-mix(in srgb, var(--rise-primary) 16%, transparent);
 	}
 
+	&__resize {
+		position: absolute;
+		right: 0;
+		bottom: 0;
+		cursor: ew-resize;
+	}
+
+	&__event--bar &__resize {
+		top: 0;
+		width: sz(8px);
+	}
+
+	&__event--block &__resize {
+		left: 0;
+		height: sz(8px);
+		cursor: ns-resize;
+	}
+
+	&__event--grabbed,
+	&__event--dragging {
+		z-index: 3;
+		box-shadow: var(--rise-shadow-md);
+	}
+
+	&__event--dragging {
+		cursor: grabbing;
+		opacity: 0.85;
+	}
+
+	&__event--blocked {
+		outline: 2px dashed var(--rise-error);
+		cursor: not-allowed;
+	}
+
 	&__cursor {
 		z-index: 2;
 		box-sizing: border-box;

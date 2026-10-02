@@ -119,3 +119,36 @@ export interface EventCalendarSelectionApi {
 	clear: () => void
 	finish: (state: EventCalendarSelectionState) => void
 }
+
+/** Где лежит событие, которое переносят: сетка месяца, строка «Весь день» или сетка времени */
+export type EventCalendarEditKind = 'month' | 'all-day' | 'time'
+
+/** Сдвиг времени события: дни по календарю и минуты */
+export interface EventCalendarShift {
+	days: number
+	minutes: number
+}
+
+/** Время события: начало и конец (не входит) */
+export interface EventCalendarTime {
+	start: Date
+	end: Date
+}
+
+/** Событие, взятое с клавиатуры: исходный показ и где он лежит */
+export interface EventCalendarGrab {
+	item: NormalizedCalendarEvent
+	kind: EventCalendarEditKind
+}
+
+/** Нажатие на событие мышью: событие, где лежит, место и точка нажатия, тянут ли за край (растягивание) */
+export interface EventCalendarPress {
+	item: NormalizedCalendarEvent
+	kind: EventCalendarEditKind
+	origin: Date
+	point: ScreenPoint
+	isResize: boolean
+}
+
+/** Объявление переноса с клавиатуры: ключ строки словаря `eventCalendar` */
+export type EventCalendarAnnouncement = 'PICKED' | 'MOVED' | 'DROPPED' | 'CANCELLED' | 'BLOCKED'
