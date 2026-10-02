@@ -1530,3 +1530,7 @@ FOLLOW_UPS № 38, № 39, № 13 и № 15 (медиа).
 - **BaseCardInput**: пропсы `hasPreview` (карта-превью с переворотом на оборот, пока фокус в поле кода) и `previewBackground`; ключ `preview` в `customClass`. Адаптер `createCloudPaymentsTokenizer({ publicId, Checkout? })` → `CardTokenizer` для пропа `tokenize` (скрипт Checkout CloudPayments подключает приложение); константа `CARD_BRAND_BACKGROUNDS`; типы `CloudPaymentsTokenizerOptions`, `CloudPaymentsCardFields`, `CloudPaymentsCheckout`, `CloudPaymentsCheckoutConstructor`.
 - **BaseBankCard** (Element): пропсы `brand`, `last4`, `expiry`, `holder`, `label`, `isCompact`, `isExpired`, `brandIcons`, `background`, `variant` (`default`, `soft`, `outline`, `ghost` — для `isCompact`), `sizeScale`, `color`; слот `default`; константа `BANK_CARD_VARIANTS`, тип `BankCardVariant`.
 - Словарь `card` (`UI_CARD`): новые ключи `SAVED_CARD`, `SAVED_ENDING`, `SAVED_EXPIRES`, `SAVED_EXPIRED`, `EXPIRED`, `TOKENIZER_UNAVAILABLE`, `TOKENIZE_FAILED`.
+
+## Задача new-blocks: новые витрины Blocks
+
+API кита не меняется. В Storybook добавлены примеры страниц из компонентов кита — код берите из «Show code»: `Blocks/Errors` (404 и 500), `Blocks/Pricing` (тарифы), `Blocks/Series` (страница серии с BaseMediaPlayer, `playlists` и `v-model:episode`, связанным со списком серий).
