@@ -1167,3 +1167,9 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 - Истории — `media-baseimagemap--*`; эталонов скриншотов нет (заготовка `BaseImageMap.visual.spec.ts`: variants, sizes).
 - Исправление по проверке (02.10): недоступный объект — прозрачность `--rise-disabled-opacity` (0,5 вместо 0,45, миксин `disabled-state`); в подсказке больше нет ссылок (только в окне); увеличенное окно карты в фокусе с клавиатуры — кольцо `--rise-focus-ring` внутри рамки.
 
+
+### new-image-map — истории (Storybook)
+
+- Истории `Media/BaseImageMap`: Default, Variants, Sizes, CustomColor, Disabled, Loading, WithError, Empty, Areas, Slots, LongContent, Hotspots, Floors, Zoom, InitArea, MobileSheet. Графика — свои фикстуры (`placeholderImage`, план этажа SVG в `stories/fixtures.ts`).
+- Скриншот-тесты `BaseImageMap.visual.spec.ts`: variants, sizes, areas, with-error, empty — в двух темах (10 снимков). Эталонов нет — их создаёт владелец; play этих историй не кликает по объектам (на остановленных часах обработчики на `.base-image-map__stage` не срабатывают).
+- Variants и Sizes: у каждого экземпляра своё имя региона (`aria-label`), иначе axe `landmark-unique`; на вид не влияет.
