@@ -1210,3 +1210,12 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 - BaseBankCard, полный вид: такая же лицевая сторона шириной 320px без чипа — название слева сверху, марка справа, `•••• 4242`, имя и срок; истёкшая — плашка «Истекла» (`error-700`) и приглушённые цвета (`grayscale(0.6)`).
 - BaseBankCard `isCompact`: строка — марка (44px), `•••• 4242`, название (`--rise-text-muted`), срок справа; «Истекла» — `--rise-error-text`; при `color.text` марка, номер, название и срок берут этот цвет. Варианты: `default` — фон `--rise-bg` и рамка `--rise-border`, `soft` — `--rise-bg-elevated`, название и срок на нём — `--rise-text-toned` (контраст ≥4.5:1 в обеих темах), `outline` — рамка `--rise-border-accented`, `ghost` — без фона и рамки.
 - Исправление по проверке 02.10 11:20: подпись полной BaseBankCard (название слева сверху) — без прозрачности 0.85, полный `--rise-color-neutral-50` (было ≈4.15–4.53:1 на светлом углу градиента «Мир», стало ≥4.8:1 у всех марок, WCAG 1.4.3). Видно в `element-basebankcard--saved-cards` и других историях полного вида: подпись чуть ярче.
+
+### Задача new-card-2: истории превью BaseCardInput и BaseBankCard (Storybook)
+
+Новые истории `form-basecardinput--with-preview`, `--preview-background` и `element-basebankcard--*`; эталонов у них нет — их снимет владелец. Страница со снимками — `.rise-transfer/review/new-card-2.html`.
+
+- Скриншот-тест BaseCardInput: добавлена `preview-background` — пустое превью над полями с фоном `primary-700`→`primary-950` (`previewBackground`), на карте точки номера, «IVAN IVANOV» и «ММ/ГГ». WithPreview в тест не входит: её play вводит карту и переворачивает превью.
+- Скриншот-тест BaseBankCard: `variants` — четыре строки `isCompact` столбцом (`story-col`, подпись — имя варианта; в заготовке были полные карты в ряд), `sizes` — полная карта Visa в пяти размерах, новые `expired` (Mastercard 01/20: полная приглушённая карта с плашкой «Истекла» и строка) и `without-brand` (без значка, фон `neutral-700`→`neutral-950`, `•••• 1111`).
+- Срок в историях BaseBankCard — 12/34 (в заготовке 12/30): истории не меняются до 2034 года.
+
