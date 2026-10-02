@@ -24,13 +24,19 @@ const steps: TourStep[] = [
 	},
 ]
 
+function isHitAtCenter(target: HTMLElement): boolean {
+	const rect = target.getBoundingClientRect()
+	const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2)
+	return hit !== null && target.contains(hit)
+}
+
 const template = `
 	<div class="story-stack">
 		<div class="story-row">
 			<BaseButton id="tour-like" variant="outline" @click="likes++">Нравится: {{ likes }}</BaseButton>
 		</div>
 		<div>
-			<BaseButton variant="soft" @click="isOpen = true">Запустить тур</BaseButton>
+			<BaseButton variant="soft" @click="step = 0; isOpen = true">Запустить тур</BaseButton>
 		</div>
 	</div>
 	<BaseTour v-bind="args" v-model:is-open="isOpen" v-model:step="step" />
@@ -66,8 +72,10 @@ export const TargetInteraction: StoryObj<typeof meta> = {
 		const next = await within(dialog).findByRole('button', { name: 'Далее' })
 		await waitFor(() => expect(next).toHaveFocus())
 
+		const like = canvas.getByRole('button', { name: /^Нравится/ })
+		await waitFor(() => expect(isHitAtCenter(like)).toBe(true))
+
 		await userEvent.tab()
-		const like = canvas.getByRole('button', { name: 'Нравится: 0' })
 		await expect(like).toHaveFocus()
 		await userEvent.keyboard('{Enter}')
 		await expect(await canvas.findByRole('button', { name: 'Нравится: 1' })).toBeInTheDocument()
@@ -81,6 +89,7 @@ export const TargetInteraction: StoryObj<typeof meta> = {
 
 		const second = await screen.findByRole('dialog', { name: 'Только посмотреть' })
 		await expect(second).toHaveAttribute('aria-modal', 'true')
+		await waitFor(() => expect(isHitAtCenter(like)).toBe(false))
 		await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Шаг 2 из 2: Только посмотреть'))
 
 		await userEvent.keyboard('{Escape}')

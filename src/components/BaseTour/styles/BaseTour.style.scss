@@ -2,11 +2,13 @@
 	position: fixed;
 	inset: 0;
 	z-index: calc(var(--rise-z-overlay) + var(--rise-layer-index, 0));
+	pointer-events: none;
 }
 
 .base-tour__overlay {
 	position: fixed;
 	inset: 0;
+	pointer-events: auto;
 	cursor: pointer;
 
 	&--dim {
@@ -36,6 +38,7 @@
 .base-tour__card {
 	position: fixed;
 	z-index: 1;
+	pointer-events: auto;
 	width: sz(320px);
 	max-width: calc(100vw - #{sz(32px)});
 

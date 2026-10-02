@@ -7,7 +7,7 @@
 			:style="layerStyle"
 			role="dialog"
 			:aria-modal="isModal ? 'true' : 'false'"
-			v-bind="dialogAria">
+			v-bind="getDialogAria()">
 			<div
 				class="base-tour__overlay"
 				:class="[{ 'base-tour__overlay--dim': !spotlightStyle }, classes.overlay]"
@@ -149,7 +149,7 @@ const {
 	overlayStyle,
 	titleId,
 	contentId,
-	dialogAria,
+	getDialogAria,
 	announcement,
 	slotContext,
 	hasHeader,

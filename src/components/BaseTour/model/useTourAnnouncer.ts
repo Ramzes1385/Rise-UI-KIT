@@ -1,8 +1,8 @@
 import type { Ref } from 'vue'
 import { UI_TOUR } from '@/locales/messages'
 import { formatMessage } from '@/locales/state'
+import { nextTick, ref, useId, useSlots, watch } from 'vue'
 import type { TourTargetOptions } from '../types/BaseTour.types'
-import { computed, nextTick, ref, useId, useSlots, watch } from 'vue'
 
 function stepMessage(index: number, total: number, title: string | undefined): string {
 	const params = { current: index + 1, total, title: title ?? '' }
@@ -17,19 +17,15 @@ export function useTourAnnouncer(options: TourTargetOptions, activeIndex: Ref<nu
 	const contentId = `${baseId}-content`
 	const announcement = ref('')
 
-	const isOwnCard = computed((): boolean => isCardShown.value && !slots.default)
-	const hasOwnTitle = computed((): boolean => isOwnCard.value && Boolean(currentStep.value?.title) && !slots.title)
-	const hasOwnContent = computed((): boolean => isOwnCard.value && Boolean(currentStep.value?.content) && !slots.content)
+	const isOwnCard = (): boolean => isCardShown.value && !slots.default
+	const hasOwnTitle = (): boolean => isOwnCard() && Boolean(currentStep.value?.title) && !slots.title
+	const hasOwnContent = (): boolean => isOwnCard() && Boolean(currentStep.value?.content) && !slots.content
 
-	const dialogAria = computed((): Record<string, string | undefined> => {
-		if (hasOwnTitle.value) {
-			return { 'aria-labelledby': titleId, 'aria-describedby': hasOwnContent.value ? contentId : undefined }
-		}
-		return {
-			'aria-label': currentStep.value?.title || UI_TOUR.TITLE,
-			'aria-describedby': hasOwnContent.value ? contentId : undefined,
-		}
-	})
+	const getDialogAria = (): Record<string, string | undefined> => {
+		const describedBy = hasOwnContent() ? contentId : undefined
+		if (hasOwnTitle()) return { 'aria-labelledby': titleId, 'aria-describedby': describedBy }
+		return { 'aria-label': currentStep.value?.title || UI_TOUR.TITLE, 'aria-describedby': describedBy }
+	}
 
 	watch(
 		() => (props.isOpen && currentStep.value ? activeIndex.value : -1),
@@ -44,5 +40,5 @@ export function useTourAnnouncer(options: TourTargetOptions, activeIndex: Ref<nu
 		{ immediate: true, flush: 'post' },
 	)
 
-	return { titleId, contentId, dialogAria, announcement }
+	return { titleId, contentId, getDialogAria, announcement }
 }

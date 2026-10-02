@@ -142,7 +142,7 @@ export function useBaseTour(props: TourProps, emit: BaseTourEmits) {
 		overlayStyle: access.overlayStyle,
 		titleId: access.titleId,
 		contentId: access.contentId,
-		dialogAria: access.dialogAria,
+		getDialogAria: access.getDialogAria,
 		announcement: access.announcement,
 	}
 }
