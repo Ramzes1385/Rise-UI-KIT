@@ -1522,3 +1522,11 @@ FOLLOW_UPS № 38, № 39, № 13 и № 15 (медиа).
 - **`cardUtils`** (вход `utils`): `CARD_BRANDS`, `CARD_BRAND_IDS`, `defineCardBrand`, `getCardBrand`, `formatCardNumber`, `cardDigits`, `cardNumberMaxLength`, `isLuhnValid`, `isValidCardNumber`, `parseCardExpiry`, `isValidExpiry`; типы `CardBrand`, `CardBrandInput`, `CardBrandId`, `CardBrandRef`, `CardBrandOptions`, `CardExpiry`, `CardPrefix`, `CardSecurityCode`.
 - **BaseCardInput** (Form): `v-model` — сводка `CardInputValue` без номера и кода; пропсы `layout`, `brands`, `brandIcons`, `hasHolder`, `tokenize`, `label`, `error`, `isRequired`, `isDisabled`; события `update:modelValue`, `complete`; методы `getCardData`, `tokenize`, `validate`, `reset`, `focus`. Константы `CARD_INPUT_VARIANTS`, `CARD_INPUT_LAYOUTS`, `CARD_INPUT_FIELDS`, типы `CardData`, `CardInputValue`, `CardTokenizer`, `CardInputField`, `CardInputLayout`, `BaseCardInputExpose`.
 - Новый раздел словаря `card` (`UI_CARD`): своё название марки «Мир» и тексты полей и ошибок меняются через `defineLocale(…, { card: { … } })`.
+
+## Задача new-card-2: превью карты, BaseBankCard и адаптер CloudPayments
+
+Новые возможности, изменений в существующем поведении нет.
+
+- **BaseCardInput**: пропсы `hasPreview` (карта-превью с переворотом на оборот, пока фокус в поле кода) и `previewBackground`; ключ `preview` в `customClass`. Адаптер `createCloudPaymentsTokenizer({ publicId, Checkout? })` → `CardTokenizer` для пропа `tokenize` (скрипт Checkout CloudPayments подключает приложение); константа `CARD_BRAND_BACKGROUNDS`; типы `CloudPaymentsTokenizerOptions`, `CloudPaymentsCardFields`, `CloudPaymentsCheckout`, `CloudPaymentsCheckoutConstructor`.
+- **BaseBankCard** (Element): пропсы `brand`, `last4`, `expiry`, `holder`, `label`, `isCompact`, `isExpired`, `brandIcons`, `background`, `variant` (`default`, `soft`, `outline`, `ghost` — для `isCompact`), `sizeScale`, `color`; слот `default`; константа `BANK_CARD_VARIANTS`, тип `BankCardVariant`.
+- Словарь `card` (`UI_CARD`): новые ключи `SAVED_CARD`, `SAVED_ENDING`, `SAVED_EXPIRES`, `SAVED_EXPIRED`, `EXPIRED`, `TOKENIZER_UNAVAILABLE`, `TOKENIZE_FAILED`.

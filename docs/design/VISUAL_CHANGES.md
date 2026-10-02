@@ -1191,3 +1191,13 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 - Группа `fieldset` без рамки; поля — BaseInput (варианты и размеры — как у BaseInput), цифры моноширинные (`tabular-nums`). `stacked`: номер и имя во всю ширину, срок и код в два столбца; `inline`: номер, срок (от 128px) и код (от 96px) в строку на одной высоте, подписи в одну строку (длинная — с многоточием); перенос — по ширине самого компонента, а не окна: в узкой колонке номер уходит на свою строку, срок и код делят следующую (исправление 02.10, отчёт Storybook 0838; прежде срок 96px — подпись в две строки, поле на ≈20px ниже соседей).
 - Марка — справа в поле номера: значок Font Awesome высотой 22px цветом `--rise-text-muted` (Visa, Mastercard, Amex, Discover, JCB, Diners Club), картинка из `brandIcons` или плашка с названием (рамка `--rise-border`, `--rise-radius-sm`, шрифт `--rise-font-size-xs`).
 - Ошибки — под каждым полем (как у BaseInput) и общая `error` под группой цветом `--rise-error`.
+
+## Задача new-card-2: превью BaseCardInput и BaseBankCard
+
+Существующие истории и эталоны не меняются: превью включается только пропом `hasPreview`, BaseBankCard — новый компонент. Превью и истории (WithPreview, SavedCards) допишет сессия Storybook.
+
+- Превью BaseCardInput — над полями, ширина до 340px, пропорции банковской карты (85,6 × 53,98), радиус `--rise-radius-xl`, тень `--rise-shadow-md`, текст `--rise-color-neutral-50`. Лицевая сторона: чип (градиент `warning-200`→`warning-400`), значок марки справа сверху, номер моноширинным шрифтом (`--rise-font-size-xl`, на узкой карте — меньше, `5.6cqi`), имя заглавными слева снизу, «Срок действия» и срок справа снизу. Оборот: чёрная полоса `neutral-950` и плашка кода `neutral-50`.
+- Фон — градиент 135° токенов палитры по марке: Visa `info-700`→`info-950`, Mastercard `neutral-800`→`primary-900`, Мир `success-700`→`info-900`, Maestro `info-800`→`error-900`, Amex `info-700`→`info-900`, UnionPay `error-800`→`info-900`, JCB `success-800`→`info-900`, Discover `warning-800`→`primary-950`, Diners `neutral-600`→`neutral-900`; без марки и у остальных — `neutral-700`→`neutral-950`.
+- Переворот — `rotateY(180deg)` за `--rise-duration-slow`; при `prefers-reduced-motion` — сразу, без анимации.
+- BaseBankCard, полный вид: такая же лицевая сторона шириной 320px без чипа — название слева сверху, марка справа, `•••• 4242`, имя и срок; истёкшая — плашка «Истекла» (`error-700`) и приглушённые цвета (`grayscale(0.6)`).
+- BaseBankCard `isCompact`: строка — марка (44px), `•••• 4242`, название (`--rise-text-muted`), срок справа; «Истекла» — `--rise-error-text`. Варианты: `default` — фон `--rise-bg` и рамка `--rise-border`, `soft` — `--rise-bg-elevated`, `outline` — рамка `--rise-border-accented`, `ghost` — без фона и рамки.

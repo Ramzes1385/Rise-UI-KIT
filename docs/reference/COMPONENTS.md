@@ -195,13 +195,41 @@ const country = ref('RU')
 <BaseCardInput ref="card" v-model="card" :brands="['mir', 'visa', 'mastercard']" :tokenize="tokenizer" />
 ```
 
-- `v-model` — сводка без номера и кода: `{ brand, last4, expiry, holder, isComplete }`; её можно держать в `state` BaseForm и проверять схемой (`isComplete: true`). Сами данные карты отдают только `getCardData()` и `tokenize()` (адаптер эквайера из пропа `tokenize`, например `createCloudPaymentsTokenizer` — задача new-card-2).
+- `v-model` — сводка без номера и кода: `{ brand, last4, expiry, holder, isComplete }`; её можно держать в `state` BaseForm и проверять схемой (`isComplete: true`). Сами данные карты отдают только `getCardData()` и `tokenize()` (адаптер эквайера из пропа `tokenize`, например `createCloudPaymentsTokenizer`).
 - `brands` — принимаемые марки (id или свои через `defineCardBrand`); карта другой марки — ошибка «Карты American Express не принимаются». Общие национальные диапазоны (RuPay 60 и 65, Troy 65) распознаются, только если марка есть в `brands`.
 - `layout`: `stacked` (номер и имя во всю ширину, срок и код рядом) или `inline` (номер, срок и код в строку; на узком экране — как `stacked`). `hasHolder: false` убирает имя.
 - Ошибки появляются после ухода из поля; `validate()` показывает все сразу, `reset()` очищает, `focus(field?)` ставит фокус на поле или первое незаполненное. Событие `complete` — когда все поля заполнены верно.
 - Внутри BaseFormField группа полей (`fieldset`) называется подписью обёртки, её описание и ошибка связываются с группой; без обёртки и без `label` у группы скрытая подпись «Банковская карта».
 - Значки марок: Visa, Mastercard, American Express, Discover, JCB, Diners Club — Font Awesome Free 7.3.1 Brands (CC BY 4.0, Fonticons, Inc.); остальные — плашка с названием, пока приложение не передаст официальный знак из брендбука в `brandIcons` (`{ mir: '/img/mir.svg' }`).
 - Безопасность: у полей нет `name` (обычная отправка формы не унесёт номер на сервер магазина), `autocomplete` — `cc-number`, `cc-exp`, `cc-csc`, `cc-name`, клавиатура цифровая; ничего не пишется в `localStorage` и консоль. Свои поля карты на странице магазина — это PCI DSS SAQ A-EP (у CloudPayments ещё ежеквартальное ASV-сканирование); для SAQ A нужна форма эквайера в iframe или переход на его страницу.
+- Карта-превью (`hasPreview`): над полями — лицевая сторона с номером (ненабранные цифры — точки), именем, сроком и маркой; пока фокус в поле кода, карта переворачивается оборотом с кодом (точками). Фон — по марке (`CARD_BRAND_BACKGROUNDS`, градиенты палитры кита, не фирменные цвета) или свой `previewBackground` (любое значение CSS `background`). Превью скрыто от чтения с экрана — всё то же есть в полях; при `prefers-reduced-motion` карта переворачивается без анимации.
+- Оплата через CloudPayments: скрипт `https://checkout.cloudpayments.ru/checkout.js` подключает приложение, кит его не грузит.
+
+```ts
+import { createCloudPaymentsTokenizer } from '@ramzes1385/rise-ui-kit'
+
+const tokenizer = createCloudPaymentsTokenizer({ publicId: 'pk_…' })
+const cryptogram = await card.value.tokenize() // криптограмма → на сервер магазина, оплата методом API «по криптограмме»
+```
+
+Адаптер вызывает `new cp.Checkout({ publicId }).createPaymentCryptogram({ cardNumber, expDateMonth, expDateYear, cvv, name })`. Нет скрипта — `Error` «скрипт CloudPayments Checkout не подключён»; платёжная система отклонила данные — `Error` «не приняла данные карты», коды (`CardNumber_Invalid`…) — в `error.cause`. Свой эквайер — функция `(data: CardData) => Promise<string>` в проп `tokenize`.
+
+---
+
+## BaseBankCard
+
+Сохранённая банковская карта: марка, `•••• 4242`, срок и «Истекла». Полный вид — лицевая сторона карты с фоном по марке (как превью BaseCardInput); `isCompact` — строка для списков выбора карты.
+
+```vue
+<BaseBankCard brand="visa" last4="4242" expiry="12/30" holder="IVAN IVANOV" label="Основная" />
+<BaseBankCard v-for="card in cards" :key="card.id" v-bind="card" is-compact variant="soft" />
+```
+
+- `brand` — id марки, своя марка (`defineCardBrand`) или `null`; `last4`; `expiry` — `{ month, year }` или `ММ/ГГ`; `holder` — только в полном виде; `label` или слот `default` — название карты («Основная»).
+- «Истекла» — по `expiry` и текущей дате; `isExpired` задаёт явно (например, по ответу эквайера).
+- Значки марок — как в BaseCardInput (Font Awesome Free Brands или `brandIcons`, иначе плашка с названием); свой фон полной карты — `background`.
+- Варианты (`default`, `soft`, `outline`, `ghost`) меняют только строку `isCompact`. Компонент только показывает карту: выбор делает обёртка приложения (BaseRadio, пункт BaseSelect, кнопка).
+- Чтение с экрана получает одну фразу — «Visa, номер заканчивается на 4242, срок до 12/30» (или «срок истёк …»); точки, значок и подписи скрыты.
 
 ---
 
@@ -2922,6 +2950,7 @@ BaseAvatarCropper
 BaseAvatarGroup
 BaseBackTop
 BaseBadge
+BaseBankCard
 BaseBreadcrumbs
 BaseButton
 BaseButtonGroup
