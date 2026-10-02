@@ -1,7 +1,8 @@
 <template>
 	<div
+		ref="rootRef"
 		class="base-event-calendar"
-		:class="[variantClass, classes.root, `base-event-calendar--${currentView}`]"
+		:class="[variantClass, classes.root, `base-event-calendar--${currentView}`, { 'base-event-calendar--selectable': isSelectable }]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		role="region"
 		:aria-label="text.CALENDAR">
@@ -28,6 +29,7 @@
 			</div>
 		</slot>
 		<div class="base-event-calendar__status" role="status">{{ status }}</div>
+		<span v-if="isSelectable" :id="selectHintId" hidden>{{ text.SELECT_HINT }}</span>
 
 		<div
 			v-if="currentView === 'month'"
@@ -35,7 +37,10 @@
 			class="base-event-calendar__month"
 			role="grid"
 			:aria-label="title"
-			@keydown="handleGridKeydown">
+			:aria-multiselectable="isSelectable || undefined"
+			:aria-describedby="isSelectable ? selectHintId : undefined"
+			@keydown="handleGridKeydown"
+			@pointerdown="handleMonthPointerDown">
 			<div class="base-event-calendar__weekdays" role="row">
 				<div v-for="name in weekdays" :key="name" class="base-event-calendar__weekday" role="columnheader">{{ name }}</div>
 			</div>
@@ -49,12 +54,16 @@
 					v-for="day in week.days"
 					:key="day.key"
 					class="base-event-calendar__day"
-					:class="{ 'base-event-calendar__day--today': day.isToday, 'base-event-calendar__day--outside': day.isOutside }"
+					:class="{
+						'base-event-calendar__day--today': day.isToday,
+						'base-event-calendar__day--outside': day.isOutside,
+						'base-event-calendar__day--selected': isDaySelected(day),
+					}"
 					role="gridcell"
 					:data-day="day.key"
 					:tabindex="day.key === focusedKey ? 0 : -1"
 					:aria-label="day.label"
-					:aria-selected="day.key === focusedKey"
+					:aria-selected="day.key === focusedKey || isDaySelected(day)"
 					:aria-current="day.isToday ? 'date' : undefined"
 					@focus="handleDayFocus(day)">
 					<span class="base-event-calendar__day-number" aria-hidden="true">
@@ -191,7 +200,7 @@
 				</div>
 			</div>
 			<div ref="scrollRef" class="base-event-calendar__time-body">
-				<div class="base-event-calendar__time-canvas" :style="{ '--slots': timeSlots.length }">
+				<div class="base-event-calendar__time-canvas" :style="{ '--slots': timeSlots.length }" @pointerdown="handleTimePointerDown">
 					<div class="base-event-calendar__axis" aria-hidden="true">
 						<div v-for="slot in timeSlots" :key="slot.key" class="base-event-calendar__axis-slot">
 							<slot v-if="slot.isHour" name="time-slot" :time="slot.time" :label="slot.label">{{ slot.label }}</slot>
@@ -206,8 +215,16 @@
 							'base-event-calendar__column--work-hours': Boolean(workHours),
 						}"
 						role="group"
-						:aria-label="day.label">
+						:data-day="day.key"
+						:tabindex="isSelectable ? (day.key === focusedKey ? 0 : -1) : undefined"
+						:aria-label="day.label"
+						:aria-describedby="isSelectable ? selectHintId : undefined"
+						@keydown="handleColumnKeydown($event, day)"
+						@focus="handleColumnFocus(day)"
+						@blur="handleColumnBlur">
 						<div v-if="day.work" class="base-event-calendar__work" :style="workStyle(day.work)"></div>
+						<div v-if="selectionStyle(day)" class="base-event-calendar__selection" :style="selectionStyle(day)!"></div>
+						<div v-if="cursorStyle(day)" class="base-event-calendar__cursor" :style="cursorStyle(day)!"></div>
 						<div v-if="hasNowLine(day)" class="base-event-calendar__now" :style="nowStyle">
 							<span class="base-event-calendar__now-label">{{ text.NOW }}</span>
 						</div>
@@ -258,6 +275,9 @@ const props = withDefaults(
 		maxEventsPerDay: 3,
 		hasNowIndicator: true,
 		today: undefined,
+		isSelectable: false,
+		isEditable: false,
+		canMove: undefined,
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )
@@ -318,5 +338,15 @@ const {
 	daySlot,
 	daySlotProps,
 	handleEventClick,
+	rootRef,
+	selectHintId,
+	isDaySelected,
+	handleMonthPointerDown,
+	handleTimePointerDown,
+	handleColumnKeydown,
+	handleColumnFocus,
+	handleColumnBlur,
+	selectionStyle,
+	cursorStyle,
 } = useBaseEventCalendar(props, emit)
 </script>

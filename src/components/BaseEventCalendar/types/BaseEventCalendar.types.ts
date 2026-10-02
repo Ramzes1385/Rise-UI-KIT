@@ -45,6 +45,19 @@ export interface BaseEventCalendarProps extends BaseComponentProps<EventCalendar
 	hasNowIndicator?: boolean
 	/** Сегодняшняя дата (подсветка дня и линия времени); по умолчанию — часы браузера */
 	today?: CalendarEventDate
+	/**
+	 * Выделение и создание: протянуть мышью по дням или шагам времени — событие `select`, нажать пустое место — `create`.
+	 * С клавиатуры: Shift со стрелками выделяет, Enter — `select` или `create`, Escape снимает выделение
+	 */
+	isSelectable?: boolean
+	/**
+	 * Перенос и растягивание событий: мышью — за событие и за его край, с клавиатуры — Space берёт событие, стрелки
+	 * двигают на шаг сетки или день, Shift со стрелками меняет длительность, Enter кладёт, Escape отменяет. Итог —
+	 * событие `event-change`: календарь не меняет `events` сам
+	 */
+	isEditable?: boolean
+	/** Запрет переноса и растягивания: вернуть false — событие нельзя положить на это время */
+	canMove?: (change: EventCalendarChange) => boolean
 }
 
 /** Событие, которое нажали: исходное, начало и конец показа (у повтора — этого повтора) */
@@ -53,6 +66,18 @@ export interface EventCalendarEventPayload {
 	start: Date
 	end: Date
 	allDay: boolean
+}
+
+/** Выделенное время или пустое место для нового события: начало, конец (не входит), весь ли день */
+export interface EventCalendarSelection extends CalendarRange {
+	allDay: boolean
+}
+
+/** Изменение события: перенос (`move`) или растягивание (`resize`), новое время и прежнее */
+export interface EventCalendarChange extends EventCalendarEventPayload {
+	type: 'move' | 'resize'
+	oldStart: Date
+	oldEnd: Date
 }
 
 /** Показанный период: вид, начало и конец (не входит) — для загрузки событий приложением */
@@ -72,6 +97,12 @@ export interface BaseEventCalendarEmits {
 	(event: 'period-change', value: EventCalendarPeriod): void
 	/** Нажато событие (мышью, Enter или Space) */
 	(event: 'event-click', value: EventCalendarEventPayload): void
+	/** Выделено время (`isSelectable`): мышью по нескольким дням или шагам, с клавиатуры — Shift со стрелками и Enter */
+	(event: 'select', value: EventCalendarSelection): void
+	/** Нажато пустое место (`isSelectable`): день в месяце или шаг времени в неделе и дне; с клавиатуры — Enter */
+	(event: 'create', value: EventCalendarSelection): void
+	/** Событие перенесено или растянуто (`isEditable`); у повтора — время этого повтора */
+	(event: 'event-change', value: EventCalendarChange): void
 }
 
 /** Данные слота события: событие, его время для показа (`time` — «10:00–11:00», пусто у события на весь день) и вид */

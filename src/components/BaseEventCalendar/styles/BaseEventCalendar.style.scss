@@ -407,4 +407,37 @@
 	&__now-label {
 		@include visually-hidden;
 	}
+
+	&--selectable &__month,
+	&--selectable &__time-canvas {
+		user-select: none;
+	}
+
+	&--selectable &__column {
+		outline-offset: -2px;
+		@include focus-ring(-2px);
+	}
+
+	&__day--selected {
+		background-color: color-mix(in srgb, var(--rise-primary) 12%, var(--rise-bg));
+	}
+
+	&__selection,
+	&__cursor {
+		position: absolute;
+		right: 0;
+		left: 0;
+		pointer-events: none;
+	}
+
+	&__selection {
+		background-color: color-mix(in srgb, var(--rise-primary) 16%, transparent);
+	}
+
+	&__cursor {
+		z-index: 2;
+		box-sizing: border-box;
+		border: 2px solid var(--rise-primary);
+		border-radius: sz(var(--rise-radius-sm));
+	}
 }

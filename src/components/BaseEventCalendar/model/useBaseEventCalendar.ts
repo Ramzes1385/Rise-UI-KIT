@@ -7,16 +7,22 @@ import { useEventCalendarEvents } from './useEventCalendarEvents'
 import { useEventCalendarContext } from './useEventCalendarContext'
 import { useEventCalendarToolbar } from './useEventCalendarToolbar'
 import { useEventCalendarTimeGrid } from './useEventCalendarTimeGrid'
+import { useEventCalendarSelect } from './edit/useEventCalendarSelect'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseEventCalendarEmits } from '../types/BaseEventCalendar.types'
 import type { EventCalendarProps } from '../types/BaseEventCalendarModel.types'
 
 export function useBaseEventCalendar(props: EventCalendarProps, emit: BaseEventCalendarEmits) {
 	const context = useEventCalendarContext(props, emit)
+	const month = useEventCalendarMonth(context)
+	const select = useEventCalendarSelect(context)
 	return {
 		...useStandardBaseComponent('base-event-calendar', props, ['root', 'toolbar', 'event']),
 		...useEventCalendarToolbar(context),
-		...useEventCalendarMonth(context),
+		...month,
+		...select,
+		handleGridKeydown: (event: KeyboardEvent): void => select.handleMonthKeydown(event, month.handleGridKeydown),
+		rootRef: context.rootRef,
 		...useEventCalendarTimeGrid(context),
 		...useEventCalendarEvents(context),
 		currentView: context.view,
