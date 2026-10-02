@@ -1514,3 +1514,11 @@ FOLLOW_UPS № 38, № 39, № 13 и № 15 (медиа).
 - `isEditable` — перенос и растягивание мышью и с клавиатуры (Space, стрелки, Shift со стрелками, Enter, Escape), `canMove(change)`; событие `event-change` (`EventCalendarChange`: `{ type, event, start, end, allDay, oldStart, oldEnd }`). `events` календарь сам не меняет — обновите их в обработчике.
 - DOM: у колонок недели и дня — `data-day`; при `isSelectable` колонка дня — точка Tab (`tabindex`), у сетки месяца — `aria-multiselectable`, у выделенных дней `aria-selected="true"`; у событий — `data-event-key`, при `isEditable` — `aria-describedby` с подсказкой.
 - Словарь `eventCalendar`: новые ключи `DAY_TIME`, `RANGE`, `SELECTED`, `SELECTION_CLEARED`, `SELECT_HINT`, `EDIT_HINT`, `PICKED`, `MOVED`, `DROPPED`, `CANCELLED`, `BLOCKED` — свой язык дополните ими.
+
+## Задача new-card: банковская карта — `cardUtils` и BaseCardInput
+
+Новые компоненты и утилиты, изменений в существующих нет.
+
+- **`cardUtils`** (вход `utils`): `CARD_BRANDS`, `CARD_BRAND_IDS`, `defineCardBrand`, `getCardBrand`, `formatCardNumber`, `cardDigits`, `cardNumberMaxLength`, `isLuhnValid`, `isValidCardNumber`, `parseCardExpiry`, `isValidExpiry`; типы `CardBrand`, `CardBrandInput`, `CardBrandId`, `CardBrandRef`, `CardBrandOptions`, `CardExpiry`, `CardPrefix`, `CardSecurityCode`.
+- **BaseCardInput** (Form): `v-model` — сводка `CardInputValue` без номера и кода; пропсы `layout`, `brands`, `brandIcons`, `hasHolder`, `tokenize`, `label`, `error`, `isRequired`, `isDisabled`; события `update:modelValue`, `complete`; методы `getCardData`, `tokenize`, `validate`, `reset`, `focus`. Константы `CARD_INPUT_VARIANTS`, `CARD_INPUT_LAYOUTS`, `CARD_INPUT_FIELDS`, типы `CardData`, `CardInputValue`, `CardTokenizer`, `CardInputField`, `CardInputLayout`, `BaseCardInputExpose`.
+- Новый раздел словаря `card` (`UI_CARD`): своё название марки «Мир» и тексты полей и ошибок меняются через `defineLocale(…, { card: { … } })`.

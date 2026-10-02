@@ -1183,3 +1183,11 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 - При `is-selectable` в месяце и сетке времени отключено выделение текста (`user-select: none`). Анимаций нет.
 
 Истории (сессия Storybook): `data-baseeventcalendar--` `selectable` (месяц, `is-selectable`, журнал `select`/`create` под календарём), `drag-and-drop`, `can-move` (запрет выходных), `recurring-edit` (перенос одного повтора) — неделя, `is-editable`, события в состоянии примера. В скриншот-тесты не добавлены: их вид — то же, что `month` и `week`, а выделение и перенос появляются только после клавиш в play. Существующие истории не меняются: в `args` добавлены только шпионы `onSelect`, `onCreate`, `onEvent-change`, в Controls — `isSelectable`, `isEditable`, `canMove`.
+
+## Задача new-card: BaseCardInput
+
+Новый компонент, существующие истории и эталоны не меняются. Превью и истории допишет сессия Storybook.
+
+- Группа `fieldset` без рамки; поля — BaseInput (варианты и размеры — как у BaseInput), цифры моноширинные (`tabular-nums`). `stacked`: номер и имя во всю ширину, срок и код в два столбца; `inline`: номер, срок и код (по 96px) в строку, при ширине до 480px — как `stacked`.
+- Марка — справа в поле номера: значок Font Awesome высотой 22px цветом `--rise-text-muted` (Visa, Mastercard, Amex, Discover, JCB, Diners Club), картинка из `brandIcons` или плашка с названием (рамка `--rise-border`, `--rise-radius-sm`, шрифт `--rise-font-size-xs`).
+- Ошибки — под каждым полем (как у BaseInput) и общая `error` под группой цветом `--rise-error`.

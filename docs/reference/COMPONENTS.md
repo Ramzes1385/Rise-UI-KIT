@@ -187,6 +187,24 @@ const country = ref('RU')
 
 ---
 
+## BaseCardInput
+
+Поля банковской карты: номер, срок «ММ/ГГ», код с оборота и имя владельца латиницей. Марка определяется по первым цифрам (таблица `CARD_BRANDS` из `cardUtils` — Visa, Mastercard, Мир, Maestro, American Express, UnionPay, JCB, Discover, Diners Club, Troy, RuPay, UzCard, HUMO, Verve, Dankort, BORICA, InterPayment, LankaPay) и видна значком в поле; цифры группируются по марке («4242 4242 4242 4242», у American Express — «3782 822463 10005»), курсор при вводе и удалении в середине номера остаётся на месте. Вставка номера с пробелами и дефисами работает, заполненное поле само переводит фокус на следующее, Backspace в пустом начале поля возвращает к предыдущему.
+
+```vue
+<BaseCardInput ref="card" v-model="card" :brands="['mir', 'visa', 'mastercard']" :tokenize="tokenizer" />
+```
+
+- `v-model` — сводка без номера и кода: `{ brand, last4, expiry, holder, isComplete }`; её можно держать в `state` BaseForm и проверять схемой (`isComplete: true`). Сами данные карты отдают только `getCardData()` и `tokenize()` (адаптер эквайера из пропа `tokenize`, например `createCloudPaymentsTokenizer` — задача new-card-2).
+- `brands` — принимаемые марки (id или свои через `defineCardBrand`); карта другой марки — ошибка «Карты American Express не принимаются». Общие национальные диапазоны (RuPay 60 и 65, Troy 65) распознаются, только если марка есть в `brands`.
+- `layout`: `stacked` (номер и имя во всю ширину, срок и код рядом) или `inline` (номер, срок и код в строку; на узком экране — как `stacked`). `hasHolder: false` убирает имя.
+- Ошибки появляются после ухода из поля; `validate()` показывает все сразу, `reset()` очищает, `focus(field?)` ставит фокус на поле или первое незаполненное. Событие `complete` — когда все поля заполнены верно.
+- Внутри BaseFormField группа полей (`fieldset`) называется подписью обёртки, её описание и ошибка связываются с группой; без обёртки и без `label` у группы скрытая подпись «Банковская карта».
+- Значки марок: Visa, Mastercard, American Express, Discover, JCB, Diners Club — Font Awesome Free 7.3.1 Brands (CC BY 4.0, Fonticons, Inc.); остальные — плашка с названием, пока приложение не передаст официальный знак из брендбука в `brandIcons` (`{ mir: '/img/mir.svg' }`).
+- Безопасность: у полей нет `name` (обычная отправка формы не унесёт номер на сервер магазина), `autocomplete` — `cc-number`, `cc-exp`, `cc-csc`, `cc-name`, клавиатура цифровая; ничего не пишется в `localStorage` и консоль. Свои поля карты на странице магазина — это PCI DSS SAQ A-EP (у CloudPayments ещё ежеквартальное ASV-сканирование); для SAQ A нужна форма эквайера в iframe или переход на его страницу.
+
+---
+
 ## BaseMoneyInput
 
 Поле суммы: разряды расставляются при вводе, курсор остаётся на месте, знак валюты стоит там, где принято в языке кита («1 234,50 ₽», в английском — «$1,234.50»). `v-model` — число или `null`.
@@ -2910,6 +2928,8 @@ BaseButtonGroup
 BaseCalendar
 BaseCard
 BaseChart
+
+BaseCardInput
 BaseChat
 BaseCheckbox
 BaseCheckboxGroup

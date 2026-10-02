@@ -99,6 +99,23 @@ isSafeUrl('blob:https://example.com/7f3c', DOWNLOAD_PROTOCOLS) // true
 
 ---
 
+## cardUtils
+
+Банковская карта без зависимостей: таблица марок `CARD_BRANDS` (префиксы IIN, длины номера, группировка цифр, имя и длина кода — CVV2, CVC2, CVP2, CID…; источник — Wikipedia «Payment card number»), `getCardBrand` — марка по самому длинному совпавшему префиксу, `formatCardNumber` — группы по марке, `isValidCardNumber` — длина и Луна (`isLuhnValid`), `parseCardExpiry` и `isValidExpiry` — срок «ММ/ГГ» годен до конца месяца. Своя марка — `defineCardBrand`, её передают в `brands`; там же включаются общие национальные диапазоны (RuPay, Troy).
+
+```ts
+import { defineCardBrand, formatCardNumber, getCardBrand, isValidCardNumber, isValidExpiry } from '@ramzes1385/rise-ui-kit/utils'
+
+getCardBrand('2200 1234')?.name // 'Mir'
+formatCardNumber('378282246310005') // '3782 822463 10005'
+isValidCardNumber('4242 4242 4242 4242') // true
+isValidExpiry('09/26', new Date(2026, 9, 2)) // false — истекла в конце сентября
+const club = defineCardBrand({ id: 'club', name: 'Club Card', prefixes: ['9999'], lengths: [16] })
+getCardBrand('9999 0000', { brands: [club] })?.id // 'club'
+```
+
+---
+
 ## dadataUtils
 
 Подсказки DaData без зависимостей: `createDadataSource(kind, options)` возвращает источник подсказок для `BaseDadataInput`, `BaseAddressInput` или своего поля. Виды — `DADATA_KINDS`: `address`, `party` (организации и ИП), `bank`, `fio`, `email`. Ключ API и адрес — снаружи: `token` уходит в заголовок `Authorization: Token …`; без ключа запросы идут на `baseUrl` — свой прокси, который сам добавляет ключ (ключ DaData в браузере виден всем). Источник принимает `signal` — устаревший запрос отменяется. `dadataRequisites(suggestion)` достаёт реквизиты организации или банка (`inn`, `kpp`, `ogrn`, `bik`, `correspondentAccount`) — их можно передать в `BaseRequisiteInput`; `dadataAddressText` — адрес организации или банка.
@@ -183,6 +200,7 @@ const imported = parseIcs(file) // VEVENT → события; RRULE и EXDATE о
 ## Список utils
 
 ```txt
+cardUtils
 clipboardUtils
 colorUtils
 dadataUtils
