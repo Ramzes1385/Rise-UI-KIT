@@ -1,13 +1,21 @@
+import { source } from './render'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseAnchor from '../ui/BaseAnchor.vue'
 
 export const parameters = {
 	docs: {
+		source,
 		description: {
 			component: [
-				'TODO(scaffold): назначение компонента и когда его использовать.',
+				'Оглавление страницы: ссылки на разделы и подсветка того, который сейчас читают.',
 				'',
-				'- Варианты, размеры при `sizeScale` = 100, доступность.',
+				'- Пункты — `items` (с вложенными `children`) или заголовки `headings` (по умолчанию `h2, h3`) внутри `content`;',
+				'  заголовку без id компонент присваивает id.',
+				'- `target` — прокручиваемый контейнер (по умолчанию окно). Текущий раздел — последний, чей верх выше линии `offset`;',
+				'  следит IntersectionObserver, без обработчика прокрутки. `v-model:active` — id текущего.',
+				'- Клик: плавная прокрутка (без анимации при «уменьшении движения»), фокус переходит к разделу, адрес — `#id`',
+				'  (`isHashSynced`). Клик с Ctrl, Cmd, Shift или средней кнопкой — как у обычной ссылки.',
+				'- Доступность: `<nav>` с именем «Содержание» (`label`), у текущего пункта `aria-current="location"`.',
 			].join('\n'),
 		},
 	},
