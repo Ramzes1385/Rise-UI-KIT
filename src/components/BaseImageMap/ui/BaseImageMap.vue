@@ -114,6 +114,12 @@
 								:style="shape.item.style"
 								vector-effect="non-scaling-stroke" />
 						</svg>
+						<ImageMapRouteLine
+							v-if="routeLines.length || routeMarkers.length"
+							:lines="routeLines"
+							:markers="routeMarkers"
+							:width="view.layer.width"
+							:height="view.layer.height" />
 						<component
 							:is="point.tag"
 							v-for="point in points"
@@ -152,6 +158,17 @@
 						{{ group.title }}
 					</li>
 				</ul>
+				<ImageMapRoutePanel
+					v-if="hasRoutes && data.routes"
+					:custom-class="classes.route"
+					:options="routeOptions"
+					:value="route"
+					:steps="routeSteps"
+					:summary="routeSummary"
+					:is-unreachable="isRouteUnreachable"
+					:has-step-free="hasStepFree"
+					@update:value="setRoute"
+					@show-layer="showRouteLayer" />
 			</div>
 			<ImageMapDirectory
 				v-if="hasDirectory"
@@ -241,7 +258,9 @@ import { BaseModal } from '@components/BaseModal'
 import { BaseButton } from '@components/BaseButton'
 import { BaseDrawer } from '@components/BaseDrawer'
 import ImageMapDirectory from './ImageMapDirectory.vue'
+import ImageMapRouteLine from './ImageMapRouteLine.vue'
 import { BaseDropdown } from '@components/BaseDropdown'
+import ImageMapRoutePanel from './ImageMapRoutePanel.vue'
 import { BaseSegmented } from '@components/BaseSegmented'
 import { useBaseImageMap } from '../model/useBaseImageMap'
 import { UI_ARIA, UI_IMAGE_MAP } from '@/locales/messages'
@@ -272,6 +291,8 @@ const props = withDefaults(
 		hasLegend: false,
 		hasDeepLinking: false,
 		deepLinkParam: 'location',
+		hasRoutes: false,
+		route: null,
 		variant: DEFAULT_VARIANT,
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
@@ -329,6 +350,16 @@ const {
 	selectFromDirectory,
 	hoverFromDirectory,
 	clearFromDirectory,
+	route,
+	setRoute,
+	routeOptions,
+	routeSteps,
+	routeSummary,
+	isRouteUnreachable,
+	hasStepFree,
+	routeLines,
+	routeMarkers,
+	showRouteLayer,
 	exposed,
 } = useBaseImageMap(props, emit)
 

@@ -95,6 +95,9 @@ export const UI_DESCRIPTIONS = localized('descriptions')
 /** Интерактивная картинка и карта этажей */
 export const UI_IMAGE_MAP = localized('imageMap')
 
+/** Маршруты карты этажей */
+export const UI_IMAGE_MAP_ROUTES = localized('imageMapRoutes')
+
 /** Просмотр JSON */
 export const UI_JSON_VIEWER = localized('jsonViewer')
 

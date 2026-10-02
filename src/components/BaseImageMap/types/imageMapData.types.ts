@@ -1,4 +1,5 @@
 import type { ImageMapHours } from './ImageMapHours.types'
+import type { ImageMapRoutes } from './ImageMapRoutes.types'
 
 /**
  * Формат данных BaseImageMap — JSON карты. Версия 1.
@@ -268,6 +269,8 @@ export interface ImageMapData {
 	styles?: Record<string, ImageMapStyle>
 	/** Часовой пояс IANA для `hours` объектов без своего `timeZone`: `'Europe/Moscow'`. Без него — пояс браузера */
 	timeZone?: string
+	/** Граф путей для маршрутов «Как пройти»: узлы, коридоры, лестницы и лифты (`ImageMapRoutes`) */
+	routes?: ImageMapRoutes
 }
 
 /** Область карты в долях картинки: начальный вид (`initArea`) */

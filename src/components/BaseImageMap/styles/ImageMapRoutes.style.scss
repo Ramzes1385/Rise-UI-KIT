@@ -1,0 +1,169 @@
+.base-image-map {
+	&__route-layer {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+	}
+
+	&__route-svg {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		overflow: visible;
+		fill: none;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
+	&__route-casing {
+		stroke: var(--rise-bg);
+		stroke-width: 8px;
+	}
+
+	&__route-path {
+		stroke: var(--rise-primary);
+		stroke-dasharray: 10px 8px;
+		stroke-width: 4px;
+
+		@include motion-safe {
+			animation: base-image-map-route 0.9s linear infinite;
+		}
+	}
+
+	&__route-marker {
+		position: absolute;
+		box-sizing: border-box;
+		width: sz(16px);
+		height: sz(16px);
+		border: 3px solid var(--rise-bg);
+		border-radius: var(--rise-radius-full);
+		background-color: var(--rise-primary);
+		box-shadow: var(--rise-shadow-md);
+		transform: translate(-50%, -50%) scale(calc(1 / var(--im-scale, 1)));
+
+		&--end {
+			width: sz(20px);
+			height: sz(20px);
+			background-color: var(--rise-success);
+		}
+
+		&--transition {
+			background-color: var(--rise-warning);
+		}
+	}
+
+	&__route {
+		display: flex;
+		flex-direction: column;
+		gap: sz(8px);
+		min-width: 0;
+	}
+
+	&__route-title {
+		margin: 0;
+		font-weight: 600;
+		@include text-size(base);
+	}
+
+	&__route-fields {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-end;
+		gap: sz(8px);
+	}
+
+	&__route-field {
+		flex: 1 1 sz(180px);
+		min-width: 0;
+	}
+
+	&__route-options {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: sz(8px);
+	}
+
+	&__route-summary {
+		margin: 0;
+		color: var(--rise-text-muted);
+		@include text-size(sm);
+
+		&--error {
+			color: var(--rise-error);
+		}
+	}
+
+	&__route-steps {
+		display: flex;
+		flex-direction: column;
+		gap: sz(2px);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		counter-reset: base-image-map-step;
+	}
+
+	&__route-step-row {
+		counter-increment: base-image-map-step;
+	}
+
+	&__route-step {
+		display: flex;
+		align-items: baseline;
+		gap: sz(8px);
+		box-sizing: border-box;
+		width: 100%;
+		margin: 0;
+		padding: sz(6px 8px);
+		border: 0;
+		border-radius: sz(var(--rise-radius-md));
+		background: none;
+		color: inherit;
+		font: inherit;
+		text-align: start;
+		cursor: pointer;
+		@include text-size(sm);
+		@include transition-colors;
+		@include focus-ring;
+
+		&::before {
+			flex: none;
+			min-width: sz(18px);
+			color: var(--rise-text-muted);
+			font-variant-numeric: tabular-nums;
+			content: counter(base-image-map-step) '.';
+		}
+
+		&:hover {
+			background-color: var(--rise-bg-muted);
+		}
+
+		&--transition {
+			font-weight: 600;
+		}
+	}
+
+	&__route-step-text {
+		flex: 1;
+		min-width: 0;
+	}
+
+	&__route-sr {
+		@include visually-hidden;
+	}
+
+	&__route-step-meters {
+		flex: none;
+		color: var(--rise-text-muted);
+		white-space: nowrap;
+	}
+}
+
+@keyframes base-image-map-route {
+	to {
+		stroke-dashoffset: -18px;
+	}
+}

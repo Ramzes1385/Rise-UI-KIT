@@ -6,6 +6,7 @@ import { useImageMapData } from './data/useImageMapData'
 import { useImageMapView } from './zoom/useImageMapView'
 import { useImageMapObjects } from './useImageMapObjects'
 import { useImageMapHours } from './hours/useImageMapHours'
+import { useImageMapRoutes } from './routes/useImageMapRoutes'
 import { useDirectoryPart } from './directory/useDirectoryPart'
 import { useImageMapGestures } from './zoom/useImageMapGestures'
 import { useImageMapFocus } from './interaction/useImageMapFocus'
@@ -32,6 +33,7 @@ const CLASS_KEYS = [
 	'directory',
 	'filters',
 	'legend',
+	'route',
 ]
 
 function useRefs() {
@@ -117,6 +119,7 @@ export function useBaseImageMap(props: ImageMapProps, emit: BaseImageMapEmits) {
 	const pan = useImageMapPan(zoom, refs.viewportRef)
 	const events = useImageMapEvents(emit, { overlay, focus, actions, zoom, pan, consumeDrag: gestures.consumeDrag })
 	const directory = useDirectoryPart(props, emit, core)
+	const routes = useImageMapRoutes(props, emit, core)
 
 	return {
 		...useStandardBaseComponent('base-image-map', props, CLASS_KEYS),
@@ -126,6 +129,7 @@ export function useBaseImageMap(props: ImageMapProps, emit: BaseImageMapEmits) {
 		...events,
 		...usePresentation(props, data, overlay),
 		...directory,
+		...routes,
 		view: data.view,
 		wheelHint: wheelHint(),
 		svgMarkup: svg.markup,
@@ -143,6 +147,7 @@ export function useBaseImageMap(props: ImageMapProps, emit: BaseImageMapEmits) {
 			zoomToObject: (id: string) => void actions.zoomToObject(id),
 			setLayer: actions.setLayer,
 			clearFilters: core.filters.clearFilters,
+			...routes.routeExpose,
 		} satisfies BaseImageMapExpose,
 	}
 }

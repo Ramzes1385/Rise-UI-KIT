@@ -52,4 +52,16 @@ export type {
 } from './types/imageMapData.types'
 export { IMAGE_MAP_OPEN_NOW_VALUE, IMAGE_MAP_WEEKDAYS } from './types/ImageMapHours.types'
 export type { ImageMapHours, ImageMapHoursDay, ImageMapHoursState, ImageMapTimeRange, ImageMapWeekday } from './types/ImageMapHours.types'
+export { IMAGE_MAP_ROUTE_STEP_KINDS, IMAGE_MAP_TRANSITION_TYPES } from './types/ImageMapRoutes.types'
+export type {
+	ImageMapRouteEdge,
+	ImageMapRouteNode,
+	ImageMapRouteResult,
+	ImageMapRoutes,
+	ImageMapRouteStep,
+	ImageMapRouteStepKind,
+	ImageMapRouteTransition,
+	ImageMapRouteValue,
+	ImageMapTransitionType,
+} from './types/ImageMapRoutes.types'
 export { default as BaseImageMap } from './ui/BaseImageMap.vue'

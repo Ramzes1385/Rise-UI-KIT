@@ -57,6 +57,7 @@ export interface UiKitLocale {
 	fileUpload: Section<'fileUpload'>
 	descriptions: Section<'descriptions'>
 	imageMap: Section<'imageMap'>
+	imageMapRoutes: Section<'imageMapRoutes'>
 	jsonViewer: Section<'jsonViewer'>
 	map: Section<'map'>
 	textDiff: Section<'textDiff'>

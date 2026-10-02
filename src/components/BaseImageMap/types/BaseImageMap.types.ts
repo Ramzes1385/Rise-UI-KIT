@@ -1,6 +1,7 @@
 import type { ImageMapHoursState } from './ImageMapHours.types'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
+import type { ImageMapRouteResult, ImageMapRouteValue } from './ImageMapRoutes.types'
 import type { ImageMapAction, ImageMapArea, ImageMapData, ImageMapGroup, ImageMapObject } from './imageMapData.types'
 
 /**
@@ -63,6 +64,7 @@ type ImageMapClassKey =
 	| 'directory'
 	| 'filters'
 	| 'legend'
+	| 'route'
 
 /**
  * Пропсы компонента BaseImageMap
@@ -127,6 +129,10 @@ export interface BaseImageMapProps extends BaseComponentProps<ImageMapVariant, I
 	 * Без него — текущее время, состояние обновляется в начале каждой минуты
 	 */
 	now?: Date | number
+	/** Панель «Как пройти» под картой: откуда, куда, «Без лестниц» и шаги списком. Нужен `data.routes` */
+	hasRoutes?: boolean
+	/** Запрос маршрута (`v-model:route`): `{ from, to, isStepFree }`; линия рисуется и без панели */
+	route?: ImageMapRouteValue | null
 }
 
 /** Пропсы после `withDefaults` */
@@ -152,6 +158,8 @@ export type ImageMapProps = PropsWithDefaults<
 	| 'hasLegend'
 	| 'hasDeepLinking'
 	| 'deepLinkParam'
+	| 'hasRoutes'
+	| 'route'
 >
 
 /**
@@ -172,6 +180,10 @@ export interface BaseImageMapEmits {
 	(event: 'update:search', value: string): void
 	/** Изменились значения фильтров (`v-model:filters`) */
 	(event: 'update:filters', value: ImageMapFilterValues): void
+	/** Изменился запрос маршрута (`v-model:route`) */
+	(event: 'update:route', value: ImageMapRouteValue): void
+	/** Найден маршрут (шаги, узлы, длина) или `null` — маршрут сброшен или не найден */
+	(event: 'route-change', result: ImageMapRouteResult | null): void
 }
 
 /** Данные объекта в слотах */
@@ -220,4 +232,8 @@ export interface BaseImageMapExpose {
 	setLayer: (id: string) => void
 	/** Очистить поиск и снять все фильтры */
 	clearFilters: () => void
+	/** Проложить маршрут от объекта `from` до объекта `to` */
+	showRoute: (from: string, to: string) => void
+	/** Сбросить маршрут */
+	clearRoute: () => void
 }
