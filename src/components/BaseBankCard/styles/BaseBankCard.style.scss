@@ -102,24 +102,24 @@
 	&--compact &__brand {
 		display: inline-flex;
 		justify-content: center;
-		color: var(--rise-text-highlighted);
+		@include custom-text(color, var(--rise-text-highlighted));
 		font-size: sz(var(--rise-font-size-sm));
 	}
 
 	&--compact &__number {
-		color: var(--rise-text-highlighted);
+		@include custom-text(color, var(--rise-text-highlighted));
 		font-weight: var(--rise-font-weight-medium);
 	}
 
 	&--compact &__label {
 		grid-row: 1;
 		grid-column: 3;
-		color: var(--rise-text-muted);
+		@include custom-text(color, var(--rise-text-muted));
 	}
 
 	&--compact &__expiry {
 		grid-column: 4;
-		color: var(--rise-text-muted);
+		@include custom-text(color, var(--rise-text-muted));
 	}
 
 	&--compact &__expired {
@@ -129,6 +129,11 @@
 	&--compact.base-bank-card--soft {
 		border-color: transparent;
 		@include custom-bg(background-color, var(--rise-bg-elevated));
+	}
+
+	&--compact.base-bank-card--soft &__label,
+	&--compact.base-bank-card--soft &__expiry {
+		@include custom-text(color, var(--rise-text-toned));
 	}
 
 	&--compact.base-bank-card--outline {
