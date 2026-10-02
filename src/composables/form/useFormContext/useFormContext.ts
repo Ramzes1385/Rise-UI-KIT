@@ -57,17 +57,24 @@ function useFieldRegistration(field: FormFieldContext | null, getId: () => strin
 	return { hasOwnLabel, isInField: computed(() => Boolean(unregister.value)) }
 }
 
+/** Обёртка — группа со своими подписью, описанием и ошибкой; контекст без `isGroup` — группа, если есть подпись */
+function isFieldGroup(field: FormFieldContext | null): boolean {
+	if (!field) return false
+	return field.isGroup ? field.isGroup.value : field.hasLabel.value
+}
+
 /**
  * Контрол внутри BaseFormField: id для подписи обёртки (`for`), `aria-describedby` с её описанием или ошибкой,
  * `aria-invalid` и `aria-required`. Вне обёртки — только собственные состояния контрола. Контрол со своей подписью
- * (`hasOwnLabel`) обёртку не занимает: она — группа со своим описанием, а контрол берёт из неё только обязательность.
+ * (`hasOwnLabel`) обёртку не занимает. Если обёртка при этом стала группой (`isGroup`), её описание и ошибку несёт группа,
+ * а контрол берёт только обязательность и цвет ошибки; не стала (нет подписи обёртки) — ошибку и описание несёт контрол.
  */
 export function useFieldControl(options: UseFieldControlOptions = {}): UseFieldControlReturn {
 	const field = inject(FORM_FIELD_CONTEXT_KEY, null)
 	const ownId = useId()
 	const id = computed(() => options.id?.() || ownId)
 	const registration = useFieldRegistration(field, () => id.value, options)
-	const fieldState = computed(() => (registration.hasOwnLabel.value ? null : field))
+	const fieldState = computed(() => (registration.hasOwnLabel.value && isFieldGroup(field) ? null : field))
 
 	const hasError = computed(() => Boolean(options.hasError?.()) || Boolean(field?.hasError.value))
 

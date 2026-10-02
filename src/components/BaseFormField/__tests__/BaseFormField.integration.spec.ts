@@ -7,6 +7,7 @@ import { BaseSelect } from '@components/BaseSelect'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
 import { BaseCalendar } from '@components/BaseCalendar'
+import { BaseCheckbox } from '@components/BaseCheckbox'
 import { BaseTextarea } from '@components/BaseTextarea'
 import { BaseDatePicker } from '@components/BaseDatePicker'
 import type { StandardSchemaV1 } from '@utils/form/formUtils'
@@ -136,6 +137,25 @@ describe('BaseFormField: контрол кита внутри', () => {
 		})
 
 		expect(screen.getByRole('group', { name: 'Адрес' })).toHaveAccessibleDescription('Улица и дом')
+	})
+
+	it('флажок со своей подписью: ошибку несёт группа, только когда обёртка стала группой', async () => {
+		render({
+			components: { BaseCheckbox, BaseFormField, BaseInput },
+			template: `
+				<BaseFormField label="Почта" error="Подтвердите адрес">
+					<BaseInput model-value="" />
+					<BaseCheckbox label="Подписаться" />
+				</BaseFormField>
+			`,
+		})
+		await nextTick()
+
+		expect(screen.queryByRole('group')).toBeNull()
+		expect(screen.getByRole('textbox', { name: 'Почта' })).toHaveAccessibleDescription('Подтвердите адрес')
+		const checkbox = screen.getByRole('checkbox', { name: 'Подписаться' })
+		expect(checkbox).toHaveAttribute('aria-invalid', 'true')
+		expect(checkbox).toHaveAccessibleDescription('Подтвердите адрес')
 	})
 
 	it('поле с name показывает ошибку проверки BaseForm по схеме', async () => {

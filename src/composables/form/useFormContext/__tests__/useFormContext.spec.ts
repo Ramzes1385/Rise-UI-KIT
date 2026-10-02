@@ -154,6 +154,41 @@ describe('useFormContext', () => {
 			})
 		})
 
+		it('hasOwnLabel вне обёртки: только собственные состояния', () => {
+			const { result } = withProviders(() => useFieldControl({ hasOwnLabel: true, hasError: () => true }))
+
+			expect(result.isInField).toBe(false)
+			expect(result.aria.value).toEqual({ 'aria-invalid': 'true', 'aria-required': undefined, 'aria-describedby': undefined })
+		})
+
+		it('hasOwnLabel в обёртке без подписи: обёртка не группа — её ошибку и описание несёт контрол', () => {
+			const field = createField({ hasLabel: computed(() => false), hasError: computed(() => true) })
+			const { result } = withProviders(() => useFieldControl({ hasOwnLabel: true }), { field })
+
+			expect(field.control).toBeNull()
+			expect(result.isInField).toBe(false)
+			expect(result.aria.value).toEqual({
+				'aria-invalid': 'true',
+				'aria-required': undefined,
+				'aria-describedby': 'field-description',
+			})
+		})
+
+		it('hasOwnLabel: решает isGroup обёртки, а не подпись; isGroup реактивен', async () => {
+			const isGroup = ref(false)
+			const field = createField({ isGroup: computed(() => isGroup.value), hasError: computed(() => true) })
+			const { result } = withProviders(() => useFieldControl({ hasOwnLabel: true, describedBy: () => 'own-description' }), { field })
+
+			expect(result.aria.value['aria-invalid']).toBe('true')
+			expect(result.aria.value['aria-describedby']).toBe('own-description field-description')
+
+			isGroup.value = true
+			await nextTick()
+			expect(result.aria.value['aria-invalid']).toBeUndefined()
+			expect(result.aria.value['aria-describedby']).toBe('own-description')
+			expect(result.hasError.value).toBe(true)
+		})
+
 		it('hasOwnLabel: собственные ошибка и описание остаются', () => {
 			const field = createField()
 			const { result } = withProviders(

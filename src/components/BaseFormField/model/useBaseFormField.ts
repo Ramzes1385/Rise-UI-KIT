@@ -39,6 +39,7 @@ export function useBaseFormField(props: FormFieldProps) {
 	const { labelId, descriptionId, errorId } = useFieldIds()
 	const { formField, error } = useFieldError(props)
 	const { control, register } = useControlRegistry()
+	const isGroup = computed(() => Boolean(props.label) && !props.for && !control.value)
 	const describedBy = computed(() => {
 		if (error.value) return errorId
 		return props.description ? descriptionId : undefined
@@ -47,6 +48,7 @@ export function useBaseFormField(props: FormFieldProps) {
 	provide(FORM_FIELD_CONTEXT_KEY, {
 		labelId,
 		hasLabel: computed(() => Boolean(props.label)),
+		isGroup,
 		describedBy,
 		hasError: computed(() => Boolean(error.value)),
 		isRequired: computed(() => props.isRequired),
@@ -62,7 +64,7 @@ export function useBaseFormField(props: FormFieldProps) {
 		error,
 		describedBy,
 		controlId: computed(() => props.for ?? (control.value?.isLabelable ? control.value.getId() : undefined)),
-		isGroup: computed(() => Boolean(props.label) && !props.for && !control.value),
+		isGroup,
 		exposed: { rootRef, validate: formField.validate, reset: formField.reset },
 	}
 }

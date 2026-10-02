@@ -65,6 +65,24 @@ describe('BaseCheckbox: имя и контекст поля', () => {
 		expect(container.querySelector('label.base-form-field__label')).not.toHaveAttribute('for')
 	})
 
+	it('со своей подписью в обёртке без подписи: группы нет — ошибку обёртки несёт флажок', async () => {
+		const { container } = render({
+			components: { BaseCheckbox, BaseFormField },
+			template: `
+				<BaseFormField error="Примите условия">
+					<BaseCheckbox label="Принимаю условия" />
+				</BaseFormField>
+			`,
+		})
+		await nextTick()
+
+		expect(screen.queryByRole('group')).toBeNull()
+		const checkbox = screen.getByRole('checkbox', { name: 'Принимаю условия' })
+		expect(checkbox).toHaveAttribute('aria-invalid', 'true')
+		expect(checkbox).toHaveAccessibleDescription('Примите условия')
+		expect(container.querySelector('.base-checkbox')).toHaveClass('base-checkbox--error')
+	})
+
 	it('подпись, появившаяся позже, освобождает обёртку; пропавшая — подключает флажок к подписи обёртки', async () => {
 		const wrapper = mount(
 			{

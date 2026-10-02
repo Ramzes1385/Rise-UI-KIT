@@ -1282,4 +1282,4 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 
 - **BaseStepper** — при наведении на текущий шаг (`clickable` = `all` или `completed`) индикатор снова остаётся с фоном `--rise-bg`, как до fu-nav: подсветка наведения только у шагов, по которым можно перейти. В снимки не попадает (наведение); при fu-nav этот сброс был потерян.
 - **BaseAccordion Keyboard** — play дополнен стрелками ↓/↑ и Home/End: конечный кадр — фокус на последнем заголовке «Как связаться с поддержкой?» (кольцо фокуса), второй пункт раскрыт, как и раньше. История не входит в `BaseAccordion.visual.spec.ts`.
-- **BaseCheckbox, BaseSwitch, BaseRadio** — без видимых изменений: цвет ошибки внутри BaseFormField с ошибкой остаётся; меняются только `aria-invalid`/`aria-describedby` (MIGRATION, раздел small-fixes-7b).
+- **BaseCheckbox, BaseSwitch, BaseRadio** — без видимых изменений: цвет ошибки внутри BaseFormField с ошибкой остаётся; меняются только `aria-invalid`/`aria-describedby` при обёртке-группе (с подписью; MIGRATION, раздел small-fixes-7b).

@@ -128,6 +128,23 @@ describe('BaseSwitch: описание, имя и контекст поля', ()
 		expect(container.querySelector('.base-switch')).toHaveClass('base-switch--error')
 	})
 
+	it('со своей подписью в обёртке без подписи: группы нет — ошибку обёртки несёт переключатель', async () => {
+		render({
+			components: { BaseSwitch, BaseFormField },
+			template: `
+				<BaseFormField error="Нужно согласие">
+					<BaseSwitch label="Делиться статистикой">Анонимно</BaseSwitch>
+				</BaseFormField>
+			`,
+		})
+		await nextTick()
+
+		expect(screen.queryByRole('group')).toBeNull()
+		const control = screen.getByRole('switch', { name: 'Делиться статистикой' })
+		expect(control).toHaveAttribute('aria-invalid', 'true')
+		expect(control).toHaveAccessibleDescription('Анонимно Нужно согласие')
+	})
+
 	it('подпись в слоте, появившаяся позже, освобождает обёртку', async () => {
 		const wrapper = mount(
 			{
