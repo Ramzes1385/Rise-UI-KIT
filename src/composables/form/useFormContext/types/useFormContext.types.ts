@@ -1,4 +1,4 @@
-import type { ComputedRef } from 'vue'
+import type { ComputedRef, MaybeRefOrGetter } from 'vue'
 
 /** Контекст BaseForm для вложенных контролов и полей */
 export interface FormContext {
@@ -38,10 +38,12 @@ export interface UseFieldControlOptions {
 	/** Элемент — нативное поле, которое подпись называет через `for` (по умолчанию `true`) */
 	isLabelable?: boolean
 	/**
-	 * У контрола своя подпись (флажок или переключатель с текстом): он не занимает подпись обёртки — обёртка остаётся
-	 * группой с этой подписью, а контрол берёт из неё только описание, ошибку и обязательность
+	 * У контрола своя подпись (флажок, переключатель или группа радиокнопок с текстом): он не занимает подпись обёртки —
+	 * обёртка остаётся группой со своими подписью, описанием и ошибкой, а контрол берёт из неё только обязательность
+	 * и цвет ошибки (`hasError`), без `aria-invalid` и `aria-describedby` обёртки. Реактивно: подпись, появившаяся позже,
+	 * освобождает обёртку, пропавшая — подключает контрол
 	 */
-	hasOwnLabel?: boolean
+	hasOwnLabel?: MaybeRefOrGetter<boolean | undefined>
 	/** Свой признак обязательности */
 	isRequired?: () => boolean
 }
@@ -55,8 +57,8 @@ export interface FieldControlAria {
 export interface UseFieldControlReturn {
 	/** id элемента контрола */
 	id: ComputedRef<string>
-	/** Контрол подключён к BaseFormField (подпись обёртки называет его) */
-	isInField: boolean
+	/** Контрол подключён к BaseFormField (подпись обёртки называет его); геттер — читай из возвращённого объекта */
+	readonly isInField: boolean
 	/** id подписи обёртки, если контрол в ней и подпись есть — для `aria-labelledby` */
 	fieldLabelId: ComputedRef<string | undefined>
 	/** Ошибка своя или обёртки — для цвета ошибки */

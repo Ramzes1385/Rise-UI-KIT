@@ -1,6 +1,7 @@
 import type { ComputedRef } from 'vue'
 import { TREE_CONTEXT_KEY } from '../types/BaseTree.types'
 import { findTypeaheadIndex } from '@utils/navigation/menuUtils'
+import { isolateFormField } from '@composables/form/useFormContext'
 import { useTreeState } from '@composables/navigation/useTreeState'
 import { useVirtualList } from '@composables/interaction/useVirtualList'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
@@ -135,6 +136,7 @@ function provideTreeContext(
 		headers: ReturnType<typeof useHeaders>
 	},
 ): void {
+	isolateFormField()
 	provide(TREE_CONTEXT_KEY, {
 		selectionMode: toRef(props, 'selectionMode'),
 		arrowPosition: toRef(props, 'arrowPosition'),

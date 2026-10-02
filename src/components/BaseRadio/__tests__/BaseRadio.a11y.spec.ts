@@ -45,6 +45,25 @@ describe('BaseRadio: имя группы и контекст поля', () => {
 		expect(container.querySelector('label.base-form-field__label')).not.toHaveAttribute('for')
 	})
 
+	it('со своим заголовком внутри BaseFormField с подписью: обёртка — группа со своей подписью, radiogroup — со своей', async () => {
+		const { container } = render({
+			components: { BaseRadio, BaseFormField },
+			setup: () => ({ options: OPTIONS }),
+			template: `
+				<BaseFormField label="Заказ" description="Можно изменить позже" error="Выберите способ">
+					<BaseRadio model-value="" :options="options" name="pay" label="Оплата" />
+				</BaseFormField>
+			`,
+		})
+		await nextTick()
+
+		expect(screen.getByRole('group', { name: 'Заказ' })).toHaveAccessibleDescription('Выберите способ')
+		const radiogroup = screen.getByRole('radiogroup', { name: 'Оплата' })
+		expect(radiogroup).not.toHaveAttribute('aria-invalid')
+		expect(radiogroup).not.toHaveAttribute('aria-describedby')
+		expect(container.querySelector('.base-radio')).toHaveClass('base-radio--error')
+	})
+
 	it('ошибка обёртки: aria-invalid, описание ошибкой и цвет ошибки у группы и опций', async () => {
 		const { container } = render({
 			components: { BaseRadio, BaseFormField },

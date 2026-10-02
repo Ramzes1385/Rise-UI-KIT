@@ -46,7 +46,7 @@ describe('BaseCheckbox: имя и контекст поля', () => {
 		expect(container.querySelector('[role="group"]')).toBeNull()
 	})
 
-	it('со своей подписью не занимает подпись обёртки: обёртка — группа, флажок берёт ошибку и цвет ошибки', async () => {
+	it('со своей подписью не занимает подпись обёртки: ошибку описывает группа, у флажка — только цвет ошибки', async () => {
 		const { container } = render({
 			components: { BaseCheckbox, BaseFormField },
 			template: `
@@ -57,12 +57,43 @@ describe('BaseCheckbox: имя и контекст поля', () => {
 		})
 		await nextTick()
 
-		expect(screen.getByRole('group', { name: 'Условия' })).toBeInTheDocument()
+		expect(screen.getByRole('group', { name: 'Условия' })).toHaveAccessibleDescription('Примите условия')
 		const checkbox = screen.getByRole('checkbox', { name: 'Принимаю условия' })
-		expect(checkbox).toHaveAttribute('aria-invalid', 'true')
-		expect(checkbox).toHaveAccessibleDescription('Примите условия')
+		expect(checkbox).not.toHaveAttribute('aria-invalid')
+		expect(checkbox).not.toHaveAttribute('aria-describedby')
 		expect(container.querySelector('.base-checkbox')).toHaveClass('base-checkbox--error')
 		expect(container.querySelector('label.base-form-field__label')).not.toHaveAttribute('for')
+	})
+
+	it('подпись, появившаяся позже, освобождает обёртку; пропавшая — подключает флажок к подписи обёртки', async () => {
+		const wrapper = mount(
+			{
+				components: { BaseCheckbox, BaseFormField },
+				props: { label: { type: String, default: undefined } },
+				template: `
+				<BaseFormField label="Рассылка" error="Нужно выбрать">
+					<BaseCheckbox :label="label" />
+				</BaseFormField>
+			`,
+			},
+			{ attachTo: document.body },
+		)
+		await nextTick()
+
+		const input = wrapper.find('input')
+		expect(wrapper.find('label.base-form-field__label').attributes('for')).toBe(input.attributes('id'))
+		expect(input.attributes('aria-invalid')).toBe('true')
+		expect(wrapper.find('[role="group"]').exists()).toBe(false)
+
+		await wrapper.setProps({ label: 'Получать новости' })
+		expect(wrapper.find('label.base-form-field__label').attributes('for')).toBeUndefined()
+		expect(wrapper.find('[role="group"]').exists()).toBe(true)
+		expect(input.attributes('aria-invalid')).toBeUndefined()
+
+		await wrapper.setProps({ label: undefined })
+		expect(wrapper.find('label.base-form-field__label').attributes('for')).toBe(input.attributes('id'))
+		expect(input.attributes('aria-invalid')).toBe('true')
+		wrapper.unmount()
 	})
 
 	it('вне обёртки без ошибки aria-invalid и aria-describedby нет', () => {
@@ -82,5 +113,13 @@ describe('BaseCheckbox: имя и контекст поля', () => {
 		wrapper.vm.blur()
 		expect(document.activeElement).not.toBe(input)
 		wrapper.unmount()
+	})
+
+	it('change без поля в target не эмитит значение', () => {
+		const wrapper = mount(BaseCheckbox, { props: { label: 'Событие' } })
+		const event = new Event('change')
+		Object.defineProperty(event, 'target', { value: null })
+		wrapper.find('input').element.dispatchEvent(event)
+		expect(wrapper.emitted('update:modelValue')).toBeUndefined()
 	})
 })

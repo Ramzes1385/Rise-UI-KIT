@@ -12,7 +12,7 @@ function useCheckboxControl(props: CheckboxProps) {
 	const formField = useFormField({ value: () => props.modelValue, error: () => props.error })
 	const control = useFieldControl({
 		id: () => props.inputAttrs?.id as string | undefined,
-		hasOwnLabel: Boolean(props.label),
+		hasOwnLabel: () => Boolean(props.label),
 		describedBy: () =>
 			[formField.error ? errorId : undefined, props.inputAttrs?.['aria-describedby']].filter(Boolean).join(' ') || undefined,
 		hasError: () => Boolean(formField.error),

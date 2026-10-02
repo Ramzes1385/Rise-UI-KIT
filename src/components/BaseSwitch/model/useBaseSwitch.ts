@@ -1,9 +1,9 @@
-import { computed, ref, useId, useSlots } from 'vue'
 import { useFormField } from '@composables/form/useFormField'
 import { useFieldControl } from '@composables/form/useFormContext'
 import { toHTMLElement, toHTMLInputElement } from '@utils/dom/domUtils'
 import type { BaseSwitchEmits, SwitchProps } from '../types/BaseSwitch.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import { computed, onBeforeUpdate, ref, shallowRef, useId, useSlots } from 'vue'
 
 const SWITCH_ELEMENTS = [
 	'root',
@@ -22,17 +22,28 @@ const SWITCH_ELEMENTS = [
 
 const OWN_CLICK_TARGETS = 'label, input, a, button, select, textarea, summary, [tabindex], [contenteditable]'
 
-function useSwitchControl(props: SwitchProps) {
+function useSlotPresence() {
 	const slots = useSlots()
+	const read = () => ({ label: Boolean(slots.label), content: Boolean(slots.default) })
+	const presence = shallowRef(read())
+	onBeforeUpdate(() => {
+		const next = read()
+		if (next.label !== presence.value.label || next.content !== presence.value.content) presence.value = next
+	})
+	return presence
+}
+
+function useSwitchControl(props: SwitchProps) {
+	const slots = useSlotPresence()
 	const baseId = useId()
 	const errorId = `${baseId}-error`
 	const descriptionId = `${baseId}-description`
-	const hasLabel = computed(() => Boolean(props.label || slots.label))
-	const hasDescription = computed(() => hasLabel.value && Boolean(slots.default))
+	const hasLabel = computed(() => Boolean(props.label) || slots.value.label)
+	const hasDescription = computed(() => hasLabel.value && slots.value.content)
 	const formField = useFormField({ value: () => props.modelValue, error: () => props.error, isRequired: () => props.isRequired })
 	const control = useFieldControl({
 		id: () => props.inputAttrs?.id as string | undefined,
-		hasOwnLabel: hasLabel.value,
+		hasOwnLabel: hasLabel,
 		describedBy: () =>
 			[
 				formField.error ? errorId : undefined,
@@ -50,7 +61,7 @@ function useSwitchControl(props: SwitchProps) {
 		descriptionId,
 		hasLabel,
 		hasDescription,
-		hasCaption: computed(() => hasLabel.value || Boolean(slots.default)),
+		hasCaption: computed(() => hasLabel.value || slots.value.content),
 		formField,
 		control,
 		inputId: control.id,

@@ -13,6 +13,7 @@ function useRadioGroupField(props: RadioProps) {
 	const formField = useFormField({ value: () => props.modelValue, error: () => props.error, isRequired: () => props.isRequired })
 	const control = useFieldControl({
 		isLabelable: false,
+		hasOwnLabel: () => Boolean(props.label),
 		describedBy: () => (formField.error ? errorId : undefined),
 		hasError: () => Boolean(formField.error),
 		isRequired: () => props.isRequired,

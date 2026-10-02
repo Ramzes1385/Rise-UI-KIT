@@ -110,7 +110,7 @@ describe('BaseSwitch: описание, имя и контекст поля', ()
 		expect(control).toHaveAttribute('aria-required', 'true')
 	})
 
-	it('со своей подписью внутри BaseFormField: обёртка — группа, ошибка обёртки описывает переключатель', async () => {
+	it('со своей подписью внутри BaseFormField: ошибку обёртки описывает группа, переключатель — только своим описанием', async () => {
 		const { container } = render({
 			components: { BaseSwitch, BaseFormField },
 			template: `
@@ -121,11 +121,36 @@ describe('BaseSwitch: описание, имя и контекст поля', ()
 		})
 		await nextTick()
 
-		expect(screen.getByRole('group', { name: 'Конфиденциальность' })).toBeInTheDocument()
+		expect(screen.getByRole('group', { name: 'Конфиденциальность' })).toHaveAccessibleDescription('Нужно согласие')
 		const control = screen.getByRole('switch', { name: 'Делиться статистикой' })
-		expect(control).toHaveAttribute('aria-invalid', 'true')
-		expect(control).toHaveAccessibleDescription('Анонимно Нужно согласие')
+		expect(control).not.toHaveAttribute('aria-invalid')
+		expect(control).toHaveAccessibleDescription('Анонимно')
 		expect(container.querySelector('.base-switch')).toHaveClass('base-switch--error')
+	})
+
+	it('подпись в слоте, появившаяся позже, освобождает обёртку', async () => {
+		const wrapper = mount(
+			{
+				components: { BaseSwitch, BaseFormField },
+				props: { isLabelShown: Boolean },
+				template: `
+					<BaseFormField label="Уведомления">
+						<BaseSwitch><template v-if="isLabelShown" #label>Почта</template></BaseSwitch>
+					</BaseFormField>
+				`,
+			},
+			{ attachTo: document.body },
+		)
+		await nextTick()
+
+		const input = wrapper.find('input')
+		expect(wrapper.find('label.base-form-field__label').attributes('for')).toBe(input.attributes('id'))
+
+		await wrapper.setProps({ isLabelShown: true })
+		expect(wrapper.find('.base-switch__caption').text()).toBe('Почта')
+		expect(wrapper.find('label.base-form-field__label').attributes('for')).toBeUndefined()
+		expect(wrapper.find('[role="group"]').exists()).toBe(true)
+		wrapper.unmount()
 	})
 
 	it('focus и blur из defineExpose переводят фокус на input и снимают его', () => {
@@ -137,5 +162,18 @@ describe('BaseSwitch: описание, имя и контекст поля', ()
 		wrapper.vm.blur()
 		expect(document.activeElement).not.toBe(input)
 		wrapper.unmount()
+	})
+
+	it('change без поля в target не эмитит значение', () => {
+		const wrapper = mount(BaseSwitch, { props: { label: 'Событие' } })
+		const event = new Event('change')
+		Object.defineProperty(event, 'target', { value: null })
+		wrapper.find('input').element.dispatchEvent(event)
+		expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+	})
+
+	it('обязательный переключатель проверяет значение через validate', () => {
+		const wrapper = mount(BaseSwitch, { props: { label: 'Согласие', isRequired: true, modelValue: true } })
+		expect(wrapper.vm.validate()).toBe(true)
 	})
 })

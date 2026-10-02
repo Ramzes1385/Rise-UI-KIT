@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import { useChatState } from '@composables/chat/useChatState'
 import { useChatActions } from '@composables/chat/useChatActions'
 import type { VoiceRecording } from '@components/BaseVoiceRecorder'
+import { isolateFormField } from '@composables/form/useFormContext'
 import type { BaseChatEmits, BaseChatProps } from '../types/BaseChat.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { useChatDeleteConfirm } from '@composables/chat/useChatDeleteConfirm'
@@ -9,6 +10,7 @@ import type { MessageListExposed } from '@composables/chat/useChatActions/types/
 
 export function useBaseChat(props: BaseChatProps, emit: BaseChatEmits) {
 	const standard = useStandardBaseComponent('base-chat', props, ['root'])
+	isolateFormField()
 	const messageListRef = ref<MessageListExposed | null>(null)
 	const state = useChatState(props, emit, {
 		scrollToMessage: messageId => messageListRef.value?.scrollToMessage(messageId),

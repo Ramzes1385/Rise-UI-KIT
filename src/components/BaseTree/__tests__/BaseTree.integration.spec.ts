@@ -1,7 +1,9 @@
 import '@testing-library/jest-dom/vitest'
+import { nextTick } from 'vue'
 import BaseTree from '../ui/BaseTree.vue'
 import userEvent from '@testing-library/user-event'
 import type { TreeNode } from '../types/BaseTree.types'
+import { BaseFormField } from '@components/BaseFormField'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 
 const NESTED_ITEMS: TreeNode[] = [
@@ -1062,5 +1064,28 @@ describe('BaseTree integration', () => {
 			await user.click(nodeLabel('Открыто'))
 			expect(emitted()['update:selectedIds']).toEqual([[['open']]])
 		})
+	})
+
+	it('внутри BaseFormField флажки узлов не берут подпись, ошибку и обязательность обёртки', async () => {
+		const { container } = render({
+			components: { BaseTree, BaseFormField },
+			setup: () => ({ items: NESTED_ITEMS }),
+			template: `
+				<BaseFormField label="Материалы" error="Выберите материал" is-required>
+					<BaseTree :items="items" selection-mode="multiple" />
+				</BaseFormField>
+			`,
+		})
+		await nextTick()
+
+		const inputs = container.querySelectorAll<HTMLInputElement>('.base-tree__checkbox input')
+		expect(inputs).toHaveLength(2)
+		for (const input of inputs) {
+			expect(input).not.toHaveAttribute('aria-invalid')
+			expect(input).not.toHaveAttribute('aria-required')
+			expect(input).not.toHaveAttribute('aria-describedby')
+		}
+		expect(container.querySelector('.base-tree__checkbox .base-checkbox--error')).toBeNull()
+		expect(container.querySelector('label.base-form-field__label')).not.toHaveAttribute('for')
 	})
 })

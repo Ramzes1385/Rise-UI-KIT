@@ -1,7 +1,9 @@
 import '@testing-library/jest-dom/vitest'
+import { nextTick } from 'vue'
 import BaseChat from '../ui/BaseChat.vue'
 import { afterEach, beforeEach, vi } from 'vitest'
 import userEvent from '@testing-library/user-event'
+import { BaseFormField } from '@components/BaseFormField'
 import type { ChatMember, ChatMessage } from '../types/BaseChat.types'
 import { fireEvent, render, screen, within } from '@testing-library/vue'
 
@@ -594,5 +596,27 @@ describe('BaseChat integration', () => {
 			expect(panel).toHaveTextContent('Чат команды поддержки')
 			expect(panel.textContent).not.toMatch(/Металл-Арт|\+7 \(999\) 123-45-67|info@metal-art\.ru/)
 		})
+	})
+
+	it('внутри BaseFormField флажки выбора сообщений не берут подпись, ошибку и обязательность обёртки', async () => {
+		const { container } = render({
+			components: { BaseChat, BaseFormField },
+			setup: () => ({ messages: MESSAGES }),
+			template: `
+				<BaseFormField label="Поддержка" error="Нет связи" is-required>
+					<BaseChat :messages="messages" title="Чат с Анной" />
+				</BaseFormField>
+			`,
+		})
+		await fireEvent.click(screen.getAllByLabelText('Выбрать сообщение')[0])
+		await nextTick()
+
+		const checkboxes = container.querySelectorAll('.base-chat input[type="checkbox"]')
+		expect(checkboxes.length).toBeGreaterThan(0)
+		for (const checkbox of checkboxes) {
+			expect(checkbox).not.toHaveAttribute('aria-invalid')
+			expect(checkbox).not.toHaveAttribute('aria-required')
+		}
+		expect(container.querySelector('label.base-form-field__label')).not.toHaveAttribute('for')
 	})
 })

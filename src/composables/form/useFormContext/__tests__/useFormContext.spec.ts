@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { computed, defineComponent, effectScope, h, provide, ref } from 'vue'
+import { computed, defineComponent, effectScope, h, nextTick, provide, ref } from 'vue'
 import type { FormFieldContext, UseFieldControlOptions, UseFieldControlReturn } from '../types/useFormContext.types'
 import {
 	FORM_CONTEXT_KEY,
@@ -139,18 +139,54 @@ describe('useFormContext', () => {
 			expect(result.fieldLabelId.value).toBeUndefined()
 		})
 
-		it('hasOwnLabel: контрол со своей подписью не занимает обёртку, но берёт её описание, ошибку и обязательность', () => {
+		it('hasOwnLabel: контрол со своей подписью не занимает обёртку и не берёт её aria-invalid и описание', () => {
 			const field = createField({ hasError: computed(() => true), isRequired: computed(() => true) })
 			const { result } = withProviders(() => useFieldControl({ hasOwnLabel: true }), { field })
 
 			expect(field.control).toBeNull()
 			expect(result.isInField).toBe(false)
 			expect(result.fieldLabelId.value).toBeUndefined()
+			expect(result.hasError.value).toBe(true)
 			expect(result.aria.value).toEqual({
-				'aria-invalid': 'true',
+				'aria-invalid': undefined,
 				'aria-required': 'true',
-				'aria-describedby': 'field-description',
+				'aria-describedby': undefined,
 			})
+		})
+
+		it('hasOwnLabel: собственные ошибка и описание остаются', () => {
+			const field = createField()
+			const { result } = withProviders(
+				() => useFieldControl({ hasOwnLabel: () => true, hasError: () => true, describedBy: () => 'own-error' }),
+				{ field },
+			)
+
+			expect(result.aria.value).toEqual({ 'aria-invalid': 'true', 'aria-required': undefined, 'aria-describedby': 'own-error' })
+		})
+
+		it('hasOwnLabel реактивен: подпись появилась — обёртка свободна, пропала — контрол подключается снова', async () => {
+			const field = createField({ hasError: computed(() => true) })
+			const hasOwnLabel = ref(false)
+			const { result, unmount } = withProviders(() => useFieldControl({ id: () => 'agree', hasOwnLabel }), { field })
+
+			expect(result.isInField).toBe(true)
+			expect(field.control?.getId()).toBe('agree')
+			expect(result.aria.value['aria-describedby']).toBe('field-description')
+
+			hasOwnLabel.value = true
+			await nextTick()
+			expect(field.control).toBeNull()
+			expect(result.isInField).toBe(false)
+			expect(result.fieldLabelId.value).toBeUndefined()
+			expect(result.aria.value).toEqual({ 'aria-invalid': undefined, 'aria-required': undefined, 'aria-describedby': undefined })
+
+			hasOwnLabel.value = false
+			await nextTick()
+			expect(result.isInField).toBe(true)
+			expect(result.fieldLabelId.value).toBe('field-label')
+
+			unmount()
+			expect(field.control).toBeNull()
 		})
 
 		it('второй контрол в той же обёртке не подключается', () => {
