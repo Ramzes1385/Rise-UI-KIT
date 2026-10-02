@@ -43,6 +43,18 @@ const ALLOWED = [
 		text: 'онлайн',
 		reason: 'статус собеседника из данных приложения: «онлайн» распознаётся на обоих языках',
 	},
+	{
+		file: 'src/composables/crypto/useCryptoPro/core/subject.ts',
+		reason: 'имена полей субъекта сертификата (ИНН, ОГРН, СНИЛС) — так их отдаёт КриптоПро, это ключи разбора, а не текст',
+	},
+	{
+		file: 'src/composables/crypto/useCryptoPro/emulation/emulatedCertificates.ts',
+		reason: 'данные эмуляции КриптоПро: субъекты тестовых сертификатов, как их отдаёт плагин',
+	},
+	{
+		file: 'src/composables/crypto/useCryptoPro/emulation/emulatedObjects.ts',
+		reason: 'тексты ошибок эмуляции КриптоПро — как их отдаёт getLastError плагина на русской системе',
+	},
 ]
 
 function listFiles(dir) {

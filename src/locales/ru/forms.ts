@@ -133,4 +133,23 @@ export const ruForms = {
 		NEGATIVE: '{component}: `{prop}` = {value} — меньше 0, не применяется',
 		MAX_BELOW_MIN: '{component}: `max` = {max} меньше `min` = {min} — диапазон сведён к {min}',
 	},
+	/** КриптоПро ЭЦП Browser plug-in (useCryptoPro): шаги диагностики и ошибки; `{message}` — текст ошибки плагина */
+	cryptopro: {
+		STEP_EXTENSION: 'Расширение для браузера',
+		STEP_PLUGIN: 'КриптоПро ЭЦП Browser plug-in',
+		STEP_CSP: 'Криптопровайдер КриптоПро CSP',
+		STEP_OBJECTS: 'Объекты подписи',
+		NO_SCRIPT: 'Не подключён скрипт cadesplugin_api.js',
+		SCRIPT_FAILED: 'Не удалось загрузить скрипт cadesplugin_api.js',
+		NO_EXTENSION: 'Расширение КриптоПро ЭЦП Browser plug-in не отвечает: установите и включите расширение и плагин',
+		NO_PLUGIN: 'КриптоПро ЭЦП Browser plug-in не установлен или недоступен',
+		NO_CSP: 'Не установлен криптопровайдер КриптоПро CSP',
+		OBJECTS_FAILED: 'Не удалось создать объекты подписи КриптоПро',
+		NO_CERTIFICATES: 'В личном хранилище нет сертификатов',
+		CERTIFICATE_NOT_FOUND: 'Сертификат не найден',
+		NO_PRIVATE_KEY: 'У сертификата нет закрытого ключа',
+		CERTIFICATE_INVALID: 'Сертификат недействителен: истёк срок действия или не пройдена проверка',
+		CANCELLED: 'Подпись отменена',
+		UNKNOWN: 'Ошибка КриптоПро: {message}',
+	},
 }

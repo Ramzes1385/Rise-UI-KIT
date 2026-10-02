@@ -415,3 +415,30 @@ function scrollToTop(): void {
 
 - Возвращает `Readonly<Ref<boolean>>`. До монтирования и без `matchMedia` (SSR) — `false`; после монтирования — текущее значение, дальше меняется вместе с настройкой. Подписка снимается при размонтировании.
 - Вызывается в `setup` компонента. Им пользуются BaseAvatar (персонаж), BaseBackTop, BaseMarquee и окно «Поделиться» BaseMediaPlayer.
+
+---
+
+## useCryptoPro (new-cryptopro)
+
+Адаптер КриптоПро ЭЦП Browser plug-in: диагностика, сертификаты пользователя, присоединённая и отсоединённая подпись CAdES-BES. Без npm-пакетов, только асинхронный API плагина (`cadesplugin.CreateObjectAsync`, `propset_*`, `getLastError`).
+
+Что нужно пользователю: КриптоПро CSP, КриптоПро ЭЦП Browser plug-in и расширение браузера, сертификат с закрытым ключом в личном хранилище. Что нужно приложению: скрипт `cadesplugin_api.js` с сайта КриптоПро — кит его не содержит. Приложение подключает скрипт само или передаёт его адрес в `scriptUrl`: тогда composable загрузит его при первой проверке.
+
+```ts
+import { useCryptoPro } from '@ramzes1385/rise-ui-kit/composables'
+
+const { status, isReady, certificates, error, isLoading, isSigning, check, getCertificates, sign } = useCryptoPro({
+	scriptUrl: '/vendor/cadesplugin_api.js',
+})
+
+await getCertificates() // certificates.value: [{ thumbprint, name, organization, inn, innLe, ogrn, ogrnip, snils, validTo, hasPrivateKey, … }]
+const signature = await sign(file, { thumbprint: certificates.value[0].thumbprint, detached: true }) // Base64 без переносов
+```
+
+- Настройки: `scriptUrl` (строка, ref или геттер), `timeout` — ожидание скрипта и плагина, мс (30000), `checkOnMount` — диагностика после монтирования (`true`). До `onMounted` composable ничего не трогает — безопасен для SSR.
+- `status` (только чтение): `state` — `idle`, `checking`, `ready`, `error`; `steps` — шаги демостраницы КриптоПро по порядку: `extension`, `plugin`, `csp`, `objects`, у каждого `pending`, `checking`, `ok` или `error`; `pluginVersion`, `cspVersion`, `cspName`; `error` — ошибка диагностики. `check()` — повторная диагностика, возвращает `true` или `false`; параллельные вызовы ждут одну проверку.
+- `getCertificates()` — личное хранилище текущего пользователя (`CAPICOM_CURRENT_USER_STORE`, `My`). Субъект разбирается по русским, латинским и OID-именам: `ИНН`/`INN`/`1.2.643.3.131.1.1`, `ИНН ЮЛ`/`INNLE`/`1.2.643.100.4`, `ОГРН`, `ОГРНИП`, `СНИЛС`; ФИО — `SN` + `G`, без них `CN`. Пустое хранилище — пустой список и `error` с кодом `noCertificates`.
+- `sign(data, { thumbprint, detached })`: `data` — строка (подписываются её байты UTF-8, а не UTF-16, как при `ContentEncoding` по умолчанию), `Blob`/`File`, `ArrayBuffer` или типизированный массив. Данные уходят в плагин Base64 с `CADESCOM_BASE64_TO_BINARY`, подпись — `SignCades(…, CADESCOM_CADES_BES, detached)` с проверкой сертификата (`CheckCertificate`).
+- Ошибки — `CryptoProError`: `code` (`noScript`, `scriptFailed`, `noExtension`, `noPlugin`, `noCsp`, `objectsFailed`, `noCertificates`, `certificateNotFound`, `noPrivateKey`, `certificateInvalid`, `cancelled`, `unknown`), `message` — из раздела словаря `cryptopro`, `detail` — текст плагина с кодом вида `(0x8010006E)`. Последняя ошибка сертификатов и подписи — в `error`.
+- Эмуляция для тестов и демо: `createCryptoProEmulation({ scenario, certificates, now, delay })` и `install()` — ставит `window.cadesplugin`; сценарии `CRYPTO_PRO_EMULATION_SCENARIOS`: `ready`, `noExtension`, `noPlugin`, `noCsp`, `noCertificates`, `cancel`; тестовые сертификаты — `emulatedCertificates(now)`. Подпись эмуляции фиктивная, журнал вызовов плагина — `calls`.
+- Ограничения: настоящую подпись CI не проверяет (нужны CSP, плагин и ключ); подпись больших файлов, хэш, штамп времени и проверка подписи — компонент BaseCryptoProSign (new-cryptopro-ui).

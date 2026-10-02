@@ -68,6 +68,9 @@ export const UI_REQUISITES = localized('requisites')
 /** Подсказки DaData */
 export const UI_DADATA = localized('dadata')
 
+/** КриптоПро ЭЦП Browser plug-in: шаги диагностики и ошибки */
+export const UI_CRYPTOPRO = localized('cryptopro')
+
 /** Палитра команд */
 export const UI_COMMAND_PALETTE = localized('commandPalette')
 

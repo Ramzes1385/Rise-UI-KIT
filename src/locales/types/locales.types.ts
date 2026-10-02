@@ -47,6 +47,7 @@ export interface UiKitLocale {
 	phoneInput: Section<'phoneInput'>
 	requisites: Section<'requisites'>
 	dadata: Section<'dadata'>
+	cryptopro: Section<'cryptopro'>
 	commandPalette: Section<'commandPalette'>
 	charts: Section<'charts'>
 	codeBlock: Section<'codeBlock'>

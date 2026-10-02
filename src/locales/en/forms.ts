@@ -128,4 +128,23 @@ export const enForms = {
 		NEGATIVE: '{component}: `{prop}` = {value} is below 0 and is ignored',
 		MAX_BELOW_MIN: '{component}: `max` = {max} is less than `min` = {min}, the range is collapsed to {min}',
 	},
+	/** CryptoPro CAdES Browser plug-in (useCryptoPro): diagnostic steps and errors; `{message}` is the plug-in error text */
+	cryptopro: {
+		STEP_EXTENSION: 'Browser extension',
+		STEP_PLUGIN: 'CryptoPro CAdES Browser plug-in',
+		STEP_CSP: 'CryptoPro CSP',
+		STEP_OBJECTS: 'Signing objects',
+		NO_SCRIPT: 'The cadesplugin_api.js script is not connected',
+		SCRIPT_FAILED: 'The cadesplugin_api.js script could not be loaded',
+		NO_EXTENSION: 'The CryptoPro CAdES Browser plug-in extension does not respond: install and enable the extension and the plug-in',
+		NO_PLUGIN: 'CryptoPro CAdES Browser plug-in is not installed or unavailable',
+		NO_CSP: 'CryptoPro CSP is not installed',
+		OBJECTS_FAILED: 'CryptoPro signing objects could not be created',
+		NO_CERTIFICATES: 'There are no certificates in the personal store',
+		CERTIFICATE_NOT_FOUND: 'Certificate not found',
+		NO_PRIVATE_KEY: 'The certificate has no private key',
+		CERTIFICATE_INVALID: 'The certificate is invalid: it has expired or failed verification',
+		CANCELLED: 'Signing cancelled',
+		UNKNOWN: 'CryptoPro error: {message}',
+	},
 }

@@ -1666,3 +1666,12 @@ API кита не меняется. В Storybook добавлены пример
 - Словарь (ru, en): удалены неиспользуемые ключи `UI_TEXT.FILE_STATUS_PENDING` и `UI_TEXT.FILE_MAX_COUNT_PREFIX`. Свой язык через `defineLocale`: уберите их из своего словаря, если тип локали ругается на лишние ключи.
 - BaseTable: внутренний тулбар больше не принимает `settingsMaxHeight` и не объявляет `toggle-settings` (не использовались с fu-overlays; тулбар наружу не экспортируется).
 - BaseDropdown (и всё на нём: BaseSelect, BaseInputTags, BaseAutocomplete…): открытая панель следит и за размером триггера — поле с бейджами выросло на строку, панель сдвигается за его нижний край (раньше оставалась на месте и закрывала новую строку до прокрутки). Свои вызовы `updatePosition()` ради этого можно убрать.
+
+## Задача new-cryptopro: useCryptoPro
+
+Новый composable, изменений в существующих нет.
+
+- `useCryptoPro({ scriptUrl, timeout, checkOnMount })` — КриптоПро ЭЦП Browser plug-in: диагностика `status`, `getCertificates()`, `sign(data, { thumbprint, detached })` → Base64, ошибки `CryptoProError`. Справочник — docs/reference/COMPOSABLES.md, «useCryptoPro».
+- Эмуляция плагина для тестов приложения: `createCryptoProEmulation`, `emulatedCertificates`, `CRYPTO_PRO_EMULATION_SCENARIOS`.
+- Словарь: раздел `cryptopro` (ru, en) — шаги диагностики и тексты ошибок; свой язык — `defineLocale(en, { cryptopro: { … } })`.
+- `cadesplugin_api.js` в кит не входит: приложение подключает его само или передаёт адрес в `scriptUrl`.
