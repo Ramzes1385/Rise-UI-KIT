@@ -54,6 +54,12 @@ export const enBase = {
 		BREADCRUMBS_NAV: 'Breadcrumbs',
 		PAGINATION_PREV: 'Previous page',
 		PAGINATION_NEXT: 'Next page',
+		/** Ориентир навигации BasePagination */
+		PAGINATION: 'Pagination',
+		/** Имя номера страницы BasePagination */
+		PAGINATION_PAGE: 'Page {page}',
+		/** Кнопка BaseBreadcrumbs, которая снова прячет раскрытые крошки */
+		BREADCRUMBS_COLLAPSE: 'Hide sections',
 		TABS_SCROLL_LEFT: 'Scroll tabs left',
 		TABS_SCROLL_RIGHT: 'Scroll tabs right',
 		CLOSE: 'Close',

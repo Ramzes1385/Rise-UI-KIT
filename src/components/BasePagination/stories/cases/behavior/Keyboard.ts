@@ -9,18 +9,22 @@ export const Keyboard: StoryObj<typeof meta> = {
 			description: {
 				story: [
 					'Клавиатура: кнопки страниц и стрелки достижимы по Tab (заблокированная стрелка пропускается), Enter переключает',
-					'страницу. Кольцо фокуса видно только при навигации с клавиатуры.',
+					'страницу. Кольцо фокуса видно только при навигации с клавиатуры. Пагинация — ориентир `nav` «Пагинация», номера',
+					'названы «Страница N», текущая помечена `aria-current="page"`; Enter на текущей странице событий не эмитит.',
 				].join('\n'),
 			},
 		},
 	},
 	tags: ['!autodocs'],
 	play: async ({ canvas, userEvent, args }) => {
-		const second = canvas.getByRole('button', { name: '2' })
+		await expect(canvas.getByRole('navigation', { name: 'Пагинация' })).toBeVisible()
+		const second = canvas.getByRole('button', { name: 'Страница 2' })
 		await tabTo(second, userEvent)
 		await expect(getComputedStyle(second).outlineStyle).toBe('solid')
 		await userEvent.keyboard('{Enter}')
 		await expect(args.onChange).toHaveBeenCalledWith(2)
-		await waitFor(() => expect(canvas.getByRole('button', { name: '2' })).toHaveAttribute('aria-current', 'page'))
+		await waitFor(() => expect(canvas.getByRole('button', { name: 'Страница 2' })).toHaveAttribute('aria-current', 'page'))
+		await userEvent.keyboard('{Enter}')
+		await expect(args.onChange).toHaveBeenCalledTimes(1)
 	},
 }

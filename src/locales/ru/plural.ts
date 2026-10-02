@@ -11,6 +11,13 @@ export const ruPlural = {
 	NOTIFICATIONS_UNREAD: { one: '{n} новое', few: '{n} новых', many: '{n} новых', other: '{n} новых' },
 	REPLIES: { one: '{n} ответ', few: '{n} ответа', many: '{n} ответов', other: '{n} ответа' },
 	BADGES_MORE: { one: 'Ещё {n} значок', few: 'Ещё {n} значка', many: 'Ещё {n} значков', other: 'Ещё {n} значка' },
+	/** Кнопка «…» BaseBreadcrumbs: сколько крошек скрыто */
+	BREADCRUMBS_HIDDEN: {
+		one: 'Показать ещё {n} раздел',
+		few: 'Показать ещё {n} раздела',
+		many: 'Показать ещё {n} разделов',
+		other: 'Показать ещё {n} раздела',
+	},
 	/** Статус поиска для скринридера: сколько результатов в списке */
 	SEARCH_RESULTS: {
 		one: 'Найден {n} результат',

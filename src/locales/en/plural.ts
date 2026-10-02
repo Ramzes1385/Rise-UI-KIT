@@ -10,5 +10,6 @@ export const enPlural = {
 	NOTIFICATIONS_UNREAD: { one: '{n} new', other: '{n} new' },
 	REPLIES: { one: '{n} reply', other: '{n} replies' },
 	BADGES_MORE: { one: '{n} more badge', other: '{n} more badges' },
+	BREADCRUMBS_HIDDEN: { one: 'Show {n} more section', other: 'Show {n} more sections' },
 	SEARCH_RESULTS: { one: '{n} result found', other: '{n} results found' },
 }

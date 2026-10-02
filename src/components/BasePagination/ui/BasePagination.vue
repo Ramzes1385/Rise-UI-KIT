@@ -1,5 +1,5 @@
 <template>
-	<div class="base-pagination" :class="classes.root" :style="[sizeScaleStyle, customColorStyle]">
+	<nav class="base-pagination" :class="classes.root" :style="[sizeScaleStyle, customColorStyle]" :aria-label="UI_ARIA.PAGINATION">
 		<BaseButton
 			:variant="inactivePageVariant"
 			class="base-pagination__arrow"
@@ -19,6 +19,7 @@
 					class="base-pagination__page"
 					:class="{ 'base-pagination__page--current': modelValue === page }"
 					:aria-current="modelValue === page ? 'page' : undefined"
+					:aria-label="pageLabel(page)"
 					:size-scale="sizeScale"
 					:custom-class="classes.button"
 					@click="changePage(page)">
@@ -38,7 +39,7 @@
 			@click="changePage(modelValue + 1)">
 			<BaseIcon name="chevron-right" :size-scale="calcIconScale('md', sizeScale)" />
 		</BaseButton>
-	</div>
+	</nav>
 </template>
 
 <script setup lang="ts">
@@ -67,6 +68,16 @@ const emit = defineEmits<BasePaginationEmits>()
 
 defineSlots<BasePaginationSlots>()
 
-const { sizeScaleStyle, customColorStyle, classes, pages, inactivePageVariant, isPrevDisabled, isNextDisabled, changePage, goToPrevPage } =
-	useBasePagination(props, emit)
+const {
+	sizeScaleStyle,
+	customColorStyle,
+	classes,
+	pages,
+	inactivePageVariant,
+	isPrevDisabled,
+	isNextDisabled,
+	pageLabel,
+	changePage,
+	goToPrevPage,
+} = useBasePagination(props, emit)
 </script>

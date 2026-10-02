@@ -22,7 +22,7 @@ export const Pagination: StoryObj<typeof meta> = {
 	},
 	play: async ({ canvas, userEvent, args }) => {
 		await expect(canvas.getByText('1–3 из 8')).toBeVisible()
-		await userEvent.click(canvas.getByRole('button', { name: '2' }))
+		await userEvent.click(canvas.getByRole('button', { name: 'Страница 2' }))
 		await expect(canvas.getByText('4–6 из 8')).toBeVisible()
 		await expect(bodyRows(canvas.getByRole('table'))[0]).toHaveTextContent('З-1044')
 		await expect(args['onPage-change']).toHaveBeenLastCalledWith(2)

@@ -185,4 +185,42 @@ describe('BasePagination integration', () => {
 			expect(container.querySelectorAll('.base-pagination__arrow.base-button--ghost')).toHaveLength(2)
 		})
 	})
+
+	describe('доступность и лишние события (PG-3, PG-6)', () => {
+		it('корень — ориентир <nav> «Пагинация», номера названы «Страница N»', () => {
+			render(BasePagination, { props: { modelValue: 2, total: 50, pageSize: 10 } })
+
+			expect(screen.getByRole('navigation', { name: 'Пагинация' })).toBeInTheDocument()
+			expect(screen.getByRole('button', { name: 'Страница 2' })).toHaveAttribute('aria-current', 'page')
+			expect(screen.getByRole('button', { name: 'Страница 5' })).not.toHaveAttribute('aria-current')
+		})
+
+		it('клик по текущей странице не эмитит событий', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BasePagination, { props: { modelValue: 2, total: 50, pageSize: 10 } })
+
+			await user.click(screen.getByRole('button', { name: 'Страница 2' }))
+
+			expect(emitted()).not.toHaveProperty('update:modelValue')
+			expect(emitted()).not.toHaveProperty('change')
+		})
+
+		it('с клавиатуры: Tab до номера и Enter переключают страницу', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BasePagination, { props: { modelValue: 2, total: 50, pageSize: 10 } })
+
+			await user.tab()
+			await user.tab()
+			expect(screen.getByRole('button', { name: 'Страница 1' })).toHaveFocus()
+			await user.keyboard('{Enter}')
+
+			expect(emitted('change')).toEqual([[1]])
+		})
+
+		it('без showLastPage на последней странице окно доходит до неё (PG-4)', () => {
+			render(BasePagination, { props: { modelValue: 20, total: 200, pageSize: 10, showLastPage: false } })
+
+			expect(screen.getByRole('button', { name: 'Страница 20' })).toHaveAttribute('aria-current', 'page')
+		})
+	})
 })

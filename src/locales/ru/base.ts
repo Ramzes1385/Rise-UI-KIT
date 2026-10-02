@@ -58,6 +58,12 @@ export const ruBase = {
 		BREADCRUMBS_NAV: 'Хлебные крошки',
 		PAGINATION_PREV: 'Предыдущая страница',
 		PAGINATION_NEXT: 'Следующая страница',
+		/** Ориентир навигации BasePagination */
+		PAGINATION: 'Пагинация',
+		/** Имя номера страницы BasePagination */
+		PAGINATION_PAGE: 'Страница {page}',
+		/** Кнопка BaseBreadcrumbs, которая снова прячет раскрытые крошки */
+		BREADCRUMBS_COLLAPSE: 'Скрыть разделы',
 		TABS_SCROLL_LEFT: 'Прокрутить вкладки влево',
 		TABS_SCROLL_RIGHT: 'Прокрутить вкладки вправо',
 		CLOSE: 'Закрыть',

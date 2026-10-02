@@ -102,16 +102,29 @@ describe('paginationUtils', () => {
 			expect(result[result.length - 1]).toBe(20)
 		})
 
-		it('не показывает последнюю страницу и правое многоточие при showLastPage=false', () => {
-			const result = calcVisiblePages({ current: 10, total: 20, showLastPage: false })
-			expect(result).not.toContain(20)
-			expect(result[result.length - 1]).not.toBe('...')
+		it('без showLastPage: окно из maxVisible - 1 номеров вокруг текущей и правое многоточие, если дальше есть страницы', () => {
+			expect(calcVisiblePages({ current: 10, total: 20, showLastPage: false })).toEqual([1, '...', 7, 8, 9, 10, 11, 12, '...'])
 		})
 
-		it('прижимает к концу без showLastPage', () => {
-			const result = calcVisiblePages({ current: 19, total: 20, showLastPage: false })
-			expect(result).toContain(19)
-			expect(result).not.toContain(20)
+		it('без showLastPage окно доходит до последней страницы, когда текущая — последняя (PG-4)', () => {
+			expect(calcVisiblePages({ current: 20, total: 20, showLastPage: false })).toEqual([1, '...', 15, 16, 17, 18, 19, 20])
+		})
+
+		it('без showLastPage у начала — без левого многоточия', () => {
+			expect(calcVisiblePages({ current: 2, total: 20, showLastPage: false })).toEqual([1, 2, 3, 4, 5, 6, 7, '...'])
+		})
+
+		it('с showLastPage у конца — без правого многоточия', () => {
+			expect(calcVisiblePages({ current: 20, total: 20 })).toEqual([1, '...', 15, 16, 17, 18, 19, 20])
+		})
+
+		it('с showLastPage в середине — по многоточию с каждой стороны', () => {
+			expect(calcVisiblePages({ current: 10, total: 20 })).toEqual([1, '...', 8, 9, 10, 11, 12, '...', 20])
+		})
+
+		it('чётный maxVisible не даёт лишнего номера', () => {
+			const result = calcVisiblePages({ current: 10, total: 20, maxVisible: 6 })
+			expect(result.filter(page => page !== '...')).toHaveLength(6)
 		})
 	})
 
@@ -136,6 +149,10 @@ describe('paginationUtils', () => {
 		it('форматирует информацию о последней неполной странице', () => {
 			const result = calcPageInfo({ current: 10, pageSize: 10, total: 95 })
 			expect(result).toBe('91–95 из 95')
+		})
+
+		it('без элементов — «0–0 из 0», а не «1–0» (PG-7)', () => {
+			expect(calcPageInfo({ current: 1, pageSize: 10, total: 0 })).toBe('0–0 из 0')
 		})
 
 		it('форматирует информацию при одном элементе', () => {

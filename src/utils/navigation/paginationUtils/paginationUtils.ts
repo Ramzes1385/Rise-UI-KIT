@@ -9,22 +9,22 @@ function calcTotalPages(total: number, pageSize: number): number {
 	return Math.ceil(total / pageSize)
 }
 
-/** Диапазон средних страниц [start, end] вокруг текущей, прижатый к краям 2…total-1 */
-function calcMiddleRange(current: number, total: number, maxVisible: number): [number, number] {
-	const slotsForMiddle = maxVisible - 2 // минус первая и последняя
-	const half = Math.floor(slotsForMiddle / 2)
-
-	let start = current - half
-	let end = current + half
+/**
+ * Диапазон средних страниц [start, end] вокруг текущей, прижатый к краям 2…last:
+ * `last` — total-1, когда последняя страница показана отдельно, иначе total; `slots` — сколько номеров в диапазоне
+ */
+function calcMiddleRange(current: number, last: number, slots: number): [number, number] {
+	let start = current - Math.floor(slots / 2)
+	let end = start + slots - 1
 
 	if (start < 2) {
-		end = Math.min(total - 1, end + (2 - start))
+		end = Math.min(last, end + (2 - start))
 		start = 2
 	}
 
-	if (end > total - 1) {
-		start = Math.max(2, start - (end - (total - 1)))
-		end = total - 1
+	if (end > last) {
+		start = Math.max(2, start - (end - last))
+		end = last
 	}
 
 	return [start, end]
@@ -43,7 +43,7 @@ function buildPageItems(range: [number, number], total: number, showLastPage: bo
 		result.push(i)
 	}
 
-	if (showLastPage && end < total - 1) {
+	if (end < (showLastPage ? total - 1 : total)) {
 		result.push('...')
 	}
 
@@ -70,13 +70,14 @@ function calcVisiblePages(options: VisiblePagesOptions): VisiblePageItem[] {
 		return Array.from({ length: total }, (_, i) => i + 1)
 	}
 
-	return buildPageItems(calcMiddleRange(current, total, maxVisible), total, showLastPage)
+	const range = showLastPage ? calcMiddleRange(current, total - 1, maxVisible - 2) : calcMiddleRange(current, total, maxVisible - 1)
+	return buildPageItems(range, total, showLastPage)
 }
 
 /** Рассчитать строку информации о странице («1–10 из 100») */
 function calcPageInfo(options: PageInfoOptions): string {
 	const { current, pageSize, total } = options
-	const from = (current - 1) * pageSize + 1
+	const from = total > 0 ? (current - 1) * pageSize + 1 : 0
 	const to = Math.min(current * pageSize, total)
 	return formatMessage(UI_TEXT.PAGE_RANGE, { from: formatNumber(from), to: formatNumber(to), total: formatNumber(total) })
 }

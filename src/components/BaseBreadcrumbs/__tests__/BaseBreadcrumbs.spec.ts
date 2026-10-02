@@ -134,8 +134,8 @@ describe('BaseBreadcrumbs unit', () => {
 			ellipsisBtn.dispatchEvent(new Event('click'))
 			await new Promise(resolve => setTimeout(resolve, 0))
 
-			expect(container.querySelector('.base-breadcrumbs__item--ellipsis')).not.toBeInTheDocument()
-			const listItems = container.querySelectorAll('.base-breadcrumbs__item')
+			expect(ellipsisBtn).toHaveAttribute('aria-expanded', 'true')
+			const listItems = container.querySelectorAll('.base-breadcrumbs__item:not(.base-breadcrumbs__item--ellipsis)')
 			expect(listItems).toHaveLength(ITEMS.length)
 		})
 

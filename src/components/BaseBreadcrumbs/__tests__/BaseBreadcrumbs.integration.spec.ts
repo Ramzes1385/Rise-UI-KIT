@@ -57,7 +57,57 @@ describe('BaseBreadcrumbs integration', () => {
 
 			await user.click(ellipsisBtn!)
 
-			expect(container.querySelector('.base-breadcrumbs__ellipsis-btn')).not.toBeInTheDocument()
+			expect(screen.getByText('Каталог')).toBeInTheDocument()
+			expect(ellipsisBtn).toHaveAttribute('aria-expanded', 'true')
+		})
+
+		it('кнопка «…» — раскрывающая: имя с числом скрытых, aria-expanded, повторный клик сворачивает (BC-3)', async () => {
+			const user = userEvent.setup()
+			render(BaseBreadcrumbs, { props: { items: ITEMS, maxItems: 2 } })
+
+			const toggle = screen.getByRole('button', { name: 'Показать ещё 2 раздела' })
+			expect(toggle).toHaveAttribute('aria-expanded', 'false')
+			expect(screen.queryByText('Главная')).not.toBeInTheDocument()
+
+			await user.click(toggle)
+			expect(toggle).toHaveAccessibleName('Скрыть разделы')
+			expect(toggle).toHaveAttribute('aria-expanded', 'true')
+			expect(toggle).toHaveFocus()
+			expect(screen.getAllByRole('listitem').filter(item => !item.hasAttribute('aria-hidden'))).toHaveLength(ITEMS.length + 1)
+
+			await user.click(toggle)
+			expect(toggle).toHaveAccessibleName('Показать ещё 2 раздела')
+			expect(screen.queryByText('Главная')).not.toBeInTheDocument()
+		})
+
+		it('кнопка «…» работает с клавиатуры: Tab до неё, Enter и Space переключают', async () => {
+			const user = userEvent.setup()
+			render(BaseBreadcrumbs, { props: { items: ITEMS, maxItems: 2 } })
+
+			await user.tab()
+			const toggle = screen.getByRole('button', { name: 'Показать ещё 2 раздела' })
+			expect(toggle).toHaveFocus()
+
+			await user.keyboard('{Enter}')
+			expect(toggle).toHaveAttribute('aria-expanded', 'true')
+			await user.keyboard(' ')
+			expect(toggle).toHaveAttribute('aria-expanded', 'false')
+		})
+
+		it('новые items снова сворачивают крошки', async () => {
+			const user = userEvent.setup()
+			const { rerender } = render(BaseBreadcrumbs, { props: { items: ITEMS, maxItems: 2 } })
+
+			await user.click(screen.getByRole('button', { name: 'Показать ещё 2 раздела' }))
+			await rerender({ items: [...ITEMS, { label: 'Калитка' }] })
+
+			expect(screen.getByRole('button', { name: 'Показать ещё 3 раздела' })).toHaveAttribute('aria-expanded', 'false')
+		})
+
+		it('с showHome считает скрытыми крошки после «домой»', () => {
+			render(BaseBreadcrumbs, { props: { items: [...ITEMS, { label: 'Калитка' }], maxItems: 2, showHome: true } })
+
+			expect(screen.getByRole('button', { name: 'Показать ещё 2 раздела' })).toBeInTheDocument()
 		})
 	})
 

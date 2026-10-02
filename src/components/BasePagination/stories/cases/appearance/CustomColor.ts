@@ -21,7 +21,7 @@ export const CustomColor: StoryObj<typeof meta> = {
 		},
 	},
 	play: async ({ canvas }) => {
-		await expect(getComputedStyle(canvas.getByRole('button', { name: '4' })).backgroundColor).toBe('rgb(29, 78, 216)')
-		await expect(getComputedStyle(canvas.getByRole('button', { name: '3' })).color).toBe('rgb(30, 58, 138)')
+		await expect(getComputedStyle(canvas.getByRole('button', { name: 'Страница 4' })).backgroundColor).toBe('rgb(29, 78, 216)')
+		await expect(getComputedStyle(canvas.getByRole('button', { name: 'Страница 3' })).color).toBe('rgb(30, 58, 138)')
 	},
 }

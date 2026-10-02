@@ -30,17 +30,20 @@
 				</span>
 			</li>
 
-			<template v-if="collapsedItems.length > 0">
+			<template v-if="canCollapse">
 				<li class="base-breadcrumbs__item base-breadcrumbs__item--ellipsis" :class="classes.item">
 					<button
 						type="button"
 						class="base-breadcrumbs__link base-breadcrumbs__ellipsis-btn"
-						:class="classes.ellipsisBtn"
-						@click="isExpanded = true">
-						…
+						:class="[{ 'base-breadcrumbs__ellipsis-btn--expanded': isExpanded }, classes.ellipsisBtn]"
+						:aria-label="toggleLabel"
+						:aria-expanded="isExpanded"
+						@click="toggleExpanded">
+						<BaseIcon v-if="isExpanded" name="chevron-left" :size-scale="iconScale" />
+						<template v-else>…</template>
 					</button>
 				</li>
-				<li class="base-breadcrumbs__item" :class="classes.item" aria-hidden="true">
+				<li v-if="!isExpanded" class="base-breadcrumbs__item" :class="classes.item" aria-hidden="true">
 					<span class="base-breadcrumbs__sep" :class="classes.separator">
 						<slot name="separator" :index="0">
 							<BreadcrumbsSeparator
@@ -132,8 +135,10 @@ const {
 	customColorStyle,
 	classes,
 	isExpanded,
+	canCollapse,
+	toggleLabel,
+	toggleExpanded,
 	visibleItems,
-	collapsedItems,
 	iconScale,
 	structuredData,
 	isCurrent,

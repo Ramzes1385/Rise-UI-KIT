@@ -11,6 +11,6 @@ export const ManyPages: StoryObj<typeof meta> = {
 	args: { modelValue: 25, total: 500 },
 	play: async ({ canvas }) => {
 		await expect(canvas.getAllByText('…')).toHaveLength(2)
-		await expect(canvas.getByRole('button', { name: '50' })).toBeVisible()
+		await expect(canvas.getByRole('button', { name: 'Страница 50' })).toBeVisible()
 	},
 }

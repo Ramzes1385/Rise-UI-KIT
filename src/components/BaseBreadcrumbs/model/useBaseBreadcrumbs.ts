@@ -1,4 +1,6 @@
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { UI_ARIA } from '@/locales/messages'
+import { getLocale, pluralize } from '@/locales/state'
 import { calcIconScale } from '@utils/media/iconUtils'
 import type { ResolvedLink } from '@composables/interaction/useLink'
 import type { StructuredData } from '@utils/seo/structuredDataUtils'
@@ -41,12 +43,30 @@ function breadcrumbsSchema(items: BreadcrumbItem[], { url }: StructuredDataConte
 function useVisibleItems(props: BreadcrumbsProps) {
 	const isExpanded = ref(false)
 	const trailItems = computed<BreadcrumbItem[]>(() => (props.showHome && props.items.length > 1 ? props.items.slice(1) : props.items))
-	const isCollapsed = computed(() => props.maxItems > 0 && !isExpanded.value && trailItems.value.length > props.maxItems)
+	const canCollapse = computed(() => props.maxItems > 0 && trailItems.value.length > props.maxItems)
+	const isCollapsed = computed(() => canCollapse.value && !isExpanded.value)
+	const collapsedItems = computed<BreadcrumbItem[]>(() => (isCollapsed.value ? trailItems.value.slice(0, -props.maxItems) : []))
+
+	watch(
+		() => props.items,
+		() => {
+			isExpanded.value = false
+		},
+	)
 
 	return {
 		isExpanded,
+		canCollapse,
 		visibleItems: computed<BreadcrumbItem[]>(() => (isCollapsed.value ? trailItems.value.slice(-props.maxItems) : trailItems.value)),
-		collapsedItems: computed<BreadcrumbItem[]>(() => (isCollapsed.value ? trailItems.value.slice(0, -props.maxItems) : [])),
+		collapsedItems,
+		toggleLabel: computed(() =>
+			isCollapsed.value
+				? pluralize(getLocale().plural.BREADCRUMBS_HIDDEN, collapsedItems.value.length)
+				: UI_ARIA.BREADCRUMBS_COLLAPSE,
+		),
+		toggleExpanded(): void {
+			isExpanded.value = !isExpanded.value
+		},
 	}
 }
 
@@ -70,13 +90,12 @@ function useItemLinks(props: BreadcrumbsProps, emit: BaseBreadcrumbsEmits) {
 
 export function useBaseBreadcrumbs(props: BreadcrumbsProps, emit: BaseBreadcrumbsEmits) {
 	const standard = useStandardBaseComponent('base-breadcrumbs', props, BREADCRUMBS_ELEMENTS)
-	const { isExpanded, visibleItems, collapsedItems } = useVisibleItems(props)
+	const visible = useVisibleItems(props)
+	const { visibleItems } = visible
 
 	return {
 		...standard,
-		isExpanded,
-		visibleItems,
-		collapsedItems,
+		...visible,
 		iconScale: computed(() => calcIconScale('sm', props.sizeScale)),
 		...useStructuredData(
 			'BaseBreadcrumbs',
