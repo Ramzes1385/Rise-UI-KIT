@@ -219,3 +219,51 @@ export const imageMapByUrl = (svgUrl: string): ImageMapData => ({
 	layers: [{ id: 'plan', title: 'План этажа', svgUrl, width: 1000, height: 600 }],
 	objects: [],
 })
+
+const MALL_TAGS: Record<number, string[]> = { 1: ['wifi'], 2: ['wifi', 'parking'], 5: ['parking', 'kids'], 6: ['kids'] }
+
+function mallObjects(level: number): ImageMapObject[] {
+	return floorObjects(level).map(object => {
+		const index = Number(object.id.split('-shop-')[1])
+		if (index) {
+			const isFood = object.group === 'food'
+			return {
+				...object,
+				tags: MALL_TAGS[index],
+				keywords: isFood ? ['кофе', 'обед'] : ['одежда', 'подарки'],
+				image: placeholderImage({ width: 320, height: 240, hue: 40 * index + 20 * level }),
+			}
+		}
+		if (object.id.endsWith('-info')) return { ...object, tags: ['wifi'], keywords: ['помощь', 'камера хранения'] }
+		if (object.id.endsWith('-lift')) return { ...object, tags: ['parking', 'kids'] }
+		return { ...object, isHiddenInDirectory: true }
+	})
+}
+
+export const IMAGE_MAP_MALL: ImageMapData = {
+	...IMAGE_MAP_FLOORS,
+	filters: [
+		{ id: 'groups', title: 'Категории' },
+		{
+			id: 'amenities',
+			title: 'Удобства',
+			type: 'tags',
+			logic: 'and',
+			options: [
+				{ value: 'wifi', label: 'Wi-Fi' },
+				{ value: 'parking', label: 'Парковка' },
+			],
+		},
+		{ id: 'kids', title: 'Для семьи', type: 'switch', options: [{ value: 'kids', label: 'Детская комната рядом' }] },
+		{
+			id: 'access',
+			title: 'Рядом',
+			type: 'select',
+			options: [
+				{ value: 'parking', label: 'Парковка' },
+				{ value: 'wifi', label: 'Зона Wi-Fi' },
+			],
+		},
+	],
+	objects: [1, 2, 3].flatMap(mallObjects),
+}
