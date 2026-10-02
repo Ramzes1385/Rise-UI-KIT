@@ -8,6 +8,7 @@ export const args = {
 	type: 'button',
 	isLoading: false,
 	isDisabled: false,
+	isFocusableWhenDisabled: false,
 	sizeScale: 100,
 	onClick: fn(),
 } satisfies Meta<typeof BaseButton>['args']

@@ -12,8 +12,8 @@
 		]"
 		:style="[paddingStyle, sizeScaleStyle, variantStyle, customColorStyle]"
 		:type="type"
-		:disabled="isDisabled"
-		:aria-disabled="isLoading ? 'true' : undefined"
+		:disabled="isDisabled && !isFocusableWhenDisabled"
+		:aria-disabled="isLoading || (isDisabled && isFocusableWhenDisabled) ? 'true' : undefined"
 		:aria-busy="isLoading ? 'true' : undefined"
 		@click="handleClick">
 		<span v-if="isLoading" class="base-button__loader" aria-hidden="true"></span>
@@ -46,6 +46,7 @@ const props = withDefaults(
 		padding: undefined,
 		isLoading: false,
 		isDisabled: false,
+		isFocusableWhenDisabled: false,
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )

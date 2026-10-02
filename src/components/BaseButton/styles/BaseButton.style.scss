@@ -54,6 +54,18 @@
 		@include disabled-state;
 	}
 
+	&--disabled[aria-disabled='true']:focus-visible {
+		opacity: 1;
+
+		.base-button__loader {
+			opacity: var(--rise-disabled-opacity);
+		}
+
+		&:not(.base-button--loading) .base-button__content {
+			opacity: var(--rise-disabled-opacity);
+		}
+	}
+
 	&--loading {
 		cursor: progress;
 

@@ -154,4 +154,117 @@ describe('BaseButton integration', () => {
 			form.remove()
 		})
 	})
+
+	describe('isFocusableWhenDisabled', () => {
+		const renderFocusable = (props: Record<string, unknown> = {}, container?: HTMLElement) =>
+			render(BaseButton, {
+				props: { isDisabled: true, isFocusableWhenDisabled: true, ...props },
+				slots: { default: 'Вперёд' },
+				...(container ? { container } : {}),
+			})
+
+		it('отключённая кнопка — aria-disabled вместо disabled и остаётся в порядке Tab', async () => {
+			const user = userEvent.setup()
+			renderFocusable()
+			const button = screen.getByRole('button', { name: 'Вперёд' })
+
+			expect(button).not.toHaveAttribute('disabled')
+			expect(button).toHaveAttribute('aria-disabled', 'true')
+			expect(button).toHaveClass('base-button--disabled')
+			expect(button.tabIndex).toBe(0)
+
+			await user.tab()
+			expect(button).toHaveFocus()
+		})
+
+		it('клик, Enter и Space не эмитят click', async () => {
+			const user = userEvent.setup()
+			const { emitted } = renderFocusable()
+			const button = screen.getByRole('button', { name: 'Вперёд' })
+
+			await user.click(button)
+			button.focus()
+			await user.keyboard('{Enter}')
+			await user.keyboard(' ')
+
+			expect(button).toHaveFocus()
+			expect(emitted()).not.toHaveProperty('click')
+		})
+
+		it('клик не всплывает к предку', async () => {
+			const user = userEvent.setup()
+			const onParentClick = vi.fn()
+			const parent = document.createElement('div')
+			parent.addEventListener('click', onParentClick)
+			document.body.appendChild(parent)
+			renderFocusable({}, parent)
+
+			await user.click(screen.getByRole('button', { name: 'Вперёд' }))
+
+			expect(onParentClick).not.toHaveBeenCalled()
+			parent.remove()
+		})
+
+		it('type=submit не отправляет форму ни кликом, ни Space', async () => {
+			const user = userEvent.setup()
+			const onSubmit = vi.fn((event: Event) => event.preventDefault())
+			const form = document.createElement('form')
+			form.addEventListener('submit', onSubmit)
+			document.body.appendChild(form)
+			renderFocusable({ type: 'submit' }, form)
+			const button = screen.getByRole('button', { name: 'Вперёд' })
+
+			await user.click(button)
+			button.focus()
+			await user.keyboard(' ')
+
+			expect(onSubmit).not.toHaveBeenCalled()
+			form.remove()
+		})
+
+		it('фокус остаётся на кнопке, когда она отключается от собственного нажатия', async () => {
+			const user = userEvent.setup()
+			const { rerender, emitted } = render(BaseButton, {
+				props: { isFocusableWhenDisabled: true },
+				slots: { default: 'Вперёд' },
+			})
+			const button = screen.getByRole('button', { name: 'Вперёд' })
+
+			await user.tab()
+			await user.keyboard('{Enter}')
+			await rerender({ isFocusableWhenDisabled: true, isDisabled: true })
+
+			expect(emitted('click')).toHaveLength(1)
+			expect(button).toHaveFocus()
+			expect(document.activeElement).toBe(button)
+		})
+
+		it('метод focus() работает у отключённой кнопки', async () => {
+			const { container } = renderFocusable()
+			const button = container.querySelector('button') as HTMLButtonElement
+
+			button.focus()
+
+			expect(document.activeElement).toBe(button)
+		})
+
+		it('без isDisabled кнопка обычная: нет aria-disabled, клик эмитится', async () => {
+			const user = userEvent.setup()
+			const { emitted } = renderFocusable({ isDisabled: false })
+			const button = screen.getByRole('button', { name: 'Вперёд' })
+
+			expect(button).not.toHaveAttribute('aria-disabled')
+			await user.click(button)
+
+			expect(emitted('click')).toHaveLength(1)
+		})
+
+		it('без нового пропа отключённая кнопка — прежний нативный disabled', () => {
+			render(BaseButton, { props: { isDisabled: true }, slots: { default: 'Вперёд' } })
+			const button = screen.getByRole('button', { name: 'Вперёд' })
+
+			expect(button).toBeDisabled()
+			expect(button).not.toHaveAttribute('aria-disabled')
+		})
+	})
 })

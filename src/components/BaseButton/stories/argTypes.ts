@@ -9,6 +9,7 @@ export const argTypes = {
 	padding: { control: 'object', table: propGroup(ARG_GROUP.appearance) },
 	isLoading: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 	isDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+	isFocusableWhenDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 	default: slotArgType('Текст кнопки'),
 	left: { control: false },
 	right: { control: false },

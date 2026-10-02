@@ -24,6 +24,13 @@ export interface BaseButtonProps extends BaseComponentProps<(typeof BUTTON_VARIA
 	isLoading?: boolean
 	/** Отключенное состояние */
 	isDisabled?: boolean
+	/**
+	 * Отключённая кнопка остаётся в фокусе и в порядке Tab: `aria-disabled="true"` вместо `disabled`,
+	 * клик, Enter и Space не вызывают `click`, не отправляют форму и не всплывают.
+	 * Для кнопок, которые отключаются от собственного нажатия (предел шага, исчерпанная история):
+	 * фокус не уходит в `body`.
+	 */
+	isFocusableWhenDisabled?: boolean
 }
 
 export interface BaseButtonEmits {

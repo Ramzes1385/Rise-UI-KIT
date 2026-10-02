@@ -21,6 +21,7 @@ export const Sizes = cases.Sizes
 export const CustomColor = cases.CustomColor
 export const Disabled = cases.Disabled
 export const Loading = cases.Loading
+export const FocusableWhenDisabled = cases.FocusableWhenDisabled
 export const WithIcons = cases.WithIcons
 export const LongText = cases.LongText
 export const InForm = cases.InForm

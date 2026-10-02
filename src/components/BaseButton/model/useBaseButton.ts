@@ -12,12 +12,11 @@ export function useBaseButton(props: BaseButtonProps, emit: BaseButtonEmits) {
 		buttonRef,
 		paddingStyle: computed(() => (props.padding === undefined ? undefined : paddingStyle.value)),
 		handleClick(event: MouseEvent): void {
-			if (props.isLoading) {
+			if (props.isLoading || props.isDisabled) {
 				event.preventDefault()
 				event.stopPropagation()
 				return
 			}
-			if (props.isDisabled) return
 			emit('click', event)
 		},
 		exposed: { buttonRef, focus: () => buttonRef.value?.focus(), blur: () => buttonRef.value?.blur() },
