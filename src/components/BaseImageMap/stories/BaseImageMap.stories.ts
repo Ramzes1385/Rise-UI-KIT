@@ -38,3 +38,4 @@ export const DirectoryEmpty = cases.DirectoryEmpty
 export const Filters = cases.Filters
 export const Legend = cases.Legend
 export const DeepLink = cases.DeepLink
+export const OpeningHours = cases.OpeningHours
