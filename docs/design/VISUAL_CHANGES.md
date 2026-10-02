@@ -960,3 +960,13 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 Эталоны скриншот-тестов, которые это затронет (по `*.visual.spec.ts`, обе темы): `chat-baseaimessage` — default, composition, sizes; `chat-basepromptinput` — disabled, sizes, variants; `chat-basetoolcall--statuses`; `data-basefilterbuilder` — disabled, empty, sizes, variants; `data-basekanban` — не затронуты (disabled, sizes, variants, wip-limits совпадают с базой); `element-basemarkdown--default`; `form-basecolorpicker` — minimal, presets; `media-baseaudioplayer` — default, sizes, variants, with-error; `navigation-basemegamenu--default`. Эталоны не трогались.
 
 Новые истории (в скриншот-тесты не добавлены): `form-basedatepicker--navigation-tooltips` (подсказки навигации панели по наведению и Tab), `form-basefileupload--long-content` (многоточие и подсказка длинного имени).
+
+## Задача fu-keyboard: клавиатура у кликабельных элементов
+
+Сверка Storybook «было / стало» (база 4513198d): все истории BaseBadge, BaseAvatar, BaseChip, BaseCard, BasePopover в двух темах. Истории из скриншот-тестов не изменились — эталоны не затронуты. Страница с превью — `.rise-transfer\review\fu-keyboard.html`.
+
+- **BaseBadge, BaseAvatar, индикатор BaseChip с обработчиком клика** — кнопка: кольцо фокуса `focus-ring` при фокусе с клавиатуры, курсор-указатель. В историях Default (не в скриншот-тестах) после клика в play видно кольцо фокуса. Без обработчика вид прежний.
+- **BaseCard с `@click`** получает вид `isHoverable` (курсор, рамка `--rise-border-accented` и тень при наведении, кольцо фокуса). История Hoverable совпала попиксельно: роль и фокус теперь даёт кит, а не атрибуты истории.
+- **`isDisabled`** у BaseBadge, BaseAvatar, BaseCard — прозрачность `--rise-disabled-opacity` и курсор `not-allowed` (миксин `disabled-state`).
+- **BasePopover** — триггер без кнопки (текст в слоте) получает кольцо фокуса.
+- Новые истории (в скриншот-тесты не добавлены): `element-basebadge--clickable`, `element-basebadge--disabled`, `element-baseavatar--clickable`, `element-baseavatar--disabled`, `element-basechip--clickable-badge`, `element-basecard--clickable`, `element-basecard--disabled`, `overlay-basepopover--text-trigger`.

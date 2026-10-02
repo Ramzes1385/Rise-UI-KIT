@@ -10,5 +10,6 @@ export const args = {
 	variant: 'default',
 	isHoverable: false,
 	scroll: false,
+	isDisabled: false,
 	sizeScale: 100,
 } satisfies Meta<typeof BaseCard>['args']

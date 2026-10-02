@@ -2,8 +2,8 @@ import type { ComputedRef } from 'vue'
 
 /** Опции composable useClickable */
 export interface UseClickableOptions {
-	/** Слушатель компонента, который делает элемент кликабельным, в виде ключа vnode: `onClick`, `onClickBadge` */
-	listener: string
+	/** Событие компонента, слушатель которого делает элемент кликабельным: `click`, `click-badge` (`@click-badge` и `onClick-badge`) */
+	event: string
 	/** Элемент выключен: `aria-disabled="true"`, без фокуса, клик и клавиши не срабатывают */
 	isDisabled?: () => boolean
 }

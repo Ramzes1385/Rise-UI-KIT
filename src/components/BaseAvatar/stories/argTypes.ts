@@ -5,6 +5,7 @@ import { AVATAR_VARIANTS, AVATAR_SHAPES, AVATAR_RINGS, AVATAR_MASCOTS } from '..
 
 export const argTypes = {
 	...baseArgTypes({ variants: AVATAR_VARIANTS }),
+	isDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 	name: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	src: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	alt: { control: 'text', table: propGroup(ARG_GROUP.content) },

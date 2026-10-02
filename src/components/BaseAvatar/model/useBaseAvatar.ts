@@ -24,7 +24,7 @@ export function useBaseAvatar(props: BaseAvatarProps, emit: BaseAvatarEmits) {
 		},
 	)
 
-	const clickable = useClickable({ listener: 'onClick', isDisabled: () => Boolean(props.isDisabled) })
+	const clickable = useClickable({ event: 'click', isDisabled: () => Boolean(props.isDisabled) })
 
 	return {
 		...clickable,

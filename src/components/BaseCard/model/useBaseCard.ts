@@ -8,7 +8,7 @@ export function useBaseCard(props: BaseCardProps, emit: BaseCardEmits) {
 	const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--card-pad' })
 
 	return {
-		...useClickable({ listener: 'onClick', isDisabled: () => Boolean(props.isDisabled) }),
+		...useClickable({ event: 'click', isDisabled: () => Boolean(props.isDisabled) }),
 		titleId: `rise-card-title-${useId()}`,
 		handleClick: (event: MouseEvent) => {
 			if (!props.isDisabled) emit('click', event)

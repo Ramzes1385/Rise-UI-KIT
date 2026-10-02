@@ -1,5 +1,4 @@
 import { anna } from './shared'
-import { fn } from 'storybook/test'
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseAvatar from '../ui/BaseAvatar.vue'
 
@@ -11,6 +10,6 @@ export const args = {
 	ring: 'none',
 	mascot: 'none',
 	isEyesClosed: false,
+	isDisabled: false,
 	sizeScale: 100,
-	onClick: fn(),
 } satisfies Meta<typeof BaseAvatar>['args']

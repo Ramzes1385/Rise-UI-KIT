@@ -5,6 +5,7 @@ import { baseArgTypes, propGroup, ARG_GROUP, slotArgType } from '@/stories/helpe
 
 export const argTypes = {
 	...baseArgTypes({ variants: CARD_VARIANTS }),
+	isDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 	title: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	subtitle: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	padding: { control: 'object', table: propGroup(ARG_GROUP.appearance) },

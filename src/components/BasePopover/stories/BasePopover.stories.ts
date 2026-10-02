@@ -26,3 +26,4 @@ export const LongContent = cases.LongContent
 export const WithForm = cases.WithForm
 export const NestedList = cases.NestedList
 export const Keyboard = cases.Keyboard
+export const TextTrigger = cases.TextTrigger

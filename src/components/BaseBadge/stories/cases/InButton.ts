@@ -17,13 +17,13 @@ export const InButton: StoryObj<typeof meta> = {
 		controls: { include: ['variant'] },
 		docs: {
 			description: { story: 'Счётчик в кнопке: бейдж в слоте `right` у `BaseButton`. Число входит в доступное имя кнопки.' },
-			source: storySource({ template, imports: ['BaseBadge', 'BaseButton'], omit: ['default', 'label', 'onClick'] }),
+			source: storySource({ template, imports: ['BaseBadge', 'BaseButton'], omit: ['default', 'label'] }),
 		},
 	},
 	args: { variant: 'soft' },
 	render: args => ({
 		components: { BaseBadge, BaseButton },
-		setup: useStorySetup(args, { slots: ['default', 'label', 'onClick'] }),
+		setup: useStorySetup(args, { slots: ['default', 'label'] }),
 		template,
 	}),
 	play: async ({ canvas }) => {

@@ -49,6 +49,10 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseModal',
 	'BaseTooltip',
 	'BasePopover',
+	'BaseBadge',
+	'BaseAvatar',
+	'BaseCard',
+	'BaseChip',
 	'BaseMenu',
 	'BaseMegaMenu',
 	'BasePin',
@@ -117,6 +121,9 @@ const INTERACTIVE_COMPONENTS = new Set([
 /** Интерактивные компоненты с естественным Disabled-состоянием */
 const INTERACTIVE_WITH_DISABLED = new Set([
 	'BaseButton',
+	'BaseBadge',
+	'BaseAvatar',
+	'BaseCard',
 	'BaseInput',
 	'BaseTextarea',
 	'BaseSelect',

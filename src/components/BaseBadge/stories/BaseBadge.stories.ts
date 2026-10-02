@@ -23,3 +23,5 @@ export const WithIcon = cases.WithIcon
 export const LongContent = cases.LongContent
 export const Statuses = cases.Statuses
 export const InButton = cases.InButton
+export const Clickable = cases.Clickable
+export const Disabled = cases.Disabled

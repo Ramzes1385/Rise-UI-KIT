@@ -5,6 +5,7 @@ import { baseArgTypes, propGroup, ARG_GROUP, slotArgType } from '@/stories/helpe
 
 export const argTypes = {
 	...baseArgTypes({ variants: BADGE_VARIANTS }),
+	isDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 	label: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	default: slotArgType('Содержимое (заменяет label)'),
 } satisfies Meta<typeof BaseBadge>['argTypes']

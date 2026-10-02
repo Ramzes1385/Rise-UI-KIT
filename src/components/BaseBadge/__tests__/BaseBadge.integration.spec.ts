@@ -13,4 +13,40 @@ describe('BaseBadge integration', () => {
 		await user.click(screen.getByText('Badge'))
 		expect(emitted()).toHaveProperty('click')
 	})
+
+	describe('клавиатура (fu-keyboard)', () => {
+		it('с обработчиком — кнопка в порядке Tab, Enter и Space вызывают click', async () => {
+			const user = userEvent.setup()
+			const onClick = vi.fn()
+			render(BaseBadge, { props: { label: 'Новое', onClick } })
+
+			const badge = screen.getByRole('button', { name: 'Новое' })
+			await user.tab()
+			expect(badge).toHaveFocus()
+			await user.keyboard('{Enter}')
+			await user.keyboard(' ')
+			expect(onClick).toHaveBeenCalledTimes(2)
+		})
+
+		it('без обработчика — не кнопка и не в порядке Tab', () => {
+			render(BaseBadge, { props: { label: 'Статус' } })
+
+			expect(screen.queryByRole('button')).not.toBeInTheDocument()
+			expect(screen.getByText('Статус').closest('.base-badge')).not.toHaveAttribute('tabindex')
+		})
+
+		it('выключенный — aria-disabled, без фокуса и без click', async () => {
+			const user = userEvent.setup()
+			const onClick = vi.fn()
+			render(BaseBadge, { props: { label: 'Новое', isDisabled: true, onClick } })
+
+			const badge = screen.getByRole('button', { name: 'Новое' })
+			expect(badge).toHaveAttribute('aria-disabled', 'true')
+			expect(badge).toHaveClass('base-badge--disabled')
+			await user.tab()
+			expect(badge).not.toHaveFocus()
+			await user.click(badge)
+			expect(onClick).not.toHaveBeenCalled()
+		})
+	})
 })

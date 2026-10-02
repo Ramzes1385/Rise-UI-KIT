@@ -121,4 +121,70 @@ describe('useTriggerAttributes', () => {
 		expect(api.getTrigger()).toBeNull()
 		expect(api.triggerId.value).toBeUndefined()
 	})
+
+	describe('fallbackAttributes (fu-keyboard)', () => {
+		function mountFallback(content: () => ReturnType<typeof h>[]) {
+			let api!: ReturnType<typeof useTriggerAttributes>
+			const container = ref<HTMLElement | null>(null)
+			const utils = render(
+				defineComponent({
+					setup() {
+						api = useTriggerAttributes(
+							() => container.value,
+							() => ({ 'aria-haspopup': 'dialog' }),
+							{ fallbackAttributes: { role: 'button', tabindex: '0' } },
+						)
+						return () => h('span', { ref: container }, content())
+					},
+				}),
+			)
+			return { ...utils, api: () => api, container }
+		}
+
+		it('элемент без фокусируемого получает fallbackAttributes и теряет их при размонтировании', async () => {
+			const label = ref('Подробнее')
+			const { container, unmount, api } = mountFallback(() => [h('span', label.value)])
+			const span = container.value?.querySelector('span') as HTMLElement
+			expect(span).toHaveAttribute('role', 'button')
+			expect(span).toHaveAttribute('tabindex', '0')
+			expect(span).toHaveAttribute('aria-haspopup', 'dialog')
+			expect(api().isFallbackTrigger()).toBe(true)
+
+			label.value = 'Ещё'
+			await nextTick()
+			expect(api().getTrigger()).toBe(span)
+			expect(span).toHaveAttribute('role', 'button')
+
+			unmount()
+			expect(span).not.toHaveAttribute('role')
+			expect(span).not.toHaveAttribute('tabindex')
+		})
+
+		it('кнопка в слоте — без fallbackAttributes; смена span на кнопку снимает их', async () => {
+			const hasButton = ref(false)
+			const { container, api } = mountFallback(() => [
+				hasButton.value ? h('button', { type: 'button' }, 'Открыть') : h('span', 'Открыть'),
+			])
+			const span = container.value?.querySelector('span') as HTMLElement
+			expect(api().isFallbackTrigger()).toBe(true)
+
+			hasButton.value = true
+			await nextTick()
+			const button = container.value?.querySelector('button') as HTMLButtonElement
+			expect(button).not.toHaveAttribute('role')
+			expect(button).not.toHaveAttribute('tabindex')
+			expect(button).toHaveAttribute('aria-haspopup', 'dialog')
+			expect(span).not.toHaveAttribute('role')
+			expect(api().isFallbackTrigger()).toBe(false)
+		})
+
+		it('без опции элемент без фокусируемого остаётся без роли', () => {
+			const { container, api } = mountTrigger(
+				() => ({ 'aria-haspopup': 'dialog' }),
+				() => [h('span', 'Текст')],
+			)
+			expect(container.value?.querySelector('span')).not.toHaveAttribute('role')
+			expect(api().isFallbackTrigger()).toBe(false)
+		})
+	})
 })

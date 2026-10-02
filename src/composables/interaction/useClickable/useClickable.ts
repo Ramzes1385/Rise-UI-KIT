@@ -1,5 +1,5 @@
 /** Composable: элемент без кнопки (span, div) работает как кнопка, если у компонента есть слушатель клика */
-import { computed } from 'vue'
+import { camelize, computed, toHandlerKey } from 'vue'
 import { useExplicitPropDetection } from '@composables/base/useExplicitPropDetection'
 import type { ClickableAttributes, UseClickableOptions, UseClickableReturn } from './types/useClickable.types'
 
@@ -12,12 +12,12 @@ const ACTIVATION_KEYS = new Set(['Enter', ' '])
  * один и получает `MouseEvent`, как от мыши.
  *
  * @example
- * const { clickableAttributes, handleKeydown } = useClickable({ listener: 'onClick', isDisabled: () => props.isDisabled })
+ * const { clickableAttributes, handleKeydown } = useClickable({ event: 'click', isDisabled: () => props.isDisabled })
  * const handleClick = (event: MouseEvent) => !props.isDisabled && emit('click', event)
  */
 export function useClickable(options: UseClickableOptions): UseClickableReturn {
 	const { wasPropPassed } = useExplicitPropDetection()
-	const hasListener = wasPropPassed(options.listener)
+	const hasListener = wasPropPassed(toHandlerKey(camelize(options.event))) || wasPropPassed(toHandlerKey(options.event))
 	const isClickable = computed(() => hasListener)
 	const isDisabled = (): boolean => Boolean(options.isDisabled?.())
 	const canActivate = (): boolean => hasListener && !isDisabled()

@@ -28,3 +28,5 @@ export const CustomHeader = cases.CustomHeader
 export const LongContent = cases.LongContent
 export const FixedHeight = cases.FixedHeight
 export const Hoverable = cases.Hoverable
+export const Clickable = cases.Clickable
+export const Disabled = cases.Disabled

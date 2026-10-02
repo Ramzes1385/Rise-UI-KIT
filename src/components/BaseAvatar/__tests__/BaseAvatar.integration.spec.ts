@@ -1,5 +1,7 @@
 import '@testing-library/jest-dom/vitest'
+import { UI_ARIA } from '@/locales/messages'
 import BaseAvatar from '../ui/BaseAvatar.vue'
+import userEvent from '@testing-library/user-event'
 import { fireEvent, render, screen } from '@testing-library/vue'
 
 describe('BaseAvatar integration', () => {
@@ -85,6 +87,52 @@ describe('BaseAvatar integration', () => {
 
 			expect(screen.getByText('И')).toBeInTheDocument()
 			expect(container.querySelector('.base-avatar__online')).toBeInTheDocument()
+		})
+	})
+
+	describe('клавиатура (fu-keyboard)', () => {
+		it('с обработчиком — кнопка с именем из alt, Enter и Space вызывают click', async () => {
+			const user = userEvent.setup()
+			const onClick = vi.fn()
+			render(BaseAvatar, { props: { name: 'Анна Смирнова', alt: 'Профиль Анны', onClick } })
+
+			const avatar = screen.getByRole('button', { name: 'Профиль Анны' })
+			await user.tab()
+			expect(avatar).toHaveFocus()
+			await user.keyboard('{Enter}')
+			await user.keyboard(' ')
+			expect(onClick).toHaveBeenCalledTimes(2)
+		})
+
+		it('имя кнопки — name без alt, иначе «Аватар» из словаря', () => {
+			render(BaseAvatar, { props: { name: 'Анна Смирнова', onClick: vi.fn() } })
+			render(BaseAvatar, { props: { onClick: vi.fn() } })
+
+			expect(screen.getByRole('button', { name: 'Анна Смирнова' })).toBeInTheDocument()
+			expect(screen.getByRole('button', { name: UI_ARIA.AVATAR })).toBeInTheDocument()
+		})
+
+		it('без обработчика — не кнопка, без tabindex и aria-label', () => {
+			const { container } = render(BaseAvatar, { props: { name: 'Анна Смирнова' } })
+
+			const avatar = container.querySelector('.base-avatar')
+			expect(screen.queryByRole('button')).not.toBeInTheDocument()
+			expect(avatar).not.toHaveAttribute('tabindex')
+			expect(avatar).not.toHaveAttribute('aria-label')
+		})
+
+		it('выключенный — aria-disabled, без фокуса и без click', async () => {
+			const user = userEvent.setup()
+			const onClick = vi.fn()
+			render(BaseAvatar, { props: { name: 'Анна', isDisabled: true, onClick } })
+
+			const avatar = screen.getByRole('button', { name: 'Анна' })
+			expect(avatar).toHaveAttribute('aria-disabled', 'true')
+			expect(avatar).toHaveClass('base-avatar--disabled')
+			await user.tab()
+			expect(avatar).not.toHaveFocus()
+			await user.click(avatar)
+			expect(onClick).not.toHaveBeenCalled()
 		})
 	})
 })

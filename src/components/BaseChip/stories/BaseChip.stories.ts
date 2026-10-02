@@ -26,3 +26,4 @@ export const Overflow = cases.Overflow
 export const HiddenOnZero = cases.HiddenOnZero
 export const LongContent = cases.LongContent
 export const Counter = cases.Counter
+export const ClickableBadge = cases.ClickableBadge

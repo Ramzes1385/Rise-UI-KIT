@@ -21,12 +21,9 @@ const template = `
 				:key="project.id"
 				v-bind="args"
 				is-hoverable
-				tabindex="0"
-				role="link"
 				:title="project.title"
 				:subtitle="project.subtitle"
-				@click="opened = project.title"
-				@keydown.enter="opened = project.title" />
+				@click="opened = project.title" />
 		</div>
 		<p class="story-label" role="status">{{ opened ? 'Открыт проект «' + opened + '»' : 'Проект не выбран' }}</p>
 	</div>
@@ -39,7 +36,8 @@ export const Hoverable: StoryObj<typeof meta> = {
 			description: {
 				story: [
 					'Интерактивные карточки: `isHoverable` даёт курсор, рамку и тень при наведении и кольцо фокуса.',
-					'Фокус и клавиатуру добавляет приложение: `tabindex="0"`, `role="link"`, обработчики click и Enter.',
+					'Фокус и клавиатуру даёт обработчик `@click`: карточка становится кнопкой с именем из `title`, Enter и Space вызывают `click`.',
+					'`isHoverable` без обработчика — только вид.',
 				].join('\n'),
 			},
 			source: storySource({
@@ -57,7 +55,7 @@ export const Hoverable: StoryObj<typeof meta> = {
 		template,
 	}),
 	play: async ({ canvas, userEvent }) => {
-		const [first, second] = canvas.getAllByRole('link')
+		const [first, second] = canvas.getAllByRole('button')
 		await tabTo(first, userEvent)
 		await expect(getComputedStyle(first).outlineStyle).toBe('solid')
 		await userEvent.keyboard('{Enter}')

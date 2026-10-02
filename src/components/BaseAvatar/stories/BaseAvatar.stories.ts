@@ -28,3 +28,5 @@ export const Group = cases.Group
 export const Rings = cases.Rings
 export const Media = cases.Media
 export const Mascot = cases.Mascot
+export const Clickable = cases.Clickable
+export const Disabled = cases.Disabled

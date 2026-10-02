@@ -13,7 +13,7 @@ function toNumber(content: ChipProps['content']): number | null {
 
 export function useBaseChip(props: ChipProps, emit: BaseChipEmits) {
 	const numericValue = computed(() => toNumber(props.content))
-	const clickable = useClickable({ listener: 'onClickBadge' })
+	const clickable = useClickable({ event: 'click-badge' })
 	const displayContent = computed((): string => {
 		if (numericValue.value !== null && props.hasOverflow && numericValue.value > props.maxValue) return `${props.maxValue}+`
 		return String(props.content)
