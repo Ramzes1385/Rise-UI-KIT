@@ -14,6 +14,33 @@
 			:class="[{ 'base-card-input__legend--hidden': !label }, classes.legend]">
 			{{ label || UI_CARD.GROUP }}
 		</legend>
+		<div
+			v-if="preview"
+			class="base-card-input__preview"
+			:class="[{ 'base-card-input__preview--flipped': preview.isFlipped }, classes.preview]"
+			:style="preview.style"
+			aria-hidden="true">
+			<div class="base-card-input__preview-inner">
+				<div class="base-card-input__face base-card-input__face--front">
+					<span class="base-card-input__chip" />
+					<CardBrandMark
+						v-if="preview.brand"
+						class="base-card-input__face-brand"
+						:brand="preview.brand"
+						:brand-icons="brandIcons" />
+					<span class="base-card-input__face-number">{{ preview.number }}</span>
+					<span v-if="preview.hasHolder" class="base-card-input__face-holder">{{ preview.holder }}</span>
+					<span class="base-card-input__face-expiry">
+						<span class="base-card-input__face-caption">{{ UI_CARD.EXPIRY }}</span>
+						{{ preview.expiry }}
+					</span>
+				</div>
+				<div class="base-card-input__face base-card-input__face--back">
+					<span class="base-card-input__stripe" />
+					<span class="base-card-input__face-code">{{ preview.code }}</span>
+				</div>
+			</div>
+		</div>
 		<div class="base-card-input__fields">
 			<BaseInput
 				v-for="item in fieldViews"
@@ -32,6 +59,7 @@
 				:custom-class="{ root: classes[item.field] }"
 				@input="handleInput(item.field, $event)"
 				@keydown="handleKeydown(item.field, $event)"
+				@focus="handleFocus(item.field)"
 				@blur="handleBlur(item.field)">
 				<template v-if="item.field === 'number' && brandView" #suffix>
 					<span class="base-card-input__brand" :class="classes.brand" role="img" :aria-label="brandView.label">
@@ -61,6 +89,7 @@
 <script setup lang="ts">
 import '../styles/BaseCardInput.style.scss'
 import { UI_CARD } from '@/locales/messages'
+import CardBrandMark from './CardBrandMark.vue'
 import { BaseInput } from '@components/BaseInput'
 import { FormFieldError } from '@components/BaseFormField'
 import { kitDefaults } from '@composables/base/useDefaults'
@@ -75,6 +104,7 @@ const props = withDefaults(
 		variant: DEFAULT_VARIANT,
 		modelValue: null,
 		layout: 'stacked',
+		hasPreview: false,
 		hasHolder: true,
 		isRequired: false,
 		isDisabled: false,
@@ -98,7 +128,9 @@ const {
 	brandView,
 	handleInput,
 	handleKeydown,
+	handleFocus,
 	handleBlur,
+	preview,
 	exposed,
 } = useBaseCardInput(props, emit)
 

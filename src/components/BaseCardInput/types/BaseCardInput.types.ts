@@ -61,7 +61,7 @@ export type CardTokenizer = (data: CardData) => Promise<string>
  */
 export interface BaseCardInputProps extends BaseComponentProps<
 	InputVariant,
-	'root' | 'legend' | 'number' | 'expiry' | 'code' | 'holder' | 'brand' | 'error'
+	'root' | 'legend' | 'preview' | 'number' | 'expiry' | 'code' | 'holder' | 'brand' | 'error'
 > {
 	/** Сводка о карте (`v-model`): марка, последние 4 цифры, срок, имя, `isComplete` — без номера и кода */
 	modelValue?: CardInputValue | null
@@ -74,6 +74,13 @@ export interface BaseCardInputProps extends BaseComponentProps<
 	brands?: readonly CardBrandRef[]
 	/** Официальные знаки марок от приложения: id марки → адрес картинки. Сильнее встроенных значков */
 	brandIcons?: Readonly<Record<string, string>>
+	/**
+	 * Карта-превью над полями: номер, имя, срок и марка на лицевой стороне; пока фокус в поле кода — оборот с кодом.
+	 * Превью скрыто от чтения с экрана (`aria-hidden`): всё то же есть в полях. При `prefers-reduced-motion` — без анимации
+	 */
+	hasPreview?: boolean
+	/** Свой фон превью — значение CSS `background` (градиент, картинка). По умолчанию — фон по марке из `CARD_BRAND_BACKGROUNDS` */
+	previewBackground?: string
 	/** Поле имени владельца (по умолчанию есть) */
 	hasHolder?: boolean
 	/** Адаптер эквайера для метода `tokenize()` */

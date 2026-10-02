@@ -4,6 +4,7 @@ import { useCardFields } from './useCardFields'
 import { formatMessage } from '@/locales/state'
 import { cardBrandName } from './card/cardErrors'
 import { computed, ref, useId, watch } from 'vue'
+import { useCardPreview } from './face/useCardPreview'
 import { formatCardNumber } from '@utils/form/cardUtils'
 import { useCardInputHandlers } from './useCardInputHandlers'
 import { CARD_INPUT_FIELDS } from '../types/BaseCardInput.types'
@@ -91,6 +92,7 @@ export function useBaseCardInput(props: BaseCardInputProps, emit: BaseCardInputE
 	isolateFormField()
 	const fields = useCardFields(props)
 	const handlers = useCardInputHandlers(props, fields, rootRef)
+	const preview = useCardPreview(props, fields)
 	watch(fields.summary, (next, previous) => {
 		emit('update:modelValue', next)
 		if (next.isComplete && !previous.isComplete) emit('complete', next)
@@ -102,7 +104,17 @@ export function useBaseCardInput(props: BaseCardInputProps, emit: BaseCardInputE
 		},
 	)
 	return {
-		...useStandardBaseComponent('base-card-input', props, ['root', 'legend', 'number', 'expiry', 'code', 'holder', 'brand', 'error']),
+		...useStandardBaseComponent('base-card-input', props, [
+			'root',
+			'legend',
+			'preview',
+			'number',
+			'expiry',
+			'code',
+			'holder',
+			'brand',
+			'error',
+		]),
 		rootRef,
 		errorId,
 		control,
@@ -111,7 +123,9 @@ export function useBaseCardInput(props: BaseCardInputProps, emit: BaseCardInputE
 		brandView: useCardBrandView(props, fields),
 		handleInput: handlers.handleInput,
 		handleKeydown: handlers.handleKeydown,
-		handleBlur: fields.touch,
+		handleFocus: preview.focus,
+		handleBlur: (field: CardInputField) => (preview.blur(), fields.touch(field)),
+		preview: preview.view,
 		exposed: useCardExpose(props, fields, handlers.focusField),
 	}
 }
