@@ -18,7 +18,7 @@
 					'base-tree-select--disabled': isControlDisabled,
 					'base-tree-select--error': control.hasError.value,
 					'base-tree-select--multiple': isMultiple,
-					'base-tree-select--has-tags': tagNodes.length > 0,
+					'base-tree-select--has-tags': tagNodes.length > 0 || moreCount > 0,
 				},
 				classes.root,
 			]"
@@ -52,7 +52,7 @@
 				@click="toggleDropdown"
 				@keydown="handleKeydown">
 				<div class="base-tree-select__values" :class="classes.values">
-					<template v-if="tagNodes.length">
+					<template v-if="tagNodes.length || moreCount">
 						<slot v-if="$slots.tag" name="tag" :nodes="tagNodes" :remove="removeValue" />
 						<template v-else>
 							<BaseBadge

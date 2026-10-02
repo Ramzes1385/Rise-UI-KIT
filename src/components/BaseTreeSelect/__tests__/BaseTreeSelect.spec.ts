@@ -190,6 +190,16 @@ describe('BaseTreeSelect unit', () => {
 			expect(container.querySelector('.base-tree-select__more')).toHaveTextContent('+2')
 		})
 
+		it('maxTagCount=0: при выбранных значениях — только счётчик, без плейсхолдера', () => {
+			const { container } = render(BaseTreeSelect, {
+				props: { items: ITEMS, isMultiple: true, maxTagCount: 0, modelValue: ['moscow', 'spb'], placeholder: 'Пусто' },
+			})
+			expect(container.querySelector('.base-tree-select__tag')).not.toBeInTheDocument()
+			expect(container.querySelector('.base-tree-select__more')).toHaveTextContent('+2')
+			expect(container.querySelector('.base-tree-select')).toHaveClass('base-tree-select--has-tags')
+			expect(screen.queryByText('Пусто')).not.toBeInTheDocument()
+		})
+
 		it('maxTagCount больше числа меток — без счётчика', () => {
 			const { container } = render(BaseTreeSelect, { props: { items: ITEMS, isMultiple: true, maxTagCount: 5, modelValue: ['spb'] } })
 			expect(container.querySelector('.base-tree-select__more')).not.toBeInTheDocument()

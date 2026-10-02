@@ -78,6 +78,23 @@ describe('BaseTreeSelect integration', () => {
 			expect(rowLabels()).toEqual(['Центр', 'Север', 'Казань'])
 		})
 
+		it.each([
+			['{Home}', 'Центр'],
+			['{End}', 'Казань'],
+		])('%s открывает список на первой или последней строке', async (key, label) => {
+			const { user } = renderSelect({}, 'north')
+			combobox().focus()
+			await user.keyboard(key)
+			expect(combobox()).toHaveAttribute('aria-expanded', 'true')
+			expect(activeLabel()).toBe(label)
+		})
+
+		it('клавиши во время ввода через IME не открывают список', async () => {
+			renderSelect()
+			await fireEvent.keyDown(combobox(), { key: 'Enter', isComposing: true })
+			expect(combobox()).toHaveAttribute('aria-expanded', 'false')
+		})
+
 		it('другие клавиши при закрытом списке ничего не делают', async () => {
 			const { user } = renderSelect()
 			combobox().focus()
@@ -255,6 +272,64 @@ describe('BaseTreeSelect integration', () => {
 		})
 	})
 
+	describe('отключённые узлы в значении', () => {
+		const WITH_DISABLED: TreeNode[] = [
+			{
+				id: 'parent',
+				label: 'Ветка',
+				children: [
+					{ id: 'locked', label: 'Закрытый', isDisabled: true },
+					{ id: 'open', label: 'Открытый' },
+				],
+			},
+			{ id: 'only', label: 'Одна', children: [{ id: 'fixed', label: 'Неизменный', isDisabled: true }] },
+			{ id: 'frozen', label: 'Замороженная', isDisabled: true, children: [{ id: 'inner', label: 'Внутри' }] },
+			{ id: 'leaf', label: 'Лист' },
+		]
+		const renderDisabled = (checkedStrategy: BaseTreeSelectProps['checkedStrategy'], initial: string[]) =>
+			renderSelect({ items: WITH_DISABLED, isMultiple: true, isDefaultExpandAll: true, checkedStrategy }, initial)
+
+		it.each([
+			['parent', ['parent', 'locked']],
+			['child', ['locked', 'open']],
+			['all', ['parent', 'locked', 'open']],
+		] as const)('%s: выбор доступных детей не теряет выбранный отключённый узел', async (strategy, expected) => {
+			const { user, value } = renderDisabled(strategy, ['locked'])
+			await user.click(combobox())
+			await user.click(treeitem('Открытый'))
+			expect(value.value).toEqual(expected)
+			expect(treeitem('Закрытый')).toHaveAttribute('aria-checked', 'true')
+			expect(treeitem('Ветка')).toHaveAttribute('aria-checked', 'true')
+			await user.click(treeitem('Открытый'))
+			expect(value.value).toEqual(['locked'])
+		})
+
+		it('parent: ветка одним id, если невыбранный отключённый ребёнок не мешает; он не добавляется', async () => {
+			const { user, value } = renderDisabled('parent', [])
+			await user.click(combobox())
+			await user.click(treeitem('Открытый'))
+			expect(value.value).toEqual(['parent'])
+			expect(treeitem('Закрытый')).toHaveAttribute('aria-checked', 'false')
+			expect(treeitem('Ветка')).toHaveAttribute('aria-checked', 'true')
+		})
+
+		it('child: ветку, у которой все дети отключены и один выбран, можно выбрать и снять', async () => {
+			const { user, value } = renderDisabled('child', ['fixed'])
+			await user.click(combobox())
+			await user.click(treeitem('Одна'))
+			expect(value.value).toEqual(['only', 'fixed'])
+			await user.click(treeitem('Одна'))
+			expect(value.value).toEqual(['fixed'])
+		})
+
+		it.each(['parent', 'child'] as const)('%s: выбранные отключённая ветка и её ребёнок остаются в значении', async strategy => {
+			const { user, value } = renderDisabled(strategy, ['frozen', 'inner'])
+			await user.click(combobox())
+			await user.click(treeitem('Лист'))
+			expect(value.value).toEqual(['frozen', 'inner', 'leaf'])
+		})
+	})
+
 	describe('указатель', () => {
 		it('клик по стрелке раскрывает ветку, клик по строке выбирает', async () => {
 			const { user, value } = renderSelect()
@@ -287,6 +362,16 @@ describe('BaseTreeSelect integration', () => {
 
 	describe('поиск', () => {
 		const search = (): HTMLElement => screen.getByRole('textbox', { name: /.+/ })
+
+		it('Enter, подтверждающий ввод через IME, не выбирает строку и не закрывает список', async () => {
+			const { user, value } = renderSelect({ isSearchable: true })
+			await user.click(combobox())
+			await fireEvent.keyDown(search(), { key: 'Enter', isComposing: true })
+			expect(value.value).toBe('')
+			expect(combobox()).toHaveAttribute('aria-expanded', 'true')
+			await fireEvent.keyDown(search(), { key: 'Enter' })
+			expect(value.value).toBe('center')
+		})
 
 		it('фокус в поле поиска; совпавшие узлы с раскрытыми предками', async () => {
 			const { user } = renderSelect({ isSearchable: true })

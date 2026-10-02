@@ -1,4 +1,5 @@
 import type { TreeIndex } from '@utils/navigation/treeUtils'
+import { getTreeChildren } from '@utils/navigation/treeUtils'
 import type { TreeNode } from '@components/BaseTree/types/BaseTree.types'
 import type { TreeSelectCheckedStrategy, TreeSelectValue } from '../types/BaseTreeSelect.types'
 
@@ -8,22 +9,25 @@ export function toSelectedIds(value: TreeSelectValue, isMultiple: boolean): stri
 	return value ? [value] : []
 }
 
-function hasSelectedChild(node: TreeNode, selected: Set<string>): boolean {
-	return (node.children ?? []).some(child => selected.has(child.id))
+function isImpliedByChildren(index: TreeIndex, node: TreeNode, selected: Set<string>): boolean {
+	return !node.isDisabled && getTreeChildren(index, node).some(child => !child.isDisabled && selected.has(child.id))
+}
+
+function isImpliedByParent(index: TreeIndex, id: string, selected: Set<string>): boolean {
+	const parentId = index.parents.get(id)
+	if (parentId === undefined || !selected.has(parentId)) return false
+	return !index.nodes.get(id)?.isDisabled && !index.nodes.get(parentId)?.isDisabled
 }
 
 export function applyCheckedStrategy(index: TreeIndex, ids: string[], strategy: TreeSelectCheckedStrategy): string[] {
 	if (strategy === 'all') return ids
 	const selected = new Set(ids)
 	if (strategy === 'parent') {
-		return ids.filter(id => {
-			const parentId = index.parents.get(id)
-			return parentId === undefined || !selected.has(parentId)
-		})
+		return ids.filter(id => !isImpliedByParent(index, id, selected))
 	}
 	return ids.filter(id => {
 		const node = index.nodes.get(id)
-		return !node || !hasSelectedChild(node, selected)
+		return !node || !isImpliedByChildren(index, node, selected)
 	})
 }
 

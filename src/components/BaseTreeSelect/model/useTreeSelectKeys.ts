@@ -1,6 +1,6 @@
 import type { TreeSelectKeyAction, TreeSelectKeysContext, TreeSelectRow } from '../types/BaseTreeSelect.types'
 
-const CLOSED_KEYS = new Set(['Enter', ' ', 'ArrowDown', 'ArrowUp'])
+const CLOSED_KEYS = new Set(['Enter', ' ', 'ArrowDown', 'ArrowUp', 'Home', 'End'])
 const CARET_KEYS = new Set(['ArrowLeft', 'ArrowRight', 'Home', 'End'])
 
 function arrowRight(context: TreeSelectKeysContext, row: TreeSelectRow | undefined): void {
@@ -23,15 +23,23 @@ function selectActive(context: TreeSelectKeysContext, row: TreeSelectRow | undef
 	if (row) context.selectRow(row)
 }
 
+const moveToFirst: TreeSelectKeyAction = context => context.moveTo(0)
+const moveToLast: TreeSelectKeyAction = context => context.moveTo(context.rows.value.length - 1)
+
 const OPEN_KEYS = new Map<string, TreeSelectKeyAction>([
 	['ArrowDown', context => context.moveTo(context.activeIndex.value + 1)],
 	['ArrowUp', context => context.moveTo(context.activeIndex.value - 1)],
-	['Home', context => context.moveTo(0)],
-	['End', context => context.moveTo(context.rows.value.length - 1)],
+	['Home', moveToFirst],
+	['End', moveToLast],
 	['ArrowRight', arrowRight],
 	['ArrowLeft', arrowLeft],
 	['Enter', selectActive],
 	[' ', selectActive],
+])
+
+const EDGE_KEYS = new Map<string, TreeSelectKeyAction>([
+	['Home', moveToFirst],
+	['End', moveToLast],
 ])
 
 function isCaretKey(context: TreeSelectKeysContext, event: KeyboardEvent, isSearch: boolean): boolean {
@@ -60,7 +68,7 @@ function handleOpenKey(context: TreeSelectKeysContext, event: KeyboardEvent, isS
 export function useTreeSelectKeys(context: TreeSelectKeysContext) {
 	return {
 		handleKeydown(event: KeyboardEvent, isSearch = false): void {
-			if (context.isDisabled()) return
+			if (context.isDisabled() || event.isComposing) return
 			if (context.isOpen.value) {
 				handleOpenKey(context, event, isSearch)
 				return
@@ -68,6 +76,7 @@ export function useTreeSelectKeys(context: TreeSelectKeysContext) {
 			if (!CLOSED_KEYS.has(event.key)) return
 			event.preventDefault()
 			context.open()
+			EDGE_KEYS.get(event.key)?.(context, undefined)
 		},
 	}
 }
