@@ -12,7 +12,7 @@ export const LOGOS = [
 	{ name: 'Кварц', icon: 'settings' },
 	{ name: 'Полюс', icon: 'link' },
 	{ name: 'Орбита', icon: 'calendar' },
-	{ name: 'Маяк', icon: 'email' },
+	{ name: 'Маяк', icon: 'map-pin' },
 ] as const
 
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
