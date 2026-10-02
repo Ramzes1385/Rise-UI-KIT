@@ -100,7 +100,7 @@ describe('BaseMarkdown', () => {
 		const writeText = vi.fn(async (_text: string) => undefined)
 		Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } })
 		const { container, unmount } = render(BaseMarkdown, { props: { source: '```\nx = 1\n```' } })
-		const button = screen.getByRole('button', { name: 'Копировать' })
+		const button = screen.getByRole('button', { name: 'Копировать код' })
 
 		expect(container.querySelector('.base-markdown__code-lang')).toHaveTextContent('Код')
 		await fireEvent.click(button)
@@ -108,6 +108,7 @@ describe('BaseMarkdown', () => {
 		await nextTick()
 		expect(writeText).toHaveBeenCalledWith('x = 1')
 		expect(button).toHaveTextContent('Скопировано')
+		expect(button).toHaveAccessibleName('Скопировано')
 		await fireEvent.click(button)
 		await Promise.resolve()
 		vi.advanceTimersByTime(2000)

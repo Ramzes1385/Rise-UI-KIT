@@ -2,7 +2,7 @@
 	<div class="base-markdown__code-block">
 		<div class="base-markdown__code-header">
 			<span class="base-markdown__code-lang">{{ block.lang || UI_MARKDOWN.CODE }}</span>
-			<BaseButton variant="ghost" class="base-markdown__copy" @click="copy">
+			<BaseButton variant="ghost" class="base-markdown__copy" :aria-label="copyLabel" @click="copy">
 				<template #left><BaseIcon :name="isCopied ? 'check' : 'copy'" /></template>
 				{{ isCopied ? UI_MARKDOWN.CODE_COPIED : UI_MARKDOWN.COPY_CODE }}
 			</BaseButton>
@@ -22,5 +22,5 @@ import type { MarkdownCodeProps } from '../types/MarkdownParts.types'
 
 const props = defineProps<MarkdownCodeProps>()
 
-const { isCopied, copy, tokens } = useMarkdownCode(props)
+const { isCopied, copy, copyLabel, tokens } = useMarkdownCode(props)
 </script>

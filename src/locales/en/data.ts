@@ -93,6 +93,10 @@ export const enData = {
 		LABEL_LANGUAGE: 'Code, {language}',
 		COPY: 'Copy',
 		COPIED: 'Copied',
+		/** Имя кнопки копирования для скринридера: различает блоки на странице по заголовку или языку */
+		COPY_LABEL: 'Copy code',
+		COPY_LABEL_NAMED: 'Copy code: {name}',
+		COPIED_LABEL_NAMED: 'Copied: {name}',
 		COPY_DONE: 'Code copied to clipboard',
 		COPY_FAILED: 'Could not copy code',
 		EMPTY: 'No code',

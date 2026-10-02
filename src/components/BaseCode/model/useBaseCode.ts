@@ -23,12 +23,19 @@ export function useBaseCode(props: CodeProps, emit: BaseCodeEmits) {
 		if (props.label) return props.label
 		return languageName.value ? formatMessage(UI_CODE.LABEL_LANGUAGE, { language: languageName.value }) : UI_CODE.LABEL
 	})
+	const copying = useCodeCopy(props, emit)
+	const copyLabel = computed(() => {
+		const name = props.title || languageName.value
+		if (!name) return copying.isCopied.value ? undefined : UI_CODE.COPY_LABEL
+		return formatMessage(copying.isCopied.value ? UI_CODE.COPIED_LABEL_NAMED : UI_CODE.COPY_LABEL_NAMED, { name })
+	})
 	const preStyle = computed(() => (props.maxHeight ? { maxHeight: `${props.maxHeight}px` } : undefined))
 	const numberWidth = computed(() => ({ '--base-code-number-width': `${String(props.startLine + lines.value.length - 1).length}ch` }))
 
 	return {
 		...base,
-		...useCodeCopy(props, emit),
+		...copying,
+		copyLabel,
 		preRef,
 		isScrollable,
 		languageName,

@@ -16,8 +16,12 @@ export function useCodeCopy(props: CodeProps, emit: BaseCodeEmits) {
 	const isCopied = ref(false)
 	const status = ref('')
 	let timer: ReturnType<typeof setTimeout> | undefined
+	let isUnmounted = false
 
-	onBeforeUnmount(() => clearTimeout(timer))
+	onBeforeUnmount(() => {
+		isUnmounted = true
+		clearTimeout(timer)
+	})
 
 	async function announce(text: string): Promise<void> {
 		status.value = ''
@@ -29,6 +33,7 @@ export function useCodeCopy(props: CodeProps, emit: BaseCodeEmits) {
 		const code = props.code
 		const success = await writeClipboard(code)
 		emit('copy', { code, success })
+		if (isUnmounted) return success
 		clearTimeout(timer)
 		isCopied.value = success
 		await announce(success ? UI_CODE.COPY_DONE : UI_CODE.COPY_FAILED)

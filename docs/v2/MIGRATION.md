@@ -1651,6 +1651,7 @@ API кита не меняется. В Storybook добавлены пример
 - **BaseMarkdown**: блоки кода с языком подсвечиваются тем же токенизатором. DOM: внутри `<pre><code>` текст разбит на `<span class="base-markdown__token base-markdown__token--<вид>">`; `textContent` блока не изменился. Поиск текста кода одним `getByText` по части строки больше не находит его — ищите по `code` целиком (`toHaveTextContent` или функция-сопоставитель).
 - Токены цвета `--rise-code-keyword`, `-string`, `-number`, `-comment`, `-function`, `-tag`, `-attribute`, `-property`, `-variable` — свои значения в светлой и тёмной теме; `npm run test:contrast` проверяет их на `--rise-bg`, `--rise-bg-muted`, `--rise-bg-elevated`, `--rise-primary-soft`.
 - Экспорт: `BaseCode`, `CODE_VARIANTS`, типы `BaseCodeProps`, `BaseCodeEmits`, `BaseCodeSlots`, `BaseCodeExpose`.
-- Строки словаря (ru, en): раздел `codeBlock` — `LABEL`, `LABEL_LANGUAGE`, `COPY`, `COPIED`, `COPY_DONE`, `COPY_FAILED`, `EMPTY` (`UI_CODE`).
+- Строки словаря (ru, en): раздел `codeBlock` — `LABEL`, `LABEL_LANGUAGE`, `COPY`, `COPIED`, `COPY_LABEL`, `COPY_LABEL_NAMED`, `COPIED_LABEL_NAMED`, `COPY_DONE`, `COPY_FAILED`, `EMPTY` (`UI_CODE`).
+- Имя кнопки «Копировать» для скринридера (BaseCode и блок кода BaseMarkdown) — «Копировать код: <заголовок или язык>», после копирования — «Скопировано: <…>»; без заголовка и языка — «Копировать код». Видимая надпись прежняя. Тесты, которые ищут кнопку по имени `'Копировать'`, ищите по `/^Копировать код/` или по полному имени. Блок кода BaseMarkdown берёт эти строки из раздела `codeBlock`.
 
 **Что сделать.** Ничего. Свои цвета подсветки — переопределите токены `--rise-code-*` в теме приложения (контраст 4.5:1 на подложке блока).

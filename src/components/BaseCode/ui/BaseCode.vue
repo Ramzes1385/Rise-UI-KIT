@@ -8,7 +8,13 @@
 				<slot name="header">{{ title || languageName }}</slot>
 			</span>
 			<slot name="actions" />
-			<BaseButton v-if="hasCopyButton && !isEmpty" variant="ghost" class="base-code__copy" :size-scale="sizeScale" @click="copy">
+			<BaseButton
+				v-if="hasCopyButton && !isEmpty"
+				variant="ghost"
+				class="base-code__copy"
+				:size-scale="sizeScale"
+				:aria-label="copyLabel"
+				@click="copy">
 				<template #left><BaseIcon :name="isCopied ? 'check' : 'copy'" /></template>
 				{{ isCopied ? UI_CODE.COPIED : UI_CODE.COPY }}
 			</BaseButton>
@@ -83,6 +89,7 @@ const {
 	lines,
 	isEmpty,
 	regionLabel,
+	copyLabel,
 	preStyle,
 	numberWidth,
 	isCopied,

@@ -3,7 +3,7 @@ import { nextTick, ref } from 'vue'
 import BaseCode from '../ui/BaseCode.vue'
 import { createUiKitPlugin } from '@/plugin'
 import type { BaseCodeExpose } from '../types/BaseCode.types'
-import { fireEvent, render, screen } from '@testing-library/vue'
+import { cleanup, fireEvent, render, screen } from '@testing-library/vue'
 
 const SAMPLE = "const a = 1\n// comment\nconsole.log('x')"
 
@@ -125,14 +125,14 @@ describe('BaseCode: копирование', () => {
 		vi.useFakeTimers()
 		const writeText = stubClipboard(() => Promise.resolve())
 		const { emitted } = render(BaseCode, { props: { code: SAMPLE } })
-		await fireEvent.click(screen.getByRole('button', { name: 'Копировать' }))
+		await fireEvent.click(screen.getByRole('button', { name: 'Копировать код' }))
 		await vi.waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Код скопирован в буфер обмена'))
 		expect(writeText).toHaveBeenCalledWith(SAMPLE)
 		expect(emitted('copy')).toEqual([[{ code: SAMPLE, success: true }]])
 		expect(screen.getByRole('button', { name: 'Скопировано' })).toBeInTheDocument()
 		vi.advanceTimersByTime(2000)
 		await nextTick()
-		expect(screen.getByRole('button', { name: 'Копировать' })).toBeInTheDocument()
+		expect(screen.getByRole('button', { name: 'Копировать код' })).toBeInTheDocument()
 	})
 
 	it('повторное копирование объявляется заново: статус сначала очищается', async () => {
@@ -154,10 +154,10 @@ describe('BaseCode: копирование', () => {
 	it('буфер обмена отказал — «Не удалось скопировать код», надпись не меняется', async () => {
 		stubClipboard(() => Promise.reject(new Error('denied')))
 		const { emitted } = render(BaseCode, { props: { code: 'a' } })
-		await fireEvent.click(screen.getByRole('button', { name: 'Копировать' }))
+		await fireEvent.click(screen.getByRole('button', { name: 'Копировать код' }))
 		await vi.waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Не удалось скопировать код'))
 		expect(emitted('copy')).toEqual([[{ code: 'a', success: false }]])
-		expect(screen.getByRole('button', { name: 'Копировать' })).toBeInTheDocument()
+		expect(screen.getByRole('button', { name: 'Копировать код' })).toBeInTheDocument()
 	})
 
 	it('без Clipboard API — неудача без исключения', async () => {
@@ -170,6 +170,29 @@ describe('BaseCode: копирование', () => {
 		stubClipboard(() => Promise.resolve())
 		const target = renderWithRef()
 		await expect(target.value!.copy()).resolves.toBe(true)
+	})
+
+	it('имя кнопки различает блоки: заголовок, иначе язык; после копирования — «Скопировано: …»', async () => {
+		stubClipboard(() => Promise.resolve())
+		render(BaseCode, { props: { code: 'a', title: 'useCounter.ts', language: 'ts' } })
+		render(BaseCode, { props: { code: 'b', language: 'ts' } })
+		const titled = screen.getByRole('button', { name: 'Копировать код: useCounter.ts' })
+		expect(titled).toHaveTextContent('Копировать')
+		expect(screen.getByRole('button', { name: 'Копировать код: TypeScript' })).toBeInTheDocument()
+		await fireEvent.click(titled)
+		await vi.waitFor(() => expect(titled).toHaveAccessibleName('Скопировано: useCounter.ts'))
+	})
+
+	it('буфер ответил после размонтирования — copy() возвращает успех, таймер надписи не ставится', async () => {
+		let resolve: () => void = () => undefined
+		stubClipboard(() => new Promise<void>(done => (resolve = done)))
+		const target = renderWithRef()
+		const result = target.value!.copy()
+		cleanup()
+		const set = vi.spyOn(globalThis, 'setTimeout')
+		resolve()
+		await expect(result).resolves.toBe(true)
+		expect(set).not.toHaveBeenCalledWith(expect.any(Function), 2000)
 	})
 
 	it('размонтирование сбрасывает таймер надписи', async () => {
