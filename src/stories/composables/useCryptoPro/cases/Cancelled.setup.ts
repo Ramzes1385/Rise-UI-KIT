@@ -1,5 +1,6 @@
+import { useCryptoPro } from '@composables/crypto/useCryptoPro'
 import { computed, onMounted, reactive, ref, useId } from 'vue'
-import { createCryptoProEmulation, useCryptoPro } from '@composables/crypto/useCryptoPro'
+import { createCryptoProEmulation } from '@composables/crypto/useCryptoPro/emulation'
 
 const modes = [
 	{ value: 'attached', label: 'Присоединённая' },

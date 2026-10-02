@@ -1,6 +1,7 @@
 import { setLocale } from '@/locales/state'
 import { toCryptoProError } from '../core/errors'
-import { CryptoProError, CRYPTO_PRO_ERROR_CODES, createCryptoProEmulation } from '..'
+import { createCryptoProEmulation } from '../emulation'
+import { CryptoProError, CRYPTO_PRO_ERROR_CODES } from '..'
 
 afterEach(() => setLocale('ru'))
 

@@ -22,7 +22,7 @@ export const Certificates: StoryObj<typeof meta> = {
 			source: staticStorySource({
 				template,
 				imports: ['BaseAlert', 'BaseBadge', 'BaseButton'],
-				importsFrom: { [COMPOSABLES]: ['createCryptoProEmulation', 'useCryptoPro'] },
+				importsFrom: { [COMPOSABLES]: ['useCryptoPro'] },
 				vue: ['onMounted'],
 				script: scriptSource(setupSource),
 			}),

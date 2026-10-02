@@ -2,7 +2,7 @@ import { CADES } from '../core/constants'
 import { NOW, IVANOV, cleanup } from './cryptoProFakes'
 import { EMULATED_ERRORS } from '../emulation/emulatedObjects'
 import type { CadesPlugin, CadesWindow, CadesCertificate } from '../types/cadesplugin.types'
-import { emulatedCertificates, createCryptoProEmulation, CRYPTO_PRO_EMULATION_SCENARIOS } from '..'
+import { emulatedCertificates, createCryptoProEmulation, CRYPTO_PRO_EMULATION_SCENARIOS } from '../emulation'
 
 const target = window as CadesWindow
 

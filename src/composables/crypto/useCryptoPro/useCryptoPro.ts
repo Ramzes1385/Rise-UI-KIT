@@ -1,6 +1,3 @@
-import { signData } from './core/signing'
-import { runDiagnostics } from './core/diagnostics'
-import { listCertificates } from './core/certificates'
 import { CryptoProError, toCryptoProError } from './core/errors'
 import { CRYPTO_PRO_STEP_IDS } from './types/useCryptoPro.types'
 import type { CadesPlugin, CadesPluginHandle } from './types/cadesplugin.types'
@@ -15,6 +12,9 @@ import type {
 } from './types/useCryptoPro.types'
 
 const DEFAULT_TIMEOUT = 30000
+
+/** Код работы с плагином — отдельный чанк: приложение, которое только импортирует вход, его не загружает */
+const loadPlugin = () => import('./core/plugin')
 
 function initialStatus(): CryptoProStatus {
 	return {
@@ -35,6 +35,7 @@ function useDiagnostics(options: UseCryptoProOptions) {
 	async function run(): Promise<CadesPluginHandle> {
 		Object.assign(status, initialStatus(), { state: 'checking' })
 		try {
+			const { runDiagnostics } = await loadPlugin()
 			handle = await runDiagnostics({ scriptUrl: toValue(options.scriptUrl), timeout: options.timeout ?? DEFAULT_TIMEOUT, status })
 			status.state = 'ready'
 			return handle
@@ -80,14 +81,14 @@ function useOperations(diagnostics: ReturnType<typeof useDiagnostics>) {
 	}
 
 	async function getCertificates(): Promise<CryptoProCertificate[]> {
-		const list = await guarded(isLoading, listCertificates)
+		const list = await guarded(isLoading, async plugin => (await loadPlugin()).listCertificates(plugin))
 		certificates.value = list
 		if (list.length === 0) error.value = markRaw(new CryptoProError('noCertificates'))
 		return list
 	}
 
 	function sign(data: CryptoProSignData, options: CryptoProSignOptions): Promise<string> {
-		return guarded(isSigning, plugin => signData(plugin, data, options))
+		return guarded(isSigning, async plugin => (await loadPlugin()).signData(plugin, data, options))
 	}
 
 	return { certificates, error, isLoading, isSigning, getCertificates, sign }

@@ -1,4 +1,5 @@
-import { useCryptoPro, emulatedCertificates, createCryptoProEmulation, type CryptoProEmulation } from '..'
+import { useCryptoPro } from '..'
+import { emulatedCertificates, createCryptoProEmulation, type CryptoProEmulation } from '../emulation'
 import { NOW, IVANOV, cleanup, install, fakeStore, customPlugin, fakeCertificate } from './cryptoProFakes'
 
 const DAY = 24 * 60 * 60 * 1000

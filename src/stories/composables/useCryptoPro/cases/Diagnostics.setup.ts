@@ -1,5 +1,6 @@
 import { onMounted } from 'vue'
-import { createCryptoProEmulation, useCryptoPro, type CryptoProStepId, type CryptoProStepState } from '@composables/crypto/useCryptoPro'
+import { createCryptoProEmulation } from '@composables/crypto/useCryptoPro/emulation'
+import { useCryptoPro, type CryptoProStepId, type CryptoProStepState } from '@composables/crypto/useCryptoPro'
 
 const STEP_LABELS: Record<CryptoProStepId, string> = {
 	extension: 'Расширение',

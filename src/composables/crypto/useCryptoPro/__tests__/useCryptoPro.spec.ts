@@ -1,10 +1,11 @@
+import { CryptoProError, useCryptoPro } from '..'
 import { runDiagnostics } from '../core/diagnostics'
 import { renderToString } from 'vue/server-renderer'
 import { mount, flushPromises } from '@vue/test-utils'
+import { createCryptoProEmulation } from '../emulation'
 import { createSSRApp, defineComponent, h, ref } from 'vue'
 import type { CadesWindow } from '../types/cadesplugin.types'
 import type { CryptoProStatus } from '../types/useCryptoPro.types'
-import { CryptoProError, useCryptoPro, createCryptoProEmulation } from '..'
 import { NOW, install, cleanup, stepStates, silentThen, customPlugin } from './cryptoProFakes'
 
 const callbackWindow = window as CadesWindow
@@ -15,6 +16,12 @@ function aboutCalls(calls: { object: string; member: string; args: unknown[] }[]
 
 function scriptsOf(url: string): HTMLScriptElement[] {
 	return [...document.head.querySelectorAll<HTMLScriptElement>(`script[src="${url}"]`)]
+}
+
+/** Код плагина грузится динамически — скрипт появляется в head не сразу после `check()` */
+async function appendedScripts(url: string, count = 1): Promise<HTMLScriptElement[]> {
+	await vi.waitFor(() => expect(scriptsOf(url)).toHaveLength(count))
+	return scriptsOf(url)
 }
 
 afterEach(cleanup)
@@ -194,7 +201,7 @@ describe('useCryptoPro — загрузка скрипта', () => {
 		const url = 'https://cdn.example.ru/cades-load.js'
 		const { status, check } = useCryptoPro({ scriptUrl: () => url })
 		const checking = check()
-		const [script] = scriptsOf(url)
+		const [script] = await appendedScripts(url)
 		expect(script?.async).toBe(true)
 		const restore = createCryptoProEmulation().install()
 		script?.dispatchEvent(new Event('load'))
@@ -210,8 +217,9 @@ describe('useCryptoPro — загрузка скрипта', () => {
 		const url = 'https://cdn.example.ru/cades-ref.js'
 		const { check } = useCryptoPro({ scriptUrl: ref(url) })
 		const checking = check()
+		const [script] = await appendedScripts(url)
 		createCryptoProEmulation().install()
-		scriptsOf(url)[0]?.dispatchEvent(new Event('load'))
+		script?.dispatchEvent(new Event('load'))
 		await expect(checking).resolves.toBe(true)
 	})
 
@@ -219,7 +227,8 @@ describe('useCryptoPro — загрузка скрипта', () => {
 		const url = 'https://cdn.example.ru/cades-empty.js'
 		const { status, check } = useCryptoPro({ scriptUrl: url })
 		const checking = check()
-		scriptsOf(url)[0]?.dispatchEvent(new Event('load'))
+		const [script] = await appendedScripts(url)
+		script?.dispatchEvent(new Event('load'))
 		await expect(checking).resolves.toBe(false)
 		expect(status.error?.code).toBe('scriptFailed')
 		expect(status.error?.message).toBe('Не удалось загрузить скрипт cadesplugin_api.js')
@@ -229,14 +238,15 @@ describe('useCryptoPro — загрузка скрипта', () => {
 		const url = 'https://cdn.example.ru/cades-error.js'
 		const { status, check } = useCryptoPro({ scriptUrl: url })
 		const checking = check()
-		scriptsOf(url)[0]?.dispatchEvent(new Event('error'))
+		const [script] = await appendedScripts(url)
+		script?.dispatchEvent(new Event('error'))
 		await expect(checking).resolves.toBe(false)
 		expect(status.error?.code).toBe('scriptFailed')
 		expect(stepStates(status)).toEqual(['error', 'pending', 'pending', 'pending'])
 		const retry = check()
-		expect(scriptsOf(url)).toHaveLength(2)
+		const scripts = await appendedScripts(url, 2)
 		createCryptoProEmulation().install()
-		scriptsOf(url)[1]?.dispatchEvent(new Event('load'))
+		scripts[1]?.dispatchEvent(new Event('load'))
 		await expect(retry).resolves.toBe(true)
 	})
 

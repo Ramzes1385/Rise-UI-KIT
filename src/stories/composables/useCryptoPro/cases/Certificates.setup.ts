@@ -1,5 +1,6 @@
 import { onMounted } from 'vue'
-import { createCryptoProEmulation, useCryptoPro } from '@composables/crypto/useCryptoPro'
+import { useCryptoPro } from '@composables/crypto/useCryptoPro'
+import { createCryptoProEmulation } from '@composables/crypto/useCryptoPro/emulation'
 
 const formatDate = (date: Date): string => date.toLocaleDateString('ru-RU')
 

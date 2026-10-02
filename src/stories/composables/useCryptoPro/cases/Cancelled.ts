@@ -23,7 +23,7 @@ export const Cancelled: StoryObj<typeof meta> = {
 			source: staticStorySource({
 				template,
 				imports: ['BaseAlert', 'BaseButton', 'BaseRadio', 'BaseSegmented', 'BaseTextarea'],
-				importsFrom: { [COMPOSABLES]: ['createCryptoProEmulation', 'useCryptoPro'] },
+				importsFrom: { [COMPOSABLES]: ['useCryptoPro'] },
 				vue: ['computed', 'onMounted', 'reactive', 'ref', 'useId'],
 				script: scriptSource(setupSource),
 			}),

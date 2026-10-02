@@ -22,7 +22,7 @@ export const Diagnostics: StoryObj<typeof meta> = {
 				template,
 				imports: ['BaseAlert', 'BaseBadge', 'BaseButton'],
 				importsFrom: {
-					[COMPOSABLES]: ['createCryptoProEmulation', 'useCryptoPro', 'type CryptoProStepId', 'type CryptoProStepState'],
+					[COMPOSABLES]: ['useCryptoPro', 'type CryptoProStepId', 'type CryptoProStepState'],
 				},
 				vue: ['onMounted'],
 				script: scriptSource(setupSource),

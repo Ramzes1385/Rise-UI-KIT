@@ -1,4 +1,4 @@
-/** Утилиты: эмуляция КриптоПро ЭЦП Browser plug-in для тестов, историй и демо приложения — сертификаты, фиктивная подпись, сценарии ошибок */
+/** Утилиты: эмуляция КриптоПро ЭЦП Browser plug-in для тестов и историй кита (внутренняя: в публичный вход пакета не входит) — сертификаты, фиктивная подпись, сценарии ошибок */
 import { emulatedCertificates } from './emulatedCertificates'
 import { EMULATED_ERRORS, createEmulatedObject } from './emulatedObjects'
 import type { CadesPlugin, CadesWindow } from '../types/cadesplugin.types'

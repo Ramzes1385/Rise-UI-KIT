@@ -1672,6 +1672,6 @@ API кита не меняется. В Storybook добавлены пример
 Новый composable, изменений в существующих нет.
 
 - `useCryptoPro({ scriptUrl, timeout, checkOnMount })` — КриптоПро ЭЦП Browser plug-in: диагностика `status`, `getCertificates()`, `sign(data, { thumbprint, detached })` → Base64, ошибки `CryptoProError`. Справочник — docs/reference/COMPOSABLES.md, «useCryptoPro».
-- Эмуляция плагина для тестов приложения: `createCryptoProEmulation`, `emulatedCertificates`, `CRYPTO_PRO_EMULATION_SCENARIOS`.
+- Эмуляция плагина — внутренняя (тесты и истории кита), из входа `composables` не экспортируется. Подпись в приложении проверяйте с настоящим плагином, в тестах приложения — своей подменой `window.cadesplugin` или моком `useCryptoPro`. Код работы с плагином загружается отдельным чанком при первой проверке.
 - Словарь: раздел `cryptopro` (ru, en) — шаги диагностики и тексты ошибок; свой язык — `defineLocale(en, { cryptopro: { … } })`.
 - `cadesplugin_api.js` в кит не входит: приложение подключает его само или передаёт адрес в `scriptUrl`.

@@ -1,6 +1,7 @@
 import type { CadesSignedData } from '../types/cadesplugin.types'
+import { useCryptoPro, CryptoProError, type CryptoProSignData } from '..'
+import { createCryptoProEmulation, type CryptoProEmulation } from '../emulation'
 import { NOW, IVANOV, SMIRNOV, SIDOROVA, cleanup, install, customPlugin } from './cryptoProFakes'
-import { useCryptoPro, CryptoProError, createCryptoProEmulation, type CryptoProEmulation, type CryptoProSignData } from '..'
 
 function decode(signature: string): string {
 	return new TextDecoder().decode(Uint8Array.from(atob(signature), char => char.charCodeAt(0)))
