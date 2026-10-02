@@ -1,8 +1,8 @@
 import { expect } from 'storybook/test'
-import type meta from '../BaseAnchor.stories'
-import BaseAnchor from '../../ui/BaseAnchor.vue'
+import type meta from '../../BaseAnchor.stories'
+import BaseAnchor from '../../../ui/BaseAnchor.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import type { AnchorItem } from '../../types/BaseAnchor.types'
+import type { AnchorItem } from '../../../types/BaseAnchor.types'
 import { literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const items: AnchorItem[] = [

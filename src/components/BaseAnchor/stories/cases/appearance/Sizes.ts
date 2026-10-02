@@ -1,6 +1,6 @@
-import { items } from '../shared'
-import type meta from '../BaseAnchor.stories'
-import BaseAnchor from '../../ui/BaseAnchor.vue'
+import { items } from '../../shared'
+import type meta from '../../BaseAnchor.stories'
+import BaseAnchor from '../../../ui/BaseAnchor.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { literal, SIZE_PRESETS, sizeLabel, storySource, useStorySetup } from '@/stories/helpers'
 

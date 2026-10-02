@@ -1,9 +1,9 @@
-import { items } from '../shared'
+import { items } from '../../shared'
 import { expect } from 'storybook/test'
-import type meta from '../BaseAnchor.stories'
-import BaseAnchor from '../../ui/BaseAnchor.vue'
+import type meta from '../../BaseAnchor.stories'
+import BaseAnchor from '../../../ui/BaseAnchor.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { ANCHOR_VARIANTS } from '../../types/BaseAnchor.types'
+import { ANCHOR_VARIANTS } from '../../../types/BaseAnchor.types'
 import { literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const template = `

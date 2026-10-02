@@ -1,4 +1,4 @@
-import type meta from '../BaseAnchor.stories'
+import type meta from '../../BaseAnchor.stories'
 import { waitFor, expect } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
 

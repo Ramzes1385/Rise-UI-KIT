@@ -1,6 +1,6 @@
 import { expect } from 'storybook/test'
-import type meta from '../BaseAnchor.stories'
-import BaseAnchor from '../../ui/BaseAnchor.vue'
+import type meta from '../../BaseAnchor.stories'
+import BaseAnchor from '../../../ui/BaseAnchor.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { storySource, useStorySetup } from '@/stories/helpers'
 
