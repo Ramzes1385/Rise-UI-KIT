@@ -6,10 +6,11 @@ import { literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const positions = ['top-left', 'top-right', 'bottom-left', 'bottom-right'].map(position => ({
 	name: position,
+	label: `Стрелки ${position}`,
 	items: PHOTOS.slice(0, 3).map(photo => ({ ...photo, title: position })),
 }))
 
-const hidden = ['items', 'arrowsPosition', 'navigation', 'height', 'hasCaption']
+const hidden = ['items', 'arrowsPosition', 'navigation', 'height', 'hasCaption', 'label']
 
 const template = `
 	<div class="story-grid" style="--story-grid-min: 300px; row-gap: 96px; padding: 40px 0;">
@@ -19,6 +20,7 @@ const template = `
 			v-bind="args"
 			:items="position.items"
 			:arrows-position="position.name"
+			:label="position.label"
 			navigation="none"
 			height="160px" />
 	</div>
@@ -33,6 +35,7 @@ export const ArrowPositions: StoryObj<typeof meta> = {
 				story: [
 					'Позиции стрелок: `center` (по умолчанию) — поверх слайдов по бокам; угловые — снаружи, над или под областью',
 					'слайдов (оставьте для них место). Снаружи стрелки контурные, поверх фото — приподнятые с тенью.',
+					'Несколько каруселей на странице — каждой своё имя `label`: скринридер различает их в списке областей.',
 				].join('\n'),
 			},
 			source: storySource({

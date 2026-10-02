@@ -1134,6 +1134,17 @@ import { BaseImage } from '@ramzes1385/rise-ui-kit'
 </template>
 ```
 
+Просмотр (`:zoom-config="{ hasZoom: true }"`) — модальное окно: «+», «-» и «0» меняют масштаб, ← → листают галерею — только пока фокус в окне. `gallery` — адреса строками или `{ src, alt }`: имя окна меняется при листании («Просмотр изображения: Долина, изображение 3 из 5»). Атрибуты самого `<img>` (`crossorigin`, `fetchpriority`, `referrerpolicy`) — `img-attrs`; события `zoom-open`, `zoom-close` и `zoom` (масштаб изменился); через `ref` — `openZoom()` и `closeZoom()`.
+
+```vue
+<BaseImage
+	src="/photos/1.jpg"
+	alt="Горы"
+	:zoom-config="{ hasZoom: true }"
+	:gallery="[{ src: '/photos/1.jpg', alt: 'Горы' }, { src: '/photos/2.jpg', alt: 'Долина' }]"
+	:img-attrs="{ fetchpriority: 'high' }" />
+```
+
 ---
 
 ## BaseIcon
@@ -1283,6 +1294,12 @@ const slides = [
 <template>
 	<BaseSlider :items="slides" has-caption />
 </template>
+```
+
+Доступность — по APG Carousel: область с ролью «карусель» и именем `label` (по умолчанию «Карусель»), слайды — группы «2 из 5», смена слайда озвучивается. С `is-autoplay` первой в порядке Tab стоит кнопка «Остановить/Запустить автопрокрутку»; указатель над слайдером — пауза, фокус на слайде или стрелке, запуск видео и `prefers-reduced-motion` останавливают прокрутку до кнопки. Через `ref` — `goTo(index)`, `goNext()`, `goPrev()`, `stopAutoplay()`, `playAutoplay()`.
+
+```vue
+<BaseSlider ref="slider" :items="slides" label="Новинки" is-autoplay :autoplay-interval="5000" />
 ```
 
 ---

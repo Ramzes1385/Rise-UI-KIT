@@ -1011,3 +1011,15 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 
 - **BaseMarquee** — лента без фона и рамки (`default`), с мягким фоном (`soft`) или рамкой (`outline`); справа кнопка паузы ghost со значком `pause`/`play`; `hasFade` — края ленты растворяются маской (48 px при `sizeScale` 100); вертикальная лента — высота области 160 px.
 - Новые истории: `element-basemarquee--default`, `--variants`, `--sizes`, `--news`, `--logos`, `--directions`, `--vertical`, `--custom-color`, `--keyboard`, `--reduced-motion`. В скриншот-тесты добавлены `variants`, `sizes`, `directions`, `logos` (обе темы, движение снимается остановленным в начале круга) — эталонов нет, их делает владелец.
+
+## Задача fu-media — BaseImage, BaseSlider, токены медиа
+
+Сверка попиксельно: Storybook с `4513198d` (база) и с ветки `epic/fu-media` (40894b76), окно 800×600, обе темы, `prefers-reduced-motion: reduce`. Страница со снимками — `.rise-transfer\review\fu-media.html`.
+
+- **BaseSlider с `isAutoplay`** — в левом верхнем углу слайдов круглая кнопка «Остановить/Запустить автопрокрутку» (значок пауза/пуск, подложка `--rise-media-surface`, белый значок), отступ 12px. Затронута история Autoplay (`data-baseslider--autoplay`); в скриншот-тестах её нет.
+- **BaseSlider ArrowPositions** — без видимых изменений (у каруселей появились разные имена `label`).
+- **Токены `--rise-media-*`** (BaseImage — окно просмотра, BaseSlider — подписи и миниатюры видео) — значения прежние: Default и Fits BaseSlider/BaseImage совпадают с базой попиксельно в обеих темах; Gallery BaseImage отличается на 3×1 px в тёмной теме — та же разница есть между двумя прогонами базы (нестабильна в базе).
+- **BaseImage** с `aspectRatio` и `width` вместе — теперь ширина применяется, высота считается из пропорций (раньше ширина игнорировалась). В историях кита такого сочетания нет.
+- **BaseImage** с пустым `src` — мерцающая заглушка вместо «Ошибка загрузки» (миниатюра видео без `poster` в BaseSlider).
+
+Эталоны скриншот-тестов, которые это затронет: нет — `*.visual.spec.ts` BaseSlider и BaseImage не включают Autoplay, а остальные снимки совпадают с базой. Эталоны не трогались.
