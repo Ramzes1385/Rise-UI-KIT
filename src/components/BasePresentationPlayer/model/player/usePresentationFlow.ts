@@ -4,8 +4,8 @@ import { useSlidePlayback } from '../playback/useSlidePlayback'
 import { useDocumentVisible } from '../playback/useDocumentVisible'
 import { usePresentationStorage } from '../progress/usePresentationStorage'
 import { usePresentationProgress } from '../progress/usePresentationProgress'
-import type { PresentationElements } from '../../types/PresentationModel.types'
 import { usePresentationNavigation } from '../playback/usePresentationNavigation'
+import type { PresentationElements, SlidePlaybackOptions } from '../../types/PresentationModel.types'
 import type { BasePresentationPlayerEmits, BasePresentationPlayerProps } from '../../types/BasePresentationPlayer.types'
 
 function useStrictRules(props: BasePresentationPlayerProps, playback: ReturnType<typeof useSlidePlayback>, index: () => number) {
@@ -24,21 +24,24 @@ function useStrictRules(props: BasePresentationPlayerProps, playback: ReturnType
 	}
 }
 
-function useFlowState(props: BasePresentationPlayerProps, emit: BasePresentationPlayerEmits, elements: PresentationElements) {
+function useFlowState(
+	props: BasePresentationPlayerProps,
+	emit: BasePresentationPlayerEmits,
+	options: PresentationElements & Pick<SlidePlaybackOptions, 'onSlideEnd' | 'onTrackSlide'>,
+) {
 	const navigation = usePresentationNavigation(props, emit)
 	const isVisible = useDocumentVisible()
 	const isPlaying = ref(false)
-	const hooks = { end: (): void => undefined, track: (index: number): void => void index }
 	const playback = useSlidePlayback(props, {
 		index: navigation.index,
 		isPlaying,
 		isVisible,
-		audioRef: elements.audioRef,
-		videoRef: elements.videoRef,
-		onSlideEnd: () => hooks.end(),
-		onTrackSlide: index => hooks.track(index),
+		audioRef: options.audioRef,
+		videoRef: options.videoRef,
+		onSlideEnd: options.onSlideEnd,
+		onTrackSlide: options.onTrackSlide,
 	})
-	return { navigation, isVisible, isPlaying, hooks, playback }
+	return { navigation, isVisible, isPlaying, playback }
 }
 
 function useAdvance(state: ReturnType<typeof useFlowState>) {
@@ -80,8 +83,12 @@ function useCommands(
 }
 
 export function usePresentationFlow(props: BasePresentationPlayerProps, emit: BasePresentationPlayerEmits, elements: PresentationElements) {
-	const state = useFlowState(props, emit, elements)
-	const { navigation, isVisible, isPlaying, hooks, playback } = state
+	const state = useFlowState(props, emit, {
+		...elements,
+		onSlideEnd: () => progress.onMediaEnd(),
+		onTrackSlide: index => progress.onTrackEnd(index),
+	})
+	const { navigation, isVisible, isPlaying, playback } = state
 	const { isFinished, advanceTo } = useAdvance(state)
 	const hasStarted = ref(false)
 	const index = (): number => navigation.index.value
@@ -94,8 +101,6 @@ export function usePresentationFlow(props: BasePresentationPlayerProps, emit: Ba
 		pause: () => void (isPlaying.value = false),
 	})
 	const strict = useStrictRules(props, playback, index)
-	hooks.end = progress.onMediaEnd
-	hooks.track = progress.onTrackEnd
 	const { goTo, play } = useCommands(state, { isFinished, hasStarted, canGoTo: progress.canGoTo })
 
 	watch(isPlaying, value => (value ? emit('play') : emit('pause')))
