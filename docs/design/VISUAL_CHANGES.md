@@ -993,3 +993,14 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 Эталоны скриншот-тестов, которые это затронет: `navigation-basepagination--without-last-page`, если она есть в `BasePagination.visual.spec.ts`, и `navigation-basestepper--errors` (на уровне сглаживания). Эталоны не трогались.
 
 Новые истории (в скриншот-тесты не добавлены): `navigation-basestepper--clickable`, `data-baseaccordion--open-model`.
+
+## Задача fu-forms: имена и контекст полей форм
+
+Сравнение попиксельно: Storybook с `4513198d` (база, два прохода — нестабильные снимки отсеяны) и с `epic/fu-forms`; 84 истории BaseSwitch, BaseCheckbox, BaseRadio, BaseSelect, BaseColorPicker, BaseFormField и BaseTable × 2 темы, окно 800×500, часы зафиксированы. Совпали 154 снимка из 168; в 13 разница — сглаживание (ни одного пикселя с отклонением больше 16 из 255) или нестабильность базы.
+
+- **BaseFormField WithError** — флажки BaseCheckbox внутри обёртки с ошибкой получили рамку цвета ошибки (контекст поля, FOLLOW_UPS № 2) — как BaseInput и BaseCheckboxGroup в обёртке с ошибкой. Затронет эталон `base-form-field-with-error` (обе темы).
+- **BaseSwitch** — описание (слот `default` при подписи) теперь с новой строки и приглушённым цветом (`--rise-text-muted`): раньше текст слота шёл сразу за подписью без пробела. В историях кита описание уже было блоком своего цвета — Slots совпадает с базой. Разметка: строка — `div`, подпись — `label.base-switch__caption`, описание — `span.base-switch__description`.
+- **BaseTable** — без видимых изменений: у флажков выбора убран скрытый `span` подписи.
+- Новые истории (в скриншот-тесты не добавлены): `form-baseformfield--toggle-controls` (флажок, переключатель и радиогруппа в обёртке), `form-basecheckbox--aria-label`, `form-baseselect--aria-label`, `form-basecolorpicker--aria-label`.
+
+Страница со снимками — `.rise-transfer\review\fu-forms.html`. Эталоны не трогались.

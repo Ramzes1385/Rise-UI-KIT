@@ -28,3 +28,4 @@ export const LongContent = cases.LongContent
 export const ErrorSlot = cases.ErrorSlot
 export const ConsentBeforeSubmit = cases.ConsentBeforeSubmit
 export const Keyboard = cases.Keyboard
+export const AriaLabel = cases.AriaLabel

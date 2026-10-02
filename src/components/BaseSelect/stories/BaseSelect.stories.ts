@@ -31,3 +31,4 @@ export const Multiple = cases.Multiple
 export const Searchable = cases.Searchable
 export const DisabledOptions = cases.DisabledOptions
 export const Keyboard = cases.Keyboard
+export const AriaLabel = cases.AriaLabel

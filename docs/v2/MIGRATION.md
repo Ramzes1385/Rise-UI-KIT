@@ -1178,7 +1178,7 @@
 
 | Компонент | Было | Стало |
 |---|---|---|
-| BaseSwitch | `.base-switch__row` — `<label>` вокруг переключателя, подписи и слота `default`: текст слота входил в имя переключателя | `.base-switch__row` — `<div>`; подпись и `*` — в `<label class="base-switch__caption" for>`, слот `default` — в `span.base-switch__description`, связанном через `aria-describedby`. Клик по описанию и пустому месту строки по-прежнему переключает (кроме ссылок, кнопок и полей внутри). Без `label` и слота `label` слот `default` остаётся подписью. Новые ключи `customClass`: `caption`, `description` |
+| BaseSwitch | `.base-switch__row` — `<label>` вокруг переключателя, подписи и слота `default`: текст слота входил в имя переключателя | `.base-switch__row` — `<div>`; подпись и `*` — в `<label class="base-switch__caption" for>`, слот `default` — в `span.base-switch__description` (с новой строки, приглушённым цветом), связанном через `aria-describedby`. Клик по описанию и пустому месту строки по-прежнему переключает (кроме ссылок, кнопок и полей внутри). Без `label` и слота `label` слот `default` остаётся подписью. Новые ключи `customClass`: `caption`, `description` |
 | BaseSelect | список (`listbox`) без `label` назывался плейсхолдером, даже внутри BaseFormField с подписью | список и триггер называются подписью BaseFormField; без неё — `ariaLabel`, затем плейсхолдер. Пустой `placeholder=""` больше не даёт пустое имя |
 | BaseSelect (`isMultiple` + `isRequired`) | пустой массив `[]` проходил проверку | `[]` — незаполненное поле: `validate()` возвращает `false`, ошибка «Обязательное поле». То же для любого поля на `useFormField` с массивом |
 | BaseCheckboxGroup | — | флажки внутри группы не берут контекст BaseFormField (его получает сама группа) |

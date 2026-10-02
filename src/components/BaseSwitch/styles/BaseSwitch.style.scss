@@ -91,6 +91,11 @@
 		@include field-required;
 	}
 
+	&__description {
+		display: block;
+		color: var(--rise-text-muted);
+	}
+
 	&__error:empty {
 		display: none;
 	}

@@ -24,3 +24,4 @@ export const WithError = cases.WithError
 export const LongContent = cases.LongContent
 export const KitControl = cases.KitControl
 export const LabelFor = cases.LabelFor
+export const ToggleControls = cases.ToggleControls

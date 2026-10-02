@@ -28,3 +28,4 @@ export const HexInput = cases.HexInput
 export const Formats = cases.Formats
 export const Resettable = cases.Resettable
 export const Keyboard = cases.Keyboard
+export const AriaLabel = cases.AriaLabel

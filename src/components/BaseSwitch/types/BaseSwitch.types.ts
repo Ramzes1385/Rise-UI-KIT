@@ -33,7 +33,7 @@ export interface BaseSwitchEmits {
 
 export interface BaseSwitchSlots {
 	/**
-	 * Описание рядом с подписью: связано с переключателем через `aria-describedby`, клик по нему переключает.
+	 * Описание под подписью: связано с переключателем через `aria-describedby`, клик по нему переключает.
 	 * Без `label` и слота `label` содержимое становится подписью
 	 */
 	default?: () => unknown
