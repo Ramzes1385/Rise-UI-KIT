@@ -1,0 +1,27 @@
+.base-presentation-player {
+	&__stage {
+		position: absolute;
+		inset: 0;
+		overflow: hidden;
+	}
+
+	&__slide {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	&__slide-enter-active,
+	&__slide-leave-active {
+		@include motion-safe {
+			transition: opacity var(--media-normal) var(--media-ease);
+		}
+	}
+
+	&__slide-enter-from,
+	&__slide-leave-to {
+		opacity: 0;
+	}
+}
