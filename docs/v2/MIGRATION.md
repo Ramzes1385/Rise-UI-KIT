@@ -474,6 +474,7 @@
 ### Новое
 
 - `useFormContext`: `useFormDisabled()` (блокировка с учётом формы), `useFieldControl()` (id, описание и ошибка обёртки для своих контролов), ключи `FORM_CONTEXT_KEY` и `FORM_FIELD_CONTEXT_KEY`.
+- `BaseImageMap` — интерактивная картинка и карта этажей: точки и фигуры, подсказки, окна, этажи, масштаб, свой JSON (задача new-image-map).
 - `formUtils`: `validateSchema`, `issuesToErrors`, `issueName` и типы Standard Schema (`StandardSchemaV1`).
 - `useSelect` принимает `isDisabled` — блокировку с учётом формы.
 - Строка словаря `text.SELECT_ALL_OPTIONS` (ru, en) — «Выбрать все» в BaseCheckboxGroup.
@@ -1493,3 +1494,13 @@ FOLLOW_UPS № 38, № 39, № 13 и № 15 (медиа).
 - Строка словаря (ru, en): `aria.LOADING_BAR` — «Загрузка страницы» / «Page loading».
 
 **Что сделать.** Ничего: только добавление. Полоса появляется, только если приложение вызывает `useLoadingBar().start()`.
+
+## Задача new-image-map: BaseImageMap
+
+Новый компонент, изменений в существующих нет.
+
+- `BaseImageMap` — интерактивная картинка и карта этажей: `data` (`ImageMapData`: `layers`, `objects`, `groups`, `filters`, `styles`), `v-model:active`, `v-model:layer`, `defaultAction`, `wheelZoom`, `maxZoom`, `initArea`, `height`, `hasZoomControls`, `hasFullscreen`, `hasTooltip`, `hasZoomToActive`, `isPulsing`, `sheetBreakpoint`, варианты `default`, `outline`, `ghost`; события `select`, `hover`, `layer-change`; слоты `tooltip`, `popup`, `point`; методы `zoomIn`, `zoomOut`, `resetZoom`, `zoomToObject`, `setLayer`. Справочник — docs/reference/COMPONENTS.md, «BaseImageMap».
+- Экспорт типов и констант: `ImageMapData`, `ImageMapLayer`, `ImageMapObject` и виды объектов, `ImageMapGroup`, `ImageMapStyle`, `ImageMapArea`, `IMAGE_MAP_VARIANTS`, `IMAGE_MAP_WHEEL_MODES`, `IMAGE_MAP_ACTIONS`, `IMAGE_MAP_OBJECT_TYPES`, `IMAGE_MAP_DATA_VERSION`.
+- Строки словаря (ru, en): раздел `imageMap` — `LABEL`, `LAYERS`, `ZOOM`, `FULLSCREEN`, `EXIT_FULLSCREEN`, `WHEEL_HINT`, `WHEEL_HINT_MAC`, `LOADING`, `ERROR`, `EMPTY` (`UI_IMAGE_MAP`).
+- Формат JSON версии 1 следующие части (список и фильтры, редактор, маршруты) только расширяют: сохранённые карты останутся рабочими.
+
