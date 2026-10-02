@@ -49,6 +49,17 @@ describe('useFormField', () => {
 			expect(field.validate()).toBe(false)
 		})
 
+		it('возвращает false для пустого массива в required поле (мультивыбор)', () => {
+			const field = useFormField({ value: () => [], isRequired: () => true })
+			expect(field.validate()).toBe(false)
+			expect(field.error).toBe(UI_TEXT.REQUIRED_FIELD)
+		})
+
+		it('возвращает true для непустого массива в required поле', () => {
+			const field = useFormField({ value: () => ['a'], isRequired: () => true })
+			expect(field.validate()).toBe(true)
+		})
+
 		it('возвращает false при нарушении правила', () => {
 			const field = useFormField({
 				value: () => 'ab',

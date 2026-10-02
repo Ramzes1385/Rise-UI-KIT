@@ -70,6 +70,25 @@ describe('BaseCheckboxGroup integration', () => {
 		expect(screen.getAllByRole('group')).toHaveLength(1)
 	})
 
+	it('ошибка BaseFormField описывает группу, а не каждый флажок', async () => {
+		render({
+			components: { BaseCheckboxGroup, BaseFormField },
+			setup: () => ({ options: OPTIONS }),
+			template: `
+				<BaseFormField label="Каналы" error="Выберите канал">
+					<BaseCheckboxGroup :options="options" />
+				</BaseFormField>
+			`,
+		})
+
+		await nextTick()
+		expect(screen.getByRole('group', { name: 'Каналы' })).toHaveAccessibleDescription('Выберите канал')
+		for (const checkbox of screen.getAllByRole('checkbox')) {
+			expect(checkbox).not.toHaveAttribute('aria-invalid')
+			expect(checkbox).not.toHaveAttribute('aria-describedby')
+		}
+	})
+
 	it('в отключённой BaseForm флажки отключены', () => {
 		render({
 			components: { BaseCheckboxGroup, BaseForm },

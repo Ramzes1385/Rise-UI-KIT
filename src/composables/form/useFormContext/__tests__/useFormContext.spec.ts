@@ -139,6 +139,20 @@ describe('useFormContext', () => {
 			expect(result.fieldLabelId.value).toBeUndefined()
 		})
 
+		it('hasOwnLabel: контрол со своей подписью не занимает обёртку, но берёт её описание, ошибку и обязательность', () => {
+			const field = createField({ hasError: computed(() => true), isRequired: computed(() => true) })
+			const { result } = withProviders(() => useFieldControl({ hasOwnLabel: true }), { field })
+
+			expect(field.control).toBeNull()
+			expect(result.isInField).toBe(false)
+			expect(result.fieldLabelId.value).toBeUndefined()
+			expect(result.aria.value).toEqual({
+				'aria-invalid': 'true',
+				'aria-required': 'true',
+				'aria-describedby': 'field-description',
+			})
+		})
+
 		it('второй контрол в той же обёртке не подключается', () => {
 			const field = createField()
 			let second!: UseFieldControlReturn
