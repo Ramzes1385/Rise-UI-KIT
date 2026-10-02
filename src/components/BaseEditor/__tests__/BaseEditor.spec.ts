@@ -406,8 +406,8 @@ describe('BaseEditor unit', () => {
 			expect(within(toolbar).getByRole('button', { name: 'Ссылка' })).not.toHaveAttribute('aria-pressed')
 			expect(within(toolbar).getByLabelText('Изображение')).toHaveAttribute('type', 'file')
 			expect(within(toolbar).getByLabelText('Видео')).toHaveAttribute('type', 'file')
-			expect(within(toolbar).getByRole('group', { name: 'Цвет текста' })).toBeInTheDocument()
-			expect(within(toolbar).getByRole('group', { name: 'Цвет фона' })).toBeInTheDocument()
+			expect(within(toolbar).getByRole('button', { name: /^Цвет текста, выбран / })).toHaveAttribute('aria-expanded', 'false')
+			expect(within(toolbar).getByRole('button', { name: /^Цвет фона, выбран / })).toHaveAttribute('aria-expanded', 'false')
 		})
 
 		it('кнопка «Режим кода» нажата в режиме кода, поле HTML-кода подписано', async () => {
