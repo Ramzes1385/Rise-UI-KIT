@@ -207,7 +207,7 @@
 						}"
 						role="group"
 						:aria-label="day.label">
-						<div v-if="day.work" class="base-event-calendar__work" :style="workStyle(day)"></div>
+						<div v-if="day.work" class="base-event-calendar__work" :style="workStyle(day.work)"></div>
 						<div v-if="hasNowLine(day)" class="base-event-calendar__now" :style="nowStyle">
 							<span class="base-event-calendar__now-label">{{ text.NOW }}</span>
 						</div>
@@ -216,7 +216,7 @@
 							:key="segment.item.key"
 							type="button"
 							class="base-event-calendar__event base-event-calendar__event--block"
-							:class="classes.event"
+							:class="[classes.event, { 'base-event-calendar__event--compact': isCompact(segment) }]"
 							:style="[eventStyle(segment.item), timedStyle(segment)]"
 							:aria-label="eventLabel(segment.item)"
 							@click="handleEventClick(segment.item)">
@@ -308,6 +308,7 @@ const {
 	nowStyle,
 	timedTime,
 	hasNowLine,
+	isCompact,
 	eventLabel,
 	eventTime,
 	eventStart,

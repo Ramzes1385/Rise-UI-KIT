@@ -55,7 +55,7 @@ export function useEventCalendarContext(props: EventCalendarProps, emit: BaseEve
 	const period = computed(() => periodOf(view.value, date.value, firstDay.value))
 	const items = computed(() => getEventsInRange(props.events, period.value))
 	watch(
-		() => [period.value.view, period.value.start.getTime(), period.value.end.getTime()],
+		[() => period.value.view, () => period.value.start.getTime(), () => period.value.end.getTime()],
 		() => emit('period-change', period.value),
 		{ immediate: true },
 	)

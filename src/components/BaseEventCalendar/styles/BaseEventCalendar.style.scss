@@ -13,7 +13,7 @@
 	padding: sz(12px);
 	border: 1px solid var(--rise-border);
 	border-radius: sz(var(--rise-radius-lg));
-	color: var(--rise-text);
+	@include custom-text(color, var(--rise-text));
 	@include text-size(sm);
 	@include custom-bg(background-color, var(--rise-bg));
 
@@ -50,7 +50,7 @@
 		flex: 1 1 auto;
 		min-width: 0;
 		font-weight: var(--rise-font-weight-semibold);
-		color: var(--rise-text-highlighted);
+		@include custom-text(color, var(--rise-text-highlighted));
 		@include text-size(lg);
 	}
 
@@ -74,9 +74,9 @@
 		padding: sz(6px) sz(8px);
 		border-bottom: 1px solid var(--grid-line);
 		font-weight: var(--rise-font-weight-medium);
-		color: var(--rise-text-muted);
 		text-align: center;
 		@include text-size(xs);
+		@include custom-text(color, var(--rise-text-muted));
 	}
 
 	&__week + &__week &__day {
@@ -98,8 +98,8 @@
 		}
 
 		&--outside {
-			color: var(--rise-text-dimmed);
-			background-color: var(--rise-bg-muted);
+			@include custom-text(color, var(--rise-text-muted));
+			@include custom-bg(background-color, var(--rise-bg-muted));
 		}
 	}
 
@@ -159,6 +159,7 @@
 		&--timed {
 			border-left-color: transparent;
 			background-color: transparent;
+			@include custom-text(color, var(--rise-text));
 
 			&::before {
 				flex: none;
@@ -200,11 +201,27 @@
 			border: 1px solid var(--rise-bg);
 			border-left: sz(3px) solid var(--event-color);
 		}
+
+		&--block &-title,
+		&--block &-time {
+			@include truncate;
+		}
+
+		&--compact {
+			flex-direction: row;
+			align-items: center;
+			gap: sz(4px);
+			padding-block: 0;
+		}
+
+		&--compact &-time {
+			flex: none;
+		}
 	}
 
 	&__event-time {
 		flex: none;
-		color: var(--rise-text-muted);
+		color: inherit;
 		font-variant-numeric: tabular-nums;
 	}
 
@@ -226,8 +243,8 @@
 		border-radius: sz(var(--rise-radius-sm));
 		font: inherit;
 		font-weight: var(--rise-font-weight-medium);
-		color: var(--rise-text-muted);
 		background: none;
+		@include custom-text(color, var(--rise-text-muted));
 		cursor: pointer;
 		@include text-size(xs);
 		@include focus-ring(1px);
@@ -260,7 +277,7 @@
 		padding: sz(6px) sz(8px);
 		border-radius: sz(var(--rise-radius-sm));
 		font-weight: var(--rise-font-weight-semibold);
-		background-color: var(--rise-bg-muted);
+		@include custom-bg(background-color, var(--rise-bg-muted));
 	}
 
 	&__agenda-items {
@@ -278,7 +295,7 @@
 
 	&__empty {
 		padding: sz(32px) sz(16px);
-		color: var(--rise-text-muted);
+		@include custom-text(color, var(--rise-text-muted));
 		text-align: center;
 	}
 
@@ -306,8 +323,8 @@
 		border-bottom: 1px solid var(--grid-line);
 		border-left: 1px solid var(--grid-line);
 		font-weight: var(--rise-font-weight-medium);
-		color: var(--rise-text-muted);
 		text-align: center;
+		@include custom-text(color, var(--rise-text-muted));
 
 		&--today {
 			color: var(--rise-primary);
@@ -316,8 +333,8 @@
 
 	&__all-day-label {
 		padding: sz(4px);
-		color: var(--rise-text-muted);
 		text-align: end;
+		@include custom-text(color, var(--rise-text-muted));
 		@include text-size(xs);
 	}
 
@@ -350,8 +367,8 @@
 
 	&__axis-slot {
 		padding-right: sz(6px);
-		color: var(--rise-text-muted);
 		text-align: end;
+		@include custom-text(color, var(--rise-text-muted));
 		transform: translateY(-50%);
 		@include text-size(2xs);
 
@@ -367,7 +384,7 @@
 		background-size: 100% calc(var(--slot-height) * 2);
 
 		&--work-hours {
-			background-color: var(--rise-bg-muted);
+			@include custom-bg(background-color, var(--rise-bg-muted));
 		}
 	}
 
@@ -375,7 +392,7 @@
 		position: absolute;
 		right: 0;
 		left: 0;
-		background-color: var(--rise-bg);
+		@include custom-bg(background-color, var(--rise-bg));
 	}
 
 	&__now {

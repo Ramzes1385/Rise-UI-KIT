@@ -94,7 +94,9 @@ export function useEventCalendarTimeGrid(context: EventCalendarContext) {
 			left: percent(segment.column / segment.columns),
 			width: percent(1 / segment.columns),
 		}),
-		workStyle: (day: EventCalendarTimeDay) => (day.work ? { top: percent(day.work.top), height: percent(day.work.height) } : {}),
+		workStyle: (work: NonNullable<EventCalendarTimeDay['work']>) => ({ top: percent(work.top), height: percent(work.height) }),
+		isCompact: (segment: CalendarTimeSegment): boolean =>
+			segment.height * MINUTES_PER_DAY < Math.min(60, Math.max(5, props.slotDuration)) * 1.5,
 		nowStyle: computed(() => ({ top: percent((now.value.getHours() * 60 + now.value.getMinutes()) / MINUTES_PER_DAY) })),
 		timedTime: (segment: CalendarTimeSegment): string => eventTime(segment.item),
 		hasNowLine: (day: EventCalendarTimeDay): boolean => props.hasNowIndicator && day.isToday,
