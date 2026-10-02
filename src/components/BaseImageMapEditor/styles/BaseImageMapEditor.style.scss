@@ -276,6 +276,7 @@
 	}
 
 	&__fieldset {
+		min-width: 0;
 		margin: 0;
 		padding: sz(8px 10px 10px);
 		border: 1px solid var(--rise-border);
@@ -283,7 +284,10 @@
 	}
 
 	&__legend {
+		box-sizing: border-box;
+		max-width: 100%;
 		padding: sz(0 4px);
+		overflow-wrap: anywhere;
 		color: var(--rise-text-highlighted);
 		@include text-size(sm);
 	}
