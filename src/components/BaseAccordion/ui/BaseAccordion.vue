@@ -27,7 +27,8 @@
 					:aria-labelledby="`${getHeaderId(index)}-label`"
 					:aria-describedby="item.description ? `${getHeaderId(index)}-description` : undefined"
 					:aria-disabled="item.isDisabled || undefined"
-					@click="toggleItem(index)">
+					@click="toggleItem(index)"
+					@keydown="handleHeaderKeydown">
 					<BaseIcon
 						v-if="item.icon"
 						:name="item.icon"
@@ -115,6 +116,7 @@ const {
 	toggleItem,
 	getHeaderId,
 	getPanelId,
+	handleHeaderKeydown,
 	structuredData,
 } = useBaseAccordion(props, emit)
 </script>

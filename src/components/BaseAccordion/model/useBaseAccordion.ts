@@ -1,4 +1,5 @@
 import { computed, ref, useId, watch } from 'vue'
+import { toHTMLElement } from '@utils/dom/domUtils'
 import type { StructuredData } from '@utils/seo/structuredDataUtils'
 import { useStructuredData } from '@composables/seo/useStructuredData'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
@@ -20,6 +21,25 @@ const ACCORDION_ELEMENTS = [
 ]
 
 const DEFAULT_EXPAND_ICON = 'chevron-down'
+
+const HEADER_SELECTOR = ':scope > .base-accordion__item > .base-accordion__heading > .base-accordion__header'
+
+const HEADER_KEY_TARGETS: Record<string, (index: number, count: number) => number> = {
+	ArrowDown: (index, count) => (index + 1) % count,
+	ArrowUp: (index, count) => (index - 1 + count) % count,
+	Home: () => 0,
+	End: (_, count) => count - 1,
+}
+
+function handleHeaderKeydown(event: KeyboardEvent): void {
+	const target = HEADER_KEY_TARGETS[event.key]
+	const header = toHTMLElement(event.currentTarget)
+	const root = header?.closest('.base-accordion')
+	if (!target || !header || !root || event.altKey || event.ctrlKey || event.metaKey) return
+	const headers = Array.from(root.querySelectorAll<HTMLElement>(HEADER_SELECTOR))
+	event.preventDefault()
+	headers[target(headers.indexOf(header), headers.length)]?.focus()
+}
 
 function faqSchema(items: BaseAccordionItem[]): StructuredData | null {
 	if (!items.length) return null
@@ -126,6 +146,7 @@ export function useBaseAccordion(props: BaseAccordionProps, emit: BaseAccordionE
 		...useAccordionAppearance(props),
 		getHeaderId: (index: number): string => `${baseId}-header-${index}`,
 		getPanelId: (index: number): string => `${baseId}-panel-${index}`,
+		handleHeaderKeydown,
 		...useStructuredData(
 			'BaseAccordion',
 			() => props.seo,

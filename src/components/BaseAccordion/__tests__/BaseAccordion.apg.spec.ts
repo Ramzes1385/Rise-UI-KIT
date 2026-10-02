@@ -80,6 +80,76 @@ describe('BaseAccordion по шаблону Accordion WAI-ARIA', () => {
 			await user.keyboard(' ')
 			expect(header('Доставка')).toHaveAttribute('aria-expanded', 'false')
 		})
+
+		it('↓ и ↑ переводят фокус между заголовками по кругу, отключённый пункт тоже в порядке', async () => {
+			const user = userEvent.setup()
+			render(BaseAccordion, { props: { items: ITEMS } })
+
+			header('Материалы').focus()
+			await user.keyboard('{ArrowDown}')
+			expect(header('Доставка')).toHaveFocus()
+			await user.keyboard('{ArrowDown}')
+			expect(header('Гарантия')).toHaveFocus()
+			await user.keyboard('{ArrowDown}')
+			expect(header('Материалы')).toHaveFocus()
+			await user.keyboard('{ArrowUp}')
+			expect(header('Гарантия')).toHaveFocus()
+			await user.keyboard('{ArrowUp}')
+			expect(header('Доставка')).toHaveFocus()
+			expect(header('Доставка')).toHaveAttribute('aria-expanded', 'false')
+		})
+
+		it('Home и End — первый и последний заголовок; стрелки не прокручивают страницу', async () => {
+			const user = userEvent.setup()
+			render(BaseAccordion, { props: { items: ITEMS } })
+
+			header('Доставка').focus()
+			await user.keyboard('{End}')
+			expect(header('Гарантия')).toHaveFocus()
+			await user.keyboard('{Home}')
+			expect(header('Материалы')).toHaveFocus()
+
+			const event = new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true })
+			header('Материалы').dispatchEvent(event)
+			expect(event.defaultPrevented).toBe(true)
+		})
+
+		it('другие клавиши и сочетания с модификаторами фокус не двигают', async () => {
+			const user = userEvent.setup()
+			render(BaseAccordion, { props: { items: ITEMS } })
+
+			header('Материалы').focus()
+			await user.keyboard('{ArrowRight}{Control>}{End}{/Control}{Alt>}{ArrowDown}{/Alt}{Meta>}{ArrowDown}{/Meta}')
+			expect(header('Материалы')).toHaveFocus()
+		})
+
+		it('вложенный аккордеон в панели — свой порядок стрелок', async () => {
+			const user = userEvent.setup()
+			render({
+				components: { BaseAccordion },
+				setup: () => ({
+					outer: [
+						{ label: 'Внешний', slot: 'inner' },
+						{ label: 'Второй внешний', content: '' },
+					],
+					inner: ITEMS.slice(0, 2),
+				}),
+				template: `
+					<BaseAccordion :items="outer" :open="['Внешний']">
+						<template #inner><BaseAccordion :items="inner" /></template>
+					</BaseAccordion>
+				`,
+			})
+
+			header('Материалы').focus()
+			await user.keyboard('{ArrowDown}')
+			expect(header('Доставка')).toHaveFocus()
+			await user.keyboard('{ArrowDown}')
+			expect(header('Материалы')).toHaveFocus()
+			header('Внешний').focus()
+			await user.keyboard('{End}')
+			expect(header('Второй внешний')).toHaveFocus()
+		})
 	})
 
 	describe('v-model:open (ACC-4)', () => {

@@ -136,6 +136,14 @@
 		color: var(--rise-text-highlighted);
 	}
 
+	&__step--active &__trigger--clickable {
+		@include hover {
+			.base-stepper__indicator {
+				background-color: var(--rise-bg);
+			}
+		}
+	}
+
 	&__step--completed &__indicator {
 		border-color: var(--stepper-accent);
 		background-color: var(--stepper-accent);

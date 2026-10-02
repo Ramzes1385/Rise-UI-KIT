@@ -35,8 +35,9 @@ export const ToggleControls: StoryObj<typeof meta> = {
 				story: [
 					'Флажок, переключатель и радиогруппа внутри обёртки берут из неё описание или ошибку (`aria-describedby`),',
 					'`aria-invalid`, `aria-required` и цвет ошибки. Без своей подписи флажок называется подписью обёртки,',
-					'радиогруппа — тоже. Переключатель со своей подписью обёртку не занимает: она становится группой,',
-					'а описание переключателя (слот `default`) и ошибка обёртки описывают его.',
+					'радиогруппа — тоже. Переключатель со своей подписью обёртку не занимает: она становится группой',
+					'с подписью и ошибкой обёртки, а переключатель описывает только его описание (слот `default`);',
+					'`aria-invalid` обёртки он не берёт, цвет ошибки — берёт.',
 				].join('\n'),
 			},
 			source: staticStorySource({
@@ -59,10 +60,10 @@ export const ToggleControls: StoryObj<typeof meta> = {
 		await userEvent.click(canvas.getByText('Подарочная упаковка'))
 		await expect(gift).toBeChecked()
 
-		await expect(canvas.getByRole('group', { name: 'Уведомления' })).toBeInTheDocument()
+		await expect(canvas.getByRole('group', { name: 'Уведомления' })).toHaveAccessibleDescription('Нужно хотя бы одно уведомление')
 		const sms = canvas.getByRole('switch', { name: 'SMS о статусе заказа' })
-		await expect(sms).toHaveAttribute('aria-invalid', 'true')
-		await expect(sms).toHaveAccessibleDescription('Не чаще раза в день Нужно хотя бы одно уведомление')
+		await expect(sms).not.toHaveAttribute('aria-invalid')
+		await expect(sms).toHaveAccessibleDescription('Не чаще раза в день')
 		sms.focus()
 		await userEvent.keyboard(' ')
 		await expect(sms).not.toBeChecked()

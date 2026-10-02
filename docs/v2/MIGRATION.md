@@ -1605,3 +1605,21 @@ API кита не меняется. В Storybook добавлены пример
 - DOM: у колонок недели и дня `data-day` — по-прежнему день, новые `data-column` (`<ресурс>|<ГГГГ-ММ-ДД>` или день) и `data-resource`; имя колонки и события дополнено названием ресурса.
 - Утилиты iCalendar: `parseIcs` пересчитывает время с `TZID` из пояса IANA (было — время считалось местным; пояс не из IANA — как раньше), читает `DURATION` без `DTEND` и `RESOURCES` (первый — `resourceId` строкой); `toIcs` пишет `RESOURCES` из `resourceId`. Новые `readIcsFile(file)`, `downloadIcs(events, fileName?, options?)`, `parseIcsDuration(value)`.
 - Словарь `eventCalendar`: новые ключи `RESOURCE_COLUMN`, `EVENT_RESOURCE` — свой язык дополните ими.
+
+## Задача small-fixes-7b: поля со своей подписью в BaseFormField, клавиатура BaseAccordion
+
+Несовместимое (коммит `fix(form)!`):
+
+- **BaseCheckbox и BaseSwitch со своей подписью, BaseRadio со своим заголовком внутри BaseFormField** больше не получают `aria-invalid` и `aria-describedby` обёртки. Обёртка в этом случае — группа (`role="group"`) с подписью, описанием и ошибкой обёртки: скринридер читает ошибку при входе в группу, а не повторяет её у каждого флажка. Собственные `error`, описание и `inputAttrs['aria-describedby']` контрола остаются; `aria-required` и цвет ошибки обёртки — тоже.
+  - Было: `<BaseFormField label="Условия" error="Примите условия"><BaseCheckbox label="Принимаю" /></BaseFormField>` — у флажка `aria-invalid="true"` и описание «Примите условия».
+  - Стало: описание «Примите условия» у группы «Условия», у флажка — нет. Нужна ошибка именно на флажке — передайте её флажку (`error`), а не обёртке.
+- **BaseRadio с `label` внутри BaseFormField с `label`**: раньше подпись обёртки ни к чему не была привязана; теперь обёртка — группа со своей подписью, внутри — `radiogroup` со своей.
+- **`useFieldControl`**: `hasOwnLabel` принимает значение, ref или геттер (`MaybeRefOrGetter<boolean | undefined>`) и реактивен — подпись, появившаяся позже, освобождает обёртку, пропавшая — подключает контрол к подписи обёртки. `isInField` в ответе — геттер: читайте его из объекта (`control.isInField`), а не деструктуризацией. BaseCheckbox и BaseSwitch передают подпись реактивно (у BaseSwitch — и слот `label`, и описание из слота `default`, появившиеся после монтирования).
+- **BaseTree и BaseChat** вызывают `isolateFormField()`: внутри BaseFormField флажки узлов и выбора сообщений не берут подпись, ошибку и обязательность обёртки (как BaseTable и BaseCalendar).
+
+Новое:
+
+- **BaseAccordion**: стрелки ↓/↑ переводят фокус на следующий и предыдущий заголовок (по кругу), Home и End — на первый и последний (необязательные клавиши APG Accordion). Пункты не раскрываются, Tab, Enter и Space — как раньше; с Ctrl, Alt и Meta клавиши не перехватываются. Вложенный аккордеон в панели — свой порядок.
+
+Что сделать: тесты приложения, которые ждали `aria-invalid` у флажка, переключателя или группы радиокнопок со своей подписью внутри BaseFormField с ошибкой, — проверять описание группы обёртки (`getByRole('group', { name })` + `toHaveAccessibleDescription`).
+

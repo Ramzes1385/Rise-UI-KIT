@@ -990,7 +990,7 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 - **BaseStepper Errors** — 5–6 пикселей на краях текста (сглаживание: шаг теперь `<button>`), глазом не видно.
 - Без видимых изменений: BasePagination (корень `nav`, имена «Страница N»), BaseStepper (`ol`/`li`/`button`), BaseAccordion, BaseTable Pagination.
 
-Эталоны скриншот-тестов, которые это затронет: `navigation-basepagination--without-last-page`, если она есть в `BasePagination.visual.spec.ts`, и `navigation-basestepper--errors` (на уровне сглаживания). Эталоны не трогались.
+Эталоны скриншот-тестов это не затрагивает: `navigation-basepagination--without-last-page` и `navigation-basestepper--errors` не входят в `STORIES` у `BasePagination.visual.spec.ts` и `BaseStepper.visual.spec.ts`, а эталонов этих компонентов в `tests/visual-snapshots` нет (проверка fu-nav, small-fixes-7b). Эталоны не трогались.
 
 Новые истории (в скриншот-тесты не добавлены): `navigation-basestepper--clickable`, `data-baseaccordion--open-model`.
 
@@ -1277,3 +1277,9 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 - Событие без своего `color` — цвета ресурса, если он задан. Анимаций нет.
 
 Истории (сессия Storybook): `data-baseeventcalendar--` `resources` (день, три комнаты с цветами, `is-selectable` и `is-editable`, журнал под календарём), `resource-slot` (день, сотрудники с аватаром в слоте `resource`, слот `resource-oleg`), `ics` (кнопки «Загрузить пример», поле «Импорт .ics», «Экспорт .ics»; до импорта календарь пуст), `many-events` (1 200 событий, четыре ресурса, `max-events-per-day` 3, строка со временем отрисовки — число от прогона к прогону разное). В скриншот-тесты добавлена `resource-slot` (play без кликов) — эталонов нет, их создаёт владелец; остальные не добавлены: состояние создаёт play или на экране меняющееся время. Существующие истории не меняются.
+
+## Задача small-fixes-7b: BaseStepper, BaseAccordion, поля со своей подписью
+
+- **BaseStepper** — при наведении на текущий шаг (`clickable` = `all` или `completed`) индикатор снова остаётся с фоном `--rise-bg`, как до fu-nav: подсветка наведения только у шагов, по которым можно перейти. В снимки не попадает (наведение); при fu-nav этот сброс был потерян.
+- **BaseAccordion Keyboard** — play дополнен стрелками ↓/↑ и Home/End: конечный кадр — фокус на последнем заголовке «Как связаться с поддержкой?» (кольцо фокуса), второй пункт раскрыт, как и раньше. История не входит в `BaseAccordion.visual.spec.ts`.
+- **BaseCheckbox, BaseSwitch, BaseRadio** — без видимых изменений: цвет ошибки внутри BaseFormField с ошибкой остаётся; меняются только `aria-invalid`/`aria-describedby` (MIGRATION, раздел small-fixes-7b).
