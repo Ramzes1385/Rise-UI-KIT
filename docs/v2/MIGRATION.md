@@ -1469,3 +1469,16 @@ FOLLOW_UPS № 38, № 39, № 13 и № 15 (медиа).
 - Типы: `PresentationSlide`, `PresentationSlideSlotProps`, `PresentationSlideComplete`, `PresentationProgress`, `PresentationSavedProgress`, `PresentationNavigation`, `PresentationPlayerVariant`, `BasePresentationPlayerProps`, `…Emits`, `…Slots`, `…Expose`; константы `PRESENTATION_PLAYER_VARIANTS`, `PRESENTATION_NAVIGATION_MODES`.
 - Раздел словаря `presentation` (ru, en): `PREVIOUS`, `NEXT`, `SLIDES`, `STATUS`, `SLIDE_HINT`, `REPLAY`, `LOCKED`, `LOCKED_AUDIO`, `RESUME`, `RESUME_YES`, `RESUME_NO`, `DONE`, `FINISHED`, `DONE_TEXT`. `defineLocale(base, overrides)` берёт недостающие строки из `base` — ничего делать не нужно; полный собственный объект `UiKitLocale` без этого раздела даст ошибку TS — добавьте раздел.
 - Отдельный пакет плеера (`build/media-package/extract.mjs`) теперь несёт и презентацию — `src/presentation/`.
+
+
+## Задача new-presentation-2: BasePresentationPlayer — субтитры, стенограмма, список слайдов, речь, вопрос (Новые компоненты)
+
+Дополнение нового компонента, существующие не менялись.
+
+- `PresentationSlide`: новые поля `captions` (WebVTT/SRT), `notes` (стенограмма), `speech` (текст для `speechSynthesis`), `isInteractive` (слайд-вопрос).
+- Пропсы: `captions` (субтитры общей дорожки), `isCaptionsOn` (`v-model:is-captions-on`, по умолчанию включены), `speechVoice`. Событие `update:isCaptionsOn`.
+- Слот `slide` получает ещё `complete()` и `isCompleted` (`PresentationSlideSlotProps`).
+- Поведение: слайд с `isInteractive` пройден только после `complete()`; после конца озвучки показ ждёт ответа (во всех режимах). Слайд с `speech` и без `audio` идёт по синтезу речи; голосов нет — по `duration`.
+- Панель: кнопка «Список слайдов» — всегда, «Стенограмма» — если есть `notes`, «Субтитры» — если есть `captions`; клавиша C — субтитры.
+- Раздел словаря `presentation`: новые ключи `LOCKED_QUIZ`, `SLIDE_LIST`, `NOTES`, `NOTES_EMPTY`, `SLIDE_DONE`, `SLIDE_LOCKED` — свой язык через `defineLocale` должен их задать.
+- Исправление new-presentation (ff7ced68): после авто-перехода следующий слайд больше не отмечается пройденным сразу; переход, убравший «Продолжить со слайда N?», сохраняет новое место; клик по кадру снова ставит на паузу и запускает.
