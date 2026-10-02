@@ -29,6 +29,7 @@ export const argTypes = {
 	panelClass: { control: 'text', table: propGroup(ARG_GROUP.appearance) },
 	isOpen: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 	closeOnEscape: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+	trapFocus: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	preventMousedown: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	default: { control: false },
 	dropdown: { control: false },

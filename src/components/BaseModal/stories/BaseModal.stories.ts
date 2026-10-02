@@ -29,3 +29,4 @@ export const FullScreen = cases.FullScreen
 export const WithList = cases.WithList
 export const FromPopover = cases.FromPopover
 export const Keyboard = cases.Keyboard
+export const Blocking = cases.Blocking

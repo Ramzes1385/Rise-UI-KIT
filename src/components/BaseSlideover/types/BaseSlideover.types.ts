@@ -18,7 +18,7 @@ export interface BaseSlideoverProps extends BaseComponentProps<string, 'root' | 
 	isFullWidth?: boolean
 	/** Закрытие по клику на оверлей */
 	closeOnOverlay?: boolean
-	/** Закрытие по Escape. У немодальной панели (`hasOverlay: false`, `isContained`, `container`) — только когда фокус в панели */
+	/** Закрытие по Escape. У панели без затемнения (`hasOverlay: false`) — только когда фокус в панели */
 	closeOnEscape?: boolean
 	/**
 	 * Панель внутри контейнера: рендерится на месте (без teleport) и перекрывает ближайшего родителя с position: relative

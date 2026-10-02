@@ -50,7 +50,7 @@ function useSlideoverClose(
 		closeOnOverlay: () => props.closeOnOverlay,
 		closeOnEscape: () => props.closeOnEscape,
 		lockScroll: () => dialog.isModal.value,
-		escapeScope: () => (dialog.isModal.value ? undefined : dialog.panelRef.value),
+		escapeScope: () => (props.hasOverlay === false ? dialog.panelRef.value : undefined),
 		onClose: () => {
 			emit('update:isOpen', false)
 			emit('close')

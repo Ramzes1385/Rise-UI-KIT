@@ -30,7 +30,8 @@ export const Toolbar: StoryObj<typeof meta> = {
 				story: [
 					'Тулбар: поиск по всем полям (`features.search`), фильтр «колонка — условие — значение» (`features.filters`),',
 					'видимость колонок (`features.columnSettings`) и свои элементы в слотах `toolbar-prepend` / `toolbar-append`.',
-					'Поля и кнопки — 32px в один ряд. Панель «Колонки» ставит фокус на первый чекбокс, Escape возвращает его на кнопку.',
+					'Поля и кнопки — 32px в один ряд. «Колонки» — меню с флажками (APG Menu Button): клик или Space отмечает колонку,',
+					'Enter отмечает и закрывает меню, Escape закрывает его и возвращает фокус на кнопку.',
 				].join('\n'),
 			},
 			source: storySource({
@@ -54,9 +55,10 @@ export const Toolbar: StoryObj<typeof meta> = {
 		const columnsButton = canvas.getByRole('button', { name: 'Колонки' })
 		await userEvent.click(columnsButton)
 		await expect(columnsButton).toHaveAttribute('aria-expanded', 'true')
-		const cityOption = await screen.findByRole('checkbox', { name: 'Город' }, { timeout: STORY_WAIT_TIMEOUT })
+		const cityOption = await screen.findByRole('menuitemcheckbox', { name: 'Город' }, { timeout: STORY_WAIT_TIMEOUT })
 		await userEvent.click(cityOption)
 		await expect(canvas.queryByRole('columnheader', { name: 'Город' })).not.toBeInTheDocument()
+		await expect(screen.getByRole('menuitemcheckbox', { name: 'Город' })).toHaveAttribute('aria-checked', 'false')
 		await userEvent.keyboard('{Escape}')
 		await expect(columnsButton).toHaveFocus()
 		await expect(columnsButton).toHaveAttribute('aria-expanded', 'false')

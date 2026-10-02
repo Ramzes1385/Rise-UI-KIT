@@ -11,6 +11,7 @@ export const args = {
 	matchWidth: false,
 	closeOnEscape: true,
 	preventMousedown: true,
+	trapFocus: false,
 	sizeScale: 100,
 	onClose: fn(),
 	'onUpdate:isOpen': fn(),

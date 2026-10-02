@@ -10,6 +10,7 @@ export const argTypes = {
 	hasOverlay: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
 	isOpen: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 	closeOnOverlay: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+	closeOnEscape: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	isContained: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	default: slotArgType('Текст в теле окна'),
 	footer: { control: false },

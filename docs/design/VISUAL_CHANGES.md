@@ -1034,6 +1034,7 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 
 ## Задача fu-overlays (FOLLOW_UPS № 17–19)
 
-- **BaseTable** — панель «Колонки» теперь меню BaseDropdownMenu: пункты-флажки в оформлении меню (галочка слева вместо квадратного BaseCheckbox), высота панели — до 320px. Затронуты истории с открытой панелью «Колонки», если такие есть в скриншот-тестах; таблица без открытой панели не меняется.
+- **BaseTable** — панель «Колонки» теперь меню BaseDropdownMenu: пункты-флажки в оформлении меню (галочка слева вместо квадратного BaseCheckbox), высота панели — до 320px. Видно только при открытом меню; скриншот-тест `data-basetable--toolbar` снимает таблицу после play с закрытым меню — ожидаемо без изменений. Снимки «было | стало» в обеих темах — `.rise-transfer\review\fu-overlays.html`.
+- Новые истории (в скриншот-тесты не добавлены, play кликает по триггерам): `overlay-basedropdown--dialog-panel`, `overlay-basedropdown--tab-from-panel`, `overlay-basemodal--blocking`, `overlay-baseslideover--non-modal`.
 - **BaseSlideover** с `hasOverlay: false` — без видимых изменений (фон и раньше прозрачный); меняется поведение: страница под панелью кликается и прокручивается.
 - **BaseModal**, **BaseDropdown** — без видимых изменений (новые пропсы `closeOnEscape`, `trapFocus` и клавиатура).

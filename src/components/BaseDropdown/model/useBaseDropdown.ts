@@ -112,7 +112,9 @@ export function useBaseDropdown(props: DropdownProps, emit: BaseDropdownEmits) {
 			if (preventMousedown.value && !keyboard.isDialog() && !isTextEntryTarget(event.target)) event.preventDefault()
 		},
 		handlePanelFocusin(event: FocusEvent): void {
-			const shouldKeepTriggerFocus = preventMousedown.value && !keyboard.isDialog() && !isTextEntryTarget(event.target)
+			const isWithinPanel = event.relatedTarget instanceof Node && Boolean(dropdownRef.value?.contains(event.relatedTarget))
+			const shouldKeepTriggerFocus =
+				preventMousedown.value && !keyboard.isDialog() && !isWithinPanel && !isTextEntryTarget(event.target)
 			if (shouldKeepTriggerFocus && savedActiveElement.value) savedActiveElement.value.focus()
 		},
 		handlePanelKeydown: keyboard.handlePanelKeydown,

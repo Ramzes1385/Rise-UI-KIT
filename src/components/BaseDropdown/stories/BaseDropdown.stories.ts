@@ -27,3 +27,5 @@ export const ViewportEdge = cases.ViewportEdge
 export const InDarkBlock = cases.InDarkBlock
 export const WithField = cases.WithField
 export const Keyboard = cases.Keyboard
+export const DialogPanel = cases.DialogPanel
+export const TabFromPanel = cases.TabFromPanel

@@ -162,6 +162,32 @@ describe('BaseDropdown: клавиатура панели (APG Menu Button, Disc
 		})
 	})
 
+	describe('preventMousedown по умолчанию и Tab', () => {
+		it('Tab из поля панели переводит фокус на кнопку панели, а не возвращает его на триггер', async () => {
+			const user = userEvent.setup()
+			renderHost('<input aria-label="Метка" /><button type="button">Добавить</button>')
+			await openWithTrigger(user)
+			await user.click(screen.getByRole('textbox', { name: 'Метка' }))
+
+			await user.tab()
+
+			expect(screen.getByRole('button', { name: 'Добавить' })).toHaveFocus()
+		})
+
+		it('Tab с последней кнопки после поля закрывает панель и возвращает фокус на триггер', async () => {
+			const user = userEvent.setup()
+			const { onClose } = renderHost('<input aria-label="Метка" /><button type="button">Добавить</button>')
+			const trigger = await openWithTrigger(user)
+			await user.click(screen.getByRole('textbox', { name: 'Метка' }))
+			await user.tab()
+
+			await user.tab()
+
+			expect(onClose).toHaveBeenCalledOnce()
+			expect(trigger).toHaveFocus()
+		})
+	})
+
 	describe('стрелки по пунктам', () => {
 		it('ArrowDown и ArrowUp ходят по пунктам по кругу и пропускают недоступный', async () => {
 			const user = userEvent.setup()

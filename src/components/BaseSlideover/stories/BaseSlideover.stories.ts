@@ -26,3 +26,4 @@ export const LongContent = cases.LongContent
 export const Contained = cases.Contained
 export const Padding = cases.Padding
 export const Keyboard = cases.Keyboard
+export const NonModal = cases.NonModal

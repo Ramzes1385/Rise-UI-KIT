@@ -10,6 +10,7 @@ export const args = {
 	sizeScale: 100,
 	hasOverlay: true,
 	closeOnOverlay: true,
+	closeOnEscape: true,
 	isContained: false,
 	onClose: fn(),
 	'onUpdate:isOpen': fn(),
