@@ -269,6 +269,21 @@ const newName = await rename.open({ name: project.name })
 - Окно для `useOverlay()` закрывается событием `close` (с результатом) или `update:isOpen` (без результата); если компонент шлёт оба, `close` должен идти первым. После анимации (`after-leave`) окно удаляется из DOM.
 - Вызовы вне дерева `BaseApp` (в сторе, роутере, обработчике запросов) идут в последний смонтированный `BaseApp`. Без `BaseApp` вызов пишет предупреждение в консоль и ничего не показывает; `confirm()` при этом отвечает `false`.
 
+**Полоса загрузки при переходах** — `useLoadingBar()`: `start`, `finish`, `error`; полосу показывает `BaseApp`. Хранилище одно на страницу, поэтому вызывать можно и до монтирования приложения — например, в охранниках роутера (кит vue-router не импортирует):
+
+```ts
+import { useLoadingBar } from '@ramzes1385/rise-ui-kit'
+
+const loadingBar = useLoadingBar()
+router.beforeEach(() => loadingBar.start())
+router.afterEach(() => loadingBar.finish())
+router.onError(() => loadingBar.error())
+```
+
+- Полоса растёт до 90 % и ждёт `finish`; повторный `start` во время загрузки ничего не меняет, `finish` и `error` без `start` — тоже. Счётчика вложенных загрузок нет: одна полоса на одну загрузку страницы.
+- Для скринридера — `role="progressbar"` без значения (ход оценочный) и с именем «Загрузка страницы»; шаги роста не объявляются. `isLoading` удобно поставить в `aria-busy` основной области: `<main :aria-busy="loadingBar.isLoading.value">`.
+- При `prefers-reduced-motion: reduce` полоса не движется: видна во всю ширину, пока идёт загрузка. Проп `loadingBar` у `BaseApp` — толщина `height` (3 px) и имя `label`.
+
 ### Слои: окна, панели и подсказки
 
 Окна, боковые панели, выпадающие списки, меню и подсказки — слои. Кит ведёт их общий стек в порядке открытия:
@@ -327,7 +342,7 @@ import '@ramzes1385/rise-ui-kit/styles'
 const size = utils.formatFileSize(1024) // то же, что formatFileSize(1024)
 ```
 
-Исключение — сервисы всего приложения: `useToast`, `useOverlay`, `useConfirm`, `useColorMode`, `useLocale`, а также `setLocale`, `defineLocale` и словари `ru`, `en` импортируются из корня пакета по имени, как компоненты.
+Исключение — сервисы всего приложения: `useToast`, `useOverlay`, `useConfirm`, `useLoadingBar`, `useColorMode`, `useLocale`, а также `setLocale`, `defineLocale` и словари `ru`, `en` импортируются из корня пакета по имени, как компоненты.
 
 Видеоплеер `BaseMediaPlayer` и его типы — только из подпути `@ramzes1385/rise-ui-kit/media`: в корень пакета и в плагин он не входит, поэтому приложения без плеера его код не загружают.
 

@@ -134,6 +134,8 @@ export const enBase = {
 		BACK_TO_TOP: 'Back to top',
 		/** Разделитель BaseSplitter */
 		SPLITTER: 'Resize panels',
+		/** Полоса загрузки BaseApp (useLoadingBar) */
+		LOADING_BAR: 'Page loading',
 	},
 	tour: {
 		SKIP: 'Skip tour',

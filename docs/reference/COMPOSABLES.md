@@ -1,6 +1,6 @@
 # Composables
 
-Composables кита импортируются из подпути `@ramzes1385/rise-ui-kit/composables` или как namespace `composables` из корня пакета (`import { composables } from '@ramzes1385/rise-ui-kit'`). Именованного экспорта composables из корня нет. Вызывайте их внутри `setup` / `<script setup>`: они подписываются на хуки жизненного цикла компонента. Сервисы всего приложения — `useToast`, `useOverlay`, `useConfirm`, `useColorMode`, `useLocale` — импортируются из корня пакета по имени (см. [README](../../README.md#публичный-api)).
+Composables кита импортируются из подпути `@ramzes1385/rise-ui-kit/composables` или как namespace `composables` из корня пакета (`import { composables } from '@ramzes1385/rise-ui-kit'`). Именованного экспорта composables из корня нет. Вызывайте их внутри `setup` / `<script setup>`: они подписываются на хуки жизненного цикла компонента. Сервисы всего приложения — `useToast`, `useOverlay`, `useConfirm`, `useLoadingBar`, `useColorMode`, `useLocale` — импортируются из корня пакета по имени (см. [README](../../README.md#публичный-api)).
 
 ## useDebounce
 
@@ -284,6 +284,7 @@ useInputMask
 useLayer
 useLayerIndex
 useListNavigation
+useLoadingBar
 usePadding
 usePasswordVisibility
 usePopup
@@ -337,3 +338,29 @@ const expand = useExpandTransition({ duration: 200 })
 
 - `duration` — мс, по умолчанию 300. `0` и системная настройка `prefers-reduced-motion: reduce` — без анимации: элемент сразу в конечном состоянии.
 - Переход завершается по `transitionend` самого элемента (всплывшие от потомков не считаются) или по таймеру-страховке через `duration` + 50 мс, если событие не пришло. Новый переход того же элемента (свернули во время раскрытия) отменяет ожидание прежнего.
+
+## useLoadingBar
+
+Полоса загрузки вверху страницы при переходах и долгих запросах; показывает её `BaseApp`. Импорт — из корня пакета по имени, как `useToast`.
+
+```ts
+import { useLoadingBar } from '@ramzes1385/rise-ui-kit'
+
+const loadingBar = useLoadingBar()
+router.beforeEach(() => loadingBar.start())
+router.afterEach(() => loadingBar.finish())
+router.onError(() => loadingBar.error())
+```
+
+| Поле | Что |
+|---|---|
+| `start()` | начать загрузку: полоса появляется с 10 % и растёт до 90 %; во время загрузки повторный вызов ничего не меняет |
+| `finish()` | заполнить полосу и убрать её через 400 мс; без начатой загрузки ничего не делает |
+| `error()` | то же в цвете ошибки (`--rise-error`) |
+| `status` | `idle`, `loading`, `done`, `error` (`LOADING_BAR_STATUSES`) |
+| `progress` | заполнение от 0 до 1 — оценочное |
+| `isLoading` | `status === 'loading'`: для `aria-busy` основной области |
+
+- Хранилище одно на страницу (`loadingBarStore`) и работает до монтирования `BaseApp`: первая навигация роутера идёт раньше монтирования. На сервере (SSR) `start` ничего не делает и не ставит таймеров.
+- `createLoadingBarStore()` — отдельное хранилище для тестов и своих контейнеров, `reset()` у хранилища сбрасывает полосу сразу.
+- Доступность: `role="progressbar"` без `aria-valuenow` (неопределённый ход) с именем из словаря (`UI_ARIA.LOADING_BAR`) или `loadingBar.label`; шаги не объявляются. При `prefers-reduced-motion` полоса неподвижна и видна во всю ширину.

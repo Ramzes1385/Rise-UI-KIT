@@ -1482,3 +1482,14 @@ FOLLOW_UPS № 38, № 39, № 13 и № 15 (медиа).
 - Панель: кнопка «Список слайдов» — всегда, «Стенограмма» — если есть `notes`, «Субтитры» — если есть `captions`; клавиша C — субтитры.
 - Раздел словаря `presentation`: новые ключи `LOCKED_QUIZ`, `SLIDE_LIST`, `NOTES`, `NOTES_EMPTY`, `SLIDE_DONE`, `SLIDE_LOCKED` — свой язык через `defineLocale` должен их задать.
 - Исправление new-presentation (ff7ced68): после авто-перехода следующий слайд больше не отмечается пройденным сразу; переход, убравший «Продолжить со слайда N?», сохраняет новое место; клик по кадру снова ставит на паузу и запускает.
+
+## Задача new-loading-bar: useLoadingBar — полоса загрузки при переходах
+
+Новый composable и полоса в `BaseApp`; поведение существующего не меняется.
+
+- `useLoadingBar()` — `start`, `finish`, `error`, `status` (`idle`, `loading`, `done`, `error`), `progress` (0–1, оценочный), `isLoading`. Хранилище одно на страницу и работает до монтирования `BaseApp` — для охранников роутера (`beforeEach` → `start`, `afterEach` → `finish`, `onError` → `error`). Повторный `start` во время загрузки, `finish` и `error` без `start` ничего не делают; на сервере `start` не ставит таймеров.
+- `BaseApp` рендерит перед слотом `div.base-app-loading-bar` с `role="progressbar"` (без `aria-valuenow`, имя «Загрузка страницы»), только пока идёт загрузка или полоса исчезает. Новый проп `loadingBar` — `{ height?: number; label?: string }`.
+- Экспорт: `useLoadingBar` — из корня пакета по имени (сервис приложения, как `useToast`); из `composables` — ещё `createLoadingBarStore`, `loadingBarStore`, `LOADING_BAR_STATUSES`, `LOADING_BAR_START`, `LOADING_BAR_LIMIT`, `LOADING_BAR_TRICKLE_MS`, `LOADING_BAR_HIDE_MS`; типы `LoadingBarStatus`, `LoadingBarStore`, `UseLoadingBarReturn`, `BaseAppLoadingBarOptions`.
+- Строка словаря (ru, en): `aria.LOADING_BAR` — «Загрузка страницы» / «Page loading».
+
+**Что сделать.** Ничего: только добавление. Полоса появляется, только если приложение вызывает `useLoadingBar().start()`.

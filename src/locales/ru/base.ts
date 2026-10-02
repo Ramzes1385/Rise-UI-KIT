@@ -149,6 +149,8 @@ export const ruBase = {
 		BACK_TO_TOP: 'Наверх',
 		/** Разделитель BaseSplitter */
 		SPLITTER: 'Размер панелей',
+		/** Полоса загрузки BaseApp (useLoadingBar) */
+		LOADING_BAR: 'Загрузка страницы',
 	},
 	tour: {
 		SKIP: 'Пропустить тур',
