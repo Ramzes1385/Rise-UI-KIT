@@ -1,0 +1,130 @@
+$code-token-types: keyword, string, number, comment, function, tag, attribute, property, variable;
+
+.base-code {
+	--base-code-number-width: 1ch;
+
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+	min-width: 0;
+	max-width: 100%;
+	overflow: hidden;
+	border: 1px solid var(--rise-border);
+	border-radius: sz(var(--rise-radius-md));
+	@include custom-bg(background-color, var(--rise-bg-muted));
+	@include custom-text(color, var(--rise-text-highlighted));
+
+	&--soft {
+		border-color: transparent;
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+	}
+
+	&--outline {
+		border-color: var(--rise-border-accented);
+		@include custom-bg(background-color, var(--rise-bg));
+	}
+
+	&__header {
+		display: flex;
+		align-items: center;
+		gap: sz(8px);
+		min-height: sz(32px);
+		padding: sz(4px) sz(4px) sz(4px) sz(12px);
+		border-bottom: 1px solid var(--rise-border);
+		color: var(--rise-text-toned);
+		@include text-size(xs);
+	}
+
+	&__title {
+		flex: 1;
+		min-width: 0;
+		overflow: hidden;
+		font-family: var(--rise-font-mono);
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	&__copy.base-button {
+		--btn-pad-top: 3px;
+		--btn-pad-right: 8px;
+		--btn-pad-bottom: 3px;
+		--btn-pad-left: 8px;
+
+		flex-shrink: 0;
+		border-radius: sz(var(--rise-radius-sm));
+		color: var(--rise-text-toned);
+		@include text-size(xs);
+	}
+
+	&__pre {
+		margin: 0;
+		padding: sz(12px) 0;
+		overflow: auto;
+		font-family: var(--rise-font-mono);
+		@include text-size(xs);
+		line-height: 1.6;
+		@include focus-ring(-2px);
+		@include scrollbar-thin;
+	}
+
+	&__code {
+		display: block;
+		min-width: max-content;
+		font-family: inherit;
+	}
+
+	&--wrapped &__code {
+		min-width: 0;
+	}
+
+	&__line {
+		display: flex;
+		padding-inline: sz(16px);
+
+		&--highlighted {
+			background-color: var(--rise-primary-soft);
+			box-shadow: inset 2px 0 0 var(--rise-primary);
+		}
+	}
+
+	&__number {
+		flex-shrink: 0;
+		width: var(--base-code-number-width);
+		margin-right: sz(16px);
+		color: var(--rise-text-toned);
+		text-align: right;
+		user-select: none;
+	}
+
+	&__text {
+		flex: 1;
+		min-width: 0;
+		white-space: pre;
+	}
+
+	&--wrapped &__text {
+		white-space: pre-wrap;
+		overflow-wrap: anywhere;
+	}
+
+	@each $type in $code-token-types {
+		&__token--#{$type} {
+			color: var(--rise-code-#{$type});
+		}
+	}
+
+	&__token--comment {
+		font-style: italic;
+	}
+
+	&__empty {
+		margin: 0;
+		padding-inline: sz(16px);
+		color: var(--rise-text-toned);
+		font-family: var(--rise-font-sans);
+	}
+
+	&__status {
+		@include visually-hidden;
+	}
+}
