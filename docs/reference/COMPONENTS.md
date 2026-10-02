@@ -2966,6 +2966,41 @@ const cities = ref<string[]>([])
 
 ---
 
+## BaseCascader
+
+Выбор из иерархии уровнями-колонками: регион → город → район. Поле — как у `BaseSelect`, панель — `BaseDropdown`, каждая колонка — `listbox`.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseCascader, type BaseCascaderNode } from '@ramzes1385/rise-ui-kit'
+
+const regions: BaseCascaderNode[] = [
+	{ id: 'ru', label: 'Россия' },
+	{ id: 'kz', label: 'Казахстан' },
+]
+const district = ref<string[]>([])
+
+async function load(node: BaseCascaderNode): Promise<BaseCascaderNode[]> {
+	const response = await fetch(`/api/regions/${node.id}/children`)
+	return response.json()
+}
+</script>
+
+<template>
+	<BaseCascader v-model="district" :items="regions" :load="load" label="Район доставки" is-searchable />
+</template>
+```
+
+- `v-model` — путь id от корня (`['ru', 'msk', 'tverskoy']`), в поле — подписи пути через `separator` (по умолчанию « / »); не загруженный ещё узел показывается своим id, своя подпись — слот `selected` (`{ path, labels, nodes }`). `isMultiple` — список путей, выбранные — метками с крестиком, панель не закрывается. `isAnyLevel` — можно выбрать узел любого уровня: щелчок и Enter выбирают его и раскрывают следующий уровень.
+- Узлы `BaseCascaderNode`: `id`, `label`, `description`, `icon`, `children`, `isLeaf`, `isDisabled`. id уникальны во всём дереве: повтор и цикл не показываются (индекс — `treeUtils`). Отключённый узел не выбирается и не раскрывается.
+- Ленивые уровни: узел без `children` и без `isLeaf` раскрывается через `load(node)` — промис детей. Пока он не выполнен, колонка показывает `BaseLoader`; отклонённый промис — текст «Не удалось загрузить», кнопка «Повторить» и событие `load-error` (`node`, `error`); повторное раскрытие узла с ошибкой загружает снова, загруженное запоминается. Открытие панели раскрывает путь значения и при необходимости загружает уровни по нему. `isLoading` — загружается корневой уровень: индикатор в колонке и `aria-busy` у поля.
+- `isSearchable` — поле поиска в панели: ищет по подписи и описанию узлов всех загруженных уровней, результаты — пути до выбираемых узлов (конечных; при `isAnyLevel` — любых), отключённые на пути — `aria-disabled`.
+- Поле формы: `label`, `isRequired`, `error`, `placeholder`, `ariaLabel`, `triggerAttrs`; внутри `BaseFormField` имя, описание, ошибка и обязательность берутся из обёртки. Методы `focus`, `blur`, `validate`, `reset`. Слоты `option` (`{ node, isSelected, hasChildren }`), `empty`, `selected`. Варианты — как у `BaseSelect`.
+- Доступность (APG Combobox): поле — `combobox` с `aria-haspopup="listbox"`, `aria-expanded`, `aria-controls` на колонку активного узла и `aria-activedescendant`; колонка — `listbox` с именем родителя (корневая — имя поля). Клавиши: стрелки вниз и вверх, Enter, пробел открывают; вверх и вниз — по колонке, Home и End — края; вправо — раскрыть узел и перейти в его колонку (у ленивого — после загрузки), влево — назад; Enter и пробел — выбрать конечный узел (или раскрыть); Escape и Tab закрывают. В поле поиска с пустым запросом стрелки работают так же, с запросом — вверх и вниз по результатам, Enter выбирает.
+
+---
+
 ## Список компонентов
 
 ```txt
@@ -2989,6 +3024,7 @@ BaseButton
 BaseButtonGroup
 BaseCalendar
 BaseCard
+BaseCascader
 BaseChart
 
 BaseCardInput

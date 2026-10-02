@@ -1583,3 +1583,13 @@ API кита не меняется. В Storybook добавлены пример
 - Поле формы как у BaseSelect: подпись `FormFieldLabel`, ошибка `FormFieldError`, внутри BaseFormField имя и описание — от обёртки (`useFieldControl`), `disabled` — от BaseForm.
 - Доступность: поле — `combobox` (`aria-haspopup="tree"`), фокус остаётся в поле, активный узел — `aria-activedescendant` (APG Combobox); дерево — плоский список `treeitem` с `aria-level`, `aria-setsize`, `aria-posinset`, `aria-expanded`; одиночный выбор — `aria-selected`, несколько — `aria-checked` с `mixed`.
 - Экспорт: `BaseTreeSelect`, `TREE_SELECT_VARIANTS`, `TREE_SELECT_CHECKED_STRATEGIES`, типы `BaseTreeSelectProps`, `BaseTreeSelectEmits`, `BaseTreeSelectSlots`, `TreeSelectCheckedStrategy`, `TreeSelectValue`. Новых строк словаря нет (берутся `SELECT_PLACEHOLDER`, `SEARCH_PLACEHOLDER`, `NO_RESULTS`, `EMPTY`, `LOADING`, `DELETE`, `aria.SEARCH`).
+
+## Задача new-cascader: BaseCascader
+
+Новый компонент, изменений в существующих нет.
+
+**Новые компоненты**
+
+- `BaseCascader` (Form) — выбор из иерархии колонками: `items` (`BaseCascaderNode`: `id`, `label`, `description`, `icon`, `children`, `isLeaf`, `isDisabled`), `v-model` — путь id (`string[]`), при `isMultiple` — список путей (`string[][]`); `load` (промис детей уровня), `isLoading`, `isAnyLevel`, `isSearchable`, `separator`, `label`, `placeholder`, `ariaLabel`, `triggerAttrs`, `isRequired`, `isDisabled`, `error`; события `update:modelValue`, `change`, `load-error`; слоты `selected`, `option`, `empty`; методы `focus`, `blur`, `validate`, `reset`.
+- Экспорт: `BaseCascader`, `CASCADER_VARIANTS`, типы `BaseCascaderProps`, `BaseCascaderEmits`, `BaseCascaderSlots`, `BaseCascaderNode`, `CascaderLoad`, `CascaderPath`, `CascaderValue`.
+- Новых строк словаря нет: «Загрузка...», «Не удалось загрузить», «Повторить», «Нет данных», «Ничего не найдено», «Поиск...» — общие строки `text`.

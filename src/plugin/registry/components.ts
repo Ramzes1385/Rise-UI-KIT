@@ -60,6 +60,7 @@ import { BaseStepper } from '../../components/BaseStepper'
 import { BaseToolbar } from '../../components/BaseToolbar'
 import { BaseTooltip } from '../../components/BaseTooltip'
 import { BaseBankCard } from '../../components/BaseBankCard'
+import { BaseCascader } from '../../components/BaseCascader'
 import { BaseCheckbox } from '../../components/BaseCheckbox'
 import { BaseDropdown } from '../../components/BaseDropdown'
 import { BaseImageMap } from '../../components/BaseImageMap'
@@ -153,6 +154,7 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseButton,
 	BaseButtonGroup,
 	BaseCard,
+	BaseCascader,
 	BaseChart,
 	BaseCardInput,
 	BaseCheckbox,

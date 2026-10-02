@@ -128,6 +128,7 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseList',
 	'BaseTransfer',
 	'BaseTreeSelect',
+	'BaseCascader',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */
@@ -187,6 +188,7 @@ const INTERACTIVE_WITH_DISABLED = new Set([
 	'BaseList',
 	'BaseTransfer',
 	'BaseTreeSelect',
+	'BaseCascader',
 ])
 
 /** Формовые компоненты, требующие story Error */
@@ -219,6 +221,7 @@ const FORM_COMPONENTS = new Set([
 	'BaseList',
 	'BaseTransfer',
 	'BaseTreeSelect',
+	'BaseCascader',
 ])
 
 const LOADING_COMPONENTS = new Set([
@@ -233,6 +236,7 @@ const LOADING_COMPONENTS = new Set([
 	'BaseMap',
 	'BasePresentationPlayer',
 	'BaseTreeSelect',
+	'BaseCascader',
 ])
 
 const EMPTY_COMPONENTS = new Set([
@@ -262,6 +266,7 @@ const EMPTY_COMPONENTS = new Set([
 	'BaseList',
 	'BaseTransfer',
 	'BaseTreeSelect',
+	'BaseCascader',
 ])
 
 const LONG_CONTENT_COMPONENTS = new Set([
@@ -302,6 +307,7 @@ const LONG_CONTENT_COMPONENTS = new Set([
 	'BaseList',
 	'BaseTransfer',
 	'BaseTreeSelect',
+	'BaseCascader',
 ])
 
 const REQUIRED_STORIES_INTERACTIVE = ['Default', 'Disabled']
