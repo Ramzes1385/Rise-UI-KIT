@@ -8,7 +8,7 @@ const slides = [
 ]
 
 describe('BasePresentationPlayer unit', () => {
-	it('рендерит область с названием и картинку слайда', () => {
+	it('рендерит область с названием и картинку слайда', async () => {
 		render(BasePresentationPlayer, { props: { title: 'Курс', slides } })
 		expect(screen.getByRole('region', { name: 'Курс' })).toBeInTheDocument()
 		expect(screen.getByRole('img', { name: 'Первый' })).toBeInTheDocument()
