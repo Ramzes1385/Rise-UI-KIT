@@ -1,0 +1,167 @@
+.base-crypto-pro-sign {
+	display: flex;
+	flex-direction: column;
+	gap: sz(16px);
+	box-sizing: border-box;
+	min-width: 0;
+	max-width: 100%;
+	padding: sz(16px);
+	border: 1px solid var(--rise-border);
+	border-radius: sz(var(--rise-radius-lg));
+	@include text-size(sm);
+	@include custom-bg(background-color, var(--rise-bg));
+	@include custom-text(color, var(--rise-text));
+
+	&--soft {
+		border-color: transparent;
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+	}
+
+	&--outline {
+		border-color: var(--rise-border-accented);
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--ghost {
+		padding: 0;
+		border-color: transparent;
+		@include custom-bg(background-color, transparent);
+	}
+
+	&__empty,
+	&__source,
+	&__hint {
+		margin: 0;
+	}
+
+	&__empty,
+	&__hint {
+		color: var(--rise-text-muted);
+	}
+
+	&__actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: sz(8px);
+	}
+
+	&__live {
+		@include visually-hidden;
+	}
+}
+
+.base-crypto-pro-sign-status {
+	display: flex;
+	flex-direction: column;
+	gap: sz(12px);
+
+	&__versions {
+		margin: 0;
+		color: var(--rise-text-muted);
+		@include text-size(xs);
+	}
+
+	&__steps {
+		display: flex;
+		flex-direction: column;
+		gap: sz(6px);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	&__step {
+		display: flex;
+		align-items: center;
+		gap: sz(8px);
+
+		&--ok .base-crypto-pro-sign-status__icon {
+			color: var(--rise-success-text);
+		}
+
+		&--error .base-crypto-pro-sign-status__icon {
+			color: var(--rise-error-text);
+		}
+
+		&--pending {
+			color: var(--rise-text-muted);
+		}
+	}
+
+	&__dot {
+		box-sizing: border-box;
+		flex: none;
+		width: sz(16px);
+		height: sz(16px);
+		border: 2px solid var(--rise-border-accented);
+		border-radius: 50%;
+	}
+
+	&__step--checking &__dot {
+		border-color: var(--rise-primary);
+		border-right-color: transparent;
+
+		@include motion-safe {
+			animation: base-crypto-pro-sign-spin calc(var(--rise-duration-slow) * 3) linear infinite;
+		}
+	}
+
+	&__state {
+		@include visually-hidden;
+	}
+}
+
+.base-crypto-pro-sign-result {
+	display: flex;
+	align-items: flex-start;
+	gap: sz(10px);
+	padding: sz(12px);
+	border: 1px solid var(--rise-success-border);
+	border-radius: sz(var(--rise-radius-md));
+	background-color: var(--rise-success-soft);
+	color: var(--rise-success-text);
+
+	&--invalid {
+		border-color: var(--rise-error-border);
+		background-color: var(--rise-error-soft);
+		color: var(--rise-error-text);
+	}
+
+	&__icon {
+		flex: none;
+	}
+
+	&__body,
+	&__signer {
+		display: flex;
+		flex-direction: column;
+		gap: sz(4px);
+		min-width: 0;
+	}
+
+	&__title,
+	&__name {
+		font-weight: 600;
+	}
+
+	&__signers {
+		display: flex;
+		flex-direction: column;
+		gap: sz(10px);
+		margin: sz(6px) 0 0;
+		padding: 0;
+		list-style: none;
+		color: var(--rise-text);
+	}
+
+	&__detail,
+	&__line {
+		overflow-wrap: anywhere;
+	}
+}
+
+@keyframes base-crypto-pro-sign-spin {
+	to {
+		transform: rotate(1turn);
+	}
+}
