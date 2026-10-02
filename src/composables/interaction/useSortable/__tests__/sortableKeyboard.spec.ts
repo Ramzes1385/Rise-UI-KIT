@@ -1,4 +1,20 @@
+import { ref } from 'vue'
 import { ITEMS, key, mountSortable, sortableOptions } from './sortableHarness'
+
+function rootWithItem() {
+	const root = document.createElement('div')
+	const inside = document.createElement('button')
+	const outside = document.createElement('button')
+	root.append(inside)
+	document.body.append(root, outside)
+	return { root, inside, outside, rootRef: ref<HTMLElement | null>(root) }
+}
+
+function leaveFocus(from: HTMLElement, to: HTMLElement): void {
+	from.focus()
+	to.focus()
+	vi.runAllTimers()
+}
 
 describe('useSortable: клавиатура', () => {
 	it('без взятого элемента клавиши не обрабатывает', () => {
@@ -117,5 +133,108 @@ describe('useSortable: клавиатура', () => {
 		expect(options.stepPlace).not.toHaveBeenCalled()
 		sortable.handleGrabbedKeydown(key('ArrowDown'))
 		expect(options.onPreview).toHaveBeenCalledWith('a', 2)
+	})
+
+	it('шаг на место 0 — тоже перенос: onPreview с нулём и объявление', () => {
+		const options = sortableOptions({ stepPlace: vi.fn(() => 0) })
+		const { sortable } = mountSortable(options)
+		sortable.grab(ITEMS[1])
+		sortable.handleGrabbedKeydown(key('Home'))
+		expect(options.onPreview).toHaveBeenCalledWith('b', 0)
+		expect(options.onAnnounce).toHaveBeenLastCalledWith('MOVED', 'b')
+		expect(options.focusItem).toHaveBeenCalledWith('b')
+	})
+
+	describe('уход фокуса из корня не по Tab', () => {
+		beforeEach(() => vi.useFakeTimers())
+		afterEach(() => {
+			vi.useRealTimers()
+			document.body.replaceChildren()
+		})
+
+		it('фокус ушёл за пределы корня — отмена без возврата фокуса', () => {
+			const dom = rootWithItem()
+			const options = sortableOptions({ rootRef: dom.rootRef })
+			const { sortable } = mountSortable(options)
+			sortable.grab(ITEMS[0])
+			leaveFocus(dom.inside, dom.outside)
+			expect(options.onCancel).toHaveBeenCalledWith('a', expect.any(Function))
+			vi.mocked(options.onCancel).mock.calls[0][1]()
+			expect(sortable.grabbedId.value).toBeNull()
+			expect(options.focusItem).not.toHaveBeenCalled()
+		})
+
+		it('фокус пропал на миг и вернулся внутрь корня (перенос узла) — без отмены', () => {
+			const dom = rootWithItem()
+			const options = sortableOptions({ rootRef: dom.rootRef })
+			const { sortable } = mountSortable(options)
+			sortable.grab(ITEMS[0])
+			dom.inside.focus()
+			dom.outside.focus()
+			dom.inside.focus()
+			vi.runAllTimers()
+			expect(options.onCancel).not.toHaveBeenCalled()
+			expect(sortable.grabbedId.value).toBe('a')
+		})
+
+		it('после броска уход фокуса ничего не отменяет — слушатель снят', () => {
+			const dom = rootWithItem()
+			const options = sortableOptions({ rootRef: dom.rootRef })
+			const { sortable } = mountSortable(options)
+			sortable.grab(ITEMS[0])
+			sortable.handleGrabbedKeydown(key('Enter'))
+			vi.mocked(options.onDrop).mock.calls[0][1]()
+			leaveFocus(dom.inside, dom.outside)
+			expect(options.onCancel).not.toHaveBeenCalled()
+		})
+
+		it('бросок раньше проверки фокуса — проверка уже ничего не отменяет', () => {
+			const dom = rootWithItem()
+			const options = sortableOptions({ rootRef: dom.rootRef })
+			const { sortable } = mountSortable(options)
+			sortable.grab(ITEMS[0])
+			dom.inside.focus()
+			dom.outside.focus()
+			sortable.handleGrabbedKeydown(key('Enter'))
+			vi.mocked(options.onDrop).mock.calls[0][1]()
+			vi.runAllTimers()
+			expect(options.onCancel).not.toHaveBeenCalled()
+		})
+
+		it('уход фокуса после отмены по Tab не отменяет второй раз', () => {
+			const dom = rootWithItem()
+			const options = sortableOptions({ rootRef: dom.rootRef, onCancel: vi.fn((_id: string, done: () => void) => done()) })
+			const { sortable } = mountSortable(options)
+			sortable.grab(ITEMS[0])
+			dom.inside.focus()
+			sortable.handleGrabbedKeydown(key('Tab'))
+			dom.outside.focus()
+			vi.runAllTimers()
+			expect(options.onCancel).toHaveBeenCalledTimes(1)
+		})
+
+		it('без корня и после размонтирования — без отмены', () => {
+			const dom = rootWithItem()
+			const rootless = sortableOptions()
+			mountSortable(rootless).sortable.grab(ITEMS[0])
+			const options = sortableOptions({ rootRef: dom.rootRef })
+			const { sortable, wrapper } = mountSortable(options)
+			sortable.grab(ITEMS[0])
+			wrapper.unmount()
+			leaveFocus(dom.inside, dom.outside)
+			expect(rootless.onCancel).not.toHaveBeenCalled()
+			expect(options.onCancel).not.toHaveBeenCalled()
+		})
+
+		it('повторный захват не вешает второй слушатель', () => {
+			const dom = rootWithItem()
+			const options = sortableOptions({ rootRef: dom.rootRef })
+			const { sortable } = mountSortable(options)
+			sortable.grab(ITEMS[0])
+			sortable.grab(ITEMS[1])
+			leaveFocus(dom.inside, dom.outside)
+			expect(options.onCancel).toHaveBeenCalledTimes(1)
+			expect(options.onCancel).toHaveBeenCalledWith('b', expect.any(Function))
+		})
 	})
 })

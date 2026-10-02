@@ -104,6 +104,22 @@ describe('BaseList integration', () => {
 			vi.useRealTimers()
 		})
 
+		it('запрос из нескольких букв ищет с текущей строки, как нативный select', async () => {
+			const items = [
+				{ id: 'x', title: 'Ель' },
+				{ id: 'a', title: 'Абрикос' },
+				{ id: 'b', title: 'Абажур' },
+			]
+			const { user } = setup({ selectionMode: 'single', items })
+			await user.tab()
+			await user.keyboard('а')
+			expect(option('Абрикос')).toHaveFocus()
+			await user.keyboard('б')
+			expect(option('Абрикос')).toHaveFocus()
+			await user.keyboard('аж')
+			expect(option('Абажур')).toHaveFocus()
+		})
+
 		it('Ctrl+буква и ввод в составе (IME) не ищут и не выбирают', async () => {
 			const { user, emitted } = setup({ selectionMode: 'single' })
 			await user.tab()
@@ -194,6 +210,30 @@ describe('BaseList integration', () => {
 			expect(model.value).toEqual(['c'])
 		})
 
+		it('Shift+Home и Shift+End выбирают диапазон от строки с фокусом до края, пропуская недоступные', async () => {
+			const items = [ROWS[0], { id: 'e', title: 'Эпсилон', isDisabled: true }, ...ROWS.slice(1)]
+			const { user, model } = setup({ selectionMode: 'multiple', items })
+			await user.tab()
+			await user.keyboard('{ArrowDown}{ArrowDown}{Shift>}{Home}{/Shift}')
+			expect(option('Альфа')).toHaveFocus()
+			expect(model.value).toEqual(['a', 'b'])
+			await user.keyboard('{ArrowDown}{ArrowDown}{ArrowDown}{Shift>}{End}{/Shift}')
+			expect(option('Дельта')).toHaveFocus()
+			expect(model.value).toEqual(['a', 'b', 'c', 'd'])
+		})
+
+		it('Shift+Home на первой строке и при isDisabled ничего не выбирает', async () => {
+			const first = setup({ selectionMode: 'multiple' })
+			await first.user.tab()
+			await first.user.keyboard('{Shift>}{Home}{/Shift}')
+			expect(first.emitted('update:modelValue')).toBeUndefined()
+			document.body.replaceChildren()
+			const disabled = setup({ selectionMode: 'multiple', isDisabled: true })
+			await disabled.user.tab()
+			await fireEvent.keyDown(option('Альфа'), { key: 'End', shiftKey: true })
+			expect(disabled.emitted('update:modelValue')).toBeUndefined()
+		})
+
 		it('Shift+стрелка в одиночном выборе только переводит фокус', async () => {
 			const { user, emitted } = setup({ selectionMode: 'single' })
 			await user.tab()
@@ -217,6 +257,14 @@ describe('BaseList integration', () => {
 			await user.tab()
 			await user.keyboard('{Control>}a{/Control}')
 			expect(emitted('update:modelValue')).toBeUndefined()
+		})
+
+		it.each(['single', 'none'])('Ctrl/⌘+A в режиме %s не выделяет текст страницы', async selectionMode => {
+			const { user } = setup({ selectionMode })
+			await user.tab()
+			const event = new KeyboardEvent('keydown', { key: 'a', metaKey: true, bubbles: true, cancelable: true })
+			;(document.activeElement as HTMLElement).dispatchEvent(event)
+			expect(event.defaultPrevented).toBe(true)
 		})
 	})
 
@@ -275,6 +323,35 @@ describe('BaseList integration', () => {
 			expect(order()).toEqual(['a', 'c', 'b', 'd'])
 			await user.keyboard(' ')
 			expect(emitted('move')).toEqual([[{ item: ROWS[2], from: 2, to: 1 }]])
+		})
+
+		it.each(['{Home}', '{ArrowUp}'])('пробел и %s переносят на первое место', async keys => {
+			const { user, emitted, rows } = setup({ isSortable: true })
+			await user.tab()
+			await user.keyboard(`{ArrowDown} ${keys}`)
+			expect(screen.getByRole('status')).toHaveTextContent('Место 1 из 4')
+			expect(order()).toEqual(['b', 'a', 'c', 'd'])
+			await user.keyboard(' ')
+			expect(emitted('move')).toEqual([[{ item: ROWS[1], from: 1, to: 0 }]])
+			expect(rows.value.map(item => item.id)).toEqual(['b', 'a', 'c', 'd'])
+		})
+
+		it('фокус ушёл из списка не по Tab — перенос отменён, другая строка взятую не двигает', async () => {
+			const { user, emitted } = setup({ isSortable: true })
+			const outside = document.createElement('button')
+			document.body.append(outside)
+			onTestFinished(() => outside.remove())
+			await user.tab()
+			await user.keyboard(' {ArrowDown}')
+			expect(order()).toEqual(['b', 'a', 'c', 'd'])
+			outside.focus()
+			await waitFor(() => expect(order()).toEqual(['a', 'b', 'c', 'd']))
+			expect(screen.getByRole('status')).toHaveTextContent('Перемещение отменено')
+			expect(row('Альфа')).not.toHaveClass('base-list__item--grabbed')
+			row('Гамма').focus()
+			await user.keyboard('{ArrowUp}')
+			expect(order()).toEqual(['a', 'b', 'c', 'd'])
+			expect(emitted('move')).toBeUndefined()
 		})
 
 		it('Enter тоже кладёт; на то же место — без событий', async () => {
@@ -406,6 +483,27 @@ describe('BaseList integration', () => {
 			expect(emitted('activate')).toBeUndefined()
 			await fireEvent.click(row('Альфа'))
 			expect(emitted('activate')).toEqual([[ROWS[0]]])
+		})
+
+		it('мышью на первое место', async () => {
+			const { emitted, rows } = setup({ isSortable: true })
+			row('Гамма').dispatchEvent(pointer('pointerdown', 110))
+			await fireEvent(window, pointer('pointermove', 5))
+			expect(order()).toEqual(['c', 'a', 'b', 'd'])
+			await fireEvent(window, pointer('pointerup', 5))
+			expect(emitted('move')).toEqual([[{ item: ROWS[2], from: 2, to: 0 }]])
+			expect(rows.value.map(item => item.id)).toEqual(['c', 'a', 'b', 'd'])
+		})
+
+		it('pointercancel отменяет перетаскивание', async () => {
+			const { emitted } = setup({ isSortable: true })
+			row('Альфа').dispatchEvent(pointer('pointerdown', 10))
+			await fireEvent(window, pointer('pointermove', 130))
+			expect(order()).toEqual(['b', 'c', 'a', 'd'])
+			await fireEvent(window, pointer('pointercancel', 130))
+			await waitFor(() => expect(document.querySelector('.base-list__ghost')).toBeNull())
+			expect(order()).toEqual(['a', 'b', 'c', 'd'])
+			expect(emitted('move')).toBeUndefined()
 		})
 
 		it('ниже всех строк — в конец; Escape отменяет перетаскивание', async () => {

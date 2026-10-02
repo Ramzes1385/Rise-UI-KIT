@@ -47,5 +47,13 @@ export const Sortable: StoryObj<typeof meta> = {
 		await userEvent.keyboard('{Escape}')
 		await waitFor(() => expect(status).toHaveTextContent('Перемещение отменено, строка «Макет главной» на прежнем месте'))
 		await expect(listTitles(canvasElement)).toEqual(['Метод выгрузки', 'Макет главной', 'Тесты оплаты', 'Выпуск 2.0'])
+
+		await userEvent.keyboard(' ')
+		await userEvent.keyboard('{Home}')
+		await waitFor(() => expect(status).toHaveTextContent('Место 1 из 4'))
+		await userEvent.keyboard(' ')
+		await waitFor(() => expect(status).toHaveTextContent('Строка «Макет главной» на месте 1 из 4'))
+		await expect(listTitles(canvasElement)).toEqual(['Макет главной', 'Метод выгрузки', 'Тесты оплаты', 'Выпуск 2.0'])
+		await expect((args as ListStoryArgs).onMove).toHaveBeenLastCalledWith(expect.objectContaining({ from: 1, to: 0 }))
 	},
 }

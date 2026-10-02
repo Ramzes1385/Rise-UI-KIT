@@ -39,6 +39,7 @@ describe('useSortable: мышь', () => {
 		['перестановка выключена', { isDisabled: () => true }, {}],
 		['не левая кнопка', {}, { button: 1 }],
 		['касание', {}, { pointerType: 'touch' }],
+		['элемента нет (locate → null), как у клавиатуры', { locate: () => null }, {}],
 	])('не начинает перетаскивание: %s', (_, overrides, event) => {
 		const options = sortableOptions(overrides)
 		const { sortable } = mountSortable(options)
@@ -195,5 +196,37 @@ describe('useSortable: мышь', () => {
 		window.dispatchEvent(pointer('pointerup', [30, 120]))
 		expect(options.onDrop).not.toHaveBeenCalled()
 		expect(sortable.drag.value).toBeNull()
+	})
+
+	it('перенос мышью на место 0: onPreview с нулём, бросок — с исходным местом', () => {
+		const options = sortableOptions({ dropPlace: vi.fn(() => 0) })
+		const { sortable } = mountSortable(options)
+		pressOn(sortable, ITEMS[1])
+		window.dispatchEvent(pointer('pointermove', [30, 10]))
+		expect(options.onPreview).toHaveBeenCalledWith('b', 0)
+		window.dispatchEvent(pointer('pointerup', [30, 10]))
+		expect(options.onDrop).toHaveBeenCalledWith({ id: 'b', origin: 1 }, expect.any(Function))
+	})
+
+	it('pointercancel во время перетаскивания — отмена, как по Escape', async () => {
+		const { options, sortable } = startDrag()
+		window.dispatchEvent(pointer('pointercancel', [30, 60]))
+		expect(options.onCancel).toHaveBeenCalledWith('a', expect.any(Function))
+		vi.mocked(options.onCancel).mock.calls[0][1]()
+		await nextTick()
+		expect(sortable.drag.value).toBeNull()
+		window.dispatchEvent(pointer('pointercancel', [30, 60]))
+		expect(options.onCancel).toHaveBeenCalledTimes(1)
+	})
+
+	it('pointercancel до сдвига — нажатие забыто, без отмены', () => {
+		const options = sortableOptions()
+		const { sortable } = mountSortable(options)
+		pressOn(sortable, ITEMS[0])
+		window.dispatchEvent(pointer('pointercancel', [30, 30]))
+		window.dispatchEvent(pointer('pointermove', [30, 90]))
+		expect(options.onCancel).not.toHaveBeenCalled()
+		expect(options.onStart).not.toHaveBeenCalled()
+		expect(sortable.consumeClick()).toBe(false)
 	})
 })

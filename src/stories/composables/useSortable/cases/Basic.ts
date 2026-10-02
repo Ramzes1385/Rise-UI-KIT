@@ -90,5 +90,15 @@ export const Basic: StoryObj<typeof meta> = {
 		})
 		window.dispatchEvent(pointer('pointerup', target.left + 20, target.top + 5))
 		await waitFor(() => expect(status).toHaveTextContent('«Выпуск» на месте 2 из 4'))
+
+		canvas.getByText('Код').focus()
+		await userEvent.keyboard(' ')
+		await waitFor(() => expect(status).toHaveTextContent('«Код» взят, место 3 из 4'))
+		await userEvent.keyboard('{Home}')
+		await waitFor(() => expect(status).toHaveTextContent('место 1 из 4'))
+		await userEvent.keyboard(' ')
+		await waitFor(() => expect(status).toHaveTextContent('«Код» на месте 1 из 4'))
+		await expect(titles(list)).toEqual(['Код', 'Дизайн', 'Выпуск', 'Бриф'])
+		await expect(canvas.getByText('Код')).toHaveFocus()
 	},
 }

@@ -1,17 +1,29 @@
 import { nextTick, ref } from 'vue'
-import { ITEMS, mountSortable, sortableOptions } from './sortableHarness'
+import { ITEMS, key, mountSortable, pointer, rect, sortableOptions } from './sortableHarness'
 
 describe('useSortable', () => {
 	afterEach(() => vi.unstubAllGlobals())
 
-	it('отдаёт клавиатуру и мышь одним объектом', () => {
-		const { sortable } = mountSortable(sortableOptions())
-		expect(Object.keys(sortable).sort()).toEqual(
-			['consumeClick', 'drag', 'ghostRef', 'ghostStyle', 'grab', 'grabbedId', 'handleGrabbedKeydown', 'handlePointerDown'].sort(),
-		)
+	it('клавиатура и мышь работают через один объект', () => {
+		const options = sortableOptions()
+		const { sortable } = mountSortable(options)
+		expect(sortable.ghostRef.value).toBeNull()
 		sortable.grab(ITEMS[0])
 		expect(sortable.grabbedId.value).toBe('a')
 		expect(sortable.drag.value).toBeNull()
+		expect(sortable.handleGrabbedKeydown(key('ArrowDown'))).toBe(true)
+		expect(options.onPreview).toHaveBeenCalledWith('a', 2)
+
+		const element = document.createElement('div')
+		element.getBoundingClientRect = () => rect([0, 0, 100, 40])
+		element.addEventListener('pointerdown', event => sortable.handlePointerDown(event as PointerEvent, ITEMS[1]))
+		element.dispatchEvent(pointer('pointerdown', [10, 10]))
+		window.dispatchEvent(pointer('pointermove', [10, 30]))
+		expect(sortable.drag.value?.item).toBe(ITEMS[1])
+		expect(sortable.ghostStyle.value).toEqual({ width: '100px', transform: 'translate(0px, 20px)' })
+		window.dispatchEvent(pointer('pointerup', [10, 30]))
+		expect(options.onDrop).toHaveBeenCalledWith({ id: 'b', origin: 1 }, expect.any(Function))
+		expect(sortable.consumeClick()).toBe(true)
 	})
 
 	it('с опцией flip следит за источником порядка, без неё — нет', async () => {
