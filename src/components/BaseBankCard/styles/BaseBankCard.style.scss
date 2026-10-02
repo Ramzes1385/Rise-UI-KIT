@@ -1,0 +1,143 @@
+.base-bank-card {
+	box-sizing: border-box;
+	min-width: 0;
+	max-width: 100%;
+	font-size: sz(var(--rise-font-size-sm));
+
+	&__summary {
+		@include visually-hidden;
+	}
+
+	&__number,
+	&__expiry {
+		font-variant-numeric: tabular-nums;
+		white-space: nowrap;
+	}
+
+	&__label {
+		overflow: hidden;
+		min-width: 0;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	&__expired {
+		font-weight: var(--rise-font-weight-semibold);
+	}
+
+	&--full {
+		display: grid;
+		grid-template: 'label brand' auto 'number number' 1fr 'holder expiry' auto / minmax(0, 1fr) auto;
+		column-gap: sz(12px);
+		align-items: center;
+		width: sz(320px);
+		aspect-ratio: 85.6 / 53.98;
+		overflow: hidden;
+		padding: sz(16px 20px);
+		border-radius: sz(var(--rise-radius-xl));
+		background: var(--base-bank-card-bg);
+		box-shadow: var(--rise-shadow-md);
+		color: var(--rise-color-neutral-50);
+	}
+
+	&--full &__label {
+		grid-area: label;
+		opacity: 0.85;
+	}
+
+	&--full &__brand {
+		grid-area: brand;
+		justify-self: end;
+		font-size: sz(var(--rise-font-size-lg));
+	}
+
+	&--full &__number {
+		grid-area: number;
+		font-family: var(--rise-font-mono);
+		font-size: sz(var(--rise-font-size-xl));
+		letter-spacing: 0.06em;
+	}
+
+	&--full &__holder {
+		grid-area: holder;
+		overflow: hidden;
+		letter-spacing: 0.06em;
+		text-overflow: ellipsis;
+		text-transform: uppercase;
+		white-space: nowrap;
+	}
+
+	&--full &__expiry {
+		display: flex;
+		grid-area: expiry;
+		flex-direction: column;
+		align-items: flex-end;
+		font-family: var(--rise-font-mono);
+	}
+
+	&--full &__expired {
+		padding: sz(0 6px);
+		border-radius: sz(var(--rise-radius-sm));
+		background: var(--rise-color-error-700);
+		font-family: var(--rise-font-sans);
+		font-size: sz(var(--rise-font-size-xs));
+	}
+
+	&--full.base-bank-card--expired {
+		filter: grayscale(0.6);
+	}
+
+	&--compact {
+		display: inline-grid;
+		grid-template-columns: sz(44px) auto minmax(0, 1fr) auto;
+		gap: sz(10px);
+		align-items: center;
+		padding: sz(var(--rise-control-padding-y)) sz(var(--rise-control-padding-x));
+		border: 1px solid var(--rise-border);
+		border-radius: sz(var(--rise-radius-md));
+		@include custom-bg(background-color, var(--rise-bg));
+		@include custom-text(color, var(--rise-text));
+	}
+
+	&--compact &__brand {
+		display: inline-flex;
+		justify-content: center;
+		color: var(--rise-text-highlighted);
+		font-size: sz(var(--rise-font-size-sm));
+	}
+
+	&--compact &__number {
+		color: var(--rise-text-highlighted);
+		font-weight: var(--rise-font-weight-medium);
+	}
+
+	&--compact &__label {
+		grid-row: 1;
+		grid-column: 3;
+		color: var(--rise-text-muted);
+	}
+
+	&--compact &__expiry {
+		grid-column: 4;
+		color: var(--rise-text-muted);
+	}
+
+	&--compact &__expired {
+		color: var(--rise-error-text);
+	}
+
+	&--compact.base-bank-card--soft {
+		border-color: transparent;
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+	}
+
+	&--compact.base-bank-card--outline {
+		border-color: var(--rise-border-accented);
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--compact.base-bank-card--ghost {
+		border-color: transparent;
+		@include custom-bg(background-color, transparent);
+	}
+}

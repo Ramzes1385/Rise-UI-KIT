@@ -18,5 +18,10 @@ export const enCard = {
 		BRAND_MIR: 'Mir',
 		NO_TOKENIZER: 'BaseCardInput: tokenize is not set — nowhere to send the card data',
 		INCOMPLETE: 'BaseCardInput: card data is incomplete',
+		SAVED_CARD: 'Card',
+		SAVED_ENDING: '{brand} ending in {last4}',
+		SAVED_EXPIRES: 'expires {date}',
+		SAVED_EXPIRED: 'expired {date}',
+		EXPIRED: 'Expired',
 	},
 }

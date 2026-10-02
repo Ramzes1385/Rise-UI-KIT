@@ -22,5 +22,11 @@ export const ruCard = {
 		/** Ошибка `tokenize()` без адаптера */
 		NO_TOKENIZER: 'BaseCardInput: не задан tokenize — данные карты некуда передать',
 		INCOMPLETE: 'BaseCardInput: данные карты заполнены не полностью',
+		/** BaseBankCard — сохранённая карта; `{brand}` — марка, `{last4}` — последние цифры, `{date}` — срок ММ/ГГ */
+		SAVED_CARD: 'Карта',
+		SAVED_ENDING: '{brand}, номер заканчивается на {last4}',
+		SAVED_EXPIRES: 'срок до {date}',
+		SAVED_EXPIRED: 'срок истёк {date}',
+		EXPIRED: 'Истекла',
 	},
 }
