@@ -6,6 +6,7 @@ import {
 	collectDescendantIdsInto,
 	collectExpandableIds,
 	getTreeChildren,
+	getTreeRoots,
 	normalizeTreeSelection,
 	toggleTreeSelection,
 } from '../treeUtils'
@@ -198,6 +199,37 @@ describe('treeUtils', () => {
 			b.children?.push({ id: 'new', label: 'Новый' })
 			expect(getTreeChildren(index, b).map(node => node.id)).toEqual(['new'])
 			expect(getTreeChildren(index, { id: 'leaf', label: 'Лист' })).toEqual([])
+		})
+	})
+
+	describe('повторы по ссылке на узел (п. 6–8 проверки)', () => {
+		it('getTreeRoots: дубль id на корне и узел, уже встреченный потомком, пропускаются', () => {
+			const b: TreeNode = { id: 'b', label: 'B' }
+			const a: TreeNode = { id: 'a', label: 'A', children: [b] }
+			const twin: TreeNode = { id: 'a', label: 'Дубль A' }
+			const items = [a, twin, b]
+			expect(getTreeRoots(buildTreeIndex(items), items)).toEqual([a])
+		})
+
+		it('getTreeRoots: тот же объект дважды на корне показывается один раз', () => {
+			const a: TreeNode = { id: 'a', label: 'A' }
+			const items = [a, a]
+			expect(getTreeRoots(buildTreeIndex(items), items)).toEqual([a])
+		})
+
+		it('getTreeChildren: дубль id среди детей одного родителя пропускается', () => {
+			const first: TreeNode = { id: 'b', label: 'B' }
+			const parent: TreeNode = { id: 'p', label: 'P', children: [first, { id: 'b', label: 'Дубль B' }, first] }
+			expect(getTreeChildren(buildTreeIndex([parent]), parent)).toEqual([first])
+		})
+
+		it('без повторов — тот же массив: стабильная ссылка не перерисовывает узлы', () => {
+			const parent: TreeNode = { id: 'p', label: 'P', children: [{ id: 'c', label: 'C' }] }
+			const items = [parent]
+			const index = buildTreeIndex(items)
+			expect(getTreeRoots(index, items)).toBe(items)
+			expect(getTreeChildren(index, parent)).toBe(parent.children)
+			expect(getTreeChildren(index, { id: 'leaf', label: 'Лист' })).toBe(getTreeChildren(index, { id: 'leaf2', label: 'Лист 2' }))
 		})
 	})
 

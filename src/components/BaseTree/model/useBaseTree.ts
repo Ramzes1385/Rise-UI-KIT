@@ -157,15 +157,15 @@ function provideTreeContext(
 }
 
 function arrowRight(entry: VisibleNode, tree: ReturnType<typeof useTreeModel>, focusNode: (id: string | undefined) => void): void {
-	const { node } = entry
-	if (!node.children?.length) return
-	if (tree.expandedSet.value.has(node.id)) focusNode(node.children[0]?.id)
-	else if (!node.isDisabled) tree.toggleNode(node.id)
+	const children = tree.childrenOf(entry.node)
+	if (!children.length) return
+	if (tree.expandedSet.value.has(entry.node.id)) focusNode(children[0].id)
+	else if (!entry.node.isDisabled) tree.toggleNode(entry.node.id)
 }
 
 function arrowLeft(entry: VisibleNode, tree: ReturnType<typeof useTreeModel>, focusNode: (id: string | undefined) => void): void {
 	const { node } = entry
-	const isOpenBranch = Boolean(node.children?.length) && tree.expandedSet.value.has(node.id)
+	const isOpenBranch = tree.childrenOf(node).length > 0 && tree.expandedSet.value.has(node.id)
 	if (isOpenBranch && !node.isDisabled) tree.toggleNode(node.id)
 	else focusNode(entry.parentId ?? undefined)
 }
@@ -189,7 +189,8 @@ function createTreeKeys(
 				tree.expandNodes(
 					visible
 						.filter(
-							({ parentId, node: sibling }) => parentId === entry.parentId && sibling.children?.length && !sibling.isDisabled,
+							({ parentId, node: sibling }) =>
+								parentId === entry.parentId && tree.childrenOf(sibling).length && !sibling.isDisabled,
 						)
 						.map(({ node: sibling }) => sibling.id),
 				),
@@ -202,7 +203,7 @@ function createTreeKeys(
 export function useBaseTree(props: TreeProps, emit: BaseTreeEmits) {
 	const standard = useStandardBaseComponent('base-tree', props, TREE_ELEMENTS)
 	const tree = useTreeModel(props, emit)
-	const rootNodes = computed((): TreeNode[] => props.items ?? [])
+	const rootNodes = tree.roots
 	const visibleNodes = computed((): VisibleNode[] => collectVisible(rootNodes.value, tree.expandedSet.value, tree.childrenOf))
 	const tab = useTabbable(visibleNodes, tree)
 	const virtual = useTreeVirtual(props, visibleNodes, tab.tabbableIndex)

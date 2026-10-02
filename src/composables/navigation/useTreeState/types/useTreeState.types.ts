@@ -21,6 +21,8 @@ export interface UseTreeStateResult {
 	selectedSet: ComputedRef<Set<string>>
 	/** Узлы с частичным выбором в режиме multiple: выбрана часть доступных потомков */
 	indeterminateSet: ComputedRef<Set<string>>
+	/** Корневые узлы без повторных id (дубль на корне или узел, уже встреченный потомком) */
+	roots: ComputedRef<TreeNode[]>
 	/** Дети узла без повторных id (цикл в children или дубль) */
 	childrenOf: (node: TreeNode) => TreeNode[]
 	toggleNode: (id: string) => void

@@ -997,6 +997,58 @@ describe('BaseTree integration', () => {
 			warnSpy.mockRestore()
 		})
 
+		it('повтор id на корне не показывается: дубль и узел, уже встреченный потомком (п. 6 проверки)', () => {
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+			const inner: TreeNode = { id: 'inner', label: 'Внутри' }
+			render(BaseTree, {
+				props: {
+					items: [{ id: 'a', label: 'Первый', children: [inner] }, { id: 'a', label: 'Дубль' }, inner],
+					isDefaultExpandAll: true,
+				},
+				slots: { label: DEFAULT_SLOT },
+			})
+			expect(screen.getAllByRole('treeitem').map(item => item.textContent?.trim())).toEqual(['Первый', 'Внутри'])
+			expect(screen.queryByText('Дубль')).not.toBeInTheDocument()
+			warnSpy.mockRestore()
+		})
+
+		it('клавиатура видит детей без повторов: → на узле с одними повторами ничего не делает, на раскрытом — к первому настоящему ребёнку (п. 7 проверки)', async () => {
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+			const user = userEvent.setup()
+			const shared: TreeNode = { id: 'shared', label: 'Общий' }
+			const { emitted } = render(BaseTree, {
+				props: {
+					items: [
+						{ id: 'a', label: 'Ветка А', children: [shared] },
+						{ id: 'b', label: 'Ветка Б', children: [{ id: 'shared', label: 'Повтор' }] },
+						{
+							id: 'c',
+							label: 'Ветка В',
+							children: [
+								{ id: 'shared', label: 'Повтор 2' },
+								{ id: 'own', label: 'Свой' },
+							],
+						},
+					],
+					expandedIds: ['c'],
+				},
+				slots: { label: DEFAULT_SLOT },
+			})
+			treeItem('Ветка Б').focus()
+			await user.keyboard('{ArrowRight}')
+			expect(emitted()['update:expandedIds']).toBeUndefined()
+			expect(treeItem('Ветка Б')).not.toHaveAttribute('aria-expanded')
+
+			treeItem('Ветка В').focus()
+			await user.keyboard('{ArrowRight}')
+			expect(treeItem('Свой')).toHaveFocus()
+
+			treeItem('Ветка Б').focus()
+			await user.keyboard('*')
+			expect(emitted()['update:expandedIds']).toEqual([[['c', 'a']]])
+			warnSpy.mockRestore()
+		})
+
 		it('дети раскрытого отключённого узла выбираются кликом', async () => {
 			const user = userEvent.setup()
 			const { emitted } = render(BaseTree, {

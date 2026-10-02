@@ -71,12 +71,39 @@ export function buildTreeIndex(nodes: TreeNode[]): TreeIndex {
 	return index
 }
 
+const NO_CHILDREN: TreeNode[] = []
+
 /**
- * Дети узла без повторов: ребёнок, которого индекс знает под другим родителем (цикл или дубль id), пропускается.
+ * Узел — то самое вхождение, что попало в индекс: тот же объект под тем же родителем (узлы и индекс — из одного источника: оба reactive или оба нет).
+ * Узел, которого индекс ещё не знает (children изменили на месте), считается своим
+ */
+function isIndexedEntry(index: TreeIndex, node: TreeNode, parentId: string | undefined): boolean {
+	const known = index.nodes.get(node.id)
+	return !known || (known === node && index.parents.get(node.id) === parentId)
+}
+
+/** Узлы одного уровня без повторов; ничего не отброшено — тот же массив (стабильная ссылка для computed) */
+function uniqueEntries(index: TreeIndex, nodes: TreeNode[], parentId: string | undefined): TreeNode[] {
+	const seen = new Set<string>()
+	const entries = nodes.filter(node => {
+		if (seen.has(node.id) || !isIndexedEntry(index, node, parentId)) return false
+		seen.add(node.id)
+		return true
+	})
+	return entries.length === nodes.length ? nodes : entries
+}
+
+/**
+ * Дети узла без повторов: ребёнок, которого индекс знает в другом месте (цикл или дубль id), пропускается.
  * Ребёнок, которого индекс ещё не знает (children изменили на месте), остаётся
  */
 export function getTreeChildren(index: TreeIndex, node: TreeNode): TreeNode[] {
-	return (node.children ?? []).filter(child => !index.nodes.has(child.id) || index.parents.get(child.id) === node.id)
+	return node.children ? uniqueEntries(index, node.children, node.id) : NO_CHILDREN
+}
+
+/** Корневые узлы без повторов: дубль id на корне и узел, который уже встретился потомком, пропускаются */
+export function getTreeRoots(index: TreeIndex, nodes: TreeNode[]): TreeNode[] {
+	return uniqueEntries(index, nodes, undefined)
 }
 
 function getEnabledChildren(index: TreeIndex, node: TreeNode): TreeNode[] {

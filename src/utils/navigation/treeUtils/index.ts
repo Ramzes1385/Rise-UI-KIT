@@ -4,6 +4,7 @@ export {
 	collectDescendantIdsInto,
 	collectExpandableIds,
 	getTreeChildren,
+	getTreeRoots,
 	normalizeTreeSelection,
 	toggleTreeSelection,
 } from './treeUtils'

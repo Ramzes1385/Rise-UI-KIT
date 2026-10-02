@@ -7,7 +7,7 @@ import { createTreeSelection } from './useTreeStateSelection'
 import type { TreeIndex, TreeSelectionState } from '@utils/navigation/treeUtils'
 import type { TreeSelectionMode } from '@components/BaseTree/types/BaseTree.types'
 import type { TreeStateContext, UseTreeStateOptions, UseTreeStateResult } from './types/useTreeState.types'
-import { buildTreeIndex, collectExpandableIds, getTreeChildren, normalizeTreeSelection } from '@utils/navigation/treeUtils'
+import { buildTreeIndex, collectExpandableIds, getTreeChildren, getTreeRoots, normalizeTreeSelection } from '@utils/navigation/treeUtils'
 
 const REPEATED_IDS_SHOWN = 5
 
@@ -41,13 +41,16 @@ function createTreeStateContext(options: UseTreeStateOptions): TreeStateContext 
 	}
 }
 
-/** Предупреждение о повторных id: цикл в children или дубль; такие вхождения не показываются */
+/** Предупреждение о повторных id: цикл в children или дубль; такие вхождения не показываются. Тот же набор — один раз */
 function watchRepeatedIds(context: TreeStateContext): void {
+	let lastWarned = ''
 	watch(
 		context.index,
 		function warnRepeated({ repeated }): void {
-			if (!repeated.length) return
-			warn(UI_WARNINGS.TREE_REPEATED_ID, { ids: [...new Set(repeated)].slice(0, REPEATED_IDS_SHOWN).join(', ') })
+			const ids = [...new Set(repeated)].slice(0, REPEATED_IDS_SHOWN).join(', ')
+			if (ids === lastWarned) return
+			lastWarned = ids
+			if (ids) warn(UI_WARNINGS.TREE_REPEATED_ID, { ids })
 		},
 		{ immediate: true },
 	)
@@ -105,6 +108,7 @@ function useTreeState(options: UseTreeStateOptions): UseTreeStateResult {
 		expandedSet,
 		selectedSet,
 		indeterminateSet,
+		roots: computed(() => getTreeRoots(index.value, options.items.value ?? [])),
 		childrenOf: node => getTreeChildren(index.value, node),
 		toggleNode,
 		expandNodes,

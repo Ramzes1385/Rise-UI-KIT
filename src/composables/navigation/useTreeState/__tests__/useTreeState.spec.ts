@@ -191,6 +191,7 @@ describe('useTreeState', () => {
 
 	it('items: undefined — пустое дерево без ошибок', () => {
 		const ctx = setup({ hasItems: false, mode: 'multiple', expandAll: true })
+		expect(ctx.roots.value).toEqual([])
 		expect(ctx.expandedIds.value).toEqual([])
 		expect(ctx.selectedIds.value).toEqual([])
 		ctx.selectNode('a')
@@ -203,12 +204,38 @@ describe('useTreeState', () => {
 		const b: TreeNode = { id: 'b', label: 'B', children: [a] }
 		a.children = [b]
 		const ctx = setup({ items: [a], expandAll: true })
+		const [node] = ctx.items.value as TreeNode[]
+		const [child] = node.children as TreeNode[]
 
-		expect(ctx.childrenOf(a)).toEqual([b])
-		expect(ctx.childrenOf(b)).toEqual([])
+		expect(ctx.childrenOf(node)).toEqual([child])
+		expect(ctx.childrenOf(child)).toEqual([])
 		expect(ctx.expandedIds.value).toEqual(['a', 'b'])
 		expect(warnSpy).toHaveBeenCalledTimes(1)
 		expect(warnSpy.mock.calls[0][0]).toContain(': a.')
+		warnSpy.mockRestore()
+	})
+
+	it('roots: корень без повторов; предупреждение о том же наборе повторов — один раз (п. 6, 9 проверки)', async () => {
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+		const a: TreeNode = { id: 'a', label: 'A' }
+		const ctx = setup({ items: [a, { id: 'a', label: 'Дубль' }] })
+		expect(ctx.roots.value).toEqual([a])
+		expect(warnSpy).toHaveBeenCalledTimes(1)
+
+		ctx.items.value = [a, { id: 'a', label: 'Дубль' }, { id: 'c', label: 'C' }]
+		await tick()
+		expect(warnSpy).toHaveBeenCalledTimes(1)
+
+		ctx.items.value = [a, { id: 'c', label: 'C' }, { id: 'c', label: 'Дубль C' }]
+		await tick()
+		expect(warnSpy).toHaveBeenCalledTimes(2)
+		expect(warnSpy.mock.calls[1][0]).toContain(': c.')
+
+		ctx.items.value = [a]
+		await tick()
+		ctx.items.value = [a, { id: 'c', label: 'C' }, { id: 'c', label: 'Дубль C' }]
+		await tick()
+		expect(warnSpy).toHaveBeenCalledTimes(3)
 		warnSpy.mockRestore()
 	})
 
