@@ -114,8 +114,8 @@
 				:data-theme="inheritedTheme"
 				aria-hidden="true">
 				<div class="base-kanban__ghost-card" :class="classes.card">
-					<slot name="card" :card="drag.card" :is-dragging="true">
-						<KanbanCardContent :card="drag.card" :today="today" :is-done="isDoneColumn(drag.card.columnId)" />
+					<slot name="card" :card="drag.item" :is-dragging="true">
+						<KanbanCardContent :card="drag.item" :today="today" :is-done="isDoneColumn(drag.item.columnId)" />
 					</slot>
 				</div>
 			</div>

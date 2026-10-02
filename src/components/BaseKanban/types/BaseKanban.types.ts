@@ -94,16 +94,6 @@ export interface KanbanMove {
 	to: KanbanPlace
 }
 
-/** Перетаскивание мышью: карточка, точка захвата внутри неё и размер для «призрака» под курсором */
-export interface KanbanPointerDrag {
-	card: KanbanCard
-	x: number
-	y: number
-	offsetX: number
-	offsetY: number
-	width: number
-}
-
 /** Объявление для скринридера при перемещении с клавиатуры: ключ строки из словаря `kanban` */
 export type KanbanAnnouncement = 'PICKED' | 'MOVED' | 'DROPPED' | 'CANCELLED' | 'BLOCKED' | 'CREATED' | 'RENAMED'
 
