@@ -19,7 +19,7 @@
 			<div class="base-presentation-player__stage" :class="classes.stage" @click="onStageClick">
 				<Transition name="base-presentation-player__slide" mode="out-in">
 					<div v-if="slide" :key="slide.id" class="base-presentation-player__slide">
-						<slot name="slide" :slide="slide" :index="index">
+						<slot name="slide" :slide="slide" :index="index" v-bind="slideActions">
 							<video
 								v-if="videoSrc"
 								ref="videoRef"
@@ -43,6 +43,7 @@
 					</div>
 				</Transition>
 			</div>
+			<PresentationCaptions v-if="captionLines.length" :lines="captionLines" :box-style="captionBoxStyle" />
 			<audio
 				ref="audioRef"
 				class="base-media-player__audio"
@@ -139,6 +140,30 @@
 						</div>
 					</div>
 					<div class="base-media-player__group base-media-player__group--end">
+						<MediaControlButton
+							v-if="hasCaptions"
+							class="base-presentation-player__captions-button"
+							:icon="isCaptionsOn ? 'captions' : 'captions-off'"
+							:label="UI_PLAYER.CAPTIONS"
+							:is-active="isCaptionsOn"
+							:aria-pressed="isCaptionsOn"
+							@click="toggleCaptions" />
+						<MediaControlButton
+							v-if="hasNotes"
+							class="base-presentation-player__notes-button"
+							icon="list"
+							:label="UI_PRESENTATION.NOTES"
+							:is-active="panelView === 'notes'"
+							:aria-expanded="panelView === 'notes'"
+							@click="togglePanel('notes')" />
+						<MediaControlButton
+							class="base-presentation-player__slides-button"
+							icon="playlist"
+							:label="UI_PRESENTATION.SLIDE_LIST"
+							:badge="count"
+							:is-active="panelView === 'slides'"
+							:aria-expanded="panelView === 'slides'"
+							@click="togglePanel('slides')" />
 						<MediaPopover v-if="speedMenu.items.length > 1">
 							<template #default="{ isOpen, toggle }">
 								<MediaControlButton
@@ -159,6 +184,85 @@
 					</div>
 				</div>
 			</div>
+			<Transition name="base-media-player__episodes" :duration="{ enter: 720, leave: 240 }">
+				<section
+					v-if="panelView"
+					ref="panelRef"
+					class="base-media-player__episodes base-presentation-player__panel"
+					:aria-label="panelView === 'notes' ? UI_PRESENTATION.NOTES : UI_PRESENTATION.SLIDE_LIST"
+					@keydown="onPanelKeydown">
+					<div class="base-media-player__episodes-header">
+						<div v-if="hasNotes" class="base-media-player__episodes-views">
+							<button
+								type="button"
+								class="base-media-player__episodes-view"
+								:aria-pressed="panelView === 'slides'"
+								@click="showPanelView('slides')">
+								{{ UI_PRESENTATION.SLIDE_LIST }}
+							</button>
+							<button
+								type="button"
+								class="base-media-player__episodes-view"
+								:aria-pressed="panelView === 'notes'"
+								@click="showPanelView('notes')">
+								{{ UI_PRESENTATION.NOTES }}
+							</button>
+						</div>
+						<span v-else class="base-media-player__episodes-title">{{ UI_PRESENTATION.SLIDE_LIST }}</span>
+						<MediaControlButton icon="close" :label="UI_ARIA.CLOSE" @click="closePanel" />
+					</div>
+					<div v-if="panelView === 'notes'" class="base-presentation-player__notes" tabindex="-1">
+						<p v-if="slide" class="base-presentation-player__notes-title">{{ index + 1 }}. {{ slide.title }}</p>
+						<p
+							v-for="(paragraph, paragraphIndex) in notesParagraphs"
+							:key="paragraphIndex"
+							class="base-presentation-player__notes-text">
+							{{ paragraph }}
+						</p>
+						<p v-if="!notesParagraphs.length" class="base-presentation-player__notes-text">{{ UI_PRESENTATION.NOTES_EMPTY }}</p>
+					</div>
+					<ol v-else class="base-media-player__episodes-list">
+						<li v-for="card in slideCards" :key="card.id" :style="{ '--media-item-index': card.index }">
+							<button
+								type="button"
+								class="base-media-player__episode-card"
+								:class="{
+									'base-media-player__episode-card--current': card.isCurrent,
+									'base-presentation-player__card--locked': card.isLocked,
+								}"
+								:aria-current="card.isCurrent ? 'true' : undefined"
+								:aria-disabled="card.isLocked || undefined"
+								@click="chooseSlide(card.index)">
+								<span class="base-media-player__episode-number" aria-hidden="true">{{ card.number }}</span>
+								<span class="base-media-player__episode-cover" aria-hidden="true">
+									<img
+										v-if="card.image"
+										class="base-media-player__episode-image"
+										:src="card.image"
+										alt=""
+										loading="lazy" />
+									<span v-if="card.duration" class="base-media-player__episode-duration">{{ card.duration }}</span>
+								</span>
+								<span class="base-media-player__episode-info">
+									<span class="base-media-player__episode-name">{{ card.title }}</span>
+								</span>
+								<span v-if="card.isLocked" class="base-presentation-player__card-mark">
+									<svg class="base-presentation-player__lock" viewBox="0 0 448 512" aria-hidden="true">
+										<path :d="PRESENTATION_LOCK_ICON" />
+									</svg>
+									<span class="base-media-player__visually-hidden">{{ UI_PRESENTATION.SLIDE_LOCKED }}</span>
+								</span>
+								<span
+									v-else-if="card.isCompleted"
+									class="base-presentation-player__card-mark base-presentation-player__card-mark--done">
+									<MediaIcon name="check" />
+									<span class="base-media-player__visually-hidden">{{ UI_PRESENTATION.SLIDE_DONE }}</span>
+								</span>
+							</button>
+						</li>
+					</ol>
+				</section>
+			</Transition>
 			<div class="base-media-player__visually-hidden" role="status">{{ statusText }}</div>
 		</div>
 	</div>
@@ -173,6 +277,7 @@ import '@components/BaseMediaPlayer/styles/MediaOverlays.style.scss'
 import '@components/BaseMediaPlayer/styles/MediaPanels.style.scss'
 import { BaseButton } from '@components/BaseButton'
 import { kitDefaults } from '@composables/base/useDefaults'
+import PresentationCaptions from './PresentationCaptions.vue'
 import MediaIcon from '@components/BaseMediaPlayer/ui/controls/MediaIcon.vue'
 import MediaPopover from '@components/BaseMediaPlayer/ui/menus/MediaPopover.vue'
 import MediaSlider from '@components/BaseMediaPlayer/ui/controls/MediaSlider.vue'
@@ -203,6 +308,9 @@ const props = withDefaults(
 		navigation: 'free',
 		maxRate: 1,
 		storageKey: undefined,
+		captions: undefined,
+		isCaptionsOn: undefined,
+		speechVoice: undefined,
 	}),
 )
 
@@ -273,6 +381,24 @@ const {
 	toggleFullscreen,
 	onMediaPlay,
 	onMediaPause,
+	captionLines,
+	captionBoxStyle,
+	hasCaptions,
+	isCaptionsOn,
+	toggleCaptions,
+	hasNotes,
+	panelView,
+	panelRef,
+	togglePanel,
+	showPanelView,
+	closePanel,
+	notesParagraphs,
+	slideCards,
+	chooseSlide,
+	onPanelKeydown,
+	slideActions,
+	UI_ARIA,
+	PRESENTATION_LOCK_ICON,
 } = useBasePresentationPlayer(props, emit)
 
 defineExpose<BasePresentationPlayerExpose>({ play, pause, next, previous, goTo })

@@ -34,7 +34,7 @@ export function usePresentationScreen(
 			toggleMute: source.toggleMute,
 			toggleFullscreen: () => void fullscreen.toggle(),
 			toggleTheater: noop,
-			toggleCaptions: noop,
+			toggleCaptions: source.toggleCaptions,
 			nextEpisode: source.next,
 			previousEpisode: source.previous,
 			stepPlaybackRate: source.stepRate,

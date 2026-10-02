@@ -42,6 +42,24 @@ export interface PresentationSlide {
 	 * только пока вкладка видна и идёт показ. Слайд пройден, когда кончилась озвучка и прошло это время — что позже
 	 */
 	minDuration?: number
+	/**
+	 * Субтитры озвучки слайда — адрес файла WebVTT или SRT (http, https, blob, data); время — от начала слайда. Разбор —
+	 * `parseSubtitles` из `subtitleUtils`, вывод — как у BaseMediaPlayer. У общей дорожки — проп `captions` плеера
+	 */
+	captions?: string
+	/** Стенограмма слайда — текст для панели «Стенограмма»; абзацы — через пустую строку */
+	notes?: string
+	/**
+	 * Текст для синтеза речи браузера (`speechSynthesis`), если у слайда нет `audio` и не задана общая дорожка. Голос — по
+	 * языку кита или `speechVoice`; голосов нет — слайд идёт по `duration`. Голоса и качество зависят от браузера и
+	 * системы: для обучения лучше запись
+	 */
+	speech?: string
+	/**
+	 * Слайд-вопрос: пройден, только когда слот `slide` вызвал `complete()` (и кончилась озвучка, прошло `minDuration`).
+	 * После конца озвучки показ ждёт ответа и сам дальше не идёт
+	 */
+	isInteractive?: boolean
 }
 
 /** Данные события `slide-complete` */
@@ -76,6 +94,10 @@ export interface PresentationSlideSlotProps {
 	slide: PresentationSlide
 	/** Номер слайда с нуля */
 	index: number
+	/** Отметить слайд-вопрос (`isInteractive`) отвеченным; у обычного слайда ничего не делает */
+	complete: () => void
+	/** Слайд уже пройден */
+	isCompleted: boolean
 }
 
 /** Пропсы компонента BasePresentationPlayer */
@@ -112,6 +134,12 @@ export interface BasePresentationPlayerProps extends BaseComponentProps<Presenta
 	 * Это удобство для зрителя, а не контроль: строгий учёт — на сервере по событиям `slide-complete`
 	 */
 	storageKey?: string
+	/** Субтитры общей дорожки `audio` — адрес WebVTT или SRT; время — от начала дорожки */
+	captions?: string
+	/** Субтитры показаны (`v-model:is-captions-on`); кнопка «Субтитры» и клавиша C — когда субтитры есть хотя бы у одного слайда */
+	isCaptionsOn?: boolean
+	/** Голос синтеза речи — `name` или `voiceURI` из `speechSynthesis.getVoices()`; не найден — голос по языку кита */
+	speechVoice?: string
 }
 
 /** События компонента BasePresentationPlayer */
@@ -128,6 +156,8 @@ export interface BasePresentationPlayerEmits {
 	(event: 'progress', value: PresentationProgress): void
 	/** Пройдены все слайды */
 	(event: 'complete'): void
+	/** Субтитры включены или выключены */
+	(event: 'update:isCaptionsOn', value: boolean): void
 }
 
 /** Слоты компонента BasePresentationPlayer */

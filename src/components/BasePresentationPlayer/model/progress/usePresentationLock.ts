@@ -32,11 +32,11 @@ export function usePresentationLock(source: PresentationLockSource) {
 		return Number.isFinite(duration) ? Math.max(0, (duration - source.slideTime()) / source.rate()) : Number.NaN
 	})
 	const remaining = computed(() => Math.max(mediaLeft.value, source.minDuration() - source.watched(), 0))
-	const lockText = computed(() =>
-		Number.isNaN(remaining.value)
-			? UI_PRESENTATION.LOCKED_AUDIO
-			: formatMessage(UI_PRESENTATION.LOCKED, { n: Math.ceil(remaining.value) }),
-	)
+	const lockText = computed(() => {
+		if (source.isAwaitingAnswer() && !(remaining.value > 0)) return UI_PRESENTATION.LOCKED_QUIZ
+		if (Number.isNaN(remaining.value)) return UI_PRESENTATION.LOCKED_AUDIO
+		return formatMessage(UI_PRESENTATION.LOCKED, { n: Math.ceil(remaining.value) })
+	})
 	const isNextLocked = computed(() => source.index() < source.count() - 1 && !source.canGoTo(source.index() + 1))
 
 	return {

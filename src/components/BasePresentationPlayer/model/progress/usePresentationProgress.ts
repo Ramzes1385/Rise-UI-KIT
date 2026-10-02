@@ -52,8 +52,9 @@ function useCompletion(props: BasePresentationPlayerProps, emit: BasePresentatio
 	}
 }
 
-function useSlideState(source: PresentationProgressSource) {
+function useSlideState(props: BasePresentationPlayerProps, source: PresentationProgressSource) {
 	const isMediaDone = ref(!source.hasClock())
+	const isAnswered = ref(false)
 	const held = ref<{ target: number; resume: boolean } | null>(null)
 	const watched = useWatchedTime(() => source.isVisible() && (source.isPlaying() || held.value !== null))
 	watch(
@@ -61,11 +62,38 @@ function useSlideState(source: PresentationProgressSource) {
 		() => {
 			watched.value = 0
 			held.value = null
+			isAnswered.value = false
 			isMediaDone.value = !source.hasClock()
 		},
 		{ flush: 'sync' },
 	)
-	return { isMediaDone, held, watched }
+	const isInteractive = computed(() => Boolean(props.slides[source.index()]?.isInteractive))
+	const minDuration = computed(() => Math.max(0, props.slides[source.index()]?.minDuration ?? 0))
+	return {
+		isMediaDone,
+		isAnswered,
+		isInteractive,
+		held,
+		watched,
+		minDuration,
+		isSlideDone: computed(() => isMediaDone.value && watched.value >= minDuration.value && (!isInteractive.value || isAnswered.value)),
+	}
+}
+
+function useFinishMedia(
+	state: ReturnType<typeof useSlideState>,
+	source: PresentationProgressSource,
+	rules: { isRestricted: () => boolean; complete: (index: number) => void },
+) {
+	const { isRestricted } = rules
+	return (target: number, isTrack: boolean): void => {
+		state.isMediaDone.value = true
+		if (state.isSlideDone.value) rules.complete(source.index())
+		if (state.isSlideDone.value || (!isRestricted() && !state.isInteractive.value)) return source.advanceTo(target, false)
+		if (state.isInteractive.value) return source.pause()
+		state.held.value = { target, resume: isTrack }
+		if (isTrack) source.pause()
+	}
 }
 
 export function usePresentationProgress(
@@ -73,39 +101,34 @@ export function usePresentationProgress(
 	emit: BasePresentationPlayerEmits,
 	source: PresentationProgressSource,
 ) {
-	const { isMediaDone, held, watched } = useSlideState(source)
+	const state = useSlideState(props, source)
 	const completion = useCompletion(props, emit)
 	const isRestricted = computed(() => props.navigation === 'linear' || props.navigation === 'strict')
-	const minDuration = computed(() => Math.max(0, props.slides[source.index()]?.minDuration ?? 0))
-	const isSlideDone = computed(() => isMediaDone.value && watched.value >= minDuration.value)
+	const finishMedia = useFinishMedia(state, source, { isRestricted: () => isRestricted.value, complete: completion.complete })
 
 	watch(
-		() => [source.index(), isSlideDone.value] as const,
+		() => [source.index(), state.isSlideDone.value] as const,
 		([index, done]) => {
 			if (!done) return
 			completion.complete(index)
-			const target = held.value
-			held.value = null
+			const target = state.held.value
+			state.held.value = null
 			if (target) source.advanceTo(target.target, target.resume)
 		},
 		{ immediate: true },
 	)
 
-	const finishMedia = (target: number, isTrack: boolean): void => {
-		isMediaDone.value = true
-		if (isSlideDone.value) completion.complete(source.index())
-		if (isSlideDone.value || !isRestricted.value) return source.advanceTo(target, false)
-		held.value = { target, resume: isTrack }
-		if (isTrack) source.pause()
-	}
-
 	return {
 		...completion,
-		watched,
-		minDuration,
-		isMediaDone,
+		watched: state.watched,
+		minDuration: state.minDuration,
+		isMediaDone: state.isMediaDone,
+		isAwaitingAnswer: computed(() => state.isInteractive.value && !state.isAnswered.value),
 		isRestricted,
 		canGoTo: (index: number): boolean => !isRestricted.value || index <= completion.firstOpen.value,
+		answer(): void {
+			if (state.isInteractive.value) state.isAnswered.value = true
+		},
 		onMediaEnd(): void {
 			finishMedia(source.index() + 1, false)
 		},

@@ -5,7 +5,11 @@ import { UI_PRESENTATION, formatMessage } from './messages'
 import { usePresentationFlow } from './usePresentationFlow'
 import { usePresentationScreen } from './usePresentationScreen'
 import { usePresentationControls } from './usePresentationControls'
+import { UI_ARIA } from '@components/BaseMediaPlayer/model/messages'
 import { usePresentationLock } from '../progress/usePresentationLock'
+import { usePresentationPanel } from '../content/usePresentationPanel'
+import { PRESENTATION_LOCK_ICON } from '../../types/PresentationModel.types'
+import { usePresentationCaptions } from '../content/usePresentationCaptions'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { MediaIconName } from '@components/BaseMediaPlayer/types/controls/MediaIcon.types'
 import type { BasePresentationPlayerEmits, BasePresentationPlayerProps } from '../../types/BasePresentationPlayer.types'
@@ -78,20 +82,55 @@ function useLock(flow: ReturnType<typeof usePresentationFlow>) {
 		watched: () => progress.watched.value,
 		minDuration: () => progress.minDuration.value,
 		isMediaDone: () => progress.isMediaDone.value,
+		isAwaitingAnswer: () => progress.isAwaitingAnswer.value,
 		canGoTo: progress.canGoTo,
 		next: flow.next,
 	})
 }
 
-export function useBasePresentationPlayer(props: BasePresentationPlayerProps, emit: BasePresentationPlayerEmits) {
-	const elements = {
+function useContentView(
+	props: BasePresentationPlayerProps,
+	emit: BasePresentationPlayerEmits,
+	parts: { flow: ReturnType<typeof usePresentationFlow>; lock: ReturnType<typeof useLock>; root: () => HTMLElement | null },
+) {
+	const { flow, lock } = parts
+	const { playback, progress } = flow
+	const captions = usePresentationCaptions(props, emit, {
+		index: () => flow.index.value,
+		isShared: () => playback.isShared.value,
+		time: () => (playback.isShared.value ? playback.state.currentTime : playback.slideTime.value),
+	})
+	const panel = usePresentationPanel(props, {
+		root: parts.root,
+		index: () => flow.index.value,
+		isCompleted: progress.isCompleted,
+		canGoTo: progress.canGoTo,
+		goTo: index => void flow.goTo(index),
+		onLocked: () => lock.next(),
+	})
+	return {
+		...captions,
+		...panel,
+		UI_ARIA,
+		PRESENTATION_LOCK_ICON,
+		slideActions: computed(() => ({ complete: progress.answer, isCompleted: progress.isCompleted(flow.index.value) })),
+	}
+}
+
+function useElements() {
+	return {
 		rootRef: ref<HTMLElement | null>(null),
 		audioRef: ref<HTMLAudioElement | null>(null),
 		videoRef: ref<HTMLVideoElement | null>(null),
 	}
+}
+
+export function useBasePresentationPlayer(props: BasePresentationPlayerProps, emit: BasePresentationPlayerEmits) {
+	const elements = useElements()
 	const flow = usePresentationFlow(props, emit, elements)
 	const { playback } = flow
 	const lock = useLock(flow)
+	const content = useContentView(props, emit, { flow, lock, root: () => elements.rootRef.value })
 	const screen = usePresentationScreen(props, elements.rootRef, {
 		media: () => playback.media.value,
 		isPlaying: () => flow.isPlaying.value,
@@ -102,6 +141,7 @@ export function useBasePresentationPlayer(props: BasePresentationPlayerProps, em
 		goTo: index => void flow.goTo(index),
 		setVolume: playback.setVolume,
 		toggleMute: playback.toggleMute,
+		toggleCaptions: () => content.toggleCaptions(),
 		stepRate: direction => flow.setRate(nextRate(flow.rates(), playback.rate.value, direction)),
 	})
 	const controls = usePresentationControls(props, {
@@ -128,6 +168,7 @@ export function useBasePresentationPlayer(props: BasePresentationPlayerProps, em
 		...lock,
 		...useStageView(flow, controls.playLabel),
 		...useProgressView(props, flow),
+		...content,
 		statusText: computed(() => lock.flash.value || controls.statusText.value),
 		rootStyle: computed(() => ({ aspectRatio: props.aspectRatio })),
 	}

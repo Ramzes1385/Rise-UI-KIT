@@ -15,5 +15,14 @@ export const enPresentation = {
 		DONE: 'Completed',
 		FINISHED: 'Presentation ended',
 		DONE_TEXT: 'Slides completed: {completed} of {total}',
+		/** Подсказка закрытой «Следующий слайд» на слайде-вопросе (isInteractive) до ответа */
+		LOCKED_QUIZ: 'Answer the question to continue',
+		/** Выдвижная панель: список слайдов и стенограмма (notes) */
+		SLIDE_LIST: 'Slide list',
+		NOTES: 'Transcript',
+		NOTES_EMPTY: 'This slide has no transcript',
+		/** Отметки в списке слайдов для скринридера */
+		SLIDE_DONE: 'Completed',
+		SLIDE_LOCKED: 'Locked',
 	},
 }

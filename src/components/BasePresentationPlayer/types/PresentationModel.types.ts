@@ -1,4 +1,5 @@
 import type { Ref } from 'vue'
+import type { MediaCueSegment } from '@components/BaseMediaPlayer/types/content/MediaSubtitles.types'
 
 /** Ссылка на элемент: null до монтирования */
 export type ElementRef<T extends HTMLElement> = Readonly<Ref<T | null>>
@@ -71,6 +72,8 @@ export interface PresentationScreenSource {
 	goTo: (index: number) => void
 	setVolume: (volume: number) => void
 	toggleMute: () => void
+	/** Клавиша C — субтитры */
+	toggleCaptions: () => void
 	/** Соседняя скорость из списка: 1 — быстрее, -1 — медленнее */
 	stepRate: (direction: 1 | -1) => void
 }
@@ -129,8 +132,84 @@ export interface PresentationLockSource {
 	minDuration: () => number
 	/** Озвучка, видео или показ по `duration` кончились */
 	isMediaDone: () => boolean
+	/** Слайд-вопрос ждёт ответа */
+	isAwaitingAnswer: () => boolean
 	/** Можно ли перейти к слайду */
 	canGoTo: (index: number) => boolean
 	/** Следующий слайд; false — переход закрыт */
 	next: () => boolean
+}
+
+/** Что нужно субтитрам от показа */
+export interface PresentationCaptionsSource {
+	/** Номер текущего слайда */
+	index: () => number
+	/** Идёт общая дорожка `audio` */
+	isShared: () => boolean
+	/** Время для субтитров: от начала дорожки при общей дорожке, иначе от начала слайда */
+	time: () => number
+}
+
+/** Вид выдвижной панели: список слайдов или стенограмма */
+export type PresentationPanelView = 'slides' | 'notes'
+
+/** Что нужно панели от показа */
+export interface PresentationPanelSource {
+	/** Корень плеера: туда возвращается фокус после закрытия */
+	root: () => HTMLElement | null
+	index: () => number
+	isCompleted: (index: number) => boolean
+	canGoTo: (index: number) => boolean
+	goTo: (index: number) => void
+	/** Выбран недоступный слайд */
+	onLocked: () => void
+}
+
+/** Карточка слайда в списке */
+export interface PresentationSlideCard {
+	id: string
+	index: number
+	number: number
+	title: string
+	image?: string
+	/** Длительность «0:12» или пусто */
+	duration: string
+	isCurrent: boolean
+	isCompleted: boolean
+	/** Недоступен в режимах `linear` и `strict` */
+	isLocked: boolean
+}
+
+/** Синтез речи слайда */
+export interface SlideSpeechOptions {
+	/** Текст текущего слайда или `undefined` */
+	text: () => string | undefined
+	/** Ключ слайда: смена — новая речь */
+	key: () => string | undefined
+	/** Речь должна идти */
+	isRunning: () => boolean
+	rate: () => number
+	volume: () => number
+	isMuted: () => boolean
+	/** Голос: `name` или `voiceURI` */
+	voice: () => string | undefined
+	/** Язык кита */
+	lang: () => string
+	/** Речь дочитана */
+	onEnd: () => void
+}
+
+/**
+ * Значок замка у недоступного слайда в списке — контур «lock» Font Awesome Free (Fonticons, Inc., https://fontawesome.com),
+ * набор Solid, лицензия CC BY 4.0; поле 448×512. В наборе значков плеера замка нет, а интерфейс плеера не меняется
+ */
+export const PRESENTATION_LOCK_ICON =
+	'M144 144v48h160v-48c0-44.2-35.8-80-80-80s-80 35.8-80 80zm-64 48v-48C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64v192c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64h16z'
+
+/** Пропсы вывода субтитров PresentationCaptions */
+export interface PresentationCaptionsProps {
+	/** Строки текущей реплики — разметка как у BaseMediaPlayer */
+	lines: MediaCueSegment[][]
+	/** Положение плашки: `left` и `top` в процентах */
+	boxStyle: Record<string, string>
 }

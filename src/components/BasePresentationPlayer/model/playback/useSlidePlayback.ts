@@ -1,5 +1,7 @@
 import { computed, ref, watch } from 'vue'
 import { useSlideTimer } from './useSlideTimer'
+import { useSlideSpeech } from './useSlideSpeech'
+import { useLocale } from '@composables/app/useLocale'
 import { indexAtTime, safeUrl, slideSpan, trackStarts } from './timeline'
 import type { SlidePlaybackOptions } from '../../types/PresentationModel.types'
 import { useMediaElement } from '@components/BaseMediaPlayer/model/core/useMediaElement'
@@ -14,8 +16,8 @@ function useSlideSources(props: BasePresentationPlayerProps, options: SlidePlayb
 		if (isShared.value || audioSrc.value) return options.audioRef.value
 		return videoSrc.value ? options.videoRef.value : null
 	})
-	const hasClock = computed(() => Boolean(audioSrc.value || videoSrc.value || (slide.value?.duration ?? 0) > 0))
-	return { slide, isShared, audioSrc, videoSrc, media, hasClock }
+	const speechText = computed(() => (isShared.value || audioSrc.value || videoSrc.value ? undefined : slide.value?.speech))
+	return { slide, isShared, audioSrc, videoSrc, media, speechText }
 }
 
 function useSettings() {
@@ -49,6 +51,7 @@ function useSlideClock(parts: {
 	track: ReturnType<typeof useTrack>
 	index: () => number
 	timer: ReturnType<typeof useSlideTimer>
+	isSpeech: () => boolean
 }) {
 	const { sources, state, track, index, timer } = parts
 	return {
@@ -58,7 +61,7 @@ function useSlideClock(parts: {
 			return Math.max(0, state.currentTime - track.span(index())[0])
 		}),
 		slideDuration: computed(() => {
-			if (!sources.media.value) return sources.slide.value?.duration ?? Number.NaN
+			if (!sources.media.value) return parts.isSpeech() ? Number.NaN : (sources.slide.value?.duration ?? Number.NaN)
 			if (!sources.isShared.value) return state.duration
 			const [start, end] = track.span(index())
 			return end - start
@@ -138,13 +141,41 @@ function useSound(
 	}
 }
 
+function useSpeech(
+	props: BasePresentationPlayerProps,
+	parts: { sources: ReturnType<typeof useSlideSources>; sound: ReturnType<typeof useSound> },
+	options: SlidePlaybackOptions,
+) {
+	const { sources, sound } = parts
+	const { locale } = useLocale()
+	const speech = useSlideSpeech({
+		text: () => sources.speechText.value,
+		key: () => sources.slide.value?.id,
+		isRunning: () => options.isPlaying.value && options.isVisible.value,
+		rate: () => sound.rate.value,
+		volume: () => sound.volume.value,
+		isMuted: () => sound.isMuted.value,
+		voice: () => props.speechVoice,
+		lang: () => locale.value,
+		onEnd: () => options.onSlideEnd(),
+	})
+	watch(speech.isSpeech, (isSpeech, wasSpeech) => {
+		if (wasSpeech && !isSpeech && !((sources.slide.value?.duration ?? 0) > 0)) options.onSlideEnd()
+	})
+	return speech.isSpeech
+}
+
 export function useSlidePlayback(props: BasePresentationPlayerProps, options: SlidePlaybackOptions) {
 	const sources = useSlideSources(props, options)
 	const media = useMediaElement(sources.media)
 	const sound = useSound(sources, media, options.isPlaying)
 	const track = useTrack(props, () => media.state.duration)
+	const isSpeech = useSpeech(props, { sources, sound }, options)
+	const hasClock = computed(() =>
+		Boolean(sources.audioSrc.value || sources.videoSrc.value || isSpeech.value || (sources.slide.value?.duration ?? 0) > 0),
+	)
 	const timer = useSlideTimer({
-		duration: () => (sources.media.value ? Number.NaN : (sources.slide.value?.duration ?? Number.NaN)),
+		duration: () => (sources.media.value || isSpeech.value ? Number.NaN : (sources.slide.value?.duration ?? Number.NaN)),
 		rate: () => sound.rate.value,
 		isRunning: () => options.isPlaying.value && options.isVisible.value,
 		onEnd: options.onSlideEnd,
@@ -155,7 +186,9 @@ export function useSlidePlayback(props: BasePresentationPlayerProps, options: Sl
 	return {
 		...sources,
 		...sound,
-		...useSlideClock({ sources, state: media.state, track, index: () => options.index.value, timer }),
+		hasClock,
+		isSpeech,
+		...useSlideClock({ sources, state: media.state, track, index: () => options.index.value, timer, isSpeech: () => isSpeech.value }),
 		state: media.state,
 		seekInSlide(time: number): void {
 			if (!sources.media.value) return timer.seek(time)
