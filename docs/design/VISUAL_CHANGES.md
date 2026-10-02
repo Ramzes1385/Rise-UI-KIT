@@ -1120,3 +1120,11 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 - Горизонтальный — строка с переносом, у `default` линия снизу и отметка под текущим пунктом.
 - Текст пунктов `--rise-text-muted`, при наведении `--rise-text`; кольцо фокуса `focus-ring`; смена цвета — `transition-colors` (при reduced motion — мгновенно).
 - Исправление по проверке (02.10): у блока истории Default убран нижний отступ 160px (`stories/render.ts`) — последний короткий раздел теперь подсвечивается по правилу «в конце прокрутки текущий — последний», а не за счёт отступа. История Default — без снимка, эталоны не затронуты.
+
+## Задача new-tag: BaseTag и BaseTagGroup — метки
+
+Новые компоненты, существующие истории и эталоны не затронуты. Страница с превью — `.rise-transfer\review\new-tag.html`.
+
+- **BaseTag** — «таблетка» (`--rise-radius-full`), текст 14/20 medium, высота 26 px при `sizeScale` 100; `default` — мягкий фон роли и рамка роли, `outline` — фон страницы и рамка роли; выбранная — заливка `--rise-{роль}` и текст `--rise-on-{роль}`, слева галочка; у нейтральной выбранной — основной цвет. Кнопка удаления — круг 20 px со значком `close`, под указателем — подложка 15 % цвета текста.
+- **BaseTagGroup** — метки в строку с переносом, промежуток 6 px.
+- Новые истории: `element-basetag--default`, `--variants`, `--tones`, `--sizes`, `--custom-color`, `--with-icon`, `--long-content`, `--removable`, `--clickable`, `--disabled`; `element-basetaggroup--default`, `--single`, `--removable`, `--tones`, `--custom-tag`, `--long-content`, `--empty`, `--disabled`. В скриншот-тесты добавлены BaseTag `variants`, `tones`, `sizes`, `with-icon` и BaseTagGroup `default`, `tones`, `long-content` (обе темы) — эталонов нет, их делает владелец.

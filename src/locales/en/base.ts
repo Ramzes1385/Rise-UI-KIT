@@ -182,6 +182,11 @@ export const enBase = {
 		PAUSE: 'Pause the ticker',
 		PLAY: 'Play the ticker',
 	},
+	tag: {
+		REMOVE: 'Remove tag {label}',
+		REMOVE_UNNAMED: 'Remove tag',
+		GROUP: 'Tags',
+	},
 	notificationCenter: {
 		TITLE: 'Notifications',
 		READ_ALL: 'Mark all as read',

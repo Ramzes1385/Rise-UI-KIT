@@ -1447,3 +1447,14 @@ FOLLOW_UPS № 38, № 39, № 13 и № 15 (медиа).
 - Заголовку без id компонент присваивает id (`rise-anchor…-<номер>`): приложение, которое само задаёт id, этого не заметит.
 - Строка словаря (ru, en): `aria.ANCHOR_NAV` — «Содержание» / «On this page».
 - Текущий раздел (исправление по проверке, 02.10): последний, чей заголовок поднялся выше линии `offset + 8px` (на самой линии — ещё нет); в конце прокрутки — последний раздел, даже короткий. Наблюдатель следит за той же линией, поэтому подсветка меняется и при прокрутке вверх; конец прокрутки и прыжок через разделы досчитываются по `scrollend` (где его нет — по паузе 100 мс в событиях `scroll`).
+
+## Задача new-tag: BaseTag и BaseTagGroup — метки
+
+Новые компоненты, изменений в существующих нет.
+
+- `BaseTag` — метка: `label` или слот default, `icon` или слот `icon`; цвет роли `tone` (`neutral` по умолчанию, `primary`, `info`, `success`, `warning`, `error`) на токенах `--rise-{роль}-soft`, `-text`, `-border`; варианты `default` (мягкий фон) и `outline` (фон страницы, рамка роли).
+- Выбираемая (`isSelectable`, `v-model:is-selected`) — `<button aria-pressed>`; выбранная залита цветом роли и показывает галочку вместо значка. Кликабельная без выбора (`@click`) — `role="button"` через `useClickable`.
+- Удаляемая (`isRemovable`) — кнопка «Удалить метку {label}» (словарь `tag.REMOVE`, своё имя — `removeLabel`) и клавиши Delete и Backspace на метке — событие `remove`; метку убирает приложение. У выбираемой или кликабельной метки кнопка удаления вне Tab (`tabindex="-1"`), а клавиши указаны в `aria-keyshortcuts`.
+- `BaseTagGroup` — метки по `items` (`{ value, label, icon?, tone?, isDisabled?, isRemovable? }`) в `role="group"` с именем `label` (по умолчанию «Метки»); `selectionMode`: `none` (по умолчанию), `single` (`v-model` — значение или `null`, повторное нажатие снимает выбор), `multiple` (массив); `isRemovable`, `tone`, `variant`, `color`, `sizeScale` передаются меткам; слот `tag` (`{ item, isSelected }`). Событие `remove` (`item`, `index`): если приложение убрало метку из `items` сразу, фокус переходит на следующую метку, у последней — на предыдущую, у пустой группы — на саму группу.
+- Словарь: раздел `tag` (`REMOVE`, `REMOVE_UNNAMED`, `GROUP`) и `UI_TAG`; приложения со своим словарём (`defineLocale`) добавляют эти ключи.
+- Экспорт: `BaseTag`, `TAG_VARIANTS`, `TAG_TONES`, типы `BaseTagProps`, `BaseTagEmits`, `BaseTagSlots`, `TagTone`; `BaseTagGroup`, `TAG_GROUP_SELECTION_MODES`, типы `BaseTagGroupProps`, `BaseTagGroupEmits`, `BaseTagGroupSlots`, `TagGroupItem`, `TagGroupModelValue`, `TagGroupSelectionMode`, `TagValue`.

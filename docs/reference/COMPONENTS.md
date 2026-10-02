@@ -2766,6 +2766,35 @@ const isPaused = ref(false)
 
 Событие остаётся кнопкой — в слотах события не нужны свои кнопки и ссылки. Утилиты календаря (`getEventsInRange`, `layoutWeek`, `layoutDay`, `expandRecurrence`, `parseIcs`, `toIcs` и др.) — docs/reference/UTILS.md.
 
+## BaseTag и BaseTagGroup
+
+Метки: фильтры, теги записи, выбранные значения. `BaseTag` — одна метка, `BaseTagGroup` — набор по `items`.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseTagGroup, type TagGroupItem, type TagGroupModelValue } from '@ramzes1385/rise-ui-kit'
+
+const tags = ref<TagGroupItem[]>([
+	{ value: 'vue', label: 'Vue' },
+	{ value: 'react', label: 'React' },
+	{ value: 'svelte', label: 'Svelte', tone: 'warning' },
+])
+const selected = ref<TagGroupModelValue>(['vue'])
+const remove = (item: TagGroupItem) => (tags.value = tags.value.filter(tag => tag.value !== item.value))
+</script>
+
+<template>
+	<BaseTagGroup v-model="selected" :items="tags" selection-mode="multiple" label="Технологии" is-removable @remove="remove" />
+</template>
+```
+
+`BaseTag`: `label` или слот default, `icon` или слот `icon`, цвет роли `tone` (`neutral`, `primary`, `info`, `success`, `warning`, `error`), варианты `default` и `outline`. Выбираемая — `is-selectable` и `v-model:is-selected`, удаляемая — `is-removable` и событие `remove`; метку убирает приложение.
+
+`BaseTagGroup`: `selectionMode` — `none` (по умолчанию), `single` (`v-model` — значение или `null`), `multiple` (массив); `isRemovable`, `tone`, `variant`, `color`, `sizeScale` — для всех меток, у метки можно задать свой `tone`, `isDisabled`, `isRemovable`; слот `tag` (`{ item, isSelected }`).
+
+Доступность: выбираемая метка — кнопка-переключатель с `aria-pressed` (APG Button, toggle), выбранная показывает галочку — выбор виден не только по цвету. Удаление — кнопка «Удалить метку {label}» и клавиши Delete и Backspace на метке; у выбираемой метки кнопка удаления вне Tab, клавиши — в `aria-keyshortcuts`. Группа — `role="group"` с именем `label` (по умолчанию «Метки»); после удаления фокус переходит на соседнюю метку, если приложение убрало метку из `items` сразу (в том же тике).
+
 ---
 
 ## Список компонентов
@@ -2877,6 +2906,8 @@ BaseSubtitleEditor
 BaseSwitch
 BaseTable
 BaseTabs
+BaseTag
+BaseTagGroup
 BaseText
 BaseTextarea
 BaseTextDiff

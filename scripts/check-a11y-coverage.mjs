@@ -120,6 +120,8 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseChart',
 	'BaseBottomNav',
 	'BaseEventCalendar',
+	'BaseTag',
+	'BaseTagGroup',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */
@@ -172,6 +174,8 @@ const INTERACTIVE_WITH_DISABLED = new Set([
 	'BaseAvatarCropper',
 	'BaseDadataInput',
 	'BaseBottomNav',
+	'BaseTag',
+	'BaseTagGroup',
 ])
 
 /** Формовые компоненты, требующие story Error */

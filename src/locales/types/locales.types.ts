@@ -56,6 +56,7 @@ export interface UiKitLocale {
 	textDiff: Section<'textDiff'>
 	qrCode: Section<'qrCode'>
 	marquee: Section<'marquee'>
+	tag: Section<'tag'>
 	signaturePad: Section<'signaturePad'>
 	avatarCropper: Section<'avatarCropper'>
 	valueWarnings: Section<'valueWarnings'>

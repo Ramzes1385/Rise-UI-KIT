@@ -203,6 +203,12 @@ export const ruBase = {
 		PAUSE: 'Остановить бегущую строку',
 		PLAY: 'Запустить бегущую строку',
 	},
+	/** Метки: кнопка удаления и имя группы */
+	tag: {
+		REMOVE: 'Удалить метку {label}',
+		REMOVE_UNNAMED: 'Удалить метку',
+		GROUP: 'Метки',
+	},
 	notificationCenter: {
 		TITLE: 'Уведомления',
 		READ_ALL: 'Прочитать все',

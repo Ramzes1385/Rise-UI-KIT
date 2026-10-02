@@ -10,6 +10,7 @@ import { BaseFab } from '../../components/BaseFab'
 import { BaseKbd } from '../../components/BaseKbd'
 import { BaseMap } from '../../components/BaseMap'
 import { BasePin } from '../../components/BasePin'
+import { BaseTag } from '../../components/BaseTag'
 import { BaseCard } from '../../components/BaseCard'
 import { BaseChip } from '../../components/BaseChip'
 import { BaseForm } from '../../components/BaseForm'
@@ -65,6 +66,7 @@ import { BasePieChart } from '../../components/BasePieChart'
 import { BaseProgress } from '../../components/BaseProgress'
 import { BaseSkeleton } from '../../components/BaseSkeleton'
 import { BaseSplitter } from '../../components/BaseSplitter'
+import { BaseTagGroup } from '../../components/BaseTagGroup'
 import { BaseTextarea } from '../../components/BaseTextarea'
 import { BaseTextDiff } from '../../components/BaseTextDiff'
 import { BaseTimeline } from '../../components/BaseTimeline'
@@ -228,6 +230,8 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseSubtitleEditor,
 	BaseSwitch,
 	BaseTabs,
+	BaseTag,
+	BaseTagGroup,
 	BaseText,
 	BaseTextDiff,
 	BaseTextarea,
