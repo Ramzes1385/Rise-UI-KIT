@@ -5,7 +5,7 @@ import { literal, SIZE_PRESETS, storySource, useStorySetup } from '@/stories/hel
 
 const presets = SIZE_PRESETS.map(preset => ({ name: preset.name, sizeScale: preset.sizeScale }))
 
-const template = `<div class="story-row"><BaseCryptoProSign v-for="preset in presets" :key="preset.name" v-bind="args" :size-scale="preset.sizeScale" /></div>`
+const template = `<div class="story-row"><BaseCryptoProSign v-for="preset in presets" :key="preset.name" v-bind="args" :size-scale="preset.sizeScale" :aria-label="'Электронная подпись, ' + preset.name" /></div>`
 
 export const Sizes: StoryObj<typeof meta> = {
 	parameters: {

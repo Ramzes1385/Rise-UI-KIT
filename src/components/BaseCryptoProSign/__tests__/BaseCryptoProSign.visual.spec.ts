@@ -1,7 +1,7 @@
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 
-const STORIES = ['variants', 'sizes'] as const
+const STORIES = ['variants', 'sizes', 'disabled', 'no-plugin', 'no-certificates'] as const
 
 for (const theme of VISUAL_THEMES) {
 	test.describe(`BaseCryptoProSign · ${theme}`, () => {
