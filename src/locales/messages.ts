@@ -97,6 +97,8 @@ export const UI_IMAGE_MAP = localized('imageMap')
 
 /** Маршруты карты этажей */
 export const UI_IMAGE_MAP_ROUTES = localized('imageMapRoutes')
+/** Редактор интерактивной картинки */
+export const UI_IMAGE_MAP_EDITOR = localized('imageMapEditor')
 
 /** Просмотр JSON */
 export const UI_JSON_VIEWER = localized('jsonViewer')

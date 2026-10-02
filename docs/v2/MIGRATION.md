@@ -1719,3 +1719,13 @@ API кита не меняется. В Storybook добавлены пример
 - Поведение: найденный маршрут (и маршрут из `route` при открытии) переключает карту на этаж начала — `update:layer` и `layer-change`. Линия маршрута рисуется поверх фигур и под точками, `pointer-events: none`, `aria-hidden`; текстовый путь — шаги в панели `hasRoutes`.
 - Экспорт: `IMAGE_MAP_TRANSITION_TYPES`, `IMAGE_MAP_ROUTE_STEP_KINDS` и типы `ImageMapRoutes`, `ImageMapRouteNode`, `ImageMapRouteEdge`, `ImageMapRouteTransition`, `ImageMapTransitionType`, `ImageMapRouteValue`, `ImageMapRouteResult`, `ImageMapRouteStep`, `ImageMapRouteStepKind`.
 - Строки словаря (ru, en) — новый раздел `imageMapRoutes` (`UI_IMAGE_MAP_ROUTES`): подписи панели, итог, шаги, виды переходов в дательном падеже (`TO_*`) и со способом (`VIA_*`); свой язык — `defineLocale` с этим разделом.
+
+## Задача new-image-map-editor: BaseImageMapEditor — редактор карты
+
+Новый компонент, изменений в существующих API нет.
+
+- `BaseImageMapEditor`: `v-model` (`ImageMapData`), `v-model:layer`, `v-model:selected`, `v-model:tool` (`select` | `point` | `rect` | `ellipse` | `polygon`), `label`, `error`, `isDisabled`, `historyLimit` (100), `nudgeStep` (0,005), `hasPreview` (true), `height`, `fileName` (`image-map.json`); событие `import-error`; слот `toolbar`; методы `undo`, `redo`, `deleteSelected`, `exportJson`, `importJson`, `importSvgObjects`. Экспорт: `IMAGE_MAP_EDITOR_TOOLS`, `IMAGE_MAP_EDITOR_VARIANTS`, типы `ImageMapEditorTool`, `ImageMapEditorVariant`, `BaseImageMapEditorProps`, `BaseImageMapEditorEmits`, `BaseImageMapEditorSlots`, `BaseImageMapEditorExpose`.
+- Формат JSON BaseImageMap не менялся: редактор пишет только существующие поля версии 1. Новые объекты получают `id` вида `rect-3`, `layer` текущего этажа и название «Прямоугольник 3»; координаты округляются до 4 знаков.
+- Словари (ru, en): новый раздел `imageMapEditor` (`UI_IMAGE_MAP_EDITOR`), файлы `src/locales/{ru,en}/mapEditor.ts`.
+- Внутреннее: `useSvgMarkup` из `BaseImageMap/model/svg/useImageMapSvg.ts` экспортирован (редактор показывает SVG слоя так же, как карта).
+

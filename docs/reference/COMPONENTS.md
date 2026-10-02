@@ -3086,6 +3086,37 @@ const mallMap: ImageMapData = {
 <BaseImageMap v-model:route="route" :data="mallMap" has-routes @route-change="trackRoute" />
 ```
 
+---
+
+## BaseImageMapEditor
+
+Редактор JSON для BaseImageMap (задача new-image-map-editor): открыть картинку или SVG, нарисовать точки и фигуры, заполнить свойства, этажи и группы, проверить в «Просмотре», сохранить. `v-model` — тот же `ImageMapData`: редактор формат не меняет, только заполняет его поля.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import type { ImageMapData } from '@ramzes1385/rise-ui-kit'
+import { BaseImageMapEditor } from '@ramzes1385/rise-ui-kit'
+
+const map = ref<ImageMapData>({ layers: [], objects: [] })
+</script>
+
+<template>
+	<BaseImageMapEditor v-model="map" v-model:selected="selectedId" label="План торгового центра">
+		<template #toolbar><BaseButton @click="save(map)">Сохранить</BaseButton></template>
+	</BaseImageMapEditor>
+</template>
+```
+
+- **Инструменты** (`v-model:tool`): `select` — выделить, тянуть, ручки углов (у многоугольника — вершин); `point` — щелчок ставит точку; `rect`, `ellipse` — протяжка от угла до угла или щелчок (фигура 10 % × 10 %); `polygon` — вершины щелчками, завершить — щелчком по первой вершине, двойным щелчком или кнопкой «Завершить фигуру».
+- **Клавиатура** (WCAG 2.1.1 и 2.5.7 — у каждого перетаскивания есть путь без него): холст — одна остановка Tab (`role="application"`, подсказка по инструменту под холстом связана `aria-describedby`). Выбор: стрелки сдвигают выделенный объект на `nudgeStep` (0,5 %; с Shift — 5 %), Delete — удалить, Escape — снять выделение. Рисование: стрелки ведут перекрестие, Enter — точка, угол или вершина, Shift+Enter — завершить многоугольник, Backspace — убрать вершину, Escape — отменить. Ctrl+Z, Ctrl+Shift+Z (Ctrl+Y), Ctrl+D — везде, кроме полей ввода. Размер и вершины — числами в панели свойств (проценты). Объекты слоя выбираются и списком в панели. Итог действий — в `role="status"`.
+- **Отмена и повтор** — снимки JSON, `historyLimit` шагов (100); ввод в одно поле и сдвиг стрелками подряд — один шаг. Внешняя смена `v-model` (другой JSON) сбрасывает историю.
+- **Панель свойств** — id (проверка на повтор), название, описание, группа, этаж, картинка подсказки; положение и размер в процентах (у многоугольника — вершины строками «слева; сверху»); действие (`popup`, `link` с адресом и новой вкладкой, `layer` с этажом, `none`); стиль: именованный из `styles` или свой — заливка, обводка, непрозрачность; метки (`tags`), слова поиска (`keywords`), «Не показывать в списке», «Без подсказки», «Недоступен». Этажи: выбор, порядок, удаление (с объектами этажа), название, короткая подпись, адрес картинки, описание, размеры. Группы: название, цвет, значок.
+- **Файлы**: «Открыть картинку или SVG» и «Добавить этаж» — картинка читается в data URL с её размерами (для своего сервера — загрузите файл и впишите адрес в «Адрес картинки»), SVG — в `svg` слоя с размерами из `viewBox`; «Объекты из SVG» — объект `svg` для каждого элемента с `id` (фигуры и `g`, кроме `defs`), у которого его ещё нет, название — из `<title>`; «Импорт JSON» проверяет `layers` и `objects` (ошибка — `role="alert"` и событие `import-error`); «Экспорт JSON» скачивает `fileName`. Методы через ref: `undo()`, `redo()`, `deleteSelected()`, `exportJson()`, `importJson(text)`, `importSvgObjects()`.
+- **Просмотр** (`hasPreview`) — карта как у посетителя (BaseImageMap) с подсказками и окнами. `isDisabled` — только просмотр холста и панели.
+
+---
+
 ## BaseTreeSelect
 
 Выбор из иерархии в выпадающем списке: регион → город, отдел → сотрудник, категория → подкатегория. Узлы — в формате BaseTree.
@@ -3216,6 +3247,7 @@ BaseIcon
 BaseImage
 BaseImageCompare
 BaseImageMap
+BaseImageMapEditor
 BaseInfiniteScroll
 BaseInplace
 BaseInput

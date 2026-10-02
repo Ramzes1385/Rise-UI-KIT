@@ -130,6 +130,7 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseTreeSelect',
 	'BaseCascader',
 	'BaseCryptoProSign',
+	'BaseImageMapEditor',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */
@@ -191,6 +192,7 @@ const INTERACTIVE_WITH_DISABLED = new Set([
 	'BaseTreeSelect',
 	'BaseCascader',
 	'BaseCryptoProSign',
+	'BaseImageMapEditor',
 ])
 
 /** Формовые компоненты, требующие story Error */
@@ -224,6 +226,7 @@ const FORM_COMPONENTS = new Set([
 	'BaseTransfer',
 	'BaseTreeSelect',
 	'BaseCascader',
+	'BaseImageMapEditor',
 ])
 
 const LOADING_COMPONENTS = new Set([

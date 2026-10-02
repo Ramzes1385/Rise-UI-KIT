@@ -128,6 +128,7 @@ import { BaseEventCalendar } from '../../components/BaseEventCalendar'
 import { BaseFilterBuilder } from '../../components/BaseFilterBuilder'
 import { BaseVoiceRecorder } from '../../components/BaseVoiceRecorder'
 import { BaseCommandPalette } from '../../components/BaseCommandPalette'
+import { BaseImageMapEditor } from '../../components/BaseImageMapEditor'
 import { BaseInfiniteScroll } from '../../components/BaseInfiniteScroll'
 import { BaseRequisiteInput } from '../../components/BaseRequisiteInput'
 import { BaseSubtitleEditor } from '../../components/BaseSubtitleEditor'
@@ -192,6 +193,7 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseImage,
 	BaseImageCompare,
 	BaseImageMap,
+	BaseImageMapEditor,
 	BaseInfiniteScroll,
 	BaseInplace,
 	BaseInput,
