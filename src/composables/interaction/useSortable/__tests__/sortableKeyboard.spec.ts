@@ -1,0 +1,121 @@
+import { ITEMS, key, mountSortable, sortableOptions } from './sortableHarness'
+
+describe('useSortable: клавиатура', () => {
+	it('без взятого элемента клавиши не обрабатывает', () => {
+		const { sortable } = mountSortable(sortableOptions())
+		const event = key(' ')
+		expect(sortable.handleGrabbedKeydown(event)).toBe(false)
+		expect(event.defaultPrevented).toBe(false)
+		expect(sortable.grabbedId.value).toBeNull()
+	})
+
+	it('не берёт элемент, если перестановка выключена или элемента нет', () => {
+		const disabled = sortableOptions({ isDisabled: () => true })
+		mountSortable(disabled).sortable.grab(ITEMS[0])
+		expect(disabled.onStart).not.toHaveBeenCalled()
+
+		const missing = sortableOptions({ locate: () => null })
+		const { sortable } = mountSortable(missing)
+		sortable.grab(ITEMS[0])
+		expect(sortable.grabbedId.value).toBeNull()
+		expect(missing.onStart).not.toHaveBeenCalled()
+		expect(missing.onAnnounce).not.toHaveBeenCalled()
+	})
+
+	it('берёт элемент: onStart с источником keyboard и объявление PICKED', () => {
+		const options = sortableOptions()
+		const { sortable } = mountSortable(options)
+		sortable.grab(ITEMS[1])
+		expect(sortable.grabbedId.value).toBe('b')
+		expect(options.onStart).toHaveBeenCalledWith('b', 'keyboard')
+		expect(options.onAnnounce).toHaveBeenCalledWith('PICKED', 'b')
+	})
+
+	it('стрелка двигает на место из stepPlace, объявляет MOVED и возвращает фокус', () => {
+		const options = sortableOptions()
+		const { sortable } = mountSortable(options)
+		sortable.grab(ITEMS[0])
+		const event = key('ArrowDown')
+		expect(sortable.handleGrabbedKeydown(event)).toBe(true)
+		expect(event.defaultPrevented).toBe(true)
+		expect(options.stepPlace).toHaveBeenCalledWith('a', 'ArrowDown')
+		expect(options.onPreview).toHaveBeenCalledWith('a', 2)
+		expect(options.onAnnounce).toHaveBeenLastCalledWith('MOVED', 'a')
+		expect(options.focusItem).toHaveBeenCalledWith('a')
+	})
+
+	it('шагать некуда — ни переноса, ни объявления, но клавиша поглощена', () => {
+		const options = sortableOptions()
+		const { sortable } = mountSortable(options)
+		sortable.grab(ITEMS[0])
+		const event = key('ArrowUp')
+		sortable.handleGrabbedKeydown(event)
+		expect(event.defaultPrevented).toBe(true)
+		expect(options.onPreview).not.toHaveBeenCalled()
+		expect(options.onAnnounce).toHaveBeenCalledTimes(1)
+		expect(options.focusItem).not.toHaveBeenCalled()
+	})
+
+	it.each([' ', 'Enter'])('«%s» кладёт: onDrop с местом, откуда взяли; done снимает захват и ставит фокус', name => {
+		const options = sortableOptions()
+		const { sortable } = mountSortable(options)
+		sortable.grab(ITEMS[1])
+		const event = key(name)
+		sortable.handleGrabbedKeydown(event)
+		expect(event.defaultPrevented).toBe(true)
+		expect(options.onDrop).toHaveBeenCalledWith({ id: 'b', origin: 1 }, expect.any(Function))
+		expect(sortable.grabbedId.value).toBe('b')
+		vi.mocked(options.onDrop).mock.calls[0][1]()
+		expect(sortable.grabbedId.value).toBeNull()
+		expect(options.focusItem).toHaveBeenCalledWith('b')
+	})
+
+	it('Escape отменяет: onCancel, done снимает захват и возвращает фокус', () => {
+		const options = sortableOptions()
+		const { sortable } = mountSortable(options)
+		sortable.grab(ITEMS[2])
+		const event = key('Escape')
+		sortable.handleGrabbedKeydown(event)
+		expect(event.defaultPrevented).toBe(true)
+		expect(options.onCancel).toHaveBeenCalledWith('c', expect.any(Function))
+		vi.mocked(options.onCancel).mock.calls[0][1]()
+		expect(sortable.grabbedId.value).toBeNull()
+		expect(options.focusItem).toHaveBeenCalledWith('c')
+	})
+
+	it('Tab отменяет без preventDefault и без возврата фокуса — фокус уходит дальше', () => {
+		const options = sortableOptions()
+		const { sortable } = mountSortable(options)
+		sortable.grab(ITEMS[0])
+		const event = key('Tab')
+		expect(sortable.handleGrabbedKeydown(event)).toBe(true)
+		expect(event.defaultPrevented).toBe(false)
+		expect(options.onCancel).toHaveBeenCalledWith('a', expect.any(Function))
+		vi.mocked(options.onCancel).mock.calls[0][1]()
+		expect(sortable.grabbedId.value).toBeNull()
+		expect(options.focusItem).not.toHaveBeenCalled()
+	})
+
+	it('прочие клавиши взятый элемент не трогают и не отменяют', () => {
+		const options = sortableOptions()
+		const { sortable } = mountSortable(options)
+		sortable.grab(ITEMS[0])
+		const event = key('a')
+		expect(sortable.handleGrabbedKeydown(event)).toBe(true)
+		expect(event.defaultPrevented).toBe(false)
+		expect(options.onCancel).not.toHaveBeenCalled()
+		expect(sortable.grabbedId.value).toBe('a')
+	})
+
+	it('moveKeys заменяет клавиши шага: стрелка влево не двигает', () => {
+		const options = sortableOptions({ moveKeys: ['ArrowDown'] })
+		const { sortable } = mountSortable(options)
+		sortable.grab(ITEMS[0])
+		const left = key('ArrowLeft')
+		sortable.handleGrabbedKeydown(left)
+		expect(left.defaultPrevented).toBe(false)
+		expect(options.stepPlace).not.toHaveBeenCalled()
+		sortable.handleGrabbedKeydown(key('ArrowDown'))
+		expect(options.onPreview).toHaveBeenCalledWith('a', 2)
+	})
+})
