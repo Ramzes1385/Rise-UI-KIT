@@ -159,26 +159,74 @@ describe('icsUtils', () => {
 			expect(single('DTSTART;TZID=Europe/Moscow:20261002', 'DTEND:20261004').end).toBe('2026-10-04')
 		})
 
-		it('пояс без частей даты в ответе Intl — смещение считается от нулей', () => {
+		describe('Intl — свежий модуль: форматтер пояса кэшируется, подмена Intl действует только до первого разбора пояса', () => {
 			const RealFormat = Intl.DateTimeFormat
-			vi.spyOn(Intl, 'DateTimeFormat').mockImplementation(function (...args: ConstructorParameters<typeof Intl.DateTimeFormat>) {
-				return Object.assign(new RealFormat(...args), { formatToParts: () => [] })
-			})
-			const start = single('DTSTART;TZID=Europe/Moscow:20261002T100000').start as Date
-			expect(start).toBeInstanceOf(Date)
-			expect(Number.isNaN(start.getTime())).toBe(false)
-			expect(start).not.toEqual(new Date(2026, 9, 2, 10))
-		})
+			const NEW_YORK = 'DTSTART;TZID=America/New_York:20261002T100000'
 
-		it('ошибка Intl на втором шаге — берётся первое смещение', () => {
-			const RealFormat = Intl.DateTimeFormat
-			let calls = 0
-			vi.spyOn(Intl, 'DateTimeFormat').mockImplementation(function (...args: ConstructorParameters<typeof Intl.DateTimeFormat>) {
-				calls += 1
-				if (calls === 2) throw new RangeError('нет пояса')
-				return new RealFormat(...args)
+			async function freshSingle(...lines: string[]): Promise<CalendarEvent> {
+				vi.resetModules()
+				const fresh = await import('..')
+				const [event] = fresh.parseIcs(calendar(lines))
+				return event
+			}
+
+			function mockParts(filter: (part: Intl.DateTimeFormatPart) => boolean): void {
+				vi.spyOn(Intl, 'DateTimeFormat').mockImplementation(function (...args: ConstructorParameters<typeof Intl.DateTimeFormat>) {
+					const real = new RealFormat(...args)
+					return Object.assign(real, {
+						formatToParts: (date?: Date) => RealFormat.prototype.formatToParts.call(real, date).filter(filter),
+					})
+				})
+			}
+
+			it('без подмены — время из пояса (контроль свежего модуля)', async () => {
+				expect((await freshSingle(NEW_YORK)).start).toEqual(new Date('2026-10-02T14:00:00Z'))
 			})
-			expect(single('DTSTART;TZID=Europe/Moscow:20261002T100000').start).toEqual(new Date('2026-10-02T07:00:00Z'))
+
+			it('ответ Intl без частей даты — время местное, как у неизвестного пояса, а не NaN', async () => {
+				mockParts(() => false)
+				const start = (await freshSingle(NEW_YORK)).start as Date
+				expect(Number.isNaN(start.getTime())).toBe(false)
+				expect(start).toEqual(new Date(2026, 9, 2, 10))
+			})
+
+			it('в ответе Intl нет одной части (года) — время местное', async () => {
+				mockParts(part => part.type !== 'year')
+				expect((await freshSingle(NEW_YORK)).start).toEqual(new Date(2026, 9, 2, 10))
+			})
+
+			it('Intl не создаёт форматтер пояса — время местное', async () => {
+				vi.spyOn(Intl, 'DateTimeFormat').mockImplementation(() => {
+					throw new RangeError('нет пояса')
+				})
+				expect((await freshSingle(NEW_YORK)).start).toEqual(new Date(2026, 9, 2, 10))
+			})
+
+			it('форматтер создаётся один раз на пояс, в том числе для неизвестного', async () => {
+				const spy = vi.spyOn(Intl, 'DateTimeFormat').mockImplementation(function (
+					...args: ConstructorParameters<typeof Intl.DateTimeFormat>
+				) {
+					return new RealFormat(...args)
+				})
+				vi.resetModules()
+				const fresh = await import('..')
+				const events = fresh.parseIcs(
+					calendar(
+						[NEW_YORK, 'DTEND;TZID=America/New_York:20261002T110000'],
+						['DTSTART;TZID=America/New_York:20260715T090000'],
+						['DTSTART;TZID=Нет/Пояса:20261002T100000'],
+						['DTSTART;TZID=Нет/Пояса:20261003T100000'],
+					),
+				)
+				expect(events.map(event => event.start)).toEqual([
+					new Date('2026-10-02T14:00:00Z'),
+					new Date('2026-07-15T13:00:00Z'),
+					new Date(2026, 9, 2, 10),
+					new Date(2026, 9, 3, 10),
+				])
+				const zones = spy.mock.calls.map(([, options]) => options?.timeZone).filter(Boolean)
+				expect(zones).toEqual(['America/New_York', 'Нет/Пояса'])
+			})
 		})
 	})
 

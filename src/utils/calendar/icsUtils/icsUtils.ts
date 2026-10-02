@@ -77,7 +77,7 @@ function zoneFormatter(timeZone: string): Intl.DateTimeFormat | null {
 	return formatter
 }
 
-/** Смещение пояса от UTC в момент `time`, мс */
+/** Смещение пояса от UTC в момент `time`, мс; без какой-либо части даты в ответе Intl — NaN (пояс не определить) */
 function zoneOffset(time: number, formatter: Intl.DateTimeFormat): number {
 	const part: Record<string, number> = Object.fromEntries(
 		formatter.formatToParts(new Date(time)).map(item => [item.type, Number(item.value)]),
@@ -88,8 +88,9 @@ function zoneOffset(time: number, formatter: Intl.DateTimeFormat): number {
 
 /**
  * Время `20261002T100000` в поясе IANA (`TZID=Europe/Moscow`) — точный момент; пояс не из базы IANA (например,
- * имена Windows из Outlook) — null, время тогда считается местным. RFC 5545 (3.3.5): время, которое при переходе
- * на зимнее бывает дважды, — первое вхождение; пропущенное при переходе на летнее — по смещению до перехода
+ * имена Windows из Outlook) или смещение, которое Intl не дал посчитать, — null, время тогда считается местным.
+ * RFC 5545 (3.3.5): время, которое при переходе на зимнее бывает дважды, — первое вхождение; пропущенное при
+ * переходе на летнее — по смещению до перехода
  */
 function zonedDate(value: string, timeZone: string): Date | null {
 	const match = ZONED_TIME.exec(value.trim())
@@ -98,6 +99,7 @@ function zonedDate(value: string, timeZone: string): Date | null {
 	const [year, month, day, hours, minutes, seconds] = match.slice(1).map(part => Number(part ?? 0))
 	const wall = Date.UTC(year, month - 1, day, hours, minutes, seconds)
 	const before = zoneOffset(wall - DAY_MS, formatter)
+	if (Number.isNaN(before)) return null
 	const valid = [before, zoneOffset(wall + DAY_MS, formatter)].filter(offset => zoneOffset(wall - offset, formatter) === offset)
 	return new Date(wall - (valid.length ? Math.max(...valid) : before))
 }
