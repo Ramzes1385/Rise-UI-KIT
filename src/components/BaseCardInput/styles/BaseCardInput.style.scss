@@ -29,11 +29,36 @@
 	}
 
 	&--inline &__fields {
-		grid-template-columns: minmax(0, 1fr) sz(96px) sz(96px);
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-start;
+		container-type: inline-size;
 	}
 
 	&--inline &__number {
-		grid-column: auto;
+		flex: 1000 1 sz(256px);
+
+		@container (max-width: 503px) {
+			flex-basis: 100%;
+		}
+	}
+
+	&--inline &__expiry {
+		flex: 1 0 sz(128px);
+	}
+
+	&--inline &__code {
+		flex: 1 0 sz(96px);
+	}
+
+	&--inline &__holder {
+		flex: 1 0 100%;
+	}
+
+	&--inline .base-input__label {
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
 	}
 
 	.base-input__field {
@@ -73,15 +98,5 @@
 	&__error {
 		color: var(--rise-error);
 		font-size: sz(var(--rise-font-size-xs));
-	}
-}
-
-@media (max-width: 480px) {
-	.base-card-input--inline .base-card-input__fields {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-	}
-
-	.base-card-input--inline .base-card-input__number {
-		grid-column: 1 / -1;
 	}
 }

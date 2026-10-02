@@ -23,9 +23,10 @@ function cardSummary(
 	errors: Record<CardInputField, string | null>,
 	props: BaseCardInputProps,
 ): Pick<CardInputValue, 'last4' | 'expiry' | 'holder'> {
+	const expiry = errors.expiry === null ? parseCardExpiry(texts.expiry) : undefined
 	return {
 		last4: errors.number === null ? cardDigits(texts.number).slice(-4) : '',
-		expiry: errors.expiry === null ? (parseCardExpiry(texts.expiry) ?? null) : null,
+		expiry: expiry ?? null,
 		holder: props.hasHolder === false ? '' : texts.holder.trim(),
 	}
 }
@@ -73,10 +74,9 @@ export function useCardFields(props: BaseCardInputProps) {
 			isValidated.value = false
 		},
 		getCardData(): CardData | null {
-			if (!isComplete.value) return null
-			const expiry = parseCardExpiry(texts.expiry)
-			if (!expiry) return null
-			return { number: cardDigits(texts.number), expiry, code: texts.code, holder: summary.value.holder, brand: brand.value }
+			const { expiry, holder } = summary.value
+			if (!isComplete.value || expiry === null) return null
+			return { number: cardDigits(texts.number), expiry, code: texts.code, holder, brand: brand.value }
 		},
 	}
 }

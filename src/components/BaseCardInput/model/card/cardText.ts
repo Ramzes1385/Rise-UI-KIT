@@ -11,10 +11,8 @@ export function digitCount(text: string): number {
 }
 
 export function caretAfterDigits(text: string, count: number): number {
-	if (count <= 0) return 0
-	let seen = 0
-	const index = [...text].findIndex(char => /\d/.test(char) && ++seen === count)
-	return index === -1 ? text.length : index + 1
+	const ends = [...text].flatMap((char, index) => (/\d/.test(char) ? [index + 1] : []))
+	return ends[Math.min(count, ends.length) - 1] ?? 0
 }
 
 export function codeLength(brand: CardBrand | undefined): number {

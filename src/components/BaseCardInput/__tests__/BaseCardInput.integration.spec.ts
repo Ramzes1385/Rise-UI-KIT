@@ -215,6 +215,8 @@ describe('BaseCardInput integration', () => {
 				holder: 'IVAN IVANOV',
 				brand: expect.objectContaining({ id: 'visa' }),
 			})
+			await typeInto(field(container, 'expiry'), PAST_EXPIRY)
+			expect(card.value!.getCardData()).toBeNull()
 		})
 
 		it('tokenize: без адаптера — ошибка, с неполной картой — ошибка, с полной — результат адаптера', async () => {

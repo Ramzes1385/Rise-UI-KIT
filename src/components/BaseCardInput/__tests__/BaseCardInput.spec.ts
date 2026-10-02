@@ -2,6 +2,7 @@ import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
 import BaseCardInput from '../ui/BaseCardInput.vue'
 import { render, screen } from '@testing-library/vue'
+import { caretAfterDigits } from '../model/card/cardText'
 import type { CardInputField } from '../types/BaseCardInput.types'
 import { field, pressBackspace, typeInto } from './cardInputHelpers'
 
@@ -154,6 +155,13 @@ describe('BaseCardInput unit', () => {
 			await typeInto(number, '4242 49242 4242 4242', 7)
 			expect(number.value).toBe('4242 4924 2424 2424 2')
 			expect(number.selectionStart).toBe(7)
+		})
+
+		it('каретка после n-й цифры: 0 цифр — начало, цифр меньше n — после последней', () => {
+			expect(caretAfterDigits('4242 42', 0)).toBe(0)
+			expect(caretAfterDigits('4242 42', 5)).toBe(6)
+			expect(caretAfterDigits('4242 42/', 9)).toBe(7)
+			expect(caretAfterDigits('', 1)).toBe(0)
 		})
 
 		it('удаление в середине номера — каретка на месте', async () => {
