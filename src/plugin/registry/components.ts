@@ -72,6 +72,7 @@ import { BaseWaveform } from '../../components/BaseWaveform'
 import { BaseAccordion } from '../../components/BaseAccordion'
 import { BaseAiMessage } from '../../components/BaseAiMessage'
 import { BaseAnimation } from '../../components/BaseAnimation'
+import { BaseBottomNav } from '../../components/BaseBottomNav'
 import { BaseChecklist } from '../../components/BaseChecklist'
 import { BaseContainer } from '../../components/BaseContainer'
 import { BaseCountdown } from '../../components/BaseCountdown'
@@ -134,6 +135,7 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseAvatarGroup,
 	BaseBackTop,
 	BaseBadge,
+	BaseBottomNav,
 	BaseBreadcrumbs,
 	BaseButton,
 	BaseButtonGroup,

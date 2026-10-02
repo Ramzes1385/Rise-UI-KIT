@@ -94,6 +94,7 @@
 - `BaseInputNumber` — число с кнопками −/+ по образцу APG Spinbutton; `BaseAutocomplete` — поле с подсказками (APG Combobox), свой вариант и загрузка с сервера; `BaseTimePicker` — время из списка с шагом или набором «930» → 09:30; `BaseInputTags` — поле тегов; `BaseSegmented` — переключатель сегментами на нативных radio. Все подключаются к `BaseFormField` и `BaseForm`.
 - `BasePhoneInput` — телефон: выбор страны в списке с флагами (порция Н.5) и маска номера, `v-model` — `+79161234567`, вставка «+375 29…» или «8 916…» сама выбирает страну; `BaseMoneyInput` — сумма с разрядами при вводе и знаком валюты по `currency`, округление и границы после ухода из поля (порция 4.17а).
 - `BaseRequisiteInput` — реквизиты с проверкой контрольных чисел: ИНН, КПП, ОГРН, ОГРНИП, БИК, расчётный и корреспондентский счёт (вместе с БИК), СНИЛС; те же проверки — функциями `isValidInn` и др. `BaseAddressInput` — адрес с подсказками из подключаемого источника, готовый адаптер DaData (порция 4.17б).
+- `BaseBottomNav` — нижние вкладки для телефона и PWA: 3–5 пунктов со значком и подписью, `v-model` с `aria-current="page"`, ссылки или кнопки, счётчики BaseBadge, безопасная зона, `hideOnScroll` (задача new-bottom-nav, раздел [«Нижняя навигация»](#нижняя-навигация-new-bottom-nav)).
 
 **Медиа**
 
@@ -1406,3 +1407,17 @@ FOLLOW_UPS № 38, № 39, № 13 и № 15 (медиа).
 - Экспорт: `BaseStat`, `STAT_VARIANTS`, типы `BaseStatProps`, `BaseStatSlots`, `StatTrend`, `StatTone`; `BaseCountdown`, `COUNTDOWN_VARIANTS`, `COUNTDOWN_UNITS`, типы `BaseCountdownProps`, `BaseCountdownEmits`, `BaseCountdownSlots`, `CountdownUnit`, `CountdownLayout`, `CountdownParts`.
 - Новый раздел словаря `countdown` (ru, en): `LABEL`, `REMAINING`, `LESS_THAN_MINUTE`, `FINISHED`. Свой язык через `defineLocale` должен его перевести, иначе возьмутся строки базового словаря.
 - Блок Storybook Dashboard: показатели переведены на BaseStat (раньше — разметка блока внутри BaseCard).
+
+## Нижняя навигация (new-bottom-nav)
+
+Новый компонент, изменений в существующих нет.
+
+- `BaseBottomNav` — нижние вкладки для телефона и PWA. Корень — `<nav aria-label="Нижняя навигация">` (`ariaLabel` меняет имя) со списком `<ul>`.
+- `items` — 3–5 пунктов `{ value, label, icon, activeIcon?, to?, href?, target?, badge?, badgeLabel?, isDisabled? }`; меньше 3 или больше 5 — предупреждение в консоли.
+- `v-model` — `value` выбранного пункта: у него `aria-current="page"` и подложка под значком. Без `v-model` компонент помнит выбор сам. События `select(item)` и `navigate(url)` (у пунктов с адресом).
+- Пункт с `to` — компонент ссылок приложения (`linkComponent`, плагин, RouterLink) или `<a href>`, с `href` — `<a href>`, без адреса — кнопка. Ссылка в новой вкладке и клик с Ctrl, ⌘ или Shift выбор не меняют.
+- `badge` — счётчик BaseBadge на значке (`0` и пустая строка — без бейджа, больше `maxBadge` — «99+»); бейдж скрыт от скринридера, у пункта описание `aria-describedby` — «3 новых» или `badgeLabel`.
+- `isFixed` (по умолчанию `true`) — `position: fixed` внизу окна; отступ `env(safe-area-inset-bottom)` есть всегда (для PWA нужен `viewport-fit=cover`). Нижний отступ содержимого задаёт приложение.
+- `hideOnScroll` — прячет панель при прокрутке окна вниз, показывает при прокрутке вверх и при фокусе внутри; при `prefers-reduced-motion` — без анимации.
+- Слоты `icon` и `label` с `{ item, isActive }`; варианты `default`, `soft`, `outline`, `ghost`; `customClass` — `root`, `list`, `item`, `link`, `icon`, `label`, `badge`.
+- Строки словаря (ru, en): `aria.BOTTOM_NAV`, `warnings.BOTTOM_NAV_ITEM_COUNT`.

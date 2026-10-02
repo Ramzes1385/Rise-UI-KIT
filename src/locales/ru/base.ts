@@ -50,6 +50,8 @@ export const ruBase = {
 		FILE_WRONG_FORMAT: 'Формат файла "{name}" не поддерживается. Допустимые: {formats}',
 	},
 	aria: {
+		/** Ориентир навигации BaseBottomNav */
+		BOTTOM_NAV: 'Нижняя навигация',
 		/** Ориентир навигации BaseMegaMenu */
 		MEGA_MENU: 'Главное меню',
 		/** Ориентир навигации BaseSideBar без title */
@@ -213,6 +215,8 @@ export const ruBase = {
 	},
 	/** Предупреждения в консоли для разработчика приложения */
 	warnings: {
+		BOTTOM_NAV_ITEM_COUNT:
+			'BaseBottomNav: пунктов {count} — нижняя навигация рассчитана на {min}–{max}; остальное вынесите в пункт «Ещё»',
 		UNKNOWN_LOCALE: 'Неизвестный язык «{locale}». Встроенные: {locales}; свой — defineLocale()',
 		TOAST_WITHOUT_APP: 'useToast: не найден <BaseApp> — уведомление не показано. Оберните приложение в <BaseApp>.',
 		OVERLAY_WITHOUT_APP: 'useOverlay: не найден <BaseApp> — оверлей не показан. Оберните приложение в <BaseApp>.',

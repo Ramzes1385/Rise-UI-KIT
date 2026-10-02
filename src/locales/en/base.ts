@@ -46,6 +46,8 @@ export const enBase = {
 		FILE_WRONG_FORMAT: 'The format of file "{name}" is not supported. Allowed: {formats}',
 	},
 	aria: {
+		/** Ориентир навигации BaseBottomNav */
+		BOTTOM_NAV: 'Bottom navigation',
 		/** Ориентир навигации BaseMegaMenu */
 		MEGA_MENU: 'Main menu',
 		/** Ориентир навигации BaseSideBar без title */
@@ -192,6 +194,8 @@ export const enBase = {
 	},
 	/** Console warnings for the app developer */
 	warnings: {
+		BOTTOM_NAV_ITEM_COUNT:
+			'BaseBottomNav: {count} items — bottom navigation is designed for {min}–{max}; move the rest to a “More” item',
 		UNKNOWN_LOCALE: 'Unknown locale "{locale}". Built-in: {locales}; for your own use defineLocale()',
 		TOAST_WITHOUT_APP: 'useToast: <BaseApp> not found — the notification was not shown. Wrap the app in <BaseApp>.',
 		OVERLAY_WITHOUT_APP: 'useOverlay: <BaseApp> not found — the overlay was not shown. Wrap the app in <BaseApp>.',

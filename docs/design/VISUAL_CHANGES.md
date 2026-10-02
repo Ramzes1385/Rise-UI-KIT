@@ -1085,3 +1085,12 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 - **BaseStat** — карточка с рамкой `--rise-border`, радиус `--rise-radius-lg`, отступ 16px; подпись приглушённая (`sm`), значение 2xl полужирное с моноширинными цифрами; изменение `xs`: стрелка и число зелёные (`--rise-success-text`) или красные (`--rise-error-text`), ноль — значок «минус» приглушённым цветом, текст периода приглушённый. Вариант `soft` — фон `--rise-bg-elevated`, подпись и изменение `--rise-text-toned` (muted на этом фоне не проходит AA); `ghost` — без рамки и отступов.
 - **BaseCountdown** — ячейки «число и подпись» (мин. ширина 64px, рамка, радиус `md`), число 2xl полужирное, подпись `xs` приглушённая; У `soft` подписи `--rise-text-toned`. `inline` — строка `lg`. После окончания цифры приглушены.
 - **Блок Dashboard (Overview)** — показатели теперь BaseStat вместо BaseCard с разметкой блока: «▲ 12% к августу» стало «↑ +12 % к августу» зелёным, у возвратов «↓ -0,4 п. п. к августу» зелёным (`isInverse`); радиус карточки `lg`, как у BaseCard; значения форматирует Intl (`4,82 млн ₽`, `1 284`, `3 750 ₽`, `2,1 %` — с пробелом перед знаком процента). В скриншот-тестах блока нет — эталоны не затронуты.
+
+## Задача new-bottom-nav: BaseBottomNav
+
+Новый компонент, существующие не меняются.
+
+- **BaseBottomNav** — панель высотой ≈56 px + безопасная зона: равные колонки, значок над подписью (12 px), невыбранные пункты — `--rise-text-toned`, выбранный — подпись `--rise-text-highlighted` полужирная и подложка-«пилюля» под значком (`--rise-primary` 16%), значок цвета `--rise-primary`. Варианты: `default` — фон страницы и граница сверху, `soft` — `--rise-bg-elevated` без границы, `outline` — граница `--rise-border-accented`, `ghost` — прозрачная. Счётчик — BaseBadge в правом верхнем углу значка. Фокус — кольцо `--rise-focus-ring` внутри пункта (offset −2 px), видно в обеих темах. `hideOnScroll` — сдвиг вниз на свою высоту, при reduced motion — без анимации.
+- Новые истории: `navigation-basebottomnav--default`, `--variants`, `--sizes`, `--custom-color`, `--links`, `--badges`, `--custom-slots`, `--long-content`, `--disabled`, `--keyboard`, `--hide-on-scroll`. В `BaseBottomNav.visual.spec.ts` — `variants`, `sizes`, `badges` (обе темы); эталонов нет — их создаёт владелец.
+
+Страница со снимками — `.rise-transfer\review\new-bottom-nav.html`. Эталоны не трогались.

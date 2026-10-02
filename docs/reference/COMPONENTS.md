@@ -2440,6 +2440,35 @@ const items = [{ label: 'Главная', to: '/' }, { label: 'Пользова�
 
 ---
 
+## BaseBottomNav
+
+Нижние вкладки для телефона и PWA: 3–5 главных разделов приложения.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseBottomNav } from '@ramzes1385/rise-ui-kit'
+import type { BottomNavItem } from '@ramzes1385/rise-ui-kit'
+
+const active = ref('home')
+
+const items: BottomNavItem[] = [
+	{ value: 'home', label: 'Главная', icon: 'home', to: '/' },
+	{ value: 'search', label: 'Поиск', icon: 'search', to: '/search' },
+	{ value: 'chats', label: 'Чаты', icon: 'comment', to: '/chats', badge: 3 },
+	{ value: 'settings', label: 'Настройки', icon: 'settings', to: '/settings' },
+]
+</script>
+
+<template>
+	<BaseBottomNav v-model="active" :items="items" hide-on-scroll />
+</template>
+```
+
+Корень — ориентир `<nav aria-label="Нижняя навигация">`, выбранный пункт помечен `aria-current="page"`; приложение обычно ставит `v-model` по текущему маршруту. Пункт с `to` — RouterLink приложения (из `linkComponent`, плагина или vue-router), без роутера — `<a href>`; с `href` — внешняя ссылка; без адреса — кнопка с событием `select`. `badge` показывает счётчик BaseBadge («99+» больше `maxBadge`), а скринридер слышит описание «3 новых» (`badgeLabel` меняет его). Панель по умолчанию закреплена внизу окна (`isFixed`) с отступом `env(safe-area-inset-bottom)` — для PWA добавьте `viewport-fit=cover` в meta viewport, а содержимому страницы — нижний отступ под панель. `hideOnScroll` прячет панель при прокрутке вниз и возвращает при прокрутке вверх и при фокусе на пункте.
+
+---
+
 ## BaseStepper
 
 Stepper.

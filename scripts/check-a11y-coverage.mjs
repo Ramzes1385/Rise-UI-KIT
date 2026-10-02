@@ -118,6 +118,7 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseDadataInput',
 	'BaseMap',
 	'BaseChart',
+	'BaseBottomNav',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */
@@ -169,6 +170,7 @@ const INTERACTIVE_WITH_DISABLED = new Set([
 	'BaseSignaturePad',
 	'BaseAvatarCropper',
 	'BaseDadataInput',
+	'BaseBottomNav',
 ])
 
 /** Формовые компоненты, требующие story Error */
