@@ -1,10 +1,11 @@
 import { nextTick } from 'vue'
 import { formatMessage } from '@/locales/state'
 import { UI_EVENT_CALENDAR } from '@/locales/messages'
+import { resourceOfElement } from '../eventCalendarResources'
 import { formatDayLabel, formatTime } from '../eventCalendarFormat'
 import { addDays, parseEventDate, startOfDay } from '@utils/calendar/eventUtils'
 import type { EventCalendarSelection } from '../../types/BaseEventCalendar.types'
-import type { EventCalendarContext, EventCalendarEditKind, ScreenPoint } from '../../types/BaseEventCalendarModel.types'
+import type { EventCalendarContext, EventCalendarEditKind, EventCalendarSlot, ScreenPoint } from '../../types/BaseEventCalendarModel.types'
 
 const MINUTES_PER_DAY = 1440
 
@@ -40,12 +41,17 @@ export function atMinute(day: Date, minute: number): Date {
 	return new Date(day.getFullYear(), day.getMonth(), day.getDate(), 0, minute)
 }
 
-export function slotLocator(context: EventCalendarContext, kind: EventCalendarEditKind): (point: ScreenPoint) => Date | null {
+export function columnSelector(key: string): string {
+	return `${TIME_COLUMN}[data-column="${key.replace(/"/g, '\\"')}"]`
+}
+
+export function slotLocator(context: EventCalendarContext, kind: EventCalendarEditKind): (point: ScreenPoint) => EventCalendarSlot | null {
 	return point => {
 		const element = elementAtPoint(context.rootRef.value, kind === 'month' ? DAY_CELL : TIME_COLUMN, point)
 		const day = element && dayOf(element)
 		if (!element || !day) return null
-		return kind === 'time' ? atMinute(day, minuteAt(element, point.y, context.step.value)) : day
+		const date = kind === 'time' ? atMinute(day, minuteAt(element, point.y, context.step.value)) : day
+		return { date, resourceId: kind === 'month' ? undefined : resourceOfElement(context, element) }
 	}
 }
 

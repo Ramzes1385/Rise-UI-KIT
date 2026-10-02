@@ -32,9 +32,14 @@ export function resizedTime(time: EventCalendarTime, end: Date, least: EventCale
 	return { start: time.start, end: end < shortest ? shortest : end }
 }
 
+function isResourceChanged(item: NormalizedCalendarEvent, time: EventCalendarTime): boolean {
+	return time.resourceId !== undefined && String(time.resourceId) !== String(item.event.resourceId)
+}
+
 function toChange(item: NormalizedCalendarEvent, time: EventCalendarTime): EventCalendarChange {
-	return {
-		type: time.start.getTime() === item.start.getTime() ? 'resize' : 'move',
+	const isSameStart = time.start.getTime() === item.start.getTime()
+	const change: EventCalendarChange = {
+		type: isSameStart && !isResourceChanged(item, time) ? 'resize' : 'move',
 		event: item.event,
 		start: time.start,
 		end: time.end,
@@ -42,10 +47,13 @@ function toChange(item: NormalizedCalendarEvent, time: EventCalendarTime): Event
 		oldStart: item.start,
 		oldEnd: item.end,
 	}
+	if (time.resourceId === undefined) return change
+	return { ...change, resourceId: time.resourceId, oldResourceId: item.event.resourceId }
 }
 
 function isUnchanged(item: NormalizedCalendarEvent, time: EventCalendarTime): boolean {
-	return time.start.getTime() === item.start.getTime() && time.end.getTime() === item.end.getTime()
+	const isSameTime = time.start.getTime() === item.start.getTime() && time.end.getTime() === item.end.getTime()
+	return isSameTime && !isResourceChanged(item, time)
 }
 
 export function isInPeriod(context: EventCalendarContext, start: Date): boolean {
@@ -55,7 +63,9 @@ export function isInPeriod(context: EventCalendarContext, start: Date): boolean 
 
 export function makeDraft(context: EventCalendarContext, item: NormalizedCalendarEvent, time: EventCalendarTime): EventCalendarDraft {
 	const isAllowed = context.props.canMove?.(toChange(item, time)) ?? true
-	return { key: item.key, start: time.start, end: time.end, isBlocked: !isAllowed }
+	const draft: EventCalendarDraft = { key: item.key, start: time.start, end: time.end, isBlocked: !isAllowed }
+	if (time.resourceId !== undefined) draft.resourceId = time.resourceId
+	return draft
 }
 
 export function emitChange(context: EventCalendarContext, item: NormalizedCalendarEvent, draft: EventCalendarDraft | null): boolean {

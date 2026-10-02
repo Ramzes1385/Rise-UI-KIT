@@ -1,8 +1,23 @@
 import { useSlots } from 'vue'
+import { formatMessage } from '@/locales/state'
+import { UI_EVENT_CALENDAR } from '@/locales/messages'
+import { findResource } from './eventCalendarResources'
 import { eventLabel, eventTime, formatTime } from './eventCalendarFormat'
 import type { NormalizedCalendarEvent } from '@utils/calendar/eventUtils'
-import type { DaySlotName, EventCalendarContext, EventCalendarMonthDay, EventSlotName } from '../types/BaseEventCalendarModel.types'
-import type { EventCalendarDaySlotProps, EventCalendarEventPayload, EventCalendarEventSlotProps } from '../types/BaseEventCalendar.types'
+import type {
+	EventCalendarDaySlotProps,
+	EventCalendarEventPayload,
+	EventCalendarEventSlotProps,
+	EventCalendarResourceSlotProps,
+} from '../types/BaseEventCalendar.types'
+import type {
+	DaySlotName,
+	EventCalendarContext,
+	EventCalendarMonthDay,
+	EventCalendarResourceHeader,
+	EventSlotName,
+	ResourceSlotName,
+} from '../types/BaseEventCalendarModel.types'
 
 function payload(item: NormalizedCalendarEvent): EventCalendarEventPayload {
 	return { event: item.event, start: item.start, end: item.end, allDay: item.allDay }
@@ -11,12 +26,28 @@ function payload(item: NormalizedCalendarEvent): EventCalendarEventPayload {
 export function useEventCalendarEvents(context: EventCalendarContext) {
 	const slots = useSlots() as Record<string, unknown>
 	const has = (name: string): boolean => Boolean(slots[name])
+	const resourceOf = (item: NormalizedCalendarEvent) => findResource(context, item.event.resourceId)
 
 	return {
-		eventLabel,
+		eventLabel(item: NormalizedCalendarEvent): string {
+			const resource = resourceOf(item)
+			const label = eventLabel(item)
+			return resource ? formatMessage(UI_EVENT_CALENDAR.EVENT_RESOURCE, { event: label, resource: resource.title }) : label
+		},
 		eventTime,
 		eventStart: (item: NormalizedCalendarEvent): string => (item.allDay ? '' : formatTime(item.start)),
-		eventStyle: (item: NormalizedCalendarEvent) => (item.event.color ? { '--event-color': item.event.color } : {}),
+		eventStyle(item: NormalizedCalendarEvent) {
+			const color = item.event.color ?? resourceOf(item)?.color
+			return color ? { '--event-color': color } : {}
+		},
+		resourceSlot(header: EventCalendarResourceHeader): ResourceSlotName | null {
+			if (has(`resource-${header.key}`)) return `resource-${header.key}`
+			return has('resource') ? 'resource' : null
+		},
+		resourceSlotProps: (header: EventCalendarResourceHeader): EventCalendarResourceSlotProps => ({
+			resource: header.resource,
+			days: header.days,
+		}),
 		eventSlot(item: NormalizedCalendarEvent): EventSlotName | null {
 			const { id, category } = item.event
 			if (has(`event-${id}`)) return `event-${id}`

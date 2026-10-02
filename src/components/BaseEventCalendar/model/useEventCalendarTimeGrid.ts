@@ -2,9 +2,15 @@ import type { ComputedRef } from 'vue'
 import { computed, nextTick, ref, watch } from 'vue'
 import type { EventCalendarWorkHours } from '../types/BaseEventCalendar.types'
 import { eventTime, formatHeaderDay, formatTime } from './eventCalendarFormat'
+import { columnKey, columnName, itemsOfResource } from './eventCalendarResources'
 import type { CalendarTimeSegment, CalendarWeekSegment } from '@utils/calendar/eventUtils'
 import { addDays, daysBetween, layoutDay, layoutWeek, toDayKey } from '@utils/calendar/eventUtils'
-import type { EventCalendarContext, EventCalendarTimeDay, EventCalendarTimeSlot } from '../types/BaseEventCalendarModel.types'
+import type {
+	EventCalendarContext,
+	EventCalendarResourceHeader,
+	EventCalendarTimeDay,
+	EventCalendarTimeSlot,
+} from '../types/BaseEventCalendarModel.types'
 
 const MINUTES_PER_DAY = 1440
 export const DEFAULT_SCROLL_MINUTE = 8 * 60
@@ -42,21 +48,32 @@ function useTimeScroll(context: EventCalendarContext) {
 }
 
 function useTimeColumns(context: EventCalendarContext, dayCount: ComputedRef<number>) {
-	const { props, period, items, today } = context
+	const { props, period, items, today, resources } = context
 	const { step } = context
+	const days = computed(() => Array.from({ length: dayCount.value }, (_, index) => addDays(period.value.start, index)))
 	return {
 		timeDays: computed(() =>
-			Array.from({ length: dayCount.value }, (_, index): EventCalendarTimeDay => {
-				const date = addDays(period.value.start, index)
-				return {
-					date,
-					key: toDayKey(date),
-					label: formatHeaderDay(date),
-					isToday: date.getTime() === today.value.getTime(),
-					work: workBand(props.workHours, date),
-					segments: layoutDay(items.value, date),
-				}
+			(resources.value.length ? resources.value : [null]).flatMap(resource => {
+				const own = itemsOfResource(items.value, resource)
+				return days.value.map((date, index): EventCalendarTimeDay => {
+					const label = formatHeaderDay(date)
+					return {
+						date,
+						key: columnKey(date, resource?.id),
+						dayKey: toDayKey(date),
+						resource,
+						isResourceStart: Boolean(resource) && index === 0,
+						name: columnName(label, resource),
+						label,
+						isToday: date.getTime() === today.value.getTime(),
+						work: workBand(props.workHours, date),
+						segments: layoutDay(own, date),
+					}
+				})
 			}),
+		),
+		resourceHeaders: computed(() =>
+			resources.value.map((resource): EventCalendarResourceHeader => ({ key: String(resource.id), resource, days: days.value })),
 		),
 		timeSlots: computed(() =>
 			Array.from({ length: MINUTES_PER_DAY / step.value }, (_, index): EventCalendarTimeSlot => {
@@ -68,26 +85,37 @@ function useTimeColumns(context: EventCalendarContext, dayCount: ComputedRef<num
 	}
 }
 
-export function useEventCalendarTimeGrid(context: EventCalendarContext) {
-	const { props, period, items, now } = context
-	const dayCount = computed(() => daysBetween(period.value.start, period.value.end))
-	const allDaySegments = computed(() =>
-		layoutWeek(
-			items.value.filter(item => item.allDay),
-			period.value.start,
-			dayCount.value,
-		),
-	)
+function useAllDay(context: EventCalendarContext, dayCount: ComputedRef<number>) {
+	const { period, items, resources } = context
+	const columnCount = computed(() => dayCount.value * Math.max(1, resources.value.length))
+	const allDaySegments = computed(() => {
+		const allDay = items.value.filter(item => item.allDay)
+		return (resources.value.length ? resources.value : [null]).flatMap((resource, index) =>
+			layoutWeek(itemsOfResource(allDay, resource), period.value.start, dayCount.value).map(segment => ({
+				...segment,
+				column: segment.column + index * dayCount.value,
+			})),
+		)
+	})
 	return {
-		scrollRef: useTimeScroll(context),
-		...useTimeColumns(context, dayCount),
+		columnCount,
 		allDaySegments,
 		allDayLanes: computed(() => Math.max(1, ...allDaySegments.value.map(segment => segment.lane + 1))),
 		allDayStyle: (segment: CalendarWeekSegment) => ({
-			left: percent(segment.column / dayCount.value),
-			width: percent(segment.span / dayCount.value),
+			left: percent(segment.column / columnCount.value),
+			width: percent(segment.span / columnCount.value),
 			'--lane': segment.lane,
 		}),
+	}
+}
+
+export function useEventCalendarTimeGrid(context: EventCalendarContext) {
+	const { props, period, now } = context
+	const dayCount = computed(() => daysBetween(period.value.start, period.value.end))
+	return {
+		scrollRef: useTimeScroll(context),
+		...useTimeColumns(context, dayCount),
+		...useAllDay(context, dayCount),
 		timedStyle: (segment: CalendarTimeSegment) => ({
 			top: percent(segment.top),
 			height: percent(segment.height),

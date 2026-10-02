@@ -9,6 +9,8 @@ export type {
 	EventCalendarEventSlotProps,
 	EventCalendarHeaderDaySlotProps,
 	EventCalendarPeriod,
+	EventCalendarResource,
+	EventCalendarResourceSlotProps,
 	EventCalendarSelection,
 	EventCalendarTimeSlotProps,
 	EventCalendarToolbarSlotProps,

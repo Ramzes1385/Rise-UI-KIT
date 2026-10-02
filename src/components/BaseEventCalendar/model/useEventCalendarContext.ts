@@ -39,10 +39,16 @@ function useNow() {
 	return now
 }
 
+function draftItem(item: NormalizedCalendarEvent, draft: EventCalendarDraft): NormalizedCalendarEvent {
+	const isOtherResource = draft.resourceId !== undefined && draft.resourceId !== item.event.resourceId
+	const event = isOtherResource ? { ...item.event, resourceId: draft.resourceId } : item.event
+	return { ...item, event, start: draft.start, end: draft.end }
+}
+
 function withDraft(items: NormalizedCalendarEvent[], draft: EventCalendarDraft | null): NormalizedCalendarEvent[] {
 	if (!draft) return items
 	return items
-		.map(item => (item.key === draft.key ? { ...item, start: draft.start, end: draft.end } : item))
+		.map(item => (item.key === draft.key ? draftItem(item, draft) : item))
 		.sort((first, second) => first.start.getTime() - second.start.getTime() || second.end.getTime() - first.end.getTime())
 }
 
@@ -62,7 +68,8 @@ export function useEventCalendarContext(props: EventCalendarProps, emit: BaseEve
 	const firstDay = computed(() => props.firstDayOfWeek ?? getLocale().firstDayOfWeek)
 	const period = computed(() => periodOf(view.value, date.value, firstDay.value))
 	const draft = shallowRef<EventCalendarDraft | null>(null)
-	const items = computed(() => withDraft(getEventsInRange(props.events, period.value), draft.value))
+	const visible = computed(() => getEventsInRange(props.events, period.value))
+	const items = computed(() => withDraft(visible.value, draft.value))
 	watch(
 		[() => period.value.view, () => period.value.start.getTime(), () => period.value.end.getTime()],
 		() => emit('period-change', period.value),
@@ -78,6 +85,7 @@ export function useEventCalendarContext(props: EventCalendarProps, emit: BaseEve
 		firstDay,
 		period,
 		items,
+		resources: computed(() => (view.value === 'week' || view.value === 'day' ? props.resources : [])),
 		step: computed(() => Math.min(60, Math.max(5, props.slotDuration))),
 		status: ref(''),
 		draft,

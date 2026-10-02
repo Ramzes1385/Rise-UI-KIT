@@ -171,13 +171,27 @@
 		</div>
 
 		<div v-else class="base-event-calendar__time-grid" :style="{ '--days': timeDays.length, '--all-day-lanes': allDayLanes }">
+			<div v-if="resourceHeaders.length" class="base-event-calendar__resource-head">
+				<div class="base-event-calendar__corner"></div>
+				<div
+					v-for="header in resourceHeaders"
+					:key="header.key"
+					class="base-event-calendar__resource"
+					:style="{ '--span': header.days.length }">
+					<slot v-if="resourceSlot(header)" :name="resourceSlot(header)!" v-bind="resourceSlotProps(header)" />
+					<template v-else>{{ header.resource.title }}</template>
+				</div>
+			</div>
 			<div class="base-event-calendar__time-head">
 				<div class="base-event-calendar__corner"></div>
 				<div
 					v-for="day in timeDays"
 					:key="day.key"
 					class="base-event-calendar__header-day"
-					:class="{ 'base-event-calendar__header-day--today': day.isToday }">
+					:class="{
+						'base-event-calendar__header-day--today': day.isToday,
+						'base-event-calendar__header-day--resource-start': day.isResourceStart,
+					}">
 					<slot name="header-day" :date="day.date" :label="day.label" :is-today="day.isToday">{{ day.label }}</slot>
 				</div>
 			</div>
@@ -226,11 +240,14 @@
 						:class="{
 							'base-event-calendar__column--today': day.isToday,
 							'base-event-calendar__column--work-hours': Boolean(workHours),
+							'base-event-calendar__column--resource-start': day.isResourceStart,
 						}"
 						role="group"
-						:data-day="day.key"
-						:tabindex="isSelectable ? (day.key === focusedKey ? 0 : -1) : undefined"
-						:aria-label="day.label"
+						:data-day="day.dayKey"
+						:data-column="day.key"
+						:data-resource="day.resource ? day.resource.id : undefined"
+						:tabindex="isSelectable ? (isColumnFocusable(day, focusedKey) ? 0 : -1) : undefined"
+						:aria-label="day.name"
 						:aria-describedby="isSelectable ? selectHintId : undefined"
 						@keydown="handleColumnKeydown($event, day)"
 						@focus="handleColumnFocus(day)"
@@ -296,6 +313,7 @@ const props = withDefaults(
 		isSelectable: false,
 		isEditable: false,
 		canMove: undefined,
+		resources: () => [],
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )
@@ -338,6 +356,10 @@ const {
 	scrollRef,
 	timeDays,
 	timeSlots,
+	resourceHeaders,
+	resourceSlot,
+	resourceSlotProps,
+	isColumnFocusable,
 	allDaySegments,
 	allDayLanes,
 	allDayStyle,

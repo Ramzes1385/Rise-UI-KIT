@@ -5,6 +5,7 @@ import type {
 	BaseEventCalendarEmits,
 	BaseEventCalendarProps,
 	EventCalendarPeriod,
+	EventCalendarResource,
 	EventCalendarSelection,
 	EventCalendarView,
 } from './BaseEventCalendar.types'
@@ -12,7 +13,7 @@ import type {
 /** Пропсы после `withDefaults`: значения по умолчанию заданы в `ui/BaseEventCalendar.vue` */
 export type EventCalendarProps = PropsWithDefaults<
 	BaseEventCalendarProps,
-	'events' | 'view' | 'views' | 'slotDuration' | 'maxEventsPerDay' | 'hasNowIndicator' | 'isSelectable' | 'isEditable'
+	'events' | 'view' | 'views' | 'slotDuration' | 'maxEventsPerDay' | 'hasNowIndicator' | 'isSelectable' | 'isEditable' | 'resources'
 >
 
 /** Событие, которое сейчас переносят или растягивают: ключ показа и новое время; `isBlocked` — `canMove` запретил */
@@ -21,6 +22,8 @@ export interface EventCalendarDraft {
 	start: Date
 	end: Date
 	isBlocked: boolean
+	/** Ресурс колонки, куда переносят: есть только при заданных `resources` */
+	resourceId?: string | number
 }
 
 /** Выделение: откуда начали (`anchor`) и где сейчас (`focus`) — дни (`allDay`) или начала шагов времени */
@@ -28,6 +31,8 @@ export interface EventCalendarSelectionState {
 	anchor: Date
 	focus: Date
 	allDay: boolean
+	/** Ресурс колонки, где начали выделение: выделение не выходит за его колонки */
+	resourceId?: string | number
 }
 
 /** Общее состояние календаря: вид, дата, сегодня, показанный период и его события */
@@ -41,6 +46,8 @@ export interface EventCalendarContext {
 	firstDay: ComputedRef<number>
 	period: ComputedRef<EventCalendarPeriod>
 	items: ComputedRef<NormalizedCalendarEvent[]>
+	/** Ресурсы колонок недели и дня; пусто — в месяце, списке и без `resources` */
+	resources: ComputedRef<EventCalendarResource[]>
 	/** Шаг сетки времени, минуты (5–60) */
 	step: ComputedRef<number>
 	/** Текст `role="status"`: смена периода, выделение, перенос */
@@ -74,10 +81,19 @@ export interface EventCalendarMonthWeek {
 	hasMore: boolean
 }
 
-/** День сетки времени: подпись, рабочие часы (доли суток), события со временем */
+/**
+ * Колонка сетки времени — день, а при заданных `resources` — день ресурса: подпись, рабочие часы (доли суток),
+ * события со временем. `key` — ключ колонки (`<ресурс>|<ГГГГ-ММ-ДД>` или `ГГГГ-ММ-ДД`), `dayKey` — ключ дня
+ */
 export interface EventCalendarTimeDay {
 	date: Date
 	key: string
+	dayKey: string
+	resource: EventCalendarResource | null
+	/** Первая колонка ресурса: от соседнего ресурса её отделяет заметная граница */
+	isResourceStart: boolean
+	/** Доступное имя колонки: день, у ресурса — «Переговорная, пн, 2 окт.» */
+	name: string
 	label: string
 	isToday: boolean
 	work: { top: number; height: number } | null
@@ -97,6 +113,9 @@ export type EventSlotName = 'event' | `event-${string}` | `category-${string}`
 
 /** Слот дня месяца: `day-<ГГГГ-ММ-ДД>` или `day` */
 export type DaySlotName = 'day' | `day-${string}`
+
+/** Слот заголовка ресурса: `resource-<id>` или `resource` */
+export type ResourceSlotName = 'resource' | `resource-${string}`
 
 /** Точка экрана: координаты указателя */
 export interface ScreenPoint {
@@ -129,10 +148,27 @@ export interface EventCalendarShift {
 	minutes: number
 }
 
-/** Время события: начало и конец (не входит) */
+/** Время события: начало и конец (не входит); `resourceId` — ресурс колонки, если заданы `resources` */
 export interface EventCalendarTime {
 	start: Date
 	end: Date
+	resourceId?: string | number
+}
+
+/** id ресурса; `undefined` — колонка без ресурса */
+export type ResourceId = string | number | undefined
+
+/** Место в сетке времени: время шага или день и ресурс колонки */
+export interface EventCalendarSlot {
+	date: Date
+	resourceId?: string | number
+}
+
+/** Заголовок ресурса над его колонками: ресурс, дни, сколько колонок занимает */
+export interface EventCalendarResourceHeader {
+	key: string
+	resource: EventCalendarResource
+	days: Date[]
 }
 
 /** Событие, взятое с клавиатуры: исходный показ и где он лежит */
@@ -145,7 +181,7 @@ export interface EventCalendarGrab {
 export interface EventCalendarPress {
 	item: NormalizedCalendarEvent
 	kind: EventCalendarEditKind
-	origin: Date
+	origin: EventCalendarSlot
 	point: ScreenPoint
 	isResize: boolean
 }

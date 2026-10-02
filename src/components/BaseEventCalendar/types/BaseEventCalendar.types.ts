@@ -22,6 +22,16 @@ export interface EventCalendarWorkHours {
 }
 
 /**
+ * Ресурс календаря — комната, человек, оборудование: в неделе и дне у каждого ресурса свои колонки, событие лежит
+ * в колонке своего `resourceId`. `color` — цвет событий ресурса без своего цвета
+ */
+export interface EventCalendarResource {
+	id: string | number
+	title: string
+	color?: string
+}
+
+/**
  * Пропсы компонента BaseEventCalendar
  */
 export interface BaseEventCalendarProps extends BaseComponentProps<EventCalendarVariant, 'root' | 'toolbar' | 'event'> {
@@ -58,6 +68,12 @@ export interface BaseEventCalendarProps extends BaseComponentProps<EventCalendar
 	isEditable?: boolean
 	/** Запрет переноса и растягивания: вернуть false — событие нельзя положить на это время */
 	canMove?: (change: EventCalendarChange) => boolean
+	/**
+	 * Ресурсы (комнаты, люди): в неделе и дне — колонки по ресурсам, в неделе у каждого ресурса свои дни. Событие
+	 * показано в колонке своего `resourceId`; событие без ресурса или с чужим `resourceId` в неделе и дне не видно,
+	 * в месяце и списке — как обычно. Перенос в колонку другого ресурса меняет `resourceId` в `event-change`
+	 */
+	resources?: EventCalendarResource[]
 }
 
 /** Событие, которое нажали: исходное, начало и конец показа (у повтора — этого повтора) */
@@ -71,6 +87,8 @@ export interface EventCalendarEventPayload {
 /** Выделенное время или пустое место для нового события: начало, конец (не входит), весь ли день */
 export interface EventCalendarSelection extends CalendarRange {
 	allDay: boolean
+	/** Ресурс колонки — если заданы `resources` */
+	resourceId?: string | number
 }
 
 /** Изменение события: перенос (`move`) или растягивание (`resize`), новое время и прежнее */
@@ -78,6 +96,9 @@ export interface EventCalendarChange extends EventCalendarEventPayload {
 	type: 'move' | 'resize'
 	oldStart: Date
 	oldEnd: Date
+	/** Ресурс после переноса и до него — если заданы `resources` */
+	resourceId?: string | number
+	oldResourceId?: string | number
 }
 
 /** Показанный период: вид, начало и конец (не входит) — для загрузки событий приложением */
@@ -144,6 +165,12 @@ export interface EventCalendarHeaderDaySlotProps {
 	isToday: boolean
 }
 
+/** Данные слота заголовка ресурса: ресурс и его дни в показанном периоде */
+export interface EventCalendarResourceSlotProps {
+	resource: EventCalendarResource
+	days: Date[]
+}
+
 /**
  * Слоты компонента BaseEventCalendar
  */
@@ -169,6 +196,10 @@ export interface BaseEventCalendarSlots {
 	'header-day'?: (props: EventCalendarHeaderDaySlotProps) => unknown
 	/** Подпись строки событий на весь день в неделе и дне (по умолчанию «Весь день») */
 	'all-day'?: () => unknown
+	/** Заголовок ресурса над его колонками в неделе и дне — для всех ресурсов; у ресурса со своим слотом — он */
+	resource?: (props: EventCalendarResourceSlotProps) => unknown
+	/** Заголовок одного ресурса по его `id`: `resource-room-1` — ресурс с `id: 'room-1'` */
+	[name: `resource-${string}`]: ((props: EventCalendarResourceSlotProps) => unknown) | undefined
 	/** Пустой вид «Список»: в периоде нет событий */
 	empty?: () => unknown
 }

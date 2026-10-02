@@ -4,6 +4,7 @@
 	--slot-height: #{sz(24px)};
 	--axis-width: #{sz(56px)};
 	--grid-line: var(--rise-border-muted);
+	--grid-line-strong: var(--rise-border);
 
 	display: flex;
 	flex-direction: column;
@@ -306,6 +307,7 @@
 		border-radius: sz(var(--rise-radius-md));
 	}
 
+	&__resource-head,
 	&__time-head,
 	&__all-day,
 	&__time-canvas {
@@ -316,6 +318,24 @@
 	&__all-day {
 		grid-template-columns: var(--axis-width) minmax(0, 1fr);
 		border-bottom: 1px solid var(--grid-line);
+	}
+
+	&__resource {
+		grid-column: span var(--span);
+		min-width: 0;
+		padding: sz(6px) sz(8px);
+		overflow: hidden;
+		border-bottom: 1px solid var(--grid-line);
+		border-left: 2px solid var(--grid-line-strong);
+		font-weight: var(--rise-font-weight-semibold);
+		text-align: center;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	&__header-day--resource-start,
+	&__column--resource-start {
+		border-left: 2px solid var(--grid-line-strong);
 	}
 
 	&__header-day {

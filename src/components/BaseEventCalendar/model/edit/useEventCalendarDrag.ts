@@ -8,6 +8,7 @@ import type {
 	EventCalendarContext,
 	EventCalendarEditKind,
 	EventCalendarPress,
+	EventCalendarSlot,
 	EventCalendarTime,
 	ScreenPoint,
 } from '../../types/BaseEventCalendarModel.types'
@@ -20,10 +21,13 @@ function slotEnd(slot: Date, kind: EventCalendarEditKind, step: number): Date {
 	return kind === 'time' ? new Date(slot.getTime() + step * MINUTE) : addDays(slot, 1)
 }
 
-function draggedTime(context: EventCalendarContext, press: EventCalendarPress, slot: Date): EventCalendarTime {
+function draggedTime(context: EventCalendarContext, press: EventCalendarPress, slot: EventCalendarSlot): EventCalendarTime {
 	const step = context.step.value
-	if (press.isResize) return resizedTime(press.item, slotEnd(slot, press.kind, step), leastLength(press.kind, step))
-	return movedTime(press.item, shiftBetween(press.origin, slot))
+	if (press.isResize) {
+		const time = resizedTime(press.item, slotEnd(slot.date, press.kind, step), leastLength(press.kind, step))
+		return { ...time, resourceId: press.origin.resourceId }
+	}
+	return { ...movedTime(press.item, shiftBetween(press.origin.date, slot.date)), resourceId: slot.resourceId }
 }
 
 export function useEventCalendarDrag(context: EventCalendarContext) {

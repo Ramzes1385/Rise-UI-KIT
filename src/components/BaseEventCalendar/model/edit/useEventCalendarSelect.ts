@@ -1,10 +1,11 @@
 import { formatMessage } from '@/locales/state'
 import { UI_EVENT_CALENDAR } from '@/locales/messages'
 import { computed, ref, shallowRef, useId } from 'vue'
+import { addDays, startOfDay } from '@utils/calendar/eventUtils'
 import { useEventCalendarPointer } from './useEventCalendarPointer'
-import { addDays, startOfDay, toDayKey } from '@utils/calendar/eventUtils'
 import type { EventCalendarSelection } from '../../types/BaseEventCalendar.types'
 import { DEFAULT_SCROLL_MINUTE, parseMinutes } from '../useEventCalendarTimeGrid'
+import { columnKey, isSameResource, neighborColumn, resourceOfElement } from '../eventCalendarResources'
 import {
 	DAY_CELL,
 	MINUTE,
@@ -18,12 +19,14 @@ import {
 	minuteAt,
 	minuteOf,
 	slotLocator,
+	columnSelector,
 } from './eventCalendarEditDom'
 import type {
 	EventCalendarContext,
 	EventCalendarMonthDay,
 	EventCalendarSelectionApi,
 	EventCalendarSelectionState,
+	EventCalendarSlot,
 	ScreenPoint,
 	EventCalendarTimeDay,
 } from '../../types/BaseEventCalendarModel.types'
@@ -36,7 +39,10 @@ const MINUTES_PER_DAY = 1440
 
 function toRange(state: EventCalendarSelectionState, step: number): EventCalendarSelection {
 	const [first, last] = state.anchor <= state.focus ? [state.anchor, state.focus] : [state.focus, state.anchor]
-	return { start: first, end: state.allDay ? addDays(last, 1) : new Date(last.getTime() + step * MINUTE), allDay: state.allDay }
+	const end = state.allDay ? addDays(last, 1) : new Date(last.getTime() + step * MINUTE)
+	const range: EventCalendarSelection = { start: first, end, allDay: state.allDay }
+	if (state.resourceId !== undefined) range.resourceId = state.resourceId
+	return range
 }
 
 function percent(value: number): string {
@@ -71,12 +77,14 @@ function useSelectionState(context: EventCalendarContext): EventCalendarSelectio
 
 function useSelectPointer(context: EventCalendarContext, api: EventCalendarSelectionApi, setCursor: (minute: number) => void) {
 	const track = useEventCalendarPointer()
-	const start = (state: EventCalendarSelectionState, locate: (point: ScreenPoint) => Date | null): void => {
+	const start = (state: EventCalendarSelectionState, locate: (point: ScreenPoint) => EventCalendarSlot | null): void => {
 		api.selection.value = state
 		track({
 			move(point) {
-				const focus = locate(point)
-				if (focus && api.selection.value) api.selection.value = { ...api.selection.value, focus }
+				const slot = locate(point)
+				const current = api.selection.value
+				const isSameColumnGroup = current?.resourceId === undefined || isSameResource(slot?.resourceId, current.resourceId)
+				if (slot && current && isSameColumnGroup) api.selection.value = { ...current, focus: slot.date }
 			},
 			up() {
 				if (!api.selection.value) return
@@ -102,22 +110,24 @@ function useSelectPointer(context: EventCalendarContext, api: EventCalendarSelec
 			const date = column && dayOf(column)
 			if (!column || !date) return
 			const anchor = atMinute(date, minuteAt(column, event.clientY, context.step.value))
-			start({ anchor, focus: anchor, allDay: false }, slotLocator(context, 'time'))
+			const resourceId = resourceOfElement(context, column)
+			start({ anchor, focus: anchor, allDay: false, resourceId }, slotLocator(context, 'time'))
 		},
 	}
 }
 
-function stepTime(context: EventCalendarContext, key: string, point: Date): Date | null {
+function stepTime(context: EventCalendarContext, event: KeyboardEvent, slot: EventCalendarSlot): EventCalendarSlot | null {
 	const step = context.step.value
+	const point = slot.date
 	const minute = minuteOf(point)
-	const { start, end } = context.period.value
-	const steps: Record<string, () => Date | null> = {
-		ArrowUp: () => (minute - step >= 0 ? atMinute(point, minute - step) : null),
-		ArrowDown: () => (minute + step < MINUTES_PER_DAY ? atMinute(point, minute + step) : null),
-		ArrowLeft: () => (addDays(point, -1) >= start ? addDays(point, -1) : null),
-		ArrowRight: () => (addDays(point, 1) < end ? addDays(point, 1) : null),
+	const vertical = (next: Date): EventCalendarSlot => ({ ...slot, date: next })
+	const steps: Record<string, () => EventCalendarSlot | null> = {
+		ArrowUp: () => (minute - step >= 0 ? vertical(atMinute(point, minute - step)) : null),
+		ArrowDown: () => (minute + step < MINUTES_PER_DAY ? vertical(atMinute(point, minute + step)) : null),
+		ArrowLeft: () => neighborColumn(context, slot, { direction: -1, isSameResourceOnly: event.shiftKey }),
+		ArrowRight: () => neighborColumn(context, slot, { direction: 1, isSameResourceOnly: event.shiftKey }),
 	}
-	return Object.hasOwn(steps, key) ? steps[key]() : null
+	return Object.hasOwn(steps, event.key) ? steps[event.key]() : null
 }
 
 function handleAction(api: EventCalendarSelectionApi, event: KeyboardEvent, current: EventCalendarSelectionState): boolean {
@@ -131,24 +141,40 @@ function handleAction(api: EventCalendarSelectionApi, event: KeyboardEvent, curr
 function moveCursor(
 	context: EventCalendarContext,
 	api: EventCalendarSelectionApi,
-	move: { event: KeyboardEvent; point: Date; next: Date },
+	move: { event: KeyboardEvent; point: EventCalendarSlot; next: EventCalendarSlot },
 ): void {
 	const { event, point, next } = move
 	event.preventDefault()
 	const previous = api.selection.value
-	const anchor = previous && !previous.allDay ? previous.anchor : point
-	if (toDayKey(next) !== toDayKey(point)) {
-		context.setDate(next)
-		focusIn(context.rootRef.value, `${TIME_COLUMN}[data-day="${toDayKey(next)}"]`)
-	}
-	api.update(event.shiftKey ? { anchor, focus: next, allDay: false } : null)
-	if (!event.shiftKey) context.status.value = formatPosition(next)
+	const anchor = previous && !previous.allDay ? previous.anchor : point.date
+	const key = columnKey(next.date, next.resourceId)
+	if (key !== columnKey(point.date, point.resourceId)) focusIn(context.rootRef.value, columnSelector(key))
+	api.update(event.shiftKey ? { anchor, focus: next.date, allDay: false, resourceId: point.resourceId } : null)
+	if (!event.shiftKey) context.status.value = formatPosition(next.date)
+}
+
+function monthKeydown(
+	context: EventCalendarContext,
+	api: EventCalendarSelectionApi,
+	key: { event: KeyboardEvent; move: (event: KeyboardEvent) => void },
+): void {
+	const { event, move } = key
+	const { date } = context
+	const isCell = (event.target as HTMLElement).getAttribute('role') === 'gridcell'
+	const day = { anchor: date.value, focus: date.value, allDay: true }
+	if (!context.props.isSelectable || !isCell) return move(event)
+	if (handleAction(api, event, day)) return
+	const previous = api.selection.value
+	const anchor = previous?.allDay ? previous.anchor : date.value
+	move(event)
+	if (NAV_KEYS.has(event.key)) api.update(event.shiftKey ? { anchor, focus: date.value, allDay: true } : null)
 }
 
 function useSelectKeyboard(context: EventCalendarContext, api: EventCalendarSelectionApi) {
 	const { props, date, status } = context
 	const cursor = ref<number | null>(null)
 	const activeColumn = ref<string | null>(null)
+	const activeResource = ref<string | number | undefined>(undefined)
 	let isKeepingStatus = false
 	const initialMinute = (): number => {
 		const minute = (props.workHours && parseMinutes(props.workHours.start)) ?? DEFAULT_SCROLL_MINUTE
@@ -158,35 +184,31 @@ function useSelectKeyboard(context: EventCalendarContext, api: EventCalendarSele
 	return {
 		cursor,
 		activeColumn,
+		activeResource,
 		setCursor: (minute: number): void => {
 			cursor.value = minute
 		},
-		handleMonthKeydown(event: KeyboardEvent, move: (event: KeyboardEvent) => void): void {
-			const isCell = (event.target as HTMLElement).getAttribute('role') === 'gridcell'
-			const day = { anchor: date.value, focus: date.value, allDay: true }
-			if (!props.isSelectable || !isCell) return move(event)
-			if (handleAction(api, event, day)) return
-			const previous = api.selection.value
-			const anchor = previous?.allDay ? previous.anchor : date.value
-			move(event)
-			if (NAV_KEYS.has(event.key)) api.update(event.shiftKey ? { anchor, focus: date.value, allDay: true } : null)
-		},
+		handleMonthKeydown: (event: KeyboardEvent, move: (event: KeyboardEvent) => void): void =>
+			monthKeydown(context, api, { event, move }),
 		handleColumnKeydown(event: KeyboardEvent, day: EventCalendarTimeDay): void {
 			if (!props.isSelectable || event.target !== event.currentTarget) return
-			const point = pointOf(day.date)
-			if (handleAction(api, event, { anchor: point, focus: point, allDay: false })) return
-			const next = stepTime(context, event.key, point)
+			const point = { date: pointOf(day.date), resourceId: day.resource?.id }
+			const current = { anchor: point.date, focus: point.date, allDay: false, resourceId: point.resourceId }
+			if (handleAction(api, event, current)) return
+			const next = stepTime(context, event, point)
 			if (!next) return
-			cursor.value = minuteOf(next)
-			isKeepingStatus = event.shiftKey && toDayKey(next) !== toDayKey(point)
+			cursor.value = minuteOf(next.date)
+			isKeepingStatus = event.shiftKey && columnKey(next.date, next.resourceId) !== columnKey(point.date, point.resourceId)
 			moveCursor(context, api, { event, point, next })
 		},
 		handleColumnFocus(day: EventCalendarTimeDay): void {
 			if (!props.isSelectable) return
 			activeColumn.value = day.key
+			activeResource.value = day.resource?.id
 			cursor.value ??= initialMinute()
-			if (day.key !== toDayKey(date.value)) context.setDate(day.date)
-			if (!isKeepingStatus) status.value = formatPosition(pointOf(day.date))
+			if (day.date.getTime() !== date.value.getTime()) context.setDate(day.date)
+			const position = formatPosition(pointOf(day.date))
+			if (!isKeepingStatus) status.value = day.resource ? `${day.name}, ${position}` : position
 			isKeepingStatus = false
 		},
 		handleColumnBlur(): void {
@@ -207,7 +229,7 @@ function dayBand(range: { start: Date; end: Date }, day: Date) {
 export function useEventCalendarSelect(context: EventCalendarContext) {
 	const api = useSelectionState(context)
 	const keyboard = useSelectKeyboard(context, api)
-	const { cursor, activeColumn } = keyboard
+	const { cursor, activeColumn, activeResource } = keyboard
 	return {
 		...useSelectPointer(context, api, keyboard.setCursor),
 		selectHintId: `${useId()}-select-hint`,
@@ -219,9 +241,16 @@ export function useEventCalendarSelect(context: EventCalendarContext) {
 			const range = api.range.value
 			return Boolean(range?.allDay && day.date >= range.start && day.date < range.end)
 		},
+		isColumnFocusable(day: EventCalendarTimeDay, focusedKey: string): boolean {
+			if (day.dayKey !== focusedKey) return false
+			const first = context.resources.value[0]
+			return !day.resource || isSameResource(day.resource.id, activeResource.value ?? first?.id)
+		},
 		selectionStyle(day: EventCalendarTimeDay) {
 			const range = api.range.value
-			return range && !range.allDay ? dayBand(range, startOfDay(day.date)) : null
+			if (!range || range.allDay) return null
+			if (range.resourceId !== undefined && !isSameResource(range.resourceId, day.resource?.id)) return null
+			return dayBand(range, startOfDay(day.date))
 		},
 		cursorStyle(day: EventCalendarTimeDay) {
 			if (activeColumn.value !== day.key || cursor.value === null) return null

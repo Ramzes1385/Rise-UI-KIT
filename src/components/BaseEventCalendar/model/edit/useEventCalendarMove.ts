@@ -2,8 +2,9 @@ import { shallowRef } from 'vue'
 import { formatMessage } from '@/locales/state'
 import { UI_EVENT_CALENDAR } from '@/locales/messages'
 import { focusIn, formatRange } from './eventCalendarEditDom'
+import { findResource, neighborColumn } from '../eventCalendarResources'
 import type { NormalizedCalendarEvent } from '@utils/calendar/eventUtils'
-import { emitChange, isInPeriod, leastLength, makeDraft, movedTime, resizedTime, shiftDate } from './eventCalendarChange'
+import { emitChange, isInPeriod, leastLength, makeDraft, movedTime, resizedTime, shiftBetween, shiftDate } from './eventCalendarChange'
 import type {
 	EventCalendarAnnouncement,
 	EventCalendarContext,
@@ -24,9 +25,21 @@ function stepOf(kind: EventCalendarEditKind, key: string, step: number): EventCa
 	return Object.hasOwn(steps, key) ? steps[key] : null
 }
 
-function nextTime(current: EventCalendarTime, grab: EventCalendarGrab, move: { by: EventCalendarShift; isResize: boolean; step: number }) {
-	if (!move.isResize) return movedTime(current, move.by)
-	return resizedTime(current, shiftDate(current.end, move.by), leastLength(grab.kind, move.step))
+function nextTime(
+	current: EventCalendarTime,
+	grab: EventCalendarGrab,
+	move: { by: EventCalendarShift; isResize: boolean; step: number },
+): EventCalendarTime {
+	if (!move.isResize) return { ...movedTime(current, move.by), resourceId: current.resourceId }
+	return { ...resizedTime(current, shiftDate(current.end, move.by), leastLength(grab.kind, move.step)), resourceId: current.resourceId }
+}
+
+function columnTime(context: EventCalendarContext, current: EventCalendarTime, key: string): EventCalendarTime | null {
+	const direction = { ArrowLeft: -1, ArrowRight: 1 }[key]
+	if (!direction) return null
+	const next = neighborColumn(context, { date: current.start, resourceId: current.resourceId }, { direction })
+	if (!next) return null
+	return { ...movedTime(current, shiftBetween(current.start, next.date)), resourceId: next.resourceId }
 }
 
 function eventSelector(key: string): string {
@@ -38,8 +51,20 @@ function announceMove(
 	message: EventCalendarAnnouncement,
 	target: { item: NormalizedCalendarEvent; time: EventCalendarTime },
 ): void {
-	const range = formatRange({ start: target.time.start, end: target.time.end, allDay: target.item.allDay })
+	const time = formatRange({ start: target.time.start, end: target.time.end, allDay: target.item.allDay })
+	const resource = findResource(context, target.time.resourceId)
+	const range = resource ? formatMessage(UI_EVENT_CALENDAR.RESOURCE_COLUMN, { resource: resource.title, day: time }) : time
 	context.status.value = formatMessage(UI_EVENT_CALENDAR[message], { title: target.item.event.title, range })
+}
+
+function keyTime(
+	context: EventCalendarContext,
+	key: { event: KeyboardEvent; grab: EventCalendarGrab; current: EventCalendarTime; by: EventCalendarShift },
+): EventCalendarTime {
+	const { event, grab, current, by } = key
+	const move = { by, isResize: event.shiftKey, step: context.step.value }
+	const isColumnStep = context.resources.value.length > 0 && grab.kind !== 'month' && !event.shiftKey
+	return (isColumnStep && columnTime(context, current, event.key)) || nextTime(current, grab, move)
 }
 
 export function useEventCalendarMove(context: EventCalendarContext) {
@@ -59,7 +84,7 @@ export function useEventCalendarMove(context: EventCalendarContext) {
 		const current = context.draft.value
 		if (!by || !current) return
 		event.preventDefault()
-		const time = nextTime(current, grab, { by, isResize: event.shiftKey, step: context.step.value })
+		const time = keyTime(context, { event, grab, current, by })
 		if (!isInPeriod(context, time.start)) return
 		const draft = makeDraft(context, grab.item, time)
 		if (draft.isBlocked) return announce('BLOCKED', grab.item, time)
@@ -86,7 +111,8 @@ export function useEventCalendarMove(context: EventCalendarContext) {
 			if (event.key !== ' ') return
 			event.preventDefault()
 			grabbed.value = { item, kind }
-			context.draft.value = { key: item.key, start: item.start, end: item.end, isBlocked: false }
+			const resourceId = context.resources.value.length ? item.event.resourceId : undefined
+			context.draft.value = { key: item.key, start: item.start, end: item.end, isBlocked: false, resourceId }
 			announce('PICKED', item)
 		},
 	}
