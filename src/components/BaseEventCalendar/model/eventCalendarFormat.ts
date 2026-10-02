@@ -11,8 +11,20 @@ const VIEW_LABELS = {
 	list: 'VIEW_LIST',
 } as const
 
+const formatters = new Map<string, Intl.DateTimeFormat>()
+
+function formatter(options: Intl.DateTimeFormatOptions): Intl.DateTimeFormat {
+	const { intl } = getLocale()
+	const key = `${intl}|${JSON.stringify(options)}`
+	const cached = formatters.get(key)
+	if (cached) return cached
+	const created = new Intl.DateTimeFormat(intl, options)
+	formatters.set(key, created)
+	return created
+}
+
 function format(date: Date, options: Intl.DateTimeFormatOptions): string {
-	return new Intl.DateTimeFormat(getLocale().intl, options).format(date)
+	return formatter(options).format(date)
 }
 
 function capitalize(text: string): string {
@@ -46,8 +58,7 @@ export function weekdayNames(firstDay: number): string[] {
 
 export function periodTitle(period: EventCalendarPeriod, date: Date): string {
 	if (period.view === 'week') {
-		const formatter = new Intl.DateTimeFormat(getLocale().intl, { day: 'numeric', month: 'short', year: 'numeric' })
-		return formatter.formatRange(period.start, addDays(period.end, -1))
+		return formatter({ day: 'numeric', month: 'short', year: 'numeric' }).formatRange(period.start, addDays(period.end, -1))
 	}
 	if (period.view === 'day') return capitalize(formatFullDate(date))
 	return capitalize(format(date, { month: 'long', year: 'numeric' }))

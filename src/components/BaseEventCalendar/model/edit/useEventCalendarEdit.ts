@@ -12,6 +12,7 @@ export function useEventCalendarEdit(context: EventCalendarContext, open: (item:
 		editHintId: `${useId()}-edit-hint`,
 		handleEventPointerDown: drag.handleEventPointerDown,
 		handleEventKeydown: move.handleEventKeydown,
+		handleEventFocusout: move.handleEventFocusout,
 		handleEventClick(item: NormalizedCalendarEvent): void {
 			if (!drag.isClickSuppressed() && !move.grabbedKey()) open(item)
 		},

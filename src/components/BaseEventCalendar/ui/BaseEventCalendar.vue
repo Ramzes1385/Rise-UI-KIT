@@ -93,7 +93,8 @@
 							:data-event-key="segment.item.key"
 							@click="handleEventClick(segment.item)"
 							@pointerdown="handleEventPointerDown($event, segment.item, 'month')"
-							@keydown="handleEventKeydown($event, segment.item, 'month')">
+							@keydown="handleEventKeydown($event, segment.item, 'month')"
+							@focusout="handleEventFocusout">
 							<slot v-if="eventSlot(segment.item)" :name="eventSlot(segment.item)!" v-bind="eventSlotProps(segment.item)" />
 							<template v-else>
 								<span v-if="eventStart(segment.item)" class="base-event-calendar__event-time">{{
@@ -219,7 +220,8 @@
 						:data-event-key="segment.item.key"
 						@click="handleEventClick(segment.item)"
 						@pointerdown="handleEventPointerDown($event, segment.item, 'all-day')"
-						@keydown="handleEventKeydown($event, segment.item, 'all-day')">
+						@keydown="handleEventKeydown($event, segment.item, 'all-day')"
+						@focusout="handleEventFocusout">
 						<slot v-if="eventSlot(segment.item)" :name="eventSlot(segment.item)!" v-bind="eventSlotProps(segment.item)" />
 						<span v-else class="base-event-calendar__event-title">{{ segment.item.event.title }}</span>
 						<span v-if="canResizeBar(segment)" class="base-event-calendar__resize" aria-hidden="true"></span>
@@ -270,7 +272,8 @@
 							:data-event-key="segment.item.key"
 							@click="handleEventClick(segment.item)"
 							@pointerdown="handleEventPointerDown($event, segment.item, 'time')"
-							@keydown="handleEventKeydown($event, segment.item, 'time')">
+							@keydown="handleEventKeydown($event, segment.item, 'time')"
+							@focusout="handleEventFocusout">
 							<slot v-if="eventSlot(segment.item)" :name="eventSlot(segment.item)!" v-bind="eventSlotProps(segment.item)" />
 							<template v-else>
 								<span class="base-event-calendar__event-title">{{ segment.item.event.title }}</span>
@@ -394,5 +397,6 @@ const {
 	canResizeBlock,
 	handleEventPointerDown,
 	handleEventKeydown,
+	handleEventFocusout,
 } = useBaseEventCalendar(props, emit)
 </script>
