@@ -39,9 +39,9 @@ export interface ImageMapRouteTransition {
 	type?: ImageMapTransitionType
 	/** Название в шагах маршрута: «Лестница А», «Лифт у входа» */
 	title?: string
-	/** Узлы перехода на разных слоях — снизу вверх: соседние в списке соединены */
+	/** Узлы перехода на разных слоях: соседние в списке соединены. «Вверх» и «вниз» в шагах — по порядку слоёв `data.layers` */
 	nodes: string[]
-	/** Только снизу вверх (эскалатор вверх); вниз — переверните `nodes` */
+	/** Проход только в порядке `nodes`: эскалатор вверх — узлы снизу вверх, эскалатор вниз — сверху вниз */
 	isOneWay?: boolean
 	/** Без ступеней — для маршрута «Без лестниц»; по умолчанию у лифта и пандуса */
 	isStepFree?: boolean
@@ -119,6 +119,14 @@ export interface RouteGraph {
 	nodes: Map<string, ImageMapRouteNode>
 	links: Map<string, RouteLink[]>
 	layerOf: (node: ImageMapRouteNode) => string
+	/** Слой по id — пропорции для длины пути */
+	layerInfo: (id: string) => ImageMapLayer | undefined
+}
+
+/** Точка слоя в долях картинки */
+export interface RoutePoint {
+	x: number
+	y: number
 }
 
 /** Данные для построения графа */

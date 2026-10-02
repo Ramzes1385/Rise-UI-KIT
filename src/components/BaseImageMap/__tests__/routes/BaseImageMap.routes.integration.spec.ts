@@ -1,12 +1,12 @@
 import '@testing-library/jest-dom/vitest'
 import { ref } from 'vue'
-import BaseImageMap from '../ui/BaseImageMap.vue'
 import userEvent from '@testing-library/user-event'
-import type { ImageMapData } from '../types/imageMapData.types'
-import { IMAGE_MAP_MALL_ROUTES } from '../stories/routesFixtures'
-import type { BaseImageMapExpose } from '../types/BaseImageMap.types'
+import BaseImageMap from '../../ui/BaseImageMap.vue'
+import type { ImageMapData } from '../../types/imageMapData.types'
+import { IMAGE_MAP_MALL_ROUTES } from '../../stories/routesFixtures'
 import { render, screen, waitFor, within } from '@testing-library/vue'
-import type { ImageMapRouteResult, ImageMapRouteValue } from '../types/ImageMapRoutes.types'
+import type { BaseImageMapExpose } from '../../types/BaseImageMap.types'
+import type { ImageMapRouteResult, ImageMapRouteValue } from '../../types/ImageMapRoutes.types'
 
 const data = IMAGE_MAP_MALL_ROUTES
 const BASE_PROPS = { data, hasRoutes: true, hasZoomControls: false, hasFullscreen: false }
@@ -181,5 +181,25 @@ describe('BaseImageMap integration — маршруты', () => {
 		mapRef.value?.clearRoute()
 		await waitFor(() => expect(within(panel()).getByRole('status')).toHaveTextContent(''))
 		expect(emitted()).toBeDefined()
+	})
+})
+
+describe('BaseImageMap integration — маршруты: исправления по проверке', () => {
+	it('новый объект data с тем же маршрутом не шлёт route-change и не меняет этаж; новый запрос — шлёт', async () => {
+		const { emitted, rerender } = render(BaseImageMap, { props: { ...BASE_PROPS, route: TO_CINEMA } })
+		expect(routeChanges(emitted())).toHaveLength(1)
+		expect(emitted()['update:layer']).toEqual([['floor-1']])
+		await rerender({ data: { ...data, objects: data.objects.map(object => ({ ...object })) } })
+		expect(routeChanges(emitted())).toHaveLength(1)
+		expect(emitted()['update:layer']).toEqual([['floor-1']])
+		await rerender({ route: { ...TO_CINEMA, isStepFree: true } })
+		expect(routeChanges(emitted())).toHaveLength(2)
+	})
+
+	it('после «Сбросить маршрут» фокус — в поле «Откуда»', async () => {
+		const user = userEvent.setup()
+		render(BaseImageMap, { props: { ...BASE_PROPS, route: TO_CINEMA } })
+		await user.click(within(panel()).getByRole('button', { name: 'Сбросить маршрут' }))
+		await waitFor(() => expect(document.activeElement).toBe(within(panel()).getByRole('combobox', { name: 'Откуда' })))
 	})
 })

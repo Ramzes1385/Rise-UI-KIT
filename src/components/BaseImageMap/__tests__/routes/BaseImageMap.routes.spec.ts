@@ -1,9 +1,9 @@
-import { MALL_ROUTES } from '../stories/routesFixtures'
-import { routeLines, routeMarkers } from '../model/routes/routeView'
-import { routeSteps, walkedMeters } from '../model/routes/routeSteps'
-import type { ImageMapRoutes, RouteGraph } from '../types/ImageMapRoutes.types'
-import type { ImageMapLayer, ImageMapObject } from '../types/imageMapData.types'
-import { buildRouteGraph, findRoutePath, isStepFree, objectNodes, transitionType } from '../model/routes/routeGraph'
+import { MALL_ROUTES } from '../../stories/routesFixtures'
+import { routeLines, routeMarkers } from '../../model/routes/routeView'
+import { routeSteps, walkedMeters } from '../../model/routes/routeSteps'
+import type { ImageMapRoutes, RouteGraph } from '../../types/ImageMapRoutes.types'
+import type { ImageMapLayer, ImageMapObject } from '../../types/imageMapData.types'
+import { buildRouteGraph, findRoutePath, isStepFree, objectNodes, transitionType } from '../../model/routes/routeGraph'
 
 const LAYERS: ImageMapLayer[] = [1, 2, 3].map(level => ({ id: `floor-${level}`, title: `${level} этаж`, width: 1000, height: 600 }))
 
@@ -106,6 +106,22 @@ describe('routeGraph', () => {
 		expect(objectNodes(graph, point, 'floor-2')).toEqual(['f2-c2'])
 		const rect: ImageMapObject = { id: 'zone', type: 'rect', title: 'Зона', x: 0.5, y: 0.45, width: 0.2, height: 0.1 }
 		expect(objectNodes(graph, rect, 'floor-1')).toEqual(['f1-c3'])
+	})
+
+	it('ближайший узел объекта без входа — с пропорциями слоя, как длина коридора', () => {
+		const graph = buildRouteGraph({
+			routes: {
+				nodes: [
+					{ id: 'side', x: 0.2, y: 0.5 },
+					{ id: 'below', x: 0, y: 0.8 },
+				],
+				edges: [],
+			},
+			layers: [{ id: 'wide', title: 'W', width: 1000, height: 600 }],
+			isStepFree: false,
+		})
+		const point: ImageMapObject = { id: 'p', type: 'point', title: 'P', x: 0, y: 0.5 }
+		expect(objectNodes(graph, point, 'wide')).toEqual(['below'])
 	})
 
 	it('без входа объект `svg` и объект на слое без узлов к графу не привязаны', () => {
@@ -225,6 +241,27 @@ describe('routeSteps', () => {
 			'Начните у «А» (x)',
 			'Идите к лифту «Лифт»',
 			'Поднимитесь на лифте: y',
+			'Идите к «Б»',
+		])
+	})
+
+	it('вверх и вниз — по порядку слоёв: эскалатор вниз с узлами сверху вниз и isOneWay', () => {
+		const routes: ImageMapRoutes = {
+			nodes: [
+				{ id: 'a', layer: 'floor-2', x: 0, y: 0 },
+				{ id: 'b', layer: 'floor-1', x: 0, y: 0 },
+			],
+			edges: [],
+			transitions: [{ id: 'down', type: 'escalator', nodes: ['a', 'b'], isOneWay: true }],
+		}
+		const graph = buildRouteGraph({ routes, layers: LAYERS, isStepFree: false })
+		expect(findRoutePath(graph, ['b'], ['a'])).toBeNull()
+		const path = findRoutePath(graph, ['a'], ['b'])!
+		const steps = routeSteps({ graph, path, from: shop('a', 'А'), to: shop('b', 'Б'), layers: LAYERS })
+		expect(steps.map(step => step.text)).toEqual([
+			'Начните у «А» (2 этаж)',
+			'Идите к эскалатору',
+			'Спуститесь на эскалаторе: 1 этаж',
 			'Идите к «Б»',
 		])
 	})

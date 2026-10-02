@@ -3,6 +3,7 @@
 		<p class="base-image-map__route-title" aria-hidden="true">{{ UI_IMAGE_MAP_ROUTES.TITLE }}</p>
 		<div class="base-image-map__route-fields">
 			<BaseSelect
+				ref="fromRef"
 				class="base-image-map__route-field"
 				:label="UI_IMAGE_MAP_ROUTES.FROM"
 				:placeholder="UI_IMAGE_MAP_ROUTES.PLACEHOLDER"
@@ -33,11 +34,7 @@
 				:label="UI_IMAGE_MAP_ROUTES.STEP_FREE"
 				:model-value="Boolean(value.isStepFree)"
 				@update:model-value="$emit('update:value', { ...value, isStepFree: $event })" />
-			<BaseButton
-				v-if="value.from || value.to"
-				variant="ghost"
-				:size-scale="85"
-				@click="$emit('update:value', { from: null, to: null, isStepFree: value.isStepFree })">
+			<BaseButton v-if="value.from || value.to" variant="ghost" :size-scale="85" @click="clear">
 				{{ UI_IMAGE_MAP_ROUTES.CLEAR }}
 			</BaseButton>
 		</div>
@@ -70,9 +67,12 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseSelect } from '@components/BaseSelect'
 import { BaseSwitch } from '@components/BaseSwitch'
 import { UI_IMAGE_MAP_ROUTES } from '@/locales/messages'
+import { useRoutePanel } from '../model/routes/useRoutePanel'
 import type { ImageMapRoutePanelEmits, ImageMapRoutePanelProps } from '../types/ImageMapRoutes.types'
 
-defineProps<ImageMapRoutePanelProps>()
+const props = defineProps<ImageMapRoutePanelProps>()
 
-defineEmits<ImageMapRoutePanelEmits>()
+const emit = defineEmits<ImageMapRoutePanelEmits>()
+
+const { clear } = useRoutePanel(props, emit)
 </script>

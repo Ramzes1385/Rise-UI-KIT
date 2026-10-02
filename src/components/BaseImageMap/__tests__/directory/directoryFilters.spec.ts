@@ -1,5 +1,5 @@
 import { effectScope, nextTick, reactive } from 'vue'
-import { directoryData } from '../imageMapDirectory.test-utils'
+import { directoryData } from './imageMapDirectory.test-utils'
 import { useImageMapData } from '../../model/data/useImageMapData'
 import type { ImageMapProps } from '../../types/BaseImageMap.types'
 import type { ImageMapObject } from '../../types/imageMapData.types'

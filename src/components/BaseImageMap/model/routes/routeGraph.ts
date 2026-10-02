@@ -8,6 +8,7 @@ import type {
 	RouteGraphInput,
 	RouteLink,
 	RoutePath,
+	RoutePoint,
 	SearchState,
 } from '../../types/ImageMapRoutes.types'
 
@@ -22,7 +23,7 @@ export function isStepFree(transition: ImageMapRouteTransition): boolean {
 	return transition.isStepFree ?? (type === 'elevator' || type === 'ramp')
 }
 
-function walkCost(from: ImageMapRouteNode, to: ImageMapRouteNode, layer: ImageMapLayer | undefined): number {
+function walkCost(from: RoutePoint, to: RoutePoint, layer: ImageMapLayer | undefined): number {
 	const ratio = layer ? layer.height / layer.width : 1
 	return Math.hypot(to.x - from.x, (to.y - from.y) * ratio)
 }
@@ -43,17 +44,14 @@ function addTransition(graph: RouteGraph, transition: ImageMapRouteTransition): 
 
 export function buildRouteGraph({ routes, layers, isStepFree: onlyStepFree }: RouteGraphInput): RouteGraph {
 	const layerOf = (node: ImageMapRouteNode): string => node.layer ?? layers[0]?.id ?? ''
+	const layerInfo = (id: string): ImageMapLayer | undefined => layers.find(layer => layer.id === id)
 	const nodes = new Map(routes.nodes.map(node => [node.id, node]))
-	const graph: RouteGraph = { nodes, links: new Map(), layerOf }
+	const graph: RouteGraph = { nodes, links: new Map(), layerOf, layerInfo }
 	routes.edges.forEach(([fromId, toId]) => {
 		const from = nodes.get(fromId)
 		const to = nodes.get(toId)
 		if (!from || !to || layerOf(from) !== layerOf(to)) return
-		const cost = walkCost(
-			from,
-			to,
-			layers.find(layer => layer.id === layerOf(from)),
-		)
+		const cost = walkCost(from, to, layerInfo(layerOf(from)))
 		addLink(graph.links, fromId, { to: toId, cost })
 		addLink(graph.links, toId, { to: fromId, cost })
 	})
@@ -73,7 +71,8 @@ export function objectNodes(graph: RouteGraph, object: ImageMapObject, layer: st
 	const center = objectCenter(object)
 	const own = nodes.filter(node => graph.layerOf(node) === layer)
 	if (!center || !own.length) return []
-	const distance = (node: ImageMapRouteNode): number => Math.hypot(node.x - center.x, node.y - center.y)
+	const info = graph.layerInfo(layer)
+	const distance = (node: ImageMapRouteNode): number => walkCost(node, center, info)
 	const nearest = own.reduce((best, node) => (distance(node) < distance(best) ? node : best))
 	return [nearest.id]
 }

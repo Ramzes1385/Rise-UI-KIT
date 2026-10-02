@@ -34,10 +34,20 @@ function walkStep(transition: ImageMapRouteTransition, layer: string, meters: nu
 	return { kind: 'walk', text, layer, meters }
 }
 
+function layerIndex(layers: ImageMapLayer[], id: string): number {
+	return layers.findIndex(layer => layer.id === id)
+}
+
+function isGoingUp(input: StepsInput, transition: ImageMapRouteTransition, [fromId, lastId]: [string, string]): boolean {
+	const fromIndex = layerIndex(input.layers, input.graph.layerOf(input.graph.nodes.get(fromId) as RouteNode))
+	const toIndex = layerIndex(input.layers, input.graph.layerOf(input.graph.nodes.get(lastId) as RouteNode))
+	return fromIndex === toIndex ? transition.nodes.indexOf(lastId) > transition.nodes.indexOf(fromId) : toIndex > fromIndex
+}
+
 function transitionStep(input: StepsInput, links: RouteLink[], fromId: string): ImageMapRouteStep {
 	const transition = links[0]?.transition as ImageMapRouteTransition
 	const lastId = links[links.length - 1]?.to as string
-	const isUp = transition.nodes.indexOf(lastId) > transition.nodes.indexOf(fromId)
+	const isUp = isGoingUp(input, transition, [fromId, lastId])
 	const layer = input.graph.layerOf(input.graph.nodes.get(lastId) as RouteNode)
 	const template = isUp ? UI_IMAGE_MAP_ROUTES.UP : UI_IMAGE_MAP_ROUTES.DOWN
 	return {

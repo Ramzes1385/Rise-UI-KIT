@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom/vitest'
 import { h } from 'vue'
-import BaseImageMap from '../ui/BaseImageMap.vue'
 import userEvent from '@testing-library/user-event'
+import BaseImageMap from '../../ui/BaseImageMap.vue'
 import { getLocale, pluralize } from '@/locales/state'
-import { IMAGE_MAP_HOTSPOTS } from '../stories/fixtures'
 import { UI_IMAGE_MAP, UI_TEXT } from '@/locales/messages'
+import { IMAGE_MAP_HOTSPOTS } from '../../stories/fixtures'
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
 import { DIRECTORY_PROPS, directoryData, entryIds, entryOf, objectOf } from './imageMapDirectory.test-utils'
 

@@ -1,4 +1,4 @@
-import type { ImageMapData, ImageMapFilter, ImageMapObject } from '../types/imageMapData.types'
+import type { ImageMapData, ImageMapFilter, ImageMapObject } from '../../types/imageMapData.types'
 
 export const DIRECTORY_GROUPS = [
 	{ id: 'food', title: 'Кафе', color: 'var(--rise-warning)', icon: 'star' },

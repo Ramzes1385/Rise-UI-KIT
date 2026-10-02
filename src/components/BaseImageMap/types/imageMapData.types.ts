@@ -257,7 +257,7 @@ export type ImageMapObject = ImageMapPoint | ImageMapRect | ImageMapEllipse | Im
 export interface ImageMapData {
 	/** Версия формата; сейчас 1 */
 	version?: number
-	/** Слои (этажи); первый показывается по умолчанию */
+	/** Слои (этажи) снизу вверх — по этому порядку «вверх» и «вниз» в маршрутах; первый показывается по умолчанию */
 	layers: ImageMapLayer[]
 	/** Объекты всех слоёв */
 	objects: ImageMapObject[]

@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom/vitest'
 import { h } from 'vue'
 import { setLocale } from '@/locales/state'
-import BaseImageMap from '../ui/BaseImageMap.vue'
 import { UI_IMAGE_MAP } from '@/locales/messages'
 import userEvent from '@testing-library/user-event'
-import type { ImageMapData } from '../types/imageMapData.types'
+import BaseImageMap from '../../ui/BaseImageMap.vue'
+import type { ImageMapData } from '../../types/imageMapData.types'
 import { fireEvent, render, screen, within } from '@testing-library/vue'
 
 const FRIDAY_18_MSK = Date.parse('2026-10-02T15:00:00Z')

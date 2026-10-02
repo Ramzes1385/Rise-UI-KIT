@@ -1714,7 +1714,8 @@ API кита не меняется. В Storybook добавлены пример
 
 Новые возможности, по умолчанию выключены: у карт без `data.routes` и `route` вид и поведение прежние.
 
-- Формат JSON (версия 1, только расширен): `routes` — `nodes` (`id`, `layer`, `x`, `y`, `object` — вход объекта), `edges` (`[id, id]`), `transitions` (`id`, `type` `stairs` | `elevator` | `escalator` | `ramp`, `title`, `nodes` снизу вверх, `isOneWay`, `isStepFree`, `cost`), `metersPerWidth`.
+- Формат JSON (версия 1, только расширен): `routes` — `nodes` (`id`, `layer`, `x`, `y`, `object` — вход объекта), `edges` (`[id, id]`), `transitions` (`id`, `type` `stairs` | `elevator` | `escalator` | `ramp`, `title`, `nodes`, `isOneWay` — проход только в порядке `nodes`, `isStepFree`, `cost`), `metersPerWidth`.
+- Слои `data.layers` перечисляются снизу вверх: по их порядку шаги маршрута говорят «поднимитесь» или «спуститесь» (исправление по проверке, new-image-map-stack). Новый объект `data` с тем же маршрутом (те же откуда, куда, «Без лестниц» и путь) не шлёт `route-change` и не переключает этаж; после «Сбросить маршрут» фокус — в поле «Откуда».
 - Пропсы: `hasRoutes`, `route` (`v-model:route`, `ImageMapRouteValue`: `from`, `to`, `isStepFree`); события `update:route`, `route-change` (`ImageMapRouteResult | null`); методы `showRoute(from, to)`, `clearRoute()`; ключ `customClass`: `route`.
 - Поведение: найденный маршрут (и маршрут из `route` при открытии) переключает карту на этаж начала — `update:layer` и `layer-change`. Линия маршрута рисуется поверх фигур и под точками, `pointer-events: none`, `aria-hidden`; текстовый путь — шаги в панели `hasRoutes`.
 - Экспорт: `IMAGE_MAP_TRANSITION_TYPES`, `IMAGE_MAP_ROUTE_STEP_KINDS` и типы `ImageMapRoutes`, `ImageMapRouteNode`, `ImageMapRouteEdge`, `ImageMapRouteTransition`, `ImageMapTransitionType`, `ImageMapRouteValue`, `ImageMapRouteResult`, `ImageMapRouteStep`, `ImageMapRouteStepKind`.

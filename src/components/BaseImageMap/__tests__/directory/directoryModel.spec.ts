@@ -2,7 +2,7 @@ import { directorySections } from '../../model/directory/directorySections'
 import type { ResolvedImageMapObject } from '../../types/imageMapModel.types'
 import type { ImageMapDirectoryEntry } from '../../types/ImageMapDirectory.types'
 import type { ImageMapFilter, ImageMapGroup, ImageMapObject } from '../../types/imageMapData.types'
-import { DIRECTORY_FILTERS, DIRECTORY_GROUPS, directoryData } from '../imageMapDirectory.test-utils'
+import { DIRECTORY_FILTERS, DIRECTORY_GROUPS, directoryData } from './imageMapDirectory.test-utils'
 import {
 	filterOptions,
 	initialFilterValues,
