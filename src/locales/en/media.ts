@@ -248,5 +248,13 @@ export const enMedia = {
 		LOADING: 'Loading map…',
 		ERROR: 'Could not load the map',
 		EMPTY: 'No map layers',
+		DIRECTORY: 'Locations',
+		SEARCH: 'Search the map',
+		SEARCH_PLACEHOLDER: 'Name or category',
+		FILTERS: 'Filters',
+		ALL: 'All',
+		CLEAR_FILTERS: 'Clear filters',
+		LEGEND: 'Legend',
+		OTHER_GROUP: 'Other',
 	},
 }

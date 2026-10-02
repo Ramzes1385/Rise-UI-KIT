@@ -1625,3 +1625,12 @@ API кита не меняется. В Storybook добавлены пример
 
 Что сделать: тесты приложения, которые ждали `aria-invalid` у флажка, переключателя или группы радиокнопок со своей подписью внутри BaseFormField с подписью и ошибкой, — проверять описание группы обёртки (`getByRole('group', { name })` + `toHaveAccessibleDescription`).
 
+## Задача new-image-map-2: BaseImageMap — список объектов, фильтры, легенда, ссылка на объект
+
+Новые возможности, по умолчанию выключены: у карт без новых пропсов вид и поведение прежние.
+
+- Пропсы: `hasDirectory`, `directoryPosition` (`start` | `end`), `directoryView` (`list` | `grid`), `directoryGroupBy` (`group` | `alpha` | `none`), `directoryScope` (`all` | `layer`), `hasSearch`, `hasFilters`, `hasLegend`, `search` (`v-model:search`), `filters` (`v-model:filters`), `hasDeepLinking`, `deepLinkParam`; события `update:search`, `update:filters`; слоты `directory-item`, `directory-empty`; метод `clearFilters()`; ключи `customClass`: `directory`, `filters`, `legend`.
+- Формат JSON (версия 1, только расширен): у фильтра — `type` (`checkbox` | `tags` | `select` | `switch`), `logic` (`or` | `and`), `value`; у объекта — `tags`, `keywords`, `isHiddenInDirectory`.
+- Поведение: скрытые фильтром точки и фигуры не рисуются, элементы SVG слоя получают класс `base-image-map__object--filtered`, теряют роль, `tabindex` и `data-image-map-object`; окно объекта, открытое из списка, возвращает фокус в строку списка.
+- Экспорт: `IMAGE_MAP_DIRECTORY_VIEWS`, `IMAGE_MAP_DIRECTORY_GROUPINGS`, `IMAGE_MAP_DIRECTORY_SCOPES`, `IMAGE_MAP_DIRECTORY_POSITIONS`, `IMAGE_MAP_FILTER_TYPES`, `IMAGE_MAP_FILTER_LOGIC` и типы `ImageMapDirectoryView`, `ImageMapDirectoryGrouping`, `ImageMapDirectoryScope`, `ImageMapDirectoryPosition`, `ImageMapFilterValues`, `ImageMapFilterType`, `ImageMapFilterLogic`.
+- Строки словаря (ru, en), раздел `imageMap`: `DIRECTORY`, `SEARCH`, `SEARCH_PLACEHOLDER`, `FILTERS`, `ALL`, `CLEAR_FILTERS`, `LEGEND`, `OTHER_GROUP`; число найденного — `plural.SEARCH_RESULTS`, пусто — `UI_TEXT.NO_RESULTS`.
