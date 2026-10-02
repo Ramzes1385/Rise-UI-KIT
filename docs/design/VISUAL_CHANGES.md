@@ -970,3 +970,13 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 - **`isDisabled`** у BaseBadge, BaseAvatar, BaseCard — прозрачность `--rise-disabled-opacity` и курсор `not-allowed` (миксин `disabled-state`).
 - **BasePopover** — триггер без кнопки (текст в слоте) получает кольцо фокуса.
 - Новые истории (в скриншот-тесты не добавлены): `element-basebadge--clickable`, `element-basebadge--disabled`, `element-baseavatar--clickable`, `element-baseavatar--disabled`, `element-basechip--clickable-badge`, `element-basecard--clickable`, `element-basecard--disabled`, `overlay-basepopover--text-trigger`.
+
+## Задача fu-range: клавиатура и проверка значений Range, Rating, Separator, Skeleton
+
+Сверка попиксельно: Storybook с `4513198d` (основа ветки, два прохода — нестабильных нет) и с `epic/fu-range`; 40 прежних историй 4 компонентов × 2 темы. Без изменений — 76 снимков из 80, включая все истории из `*.visual.spec.ts` (эталоны скриншот-тестов не затронуты). Превью — `.rise-transfer\review\fu-range.html`.
+
+- **BaseSeparator Spacing** — новая строка «без подписи, spacing 16»: линия без подписи с отступом 16px сверху и снизу (раньше `spacing` без подписи не действовал). Описание истории обновлено.
+- **BaseRange Keyboard** — меняется только конечный кадр: play теперь проверяет и PageUp/PageDown, End, Home и заканчивается на `0` (было `39`).
+- Вид компонентов при корректных пропсах не менялся. Меняется при недопустимых: BaseSeparator с `thickness` 0/NaN — линия 1px вместо пропавшей; BaseRange и BaseRating со значением больше `max` — ползунок и звёзды на границе, а не за шкалой; BaseSkeleton с `width`/`height` 0 — `0px`, с `'auto'` при `sizeScale` ≠ 100 — `auto` вместо отброшенного `calc`; `circle` только с шириной — круг (`aspect-ratio: 1`), раньше не был виден.
+
+Новые истории (в скриншот-тесты не добавлены): `form-baserange--range-keyboard` (Home/End/PageUp/PageDown у диапазона — до соседнего ползунка), `form-baserange--out-of-bounds` (значение 140 при `max` 100 — на границе), `form-baserating--out-of-bounds` (оценка 7 из 5 — пять полных звёзд), `element-baseskeleton--size-values` (круг по ширине, `width="auto"` при `sizeScale` 150).

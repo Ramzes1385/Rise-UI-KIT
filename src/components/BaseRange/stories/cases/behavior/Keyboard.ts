@@ -15,8 +15,9 @@ export const Keyboard: StoryObj<typeof meta> = {
 		docs: {
 			description: {
 				story: [
-					'Клавиатура: Tab ставит фокус на ползунок, стрелки вправо/вверх увеличивают значение на `step`, влево/вниз —',
-					'уменьшают; каждый шаг с клавиатуры — завершённый выбор, поэтому приходит и `change`.',
+					'Клавиатура по APG Slider: Tab ставит фокус на ползунок, стрелки вправо/вверх увеличивают значение на `step`,',
+					'влево/вниз — уменьшают, PageUp/PageDown — на 10 шагов, Home — `min`, End — `max` (у диапазона и точек —',
+					'до соседнего ползунка). Каждое нажатие — завершённый выбор, поэтому приходит и `change`; упор в границу `change` не даёт.',
 				].join('\n'),
 			},
 			source: storySource({ template, imports: ['BaseRange'], state, omit: ['modelValue', 'thumb', 'onUpdate:modelValue'] }),
@@ -39,5 +40,17 @@ export const Keyboard: StoryObj<typeof meta> = {
 		await userEvent.keyboard('{ArrowDown}{ArrowDown}')
 		await expect(thumb).toHaveAttribute('aria-valuenow', '39')
 		await expect(args.onChange).toHaveBeenLastCalledWith(39)
+
+		await userEvent.keyboard('{PageUp}')
+		await expect(thumb).toHaveAttribute('aria-valuenow', '49')
+		await userEvent.keyboard('{PageDown}{PageDown}')
+		await expect(thumb).toHaveAttribute('aria-valuenow', '29')
+		await expect(args.onChange).toHaveBeenLastCalledWith(29)
+
+		await userEvent.keyboard('{End}')
+		await expect(thumb).toHaveAttribute('aria-valuenow', '100')
+		await userEvent.keyboard('{Home}')
+		await expect(thumb).toHaveAttribute('aria-valuenow', '0')
+		await expect(args.onChange).toHaveBeenLastCalledWith(0)
 	},
 }

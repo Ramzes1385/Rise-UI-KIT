@@ -23,6 +23,7 @@ export const Sizes = cases.Sizes
 export const CustomColor = cases.CustomColor
 export const Readonly = cases.Readonly
 export const Disabled = cases.Disabled
+export const OutOfBounds = cases.OutOfBounds
 export const CustomIcons = cases.CustomIcons
 export const InFormField = cases.InFormField
 export const HalfStars = cases.HalfStars

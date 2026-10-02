@@ -23,3 +23,4 @@ export const Animations = cases.Animations
 export const Sizes = cases.Sizes
 export const CustomColor = cases.CustomColor
 export const CardPlaceholder = cases.CardPlaceholder
+export const SizeValues = cases.SizeValues

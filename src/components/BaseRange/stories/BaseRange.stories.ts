@@ -30,3 +30,5 @@ export const WithMarks = cases.WithMarks
 export const DecimalStep = cases.DecimalStep
 export const CustomThumb = cases.CustomThumb
 export const Keyboard = cases.Keyboard
+export const RangeKeyboard = cases.RangeKeyboard
+export const OutOfBounds = cases.OutOfBounds

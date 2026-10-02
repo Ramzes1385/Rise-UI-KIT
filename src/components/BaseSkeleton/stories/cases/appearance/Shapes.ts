@@ -1,6 +1,6 @@
-import type meta from '../BaseSkeleton.stories'
-import BaseSkeleton from '../../ui/BaseSkeleton.vue'
+import type meta from '../../BaseSkeleton.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
+import BaseSkeleton from '../../../ui/BaseSkeleton.vue'
 import { storySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
