@@ -1,4 +1,4 @@
-import type { Ref, ShallowRef } from 'vue'
+import type { ComputedRef, Ref, ShallowRef } from 'vue'
 import type { ImageMapEditorTool } from './BaseImageMapEditor.types'
 import type { ImageMapData, ImageMapLayer, ImageMapObject } from '@components/BaseImageMap/types/imageMapData.types'
 
@@ -212,4 +212,18 @@ export interface EditorFilesOptions {
 	svgContainerRef: Ref<HTMLElement | null>
 	/** Приставка id элементов SVG на холсте */
 	svgPrefix: string
+}
+
+/** Связь выделения и слоя с v-model:selected и показанным слоем */
+export interface EditorSelectionSync {
+	/** Карта */
+	data: Ref<ImageMapData>
+	/** id выделенного объекта */
+	selectedId: Ref<string | null>
+	/** Показанный слой */
+	currentLayer: ComputedRef<ImageMapLayer | undefined>
+	/** Сменить слой (эмитит update:layer) */
+	setLayer: (id: string) => void
+	/** Выделить объект (эмитит update:selected) */
+	select: (id: string | null) => void
 }

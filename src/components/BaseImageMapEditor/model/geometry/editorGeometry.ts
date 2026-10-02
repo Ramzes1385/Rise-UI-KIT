@@ -45,15 +45,7 @@ export function dragBounds(start: EditorPoint, end: EditorPoint): ImageMapArea {
 	return isClick ? clickBounds(start) : boundsFromCorners(start, end)
 }
 
-function polygonBounds(points: [number, number][], bounds: ImageMapArea, next: ImageMapArea): [number, number][] {
-	const scaleX = bounds.width ? next.width / bounds.width : 1
-	const scaleY = bounds.height ? next.height / bounds.height : 1
-	return points.map(([x, y]) => [round(next.x + (x - bounds.x) * scaleX), round(next.y + (y - bounds.y) * scaleY)])
-}
-
 function setBounds(object: ImageMapObject, next: ImageMapArea): void {
-	const bounds = objectArea(object)
-	if (!bounds) return
 	if (object.type === 'rect')
 		Object.assign(object, { x: round(next.x), y: round(next.y), width: round(next.width), height: round(next.height) })
 	if (object.type === 'ellipse') {
@@ -64,7 +56,6 @@ function setBounds(object: ImageMapObject, next: ImageMapArea): void {
 			ry: round(next.height / 2),
 		})
 	}
-	if (object.type === 'polygon') object.points = polygonBounds(object.points, bounds, next)
 }
 
 export function translateObject(object: ImageMapObject, delta: EditorPoint): void {
