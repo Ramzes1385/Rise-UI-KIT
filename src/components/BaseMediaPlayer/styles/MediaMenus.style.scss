@@ -250,13 +250,22 @@
 		@include transition(background-color, opacity);
 		@include focus-ring;
 
-		&:hover:not(:disabled) {
+		&:hover:not(:disabled, [aria-disabled='true']) {
 			background-color: rgb(255 255 255 / 20%);
 		}
 
-		&:disabled {
+		&:disabled,
+		&[aria-disabled='true'] {
 			cursor: default;
 			opacity: 0.4;
+		}
+
+		&[aria-disabled='true']:focus-visible {
+			opacity: 1;
+
+			.base-media-player__icon {
+				opacity: 0.4;
+			}
 		}
 
 		.base-media-player__icon {

@@ -7,7 +7,7 @@
 				type="button"
 				class="base-media-player__speed-step"
 				:aria-label="UI_PLAYER.SPEED_DOWN"
-				:disabled="rate <= min"
+				:aria-disabled="rate <= min || undefined"
 				@click="decrease">
 				<MediaIcon name="minus" />
 			</button>
@@ -27,7 +27,7 @@
 				type="button"
 				class="base-media-player__speed-step"
 				:aria-label="UI_PLAYER.SPEED_UP"
-				:disabled="rate >= max"
+				:aria-disabled="rate >= max || undefined"
 				@click="increase">
 				<MediaIcon name="plus" />
 			</button>

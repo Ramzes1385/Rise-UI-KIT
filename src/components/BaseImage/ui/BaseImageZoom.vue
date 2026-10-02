@@ -17,6 +17,7 @@
 					:custom-class="classes.zoomOutButton"
 					:aria-label="UI_ARIA.ZOOM_OUT"
 					:is-disabled="zoom.isMinScale.value"
+					is-focusable-when-disabled
 					@click="zoom.zoomOut">
 					<template #left><BaseIcon name="minus" :custom-class="classes.zoomOutIcon" /></template>
 				</BaseButton>
@@ -27,6 +28,7 @@
 					:custom-class="classes.zoomInButton"
 					:aria-label="UI_ARIA.ZOOM_IN"
 					:is-disabled="zoom.isMaxScale.value"
+					is-focusable-when-disabled
 					@click="zoom.zoomIn">
 					<template #left><BaseIcon name="plus" :custom-class="classes.zoomInIcon" /></template>
 				</BaseButton>

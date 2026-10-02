@@ -113,7 +113,7 @@ describe('BasePagination integration', () => {
 			})
 
 			const buttons = container.querySelectorAll<HTMLButtonElement>('.base-pagination > button')
-			expect(buttons[buttons.length - 1]).toBeDisabled()
+			expect(buttons[buttons.length - 1]).toHaveAttribute('aria-disabled', 'true')
 		})
 
 		it('«назад» и «вперёд» заблокированы, когда страниц нет (total=0)', () => {
@@ -123,8 +123,8 @@ describe('BasePagination integration', () => {
 
 			const buttons = container.querySelectorAll<HTMLButtonElement>('.base-pagination > button')
 			expect(buttons).toHaveLength(2)
-			expect(buttons[0]).toBeDisabled()
-			expect(buttons[1]).toBeDisabled()
+			expect(buttons[0]).toHaveAttribute('aria-disabled', 'true')
+			expect(buttons[1]).toHaveAttribute('aria-disabled', 'true')
 		})
 	})
 

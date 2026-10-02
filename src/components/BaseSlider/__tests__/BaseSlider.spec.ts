@@ -230,7 +230,8 @@ describe('BaseSlider unit', () => {
 			})
 
 			const prevBtn = container.querySelector('.base-slider__arrow--prev')
-			expect(prevBtn?.hasAttribute('disabled')).toBe(true)
+			expect(prevBtn?.getAttribute('aria-disabled')).toBe('true')
+			expect(prevBtn?.hasAttribute('disabled')).toBe(false)
 		})
 
 		it('не должен отключать кнопку prev когда isLoop=true', () => {
@@ -248,7 +249,8 @@ describe('BaseSlider unit', () => {
 			})
 
 			const nextBtn = container.querySelector('.base-slider__arrow--next')
-			expect(nextBtn?.hasAttribute('disabled')).toBe(true)
+			expect(nextBtn?.getAttribute('aria-disabled')).toBe('true')
+			expect(nextBtn?.hasAttribute('disabled')).toBe(false)
 		})
 	})
 

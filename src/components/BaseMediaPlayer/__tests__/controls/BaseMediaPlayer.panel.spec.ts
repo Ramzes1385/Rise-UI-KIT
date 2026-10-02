@@ -152,6 +152,37 @@ describe('BaseMediaPlayer: панель', () => {
 		expect(emitted('update:currentTime')?.at(-1)).toEqual([30.2])
 	})
 
+	it('панель скорости: «+» на пределе — aria-disabled, фокус остаётся, нажатие не меняет скорость', async () => {
+		const wrapper = mountPlayer({ sources: SOURCE, title: 'Демо' })
+		await nextTick()
+		const video = wrapper.get('video').element as HTMLVideoElement
+		const rate = async (value: number): Promise<void> => {
+			video.playbackRate = value
+			video.dispatchEvent(new Event('ratechange'))
+			await nextTick()
+		}
+		await wrapper.get('button[aria-label="Скорость воспроизведения"]').trigger('click')
+		await rate(3.95)
+		const faster = wrapper.get('button[aria-label="Быстрее"]')
+		const slower = wrapper.get('button[aria-label="Медленнее"]')
+
+		;(faster.element as HTMLButtonElement).focus()
+		await faster.trigger('click')
+		expect(video.playbackRate).toBe(4)
+		await rate(4)
+
+		expect(faster.attributes('aria-disabled')).toBe('true')
+		expect(faster.attributes('disabled')).toBeUndefined()
+		expect(document.activeElement).toBe(faster.element)
+		await faster.trigger('click')
+		expect(video.playbackRate).toBe(4)
+
+		await rate(0.25)
+		expect(slower.attributes('aria-disabled')).toBe('true')
+		await slower.trigger('click')
+		expect(video.playbackRate).toBe(0.25)
+	})
+
 	it('панель скорости: ползунок, «−» и «+», готовые значения по порядку; меню качества — источники с подписью', async () => {
 		vi.spyOn(HTMLMediaElement.prototype, 'canPlayType').mockReturnValue('maybe')
 		const sources = [
@@ -181,7 +212,7 @@ describe('BaseMediaPlayer: панель', () => {
 		await panel.get('button[aria-label="Медленнее"]').trigger('click')
 		expect(video.playbackRate).toBe(1.95)
 		await rate(4)
-		expect(panel.get('button[aria-label="Быстрее"]').attributes('disabled')).toBeDefined()
+		expect(panel.get('button[aria-label="Быстрее"]').attributes('aria-disabled')).toBe('true')
 		await panel.get('button[aria-label="Быстрее"]').trigger('click')
 		await panel.get('input[type="range"]').setValue('0.35')
 		expect(video.playbackRate).toBe(0.35)

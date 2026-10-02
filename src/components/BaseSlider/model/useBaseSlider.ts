@@ -68,7 +68,12 @@ function useSliderState(props: SliderProps, emit: BaseSliderEmits) {
 	})
 }
 
-function useHold(goNext: () => void, goPrev: () => void) {
+function canStepTo(props: SliderProps, slider: ReturnType<typeof useSlider>, direction: 'prev' | 'next'): boolean {
+	if (props.isLoop) return true
+	return direction === 'prev' ? slider.currentIndex.value > 0 : slider.currentIndex.value < slider.maxIndex.value
+}
+
+function useHold(goNext: () => void, goPrev: () => void, canStep: (direction: 'prev' | 'next') => boolean) {
 	let delayTimer: ReturnType<typeof setTimeout> | null = null
 	let repeatTimer: ReturnType<typeof setInterval> | null = null
 	let hasRepeated = false
@@ -86,7 +91,7 @@ function useHold(goNext: () => void, goPrev: () => void) {
 		startHold(direction: 'prev' | 'next', event: PointerEvent): void {
 			stopHold()
 			hasRepeated = false
-			if (event.button > 0) return
+			if (event.button > 0 || !canStep(direction)) return
 			delayTimer = setTimeout(() => {
 				repeatTimer = setInterval(() => {
 					hasRepeated = true
@@ -150,7 +155,7 @@ export function useBaseSlider(props: SliderProps, emit: BaseSliderEmits) {
 		slideEffectStyle: useSlideEffect(props, () => slider.currentIndex.value),
 		onVideoPlay: videos.onVideoPlay,
 		...useCarouselA11y(props, slider),
-		...useHold(slider.goNext, slider.goPrev),
+		...useHold(slider.goNext, slider.goPrev, direction => canStepTo(props, slider, direction)),
 		exposed: {
 			goTo: slider.goTo,
 			goNext: slider.goNext,

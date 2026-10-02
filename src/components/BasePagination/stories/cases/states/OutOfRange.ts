@@ -15,7 +15,7 @@ export const OutOfRange: StoryObj<typeof meta> = {
 	},
 	args: { modelValue: 7, total: 30 },
 	play: async ({ canvas, userEvent, args }) => {
-		await expect(canvas.getByRole('button', { name: 'Следующая страница' })).toBeDisabled()
+		await expect(canvas.getByRole('button', { name: 'Следующая страница' })).toHaveAttribute('aria-disabled', 'true')
 		await userEvent.click(canvas.getByRole('button', { name: 'Предыдущая страница' }))
 		await expect(args.onChange).toHaveBeenCalledWith(3)
 	},

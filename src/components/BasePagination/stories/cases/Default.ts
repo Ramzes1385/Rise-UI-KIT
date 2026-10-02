@@ -7,7 +7,7 @@ export const Default: StoryObj<typeof meta> = {
 		docs: { description: { story: 'Песочница: клик по номеру или стрелке меняет страницу — значение синхронизировано с Controls.' } },
 	},
 	play: async ({ canvas, userEvent, args }) => {
-		await expect(canvas.getByRole('button', { name: 'Предыдущая страница' })).toBeDisabled()
+		await expect(canvas.getByRole('button', { name: 'Предыдущая страница' })).toHaveAttribute('aria-disabled', 'true')
 
 		await userEvent.click(canvas.getByRole('button', { name: 'Страница 3' }))
 		await expect(args.onChange).toHaveBeenCalledWith(3)

@@ -13,10 +13,10 @@ export const WithoutLoop: StoryObj<typeof meta> = {
 	},
 	args: { isLoop: false },
 	play: async ({ canvas, canvasElement, userEvent }) => {
-		await expect(canvas.getByRole('button', { name: 'Предыдущий слайд' })).toBeDisabled()
+		await expect(canvas.getByRole('button', { name: 'Предыдущий слайд' })).toHaveAttribute('aria-disabled', 'true')
 
 		await userEvent.click(sliderNav(canvasElement, 6))
-		await expect(canvas.getByRole('button', { name: 'Следующий слайд' })).toBeDisabled()
+		await expect(canvas.getByRole('button', { name: 'Следующий слайд' })).toHaveAttribute('aria-disabled', 'true')
 		await expect(canvas.getByRole('button', { name: 'Предыдущий слайд' })).toBeEnabled()
 	},
 }

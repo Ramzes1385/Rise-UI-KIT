@@ -40,6 +40,7 @@
 					:class="classes.arrow"
 					:aria-label="UI_ARIA.SLIDER_PREV"
 					:is-disabled="!isLoop && currentIndex === 0"
+					is-focusable-when-disabled
 					:size-scale="sizeScale"
 					@click="onArrowClick('prev', $event)"
 					@pointerdown="startHold('prev', $event)"
@@ -54,6 +55,7 @@
 					:class="classes.arrow"
 					:aria-label="UI_ARIA.SLIDER_NEXT"
 					:is-disabled="!isLoop && currentIndex >= maxIndex"
+					is-focusable-when-disabled
 					:size-scale="sizeScale"
 					@click="onArrowClick('next', $event)"
 					@pointerdown="startHold('next', $event)"

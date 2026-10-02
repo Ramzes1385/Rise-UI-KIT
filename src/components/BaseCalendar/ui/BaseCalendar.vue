@@ -23,6 +23,7 @@
 					:aria-label="navLabels.prev"
 					:size-scale="resolvedProps.sizeScale"
 					:is-disabled="resolvedProps.isDisabled || !canPrev"
+					:is-focusable-when-disabled="!resolvedProps.isDisabled"
 					@click="prevMonth">
 					<BaseIcon name="chevron-left" :size-scale="calcIconScale('md', resolvedProps.sizeScale)" />
 				</BaseButton>
@@ -42,6 +43,7 @@
 					:aria-label="navLabels.next"
 					:size-scale="resolvedProps.sizeScale"
 					:is-disabled="resolvedProps.isDisabled || !canNext"
+					:is-focusable-when-disabled="!resolvedProps.isDisabled"
 					@click="nextMonth">
 					<BaseIcon name="chevron-right" :size-scale="calcIconScale('md', resolvedProps.sizeScale)" />
 				</BaseButton>

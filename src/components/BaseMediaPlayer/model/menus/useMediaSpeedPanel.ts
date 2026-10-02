@@ -32,8 +32,12 @@ export function useMediaSpeedPanel() {
 			rates.value.map(value => ({ value, label: formatNumber(value), isActive: Math.abs(value - rate.value) < 0.001 })),
 		),
 		select,
-		decrease: (): void => select(rate.value - SPEED_STEP),
-		increase: (): void => select(rate.value + SPEED_STEP),
+		decrease: (): void => {
+			if (rate.value > SPEED_MIN) select(rate.value - SPEED_STEP)
+		},
+		increase: (): void => {
+			if (rate.value < SPEED_MAX) select(rate.value + SPEED_STEP)
+		},
 		onInput: (event: Event): void => select(Number((event.target as HTMLInputElement).value)),
 	}
 }

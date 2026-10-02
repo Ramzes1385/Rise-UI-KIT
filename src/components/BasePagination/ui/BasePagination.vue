@@ -4,6 +4,7 @@
 			:variant="inactivePageVariant"
 			class="base-pagination__arrow"
 			:is-disabled="isPrevDisabled"
+			is-focusable-when-disabled
 			:size-scale="sizeScale"
 			:custom-class="classes.prev"
 			:aria-label="UI_ARIA.PAGINATION_PREV"
@@ -33,6 +34,7 @@
 			:variant="inactivePageVariant"
 			class="base-pagination__arrow"
 			:is-disabled="isNextDisabled"
+			is-focusable-when-disabled
 			:size-scale="sizeScale"
 			:custom-class="classes.next"
 			:aria-label="UI_ARIA.PAGINATION_NEXT"
