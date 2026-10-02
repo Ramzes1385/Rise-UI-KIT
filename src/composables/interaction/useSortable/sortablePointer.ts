@@ -1,5 +1,4 @@
 /** Composable: перетаскивание мышью — порог сдвига, «призрак» под курсором, посадка на место, Escape отменяет */
-import { isMotionReduced } from './sortableFlip'
 import { computed, nextTick, onBeforeUnmount, ref, shallowRef, type Ref } from 'vue'
 import type { SortableDrag, SortableMove, SortablePress, SortableWindowHandlers, UseSortableOptions } from './types/useSortable.types'
 
@@ -37,9 +36,13 @@ function createPointerSession<TItem, TPlace>(options: UseSortableOptions<TItem, 
 }
 
 /** Плавная посадка «призрака» на новое место элемента; без анимации — сразу `done` */
-function settleGhost(ghost: Ref<HTMLElement | null>, target: { element: HTMLElement | null; className?: string }, done: () => void): void {
+function settleGhost(
+	ghost: Ref<HTMLElement | null>,
+	target: { element: HTMLElement | null; className?: string; isReducedMotion: boolean },
+	done: () => void,
+): void {
 	const rect = target.element?.getBoundingClientRect()
-	if (!ghost.value?.animate || !rect || isMotionReduced()) return done()
+	if (!ghost.value?.animate || !rect || target.isReducedMotion) return done()
 	if (target.className) ghost.value.classList.add(target.className)
 	const animation = ghost.value.animate([{ transform: `translate(${rect.left}px, ${rect.top}px)` }], {
 		duration: SETTLE_DURATION,
@@ -86,8 +89,13 @@ function ghostStyle<TItem>(drag: SortableDrag<TItem> | null): Record<string, str
 	return { width: `${drag.width}px`, transform: `translate(${drag.x - drag.offsetX}px, ${drag.y - drag.offsetY}px)` }
 }
 
+/** Куда садится «призрак»: элемент на новом месте, класс посадки и признак «уменьшить движение» */
+function settleTarget<TItem, TPlace>(options: UseSortableOptions<TItem, TPlace>, isReducedMotion: boolean, id: string) {
+	return { element: options.itemElement(id), className: options.settlingClass, isReducedMotion }
+}
+
 /** Перетаскивание мышью и пером; касание не перехватывается — им прокручивают */
-export function useSortablePointer<TItem, TPlace>(options: UseSortableOptions<TItem, TPlace>) {
+export function useSortablePointer<TItem, TPlace>(options: UseSortableOptions<TItem, TPlace>, isReducedMotion: Readonly<Ref<boolean>>) {
 	const drag = shallowRef<SortableDrag<TItem> | null>(null)
 	const ghostRef = ref<HTMLElement | null>(null)
 	let session: ReturnType<typeof createPointerSession<TItem, TPlace>> | null = null
@@ -100,7 +108,7 @@ export function useSortablePointer<TItem, TPlace>(options: UseSortableOptions<TI
 	}
 	const settle = (id: string) => (): void => {
 		listeners.unlisten()
-		nextTick(() => settleGhost(ghostRef, { element: options.itemElement(id), className: options.settlingClass }, stop))
+		nextTick(() => settleGhost(ghostRef, settleTarget(options, isReducedMotion.value, id), stop))
 	}
 	function handleMove(event: PointerEvent): void {
 		session?.move(event)

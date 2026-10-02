@@ -248,6 +248,40 @@ describe('BaseCascader integration', () => {
 			await user.click(armenia)
 			expect(emitted()['update:modelValue'][1]).toEqual([[]])
 		})
+		it('поле выросло от новых меток — панель сама переезжает под него (наблюдатель размера BaseDropdown)', async () => {
+			const observers: { callback: () => void; targets: Element[] }[] = []
+			vi.stubGlobal(
+				'ResizeObserver',
+				class {
+					callback: () => void
+					targets: Element[] = []
+					constructor(callback: () => void) {
+						this.callback = callback
+						observers.push(this)
+					}
+					observe(target: Element) {
+						this.targets.push(target)
+					}
+					disconnect() {}
+				},
+			)
+			const { user, field, rerender } = setup({ isMultiple: true, modelValue: [] })
+			await user.click(field)
+			await nextTick()
+			const wrapper = field.closest('.base-dropdown') as HTMLElement
+			const panel = document.querySelector('.base-dropdown__panel') as HTMLElement
+			const observer = observers.find(item => item.targets.includes(wrapper))
+			expect(observer).toBeDefined()
+			const before = panel.style.top
+
+			await rerender({ items: REGIONS, label: 'Регион', isMultiple: true, modelValue: [['am']] })
+			;(wrapper.firstElementChild as HTMLElement).getBoundingClientRect = () =>
+				DOMRect.fromRect({ x: 0, y: 0, width: 200, height: 80 })
+			observer?.callback()
+			await nextTick()
+			expect(panel.style.top).not.toBe(before)
+			vi.unstubAllGlobals()
+		})
 	})
 
 	describe('ленивые уровни', () => {

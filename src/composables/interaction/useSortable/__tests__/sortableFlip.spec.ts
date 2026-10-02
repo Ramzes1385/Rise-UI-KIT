@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { rect } from './sortableHarness'
+import { useSortableFlip } from '../sortableFlip'
 import { defineComponent, h, nextTick, ref, type Ref } from 'vue'
-import { isMotionReduced, useSortableFlip } from '../sortableFlip'
 import type { SortableFlipOptions } from '../types/useSortable.types'
 
 type Board = Record<string, string[]>
@@ -19,13 +19,13 @@ function layout(this: HTMLElement): DOMRect {
 	return rect([0, 0, 0, 0])
 }
 
-function mountBoard(initial: Board, options: Partial<SortableFlipOptions> = {}, withRoot = true) {
+function mountBoard(initial: Board, options: Partial<SortableFlipOptions> = {}, { withRoot = true, isReducedMotion = false } = {}) {
 	const board = ref(initial) as Ref<Board>
 	const rootRef = ref<HTMLElement | null>(null)
 	const wrapper = mount(
 		defineComponent({
 			setup() {
-				useSortableFlip(rootRef, { source: () => board.value, items: ITEMS, ...options })
+				useSortableFlip(rootRef, { source: () => board.value, items: ITEMS, ...options }, ref(isReducedMotion))
 				return () =>
 					h(
 						'div',
@@ -54,10 +54,6 @@ describe('useSortable: анимация перестановки (FLIP)', () => 
 		vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(layout)
 		animate = vi.fn()
 		HTMLElement.prototype.animate = animate as unknown as HTMLElement['animate']
-		vi.stubGlobal(
-			'matchMedia',
-			vi.fn(() => ({ matches: false })),
-		)
 	})
 
 	afterEach(() => {
@@ -65,22 +61,6 @@ describe('useSortable: анимация перестановки (FLIP)', () => 
 		vi.unstubAllGlobals()
 		delete (HTMLElement.prototype as Partial<HTMLElement>).animate
 		document.body.innerHTML = ''
-	})
-
-	it('без matchMedia считает, что движение нужно убрать', () => {
-		vi.unstubAllGlobals()
-		vi.stubGlobal('matchMedia', undefined)
-		expect(isMotionReduced()).toBe(true)
-		vi.stubGlobal(
-			'matchMedia',
-			vi.fn(() => ({ matches: true })),
-		)
-		expect(isMotionReduced()).toBe(true)
-		vi.stubGlobal(
-			'matchMedia',
-			vi.fn(() => ({ matches: false })),
-		)
-		expect(isMotionReduced()).toBe(false)
 	})
 
 	it('сдвинутые элементы едут со старого места, несдвинутые — стоят', async () => {
@@ -134,11 +114,7 @@ describe('useSortable: анимация перестановки (FLIP)', () => 
 	})
 
 	it('при уменьшенном движении ничего не анимирует', async () => {
-		vi.stubGlobal(
-			'matchMedia',
-			vi.fn(() => ({ matches: true })),
-		)
-		const { board } = mountBoard({ todo: ['a', 'b'] }, { containers: CONTAINERS })
+		const { board } = mountBoard({ todo: ['a', 'b'] }, { containers: CONTAINERS }, { isReducedMotion: true })
 		board.value = { todo: ['b', 'a'] }
 		await nextTick()
 		expect(animate).not.toHaveBeenCalled()
@@ -152,7 +128,7 @@ describe('useSortable: анимация перестановки (FLIP)', () => 
 		expect(element('[data-item="a"]')).toBeTruthy()
 
 		HTMLElement.prototype.animate = animate as unknown as HTMLElement['animate']
-		const rootless = mountBoard({ x: ['p', 'q'] }, { containers: CONTAINERS }, false)
+		const rootless = mountBoard({ x: ['p', 'q'] }, { containers: CONTAINERS }, { withRoot: false })
 		rootless.board.value = { x: ['q', 'p'] }
 		await nextTick()
 		expect(animate).not.toHaveBeenCalled()

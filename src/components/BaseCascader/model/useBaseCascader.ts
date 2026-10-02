@@ -1,14 +1,13 @@
 import { UI_TEXT } from '@/locales/messages'
+import { computed, provide, ref, watch } from 'vue'
 import { useCascaderField } from './useCascaderField'
 import { useCascaderValue } from './useCascaderValue'
 import { useCascaderSearch } from './useCascaderSearch'
 import { useCascaderKeyboard } from './useCascaderKeyboard'
-import { computed, nextTick, provide, ref, watch } from 'vue'
 import { useCascaderLevels } from './levels/useCascaderLevels'
 import { CASCADER_PANEL_KEY } from '../types/BaseCascader.types'
 import { useCascaderNavigation } from './levels/useCascaderNavigation'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
-import type { BaseDropdownExpose } from '@components/BaseDropdown/types/BaseDropdown.types'
 import type { BaseCascaderEmits, BaseCascaderNode, CascaderPanelContext, CascaderPath, CascaderProps } from '../types/BaseCascader.types'
 
 const CASCADER_ELEMENTS = [
@@ -193,17 +192,9 @@ export function useBaseCascader(props: CascaderProps, emit: BaseCascaderEmits) {
 	const keys = useCascaderKeys(state, actions, () => field.isControlDisabled.value)
 	const ids = useCascaderIds(field.baseId)
 	const triggerRef = ref<HTMLDivElement | null>(null)
-	const dropdownRef = ref<BaseDropdownExpose | null>(null)
 	const { value } = state
 	const aria = useTriggerAria(state, () => actions.isOpen.value, ids)
 
-	watch(
-		() => value.tags.value.length,
-		async () => {
-			await nextTick()
-			dropdownRef.value?.updatePosition()
-		},
-	)
 	provide(CASCADER_PANEL_KEY, buildPanelContext(props, { standard, field }, { state, actions, keys, ids, aria }))
 
 	return {
@@ -213,7 +204,6 @@ export function useBaseCascader(props: CascaderProps, emit: BaseCascaderEmits) {
 		isOpen: actions.isOpen,
 		handleClose: actions.close,
 		triggerRef,
-		dropdownRef,
 		...aria,
 		handleTriggerKeydown: keys.handleTriggerKeydown,
 		resolvedPlaceholder: computed(() => props.placeholder ?? UI_TEXT.SELECT_PLACEHOLDER),

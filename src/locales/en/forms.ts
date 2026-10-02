@@ -128,12 +128,13 @@ export const enForms = {
 		NEGATIVE: '{component}: `{prop}` = {value} is below 0 and is ignored',
 		MAX_BELOW_MIN: '{component}: `max` = {max} is less than `min` = {min}, the range is collapsed to {min}',
 	},
-	/** CryptoPro CAdES Browser plug-in (useCryptoPro): diagnostic steps and errors; `{message}` is the plug-in error text */
+	/** CryptoPro CAdES Browser plug-in: useCryptoPro (diagnostic steps, errors; `{message}` is the plug-in error text) and BaseCryptoProSign */
 	cryptopro: {
 		STEP_EXTENSION: 'Browser extension',
 		STEP_PLUGIN: 'CryptoPro CAdES Browser plug-in',
 		STEP_CSP: 'CryptoPro CSP',
 		STEP_OBJECTS: 'Signing objects',
+		/** useCryptoPro errors */
 		NO_SCRIPT: 'The cadesplugin_api.js script is not connected',
 		SCRIPT_FAILED: 'The cadesplugin_api.js script could not be loaded',
 		NO_EXTENSION: 'The CryptoPro CAdES Browser plug-in extension does not respond: install and enable the extension and the plug-in',
@@ -146,6 +147,7 @@ export const enForms = {
 		CERTIFICATE_INVALID: 'The certificate is invalid: it has expired or failed verification',
 		CANCELLED: 'Signing cancelled',
 		UNKNOWN: 'CryptoPro error: {message}',
+		/** BaseCryptoProSign: regions and diagnostics */
 		REGION_SIGN: 'Electronic signature',
 		REGION_VERIFY: 'Electronic signature verification',
 		STATE_PENDING: 'waiting',
@@ -160,6 +162,7 @@ export const enForms = {
 		HELP_SCRIPT: 'Signing is not set up on this page: contact support',
 		LINK_PLUGIN: 'Download CryptoPro CAdES Browser plug-in',
 		LINK_CSP: 'Download CryptoPro CSP',
+		/** Certificate choice and state */
 		CERTIFICATE: 'Certificate',
 		CERTIFICATE_PLACEHOLDER: 'Select a certificate',
 		INN: 'INN {inn}',
@@ -168,11 +171,13 @@ export const enForms = {
 		EXPIRED: 'expired on {date}',
 		NO_KEY: 'no private key',
 		NOT_VALID: 'fails verification',
+		/** Document */
 		DOCUMENT: 'Document',
 		DOCUMENT_VERIFY: 'Signed document — for a detached signature',
 		SOURCE_TEXT: 'Signing text, {size}',
 		SOURCE_TEXT_VERIFY: 'Verifying the signature of text, {size}',
 		SOURCE_FILE: 'Document: {name}, {size}',
+		/** Signing */
 		TYPE: 'Signature type',
 		ATTACHED: 'Attached',
 		DETACHED: 'Detached',
@@ -181,6 +186,7 @@ export const enForms = {
 		SIGN: 'Sign',
 		SIGNED: 'Signature created: {name}',
 		DOWNLOAD: 'Download signature',
+		/** Signature verification */
 		SIGNATURE_FILE: 'Signature file',
 		SIGNATURE_GIVEN: 'Signature to verify received',
 		VERIFY: 'Verify signature',

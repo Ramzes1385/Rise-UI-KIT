@@ -264,6 +264,41 @@ describe('BaseTreeSelect integration', () => {
 			expect(value.value).toEqual(['center'])
 		})
 
+		it('поле выросло от новых меток — панель сама переезжает под него (наблюдатель размера BaseDropdown)', async () => {
+			const observers: { callback: () => void; targets: Element[] }[] = []
+			vi.stubGlobal(
+				'ResizeObserver',
+				class {
+					callback: () => void
+					targets: Element[] = []
+					constructor(callback: () => void) {
+						this.callback = callback
+						observers.push(this)
+					}
+					observe(target: Element) {
+						this.targets.push(target)
+					}
+					disconnect() {}
+				},
+			)
+			const { user } = renderSelect({ isMultiple: true }, [])
+			await user.click(combobox())
+			await nextTick()
+			const wrapper = combobox().closest('.base-dropdown') as HTMLElement
+			const trigger = wrapper.firstElementChild as HTMLElement
+			const panel = document.querySelector('.base-dropdown__panel') as HTMLElement
+			const observer = observers.find(item => item.targets.includes(wrapper))
+			expect(observer).toBeDefined()
+			const before = panel.style.top
+
+			await user.click(treeitem('Казань'))
+			trigger.getBoundingClientRect = () => DOMRect.fromRect({ x: 0, y: 0, width: 200, height: 80 })
+			observer?.callback()
+			await nextTick()
+			expect(panel.style.top).not.toBe(before)
+			vi.unstubAllGlobals()
+		})
+
 		it('кнопка метки снимает выбор с каскадом', async () => {
 			const { user, value } = renderSelect({ isMultiple: true, checkedStrategy: 'parent' }, ['region'])
 			await user.click(screen.getByRole('button', { name: `${UI_TEXT.DELETE} Область`, hidden: true }))

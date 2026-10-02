@@ -42,7 +42,7 @@ describe('BaseKanban: анимации', () => {
 		HTMLElement.prototype.animate = animate as unknown as HTMLElement['animate']
 		vi.stubGlobal(
 			'matchMedia',
-			vi.fn(() => ({ matches: false })),
+			vi.fn(() => ({ matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() })),
 		)
 	})
 
@@ -68,7 +68,7 @@ describe('BaseKanban: анимации', () => {
 	it('при «уменьшить движение» анимаций нет', async () => {
 		vi.stubGlobal(
 			'matchMedia',
-			vi.fn(() => ({ matches: true })),
+			vi.fn(() => ({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() })),
 		)
 		render(BaseKanban, { props: { columns: COLUMNS, cards: CARDS } })
 

@@ -1,7 +1,8 @@
-/** Composable: перестановка элементов мышью и с клавиатуры (WCAG 2.5.7) с объявлениями и анимацией */
 import { useSortableFlip } from './sortableFlip'
 import { useSortablePointer } from './sortablePointer'
 import { useSortableKeyboard } from './sortableKeyboard'
+/** Composable: перестановка элементов мышью и с клавиатуры (WCAG 2.5.7) с объявлениями и анимацией */
+import { useReducedMotion } from '@composables/app/useReducedMotion'
 import type { UseSortableOptions, UseSortableReturn } from './types/useSortable.types'
 
 /**
@@ -35,7 +36,8 @@ import type { UseSortableOptions, UseSortableReturn } from './types/useSortable.
  */
 export function useSortable<TItem, TPlace>(options: UseSortableOptions<TItem, TPlace>): UseSortableReturn<TItem> {
 	const keyboard = useSortableKeyboard(options)
-	const pointer = useSortablePointer(options)
-	if (options.flip) useSortableFlip(options.rootRef, options.flip)
+	const isReducedMotion = useReducedMotion()
+	const pointer = useSortablePointer(options, isReducedMotion)
+	if (options.flip) useSortableFlip(options.rootRef, options.flip, isReducedMotion)
 	return { ...keyboard, ...pointer }
 }

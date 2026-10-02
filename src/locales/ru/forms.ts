@@ -133,12 +133,13 @@ export const ruForms = {
 		NEGATIVE: '{component}: `{prop}` = {value} — меньше 0, не применяется',
 		MAX_BELOW_MIN: '{component}: `max` = {max} меньше `min` = {min} — диапазон сведён к {min}',
 	},
-	/** КриптоПро ЭЦП Browser plug-in (useCryptoPro): шаги диагностики и ошибки; `{message}` — текст ошибки плагина */
+	/** КриптоПро ЭЦП Browser plug-in: useCryptoPro (шаги диагностики, ошибки; `{message}` — текст ошибки плагина) и BaseCryptoProSign */
 	cryptopro: {
 		STEP_EXTENSION: 'Расширение для браузера',
 		STEP_PLUGIN: 'КриптоПро ЭЦП Browser plug-in',
 		STEP_CSP: 'Криптопровайдер КриптоПро CSP',
 		STEP_OBJECTS: 'Объекты подписи',
+		/** Ошибки useCryptoPro */
 		NO_SCRIPT: 'Не подключён скрипт cadesplugin_api.js',
 		SCRIPT_FAILED: 'Не удалось загрузить скрипт cadesplugin_api.js',
 		NO_EXTENSION: 'Расширение КриптоПро ЭЦП Browser plug-in не отвечает: установите и включите расширение и плагин',
@@ -151,6 +152,7 @@ export const ruForms = {
 		CERTIFICATE_INVALID: 'Сертификат недействителен: истёк срок действия или не пройдена проверка',
 		CANCELLED: 'Подпись отменена',
 		UNKNOWN: 'Ошибка КриптоПро: {message}',
+		/** BaseCryptoProSign: области и диагностика */
 		REGION_SIGN: 'Электронная подпись',
 		REGION_VERIFY: 'Проверка электронной подписи',
 		STATE_PENDING: 'ожидает проверки',
@@ -165,6 +167,7 @@ export const ruForms = {
 		HELP_SCRIPT: 'Подпись на этой странице не настроена: обратитесь в поддержку',
 		LINK_PLUGIN: 'Скачать КриптоПро ЭЦП Browser plug-in',
 		LINK_CSP: 'Скачать КриптоПро CSP',
+		/** Выбор сертификата и его состояние */
 		CERTIFICATE: 'Сертификат',
 		CERTIFICATE_PLACEHOLDER: 'Выберите сертификат',
 		INN: 'ИНН {inn}',
@@ -173,11 +176,13 @@ export const ruForms = {
 		EXPIRED: 'срок истёк {date}',
 		NO_KEY: 'нет закрытого ключа',
 		NOT_VALID: 'не проходит проверку',
+		/** Документ */
 		DOCUMENT: 'Документ',
 		DOCUMENT_VERIFY: 'Подписанный документ — для отсоединённой подписи',
 		SOURCE_TEXT: 'Подписываем текст, {size}',
 		SOURCE_TEXT_VERIFY: 'Проверяем подпись текста, {size}',
 		SOURCE_FILE: 'Документ: {name}, {size}',
+		/** Подпись */
 		TYPE: 'Тип подписи',
 		ATTACHED: 'Присоединённая',
 		DETACHED: 'Отсоединённая',
@@ -186,6 +191,7 @@ export const ruForms = {
 		SIGN: 'Подписать',
 		SIGNED: 'Подпись создана: {name}',
 		DOWNLOAD: 'Скачать подпись',
+		/** Проверка подписи */
 		SIGNATURE_FILE: 'Файл подписи',
 		SIGNATURE_GIVEN: 'Подпись для проверки получена',
 		VERIFY: 'Проверить подпись',

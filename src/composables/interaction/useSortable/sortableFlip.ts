@@ -11,9 +11,6 @@ const APPEAR = [
 	{ opacity: 1, transform: 'none' },
 ]
 
-/** Пользователь просит меньше движения (или `matchMedia` нет — тогда без анимации) */
-export const isMotionReduced = (): boolean => typeof matchMedia !== 'function' || matchMedia('(prefers-reduced-motion: reduce)').matches
-
 const elements = (root: HTMLElement | null, target: SortableFlipTarget): HTMLElement[] => [
 	...(root?.querySelectorAll<HTMLElement>(target.selector) ?? []),
 ]
@@ -48,8 +45,12 @@ function playContainers(
 	}
 }
 
-/** Меряет положения до обновления DOM и проигрывает разницу после */
-export function useSortableFlip(rootRef: Ref<HTMLElement | null>, options: SortableFlipOptions): void {
+/** Меряет положения до обновления DOM и проигрывает разницу после; при «уменьшить движение» — без анимации */
+export function useSortableFlip(
+	rootRef: Ref<HTMLElement | null>,
+	options: SortableFlipOptions,
+	isReducedMotion: Readonly<Ref<boolean>>,
+): void {
 	const duration = options.duration ?? DURATION
 	let items = new Map<string, DOMRect>()
 	let containers = new Map<string, DOMRect>()
@@ -64,7 +65,7 @@ export function useSortableFlip(rootRef: Ref<HTMLElement | null>, options: Sorta
 	watch(
 		options.source,
 		() => {
-			if (isMotionReduced()) return
+			if (isReducedMotion.value) return
 			playItems(rootRef.value, options.items, { rects: items, duration })
 			if (options.containers) playContainers(rootRef.value, options.containers, { rects: containers, duration })
 		},

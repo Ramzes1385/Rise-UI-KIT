@@ -29,7 +29,7 @@ describe('useSortable', () => {
 	it('с опцией flip следит за источником порядка, без неё — нет', async () => {
 		vi.stubGlobal(
 			'matchMedia',
-			vi.fn(() => ({ matches: true })),
+			vi.fn(() => ({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() })),
 		)
 		const order = ref(['a', 'b'])
 		const source = vi.fn(() => order.value)

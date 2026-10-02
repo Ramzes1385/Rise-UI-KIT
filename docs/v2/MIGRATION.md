@@ -1684,3 +1684,11 @@ API кита не меняется. В Storybook добавлены пример
 - Словарь: в раздел `cryptopro` (ru, en) добавлены тексты компонента; в `plural` — `CRYPTOPRO_EXPIRES`; в `warnings` — `CRYPTOPRO_NO_TSA`. Свой язык — `defineLocale(en, { cryptopro: { … } })`.
 - `scriptUrl` можно задать один раз: `createUiKitPlugin({ defaults: { BaseCryptoProSign: { scriptUrl } } })`.
 - Исправление по проверке 02.10: в `mode="verify"` строка `data` описывается «Проверяем подпись текста, N Б» (ключ словаря `cryptopro.SOURCE_TEXT_VERIFY`, ru и en); при `color.text` подписи вложенных BaseSelect, BaseSegmented и BaseFileUpload берут этот цвет; «Подписать» недоступна, если выбран недоступный сертификат (истёк, без закрытого ключа, не проходит проверку) — `sign()` через `ref` по-прежнему отдаёт ошибку `certificateInvalid` / `noPrivateKey`.
+
+## Задача small-fixes-8c: BaseKanban, BaseTreeSelect и BaseCascader на общих механизмах; словарь cryptopro
+
+Публичный API не менялся.
+
+- `useSortable` (BaseKanban, BaseList): «уменьшить движение» — через общий `useReducedMotion` вместо своей проверки; смена настройки на лету учитывается без перезагрузки. Отличие: в среде без `matchMedia` (SSR, старые тестовые окружения) анимации теперь не отключаются заранее — их, как и раньше, нет там, где у элементов нет `animate()`. В тестах приложения, которые подменяют `matchMedia`, у подмены должны быть `addEventListener` и `removeEventListener`.
+- BaseTreeSelect и BaseCascader: свой вызов `updatePosition()` BaseDropdown после изменения числа меток убран — панель сама следует за выросшим полем (small-fixes-7c).
+- Словарь `cryptopro` (ru, en): ключи и тексты те же; добавлены комментарии групп (ошибки useCryptoPro, BaseCryptoProSign — диагностика, сертификат, документ, подпись, проверка), описание раздела называет оба потребителя.

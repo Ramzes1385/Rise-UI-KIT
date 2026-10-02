@@ -22,7 +22,7 @@ function startDrag(overrides: Partial<UseSortableOptions<Item, number>> = {}) {
 const motion = (isReduced: boolean) =>
 	vi.stubGlobal(
 		'matchMedia',
-		vi.fn(() => ({ matches: isReduced })),
+		vi.fn(() => ({ matches: isReduced, addEventListener: vi.fn(), removeEventListener: vi.fn() })),
 	)
 
 describe('useSortable: мышь', () => {
