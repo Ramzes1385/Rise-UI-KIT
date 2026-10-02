@@ -24,6 +24,7 @@ describe('BaseChart unit', () => {
 		const plot = screen.getByRole('img', { name: 'Финансы: Выручка, Расходы; значения от 60 до 240' })
 		expect(plot).toHaveAttribute('tabindex', '0')
 		expect(plot).toHaveAccessibleDescription(/Стрелки влево и вправо/)
+		expect(plot).toHaveAccessibleDescription(/Home и End.*PageUp и PageDown.*Escape/)
 	})
 
 	it('пишет --size-scale только при масштабе, отличном от 100', () => {
@@ -140,6 +141,45 @@ describe('BaseChart unit', () => {
 			} finally {
 				globalThis.ResizeObserver = original
 			}
+		})
+
+		it('крайние подписи X у линии прижаты к краям классами --start и --end', () => {
+			const { container } = render(BaseChart, { props })
+			const ticks = [...container.querySelectorAll('.base-chart__x-tick')]
+			expect(ticks[0]).toHaveClass('base-chart__x-tick--start')
+			expect(ticks[0]).not.toHaveClass('base-chart__x-tick--end')
+			expect(ticks[1].className).toBe('base-chart__x-tick')
+			expect(ticks[2]).toHaveClass('base-chart__x-tick--end')
+		})
+
+		it('у столбиков и у одной точки подписи по центру полос, без --start и --end', async () => {
+			const { container, rerender } = render(BaseChart, { props: { ...props, variant: 'bar' } })
+			const edges = () => container.querySelectorAll('.base-chart__x-tick--start, .base-chart__x-tick--end')
+			expect(container.querySelectorAll('.base-chart__x-tick')).toHaveLength(3)
+			expect(edges()).toHaveLength(0)
+			await rerender({ variant: 'line', labels: ['a'], series: [{ name: 'Один', values: [5] }] })
+			expect(container.querySelectorAll('.base-chart__x-tick')).toHaveLength(1)
+			expect(edges()).toHaveLength(0)
+		})
+	})
+
+	describe('NaN и Infinity', () => {
+		const broken = { label: 'Р', labels: ['a', 'b', 'c'], series: [{ name: 'Р', values: [1, Number.NaN, Number.POSITIVE_INFINITY] }] }
+
+		it('считаются «нет значения» в таблице и не попадают в сводку', () => {
+			render(BaseChart, { props: broken })
+			expect(screen.getByRole('img', { name: 'Р: Р; значения от 1 до 1' })).toBeInTheDocument()
+			const rows = within(screen.getByRole('table')).getAllByRole('row')
+			expect(rows[2]).toHaveTextContent('bнет значения')
+			expect(rows[3]).toHaveTextContent('cнет значения')
+		})
+
+		it('-Infinity в столбиках не рисует столбик и не ломает шкалу', () => {
+			const { container } = render(BaseChart, {
+				props: { ...broken, variant: 'bar', series: [{ name: 'Р', values: [2, Number.NEGATIVE_INFINITY, 4] }] },
+			})
+			expect(container.querySelectorAll('.base-chart__bar')).toHaveLength(2)
+			expect(yTicks(container).every(text => text !== undefined && !/NaN|∞/.test(text ?? ''))).toBe(true)
 		})
 	})
 

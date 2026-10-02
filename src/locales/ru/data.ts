@@ -82,7 +82,8 @@ export const ruData = {
 		MORE: 'Больше',
 		HEATMAP_SUMMARY: '{label}: всего {total}, больше всего {max} — {date}',
 		CHART_SUMMARY: '{label}: {series}; значения от {min} до {max}',
-		CHART_HINT: 'Стрелки влево и вправо — переход по точкам; таблица данных — после графика',
+		CHART_HINT:
+			'Стрелки влево и вправо — переход по точкам, Home и End — к первой и последней, PageUp и PageDown — на десятую часть, Escape — скрыть подсказку; таблица данных — после графика',
 		CHART_POINT: '{label}: {values}',
 		CATEGORY: 'Категория',
 		LEGEND: 'Ряды графика',

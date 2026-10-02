@@ -10,14 +10,14 @@ const PAGE_PARTS = 10
 function nextIndex(key: string, current: number | null, count: number): number | null | undefined {
 	const page = Math.max(1, Math.round(count / PAGE_PARTS))
 	const from = current ?? -1
-	const moves: Record<string, () => number | null> = {
+	const moves: Record<string, () => number | null | undefined> = {
 		ArrowRight: () => Math.min(count - 1, from + 1),
 		ArrowLeft: () => Math.max(0, current === null ? count - 1 : from - 1),
 		PageDown: () => Math.min(count - 1, Math.max(0, from) + page),
 		PageUp: () => Math.max(0, (current ?? count - 1) - page),
 		Home: () => 0,
 		End: () => count - 1,
-		Escape: () => null,
+		Escape: () => (current === null ? undefined : null),
 	}
 	return moves[key]?.()
 }

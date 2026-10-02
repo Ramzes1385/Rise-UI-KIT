@@ -72,7 +72,8 @@ export const enData = {
 		MORE: 'More',
 		HEATMAP_SUMMARY: '{label}: {total} in total, peak {max} on {date}',
 		CHART_SUMMARY: '{label}: {series}; values from {min} to {max}',
-		CHART_HINT: 'Left and right arrows move between points; the data table follows the chart',
+		CHART_HINT:
+			'Left and right arrows move between points, Home and End jump to the first and last, Page Up and Page Down move by a tenth, Escape hides the tooltip; the data table follows the chart',
 		CHART_POINT: '{label}: {values}',
 		CATEGORY: 'Category',
 		LEGEND: 'Chart series',

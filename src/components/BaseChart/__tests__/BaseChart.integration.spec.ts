@@ -147,6 +147,47 @@ describe('BaseChart integration', () => {
 			plot().dispatchEvent(other)
 			expect(other.defaultPrevented).toBe(false)
 		})
+
+		it('Escape без выбранной точки не перехватывается — модалка вокруг графика закроется', async () => {
+			const user = userEvent.setup()
+			render(BaseChart, { props })
+			await user.tab()
+			const idle = new KeyboardEvent('keydown', { key: 'Escape', cancelable: true })
+			plot().dispatchEvent(idle)
+			expect(idle.defaultPrevented).toBe(false)
+			await user.keyboard('{End}')
+			const active = new KeyboardEvent('keydown', { key: 'Escape', cancelable: true })
+			plot().dispatchEvent(active)
+			expect(active.defaultPrevented).toBe(true)
+			const again = new KeyboardEvent('keydown', { key: 'Escape', cancelable: true })
+			plot().dispatchEvent(again)
+			expect(again.defaultPrevented).toBe(false)
+		})
+
+		it('NaN и Infinity объявляются и показываются как «нет значения», в слот tooltip — null', async () => {
+			const user = userEvent.setup()
+			const { container } = render(BaseChart, {
+				props: { label: 'Р', labels: ['a', 'b', 'c'], series: [{ name: 'Р', values: [1, Number.NaN, Number.POSITIVE_INFINITY] }] },
+				slots: { tooltip: `<template #tooltip="{ point }">{{ point.label }}={{ String(point.values[0].value) }}</template>` },
+			})
+			await user.tab()
+			await user.keyboard('{End}')
+			expect(status()).toHaveTextContent('c: Р: нет значения')
+			expect(tooltip(container)).toHaveTextContent('c=null')
+			await user.keyboard('{ArrowLeft}')
+			expect(status()).toHaveTextContent('b: Р: нет значения')
+			expect(tooltip(container)).toHaveTextContent('b=null')
+		})
+
+		it('в подсказке без слота NaN показан как «нет значения»', async () => {
+			const user = userEvent.setup()
+			const { container } = render(BaseChart, {
+				props: { label: 'Р', labels: ['a', 'b'], series: [{ name: 'Р', values: [1, Number.NaN] }] },
+			})
+			await user.tab()
+			await user.keyboard('{End}')
+			expect(tooltip(container)).toHaveTextContent('нет значения')
+		})
 	})
 
 	describe('легенда', () => {
