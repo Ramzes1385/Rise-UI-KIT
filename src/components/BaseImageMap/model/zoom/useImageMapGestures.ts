@@ -1,6 +1,6 @@
 import { onBeforeUnmount, onMounted, ref } from 'vue'
-import type { ImageMapView } from '../../types/imageMapModel.types'
-import type { GestureOptions, GestureView, PointerStart, ScreenPoint } from '../../types/imageMapInternal.types'
+import type { ImageMapView } from '../../types/internal/imageMapModel.types'
+import type { GestureOptions, GestureView, PointerStart, ScreenPoint } from '../../types/internal/imageMapInternal.types'
 
 const DRAG_THRESHOLD = 4
 const WHEEL_SENSITIVITY = 0.002

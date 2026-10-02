@@ -1,10 +1,10 @@
 import { nextTick, ref, watch } from 'vue'
 import { objectArea } from '../data/shapeGeometry'
 import type { ImageMapArea } from '../../types/imageMapData.types'
-import type { ActionContext } from '../../types/imageMapInternal.types'
-import { IMAGE_MAP_OBJECT_ATTR } from '../../types/imageMapModel.types'
-import type { ResolvedImageMapObject } from '../../types/imageMapModel.types'
+import type { ActionContext } from '../../types/internal/imageMapInternal.types'
+import { IMAGE_MAP_OBJECT_ATTR } from '../../types/internal/imageMapModel.types'
 import type { BaseImageMapEmits, ImageMapProps } from '../../types/BaseImageMap.types'
+import type { ResolvedImageMapObject } from '../../types/internal/imageMapModel.types'
 
 function elementArea(stage: HTMLElement | null, id: string): ImageMapArea | undefined {
 	const element = stage?.querySelector(`[${IMAGE_MAP_OBJECT_ATTR}="${id}"]`)

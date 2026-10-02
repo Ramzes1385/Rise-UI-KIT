@@ -1,7 +1,7 @@
-import { IMAGE_MAP_OBJECT_ATTR } from '../../types/imageMapModel.types'
-import type { OverlayOptions } from '../../types/imageMapInternal.types'
+import { IMAGE_MAP_OBJECT_ATTR } from '../../types/internal/imageMapModel.types'
+import type { OverlayOptions } from '../../types/internal/imageMapInternal.types'
 import { computed, nextTick, onBeforeUnmount, ref, shallowRef, useId } from 'vue'
-import type { ImageMapBox, ResolvedImageMapObject } from '../../types/imageMapModel.types'
+import type { ImageMapBox, ResolvedImageMapObject } from '../../types/internal/imageMapModel.types'
 
 const HIDE_DELAY = 150
 

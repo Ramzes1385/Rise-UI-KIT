@@ -1,6 +1,6 @@
 import { onMounted, watch } from 'vue'
 import type { ImageMapProps } from '../../types/BaseImageMap.types'
-import type { DeepLinkContext } from '../../types/imageMapInternal.types'
+import type { DeepLinkContext } from '../../types/internal/imageMapInternal.types'
 
 function writeParam(param: string, id: string | null): void {
 	const url = new URL(window.location.href)

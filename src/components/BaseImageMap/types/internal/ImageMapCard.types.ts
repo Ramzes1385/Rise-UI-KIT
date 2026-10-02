@@ -1,4 +1,4 @@
-import type { ImageMapHoursState } from './ImageMapHours.types'
+import type { ImageMapHoursState } from '../ImageMapHours.types'
 import type { ResolvedImageMapObject } from './imageMapModel.types'
 
 /** Пропсы содержимого подсказки и окна объекта */

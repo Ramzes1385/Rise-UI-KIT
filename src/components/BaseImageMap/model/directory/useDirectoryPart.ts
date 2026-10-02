@@ -1,11 +1,11 @@
 import { nextTick } from 'vue'
 import { useImageMapDeepLink } from './useImageMapDeepLink'
 import { useImageMapDirectory } from './useImageMapDirectory'
-import type { MapCore } from '../../types/imageMapInternal.types'
+import type { MapCore } from '../../types/internal/imageMapInternal.types'
 import { focusDirectoryStart, keepFocusInDirectory } from './directoryFocus'
-import type { ResolvedImageMapObject } from '../../types/imageMapModel.types'
-import type { ImageMapFilterToggle } from '../../types/ImageMapDirectory.types'
 import type { BaseImageMapEmits, ImageMapProps } from '../../types/BaseImageMap.types'
+import type { ResolvedImageMapObject } from '../../types/internal/imageMapModel.types'
+import type { ImageMapFilterToggle } from '../../types/internal/ImageMapDirectory.types'
 
 function useDirectoryHandlers(props: ImageMapProps, emit: BaseImageMapEmits, core: MapCore) {
 	const { refs, data, actions, overlay, filters } = core

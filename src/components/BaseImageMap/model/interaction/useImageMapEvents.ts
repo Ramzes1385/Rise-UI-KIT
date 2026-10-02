@@ -1,8 +1,8 @@
 import { nextTick } from 'vue'
-import type { EventContext } from '../../types/imageMapInternal.types'
 import type { BaseImageMapEmits } from '../../types/BaseImageMap.types'
-import { IMAGE_MAP_OBJECT_ATTR } from '../../types/imageMapModel.types'
-import type { ResolvedImageMapObject } from '../../types/imageMapModel.types'
+import type { EventContext } from '../../types/internal/imageMapInternal.types'
+import { IMAGE_MAP_OBJECT_ATTR } from '../../types/internal/imageMapModel.types'
+import type { ResolvedImageMapObject } from '../../types/internal/imageMapModel.types'
 
 const ZOOM_KEYS: Record<string, 'zoomIn' | 'zoomOut' | 'resetZoom'> = { '+': 'zoomIn', '=': 'zoomIn', '-': 'zoomOut', '0': 'resetZoom' }
 

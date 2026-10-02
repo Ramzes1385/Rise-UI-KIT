@@ -1,8 +1,8 @@
 import type { Ref } from 'vue'
 import type { ImageMapArea } from '../../types/imageMapData.types'
-import type { ImageMapView } from '../../types/imageMapModel.types'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import type { Frame, ScreenPoint, ViewOptions } from '../../types/imageMapInternal.types'
+import type { ImageMapView } from '../../types/internal/imageMapModel.types'
+import type { Frame, ScreenPoint, ViewOptions } from '../../types/internal/imageMapInternal.types'
 import { clampScale, clampView, fitArea, fitStage, scaleForArea, zoomAround } from './viewGeometry'
 
 export const ZOOM_STEP = 1.5

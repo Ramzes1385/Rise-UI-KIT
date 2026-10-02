@@ -1,6 +1,6 @@
 import type { ImageMapArea } from '../../types/imageMapData.types'
-import type { ImageMapView } from '../../types/imageMapModel.types'
-import type { Frame, ScreenBox, ScreenPoint } from '../../types/imageMapInternal.types'
+import type { ImageMapView } from '../../types/internal/imageMapModel.types'
+import type { Frame, ScreenBox, ScreenPoint } from '../../types/internal/imageMapInternal.types'
 
 export function fitStage(
 	viewport: { width: number; height: number },

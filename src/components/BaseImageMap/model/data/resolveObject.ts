@@ -1,5 +1,5 @@
 import { isSafeUrl } from '@utils/data/urlUtils'
-import type { ResolvedImageMapObject } from '../../types/imageMapModel.types'
+import type { ResolvedImageMapObject } from '../../types/internal/imageMapModel.types'
 import type {
 	ImageMapAction,
 	ImageMapData,

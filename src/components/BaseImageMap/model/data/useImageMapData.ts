@@ -2,7 +2,7 @@ import { computed, ref, watch } from 'vue'
 import { resolveObject } from './resolveObject'
 import type { ImageMapProps } from '../../types/BaseImageMap.types'
 import type { ImageMapLayer, ImageMapObject } from '../../types/imageMapData.types'
-import type { ImageMapLayerView, ResolvedImageMapObject } from '../../types/imageMapModel.types'
+import type { ImageMapLayerView, ResolvedImageMapObject } from '../../types/internal/imageMapModel.types'
 
 function useLayerModel(props: ImageMapProps) {
 	const localLayer = ref(props.layer)

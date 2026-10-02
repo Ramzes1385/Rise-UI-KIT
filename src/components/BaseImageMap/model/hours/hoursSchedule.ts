@@ -2,7 +2,7 @@ import { warn } from '@/locales/warn'
 import { UI_WARNINGS } from '@/locales/messages'
 import { IMAGE_MAP_WEEKDAYS } from '../../types/ImageMapHours.types'
 import type { ImageMapHours, ImageMapTimeRange } from '../../types/ImageMapHours.types'
-import type { HoursPhase, HoursRange, ParsedHours, ZonedMoment } from '../../types/imageMapInternal.types'
+import type { HoursPhase, HoursRange, ParsedHours, ZonedMoment } from '../../types/internal/imageMapInternal.types'
 
 export const DAY_MINUTES = 1440
 export const DAY_MS = 86_400_000

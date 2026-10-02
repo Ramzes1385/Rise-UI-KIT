@@ -15,8 +15,8 @@ import { useImageMapEvents } from './interaction/useImageMapEvents'
 import { useImageMapFullscreen } from './zoom/useImageMapFullscreen'
 import { useImageMapActions } from './interaction/useImageMapActions'
 import { useImageMapOverlay } from './interaction/useImageMapOverlay'
-import type { ResolvedImageMapObject } from '../types/imageMapModel.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import type { ResolvedImageMapObject } from '../types/internal/imageMapModel.types'
 import type { BaseImageMapEmits, BaseImageMapExpose, ImageMapProps } from '../types/BaseImageMap.types'
 
 const CLASS_KEYS = [

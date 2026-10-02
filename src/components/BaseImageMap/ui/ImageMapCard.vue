@@ -35,7 +35,7 @@
 import { BaseLink } from '@components/BaseLink'
 import { BaseText } from '@components/BaseText'
 import { UI_IMAGE_MAP } from '@/locales/messages'
-import type { ImageMapCardProps } from '../types/ImageMapCard.types'
+import type { ImageMapCardProps } from '../types/internal/ImageMapCard.types'
 
 defineProps<ImageMapCardProps>()
 </script>

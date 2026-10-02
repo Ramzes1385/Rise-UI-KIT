@@ -1,4 +1,4 @@
-import type { ShapeGeometry } from '../../types/imageMapInternal.types'
+import type { ShapeGeometry } from '../../types/internal/imageMapInternal.types'
 import type { ImageMapArea, ImageMapLayer, ImageMapObject } from '../../types/imageMapData.types'
 
 export function shapeGeometry(object: ImageMapObject, layer: ImageMapLayer): ShapeGeometry | undefined {

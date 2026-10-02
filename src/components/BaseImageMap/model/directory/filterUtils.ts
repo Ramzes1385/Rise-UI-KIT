@@ -2,7 +2,7 @@ import { UI_IMAGE_MAP } from '@/locales/messages'
 import { foldSearchText } from '@utils/data/textUtils'
 import type { ImageMapFilterValues } from '../../types/BaseImageMap.types'
 import { IMAGE_MAP_OPEN_NOW_VALUE } from '../../types/ImageMapHours.types'
-import type { ResolvedImageMapObject } from '../../types/imageMapModel.types'
+import type { ResolvedImageMapObject } from '../../types/internal/imageMapModel.types'
 import type { ImageMapData, ImageMapFilter, ImageMapFilterOption, ImageMapObject } from '../../types/imageMapData.types'
 
 export function normalizeText(value: string): string {

@@ -1,8 +1,8 @@
 import { computed, ref } from 'vue'
 import { centerOf, pickInDirection } from './spatial'
-import { IMAGE_MAP_OBJECT_ATTR } from '../../types/imageMapModel.types'
-import type { ImageMapDirection } from '../../types/imageMapModel.types'
-import type { MapFocusOptions } from '../../types/imageMapInternal.types'
+import { IMAGE_MAP_OBJECT_ATTR } from '../../types/internal/imageMapModel.types'
+import type { ImageMapDirection } from '../../types/internal/imageMapModel.types'
+import type { MapFocusOptions } from '../../types/internal/imageMapInternal.types'
 
 const ARROWS: Record<string, ImageMapDirection> = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down' }
 

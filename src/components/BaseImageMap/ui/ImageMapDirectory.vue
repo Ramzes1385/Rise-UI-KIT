@@ -143,7 +143,7 @@ import { BaseSelect } from '@components/BaseSelect'
 import { BaseSwitch } from '@components/BaseSwitch'
 import { UI_IMAGE_MAP, UI_TEXT } from '@/locales/messages'
 import { BaseCheckboxGroup } from '@components/BaseCheckboxGroup'
-import type { ImageMapDirectoryEmits, ImageMapDirectoryProps, ImageMapDirectorySlots } from '../types/ImageMapDirectory.types'
+import type { ImageMapDirectoryEmits, ImageMapDirectoryProps, ImageMapDirectorySlots } from '../types/internal/ImageMapDirectory.types'
 
 defineProps<ImageMapDirectoryProps>()
 

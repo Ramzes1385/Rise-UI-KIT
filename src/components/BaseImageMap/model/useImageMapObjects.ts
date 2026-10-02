@@ -1,9 +1,9 @@
 import { computed } from 'vue'
 import { shapeGeometry } from './data/shapeGeometry'
 import { objectAttributes, objectClasses } from './data/objectAttributes'
-import type { ResolvedImageMapObject } from '../types/imageMapModel.types'
 import type { ImageMapPoint, ImageMapSvgObject } from '../types/imageMapData.types'
-import type { ObjectState, ObjectsOptions, PointView, ShapeView, SvgBinding } from '../types/imageMapInternal.types'
+import type { ResolvedImageMapObject } from '../types/internal/imageMapModel.types'
+import type { ObjectState, ObjectsOptions, PointView, ShapeView, SvgBinding } from '../types/internal/imageMapInternal.types'
 
 const POINT_SIZE = 28
 

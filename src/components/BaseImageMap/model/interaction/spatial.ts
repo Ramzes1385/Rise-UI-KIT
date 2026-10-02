@@ -1,5 +1,5 @@
-import type { Center } from '../../types/imageMapInternal.types'
-import type { ImageMapDirection } from '../../types/imageMapModel.types'
+import type { Center } from '../../types/internal/imageMapInternal.types'
+import type { ImageMapDirection } from '../../types/internal/imageMapModel.types'
 
 const OFF_AXIS_WEIGHT = 2
 const MIN_STEP = 1

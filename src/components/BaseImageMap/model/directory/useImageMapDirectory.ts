@@ -4,9 +4,9 @@ import { directorySections } from './directorySections'
 import { UI_IMAGE_MAP, UI_TEXT } from '@/locales/messages'
 import type { ImageMapProps } from '../../types/BaseImageMap.types'
 import { filterOptions, matchesSearch, searchText } from './filterUtils'
-import type { DirectoryContext } from '../../types/imageMapInternal.types'
-import type { ResolvedImageMapObject } from '../../types/imageMapModel.types'
-import type { ImageMapDirectoryEntry, ImageMapFilterControl } from '../../types/ImageMapDirectory.types'
+import type { DirectoryContext } from '../../types/internal/imageMapInternal.types'
+import type { ResolvedImageMapObject } from '../../types/internal/imageMapModel.types'
+import type { ImageMapDirectoryEntry, ImageMapFilterControl } from '../../types/internal/ImageMapDirectory.types'
 
 function useDirectoryEntries(props: ImageMapProps, context: DirectoryContext) {
 	const layerTitles = computed(

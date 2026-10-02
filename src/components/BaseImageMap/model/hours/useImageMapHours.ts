@@ -1,9 +1,9 @@
 import { hoursState } from './hoursFormat'
 import { parseHours } from './hoursSchedule'
 import type { ImageMapProps } from '../../types/BaseImageMap.types'
-import type { ParsedHours } from '../../types/imageMapInternal.types'
 import type { ImageMapHoursState } from '../../types/ImageMapHours.types'
 import { computed, onBeforeUnmount, onMounted, shallowRef, watch } from 'vue'
+import type { ParsedHours } from '../../types/internal/imageMapInternal.types'
 
 const MINUTE_MS = 60_000
 

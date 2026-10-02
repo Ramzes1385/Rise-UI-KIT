@@ -1,4 +1,4 @@
-import type { ImageMapAction, ImageMapGroup, ImageMapLayer, ImageMapObject } from './imageMapData.types'
+import type { ImageMapAction, ImageMapGroup, ImageMapLayer, ImageMapObject } from '../imageMapData.types'
 
 /** Атрибут с id объекта на его элементе: по нему карта находит объект в событиях */
 export const IMAGE_MAP_OBJECT_ATTR = 'data-image-map-object'

@@ -1,7 +1,7 @@
-import type { ImageMapHoursState } from './ImageMapHours.types'
-import type { ImageMapDirectoryView } from './BaseImageMap.types'
+import type { ImageMapHoursState } from '../ImageMapHours.types'
+import type { ImageMapDirectoryView } from '../BaseImageMap.types'
 import type { ResolvedImageMapObject } from './imageMapModel.types'
-import type { ImageMapFilter, ImageMapFilterOption, ImageMapFilterType, ImageMapGroup } from './imageMapData.types'
+import type { ImageMapFilter, ImageMapFilterOption, ImageMapFilterType, ImageMapGroup } from '../imageMapData.types'
 
 /** Строка списка объектов */
 export interface ImageMapDirectoryEntry {

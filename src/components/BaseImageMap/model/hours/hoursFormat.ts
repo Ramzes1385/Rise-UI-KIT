@@ -1,7 +1,7 @@
 import { UI_IMAGE_MAP } from '@/locales/messages'
 import { formatMessage, getLocale } from '@/locales/state'
 import type { ImageMapHoursDay, ImageMapHoursState } from '../../types/ImageMapHours.types'
-import type { HoursRange, ParsedHours, ZonedMoment } from '../../types/imageMapInternal.types'
+import type { HoursRange, ParsedHours, ZonedMoment } from '../../types/internal/imageMapInternal.types'
 import { DAY_MINUTES, DAY_MS, dayRanges, hoursPhase, weekdayIndex, zonedMoment } from './hoursSchedule'
 
 const MONDAY = Date.UTC(2024, 0, 1)

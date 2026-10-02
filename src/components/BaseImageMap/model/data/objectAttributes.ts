@@ -1,6 +1,6 @@
-import type { ObjectState } from '../../types/imageMapInternal.types'
-import { IMAGE_MAP_OBJECT_ATTR } from '../../types/imageMapModel.types'
-import type { ResolvedImageMapObject } from '../../types/imageMapModel.types'
+import type { ObjectState } from '../../types/internal/imageMapInternal.types'
+import { IMAGE_MAP_OBJECT_ATTR } from '../../types/internal/imageMapModel.types'
+import type { ResolvedImageMapObject } from '../../types/internal/imageMapModel.types'
 
 const OBJECT_CLASS = 'base-image-map__object'
 

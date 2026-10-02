@@ -1,7 +1,7 @@
 import { sanitizeSvg } from './sanitizeSvg'
 import type { ImageMapLayer } from '../../types/imageMapData.types'
 import { ref, useId, watch, onMounted, watchPostEffect } from 'vue'
-import type { SvgBinding, SvgOptions } from '../../types/imageMapInternal.types'
+import type { SvgBinding, SvgOptions } from '../../types/internal/imageMapInternal.types'
 
 export function useSvgMarkup(getLayer: () => ImageMapLayer | undefined, prefix: string) {
 	const markup = ref('')

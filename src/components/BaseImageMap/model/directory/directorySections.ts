@@ -1,6 +1,6 @@
 import { normalizeText } from './filterUtils'
-import type { SectionsInput } from '../../types/imageMapInternal.types'
-import type { ImageMapDirectoryEntry, ImageMapDirectorySection } from '../../types/ImageMapDirectory.types'
+import type { SectionsInput } from '../../types/internal/imageMapInternal.types'
+import type { ImageMapDirectoryEntry, ImageMapDirectorySection } from '../../types/internal/ImageMapDirectory.types'
 
 function byGroup(input: SectionsInput): ImageMapDirectorySection[] {
 	const sections = input.groups.map(group => ({ id: group.id, title: group.title, entries: [] as ImageMapDirectoryEntry[] }))
