@@ -31,9 +31,14 @@ function describe(context: EmulationContext, value: unknown): unknown {
 	return context.signers.has(value) ? 'CPSigner' : 'object'
 }
 
-function record(context: EmulationContext, name: string, args: unknown[]): void {
-	const [object = '', member = ''] = name.split('.')
-	context.calls.push({ object, member, args: args.map(arg => describe(context, arg)) })
+/** Имя вызова — всегда `Объект.Член`: разбор по первой точке без недостижимых ветвей */
+function record(context: EmulationContext, name: `${string}.${string}`, args: unknown[]): void {
+	const dot = name.indexOf('.')
+	context.calls.push({
+		object: name.slice(0, dot),
+		member: name.slice(dot + 1),
+		args: args.map(arg => describe(context, arg)),
+	})
 }
 
 function version(value: string) {
