@@ -260,13 +260,15 @@ describe('BaseCryptoProSign — модель', () => {
 			])
 		})
 
-		it('record — имя без точки', () => {
+		it('record — имя без точки не проходит тип; объект — до первой точки, член — всё после неё', () => {
+			expectTypeOf<'Hash'>().not.toExtend<Parameters<typeof record>[1]>()
+			expectTypeOf<''>().not.toExtend<Parameters<typeof record>[1]>()
 			const calls: Array<{ object: string; member: string; args: unknown[] }> = []
-			record({ calls } as never, 'Hash', [])
-			record({ calls } as never, '', [])
+			record({ calls } as never, 'HashedData.Hash', [])
+			record({ calls } as never, 'CPSigner.AuthenticatedAttributes2.Add', ['CPAttribute'])
 			expect(calls).toEqual([
-				{ object: 'Hash', member: '', args: [] },
-				{ object: '', member: '', args: [] },
+				{ object: 'HashedData', member: 'Hash', args: [] },
+				{ object: 'CPSigner', member: 'AuthenticatedAttributes2.Add', args: ['CPAttribute'] },
 			])
 		})
 

@@ -256,7 +256,7 @@ describe('BaseCryptoProSign unit', () => {
 			expect(callsOf(emulation, 'CPSigner.propset_TSAAddress')).toHaveLength(0)
 			expect(callsOf(emulation, 'CPAttribute.propset_Name')[0]?.args).toEqual([0])
 			expect(callsOf(emulation, 'CPAttribute.propset_Value')[0]?.args).toEqual(['Date'])
-			expect(callsOf(emulation, 'CPSigner.AuthenticatedAttributes2')).toHaveLength(1)
+			expect(callsOf(emulation, 'CPSigner.AuthenticatedAttributes2.Add')[0]?.args).toEqual(['CPAttribute'])
 			expect(callsOf(emulation, 'CadesSignedData.propset_ContentEncoding')[0]?.args).toEqual([1])
 			expect(callsOf(emulation, 'CadesSignedData.propset_Content')[0]?.args).toEqual([textToBase64('Привет')])
 			expect(callsOf(emulation, 'CadesSignedData.SignCades')[0]?.args).toEqual(['CPSigner', 1, false])
