@@ -109,13 +109,17 @@ describe('BaseEventCalendar integration', () => {
 			await nextTick()
 			expect(lastDate(emitted())).toEqual(new Date(2026, 9, 2))
 		})
-		it('смена дня внутри периода не меняет период', async () => {
+		it('одно событие period-change при смене дня внутри периода (клавиша, щелчок, «Сегодня»)', async () => {
 			const user = userEvent.setup()
-			const { emitted } = renderCalendar()
-			cell('2026-10-02').focus()
+			const { emitted } = renderCalendar({ date: '2026-10-20' })
+			cell('2026-10-20').focus()
 			await user.keyboard('{ArrowRight}')
-			expect(lastDate(emitted())).toEqual(new Date(2026, 9, 3))
-			expect(periods(emitted())).toEqual(['month 2026-09-28'])
+			expect(lastDate(emitted())).toEqual(new Date(2026, 9, 21))
+			await user.click(cell('2026-10-05'))
+			await user.click(screen.getByRole('button', { name: 'Сегодня' }))
+			expect(lastDate(emitted())).toEqual(new Date(2026, 9, 2))
+			expect(emitted()['update:date']).toHaveLength(3)
+			expect(emitted()['period-change']).toHaveLength(1)
 		})
 
 		it('v-model: смена пропсов date и view перерисовывает период без update-событий', async () => {
@@ -187,6 +191,7 @@ describe('BaseEventCalendar integration', () => {
 			expect(title()).toBe('Ноябрь 2026 г.')
 			expect(cell('2026-11-13')).toHaveFocus()
 			expect(periods(emitted())).toEqual(['month 2026-09-28', 'month 2026-10-26'])
+			expect(emitted()['period-change']).toHaveLength(2)
 		})
 
 		it('другие клавиши и клавиши на событии сетку не двигают', async () => {

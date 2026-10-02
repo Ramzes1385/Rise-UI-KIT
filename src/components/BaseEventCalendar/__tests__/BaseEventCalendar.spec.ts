@@ -258,6 +258,26 @@ describe('BaseEventCalendar unit', () => {
 			expect(vacation.style.getPropertyValue('--lane')).toBe('0')
 		})
 
+		it('событие короче полутора шагов шкалы — компактное', () => {
+			const events: CalendarEvent[] = [
+				{ id: 's', title: 'Звонок', start: '2026-10-02T09:00', end: '2026-10-02T09:30' },
+				{ id: 'e', title: 'Ровно', start: '2026-10-02T12:00', end: '2026-10-02T12:45' },
+				{ id: 'l', title: 'Час', start: '2026-10-02T15:00', end: '2026-10-02T16:00' },
+			]
+			const compact = (slotDuration?: number): boolean[] => {
+				const { unmount } = renderCalendar({ view: 'day', events, slotDuration })
+				const result = within(screen.getByRole('group'))
+					.getAllByRole('button')
+					.map(button => button.classList.contains('base-event-calendar__event--compact'))
+				unmount()
+				return result
+			}
+			expect(compact()).toEqual([true, false, false])
+			expect(compact(60)).toEqual([true, true, true])
+			expect(compact(1)).toEqual([false, false, false])
+			expect(compact(240)).toEqual([true, true, true])
+		})
+
 		it('события со временем: место по времени и колонки пересечений', () => {
 			renderCalendar({ view: 'day' })
 			const friday = screen.getByRole('group', { name: 'пт, 2 окт.' })
