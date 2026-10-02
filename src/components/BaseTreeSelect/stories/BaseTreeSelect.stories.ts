@@ -1,5 +1,6 @@
 import { args } from './args'
 import * as cases from './cases'
+import { render } from './render'
 import { argTypes } from './argTypes'
 import { parameters } from './parameters'
 import type { Meta } from '@storybook/vue3-vite'
@@ -11,6 +12,7 @@ const meta = {
 	parameters,
 	argTypes,
 	args,
+	render,
 } satisfies Meta<typeof BaseTreeSelect>
 
 export default meta
@@ -24,3 +26,6 @@ export const WithError = cases.WithError
 export const Loading = cases.Loading
 export const Empty = cases.Empty
 export const LongContent = cases.LongContent
+export const Keyboard = cases.Keyboard
+export const Multiple = cases.Multiple
+export const Searchable = cases.Searchable

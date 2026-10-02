@@ -25,6 +25,8 @@ export interface BaseTreeSelectPanelProps {
 	sizeScaleStyle: Record<string, string> | undefined
 	/** id дерева (`role="tree"`): на него ссылается `aria-controls` поля */
 	treeId: string
+	/** id того, чем управляет поле (`aria-controls`): дерево, а без строк — сама панель (`<treeId>-panel`) */
+	popupId: string
 	/** id подписи поля — имя дерева; без подписи имя берётся из `treeLabel` */
 	labelledby?: string
 	/** Имя дерева, если подписи нет */

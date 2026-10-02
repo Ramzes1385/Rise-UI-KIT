@@ -43,7 +43,7 @@
 				:tabindex="isControlDisabled ? undefined : 0"
 				aria-haspopup="tree"
 				:aria-expanded="isOpen ? 'true' : 'false'"
-				:aria-controls="isOpen && rows.length && !isLoading ? treeId : undefined"
+				:aria-controls="isOpen ? popupId : undefined"
 				:aria-activedescendant="isOpen && activeIndex >= 0 && !isLoading ? getRowId(activeIndex) : undefined"
 				:aria-busy="isLoading ? 'true' : undefined"
 				v-bind="triggerAttrs"
@@ -137,6 +137,7 @@
 				:classes="classes"
 				:size-scale-style="sizeScaleStyle"
 				:tree-id="treeId"
+				:popup-id="popupId"
 				:labelledby="triggerLabelledBy"
 				:tree-label="unlabelledName"
 				:active-index="activeIndex"
@@ -201,6 +202,7 @@ const {
 	labelId,
 	errorId,
 	treeId,
+	popupId,
 	formField,
 	isControlDisabled,
 	control,

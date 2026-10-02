@@ -334,7 +334,8 @@ describe('BaseTreeSelect integration', () => {
 			expect(screen.getByText(UI_TEXT.NO_RESULTS)).toBeInTheDocument()
 			expect(screen.queryByRole('tree')).not.toBeInTheDocument()
 			expect(search()).not.toHaveAttribute('aria-activedescendant')
-			expect(search()).not.toHaveAttribute('aria-controls')
+			expect(search()).toHaveAttribute('aria-controls', combobox().getAttribute('aria-controls'))
+			expect(document.getElementById(search().getAttribute('aria-controls') ?? '')).toHaveClass('base-tree-select__panel')
 		})
 
 		it('Tab из поиска закрывает список, поиск сбрасывается', async () => {
@@ -356,6 +357,7 @@ describe('BaseTreeSelect integration', () => {
 			expect(screen.getByRole('status')).toHaveTextContent(UI_TEXT.LOADING)
 			expect(screen.queryByRole('tree')).not.toBeInTheDocument()
 			expect(combobox()).not.toHaveAttribute('aria-activedescendant')
+			expect(document.getElementById(combobox().getAttribute('aria-controls') ?? '')).toHaveClass('base-tree-select__panel')
 		})
 
 		it('нет узлов — «Нет данных» или слот empty', async () => {

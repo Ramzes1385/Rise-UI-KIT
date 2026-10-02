@@ -1,30 +1,24 @@
-import { expect } from 'storybook/test'
 import type meta from '../BaseTreeSelect.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import BaseTreeSelect from '../../ui/BaseTreeSelect.vue'
-import { storySource, useStorySetup } from '@/stories/helpers'
-
-const models = { value: 'modelValue' }
-
-const template = `<BaseTreeSelect v-bind="args" v-model="value" />`
+import { expect, screen, waitFor } from 'storybook/test'
 
 export const Default: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
-			description: { story: 'Песочница: v-model связан с Controls — введённый текст появляется в панели.' },
-			source: storySource({ template, imports: ['BaseTreeSelect'], models }),
+			description: {
+				story: [
+					'Песочница: раскройте округ стрелкой и выберите город — значение синхронизировано с Controls.',
+					'Сценарий с клавиатурой — в истории Keyboard.',
+				].join('\n'),
+			},
 		},
 	},
-	render: args => ({
-		components: { BaseTreeSelect },
-		setup: useStorySetup(args, { models }),
-		template,
-	}),
 	play: async ({ canvas, userEvent }) => {
-		const field = canvas.getByLabelText('Название')
-		await userEvent.tab()
-		await expect(field).toHaveFocus()
-		await userEvent.type(field, 'Отчёт')
-		await expect(field).toHaveValue('Отчёт')
+		const trigger = canvas.getByRole('combobox', { name: 'Город доставки' })
+		await userEvent.click(trigger)
+		const tree = await screen.findByRole('tree', { name: 'Город доставки' })
+		await expect(trigger).toHaveAttribute('aria-controls', tree.id)
+		await userEvent.keyboard('{Escape}')
+		await waitFor(() => expect(trigger).toHaveAttribute('aria-expanded', 'false'))
 	},
 }

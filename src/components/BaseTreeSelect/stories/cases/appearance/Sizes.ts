@@ -1,6 +1,6 @@
-import type meta from '../BaseTreeSelect.stories'
+import type meta from '../../BaseTreeSelect.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import BaseTreeSelect from '../../ui/BaseTreeSelect.vue'
+import BaseTreeSelect from '../../../ui/BaseTreeSelect.vue'
 import { literal, SIZE_PRESETS, sizeLabel, storySource, useStorySetup } from '@/stories/helpers'
 
 const presets = SIZE_PRESETS.map(preset => ({ name: preset.name, sizeScale: preset.sizeScale, label: sizeLabel(preset) }))

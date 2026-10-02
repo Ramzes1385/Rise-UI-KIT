@@ -75,9 +75,10 @@ function useTreeSelectActions(props: TreeSelectProps, model: ReturnType<typeof u
 	}
 }
 
-function useTreeSelectDisplay(props: TreeSelectProps, model: ReturnType<typeof useTreeSelectTree>) {
+function useTreeSelectDisplay(props: TreeSelectProps, model: ReturnType<typeof useTreeSelectTree>, treeId: string) {
 	const { valueNodes } = model
 	return {
+		popupId: computed(() => (model.rows.value.length && !props.isLoading ? treeId : `${treeId}-panel`)),
 		selectedNode: computed(() => (props.isMultiple ? undefined : valueNodes.value[0])),
 		tagNodes: computed(() => (props.isMultiple ? valueNodes.value.slice(0, props.maxTagCount ?? valueNodes.value.length) : [])),
 		moreCount: computed(() =>
@@ -112,7 +113,7 @@ export function useBaseTreeSelect(props: TreeSelectProps, emit: BaseTreeSelectEm
 	return {
 		...standard,
 		...field,
-		...useTreeSelectDisplay(props, model),
+		...useTreeSelectDisplay(props, model, field.treeId),
 		...actions,
 		triggerRef,
 		isOpen,

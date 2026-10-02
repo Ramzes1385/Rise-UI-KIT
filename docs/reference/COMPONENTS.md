@@ -2933,6 +2933,39 @@ const mallMap: ImageMapData = {
 - **Масштаб** — кнопки «+», «−», «Сбросить», перетаскивание, щипок; колесо — с Ctrl или ⌘ (`wheelZoom: 'ctrl'`, без него страница прокручивается и появляется подсказка), `always` или `none`; `maxZoom`, `initArea`, `hasZoomToActive`; полный экран (`hasFullscreen`). Методы через ref: `zoomIn`, `zoomOut`, `resetZoom`, `zoomToObject(id)`, `setLayer(id)`.
 - **Доступность** — объекты — кнопки или ссылки с именем `title`, одна остановка Tab, стрелки — к ближайшему объекту в направлении, Home/End, Enter и пробел (у ссылок — только Enter); `+`/`−` на объекте масштабируют вокруг него, при увеличении фокус на объекте за краем сдвигает вид к нему, а окно карты получает фокус — стрелки на нём сдвигают вид; окно возвращает фокус на объект; кнопки масштаба подписаны. Список объектов для скринридера и поиска — следующая часть (new-image-map-2).
 
+## BaseTreeSelect
+
+Выбор из иерархии в выпадающем списке: регион → город, отдел → сотрудник, категория → подкатегория. Узлы — в формате BaseTree.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseTreeSelect } from '@ramzes1385/rise-ui-kit'
+import type { TreeNode } from '@ramzes1385/rise-ui-kit'
+
+const regions: TreeNode[] = [
+	{ id: 'center', label: 'Центральный округ', children: [{ id: 'moscow', label: 'Москва' }, { id: 'tula', label: 'Тула' }] },
+	{ id: 'volga', label: 'Приволжский округ', children: [{ id: 'kazan', label: 'Казань' }] },
+]
+const city = ref('')
+const cities = ref<string[]>([])
+</script>
+
+<template>
+	<BaseTreeSelect v-model="city" :items="regions" label="Город доставки" is-searchable />
+	<BaseTreeSelect v-model="cities" :items="regions" label="Города" is-multiple :max-tag-count="3" />
+</template>
+```
+
+- `v-model` — id узла (`''` — ничего); при `isMultiple` — массив id. Несколько значений — флажки с каскадом: ветка отмечает доступных потомков, выбор всех доступных детей отмечает родителя, часть — частичный выбор. Отключённые узлы и их ветки в каскаде не участвуют. Вид массива — `checkedStrategy`: `child` (по умолчанию) — узлы без выбранных детей, `parent` — полностью выбранная ветка одним id, `all` — все выбранные узлы. На вход можно отдать массив в любом из видов — выбор согласуется.
+- `isSearchable` — поиск по подписям: видны совпавшие узлы, их предки (раскрыты) и потомки совпавших веток. `isDefaultExpandAll`, `isLoading` («Загрузка...» в `role="status"`, у поля `aria-busy`), `maxTagCount` («+N»). Слоты `node`, `selected`, `tag` (`{ nodes, remove }`), `empty`; событие `toggle` — раскрытие узла.
+- Поле формы как BaseSelect: `label`, `error`, `isRequired`, `triggerAttrs`, внутри BaseFormField — имя и описание обёртки; `validate()` и `reset()` через `ref`.
+- Клавиатура (APG Combobox, фокус остаётся в поле): Enter, пробел, стрелки открывают список; вверх и вниз, Home и End — по строкам; вправо — раскрыть ветку или к первому ребёнку, влево — свернуть или к родителю; Enter (в поле и пробел) — выбрать: одиночный выбор закрывает список, несколько — оставляет открытым; Escape, Tab, Alt+↑ — закрыть. В поле поиска с текстом влево, вправо, Home и End двигают курсор.
+
+Для плоского списка — `BaseSelect`, для дерева на странице — `BaseTree`.
+
+---
+
 ## Список компонентов
 
 ```txt
@@ -3061,6 +3094,7 @@ BaseTooltip
 BaseTour
 BaseTransfer
 BaseTree
+BaseTreeSelect
 BaseUser
 BaseVirtualList
 BaseVoiceRecorder

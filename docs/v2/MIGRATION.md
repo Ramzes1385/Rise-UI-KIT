@@ -1575,3 +1575,11 @@ API кита не меняется. В Storybook добавлены пример
 - `BaseCountdown`: слот `finished` больше не под `aria-hidden` — скринридер читает его вместо «время вышло», ссылки и кнопки в нём доступны; скрытый текст `.base-countdown__spoken` при показе слота не выводится. Слот default по-прежнему только для вида (под `aria-hidden`): интерактивное — рядом с компонентом или в `finished`.
 - `BaseCountdown`: при рендере на сервере и гидратации первая отрисовка — заглушка `--` (части времени — нули, `isFinished: false`), настоящее время — после монтирования. HTML сервера не зависит от его часов, гидратация без расхождений. В обычном приложении (без SSR) первая отрисовка сразу с настоящим временем.
 
+## Задача new-tree-select: новый компонент BaseTreeSelect
+
+Новые компоненты, изменений в существующих нет.
+
+- `BaseTreeSelect` (Form) — выбор из дерева в выпадающем списке: `items` (узлы `TreeNode`, как у BaseTree), `v-model` — id узла или массив id при `isMultiple`; `checkedStrategy` (`child` — по умолчанию, `parent`, `all`) — вид массива при каскаде; `maxTagCount`, `isSearchable`, `isDefaultExpandAll`, `isLoading`, `label`, `ariaLabel`, `placeholder`, `triggerAttrs`, `isRequired`, `isDisabled`, `error`, `variant`, `sizeScale`, `color`, `customClass`. События `update:modelValue`, `change`, `toggle`; слоты `node`, `selected`, `tag`, `empty`; методы `focus`, `blur`, `validate`, `reset`.
+- Поле формы как у BaseSelect: подпись `FormFieldLabel`, ошибка `FormFieldError`, внутри BaseFormField имя и описание — от обёртки (`useFieldControl`), `disabled` — от BaseForm.
+- Доступность: поле — `combobox` (`aria-haspopup="tree"`), фокус остаётся в поле, активный узел — `aria-activedescendant` (APG Combobox); дерево — плоский список `treeitem` с `aria-level`, `aria-setsize`, `aria-posinset`, `aria-expanded`; одиночный выбор — `aria-selected`, несколько — `aria-checked` с `mixed`.
+- Экспорт: `BaseTreeSelect`, `TREE_SELECT_VARIANTS`, `TREE_SELECT_CHECKED_STRATEGIES`, типы `BaseTreeSelectProps`, `BaseTreeSelectEmits`, `BaseTreeSelectSlots`, `TreeSelectCheckedStrategy`, `TreeSelectValue`. Новых строк словаря нет (берутся `SELECT_PLACEHOLDER`, `SEARCH_PLACEHOLDER`, `NO_RESULTS`, `EMPTY`, `LOADING`, `DELETE`, `aria.SEARCH`).

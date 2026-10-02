@@ -1,5 +1,5 @@
 <template>
-	<div class="base-tree-select__panel" :class="classes.panel" :style="sizeScaleStyle">
+	<div :id="`${treeId}-panel`" class="base-tree-select__panel" :class="classes.panel" :style="sizeScaleStyle">
 		<div v-if="isSearchable" class="base-tree-select__search" :class="classes.search">
 			<BaseIcon name="search" class="base-tree-select__search-icon" :size-scale="calcIconScale('sm', sizeScale)" />
 			<input
@@ -9,7 +9,7 @@
 				:placeholder="UI_TEXT.SEARCH_PLACEHOLDER"
 				:aria-label="UI_ARIA.SEARCH"
 				aria-autocomplete="list"
-				:aria-controls="rows.length && !isLoading ? treeId : undefined"
+				:aria-controls="popupId"
 				:aria-activedescendant="activeIndex >= 0 && !isLoading ? getRowId(activeIndex) : undefined"
 				autocomplete="off"
 				class="base-tree-select__search-input"
