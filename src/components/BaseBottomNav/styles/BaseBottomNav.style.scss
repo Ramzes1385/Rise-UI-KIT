@@ -1,0 +1,118 @@
+.base-bottom-nav {
+	--bottom-nav-indicator: color-mix(in srgb, var(--custom-bg-active, var(--rise-primary)) 16%, transparent);
+
+	display: block;
+	box-sizing: border-box;
+	width: 100%;
+	padding-inline: env(safe-area-inset-left, 0) env(safe-area-inset-right, 0);
+	padding-bottom: env(safe-area-inset-bottom, 0);
+	border-top: 1px solid var(--rise-border);
+	@include custom-bg(background-color, var(--rise-bg));
+
+	&--fixed {
+		position: fixed;
+		inset-inline: 0;
+		bottom: 0;
+		z-index: calc(var(--rise-z-overlay) - 2);
+	}
+
+	&--hidden {
+		transform: translateY(100%);
+	}
+
+	@include motion-safe {
+		transition: transform var(--rise-duration) ease;
+	}
+
+	&--soft {
+		border-top-color: transparent;
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+	}
+
+	&--outline {
+		border-top-color: var(--rise-border-accented);
+	}
+
+	&--ghost {
+		border-top-color: transparent;
+		@include custom-bg(background-color, transparent);
+	}
+
+	&__list {
+		display: flex;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	&__item {
+		flex: 1 1 0;
+		min-width: 0;
+	}
+
+	&__link {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: sz(4px);
+		box-sizing: border-box;
+		width: 100%;
+		min-height: sz(56px);
+		margin: 0;
+		padding: sz(8px) sz(4px) sz(6px);
+		border: none;
+		border-radius: sz(var(--rise-radius-md));
+		background-color: transparent;
+		font: inherit;
+		text-decoration: none;
+		cursor: pointer;
+		-webkit-tap-highlight-color: transparent;
+		@include custom-text(color, var(--rise-text-toned));
+		@include transition-colors;
+		@include focus-ring(-2px);
+		@include custom-text-hover(color, var(--rise-text));
+	}
+
+	&__link--active {
+		color: var(--custom-text-active, var(--rise-text-highlighted));
+		font-weight: var(--rise-font-weight-semibold);
+	}
+
+	&__link--disabled,
+	&__link:disabled {
+		@include disabled-state;
+	}
+
+	&__icon-wrap {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: sz(56px);
+		padding: sz(2px) sz(12px);
+		border-radius: var(--rise-radius-full);
+		@include transition-colors;
+	}
+
+	&__link--active &__icon-wrap {
+		background-color: var(--bottom-nav-indicator);
+		color: var(--custom-bg-active, var(--rise-primary));
+	}
+
+	&__badge {
+		position: absolute;
+		top: sz(-4px);
+		left: calc(50% + #{sz(6px)});
+		pointer-events: none;
+	}
+
+	&__label {
+		max-width: 100%;
+		@include text-size(xs);
+		@include truncate;
+	}
+
+	&__sr-only {
+		@include visually-hidden;
+	}
+}
