@@ -37,9 +37,9 @@ export function certificateOption(certificate: CryptoProCertificate, now: Date):
 	}
 }
 
-export function describeSource(source: string | Blob, fileName: string): string {
+export function describeSource(source: string | Blob, fileName: string, isVerify = false): string {
 	const size = formatFileSize(typeof source === 'string' ? new TextEncoder().encode(source).length : source.size)
-	if (typeof source === 'string') return formatMessage(UI_CRYPTOPRO.SOURCE_TEXT, { size })
+	if (typeof source === 'string') return formatMessage(isVerify ? UI_CRYPTOPRO.SOURCE_TEXT_VERIFY : UI_CRYPTOPRO.SOURCE_TEXT, { size })
 	return formatMessage(UI_CRYPTOPRO.SOURCE_FILE, { name: fileName, size })
 }
 

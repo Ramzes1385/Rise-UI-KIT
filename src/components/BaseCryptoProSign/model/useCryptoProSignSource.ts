@@ -32,7 +32,7 @@ export function useCryptoProSignSource(props: BaseCryptoProSignProps) {
 		fileName,
 		isHash,
 		hasSignature: computed(() => Boolean(props.signature) || signatureFile.value !== null),
-		sourceText: computed(() => (props.data === undefined ? '' : describeSource(props.data, fileName.value))),
+		sourceText: computed(() => (props.data === undefined ? '' : describeSource(props.data, fileName.value, props.mode === 'verify'))),
 		hashHint: computed(() => formatMessage(UI_CRYPTOPRO.HASH_HINT, { size: formatFileSize(props.hashThreshold ?? 0) })),
 		pickFile: (files: File[]): void => {
 			pickedFile.value = files[0] ?? null

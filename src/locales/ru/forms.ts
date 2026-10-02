@@ -176,6 +176,7 @@ export const ruForms = {
 		DOCUMENT: 'Документ',
 		DOCUMENT_VERIFY: 'Подписанный документ — для отсоединённой подписи',
 		SOURCE_TEXT: 'Подписываем текст, {size}',
+		SOURCE_TEXT_VERIFY: 'Проверяем подпись текста, {size}',
 		SOURCE_FILE: 'Документ: {name}, {size}',
 		TYPE: 'Тип подписи',
 		ATTACHED: 'Присоединённая',

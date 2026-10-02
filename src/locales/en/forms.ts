@@ -171,6 +171,7 @@ export const enForms = {
 		DOCUMENT: 'Document',
 		DOCUMENT_VERIFY: 'Signed document — for a detached signature',
 		SOURCE_TEXT: 'Signing text, {size}',
+		SOURCE_TEXT_VERIFY: 'Verifying the signature of text, {size}',
 		SOURCE_FILE: 'Document: {name}, {size}',
 		TYPE: 'Signature type',
 		ATTACHED: 'Attached',

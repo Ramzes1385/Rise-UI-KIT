@@ -11,6 +11,11 @@
 	@include text-size(sm);
 	@include custom-bg(background-color, var(--rise-bg));
 	@include custom-text(color, var(--rise-text));
+	@include custom-text(--crypto-pro-sign-text, var(--rise-text));
+
+	& :is(.base-select, .base-segmented, .base-file-upload) :is(.base-select__label, .base-segmented__label, .base-file-upload__label) {
+		color: var(--crypto-pro-sign-text);
+	}
 
 	&--soft {
 		border-color: transparent;
