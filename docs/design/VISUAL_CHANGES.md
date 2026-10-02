@@ -1173,3 +1173,11 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 - Истории `Media/BaseImageMap`: Default, Variants, Sizes, CustomColor, Disabled, Loading, WithError, Empty, Areas, Slots, LongContent, Hotspots, Floors, Zoom, InitArea, MobileSheet. Графика — свои фикстуры (`placeholderImage`, план этажа SVG в `stories/fixtures.ts`).
 - Скриншот-тесты `BaseImageMap.visual.spec.ts`: variants, sizes, areas, with-error, empty — в двух темах (10 снимков). Эталонов нет — их создаёт владелец; play этих историй не кликает по объектам (на остановленных часах обработчики на `.base-image-map__stage` не срабатывают).
 - Variants и Sizes: у каждого экземпляра своё имя региона (`aria-label`), иначе axe `landmark-unique`; на вид не влияет.
+
+## Задача new-event-calendar-2: выделение и перенос в BaseEventCalendar
+
+Существующие истории и эталоны не меняются: всё ниже видно только с `is-selectable` или `is-editable`.
+
+- Выделенные дни месяца — фон `color-mix(--rise-primary 12 %, --rise-bg)`; выделенное время в неделе и дне — полупрозрачная полоса `--rise-primary` 16 %; курсор клавиатуры в колонке — рамка 2 px `--rise-primary`, колонка в фокусе — кольцо фокуса внутрь.
+- Переносимое событие — тень `--rise-shadow-md` и поверх соседей; под мышью — прозрачность 0,85 и курсор `grabbing`; запрещённое `canMove` место — пунктир 2 px `--rise-error` и курсор `not-allowed`. Ручка растягивания невидима: курсор `ns-resize` у нижнего края события в сетке времени и `ew-resize` у правого края события на весь день.
+- При `is-selectable` в месяце и сетке времени отключено выделение текста (`user-select: none`). Анимаций нет.
