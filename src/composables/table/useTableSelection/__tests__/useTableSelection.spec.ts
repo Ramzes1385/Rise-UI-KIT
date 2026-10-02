@@ -208,4 +208,17 @@ describe('useTableSelection', () => {
 		expect(isAllSelected.value).toBe(true)
 		expect(isSomeSelected.value).toBe(false)
 	})
+	it('isSelectAllDisabled — в отфильтрованном наборе нет доступных строк (п. 11 проверки)', () => {
+		const rows = ref<TableRow[]>([
+			{ id: '1', data: {} },
+			{ id: '2', data: {}, isDisabled: true },
+		])
+		const filteredRows = ref<TableRow[]>(rows.value)
+		const { isSelectAllDisabled } = useTableSelection({ rows, filteredRows })
+		expect(isSelectAllDisabled.value).toBe(false)
+		filteredRows.value = [rows.value[1]]
+		expect(isSelectAllDisabled.value).toBe(true)
+		filteredRows.value = []
+		expect(isSelectAllDisabled.value).toBe(true)
+	})
 })

@@ -36,6 +36,19 @@ describe('BaseTable — № 7: «Выбрать все» в частичном �
 	})
 })
 
+describe('BaseTable — «Выбрать все» без доступных строк (п. 11 проверки)', () => {
+	it('все строки отключены — флажок в шапке неактивен', () => {
+		const rows = makeRows(2).map(row => ({ ...row, isDisabled: true }))
+		render(BaseTable, { props: { columns, rows, behavior: { selectable: true } } })
+		expect(selectAllInput()).toBeDisabled()
+	})
+
+	it('есть доступная строка — флажок активен', () => {
+		render(BaseTable, { props: { columns, rows: makeRows(2), behavior: { selectable: true } } })
+		expect(selectAllInput()).not.toBeDisabled()
+	})
+})
+
 describe('BaseTable — TBL-3: смена rows', () => {
 	it('новая ссылка rows не сбрасывает страницу и выбор', async () => {
 		const user = userEvent.setup()
@@ -72,7 +85,7 @@ describe('BaseTable — обходы из MIGRATION (п. 1 проверки)', (
 		const { rerender, emitted } = render(BaseTable, { props: { columns, rows, behavior: { selectable: true } } })
 
 		await user.click(screen.getByRole('checkbox', { name: 'Выбрать строку 2' }))
-		const selected = new Set((emitted('select')?.at(-1)?.[0] as TableRow[]).map(row => row.id))
+		const selected = new Set(((emitted('select') as TableRow[][][]).at(-1)?.[0] ?? []).map(row => row.id))
 		await rerender({ rows: rows.map(row => ({ ...row, isSelected: selected.has(row.id) })) })
 		expect(screen.getByRole('checkbox', { name: 'Выбрать строку 2' })).toBeChecked()
 
@@ -390,7 +403,10 @@ describe('BaseTable — закреплённые колонки', () => {
 		const observed = new Map<Element, () => void>()
 		const Original = globalThis.ResizeObserver
 		globalThis.ResizeObserver = class {
-			constructor(private readonly callback: () => void) {}
+			private readonly callback: () => void
+			constructor(callback: () => void) {
+				this.callback = callback
+			}
 			observe(element: Element) {
 				observed.set(element, this.callback)
 			}

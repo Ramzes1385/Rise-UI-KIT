@@ -48,6 +48,7 @@ function useTableComposition(options: UseTableCompositionOptions) {
 		...pickColumnsState(tableColumns),
 		isAllSelected: selection.isAllSelected,
 		isSomeSelected: selection.isSomeSelected,
+		isSelectAllDisabled: selection.isSelectAllDisabled,
 		isSelected: selection.isSelected,
 		isExpanded: expand.isExpanded,
 		toggleExpand: expand.toggleExpand,

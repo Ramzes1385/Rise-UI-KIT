@@ -22,6 +22,8 @@ export interface UseTableSelectionReturn {
 	isAllSelected: ComputedRef<boolean>
 	/** Выбрана часть доступных строк отфильтрованного набора (частичное состояние «Выбрать все») */
 	isSomeSelected: ComputedRef<boolean>
+	/** Доступных строк в отфильтрованном наборе нет: «Выбрать все» неактивен */
+	isSelectAllDisabled: ComputedRef<boolean>
 	/** Проверить, выбрана ли строка */
 	isSelected: (row: TableRow) => boolean
 	/** Переключить выбор строки */

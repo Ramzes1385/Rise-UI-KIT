@@ -15,6 +15,8 @@ export interface BaseTableHeaderProps {
 	isAllSelected: boolean
 	/** Выбрана часть строк: «Выбрать все» в частичном состоянии */
 	isSomeSelected: boolean
+	/** Доступных строк нет (всё скрыто поиском или отключено): «Выбрать все» неактивен */
+	isSelectAllDisabled: boolean
 	/** Масштаб размера (базовая единица sizeScale) */
 	sizeScale: number
 	/** Включена ли множественная сортировка */

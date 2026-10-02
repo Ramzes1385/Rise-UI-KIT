@@ -57,6 +57,9 @@ function useTableSelection(options: UseTableSelectionOptions): UseTableSelection
 		return !isAllSelected.value && selectableFilteredRows.value.some(r => selectedIds.value.has(r.id))
 	})
 
+	/** Доступных строк в отфильтрованном наборе нет (всё скрыто поиском или отключено) — «Выбрать все» неактивен */
+	const isSelectAllDisabled = computed((): boolean => selectableFilteredRows.value.length === 0)
+
 	function toggleRow(row: TableRow): void {
 		selectedIds.value = toggleSelectedId(selectedIds.value, row.id)
 		if (onSelect) onSelect(selectedRows.value)
@@ -86,6 +89,7 @@ function useTableSelection(options: UseTableSelectionOptions): UseTableSelection
 		selectedRows,
 		isAllSelected,
 		isSomeSelected,
+		isSelectAllDisabled,
 		isSelected,
 		toggleRow,
 		toggleAll,

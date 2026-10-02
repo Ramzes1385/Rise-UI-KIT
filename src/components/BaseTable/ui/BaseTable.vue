@@ -74,6 +74,7 @@
 							:has-expandable-rows="hasExpandableRows"
 							:is-all-selected="isAllSelected"
 							:is-some-selected="isSomeSelected"
+							:is-select-all-disabled="isSelectAllDisabled"
 							:size-scale="sizeScale"
 							:is-multi-sort="isMultiSort"
 							:thead-class="classes.thead"
@@ -265,6 +266,7 @@ const {
 	formatCellValue,
 	isAllSelected,
 	isSomeSelected,
+	isSelectAllDisabled,
 	isSelected,
 	isExpanded,
 	toggleExpand,

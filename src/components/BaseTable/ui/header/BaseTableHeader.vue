@@ -5,6 +5,7 @@
 				<BaseCheckbox
 					:model-value="isAllSelected"
 					:is-indeterminate="isSomeSelected"
+					:is-disabled="isSelectAllDisabled"
 					:aria-label="TABLE_TEXT.SELECT_ALL"
 					:size-scale="sizeScale"
 					@update:model-value="emit('toggle-all')" />
