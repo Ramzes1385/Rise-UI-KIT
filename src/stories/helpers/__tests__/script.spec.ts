@@ -75,7 +75,7 @@ describe('модули setup витрин Blocks', () => {
 	it.each(Object.keys(SETUP_MODULES))('%s: код объявляет всё, что setup отдаёт превью', file => {
 		const code = scriptSource(SETUP_MODULES[file])
 		expect(code).not.toMatch(/^(?:import|export|return)\b/m)
-		const declared = new Set([...code.matchAll(/^(?:const|function)\s+([\w$]+)/gm)].map(match => match[1]))
+		const declared = new Set([...code.matchAll(/^(?:const|(?:async\s+)?function)\s+([\w$]+)/gm)].map(match => match[1]))
 		expect(Object.keys(SETUPS[file].setup()).filter(name => !declared.has(name))).toEqual([])
 	})
 })

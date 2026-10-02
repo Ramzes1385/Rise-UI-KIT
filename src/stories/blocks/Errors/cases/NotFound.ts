@@ -4,6 +4,7 @@ import { BaseIcon } from '@components/BaseIcon'
 import { BaseLink } from '@components/BaseLink'
 import { waitFor, expect } from 'storybook/test'
 import setupSource from './NotFound.setup.ts?raw'
+import { BaseEmpty } from '@components/BaseEmpty'
 import { BaseButton } from '@components/BaseButton'
 import { BaseSearch } from '@components/BaseSearch'
 import type { StoryObj } from '@storybook/vue3-vite'
@@ -11,19 +12,23 @@ import { scriptSource, staticStorySource, tabTo, useStorySetup } from '@/stories
 
 const template = `
 	<main class="blk-page blk-error">
-		<p class="blk-error__code" aria-hidden="true">404</p>
-		<h1 class="blk-title">Страница не найдена</h1>
-		<p class="blk-muted">Возможно, её переместили или в адресе опечатка. Найдите нужное через поиск или вернитесь на главную.</p>
-		<div class="blk-error__search">
-			<BaseSearch v-model="query" :results="pages" placeholder="Поиск по сайту" @select="open" />
-		</div>
-		<div class="blk-error__actions">
-			<BaseButton variant="outline" @click="message = 'Возврат на предыдущую страницу'">
-				<template #left><BaseIcon name="arrow-left" /></template>
-				Назад
-			</BaseButton>
-			<BaseLink href="#">На главную</BaseLink>
-		</div>
+		<BaseEmpty variant="ghost" :custom-class="{ content: 'blk-error__content', actions: 'blk-error__actions' }">
+			<template #icon><p class="blk-error__code" aria-hidden="true">404</p></template>
+			<div class="blk-error__text">
+				<h1 class="blk-title">Страница не найдена</h1>
+				<p class="blk-muted">Возможно, её переместили или в адресе опечатка. Найдите нужное через поиск или вернитесь на главную.</p>
+			</div>
+			<div class="blk-error__search">
+				<BaseSearch v-model="query" :results="pages" placeholder="Поиск по сайту" @select="open" />
+			</div>
+			<template #actions>
+				<BaseButton variant="outline" @click="message = 'Возврат на предыдущую страницу'">
+					<template #left><BaseIcon name="arrow-left" /></template>
+					Назад
+				</BaseButton>
+				<BaseLink href="#">На главную</BaseLink>
+			</template>
+		</BaseEmpty>
 		<nav class="blk-error__links" aria-label="Популярные разделы">
 			<p class="blk-muted">Популярные разделы</p>
 			<ul class="blk-error__list">
@@ -39,22 +44,24 @@ const template = `
 export const NotFound: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
+			story: { inline: false, height: '540px' },
 			description: {
 				story: [
-					'Страница 404: крупный код ошибки скрыт от скринридера, смысл передаёт заголовок. Поиск по разделам сайта (стрелки и Enter),',
-					'кнопка «Назад», ссылка на главную и список популярных разделов. Выбранный раздел объявляет область `role="status"`.',
+					'Страница 404 на BaseEmpty: крупный код ошибки в слоте `icon` скрыт от скринридера, смысл передаёт заголовок `h1` в слоте по умолчанию',
+					'(проп `title` BaseEmpty рисует `h3`, а на странице ошибки нужен заголовок первого уровня). Поиск по разделам сайта (стрелки и Enter),',
+					'кнопка «Назад» и ссылка на главную — в слоте `actions`, ниже список популярных разделов. Выбранный раздел объявляет область `role="status"`.',
 				].join('\n'),
 			},
 			source: staticStorySource({
 				template,
-				imports: ['BaseButton', 'BaseIcon', 'BaseLink', 'BaseSearch', 'type SearchResult'],
+				imports: ['BaseButton', 'BaseEmpty', 'BaseIcon', 'BaseLink', 'BaseSearch', 'type SearchResult'],
 				vue: ['ref'],
 				script: scriptSource(setupSource),
 			}),
 		},
 	},
 	render: args => ({
-		components: { BaseButton, BaseIcon, BaseLink, BaseSearch },
+		components: { BaseButton, BaseEmpty, BaseIcon, BaseLink, BaseSearch },
 		setup: useStorySetup(args, { setup }),
 		template,
 	}),

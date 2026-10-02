@@ -37,7 +37,7 @@ const template = `
 						</li>
 					</ul>
 					<template #footer>
-						<BaseButton :variant="plan.isPopular ? 'default' : 'outline'" class="blk-auth__wide" @click="choose(plan)">
+						<BaseButton :variant="plan.isPopular ? 'default' : 'outline'" class="blk-pricing__action" @click="choose(plan)">
 							{{ plan.monthly ? 'Выбрать «' + plan.name + '»' : 'Начать бесплатно' }}
 						</BaseButton>
 					</template>

@@ -223,14 +223,26 @@
 		line-height: 1;
 	}
 
+	& &__content {
+		width: 100%;
+		max-width: none;
+	}
+
+	&__text {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
 	&__search {
 		width: 100%;
-		max-width: 400px;
+		margin-top: 16px;
 		text-align: start;
 	}
 
 	&__alert {
 		width: 100%;
+		margin-top: 16px;
 		text-align: start;
 	}
 
@@ -319,6 +331,11 @@
 			font-weight: var(--rise-font-weight-normal);
 			@include text-size(sm);
 		}
+	}
+
+	&__action {
+		width: 100%;
+		justify-content: center;
 	}
 
 	&__features {

@@ -10,4 +10,5 @@ export const seriesMedia = {
 	cover: seriesCover,
 	posters: [posterEpisode1, posterEpisode2, posterEpisode3],
 	avatars: [avatarImage(24), avatarImage(210), avatarImage(150)],
+	viewers: [avatarImage(330), avatarImage(60), avatarImage(190)],
 }

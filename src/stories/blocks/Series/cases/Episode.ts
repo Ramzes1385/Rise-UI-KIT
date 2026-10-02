@@ -3,12 +3,13 @@ import type meta from '../Series.stories'
 import { BaseTabs } from '@components/BaseTabs'
 import { BaseUser } from '@components/BaseUser'
 import setupSource from './Episode.setup.ts?raw'
-import { waitFor, expect } from 'storybook/test'
 import { BaseBadge } from '@components/BaseBadge'
 import { BaseRating } from '@components/BaseRating'
 import type { StoryObj } from '@storybook/vue3-vite'
+import { within, waitFor, expect } from 'storybook/test'
 import { BaseBreadcrumbs } from '@components/BaseBreadcrumbs'
 import { BaseMediaPlayer } from '@components/BaseMediaPlayer'
+import { BaseCommentThread } from '@components/BaseCommentThread'
 import { scriptSource, staticStorySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
@@ -17,7 +18,7 @@ const template = `
 		<BaseMediaPlayer
 			v-model:episode="episode"
 			:playlists="playlists"
-			:poster="seriesMedia.cover"
+			:poster="cover"
 			title="Демо-сериал"
 			class="blk-series__player"
 			@update:episode="syncSeason" />
@@ -57,6 +58,17 @@ const template = `
 				</li>
 			</ul>
 		</section>
+		<div class="blk-series__section">
+			<h2 class="blk-series__heading">Обсуждение</h2>
+			<BaseCommentThread
+				:comments="comments"
+				:current-user="viewer"
+				:now="now"
+				label="Комментарии к серии"
+				variant="ghost"
+				@reply="reply"
+				@like="like" />
+		</div>
 	</main>
 `
 
@@ -67,12 +79,24 @@ export const Episode: StoryObj<typeof meta> = {
 				story: [
 					'Страница серии: хлебные крошки, плеер с сезонами, название, жанры, рейтинг и описание. Вкладки сезонов',
 					'показывают серии карточками-кнопками, текущая отмечена `aria-current`. Щелчок по серии переключает плеер,',
-					'смена серии в плеере (например, «Следующая серия») переключает вкладку сезона. Ниже — актёры BaseUser.',
+					'смена серии в плеере (например, «Следующая серия») переключает вкладку сезона. Ниже — актёры BaseUser',
+					'и обсуждение серии BaseCommentThread: обработчики `reply` и `like` добавляют ответ в дерево и меняют счётчик.',
 				].join('\n'),
 			},
 			source: staticStorySource({
 				template,
-				imports: ['BaseBadge', 'BaseBreadcrumbs', 'BaseRating', 'BaseTabs', 'BaseUser', 'type BreadcrumbItem', 'type TabItem'],
+				imports: [
+					'BaseBadge',
+					'BaseBreadcrumbs',
+					'BaseCommentThread',
+					'BaseRating',
+					'BaseTabs',
+					'BaseUser',
+					'type BreadcrumbItem',
+					'type CommentItem',
+					'type CommentReply',
+					'type TabItem',
+				],
 				importsFrom: {
 					'@ramzes1385/rise-ui-kit/media': ['BaseMediaPlayer', 'type MediaEpisode', 'type MediaPlaylist'],
 					'./media': ['seriesMedia'],
@@ -83,7 +107,7 @@ export const Episode: StoryObj<typeof meta> = {
 		},
 	},
 	render: args => ({
-		components: { BaseBadge, BaseBreadcrumbs, BaseMediaPlayer, BaseRating, BaseTabs, BaseUser },
+		components: { BaseBadge, BaseBreadcrumbs, BaseCommentThread, BaseMediaPlayer, BaseRating, BaseTabs, BaseUser },
 		setup: useStorySetup(args, { setup }),
 		template,
 	}),
@@ -101,5 +125,15 @@ export const Episode: StoryObj<typeof meta> = {
 		await waitFor(() => expect(canvas.getByRole('tab', { name: 'Сезон 2' })).toHaveAttribute('aria-selected', 'true'))
 		await userEvent.click(canvas.getByRole('button', { name: /^Серия 1\. Возвращение/ }))
 		await waitFor(() => expect(canvas.getByRole('region', { name: 'Демо-сериал. Серия 1. Возвращение' })).toBeInTheDocument())
+
+		const thread = canvas.getByRole('region', { name: 'Комментарии к серии' })
+		await userEvent.click(within(thread).getAllByRole('button', { name: 'Ответить' })[0])
+		await waitFor(() => expect(within(thread).getByRole('textbox', { name: 'Ответ пользователю Кира Лунная' })).toHaveFocus())
+		await userEvent.keyboard('Договорились, без спойлеров{Control>}{Enter}{/Control}')
+		await waitFor(() => expect(within(thread).getByText('Договорились, без спойлеров')).toBeVisible())
+		await expect(within(thread).getByText('3 комментария')).toBeVisible()
+
+		await userEvent.click(within(thread).getByRole('button', { name: 'Нравится · 4' }))
+		await expect(within(thread).getByRole('button', { name: 'Нравится · 5' })).toHaveAttribute('aria-pressed', 'true')
 	},
 }
