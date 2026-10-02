@@ -1,13 +1,13 @@
 import { ruBase } from './base'
-import { ruCard } from './card'
 import { ruChat } from './chat'
 import { ruData } from './data'
 import { ruForms } from './forms'
 import { ruMedia } from './media'
 import { ruPlural } from './plural'
-import { ruMapEditor } from './mapEditor'
-import { ruPresentation } from './presentation'
-import { ruEventCalendar } from './eventCalendar'
+import { ruCard } from './components/card'
+import { ruMapEditor } from './components/mapEditor'
+import { ruPresentation } from './components/presentation'
+import { ruEventCalendar } from './components/eventCalendar'
 /** Русский словарь кита (язык по умолчанию); ключи совпадают с `UI_TEXT`, `UI_ARIA` и др.; `{name}` — место для значения (formatMessage), `plural` — формы чисел (Intl.PluralRules). */
 export const ru = {
 	code: 'ru',

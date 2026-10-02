@@ -1,7 +1,8 @@
+/** Composable: перестановка элементов мышью и с клавиатуры (WCAG 2.5.7) с объявлениями и анимацией */
+
 import { useSortableFlip } from './sortableFlip'
 import { useSortablePointer } from './sortablePointer'
 import { useSortableKeyboard } from './sortableKeyboard'
-/** Composable: перестановка элементов мышью и с клавиатуры (WCAG 2.5.7) с объявлениями и анимацией */
 import { useReducedMotion } from '@composables/app/useReducedMotion'
 import type { UseSortableOptions, UseSortableReturn } from './types/useSortable.types'
 
