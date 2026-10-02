@@ -1,5 +1,5 @@
 <template>
-	<div class="base-cascader__panel" :class="classes.panel" :style="sizeScaleStyle">
+	<div :id="panelId" class="base-cascader__panel" :class="classes.panel" :style="sizeScaleStyle">
 		<div v-if="isSearchable()" class="base-cascader__search" :class="classes.search">
 			<BaseIcon name="search" class="base-cascader__search-icon" :size-scale="calcIconScale('sm', sizeScale())" />
 			<input
@@ -184,6 +184,7 @@ const {
 	isSearching,
 	results,
 	resultsId,
+	panelId,
 	resultId,
 	activeResult,
 	isPathSelected,

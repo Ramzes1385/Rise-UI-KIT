@@ -204,6 +204,8 @@ export interface CascaderPanelContext {
 	resultId: (index: number) => string
 	columnId: (level: number) => string
 	resultsId: string
+	/** id панели: `aria-controls` поля, пока у активного уровня нет списка (загрузка) */
+	panelId: string
 	clickNode: (level: number, node: BaseCascaderNode) => void
 	hoverNode: (level: number, node: BaseCascaderNode) => void
 	clickResult: (result: CascaderSearchResult) => void

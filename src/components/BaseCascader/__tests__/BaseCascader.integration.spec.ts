@@ -368,7 +368,8 @@ describe('BaseCascader integration', () => {
 			const { user, field } = setup({ items: [], isLoading: true })
 			await user.click(field)
 			expect(screen.getByRole('status', { name: /Загрузка/ })).toBeInTheDocument()
-			expect(field).not.toHaveAttribute('aria-controls')
+			expect(field.getAttribute('aria-controls')).toMatch(/-panel$/)
+			expect(document.getElementById(field.getAttribute('aria-controls') ?? '')).toBeInTheDocument()
 			expect(field).not.toHaveAttribute('aria-activedescendant')
 		})
 

@@ -1,5 +1,6 @@
 <template>
 	<BaseDropdown
+		ref="dropdownRef"
 		v-model:is-open="isOpen"
 		class="base-cascader__dropdown"
 		position="bottom-start"
@@ -169,6 +170,7 @@ const {
 	triggerAttrs,
 	resolvedPlaceholder,
 	triggerRef,
+	dropdownRef,
 	isOpen,
 	controls,
 	activeDescendant,
