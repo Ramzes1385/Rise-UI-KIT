@@ -7,6 +7,6 @@ export const Empty: StoryObj<typeof meta> = {
 	args: { items: [] },
 	play: async ({ canvas }) => {
 		await expect(canvas.getByText('Уведомлений нет')).toBeVisible()
-		await expect(canvas.getByRole('button', { name: 'Прочитать все' })).toBeDisabled()
+		await expect(canvas.getByRole('button', { name: 'Прочитать все' })).toHaveAttribute('aria-disabled', 'true')
 	},
 }

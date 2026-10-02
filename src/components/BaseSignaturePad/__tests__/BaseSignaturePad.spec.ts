@@ -26,8 +26,8 @@ describe('BaseSignaturePad unit', () => {
 		expect(screen.getByRole('group', { name: 'Подпись' })).toBeInTheDocument()
 		expect(screen.getByRole('img', { name: 'Подписи нет' })).toBeInTheDocument()
 		expect(screen.getByText('Распишитесь мышью, пальцем или пером')).toBeInTheDocument()
-		expect(screen.getByRole('button', { name: 'Отменить штрих' })).toBeDisabled()
-		expect(screen.getByRole('button', { name: 'Очистить' })).toBeDisabled()
+		expect(screen.getByRole('button', { name: 'Отменить штрих' })).toHaveAttribute('aria-disabled', 'true')
+		expect(screen.getByRole('button', { name: 'Очистить' })).toHaveAttribute('aria-disabled', 'true')
 	})
 
 	it('label — видимая подпись и имя группы, placeholder — своя подсказка', () => {
@@ -150,5 +150,20 @@ describe('BaseSignaturePad unit', () => {
 		})
 		expect(container.firstElementChild).toHaveClass('base-signature-pad--soft', 'my-root')
 		expect(container.querySelector('.base-signature-pad__surface')).toHaveClass('my-surface')
+	})
+
+	it('«Отменить штрих» после последнего штриха — aria-disabled и остаётся в фокусе', async () => {
+		const { emitted, rerender } = render(BaseSignaturePad, { props: { modelValue: [STROKE] } })
+		const undo = screen.getByRole('button', { name: 'Отменить штрих' })
+		undo.focus()
+		await fireEvent.click(undo)
+		await rerender({ modelValue: [] })
+
+		expect(emitted()['update:modelValue']).toEqual([[[]]])
+		expect(undo).toHaveAttribute('aria-disabled', 'true')
+		expect(undo).not.toHaveAttribute('disabled')
+		expect(document.activeElement).toBe(undo)
+		await fireEvent.click(undo)
+		expect(emitted()['update:modelValue']).toHaveLength(1)
 	})
 })

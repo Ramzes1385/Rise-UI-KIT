@@ -73,6 +73,7 @@
 						class="base-transfer__move"
 						variant="outline"
 						:is-disabled="!canMove('target')"
+						:is-focusable-when-disabled="!isDisabled"
 						:aria-label="formatMoveLabel('target')"
 						:size-scale="sizeScale"
 						@click="handleMoveClick('target')">
@@ -82,6 +83,7 @@
 						class="base-transfer__move"
 						variant="outline"
 						:is-disabled="!canMove('source')"
+						:is-focusable-when-disabled="!isDisabled"
 						:aria-label="formatMoveLabel('source')"
 						:size-scale="sizeScale"
 						@click="handleMoveClick('source')">

@@ -85,11 +85,11 @@ describe('BaseTransfer unit', () => {
 
 	it('кнопки переноса доступны, только когда в другой панели есть отмеченные', async () => {
 		const { emitted } = render(BaseTransfer, { props: { items: ITEMS, modelValue: ['d'] } })
-		expect(moveButton('Выбрано')).toBeDisabled()
-		expect(moveButton('Доступно')).toBeDisabled()
+		expect(moveButton('Выбрано')).toHaveAttribute('aria-disabled', 'true')
+		expect(moveButton('Доступно')).toHaveAttribute('aria-disabled', 'true')
 		await fireEvent.click(option('Доступно', 'Борис'))
 		await fireEvent.click(option('Доступно', 'Анна'))
-		expect(moveButton('Выбрано')).toBeEnabled()
+		expect(moveButton('Выбрано')).not.toHaveAttribute('aria-disabled')
 		await fireEvent.click(moveButton('Выбрано'))
 		expect(emitted()['update:modelValue']).toEqual([[['d', 'a', 'b']]])
 		expect(emitted().change).toEqual([[{ to: 'target', ids: ['a', 'b'] }]])
@@ -121,7 +121,7 @@ describe('BaseTransfer unit', () => {
 		await fireEvent.click(option('Доступно', 'Анна'))
 		await rerender({ modelValue: ['a'] })
 		expect(within(panel('Доступно')).getByText('0 из 3')).toBeInTheDocument()
-		expect(moveButton('Выбрано')).toBeDisabled()
+		expect(moveButton('Выбрано')).toHaveAttribute('aria-disabled', 'true')
 	})
 
 	it('поиск фильтрует по title и description без учёта регистра; пусто — «Ничего не найдено»', async () => {
@@ -242,5 +242,26 @@ describe('BaseTransfer unit', () => {
 			global: { plugins: [createUiKitPlugin({ defaults: { BaseTransfer: { variant: 'outline' } } })] },
 		})
 		expect(screen.getAllByRole('group')[0]).toHaveClass('base-transfer--outline')
+	})
+
+	it('кнопка переноса после переноса — aria-disabled и остаётся в фокусе; при isDisabled — нативный disabled', async () => {
+		const { emitted, rerender } = render(BaseTransfer, { props: { items: ITEMS, modelValue: [] as string[] } })
+		await fireEvent.click(option('Доступно', 'Анна'))
+		const toTarget = moveButton('Выбрано')
+		toTarget.focus()
+		await fireEvent.click(toTarget)
+		const moved = emitted()['update:modelValue'].at(-1) as [string[]]
+		await rerender({ modelValue: moved[0] })
+
+		expect(moved[0]).toEqual(['a'])
+		expect(toTarget).toHaveAttribute('aria-disabled', 'true')
+		expect(toTarget).not.toHaveAttribute('disabled')
+		expect(document.activeElement).toBe(toTarget)
+		await fireEvent.click(toTarget)
+		expect(emitted()['update:modelValue']).toHaveLength(1)
+
+		await rerender({ isDisabled: true })
+		expect(toTarget).toBeDisabled()
+		expect(toTarget).not.toHaveAttribute('aria-disabled')
 	})
 })

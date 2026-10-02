@@ -12,6 +12,7 @@
 				variant="ghost"
 				:size-scale="sizeScale * 0.875"
 				:is-disabled="!unread"
+				is-focusable-when-disabled
 				@click="readAll">
 				{{ UI_NOTIFICATION_CENTER.READ_ALL }}
 			</BaseButton>

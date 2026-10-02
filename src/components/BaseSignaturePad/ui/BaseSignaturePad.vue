@@ -39,10 +39,20 @@
 			</svg>
 		</div>
 		<div class="base-signature-pad__toolbar" :class="classes.toolbar">
-			<BaseButton variant="ghost" :size-scale="sizeScale * 0.875" :is-disabled="isEmpty || isControlDisabled" @click="undo">
+			<BaseButton
+				variant="ghost"
+				:size-scale="sizeScale * 0.875"
+				:is-disabled="isEmpty || isControlDisabled"
+				:is-focusable-when-disabled="!isControlDisabled"
+				@click="undo">
 				{{ UI_SIGNATURE_PAD.UNDO }}
 			</BaseButton>
-			<BaseButton variant="ghost" :size-scale="sizeScale * 0.875" :is-disabled="isEmpty || isControlDisabled" @click="clear">
+			<BaseButton
+				variant="ghost"
+				:size-scale="sizeScale * 0.875"
+				:is-disabled="isEmpty || isControlDisabled"
+				:is-focusable-when-disabled="!isControlDisabled"
+				@click="clear">
 				{{ UI_SIGNATURE_PAD.CLEAR }}
 			</BaseButton>
 		</div>

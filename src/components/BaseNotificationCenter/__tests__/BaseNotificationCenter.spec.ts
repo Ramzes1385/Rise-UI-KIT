@@ -68,7 +68,7 @@ describe('BaseNotificationCenter unit', () => {
 		await fireEvent.click(screen.getByRole('button', { name: 'Прочитать все' }))
 		expect(emitted().read).toEqual([[['n1', 'n2']]])
 		await rerender({ items: ITEMS.map(item => ({ ...item, isRead: true })) })
-		expect(screen.getByRole('button', { name: 'Прочитать все' })).toBeDisabled()
+		expect(screen.getByRole('button', { name: 'Прочитать все' })).toHaveAttribute('aria-disabled', 'true')
 		expect(screen.getByRole('status')).toHaveTextContent('')
 	})
 
@@ -96,5 +96,19 @@ describe('BaseNotificationCenter unit', () => {
 	it('без now — относительно текущего времени', () => {
 		render(BaseNotificationCenter, { props: { items: [{ id: 'x', title: 'Сейчас', date: new Date() }] } })
 		expect(screen.getByRole('button', { name: /^Сейчас сейчас/ })).toBeInTheDocument()
+	})
+
+	it('«Прочитать все» после нажатия — aria-disabled и остаётся в фокусе', async () => {
+		const { emitted, rerender } = renderCenter()
+		const readAll = screen.getByRole('button', { name: 'Прочитать все' })
+		readAll.focus()
+		await fireEvent.click(readAll)
+		await rerender({ items: ITEMS.map(item => ({ ...item, isRead: true })) })
+
+		expect(readAll).toHaveAttribute('aria-disabled', 'true')
+		expect(readAll).not.toHaveAttribute('disabled')
+		expect(document.activeElement).toBe(readAll)
+		await fireEvent.click(readAll)
+		expect(emitted().read).toHaveLength(1)
 	})
 })
