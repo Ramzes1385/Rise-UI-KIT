@@ -24,3 +24,10 @@ export interface IcsDuration {
 export interface IcsEventDraft extends Partial<CalendarEvent> {
 	duration?: IcsDuration
 }
+
+/** Состояние разбора `.ics`: готовые события, открытое событие и глубина вложенных в него компонентов (VALARM) */
+export interface IcsReader {
+	events: CalendarEvent[]
+	current: IcsEventDraft | null
+	depth: number
+}

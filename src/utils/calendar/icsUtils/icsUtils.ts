@@ -6,7 +6,7 @@ import { downloadFile } from '@utils/media/fileUtils'
 import { normalizeEvent } from '../eventUtils/eventUtils'
 import type { CalendarEvent, CalendarEventDate } from '../eventUtils/types/eventUtils.types'
 import { formatIcsDate, formatRecurrenceRule, parseIcsDate } from '../recurrenceUtils/recurrenceUtils'
-import type { IcsDuration, IcsEventDraft, IcsExportOptions, IcsProperty } from './types/icsUtils.types'
+import type { IcsDuration, IcsEventDraft, IcsExportOptions, IcsProperty, IcsReader } from './types/icsUtils.types'
 
 /** Длина строки `.ics` в байтах UTF-8 без перевода строки (RFC 5545, 3.1) */
 const LINE_OCTETS = 75
@@ -20,14 +20,19 @@ function unfold(text: string): string[] {
 		.filter(line => line.trim() !== '')
 }
 
+/** Разделитель вне кавычек: `;` и `:` внутри значения параметра в кавычках (`CN="Иванов; ИП"`) не делят строку */
+const OUTSIDE_QUOTES = '(?=(?:[^"]*"[^"]*")*[^"]*$)'
+const PARAM_SEPARATOR = new RegExp(`;${OUTSIDE_QUOTES}`)
+const VALUE_SEPARATOR = new RegExp(`:${OUTSIDE_QUOTES}`)
+
 function parseProperty(line: string): IcsProperty | null {
-	const colon = line.search(/:(?=(?:[^"]*"[^"]*")*[^"]*$)/)
+	const colon = line.search(VALUE_SEPARATOR)
 	if (colon === -1) return null
-	const [name, ...rawParams] = line.slice(0, colon).split(';')
+	const [name, ...rawParams] = line.slice(0, colon).split(PARAM_SEPARATOR)
 	const params: Record<string, string> = {}
 	for (const param of rawParams) {
-		const [key, value = ''] = param.split('=')
-		params[key.toUpperCase()] = value.replace(/^"|"$/g, '')
+		const [key, ...value] = param.split('=')
+		params[key.toUpperCase()] = value.join('=').replace(/^"|"$/g, '')
 	}
 	return { name: name.toUpperCase(), params, value: line.slice(colon + 1) }
 }
@@ -42,10 +47,13 @@ function escapeText(value: string): string {
 
 const ZONED_TIME = /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})?$/
 
-/** Смещение пояса `timeZone` от UTC в момент `time`, мс; неизвестный пояс — null */
-function zoneOffset(time: number, timeZone: string): number | null {
+const DAY_MS = 86_400_000
+
+const zoneFormatters = new Map<string, Intl.DateTimeFormat | null>()
+
+function createZoneFormatter(timeZone: string): Intl.DateTimeFormat | null {
 	try {
-		const parts = new Intl.DateTimeFormat('en-US', {
+		return new Intl.DateTimeFormat('en-US', {
 			timeZone,
 			hourCycle: 'h23',
 			year: 'numeric',
@@ -54,28 +62,44 @@ function zoneOffset(time: number, timeZone: string): number | null {
 			hour: 'numeric',
 			minute: 'numeric',
 			second: 'numeric',
-		}).formatToParts(new Date(time))
-		const part = (type: Intl.DateTimeFormatPartTypes): number => Number(parts.find(item => item.type === type)?.value ?? 0)
-		const wall = Date.UTC(part('year'), part('month') - 1, part('day'), part('hour'), part('minute'), part('second'))
-		return wall - Math.floor(time / 1000) * 1000
+		})
 	} catch {
 		return null
 	}
 }
 
+/** Форматтер пояса IANA (кэш по имени): разбор файла на тысячи строк не создаёт форматтер на каждую дату; неизвестный пояс — null */
+function zoneFormatter(timeZone: string): Intl.DateTimeFormat | null {
+	const cached = zoneFormatters.get(timeZone)
+	if (cached !== undefined) return cached
+	const formatter = createZoneFormatter(timeZone)
+	zoneFormatters.set(timeZone, formatter)
+	return formatter
+}
+
+/** Смещение пояса от UTC в момент `time`, мс */
+function zoneOffset(time: number, formatter: Intl.DateTimeFormat): number {
+	const part: Record<string, number> = Object.fromEntries(
+		formatter.formatToParts(new Date(time)).map(item => [item.type, Number(item.value)]),
+	)
+	const wall = Date.UTC(part.year, part.month - 1, part.day, part.hour, part.minute, part.second)
+	return wall - Math.floor(time / 1000) * 1000
+}
+
 /**
  * Время `20261002T100000` в поясе IANA (`TZID=Europe/Moscow`) — точный момент; пояс не из базы IANA (например,
- * имена Windows из Outlook) — null, время тогда считается местным
+ * имена Windows из Outlook) — null, время тогда считается местным. RFC 5545 (3.3.5): время, которое при переходе
+ * на зимнее бывает дважды, — первое вхождение; пропущенное при переходе на летнее — по смещению до перехода
  */
 function zonedDate(value: string, timeZone: string): Date | null {
 	const match = ZONED_TIME.exec(value.trim())
-	if (!match) return null
+	const formatter = zoneFormatter(timeZone)
+	if (!match || !formatter) return null
 	const [year, month, day, hours, minutes, seconds] = match.slice(1).map(part => Number(part ?? 0))
 	const wall = Date.UTC(year, month - 1, day, hours, minutes, seconds)
-	const first = zoneOffset(wall, timeZone)
-	if (first === null) return null
-	const second = zoneOffset(wall - first, timeZone) ?? first
-	return new Date(wall - second)
+	const before = zoneOffset(wall - DAY_MS, formatter)
+	const valid = [before, zoneOffset(wall + DAY_MS, formatter)].filter(offset => zoneOffset(wall - offset, formatter) === offset)
+	return new Date(wall - (valid.length ? Math.max(...valid) : before))
 }
 
 /** Дата свойства: VALUE=DATE — день `ГГГГ-ММ-ДД`, время с TZID — из пояса IANA, иначе — UTC (`…Z`) или местное */
@@ -165,27 +189,36 @@ function finishEvent(draft: IcsEventDraft, index: number): CalendarEvent | null 
 	return result
 }
 
+/** Строка внутри открытого события: вложенные компоненты (VALARM и др.) пропускаются целиком, END:VEVENT закрывает событие */
+function readEventLine(reader: IcsReader, current: IcsEventDraft, property: IcsProperty): void {
+	if (property.name === 'BEGIN') reader.depth += 1
+	else if (property.name === 'END' && reader.depth > 0) reader.depth -= 1
+	else if (property.name === 'END' && property.value.trim().toUpperCase() === 'VEVENT') {
+		const event = finishEvent(current, reader.events.length)
+		if (event) reader.events.push(event)
+		reader.current = null
+	} else if (reader.depth === 0) applyProperty(current, property)
+}
+
+function readLine(reader: IcsReader, property: IcsProperty): void {
+	if (reader.current) readEventLine(reader, reader.current, property)
+	else if (property.name === 'BEGIN' && property.value.trim().toUpperCase() === 'VEVENT') reader.current = {}
+}
+
 /**
  * Разбор `.ics`: события VEVENT, у которых есть DTSTART. UID — `id` (без UID — `ics-<номер>`), SUMMARY — `title`,
  * день без времени (VALUE=DATE) — событие на весь день, первая категория CATEGORIES — `category`, первый ресурс
  * RESOURCES — `resourceId` (строкой); без DTEND конец считается по DURATION; время с TZID пересчитывается из пояса
- * IANA, пояс не из базы IANA (имена Windows из Outlook) — время считается местным. Повторы (RRULE,
- * EXDATE) не разворачиваются: их развернёт календарь в видимом периоде
+ * IANA, пояс не из базы IANA (имена Windows из Outlook) — время считается местным. Вложенные компоненты события
+ * (напоминания VALARM) пропускаются. Повторы (RRULE, EXDATE) не разворачиваются: их развернёт календарь в видимом периоде
  */
 function parseIcs(text: string): CalendarEvent[] {
-	const events: CalendarEvent[] = []
-	let current: IcsEventDraft | null = null
+	const reader: IcsReader = { events: [], current: null, depth: 0 }
 	for (const line of unfold(text)) {
 		const property = parseProperty(line)
-		if (!property) continue
-		if (property.name === 'BEGIN' && property.value.toUpperCase() === 'VEVENT') current = {}
-		else if (property.name === 'END' && property.value.toUpperCase() === 'VEVENT' && current) {
-			const event = finishEvent(current, events.length)
-			if (event) events.push(event)
-			current = null
-		} else if (current) applyProperty(current, property)
+		if (property) readLine(reader, property)
 	}
-	return events
+	return reader.events
 }
 
 const encoder = new TextEncoder()
