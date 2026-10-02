@@ -8,6 +8,8 @@
 		:aria-label="`${TABLE_TEXT.RESIZE_COLUMN}: ${column.label}`"
 		:aria-valuenow="width"
 		:aria-valuemin="minWidth"
+		:aria-valuemax="maxWidth"
+		:aria-valuetext="`${width}px`"
 		@mousedown.stop="emit('resize-start', $event)"
 		@click.stop
 		@keydown="onKeydown"></div>
@@ -15,12 +17,12 @@
 
 <script setup lang="ts">
 import { TABLE_TEXT } from '@/locales/messages'
-import { useBaseTableResizeHandle } from '../../model/useBaseTableResizeHandle'
+import { useBaseTableResizeHandle } from '../../model/header/useBaseTableResizeHandle'
 import type { BaseTableResizeHandleEmits, BaseTableResizeHandleProps } from '../../types/header/BaseTableResizeHandle.types'
 
 const props = defineProps<BaseTableResizeHandleProps>()
 
 const emit = defineEmits<BaseTableResizeHandleEmits>()
 
-const { handleRef, width, minWidth, onKeydown } = useBaseTableResizeHandle(props, emit)
+const { handleRef, width, minWidth, maxWidth, onKeydown } = useBaseTableResizeHandle(props, emit)
 </script>

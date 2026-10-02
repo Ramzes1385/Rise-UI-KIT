@@ -399,6 +399,24 @@ describe('useColumnResize — перетаскивание по реальной
 		expect(ctx.onColumnsChange).toHaveBeenCalledTimes(1)
 	})
 
+	it('resizeBy берёт ширину ячейки на экране, а не column.width: проценты и растянутая колонка (п. 3 проверки)', () => {
+		const { table, ths } = buildHeader([200, 180, 300])
+		const ctx = setup([
+			{ key: 'a', width: '20%' },
+			{ key: 'b', width: '100px' },
+			{ key: 'c', width: '12rem' },
+		])
+		cleanup = () => {
+			ctx.wrapper.unmount()
+			table.remove()
+		}
+		ctx.result.resizeBy(ths[0].th, 'a', 10)
+		expect(ctx.onColumnResize).toHaveBeenLastCalledWith('a', 210)
+		expect(ctx.columns.value[1].width).toBe('170px')
+		ctx.result.resizeBy(ths[1].th, 'b', 10)
+		expect(ctx.onColumnResize).toHaveBeenLastCalledWith('b', 190)
+	})
+
 	it('resizeBy у колонки без ширины берёт ширину ячейки, у единственной колонки соседа нет', () => {
 		const { table, ths } = buildHeader([120])
 		const ctx = setup([{ key: 'a' }])

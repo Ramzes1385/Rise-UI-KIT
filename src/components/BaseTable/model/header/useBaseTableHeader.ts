@@ -1,6 +1,6 @@
 import { useId } from 'vue'
-import type { TableColumn } from '../types/BaseTable.types'
-import type { BaseTableHeaderProps } from '../types/header/BaseTableHeader.types'
+import type { TableColumn } from '../../types/BaseTable.types'
+import type { BaseTableHeaderProps } from '../../types/header/BaseTableHeader.types'
 
 export function useBaseTableHeader(props: BaseTableHeaderProps) {
 	return {

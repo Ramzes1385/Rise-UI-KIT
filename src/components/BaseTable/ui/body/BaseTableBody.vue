@@ -116,7 +116,7 @@ import { BaseLoader } from '@components/BaseLoader'
 import { BaseSkeleton } from '@components/BaseSkeleton'
 import BaseTableNestedRow from './BaseTableNestedRow.vue'
 import BaseTableExpandedRow from './BaseTableExpandedRow.vue'
-import { useBaseTableBody } from '../../model/useBaseTableBody'
+import { useBaseTableBody } from '../../model/body/useBaseTableBody'
 import type { BaseTableBodyEmits, BaseTableBodyProps, BaseTableBodySlots } from '../../types/body/BaseTableBody.types'
 
 const props = withDefaults(defineProps<BaseTableBodyProps>(), {

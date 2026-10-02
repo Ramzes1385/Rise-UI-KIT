@@ -42,7 +42,7 @@
 
 <script setup lang="ts">
 import BaseTable from '../BaseTable.vue'
-import { useTableExpandTransition } from '../../model/useTableExpandTransition'
+import { useTableExpandTransition } from '../../model/body/useTableExpandTransition'
 import type { BaseTableNestedRowProps, BaseTableNestedRowSlots } from '../../types/body/BaseTableNestedRow.types'
 
 defineProps<BaseTableNestedRowProps>()

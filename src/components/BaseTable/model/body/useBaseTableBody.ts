@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
-import type { TableRow } from '../types/BaseTable.types'
-import type { BaseTableBodyProps } from '../types/body/BaseTableBody.types'
+import type { TableRow } from '../../types/BaseTable.types'
+import type { BaseTableBodyProps } from '../../types/body/BaseTableBody.types'
 
 const EMPTY_CLASSES = { root: 'base-table__empty', title: 'base-table__empty-text' }
 const LOADING_MORE_CLASSES = { root: 'base-table__loading-more', animation: 'base-table__loading-more-icon' }

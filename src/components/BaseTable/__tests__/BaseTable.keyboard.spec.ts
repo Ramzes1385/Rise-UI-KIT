@@ -65,6 +65,41 @@ describe('BaseTable — TBL-3: смена rows', () => {
 	})
 })
 
+describe('BaseTable — обходы из MIGRATION (п. 1 проверки)', () => {
+	it('выбор, отражённый в isSelected по select, снимается новым rows с isSelected: false', async () => {
+		const user = userEvent.setup()
+		const rows = makeRows(3)
+		const { rerender, emitted } = render(BaseTable, { props: { columns, rows, behavior: { selectable: true } } })
+
+		await user.click(screen.getByRole('checkbox', { name: 'Выбрать строку 2' }))
+		const selected = new Set((emitted('select')?.at(-1)?.[0] as TableRow[]).map(row => row.id))
+		await rerender({ rows: rows.map(row => ({ ...row, isSelected: selected.has(row.id) })) })
+		expect(screen.getByRole('checkbox', { name: 'Выбрать строку 2' })).toBeChecked()
+
+		await rerender({ rows: rows.map(row => ({ ...row, isSelected: false })) })
+		expect(screen.getByRole('checkbox', { name: 'Выбрать строку 2' })).not.toBeChecked()
+	})
+
+	it('смена key пересоздаёт таблицу с первой страницы и без выбора', async () => {
+		const user = userEvent.setup()
+		const rows = makeRows(6)
+		const Host = {
+			components: { BaseTable },
+			props: ['reportId'],
+			setup: () => ({ columns, rows }),
+			template: '<BaseTable :key="reportId" :columns="columns" :rows="rows" :page-size="2" :behavior="{ selectable: true }" />',
+		}
+		const { rerender } = render(Host, { props: { reportId: 1 } })
+		await user.click(screen.getByRole('button', { name: /3/ }))
+		await user.click(screen.getByRole('checkbox', { name: 'Выбрать строку 5' }))
+		await rerender({ reportId: 2 })
+		expect(screen.getByText('Имя 1')).toBeInTheDocument()
+		expect(screen.queryByText('Имя 5')).not.toBeInTheDocument()
+		await user.click(screen.getByRole('button', { name: /3/ }))
+		expect(screen.getByRole('checkbox', { name: 'Выбрать строку 5' })).not.toBeChecked()
+	})
+})
+
 describe('BaseTable — TBL-4: догрузка', () => {
 	it('строки, дописанные родителем по load-more, не сворачивают показанные', async () => {
 		const user = userEvent.setup()
@@ -202,9 +237,19 @@ describe('BaseTable — ресайз колонки с клавиатуры', ()
 		{ key: 'city', label: 'Город', width: '100px' },
 	]
 
+	function mockCellWidths(widths: Record<string, number>) {
+		return vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockImplementation(function (this: HTMLElement) {
+			if (this.tagName !== 'TH') return 0
+			const label = Object.keys(widths).find(key => this.textContent?.includes(key))
+			return label ? widths[label] : 0
+		})
+	}
+
 	it('ручка — separator с именем и шириной, стрелки меняют ширину', async () => {
+		const spy = mockCellWidths({ Имя: 120, Город: 100 })
 		const user = userEvent.setup()
 		const { emitted } = render(BaseTable, { props: { columns: resizable, rows: makeRows(1), behavior: { resizable: true } } })
+		await nextTick()
 		const handle = screen.getByRole('separator', { name: 'Ширина колонки: Имя' })
 		expect(handle).toHaveAttribute('aria-valuenow', '120')
 		expect(handle).toHaveAttribute('aria-orientation', 'vertical')
@@ -212,16 +257,79 @@ describe('BaseTable — ресайз колонки с клавиатуры', ()
 		handle.focus()
 		await user.keyboard('{ArrowRight}')
 		expect(emitted('column-resize')).toEqual([['name', 130]])
+		spy.mockRestore()
+		const shrunk = mockCellWidths({ Имя: 130, Город: 90 })
 		await user.keyboard('{Shift>}{ArrowLeft}{/Shift}')
 		expect(emitted('column-resize')?.[1]).toEqual(['name', 80])
 		await user.keyboard('{ArrowUp}')
 		expect(emitted('column-resize')).toHaveLength(2)
-		expect(screen.getByRole('separator', { name: 'Ширина колонки: Имя' })).toHaveAttribute('aria-valuenow', '80')
+		shrunk.mockRestore()
 	})
 
-	it('у колонки без ширины в px aria-valuenow — ширина ячейки', () => {
+	it('aria-valuemax — ширина колонки плюс то, что можно забрать у соседа; aria-valuetext — в px (п. 2 проверки)', async () => {
+		const spy = mockCellWidths({ Имя: 120, Город: 100 })
+		render(BaseTable, { props: { columns: resizable, rows: makeRows(1), behavior: { resizable: true } } })
+		await nextTick()
+		const handle = screen.getByRole('separator', { name: 'Ширина колонки: Имя' })
+		expect(handle).toHaveAttribute('aria-valuemin', '50')
+		expect(handle).toHaveAttribute('aria-valuemax', '170')
+		expect(handle).toHaveAttribute('aria-valuetext', '120px')
+		const last = screen.getByRole('separator', { name: 'Ширина колонки: Город' })
+		expect(last).toHaveAttribute('aria-valuemax', '170')
+		spy.mockRestore()
+	})
+
+	it('после ресайза aria-valuenow и aria-valuemax пересчитываются по ячейкам', async () => {
+		let widths = { Имя: 120, Город: 100 }
+		const spy = vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockImplementation(function (this: HTMLElement) {
+			if (this.tagName !== 'TH') return 0
+			return this.textContent?.includes('Имя') ? widths.Имя : widths.Город
+		})
+		const user = userEvent.setup()
+		render(BaseTable, { props: { columns: resizable, rows: makeRows(1), behavior: { resizable: true } } })
+		const handle = screen.getByRole('separator', { name: 'Ширина колонки: Имя' })
+		handle.focus()
+		widths = { Имя: 130, Город: 90 }
+		await user.keyboard('{ArrowRight}')
+		await nextTick()
+		expect(handle).toHaveAttribute('aria-valuenow', '130')
+		expect(handle).toHaveAttribute('aria-valuetext', '130px')
+		expect(handle).toHaveAttribute('aria-valuemax', '170')
+		spy.mockRestore()
+	})
+
+	it('ширина с клавиатуры — от ячейки на экране, как у мыши: проценты и растянутая колонка (п. 3 проверки)', async () => {
+		const spy = mockCellWidths({ Имя: 180, Город: 300 })
+		const user = userEvent.setup()
+		const { emitted } = render(BaseTable, {
+			props: {
+				columns: [
+					{ key: 'name', label: 'Имя', width: '100px' },
+					{ key: 'city', label: 'Город', width: '20%' },
+				],
+				rows: makeRows(1),
+				behavior: { resizable: true },
+			},
+		})
+		screen.getByRole('separator', { name: 'Ширина колонки: Имя' }).focus()
+		await user.keyboard('{ArrowRight}')
+		expect(emitted('column-resize')?.[0]).toEqual(['name', 190])
+		screen.getByRole('separator', { name: 'Ширина колонки: Город' }).focus()
+		await user.keyboard('{ArrowLeft}')
+		expect(emitted('column-resize')?.[1]).toEqual(['city', 290])
+		spy.mockRestore()
+	})
+
+	it('до раскладки (ширина ячейки 0) aria-valuenow — объявленная ширина', () => {
+		render(BaseTable, { props: { columns: resizable, rows: makeRows(1), behavior: { resizable: true } } })
+		expect(screen.getByRole('separator', { name: 'Ширина колонки: Имя' })).toHaveAttribute('aria-valuenow', '120')
+	})
+
+	it('без объявленной ширины и раскладки aria-valuenow — 0, aria-valuemax — минимум', () => {
 		render(BaseTable, { props: { columns: [{ key: 'name', label: 'Имя' }], rows: makeRows(1), behavior: { resizable: true } } })
-		expect(screen.getByRole('separator')).toHaveAttribute('aria-valuenow', '0')
+		const handle = screen.getByRole('separator')
+		expect(handle).toHaveAttribute('aria-valuenow', '0')
+		expect(handle).toHaveAttribute('aria-valuemax', '50')
 	})
 })
 
@@ -276,6 +384,44 @@ describe('BaseTable — закреплённые колонки', () => {
 		expect(headers[5].style.right).toBe('100px')
 		expect(headers[6].style.right).toBe('0px')
 		spy.mockRestore()
+	})
+
+	it('после ресайза колонки смещения закреплённых пересчитываются: наблюдается каждая ячейка шапки (п. 4 проверки)', async () => {
+		const observed = new Map<Element, () => void>()
+		const Original = globalThis.ResizeObserver
+		globalThis.ResizeObserver = class {
+			constructor(private readonly callback: () => void) {}
+			observe(element: Element) {
+				observed.set(element, this.callback)
+			}
+			unobserve() {}
+			disconnect() {}
+		} as unknown as typeof ResizeObserver
+		let nameWidth = 100
+		const spy = vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockImplementation(function (this: HTMLElement) {
+			if (this.tagName !== 'TH') return 0
+			return this.textContent?.includes('Имя') ? nameWidth : 100
+		})
+		render(BaseTable, {
+			props: {
+				columns: [
+					{ key: 'name', label: 'Имя', isSticky: 'left' },
+					{ key: 'code', label: 'Код', isSticky: 'left' },
+					{ key: 'city', label: 'Город' },
+				],
+				rows: makeRows(1),
+			},
+		})
+		await nextTick()
+		const headers = [...document.querySelectorAll<HTMLElement>('thead th')]
+		expect([...observed.keys()].filter(element => element.tagName === 'TH')).toEqual(headers)
+		expect(headers[1].style.left).toBe('100px')
+		nameWidth = 160
+		observed.get(headers[0])?.()
+		await nextTick()
+		expect(headers[1].style.left).toBe('160px')
+		spy.mockRestore()
+		globalThis.ResizeObserver = Original
 	})
 
 	it('без закреплённых колонок смещения не считаются', () => {

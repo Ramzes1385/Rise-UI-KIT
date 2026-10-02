@@ -31,10 +31,10 @@ function measureOffsets(cells: HTMLElement[], columns: TableColumn[], serviceKey
 }
 
 function observeHeader(wrapperRef: Ref<HTMLElement | null>, measure: () => void): () => void {
-	const row = wrapperRef.value?.querySelector('thead > tr')
-	if (!row) return () => undefined
+	const cells = headerCells(wrapperRef.value)
+	if (!cells.length) return () => undefined
 	const observer = new ResizeObserver(measure)
-	observer.observe(row)
+	cells.forEach(cell => observer.observe(cell))
 	return () => observer.disconnect()
 }
 

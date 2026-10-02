@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import type { BaseTableRowEmits, BaseTableRowProps } from '../types/body/BaseTableRow.types'
+import type { BaseTableRowEmits, BaseTableRowProps } from '../../types/body/BaseTableRow.types'
 
 const EXPAND_BUTTON_PADDING = { x: 3, y: 3 }
 const INTERACTIVE_TARGET = 'a, button, input, select, textarea, label, [role="button"], [role="link"], [contenteditable="true"]'

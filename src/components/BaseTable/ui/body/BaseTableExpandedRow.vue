@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { useTableExpandTransition } from '../../model/useTableExpandTransition'
+import { useTableExpandTransition } from '../../model/body/useTableExpandTransition'
 import type { BaseTableExpandedRowProps, BaseTableExpandedRowSlots } from '../../types/body/BaseTableExpandedRow.types'
 
 defineProps<BaseTableExpandedRowProps>()
