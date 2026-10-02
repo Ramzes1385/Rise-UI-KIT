@@ -1,6 +1,6 @@
 import { expect } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
-import type meta from '../../BaseEventCalendar.stories'
+import type meta from '../../../BaseEventCalendar.stories'
 
 export const Month: StoryObj<typeof meta> = {
 	parameters: {

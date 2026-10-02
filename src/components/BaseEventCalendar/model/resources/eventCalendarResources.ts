@@ -2,8 +2,8 @@ import { formatMessage } from '@/locales/state'
 import { UI_EVENT_CALENDAR } from '@/locales/messages'
 import type { NormalizedCalendarEvent } from '@utils/calendar/eventUtils'
 import { addDays, daysBetween, toDayKey } from '@utils/calendar/eventUtils'
-import type { EventCalendarResource } from '../types/BaseEventCalendar.types'
-import type { EventCalendarContext, EventCalendarSlot, ResourceId } from '../types/BaseEventCalendarModel.types'
+import type { EventCalendarResource } from '../../types/BaseEventCalendar.types'
+import type { EventCalendarContext, EventCalendarSlot, ResourceId } from '../../types/BaseEventCalendarModel.types'
 
 export function columnKey(day: Date, resourceId?: ResourceId): string {
 	return resourceId === undefined ? toDayKey(day) : `${String(resourceId)}|${toDayKey(day)}`

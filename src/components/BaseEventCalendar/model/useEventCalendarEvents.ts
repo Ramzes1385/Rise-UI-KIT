@@ -1,7 +1,7 @@
 import { useSlots } from 'vue'
 import { formatMessage } from '@/locales/state'
 import { UI_EVENT_CALENDAR } from '@/locales/messages'
-import { findResource } from './eventCalendarResources'
+import { findResource } from './resources/eventCalendarResources'
 import { eventLabel, eventTime, formatTime } from './eventCalendarFormat'
 import type { NormalizedCalendarEvent } from '@utils/calendar/eventUtils'
 import type {

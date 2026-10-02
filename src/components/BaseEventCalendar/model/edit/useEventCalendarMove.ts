@@ -2,8 +2,8 @@ import { shallowRef } from 'vue'
 import { formatMessage } from '@/locales/state'
 import { UI_EVENT_CALENDAR } from '@/locales/messages'
 import { focusIn, formatRange } from './eventCalendarEditDom'
-import { findResource, neighborColumn } from '../eventCalendarResources'
 import type { NormalizedCalendarEvent } from '@utils/calendar/eventUtils'
+import { findResource, neighborColumn } from '../resources/eventCalendarResources'
 import { emitChange, isInPeriod, leastLength, makeDraft, movedTime, resizedTime, shiftBetween, shiftDate } from './eventCalendarChange'
 import type {
 	EventCalendarAnnouncement,

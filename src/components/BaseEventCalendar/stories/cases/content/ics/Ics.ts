@@ -1,11 +1,11 @@
 import { setup } from './Ics.setup'
-import { models } from '../../render'
 import { expect } from 'storybook/test'
+import { models } from '../../../render'
 import setupSource from './Ics.setup.ts?raw'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import type meta from '../../BaseEventCalendar.stories'
-import BaseEventCalendar from '../../../ui/BaseEventCalendar.vue'
+import type meta from '../../../BaseEventCalendar.stories'
+import BaseEventCalendar from '../../../../ui/BaseEventCalendar.vue'
 import { scriptSource, storySource, tabTo, useStorySetup } from '@/stories/helpers'
 
 const template = `

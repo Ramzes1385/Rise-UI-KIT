@@ -1,11 +1,11 @@
-import { models } from '../../render'
 import { expect } from 'storybook/test'
+import { models } from '../../../render'
 import type { StoryObj } from '@storybook/vue3-vite'
-import type meta from '../../BaseEventCalendar.stories'
-import BaseEventCalendar from '../../../ui/BaseEventCalendar.vue'
+import type meta from '../../../BaseEventCalendar.stories'
+import BaseEventCalendar from '../../../../ui/BaseEventCalendar.vue'
 import { storySource, tabTo, useStorySetup } from '@/stories/helpers'
-import { EDIT_EVENTS, MOVE_SCRIPT, useMovableEvents } from '../../shared'
-import type { EventCalendarChange } from '../../../types/BaseEventCalendar.types'
+import { EDIT_EVENTS, MOVE_SCRIPT, useMovableEvents } from '../../../shared'
+import type { EventCalendarChange } from '../../../../types/BaseEventCalendar.types'
 
 const template = `
 	<BaseEventCalendar

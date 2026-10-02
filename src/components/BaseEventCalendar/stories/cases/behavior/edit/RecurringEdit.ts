@@ -1,13 +1,13 @@
 import { ref } from 'vue'
 import type { Ref } from 'vue'
-import { models } from '../../render'
 import { expect } from 'storybook/test'
+import { models } from '../../../render'
 import type { StoryObj } from '@storybook/vue3-vite'
-import type meta from '../../BaseEventCalendar.stories'
+import type meta from '../../../BaseEventCalendar.stories'
 import type { CalendarEvent } from '@utils/calendar/eventUtils'
-import BaseEventCalendar from '../../../ui/BaseEventCalendar.vue'
+import BaseEventCalendar from '../../../../ui/BaseEventCalendar.vue'
 import { storySource, tabTo, useStorySetup } from '@/stories/helpers'
-import type { EventCalendarChange } from '../../../types/BaseEventCalendar.types'
+import type { EventCalendarChange } from '../../../../types/BaseEventCalendar.types'
 
 const EVENTS: CalendarEvent[] = [
 	{

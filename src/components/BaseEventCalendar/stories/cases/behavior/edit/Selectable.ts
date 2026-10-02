@@ -1,12 +1,12 @@
 import { ref } from 'vue'
-import { models } from '../../render'
-import { getDay } from '../../shared'
 import { expect } from 'storybook/test'
+import { models } from '../../../render'
+import { getDay } from '../../../shared'
 import type { StoryObj } from '@storybook/vue3-vite'
-import type meta from '../../BaseEventCalendar.stories'
-import BaseEventCalendar from '../../../ui/BaseEventCalendar.vue'
+import type meta from '../../../BaseEventCalendar.stories'
+import BaseEventCalendar from '../../../../ui/BaseEventCalendar.vue'
 import { storySource, tabTo, useStorySetup } from '@/stories/helpers'
-import type { EventCalendarSelection } from '../../../types/BaseEventCalendar.types'
+import type { EventCalendarSelection } from '../../../../types/BaseEventCalendar.types'
 
 const template = `
 	<div class="story-stack">

@@ -5,7 +5,7 @@ import { addDays, startOfDay } from '@utils/calendar/eventUtils'
 import { useEventCalendarPointer } from './useEventCalendarPointer'
 import type { EventCalendarSelection } from '../../types/BaseEventCalendar.types'
 import { DEFAULT_SCROLL_MINUTE, parseMinutes } from '../useEventCalendarTimeGrid'
-import { columnKey, isSameResource, neighborColumn, resourceOfElement } from '../eventCalendarResources'
+import { columnKey, isSameResource, neighborColumn, resourceOfElement } from '../resources/eventCalendarResources'
 import {
 	DAY_CELL,
 	MINUTE,

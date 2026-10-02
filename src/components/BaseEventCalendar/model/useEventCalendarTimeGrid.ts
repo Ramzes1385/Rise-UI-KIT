@@ -2,8 +2,8 @@ import type { ComputedRef } from 'vue'
 import { computed, nextTick, ref, watch } from 'vue'
 import type { EventCalendarWorkHours } from '../types/BaseEventCalendar.types'
 import { eventTime, formatHeaderDay, formatTime } from './eventCalendarFormat'
-import { columnKey, columnName, itemsOfResource } from './eventCalendarResources'
 import type { CalendarTimeSegment, CalendarWeekSegment } from '@utils/calendar/eventUtils'
+import { columnKey, columnName, itemsOfResource } from './resources/eventCalendarResources'
 import { addDays, daysBetween, layoutDay, layoutWeek, toDayKey } from '@utils/calendar/eventUtils'
 import type {
 	EventCalendarContext,
