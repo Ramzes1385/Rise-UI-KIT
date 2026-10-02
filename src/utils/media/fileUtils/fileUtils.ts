@@ -91,6 +91,23 @@ function getFileIconName(filename: string): string {
 	return FILE_ICON_NAME_MAP[ext] || 'file-config'
 }
 
+/** Токены `accept` в нижнем регистре, без пустых (висячая запятая не разрешает файлы без MIME-типа) */
+function parseAccept(accept: string): string[] {
+	return accept
+		.split(',')
+		.map(token => token.trim().toLowerCase())
+		.filter(Boolean)
+}
+
+/** Файл подходит под токен `accept`: `.tar.gz` — по окончанию имени, `image/*` — по группе, `*` и `*\/*` — любой */
+function matchesAcceptToken(file: File, token: string): boolean {
+	if (token === '*' || token === '*/*') return true
+	if (token.startsWith('.')) return file.name.toLowerCase().endsWith(token)
+	const mime = file.type.toLowerCase()
+	if (token.endsWith('/*')) return mime.startsWith(token.slice(0, -1))
+	return mime === token
+}
+
 /** Валидировать файл по размеру и допустимым типам */
 function validateFile(file: File, options: FileValidationOptions): FileValidationResult {
 	const errors: string[] = []
@@ -99,27 +116,20 @@ function validateFile(file: File, options: FileValidationOptions): FileValidatio
 		errors.push(formatMessage(UI_TEXT.FILE_TOO_LARGE, { name: file.name, size: formatNumber(options.maxSize) }))
 	}
 
-	if (options.accept) {
-		const acceptedTypes = options.accept.split(',').map(s => s.trim().toLowerCase())
-		const ext = getExtension(file.name).toLowerCase()
-		const mime = file.type.toLowerCase()
-		const matches = acceptedTypes.some(t => {
-			if (t.startsWith('.')) return `.${ext}` === t
-			if (t.endsWith('/*')) return mime.startsWith(t.replace('/*', '/'))
-			return mime === t
-		})
-		if (!matches) {
-			errors.push(formatMessage(UI_TEXT.FILE_WRONG_FORMAT, { name: file.name, formats: formatAcceptHint(options.accept) }))
-		}
+	const accept = options.accept ?? ''
+	const acceptedTypes = parseAccept(accept)
+	if (acceptedTypes.length > 0 && !acceptedTypes.some(token => matchesAcceptToken(file, token))) {
+		errors.push(formatMessage(UI_TEXT.FILE_WRONG_FORMAT, { name: file.name, formats: formatAcceptHint(accept) }))
 	}
 
 	return { isValid: errors.length === 0, errors }
 }
 
+/** Подсказка о допустимых типах: расширения — прописными (`.PDF`), MIME-типы — как есть (`image/*`) */
 function formatAcceptHint(accept: string): string {
-	if (!accept) return ''
-	const parts = accept.split(',').map(s => s.trim().toUpperCase())
-	return parts.join(', ')
+	return parseAccept(accept)
+		.map(token => (token.startsWith('.') ? token.toUpperCase() : token))
+		.join(', ')
 }
 
 /** Создать превью для изображения через FileReader */

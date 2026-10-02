@@ -229,4 +229,11 @@ export const enMedia = {
 		PAUSE: 'Stop automatic slide show',
 		PLAY: 'Start automatic slide show',
 	},
+	fileUpload: {
+		UPLOAD_ERROR: 'Failed to upload the file',
+		UPLOADED: 'File “{name}” uploaded',
+		UPLOAD_FAILED: 'Failed to upload “{name}”: {message}',
+		RETRY: 'Retry uploading “{name}”',
+		MAX_COUNT: 'The file limit is {count}; the rest were not added',
+	},
 }

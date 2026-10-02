@@ -49,6 +49,7 @@ export interface UiKitLocale {
 	imageCompare: Section<'imageCompare'>
 	imageViewer: Section<'imageViewer'>
 	carousel: Section<'carousel'>
+	fileUpload: Section<'fileUpload'>
 	jsonViewer: Section<'jsonViewer'>
 	map: Section<'map'>
 	textDiff: Section<'textDiff'>

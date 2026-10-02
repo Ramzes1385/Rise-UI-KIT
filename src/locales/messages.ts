@@ -99,5 +99,8 @@ export const UI_VALUE_WARNINGS = localized('valueWarnings')
 export const UI_NOTIFICATION_CENTER = localized('notificationCenter')
 export const UI_COMMENT_THREAD = localized('commentThread')
 
+/** Загрузка файлов BaseFileUpload */
+export const UI_FILE_UPLOAD = localized('fileUpload')
+
 /** Предупреждения в консоли */
 export const UI_WARNINGS = localized('warnings')

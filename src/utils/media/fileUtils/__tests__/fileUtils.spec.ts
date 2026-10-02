@@ -189,11 +189,33 @@ describe('fileUtils', () => {
 			expect(result.isValid).toBe(false)
 			expect(result.errors).toHaveLength(2)
 		})
+
+		it('висячая запятая не разрешает файл без MIME-типа', () => {
+			const file = createFile('evil.exe', 10, '')
+			expect(validateFile(file, { accept: 'image/png,' }).isValid).toBe(false)
+		})
+
+		it('составное расширение сравнивается по окончанию имени', () => {
+			expect(validateFile(createFile('backup.tar.gz', 10, 'application/gzip'), { accept: '.tar.gz' }).isValid).toBe(true)
+			expect(validateFile(createFile('backup.gz', 10, 'application/gzip'), { accept: '.tar.gz' }).isValid).toBe(false)
+		})
+
+		it.each(['*', '*/*'])('«%s» принимает любой файл', accept => {
+			expect(validateFile(createFile('a.bin', 10, 'application/octet-stream'), { accept }).isValid).toBe(true)
+		})
+
+		it('accept из одних разделителей не ограничивает типы', () => {
+			expect(validateFile(createFile('a.bin', 10, ''), { accept: ' , ' }).isValid).toBe(true)
+		})
 	})
 
 	describe('formatAcceptHint', () => {
 		it('форматирует допустимые типы', () => {
 			expect(formatAcceptHint('.pdf,.doc')).toBe('.PDF, .DOC')
+		})
+
+		it('MIME-типы — как есть, пустые токены пропускаются', () => {
+			expect(formatAcceptHint('image/*, .pdf,')).toBe('image/*, .PDF')
 		})
 
 		it('возвращает пустую строку для пустого accept', () => {

@@ -1689,6 +1689,34 @@ function handleFiles(files: File[]): void {
 </template>
 ```
 
+Загрузку выполняет приложение — функция `uploader(file, { onProgress, signal })` (тип `FileUploader`). Кит вызывает её для каждого принятого файла, показывает прогресс из `onProgress` (0–100), после выполненного промиса — «Загружено» и событие `upload-success` (второй аргумент — результат промиса), после отклонённого — «Ошибка», текст `message` под файлом, событие `upload-error` и кнопку повтора. Удаление или замена файла, `reset()` и размонтирование отменяют загрузку через `signal`. Без `uploader` файлы только выбираются (статус `selected`) — без прогресса и «Загружено».
+
+```vue
+<script setup lang="ts">
+import { BaseFileUpload, type FileUploaderContext } from '@ramzes1385/rise-ui-kit'
+
+function uploadFile(file: File, { onProgress, signal }: FileUploaderContext): Promise<unknown> {
+	return new Promise((resolve, reject) => {
+		const xhr = new XMLHttpRequest()
+		xhr.open('POST', '/api/files')
+		xhr.upload.onprogress = event => onProgress((event.loaded / event.total) * 100)
+		xhr.onload = () => (xhr.status < 400 ? resolve(JSON.parse(xhr.responseText)) : reject(new Error('Не удалось сохранить файл')))
+		xhr.onerror = () => reject(new Error('Нет связи с сервером'))
+		signal.addEventListener('abort', () => xhr.abort())
+		const body = new FormData()
+		body.append('file', file)
+		xhr.send(body)
+	})
+}
+</script>
+
+<template>
+	<BaseFileUpload label="Договор" accept=".pdf" is-required :uploader="uploadFile" @upload-success="(file, saved) => attach(saved)" />
+</template>
+```
+
+Ошибки выбора (формат, размер, лимит `max-count`) и проп `error` выводятся под зоной в `role="alert"`, итог загрузки озвучивается live-регионом. `allow-preview: false` — иконка вместо миниатюры (миниатюра — objectURL, освобождается при удалении). Через ref (`BaseFileUploadExpose`): `focus()`/`blur()` — зона, `validate()` (с `is-required` без файлов — `false` и ошибка «Обязательное поле»), `reset()` — очищает список и ошибки, `retry(file)` — повтор загрузки файла с ошибкой.
+
 ---
 
 ## BaseSignaturePad

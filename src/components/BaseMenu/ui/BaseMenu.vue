@@ -2,11 +2,10 @@
 	<div class="base-menu" :class="[variantClass, classes.root]" :style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<div v-for="(group, gIndex) in items" :key="gIndex" class="base-menu__group" :class="classes.group">
 			<template v-for="(item, iIndex) in group" :key="iIndex">
-				<div
+				<component
+					:is="isLink(item) ? BaseLink : 'div'"
+					v-bind="itemAttrs(item)"
 					class="base-menu__item"
-					role="button"
-					tabindex="0"
-					:aria-disabled="item.isDisabled || undefined"
 					:class="[
 						{
 							'base-menu__item--disabled': item.isDisabled,
@@ -14,8 +13,7 @@
 						classes.item,
 					]"
 					@click="handleItemClick(item)"
-					@keydown.enter.prevent="handleItemClick(item)"
-					@keydown.space.prevent="handleItemClick(item)">
+					@keydown="handleItemKeydown(item, $event)">
 					<BaseIcon
 						v-if="item.icon"
 						class="base-menu__icon"
@@ -23,7 +21,7 @@
 						:name="item.icon"
 						:size-scale="calcIconScale('sm', sizeScale)" />
 					<span class="base-menu__label" :class="classes.label">{{ item.label }}</span>
-				</div>
+				</component>
 				<BaseSeparator
 					v-if="item.hasDivider && iIndex < group.length - 1"
 					class="base-menu__divider"
@@ -38,6 +36,7 @@
 <script setup lang="ts">
 import '../styles/BaseMenu.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
+import { BaseLink } from '@components/BaseLink'
 import { useBaseMenu } from '../model/useBaseMenu'
 import { calcIconScale } from '@utils/media/iconUtils'
 import { BaseSeparator } from '@components/BaseSeparator'
@@ -56,5 +55,6 @@ const props = withDefaults(
 const emit = defineEmits<BaseMenuEmits>()
 defineSlots<BaseMenuSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, handleItemClick } = useBaseMenu(props, emit)
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, isLink, itemAttrs, handleItemClick, handleItemKeydown } =
+	useBaseMenu(props, emit)
 </script>

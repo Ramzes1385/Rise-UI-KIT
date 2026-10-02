@@ -1,4 +1,5 @@
 import type { Component } from 'vue'
+import { afterAll, beforeAll } from 'vitest'
 
 export const BASE_SIDEBAR_STUBS: Record<string, Component> = {
 	BaseBadge: {
@@ -64,4 +65,13 @@ export const BASE_SIDEBAR_STUBS: Record<string, Component> = {
       </span>
     `,
 	},
+}
+
+function preventNavigation(event: Event): void {
+	event.preventDefault()
+}
+
+export function preventLinkNavigation(): void {
+	beforeAll(() => document.addEventListener('click', preventNavigation, true))
+	afterAll(() => document.removeEventListener('click', preventNavigation, true))
 }

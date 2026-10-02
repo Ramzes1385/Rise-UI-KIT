@@ -7,8 +7,12 @@ export interface BaseMenuItem {
 	label: string
 	/** Иконка */
 	icon?: string
-	/** Ссылка для навигации */
+	/** Маршрут приложения: пункт становится ссылкой (BaseLink, RouterLink при подключённом роутере) */
 	to?: string
+	/** Внешний адрес: пункт становится ссылкой `<a href>` (BaseLink) */
+	href?: string
+	/** Target ссылки */
+	target?: '_blank' | '_self'
 	/** Клик */
 	click?: () => void
 	/** Отключен ли */

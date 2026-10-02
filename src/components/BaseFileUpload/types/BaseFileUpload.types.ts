@@ -1,7 +1,31 @@
+import type { FormFieldExpose } from '@composables/form/useFormField'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export const FILE_UPLOAD_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
+
+/**
+ * Статус файла в списке:
+ * `selected` — выбран, приложение загрузку не передало (без `uploader`);
+ * `uploading` — идёт загрузка через `uploader`; `done` — `uploader` завершился успешно; `error` — `uploader` отклонил промис.
+ */
+export const FILE_UPLOAD_STATUSES = ['selected', 'uploading', 'done', 'error'] as const
+
+export type FileUploadStatus = (typeof FILE_UPLOAD_STATUSES)[number]
+
+/** Что `uploader` получает вторым аргументом */
+export interface FileUploaderContext {
+	/** Сообщить прогресс загрузки, 0–100 (значения вне диапазона обрезаются) */
+	onProgress: (percent: number) => void
+	/** Отменяется, когда файл удалён, заменён, список сброшен или компонент размонтирован */
+	signal: AbortSignal
+}
+
+/**
+ * Функция загрузки файла приложения. Промис выполнен — файл загружен (`done`, событие `upload-success` с результатом),
+ * отклонён — ошибка (`error`, текст — `message` ошибки, событие `upload-error`).
+ */
+export type FileUploader = (file: File, context: FileUploaderContext) => Promise<unknown>
 
 export interface UploadedFile {
 	/** Уникальный идентификатор */
@@ -18,10 +42,12 @@ export interface UploadedFile {
 	extension: string
 	/** URL для превью (для изображений) */
 	previewUrl: string | null
-	/** Статус загрузки */
-	status: 'pending' | 'uploading' | 'done' | 'error'
-	/** Прогресс загрузки (0–100) */
+	/** Статус загрузки (`FILE_UPLOAD_STATUSES`) */
+	status: FileUploadStatus
+	/** Прогресс загрузки (0–100) — только из `onProgress` функции `uploader` */
 	progress: number
+	/** Текст ошибки загрузки (статус `error`) */
+	error?: string
 }
 
 export interface BaseFileUploadProps extends BaseComponentProps<
@@ -30,6 +56,7 @@ export interface BaseFileUploadProps extends BaseComponentProps<
 	| 'label'
 	| 'dropzone'
 	| 'text'
+	| 'dropText'
 	| 'hint'
 	| 'list'
 	| 'item'
@@ -43,6 +70,8 @@ export interface BaseFileUploadProps extends BaseComponentProps<
 	| 'status'
 	| 'progress'
 	| 'remove'
+	| 'fileError'
+	| 'retry'
 	| 'errors'
 	| 'errorItem'
 > {
@@ -52,7 +81,14 @@ export interface BaseFileUploadProps extends BaseComponentProps<
 	isMultiple?: boolean
 	/** Отключенное состояние */
 	isDisabled?: boolean
-	/** Максимальное размер файла (MB) */
+	/** Обязательное поле: `validate()` без выбранных файлов вернёт `false` и покажет ошибку; у заголовка — звёздочка */
+	isRequired?: boolean
+	/**
+	 * Функция загрузки приложения: кит вызывает её для каждого принятого файла и показывает её прогресс и итог.
+	 * Без неё файлы только выбираются (статус `selected`) — без прогресса и «Загружено».
+	 */
+	uploader?: FileUploader
+	/** Максимальный размер файла (МБ); `0` — без ограничения */
 	maxSize?: number
 	/** Максимальное количество файлов */
 	maxCount?: number
@@ -65,9 +101,9 @@ export interface BaseFileUploadProps extends BaseComponentProps<
 	 * Без пропа — 40px из стилей.
 	 */
 	previewSize?: number
-	/** Разрешить предпросмотр (изображения) */
+	/** Миниатюры изображений в списке и их увеличение по клику; `false` — иконка типа файла */
 	allowPreview?: boolean
-	/** Текст пустой зоны */
+	/** Подсказка о перетаскивании под текстом кнопки в зоне; пустая строка — без подсказки */
 	emptyText?: string
 	/** Текст ошибки */
 	error?: string
@@ -77,6 +113,16 @@ export interface BaseFileUploadEmits {
 	(event: 'change', files: File[]): void
 	(event: 'error', message: string): void
 	(event: 'remove', file: UploadedFile): void
+	/** `uploader` завершился успешно; `response` — результат его промиса */
+	(event: 'upload-success', file: UploadedFile, response: unknown): void
+	/** `uploader` отклонил промис; `message` — текст ошибки под файлом */
+	(event: 'upload-error', file: UploadedFile, message: string): void
+}
+
+/** Методы, доступные через ref компонента */
+export interface BaseFileUploadExpose extends FormFieldExpose {
+	/** Повторить загрузку файла со статусом `error` */
+	retry: (file: UploadedFile) => void
 }
 
 export interface BaseFileUploadSlots {
@@ -84,4 +130,7 @@ export interface BaseFileUploadSlots {
 	trigger?: () => unknown
 }
 
-export type FileUploadProps = PropsWithDefaults<BaseFileUploadProps, 'accept' | 'isMultiple' | 'maxSize' | 'maxCount' | 'sizeScale'>
+export type FileUploadProps = PropsWithDefaults<
+	BaseFileUploadProps,
+	'accept' | 'isMultiple' | 'maxSize' | 'maxCount' | 'sizeScale' | 'allowPreview' | 'emptyText'
+>

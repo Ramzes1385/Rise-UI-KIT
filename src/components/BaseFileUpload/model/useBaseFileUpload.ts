@@ -6,13 +6,14 @@ import { useFormDisabled } from '@composables/form/useFormContext'
 import { useFileUploadState } from '@composables/form/useFileUploadState'
 import { formatAcceptHint, formatFileSize } from '@utils/media/fileUtils'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
-import type { BaseFileUploadEmits, FileUploadProps, UploadedFile } from '../types/BaseFileUpload.types'
+import type { BaseFileUploadEmits, BaseFileUploadExpose, FileUploadProps, UploadedFile } from '../types/BaseFileUpload.types'
 
 const FILE_UPLOAD_ELEMENTS = [
 	'root',
 	'label',
 	'dropzone',
 	'text',
+	'dropText',
 	'hint',
 	'list',
 	'item',
@@ -26,9 +27,13 @@ const FILE_UPLOAD_ELEMENTS = [
 	'status',
 	'progress',
 	'remove',
+	'fileError',
+	'retry',
 	'errors',
 	'errorItem',
 ]
+
+const PREVIEW_ZOOM = Object.freeze({ hasZoom: true })
 
 function fileIconName(item: UploadedFile): string {
 	if (item.type.startsWith('image/')) return 'image'
@@ -42,9 +47,13 @@ function useUploadState(props: FileUploadProps, emit: BaseFileUploadEmits) {
 		getAccept: () => props.accept,
 		getMaxCount: () => props.maxCount,
 		getIsMultiple: () => props.isMultiple,
+		getUploader: () => props.uploader,
+		getAllowPreview: () => props.allowPreview,
 		onError: (message: string) => emit('error', message),
 		onChange: (files: File[]) => emit('change', files),
 		onRemove: file => emit('remove', file),
+		onUploadSuccess: (file, response) => emit('upload-success', file, response),
+		onUploadError: (file, message) => emit('upload-error', file, message),
 	})
 }
 
@@ -81,41 +90,69 @@ function previewStyleOf(props: FileUploadProps): { width: string; height: string
 	return { width: size, height: size }
 }
 
+function useFileUploadForm(props: FileUploadProps, state: ReturnType<typeof useFileUploadState>) {
+	const formField = useFormField({
+		value: () => (state.uploadedFiles.value.length > 0 ? state.uploadedFiles.value.length : undefined),
+		error: () => props.error,
+		isRequired: () => props.isRequired === true,
+	})
+	return {
+		formField,
+		displayErrors: computed(() => [...(formField.error ? [formField.error] : []), ...state.displayErrors.value]),
+	}
+}
+
+function exposeOf(
+	refs: { rootRef: Ref<HTMLElement | null>; dropzoneRef: Ref<HTMLElement | null> },
+	formField: ReturnType<typeof useFormField>,
+	state: ReturnType<typeof useFileUploadState>,
+): BaseFileUploadExpose {
+	return {
+		get rootRef() {
+			return refs.rootRef.value
+		},
+		focus: () => refs.dropzoneRef.value?.focus(),
+		blur: () => refs.dropzoneRef.value?.blur(),
+		validate: formField.validate,
+		reset: () => {
+			state.clear()
+			formField.reset()
+		},
+		retry: state.retry,
+	}
+}
+
 export function useBaseFileUpload(props: FileUploadProps, emit: BaseFileUploadEmits) {
 	const isControlDisabled = useFormDisabled(() => props.isDisabled)
 	const standard = useStandardBaseComponent('base-file-upload', props, FILE_UPLOAD_ELEMENTS)
-	const formField = useFormField({ value: () => undefined, error: () => props.error })
 	const fileInput = ref<HTMLInputElement | null>(null)
 	const rootRef = ref<HTMLElement | null>(null)
-	const inputId = useId()
-	const errorsId = useId()
+	const dropzoneRef = ref<HTMLElement | null>(null)
 	const state = useUploadState(props, emit)
-	const displayErrors = computed(() => [...(formField.error ? [formField.error] : []), ...state.displayErrors.value])
+	const { formField, displayErrors } = useFileUploadForm(props, state)
+	const ids = { inputId: useId(), errorsId: useId() }
 
 	return {
 		...standard,
 		isControlDisabled,
 		fileInput,
 		rootRef,
-		inputId,
-		errorsId,
+		dropzoneRef,
+		...ids,
 		uploadedFiles: state.uploadedFiles,
 		isDragOver: state.isDragOver,
+		announcement: state.announcement,
 		handleRemove: state.handleRemove,
+		handleRetry: state.retry,
 		handleDragLeave: state.handleDragLeave,
 		displayErrors,
 		hasError: computed(() => displayErrors.value.length > 0),
+		previewZoom: PREVIEW_ZOOM,
 		previewStyle: computed(() => previewStyleOf(props)),
 		formatHint: computed(() => formatAcceptHint(props.accept)),
 		formatSize: (bytes: number): string => formatFileSize(bytes),
 		fileIconName,
 		...useDropzone(state, isControlDisabled, fileInput),
-		exposed: {
-			rootRef,
-			focus: () => rootRef.value?.focus(),
-			blur: () => rootRef.value?.blur(),
-			validate: formField.validate,
-			reset: formField.reset,
-		},
+		exposed: exposeOf({ rootRef, dropzoneRef }, formField, state),
 	}
 }

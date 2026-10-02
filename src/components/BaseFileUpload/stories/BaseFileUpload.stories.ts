@@ -30,3 +30,4 @@ export const Multiple = cases.Multiple
 export const ImagesOnly = cases.ImagesOnly
 export const DragAndDrop = cases.DragAndDrop
 export const Keyboard = cases.Keyboard
+export const UploadError = cases.UploadError

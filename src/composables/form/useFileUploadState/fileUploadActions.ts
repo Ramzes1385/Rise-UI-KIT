@@ -1,5 +1,6 @@
 /** Утилиты: добавление, замена и удаление файлов в состоянии загрузки */
-import { UI_TEXT } from '@/locales/messages'
+import { formatMessage } from '@/locales/state'
+import { UI_FILE_UPLOAD } from '@/locales/messages'
 import type { FileUploadContext } from './types/useFileUploadState.types'
 import type { UploadedFile } from '@components/BaseFileUpload/types/BaseFileUpload.types'
 import { buildUploadItem, commitUploadItem, releaseItem, reportError, validateFiles } from './fileUploadItems'
@@ -8,64 +9,75 @@ function emitChange(ctx: FileUploadContext): void {
 	ctx.options.onChange(ctx.uploadedFiles.value.map(uploadedFile => uploadedFile.file))
 }
 
-/** Описание: множественный режим — добавляет валидные файлы до maxCount */
-async function appendFiles(ctx: FileUploadContext, files: File[]): Promise<void> {
-	const maxCount = ctx.options.getMaxCount()
-	const remaining = maxCount - ctx.uploadedFiles.value.length
-	if (remaining <= 0) {
-		reportError(ctx, `${UI_TEXT.FILE_MAX_COUNT_PREFIX} ${maxCount}`)
-		return
-	}
+function maxCountMessage(ctx: FileUploadContext): string {
+	return formatMessage(UI_FILE_UPLOAD.MAX_COUNT, { count: ctx.options.getMaxCount() })
+}
 
-	ctx.internalErrors.value = []
-	const valid = validateFiles(ctx, files.slice(0, remaining))
+/**
+ * Множественный режим: сначала проверка, потом лимит — невалидные файлы не занимают места,
+ * а не поместившиеся валидные отбрасываются с одной ошибкой лимита.
+ */
+function appendFiles(ctx: FileUploadContext, files: File[]): void {
+	const valid = validateFiles(ctx, files)
+	const remaining = Math.max(0, ctx.options.getMaxCount() - ctx.uploadedFiles.value.length)
+	if (valid.length > remaining) reportError(ctx, maxCountMessage(ctx))
 
-	for (const file of valid) {
-		commitUploadItem(ctx, await buildUploadItem(file))
-	}
-
+	const accepted = valid.slice(0, remaining)
+	if (accepted.length === 0) return
+	accepted.forEach(file => commitUploadItem(ctx, buildUploadItem(ctx, file)))
 	emitChange(ctx)
 }
 
 /**
  * Одиночный режим: новый валидный файл заменяет выбранный, как у нативного input без multiple.
- * Раньше файлы копились до maxCount, и потребитель, читающий files[0] из change, получал старый файл.
  * maxCount здесь не применяется; невалидный файл выбранный не вытесняет.
  */
-async function replaceFile(ctx: FileUploadContext, files: File[]): Promise<void> {
-	ctx.internalErrors.value = []
+function replaceFile(ctx: FileUploadContext, files: File[]): void {
 	const [file] = validateFiles(ctx, files)
 	if (!file) return
 
-	const selectionId = ++ctx.selection.id
 	const replacedItems = ctx.uploadedFiles.value
 	ctx.uploadedFiles.value = []
 	replacedItems.forEach(item => releaseItem(ctx, item))
-
-	const item = await buildUploadItem(file)
-	if (selectionId !== ctx.selection.id) return
-	commitUploadItem(ctx, item)
+	commitUploadItem(ctx, buildUploadItem(ctx, file))
 	ctx.options.onChange([file])
 }
 
-/** Описание: добавляет файлы с учётом режима выбора (одиночный — замена, множественный — до maxCount) */
-async function addFiles(ctx: FileUploadContext, files: File[]): Promise<void> {
-	/* istanbul ignore next — defensive: пустой массив отсекается на уровне input change */
+/** Описание: добавляет файлы с учётом режима выбора; ошибки прошлого выбора заменяются новыми */
+function addFiles(ctx: FileUploadContext, files: File[]): void {
 	if (files.length === 0) return
+	ctx.internalErrors.value = []
 
 	if (!(ctx.options.getIsMultiple?.() ?? true)) {
-		await replaceFile(ctx, files)
+		replaceFile(ctx, files)
 		return
 	}
 
-	await appendFiles(ctx, files)
+	appendFiles(ctx, files)
 }
 
-/** Описание: удаляет файл из списка, освобождает превью и сообщает новый список */
+/** Описание: удаляет файл из списка, снимает ошибку лимита и сообщает новый список */
 function removeFile(ctx: FileUploadContext, item: UploadedFile): void {
 	ctx.uploadedFiles.value = ctx.uploadedFiles.value.filter(uploadedFile => uploadedFile.id !== item.id)
+	const limitMessage = maxCountMessage(ctx)
+	ctx.internalErrors.value = ctx.internalErrors.value.filter(message => message !== limitMessage)
 	releaseItem(ctx, item)
 	emitChange(ctx)
 }
 
-export { addFiles, removeFile }
+/** Описание: очищает список и ошибки (reset формы); change — только если файлы были */
+function clearFiles(ctx: FileUploadContext): void {
+	const items = ctx.uploadedFiles.value
+	ctx.uploadedFiles.value = []
+	ctx.internalErrors.value = []
+	items.forEach(item => releaseItem(ctx, item))
+	if (items.length > 0) emitChange(ctx)
+}
+
+/** Описание: повторяет загрузку файла со статусом `error` */
+function retryFile(ctx: FileUploadContext, item: UploadedFile): void {
+	const live = ctx.uploadedFiles.value.find(uploadedFile => uploadedFile.id === item.id)
+	if (live?.status === 'error') ctx.transfer.start(live.id)
+}
+
+export { addFiles, clearFiles, removeFile, retryFile }

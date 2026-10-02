@@ -1,7 +1,7 @@
 import { waitFor, expect } from 'storybook/test'
 import type meta from '../../BaseFileUpload.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { documentFile, imageFile, UPLOAD_TIMEOUT } from '../../shared'
+import { documentFile, imageFile } from '../../shared'
 
 export const Multiple: StoryObj<typeof meta> = {
 	parameters: {
@@ -27,6 +27,5 @@ export const Multiple: StoryObj<typeof meta> = {
 		await expect(args.onRemove).toHaveBeenCalledOnce()
 		await expect(canvas.getAllByRole('listitem')).toHaveLength(2)
 		await expect(args.onChange).toHaveBeenLastCalledWith([expect.any(File), expect.any(File)])
-		await expect(await canvas.findByText('Загружено', {}, { timeout: UPLOAD_TIMEOUT })).toBeVisible()
 	},
 }

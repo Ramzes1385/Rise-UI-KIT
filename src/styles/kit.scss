@@ -1,0 +1,14 @@
+// Попадает в dist/styles.css: шрифт кита только на его собственных элементах (классы base-*), с нулевой специфичностью.
+// body, button и поля приложения кит не трогает — это решает приложение (README, «Шрифты»); @font-face подключает приложение.
+:where([class^='base-'], [class*=' base-']) {
+	font-family: var(--rise-font-sans);
+	font-synthesis: none;
+	text-rendering: optimizelegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+:where([class^='base-'], [class*=' base-']) :where(code, kbd, samp, pre),
+:where(code, kbd, samp, pre):where([class^='base-'], [class*=' base-']) {
+	font-family: var(--rise-font-mono);
+}

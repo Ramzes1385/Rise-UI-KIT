@@ -239,7 +239,8 @@ describe('BaseFileUpload integration', () => {
 
 		it('кнопка удаления и полоса прогресса называют файл', async () => {
 			const user = userEvent.setup()
-			const { container } = render(BaseFileUpload, { props: { isMultiple: true } })
+			const uploader = () => new Promise<void>(() => undefined)
+			const { container } = render(BaseFileUpload, { props: { isMultiple: true, uploader } })
 			const fileInput = container.querySelector<HTMLInputElement>('input[type="file"]')!
 
 			await user.upload(fileInput, [createFile('photo.png', 10, 'image/png'), createFile('report.pdf', 10, 'application/pdf')])

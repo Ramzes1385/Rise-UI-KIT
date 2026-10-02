@@ -1,7 +1,7 @@
 /** Утилиты: проверка, создание и освобождение элементов загрузки файлов */
 import { generateId } from '@utils/data/idUtils'
+import { getExtension, validateFile } from '@utils/media/fileUtils'
 import type { FileUploadContext } from './types/useFileUploadState.types'
-import { createImagePreview, getExtension, validateFile } from '@utils/media/fileUtils'
 import type { UploadedFile } from '@components/BaseFileUpload/types/BaseFileUpload.types'
 
 /** Описание: добавляет ошибку в список и сообщает о ней потребителю */
@@ -29,9 +29,15 @@ function validateFiles(ctx: FileUploadContext, files: File[]): File[] {
 	return valid
 }
 
-/** Описание: создаёт элемент загрузки; файл с превью сразу «загружается», без превью — ждёт */
-async function buildUploadItem(file: File): Promise<UploadedFile> {
-	const previewUrl = await createImagePreview(file)
+/** Описание: objectURL миниатюры изображения; null — не изображение или превью выключены */
+function createPreviewUrl(ctx: FileUploadContext, file: File): string | null {
+	if (!file.type.startsWith('image/')) return null
+	if (!(ctx.options.getAllowPreview?.() ?? true)) return null
+	return URL.createObjectURL(file)
+}
+
+/** Описание: создаёт элемент списка синхронно (превью — objectURL), поэтому места под maxCount не гоняются */
+function buildUploadItem(ctx: FileUploadContext, file: File): UploadedFile {
 	return {
 		id: generateId(),
 		file,
@@ -39,25 +45,28 @@ async function buildUploadItem(file: File): Promise<UploadedFile> {
 		size: file.size,
 		type: file.type,
 		extension: getExtension(file.name),
-		previewUrl,
-		status: previewUrl ? 'uploading' : 'pending',
+		previewUrl: createPreviewUrl(ctx, file),
+		status: 'selected',
 		progress: 0,
 	}
 }
 
-/** Описание: добавляет элемент в список и запускает имитацию прогресса для файла с превью */
+/** Описание: добавляет элемент в список и запускает его загрузку (если приложение передало `uploader`) */
 function commitUploadItem(ctx: FileUploadContext, item: UploadedFile): void {
 	ctx.uploadedFiles.value.push(item)
-	if (item.previewUrl) {
-		ctx.progress.simulate(item.id)
-	}
+	ctx.transfer.start(item.id)
 }
 
-/** Описание: освобождает превью и сообщает потребителю, что файл больше не выбран */
-function releaseItem(ctx: FileUploadContext, item: UploadedFile): void {
-	/* istanbul ignore next — previewUrl присутствует только для image-файлов */
+/** Описание: отменяет загрузку и освобождает превью файла, который больше не выбран */
+function disposeItem(ctx: FileUploadContext, item: UploadedFile): void {
+	ctx.transfer.abort(item.id)
 	if (item.previewUrl) URL.revokeObjectURL(item.previewUrl)
+}
+
+/** Описание: освобождает файл и сообщает потребителю, что он больше не выбран */
+function releaseItem(ctx: FileUploadContext, item: UploadedFile): void {
+	disposeItem(ctx, item)
 	ctx.options.onRemove(item)
 }
 
-export { buildUploadItem, commitUploadItem, releaseItem, reportError, validateFiles }
+export { buildUploadItem, commitUploadItem, disposeItem, releaseItem, reportError, validateFiles }

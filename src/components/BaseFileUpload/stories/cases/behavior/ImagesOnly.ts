@@ -1,7 +1,7 @@
 import type meta from '../../BaseFileUpload.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { fireEvent, waitFor, expect } from 'storybook/test'
-import { dropData, documentFile, imageFile, UPLOAD_TIMEOUT } from '../../shared'
+import { dropData, documentFile, imageFile } from '../../shared'
 
 export const ImagesOnly: StoryObj<typeof meta> = {
 	parameters: {
@@ -20,11 +20,11 @@ export const ImagesOnly: StoryObj<typeof meta> = {
 		await fireEvent.drop(dropzone, { dataTransfer: dropData([documentFile('Счёт.pdf', 90)]) })
 		const error = await canvas.findByText(/Формат файла "Счёт\.pdf" не поддерживается/)
 		await waitFor(() => expect(error).toBeVisible())
+		await expect(canvas.getByRole('alert')).toContainElement(error)
 		await expect(args.onError).toHaveBeenCalledOnce()
 
 		await userEvent.upload(canvas.getByLabelText('Фото товара'), imageFile('Товар.svg', 340))
 		await expect(await canvas.findByRole('button', { name: 'Товар.svg' })).toBeVisible()
 		await expect(canvas.queryByText(/не поддерживается/)).not.toBeInTheDocument()
-		await expect(await canvas.findByText('Загружено', {}, { timeout: UPLOAD_TIMEOUT })).toBeVisible()
 	},
 }

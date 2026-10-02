@@ -37,6 +37,17 @@
 		&--disabled {
 			@include disabled-state;
 		}
+
+		&.base-link {
+			display: flex;
+			@include text-size(sm);
+			text-decoration: none;
+			@include custom-text(color, var(--rise-text));
+
+			@include hover {
+				text-decoration: none;
+			}
+		}
 	}
 
 	&__icon {

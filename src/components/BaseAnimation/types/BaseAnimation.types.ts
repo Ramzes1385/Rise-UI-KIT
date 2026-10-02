@@ -21,7 +21,8 @@ export type TransitionName = (typeof ANIMATION_NAMES)[number]
 
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
-export interface BaseAnimationProps extends BaseComponentProps<string, 'root'> {
+/** Обёртка анимации без своего вида: из общих пропсов — только `customClass` (`variant`, `sizeScale` и `color` удалены в 2.0) */
+export interface BaseAnimationProps extends Pick<BaseComponentProps<string, 'root'>, 'customClass'> {
 	/** Показывать содержимое. Переключение запускает анимацию появления или исчезновения. По умолчанию `true`. */
 	show?: boolean
 	/**

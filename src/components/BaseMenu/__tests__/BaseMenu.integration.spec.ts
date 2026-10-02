@@ -62,12 +62,12 @@ describe('BaseMenu integration', () => {
 	})
 
 	describe('клавиатура и семантика', () => {
-		it('пункты доступны вспомогательным технологиям как кнопки с именем', () => {
+		it('пункты доступны вспомогательным технологиям: с `to` — ссылка, без — кнопка', () => {
 			render(BaseMenu, {
 				props: { items: ITEMS },
 			})
 
-			expect(screen.getByRole('button', { name: 'Профиль' })).toBeInTheDocument()
+			expect(screen.getByRole('link', { name: 'Профиль' })).toHaveAttribute('href', '/profile')
 			expect(screen.getByRole('button', { name: 'Действие' })).toBeInTheDocument()
 		})
 
@@ -81,6 +81,26 @@ describe('BaseMenu integration', () => {
 			await user.keyboard('{Enter}')
 
 			expect(emitted().select).toEqual([[ITEMS[0][0]]])
+		})
+
+		it('пункт-ссылка: href и target, Space не перехватывается, отключённая ссылка без адреса', async () => {
+			const user = userEvent.setup()
+			const items = [
+				[
+					{ label: 'Документация', href: 'https://example.com', target: '_blank' as const },
+					{ label: 'Архив', to: '/archive', isDisabled: true },
+				],
+			]
+			const { emitted } = render(BaseMenu, { props: { items } })
+
+			const link = screen.getByRole('link', { name: /Документация/ })
+			expect(link).toHaveAttribute('href', 'https://example.com')
+			expect(link).toHaveAttribute('target', '_blank')
+			link.focus()
+			await user.keyboard(' ')
+			expect(emitted()).not.toHaveProperty('select')
+
+			expect(screen.getByText('Архив').closest('.base-menu__item')).not.toHaveAttribute('href')
 		})
 
 		it('должен активировать пункт по Space и вызывать item.click', async () => {

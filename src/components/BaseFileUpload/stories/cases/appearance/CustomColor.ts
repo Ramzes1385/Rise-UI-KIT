@@ -1,7 +1,7 @@
 import { expect } from 'storybook/test'
+import { imageFile } from '../../shared'
 import type meta from '../../BaseFileUpload.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { imageFile, UPLOAD_TIMEOUT } from '../../shared'
 
 export const CustomColor: StoryObj<typeof meta> = {
 	parameters: {
@@ -28,6 +28,5 @@ export const CustomColor: StoryObj<typeof meta> = {
 		await userEvent.upload(canvas.getByLabelText('Логотип компании'), imageFile('Логотип.svg', 270))
 		const remove = await canvas.findByRole('button', { name: 'Удалить Логотип.svg' })
 		await expect(getComputedStyle(remove).color).not.toBe('rgb(109, 40, 217)')
-		await expect(await canvas.findByText('Загружено', {}, { timeout: UPLOAD_TIMEOUT })).toBeVisible()
 	},
 }

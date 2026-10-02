@@ -77,7 +77,9 @@ import '@fontsource-variable/jetbrains-mono/index.css'
 
 Это те же файлы, что и при `import '@fontsource-variable/inter'`; явный путь к `.css` нужен TypeScript 6, где `noUncheckedSideEffectImports` включён по умолчанию: импорт без расширения даёт ошибку TS2882, а `*.css` покрывается объявлениями `vite/client`.
 
-Без этих импортов браузер берёт запасные шрифты из токенов (`system-ui`, `Segoe UI`, `Roboto`, `Arial`; для моноширинного — `ui-monospace`, `Menlo`, `Consolas` и т. п.), то есть системный шрифт. `styles.css` также не задаёт шрифт для `body`, `button` и полей ввода: чтобы весь интерфейс использовал шрифт библиотеки, добавьте в стили приложения `body, button, input, textarea, select { font-family: var(--rise-font-sans); }`.
+Без этих импортов браузер берёт запасные шрифты из токенов (`system-ui`, `Segoe UI`, `Roboto`, `Arial`; для моноширинного — `ui-monospace`, `Menlo`, `Consolas` и т. п.), то есть системный шрифт.
+
+`styles.css` задаёт шрифт только элементам кита (классы `base-*`, селектор `:where` с нулевой специфичностью — стили приложения его перекрывают): `--rise-font-sans`, внутри `code`, `kbd`, `samp`, `pre` — `--rise-font-mono`. Шрифт `body`, `button` и полей ввода приложения кит не меняет; чтобы весь интерфейс использовал шрифт библиотеки, добавьте в стили приложения `body, button, input, textarea, select { font-family: var(--rise-font-sans); }`. Алиасы 1.x (`--font-family-base` и др.) оставлены для совместимости, в новом коде — `--rise-font-sans` и `--rise-font-mono`.
 
 ### Дизайн-система и темы
 

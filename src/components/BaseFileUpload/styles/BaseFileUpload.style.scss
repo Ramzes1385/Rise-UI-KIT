@@ -59,10 +59,15 @@
 		@include text-size(xs);
 		@include custom-text(color, var(--rise-text-muted));
 
-		> span + span::before {
+		> span:not(:last-child)::after {
 			content: '·';
-			margin-right: sz(6px);
+			margin-left: sz(6px);
 		}
+	}
+
+	&__drop-text {
+		@include text-size(xs);
+		@include custom-text(color, var(--rise-text-muted));
 	}
 
 	&--outline &__dropzone {
@@ -174,9 +179,9 @@
 		@include text-size(xs);
 		color: var(--rise-text-muted);
 
-		> span + span::before {
+		> span:not(:last-child)::after {
 			content: '·';
-			margin-right: sz(6px);
+			margin-left: sz(6px);
 			color: var(--rise-text-muted);
 		}
 	}
@@ -201,6 +206,14 @@
 		margin-top: sz(4px);
 	}
 
+	&__file-error {
+		display: block;
+		@include text-size(xs);
+		color: var(--rise-error);
+		overflow-wrap: anywhere;
+	}
+
+	&__retry.base-button,
 	&__remove.base-button {
 		--btn-pad-top: 5px;
 		--btn-pad-right: 5px;
@@ -222,5 +235,13 @@
 
 	&__error-item {
 		@include field-error;
+	}
+
+	&__alert:empty {
+		position: absolute;
+	}
+
+	&__live {
+		@include visually-hidden;
 	}
 }

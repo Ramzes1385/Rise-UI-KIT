@@ -78,7 +78,6 @@
 					:reply-to-id="message.replyToId"
 					:reply-to-sender-name="message.replyToSenderName"
 					:reply-to-text="message.replyToText"
-					:size-scale="sizeScale"
 					@click="handleReplyClick" />
 
 				<ChatMessageAttachments

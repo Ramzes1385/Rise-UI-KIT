@@ -27,11 +27,13 @@
 			v-if="label"
 			:for-id="inputId"
 			:label="label"
+			:is-required="isRequired"
 			class-name="base-file-upload__label"
 			:custom-class="classes.label"
 			:size-scale="sizeScale" />
 
 		<div
+			ref="dropzoneRef"
 			class="base-file-upload__dropzone"
 			role="button"
 			:tabindex="isControlDisabled ? -1 : 0"
@@ -47,6 +49,7 @@
 			<slot name="trigger">
 				<BaseIcon name="upload" class="base-file-upload__icon" />
 				<span class="base-file-upload__text" :class="classes.text">{{ buttonText ?? UI_TEXT.FILE_SELECT }}</span>
+				<span v-if="emptyText" class="base-file-upload__drop-text" :class="classes.dropText">{{ emptyText }}</span>
 				<span v-if="accept || maxSize" class="base-file-upload__hint" :class="classes.hint">
 					<span v-if="accept">{{ formatHint }}</span>
 					<span v-if="maxSize">{{ UI_TEXT.FILE_MAX_SIZE_PREFIX }} {{ maxSize }} {{ UI_TEXT.FILE_MAX_SIZE_SUFFIX }}</span>
@@ -69,7 +72,7 @@
 						:custom-class="classes.previewImg"
 						fit="cover"
 						:border-radius="0"
-						:zoom-config="{ hasZoom: allowPreview }" />
+						:zoom-config="previewZoom" />
 					<BaseIcon v-else :name="fileIconName(item)" class="base-file-upload__file-icon" />
 				</div>
 
@@ -82,13 +85,18 @@
 							item.extension.toUpperCase()
 						}}</span>
 						<span class="base-file-upload__size" :class="classes.size">{{ formatSize(item.size) }}</span>
-						<span class="base-file-upload__status" :class="[`base-file-upload__status--${item.status}`, classes.status]">
+						<span
+							v-if="item.status !== 'selected'"
+							class="base-file-upload__status"
+							:class="[`base-file-upload__status--${item.status}`, classes.status]">
 							<template v-if="item.status === 'done'">{{ UI_TEXT.FILE_STATUS_DONE }}</template>
 							<template v-else-if="item.status === 'uploading'">{{ item.progress }}%</template>
-							<template v-else-if="item.status === 'error'">{{ UI_TEXT.FILE_STATUS_ERROR }}</template>
-							<template v-else>{{ UI_TEXT.FILE_STATUS_PENDING }}</template>
+							<template v-else>{{ UI_TEXT.FILE_STATUS_ERROR }}</template>
 						</span>
 					</div>
+					<span v-if="item.status === 'error' && item.error" class="base-file-upload__file-error" :class="classes.fileError">{{
+						item.error
+					}}</span>
 					<BaseProgress
 						v-if="item.status === 'uploading'"
 						:value="item.progress"
@@ -99,6 +107,17 @@
 						class="base-file-upload__progress" />
 				</div>
 
+				<BaseButton
+					v-if="item.status === 'error'"
+					variant="ghost"
+					class="base-file-upload__retry"
+					:custom-class="classes.retry"
+					:aria-label="formatMessage(UI_FILE_UPLOAD.RETRY, { name: item.name })"
+					:is-disabled="isControlDisabled"
+					:size-scale="sizeScale"
+					@click="handleRetry(item)">
+					<template #left><BaseIcon name="rotate-right" :size-scale="calcIconScale('sm', sizeScale)" /></template>
+				</BaseButton>
 				<BaseButton
 					variant="ghost"
 					class="base-file-upload__remove"
@@ -112,24 +131,32 @@
 			</li>
 		</ul>
 
-		<BaseAnimation
-			v-if="hasError"
-			:id="errorsId"
-			name="fade"
-			is-group
-			tag="ul"
-			:custom-class="classes.errors"
-			class="base-file-upload__errors">
-			<li v-for="(err, index) in displayErrors" :key="err + index" class="base-file-upload__error-item" :class="classes.errorItem">
-				{{ err }}
-			</li>
-		</BaseAnimation>
+		<div class="base-file-upload__alert" role="alert">
+			<BaseAnimation
+				v-if="hasError"
+				:id="errorsId"
+				name="fade"
+				is-group
+				tag="ul"
+				:custom-class="classes.errors"
+				class="base-file-upload__errors">
+				<li
+					v-for="(err, index) in displayErrors"
+					:key="err + index"
+					class="base-file-upload__error-item"
+					:class="classes.errorItem">
+					{{ err }}
+				</li>
+			</BaseAnimation>
+		</div>
+
+		<div class="base-file-upload__live" role="status">{{ announcement }}</div>
 	</div>
 </template>
 
 <script setup lang="ts">
 import '../styles/BaseFileUpload.style.scss'
-import { UI_TEXT } from '@/locales/messages'
+import { formatMessage } from '@/locales/state'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseButton } from '@components/BaseButton'
@@ -139,6 +166,7 @@ import { BaseProgress } from '@components/BaseProgress'
 import { BaseAnimation } from '@components/BaseAnimation'
 import { FormFieldLabel } from '@components/BaseFormField'
 import { kitDefaults } from '@composables/base/useDefaults'
+import { UI_FILE_UPLOAD, UI_TEXT } from '@/locales/messages'
 import { useBaseFileUpload } from '../model/useBaseFileUpload'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseFileUploadEmits, BaseFileUploadProps, BaseFileUploadSlots } from '../types/BaseFileUpload.types'
@@ -149,6 +177,7 @@ const props = withDefaults(
 		accept: '',
 		isMultiple: false,
 		isDisabled: false,
+		isRequired: false,
 		variant: DEFAULT_VARIANT,
 		maxSize: 5,
 		maxCount: 10,
@@ -172,11 +201,15 @@ const {
 	isControlDisabled,
 	fileInput,
 	rootRef,
+	dropzoneRef,
 	inputId,
 	errorsId,
 	uploadedFiles,
 	isDragOver,
+	announcement,
+	previewZoom,
 	handleRemove,
+	handleRetry,
 	handleDragLeave,
 	displayErrors,
 	hasError,

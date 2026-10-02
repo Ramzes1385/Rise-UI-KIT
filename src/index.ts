@@ -1,3 +1,4 @@
+import './styles/kit.scss'
 export * from './components'
 export * as composables from './composables'
 export { useColorMode, useLocale, useOverlay, useToast } from './composables'

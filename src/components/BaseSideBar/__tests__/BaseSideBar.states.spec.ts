@@ -3,6 +3,7 @@ import { nextTick } from 'vue'
 import BaseSideBar from '../ui/BaseSideBar.vue'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { SideBarItem } from '../types/BaseSideBar.types'
+import { preventLinkNavigation } from './BaseSideBar.test-utils'
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
 
 const ITEMS: SideBarItem[] = [
@@ -52,6 +53,8 @@ afterEach(() => {
 	cleanup()
 	setViewport(1024)
 })
+
+preventLinkNavigation()
 
 describe('BaseSideBar: разделы, бейджи, ориентир', () => {
 	it('ставит ориентир nav с именем из title, navigationLabel или по умолчанию', async () => {

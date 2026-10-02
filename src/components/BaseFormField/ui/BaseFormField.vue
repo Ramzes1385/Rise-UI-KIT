@@ -30,7 +30,7 @@
 			{{ description }}
 		</p>
 
-		<BaseAnimation v-if="error" name="fade" :size-scale="sizeScale" :custom-class="classes.animation">
+		<BaseAnimation v-if="error" name="fade" :custom-class="classes.animation">
 			<p :id="errorId" class="base-form-field__error" :class="classes.error">
 				{{ error }}
 			</p>
