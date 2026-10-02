@@ -18,6 +18,8 @@ const DEFAULT_LABEL_FORMAT: Intl.DateTimeFormatOptions = { day: 'numeric', month
 const DEFAULT_Y_TICKS = 5
 const PALETTE_SIZE = 8
 
+export const isFiniteValue = (value: number | null | undefined): value is number => typeof value === 'number' && Number.isFinite(value)
+
 const seriesColor = (color: string | undefined, index: number): string => color ?? `var(--rise-chart-${(index % PALETTE_SIZE) + 1})`
 
 function useChartFormat(props: BaseChartProps) {
@@ -112,14 +114,12 @@ export function useChartAxes(props: BaseChartProps, data: ReturnType<typeof useC
 				label: data.formatLabel(label),
 				cells: props.series.map(series => {
 					const value = series.values[index]
-					return typeof value === 'number' ? data.formatValue(value) : UI_CHARTS.NO_VALUE
+					return isFiniteValue(value) ? data.formatValue(value) : UI_CHARTS.NO_VALUE
 				}),
 			})),
 		),
 		summary: computed(() => {
-			const values = data.visibleIndexes.value.flatMap(index =>
-				props.series[index].values.filter((value): value is number => typeof value === 'number'),
-			)
+			const values = data.visibleIndexes.value.flatMap(index => props.series[index].values.filter(isFiniteValue))
 			if (data.isEmpty.value || !values.length) return props.label
 			return formatMessage(UI_CHARTS.CHART_SUMMARY, {
 				label: props.label,

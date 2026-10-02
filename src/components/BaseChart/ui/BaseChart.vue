@@ -70,7 +70,12 @@
 					</div>
 				</div>
 				<div class="base-chart__x-axis" aria-hidden="true">
-					<span v-for="tick in xTicks" :key="tick.position" class="base-chart__x-tick" :style="{ left: `${tick.position}%` }">
+					<span
+						v-for="tick in xTicks"
+						:key="tick.position"
+						class="base-chart__x-tick"
+						:class="{ 'base-chart__x-tick--start': tick.position <= 0, 'base-chart__x-tick--end': tick.position >= 100 }"
+						:style="{ left: `${tick.position}%` }">
 						{{ tick.text }}
 					</span>
 				</div>

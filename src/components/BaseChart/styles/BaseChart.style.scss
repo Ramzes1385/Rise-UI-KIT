@@ -153,6 +153,14 @@
 		@include truncate;
 	}
 
+	&__x-tick--start {
+		transform: none;
+	}
+
+	&__x-tick--end {
+		transform: translateX(-100%);
+	}
+
 	&__legend {
 		display: flex;
 		flex-wrap: wrap;

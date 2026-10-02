@@ -1,7 +1,7 @@
 import { computed, ref, type Ref } from 'vue'
 import { UI_CHARTS } from '@/locales/messages'
 import { formatMessage } from '@/locales/state'
-import type { useChartData } from './useChartData'
+import { isFiniteValue, type useChartData } from './useChartData'
 import { nearestIndex, xPosition, yPosition } from './chart/chartGeometry'
 import type { BaseChartProps, ChartMarker, ChartPoint } from '../types/BaseChart.types'
 
@@ -30,8 +30,9 @@ function useActivePoint(props: BaseChartProps, data: ReturnType<typeof useChartD
 			index,
 			label: data.formatLabel(props.labels[index]),
 			values: data.visibleIndexes.value.map(seriesIndex => {
-				const value = props.series[seriesIndex].values[index] ?? null
-				const text = typeof value === 'number' ? data.formatValue(value) : UI_CHARTS.NO_VALUE
+				const raw = props.series[seriesIndex].values[index]
+				const value = isFiniteValue(raw) ? raw : null
+				const text = value === null ? UI_CHARTS.NO_VALUE : data.formatValue(value)
 				return { name: props.series[seriesIndex].name, color: data.seriesViews.value[seriesIndex].color, value, text }
 			}),
 		}
