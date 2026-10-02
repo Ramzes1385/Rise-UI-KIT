@@ -66,6 +66,8 @@
 	}
 
 	&__item {
+		--base-descriptions-span: 1;
+
 		display: flex;
 		flex-wrap: wrap;
 		gap: sz(2px) sz(12px);
@@ -77,10 +79,14 @@
 	}
 
 	&__label {
-		flex: 0 1 var(--base-descriptions-label-width, 40%);
+		flex: 0 1
+			var(
+				--base-descriptions-label-width,
+				calc((100% - (var(--base-descriptions-span) - 1) * var(--base-descriptions-gap-x)) / var(--base-descriptions-span) * 0.4)
+			);
 		min-width: 0;
-		color: var(--rise-text-muted);
-		overflow-wrap: anywhere;
+		color: var(--rise-text-toned);
+		overflow-wrap: break-word;
 	}
 
 	&__value {
@@ -100,12 +106,12 @@
 
 	&__content {
 		min-width: 0;
-		overflow-wrap: anywhere;
+		overflow-wrap: break-word;
 		white-space: pre-line;
 	}
 
 	&__empty-value {
-		color: var(--rise-text-muted);
+		color: var(--rise-text-toned);
 	}
 
 	& &__copy {
@@ -120,7 +126,7 @@
 	}
 
 	&__empty {
-		color: var(--rise-text-muted);
+		color: var(--rise-text-toned);
 	}
 
 	&__status {

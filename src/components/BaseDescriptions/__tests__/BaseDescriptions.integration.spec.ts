@@ -14,7 +14,9 @@ class FakeResizeObserver {
 	static instances: FakeResizeObserver[] = []
 	readonly observe = vi.fn()
 	readonly disconnect = vi.fn()
-	constructor(readonly callback: () => void) {
+	readonly callback: () => void
+	constructor(callback: () => void) {
+		this.callback = callback
 		FakeResizeObserver.instances.push(this)
 	}
 }
@@ -51,6 +53,9 @@ describe('BaseDescriptions integration: колонки по ширине', () =>
 		const { container } = render(BaseDescriptions, { props: { items: ITEMS, columns: 4, minItemWidth: 300 } })
 		await nextTick()
 		expect(spans(container)).toEqual(['', 'span 3', 'span 2'])
+		expect(
+			(container.querySelectorAll('.base-descriptions__item')[1] as HTMLElement).style.getPropertyValue('--base-descriptions-span'),
+		).toBe('3')
 
 		width = 500
 		FakeResizeObserver.instances[0].callback()

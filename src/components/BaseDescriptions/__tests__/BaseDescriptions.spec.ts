@@ -125,6 +125,7 @@ describe('BaseDescriptions unit', () => {
 		})
 		const items = Array.from(container.querySelectorAll<HTMLElement>('.base-descriptions__item'))
 		expect(items.map(item => item.style.gridColumn)).toEqual(['1 / -1', 'span 1', '', ''])
+		expect(items.map(item => item.style.getPropertyValue('--base-descriptions-span'))).toEqual(['1', '1', '', ''])
 	})
 
 	it('кнопка «Копировать: <подпись>» — у полей со значением при isCopyable; поле переопределяет', () => {

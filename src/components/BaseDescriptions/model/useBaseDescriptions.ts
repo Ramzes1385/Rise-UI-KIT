@@ -61,9 +61,10 @@ export function useBaseDescriptions(props: BaseDescriptionsProps, emit: BaseDesc
 		emptyListText: computed(() => props.emptyText ?? UI_DESCRIPTIONS.EMPTY),
 		isEmptyValue,
 		itemStyle(item: DescriptionsItem): Record<string, string> {
-			if (item.span === 'full') return { gridColumn: '1 / -1' }
+			if (item.span === 'full') return { gridColumn: '1 / -1', '--base-descriptions-span': String(columnCount.value) }
 			if (!item.span || item.span <= 1) return {}
-			return { gridColumn: `span ${Math.min(Math.floor(item.span), columnCount.value)}` }
+			const span = String(Math.min(Math.floor(item.span), columnCount.value))
+			return { gridColumn: `span ${span}`, '--base-descriptions-span': span }
 		},
 	}
 }
