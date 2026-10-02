@@ -39,5 +39,5 @@
 		"test:utils:coverage": 0,
 		"test:components-heavy:coverage": 0
 	},
-	"lintWarnings": 55
+	"lintWarnings": 0
 }
