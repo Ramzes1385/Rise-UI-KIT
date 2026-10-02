@@ -76,7 +76,7 @@
 		font-weight: var(--rise-font-weight-medium);
 		text-align: center;
 		@include text-size(xs);
-		@include custom-text(color, var(--rise-text-muted));
+		@include custom-text(color, var(--rise-text-toned));
 	}
 
 	&__week + &__week &__day {
@@ -244,7 +244,7 @@
 		font: inherit;
 		font-weight: var(--rise-font-weight-medium);
 		background: none;
-		@include custom-text(color, var(--rise-text-muted));
+		@include custom-text(color, var(--rise-text-toned));
 		cursor: pointer;
 		@include text-size(xs);
 		@include focus-ring(1px);
@@ -295,7 +295,7 @@
 
 	&__empty {
 		padding: sz(32px) sz(16px);
-		@include custom-text(color, var(--rise-text-muted));
+		@include custom-text(color, var(--rise-text-toned));
 		text-align: center;
 	}
 
@@ -324,7 +324,7 @@
 		border-left: 1px solid var(--grid-line);
 		font-weight: var(--rise-font-weight-medium);
 		text-align: center;
-		@include custom-text(color, var(--rise-text-muted));
+		@include custom-text(color, var(--rise-text-toned));
 
 		&--today {
 			color: var(--rise-primary);
@@ -334,7 +334,7 @@
 	&__all-day-label {
 		padding: sz(4px);
 		text-align: end;
-		@include custom-text(color, var(--rise-text-muted));
+		@include custom-text(color, var(--rise-text-toned));
 		@include text-size(xs);
 	}
 
@@ -368,7 +368,7 @@
 	&__axis-slot {
 		padding-right: sz(6px);
 		text-align: end;
-		@include custom-text(color, var(--rise-text-muted));
+		@include custom-text(color, var(--rise-text-toned));
 		transform: translateY(-50%);
 		@include text-size(2xs);
 
