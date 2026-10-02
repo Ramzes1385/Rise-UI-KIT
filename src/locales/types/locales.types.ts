@@ -40,6 +40,7 @@ export interface UiKitLocale {
 	emoji: Section<'emoji'>
 	mention: Section<'mention'>
 	kanban: Section<'kanban'>
+	list: Section<'list'>
 	filterBuilder: Section<'filterBuilder'>
 	checklist: Section<'checklist'>
 	phoneInput: Section<'phoneInput'>

@@ -1227,3 +1227,10 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 - Исправление по проверке (02.10): 404 и 500 собраны на BaseEmpty (`variant="ghost"`): код ошибки — в слоте `icon`, `h1` и текст — в слоте по умолчанию, кнопки — в слоте `actions`. Вид почти прежний: поиск на 404 и BaseAlert на 500 — во всю ширину колонки (было: поиск до 400px), кнопки в ряд по центру. На странице Docs раздела Blocks/Errors обе истории идут в своих iframe (540px и 520px): на странице больше нет трёх `<main>` подряд.
 - `blocks-series--episode`: внизу новая секция «Обсуждение» — BaseCommentThread (`ghost`) с двумя комментариями и полем нового комментария; play добавляет ответ и отмечает «Нравится».
 - `blocks-pricing--plans`: кнопка тарифа — свой класс `blk-pricing__action` вместо `blk-auth__wide`, вид тот же.
+
+## Задача new-list: BaseList
+
+- **BaseList** — новый компонент (раздел Storybook «Data»): строки 40px с отступами внутри рамки `--rise-border` и радиусом `--rise-radius-md`; варианты `default`, `soft` (подложка `--rise-bg-elevated`), `outline` (рамка `--rise-border-accented`), `ghost`; выбранная строка — фон `--rise-primary-soft` и галочка `--rise-primary`; взятая с клавиатуры — пунктирная рамка `--rise-primary`; при перетаскивании мышью — «призрак» с тенью `--rise-shadow-lg`, на месте строки — полупрозрачная копия; ручка `grip-vertical` слева у `is-sortable`. Эталонов скриншот-тестов нет (их делает владелец; заготовка `BaseList.visual.spec.ts` — variants, sizes, disabled, with-error).
+- **BaseKanban** — без видимых изменений: перестановка вынесена в `useSortable`, истории канбана прошли в обеих темах.
+- Новый значок `grip-vertical` (шесть точек) в наборе иконок.
+

@@ -126,4 +126,15 @@ export const enData = {
 		LESS_THAN_MINUTE: 'less than a minute',
 		FINISHED: 'time is up',
 	},
+	/** Список BaseList: пустое состояние, подсказки и объявления при перестановке строк */
+	list: {
+		EMPTY: 'The list is empty',
+		HINT_SORTABLE: 'Space to pick up a row, arrow keys to move it, Alt + arrow keys to move at once, Enter to open',
+		HINT_SORTABLE_SELECT: 'Alt + Up or Down arrow to move the row',
+		PICKED: 'Picked up row “{item}”, position {position} of {total}. Use arrow keys to move it, Space to drop, Escape to cancel',
+		MOVED: 'Position {position} of {total}',
+		DROPPED: 'Row “{item}” is at position {position} of {total}',
+		CANCELLED: 'Move cancelled, row “{item}” is back in place',
+		BLOCKED: 'Row “{item}” cannot be moved here',
+	},
 }

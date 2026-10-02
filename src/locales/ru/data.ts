@@ -136,4 +136,15 @@ export const ruData = {
 		LESS_THAN_MINUTE: 'меньше минуты',
 		FINISHED: 'время вышло',
 	},
+	/** Список BaseList: пустое состояние, подсказки и объявления при перестановке строк */
+	list: {
+		EMPTY: 'Список пуст',
+		HINT_SORTABLE: 'Space — взять строку, стрелки — переместить, Alt + стрелки — сдвинуть сразу, Enter — открыть',
+		HINT_SORTABLE_SELECT: 'Alt + стрелка вверх или вниз — переместить строку',
+		PICKED: 'Строка «{item}» взята, место {position} из {total}. Стрелки перемещают её, Space кладёт, Escape отменяет',
+		MOVED: 'Место {position} из {total}',
+		DROPPED: 'Строка «{item}» на месте {position} из {total}',
+		CANCELLED: 'Перемещение отменено, строка «{item}» на прежнем месте',
+		BLOCKED: 'Строку «{item}» нельзя переместить сюда',
+	},
 }

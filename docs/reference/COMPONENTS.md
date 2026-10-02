@@ -3002,6 +3002,7 @@ BaseKanban
 BaseKbd
 BaseLayout
 BaseLink
+BaseList
 BaseLoader
 BaseMap
 BaseMarkdown
@@ -3066,3 +3067,19 @@ BaseWaveform
 ```
 
 ---
+
+## BaseList (задача new-list)
+
+Список строк: значок или аватар, текст, описание, короткий текст справа (`meta`) и кнопки действий. Строки — `items` (`{ id, title, description?, icon?, avatar?, meta?, isDisabled? }`; свои поля сохраняются — компонент обобщённый). Подпись — `label` или `aria-label`.
+
+```vue
+<BaseList v-model="selected" v-model:items="folders" selection-mode="multiple" is-sortable label="Папки" @move="saveOrder" />
+```
+
+- `selection-mode` — `none` (по умолчанию: `role="list"`, клик и Enter — событие `activate`, слот `actions` для кнопок), `single` или `multiple` — список выбора по APG Listbox: `role="listbox"`, у строк `role="option"` и `aria-selected`, одна точка Tab, стрелки, Home и End, пробел выбирает, в `multiple` — Shift + стрелки и Shift + клик выбирают подряд, Ctrl+A — все; переход к строке по первым буквам названия. `v-model` — id строки или массив id. В режиме выбора действий в строке нет: у `option` не может быть интерактивного содержимого.
+- `is-sortable` — перестановка: мышью за строку (после сдвига на 5px, Escape отменяет), с клавиатуры — в режиме `none` пробел берёт строку, стрелки двигают, пробел или Enter кладут, Escape отменяет; в любом режиме Alt + ↑/↓ сдвигают строку сразу. Каждое новое место объявляется скринридеру («Место 3 из 10»). Новый порядок — `update:items` и событие `move` (`{ item, from, to }`); `can-move` запрещает место. Касанием строки не перетаскиваются (ими прокручивают) — для телефона дайте свои кнопки через метод `moveItem`.
+- `filter` — какие строки показать; скрытые строки сохраняют свои места при перестановке.
+- `is-virtual` — в DOM только видимые строки (тысячи строк), высота — `height` (по умолчанию 360px), `item-size` — высота строки до замера.
+- Через `ref`: `focusItem(id)`, `selectAll()`, `clearSelection()`, `moveItem(id, index)`.
+- Слоты: `item` (вся строка), `prefix` (вместо значка), `actions`, `empty`.
+

@@ -1534,3 +1534,16 @@ FOLLOW_UPS № 38, № 39, № 13 и № 15 (медиа).
 ## Задача new-blocks: новые витрины Blocks
 
 API кита не меняется. В Storybook добавлены примеры страниц из компонентов кита — код берите из «Show code»: `Blocks/Errors` (404 и 500), `Blocks/Pricing` (тарифы), `Blocks/Series` (страница серии с BaseMediaPlayer, `playlists` и `v-model:episode`, связанным со списком серий).
+
+## Задача new-list: BaseList и useSortable
+
+**Новые компоненты**
+
+- `BaseList` — список строк (значок или аватар, текст, описание, `meta`, действия); выбор `selection-mode` `single` или `multiple` по APG Listbox, `v-model` — id или массив id; перестановка `is-sortable` мышью и с клавиатуры с объявлением нового места, `v-model:items`, событие `move`, `can-move`; `filter`, `is-virtual`; методы `focusItem`, `selectAll`, `clearSelection`, `moveItem`. Справочник — docs/reference/COMPONENTS.md, «BaseList».
+- `useSortable` — composable перестановки мышью и с клавиатуры (основа BaseKanban и BaseList), типы `SortableMove`, `SortableDrag`, `UseSortableOptions` и др. Справочник — docs/reference/COMPOSABLES.md.
+- Значок `grip-vertical` (ручка перетаскивания) в наборе BaseIcon; раздел словаря `list` (`UI_LIST`) — своему языку через `defineLocale` нужны его строки.
+
+**Существующие компоненты**
+
+- `BaseKanban` переведён на `useSortable`: API, разметка, классы и поведение не менялись.
+

@@ -16,6 +16,7 @@ import { BaseChip } from '../../components/BaseChip'
 import { BaseForm } from '../../components/BaseForm'
 import { BaseIcon } from '../../components/BaseIcon'
 import { BaseLink } from '../../components/BaseLink'
+import { BaseList } from '../../components/BaseList'
 import { BaseMenu } from '../../components/BaseMenu'
 import { BaseStat } from '../../components/BaseStat'
 import { BaseTabs } from '../../components/BaseTabs'
@@ -193,6 +194,7 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseKbd,
 	BaseLayout,
 	BaseLink,
+	BaseList,
 	BaseLoader,
 	BaseMap,
 	BaseMarkdown,

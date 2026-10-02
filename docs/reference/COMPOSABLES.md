@@ -295,6 +295,7 @@ useSelect
 useSelectKeys
 useSizeScale
 useSlider
+useSortable
 useStructuredData
 useSwipe
 useTableData
@@ -364,3 +365,34 @@ router.onError(() => loadingBar.error())
 - Хранилище одно на страницу (`loadingBarStore`) и работает до монтирования `BaseApp`: первая навигация роутера идёт раньше монтирования. На сервере (SSR) `start` ничего не делает и не ставит таймеров.
 - `createLoadingBarStore()` — отдельное хранилище для тестов и своих контейнеров, `reset()` у хранилища сбрасывает полосу сразу.
 - Доступность: `role="progressbar"` без `aria-valuenow` (неопределённый ход) с именем из словаря (`UI_ARIA.LOADING_BAR`) или `loadingBar.label`; шаги не объявляются. При `prefers-reduced-motion` полоса неподвижна и видна во всю ширину.
+
+---
+
+## useSortable (задача new-list)
+
+Перестановка элементов мышью и с клавиатуры — общая основа BaseKanban и BaseList. Composable ведёт захват, шаги, бросок и отмену; порядок и черновик хранит вызывающий код, место (`TPlace`) — любое: индекс списка, `{ columnId, index }` колонки.
+
+```ts
+const sortable = useSortable<Item, number>({
+	rootRef,
+	itemId: item => item.id,
+	isDisabled: () => props.isDisabled,
+	locate: id => shown.value.findIndex(item => item.id === id),
+	isSamePlace: (a, b) => a === b,
+	stepPlace: (id, key) => nextIndex(id, key),
+	dropPlace: (point, id) => indexUnder(point, id),
+	itemElement: id => rowElement(id),
+	onStart: () => (draft.value = [...shown.value]),
+	onPreview: (id, index) => (draft.value = moveTo(shown.value, id, index)),
+	onDrop: (move, done) => commit(move, done),
+	onCancel: (id, done) => cancel(id, done),
+	onAnnounce: (message, id) => say(message, id),
+	focusItem: id => focus(id),
+	flip: { source: () => shown.value, items: { selector: '[data-id]', key: 'id' } },
+})
+```
+
+- Клавиатура (`grab`, `handleGrabbedKeydown`): пробел берёт, стрелки (`moveKeys`) двигают, пробел или Enter кладут, Escape отменяет, Tab отменяет и уводит фокус; `onAnnounce('PICKED' | 'MOVED')` — объявить шаг. Это клавиатурная альтернатива перетаскиванию (WCAG 2.5.7, 2.1.1).
+- Мышь и перо (`handlePointerDown`): порог 5px, «призрак» (`drag`, `ghostRef`, `ghostStyle`), посадка на место, Escape отменяет; касание не перехватывается. `consumeClick()` — пропустить клик сразу после перетаскивания.
+- `flip` — элементы плавно едут на новое место, контейнеры меняют высоту; при `prefers-reduced-motion` анимации нет.
+
