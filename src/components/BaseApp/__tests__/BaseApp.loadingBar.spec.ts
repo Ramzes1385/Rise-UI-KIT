@@ -4,7 +4,7 @@ import BaseApp from '../ui/BaseApp.vue'
 import { setLocale } from '@/locales/state'
 import { render, screen } from '@testing-library/vue'
 import type { BaseAppLoadingBarOptions } from '../types/BaseApp.types'
-import { LOADING_BAR_HIDE_MS, LOADING_BAR_START, loadingBarStore, useLoadingBar } from '@composables/app/useLoadingBar'
+import { LOADING_BAR_HIDE_MS, LOADING_BAR_START, loadingBarStore, useLoadingBar } from '@composables/app/useLoadingBar/useLoadingBar'
 
 function renderApp(loadingBar?: BaseAppLoadingBarOptions) {
 	return render(BaseApp, { props: { loadingBar }, slots: { default: () => h('main', 'Приложение') } })

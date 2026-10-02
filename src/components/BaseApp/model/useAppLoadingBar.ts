@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
 import type { BaseAppProps } from '../types/BaseApp.types'
-import { loadingBarStore } from '@composables/app/useLoadingBar'
+import { loadingBarStore } from '@composables/app/useLoadingBar/useLoadingBar'
 
 const LOADING_BAR_HEIGHT = 3
 
