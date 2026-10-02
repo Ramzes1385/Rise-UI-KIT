@@ -114,10 +114,12 @@
 				</component>
 			</div>
 			<div v-if="!view" class="base-image-map__status">{{ UI_IMAGE_MAP.EMPTY }}</div>
-			<div v-else-if="isSvgLoading" class="base-image-map__status" role="status">{{ UI_IMAGE_MAP.LOADING }}</div>
-			<div v-else-if="hasSvgError" class="base-image-map__status base-image-map__status--error" role="alert">
-				{{ UI_IMAGE_MAP.ERROR }}
-			</div>
+			<template v-else>
+				<div class="base-image-map__status" role="status">{{ isSvgLoading ? UI_IMAGE_MAP.LOADING : '' }}</div>
+				<div class="base-image-map__status base-image-map__status--error" role="alert">
+					{{ hasSvgError ? UI_IMAGE_MAP.ERROR : '' }}
+				</div>
+			</template>
 			<div v-if="gestures.isWheelHintVisible.value" class="base-image-map__hint" aria-hidden="true">{{ wheelHint }}</div>
 		</div>
 

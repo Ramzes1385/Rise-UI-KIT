@@ -1,3 +1,5 @@
+const SVG_NS = 'http://www.w3.org/2000/svg'
+
 const ALLOWED_TAGS = new Set([
 	'svg',
 	'g',
@@ -24,7 +26,42 @@ const ALLOWED_TAGS = new Set([
 	'image',
 ])
 
+const TEXT_ONLY_TAGS = new Set(['title', 'desc'])
+
+const PRESENTATION_PROPERTIES = [
+	'fill',
+	'fill-opacity',
+	'fill-rule',
+	'clip-rule',
+	'stroke',
+	'stroke-width',
+	'stroke-opacity',
+	'stroke-linecap',
+	'stroke-linejoin',
+	'stroke-dasharray',
+	'stroke-dashoffset',
+	'stroke-miterlimit',
+	'opacity',
+	'stop-color',
+	'stop-opacity',
+	'clip-path',
+	'mask',
+	'font-size',
+	'font-family',
+	'font-weight',
+	'font-style',
+	'text-anchor',
+	'dominant-baseline',
+	'letter-spacing',
+	'display',
+	'visibility',
+	'vector-effect',
+]
+
+const STYLE_PROPERTIES = new Set(PRESENTATION_PROPERTIES)
+
 const ALLOWED_ATTRIBUTES = new Set([
+	...PRESENTATION_PROPERTIES,
 	'id',
 	'class',
 	'd',
@@ -49,90 +86,81 @@ const ALLOWED_ATTRIBUTES = new Set([
 	'transform',
 	'viewbox',
 	'preserveaspectratio',
-	'fill',
-	'fill-opacity',
-	'fill-rule',
-	'clip-rule',
-	'stroke',
-	'stroke-width',
-	'stroke-opacity',
-	'stroke-linecap',
-	'stroke-linejoin',
-	'stroke-dasharray',
-	'stroke-dashoffset',
-	'stroke-miterlimit',
-	'opacity',
 	'offset',
-	'stop-color',
-	'stop-opacity',
 	'gradientunits',
 	'gradienttransform',
 	'patternunits',
 	'patterntransform',
-	'clip-path',
-	'mask',
-	'font-size',
-	'font-family',
-	'font-weight',
-	'font-style',
-	'text-anchor',
-	'dominant-baseline',
-	'letter-spacing',
-	'display',
-	'visibility',
-	'vector-effect',
 	'style',
 	'href',
 ])
 
+const SAFE_FUNCTIONS = new Set(['rgb', 'rgba', 'hsl', 'hsla', 'matrix', 'translate', 'scale', 'rotate', 'skewx', 'skewy'])
+
 const LOCAL_URL_RE = /url\(\s*['"]?#[\w.:-]+['"]?\s*\)/gi
-const UNSAFE_VALUE_RE = /url\s*\(|expression\s*\(|javascript:|@import|\\/i
+const FUNCTION_RE = /([\w-]*)\s*\(/g
+const FORBIDDEN_RE = /javascript:|@|\\|\/\*|[<>]/i
 const DATA_IMAGE_RE = /^data:image\/(png|jpe?g|gif|webp);base64,[\w+/=\s]+$/i
 const ID_REF_RE = /^#[\w.:-]+$/
 
 function isSafeValue(value: string): boolean {
-	return !UNSAFE_VALUE_RE.test(value.replace(LOCAL_URL_RE, ''))
+	const rest = value.replace(LOCAL_URL_RE, '')
+	if (FORBIDDEN_RE.test(rest)) return false
+	return [...rest.matchAll(FUNCTION_RE)].every(([, name]) => SAFE_FUNCTIONS.has(String(name).toLowerCase()))
 }
 
 function isSafeHref(tag: string, value: string): boolean {
-	if (tag === 'image') return DATA_IMAGE_RE.test(value.trim())
-	return ID_REF_RE.test(value.trim())
+	if (tag === 'image') return DATA_IMAGE_RE.test(value)
+	return ID_REF_RE.test(value)
 }
 
-function isAllowedAttribute(tag: string, name: string, value: string): boolean {
-	if (name.startsWith('data-')) return isSafeValue(value)
-	if (!ALLOWED_ATTRIBUTES.has(name)) return false
-	if (name === 'href') return isSafeHref(tag, value)
-	return isSafeValue(value)
+function cleanDeclaration(declaration: string): string {
+	const index = declaration.indexOf(':')
+	const name = declaration.slice(0, index).trim().toLowerCase()
+	const value = declaration.slice(index + 1).trim()
+	return STYLE_PROPERTIES.has(name) && value && isSafeValue(value) ? `${name}: ${value}` : ''
 }
 
-function moveXlinkHref(element: Element, tag: string, attribute: Attr): void {
-	element.removeAttribute(attribute.name)
-	if (!element.hasAttribute('href') && isSafeHref(tag, attribute.value)) element.setAttribute('href', attribute.value)
+function cleanValue(tag: string, name: string, value: string): string | null {
+	if (name === 'style') return value.split(';').map(cleanDeclaration).filter(Boolean).join('; ') || null
+	if (name === 'href') return isSafeHref(tag, value.trim()) ? value.trim() : null
+	return isSafeValue(value) ? value : null
 }
 
-function cleanAttributes(element: Element): void {
-	const tag = element.tagName.toLowerCase()
-	for (const attribute of [...element.attributes]) {
-		const name = attribute.name.toLowerCase()
-		if (name === 'xlink:href') moveXlinkHref(element, tag, attribute)
-		else if (!isAllowedAttribute(tag, name, attribute.value)) element.removeAttribute(attribute.name)
+function targetName(source: Element, attribute: Attr): string | null {
+	const name = attribute.name.toLowerCase()
+	if (name === 'xlink:href') return source.hasAttribute('href') ? null : 'href'
+	return ALLOWED_ATTRIBUTES.has(name) ? attribute.name : null
+}
+
+function copyAttributes(source: Element, target: Element, tag: string): void {
+	for (const attribute of source.attributes) {
+		const name = targetName(source, attribute)
+		const value = name === null ? null : cleanValue(tag, name.toLowerCase(), attribute.value)
+		if (name !== null && value !== null) target.setAttribute(name, value)
 	}
 }
 
-function cleanTree(parent: Element): void {
-	for (const child of [...parent.children]) {
-		if (ALLOWED_TAGS.has(child.tagName.toLowerCase())) {
-			cleanAttributes(child)
-			cleanTree(child)
-		} else {
-			child.remove()
-		}
+function copyNode(node: Node, isTextOnly: boolean): Node | null {
+	if (node.nodeType === Node.TEXT_NODE || node.nodeType === Node.CDATA_SECTION_NODE) return document.createTextNode(node.nodeValue ?? '')
+	if (node.nodeType !== Node.ELEMENT_NODE || isTextOnly) return null
+	return copyElement(node as Element)
+}
+
+function copyElement(source: Element): Element | null {
+	const tag = source.localName.toLowerCase()
+	if (!ALLOWED_TAGS.has(tag)) return null
+	const target = document.createElementNS(SVG_NS, source.localName)
+	copyAttributes(source, target, tag)
+	for (const node of source.childNodes) {
+		const child = copyNode(node, TEXT_ONLY_TAGS.has(tag))
+		if (child) target.append(child)
 	}
+	return target
 }
 
 function prefixReference(name: string, value: string, prefix: string): string {
-	if (name === 'href') return value.replace(/^\s*#/, `#${prefix}`)
+	if (name === 'href') return value.replace(/^#/, `#${prefix}`)
 	return value.replace(/url\(\s*(['"]?)#/gi, `url($1#${prefix}`)
 }
 
@@ -148,10 +176,9 @@ function prefixIds(root: Element, prefix: string): void {
 
 export function sanitizeSvg(markup: string, idPrefix: string): string {
 	const parsed = new DOMParser().parseFromString(markup, 'image/svg+xml')
-	const root = parsed.documentElement
-	if (root.tagName.toLowerCase() !== 'svg' || parsed.getElementsByTagName('parsererror').length) return ''
-	cleanAttributes(root)
-	cleanTree(root)
+	const source = parsed.documentElement
+	if (source.localName !== 'svg' || parsed.getElementsByTagName('parsererror').length) return ''
+	const root = copyElement(source) as Element
 	prefixIds(root, idPrefix)
 	root.setAttribute('width', '100%')
 	root.setAttribute('height', '100%')

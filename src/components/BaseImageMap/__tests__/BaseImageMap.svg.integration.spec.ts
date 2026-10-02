@@ -102,14 +102,15 @@ describe('BaseImageMap svg — встроенный план', () => {
 		expect(container.querySelector('script')).toBeNull()
 	})
 
-	it('невалидный встроенный SVG не рисует план и не показывает загрузку', () => {
+	it('невалидный встроенный SVG не рисует план, сообщение об ошибке появляется после монтирования', async () => {
 		const data: ImageMapData = {
 			layers: [{ id: 'plan', title: 'План', svg: '<svg><rect></svg>', width: 100, height: 100 }],
 			objects: [],
 		}
 		const { container } = render(BaseImageMap, { props: { data, ...BASE_PROPS } })
+		await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('Не удалось загрузить карту'))
 		expect(container.querySelector('.base-image-map__svg')).toBeNull()
-		expect(screen.queryByRole('status')).toBeNull()
+		expect(screen.getByRole('status')).toBeEmptyDOMElement()
 	})
 })
 
@@ -119,11 +120,13 @@ describe('BaseImageMap svg — загрузка по svgUrl', () => {
 		const fetchMock = vi.fn(() => response.promise)
 		vi.stubGlobal('fetch', fetchMock)
 		render(BaseImageMap, { props: { data: urlData('/plan.svg'), ...BASE_PROPS } })
-		expect(screen.getByRole('status')).toHaveTextContent('Загрузка карты…')
+		expect(screen.getByRole('status')).toBeEmptyDOMElement()
+		expect(screen.getByRole('alert')).toBeEmptyDOMElement()
+		await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Загрузка карты…'))
 		expect(fetchMock).toHaveBeenCalledWith('/plan.svg')
 		response.resolve(okResponse(PLAN))
 		expect(await screen.findByRole('button', { name: 'Комната' })).toBeInTheDocument()
-		expect(screen.queryByRole('status')).toBeNull()
+		expect(screen.getByRole('status')).toBeEmptyDOMElement()
 		vi.unstubAllGlobals()
 	})
 
@@ -133,22 +136,22 @@ describe('BaseImageMap svg — загрузка по svgUrl', () => {
 			vi.fn(async () => ({ ok: false, text: async () => '' }) as Response),
 		)
 		const first = render(BaseImageMap, { props: { data: urlData('/404.svg'), ...BASE_PROPS } })
-		expect(await screen.findByRole('alert')).toHaveTextContent('Не удалось загрузить карту')
+		await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('Не удалось загрузить карту'))
 		first.unmount()
 		vi.stubGlobal(
 			'fetch',
 			vi.fn(async () => Promise.reject(new Error('offline'))),
 		)
 		const second = render(BaseImageMap, { props: { data: urlData('/offline.svg'), ...BASE_PROPS } })
-		expect(await screen.findByRole('alert')).toHaveTextContent('Не удалось загрузить карту')
-		expect(screen.queryByRole('status')).toBeNull()
+		await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('Не удалось загрузить карту'))
+		expect(screen.getByRole('status')).toBeEmptyDOMElement()
 		second.unmount()
 		vi.stubGlobal(
 			'fetch',
 			vi.fn(async () => okResponse('<div/>')),
 		)
 		render(BaseImageMap, { props: { data: urlData('/bad.svg'), ...BASE_PROPS } })
-		expect(await screen.findByRole('alert')).toBeInTheDocument()
+		await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('Не удалось загрузить карту'))
 		vi.unstubAllGlobals()
 	})
 
@@ -165,7 +168,7 @@ describe('BaseImageMap svg — загрузка по svgUrl', () => {
 		await new Promise(resolve => setTimeout(resolve, 0))
 		expect(screen.getByRole('button', { name: 'Зал' })).toBeInTheDocument()
 		expect(screen.queryByRole('button', { name: 'Комната' })).toBeNull()
-		expect(screen.queryByRole('status')).toBeNull()
+		expect(screen.getByRole('status')).toBeEmptyDOMElement()
 		vi.unstubAllGlobals()
 	})
 
@@ -179,7 +182,7 @@ describe('BaseImageMap svg — загрузка по svgUrl', () => {
 		await rerender({ data: urlData('/slow.svg', true), ...BASE_PROPS, layer: 'inline' })
 		late.reject(new Error('offline'))
 		await new Promise(resolve => setTimeout(resolve, 0))
-		expect(screen.queryByRole('alert')).toBeNull()
+		expect(screen.getByRole('alert')).toBeEmptyDOMElement()
 		expect(await screen.findByRole('button', { name: 'Зал' })).toBeInTheDocument()
 		vi.unstubAllGlobals()
 	})
@@ -188,7 +191,7 @@ describe('BaseImageMap svg — загрузка по svgUrl', () => {
 		const data: ImageMapData = { layers: [{ id: 'plain', title: 'Пусто', width: 10, height: 10 }], objects: [] }
 		const { container } = render(BaseImageMap, { props: { data, ...BASE_PROPS } })
 		expect(container.querySelector('.base-image-map__svg')).toBeNull()
-		expect(screen.queryByRole('status')).toBeNull()
-		expect(screen.queryByRole('alert')).toBeNull()
+		expect(screen.getByRole('status')).toBeEmptyDOMElement()
+		expect(screen.getByRole('alert')).toBeEmptyDOMElement()
 	})
 })

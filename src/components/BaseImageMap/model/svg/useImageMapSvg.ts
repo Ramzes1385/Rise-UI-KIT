@@ -1,6 +1,6 @@
 import { sanitizeSvg } from './sanitizeSvg'
-import { ref, useId, watch, watchPostEffect } from 'vue'
 import type { ImageMapLayer } from '../../types/imageMapData.types'
+import { ref, useId, watch, onMounted, watchPostEffect } from 'vue'
 import type { SvgBinding, SvgOptions } from '../../types/imageMapInternal.types'
 
 function useSvgMarkup(getLayer: () => ImageMapLayer | undefined, prefix: string) {
@@ -24,16 +24,18 @@ function useSvgMarkup(getLayer: () => ImageMapLayer | undefined, prefix: string)
 		}
 	}
 
-	watch(
-		() => [getLayer()?.svg, getLayer()?.svgUrl],
-		([svg, svgUrl]) => {
-			request++
-			isLoading.value = false
-			markup.value = svg ? sanitizeSvg(svg, prefix) : ''
-			hasError.value = Boolean(svg) && !markup.value
-			if (!svg && svgUrl) void load(svgUrl, request)
-		},
-		{ immediate: true },
+	onMounted(() =>
+		watch(
+			() => [getLayer()?.svg, getLayer()?.svgUrl],
+			([svg, svgUrl]) => {
+				request++
+				isLoading.value = false
+				markup.value = svg ? sanitizeSvg(svg, prefix) : ''
+				hasError.value = Boolean(svg) && !markup.value
+				if (!svg && svgUrl) void load(svgUrl, request)
+			},
+			{ immediate: true },
+		),
 	)
 
 	return { markup, isLoading, hasError }

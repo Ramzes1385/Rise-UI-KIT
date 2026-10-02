@@ -1,6 +1,7 @@
 import { sanitizeSvg } from '../../model/svg/sanitizeSvg'
 
 const PREFIX = 'rise-im-t-'
+const XLINK = 'http://www.w3.org/1999/xlink'
 const wrap = (body: string, attributes = ''): string =>
 	`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" ${attributes}>${body}</svg>`
 
@@ -42,7 +43,7 @@ describe('sanitizeSvg', () => {
 		)
 		const rect = root.querySelector('rect') as Element
 		expect(root.hasAttribute('onload')).toBe(false)
-		expect([...rect.attributes].map(attribute => attribute.name).sort()).toEqual(['class', 'data-kind', 'opacity'])
+		expect([...rect.attributes].map(attribute => attribute.name).sort()).toEqual(['class', 'opacity'])
 	})
 
 	it('отсекает @import, expression и обратный слэш в значениях', () => {
@@ -89,11 +90,110 @@ describe('sanitizeSvg', () => {
 		expect(root.querySelector('stop')?.getAttribute('stop-color')).toBe('#fff')
 	})
 
-	it('xlink:href у use тоже получает префикс', () => {
+	it('xlink:href переезжает в href с префиксом, xlink:href не остаётся', () => {
 		const result = sanitizeSvg(
 			'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="#a"/></svg>',
 			PREFIX,
 		)
-		expect(parse(result).querySelector('use')?.getAttributeNS('http://www.w3.org/1999/xlink', 'href')).toBe(`#${PREFIX}a`)
+		const use = parse(result).querySelector('use') as Element
+		expect(use.getAttribute('href')).toBe(`#${PREFIX}a`)
+		expect(use.hasAttributeNS(XLINK, 'href')).toBe(false)
+		expect(result).not.toContain('xlink')
+	})
+
+	it('небезопасный xlink:href не переезжает, существующий href не перезаписывается', () => {
+		const root = parse(
+			sanitizeSvg(
+				`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="${XLINK}"><use id="u1" xlink:href="javascript:alert(1)"/><use id="u2" href="#b" xlink:href="#c"/><image id="i1" xlink:href="https://evil/x.png"/></svg>`,
+				PREFIX,
+			),
+		)
+		expect(root.querySelector(`[id="${PREFIX}u1"]`)?.hasAttribute('href')).toBe(false)
+		expect(root.querySelector(`[id="${PREFIX}u2"]`)?.getAttribute('href')).toBe(`#${PREFIX}b`)
+		expect(root.querySelector(`[id="${PREFIX}i1"]`)?.hasAttribute('href')).toBe(false)
+	})
+
+	it('data-* атрибуты не пропускаются — разметка не подделает data-image-map-object', () => {
+		const rect = parse(sanitizeSvg(wrap('<rect data-image-map-object="other" data-kind="shop"/>'), PREFIX)).querySelector('rect')
+		expect(rect?.attributes).toHaveLength(0)
+	})
+})
+
+describe('sanitizeSvg — векторы XSS (результат разбирается HTML-парсером, как в v-html)', () => {
+	function renderHtml(markup: string): HTMLElement {
+		const host = document.createElement('div')
+		host.innerHTML = sanitizeSvg(markup, PREFIX)
+		return host
+	}
+
+	function expectInert(host: HTMLElement): void {
+		expect(host.querySelector('img, script, iframe, foreignObject, a, style, set, animate')).toBeNull()
+		const attributes = [...host.querySelectorAll('*')].flatMap(element => [...element.attributes])
+		expect(attributes.filter(attribute => attribute.name.startsWith('on') || /javascript:/i.test(attribute.value))).toEqual([])
+		expect(host.innerHTML).not.toMatch(/<img|<!--|<\?/i)
+	}
+
+	it.each([
+		['комментарий', '<!--><img src=x onerror=alert(1)>-->'],
+		['инструкция обработки', '<?x ><img src=x onerror=alert(1)>?>'],
+		['CDATA', '<text><![CDATA[</text><img src=x onerror=alert(1)>]]></text>'],
+		['script', '<script>alert(1)</script>'],
+		['foreignObject', '<foreignObject><img xmlns="http://www.w3.org/1999/xhtml" src="x" onerror="alert(1)"/></foreignObject>'],
+		['обработчик on*', '<rect onclick="alert(1)" onmouseover="alert(1)"/>'],
+		['ссылка javascript:', '<a href="javascript:alert(1)"><rect/></a><use href="javascript:alert(1)"/>'],
+		['animate/set', '<set attributeName="onmouseover" to="alert(1)"/><animate attributeName="href" values="javascript:alert(1)"/>'],
+		['текст с разметкой в title', '<title>&lt;img src=x onerror=alert(1)&gt;</title>'],
+		['элемент внутри title', '<title><rect/><img xmlns="http://www.w3.org/1999/xhtml" src="x" onerror="alert(1)"/></title>'],
+	])('%s — без исполняемого кода', (_name, body) => {
+		expectInert(renderHtml(wrap(body)))
+	})
+
+	it('xlink:href с javascript: удаляется', () => {
+		const host = renderHtml(
+			`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="${XLINK}"><use xlink:href="javascript:alert(1)"/></svg>`,
+		)
+		expectInert(host)
+		expect(host.querySelector('use')?.attributes).toHaveLength(0)
+	})
+
+	it('текст CDATA и title сохраняется как текст', () => {
+		const host = renderHtml(wrap('<title>План &amp; схема</title><text><![CDATA[a < b]]></text>'))
+		expect(host.querySelector('title')?.textContent).toBe('План & схема')
+		expect(host.querySelector('text')?.textContent).toBe('a < b')
+		expect(host.querySelector('title')?.children).toHaveLength(0)
+	})
+
+	it.each([
+		['url(http)', 'fill: url(https://evil/x.svg)'],
+		['url без кавычек с пробелом', 'fill: url (//evil/x)'],
+		['image-set', 'fill: red; background-image: image-set("https://evil/x.png" 1x)'],
+		['image-set в разрешённом свойстве', 'fill: image-set("https://evil/x.png" 1x)'],
+		['экранирование', 'fill: u\\rl(//evil)'],
+		['комментарий', 'fill: url/**/(//evil)'],
+		['@import', '@import "x"; fill: red'],
+	])('style с внешней ссылкой (%s) не пропускает её', (_name, style) => {
+		const rect = renderHtml(wrap(`<rect style='${style}'/>`)).querySelector('rect') as Element
+		expect(rect.getAttribute('style') ?? '').not.toMatch(/url|image-set|evil|@/)
+	})
+
+	it('style оставляет только свойства оформления с безопасными значениями', () => {
+		const rect = renderHtml(
+			wrap('<rect style="fill: rgb(1, 2, 3); stroke: url(#grad); position: fixed; opacity: 0.5; behavior: x; :broken"/>'),
+		).querySelector('rect') as Element
+		expect(rect.getAttribute('style')).toBe(`fill: rgb(1, 2, 3); stroke: url(#${PREFIX}grad); opacity: 0.5`)
+	})
+
+	it('style без допустимых свойств удаляется целиком', () => {
+		expect(renderHtml(wrap('<rect style="position: fixed"/>')).querySelector('rect')?.hasAttribute('style')).toBe(false)
+	})
+
+	it('в значениях атрибутов разрешены только функции оформления', () => {
+		const rect = renderHtml(
+			wrap('<rect transform="translate(1 2) rotate(45)" fill="image-set(x)" stroke="hsl(1 2% 3%)" opacity="(1)"/>'),
+		).querySelector('rect') as Element
+		expect(rect.getAttribute('transform')).toBe('translate(1 2) rotate(45)')
+		expect(rect.getAttribute('stroke')).toBe('hsl(1 2% 3%)')
+		expect(rect.hasAttribute('fill')).toBe(false)
+		expect(rect.hasAttribute('opacity')).toBe(false)
 	})
 })
