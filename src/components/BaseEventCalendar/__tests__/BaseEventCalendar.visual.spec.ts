@@ -1,7 +1,7 @@
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 
-const STORIES = ['variants', 'sizes', 'month', 'week', 'list'] as const
+const STORIES = ['variants', 'sizes', 'month', 'week', 'list', 'resource-slot'] as const
 
 for (const theme of VISUAL_THEMES) {
 	test.describe(`BaseEventCalendar · ${theme}`, () => {

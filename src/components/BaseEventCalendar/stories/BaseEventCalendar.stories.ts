@@ -37,3 +37,7 @@ export const Selectable = cases.Selectable
 export const DragAndDrop = cases.DragAndDrop
 export const CanMove = cases.CanMove
 export const RecurringEdit = cases.RecurringEdit
+export const Resources = cases.Resources
+export const ResourceSlot = cases.ResourceSlot
+export const Ics = cases.Ics
+export const ManyEvents = cases.ManyEvents
