@@ -74,6 +74,7 @@ import { BaseTextarea } from '../../components/BaseTextarea'
 import { BaseTextDiff } from '../../components/BaseTextDiff'
 import { BaseTimeline } from '../../components/BaseTimeline'
 import { BaseToolCall } from '../../components/BaseToolCall'
+import { BaseTransfer } from '../../components/BaseTransfer'
 import { BaseWaveform } from '../../components/BaseWaveform'
 import { BaseAccordion } from '../../components/BaseAccordion'
 import { BaseAiMessage } from '../../components/BaseAiMessage'
@@ -249,6 +250,7 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseToolbar,
 	BaseTooltip,
 	BaseTour,
+	BaseTransfer,
 	BaseTree,
 	BaseUser,
 	BaseVirtualList,

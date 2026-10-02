@@ -50,6 +50,9 @@ export const UI_KANBAN = localized('kanban')
 /** Список BaseList */
 export const UI_LIST = localized('list')
 
+/** Перенос между списками BaseTransfer */
+export const UI_TRANSFER = localized('transfer')
+
 /** Конструктор фильтров */
 export const UI_FILTER_BUILDER = localized('filterBuilder')
 

@@ -137,4 +137,17 @@ export const enData = {
 		CANCELLED: 'Move cancelled, row “{item}” is back in place',
 		BLOCKED: 'Row “{item}” cannot be moved here',
 	},
+	transfer: {
+		SOURCE: 'Available',
+		TARGET: 'Selected',
+		SEARCH: 'Search',
+		SEARCH_IN: 'Search: {list}',
+		SELECT_ALL: 'Select all',
+		COUNT: '{checked} of {total}',
+		MOVE_TO: 'Move checked to “{list}”',
+		MOVED: 'Moved to “{list}”: {count}',
+		NOT_FOUND: 'Nothing found',
+		HINT_TO_TARGET: 'Space checks a row, Ctrl or Alt + Right arrow moves checked rows',
+		HINT_TO_SOURCE: 'Space checks a row, Ctrl or Alt + Left arrow moves checked rows back',
+	},
 }

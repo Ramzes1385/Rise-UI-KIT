@@ -3059,6 +3059,7 @@ BaseToolbar
 BaseToolCall
 BaseTooltip
 BaseTour
+BaseTransfer
 BaseTree
 BaseUser
 BaseVirtualList
@@ -3083,3 +3084,20 @@ BaseWaveform
 - Через `ref`: `focusItem(id)`, `selectAll()`, `clearSelection()`, `moveItem(id, index)`.
 - Слоты: `item` (вся строка), `prefix` (вместо значка), `actions`, `empty`.
 
+---
+
+## BaseTransfer (задача new-transfer)
+
+Перенос строк между двумя списками — «Доступно» и «Выбрано» — на BaseList. Строки — `items` (`ListItem` BaseList; компонент обобщённый). `v-model` — массив id в «Выбрано» в их порядке: перенесённые встают в конец, id без строки в `items` сохраняются. Подпись — `label` или `aria-label`.
+
+```vue
+<BaseTransfer v-model="memberIds" :items="employees" label="Участники проекта" is-searchable is-sortable @change="log" />
+```
+
+- Панели — BaseList `selection-mode="multiple"` (APG Listbox): стрелки, Home и End, пробел и Enter отмечают, Shift — подряд, Ctrl+A — все показанные. «Выбрать все» (с частичным состоянием) и счётчик «N из M» — по показанным доступным строкам; строки с `isDisabled` не отмечаются и не переносятся.
+- Перенос — кнопками между панелями или **Ctrl (или Alt) + →** в «Доступно» и **Ctrl (или Alt) + ←** в «Выбрано». После клавиш фокус остаётся на том же месте списка (панель опустела — на перенесённую строку), после кнопки — на первую перенесённую строку. Перенос объявляется в `role="status"` («Перенесено в «Выбрано»: 2»); подсказка клавиш связана с панелью через `aria-describedby`. Перенесённые строки не остаются отмеченными.
+- `is-searchable` — поиск над каждым списком по `title` и `description` без учёта регистра; свой — `filter-method(item, query)`. Переносятся только показанные отмеченные строки; ничего не найдено — «Ничего не найдено».
+- `is-sortable` — перестановка в «Выбрано» мышью и Alt + ↑/↓ (как BaseList), меняет порядок `v-model`.
+- `titles` — свои заголовки панелей, `height` — высота списков (по умолчанию 280px), `is-virtual` — тысячи строк, `empty-text`, `error`, `is-disabled`, `variant` (`default`, `soft`, `outline`, `ghost`), `size-scale`, `color`.
+- Событие `change` — `{ to: 'target' | 'source', ids }`. Через `ref`: `transfer(to, ids?)` — перенести по id (по умолчанию — отмеченные), например для своей кнопки «Перенести всё».
+- Слоты: `item` (данные строки BaseList и `side`), `empty` (`{ side }`). На узком экране (меньше 640px) панели идут друг под другом, стрелки кнопок — вниз и вверх.

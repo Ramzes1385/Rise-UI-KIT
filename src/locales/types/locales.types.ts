@@ -41,6 +41,7 @@ export interface UiKitLocale {
 	mention: Section<'mention'>
 	kanban: Section<'kanban'>
 	list: Section<'list'>
+	transfer: Section<'transfer'>
 	filterBuilder: Section<'filterBuilder'>
 	checklist: Section<'checklist'>
 	phoneInput: Section<'phoneInput'>

@@ -147,4 +147,17 @@ export const ruData = {
 		CANCELLED: 'Перемещение отменено, строка «{item}» на прежнем месте',
 		BLOCKED: 'Строку «{item}» нельзя переместить сюда',
 	},
+	transfer: {
+		SOURCE: 'Доступно',
+		TARGET: 'Выбрано',
+		SEARCH: 'Поиск',
+		SEARCH_IN: 'Поиск: {list}',
+		SELECT_ALL: 'Выбрать все',
+		COUNT: '{checked} из {total}',
+		MOVE_TO: 'Перенести отмеченные в «{list}»',
+		MOVED: 'Перенесено в «{list}»: {count}',
+		NOT_FOUND: 'Ничего не найдено',
+		HINT_TO_TARGET: 'Space отмечает строку, Ctrl или Alt + стрелка вправо переносит отмеченные',
+		HINT_TO_SOURCE: 'Space отмечает строку, Ctrl или Alt + стрелка влево возвращает отмеченные',
+	},
 }
