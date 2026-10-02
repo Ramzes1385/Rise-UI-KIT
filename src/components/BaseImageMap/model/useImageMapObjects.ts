@@ -3,7 +3,7 @@ import { shapeGeometry } from './data/shapeGeometry'
 import { objectAttributes, objectClasses } from './data/objectAttributes'
 import type { ResolvedImageMapObject } from '../types/imageMapModel.types'
 import type { ImageMapPoint, ImageMapSvgObject } from '../types/imageMapData.types'
-import type { ObjectState, ObjectsOptions, PointView, ShapeView } from '../types/imageMapInternal.types'
+import type { ObjectState, ObjectsOptions, PointView, ShapeView, SvgBinding } from '../types/imageMapInternal.types'
 
 const POINT_SIZE = 28
 
@@ -17,6 +17,18 @@ function pointView(item: ResolvedImageMapObject, state: ObjectState): PointView 
 		classes: { ...objectClasses(item, state), 'base-image-map__point--scaled': Boolean(point.isScaled) },
 		style: { ...item.style, left: `${point.x * 100}%`, top: `${point.y * 100}%`, '--im-point-size': `${point.size ?? POINT_SIZE}px` },
 		isActive: state.isActive,
+	}
+}
+
+function hiddenBinding(item: ResolvedImageMapObject): SvgBinding {
+	const state: ObjectState = { isTabbable: false, isActive: false, isHovered: false, isPulsing: false }
+	const attributes = Object.fromEntries(Object.keys(objectAttributes(item, state, false)).map(name => [name, undefined]))
+	const classes = Object.fromEntries(Object.keys(objectClasses(item, state)).map(name => [name, false]))
+	return {
+		item,
+		elementId: (item.object as ImageMapSvgObject).elementId,
+		attributes: { ...attributes, 'aria-hidden': 'true' },
+		classes: { ...classes, 'base-image-map__object--filtered': true },
 	}
 }
 
@@ -37,8 +49,8 @@ export function useImageMapObjects(options: ObjectsOptions) {
 				return [{ item, geometry, attributes: objectAttributes(item, state, false), classes: objectClasses(item, state) }]
 			})
 		}),
-		svgBindings: computed(() =>
-			objects.value
+		svgBindings: computed(() => [
+			...objects.value
 				.filter(item => item.object.type === 'svg')
 				.map(item => {
 					const state = options.getState(item)
@@ -49,6 +61,7 @@ export function useImageMapObjects(options: ObjectsOptions) {
 						classes: objectClasses(item, state),
 					}
 				}),
-		),
+			...(options.getView()?.hidden ?? []).filter(item => item.object.type === 'svg').map(hiddenBinding),
+		]),
 	}
 }

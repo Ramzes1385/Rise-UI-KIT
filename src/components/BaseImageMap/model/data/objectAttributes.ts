@@ -11,6 +11,7 @@ export function objectClasses(item: ResolvedImageMapObject, state: ObjectState):
 		[`${OBJECT_CLASS}--hover`]: state.isHovered,
 		[`${OBJECT_CLASS}--disabled`]: item.isDisabled,
 		[`${OBJECT_CLASS}--pulsing`]: state.isPulsing,
+		[`${OBJECT_CLASS}--filtered`]: false,
 	}
 }
 
@@ -32,5 +33,6 @@ export function objectAttributes(item: ResolvedImageMapObject, state: ObjectStat
 		'aria-current': state.isActive ? 'true' : undefined,
 		'aria-haspopup': item.action === 'popup' ? 'dialog' : undefined,
 		'aria-describedby': state.describedBy,
+		'aria-hidden': undefined,
 	}
 }

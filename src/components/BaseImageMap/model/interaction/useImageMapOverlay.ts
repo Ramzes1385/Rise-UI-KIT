@@ -51,10 +51,21 @@ function useTooltip(options: OverlayOptions) {
 	}
 }
 
+function outsideOpener(stage: HTMLElement | null): HTMLElement | null {
+	const element = typeof document === 'undefined' ? null : document.activeElement
+	return element instanceof HTMLElement && element !== document.body && !stage?.contains(element) ? element : null
+}
+
+function restoreFocus(stage: HTMLElement | null, id: string, opener: HTMLElement | null): void {
+	const element = opener?.isConnected ? opener : findElement(stage, id)
+	if (element instanceof HTMLElement || element instanceof SVGElement) element.focus({ preventScroll: true })
+}
+
 export function useImageMapOverlay(options: OverlayOptions) {
 	const tooltip = useTooltip(options)
 	const popupId = ref<string | null>(null)
 	const isSheet = ref(false)
+	let opener: HTMLElement | null = null
 
 	return {
 		...tooltip,
@@ -67,16 +78,16 @@ export function useImageMapOverlay(options: OverlayOptions) {
 		openPopup(id: string): void {
 			tooltip.hideTooltip()
 			isSheet.value = typeof window !== 'undefined' && window.innerWidth < options.getSheetBreakpoint()
+			opener = outsideOpener(options.stageRef.value)
 			popupId.value = id
 		},
 		closePopup(): void {
 			const id = popupId.value
 			popupId.value = null
 			if (!id) return
-			void nextTick(() => {
-				const element = findElement(options.stageRef.value, id)
-				if (element instanceof HTMLElement || element instanceof SVGElement) element.focus({ preventScroll: true })
-			})
+			const target = opener
+			opener = null
+			void nextTick(() => restoreFocus(options.stageRef.value, id, target))
 		},
 	}
 }

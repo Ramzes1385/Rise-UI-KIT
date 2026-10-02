@@ -1,7 +1,7 @@
 import { computed, ref, watch } from 'vue'
 import { resolveObject } from './resolveObject'
 import type { ImageMapProps } from '../../types/BaseImageMap.types'
-import type { ImageMapLayer } from '../../types/imageMapData.types'
+import type { ImageMapLayer, ImageMapObject } from '../../types/imageMapData.types'
 import type { ImageMapLayerView, ResolvedImageMapObject } from '../../types/imageMapModel.types'
 
 function useLayerModel(props: ImageMapProps) {
@@ -19,7 +19,7 @@ function useLayerModel(props: ImageMapProps) {
 	return { localLayer, currentLayer }
 }
 
-export function useImageMapData(props: ImageMapProps) {
+export function useImageMapData(props: ImageMapProps, isShown: (object: ImageMapObject) => boolean = () => true) {
 	const { localLayer, currentLayer } = useLayerModel(props)
 
 	const resolved = computed((): ResolvedImageMapObject[] =>
@@ -31,12 +31,14 @@ export function useImageMapData(props: ImageMapProps) {
 	const view = computed((): ImageMapLayerView | undefined => {
 		const layer = currentLayer.value
 		if (!layer) return undefined
-		return { layer, objects: resolved.value.filter(item => objectLayer(item) === layer.id) }
+		const own = resolved.value.filter(item => objectLayer(item) === layer.id)
+		return { layer, objects: own.filter(item => isShown(item.object)), hidden: own.filter(item => !isShown(item.object)) }
 	})
 
 	return {
 		localLayer,
 		currentLayer,
+		resolved,
 		view,
 		findObject: (id: string | null | undefined): ResolvedImageMapObject | undefined =>
 			id ? resolved.value.find(item => item.object.id === id) : undefined,

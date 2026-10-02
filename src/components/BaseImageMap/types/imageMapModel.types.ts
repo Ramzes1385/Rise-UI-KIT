@@ -25,6 +25,8 @@ export interface ImageMapLayerView {
 	layer: ImageMapLayer
 	/** Объекты слоя в порядке JSON */
 	objects: ResolvedImageMapObject[]
+	/** Объекты слоя, скрытые фильтрами: точки и фигуры не рисуются, элементы SVG слоя бледнеют и не выбираются */
+	hidden: ResolvedImageMapObject[]
 }
 
 /** Прямоугольник на экране относительно окна карты, px */
