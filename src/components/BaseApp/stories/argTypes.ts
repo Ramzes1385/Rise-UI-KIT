@@ -4,4 +4,5 @@ import { propGroup, ARG_GROUP } from '@/stories/helpers'
 
 export const argTypes = {
 	toaster: { control: 'object', table: propGroup(ARG_GROUP.behavior) },
+	loadingBar: { control: 'object', table: propGroup(ARG_GROUP.appearance) },
 } satisfies Meta<typeof BaseApp>['argTypes']
