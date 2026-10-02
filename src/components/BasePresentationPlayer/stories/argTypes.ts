@@ -16,5 +16,8 @@ export const argTypes = {
 	hasKeyboardShortcuts: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	playbackRates: { control: 'object', table: propGroup(ARG_GROUP.behavior) },
 	aspectRatio: { control: 'text', table: propGroup(ARG_GROUP.appearance) },
+	captions: { control: false, table: propGroup(ARG_GROUP.content) },
+	isCaptionsOn: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+	speechVoice: { control: 'text', table: propGroup(ARG_GROUP.behavior) },
 	idleTimeout: { control: { type: 'number', min: 0, step: 500 }, table: propGroup(ARG_GROUP.behavior) },
 } satisfies Meta<typeof BasePresentationPlayer>['argTypes']
