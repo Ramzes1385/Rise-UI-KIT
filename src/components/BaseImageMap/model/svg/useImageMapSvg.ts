@@ -3,7 +3,7 @@ import type { ImageMapLayer } from '../../types/imageMapData.types'
 import { ref, useId, watch, onMounted, watchPostEffect } from 'vue'
 import type { SvgBinding, SvgOptions } from '../../types/imageMapInternal.types'
 
-function useSvgMarkup(getLayer: () => ImageMapLayer | undefined, prefix: string) {
+export function useSvgMarkup(getLayer: () => ImageMapLayer | undefined, prefix: string) {
 	const markup = ref('')
 	const isLoading = ref(false)
 	const hasError = ref(false)
