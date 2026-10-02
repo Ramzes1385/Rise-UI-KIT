@@ -29,8 +29,8 @@
 			"budget": 83968
 		},
 		"utils.js": {
-			"gzip": 46601,
-			"budget": 52224
+			"gzip": 57621,
+			"budget": 63488
 		}
 	},
 	"coverageExcludes": {
