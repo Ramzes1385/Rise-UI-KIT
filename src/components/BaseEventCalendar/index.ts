@@ -1,0 +1,17 @@
+export { EVENT_CALENDAR_VARIANTS, EVENT_CALENDAR_VIEWS } from './types/BaseEventCalendar.types'
+export type {
+	BaseEventCalendarEmits,
+	BaseEventCalendarProps,
+	BaseEventCalendarSlots,
+	EventCalendarDaySlotProps,
+	EventCalendarEventPayload,
+	EventCalendarEventSlotProps,
+	EventCalendarHeaderDaySlotProps,
+	EventCalendarPeriod,
+	EventCalendarTimeSlotProps,
+	EventCalendarToolbarSlotProps,
+	EventCalendarVariant,
+	EventCalendarView,
+	EventCalendarWorkHours,
+} from './types/BaseEventCalendar.types'
+export { default as BaseEventCalendar } from './ui/BaseEventCalendar.vue'
