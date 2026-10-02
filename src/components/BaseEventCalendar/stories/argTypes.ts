@@ -8,4 +8,11 @@ export const argTypes = {
 	events: { control: 'object', table: propGroup(ARG_GROUP.content) },
 	view: { control: 'select', options: EVENT_CALENDAR_VIEWS, table: propGroup(ARG_GROUP.state) },
 	date: { control: 'text', table: propGroup(ARG_GROUP.state) },
+	today: { control: 'text', table: propGroup(ARG_GROUP.state) },
+	views: { control: 'check', options: EVENT_CALENDAR_VIEWS, table: propGroup(ARG_GROUP.behavior) },
+	slotDuration: { control: { type: 'select' }, options: [15, 30, 60], table: propGroup(ARG_GROUP.behavior) },
+	workHours: { control: 'object', table: propGroup(ARG_GROUP.behavior) },
+	firstDayOfWeek: { control: { type: 'select' }, options: [0, 1], table: propGroup(ARG_GROUP.behavior) },
+	maxEventsPerDay: { control: { type: 'number', min: 1, max: 10 }, table: propGroup(ARG_GROUP.behavior) },
+	hasNowIndicator: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
 } satisfies Meta<typeof BaseEventCalendar>['argTypes']

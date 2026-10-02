@@ -1,10 +1,10 @@
-import type meta from '../BaseEventCalendar.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import BaseEventCalendar from '../../ui/BaseEventCalendar.vue'
+import type meta from '../../BaseEventCalendar.stories'
 import { storySource, useStorySetup } from '@/stories/helpers'
-import { EVENT_CALENDAR_VARIANTS } from '../../types/BaseEventCalendar.types'
+import BaseEventCalendar from '../../../ui/BaseEventCalendar.vue'
+import { EVENT_CALENDAR_VARIANTS } from '../../../types/BaseEventCalendar.types'
 
-const template = `<div class="story-row"><BaseEventCalendar v-for="variant in EVENT_CALENDAR_VARIANTS" :key="variant" v-bind="args" :variant="variant" /></div>`
+const template = `<div class="story-stack"><BaseEventCalendar v-for="variant in EVENT_CALENDAR_VARIANTS" :key="variant" v-bind="args" :variant="variant" :aria-label="'Календарь событий: ' + variant" /></div>`
 
 export const Variants: StoryObj<typeof meta> = {
 	parameters: {
