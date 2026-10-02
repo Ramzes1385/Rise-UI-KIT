@@ -1192,6 +1192,14 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 - Марка — справа в поле номера: значок Font Awesome высотой 22px цветом `--rise-text-muted` (Visa, Mastercard, Amex, Discover, JCB, Diners Club), картинка из `brandIcons` или плашка с названием (рамка `--rise-border`, `--rise-radius-sm`, шрифт `--rise-font-size-xs`).
 - Ошибки — под каждым полем (как у BaseInput) и общая `error` под группой цветом `--rise-error`.
 
+### Задача new-card: истории BaseCardInput (Storybook)
+
+Новые истории `form-basecardinput--*`, эталонов у компонента ещё нет — их снимет владелец.
+
+- Скриншот-тест `BaseCardInput.visual.spec.ts`: `variants`, `sizes`, `disabled`, `with-error` и новая `inline` в двух темах. Витрины Variants и Sizes — сетка карточек шириной от 300px (`story-grid`), остальные — в колонке 360px (`story-narrow`, общий `render`), Inline — 560px (`story-medium`).
+- WithError — общая ошибка эквайера под группой («Банк отклонил оплату: недостаточно средств»), CustomColor — светло-фиолетовый фон `#f5f3ff` у всех четырёх полей.
+- В снимках без play поля пустые: placeholder `0000 0000 0000 0000`, «ММ/ГГ», `000`, «IVAN IVANOV», значка марки нет.
+
 ## Задача new-card-2: превью BaseCardInput и BaseBankCard
 
 Существующие истории и эталоны не меняются: превью включается только пропом `hasPreview`, BaseBankCard — новый компонент. Превью и истории (WithPreview, SavedCards) допишет сессия Storybook.
