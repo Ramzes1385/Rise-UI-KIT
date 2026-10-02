@@ -13,6 +13,7 @@ import { BasePin } from '../../components/BasePin'
 import { BaseTag } from '../../components/BaseTag'
 import { BaseCard } from '../../components/BaseCard'
 import { BaseChip } from '../../components/BaseChip'
+import { BaseCode } from '../../components/BaseCode'
 import { BaseForm } from '../../components/BaseForm'
 import { BaseIcon } from '../../components/BaseIcon'
 import { BaseLink } from '../../components/BaseLink'
@@ -161,6 +162,7 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseCheckboxGroup,
 	BaseChecklist,
 	BaseChip,
+	BaseCode,
 	BaseColorModeButton,
 	BaseColorPicker,
 	BaseCommandPalette,

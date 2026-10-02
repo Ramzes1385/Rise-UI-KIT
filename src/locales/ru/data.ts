@@ -97,6 +97,16 @@ export const ruData = {
 		COPIED: 'Скопировано: {label}',
 		COPY_FAILED: 'Не удалось скопировать: {label}',
 	},
+	/** Блок кода BaseCode: имя области, копирование, пустой код */
+	codeBlock: {
+		LABEL: 'Код',
+		LABEL_LANGUAGE: 'Код, {language}',
+		COPY: 'Копировать',
+		COPIED: 'Скопировано',
+		COPY_DONE: 'Код скопирован в буфер обмена',
+		COPY_FAILED: 'Не удалось скопировать код',
+		EMPTY: 'Кода нет',
+	},
 	/** Просмотр JSON: кнопки над деревом и сообщение о копировании */
 	jsonViewer: {
 		EXPAND_ALL: 'Развернуть всё',

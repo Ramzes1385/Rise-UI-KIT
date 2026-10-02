@@ -64,6 +64,7 @@ $code-token-types: keyword, string, number, comment, function, tag, attribute, p
 		@include text-size(xs);
 		line-height: 1.6;
 		tab-size: 4;
+		font-variant-ligatures: none;
 		@include focus-ring(-2px);
 		@include scrollbar-thin;
 	}

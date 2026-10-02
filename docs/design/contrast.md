@@ -24,6 +24,42 @@
 | Текст на инвертированном фоне | `--rise-text-inverted` #ffffff | `--rise-bg-inverted` #18181b | 17.72 | 4.5 | проходит |
 | Рамка поля ввода | `--rise-border-accented` #d4d4d8 | `--rise-bg` #ffffff | 1.48 | 3 | справочно |
 | Кольцо фокуса | `--rise-focus-ring` #c2410c | `--rise-bg` #ffffff | 5.18 | 3 | проходит |
+| Подсветка кода: keyword | `--rise-code-keyword` #cf222e | `--rise-bg` #ffffff | 5.36 | 4.5 | проходит |
+| Подсветка кода: keyword | `--rise-code-keyword` #cf222e | `--rise-bg-muted` #fafafa | 5.13 | 4.5 | проходит |
+| Подсветка кода: keyword | `--rise-code-keyword` #cf222e | `--rise-bg-elevated` #f4f4f5 | 4.87 | 4.5 | проходит |
+| Подсветка кода: keyword | `--rise-code-keyword` #cf222e | `--rise-primary-soft` #fff7ed | 5.04 | 4.5 | проходит |
+| Подсветка кода: string | `--rise-code-string` #0a3069 | `--rise-bg` #ffffff | 12.81 | 4.5 | проходит |
+| Подсветка кода: string | `--rise-code-string` #0a3069 | `--rise-bg-muted` #fafafa | 12.27 | 4.5 | проходит |
+| Подсветка кода: string | `--rise-code-string` #0a3069 | `--rise-bg-elevated` #f4f4f5 | 11.65 | 4.5 | проходит |
+| Подсветка кода: string | `--rise-code-string` #0a3069 | `--rise-primary-soft` #fff7ed | 12.06 | 4.5 | проходит |
+| Подсветка кода: number | `--rise-code-number` #0550ae | `--rise-bg` #ffffff | 7.59 | 4.5 | проходит |
+| Подсветка кода: number | `--rise-code-number` #0550ae | `--rise-bg-muted` #fafafa | 7.28 | 4.5 | проходит |
+| Подсветка кода: number | `--rise-code-number` #0550ae | `--rise-bg-elevated` #f4f4f5 | 6.91 | 4.5 | проходит |
+| Подсветка кода: number | `--rise-code-number` #0550ae | `--rise-primary-soft` #fff7ed | 7.15 | 4.5 | проходит |
+| Подсветка кода: comment | `--rise-code-comment` #57606a | `--rise-bg` #ffffff | 6.39 | 4.5 | проходит |
+| Подсветка кода: comment | `--rise-code-comment` #57606a | `--rise-bg-muted` #fafafa | 6.12 | 4.5 | проходит |
+| Подсветка кода: comment | `--rise-code-comment` #57606a | `--rise-bg-elevated` #f4f4f5 | 5.81 | 4.5 | проходит |
+| Подсветка кода: comment | `--rise-code-comment` #57606a | `--rise-primary-soft` #fff7ed | 6.02 | 4.5 | проходит |
+| Подсветка кода: function | `--rise-code-function` #8250df | `--rise-bg` #ffffff | 5.05 | 4.5 | проходит |
+| Подсветка кода: function | `--rise-code-function` #8250df | `--rise-bg-muted` #fafafa | 4.83 | 4.5 | проходит |
+| Подсветка кода: function | `--rise-code-function` #8250df | `--rise-bg-elevated` #f4f4f5 | 4.59 | 4.5 | проходит |
+| Подсветка кода: function | `--rise-code-function` #8250df | `--rise-primary-soft` #fff7ed | 4.75 | 4.5 | проходит |
+| Подсветка кода: tag | `--rise-code-tag` #116329 | `--rise-bg` #ffffff | 7.39 | 4.5 | проходит |
+| Подсветка кода: tag | `--rise-code-tag` #116329 | `--rise-bg-muted` #fafafa | 7.08 | 4.5 | проходит |
+| Подсветка кода: tag | `--rise-code-tag` #116329 | `--rise-bg-elevated` #f4f4f5 | 6.73 | 4.5 | проходит |
+| Подсветка кода: tag | `--rise-code-tag` #116329 | `--rise-primary-soft` #fff7ed | 6.96 | 4.5 | проходит |
+| Подсветка кода: attribute | `--rise-code-attribute` #0550ae | `--rise-bg` #ffffff | 7.59 | 4.5 | проходит |
+| Подсветка кода: attribute | `--rise-code-attribute` #0550ae | `--rise-bg-muted` #fafafa | 7.28 | 4.5 | проходит |
+| Подсветка кода: attribute | `--rise-code-attribute` #0550ae | `--rise-bg-elevated` #f4f4f5 | 6.91 | 4.5 | проходит |
+| Подсветка кода: attribute | `--rise-code-attribute` #0550ae | `--rise-primary-soft` #fff7ed | 7.15 | 4.5 | проходит |
+| Подсветка кода: property | `--rise-code-property` #953800 | `--rise-bg` #ffffff | 7.39 | 4.5 | проходит |
+| Подсветка кода: property | `--rise-code-property` #953800 | `--rise-bg-muted` #fafafa | 7.08 | 4.5 | проходит |
+| Подсветка кода: property | `--rise-code-property` #953800 | `--rise-bg-elevated` #f4f4f5 | 6.72 | 4.5 | проходит |
+| Подсветка кода: property | `--rise-code-property` #953800 | `--rise-primary-soft` #fff7ed | 6.96 | 4.5 | проходит |
+| Подсветка кода: variable | `--rise-code-variable` #953800 | `--rise-bg` #ffffff | 7.39 | 4.5 | проходит |
+| Подсветка кода: variable | `--rise-code-variable` #953800 | `--rise-bg-muted` #fafafa | 7.08 | 4.5 | проходит |
+| Подсветка кода: variable | `--rise-code-variable` #953800 | `--rise-bg-elevated` #f4f4f5 | 6.72 | 4.5 | проходит |
+| Подсветка кода: variable | `--rise-code-variable` #953800 | `--rise-primary-soft` #fff7ed | 6.96 | 4.5 | проходит |
 | Текст на заливке primary | `--rise-on-primary` #ffffff | `--rise-primary` #c2410c | 5.18 | 4.5 | проходит |
 | Текст на заливке primary (hover) | `--rise-on-primary` #ffffff | `--rise-primary-hover` #9a3412 | 7.31 | 4.5 | проходит |
 | Цвет primary как текст на фоне | `--rise-primary` #c2410c | `--rise-bg` #ffffff | 5.18 | 4.5 | проходит |
@@ -80,6 +116,42 @@
 | Текст на инвертированном фоне | `--rise-text-inverted` #18181b | `--rise-bg-inverted` #ffffff | 17.72 | 4.5 | проходит |
 | Рамка поля ввода | `--rise-border-accented` #3f3f46 | `--rise-bg` #18181b | 1.70 | 3 | справочно |
 | Кольцо фокуса | `--rise-focus-ring` #fb923c | `--rise-bg` #18181b | 7.83 | 3 | проходит |
+| Подсветка кода: keyword | `--rise-code-keyword` #ff7b72 | `--rise-bg` #18181b | 7.03 | 4.5 | проходит |
+| Подсветка кода: keyword | `--rise-code-keyword` #ff7b72 | `--rise-bg-muted` #27272a | 5.91 | 4.5 | проходит |
+| Подсветка кода: keyword | `--rise-code-keyword` #ff7b72 | `--rise-bg-elevated` #27272a | 5.91 | 4.5 | проходит |
+| Подсветка кода: keyword | `--rise-code-keyword` #ff7b72 | `--rise-primary-soft` #33271f | 5.75 | 4.5 | проходит |
+| Подсветка кода: string | `--rise-code-string` #a5d6ff | `--rise-bg` #18181b | 11.53 | 4.5 | проходит |
+| Подсветка кода: string | `--rise-code-string` #a5d6ff | `--rise-bg-muted` #27272a | 9.69 | 4.5 | проходит |
+| Подсветка кода: string | `--rise-code-string` #a5d6ff | `--rise-bg-elevated` #27272a | 9.69 | 4.5 | проходит |
+| Подсветка кода: string | `--rise-code-string` #a5d6ff | `--rise-primary-soft` #33271f | 9.44 | 4.5 | проходит |
+| Подсветка кода: number | `--rise-code-number` #79c0ff | `--rise-bg` #18181b | 9.11 | 4.5 | проходит |
+| Подсветка кода: number | `--rise-code-number` #79c0ff | `--rise-bg-muted` #27272a | 7.66 | 4.5 | проходит |
+| Подсветка кода: number | `--rise-code-number` #79c0ff | `--rise-bg-elevated` #27272a | 7.66 | 4.5 | проходит |
+| Подсветка кода: number | `--rise-code-number` #79c0ff | `--rise-primary-soft` #33271f | 7.46 | 4.5 | проходит |
+| Подсветка кода: comment | `--rise-code-comment` #9ca3af | `--rise-bg` #18181b | 6.98 | 4.5 | проходит |
+| Подсветка кода: comment | `--rise-code-comment` #9ca3af | `--rise-bg-muted` #27272a | 5.87 | 4.5 | проходит |
+| Подсветка кода: comment | `--rise-code-comment` #9ca3af | `--rise-bg-elevated` #27272a | 5.87 | 4.5 | проходит |
+| Подсветка кода: comment | `--rise-code-comment` #9ca3af | `--rise-primary-soft` #33271f | 5.72 | 4.5 | проходит |
+| Подсветка кода: function | `--rise-code-function` #d2a8ff | `--rise-bg` #18181b | 9.10 | 4.5 | проходит |
+| Подсветка кода: function | `--rise-code-function` #d2a8ff | `--rise-bg-muted` #27272a | 7.65 | 4.5 | проходит |
+| Подсветка кода: function | `--rise-code-function` #d2a8ff | `--rise-bg-elevated` #27272a | 7.65 | 4.5 | проходит |
+| Подсветка кода: function | `--rise-code-function` #d2a8ff | `--rise-primary-soft` #33271f | 7.45 | 4.5 | проходит |
+| Подсветка кода: tag | `--rise-code-tag` #7ee787 | `--rise-bg` #18181b | 11.53 | 4.5 | проходит |
+| Подсветка кода: tag | `--rise-code-tag` #7ee787 | `--rise-bg-muted` #27272a | 9.69 | 4.5 | проходит |
+| Подсветка кода: tag | `--rise-code-tag` #7ee787 | `--rise-bg-elevated` #27272a | 9.69 | 4.5 | проходит |
+| Подсветка кода: tag | `--rise-code-tag` #7ee787 | `--rise-primary-soft` #33271f | 9.44 | 4.5 | проходит |
+| Подсветка кода: attribute | `--rise-code-attribute` #79c0ff | `--rise-bg` #18181b | 9.11 | 4.5 | проходит |
+| Подсветка кода: attribute | `--rise-code-attribute` #79c0ff | `--rise-bg-muted` #27272a | 7.66 | 4.5 | проходит |
+| Подсветка кода: attribute | `--rise-code-attribute` #79c0ff | `--rise-bg-elevated` #27272a | 7.66 | 4.5 | проходит |
+| Подсветка кода: attribute | `--rise-code-attribute` #79c0ff | `--rise-primary-soft` #33271f | 7.46 | 4.5 | проходит |
+| Подсветка кода: property | `--rise-code-property` #ffa657 | `--rise-bg` #18181b | 9.15 | 4.5 | проходит |
+| Подсветка кода: property | `--rise-code-property` #ffa657 | `--rise-bg-muted` #27272a | 7.69 | 4.5 | проходит |
+| Подсветка кода: property | `--rise-code-property` #ffa657 | `--rise-bg-elevated` #27272a | 7.69 | 4.5 | проходит |
+| Подсветка кода: property | `--rise-code-property` #ffa657 | `--rise-primary-soft` #33271f | 7.49 | 4.5 | проходит |
+| Подсветка кода: variable | `--rise-code-variable` #ffa657 | `--rise-bg` #18181b | 9.15 | 4.5 | проходит |
+| Подсветка кода: variable | `--rise-code-variable` #ffa657 | `--rise-bg-muted` #27272a | 7.69 | 4.5 | проходит |
+| Подсветка кода: variable | `--rise-code-variable` #ffa657 | `--rise-bg-elevated` #27272a | 7.69 | 4.5 | проходит |
+| Подсветка кода: variable | `--rise-code-variable` #ffa657 | `--rise-primary-soft` #33271f | 7.49 | 4.5 | проходит |
 | Текст на заливке primary | `--rise-on-primary` #09090b | `--rise-primary` #fb923c | 8.79 | 4.5 | проходит |
 | Текст на заливке primary (hover) | `--rise-on-primary` #09090b | `--rise-primary-hover` #fdba74 | 11.80 | 4.5 | проходит |
 | Цвет primary как текст на фоне | `--rise-primary` #fb923c | `--rise-bg` #18181b | 7.83 | 4.5 | проходит |

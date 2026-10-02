@@ -1298,3 +1298,11 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 
 - Новые истории `Media/BaseImageMap`: Directory, DirectoryGrid, DirectoryNarrow, DirectoryEmpty, Filters, Legend, DeepLink — на фикстуре `IMAGE_MAP_MALL` (план торгового центра из `stories/fixtures.ts` с метками удобств, ключевыми словами и своими миниатюрами `placeholderImage`; чужой графики нет). Прежние истории не менялись.
 - Скриншот-тесты `BaseImageMap.visual.spec.ts`: добавлены directory-grid (список справа карточками, разделы по буквам), directory-narrow (360 px — список и легенда под картой), legend — в двух темах (+6 снимков). Эталонов нет — их создаёт владелец; play этих историй ничего не кликает.
+
+## Задача new-code-highlight: BaseCode и подсветка блоков кода BaseMarkdown
+
+Страница с превью — `.rise-transfer\review\new-code-highlight.html`.
+
+- **BaseCode** (новый) — блок на подложке `--rise-bg-muted` в рамке (`soft` — `--rise-bg-elevated` без рамки, `outline` — фон страницы в рамке); заголовок 32 px: название языка или файла моноширинным шрифтом слева, ghost-кнопка «Копировать» со значком справа; номера строк цветом `--rise-text-toned` по правому краю колонки; выделенная строка — фон `--rise-primary-soft` и полоса 2 px `--rise-primary` слева; комментарии курсивом.
+- **BaseMarkdown** — текст в блоках кода с известным языком окрашен токенами `--rise-code-*` (ключевые слова, строки, числа, комментарии курсивом); раскладка, подложка и заголовок блока те же. Меняются снимки `element-basemarkdown--default`, `--variants`, `--sizes` (в примере блок `ts`) в обеих темах; `--safety` — без изменений (блока кода нет).
+- Новые истории: `data-basecode--default`, `--variants`, `--sizes`, `--custom-color`, `--languages`, `--file-excerpt`, `--empty`, `--long-content`, `--wrapped`, `--max-height`, `--copy`; `element-basemarkdown--code-blocks`. В скриншот-тесты BaseCode — `variants`, `sizes`, `languages` (обе темы) — эталонов нет, их делает владелец.

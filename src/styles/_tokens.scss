@@ -222,6 +222,16 @@ $light-main-shade: (
 	--rise-chart-7: #4a3aa7;
 	--rise-chart-8: #e34948;
 
+	--rise-code-keyword: #cf222e;
+	--rise-code-string: #0a3069;
+	--rise-code-number: #0550ae;
+	--rise-code-comment: #57606a;
+	--rise-code-function: #8250df;
+	--rise-code-tag: #116329;
+	--rise-code-attribute: #0550ae;
+	--rise-code-property: #953800;
+	--rise-code-variable: #953800;
+
 	--rise-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 5%);
 	--rise-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 10%), 0 1px 2px -1px rgb(0 0 0 / 10%);
 	--rise-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 10%), 0 2px 4px -2px rgb(0 0 0 / 10%);
@@ -277,6 +287,16 @@ $light-main-shade: (
 	--rise-chart-6: #008300;
 	--rise-chart-7: #9085e9;
 	--rise-chart-8: #e66767;
+
+	--rise-code-keyword: #ff7b72;
+	--rise-code-string: #a5d6ff;
+	--rise-code-number: #79c0ff;
+	--rise-code-comment: #9ca3af;
+	--rise-code-function: #d2a8ff;
+	--rise-code-tag: #7ee787;
+	--rise-code-attribute: #79c0ff;
+	--rise-code-property: #ffa657;
+	--rise-code-variable: #ffa657;
 }
 
 @mixin legacy-aliases {

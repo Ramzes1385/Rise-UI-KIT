@@ -1640,3 +1640,17 @@ API кита не меняется. В Storybook добавлены пример
   - Ссылка на объект (`hasDeepLinking`) не открывает объект, скрытый фильтром или выключенный; если `data` пришла после монтирования, ссылка применяется, когда объект появится.
   - Начальные значения фильтров (`filter.value`) берутся из текущей `data`, пока пользователь не менял фильтры и не задан `filters`.
   - «Найдено N» и «Сбросить фильтры» учитывают только действующие фильтры: при `hasFilters=false` и для ключей, которых нет в `data.filters`, выбора нет; поиск из одних пробелов не показывает кнопку сброса.
+
+## Задача new-code-highlight: BaseCode и подсветка блоков кода BaseMarkdown
+
+Новые компонент и утилиты; в существующих меняется только вид блоков кода BaseMarkdown.
+
+- `BaseCode` — блок кода с подсветкой: `code`, `language` (имя или псевдоним: `js`, `ts`, `json`, `html`, `vue`, `css`, `scss`, `bash`/`sh`, `python`/`py`; другой — простой текст), `title` (по умолчанию — название языка), `hasLineNumbers` (по умолчанию есть), `startLine`, `highlightLines`, `hasCopyButton`, `hasHeader`, `isWrapped`, `maxHeight`, `label`; варианты `default`, `soft`, `outline`. Слоты `header` и `actions`, событие `copy` (`{ code, success }`), метод `copy()` через ref.
+- Доступность: номера строк `aria-hidden` и не попадают в выделение; длинный код прокручивается с клавиатуры — область получает `tabindex="0"`, роль `region` и имя «Код, <язык>», только когда есть что прокручивать; результат копирования — в `role="status"`.
+- `codeHighlightUtils` (вход `utils`): `tokenizeCode`, `highlightCode`, `splitCodeLines`, `normalizeCodeLanguage`, `getCodeLanguageName`, `CODE_LANGUAGES`, `CODE_LANGUAGE_NAMES`, `CODE_TOKEN_TYPES`, типы `CodeLanguage`, `CodeToken`, `CodeTokenType`. Без зависимостей.
+- **BaseMarkdown**: блоки кода с языком подсвечиваются тем же токенизатором. DOM: внутри `<pre><code>` текст разбит на `<span class="base-markdown__token base-markdown__token--<вид>">`; `textContent` блока не изменился. Поиск текста кода одним `getByText` по части строки больше не находит его — ищите по `code` целиком (`toHaveTextContent` или функция-сопоставитель).
+- Токены цвета `--rise-code-keyword`, `-string`, `-number`, `-comment`, `-function`, `-tag`, `-attribute`, `-property`, `-variable` — свои значения в светлой и тёмной теме; `npm run test:contrast` проверяет их на `--rise-bg`, `--rise-bg-muted`, `--rise-bg-elevated`, `--rise-primary-soft`.
+- Экспорт: `BaseCode`, `CODE_VARIANTS`, типы `BaseCodeProps`, `BaseCodeEmits`, `BaseCodeSlots`, `BaseCodeExpose`.
+- Строки словаря (ru, en): раздел `codeBlock` — `LABEL`, `LABEL_LANGUAGE`, `COPY`, `COPIED`, `COPY_DONE`, `COPY_FAILED`, `EMPTY` (`UI_CODE`).
+
+**Что сделать.** Ничего. Свои цвета подсветки — переопределите токены `--rise-code-*` в теме приложения (контраст 4.5:1 на подложке блока).

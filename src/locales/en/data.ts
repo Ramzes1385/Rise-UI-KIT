@@ -87,6 +87,16 @@ export const enData = {
 		COPIED: '{label} copied',
 		COPY_FAILED: 'Could not copy {label}',
 	},
+	/** Блок кода BaseCode: имя области, копирование, пустой код */
+	codeBlock: {
+		LABEL: 'Code',
+		LABEL_LANGUAGE: 'Code, {language}',
+		COPY: 'Copy',
+		COPIED: 'Copied',
+		COPY_DONE: 'Code copied to clipboard',
+		COPY_FAILED: 'Could not copy code',
+		EMPTY: 'No code',
+	},
 	/** Просмотр JSON: кнопки над деревом и сообщение о копировании */
 	jsonViewer: {
 		EXPAND_ALL: 'Expand all',

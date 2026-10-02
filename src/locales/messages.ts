@@ -98,6 +98,9 @@ export const UI_JSON_VIEWER = localized('jsonViewer')
 /** Карта */
 export const UI_MAP = localized('map')
 
+/** Блок кода */
+export const UI_CODE = localized('codeBlock')
+
 /** Сравнение текстов */
 export const UI_TEXT_DIFF = localized('textDiff')
 

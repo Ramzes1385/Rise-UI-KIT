@@ -98,6 +98,7 @@
 - `--rise-disabled-opacity` — прозрачность неактивных элементов.
 - `--rise-duration-*`, `--rise-ease*` — длительности и кривые анимаций; при `prefers-reduced-motion: reduce` длительности становятся 0.01ms.
 - `--rise-chart-1 … 8` — восемь категориальных цветов графиков в фиксированном порядке: синий, оранжевый, бирюзовый, жёлтый, розовый, зелёный, фиолетовый, красный. Соседние пары различимы при дальтонизме (ΔE ≥ 8 в OKLab); в тёмной теме — свои оттенки с контрастом к фону не ниже 3:1.
+- `--rise-code-keyword`, `-string`, `-number`, `-comment`, `-function`, `-tag`, `-attribute`, `-property`, `-variable` — подсветка кода (BaseCode, блоки кода BaseMarkdown), палитра в духе GitHub Light и Dark. Контраст текста 4.5:1 на `--rise-bg`, `--rise-bg-muted`, `--rise-bg-elevated` и `--rise-primary-soft` (выделенная строка) в обеих темах — проверяет `npm run test:contrast`.
 - `--rise-z-overlay` (1000), `--rise-z-toast` (2000), `--rise-z-tooltip` (3000), `--rise-z-max` (9999) — z-index слоёв. Окна, боковые панели, тур, выпадающие панели и контекстные меню — один стек: `z-index: calc(var(--rise-z-overlay) + var(--rise-layer-index, 0))`, где `--rise-layer-index` — место слоя в порядке открытия (`useLayerIndex`). Уведомления, подсказки и просмотр изображения — поверх стека. Числа z-index в стилях компонентов не пишутся.
 
 ### 1.3. Контраст

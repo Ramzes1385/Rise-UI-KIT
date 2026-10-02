@@ -198,11 +198,33 @@ const imported = parseIcs(file) // VEVENT → события; RRULE и EXDATE о
 
 ---
 
+## codeHighlightUtils
+
+Подсветка кода без зависимостей — основа BaseCode и блоков кода BaseMarkdown.
+
+```ts
+import { highlightCode, tokenizeCode, normalizeCodeLanguage, getCodeLanguageName } from '@ramzes1385/rise-ui-kit/utils'
+
+tokenizeCode('const a = 1', 'ts')
+// [{ type: 'keyword', value: 'const' }, { type: null, value: ' a = ' }, { type: 'number', value: '1' }]
+highlightCode('a\nb', 'js') // фрагменты по строкам — для номеров строк
+normalizeCodeLanguage('sh') // 'bash'
+getCodeLanguageName('py') // 'Python'
+```
+
+- Языки (`CODE_LANGUAGES`): `javascript`, `typescript`, `json`, `html`, `vue` (скрипт и стили внутри, выражения `{{ }}` и директивы), `css`, `scss`, `bash`, `python`; псевдонимы — `js`, `jsx`, `ts`, `tsx`, `jsonc`, `htm`, `xml`, `svg`, `sh`, `shell`, `zsh`, `console`, `py`. Неизвестный язык — один фрагмент простого текста.
+- Виды фрагментов (`CODE_TOKEN_TYPES`): `keyword`, `string`, `number`, `comment`, `function`, `tag`, `attribute`, `property`, `variable`; `null` — обычный текст. Цвета — токены `--rise-code-<вид>`.
+- Склеенный текст фрагментов всегда равен исходному коду. Выводите фрагменты текстом (`{{ token.value }}`), не через `v-html`.
+- Это подсветка для чтения, а не разбор языка: регулярные выражения JavaScript, вложенные `${}` в шаблонных строках и heredoc Bash подсвечиваются как обычный текст или строка.
+
+---
+
 ## Список utils
 
 ```txt
 cardUtils
 clipboardUtils
+codeHighlightUtils
 colorUtils
 dadataUtils
 dateUtils

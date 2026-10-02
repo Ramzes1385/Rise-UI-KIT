@@ -6,6 +6,7 @@ import * as sass from 'sass-embedded'
 
 const ROOT = resolve(process.cwd())
 const ROLES = ['primary', 'success', 'info', 'warning', 'error']
+const CODE_TOKENS = ['keyword', 'string', 'number', 'comment', 'function', 'tag', 'attribute', 'property', 'variable']
 const TEXT = 4.5
 const GRAPHIC = 3
 
@@ -116,6 +117,9 @@ function pairs() {
 	list.push(['--rise-text-inverted', '--rise-bg-inverted', TEXT, 'Текст на инвертированном фоне'])
 	list.push(['--rise-border-accented', '--rise-bg', GRAPHIC, 'Рамка поля ввода', true])
 	list.push(['--rise-focus-ring', '--rise-bg', GRAPHIC, 'Кольцо фокуса'])
+	for (const token of CODE_TOKENS) {
+		for (const bg of [...surfaces, '--rise-primary-soft']) list.push([`--rise-code-${token}`, bg, TEXT, `Подсветка кода: ${token}`])
+	}
 	for (const role of ROLES) {
 		list.push([`--rise-on-${role}`, `--rise-${role}`, TEXT, `Текст на заливке ${role}`])
 		list.push([`--rise-on-${role}`, `--rise-${role}-hover`, TEXT, `Текст на заливке ${role} (hover)`])

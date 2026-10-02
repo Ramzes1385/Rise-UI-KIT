@@ -2768,6 +2768,32 @@ const current = ref<string>()
 
 ---
 
+## BaseCode
+
+Блок кода с подсветкой синтаксиса: примеры в документации, ответы ассистента, команды и настройки.
+
+```vue
+<script setup lang="ts">
+import { BaseCode } from '@ramzes1385/rise-ui-kit'
+
+const code = "import { ref } from 'vue'\nconst count = ref(0)"
+</script>
+
+<template>
+	<BaseCode :code="code" language="ts" title="useCounter.ts" :start-line="12" :highlight-lines="[13]" />
+</template>
+```
+
+`language` — имя или псевдоним: `js`, `ts`, `json`, `html`, `vue`, `css`, `scss`, `bash` (`sh`, `shell`), `python` (`py`); другой язык показывается простым текстом. Подсветка — встроенный токенизатор без зависимостей (`codeHighlightUtils`), цвета — токены `--rise-code-*` (контраст 4.5:1 на подложках всех вариантов в обеих темах). Код выводится только текстом, без `v-html`.
+
+`has-line-numbers` (по умолчанию есть), `start-line`, `highlight-lines`, `title` (по умолчанию — название языка, слот `header`), слот `actions` — свои кнопки в заголовке, `has-copy-button`, `has-header`, `is-wrapped` — перенос длинных строк, `max-height` — вертикальная прокрутка, `label` — имя области; варианты `default`, `soft`, `outline`.
+
+Доступность: номера строк `aria-hidden` и не попадают в выделение; длинный код прокручивается с клавиатуры — область получает `tabindex="0"`, роль `region` и имя «Код, <язык>» только когда есть что прокручивать (`useScrollableRegion`). «Копировать» объявляет результат в `role="status"`; событие `copy` (`{ code, success }`) и метод `copy()` через ref.
+
+Блоки кода BaseMarkdown подсвечиваются тем же токенизатором.
+
+---
+
 ## BaseMarquee
 
 Бегущая строка: новости, акции, логотипы партнёров. Содержимое — слот default или `items` со слотами `item` и `separator`.
@@ -3063,6 +3089,7 @@ BaseCheckbox
 BaseCheckboxGroup
 BaseChecklist
 BaseChip
+BaseCode
 BaseColorModeButton
 BaseColorPicker
 BaseCommandPalette

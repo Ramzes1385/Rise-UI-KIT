@@ -49,6 +49,7 @@ export interface UiKitLocale {
 	dadata: Section<'dadata'>
 	commandPalette: Section<'commandPalette'>
 	charts: Section<'charts'>
+	codeBlock: Section<'codeBlock'>
 	imageCompare: Section<'imageCompare'>
 	imageViewer: Section<'imageViewer'>
 	carousel: Section<'carousel'>

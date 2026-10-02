@@ -267,6 +267,7 @@ const EMPTY_COMPONENTS = new Set([
 	'BaseTransfer',
 	'BaseTreeSelect',
 	'BaseCascader',
+	'BaseCode',
 ])
 
 const LONG_CONTENT_COMPONENTS = new Set([
@@ -308,6 +309,7 @@ const LONG_CONTENT_COMPONENTS = new Set([
 	'BaseTransfer',
 	'BaseTreeSelect',
 	'BaseCascader',
+	'BaseCode',
 ])
 
 const REQUIRED_STORIES_INTERACTIVE = ['Default', 'Disabled']
