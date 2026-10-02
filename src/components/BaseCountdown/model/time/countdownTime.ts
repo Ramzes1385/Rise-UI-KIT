@@ -7,8 +7,13 @@ const UNIT_MS: Record<CountdownUnit, number> = { days: 86_400_000, hours: 3_600_
 
 const INTL_UNIT: Record<CountdownUnit, string> = { days: 'day', hours: 'hour', minutes: 'minute', seconds: 'second' }
 
+const DATE_ONLY = /^(\d{4})-(\d{2})-(\d{2})$/
+
 export function toTimestamp(value: Date | number | string): number {
-	return value instanceof Date ? value.getTime() : new Date(value).getTime()
+	if (value instanceof Date) return value.getTime()
+	const date = typeof value === 'string' ? DATE_ONLY.exec(value) : null
+	if (date) return new Date(Number(date[1]), Number(date[2]) - 1, Number(date[3])).getTime()
+	return new Date(value).getTime()
 }
 
 export function orderedUnits(format: readonly CountdownUnit[]): CountdownUnit[] {

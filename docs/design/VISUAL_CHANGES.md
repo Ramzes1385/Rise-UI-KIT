@@ -1246,3 +1246,9 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 
 - **BaseBadge, BaseAvatar, BaseChip — история Default.** Без `onClick` (`onClick-badge` у BaseChip) в args: элемент в песочнице больше не кнопка — нет `role="button"`, фокуса с Tab и кольца фокуса, курсор обычный (у кликабельного был указатель). В покое вид не меняется; кликабельный вид — истории Clickable и ClickableBadge. «Show code» Default теперь совпадает с превью.
 - **BasePopconfirm, BaseDropdownMenu** со `span` в слоте триггера: при фокусе с клавиатуры у `span` появляется кольцо фокуса браузера (раньше `span` фокус не получал). В историях с кнопкой в слоте вид не меняется. Эталоны скриншотов не затронуты.
+
+## small-fixes-7d — BaseChart и BaseCountdown
+
+- **BaseCountdown** — только при SSR: до гидратации вместо цифр `--` (в `inline` — `--:--:--`). В Storybook и снимках изменений нет.
+- **BaseChart** — вид не менялся (длиннее только скрытая подсказка для скринридера).
+

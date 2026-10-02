@@ -6,21 +6,23 @@
 		role="timer"
 		:aria-live="isLive ? 'polite' : 'off'"
 		aria-atomic="true">
-		<span class="base-countdown__spoken">{{ spoken }}</span>
-		<div v-if="parts.isFinished && $slots.finished" class="base-countdown__finished" aria-hidden="true">
+		<div v-if="parts.isFinished && $slots.finished" class="base-countdown__finished">
 			<slot name="finished" />
 		</div>
-		<div v-else class="base-countdown__display" aria-hidden="true">
-			<slot v-bind="parts">
-				<span v-if="layout === 'inline'" class="base-countdown__clock" :class="classes.value">{{ clock }}</span>
-				<template v-else>
-					<span v-for="cell in cells" :key="cell.unit" class="base-countdown__unit" :class="classes.unit">
-						<span class="base-countdown__value" :class="classes.value">{{ cell.value }}</span>
-						<span class="base-countdown__caption" :class="classes.caption">{{ cell.caption }}</span>
-					</span>
-				</template>
-			</slot>
-		</div>
+		<template v-else>
+			<span class="base-countdown__spoken">{{ spoken }}</span>
+			<div class="base-countdown__display" aria-hidden="true">
+				<slot v-bind="parts">
+					<span v-if="layout === 'inline'" class="base-countdown__clock" :class="classes.value">{{ clock }}</span>
+					<template v-else>
+						<span v-for="cell in cells" :key="cell.unit" class="base-countdown__unit" :class="classes.unit">
+							<span class="base-countdown__value" :class="classes.value">{{ cell.value }}</span>
+							<span class="base-countdown__caption" :class="classes.caption">{{ cell.caption }}</span>
+						</span>
+					</template>
+				</slot>
+			</div>
+		</template>
 	</div>
 </template>
 

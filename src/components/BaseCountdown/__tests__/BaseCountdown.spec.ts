@@ -39,6 +39,17 @@ describe('BaseCountdown unit', () => {
 		expect(cells(container)).toEqual(['00 минут', '30 секунд'])
 	})
 
+	it('строка без смещения — местное время устройства, только дата — местная полночь', async () => {
+		const { container, rerender } = render(BaseCountdown, { props: { to: '2026-10-03', format: ['hours', 'minutes', 'seconds'] } })
+		const toLocalMidnight = new Date(2026, 9, 3).getTime() - NOW
+		const hours = Math.floor(toLocalMidnight / HOUR)
+		expect(text(container.querySelector('.base-countdown__value'))).toBe(String(hours).padStart(2, '0'))
+		const later = new Date(NOW + 5 * HOUR)
+		const local = `2026-10-${String(later.getDate()).padStart(2, '0')}T${String(later.getHours()).padStart(2, '0')}:00`
+		await rerender({ to: local })
+		expect(cells(container)).toEqual(['05 часов', '00 минут', '00 секунд'])
+	})
+
 	it('идёт каждую секунду и вызывает finish один раз на нуле', async () => {
 		const { container, emitted } = render(BaseCountdown, { props: { to: NOW + 2 * SECOND + 500, format: ['seconds'] } })
 		expect(cells(container)).toEqual(['03 секунды'])
@@ -135,6 +146,25 @@ describe('BaseCountdown unit', () => {
 		await vi.advanceTimersByTimeAsync(SECOND)
 		expect(screen.getByText('Распродажа началась')).toBeInTheDocument()
 		expect(container.querySelector('.base-countdown__display')).toBeNull()
+	})
+
+	it('слот finished доступен скринридеру вместо «время вышло», ссылки в нём не скрыты', async () => {
+		const { container } = render(BaseCountdown, {
+			props: { to: NOW + SECOND, isLive: true },
+			slots: { finished: '<a href="/sale">Распродажа началась</a>' },
+		})
+		await vi.advanceTimersByTimeAsync(SECOND)
+		const link = screen.getByRole('link', { name: 'Распродажа началась' })
+		expect(link.closest('[aria-hidden]')).toBeNull()
+		expect(container.querySelector('.base-countdown__spoken')).toBeNull()
+		expect(screen.getByRole('timer')).toHaveTextContent(/^Распродажа началась$/)
+	})
+
+	it('без слота finished после окончания — «время вышло» и нули под aria-hidden', async () => {
+		const { container } = render(BaseCountdown, { props: { to: NOW + SECOND } })
+		await vi.advanceTimersByTimeAsync(SECOND)
+		expect(text(container.querySelector('.base-countdown__spoken'))).toBe('Осталось: время вышло')
+		expect(container.querySelector('.base-countdown__display')).toHaveAttribute('aria-hidden', 'true')
 	})
 
 	it('слот default получает части времени', () => {
