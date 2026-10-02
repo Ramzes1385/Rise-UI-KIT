@@ -5,6 +5,7 @@ import type BaseSlideover from '../ui/BaseSlideover.vue'
 export const args = {
 	isOpen: false,
 	title: 'Фильтры',
+	variant: 'default',
 	side: 'right',
 	width: 100,
 	isFullWidth: false,

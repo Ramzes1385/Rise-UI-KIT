@@ -4,8 +4,19 @@ import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export type SlideoverSide = 'left' | 'right'
 
-/** Из общих props действуют `sizeScale` (отступы, кегль, ширина панели) и `color` (фон и текст панели); `variant` не используется — у панели одно оформление. */
-export interface BaseSlideoverProps extends BaseComponentProps<string, 'root' | 'panel' | 'header' | 'title' | 'body' | 'footer'> {
+/**
+ * Варианты оформления панели, как у BaseModal:
+ * default — рамка и тень; shadow — только тень, без рамки; ghost — без фона, рамки и тени (оформление даёт содержимое слота).
+ */
+export const SLIDEOVER_VARIANTS = ['default', 'shadow', 'ghost'] as const
+
+export type SlideoverVariant = (typeof SLIDEOVER_VARIANTS)[number]
+
+/** Из общих props действуют `variant` (оформление панели), `sizeScale` (отступы, кегль, ширина панели) и `color` (фон и текст панели). */
+export interface BaseSlideoverProps extends BaseComponentProps<
+	SlideoverVariant,
+	'root' | 'panel' | 'header' | 'title' | 'body' | 'footer'
+> {
 	/** Состояние открытия */
 	isOpen: boolean
 	/** Заголовок */

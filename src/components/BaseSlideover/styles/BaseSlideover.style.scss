@@ -108,6 +108,21 @@
 		border-top: 1px solid var(--rise-border);
 		@include reset-custom-color;
 	}
+
+	&--shadow &__panel {
+		border-color: transparent;
+	}
+
+	&--ghost &__panel {
+		border-color: transparent;
+		@include custom-bg(background-color, transparent);
+		box-shadow: none;
+	}
+
+	&--ghost &__header,
+	&--ghost &__footer {
+		border-color: transparent;
+	}
 }
 
 .base-slideover-enter-active,

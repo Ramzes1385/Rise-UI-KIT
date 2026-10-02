@@ -6,12 +6,13 @@
 				class="base-slideover"
 				:class="[
 					`base-slideover--${side}`,
+					variantClass,
 					isFullWidth && 'base-slideover--full',
 					isContainedMode && 'base-slideover--contained',
 					!hasOverlay && 'base-slideover--no-overlay',
 					classes.root,
 				]"
-				:style="[widthStyle, sizeScaleStyle, customColorStyle, layerStyle]"
+				:style="[widthStyle, sizeScaleStyle, variantStyle, customColorStyle, layerStyle]"
 				@click.self="handleOverlayClick">
 				<div
 					ref="panelRef"
@@ -59,11 +60,13 @@ import { BaseButton } from '@components/BaseButton'
 import { kitDefaults } from '@composables/base/useDefaults'
 import { useBaseSlideover } from '../model/useBaseSlideover'
 import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
+import { DEFAULT_VARIANT } from '@composables/base/useBaseComponent'
 import type { BaseSlideoverEmits, BaseSlideoverProps, BaseSlideoverSlots } from '../types/BaseSlideover.types'
 
 const props = withDefaults(
 	defineProps<BaseSlideoverProps>(),
 	kitDefaults('BaseSlideover', {
+		variant: DEFAULT_VARIANT,
 		side: 'right',
 		width: 100,
 		isFullWidth: false,
@@ -78,6 +81,8 @@ const emit = defineEmits<BaseSlideoverEmits>()
 defineSlots<BaseSlideoverSlots>()
 
 const {
+	variantClass,
+	variantStyle,
 	sizeScaleStyle,
 	customColorStyle,
 	classes,

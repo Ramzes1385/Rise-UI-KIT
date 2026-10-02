@@ -18,6 +18,7 @@ const meta = {
 export default meta
 
 export const Default = cases.Default
+export const Variants = cases.Variants
 export const Sides = cases.Sides
 export const Widths = cases.Widths
 export const Sizes = cases.Sizes

@@ -19,6 +19,7 @@
 				:columns="localColumns"
 				:is-settings-open="isSettingsOpen"
 				:size-scale="sizeScale"
+				:settings-max-height="settingsMaxHeight"
 				:toolbar-class="classes.toolbar"
 				:search-class="classes.search"
 				:filters-class="classes.filters"
@@ -31,6 +32,7 @@
 				@update:filter-value="filterValue = $event"
 				@add-filter="handleAddFilter"
 				@remove-filter="handleRemoveFilter"
+				@toggle-settings="isSettingsOpen = !isSettingsOpen"
 				@update:is-settings-open="isSettingsOpen = $event"
 				@toggle-column-visibility="toggleColumnVisibility">
 				<template #toolbar-prepend>
@@ -223,6 +225,7 @@ const {
 	variantStyle,
 	customColorStyle,
 	classes,
+	settingsMaxHeight,
 	paginationMaxVisible,
 	paddingStyle,
 	isSelectable,

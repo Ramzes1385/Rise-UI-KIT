@@ -1,10 +1,10 @@
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseSlideover from '../ui/BaseSlideover.vue'
-import { baseArgTypes, hiddenArgTypes, propGroup, ARG_GROUP } from '@/stories/helpers'
+import { SLIDEOVER_VARIANTS } from '../types/BaseSlideover.types'
+import { baseArgTypes, propGroup, ARG_GROUP } from '@/stories/helpers'
 
 export const argTypes = {
-	...baseArgTypes(),
-	...hiddenArgTypes('variant'),
+	...baseArgTypes({ variants: SLIDEOVER_VARIANTS }),
 	title: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	side: { control: 'inline-radio', options: ['left', 'right'], table: propGroup(ARG_GROUP.appearance) },
 	width: { control: { type: 'range', min: 50, max: 200, step: 10 }, table: propGroup(ARG_GROUP.appearance) },
