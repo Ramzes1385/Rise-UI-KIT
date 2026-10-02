@@ -81,6 +81,12 @@ export const ruData = {
 		LESS: 'Меньше',
 		MORE: 'Больше',
 		HEATMAP_SUMMARY: '{label}: всего {total}, больше всего {max} — {date}',
+		CHART_SUMMARY: '{label}: {series}; значения от {min} до {max}',
+		CHART_HINT: 'Стрелки влево и вправо — переход по точкам; таблица данных — после графика',
+		CHART_POINT: '{label}: {values}',
+		CATEGORY: 'Категория',
+		LEGEND: 'Ряды графика',
+		NO_VALUE: 'нет значения',
 	},
 	/** Просмотр JSON: кнопки над деревом и сообщение о копировании */
 	jsonViewer: {

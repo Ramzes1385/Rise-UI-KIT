@@ -117,6 +117,7 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseCommentThread',
 	'BaseDadataInput',
 	'BaseMap',
+	'BaseChart',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */
@@ -230,6 +231,7 @@ const EMPTY_COMPONENTS = new Set([
 	'BaseBreadcrumbs',
 	'BaseChat',
 	'BaseDadataInput',
+	'BaseChart',
 ])
 
 const LONG_CONTENT_COMPONENTS = new Set([

@@ -71,6 +71,12 @@ export const enData = {
 		LESS: 'Less',
 		MORE: 'More',
 		HEATMAP_SUMMARY: '{label}: {total} in total, peak {max} on {date}',
+		CHART_SUMMARY: '{label}: {series}; values from {min} to {max}',
+		CHART_HINT: 'Left and right arrows move between points; the data table follows the chart',
+		CHART_POINT: '{label}: {values}',
+		CATEGORY: 'Category',
+		LEGEND: 'Chart series',
+		NO_VALUE: 'no value',
 	},
 	/** Просмотр JSON: кнопки над деревом и сообщение о копировании */
 	jsonViewer: {

@@ -2041,6 +2041,31 @@ const visible = computed(() => tasks.value.filter(createFilterPredicate(filter.v
 
 ---
 
+## BaseChart
+
+График рядов по общей оси X на своём SVG: линии, области и столбики (группами или стопкой). Цвета рядов — токены `--rise-chart-1…8` в обеих темах.
+
+```vue
+<BaseChart
+	v-model:hidden-series="hidden"
+	variant="bar"
+	:labels="['Янв', 'Фев', 'Мар']"
+	:series="[
+		{ name: 'Выручка', values: [120, 135, 150] },
+		{ name: 'Расходы', values: [90, 95, null] },
+	]"
+	:value-format="{ style: 'currency', currency: 'RUB', maximumFractionDigits: 0 }"
+	label="Выручка и расходы, I квартал" />
+```
+
+- `variant` — `line` (по умолчанию), `area`, `bar`; `isStacked` — стопка столбиков и областей (отрицательные значения — вниз от нуля). `null` в `values` — нет значения: разрыв линии, пустая ячейка таблицы.
+- Ось Y — «круглые» метки (`yTickCount`, по умолчанию 5); у `area` и `bar` шкала всегда включает ноль. Подписи `labels` — строки, числа или даты: даты и числа форматируются через `Intl` языка кита (`labelFormat`, `valueFormat`) или своими `formatLabel`, `formatValue`. Метки оси X прореживаются по ширине графика.
+- Наведение показывает подсказку у ближайшей точки (слот `tooltip` получает `point`: подпись и значения видимых рядов). Легенда (`hasLegend`) — кнопки с `aria-pressed`, скрывают ряды; `v-model:hidden-series` — имена скрытых.
+- Доступность: область графика — `role="img"` со сводкой («ряды; значения от … до …»), в порядке Tab; стрелки, Home/End, PageUp/PageDown переходят по точкам и объявляют значения в `role="status"`, Escape снимает выбор. Полные данные — скрытая таблица с подписью `label` (заголовок первой колонки — `labelsTitle`).
+- Нет рядов или подписей — «Нет данных» или слот `empty`. Высота — `height` (240), ширина — по контейнеру.
+
+---
+
 ## BaseImageCompare
 
 Сравнение «до / после»: две картинки друг над другом и граница, которую двигают мышью, пальцем или клавишами.
@@ -2621,6 +2646,7 @@ BaseButton
 BaseButtonGroup
 BaseCalendar
 BaseCard
+BaseChart
 BaseChat
 BaseCheckbox
 BaseCheckboxGroup

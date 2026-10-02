@@ -1387,3 +1387,11 @@ FOLLOW_UPS № 38, № 39, № 13 и № 15 (медиа).
 - Тесты, которые ждали сброса страницы через `searchDebounce`, или поиска по полям вне колонок, — обновить.
 - Слоты `header-<key>` сортируемых колонок: уберите из них свои кнопки сортировки; подпись слота окажется внутри кнопки.
 - Если обработчик `row-click` полагался на клики по кнопкам внутри ячеек — повесьте обработчик на саму кнопку.
+
+## Задача new-chart: BaseChart
+
+Новый компонент, изменений в существующих нет.
+
+- `BaseChart` (Data) — линии, области и столбики по общей оси X: `series` (`name`, `values` с `null` для пропусков, `color`), `labels` (строки, числа, даты), `label`, `variant` (`line`, `area`, `bar`), `isStacked`, `height`, `hasGrid`, `hasLegend`, `yTickCount`, `valueFormat`, `labelFormat`, `formatValue`, `formatLabel`, `labelsTitle`, `v-model:hidden-series`; слоты `tooltip` и `empty`.
+- Экспорт: `BaseChart`, `CHART_VARIANTS`, типы `BaseChartProps`, `BaseChartEmits`, `BaseChartSlots`, `ChartSeries`, `ChartLabel`, `ChartPoint`, `ChartPointValue`, `ChartVariant`.
+- Строки словаря (ru, en): `charts.CHART_SUMMARY`, `charts.CHART_HINT`, `charts.CHART_POINT`, `charts.CATEGORY`, `charts.LEGEND`, `charts.NO_VALUE`.

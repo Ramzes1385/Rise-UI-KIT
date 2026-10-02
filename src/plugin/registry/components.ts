@@ -23,6 +23,7 @@ import { BaseTree } from '../../components/BaseTree'
 import { BaseUser } from '../../components/BaseUser'
 import { BaseAlert } from '../../components/BaseAlert'
 import { BaseBadge } from '../../components/BaseBadge'
+import { BaseChart } from '../../components/BaseChart'
 import { BaseEmpty } from '../../components/BaseEmpty'
 import { BaseImage } from '../../components/BaseImage'
 import { BaseInput } from '../../components/BaseInput'
@@ -135,6 +136,7 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseButton,
 	BaseButtonGroup,
 	BaseCard,
+	BaseChart,
 	BaseCheckbox,
 	BaseCheckboxGroup,
 	BaseChecklist,
