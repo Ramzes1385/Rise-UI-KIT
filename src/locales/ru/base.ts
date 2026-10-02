@@ -239,5 +239,7 @@ export const ruBase = {
 		TREE_REPEATED_ID: 'BaseTree: id узлов встречаются в дереве повторно (цикл в children или дубль): {ids}. Повторы не показаны',
 		IMAGE_MAP_TIME_ZONE: 'BaseImageMap: неизвестный часовой пояс «{zone}» — часы работы считаются по поясу браузера',
 		IMAGE_MAP_HOURS_RANGE: 'BaseImageMap: интервал часов работы «{range}» объекта «{id}» пропущен — ожидается «10:00-22:00»',
+		IMAGE_MAP_ROUTE_LAYER:
+			'BaseImageMap: узел маршрута «{id}» стоит на слое «{layer}», которого нет в data.layers — вверх или вниз определено по порядку узлов перехода',
 	},
 }

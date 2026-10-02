@@ -218,5 +218,7 @@ export const enBase = {
 			'BaseTree: node ids occur in the tree more than once (a cycle in children or a duplicate): {ids}. Repeats are not shown',
 		IMAGE_MAP_TIME_ZONE: 'BaseImageMap: unknown time zone "{zone}" — opening hours use the browser time zone',
 		IMAGE_MAP_HOURS_RANGE: 'BaseImageMap: opening hours range "{range}" of the object "{id}" is skipped — expected "10:00-22:00"',
+		IMAGE_MAP_ROUTE_LAYER:
+			'BaseImageMap: route node "{id}" is on the layer "{layer}" that is not in data.layers — up or down is taken from the order of transition nodes',
 	},
 }

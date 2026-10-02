@@ -1346,3 +1346,9 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 - Исправление по отчёту Storybook (02.10): длинное название раздела панели (`legend` у `fieldset`, например группы) переносится по словам, а слово длиннее строки — в любом месте; панель больше не раздвигается и не получает горизонтальной прокрутки (`fieldset` — `min-width: 0`).
 - Истории (сессия Storybook): `media-baseimagemapeditor--` default, variants, disabled, with-error, empty, floors, long-content, preview, custom-toolbar, mouse-editing, keyboard; скриншот-тест снимает disabled, with-error, empty, long-content в обеих темах при окне 1100×900 — эталоны создаёт владелец.
 
+## Задача new-image-map-routes-fix: BaseImageMap — исправления маршрутов
+
+Эталоны BaseImageMap не затронуты (скриншот-тестов к историям маршрутов нет).
+
+- История `Media/BaseImageMap/Routes`: на планах 2 и 3 этажа — новый прямоугольник эскалатора вниз (40 × 60, оранжевый `#fed7aa` с обводкой `#ea580c`) справа от эскалатора вверх, у левого края коридора. Маршрут со 2 или 3 этажа к магазинам слева теперь идёт по эскалатору вниз, а не по лестнице справа; линия и метки — прежнего вида.
+- Бегущий пунктир линии маршрута — длительность круга от токена (`--rise-duration-slow` × 3 = 0,9 с, как раньше); вид не изменился.
