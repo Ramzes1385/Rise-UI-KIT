@@ -17,9 +17,9 @@ const LEVELS: Record<number, string> = {
 	[CADES_SIGN.CADES_X_LONG_TYPE_1]: 'XLT1',
 }
 
-export function record(context: EmulatedSignContext, name: string, args: unknown[]): void {
-	const [object = '', member = ''] = name.split('.')
-	context.calls.push({ object, member, args })
+export function record(context: EmulatedSignContext, name: `${string}.${string}`, args: unknown[]): void {
+	const dot = name.indexOf('.')
+	context.calls.push({ object: name.slice(0, dot), member: name.slice(dot + 1), args })
 }
 
 function wait(delay: number): Promise<void> {
@@ -123,7 +123,8 @@ export function hashedData(context: EmulatedSignContext): CadesHashedData {
 			digest.update(base64ToBytes(value))
 		},
 		get Value() {
-			return Promise.resolve(digest.value().split(':')[1] ?? '')
+			const value = digest.value()
+			return Promise.resolve(value.slice(value.indexOf(':') + 1))
 		},
 	}
 	context.hashes.set(object, digest)

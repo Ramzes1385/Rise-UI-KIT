@@ -36,7 +36,14 @@
 
 	&__empty,
 	&__hint {
-		color: var(--rise-text-muted);
+		@include custom-text(color, var(--rise-text-muted));
+	}
+
+	&--soft &__empty,
+	&--soft &__hint,
+	&--soft .base-crypto-pro-sign-status__versions,
+	&--soft .base-crypto-pro-sign-status__step--pending {
+		@include custom-text(color, var(--rise-text-toned));
 	}
 
 	&__actions {
@@ -57,7 +64,7 @@
 
 	&__versions {
 		margin: 0;
-		color: var(--rise-text-muted);
+		@include custom-text(color, var(--rise-text-muted));
 		@include text-size(xs);
 	}
 
@@ -84,7 +91,7 @@
 		}
 
 		&--pending {
-			color: var(--rise-text-muted);
+			@include custom-text(color, var(--rise-text-muted));
 		}
 	}
 

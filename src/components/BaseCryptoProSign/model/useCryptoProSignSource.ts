@@ -26,12 +26,7 @@ export function useCryptoProSignSource(props: BaseCryptoProSignProps) {
 		if (value instanceof File && value.name) return value.name
 		return props.fileName || DEFAULT_FILE_NAME
 	})
-	const size = computed(() => {
-		const value = source.value
-		if (value === undefined) return 0
-		return typeof value === 'string' ? new TextEncoder().encode(value).length : value.size
-	})
-	const isHash = computed(() => source.value instanceof Blob && size.value > (props.hashThreshold ?? Infinity))
+	const isHash = computed(() => source.value instanceof Blob && source.value.size > (props.hashThreshold ?? Infinity))
 	return {
 		source,
 		fileName,

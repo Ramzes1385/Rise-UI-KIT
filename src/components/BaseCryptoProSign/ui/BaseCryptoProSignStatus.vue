@@ -16,7 +16,7 @@
 					<span class="base-crypto-pro-sign-status__state">{{ step.stateText }}</span>
 				</li>
 			</ul>
-			<BaseAlert v-if="status.error" type="error" :title="status.error.message" :description="help.text">
+			<BaseAlert v-if="status.error" type="error" variant="soft" :title="status.error.message" :description="help.text">
 				<template #actions>
 					<BaseLink v-for="link in help.links" :key="link.href" :href="link.href" target="_blank" rel="noopener noreferrer">
 						{{ link.label }}

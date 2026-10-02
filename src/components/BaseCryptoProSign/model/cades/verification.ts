@@ -66,12 +66,12 @@ async function verifyByHash(plugin: CadesSignPlugin, signedData: CadesSignSigned
 }
 
 async function verifyContent(plugin: CadesSignPlugin, signedData: CadesSignSignedData, request: CryptoProVerifyRequest): Promise<void> {
-	const isDetached = request.data !== undefined
-	if (isDetached) {
+	const data = request.data
+	if (data !== undefined) {
 		await signedData.propset_ContentEncoding(CADES.BASE64_TO_BINARY)
-		await signedData.propset_Content(bytesToBase64(await toBytes(request.data ?? '')))
+		await signedData.propset_Content(bytesToBase64(await toBytes(data)))
 	}
-	await signedData.VerifyCades(request.signature, CADES_SIGN.CADES_BES, isDetached)
+	await signedData.VerifyCades(request.signature, CADES_SIGN.CADES_BES, data !== undefined)
 }
 
 export async function verifySignature(plugin: CadesSignPlugin, request: CryptoProVerifyRequest): Promise<CryptoProVerifySigner[]> {

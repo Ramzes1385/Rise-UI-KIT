@@ -60,7 +60,7 @@ function decodeText(value: string): string {
 export function decodeSignature(value: string): EmulatedSignature {
 	const text = decodeText(value)
 	if (!text.startsWith(PREFIX)) throw new Error(EMULATED_SIGN_ERRORS.badFormat)
-	const [level = '', ...pairs] = text.slice(PREFIX.length).split(';')
+	const [level, ...pairs] = text.slice(PREFIX.length).split(';')
 	const fields = Object.fromEntries(pairs.map(pair => [pair.slice(0, pair.indexOf('=')), pair.slice(pair.indexOf('=') + 1)]))
 	return {
 		level,
