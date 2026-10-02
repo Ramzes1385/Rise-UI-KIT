@@ -50,7 +50,7 @@ function useSelectKeys(ctx: EditorContext, commands: EditorCommands) {
 
 function useDrawKeys(ctx: EditorContext, tool: EditorToolApi) {
 	const cursor = ref<EditorPoint>({ x: 0.5, y: 0.5 })
-	const start = ref<EditorPoint | null>(null)
+	const start = tool.keyStart
 
 	function place(event: KeyboardEvent): void {
 		const point = cursor.value
@@ -70,7 +70,6 @@ function useDrawKeys(ctx: EditorContext, tool: EditorToolApi) {
 
 	function escape(): void {
 		if (start.value || tool.polygon.points.value.length) {
-			start.value = null
 			tool.cancel()
 			ctx.announcer.announce(UI_IMAGE_MAP_EDITOR.DRAW_CANCELLED)
 			return

@@ -2,10 +2,10 @@ import type { Ref } from 'vue'
 import { layerObjects } from '../document/editorOps'
 import { computed, useId, watchPostEffect } from 'vue'
 import { EDITOR_OBJECT_ATTR } from './useEditorPointer'
-import { useSvgMarkup } from '@components/BaseImageMap/model/svg/useImageMapSvg'
 import { resolveObject } from '@components/BaseImageMap/model/data/resolveObject'
 import { shapeGeometry } from '@components/BaseImageMap/model/data/shapeGeometry'
 import { createShape, dragBounds, objectHandles } from '../geometry/editorGeometry'
+import { attributeSelector, useSvgMarkup } from '@components/BaseImageMap/model/svg/useImageMapSvg'
 import type { ImageMapLayer, ImageMapObject, ImageMapPoint } from '@components/BaseImageMap/types/imageMapData.types'
 import type { EditorCanvasOptions, EditorContext, EditorPoint, EditorToolApi } from '../../types/imageMapEditorInternal.types'
 
@@ -60,7 +60,7 @@ function useSvgSelection(ctx: EditorContext, svg: { containerRef: Ref<HTMLElemen
 		unbindAll(container)
 		for (const object of layerObjects(ctx.doc.getData(), ctx.selection.getLayer()?.id)) {
 			if (object.type !== 'svg') continue
-			const element = container.querySelector(`[id="${svg.prefix}${object.elementId}"]`)
+			const element = container.querySelector(attributeSelector('id', svg.prefix + object.elementId))
 			bindElement(element, { id: object.id, isSelected: object.id === selectedId })
 		}
 	})

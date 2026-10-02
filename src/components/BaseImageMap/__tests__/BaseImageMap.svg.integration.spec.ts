@@ -89,6 +89,19 @@ describe('BaseImageMap svg — встроенный план', () => {
 		expect(screen.queryByRole('button', { name: 'Призрак' })).toBeNull()
 	})
 
+	it('elementId с кавычкой и обратной косой чертой не ломает поиск элементов', async () => {
+		const data: ImageMapData = {
+			layers: [{ id: 'plan', title: 'План', svg: PLAN, width: 100, height: 100 }],
+			objects: [
+				{ id: 'q', type: 'svg', elementId: 'a"b\\c', title: 'Кавычка' },
+				{ id: 'room', type: 'svg', elementId: 'room', title: 'Комната' },
+			],
+		}
+		render(BaseImageMap, { props: { data, ...BASE_PROPS } })
+		expect(await screen.findByRole('button', { name: 'Комната' })).toBeInTheDocument()
+		expect(screen.queryByRole('button', { name: 'Кавычка' })).toBeNull()
+	})
+
 	it('SVG слоя очищается: скрипты и обработчики не попадают в разметку', async () => {
 		const unsafe =
 			'<svg xmlns="http://www.w3.org/2000/svg"><script>window.hacked = 1</script><rect id="room" onclick="window.hacked = 1"/></svg>'

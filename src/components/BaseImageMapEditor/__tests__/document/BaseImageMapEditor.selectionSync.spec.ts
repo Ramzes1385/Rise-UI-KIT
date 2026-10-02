@@ -88,3 +88,26 @@ describe('BaseImageMapEditor: исправление по отчёту 1157 — 
 		expect(wrapper.emitted('update:layer')).toBeUndefined()
 	})
 })
+
+describe('BaseImageMapEditor: внешняя смена v-model:layer', () => {
+	it('снимает выделение объекта другого слоя', async () => {
+		const wrapper = mount(BaseImageMapEditor, { props: { modelValue: makeMap(), selected: 'p1', layer: 'l1' } })
+		await wrapper.setProps({ layer: 'l2' })
+		expect(wrapper.emitted('update:selected')).toEqual([[null]])
+		expect(currentItems(wrapper)).toEqual(['Второй'])
+	})
+
+	it('слой и объект этого слоя одновременно — выделение остаётся', async () => {
+		const wrapper = mount(BaseImageMapEditor, { props: { modelValue: makeMap(), selected: 'p1', layer: 'l1' } })
+		await wrapper.setProps({ layer: 'l2', selected: 'e1' })
+		expect(wrapper.emitted('update:selected')).toBeUndefined()
+		expect(currentItems(wrapper)).toEqual(['Фонтан', 'Второй'])
+	})
+
+	it('объект того же слоя остаётся выделенным', async () => {
+		const wrapper = mount(BaseImageMapEditor, { props: { modelValue: makeMap(), selected: 'e1', layer: 'l2' } })
+		await wrapper.setProps({ layer: 'l1' })
+		await wrapper.setProps({ layer: 'l2', selected: 'e1' })
+		expect(wrapper.emitted('update:selected')).toEqual([[null]])
+	})
+})

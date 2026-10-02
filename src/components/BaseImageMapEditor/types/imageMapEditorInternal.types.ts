@@ -166,6 +166,8 @@ export interface EditorToolApi {
 	tool: Ref<ImageMapEditorTool>
 	/** Протяжка указателем */
 	drag: ShallowRef<EditorDrag | null>
+	/** Первый угол прямоугольника или эллипса, поставленный с клавиатуры; `cancel` сбрасывает */
+	keyStart: Ref<EditorPoint | null>
 	/** Многоугольник в процессе рисования */
 	polygon: EditorPolygonApi
 	/** Сменить инструмент */

@@ -1,4 +1,5 @@
-import { sanitizeSvg } from '../../model/svg/sanitizeSvg'
+import { attributeSelector } from '../../model/svg/useImageMapSvg'
+import { cleanSvg, sanitizeSvg } from '../../model/svg/sanitizeSvg'
 
 const PREFIX = 'rise-im-t-'
 const XLINK = 'http://www.w3.org/1999/xlink'
@@ -204,5 +205,32 @@ describe('sanitizeSvg — векторы XSS (результат разбира�
 		expect(rect.getAttribute('stroke')).toBe('hsl(1 2% 3%)')
 		expect(rect.hasAttribute('fill')).toBe(false)
 		expect(rect.hasAttribute('opacity')).toBe(false)
+	})
+})
+
+describe('cleanSvg', () => {
+	it('чистит, но оставляет xmlns, размеры и id без префикса', () => {
+		const markup = wrap('<rect id="r" width="5" height="5" onclick="x()"/><script>alert(1)</script>', 'width="10" height="10"')
+		const clean = cleanSvg(markup)
+		expect(clean).toContain('xmlns="http://www.w3.org/2000/svg"')
+		expect(clean).toContain('width="10"')
+		expect(clean).toContain('id="r"')
+		expect(clean).not.toContain('script')
+		expect(clean).not.toContain('onclick')
+	})
+
+	it('не SVG — пустая строка', () => {
+		expect(cleanSvg('<div>x</div>')).toBe('')
+	})
+})
+
+describe('attributeSelector', () => {
+	it('экранирует кавычки, обратную косую черту и перевод строки', () => {
+		const root = document.createElement('div')
+		const target = document.createElement('span')
+		target.id = 'a"b\\c\nd'
+		root.append(target)
+		expect(attributeSelector('id', 'a"b\\c\nd')).toBe('[id="a\\"b\\\\c\\a d"]')
+		expect(root.querySelector(attributeSelector('id', target.id))).toBe(target)
 	})
 })

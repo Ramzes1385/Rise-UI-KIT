@@ -1,6 +1,6 @@
-import { computed, ref, watch } from 'vue'
 import { objectSections } from './objectFields'
 import { formatMessage } from '@/locales/state'
+import { computed, nextTick, ref, watch } from 'vue'
 import { applyField, parsePoints } from './applyField'
 import { groupFields, layerFields } from './mapFields'
 import { UI_IMAGE_MAP_EDITOR } from '@/locales/messages'
@@ -17,6 +17,22 @@ import {
 	removeObject,
 	renameObject,
 } from '../document/editorOps'
+
+function focusLater(origin: EventTarget | null | undefined, kind: 'layer' | 'group', index: number): void {
+	const panel = origin instanceof Element ? origin.closest('.base-image-map-editor__panel') : null
+	if (!panel) return
+	void nextTick(() => {
+		const add = panel.querySelector<HTMLElement>(`[data-add="${kind}"]`)
+		const rows = add?.parentElement?.querySelectorAll(kind === 'layer' ? '.base-image-map-editor__row' : ':scope > fieldset')
+		const row = rows?.[Math.min(index, rows.length - 1)]
+		const target = row?.querySelector<HTMLElement>(kind === 'layer' ? '.base-image-map-editor__item' : ':scope > .base-button') ?? add
+		target?.focus()
+	})
+}
+
+function indexOf(items: { id: string }[], id: string): number {
+	return items.findIndex(item => item.id === id)
+}
 
 function useObjectFields(ctx: EditorContext) {
 	const errors = ref<Record<string, string>>({})
@@ -90,19 +106,24 @@ function useMapFields(ctx: EditorContext) {
 				addGroup(draft, formatMessage(UI_IMAGE_MAP_EDITOR.NEW_GROUP, { n: (draft.groups?.length ?? 0) + 1 }))
 			})
 		},
-		removeGroup(id: string): void {
+		removeGroup(id: string, event?: Event): void {
+			const index = indexOf(ctx.doc.getData().groups ?? [], id)
 			ctx.doc.apply(draft => removeGroup(draft, id))
+			focusLater(event?.target, 'group', index)
 		},
 	}
 }
 
 function useLayerActions(ctx: EditorContext, setLayer: (id: string) => void) {
 	return {
-		removeLayer(id: string): void {
+		removeLayer(id: string, event?: Event): void {
 			const layers = ctx.doc.getData().layers
-			const next = layers.find(layer => layer.id !== id)
+			const index = indexOf(layers, id)
+			const next = layers[index + 1] ?? layers[index - 1]
+			const isCurrent = ctx.selection.getLayer()?.id === id
 			ctx.doc.apply(draft => removeLayer(draft, id))
-			if (next) setLayer(next.id)
+			if (next && isCurrent) setLayer(next.id)
+			focusLater(event?.target, 'layer', index)
 			ctx.announcer.announce(UI_IMAGE_MAP_EDITOR.LAYER_DELETED)
 		},
 		moveLayer(id: string, delta: number): void {

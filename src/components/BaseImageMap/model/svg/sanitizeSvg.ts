@@ -177,11 +177,21 @@ function prefixIds(root: Element, prefix: string): void {
 	}
 }
 
-export function sanitizeSvg(markup: string, idPrefix: string): string {
+function cleanRoot(markup: string): Element | null {
 	const parsed = new DOMParser().parseFromString(markup, 'image/svg+xml')
 	const source = parsed.documentElement
-	if (source.localName !== 'svg' || parsed.getElementsByTagName('parsererror').length) return ''
-	const root = copyElement(source) as Element
+	if (source.localName !== 'svg' || parsed.getElementsByTagName('parsererror').length) return null
+	return copyElement(source)
+}
+
+export function cleanSvg(markup: string): string {
+	const root = cleanRoot(markup)
+	return root ? new XMLSerializer().serializeToString(root) : ''
+}
+
+export function sanitizeSvg(markup: string, idPrefix: string): string {
+	const root = cleanRoot(markup)
+	if (!root) return ''
 	prefixIds(root, idPrefix)
 	root.setAttribute('width', '100%')
 	root.setAttribute('height', '100%')

@@ -48,13 +48,22 @@ export function useEditorSelection(props: ImageMapEditorProps, emit: BaseImageMa
 		if (layer) setLayer(layer)
 	}
 
+	function dropForeignSelection(id: string | undefined): void {
+		if (selected.value && objectLayerId(data.value, selected.value) !== id) select(null)
+	}
+
+	useSelectionSync(props, { data, selectedId, currentLayer, setLayer, select })
 	watch(
 		() => props.layer,
 		value => {
 			layerId.value = value
 		},
 	)
-	useSelectionSync(props, { data, selectedId, currentLayer, setLayer, select })
+	watch(
+		() => props.layer,
+		() => dropForeignSelection(currentLayer.value?.id),
+		{ flush: 'post' },
+	)
 	watch(selected, object => {
 		if (!object && selectedId.value) select(null)
 	})
@@ -64,7 +73,7 @@ export function useEditorSelection(props: ImageMapEditorProps, emit: BaseImageMa
 		selected,
 		setLayer(id: string): void {
 			setLayer(id)
-			if (selected.value && objectLayerId(data.value, selected.value) !== id) select(null)
+			dropForeignSelection(id)
 		},
 		select,
 		getLayer: () => currentLayer.value,

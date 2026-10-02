@@ -107,6 +107,21 @@ describe('BaseImageMapEditor клавиатура: рисование', () => {
 		expect(container.querySelector('.base-image-map-editor__draft')).toBeNull()
 	})
 
+	it('первый угол с клавиатуры сбрасывается при смене инструмента и слоя', async () => {
+		const { container, emitted, rerender } = renderEditor({ tool: 'rect', nudgeStep: 0.1 })
+		await press({ key: 'Enter' })
+		await rerender({ tool: 'select' })
+		await rerender({ tool: 'rect' })
+		expect(container.querySelector('.base-image-map-editor__draft')).toBeNull()
+		await press({ key: 'Enter' })
+		expect(statusOf(container)).toHaveTextContent(/Первый угол поставлен/)
+		expect(lastModel(emitted)).toBeUndefined()
+		await fireEvent.click(screen.getByRole('button', { name: 'Второй' }))
+		await press({ key: 'Enter' })
+		expect(lastModel(emitted)).toBeUndefined()
+		expect(statusOf(container)).toHaveTextContent(/Первый угол поставлен/)
+	})
+
 	it('эллипс: пробел ставит углы; перекрестие у края прижато', async () => {
 		const { emitted } = renderEditor({ tool: 'ellipse', nudgeStep: 0.5 })
 		await press({ key: ' ' })

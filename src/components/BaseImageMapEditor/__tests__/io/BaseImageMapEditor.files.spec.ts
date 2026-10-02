@@ -103,6 +103,14 @@ describe('BaseImageMapEditor файлы: картинка и SVG', () => {
 		expect(lastModel(emitted).layers[0]).not.toHaveProperty('image')
 	})
 
+	it('в слой уходит очищенный SVG: без скриптов и обработчиков', async () => {
+		const { container, emitted } = renderEditor()
+		const dirty = SVG_MARKUP.replace('<circle', '<script>alert(1)</script><circle onclick="x()"')
+		await fireEvent.click(screen.getByRole('button', { name: 'Заменить картинку' }))
+		await chooseFile(backgroundInput(container), new File([dirty], 'plan.svg', { type: 'image/svg+xml' }))
+		await waitFor(() => expect(lastModel(emitted)?.layers[0]).toMatchObject({ svg: SVG_MARKUP }))
+	})
+
 	it('пустой SVG и битая картинка — «Не удалось открыть картинку» и import-error', async () => {
 		vi.stubGlobal('Image', BrokenImage)
 		const { container, emitted } = renderEditor()
@@ -155,6 +163,16 @@ describe('BaseImageMapEditor файлы: JSON', () => {
 		expect(screen.getByRole('button', { name: /^Зал\s*Прямоугольник$/ })).toBeInTheDocument()
 	})
 
+	it('импорт и экспорт JSON чистят SVG слоёв', () => {
+		const map = makeSvgMap()
+		map.layers[0]!.svg = SVG_MARKUP.replace('<circle', '<circle onclick="x()"')
+		const wrapper = mount(BaseImageMapEditor, { props: { modelValue: map } })
+		const api = wrapper.vm as unknown as BaseImageMapEditorExpose
+		expect(JSON.parse(api.exportJson()).layers[0].svg).toBe(SVG_MARKUP)
+		expect(api.importJson(JSON.stringify(map))).toBe(true)
+		expect((wrapper.emitted('update:modelValue')?.at(-1)?.[0] as typeof map).layers[0]?.svg).toBe(SVG_MARKUP)
+	})
+
 	it('«Экспорт JSON» скачивает файл fileName', async () => {
 		const createObjectURL = vi.fn(() => 'blob:map')
 		const revokeObjectURL = vi.fn()
@@ -186,6 +204,21 @@ describe('BaseImageMapEditor файлы: объекты из SVG', () => {
 		expect(container.querySelectorAll('.base-image-map-editor__svg-object')).toHaveLength(3)
 	})
 
+	it('уже связанные элементы ищутся только на своём слое; id без повторов', async () => {
+		const map = makeSvgMap()
+		map.layers.push({ id: 'f2', title: 'Второй', svg: SVG_MARKUP, width: 800, height: 400 })
+		map.objects.push(
+			{ type: 'svg', id: 'hall', elementId: 'hall', title: 'Холл', layer: 'f2' },
+			{ type: 'point', id: 'svg-hall', title: 'Занято', x: 0.5, y: 0.5, layer: 'f2' },
+		)
+		const wrapper = mount(BaseImageMapEditor, { props: { modelValue: map } })
+		await nextTick()
+		const api = wrapper.vm as unknown as BaseImageMapEditorExpose
+		expect(api.importSvgObjects()).toBe(2)
+		const created = (wrapper.emitted('update:modelValue')?.at(-1)?.[0] as typeof map).objects.slice(3)
+		expect(created.map(object => object.id)).toEqual(['svg-hall-1', 'shop'])
+	})
+
 	it('importSvgObjects возвращает число новых объектов', async () => {
 		const wrapper = mount(BaseImageMapEditor, { props: { modelValue: makeSvgMap() } })
 		const api = wrapper.vm as unknown as BaseImageMapEditorExpose
@@ -193,6 +226,15 @@ describe('BaseImageMapEditor файлы: объекты из SVG', () => {
 		await nextTick()
 		expect(api.importSvgObjects()).toBe(2)
 		expect(api.importSvgObjects()).toBe(0)
+	})
+
+	it('elementId с кавычкой не ломает холст', async () => {
+		const map = makeSvgMap()
+		map.objects.push({ type: 'svg', id: 'q', title: 'Кавычка', elementId: 'a"b' })
+		const { container } = renderEditor({ modelValue: map })
+		await nextTick()
+		expect(container.querySelectorAll('.base-image-map-editor__svg-object')).toHaveLength(1)
+		expect(screen.getByRole('application', { name: 'Холст карты' })).toBeInTheDocument()
 	})
 
 	it('у слоя-картинки кнопки «Объекты из SVG» нет', () => {

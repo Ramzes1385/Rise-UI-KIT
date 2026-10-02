@@ -362,3 +362,49 @@ describe('BaseImageMapEditor панель: маршруты', () => {
 		expect(modelObject(emitted, 'hall')).toBeDefined()
 	})
 })
+
+function threeFloors(): ImageMapData {
+	const map = makeMap()
+	map.layers.push({ id: 'l3', title: 'Третий', image: 'https://example.com/3.png', width: 1000, height: 500 })
+	map.groups?.push({ id: 'g2', title: 'Кафе' })
+	return map
+}
+
+describe('BaseImageMapEditor панель: удаление этажа и группы', () => {
+	it('удаление не текущего этажа текущий не меняет; фокус — на соседнюю строку', async () => {
+		const { emitted } = renderEditor({ modelValue: threeFloors(), layer: 'l3', selected: 'e1' })
+		await fireEvent.click(screen.getByRole('button', { name: 'Удалить этаж «Второй»' }))
+		expect(emitted()['update:layer']).toBeUndefined()
+		await nextTick()
+		expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Третий' }))
+	})
+
+	it('удаление текущего этажа показывает следующий, у последнего — предыдущий', async () => {
+		const { emitted } = renderEditor({ modelValue: threeFloors(), layer: 'l2' })
+		await fireEvent.click(screen.getByRole('button', { name: 'Удалить этаж «Второй»' }))
+		expect(emitted()['update:layer']).toEqual([['l3']])
+		await fireEvent.click(screen.getByRole('button', { name: 'Удалить этаж «Третий»' }))
+		expect(emitted()['update:layer']).toEqual([['l3'], ['l1']])
+		await nextTick()
+		expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Первый' }))
+	})
+
+	it('после удаления последнего этажа фокус — на «Добавить этаж»', async () => {
+		const map = makeMap()
+		map.layers = map.layers.slice(0, 1)
+		renderEditor({ modelValue: map })
+		await fireEvent.click(screen.getByRole('button', { name: 'Удалить этаж «Первый»' }))
+		await nextTick()
+		expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Добавить этаж' }))
+	})
+
+	it('удаление группы — фокус на соседнюю группу, после последней — на «Добавить группу»', async () => {
+		renderEditor({ modelValue: threeFloors() })
+		await fireEvent.click(screen.getByRole('button', { name: 'Удалить группу «Магазины»' }))
+		await nextTick()
+		expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Удалить группу «Кафе»' }))
+		await fireEvent.click(screen.getByRole('button', { name: 'Удалить группу «Кафе»' }))
+		await nextTick()
+		expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Добавить группу' }))
+	})
+})

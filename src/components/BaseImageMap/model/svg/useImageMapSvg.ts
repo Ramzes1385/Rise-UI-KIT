@@ -3,6 +3,10 @@ import type { ImageMapLayer } from '../../types/imageMapData.types'
 import { ref, useId, watch, onMounted, watchPostEffect } from 'vue'
 import type { SvgBinding, SvgOptions } from '../../types/internal/imageMapInternal.types'
 
+export function attributeSelector(name: string, value: string): string {
+	return `[${name}="${value.replace(/["\\]/g, '\\$&').replace(/\n/g, '\\a ')}"]`
+}
+
 export function useSvgMarkup(getLayer: () => ImageMapLayer | undefined, prefix: string) {
 	const markup = ref('')
 	const isLoading = ref(false)
@@ -53,7 +57,7 @@ function applyAttributes(element: Element, binding: SvgBinding): void {
 }
 
 function findElement(container: HTMLElement, prefix: string, binding: SvgBinding): Element | null {
-	return container.querySelector(`[id="${prefix}${binding.elementId}"]`)
+	return container.querySelector(attributeSelector('id', prefix + binding.elementId))
 }
 
 function isSameSet(left: ReadonlySet<string>, right: ReadonlySet<string>): boolean {

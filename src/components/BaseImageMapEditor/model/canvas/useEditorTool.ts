@@ -77,11 +77,16 @@ export function useEditorTool(props: ImageMapEditorProps, emit: BaseImageMapEdit
 	const drag = shallowRef<EditorDrag | null>(null)
 	const create = useCreate(ctx)
 	const polygon = usePolygonDraft(ctx, create)
+	const keyStart = ref<EditorPoint | null>(null)
 
 	function cancel(): void {
 		drag.value = null
+		keyStart.value = null
 		polygon.points.value = []
 	}
+
+	watch(() => ctx.selection.getLayer()?.id, cancel)
+	watch(() => ctx.doc.getData(), cancel)
 
 	watch(
 		() => props.tool,
@@ -94,6 +99,7 @@ export function useEditorTool(props: ImageMapEditorProps, emit: BaseImageMapEdit
 	return {
 		tool,
 		drag,
+		keyStart,
 		polygon,
 		create,
 		cancel,

@@ -269,7 +269,7 @@
 								variant="ghost"
 								:aria-label="formatMessage(UI_IMAGE_MAP_EDITOR.DELETE_LAYER, { title: layer.title })"
 								:is-disabled="isDisabled"
-								@click="panel.removeLayer(layer.id)">
+								@click="panel.removeLayer(layer.id, $event)">
 								<template #left><BaseIcon name="trash" /></template>
 							</BaseButton>
 						</li>
@@ -282,7 +282,7 @@
 							:is-disabled="isDisabled"
 							@update="panel.setLayerField(field.key, $event)" />
 					</div>
-					<BaseButton variant="outline" :is-disabled="isDisabled" @click="files.openBackground('add')">
+					<BaseButton variant="outline" :is-disabled="isDisabled" data-add="layer" @click="files.openBackground('add')">
 						<template #left><BaseIcon name="plus" /></template>
 						{{ UI_IMAGE_MAP_EDITOR.ADD_LAYER }}
 					</BaseButton>
@@ -298,12 +298,12 @@
 							:field="field"
 							:is-disabled="isDisabled"
 							@update="panel.setGroupField(group.id, field.key, $event)" />
-						<BaseButton variant="ghost" :is-disabled="isDisabled" @click="panel.removeGroup(group.id)">
+						<BaseButton variant="ghost" :is-disabled="isDisabled" @click="panel.removeGroup(group.id, $event)">
 							<template #left><BaseIcon name="trash" /></template>
 							{{ formatMessage(UI_IMAGE_MAP_EDITOR.DELETE_GROUP, { title: group.title }) }}
 						</BaseButton>
 					</fieldset>
-					<BaseButton variant="outline" :is-disabled="isDisabled" @click="panel.addGroup">
+					<BaseButton variant="outline" :is-disabled="isDisabled" data-add="group" @click="panel.addGroup">
 						<template #left><BaseIcon name="plus" /></template>
 						{{ UI_IMAGE_MAP_EDITOR.ADD_GROUP }}
 					</BaseButton>
