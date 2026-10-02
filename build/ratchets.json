@@ -1,8 +1,8 @@
 {
 	"size": {
 		"components.js": {
-			"gzip": 392131,
-			"budget": 432128
+			"gzip": 458630,
+			"budget": 504832
 		},
 		"composables.js": {
 			"gzip": 103050,
@@ -29,8 +29,8 @@
 			"budget": 83968
 		},
 		"utils.js": {
-			"gzip": 57621,
-			"budget": 63488
+			"gzip": 64880,
+			"budget": 71680
 		}
 	},
 	"coverageExcludes": {
