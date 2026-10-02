@@ -1,5 +1,6 @@
 import { args } from './args'
 import * as cases from './cases'
+import { render } from './render'
 import { argTypes } from './argTypes'
 import { parameters } from './parameters'
 import type { Meta } from '@storybook/vue3-vite'
@@ -11,8 +12,15 @@ const meta = {
 	parameters,
 	argTypes,
 	args,
+	render,
 } satisfies Meta<typeof BasePresentationPlayer>
 
 export default meta
 
 export const Default = cases.Default
+export const Linear = cases.Linear
+export const Strict = cases.Strict
+export const SharedAudio = cases.SharedAudio
+export const CustomSlide = cases.CustomSlide
+export const Resume = cases.Resume
+export const Loading = cases.Loading

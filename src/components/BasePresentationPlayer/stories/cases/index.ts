@@ -1,1 +1,7 @@
 export { Default } from './Default'
+export { Loading } from './states/Loading'
+export { Linear } from './behavior/Linear'
+export { Resume } from './behavior/Resume'
+export { Strict } from './behavior/Strict'
+export { CustomSlide } from './content/CustomSlide'
+export { SharedAudio } from './content/SharedAudio'
