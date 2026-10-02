@@ -9,7 +9,7 @@
 				:options="options"
 				:model-value="value.from ?? ''"
 				is-searchable
-				@update:model-value="$emit('update:value', { ...value, from: String($event) || null })" />
+				@update:model-value="$emit('update:value', { ...value, from: String($event) })" />
 			<BaseButton
 				class="base-image-map__route-swap"
 				variant="ghost"
@@ -25,7 +25,7 @@
 				:options="options"
 				:model-value="value.to ?? ''"
 				is-searchable
-				@update:model-value="$emit('update:value', { ...value, to: String($event) || null })" />
+				@update:model-value="$emit('update:value', { ...value, to: String($event) })" />
 		</div>
 		<div v-if="hasStepFree || value.from || value.to" class="base-image-map__route-options">
 			<BaseSwitch

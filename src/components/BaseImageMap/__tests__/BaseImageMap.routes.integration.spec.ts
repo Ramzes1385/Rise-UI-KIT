@@ -81,13 +81,17 @@ describe('BaseImageMap integration — маршруты', () => {
 		expect(steps()[2]).toBe('Поднимитесь на эскалаторе: 2 этаж')
 	})
 
-	it('варианты — объекты с этажом, по алфавиту', async () => {
+	it('варианты — объекты с этажом, по алфавиту; объект неизвестного слоя — без этажа', async () => {
 		const user = userEvent.setup()
-		render(BaseImageMap, { props: BASE_PROPS })
+		const terrace = { id: 'terrace', type: 'point' as const, title: 'Терраса', layer: 'roof', x: 0.5, y: 0.5 }
+		const layers = data.layers.map(layer => (layer.id === 'floor-3' ? { ...layer, shortTitle: undefined } : layer))
+		render(BaseImageMap, { props: { ...BASE_PROPS, data: { ...data, layers, objects: [...data.objects, terrace] } } })
 		await user.click(within(panel()).getByRole('combobox', { name: 'Откуда' }))
 		const options = screen.getAllByRole('option').map(option => option.textContent?.trim())
 		expect(options[0]).toBe('Аптека · 1')
-		expect(options).toHaveLength(12)
+		expect(options).toHaveLength(13)
+		expect(options).toContain('Терраса')
+		expect(options).toContain('Кино · 3 этаж')
 	})
 
 	it('на одном слое варианты без этажа; недоступные и скрытые из списка объекты не предлагаются', async () => {
@@ -156,8 +160,9 @@ describe('BaseImageMap integration — маршруты', () => {
 
 	it('без переходов без ступеней переключателя «Без лестниц» нет; customClass.route — на панели', () => {
 		const routes = { ...data.routes!, transitions: data.routes!.transitions!.filter(item => item.type === 'stairs') }
-		render(BaseImageMap, { props: { ...BASE_PROPS, data: { ...data, routes }, customClass: { route: 'my-route' } } })
+		render(BaseImageMap, { props: { ...BASE_PROPS, data: { ...data, routes }, route: TO_CINEMA, customClass: { route: 'my-route' } } })
 		expect(within(panel()).queryByRole('switch')).toBeNull()
+		expect(within(panel()).getByRole('button', { name: 'Сбросить маршрут' })).toBeInTheDocument()
 		expect(panel()).toHaveClass('my-route')
 	})
 

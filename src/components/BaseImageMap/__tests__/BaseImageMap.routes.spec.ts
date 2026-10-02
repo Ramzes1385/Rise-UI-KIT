@@ -137,6 +137,21 @@ describe('routeGraph', () => {
 		expect(route('nowhere', 'f1-shop-1').path).toBeNull()
 	})
 
+	it('узел без коридоров — путь не найден', () => {
+		const graph = buildRouteGraph({
+			routes: {
+				nodes: [
+					{ id: 'a', x: 0, y: 0 },
+					{ id: 'b', x: 1, y: 1 },
+				],
+				edges: [],
+			},
+			layers: LAYERS,
+			isStepFree: false,
+		})
+		expect(findRoutePath(graph, ['a'], ['b'])).toBeNull()
+	})
+
 	it('общий узел начала и конца — путь из одного узла', () => {
 		const graph = mall()
 		const path = findRoutePath(graph, ['f1-c1'], ['f1-c1'])

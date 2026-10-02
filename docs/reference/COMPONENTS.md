@@ -3055,6 +3055,37 @@ const mallMap: ImageMapData = {
 }
 ```
 
+- **Маршруты** (`data.routes`, `hasRoutes`, new-image-map-routes) — «Как пройти», как wayfinding: граф путей по этажам. `routes.nodes` — узлы в долях картинки своего слоя (`layer`), `routes.edges` — коридоры `[id, id]` внутри слоя (в обе стороны, длина по координатам с учётом пропорций слоя), `routes.transitions` — переходы между этажами: `type` `stairs` (по умолчанию), `elevator`, `escalator`, `ramp`; `nodes` — узлы снизу вверх, соседние соединены; `isOneWay` — только вверх; `isStepFree` (по умолчанию у лифта и пандуса); `cost` — цена этажа в долях ширины слоя (лестница и эскалатор 0.2, пандус 0.25, лифт 0.3); `title` — имя в шагах. `routes.metersPerWidth` — метров в ширине слоя: с ним шаги и итог показывают расстояние.
+- Объект привязан к графу узлом с его `object` (вход; входов может быть несколько — берётся ближайший по маршруту), без такого узла — ближайшим узлом своего слоя по центру объекта; объекту `svg` нужен вход. Кратчайший путь — от любого входа «откуда» до любого входа «куда»; без пути — «Маршрут … не найден».
+- Линия маршрута текущего этажа — бегущий пунктир `--rise-primary` с подложкой (без движения при reduced motion), метки начала, переходов (`--rise-warning`) и конца (`--rise-success`); линия рисуется и без панели, если задан `route`. Панель `hasRoutes` под картой: «Откуда» и «Куда» (BaseSelect с поиском; объекты кроме недоступных и `isHiddenInDirectory`, с коротким названием этажа), «Поменять местами», «Без лестниц» (если есть переходы с ступенями и без), «Сбросить маршрут»; итог — в `role="status"`, шаги — нумерованным списком (начало, путь к переходу, подъём или спуск, приход); выбор шага показывает его этаж. Найденный маршрут переключает карту на этаж начала.
+- `v-model:route` — `{ from, to, isStepFree }` (`ImageMapRouteValue`); событие `route-change` — `ImageMapRouteResult` (`from`, `to`, `nodes`, `steps`, `meters`) или `null`; методы `showRoute(from, to)`, `clearRoute()`; ключ `customClass.route`.
+
+```ts
+const mallMap: ImageMapData = {
+	layers: [floor1, floor2],
+	objects: [
+		{ id: 'cafe', type: 'svg', elementId: 'shop-12', layer: 'f1', title: 'Кафе' },
+		{ id: 'cinema', type: 'svg', elementId: 'hall-3', layer: 'f2', title: 'Кино' },
+	],
+	routes: {
+		nodes: [
+			{ id: 'cafe-door', layer: 'f1', x: 0.2, y: 0.45, object: 'cafe' },
+			{ id: 'f1-hall', layer: 'f1', x: 0.2, y: 0.5 },
+			{ id: 'f1-stairs', layer: 'f1', x: 0.9, y: 0.5 },
+			{ id: 'f2-stairs', layer: 'f2', x: 0.9, y: 0.5 },
+			{ id: 'cinema-door', layer: 'f2', x: 0.5, y: 0.5, object: 'cinema' },
+		],
+		edges: [['cafe-door', 'f1-hall'], ['f1-hall', 'f1-stairs'], ['f2-stairs', 'cinema-door']],
+		transitions: [{ id: 'stairs-a', type: 'stairs', title: 'Лестница А', nodes: ['f1-stairs', 'f2-stairs'] }],
+		metersPerWidth: 120,
+	},
+}
+```
+
+```vue
+<BaseImageMap v-model:route="route" :data="mallMap" has-routes @route-change="trackRoute" />
+```
+
 ## BaseTreeSelect
 
 Выбор из иерархии в выпадающем списке: регион → город, отдел → сотрудник, категория → подкатегория. Узлы — в формате BaseTree.

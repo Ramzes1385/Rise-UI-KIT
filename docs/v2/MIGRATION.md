@@ -1709,3 +1709,13 @@ API кита не меняется. В Storybook добавлены пример
 - Поведение: при включённом фильтре `open-now` объекты без `hours` и закрытые сейчас скрываются со списка и карты, как при других фильтрах. Неизвестный часовой пояс — предупреждение и пояс браузера; неверный интервал — предупреждение, интервал пропускается.
 - Экспорт: `IMAGE_MAP_WEEKDAYS`, `IMAGE_MAP_OPEN_NOW_VALUE` (`'open'`) и типы `ImageMapHours`, `ImageMapHoursState`, `ImageMapHoursDay`, `ImageMapHoursSlotProps`, `ImageMapTimeRange`, `ImageMapWeekday`; `IMAGE_MAP_FILTER_TYPES` дополнен `'open-now'`.
 - Строки словаря (ru, en): раздел `imageMap` — `HOURS`, `OPEN_NOW`, `ALWAYS_OPEN`, `OPEN_UNTIL`, `OPEN_UNTIL_DAY`, `CLOSED`, `CLOSED_OPENS`, `CLOSED_OPENS_DAY`, `ALL_DAY`, `DAY_OFF`; раздел `warnings` — `IMAGE_MAP_TIME_ZONE`, `IMAGE_MAP_HOURS_RANGE`.
+
+## Задача new-image-map-routes: BaseImageMap — маршруты
+
+Новые возможности, по умолчанию выключены: у карт без `data.routes` и `route` вид и поведение прежние.
+
+- Формат JSON (версия 1, только расширен): `routes` — `nodes` (`id`, `layer`, `x`, `y`, `object` — вход объекта), `edges` (`[id, id]`), `transitions` (`id`, `type` `stairs` | `elevator` | `escalator` | `ramp`, `title`, `nodes` снизу вверх, `isOneWay`, `isStepFree`, `cost`), `metersPerWidth`.
+- Пропсы: `hasRoutes`, `route` (`v-model:route`, `ImageMapRouteValue`: `from`, `to`, `isStepFree`); события `update:route`, `route-change` (`ImageMapRouteResult | null`); методы `showRoute(from, to)`, `clearRoute()`; ключ `customClass`: `route`.
+- Поведение: найденный маршрут (и маршрут из `route` при открытии) переключает карту на этаж начала — `update:layer` и `layer-change`. Линия маршрута рисуется поверх фигур и под точками, `pointer-events: none`, `aria-hidden`; текстовый путь — шаги в панели `hasRoutes`.
+- Экспорт: `IMAGE_MAP_TRANSITION_TYPES`, `IMAGE_MAP_ROUTE_STEP_KINDS` и типы `ImageMapRoutes`, `ImageMapRouteNode`, `ImageMapRouteEdge`, `ImageMapRouteTransition`, `ImageMapTransitionType`, `ImageMapRouteValue`, `ImageMapRouteResult`, `ImageMapRouteStep`, `ImageMapRouteStepKind`.
+- Строки словаря (ru, en) — новый раздел `imageMapRoutes` (`UI_IMAGE_MAP_ROUTES`): подписи панели, итог, шаги, виды переходов в дательном падеже (`TO_*`) и со способом (`VIA_*`); свой язык — `defineLocale` с этим разделом.

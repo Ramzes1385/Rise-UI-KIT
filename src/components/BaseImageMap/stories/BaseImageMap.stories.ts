@@ -39,3 +39,4 @@ export const Filters = cases.Filters
 export const Legend = cases.Legend
 export const DeepLink = cases.DeepLink
 export const OpeningHours = cases.OpeningHours
+export const Routes = cases.Routes
