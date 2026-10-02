@@ -1,4 +1,5 @@
 import { setLocale } from '@/locales/state'
+import { useAppLoadingBar } from './useAppLoadingBar'
 import { onBeforeUnmount, provide, watch } from 'vue'
 import type { BaseAppProps } from '../types/BaseApp.types'
 import { TELEPORT_TARGET_KEY } from '@composables/app/useTeleportTarget'
@@ -33,6 +34,7 @@ export function useBaseApp(props: BaseAppProps) {
 	return {
 		toasts,
 		overlays,
+		loadingBar: useAppLoadingBar(props),
 		handleOpenChange(id: number, value: boolean): void {
 			if (!value) overlays.close(id)
 		},

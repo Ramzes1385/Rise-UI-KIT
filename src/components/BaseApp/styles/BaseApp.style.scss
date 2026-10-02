@@ -1,0 +1,33 @@
+.base-app-loading-bar {
+	position: fixed;
+	inset: 0 0 auto;
+	z-index: var(--rise-z-max);
+	height: var(--loading-bar-height);
+	background-color: var(--rise-primary);
+	pointer-events: none;
+	transform: scaleX(var(--loading-bar-progress));
+	transform-origin: left center;
+
+	&:dir(rtl) {
+		transform-origin: right center;
+	}
+
+	&--error {
+		background-color: var(--rise-error);
+	}
+
+	@include motion-safe {
+		@include transition(transform);
+
+		&--done,
+		&--error {
+			opacity: 0;
+			transition-property: transform, opacity;
+			transition-delay: 0s, var(--rise-duration);
+		}
+	}
+
+	@include motion-reduce {
+		transform: none;
+	}
+}

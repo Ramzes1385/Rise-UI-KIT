@@ -16,9 +16,19 @@ export interface BaseAppToasterOptions {
 	sizeScale?: number
 }
 
+/** Полоса загрузки `useLoadingBar()` */
+export interface BaseAppLoadingBarOptions {
+	/** Толщина полосы, px (3) */
+	height?: number
+	/** Имя полосы для скринридера. По умолчанию — из словаря: «Загрузка страницы» */
+	label?: string
+}
+
 export interface BaseAppProps {
 	/** Настройки уведомлений, которые показывает `useToast()` */
 	toaster?: BaseAppToasterOptions
+	/** Полоса загрузки, которую показывает `useLoadingBar()`: толщина и имя для скринридера */
+	loadingBar?: BaseAppLoadingBarOptions
 	/**
 	 * Язык кита: `ru`, `en` или свой словарь из `defineLocale()`. Меняет строки интерфейса, формат дат и чисел
 	 * во всём приложении (язык один на страницу). Без пропа язык не меняется

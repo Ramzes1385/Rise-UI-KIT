@@ -1,4 +1,10 @@
 <template>
+	<div
+		v-if="loadingBar.isVisible.value"
+		:class="loadingBar.classes.value"
+		:style="loadingBar.styles.value"
+		role="progressbar"
+		:aria-label="loadingBar.label.value" />
 	<slot />
 	<BaseNotification
 		:items="toasts.items.value"
@@ -19,6 +25,7 @@
 </template>
 
 <script setup lang="ts">
+import '../styles/BaseApp.style.scss'
 import { useBaseApp } from '../model/useBaseApp'
 import { BaseNotification } from '@components/BaseNotification'
 import type { BaseAppProps, BaseAppSlots } from '../types/BaseApp.types'
@@ -28,5 +35,5 @@ defineOptions({ inheritAttrs: false })
 const props = defineProps<BaseAppProps>()
 defineSlots<BaseAppSlots>()
 
-const { toasts, overlays, handleOpenChange } = useBaseApp(props)
+const { toasts, overlays, loadingBar, handleOpenChange } = useBaseApp(props)
 </script>
