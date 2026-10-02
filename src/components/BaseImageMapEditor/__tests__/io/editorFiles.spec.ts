@@ -212,7 +212,7 @@ describe('editorFiles: parseMap', () => {
 })
 
 describe('editorFiles: downloadText', () => {
-	it('создаёт ссылку на Blob, кликает и освобождает URL', () => {
+	it('создаёт ссылку на Blob, кликает и освобождает URL после клика', async () => {
 		const createObjectURL = vi.fn(() => 'blob:map')
 		const revokeObjectURL = vi.fn()
 		vi.stubGlobal(
@@ -232,6 +232,8 @@ describe('editorFiles: downloadText', () => {
 		const link = click.mock.contexts[0] as HTMLAnchorElement
 		expect(link.download).toBe('map.json')
 		expect(link.href).toBe('blob:map')
+		expect(revokeObjectURL).not.toHaveBeenCalled()
+		await new Promise(resolve => setTimeout(resolve))
 		expect(revokeObjectURL).toHaveBeenCalledWith('blob:map')
 	})
 })

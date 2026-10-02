@@ -121,7 +121,7 @@ export function downloadText(text: string, fileName: string): void {
 	link.href = url
 	link.download = fileName
 	link.click()
-	URL.revokeObjectURL(url)
+	setTimeout(() => URL.revokeObjectURL(url))
 }
 
 export function svgCandidates(container: HTMLElement | null, prefix: string, taken: Set<string>): SvgCandidate[] {

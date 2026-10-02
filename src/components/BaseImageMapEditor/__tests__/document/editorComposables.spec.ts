@@ -50,12 +50,12 @@ describe('useEditorAnnouncer', () => {
 })
 
 describe('useEditorZoom', () => {
-	it('без слоя у сцены нет размеров; resetZoom возвращает 100 %', () => {
+	it('без слоя у сцены нет размеров; zoomOut возвращает 100 %', () => {
 		const zoom = useEditorZoom(() => undefined)
 		expect(zoom.stageStyle.value).toEqual({})
 		zoom.zoomIn()
 		expect(zoom.zoom.value).toBe(1.25)
-		zoom.resetZoom()
+		zoom.zoomOut()
 		expect(zoom.zoom.value).toBe(1)
 		expect(zoom.isMinZoom.value).toBe(true)
 	})

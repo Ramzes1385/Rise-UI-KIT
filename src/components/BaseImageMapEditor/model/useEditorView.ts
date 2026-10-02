@@ -45,9 +45,6 @@ export function useEditorZoom(getLayer: () => ImageMapLayer | undefined) {
 		zoomOut(): void {
 			zoom.value = Math.max(1, zoom.value / ZOOM_STEP)
 		},
-		resetZoom(): void {
-			zoom.value = 1
-		},
 		stageStyle: computed((): Record<string, string> => {
 			const layer = getLayer()
 			return layer ? { width: `${zoom.value * 100}%`, aspectRatio: `${layer.width} / ${layer.height}` } : {}

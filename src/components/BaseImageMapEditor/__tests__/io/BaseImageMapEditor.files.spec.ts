@@ -184,6 +184,8 @@ describe('BaseImageMapEditor файлы: JSON', () => {
 		expect(link.download).toBe('mall.json')
 		expect(link.getAttribute('href')).toBe('blob:map')
 		expect(createObjectURL).toHaveBeenCalledOnce()
+		expect(revokeObjectURL).not.toHaveBeenCalled()
+		await new Promise(resolve => setTimeout(resolve))
 		expect(revokeObjectURL).toHaveBeenCalledWith('blob:map')
 	})
 })

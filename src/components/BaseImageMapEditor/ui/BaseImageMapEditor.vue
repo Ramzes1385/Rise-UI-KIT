@@ -123,7 +123,7 @@
 						@pointerdown="pointer.handlePointerDown"
 						@pointermove="pointer.handlePointerMove"
 						@pointerup="pointer.handlePointerUp"
-						@pointercancel="pointer.handlePointerUp"
+						@pointercancel="pointer.handlePointerCancel"
 						@pointerleave="pointer.handlePointerLeave"
 						@dblclick="pointer.handleDoubleClick"
 						@keydown="keyboard.handleCanvasKeydown"

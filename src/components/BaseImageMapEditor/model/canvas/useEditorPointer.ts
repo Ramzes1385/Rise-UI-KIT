@@ -75,6 +75,11 @@ export function useEditorPointer(ctx: EditorContext, tool: EditorToolApi) {
 			if (drag.kind === 'draw') tool.finishDraw(drag.start, drag.current)
 			else ctx.doc.commit()
 		},
+		handlePointerCancel(): void {
+			const drag = tool.drag.value
+			tool.drag.value = null
+			if (drag && drag.kind !== 'draw') ctx.doc.commit()
+		},
 		handlePointerLeave(): void {
 			hover.value = null
 		},

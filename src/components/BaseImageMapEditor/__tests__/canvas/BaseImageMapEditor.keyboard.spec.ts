@@ -24,7 +24,7 @@ describe('BaseImageMapEditor клавиатура: выбор', () => {
 		const { container, emitted } = renderEditor({ selected: 'r1' })
 		expect(await press({ key: 'ArrowRight' })).toBe(false)
 		expect(modelObject(emitted, 'r1')).toMatchObject({ x: 0.105, y: 0.1 })
-		expect(statusOf(container)).toHaveTextContent('Слева 10.5 %, сверху 10 %')
+		expect(statusOf(container)).toHaveTextContent('Слева 10,5 %, сверху 10 %')
 		await press({ key: 'ArrowDown', shiftKey: true })
 		expect(modelObject(emitted, 'r1')).toMatchObject({ x: 0.105, y: 0.15 })
 		await press({ key: 'ArrowLeft' })

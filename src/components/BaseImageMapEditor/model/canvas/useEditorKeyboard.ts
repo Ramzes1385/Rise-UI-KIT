@@ -1,7 +1,7 @@
 import { ref } from 'vue'
-import { formatMessage } from '@/locales/state'
 import { findObject } from '../document/editorOps'
 import { UI_IMAGE_MAP_EDITOR } from '@/locales/messages'
+import { formatMessage, formatNumber } from '@/locales/state'
 import { clampPoint, translateObject } from '../geometry/editorGeometry'
 import { objectArea } from '@components/BaseImageMap/model/data/shapeGeometry'
 import type { ImageMapEditorProps } from '../../types/BaseImageMapEditor.types'
@@ -14,8 +14,8 @@ function isEditable(target: EventTarget | null): boolean {
 	return Boolean(element?.closest?.('input:not([type="radio"], [type="checkbox"]), textarea, select, [contenteditable="true"]'))
 }
 
-function percent(value: number): number {
-	return Math.round(value * 1000) / 10
+function percent(value: number): string {
+	return formatNumber(Math.round(value * 1000) / 10)
 }
 
 function useHistoryKeys(commands: EditorCommands) {

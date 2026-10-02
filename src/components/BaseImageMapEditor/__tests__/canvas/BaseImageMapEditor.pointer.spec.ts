@@ -118,6 +118,17 @@ describe('BaseImageMapEditor холст: выбор мышью', () => {
 		expect(emitted()['update:modelValue']).toHaveLength(1)
 	})
 
+	it('pointercancel во время рисования фигуру не создаёт', async () => {
+		const { stage, emitted } = renderEditor({ tool: 'rect' })
+		await fireEvent.pointerDown(stage(), at(0.2, 0.2))
+		await fireEvent.pointerMove(stage(), at(0.4, 0.4))
+		await fireEvent.pointerCancel(stage(), at(0.4, 0.4))
+		expect(emitted()['update:modelValue']).toBeUndefined()
+		expect(stage()).not.toHaveClass('base-image-map-editor__stage--dragging')
+		await fireEvent.pointerCancel(stage(), at(0.4, 0.4))
+		expect(emitted()['update:modelValue']).toBeUndefined()
+	})
+
 	it('без размеров холста точка — левый верхний угол', async () => {
 		const { container, emitted, rerender } = renderEditor()
 		await rerender({ tool: 'point' })
