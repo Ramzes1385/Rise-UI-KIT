@@ -72,13 +72,14 @@ export const Variants: StoryObj<typeof meta> = {
 | `Blocks` | Готовые экраны из компонентов: Auth (вход, регистрация), Settings, Dashboard (`src/stories/blocks/`) |
 | `Element` | BaseAlert, BaseAnimation, BaseAvatar, BaseAvatarGroup, BaseBadge, BaseButton, BaseButtonGroup, BaseCard, BaseChip, BaseColorModeButton, BaseFab, BaseIcon, BaseImage, BaseKbd, BaseLoader, BaseMarkdown, BaseProgress, BaseQrCode, BaseSeparator, BaseSkeleton, BaseSplitButton, BaseText, BaseUser |
 | `Form` | BaseAddressInput, BaseAutocomplete, BaseAvatarCropper, BaseCheckbox, BaseCheckboxGroup, BaseColorPicker, BaseDadataInput, BaseDatePicker, BaseFileUpload, BaseForm, BaseFormField, BaseInplace, BaseInput, BaseInputNumber, BaseInputTags, BaseMention, BaseMoneyInput, BasePhoneInput, BasePin, BaseRadio, BaseRange, BaseRating, BaseRequisiteInput, BaseSearch, BaseSegmented, BaseSelect, BaseSignaturePad, BaseSwitch, BaseTextarea, BaseTimePicker |
-| `Data` | BaseAccordion, BaseCalendar, BaseChecklist, BaseEmpty, BaseFilterBuilder, BaseHeatmap, BaseInfiniteScroll, BaseJsonViewer, BaseKanban, BasePieChart, BaseSlider, BaseSparkline, BaseTable, BaseTextDiff, BaseTimeline, BaseTree, BaseVirtualList |
+| `Data` | BaseAccordion, BaseCalendar, BaseChecklist, BaseEmpty, BaseFilterBuilder, BaseHeatmap, BaseInfiniteScroll, BaseJsonViewer, BaseKanban, BaseList, BasePieChart, BaseSlider, BaseSparkline, BaseTable, BaseTextDiff, BaseTimeline, BaseTree, BaseVirtualList |
 | `Navigation` | BaseBackTop, BaseBreadcrumbs, BaseLink, BaseMegaMenu, BaseMenu, BasePagination, BaseSideBar, BaseStepper, BaseTabs, BaseToolbar |
 | `Layout` | BaseContainer, BaseFooter, BaseHeader, BaseLayout, BaseScrollArea, BaseSplitter |
 | `Overlay` | BaseApp, BaseCommandPalette, BaseConfirm, BaseContextMenu, BaseDrawer, BaseDropdown, BaseDropdownMenu, BaseModal, BaseNotification, BaseNotificationCenter, BasePopconfirm, BasePopover, BaseSlideover, BaseTooltip, BaseTour |
 | `Chat` | BaseAiMessage, BaseChat, BaseCommentThread, BaseEmojiPicker, BasePromptInput, BaseReasoning, BaseToolCall |
 | `Editor` | BaseEditor |
 | `Media` | BaseAudioPlayer, BaseImageCompare, BaseMap, BaseMediaPlayer, BaseSubtitleEditor, BaseVoiceRecorder, BaseWaveform |
+| `Composables` | Демо composables для своих компонентов приложения: useSortable (`src/stories/composables/`). Страница — витрина без компонента, как Blocks: истории и `parameters.ts` — в `<Имя>/`, логика — модулем `cases/<История>.setup.ts`, стили — классы `cmp-*` в `composables.scss`; «Show code» — через `scriptSource`, импорт из `@ramzes1385/rise-ui-kit/composables` — в `importsFrom` |
 
 ## 3. Описание и argTypes
 
@@ -243,7 +244,7 @@ for (const theme of VISUAL_THEMES) {
 
 ## Эпик show-code (Ш.3–Ш.6): дополнения к разделу 8
 
-- **Проверка — по всем разделам.** `npm run test:story-source` проверяет истории всех компонентов и витрины `src/stories/blocks` и `src/stories/foundations` (у витрин истории и `parameters.ts` лежат прямо в папке `<раздел>/<Имя>/`). Ошибок нет ни в одном разделе; проверка идёт в CI (job «Stories & A11y Coverage»).
+- **Проверка — по всем разделам.** `npm run test:story-source` проверяет истории всех компонентов и витрины `src/stories/blocks`, `src/stories/composables` и `src/stories/foundations` (у витрин истории и `parameters.ts` лежат прямо в папке `<раздел>/<Имя>/`). Ошибок нет ни в одном разделе; проверка идёт в CI (job «Stories & A11y Coverage»).
 - **Свои компоненты примера — `components`.** Когда логика должна жить внутри `<BaseApp>` (`useToast()`, `useOverlay()`, `useConfirm()` находят ближайший `BaseApp` через inject), пример состоит из нескольких файлов. `storySource({ …, components: { ToastButtons: { template, imports, script, vue, state, types, components } } })`: основной файл получает `import ToastButtons from './ToastButtons.vue'`, файлы идут следом под комментарием `<!-- ToastButtons.vue -->`, вложенные `components` — тоже. В превью дочерний компонент — `defineComponent` с тем же шаблоном и той же логикой, что строки `script` (BaseApp, BaseConfirm FromCode, Foundations/Theming).
 - **Корневой импорт пакета** не пишется, если `imports` пуст (компонент только из `@ramzes1385/rise-ui-kit/media`, `importsFrom`).
 - **`types` — и для `models`:** `models: { messages: 'messages' }, types: { messages: 'ChatMessage[]' }` → `const messages = ref<ChatMessage[]>(…)`.

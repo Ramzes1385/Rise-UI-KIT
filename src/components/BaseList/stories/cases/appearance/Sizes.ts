@@ -1,5 +1,5 @@
-import type meta from '../BaseList.stories'
-import BaseList from '../../ui/BaseList.vue'
+import type meta from '../../BaseList.stories'
+import BaseList from '../../../ui/BaseList.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { literal, SIZE_PRESETS, sizeLabel, storySource, useStorySetup } from '@/stories/helpers'
 

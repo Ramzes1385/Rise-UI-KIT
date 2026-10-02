@@ -1,0 +1,62 @@
+// Оформление страниц Composables в Storybook: демо composables на простой разметке. В пакет не попадает.
+
+.cmp-demo {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	max-width: 360px;
+	color: var(--rise-text);
+	font-family: var(--rise-font-sans);
+	@include text-size(sm);
+}
+
+.cmp-sortable {
+	&__list {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	&__item,
+	&__ghost {
+		padding: 10px 12px;
+		border: 1px solid var(--rise-border);
+		border-radius: var(--rise-radius-sm);
+		background: var(--rise-bg);
+		color: var(--rise-text-highlighted);
+		cursor: grab;
+		user-select: none;
+	}
+
+	&__item:focus-visible {
+		@include focus-ring;
+	}
+
+	&__item--grabbed {
+		border-color: var(--rise-primary);
+		box-shadow: var(--rise-shadow-md);
+	}
+
+	&__item--placeholder {
+		opacity: 0.4;
+	}
+
+	&__ghost {
+		position: fixed;
+		top: 0;
+		left: 0;
+		z-index: var(--rise-z-overlay);
+		box-shadow: var(--rise-shadow-lg);
+		cursor: grabbing;
+		pointer-events: none;
+	}
+
+	&__hint {
+		margin: 0;
+		color: var(--rise-text-toned);
+		@include text-size(xs);
+	}
+}

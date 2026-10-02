@@ -120,6 +120,7 @@ export default tseslint.config(
 			'src/components/*/stories/**',
 			'src/stories/foundations/**',
 			'src/stories/blocks/**',
+			'src/stories/composables/**',
 			'src/**/*.d.ts',
 		],
 		rules: {
@@ -182,6 +183,7 @@ export default tseslint.config(
 			'src/components/*/stories/**/*.ts',
 			'src/stories/foundations/**/*.ts',
 			'src/stories/blocks/**/*.ts',
+			'src/stories/composables/**/*.ts',
 		],
 		languageOptions: {
 			globals: {

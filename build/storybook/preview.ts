@@ -108,6 +108,7 @@ const preview: Preview = {
 					'Chat',
 					'Editor',
 					'Media',
+					'Composables',
 				],
 			},
 		},

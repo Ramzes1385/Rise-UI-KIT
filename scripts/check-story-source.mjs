@@ -4,7 +4,7 @@
  * `render` задаёт `parameters.docs.source` в `stories/parameters.ts`. Код, написанный вручную (`source.code`),
  * не допускается: он расходится с превью. Состояние шаблона — `state` помощников, а не `ref` в константе модуля:
  * такое состояние общее для всех показов истории и в код не попадает. Проверяются истории компонентов и витрины
- * `src/stories/blocks` и `src/stories/foundations`. `--group=Element` проверяет один раздел.
+ * `src/stories/blocks`, `src/stories/composables` и `src/stories/foundations`. `--group=Element` проверяет один раздел.
  */
 
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
@@ -14,7 +14,7 @@ import ts from 'typescript'
 const ROOT = join(import.meta.dirname, '..')
 const COMPONENTS = join(ROOT, 'src/components')
 /** Витрины без компонента: `src/stories/<раздел>/<Имя>/` — истории и `parameters.ts` прямо в папке */
-const STORY_SECTIONS = ['src/stories/blocks', 'src/stories/foundations'].map(path => join(ROOT, path))
+const STORY_SECTIONS = ['src/stories/blocks', 'src/stories/composables', 'src/stories/foundations'].map(path => join(ROOT, path))
 const SOURCE_HELPERS = new Set(['storySource', 'staticStorySource'])
 const REACTIVE = new Set(['ref', 'shallowRef', 'reactive', 'computed'])
 

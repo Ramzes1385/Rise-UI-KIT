@@ -1234,3 +1234,5 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 - **BaseKanban** — без видимых изменений: перестановка вынесена в `useSortable`, истории канбана прошли в обеих темах.
 - Новый значок `grip-vertical` (шесть точек) в наборе иконок.
 
+- **Истории BaseList** (Storybook): новые истории `data-baselist--` Avatars, WithActions, SingleSelect, MultipleSelect, Typeahead, Sortable, SortableSelect, CanMove, Filtered, Virtual; Empty («Разделов пока нет») и LongContent (узкий контейнер 360px, перенос длинных заголовков и ссылки) заполнены. Список скриншот-тестов не менялся (variants, sizes, disabled, with-error) — эталоны делает владелец.
+- **Новый раздел Storybook «Composables»** — страница `composables-usesortable--basic`: демо-список из четырёх этапов на простой разметке (классы `cmp-sortable` в `src/stories/composables/composables.scss`: рамка `--rise-border`, фон `--rise-bg`, взятый этап — рамка `--rise-primary` и тень `--rise-shadow-md`, «призрак» — тень `--rise-shadow-lg`). Только витрина Storybook, в пакет не попадает; в скриншот-тесты не входит.
