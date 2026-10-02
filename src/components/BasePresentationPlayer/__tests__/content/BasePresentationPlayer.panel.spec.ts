@@ -194,6 +194,16 @@ describe('BasePresentationPlayer — панель «Список слайдов�
 		expect(wrapper.get('.base-presentation-player__notes-text').text()).toBe('Итоговый текст')
 	})
 
+	it('«Стенограмма» открыта, слайды убрали — заголовка нет, панель не падает', async () => {
+		const wrapper = await mountContent({ slides: NOTES_SLIDES })
+		await notesButton(wrapper).trigger('click')
+		expect(wrapper.find('.base-presentation-player__notes-title').exists()).toBe(true)
+		await wrapper.setProps({ slides: [] })
+		const notes = wrapper.get('.base-presentation-player__notes')
+		expect(notes.find('.base-presentation-player__notes-title').exists()).toBe(false)
+		expect(notes.get('.base-presentation-player__notes-text').text()).toBe(UI_PRESENTATION.NOTES_EMPTY)
+	})
+
 	it('notes из одних пробелов не считаются стенограммой; пустой список слайдов', async () => {
 		const wrapper = await mountContent({ slides: contentSlides(2, { notes: '   ' }) })
 		expect(notesButton(wrapper).exists()).toBe(false)
