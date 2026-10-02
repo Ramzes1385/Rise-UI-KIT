@@ -2098,6 +2098,24 @@ const visible = computed(() => tasks.value.filter(createFilterPredicate(filter.v
 
 ---
 
+## BaseDescriptions
+
+Список «поле — значение» для страниц деталей: реквизиты, карточка заказа, профиль, настройки.
+
+```vue
+<BaseDescriptions title="Реквизиты" :items="[
+	{ key: 'name', label: 'Компания', value: 'ООО «Ромашка»' },
+	{ key: 'inn', label: 'ИНН', value: '7707083893', isCopyable: true },
+	{ key: 'address', label: 'Адрес', value: address, span: 'full' },
+]" :columns="3" @copy="({ item }) => track('copied', item.key)">
+	<template #value-status><BaseBadge label="Оплачен" /></template>
+</BaseDescriptions>
+```
+
+Разметка — `dl`, у каждого поля `dt` и `dd` в своём `div`. Колонки — по ширине контейнера, а не окна: не больше `columns` (по умолчанию 3), каждая не уже `minItemWidth` (240 px); в узком контейнере — одна. `span` поля — сколько колонок оно занимает (не больше помещающихся), `full` — всю строку. `layout`: `horizontal` — подпись слева шириной `labelWidth` (по умолчанию 40 %), в узкой колонке значение переносится под неё; `vertical` — подпись над значением. Пустое значение (`null`, `undefined`, `''`) — «—» (`emptyValue`), полей нет — «Нет данных» (`emptyText`, слот `empty`). `isCopyable` у списка или поля — кнопка «Копировать: ИНН» (`copyText` — свой текст для буфера), событие `copy` (`{ item, text }`), итог — в `role="status"`. Слоты: `title`, `extra`, `label` и `value` для всех полей, `label-<key>` и `value-<key>` — для одного. Заголовок — не `h*`: свой уровень заголовка ставьте слотом `title`.
+
+---
+
 ## BaseTextDiff
 
 Сравнение двух текстов по строкам: редакции договора, описания товара, настройки.
@@ -2721,6 +2739,7 @@ BaseContainer
 BaseContextMenu
 BaseDadataInput
 BaseDatePicker
+BaseDescriptions
 BaseDrawer
 BaseDropdown
 BaseDropdownMenu

@@ -1094,3 +1094,12 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 - Новые истории: `navigation-basebottomnav--default`, `--variants`, `--sizes`, `--custom-color`, `--links`, `--badges`, `--custom-slots`, `--long-content`, `--disabled`, `--keyboard`, `--hide-on-scroll`. В `BaseBottomNav.visual.spec.ts` — `variants`, `sizes`, `badges` (обе темы); эталонов нет — их создаёт владелец.
 
 Страница со снимками — `.rise-transfer\review\new-bottom-nav.html`. Эталоны не трогались.
+
+## Задача new-descriptions: BaseDescriptions
+
+Новый компонент, вид существующих не меняется. Эталонов нет — снимки историй `data-basedescriptions--variants`, `--sizes`, `--layouts`, `--responsive` (обе темы) делает владелец. Превью — `.rise-transfer\review\new-descriptions.html`.
+
+- Корень — рамка `--rise-border`, радиус `--rise-radius-lg`, отступ 16px (у `ghost` — без рамки и отступа); текст `sm`.
+- Подпись `dt` — `--rise-text-toned`, значение `dd` — `--rise-text-highlighted`; пустое значение «—» — `--rise-text-toned`. Заголовок — `md`, полужирный.
+- Сетка: зазор 12px по вертикали и 24px между колонками; колонки не уже `minItemWidth`, в узком контейнере — одна.
+- Кнопка копирования — ghost-кнопка со значком 14px, после копирования значок «готово» на 2 с.

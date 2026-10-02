@@ -80,6 +80,9 @@ export const UI_IMAGE_VIEWER = localized('imageViewer')
 /** Карусель BaseSlider */
 export const UI_CAROUSEL = localized('carousel')
 
+/** Список «поле — значение» */
+export const UI_DESCRIPTIONS = localized('descriptions')
+
 /** Просмотр JSON */
 export const UI_JSON_VIEWER = localized('jsonViewer')
 

@@ -50,6 +50,7 @@ export interface UiKitLocale {
 	imageViewer: Section<'imageViewer'>
 	carousel: Section<'carousel'>
 	fileUpload: Section<'fileUpload'>
+	descriptions: Section<'descriptions'>
 	jsonViewer: Section<'jsonViewer'>
 	map: Section<'map'>
 	textDiff: Section<'textDiff'>

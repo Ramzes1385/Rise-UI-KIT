@@ -1421,3 +1421,11 @@ FOLLOW_UPS № 38, № 39, № 13 и № 15 (медиа).
 - `hideOnScroll` — прячет панель при прокрутке окна вниз, показывает при прокрутке вверх и при фокусе внутри; при `prefers-reduced-motion` — без анимации.
 - Слоты `icon` и `label` с `{ item, isActive }`; варианты `default`, `soft`, `outline`, `ghost`; `customClass` — `root`, `list`, `item`, `link`, `icon`, `label`, `badge`.
 - Строки словаря (ru, en): `aria.BOTTOM_NAV`, `warnings.BOTTOM_NAV_ITEM_COUNT`.
+
+## Новые компоненты: BaseDescriptions (задача new-descriptions)
+
+Новый компонент, изменений в существующих нет.
+
+- `BaseDescriptions` — список «поле — значение» на `dl`/`dt`/`dd`: `items` (`key`, `label`, `value`, `span`, `isCopyable`, `copyText`), `title`, `columns` и `minItemWidth` (колонки по ширине контейнера), `layout` (`horizontal`, `vertical`), `labelWidth`, `isCopyable`, `emptyValue`, `emptyText`; событие `copy` (`{ item, text }`); слоты `title`, `extra`, `label`, `value`, `label-<key>`, `value-<key>`, `empty`.
+- Экспорт: `BaseDescriptions`, `DESCRIPTIONS_VARIANTS`, `DESCRIPTIONS_LAYOUTS`, типы `BaseDescriptionsProps`, `BaseDescriptionsEmits`, `BaseDescriptionsSlots`, `DescriptionsItem`, `DescriptionsCopyEvent`, `DescriptionsItemSlotProps`, `DescriptionsLayout`.
+- Строки словаря (ru, en): раздел `descriptions` (`UI_DESCRIPTIONS`) — `EMPTY_VALUE`, `EMPTY`, `COPY`, `COPIED`, `COPY_FAILED`. Свой язык через `defineLocale` должен перевести новый раздел.

@@ -78,6 +78,14 @@ export const enData = {
 		LEGEND: 'Chart series',
 		NO_VALUE: 'no value',
 	},
+	/** Список «поле — значение»: пустое значение, пустой список, копирование */
+	descriptions: {
+		EMPTY_VALUE: '—',
+		EMPTY: 'No data',
+		COPY: 'Copy {label}',
+		COPIED: '{label} copied',
+		COPY_FAILED: 'Could not copy {label}',
+	},
 	/** Просмотр JSON: кнопки над деревом и сообщение о копировании */
 	jsonViewer: {
 		EXPAND_ALL: 'Expand all',

@@ -234,6 +234,7 @@ const EMPTY_COMPONENTS = new Set([
 	'BaseChat',
 	'BaseDadataInput',
 	'BaseChart',
+	'BaseDescriptions',
 ])
 
 const LONG_CONTENT_COMPONENTS = new Set([
@@ -269,6 +270,7 @@ const LONG_CONTENT_COMPONENTS = new Set([
 	'BaseStepper',
 	'BaseConfirm',
 	'BaseDadataInput',
+	'BaseDescriptions',
 ])
 
 const REQUIRED_STORIES_INTERACTIVE = ['Default', 'Disabled']

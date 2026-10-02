@@ -104,6 +104,7 @@ import { BaseSplitButton } from '../../components/BaseSplitButton'
 import { BaseVirtualList } from '../../components/BaseVirtualList'
 import { BaseAddressInput } from '../../components/BaseAddressInput'
 import { BaseAutocomplete } from '../../components/BaseAutocomplete'
+import { BaseDescriptions } from '../../components/BaseDescriptions'
 import { BaseDropdownMenu } from '../../components/BaseDropdownMenu'
 import { BaseImageCompare } from '../../components/BaseImageCompare'
 import { BaseNotification } from '../../components/BaseNotification'
@@ -154,6 +155,7 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseContextMenu,
 	BaseCountdown,
 	BaseDadataInput,
+	BaseDescriptions,
 	BaseDrawer,
 	BaseDropdown,
 	BaseDropdownMenu,
