@@ -1,8 +1,9 @@
 /** Composable: viewport слайдера — элемент и его размер по оси прокрутки, обновляемый ResizeObserver */
 import { onBeforeUnmount, onMounted, ref } from 'vue'
+import type { UseSliderViewportReturn } from './types/useSlider.types'
 
 /** Описание: элемент viewport и его размер по оси прокрутки; `measure` читает размер напрямую из DOM */
-function useSliderViewport(isVertical: () => boolean) {
+function useSliderViewport(isVertical: () => boolean): UseSliderViewportReturn {
 	const viewportRef = ref<HTMLElement | null>(null)
 	const viewportSize = ref(0)
 	let resizeObserver: ResizeObserver | null = null

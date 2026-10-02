@@ -1,9 +1,9 @@
 /** Composable: подписки документа на время перетаскивания ползунка range-слайдера (мышь и касание) */
 import { onBeforeUnmount } from 'vue'
-import type { RangeDragKind, UseRangeDragListenersOptions } from './types/useRangeDrag.types'
+import type { RangeDragKind, UseRangeDragListenersOptions, UseRangeDragListenersReturn } from './types/useRangeDrag.types'
 
 /** Описание: подписывает документ на движение и отпускание указателя; отписка — по отпусканию и при размонтировании */
-function useRangeDragListeners({ activeIndex, onMove, onEnd }: UseRangeDragListenersOptions) {
+function useRangeDragListeners({ activeIndex, onMove, onEnd }: UseRangeDragListenersOptions): UseRangeDragListenersReturn {
 	function handleMouseMove(ev: MouseEvent): void {
 		/* istanbul ignore next -- Защитный выход без активного drag. */
 		if (activeIndex.value === null) return

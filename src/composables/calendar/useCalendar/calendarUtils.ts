@@ -69,13 +69,15 @@ function boundaryDiff(boundary: Date | null, timestamp: number): number {
 function hasPrevMonth(position: CalendarMonthPosition, limits: CalendarPrevLimits): boolean {
 	const prev = shiftMonth(position, -1)
 	const lastDayPrev = new Date(prev.year, prev.month + 1, 0).getTime()
-	return !(boundaryDiff(limits.minDate(), lastDayPrev) > 0 || boundaryDiff(limits.disableTo(), lastDayPrev) > 0)
+	const { minDate, disableTo } = limits
+	return !(boundaryDiff(minDate(), lastDayPrev) > 0 || boundaryDiff(disableTo(), lastDayPrev) > 0)
 }
 
 function hasNextMonth(position: CalendarMonthPosition, limits: CalendarNextLimits): boolean {
 	const next = shiftMonth(position, 1)
 	const firstDayNext = new Date(next.year, next.month, 1).getTime()
-	return !(boundaryDiff(limits.maxDate(), firstDayNext) < 0 || boundaryDiff(limits.disableFrom(), firstDayNext) < 0)
+	const { maxDate, disableFrom } = limits
+	return !(boundaryDiff(maxDate(), firstDayNext) < 0 || boundaryDiff(disableFrom(), firstDayNext) < 0)
 }
 
 /** Шаг по календарю: в виде дней — на месяц, месяцев — на год, лет — на 12 лет */
@@ -90,19 +92,21 @@ function shiftCalendarView(state: CalendarViewState, direction: CalendarStepDire
 }
 
 function isDisabledByList(dateOnly: Date, limits: CalendarDayLimits): boolean {
-	const disabled = limits.disabledDates()
+	const { disabledDates, disabledWeekdays } = limits
+	const disabled = disabledDates()
 	if (Array.isArray(disabled) && disabled.some(item => !!item && isSameDay(dateOnly, new Date(item)))) return true
 
-	const weekdays = limits.disabledWeekdays()
+	const weekdays = disabledWeekdays()
 	return Array.isArray(weekdays) && weekdays.includes(getWeekday(dateOnly) as CalendarWeekday)
 }
 
 function isOutsideLimits(timestamp: number, limits: CalendarDayLimits): boolean {
+	const { minDate, maxDate, disableFrom, disableTo } = limits
 	return (
-		boundaryDiff(limits.minDate(), timestamp) > 0 ||
-		boundaryDiff(limits.maxDate(), timestamp) < 0 ||
-		boundaryDiff(limits.disableFrom(), timestamp) <= 0 ||
-		boundaryDiff(limits.disableTo(), timestamp) >= 0
+		boundaryDiff(minDate(), timestamp) > 0 ||
+		boundaryDiff(maxDate(), timestamp) < 0 ||
+		boundaryDiff(disableFrom(), timestamp) <= 0 ||
+		boundaryDiff(disableTo(), timestamp) >= 0
 	)
 }
 

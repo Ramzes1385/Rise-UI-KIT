@@ -326,6 +326,25 @@ describe('useChatInputState', () => {
 			expect(state.attachments.value).toEqual([])
 		})
 
+		it('ошибка blob-ссылки на N-м файле не теряет добавленные раньше', () => {
+			vi.spyOn(URL, 'createObjectURL').mockImplementation(file => {
+				if ((file as File).name === 'broken.pdf') throw new Error('quota')
+				return `blob:${(file as File).name}`
+			})
+			const { state } = setup()
+			const fileInput = document.createElement('input')
+			fileInput.type = 'file'
+			const files = [
+				new File(['x'], 'photo.png', { type: 'image/png' }),
+				new File(['abc'], 'broken.pdf', { type: 'application/pdf' }),
+			]
+			selectFiles(fileInput, files)
+
+			expect(() => state.handleFileChange({ target: fileInput } as unknown as Event)).toThrow('quota')
+
+			expect(state.attachments.value.map(item => item.name)).toEqual(['photo.png'])
+		})
+
 		it('событие не от поля ввода игнорируется', () => {
 			const { state, emit } = setup()
 

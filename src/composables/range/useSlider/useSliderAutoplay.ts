@@ -1,6 +1,6 @@
 /** Composable: автопрокрутка слайдера с паузой под указателем, при фокусе внутри и при prefers-reduced-motion */
 import { onBeforeUnmount, onMounted, watch } from 'vue'
-import type { ResolvedSliderOptions } from './types/useSlider.types'
+import type { ResolvedSliderOptions, UseSliderAutoplayReturn } from './types/useSlider.types'
 
 /** Медиазапрос системной настройки «уменьшить движение» */
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
@@ -32,7 +32,7 @@ function useReducedMotionFlag(onChange: () => void): { isReduced: boolean } {
 }
 
 /** Описание: автопрокрутка (`goNext` по интервалу) и обработчики корня, которые ставят её на паузу (WCAG 2.2.2) */
-function useSliderAutoplay(settings: ResolvedSliderOptions, goNext: () => void) {
+function useSliderAutoplay(settings: ResolvedSliderOptions, goNext: () => void): UseSliderAutoplayReturn {
 	let autoplayTimer: ReturnType<typeof setInterval> | null = null
 	/**
 	 * Причины паузы: указатель над слайдером и фокус внутри него. Храним раздельно: уход мыши

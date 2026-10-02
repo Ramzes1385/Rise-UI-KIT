@@ -103,4 +103,34 @@ interface SliderTrackStyleInput {
 	isDragging: boolean
 }
 
-export type { ResolvedSliderOptions, SliderTrackStyleInput, UseSliderOptions, UseSliderReturn }
+/** Возврат useSliderNavigation: текущий слайд, страницы и переходы */
+type UseSliderNavigationReturn = Pick<
+	UseSliderReturn,
+	'currentIndex' | 'maxIndex' | 'pageCount' | 'currentPage' | 'goTo' | 'goNext' | 'goPrev' | 'goToPage'
+>
+
+/** Возврат useSliderAutoplay: управление автопрокруткой и обработчики корня, ставящие её на паузу */
+type UseSliderAutoplayReturn = Pick<
+	UseSliderReturn,
+	'pauseAutoplay' | 'resumeAutoplay' | 'onMouseEnter' | 'onMouseLeave' | 'onFocusIn' | 'onFocusOut'
+>
+
+/** Возврат useSliderViewport */
+interface UseSliderViewportReturn {
+	/** Ref на viewport элемент */
+	viewportRef: Ref<HTMLElement | null>
+	/** Размер viewport по оси прокрутки, px; обновляется ResizeObserver */
+	viewportSize: Ref<number>
+	/** Размер viewport по оси прокрутки, прочитанный из DOM сейчас; без элемента — 0 */
+	measure: () => number
+}
+
+export type {
+	ResolvedSliderOptions,
+	SliderTrackStyleInput,
+	UseSliderAutoplayReturn,
+	UseSliderNavigationReturn,
+	UseSliderOptions,
+	UseSliderReturn,
+	UseSliderViewportReturn,
+}

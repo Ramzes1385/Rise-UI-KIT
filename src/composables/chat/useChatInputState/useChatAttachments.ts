@@ -23,13 +23,20 @@ function useChatAttachments(options: UseChatAttachmentsOptions) {
 	const fileInputRef = ref<HTMLInputElement | null>(null)
 	const attachments = ref<ChatMessageAttachment[]>([])
 
+	function triggerFileSelect(): void {
+		fileInputRef.value?.click()
+	}
+
 	function handleFileChange(event: Event): void {
 		const target = toHTMLInputElement(event.target)
 		if (!target) return
 		/* istanbul ignore next -- defensive */
 		if (!target.files || target.files.length === 0) return
 		emit('attach', target.files)
-		attachments.value.push(...Array.from(target.files, toChatAttachment))
+		// По одному: если createObjectURL бросит на N-м файле, первые N−1 уже добавлены
+		for (const file of Array.from(target.files)) {
+			attachments.value.push(toChatAttachment(file))
+		}
 		target.value = ''
 	}
 
@@ -55,7 +62,7 @@ function useChatAttachments(options: UseChatAttachmentsOptions) {
 	return {
 		fileInputRef,
 		attachments,
-		triggerFileSelect: () => fileInputRef.value?.click(),
+		triggerFileSelect,
 		handleFileChange,
 		removeAttachment,
 		sendMessage,

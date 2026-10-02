@@ -17,6 +17,18 @@ const CONTEXT_MENU_GAP = 16
  */
 const SCROLL_CLOSE_THRESHOLD = 16
 
+/** Пространство имён HTML: элемент с фокусом проверяем по нему, а не `instanceof HTMLElement` — у ленты в iframe свои классы */
+const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml'
+
+/**
+ * HTML-элемент с фокусом в данном документе. Документ — тот, где лента или меню (iframe, Picture-in-Picture, `window.open`),
+ * а не глобальный `document`; проверка без глобальных классов окна, чтобы работать в чужом realm.
+ */
+function getFocusedHtmlElement(ownerDocument: Document): HTMLElement | null {
+	const active = ownerDocument.activeElement
+	return active?.namespaceURI === HTML_NAMESPACE ? (active as HTMLElement) : null
+}
+
 /** Координата меню по одной оси: у курсора, но не дальше края окна */
 function clampToWindow(position: number, size: number, windowSize: number): number {
 	/* istanbul ignore next — boundary */
@@ -44,7 +56,7 @@ function useChatContextMenu(options: UseChatContextMenuOptions) {
 	function handleContextMenu(event: MouseEvent, message: ChatContextMenuState['message']): void {
 		/* istanbul ignore next — defensive */
 		if (selectedMessageIds.value.length > 0) return
-		returnFocusTarget = document.activeElement instanceof HTMLElement ? document.activeElement : null
+		returnFocusTarget = getFocusedHtmlElement(listRef.value?.ownerDocument ?? document)
 		scrollTopAtOpen = listRef.value?.scrollTop ?? 0
 		contextMenu.value = {
 			isOpen: true,
@@ -59,7 +71,8 @@ function useChatContextMenu(options: UseChatContextMenuOptions) {
 	 * с которого меню открыли: иначе после удаления меню из DOM фокус упал бы на body.
 	 */
 	function closeContextMenu(): void {
-		const hadFocus = Boolean(contextMenuElement.value?.contains(document.activeElement))
+		const menuElement = contextMenuElement.value
+		const hadFocus = Boolean(menuElement?.contains(menuElement.ownerDocument.activeElement))
 		contextMenu.value.isOpen = false
 		contextMenu.value.message = null
 		if (hadFocus && returnFocusTarget?.isConnected) returnFocusTarget.focus()

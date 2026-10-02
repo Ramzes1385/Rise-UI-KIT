@@ -1,7 +1,8 @@
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
+import { mount } from '@vue/test-utils'
+import type { VueWrapper } from '@vue/test-utils'
 import BaseMediaPlayer from '../../ui/BaseMediaPlayer.vue'
-import { enableAutoUnmount, mount } from '@vue/test-utils'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import type { FakeMediaValues } from '../utils/BaseMediaPlayer.test-utils'
 import { fakeMedia, playerMenu } from '../utils/BaseMediaPlayer.test-utils'
@@ -9,7 +10,17 @@ import type { BaseMediaPlayerProps } from '../../types/BaseMediaPlayer.types'
 
 const SOURCE = '/media/demo.webm'
 
-enableAutoUnmount(afterEach)
+const mountedWrappers: VueWrapper[] = []
+
+afterEach(() => {
+	for (const wrapper of mountedWrappers.splice(0)) wrapper.unmount()
+})
+
+function mountPlayer(props: BaseMediaPlayerProps): VueWrapper {
+	const wrapper = mount(BaseMediaPlayer, { props, attachTo: document.body })
+	mountedWrappers.push(wrapper)
+	return wrapper
+}
 
 async function setup(props: Partial<BaseMediaPlayerProps> = {}, initial: Partial<FakeMediaValues> = {}) {
 	vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue()
@@ -148,7 +159,7 @@ describe('BaseMediaPlayer: панель', () => {
 			{ src: '/media/sd.webm', type: 'video/webm', label: '360p' },
 			{ src: '/media/raw.webm', type: 'video/webm' },
 		]
-		const wrapper = mount(BaseMediaPlayer, { props: { sources, title: 'Демо', playbackRates: [2, 1, 0.5] }, attachTo: document.body })
+		const wrapper = mountPlayer({ sources, title: 'Демо', playbackRates: [2, 1, 0.5] })
 		await nextTick()
 		const video = wrapper.get('video').element as HTMLVideoElement
 		const rate = async (value: number): Promise<void> => {
@@ -202,7 +213,7 @@ describe('BaseMediaPlayer: панель', () => {
 			{ src: '/media/cut.webm', type: 'video/webm', label: 'Режиссёрская' },
 			{ src: '/media/tv.webm', type: 'video/webm', label: 'Телеверсия' },
 		]
-		const wrapper = mount(BaseMediaPlayer, { props: { sources, title: 'Демо' }, attachTo: document.body })
+		const wrapper = mountPlayer({ sources, title: 'Демо' })
 		await nextTick()
 		const quality = playerMenu(wrapper, 'Качество')
 
@@ -217,7 +228,7 @@ describe('BaseMediaPlayer: панель', () => {
 			{ src: '/media/a.webm', type: 'video/webm', height: 1080 },
 			{ src: '/media/b.webm', type: 'video/webm', height: 480 },
 		]
-		const wrapper = mount(BaseMediaPlayer, { props: { sources, title: 'Демо' }, attachTo: document.body })
+		const wrapper = mountPlayer({ sources, title: 'Демо' })
 		await nextTick()
 		const quality = playerMenu(wrapper, 'Качество')
 
@@ -235,7 +246,7 @@ describe('BaseMediaPlayer: панель', () => {
 			{ src: '/media/b.webm', type: 'video/webm', height: 720 },
 			{ src: '/media/c.webm', type: 'video/webm', height: 480 },
 		]
-		const wrapper = mount(BaseMediaPlayer, { props: { sources, title: 'Демо' }, attachTo: document.body })
+		const wrapper = mountPlayer({ sources, title: 'Демо' })
 		await nextTick()
 
 		expect(playerMenu(wrapper, 'Качество').options()).toEqual(['Авто (720p)', '1080p', '720p', '480p'])
@@ -265,7 +276,7 @@ describe('BaseMediaPlayer: панель', () => {
 			{ id: 's2', title: 'Сезон 2', episodes: [{ id: 'e3', title: 'Серия 3', sources }] },
 		]
 		const audioTracks = [{ label: 'Оригинал' }, { src: '/media/dub.m4a', label: 'Студия' }]
-		const wrapper = mount(BaseMediaPlayer, { props: { title: 'Демо', playlists, audioTracks }, attachTo: document.body })
+		const wrapper = mountPlayer({ title: 'Демо', playlists, audioTracks })
 		const video = wrapper.get('video').element as HTMLVideoElement
 		const fake = fakeMedia(video, { duration: 60 })
 		await nextTick()

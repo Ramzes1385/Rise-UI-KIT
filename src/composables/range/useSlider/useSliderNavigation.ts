@@ -1,8 +1,8 @@
 /** Composable: навигация слайдера — текущий индекс, страницы, переходы вперёд и назад с учётом loop */
 import type { Ref } from 'vue'
 import { computed, ref, watch } from 'vue'
-import type { ResolvedSliderOptions } from './types/useSlider.types'
 import { clampSlideIndex, maxSlideIndex, perGroup } from './sliderOptions'
+import type { ResolvedSliderOptions, UseSliderNavigationReturn } from './types/useSlider.types'
 
 /** Описание: держит индекс в границах при смене начального индекса и количества слайдов */
 function watchIndexBounds(settings: ResolvedSliderOptions, currentIndex: Ref<number>): void {
@@ -18,7 +18,7 @@ function watchIndexBounds(settings: ResolvedSliderOptions, currentIndex: Ref<num
 }
 
 /** Описание: текущий слайд и страницы; переход на slidesPerGroup, за краем — на другой край при loop */
-function useSliderNavigation(settings: ResolvedSliderOptions) {
+function useSliderNavigation(settings: ResolvedSliderOptions): UseSliderNavigationReturn {
 	const currentIndex = ref(clampSlideIndex(settings, settings.initialIndex()))
 
 	function goTo(index: number): void {

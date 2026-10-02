@@ -97,6 +97,30 @@ describe('calendarUtils', () => {
 		})
 	})
 
+	describe('вызов границ', () => {
+		it('должен вызывать границы и списки без this, как до разбиения на модули', () => {
+			const receivers: unknown[] = []
+			function readNull(this: unknown): null {
+				receivers.push(this)
+				return null
+			}
+			function readEmpty(this: unknown): never[] {
+				receivers.push(this)
+				return []
+			}
+			const limits = { minDate: readNull, maxDate: readNull, disableFrom: readNull, disableTo: readNull }
+
+			hasPrevMonth({ year: 2024, month: 0 }, limits)
+			hasNextMonth({ year: 2024, month: 0 }, limits)
+			createDayMarkers(markerOptions({ ...limits, disabledDates: readEmpty, disabledWeekdays: readEmpty })).isDayDisabled(
+				new Date(2024, 0, 10),
+			)
+
+			expect(receivers).toHaveLength(10)
+			expect(receivers.every(receiver => receiver === undefined)).toBe(true)
+		})
+	})
+
 	describe('shiftCalendarView', () => {
 		it('должен шагать по месяцам в виде дней с переходом через год', () => {
 			const back = viewState(2024, 0)

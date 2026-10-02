@@ -17,10 +17,9 @@ function trackBasePercent({ settings, currentIndex, viewportSize }: SliderTrackS
 	return (basePx / viewportSize) * 100
 }
 
-/** Описание: стиль трека с учётом смещения при перетаскивании; не slide-анимация — без стиля */
+/** Описание: стиль трека slide-анимации с учётом смещения при перетаскивании (режим проверяет useSlider) */
 function buildTrackStyle(input: SliderTrackStyleInput): Record<string, string> {
 	const { settings, viewportSize } = input
-	if (settings.animation() !== 'slide') return {}
 	const direction = settings.isVertical() ? 'Y' : 'X'
 	const gap = settings.spaceBetween()
 	const offsetPercent = viewportSize > 0 ? (input.dragOffset / viewportSize) * 100 : 0
@@ -32,9 +31,8 @@ function buildTrackStyle(input: SliderTrackStyleInput): Record<string, string> {
 	return styles
 }
 
-/** Описание: инлайн-стиль отдельного слайда (размер по оси прокрутки), когда на экране несколько слайдов или есть gap */
+/** Описание: инлайн-стиль слайда slide-анимации (размер по оси прокрутки), когда на экране несколько слайдов или есть gap */
 function buildSlideStyle(settings: ResolvedSliderOptions, viewportSize: number): Record<string, string> {
-	if (settings.animation() !== 'slide') return {}
 	if (perView(settings) <= 1 && settings.spaceBetween() === 0) return {}
 	if (viewportSize === 0) return {}
 	const dimension = settings.isVertical() ? 'height' : 'width'

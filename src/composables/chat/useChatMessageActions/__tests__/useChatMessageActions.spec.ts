@@ -167,6 +167,40 @@ describe('useChatMessageActions', () => {
 			expect(document.activeElement).toBe(opener)
 		})
 
+		it('лента в iframe: фокус возвращается на кнопку из документа ленты', () => {
+			const { actions, list, menu, menuButton } = setup()
+			const frame = document.createElement('iframe')
+			document.body.append(frame)
+			const frameDocument = frame.contentDocument as Document
+			const opener = frameDocument.createElement('button')
+			frameDocument.body.append(list, menu, opener)
+			opener.focus()
+
+			actions.handleContextMenu(rightClick(), message)
+			menuButton.focus()
+			expect(opener).not.toBeInstanceOf(HTMLElement)
+			expect(frameDocument.activeElement).toBe(menuButton)
+
+			actions.closeContextMenu()
+
+			expect(frameDocument.activeElement).toBe(opener)
+		})
+
+		it('фокус на SVG-элементе не запоминается', () => {
+			const { actions, menuButton } = setup()
+			const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+			icon.setAttribute('tabindex', '0')
+			document.body.append(icon)
+			icon.focus()
+			expect(document.activeElement).toBe(icon)
+			actions.handleContextMenu(rightClick(), message)
+			menuButton.focus()
+
+			actions.closeContextMenu()
+
+			expect(document.activeElement).toBe(menuButton)
+		})
+
 		it('фокус не возвращается, если кнопки уже нет в DOM или фокус был вне меню', () => {
 			const { actions, menuButton } = setup()
 			const opener = document.createElement('button')

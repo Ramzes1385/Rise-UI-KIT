@@ -35,3 +35,9 @@ export interface UseRangeDragListenersOptions {
 	/** Конец перетаскивания (отпускание кнопки или пальца) */
 	onEnd: () => void
 }
+
+/** Возврат useRangeDragListeners */
+export interface UseRangeDragListenersReturn {
+	/** Подписать документ на движение и отпускание указателя выбранного вида */
+	addListeners: (kind: RangeDragKind) => void
+}

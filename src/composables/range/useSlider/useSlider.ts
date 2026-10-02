@@ -37,21 +37,25 @@ function useSlider(options: UseSliderOptions): UseSliderReturn {
 		onDragEnd: handleDragEnd,
 	})
 
+	/** Стили нужны только slide-анимации: в остальных режимах computed не читают индекс, размер и смещение */
+	const isSlideMode = (): boolean => settings.animation() === 'slide'
+
 	return {
 		...navigation,
 		dragOffset,
 		isDragging: swipe.isDragging,
 		viewportRef,
-		trackStyle: computed((): Record<string, string> =>
-			buildTrackStyle({
+		trackStyle: computed((): Record<string, string> => {
+			if (!isSlideMode()) return {}
+			return buildTrackStyle({
 				settings,
 				currentIndex: navigation.currentIndex.value,
 				viewportSize: viewportSize.value,
 				dragOffset: dragOffset.value,
 				isDragging: swipe.isDragging.value,
-			}),
-		),
-		slideStyle: computed((): Record<string, string> => buildSlideStyle(settings, viewportSize.value)),
+			})
+		}),
+		slideStyle: computed((): Record<string, string> => (isSlideMode() ? buildSlideStyle(settings, viewportSize.value) : {})),
 		...useSliderAutoplay(settings, navigation.goNext),
 		onTouchStart: swipe.onTouchStart,
 		onTouchMove: swipe.onTouchMove,
