@@ -149,6 +149,7 @@ function useSelectKeyboard(context: EventCalendarContext, api: EventCalendarSele
 	const { props, date, status } = context
 	const cursor = ref<number | null>(null)
 	const activeColumn = ref<string | null>(null)
+	let isKeepingStatus = false
 	const initialMinute = (): number => {
 		const minute = (props.workHours && parseMinutes(props.workHours.start)) ?? DEFAULT_SCROLL_MINUTE
 		return Math.floor(minute / context.step.value) * context.step.value
@@ -177,6 +178,7 @@ function useSelectKeyboard(context: EventCalendarContext, api: EventCalendarSele
 			const next = stepTime(context, event.key, point)
 			if (!next) return
 			cursor.value = minuteOf(next)
+			isKeepingStatus = event.shiftKey && toDayKey(next) !== toDayKey(point)
 			moveCursor(context, api, { event, point, next })
 		},
 		handleColumnFocus(day: EventCalendarTimeDay): void {
@@ -184,7 +186,8 @@ function useSelectKeyboard(context: EventCalendarContext, api: EventCalendarSele
 			activeColumn.value = day.key
 			cursor.value ??= initialMinute()
 			if (day.key !== toDayKey(date.value)) context.setDate(day.date)
-			status.value = formatPosition(pointOf(day.date))
+			if (!isKeepingStatus) status.value = formatPosition(pointOf(day.date))
+			isKeepingStatus = false
 		},
 		handleColumnBlur(): void {
 			activeColumn.value = null
