@@ -27,6 +27,7 @@ const isWorkday = ({ start }: EventCalendarChange): boolean => ![0, 6].includes(
 export const CanMove: StoryObj<typeof meta> = {
 	args: { view: 'week' },
 	parameters: {
+		controls: { exclude: ['events'] },
 		docs: {
 			description: {
 				story: [
@@ -40,6 +41,7 @@ export const CanMove: StoryObj<typeof meta> = {
 				imports: ['BaseEventCalendar', 'type EventCalendarChange'],
 				importsFrom: { '@ramzes1385/rise-ui-kit/utils': ['type CalendarEvent'] },
 				models,
+				omit: ['events'],
 				state: { events: EDIT_EVENTS },
 				types: { events: 'CalendarEvent[]' },
 				script,

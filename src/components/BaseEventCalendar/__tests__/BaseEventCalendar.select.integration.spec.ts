@@ -350,6 +350,7 @@ describe('BaseEventCalendar — выделение и создание', () => {
 			expect(statusText()).toBe('3 октября, 08:00')
 			await user.keyboard('{Shift>}{ArrowLeft}{/Shift}')
 			await waitFor(() => expect(column('2026-10-02')).toHaveFocus())
+			expect(statusText()).toBe('Выделено: 2 октября, 08:00 — 3 октября, 08:30')
 			expect(column('2026-10-02').querySelector('.base-event-calendar__selection')).not.toBeNull()
 			expect(column('2026-10-03').querySelector('.base-event-calendar__selection')).not.toBeNull()
 			await user.keyboard('{Shift>}{ArrowDown}{/Shift}')

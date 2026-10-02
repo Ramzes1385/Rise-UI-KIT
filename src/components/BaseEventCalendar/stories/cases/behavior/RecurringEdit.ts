@@ -60,6 +60,7 @@ function useRecurring(): { events: Ref<CalendarEvent[]>; move: (change: EventCal
 export const RecurringEdit: StoryObj<typeof meta> = {
 	args: { view: 'week' },
 	parameters: {
+		controls: { exclude: ['events'] },
 		docs: {
 			description: {
 				story: [
@@ -73,6 +74,7 @@ export const RecurringEdit: StoryObj<typeof meta> = {
 				imports: ['BaseEventCalendar', 'type EventCalendarChange'],
 				importsFrom: { '@ramzes1385/rise-ui-kit/utils': ['type CalendarEvent'] },
 				models,
+				omit: ['events'],
 				state: { events: EVENTS },
 				types: { events: 'CalendarEvent[]' },
 				script,

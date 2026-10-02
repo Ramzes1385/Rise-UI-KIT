@@ -19,6 +19,7 @@ const template = `
 export const DragAndDrop: StoryObj<typeof meta> = {
 	args: { view: 'week' },
 	parameters: {
+		controls: { exclude: ['events'] },
 		docs: {
 			description: {
 				story: [
@@ -34,6 +35,7 @@ export const DragAndDrop: StoryObj<typeof meta> = {
 				imports: ['BaseEventCalendar', 'type EventCalendarChange'],
 				importsFrom: { '@ramzes1385/rise-ui-kit/utils': ['type CalendarEvent'] },
 				models,
+				omit: ['events'],
 				state: { events: EDIT_EVENTS },
 				types: { events: 'CalendarEvent[]' },
 				script: MOVE_SCRIPT,
