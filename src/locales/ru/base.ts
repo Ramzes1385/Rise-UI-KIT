@@ -223,5 +223,6 @@ export const ruBase = {
 		DOWNLOAD_UNSAFE_URL: 'Скачивание по небезопасному URL заблокировано: {url}',
 		NAVIGATION_UNSAFE_URL: 'Переход по небезопасному URL заблокирован: {url}',
 		SEO_MISSING_FIELDS: '{component}: в SEO-разметке {type} нет обязательных полей: {fields}. Передайте их в seo.data',
+		TREE_REPEATED_ID: 'BaseTree: id узлов встречаются в дереве повторно (цикл в children или дубль): {ids}. Повторы не показаны',
 	},
 }

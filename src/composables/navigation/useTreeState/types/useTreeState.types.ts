@@ -1,8 +1,10 @@
 import type { ComputedRef, Ref } from 'vue'
+import type { TreeIndex } from '@utils/navigation/treeUtils'
 import type { BaseTreeEmits, TreeNode, TreeSelectionMode } from '@components/BaseTree/types/BaseTree.types'
 
 export interface UseTreeStateOptions {
-	items: Ref<TreeNode[]>
+	/** Корневые узлы; `undefined` — пустое дерево */
+	items: Ref<TreeNode[] | undefined>
 	selectionMode: Ref<TreeSelectionMode>
 	expandedIds: Ref<string[] | undefined>
 	selectedIds: Ref<string[] | undefined>
@@ -12,12 +14,19 @@ export interface UseTreeStateOptions {
 
 export interface UseTreeStateResult {
 	expandedIds: ComputedRef<string[]>
+	/** Выбранные id: в режиме multiple — согласованные снизу вверх, в single — не больше одного */
 	selectedIds: ComputedRef<string[]>
 	expandedSet: ComputedRef<Set<string>>
+	/** Множество выбранных id для O(1) проверки */
 	selectedSet: ComputedRef<Set<string>>
+	/** Узлы с частичным выбором в режиме multiple: выбрана часть доступных потомков */
+	indeterminateSet: ComputedRef<Set<string>>
+	/** Дети узла без повторных id (цикл в children или дубль) */
+	childrenOf: (node: TreeNode) => TreeNode[]
 	toggleNode: (id: string) => void
 	/** Раскрыть несколько узлов разом */
 	expandNodes: (ids: string[]) => void
+	/** Переключить выбор узла; отключённый узел не выбирается, в режиме multiple — с каскадом */
 	selectNode: (id: string) => void
 }
 
@@ -25,9 +34,13 @@ export interface UseTreeStateResult {
 export interface TreeStateContext {
 	internalExpandedIds: Ref<string[]>
 	internalSelectedIds: Ref<string[]>
-	descendantsCache: Map<string, string[]>
+	/** Индекс дерева: узлы и родители по id, порядок обхода, повторные id */
+	index: ComputedRef<TreeIndex>
 	expandedIds: ComputedRef<string[]>
+	/** Выбор из пропа или внутренний — как передан */
+	rawSelectedIds: ComputedRef<string[]>
 	selectedIds: ComputedRef<string[]>
 	expandedSet: ComputedRef<Set<string>>
 	selectedSet: ComputedRef<Set<string>>
+	indeterminateSet: ComputedRef<Set<string>>
 }

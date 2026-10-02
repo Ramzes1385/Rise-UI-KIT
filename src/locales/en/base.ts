@@ -202,5 +202,7 @@ export const enBase = {
 		DOWNLOAD_UNSAFE_URL: 'Download from an unsafe URL was blocked: {url}',
 		NAVIGATION_UNSAFE_URL: 'Navigation to an unsafe URL was blocked: {url}',
 		SEO_MISSING_FIELDS: '{component}: {type} SEO markup lacks required fields: {fields}. Pass them in seo.data',
+		TREE_REPEATED_ID:
+			'BaseTree: node ids occur in the tree more than once (a cycle in children or a duplicate): {ids}. Repeats are not shown',
 	},
 }

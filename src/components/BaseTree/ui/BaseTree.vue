@@ -34,11 +34,11 @@
 		</div>
 		<template v-else>
 			<BaseTreeNode
-				v-for="(node, index) in items"
+				v-for="(node, index) in rootNodes"
 				:key="node.id"
 				:node="node"
 				:depth="0"
-				:set-size="items.length"
+				:set-size="rootNodes.length"
 				:pos-in-set="index + 1"
 				:size-scale="sizeScale">
 				<template #icon="slotProps"><slot name="icon" v-bind="slotProps" /></template>
@@ -83,6 +83,7 @@ const {
 	variantStyle,
 	customColorStyle,
 	classes,
+	rootNodes,
 	visibleNodes,
 	rootRef,
 	virtualStyle,

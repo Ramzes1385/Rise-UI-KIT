@@ -16,10 +16,10 @@
 			:aria-posinset="posInSet"
 			:aria-expanded="hasChildren ? isExpanded : undefined"
 			:aria-selected="treeContext.selectionMode.value === 'single' && isSelected ? true : undefined"
-			:aria-checked="treeContext.selectionMode.value === 'multiple' ? isSelected : undefined"
+			:aria-checked="ariaChecked"
 			:aria-disabled="node.isDisabled ? 'true' : undefined"
 			@click="handleHeaderClick"
-			@focus="treeContext.setActive(node.id)">
+			@focusin="treeContext.setActive(node.id)">
 			<span
 				v-if="treeContext.arrowPosition.value === 'left'"
 				class="base-tree__arrow"
@@ -35,6 +35,7 @@
 					class="base-tree__checkbox"
 					:custom-class="checkboxClasses"
 					:model-value="isSelected"
+					:is-indeterminate="isIndeterminate"
 					:label="node.label"
 					:is-disabled="node.isDisabled"
 					:size-scale="sizeScale" />
@@ -74,7 +75,7 @@
 					<BaseIcon name="chevron-right" :size-scale="calcIconScale('sm', sizeScale)" />
 				</slot>
 			</span>
-			<div class="base-tree__actions" :class="treeContext.classes.value.actions">
+			<div ref="actionsRef" class="base-tree__actions" :class="treeContext.classes.value.actions" @click.stop>
 				<slot name="actions" :node="node" />
 			</div>
 		</div>
@@ -126,6 +127,9 @@ const {
 	hasChildren,
 	isExpanded,
 	isSelected,
+	isIndeterminate,
+	ariaChecked,
+	actionsRef,
 	wasExpanded,
 	childNodes,
 	tabIndex,

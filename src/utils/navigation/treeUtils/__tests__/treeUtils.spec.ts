@@ -1,6 +1,14 @@
 import { describe, it, expect } from 'vitest'
 import type { TreeNode } from '@components/BaseTree/types/BaseTree.types'
-import { buildDescendantsCache, collectDescendantIdsInto, collectExpandableIds } from '../treeUtils'
+import {
+	buildDescendantsCache,
+	buildTreeIndex,
+	collectDescendantIdsInto,
+	collectExpandableIds,
+	getTreeChildren,
+	normalizeTreeSelection,
+	toggleTreeSelection,
+} from '../treeUtils'
 
 const leaf: TreeNode = { id: 'leaf1', label: 'Leaf' }
 const childWithLeaf: TreeNode = { id: 'child1', label: 'Child', children: [leaf] }
@@ -119,6 +127,141 @@ describe('treeUtils', () => {
 				{ id: 'b', label: 'B' },
 			]
 			expect(collectExpandableIds(nodes)).toEqual([])
+		})
+	})
+
+	describe('циклы, дубли и большие деревья', () => {
+		function cyclic(): TreeNode[] {
+			const a: TreeNode = { id: 'a', label: 'A', children: [] }
+			const b: TreeNode = { id: 'b', label: 'B', children: [a] }
+			a.children = [b, { id: 'c', label: 'C' }]
+			return [a]
+		}
+
+		function chain(depth: number): TreeNode {
+			const rootNode: TreeNode = { id: 'n0', label: 'n0' }
+			let current = rootNode
+			for (let level = 1; level < depth; level++) {
+				const next: TreeNode = { id: `n${level}`, label: `n${level}` }
+				current.children = [next]
+				current = next
+			}
+			return rootNode
+		}
+
+		it('цикл в children не зацикливает обход: повтор пропускается', () => {
+			const ids: string[] = []
+			collectDescendantIdsInto(cyclic(), ids)
+			expect(ids).toEqual(['a', 'b', 'c'])
+			expect(collectExpandableIds(cyclic())).toEqual(['a', 'b'])
+		})
+
+		it('кэш потомков при цикле: узел не попадает в свой список', () => {
+			const cache = new Map<string, string[]>()
+			buildDescendantsCache(cyclic(), cache)
+			expect(cache.get('a')).toEqual(['b', 'c'])
+			expect(cache.get('b')).toEqual(['a', 'c'])
+		})
+
+		it('глубина 20 000 и 200 000 детей одного узла — без переполнения стека', () => {
+			expect(collectExpandableIds([chain(20000)])).toHaveLength(19999)
+			const wide: TreeNode = { id: 'wide', label: 'wide', children: [] }
+			for (let position = 0; position < 200000; position++) wide.children?.push({ id: `w${position}`, label: 'w' })
+			const ids: string[] = []
+			collectDescendantIdsInto([wide], ids)
+			expect(ids).toHaveLength(200001)
+		})
+	})
+
+	describe('buildTreeIndex и getTreeChildren', () => {
+		it('узел и родитель по id, порядок обхода, повторы — цикл и дубль', () => {
+			const a: TreeNode = { id: 'a', label: 'A', children: [] }
+			const items: TreeNode[] = [a, { id: 'x', label: 'X', children: [{ id: 'b', label: 'Дубль' }] }]
+			a.children = [{ id: 'b', label: 'B', children: [a] }]
+
+			const index = buildTreeIndex(items)
+			expect(index.order).toEqual(['a', 'b', 'x'])
+			expect(index.parents.get('b')).toBe('a')
+			expect(index.parents.has('a')).toBe(false)
+			expect(index.nodes.get('b')?.label).toBe('B')
+			expect(index.repeated).toEqual(['a', 'b'])
+		})
+
+		it('дети без повторов; ребёнок, которого индекс не знает, остаётся; лист — без детей', () => {
+			const a: TreeNode = { id: 'a', label: 'A', children: [] }
+			const b: TreeNode = { id: 'b', label: 'B', children: [a] }
+			a.children = [b]
+			const index = buildTreeIndex([a])
+			expect(getTreeChildren(index, a)).toEqual([b])
+			expect(getTreeChildren(index, b)).toEqual([])
+
+			b.children?.push({ id: 'new', label: 'Новый' })
+			expect(getTreeChildren(index, b).map(node => node.id)).toEqual(['new'])
+			expect(getTreeChildren(index, { id: 'leaf', label: 'Лист' })).toEqual([])
+		})
+	})
+
+	describe('выбор с каскадом (multiple)', () => {
+		const ITEMS: TreeNode[] = [
+			{
+				id: 'root',
+				label: 'Корень',
+				children: [
+					{
+						id: 'a',
+						label: 'A',
+						children: [
+							{ id: 'a1', label: 'A1' },
+							{ id: 'a2', label: 'A2' },
+						],
+					},
+					{ id: 'b', label: 'B' },
+					{ id: 'locked', label: 'Закрыто', isDisabled: true, children: [{ id: 'l1', label: 'L1' }] },
+					{ id: 'only-locked', label: 'Только закрытые', children: [{ id: 'z', label: 'Z', isDisabled: true }] },
+				],
+			},
+		]
+		const index = buildTreeIndex(ITEMS)
+
+		it('выбранный узел выбирает доступных потомков, отключённое поддерево не трогает', () => {
+			const { selected, indeterminate } = normalizeTreeSelection(index, ['root'])
+			expect(selected).toEqual(['root', 'a', 'b', 'only-locked', 'a1', 'a2'])
+			expect(indeterminate.size).toBe(0)
+		})
+
+		it('выбор всех доступных детей выбирает родителя; часть — частичный выбор до корня', () => {
+			expect(normalizeTreeSelection(index, ['a1', 'a2']).selected).toEqual(['a1', 'a2', 'a'])
+
+			const partial = normalizeTreeSelection(index, ['a1'])
+			expect(partial.selected).toEqual(['a1'])
+			expect([...partial.indeterminate]).toEqual(['a', 'root'])
+		})
+
+		it('узел, у которого все дети отключены, выбирается сам; выбранный отключённый узел сохраняется и не каскадирует', () => {
+			const { selected, indeterminate } = normalizeTreeSelection(index, ['locked', 'only-locked', 'unknown'])
+			expect(selected).toEqual(['locked', 'only-locked', 'unknown'])
+			expect([...indeterminate]).toEqual(['root'])
+		})
+
+		it('toggle: включение — узел и доступные потомки, родители пересчитываются', () => {
+			const afterA = toggleTreeSelection(index, [], 'a')
+			expect(afterA).toEqual(['a', 'a1', 'a2'])
+			const all = toggleTreeSelection(index, toggleTreeSelection(index, afterA, 'b'), 'only-locked')
+			expect(all).toEqual(['a', 'a1', 'a2', 'b', 'only-locked', 'root'])
+		})
+
+		it('toggle: снятие одного ребёнка снимает выбор с предков, отключённые не трогает', () => {
+			const all = normalizeTreeSelection(index, ['root', 'locked']).selected
+			expect(toggleTreeSelection(index, all, 'a2')).toEqual(['locked', 'b', 'only-locked', 'a1'])
+		})
+
+		it('toggle: под отключённым предком — его состояние не меняется', () => {
+			expect(toggleTreeSelection(index, ['locked'], 'l1')).toEqual(['locked', 'l1'])
+			expect(toggleTreeSelection(index, ['locked', 'l1'], 'l1')).toEqual(['locked'])
+		})
+
+		it('toggle: id не из дерева переключается сам по себе', () => {
+			expect(toggleTreeSelection(index, [], 'ghost')).toEqual(['ghost'])
 		})
 	})
 })

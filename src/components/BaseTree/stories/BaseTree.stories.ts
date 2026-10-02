@@ -26,6 +26,7 @@ export const Disabled = cases.Disabled
 export const Empty = cases.Empty
 export const LongContent = cases.LongContent
 export const SelectionModes = cases.SelectionModes
+export const Cascade = cases.Cascade
 export const Slots = cases.Slots
 export const LabelById = cases.LabelById
 export const Controlled = cases.Controlled

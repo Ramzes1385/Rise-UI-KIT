@@ -43,6 +43,10 @@ export interface TreeContext {
 	expandedSet: Ref<Set<string>>
 	/** Множество выбранных id для O(1) проверки */
 	selectedSet: Ref<Set<string>>
+	/** Узлы с частичным выбором в режиме multiple: выбрана часть доступных потомков */
+	indeterminateSet: Ref<Set<string>>
+	/** Дети узла без повторных id (цикл в children или дубль) */
+	childrenOf: (node: TreeNode) => TreeNode[]
 	/** Переключить раскрытие узла */
 	toggleNode: (id: string) => void
 	/** Выбрать/отменить выбор узла */
@@ -65,9 +69,17 @@ export interface BaseTreeProps extends BaseComponentProps<
 	(typeof TREE_VARIANTS)[number],
 	'root' | 'node' | 'header' | 'arrow' | 'checkbox' | 'icon' | 'label' | 'actions' | 'children'
 > {
-	/** Корневые узлы дерева */
+	/**
+	 * Корневые узлы дерева. id уникальны во всём дереве: повторный id (цикл в children или дубль) не показывается,
+	 * в консоли — предупреждение
+	 */
 	items: TreeNode[]
-	/** Режим выбора */
+	/**
+	 * Режим выбора: `single` — один узел (`aria-selected`); `multiple` — флажки с каскадом: узел выбирает доступных
+	 * потомков, выбор всех доступных детей выбирает родителя, часть — частичный выбор (`aria-checked="mixed"`).
+	 * Отключённые узлы и их поддеревья в каскаде не участвуют. При переходе в `single` остаётся не больше одного
+	 * выбранного узла (событие `update:selectedIds`); в `none` выбор не меняется кликом, `selectedIds` сохраняются
+	 */
 	selectionMode?: TreeSelectionMode
 	/** Позиция стрелки раскрытия */
 	arrowPosition?: TreeArrowPosition
@@ -75,7 +87,7 @@ export interface BaseTreeProps extends BaseComponentProps<
 	expandedIds?: string[]
 	/** v-model выбранных узлов */
 	selectedIds?: string[]
-	/** Раскрыть все узлы по умолчанию */
+	/** Раскрыть все узлы по умолчанию; узлы, пришедшие позже (асинхронные `items`), тоже раскрываются */
 	isDefaultExpandAll?: boolean
 	/** Имя дерева для скринридера, например «Файлы проекта» */
 	ariaLabel?: string
@@ -106,7 +118,11 @@ export interface BaseTreeSlots {
 	label?: (props: { node: TreeNode; depth: number; isSelected: boolean; isExpanded: boolean }) => unknown
 	/** Метка одного узла по его `id`: `label-docs` — узел `docs`, на любой глубине; у остальных — `label` */
 	[name: `label-${string}`]: ((props: { node: TreeNode; depth: number; isSelected: boolean; isExpanded: boolean }) => unknown) | undefined
-	/** Действия справа от узла */
+	/**
+	 * Действия справа от узла: видны при наведении и при фокусе на узле. Клик внутри не выбирает и не раскрывает узел.
+	 * В порядке Tab — только действия узла, который сейчас в порядке Tab; у остальных узлов фокусируемые элементы
+	 * слота получают `tabindex="-1"`
+	 */
 	actions?: (props: { node: TreeNode }) => unknown
 }
 

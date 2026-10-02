@@ -20,11 +20,12 @@ type Setup = {
 	expanded?: string[]
 	selected?: string[]
 	expandAll?: boolean
-	items?: TreeNode[]
+	items?: TreeNode[] | undefined
+	hasItems?: boolean
 }
 
 function setup(opts: Setup = {}) {
-	const items = ref<TreeNode[]>(opts.items ?? ITEMS)
+	const items = ref<TreeNode[] | undefined>(opts.hasItems === false ? undefined : (opts.items ?? ITEMS))
 	const selectionMode = ref<TreeSelectionMode>(opts.mode ?? 'single')
 	const expandedIds = ref<string[] | undefined>(opts.expanded)
 	const selectedIds = ref<string[] | undefined>(opts.selected)
@@ -38,7 +39,7 @@ function setup(opts: Setup = {}) {
 		isDefaultExpandAll,
 		emit: emit as unknown as BaseTreeEmits,
 	})
-	return { items, selectionMode, isDefaultExpandAll, emit, ...api }
+	return { items, selectionMode, selectedIdsProp: selectedIds, isDefaultExpandAll, emit, ...api }
 }
 
 const tick = () => Promise.resolve()
@@ -110,7 +111,7 @@ describe('useTreeState', () => {
 		expect(ctx.emit).toHaveBeenLastCalledWith('select', 'b', false)
 	})
 
-	it('режим multiple: выбор узла выбирает всех потомков, снятие — снимает их', () => {
+	it('режим multiple: выбор узла выбирает всех потомков; снятие ребёнка снимает выбор с предков', () => {
 		const ctx = setup({ mode: 'multiple' })
 		ctx.selectNode('docs')
 		expect([...ctx.selectedIds.value].sort()).toEqual(['a', 'b', 'b1', 'docs'])
@@ -118,8 +119,10 @@ describe('useTreeState', () => {
 
 		ctx.selectNode('img')
 		ctx.selectNode('b')
-		expect([...ctx.selectedIds.value].sort()).toEqual(['a', 'docs', 'img'])
+		expect([...ctx.selectedIds.value].sort()).toEqual(['a', 'img'])
+		expect(ctx.indeterminateSet.value.has('docs')).toBe(true)
 		expect(ctx.emit).toHaveBeenLastCalledWith('select', 'b', false)
+		expect(ctx.emit).toHaveBeenCalledWith('update:selectedIds', ['a', 'img'])
 	})
 
 	it('режим multiple: лист без потомков добавляется к выбранным', () => {
@@ -150,5 +153,137 @@ describe('useTreeState', () => {
 		later.isDefaultExpandAll.value = false
 		await tick()
 		expect([...later.expandedIds.value].sort()).toEqual(['b', 'docs'])
+	})
+
+	it('режим multiple: выбор всех детей выбирает родителя, часть — частичный выбор; отключённый узел не выбирается', () => {
+		const ctx = setup({
+			mode: 'multiple',
+			items: [
+				{
+					id: 'p',
+					label: 'P',
+					children: [
+						{ id: 'x', label: 'X' },
+						{ id: 'y', label: 'Y' },
+						{ id: 'off', label: 'Off', isDisabled: true },
+					],
+				},
+			],
+		})
+		ctx.selectNode('x')
+		expect(ctx.indeterminateSet.value).toEqual(new Set(['p']))
+		ctx.selectNode('y')
+		expect(ctx.emit).toHaveBeenLastCalledWith('select', 'y', true)
+		expect(ctx.selectedIds.value).toEqual(['x', 'y', 'p'])
+		expect(ctx.indeterminateSet.value.size).toBe(0)
+
+		ctx.emit.mockClear()
+		ctx.selectNode('off')
+		expect(ctx.emit).not.toHaveBeenCalled()
+	})
+
+	it('режим multiple: противоречивый проп показывается согласованным', () => {
+		const ctx = setup({ mode: 'multiple', selected: ['b'] })
+		expect(ctx.selectedIds.value).toEqual(['b', 'b1'])
+		expect(ctx.selectedSet.value.has('b1')).toBe(true)
+		expect(ctx.indeterminateSet.value).toEqual(new Set(['docs']))
+	})
+
+	it('items: undefined — пустое дерево без ошибок', () => {
+		const ctx = setup({ hasItems: false, mode: 'multiple', expandAll: true })
+		expect(ctx.expandedIds.value).toEqual([])
+		expect(ctx.selectedIds.value).toEqual([])
+		ctx.selectNode('a')
+		expect(ctx.selectedIds.value).toEqual(['a'])
+	})
+
+	it('childrenOf: дети без повторных id; повтор — предупреждение в консоли', () => {
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+		const a: TreeNode = { id: 'a', label: 'A', children: [] }
+		const b: TreeNode = { id: 'b', label: 'B', children: [a] }
+		a.children = [b]
+		const ctx = setup({ items: [a], expandAll: true })
+
+		expect(ctx.childrenOf(a)).toEqual([b])
+		expect(ctx.childrenOf(b)).toEqual([])
+		expect(ctx.expandedIds.value).toEqual(['a', 'b'])
+		expect(warnSpy).toHaveBeenCalledTimes(1)
+		expect(warnSpy.mock.calls[0][0]).toContain(': a.')
+		warnSpy.mockRestore()
+	})
+
+	it('isDefaultExpandAll: узлы, пришедшие позже, раскрываются; свёрнутые пользователем — нет', async () => {
+		const ctx = setup({ items: [], expandAll: true })
+		expect(ctx.emit).not.toHaveBeenCalled()
+
+		ctx.items.value = ITEMS
+		await tick()
+		expect(ctx.expandedIds.value).toEqual(['docs', 'b'])
+
+		ctx.toggleNode('b')
+		ctx.emit.mockClear()
+		ctx.items.value = [...ITEMS, { id: 'new', label: 'Новая', children: [{ id: 'n1', label: 'N1' }] }]
+		await tick()
+		expect(ctx.expandedIds.value).toEqual(['docs', 'new'])
+		expect(ctx.emit).toHaveBeenCalledWith('update:expandedIds', ['docs', 'new'])
+
+		ctx.emit.mockClear()
+		ctx.items.value = [...ctx.items.value!]
+		await tick()
+		expect(ctx.emit).not.toHaveBeenCalled()
+	})
+
+	it('без isDefaultExpandAll новые узлы не раскрываются', async () => {
+		const ctx = setup({ items: [] })
+		ctx.items.value = ITEMS
+		await tick()
+		expect(ctx.expandedIds.value).toEqual([])
+		expect(ctx.emit).not.toHaveBeenCalled()
+	})
+
+	it('смена режима на single оставляет один выбранный id и сообщает об этом; none и один id — без события', async () => {
+		const ctx = setup({ mode: 'multiple' })
+		ctx.selectNode('b')
+		ctx.emit.mockClear()
+
+		ctx.selectionMode.value = 'single'
+		await tick()
+		expect(ctx.emit).toHaveBeenCalledWith('update:selectedIds', ['b'])
+		expect(ctx.selectedIds.value).toEqual(['b'])
+
+		ctx.emit.mockClear()
+		ctx.selectionMode.value = 'none'
+		await tick()
+		ctx.selectionMode.value = 'single'
+		await tick()
+		expect(ctx.emit).not.toHaveBeenCalled()
+		expect(ctx.selectedIds.value).toEqual(['b'])
+	})
+
+	it('режим single с несколькими id в пропе показывает только первый', () => {
+		const ctx = setup({ selected: ['a', 'img'] })
+		expect(ctx.selectedIds.value).toEqual(['a'])
+		expect(ctx.selectedSet.value.has('img')).toBe(false)
+	})
+
+	it('режим none: выбор из пропа сохраняется как передан', async () => {
+		const ctx = setup({ mode: 'multiple', selected: ['a', 'img'] })
+		ctx.selectionMode.value = 'none'
+		await tick()
+		expect(ctx.selectedIds.value).toEqual(['a', 'img'])
+		expect(ctx.emit).not.toHaveBeenCalled()
+	})
+
+	it('реактивные items: правка children на месте пересобирает индекс — новый ребёнок выбранной папки выбран', async () => {
+		const ctx = setup({ mode: 'multiple', items: [{ id: 'p', label: 'P', children: [{ id: 'x', label: 'X' }] }] })
+		ctx.selectNode('x')
+		expect(ctx.selectedIds.value).toEqual(['x', 'p'])
+
+		ctx.items.value?.[0].children?.push({ id: 'y', label: 'Y' })
+		await tick()
+		expect(ctx.selectedIds.value).toEqual(['x', 'p', 'y'])
+		ctx.selectNode('y')
+		expect(ctx.selectedIds.value).toEqual(['x'])
+		expect(ctx.indeterminateSet.value.has('p')).toBe(true)
 	})
 })

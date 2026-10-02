@@ -10,12 +10,13 @@ import type { BaseTreeEmits, TreeNode, TreeProps, VisibleNode } from '../types/B
 const TREE_ELEMENTS = ['root', 'node', 'header', 'arrow', 'checkbox', 'icon', 'label', 'actions', 'children']
 const TYPEAHEAD_RESET = 500
 
-function collectVisible(items: TreeNode[], expanded: Set<string>): VisibleNode[] {
+function collectVisible(items: TreeNode[], expanded: Set<string>, childrenOf: (node: TreeNode) => TreeNode[]): VisibleNode[] {
 	const result: VisibleNode[] = []
 	const walk = (nodes: TreeNode[], parentId: string | null, depth: number): void => {
 		nodes.forEach((node, index) => {
 			result.push({ node, parentId, depth, setSize: nodes.length, posInSet: index + 1 })
-			if (node.children?.length && expanded.has(node.id)) walk(node.children, node.id, depth + 1)
+			const children = expanded.has(node.id) ? childrenOf(node) : []
+			if (children.length) walk(children, node.id, depth + 1)
 		})
 	}
 	walk(items, null, 0)
@@ -141,6 +142,8 @@ function provideTreeContext(
 		selectedIds: tree.selectedIds,
 		expandedSet: tree.expandedSet,
 		selectedSet: tree.selectedSet,
+		indeterminateSet: tree.indeterminateSet,
+		childrenOf: tree.childrenOf,
 		toggleNode: tree.toggleNode,
 		selectNode: tree.selectNode,
 		classes: computed(() => parts.classes.value),
@@ -199,7 +202,8 @@ function createTreeKeys(
 export function useBaseTree(props: TreeProps, emit: BaseTreeEmits) {
 	const standard = useStandardBaseComponent('base-tree', props, TREE_ELEMENTS)
 	const tree = useTreeModel(props, emit)
-	const visibleNodes = computed((): VisibleNode[] => collectVisible(props.items ?? [], tree.expandedSet.value))
+	const rootNodes = computed((): TreeNode[] => props.items ?? [])
+	const visibleNodes = computed((): VisibleNode[] => collectVisible(rootNodes.value, tree.expandedSet.value, tree.childrenOf))
 	const tab = useTabbable(visibleNodes, tree)
 	const virtual = useTreeVirtual(props, visibleNodes, tab.tabbableIndex)
 	const headers = useHeaders(props, visibleNodes, virtual.scrollToIndex)
@@ -209,6 +213,7 @@ export function useBaseTree(props: TreeProps, emit: BaseTreeEmits) {
 
 	return {
 		...standard,
+		rootNodes,
 		visibleNodes,
 		rootRef: virtual.rootRef,
 		virtualStyle: virtual.virtualStyle,

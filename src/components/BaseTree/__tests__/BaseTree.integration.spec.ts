@@ -816,4 +816,199 @@ describe('BaseTree integration', () => {
 			expect(screen.getByText('Дерево')).toBeInTheDocument()
 		})
 	})
+
+	describe('каскад с частичным выбором (APG Tree View, multiple)', () => {
+		const PROJECT: TreeNode[] = [
+			{
+				id: 'src',
+				label: 'Исходники',
+				children: [
+					{ id: 'main', label: 'Главный' },
+					{ id: 'util', label: 'Утилиты' },
+					{ id: 'secret', label: 'Секрет', isDisabled: true },
+				],
+			},
+			{ id: 'readme', label: 'Описание' },
+		]
+
+		function lastSelected(emitted: Record<string, unknown[]>): string[] {
+			const events = emitted['update:selectedIds'] as unknown[][]
+			return events[events.length - 1][0] as string[]
+		}
+
+		function checkboxInput(item: HTMLElement): HTMLInputElement {
+			return item.querySelector('.base-tree__checkbox input') as HTMLInputElement
+		}
+
+		it('пробел на папке отмечает доступных детей, отключённого не трогает; снятие ребёнка — mixed у родителя', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseTree, {
+				props: { items: PROJECT, selectionMode: 'multiple', isDefaultExpandAll: true },
+				slots: { label: DEFAULT_SLOT },
+			})
+			await user.tab()
+			expect(treeItem('Исходники')).toHaveFocus()
+
+			await user.keyboard('{ }')
+			expect(lastSelected(emitted())).toEqual(['src', 'main', 'util'])
+			expect(treeItem('Исходники')).toHaveAttribute('aria-checked', 'true')
+			expect(treeItem('Главный')).toHaveAttribute('aria-checked', 'true')
+			expect(treeItem('Секрет')).toHaveAttribute('aria-checked', 'false')
+
+			await user.keyboard('{ArrowDown}{ArrowDown}{ }')
+			expect(treeItem('Утилиты')).toHaveFocus()
+			expect(lastSelected(emitted())).toEqual(['main'])
+			expect(treeItem('Исходники')).toHaveAttribute('aria-checked', 'mixed')
+			expect(checkboxInput(treeItem('Исходники')).indeterminate).toBe(true)
+			expect(treeItem('Утилиты')).toHaveAttribute('aria-checked', 'false')
+
+			await user.keyboard('{ }')
+			expect(lastSelected(emitted())).toEqual(['main', 'util', 'src'])
+			expect(treeItem('Исходники')).toHaveAttribute('aria-checked', 'true')
+			expect(checkboxInput(treeItem('Исходники')).indeterminate).toBe(false)
+		})
+
+		it('пробел на узле с частичным выбором отмечает всё поддерево', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseTree, {
+				props: { items: PROJECT, selectionMode: 'multiple', selectedIds: ['util'] },
+				slots: { label: DEFAULT_SLOT },
+			})
+			expect(treeItem('Исходники')).toHaveAttribute('aria-checked', 'mixed')
+
+			await user.tab()
+			expect(treeItem('Исходники')).toHaveFocus()
+			await user.keyboard('{ }')
+			expect(lastSelected(emitted())).toEqual(['util', 'src', 'main'])
+			expect(emitted().select).toEqual([['src', true]])
+		})
+
+		it('флажок отключённого узла заблокирован, пробел на нём ничего не меняет', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseTree, {
+				props: { items: PROJECT, selectionMode: 'multiple', expandedIds: ['src'] },
+				slots: { label: DEFAULT_SLOT },
+			})
+			expect(checkboxInput(treeItem('Секрет'))).toBeDisabled()
+			await user.tab()
+			await user.keyboard('{ArrowDown}{ArrowDown}{ArrowDown}{ }')
+			expect(treeItem('Секрет')).toHaveFocus()
+			expect(emitted()['update:selectedIds']).toBeUndefined()
+		})
+
+		it('смена режима на single оставляет один выбранный узел', async () => {
+			const { emitted, rerender } = render(BaseTree, {
+				props: { items: PROJECT, selectionMode: 'multiple', selectedIds: ['src', 'main', 'util'] },
+				slots: { label: DEFAULT_SLOT },
+			})
+			await rerender({ selectionMode: 'single' })
+			expect(lastSelected(emitted())).toEqual(['src'])
+			expect(treeItem('Исходники')).toHaveAttribute('aria-selected', 'true')
+		})
+	})
+
+	describe('слот actions и порядок Tab', () => {
+		const ACTIONS = '<button type="button">Ещё</button><button type="button" tabindex="-1">Скрытая</button>'
+
+		function actionsOf(name: string): HTMLButtonElement {
+			return treeItem(name).querySelector('.base-tree__actions button') as HTMLButtonElement
+		}
+
+		it('Tab с узла попадает в действия этого узла; действия других узлов вне порядка Tab', async () => {
+			const user = userEvent.setup()
+			render(BaseTree, { props: { items: NESTED_ITEMS }, slots: { label: DEFAULT_SLOT, actions: ACTIONS } })
+
+			expect(actionsOf('Металл')).not.toHaveAttribute('tabindex')
+			expect(actionsOf('Дерево')).toHaveAttribute('tabindex', '-1')
+			expect(treeItem('Металл').querySelectorAll('button')[1]).toHaveAttribute('tabindex', '-1')
+
+			await user.tab()
+			expect(treeItem('Металл')).toHaveFocus()
+			await user.tab()
+			expect(actionsOf('Металл')).toHaveFocus()
+			await user.tab()
+			expect(document.body).toHaveFocus()
+
+			await user.tab({ shift: true })
+			await user.tab({ shift: true })
+			await user.keyboard('{ArrowDown}')
+			expect(treeItem('Дерево')).toHaveFocus()
+			expect(actionsOf('Металл')).toHaveAttribute('tabindex', '-1')
+			expect(actionsOf('Дерево')).not.toHaveAttribute('tabindex')
+			expect(actionsOf('Дерево')).not.toHaveAttribute('data-rise-tree-tabindex')
+			expect(treeItem('Дерево').querySelectorAll('button')[1]).toHaveAttribute('tabindex', '-1')
+			await user.tab()
+			expect(actionsOf('Дерево')).toHaveFocus()
+		})
+
+		it('клик, Enter и пробел по кнопке действий не выбирают и не раскрывают узел', async () => {
+			const user = userEvent.setup()
+			const onAction = vi.fn()
+			const { emitted } = render(BaseTree, {
+				props: { items: NESTED_ITEMS, selectionMode: 'single' },
+				slots: { label: DEFAULT_SLOT, actions: ACTIONS },
+				attrs: { onClickCapture: onAction },
+			})
+
+			await user.click(actionsOf('Металл'))
+			await user.keyboard('{Enter}{ }')
+
+			expect(onAction).toHaveBeenCalledTimes(3)
+			expect(emitted().select).toBeUndefined()
+			expect(emitted().toggle).toBeUndefined()
+			expect(treeItem('Металл')).toHaveAttribute('tabindex', '0')
+		})
+
+		it('фокус на кнопке действий делает её узел текущим в порядке Tab', async () => {
+			render(BaseTree, { props: { items: NESTED_ITEMS }, slots: { label: DEFAULT_SLOT, actions: ACTIONS } })
+
+			actionsOf('Дерево').focus()
+			await waitFor(() => expect(treeItem('Дерево')).toHaveAttribute('tabindex', '0'))
+			expect(actionsOf('Дерево')).not.toHaveAttribute('tabindex')
+		})
+	})
+
+	describe('данные: items позже, undefined, циклы, отключённый родитель', () => {
+		it('isDefaultExpandAll раскрывает узлы, пришедшие позже', async () => {
+			const { rerender } = render(BaseTree, { props: { items: [], isDefaultExpandAll: true }, slots: { label: DEFAULT_SLOT } })
+			await rerender({ items: NESTED_ITEMS })
+			expect(treeItem('Металл')).toHaveAttribute('aria-expanded', 'true')
+			expect(treeItem('Сталь')).toBeVisible()
+		})
+
+		it('items: undefined — пустое дерево без ошибок', () => {
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+			render(BaseTree, { props: { items: undefined as unknown as TreeNode[], isDefaultExpandAll: true, selectionMode: 'multiple' } })
+			expect(screen.getByRole('tree')).toBeInTheDocument()
+			expect(screen.queryAllByRole('treeitem')).toHaveLength(0)
+			warnSpy.mockRestore()
+		})
+
+		it('цикл в children не зацикливает раскрытие: повтор не показан, в консоли предупреждение', () => {
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+			const loop: TreeNode = { id: 'loop', label: 'Петля', children: [] }
+			loop.children = [{ id: 'inner', label: 'Внутри', children: [loop] }]
+
+			render(BaseTree, { props: { items: [loop], isDefaultExpandAll: true }, slots: { label: DEFAULT_SLOT } })
+
+			expect(screen.getAllByRole('treeitem')).toHaveLength(2)
+			expect(treeItem('Внутри')).not.toHaveAttribute('aria-expanded')
+			expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('loop'))
+			warnSpy.mockRestore()
+		})
+
+		it('дети раскрытого отключённого узла выбираются кликом', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseTree, {
+				props: {
+					items: [{ id: 'off', label: 'Закрыто', isDisabled: true, children: [{ id: 'open', label: 'Открыто' }] }],
+					selectionMode: 'single',
+					expandedIds: ['off'],
+				},
+				slots: { label: DEFAULT_SLOT },
+			})
+			await user.click(nodeLabel('Открыто'))
+			expect(emitted()['update:selectedIds']).toEqual([[['open']]])
+		})
+	})
 })
