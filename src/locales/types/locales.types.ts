@@ -60,6 +60,7 @@ export interface UiKitLocale {
 	valueWarnings: Section<'valueWarnings'>
 	notificationCenter: Section<'notificationCenter'>
 	commentThread: Section<'commentThread'>
+	countdown: Section<'countdown'>
 	warnings: Section<'warnings'>
 	plural: { readonly [P in keyof Base['plural']]: PluralForms }
 }

@@ -580,6 +580,7 @@ const isOpen = ref(false)
 ---
 
 ## BaseConfirm
+BaseCountdown
 
 Окно подтверждения: вопрос, последствия и две кнопки. Из кода — `useConfirm()` внутри `BaseApp` (см. [«BaseApp: уведомления и окна из кода»](../../README.md#baseapp-уведомления-и-окна-из-кода)), в шаблоне — так:
 
@@ -2342,6 +2343,7 @@ function handleSelect(item: BaseMenuItem): void {
 ---
 
 ## BaseSplitter
+BaseStat
 
 Панели с разделителями по образцу APG Window Splitter: `v-model` — размер первой панели в процентах, `min` / `max` — границы, `change` — итог. Разделитель — `role="separator"`; стрелки двигают его на `step`, Home/End — к границам, Enter сворачивает первую панель и возвращает её. `orientation="vertical"` — панели одна над другой.
 
@@ -2622,6 +2624,35 @@ const isPaused = ref(false)
 `direction` — `left` (по умолчанию), `right`, `up`, `down`; `speed` — пикселей в секунду: длительность круга считается по размеру содержимого (ResizeObserver), поэтому длинная и короткая ленты движутся одинаково быстро. `gap` — отступ между элементами и повторами, px. Бесшовный круг — копиями содержимого с `aria-hidden` и `inert`, движение — CSS `transform`.
 
 Доступность: роль `marquee` с именем `label` (по умолчанию «Бегущая строка»); лента стоит под указателем и при фокусе внутри; кнопка паузы (`has-pause-button`, по умолчанию есть) и `v-model:is-paused` — WCAG 2.2.2. При `prefers-reduced-motion` лента не движется, а длинная прокручивается, в том числе с клавиатуры. Вертикальная лента — высота области 160 px, своя — через `customClass.viewport`.
+
+---
+
+## BaseStat и BaseCountdown
+
+Показатель для дашборда и отсчёт до даты. Числа и подписи — по языку кита через `Intl.NumberFormat`.
+
+```vue
+<BaseStat
+	label="Выручка"
+	:value="4820000"
+	:value-format="{ style: 'currency', currency: 'RUB', notation: 'compact', maximumFractionDigits: 2 }"
+	:change="0.12"
+	change-label="к августу">
+	<template #chart>
+		<BaseSparkline :values="revenue" label="Выручка за 12 недель" variant="area" :height="40" />
+	</template>
+</BaseStat>
+
+<BaseStat label="Отток" :value="0.031" :value-format="{ style: 'percent', maximumFractionDigits: 1 }" :change="-0.004" is-inverse />
+
+<BaseCountdown :to="saleEnd" label="До конца распродажи" @finish="reload">
+	<template #finished>Распродажа закончилась</template>
+</BaseCountdown>
+```
+
+- `BaseStat` — подпись (`dt`), значение и изменение (`dd`). `value` — число (формат `valueFormat`, параметры `Intl.NumberFormat`) или готовая строка. `change` — изменение: по умолчанию доля для процентов со знаком (`0.12` → «+12 %»), свой формат — `changeFormat` (например, `{ style: 'decimal' }` и `change-label="п. п."`). Знак задаёт стрелку, цвет — оценку: рост зелёный (`--rise-success-text`), снижение красный (`--rise-error-text`), ноль — приглушённый; `is-inverse` — когда рост плох. Слоты `chart` (BaseSparkline), `icon`, а также `label`, `value` (`{ formatted }`), `change` (`{ formatted, trend, tone }`). `is-loading` — заглушки и `aria-busy`. Варианты `default`, `soft`, `outline`, `ghost` (без рамки и отступов — внутри своей карточки).
+- `BaseCountdown` — отсчёт до `to` (`Date`, метка времени, ISO-строка). `format` — единицы из `days`, `hours`, `minutes`, `seconds`: старшая вбирает остаток (без дней — «53:42:17»), младшая округляется вверх. `layout` — `blocks` (ячейки «число и подпись») или `inline` («2 дн. 05:42:17»). Время считается от часов устройства на каждом шаге и при возврате на вкладку. `finish` — один раз на нуле, не вызывается, если дата прошла до монтирования; слот `finished` заменяет нули, слот default получает `{ days, hours, minutes, seconds, total, isFinished }`.
+- Доступность отсчёта: `role="timer"`, цифры скрыты от скринридера, вместо них текст с точностью до минуты («До конца распродажи: 2 дня 5 часов 42 минуты», меньше минуты — «меньше минуты»), он меняется не чаще раза в минуту. По умолчанию `aria-live="off"` — время читается, когда пользователь дойдёт до таймера; `is-live` — объявлять изменения (`polite`). Анимаций нет, `prefers-reduced-motion` ничего не меняет.
 
 ---
 

@@ -16,6 +16,7 @@ import { BaseForm } from '../../components/BaseForm'
 import { BaseIcon } from '../../components/BaseIcon'
 import { BaseLink } from '../../components/BaseLink'
 import { BaseMenu } from '../../components/BaseMenu'
+import { BaseStat } from '../../components/BaseStat'
 import { BaseTabs } from '../../components/BaseTabs'
 import { BaseText } from '../../components/BaseText'
 import { BaseTour } from '../../components/BaseTour'
@@ -73,6 +74,7 @@ import { BaseAiMessage } from '../../components/BaseAiMessage'
 import { BaseAnimation } from '../../components/BaseAnimation'
 import { BaseChecklist } from '../../components/BaseChecklist'
 import { BaseContainer } from '../../components/BaseContainer'
+import { BaseCountdown } from '../../components/BaseCountdown'
 import { BaseFormField } from '../../components/BaseFormField'
 import { BaseInputTags } from '../../components/BaseInputTags'
 import { BaseReasoning } from '../../components/BaseReasoning'
@@ -148,6 +150,7 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseConfirm,
 	BaseContainer,
 	BaseContextMenu,
+	BaseCountdown,
 	BaseDadataInput,
 	BaseDrawer,
 	BaseDropdown,
@@ -212,6 +215,7 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseSparkline,
 	BaseSplitButton,
 	BaseSplitter,
+	BaseStat,
 	BaseStepper,
 	BaseSubtitleEditor,
 	BaseSwitch,

@@ -1396,3 +1396,13 @@ FOLLOW_UPS № 38, № 39, № 13 и № 15 (медиа).
 - Экспорт: `BaseChart`, `CHART_VARIANTS`, типы `BaseChartProps`, `BaseChartEmits`, `BaseChartSlots`, `ChartSeries`, `ChartLabel`, `ChartPoint`, `ChartPointValue`, `ChartVariant`.
 - Строки словаря (ru, en): `charts.CHART_SUMMARY`, `charts.CHART_HINT`, `charts.CHART_POINT`, `charts.CATEGORY`, `charts.LEGEND`, `charts.NO_VALUE`.
 - `null`, `NaN` и `Infinity` в `values` — «нет значения»: разрыв линии, пропуск столбика, «нет значения» в скрытой таблице, подсказке и объявлении (`ChartPointValue.value` — `null`); диапазон в `aria-label` — по конечным числам.
+
+## Задача new-stat: новые компоненты BaseStat и BaseCountdown
+
+Новые компоненты, изменений в существующих нет.
+
+- `BaseStat` — показатель: `label`, `value` (число по `valueFormat` или строка), `change` (по умолчанию доля для процентов: `0.12` → «+12 %»), `changeFormat`, `changeLabel`, `isInverse` (рост — плохо), `isLoading`; слоты `label`, `value`, `change`, `icon`, `chart`. Разметка `dl`/`dt`/`dd`.
+- `BaseCountdown` — отсчёт до даты: `to`, `format` (единицы `days`, `hours`, `minutes`, `seconds`), `layout` (`blocks`, `inline`), `label`, `isLive`; событие `finish`; слоты default (`{ days, hours, minutes, seconds, total, isFinished }`) и `finished`; `role="timer"`, текст для скринридера — раз в минуту.
+- Экспорт: `BaseStat`, `STAT_VARIANTS`, типы `BaseStatProps`, `BaseStatSlots`, `StatTrend`, `StatTone`; `BaseCountdown`, `COUNTDOWN_VARIANTS`, `COUNTDOWN_UNITS`, типы `BaseCountdownProps`, `BaseCountdownEmits`, `BaseCountdownSlots`, `CountdownUnit`, `CountdownLayout`, `CountdownParts`.
+- Новый раздел словаря `countdown` (ru, en): `LABEL`, `REMAINING`, `LESS_THAN_MINUTE`, `FINISHED`. Свой язык через `defineLocale` должен его перевести, иначе возьмутся строки базового словаря.
+- Блок Storybook Dashboard: показатели переведены на BaseStat (раньше — разметка блока внутри BaseCard).

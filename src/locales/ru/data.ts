@@ -121,4 +121,11 @@ export const ruData = {
 		YANDEX: 'Яндекс Карты',
 		GOOGLE: 'Google Maps',
 	},
+	/** Отсчёт до даты: имя таймера и текст для скринридера (обновляется раз в минуту) */
+	countdown: {
+		LABEL: 'Осталось',
+		REMAINING: '{label}: {time}',
+		LESS_THAN_MINUTE: 'меньше минуты',
+		FINISHED: 'время вышло',
+	},
 }

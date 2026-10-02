@@ -3,6 +3,7 @@ import type meta from '../Dashboard.stories'
 import { BaseKbd } from '@components/BaseKbd'
 import { BaseCard } from '@components/BaseCard'
 import { BaseLink } from '@components/BaseLink'
+import { BaseStat } from '@components/BaseStat'
 import { BaseUser } from '@components/BaseUser'
 import setupSource from './Overview.setup.ts?raw'
 import { BaseTable } from '@components/BaseTable'
@@ -53,11 +54,17 @@ const template = `
 			<section aria-labelledby="blk-dash-kpis">
 				<h2 id="blk-dash-kpis" class="blk-sr-only">Показатели</h2>
 				<div class="blk-dash__kpis">
-					<BaseCard v-for="kpi in kpis" :key="kpi.id">
-						<div class="blk-dash__kpi">
-							<p class="blk-muted">{{ kpi.label }}</p>
-							<p class="blk-dash__value">{{ kpi.value }}</p>
-							<p class="blk-muted">{{ kpi.delta }}</p>
+					<BaseStat
+						v-for="kpi in kpis"
+						:key="kpi.id"
+						:label="kpi.label"
+						:value="kpi.value"
+						:value-format="kpi.valueFormat"
+						:change="kpi.change"
+						:change-format="kpi.changeFormat"
+						:change-label="kpi.changeLabel"
+						:is-inverse="kpi.isInverse">
+						<template #chart>
 							<BaseSparkline
 								:values="kpi.trend"
 								:labels="weeks"
@@ -65,8 +72,8 @@ const template = `
 								:format-value="kpi.format"
 								variant="area"
 								:height="40" />
-						</div>
-					</BaseCard>
+						</template>
+					</BaseStat>
 				</div>
 			</section>
 			<section aria-labelledby="blk-dash-charts">
@@ -101,7 +108,7 @@ export const Overview: StoryObj<typeof meta> = {
 		docs: {
 			description: {
 				story: [
-					'Дашборд магазина: каркас BaseLayout с липкой шапкой и боковым меню, карточки показателей со спарклайнами,',
+					'Дашборд магазина: каркас BaseLayout с липкой шапкой и боковым меню, показатели BaseStat со спарклайнами,',
 					'доли выручки по каналам, календарь активности, последние заказы и лента событий. «Поиск» и ⌘K (Ctrl+K)',
 					'открывают палитру команд: раздел из палитры подсвечивается в боковом меню.',
 				].join('\n'),
@@ -120,6 +127,7 @@ export const Overview: StoryObj<typeof meta> = {
 					'BasePieChart',
 					'BaseSideBar',
 					'BaseSparkline',
+					'BaseStat',
 					'BaseTable',
 					'BaseTimeline',
 					'BaseUser',
@@ -146,6 +154,7 @@ export const Overview: StoryObj<typeof meta> = {
 			BasePieChart,
 			BaseSideBar,
 			BaseSparkline,
+			BaseStat,
 			BaseTable,
 			BaseTimeline,
 			BaseUser,
@@ -157,7 +166,9 @@ export const Overview: StoryObj<typeof meta> = {
 		await expect(canvas.getByRole('heading', { level: 1, name: 'Обзор' })).toBeVisible()
 		const sidebar = canvasElement.querySelector('.base-layout__sidebar') as HTMLElement
 		if (window.innerWidth >= 768) await expect(sidebar.getBoundingClientRect().width).toBeGreaterThan(200)
-		await expect(canvas.getByText('4,82 млн ₽', { selector: '.blk-dash__value' })).toBeVisible()
+		await expect(
+			canvas.getByText('4,82 млн ₽', { selector: '.base-stat__value', normalizer: text => text.replace(/\s+/g, ' ').trim() }),
+		).toBeVisible()
 
 		await userEvent.click(canvas.getByRole('button', { name: 'Поиск' }))
 		const dialog = await screen.findByRole('dialog', { name: 'Палитра команд' })

@@ -111,4 +111,11 @@ export const enData = {
 		YANDEX: 'Yandex Maps',
 		GOOGLE: 'Google Maps',
 	},
+	/** Отсчёт до даты: имя таймера и текст для скринридера (обновляется раз в минуту) */
+	countdown: {
+		LABEL: 'Time left',
+		REMAINING: '{label}: {time}',
+		LESS_THAN_MINUTE: 'less than a minute',
+		FINISHED: 'time is up',
+	},
 }

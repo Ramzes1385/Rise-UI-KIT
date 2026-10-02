@@ -68,6 +68,9 @@ export const UI_COMMAND_PALETTE = localized('commandPalette')
 /** Графики */
 export const UI_CHARTS = localized('charts')
 
+/** Отсчёт до даты */
+export const UI_COUNTDOWN = localized('countdown')
+
 /** Сравнение картинок */
 export const UI_IMAGE_COMPARE = localized('imageCompare')
 

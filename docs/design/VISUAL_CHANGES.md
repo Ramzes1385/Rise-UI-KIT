@@ -1077,3 +1077,11 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 Исправление (02.10): у `line` и `area` крайние подписи оси X (точки на 0% и 100%) больше не выходят за график — первая выровнена по левому краю, последняя по правому (`base-chart__x-tick--start` / `--end`); остальные подписи и `bar` — по центру, как раньше.
 
 Истории (роль Storybook): заготовки `variants` и `sizes` в скриншот-тесте заменены историями из EPICS; `Variants` убрана (её показывают `Line`, `Area`, `Bars`), `Sizes` — столбцом (`story-stack`, `height` 160). Новые истории: Line, Area, Bars, Stacked (столбики и области стопкой, с отрицательными), MultiSeries (8 рядов), Empty, WithGaps, Formats, CustomTooltip, Dense (1000 точек), HiddenSeries, Keyboard. Снимки для решения об эталонах — `.rise-transfer\review\new-chart.html`.
+
+## Задача new-stat: BaseStat и BaseCountdown
+
+Новые компоненты — эталонов у них ещё нет, `*.visual.spec.ts` перечисляют истории для будущих эталонов владельца: `data-basestat` — trends, with-sparkline, variants, sizes, loading; `data-basecountdown` — default, layouts, finished, variants, sizes (отсчёт в скриншот-тестах стоит: часы остановлены). Превью — `.rise-transfer\review\new-stat.html`.
+
+- **BaseStat** — карточка с рамкой `--rise-border`, радиус `--rise-radius-lg`, отступ 16px; подпись приглушённая (`sm`), значение 2xl полужирное с моноширинными цифрами; изменение `xs`: стрелка и число зелёные (`--rise-success-text`) или красные (`--rise-error-text`), ноль — значок «минус» приглушённым цветом, текст периода приглушённый. Вариант `soft` — фон `--rise-bg-elevated`, подпись и изменение `--rise-text-toned` (muted на этом фоне не проходит AA); `ghost` — без рамки и отступов.
+- **BaseCountdown** — ячейки «число и подпись» (мин. ширина 64px, рамка, радиус `md`), число 2xl полужирное, подпись `xs` приглушённая; У `soft` подписи `--rise-text-toned`. `inline` — строка `lg`. После окончания цифры приглушены.
+- **Блок Dashboard (Overview)** — показатели теперь BaseStat вместо BaseCard с разметкой блока: «▲ 12% к августу» стало «↑ +12 % к августу» зелёным, у возвратов «↓ -0,4 п. п. к августу» зелёным (`isInverse`); радиус карточки `lg`, как у BaseCard; значения форматирует Intl (`4,82 млн ₽`, `1 284`, `3 750 ₽`, `2,1 %` — с пробелом перед знаком процента). В скриншот-тестах блока нет — эталоны не затронуты.
