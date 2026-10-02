@@ -130,4 +130,48 @@ describe('BasePopconfirm', () => {
 		const ghostDialog = await open(ghost.trigger)
 		expect(ghostDialog.closest('.base-dropdown__panel')?.querySelector('.base-dropdown__arrow')).toBeNull()
 	})
+
+	describe('триггер без кнопки (small-fixes-7a)', () => {
+		function renderSpan() {
+			const utils = render(BasePopconfirm, {
+				props: { title: 'Удалить?' },
+				slots: { default: () => h('span', null, [h('b', null, 'Удалить')]) },
+			})
+			return { ...utils, trigger: screen.getByRole('button', { name: 'Удалить' }) }
+		}
+
+		it('span в слоте — role="button" и tabindex, Enter открывает, Space закрывает и возвращает фокус', async () => {
+			const { trigger, emitted } = renderSpan()
+			expect(trigger.tagName).toBe('SPAN')
+			expect(trigger).toHaveAttribute('tabindex', '0')
+			expect(trigger).toHaveAttribute('aria-haspopup', 'dialog')
+
+			trigger.focus()
+			await fireEvent.keyDown(trigger, { key: 'Enter' })
+			await nextTick()
+			expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+			expect(trigger).toHaveAttribute('aria-expanded', 'true')
+
+			await fireEvent.keyDown(trigger, { key: ' ' })
+			expect(emitted('update:isOpen')).toEqual([[true], [false]])
+			expect(emitted('cancel')).toHaveLength(1)
+			expect(trigger).toHaveFocus()
+		})
+
+		it('повтор клавиши, другие клавиши и клавиша на вложенном элементе не переключают', async () => {
+			const { trigger, emitted } = renderSpan()
+			await fireEvent.keyDown(trigger, { key: 'Enter', repeat: true })
+			await fireEvent.keyDown(trigger, { key: 'a' })
+			await fireEvent.keyDown(trigger.querySelector('b') as HTMLElement, { key: 'Enter' })
+			expect(emitted('update:isOpen')).toBeUndefined()
+		})
+
+		it('кнопка в слоте — без role и tabindex, keydown не переключает (открывает нативный click)', async () => {
+			const { trigger, emitted } = renderConfirm()
+			expect(trigger).not.toHaveAttribute('role')
+			expect(trigger).not.toHaveAttribute('tabindex')
+			await fireEvent.keyDown(trigger, { key: 'Enter' })
+			expect(emitted('update:isOpen')).toBeUndefined()
+		})
+	})
 })

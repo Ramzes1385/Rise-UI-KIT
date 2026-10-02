@@ -502,4 +502,29 @@ describe('BaseDropdownMenu', () => {
 			vi.useRealTimers()
 		})
 	})
+
+	describe('триггер без кнопки (small-fixes-7a)', () => {
+		it('span в слоте — role="button" и tabindex, Enter открывает меню, выбор возвращает фокус на span', async () => {
+			render(BaseDropdownMenu, {
+				props: { items: ACTIONS },
+				slots: { default: () => h('span', null, 'Ещё') },
+			})
+			const trigger = screen.getByRole('button', { name: 'Ещё' })
+			expect(trigger.tagName).toBe('SPAN')
+			expect(trigger).toHaveAttribute('tabindex', '0')
+			expect(trigger).toHaveAttribute('aria-haspopup', 'menu')
+
+			const menu = await openWithKeyboard(trigger)
+			expect(trigger).toHaveAttribute('aria-expanded', 'true')
+			await waitFor(() => expect(focused()).toContain('Переименовать'))
+			await fireEvent.click(within(menu).getByRole('menuitem', { name: /Дублировать/ }))
+			expect(trigger).toHaveFocus()
+		})
+
+		it('кнопка в слоте — без role и tabindex', () => {
+			const { trigger } = renderMenu(ACTIONS)
+			expect(trigger).not.toHaveAttribute('role')
+			expect(trigger).not.toHaveAttribute('tabindex')
+		})
+	})
 })

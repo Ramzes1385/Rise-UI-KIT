@@ -11,6 +11,8 @@ const DANGER_COLOR: CustomColor = {
 	text: { base: 'var(--rise-on-error)' },
 }
 const BUTTON_SCALE_RATIO = 0.875
+const FALLBACK_TRIGGER_ATTRIBUTES = { role: 'button', tabindex: '0' }
+const ACTIVATION_KEYS = new Set(['Enter', ' '])
 
 function previousIndex(index: number, count: number): number {
 	return index <= 0 ? count - 1 : index - 1
@@ -64,11 +66,19 @@ function usePopconfirmTrigger(isOpenState: ComputedRef<boolean>, dialogId: strin
 		'aria-expanded': isOpenState.value ? 'true' : 'false',
 		'aria-controls': isOpenState.value ? dialogId : undefined,
 	}))
-	const { getTrigger } = useTriggerAttributes(
+	const { getTrigger, isFallbackTrigger } = useTriggerAttributes(
 		() => triggerRef.value,
 		() => triggerAttributes.value,
+		{ fallbackAttributes: FALLBACK_TRIGGER_ATTRIBUTES },
 	)
-	return { triggerRef, triggerAttributes, getTrigger }
+	return {
+		triggerRef,
+		triggerAttributes,
+		getTrigger,
+		isActivationKey(event: KeyboardEvent): boolean {
+			return ACTIVATION_KEYS.has(event.key) && isFallbackTrigger() && event.target === getTrigger()
+		},
+	}
 }
 
 function useAutofocus(isOpen: Ref<boolean>, dialogRef: Ref<HTMLElement | null>): void {
@@ -84,7 +94,7 @@ export function useBasePopconfirm(props: PopconfirmProps, emit: BasePopconfirmEm
 	const dialogId = `rise-popconfirm-${useId()}`
 	const dialogRef = ref<HTMLElement | null>(null)
 	const { isOpenLocal, isOpenState, setOpen } = usePopconfirmOpen(props, emit)
-	const { triggerRef, triggerAttributes, getTrigger } = usePopconfirmTrigger(isOpenState, dialogId)
+	const { triggerRef, triggerAttributes, getTrigger, isActivationKey } = usePopconfirmTrigger(isOpenState, dialogId)
 	useAutofocus(isOpenLocal, dialogRef)
 
 	const finish = (isConfirmed: boolean): void => {
@@ -92,6 +102,10 @@ export function useBasePopconfirm(props: PopconfirmProps, emit: BasePopconfirmEm
 		getTrigger()?.focus()
 		if (isConfirmed) emit('confirm')
 		else emit('cancel')
+	}
+	const toggle = (): void => {
+		if (isOpenLocal.value) finish(false)
+		else setOpen(true)
 	}
 
 	return {
@@ -104,9 +118,11 @@ export function useBasePopconfirm(props: PopconfirmProps, emit: BasePopconfirmEm
 		triggerAttributes,
 		isOpenState,
 		finish,
-		toggle(): void {
-			if (isOpenLocal.value) finish(false)
-			else setOpen(true)
+		toggle,
+		handleTriggerKeydown(event: KeyboardEvent): void {
+			if (!isActivationKey(event)) return
+			event.preventDefault()
+			if (!event.repeat) toggle()
 		},
 		handleDropdownUpdate(value: boolean): void {
 			if (!value && isOpenLocal.value) finish(false)

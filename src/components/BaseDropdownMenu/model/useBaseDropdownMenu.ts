@@ -5,6 +5,8 @@ import type DropdownMenuContent from '../ui/DropdownMenuContent.vue'
 import { useTriggerAttributes } from '@composables/overlay/useTriggerAttributes'
 import type { BaseDropdownMenuEmits, BaseDropdownMenuProps, DropdownMenuItem, FocusTarget } from '../types/BaseDropdownMenu.types'
 
+const FALLBACK_TRIGGER_ATTRIBUTES = { role: 'button', tabindex: '0' }
+
 function focusTargetFor(key: string): FocusTarget | null {
 	if (['Enter', ' ', 'ArrowDown'].includes(key)) return 'first'
 	if (key === 'ArrowUp') return 'last'
@@ -45,7 +47,7 @@ function useMenuTrigger(isOpenState: ComputedRef<boolean>, menuId: string) {
 	const { triggerId, getTrigger } = useTriggerAttributes(
 		() => triggerRef.value,
 		() => triggerAttributes.value,
-		{ withId: true },
+		{ withId: true, fallbackAttributes: FALLBACK_TRIGGER_ATTRIBUTES },
 	)
 	return { triggerRef, triggerAttributes, triggerId, getTrigger }
 }

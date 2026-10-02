@@ -216,5 +216,17 @@ describe('BaseSkeleton unit', () => {
 			expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('BaseSkeleton: `width`'))
 			expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('BaseSkeleton: `height`'))
 		})
+
+		it('предупреждение не повторяется при смене sizeScale и color, но повторяется при новом width', async () => {
+			const { rerender } = render(BaseSkeleton, { props: { width: -10 } })
+			expect(warnSpy).toHaveBeenCalledTimes(1)
+
+			await rerender({ width: -10, sizeScale: 150 })
+			await rerender({ width: -10, sizeScale: 150, color: 'var(--rise-surface)' })
+			expect(warnSpy).toHaveBeenCalledTimes(1)
+
+			await rerender({ width: -20, sizeScale: 150, color: 'var(--rise-surface)' })
+			expect(warnSpy).toHaveBeenCalledTimes(2)
+		})
 	})
 })

@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import BaseBadge from '../ui/BaseBadge.vue'
 import userEvent from '@testing-library/user-event'
-import { render, screen } from '@testing-library/vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 describe('BaseBadge integration', () => {
 	it('должен эмитить click при клике', async () => {
@@ -35,17 +35,18 @@ describe('BaseBadge integration', () => {
 			expect(screen.getByText('Статус').closest('.base-badge')).not.toHaveAttribute('tabindex')
 		})
 
-		it('выключенный — aria-disabled, без фокуса и без click', async () => {
+		it('выключенный — aria-disabled, без фокуса; мышь, Enter и Space не вызывают click', async () => {
 			const user = userEvent.setup()
 			const onClick = vi.fn()
 			render(BaseBadge, { props: { label: 'Новое', isDisabled: true, onClick } })
 
 			const badge = screen.getByRole('button', { name: 'Новое' })
 			expect(badge).toHaveAttribute('aria-disabled', 'true')
-			expect(badge).toHaveClass('base-badge--disabled')
 			await user.tab()
 			expect(badge).not.toHaveFocus()
 			await user.click(badge)
+			await fireEvent.keyDown(badge, { key: 'Enter' })
+			await fireEvent.keyDown(badge, { key: ' ' })
 			expect(onClick).not.toHaveBeenCalled()
 		})
 	})

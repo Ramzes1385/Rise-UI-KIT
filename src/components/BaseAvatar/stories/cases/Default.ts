@@ -1,19 +1,17 @@
-import { expect, fn } from 'storybook/test'
+import { expect } from 'storybook/test'
 import type meta from '../BaseAvatar.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 
 export const Default: StoryObj<typeof meta> = {
-	args: { onClick: fn() },
 	parameters: {
 		docs: {
 			description: {
-				story: 'Песочница: меняйте props в панели Controls. Без `src` видны инициалы из `name`; клик вызывает событие `click`.',
+				story: 'Песочница: меняйте props в панели Controls. Без `src` видны инициалы из `name`; кликабельный аватар (с `@click`) — история Clickable.',
 			},
 		},
 	},
-	play: async ({ canvas, userEvent, args }) => {
-		const initials = canvas.getByText('АС')
-		await userEvent.click(initials)
-		await expect(args.onClick).toHaveBeenCalledOnce()
+	play: async ({ canvas }) => {
+		await expect(canvas.getByText('АС')).toBeVisible()
+		await expect(canvas.queryByRole('button')).toBeNull()
 	},
 }

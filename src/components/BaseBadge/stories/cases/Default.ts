@@ -1,16 +1,18 @@
-import { expect, fn } from 'storybook/test'
+import { expect } from 'storybook/test'
 import type meta from '../BaseBadge.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 
 export const Default: StoryObj<typeof meta> = {
-	args: { onClick: fn() },
 	parameters: {
-		docs: { description: { story: 'Песочница: меняйте props в панели Controls. Клик по бейджу вызывает событие `click`.' } },
+		docs: {
+			description: {
+				story: 'Песочница: меняйте props в панели Controls. Без обработчика `@click` бейдж — текст без роли и фокуса; кликабельный бейдж — история Clickable.',
+			},
+		},
 	},
-	play: async ({ canvas, userEvent, args }) => {
-		const badge = canvas.getByText('Новый')
-		await expect(badge.closest('.base-badge')?.getBoundingClientRect().height).toBe(20)
-		await userEvent.click(badge)
-		await expect(args.onClick).toHaveBeenCalledOnce()
+	play: async ({ canvas }) => {
+		const badge = canvas.getByText('Новый').closest('.base-badge')
+		await expect(badge?.getBoundingClientRect().height).toBe(20)
+		await expect(canvas.queryByRole('button')).toBeNull()
 	},
 }

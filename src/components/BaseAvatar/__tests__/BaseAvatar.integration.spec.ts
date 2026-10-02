@@ -121,17 +121,18 @@ describe('BaseAvatar integration', () => {
 			expect(avatar).not.toHaveAttribute('aria-label')
 		})
 
-		it('выключенный — aria-disabled, без фокуса и без click', async () => {
+		it('выключенный — aria-disabled, без фокуса; мышь, Enter и Space не вызывают click', async () => {
 			const user = userEvent.setup()
 			const onClick = vi.fn()
 			render(BaseAvatar, { props: { name: 'Анна', isDisabled: true, onClick } })
 
 			const avatar = screen.getByRole('button', { name: 'Анна' })
 			expect(avatar).toHaveAttribute('aria-disabled', 'true')
-			expect(avatar).toHaveClass('base-avatar--disabled')
 			await user.tab()
 			expect(avatar).not.toHaveFocus()
 			await user.click(avatar)
+			await fireEvent.keyDown(avatar, { key: 'Enter' })
+			await fireEvent.keyDown(avatar, { key: ' ' })
 			expect(onClick).not.toHaveBeenCalled()
 		})
 	})

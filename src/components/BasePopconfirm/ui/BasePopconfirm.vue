@@ -11,7 +11,7 @@
 		panel-class="base-popconfirm__panel"
 		:custom-class="{ root: rootClass, panel: classes.panel, arrow: classes.arrow }"
 		@update:is-open="handleDropdownUpdate">
-		<span ref="triggerRef" class="base-popconfirm-trigger" :class="classes.trigger" @click="toggle">
+		<span ref="triggerRef" class="base-popconfirm-trigger" :class="classes.trigger" @click="toggle" @keydown="handleTriggerKeydown">
 			<slot :is-open="isOpenState" :trigger-props="triggerAttributes" />
 		</span>
 
@@ -97,6 +97,7 @@ const {
 	isOpenState,
 	finish,
 	toggle,
+	handleTriggerKeydown,
 	handleDropdownUpdate,
 	handleKeydown,
 } = useBasePopconfirm(props, emit)

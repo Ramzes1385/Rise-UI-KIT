@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import BaseCard from '../ui/BaseCard.vue'
 import userEvent from '@testing-library/user-event'
-import { render, screen } from '@testing-library/vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 describe('BaseCard integration', () => {
 	it('должен рендерить контент в слотах', () => {
@@ -34,7 +34,7 @@ describe('BaseCard integration', () => {
 			expect(onClick.mock.calls[0]?.[0]).toBeInstanceOf(MouseEvent)
 		})
 
-		it('Enter на кнопке внутри карточки не вызывает click карточки повторно', async () => {
+		it('Enter в поле внутри карточки не вызывает click карточки', async () => {
 			const user = userEvent.setup()
 			const onClick = vi.fn()
 			render(BaseCard, { props: { onClick }, slots: { default: '<input aria-label="Поле" />' } })
@@ -55,17 +55,18 @@ describe('BaseCard integration', () => {
 			expect(card).not.toHaveAttribute('aria-labelledby')
 		})
 
-		it('выключенная — aria-disabled, без фокуса и без click', async () => {
+		it('выключенная — aria-disabled, без фокуса; мышь, Enter и Space не вызывают click', async () => {
 			const user = userEvent.setup()
 			const onClick = vi.fn()
 			render(BaseCard, { props: { title: 'Карточка', isDisabled: true, onClick } })
 
 			const card = screen.getByRole('button', { name: 'Карточка' })
 			expect(card).toHaveAttribute('aria-disabled', 'true')
-			expect(card).toHaveClass('base-card--disabled')
 			await user.tab()
 			expect(card).not.toHaveFocus()
 			await user.click(card)
+			await fireEvent.keyDown(card, { key: 'Enter' })
+			await fireEvent.keyDown(card, { key: ' ' })
 			expect(onClick).not.toHaveBeenCalled()
 		})
 

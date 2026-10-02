@@ -17,11 +17,12 @@ function checkedDimension(prop: 'width' | 'height', value: number | string | und
 	return nonNegativeProp({ component: 'BaseSkeleton', prop, value })
 }
 
-function skeletonStyles(props: SkeletonProps): Record<string, string> {
+function skeletonStyles(
+	props: SkeletonProps,
+	{ width, height }: Record<'width' | 'height', number | string | undefined>,
+): Record<string, string> {
 	const styles: Record<string, string> = {}
 	const scale = props.sizeScale / 100
-	const width = checkedDimension('width', props.width)
-	const height = checkedDimension('height', props.height)
 	if (width !== undefined) styles.width = scaleDimension(width, scale)
 	if (height !== undefined) styles.height = scaleDimension(height, scale)
 	if (props.color) styles.backgroundColor = props.color
@@ -30,8 +31,10 @@ function skeletonStyles(props: SkeletonProps): Record<string, string> {
 }
 
 export function useBaseSkeleton(props: SkeletonProps) {
+	const width = computed(() => checkedDimension('width', props.width))
+	const height = computed(() => checkedDimension('height', props.height))
 	return {
 		...useCustomClass({ getClass: () => props.customClass, elementKeys: ['root'] }),
-		skeletonStyle: computed(() => skeletonStyles(props)),
+		skeletonStyle: computed(() => skeletonStyles(props, { width: width.value, height: height.value })),
 	}
 }
