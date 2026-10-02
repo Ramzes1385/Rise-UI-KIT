@@ -1,0 +1,43 @@
+{
+	"size": {
+		"components.js": {
+			"gzip": 310113,
+			"budget": 342016
+		},
+		"composables.js": {
+			"gzip": 82523,
+			"budget": 91136
+		},
+		"icons.js": {
+			"gzip": 3062,
+			"budget": 4096
+		},
+		"icons.svg": {
+			"gzip": 4354,
+			"budget": 6144
+		},
+		"index.js": {
+			"gzip": 317728,
+			"budget": 350208
+		},
+		"media.js": {
+			"gzip": 114793,
+			"budget": 126976
+		},
+		"styles.css": {
+			"gzip": 67451,
+			"budget": 74752
+		},
+		"utils.js": {
+			"gzip": 38059,
+			"budget": 41984
+		}
+	},
+	"coverageExcludes": {
+		"test:components:coverage": 23,
+		"test:composables:coverage": 0,
+		"test:utils:coverage": 0,
+		"test:components-heavy:coverage": 0
+	},
+	"lintWarnings": 55
+}

@@ -87,6 +87,7 @@
     "test:l10n": "node scripts/check-l10n.mjs",
     "test:story-source": "node scripts/check-story-source.mjs",
     "test:slot-docs": "node scripts/check-slot-docs.mjs",
+    "test:ratchets": "node scripts/check-ratchets.mjs",
     "create:component": "node scripts/create-component.mjs",
     "generate:emoji-data": "node scripts/generate-emoji-data.mjs",
     "pretest:components:coverage": "node scripts/invalidate-merged-coverage.mjs",
@@ -111,7 +112,7 @@
     "pack:dry": "npm run build:lib && npm pack --dry-run",
     "release": "semantic-release --extends ./build/release/semantic-release.config.cjs",
     "release:dry": "semantic-release --dry-run --extends ./build/release/semantic-release.local.config.cjs",
-    "ci:validate": "npm run lint && npm run lint:styles && npm run lint:unused && npm run format:check && npm run typecheck && npm run test:unit && npm run pack:dry",
+    "ci:validate": "npm run lint && npm run lint:styles && npm run lint:unused && npm run format:check && npm run typecheck && npm run test:unit && npm run pack:dry && npm run test:ratchets",
     "ci:release": "npm run release"
   },
   "dependencies": {

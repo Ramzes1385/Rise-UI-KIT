@@ -48,6 +48,10 @@ jobs:
       - name: Type check & build
         run: npm run build
 
+      # Храповики (build/ratchets.json): размер входов dist в gzip — в бюджете, исключений покрытия и предупреждений ESLint — не больше базы
+      - name: Ratchets (bundle size, coverage excludes, lint warnings)
+        run: npm run test:ratchets
+
   quality-gates:
     name: Stories & A11y Coverage
     runs-on: ubuntu-latest
