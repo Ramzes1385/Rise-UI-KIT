@@ -1,5 +1,9 @@
 import { expect, test } from '@playwright/test'
 
+const PLAYED_PHASES = ['played', 'completed', 'finished']
+
+type StorybookWindow = { __STORYBOOK_PREVIEW__?: { currentRender?: { phase?: string } } }
+
 async function loadSlider(page: import('@playwright/test').Page, storyId: string): Promise<void> {
 	await page.goto(`/iframe.html?id=${storyId}`)
 	await page.waitForSelector('.base-slider__dot', { timeout: 25000 })
@@ -30,13 +34,22 @@ test('слайдер: навигация по точкам', async ({ page }) =>
 
 test('слайдер: autoplay переключает слайды', async ({ page }) => {
 	await loadSlider(page, 'data-baseslider--autoplay')
+	await page.waitForFunction(
+		phases => phases.includes((window as StorybookWindow).__STORYBOOK_PREVIEW__?.currentRender?.phase ?? ''),
+		PLAYED_PHASES,
+		{ timeout: 25_000 },
+	)
 
-	const dots = page.locator('.base-slider__dot')
-	await expect(dots.first()).toHaveClass(/--active/)
+	const activeDot = (): Promise<number> =>
+		page.locator('.base-slider__dot').evaluateAll(dots => dots.findIndex(dot => /--active/.test(dot.className)))
+	const initialDot = await activeDot()
+	expect(initialDot).toBeGreaterThanOrEqual(0)
 
-	await page.waitForTimeout(5000)
+	const start = page.getByRole('button', { name: 'Запустить автопрокрутку' })
+	if (await start.isVisible()) await start.press('Enter')
+	await expect(page.getByRole('button', { name: 'Остановить автопрокрутку' })).toBeVisible()
 
-	await expect(dots.first()).not.toHaveClass(/--active/)
+	await expect.poll(activeDot, { timeout: 10_000 }).not.toBe(initialDot)
 })
 
 test('слайдер: анимация fade', async ({ page }) => {
