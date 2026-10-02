@@ -18,7 +18,11 @@ type Theme = 'light' | 'dark'
 
 // Ссылки на маршруты (`to`) во всех stories — StoryRouterLink, как RouterLink в приложении: клик не уводит
 // iframe со страницы Storybook (пункты BaseMegaMenu и BaseDropdownMenu, крошки, боковая панель)
+// У каждой story своё приложение Vue, а `useId()` считает id внутри приложения: на странице Docs у соседних stories
+// совпадали id и `name` радиогрупп (BaseRadio, BaseSegmented), и выбор в одной story снимал его в другой
+let appCount = 0
 setup(app => {
+	app.config.idPrefix = `story${++appCount}`
 	app.provide(LINK_COMPONENT_KEY, StoryRouterLink)
 })
 

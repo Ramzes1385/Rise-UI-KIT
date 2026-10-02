@@ -79,7 +79,7 @@ export const Variants: StoryObj<typeof meta> = {
 | `Chat` | BaseAiMessage, BaseChat, BaseCommentThread, BaseEmojiPicker, BasePromptInput, BaseReasoning, BaseToolCall |
 | `Editor` | BaseEditor |
 | `Media` | BaseAudioPlayer, BaseImageCompare, BaseMap, BaseMediaPlayer, BaseSubtitleEditor, BaseVoiceRecorder, BaseWaveform |
-| `Composables` | Демо composables для своих компонентов приложения: useSortable (`src/stories/composables/`). Страница — витрина без компонента, как Blocks: истории и `parameters.ts` — в `<Имя>/`, логика — модулем `cases/<История>.setup.ts`, стили — классы `cmp-*` в `composables.scss`; «Show code» — через `scriptSource`, импорт из `@ramzes1385/rise-ui-kit/composables` — в `importsFrom` |
+| `Composables` | Демо composables для своих компонентов приложения: useSortable, useCryptoPro (`src/stories/composables/`). Страница — витрина без компонента, как Blocks: истории и `parameters.ts` — в `<Имя>/`, логика — модулем `cases/<История>.setup.ts`, стили — классы `cmp-*` в `composables.scss`; «Show code» — через `scriptSource`, импорт из `@ramzes1385/rise-ui-kit/composables` — в `importsFrom`. У useCryptoPro `window.cadesplugin` один на страницу Docs — эмуляция ставится только на время `check()` |
 
 ## 3. Описание и argTypes
 
