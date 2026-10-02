@@ -1293,3 +1293,8 @@ BaseModal получил `ariaLabel`: снимки BaseModal не меняютс
 - Легенда (`hasLegend`) — строка кружков с названиями групп под картой.
 - Скрытые фильтром элементы SVG слоя — прозрачность 0,25.
 - Исправление по проверке (02.10): подпись строки списка (группа и этаж) — `--rise-text-toned` вместо `--rise-text-muted` (светлая тема: neutral-600 вместо neutral-500, чуть темнее; тёмная: neutral-300 вместо neutral-400, чуть светлее) — контраст на фоне наведения и выбранной строки `--rise-bg-elevated` не ниже 4,5:1 (axe color-contrast).
+
+### new-image-map-2 — истории (Storybook)
+
+- Новые истории `Media/BaseImageMap`: Directory, DirectoryGrid, DirectoryNarrow, DirectoryEmpty, Filters, Legend, DeepLink — на фикстуре `IMAGE_MAP_MALL` (план торгового центра из `stories/fixtures.ts` с метками удобств, ключевыми словами и своими миниатюрами `placeholderImage`; чужой графики нет). Прежние истории не менялись.
+- Скриншот-тесты `BaseImageMap.visual.spec.ts`: добавлены directory-grid (список справа карточками, разделы по буквам), directory-narrow (360 px — список и легенда под картой), legend — в двух темах (+6 снимков). Эталонов нет — их создаёт владелец; play этих историй ничего не кликает.
