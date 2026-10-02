@@ -87,7 +87,7 @@ describe('routeGraph', () => {
 		expect(graph.links.get('b')?.[0]).toMatchObject({ to: 'a', cost: 2 })
 	})
 
-	it('односторонний переход — только снизу вверх', () => {
+	it('односторонний переход — только в порядке nodes, обратной связи нет', () => {
 		const graph = mall()
 		expect(graph.links.get('f1-c0')?.some(link => link.to === 'f2-c0')).toBe(true)
 		expect(graph.links.get('f2-c0')?.some(link => link.to === 'f1-c0')).toBe(false)
@@ -136,11 +136,13 @@ describe('routeGraph', () => {
 		expect(path?.nodes.map(node => node.id)).toEqual(['f1-door-1', 'f1-c1', 'f1-c2', 'f1-c3', 'f1-door-2'])
 	})
 
-	it('между этажами выбирает дешёвый переход: вверх — эскалатор или лестница, вниз — лестница', () => {
+	it('между этажами выбирает дешёвый переход: слева — эскалаторы вверх и вниз, справа — лестница', () => {
 		const up = route('f1-shop-1', 'f2-shop-1').path
 		expect(up?.links.find(link => link.transition)?.transition?.id).toBe('escalator-up')
 		const down = route('f2-shop-1', 'f1-shop-1').path
-		expect(down?.links.find(link => link.transition)?.transition?.id).toBe('stairs')
+		expect(down?.links.find(link => link.transition)?.transition?.id).toBe('escalator-down')
+		const right = route('f2-shop-4', 'f1-shop-4').path
+		expect(right?.links.find(link => link.transition)?.transition?.id).toBe('stairs')
 	})
 
 	it('без ступеней — лифт', () => {
@@ -264,6 +266,37 @@ describe('routeSteps', () => {
 			'Спуститесь на эскалаторе: 1 этаж',
 			'Идите к «Б»',
 		])
+	})
+
+	it('узел на слое не из data.layers: предупреждение и направление по порядку узлов перехода', () => {
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+		const routes: ImageMapRoutes = {
+			nodes: [
+				{ id: 'a', layer: 'floor-2', x: 0, y: 0 },
+				{ id: 'b', layer: 'roof', x: 0, y: 0 },
+			],
+			edges: [],
+			transitions: [{ id: 'lift', type: 'elevator', nodes: ['b', 'a'] }],
+		}
+		const graph = buildRouteGraph({ routes, layers: LAYERS, isStepFree: false })
+		const up = routeSteps({
+			graph,
+			path: findRoutePath(graph, ['b'], ['a'])!,
+			from: shop('b', 'Б'),
+			to: shop('a', 'А'),
+			layers: LAYERS,
+		})
+		expect(up[2]?.text).toBe('Поднимитесь на лифте: 2 этаж')
+		const down = routeSteps({
+			graph,
+			path: findRoutePath(graph, ['a'], ['b'])!,
+			from: shop('a', 'А'),
+			to: shop('b', 'Б'),
+			layers: LAYERS,
+		})
+		expect(down[2]?.text).toBe('Спуститесь на лифте: roof')
+		expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('узел маршрута «b» стоит на слое «roof»'))
+		warnSpy.mockRestore()
 	})
 
 	it('короткий отрезок — не меньше 1 м', () => {

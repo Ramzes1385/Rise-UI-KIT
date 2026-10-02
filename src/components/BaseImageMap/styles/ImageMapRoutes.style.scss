@@ -27,7 +27,7 @@
 		stroke-width: 4px;
 
 		@include motion-safe {
-			animation: base-image-map-route 0.9s linear infinite;
+			animation: base-image-map-route calc(var(--rise-duration-slow) * 3) linear infinite;
 		}
 	}
 

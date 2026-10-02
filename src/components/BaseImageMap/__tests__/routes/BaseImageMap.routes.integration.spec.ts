@@ -116,7 +116,7 @@ describe('BaseImageMap integration — маршруты', () => {
 		const { emitted } = render(BaseImageMap, { props: { ...BASE_PROPS, route: TO_CINEMA } })
 		await user.click(within(panel()).getByRole('button', { name: 'Поменять местами' }))
 		expect(emitted()['update:route']?.[0]).toEqual([{ from: 'f3-shop-1', to: 'f1-shop-1' }])
-		expect(steps()[2]).toBe('Спуститесь по лестнице: 1 этаж')
+		expect(steps()[2]).toBe('Спуститесь на эскалаторе: 1 этаж')
 		await user.click(within(panel()).getByRole('switch', { name: 'Без лестниц' }))
 		expect(emitted()['update:route']?.[1]).toEqual([{ from: 'f3-shop-1', to: 'f1-shop-1', isStepFree: true }])
 		expect(steps()[1]).toMatch(/^Идите к лифту «Лифт»/)
@@ -185,15 +185,41 @@ describe('BaseImageMap integration — маршруты', () => {
 })
 
 describe('BaseImageMap integration — маршруты: исправления по проверке', () => {
-	it('новый объект data с тем же маршрутом не шлёт route-change и не меняет этаж; новый запрос — шлёт', async () => {
+	it('маршрут на 1 этаже, пользователь перешёл на 2 этаж, пришёл новый data — этаж остаётся 2', async () => {
+		const user = userEvent.setup()
 		const { emitted, rerender } = render(BaseImageMap, { props: { ...BASE_PROPS, route: TO_CINEMA } })
-		expect(routeChanges(emitted())).toHaveLength(1)
 		expect(emitted()['update:layer']).toEqual([['floor-1']])
+		await user.click(screen.getByRole('radio', { name: '2' }))
+		expect(emitted()['update:layer']).toEqual([['floor-1'], ['floor-2']])
 		await rerender({ data: { ...data, objects: data.objects.map(object => ({ ...object })) } })
+		expect(screen.getByRole('radio', { name: '2' })).toBeChecked()
+		expect(emitted()['update:layer']).toEqual([['floor-1'], ['floor-2']])
 		expect(routeChanges(emitted())).toHaveLength(1)
-		expect(emitted()['update:layer']).toEqual([['floor-1']])
+	})
+
+	it('новый data меняет итог (метры, название) — route-change приходит, этаж не переключается', async () => {
+		const user = userEvent.setup()
+		const { emitted, rerender } = render(BaseImageMap, { props: { ...BASE_PROPS, route: TO_CINEMA } })
+		await user.click(screen.getByRole('radio', { name: '2' }))
+		const routes = data.routes as NonNullable<ImageMapData['routes']>
+		await rerender({ data: { ...data, routes: { ...routes, metersPerWidth: 240 } } })
+		const [first, second] = routeChanges(emitted())
+		expect(second?.meters).toBeGreaterThan(first?.meters ?? 0)
+		const objects = data.objects.map(object => (object.id === 'f3-shop-1' ? { ...object, title: 'Кинозал' } : object))
+		await rerender({ data: { ...data, objects } })
+		expect(routeChanges(emitted())).toHaveLength(3)
+		expect(routeChanges(emitted())[2]?.to.title).toBe('Кинозал')
+		expect(screen.getByRole('radio', { name: '2' })).toBeChecked()
+		expect(emitted()['update:layer']).toEqual([['floor-1'], ['floor-2']])
+	})
+
+	it('новый запрос шлёт route-change и показывает этаж начала', async () => {
+		const user = userEvent.setup()
+		const { emitted, rerender } = render(BaseImageMap, { props: { ...BASE_PROPS, route: TO_CINEMA } })
+		await user.click(screen.getByRole('radio', { name: '2' }))
 		await rerender({ route: { ...TO_CINEMA, isStepFree: true } })
 		expect(routeChanges(emitted())).toHaveLength(2)
+		expect(emitted()['update:layer']).toEqual([['floor-1'], ['floor-2'], ['floor-1']])
 	})
 
 	it('после «Сбросить маршрут» фокус — в поле «Откуда»', async () => {

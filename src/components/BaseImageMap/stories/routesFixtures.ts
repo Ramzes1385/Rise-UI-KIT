@@ -44,6 +44,7 @@ function planSvg(level: number): string {
 		`<rect x="900" y="40" width="60" height="200" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>`,
 		`<rect x="900" y="360" width="60" height="200" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>`,
 		level < 3 ? `<rect x="30" y="270" width="60" height="60" fill="#fde68a" stroke="#d97706" stroke-width="2"/>` : '',
+		level > 1 ? `<rect x="100" y="270" width="40" height="60" fill="#fed7aa" stroke="#ea580c" stroke-width="2"/>` : '',
 		`</svg>`,
 	].join('')
 }
@@ -61,6 +62,7 @@ function corridorNodes(level: number): ImageMapRouteNode[] {
 	const landings = [
 		{ id: `f${level}-stairs`, layer, x: 0.93, y: 0.38 },
 		{ id: `f${level}-lift`, layer, x: 0.93, y: 0.62 },
+		{ id: `f${level}-escalator-down`, layer, x: 0.12, y: 0.5 },
 	]
 	return [...corridor, ...doors, ...landings]
 }
@@ -69,7 +71,12 @@ function corridorEdges(level: number): [string, string][] {
 	const corridor = CORRIDOR_X.slice(1).map((_, index): [string, string] => [`f${level}-c${index}`, `f${level}-c${index + 1}`])
 	const doors = SLOTS.map((slot, index): [string, string] => [`f${level}-door-${index + 1}`, `f${level}-c${slot.column + 1}`])
 	const reachable = level === 3 ? doors.slice(0, 3) : doors
-	return [...corridor, ...reachable, [`f${level}-stairs`, `f${level}-c5`], [`f${level}-lift`, `f${level}-c5`]]
+	const landings: [string, string][] = [
+		[`f${level}-stairs`, `f${level}-c5`],
+		[`f${level}-lift`, `f${level}-c5`],
+		[`f${level}-escalator-down`, `f${level}-c1`],
+	]
+	return [...corridor, ...reachable, ...landings]
 }
 
 export const MALL_ROUTES: ImageMapRoutes = {
@@ -79,6 +86,13 @@ export const MALL_ROUTES: ImageMapRoutes = {
 		{ id: 'stairs', type: 'stairs', title: 'Лестница у входа', nodes: ['f1-stairs', 'f2-stairs', 'f3-stairs'] },
 		{ id: 'lift', type: 'elevator', title: 'Лифт', nodes: ['f1-lift', 'f2-lift', 'f3-lift'] },
 		{ id: 'escalator-up', type: 'escalator', title: 'Эскалатор вверх', nodes: ['f1-c0', 'f2-c0'], isOneWay: true },
+		{
+			id: 'escalator-down',
+			type: 'escalator',
+			title: 'Эскалатор вниз',
+			nodes: ['f3-escalator-down', 'f2-escalator-down', 'f1-escalator-down'],
+			isOneWay: true,
+		},
 	],
 	metersPerWidth: 120,
 }

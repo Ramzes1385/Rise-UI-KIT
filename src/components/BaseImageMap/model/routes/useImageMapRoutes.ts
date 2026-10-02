@@ -52,10 +52,15 @@ function useRouteSearch(props: ImageMapProps, core: MapCore, getRoute: () => Ima
 	})
 }
 
-function routeKey(search: RouteSearch | null, route: ImageMapRouteValue): string | undefined {
+function pathKey(search: RouteSearch | null, route: ImageMapRouteValue): string | undefined {
 	if (!search) return undefined
 	const nodes = search.result ? search.result.nodes.map(node => node.id).join(',') : '-'
 	return `${route.from}>${route.to}:${Boolean(route.isStepFree)}:${nodes}`
+}
+
+function resultKey(search: RouteSearch | null): string | undefined {
+	if (!search) return undefined
+	return search.result ? JSON.stringify(search.result) : '-'
 }
 
 function summaryText(search: RouteSearch | null): string {
@@ -89,13 +94,12 @@ export function useImageMapRoutes(props: ImageMapProps, emit: BaseImageMapEmits,
 	const search = useRouteSearch(props, core, () => localRoute.value)
 
 	watch(
-		() => routeKey(search.value, localRoute.value),
-		(key, previous) => {
-			if (key === undefined && previous === undefined) return
-			const result = search.value?.result
-			emit('route-change', result ?? null)
-			const layer = result?.steps[0]?.layer
-			if (layer) core.actions.setLayer(layer)
+		[() => pathKey(search.value, localRoute.value), () => resultKey(search.value)],
+		([path], [previousPath]) => {
+			if (path === undefined && previousPath === undefined) return
+			emit('route-change', search.value?.result ?? null)
+			const layer = search.value?.result?.steps[0]?.layer
+			if (layer && path !== previousPath) core.actions.setLayer(layer)
 		},
 		{ immediate: true },
 	)

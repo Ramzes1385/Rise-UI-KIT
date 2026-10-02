@@ -18,7 +18,7 @@ export const Routes: StoryObj<typeof meta> = {
 		docs: {
 			description: {
 				story: [
-					'Маршруты, как wayfinding: `data.routes` — граф путей торгового центра в три этажа. Узлы в долях плана, коридоры между узлами этажа, переходы между этажами — лестница, лифт и эскалатор только вверх. Вход магазина — узел с его `object`.',
+					'Маршруты, как wayfinding: `data.routes` — граф путей торгового центра в три этажа. Узлы в долях плана, коридоры между узлами этажа, переходы между этажами — лестница, лифт, эскалатор вверх (1 → 2) и эскалатор вниз (3 → 2 → 1): у одностороннего перехода `isOneWay` проход — в порядке `nodes`. Вход магазина — узел с его `object`.',
 					'Панель «Как пройти» (`hasRoutes`): «Откуда» и «Куда» с поиском, «Поменять местами», «Без лестниц» (только лифт). Кратчайший путь рисуется линией с бегущим пунктиром на текущем этаже (без движения при reduced motion), метки — начало, переходы и конец.',
 					'Для скринридера маршрут дублируется текстом: итог в `role="status"` и шаги нумерованным списком; выбор шага показывает его этаж. «Служебное помещение» на 3 этаже не связано с коридором — «Маршрут не найден». Запрос — `v-model:route`, результат — событие `route-change`.',
 				].join('\n'),
@@ -58,5 +58,11 @@ export const Routes: StoryObj<typeof meta> = {
 		await waitFor(() => expect(within(steps).getAllByRole('listitem')[1]).toHaveTextContent('лифту'))
 		await userEvent.click(within(steps).getByRole('button', { name: /Поднимитесь на лифте/ }))
 		await waitFor(() => expect(canvas.getByRole('radio', { name: '3' })).toBeChecked())
+		await userEvent.click(panel.getByRole('switch', { name: 'Без лестниц' }))
+		await userEvent.click(panel.getByRole('button', { name: 'Поменять местами' }))
+		await waitFor(() => expect(panel.getByRole('status')).toHaveTextContent(/Маршрут от «Кино» до «Кофейня»/))
+		const back = within(panel.getByRole('list', { name: 'Шаги маршрута' })).getAllByRole('listitem')
+		await expect(back[1]).toHaveTextContent('Идите к эскалатору «Эскалатор вниз»')
+		await expect(back[2]).toHaveTextContent('Спуститесь на эскалаторе: 1 этаж')
 	},
 }

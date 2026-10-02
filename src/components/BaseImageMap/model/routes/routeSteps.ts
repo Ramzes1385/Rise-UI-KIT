@@ -1,7 +1,8 @@
+import { warn } from '@/locales/warn'
 import { transitionType } from './routeGraph'
 import { formatMessage } from '@/locales/state'
-import { UI_IMAGE_MAP_ROUTES } from '@/locales/messages'
 import type { ImageMapLayer } from '../../types/imageMapData.types'
+import { UI_IMAGE_MAP_ROUTES, UI_WARNINGS } from '@/locales/messages'
 import type {
 	ImageMapRouteNode as RouteNode,
 	ImageMapRouteStep,
@@ -38,10 +39,18 @@ function layerIndex(layers: ImageMapLayer[], id: string): number {
 	return layers.findIndex(layer => layer.id === id)
 }
 
+function nodeLayerIndex(input: StepsInput, id: string): number {
+	const layer = input.graph.layerOf(input.graph.nodes.get(id) as RouteNode)
+	const index = layerIndex(input.layers, layer)
+	if (index < 0) warn(UI_WARNINGS.IMAGE_MAP_ROUTE_LAYER, { id, layer })
+	return index
+}
+
 function isGoingUp(input: StepsInput, transition: ImageMapRouteTransition, [fromId, lastId]: [string, string]): boolean {
-	const fromIndex = layerIndex(input.layers, input.graph.layerOf(input.graph.nodes.get(fromId) as RouteNode))
-	const toIndex = layerIndex(input.layers, input.graph.layerOf(input.graph.nodes.get(lastId) as RouteNode))
-	return fromIndex === toIndex ? transition.nodes.indexOf(lastId) > transition.nodes.indexOf(fromId) : toIndex > fromIndex
+	const fromIndex = nodeLayerIndex(input, fromId)
+	const toIndex = nodeLayerIndex(input, lastId)
+	const isOrdered = fromIndex >= 0 && toIndex >= 0 && fromIndex !== toIndex
+	return isOrdered ? toIndex > fromIndex : transition.nodes.indexOf(lastId) > transition.nodes.indexOf(fromId)
 }
 
 function transitionStep(input: StepsInput, links: RouteLink[], fromId: string): ImageMapRouteStep {
