@@ -1,20 +1,18 @@
-import { nextTick, ref, watch } from 'vue'
-import type { BaseTableToolbarProps } from '../types/toolbar/BaseTableToolbar.types'
+import { computed } from 'vue'
+import type { DropdownMenuItem } from '@components/BaseDropdownMenu'
+import type { BaseTableToolbarEmits, BaseTableToolbarProps } from '../types/toolbar/BaseTableToolbar.types'
 
 const HIDDEN_LABEL = { label: 'base-table__visually-hidden' }
-const SETTINGS_OPTION = { labelWrapper: 'base-table__settings-option' }
 
-export function useBaseTableToolbar(props: BaseTableToolbarProps) {
-	const settingsListRef = ref<HTMLElement | null>(null)
-
-	watch(
-		() => props.isSettingsOpen,
-		async isOpen => {
-			if (!isOpen) return
-			await nextTick()
-			settingsListRef.value?.querySelector<HTMLInputElement>('input')?.focus()
-		},
+export function useBaseTableToolbar(props: BaseTableToolbarProps, emit: BaseTableToolbarEmits) {
+	const columnItems = computed<DropdownMenuItem[]>(() =>
+		props.columns.map(column => ({
+			type: 'checkbox',
+			label: column.label,
+			isChecked: !column.isHidden,
+			onUpdateChecked: () => emit('toggle-column-visibility', column),
+		})),
 	)
 
-	return { hiddenLabel: HIDDEN_LABEL, settingsOption: SETTINGS_OPTION, settingsListRef }
+	return { hiddenLabel: HIDDEN_LABEL, columnItems }
 }

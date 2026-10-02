@@ -13,7 +13,7 @@ function useModalClose(props: BaseModalProps, emit: BaseModalEmits) {
 	const { handleOverlayClick, close } = usePopup({
 		isOpen: () => props.isOpen,
 		closeOnOverlay: () => props.closeOnOverlay ?? true,
-		closeOnEscape: () => true,
+		closeOnEscape: () => props.closeOnEscape ?? true,
 		lockScroll: () => !props.isContained,
 		onClose: () => {
 			emit('update:isOpen', false)

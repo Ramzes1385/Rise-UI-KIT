@@ -1,3 +1,4 @@
+import type { Ref } from 'vue'
 import type { PaddingProp } from '@composables/base/usePadding'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
@@ -38,6 +39,13 @@ export interface BaseDropdownProps extends BaseComponentProps<(typeof DROPDOWN_V
 	closeOnEscape?: boolean
 	/** Предотвращать mousedown внутри панели (сохраняет фокус триггера) */
 	preventMousedown?: boolean
+	/**
+	 * Панель — диалог (APG Dialog: в ней поля и кнопки, содержимое с `role="dialog"`): при открытии фокус переходит в панель,
+	 * Tab и Shift+Tab ходят по кругу внутри неё, после закрытия фокус возвращается на триггер.
+	 * По умолчанию (`false`) панель — список или меню: Tab, уводящий фокус из панели, закрывает её и возвращает фокус
+	 * на триггер; стрелки вверх и вниз, Home и End переводят фокус по пунктам (`menuitem*`, `option`), если фокус на пункте
+	 */
+	trapFocus?: boolean
 	/** CSS-класс панели */
 	panelClass?: string
 	/**
@@ -73,3 +81,13 @@ export interface BaseDropdownExpose {
 }
 
 export type DropdownProps = PropsWithDefaults<BaseDropdownProps, 'isOpen' | 'position' | 'gap' | 'maxHeight' | 'matchWidth'>
+
+/** Новый индекс пункта по клавише: стрелки по кругу, Home — первый, End — последний */
+export type DropdownItemStep = (index: number, count: number) => number
+
+/** Элементы для клавиатуры панели: обёртка с триггером, панель и элемент, с которого открыли панель */
+export interface DropdownKeyboardRefs {
+	wrapperRef: Ref<HTMLElement | null>
+	dropdownRef: Ref<HTMLElement | null>
+	savedActiveElement: Ref<HTMLElement | null>
+}

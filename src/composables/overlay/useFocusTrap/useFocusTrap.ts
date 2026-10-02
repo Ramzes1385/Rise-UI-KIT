@@ -18,7 +18,7 @@ const FOCUSABLE_SELECTOR = [
 ].join(',')
 
 /** Элементы контейнера, достижимые по Tab, в порядке документа */
-function getTabbableElements(container: HTMLElement): HTMLElement[] {
+export function getTabbableElements(container: HTMLElement): HTMLElement[] {
 	return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
 		element => element.tabIndex >= 0 && !element.closest('[hidden], [inert]'),
 	)

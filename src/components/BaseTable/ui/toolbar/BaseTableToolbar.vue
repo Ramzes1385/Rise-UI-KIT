@@ -49,37 +49,20 @@
 		</div>
 
 		<div v-if="hasColumnSettings" class="base-table__settings" :class="settingsClass">
-			<BaseDropdown
+			<BaseDropdownMenu
 				:is-open="isSettingsOpen"
+				:items="columnItems"
 				position="bottom-end"
-				panel-class="base-table__settings-panel"
-				:max-height="settingsMaxHeight"
 				:size-scale="sizeScale"
+				:custom-class="{ panel: 'base-table__settings-panel' }"
 				@update:is-open="emit('update:is-settings-open', $event)">
-				<BaseButton
-					variant="outline"
-					class="base-table__settings-btn"
-					:aria-expanded="isSettingsOpen ? 'true' : 'false'"
-					:size-scale="sizeScale"
-					@click="emit('toggle-settings')">
+				<BaseButton variant="outline" class="base-table__settings-btn" :size-scale="sizeScale">
 					{{ TABLE_TEXT.COLUMNS }}
 					<template #right>
 						<BaseIcon name="chevron-down" :size-scale="calcIconScale('sm', sizeScale)" :rotate="isSettingsOpen ? 180 : 0" />
 					</template>
 				</BaseButton>
-				<template #dropdown>
-					<div ref="settingsListRef" class="base-table__settings-list" role="group" :aria-label="TABLE_TEXT.COLUMNS">
-						<div v-for="column in columns" :key="column.key" class="base-table__settings-item">
-							<BaseCheckbox
-								:model-value="!column.isHidden"
-								:label="column.label"
-								:custom-class="settingsOption"
-								:size-scale="sizeScale"
-								@update:model-value="emit('toggle-column-visibility', column)" />
-						</div>
-					</div>
-				</template>
-			</BaseDropdown>
+			</BaseDropdownMenu>
 		</div>
 
 		<div v-if="activeFilters.length" class="base-table__active-filters" :class="activeFiltersClass">
@@ -111,8 +94,7 @@ import { BaseInput } from '@components/BaseInput'
 import { BaseButton } from '@components/BaseButton'
 import { BaseSelect } from '@components/BaseSelect'
 import { calcIconScale } from '@utils/media/iconUtils'
-import { BaseCheckbox } from '@components/BaseCheckbox'
-import { BaseDropdown } from '@components/BaseDropdown'
+import { BaseDropdownMenu } from '@components/BaseDropdownMenu'
 import { TABLE_TEXT, UI_FILTER, UI_TEXT } from '@/locales/messages'
 import { useBaseTableToolbar } from '../../model/useBaseTableToolbar'
 import type { BaseTableToolbarEmits, BaseTableToolbarProps, BaseTableToolbarSlots } from '../../types/toolbar/BaseTableToolbar.types'
@@ -123,5 +105,5 @@ const emit = defineEmits<BaseTableToolbarEmits>()
 
 defineSlots<BaseTableToolbarSlots>()
 
-const { hiddenLabel, settingsOption, settingsListRef } = useBaseTableToolbar(props)
+const { hiddenLabel, columnItems } = useBaseTableToolbar(props, emit)
 </script>

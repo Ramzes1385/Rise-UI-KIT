@@ -1,4 +1,4 @@
-import type { ComputedRef } from 'vue'
+import type { ComputedRef, Ref } from 'vue'
 import { computed, ref, useId, useSlots } from 'vue'
 import { usePopup } from '@composables/overlay/usePopup'
 import { usePadding } from '@composables/base/usePadding'
@@ -40,12 +40,17 @@ function useSlideoverSections(props: SlideoverProps) {
 	}
 }
 
-function useSlideoverClose(props: SlideoverProps, emit: BaseSlideoverEmits, isContainedMode: ComputedRef<boolean>) {
+function useSlideoverClose(
+	props: SlideoverProps,
+	emit: BaseSlideoverEmits,
+	dialog: { isModal: ComputedRef<boolean>; panelRef: Ref<HTMLElement | null> },
+) {
 	const { handleOverlayClick, close } = usePopup({
 		isOpen: () => props.isOpen,
 		closeOnOverlay: () => props.closeOnOverlay,
 		closeOnEscape: () => props.closeOnEscape,
-		lockScroll: () => !isContainedMode.value,
+		lockScroll: () => dialog.isModal.value,
+		escapeScope: () => (dialog.isModal.value ? undefined : dialog.panelRef.value),
 		onClose: () => {
 			emit('update:isOpen', false)
 			emit('close')
@@ -59,7 +64,7 @@ function useSlideoverDialog(props: SlideoverProps, isContainedMode: ComputedRef<
 	const bodyRef = ref<HTMLElement | null>(null)
 	const titleId = useId()
 	const { isScrollable: isBodyScrollable } = useScrollableRegion({ elementRef: bodyRef })
-	const isModal = computed(() => !isContainedMode.value)
+	const isModal = computed(() => !isContainedMode.value && props.hasOverlay !== false)
 	useFocusTrap({ containerRef: panelRef, isActive: () => props.isOpen && isModal.value })
 
 	return { panelRef, bodyRef, titleId, isBodyScrollable, isModal }
@@ -68,13 +73,14 @@ function useSlideoverDialog(props: SlideoverProps, isContainedMode: ComputedRef<
 export function useBaseSlideover(props: SlideoverProps, emit: BaseSlideoverEmits) {
 	const standard = useStandardBaseComponent('base-slideover', props, SLIDEOVER_ELEMENTS)
 	const layout = useSlideoverLayout(props)
+	const dialog = useSlideoverDialog(props, layout.isContainedMode)
 
 	return {
 		...standard,
 		...layout,
 		...useSlideoverSections(props),
 		layerStyle: useLayerIndex(() => props.isOpen),
-		...useSlideoverClose(props, emit, layout.isContainedMode),
-		...useSlideoverDialog(props, layout.isContainedMode),
+		...useSlideoverClose(props, emit, dialog),
+		...dialog,
 	}
 }

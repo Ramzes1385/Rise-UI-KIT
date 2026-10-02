@@ -2,6 +2,7 @@ import { computed, ref, watch } from 'vue'
 import type { ComputedRef, Ref } from 'vue'
 import { getActiveElement } from '@utils/dom/domUtils'
 import { usePadding } from '@composables/base/usePadding'
+import { useDropdownKeyboard } from './useDropdownKeyboard'
 import { useLayerIndex } from '@composables/app/useLayerStack'
 import { useEscapeKey } from '@composables/overlay/useEscapeKey'
 import { useClickOutside } from '@composables/overlay/useClickOutside'
@@ -68,13 +69,14 @@ function useDropdownClose(
 	props: DropdownProps,
 	emit: BaseDropdownEmits,
 	options: { targets: Ref<HTMLElement | null>[]; closeOnEscape: ComputedRef<boolean> },
-): void {
+): () => void {
 	const handleClose = (): void => {
 		emit('update:isOpen', false)
 		emit('close')
 	}
 	useClickOutside({ targets: options.targets, callback: handleClose, isActive: () => props.isOpen })
 	useEscapeKey({ isActive: () => props.isOpen && options.closeOnEscape.value, callback: handleClose })
+	return handleClose
 }
 
 export function useBaseDropdown(props: DropdownProps, emit: BaseDropdownEmits) {
@@ -91,7 +93,8 @@ export function useBaseDropdown(props: DropdownProps, emit: BaseDropdownEmits) {
 	const dropdownRef = ref<HTMLElement | null>(null)
 	const savedActiveElement = useFocusReturn(props, dropdownRef)
 	const { panelStyle, arrow, arrowStyle, updatePosition } = usePanelPosition(props, wrapperRef, dropdownRef)
-	useDropdownClose(props, emit, { targets: [wrapperRef, dropdownRef], closeOnEscape })
+	const handleClose = useDropdownClose(props, emit, { targets: [wrapperRef, dropdownRef], closeOnEscape })
+	const keyboard = useDropdownKeyboard(props, handleClose, { wrapperRef, dropdownRef, savedActiveElement })
 
 	return {
 		...standard,
@@ -106,11 +109,13 @@ export function useBaseDropdown(props: DropdownProps, emit: BaseDropdownEmits) {
 		),
 		paddingStyle: computed(() => (props.padding === undefined ? undefined : paddingStyle.value)),
 		handlePanelMousedown(event: MouseEvent): void {
-			if (preventMousedown.value && !isTextEntryTarget(event.target)) event.preventDefault()
+			if (preventMousedown.value && !keyboard.isDialog() && !isTextEntryTarget(event.target)) event.preventDefault()
 		},
 		handlePanelFocusin(event: FocusEvent): void {
-			if (preventMousedown.value && savedActiveElement.value && !isTextEntryTarget(event.target)) savedActiveElement.value.focus()
+			const shouldKeepTriggerFocus = preventMousedown.value && !keyboard.isDialog() && !isTextEntryTarget(event.target)
+			if (shouldKeepTriggerFocus && savedActiveElement.value) savedActiveElement.value.focus()
 		},
+		handlePanelKeydown: keyboard.handlePanelKeydown,
 		exposed: { updatePosition } satisfies BaseDropdownExpose,
 	}
 }

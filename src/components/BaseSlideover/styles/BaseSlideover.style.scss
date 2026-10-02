@@ -9,7 +9,12 @@
 	}
 
 	&--no-overlay {
+		pointer-events: none;
 		background-color: transparent;
+	}
+
+	&--no-overlay &__panel {
+		pointer-events: auto;
 	}
 
 	&__panel {

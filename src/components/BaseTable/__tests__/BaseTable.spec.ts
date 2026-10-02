@@ -533,8 +533,8 @@ describe('BaseTable unit', () => {
 				global: globalConfig,
 			})
 
-			const settingsCheckbox = container.querySelector('.base-table__settings .base-checkbox-stub input')!
-			await fireEvent.click(settingsCheckbox)
+			await fireEvent.click(container.querySelector('.base-table__settings-btn')!)
+			await fireEvent.click(await screen.findByRole('menuitemcheckbox', { name: 'Имя' }))
 
 			expect(emitted()).toHaveProperty('columns-change')
 		})
@@ -882,7 +882,8 @@ describe('BaseTable unit', () => {
 				global: globalConfig,
 			})
 
-			await fireEvent.click(container.querySelector('.base-table__settings .base-checkbox-stub input')!)
+			await fireEvent.click(container.querySelector('.base-table__settings-btn')!)
+			await fireEvent.click(await screen.findByRole('menuitemcheckbox', { name: 'Имя' }))
 
 			expect(screen.queryByRole('columnheader', { name: 'Имя' })).not.toBeInTheDocument()
 			expect(columns[0].isHidden).toBeUndefined()
@@ -910,13 +911,14 @@ describe('BaseTable unit', () => {
 				props: { columns, rows: ROWS, features: { columnSettings: true } },
 				global: { stubs: stubsWithRealCheckbox },
 			})
-			const nameSettingsItem = () => container.querySelector('.base-table__settings-item')!
+			const nameSettingsItem = () => screen.getByRole('menuitemcheckbox', { name: 'Имя' })
 
 			await rerender({ columns: columns.map(column => ({ ...column })) })
-			await fireEvent.click(nameSettingsItem().querySelector('input')!)
+			await fireEvent.click(container.querySelector('.base-table__settings-btn')!)
+			await fireEvent.click(nameSettingsItem())
 
 			expect(screen.queryByRole('columnheader', { name: 'Имя' })).not.toBeInTheDocument()
-			expect(nameSettingsItem().querySelector('.base-checkbox__icon')).not.toBeInTheDocument()
+			expect(nameSettingsItem()).toHaveAttribute('aria-checked', 'false')
 		})
 
 		it('TBL-5: isHidden и width, изменённые родителем в props, применяются к таблице', async () => {
@@ -944,7 +946,8 @@ describe('BaseTable unit', () => {
 				global: globalConfig,
 			})
 
-			await fireEvent.click(container.querySelectorAll('.base-table__settings .base-checkbox-stub input')[1])
+			await fireEvent.click(container.querySelector('.base-table__settings-btn')!)
+			await fireEvent.click(await screen.findByRole('menuitemcheckbox', { name: 'Возраст' }))
 			await rerender({ columns: columns.map(column => ({ ...column, label: `${column.label}!` })) })
 
 			expect(screen.getByRole('columnheader', { name: 'Имя!' })).toBeInTheDocument()
@@ -1108,7 +1111,7 @@ describe('BaseTable unit', () => {
 			expect(container.querySelector('.base-table__wrapper')).not.toHaveAttribute('tabindex')
 		})
 
-		it('открытие панели «Колонки» переводит фокус на первый чекбокс панели', async () => {
+		it('открытие меню «Колонки» переводит фокус в меню', async () => {
 			const user = userEvent.setup()
 			const { container } = render(BaseTable, {
 				props: { columns: COLUMNS, rows: ROWS, features: { columnSettings: true } },
@@ -1118,7 +1121,7 @@ describe('BaseTable unit', () => {
 			await user.click(container.querySelector('.base-table__settings-btn')!)
 			await nextTick()
 
-			expect(document.activeElement).toBe(container.querySelector('.base-table__settings-list input'))
+			expect(screen.getByRole('menu').contains(document.activeElement)).toBe(true)
 		})
 
 		it('кнопка удаления фильтра названа условием и удаляет фильтр', async () => {

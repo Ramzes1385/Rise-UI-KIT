@@ -12,7 +12,8 @@
 					:style="[panelStyle, paddingStyle, sizeScaleStyle, variantStyle, customColorStyle, layerStyle]"
 					:data-theme="inheritedTheme"
 					@mousedown="handlePanelMousedown"
-					@focusin="handlePanelFocusin">
+					@focusin="handlePanelFocusin"
+					@keydown="handlePanelKeydown">
 					<span v-if="showArrow" class="base-dropdown__arrow" :class="classes.arrow" aria-hidden="true" />
 					<slot name="dropdown" />
 				</div>
@@ -40,6 +41,7 @@ const props = withDefaults(
 		panelClass: '',
 		padding: undefined,
 		showArrow: false,
+		trapFocus: false,
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )
@@ -62,6 +64,7 @@ const {
 	paddingStyle,
 	handlePanelMousedown,
 	handlePanelFocusin,
+	handlePanelKeydown,
 	exposed,
 } = useBaseDropdown(props, emit)
 

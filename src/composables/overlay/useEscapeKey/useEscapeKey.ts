@@ -16,7 +16,7 @@ import type { UseEscapeKeyOptions } from './types/useEscapeKey.types'
  * ```
  */
 function useEscapeKey(options: UseEscapeKeyOptions): void {
-	useLayer({ isActive: options.isActive, onEscape: options.callback })
+	useLayer({ isActive: options.isActive, onEscape: options.callback, handlesEscape: options.isTarget })
 }
 
 export { useEscapeKey }

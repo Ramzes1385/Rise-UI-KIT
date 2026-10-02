@@ -75,6 +75,7 @@ const props = withDefaults(
 		isOpen: undefined,
 		variant: DEFAULT_VARIANT,
 		closeOnOverlay: true,
+		closeOnEscape: true,
 		sizeScale: SIZE_SCALE_DEFAULT,
 		isContained: false,
 		hasOverlay: true,

@@ -20,6 +20,12 @@ export interface BaseModalProps extends BaseComponentProps<
 	title?: string
 	/** Закрытие по клику на оверлей */
 	closeOnOverlay?: boolean
+	/**
+	 * Закрытие по Escape (по умолчанию `true`). `false` — блокирующий диалог: Escape не закрывает окно
+	 * и не достаётся слоям под ним (поповеру или меню, из которого окно открыто). Закрыть такое окно —
+	 * кнопкой в окне; вместе с `closeOnOverlay: false` — только ею
+	 */
+	closeOnEscape?: boolean
 	/** Растянуть окно на всю ширину, высоту или на весь экран (с отступом 16px от краёв) */
 	fullScreen?: ModalFullScreen
 	/**
@@ -43,7 +49,6 @@ export interface BaseModalProps extends BaseComponentProps<
 export interface BaseModalEmits {
 	(event: 'update:isOpen', value: boolean): void
 	(event: 'close'): void
-	(event: 'confirm'): void
 	/** Окно закрыто и анимация закрытия закончилась: его можно удалить из DOM */
 	(event: 'after-leave'): void
 }

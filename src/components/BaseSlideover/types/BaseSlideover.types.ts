@@ -18,7 +18,7 @@ export interface BaseSlideoverProps extends BaseComponentProps<string, 'root' | 
 	isFullWidth?: boolean
 	/** Закрытие по клику на оверлей */
 	closeOnOverlay?: boolean
-	/** Закрытие по Escape */
+	/** Закрытие по Escape. У немодальной панели (`hasOverlay: false`, `isContained`, `container`) — только когда фокус в панели */
 	closeOnEscape?: boolean
 	/**
 	 * Панель внутри контейнера: рендерится на месте (без teleport) и перекрывает ближайшего родителя с position: relative
@@ -33,7 +33,11 @@ export interface BaseSlideoverProps extends BaseComponentProps<string, 'root' | 
 	 * Имеет приоритет над isContained.
 	 */
 	container?: string | HTMLElement
-	/** Показывать затемнение фона за панелью */
+	/**
+	 * Затемнение фона за панелью (по умолчанию `true`): панель модальная — `aria-modal`, ловушка фокуса, блокировка прокрутки,
+	 * клик по фону закрывает (`closeOnOverlay`). `false` — немодальная панель: клики проходят на страницу, фокус свободно
+	 * уходит из панели и возвращается в неё, страница прокручивается; Escape закрывает панель, только когда фокус в ней
+	 */
 	hasOverlay?: boolean
 	/**
 	 * Внутренние отступы шапки, тела и подвала. Число (px) задаёт горизонтальные отступы

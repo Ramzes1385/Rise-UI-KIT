@@ -20,12 +20,13 @@ function contains(layer: LayerEntry, path: EventTarget[]): boolean {
  * Escape получает только верхний открытый слой с обработчиком: из окна с открытым списком
  * первое нажатие закрывает список, второе — окно. Событие, уже обработанное элементом
  * (`preventDefault`), и Escape, отменяющий ввод через IME (`isComposing`), слои не трогают.
+ * Слой, который сейчас не принимает Escape (`handlesEscape` вернул `false`), пропускается.
  */
 function handleKeydown(event: KeyboardEvent): void {
 	if (event.key !== 'Escape' || event.defaultPrevented || event.isComposing) return
 	const top = openLayers()
 		.reverse()
-		.find(layer => layer.onEscape)
+		.find(layer => layer.onEscape && (layer.handlesEscape?.() ?? true))
 	top?.onEscape?.()
 }
 

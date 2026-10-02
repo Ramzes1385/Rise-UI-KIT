@@ -12,15 +12,4 @@
 	&__settings-panel {
 		min-width: sz(200px);
 	}
-
-	&__settings-list {
-		display: flex;
-		flex-direction: column;
-	}
-
-	&__settings-item &__settings-option {
-		@include menu-item;
-		box-sizing: border-box;
-		width: 100%;
-	}
 }
