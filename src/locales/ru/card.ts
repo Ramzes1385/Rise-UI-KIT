@@ -22,6 +22,9 @@ export const ruCard = {
 		/** Ошибка `tokenize()` без адаптера */
 		NO_TOKENIZER: 'BaseCardInput: не задан tokenize — данные карты некуда передать',
 		INCOMPLETE: 'BaseCardInput: данные карты заполнены не полностью',
+		/** Ошибки адаптера createCloudPaymentsTokenizer */
+		TOKENIZER_UNAVAILABLE: 'Оплата картой недоступна: скрипт CloudPayments Checkout не подключён',
+		TOKENIZE_FAILED: 'Платёжная система не приняла данные карты',
 		/** BaseBankCard — сохранённая карта; `{brand}` — марка, `{last4}` — последние цифры, `{date}` — срок ММ/ГГ */
 		SAVED_CARD: 'Карта',
 		SAVED_ENDING: '{brand}, номер заканчивается на {last4}',

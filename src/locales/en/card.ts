@@ -18,6 +18,8 @@ export const enCard = {
 		BRAND_MIR: 'Mir',
 		NO_TOKENIZER: 'BaseCardInput: tokenize is not set — nowhere to send the card data',
 		INCOMPLETE: 'BaseCardInput: card data is incomplete',
+		TOKENIZER_UNAVAILABLE: 'Card payment is unavailable: the CloudPayments Checkout script is not loaded',
+		TOKENIZE_FAILED: 'The payment system did not accept the card data',
 		SAVED_CARD: 'Card',
 		SAVED_ENDING: '{brand} ending in {last4}',
 		SAVED_EXPIRES: 'expires {date}',
