@@ -206,6 +206,21 @@ describe('BaseImageMap directory — поиск', () => {
 		expect(entryIds(container)).toHaveLength(8)
 		expect(status()).toHaveTextContent('')
 		expect(within(directory()).queryByRole('button', { name: UI_IMAGE_MAP.CLEAR_FILTERS })).toBeNull()
+		await waitFor(() => expect(within(directory()).getByRole('textbox', { name: UI_IMAGE_MAP.SEARCH })).toHaveFocus())
+	})
+
+	it('без поля поиска «Сбросить фильтры» переводит фокус в первую строку', async () => {
+		const user = userEvent.setup()
+		const { container } = renderMap({ hasSearch: false, filters: { groups: ['food'] } })
+		await user.click(within(directory()).getByRole('button', { name: UI_IMAGE_MAP.CLEAR_FILTERS }))
+		await waitFor(() => expect(entryOf(container, 'cafe')).toHaveFocus())
+		expect(entryIds(container)).toHaveLength(8)
+	})
+
+	it('запрос из одних пробелов — без статуса и кнопки сброса', () => {
+		renderMap({ search: '   ' })
+		expect(status()).toHaveTextContent('')
+		expect(within(directory()).queryByRole('button', { name: UI_IMAGE_MAP.CLEAR_FILTERS })).toBeNull()
 	})
 
 	it('слот directory-empty заменяет текст пустого списка', () => {
@@ -317,7 +332,29 @@ describe('BaseImageMap directory — фильтры', () => {
 		await rerender({ data, ...DIRECTORY_PROPS, hasFilters: false })
 		expect(within(directory()).queryByRole('group', { name: UI_IMAGE_MAP.FILTERS })).toBeNull()
 		expect(entryIds(container)).toHaveLength(8)
-		expect(status()).toHaveTextContent(found(8))
+		expect(status()).toHaveTextContent('')
+		expect(within(directory()).queryByRole('button', { name: UI_IMAGE_MAP.CLEAR_FILTERS })).toBeNull()
+	})
+
+	it('ключи вне data.filters не считаются выбором: нет статуса и кнопки сброса', () => {
+		const { container } = renderMap({ filters: { unknown: ['x'], groups: [] } })
+		expect(entryIds(container)).toHaveLength(8)
+		expect(status()).toHaveTextContent('')
+		expect(within(directory()).queryByRole('button', { name: UI_IMAGE_MAP.CLEAR_FILTERS })).toBeNull()
+	})
+
+	it('начальный выбор из value применяется, когда фильтры пришли в data после монтирования', async () => {
+		const user = userEvent.setup()
+		const later = directoryData()
+		later.filters = later.filters!.map(filter => (filter.id === 'groups' ? { ...filter, value: ['food'] } : filter))
+		const { container, rerender } = renderMap({ data: directoryData({ filters: undefined }) })
+		expect(entryIds(container)).toHaveLength(8)
+		await rerender({ data: later, ...DIRECTORY_PROPS })
+		expect(entryIds(container)).toEqual(['cafe', 'closed', 'hall'])
+		expect(screen.getByRole('checkbox', { name: 'Кафе' })).toBeChecked()
+		await user.click(screen.getByRole('checkbox', { name: 'Кафе' }))
+		await rerender({ data: { ...later }, ...DIRECTORY_PROPS })
+		expect(entryIds(container)).toHaveLength(8)
 	})
 
 	it('expose clearFilters очищает запрос и фильтры', async () => {
@@ -362,6 +399,50 @@ describe('BaseImageMap directory — связь списка и карты', () 
 		entryOf(container, 'cafe').focus()
 		await user.keyboard('{Enter}')
 		expect(await screen.findByRole('dialog', { name: 'Ёлка' })).toBeInTheDocument()
+	})
+
+	it('directoryScope layer: строка с action layer исчезает после смены этажа — фокус в первую строку нового списка', async () => {
+		const objects = [
+			...directoryData().objects,
+			{
+				id: 'stairs',
+				type: 'point' as const,
+				layer: 'f1',
+				title: 'Лестница',
+				x: 0.9,
+				y: 0.9,
+				action: 'layer' as const,
+				targetLayer: 'f2',
+			},
+		]
+		const user = userEvent.setup()
+		const { container, emitted } = renderMap({ data: directoryData({ objects }), directoryScope: 'layer' })
+		entryOf(container, 'stairs').focus()
+		await user.keyboard('{Enter}')
+		expect(emitted()['update:layer']?.at(-1)).toEqual(['f2'])
+		await waitFor(() => expect(entryOf(container, 'hall')).toHaveFocus())
+		expect(entryOf(container, 'stairs')).toBeNull()
+	})
+
+	it('выбор строки мышью без фокуса не переносит фокус', async () => {
+		const objects = [
+			...directoryData().objects,
+			{
+				id: 'stairs',
+				type: 'point' as const,
+				layer: 'f1',
+				title: 'Лестница',
+				x: 0.9,
+				y: 0.9,
+				action: 'layer' as const,
+				targetLayer: 'f2',
+			},
+		]
+		const { container, emitted } = renderMap({ data: directoryData({ objects }), directoryScope: 'layer' })
+		await fireEvent.click(entryOf(container, 'stairs'))
+		expect(emitted()['update:layer']?.at(-1)).toEqual(['f2'])
+		await Promise.resolve()
+		expect(document.body).toHaveFocus()
 	})
 
 	it('недоступная строка ничего не делает', async () => {
@@ -448,6 +529,35 @@ describe('BaseImageMap directory — ссылка на объект', () => {
 		const third = renderMap({ hasDeepLinking: true })
 		await Promise.resolve()
 		expect(third.emitted()['update:active']).toBeUndefined()
+	})
+
+	it('объект, скрытый фильтром, не открывается', async () => {
+		window.history.replaceState(null, '', '/?location=shop-2')
+		const { emitted } = renderMap({ hasDeepLinking: true, filters: { groups: ['food'] } })
+		await Promise.resolve()
+		await Promise.resolve()
+		expect(emitted()['update:active']).toBeUndefined()
+		expect(screen.queryByRole('dialog')).toBeNull()
+	})
+
+	it('data после монтирования: ссылка применяется, когда объект появился; скрытый фильтром — нет', async () => {
+		window.history.replaceState(null, '', '/?location=room')
+		const empty = { layers: [], objects: [] }
+		const { emitted, rerender } = renderMap({ data: empty, hasDeepLinking: true })
+		await rerender({ data: { ...empty }, ...DIRECTORY_PROPS, hasDeepLinking: true })
+		expect(emitted()['update:active']).toBeUndefined()
+		await rerender({ data: directoryData(), ...DIRECTORY_PROPS, hasDeepLinking: true })
+		expect(await screen.findByRole('dialog', { name: 'Комната' })).toBeInTheDocument()
+		expect(emitted()['update:active']?.at(-1)).toEqual(['room'])
+	})
+
+	it('data после монтирования с объектом, скрытым фильтром, — ссылка не применяется', async () => {
+		window.history.replaceState(null, '', '/?location=room')
+		const { emitted, rerender } = renderMap({ data: { layers: [], objects: [] }, hasDeepLinking: true, filters: { groups: ['food'] } })
+		await rerender({ data: directoryData(), ...DIRECTORY_PROPS, hasDeepLinking: true, filters: { groups: ['food'] } })
+		await Promise.resolve()
+		expect(emitted()['update:active']).toBeUndefined()
+		expect(screen.queryByRole('dialog')).toBeNull()
 	})
 
 	it('объект без слоя (данные без слоёв) выбирается без смены слоя', async () => {

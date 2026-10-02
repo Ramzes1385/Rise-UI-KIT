@@ -72,11 +72,23 @@ describe('useImageMapFilters — значения', () => {
 		expect(emit.mock.calls.at(-1)?.[1]).not.toBe(first)
 	})
 
-	it('hasSelection — есть хотя бы одно выбранное значение', () => {
-		const { filters } = setup({ filters: { groups: [] } })
+	it('hasSelection — выбрано значение действующего фильтра', () => {
+		const { props, filters } = setup({ filters: { groups: [], unknown: ['x'] } })
 		expect(filters.hasSelection.value).toBe(false)
 		filters.toggleFilter('groups', 'food', true)
 		expect(filters.hasSelection.value).toBe(true)
+		props.hasFilters = false
+		expect(filters.hasSelection.value).toBe(false)
+	})
+
+	it('начальный выбор следует за data, пока пользователь не менял фильтры', () => {
+		const { props, filters } = setup({ data: directoryData({ filters: undefined }) })
+		expect(filters.values.value).toEqual({})
+		props.data = directoryData({ filters: [{ id: 'groups', title: 'Категории', value: ['food'] }] })
+		expect(filters.values.value).toEqual({ groups: ['food'] })
+		filters.setFilter('groups', [])
+		props.data = directoryData({ filters: [{ id: 'groups', title: 'Категории', value: ['shops'] }] })
+		expect(filters.values.value).toEqual({ groups: [] })
 	})
 
 	it('clearFilters очищает поиск и выбор без лишних событий', () => {

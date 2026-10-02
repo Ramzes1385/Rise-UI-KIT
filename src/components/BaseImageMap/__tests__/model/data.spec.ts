@@ -156,6 +156,7 @@ describe('objectAttributes и objectClasses', () => {
 			'aria-disabled': 'true',
 			'aria-current': 'true',
 			'aria-haspopup': 'dialog',
+			'aria-hidden': undefined,
 		})
 	})
 
