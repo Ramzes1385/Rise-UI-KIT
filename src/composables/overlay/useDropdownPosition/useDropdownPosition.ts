@@ -176,10 +176,14 @@ function buildPanelStyle(
 }
 
 /**
- * Слушатели пересчёта открытой панели: прокрутка (в любом контейнере), размер окна и размер самой панели
- * (подгрузились пункты). `listen` повторно наблюдатель размера не создаёт
+ * Слушатели пересчёта открытой панели: прокрутка (в любом контейнере), размер окна, размер самой панели
+ * (подгрузились пункты) и триггера (поле с бейджами выросло на строку). `listen` повторно наблюдатель размера не создаёт
  */
-function useRepositionListeners(update: () => void, dropdownRef: Ref<HTMLElement | null>): { listen: () => void; unlisten: () => void } {
+function useRepositionListeners(
+	update: () => void,
+	dropdownRef: Ref<HTMLElement | null>,
+	wrapperRef: Ref<HTMLElement | null>,
+): { listen: () => void; unlisten: () => void } {
 	let resizeObserver: ResizeObserver | null = null
 	return {
 		listen: () => {
@@ -189,6 +193,7 @@ function useRepositionListeners(update: () => void, dropdownRef: Ref<HTMLElement
 				if (!dropdownRef.value || resizeObserver) return
 				resizeObserver = new ResizeObserver(() => update())
 				resizeObserver.observe(dropdownRef.value)
+				if (wrapperRef.value) resizeObserver.observe(wrapperRef.value)
 			})
 		},
 		unlisten: () => {
@@ -203,7 +208,7 @@ function useRepositionListeners(update: () => void, dropdownRef: Ref<HTMLElement
 /**
  * Позиция выпадающей панели (`position: fixed`) у триггера. Если на выбранной стороне не хватает места,
  * а на противоположной хватает, панель переворачивается; вдоль края окна она сдвигается, чтобы не выйти за него.
- * Пересчёт — при открытии, прокрутке, изменении окна и размера панели; слушатели есть только у открытой панели.
+ * Пересчёт — при открытии, прокрутке, изменении окна, размера панели и триггера; слушатели есть только у открытой панели.
  *
  * @example
  * ```ts
@@ -252,7 +257,7 @@ function useDropdownPosition(options: UseDropdownPositionOptions) {
 		buildPanelStyle(coords.value, placement.value, { maxHeight: maxHeight(), width: matchWidth() ? triggerWidth.value : null }),
 	)
 
-	const { listen, unlisten } = useRepositionListeners(updatePosition, dropdownRef)
+	const { listen, unlisten } = useRepositionListeners(updatePosition, dropdownRef, wrapperRef)
 
 	/** Пересчитать сейчас и после отрисовки, когда известен размер панели */
 	function refresh(): void {

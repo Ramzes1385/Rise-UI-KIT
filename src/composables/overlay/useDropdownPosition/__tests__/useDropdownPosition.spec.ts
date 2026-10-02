@@ -222,7 +222,55 @@ describe('useDropdownPosition', () => {
 		isOpen.value = true
 		await nextTick()
 		await nextTick()
-		expect(observe).toHaveBeenCalledTimes(1)
+		expect(observe).toHaveBeenCalledTimes(2)
+		vi.unstubAllGlobals()
+	})
+
+	it('триггер вырос (бейджи перенеслись на вторую строку) — панель сдвигается за его нижним краем', async () => {
+		const observed: Element[] = []
+		let notify: () => void = () => undefined
+		vi.stubGlobal(
+			'ResizeObserver',
+			class {
+				constructor(callback: () => void) {
+					notify = callback
+				}
+				observe(element: Element) {
+					observed.push(element)
+				}
+				disconnect() {}
+			},
+		)
+		const { api, isOpen, wrapperRef, dropdownRef } = setup({ isOpen: false })
+		isOpen.value = true
+		await nextTick()
+		await nextTick()
+		expect(observed).toEqual([dropdownRef.value, wrapperRef.value])
+		expect(api.coords.value.top).toBe(344)
+
+		;(wrapperRef.value!.firstElementChild as HTMLElement).getBoundingClientRect = () => rect(300, 400, { height: 72 })
+		notify()
+
+		expect(api.coords.value.top).toBe(300 + 72 + GAP)
+		vi.unstubAllGlobals()
+	})
+
+	it('без обёртки наблюдается только панель', async () => {
+		const observe = vi.fn()
+		vi.stubGlobal(
+			'ResizeObserver',
+			class {
+				observe = observe
+				disconnect() {}
+			},
+		)
+		const { isOpen, dropdownRef } = setup({ isOpen: false, wrapper: null })
+		isOpen.value = true
+		await nextTick()
+		await nextTick()
+
+		expect(observe).toHaveBeenCalledOnce()
+		expect(observe).toHaveBeenCalledWith(dropdownRef.value)
 		vi.unstubAllGlobals()
 	})
 
