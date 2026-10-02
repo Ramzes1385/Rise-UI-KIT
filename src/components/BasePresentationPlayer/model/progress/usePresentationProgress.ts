@@ -52,24 +52,33 @@ function useCompletion(props: BasePresentationPlayerProps, emit: BasePresentatio
 	}
 }
 
+function useSlideState(source: PresentationProgressSource) {
+	const isMediaDone = ref(!source.hasClock())
+	const held = ref<{ target: number; resume: boolean } | null>(null)
+	const watched = useWatchedTime(() => source.isVisible() && (source.isPlaying() || held.value !== null))
+	watch(
+		source.index,
+		() => {
+			watched.value = 0
+			held.value = null
+			isMediaDone.value = !source.hasClock()
+		},
+		{ flush: 'sync' },
+	)
+	return { isMediaDone, held, watched }
+}
+
 export function usePresentationProgress(
 	props: BasePresentationPlayerProps,
 	emit: BasePresentationPlayerEmits,
 	source: PresentationProgressSource,
 ) {
-	const isMediaDone = ref(!source.hasClock())
-	const held = ref<{ target: number; resume: boolean } | null>(null)
-	const watched = useWatchedTime(() => source.isVisible() && (source.isPlaying() || held.value !== null))
+	const { isMediaDone, held, watched } = useSlideState(source)
 	const completion = useCompletion(props, emit)
 	const isRestricted = computed(() => props.navigation === 'linear' || props.navigation === 'strict')
 	const minDuration = computed(() => Math.max(0, props.slides[source.index()]?.minDuration ?? 0))
 	const isSlideDone = computed(() => isMediaDone.value && watched.value >= minDuration.value)
 
-	watch(source.index, () => {
-		watched.value = 0
-		held.value = null
-		isMediaDone.value = !source.hasClock()
-	})
 	watch(
 		() => [source.index(), isSlideDone.value] as const,
 		([index, done]) => {

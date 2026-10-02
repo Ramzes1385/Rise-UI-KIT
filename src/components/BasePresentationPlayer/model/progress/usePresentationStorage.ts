@@ -34,14 +34,14 @@ export function usePresentationStorage(props: BasePresentationPlayerProps, sourc
 		source.restore(saved.completed.filter(id => ids.has(id)))
 		if (saved.index > 0 && saved.index < props.slides.length && saved.index !== source.index()) resumeIndex.value = saved.index
 	})
+	watch(source.index, () => {
+		resumeIndex.value = null
+	})
 	watch([source.index, source.completed, source.isFinished], () => {
 		const storageKey = key()
 		if (!storageKey) return
 		const index = resumeIndex.value ?? (source.isFinished() ? 0 : source.index())
 		writeSaved(storageKey, { index, completed: source.completed() })
-	})
-	watch(source.index, () => {
-		resumeIndex.value = null
 	})
 
 	return {

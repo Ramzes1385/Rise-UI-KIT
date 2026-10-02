@@ -37,7 +37,9 @@ function useStageView(flow: ReturnType<typeof usePresentationFlow>, playLabel: R
 		}),
 		playLabel: computed(() => (flow.isFinished.value && !flow.isPlaying.value ? UI_PRESENTATION.REPLAY : playLabel.value)),
 		onStageClick(event: MouseEvent): void {
-			if (!(event.target as Element).closest(INTERACTIVE_SELECTOR)) flow.togglePlay()
+			const stage = event.currentTarget as Element
+			const hit = (event.target as Element).closest(INTERACTIVE_SELECTOR)
+			if (!hit || hit === stage || !stage.contains(hit)) flow.togglePlay()
 		},
 		setVolume: playback.setVolume,
 		toggleMute: playback.toggleMute,
