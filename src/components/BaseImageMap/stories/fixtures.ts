@@ -27,7 +27,7 @@ function floorPlanSvg(level: number): string {
 		shopRects(level),
 		`<rect id="f${level}-stairs" x="900" y="40" width="60" height="200" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>`,
 		`<rect id="f${level}-lift" x="900" y="360" width="60" height="200" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>`,
-		`<text x="500" y="308" font-size="22" text-anchor="middle" fill="#64748b">Этаж ${level}</text>`,
+		`<text x="200" y="308" font-size="22" text-anchor="middle" fill="#64748b">Этаж ${level}</text>`,
 		`</svg>`,
 	].join('')
 }
@@ -119,3 +119,103 @@ export const IMAGE_MAP_FLOORS: ImageMapData = {
 	groups: IMAGE_MAP_GROUPS,
 	objects: [1, 2, 3].flatMap(floorObjects),
 }
+
+const HOTSPOTS_LAYER = IMAGE_MAP_HOTSPOTS.layers[0]
+
+export const IMAGE_MAP_AREAS: ImageMapData = {
+	version: 1,
+	layers: [{ ...HOTSPOTS_LAYER, id: 'areas', title: 'Участки курорта' }],
+	groups: [
+		{ id: 'rest', title: 'Отдых', color: 'var(--rise-success)', style: 'soft' },
+		{ id: 'sport', title: 'Спорт', color: 'var(--rise-primary)' },
+	],
+	styles: {
+		soft: {
+			base: { fillOpacity: 0.2, strokeWidth: 1 },
+			hover: { fillOpacity: 0.4, strokeWidth: 2 },
+			active: { fillOpacity: 0.6, strokeWidth: 3 },
+		},
+	},
+	objects: [
+		{
+			id: 'meadow',
+			type: 'rect',
+			title: 'Поляна',
+			x: 0.06,
+			y: 0.12,
+			width: 0.3,
+			height: 0.3,
+			radius: 0.02,
+			group: 'rest',
+			description: 'Пикники и шезлонги',
+		},
+		{
+			id: 'pond',
+			type: 'ellipse',
+			title: 'Пруд',
+			x: 0.56,
+			y: 0.26,
+			rx: 0.14,
+			ry: 0.12,
+			group: 'rest',
+			description: 'Рыбалка по выходным',
+		},
+		{
+			id: 'slope',
+			type: 'polygon',
+			title: 'Учебный склон',
+			points: [
+				[0.1, 0.92],
+				[0.32, 0.56],
+				[0.54, 0.92],
+			],
+			group: 'sport',
+			description: 'Склон для новичков, инструкторы с 10:00',
+		},
+		{
+			id: 'rink',
+			type: 'rect',
+			title: 'Каток',
+			x: 0.64,
+			y: 0.6,
+			width: 0.28,
+			height: 0.28,
+			group: 'sport',
+			style: { base: { fill: 'var(--rise-warning)', fillOpacity: 0.3, stroke: 'var(--rise-warning)' }, hover: { fillOpacity: 0.5 } },
+			description: 'Свой стиль объекта поверх цвета группы',
+		},
+	],
+}
+
+export const IMAGE_MAP_LONG: ImageMapData = {
+	version: 1,
+	layers: [{ ...HOTSPOTS_LAYER, id: 'long', title: 'Маршруты' }],
+	groups: IMAGE_MAP_GROUPS,
+	objects: [
+		{
+			id: 'trail',
+			type: 'point',
+			title: 'Экологическая тропа «Через кедровый лес к водопаду и обратно по северному склону»',
+			x: 0.5,
+			y: 0.5,
+			group: 'service',
+			label: 'Экологическая тропа к водопаду',
+			description: [
+				'Протяжённость маршрута — 14 километров, перепад высот около 600 метров, в пути 6–7 часов.',
+				'Тропа проходит через кедровый лес, по каменистым осыпям и вдоль ручья; в верхней части возможен туман, поэтому возьмите тёплую одежду и дождевик.',
+				'Вход по талонам, которые выдают на нижней станции подъёмника с 8:00 до 11:00.',
+			].join('\n'),
+			image: placeholderImage({ width: 480, height: 270, hue: 140 }),
+			links: [
+				{ label: 'Правила посещения особо охраняемой природной территории', href: '#rules' },
+				{ label: 'Прогноз погоды', href: '#weather' },
+			],
+		},
+	],
+}
+
+export const imageMapByUrl = (svgUrl: string): ImageMapData => ({
+	version: 1,
+	layers: [{ id: 'plan', title: 'План этажа', svgUrl, width: 1000, height: 600 }],
+	objects: [],
+})

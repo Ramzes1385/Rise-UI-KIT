@@ -1,11 +1,11 @@
-import type meta from '../BaseImageMap.stories'
-import BaseImageMap from '../../ui/BaseImageMap.vue'
+import type meta from '../../BaseImageMap.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
+import BaseImageMap from '../../../ui/BaseImageMap.vue'
 import { literal, SIZE_PRESETS, sizeLabel, storySource, useStorySetup } from '@/stories/helpers'
 
 const presets = SIZE_PRESETS.map(preset => ({ name: preset.name, sizeScale: preset.sizeScale, label: sizeLabel(preset) }))
 
-const template = `<div class="story-row"><BaseImageMap v-for="preset in presets" :key="preset.name" v-bind="args" :size-scale="preset.sizeScale"/></div>`
+const template = `<div class="story-row"><BaseImageMap v-for="preset in presets" :key="preset.name" v-bind="args" :size-scale="preset.sizeScale" :aria-label="preset.label"/></div>`
 
 export const Sizes: StoryObj<typeof meta> = {
 	parameters: {
