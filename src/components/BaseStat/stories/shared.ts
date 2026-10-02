@@ -1,0 +1,1 @@
+export const GRID_STYLE = 'display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px'

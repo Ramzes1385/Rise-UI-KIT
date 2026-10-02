@@ -1,0 +1,102 @@
+.base-stat {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: sz(12px);
+	box-sizing: border-box;
+	min-width: 0;
+	padding: sz(16px);
+	border: 1px solid var(--rise-border);
+	border-radius: sz(var(--rise-radius-lg));
+	@include text-size(sm);
+	@include custom-bg(background-color, var(--rise-bg));
+	@include custom-text(color, var(--rise-text));
+
+	&--soft {
+		border-color: transparent;
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+	}
+
+	&--soft &__label,
+	&--soft &__change {
+		@include custom-text(color, var(--rise-text-toned));
+	}
+
+	&--outline {
+		border-color: var(--rise-border-accented);
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--ghost {
+		padding: 0;
+		border-color: transparent;
+		@include custom-bg(background-color, transparent);
+	}
+
+	&__body {
+		display: flex;
+		flex-direction: column;
+		gap: sz(4px);
+		min-width: 0;
+		margin: 0;
+	}
+
+	&__label {
+		@include custom-text(color, var(--rise-text-muted));
+	}
+
+	&__value {
+		margin: 0;
+		font-weight: var(--rise-font-weight-semibold);
+		font-variant-numeric: tabular-nums;
+		overflow-wrap: anywhere;
+		@include text-size(2xl);
+		@include custom-text(color, var(--rise-text-highlighted));
+	}
+
+	&__change {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: sz(4px);
+		margin: 0;
+		@include text-size(xs);
+		@include custom-text(color, var(--rise-text-muted));
+	}
+
+	&__trend,
+	&__delta {
+		font-weight: var(--rise-font-weight-medium);
+	}
+
+	&__change--positive &__trend,
+	&__change--positive &__delta {
+		color: var(--rise-success-text);
+	}
+
+	&__change--negative &__trend,
+	&__change--negative &__delta {
+		color: var(--rise-error-text);
+	}
+
+	&__icon {
+		position: absolute;
+		top: sz(16px);
+		right: sz(16px);
+		display: flex;
+		color: var(--rise-text-muted);
+	}
+
+	&--with-icon &__label {
+		padding-right: sz(32px);
+	}
+
+	&--ghost &__icon {
+		top: 0;
+		right: 0;
+	}
+
+	&__chart {
+		min-width: 0;
+	}
+}
