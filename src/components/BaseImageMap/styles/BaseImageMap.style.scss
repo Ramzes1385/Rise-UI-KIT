@@ -458,6 +458,15 @@
 		@include text-size(xs);
 	}
 
+	&__entry-hours {
+		color: var(--rise-error-text);
+		@include text-size(xs);
+
+		&--open {
+			color: var(--rise-success-text);
+		}
+	}
+
 	&__list-empty {
 		padding: sz(16px 8px);
 		color: var(--rise-text-muted);
@@ -542,6 +551,57 @@
 		display: flex;
 		flex-wrap: wrap;
 		gap: sz(12px);
+	}
+
+	&__hours {
+		display: flex;
+		gap: sz(6px);
+		align-items: center;
+		margin: 0;
+		color: var(--rise-error-text);
+		font-weight: 500;
+		@include text-size(sm);
+
+		&--open {
+			color: var(--rise-success-text);
+		}
+	}
+
+	&__hours-dot {
+		flex-shrink: 0;
+		width: sz(8px);
+		height: sz(8px);
+		border-radius: 50%;
+		background: currentcolor;
+	}
+
+	&__schedule-title {
+		margin: 0;
+		font-weight: 600;
+		@include text-size(sm);
+	}
+
+	&__schedule {
+		display: grid;
+		gap: sz(2px);
+		margin: 0;
+		@include text-size(sm);
+	}
+
+	&__schedule-row {
+		display: grid;
+		grid-template-columns: sz(48px) 1fr;
+		gap: sz(8px);
+		color: var(--rise-text-muted);
+
+		dd {
+			margin: 0;
+		}
+
+		&--today {
+			color: var(--rise-text);
+			font-weight: 600;
+		}
 	}
 }
 

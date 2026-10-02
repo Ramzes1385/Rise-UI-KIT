@@ -36,6 +36,7 @@ function useDirectoryEntries(props: ImageMapProps, context: DirectoryContext) {
 			layerTitle: isMultiLayer.value ? layerTitles.value.get(context.layerOf(item.object.id)) : undefined,
 			isActive: context.getActive() === item.object.id,
 			isHovered: context.getHover() === item.object.id,
+			hours: context.hoursOf(item.object.id),
 		})),
 	)
 

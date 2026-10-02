@@ -36,17 +36,21 @@ function useValuesModel(props: ImageMapProps, emit: BaseImageMapEmits) {
 	return { values: computed(() => local.value ?? initialFilterValues(props.data.filters ?? [])), commit }
 }
 
-export function useImageMapFilters(props: ImageMapProps, emit: BaseImageMapEmits) {
+export function useImageMapFilters(props: ImageMapProps, emit: BaseImageMapEmits, isOpenNow?: (id: string) => boolean) {
 	const { search, setSearch } = useSearchModel(props, emit)
 	const { values, commit } = useValuesModel(props, emit)
 	const activeFilters = computed(() => (props.hasFilters ? (props.data.filters ?? []) : []))
+	const isOpenNowOn = computed(() =>
+		activeFilters.value.some(filter => filter.type === 'open-now' && Boolean(values.value[filter.id]?.length)),
+	)
 
 	return {
 		search,
 		setSearch,
 		values,
 		hasSelection: computed(() => activeFilters.value.some(filter => Boolean(values.value[filter.id]?.length))),
-		isShown: (object: ImageMapObject): boolean => matchesFilters(object, activeFilters.value, values.value),
+		isShown: (object: ImageMapObject): boolean =>
+			matchesFilters(object, activeFilters.value, values.value) && (!isOpenNowOn.value || Boolean(isOpenNow?.(object.id))),
 		setFilter(id: string, next: string[]): void {
 			commit({ ...values.value, [id]: next })
 		},

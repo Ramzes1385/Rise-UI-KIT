@@ -23,6 +23,7 @@ export type {
 	ImageMapDirectoryScope,
 	ImageMapDirectoryView,
 	ImageMapFilterValues,
+	ImageMapHoursSlotProps,
 	ImageMapSlotProps,
 	ImageMapVariant,
 	ImageMapWheelMode,
@@ -49,4 +50,6 @@ export type {
 	ImageMapStyle,
 	ImageMapSvgObject,
 } from './types/imageMapData.types'
+export { IMAGE_MAP_OPEN_NOW_VALUE, IMAGE_MAP_WEEKDAYS } from './types/ImageMapHours.types'
+export type { ImageMapHours, ImageMapHoursDay, ImageMapHoursState, ImageMapTimeRange, ImageMapWeekday } from './types/ImageMapHours.types'
 export { default as BaseImageMap } from './ui/BaseImageMap.vue'

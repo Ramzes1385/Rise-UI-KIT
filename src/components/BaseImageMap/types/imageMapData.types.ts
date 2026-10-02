@@ -1,3 +1,5 @@
+import type { ImageMapHours } from './ImageMapHours.types'
+
 /**
  * Формат данных BaseImageMap — JSON карты. Версия 1.
  * Координаты — в долях картинки слоя: `0` — левый или верхний край, `1` — правый или нижний.
@@ -89,9 +91,10 @@ export interface ImageMapFilterOption {
 
 /**
  * Вид фильтра в списке объектов: checkbox — флажки; tags — метки-переключатели; select — выпадающий список с одним
- * значением; switch — переключатели
+ * значением; switch — переключатели; open-now — один переключатель «Открыто сейчас» по `hours` объектов
+ * (объекты без `hours` при включённом фильтре скрываются)
  */
-export const IMAGE_MAP_FILTER_TYPES = ['checkbox', 'tags', 'select', 'switch'] as const
+export const IMAGE_MAP_FILTER_TYPES = ['checkbox', 'tags', 'select', 'switch', 'open-now'] as const
 
 /** Вид фильтра */
 export type ImageMapFilterType = (typeof IMAGE_MAP_FILTER_TYPES)[number]
@@ -112,7 +115,7 @@ export interface ImageMapFilter {
 	id: string
 	/** Подпись фильтра */
 	title: string
-	/** Варианты; без них фильтр — по группам */
+	/** Варианты; без них фильтр — по группам. У `open-now` не нужны */
 	options?: ImageMapFilterOption[]
 	/** Вид: `checkbox` (по умолчанию), `tags`, `select`, `switch` */
 	type?: ImageMapFilterType
@@ -174,6 +177,8 @@ export interface ImageMapObjectBase {
 	keywords?: string[]
 	/** Объект не показывается в списке объектов (лестницы, лифты); на карте остаётся */
 	isHiddenInDirectory?: boolean
+	/** Часы работы: «Открыто до 21:00» в подсказке, окне и списке, фильтр `open-now` (`ImageMapHours`) */
+	hours?: ImageMapHours
 	/** Свои данные приложения: доступны в слотах `tooltip` и `popup` */
 	data?: Record<string, unknown>
 }
@@ -261,6 +266,8 @@ export interface ImageMapData {
 	filters?: ImageMapFilter[]
 	/** Именованные стили: объект или группа ссылаются на них по ключу */
 	styles?: Record<string, ImageMapStyle>
+	/** Часовой пояс IANA для `hours` объектов без своего `timeZone`: `'Europe/Moscow'`. Без него — пояс браузера */
+	timeZone?: string
 }
 
 /** Область карты в долях картинки: начальный вид (`initArea`) */

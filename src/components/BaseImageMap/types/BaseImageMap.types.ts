@@ -1,3 +1,4 @@
+import type { ImageMapHoursState } from './ImageMapHours.types'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import type { ImageMapAction, ImageMapArea, ImageMapData, ImageMapGroup, ImageMapObject } from './imageMapData.types'
@@ -121,6 +122,11 @@ export interface BaseImageMapProps extends BaseComponentProps<ImageMapVariant, I
 	hasDeepLinking?: boolean
 	/** Имя параметра адреса для `hasDeepLinking` */
 	deepLinkParam?: string
+	/**
+	 * Момент, на который считаются часы работы объектов (`hours`): дата или метка времени.
+	 * Без него — текущее время, состояние обновляется в начале каждой минуты
+	 */
+	now?: Date | number
 }
 
 /** Пропсы после `withDefaults` */
@@ -176,18 +182,24 @@ export interface ImageMapSlotProps {
 	group: ImageMapGroup | undefined
 }
 
+/** Часы работы объекта в слотах подсказки, окна и строки списка; у объекта без `hours` — `undefined` */
+export interface ImageMapHoursSlotProps {
+	/** Состояние сейчас: открыто ли, текст «Открыто до 21:00», расписание недели */
+	hours: ImageMapHoursState | undefined
+}
+
 /**
  * Слоты компонента BaseImageMap
  */
 export interface BaseImageMapSlots {
 	/** Содержимое подсказки вместо заголовка, текста, картинки и кнопок */
-	tooltip?: (props: ImageMapSlotProps) => unknown
+	tooltip?: (props: ImageMapSlotProps & ImageMapHoursSlotProps) => unknown
 	/** Содержимое окна объекта вместо картинки, описания, видео и ссылок; `close` закрывает окно */
-	popup?: (props: ImageMapSlotProps & { close: () => void }) => unknown
+	popup?: (props: ImageMapSlotProps & ImageMapHoursSlotProps & { close: () => void }) => unknown
 	/** Содержимое точки вместо значка; `isActive` — точка выбрана */
 	point?: (props: ImageMapSlotProps & { isActive: boolean }) => unknown
 	/** Содержимое строки списка объектов вместо миниатюры, названия и группы; `isActive` — объект выбран */
-	'directory-item'?: (props: ImageMapSlotProps & { isActive: boolean }) => unknown
+	'directory-item'?: (props: ImageMapSlotProps & ImageMapHoursSlotProps & { isActive: boolean }) => unknown
 	/** Пустой список: ничего не найдено поиском и фильтрами */
 	'directory-empty'?: () => unknown
 }

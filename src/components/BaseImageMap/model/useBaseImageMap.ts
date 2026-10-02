@@ -5,6 +5,7 @@ import { useImageMapPan } from './zoom/useImageMapPan'
 import { useImageMapData } from './data/useImageMapData'
 import { useImageMapView } from './zoom/useImageMapView'
 import { useImageMapObjects } from './useImageMapObjects'
+import { useImageMapHours } from './hours/useImageMapHours'
 import { useDirectoryPart } from './directory/useDirectoryPart'
 import { useImageMapGestures } from './zoom/useImageMapGestures'
 import { useImageMapFocus } from './interaction/useImageMapFocus'
@@ -50,7 +51,8 @@ function wheelHint(): string {
 
 export function useMapCore(props: ImageMapProps, emit: BaseImageMapEmits) {
 	const refs = useRefs()
-	const filters = useImageMapFilters(props, emit)
+	const hours = useImageMapHours(props)
+	const filters = useImageMapFilters(props, emit, hours.isOpenNow)
 	const data = useImageMapData(props, filters.isShown)
 	const zoom = useImageMapView({
 		viewportRef: refs.viewportRef,
@@ -72,7 +74,7 @@ export function useMapCore(props: ImageMapProps, emit: BaseImageMapEmits) {
 		getRenderedSvgIds: () => refs.renderedSvgIds.value,
 	})
 	const gestures = useImageMapGestures({ ...refs, getWheelMode: () => props.wheelZoom, onInteract: overlay.hideTooltip }, zoom)
-	return { refs, filters, data, zoom, overlay, actions, focus, gestures }
+	return { refs, hours, filters, data, zoom, overlay, actions, focus, gestures }
 }
 
 function usePresentation(props: ImageMapProps, data: ReturnType<typeof useImageMapData>, overlay: ReturnType<typeof useImageMapOverlay>) {
@@ -133,6 +135,7 @@ export function useBaseImageMap(props: ImageMapProps, emit: BaseImageMapEmits) {
 		gestures,
 		overlay,
 		setLayer: actions.setLayer,
+		hoursOf: core.hours.hoursOf,
 		exposed: {
 			zoomIn: zoom.zoomIn,
 			zoomOut: zoom.zoomOut,

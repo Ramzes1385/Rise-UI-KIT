@@ -49,6 +49,7 @@ export function useDirectoryPart(props: ImageMapProps, emit: BaseImageMapEmits, 
 		getLayer: () => data.currentLayer.value,
 		getActive: () => actions.localActive.value,
 		getHover: () => overlay.hoverId.value,
+		hoursOf: core.hours.hoursOf,
 		filters,
 	})
 	useImageMapDeepLink(props, {

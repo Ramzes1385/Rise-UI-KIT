@@ -92,7 +92,12 @@
 							@pointerleave="$emit('hover', null)"
 							@focus="$emit('hover', entry.item.object.id)"
 							@blur="$emit('hover', null)">
-							<slot name="item" :object="entry.item.object" :group="entry.item.group" :is-active="entry.isActive">
+							<slot
+								name="item"
+								:object="entry.item.object"
+								:group="entry.item.group"
+								:is-active="entry.isActive"
+								:hours="entry.hours">
 								<img
 									v-if="view === 'grid' && entry.item.object.image"
 									class="base-image-map__thumb"
@@ -110,6 +115,12 @@
 									<span class="base-image-map__entry-title">{{ entry.item.object.title }}</span>
 									<span v-if="entry.item.group || entry.layerTitle" class="base-image-map__entry-meta">
 										{{ [entry.item.group?.title, entry.layerTitle].filter(Boolean).join(' · ') }}
+									</span>
+									<span
+										v-if="entry.hours"
+										class="base-image-map__entry-hours"
+										:class="{ 'base-image-map__entry-hours--open': entry.hours.isOpen }">
+										{{ entry.hours.text }}
 									</span>
 								</span>
 							</slot>

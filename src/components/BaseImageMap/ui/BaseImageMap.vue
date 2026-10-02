@@ -201,8 +201,12 @@
 					role="tooltip"
 					@mouseenter="overlay.cancelHide"
 					@mouseleave="overlay.scheduleHide">
-					<slot name="tooltip" :object="tooltipView.item.object" :group="tooltipView.item.group">
-						<ImageMapCard :item="tooltipView.item" />
+					<slot
+						name="tooltip"
+						:object="tooltipView.item.object"
+						:group="tooltipView.item.group"
+						:hours="hoursOf(tooltipView.item.object.id)">
+						<ImageMapCard :item="tooltipView.item" :hours="hoursOf(tooltipView.item.object.id)" />
 					</slot>
 				</div>
 			</template>
@@ -217,8 +221,13 @@
 			:custom-class="{ root: classes.popup }"
 			@close="overlay.closePopup"
 			@update:is-open="overlay.closePopup">
-			<slot name="popup" :object="overlay.popupItem.value.object" :group="overlay.popupItem.value.group" :close="overlay.closePopup">
-				<ImageMapCard :item="overlay.popupItem.value" is-full />
+			<slot
+				name="popup"
+				:object="overlay.popupItem.value.object"
+				:group="overlay.popupItem.value.group"
+				:hours="hoursOf(overlay.popupItem.value.object.id)"
+				:close="overlay.closePopup">
+				<ImageMapCard :item="overlay.popupItem.value" :hours="hoursOf(overlay.popupItem.value.object.id)" is-full />
 			</slot>
 		</component>
 	</section>
@@ -307,6 +316,7 @@ const {
 	gestures,
 	overlay,
 	setLayer,
+	hoursOf,
 	legend,
 	sections,
 	controls,

@@ -1,5 +1,7 @@
+import { UI_IMAGE_MAP } from '@/locales/messages'
 import { foldSearchText } from '@utils/data/textUtils'
 import type { ImageMapFilterValues } from '../../types/BaseImageMap.types'
+import { IMAGE_MAP_OPEN_NOW_VALUE } from '../../types/ImageMapHours.types'
 import type { ResolvedImageMapObject } from '../../types/imageMapModel.types'
 import type { ImageMapData, ImageMapFilter, ImageMapFilterOption, ImageMapObject } from '../../types/imageMapData.types'
 
@@ -8,6 +10,7 @@ export function normalizeText(value: string): string {
 }
 
 export function filterOptions(filter: ImageMapFilter, data: ImageMapData): ImageMapFilterOption[] {
+	if (filter.type === 'open-now') return [{ value: IMAGE_MAP_OPEN_NOW_VALUE, label: UI_IMAGE_MAP.OPEN_NOW }]
 	if (filter.options) return filter.options
 	return (data.groups ?? []).map(group => ({ value: group.id, label: group.title }))
 }
@@ -25,7 +28,7 @@ function matchesFilter(object: ImageMapObject, filter: ImageMapFilter, selected:
 }
 
 export function matchesFilters(object: ImageMapObject, filters: ImageMapFilter[], values: ImageMapFilterValues): boolean {
-	return filters.every(filter => matchesFilter(object, filter, values[filter.id]))
+	return filters.every(filter => filter.type === 'open-now' || matchesFilter(object, filter, values[filter.id]))
 }
 
 export function initialFilterValues(filters: ImageMapFilter[]): ImageMapFilterValues {

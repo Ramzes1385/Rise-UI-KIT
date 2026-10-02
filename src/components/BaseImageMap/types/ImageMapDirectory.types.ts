@@ -1,3 +1,4 @@
+import type { ImageMapHoursState } from './ImageMapHours.types'
 import type { ImageMapDirectoryView } from './BaseImageMap.types'
 import type { ResolvedImageMapObject } from './imageMapModel.types'
 import type { ImageMapFilter, ImageMapFilterOption, ImageMapFilterType, ImageMapGroup } from './imageMapData.types'
@@ -12,6 +13,8 @@ export interface ImageMapDirectoryEntry {
 	isActive: boolean
 	/** Объект под указателем на карте или в списке */
 	isHovered: boolean
+	/** Часы работы сейчас; нет `hours` — `undefined` */
+	hours?: ImageMapHoursState
 }
 
 /** Раздел списка: группа или буква */
@@ -79,7 +82,12 @@ export interface ImageMapDirectoryEmits {
 /** Слоты списка объектов */
 export interface ImageMapDirectorySlots {
 	/** Содержимое строки */
-	item?: (props: { object: ResolvedImageMapObject['object']; group: ImageMapGroup | undefined; isActive: boolean }) => unknown
+	item?: (props: {
+		object: ResolvedImageMapObject['object']
+		group: ImageMapGroup | undefined
+		isActive: boolean
+		hours: ImageMapHoursState | undefined
+	}) => unknown
 	/** Пустой список */
 	empty?: () => unknown
 }

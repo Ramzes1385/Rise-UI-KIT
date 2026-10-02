@@ -1,6 +1,7 @@
 import type { Ref } from 'vue'
 import type { useMapCore } from '../model/useBaseImageMap'
 import type { useImageMapPan } from '../model/zoom/useImageMapPan'
+import type { ImageMapHoursState } from './ImageMapHours.types'
 import type { useImageMapView } from '../model/zoom/useImageMapView'
 import type { ImageMapDirectoryEntry } from './ImageMapDirectory.types'
 import type { useImageMapFocus } from '../model/interaction/useImageMapFocus'
@@ -160,6 +161,7 @@ export interface DirectoryContext {
 	getLayer: () => ImageMapLayer | undefined
 	getActive: () => string | null
 	getHover: () => string | null
+	hoursOf: (id: string) => ImageMapHoursState | undefined
 	filters: ReturnType<typeof useImageMapFilters>
 }
 
@@ -170,4 +172,26 @@ export interface DeepLinkContext {
 	isShown: (item: ResolvedImageMapObject) => boolean
 	getActive: () => string | null
 	activateFromLink: (id: string) => void
+}
+
+export interface HoursRange {
+	start: number
+	end: number
+}
+
+export interface ParsedHours {
+	timeZone: string | undefined
+	week: HoursRange[][]
+	exceptions: Map<string, HoursRange[]>
+}
+
+export interface ZonedMoment {
+	day: number
+	minutes: number
+}
+
+export interface HoursPhase {
+	isOpen: boolean
+	isAlwaysOpen: boolean
+	change: number | null
 }

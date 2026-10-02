@@ -216,5 +216,7 @@ export const enBase = {
 		SEO_MISSING_FIELDS: '{component}: {type} SEO markup lacks required fields: {fields}. Pass them in seo.data',
 		TREE_REPEATED_ID:
 			'BaseTree: node ids occur in the tree more than once (a cycle in children or a duplicate): {ids}. Repeats are not shown',
+		IMAGE_MAP_TIME_ZONE: 'BaseImageMap: unknown time zone "{zone}" — opening hours use the browser time zone',
+		IMAGE_MAP_HOURS_RANGE: 'BaseImageMap: opening hours range "{range}" of the object "{id}" is skipped — expected "10:00-22:00"',
 	},
 }
