@@ -14,6 +14,8 @@ export const argTypes = {
 	brandIcons: { control: false, table: propGroup(ARG_GROUP.content) },
 	isCompact: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
 	background: { control: 'text', table: propGroup(ARG_GROUP.appearance) },
+	cover: { control: 'text', table: propGroup(ARG_GROUP.appearance) },
+	hasCoverOverlay: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
 	isExpired: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 	default: slotArgType('Содержимое (заменяет label)'),
 } satisfies Meta<typeof BaseBankCard>['argTypes']

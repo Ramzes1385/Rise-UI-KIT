@@ -29,6 +29,7 @@ export const AllBrands = cases.AllBrands
 export const WithoutHolder = cases.WithoutHolder
 export const WithPreview = cases.WithPreview
 export const PreviewBackground = cases.PreviewBackground
+export const PreviewCover = cases.PreviewCover
 export const Accepted = cases.Accepted
 export const InForm = cases.InForm
 export const Keyboard = cases.Keyboard
