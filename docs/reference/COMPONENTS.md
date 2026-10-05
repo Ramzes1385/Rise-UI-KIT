@@ -2583,6 +2583,17 @@ const items: BottomNavItem[] = [
 
 Корень — ориентир `<nav aria-label="Нижняя навигация">`, выбранный пункт помечен `aria-current="page"`; приложение обычно ставит `v-model` по текущему маршруту. Пункт с `to` — RouterLink приложения (из `linkComponent`, плагина или vue-router), без роутера — `<a href>`; с `href` — внешняя ссылка; без адреса — кнопка с событием `select`. `badge` показывает счётчик BaseBadge («99+» больше `maxBadge`), а скринридер слышит описание «3 новых» (`badgeLabel` меняет его). Панель по умолчанию закреплена внизу окна (`isFixed`) с отступом `env(safe-area-inset-bottom)` — для PWA добавьте `viewport-fit=cover` в meta viewport, а содержимому страницы — нижний отступ под панель. `hideOnScroll` прячет панель при прокрутке вниз и возвращает при прокрутке вверх и при фокусе на пункте.
 
+Варианты (`variant`): классика — `default`, `soft`, `outline`, `ghost`; новые — `floating` (парящая скруглённая панель с тенью и отступом от краёв окна), `glass` (полупрозрачная панель с размытием фона; без `backdrop-filter` — сплошной приподнятый фон) и `notched` (вырез под главное действие). У `floating` и `glass` выбранный пункт отмечает скользящая подложка. В `notched` главное действие — первый пункт с `isPrimary: true`: круглая кнопка над вырезом, выбирается как обычный пункт; без `isPrimary` выреза нет, в других вариантах `isPrimary` ничего не меняет.
+
+```ts
+const items: BottomNavItem[] = [
+	{ value: 'home', label: 'Главная', icon: 'home', to: '/' },
+	{ value: 'create', label: 'Создать', icon: 'plus', isPrimary: true },
+	{ value: 'chats', label: 'Чаты', icon: 'comment', to: '/chats' },
+]
+// <BaseBottomNav v-model="active" :items="items" variant="notched" />
+```
+
 ---
 
 ## BaseStepper

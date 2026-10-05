@@ -1799,3 +1799,9 @@ API кита не меняется. В Storybook добавлены пример
 - **DOM:** область слайдов и навигация теперь внутри новой обёртки `div.base-slider__body` (при `bottom` — `display: contents`, раскладка прежняя). Селекторы прямого потомка `.base-slider > .base-slider__stage` / `> .base-slider__navigation` замените на `.base-slider__body > …` или потомка.
 - **Клавиатура миниатюр (все положения):** стрелки по оси ленты (←/→ у горизонтальной, ↑/↓ у вертикальной; по кругу), Home и End переводят фокус на миниатюру и сразу листают к её слайду. Tab и Enter — как прежде.
 - **Лента сама докручивается до текущей миниатюры** при любой смене слайда (стрелки, автопрокрутка, точки, `goTo`), плавно — без анимации при `prefers-reduced-motion`. Прокручивается только сама лента (не страница), фокус не переносится.
+## Задача design-bottom-nav: BaseBottomNav — новые варианты оформления
+
+- `BOTTOM_NAV_VARIANTS` пополнился: `floating`, `glass`, `notched` (прежние `default`, `soft`, `outline`, `ghost` не изменились). Код, который перебирает `BOTTOM_NAV_VARIANTS` или сужает `BottomNavVariant` исчерпывающим `switch`, увидит три новых значения.
+- Новое поле `BottomNavItem.isPrimary` — главное действие для `notched` (учитывается первый такой пункт); в остальных вариантах пункт обычный. В `BottomNavEntry` — новое поле `isPrimary`.
+- Разметка: список `ul.base-bottom-nav__list` теперь обёрнут в `div.base-bottom-nav__bar` (новый ключ `customClass.bar`). Стили приложения с селектором `.base-bottom-nav > .base-bottom-nav__list` нужно поправить на `.base-bottom-nav__bar > .base-bottom-nav__list`. У `floating` и `glass` в обёртке — декоративный `span.base-bottom-nav__indicator` (`aria-hidden`); у главного пункта `notched` — класс `base-bottom-nav__link--primary`.
+
