@@ -44,6 +44,26 @@ const fromSamples = computeWaveformPeaks(buffer.getChannelData(0), 48)
 
 ---
 
+## speechProviderUtils
+
+Поставщик озвучки для `BasePresentationPlayer` (проп `speechProvider`) поверх `fetch` к посреднику приложения: ключ сервиса синтеза остаётся на сервере.
+
+```ts
+import { createFetchSpeechProvider } from '@ramzes1385/rise-ui-kit/utils'
+
+// POST /api/tts с JSON { text, voice, lang, format }; ответ — аудио (Blob). Ответ не ok → Error('TTS <статус>'),
+// отмена — по signal плеера (смена слайда, таймаут 15 с, размонтирование)
+const speechProvider = createFetchSpeechProvider({
+	url: '/api/tts',
+	headers: { Authorization: `Bearer ${sessionToken}` }, // заголовки приложения; Content-Type: application/json ставится сам
+	format: 'mp3', // что посредник просит у сервиса; уходит полем тела
+})
+```
+
+Типы запроса и поставщика — `PresentationSpeechProvider`, `PresentationSpeechRequest`, `PresentationSpeechError` из `@ramzes1385/rise-ui-kit/media`; пример посредника — docs/reference/COMPONENTS.md, BasePresentationPlayer → «Озвучка через сервис».
+
+---
+
 ## dateUtils
 
 Утилиты для работы с датами.
@@ -319,6 +339,7 @@ ratingUtils
 recurrenceUtils
 requisiteUtils
 scriptUtils
+speechProviderUtils
 structuredDataUtils
 subtitleUtils
 tableExportUtils

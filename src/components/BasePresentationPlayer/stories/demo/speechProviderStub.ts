@@ -1,7 +1,11 @@
 import { ref } from 'vue'
-import { SLIDE_VOICES } from './shared'
+import { SLIDE_VOICES } from '../shared'
 import { createFetchSpeechProvider } from '@utils/media/speechProviderUtils'
-import type { PresentationSpeechError, PresentationSpeechProvider, PresentationSpeechRequest } from '../types/BasePresentationPlayer.types'
+import type {
+	PresentationSpeechError,
+	PresentationSpeechProvider,
+	PresentationSpeechRequest,
+} from '../../types/BasePresentationPlayer.types'
 
 export const SPEECH_SERVICE_DELAY_MS = 600
 

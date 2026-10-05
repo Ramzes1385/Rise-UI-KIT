@@ -2002,3 +2002,16 @@ API кита не меняется. В Storybook добавлены пример
 - **Телепорт и темы областей**: `useInheritedThemeAttrs(anchor, isActive)` и `readThemeAttrs(el)` (`@composables/app/useTeleportTarget`) — панель берёт с якоря `data-theme` и `data-rise-theme`. BaseDropdown, BaseTooltip, BaseDatePicker, контекстное меню BaseEditor и сообщений BaseChat, призрак перетаскивания BaseKanban и BaseList ставят на телепортированный элемент оба атрибута. `useInheritedTheme` оставлен.
 - **Миксин `field-box($component: null)`** принимает имя компонента для токенов; без имени вывод прежний. Функции SCSS `ct()` и `space()` — DESIGN_SYSTEM §3.
 - **`npm run lint:styles`** ещё и запускает `scripts/check-component-tokens.mjs`: после правки токенов компонента — `node scripts/check-component-tokens.mjs --write`.
+
+## Задача presentation-tts: озвучка слайдов BasePresentationPlayer сервисом
+
+Добавление без ломки: без `speechProvider` вид и поведение прежние.
+
+- **Проп `speechProvider?: PresentationSpeechProvider`** — объект с `synthesize(text, { voice, lang, slide, signal }) → Promise<Blob | string>`. Текст `slides[].speech` озвучивает сервис, а не `speechSynthesis`; полученное аудио играет в `<audio>` слайда — перемотка, скорость, громкость, лоадер и режимы как у `slides[].audio`. Кэш восьми последних фраз в экземпляре плеера (ключ голос + язык + текст, `URL.revokeObjectURL` при вытеснении и размонтировании), предзагрузка текущего и следующего слайда, отмена через `signal` при смене слайда, таймаут 15 с.
+- **Событие `speech-error`** `{ slide, error }` — отклонение поставщика, `DOMException` `TimeoutError` или ошибка `<audio>` на полученном адресе; слайд уходит на синтез речи браузера (нет голосов — на `duration`), повтор запроса — при следующем заходе на слайд.
+- **`speechVoice`** при поставщике — имя голоса сервиса (уходит в запрос как есть); смена `speechProvider` или `speechVoice` сбрасывает кэш.
+- **Типы** `PresentationSpeechProvider`, `PresentationSpeechRequest`, `PresentationSpeechError` — экспорт `/media`.
+- **Утилита `createFetchSpeechProvider({ url, headers?, format? })`** (`@ramzes1385/rise-ui-kit/utils`, `speechProviderUtils`): `POST` JSON `{ text, voice, lang, format }` к посреднику приложения, ответ — `Blob`; `!ok` → `Error('TTS <статус>')`. Тип настроек — `FetchSpeechProviderOptions`.
+- **Поправка поведения синтеза браузера**: переход со слайда с `speech` на слайд с `audio` без `duration` больше не вызывает лишний конец слайда (раньше следующий слайд мог быть пропущен).
+- **Storybook**: истории `SpeechService` (заглушка сервиса, play) и `SpeechYandex` (живой SpeechKit через dev-middleware `POST /__rise/tts`, ключ `YANDEX_SPEECHKIT_API_KEY` в `.env.local`, только локальный `npm run storybook`); `.env.example`.
+

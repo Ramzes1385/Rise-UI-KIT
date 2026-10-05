@@ -1623,7 +1623,8 @@ function report(event: PresentationSlideComplete) {
 - **Учёт** — события `slide-complete` (`{ id, index, at }`, `at` — `Date.now()`), `progress` (`{ completed, total }`), `complete`; после последнего слайда — экран «Пройдено». `storageKey` сохраняет в localStorage место и пройденные слайды и предлагает «Продолжить со слайда 5?».
 - **Субтитры** — `slides[].captions` (WebVTT или SRT, время от начала слайда) или `captions` для общей дорожки (время от начала дорожки). Разбор — `parseSubtitles` из `subtitleUtils`, вывод — как у BaseMediaPlayer (курсив, жирный, подчёркивание). Кнопка «Субтитры» и клавиша C — когда субтитры есть; `v-model:is-captions-on` (по умолчанию включены).
 - **Список слайдов и стенограмма** — выдвижная панель в стиле серий плеера: миниатюры, длительность, отметка «пройден», замок у недоступных в `linear`/`strict` (выбор недоступного — подсказка «Доступно через …»). `slides[].notes` — стенограмма текущего слайда, абзацы через пустую строку. Escape и клик снаружи закрывают панель, фокус возвращается на кнопку.
-- **Синтез речи** — `slides[].speech`: текст для `speechSynthesis`, если у слайда нет `audio` и нет общей дорожки. Голос — `speechVoice` (`name` или `voiceURI`), иначе по языку кита; голосов нет (ждём `voiceschanged` 1,5 с) — слайд идёт по `duration`. Голоса и качество зависят от браузера и системы, а смена скорости и громкости применяется со следующей фразы: для обучения лучше запись.
+- **Синтез речи** — `slides[].speech`: текст озвучки, если у слайда нет `audio` и `video` и нет общей дорожки. Без `speechProvider` — `speechSynthesis` браузера: голос — `speechVoice` (`name` или `voiceURI`), иначе по языку кита; голосов нет (ждём `voiceschanged` 1,5 с) — слайд идёт по `duration`. Голоса браузера и их качество зависят от системы, а смена скорости и громкости применяется со следующей фразы: для обучения лучше сервис озвучки (ниже) или запись.
+- **Озвучка через сервис** — проп `speechProvider`: объект с `synthesize(text, { voice, lang, slide, signal })`, который возвращает аудио (Blob или адрес). Полученная озвучка играет как запись слайда: перемотка, полоса времени, скорость (`playbackRate`), громкость, лоадер «Загрузка», режимы `linear`/`strict`. Плеер кэширует восемь последних фраз (ключ — голос, язык и текст), грузит текущий и следующий слайд заранее (следующий — пока идёт показ на видимой вкладке), отменяет лишние запросы при смене слайда через `signal` и ждёт ответ не дольше 15 с. Отклонение, таймаут или ошибка `<audio>` — событие `speech-error` (`{ slide, error }`) и откат слайда на синтез браузера (нет голосов — на `duration`); повтор запроса — при следующем заходе на слайд. Смена `speechProvider` или `speechVoice` сбрасывает кэш. Готовый поставщик — `createFetchSpeechProvider` из `@ramzes1385/rise-ui-kit/utils`, подробности — раздел «Озвучка через сервис» ниже.
 - **Слайд-вопрос** — `isInteractive: true` и слот `slide`: слот получает `complete()` и `isCompleted`; слайд пройден только после `complete()` (и конца озвучки, `minDuration`). После озвучки показ ждёт ответа, «Следующий слайд» в `linear`/`strict` — «Ответьте на вопрос, чтобы продолжить».
 
 ```vue
@@ -1634,6 +1635,85 @@ function report(event: PresentationSlideComplete) {
 </BasePresentationPlayer>
 ```
 - **Что не делает.** Не разбирает .pptx и .pdf — экспортируйте слайды в картинки. Не отправляет данные в LMS и не заменяет проверку на сервере: localStorage и режимы — удобство зрителя, строгий учёт — на сервере по времени `slide-complete`.
+
+### Озвучка через сервис
+
+Ключ сервиса синтеза (Яндекс SpeechKit, SaluteSpeech, ElevenLabs…) **не должен попадать в браузер**: в ките нет адаптеров к сервисам, только общий `createFetchSpeechProvider({ url, headers?, format? })`, который шлёт `POST` JSON `{ text, voice, lang, format }` на адрес вашего посредника и ждёт аудио в ответе (`response.blob()`; ответ не `ok` → ошибка `TTS <статус>`). Посредник — обычный маршрут вашего сервера: проверяет сессию пользователя, ходит в сервис со своим ключом, кэширует ответы по хешу текста (озвучка слайдов не меняется — платить за фразу один раз) и ограничивает частоту запросов.
+
+```vue
+<script setup lang="ts">
+import { BasePresentationPlayer } from '@ramzes1385/rise-ui-kit/media'
+import { createFetchSpeechProvider } from '@ramzes1385/rise-ui-kit/utils'
+import type { PresentationSpeechError } from '@ramzes1385/rise-ui-kit/media'
+
+const speechProvider = createFetchSpeechProvider({
+	url: '/api/tts',
+	headers: { Authorization: `Bearer ${sessionToken}` }, // токен сессии приложения, не ключ сервиса
+	format: 'mp3',
+})
+
+function onSpeechError({ slide, error }: PresentationSpeechError) {
+	console.warn(`Слайд ${slide + 1} озвучен браузером:`, error) // сервис не ответил — слайд уже ушёл на speechSynthesis
+}
+</script>
+
+<template>
+	<BasePresentationPlayer :slides="slides" title="Вводный курс" :speech-provider="speechProvider" speech-voice="filipp" @speech-error="onSpeechError" />
+</template>
+```
+
+- `speechVoice` при поставщике — имя голоса сервиса (`filipp`, `jane`, `alena`…), уходит в запрос как есть; при откате на синтез браузера такого голоса нет — берётся голос по языку кита.
+- Скорость показа в запрос не передаётся — её применяет `<audio>.playbackRate`, поэтому смена скорости не сбрасывает кэш.
+- Свой поставщик — любой объект `PresentationSpeechProvider`: `synthesize` может вернуть и адрес (`string`) готового файла, например из кэша CDN, или Blob локальной модели (так подключается `piper-tts-web`: без зависимостей в ките). Отмену по `signal` поддержите, чтобы не платить за фразы слайдов, которые зритель пролистал.
+- Субтитры и стенограмма — как у записи: `slides[].captions` (если сервис вернул и разметку времени — соберите WebVTT) и `slides[].notes`; меток времени кит сам не строит.
+
+Посредник на Node без зависимостей (пример для SpeechKit REST v1; ключ — в переменной окружения сервера, не `VITE_*` и не `STORYBOOK_*`). Тот же код работает dev-middleware Storybook (`build/storybook/tts.ts`):
+
+```js
+// server/tts.mjs — Node 18+
+import { createServer } from 'node:http'
+
+const KEY = process.env.YANDEX_SPEECHKIT_API_KEY
+const LANGS = { ru: 'ru-RU', en: 'en-US' }
+
+createServer(async (req, res) => {
+	if (req.method !== 'POST' || req.url !== '/api/tts') return res.writeHead(404).end()
+	let raw = ''
+	for await (const chunk of req) raw += chunk
+	const { text = '', voice = 'filipp', lang = 'ru', format = 'mp3' } = JSON.parse(raw || '{}')
+	if (!text.trim() || text.length > 5000) return res.writeHead(400).end() // v1: до 5000 символов
+	// Здесь же — своя авторизация пользователя, лимит запросов и кэш по хешу текста
+	const upstream = await fetch('https://tts.api.cloud.yandex.net/speech/v1/tts:synthesize', {
+		method: 'POST',
+		headers: { Authorization: `Api-Key ${KEY}` },
+		body: new URLSearchParams({ text, lang: LANGS[lang] ?? lang, voice, format }),
+	})
+	if (!upstream.ok) return res.writeHead(502).end()
+	res.writeHead(200, { 'Content-Type': 'audio/mpeg', 'Cache-Control': 'private, max-age=86400' })
+	res.end(Buffer.from(await upstream.arrayBuffer()))
+}).listen(8787)
+```
+
+То же edge-функцией (Cloudflare Workers, Vercel Edge, Deno Deploy — API `Request`/`Response`):
+
+```ts
+export default {
+	async fetch(request: Request, env: { YANDEX_SPEECHKIT_API_KEY: string }): Promise<Response> {
+		if (request.method !== 'POST') return new Response(null, { status: 405 })
+		const { text = '', voice = 'filipp', lang = 'ru', format = 'mp3' } = await request.json()
+		if (!text.trim() || text.length > 5000) return new Response(null, { status: 400 })
+		const upstream = await fetch('https://tts.api.cloud.yandex.net/speech/v1/tts:synthesize', {
+			method: 'POST',
+			headers: { Authorization: `Api-Key ${env.YANDEX_SPEECHKIT_API_KEY}` },
+			body: new URLSearchParams({ text, lang: lang === 'ru' ? 'ru-RU' : 'en-US', voice, format }),
+		})
+		if (!upstream.ok) return new Response(null, { status: 502 })
+		return new Response(upstream.body, { headers: { 'Content-Type': 'audio/mpeg', 'Cache-Control': 'private, max-age=86400' } })
+	},
+}
+```
+
+Заметки по сервисам (сверяйте с их документацией при подключении): у SpeechKit REST v1 не все голоса (новые — только в API v3, который отдаёт поток JSON с base64-кусками), оплата из России — картами РФ; SaluteSpeech (Сбер) — тот же посредник, но с OAuth-токеном по ключу, который живёт 30 минут; у зарубежных сервисов проверьте доступ и условия использования синтезированного аудио. Цены меняются — в документацию кита они не записаны.
 
 ## BaseAudioPlayer
 

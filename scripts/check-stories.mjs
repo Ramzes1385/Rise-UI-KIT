@@ -1,4 +1,9 @@
-/** Story падает при ошибке рендера/play, необработанном исключении, console.error, внешних запросах или нарушениях axe; `__story-missing` — намеренное исключение, stories с тегом `!test` пропускаются. */
+/**
+ * Story падает при ошибке рендера/play, необработанном исключении, console.error, внешних запросах или нарушениях axe;
+ * `__story-missing` — намеренное исключение. Stories с тегом `!test` пропускаются: в index.json Storybook снимает тег
+ * `test`, поэтому проверяется его отсутствие. Тег должен стоять в `X.stories.ts` (`export const X = { ...cases.X, tags: ['!test'] }`):
+ * индексатор читает файл статически и тегов у `cases.X` не видит.
+ */
 
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
@@ -136,8 +141,9 @@ async function main() {
 			)
 			process.exit(2)
 		})
+	const isTested = entry => !entry.tags || (entry.tags.includes('test') && !entry.tags.includes('!test'))
 	const stories = Object.values(index.entries).filter(
-		entry => entry.type === 'story' && !entry.tags?.includes('!test') && (!options.filter || options.filter.test(entry.id)),
+		entry => entry.type === 'story' && isTested(entry) && (!options.filter || options.filter.test(entry.id)),
 	)
 	const jobs = stories.flatMap(story => options.themes.map(theme => ({ story, theme })))
 	console.log(`=== Прогон stories: ${stories.length} × темы ${options.themes.join(', ')} = ${jobs.length} ===`)
