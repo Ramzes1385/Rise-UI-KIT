@@ -5,13 +5,16 @@ const bytesOf = (text: string): number[] => [...new TextEncoder().encode(text)]
 
 describe('данные QR-кода в байтовом режиме', () => {
 	it('ёмкость версии — кодовые слова данных всех блоков', () => {
-		expect([dataCapacity(1, 'L'), dataCapacity(1, 'H'), dataCapacity(5, 'Q'), dataCapacity(10, 'L')]).toEqual([19, 9, 62, 274])
+		expect([dataCapacity(1, 'L'), dataCapacity(1, 'H'), dataCapacity(5, 'Q'), dataCapacity(10, 'L'), dataCapacity(40, 'L')]).toEqual([
+			19, 9, 62, 274, 2956,
+		])
 	})
 
-	it('версия — наименьшая, в которую помещается текст; сверх версии 10 — null', () => {
+	it('версия — наименьшая, в которую помещается текст; сверх версии 40 — null', () => {
 		expect([chooseVersion(0, 'M'), chooseVersion(14, 'M'), chooseVersion(15, 'M')]).toEqual([1, 1, 2])
-		expect([chooseVersion(271, 'L'), chooseVersion(272, 'L')]).toEqual([10, null])
-		expect([chooseVersion(119, 'H'), chooseVersion(120, 'H')]).toEqual([10, null])
+		expect([chooseVersion(271, 'L'), chooseVersion(272, 'L')]).toEqual([10, 11])
+		expect([chooseVersion(2953, 'L'), chooseVersion(2954, 'L')]).toEqual([40, null])
+		expect([chooseVersion(1273, 'H'), chooseVersion(1274, 'H')]).toEqual([40, null])
 	})
 
 	it('режим, длина, байты, терминатор и чередование 0xEC и 0x11', () => {

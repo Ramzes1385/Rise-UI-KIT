@@ -52,7 +52,7 @@ describe('BaseQrCode unit', () => {
 	})
 
 	it('слишком длинный текст: сообщение вместо кода и то же имя для скринридера', () => {
-		const { container } = render(BaseQrCode, { props: { value: 'a'.repeat(300) } })
+		const { container } = render(BaseQrCode, { props: { value: 'a'.repeat(2400) } })
 		expect(screen.getByRole('img', { name: 'Текст слишком длинный для QR-кода' })).toHaveClass('base-qr-code__box')
 		expect(container.firstElementChild).toHaveClass('base-qr-code--overflow')
 		expect(container.querySelector('svg')).toBeNull()
@@ -84,7 +84,7 @@ describe('BaseQrCode unit', () => {
 			`<path d="${wrapper.find('.base-qr-code__finder').attributes('d')}" fill="#111111" fill-rule="evenodd" shape-rendering="crispEdges"/>`,
 		)
 		expect(svg).not.toContain('<image')
-		await wrapper.setProps({ value: 'a'.repeat(300) })
+		await wrapper.setProps({ value: 'a'.repeat(2400) })
 		expect(wrapper.vm.getSvg()).toBe('')
 		wrapper.unmount()
 	})

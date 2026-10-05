@@ -1,4 +1,5 @@
 import { encodeQr } from '../../model/encode/qrCode'
+import { QR_VECTORS, VECTOR_TEXT } from './qrVectors'
 
 const bitsOf = (modules: readonly (readonly boolean[])[]): string[] => modules.map(row => row.map(isDark => (isDark ? '1' : '0')).join(''))
 
@@ -107,8 +108,29 @@ describe('кодирование QR', () => {
 		expect(encodeQr('Привет', 'H')?.version).toBe(2)
 	})
 
-	it('слишком длинный текст — null', () => {
-		expect(encodeQr('a'.repeat(271), 'L')?.version).toBe(10)
-		expect(encodeQr('a'.repeat(272), 'L')).toBeNull()
+	it.each(QR_VECTORS.map(vector => [`${vector.version}-${vector.level}`, vector] as const))(
+		'версия %s совпадает с эталоном python-qrcode: наименьшая версия и матрица с той же маской',
+		(_, vector) => {
+			const text = VECTOR_TEXT.repeat(60).slice(0, vector.length)
+			expect(encodeQr(text.slice(0, -1), vector.level)?.version).toBe(vector.version - 1)
+			const qr = encodeQr(text, vector.level, vector.mask)
+			expect(qr).toMatchObject({ version: vector.version, size: 17 + vector.version * 4, mask: vector.mask })
+			expect(hexOf(qr?.modules ?? [])).toEqual(vector.rows.split(' '))
+		},
+	)
+
+	it('платёжная строка ГОСТ с кириллицей (290 байт) строится при M', () => {
+		const text =
+			'ST00012|Name=ООО «Ромашка-Сервис»|PersonalAcc=40702810138000012345|BankName=ПАО СБЕРБАНК|BIC=044525225|' +
+			'CorrespAcc=30101810400000000225|PayeeINN=7707083893|KPP=773601001|Purpose=Оплата по счёту № 42 от 05.10.2026 за услуги связи, НДС не облагается|Sum=1250000'
+		expect(new TextEncoder().encode(text).length).toBeGreaterThanOrEqual(290)
+		expect(encodeQr(text, 'M')?.version).toBeGreaterThan(10)
+	})
+
+	it('слишком длинный текст — null: сверх версии 40', () => {
+		expect(encodeQr('a'.repeat(2953), 'L')?.version).toBe(40)
+		expect(encodeQr('a'.repeat(2954), 'L')).toBeNull()
+		expect(encodeQr('a'.repeat(1273), 'H')?.version).toBe(40)
+		expect(encodeQr('a'.repeat(1274), 'H')).toBeNull()
 	})
 })

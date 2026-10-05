@@ -55,10 +55,11 @@ describe('логотип в QR-коде', () => {
 		expect(encodeWithLogo(long, 'H', 0.22)?.matrix.version).toBe(9)
 	})
 
-	it('если логотип не помещается даже в версию 10, он уменьшается; слишком длинный текст — null', () => {
-		const code = encodeWithLogo('a'.repeat(140), 'Q', 0.3)
-		expect(code?.matrix.version).toBe(10)
-		expect(code?.area?.image).toBeLessThan(57 * 0.3)
-		expect(encodeWithLogo('a'.repeat(300), 'L', 0.22)).toBeNull()
+	it('если логотип не помещается даже в версию 40, он уменьшается; слишком длинный текст — null', () => {
+		expect(encodeWithLogo('a'.repeat(140), 'Q', 0.3)?.matrix.version).toBe(12)
+		const code = encodeWithLogo('a'.repeat(2900), 'L', 0.3)
+		expect(code?.matrix.version).toBe(40)
+		expect(code?.area?.image).toBeLessThan(177 * 0.3)
+		expect(encodeWithLogo('a'.repeat(3000), 'L', 0.22)).toBeNull()
 	})
 })

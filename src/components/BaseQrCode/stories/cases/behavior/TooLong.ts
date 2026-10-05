@@ -7,12 +7,12 @@ export const TooLong: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
 			description: {
-				story: 'Текст не помещается в версию 10 при выбранном уровне — вместо кода сообщение, для скринридера — то же.',
+				story: 'Текст не помещается в версию 40 при выбранном уровне — вместо кода сообщение, для скринридера — то же.',
 			},
 			source: QR_SOURCE,
 		},
 	},
-	args: { value: 'Длинный текст '.repeat(12), errorCorrection: 'H' },
+	args: { value: 'Длинный текст '.repeat(60), errorCorrection: 'H' },
 	render: renderQr,
 	play: async ({ canvas }) => {
 		await expect(canvas.getByRole('img', { name: 'Текст слишком длинный для QR-кода' })).toBeVisible()

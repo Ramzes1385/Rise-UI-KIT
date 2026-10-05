@@ -114,7 +114,7 @@ export interface QrSvgParts {
  * Пропсы компонента BaseQrCode
  */
 export interface BaseQrCodeProps extends BaseComponentProps<(typeof QR_CODE_VARIANTS)[number], 'root'> {
-	/** Текст или адрес: кодируется байтами UTF-8, до 271 байта при уровне L и до 119 при H */
+	/** Текст или адрес: кодируется байтами UTF-8, до 2953 байт при уровне L, 2331 при M и 1273 при H (версии 1–40) */
 	value: string
 	/**
 	 * Имя картинки для скринридера. По умолчанию текст кода в имя не попадает: для ссылки http(s) —
