@@ -7,7 +7,20 @@
 	}
 
 	&__panel {
-		min-width: sz(180px);
+		--dm-panel-width: #{ct(dropdown-menu-panel, width, 180px)};
+		--dm-panel-text: var(--custom-text);
+		--dm-item-text: #{ct(dropdown-menu-item, text, var(--rise-text))};
+		--dm-item-bg-hover: #{ct(dropdown-menu-item, bg-hover, var(--rise-bg-elevated))};
+		--dm-item-radius: #{ct(dropdown-menu-item, radius, var(--rise-radius-md))};
+		--dm-item-padding-x: #{ct(dropdown-menu-item, padding-x, 8px)};
+		--dm-item-padding-y: #{ct(dropdown-menu-item, padding-y, 6px)};
+		--dm-item-font-size: #{ct(dropdown-menu-item, font-size, var(--rise-font-size-sm))};
+		--dm-item-icon-size: #{ct(dropdown-menu-item, icon-size, 16px)};
+		--dm-label-text: #{ct(dropdown-menu-label, text, var(--rise-text-muted))};
+		--dm-separator-border: #{ct(dropdown-menu-separator, border, var(--rise-border))};
+		--dm-shortcut-text: #{ct(dropdown-menu-shortcut, text, var(--rise-text-muted))};
+
+		min-width: sz(var(--dm-panel-width));
 		max-width: sz(320px);
 	}
 
@@ -23,22 +36,32 @@
 	}
 
 	&__item {
+		--dm-icon-size: #{sz(var(--dm-item-icon-size))};
+
 		@include menu-item;
-		@include custom-text(color, var(--rise-text));
+		padding: sz(var(--dm-item-padding-y) var(--dm-item-padding-x));
+		border-radius: sz(var(--dm-item-radius));
+		font-size: sz(var(--dm-item-font-size));
+		@include custom-text(color, var(--dm-panel-text, var(--dm-item-text)));
 		outline: none;
 
+		@include hover {
+			background-color: var(--dm-item-bg-hover);
+		}
+
 		&:focus {
-			background-color: var(--custom-bg-hover, var(--rise-bg-elevated));
-			color: var(--custom-text-hover, var(--custom-text, var(--rise-text-highlighted)));
+			background-color: var(--custom-bg-hover, var(--dm-item-bg-hover));
+			color: var(--custom-text-hover, var(--custom-text, var(--dm-panel-text, var(--rise-text-highlighted))));
 
 			.base-dropdown-menu__icon,
-			.base-dropdown-menu__submenu-arrow {
+			.base-dropdown-menu__submenu-arrow,
+			.base-dropdown-menu__shortcut {
 				color: inherit;
 			}
 		}
 
 		&[aria-expanded='true'] {
-			background-color: var(--rise-bg-elevated);
+			background-color: var(--dm-item-bg-hover);
 		}
 
 		@include active {
@@ -60,16 +83,17 @@
 
 		&.base-link {
 			display: flex;
-			@include text-size(sm);
+			font-size: sz(var(--dm-item-font-size));
+			line-height: sz(var(--rise-line-height-sm));
 			text-decoration: none;
-			@include custom-text(color, var(--rise-text));
+			@include custom-text(color, var(--dm-panel-text, var(--dm-item-text)));
 
 			@include hover {
 				text-decoration: none;
 			}
 
 			&:focus {
-				color: var(--custom-text-hover, var(--custom-text, var(--rise-text-highlighted)));
+				color: var(--custom-text-hover, var(--custom-text, var(--dm-panel-text, var(--rise-text-highlighted))));
 			}
 		}
 	}
@@ -92,8 +116,13 @@
 	&__icon,
 	&__submenu-arrow {
 		flex-shrink: 0;
-		color: var(--rise-text-muted);
+		color: var(--dm-panel-text, var(--rise-text-muted));
 		@include transition-colors;
+
+		.base-icon__svg {
+			width: var(--dm-icon-size);
+			height: var(--dm-icon-size);
+		}
 	}
 
 	&__item-label {
@@ -106,19 +135,25 @@
 		flex-shrink: 0;
 		padding-left: sz(16px);
 		@include text-size(xs);
-		color: var(--rise-text-muted);
+		color: var(--dm-panel-text, var(--dm-shortcut-text));
 	}
 
 	&__label {
-		padding: sz(6px 8px 2px);
+		padding: sz(6px var(--dm-item-padding-x) 2px);
 		@include text-size(xs);
 		font-weight: var(--rise-font-weight-semibold);
-		color: var(--rise-text-muted);
+		color: var(--dm-panel-text, var(--dm-label-text));
 	}
 
 	&__separator.base-separator {
 		flex-shrink: 0;
 		width: auto;
 		margin: sz(4px) sz(-4px);
+
+		.base-separator__line {
+			border-color: var(--dm-separator-border);
+		}
 	}
 }
+
+@include enter-pop(base-dropdown-menu-check, calc(var(--rise-motion-scale-from) * 0.5));

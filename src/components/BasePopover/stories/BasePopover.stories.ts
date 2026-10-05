@@ -27,3 +27,5 @@ export const WithForm = cases.WithForm
 export const NestedList = cases.NestedList
 export const Keyboard = cases.Keyboard
 export const TextTrigger = cases.TextTrigger
+export const Theming = cases.Theming
+export const Animations = cases.Animations

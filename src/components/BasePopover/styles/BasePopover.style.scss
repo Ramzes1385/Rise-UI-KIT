@@ -14,13 +14,14 @@
 	&__panel.base-dropdown__panel {
 		display: flex;
 		flex-direction: column;
-		max-width: sz(320px);
+		max-width: sz(ct(popover-panel, width, 320px));
 		overflow: visible;
 	}
 
 	&__inner {
 		min-height: 0;
-		padding: sz(12px) sz(16px);
+		padding: space(ct(popover-inner, padding-y, 12px) ct(popover-inner, padding-x, 16px));
+		font-size: sz(ct(popover-inner, font-size, var(--rise-font-size-sm)));
 		overflow: hidden auto;
 		overflow-wrap: anywhere;
 		@include scrollbar-thin;

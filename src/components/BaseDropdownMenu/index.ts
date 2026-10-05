@@ -1,7 +1,8 @@
-export { DROPDOWN_MENU_VARIANTS } from './types/BaseDropdownMenu.types'
+export { DROPDOWN_MENU_PARTS, DROPDOWN_MENU_VARIANTS } from './types/BaseDropdownMenu.types'
 export type {
 	BaseDropdownMenuEmits,
 	BaseDropdownMenuExpose,
+	BaseDropdownMenuPart,
 	BaseDropdownMenuProps,
 	BaseDropdownMenuSlots,
 	DropdownMenuItem,

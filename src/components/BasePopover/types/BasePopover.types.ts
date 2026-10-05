@@ -1,3 +1,5 @@
+import type { UiProp } from '@composables/base/useUi'
+import type { EnterAnimation } from '@composables/app/useMotion'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
@@ -10,6 +12,11 @@ export const POPOVER_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'
 
 export type PopoverVariant = (typeof POPOVER_VARIANTS)[number]
 
+/** Части для пропа `ui`: root — обёртка, trigger — обёртка триггера, panel — панель, inner — содержимое, arrow — стрелка */
+export const POPOVER_PARTS = ['root', 'trigger', 'panel', 'inner', 'arrow'] as const
+
+export type BasePopoverPart = (typeof POPOVER_PARTS)[number]
+
 export type PopoverPosition = 'top' | 'bottom' | 'left' | 'right'
 
 export interface BasePopoverProps extends BaseComponentProps<PopoverVariant, 'root' | 'trigger' | 'arrow' | 'inner' | 'panel'> {
@@ -19,6 +26,18 @@ export interface BasePopoverProps extends BaseComponentProps<PopoverVariant, 'ro
 	position?: PopoverPosition
 	/** Предел высоты панели (CSS-длина): содержимое выше прокручивается. По умолчанию `320px`, как у BaseDropdown */
 	maxHeight?: string
+	/**
+	 * Появление и уход: `scale` (по умолчанию) — масштаб от стрелки, `fade` — прозрачность, `slide` — сдвиг от триггера,
+	 * `pop` — масштаб с пружиной, `none` — сразу. Глобально — `defaults.BasePopover.animation`
+	 */
+	animation?: EnterAnimation
+	/**
+	 * Классы частей: добавляются к БЭМ-классам кита, глобальные — `defaults.BasePopover.ui`.
+	 *
+	 * @example
+	 * <BasePopover :ui="{ panel: 'max-w-md', inner: 'p-6' }" />
+	 */
+	ui?: UiProp<BasePopoverPart>
 }
 
 export interface BasePopoverEmits {

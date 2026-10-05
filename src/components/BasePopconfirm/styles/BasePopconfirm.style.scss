@@ -10,11 +10,11 @@
 .base-popconfirm {
 	display: flex;
 	flex-direction: column;
-	gap: sz(8px);
+	gap: sz(ct(popconfirm, gap, 8px));
 	box-sizing: border-box;
 	width: max-content;
-	max-width: sz(300px);
-	padding: sz(8px);
+	max-width: sz(ct(popconfirm, width, 300px));
+	padding: space(ct(popconfirm, padding, 8px));
 
 	&__header {
 		display: flex;
@@ -25,21 +25,21 @@
 	&__icon {
 		flex-shrink: 0;
 		margin-top: sz(2px);
-		color: var(--rise-error);
+		color: ct(popconfirm-icon, text, var(--rise-error));
 	}
 
 	&__title {
 		margin: 0;
 		@include text-size(sm);
-		font-weight: var(--rise-font-weight-semibold);
-		color: var(--rise-text-highlighted);
+		font-weight: ct(popconfirm-title, font-weight, var(--rise-font-weight-semibold));
+		color: ct(popconfirm-title, text, var(--rise-text-highlighted));
 		overflow-wrap: anywhere;
 	}
 
 	&__description {
 		margin: 0;
 		@include text-size(sm);
-		color: var(--rise-text-muted);
+		color: ct(popconfirm-description, text, var(--rise-text-muted));
 		overflow-wrap: anywhere;
 	}
 

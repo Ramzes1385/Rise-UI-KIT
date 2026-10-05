@@ -5,16 +5,12 @@
 		:variant="variant"
 		:color="color"
 		:size-scale="sizeScale"
+		:animation="animation"
 		:prevent-mousedown="false"
-		panel-class="base-dropdown-menu__panel"
+		:panel-class="ui('panel')"
 		:custom-class="{ root: rootClass, panel: classes.panel }"
 		@update:is-open="setOpen">
-		<span
-			ref="triggerRef"
-			class="base-dropdown-menu__trigger"
-			:class="classes.trigger"
-			@click="handleTriggerClick"
-			@keydown="handleTriggerKeydown">
+		<span ref="triggerRef" :class="[ui('trigger'), classes.trigger]" @click="handleTriggerClick" @keydown="handleTriggerKeydown">
 			<slot :is-open="isOpenState" :trigger-props="triggerAttributes" />
 		</span>
 
@@ -28,6 +24,8 @@
 				:variant="variant"
 				:size-scale="sizeScale"
 				:classes="classes"
+				:ui="ui"
+				:animation="animation"
 				@select="handleSelect" />
 		</template>
 	</BaseDropdown>
@@ -51,6 +49,7 @@ const props = withDefaults(
 		position: 'bottom-start',
 		variant: DEFAULT_VARIANT,
 		sizeScale: SIZE_SCALE_DEFAULT,
+		animation: 'scale',
 	}),
 )
 const emit = defineEmits<BaseDropdownMenuEmits>()
@@ -70,6 +69,7 @@ const {
 	handleTriggerKeydown,
 	handleSelect,
 	exposed,
+	ui,
 } = useBaseDropdownMenu(props, emit)
 
 defineExpose(exposed)

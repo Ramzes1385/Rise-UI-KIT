@@ -6,10 +6,11 @@
 		:variant="variant"
 		:color="color"
 		:size-scale="sizeScale"
+		:animation="animation"
 		:prevent-mousedown="false"
 		:show-arrow="hasArrow"
-		panel-class="base-popconfirm__panel"
-		:custom-class="{ root: rootClass, panel: classes.panel, arrow: classes.arrow }"
+		:panel-class="ui('panel')"
+		:custom-class="{ root: rootClass, panel: classes.panel, arrow: arrowClass }"
 		@update:is-open="handleDropdownUpdate">
 		<span ref="triggerRef" class="base-popconfirm-trigger" :class="classes.trigger" @click="toggle" @keydown="handleTriggerKeydown">
 			<slot :is-open="isOpenState" :trigger-props="triggerAttributes" />
@@ -19,19 +20,19 @@
 			<div
 				:id="dialogId"
 				ref="dialogRef"
-				class="base-popconfirm"
+				:class="ui('root')"
 				role="alertdialog"
 				:aria-labelledby="titleId"
 				:aria-describedby="description ? descriptionId : undefined"
 				@keydown="handleKeydown">
-				<div class="base-popconfirm__header">
-					<BaseIcon v-if="isDanger" class="base-popconfirm__icon" name="alert-triangle" :size-scale="iconScale" />
-					<p :id="titleId" class="base-popconfirm__title" :class="classes.title">{{ title }}</p>
+				<div :class="ui('header')">
+					<BaseIcon v-if="isDanger" :class="ui('icon')" name="alert-triangle" :size-scale="iconScale" />
+					<p :id="titleId" :class="[ui('title'), classes.title]">{{ title }}</p>
 				</div>
-				<p v-if="description" :id="descriptionId" class="base-popconfirm__description" :class="classes.description">
+				<p v-if="description" :id="descriptionId" :class="[ui('description'), classes.description]">
 					{{ description }}
 				</p>
-				<div class="base-popconfirm__actions">
+				<div :class="ui('actions')">
 					<BaseButton
 						variant="outline"
 						:size-scale="buttonScale"
@@ -76,6 +77,7 @@ const props = withDefaults(
 		showArrow: true,
 		variant: DEFAULT_VARIANT,
 		sizeScale: SIZE_SCALE_DEFAULT,
+		animation: 'scale',
 	}),
 )
 const emit = defineEmits<BasePopconfirmEmits>()
@@ -100,5 +102,7 @@ const {
 	handleTriggerKeydown,
 	handleDropdownUpdate,
 	handleKeydown,
+	ui,
+	arrowClass,
 } = useBasePopconfirm(props, emit)
 </script>

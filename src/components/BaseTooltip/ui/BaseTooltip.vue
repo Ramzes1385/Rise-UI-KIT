@@ -1,8 +1,7 @@
 <template>
 	<span
 		ref="wrapperRef"
-		class="base-tooltip"
-		:class="classes.root"
+		:class="[ui('root'), classes.root]"
 		@mouseenter="handleEnter"
 		@mouseleave="handleLeave"
 		@focusin="handleEnter"
@@ -15,14 +14,13 @@
 					v-if="isShown"
 					:id="tooltipId"
 					ref="popupRef"
-					class="base-tooltip-popup"
-					:class="[`base-tooltip-popup--${placement}`, variantClass, classes.tooltip]"
+					:class="[ui('popup'), `base-tooltip-popup--${placement}`, animationClass, variantClass, classes.tooltip]"
 					:style="[tooltipStyle, sizeScaleStyle, variantStyle, customColorStyle]"
 					v-bind="inheritedTheme"
 					role="tooltip"
 					@mouseenter="cancelHide"
 					@mouseleave="handleLeave">
-					<BaseText tag="span" :custom-class="classes.text">{{ text }}</BaseText>
+					<BaseText tag="span" :class="ui('text')" :custom-class="classes.text">{{ text }}</BaseText>
 				</div>
 			</Transition>
 		</Teleport>
@@ -44,6 +42,7 @@ const props = withDefaults(
 		position: 'top',
 		isAlwaysVisible: false,
 		sizeScale: SIZE_SCALE_DEFAULT,
+		animation: 'fade',
 	}),
 )
 defineSlots<BaseTooltipSlots>()
@@ -66,5 +65,7 @@ const {
 	handleEnter,
 	handleLeave,
 	cancelHide,
+	ui,
+	animationClass,
 } = useBaseTooltip(props)
 </script>

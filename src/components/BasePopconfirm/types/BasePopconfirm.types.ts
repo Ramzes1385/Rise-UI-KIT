@@ -1,8 +1,19 @@
+import type { UiProp } from '@composables/base/useUi'
+import type { EnterAnimation } from '@composables/app/useMotion'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /** Варианты панели — те же, что у BaseDropdown и BasePopover */
 export const POPCONFIRM_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
+
+/**
+ * Части для пропа `ui`: root — сам вопрос (`.base-popconfirm`, `role="alertdialog"`), panel — панель, arrow — стрелка,
+ * header — строка со значком и вопросом, icon — значок предупреждения, title — вопрос, description — пояснение,
+ * actions — кнопки
+ */
+export const POPCONFIRM_PARTS = ['root', 'panel', 'arrow', 'header', 'icon', 'title', 'description', 'actions'] as const
+
+export type BasePopconfirmPart = (typeof POPCONFIRM_PARTS)[number]
 
 /** Сторона от кнопки; у края окна панель переворачивается и сдвигается */
 export type PopconfirmPosition = 'top' | 'bottom' | 'left' | 'right'
@@ -34,6 +45,18 @@ export interface BasePopconfirmProps extends BaseComponentProps<
 	 * у варианта `ghost` стрелки нет, как у BasePopover
 	 */
 	showArrow?: boolean
+	/**
+	 * Появление и уход: `scale` (по умолчанию) — масштаб от стрелки, `fade` — прозрачность, `slide` — сдвиг от кнопки,
+	 * `pop` — масштаб с пружиной, `none` — сразу. Глобально — `defaults.BasePopconfirm.animation`
+	 */
+	animation?: EnterAnimation
+	/**
+	 * Классы частей: добавляются к БЭМ-классам кита, глобальные — `defaults.BasePopconfirm.ui`.
+	 *
+	 * @example
+	 * <BasePopconfirm title="Удалить?" :ui="{ root: 'max-w-xs', actions: 'justify-start' }" />
+	 */
+	ui?: UiProp<BasePopconfirmPart>
 }
 
 export interface BasePopconfirmEmits {

@@ -1,4 +1,5 @@
 import type { ComputedRef, Ref } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import { computed, nextTick, ref, useId, watch } from 'vue'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import type DropdownMenuContent from '../ui/DropdownMenuContent.vue'
@@ -79,10 +80,12 @@ export function useBaseDropdownMenu(props: BaseDropdownMenuProps, emit: BaseDrop
 	const isOpenState = computed(() => isOpenLocal.value)
 	const trigger = useMenuTrigger(isOpenState, menuId)
 	useMenuFocus(isOpenLocal, contentRef, getPendingFocus)
+	const ui = useUi(props, 'base-dropdown-menu')
 
 	return {
 		classes,
-		rootClass: computed((): string => ['base-dropdown-menu', classes.value.root].filter(Boolean).join(' ')),
+		ui,
+		rootClass: computed((): string => [ui('root'), classes.value.root].filter(Boolean).join(' ')),
 		menuId,
 		contentRef,
 		isOpenState,

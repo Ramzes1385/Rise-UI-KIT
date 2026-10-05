@@ -1,5 +1,7 @@
 import type { Ref } from 'vue'
+import type { UiProp } from '@composables/base/useUi'
 import type { PaddingProp } from '@composables/base/usePadding'
+import type { EnterAnimation } from '@composables/app/useMotion'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
@@ -9,6 +11,11 @@ import type { BaseComponentProps } from '@composables/base/useBaseComponent'
  * soft — мягкий нейтральный фон без рамки; ghost — без фона, рамки и тени (оформление даёт содержимое).
  */
 export const DROPDOWN_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
+
+/** Части для пропа `ui`: root — обёртка с триггером, panel — панель (телепортирована в body), arrow — стрелка панели */
+export const DROPDOWN_PARTS = ['root', 'panel', 'arrow'] as const
+
+export type BaseDropdownPart = (typeof DROPDOWN_PARTS)[number]
 
 export type DropdownPosition =
 	| 'bottom-start'
@@ -61,6 +68,21 @@ export interface BaseDropdownProps extends BaseComponentProps<(typeof DROPDOWN_V
 	 * По умолчанию — из стилей: 4px со всех сторон (пункты меню почти касаются краёв панели, как в меню Nuxt UI).
 	 */
 	padding?: PaddingProp
+	/**
+	 * Появление и уход панели: `scale` (по умолчанию) — масштаб от угла у триггера (`--rise-motion-scale-from`),
+	 * `fade` — только прозрачность, `slide` — сдвиг от триггера на `--rise-motion-distance` (сторона — фактическая,
+	 * после переворота), `pop` — масштаб с пружиной, `none` — сразу. Длительности — токены и пресет `data-rise-motion`
+	 * области триггера; при «уменьшить движение» — сразу. Глобально — `defaults.BaseDropdown.animation`
+	 */
+	animation?: EnterAnimation
+	/**
+	 * Классы частей: добавляются к БЭМ-классам кита (`base-dropdown`, `base-dropdown__panel`, `base-dropdown__arrow`),
+	 * глобальные — `defaults.BaseDropdown.ui`.
+	 *
+	 * @example
+	 * <BaseDropdown :ui="{ panel: 'rounded-xl shadow-2xl' }" />
+	 */
+	ui?: UiProp<BaseDropdownPart>
 }
 
 export interface BaseDropdownEmits {

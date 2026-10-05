@@ -1,9 +1,11 @@
 import type { ComputedRef, Ref } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import { getFixedOrigin } from '@utils/dom/domUtils'
+import type { UiClassFn } from '@composables/base/useUi'
 import type { TooltipLayout } from '@utils/dom/tooltipUtils'
-import type { TooltipProps } from '../types/BaseTooltip.types'
 import { useEscapeKey } from '@composables/overlay/useEscapeKey'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import type { BaseTooltipPart, TooltipProps } from '../types/BaseTooltip.types'
 import { useTriggerAttributes } from '@composables/overlay/useTriggerAttributes'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import { useInheritedThemeAttrs, useTeleportTarget } from '@composables/app/useTeleportTarget'
@@ -40,9 +42,8 @@ function useTooltipPosition(props: TooltipProps, wrapperRef: Ref<HTMLElement | n
 			}
 		}),
 		updateCoords(): void {
-			if (!wrapperRef.value) return
-			const { top, left, width, height } = wrapperRef.value.getBoundingClientRect()
 			const current = coords.value
+			const { top, left, width, height } = wrapperRef.value?.getBoundingClientRect() ?? current
 			if (current.top !== top || current.left !== left || current.width !== width || current.height !== height) {
 				coords.value = { top, left, width, height }
 			}
@@ -58,23 +59,25 @@ function useTooltipPosition(props: TooltipProps, wrapperRef: Ref<HTMLElement | n
 	}
 }
 
+function hasAnimationFrame(): boolean {
+	return typeof requestAnimationFrame === 'function' && typeof cancelAnimationFrame === 'function'
+}
+
 function createUpdateLoop(isVisible: Ref<boolean>, onFrame: () => void) {
 	let rafId: number | null = null
 	const tick = (): void => {
 		onFrame()
-		if (isVisible.value) {
+		if (isVisible.value && hasAnimationFrame()) {
 			rafId = requestAnimationFrame(tick)
 		}
 	}
 	return {
 		start(): void {
-			rafId = requestAnimationFrame(tick)
+			if (hasAnimationFrame()) rafId = requestAnimationFrame(tick)
 		},
 		stop(): void {
-			if (rafId !== null) {
-				cancelAnimationFrame(rafId)
-				rafId = null
-			}
+			if (rafId !== null && hasAnimationFrame()) cancelAnimationFrame(rafId)
+			rafId = null
 		},
 	}
 }
@@ -170,6 +173,11 @@ function useMeasureOnShow(isShown: ComputedRef<boolean>, measurePopup: () => voi
 	})
 }
 
+function useTooltipUi(props: TooltipProps): UiClassFn<BaseTooltipPart> {
+	const ui = useUi(props, 'base-tooltip')
+	return part => (part === 'popup' ? ui(part).replace('base-tooltip__popup', 'base-tooltip-popup') : ui(part))
+}
+
 export function useBaseTooltip(props: TooltipProps) {
 	const teleportTarget = useTeleportTarget()
 	const standard = useStandardBaseComponent('base-tooltip-popup', props, ['root', 'tooltip', 'text'])
@@ -195,6 +203,8 @@ export function useBaseTooltip(props: TooltipProps) {
 		inheritedTheme,
 		tooltipId,
 		triggerAttributes,
+		ui: useTooltipUi(props),
+		animationClass: computed(() => `base-tooltip-popup--animation-${props.animation ?? 'fade'}`),
 		placement: position.placement,
 		tooltipStyle: position.tooltipStyle,
 		...useTooltipVisibility(props, isVisible, position),

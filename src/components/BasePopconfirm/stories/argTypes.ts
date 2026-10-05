@@ -1,5 +1,6 @@
 import type { Meta } from '@storybook/vue3-vite'
 import type BasePopconfirm from '../ui/BasePopconfirm.vue'
+import { ENTER_ANIMATIONS } from '@composables/app/useMotion'
 import { POPCONFIRM_VARIANTS } from '../types/BasePopconfirm.types'
 import { baseArgTypes, propGroup, ARG_GROUP } from '@/stories/helpers'
 
@@ -13,5 +14,7 @@ export const argTypes = {
 	showArrow: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
 	isDanger: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 	isOpen: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+	animation: { control: 'inline-radio', options: ENTER_ANIMATIONS, table: propGroup(ARG_GROUP.appearance) },
+	ui: { control: false },
 	default: { control: false },
 } satisfies Meta<typeof BasePopconfirm>['argTypes']

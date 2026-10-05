@@ -2,23 +2,25 @@
 	position: relative;
 
 	&__panel {
-		--dd-pad-top: 4px;
-		--dd-pad-right: 4px;
-		--dd-pad-bottom: 4px;
-		--dd-pad-left: 4px;
-		@include custom-bg(--dd-bg, var(--rise-bg));
-		--dd-border: var(--rise-border);
+		--dd-pad-top: #{ct(dropdown-panel, padding, 4px)};
+		--dd-pad-right: #{ct(dropdown-panel, padding, 4px)};
+		--dd-pad-bottom: #{ct(dropdown-panel, padding, 4px)};
+		--dd-pad-left: #{ct(dropdown-panel, padding, 4px)};
+		@include custom-bg(--dd-bg, ct(dropdown-panel, bg, var(--rise-bg)));
+		--dd-border: #{ct(dropdown-panel, border, var(--rise-border))};
 
 		position: fixed;
 		z-index: calc(var(--rise-z-overlay) + var(--rise-layer-index, 0));
 		box-sizing: border-box;
-		min-width: sz(128px);
-		padding: sz(var(--dd-pad-top)) sz(var(--dd-pad-right)) sz(var(--dd-pad-bottom)) sz(var(--dd-pad-left));
+		min-width: sz(ct(dropdown-panel, width, 128px));
+		padding: space(var(--dd-pad-top) var(--dd-pad-right) var(--dd-pad-bottom) var(--dd-pad-left));
 		overflow-y: auto;
 		@include floating-surface;
 		border-color: var(--dd-border);
+		border-radius: sz(ct(dropdown-panel, radius, var(--rise-radius-md)));
 		background-color: var(--dd-bg);
-		@include custom-text(color, var(--rise-text));
+		@include custom-text(color, ct(dropdown-panel, text, var(--rise-text)));
+		box-shadow: ct(dropdown-panel, shadow, var(--rise-shadow-lg));
 		@include text-size(sm);
 		@include scrollbar-thin;
 
@@ -52,6 +54,22 @@
 
 		&--arrow {
 			overflow: visible;
+		}
+
+		&--side-bottom {
+			--overlay-slide: 0 calc(var(--rise-motion-distance) * -1);
+		}
+
+		&--side-top {
+			--overlay-slide: 0 var(--rise-motion-distance);
+		}
+
+		&--side-left {
+			--overlay-slide: var(--rise-motion-distance) 0;
+		}
+
+		&--side-right {
+			--overlay-slide: calc(var(--rise-motion-distance) * -1) 0;
 		}
 	}
 
@@ -98,15 +116,4 @@
 	}
 }
 
-.base-dropdown-enter-active,
-.base-dropdown-leave-active {
-	transition-property: opacity, transform;
-	transition-duration: var(--rise-duration-fast);
-	transition-timing-function: var(--rise-ease-out);
-}
-
-.base-dropdown-enter-from,
-.base-dropdown-leave-to {
-	opacity: 0;
-	transform: scale(0.95);
-}
+@include overlay-animation(base-dropdown, '.base-dropdown__panel', null, var(--rise-duration-fast), var(--rise-duration-fast));

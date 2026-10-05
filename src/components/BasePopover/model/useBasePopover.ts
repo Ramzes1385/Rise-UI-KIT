@@ -1,3 +1,4 @@
+import { useUi } from '@composables/base/useUi'
 import { computed, ref, useId, watch } from 'vue'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import type { BasePopoverEmits, PopoverProps } from '../types/BasePopover.types'
@@ -32,6 +33,7 @@ function usePopoverOpen(props: PopoverProps, emit: BasePopoverEmits) {
 export function useBasePopover(props: PopoverProps, emit: BasePopoverEmits) {
 	const { classes } = useCustomClass({ getClass: () => props.customClass, elementKeys: ['root', 'trigger', 'arrow', 'inner', 'panel'] })
 	const open = usePopoverOpen(props, emit)
+	const ui = useUi(props, 'base-popover')
 	const triggerRef = ref<HTMLElement | null>(null)
 	const panelId = `rise-popover-${useId()}`
 	const triggerAttributes = computed(() => ({
@@ -48,6 +50,7 @@ export function useBasePopover(props: PopoverProps, emit: BasePopoverEmits) {
 	return {
 		...open,
 		classes,
+		ui,
 		triggerRef,
 		panelId,
 		triggerAttributes,
@@ -57,8 +60,8 @@ export function useBasePopover(props: PopoverProps, emit: BasePopoverEmits) {
 			event.preventDefault()
 			if (!event.repeat) open.toggle()
 		},
-		rootClass: computed(() => ['base-popover', classes.value.root].filter(Boolean).join(' ')),
-		arrowClass: computed(() => ['base-popover__arrow', classes.value.arrow].filter(Boolean).join(' ')),
-		panelClasses: computed(() => `base-popover__panel base-popover__panel--${props.variant}`),
+		rootClass: computed(() => [ui('root'), classes.value.root].filter(Boolean).join(' ')),
+		arrowClass: computed(() => [ui('arrow'), classes.value.arrow].filter(Boolean).join(' ')),
+		panelClasses: computed(() => `${ui('panel')} base-popover__panel--${props.variant}`),
 	}
 }

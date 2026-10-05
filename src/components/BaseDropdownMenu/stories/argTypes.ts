@@ -1,4 +1,5 @@
 import type { Meta } from '@storybook/vue3-vite'
+import { ENTER_ANIMATIONS } from '@composables/app/useMotion'
 import type BaseDropdownMenu from '../ui/BaseDropdownMenu.vue'
 import { baseArgTypes, propGroup, ARG_GROUP } from '@/stories/helpers'
 import { DROPDOWN_MENU_VARIANTS } from '../types/BaseDropdownMenu.types'
@@ -14,5 +15,7 @@ export const argTypes = {
 	isOpen: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 	ariaLabel: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	closeOnCheck: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+	animation: { control: 'inline-radio', options: ENTER_ANIMATIONS, table: propGroup(ARG_GROUP.appearance) },
+	ui: { control: false },
 	default: { control: false },
 } satisfies Meta<typeof BaseDropdownMenu>['argTypes']

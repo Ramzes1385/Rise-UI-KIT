@@ -1,5 +1,6 @@
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseDropdown from '../ui/BaseDropdown.vue'
+import { ENTER_ANIMATIONS } from '@composables/app/useMotion'
 import { DROPDOWN_VARIANTS } from '../types/BaseDropdown.types'
 import type { DropdownPosition } from '../types/BaseDropdown.types'
 import { baseArgTypes, propGroup, ARG_GROUP } from '@/stories/helpers'
@@ -31,6 +32,8 @@ export const argTypes = {
 	closeOnEscape: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	trapFocus: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	preventMousedown: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+	animation: { control: 'inline-radio', options: ENTER_ANIMATIONS, table: propGroup(ARG_GROUP.appearance) },
+	ui: { control: false },
 	default: { control: false },
 	dropdown: { control: false },
 } satisfies Meta<typeof BaseDropdown>['argTypes']

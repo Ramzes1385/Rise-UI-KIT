@@ -1,5 +1,10 @@
+import type { UiClassFn } from '@composables/base/useUi'
+import type { EnterAnimation } from '@composables/app/useMotion'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { DropdownMenuItem, DropdownMenuItems, DropdownMenuVariant } from './BaseDropdownMenu.types'
+
+/** Части списка меню, которые получают классы `ui` от меню (и панели подменю) */
+export type DropdownMenuContentPart = 'panel' | 'content' | 'group' | 'item' | 'label' | 'separator' | 'shortcut' | 'icon'
 
 export interface DropdownMenuContentProps {
 	items: DropdownMenuItems
@@ -15,6 +20,10 @@ export interface DropdownMenuContentProps {
 	classes?: Partial<Record<'panel' | 'item' | 'label' | 'separator', string>>
 	/** Уровень вложенности: 0 — меню, 1 и глубже — подменю */
 	level?: number
+	/** Классы частей (`ui` меню): БЭМ-класс кита и классы приложения */
+	ui: UiClassFn<DropdownMenuContentPart>
+	/** Появление и уход подменю */
+	animation?: EnterAnimation
 }
 
 export interface DropdownMenuContentEmits {

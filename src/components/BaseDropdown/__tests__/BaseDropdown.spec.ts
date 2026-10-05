@@ -40,6 +40,7 @@ vi.mock('@composables/overlay/useDropdownPosition', () => ({
 			arrowStyle: { value: { '--dd-arrow-offset': '30px' } },
 			triggerWidth: { value: 0 },
 			coords: { value: { top: 0, left: 0 } },
+			placement: { value: 'bottom-start' },
 			updatePosition: vi.fn(),
 		}
 	},

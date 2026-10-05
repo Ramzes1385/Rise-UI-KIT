@@ -11,15 +11,16 @@
 		:panel-class="panelClasses"
 		:padding="0"
 		:size-scale="sizeScale"
+		:animation="animation"
 		:show-arrow="variant !== 'ghost'"
 		:custom-class="{ root: rootClass, panel: classes.panel, arrow: arrowClass }"
 		@close="handleClose">
-		<div ref="triggerRef" class="base-popover__trigger" :class="classes.trigger" @click="toggle" @keydown="handleTriggerKeydown">
+		<div ref="triggerRef" :class="[ui('trigger'), classes.trigger]" @click="toggle" @keydown="handleTriggerKeydown">
 			<slot name="trigger" :is-open="isOpenLocal" :trigger-props="triggerAttributes" />
 		</div>
 
 		<template #dropdown>
-			<div :id="panelId" class="base-popover__inner" :class="classes.inner" role="dialog" :aria-labelledby="triggerId">
+			<div :id="panelId" :class="[ui('inner'), classes.inner]" role="dialog" :aria-labelledby="triggerId">
 				<slot />
 			</div>
 		</template>
@@ -42,6 +43,7 @@ const props = withDefaults(
 		maxHeight: '320px',
 		variant: DEFAULT_VARIANT,
 		sizeScale: SIZE_SCALE_DEFAULT,
+		animation: 'scale',
 	}),
 )
 
@@ -61,5 +63,6 @@ const {
 	rootClass,
 	panelClasses,
 	arrowClass,
+	ui,
 } = useBasePopover(props, emit)
 </script>

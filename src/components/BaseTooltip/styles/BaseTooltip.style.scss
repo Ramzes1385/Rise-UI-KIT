@@ -4,21 +4,25 @@
 }
 
 .base-tooltip-popup {
-	@include custom-bg(--tooltip-bg, var(--rise-bg-inverted));
+	@include custom-bg(--tooltip-bg, ct(tooltip, bg, var(--rise-bg-inverted)));
 	--tooltip-border: transparent;
 	--tooltip-offset: #{sz(2px)};
+	--tooltip-shadow: #{ct(tooltip, shadow, 0 0 transparent)};
 
 	position: fixed;
 	z-index: var(--rise-z-tooltip);
 	display: flex;
 	box-sizing: border-box;
-	max-width: sz(280px);
-	padding: sz(4px) sz(8px);
-	border-radius: sz(var(--rise-radius-sm));
+	max-width: sz(ct(tooltip, width, 280px));
+	padding: space(ct(tooltip, padding-y, 4px) ct(tooltip, padding-x, 8px));
+	border-radius: sz(ct(tooltip, radius, var(--rise-radius-sm)));
 	background-color: var(--tooltip-bg);
-	box-shadow: inset 0 0 0 1px var(--tooltip-border);
-	@include custom-text(color, var(--rise-text-inverted));
-	@include text-size(xs);
+	box-shadow:
+		inset 0 0 0 1px var(--tooltip-border),
+		var(--tooltip-shadow);
+	@include custom-text(color, ct(tooltip, text, var(--rise-text-inverted)));
+	font-size: sz(ct(tooltip, font-size, var(--rise-font-size-xs)));
+	line-height: sz(var(--rise-line-height-xs));
 	white-space: pre-wrap;
 	overflow-wrap: break-word;
 
@@ -40,7 +44,10 @@
 	}
 
 	&--top {
-		translate: -50% calc(-100% - var(--tooltip-offset));
+		--overlay-slide: 0 var(--rise-motion-distance);
+
+		transform: translate(-50%, calc(-100% - var(--tooltip-offset)));
+		transform-origin: var(--tooltip-arrow-offset, 0) calc(var(--tooltip-offset) * -1);
 
 		&::after {
 			top: 100%;
@@ -52,7 +59,10 @@
 	}
 
 	&--bottom {
-		translate: -50% var(--tooltip-offset);
+		--overlay-slide: 0 calc(var(--rise-motion-distance) * -1);
+
+		transform: translate(-50%, var(--tooltip-offset));
+		transform-origin: var(--tooltip-arrow-offset, 0) var(--tooltip-offset);
 
 		&::after {
 			bottom: 100%;
@@ -64,7 +74,10 @@
 	}
 
 	&--left {
-		translate: calc(-100% - var(--tooltip-offset)) -50%;
+		--overlay-slide: var(--rise-motion-distance) 0;
+
+		transform: translate(calc(-100% - var(--tooltip-offset)), -50%);
+		transform-origin: calc(var(--tooltip-offset) * -1) var(--tooltip-arrow-offset, 0);
 
 		&::after {
 			top: calc(50% + var(--tooltip-arrow-offset, 0px));
@@ -76,7 +89,10 @@
 	}
 
 	&--right {
-		translate: var(--tooltip-offset) -50%;
+		--overlay-slide: calc(var(--rise-motion-distance) * -1) 0;
+
+		transform: translate(var(--tooltip-offset), -50%);
+		transform-origin: var(--tooltip-offset) var(--tooltip-arrow-offset, 0);
 
 		&::after {
 			top: calc(50% + var(--tooltip-arrow-offset, 0px));
@@ -105,10 +121,9 @@
 		@include custom-bg(--tooltip-bg, var(--rise-bg));
 		--tooltip-border: var(--rise-border);
 
+		--tooltip-shadow: #{ct(tooltip, shadow, var(--rise-shadow-md))};
+
 		@include custom-text(color, var(--rise-text));
-		box-shadow:
-			inset 0 0 0 1px var(--tooltip-border),
-			var(--rise-shadow-md);
 	}
 
 	&--ghost {
@@ -121,14 +136,4 @@
 	}
 }
 
-.base-tooltip-enter-active,
-.base-tooltip-leave-active {
-	transition-property: opacity;
-	transition-duration: var(--rise-duration-fast);
-	transition-timing-function: var(--rise-ease-out);
-}
-
-.base-tooltip-enter-from,
-.base-tooltip-leave-to {
-	opacity: 0;
-}
+@include overlay-animation(base-tooltip, '.base-tooltip-popup', null, var(--rise-duration-fast));

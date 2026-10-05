@@ -1,9 +1,11 @@
 import { computed, nextTick, ref } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import { getFixedOrigin } from '@utils/dom/domUtils'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import type DropdownMenuContent from '@components/BaseDropdownMenu/ui/DropdownMenuContent.vue'
 import type { BaseContextMenuEmits, BaseContextMenuProps } from '../types/BaseContextMenu.types'
 import type { DropdownMenuItem } from '@components/BaseDropdownMenu/types/BaseDropdownMenu.types'
+import type { DropdownMenuContentPart } from '@components/BaseDropdownMenu/types/DropdownMenuContent.types'
 
 function useMenuOpening(emit: BaseContextMenuEmits) {
 	const rootRef = ref<HTMLElement | null>(null)
@@ -39,10 +41,19 @@ function useMenuOpening(emit: BaseContextMenuEmits) {
 	}
 }
 
+function useMenuUi(props: BaseContextMenuProps) {
+	const ui = useUi(props, 'base-context-menu')
+	return {
+		ui,
+		menuUi: (part: DropdownMenuContentPart | 'root'): string => `base-dropdown-menu__${part} ${ui(part)}`,
+	}
+}
+
 export function useBaseContextMenu(props: BaseContextMenuProps, emit: BaseContextMenuEmits) {
 	const { rootRef, contentRef, isOpen, point, setOpen, openAt, restoreFocus } = useMenuOpening(emit)
 
 	return {
+		...useMenuUi(props),
 		...useCustomClass({ getClass: () => props.customClass, elementKeys: ['root', 'panel', 'item', 'label', 'separator'] }),
 		rootRef,
 		contentRef,

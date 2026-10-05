@@ -1,4 +1,5 @@
 import type { ComputedRef, Ref } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import { calcIconScale } from '@utils/media/iconUtils'
 import { computed, nextTick, ref, useId, watch } from 'vue'
 import { useCustomClass } from '@composables/base/useCustomClass'
@@ -31,8 +32,11 @@ function usePopconfirmView(props: PopconfirmProps) {
 		getClass: () => props.customClass,
 		elementKeys: ['root', 'trigger', 'panel', 'arrow', 'title', 'description', 'cancel', 'confirm'],
 	})
+	const ui = useUi(props, 'base-popconfirm')
 	return {
 		classes,
+		ui,
+		arrowClass: computed((): string => [ui('arrow'), classes.value.arrow].filter(Boolean).join(' ')),
 		dangerColor: DANGER_COLOR,
 		hasArrow: computed(() => props.showArrow !== false && props.variant !== 'ghost'),
 		rootClass: computed((): string => ['base-popconfirm-root', classes.value.root].filter(Boolean).join(' ')),

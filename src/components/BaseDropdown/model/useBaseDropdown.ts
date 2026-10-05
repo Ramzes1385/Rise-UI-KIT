@@ -1,5 +1,6 @@
 import { computed, ref, watch } from 'vue'
 import type { ComputedRef, Ref } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import { getActiveElement } from '@utils/dom/domUtils'
 import { usePadding } from '@composables/base/usePadding'
 import { useDropdownKeyboard } from './useDropdownKeyboard'
@@ -10,7 +11,7 @@ import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { useDropdownPosition } from '@composables/overlay/useDropdownPosition'
 import { useExplicitPropDetection } from '@composables/base/useExplicitPropDetection'
 import { useInheritedThemeAttrs, useTeleportTarget } from '@composables/app/useTeleportTarget'
-import type { BaseDropdownEmits, BaseDropdownExpose, DropdownProps } from '../types/BaseDropdown.types'
+import type { BaseDropdownEmits, BaseDropdownExpose, DropdownPosition, DropdownProps } from '../types/BaseDropdown.types'
 
 const TEXT_ENTRY_SELECTOR = 'input, textarea, select, [contenteditable]:not([contenteditable="false"])'
 
@@ -79,6 +80,14 @@ function useDropdownClose(
 	return handleClose
 }
 
+function usePanelView(props: DropdownProps, placement: Ref<DropdownPosition> | undefined) {
+	return {
+		ui: useUi(props, 'base-dropdown'),
+		animationClass: computed(() => `base-dropdown__panel--animation-${props.animation ?? 'scale'}`),
+		sideClass: computed(() => `base-dropdown__panel--side-${(placement?.value ?? props.position).split('-')[0]}`),
+	}
+}
+
 export function useBaseDropdown(props: DropdownProps, emit: BaseDropdownEmits) {
 	const teleportTarget = useTeleportTarget()
 	const { closeOnEscape, preventMousedown } = useExplicitFlags(props)
@@ -92,12 +101,13 @@ export function useBaseDropdown(props: DropdownProps, emit: BaseDropdownEmits) {
 	const layerStyle = useLayerIndex(() => props.isOpen)
 	const dropdownRef = ref<HTMLElement | null>(null)
 	const savedActiveElement = useFocusReturn(props, dropdownRef)
-	const { panelStyle, arrow, arrowStyle, updatePosition } = usePanelPosition(props, wrapperRef, dropdownRef)
+	const { panelStyle, arrow, arrowStyle, placement, updatePosition } = usePanelPosition(props, wrapperRef, dropdownRef)
 	const handleClose = useDropdownClose(props, emit, { targets: [wrapperRef, dropdownRef], closeOnEscape })
 	const keyboard = useDropdownKeyboard(props, handleClose, { wrapperRef, dropdownRef, savedActiveElement })
 
 	return {
 		...standard,
+		...usePanelView(props, placement),
 		teleportTarget,
 		wrapperRef,
 		inheritedTheme,

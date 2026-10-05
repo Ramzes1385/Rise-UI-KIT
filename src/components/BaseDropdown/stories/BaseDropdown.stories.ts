@@ -29,3 +29,5 @@ export const WithField = cases.WithField
 export const Keyboard = cases.Keyboard
 export const DialogPanel = cases.DialogPanel
 export const TabFromPanel = cases.TabFromPanel
+export const Theming = cases.Theming
+export const Animations = cases.Animations

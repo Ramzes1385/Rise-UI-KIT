@@ -26,3 +26,5 @@ export const LongContent = cases.LongContent
 export const CheckboxesAndRadios = cases.CheckboxesAndRadios
 export const Submenu = cases.Submenu
 export const Keyboard = cases.Keyboard
+export const Theming = cases.Theming
+export const Animations = cases.Animations

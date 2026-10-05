@@ -1,3 +1,5 @@
+import type { UiProp } from '@composables/base/useUi'
+import type { EnterAnimation } from '@composables/app/useMotion'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import type { DropdownPosition } from '@components/BaseDropdown/types/BaseDropdown.types'
 
@@ -8,6 +10,26 @@ import type { DropdownPosition } from '@components/BaseDropdown/types/BaseDropdo
 export const DROPDOWN_MENU_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
 export type DropdownMenuVariant = (typeof DROPDOWN_MENU_VARIANTS)[number]
+
+/**
+ * Части меню для пропа `ui`: root — обёртка, trigger — обёртка кнопки, panel — панель (и панели подменю),
+ * content — список `role="menu"`, group — группа пунктов, item — пункт, label — подпись группы, separator — линия,
+ * shortcut — подпись сочетания клавиш, icon — иконка пункта
+ */
+export const DROPDOWN_MENU_PARTS = [
+	'root',
+	'trigger',
+	'panel',
+	'content',
+	'group',
+	'item',
+	'label',
+	'separator',
+	'shortcut',
+	'icon',
+] as const
+
+export type BaseDropdownMenuPart = (typeof DROPDOWN_MENU_PARTS)[number]
 
 /**
  * Тип пункта: `item` — действие или ссылка (по умолчанию); `checkbox` — флажок; `radio` — переключатель
@@ -64,6 +86,18 @@ export interface BaseDropdownMenuProps extends BaseComponentProps<
 	 * мышью можно отметить несколько). Для меню выбора одного значения: скорость, качество, серия
 	 */
 	closeOnCheck?: boolean
+	/**
+	 * Появление и уход меню и подменю: `scale` (по умолчанию) — масштаб от угла у кнопки, `fade` — прозрачность,
+	 * `slide` — сдвиг от кнопки, `pop` — масштаб с пружиной, `none` — сразу. Глобально — `defaults.BaseDropdownMenu.animation`
+	 */
+	animation?: EnterAnimation
+	/**
+	 * Классы частей меню: добавляются к БЭМ-классам кита, глобальные — `defaults.BaseDropdownMenu.ui`.
+	 *
+	 * @example
+	 * <BaseDropdownMenu :items="items" :ui="{ panel: 'min-w-60', item: 'gap-3' }" />
+	 */
+	ui?: UiProp<BaseDropdownMenuPart>
 }
 
 export interface BaseDropdownMenuEmits {

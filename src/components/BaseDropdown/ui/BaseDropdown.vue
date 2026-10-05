@@ -1,5 +1,5 @@
 <template>
-	<div ref="wrapperRef" class="base-dropdown" :class="classes.root">
+	<div ref="wrapperRef" :class="[ui('root'), classes.root]">
 		<slot />
 
 		<Teleport defer :to="teleportTarget">
@@ -7,14 +7,13 @@
 				<div
 					v-if="isOpen"
 					ref="dropdownRef"
-					class="base-dropdown__panel"
-					:class="[panelClass, variantClass, arrowPanelClass, classes.panel]"
+					:class="[ui('panel'), animationClass, sideClass, panelClass, variantClass, arrowPanelClass, classes.panel]"
 					:style="[panelStyle, paddingStyle, sizeScaleStyle, variantStyle, customColorStyle, layerStyle]"
 					v-bind="inheritedTheme"
 					@mousedown="handlePanelMousedown"
 					@focusin="handlePanelFocusin"
 					@keydown="handlePanelKeydown">
-					<span v-if="showArrow" class="base-dropdown__arrow" :class="classes.arrow" aria-hidden="true" />
+					<span v-if="showArrow" :class="[ui('arrow'), classes.arrow]" aria-hidden="true" />
 					<slot name="dropdown" />
 				</div>
 			</Transition>
@@ -43,6 +42,7 @@ const props = withDefaults(
 		showArrow: false,
 		trapFocus: false,
 		sizeScale: SIZE_SCALE_DEFAULT,
+		animation: 'scale',
 	}),
 )
 const emit = defineEmits<BaseDropdownEmits>()
@@ -66,6 +66,9 @@ const {
 	handlePanelFocusin,
 	handlePanelKeydown,
 	exposed,
+	ui,
+	animationClass,
+	sideClass,
 } = useBaseDropdown(props, emit)
 
 defineExpose<BaseDropdownExpose>(exposed)
