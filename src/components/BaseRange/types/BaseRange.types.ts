@@ -1,9 +1,35 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export const RANGE_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
 export type RangeVariant = (typeof RANGE_VARIANTS)[number]
+
+/**
+ * Части слайдера для пропа `ui` (корень — `root`): label — строка значений, label-min / label-value / label-max — её части,
+ * body — дорожка с шкалой, track-wrapper — область нажатия, track — дорожка, fill — заполнение, thumb-container — позиция
+ * ползунка, thumb — ползунок, thumb-dot — его точка, marks — шкала, mark — метка, mark-tick — деление, mark-text — подпись.
+ */
+export const RANGE_PARTS = [
+	'label',
+	'label-min',
+	'label-value',
+	'label-max',
+	'body',
+	'track-wrapper',
+	'track',
+	'fill',
+	'thumb-container',
+	'thumb',
+	'thumb-dot',
+	'marks',
+	'mark',
+	'mark-tick',
+	'mark-text',
+] as const
+
+export type BaseRangePart = (typeof RANGE_PARTS)[number]
 
 export const TICK_SIZES = ['major', 'minor', 'sub'] as const
 
@@ -65,6 +91,14 @@ export interface BaseRangeProps extends BaseComponentProps<
 	 * «Минимум»/«Максимум», «Точка N».
 	 */
 	ariaLabel?: string
+	/**
+	 * Классы частей слайдера (`root`, `track`, `fill`, `thumb`, `mark` и др. — см. `RANGE_PARTS`) — добавляются к классам кита.
+	 * Глобально — `defaults.BaseRange.ui` плагина, классы склеиваются.
+	 *
+	 * @example
+	 * <BaseRange v-model="volume" :ui="{ track: 'h-2', thumb: 'shadow-lg' }" />
+	 */
+	ui?: UiProp<BaseRangePart>
 }
 
 export interface ThumbSlotProps extends BaseComponentProps<RangeVariant, 'root'> {

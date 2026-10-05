@@ -1,7 +1,7 @@
 .base-range {
 	display: flex;
 	flex-direction: column;
-	gap: sz(8px);
+	gap: sz(ct(range, gap, 8px));
 	width: 100%;
 	user-select: none;
 
@@ -24,7 +24,7 @@
 	}
 
 	&__label &__label-value {
-		@include custom-text(color, var(--rise-text-highlighted));
+		@include custom-text(color, ct(range, label-value-text, var(--rise-text-highlighted)));
 		font-variant-numeric: tabular-nums;
 	}
 
@@ -41,6 +41,7 @@
 		width: 100%;
 		height: sz(20px);
 		cursor: pointer;
+		container-type: size;
 	}
 
 	&--disabled &__track-wrapper,
@@ -53,31 +54,44 @@
 		top: 50%;
 		box-sizing: border-box;
 		width: 100%;
-		height: sz(6px);
-		border-radius: var(--rise-radius-full);
-		background-color: var(--rise-bg-accented);
+		height: sz(ct(range, track-height, 6px));
+		border-radius: ct(range, track-radius, var(--rise-radius-full));
+		background-color: ct(range, track-bg, var(--rise-bg-accented));
 		transform: translateY(-50%);
 	}
 
 	&__fill {
 		position: absolute;
 		top: 0;
+		left: 0;
+		width: 100%;
 		height: 100%;
-		border-radius: var(--rise-radius-full);
-		@include custom-bg(background-color, var(--rise-primary));
+		border-radius: ct(range, track-radius, var(--rise-radius-full));
+		@include custom-bg(background-color, ct(range, fill-bg, var(--rise-primary)));
+		clip-path: inset(
+			0 calc(100% - var(--range-fill-end, 0%)) 0 var(--range-fill-start, 0%) round ct(range, track-radius, var(--rise-radius-full))
+		);
+		transition: clip-path var(--rise-duration-fast) var(--rise-ease-out);
 	}
 
 	&__thumb-container {
 		position: absolute;
 		top: 50%;
+		left: 0;
 		z-index: 1;
 		display: flex;
 		cursor: grab;
-		transform: translate(-50%, -50%);
+		transform: translate(calc(var(--range-offset, 0) * 1cqw - 50%), -50%);
+		transition: transform var(--rise-duration-fast) var(--rise-ease-out);
 
 		&:active {
 			cursor: grabbing;
 		}
+	}
+
+	&--dragging &__fill,
+	&--dragging &__thumb-container {
+		transition: none;
 	}
 
 	&__thumb {
@@ -85,13 +99,13 @@
 		align-items: center;
 		justify-content: center;
 		box-sizing: border-box;
-		width: sz(16px);
-		height: sz(16px);
+		width: sz(ct(range, thumb-width, 16px));
+		height: sz(ct(range, thumb-height, 16px));
 		border: 2px solid;
-		border-radius: var(--rise-radius-full);
-		@include custom-bg(border-color, var(--rise-primary));
-		background-color: var(--rise-bg);
-		box-shadow: var(--rise-shadow-sm);
+		border-radius: ct(range, thumb-radius, var(--rise-radius-full));
+		@include custom-bg(border-color, ct(range, thumb-border, var(--rise-primary)));
+		background-color: ct(range, thumb-bg, var(--rise-bg));
+		box-shadow: ct(range, thumb-shadow, var(--rise-shadow-sm));
 		cursor: inherit;
 		@include transition-colors;
 		@include focus-ring;
@@ -173,21 +187,21 @@
 	&--vertical &__track {
 		top: 0;
 		left: 50%;
-		width: sz(6px);
+		width: sz(ct(range, track-height, 6px));
 		height: 100%;
 		transform: translateX(-50%);
 	}
 
 	&--vertical &__fill {
-		top: auto;
-		left: 0;
-		width: 100%;
+		clip-path: inset(
+			calc(100% - var(--range-fill-end, 0%)) 0 var(--range-fill-start, 0%) 0 round ct(range, track-radius, var(--rise-radius-full))
+		);
 	}
 
 	&--vertical &__thumb-container {
-		top: auto;
+		top: 100%;
 		left: 50%;
-		transform: translate(-50%, 50%);
+		transform: translate(-50%, calc(-50% - var(--range-offset, 0) * 1cqh));
 	}
 
 	&--vertical &__marks {
@@ -216,7 +230,7 @@
 	}
 
 	&--soft &__track {
-		background-color: var(--rise-primary-soft);
+		background-color: ct(range, track-bg, var(--rise-primary-soft));
 	}
 
 	&--outline &__track {
@@ -229,6 +243,6 @@
 	}
 
 	&--shadow &__thumb:not(.base-range__thumb--custom) {
-		box-shadow: var(--rise-shadow-md);
+		box-shadow: ct(range, thumb-shadow, var(--rise-shadow-md));
 	}
 }

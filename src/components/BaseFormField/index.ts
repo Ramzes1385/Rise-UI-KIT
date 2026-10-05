@@ -1,5 +1,5 @@
-export { FORM_FIELD_VARIANTS } from './types/BaseFormField.types'
-export type { BaseFormFieldEmits, BaseFormFieldProps, BaseFormFieldSlots } from './types/BaseFormField.types'
+export { FORM_FIELD_PARTS, FORM_FIELD_VARIANTS } from './types/BaseFormField.types'
+export type { BaseFormFieldEmits, BaseFormFieldPart, BaseFormFieldProps, BaseFormFieldSlots } from './types/BaseFormField.types'
 export { default as BaseFormField } from './ui/BaseFormField.vue'
 export { default as FormFieldError } from './ui/FormFieldError.vue'
 export { default as FormFieldLabel } from './ui/FormFieldLabel.vue'

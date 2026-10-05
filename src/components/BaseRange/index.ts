@@ -1,6 +1,7 @@
-export { RANGE_VARIANTS, TICK_SIZES } from './types/BaseRange.types'
+export { RANGE_PARTS, RANGE_VARIANTS, TICK_SIZES } from './types/BaseRange.types'
 export type {
 	BaseRangeEmits,
+	BaseRangePart,
 	BaseRangeProps,
 	BaseRangeSlots,
 	RangeMark,

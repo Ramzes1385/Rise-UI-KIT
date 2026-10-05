@@ -1,40 +1,35 @@
 <template>
 	<div
 		ref="rootRef"
-		class="base-range"
 		:class="[
+			ui('root'),
 			variantClass,
 			{
 				'base-range--disabled': isControlDisabled,
 				'base-range--vertical': isVertical,
+				'base-range--dragging': isDragging,
 			},
 			classes.root,
 		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
-		<div v-if="hasLabel" class="base-range__label" :class="classes.label">
-			<BaseText tag="span" class="base-range__label-min" :custom-class="classes.labelMin">{{ bounds.min }}</BaseText>
-			<BaseText tag="span" class="base-range__label-value" :weight="TEXT_WEIGHT.MEDIUM" :custom-class="classes.labelValue">{{
+		<div v-if="hasLabel" :class="[ui('label'), classes.label]">
+			<BaseText tag="span" :class="ui('label-min')" :custom-class="classes.labelMin">{{ bounds.min }}</BaseText>
+			<BaseText tag="span" :class="ui('label-value')" :weight="TEXT_WEIGHT.MEDIUM" :custom-class="classes.labelValue">{{
 				labelText
 			}}</BaseText>
-			<BaseText tag="span" class="base-range__label-max" :custom-class="classes.labelMax">{{ bounds.max }}</BaseText>
+			<BaseText tag="span" :class="ui('label-max')" :custom-class="classes.labelMax">{{ bounds.max }}</BaseText>
 		</div>
 
-		<div class="base-range__body" :class="classes.body">
-			<div class="base-range__track-wrapper" :class="classes.trackWrapper" ref="trackRef" @mousedown.prevent="handleTrackDown">
-				<div class="base-range__track" :class="classes.track">
-					<div
-						v-for="(segment, index) in fillSegments"
-						:key="index"
-						class="base-range__fill"
-						:class="classes.fill"
-						:style="segment"></div>
+		<div :class="[ui('body'), classes.body]">
+			<div :class="[ui('track-wrapper'), classes.trackWrapper]" ref="trackRef" @mousedown.prevent="handleTrackDown">
+				<div :class="[ui('track'), classes.track]">
+					<div v-for="(segment, index) in fillSegments" :key="index" :class="[ui('fill'), classes.fill]" :style="segment"></div>
 				</div>
 
 				<div
 					v-for="(value, index) in pointValues"
 					:key="index"
-					class="base-range__thumb-container"
-					:class="classes.thumbContainer"
+					:class="[ui('thumb-container'), classes.thumbContainer]"
 					:style="thumbStyle(value)">
 					<BaseTooltip v-if="hasTooltip" :text="String(value)" :position="tooltipPosition">
 						<BaseRangeThumb
@@ -46,8 +41,8 @@
 							:is-disabled="isControlDisabled"
 							:is-vertical="isVertical"
 							:has-custom="hasThumbSlot"
-							:thumb-class="classes.thumb"
-							:dot-class="classes.thumbDot"
+							:thumb-class="[ui('thumb'), classes.thumb]"
+							:dot-class="[ui('thumb-dot'), classes.thumbDot]"
 							@down="handleThumbDown"
 							@keydown="handleThumbKeydown">
 							<template #default="{ value: thumbValue, index: thumbIndex }">
@@ -65,8 +60,8 @@
 						:is-disabled="isControlDisabled"
 						:is-vertical="isVertical"
 						:has-custom="hasThumbSlot"
-						:thumb-class="classes.thumb"
-						:dot-class="classes.thumbDot"
+						:thumb-class="[ui('thumb'), classes.thumb]"
+						:dot-class="[ui('thumb-dot'), classes.thumbDot]"
 						@down="handleThumbDown"
 						@keydown="handleThumbKeydown">
 						<template #default="{ value: thumbValue, index: thumbIndex }">
@@ -76,7 +71,7 @@
 				</div>
 			</div>
 
-			<BaseRangeMarks :marks="marks" :mark-style="markStyle" :classes="classes" />
+			<BaseRangeMarks :marks="marks" :mark-style="markStyle" :classes="classes" :ui="ui" />
 		</div>
 	</div>
 </template>
@@ -111,6 +106,7 @@ const emit = defineEmits<BaseRangeEmits>()
 defineSlots<BaseRangeSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,
@@ -133,6 +129,7 @@ const {
 	handleThumbDown,
 	handleTrackDown,
 	handleThumbKeydown,
+	isDragging,
 	exposed,
 } = useBaseRange(props, emit)
 

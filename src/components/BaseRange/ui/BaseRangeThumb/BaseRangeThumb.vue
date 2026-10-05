@@ -1,7 +1,6 @@
 <template>
 	<div
-		class="base-range__thumb"
-		:class="[{ 'base-range__thumb--custom': hasCustom }, thumbClass]"
+		:class="[thumbClass, { 'base-range__thumb--custom': hasCustom }]"
 		:tabindex="isDisabled ? -1 : 0"
 		role="slider"
 		:aria-label="label"
@@ -14,7 +13,7 @@
 		@touchstart.stop.prevent="emitDown($event)"
 		@keydown="emitKeydown($event)">
 		<slot :value="value" :index="index">
-			<span class="base-range__thumb-dot" :class="dotClass"></span>
+			<span :class="dotClass"></span>
 		</slot>
 	</div>
 </template>

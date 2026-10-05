@@ -101,7 +101,9 @@ describe('BaseRating integration', () => {
 
 		await user.click(screen.getByRole('button', { name: 'Установить 3.5' }))
 
-		const fillWidths = stars(container).map(s => s.querySelector<HTMLElement>('.base-rating__star-fill')!.style.width)
+		const fillWidths = stars(container).map(s =>
+			s.querySelector<HTMLElement>('.base-rating__star-fill')!.style.getPropertyValue('--rating-fill-size'),
+		)
 		expect(fillWidths[2]).toBe('100%')
 		expect(fillWidths[3]).toBe('50%')
 	})

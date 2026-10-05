@@ -1,4 +1,5 @@
-import type { BaseRangeProps } from './BaseRange.types'
+import type { UiClassFn } from '@composables/base/useUi'
+import type { BaseRangePart, BaseRangeProps } from './BaseRange.types'
 
 export interface BaseRangeMarksProps {
 	/** Метки на шкале */
@@ -7,4 +8,6 @@ export interface BaseRangeMarksProps {
 	markStyle: (value: number) => Record<string, string>
 	/** Объект CSS-классов для кастомизации элементов шкалы */
 	classes: Record<string, string | undefined>
+	/** Классы частей шкалы: БЭМ-класс кита и классы пропа `ui` */
+	ui: UiClassFn<BaseRangePart>
 }

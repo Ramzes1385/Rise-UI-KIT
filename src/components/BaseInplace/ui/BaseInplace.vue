@@ -1,30 +1,30 @@
 <template>
 	<span
-		class="base-inplace"
-		:class="[variantClass, { 'base-inplace--editing': isEditing }, classes.root]"
+		:class="[ui('root'), variantClass, { 'base-inplace--editing': isEditing }, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
-		<button
-			v-if="!isEditing"
-			ref="displayRef"
-			type="button"
-			class="base-inplace__display"
-			:class="[{ 'base-inplace__display--empty': !modelValue }, classes.display]"
-			:disabled="isControlDisabled"
-			:aria-label="`${label}: ${modelValue || placeholder}`"
-			:aria-describedby="hintId"
-			@click="edit">
-			<slot name="display" :value="modelValue">{{ modelValue || placeholder }}</slot>
-		</button>
-		<BaseInput
-			v-else
-			ref="inputRef"
-			v-model="draft"
-			class="base-inplace__field"
-			:aria-label="label"
-			:size-scale="sizeScale"
-			:custom-class="{ root: classes.field }"
-			@keydown="handleKeydown"
-			@blur="handleBlur" />
+		<Transition name="base-inplace-mode">
+			<button
+				v-if="!isEditing"
+				ref="displayRef"
+				type="button"
+				:class="[ui('display'), { 'base-inplace__display--empty': !modelValue }, classes.display]"
+				:disabled="isControlDisabled"
+				:aria-label="`${label}: ${modelValue || placeholder}`"
+				:aria-describedby="hintId"
+				@click="edit">
+				<slot name="display" :value="modelValue">{{ modelValue || placeholder }}</slot>
+			</button>
+			<BaseInput
+				v-else
+				ref="inputRef"
+				v-model="draft"
+				:class="ui('field')"
+				:aria-label="label"
+				:size-scale="sizeScale"
+				:custom-class="{ root: classes.field }"
+				@keydown="handleKeydown"
+				@blur="handleBlur" />
+		</Transition>
 		<span :id="hintId" class="base-inplace__hint">{{ UI_ARIA.INPLACE_HINT }}</span>
 	</span>
 </template>
@@ -54,6 +54,7 @@ const emit = defineEmits<BaseInplaceEmits>()
 defineSlots<BaseInplaceSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

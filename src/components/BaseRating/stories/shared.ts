@@ -3,7 +3,7 @@ export function starOf(rating: HTMLElement, index: number): HTMLElement {
 }
 
 export function fillOf(star: HTMLElement): string {
-	return (star.querySelector('.base-rating__star-fill') as HTMLElement).style.width
+	return (star.querySelector('.base-rating__star-fill') as HTMLElement).style.getPropertyValue('--rating-fill-size')
 }
 
 export function pointOn(star: HTMLElement, ratio = 0.5): { x: number; y: number } {

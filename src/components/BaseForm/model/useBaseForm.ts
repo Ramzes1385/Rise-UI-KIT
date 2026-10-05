@@ -1,4 +1,5 @@
 import type { ComputedRef, Ref } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import { computed, nextTick, provide, ref, watch } from 'vue'
 import type { FormValidationResult } from '@utils/form/formUtils'
 import { FORM_CONTEXT_KEY } from '@composables/form/useFormContext'
@@ -80,6 +81,7 @@ export function useBaseForm(props: FormProps, emit: BaseFormEmits) {
 
 	return {
 		...standard,
+		ui: useUi(props, 'base-form'),
 		formRef,
 		isLocked,
 		async handleSubmit(e: Event): Promise<void> {

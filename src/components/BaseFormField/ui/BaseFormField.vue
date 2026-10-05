@@ -1,46 +1,53 @@
 <template>
 	<div
 		ref="rootRef"
-		class="base-form-field"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		:class="[
+			ui('root'),
 			{
 				'base-form-field--error': error,
 			},
 			variantClass,
 			classes.root,
 		]">
-		<div v-if="label" class="base-form-field__header" :class="classes.header">
-			<label :id="labelId" :for="controlId" class="base-form-field__label" :class="classes.label"
-				>{{ label
-				}}<span v-if="isRequired" class="base-form-field__required" :class="classes.required" aria-hidden="true">*</span></label
+		<div v-if="label" :class="[ui('header'), classes.header]">
+			<label :id="labelId" :for="controlId" :class="[ui('label'), classes.label]"
+				>{{ label }}<span v-if="isRequired" :class="[ui('required'), classes.required]" aria-hidden="true">*</span></label
 			>
 		</div>
 
 		<div
-			class="base-form-field__content"
-			:class="classes.content"
+			:class="[ui('content'), classes.content]"
 			:role="isGroup ? 'group' : undefined"
 			:aria-labelledby="isGroup ? labelId : undefined"
 			:aria-describedby="isGroup ? describedBy : undefined">
 			<slot />
 		</div>
 
-		<p v-if="description && !error" :id="descriptionId" class="base-form-field__description" :class="classes.description">
-			{{ description }}
-		</p>
+		<div v-if="description" class="base-form-field__message" :class="{ 'base-form-field__message--open': !error }">
+			<div class="base-form-field__message-body">
+				<Transition name="base-form-field-message">
+					<p v-if="!error" :id="descriptionId" :class="[ui('description'), classes.description]">
+						{{ description }}
+					</p>
+				</Transition>
+			</div>
+		</div>
 
-		<BaseAnimation v-if="error" name="fade" :custom-class="classes.animation">
-			<p :id="errorId" class="base-form-field__error" :class="classes.error">
-				{{ error }}
-			</p>
-		</BaseAnimation>
+		<div class="base-form-field__message" :class="[{ 'base-form-field__message--open': error }, classes.animation]">
+			<div class="base-form-field__message-body">
+				<Transition name="base-form-field-message">
+					<p v-if="error" :id="errorId" :class="[ui('error'), classes.error]">
+						{{ error }}
+					</p>
+				</Transition>
+			</div>
+		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
 import '../styles/BaseFormField.style.scss'
-import { BaseAnimation } from '@components/BaseAnimation'
 import { kitDefaults } from '@composables/base/useDefaults'
 import { useBaseFormField } from '../model/useBaseFormField'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
@@ -57,6 +64,7 @@ const props = withDefaults(
 defineSlots<BaseFormFieldSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

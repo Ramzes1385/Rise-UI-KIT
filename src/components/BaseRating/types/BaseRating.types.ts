@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { SeoComponentProps } from '@composables/seo/useStructuredData'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
@@ -5,6 +6,11 @@ import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 export const RATING_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
 export type RatingVariant = (typeof RATING_VARIANTS)[number]
+
+/** Части рейтинга для пропа `ui` (корень — `root`): star — звезда, star-fill — её заливка, value — число рядом со звёздами */
+export const RATING_PARTS = ['star', 'star-fill', 'value'] as const
+
+export type BaseRatingPart = (typeof RATING_PARTS)[number]
 
 export interface BaseRatingProps extends SeoComponentProps, BaseComponentProps<RatingVariant, 'root' | 'icon' | 'iconFilled' | 'value'> {
 	/** Текущая оценка (v-model), допускает дробные значения */
@@ -25,6 +31,14 @@ export interface BaseRatingProps extends SeoComponentProps, BaseComponentProps<R
 	isReadonly?: boolean
 	/** Заблокирован — без интерактива и приглушён */
 	isDisabled?: boolean
+	/**
+	 * Классы частей рейтинга (`root`, `star`, `star-fill`, `value`) — добавляются к классам кита.
+	 * Глобально — `defaults.BaseRating.ui` плагина, классы склеиваются.
+	 *
+	 * @example
+	 * <BaseRating v-model="score" is-value-shown :ui="{ star: 'drop-shadow', value: 'font-bold' }" />
+	 */
+	ui?: UiProp<BaseRatingPart>
 }
 
 export interface BaseRatingEmits {

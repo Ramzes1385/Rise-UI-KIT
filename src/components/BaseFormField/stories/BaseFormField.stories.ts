@@ -20,8 +20,10 @@ export default meta
 export const Default = cases.Default
 export const Variants = cases.Variants
 export const Sizes = cases.Sizes
+export const Theming = cases.Theming
 export const WithError = cases.WithError
 export const LongContent = cases.LongContent
 export const KitControl = cases.KitControl
 export const LabelFor = cases.LabelFor
 export const ToggleControls = cases.ToggleControls
+export const Animations = cases.Animations

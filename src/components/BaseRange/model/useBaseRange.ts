@@ -1,6 +1,8 @@
 import type { Ref } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
 import { computed, ref, useSlots } from 'vue'
+import { useUi } from '@composables/base/useUi'
+import { toPercent } from '@utils/form/rangeUtils'
 import { useFormField } from '@composables/form/useFormField'
 import { useRangeDrag } from '@composables/range/useRangeDrag'
 import { useFormDisabled } from '@composables/form/useFormContext'
@@ -28,8 +30,26 @@ const RANGE_ELEMENTS = [
 	'markText',
 ]
 
+function fillStyle(from: number, to: number): Record<string, string> {
+	return { '--range-fill-start': `${Math.min(from, to)}%`, '--range-fill-end': `${Math.max(from, to)}%` }
+}
+
+function useRangeGeometry(values: UseRangeValuesReturn) {
+	const percent = (value: number): number => toPercent({ value, min: values.bounds.value.min, max: values.bounds.value.max })
+	return {
+		fillSegments: computed((): Record<string, string>[] => {
+			const percents = values.pointValues.value.map(percent)
+			if (values.mode.value === 'single') return [fillStyle(0, percents[0])]
+			return percents.slice(0, -1).map((from, index) => fillStyle(from, percents[index + 1]))
+		}),
+		thumbStyle: (value: number): Record<string, string> => ({ '--range-offset': String(percent(value)) }),
+	}
+}
+
 function useThumbDrag(props: RangeProps, values: UseRangeValuesReturn, track: { ref: Ref<HTMLElement | null>; isDisabled: () => boolean }) {
-	return useRangeDrag({
+	const isMoved = ref(false)
+	let isJump = false
+	const drag = useRangeDrag({
 		trackRef: track.ref,
 		pointValues: values.pointValues,
 		isDisabled: track.isDisabled,
@@ -40,9 +60,27 @@ function useThumbDrag(props: RangeProps, values: UseRangeValuesReturn, track: { 
 		thumbMin: values.thumbMin,
 		thumbMax: values.thumbMax,
 		snapToStepValue: values.snapToStepValue,
-		setPointValue: values.setPointValue,
+		setPointValue: (index: number, value: number): void => {
+			if (drag.activeIndex.value !== null && !isJump) isMoved.value = true
+			values.setPointValue(index, value)
+		},
 		emitChange: values.emitChange,
 	})
+
+	return {
+		...drag,
+		isDragging: computed((): boolean => isMoved.value && drag.activeIndex.value !== null),
+		handleThumbDown(payload: { event: MouseEvent | TouchEvent; index: number }): void {
+			isMoved.value = false
+			drag.handleThumbDown(payload)
+		},
+		handleTrackDown(event: MouseEvent): void {
+			isMoved.value = false
+			isJump = true
+			drag.handleTrackDown(event)
+			isJump = false
+		},
+	}
 }
 
 export function useBaseRange(props: RangeProps, emit: BaseRangeEmits) {
@@ -57,11 +95,13 @@ export function useBaseRange(props: RangeProps, emit: BaseRangeEmits) {
 
 	return {
 		...standard,
+		ui: useUi(props, 'base-range'),
 		isControlDisabled,
 		rootRef,
 		trackRef,
 		hasThumbSlot: computed((): boolean => Boolean(slots.thumb)),
 		...values,
+		...useRangeGeometry(values),
 		thumbLabel(index: number): string {
 			if (values.mode.value === 'single') return props.ariaLabel || UI_ARIA.RANGE_VALUE
 			let role: string = `${UI_ARIA.RANGE_POINT} ${index + 1}`

@@ -17,10 +17,10 @@ export interface BaseRangeThumbProps {
 	isVertical?: boolean
 	/** Использовать кастомный слот */
 	hasCustom?: boolean
-	/** CSS-класс для thumb (из customClass) */
-	thumbClass?: HTMLAttributes['class']
-	/** CSS-класс для thumb-dot (из customClass) */
-	dotClass?: HTMLAttributes['class']
+	/** Классы ползунка: БЭМ-класс кита, классы пропа `ui` и customClass */
+	thumbClass: HTMLAttributes['class']
+	/** Классы точки ползунка: БЭМ-класс кита, классы пропа `ui` и customClass */
+	dotClass: HTMLAttributes['class']
 }
 
 export interface BaseRangeThumbEmits {

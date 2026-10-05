@@ -1,8 +1,14 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import type { FormIssue, FormValidationResult, StandardSchemaV1 } from '@utils/form/formUtils'
 
 export const FORM_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
+
+/** Части формы для пропа `ui` (корень — `root`): overlay — слой загрузки, content — содержимое, fieldset — группа полей */
+export const FORM_PARTS = ['overlay', 'content', 'fieldset'] as const
+
+export type BaseFormPart = (typeof FORM_PARTS)[number]
 
 export interface BaseFormProps extends BaseComponentProps<(typeof FORM_VARIANTS)[number], 'root' | 'overlay' | 'content'> {
 	/** Состояние загрузки: submit не эмитится, поля формы отключены, у формы aria-busy */
@@ -16,6 +22,14 @@ export interface BaseFormProps extends BaseComponentProps<(typeof FORM_VARIANTS)
 	schema?: StandardSchemaV1
 	/** Данные формы — их проверяет `schema` и получает `submit` */
 	state?: Record<string, unknown>
+	/**
+	 * Классы частей формы (`root`, `overlay`, `content`, `fieldset`) — добавляются к классам кита.
+	 * Глобально — `defaults.BaseForm.ui` плагина, классы склеиваются.
+	 *
+	 * @example
+	 * <BaseForm :ui="{ content: 'grid gap-4' }" @submit="save">…</BaseForm>
+	 */
+	ui?: UiProp<BaseFormPart>
 }
 
 export interface BaseFormEmits {

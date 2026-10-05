@@ -1,13 +1,13 @@
 .base-rating {
-	--rating-empty: var(--rise-border-accented);
-	@include custom-text(--rating-fill, var(--rise-primary));
-	--rating-fill-hover: var(--custom-text-hover, var(--custom-text, var(--rise-primary-hover)));
+	--rating-empty: #{ct(rating, star-text, var(--rise-border-accented))};
+	@include custom-text(--rating-fill, ct(rating, star-fill-text, var(--rise-primary)));
+	--rating-fill-hover: var(--custom-text-hover, var(--custom-text, #{ct(rating, star-fill-text-hover, var(--rise-primary-hover))}));
 
 	display: inline-flex;
 	align-items: center;
-	gap: sz(2px);
+	gap: sz(ct(rating, gap, 2px));
 	vertical-align: middle;
-	border-radius: sz(var(--rise-radius-sm));
+	border-radius: sz(ct(rating, radius, var(--rise-radius-sm)));
 	@include custom-bg(background-color, transparent);
 	@include transition-colors;
 	@include focus-ring;
@@ -17,34 +17,42 @@
 		display: inline-flex;
 		flex-shrink: 0;
 		color: var(--rating-empty);
+		transition: transform var(--rise-duration-fast) var(--rise-ease-out);
 	}
 
 	&__star-fill {
 		position: absolute;
-		top: 0;
-		bottom: 0;
-		left: 0;
+		inset: 0;
 		display: inline-flex;
 		align-items: center;
 		overflow: hidden;
 		color: var(--rating-fill);
 		white-space: nowrap;
 		pointer-events: none;
-		@include transition(width, color);
+		clip-path: inset(0 calc(100% - var(--rating-fill-size, 0%)) 0 0);
+		@include transition(clip-path, color);
 	}
 
 	&__value {
-		min-width: 3ch;
+		min-width: max(3ch, calc(var(--rating-value-chars, 3) * 1ch));
 		margin-inline-start: sz(6px);
-		color: var(--rise-text-toned);
-		font-size: sz(14px);
-		font-weight: var(--rise-font-weight-medium);
+		color: ct(rating, value-text, var(--rise-text-toned));
+		font-size: sz(ct(rating, value-font-size, 14px));
+		font-weight: ct(rating, value-font-weight, var(--rise-font-weight-medium));
 		font-variant-numeric: tabular-nums;
 		line-height: 1;
 	}
 
 	&--interactive &__star {
 		cursor: pointer;
+
+		@include hover {
+			transform: scale(calc(2 - var(--rise-motion-scale-from)));
+		}
+
+		@include active {
+			transform: scale(var(--rise-motion-scale-from));
+		}
 	}
 
 	&--interactive {
@@ -61,19 +69,19 @@
 	&--soft,
 	&--ghost,
 	&--shadow {
-		padding: sz(var(--rise-control-padding-y)) sz(var(--rise-control-padding-x));
+		padding: sz(ct(rating, padding-y, var(--rise-control-padding-y))) sz(ct(rating, padding-x, var(--rise-control-padding-x)));
 		border: 1px solid transparent;
-		border-radius: sz(var(--rise-control-radius));
+		border-radius: sz(ct(rating, radius, var(--rise-control-radius)));
 	}
 
 	&--outline {
-		border-color: var(--rise-border-accented);
+		border-color: ct(rating, border, var(--rise-border-accented));
 	}
 
 	&--shadow {
-		border-color: var(--rise-border-accented);
+		border-color: ct(rating, border, var(--rise-border-accented));
 		@include custom-bg(background-color, var(--rise-bg));
-		box-shadow: var(--rise-shadow-xs);
+		box-shadow: ct(rating, shadow, var(--rise-shadow-xs));
 	}
 
 	&--soft {

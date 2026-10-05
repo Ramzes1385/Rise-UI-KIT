@@ -180,3 +180,24 @@ describe('BaseFormField: контрол кита внутри', () => {
 		expect(screen.getByRole('textbox', { name: 'Имя' })).toHaveAttribute('aria-invalid', 'true')
 	})
 })
+
+describe('BaseFormField: реестр контролов', () => {
+	it('подпись связывается с первым контролом; после его удаления содержимое — группа с именем из подписи', async () => {
+		const { rerender } = render({
+			components: { BaseFormField, BaseInput },
+			props: { isFirst: { type: Boolean, default: true } },
+			template: `
+				<BaseFormField label="Город">
+					<BaseInput v-if="isFirst" model-value="" />
+					<BaseInput model-value="" aria-label="Улица" />
+				</BaseFormField>
+			`,
+		})
+		await nextTick()
+
+		expect(screen.getByLabelText('Город')).toBe(screen.getAllByRole('textbox')[0])
+		expect(screen.queryByRole('group')).toBeNull()
+		await rerender({ isFirst: false })
+		expect(screen.getByRole('group', { name: 'Город' })).toContainElement(screen.getByRole('textbox', { name: 'Улица' }))
+	})
+})

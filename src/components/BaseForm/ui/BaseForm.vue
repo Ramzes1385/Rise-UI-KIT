@@ -1,9 +1,9 @@
 <template>
 	<form
 		ref="formRef"
-		class="base-form"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		:class="[
+			ui('root'),
 			{
 				'base-form--loading': isLoading,
 				'base-form--disabled': isDisabled,
@@ -13,12 +13,12 @@
 		]"
 		:aria-busy="isLoading || undefined"
 		@submit.prevent="handleSubmit">
-		<div class="base-form__overlay" :class="[{ 'base-form__overlay--visible': isLoading }, classes.overlay]">
+		<div :class="[ui('overlay'), { 'base-form__overlay--visible': isLoading }, classes.overlay]">
 			<BaseLoader variant="spinner" :has-label="true" :label="UI_TEXT.LOADING" :size-scale="sizeScale" />
 		</div>
 
-		<div class="base-form__content" :class="classes.content">
-			<fieldset class="base-form__fieldset" :disabled="isLocked" role="presentation">
+		<div :class="[ui('content'), classes.content]">
+			<fieldset :class="ui('fieldset')" :disabled="isLocked" role="presentation">
 				<slot />
 			</fieldset>
 		</div>
@@ -46,7 +46,7 @@ const props = withDefaults(
 const emit = defineEmits<BaseFormEmits>()
 defineSlots<BaseFormSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, formRef, isLocked, handleSubmit, exposed } = useBaseForm(
+const { ui, sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, formRef, isLocked, handleSubmit, exposed } = useBaseForm(
 	props,
 	emit,
 )

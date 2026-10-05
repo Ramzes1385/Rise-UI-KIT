@@ -1,3 +1,4 @@
+import { useUi } from '@composables/base/useUi'
 import { useFormField } from '@composables/form/useFormField'
 import { computed, provide, ref, shallowRef, useId } from 'vue'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
@@ -57,6 +58,7 @@ export function useBaseFormField(props: FormFieldProps) {
 
 	return {
 		...standard,
+		ui: useUi(props, 'base-form-field'),
 		rootRef,
 		labelId,
 		descriptionId,

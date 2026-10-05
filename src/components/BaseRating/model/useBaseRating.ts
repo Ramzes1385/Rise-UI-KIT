@@ -3,6 +3,7 @@ import type { ComputedRef } from 'vue'
 import { ratingBounds } from './ratingBounds'
 import { UI_RATING } from '@/locales/messages'
 import { formatNumber } from '@/locales/state'
+import { useUi } from '@composables/base/useUi'
 import { useFormField } from '@composables/form/useFormField'
 import { useFormDisabled } from '@composables/form/useFormContext'
 import type { StructuredData } from '@utils/seo/structuredDataUtils'
@@ -130,14 +131,18 @@ export function useBaseRating(props: RatingProps, emit: BaseRatingEmits) {
 
 	return {
 		...standard,
+		ui: useUi(props, 'base-rating'),
 		isControlDisabled,
 		rootRef,
 		isInteractive,
 		starCount: computed((): number => bounds.value.max),
 		filledIcon: computed((): string => props.iconFilled || (props.icon === 'star' ? 'star-filled' : props.icon)),
 		ariaAttrs: computed(() => ratingAria(props, bounds.value, isControlDisabled.value)),
-		fillPercent: (star: number): number => starFillPercent(star, displayValue.value),
+		fillStyle: (star: number): Record<string, string> => ({ '--rating-fill-size': `${starFillPercent(star, displayValue.value)}%` }),
 		valueLabel: computed((): string => formatRatingValue(labelValue.value, stepDecimals(bounds.value.step))),
+		valueStyle: computed(() => ({
+			'--rating-value-chars': String(formatRatingValue(bounds.value.max, stepDecimals(bounds.value.step)).length),
+		})),
 		...input,
 		...useStructuredData(
 			'BaseRating',

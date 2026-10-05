@@ -1,8 +1,8 @@
 <template>
 	<div
 		ref="rootRef"
-		class="base-rating"
 		:class="[
+			ui('root'),
 			variantClass,
 			classes.root,
 			{
@@ -18,15 +18,15 @@
 		<span
 			v-for="star in starCount"
 			:key="star"
-			class="base-rating__star"
+			:class="ui('star')"
 			@click="handleClick($event, star)"
 			@mousemove="handleHover($event, star)">
 			<BaseIcon :name="icon" :size-scale="sizeScale" :custom-class="classes.icon" aria-label="" />
-			<span class="base-rating__star-fill" :style="{ width: `${fillPercent(star)}%` }">
+			<span :class="ui('star-fill')" :style="fillStyle(star)">
 				<BaseIcon :name="filledIcon" :size-scale="sizeScale" :custom-class="classes.iconFilled" aria-label="" />
 			</span>
 		</span>
-		<span v-if="isValueShown" class="base-rating__value" :class="classes.value" aria-hidden="true">{{ valueLabel }}</span>
+		<span v-if="isValueShown" :class="[ui('value'), classes.value]" :style="valueStyle" aria-hidden="true">{{ valueLabel }}</span>
 		<component :is="'script'" v-if="structuredData" type="application/ld+json" v-html="structuredData" />
 	</div>
 </template>
@@ -59,6 +59,7 @@ const emit = defineEmits<BaseRatingEmits>()
 defineSlots<BaseRatingSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,
@@ -70,8 +71,9 @@ const {
 	starCount,
 	filledIcon,
 	ariaAttrs,
-	fillPercent,
+	fillStyle,
 	valueLabel,
+	valueStyle,
 	handleClick,
 	handleHover,
 	clearHover,

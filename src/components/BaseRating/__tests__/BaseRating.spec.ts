@@ -23,7 +23,7 @@ function getStars(container: ParentNode): HTMLElement[] {
 }
 
 function fillWidth(star: HTMLElement): string {
-	return star.querySelector<HTMLElement>('.base-rating__star-fill')!.style.width
+	return star.querySelector<HTMLElement>('.base-rating__star-fill')!.style.getPropertyValue('--rating-fill-size')
 }
 
 describe('BaseRating unit', () => {

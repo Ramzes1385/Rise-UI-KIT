@@ -1,4 +1,5 @@
 .base-inplace {
+	position: relative;
 	display: inline-flex;
 	align-items: center;
 	max-width: 100%;
@@ -7,11 +8,11 @@
 	&__display {
 		max-width: 100%;
 		margin: 0;
-		padding: sz(2px 4px);
+		padding: sz(ct(inplace, display-padding-y, 2px) ct(inplace, display-padding-x, 4px));
 		border: none;
-		border-radius: sz(var(--rise-radius-sm));
-		background-color: transparent;
-		color: inherit;
+		border-radius: sz(ct(inplace, display-radius, var(--rise-radius-sm)));
+		background-color: ct(inplace, display-bg, transparent);
+		color: ct(inplace, display-text, inherit);
 		font: inherit;
 		text-align: left;
 		text-decoration: underline dashed;
@@ -23,7 +24,7 @@
 		@include focus-ring;
 
 		@include hover {
-			background-color: var(--rise-bg-elevated);
+			background-color: ct(inplace, display-bg-hover, var(--rise-bg-elevated));
 		}
 
 		&:disabled {
@@ -41,10 +42,17 @@
 	}
 
 	&__field {
-		min-width: sz(160px);
+		min-width: sz(ct(inplace, field-width, 160px));
 	}
 
 	&__hint {
 		@include visually-hidden;
 	}
+}
+
+@include enter-fade(base-inplace-mode);
+
+.base-inplace-mode-leave-active {
+	position: absolute;
+	pointer-events: none;
 }

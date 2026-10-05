@@ -1,4 +1,5 @@
 import { nextTick, ref, useId } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import { useFormDisabled } from '@composables/form/useFormContext'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseInplaceEmits, InplaceProps, InplaceState } from '../types/BaseInplace.types'
@@ -58,6 +59,7 @@ export function useBaseInplace(props: InplaceProps, emit: BaseInplaceEmits) {
 
 	return {
 		...useStandardBaseComponent('base-inplace', props, ['root', 'display', 'field']),
+		ui: useUi(props, 'base-inplace'),
 		...state,
 		hintId: `${useId()}-hint`,
 		actions,

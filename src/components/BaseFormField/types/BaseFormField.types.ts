@@ -1,7 +1,16 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export const FORM_FIELD_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
+
+/**
+ * Части обёртки поля для пропа `ui` (корень — `root`): header — шапка с подписью, label — подпись,
+ * required — звёздочка обязательности, content — поле, description — описание, error — текст ошибки.
+ */
+export const FORM_FIELD_PARTS = ['header', 'label', 'required', 'content', 'description', 'error'] as const
+
+export type BaseFormFieldPart = (typeof FORM_FIELD_PARTS)[number]
 
 export interface BaseFormFieldProps extends BaseComponentProps<
 	(typeof FORM_FIELD_VARIANTS)[number],
@@ -23,6 +32,14 @@ export interface BaseFormFieldProps extends BaseComponentProps<
 	for?: string
 	/** Имя поля в данных BaseForm (путь через точку: `address.city`): ошибка проверки по схеме показывается здесь */
 	name?: string
+	/**
+	 * Классы частей обёртки (`root`, `header`, `label`, `required`, `content`, `description`, `error`) —
+	 * добавляются к классам кита. Глобально — `defaults.BaseFormField.ui` плагина, классы склеиваются.
+	 *
+	 * @example
+	 * <BaseFormField label="Имя" :ui="{ label: 'uppercase', error: 'font-semibold' }"><BaseInput v-model="name" /></BaseFormField>
+	 */
+	ui?: UiProp<BaseFormFieldPart>
 }
 
 export type BaseFormFieldEmits = Record<string, never>
