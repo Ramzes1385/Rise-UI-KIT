@@ -16,6 +16,7 @@ const PUBLIC_ENTRIES = [
 	'utils/index.ts',
 	'icons/index.ts',
 	'components/BaseMediaPlayer/index.ts',
+	'map3d.ts',
 ]
 
 const ALIASES: Record<string, string> = {
@@ -161,5 +162,47 @@ describe('границы плеера', () => {
 		const publicNames = kitPublicNames()
 		expect(imports.length).toBeGreaterThan(0)
 		expect(imports.filter(({ name }) => !publicNames.has(name))).toEqual([])
+	})
+})
+
+/** Где разрешён `three` (вход `/map3d`): остальной кит и его входы WebGL-движок не тянут */
+const MAP3D_DIR = join(SRC, 'components/BaseImageMap3D')
+const MAP3D_ENTRY = join(SRC, 'map3d.ts')
+
+function importsThree(file: string): boolean {
+	return runtimeSpecifiers(file).some(specifier => /^three(\/.*)?$/.test(specifier))
+}
+
+function reachableFrom(entries: string[]): Set<string> {
+	const seen = new Set<string>()
+	const queue = entries.map(entry => join(SRC, entry))
+	while (queue.length) {
+		const file = queue.pop()!
+		if (seen.has(file)) continue
+		seen.add(file)
+		runtimeSpecifiers(file).forEach(specifier => {
+			const local = resolveSpecifier(specifier, file)
+			if (local) queue.push(local)
+		})
+	}
+	return seen
+}
+
+describe('границы входа /map3d', () => {
+	it('three импортируется только из BaseImageMap3D и src/map3d.ts', () => {
+		const offenders = listSources(SRC)
+			.filter(file => !file.startsWith(MAP3D_DIR + sep) && file !== MAP3D_ENTRY)
+			.filter(importsThree)
+			.map(file => relative(ROOT, file))
+		expect(offenders).toEqual([])
+	})
+
+	it('входы кита и /media не достигают BaseImageMap3D', () => {
+		const reachable = [...reachableFrom([...KIT_ENTRIES, 'components/BaseMediaPlayer/index.ts'])]
+		expect(reachable.filter(file => file.startsWith(MAP3D_DIR + sep)).map(file => relative(ROOT, file))).toEqual([])
+	})
+
+	it('вход /map3d импортирует three', () => {
+		expect([...reachableFrom(['map3d.ts'])].some(importsThree)).toBe(true)
 	})
 })

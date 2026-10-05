@@ -133,6 +133,25 @@ export default tseslint.config(
 		rules: CLEAN_CODE_SIZE_RULES,
 	},
 
+	// three — только во входе /map3d (BaseImageMap3D и src/map3d.ts): основной вход не тянет WebGL-движок
+	{
+		files: ['src/**/*.{ts,vue}'],
+		ignores: ['src/components/BaseImageMap3D/**', 'src/map3d.ts'],
+		rules: {
+			'no-restricted-imports': [
+				'error',
+				{
+					patterns: [
+						{
+							regex: '^three(/.*)?$',
+							message: 'three импортируется только из src/components/BaseImageMap3D и src/map3d.ts (вход /map3d)',
+						},
+					],
+				},
+			],
+		},
+	},
+
 	{
 		files: ['src/components/**/*.{ts,vue}'],
 		ignores: ['src/components/**/types/**/*.types.ts'],

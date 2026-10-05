@@ -1,0 +1,44 @@
+.base-image-map-3d {
+	display: flex;
+	flex-direction: column;
+	gap: space(2);
+	min-width: 0;
+
+	&__viewport {
+		position: relative;
+		overflow: hidden;
+		box-sizing: border-box;
+		width: 100%;
+		border: 1px solid var(--rise-border);
+		border-radius: sz(var(--rise-radius-lg));
+		@include custom-bg(background-color, var(--rise-bg));
+		@include focus-ring;
+	}
+
+	&--outline &__viewport {
+		border-color: var(--rise-border-accented);
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--ghost &__viewport {
+		border-color: transparent;
+		@include custom-bg(background-color, transparent);
+	}
+
+	&__canvas {
+		display: block;
+		width: 100%;
+		height: 100%;
+		touch-action: none;
+	}
+
+	&__status {
+		margin: 0;
+		color: var(--rise-text-muted);
+		@include control-text;
+
+		&:empty {
+			@include visually-hidden;
+		}
+	}
+}
