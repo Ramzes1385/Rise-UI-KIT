@@ -309,6 +309,12 @@ const requisites = reactive({ inn: '', kpp: '', ogrn: '' })
 
 Ключ API — проп `token` или для всех полей настройка плагина `createUiKitPlugin({ defaults: { BaseDadataInput: { token } } })`; ключ в браузере виден всем, поэтому для открытого сайта лучше свой прокси (`base-url`), который добавит ключ сам. `count` — сколько подсказок, `params` — прочие поля запроса DaData (`locations`, `status`, `type`), `source` — свой источник вместо DaData. Запрос уходит после паузы `debounce` (300 мс) и с `min-chars` знаков (3), прежний отменяется. `select` передаёт подсказку и реквизиты из неё (`inn`, `kpp`, `ogrn`, `bik`, `correspondentAccount`) для BaseRequisiteInput. Без `label` имя поля — название вида («Организация или ИП»).
 
+Проверки (масок нет — поле ищет по свободному тексту). `v-model:suggestion` — выбранная подсказка целиком (`data`: ФИАС, координаты, дом, квартира, реквизиты); правка текста сбрасывает её в `null`. `is-strict` — только из подсказок: свой текст остаётся, но под полем «Выберите вариант из списка». `precision` (`city`, `street`, `house`, `flat`, только адрес) — подсказка ниже уровня не подтверждается: в поле её текст с пробелом и новый поиск, при уходе — «Укажите дом» и т. п. У `party` и `bank` запрос из цифр с неверным контрольным числом ИНН/ОГРН или форматом БИК не уходит в DaData, у `email` — формат почты при уходе из поля. Итог — событие `validate` (`true`, `false`, `null` для пустого необязательного поля); внешний `error` важнее встроенных ошибок.
+
+```vue
+<BaseDadataInput v-model="address" v-model:suggestion="chosen" kind="address" precision="flat" is-strict @validate="ok => (isValid = ok)" />
+```
+
 ---
 
 ## BaseMap

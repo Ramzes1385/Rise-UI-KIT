@@ -1841,3 +1841,20 @@ API кита не меняется. В Storybook добавлены пример
   ```
 - **Поведение по умолчанию изменилось:** цифры меняются с анимацией `roll` (≈300 мс), меняются только изменившиеся разряды. Прежний вид — `digit-animation="none"` или `createUiKitPlugin({ defaults: { BaseCountdown: { digitAnimation: 'none' } } })`. При `prefers-reduced-motion: reduce` цифры меняются сразу.
 - **DOM:** при анимации внутри `.base-countdown__value` и `.base-countdown__clock` — разряды `.base-countdown__slot` с `.base-countdown__digit[data-char]`, разделители — `.base-countdown__slot--static`; на корне — классы `base-countdown--digits-<режим>` и `base-countdown--count-down|up`. `textContent` значения прежний, но в момент смены (≈300 мс) в DOM есть и уходящая цифра (класс `base-countdown-<режим>-leave-active`): тесты приложений, которые читают `textContent` цифр, — с `digitAnimation: 'none'` или без уходящих элементов. Текст для скринридера и `aria-*` не менялись.
+## Задача dadata-checks: проверки BaseDadataInput, утилита requisiteUtils
+
+- **BaseDadataInput — новые пропсы и события** (по умолчанию поведение прежнее: свой текст принимается, проверок нет, кроме ниже):
+  - `v-model:suggestion` (`DadataSuggestion | null`) — выбранная подсказка целиком (`value`, `unrestrictedValue`, `data` сервиса). Правка текста после выбора → `null`; текст, совпавший с подсказкой при уходе из поля, её выбирает.
+  - `isStrict` — только из подсказок: свой текст при уходе остаётся, `suggestion` — `null`, ошибка «Выберите вариант из списка».
+  - `precision` (`'any' | 'city' | 'street' | 'house' | 'flat'`, только `kind="address"`; константа `DADATA_PRECISIONS`, тип `DadataPrecision`) — подсказка ниже уровня не подтверждается: в поле её текст с пробелом и новый поиск, `select` не эмитится; при уходе — «Укажите дом» / «Укажите квартиру» / «Укажите улицу» / «Укажите город или населённый пункт». Свой текст без подсказки при `precision` тоже ошибка уровня.
+  - событие `validate(isValid: boolean | null)` — при уходе из поля и при подтверждённом выборе: `true`, `false`, `null` (пусто и необязательно).
+  ```vue
+  <BaseDadataInput v-model="address" v-model:suggestion="chosen" kind="address" precision="house" is-strict @validate="ok => (isValid = ok)" />
+  ```
+- **BaseDadataInput — встроенные проверки без новых пропсов** (ошибка под полем после ухода, `aria-invalid`; внешний `error` важнее):
+  - `kind="party"`: запрос из 10/12 цифр — ИНН, из 13/15 — ОГРН; `kind="bank"`: 9 цифр — БИК. Неверное контрольное число (формат у БИК) — **запрос в DaData не уходит**, в списке строка «Неверное контрольное число ИНН» («Неверный формат БИК»), при уходе из поля — та же ошибка и `validate(false)`. Приложение, которое искало по неверным ИНН, больше не получит запрос к сервису.
+  - `kind="email"`: формат почты при уходе из поля — «Неверный адрес почты».
+  - `isRequired`: пусто при уходе — «Обязательное поле» (как раньше у BaseInput) и `validate(false)`.
+- **Утилиты:** `isValidInn`, `isValidKpp`, `isValidOgrn`, `isValidBik`, `isValidAccount`, `isValidCorrespondentAccount`, `isValidSnils` — теперь ещё и в `@ramzes1385/rise-ui-kit/utils` (`requisiteUtils`); экспорт из корня пакета (через BaseRequisiteInput) прежний. Новая `isEmailFormat(text)` в `utils` (`urlUtils`).
+- Словари: в `dadata` ru/en новые ключи `CHOOSE_OPTION`, `NEED_CITY`, `NEED_STREET`, `NEED_HOUSE`, `NEED_FLAT`, `EMAIL_FORMAT`, `CHECKSUM`, `FORMAT` — переопределения `defineLocale` их подхватят.
+- Внутреннее: проверки реквизитов переехали из `BaseRequisiteInput/model/requisites/requisiteChecks.ts` в `src/utils/data/requisiteUtils`.

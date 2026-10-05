@@ -97,6 +97,28 @@ isSafeUrl('javascript:alert(1)') // false
 isSafeUrl('blob:https://example.com/7f3c', DOWNLOAD_PROTOCOLS) // true
 ```
 
+`isEmailFormat` — синтаксис адреса почты (`имя@домен.зона`, без пробелов); существование ящика не проверяет.
+
+```ts
+import { isEmailFormat } from '@ramzes1385/rise-ui-kit/utils'
+
+isEmailFormat('team@example.com') // true
+isEmailFormat('team@example') // false
+```
+
+---
+
+## requisiteUtils
+
+Проверка контрольных чисел реквизитов: `isValidInn` (10 и 12 цифр), `isValidOgrn` (ОГРН 13, ОГРНИП 15), `isValidKpp`, `isValidBik` (формат: 9 цифр, начинается с 04), `isValidAccount` и `isValidCorrespondentAccount` (счёт по БИК), `isValidSnils`. На них построены BaseRequisiteInput и проверка цифр в BaseDadataInput; те же функции по-прежнему экспортирует BaseRequisiteInput.
+
+```ts
+import { isValidAccount, isValidInn } from '@ramzes1385/rise-ui-kit/utils'
+
+isValidInn('7707083893') // true
+isValidAccount('40702810900000000001', '044525225') // проверка ключа счёта по БИК
+```
+
 ---
 
 ## cardUtils
@@ -246,6 +268,7 @@ paginationUtils
 rangeUtils
 ratingUtils
 recurrenceUtils
+requisiteUtils
 scriptUtils
 structuredDataUtils
 subtitleUtils
