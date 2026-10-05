@@ -14,6 +14,14 @@ function naturalSize(image: HTMLImageElement): Size {
 	return { width: image.naturalWidth, height: image.naturalHeight }
 }
 
+/** Описание: место под изображение — контейнер без внутренних отступов */
+function contentBoxSize(element: HTMLElement): Size {
+	const style = window.getComputedStyle(element)
+	const padX = (Number.parseFloat(style.paddingLeft) || 0) + (Number.parseFloat(style.paddingRight) || 0)
+	const padY = (Number.parseFloat(style.paddingTop) || 0) + (Number.parseFloat(style.paddingBottom) || 0)
+	return { width: Math.max(0, element.clientWidth - padX), height: Math.max(0, element.clientHeight - padY) }
+}
+
 /** Описание: размеры зума и их замер по изображениям зума и миникарты (`measure`) */
 function useZoomLayout(options: UseImageZoomOptions) {
 	const layout: ZoomLayout = {
@@ -25,6 +33,8 @@ function useZoomLayout(options: UseImageZoomOptions) {
 		mmContentOffsetY: ref(0),
 		containerWidth: ref(0),
 		containerHeight: ref(0),
+		spaceWidth: ref(0),
+		spaceHeight: ref(0),
 	}
 
 	function measureZoomImage(): void {
@@ -33,6 +43,11 @@ function useZoomLayout(options: UseImageZoomOptions) {
 		const contained = calcContain(naturalSize(zoomImg), { width: zoomImg.offsetWidth, height: zoomImg.offsetHeight })
 		layout.zoomContentW.value = contained.width
 		layout.zoomContentH.value = contained.height
+		const container = zoomImg.parentElement
+		if (!container) return
+		const space = contentBoxSize(container)
+		layout.spaceWidth.value = space.width
+		layout.spaceHeight.value = space.height
 	}
 
 	function measureMinimapImage(): void {

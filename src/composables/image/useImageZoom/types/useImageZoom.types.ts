@@ -78,4 +78,7 @@ export interface ZoomLayout {
 	mmContentOffsetY: Ref<number>
 	containerWidth: Ref<number>
 	containerHeight: Ref<number>
+	/** Место под изображение: контейнер просмотра без отступов */
+	spaceWidth: Ref<number>
+	spaceHeight: Ref<number>
 }

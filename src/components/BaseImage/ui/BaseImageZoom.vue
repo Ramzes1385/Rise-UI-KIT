@@ -3,7 +3,7 @@
 		<div
 			ref="dialogRef"
 			class="base-image__zoom"
-			:class="{ 'base-image__zoom--gallery': gallery.hasGallery.value }"
+			:class="{ 'base-image__zoom--gallery': gallery.hasGallery.value, 'base-image__zoom--animated': zoom.isZoomAnimated.value }"
 			role="dialog"
 			aria-modal="true"
 			:aria-label="dialogLabel"
@@ -90,6 +90,7 @@
 			<div class="base-image__zoom-container" @click.self="zoom.handleOverlayClick">
 				<img
 					ref="zoomImgRef"
+					:key="gallery.currentZoomSrc.value"
 					:src="gallery.currentZoomSrc.value"
 					:alt="imageAlt"
 					class="base-image__zoom-img"
@@ -124,6 +125,7 @@
 				@mousedown.prevent="zoom.handleMinimapDragStart">
 				<img
 					ref="minimapImgRef"
+					:key="gallery.currentZoomSrc.value"
 					:src="gallery.currentZoomSrc.value"
 					alt=""
 					class="base-image__minimap-img"

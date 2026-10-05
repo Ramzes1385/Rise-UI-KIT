@@ -45,7 +45,7 @@ function useZoomViewer(
 	const gallery = useImageGallery({
 		gallery: () => props.gallery,
 		src: zoomSrc,
-		resetZoom: () => zoom.resetZoom(),
+		resetZoom: () => zoom.resetView(),
 	})
 	const zoom = useImageZoom({
 		initialScale: () => props.zoomConfig?.initialScale ?? 1,

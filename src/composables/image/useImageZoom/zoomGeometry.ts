@@ -10,6 +10,10 @@ const ZOOM_SCALE_FLOOR = 0.05
 /** Наименьший размер рамки видимой области на миникарте, px */
 const MINIMAP_VIEWPORT_MIN = 10
 
+/** Полный оборот и четверть оборота, градусы */
+const FULL_TURN_DEG = 360
+const QUARTER_TURN_DEG = 90
+
 /** Описание: изображение, вписанное в рамку с сохранением пропорций (object-fit: contain): размер и отступы внутри рамки */
 function calcContain(natural: Size, frame: Size): ContainedSize {
 	const imgAspect = natural.width / natural.height
@@ -47,6 +51,31 @@ function minimapViewportAxis(axis: MinimapViewportAxis): { size: number; offset:
 	return { size, offset: Math.min(Math.max(offset, 0), axis.mmFrame - size) }
 }
 
+/** Описание: поворот на 90° или 270° (с любым числом полных оборотов) — ширина и высота меняются местами */
+function isQuarterTurn(rotation: number): boolean {
+	return Math.abs(rotation / QUARTER_TURN_DEG) % 2 === 1
+}
+
+/** Описание: ближайший к углу полный оборот (270° → 360°, 90° → 0°, −270° → −360°); без «−0» */
+function nearestFullTurn(rotation: number): number {
+	return Math.round(rotation / FULL_TURN_DEG) * FULL_TURN_DEG + 0
+}
+
+/** Описание: размер после поворота — на 90° и 270° ширина и высота меняются местами */
+function rotatedSize(size: Size, rotation: number): Size {
+	return isQuarterTurn(rotation) ? { width: size.height, height: size.width } : size
+}
+
+/**
+ * Описание: множитель вписывания повёрнутого изображения в место под него (≤ 1).
+ * Без поворота на четверть или без замеренного места — 1: изображение уже вписано вёрсткой.
+ */
+function rotatedFit(content: Size, space: Size, rotation: number): number {
+	if (!isQuarterTurn(rotation)) return 1
+	if (content.width <= 0 || content.height <= 0 || space.width <= 0 || space.height <= 0) return 1
+	return Math.min(1, space.width / content.height, space.height / content.width)
+}
+
 /** Описание: число или запасное значение, если число не конечное (NaN, Infinity) */
 function finiteOr(value: number, fallback: number): number {
 	return Number.isFinite(value) ? value : fallback
@@ -64,4 +93,14 @@ function normalizeZoomScales(raw: ZoomScales): ZoomScales {
 	return { minScale: low, maxScale: high, zoomStep, initialScale }
 }
 
-export { calcContain, clampTranslate, minimapRatio, minimapViewportAxis, normalizeZoomScales }
+export {
+	calcContain,
+	clampTranslate,
+	isQuarterTurn,
+	minimapRatio,
+	minimapViewportAxis,
+	nearestFullTurn,
+	normalizeZoomScales,
+	rotatedFit,
+	rotatedSize,
+}

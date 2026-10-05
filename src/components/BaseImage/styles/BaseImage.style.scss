@@ -219,6 +219,14 @@
 		will-change: transform;
 	}
 
+	&--animated &-img,
+	&--animated .base-image__minimap-img,
+	&--animated .base-image__minimap-viewport {
+		@include motion-safe {
+			transition: transform var(--rise-duration-slow) var(--rise-ease-emphasized, var(--rise-ease));
+		}
+	}
+
 	&-gallery {
 		position: absolute;
 		bottom: sz(16px);

@@ -5,6 +5,8 @@ export interface UseZoomMinimapOptions {
 	translateX: Ref<number>
 	translateY: Ref<number>
 	rotation: Ref<number>
+	/** Множитель вписывания повёрнутого изображения в зуме */
+	zoomFit: Readonly<Ref<number>>
 	zoomContentW: Ref<number>
 	zoomContentH: Ref<number>
 	mmContentWidth: Ref<number>

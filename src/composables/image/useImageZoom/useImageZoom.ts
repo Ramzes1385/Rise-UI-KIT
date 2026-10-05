@@ -7,6 +7,7 @@ import { useZoomTransform } from './useZoomTransform'
 import { useEscapeKey } from '@composables/overlay/useEscapeKey'
 import { computed, nextTick, onUnmounted, ref, watch } from 'vue'
 import { useScrollLock } from '@composables/overlay/useScrollLock'
+import { useReducedMotion } from '@composables/app/useReducedMotion'
 import type { UseImageZoomOptions } from './types/useImageZoom.types'
 
 /** Прокрутка колеса на один шаг масштаба, px: тачпад присылает много мелких событий, мышь — около 100 px на щелчок */
@@ -103,7 +104,8 @@ function useImageZoom(rawOptions: UseImageZoomOptions) {
 	const isZoomOpen = ref(false)
 	const { layout, measure } = useZoomLayout(options)
 	const transform = useZoomTransform(options, layout)
-	const { clampPosition, resetZoom, ...transformState } = transform
+	const { clampPosition, resetView, zoomFit: _zoomFit, ...transformState } = transform
+	const isReducedMotion = useReducedMotion()
 
 	function syncSizes(): void {
 		measure()
@@ -112,13 +114,13 @@ function useImageZoom(rawOptions: UseImageZoomOptions) {
 
 	function openZoom(): void {
 		isZoomOpen.value = true
-		resetZoom()
+		resetView()
 		nextTick(syncSizes)
 	}
 
 	function closeZoom(): void {
 		isZoomOpen.value = false
-		resetZoom()
+		resetView()
 		minimap.cleanupDragListeners()
 	}
 
@@ -136,7 +138,9 @@ function useImageZoom(rawOptions: UseImageZoomOptions) {
 	return {
 		isZoomOpen,
 		...transformState,
-		resetZoom,
+		resetView,
+		/** Плавные переходы поворота, масштаба и сдвига: выключены при «уменьшить движение» и при перетаскивании рамки миникарты */
+		isZoomAnimated: computed((): boolean => !isReducedMotion.value && !minimap.isMinimapDragging.value),
 		syncSizes,
 		openZoom,
 		closeZoom,

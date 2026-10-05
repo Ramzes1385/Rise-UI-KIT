@@ -496,7 +496,7 @@ describe('useImageZoom', () => {
 
 		zoom.rotateRight()
 
-		expect(zoom.minimapImageStyle.value.transform).toBe('rotate(90deg)')
+		expect(zoom.minimapImageStyle.value.transform).toBe('scale(0.75) rotate(90deg)')
 	})
 
 	it('должен устанавливать body overflow=hidden при открытии зума', async () => {
