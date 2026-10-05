@@ -1,13 +1,16 @@
 import type { Meta } from '@storybook/vue3-vite'
 import { DADATA_KINDS } from '@utils/data/dadataUtils'
 import type BaseDadataInput from '../ui/BaseDadataInput.vue'
-import { DADATA_INPUT_VARIANTS } from '../types/BaseDadataInput.types'
 import { ARG_GROUP, baseArgTypes, propGroup } from '@/stories/helpers'
+import { DADATA_INPUT_VARIANTS, DADATA_PRECISIONS } from '../types/BaseDadataInput.types'
 
 export const argTypes = {
 	...baseArgTypes({ variants: DADATA_INPUT_VARIANTS }),
 	modelValue: { control: 'text', table: propGroup(ARG_GROUP.content) },
+	suggestion: { control: false, table: propGroup(ARG_GROUP.content) },
 	kind: { control: 'select', options: DADATA_KINDS, table: propGroup(ARG_GROUP.behavior) },
+	isStrict: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+	precision: { control: 'select', options: DADATA_PRECISIONS, table: propGroup(ARG_GROUP.behavior) },
 	token: { control: false, table: propGroup(ARG_GROUP.behavior) },
 	baseUrl: { control: false, table: propGroup(ARG_GROUP.behavior) },
 	count: { control: 'number', table: propGroup(ARG_GROUP.behavior) },

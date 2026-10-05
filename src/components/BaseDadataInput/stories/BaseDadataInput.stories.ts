@@ -26,3 +26,6 @@ export const WithError = cases.WithError
 export const Loading = cases.Loading
 export const Empty = cases.Empty
 export const LongContent = cases.LongContent
+export const Strict = cases.Strict
+export const AddressPrecision = cases.AddressPrecision
+export const InnDigits = cases.InnDigits

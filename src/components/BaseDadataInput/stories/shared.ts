@@ -55,6 +55,15 @@ const ADDRESSES: DadataSuggestion[] = [
 	'г Казань, ул Баумана, д 44',
 ].map((value, index) => ({ value, unrestrictedValue: `${125009 + index * 1111}, ${value}` }))
 
+const TVERSKAYA = { city: 'Москва', street: 'Тверская' }
+
+export const PRECISE_ADDRESSES: DadataSuggestion[] = [
+	{ value: 'г Москва, ул Тверская', data: TVERSKAYA },
+	{ value: 'г Москва, ул Тверская, д 7', data: { ...TVERSKAYA, house: '7' } },
+	{ value: 'г Москва, ул Тверская, д 7, кв 1', data: { ...TVERSKAYA, house: '7', flat: '1' } },
+	{ value: 'г Москва, ул Тверская, д 7, кв 2', data: { ...TVERSKAYA, house: '7', flat: '2' } },
+]
+
 const NAMES: DadataSuggestion[] = ['Иванов Иван Иванович', 'Иванова Анна Сергеевна', 'Петров Пётр Петрович', 'Смирнова Мария'].map(
 	value => ({
 		value,
@@ -76,10 +85,10 @@ function matches(item: DadataSuggestion, query: string): boolean {
 	return words.every(word => haystack.includes(word))
 }
 
-export function demoSource(kind: DadataKind, delay = DEMO_DELAY): DadataSource {
+export function demoSource(kind: DadataKind, delay = DEMO_DELAY, items = FIXTURES[kind]): DadataSource {
 	return (query, { signal }) =>
 		new Promise((resolve, reject) => {
-			const timer = setTimeout(() => resolve(FIXTURES[kind].filter(item => matches(item, query))), delay)
+			const timer = setTimeout(() => resolve(items.filter(item => matches(item, query))), delay)
 			signal.addEventListener('abort', () => {
 				clearTimeout(timer)
 				reject(new DOMException('Aborted', 'AbortError'))
