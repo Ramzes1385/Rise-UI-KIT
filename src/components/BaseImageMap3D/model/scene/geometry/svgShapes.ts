@@ -13,5 +13,5 @@ function belongsTo(path: ShapePath, elementId: string): boolean {
 }
 
 export function svgElementShapes(paths: ShapePath[], elementId: string): Shape[] {
-	return paths.filter(path => belongsTo(path, elementId)).flatMap(path => SVGLoader.createShapes(path))
+	return paths.filter(path => belongsTo(path, elementId)).flatMap(path => path.toShapes())
 }

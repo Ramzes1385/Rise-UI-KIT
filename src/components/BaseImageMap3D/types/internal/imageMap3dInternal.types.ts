@@ -255,6 +255,8 @@ export interface CameraPoseState {
 	controls: ShallowRef<OrbitControls | null>
 	/** Положение камеры сейчас */
 	current: () => CameraPose
+	/** Основа следующего шага: цель идущего перехода (нажатия копятся) или положение сейчас */
+	next: () => CameraPose
 	/** Запомнить положение после жеста */
 	sync: () => void
 	/** Плавно перейти к положению */

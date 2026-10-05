@@ -16,6 +16,7 @@ const PERSPECTIVE_FOV = 35
 const ORTHO_DISTANCE = 2
 const PERSPECTIVE_MARGIN = 1.4
 const OBJECT_SHARE = 3
+const FRAME_MARGIN = 1.3
 const NEAR = 0.1
 const FAR = 1_000_000
 
@@ -33,7 +34,7 @@ export function fitViewCamera(camera: ImageMap3DViewCamera, size: { width: numbe
 	const aspect = size.width / Math.max(size.height, 1)
 	if (camera instanceof PerspectiveCamera) camera.aspect = aspect
 	else {
-		const half = extent / 2
+		const half = (extent / 2) * FRAME_MARGIN
 		camera.left = -half * aspect
 		camera.right = half * aspect
 		camera.top = half

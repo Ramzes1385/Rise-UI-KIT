@@ -43,7 +43,9 @@ function createLights(extent: number): Group {
 export function fadeFloor(entry: SceneLayerEntry): void {
 	entry.floorMaterials.forEach(material => {
 		material.opacity = entry.opacity
+		material.transparent = entry.opacity < 1
 		material.depthWrite = entry.opacity >= 1
+		material.needsUpdate = true
 	})
 	entry.modelMaterials.forEach(material => {
 		material.opacity = Number(material.userData.baseOpacity ?? 1) * entry.opacity

@@ -1,16 +1,16 @@
 import type { Texture } from 'three'
 import { SRGBColorSpace, TextureLoader } from 'three'
-import { sanitizeSvg } from '@components/BaseImageMap/model/svg/sanitizeSvg'
+import { cleanSvg } from '@components/BaseImageMap/model/svg/sanitizeSvg'
 import type { ImageMapLayer } from '@components/BaseImageMap/types/imageMapData.types'
 
 const SVG_TEXTURE_SCALE = 2
 const MAX_TEXTURE_SIZE = 4096
 
 export async function loadLayerSvg(layer: ImageMapLayer, signal: AbortSignal): Promise<string> {
-	if (layer.svg) return sanitizeSvg(layer.svg, '')
+	if (layer.svg) return cleanSvg(layer.svg)
 	if (!layer.svgUrl) return ''
 	const response = await fetch(layer.svgUrl, { signal })
-	return response.ok ? sanitizeSvg(await response.text(), '') : ''
+	return response.ok ? cleanSvg(await response.text()) : ''
 }
 
 export function svgTextureMarkup(markup: string, layer: ImageMapLayer): string {

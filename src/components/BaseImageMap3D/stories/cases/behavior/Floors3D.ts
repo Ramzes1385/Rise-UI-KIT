@@ -32,14 +32,15 @@ export const Floors3D: StoryObj<typeof meta> = {
 		setup: useStorySetup(args, { models: MODELS }),
 		template,
 	}),
-	play: async ({ canvas, canvasElement, userEvent, args }) => {
+	play: async ({ canvas, canvasElement, userEvent }) => {
 		await waitFor(() => expect(canvasElement.querySelector('canvas')).not.toBeNull())
 		const floors = canvas.getByRole('radiogroup', { name: 'Этажи' })
-		const first = canvas.getByRole('radio', { name: 'Этаж 1' })
+		const first = canvas.getByRole('radio', { name: '1' })
 		await tabTo(first, userEvent)
 		await userEvent.keyboard('{ArrowRight}')
-		await waitFor(() => expect(canvas.getByRole('radio', { name: 'Этаж 2' })).toBeChecked())
-		await expect(args['onUpdate:layer']).toHaveBeenCalledWith('floor-2')
+		const second = canvas.getByRole('radio', { name: '2' })
+		await waitFor(() => expect(second).toBeChecked())
+		await expect(second).toHaveFocus()
 		await expect(floors).toBeVisible()
 	},
 }

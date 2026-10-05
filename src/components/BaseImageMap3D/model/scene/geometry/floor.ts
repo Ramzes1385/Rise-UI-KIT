@@ -5,7 +5,7 @@ import type { ImageMapLayer } from '@components/BaseImageMap/types/imageMapData.
 const FLOOR_ROUGHNESS = 0.9
 
 function floorMaterial(): MeshStandardMaterial {
-	return new MeshStandardMaterial({ roughness: FLOOR_ROUGHNESS, metalness: 0, transparent: true })
+	return new MeshStandardMaterial({ roughness: FLOOR_ROUGHNESS, metalness: 0 })
 }
 
 export function createFloor(layer: ImageMapLayer, thickness: number): { floor: Group; slab: Mesh; top: Mesh } {

@@ -3,6 +3,7 @@ import type { BufferGeometry, Object3D } from 'three'
 import type { SceneContent, SceneObjectEntry, SceneObjectState, SceneStateColor } from '../../../types/internal/imageMap3dInternal.types'
 
 const OBJECT_ROUGHNESS = 0.6
+const OBJECT_RENDER_ORDER = 1
 
 function createObjectMaterial(): MeshStandardMaterial {
 	return new MeshStandardMaterial({ roughness: OBJECT_ROUGHNESS, metalness: 0, transparent: true })
@@ -16,6 +17,7 @@ export function createShapeEntry(
 	const material = createObjectMaterial()
 	const mesh = new Mesh(geometry, material)
 	mesh.name = ids.id
+	mesh.renderOrder = OBJECT_RENDER_ORDER
 	mesh.userData.objectId = ids.id
 	return { ...ids, material, meshes: [mesh], source: 'shape', colors, state: 'base' }
 }
@@ -30,6 +32,7 @@ export function adoptModelNode(
 	node.traverse(child => {
 		if (!(child instanceof Mesh)) return
 		child.material = material
+		child.renderOrder = OBJECT_RENDER_ORDER
 		child.userData.objectId = ids.id
 		meshes.push(child)
 	})

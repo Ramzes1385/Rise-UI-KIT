@@ -241,4 +241,16 @@ describe('BaseImageMap3D: плавные переходы камеры', () => {
 		await nextTick()
 		expect((camera() as OrthographicCamera).zoom).toBeCloseTo(1.5)
 	})
+
+	it('нажатия во время перехода копятся: два «Увеличить» — 2,25', async () => {
+		const { camera } = await renderCamera()
+		await fireEvent.click(screen.getByRole('button', { name: 'Увеличить' }))
+		flushFrames(10)
+		await nextTick()
+		await fireEvent.click(screen.getByRole('button', { name: 'Увеличить' }))
+		flushFrames(10)
+		flushFrames(1000)
+		await nextTick()
+		expect((camera() as OrthographicCamera).zoom).toBeCloseTo(2.25)
+	})
 })

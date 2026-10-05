@@ -72,6 +72,10 @@ function useCameraPose(options: CameraOptions): CameraPoseState {
 		show(goal.value)
 	}
 
+	function next(): CameraPose {
+		return tween.isRunning.value ? goal.value : current()
+	}
+
 	function sync(): void {
 		lastPose = current()
 		zoom.value = lastPose[5]
@@ -79,7 +83,7 @@ function useCameraPose(options: CameraOptions): CameraPoseState {
 
 	watch(tween.value, show)
 
-	return { tween, zoom, controls, current, sync, goTo, jump, lastPose: () => lastPose }
+	return { tween, zoom, controls, current, next, sync, goTo, jump, lastPose: () => lastPose }
 }
 
 function useOrbitControls(options: CameraOptions, state: CameraPoseState): void {
@@ -138,10 +142,10 @@ export function useCameraController(options: CameraOptions) {
 
 	return {
 		resetCamera: () => state.goTo(homePose(options)),
-		rotate: (degrees: number) => state.goTo(turn(state.current(), 3, degrees)),
-		tilt: (degrees: number) => state.goTo(turn(state.current(), 4, degrees)),
-		zoomIn: () => state.goTo(zoomBy(state.current(), ZOOM_STEP)),
-		zoomOut: () => state.goTo(zoomBy(state.current(), 1 / ZOOM_STEP)),
+		rotate: (degrees: number) => state.goTo(turn(state.next(), 3, degrees)),
+		tilt: (degrees: number) => state.goTo(turn(state.next(), 4, degrees)),
+		zoomIn: () => state.goTo(zoomBy(state.next(), ZOOM_STEP)),
+		zoomOut: () => state.goTo(zoomBy(state.next(), 1 / ZOOM_STEP)),
 		zoomToObject: (id: string) => {
 			const box = options.getObjectBox(id)
 			if (box) state.goTo(objectPose(box, state.current(), sceneExtent(options.getData())))

@@ -26,9 +26,9 @@ describe('положение камеры', () => {
 		const ortho = createViewCamera('isometric') as OrthographicCamera
 		expect(baseDistance(ortho, 1000)).toBe(2000)
 		fitViewCamera(ortho, { width: 400, height: 200 }, 100)
-		expect([ortho.left, ortho.right, ortho.top, ortho.bottom]).toEqual([-100, 100, 50, -50])
+		expect([ortho.left, ortho.right, ortho.top, ortho.bottom]).toEqual([-130, 130, 65, -65])
 		fitViewCamera(ortho, { width: 100, height: 0 }, 2)
-		expect(ortho.right).toBe(100)
+		expect(ortho.right).toBeCloseTo(130)
 		const perspective = createViewCamera('perspective') as PerspectiveCamera
 		expect(baseDistance(perspective, 1000)).toBeCloseTo((500 / Math.tan(MathUtils.degToRad(17.5))) * 1.4)
 		fitViewCamera(perspective, { width: 300, height: 100 }, 1000)
