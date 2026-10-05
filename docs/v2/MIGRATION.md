@@ -1914,4 +1914,11 @@ API кита не меняется. В Storybook добавлены пример
 - **Утилиты `tableExportUtils`** (`@ramzes1385/rise-ui-kit/utils`): `toCsv`, `toXlsx`, `createTableExportBlob`, `downloadTableExport`, `tableExportFileName`, `TABLE_EXPORT_FORMATS`; типы `TableExportData`, `TableExportColumn`, `TableExportRow`, `TableExportFormat`, `TableExportOptions`, `TableCsvOptions`, `TableXlsxOptions`.
 - **Словарь:** новый раздел `tableExport` (`BUTTON`, `CSV`, `XLSX`, `SELECTED`) — свой язык через `defineLocale()` должен его заполнить (у `ru` и `en` он есть).
 - **Без новых зависимостей:** CSV и XLSX (ZIP без сжатия, CRC-32) пишет код кита; размер входа `utils` вырос.
+## Задача feat-audio-transcript: расшифровка в BaseAudioPlayer
+
+- **BaseAudioPlayer — новый проп `transcript`** (текст WebVTT/SRT или адрес `.vtt`/`.srt`; http:, https:, blob:, data: или относительный) и **`v-model:is-transcript-open`** (событие `update:isTranscriptOpen`). Без `transcript` вид и DOM прежние.
+- С `transcript` у плеера пятая колонка — кнопка «Расшифровка» (`aria-expanded`, `aria-controls` у открытой панели), под плеером — панель `<section aria-label="Расшифровка">`: поиск, «Скачать расшифровку», список `<ol aria-label="Реплики">` с кнопками реплик (`aria-current="true"` у текущей), итог поиска — `role="status"`. Новые части `classes`: `transcriptToggle`, `transcript`.
+- Разбор — общий `parseSubtitles`/`decodeSubtitles` (`@utils/media/subtitleUtils`); файл по адресу загружается `fetch` без cookies других сайтов (по умолчанию `same-origin`); смена `transcript` отменяет прежнюю загрузку.
+- **Умолчания BaseAudioPlayer теперь через `kitDefaults`:** `defaults.BaseAudioPlayer` и `defaults.global` из `createUiKitPlugin` действуют на `bars`, `isExclusive`, `sizeScale` (раньше игнорировались).
+- Словарь: новый раздел `transcript` (`UI_TRANSCRIPT`) — `TITLE`, `CUES`, `SEARCH`, `SEARCH_PLACEHOLDER`, `FOUND`, `NOT_FOUND`, `DOWNLOAD`, `LOADING`, `ERROR`, `EMPTY`, `FOLLOW`. Свой язык через `defineLocale` — добавьте раздел.
 

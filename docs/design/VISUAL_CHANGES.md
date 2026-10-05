@@ -1435,4 +1435,9 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 
 - Новая кнопка «Экспорт» (BaseButton `outline`, значок `download` слева, `chevron-down` справа, переворачивается при открытом меню) в панели инструментов BaseTable — только при `features.export`; без него вид прежний, снимки существующих историй не меняются. Стоит справа: после «Колонки», без «Колонок» — прижата к правому краю (`margin-left: auto`). Меню — BaseDropdownMenu: «CSV», «Excel (XLSX)», при выбранных строках сверху подпись «Только выбранные строки: N».
 - Новая история `data-basetable--export` (обе темы, снимка нет). История `data-basetable--toolbar` по-прежнему показывает свою кнопку «Экспорт» в слоте `toolbar-append` как пример слота — не изменялась.
+## Задача feat-audio-transcript: расшифровка в BaseAudioPlayer
+
+- **Без `transcript`** вид BaseAudioPlayer прежний (сетка из четырёх колонок не меняется), существующие истории и снимки не затронуты.
+- **С `transcript`** — справа после скорости круглая кнопка-иконка «Расшифровка» (`subtitles`, ghost; открытая — фон `--rise-primary-soft`, иконка `--rise-primary-text`). Под плеером на всю ширину — панель с верхней линией `--rise-border-muted`: поле поиска с иконкой и кнопка «Скачать» (`download`), список реплик высотой до 240 px с тонкой полосой прокрутки. Реплика: время (`xs`, `--rise-text-toned`, моноширинные цифры), говорящий (`xs`, полужирный), текст (`sm`); текущая — фон `--rise-primary-soft` и полоса 3 px `--rise-primary` слева, в ghost — от `currentcolor`. Совпадения поиска — `<mark>` с фоном `--rise-warning` 35 %. Появление панели — прозрачность и сдвиг на 6 px (`--rise-duration`), при reduced motion — без анимации.
+- Новые истории `media-baseaudioplayer--transcript` (подкаст, панель открывает play) и `media-baseaudioplayer--transcript-lecture` (лекция, soft, панель открыта сразу); скриншот-тестов к ним нет — эталоны делает владелец.
 
