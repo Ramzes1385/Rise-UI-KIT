@@ -1,5 +1,6 @@
 import { computed } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
 import { calcIconScale } from '@utils/media/iconUtils'
 import { useColorMode } from '@composables/app/useColorMode'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
@@ -10,6 +11,7 @@ export function useBaseColorModeButton(props: ColorModeButtonProps, emit: BaseCo
 
 	return {
 		...useStandardBaseComponent('base-color-mode-button', props, ['root', 'icon']),
+		ui: useUi(props, 'base-color-mode-button'),
 		isDark,
 		resolvedLabel: computed(() => props.label ?? UI_ARIA.DARK_THEME),
 		iconScale: computed(() => calcIconScale('sm', props.sizeScale)),

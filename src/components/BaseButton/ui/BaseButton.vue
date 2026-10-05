@@ -16,7 +16,9 @@
 		:aria-disabled="isLoading || (isDisabled && isFocusableWhenDisabled) ? 'true' : undefined"
 		:aria-busy="isLoading ? 'true' : undefined"
 		@click="handleClick">
-		<span v-if="isLoading" :class="ui('loader')" aria-hidden="true"></span>
+		<Transition name="base-button__loader">
+			<span v-if="isLoading" :class="ui('loader')" aria-hidden="true"></span>
+		</Transition>
 		<span :class="ui('content')">
 			<span v-if="$slots.left" :class="ui('slot-left')">
 				<slot name="left" />

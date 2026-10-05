@@ -1,7 +1,15 @@
+$group-radius: sz(ct(button-group, radius, var(--rise-control-radius)));
+
 .base-button-group {
+	--button-group-padding: #{ct(button-group, padding, 0px)};
+
 	display: inline-flex;
 	align-items: stretch;
 	vertical-align: middle;
+	padding: space(var(--button-group-padding));
+	border-radius: $group-radius;
+	box-shadow: ct(button-group, shadow, none);
+	background-color: ct(button-group, bg, transparent);
 
 	> * {
 		position: relative;
@@ -19,19 +27,19 @@
 	}
 
 	&--horizontal > * + * {
-		margin-left: -1px;
+		margin-left: ct(button-group, gap, -1px);
 	}
 
 	&--horizontal > :first-child,
 	&--horizontal > :first-child .base-button {
-		border-top-left-radius: sz(var(--rise-control-radius));
-		border-bottom-left-radius: sz(var(--rise-control-radius));
+		border-top-left-radius: $group-radius;
+		border-bottom-left-radius: $group-radius;
 	}
 
 	&--horizontal > :last-child,
 	&--horizontal > :last-child .base-button {
-		border-top-right-radius: sz(var(--rise-control-radius));
-		border-bottom-right-radius: sz(var(--rise-control-radius));
+		border-top-right-radius: $group-radius;
+		border-bottom-right-radius: $group-radius;
 	}
 
 	&--vertical {
@@ -39,16 +47,16 @@
 	}
 
 	&--vertical > * + * {
-		margin-top: -1px;
+		margin-top: ct(button-group, gap, -1px);
 	}
 
 	&--vertical > :first-child {
-		border-top-left-radius: sz(var(--rise-control-radius));
-		border-top-right-radius: sz(var(--rise-control-radius));
+		border-top-left-radius: $group-radius;
+		border-top-right-radius: $group-radius;
 	}
 
 	&--vertical > :last-child {
-		border-bottom-left-radius: sz(var(--rise-control-radius));
-		border-bottom-right-radius: sz(var(--rise-control-radius));
+		border-bottom-left-radius: $group-radius;
+		border-bottom-right-radius: $group-radius;
 	}
 }

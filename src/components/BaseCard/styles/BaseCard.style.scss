@@ -43,6 +43,15 @@
 			border-color: ct(card, border-hover, var(--rise-border-accented));
 			box-shadow: ct(card, shadow-hover, var(--rise-shadow-sm));
 		}
+
+		@include motion-safe {
+			transition-property:
+				color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, box-shadow, opacity, transform;
+
+			@include hover {
+				transform: translateY(calc(var(--rise-motion-distance) / -4));
+			}
+		}
 	}
 
 	&--disabled {

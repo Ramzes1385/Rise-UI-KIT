@@ -17,6 +17,7 @@ const template = `
 `
 
 export const Theming: StoryObj<typeof meta> = {
+	name: 'Токены',
 	argTypes: { variant: { control: false } },
 	parameters: {
 		docs: {

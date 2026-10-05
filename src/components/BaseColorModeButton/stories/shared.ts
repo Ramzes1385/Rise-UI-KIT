@@ -17,3 +17,18 @@ export const FRAME_SOURCE = {
 		onBeforeUnmount(colorMode.stop)
 	`,
 }
+
+export function useDetachedColorMode() {
+	const colorMode = createColorMode({ target: () => null, storageKey: false, initialMode: 'light' })
+	onBeforeUnmount(colorMode.stop)
+	return { colorMode }
+}
+
+export const DETACHED_SOURCE = {
+	importsFrom: { '@ramzes1385/rise-ui-kit/composables': ['createColorMode'] },
+	vue: ['onBeforeUnmount'],
+	script: `
+		const colorMode = createColorMode({ target: () => null, storageKey: false, initialMode: 'light' })
+		onBeforeUnmount(colorMode.stop)
+	`,
+}

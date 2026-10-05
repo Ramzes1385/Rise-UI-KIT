@@ -9,19 +9,20 @@
 		align-items: center;
 		justify-content: center;
 		box-sizing: border-box;
-		min-width: sz(18px);
-		height: sz(18px);
-		padding: 0 sz(5px);
-		border: 1px solid transparent;
-		border-radius: var(--rise-radius-full);
-		box-shadow: 0 0 0 2px var(--rise-bg);
-		@include text-size(xs);
-		font-weight: var(--rise-font-weight-medium);
+		min-width: sz(ct(chip, badge-height, 18px));
+		height: sz(ct(chip, badge-height, 18px));
+		padding: 0 sz(ct(chip, badge-padding-x, 5px));
+		border: 1px solid ct(chip, badge-border, transparent);
+		border-radius: sz(ct(chip, badge-radius, var(--rise-radius-full)));
+		box-shadow: ct(chip, badge-shadow, 0 0 0 2px var(--rise-bg));
+		font-size: sz(ct(chip, badge-font-size, var(--rise-font-size-xs)));
+		line-height: sz(var(--rise-line-height-xs));
+		font-weight: ct(chip, badge-font-weight, var(--rise-font-weight-medium));
 		font-variant-numeric: tabular-nums;
 		white-space: nowrap;
 		cursor: pointer;
-		@include custom-bg(background-color, var(--rise-primary));
-		@include custom-text(color, var(--rise-on-primary));
+		@include custom-bg(background-color, ct(chip, badge-bg, var(--rise-primary)));
+		@include custom-text(color, ct(chip, badge-text, var(--rise-on-primary)));
 
 		&--top-right {
 			top: 0;
@@ -53,13 +54,17 @@
 		@include focus-ring;
 	}
 
+	&__value {
+		display: inline-block;
+	}
+
 	&--soft &__badge {
 		@include custom-bg(background-color, var(--rise-primary-soft));
 		@include custom-text(color, var(--rise-primary-text));
 	}
 
 	&--outline &__badge {
-		border-color: var(--rise-border-accented);
+		border-color: ct(chip, badge-border, var(--rise-border-accented));
 		@include custom-bg(background-color, var(--rise-bg));
 		@include custom-text(color, var(--rise-text));
 	}
@@ -70,11 +75,43 @@
 	}
 
 	&--shadow &__badge {
-		border-color: var(--rise-border);
-		box-shadow:
-			0 0 0 2px var(--rise-bg),
-			var(--rise-shadow-sm);
+		border-color: ct(chip, badge-border, var(--rise-border));
+		box-shadow: ct(chip, badge-shadow, (0 0 0 2px var(--rise-bg), var(--rise-shadow-sm)));
 		@include custom-bg(background-color, var(--rise-bg));
 		@include custom-text(color, var(--rise-text-highlighted));
 	}
+}
+
+.base-chip__badge-enter-active {
+	transition:
+		opacity var(--rise-duration) var(--rise-ease-out),
+		scale var(--rise-duration) var(--rise-ease-spring);
+}
+
+.base-chip__badge-leave-active {
+	transition:
+		opacity var(--rise-duration-fast) var(--rise-ease-in),
+		scale var(--rise-duration-fast) var(--rise-ease-in);
+}
+
+.base-chip__badge-enter-from,
+.base-chip__badge-leave-to {
+	opacity: 0;
+	scale: calc(1 - (1 - var(--rise-motion-scale-from)) * 10);
+}
+
+.base-chip__value-enter-active {
+	transition:
+		opacity var(--rise-duration) var(--rise-ease-out),
+		transform var(--rise-duration) var(--rise-ease-spring);
+}
+
+.base-chip__value-enter-from {
+	opacity: 0;
+	transform: scale(calc(1 - (1 - var(--rise-motion-scale-from)) * 4));
+}
+
+.base-chip__value-leave-active {
+	position: absolute;
+	opacity: 0;
 }

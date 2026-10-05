@@ -27,3 +27,5 @@ export const HiddenOnZero = cases.HiddenOnZero
 export const LongContent = cases.LongContent
 export const Counter = cases.Counter
 export const ClickableBadge = cases.ClickableBadge
+export const Theming = cases.Theming
+export const Animations = cases.Animations

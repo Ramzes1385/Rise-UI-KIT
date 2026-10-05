@@ -31,3 +31,4 @@ export const FixedHeight = cases.FixedHeight
 export const Hoverable = cases.Hoverable
 export const Clickable = cases.Clickable
 export const Disabled = cases.Disabled
+export const Animations = cases.Animations

@@ -28,3 +28,4 @@ export const InForm = cases.InForm
 export const Padding = cases.Padding
 export const Theming = cases.Theming
 export const Keyboard = cases.Keyboard
+export const Animations = cases.Animations

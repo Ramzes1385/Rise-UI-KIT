@@ -1,6 +1,6 @@
 <template>
 	<BaseButton
-		class="base-color-mode-button"
+		:class="ui('root')"
 		:variant="variant"
 		:size-scale="sizeScale"
 		:color="color"
@@ -10,7 +10,16 @@
 		:aria-pressed="isDark ? 'true' : 'false'"
 		:title="resolvedLabel"
 		@click="handleClick">
-		<BaseIcon :name="isDark ? 'moon' : 'sun'" :size-scale="iconScale" :custom-class="classes.icon" />
+		<span :class="ui('icons')">
+			<Transition name="base-color-mode-button__icon">
+				<BaseIcon
+					:key="isDark ? 'moon' : 'sun'"
+					:name="isDark ? 'moon' : 'sun'"
+					:size-scale="iconScale"
+					:class="ui('icon')"
+					:custom-class="classes.icon" />
+			</Transition>
+		</span>
 	</BaseButton>
 </template>
 
@@ -34,5 +43,5 @@ const props = withDefaults(
 
 const emit = defineEmits<BaseColorModeButtonEmits>()
 
-const { classes, isDark, resolvedLabel, iconScale, handleClick } = useBaseColorModeButton(props, emit)
+const { ui, classes, isDark, resolvedLabel, iconScale, handleClick } = useBaseColorModeButton(props, emit)
 </script>

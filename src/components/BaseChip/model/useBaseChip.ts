@@ -1,6 +1,7 @@
 import { computed } from 'vue'
 import { formatMessage } from '@/locales'
 import { UI_ARIA } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
 import { useClickable } from '@composables/interaction/useClickable'
 import type { BaseChipEmits, ChipProps } from '../types/BaseChip.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
@@ -22,6 +23,7 @@ export function useBaseChip(props: ChipProps, emit: BaseChipEmits) {
 	return {
 		...clickable,
 		...useStandardBaseComponent('base-chip', props, ['root', 'badge']),
+		ui: useUi(props, 'base-chip'),
 		isVisible: computed((): boolean => {
 			if (props.content === undefined || props.content === '') return false
 			return !(props.isHiddenOnZero && numericValue.value === 0)

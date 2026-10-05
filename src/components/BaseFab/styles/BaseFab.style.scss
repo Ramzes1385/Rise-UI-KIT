@@ -5,23 +5,23 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	gap: sz(8px);
-	width: sz(56px);
-	height: sz(56px);
+	gap: sz(ct(fab, gap, 8px));
+	width: sz(ct(fab, height, 56px));
+	height: sz(ct(fab, height, 56px));
 	padding: 0;
-	border: 1px solid transparent;
-	border-radius: var(--rise-radius-full);
-	@include custom-bg(background-color, var(--rise-primary));
-	@include custom-text(color, var(--rise-on-primary));
-	box-shadow: var(--rise-shadow-lg);
+	border: 1px solid ct(fab, border, transparent);
+	border-radius: sz(ct(fab, radius, var(--rise-radius-full)));
+	@include custom-bg(background-color, ct(fab, bg, var(--rise-primary)));
+	@include custom-text(color, ct(fab, text, var(--rise-on-primary)));
+	box-shadow: ct(fab, shadow, var(--rise-shadow-lg));
 	cursor: pointer;
 	text-decoration: none;
 	@include text-size(sm);
-	font-weight: var(--rise-font-weight-medium);
+	font-weight: ct(fab, font-weight, var(--rise-font-weight-medium));
 	@include transition-colors;
 	@include focus-ring;
 
-	@include custom-bg-hover(background-color, var(--rise-primary-hover));
+	@include custom-bg-hover(background-color, ct(fab, bg-hover, var(--rise-primary-hover)));
 
 	&--bottom-right {
 		right: calc(var(--fab-offset) + env(safe-area-inset-right, 0px));
@@ -50,8 +50,8 @@
 
 	&--extended {
 		width: auto;
-		height: sz(48px);
-		padding: 0 sz(20px);
+		height: sz(ct(fab, height, 48px));
+		padding: 0 sz(ct(fab, padding-x, 20px));
 	}
 
 	&--disabled {
@@ -66,7 +66,7 @@
 	}
 
 	&--outline {
-		border-color: var(--rise-border-accented);
+		border-color: ct(fab, border, var(--rise-border-accented));
 		@include custom-bg(background-color, var(--rise-bg));
 		@include custom-text(color, var(--rise-text-highlighted));
 

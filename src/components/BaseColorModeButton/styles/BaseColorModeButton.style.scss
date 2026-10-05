@@ -1,8 +1,46 @@
 .base-color-mode-button.base-button {
-	--btn-pad-top: 7px;
-	--btn-pad-right: 7px;
-	--btn-pad-bottom: 7px;
-	--btn-pad-left: 7px;
+	--btn-pad-top: #{ct(color-mode-button, padding, 7px)};
+	--btn-pad-right: #{ct(color-mode-button, padding, 7px)};
+	--btn-pad-bottom: #{ct(color-mode-button, padding, 7px)};
+	--btn-pad-left: #{ct(color-mode-button, padding, 7px)};
 
 	flex: none;
+
+	&:focus-visible {
+		outline-color: ct(color-mode-button, ring, var(--rise-focus-ring));
+	}
+
+	@include hover {
+		.base-color-mode-button__icons {
+			color: ct(color-mode-button, text-hover, ct(color-mode-button, text, currentcolor));
+		}
+	}
+}
+
+.base-color-mode-button__icons {
+	display: grid;
+	place-items: center;
+	color: ct(color-mode-button, text, currentcolor);
+	@include transition-colors;
+
+	> * {
+		grid-area: 1 / 1;
+	}
+}
+
+.base-color-mode-button__icon-enter-active,
+.base-color-mode-button__icon-leave-active {
+	transition:
+		opacity var(--rise-duration) var(--rise-ease),
+		transform var(--rise-duration) var(--rise-ease-spring);
+}
+
+.base-color-mode-button__icon-enter-from {
+	opacity: 0;
+	transform: rotate(-90deg) scale(var(--rise-motion-scale-from));
+}
+
+.base-color-mode-button__icon-leave-to {
+	opacity: 0;
+	transform: rotate(90deg) scale(var(--rise-motion-scale-from));
 }

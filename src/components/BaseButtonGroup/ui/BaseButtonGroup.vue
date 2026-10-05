@@ -1,7 +1,6 @@
 <template>
 	<div
-		class="base-button-group"
-		:class="[`base-button-group--${orientation}`, classes.root]"
+		:class="[ui('root'), `base-button-group--${orientation}`, classes.root]"
 		:style="[sizeScaleStyle]"
 		role="group"
 		:aria-label="ariaLabel">
@@ -27,5 +26,5 @@ const props = withDefaults(
 
 defineSlots<BaseButtonGroupSlots>()
 
-const { sizeScaleStyle, classes } = useBaseButtonGroup(props)
+const { ui, sizeScaleStyle, classes } = useBaseButtonGroup(props)
 </script>

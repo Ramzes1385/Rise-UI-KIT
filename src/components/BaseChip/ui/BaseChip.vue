@@ -1,17 +1,20 @@
 <template>
-	<div class="base-chip" :class="[variantClass, classes.root]" :style="[sizeScaleStyle, variantStyle]">
+	<div :class="[ui('root'), variantClass, classes.root]" :style="[sizeScaleStyle, variantStyle]">
 		<slot />
-		<span
-			v-if="isVisible"
-			class="base-chip__badge"
-			:class="[`base-chip__badge--${placement}`, { 'base-chip__badge--clickable': isClickable }, classes.badge]"
-			:style="customColorStyle"
-			v-bind="clickableAttributes"
-			:aria-label="badgeLabel"
-			@click="handleBadgeClick"
-			@keydown="handleKeydown">
-			{{ displayContent }}
-		</span>
+		<Transition name="base-chip__badge">
+			<span
+				v-if="isVisible"
+				:class="[ui('badge'), `base-chip__badge--${placement}`, { 'base-chip__badge--clickable': isClickable }, classes.badge]"
+				:style="customColorStyle"
+				v-bind="clickableAttributes"
+				:aria-label="badgeLabel"
+				@click="handleBadgeClick"
+				@keydown="handleKeydown">
+				<Transition name="base-chip__value">
+					<span :key="displayContent" :class="ui('value')">{{ displayContent }}</span>
+				</Transition>
+			</span>
+		</Transition>
 	</div>
 </template>
 
@@ -38,6 +41,7 @@ const emit = defineEmits<BaseChipEmits>()
 defineSlots<BaseChipSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

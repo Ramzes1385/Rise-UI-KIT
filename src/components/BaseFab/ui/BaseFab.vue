@@ -1,8 +1,8 @@
 <template>
 	<component
 		:is="isLink ? BaseLink : 'button'"
-		class="base-fab"
 		:class="[
+			ui('root'),
 			variantClass,
 			`base-fab--${position}`,
 			{ 'base-fab--extended': isExtended, 'base-fab--contained': isContained, 'base-fab--disabled': isDisabled },
@@ -12,8 +12,8 @@
 		v-bind="elementProps"
 		:aria-label="isExtended ? undefined : label"
 		@click="emit('click', $event)">
-		<BaseIcon :name="icon" class="base-fab__icon" :custom-class="classes.icon" :size-scale="calcIconScale('md', sizeScale)" />
-		<span v-if="isExtended" class="base-fab__label" :class="classes.label">{{ label }}</span>
+		<BaseIcon :name="icon" :class="ui('icon')" :custom-class="classes.icon" :size-scale="calcIconScale('md', sizeScale)" />
+		<span v-if="isExtended" :class="[ui('label'), classes.label]">{{ label }}</span>
 	</component>
 </template>
 
@@ -43,5 +43,5 @@ const props = withDefaults(
 
 const emit = defineEmits<BaseFabEmits>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, isLink, elementProps } = useBaseFab(props)
+const { ui, sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, isLink, elementProps } = useBaseFab(props)
 </script>

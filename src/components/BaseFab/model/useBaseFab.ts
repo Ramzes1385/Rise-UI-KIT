@@ -1,4 +1,5 @@
 import { computed } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import type { BaseFabProps } from '../types/BaseFab.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 
@@ -7,6 +8,7 @@ export function useBaseFab(props: BaseFabProps) {
 
 	return {
 		...useStandardBaseComponent('base-fab', props, ['root', 'icon', 'label']),
+		ui: useUi(props, 'base-fab'),
 		isLink,
 		elementProps: computed(() =>
 			isLink.value
