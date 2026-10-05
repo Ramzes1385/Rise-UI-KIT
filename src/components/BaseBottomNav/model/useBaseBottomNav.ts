@@ -6,10 +6,11 @@ import type { ResolvedLink } from '@composables/interaction/useLink'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { computed, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import { resolveLink, useLinkComponent } from '@composables/interaction/useLink'
+import { getIndicatorStyle, getNotchStyle, getPrimaryIndex } from './bottomNavLayout'
 import type { BaseBottomNavEmits, BottomNavEntry, BottomNavItem, BottomNavProps } from '../types/BaseBottomNav.types'
 import { BOTTOM_NAV_MAX_ITEMS, BOTTOM_NAV_MIN_ITEMS, BOTTOM_NAV_SCROLL_THRESHOLD } from '../types/BaseBottomNav.types'
 
-const BOTTOM_NAV_ELEMENTS = ['root', 'list', 'item', 'link', 'icon', 'label', 'badge']
+const BOTTOM_NAV_ELEMENTS = ['root', 'bar', 'list', 'item', 'link', 'icon', 'label', 'badge']
 
 function useItemCountWarning(props: BottomNavProps): void {
 	watch(
@@ -88,19 +89,31 @@ function useEntries(props: BottomNavProps, current: () => string | null) {
 		return resolveLink(options, props.linkComponent ?? appLinkComponent)
 	}
 
-	return computed<BottomNavEntry[]>(() =>
-		props.items.map((item, index) => {
+	return computed<BottomNavEntry[]>(() => {
+		const primaryIndex = getPrimaryIndex(props.items, props.variant)
+		return props.items.map((item, index) => {
 			const isActive = item.value === current()
 			return {
 				item,
 				badgeId: `${ownId}-badge-${index}`,
 				link: getLink(item),
 				isActive,
+				isPrimary: index === primaryIndex,
 				icon: isActive && item.activeIcon ? item.activeIcon : item.icon,
 				badge: badgeOf(item, props.maxBadge),
 			}
+		})
+	})
+}
+
+function useBarLayout(props: BottomNavProps, current: () => string | null) {
+	return {
+		indicatorStyle: computed(() => {
+			const activeIndex = props.items.findIndex(item => item.value === current())
+			return getIndicatorStyle(props.variant, activeIndex, props.items.length)
 		}),
-	)
+		notchStyle: computed(() => getNotchStyle(getPrimaryIndex(props.items, props.variant), props.items.length)),
+	}
 }
 
 export function useBaseBottomNav(props: BottomNavProps, emit: BaseBottomNavEmits) {
@@ -117,6 +130,7 @@ export function useBaseBottomNav(props: BottomNavProps, emit: BaseBottomNavEmits
 		...useStandardBaseComponent('base-bottom-nav', props, BOTTOM_NAV_ELEMENTS),
 		...useScrollHiding(props),
 		entries: useEntries(props, () => current.value),
+		...useBarLayout(props, () => current.value),
 		navLabel: computed(() => props.ariaLabel ?? UI_ARIA.BOTTOM_NAV),
 		iconScale: computed(() => calcIconScale('lg', props.sizeScale)),
 		badgeScale: computed(() => calcIconScale('sm', props.sizeScale)),

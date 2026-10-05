@@ -3,10 +3,15 @@ import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import type { LinkComponent, LinkTo, ResolvedLink } from '@composables/interaction/useLink'
 
 /**
- * Варианты оформления панели: default — фон страницы и верхняя граница, soft — приподнятый фон без границы,
+ * Варианты оформления панели. Классика: default — фон страницы и верхняя граница, soft — приподнятый фон без границы,
  * outline — фон страницы и заметная граница, ghost — прозрачная панель без границы.
+ * Новые: floating — парящая скруглённая панель с тенью и отступом от краёв, glass — полупрозрачная панель с размытием фона,
+ * notched — панель с вырезом под главное действие (`BottomNavItem.isPrimary`).
  */
-export const BOTTOM_NAV_VARIANTS = ['default', 'soft', 'outline', 'ghost'] as const
+export const BOTTOM_NAV_VARIANTS = ['default', 'soft', 'outline', 'ghost', 'floating', 'glass', 'notched'] as const
+
+/** Варианты со скользящим индикатором выбранного пункта */
+export const BOTTOM_NAV_SLIDING_VARIANTS: readonly BottomNavVariant[] = ['floating', 'glass']
 
 /** Наименьшее рекомендуемое число пунктов (Material, Apple HIG): меньше — предупреждение в консоли */
 export const BOTTOM_NAV_MIN_ITEMS = 3
@@ -19,7 +24,7 @@ export const BOTTOM_NAV_SCROLL_THRESHOLD = 8
 
 export type BottomNavVariant = (typeof BOTTOM_NAV_VARIANTS)[number]
 
-type BottomNavElement = 'root' | 'list' | 'item' | 'link' | 'icon' | 'label' | 'badge'
+type BottomNavElement = 'root' | 'bar' | 'list' | 'item' | 'link' | 'icon' | 'label' | 'badge'
 
 export interface BottomNavItem {
 	/** Значение пункта для v-model */
@@ -42,6 +47,8 @@ export interface BottomNavItem {
 	badgeLabel?: string
 	/** Выключенный пункт: без адреса, не выбирается */
 	isDisabled?: boolean
+	/** Главное действие: в варианте `notched` — круглая кнопка над вырезом панели (учитывается первый такой пункт), в остальных — обычный пункт */
+	isPrimary?: boolean
 }
 
 /** Пункт, подготовленный к отрисовке: ссылка или кнопка, выбран ли, значок и бейдж */
@@ -52,6 +59,8 @@ export interface BottomNavEntry {
 	link: ResolvedLink
 	/** Пункт выбран: `aria-current="page"` */
 	isActive: boolean
+	/** Пункт — главное действие над вырезом (только вариант `notched`) */
+	isPrimary: boolean
 	/** Имя значка с учётом `activeIcon` */
 	icon: string
 	/** id описания бейджа для `aria-describedby` */

@@ -6,42 +6,49 @@
 		:aria-label="navLabel"
 		@focusin="handleFocusIn"
 		@focusout="handleFocusOut">
-		<ul class="base-bottom-nav__list" :class="classes.list">
-			<li v-for="entry in entries" :key="entry.item.value" class="base-bottom-nav__item" :class="classes.item">
-				<component
-					:is="entry.link.is"
-					v-bind="entry.link.attrs"
-					class="base-bottom-nav__link"
-					:class="[
-						{ 'base-bottom-nav__link--active': entry.isActive, 'base-bottom-nav__link--disabled': entry.item.isDisabled },
-						classes.link,
-					]"
-					:aria-current="entry.isActive ? 'page' : undefined"
-					:aria-describedby="entry.badge ? entry.badgeId : undefined"
-					@click="handleItemClick(entry, $event)">
-					<span class="base-bottom-nav__icon-wrap">
-						<slot name="icon" :item="entry.item" :is-active="entry.isActive">
-							<BaseIcon
-								:name="entry.icon"
-								:size-scale="iconScale"
-								class="base-bottom-nav__icon"
-								:custom-class="classes.icon" />
-						</slot>
-						<BaseBadge
-							v-if="entry.badge"
-							class="base-bottom-nav__badge"
-							:custom-class="classes.badge"
-							:label="entry.badge.text"
-							:size-scale="badgeScale"
-							aria-hidden="true" />
-					</span>
-					<span class="base-bottom-nav__label" :class="classes.label">
-						<slot name="label" :item="entry.item" :is-active="entry.isActive">{{ entry.item.label }}</slot>
-					</span>
-				</component>
-				<span v-if="entry.badge" :id="entry.badgeId" class="base-bottom-nav__sr-only">{{ entry.badge.label }}</span>
-			</li>
-		</ul>
+		<div class="base-bottom-nav__bar" :class="[{ 'base-bottom-nav__bar--notched': notchStyle }, classes.bar]" :style="notchStyle">
+			<span v-if="indicatorStyle" class="base-bottom-nav__indicator" :style="indicatorStyle" aria-hidden="true" />
+			<ul class="base-bottom-nav__list" :class="classes.list">
+				<li v-for="entry in entries" :key="entry.item.value" class="base-bottom-nav__item" :class="classes.item">
+					<component
+						:is="entry.link.is"
+						v-bind="entry.link.attrs"
+						class="base-bottom-nav__link"
+						:class="[
+							{
+								'base-bottom-nav__link--active': entry.isActive,
+								'base-bottom-nav__link--disabled': entry.item.isDisabled,
+								'base-bottom-nav__link--primary': entry.isPrimary,
+							},
+							classes.link,
+						]"
+						:aria-current="entry.isActive ? 'page' : undefined"
+						:aria-describedby="entry.badge ? entry.badgeId : undefined"
+						@click="handleItemClick(entry, $event)">
+						<span class="base-bottom-nav__icon-wrap">
+							<slot name="icon" :item="entry.item" :is-active="entry.isActive">
+								<BaseIcon
+									:name="entry.icon"
+									:size-scale="iconScale"
+									class="base-bottom-nav__icon"
+									:custom-class="classes.icon" />
+							</slot>
+							<BaseBadge
+								v-if="entry.badge"
+								class="base-bottom-nav__badge"
+								:custom-class="classes.badge"
+								:label="entry.badge.text"
+								:size-scale="badgeScale"
+								aria-hidden="true" />
+						</span>
+						<span class="base-bottom-nav__label" :class="classes.label">
+							<slot name="label" :item="entry.item" :is-active="entry.isActive">{{ entry.item.label }}</slot>
+						</span>
+					</component>
+					<span v-if="entry.badge" :id="entry.badgeId" class="base-bottom-nav__sr-only">{{ entry.badge.label }}</span>
+				</li>
+			</ul>
+		</div>
 	</nav>
 </template>
 
@@ -82,5 +89,7 @@ const {
 	iconScale,
 	badgeScale,
 	handleItemClick,
+	indicatorStyle,
+	notchStyle,
 } = useBaseBottomNav(props, emit)
 </script>

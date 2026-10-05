@@ -1,5 +1,9 @@
 .base-bottom-nav {
 	--bottom-nav-indicator: color-mix(in srgb, var(--custom-bg-active, var(--rise-primary)) 16%, transparent);
+	--bottom-nav-bar-padding: 0px;
+	--bottom-nav-direction: 1;
+	--bottom-nav-notch-radius: #{sz(34px)};
+	--bottom-nav-primary-size: #{sz(52px)};
 
 	display: block;
 	box-sizing: border-box;
@@ -38,7 +42,87 @@
 		@include custom-bg(background-color, transparent);
 	}
 
+	&:dir(rtl) {
+		--bottom-nav-direction: -1;
+	}
+
+	&--floating {
+		--bottom-nav-bar-padding: #{sz(6px)};
+
+		padding: 0 calc(#{sz(12px)} + env(safe-area-inset-right, 0)) calc(#{sz(12px)} + env(safe-area-inset-bottom, 0))
+			calc(#{sz(12px)} + env(safe-area-inset-left, 0));
+		border-top: none;
+		background-color: transparent;
+	}
+
+	&--floating &__bar {
+		max-width: sz(480px);
+		margin-inline: auto;
+		border: 1px solid var(--rise-border);
+		border-radius: var(--rise-radius-2xl);
+		box-shadow: var(--rise-shadow-lg);
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+	}
+
+	&--glass {
+		--bottom-nav-bar-padding: #{sz(4px)};
+
+		border-top-color: color-mix(in srgb, var(--rise-border) 60%, transparent);
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+
+		@supports (backdrop-filter: blur(1px)) {
+			background-color: color-mix(in srgb, var(--custom-bg, var(--rise-bg)) 80%, transparent);
+			backdrop-filter: blur(#{sz(16px)}) saturate(1.8);
+		}
+	}
+
+	&--notched {
+		border-top: none;
+		background-color: transparent;
+	}
+
+	&--notched &__bar {
+		@include custom-bg(background-color, var(--rise-bg));
+	}
+
+	&--notched &__bar--notched {
+		margin-top: calc(var(--bottom-nav-primary-size) / 2);
+		background-color: transparent;
+	}
+
+	&--notched &__bar--notched::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-top: 1px solid var(--rise-border);
+		@include custom-bg(background-color, var(--rise-bg));
+		mask: radial-gradient(
+			circle at var(--bottom-nav-notch-x) 0,
+			transparent var(--bottom-nav-notch-radius),
+			currentcolor calc(var(--bottom-nav-notch-radius) + 0.5px)
+		);
+	}
+
+	&__bar {
+		position: relative;
+		padding: var(--bottom-nav-bar-padding);
+	}
+
+	&__indicator {
+		position: absolute;
+		inset-block: var(--bottom-nav-bar-padding);
+		inset-inline-start: var(--bottom-nav-bar-padding);
+		border-radius: var(--rise-radius-xl);
+		background-color: var(--bottom-nav-indicator);
+		pointer-events: none;
+
+		@include motion-safe {
+			transition: transform var(--rise-duration-slow) var(--rise-ease-emphasized, var(--rise-ease-out));
+		}
+	}
+
 	&__list {
+		position: relative;
 		display: flex;
 		margin: 0;
 		padding: 0;
@@ -97,6 +181,35 @@
 	&__link--active &__icon-wrap {
 		background-color: var(--bottom-nav-indicator);
 		color: var(--custom-bg-active, var(--rise-primary));
+	}
+
+	&--floating &__link--active &__icon-wrap,
+	&--glass &__link--active &__icon-wrap {
+		background-color: transparent;
+	}
+
+	&__link--primary {
+		justify-content: flex-end;
+		padding-top: 0;
+	}
+
+	&__link--primary &__icon-wrap {
+		width: var(--bottom-nav-primary-size);
+		min-width: 0;
+		height: var(--bottom-nav-primary-size);
+		margin-top: calc(var(--bottom-nav-primary-size) / -2);
+		padding: 0;
+		box-shadow: var(--rise-shadow-md);
+		@include custom-bg(background-color, var(--rise-primary));
+		color: var(--custom-text, var(--rise-on-primary));
+	}
+
+	&__link--primary {
+		@include hover {
+			.base-bottom-nav__icon-wrap {
+				background-color: var(--custom-bg-hover, var(--custom-bg, var(--rise-primary-hover)));
+			}
+		}
 	}
 
 	&__badge {
