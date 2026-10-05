@@ -16,7 +16,7 @@ export const Default: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
 			description: {
-				story: 'Песочница: область 3D-карты с холстом WebGL. Область достижима клавишей Tab, скринридер называет её «3D-карта». Сцену, камеру и выбор объектов добавят следующие части. Props — в панели Controls.',
+				story: 'Песочница: область 3D-карты с холстом WebGL. Область достижима клавишей Tab, скринридер называет её «3D-карта». Наведение подсвечивает объект и показывает карточку, щелчок выбирает; стрелки в области — между объектами. Props — в панели Controls.',
 			},
 			source: storySource({ template, imports: ['BaseImageMap3D'], models: MODELS, types: { view: "'3d' | '2d'" } }),
 		},

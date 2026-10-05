@@ -21,3 +21,6 @@ export const RendererFallback = cases.RendererFallback
 export const Floors3D = cases.Floors3D
 export const Glb = cases.Glb
 export const CameraKeyboard = cases.CameraKeyboard
+export const Keyboard = cases.Keyboard
+export const Directory3D = cases.Directory3D
+export const Routes3D = cases.Routes3D

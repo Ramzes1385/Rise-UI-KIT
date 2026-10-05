@@ -14,6 +14,7 @@ export const argTypes = {
 	ariaLabel: { control: 'text', table: propGroup(ARG_GROUP.a11y) },
 	camera: { control: 'inline-radio', options: IMAGE_MAP_3D_CAMERAS, table: propGroup(ARG_GROUP.appearance) },
 	hasOrbit: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+	has2dToggle: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	layerMode: { control: 'inline-radio', options: IMAGE_MAP_3D_LAYER_MODES, table: propGroup(ARG_GROUP.appearance) },
 	rendererFactory: { control: false, table: propGroup(ARG_GROUP.behavior) },
 	configureLoader: { control: false, table: propGroup(ARG_GROUP.behavior) },

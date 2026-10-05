@@ -34,7 +34,7 @@ export const CameraKeyboard: StoryObj<typeof meta> = {
 		await userEvent.keyboard('{Enter}')
 		await waitFor(() => expect(zoomOut).toHaveAttribute('aria-disabled', 'true'))
 		await expect(zoomOut).toHaveFocus()
-		const region = canvas.getByRole('group', { name: 'Этаж 1' })
+		const region = canvas.getByRole('group', { name: 'Этаж 2' })
 		await tabTo(region, userEvent)
 		await userEvent.keyboard('{Shift>}{ArrowRight}{ArrowUp}{/Shift}')
 		await userEvent.keyboard('0')
