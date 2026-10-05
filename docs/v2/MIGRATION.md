@@ -1858,3 +1858,20 @@ API кита не меняется. В Storybook добавлены пример
 - **Утилиты:** `isValidInn`, `isValidKpp`, `isValidOgrn`, `isValidBik`, `isValidAccount`, `isValidCorrespondentAccount`, `isValidSnils` — теперь ещё и в `@ramzes1385/rise-ui-kit/utils` (`requisiteUtils`); экспорт из корня пакета (через BaseRequisiteInput) прежний. Новая `isEmailFormat(text)` в `utils` (`urlUtils`).
 - Словари: в `dadata` ru/en новые ключи `CHOOSE_OPTION`, `NEED_CITY`, `NEED_STREET`, `NEED_HOUSE`, `NEED_FLAT`, `EMAIL_FORMAT`, `CHECKSUM`, `FORMAT` — переопределения `defineLocale` их подхватят.
 - Внутреннее: проверки реквизитов переехали из `BaseRequisiteInput/model/requisites/requisiteChecks.ts` в `src/utils/data/requisiteUtils`.
+## Задача theme-api: темы бренда — createTheme, applyTheme, useTheme
+
+Всё аддитивно: без новых вызовов вид кита прежний.
+
+- **Новое — `createTheme(input)`** (`/utils` и корень пакета): тема из цвета бренда и нескольких входов (`neutral`, `radius`, `density`, `font`, `shadows`, `motion`, цвета статусов, `primaryDark`, `palettes`, `tokens`). Вывод — CSS-переменные-сиды на `[data-rise-theme="имя"][data-rise-theme]`, отчёт контраста `contrast` и признак `adjusted`. Палитра строится в OKLCH, все пары `test:contrast` проходят WCAG 2.2 AA в обоих режимах.
+  ```ts
+  const brand = createTheme({ name: 'brand', primary: '#0f766e', radius: 'lg', density: 'compact' })
+  app.use(createUiKitPlugin({ theme: brand })) // или theme: 'corporate'
+  ```
+- **Новое — `THEME_PRESETS`**: `rise` (вид кита), `corporate`, `playful`, `minimal`.
+- **Новое — `applyTheme(theme, { target, nonce })` и `useTheme()`** (`/composables` и корень): `<style data-rise-theme-style>` в `<head>`, `data-rise-theme` на `<html>` или области; если у области нет `data-theme`, он ставится унаследованным (ближайший предок или `system`). `useTheme()` — `theme`, `themes`, `css` (для SSR), `setTheme`, `configure`.
+- **Плагин — опции `theme`, `themes`, `themeNonce`**.
+- **Правило области темы:** `data-rise-theme` и `data-theme` — на одном элементе (семантику кит пересчитывает на `[data-theme]`).
+- Тема выводит только заданные входы: незаданные радиус, плотность, шрифт, тени и движение остаются от кита или `:root` приложения. Тема с `motion` сама обнуляет длительности при `prefers-reduced-motion: reduce`.
+- `--rise-density`, `--rise-shadow-strength`, `--rise-font-heading`, `--rise-color-neutral-0`, которые выводит тема, кит читает с задачи theme-core.
+- **Утилиты:** `oklchUtils` (`rgbToOklch`, `hexToOklch`, `oklchToRgb`, `oklchToHex`, `toGamut`, `relativeLuminance`, `contrastRatio`), `themeUtils` (`createPalette`, `createNeutralPalette`, `resolveThemeColors`, `themeContrast`, `THEME_CONTRAST_PAIRS`, `KIT_PALETTES` и др.) — docs/reference/UTILS.md.
+- **`npm run test:contrast`** теперь проверяет кит и 4 пресета × 2 режима (`scripts/check-contrast.mjs --theme=all`; один пресет — `--theme=<имя>`); docs/design/contrast.md — по разделу на пресет.
