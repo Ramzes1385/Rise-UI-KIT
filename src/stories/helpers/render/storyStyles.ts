@@ -11,4 +11,6 @@ export const STORY_STYLES: Readonly<Record<string, string>> = {
 	'story-narrow': 'width: 100%; max-width: 360px;',
 	'story-medium': 'width: 100%; max-width: 560px;',
 	'story-frame': 'position: relative; padding: 16px; border: 1px dashed var(--rise-border-accented); border-radius: 8px;',
+	'story-map-elevated': 'outline: 4px solid var(--rise-primary-soft); box-shadow: var(--rise-shadow-lg);',
+	'story-map-striped': 'background: repeating-linear-gradient(45deg, transparent 0 8px, var(--rise-border-muted) 8px 9px);',
 }

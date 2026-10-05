@@ -67,6 +67,17 @@ body.sb-show-main,
 	border-radius: 8px;
 }
 
+/** Карта на тени с ореолом (история BaseMap «Theming», customClass.root): свойства, которых кит не задаёт. */
+.story-map-elevated {
+	outline: 4px solid var(--rise-primary-soft);
+	box-shadow: var(--rise-shadow-lg);
+}
+
+/** Полосатый фон заглушки карты (история BaseMap «Theming», customClass.placeholder). */
+.story-map-striped {
+	background: repeating-linear-gradient(45deg, transparent 0 8px, var(--rise-border-muted) 8px 9px);
+}
+
 /** Подсказка под историей (декоратор withYandexMapsKey): чего не хватает для живого примера. */
 .story-hint {
 	margin: 0;
