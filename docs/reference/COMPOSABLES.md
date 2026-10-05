@@ -285,6 +285,7 @@ useLayer
 useLayerIndex
 useListNavigation
 useLoadingBar
+useMotion
 usePadding
 usePasswordVisibility
 usePopup
@@ -302,6 +303,7 @@ useSwipe
 useTableData
 useTeleportTarget
 useTriggerAttributes
+useTween
 useVariant
 useVirtualList
 ```
@@ -462,3 +464,41 @@ setTheme(createTheme({ … }))         // своя тема: регистрир�
 - `applyTheme(theme, { target?, nonce? })`: `<style data-rise-theme-style="имя">` в `<head>` — один на тему, повторный вызов обновляет его; CSP `nonce`. На `target` (по умолчанию `<html>`) — `data-rise-theme`, а если нет `data-theme` — режим ближайшего предка с `data-theme` или `system`. Без `document` (SSR) ничего не делает.
 - `useTheme(options?)` — одно общее управление: `theme` (имя текущей темы или `null`, только чтение), `themes` (пресеты и зарегистрированные), `css` (CSS текущей темы — для `<style>` при SSR), `setTheme`, `configure({ themes, nonce })`. `themes` и `nonce` из `options` учитываются при каждом вызове, `target` — при первом. `createThemeController(options)` — отдельное управление (тема части интерфейса, тесты).
 - Плагин: `createUiKitPlugin({ theme: 'corporate' | Theme, themes: Theme[], themeNonce })` настраивает то же общее управление и ставит тему при установке.
+---
+
+## useMotion (motion-chart)
+
+Настройки движения для анимаций в JS: те же токены `--rise-duration*`, что у CSS. Минимальная версия по решению «Движение» (2.4); пресеты (`preset`) и кривые (`easing(name)`) добавит задача motion-core, не меняя этих полей.
+
+```ts
+import { useMotion } from '@ramzes1385/rise-ui-kit/composables'
+
+const root = useTemplateRef<HTMLElement>('root')
+const motion = useMotion(root)
+
+const ms = motion.duration('xslow') // 500 в пресете standard, 0 — при выключенном движении
+```
+
+- `isReduced` (`ComputedRef<boolean>`) — системная настройка «уменьшить движение» или пресет `data-rise-motion="none"` у элемента или предка (пресет читается при монтировании).
+- `duration(name)` — миллисекунды из `getComputedStyle` элемента (без элемента — корня документа): `fast` → `--rise-duration-fast`, `base` (по умолчанию) → `--rise-duration`, `slow`, `xslow`. Без токена — значения пресета `standard` (150, 200, 300, 500); меньше 1 мс (`0.01ms` при «уменьшить движение») и при `isReduced` — `0`.
+- Вызывается в `setup`; поверх `useReducedMotion`, который остаётся.
+
+---
+
+## useTween (motion-chart)
+
+Плавно ведёт число или массив чисел к новому значению через `requestAnimationFrame`. Для чисел, данных графиков и всего, что CSS не анимирует.
+
+```ts
+import { useTween } from '@ramzes1385/rise-ui-kit/composables'
+
+const { value, isRunning, replay, stop } = useTween(() => props.total, { from: 0, duration: 'xslow' })
+// value.value — промежуточное число во время перехода
+```
+
+- Источник — ref, геттер или значение: `number` или `readonly number[]`. Новое значение во время перехода продолжает путь с текущего промежуточного (без рывка).
+- Опции: `from` — начальное значение появления (после монтирования твин идёт от него; до монтирования и на сервере — значение источника), `duration` — имя длительности `useMotion` (`xslow`), `easing` — функция `0…1 → 0…1` (по умолчанию замедление к концу без перелёта), `target` — элемент, чьи токены и пресет учитываются, `enabled` — `false` выключает переходы.
+- Сразу конечное значение: «уменьшить движение», пресет `none`, `enabled: false`, нулевая длительность, массивы разной длины. Нечисловые элементы массива (`NaN` — пропуск) сразу принимают конечное значение.
+- `replay(from?)` — повторить переход к источнику (от `from` или `options.from`), `stop()` — остановить на текущем значении; кадр отменяется при размонтировании.
+- Им пользуется BaseChart (значения, места столбиков и шкала Y).
+

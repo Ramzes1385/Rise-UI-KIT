@@ -1947,3 +1947,18 @@ API кита не меняется. В Storybook добавлены пример
 - **Уменьшение движения:** при `prefers-reduced-motion: reduce` и внутри `[data-rise-motion="none"]` — зрачки в центре, без наклона, моргания и дыхания; `mood` и `isEyesClosed` применяются сразу.
 - **DOM (для тестов приложений):** вместо `<g class="base-avatar__mascot-lids">` (появлялась при `isEyesClosed`) и `<g class="base-avatar__mascot-pupils">` — постоянные `.base-avatar__mascot-eyes` (атрибуты `transform="scale(1 …)"` и `opacity`), `.base-avatar__mascot-pupil` у каждого зрачка и `.base-avatar__mascot-lid` (веко, `opacity`). На корне SVG — классы `base-avatar__mascot--<персонаж>` и `base-avatar__mascot--mood-<настроение>`; `base-avatar__mascot--closed` — как раньше. Проверяйте закрытые глаза по классу `--closed`, а не по наличию `.base-avatar__mascot-lids`.
 - **Истории:** `element-baseavatar--mascot` переименована в `--password` («Пароль»); новые — `--mascots`, `--moods`, `--animations`.
+## Задача motion-chart: анимации BaseChart, useTween и useMotion
+
+- **Новые composables** (`@ramzes1385/rise-ui-kit/composables`): `useTween(source, options)` — плавный переход числа или массива чисел через `requestAnimationFrame`; `useMotion(el?)` — `isReduced` и `duration(name)` из токенов `--rise-duration*`. Справочник — docs/reference/COMPOSABLES.md.
+- **BaseChart — проп `animation`**: `'grow' | 'draw' | 'fade' | 'none'`, по умолчанию `grow` (через `kitDefaults`). Графики теперь появляются с анимацией: столбики растут `scaleY` от базовой линии с задержкой `--rise-motion-stagger` между точками, линии и области поднимаются от базовой линии твином значений. Прежний вид без движения — `animation: 'none'` (в одном графике или для всех: `createUiKitPlugin({ defaults: { BaseChart: { animation: 'none' } } })`).
+- **BaseChart — проп `updateAnimation`**: `'tween' | 'none'`, по умолчанию `tween`. Новые данные, скрытие и показ ряда плавно переводят значения, места столбиков в полосе и шкалу Y (подписи и сетка едут). Смена числа точек, рядов, вида или пропусков (`null`) — перекрёстное затухание старых и новых фигур. Прежнее мгновенное обновление — `updateAnimation: 'none'`.
+- Константы и типы: `CHART_ANIMATIONS`, `CHART_UPDATE_ANIMATIONS`, `ChartAnimation`, `ChartUpdateAnimation`.
+- **DOM BaseChart:**
+  - фигуры рядов лежат в `<g class="base-chart__shapes">` (с классом `base-chart__shapes--<animation>` до первой смены структуры);
+  - скрытый ряд остаётся в разметке: `base-chart__line--hidden`, `base-chart__area--hidden`, `base-chart__bar--hidden` (прозрачность 0, у столбиков — нулевая ширина или высота в стопке). Селекторы приложения вроде `querySelectorAll('.base-chart__line').length` для видимых рядов замените на `.base-chart__line:not(.base-chart__line--hidden)`;
+  - столбики — классы `base-chart__bar--negative` и переменная `--base-chart-order` в `style`, линии — `pathLength="1"`;
+  - маркеры и подсказка позиционируются `transform` от левого верхнего угла области: в `style` вместо `left`/`top` — `--base-chart-marker-x`, `--base-chart-marker-y`, `--base-chart-guide-x` в px (ширина области из `ResizeObserver`);
+  - подписи оси Y и линии сетки во время перехода шкалы получают `transform: translateY(…)` и класс `--outside` для меток вне текущей шкалы; в покое разметка прежняя.
+- **Тесты приложений на jsdom:** линии и области при `animation: 'grow'` после монтирования стоят на базовой линии до конца твина (rAF). Для проверки конечного вида — `animation: 'none'` и `updateAnimation: 'none'` или подмена `matchMedia` с `prefers-reduced-motion: reduce`.
+- «Уменьшить движение» системы и пресет `data-rise-motion="none"` выключают всё движение графика без настроек.
+
