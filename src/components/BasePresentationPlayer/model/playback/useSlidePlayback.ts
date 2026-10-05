@@ -173,6 +173,23 @@ function useSound(
 	}
 }
 
+function watchLostClock(parts: { isUntimed: () => boolean; hasClock: () => boolean }, options: SlidePlaybackOptions): void {
+	const isPending = ref(false)
+	const end = (): void => {
+		isPending.value = false
+		if (!parts.hasClock()) options.onSlideEnd()
+	}
+	watch(parts.isUntimed, (untimed, wasUntimed) => {
+		if (!wasUntimed || untimed || parts.hasClock()) return
+		if (options.isPlaying.value) return end()
+		isPending.value = true
+	})
+	watch(options.index, () => (isPending.value = false))
+	watch(options.isPlaying, playing => {
+		if (playing && isPending.value) end()
+	})
+}
+
 function useSpeech(
 	props: BasePresentationPlayerProps,
 	parts: { sources: ReturnType<typeof useSlideSources>; sound: ReturnType<typeof useSound> },
@@ -211,9 +228,7 @@ export function useSlidePlayback(props: BasePresentationPlayerProps, options: Sl
 		onEnd: options.onSlideEnd,
 	})
 	watch(options.index, () => timer.seek(0))
-	watch(isUntimed, (untimed, wasUntimed) => {
-		if (wasUntimed && !untimed && !hasClock.value) options.onSlideEnd()
-	})
+	watchLostClock({ isUntimed: () => isUntimed.value, hasClock: () => hasClock.value }, options)
 	watchTrack({ sources, media, track }, options)
 
 	return {

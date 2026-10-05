@@ -2012,6 +2012,6 @@ API кита не меняется. В Storybook добавлены пример
 - **`speechVoice`** при поставщике — имя голоса сервиса (уходит в запрос как есть); смена `speechProvider` или `speechVoice` сбрасывает кэш.
 - **Типы** `PresentationSpeechProvider`, `PresentationSpeechRequest`, `PresentationSpeechError` — экспорт `/media`.
 - **Утилита `createFetchSpeechProvider({ url, headers?, format? })`** (`@ramzes1385/rise-ui-kit/utils`, `speechProviderUtils`): `POST` JSON `{ text, voice, lang, format }` к посреднику приложения, ответ — `Blob`; `!ok` → `Error('TTS <статус>')`. Тип настроек — `FetchSpeechProviderOptions`.
-- **Поправка поведения синтеза браузера**: переход со слайда с `speech` на слайд с `audio` без `duration` больше не вызывает лишний конец слайда (раньше следующий слайд мог быть пропущен).
+- **Поправка поведения синтеза браузера**: переход со слайда с `speech` на слайд с `audio` без `duration` больше не вызывает лишний конец слайда (раньше следующий слайд мог быть пропущен). Слайд, который потерял часы до показа (голоса браузера не нашлись за 1,5 с, сервис ответил ошибкой, `duration` нет), больше не листается сам — его конец наступает при нажатии «Пуск»; во время показа — как раньше, сразу.
 - **Storybook**: истории `SpeechService` (заглушка сервиса, play) и `SpeechYandex` (живой SpeechKit через dev-middleware `POST /__rise/tts`, ключ `YANDEX_SPEECHKIT_API_KEY` в `.env.local`, только локальный `npm run storybook`); `.env.example`.
 

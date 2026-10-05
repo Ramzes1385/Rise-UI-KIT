@@ -157,6 +157,16 @@ describe('BasePresentationPlayer — синтез речи', () => {
 		expect(wrapper.emitted('update:slide')).toEqual([[1]])
 	})
 
+	it('голосов нет 1,5 с до показа — слайд ждёт нажатия «Пуск» и только тогда заканчивается', async () => {
+		stubSpeech([])
+		const wrapper = await mountContent({ slides: speechSlides() })
+		await advance(1600)
+		expect(wrapper.emitted('update:slide')).toBeUndefined()
+		wrapper.vm.play()
+		await advance(0)
+		expect(wrapper.emitted('update:slide')).toEqual([[1]])
+	})
+
 	it('нет window.speechSynthesis — сразу по duration', async () => {
 		removeSpeech()
 		const wrapper = await mountContent({ slides: speechSlides({ duration: 2 }) })

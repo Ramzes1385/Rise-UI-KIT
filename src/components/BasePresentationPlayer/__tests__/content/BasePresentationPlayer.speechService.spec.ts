@@ -132,6 +132,38 @@ describe('BasePresentationPlayer — озвучка сервисом (speechProv
 		expect(wrapper.emitted('complete')).toHaveLength(1)
 	})
 
+	it('ошибка до показа без синтеза браузера — слайд не листается сам; конец слайда — при нажатии «Пуск»', async () => {
+		removeSpeech()
+		const wrapper = await mountContent({ slides: serviceSlides(), speechProvider: failingProvider() })
+		await advance(0)
+		expect(wrapper.emitted('speech-error')).toHaveLength(1)
+		expect(wrapper.emitted('update:slide')).toBeUndefined()
+		expect(wrapper.emitted('slide-complete')).toBeUndefined()
+		await advance(5000)
+		expect(wrapper.emitted('update:slide')).toBeUndefined()
+		wrapper.vm.play()
+		await advance(0)
+		expect(wrapper.emitted('slide-complete')?.[0][0]).toMatchObject({ id: 'a' })
+		expect(wrapper.emitted('update:slide')?.[0]).toEqual([1])
+	})
+
+	it('ошибка до показа, затем смена слайда вручную — отложенный конец сброшен', async () => {
+		removeSpeech()
+		const provider: PresentationSpeechProvider = {
+			synthesize: vi.fn(async (_text: string, request: PresentationSpeechRequest) =>
+				request.slide === 0 ? Promise.reject(new Error('TTS 500')) : new Blob(['ok'], { type: 'audio/mpeg' }),
+			),
+		}
+		const wrapper = await mountContent({ slides: serviceSlides(), speechProvider: provider })
+		await advance(0)
+		wrapper.vm.goTo(1)
+		await advance(0)
+		wrapper.vm.play()
+		await advance(0)
+		expect(wrapper.emitted('update:slide')).toEqual([[1]])
+		expect(wrapper.find('audio').attributes('src')).toMatch(/^blob:/)
+	})
+
 	it('ошибка без синтеза браузера, но с duration — слайд идёт по таймеру', async () => {
 		removeSpeech()
 		const wrapper = await mountContent({ slides: serviceSlides({ duration: 2 }), speechProvider: failingProvider() })
