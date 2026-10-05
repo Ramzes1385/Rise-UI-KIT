@@ -29,37 +29,37 @@ function mountProbe(props: { ui?: UiProp<Part> }, defaults?: UiKitDefaults) {
 describe('useUi', () => {
 	it('без ui отдаёт только БЭМ-класс части; root — класс блока', () => {
 		const ui = mountProbe({})
-		expect(ui('root')).toEqual(['base-date-picker'])
-		expect(ui('label')).toEqual(['base-date-picker__label'])
+		expect(ui('root')).toBe('base-date-picker')
+		expect(ui('label')).toBe('base-date-picker__label')
 	})
 
 	it('добавляет классы экземпляра к классу кита', () => {
 		const ui = mountProbe({ ui: { root: 'shadow-lg', icon: 'text-red' } })
-		expect(ui('root')).toEqual(['base-date-picker', 'shadow-lg'])
-		expect(ui('icon')).toEqual(['base-date-picker__icon', 'text-red'])
-		expect(ui('label')).toEqual(['base-date-picker__label'])
+		expect(ui('root')).toBe('base-date-picker shadow-lg')
+		expect(ui('icon')).toBe('base-date-picker__icon text-red')
+		expect(ui('label')).toBe('base-date-picker__label')
 	})
 
 	it('склеивает глобальные классы плагина (по имени компонента из блока) и экземпляра, не заменяя', () => {
 		const ui = mountProbe({ ui: { label: 'own' } }, { BaseDatePicker: { ui: { label: 'global', root: 'g-root' } } })
-		expect(ui('label')).toEqual(['base-date-picker__label', 'global', 'own'])
-		expect(ui('root')).toEqual(['base-date-picker', 'g-root'])
+		expect(ui('label')).toBe('base-date-picker__label global own')
+		expect(ui('root')).toBe('base-date-picker g-root')
 	})
 
 	it('настройки другого компонента и без ui не влияют', () => {
 		const ui = mountProbe({}, { BaseButton: { ui: { label: 'x' } }, BaseDatePicker: { size: 1 } })
-		expect(ui('label')).toEqual(['base-date-picker__label'])
+		expect(ui('label')).toBe('base-date-picker__label')
 	})
 
 	it('читает props.ui при каждом вызове — классы реактивны', () => {
 		const props = reactive<{ ui?: UiProp<Part> }>({})
 		const ui = mountProbe(props)
 		props.ui = { label: 'later' }
-		expect(ui('label')).toEqual(['base-date-picker__label', 'later'])
+		expect(ui('label')).toBe('base-date-picker__label later')
 	})
 
 	it('вне компонента (нет inject) работает только с props.ui', () => {
 		const ui = useUi<Part>({ ui: { icon: 'i' } }, 'base-x')
-		expect(ui('icon')).toEqual(['base-x__icon', 'i'])
+		expect(ui('icon')).toBe('base-x__icon i')
 	})
 })

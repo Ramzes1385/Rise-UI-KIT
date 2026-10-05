@@ -1,8 +1,8 @@
 .base-button {
-	--btn-pad-top: var(--rise-control-padding-y);
-	--btn-pad-right: var(--rise-control-padding-x);
-	--btn-pad-bottom: var(--rise-control-padding-y);
-	--btn-pad-left: var(--rise-control-padding-x);
+	--btn-pad-top: #{ct(button, padding-y, var(--rise-control-padding-y))};
+	--btn-pad-right: #{ct(button, padding-x, var(--rise-control-padding-x))};
+	--btn-pad-bottom: #{ct(button, padding-y, var(--rise-control-padding-y))};
+	--btn-pad-left: #{ct(button, padding-x, var(--rise-control-padding-x))};
 
 	position: relative;
 	display: inline-flex;
@@ -10,18 +10,24 @@
 	justify-content: center;
 	max-width: 100%;
 	padding: sz(var(--btn-pad-top)) sz(var(--btn-pad-right)) sz(var(--btn-pad-bottom)) sz(var(--btn-pad-left));
-	border: 1px solid transparent;
-	border-radius: sz(var(--rise-control-radius));
+	border: 1px solid ct(button, border, transparent);
+	border-radius: sz(ct(button, radius, var(--rise-control-radius)));
+	box-shadow: ct(button, shadow, none);
 	font-family: inherit;
 	@include control-text;
-	font-weight: var(--rise-font-weight-medium);
+	font-weight: ct(button, font-weight, var(--rise-font-weight-medium));
 	white-space: nowrap;
 	cursor: pointer;
 	overflow: hidden;
 	@include transition-colors;
 	@include focus-ring;
-	@include custom-bg-all(background-color, var(--rise-primary), var(--rise-primary-hover), var(--rise-primary-hover));
-	@include custom-text(color, var(--rise-on-primary));
+	@include custom-bg-all(
+		background-color,
+		ct(button, bg, var(--rise-primary)),
+		ct(button, bg-hover, var(--rise-primary-hover)),
+		ct(button, bg-hover, var(--rise-primary-hover))
+	);
+	@include custom-text(color, ct(button, text, var(--rise-on-primary)));
 
 	&--soft {
 		@include custom-bg-all(background-color, var(--rise-primary-soft), var(--rise-primary-soft-hover), var(--rise-primary-soft-hover));
@@ -29,7 +35,7 @@
 	}
 
 	&--outline {
-		border-color: var(--rise-border-accented);
+		border-color: ct(button, border, var(--rise-border-accented));
 		@include custom-bg-all(background-color, var(--rise-bg), var(--rise-bg-elevated), var(--rise-bg-elevated));
 		@include custom-text(color, var(--rise-text));
 	}
@@ -40,13 +46,13 @@
 	}
 
 	&--shadow {
-		border-color: var(--rise-border);
+		border-color: ct(button, border, var(--rise-border));
 		@include custom-bg-all(background-color, var(--rise-bg), var(--rise-bg-muted), var(--rise-bg-muted));
 		@include custom-text(color, var(--rise-text-highlighted));
-		box-shadow: var(--rise-shadow-sm);
+		box-shadow: ct(button, shadow, var(--rise-shadow-sm));
 
 		@include hover {
-			box-shadow: var(--rise-shadow-md);
+			box-shadow: ct(button, shadow-hover, var(--rise-shadow-md));
 		}
 	}
 

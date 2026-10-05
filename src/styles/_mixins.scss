@@ -190,12 +190,13 @@
 	color: var(--rise-text-muted);
 }
 
-@mixin field-box {
-	border: 1px solid var(--rise-border-accented);
-	border-radius: sz(var(--rise-control-radius));
-	@include custom-bg(background-color, var(--rise-bg));
+// $component — имя компонента для токенов уровня 3 (`input` → --rise-input-bg, -border, -border-focus, -radius)
+@mixin field-box($component: null) {
+	border: 1px solid ct($component, border, var(--rise-border-accented));
+	border-radius: sz(ct($component, radius, var(--rise-control-radius)));
+	@include custom-bg(background-color, ct($component, bg, var(--rise-bg)));
 	@include transition-colors;
-	@include field-focus;
+	@include field-focus(ct($component, border-focus, var(--rise-primary)));
 }
 
 @mixin floating-surface {

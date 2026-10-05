@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PaddingProp } from '@composables/base/usePadding'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
@@ -7,6 +8,14 @@ import type { BaseComponentProps } from '@composables/base/useBaseComponent'
  * ghost — без фона и рамки, shadow — рамка и тень.
  */
 export const CARD_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
+
+/**
+ * Части карточки для пропа `ui` (БЭМ-элементы `.base-card__<часть>`, `root` — сама карточка): header — шапка,
+ * header-text — заголовок с подзаголовком, title, subtitle, actions — действия в шапке, body — тело, footer — подвал.
+ */
+export const CARD_PARTS = ['header', 'header-text', 'title', 'subtitle', 'actions', 'body', 'footer'] as const
+
+export type BaseCardPart = (typeof CARD_PARTS)[number]
 
 export interface BaseCardProps extends BaseComponentProps<
 	(typeof CARD_VARIANTS)[number],
@@ -27,13 +36,21 @@ export interface BaseCardProps extends BaseComponentProps<
 	 * Внутренние отступы шапки, тела и подвала. Число (px): Y = значение, X = значение × 2.
 	 * Объект { x, y, top, right, bottom, left } задаёт оси напрямую без умножения
 	 * (например { x: 25, y: 43 } → 43px сверху/снизу, 25px по бокам); стороны переопределяют оси.
-	 * По умолчанию — из стилей: 16px 20px.
+	 * По умолчанию — токены `--rise-card-padding-y/x` (16px 20px); отступы умножаются на плотность темы `--rise-density`.
 	 */
 	padding?: PaddingProp
 	/** Высота карточки (CSS-значение: `320px`, `50%`, `auto`). Без `scroll` текст тела обрезается до трёх строк. */
 	height?: string
 	/** Прокрутка тела карточки при заданной `height`: шапка и подвал остаются на месте */
 	scroll?: boolean
+	/**
+	 * Классы частей карточки (`root`, `header`, `header-text`, `title`, `subtitle`, `actions`, `body`, `footer`) —
+	 * добавляются к классам кита. Глобально — `defaults.BaseCard.ui` плагина, классы склеиваются.
+	 *
+	 * @example
+	 * <BaseCard title="Отчёт" :ui="{ header: 'bg-slate-50', body: 'prose' }" />
+	 */
+	ui?: UiProp<BaseCardPart>
 }
 
 export interface BaseCardSlotBindings {

@@ -1,6 +1,7 @@
-export { INPUT_VARIANTS } from './types/BaseInput.types'
+export { INPUT_PARTS, INPUT_VARIANTS } from './types/BaseInput.types'
 export type {
 	BaseInputEmits,
+	BaseInputPart,
 	BaseInputProps,
 	BaseInputSlots,
 	InputVariant,

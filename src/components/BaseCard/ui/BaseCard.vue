@@ -1,7 +1,7 @@
 <template>
 	<div
-		class="base-card"
 		:class="[
+			ui('root'),
 			variantClass,
 			{
 				'base-card--hoverable': isHoverable || isClickable,
@@ -16,39 +16,34 @@
 		:aria-labelledby="isClickable && title ? titleId : undefined"
 		@click="handleClick"
 		@keydown="handleKeydown">
-		<div v-if="title || subtitle || $slots.header || $slots.actions" class="base-card__header" :class="classes.header">
+		<div v-if="title || subtitle || $slots.header || $slots.actions" :class="[ui('header'), classes.header]">
 			<slot name="header" :size-scale="sizeScale">
-				<div class="base-card__header-text">
+				<div :class="ui('header-text')">
 					<BaseText
 						v-if="title"
 						:id="titleId"
 						tag="h3"
 						:size-scale="sizeScale"
 						:weight="TEXT_WEIGHT.SEMIBOLD"
-						class="base-card__title"
+						:class="ui('title')"
 						:custom-class="classes.title"
 						>{{ title }}</BaseText
 					>
-					<BaseText
-						v-if="subtitle"
-						tag="p"
-						:size-scale="sizeScale"
-						class="base-card__subtitle"
-						:custom-class="classes.subtitle"
-						>{{ subtitle }}</BaseText
-					>
+					<BaseText v-if="subtitle" tag="p" :size-scale="sizeScale" :class="ui('subtitle')" :custom-class="classes.subtitle">{{
+						subtitle
+					}}</BaseText>
 				</div>
 			</slot>
-			<div v-if="$slots.actions" class="base-card__actions" :class="classes.actions">
+			<div v-if="$slots.actions" :class="[ui('actions'), classes.actions]">
 				<slot name="actions" :size-scale="sizeScale" />
 			</div>
 		</div>
 
-		<div class="base-card__body" :class="classes.body" :tabindex="scroll ? 0 : undefined">
+		<div :class="[ui('body'), classes.body]" :tabindex="scroll ? 0 : undefined">
 			<slot :size-scale="sizeScale" />
 		</div>
 
-		<div v-if="$slots.footer" class="base-card__footer" :class="classes.footer">
+		<div v-if="$slots.footer" :class="[ui('footer'), classes.footer]">
 			<slot name="footer" :size-scale="sizeScale" />
 		</div>
 	</div>
@@ -78,6 +73,7 @@ const emit = defineEmits<BaseCardEmits>()
 defineSlots<BaseCardSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

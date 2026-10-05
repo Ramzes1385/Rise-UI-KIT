@@ -22,6 +22,7 @@ export const Variants = cases.Variants
 export const Sizes = cases.Sizes
 export const CustomColor = cases.CustomColor
 export const Padding = cases.Padding
+export const Theming = cases.Theming
 export const WithActions = cases.WithActions
 export const WithFooter = cases.WithFooter
 export const CustomHeader = cases.CustomHeader

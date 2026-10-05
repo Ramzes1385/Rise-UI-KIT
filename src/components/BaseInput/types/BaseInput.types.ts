@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { FieldInputAttrs } from '@composables/form/useFormContext'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
@@ -22,6 +23,28 @@ export interface PasswordRuleResult {
 	label: string
 	isValid: boolean
 }
+
+/**
+ * Части поля для пропа `ui` (БЭМ-элементы `.base-input__<часть>`, `root` — обёртка компонента): label, required — звёздочка,
+ * wrapper — рамка поля, prefix, field — `<input>`, password-toggle, postfix, password-rules, password-rule,
+ * password-rule-icon, password-rule-label, error-text.
+ */
+export const INPUT_PARTS = [
+	'label',
+	'required',
+	'wrapper',
+	'prefix',
+	'field',
+	'password-toggle',
+	'postfix',
+	'password-rules',
+	'password-rule',
+	'password-rule-icon',
+	'password-rule-label',
+	'error-text',
+] as const
+
+export type BaseInputPart = (typeof INPUT_PARTS)[number]
 
 export interface BaseInputProps extends BaseComponentProps<
 	InputVariant,
@@ -88,6 +111,14 @@ export interface BaseInputProps extends BaseComponentProps<
 	allowedChars?: AllowedChars
 	/** Правила валидации пароля */
 	passwordRules?: PasswordRule[]
+	/**
+	 * Классы частей поля (`root`, `wrapper`, `field`, `label`… — см. `INPUT_PARTS`) — добавляются к классам кита.
+	 * Глобально — `defaults.BaseInput.ui` плагина, классы склеиваются.
+	 *
+	 * @example
+	 * <BaseInput :ui="{ wrapper: 'ring-1', field: 'font-mono' }" />
+	 */
+	ui?: UiProp<BaseInputPart>
 }
 
 export interface BaseInputEmits {

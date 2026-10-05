@@ -1,7 +1,7 @@
 <template>
 	<div
-		class="base-input"
 		:class="[
+			ui('root'),
 			variantClass,
 			{
 				'base-input--error': control.hasError.value,
@@ -19,15 +19,15 @@
 			:for-id="inputId"
 			:label="label"
 			:is-required="isRequired"
-			class-name="base-input__label"
+			:class-name="ui('label')"
 			:custom-class="classes.label"
-			required-class-name="base-input__required"
+			:required-class-name="ui('required')"
 			:required-custom-class="classes.required"
 			:size-scale="sizeScale" />
 
-		<div class="base-input__wrapper" :class="classes.wrapper">
+		<div :class="[ui('wrapper'), classes.wrapper]">
 			<slot name="prefix">
-				<BaseText v-if="prefix" tag="span" class="base-input__prefix" :custom-class="classes.prefix" :size-scale="sizeScale">{{
+				<BaseText v-if="prefix" tag="span" :class="ui('prefix')" :custom-class="classes.prefix" :size-scale="sizeScale">{{
 					prefix
 				}}</BaseText>
 			</slot>
@@ -35,8 +35,7 @@
 				v-bind="nativeAttrs"
 				:id="inputId"
 				ref="inputRef"
-				class="base-input__field"
-				:class="classes.field"
+				:class="[ui('field'), classes.field]"
 				:type="inputType"
 				:value="displayValue"
 				:placeholder="placeholder"
@@ -49,7 +48,7 @@
 			<BaseButton
 				v-if="type === 'password'"
 				variant="ghost"
-				class="base-input__password-toggle"
+				:class="ui('password-toggle')"
 				:custom-class="classes.passwordToggle"
 				tabindex="-1"
 				:aria-label="isPasswordVisible ? UI_ARIA.PASSWORD_HIDE : UI_ARIA.PASSWORD_SHOW"
@@ -61,33 +60,32 @@
 					:size-scale="calcIconScale('sm', sizeScale)" />
 			</BaseButton>
 			<slot name="postfix">
-				<BaseText v-if="postfix" tag="span" class="base-input__postfix" :custom-class="classes.postfix" :size-scale="sizeScale">{{
+				<BaseText v-if="postfix" tag="span" :class="ui('postfix')" :custom-class="classes.postfix" :size-scale="sizeScale">{{
 					postfix
 				}}</BaseText>
 			</slot>
 			<slot name="suffix" />
 		</div>
 
-		<div v-if="passwordRuleResults.length > 0" class="base-input__password-rules" :class="classes.passwordRules">
+		<div v-if="passwordRuleResults.length > 0" :class="[ui('password-rules'), classes.passwordRules]">
 			<div
 				v-for="rule in passwordRuleResults"
 				:key="rule.key"
-				class="base-input__password-rule"
-				:class="[{ 'base-input__password-rule--valid': rule.isValid }, classes.passwordRule]">
-				<span class="base-input__password-rule-icon"
+				:class="[ui('password-rule'), { 'base-input__password-rule--valid': rule.isValid }, classes.passwordRule]">
+				<span :class="ui('password-rule-icon')"
 					><BaseIcon
 						:name="rule.isValid ? 'check' : 'x-mark'"
 						:custom-class="classes.passwordRuleIcon"
 						:size-scale="calcIconScale('xs', sizeScale)"
 				/></span>
-				<span class="base-input__password-rule-label">{{ rule.label }}</span>
+				<span :class="ui('password-rule-label')">{{ rule.label }}</span>
 			</div>
 		</div>
 
 		<FormFieldError
 			:id="errorId"
 			:error="formField.error"
-			class-name="base-input__error-text"
+			:class-name="ui('error-text')"
 			:custom-class="classes.errorText"
 			:size-scale="sizeScale" />
 	</div>
@@ -126,6 +124,7 @@ const emit = defineEmits<BaseInputEmits>()
 defineSlots<BaseInputSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PaddingProp } from '@composables/base/usePadding'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
@@ -9,6 +10,14 @@ export const BUTTON_TYPES = ['button', 'submit', 'reset'] as const
  * outline — нейтральная с рамкой, ghost — нейтральная без фона, shadow — нейтральная с тенью.
  */
 export const BUTTON_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
+
+/**
+ * Части кнопки для пропа `ui` (БЭМ-элементы `.base-button__<часть>`, `root` — сама кнопка):
+ * content — обёртка содержимого, label — текст, slot-left / slot-right — слоты по бокам, loader — индикатор загрузки.
+ */
+export const BUTTON_PARTS = ['content', 'label', 'slot-left', 'slot-right', 'loader'] as const
+
+export type BaseButtonPart = (typeof BUTTON_PARTS)[number]
 
 export interface BaseButtonProps extends BaseComponentProps<(typeof BUTTON_VARIANTS)[number], 'root'> {
 	/** Тип кнопки */
@@ -31,6 +40,14 @@ export interface BaseButtonProps extends BaseComponentProps<(typeof BUTTON_VARIA
 	 * фокус не уходит в `body`.
 	 */
 	isFocusableWhenDisabled?: boolean
+	/**
+	 * Классы частей кнопки (`root`, `content`, `label`, `slot-left`, `slot-right`, `loader`) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseButton: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseButton :ui="{ root: 'rounded-full', label: 'tracking-wide' }">Сохранить</BaseButton>
+	 */
+	ui?: UiProp<BaseButtonPart>
 }
 
 export interface BaseButtonEmits {

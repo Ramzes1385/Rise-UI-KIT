@@ -16,13 +16,13 @@ function partClass(block: string, part: string): string {
  *
  * @example
  * const ui = useUi(props, 'base-button')
- * ui('root') // ['base-button', 'shadow-lg']
- * ui('label') // ['base-button__label']
+ * ui('root') // 'base-button shadow-lg'
+ * ui('label') // 'base-button__label'
  */
 export function useUi<Part extends string>(props: { readonly ui?: UiProp<Part> }, block: string): UiClassFn<Part> {
 	const global = useDefaults()?.[componentName(block)]?.ui as UiProp<Part> | undefined
 
 	return function ui(part) {
-		return [partClass(block, part), global?.[part], props.ui?.[part]].filter((value): value is string => Boolean(value))
+		return [partClass(block, part), global?.[part], props.ui?.[part]].filter(Boolean).join(' ')
 	}
 }

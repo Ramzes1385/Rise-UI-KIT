@@ -9,6 +9,7 @@
  * 4. стили компонентов не объявляют токены компонентов (`--rise-<компонент>-…:`).
  * Токены без имени компонента в начале (семантика `--rise-primary`) и объявленные в `src/styles` (`--rise-chart-*`, `--rise-code-*`)
  * — не токены компонентов.
+ * Общие миксины с параметром `$component` (`@include field-box(input)`) раскрываются: их токены — токены компонента.
  * Чтения с переменной Sass в имени (`ct($component, …)` в миксине, `var(--rise-code-#{$type})`) не разбираются — их нет в отчёте.
  *
  * Таблица — `docs/design/COMPONENT_TOKENS.md`: `--write` записывает её, без флага проверка падает, если таблица устарела.
@@ -83,9 +84,57 @@ function callArgs(source, open) {
 const lineOf = (source, index) => source.slice(0, index).split('\n').length
 const unquote = value => value.replace(/^['"]|['"]$/g, '')
 
+/** Тело блока от открывающей фигурной скобки `open` */
+function blockBody(source, open) {
+	let depth = 0
+	for (let i = open; i < source.length; i++) {
+		if (source[i] === '{') depth++
+		if (source[i] === '}' && --depth === 0) return source.slice(open + 1, i)
+	}
+	return source.slice(open + 1)
+}
+
+/**
+ * Общие миксины `src/styles` с параметром `$component` (`@mixin field-box($component: null)`): какие токены они читают.
+ * Map<миксин, [{ prop, fallback }]>; вложенные `@include другой($component: $component)` раскрываются.
+ */
+function componentMixins() {
+	const raw = new Map()
+	for (const file of scssFiles(join(ROOT, 'src/styles'))) {
+		const source = readFileSync(file, 'utf8')
+		for (const match of source.matchAll(/@mixin ([\w-]+)\(([^)]*\$component[^)]*)\)\s*\{/g)) {
+			const body = blockBody(source, match.index + match[0].length - 1)
+			const own = []
+			for (const call of body.matchAll(/(?<![\w-])ct\(\s*\$component\s*,/g)) {
+				const [[, prop = '', ...rest]] = callArgs(body, call.index + 2)
+				own.push({ prop, fallback: rest.join(', ') || null })
+			}
+			const nested = [...body.matchAll(/@include ([\w-]+)\([^)]*\$component/g)].map(item => item[1])
+			raw.set(match[1], { own, nested })
+		}
+	}
+	const resolveMixin = (name, seen = new Set()) => {
+		const item = raw.get(name)
+		if (!item || seen.has(name)) return []
+		seen.add(name)
+		return [...item.own, ...item.nested.flatMap(other => resolveMixin(other, seen))]
+	}
+	return new Map([...raw.keys()].map(name => [name, resolveMixin(name)]))
+}
+
 /** Чтения токенов в файле: { name, fallback, line } */
-function readsIn(source) {
+function readsIn(source, mixins = new Map()) {
 	const reads = []
+	for (const match of source.matchAll(/@include ([\w-]+)\(/g)) {
+		if (!mixins.has(match[1])) continue
+		const [parts] = callArgs(source, match.index + match[0].length - 1)
+		const named = parts.find(part => /^\$component\s*:/.test(part))
+		const component = unquote((named ? named.replace(/^\$component\s*:/, '') : (parts[0] ?? '')).trim())
+		if (!component || /[$#]/.test(component) || component.includes(':')) continue
+		for (const { prop, fallback } of mixins.get(match[1])) {
+			reads.push({ name: `--rise-${component}-${prop}`, fallback, line: lineOf(source, match.index) })
+		}
+	}
 	for (const match of source.matchAll(/(?<![\w-])ct\(/g)) {
 		const [parts] = callArgs(source, match.index + 2)
 		const [component = '', prop = '', ...rest] = parts.map(unquote)
@@ -121,6 +170,7 @@ function collect() {
 	const errors = []
 	const tokens = new Map()
 	const declared = declaredInStyles()
+	const mixins = componentMixins()
 	const componentsDir = join(ROOT, 'src/components')
 	const folders = existsSync(componentsDir) ? readdirSync(componentsDir).filter(name => /^Base[A-Z]/.test(name)) : []
 	const names = folders.map(tokenComponent).sort((a, b) => b.length - a.length)
@@ -134,7 +184,7 @@ function collect() {
 			for (const match of source.matchAll(/(--rise-[a-z0-9-]+)\s*:/g)) {
 				if (ownerOf(match[1])) errors.push(`${where(lineOf(source, match.index))}: токен компонента объявлен — ${match[1]}`)
 			}
-			for (const read of readsIn(source)) {
+			for (const read of readsIn(source, mixins)) {
 				if (declared.has(read.name)) continue
 				const owner = ownerOf(read.name)
 				if (!owner) continue

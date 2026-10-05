@@ -1,4 +1,5 @@
 import type { Ref } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import { computed, ref, toRef, useId } from 'vue'
 import { useFormField } from '@composables/form/useFormField'
 import { useFieldControl } from '@composables/form/useFormContext'
@@ -82,6 +83,7 @@ export function useBaseInput(props: InputProps, emit: BaseInputEmits) {
 		...standard,
 		inputRef,
 		...field,
+		ui: useUi(props, 'base-input'),
 		...useMaskedValue(props, emit, inputRef),
 		...usePasswordVisibility({ type: toRef(props, 'type') }),
 		passwordRuleResults: computed<PasswordRuleResult[]>(() => {

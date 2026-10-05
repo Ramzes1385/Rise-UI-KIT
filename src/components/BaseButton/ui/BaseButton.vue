@@ -1,8 +1,8 @@
 <template>
 	<button
 		ref="buttonRef"
-		class="base-button"
 		:class="[
+			ui('root'),
 			variantClass,
 			classes.root,
 			{
@@ -16,15 +16,15 @@
 		:aria-disabled="isLoading || (isDisabled && isFocusableWhenDisabled) ? 'true' : undefined"
 		:aria-busy="isLoading ? 'true' : undefined"
 		@click="handleClick">
-		<span v-if="isLoading" class="base-button__loader" aria-hidden="true"></span>
-		<span class="base-button__content">
-			<span v-if="$slots.left" class="base-button__slot-left">
+		<span v-if="isLoading" :class="ui('loader')" aria-hidden="true"></span>
+		<span :class="ui('content')">
+			<span v-if="$slots.left" :class="ui('slot-left')">
 				<slot name="left" />
 			</span>
-			<span v-if="$slots.default" class="base-button__label">
+			<span v-if="$slots.default" :class="ui('label')">
 				<slot />
 			</span>
-			<span v-if="$slots.right" class="base-button__slot-right">
+			<span v-if="$slots.right" :class="ui('slot-right')">
 				<slot name="right" />
 			</span>
 		</span>
@@ -55,7 +55,7 @@ const emit = defineEmits<BaseButtonEmits>()
 
 defineSlots<BaseButtonSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, buttonRef, paddingStyle, handleClick, exposed } =
+const { ui, sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, buttonRef, paddingStyle, handleClick, exposed } =
 	useBaseButton(props, emit)
 
 defineExpose(exposed)

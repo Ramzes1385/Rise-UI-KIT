@@ -7,5 +7,5 @@
  */
 export type UiProp<Part extends string> = Partial<Record<Part | 'root', string>>
 
-/** Классы части: `ui('label')` → `['base-button__label', <глобальные>, <экземпляра>]` */
-export type UiClassFn<Part extends string> = (part: Part | 'root') => string[]
+/** Классы части строкой: `ui('label')` → `'base-button__label <глобальные> <экземпляра>'` — подходит и для `:class`, и для пропов-строк подкомпонентов */
+export type UiClassFn<Part extends string> = (part: Part | 'root') => string

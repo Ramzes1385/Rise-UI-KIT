@@ -3,7 +3,7 @@
 	flex-direction: column;
 	gap: sz(6px);
 	width: 100%;
-	@include custom-text(color, var(--rise-text-highlighted));
+	@include custom-text(color, ct(input, text, var(--rise-text-highlighted)));
 
 	&__label {
 		@include field-label;
@@ -19,14 +19,14 @@
 		align-items: stretch;
 		width: 100%;
 		overflow: hidden;
-		@include field-box;
+		@include field-box(input);
 	}
 
 	&__field {
 		flex: 1;
 		width: 100%;
 		min-width: 0;
-		padding: sz(var(--rise-control-padding-y)) sz(var(--rise-control-padding-x));
+		padding: sz(ct(input, padding-y, var(--rise-control-padding-y))) sz(ct(input, padding-x, var(--rise-control-padding-x)));
 		border: none;
 		border-radius: 0;
 		outline: none;
@@ -53,11 +53,11 @@
 	}
 
 	&__prefix {
-		padding-left: sz(var(--rise-control-padding-x));
+		padding-left: sz(ct(input, padding-x, var(--rise-control-padding-x)));
 	}
 
 	&__postfix {
-		padding-right: sz(var(--rise-control-padding-x));
+		padding-right: sz(ct(input, padding-x, var(--rise-control-padding-x)));
 	}
 
 	&--has-prefix &__field {
