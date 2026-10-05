@@ -19,6 +19,8 @@ export default meta
 
 export const Default = cases.Default
 export const Thumbnails = cases.Thumbnails
+export const ThumbnailsLeft = cases.ThumbnailsLeft
+export const ThumbnailsRight = cases.ThumbnailsRight
 export const ArrowPositions = cases.ArrowPositions
 export const Fade = cases.Fade
 export const Cube = cases.Cube

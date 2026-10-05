@@ -7,6 +7,15 @@
 		flex-direction: row;
 	}
 
+	&__body {
+		display: contents;
+	}
+
+	&--thumbs-left,
+	&--thumbs-right {
+		container: base-slider / inline-size;
+	}
+
 	&__stage {
 		position: relative;
 		display: flex;
@@ -451,5 +460,56 @@
 		background-color: var(--rise-media-scrim-light);
 		color: var(--rise-media-text);
 		pointer-events: none;
+	}
+
+	@container base-slider (min-width: 481px) {
+		&--thumbs-left &__body,
+		&--thumbs-right &__body {
+			display: flex;
+			flex: 1;
+			min-width: 0;
+			min-height: 0;
+		}
+
+		&--thumbs-left &__body {
+			flex-direction: row-reverse;
+		}
+
+		&--thumbs-left &__navigation,
+		&--thumbs-right &__navigation {
+			flex: none;
+			flex-direction: row;
+			min-height: 0;
+			padding-top: 0;
+		}
+
+		&--thumbs-left &__navigation {
+			padding-left: 0;
+			padding-right: sz(8px);
+		}
+
+		&--thumbs-right &__navigation {
+			padding-left: sz(8px);
+		}
+
+		&--thumbs-left &__dots,
+		&--thumbs-right &__dots {
+			flex-direction: column;
+		}
+
+		&--thumbs-left &__dot--active,
+		&--thumbs-right &__dot--active {
+			width: sz(8px);
+			height: sz(24px);
+		}
+
+		&--thumbs-left &__thumbs,
+		&--thumbs-right &__thumbs {
+			flex-direction: column;
+			justify-content: flex-start;
+			margin: 0;
+			padding: sz(4px);
+			overflow: hidden auto;
+		}
 	}
 }

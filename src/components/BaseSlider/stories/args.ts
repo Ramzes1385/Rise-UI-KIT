@@ -7,6 +7,7 @@ export const args = {
 	items: SLIDES,
 	animation: 'slide',
 	navigation: 'dots',
+	thumbnailsPosition: 'bottom',
 	hasArrows: true,
 	arrowsPosition: 'center',
 	isLoop: true,

@@ -34,6 +34,11 @@ export const SLIDER_EFFECT_RANGE = 3
 
 export type SliderNavigation = 'dots' | 'thumbnails' | 'both' | 'none'
 
+/** Места ленты миниатюр: `bottom` — под слайдами, `left` и `right` — вертикальная лента сбоку */
+export const SLIDER_THUMBNAILS_POSITIONS = ['bottom', 'left', 'right'] as const
+
+export type SliderThumbnailsPosition = (typeof SLIDER_THUMBNAILS_POSITIONS)[number]
+
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export interface BaseSliderProps extends Omit<
@@ -73,6 +78,12 @@ export interface BaseSliderProps extends Omit<
 	isAutoplay?: boolean
 	/** Интервал автопроигрывания (мс) */
 	autoplayInterval?: number
+	/**
+	 * Где лента миниатюр (`navigation`: `thumbnails` или `both`): `bottom` — под слайдами; `left` и `right` — вертикальная лента
+	 * сбоку с прокруткой, миниатюры листаются клавишами ↑/↓. Уже 480px (container query по ширине слайдера) лента возвращается вниз.
+	 * Корень с боковой лентой — контейнер по ширине (`container-type: inline-size`): ширину ему задаёт родитель.
+	 */
+	thumbnailsPosition?: SliderThumbnailsPosition
 	/** Показывать стрелки */
 	hasArrows?: boolean
 	/** Позиция стрелок */
@@ -137,6 +148,7 @@ export type SliderProps = PropsWithDefaults<
 	| 'autoplayInterval'
 	| 'isLoop'
 	| 'isVertical'
+	| 'thumbnailsPosition'
 	| 'initialIndex'
 	| 'spaceBetween'
 	| 'slidesPerView'

@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
 import { formatMessage } from '@/locales'
+import { useSliderThumbs } from './useSliderThumbs'
 import { computed, onBeforeUnmount, watch } from 'vue'
 import { useSlider } from '@composables/range/useSlider'
 import { UI_ARIA, UI_CAROUSEL } from '@/locales/messages'
@@ -155,6 +156,7 @@ export function useBaseSlider(props: SliderProps, emit: BaseSliderEmits) {
 		slideEffectStyle: useSlideEffect(props, () => slider.currentIndex.value),
 		onVideoPlay: videos.onVideoPlay,
 		...useCarouselA11y(props, slider),
+		...useSliderThumbs(props, slider),
 		...useHold(slider.goNext, slider.goPrev, direction => canStepTo(props, slider, direction)),
 		exposed: {
 			goTo: slider.goTo,

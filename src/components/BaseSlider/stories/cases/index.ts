@@ -1,5 +1,7 @@
 export { Default } from './Default'
 export { Thumbnails } from './content/Thumbnails'
+export { ThumbnailsLeft } from './content/ThumbnailsLeft'
+export { ThumbnailsRight } from './content/ThumbnailsRight'
 export { ArrowPositions } from './appearance/ArrowPositions'
 export { Fade } from './appearance/effects/Fade'
 export { Cube } from './appearance/effects/Cube'
