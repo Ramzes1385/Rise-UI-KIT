@@ -2,7 +2,7 @@ import { expect } from 'storybook/test'
 import type meta from '../Theming.stories'
 import { Sample, SAMPLE_SOURCE } from '../shared'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { staticStorySource, useStorySetup } from '@/stories/helpers'
+import { isStoryBranded, staticStorySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
 	<div class="fnd-themes">
@@ -38,6 +38,8 @@ export const LightAndDark: StoryObj<typeof meta> = {
 	}),
 	play: async ({ canvasElement }) => {
 		const [light, dark] = [...canvasElement.querySelectorAll<HTMLElement>('.fnd-themes__panel')]
+		await expect(getComputedStyle(light).backgroundColor).not.toBe(getComputedStyle(dark).backgroundColor)
+		if (isStoryBranded()) return
 		await expect(getComputedStyle(light).backgroundColor).toBe('rgb(255, 255, 255)')
 		await expect(getComputedStyle(dark).backgroundColor).toBe('rgb(24, 24, 27)')
 	},

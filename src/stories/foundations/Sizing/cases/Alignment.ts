@@ -5,7 +5,7 @@ import { BaseInput } from '@components/BaseInput'
 import { BaseButton } from '@components/BaseButton'
 import { BaseSelect } from '@components/BaseSelect'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { literal, staticStorySource, useStorySetup } from '@/stories/helpers'
+import { isStoryBranded, literal, staticStorySource, useStorySetup } from '@/stories/helpers'
 
 const STATE = { text: '', lang: 'ru' }
 
@@ -44,7 +44,7 @@ export const Alignment: StoryObj<typeof meta> = {
 		const height = (selector: string) =>
 			Math.round((canvasElement.querySelector(selector) as HTMLElement).getBoundingClientRect().height)
 		const button = height('.base-button')
-		await expect(button).toBe(32)
+		if (!isStoryBranded()) await expect(button).toBe(32)
 		await expect(height('.base-input__wrapper')).toBe(button)
 		await expect(height('.base-select__trigger')).toBe(button)
 	},

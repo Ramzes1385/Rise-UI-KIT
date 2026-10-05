@@ -3,6 +3,12 @@
  * `__story-missing` — намеренное исключение. Stories с тегом `!test` пропускаются: в index.json Storybook снимает тег
  * `test`, поэтому проверяется его отсутствие. Тег должен стоять в `X.stories.ts` (`export const X = { ...cases.X, tags: ['!test'] }`):
  * индексатор читает файл статически и тегов у `cases.X` не видит.
+ *
+ * `--themes=<список>` — в каких темах прогонять (по умолчанию `light,dark`). Тема — режим или бренд с режимом:
+ * - `light`, `dark` — режим (глобал Storybook `theme`), бренд `rise` — кит как есть;
+ * - `<бренд>-<режим>` — бренд (глобал `brand`: `rise`, `corporate`, `playful`, `minimal`, `custom`) поверх режима,
+ *   например `corporate-light,corporate-dark`; `<бренд>` без режима — оба режима: `corporate` = `corporate-light,corporate-dark`.
+ * Пример: `node scripts/check-stories.mjs --filter='^foundations-' --themes=light,dark,corporate,playful,minimal`.
  */
 
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
@@ -22,6 +28,26 @@ const FAILED_EVENTS = ['playFunctionThrewException', 'storyThrewException', 'sto
 const RENDER_TIMEOUT = 30_000
 /** Адреса, которые stories запрашивают заведомо без ответа, чтобы показать ошибку загрузки */
 const EXPECTED_MISSING_RE = /__story-missing/
+/** Режимы и бренды тем: глобалы `theme` и `brand` из build/storybook/preview.ts */
+const MODES = ['light', 'dark']
+const BRANDS = ['rise', 'corporate', 'playful', 'minimal', 'custom']
+
+/** Имя темы из `--themes` → имена с режимом: `light` → `light`, `corporate` → `corporate-light`, `corporate-dark` */
+function expandTheme(name) {
+	if (MODES.includes(name)) return [name]
+	if (BRANDS.includes(name)) return MODES.map(mode => `${name}-${mode}`)
+	const [brand, mode] = [name.slice(0, name.lastIndexOf('-')), name.slice(name.lastIndexOf('-') + 1)]
+	if (BRANDS.includes(brand) && MODES.includes(mode)) return [name]
+	console.error(`❌ Неизвестная тема «${name}»: ${MODES.join(', ')}, <бренд>-<режим> или <бренд>; бренды — ${BRANDS.join(', ')}`)
+	process.exit(2)
+}
+
+/** Глобалы Storybook темы для URL: `corporate-dark` → `theme:dark;brand:corporate` */
+function themeGlobals(theme) {
+	if (MODES.includes(theme)) return `theme:${theme}`
+	const at = theme.lastIndexOf('-')
+	return `theme:${theme.slice(at + 1)};brand:${theme.slice(0, at)}`
+}
 
 function parseArgs(argv) {
 	const options = { url: 'http://localhost:6006', themes: 'light,dark', filter: '', concurrency: '4', report: '' }
@@ -35,7 +61,7 @@ function parseArgs(argv) {
 	}
 	return {
 		url: options.url.replace(/\/$/, ''),
-		themes: options.themes.split(',').filter(Boolean),
+		themes: [...new Set(options.themes.split(',').filter(Boolean).flatMap(expandTheme))],
 		filter: options.filter ? new RegExp(options.filter) : null,
 		concurrency: Math.max(1, Number(options.concurrency) || 1),
 		report: options.report,
@@ -95,7 +121,7 @@ async function checkStory(page, options, story, theme) {
 	page.on('console', onConsole)
 	page.on('response', onResponse)
 	try {
-		await page.goto(`${options.url}/iframe.html?id=${story.id}&viewMode=story&globals=theme:${theme}`, {
+		await page.goto(`${options.url}/iframe.html?id=${story.id}&viewMode=story&globals=${themeGlobals(theme)}`, {
 			waitUntil: 'load',
 			timeout: 60_000,
 		})

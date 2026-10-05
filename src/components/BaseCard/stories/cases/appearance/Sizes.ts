@@ -2,7 +2,7 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseCard.stories'
 import BaseCard from '../../../ui/BaseCard.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { literal, SIZE_PRESETS, sizeLabel, storySource, useStorySetup } from '@/stories/helpers'
+import { isStoryBranded, literal, SIZE_PRESETS, sizeLabel, storySource, useStorySetup } from '@/stories/helpers'
 
 const presets = SIZE_PRESETS.map(preset => ({ name: preset.name, sizeScale: preset.sizeScale, label: sizeLabel(preset) }))
 
@@ -35,6 +35,6 @@ export const Sizes: StoryObj<typeof meta> = {
 	play: async ({ canvas }) => {
 		const title = canvas.getByRole('heading', { name: 'xl · 125' })
 		await expect(getComputedStyle(title).fontSize).toBe('20px')
-		await expect(getComputedStyle(title.closest('.base-card__header') as HTMLElement).padding).toBe('20px 25px')
+		if (!isStoryBranded()) await expect(getComputedStyle(title.closest('.base-card__header') as HTMLElement).padding).toBe('20px 25px')
 	},
 }

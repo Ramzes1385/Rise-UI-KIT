@@ -2,7 +2,7 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseCard.stories'
 import BaseCard from '../../../ui/BaseCard.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { isStoryBranded, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const ui = { root: 'story-themed-card', body: 'story-themed-body' }
 
@@ -48,11 +48,11 @@ export const Theming: StoryObj<typeof meta> = {
 		const body = (card: HTMLElement) => getComputedStyle(card.querySelector('.base-card__body')!)
 
 		await expect(getComputedStyle(themed).backgroundColor).not.toBe(getComputedStyle(plain).backgroundColor)
-		await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('16px')
-		await expect(body(themed).paddingTop).toBe('24px')
-		await expect(body(plain).paddingTop).toBe('16px')
-		await expect(body(dense).paddingTop).toBe('12px')
-		await expect(body(dense).paddingLeft).toBe('15px')
+		if (!isStoryBranded()) await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('16px')
+		if (!isStoryBranded()) await expect(body(themed).paddingTop).toBe('24px')
+		if (!isStoryBranded()) await expect(body(plain).paddingTop).toBe('16px')
+		if (!isStoryBranded()) await expect(body(dense).paddingTop).toBe('12px')
+		if (!isStoryBranded()) await expect(body(dense).paddingLeft).toBe('15px')
 		await expect(getComputedStyle(themed.querySelector('.base-card__header')!).backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
 		await expect(classed).toHaveClass('base-card', 'story-themed-card')
 		await expect(classed.querySelector('.base-card__body')).toHaveClass('story-themed-body')

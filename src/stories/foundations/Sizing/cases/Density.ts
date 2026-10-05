@@ -3,7 +3,7 @@ import type meta from '../Sizing.stories'
 import { BaseInput } from '@components/BaseInput'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { staticStorySource, useStorySetup } from '@/stories/helpers'
+import { isStoryBranded, staticStorySource, useStorySetup } from '@/stories/helpers'
 
 const STATE = { text: '', spacious: '' }
 
@@ -51,6 +51,8 @@ export const Density: StoryObj<typeof meta> = {
 		const [compact, spacious] = [...canvasElement.querySelectorAll('.base-button')].map(el =>
 			Math.round(el.getBoundingClientRect().height),
 		)
+		await expect(spacious).toBeGreaterThan(compact)
+		if (isStoryBranded()) return
 		await expect(compact).toBe(32)
 		await expect(spacious).toBe(36)
 	},

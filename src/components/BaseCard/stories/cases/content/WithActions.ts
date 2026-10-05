@@ -4,7 +4,7 @@ import BaseCard from '../../../ui/BaseCard.vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { storySource, useStorySetup } from '@/stories/helpers'
+import { isStoryBranded, storySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
 	<div class="story-medium">
@@ -35,7 +35,7 @@ export const WithActions: StoryObj<typeof meta> = {
 	play: async ({ canvas }) => {
 		const download = canvas.getByRole('button', { name: 'Скачать' })
 		const header = download.closest('.base-card__header') as HTMLElement
-		await expect(header.getBoundingClientRect().height).toBe(81)
+		if (!isStoryBranded()) await expect(header.getBoundingClientRect().height).toBe(81)
 		await expect(canvas.getByRole('button', { name: 'Ещё' })).toBeVisible()
 	},
 }

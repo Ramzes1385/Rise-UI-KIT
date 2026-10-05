@@ -95,3 +95,6 @@ export function watchCustomBrand(input: Ref<ThemeInput>): void {
 		{ immediate: true },
 	)
 }
+
+/** Выбран бренд, отличный от `rise`: play, которые сверяют числа и цвета кита, без бренда проверяют их точно, с брендом — соотношения */
+export const isStoryBranded = (): boolean => document.documentElement.hasAttribute('data-rise-theme')

@@ -3,7 +3,7 @@ import type meta from '../../BaseImage.stories'
 import BaseImage from '../../../ui/BaseImage.vue'
 import { expectImagesVisible } from '../../shared'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { isStoryBranded, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const radii = [
 	{ label: 'по умолчанию (md)', value: undefined },
@@ -45,7 +45,7 @@ export const BorderRadius: StoryObj<typeof meta> = {
 		await expectImagesVisible(canvasElement, 4)
 		const [themed, square] = Array.from(canvasElement.querySelectorAll<HTMLElement>('.base-image'))
 		await expect(themed?.style.borderRadius).toBe('')
-		await expect(getComputedStyle(themed!).borderTopLeftRadius).toBe('6px')
+		if (!isStoryBranded()) await expect(getComputedStyle(themed!).borderTopLeftRadius).toBe('6px')
 		await expect(getComputedStyle(square!).borderTopLeftRadius).toBe('0px')
 	},
 }
