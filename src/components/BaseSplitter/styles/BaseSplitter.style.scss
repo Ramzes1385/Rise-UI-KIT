@@ -1,5 +1,5 @@
 .base-splitter {
-	--base-splitter-bar: #{sz(9px)};
+	--base-splitter-bar: #{sz(ct(splitter-separator, width, 9px))};
 	--base-splitter-gaps: 1;
 
 	display: flex;
@@ -42,12 +42,16 @@
 
 		&::before {
 			position: absolute;
-			background-color: var(--rise-border);
+			background-color: ct(splitter-separator, bg, var(--rise-border));
 			content: '';
 			@include transition-colors;
 		}
 
 		@include focus-ring(-2px);
+
+		&:focus-visible {
+			outline-color: ct(splitter-separator, ring, var(--rise-focus-ring));
+		}
 	}
 
 	&--horizontal > &__separator {
@@ -74,30 +78,36 @@
 
 	&__handle {
 		position: relative;
-		border-radius: 999px;
-		background-color: var(--rise-border-accented);
+		border-radius: ct(splitter-handle, radius, var(--rise-radius-full));
+		background-color: ct(splitter-handle, bg, var(--rise-border-accented));
 		@include transition-colors;
 	}
 
 	&--horizontal > &__separator > &__handle {
-		width: sz(4px);
-		height: sz(24px);
+		width: sz(ct(splitter-handle, width, 4px));
+		height: sz(ct(splitter-handle, height, 24px));
 	}
 
 	&--vertical > &__separator > &__handle {
-		width: sz(24px);
-		height: sz(4px);
+		width: sz(ct(splitter-handle, height, 24px));
+		height: sz(ct(splitter-handle, width, 4px));
 	}
 
 	&__separator:hover::before,
-	&__separator:focus-visible::before,
-	&--dragging > &__separator::before {
-		background-color: var(--rise-primary);
+	&__separator:focus-visible::before {
+		background-color: ct(splitter-separator, bg-hover, var(--rise-primary));
 	}
 
-	&__separator:hover > &__handle,
+	&--dragging > &__separator::before {
+		background-color: ct(splitter-separator, bg-active, var(--rise-primary));
+	}
+
+	&__separator:hover > &__handle {
+		background-color: ct(splitter-handle, bg-hover, var(--rise-primary));
+	}
+
 	&--dragging > &__separator > &__handle {
-		background-color: var(--rise-primary);
+		background-color: ct(splitter-handle, bg-active, var(--rise-primary));
 	}
 
 	&--ghost > &__separator:not(:hover, :focus-visible)::before {

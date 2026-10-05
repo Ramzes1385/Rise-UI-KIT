@@ -25,3 +25,5 @@ export const Mail = cases.Mail
 export const Ide = cases.Ide
 export const Dashboard = cases.Dashboard
 export const Keyboard = cases.Keyboard
+export const Theming = cases.Theming
+export const Animations = cases.Animations

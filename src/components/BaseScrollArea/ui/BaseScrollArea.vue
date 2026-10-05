@@ -1,7 +1,7 @@
 <template>
 	<div
-		class="base-scroll-area"
 		:class="[
+			ui('root'),
 			variantClass,
 			`base-scroll-area--${orientation}`,
 			`base-scroll-area--scrollbar-${scrollbar}`,
@@ -11,27 +11,24 @@
 		:style="[sizeScaleStyle, variantStyle]">
 		<div
 			ref="viewportRef"
-			class="base-scroll-area__viewport"
-			:class="classes.viewport"
+			:class="[ui('viewport'), classes.viewport]"
 			:style="viewportStyle"
 			:tabindex="isScrollable ? 0 : undefined"
 			:role="ariaLabel ? 'region' : undefined"
 			:aria-label="ariaLabel"
 			@scroll="handleScroll">
-			<div ref="contentRef" class="base-scroll-area__content">
+			<div ref="contentRef" :class="ui('content')">
 				<slot />
 			</div>
 		</div>
 		<template v-for="axis in axes" :key="axis">
 			<div
 				v-if="bars[axis].isVisible"
-				class="base-scroll-area__bar"
-				:class="[`base-scroll-area__bar--${axis}`, classes.bar]"
+				:class="[ui('bar'), `base-scroll-area__bar--${axis}`, classes.bar]"
 				aria-hidden="true"
 				@pointerdown="handleTrackPointerdown(axis, $event)">
 				<div
-					class="base-scroll-area__thumb"
-					:class="classes.thumb"
+					:class="[ui('thumb'), classes.thumb]"
 					:style="thumbStyle(axis)"
 					@pointerdown.stop="handleThumbPointerdown(axis, $event)"
 					@pointermove="handleThumbPointermove"
@@ -81,6 +78,7 @@ const {
 	handleThumbPointermove,
 	handleThumbPointerup,
 	exposed,
+	ui,
 } = useBaseScrollArea(props, emit)
 
 defineExpose<BaseScrollAreaExpose>(exposed)

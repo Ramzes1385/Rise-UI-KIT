@@ -1,17 +1,16 @@
 <template>
 	<footer
-		class="base-footer"
-		:class="[variantClass, { 'base-footer--compact': isCompact }, classes.root]"
+		:class="[ui('root'), variantClass, { 'base-footer--compact': isCompact }, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<component :is="'script'" v-if="structuredData" type="application/ld+json" v-html="structuredData" />
-		<BaseContainer v-if="hasTop" :size="containerSize" class="base-footer__top" :size-scale="sizeScale">
-			<div v-if="slots.top" class="base-footer__about">
+		<BaseContainer v-if="hasTop" :size="containerSize" :class="ui('top')" :size-scale="sizeScale">
+			<div v-if="slots.top" :class="ui('about')">
 				<slot name="top" />
 			</div>
-			<div v-if="columns?.length" class="base-footer__columns">
-				<nav v-for="column in columns" :key="column.title" class="base-footer__column" :aria-label="column.title">
-					<p class="base-footer__column-title" aria-hidden="true">{{ column.title }}</p>
-					<ul class="base-footer__links">
+			<div v-if="columns?.length" :class="ui('columns')">
+				<nav v-for="column in columns" :key="column.title" :class="ui('column')" :aria-label="column.title">
+					<p :class="ui('column-title')" aria-hidden="true">{{ column.title }}</p>
+					<ul :class="ui('links')">
 						<li v-for="link in column.links" :key="link.label">
 							<BaseLink :to="link.to" :href="link.href" variant="ghost">{{ link.label }}</BaseLink>
 						</li>
@@ -22,16 +21,16 @@
 		<BaseContainer
 			v-if="hasBar"
 			:size="containerSize"
-			class="base-footer__inner"
+			:class="ui('inner')"
 			:custom-class="{ root: classes.inner }"
 			:size-scale="sizeScale">
-			<div v-if="slots.start" class="base-footer__start">
+			<div v-if="slots.start" :class="ui('start')">
 				<slot name="start" />
 			</div>
-			<div v-if="slots.default" class="base-footer__center">
+			<div v-if="slots.default" :class="ui('center')">
 				<slot />
 			</div>
-			<div v-if="slots.end" class="base-footer__end">
+			<div v-if="slots.end" :class="ui('end')">
 				<slot name="end" />
 			</div>
 		</BaseContainer>
@@ -60,6 +59,6 @@ const props = withDefaults(
 )
 
 defineSlots<BaseFooterSlots>()
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, slots, hasTop, hasBar, structuredData } =
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, slots, hasTop, hasBar, structuredData, ui } =
 	useBaseFooter(props)
 </script>

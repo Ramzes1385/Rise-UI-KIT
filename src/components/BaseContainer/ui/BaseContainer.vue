@@ -1,5 +1,5 @@
 <template>
-	<component :is="tag" class="base-container" :class="[`base-container--${size}`, classes.root]" :style="sizeScaleStyle">
+	<component :is="tag" :class="[ui('root'), `base-container--${size}`, classes.root]" :style="sizeScaleStyle">
 		<slot />
 	</component>
 </template>
@@ -23,5 +23,5 @@ const props = withDefaults(
 
 defineSlots<BaseContainerSlots>()
 
-const { sizeScaleStyle, classes } = useBaseContainer(props)
+const { sizeScaleStyle, classes, ui } = useBaseContainer(props)
 </script>

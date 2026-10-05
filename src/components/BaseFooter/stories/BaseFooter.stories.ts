@@ -25,3 +25,5 @@ export const WithSubscribe = cases.WithSubscribe
 export const WithApps = cases.WithApps
 export const Compact = cases.Compact
 export const Seo = cases.Seo
+export const Theming = cases.Theming
+export const Animations = cases.Animations

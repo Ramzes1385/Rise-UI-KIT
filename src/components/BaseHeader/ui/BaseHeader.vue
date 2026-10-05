@@ -1,7 +1,7 @@
 <template>
 	<header
-		class="base-header"
 		:class="[
+			ui('root'),
 			variantClass,
 			`base-header--nav-${navAlign}`,
 			{
@@ -13,25 +13,24 @@
 			classes.root,
 		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
-		<BaseContainer :size="containerSize" class="base-header__inner" :custom-class="{ root: classes.inner }" :size-scale="sizeScale">
-			<div class="base-header__start">
+		<BaseContainer :size="containerSize" :class="ui('inner')" :custom-class="{ root: classes.inner }" :size-scale="sizeScale">
+			<div :class="ui('start')">
 				<slot name="start">
-					<BaseLink v-if="title && (to || href)" :to="to" :href="href" class="base-header__title" :class="classes.title">
+					<BaseLink v-if="title && (to || href)" :to="to" :href="href" :class="[ui('title'), classes.title]">
 						{{ title }}
 					</BaseLink>
-					<span v-else-if="title" class="base-header__title" :class="classes.title">{{ title }}</span>
+					<span v-else-if="title" :class="[ui('title'), classes.title]">{{ title }}</span>
 				</slot>
 			</div>
-			<div v-if="slots.default" class="base-header__center">
+			<div v-if="slots.default" :class="ui('center')">
 				<slot />
 			</div>
-			<div class="base-header__end">
+			<div :class="ui('end')">
 				<slot name="end" />
 				<BaseButton
 					v-if="hasMenu"
 					variant="ghost"
-					class="base-header__toggle"
-					:class="classes.toggle"
+					:class="[ui('toggle'), classes.toggle]"
 					:aria-label="resolvedMenuLabel"
 					aria-haspopup="dialog"
 					:aria-expanded="isMenuOpen ? 'true' : 'false'"
@@ -40,7 +39,7 @@
 				</BaseButton>
 			</div>
 		</BaseContainer>
-		<BaseContainer v-if="slots.bottom" :size="containerSize" class="base-header__bottom" :size-scale="sizeScale">
+		<BaseContainer v-if="slots.bottom" :size="containerSize" :class="ui('bottom')" :size-scale="sizeScale">
 			<slot name="bottom" />
 		</BaseContainer>
 		<BaseDrawer
@@ -96,6 +95,7 @@ const {
 	isMenuOpen,
 	closeMenu,
 	exposed,
+	ui,
 } = useBaseHeader(props)
 
 defineExpose(exposed)

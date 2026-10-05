@@ -1,4 +1,5 @@
 import type { Ref } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import type { BaseLayoutProps } from '../types/BaseLayout.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { computed, onBeforeUnmount, onMounted, ref, useId, useSlots } from 'vue'
@@ -29,6 +30,7 @@ export function useBaseLayout(props: BaseLayoutProps) {
 
 	return {
 		...useStandardBaseComponent('base-layout', props, ['root', 'header', 'sidebar', 'main', 'footer']),
+		ui: useUi(props, 'base-layout'),
 		slots: useSlots(),
 		resolvedMainId: computed(() => props.mainId ?? `main-${generatedId}`),
 		headerRef,

@@ -16,4 +16,5 @@ export const argTypes = {
 	isOverlay: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	menuLabel: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	menuDirection: { control: 'inline-radio', options: DRAWER_DIRECTIONS, table: propGroup(ARG_GROUP.behavior) },
+	ui: { control: false },
 } satisfies Meta<typeof BaseHeader>['argTypes']

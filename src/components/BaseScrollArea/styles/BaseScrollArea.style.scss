@@ -34,6 +34,7 @@
 		z-index: 1;
 		box-sizing: border-box;
 		padding: sz(2px);
+		background-color: ct(scroll-area-bar, bg, transparent);
 		opacity: 0;
 		touch-action: none;
 		@include transition(opacity);
@@ -42,14 +43,14 @@
 			top: 0;
 			right: 0;
 			bottom: 0;
-			width: sz(10px);
+			width: sz(ct(scroll-area-bar, width, 10px));
 		}
 
 		&--x {
 			right: 0;
 			bottom: 0;
 			left: 0;
-			height: sz(10px);
+			height: sz(ct(scroll-area-bar, width, 10px));
 		}
 	}
 
@@ -62,12 +63,12 @@
 
 	&__thumb {
 		position: absolute;
-		border-radius: 999px;
-		background-color: var(--rise-border-accented);
+		border-radius: ct(scroll-area-thumb, radius, var(--rise-radius-full));
+		background-color: ct(scroll-area-thumb, bg, var(--rise-border-accented));
 		@include transition-colors;
 
 		&:hover {
-			background-color: var(--rise-text-muted);
+			background-color: ct(scroll-area-thumb, bg-hover, var(--rise-text-muted));
 		}
 	}
 
@@ -82,6 +83,6 @@
 	}
 
 	&--active &__thumb {
-		background-color: var(--rise-text-muted);
+		background-color: ct(scroll-area-thumb, bg-active, var(--rise-text-muted));
 	}
 }

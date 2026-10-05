@@ -1,10 +1,12 @@
 .base-footer {
 	box-sizing: border-box;
 	width: 100%;
-	border-top: 1px solid var(--rise-border);
-	@include custom-bg(background-color, var(--rise-bg));
-	@include custom-text(color, var(--rise-text-muted));
-	@include text-size(sm);
+	border-top: 1px solid ct(footer, border, var(--rise-border));
+	@include custom-bg(background-color, ct(footer, bg, var(--rise-bg)));
+	@include custom-text(color, ct(footer, text, var(--rise-text-muted)));
+	font-size: sz(ct(footer, font-size, var(--rise-font-size-sm)));
+	line-height: sz(var(--rise-line-height-sm));
+	box-shadow: ct(footer, shadow, none);
 
 	&--soft {
 		border-top-color: transparent;
@@ -21,9 +23,9 @@
 		flex-wrap: wrap;
 		align-items: center;
 		justify-content: space-between;
-		--base-footer-bar-padding: #{sz(24px)};
+		--base-footer-bar-padding: #{sz(ct(footer, padding-y, 24px))};
 
-		gap: sz(12px) sz(24px);
+		gap: sz(12px) sz(ct(footer, gap, 24px));
 		padding-block: var(--base-footer-bar-padding);
 
 		@media (max-width: 767.98px) {
@@ -49,7 +51,7 @@
 	}
 
 	&__top + &__inner {
-		background-image: linear-gradient(var(--rise-border), var(--rise-border));
+		background-image: linear-gradient(ct(footer, border, var(--rise-border)), ct(footer, border, var(--rise-border)));
 		background-repeat: no-repeat;
 		background-position: 0 calc(-1 * var(--base-footer-bar-padding));
 		background-size: 100% 1px;
@@ -73,8 +75,8 @@
 
 	&__column-title {
 		margin: 0 0 sz(12px);
-		font-weight: 600;
-		@include custom-text(color, var(--rise-text));
+		font-weight: ct(footer-column-title, font-weight, var(--rise-font-weight-semibold));
+		@include custom-text(color, ct(footer-column-title, text, var(--rise-text)));
 	}
 
 	&__links {

@@ -20,3 +20,5 @@ export default meta
 export const Default = cases.Default
 export const ShortPage = cases.ShortPage
 export const Keyboard = cases.Keyboard
+export const Theming = cases.Theming
+export const Animations = cases.Animations

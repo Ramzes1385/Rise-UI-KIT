@@ -1,4 +1,5 @@
 import type { Ref } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { Axis, BaseScrollAreaEmits, BaseScrollAreaExpose, BaseScrollAreaProps } from '../types/BaseScrollArea.types'
@@ -114,6 +115,7 @@ export function useBaseScrollArea(props: BaseScrollAreaProps, emit: BaseScrollAr
 
 	return {
 		...standard,
+		ui: useUi(props, 'base-scroll-area'),
 		axes: AXES,
 		viewportRef,
 		contentRef,

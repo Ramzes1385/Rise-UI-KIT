@@ -8,4 +8,5 @@ export const argTypes = {
 	...hiddenArgTypes('variant', 'color'),
 	size: { control: 'inline-radio', options: CONTAINER_SIZES, table: propGroup(ARG_GROUP.appearance) },
 	tag: { control: 'text', table: propGroup(ARG_GROUP.content) },
+	ui: { control: false },
 } satisfies Meta<typeof BaseContainer>['argTypes']

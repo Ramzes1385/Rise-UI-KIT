@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
 import { computed, ref, useId, watch } from 'vue'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseSplitterEmits, SplitterPane, SplitterProps, SplitterSeparator, SplitterSizes } from '../types/BaseSplitter.types'
@@ -159,6 +160,7 @@ export function useBaseSplitter(props: SplitterProps, emit: BaseSplitterEmits) {
 
 	return {
 		...useStandardBaseComponent('base-splitter', props, ['root', 'pane', 'separator']),
+		ui: useUi(props, 'base-splitter'),
 		rootRef,
 		...useSplitterPanes(props, state),
 		handleKeydown: useSplitterKeyboard(props, state),

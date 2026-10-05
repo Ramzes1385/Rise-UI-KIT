@@ -9,4 +9,5 @@ export const argTypes = {
 	maxHeight: { control: 'number', table: propGroup(ARG_GROUP.appearance) },
 	scrollbar: { control: 'inline-radio', options: ['hover', 'always'], table: propGroup(ARG_GROUP.appearance) },
 	ariaLabel: { control: 'text', table: propGroup(ARG_GROUP.content) },
+	ui: { control: false },
 } satisfies Meta<typeof BaseScrollArea>['argTypes']

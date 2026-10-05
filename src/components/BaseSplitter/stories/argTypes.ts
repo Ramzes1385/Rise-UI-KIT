@@ -15,4 +15,5 @@ export const argTypes = {
 	label: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	paneLabels: { control: false, table: propGroup(ARG_GROUP.content) },
 	isDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+	ui: { control: false },
 } satisfies Meta<typeof BaseSplitter>['argTypes']

@@ -1,9 +1,15 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { ComputedRef, Ref, StyleValue } from 'vue'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /** Варианты оформления: `default` — линия с ручкой, `ghost` — линия проявляется при наведении и в фокусе */
 export const SPLITTER_VARIANTS = ['default', 'ghost'] as const
+
+/** Части разделителя для пропа `ui`: root — корень, pane — панель, separator — разделитель, handle — ручка на разделителе */
+export const SPLITTER_PARTS = ['root', 'pane', 'separator', 'handle'] as const
+
+export type BaseSplitterPart = (typeof SPLITTER_PARTS)[number]
 
 /** Расположение панелей: `horizontal` — рядом (разделитель вертикальный), `vertical` — одна над другой */
 export type SplitterOrientation = 'horizontal' | 'vertical'
@@ -31,6 +37,13 @@ export interface BaseSplitterProps extends BaseComponentProps<(typeof SPLITTER_V
 	paneLabels?: string[]
 	/** Разделитель не двигается и не получает фокус */
 	isDisabled?: boolean
+	/**
+	 * Классы частей: добавляются к БЭМ-классам кита, глобальные — `defaults.BaseSplitter.ui`.
+	 *
+	 * @example
+	 * <BaseSplitter :ui="{ pane: 'p-4', handle: 'opacity-60' }" />
+	 */
+	ui?: UiProp<BaseSplitterPart>
 }
 
 export interface BaseSplitterEmits {

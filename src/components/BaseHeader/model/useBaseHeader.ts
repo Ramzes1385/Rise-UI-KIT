@@ -1,4 +1,5 @@
 import { UI_ARIA } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
 import { computed, ref, useSlots, watch } from 'vue'
 import { useBreakpoint } from '@composables/app/useBreakpoint'
 import type { BaseHeaderProps } from '../types/BaseHeader.types'
@@ -18,6 +19,7 @@ export function useBaseHeader(props: BaseHeaderProps) {
 
 	return {
 		...useStandardBaseComponent('base-header', props, ['root', 'inner', 'title', 'toggle']),
+		ui: useUi(props, 'base-header'),
 		slots,
 		hasMenu: computed(() => Boolean(slots.menu)),
 		resolvedMenuLabel: computed(() => props.menuLabel ?? UI_ARIA.MENU),

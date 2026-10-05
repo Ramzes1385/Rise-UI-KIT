@@ -10,4 +10,5 @@ export const argTypes = {
 	mainId: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	isHeaderSticky: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	isSidebarVisibleOnMobile: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+	ui: { control: false },
 } satisfies Meta<typeof BaseLayout>['argTypes']

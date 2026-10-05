@@ -1,8 +1,8 @@
 <template>
 	<div
 		ref="rootRef"
-		class="base-splitter"
 		:class="[
+			ui('root'),
 			variantClass,
 			`base-splitter--${orientation}`,
 			{ 'base-splitter--dragging': isDragging, 'base-splitter--disabled': isDisabled },
@@ -10,14 +10,13 @@
 		]"
 		:style="[sizeScaleStyle, variantStyle, rootStyle]">
 		<template v-for="(pane, index) in panes" :key="pane.id">
-			<BaseSplitterPane :id="pane.id" class="base-splitter__pane" :class="[pane.modifier, classes.pane]" :style="pane.style">
+			<BaseSplitterPane :id="pane.id" :class="[ui('pane'), pane.modifier, classes.pane]" :style="pane.style">
 				<slot :name="pane.slot" />
 			</BaseSplitterPane>
 			<div
 				v-if="separators[index]"
 				v-bind="separators[index]"
-				class="base-splitter__separator"
-				:class="classes.separator"
+				:class="[ui('separator'), classes.separator]"
 				role="separator"
 				:tabindex="isDisabled ? undefined : 0"
 				:aria-orientation="orientation === 'horizontal' ? 'vertical' : 'horizontal'"
@@ -27,7 +26,7 @@
 				@pointermove="handlePointermove"
 				@pointerup="handlePointerup"
 				@pointercancel="handlePointerup">
-				<span class="base-splitter__handle" aria-hidden="true" />
+				<span :class="ui('handle')" aria-hidden="true" />
 			</div>
 		</template>
 	</div>
@@ -72,5 +71,6 @@ const {
 	handlePointerdown,
 	handlePointermove,
 	handlePointerup,
+	ui,
 } = useBaseSplitter(props, emit)
 </script>

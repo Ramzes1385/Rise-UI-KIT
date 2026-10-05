@@ -27,3 +27,5 @@ export const OverCover = cases.OverCover
 export const Compact = cases.Compact
 export const WithMenu = cases.WithMenu
 export const Keyboard = cases.Keyboard
+export const Theming = cases.Theming
+export const Animations = cases.Animations

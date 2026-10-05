@@ -9,4 +9,5 @@ export const argTypes = {
 	containerSize: { control: 'inline-radio', options: CONTAINER_SIZES, table: propGroup(ARG_GROUP.appearance) },
 	isCompact: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
 	columns: { control: 'object', table: propGroup(ARG_GROUP.content) },
+	ui: { control: false },
 } satisfies Meta<typeof BaseFooter>['argTypes']

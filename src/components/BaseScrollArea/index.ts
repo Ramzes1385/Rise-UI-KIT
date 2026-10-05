@@ -1,5 +1,6 @@
-export { SCROLL_AREA_VARIANTS } from './types/BaseScrollArea.types'
+export { SCROLL_AREA_PARTS, SCROLL_AREA_VARIANTS } from './types/BaseScrollArea.types'
 export type {
+	BaseScrollAreaPart,
 	BaseScrollAreaEmits,
 	BaseScrollAreaExpose,
 	BaseScrollAreaProps,

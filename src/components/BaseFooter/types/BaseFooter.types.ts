@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { ContainerSize } from '@components/BaseContainer'
 import type { LinkTo } from '@composables/interaction/useLink'
 import type { SeoComponentProps } from '@composables/seo/useStructuredData'
@@ -8,6 +9,27 @@ import type { BaseComponentProps } from '@composables/base/useBaseComponent'
  * `ghost` — прозрачный без линии
  */
 export const FOOTER_VARIANTS = ['default', 'soft', 'ghost'] as const
+
+/**
+ * Части подвала для пропа `ui`: root — корень, top — верхняя часть, about — блок слота top, columns — сетка колонок,
+ * column — колонка (`<nav>`), column-title — заголовок колонки, links — список ссылок, inner — нижняя строка,
+ * start, center, end — её начало, середина и конец
+ */
+export const FOOTER_PARTS = [
+	'root',
+	'top',
+	'about',
+	'columns',
+	'column',
+	'column-title',
+	'links',
+	'inner',
+	'start',
+	'center',
+	'end',
+] as const
+
+export type BaseFooterPart = (typeof FOOTER_PARTS)[number]
 
 /** `sizeScale` масштабирует отступы и кегль; `color` задаёт фон и текст. */
 /** Ссылка в колонке подвала */
@@ -35,6 +57,13 @@ export interface BaseFooterProps extends SeoComponentProps, BaseComponentProps<(
 	columns?: FooterColumn[]
 	/** Компактный подвал: меньше отступы и кегль — для приложений и рабочих экранов */
 	isCompact?: boolean
+	/**
+	 * Классы частей подвала: добавляются к БЭМ-классам кита, глобальные — `defaults.BaseFooter.ui`.
+	 *
+	 * @example
+	 * <BaseFooter :ui="{ inner: 'py-4', 'column-title': 'uppercase' }" />
+	 */
+	ui?: UiProp<BaseFooterPart>
 }
 
 export interface BaseFooterSlots {

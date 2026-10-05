@@ -1,10 +1,12 @@
 .base-header {
 	box-sizing: border-box;
 	width: 100%;
-	border-bottom: 1px solid var(--rise-border);
-	@include custom-bg(background-color, var(--rise-bg));
-	@include custom-text(color, var(--rise-text));
-	@include text-size(sm);
+	border-bottom: 1px solid ct(header, border, var(--rise-border));
+	@include custom-bg(background-color, ct(header, bg, var(--rise-bg)));
+	@include custom-text(color, ct(header, text, var(--rise-text)));
+	font-size: sz(ct(header, font-size, var(--rise-font-size-sm)));
+	line-height: sz(var(--rise-line-height-sm));
+	box-shadow: ct(header, shadow, none);
 
 	&--soft {
 		border-bottom-color: transparent;
@@ -25,8 +27,8 @@
 	&__inner {
 		display: flex;
 		align-items: center;
-		gap: sz(16px);
-		min-height: sz(64px);
+		gap: sz(ct(header, gap, 16px));
+		min-height: sz(ct(header, height, 64px));
 	}
 
 	&__start {
@@ -38,8 +40,9 @@
 	}
 
 	&__title {
-		@include text-size(md);
-		font-weight: 600;
+		font-size: sz(ct(header-title, font-size, var(--rise-font-size-md)));
+		line-height: sz(var(--rise-line-height-md));
+		font-weight: ct(header-title, font-weight, var(--rise-font-weight-semibold));
 		color: inherit;
 		text-decoration: none;
 		@include truncate;
