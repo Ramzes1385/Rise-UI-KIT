@@ -88,7 +88,7 @@
 				role="dialog"
 				:aria-label="UI_EDITOR.MEDIA_MENU_LABEL"
 				:style="[sizeScaleStyle, { left: contextMenu.x + 'px', top: contextMenu.y + 'px' }, layerStyle]"
-				:data-theme="inheritedTheme">
+				v-bind="inheritedTheme">
 				<div class="base-editor__context-menu-row" @keydown.enter.prevent="applyMediaSize">
 					<BaseInput
 						:model-value="contextMenu.width"

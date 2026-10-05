@@ -18,7 +18,7 @@
 					class="base-tooltip-popup"
 					:class="[`base-tooltip-popup--${placement}`, variantClass, classes.tooltip]"
 					:style="[tooltipStyle, sizeScaleStyle, variantStyle, customColorStyle]"
-					:data-theme="inheritedTheme"
+					v-bind="inheritedTheme"
 					role="tooltip"
 					@mouseenter="cancelHide"
 					@mouseleave="handleLeave">

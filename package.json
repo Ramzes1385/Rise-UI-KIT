@@ -76,7 +76,7 @@
     "prepare": "husky build/husky",
     "lint": "eslint \"src/**/*.{ts,vue}\"",
     "lint:fix": "eslint \"src/**/*.{ts,vue}\" --fix",
-    "lint:styles": "stylelint \"src/**/*.scss\"",
+    "lint:styles": "stylelint \"src/**/*.scss\" && node scripts/check-component-tokens.mjs",
     "lint:unused": "knip --no-config-hints",
     "lint:new": "node scripts/lint-new-files.mjs",
     "format": "prettier --write . --ignore-path .gitignore --ignore-path .prettierignore --ignore-path .git/info/exclude",

@@ -9,7 +9,8 @@
 				class="date-picker-panel"
 				:class="[{ 'date-picker-panel--multi': safeMonthsCount > 1 }, classes.root]"
 				:style="[resolvedProps.panelStyle, layerStyle]"
-				:data-theme="resolvedProps.theme">
+				:data-theme="resolvedProps.theme"
+				:data-rise-theme="resolvedProps.riseTheme">
 				<div class="date-picker-panel__header">
 					<div class="date-picker-panel__nav-group">
 						<BaseTooltip :text="UI_ARIA.PREV_YEAR" :size-scale="resolvedProps.sizeScale">

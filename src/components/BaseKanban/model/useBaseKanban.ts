@@ -6,8 +6,8 @@ import { useKanbanColumns } from './board/useKanbanColumns'
 import { useKanbanContext } from './board/useKanbanContext'
 import { useKanbanSortable } from './drag/useKanbanSortable'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
-import { useInheritedTheme, useTeleportTarget } from '@composables/app/useTeleportTarget'
 import type { BaseKanbanEmits, BaseKanbanProps, KanbanCard } from '../types/BaseKanban.types'
+import { useInheritedThemeAttrs, useTeleportTarget } from '@composables/app/useTeleportTarget'
 
 function useKanbanCardText(props: BaseKanbanProps, hintId: string) {
 	const today = computed(() => toDay(props.today ?? new Date()))
@@ -41,7 +41,7 @@ export function useBaseKanban(props: BaseKanbanProps, emit: BaseKanbanEmits) {
 			sortable.handleCardKeydown(event, card)
 		},
 		teleportTarget: useTeleportTarget(),
-		inheritedTheme: useInheritedTheme(
+		inheritedTheme: useInheritedThemeAttrs(
 			() => context.rootRef.value,
 			() => Boolean(sortable.drag.value),
 		),

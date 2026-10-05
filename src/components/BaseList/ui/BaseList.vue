@@ -90,7 +90,7 @@
 				class="base-list__ghost"
 				:class="variantClass"
 				:style="[sizeScaleStyle, ghostStyle]"
-				:data-theme="inheritedTheme"
+				v-bind="inheritedTheme"
 				aria-hidden="true">
 				<div class="base-list__ghost-item">
 					<BaseIcon class="base-list__grip" name="grip-vertical" />

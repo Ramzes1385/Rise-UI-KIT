@@ -1,2 +1,2 @@
-export { TELEPORT_TARGET_KEY, useInheritedTheme, useTeleportTarget } from './useTeleportTarget'
-export type { TeleportTarget } from './types/useTeleportTarget.types'
+export { readThemeAttrs, TELEPORT_TARGET_KEY, useInheritedTheme, useInheritedThemeAttrs, useTeleportTarget } from './useTeleportTarget'
+export type { InheritedThemeAttrs, TeleportTarget } from './types/useTeleportTarget.types'

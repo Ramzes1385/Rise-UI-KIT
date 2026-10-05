@@ -10,7 +10,7 @@
 					class="base-dropdown__panel"
 					:class="[panelClass, variantClass, arrowPanelClass, classes.panel]"
 					:style="[panelStyle, paddingStyle, sizeScaleStyle, variantStyle, customColorStyle, layerStyle]"
-					:data-theme="inheritedTheme"
+					v-bind="inheritedTheme"
 					@mousedown="handlePanelMousedown"
 					@focusin="handlePanelFocusin"
 					@keydown="handlePanelKeydown">

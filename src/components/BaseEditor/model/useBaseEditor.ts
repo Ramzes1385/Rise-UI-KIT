@@ -11,7 +11,7 @@ import { useEditorToolbar } from '@composables/editor/useEditorToolbar'
 import type { BaseEditorEmits, EditorProps } from '../types/BaseEditor.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { isolateFormField, useFormDisabled } from '@composables/form/useFormContext'
-import { useInheritedTheme, useTeleportTarget } from '@composables/app/useTeleportTarget'
+import { useInheritedThemeAttrs, useTeleportTarget } from '@composables/app/useTeleportTarget'
 
 const EDITOR_ELEMENTS = ['root', 'toolbar', 'btn', 'group', 'colorPicker', 'headingSelect', 'fileInput', 'content', 'code']
 
@@ -97,7 +97,7 @@ function useSafeInsert(isLocked: ComputedRef<boolean>, sanitize: (html: string) 
 
 function useMediaMenu(editorRef: Ref<HTMLDivElement | null>, toolbar: ReturnType<typeof useEditorToolbar>) {
 	const { contextMenu, contextMenuRef, closeContextMenu } = toolbar
-	const inheritedTheme = useInheritedTheme(
+	const inheritedTheme = useInheritedThemeAttrs(
 		() => editorRef.value,
 		() => contextMenu.isVisible,
 	)

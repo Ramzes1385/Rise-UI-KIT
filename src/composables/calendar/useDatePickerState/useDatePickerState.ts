@@ -19,6 +19,7 @@ function useDatePickerState(options: UseDatePickerStateOptions) {
 	return {
 		isOpen: popup.isOpen,
 		currentTheme: popup.currentTheme,
+		currentRiseTheme: popup.currentRiseTheme,
 		wrapperRef,
 		panelRef,
 		computedMonthsCount,

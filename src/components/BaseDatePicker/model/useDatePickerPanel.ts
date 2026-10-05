@@ -31,6 +31,7 @@ function resolvePanelProps(props: DatePickerPanelProps) {
 		monthsCount: props.monthsCount ?? 1,
 		panelStyle: props.panelStyle ?? {},
 		theme: props.theme ?? null,
+		riseTheme: props.riseTheme ?? null,
 	}
 }
 

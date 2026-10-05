@@ -115,6 +115,15 @@ describe('useDatePickerState', () => {
 			wrapper.element.removeAttribute('data-theme')
 			state.handleFieldClick()
 			expect(state.currentTheme.value).toBeNull()
+			expect(state.currentRiseTheme.value).toBeNull()
+		})
+
+		it('запоминает тему бренда области поля (data-rise-theme)', () => {
+			const { state, wrapper } = setup()
+			wrapper.element.setAttribute('data-rise-theme', 'playful')
+			state.handleFieldClick()
+			expect(state.currentRiseTheme.value).toBe('playful')
+			expect(state.currentTheme.value).toBe('dark')
 		})
 
 		it('в отключённом состоянии не открывается', () => {

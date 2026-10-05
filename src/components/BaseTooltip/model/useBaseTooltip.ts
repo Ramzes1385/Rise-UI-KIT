@@ -6,7 +6,7 @@ import { useEscapeKey } from '@composables/overlay/useEscapeKey'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { useTriggerAttributes } from '@composables/overlay/useTriggerAttributes'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
-import { useInheritedTheme, useTeleportTarget } from '@composables/app/useTeleportTarget'
+import { useInheritedThemeAttrs, useTeleportTarget } from '@composables/app/useTeleportTarget'
 import { calcTooltipPosition, calcTooltipShift, resolveTooltipPlacement } from '@utils/dom/tooltipUtils'
 
 const GAP = 8
@@ -177,7 +177,7 @@ export function useBaseTooltip(props: TooltipProps) {
 	const isShown = computed(() => isVisible.value && Boolean(props.text))
 	const wrapperRef = ref<HTMLElement | null>(null)
 	const popupRef = ref<HTMLElement | null>(null)
-	const inheritedTheme = useInheritedTheme(
+	const inheritedTheme = useInheritedThemeAttrs(
 		() => wrapperRef.value,
 		() => isVisible.value,
 	)

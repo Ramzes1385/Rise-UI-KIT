@@ -111,6 +111,19 @@ describe('DatePickerPanel', () => {
 			expect(panel).toHaveAttribute('data-theme', 'dark')
 		})
 
+		it('применяет data-rise-theme области поля; без темы атрибута нет', () => {
+			const { container, rerender } = render(DatePickerPanel, {
+				props: { ...DEFAULT_PROPS, theme: 'dark', riseTheme: 'corporate' },
+				global: { stubs: STUBS },
+			})
+
+			const panel = container.querySelector('.date-picker-panel')!
+			expect(panel).toHaveAttribute('data-rise-theme', 'corporate')
+			return rerender({ ...DEFAULT_PROPS, riseTheme: null }).then(() => {
+				expect(container.querySelector('.date-picker-panel')).not.toHaveAttribute('data-rise-theme')
+			})
+		})
+
 		it('рендерит 4 кнопки навигации', () => {
 			const { container } = render(DatePickerPanel, {
 				props: DEFAULT_PROPS,

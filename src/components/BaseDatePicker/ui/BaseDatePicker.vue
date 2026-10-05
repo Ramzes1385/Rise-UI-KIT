@@ -37,6 +37,7 @@
 			:months-count="computedMonthsCount"
 			:panel-style="panelStyle"
 			:theme="currentTheme"
+			:rise-theme="currentRiseTheme"
 			:custom-class="classes.panel"
 			@model-update="handleModelUpdate"
 			@model-end-update="handleModelEndUpdate"
@@ -66,6 +67,7 @@ const {
 	calendarConfig,
 	isOpen,
 	currentTheme,
+	currentRiseTheme,
 	wrapperRef,
 	panelRef,
 	computedMonthsCount,

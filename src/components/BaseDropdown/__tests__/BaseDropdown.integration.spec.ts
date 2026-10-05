@@ -205,3 +205,29 @@ describe('BaseDropdown integration', () => {
 		})
 	})
 })
+
+describe('BaseDropdown: тема области в телепортированной панели', () => {
+	it('панель получает data-theme и data-rise-theme ближайших предков триггера', async () => {
+		const Host = defineComponent({
+			components: { BaseDropdown },
+			setup: () => ({ isOpen: ref(false) }),
+			template: `
+				<div data-rise-theme="playful" data-theme="dark">
+					<section data-theme="light">
+						<BaseDropdown v-model:is-open="isOpen">
+							<button type="button" @click="isOpen = !isOpen">Меню</button>
+							<template #dropdown><div data-testid="item">Пункт</div></template>
+						</BaseDropdown>
+					</section>
+				</div>
+			`,
+		})
+		render(Host)
+
+		await userEvent.click(screen.getByRole('button', { name: 'Меню' }))
+		const panel = (await screen.findByTestId('item')).closest('.base-dropdown__panel')
+
+		expect(panel).toHaveAttribute('data-theme', 'light')
+		expect(panel).toHaveAttribute('data-rise-theme', 'playful')
+	})
+})

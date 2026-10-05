@@ -2,6 +2,7 @@
 import type { Ref } from 'vue'
 import { computed, nextTick, ref } from 'vue'
 import { useEscapeKey } from '@composables/overlay/useEscapeKey'
+import { readThemeAttrs } from '@composables/app/useTeleportTarget'
 import { useClickOutside } from '@composables/overlay/useClickOutside'
 import { useDropdownPosition } from '@composables/overlay/useDropdownPosition'
 import type { DatePickerDismissOptions, UseDatePickerPopupOptions } from './types/useDatePickerState.types'
@@ -48,6 +49,7 @@ function useDatePickerPopup(options: UseDatePickerPopupOptions) {
 
 	const isOpen = ref(false)
 	const currentTheme = ref<string | null>(null)
+	const currentRiseTheme = ref<string | null>(null)
 	const panelEl = computed(() => panelRef.value?.panelRef ?? null)
 
 	const { panelStyle } = useDropdownPosition({
@@ -68,8 +70,9 @@ function useDatePickerPopup(options: UseDatePickerPopupOptions) {
 		/* istanbul ignore else -- defensive: wrapperRef всегда привязан после mount */
 		if (wrapperRef.value) {
 			wrapperWidth.value = wrapperRef.value.clientWidth
-			const themeEl = wrapperRef.value.closest('[data-theme]')
-			currentTheme.value = themeEl?.getAttribute('data-theme') ?? null
+			const themeAttrs = readThemeAttrs(wrapperRef.value)
+			currentTheme.value = themeAttrs['data-theme'] ?? null
+			currentRiseTheme.value = themeAttrs['data-rise-theme'] ?? null
 		}
 
 		isOpen.value = true
@@ -97,7 +100,7 @@ function useDatePickerPopup(options: UseDatePickerPopupOptions) {
 
 	useDatePickerDismiss({ wrapperRef, panelEl, isOpen, resolvedProps, close })
 
-	return { isOpen, currentTheme, panelStyle, close, handleFieldClick: open, handleKeyboardOpen }
+	return { isOpen, currentTheme, currentRiseTheme, panelStyle, close, handleFieldClick: open, handleKeyboardOpen }
 }
 
 export { useDatePickerPopup }

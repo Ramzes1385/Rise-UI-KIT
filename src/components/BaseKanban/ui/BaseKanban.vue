@@ -111,7 +111,7 @@
 				ref="ghostRef"
 				class="base-kanban__ghost"
 				:style="[sizeScaleStyle, ghostStyle]"
-				:data-theme="inheritedTheme"
+				v-bind="inheritedTheme"
 				aria-hidden="true">
 				<div class="base-kanban__ghost-card" :class="classes.card">
 					<slot name="card" :card="drag.item" :is-dragging="true">

@@ -9,7 +9,7 @@ import { useClickOutside } from '@composables/overlay/useClickOutside'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { useDropdownPosition } from '@composables/overlay/useDropdownPosition'
 import { useExplicitPropDetection } from '@composables/base/useExplicitPropDetection'
-import { useInheritedTheme, useTeleportTarget } from '@composables/app/useTeleportTarget'
+import { useInheritedThemeAttrs, useTeleportTarget } from '@composables/app/useTeleportTarget'
 import type { BaseDropdownEmits, BaseDropdownExpose, DropdownProps } from '../types/BaseDropdown.types'
 
 const TEXT_ENTRY_SELECTOR = 'input, textarea, select, [contenteditable]:not([contenteditable="false"])'
@@ -85,7 +85,7 @@ export function useBaseDropdown(props: DropdownProps, emit: BaseDropdownEmits) {
 	const standard = useStandardBaseComponent('base-dropdown__panel', props, ['root', 'panel', 'arrow'])
 	const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--dd-pad' })
 	const wrapperRef = ref<HTMLElement | null>(null)
-	const inheritedTheme = useInheritedTheme(
+	const inheritedTheme = useInheritedThemeAttrs(
 		() => wrapperRef.value,
 		() => props.isOpen,
 	)

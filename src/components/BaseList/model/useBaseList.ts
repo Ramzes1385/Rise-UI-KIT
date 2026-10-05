@@ -7,7 +7,7 @@ import { useListSortable } from './order/useListSortable'
 import { useListKeyboard } from './keyboard/useListKeyboard'
 import { useListSelection } from './selection/useListSelection'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
-import { useInheritedTheme, useTeleportTarget } from '@composables/app/useTeleportTarget'
+import { useInheritedThemeAttrs, useTeleportTarget } from '@composables/app/useTeleportTarget'
 import type { BaseListEmits, BaseListExpose, ListItem, ListProps, ListRow } from '../types/BaseList.types'
 
 function useListIds<T extends ListItem>(props: ListProps<T>) {
@@ -84,7 +84,7 @@ export function useBaseList<T extends ListItem>(props: ListProps<T>, emit: BaseL
 			isDragging: isDragging(row.item),
 		}),
 		teleportTarget: useTeleportTarget(),
-		inheritedTheme: useInheritedTheme(
+		inheritedTheme: useInheritedThemeAttrs(
 			() => parts.listRef.value,
 			() => Boolean(sortable.drag.value),
 		),

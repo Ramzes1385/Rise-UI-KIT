@@ -1,7 +1,7 @@
 import type { InjectionKey, Ref } from 'vue'
-import type { TeleportTarget } from './types/useTeleportTarget.types'
 /** Composable: куда телепортируются окна, панели и тултипы, и какую тему они наследуют */
 import { hasInjectionContext, inject, onMounted, ref, watch } from 'vue'
+import type { InheritedThemeAttrs, TeleportTarget } from './types/useTeleportTarget.types'
 
 /**
  * Ключ provide/inject цели телепорта: `createUiKitPlugin({ teleportTo })` и `<BaseApp teleport-to>`.
@@ -45,4 +45,39 @@ export function useInheritedTheme(anchor: () => Element | null | undefined, isAc
 		if (isActive()) read()
 	})
 	return theme
+}
+
+/** Атрибуты темы ближайших предков элемента: `data-theme` и `data-rise-theme` ищутся независимо (closest) */
+export function readThemeAttrs(anchor: Element | null | undefined): InheritedThemeAttrs {
+	const attrs: InheritedThemeAttrs = {}
+	const mode = anchor?.closest('[data-theme]')?.getAttribute('data-theme')
+	const theme = anchor?.closest('[data-rise-theme]')?.getAttribute('data-rise-theme')
+	if (mode) attrs['data-theme'] = mode
+	if (theme) attrs['data-rise-theme'] = theme
+	return attrs
+}
+
+/**
+ * Тема области якоря для телепортированной панели: и режим (`data-theme`), и тема бренда (`data-rise-theme`) —
+ * меню из «фиолетовой» тёмной области открывается фиолетовым и тёмным. Читается при открытии панели.
+ * На панели оба атрибута стоят на одном элементе, поэтому кит пересчитывает семантику из сидов темы.
+ *
+ * @example
+ * const themeAttrs = useInheritedThemeAttrs(() => wrapperRef.value, () => props.isOpen)
+ * // <div class="panel" v-bind="themeAttrs">
+ */
+export function useInheritedThemeAttrs(anchor: () => Element | null | undefined, isActive: () => boolean): Ref<InheritedThemeAttrs> {
+	const attrs = ref<InheritedThemeAttrs>({})
+
+	watch(
+		isActive,
+		active => {
+			if (active) attrs.value = readThemeAttrs(anchor())
+		},
+		{ flush: 'post' },
+	)
+	onMounted(() => {
+		if (isActive()) attrs.value = readThemeAttrs(anchor())
+	})
+	return attrs
 }

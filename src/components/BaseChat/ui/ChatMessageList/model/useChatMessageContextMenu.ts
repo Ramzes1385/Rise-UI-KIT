@@ -2,7 +2,7 @@ import type { Ref } from 'vue'
 import { useLayerIndex } from '@composables/app/useLayerStack'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import { computed, getCurrentInstance, nextTick, ref, watch } from 'vue'
-import { useInheritedTheme, useTeleportTarget } from '@composables/app/useTeleportTarget'
+import { useInheritedThemeAttrs, useTeleportTarget } from '@composables/app/useTeleportTarget'
 import type { ChatMessageContextMenuEmits, ChatMessageContextMenuProps } from '../types/ChatMessageContextMenu.types'
 
 function getItems(menu: HTMLElement | null): HTMLElement[] {
@@ -37,7 +37,7 @@ export function useChatMessageContextMenu(props: ChatMessageContextMenuProps, em
 	const teleportTarget = useTeleportTarget()
 	const menuRef = ref<HTMLElement | null>(null)
 	const instance = getCurrentInstance()
-	const inheritedTheme = useInheritedTheme(
+	const inheritedTheme = useInheritedThemeAttrs(
 		() => (instance?.proxy?.$el as Node | null | undefined)?.parentElement,
 		() => props.isOpen,
 	)

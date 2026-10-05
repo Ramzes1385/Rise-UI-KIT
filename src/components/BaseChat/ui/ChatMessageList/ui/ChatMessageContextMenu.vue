@@ -7,7 +7,7 @@
 			role="menu"
 			:aria-label="UI_CHAT_TEXT.MESSAGE_ACTIONS"
 			:style="[menuStyle, layerStyle]"
-			:data-theme="inheritedTheme"
+			v-bind="inheritedTheme"
 			@keydown="handleKeydown">
 			<div class="base-chat-context-menu__reactions" role="group" :aria-label="UI_CHAT_TEXT.REACTIONS_ARIA">
 				<button
