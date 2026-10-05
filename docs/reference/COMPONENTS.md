@@ -1675,13 +1675,24 @@ import { createServer } from 'node:http'
 
 const KEY = process.env.YANDEX_SPEECHKIT_API_KEY
 const LANGS = { ru: 'ru-RU', en: 'en-US' }
+const CONTENT_TYPES = { mp3: 'audio/mpeg', oggopus: 'audio/ogg', lpcm: 'audio/L16' }
+
+function readBody(raw) {
+	try {
+		return JSON.parse(raw || '{}')
+	} catch {
+		return null // битый JSON — ответ 400, а не необработанное отклонение, которое роняет процесс Node ≥15
+	}
+}
 
 createServer(async (req, res) => {
 	if (req.method !== 'POST' || req.url !== '/api/tts') return res.writeHead(404).end()
 	let raw = ''
 	for await (const chunk of req) raw += chunk
-	const { text = '', voice = 'filipp', lang = 'ru', format = 'mp3' } = JSON.parse(raw || '{}')
-	if (!text.trim() || text.length > 5000) return res.writeHead(400).end() // v1: до 5000 символов
+	const body = readBody(raw)
+	if (!body) return res.writeHead(400).end()
+	const { text = '', voice = 'filipp', lang = 'ru', format = 'mp3' } = body
+	if (typeof text !== 'string' || !text.trim() || text.length > 5000) return res.writeHead(400).end() // v1: до 5000 символов
 	// Здесь же — своя авторизация пользователя, лимит запросов и кэш по хешу текста
 	const upstream = await fetch('https://tts.api.cloud.yandex.net/speech/v1/tts:synthesize', {
 		method: 'POST',
@@ -1689,7 +1700,7 @@ createServer(async (req, res) => {
 		body: new URLSearchParams({ text, lang: LANGS[lang] ?? lang, voice, format }),
 	})
 	if (!upstream.ok) return res.writeHead(502).end()
-	res.writeHead(200, { 'Content-Type': 'audio/mpeg', 'Cache-Control': 'private, max-age=86400' })
+	res.writeHead(200, { 'Content-Type': CONTENT_TYPES[format] ?? 'application/octet-stream', 'Cache-Control': 'private, max-age=86400' })
 	res.end(Buffer.from(await upstream.arrayBuffer()))
 }).listen(8787)
 ```
@@ -1700,15 +1711,18 @@ createServer(async (req, res) => {
 export default {
 	async fetch(request: Request, env: { YANDEX_SPEECHKIT_API_KEY: string }): Promise<Response> {
 		if (request.method !== 'POST') return new Response(null, { status: 405 })
-		const { text = '', voice = 'filipp', lang = 'ru', format = 'mp3' } = await request.json()
-		if (!text.trim() || text.length > 5000) return new Response(null, { status: 400 })
+		const body = await request.json().catch(() => null) // битый JSON — 400
+		if (!body) return new Response(null, { status: 400 })
+		const { text = '', voice = 'filipp', lang = 'ru', format = 'mp3' } = body
+		if (typeof text !== 'string' || !text.trim() || text.length > 5000) return new Response(null, { status: 400 })
 		const upstream = await fetch('https://tts.api.cloud.yandex.net/speech/v1/tts:synthesize', {
 			method: 'POST',
 			headers: { Authorization: `Api-Key ${env.YANDEX_SPEECHKIT_API_KEY}` },
 			body: new URLSearchParams({ text, lang: lang === 'ru' ? 'ru-RU' : 'en-US', voice, format }),
 		})
 		if (!upstream.ok) return new Response(null, { status: 502 })
-		return new Response(upstream.body, { headers: { 'Content-Type': 'audio/mpeg', 'Cache-Control': 'private, max-age=86400' } })
+		const type = { mp3: 'audio/mpeg', oggopus: 'audio/ogg', lpcm: 'audio/L16' }[format as string] ?? 'application/octet-stream'
+		return new Response(upstream.body, { headers: { 'Content-Type': type, 'Cache-Control': 'private, max-age=86400' } })
 	},
 }
 ```
