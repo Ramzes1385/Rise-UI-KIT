@@ -1875,3 +1875,13 @@ API кита не меняется. В Storybook добавлены пример
 - `--rise-density`, `--rise-shadow-strength`, `--rise-font-heading`, `--rise-color-neutral-0`, которые выводит тема, кит читает с задачи theme-core.
 - **Утилиты:** `oklchUtils` (`rgbToOklch`, `hexToOklch`, `oklchToRgb`, `oklchToHex`, `toGamut`, `relativeLuminance`, `contrastRatio`), `themeUtils` (`createPalette`, `createNeutralPalette`, `resolveThemeColors`, `themeContrast`, `THEME_CONTRAST_PAIRS`, `KIT_PALETTES` и др.) — docs/reference/UTILS.md.
 - **`npm run test:contrast`** теперь проверяет кит и 4 пресета × 2 режима (`scripts/check-contrast.mjs --theme=all`; один пресет — `--theme=<имя>`); docs/design/contrast.md — по разделу на пресет.
+## Задача fix-command-palette-docs: палитра команд и оверлеи на страницах Docs
+
+- **BaseCommandPalette — новый проп `hotkeyScope`**: `'global'` (по умолчанию, как прежде) — `hotkey` работает на всей странице; `'container'` — только когда фокус внутри блока, в котором стоит палитра (несколько палитр на одной странице). Тип `CommandPaletteHotkeyScope` и список `COMMAND_PALETTE_HOTKEY_SCOPES` — из экспорта кита. Умолчание меняется через `defaults.BaseCommandPalette.hotkeyScope`.
+  ```vue
+  <section>
+  	<BaseCommandPalette :commands="editorCommands" hotkey-scope="container" />
+  </section>
+  ```
+  В режиме `container` открытую палитру закрывает Escape (окно телепортировано, и сочетание из него до блока не доходит).
+- Приложениям без `hotkeyScope` менять ничего не нужно.
