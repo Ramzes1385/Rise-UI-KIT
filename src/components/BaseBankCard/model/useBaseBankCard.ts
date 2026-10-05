@@ -1,6 +1,7 @@
 import { computed, useSlots } from 'vue'
 import { UI_CARD } from '@/locales/messages'
 import { formatMessage } from '@/locales/state'
+import { useUi } from '@composables/base/useUi'
 import type { BaseBankCardProps } from '../types/BaseBankCard.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { cardBrandName, CARD_FACE_DOT, cardFaceBackground } from '@utils/form/cardFaceUtils'
@@ -44,6 +45,7 @@ export function useBaseBankCard(props: BaseBankCardProps) {
 	})
 	return {
 		...useStandardBaseComponent('base-bank-card', props, ['root', 'brand', 'number', 'expiry', 'label']),
+		ui: useUi(props, 'base-bank-card'),
 		brand,
 		expiryText,
 		isExpired,

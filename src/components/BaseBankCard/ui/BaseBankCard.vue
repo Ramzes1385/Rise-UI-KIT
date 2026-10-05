@@ -1,7 +1,7 @@
 <template>
 	<div
-		class="base-bank-card"
 		:class="[
+			ui('root'),
 			variantClass,
 			isCompact ? 'base-bank-card--compact' : 'base-bank-card--full',
 			{ 'base-bank-card--expired': isExpired, 'base-bank-card--cover': hasCover },
@@ -11,23 +11,20 @@
 		<CardCover v-if="!isCompact && hasCover" :cover="cover" :has-overlay="hasCoverOverlay">
 			<slot name="cover" />
 		</CardCover>
-		<span class="base-bank-card__summary">{{ summary }}</span>
-		<span
-			class="base-bank-card__brand"
-			:class="[{ 'base-bank-card__brand--cover': isCompact && hasCover }, classes.brand]"
-			aria-hidden="true">
+		<span :class="ui('summary')">{{ summary }}</span>
+		<span :class="[ui('brand'), { 'base-bank-card__brand--cover': isCompact && hasCover }, classes.brand]" aria-hidden="true">
 			<CardCover v-if="isCompact && hasCover" :cover="cover" :has-overlay="hasCoverOverlay">
 				<slot name="cover" />
 			</CardCover>
 			<CardBrandMark v-if="brand" :brand="brand" :brand-icons="brandIcons" />
 		</span>
-		<span v-if="label || $slots.default" class="base-bank-card__label" :class="classes.label">
+		<span v-if="label || $slots.default" :class="[ui('label'), classes.label]">
 			<slot>{{ label }}</slot>
 		</span>
-		<span class="base-bank-card__number" :class="classes.number" aria-hidden="true">{{ maskedNumber }}</span>
-		<span v-if="!isCompact && holder" class="base-bank-card__holder" aria-hidden="true">{{ holder }}</span>
-		<span v-if="expiryText || isExpired" class="base-bank-card__expiry" :class="classes.expiry" aria-hidden="true">
-			<span v-if="isExpired" class="base-bank-card__expired">{{ UI_CARD.EXPIRED }}</span>
+		<span :class="[ui('number'), classes.number]" aria-hidden="true">{{ maskedNumber }}</span>
+		<span v-if="!isCompact && holder" :class="ui('holder')" aria-hidden="true">{{ holder }}</span>
+		<span v-if="expiryText || isExpired" :class="[ui('expiry'), classes.expiry]" aria-hidden="true">
+			<span v-if="isExpired" :class="ui('expired')">{{ UI_CARD.EXPIRED }}</span>
 			{{ expiryText }}
 		</span>
 	</div>
@@ -60,6 +57,7 @@ const props = withDefaults(
 defineSlots<BaseBankCardSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

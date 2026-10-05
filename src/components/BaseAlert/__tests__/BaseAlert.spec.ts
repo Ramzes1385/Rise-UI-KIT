@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
 import BaseAlert from '../ui/BaseAlert.vue'
-import { render, screen } from '@testing-library/vue'
+import { render, screen, waitFor } from '@testing-library/vue'
 
 describe('BaseAlert unit', () => {
 	describe('рендер', () => {
@@ -120,12 +120,12 @@ describe('BaseAlert unit', () => {
 		})
 
 		it('должен эмитить close при клике на кнопку закрытия', async () => {
-			const { emitted, container } = render(BaseAlert, { props: { isClosable: true } })
+			const { emitted, container } = render(BaseAlert, { props: { isClosable: true }, global: { stubs: { Transition: false } } })
 
 			const closeButton = container.querySelector('.base-alert__close') as HTMLElement
 			closeButton.dispatchEvent(new Event('click'))
 
-			expect(emitted()).toHaveProperty('close')
+			await waitFor(() => expect(emitted()).toHaveProperty('close'))
 		})
 	})
 

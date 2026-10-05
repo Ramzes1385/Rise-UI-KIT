@@ -1,7 +1,7 @@
 <template>
 	<Transition v-if="!isGroup" :name="name" :mode="mode" appear @after-enter="handleAfterEnter" @after-leave="handleAfterLeave">
-		<div v-if="show" class="base-animation" :class="[classes.root, { 'base-animation--collapse': isCollapse }]">
-			<div v-if="isCollapse" class="base-animation__inner">
+		<div v-if="show" :class="[ui('root'), classes.root, { 'base-animation--collapse': isCollapse }]">
+			<div v-if="isCollapse" :class="ui('inner')">
 				<slot />
 			</div>
 			<slot v-else />
@@ -13,8 +13,7 @@
 		:name="name"
 		:tag="tag"
 		appear
-		class="base-animation base-animation--group"
-		:class="classes.root"
+		:class="[ui('root'), 'base-animation--group', classes.root]"
 		@after-enter="handleAfterEnter"
 		@after-leave="handleAfterLeave">
 		<slot v-if="show" />
@@ -41,5 +40,5 @@ const props = withDefaults(
 const emit = defineEmits<BaseAnimationEmits>()
 defineSlots<BaseAnimationSlots>()
 
-const { classes, isCollapse, handleAfterEnter, handleAfterLeave } = useBaseAnimation(props, emit)
+const { ui, classes, isCollapse, handleAfterEnter, handleAfterLeave } = useBaseAnimation(props, emit)
 </script>

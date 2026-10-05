@@ -1,8 +1,17 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export const AVATAR_SHAPES = ['circle', 'square'] as const
 
 export const AVATAR_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
+
+/**
+ * Части аватара для пропа `ui` (БЭМ-элементы `.base-avatar__<часть>`, `root` — сам аватар):
+ * content — круг или квадрат с содержимым, img — фото, initials — инициалы, online — точка «в сети», mascot — SVG-персонаж.
+ */
+export const AVATAR_PARTS = ['content', 'img', 'initials', 'online', 'mascot'] as const
+
+export type BaseAvatarPart = (typeof AVATAR_PARTS)[number]
 
 /** Обводка: `none` — без неё, `gradient` — радужная, `shimmer` — радужная и переливается (без движения при `prefers-reduced-motion`). */
 export const AVATAR_RINGS = ['none', 'gradient', 'shimmer'] as const
@@ -124,7 +133,10 @@ export interface BaseAvatarProps extends BaseComponentProps<
 	(typeof AVATAR_VARIANTS)[number],
 	'root' | 'content' | 'img' | 'initials' | 'online' | 'mascot'
 > {
-	/** URL изображения или GIF. Если изображение не загрузилось, показываются инициалы из `name`. */
+	/**
+	 * URL изображения или GIF. Загруженное изображение плавно проявляется (`--rise-duration`; при выключенном движении — сразу).
+	 * Если изображение не загрузилось, показываются инициалы из `name`.
+	 */
 	src?: string
 	/** Альтернативный текст изображения. Пустой (по умолчанию) — изображение декоративное, например когда имя написано рядом. */
 	alt?: string
@@ -132,7 +144,7 @@ export interface BaseAvatarProps extends BaseComponentProps<
 	name?: string
 	/** Форма: `circle` — круг, `square` — квадрат со скруглением. */
 	shape?: (typeof AVATAR_SHAPES)[number]
-	/** Показывать точку статуса «в сети» в правом нижнем углу. */
+	/** Показывать точку статуса «в сети» в правом нижнем углу. Смена статуса — с коротким «pop» на токенах движения. */
 	isOnline?: boolean
 	/** Обводка вокруг аватара: радужная (`gradient`) или переливающаяся (`shimmer`). Между обводкой и аватаром — зазор цвета фона. */
 	ring?: (typeof AVATAR_RINGS)[number]
@@ -149,6 +161,14 @@ export interface BaseAvatarProps extends BaseComponentProps<
 	mood?: AvatarMood
 	/** Выключенный аватар: `click` не приходит; с обработчиком `@click` — `aria-disabled="true"` и без фокуса */
 	isDisabled?: boolean
+	/**
+	 * Классы частей аватара (`root`, `content`, `img`, `initials`, `online`, `mascot`) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseAvatar: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseAvatar name="Анна Смирнова" :ui="{ root: 'shadow-lg', initials: 'tracking-wide' }" />
+	 */
+	ui?: UiProp<BaseAvatarPart>
 }
 
 export interface BaseAvatarEmits {

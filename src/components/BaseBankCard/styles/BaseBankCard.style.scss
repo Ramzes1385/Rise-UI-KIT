@@ -28,16 +28,16 @@
 	&--full {
 		display: grid;
 		grid-template: 'label brand' auto 'number number' 1fr 'holder expiry' auto / minmax(0, 1fr) auto;
-		column-gap: sz(12px);
+		column-gap: space(ct(bank-card, gap, 12px));
 		align-items: center;
-		width: sz(320px);
+		width: sz(ct(bank-card, width, 320px));
 		aspect-ratio: 85.6 / 53.98;
 		overflow: hidden;
-		padding: sz(16px 20px);
-		border-radius: sz(var(--rise-radius-xl));
+		padding: space(ct(bank-card, padding-y, 16px) ct(bank-card, padding-x, 20px));
+		border-radius: sz(ct(bank-card, radius, var(--rise-radius-xl)));
 		background: var(--base-bank-card-bg);
-		box-shadow: var(--rise-shadow-md);
-		color: var(--rise-color-neutral-50);
+		box-shadow: ct(bank-card, shadow, var(--rise-shadow-md));
+		color: ct(bank-card, text, var(--rise-color-neutral-50));
 	}
 
 	&--full &__label {
@@ -53,7 +53,7 @@
 	&--full &__number {
 		grid-area: number;
 		font-family: var(--rise-font-mono);
-		font-size: sz(var(--rise-font-size-xl));
+		font-size: sz(ct(bank-card, number-font-size, var(--rise-font-size-xl)));
 		letter-spacing: 0.06em;
 	}
 
@@ -95,12 +95,12 @@
 	&--compact {
 		display: inline-grid;
 		grid-template-columns: sz(44px) auto minmax(0, 1fr) auto;
-		gap: sz(10px);
+		gap: sz(ct(bank-card, gap, 10px));
 		align-items: center;
-		padding: sz(var(--rise-control-padding-y)) sz(var(--rise-control-padding-x));
-		border: 1px solid var(--rise-border);
-		border-radius: sz(var(--rise-radius-md));
-		@include custom-bg(background-color, var(--rise-bg));
+		padding: sz(ct(bank-card, padding-y, var(--rise-control-padding-y)) ct(bank-card, padding-x, var(--rise-control-padding-x)));
+		border: 1px solid ct(bank-card, border, var(--rise-border));
+		border-radius: sz(ct(bank-card, radius, var(--rise-radius-md)));
+		@include custom-bg(background-color, ct(bank-card, bg, var(--rise-bg)));
 		@include custom-text(color, var(--rise-text));
 	}
 
@@ -153,7 +153,7 @@
 	}
 
 	&--compact.base-bank-card--outline {
-		border-color: var(--rise-border-accented);
+		border-color: ct(bank-card, border, var(--rise-border-accented));
 		@include custom-bg(background-color, transparent);
 	}
 

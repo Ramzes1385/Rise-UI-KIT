@@ -1,6 +1,12 @@
 <template>
-	<ul class="base-avatar-group" :class="[variantClass, classes.root]" :style="[sizeScaleStyle, variantStyle]" :aria-label="ariaLabel">
-		<li v-for="(item, index) in visibleItems" :key="`${item.name}-${index}`" class="base-avatar-group__item" :class="classes.item">
+	<TransitionGroup
+		tag="ul"
+		name="base-avatar-group-item"
+		:class="[ui('root'), variantClass, classes.root]"
+		:style="[sizeScaleStyle, variantStyle]"
+		:aria-label="ariaLabel"
+		@before-leave="handleBeforeLeave">
+		<li v-for="item in visibleItems" :key="item.key" :class="[ui('item'), classes.item]">
 			<BaseAvatar
 				:src="item.src"
 				:name="item.name"
@@ -11,16 +17,15 @@
 				:size-scale="sizeScale"
 				:color="color"
 				aria-hidden="true" />
-			<span class="base-avatar-group__name">{{ item.name }}</span>
+			<span :class="ui('name')">{{ item.name }}</span>
 		</li>
-		<li
-			v-if="restCount > 0"
-			class="base-avatar-group__item base-avatar-group__more"
-			:class="[`base-avatar-group__more--${shape}`, classes.more]">
-			<span aria-hidden="true">+{{ restCount }}</span>
-			<span class="base-avatar-group__name">{{ formatMessage(UI_ARIA.AVATARS_MORE, { n: restCount }) }}</span>
+		<li v-if="restCount > 0" key="more" :class="[ui('item'), ui('more'), `base-avatar-group__more--${shape}`, classes.more]">
+			<Transition name="base-avatar-group-count">
+				<span :key="restCount" :class="ui('count')" aria-hidden="true">+{{ restCount }}</span>
+			</Transition>
+			<span :class="ui('name')">{{ formatMessage(UI_ARIA.AVATARS_MORE, { n: restCount }) }}</span>
 		</li>
-	</ul>
+	</TransitionGroup>
 </template>
 
 <script setup lang="ts">
@@ -43,5 +48,5 @@ const props = withDefaults(
 	}),
 )
 
-const { sizeScaleStyle, variantClass, variantStyle, classes, visibleItems, restCount } = useBaseAvatarGroup(props)
+const { ui, sizeScaleStyle, variantClass, variantStyle, classes, visibleItems, restCount, handleBeforeLeave } = useBaseAvatarGroup(props)
 </script>

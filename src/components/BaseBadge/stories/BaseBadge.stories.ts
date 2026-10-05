@@ -25,3 +25,5 @@ export const Statuses = cases.Statuses
 export const InButton = cases.InButton
 export const Clickable = cases.Clickable
 export const Disabled = cases.Disabled
+export const Theming = cases.Theming
+export const Animations = cases.Animations

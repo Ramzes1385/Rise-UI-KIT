@@ -33,3 +33,4 @@ export const Animations = cases.Animations
 export const Password = cases.Password
 export const Clickable = cases.Clickable
 export const Disabled = cases.Disabled
+export const Theming = cases.Theming

@@ -1,7 +1,8 @@
 import { UI_ARIA } from '@/locales/messages'
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import { AVATAR_MASCOT_REACT_MS } from '../types/BaseAvatar.types'
 import { useClickable } from '@composables/interaction/useClickable'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { AvatarMood, BaseAvatarEmits, BaseAvatarProps } from '../types/BaseAvatar.types'
 
@@ -33,15 +34,35 @@ function useMascotReaction(props: BaseAvatarProps) {
 	}
 }
 
-export function useBaseAvatar(props: BaseAvatarProps, emit: BaseAvatarEmits) {
+function useAvatarImage(props: BaseAvatarProps) {
+	const imgRef = ref<HTMLImageElement | null>(null)
 	const hasImageError = ref(false)
+	const isImageLoaded = ref(false)
 	watch(
 		() => props.src,
 		() => {
 			hasImageError.value = false
+			isImageLoaded.value = false
 		},
 	)
+	onMounted(() => {
+		if (imgRef.value?.complete && imgRef.value.naturalWidth > 0) isImageLoaded.value = true
+	})
 
+	return {
+		imgRef,
+		hasImageError,
+		isImageLoaded,
+		handleImageError: (): void => {
+			hasImageError.value = true
+		},
+		handleImageLoad: (): void => {
+			isImageLoaded.value = true
+		},
+	}
+}
+
+export function useBaseAvatar(props: BaseAvatarProps, emit: BaseAvatarEmits) {
 	const clickable = useClickable({ event: 'click', isDisabled: () => Boolean(props.isDisabled) })
 
 	return {
@@ -50,11 +71,9 @@ export function useBaseAvatar(props: BaseAvatarProps, emit: BaseAvatarEmits) {
 		buttonLabel: computed(() => (clickable.isClickable.value ? props.alt || props.name || UI_ARIA.AVATAR : undefined)),
 		...useStandardBaseComponent('base-avatar', props, ['root', 'content', 'img', 'initials', 'online', 'mascot']),
 		ringClass: computed(() => (props.ring && props.ring !== 'none' ? `base-avatar--ring-${props.ring}` : '')),
-		hasImageError,
+		...useAvatarImage(props),
+		ui: useUi(props, 'base-avatar'),
 		initials: computed(() => toInitials(props.name)),
-		handleImageError: (): void => {
-			hasImageError.value = true
-		},
 		handleClick: (event: MouseEvent) => {
 			if (!props.isDisabled) emit('click', event)
 		},

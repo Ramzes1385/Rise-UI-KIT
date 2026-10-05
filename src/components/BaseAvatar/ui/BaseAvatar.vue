@@ -1,7 +1,7 @@
 <template>
 	<div
-		class="base-avatar"
 		:class="[
+			ui('root'),
 			`base-avatar--${shape}`,
 			ringClass,
 			variantClass,
@@ -13,7 +13,7 @@
 		:aria-label="buttonLabel"
 		@click="handleClick"
 		@keydown="handleKeydown">
-		<div class="base-avatar__content" :class="classes.content">
+		<div :class="[ui('content'), classes.content]">
 			<slot>
 				<AvatarMascot
 					v-if="mascot !== 'none'"
@@ -22,20 +22,23 @@
 					:mood="currentMood"
 					:is-eyes-closed="isEyesClosed"
 					:is-blinking="isBlinking"
-					:class="classes.mascot" />
+					:class="[ui('mascot'), classes.mascot]" />
 				<img
 					v-else-if="src && !hasImageError"
+					ref="imgRef"
 					:src="src"
 					:alt="alt"
-					class="base-avatar__img"
-					:class="classes.img"
+					:class="[ui('img'), { 'base-avatar__img--loaded': isImageLoaded }, classes.img]"
 					loading="lazy"
 					decoding="async"
+					@load="handleImageLoad"
 					@error="handleImageError" />
-				<span v-else class="base-avatar__initials" :class="classes.initials">{{ initials }}</span>
+				<span v-else :class="[ui('initials'), classes.initials]">{{ initials }}</span>
 			</slot>
 		</div>
-		<span v-if="isOnline" class="base-avatar__online" :class="classes.online" role="img" :aria-label="UI_CHAT_TEXT.ONLINE"></span>
+		<Transition name="base-avatar-online">
+			<span v-if="isOnline" :class="[ui('online'), classes.online]" role="img" :aria-label="UI_CHAT_TEXT.ONLINE"></span>
+		</Transition>
 	</div>
 </template>
 
@@ -69,15 +72,19 @@ const emit = defineEmits<BaseAvatarEmits>()
 defineSlots<BaseAvatarSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	ringClass,
 	variantClass,
 	variantStyle,
 	customColorStyle,
 	classes,
+	imgRef,
 	hasImageError,
+	isImageLoaded,
 	initials,
 	handleImageError,
+	handleImageLoad,
 	isClickable,
 	clickableAttributes,
 	buttonLabel,

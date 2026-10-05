@@ -1,51 +1,54 @@
 <template>
-	<div
-		class="base-alert"
-		:class="[`base-alert--${type}`, variantClass, classes.root]"
-		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
-		:role="liveRole">
-		<div class="base-alert__icon-wrapper" :class="classes.iconWrapper">
-			<slot name="icon">
-				<BaseIcon :name="alertIcon" :size-scale="calcIconScale('md', sizeScale)" :custom-class="classes.icon" />
-			</slot>
-		</div>
-
-		<div class="base-alert__content" :class="classes.content">
-			<BaseText
-				v-if="title"
-				tag="h4"
-				:weight="TEXT_WEIGHT.MEDIUM"
-				:size-scale="sizeScale"
-				class="base-alert__title"
-				:custom-class="classes.title">
-				{{ title }}
-			</BaseText>
-
-			<div class="base-alert__description" :class="classes.description">
-				<slot>
-					<BaseText v-if="description" tag="p" :size-scale="sizeScale" class="base-alert__text" :custom-class="classes.text">
-						{{ description }}
-					</BaseText>
+	<Transition name="base-alert" :css="!isInstant" @after-leave="handleAfterLeave">
+		<div
+			v-if="isVisible"
+			ref="rootRef"
+			:class="[ui('root'), `base-alert--${type}`, variantClass, classes.root]"
+			:style="[sizeScaleStyle, variantStyle, customColorStyle]"
+			:role="liveRole">
+			<div :class="[ui('icon-wrapper'), classes.iconWrapper]">
+				<slot name="icon">
+					<BaseIcon :name="alertIcon" :size-scale="calcIconScale('md', sizeScale)" :custom-class="classes.icon" />
 				</slot>
 			</div>
-		</div>
 
-		<div v-if="isClosable || $slots.actions" class="base-alert__actions" :class="classes.actions">
-			<slot name="actions" />
+			<div :class="[ui('content'), classes.content]">
+				<BaseText
+					v-if="title"
+					tag="h4"
+					:weight="TEXT_WEIGHT.MEDIUM"
+					:size-scale="sizeScale"
+					:class="ui('title')"
+					:custom-class="classes.title">
+					{{ title }}
+				</BaseText>
 
-			<BaseButton
-				v-if="isClosable"
-				variant="ghost"
-				:size-scale="sizeScale"
-				:padding="closeButtonPadding"
-				class="base-alert__close"
-				:custom-class="classes.close"
-				:aria-label="UI_ARIA.CLOSE"
-				@click="handleClose">
-				<BaseIcon name="close" :custom-class="classes.closeIcon" />
-			</BaseButton>
+				<div :class="[ui('description'), classes.description]">
+					<slot>
+						<BaseText v-if="description" tag="p" :size-scale="sizeScale" :class="ui('text')" :custom-class="classes.text">
+							{{ description }}
+						</BaseText>
+					</slot>
+				</div>
+			</div>
+
+			<div v-if="isClosable || $slots.actions" :class="[ui('actions'), classes.actions]">
+				<slot name="actions" />
+
+				<BaseButton
+					v-if="isClosable"
+					variant="ghost"
+					:size-scale="sizeScale"
+					:padding="closeButtonPadding"
+					:class="ui('close')"
+					:custom-class="classes.close"
+					:aria-label="UI_ARIA.CLOSE"
+					@click="handleClose">
+					<BaseIcon name="close" :custom-class="classes.closeIcon" />
+				</BaseButton>
+			</div>
 		</div>
-	</div>
+	</Transition>
 </template>
 
 <script setup lang="ts">
@@ -73,6 +76,20 @@ const props = withDefaults(
 const emit = defineEmits<BaseAlertEmits>()
 defineSlots<BaseAlertSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, closeButtonPadding, liveRole, alertIcon, handleClose } =
-	useBaseAlert(props, emit)
+const {
+	ui,
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	closeButtonPadding,
+	liveRole,
+	alertIcon,
+	rootRef,
+	isVisible,
+	isInstant,
+	handleClose,
+	handleAfterLeave,
+} = useBaseAlert(props, emit)
 </script>

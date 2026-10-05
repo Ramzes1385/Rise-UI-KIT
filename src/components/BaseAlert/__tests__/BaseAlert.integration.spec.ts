@@ -2,7 +2,7 @@ import '@testing-library/jest-dom/vitest'
 import { defineComponent, ref } from 'vue'
 import BaseAlert from '../ui/BaseAlert.vue'
 import userEvent from '@testing-library/user-event'
-import { render, screen } from '@testing-library/vue'
+import { render, screen, waitFor } from '@testing-library/vue'
 
 describe('BaseAlert integration', () => {
 	describe('закрытие через родителя', () => {
@@ -26,15 +26,15 @@ describe('BaseAlert integration', () => {
 				`,
 			})
 
-			render(Host)
+			render(Host, { global: { stubs: { Transition: false } } })
 
 			expect(screen.getByText('Внимание')).toBeInTheDocument()
 			expect(screen.getByTestId('state')).toHaveTextContent('visible')
 
 			await user.click(screen.getByRole('button'))
 
+			await waitFor(() => expect(screen.getByTestId('state')).toHaveTextContent('hidden'))
 			expect(screen.queryByText('Внимание')).not.toBeInTheDocument()
-			expect(screen.getByTestId('state')).toHaveTextContent('hidden')
 		})
 
 		it('не должен рендерить кнопку закрытия когда isClosable=false', () => {
@@ -120,11 +120,14 @@ describe('BaseAlert integration', () => {
 
 		it('кнопка закрытия должна иметь доступное имя', async () => {
 			const user = userEvent.setup()
-			const { emitted } = render(BaseAlert, { props: { title: 'Сообщение', isClosable: true } })
+			const { emitted } = render(BaseAlert, {
+				props: { title: 'Сообщение', isClosable: true },
+				global: { stubs: { Transition: false } },
+			})
 
 			await user.click(screen.getByRole('button', { name: 'Закрыть' }))
 
-			expect(emitted()).toHaveProperty('close')
+			await waitFor(() => expect(emitted()).toHaveProperty('close'))
 		})
 	})
 })

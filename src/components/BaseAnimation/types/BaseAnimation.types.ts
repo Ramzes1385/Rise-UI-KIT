@@ -19,7 +19,16 @@ export const ANIMATION_MODES = ['out-in', 'in-out', 'default'] as const
 
 export type TransitionName = (typeof ANIMATION_NAMES)[number]
 
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
+
+/**
+ * Части обёртки для пропа `ui` (БЭМ-элементы `.base-animation__<часть>`, `root` — сама обёртка, в `isGroup` — контейнер списка):
+ * inner — внутренний блок `collapse`, который раскрывается по высоте.
+ */
+export const ANIMATION_PARTS = ['inner'] as const
+
+export type BaseAnimationPart = (typeof ANIMATION_PARTS)[number]
 
 /** Обёртка анимации без своего вида: из общих пропсов — только `customClass` (`variant`, `sizeScale` и `color` удалены в 2.0) */
 export interface BaseAnimationProps extends Pick<BaseComponentProps<string, 'root'>, 'customClass'> {
@@ -42,6 +51,15 @@ export interface BaseAnimationProps extends Pick<BaseComponentProps<string, 'roo
 	isGroup?: boolean
 	/** Тег контейнера списка в режиме `isGroup`: `div`, `ul`, `ol`… */
 	tag?: string
+	/**
+	 * Классы частей обёртки (`root`, `inner`) — добавляются к классам кита. Своего вида у обёртки нет, поэтому токенов
+	 * `--rise-animation-*` нет: движение настраивают общие токены `--rise-duration*`, `--rise-ease*`, `--rise-motion-*`.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseAnimation: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseAnimation name="collapse" :show="isOpen" :ui="{ root: 'my-panel', inner: 'my-panel-inner' }">…</BaseAnimation>
+	 */
+	ui?: UiProp<BaseAnimationPart>
 }
 
 export interface BaseAnimationEmits {

@@ -9,13 +9,15 @@
 
 	display: flex;
 	align-items: flex-start;
-	gap: sz(10px);
-	padding: sz(12px) sz(16px);
-	border: 1px solid transparent;
-	border-radius: sz(var(--rise-radius-lg));
-	@include text-size(sm);
-	@include custom-bg(background-color, var(--alert-role));
-	@include custom-text(color, var(--alert-on-role));
+	gap: space(ct(alert, gap, 10px));
+	padding: space(ct(alert, padding-y, 12px) ct(alert, padding-x, 16px));
+	border: 1px solid ct(alert, border, transparent);
+	border-radius: sz(ct(alert, radius, var(--rise-radius-lg)));
+	box-shadow: ct(alert, shadow, none);
+	font-size: sz(ct(alert, font-size, var(--rise-font-size-sm)));
+	line-height: sz(var(--rise-line-height-sm));
+	@include custom-bg(background-color, ct(alert, bg, var(--alert-role)));
+	@include custom-text(color, ct(alert, text, var(--alert-on-role)));
 
 	@each $role in (success, warning, error) {
 		&--#{$role} {
@@ -41,7 +43,7 @@
 	}
 
 	&--outline {
-		border-color: var(--alert-role-border);
+		border-color: ct(alert, border, var(--alert-role-border));
 		@include custom-bg(background-color, transparent);
 		@include custom-text(color, var(--alert-role-text));
 	}
@@ -52,8 +54,8 @@
 	}
 
 	&--shadow {
-		border-color: var(--rise-border);
-		box-shadow: var(--rise-shadow-sm);
+		border-color: ct(alert, border, var(--rise-border));
+		box-shadow: ct(alert, shadow, var(--rise-shadow-sm));
 		@include custom-bg(background-color, var(--rise-bg));
 		@include custom-text(color, var(--rise-text));
 	}
@@ -122,3 +124,5 @@
 		height: sz(16px);
 	}
 }
+
+@include enter-scale('base-alert');

@@ -25,3 +25,5 @@ export const WithoutBrand = cases.WithoutBrand
 export const BrandIcons = cases.BrandIcons
 export const CoverSlot = cases.CoverSlot
 export const SavedCards = cases.SavedCards
+export const Theming = cases.Theming
+export const Animations = cases.Animations

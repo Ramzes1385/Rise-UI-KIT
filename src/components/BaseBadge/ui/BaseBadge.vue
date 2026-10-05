@@ -1,13 +1,14 @@
 <template>
 	<span
-		class="base-badge"
-		:class="[variantClass, { 'base-badge--clickable': isClickable, 'base-badge--disabled': isDisabled }, classes.root]"
+		:class="[ui('root'), variantClass, { 'base-badge--clickable': isClickable, 'base-badge--disabled': isDisabled }, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		v-bind="clickableAttributes"
 		@click="handleClick"
 		@keydown="handleKeydown">
 		<slot>
-			<span class="base-badge__text" :class="classes.text">{{ label }}</span>
+			<Transition name="base-badge-text">
+				<span :key="label" :class="[ui('text'), classes.text]">{{ label }}</span>
+			</Transition>
 		</slot>
 	</span>
 </template>
@@ -32,6 +33,7 @@ const emit = defineEmits<BaseBadgeEmits>()
 defineSlots<BaseBadgeSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

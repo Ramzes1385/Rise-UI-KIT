@@ -1,4 +1,5 @@
 .base-avatar-group {
+	position: relative;
 	display: inline-flex;
 	align-items: center;
 	margin: 0;
@@ -13,7 +14,7 @@
 		}
 
 		.base-avatar {
-			box-shadow: 0 0 0 2px var(--rise-bg);
+			box-shadow: 0 0 0 2px ct(avatar-group, ring, var(--rise-bg));
 		}
 	}
 
@@ -24,17 +25,33 @@
 	&__more {
 		align-items: center;
 		justify-content: center;
-		width: sz(32px);
-		height: sz(32px);
+		width: sz(ct(avatar-group, more-width, 32px));
+		height: sz(ct(avatar-group, more-height, var(--rise-avatar-group-more-width, 32px)));
 		border-radius: var(--rise-radius-full);
-		background-color: var(--rise-bg-elevated);
-		box-shadow: 0 0 0 2px var(--rise-bg);
-		color: var(--rise-text-highlighted);
-		@include text-size(xs);
-		font-weight: var(--rise-font-weight-medium);
+		background-color: ct(avatar-group, more-bg, var(--rise-bg-elevated));
+		box-shadow: 0 0 0 2px ct(avatar-group, ring, var(--rise-bg));
+		color: ct(avatar-group, more-text, var(--rise-text-highlighted));
+		font-size: sz(ct(avatar-group, more-font-size, var(--rise-font-size-xs)));
+		line-height: sz(var(--rise-line-height-xs));
+		font-weight: ct(avatar-group, more-font-weight, var(--rise-font-weight-medium));
 
 		&--square {
-			border-radius: sz(var(--rise-radius-md));
+			border-radius: sz(ct(avatar-group, more-radius, var(--rise-radius-md)));
 		}
 	}
+}
+
+@include enter-pop('base-avatar-group-item');
+@include enter-pop('base-avatar-group-count');
+
+.base-avatar-group-item-move {
+	transition: transform var(--rise-duration) var(--rise-ease-spring);
+}
+
+.base-avatar-group-item-leave-active {
+	position: absolute;
+}
+
+.base-avatar-group-count-leave-active {
+	position: absolute;
 }

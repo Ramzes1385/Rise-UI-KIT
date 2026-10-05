@@ -1,19 +1,21 @@
 .base-badge {
 	display: inline-flex;
 	align-items: center;
-	gap: sz(4px);
+	gap: sz(ct(badge, gap, 4px));
 	box-sizing: border-box;
 	max-width: 100%;
 	min-width: 0;
-	padding: sz(1px) sz(7px);
-	border: 1px solid transparent;
-	border-radius: sz(var(--rise-radius-sm));
+	padding: sz(ct(badge, padding-y, 1px) ct(badge, padding-x, 7px));
+	border: 1px solid ct(badge, border, transparent);
+	border-radius: sz(ct(badge, radius, var(--rise-radius-sm)));
+	box-shadow: ct(badge, shadow, none);
 	vertical-align: middle;
-	@include text-size(xs);
-	font-weight: var(--rise-font-weight-medium);
+	font-size: sz(ct(badge, font-size, var(--rise-font-size-xs)));
+	line-height: sz(var(--rise-line-height-xs));
+	font-weight: ct(badge, font-weight, var(--rise-font-weight-medium));
 	white-space: nowrap;
-	@include custom-bg(background-color, var(--rise-primary));
-	@include custom-text(color, var(--rise-on-primary));
+	@include custom-bg(background-color, ct(badge, bg, var(--rise-primary)));
+	@include custom-text(color, ct(badge, text, var(--rise-on-primary)));
 
 	&--soft {
 		@include custom-bg(background-color, var(--rise-primary-soft));
@@ -21,7 +23,7 @@
 	}
 
 	&--outline {
-		border-color: var(--rise-border-accented);
+		border-color: ct(badge, border, var(--rise-border-accented));
 		@include custom-bg(background-color, var(--rise-bg));
 		@include custom-text(color, var(--rise-text));
 	}
@@ -32,8 +34,8 @@
 	}
 
 	&--shadow {
-		border-color: var(--rise-border);
-		box-shadow: var(--rise-shadow-sm);
+		border-color: ct(badge, border, var(--rise-border));
+		box-shadow: ct(badge, shadow, var(--rise-shadow-sm));
 		@include custom-bg(background-color, var(--rise-bg));
 		@include custom-text(color, var(--rise-text-highlighted));
 	}
@@ -51,4 +53,10 @@
 		min-width: 0;
 		@include truncate;
 	}
+}
+
+@include enter-pop('base-badge-text');
+
+.base-badge-text-leave-active {
+	position: absolute;
 }

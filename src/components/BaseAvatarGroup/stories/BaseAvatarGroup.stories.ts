@@ -23,3 +23,5 @@ export const Sizes = cases.Sizes
 export const Square = cases.Square
 export const NoSingleRest = cases.NoSingleRest
 export const Media = cases.Media
+export const Theming = cases.Theming
+export const Animations = cases.Animations

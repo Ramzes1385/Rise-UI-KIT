@@ -25,3 +25,5 @@ export const WithActions = cases.WithActions
 export const LongContent = cases.LongContent
 export const Closable = cases.Closable
 export const Keyboard = cases.Keyboard
+export const Theming = cases.Theming
+export const Animations = cases.Animations

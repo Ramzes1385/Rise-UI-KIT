@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
@@ -15,6 +16,15 @@ export const ALERT_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] 
 
 export type AlertVariant = (typeof ALERT_VARIANTS)[number]
 
+/**
+ * Части оповещения для пропа `ui` (БЭМ-элементы `.base-alert__<часть>`, `root` — само оповещение):
+ * icon-wrapper — обёртка иконки, content — заголовок и описание, title — заголовок, description — обёртка описания,
+ * text — текст описания из `description`, actions — действия справа, close — кнопка «Закрыть».
+ */
+export const ALERT_PARTS = ['icon-wrapper', 'content', 'title', 'description', 'text', 'actions', 'close'] as const
+
+export type BaseAlertPart = (typeof ALERT_PARTS)[number]
+
 export interface BaseAlertProps extends BaseComponentProps<
 	AlertVariant,
 	'root' | 'iconWrapper' | 'icon' | 'content' | 'title' | 'description' | 'text' | 'actions' | 'close' | 'closeIcon'
@@ -29,10 +39,23 @@ export interface BaseAlertProps extends BaseComponentProps<
 	isClosable?: boolean
 	/** Кастомная иконка (переопределяет стандартную для типа) */
 	icon?: string
+	/**
+	 * Классы частей оповещения (`root`, `icon-wrapper`, `content`, `title`, `description`, `text`, `actions`, `close`) —
+	 * добавляются к классам кита. Глобально — `createUiKitPlugin({ defaults: { BaseAlert: { ui } } })`, классы плагина
+	 * и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseAlert title="Сохранено" :ui="{ root: 'shadow-lg', title: 'tracking-wide' }" />
+	 */
+	ui?: UiProp<BaseAlertPart>
 }
 
 export interface BaseAlertEmits {
-	/** Событие, вызываемое при клике на кнопку закрытия */
+	/**
+	 * Оповещение закрыто кнопкой «Закрыть»: оно скрывается само (уход — прозрачность и масштаб на токенах движения)
+	 * и сообщает `close`, когда анимация закончилась. При выключенном движении (`prefers-reduced-motion`,
+	 * пресет `none`, `reducedMotion: 'always'`) — сразу. Родитель может убрать его из разметки (`v-if`).
+	 */
 	(event: 'close'): void
 }
 

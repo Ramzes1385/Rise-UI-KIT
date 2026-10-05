@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { CardBrandRef, CardExpiry } from '@utils/form/cardUtils'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
@@ -9,6 +10,16 @@ export const BANK_CARD_VARIANTS = ['default', 'soft', 'outline', 'ghost'] as con
 
 /** Вариант оформления BaseBankCard */
 export type BankCardVariant = (typeof BANK_CARD_VARIANTS)[number]
+
+/**
+ * Части карты для пропа `ui` (БЭМ-элементы `.base-bank-card__<часть>`, `root` — сама карта):
+ * summary — скрытое описание для скринридера, brand — марка (в `isCompact` — мини-карта), label — название карты,
+ * number — маска номера, holder — владелец, expiry — срок действия, expired — метка «Истекла».
+ */
+export const BANK_CARD_PARTS = ['summary', 'brand', 'label', 'number', 'holder', 'expiry', 'expired'] as const
+
+/** Часть BaseBankCard для пропа `ui` */
+export type BaseBankCardPart = (typeof BANK_CARD_PARTS)[number]
 
 /**
  * Пропсы компонента BaseBankCard
@@ -43,6 +54,14 @@ export interface BaseBankCardProps extends BaseComponentProps<BankCardVariant, '
 	 * Выключайте только для своей тёмной обложки, проверив контраст
 	 */
 	hasCoverOverlay?: boolean
+	/**
+	 * Классы частей карты (`root`, `summary`, `brand`, `label`, `number`, `holder`, `expiry`, `expired`) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseBankCard: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseBankCard brand="mir" last4="4242" :ui="{ root: 'shadow-xl', number: 'tracking-widest' }" />
+	 */
+	ui?: UiProp<BaseBankCardPart>
 }
 
 /**
