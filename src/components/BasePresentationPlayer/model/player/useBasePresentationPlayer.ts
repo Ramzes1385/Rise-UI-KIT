@@ -33,7 +33,7 @@ function useStageView(flow: ReturnType<typeof usePresentationFlow>, playLabel: R
 		videoSrc: playback.videoSrc,
 		isVideoMuted: computed(() => playback.isShared.value || Boolean(playback.audioSrc.value)),
 		imageSrc: computed(() => safeUrl(playback.slide.value?.image)),
-		isWaiting: computed(() => flow.isPlaying.value && playback.state.isWaiting),
+		isWaiting: computed(() => flow.isPlaying.value && playback.isWaiting.value),
 		isStartScreen: computed(() => !flow.isPlaying.value && !flow.hasStarted.value && flow.storage.resumeIndex.value === null),
 		playIcon: computed<MediaIconName>(() => {
 			if (flow.isPlaying.value) return 'pause'

@@ -40,6 +40,7 @@ function useFlowState(
 		videoRef: options.videoRef,
 		onSlideEnd: options.onSlideEnd,
 		onTrackSlide: options.onTrackSlide,
+		onSpeechError: value => emit('speech-error', value),
 	})
 	return { navigation, isVisible, isPlaying, playback }
 }

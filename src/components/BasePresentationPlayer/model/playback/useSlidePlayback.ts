@@ -2,22 +2,52 @@ import { computed, ref, watch } from 'vue'
 import { useSlideTimer } from './useSlideTimer'
 import { useSlideSpeech } from './useSlideSpeech'
 import { useLocale } from '@composables/app/useLocale'
+import { useSlideSpeechService } from './useSlideSpeechService'
 import { indexAtTime, safeUrl, slideSpan, trackStarts } from './timeline'
 import type { SlidePlaybackOptions } from '../../types/PresentationModel.types'
 import { useMediaElement } from '@components/BaseMediaPlayer/model/core/useMediaElement'
 import type { BasePresentationPlayerProps } from '../../types/BasePresentationPlayer.types'
 
+function useSpeechService(props: BasePresentationPlayerProps, options: SlidePlaybackOptions, isShared: () => boolean) {
+	const { locale } = useLocale()
+	return useSlideSpeechService({
+		provider: () => props.speechProvider,
+		slides: () => props.slides,
+		index: () => options.index.value,
+		isShared,
+		isPrefetching: () => options.isPlaying.value && options.isVisible.value,
+		voice: () => props.speechVoice,
+		lang: () => locale.value,
+		onError: options.onSpeechError,
+	})
+}
+
 function useSlideSources(props: BasePresentationPlayerProps, options: SlidePlaybackOptions) {
 	const slide = computed(() => props.slides[options.index.value])
 	const isShared = computed(() => Boolean(safeUrl(props.audio)))
-	const audioSrc = computed(() => (isShared.value ? safeUrl(props.audio) : safeUrl(slide.value?.audio)))
+	const ownAudioSrc = computed(() => (isShared.value ? safeUrl(props.audio) : safeUrl(slide.value?.audio)))
 	const videoSrc = computed(() => safeUrl(slide.value?.video))
+	const service = useSpeechService(props, options, () => isShared.value)
+	const audioSrc = computed(() => ownAudioSrc.value ?? service.audioSrc.value)
 	const media = computed<HTMLMediaElement | null>(() => {
 		if (isShared.value || audioSrc.value) return options.audioRef.value
 		return videoSrc.value ? options.videoRef.value : null
 	})
-	const speechText = computed(() => (isShared.value || audioSrc.value || videoSrc.value ? undefined : slide.value?.speech))
-	return { slide, isShared, audioSrc, videoSrc, media, speechText }
+	const speechText = computed(() => {
+		if (isShared.value || audioSrc.value || videoSrc.value) return undefined
+		return props.speechProvider && !service.isFallback.value ? undefined : slide.value?.speech
+	})
+	return {
+		slide,
+		isShared,
+		audioSrc,
+		videoSrc,
+		media,
+		speechText,
+		isSynthesizing: service.isPending,
+		isSynthesized: computed(() => !ownAudioSrc.value && Boolean(service.audioSrc.value)),
+		failSynthesis: service.failMedia,
+	}
 }
 
 function useSettings() {
@@ -51,7 +81,7 @@ function useSlideClock(parts: {
 	track: ReturnType<typeof useTrack>
 	index: () => number
 	timer: ReturnType<typeof useSlideTimer>
-	isSpeech: () => boolean
+	isUntimed: () => boolean
 }) {
 	const { sources, state, track, index, timer } = parts
 	return {
@@ -61,7 +91,7 @@ function useSlideClock(parts: {
 			return Math.max(0, state.currentTime - track.span(index())[0])
 		}),
 		slideDuration: computed(() => {
-			if (!sources.media.value) return parts.isSpeech() ? Number.NaN : (sources.slide.value?.duration ?? Number.NaN)
+			if (!sources.media.value) return parts.isUntimed() ? Number.NaN : (sources.slide.value?.duration ?? Number.NaN)
 			if (!sources.isShared.value) return state.duration
 			const [start, end] = track.span(index())
 			return end - start
@@ -95,7 +125,9 @@ function watchTrack(
 	watch(
 		() => state.error,
 		error => {
-			if (error) options.isPlaying.value = false
+			if (!error) return
+			if (error.code !== 'autoplay-blocked' && sources.isSynthesized.value) return sources.failSynthesis(error)
+			options.isPlaying.value = false
 		},
 	)
 }
@@ -159,9 +191,6 @@ function useSpeech(
 		lang: () => locale.value,
 		onEnd: () => options.onSlideEnd(),
 	})
-	watch(speech.isSpeech, (isSpeech, wasSpeech) => {
-		if (wasSpeech && !isSpeech && !((sources.slide.value?.duration ?? 0) > 0)) options.onSlideEnd()
-	})
 	return speech.isSpeech
 }
 
@@ -171,16 +200,20 @@ export function useSlidePlayback(props: BasePresentationPlayerProps, options: Sl
 	const sound = useSound(sources, media, options.isPlaying)
 	const track = useTrack(props, () => media.state.duration)
 	const isSpeech = useSpeech(props, { sources, sound }, options)
+	const isUntimed = computed(() => isSpeech.value || sources.isSynthesizing.value)
 	const hasClock = computed(() =>
-		Boolean(sources.audioSrc.value || sources.videoSrc.value || isSpeech.value || (sources.slide.value?.duration ?? 0) > 0),
+		Boolean(sources.audioSrc.value || sources.videoSrc.value || isUntimed.value || (sources.slide.value?.duration ?? 0) > 0),
 	)
 	const timer = useSlideTimer({
-		duration: () => (sources.media.value || isSpeech.value ? Number.NaN : (sources.slide.value?.duration ?? Number.NaN)),
+		duration: () => (sources.media.value || isUntimed.value ? Number.NaN : (sources.slide.value?.duration ?? Number.NaN)),
 		rate: () => sound.rate.value,
 		isRunning: () => options.isPlaying.value && options.isVisible.value,
 		onEnd: options.onSlideEnd,
 	})
 	watch(options.index, () => timer.seek(0))
+	watch(isUntimed, (untimed, wasUntimed) => {
+		if (wasUntimed && !untimed && !hasClock.value) options.onSlideEnd()
+	})
 	watchTrack({ sources, media, track }, options)
 
 	return {
@@ -188,7 +221,8 @@ export function useSlidePlayback(props: BasePresentationPlayerProps, options: Sl
 		...sound,
 		hasClock,
 		isSpeech,
-		...useSlideClock({ sources, state: media.state, track, index: () => options.index.value, timer, isSpeech: () => isSpeech.value }),
+		isWaiting: computed(() => media.state.isWaiting || sources.isSynthesizing.value),
+		...useSlideClock({ sources, state: media.state, track, index: () => options.index.value, timer, isUntimed: () => isUntimed.value }),
 		state: media.state,
 		seekInSlide(time: number): void {
 			if (!sources.media.value) return timer.seek(time)

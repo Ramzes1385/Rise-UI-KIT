@@ -50,9 +50,10 @@ export interface PresentationSlide {
 	/** Стенограмма слайда — текст для панели «Стенограмма»; абзацы — через пустую строку */
 	notes?: string
 	/**
-	 * Текст для синтеза речи браузера (`speechSynthesis`), если у слайда нет `audio` и не задана общая дорожка. Голос — по
-	 * языку кита или `speechVoice`; голосов нет — слайд идёт по `duration`. Голоса и качество зависят от браузера и
-	 * системы: для обучения лучше запись
+	 * Текст озвучки слайда, если у слайда нет `audio` и `video` и не задана общая дорожка. С `speechProvider` текст
+	 * озвучивает сервис приложения, и слайд играет как запись (перемотка, скорость, лоадер); без него или при ошибке
+	 * сервиса — синтез речи браузера (`speechSynthesis`): голос — по языку кита или `speechVoice`; голосов нет — слайд
+	 * идёт по `duration`. Голоса браузера и их качество зависят от системы: для обучения лучше сервис или запись
 	 */
 	speech?: string
 	/**
@@ -60,6 +61,39 @@ export interface PresentationSlide {
 	 * После конца озвучки показ ждёт ответа и сам дальше не идёт
 	 */
 	isInteractive?: boolean
+}
+
+/** Запрос озвучки слайда поставщику `speechProvider` */
+export interface PresentationSpeechRequest {
+	/** `speechVoice` плеера как есть — имя голоса поставщика (`filipp`, `jane`) */
+	voice?: string
+	/** Язык кита (`ru`, `en`) */
+	lang: string
+	/** Номер слайда с нуля — для логов и кэша приложения */
+	slide: number
+	/** Отмена запроса: смена слайда, размонтирование плеера или таймаут 15 с */
+	signal: AbortSignal
+}
+
+/**
+ * Поставщик озвучки слайдов: текст → аудио. Обычно — `createFetchSpeechProvider({ url: '/api/tts' })` к посреднику
+ * приложения: ключ сервиса синтеза (SpeechKit, SaluteSpeech…) остаётся на сервере. Плеер кэширует озвучку восьми
+ * последних фраз, грузит текущий и следующий слайд заранее, отменяет лишние запросы и ждёт ответ не дольше 15 с
+ */
+export interface PresentationSpeechProvider {
+	/**
+	 * Аудио фразы: Blob (mp3, ogg, wav) или адрес файла. Отклонение, таймаут или ошибка воспроизведения — событие
+	 * `speech-error` и откат слайда на синтез речи браузера; отмена по `options.signal` — не ошибка
+	 */
+	synthesize(text: string, options: PresentationSpeechRequest): Promise<Blob | string>
+}
+
+/** Данные события `speech-error` */
+export interface PresentationSpeechError {
+	/** Номер слайда с нуля */
+	slide: number
+	/** Причина: отклонение поставщика, `DOMException` `TimeoutError` или ошибка `<audio>` на полученном адресе */
+	error: unknown
 }
 
 /** Данные события `slide-complete` */
@@ -138,8 +172,16 @@ export interface BasePresentationPlayerProps extends BaseComponentProps<Presenta
 	captions?: string
 	/** Субтитры показаны (`v-model:is-captions-on`); кнопка «Субтитры» и клавиша C — когда субтитры есть хотя бы у одного слайда */
 	isCaptionsOn?: boolean
-	/** Голос синтеза речи — `name` или `voiceURI` из `speechSynthesis.getVoices()`; не найден — голос по языку кита */
+	/**
+	 * Голос озвучки `slides[].speech`: с `speechProvider` — имя голоса поставщика, уходит в запрос как есть; без него —
+	 * `name` или `voiceURI` из `speechSynthesis.getVoices()`, не найден — голос по языку кита
+	 */
 	speechVoice?: string
+	/**
+	 * Сервис озвучки `slides[].speech` вместо синтеза речи браузера: `createFetchSpeechProvider` или свой объект с
+	 * `synthesize`. Смена поставщика или `speechVoice` сбрасывает кэш озвучки
+	 */
+	speechProvider?: PresentationSpeechProvider
 }
 
 /** События компонента BasePresentationPlayer */
@@ -158,6 +200,8 @@ export interface BasePresentationPlayerEmits {
 	(event: 'complete'): void
 	/** Субтитры включены или выключены */
 	(event: 'update:isCaptionsOn', value: boolean): void
+	/** Сервис озвучки не ответил, ответил ошибкой или аудио не воспроизвелось: слайд ушёл на синтез речи браузера */
+	(event: 'speech-error', value: PresentationSpeechError): void
 }
 
 /** Слоты компонента BasePresentationPlayer */

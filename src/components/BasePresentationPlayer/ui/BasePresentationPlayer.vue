@@ -311,6 +311,7 @@ const props = withDefaults(
 		captions: undefined,
 		isCaptionsOn: undefined,
 		speechVoice: undefined,
+		speechProvider: undefined,
 	}),
 )
 

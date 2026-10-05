@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
 import type { MediaCueSegment } from '@components/BaseMediaPlayer/types/content/MediaSubtitles.types'
+import type { PresentationSlide, PresentationSpeechError, PresentationSpeechProvider } from './BasePresentationPlayer.types'
 
 /** Ссылка на элемент: null до монтирования */
 export type ElementRef<T extends HTMLElement> = Readonly<Ref<T | null>>
@@ -32,6 +33,63 @@ export interface SlidePlaybackOptions {
 	onSlideEnd: () => void
 	/** Общая дорожка дошла до следующего слайда */
 	onTrackSlide: (index: number) => void
+	/** Сервис озвучки не справился: событие `speech-error` */
+	onSpeechError: (value: PresentationSpeechError) => void
+}
+
+/** Озвучка слайдов сервисом (`speechProvider`): кэш, предзагрузка, отмена, таймаут, откат */
+export interface SlideSpeechServiceOptions {
+	/** Поставщик озвучки; нет — сервис молчит */
+	provider: () => PresentationSpeechProvider | undefined
+	/** Слайды: текст `speech`, свои `audio` и `video` */
+	slides: () => PresentationSlide[]
+	/** Номер текущего слайда */
+	index: () => number
+	/** Идёт общая дорожка `audio`: озвучка слайдов не нужна */
+	isShared: () => boolean
+	/** Грузить и следующий слайд: показ идёт и вкладка видна */
+	isPrefetching: () => boolean
+	/** `speechVoice` — голос поставщика */
+	voice: () => string | undefined
+	/** Язык кита */
+	lang: () => string
+	/** Ошибка озвучки слайда */
+	onError: (value: PresentationSpeechError) => void
+}
+
+/** Фраза слайда, которую озвучивает сервис */
+export interface SlideSpeechTarget {
+	/** Номер слайда с нуля */
+	index: number
+	/** Текст без крайних пробелов */
+	text: string
+	/** Ключ кэша: голос, язык и текст */
+	key: string
+}
+
+/** Фраза слайда, которую озвучивает сервис */
+export interface SlideSpeechTarget {
+	/** Номер слайда с нуля */
+	index: number
+	/** Текст без крайних пробелов */
+	text: string
+	/** Ключ кэша: голос, язык и текст */
+	key: string
+}
+
+/** Запись кэша озвучки: запрос в полёте или готовый адрес */
+export interface SlideSpeechCacheEntry {
+	/** Голос, язык и текст */
+	key: string
+	/** Слайд, для которого начат запрос */
+	slide: number
+	controller: AbortController
+	/** Адрес аудио, когда ответ получен */
+	url?: string
+	/** Адрес создан через `URL.createObjectURL`: при вытеснении — `revokeObjectURL` */
+	isObjectUrl: boolean
+	/** Запись снята плеером: поздний ответ или отклонение не учитываются */
+	isCancelled: boolean
 }
 
 /** Откуда панель берёт состояние показа и куда передаёт команды */
