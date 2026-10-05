@@ -31,3 +31,4 @@ export const CustomTooltip = cases.CustomTooltip
 export const Dense = cases.Dense
 export const HiddenSeries = cases.HiddenSeries
 export const Keyboard = cases.Keyboard
+export const Animations = cases.Animations

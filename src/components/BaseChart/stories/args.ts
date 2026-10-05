@@ -13,6 +13,8 @@ export const args = {
 	hasLegend: true,
 	height: 240,
 	yTickCount: 5,
+	animation: 'grow',
+	updateAnimation: 'tween',
 	sizeScale: 100,
 	'onUpdate:hiddenSeries': fn(),
 } satisfies Meta<typeof BaseChart>['args']

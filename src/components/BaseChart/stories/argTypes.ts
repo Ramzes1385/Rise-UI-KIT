@@ -1,7 +1,7 @@
 import type BaseChart from '../ui/BaseChart.vue'
 import type { Meta } from '@storybook/vue3-vite'
-import { CHART_VARIANTS } from '../types/BaseChart.types'
 import { ARG_GROUP, baseArgTypes, propGroup } from '@/stories/helpers'
+import { CHART_ANIMATIONS, CHART_UPDATE_ANIMATIONS, CHART_VARIANTS } from '../types/BaseChart.types'
 
 export const argTypes = {
 	...baseArgTypes({ variants: CHART_VARIANTS }),
@@ -17,6 +17,8 @@ export const argTypes = {
 	yTickCount: { control: { type: 'number', min: 2, max: 12 }, table: propGroup(ARG_GROUP.appearance) },
 	valueFormat: { control: 'object', table: propGroup(ARG_GROUP.appearance) },
 	labelFormat: { control: 'object', table: propGroup(ARG_GROUP.appearance) },
+	animation: { control: 'select', options: CHART_ANIMATIONS, table: propGroup(ARG_GROUP.behavior) },
+	updateAnimation: { control: 'select', options: CHART_UPDATE_ANIMATIONS, table: propGroup(ARG_GROUP.behavior) },
 	formatValue: { control: false, table: propGroup(ARG_GROUP.appearance) },
 	formatLabel: { control: false, table: propGroup(ARG_GROUP.appearance) },
 } satisfies Meta<typeof BaseChart>['argTypes']
