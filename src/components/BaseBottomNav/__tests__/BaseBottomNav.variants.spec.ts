@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom/vitest'
 import BaseBottomNav from '../ui/BaseBottomNav.vue'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import type { BottomNavItem } from '../types/BaseBottomNav.types'
-import { getIndicatorStyle, getNotchStyle, getPrimaryIndex } from '../model/bottomNavLayout'
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
+import { getNotchStyle, getPrimaryIndex, isCellIndicator } from '../model/bottomNavLayout'
 
 const ITEMS: BottomNavItem[] = [
 	{ value: 'home', label: 'Главная', icon: 'home' },
@@ -27,15 +27,11 @@ describe('BaseBottomNav: функции раскладки', () => {
 		expect(getPrimaryIndex(ITEMS.slice(0, 2), 'notched')).toBe(-1)
 	})
 
-	it('getIndicatorStyle — ширина ячейки и сдвиг на индекс, только для скользящих вариантов', () => {
-		expect(getIndicatorStyle('floating', 1, 4)).toEqual({
-			width: 'calc((100% - 2 * var(--bottom-nav-bar-padding)) / 4)',
-			transform: 'translateX(calc(1 * 100% * var(--bottom-nav-direction)))',
-		})
-		expect(getIndicatorStyle('glass', 0, 4)).not.toBeNull()
-		expect(getIndicatorStyle('glass', -1, 4)).toBeNull()
-		expect(getIndicatorStyle('default', 1, 4)).toBeNull()
-		expect(getIndicatorStyle(undefined, 1, 4)).toBeNull()
+	it('isCellIndicator — индикатор во всю ячейку только у floating и glass', () => {
+		expect(isCellIndicator('floating')).toBe(true)
+		expect(isCellIndicator('glass')).toBe(true)
+		expect(isCellIndicator('default')).toBe(false)
+		expect(isCellIndicator(undefined)).toBe(false)
 	})
 
 	it('getNotchStyle — центр выреза над главным пунктом', () => {
@@ -50,28 +46,24 @@ describe('BaseBottomNav: варианты floating, glass, notched', () => {
 		expect(screen.getByRole('navigation')).toHaveClass(`base-bottom-nav--${variant}`)
 	})
 
-	it('floating: скользящий индикатор у выбранного пункта и сдвиг при выборе другого', async () => {
+	it('floating: индикатор у выбранного пункта, пункты-ячейки помечены для замера', async () => {
 		const { container } = renderNav({ variant: 'floating', modelValue: 'home' })
-		const indicator = indicatorOf(container)
-		expect(indicator).toHaveAttribute('aria-hidden', 'true')
-		expect(indicator?.style.transform).toContain('0 * 100%')
-
-		await fireEvent.click(screen.getByRole('button', { name: 'Поиск' }))
-		expect(indicatorOf(container)?.style.transform).toContain('1 * 100%')
+		await waitFor(() => expect(indicatorOf(container)).toHaveAttribute('aria-hidden', 'true'))
+		expect(container.querySelectorAll('li[data-indicator-item]')).toHaveLength(ITEMS.length)
+		expect(container.querySelector('.base-bottom-nav__icon-wrap[data-indicator-item]')).toBeNull()
 	})
 
-	it('индикатор следует за v-model снаружи', async () => {
-		const { container, rerender } = renderNav({ variant: 'glass', modelValue: 'home' })
-		await rerender({ items: ITEMS, variant: 'glass', modelValue: 'chats' })
-		expect(indicatorOf(container)?.style.transform).toContain('3 * 100%')
+	it('классические варианты: индикатор — «пилюля» под значком, замер по обёртке значка', async () => {
+		const { container } = renderNav({ variant: 'default', modelValue: 'home' })
+		await waitFor(() => expect(indicatorOf(container)).not.toBeNull())
+		expect(container.querySelectorAll('.base-bottom-nav__icon-wrap[data-indicator-item]')).toHaveLength(ITEMS.length)
+		expect(container.querySelector('li[data-indicator-item]')).toBeNull()
 	})
 
-	it('без выбранного пункта и в классических вариантах индикатора нет', () => {
-		const { container, unmount } = renderNav({ variant: 'glass', modelValue: null })
+	it('без выбранного пункта индикатора нет', async () => {
+		const { container } = renderNav({ variant: 'glass', modelValue: null })
+		await Promise.resolve()
 		expect(indicatorOf(container)).toBeNull()
-		unmount()
-		const classic = renderNav({ variant: 'default', modelValue: 'home' })
-		expect(indicatorOf(classic.container)).toBeNull()
 	})
 
 	it('notched: первый пункт с isPrimary — главное действие, вырез над ним', () => {

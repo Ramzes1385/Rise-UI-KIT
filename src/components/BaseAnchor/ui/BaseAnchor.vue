@@ -1,22 +1,21 @@
 <template>
 	<nav
 		v-if="links.length"
-		class="base-anchor"
-		:class="[variantClass, `base-anchor--${direction}`, classes.root]"
-		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
+		ref="rootRef"
+		:class="[ui('root'), variantClass, `base-anchor--${direction}`, classes.root]"
+		:style="[sizeScaleStyle, variantStyle, customColorStyle, indicatorStyle]"
 		:aria-label="label ?? UI_ARIA.ANCHOR_NAV">
-		<ol class="base-anchor__list" :class="classes.list">
-			<li
-				v-for="link in links"
-				:key="link.id"
-				class="base-anchor__item"
-				:class="classes.item"
-				:style="{ '--anchor-level': link.level }">
+		<span
+			v-if="isIndicatorVisible"
+			:class="[ui('indicator'), { 'base-anchor__indicator--instant': isIndicatorInstant }]"
+			aria-hidden="true" />
+		<ol :class="[ui('list'), classes.list]">
+			<li v-for="link in links" :key="link.id" :class="[ui('item'), classes.item]" :style="{ '--anchor-level': link.level }">
 				<a
 					:href="`#${link.id}`"
-					class="base-anchor__link"
-					:class="[{ 'base-anchor__link--active': isActive(link) }, classes.link]"
+					:class="[ui('link'), { 'base-anchor__link--active': isActive(link) }, classes.link]"
 					:aria-current="isActive(link) ? 'location' : undefined"
+					data-indicator-item
 					@click="handleClick(link, $event)">
 					<slot name="item" :item="link" :is-active="isActive(link)">{{ link.label }}</slot>
 				</a>
@@ -49,8 +48,23 @@ const emit = defineEmits<BaseAnchorEmits>()
 
 defineSlots<BaseAnchorSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, links, isActive, handleClick, refresh, scrollTo } =
-	useBaseAnchor(props, emit)
+const {
+	ui,
+	rootRef,
+	indicatorStyle,
+	isIndicatorVisible,
+	isIndicatorInstant,
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	links,
+	isActive,
+	handleClick,
+	refresh,
+	scrollTo,
+} = useBaseAnchor(props, emit)
 
 defineExpose({ refresh, scrollTo })
 </script>

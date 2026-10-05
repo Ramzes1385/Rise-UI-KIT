@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
@@ -11,6 +12,15 @@ export const ANCHOR_VARIANTS = ['default', 'soft'] as const
 export const ANCHOR_DIRECTIONS = ['vertical', 'horizontal'] as const
 
 export type AnchorDirection = (typeof ANCHOR_DIRECTIONS)[number]
+
+/**
+ * Части оглавления для пропа `ui` (БЭМ-элементы `.base-anchor__<часть>`, `root` — `<nav>`): list — список `<ol>`,
+ * item — пункт `<li>`, link — ссылка пункта, indicator — отметка текущего пункта (линия у `default`, заливка у `soft`),
+ * одна на оглавление и переезжает к новому текущему пункту.
+ */
+export const ANCHOR_PARTS = ['list', 'item', 'link', 'indicator'] as const
+
+export type BaseAnchorPart = (typeof ANCHOR_PARTS)[number]
 
 /** Пункт оглавления, заданный приложением */
 export interface AnchorItem {
@@ -34,7 +44,8 @@ export interface AnchorLink {
 
 /**
  * Пропсы компонента BaseAnchor — оглавление страницы с подсветкой текущего раздела при прокрутке.
- * Пункты — из `items` или из заголовков `headings` внутри `content`.
+ * Пункты — из `items` или из заголовков `headings` внутри `content`. Отметка текущего пункта одна на оглавление
+ * и переезжает к новому пункту на токенах движения; при выключенном движении — сразу на месте.
  */
 export interface BaseAnchorProps extends BaseComponentProps<(typeof ANCHOR_VARIANTS)[number], 'root' | 'list' | 'item' | 'link'> {
 	/** Пункты оглавления. Не задано — пункты собираются из заголовков `headings` внутри `content` */
@@ -58,6 +69,14 @@ export interface BaseAnchorProps extends BaseComponentProps<(typeof ANCHOR_VARIA
 	label?: string
 	/** По клику менять адрес страницы на `#id` раздела (`history.replaceState`, без новой записи в истории) */
 	isHashSynced?: boolean
+	/**
+	 * Классы частей оглавления (`root`, `list`, `item`, `link`, `indicator`) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseAnchor: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseAnchor :items="items" :ui="{ link: 'text-sm', indicator: 'rounded-full' }" />
+	 */
+	ui?: UiProp<BaseAnchorPart>
 }
 
 export interface BaseAnchorEmits {

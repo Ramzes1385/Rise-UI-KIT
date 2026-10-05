@@ -1,11 +1,12 @@
 .base-stepper {
-	--stepper-size: #{sz(28px)};
+	--stepper-size: #{sz(ct(stepper-indicator, width, 28px))};
 	--stepper-line: #{sz(2px)};
 	--stepper-line-gap: #{sz(4px)};
 	--stepper-line-radius: var(--rise-radius-full);
 	--stepper-step-min-width: #{sz(112px)};
-	--stepper-accent: var(--custom-bg, var(--rise-primary));
-	--stepper-on-accent: var(--custom-text, var(--rise-on-primary));
+	--stepper-accent: var(--custom-bg, #{ct(stepper, bg-checked, var(--rise-primary))});
+	--stepper-on-accent: var(--custom-text, #{ct(stepper, text-checked, var(--rise-on-primary))});
+	--stepper-fill-duration: var(--rise-duration);
 
 	position: relative;
 	display: flex;
@@ -127,9 +128,9 @@
 		width: 100%;
 		height: 100%;
 		border: var(--stepper-line) solid transparent;
-		border-radius: var(--rise-radius-full);
-		background-color: var(--rise-bg-elevated);
-		color: var(--rise-text-toned);
+		border-radius: ct(stepper-indicator, radius, var(--rise-radius-full));
+		background-color: ct(stepper-indicator, bg, var(--rise-bg-elevated));
+		color: ct(stepper-indicator, text, var(--rise-text-toned));
 		@include text-size(xs);
 		font-weight: var(--rise-font-weight-semibold);
 		font-variant-numeric: tabular-nums;
@@ -194,15 +195,16 @@
 	}
 
 	&__label {
-		@include text-size(sm);
-		font-weight: var(--rise-font-weight-medium);
-		color: var(--rise-text);
+		font-size: sz(ct(stepper-label, font-size, var(--rise-font-size-sm)));
+		line-height: sz(var(--rise-line-height-sm));
+		font-weight: ct(stepper-label, font-weight, var(--rise-font-weight-medium));
+		color: ct(stepper-label, text, var(--rise-text));
 		overflow-wrap: break-word;
 		hyphens: auto;
 	}
 
 	&__step--active &__label {
-		color: var(--rise-text-highlighted);
+		color: ct(stepper-label, text-active, var(--rise-text-highlighted));
 	}
 
 	&__status {
@@ -234,7 +236,7 @@
 		display: block;
 		margin: 0;
 		@include text-size(xs);
-		color: var(--rise-text-muted);
+		color: ct(stepper-description, text, var(--rise-text-muted));
 		overflow-wrap: break-word;
 		hyphens: auto;
 	}
@@ -244,28 +246,32 @@
 		content: '';
 		position: absolute;
 		z-index: 0;
-		background-color: var(--rise-border-accented);
+		background-color: ct(stepper-line, bg, var(--rise-border-accented));
 	}
 
 	&--horizontal &__step:not(:first-child)::before,
-	&--horizontal &__step:not(:last-child)::after {
+	&--horizontal &__step:not(:last-child)::after,
+	&--horizontal &__line-fill {
 		top: calc(var(--stepper-size) / 2 - var(--stepper-line) / 2);
 		height: var(--stepper-line);
 	}
 
-	&--horizontal &__step:not(:first-child)::before {
+	&--horizontal &__step:not(:first-child)::before,
+	&--horizontal &__line-fill--start {
 		right: calc(50% + var(--stepper-size) / 2 + var(--stepper-line-gap));
 		left: 0;
 		border-radius: 0 var(--stepper-line-radius) var(--stepper-line-radius) 0;
 	}
 
-	&--horizontal &__step:not(:last-child)::after {
+	&--horizontal &__step:not(:last-child)::after,
+	&--horizontal &__line-fill--end {
 		right: 0;
 		left: calc(50% + var(--stepper-size) / 2 + var(--stepper-line-gap));
 		border-radius: var(--stepper-line-radius) 0 0 var(--stepper-line-radius);
 	}
 
-	&--vertical &__step:not(:last-child)::after {
+	&--vertical &__step:not(:last-child)::after,
+	&--vertical &__line-fill {
 		top: calc(var(--stepper-size) + var(--stepper-line-gap));
 		bottom: var(--stepper-line-gap);
 		left: calc(var(--stepper-size) / 2 - var(--stepper-line) / 2);
@@ -273,14 +279,60 @@
 		border-radius: var(--stepper-line-radius);
 	}
 
-	&__step--passed:not(:last-child)::after,
+	&__line-fill {
+		z-index: 1;
+		background-color: var(--stepper-accent);
+		pointer-events: none;
+		transition: transform var(--stepper-fill-duration) var(--rise-ease);
+	}
+
+	&--horizontal &__line-fill {
+		transform: scaleX(0);
+		transform-origin: left center;
+	}
+
+	&--vertical &__line-fill {
+		transform: scaleY(0);
+		transform-origin: center top;
+	}
+
+	&--horizontal &__line-fill--start,
+	&--horizontal &__step--passed &__line-fill--end {
+		transition-delay: 0s;
+		transition-timing-function: var(--rise-ease-in);
+	}
+
+	&--horizontal &__line-fill--end,
+	&--horizontal &__step--passed &__line-fill--start,
+	&--horizontal &__step--active &__line-fill--start {
+		transition-delay: var(--stepper-fill-duration);
+		transition-timing-function: var(--rise-ease-out);
+	}
+
+	&__step--passed &__line-fill,
+	&--horizontal &__step--active &__line-fill--start {
+		transform: none;
+	}
+
+	&__step--passed:not(:last-child)::after {
+		background-color: transparent;
+		transition: background-color 0s linear var(--stepper-fill-duration);
+	}
+
 	&--horizontal &__step--passed:not(:first-child)::before,
 	&--horizontal &__step--active:not(:first-child)::before {
-		background-color: var(--stepper-accent);
+		background-color: transparent;
+		transition: background-color 0s linear calc(var(--stepper-fill-duration) * 2);
+	}
+
+	&--instant &__items &__step &__line-fill,
+	&--instant &__items &__step:nth-child(n)::before,
+	&--instant &__items &__step:nth-child(n)::after {
+		transition: none;
 	}
 
 	&--square &__indicator {
-		border-radius: sz(var(--rise-radius-md));
+		border-radius: sz(ct(stepper-indicator, radius, var(--rise-radius-md)));
 	}
 
 	&--diamond &__indicator {
@@ -305,8 +357,19 @@
 		color: var(--rise-text-highlighted);
 	}
 
-	&--animated &__step::before,
-	&--animated &__step::after {
-		transition: background-color var(--rise-duration-slow) var(--rise-ease);
+	&--animated {
+		--stepper-fill-duration: var(--rise-duration-slow);
+	}
+
+	@include motion-safe {
+		&--stepped:not(.base-stepper--instant) &__step--active &__indicator-wrapper {
+			animation: base-stepper-step-in var(--rise-duration) var(--rise-ease-spring);
+		}
+	}
+}
+
+@keyframes base-stepper-step-in {
+	from {
+		transform: scale(var(--rise-motion-scale-from));
 	}
 }

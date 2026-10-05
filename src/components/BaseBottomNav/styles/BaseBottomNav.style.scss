@@ -1,7 +1,6 @@
 .base-bottom-nav {
 	--bottom-nav-indicator: color-mix(in srgb, var(--custom-bg-active, var(--rise-primary)) 16%, transparent);
 	--bottom-nav-bar-padding: 0px;
-	--bottom-nav-direction: 1;
 	--bottom-nav-notch-radius: #{sz(34px)};
 	--bottom-nav-primary-size: #{sz(52px)};
 
@@ -10,8 +9,8 @@
 	width: 100%;
 	padding-inline: env(safe-area-inset-left, 0) env(safe-area-inset-right, 0);
 	padding-bottom: env(safe-area-inset-bottom, 0);
-	border-top: 1px solid var(--rise-border);
-	@include custom-bg(background-color, var(--rise-bg));
+	border-top: 1px solid ct(bottom-nav, border, var(--rise-border));
+	@include custom-bg(background-color, ct(bottom-nav, bg, var(--rise-bg)));
 
 	&--fixed {
 		position: fixed;
@@ -25,7 +24,7 @@
 	}
 
 	@include motion-safe {
-		transition: transform var(--rise-duration) ease;
+		@include transition(transform);
 	}
 
 	&--soft {
@@ -34,7 +33,7 @@
 	}
 
 	&--outline {
-		border-top-color: var(--rise-border-accented);
+		border-top-color: ct(bottom-nav, border, var(--rise-border-accented));
 	}
 
 	&--ghost {
@@ -42,15 +41,11 @@
 		@include custom-bg(background-color, transparent);
 	}
 
-	&:dir(rtl) {
-		--bottom-nav-direction: -1;
-	}
-
 	&--floating {
-		--bottom-nav-bar-padding: #{sz(6px)};
+		--bottom-nav-bar-padding: #{space(6px)};
 
-		padding: 0 calc(#{sz(12px)} + env(safe-area-inset-right, 0)) calc(#{sz(12px)} + env(safe-area-inset-bottom, 0))
-			calc(#{sz(12px)} + env(safe-area-inset-left, 0));
+		padding: 0 calc(#{space(12px)} + env(safe-area-inset-right, 0)) calc(#{space(12px)} + env(safe-area-inset-bottom, 0))
+			calc(#{space(12px)} + env(safe-area-inset-left, 0));
 		border-top: none;
 		background-color: transparent;
 	}
@@ -58,14 +53,14 @@
 	&--floating &__bar {
 		max-width: sz(480px);
 		margin-inline: auto;
-		border: 1px solid var(--rise-border);
-		border-radius: var(--rise-radius-2xl);
-		box-shadow: var(--rise-shadow-lg);
-		@include custom-bg(background-color, var(--rise-bg-elevated));
+		border: 1px solid ct(bottom-nav, border, var(--rise-border));
+		border-radius: ct(bottom-nav, bar-radius, var(--rise-radius-2xl));
+		box-shadow: ct(bottom-nav, bar-shadow, var(--rise-shadow-lg));
+		@include custom-bg(background-color, ct(bottom-nav, bg, var(--rise-bg-elevated)));
 	}
 
 	&--glass {
-		--bottom-nav-bar-padding: #{sz(4px)};
+		--bottom-nav-bar-padding: #{space(4px)};
 
 		border-top-color: color-mix(in srgb, var(--rise-border) 60%, transparent);
 		@include custom-bg(background-color, var(--rise-bg-elevated));
@@ -83,8 +78,8 @@
 	}
 
 	&--notched &__bar {
-		border-top: 1px solid var(--rise-border);
-		@include custom-bg(background-color, var(--rise-bg));
+		border-top: 1px solid ct(bottom-nav, border, var(--rise-border));
+		@include custom-bg(background-color, ct(bottom-nav, bg, var(--rise-bg)));
 	}
 
 	&--notched &__bar--notched {
@@ -97,8 +92,8 @@
 		content: '';
 		position: absolute;
 		inset: 0;
-		border-top: 1px solid var(--rise-border);
-		@include custom-bg(background-color, var(--rise-bg));
+		border-top: 1px solid ct(bottom-nav, border, var(--rise-border));
+		@include custom-bg(background-color, ct(bottom-nav, bg, var(--rise-bg)));
 		mask: radial-gradient(
 			circle at var(--bottom-nav-notch-x) 0,
 			transparent var(--bottom-nav-notch-radius),
@@ -112,16 +107,21 @@
 	}
 
 	&__indicator {
-		position: absolute;
-		inset-block: var(--bottom-nav-bar-padding);
-		inset-inline-start: var(--bottom-nav-bar-padding);
-		border-radius: var(--rise-radius-xl);
-		background-color: var(--bottom-nav-indicator);
-		pointer-events: none;
+		@include sliding-indicator('&--instant');
 
-		@include motion-safe {
-			transition: transform var(--rise-duration-slow) var(--rise-ease-emphasized, var(--rise-ease-out));
-		}
+		border-radius: var(--rise-radius-full);
+		background-color: ct(bottom-nav, indicator-bg, var(--bottom-nav-indicator));
+	}
+
+	&:not(&--floating, &--glass) &__indicator {
+		width: calc(round(var(--indicator-x, 0px) + var(--indicator-w, 0px), 1px) - round(var(--indicator-x, 0px), 1px));
+		height: calc(round(var(--indicator-y, 0px) + var(--indicator-h, 0px), 1px) - round(var(--indicator-y, 0px), 1px));
+		transform: translate(round(var(--indicator-x, 0px), 1px), round(var(--indicator-y, 0px), 1px));
+	}
+
+	&--floating &__indicator,
+	&--glass &__indicator {
+		border-radius: var(--rise-radius-xl);
 	}
 
 	&__list {
@@ -141,10 +141,10 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: sz(4px);
+		gap: sz(ct(bottom-nav, gap, 4px));
 		box-sizing: border-box;
 		width: 100%;
-		min-height: sz(56px);
+		min-height: sz(ct(bottom-nav, height, 56px));
 		margin: 0;
 		padding: sz(8px) sz(4px) sz(6px);
 		border: none;
@@ -154,15 +154,15 @@
 		text-decoration: none;
 		cursor: pointer;
 		-webkit-tap-highlight-color: transparent;
-		@include custom-text(color, var(--rise-text-toned));
+		@include custom-text(color, ct(bottom-nav, text, var(--rise-text-toned)));
 		@include transition-colors;
 		@include focus-ring(-2px);
-		@include custom-text-hover(color, var(--rise-text));
+		@include custom-text-hover(color, ct(bottom-nav, text-hover, var(--rise-text)));
 	}
 
 	&__link--active {
-		color: var(--custom-text-active, var(--rise-text-highlighted));
-		font-weight: var(--rise-font-weight-semibold);
+		color: var(--custom-text-active, #{ct(bottom-nav, text-active, var(--rise-text-highlighted))});
+		font-weight: ct(bottom-nav, font-weight-active, var(--rise-font-weight-semibold));
 	}
 
 	&__link--disabled,
@@ -182,8 +182,11 @@
 	}
 
 	&__link--active &__icon-wrap {
-		background-color: var(--bottom-nav-indicator);
 		color: var(--custom-bg-active, var(--rise-primary));
+	}
+
+	&__link--active#{&}__link--disabled &__icon-wrap {
+		background-color: ct(bottom-nav, indicator-bg, var(--bottom-nav-indicator));
 	}
 
 	&--floating &__link--active &__icon-wrap,
@@ -224,7 +227,8 @@
 
 	&__label {
 		max-width: 100%;
-		@include text-size(xs);
+		font-size: sz(ct(bottom-nav, font-size, var(--rise-font-size-xs)));
+		line-height: sz(var(--rise-line-height-xs));
 		@include truncate;
 	}
 

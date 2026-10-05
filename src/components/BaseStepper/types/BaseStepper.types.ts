@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export interface BaseStepperStep {
@@ -36,6 +37,10 @@ export const STEPPER_SHAPES = ['circle', 'square', 'diamond', 'empty'] as const
 
 export type StepperShape = (typeof STEPPER_SHAPES)[number]
 
+/**
+ * Варианты: `default` — линия между шагами заполняется за `--rise-duration`, `animated` — медленнее, за `--rise-duration-slow`.
+ * Заполнение — `transform`; при «уменьшить движение» и пресете `none` линия встаёт сразу
+ */
 export const STEPPER_VARIANTS = ['default', 'animated'] as const
 
 export type StepperVariant = (typeof STEPPER_VARIANTS)[number]
@@ -47,6 +52,30 @@ export type StepperVariant = (typeof STEPPER_VARIANTS)[number]
 export const STEPPER_CLICKABLE = ['all', 'completed', 'none'] as const
 
 export type StepperClickable = (typeof STEPPER_CLICKABLE)[number]
+
+/**
+ * Части степпера для пропа `ui` (БЭМ-элементы `.base-stepper__<часть>`, `root` — сам степпер): header — заголовок из слота,
+ * items — список шагов `<ol>`, step — шаг `<li>`, trigger — кнопка или блок шага, indicator-wrapper — место индикатора,
+ * indicator — кружок с номером, check — галочка пройденного шага, content — подписи шага, label — заголовок шага,
+ * description — описание, line-fill — заполнение линии до текущего шага (дорожка — `::before`/`::after` шага),
+ * footer — подвал из слота
+ */
+export const STEPPER_PARTS = [
+	'header',
+	'items',
+	'step',
+	'trigger',
+	'indicator-wrapper',
+	'indicator',
+	'check',
+	'content',
+	'label',
+	'description',
+	'line-fill',
+	'footer',
+] as const
+
+export type BaseStepperPart = (typeof STEPPER_PARTS)[number]
 
 export const STEPPER_ORIENTATIONS = ['horizontal', 'vertical'] as const
 
@@ -85,6 +114,14 @@ export interface BaseStepperProps extends BaseComponentProps<
 	 * Текущий шаг тоже кнопка (фокус не теряется после выбора), но клик по нему ничего не эмитит. По умолчанию `all`
 	 */
 	clickable?: StepperClickable
+	/**
+	 * Классы частей степпера (`root`, `items`, `step`, `indicator`, `label`, `line-fill` и др.) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseStepper: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseStepper v-model="step" :items="steps" :ui="{ indicator: 'shadow-sm', label: 'uppercase' }" />
+	 */
+	ui?: UiProp<BaseStepperPart>
 }
 
 export interface BaseStepperEmits {

@@ -29,7 +29,7 @@ export const Wizard: StoryObj<typeof meta> = {
 			description: {
 				story: [
 					'Пошаговая форма: слоты `header` и `footer`, кнопки «Назад» и «Далее» меняют `v-model`, вариант `animated`',
-					'плавно заполняет линию.',
+					'заполняет линию медленнее.',
 				].join('\n'),
 			},
 			source: storySource({

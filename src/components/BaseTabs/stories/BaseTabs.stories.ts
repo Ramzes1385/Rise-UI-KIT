@@ -31,3 +31,5 @@ export const WithContent = cases.WithContent
 export const PanelSlots = cases.PanelSlots
 export const Scrollable = cases.Scrollable
 export const Keyboard = cases.Keyboard
+export const Theming = cases.Theming
+export const Animations = cases.Animations

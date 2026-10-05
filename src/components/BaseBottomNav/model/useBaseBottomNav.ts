@@ -1,12 +1,15 @@
 import { warn } from '@/locales/warn'
+import { useUi } from '@composables/base/useUi'
 import { getLocale, pluralize } from '@/locales/state'
+import { useMotion } from '@composables/app/useMotion'
 import { calcIconScale } from '@utils/media/iconUtils'
 import { UI_ARIA, UI_WARNINGS } from '@/locales/messages'
 import type { ResolvedLink } from '@composables/interaction/useLink'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { computed, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import { resolveLink, useLinkComponent } from '@composables/interaction/useLink'
-import { getIndicatorStyle, getNotchStyle, getPrimaryIndex } from './bottomNavLayout'
+import { useSlidingIndicator } from '@composables/interaction/useSlidingIndicator'
+import { getIndicatorIndex, getNotchStyle, getPrimaryIndex, isCellIndicator } from './bottomNavLayout'
 import type { BaseBottomNavEmits, BottomNavEntry, BottomNavItem, BottomNavProps } from '../types/BaseBottomNav.types'
 import { BOTTOM_NAV_MAX_ITEMS, BOTTOM_NAV_MIN_ITEMS, BOTTOM_NAV_SCROLL_THRESHOLD } from '../types/BaseBottomNav.types'
 
@@ -106,12 +109,19 @@ function useEntries(props: BottomNavProps, current: () => string | null) {
 	})
 }
 
-function useBarLayout(props: BottomNavProps, current: () => string | null) {
+function useBarLayout(props: BottomNavProps, entries: () => BottomNavEntry[]) {
+	const barRef = ref<HTMLElement | null>(null)
+	const isCell = computed(() => isCellIndicator(props.variant))
+	const indicator = useSlidingIndicator(barRef, () => getIndicatorIndex(entries(), isCell.value))
+	const motion = useMotion(barRef)
+	watch(() => props.variant, indicator.update, { flush: 'post' })
+
 	return {
-		indicatorStyle: computed(() => {
-			const activeIndex = props.items.findIndex(item => item.value === current())
-			return getIndicatorStyle(props.variant, activeIndex, props.items.length)
-		}),
+		barRef,
+		isCellIndicator: isCell,
+		indicatorStyle: indicator.style,
+		isIndicatorVisible: indicator.isVisible,
+		isIndicatorInstant: computed(() => indicator.isInstant.value || motion.isReduced.value),
 		notchStyle: computed(() => getNotchStyle(getPrimaryIndex(props.items, props.variant), props.items.length)),
 	}
 }
@@ -125,12 +135,14 @@ export function useBaseBottomNav(props: BottomNavProps, emit: BaseBottomNavEmits
 		},
 	)
 	useItemCountWarning(props)
+	const entries = useEntries(props, () => current.value)
 
 	return {
 		...useStandardBaseComponent('base-bottom-nav', props, BOTTOM_NAV_ELEMENTS),
+		ui: useUi(props, 'base-bottom-nav'),
 		...useScrollHiding(props),
-		entries: useEntries(props, () => current.value),
-		...useBarLayout(props, () => current.value),
+		entries,
+		...useBarLayout(props, () => entries.value),
 		navLabel: computed(() => props.ariaLabel ?? UI_ARIA.BOTTOM_NAV),
 		iconScale: computed(() => calcIconScale('lg', props.sizeScale)),
 		badgeScale: computed(() => calcIconScale('sm', props.sizeScale)),

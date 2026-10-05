@@ -1,8 +1,8 @@
 <template>
-	<nav class="base-pagination" :class="classes.root" :style="[sizeScaleStyle, customColorStyle]" :aria-label="navLabel">
+	<nav :class="[ui('root'), classes.root]" :style="[sizeScaleStyle, customColorStyle]" :aria-label="navLabel">
 		<BaseButton
 			:variant="inactivePageVariant"
-			class="base-pagination__arrow"
+			:class="ui('arrow')"
 			:is-disabled="isPrevDisabled"
 			is-focusable-when-disabled
 			:size-scale="sizeScale"
@@ -12,13 +12,17 @@
 			<BaseIcon name="chevron-left" :size-scale="calcIconScale('md', sizeScale)" />
 		</BaseButton>
 
-		<div class="base-pagination__pages" :class="classes.pages">
+		<div ref="pagesRef" :class="[ui('pages'), classes.pages]" :style="indicatorStyle">
+			<span
+				v-if="isIndicatorVisible"
+				:class="[ui('indicator'), { 'base-pagination__indicator--instant': isIndicatorInstant }]"
+				aria-hidden="true" />
 			<template v-for="(page, index) in pages" :key="page === '...' ? `ellipsis-${index}` : page">
 				<BaseButton
 					v-if="page !== '...'"
 					:variant="modelValue === page ? DEFAULT_VARIANT : inactivePageVariant"
-					class="base-pagination__page"
-					:class="{ 'base-pagination__page--current': modelValue === page }"
+					:class="[ui('page'), { 'base-pagination__page--current': modelValue === page }]"
+					data-indicator-item
 					:aria-current="modelValue === page ? 'page' : undefined"
 					:aria-label="pageLabel(page)"
 					:size-scale="sizeScale"
@@ -26,13 +30,13 @@
 					@click="changePage(page)">
 					{{ page }}
 				</BaseButton>
-				<span v-else class="base-pagination__ellipsis" :class="classes.ellipsis">…</span>
+				<span v-else :class="[ui('ellipsis'), classes.ellipsis]">…</span>
 			</template>
 		</div>
 
 		<BaseButton
 			:variant="inactivePageVariant"
-			class="base-pagination__arrow"
+			:class="ui('arrow')"
 			:is-disabled="isNextDisabled"
 			is-focusable-when-disabled
 			:size-scale="sizeScale"
@@ -71,6 +75,11 @@ const emit = defineEmits<BasePaginationEmits>()
 defineSlots<BasePaginationSlots>()
 
 const {
+	ui,
+	pagesRef,
+	indicatorStyle,
+	isIndicatorVisible,
+	isIndicatorInstant,
 	sizeScaleStyle,
 	customColorStyle,
 	classes,

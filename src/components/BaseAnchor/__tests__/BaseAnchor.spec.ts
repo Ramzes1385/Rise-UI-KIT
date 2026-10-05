@@ -338,7 +338,7 @@ describe('BaseAnchor', () => {
 		it('prefers-reduced-motion — без анимации; isHashSynced=false — адрес не меняется; фокусируемый раздел без tabindex', async () => {
 			vi.stubGlobal(
 				'matchMedia',
-				vi.fn(() => ({ matches: true })),
+				vi.fn(() => ({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() })),
 			)
 			const button = document.createElement('button')
 			button.id = 'action'

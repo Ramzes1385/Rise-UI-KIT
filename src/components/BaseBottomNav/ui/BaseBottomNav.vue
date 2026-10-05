@@ -1,20 +1,29 @@
 <template>
 	<nav
-		class="base-bottom-nav"
-		:class="[variantClass, { 'base-bottom-nav--fixed': isFixed, 'base-bottom-nav--hidden': isHidden }, classes.root]"
+		:class="[ui('root'), variantClass, { 'base-bottom-nav--fixed': isFixed, 'base-bottom-nav--hidden': isHidden }, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		:aria-label="navLabel"
 		@focusin="handleFocusIn"
 		@focusout="handleFocusOut">
-		<div class="base-bottom-nav__bar" :class="[{ 'base-bottom-nav__bar--notched': notchStyle }, classes.bar]" :style="notchStyle">
-			<span v-if="indicatorStyle" class="base-bottom-nav__indicator" :style="indicatorStyle" aria-hidden="true" />
-			<ul class="base-bottom-nav__list" :class="classes.list">
-				<li v-for="entry in entries" :key="entry.item.value" class="base-bottom-nav__item" :class="classes.item">
+		<div
+			ref="barRef"
+			:class="[ui('bar'), { 'base-bottom-nav__bar--notched': notchStyle }, classes.bar]"
+			:style="[notchStyle, indicatorStyle]">
+			<span
+				v-if="isIndicatorVisible"
+				:class="[ui('indicator'), { 'base-bottom-nav__indicator--instant': isIndicatorInstant }]"
+				aria-hidden="true" />
+			<ul :class="[ui('list'), classes.list]">
+				<li
+					v-for="entry in entries"
+					:key="entry.item.value"
+					:class="[ui('item'), classes.item]"
+					:data-indicator-item="isCellIndicator ? '' : undefined">
 					<component
 						:is="entry.link.is"
 						v-bind="entry.link.attrs"
-						class="base-bottom-nav__link"
 						:class="[
+							ui('link'),
 							{
 								'base-bottom-nav__link--active': entry.isActive,
 								'base-bottom-nav__link--disabled': entry.item.isDisabled,
@@ -25,23 +34,19 @@
 						:aria-current="entry.isActive ? 'page' : undefined"
 						:aria-describedby="entry.badge ? entry.badgeId : undefined"
 						@click="handleItemClick(entry, $event)">
-						<span class="base-bottom-nav__icon-wrap">
+						<span :class="ui('icon-wrap')" :data-indicator-item="isCellIndicator ? undefined : ''">
 							<slot name="icon" :item="entry.item" :is-active="entry.isActive">
-								<BaseIcon
-									:name="entry.icon"
-									:size-scale="iconScale"
-									class="base-bottom-nav__icon"
-									:custom-class="classes.icon" />
+								<BaseIcon :name="entry.icon" :size-scale="iconScale" :class="ui('icon')" :custom-class="classes.icon" />
 							</slot>
 							<BaseBadge
 								v-if="entry.badge"
-								class="base-bottom-nav__badge"
+								:class="ui('badge')"
 								:custom-class="classes.badge"
 								:label="entry.badge.text"
 								:size-scale="badgeScale"
 								aria-hidden="true" />
 						</span>
-						<span class="base-bottom-nav__label" :class="classes.label">
+						<span :class="[ui('label'), classes.label]">
 							<slot name="label" :item="entry.item" :is-active="entry.isActive">{{ entry.item.label }}</slot>
 						</span>
 					</component>
@@ -76,6 +81,7 @@ const emit = defineEmits<BaseBottomNavEmits>()
 defineSlots<BaseBottomNavSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,
@@ -89,7 +95,11 @@ const {
 	iconScale,
 	badgeScale,
 	handleItemClick,
+	barRef,
+	isCellIndicator,
 	indicatorStyle,
+	isIndicatorVisible,
+	isIndicatorInstant,
 	notchStyle,
 } = useBaseBottomNav(props, emit)
 </script>

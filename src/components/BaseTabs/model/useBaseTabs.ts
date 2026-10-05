@@ -1,7 +1,10 @@
 import type { Ref } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import { toHTMLElement } from '@utils/dom/domUtils'
+import { useMotion } from '@composables/app/useMotion'
 import type { BaseTabsEmits, BaseTabsProps } from '../types/BaseTabs.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import { useSlidingIndicator } from '@composables/interaction/useSlidingIndicator'
 import { computed, nextTick, onMounted, onUnmounted, ref, useId, useSlots, watch } from 'vue'
 
 const DRAG_THRESHOLD = 3
@@ -137,9 +140,21 @@ function useDragScroll(listRef: Ref<HTMLElement | null>) {
 
 function usePanelSlot(props: BaseTabsProps) {
 	const slots = useSlots()
+	const panelSlot = (): `panel-${string}` | 'default' => (slots[`panel-${props.modelValue}`] ? `panel-${props.modelValue}` : 'default')
 	return {
 		hasPanel: (): boolean => Object.keys(slots).some(name => name === 'default' || name.startsWith('panel-')),
-		panelSlot: (): `panel-${string}` | 'default' => (slots[`panel-${props.modelValue}`] ? `panel-${props.modelValue}` : 'default'),
+		hasCurrentPanel: (): boolean => Boolean(slots[panelSlot()]),
+		panelSlot,
+	}
+}
+
+function useTabsIndicator(listRef: Ref<HTMLElement | null>, selectedIndex: Ref<number>) {
+	const indicator = useSlidingIndicator(listRef, selectedIndex)
+	const motion = useMotion(listRef)
+	return {
+		indicatorStyle: indicator.style,
+		isIndicatorVisible: indicator.isVisible,
+		isIndicatorInstant: computed(() => indicator.isInstant.value || motion.isReduced.value),
 	}
 }
 
@@ -156,6 +171,7 @@ export function useBaseTabs(props: BaseTabsProps, emit: BaseTabsEmits) {
 
 	return {
 		...standard,
+		ui: useUi(props, 'base-tabs'),
 		listRef,
 		panelId: `${baseId}-panel`,
 		getTabId: (index: number): string => `${baseId}-tab-${index}`,
@@ -178,5 +194,6 @@ export function useBaseTabs(props: BaseTabsProps, emit: BaseTabsEmits) {
 		handlePointerUp: drag.handlePointerUp,
 		...useScrollButtons(props, listRef),
 		...usePanelSlot(props),
+		...useTabsIndicator(listRef, selectedIndex),
 	}
 }

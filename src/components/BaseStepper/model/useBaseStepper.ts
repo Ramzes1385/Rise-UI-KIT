@@ -1,5 +1,7 @@
 import { computed } from 'vue'
 import { UI_STEPPER } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
+import { useStepperMotion } from './useStepperMotion'
 import { useStepperScroll } from './useStepperScroll'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseStepperEmits, BaseStepperProps } from '../types/BaseStepper.types'
@@ -46,9 +48,12 @@ function statusText(state: ReturnType<typeof stepState>): string {
 }
 
 export function useBaseStepper(props: BaseStepperProps, emit: BaseStepperEmits) {
+	const scroll = useStepperScroll(props)
 	return {
 		...useStandardBaseComponent('base-stepper', props, [...STEPPER_ELEMENTS]),
-		...useStepperScroll(props),
+		ui: useUi(props, 'base-stepper'),
+		...scroll,
+		...useStepperMotion(props, scroll.itemsRef),
 		optionalLabel: computed(() => UI_STEPPER.OPTIONAL),
 		stepState: (index: number) => stepState(props, index),
 		isStepPassed: (index: number): boolean => index + 1 < props.modelValue,

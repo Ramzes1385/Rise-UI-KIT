@@ -1,6 +1,4 @@
 .base-tabs {
-	--tabs-indicator: var(--custom-bg-active, var(--rise-primary));
-
 	display: flex;
 	flex-direction: column;
 	width: 100%;
@@ -18,7 +16,7 @@
 		position: relative;
 		display: flex;
 		flex: 1 1 auto;
-		gap: sz(4px);
+		gap: sz(ct(tabs, gap, 4px));
 		min-width: 0;
 		overflow-x: auto;
 		overscroll-behavior-x: contain;
@@ -47,16 +45,20 @@
 		}
 	}
 
+	&__indicator {
+		@include sliding-indicator('&--instant');
+	}
+
 	&__tab.base-button {
-		--btn-pad-left: 12px;
-		--btn-pad-right: 12px;
+		--btn-pad-left: #{ct(tabs, tab-padding-x, 12px)};
+		--btn-pad-right: #{ct(tabs, tab-padding-x, 12px)};
 
 		flex-shrink: 0;
 		max-width: none;
 		overflow: visible;
 		scroll-snap-align: start;
 		background-color: transparent;
-		@include custom-text(color, var(--rise-text-muted));
+		@include custom-text(color, ct(tabs, tab-text, var(--rise-text-muted)));
 		@include focus-ring(-2px);
 
 		@include hover {
@@ -70,10 +72,10 @@
 	}
 
 	&__tab--active.base-button {
-		color: var(--custom-text-active, var(--rise-text-highlighted));
+		color: var(--custom-text-active, ct(tabs, tab-text-selected, var(--rise-text-highlighted)));
 
 		@include hover {
-			color: var(--custom-text-active, var(--rise-text-highlighted));
+			color: var(--custom-text-active, ct(tabs, tab-text-selected, var(--rise-text-highlighted)));
 		}
 	}
 
@@ -121,11 +123,25 @@
 		&:empty {
 			display: none;
 		}
+
+		&:has(> .base-tabs-panel-leave-active) {
+			position: relative;
+		}
+	}
+
+	@include enter-fade('base-tabs-panel');
+	@include enter-fade('base-tabs-scroll');
+
+	.base-tabs-panel-leave-active {
+		position: absolute;
+		right: 0;
+		left: 0;
+		pointer-events: none;
 	}
 
 	&--underline &__nav,
 	&--arc &__nav {
-		border-bottom: 1px solid var(--rise-border);
+		border-bottom: 1px solid ct(tabs, border, var(--rise-border));
 	}
 
 	&--underline &__list,
@@ -133,22 +149,17 @@
 		margin-bottom: -1px;
 	}
 
-	&--underline &__tab::after,
-	&--arc &__tab::after {
-		content: '';
-		position: absolute;
-		right: 0;
-		bottom: -1px;
-		left: 0;
-		height: 2px;
+	&--underline &__indicator,
+	&--arc &__indicator {
+		z-index: 1;
+		width: calc(var(--indicator-w, 0px) - 2px);
+		height: ct(tabs, indicator-height, 2px);
 		border-radius: var(--rise-radius-full);
-		background-color: transparent;
-		@include transition-colors;
-	}
-
-	&--underline &__tab--active::after,
-	&--arc &__tab--active::after {
-		background-color: var(--tabs-indicator);
+		background-color: var(--custom-bg-active, ct(tabs, indicator-bg, var(--rise-primary)));
+		transform: translate(
+			calc(var(--indicator-x, 0px) + 1px),
+			calc(var(--indicator-y, 0px) + var(--indicator-h, 0px) - #{ct(tabs, indicator-height, 2px)})
+		);
 	}
 
 	&--arc &__list {
@@ -174,14 +185,25 @@
 	&--pills &__list,
 	&--rounded &__list {
 		flex: 0 1 auto;
-		padding: sz(4px);
-		border-radius: sz(var(--rise-radius-lg));
-		@include custom-bg(background-color, var(--rise-bg-elevated));
+		padding: space(ct(tabs, list-padding, 4px));
+		border-radius: sz(ct(tabs, list-radius, var(--rise-radius-lg)));
+		@include custom-bg(background-color, ct(tabs, list-bg, var(--rise-bg-elevated)));
+	}
+
+	&--pills &__indicator,
+	&--rounded &__indicator {
+		border-radius: sz(ct(tabs, indicator-radius, var(--rise-control-radius)));
+		background-color: var(--custom-bg-active, ct(tabs, indicator-bg, var(--rise-bg)));
+		box-shadow: ct(tabs, indicator-shadow, var(--rise-shadow-xs));
+	}
+
+	&--pills &__tab.base-button {
+		border-radius: sz(ct(tabs, indicator-radius, var(--rise-control-radius)));
 	}
 
 	&--pills &__tab.base-button,
 	&--rounded &__tab.base-button {
-		@include custom-text(color, var(--rise-text-toned));
+		@include custom-text(color, ct(tabs, tab-text, var(--rise-text-toned)));
 
 		@include hover {
 			color: var(--custom-text-hover, var(--custom-text, var(--rise-text-highlighted)));
@@ -190,19 +212,20 @@
 
 	&--pills &__tab--active.base-button,
 	&--rounded &__tab--active.base-button {
-		background-color: var(--custom-bg-active, var(--rise-bg));
-		box-shadow: var(--rise-shadow-xs);
-		color: var(--custom-text-active, var(--rise-text-highlighted));
+		color: var(--custom-text-active, ct(tabs, tab-text-selected, var(--rise-text-highlighted)));
 
 		@include hover {
-			background-color: var(--custom-bg-active, var(--rise-bg));
-			color: var(--custom-text-active, var(--rise-text-highlighted));
+			color: var(--custom-text-active, ct(tabs, tab-text-selected, var(--rise-text-highlighted)));
 		}
 	}
 
-	&--rounded &__list,
+	&--rounded &__list {
+		border-radius: ct(tabs, list-radius, var(--rise-radius-full));
+	}
+
+	&--rounded &__indicator,
 	&--rounded &__tab.base-button {
-		border-radius: var(--rise-radius-full);
+		border-radius: ct(tabs, indicator-radius, var(--rise-radius-full));
 	}
 
 	&--full-width &__list {

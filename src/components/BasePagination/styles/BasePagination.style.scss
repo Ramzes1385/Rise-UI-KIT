@@ -3,36 +3,48 @@
 	flex-wrap: wrap;
 	align-items: center;
 	justify-content: center;
-	gap: sz(4px);
+	gap: sz(ct(pagination, gap, 4px));
 
 	&__pages {
+		position: relative;
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
-		gap: sz(4px);
+		gap: sz(ct(pagination, gap, 4px));
+
+		@media (hover: hover) {
+			&:has(> .base-pagination__page--current:hover) > .base-pagination__indicator {
+				background-color: var(--custom-bg-active, #{ct(pagination, indicator-bg-hover, var(--rise-primary-hover))});
+			}
+		}
+	}
+
+	&__indicator {
+		@include sliding-indicator('&--instant');
+		box-sizing: border-box;
+		border-radius: sz(ct(pagination, indicator-radius, var(--rise-control-radius)));
+		box-shadow: ct(pagination, indicator-shadow, none);
+		background-color: var(--custom-bg-active, #{ct(pagination, indicator-bg, var(--rise-primary))});
 	}
 
 	&__page.base-button {
-		--btn-pad-left: 6px;
-		--btn-pad-right: 6px;
+		--btn-pad-left: #{ct(pagination, page-padding-x, 6px)};
+		--btn-pad-right: #{ct(pagination, page-padding-x, 6px)};
 
 		min-width: sz(32px);
 		font-variant-numeric: tabular-nums;
 	}
 
 	&__page--current.base-button {
-		background-color: var(--custom-bg-active, var(--rise-primary));
-		color: var(--custom-text-active, var(--rise-on-primary));
-
-		@include hover {
-			background-color: var(--custom-bg-active, var(--rise-primary-hover));
-			color: var(--custom-text-active, var(--rise-on-primary));
-		}
+		--custom-bg: transparent;
+		--custom-bg-hover: transparent;
+		--custom-bg-active: transparent;
+		--custom-text: var(--custom-text-active, #{ct(pagination, page-text-selected, var(--rise-on-primary))});
 	}
 
 	&__arrow.base-button {
-		--btn-pad-left: var(--rise-control-padding-y);
-		--btn-pad-right: var(--rise-control-padding-y);
+		--btn-pad-left: #{ct(pagination, arrow-padding-x, var(--rise-control-padding-y))};
+		--btn-pad-right: #{ct(pagination, arrow-padding-x, var(--rise-control-padding-y))};
 	}
 
 	&__ellipsis {
@@ -42,7 +54,7 @@
 		min-width: sz(32px);
 		height: sz(32px);
 		@include control-text;
-		color: var(--rise-text-muted);
+		color: ct(pagination, ellipsis-text, var(--rise-text-muted));
 		user-select: none;
 	}
 }

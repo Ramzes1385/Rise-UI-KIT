@@ -29,3 +29,5 @@ export const LongContent = cases.LongContent
 export const Disabled = cases.Disabled
 export const Keyboard = cases.Keyboard
 export const HideOnScroll = cases.HideOnScroll
+export const Theming = cases.Theming
+export const Animations = cases.Animations

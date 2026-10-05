@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import type { LinkComponent, LinkTo, ResolvedLink } from '@composables/interaction/useLink'
@@ -10,7 +11,10 @@ import type { LinkComponent, LinkTo, ResolvedLink } from '@composables/interacti
  */
 export const BOTTOM_NAV_VARIANTS = ['default', 'soft', 'outline', 'ghost', 'floating', 'glass', 'notched'] as const
 
-/** Варианты со скользящим индикатором выбранного пункта */
+/**
+ * Варианты, где индикатор выбранного пункта — подложка всей ячейки пункта; в остальных — «пилюля» под значком.
+ * Индикатор один на панель и переезжает к выбранному пункту
+ */
 export const BOTTOM_NAV_SLIDING_VARIANTS: readonly BottomNavVariant[] = ['floating', 'glass']
 
 /** Наименьшее рекомендуемое число пунктов (Material, Apple HIG): меньше — предупреждение в консоли */
@@ -23,6 +27,16 @@ export const BOTTOM_NAV_MAX_ITEMS = 5
 export const BOTTOM_NAV_SCROLL_THRESHOLD = 8
 
 export type BottomNavVariant = (typeof BOTTOM_NAV_VARIANTS)[number]
+
+/**
+ * Части панели для пропа `ui` (БЭМ-элементы `.base-bottom-nav__<часть>`, `root` — сам `nav`):
+ * bar — полоса с пунктами (контейнер индикатора), indicator — скользящий индикатор выбранного пункта,
+ * list — список `ul`, item — пункт `li`, link — кнопка или ссылка пункта, icon-wrap — обёртка значка и бейджа,
+ * icon — значок, badge — бейдж на значке, label — подпись.
+ */
+export const BOTTOM_NAV_PARTS = ['bar', 'indicator', 'list', 'item', 'link', 'icon-wrap', 'icon', 'badge', 'label'] as const
+
+export type BaseBottomNavPart = (typeof BOTTOM_NAV_PARTS)[number]
 
 type BottomNavElement = 'root' | 'bar' | 'list' | 'item' | 'link' | 'icon' | 'label' | 'badge'
 
@@ -84,6 +98,15 @@ export interface BaseBottomNavProps extends BaseComponentProps<BottomNavVariant,
 	maxBadge?: number
 	/** Компонент ссылок на маршруты. По умолчанию — из плагина, RouterLink (если подключён vue-router) или `a` */
 	linkComponent?: LinkComponent
+	/**
+	 * Классы частей панели (`root`, `bar`, `indicator`, `list`, `item`, `link`, `icon-wrap`, `icon`, `badge`, `label`) —
+	 * добавляются к классам кита. Глобально — `createUiKitPlugin({ defaults: { BaseBottomNav: { ui } } })`,
+	 * классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseBottomNav v-model="tab" :items="items" :ui="{ root: 'shadow-lg', label: 'uppercase' }" />
+	 */
+	ui?: UiProp<BaseBottomNavPart>
 }
 
 export interface BaseBottomNavEmits {

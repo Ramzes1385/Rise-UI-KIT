@@ -1,11 +1,26 @@
 import { useAnchorSpy } from './useAnchorSpy'
-import { onMounted, ref, shallowRef, useId, watch } from 'vue'
+import { useUi } from '@composables/base/useUi'
+import { useMotion } from '@composables/app/useMotion'
+import { computed, onMounted, ref, shallowRef, useId, watch } from 'vue'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import { useSlidingIndicator } from '@composables/interaction/useSlidingIndicator'
 import type { AnchorLink, AnchorProps, BaseAnchorEmits } from '../types/BaseAnchor.types'
 import { collectHeadings, flattenItems, focusSection, isPlainClick, resolveElement, scrollToSection } from './anchorDom'
 
 function resolveContent(props: AnchorProps): Element {
 	return resolveElement(props.content) ?? resolveElement(props.target) ?? document.querySelector('main') ?? document.body
+}
+
+function useAnchorIndicator(getActiveIndex: () => number) {
+	const rootRef = ref<HTMLElement | null>(null)
+	const indicator = useSlidingIndicator(rootRef, getActiveIndex)
+	const motion = useMotion(rootRef)
+	return {
+		rootRef,
+		indicatorStyle: indicator.style,
+		isIndicatorVisible: indicator.isVisible,
+		isIndicatorInstant: computed(() => indicator.isInstant.value || motion.isReduced.value),
+	}
 }
 
 export function useBaseAnchor(props: AnchorProps, emit: BaseAnchorEmits) {
@@ -49,6 +64,8 @@ export function useBaseAnchor(props: AnchorProps, emit: BaseAnchorEmits) {
 
 	return {
 		...useStandardBaseComponent('base-anchor', props, ['root', 'list', 'item', 'link']),
+		...useAnchorIndicator(() => links.value.findIndex(link => link.id === activeId.value)),
+		ui: useUi(props, 'base-anchor'),
 		links,
 		isActive: (link: AnchorLink): boolean => link.id === activeId.value,
 		handleClick(link: AnchorLink, event: MouseEvent): void {

@@ -31,3 +31,5 @@ export const CustomItem = cases.CustomItem
 export const Wizard = cases.Wizard
 export const Clickable = cases.Clickable
 export const Keyboard = cases.Keyboard
+export const Theming = cases.Theming
+export const Animations = cases.Animations

@@ -19,6 +19,22 @@
 | `--rise-alert-shadow` | корень | shadow | — | `none` |
 | `--rise-alert-text` | корень | text | — | `var(--alert-on-role)` |
 
+## BaseAnchor
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-anchor-border` | корень | border | — | `var(--rise-border)` |
+| `--rise-anchor-font-size` | корень | font-size | — | `var(--rise-font-size-sm)` |
+| `--rise-anchor-font-weight-active` | корень | font-weight | active | `var(--rise-font-weight-medium)` |
+| `--rise-anchor-gap` | корень | gap | — | `2px` |
+| `--rise-anchor-indicator-bg` | indicator | bg | — | `var(--rise-primary)` |
+| `--rise-anchor-padding-x` | корень | padding-x | — | `8px` |
+| `--rise-anchor-padding-y` | корень | padding-y | — | `4px` |
+| `--rise-anchor-radius` | корень | radius | — | `var(--rise-radius-sm)` |
+| `--rise-anchor-text` | корень | text | — | `var(--rise-text-muted)` |
+| `--rise-anchor-text-active` | корень | text | active | `var(--rise-primary-text)` |
+| `--rise-anchor-text-hover` | корень | text | hover | `var(--rise-text)` |
+
 ## BaseAutocomplete
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
@@ -103,6 +119,23 @@
 | `--rise-bank-card-shadow` | корень | shadow | — | `var(--rise-shadow-md)` |
 | `--rise-bank-card-text` | корень | text | — | `var(--rise-color-neutral-50)` |
 | `--rise-bank-card-width` | корень | width | — | `320px` |
+
+## BaseBottomNav
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-bottom-nav-bar-radius` | bar | radius | — | `var(--rise-radius-2xl)` |
+| `--rise-bottom-nav-bar-shadow` | bar | shadow | — | `var(--rise-shadow-lg)` |
+| `--rise-bottom-nav-bg` | корень | bg | — | `var(--rise-bg)` |
+| `--rise-bottom-nav-border` | корень | border | — | `var(--rise-border)` |
+| `--rise-bottom-nav-font-size` | корень | font-size | — | `var(--rise-font-size-xs)` |
+| `--rise-bottom-nav-font-weight-active` | корень | font-weight | active | `var(--rise-font-weight-semibold)` |
+| `--rise-bottom-nav-gap` | корень | gap | — | `4px` |
+| `--rise-bottom-nav-height` | корень | height | — | `56px` |
+| `--rise-bottom-nav-indicator-bg` | indicator | bg | — | `var(--bottom-nav-indicator)` |
+| `--rise-bottom-nav-text` | корень | text | — | `var(--rise-text-toned)` |
+| `--rise-bottom-nav-text-active` | корень | text | active | `var(--rise-text-highlighted)` |
+| `--rise-bottom-nav-text-hover` | корень | text | hover | `var(--rise-text)` |
 
 ## BaseButton
 
@@ -478,6 +511,20 @@
 | `--rise-mention-radius` | корень | radius | — | `var(--rise-input-radius, var(--rise-control-radius))` |
 | `--rise-mention-text` | корень | text | — | `var(--rise-text-highlighted)` |
 
+## BasePagination
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-pagination-arrow-padding-x` | arrow | padding-x | — | `var(--rise-control-padding-y)` |
+| `--rise-pagination-ellipsis-text` | ellipsis | text | — | `var(--rise-text-muted)` |
+| `--rise-pagination-gap` | корень | gap | — | `4px` |
+| `--rise-pagination-indicator-bg` | indicator | bg | — | `var(--rise-primary)` |
+| `--rise-pagination-indicator-bg-hover` | indicator | bg | hover | `var(--rise-primary-hover)` |
+| `--rise-pagination-indicator-radius` | indicator | radius | — | `var(--rise-control-radius)` |
+| `--rise-pagination-indicator-shadow` | indicator | shadow | — | `none` |
+| `--rise-pagination-page-padding-x` | page | padding-x | — | `6px` |
+| `--rise-pagination-page-text-selected` | page | text | selected | `var(--rise-on-primary)` |
+
 ## BasePhoneInput
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
@@ -682,6 +729,23 @@
 | `--rise-split-button-toggle-border` | toggle | border | — | `color-mix(in srgb, currentcolor 30%, transparent)` |
 | `--rise-split-button-toggle-padding-x` | toggle | padding-x | — | `8px` |
 
+## BaseStepper
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-stepper-bg-checked` | корень | bg | checked | `var(--rise-primary)` |
+| `--rise-stepper-description-text` | description | text | — | `var(--rise-text-muted)` |
+| `--rise-stepper-indicator-bg` | indicator | bg | — | `var(--rise-bg-elevated)` |
+| `--rise-stepper-indicator-radius` | indicator | radius | — | `var(--rise-radius-full)` |
+| `--rise-stepper-indicator-text` | indicator | text | — | `var(--rise-text-toned)` |
+| `--rise-stepper-indicator-width` | indicator | width | — | `28px` |
+| `--rise-stepper-label-font-size` | label | font-size | — | `var(--rise-font-size-sm)` |
+| `--rise-stepper-label-font-weight` | label | font-weight | — | `var(--rise-font-weight-medium)` |
+| `--rise-stepper-label-text` | label | text | — | `var(--rise-text)` |
+| `--rise-stepper-label-text-active` | label | text | active | `var(--rise-text-highlighted)` |
+| `--rise-stepper-line-bg` | line | bg | — | `var(--rise-border-accented)` |
+| `--rise-stepper-text-checked` | корень | text | checked | `var(--rise-on-primary)` |
+
 ## BaseSwitch
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
@@ -696,6 +760,23 @@
 | `--rise-switch-slider-bg-checked` | slider | bg | checked | `var(--rise-primary)` |
 | `--rise-switch-slider-ring` | slider | ring | — | `var(--rise-focus-ring)` |
 | `--rise-switch-slider-shadow` | slider | shadow | — | `none` |
+
+## BaseTabs
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-tabs-border` | корень | border | — | `var(--rise-border)` |
+| `--rise-tabs-gap` | корень | gap | — | `4px` |
+| `--rise-tabs-indicator-bg` | indicator | bg | — | `var(--rise-primary)` |
+| `--rise-tabs-indicator-height` | indicator | height | — | `2px` |
+| `--rise-tabs-indicator-radius` | indicator | radius | — | `var(--rise-control-radius)` |
+| `--rise-tabs-indicator-shadow` | indicator | shadow | — | `var(--rise-shadow-xs)` |
+| `--rise-tabs-list-bg` | list | bg | — | `var(--rise-bg-elevated)` |
+| `--rise-tabs-list-padding` | list | padding | — | `4px` |
+| `--rise-tabs-list-radius` | list | radius | — | `var(--rise-radius-lg)` |
+| `--rise-tabs-tab-padding-x` | tab | padding-x | — | `12px` |
+| `--rise-tabs-tab-text` | tab | text | — | `var(--rise-text-muted)` |
+| `--rise-tabs-tab-text-selected` | tab | text | selected | `var(--rise-text-highlighted)` |
 
 ## BaseTag
 
