@@ -1,6 +1,7 @@
 export { TABLE_VARIANTS } from './types/BaseTable.types'
 export type {
 	BaseTableEmits,
+	BaseTableExpose,
 	BaseTableProps,
 	BaseTableSlots,
 	ColumnFilter,
@@ -15,6 +16,8 @@ export type {
 	SortType,
 	TableBehaviorConfig,
 	TableColumn,
+	TableExportDataOptions,
+	TableExportEvent,
 	TableFeaturesConfig,
 	TableRow,
 	TableVariant,

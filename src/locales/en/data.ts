@@ -15,6 +15,12 @@ export const enData = {
 		EMPTY_FILTERED: 'No matching rows',
 		RESIZE_COLUMN: 'Column width',
 	},
+	tableExport: {
+		BUTTON: 'Export',
+		CSV: 'CSV',
+		XLSX: 'Excel (XLSX)',
+		SELECTED: 'Selected rows only: {n}',
+	},
 	kanban: {
 		BOARD: 'Task board',
 		EMPTY: 'No cards',

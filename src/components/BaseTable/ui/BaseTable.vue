@@ -18,11 +18,14 @@
 				:active-filters="activeFilters"
 				:columns="localColumns"
 				:is-settings-open="isSettingsOpen"
+				:export-items="exportItems"
+				:is-export-open="isExportOpen"
 				:size-scale="sizeScale"
 				:toolbar-class="classes.toolbar"
 				:search-class="classes.search"
 				:filters-class="classes.filters"
 				:settings-class="classes.settings"
+				:export-class="classes.export"
 				:active-filters-class="classes.activeFilters"
 				:get-filter-label="getFilterLabel"
 				@search-input="handleSearchInput"
@@ -32,7 +35,8 @@
 				@add-filter="handleAddFilter"
 				@remove-filter="handleRemoveFilter"
 				@update:is-settings-open="isSettingsOpen = $event"
-				@toggle-column-visibility="toggleColumnVisibility">
+				@toggle-column-visibility="toggleColumnVisibility"
+				@update:is-export-open="isExportOpen = $event">
 				<template #toolbar-prepend>
 					<slot name="toolbar-prepend"></slot>
 				</template>
@@ -205,7 +209,7 @@ import { BasePagination } from '@components/BasePagination'
 import { kitDefaults } from '@composables/base/useDefaults'
 import BaseTableToolbar from './toolbar/BaseTableToolbar.vue'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
-import type { BaseTableEmits, BaseTableProps, BaseTableSlots } from '../types/BaseTable.types'
+import type { BaseTableEmits, BaseTableExpose, BaseTableProps, BaseTableSlots } from '../types/BaseTable.types'
 
 const props = withDefaults(
 	defineProps<BaseTableProps>(),
@@ -306,5 +310,10 @@ const {
 	isFiltered,
 	bodyEmptyText,
 	isRowInteractive,
+	exportItems,
+	isExportOpen,
+	exportData,
 } = useBaseTable(props, emit)
+
+defineExpose<BaseTableExpose>({ exportData })
 </script>

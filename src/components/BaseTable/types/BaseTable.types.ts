@@ -3,6 +3,7 @@ import type { PaddingProp } from '@composables/base/usePadding'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import type { VisiblePageItem } from '@utils/navigation/paginationUtils/types/paginationUtils.types'
+import type { TableExportFormat, TableExportOptions } from '@utils/data/tableExportUtils/types/tableExportUtils.types'
 
 export const TABLE_VARIANTS = ['default', 'bordered', 'striped'] as const
 
@@ -131,6 +132,12 @@ export interface TableFeaturesConfig {
 	rowNumber?: boolean
 	/** Показывать селектор размера страницы */
 	pageSizeSelector?: boolean
+	/**
+	 * Кнопка «Экспорт» в панели инструментов: `true` — CSV и Excel, массив — только названные форматы
+	 * (`['xlsx']`). Выгружаются строки после поиска, фильтров и сортировки со всех страниц и видимые колонки
+	 * по порядку; если выбраны строки — только выбранные
+	 */
+	export?: boolean | TableExportFormat[]
 }
 
 /**
@@ -155,6 +162,7 @@ export interface BaseTableProps extends BaseComponentProps<
 	| 'filters'
 	| 'settings'
 	| 'activeFilters'
+	| 'export'
 	| 'wrapper'
 	| 'loadingOverlay'
 	| 'table'
@@ -216,6 +224,54 @@ export interface BaseTableProps extends BaseComponentProps<
 	isVirtual?: boolean
 	/** Высота строки до замера при `isVirtual`, px: строки замеряются после отрисовки, раскрытые строки учитываются */
 	rowHeight?: number
+	/**
+	 * Настройки выгрузки по кнопке «Экспорт» и `exportData()`: `fileName` — имя файла без расширения (по умолчанию
+	 * `table`), `sheetName` — имя листа Excel, `delimiter`, `locale`, `hasBom`, `isFormulaSafe` — CSV
+	 */
+	exportOptions?: TableExportOptions
+}
+
+/**
+ * Событие `export` перед скачиванием: формат, строки и колонки выгрузки. `preventDefault()` отменяет скачивание —
+ * например, чтобы выгрузить данные на сервере
+ */
+export interface TableExportEvent {
+	/** Формат: `csv` или `xlsx` */
+	format: TableExportFormat
+	/** Строки выгрузки по порядку */
+	rows: TableRow[]
+	/** Колонки выгрузки по порядку */
+	columns: TableColumn[]
+	/** Отменить скачивание файла */
+	preventDefault: () => void
+}
+
+/**
+ * Настройки `exportData()`: `onlySelected` — только выбранные строки (по умолчанию — выбранные, если они есть),
+ * `visibleColumnsOnly` — без скрытых колонок (по умолчанию `true`); остальное — как `exportOptions` и важнее их
+ */
+export interface TableExportDataOptions extends TableExportOptions {
+	/** Только выбранные строки: по умолчанию — выбранные, если они есть, иначе все */
+	onlySelected?: boolean
+	/** Только видимые колонки: по умолчанию `true` */
+	visibleColumnsOnly?: boolean
+}
+
+/** Источник выгрузки BaseTable: строки после поиска, фильтров и сортировки, колонки и выбор */
+export interface TableExportSource {
+	processedRows: Readonly<Ref<TableRow[]>>
+	localColumns: Readonly<Ref<TableColumn[]>>
+	visibleColumns: Readonly<Ref<TableColumn[]>>
+	isSelected: (row: TableRow) => boolean
+}
+
+/** Методы BaseTable через `ref` */
+export interface BaseTableExpose {
+	/**
+	 * Выгружает таблицу файлом CSV или Excel: строки после поиска, фильтров и сортировки со всех страниц.
+	 * Возвращает `false`, если обработчик `export` отменил скачивание
+	 */
+	exportData: (format: TableExportFormat, options?: TableExportDataOptions) => boolean
 }
 
 export interface BaseTableEmits {
@@ -230,6 +286,7 @@ export interface BaseTableEmits {
 	(event: 'row-click', row: TableRow): void
 	(event: 'column-resize', key: string, width: number): void
 	(event: 'columns-change', columns: TableColumn[]): void
+	(event: 'export', payload: TableExportEvent): void
 }
 
 /**

@@ -30,6 +30,9 @@ export const UI_SUBTITLES = localized('subtitles')
 /** Таблица: тексты и доступные имена элементов управления */
 export const TABLE_TEXT = localized('table')
 
+/** Выгрузка таблицы: кнопка «Экспорт» и форматы */
+export const TABLE_EXPORT_TEXT = localized('tableExport')
+
 export const UI_CHAT_TEXT = localized('chat')
 
 export const UI_EDITOR = localized('editor')

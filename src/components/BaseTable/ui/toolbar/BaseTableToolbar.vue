@@ -65,6 +65,23 @@
 			</BaseDropdownMenu>
 		</div>
 
+		<div v-if="exportItems.length" class="base-table__export" :class="exportClass">
+			<BaseDropdownMenu
+				:is-open="isExportOpen"
+				:items="exportItems"
+				position="bottom-end"
+				:size-scale="sizeScale"
+				@update:is-open="emit('update:is-export-open', $event)">
+				<BaseButton variant="outline" class="base-table__export-btn" :size-scale="sizeScale">
+					<template #left><BaseIcon name="download" :size-scale="calcIconScale('sm', sizeScale)" /></template>
+					{{ TABLE_EXPORT_TEXT.BUTTON }}
+					<template #right>
+						<BaseIcon name="chevron-down" :size-scale="calcIconScale('sm', sizeScale)" :rotate="isExportOpen ? 180 : 0" />
+					</template>
+				</BaseButton>
+			</BaseDropdownMenu>
+		</div>
+
 		<div v-if="activeFilters.length" class="base-table__active-filters" :class="activeFiltersClass">
 			<BaseBadge
 				v-for="(filter, index) in activeFilters"
@@ -95,8 +112,8 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseSelect } from '@components/BaseSelect'
 import { calcIconScale } from '@utils/media/iconUtils'
 import { BaseDropdownMenu } from '@components/BaseDropdownMenu'
-import { TABLE_TEXT, UI_FILTER, UI_TEXT } from '@/locales/messages'
 import { useBaseTableToolbar } from '../../model/useBaseTableToolbar'
+import { TABLE_EXPORT_TEXT, TABLE_TEXT, UI_FILTER, UI_TEXT } from '@/locales/messages'
 import type { BaseTableToolbarEmits, BaseTableToolbarProps, BaseTableToolbarSlots } from '../../types/toolbar/BaseTableToolbar.types'
 
 const props = defineProps<BaseTableToolbarProps>()

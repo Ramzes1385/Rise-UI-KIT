@@ -9,6 +9,16 @@
 		margin-left: auto;
 	}
 
+	&__export {
+		display: flex;
+		align-items: center;
+		margin-left: auto;
+	}
+
+	&__settings + &__export {
+		margin-left: 0;
+	}
+
 	&__settings-panel {
 		min-width: sz(200px);
 	}

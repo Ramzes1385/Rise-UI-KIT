@@ -1,4 +1,5 @@
 import type { ColumnFilter, TableColumn } from '../BaseTable.types'
+import type { DropdownMenuItems } from '@components/BaseDropdownMenu'
 
 export interface BaseTableToolbarProps {
 	/** Показывать тулбар */
@@ -27,6 +28,10 @@ export interface BaseTableToolbarProps {
 	columns: TableColumn[]
 	/** Открыта ли панель настроек колонок */
 	isSettingsOpen: boolean
+	/** Пункты меню «Экспорт»: пусто — кнопки нет */
+	exportItems: DropdownMenuItems
+	/** Открыто ли меню «Экспорт» */
+	isExportOpen: boolean
 	/** Масштаб размера (базовая единица sizeScale) */
 	sizeScale: number
 	/** CSS-класс для тулбара */
@@ -37,6 +42,8 @@ export interface BaseTableToolbarProps {
 	filtersClass?: string
 	/** CSS-класс для панели настроек */
 	settingsClass?: string
+	/** CSS-класс для блока экспорта */
+	exportClass?: string
 	/** CSS-класс для блока активных фильтров */
 	activeFiltersClass?: string
 	/** Функция получения текстовой метки для фильтра */
@@ -52,6 +59,7 @@ export interface BaseTableToolbarEmits {
 	(event: 'remove-filter', index: number): void
 	(event: 'update:is-settings-open', value: boolean): void
 	(event: 'toggle-column-visibility', column: TableColumn): void
+	(event: 'update:is-export-open', value: boolean): void
 }
 
 export interface BaseTableToolbarSlots {

@@ -35,6 +35,7 @@ export interface UiKitLocale {
 	chat: Section<'chat'>
 	editor: Section<'editor'>
 	table: Section<'table'>
+	tableExport: Section<'tableExport'>
 	markdown: Section<'markdown'>
 	ai: Section<'ai'>
 	emoji: Section<'emoji'>

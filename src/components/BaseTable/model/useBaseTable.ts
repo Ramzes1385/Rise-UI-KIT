@@ -1,5 +1,6 @@
 import type { ComputedRef, Ref } from 'vue'
 import { TABLE_TEXT, UI_TEXT } from '@/locales/messages'
+import { useBaseTableExport } from './useBaseTableExport'
 import { usePadding } from '@composables/base/usePadding'
 import { useTableStickyOffsets } from './useTableStickyOffsets'
 import { isolateFormField } from '@composables/form/useFormContext'
@@ -24,6 +25,7 @@ const TABLE_ELEMENTS = [
 	'filters',
 	'settings',
 	'activeFilters',
+	'export',
 	'wrapper',
 	'loadingOverlay',
 	'table',
@@ -183,6 +185,7 @@ export function useBaseTable(props: TableProps, emit: BaseTableEmits) {
 	const table = useComposition(props, emit, features)
 	const tableWrapperRef = ref<HTMLElement | null>(null)
 	const { isScrollable } = useScrollableRegion({ elementRef: tableWrapperRef, orientation: 'both' })
+	const exporter = useBaseTableExport(props, emit, table)
 
 	return {
 		...standard,
@@ -191,6 +194,8 @@ export function useBaseTable(props: TableProps, emit: BaseTableEmits) {
 		expand,
 		...features,
 		...table,
+		...exporter,
+		showToolbar: computed(() => table.showToolbar.value || exporter.hasExport.value),
 		hasPageSizeControl: computed(() => features.hasPageSizeSelector.value && props.pageSizeOptions.length > 0),
 		hasPagination: computed(() => props.loadMode === 'pagination' && table.localPageSize.value > 0 && table.totalPages.value > 1),
 		tableWrapperRef,
