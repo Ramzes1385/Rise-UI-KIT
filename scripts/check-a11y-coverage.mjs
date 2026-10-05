@@ -131,6 +131,7 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseCascader',
 	'BaseCryptoProSign',
 	'BaseImageMapEditor',
+	'BaseImageMap3D',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */

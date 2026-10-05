@@ -105,6 +105,8 @@ export const UI_IMAGE_MAP = localized('imageMap')
 export const UI_IMAGE_MAP_ROUTES = localized('imageMapRoutes')
 /** Редактор интерактивной картинки */
 export const UI_IMAGE_MAP_EDITOR = localized('imageMapEditor')
+/** 3D-карта BaseImageMap3D */
+export const UI_IMAGE_MAP_3D = localized('imageMap3d')
 
 /** Просмотр JSON */
 export const UI_JSON_VIEWER = localized('jsonViewer')

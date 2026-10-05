@@ -61,6 +61,7 @@ export interface UiKitLocale {
 	imageMap: Section<'imageMap'>
 	imageMapRoutes: Section<'imageMapRoutes'>
 	imageMapEditor: Section<'imageMapEditor'>
+	imageMap3d: Section<'imageMap3d'>
 	jsonViewer: Section<'jsonViewer'>
 	map: Section<'map'>
 	textDiff: Section<'textDiff'>

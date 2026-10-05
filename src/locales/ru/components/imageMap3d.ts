@@ -1,0 +1,19 @@
+/** 3D-карта BaseImageMap3D: подписи, переход в 2D и предупреждения о данных */
+export const ruImageMap3d = {
+	imageMap3d: {
+		/** Тип области для скринридера (`aria-roledescription`) */
+		ROLE: '3D-карта',
+		/** Сообщение `role="status"`, когда вместо 3D показан план */
+		FALLBACK_UNSUPPORTED: 'Браузер не поддерживает 3D — показан план',
+		FALLBACK_ERROR: 'Не удалось запустить 3D — показан план',
+		/** Предупреждение о поле данных; `{path}` — путь к полю, `{expected}` — одно из EXPECT_* */
+		INVALID_FIELD: 'BaseImageMap3D: {path} = {value} не учтено — ожидается {expected}',
+		EXPECT_NUMBER: 'конечное число',
+		EXPECT_POSITIVE: 'число больше 0',
+		EXPECT_NON_NEGATIVE: 'число не меньше 0',
+		EXPECT_TEXT: 'непустая строка',
+		EXPECT_VECTOR: 'массив из трёх чисел [x, y, z]',
+		EXPECT_MODEL: 'объект { url }',
+		EXPECT_OBJECT: 'объект',
+	},
+}

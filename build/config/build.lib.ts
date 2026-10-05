@@ -18,13 +18,14 @@ export function createLibBuildConfig(): BuildOptions {
 				utils: resolve(process.cwd(), 'src/utils/index.ts'),
 				icons: resolve(process.cwd(), 'src/icons/index.ts'),
 				media: resolve(process.cwd(), 'src/components/BaseMediaPlayer/index.ts'),
+				map3d: resolve(process.cwd(), 'src/map3d.ts'),
 			},
 			formats: ['es'],
 			cssFileName: 'styles',
 		},
 
 		rollupOptions: {
-			external: ['vue'],
+			external: ['vue', /^three(\/.*)?$/],
 
 			output: {
 				entryFileNames: '[name].js',

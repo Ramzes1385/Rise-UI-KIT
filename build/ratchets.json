@@ -20,6 +20,10 @@
 			"gzip": 481121,
 			"budget": 529408
 		},
+		"map3d.js": {
+			"gzip": 95064,
+			"budget": 105472
+		},
 		"media.js": {
 			"gzip": 144306,
 			"budget": 159744

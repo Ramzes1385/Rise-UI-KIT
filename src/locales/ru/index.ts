@@ -6,6 +6,7 @@ import { ruMedia } from './media'
 import { ruPlural } from './plural'
 import { ruCard } from './components/card'
 import { ruMapEditor } from './components/mapEditor'
+import { ruImageMap3d } from './components/imageMap3d'
 import { ruTranscript } from './components/transcript'
 import { ruPresentation } from './components/presentation'
 import { ruEventCalendar } from './components/eventCalendar'
@@ -22,6 +23,7 @@ export const ru = {
 	...ruMedia,
 	...ruPresentation,
 	...ruMapEditor,
+	...ruImageMap3d,
 	...ruChat,
 	...ruData,
 	...ruEventCalendar,

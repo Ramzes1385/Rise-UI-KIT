@@ -6,6 +6,7 @@ import { enMedia } from './media'
 import { enPlural } from './plural'
 import { enCard } from './components/card'
 import { enMapEditor } from './components/mapEditor'
+import { enImageMap3d } from './components/imageMap3d'
 import { enTranscript } from './components/transcript'
 import type { UiKitLocale } from '../types/locales.types'
 import { enPresentation } from './components/presentation'
@@ -22,6 +23,7 @@ export const en: UiKitLocale = {
 	...enMedia,
 	...enPresentation,
 	...enMapEditor,
+	...enImageMap3d,
 	...enChat,
 	...enData,
 	...enEventCalendar,

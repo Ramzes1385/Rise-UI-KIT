@@ -27,7 +27,13 @@
     "access": "public"
   },
   "peerDependencies": {
+    "three": ">=0.180.0 <0.200.0",
     "vue": "^3.5.0"
+  },
+  "peerDependenciesMeta": {
+    "three": {
+      "optional": true
+    }
   },
   "exports": {
     ".": {
@@ -53,6 +59,10 @@
     "./media": {
       "types": "./dist/components/BaseMediaPlayer/index.d.ts",
       "import": "./dist/media.js"
+    },
+    "./map3d": {
+      "types": "./dist/map3d.d.ts",
+      "import": "./dist/map3d.js"
     },
     "./styles": {
       "types": "./dist/styles.d.ts",
@@ -144,6 +154,7 @@
     "@testing-library/vue": "^8.1.0",
     "@types/node": "^25.9.1",
     "@types/react": "^19",
+    "@types/three": "0.186.0",
     "@vitejs/plugin-vue": "^6.0.7",
     "@vitest/coverage-istanbul": "^4.1.11",
     "@vitest/coverage-v8": "^4.1.11",
@@ -171,6 +182,7 @@
     "storybook": "^10.4.1",
     "stylelint": "^17.15.0",
     "stylelint-config-standard-scss": "^17.0.0",
+    "three": "0.186.1",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.60.0",
     "vite": "^8.0.15",
@@ -286,6 +298,7 @@
       "src/icons/index.ts",
       "src/components/BaseCryptoProSign/model/emulation/cryptoProSignEmulation.ts",
       "src/components/BaseMediaPlayer/index.ts",
+      "src/map3d.ts",
       "src/composables/crypto/useCryptoPro/emulation/index.ts",
       "scripts/*.mjs",
       "build/media-package/extract.mjs"
