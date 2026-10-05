@@ -305,6 +305,7 @@ useTableData
 useTeleportTarget
 useTriggerAttributes
 useTween
+useUi
 useVariant
 useVirtualList
 ```
@@ -563,3 +564,30 @@ const indicator = useSlidingIndicator(list, () => tabs.findIndex(tab => tab.valu
 - `isInstant` — первый замер и появление после скрытия: два кадра без перехода, чтобы индикатор не въезжал из угла. Миксин `sliding-indicator` снимает переход по модификатору `&--instant` (свой селектор — аргументом).
 - Пересчёт — при смене индекса и контейнера и при изменении размеров контейнера или активного пункта (ResizeObserver); `update()` — для изменений, которых наблюдатель не видит.
 - Длительность и кривая — токены `--rise-duration` и `--rise-ease-spring`: в `expressive` индикатор чуть перелетает цель, при «уменьшить движение» встаёт сразу.
+## useUi и useInheritedThemeAttrs (theme-core)
+
+### useUi
+
+Классы частей компонента для пропа `ui`: БЭМ-класс кита, затем классы из `defaults.<BaseX>.ui` плагина, затем `props.ui` экземпляра — склейкой, не заменой. Вызывается в `model/` компонента; `props.ui` читается при каждом вызове, классы реактивны.
+
+```ts
+import { useUi } from '@composables/base/useUi'
+import type { UiProp } from '@composables/base/useUi'
+
+// types/BaseX.types.ts: ui?: UiProp<'header' | 'body'>
+const ui = useUi(props, 'base-x')
+ui('root') // 'base-x <плагин> <экземпляр>'
+ui('body') // 'base-x__body …' — строка подходит и для :class, и для пропов-строк подкомпонентов
+```
+
+Имя компонента для плагина выводится из блока: `base-date-picker` → `defaults.BaseDatePicker.ui`. Проп `ui` не кладётся в `kitDefaults`.
+
+### useInheritedThemeAttrs и readThemeAttrs
+
+Тема области якоря для телепортированной панели: `{ 'data-theme'?, 'data-rise-theme'? }` ближайших предков (оба ищутся `closest` независимо), читается при открытии. На панели — `v-bind`. `useInheritedTheme` (только `data-theme`) оставлен для совместимости.
+
+```ts
+const themeAttrs = useInheritedThemeAttrs(() => wrapperRef.value, () => props.isOpen)
+// <div class="panel" v-bind="themeAttrs">
+readThemeAttrs(anchorEl) // { 'data-theme': 'dark', 'data-rise-theme': 'playful' }
+```

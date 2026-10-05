@@ -1468,3 +1468,7 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 - **Новые истории**: `Element/BaseAnimation` → «Анимации» (`element-baseanimation--animations`), `Foundations/Motion` → «Токены», «Кривые», «Появление» (`foundations-motion--tokens`, `--easings`, `--enter`). Эталонов у них нет — снимает владелец.
 - **Storybook**: в панели новый переключатель «Движение» (по умолчанию «Стандарт»).
 
+## Задача theme-core: основа тем
+
+- **Вид по умолчанию не меняется.** Новые сиды (`--rise-color-neutral-0` = `#fff`, `--rise-density` = 1, `--rise-shadow-strength` = 1, `--rise-font-heading` = стек `--rise-font-sans`, `--rise-control-*-base` = 5/10/6px) дают прежние значения; токены компонентов BaseButton, BaseInput, BaseCard читаются с прежними значениями по умолчанию. Корень BaseButton и BaseCard получил явное `box-shadow: none` (раньше — значение по умолчанию того же вида), шапка BaseCard — `background-color: transparent`.
+- **Новые истории** (снимков в `*.visual.spec.ts` нет): `element-basebutton--theming`, `element-basecard--theming`, `form-baseinput--theming` — по умолчанию, токены компонента на контейнере, плотность 0.75 (карточка) и классы через `ui`.

@@ -66,6 +66,16 @@ import '@ramzes1385/rise-ui-kit/styles'
 
 Тот же файл доступен как `@ramzes1385/rise-ui-kit/styles.css`.
 
+Чтобы стили приложения всегда побеждали стили кита — без `!important` и без борьбы за специфичность и порядок импорта, — подключите вариант в каскадном слое `rise` и задайте порядок слоёв:
+
+```css
+/* main.css приложения */
+@layer reset, rise, app;
+@import '@ramzes1385/rise-ui-kit/styles.layer.css';
+```
+
+`styles.layer.css` — одна строка `@import url('./styles.css') layer(rise);`. Стили вне слоёв сильнее любого слоя, поэтому `@layer app` можно и не объявлять. С Tailwind CSS v4: `@layer theme, base, rise, components, utilities;`. По умолчанию `styles.css` без слоя: глобальные сбросы приложения (`button { padding: 0 }`) иначе перебили бы кит.
+
 ### Шрифты
 
 Дизайн-токены `--rise-font-sans` и `--rise-font-mono` ссылаются на `Inter Variable` и `JetBrains Mono Variable`, но `dist/styles.css` не содержит `@font-face` — файлы шрифтов подключает приложение. Пакеты `@fontsource-variable/inter` и `@fontsource-variable/jetbrains-mono` устанавливаются вместе с библиотекой (они в `dependencies`):
@@ -98,9 +108,18 @@ import '@fontsource-variable/jetbrains-mono/index.css'
   /* …остальные оттенки */
 
   --rise-radius: 6px;            /* база скруглений: 0 — строгий интерфейс, 8px — мягкий */
-  --rise-control-padding-y: 7px; /* плотность: контролы 36px вместо 32px */
+  --rise-density: 0.75;          /* плотность отступов контролов и поверхностей: 0.75 — компактно, 1.25 — просторно */
+  --rise-shadow-strength: 0.6;   /* сила теней: 0 — без теней, 1.8 — выразительные */
+  --rise-font-heading: 'Nunito', system-ui, sans-serif; /* шрифт заголовков */
+
+  /* Токены компонента (--rise-<компонент>-…): кит их только читает — список в docs/design/COMPONENT_TOKENS.md */
+  --rise-button-radius: 9999px;
+  --rise-card-shadow: var(--rise-shadow-sm);
 }
 ```
+
+- **Тема на области страницы** — сиды на элементе с `data-rise-theme` и `data-theme` на нём же (`<section data-rise-theme="brand" data-theme="light">`): без `data-theme` на том же элементе семантические токены не пересчитаются. Выпадающие панели и подсказки из области берут оба атрибута.
+- **Классы частей** — проп `ui` (`<BaseButton :ui="{ root: 'rounded-full', label: 'tracking-wide' }">`) добавляет классы к БЭМ-элементам компонента; глобально — `defaults.BaseButton.ui` плагина. БЭМ-классы (`.base-card__header`) — публичный API.
 
 - **Тема «как в системе»** — `data-theme="system"`: тёмная при `prefers-color-scheme: dark`. Переключать тему из кода — `useColorMode()` (`mode`: `light`, `dark`, `system`; выбор сохраняется в localStorage), кнопка для шапки — `BaseColorModeButton`. Чтобы тема из localStorage применялась до загрузки скриптов, добавьте в `<head>`: `<script>document.documentElement.dataset.theme = localStorage.getItem('rise-color-mode') || 'system'</script>`.
 - **Размер компонента** — проп `sizeScale` (проценты): 75 / 87.5 / 100 / 112.5 / 125 ≈ xs / sm / md / lg / xl, контролы 24–40px. Кнопка, поле, селект и переключатели одного `sizeScale` одной высоты.

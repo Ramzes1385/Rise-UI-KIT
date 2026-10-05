@@ -18,11 +18,30 @@
 
 ### 1.1. Три уровня
 
-| Уровень | Имена | Для чего |
-|---|---|---|
-| Палитры | `--rise-color-{роль}-{50…950}` | Сырые оттенки ролей — палитры Tailwind CSS: `primary` (orange), `neutral` (zinc), `success` (green), `info` (blue), `warning` (amber), `error` (red) |
-| Семантические токены | `--rise-bg`, `--rise-text-muted`, `--rise-primary-soft`… | Что именно красится. Значения зависят от темы |
-| Компоненты | `var(--rise-…)` в SCSS | Только семантические токены: никаких HEX, `rgba()` и палитр напрямую |
+| Уровень | Имена | Где объявлены | Для чего |
+|---|---|---|---|
+| 1. Сиды | палитры `--rise-color-{роль}-{0,50…950}` (`neutral-0` — фон светлой темы, `#fff`); форма `--rise-radius`, `--rise-density` (1), `--rise-shadow-strength` (1), `--rise-control-padding-y-base` / `-x-base` / `--rise-control-gap-base`; шрифт `--rise-font-sans` / `-heading` / `-mono`, `--rise-font-size-*`, `--rise-font-weight-*`; движение `--rise-duration*`, `--rise-ease*` | `:root` — литералы без `var()` | Входы темы. Литерал наследуется на любой элемент, поэтому сид можно задать на `:root`, в теме или на контейнере. Палитры — Tailwind CSS: `primary` (orange), `neutral` (zinc), `success` (green), `info` (blue), `warning` (amber), `error` (red) |
+| 2. Семантика | `--rise-bg`, `--rise-text-muted`, `--rise-primary-soft`, `--rise-radius-md`, `--rise-shadow-md`, `--rise-control-padding-y`… | `:root` и **каждый `[data-theme]`** | Что именно красится. Значения зависят от режима и пересчитываются из сидов |
+| 3. Компонент | `--rise-{компонент}[-{часть}]-{свойство}[-{состояние}]` | **нигде** — кит только читает с запасным значением | Публичная ручка одного компонента: задаётся на `:root`, в теме или на контейнере. Список — [COMPONENT_TOKENS.md](./COMPONENT_TOKENS.md) |
+
+Стили компонентов используют только уровни 2 и 3: никаких HEX, `rgba()` и палитр напрямую.
+
+**Правило имён уровня 3** (проверяет `scripts/check-component-tokens.mjs` в `npm run lint:styles`):
+- `{компонент}` — имя без `Base` в kebab-case, совпадает с папкой: `button`, `input`, `dropdown-menu`; компонент читает только свои токены;
+- `{часть}` — БЭМ-элемент без `__`: `header`, `label`, `thumb`; корень — без части;
+- `{свойство}` — из словаря: `bg`, `text`, `border`, `radius`, `shadow`, `padding`, `padding-x`, `padding-y`, `gap`, `height`, `width`, `font-size`, `font-weight`, `icon-size`, `ring`;
+- `{состояние}` — `hover`, `active`, `checked`, `selected`, `disabled`, `focus`, `open`;
+- примеры: `--rise-button-bg-hover`, `--rise-card-header-padding-x`, `--rise-input-border-focus`.
+
+Всё, что начинается с `--rise-`, — публичный API. Внутренние переменные компонентов (`--btn-pad-*`, `--card-pad-*`) — без префикса `--rise-`.
+
+Токены компонента не объявляются: объявление на `.base-button` перекрыло бы значение, унаследованное от `:root` или темы, а объявление на `:root` пришлось бы повторять на каждом `[data-theme]`. Чтение с запасным значением работает на любом уровне.
+
+**Порядок силы** (от сильного к слабому): проп экземпляра (`color` → `--custom-*`, `padding` → `--btn-pad-*`) → CSS приложения и проп `ui` → токен компонента → семантика → сид. В SCSS: `var(--custom-bg, #{ct(button, bg, var(--rise-primary))})`.
+
+**Тема на области** — `data-rise-theme` и `data-theme` на одном элементе. Семантика (уровень 2) вычисляется там, где объявлена, — на `:root` и `[data-theme]`; сиды на элементе без `data-theme` до неё не доходят (палитра на `div` без `data-theme` кнопку не перекрасит). Телепортированные панели копируют с якоря оба атрибута (`useInheritedThemeAttrs`). Тему создаёт `createTheme()` — задача theme-api; пресет движения — атрибут `data-rise-motion` рядом с `data-rise-theme` (задача motion-core). Токены компонентов, заданные на произвольном контейнере, в телепортированную панель не попадают — задайте их в теме или на `:root`.
+
+**Порядок CSS.** `@ramzes1385/rise-ui-kit/styles.layer.css` кладёт весь кит в `@layer rise`: стили приложения вне слоя сильнее при любой специфичности и порядке подключения. Порядок слоёв задаёт приложение: `@layer reset, rise, app;` (с Tailwind v4 — `@layer theme, base, rise, components, utilities;`). `styles.css` остаётся без слоя.
 
 ### 1.2. Семантические токены
 
@@ -116,9 +135,10 @@
 - Светлая тема — по умолчанию (`:root`) или `data-theme="light"`.
 - Тёмная тема — `data-theme="dark"` на `<html>` или на любом контейнере.
 - Тема «как в системе» — `data-theme="system"`: светлые токены, а при `prefers-color-scheme: dark` — тёмные. Переключает тему приложения `useColorMode()` (режимы `light`, `dark`, `system`, выбор сохраняется в localStorage), кнопка для шапки — `BaseColorModeButton`.
-- Семантические и производные токены (шкала радиусов, шрифт и радиус контролов) пересчитываются на каждом элементе с `data-theme`. Поэтому:
+- Семантические и производные токены (шкала радиусов, шрифт, радиус и отступы контролов) пересчитываются на каждом элементе с `data-theme`. Поэтому:
   - вложенная светлая область внутри тёмной работает;
   - палитру можно переопределить на отдельном контейнере с `data-theme`.
+- `prefers-reduced-motion: reduce` обнуляет длительности на `:root`, `[data-theme]` и `[data-rise-theme]`: тема на области не перебивает системную настройку.
 - `color-scheme` выставляется вместе с темой: нативные элементы (скроллбары, календарь `input[type=date]`) тоже темнеют.
 - Компоненты не пишут отдельных правил под `[data-theme='dark']`: всё различие — в токенах. Исключение — осознанные эффекты вроде шиммера скелетона.
 
@@ -187,7 +207,7 @@
 
 Контрол при `sizeScale` = 100: рамка 1px + отступ `--rise-control-padding-y` (5px) + строка 20px + отступ 5px + рамка 1px = 32px. Кнопка, поле, селект, поиск, пин-код и триггер даты одной высоты, поэтому их можно ставить в один ряд.
 
-Плотность всего интерфейса меняется токенами `--rise-control-padding-y/x` на `:root`, без пропов.
+Плотность всего интерфейса — сид `--rise-density` (1; компактно 0.75, просторно 1.25): отступы контролов `--rise-control-padding-y/x` и `--rise-control-gap` = базовый сид (`--rise-control-padding-y-base` 5px, `-x-base` 10px, `--rise-control-gap-base` 6px) × плотность — пересчитываются на `:root` и каждом `[data-theme]`; отступы поверхностей (карточки, окна, таблицы, меню) — через `space()`. Прямое `--rise-control-padding-y` на контейнере тоже работает — для его поддерева.
 
 Вложенный компонент без своего `sizeScale` наследует масштаб родителя: `--size-scale` — наследуемая CSS-переменная. Композитные компоненты передают `sizeScale` дочерним явно.
 
@@ -220,6 +240,9 @@
 9. **Без тем в компонентах.** Правила `[data-theme='dark'] .base-x` не пишем: тему делают токены.
 10. **Без мёртвых селекторов.** Модификатор, которого нет в шаблоне, удаляется. Пример — размерные `--sm/--md/--lg` у полей без пропа `size`.
 11. **Цвет компонента не перекрашивает вложенные.** Переменные `--custom-*` наследуются. Поэтому обёртки пользовательских слотов (тело карточки и модального окна, подвал, панель выпадающего списка) сбрасывают их миксином `@include reset-custom-color`. Так проп `color` красит сам компонент, но не кнопки и поля внутри него.
+12. **Токены компонента — через `ct()`.** Свойства, которые приложение захочет менять у всех экземпляров (фон, текст, рамка, радиус, тень, отступы, высота; у составных — ключевые части), читают токен уровня 3: `ct(button, bg, var(--rise-primary))` → `var(--rise-button-bg, var(--rise-primary))`. Общий миксин принимает имя компонента параметром: `@include field-box(input)` → `--rise-input-bg`, `-border`, `-border-focus`, `-radius`. 4–12 токенов на компонент; список генерирует `node scripts/check-component-tokens.mjs --write`.
+13. **Отступы поверхностей — `space()`.** Как `sz()`, но ещё × `--rise-density`: `padding: space(16px 20px)`. Кегль, иконки, рамки и отступы контролов — `sz()` (плотность контролов уже в их токенах).
+14. **БЭМ-классы — публичный API.** `.base-button__label`, `.base-card__header` можно править из CSS приложения (с `styles.layer.css` — без `!important`); переименование класса — изменение API (MIGRATION). Проп `ui` (`useUi(props, 'base-x')` из `@composables/base/useUi`) добавляет классы к частям: `ui('label')` → `'base-x__label <defaults.BaseX.ui.label> <props.ui.label>'`, `ui('root')` — корень; тип частей — `UiProp<BaseXPart>` и константа `X_PARTS` в `types/`. Проп `ui` не кладётся в `kitDefaults`: глобальные классы плагина склеиваются с классами экземпляра, а не заменяются.
 
 ## 4. Рецепты по семействам
 
@@ -327,18 +350,21 @@
 - `src/styles/_tokens.scss` — токены.
 - `src/styles/_motion.scss` — токены движения и пресеты `data-rise-motion` (раздел 6).
 - `src/styles/_mixins.scss` — миксины (таблица ниже).
-- `src/styles/_functions.scss` — `sz()`.
+- `src/styles/_functions.scss` — `sz()`, `space()`, `ct()`.
 - `src/styles/_variables.scss` — брейкпоинты и подключение токенов. Карта `$breakpoints` совпадает с `BREAKPOINTS` из `useBreakpoint` — это проверяет тест.
 - `src/styles/_fonts.scss` — `@font-face` для Inter Variable и JetBrains Mono Variable из `@fontsource-variable`; `src/styles/index.scss` — токены, шрифты и базовый шрифт страницы для Storybook (в `dist/styles.css` не входит, FOLLOW_UPS № 8).
 - `build/storybook/preview.scss` — раскладки примеров в Storybook (`story-row`, `story-col`, `story-grid`…).
 - `src/stories/` — страницы Foundations и хелперы stories.
 - `scripts/check-contrast.mjs` — проверка контраста токенов.
+- `scripts/check-component-tokens.mjs` — проверка токенов компонентов (уровень 3) и таблица [COMPONENT_TOKENS.md](./COMPONENT_TOKENS.md).
 
 ### Миксины и функции
 
 | Миксин или функция | Что делает |
 |---|---|
 | `sz($values)` | Умножает длины на `--size-scale`: `sz(10px 20px)` → `calc(10px * var(--size-scale, 1)) calc(20px * var(--size-scale, 1))`, ноль остаётся нулём |
+| `space($values)` | Отступы поверхностей: как `sz()`, но ещё × `--rise-density` — `space(16px)` → `calc(16px * var(--size-scale, 1) * var(--rise-density, 1))` |
+| `ct($component, $prop, $fallback)` | Токен компонента: `ct(button, bg, var(--rise-primary))` → `var(--rise-button-bg, var(--rise-primary))`; `$component: null` — только запасное значение |
 | `text-size($size)` | Кегль и интерлиньяж из шкалы: `2xs`, `xs`, `sm`, `base`, `lg`, `xl`, `2xl`, `3xl` |
 | `control-text` | Кегль и интерлиньяж контролов: 14/20 при `sizeScale` 100 |
 | `transition($props...)` | Переход перечисленных свойств с `--rise-duration` и `--rise-ease` |
@@ -351,7 +377,7 @@
 | `active` | Нажатие, не на отключённых элементах |
 | `focus-ring($offset: 2px)` | Кольцо 2px `--rise-focus-ring` при `:focus-visible`; `-2px` — кольцо внутри элемента |
 | `disabled-state` | Прозрачность `--rise-disabled-opacity` и `cursor: not-allowed` |
-| `field-box` | Коробка поля: рамка `border-accented`, радиус контрола, фон, который перекрашивает проп `color`, переходы и фокус |
+| `field-box($component: null)` | Коробка поля: рамка `border-accented`, радиус контрола, фон, который перекрашивает проп `color`, переходы и фокус; с именем компонента — его токены `bg`, `border`, `border-focus`, `radius` |
 | `field-focus($color)` | Фокус поля: рамка и кольцо 1px цвета роли, по умолчанию `--rise-primary` |
 | `field-label`, `field-required`, `field-error`, `field-hint` | Подпись поля, звёздочка обязательности, ошибка и подсказка |
 | `floating-surface` | Плавающая панель: фон, рамка, радиус md и тень lg |

@@ -1975,3 +1975,30 @@ API кита не меняется. В Storybook добавлены пример
 - **BaseAnimation `name="collapse"`**: содержимое обёрнуто в `<div class="base-animation__inner">`, корень получает класс `base-animation--collapse`; высота раскрывается строкой сетки `0fr ↔ 1fr` во всех браузерах (раньше — `interpolate-size`, только Chromium). Селекторы вида `.base-animation > .my-content` для `collapse` поменяйте на `.base-animation__inner > .my-content`.
 - **stylelint кита** (для тех, кто наследует конфиг): правило `declaration-property-value-disallowed-list` — предупреждение о переходах по свойствам раскладки и длительностях числом.
 
+## Задача theme-core: основа тем — сиды, токены компонентов, проп `ui`, слой CSS
+
+Всё аддитивно, вид по умолчанию прежний (значения новых сидов дают те же числа).
+
+- **Новые сиды на `:root`** (литералы, наследуются на любой элемент): `--rise-color-neutral-0` (`#fff` — фон светлой темы и инверсные белые), `--rise-density` (1), `--rise-shadow-strength` (1), `--rise-font-heading` (тот же стек, что `--rise-font-sans`), `--rise-control-padding-y-base` (5px), `--rise-control-padding-x-base` (10px), `--rise-control-gap-base` (6px).
+- **`--rise-control-padding-y/x` и `--rise-control-gap` стали производными**: `calc(<сид>-base * var(--rise-density))`, пересчитываются на `:root` и каждом `[data-theme]` (как шкала радиусов). Приложение, которое задавало `--rise-control-padding-y` на `:root`, внутри вложенного `[data-theme]` получит значения по умолчанию — задавайте `--rise-control-padding-y-base` или `--rise-density`. На контейнере без `data-theme` прямое `--rise-control-padding-y` работает как раньше.
+- **Тени**: альфа всех `--rise-shadow-*` умножается на `--rise-shadow-strength` (0 — без теней). Светлая `--rise-bg`, `--rise-text-inverted`, тёмная `--rise-bg-inverted`, `--rise-text-highlighted`, `--rise-border-inverted` — `var(--rise-color-neutral-0)` вместо `#fff`. Алиас `--font-family-heading` — `var(--rise-font-heading)`.
+- **`prefers-reduced-motion`** обнуляет `--rise-duration*` на `:root`, `[data-theme]` и `[data-rise-theme]`.
+- **Токены компонентов (уровень 3)** `--rise-<компонент>[-<часть>]-<свойство>[-<состояние>]` — кит только читает, с запасным значением; задаются на `:root`, в теме или на контейнере. Пилот — BaseButton, BaseInput, BaseCard, список — docs/design/COMPONENT_TOKENS.md:
+  - BaseButton: `--rise-button-bg`, `-bg-hover`, `-text` (вариант `default`), `-border`, `-radius`, `-shadow`, `-shadow-hover` (вариант `shadow`), `-padding-x`, `-padding-y`, `-font-weight`;
+  - BaseInput: `--rise-input-bg`, `-text`, `-border`, `-border-focus`, `-radius`, `-padding-x`, `-padding-y`;
+  - BaseCard: `--rise-card-bg`, `-text`, `-border`, `-border-hover`, `-radius`, `-shadow`, `-shadow-hover`, `-padding-x`, `-padding-y`, `-header-padding-x`, `-header-padding-y`, `-header-bg`.
+  ```css
+  :root { --rise-button-radius: 9999px; --rise-input-border-focus: var(--rise-success); }
+  .promo { --rise-card-bg: var(--rise-primary-soft); }
+  ```
+- **BaseCard: отступы × `--rise-density`** (и заданные пропом `padding`); `--rise-card-header-padding-*` сильнее пропа `padding` для шапки.
+- **Проп `ui`** у BaseButton, BaseInput, BaseCard: классы частей (`Partial<Record<'root' | <часть>, string>>`), добавляются к классам кита. Глобально — `createUiKitPlugin({ defaults: { BaseButton: { ui: { root: 'rounded-full' } } } })`; классы плагина и экземпляра склеиваются. Части — константы `BUTTON_PARTS`, `INPUT_PARTS`, `CARD_PARTS`, типы `BaseButtonPart`, `BaseInputPart`, `BaseCardPart`.
+  ```vue
+  <BaseCard title="Отчёт" :ui="{ header: 'bg-slate-50', body: 'prose' }" />
+  ```
+- **Composable `useUi(props, 'base-x')`** (`@composables/base/useUi`, тип `UiProp<Part>`, `UiClassFn<Part>`): `ui('label')` → `'base-x__label <плагин> <экземпляр>'`.
+- **БЭМ-классы частей — публичный API** с 2.0: переименование класса — изменение API.
+- **`@ramzes1385/rise-ui-kit/styles.layer.css`** — весь кит в `@layer rise` (README, «Подключение стилей»). `styles.css` не меняется.
+- **Телепорт и темы областей**: `useInheritedThemeAttrs(anchor, isActive)` и `readThemeAttrs(el)` (`@composables/app/useTeleportTarget`) — панель берёт с якоря `data-theme` и `data-rise-theme`. BaseDropdown, BaseTooltip, BaseDatePicker, контекстное меню BaseEditor и сообщений BaseChat, призрак перетаскивания BaseKanban и BaseList ставят на телепортированный элемент оба атрибута. `useInheritedTheme` оставлен.
+- **Миксин `field-box($component: null)`** принимает имя компонента для токенов; без имени вывод прежний. Функции SCSS `ct()` и `space()` — DESIGN_SYSTEM §3.
+- **`npm run lint:styles`** ещё и запускает `scripts/check-component-tokens.mjs`: после правки токенов компонента — `node scripts/check-component-tokens.mjs --write`.
