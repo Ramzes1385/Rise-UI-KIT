@@ -142,6 +142,17 @@ describe('BaseImageMap3D: 3D-вид', () => {
 		await waitFor(() => expect(rendererFactory).toHaveBeenCalledTimes(2))
 	})
 
+	it('setLayer: известный этаж — события; тот же или неизвестный — ничего', async () => {
+		const onLayerChange = vi.fn()
+		const { exposed } = renderMap({ onLayerChange })
+		await waitFor(() => expect(exposed.value).not.toBeNull())
+		exposed.value?.setLayer('f1')
+		exposed.value?.setLayer('nope')
+		expect(onLayerChange).not.toHaveBeenCalled()
+		exposed.value?.setLayer('f2')
+		expect(onLayerChange).toHaveBeenCalledWith('f2')
+	})
+
 	it('освобождает объекты сцены при уходе из 3D', async () => {
 		const geometry = new BoxGeometry()
 		const material = new MeshBasicMaterial()

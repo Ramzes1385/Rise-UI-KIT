@@ -4,6 +4,13 @@
 	gap: space(2);
 	min-width: 0;
 
+	&__toolbar {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: sz(8px);
+	}
+
 	&__viewport {
 		position: relative;
 		overflow: hidden;

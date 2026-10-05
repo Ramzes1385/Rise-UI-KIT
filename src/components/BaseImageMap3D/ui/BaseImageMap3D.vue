@@ -9,28 +9,38 @@
 			/></template>
 			<template v-if="$slots['directory-empty']" #directory-empty><slot name="directory-empty" /></template>
 		</BaseImageMap>
-		<div
-			v-else
-			ref="viewportRef"
-			class="base-image-map-3d__viewport"
-			:class="classes.viewport"
-			:style="viewportStyle"
-			tabindex="0"
-			role="group"
-			:aria-label="mapLabel"
-			:aria-roledescription="UI_IMAGE_MAP_3D.ROLE">
-			<canvas v-if="hasCanvas" ref="canvasRef" class="base-image-map-3d__canvas" :class="classes.canvas" aria-hidden="true" />
-		</div>
+		<template v-else>
+			<div v-if="layerOptions.length > 1" class="base-image-map-3d__toolbar" :class="classes.toolbar">
+				<BaseSegmented
+					:custom-class="classes.layers"
+					:model-value="activeLayer?.id"
+					:options="layerOptions"
+					:aria-label="UI_IMAGE_MAP.LAYERS"
+					@update:model-value="setLayer(String($event))" />
+			</div>
+			<div
+				ref="viewportRef"
+				class="base-image-map-3d__viewport"
+				:class="classes.viewport"
+				:style="viewportStyle"
+				tabindex="0"
+				role="group"
+				:aria-label="mapLabel"
+				:aria-roledescription="UI_IMAGE_MAP_3D.ROLE">
+				<canvas v-if="hasCanvas" ref="canvasRef" class="base-image-map-3d__canvas" :class="classes.canvas" aria-hidden="true" />
+			</div>
+		</template>
 		<p class="base-image-map-3d__status" :class="classes.status" role="status">{{ statusText }}</p>
 	</div>
 </template>
 
 <script setup lang="ts">
 import '../styles/BaseImageMap3D.style.scss'
-import { UI_IMAGE_MAP_3D } from '@/locales/messages'
 import { BaseImageMap } from '@components/BaseImageMap'
+import { BaseSegmented } from '@components/BaseSegmented'
 import { kitDefaults } from '@composables/base/useDefaults'
 import { useBaseImageMap3D } from '../model/useBaseImageMap3D'
+import { UI_IMAGE_MAP, UI_IMAGE_MAP_3D } from '@/locales/messages'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseImageMap3DEmits, BaseImageMap3DProps, BaseImageMap3DSlots } from '../types/BaseImageMap3D.types'
 
@@ -58,6 +68,9 @@ const props = withDefaults(
 		hasRoutes: false,
 		route: null,
 		view: '3d',
+		camera: 'isometric',
+		layerMode: 'stack',
+		hasOrbit: true,
 		variant: DEFAULT_VARIANT,
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
@@ -79,6 +92,9 @@ const {
 	viewportStyle,
 	statusText,
 	mapBindings,
+	layerOptions,
+	activeLayer,
+	setLayer,
 	exposed,
 } = useBaseImageMap3D(props, emit)
 

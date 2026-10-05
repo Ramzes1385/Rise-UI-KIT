@@ -1,7 +1,8 @@
-import type { Ref } from 'vue'
-import type { ImageMap3DData } from '../imageMap3dData.types'
-import type { ImageMap3DRendererFactory } from '../BaseImageMap3D.types'
+import type { Ref, ShallowRef } from 'vue'
+import type { Color, Group, Mesh, MeshStandardMaterial, Scene } from 'three'
 import type { BaseImageMapProps } from '@components/BaseImageMap/types/BaseImageMap.types'
+import type { ImageMap3DData, ImageMap3DLayer, ImageMap3DObject } from '../imageMap3dData.types'
+import type { ImageMap3DLayerMode, ImageMap3DRenderer, ImageMap3DRendererFactory } from '../BaseImageMap3D.types'
 
 /** Правило проверки 3D-поля данных */
 export type ImageMap3DFieldRule = 'number' | 'positive' | 'nonNegative' | 'text' | 'vector' | 'model' | 'object'
@@ -31,4 +32,122 @@ export interface ImageMap3DViewportOptions {
 	getFactory: () => ImageMap3DRendererFactory
 	/** Рендерер не создался */
 	onError: (error: unknown) => void
+}
+
+/** Состояние объекта в сцене: обычное, под указателем или в фокусе, выбранное */
+export type SceneObjectState = 'base' | 'hover' | 'active'
+
+/** Настройки сцены после проверки `scene3d`: неверные поля заменены умолчаниями */
+export interface SceneSettings {
+	/** Большая сторона слоёв — масштаб сцены */
+	extent: number
+	/** Расстояние между этажами стопкой */
+	floorGap: number
+	/** Толщина плиты этажа */
+	floorThickness: number
+	/** Высота выдавливания объектов без `height3d` */
+	objectHeight: number
+}
+
+/** Цвет и непрозрачность материала в одном состоянии */
+export interface SceneStateColor {
+	/** Цвет */
+	color: Color
+	/** Непрозрачность 0–1 */
+	opacity: number
+}
+
+/** CSS-цвет (в том числе `var(--rise-*)`) → цвет three в теме области карты */
+export type SceneColorResolver = (css: string) => Color
+
+/** Объект карты в сцене: его меши и материал состояний */
+export interface SceneObjectEntry {
+	/** Id объекта */
+	id: string
+	/** Id слоя объекта */
+	layerId: string
+	/** Общий материал всех мешей объекта; цвет и непрозрачность меняются по состоянию */
+	material: MeshStandardMaterial
+	/** Меши объекта: выдавленная фигура или узлы модели этажа */
+	meshes: Mesh[]
+	/** Откуда меши: выдавливание фигуры или модель этажа */
+	source: 'shape' | 'model'
+	/** Цвета состояний */
+	colors: Record<SceneObjectState, SceneStateColor>
+	/** Текущее состояние */
+	state: SceneObjectState
+}
+
+/** Этаж в сцене */
+export interface SceneLayerEntry {
+	/** Id слоя */
+	id: string
+	/** Группа этажа: начало — левый верхний угол плана на высоте этажа */
+	group: Group
+	/** Высота этажа по оси Y */
+	elevation: number
+	/** Материалы пола: плита и картинка слоя */
+	floorMaterials: MeshStandardMaterial[]
+	/** Непрозрачность этажа: 1 — активный или режим `single`; меньше — неактивный в стопке */
+	opacity: number
+}
+
+/** Содержимое сцены карты */
+export interface SceneContent {
+	/** Корень содержимого: этажи и свет */
+	root: Group
+	/** Настройки сцены */
+	settings: SceneSettings
+	/** Этажи по id */
+	layers: Map<string, SceneLayerEntry>
+	/** Объекты по id */
+	objects: Map<string, SceneObjectEntry>
+}
+
+/** Объект для выдавливания: данные, слой и цвета состояний */
+export interface SceneShapeItem {
+	/** Объект карты */
+	object: ImageMap3DObject
+	/** Id слоя */
+	layerId: string
+	/** Цвета состояний */
+	colors: Record<SceneObjectState, SceneStateColor>
+}
+
+/** Загрузка поверхности этажа: SVG слоя, объекты `svg` и текстура пола */
+export interface SceneSurfaceJob {
+	/** Содержимое сцены */
+	content: SceneContent
+	/** Данные карты */
+	data: ImageMap3DData
+	/** Слой */
+	layer: ImageMap3DLayer
+	/** Материал картинки пола */
+	floor: MeshStandardMaterial
+	/** Цвета темы */
+	resolve: SceneColorResolver
+	/** Отмена: сцена перестроена или освобождена */
+	signal: AbortSignal
+	/** Что-то добавилось — нужен кадр */
+	onUpdate: () => void
+}
+
+/** Параметры содержимого сцены */
+export interface SceneOptions {
+	/** Сцена three */
+	scene: Scene
+	/** Рендерер: появился — сцена строится, пропал — освобождается */
+	renderer: Readonly<ShallowRef<ImageMap3DRenderer | null>>
+	/** Область карты: по её теме разрешаются цвета */
+	hostRef: Readonly<Ref<HTMLElement | null>>
+	/** Данные карты */
+	getData: () => ImageMap3DData
+	/** Id активного этажа */
+	getLayerId: () => string | undefined
+	/** Режим этажей */
+	getLayerMode: () => ImageMap3DLayerMode
+	/** Id выбранного объекта */
+	getActive: () => string | null
+	/** Запросить кадр */
+	invalidate: () => void
 }

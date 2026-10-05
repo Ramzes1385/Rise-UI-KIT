@@ -1,6 +1,8 @@
 import { warn3dData } from './validate3d'
 import { hasWebGL } from './webglSupport'
+import { useImageMap3DLayer } from './useImageMap3DLayer'
 import { createWebGLRenderer } from './scene/createRenderer'
+import { useImageMap3DScene } from './viewport/useImageMap3DScene'
 import { UI_IMAGE_MAP, UI_IMAGE_MAP_3D } from '@/locales/messages'
 import { useImageMap3DViewport } from './viewport/useImageMap3DViewport'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
@@ -14,7 +16,7 @@ import type {
 	ImageMap3DView,
 } from '../types/BaseImageMap3D.types'
 
-const OWN_PROPS = new Set(['view', 'rendererFactory', 'customClass'])
+const OWN_PROPS = new Set(['view', 'rendererFactory', 'customClass', 'camera', 'layerMode', 'hasOrbit', 'configureLoader'])
 
 const FORWARDED_EVENTS = [
 	'update:active',
@@ -87,8 +89,19 @@ function useViewModel(props: ImageMap3DProps, emit: BaseImageMap3DEmits) {
 	return { view, setView }
 }
 
+function useViewportView(props: ImageMap3DProps) {
+	const firstLayer = computed(() => props.data.layers[0])
+	return {
+		mapLabel: computed(() => props.ariaLabel ?? firstLayer.value?.title ?? UI_IMAGE_MAP.LABEL),
+		viewportStyle: computed(() => {
+			if (props.height) return { height: props.height }
+			return firstLayer.value ? { aspectRatio: `${firstLayer.value.width} / ${firstLayer.value.height}` } : {}
+		}),
+	}
+}
+
 export function useBaseImageMap3D(props: ImageMap3DProps, emit: BaseImageMap3DEmits) {
-	const base = useStandardBaseComponent('base-image-map-3d', props, ['root', 'viewport', 'canvas', 'status'])
+	const base = useStandardBaseComponent('base-image-map-3d', props, ['root', 'toolbar', 'layers', 'viewport', 'canvas', 'status'])
 	const viewportRef = useTemplateRef<HTMLElement>('viewportRef')
 	const canvasRef = useTemplateRef<HTMLCanvasElement>('canvasRef')
 	const fallback = useFallback(emit)
@@ -96,12 +109,7 @@ export function useBaseImageMap3D(props: ImageMap3DProps, emit: BaseImageMap3DEm
 
 	const shownView = computed<ImageMap3DView>(() => (view.value === '2d' || fallback.reason.value ? '2d' : '3d'))
 	const hasCanvas = computed(() => shownView.value === '3d' && fallback.isSupported.value === true)
-	const firstLayer = computed(() => props.data.layers[0])
-	const mapLabel = computed(() => props.ariaLabel ?? firstLayer.value?.title ?? UI_IMAGE_MAP.LABEL)
-	const viewportStyle = computed(() => {
-		if (props.height) return { height: props.height }
-		return firstLayer.value ? { aspectRatio: `${firstLayer.value.width} / ${firstLayer.value.height}` } : {}
-	})
+	const { mapLabel, viewportStyle } = useViewportView(props)
 
 	const viewport = useImageMap3DViewport({
 		canvasRef,
@@ -113,9 +121,19 @@ export function useBaseImageMap3D(props: ImageMap3DProps, emit: BaseImageMap3DEm
 		},
 	})
 
+	const layers = useImageMap3DLayer(props, emit)
+	useImageMap3DScene({
+		...viewport,
+		hostRef: viewportRef,
+		getData: () => props.data,
+		getLayerId: () => layers.activeLayer.value?.id,
+		getLayerMode: () => props.layerMode,
+		getActive: () => props.active,
+	})
+
 	watch(() => props.data, warn3dData, { immediate: true })
 
-	const exposed: BaseImageMap3DExpose = { invalidate: viewport.invalidate, setView }
+	const exposed: BaseImageMap3DExpose = { invalidate: viewport.invalidate, setView, setLayer: layers.setLayer }
 
 	return {
 		...base,
@@ -125,6 +143,9 @@ export function useBaseImageMap3D(props: ImageMap3DProps, emit: BaseImageMap3DEm
 		viewportStyle,
 		statusText: fallback.statusText,
 		mapBindings: useMapBindings(props, emit),
+		layerOptions: layers.layerOptions,
+		activeLayer: layers.activeLayer,
+		setLayer: layers.setLayer,
 		exposed,
 	}
 }

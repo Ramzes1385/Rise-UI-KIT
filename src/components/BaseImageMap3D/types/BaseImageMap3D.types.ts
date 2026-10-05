@@ -1,5 +1,6 @@
 import type { Camera, Object3D } from 'three'
 import type { ImageMap3DData } from './imageMap3dData.types'
+import type { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import type {
@@ -14,6 +15,18 @@ export const IMAGE_MAP_3D_VIEWS = ['3d', '2d'] as const
 
 /** Вид карты */
 export type ImageMap3DView = (typeof IMAGE_MAP_3D_VIEWS)[number]
+
+/** Этажи в 3D: stack — стопкой, неактивные полупрозрачны; single — виден только активный этаж */
+export const IMAGE_MAP_3D_LAYER_MODES = ['stack', 'single'] as const
+
+/** Режим этажей */
+export type ImageMap3DLayerMode = (typeof IMAGE_MAP_3D_LAYER_MODES)[number]
+
+/** Камера: isometric — ортографическая изометрия (вид Mapplic); perspective — перспектива */
+export const IMAGE_MAP_3D_CAMERAS = ['isometric', 'perspective'] as const
+
+/** Вид камеры */
+export type ImageMap3DCamera = (typeof IMAGE_MAP_3D_CAMERAS)[number]
 
 /**
  * Рендерер сцены: подмножество `WebGLRenderer`, которым пользуется карта.
@@ -44,7 +57,7 @@ export const IMAGE_MAP_3D_FALLBACK_REASONS = ['unsupported', 'error'] as const
 export type ImageMap3DFallbackReason = (typeof IMAGE_MAP_3D_FALLBACK_REASONS)[number]
 
 /** Элементы для `customClass` */
-type ImageMap3DClassKey = 'root' | 'viewport' | 'canvas' | 'status'
+type ImageMap3DClassKey = 'root' | 'toolbar' | 'layers' | 'viewport' | 'canvas' | 'status'
 
 /** Пропсы BaseImageMap, которых у 3D-карты нет или они свои: колесо, предел и начальная область масштаба — у камеры */
 type ImageMap2DOnlyProp = 'data' | 'wheelZoom' | 'maxZoom' | 'initArea' | 'variant' | 'sizeScale' | 'color' | 'customClass'
@@ -60,6 +73,17 @@ export interface BaseImageMap3DProps
 	view?: ImageMap3DView
 	/** Фабрика рендерера; по умолчанию — `WebGLRenderer` three.js со сглаживанием и прозрачным фоном */
 	rendererFactory?: ImageMap3DRendererFactory
+	/** Камера: `isometric` (по умолчанию, ортографическая изометрия) или `perspective` */
+	camera?: ImageMap3DCamera
+	/** Этажи: `stack` (по умолчанию) — стопкой, неактивные полупрозрачны; `single` — только активный этаж */
+	layerMode?: ImageMap3DLayerMode
+	/** Вращение и наклон сцены мышью и касанием; по умолчанию `true`. Масштаб и сдвиг работают всегда */
+	hasOrbit?: boolean
+	/**
+	 * Настройка загрузчика моделей этажей перед загрузкой: подключить DRACO, KTX2 или meshopt приложения.
+	 * Кит сам эти декодеры не подключает
+	 */
+	configureLoader?: (loader: GLTFLoader) => void
 }
 
 /** Пропсы после `withDefaults` */
@@ -86,6 +110,9 @@ export type ImageMap3DProps = PropsWithDefaults<
 	| 'hasRoutes'
 	| 'route'
 	| 'view'
+	| 'camera'
+	| 'layerMode'
+	| 'hasOrbit'
 >
 
 /**
@@ -111,4 +138,6 @@ export interface BaseImageMap3DExpose {
 	invalidate: () => void
 	/** Показать вид: `3d` или `2d` (то же, что `v-model:view`) */
 	setView: (view: ImageMap3DView) => void
+	/** Показать этаж по id (то же, что `v-model:layer`) */
+	setLayer: (id: string) => void
 }
