@@ -65,6 +65,8 @@ export interface SlideSpeechTarget {
 	text: string
 	/** Ключ кэша: голос, язык и текст */
 	key: string
+	/** Поставщик на момент расчёта */
+	provider: PresentationSpeechProvider
 }
 
 /** Фраза слайда, которую озвучивает сервис */
@@ -75,6 +77,8 @@ export interface SlideSpeechTarget {
 	text: string
 	/** Ключ кэша: голос, язык и текст */
 	key: string
+	/** Поставщик на момент расчёта */
+	provider: PresentationSpeechProvider
 }
 
 /** Запись кэша озвучки: запрос в полёте или готовый адрес */

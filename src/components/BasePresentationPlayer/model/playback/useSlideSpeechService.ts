@@ -23,11 +23,13 @@ function useSpeechCache() {
 		remove,
 		peek: (key: string): SlideSpeechCacheEntry | undefined => entries.get(key),
 		pending: (): SlideSpeechCacheEntry[] => [...entries.values()].filter(entry => !entry.url),
-		touch(key: string): void {
+		use(key: string): SlideSpeechCacheEntry | undefined {
 			const entry = entries.get(key)
-			if (!entry) return
-			entries.delete(key)
-			entries.set(key, entry)
+			if (entry) {
+				entries.delete(key)
+				entries.set(key, entry)
+			}
+			return entry
 		},
 		add(entry: SlideSpeechCacheEntry): void {
 			remove(entry.key)
@@ -49,7 +51,7 @@ function useSpeechState() {
 		failed,
 		bump: (): void => void (version.value += 1),
 		markFailed(index: number): void {
-			if (!failed.value.includes(index)) failed.value = [...failed.value, index]
+			failed.value = [...new Set([...failed.value, index])]
 		},
 		clearFailed(index: number): void {
 			failed.value = failed.value.filter(item => item !== index)
@@ -69,10 +71,11 @@ function toUrl(result: Blob | string): Pick<SlideSpeechCacheEntry, 'url' | 'isOb
 function createTarget(options: SlideSpeechServiceOptions, failed: () => number[]) {
 	return (index: number): SlideSpeechTarget | undefined => {
 		const slide = options.slides()[index]
-		if (!slide || !options.provider() || options.isShared() || failed().includes(index)) return undefined
+		const provider = options.provider()
+		if (!slide || !provider || options.isShared() || failed().includes(index)) return undefined
 		if (safeUrl(slide.audio) || safeUrl(slide.video)) return undefined
 		const text = slide.speech?.trim()
-		return text ? { index, text, key: [options.voice() ?? '', options.lang(), text].join('\u0000') } : undefined
+		return text ? { index, text, provider, key: [options.voice() ?? '', options.lang(), text].join('\u0000') } : undefined
 	}
 }
 
@@ -96,8 +99,6 @@ function useSpeechRequests(
 	return {
 		fail,
 		start(target: SlideSpeechTarget): void {
-			const provider = options.provider()
-			if (!provider) return
 			const controller = new AbortController()
 			const entry: SlideSpeechCacheEntry = {
 				key: target.key,
@@ -111,7 +112,7 @@ function useSpeechRequests(
 			state.bump()
 			const timer = setTimeout(() => fail(entry, new DOMException('Speech synthesis timed out', 'TimeoutError')), TIMEOUT_MS)
 			Promise.resolve()
-				.then(() => provider.synthesize(target.text, request))
+				.then(() => target.provider.synthesize(target.text, request))
 				.then(result => settle(entry, result))
 				.catch((error: unknown) => fail(entry, error))
 				.finally(() => clearTimeout(timer))
@@ -135,7 +136,9 @@ function useSpeechSync(
 		const stale = cache.pending().filter(entry => !targets.some(target => target.key === entry.key))
 		stale.forEach(entry => cache.remove(entry.key))
 		if (stale.length) parts.bump()
-		targets.forEach(target => (cache.peek(target.key) ? cache.touch(target.key) : parts.start(target)))
+		targets.forEach(target => {
+			if (!cache.use(target.key)) parts.start(target)
+		})
 	}
 }
 
