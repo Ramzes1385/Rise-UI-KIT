@@ -32,7 +32,7 @@ export const Fallback2D: StoryObj<typeof meta> = {
 		setup: useStorySetup(args, { models: MODELS }),
 		template,
 	}),
-	play: async ({ canvas, canvasElement, userEvent, args }) => {
+	play: async ({ canvas, canvasElement, userEvent }) => {
 		await expect(canvasElement.querySelector('canvas')).toBeNull()
 		const shop = await canvas.findByRole('button', { name: 'Магазин 101' })
 		await tabTo(shop, userEvent)
@@ -41,6 +41,6 @@ export const Fallback2D: StoryObj<typeof meta> = {
 		await expect(dialog).toBeVisible()
 		await userEvent.keyboard('{Escape}')
 		await waitFor(() => expect(shop).toHaveFocus())
-		await expect(args['onUpdate:active']).toHaveBeenCalled()
+		await expect(shop).toHaveAttribute('aria-current', 'true')
 	},
 }

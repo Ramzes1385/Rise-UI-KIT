@@ -34,7 +34,7 @@ export const RendererFallback: StoryObj<typeof meta> = {
 		template,
 	}),
 	play: async ({ canvas, canvasElement, args }) => {
-		await waitFor(() => expect(canvas.getByRole('status')).toHaveTextContent('Не удалось запустить 3D — показан план'))
+		await waitFor(() => expect(canvas.getByText('Не удалось запустить 3D — показан план')).toHaveAttribute('role', 'status'))
 		await expect(args.onFallback).toHaveBeenCalledWith('error')
 		await expect(canvasElement.querySelector('canvas')).toBeNull()
 		await expect(await canvas.findByRole('button', { name: 'Магазин 101' })).toBeVisible()
