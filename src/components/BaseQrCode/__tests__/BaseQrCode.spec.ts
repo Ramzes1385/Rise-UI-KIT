@@ -5,9 +5,9 @@ import { render, screen } from '@testing-library/vue'
 const URL = 'https://rise-ui.dev'
 
 describe('BaseQrCode unit', () => {
-	it('картинка с именем «QR-код: <текст>» и SVG без собственной роли', () => {
+	it('картинка с именем «QR-код: ссылка на <хост>» и SVG без собственной роли', () => {
 		const { container } = render(BaseQrCode, { props: { value: URL } })
-		expect(screen.getByRole('img', { name: `QR-код: ${URL}` })).toBeInTheDocument()
+		expect(screen.getByRole('img', { name: 'QR-код: ссылка на rise-ui.dev' })).toBeInTheDocument()
 		expect(container.querySelector('svg')).toHaveAttribute('aria-hidden', 'true')
 		expect(container.querySelector('svg')).toHaveAttribute('viewBox', '0 0 33 33')
 		expect(container.querySelector('.base-qr-code__finder')?.getAttribute('d')).toMatch(
@@ -53,7 +53,8 @@ describe('BaseQrCode unit', () => {
 
 	it('слишком длинный текст: сообщение вместо кода и то же имя для скринридера', () => {
 		const { container } = render(BaseQrCode, { props: { value: 'a'.repeat(300) } })
-		expect(screen.getByRole('img', { name: 'Текст слишком длинный для QR-кода' })).toHaveClass('base-qr-code--overflow')
+		expect(screen.getByRole('img', { name: 'Текст слишком длинный для QR-кода' })).toHaveClass('base-qr-code__box')
+		expect(container.firstElementChild).toHaveClass('base-qr-code--overflow')
 		expect(container.querySelector('svg')).toBeNull()
 		expect(container.querySelector('.base-qr-code__message')).toHaveTextContent('Текст слишком длинный для QR-кода')
 	})
@@ -104,7 +105,7 @@ describe('BaseQrCode unit', () => {
 		expect(image).toHaveAttribute('href', '/logo.svg')
 		expect([image?.getAttribute('x'), image?.getAttribute('y'), image?.getAttribute('width')]).toEqual(['18.43', '18.43', '8.14'])
 		expect(image).toHaveAttribute('preserveAspectRatio', 'xMidYMid meet')
-		expect(screen.getByRole('img', { name: `QR-код: ${URL}` })).toBeInTheDocument()
+		expect(screen.getByRole('img', { name: 'QR-код: ссылка на rise-ui.dev' })).toBeInTheDocument()
 	})
 
 	it('логотип: errorCorrection — нижняя граница уровня, logoSize ограничен 0.1–0.3', async () => {

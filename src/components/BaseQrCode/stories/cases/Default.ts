@@ -12,7 +12,7 @@ export const Default: StoryObj<typeof meta> = {
 	},
 	render: renderQr,
 	play: async ({ canvas, canvasElement }) => {
-		await expect(canvas.getByRole('img', { name: 'QR-код: https://ramzes1385.github.io/Rise-UI-KIT/' })).toBeVisible()
+		await expect(canvas.getByRole('img', { name: 'QR-код: ссылка на ramzes1385.github.io' })).toBeVisible()
 		await expect(canvasElement.querySelector('svg')).toHaveAttribute('viewBox', '0 0 37 37')
 	},
 }

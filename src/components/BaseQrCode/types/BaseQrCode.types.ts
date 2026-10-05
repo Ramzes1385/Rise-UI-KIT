@@ -24,7 +24,7 @@ export const QR_FINDER_SHAPES = ['square', 'rounded', 'circle'] as const
 /** Форма «глазков» */
 export type QrFinderShape = (typeof QR_FINDER_SHAPES)[number]
 
-/** Готовый QR-код: версия (1–10), размер в модулях и модули строками сверху вниз, true — тёмный */
+/** Готовый QR-код: версия (1–40), размер в модулях и модули строками сверху вниз, true — тёмный */
 export interface QrMatrix {
 	/** Версия QR-кода: 1 — 21×21 модуль, каждая следующая — на 4 модуля больше */
 	version: number
@@ -60,7 +60,7 @@ export interface QrLogoArea {
 
 /** Версия и уровень, с которыми строится матрица; маска — если нужна конкретная */
 export interface QrEncodeOptions {
-	/** Версия QR-кода 1–10 */
+	/** Версия QR-кода 1–40 */
 	version: number
 	/** Уровень коррекции ошибок */
 	level: QrErrorLevel
@@ -116,7 +116,10 @@ export interface QrSvgParts {
 export interface BaseQrCodeProps extends BaseComponentProps<(typeof QR_CODE_VARIANTS)[number], 'root'> {
 	/** Текст или адрес: кодируется байтами UTF-8, до 271 байта при уровне L и до 119 при H */
 	value: string
-	/** Имя картинки для скринридера; по умолчанию «QR-код: <value>» */
+	/**
+	 * Имя картинки для скринридера. По умолчанию текст кода в имя не попадает: для ссылки http(s) —
+	 * «QR-код: ссылка на <хост>», для остального — «QR-код» (секреты otpauth:// и токены не читаются вслух)
+	 */
 	label?: string
 	/** Уровень коррекции ошибок: L, M, Q, H; по умолчанию M, с логотипом — H */
 	errorCorrection?: QrErrorLevel
@@ -141,6 +144,31 @@ export interface BaseQrCodeProps extends BaseComponentProps<(typeof QR_CODE_VARI
 	logo?: string
 	/** Сторона логотипа — доля стороны кода без полей: от 0.1 до 0.3, по умолчанию 0.22 */
 	logoSize?: number
+	/**
+	 * Секретный код (ключ двухфакторной защиты, токен входа): вместо кода — размытая заглушка не из данных
+	 * и кнопка «Показать QR-код»; настоящие модули попадают в DOM только после нажатия
+	 */
+	isConcealed?: boolean
+	/** Через сколько миллисекунд после показа снова скрыть секретный код; 0 или не задано — не скрывать */
+	revealTimeout?: number
+	/**
+	 * Подпись под кодом: true — весь текст (до двух строк), 'host' — только хост ссылки http(s), чтобы человек видел,
+	 * куда ведёт код, до сканирования; для не-ссылок 'host' ничего не выводит. У скрытого кода подписи нет
+	 */
+	showValue?: QrShowValue
+}
+
+/** Подпись под кодом: false — нет, true — весь текст, 'host' — хост ссылки */
+export type QrShowValue = boolean | 'host'
+
+/**
+ * События компонента BaseQrCode
+ */
+export interface BaseQrCodeEmits {
+	/** Секретный код показан: кнопкой или методом reveal() */
+	(event: 'reveal'): void
+	/** Секретный код снова скрыт: по revealTimeout или методом conceal() */
+	(event: 'conceal'): void
 }
 
 /**
@@ -149,4 +177,8 @@ export interface BaseQrCodeProps extends BaseComponentProps<(typeof QR_CODE_VARI
 export interface BaseQrCodeExpose {
 	/** SVG-разметка кода с фоном — для скачивания или вставки в документ; пустая строка, если текст не помещается */
 	getSvg: () => string
+	/** Показать секретный код */
+	reveal: () => void
+	/** Скрыть код за заглушкой */
+	conceal: () => void
 }

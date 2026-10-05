@@ -1,14 +1,23 @@
 import { qrSvgMarkup } from './draw/qrSvg'
 import { encodeQr } from './encode/qrCode'
+import { useQrReveal } from './useQrReveal'
 import { UI_QR_CODE } from '@/locales/messages'
-import { formatMessage } from '@/locales/state'
 import { computed, type ComputedRef } from 'vue'
+import { captionText, defaultLabel } from './qrLabel'
+import { placeholderParts } from './draw/qrPlaceholder'
 import { finderPath, modulePath } from './draw/qrShapes'
 import { clampLogoShare, encodeWithLogo } from './encode/qrLogo'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
-import type { BaseQrCodeProps, QrLogoCode, QrSvgParts } from '../types/BaseQrCode.types'
+import type { BaseQrCodeEmits, BaseQrCodeProps, QrLogoCode, QrSvgParts } from '../types/BaseQrCode.types'
 
 const round = (value: number): number => Math.round(value * 1000) / 1000
+
+const marginOf = (props: BaseQrCodeProps): number => Math.max(0, Math.round(props.margin ?? 4))
+
+function colorsOf(props: BaseQrCodeProps): QrSvgParts['colors'] {
+	const module = props.moduleColor ?? '#000000'
+	return { background: props.backgroundColor ?? '#ffffff', module, finder: props.finderColor ?? module }
+}
 
 function useQrCode(props: BaseQrCodeProps): ComputedRef<QrLogoCode | null> {
 	return computed(() => {
@@ -28,14 +37,13 @@ function logoBox(props: BaseQrCodeProps, code: QrLogoCode, margin: number): QrSv
 function useQrParts(props: BaseQrCodeProps, code: ComputedRef<QrLogoCode | null>): ComputedRef<QrSvgParts | null> {
 	return computed(() => {
 		if (!code.value) return null
-		const margin = Math.max(0, Math.round(props.margin ?? 4))
+		const margin = marginOf(props)
 		const { matrix, area } = code.value
 		const moduleShape = props.moduleShape ?? 'square'
 		const finderShape = props.finderShape ?? 'square'
-		const module = props.moduleColor ?? '#000000'
 		return {
 			viewSize: matrix.size + margin * 2,
-			colors: { background: props.backgroundColor ?? '#ffffff', module, finder: props.finderColor ?? module },
+			colors: colorsOf(props),
 			modules: modulePath(matrix.modules, { margin, shape: moduleShape, area }),
 			finder: finderPath(matrix.size, margin, finderShape),
 			crisp: { modules: moduleShape === 'square', finder: finderShape === 'square' },
@@ -44,16 +52,21 @@ function useQrParts(props: BaseQrCodeProps, code: ComputedRef<QrLogoCode | null>
 	})
 }
 
-export function useBaseQrCode(props: BaseQrCodeProps) {
+export function useBaseQrCode(props: BaseQrCodeProps, emit: BaseQrCodeEmits) {
 	const parts = useQrParts(props, useQrCode(props))
+	const { isHidden, reveal, conceal, revealByButton } = useQrReveal(props, emit)
 	return {
 		...useStandardBaseComponent('base-qr-code', props, ['root']),
 		parts,
+		isHidden,
+		revealByButton,
+		view: computed(() => (isHidden.value ? placeholderParts(marginOf(props), colorsOf(props)) : parts.value)),
 		background: computed(() => props.backgroundColor ?? '#ffffff'),
+		caption: computed(() => captionText(props, isHidden.value)),
 		accessibleLabel: computed(() => {
 			if (!parts.value) return UI_QR_CODE.TOO_LONG
-			return props.label ?? formatMessage(UI_QR_CODE.LABEL, { value: props.value })
+			return props.label ?? defaultLabel(props.value)
 		}),
-		getSvg: (): string => (parts.value ? qrSvgMarkup(parts.value) : ''),
+		exposed: { getSvg: (): string => (parts.value ? qrSvgMarkup(parts.value) : ''), reveal, conceal },
 	}
 }
