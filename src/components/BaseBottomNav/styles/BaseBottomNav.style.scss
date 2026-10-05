@@ -77,16 +77,19 @@
 	}
 
 	&--notched {
+		display: flow-root;
 		border-top: none;
 		background-color: transparent;
 	}
 
 	&--notched &__bar {
+		border-top: 1px solid var(--rise-border);
 		@include custom-bg(background-color, var(--rise-bg));
 	}
 
 	&--notched &__bar--notched {
 		margin-top: calc(var(--bottom-nav-primary-size) / 2);
+		border-top: none;
 		background-color: transparent;
 	}
 

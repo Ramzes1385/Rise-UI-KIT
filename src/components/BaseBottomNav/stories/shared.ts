@@ -35,3 +35,11 @@ export const LONG_ITEMS: BottomNavItem[] = [
 	{ value: 'calendar', label: 'Календарь встреч', icon: 'calendar' },
 	{ value: 'settings', label: 'Настройки учётной записи', icon: 'settings' },
 ]
+
+export const PRIMARY_ITEMS: BottomNavItem[] = [
+	{ value: 'home', label: 'Главная', icon: 'home' },
+	{ value: 'search', label: 'Поиск', icon: 'search' },
+	{ value: 'create', label: 'Создать', icon: 'plus', isPrimary: true },
+	{ value: 'chats', label: 'Чаты', icon: 'comment', badge: 3 },
+	{ value: 'settings', label: 'Настройки', icon: 'settings' },
+]
