@@ -1,3 +1,4 @@
+import type { Component } from 'vue'
 import type { ARG_GROUP } from '../controls/argTypes'
 import type { userEvent as defaultUserEvent } from 'storybook/test'
 
@@ -84,7 +85,7 @@ export interface MotionPresetsStoryOptions {
 	 */
 	item: string
 	/** Компоненты шаблона, обязательно с `BaseButton` для кнопки «Повторить» */
-	components: Readonly<Record<string, unknown>>
+	components: Readonly<Record<string, Component>>
 	/** Что импортировать из пакета кита для «Show code» (`BaseButton` добавляется сам) */
 	imports: readonly string[]
 	/** Состояние шаблона сверх `replay` (`{ isOpen: false }`) */

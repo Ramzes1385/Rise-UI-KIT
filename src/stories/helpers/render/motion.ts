@@ -63,7 +63,7 @@ export function motionPresetsStory(options: MotionPresetsStoryOptions) {
 	const state = { replay: 0, ...options.state }
 	return {
 		template,
-		render: (args: Record<string, unknown>) => ({
+		render: <TArgs extends object>(args: TArgs) => ({
 			components: options.components,
 			setup: useStorySetup(args, { state, slots: options.slots }),
 			template,

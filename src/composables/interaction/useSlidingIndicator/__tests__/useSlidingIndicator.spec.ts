@@ -14,7 +14,10 @@ class FakeResizeObserver {
 	unobserve = vi.fn((el: Element) => this.observed.delete(el))
 	disconnect = vi.fn(() => this.observed.clear())
 
-	constructor(public callback: ResizeCallback) {
+	callback: ResizeCallback
+
+	constructor(callback: ResizeCallback) {
+		this.callback = callback
 		observers.push(this)
 	}
 }
