@@ -27,5 +27,5 @@ export const Theming = cases.Theming
 export const Loading = cases.Loading
 export const Seo = cases.Seo
 export const Placeholder = cases.Placeholder
-export const Languages = cases.Languages
+export const Language = cases.Language
 export const OfficeList = cases.OfficeList
