@@ -96,7 +96,7 @@
 - `--rise-font-weight-*` — начертания.
 - `--rise-control-*` — отступы, шрифт и радиус контролов.
 - `--rise-disabled-opacity` — прозрачность неактивных элементов.
-- `--rise-duration-*`, `--rise-ease*` — длительности и кривые анимаций; при `prefers-reduced-motion: reduce` длительности становятся 0.01ms.
+- `--rise-duration-*`, `--rise-ease*`, `--rise-motion-*` — длительности, кривые, сдвиг, масштаб и задержки анимаций; пресеты движения и «уменьшить движение» — раздел 6.
 - `--rise-chart-1 … 8` — восемь категориальных цветов графиков в фиксированном порядке: синий, оранжевый, бирюзовый, жёлтый, розовый, зелёный, фиолетовый, красный. Соседние пары различимы при дальтонизме (ΔE ≥ 8 в OKLab); в тёмной теме — свои оттенки с контрастом к фону не ниже 3:1.
 - `--rise-code-keyword`, `-string`, `-number`, `-comment`, `-function`, `-tag`, `-attribute`, `-property`, `-variable` — подсветка кода (BaseCode, блоки кода BaseMarkdown), палитра в духе GitHub Light и Dark. Контраст текста 4.5:1 на `--rise-bg`, `--rise-bg-muted`, `--rise-bg-elevated` и `--rise-primary-soft` (выделенная строка) в обеих темах — проверяет `npm run test:contrast`.
 - `--rise-z-overlay` (1000), `--rise-z-toast` (2000), `--rise-z-tooltip` (3000), `--rise-z-max` (9999) — z-index слоёв. Окна, боковые панели, тур, выпадающие панели и контекстные меню — один стек: `z-index: calc(var(--rise-z-overlay) + var(--rise-layer-index, 0))`, где `--rise-layer-index` — место слоя в порядке открытия (`useLayerIndex`). Уведомления, подсказки и просмотр изображения — поверх стека. Числа z-index в стилях компонентов не пишутся.
@@ -325,6 +325,7 @@
 ## 5. Файлы
 
 - `src/styles/_tokens.scss` — токены.
+- `src/styles/_motion.scss` — токены движения и пресеты `data-rise-motion` (раздел 6).
 - `src/styles/_mixins.scss` — миксины (таблица ниже).
 - `src/styles/_functions.scss` — `sz()`.
 - `src/styles/_variables.scss` — брейкпоинты и подключение токенов. Карта `$breakpoints` совпадает с `BREAKPOINTS` из `useBreakpoint` — это проверяет тест.
@@ -343,6 +344,9 @@
 | `transition($props...)` | Переход перечисленных свойств с `--rise-duration` и `--rise-ease` |
 | `transition-colors($duration)` | Переход цвета, фона, рамки, контура, тени и прозрачности; по умолчанию `--rise-duration-fast` |
 | `motion-safe`, `motion-reduce` | Правила только без `prefers-reduced-motion` и только с ним |
+| `expand-rows`, `expand-rows-open` | Раскрытие по высоте `auto` строкой сетки `0fr ↔ 1fr` с прозрачностью; свёрнутое скрыто и от фокуса (раздел 6) |
+| `enter-fade($name)`, `enter-scale($name)`, `enter-slide($name, $dir)`, `enter-pop($name)` | Классы `<Transition name>` на токенах движения: появление дольше, уход короче; `pop` — с пружиной |
+| `sliding-indicator` | Индикатор для `useSlidingIndicator`: позиция — `transform`, размер — ширина и высота абсолютного элемента |
 | `hover` | Наведение: только на устройствах с наведением и не на отключённых элементах — после касания состояние не «залипает» |
 | `active` | Нажатие, не на отключённых элементах |
 | `focus-ring($offset: 2px)` | Кольцо 2px `--rise-focus-ring` при `:focus-visible`; `-2px` — кольцо внутри элемента |
@@ -358,3 +362,66 @@
 | `custom-text`, `custom-text-hover` | То же для цвета текста |
 | `respond-below($name)` | Экран уже брейкпоинта (`max-width` на 0.02px меньше): `xs` 320, `sm` 480, `mobile` 640, `md` 768, `lg` 1024, `xl` 1440, `xxl` 1920 |
 | `truncate`, `visually-hidden`, `scrollbar-thin`, `flex-center` | Обрезка строки многоточием; скрытие с экрана, но не от скринридера; тонкая полоса прокрутки; центрирование flex |
+
+## 6. Движение
+
+Решение research-motion (задача motion-core). Движение настраивается как тема: токены, пресеты на любой области и одна опция плагина. JS-анимации читают те же токены (`useMotion`), поэтому CSS и JS всегда в одном темпе.
+
+### 6.1. Токены
+
+| Токен | none | subtle | standard (по умолчанию) | expressive | Для чего |
+|---|---|---|---|---|---|
+| `--rise-duration-fast` | 0.01ms | 100ms | 150ms | 180ms | цвета, наведение, мелкие отметки |
+| `--rise-duration` | 0.01ms | 140ms | 200ms | 260ms | появление, индикаторы |
+| `--rise-duration-slow` | 0.01ms | 200ms | 300ms | 420ms | панели, высота, слайды |
+| `--rise-duration-xslow` | 0.01ms | 300ms | 500ms | 700ms | графики, маскот, первая отрисовка данных |
+| `--rise-ease`, `-out`, `-in` | — | — | — | — | эффекты (прозрачность, цвет); в пресетах не меняются, перелёта нет |
+| `--rise-ease-emphasized` | `cubic-bezier(0.2, 0, 0, 1)` | `= --rise-ease-out` | `cubic-bezier(0.2, 0, 0, 1)` | `cubic-bezier(0.2, 0, 0, 1)` | крупное пространственное движение |
+| `--rise-ease-spring` | `= emphasized` | `= --rise-ease-out` | `= emphasized` | `linear(…)`, перелёт ≈5 % | только `transform`: индикаторы, отметки, появление |
+| `--rise-motion-distance` | 0px | 4px | 8px | 16px | сдвиг при появлении |
+| `--rise-motion-scale-from` | 1 | 0.98 | 0.95 | 0.9 | масштаб при появлении |
+| `--rise-motion-stagger` | 0ms | 0ms | 30ms | 50ms | задержка между элементами списка или графика |
+
+Пружина — `linear()` по затухающему осциллятору (жёсткость 260, затухание 22, масса 1). Правило: пространственные свойства (`transform`) могут перелетать цель, эффекты (прозрачность, цвет) — никогда, поэтому у них свои кривые.
+
+### 6.2. Пресеты и настройка приложения
+
+- Атрибут `data-rise-motion="none | subtle | standard | expressive"` на `<html>` или **любом** контейнере. Пресет задаёт весь набор токенов: значение, вычисленное на `:root`, в поддереве не пересчитывается. Без атрибута действует `standard` — прежние значения, вид кита не меняется.
+- Плагин: `createUiKitPlugin({ motion: 'expressive' })` ставит атрибут на `<html>`, если его там ещё нет; `reducedMotion: 'always'` выключает движение всегда (киоски, тесты) — атрибут `data-rise-reduced-motion="always"` на `<html>`. Значения «игнорировать системную настройку» нет (WCAG 2.3.3).
+- Системное «уменьшить движение» и `reducedMotion: 'always'` главнее любого пресета и темы (`[data-rise-theme]`): длительности становятся `0.01ms`, сдвиг — `0`, масштаб появления — `1`.
+- Тема и движение независимы: тема — `data-rise-theme`, движение — `data-rise-motion`. Токены движения, заданные темой на своей области, перебивает пресет только на вложенном элементе.
+- Телепортированные панели (окна, выпадающие списки) берут пресет `<html>`; пресет области до них не доходит (FOLLOW_UPS).
+
+### 6.3. Правила
+
+- Анимируются только `transform` и `opacity`. Исключения: `grid-template-rows` в `expand-rows`, размер абсолютного индикатора (`sliding-indicator`), `stroke-dasharray/-offset` у SVG. `filter: blur` — только в `expressive` и на мелких элементах.
+- Длительности — только токены. stylelint (`declaration-property-value-disallowed-list`) предупреждает о переходах по `width`, `height`, `top`, `left`, `right`, `bottom`, `inset`, `margin`, `padding` и о длительностях числом в `transition`, `animation`, `*-duration`, `*-delay`; исключение — отключение на строку с причиной. Пока группы движения не исправили свои места, это предупреждение; последняя группа переведёт его в ошибку.
+- Высота `auto` — миксин `expand-rows` (работает во всех браузерах); `interpolate-size` и `calc-size()` кит не использует.
+- Переход, который ждёт `transitionend`: при выключенном движении — сразу конечное состояние (CLAUDE.md, «Подводные камни»). В JS — `useMotion().isReduced` или `isMotionReduced(el)`.
+- Бесконечные декоративные анимации — внутри `motion-safe`. Спиннеры загрузки крутятся всегда, но их длительность — из токена.
+- `will-change` — только на время анимации.
+
+### 6.4. Рецепты
+
+```scss
+// Появление на токенах: классы fade-enter-active… для <Transition name="fade">
+@include enter-fade('fade');
+@include enter-slide('panel', up);
+@include enter-pop('badge');
+
+// Раскрытие по высоте
+.details {
+	@include expand-rows;
+
+	&--open {
+		@include expand-rows-open;
+	}
+}
+
+// Индикатор активного пункта (useSlidingIndicator)
+.tabs__indicator {
+	@include sliding-indicator;
+}
+```
+
+Компонент может завести свои переменные поверх общих (`--base-modal-motion-distance: var(--rise-motion-distance)`) — это точка стилизации темы.

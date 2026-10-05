@@ -297,6 +297,7 @@ useSelect
 useSelectKeys
 useSizeScale
 useSlider
+useSlidingIndicator
 useSortable
 useStructuredData
 useSwipe
@@ -340,7 +341,7 @@ const expand = useExpandTransition({ duration: 200 })
 //   @before-leave="expand.onBeforeLeave" @leave="expand.onLeave" @after-leave="expand.onAfterLeave">
 ```
 
-- `duration` — мс, по умолчанию 300. `0` и системная настройка `prefers-reduced-motion: reduce` — без анимации: элемент сразу в конечном состоянии.
+- `duration` — мс; по умолчанию — токен `--rise-duration-slow` элемента (300 мс в пресете `standard`, пресет `data-rise-motion` действует). Кривые — `--rise-ease-emphasized` (высота) и `--rise-ease` (прозрачность). `0`, системная настройка «уменьшить движение», пресет `none` и `reducedMotion: 'always'` — без анимации: элемент сразу в конечном состоянии.
 - Переход завершается по `transitionend` самого элемента (всплывшие от потомков не считаются) или по таймеру-страховке через `duration` + 50 мс, если событие не пришло. Новый переход того же элемента (свернули во время раскрытия) отменяет ожидание прежнего.
 
 ## useLoadingBar
@@ -469,6 +470,11 @@ setTheme(createTheme({ … }))         // своя тема: регистрир�
 ## useMotion (motion-chart)
 
 Настройки движения для анимаций в JS: те же токены `--rise-duration*`, что у CSS. Минимальная версия по решению «Движение» (2.4); пресеты (`preset`) и кривые (`easing(name)`) добавит задача motion-core, не меняя этих полей.
+---
+
+## useMotion (motion-core)
+
+Пресет движения и токены длительностей и кривых для JS-анимаций (Web Animations API, твины, таймеры). Решение research-motion: CSS и JS берут длительности из одних токенов, поэтому пресет `data-rise-motion` на области действует и на JS.
 
 ```ts
 import { useMotion } from '@ramzes1385/rise-ui-kit/composables'
@@ -502,3 +508,58 @@ const { value, isRunning, replay, stop } = useTween(() => props.total, { from: 0
 - `replay(from?)` — повторить переход к источнику (от `from` или `options.from`), `stop()` — остановить на текущем значении; кадр отменяется при размонтировании.
 - Им пользуется BaseChart (значения, места столбиков и шкала Y).
 
+const root = ref<HTMLElement | null>(null)
+const motion = useMotion(root)
+
+function pulse(el: HTMLElement): void {
+	if (motion.isReduced.value) return
+	el.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.1)' }, { transform: 'scale(1)' }], {
+		duration: motion.duration('slow'),
+		easing: motion.easing('spring'),
+	})
+}
+```
+
+- `useMotion(target?)` — `target`: ref, геттер или элемент; без него — `<html>`. Вызывается в `setup`.
+- `preset` — пресет ближайшего предка с `data-rise-motion` (или самого элемента): `none`, `subtle`, `standard`, `expressive`; без атрибута — `standard`. Меняется вместе с атрибутом (один MutationObserver на все экземпляры).
+- `isReduced` — движение выключено: системное «уменьшить движение», пресет `none` или опция плагина `reducedMotion: 'always'`. Анимацию нужно пропустить и сразу поставить конечное состояние.
+- `duration(name = 'base')` — мс из токена: `fast` (`--rise-duration-fast`), `base` (`--rise-duration`), `slow`, `xslow`; при `isReduced` — `0`. `easing(name = 'base')` — значение кривой: `base` (`--rise-ease`), `out`, `in`, `emphasized`, `spring`.
+- Без стилей кита (SSR, тесты в jsdom без CSS) — значения пресета из таблицы, совпадающей с `_motion.scss` (это проверяет тест).
+- Для кода вне `setup` (хуки `<Transition>`, обработчики): `readMotionPreset(el?)`, `isMotionReduced(el?)`, `readMotionDuration(el?, name?)`, `readMotionEasing(el?, name?)`; атрибуты — константы `MOTION_ATTRIBUTE`, `REDUCED_MOTION_ATTRIBUTE`.
+- `useReducedMotion` остаётся: он отвечает только за системную настройку.
+
+---
+
+## useSlidingIndicator (motion-core)
+
+Один скользящий индикатор на контейнер (вкладки, сегменты, нижняя навигация, якоря, пагинация) вместо своего у каждого пункта: индикатор едет к активному пункту через `transform`, размер — ширина и высота абсолютного элемента, раскладку соседей он не трогает.
+
+```ts
+import { useSlidingIndicator } from '@ramzes1385/rise-ui-kit/composables'
+
+const list = ref<HTMLElement | null>(null)
+const indicator = useSlidingIndicator(list, () => tabs.findIndex(tab => tab.value === active.value))
+```
+
+```vue
+<div ref="list" class="tabs" :style="indicator.style.value">
+	<button v-for="tab in tabs" :key="tab.value" data-indicator-item>{{ tab.label }}</button>
+	<span v-if="indicator.isVisible.value" class="tabs__indicator" :class="{ 'tabs__indicator--instant': indicator.isInstant.value }" />
+</div>
+```
+
+```scss
+.tabs {
+	position: relative;
+}
+
+.tabs__indicator {
+	@include sliding-indicator;
+}
+```
+
+- Аргументы: контейнер (ref, геттер или элемент), индекс активного пункта (`null`, `undefined` или отрицательный — активного нет), `{ itemSelector }` — селектор пунктов, по умолчанию `[data-indicator-item]`.
+- Возвращает `rect` (`{ x, y, width, height }` относительно контейнера с учётом прокрутки или `null`), `style` — CSS-переменные `--indicator-x/-y/-w/-h` для контейнера, `isVisible`, `isInstant` и `update()`.
+- `isInstant` — первый замер и появление после скрытия: два кадра без перехода, чтобы индикатор не въезжал из угла. Миксин `sliding-indicator` снимает переход по модификатору `&--instant` (свой селектор — аргументом).
+- Пересчёт — при смене индекса и контейнера и при изменении размеров контейнера или активного пункта (ResizeObserver); `update()` — для изменений, которых наблюдатель не видит.
+- Длительность и кривая — токены `--rise-duration` и `--rise-ease-spring`: в `expressive` индикатор чуть перелетает цель, при «уменьшить движение» встаёт сразу.

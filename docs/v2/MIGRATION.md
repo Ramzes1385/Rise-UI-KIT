@@ -1961,4 +1961,17 @@ API кита не меняется. В Storybook добавлены пример
   - подписи оси Y и линии сетки во время перехода шкалы получают `transform: translateY(…)` и класс `--outside` для меток вне текущей шкалы; в покое разметка прежняя.
 - **Тесты приложений на jsdom:** линии и области при `animation: 'grow'` после монтирования стоят на базовой линии до конца твина (rAF). Для проверки конечного вида — `animation: 'none'` и `updateAnimation: 'none'` или подмена `matchMedia` с `prefers-reduced-motion: reduce`.
 - «Уменьшить движение» системы и пресет `data-rise-motion="none"` выключают всё движение графика без настроек.
+## Задача motion-core: система движения (решение research-motion)
+
+Всё аддитивно: без новых опций вид и поведение прежние, кроме двух мелочей ниже.
+
+- **Новые токены** (`src/styles/_motion.scss`): `--rise-duration-xslow`, `--rise-ease-emphasized`, `--rise-ease-spring`, `--rise-motion-distance`, `--rise-motion-scale-from`, `--rise-motion-stagger`. Прежние `--rise-duration*` и `--rise-ease*` не переименованы, значения по умолчанию те же.
+- **Пресеты движения**: атрибут `data-rise-motion="none | subtle | standard | expressive"` на `<html>` или любом контейнере; без атрибута — `standard`. DESIGN_SYSTEM, раздел 6.
+- **Плагин**: `createUiKitPlugin({ motion: 'subtle', reducedMotion: 'always' })`. `motion` ставит атрибут на `<html>`, если приложение не поставило его само; `reducedMotion: 'user'` (по умолчанию) — системная настройка главнее пресета, `'always'` — движение выключено всегда (атрибут `data-rise-reduced-motion="always"`).
+- **Composables**: `useMotion(target?)` → `{ preset, isReduced, duration, easing }` и функции `readMotionPreset`, `isMotionReduced`, `readMotionDuration`, `readMotionEasing`, константы `MOTION_ATTRIBUTE`, `REDUCED_MOTION_ATTRIBUTE`, `MOTION_PRESETS`, `REDUCED_MOTION_MODES`, `MOTION_DURATIONS`, `MOTION_EASINGS`, типы `MotionPreset`, `ReducedMotionMode`, `MotionDurationName`, `MotionEasingName`, `MotionTarget`, `UseMotionReturn`; `useSlidingIndicator(container, activeIndex, { itemSelector })` и его типы (docs/reference/COMPOSABLES.md).
+- **SCSS-миксины** (`@styles/mixins`): `expand-rows`, `expand-rows-open`, `enter-fade`, `enter-scale`, `enter-slide`, `enter-pop`, `enter-transform`, `sliding-indicator`.
+- **«Уменьшить движение» на областях**: системная настройка теперь обнуляет токены и внутри любой области с `data-rise-motion`, а не только на `:root`. Сдвиг и масштаб появления при ней — `0` и `1`.
+- **`useExpandTransition`**: без `duration` длительность берётся из `--rise-duration-slow` элемента (300 мс в `standard`, как раньше); кривые — `var(--rise-ease-emphasized)` для высоты и `var(--rise-ease)` для прозрачности вместо `ease`; анимации нет и при пресете `none`, и при `reducedMotion: 'always'`. Строка `style.transition` у элемента во время перехода другая — если тесты приложения её проверяют, обновите ожидание.
+- **BaseAnimation `name="collapse"`**: содержимое обёрнуто в `<div class="base-animation__inner">`, корень получает класс `base-animation--collapse`; высота раскрывается строкой сетки `0fr ↔ 1fr` во всех браузерах (раньше — `interpolate-size`, только Chromium). Селекторы вида `.base-animation > .my-content` для `collapse` поменяйте на `.base-animation__inner > .my-content`.
+- **stylelint кита** (для тех, кто наследует конфиг): правило `declaration-property-value-disallowed-list` — предупреждение о переходах по свойствам раскладки и длительностях числом.
 

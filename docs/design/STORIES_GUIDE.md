@@ -258,3 +258,35 @@ for (const theme of VISUAL_THEMES) {
 - История, где оверлей открыт при монтировании (`args: { isOpen: true }`) и рисуется поверх страницы (BaseModal, BaseConfirm, BaseCommandPalette), — `tags: ['!autodocs']`: на Docs окно открывается только кнопкой. Открытое состояние на Docs допустимо только в рамке (`docs.story.inline: false`) — для показа вида (Variants, Positions, Sizes).
 - В рамке на Docs play не запускается, программный фокус, `autofocus` и `scrollIntoView` ждут первого нажатия или клика пользователя на странице (`build/storybook/preview.ts`, `holdPlayInDocsFrame` и `guardDocsFrameFocus`). На холсте, в check-stories и скриншот-тестах — как прежде. Поэтому начальное состояние истории в рамке должно быть осмысленным без play.
 - Горячие клавиши в истории: на странице Docs все истории — один документ, слушатель на `window` ловит нажатия во всех историях. Сочетание с `window` — только у одной истории страницы (песочница); остальным — `hotkey: null` или область (`hotkeyScope="container"` у BaseCommandPalette).
+## Задача motion-core: история «Анимации» и переключатель «Движение»
+
+- **Переключатель «Движение»** в панели Storybook (глобальная переменная `motion`: Нет, Сдержанно, Стандарт, Выразительно) ставит `data-rise-motion` на `<html>`, как «Тема» ставит `data-theme`. По умолчанию — `standard`. Скриншот-тесты открывают истории с `globals=theme:…;motion:none` (`build/tests/visual.ts`): JS-анимации сразу в конечном состоянии, CSS останавливает `animations: 'disabled'`.
+- **История `Animations`** («Анимации») — у каждого компонента, файл `cases/behavior/Animations.ts` (у компонентов со старой раскладкой `cases/` — `cases/Animations.ts`), экспорт `export const Animations` в `BaseX.stories.ts`. Внутри — одни и те же примеры в колонках четырёх пресетов и кнопка «Повторить». Помощник — `motionPresetsStory` из `@/stories/helpers`:
+
+```ts
+const motion = motionPresetsStory({
+	item: `
+		<BaseAnimation :key="replay" v-bind="args">
+			<div class="story-frame">Заказ оформлен</div>
+		</BaseAnimation>
+	`,
+	components: { BaseAnimation, BaseButton },
+	imports: ['BaseAnimation'],
+})
+
+export const Animations: StoryObj<typeof meta> = {
+	name: 'Анимации',
+	parameters: { docs: { description: { story: '…' }, source: motion.source } },
+	render: motion.render,
+	play: async ({ canvas, userEvent }) => { await userEvent.click(canvas.getByRole('button', { name: 'Повторить' })) /* … */ },
+}
+```
+
+  - `item` — разметка одной колонки. Перезапуск — `:key="replay"` (кнопка делает `replay++`) или своё действие: `action: 'isOpen = !isOpen'`, `trigger: 'Открыть'`, `state: { isOpen: false }`. В `item` нет `id`: колонок четыре.
+  - `components` — с `BaseButton` (кнопка «Повторить»); в `imports` для «Show code» он добавляется сам.
+  - **«Show code» — точный шаблон превью** (раздел 8): обёртки `<div class="story-motion__preset" data-rise-motion="…">`, кнопка и `replay` в коде те же, что на экране.
+  - В описании — какие токены управляют движением и как выключить его в приложении (`motion: 'none'`, `reducedMotion: 'always'`).
+  - Play — только конечное состояние через `waitFor` (не середину кадра); `check-stories` прогоняет истории с «уменьшить движение», середину перехода проверяет e2e (`src/stories/foundations/Motion/__tests__/motion.e2e.spec.ts`: анимации ставятся на паузу на середине через `getAnimations()`).
+  - Статичным компонентам (Text, Kbd, Separator, Container…) — появление через BaseAnimation (`fade`, `slide-up`, `scale`) тем же помощником.
+- **Проверка покрытия**: `npm run test:stories-coverage` перечисляет компоненты без истории `Animations` — пока предупреждением; последняя группа движения переведёт его в ошибку.
+- Пример — `Element/BaseAnimation` → «Анимации», страница `Foundations/Motion` («Токены», «Кривые», «Появление»).
