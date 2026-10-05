@@ -1,4 +1,5 @@
 import { computed } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import { useIcon } from '@composables/app/useIcon'
 import type { BaseIconProps } from '../types/BaseIcon.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
@@ -16,6 +17,7 @@ export function useBaseIcon(props: BaseIconProps) {
 
 	return {
 		...useStandardBaseComponent('base-icon', props, ['root', 'svg']),
+		ui: useUi(props, 'base-icon'),
 		icon: computed(() => resolveIcon(props.name)),
 		isDecorative: computed(() => !props.ariaLabel),
 		iconStyle: computed(() => {

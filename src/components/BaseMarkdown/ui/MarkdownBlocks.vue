@@ -1,26 +1,24 @@
 <template>
 	<template v-for="(block, index) in blocks" :key="index">
-		<component :is="`h${block.level}`" v-if="block.type === 'heading'" class="base-markdown__heading">
+		<component :is="`h${block.level}`" v-if="block.type === 'heading'" :class="ui('heading')">
 			<MarkdownInline :nodes="block.children" />
 		</component>
-		<p v-else-if="block.type === 'paragraph'" class="base-markdown__paragraph"><MarkdownInline :nodes="block.children" /></p>
-		<blockquote v-else-if="block.type === 'blockquote'" class="base-markdown__quote">
+		<p v-else-if="block.type === 'paragraph'" :class="ui('paragraph')"><MarkdownInline :nodes="block.children" /></p>
+		<blockquote v-else-if="block.type === 'blockquote'" :class="ui('quote')">
 			<MarkdownBlocks :blocks="block.children" />
 		</blockquote>
 		<component
 			:is="block.ordered ? 'ol' : 'ul'"
 			v-else-if="block.type === 'list'"
-			class="base-markdown__list"
+			:class="ui('list')"
 			:start="block.ordered && block.start !== 1 ? block.start : undefined">
 			<li
 				v-for="(item, itemIndex) in block.items"
 				:key="itemIndex"
-				class="base-markdown__item"
-				:class="{ 'base-markdown__item--task': item.checked !== null }">
+				:class="[ui('item'), { 'base-markdown__item--task': item.checked !== null }]">
 				<span
 					v-if="item.checked !== null"
-					class="base-markdown__check"
-					:class="{ 'base-markdown__check--done': item.checked }"
+					:class="[ui('check'), { 'base-markdown__check--done': item.checked }]"
 					role="img"
 					:aria-label="item.checked ? UI_MARKDOWN.TASK_DONE : UI_MARKDOWN.TASK_TODO">
 					<BaseIcon v-if="item.checked" name="check" />
@@ -30,9 +28,9 @@
 			</li>
 		</component>
 		<MarkdownCode v-else-if="block.type === 'code'" :block="block" />
-		<hr v-else-if="block.type === 'hr'" class="base-markdown__rule" />
-		<div v-else class="base-markdown__table-wrap">
-			<table class="base-markdown__table">
+		<hr v-else-if="block.type === 'hr'" :class="ui('rule')" />
+		<div v-else :class="ui('table-wrap')">
+			<table :class="ui('table')">
 				<thead>
 					<tr>
 						<th
@@ -60,7 +58,10 @@ import MarkdownCode from './MarkdownCode.vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_MARKDOWN } from '@/locales/messages'
 import MarkdownInline from './MarkdownInline.vue'
+import { useMarkdownUi } from '../model/useMarkdownUi'
 import type { MarkdownBlocksProps } from '../types/MarkdownParts.types'
 
 defineProps<MarkdownBlocksProps>()
+
+const ui = useMarkdownUi()
 </script>

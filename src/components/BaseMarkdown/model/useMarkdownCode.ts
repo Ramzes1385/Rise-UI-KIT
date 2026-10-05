@@ -1,4 +1,5 @@
 import { UI_CODE } from '@/locales/messages'
+import { useMarkdownUi } from './useMarkdownUi'
 import { formatMessage } from '@/locales/state'
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { tokenizeCode } from '@utils/data/codeHighlightUtils'
@@ -23,6 +24,7 @@ export function useMarkdownCode(props: MarkdownCodeProps) {
 		clearTimeout(timer)
 	})
 	return {
+		ui: useMarkdownUi(),
 		isCopied,
 		tokens: computed(() => tokenizeCode(props.block.value, props.block.lang)),
 		copyLabel: computed(() => {

@@ -21,3 +21,5 @@ export const Sizes = cases.Sizes
 export const CustomColor = cases.CustomColor
 export const Transform = cases.Transform
 export const AriaLabel = cases.AriaLabel
+export const Theming = cases.Theming
+export const Animations = cases.Animations

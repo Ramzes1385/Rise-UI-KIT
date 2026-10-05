@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
@@ -6,6 +7,14 @@ import type { BaseComponentProps } from '@composables/base/useBaseComponent'
  * default — фон bg-elevated, рамка и нижняя «грань» клавиши; outline — только рамка; soft — только фон; ghost — только текст
  */
 export const KBD_VARIANTS = ['default', 'outline', 'soft', 'ghost'] as const
+
+/**
+ * Части клавиши для пропа `ui` (БЭМ-элементы `.base-kbd__<часть>`, `root` — сам `<kbd>`):
+ * name — скрытое название служебной клавиши для скринридера (есть только у ⌘ ⇧ ↵ и других символов).
+ */
+export const KBD_PARTS = ['name'] as const
+
+export type BaseKbdPart = (typeof KBD_PARTS)[number]
 
 export interface BaseKbdProps extends BaseComponentProps<(typeof KBD_VARIANTS)[number], 'root'> {
 	/**
@@ -16,6 +25,14 @@ export interface BaseKbdProps extends BaseComponentProps<(typeof KBD_VARIANTS)[n
 	value?: string
 	/** Платформа для служебных клавиш; по умолчанию определяется по браузеру */
 	platform?: 'mac' | 'other'
+	/**
+	 * Классы частей клавиши (`root`, `name`) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseKbd: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseKbd value="K" :ui="{ root: 'font-mono' }" />
+	 */
+	ui?: UiProp<BaseKbdPart>
 }
 
 export interface BaseKbdSlots {

@@ -1,4 +1,5 @@
 import { UI_MARQUEE } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
 import { useMarqueeSize } from './useMarqueeSize'
 import { computed, nextTick, ref, watch } from 'vue'
 import { useReducedMotion } from '@composables/app/useReducedMotion'
@@ -42,6 +43,7 @@ export function useBaseMarquee(props: MarqueeProps, emit: BaseMarqueeEmits) {
 	return {
 		...useStandardBaseComponent('base-marquee', props, ['root', 'viewport', 'item', 'button']),
 		...usePausedState(props, emit),
+		ui: useUi(props, 'base-marquee'),
 		viewportRef,
 		trackRef,
 		isVertical,

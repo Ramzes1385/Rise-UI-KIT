@@ -1,5 +1,6 @@
 import { computed } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { KbdKeyLabel, KbdKeySpec, KbdProps } from '../types/BaseKbd.types'
 
@@ -49,6 +50,7 @@ export function useBaseKbd(props: KbdProps) {
 
 	return {
 		...useStandardBaseComponent('base-kbd', props, ['root']),
+		ui: useUi(props, 'base-kbd'),
 		key: computed(() => resolveKey(props.value, isMac.value)),
 	}
 }

@@ -1,9 +1,9 @@
 <template>
-	<kbd class="base-kbd" :class="[variantClass, classes.root]" :style="[sizeScaleStyle, variantStyle, customColorStyle]">
+	<kbd :class="[ui('root'), variantClass, classes.root]" :style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<slot>
 			<template v-if="key.name">
 				<span aria-hidden="true">{{ key.text }}</span>
-				<span class="base-kbd__name">{{ key.name }}</span>
+				<span :class="ui('name')">{{ key.name }}</span>
 			</template>
 			<template v-else>{{ key.text }}</template>
 		</slot>
@@ -28,5 +28,5 @@ const props = withDefaults(
 
 defineSlots<BaseKbdSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, key } = useBaseKbd(props)
+const { ui, sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, key } = useBaseKbd(props)
 </script>

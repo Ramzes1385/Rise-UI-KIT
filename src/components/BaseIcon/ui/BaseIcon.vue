@@ -1,10 +1,9 @@
 <template>
-	<span class="base-icon" :class="classes.root" :style="sizeScaleStyle">
+	<span :class="[ui('root'), classes.root]" :style="sizeScaleStyle">
 		<component
 			:is="icon.component"
 			v-if="icon.component"
-			class="base-icon__svg"
-			:class="classes.svg"
+			:class="[ui('svg'), classes.svg]"
 			:style="iconStyle"
 			:aria-hidden="isDecorative ? true : undefined"
 			:aria-label="ariaLabel || undefined"
@@ -12,8 +11,7 @@
 			focusable="false" />
 		<svg
 			v-else
-			class="base-icon__svg"
-			:class="classes.svg"
+			:class="[ui('svg'), classes.svg]"
 			:style="iconStyle"
 			:aria-hidden="isDecorative ? true : undefined"
 			:aria-label="ariaLabel || undefined"
@@ -43,5 +41,5 @@ const props = withDefaults(
 	}),
 )
 
-const { sizeScaleStyle, classes, icon, isDecorative, iconStyle } = useBaseIcon(props)
+const { ui, sizeScaleStyle, classes, icon, isDecorative, iconStyle } = useBaseIcon(props)
 </script>

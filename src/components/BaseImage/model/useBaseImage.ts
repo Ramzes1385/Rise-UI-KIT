@@ -1,6 +1,7 @@
 import type { Ref } from 'vue'
 import { computed, ref, watch } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
 import type BaseImageZoom from '../ui/BaseImageZoom.vue'
 import { useSizeScale } from '@composables/base/useSizeScale'
 import { useImageZoom } from '@composables/image/useImageZoom'
@@ -59,11 +60,20 @@ function useZoomViewer(
 		onArrowLeft: () => gallery.handleGalleryPrev(),
 		onArrowRight: () => gallery.handleGalleryNext(),
 	})
+	const isZoomRendered = ref(false)
 	watch(zoom.isZoomOpen, opened => {
-		if (opened) emit('zoom-open')
-		else emit('zoom-close')
+		if (!opened) return emit('zoom-close')
+		isZoomRendered.value = true
+		emit('zoom-open')
 	})
-	return { gallery, zoom }
+	return {
+		gallery,
+		zoom,
+		isZoomRendered,
+		handleZoomAfterLeave: (): void => {
+			if (!zoom.isZoomOpen.value) isZoomRendered.value = false
+		},
+	}
 }
 
 function useLoadState(props: ImageProps, emit: BaseImageEmits, imgRef: Ref<HTMLImageElement | null>) {
@@ -98,7 +108,7 @@ export function useBaseImage(props: ImageProps, emit: BaseImageEmits) {
 	const imgRef = ref<HTMLImageElement | null>(null)
 	const { borderRadiusStyle, ...state } = useLoadState(props, emit, imgRef)
 	const isShowingFallback = (): boolean => !!props.fallbackSrc && state.currentSrc.value === props.fallbackSrc
-	const { gallery, zoom } = useZoomViewer(props, emit, {
+	const { gallery, zoom, isZoomRendered, handleZoomAfterLeave } = useZoomViewer(props, emit, {
 		zoomRef,
 		zoomSrc: () => (isShowingFallback() ? props.fallbackSrc! : props.src),
 	})
@@ -110,6 +120,7 @@ export function useBaseImage(props: ImageProps, emit: BaseImageEmits) {
 	}
 
 	return {
+		ui: useUi(props, 'base-image'),
 		classes,
 		sizeScaleStyle,
 		customColorStyle,
@@ -123,6 +134,8 @@ export function useBaseImage(props: ImageProps, emit: BaseImageEmits) {
 		imgRef,
 		gallery,
 		zoom,
+		isZoomRendered,
+		handleZoomAfterLeave,
 		...state,
 		...useStructuredData(
 			'BaseImage',

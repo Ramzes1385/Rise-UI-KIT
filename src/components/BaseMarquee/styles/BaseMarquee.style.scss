@@ -15,24 +15,25 @@
 
 	display: flex;
 	align-items: center;
-	gap: sz(4px);
+	gap: sz(ct(marquee, gap, 4px));
 	box-sizing: border-box;
 	max-width: 100%;
 	min-width: 0;
-	border: 1px solid transparent;
-	border-radius: sz(var(--rise-radius-md));
-	@include control-text;
-	@include custom-bg(background-color, transparent);
-	@include custom-text(color, var(--rise-text));
+	border: 1px solid ct(marquee, border, transparent);
+	border-radius: sz(ct(marquee, radius, var(--rise-radius-md)));
+	font-size: sz(ct(marquee, font-size, var(--rise-control-font-size)));
+	line-height: sz(var(--rise-control-line-height));
+	@include custom-bg(background-color, ct(marquee, bg, transparent));
+	@include custom-text(color, ct(marquee, text, var(--rise-text)));
 
 	&--soft {
-		padding: sz(var(--rise-control-padding-y)) sz(4px);
+		padding: sz(ct(marquee, padding-y, var(--rise-control-padding-y))) sz(ct(marquee, padding-x, 4px));
 		@include custom-bg(background-color, var(--rise-bg-elevated));
 	}
 
 	&--outline {
-		padding: sz(var(--rise-control-padding-y)) sz(4px);
-		border-color: var(--rise-border);
+		padding: sz(ct(marquee, padding-y, var(--rise-control-padding-y))) sz(ct(marquee, padding-x, 4px));
+		border-color: ct(marquee, border, var(--rise-border));
 	}
 
 	&__viewport {
@@ -66,7 +67,7 @@
 	}
 
 	&__separator {
-		color: var(--rise-text-muted);
+		color: ct(marquee, separator-text, var(--rise-text-muted));
 	}
 
 	&__button {
@@ -81,7 +82,7 @@
 		align-items: flex-start;
 
 		.base-marquee__viewport {
-			height: sz(160px);
+			height: sz(ct(marquee, viewport-height, 160px));
 		}
 
 		.base-marquee__track {

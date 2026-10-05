@@ -1,4 +1,5 @@
 import type { ImgHTMLAttributes } from 'vue'
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { SeoComponentProps } from '@composables/seo/useStructuredData'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
@@ -7,6 +8,42 @@ import type { ImageGallerySource } from '@composables/image/useImageGallery'
 export type ImageFit = 'cover' | 'contain' | 'fill' | 'none'
 
 export type ImageLoading = 'lazy' | 'eager'
+
+/**
+ * Части изображения для пропа `ui` (БЭМ-элементы `.base-image__<часть>`, `root` — контейнер):
+ * placeholder, shimmer — заглушка загрузки и её мерцание; error, error-icon, error-text — блок ошибки; frame — обёртка
+ * (кнопка при зуме); img — само изображение. Окно просмотра: zoom — оверлей, zoom-toolbar, zoom-btn, zoom-scale,
+ * zoom-divider — панель кнопок; zoom-nav — стрелки галереи; zoom-container, zoom-img — область и изображение;
+ * zoom-gallery, zoom-gallery-track, zoom-thumb, zoom-thumb-img, zoom-counter — лента миниатюр и счётчик;
+ * minimap, minimap-img, minimap-viewport — мини-карта.
+ */
+export const IMAGE_PARTS = [
+	'placeholder',
+	'shimmer',
+	'error',
+	'error-icon',
+	'error-text',
+	'frame',
+	'img',
+	'zoom',
+	'zoom-toolbar',
+	'zoom-btn',
+	'zoom-scale',
+	'zoom-divider',
+	'zoom-nav',
+	'zoom-container',
+	'zoom-img',
+	'zoom-gallery',
+	'zoom-gallery-track',
+	'zoom-thumb',
+	'zoom-thumb-img',
+	'zoom-counter',
+	'minimap',
+	'minimap-img',
+	'minimap-viewport',
+] as const
+
+export type BaseImagePart = (typeof IMAGE_PARTS)[number]
 
 export interface ImageZoomConfig {
 	/** Включить зум по клику */
@@ -106,6 +143,15 @@ export interface BaseImageProps
 	 * Атрибуты на компоненте (`class`, `style`, `data-*`) уходят на корневой блок.
 	 */
 	imgAttrs?: ImgHTMLAttributes
+	/**
+	 * Классы частей изображения и окна просмотра (список — `IMAGE_PARTS`: `root`, `placeholder`, `img`, `zoom`,
+	 * `zoom-toolbar`, `zoom-thumb`…) — добавляются к классам кита. Глобально —
+	 * `createUiKitPlugin({ defaults: { BaseImage: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseImage :src="src" alt="Горы" :ui="{ root: 'shadow-lg', zoom: 'backdrop-blur' }" />
+	 */
+	ui?: UiProp<BaseImagePart>
 }
 
 export interface BaseImageEmits {

@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /**
@@ -5,6 +6,35 @@ import type { BaseComponentProps } from '@composables/base/useBaseComponent'
  * `outline` — в рамке, `ghost` — без подложки и отступов (для встраивания в пузырь сообщения).
  */
 export const MARKDOWN_VARIANTS = ['default', 'soft', 'outline', 'ghost'] as const
+
+/**
+ * Части для пропа `ui` (БЭМ-элементы `.base-markdown__<часть>`, `root` — корень): heading, paragraph, quote, list, item,
+ * check (флажок задачи), rule (линия), table-wrap, table, image; строчные — link, code, caret (курсор потока);
+ * блок кода — code-block, code-header, code-lang, copy (кнопка «Копировать»), pre, token (подсвеченный фрагмент).
+ */
+export const MARKDOWN_PARTS = [
+	'heading',
+	'paragraph',
+	'quote',
+	'list',
+	'item',
+	'check',
+	'rule',
+	'table-wrap',
+	'table',
+	'image',
+	'link',
+	'code',
+	'caret',
+	'code-block',
+	'code-header',
+	'code-lang',
+	'copy',
+	'pre',
+	'token',
+] as const
+
+export type BaseMarkdownPart = (typeof MARKDOWN_PARTS)[number]
 
 /** Уровень заголовка */
 export type MarkdownHeadingLevel = 1 | 2 | 3 | 4 | 5 | 6
@@ -73,4 +103,13 @@ export interface BaseMarkdownProps extends BaseComponentProps<(typeof MARKDOWN_V
 	isStreaming?: boolean
 	/** Одиночный перевод строки — перенос строки, как в чатах; false — пробел, как в CommonMark */
 	hasLineBreaks?: boolean
+	/**
+	 * Классы частей (`root`, `heading`, `paragraph`, `link`, `code`, `code-block`, `pre`, `quote`, `table`… — список в
+	 * `MARKDOWN_PARTS`) — добавляются к классам кита. Глобально — `createUiKitPlugin({ defaults: { BaseMarkdown: { ui } } })`,
+	 * классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseMarkdown :source="text" :ui="{ heading: 'tracking-tight', link: 'font-medium' }" />
+	 */
+	ui?: UiProp<BaseMarkdownPart>
 }

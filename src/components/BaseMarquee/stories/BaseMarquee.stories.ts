@@ -29,3 +29,5 @@ export const Vertical = cases.Vertical
 export const CustomColor = cases.CustomColor
 export const Keyboard = cases.Keyboard
 export const ReducedMotion = cases.ReducedMotion
+export const Theming = cases.Theming
+export const Animations = cases.Animations

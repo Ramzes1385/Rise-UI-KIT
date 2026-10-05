@@ -1,7 +1,7 @@
 <template>
 	<div
-		class="base-image"
 		:class="[
+			ui('root'),
 			`base-image--${fit}`,
 			{
 				'base-image--loaded': isLoaded,
@@ -14,23 +14,25 @@
 		:style="[containerStyle, radiusStyle, sizeScaleStyle, customColorStyle]">
 		<component :is="'script'" v-if="structuredData" type="application/ld+json" v-html="structuredData" />
 
-		<div v-if="hasPlaceholder && !isLoaded && !hasError" class="base-image__placeholder" :class="classes.placeholder">
-			<slot name="placeholder">
-				<div class="base-image__shimmer"></div>
-			</slot>
-		</div>
+		<Transition name="base-image-placeholder">
+			<div v-if="hasPlaceholder && !isLoaded && !hasError" :class="[ui('placeholder'), classes.placeholder]">
+				<slot name="placeholder">
+					<div :class="ui('shimmer')"></div>
+				</slot>
+			</div>
+		</Transition>
 
-		<div v-if="hasError" class="base-image__error" :class="classes.error">
+		<div v-if="hasError" :class="[ui('error'), classes.error]">
 			<slot name="error">
-				<BaseIcon name="image" class="base-image__error-icon" :aria-label="alt" />
-				<span class="base-image__error-text">{{ UI_TEXT.IMAGE_ERROR }}</span>
+				<BaseIcon name="image" :class="ui('error-icon')" :aria-label="alt" />
+				<span :class="ui('error-text')">{{ UI_TEXT.IMAGE_ERROR }}</span>
 			</slot>
 		</div>
 
 		<component
 			:is="resolvedHasZoom ? 'button' : 'div'"
 			v-if="!hasError && currentSrc"
-			class="base-image__frame"
+			:class="ui('frame')"
 			v-bind="zoomTriggerAttrs"
 			@click="handleImageClick">
 			<picture>
@@ -47,22 +49,23 @@
 					:height="height"
 					:loading="loading"
 					decoding="async"
-					class="base-image__img"
-					:class="classes.img"
+					:class="[ui('img'), classes.img]"
 					@load="handleLoad"
 					@error="handleError" />
 			</picture>
 		</component>
 
 		<BaseImageZoom
-			v-if="zoom.isZoomOpen.value"
+			v-if="isZoomRendered"
 			ref="zoomRef"
 			:zoom="zoom"
 			:gallery="gallery"
 			:alt="alt"
 			:classes="classes"
+			:ui="ui"
 			:show-minimap="resolvedShowMinimap"
-			:current-scale="zoom.currentScale.value" />
+			:current-scale="zoom.currentScale.value"
+			@after-leave="handleZoomAfterLeave" />
 	</div>
 </template>
 
@@ -96,6 +99,7 @@ const emit = defineEmits<BaseImageEmits>()
 defineSlots<BaseImageSlots>()
 
 const {
+	ui,
 	classes,
 	sizeScaleStyle,
 	customColorStyle,
@@ -106,6 +110,8 @@ const {
 	imgRef,
 	gallery,
 	zoom,
+	isZoomRendered,
+	handleZoomAfterLeave,
 	isLoaded,
 	hasError,
 	containerStyle,

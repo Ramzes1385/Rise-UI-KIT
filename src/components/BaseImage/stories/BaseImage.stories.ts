@@ -26,3 +26,5 @@ export const Gallery = cases.Gallery
 export const Keyboard = cases.Keyboard
 export const Rotation = cases.Rotation
 export const Seo = cases.Seo
+export const Theming = cases.Theming
+export const Animations = cases.Animations

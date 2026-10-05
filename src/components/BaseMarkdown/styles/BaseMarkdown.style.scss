@@ -3,21 +3,21 @@
 	box-sizing: border-box;
 	min-width: 0;
 	max-width: 100%;
-	@include text-size(sm);
+	font-size: sz(ct(markdown, font-size, var(--rise-font-size-sm)));
 	line-height: 1.6;
-	@include custom-text(color, var(--rise-text));
+	@include custom-text(color, ct(markdown, text, var(--rise-text)));
 	overflow-wrap: anywhere;
 
 	&--soft {
-		padding: sz(12px) sz(16px);
-		border-radius: sz(var(--rise-radius-md));
+		padding: space(ct(markdown, padding-y, 12px) ct(markdown, padding-x, 16px));
+		border-radius: sz(ct(markdown, radius, var(--rise-radius-md)));
 		@include custom-bg(background-color, var(--rise-bg-elevated));
 	}
 
 	&--outline {
-		padding: sz(12px) sz(16px);
+		padding: space(ct(markdown, padding-y, 12px) ct(markdown, padding-x, 16px));
 		border: 1px solid var(--rise-border-accented);
-		border-radius: sz(var(--rise-radius-md));
+		border-radius: sz(ct(markdown, radius, var(--rise-radius-md)));
 	}
 
 	&--ghost {
@@ -41,7 +41,7 @@
 		margin: sz(18px) 0 sz(8px);
 		font-weight: var(--rise-font-weight-semibold);
 		line-height: 1.3;
-		@include custom-text(color, var(--rise-text-highlighted));
+		@include custom-text(color, ct(markdown, heading-text, var(--rise-text-highlighted)));
 		text-wrap: balance;
 	}
 
@@ -71,7 +71,7 @@
 	}
 
 	&__link {
-		@include custom-text(color, var(--rise-primary));
+		@include custom-text(color, ct(markdown, link-text, var(--rise-primary)));
 		text-decoration: underline;
 		text-decoration-thickness: 1px;
 		text-underline-offset: sz(3px);
@@ -87,7 +87,7 @@
 		padding: sz(1px) sz(5px);
 		border: 1px solid var(--rise-border);
 		border-radius: sz(var(--rise-radius-sm));
-		background-color: var(--rise-bg-muted);
+		background-color: ct(markdown, code-bg, var(--rise-bg-muted));
 		color: var(--rise-text-highlighted);
 		font-family: var(--rise-font-mono);
 		font-size: 0.875em;
@@ -143,8 +143,8 @@
 	&__quote {
 		margin: sz(12px) 0;
 		padding: sz(2px) 0 sz(2px) sz(12px);
-		border-left: sz(3px) solid var(--rise-primary);
-		@include custom-text(color, var(--rise-text-muted));
+		border-left: sz(3px) solid ct(markdown, quote-border, var(--rise-primary));
+		@include custom-text(color, ct(markdown, quote-text, var(--rise-text-muted)));
 
 		> :last-child {
 			margin-bottom: 0;
@@ -156,7 +156,7 @@
 		overflow: hidden;
 		border: 1px solid var(--rise-border);
 		border-radius: sz(var(--rise-radius-md));
-		background-color: var(--rise-bg-muted);
+		background-color: ct(markdown, code-block-bg, var(--rise-bg-muted));
 	}
 
 	&__code-header {
@@ -212,7 +212,7 @@
 
 	&__pre {
 		margin: 0;
-		padding: sz(12px) sz(16px);
+		padding: space(12px 16px);
 		overflow-x: auto;
 		color: var(--rise-text-highlighted);
 		font-family: var(--rise-font-mono);
@@ -241,8 +241,8 @@
 		font-variant-numeric: tabular-nums;
 
 		:where(th, td) {
-			padding: sz(6px) sz(12px);
-			border: 1px solid var(--rise-border);
+			padding: space(6px 12px);
+			border: 1px solid ct(markdown, table-border, var(--rise-border));
 			text-align: left;
 			vertical-align: top;
 		}
@@ -271,7 +271,7 @@
 		background-color: var(--rise-primary);
 
 		@include motion-safe {
-			animation: base-markdown-caret 1s steps(1) infinite;
+			animation: base-markdown-caret var(--rise-duration-loop) steps(1) infinite;
 		}
 	}
 }

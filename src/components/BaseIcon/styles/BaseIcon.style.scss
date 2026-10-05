@@ -3,11 +3,12 @@
 	align-items: center;
 	justify-content: center;
 	flex-shrink: 0;
+	color: ct(icon, text, currentcolor);
 	fill: currentcolor;
 
 	&__svg {
-		width: sz(20px);
-		height: sz(20px);
+		width: sz(ct(icon, icon-size, 20px));
+		height: sz(ct(icon, icon-size, 20px));
 		transform-box: fill-box;
 		transform-origin: center;
 		@include transition(transform, color);

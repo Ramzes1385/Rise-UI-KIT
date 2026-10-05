@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
@@ -6,6 +7,15 @@ export const MARQUEE_VARIANTS = ['default', 'soft', 'outline'] as const
 
 /** Куда движется лента: `left` и `right` — по горизонтали, `up` и `down` — по вертикали */
 export const MARQUEE_DIRECTIONS = ['left', 'right', 'up', 'down'] as const
+
+/**
+ * Части ленты для пропа `ui` (БЭМ-элементы `.base-marquee__<часть>`, `root` — корень с `role="marquee"`):
+ * viewport — видимая область, track — движущаяся дорожка, group — повтор содержимого, item — элемент из `items`,
+ * separator — разделитель после элемента, button — кнопка паузы.
+ */
+export const MARQUEE_PARTS = ['viewport', 'track', 'group', 'item', 'separator', 'button'] as const
+
+export type BaseMarqueePart = (typeof MARQUEE_PARTS)[number]
 
 /** Направление движения ленты */
 export type MarqueeDirection = (typeof MARQUEE_DIRECTIONS)[number]
@@ -33,6 +43,14 @@ export interface BaseMarqueeProps<T = unknown> extends BaseComponentProps<
 	isPaused?: boolean
 	/** Имя ленты для скринридера; по умолчанию «Бегущая строка» */
 	label?: string
+	/**
+	 * Классы частей ленты (`root`, `viewport`, `track`, `group`, `item`, `separator`, `button`) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseMarquee: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseMarquee :items="news" :ui="{ root: 'promo-strip', item: 'font-semibold' }" />
+	 */
+	ui?: UiProp<BaseMarqueePart>
 }
 
 export interface BaseMarqueeEmits {

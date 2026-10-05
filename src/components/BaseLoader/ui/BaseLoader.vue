@@ -1,39 +1,38 @@
 <template>
 	<div
 		ref="rootRef"
-		class="base-loader"
-		:class="[`base-loader--${variant}`, { 'base-loader--overlay': isOverlay }, classes.root]"
+		:class="[ui('root'), `base-loader--${variant}`, { 'base-loader--overlay': isOverlay }, classes.root]"
 		:style="[sizeScaleStyle, customColorStyle]"
 		role="status"
 		:aria-label="accessibleName">
-		<div class="base-loader__animation" :class="classes.animation" aria-hidden="true">
+		<div :class="[ui('animation'), classes.animation]" aria-hidden="true">
 			<template v-if="variant === 'spinner'">
-				<svg class="base-loader__spinner" :class="classes.spinner" viewBox="0 0 50 50">
-					<circle class="base-loader__spinner-track" cx="25" cy="25" r="20" fill="none" stroke-width="4" />
-					<circle class="base-loader__spinner-fill" cx="25" cy="25" r="20" fill="none" stroke-width="4" />
+				<svg :class="[ui('spinner'), classes.spinner]" viewBox="0 0 50 50">
+					<circle :class="ui('spinner-track')" cx="25" cy="25" r="20" fill="none" stroke-width="4" />
+					<circle :class="ui('spinner-fill')" cx="25" cy="25" r="20" fill="none" stroke-width="4" />
 				</svg>
 			</template>
 
 			<template v-if="variant === 'dots'">
-				<span class="base-loader__dot"></span>
-				<span class="base-loader__dot"></span>
-				<span class="base-loader__dot"></span>
+				<span :class="ui('dot')"></span>
+				<span :class="ui('dot')"></span>
+				<span :class="ui('dot')"></span>
 			</template>
 
 			<template v-if="variant === 'pulse'">
-				<span class="base-loader__pulse"></span>
+				<span :class="ui('pulse')"></span>
 			</template>
 
 			<template v-if="variant === 'bars'">
-				<span class="base-loader__bar"></span>
-				<span class="base-loader__bar"></span>
-				<span class="base-loader__bar"></span>
-				<span class="base-loader__bar"></span>
+				<span :class="ui('bar')"></span>
+				<span :class="ui('bar')"></span>
+				<span :class="ui('bar')"></span>
+				<span :class="ui('bar')"></span>
 			</template>
 		</div>
 
-		<span v-if="hasLabel" class="base-loader__label" :class="classes.label" aria-hidden="true">{{ resolvedLabel }}</span>
-		<span class="base-loader__announce">{{ isAnnounced ? accessibleName : '' }}</span>
+		<span v-if="hasLabel" :class="[ui('label'), classes.label]" aria-hidden="true">{{ resolvedLabel }}</span>
+		<span :class="ui('announce')">{{ isAnnounced ? accessibleName : '' }}</span>
 	</div>
 </template>
 
@@ -54,5 +53,5 @@ const props = withDefaults(
 	}),
 )
 
-const { classes, sizeScaleStyle, customColorStyle, resolvedLabel, accessibleName, isAnnounced, rootRef } = useBaseLoader(props)
+const { ui, classes, sizeScaleStyle, customColorStyle, resolvedLabel, accessibleName, isAnnounced, rootRef } = useBaseLoader(props)
 </script>

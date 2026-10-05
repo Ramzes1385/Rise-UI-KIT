@@ -1,7 +1,6 @@
 <template>
 	<div
-		class="base-markdown"
-		:class="[variantClass, classes.root, { 'base-markdown--streaming': isStreaming }]"
+		:class="[ui('root'), variantClass, classes.root, { 'base-markdown--streaming': isStreaming }]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		:aria-busy="isStreaming ? 'true' : undefined">
 		<MarkdownBlocks :blocks="blocks" />
@@ -22,5 +21,5 @@ const props = withDefaults(defineProps<BaseMarkdownProps>(), {
 	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, blocks } = useBaseMarkdown(props)
+const { ui, sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, blocks } = useBaseMarkdown(props)
 </script>

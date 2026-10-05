@@ -10,7 +10,7 @@ export function useBaseImageZoom(props: BaseImageZoomProps) {
 	const dialogRef = ref<HTMLElement | null>(null)
 	const zoomImgRef = ref<HTMLElement | null>(null)
 	const minimapImgRef = ref<HTMLElement | null>(null)
-	useFocusTrap({ containerRef: dialogRef, isActive: () => true })
+	useFocusTrap({ containerRef: dialogRef, isActive: () => props.zoom.isZoomOpen.value })
 	const imageAlt = computed((): string => props.gallery.currentAlt.value ?? props.alt)
 
 	return {

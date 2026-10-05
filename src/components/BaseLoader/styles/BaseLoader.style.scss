@@ -1,22 +1,23 @@
 .base-loader {
-	@include custom-text('--loader-color', var(--rise-primary));
+	@include custom-text('--loader-color', ct(loader, text, var(--rise-primary)));
 
 	display: inline-flex;
 	flex-direction: column;
 	align-items: center;
-	gap: sz(8px);
+	gap: sz(ct(loader, gap, 8px));
 
 	&__animation {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: sz(32px);
-		height: sz(32px);
+		width: sz(ct(loader, icon-size, 32px));
+		height: sz(ct(loader, icon-size, 32px));
 	}
 
 	&__label {
-		@include text-size(sm);
-		color: var(--rise-text-muted);
+		font-size: sz(ct(loader, label-font-size, var(--rise-font-size-sm)));
+		line-height: sz(var(--rise-line-height-sm));
+		color: ct(loader, label-text, var(--rise-text-muted));
 	}
 
 	&__announce {
@@ -26,11 +27,11 @@
 	&__spinner {
 		width: 100%;
 		height: 100%;
-		animation: base-loader-spin 0.8s linear infinite;
+		animation: base-loader-spin calc(var(--rise-duration-loop) * 0.8) linear infinite;
 	}
 
 	&__spinner-track {
-		stroke: var(--rise-bg-accented);
+		stroke: ct(loader, spinner-track-bg, var(--rise-bg-accented));
 	}
 
 	&__spinner-fill {
@@ -81,34 +82,34 @@
 
 	@include motion-safe {
 		&__dot {
-			animation: base-loader-dot 1.2s var(--rise-ease) infinite both;
+			animation: base-loader-dot calc(var(--rise-duration-loop) * 1.2) var(--rise-ease) infinite both;
 
 			&:nth-child(1) {
-				animation-delay: -0.32s;
+				animation-delay: calc(var(--rise-duration-loop) * -0.32);
 			}
 
 			&:nth-child(2) {
-				animation-delay: -0.16s;
+				animation-delay: calc(var(--rise-duration-loop) * -0.16);
 			}
 		}
 
 		&__pulse::before {
-			animation: base-loader-ping 1.2s var(--rise-ease-out) infinite;
+			animation: base-loader-ping calc(var(--rise-duration-loop) * 1.2) var(--rise-ease-out) infinite;
 		}
 
 		&__bar {
-			animation: base-loader-bar 1.2s var(--rise-ease) infinite both;
+			animation: base-loader-bar calc(var(--rise-duration-loop) * 1.2) var(--rise-ease) infinite both;
 
 			&:nth-child(1) {
-				animation-delay: -0.36s;
+				animation-delay: calc(var(--rise-duration-loop) * -0.36);
 			}
 
 			&:nth-child(2) {
-				animation-delay: -0.24s;
+				animation-delay: calc(var(--rise-duration-loop) * -0.24);
 			}
 
 			&:nth-child(3) {
-				animation-delay: -0.12s;
+				animation-delay: calc(var(--rise-duration-loop) * -0.12);
 			}
 		}
 	}
@@ -116,13 +117,13 @@
 	&--overlay {
 		position: absolute;
 		inset: 0;
-		z-index: 9999;
+		z-index: var(--rise-z-max);
 		justify-content: center;
-		background-color: color-mix(in srgb, var(--rise-bg) 80%, transparent);
+		background-color: ct(loader, bg, color-mix(in srgb, var(--rise-bg) 80%, transparent));
 	}
 
 	&--overlay &__label {
-		color: var(--rise-text-toned);
+		color: ct(loader, label-text, var(--rise-text-toned));
 	}
 }
 

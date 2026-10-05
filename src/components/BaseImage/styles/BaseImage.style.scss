@@ -2,8 +2,8 @@
 	position: relative;
 	display: inline-block;
 	overflow: hidden;
-	border-radius: sz(var(--rise-radius-md));
-	@include custom-bg(background-color, transparent);
+	border-radius: sz(ct(image, radius, var(--rise-radius-md)));
+	@include custom-bg(background-color, ct(image, bg, transparent));
 
 	&__frame {
 		display: block;
@@ -35,6 +35,10 @@
 		opacity: 1;
 	}
 
+	&__placeholder ~ &__frame &__img {
+		transition: none;
+	}
+
 	&--cover &__img {
 		object-fit: cover;
 	}
@@ -58,7 +62,7 @@
 		align-items: center;
 		justify-content: center;
 		overflow: hidden;
-		background-color: var(--rise-bg-elevated);
+		background-color: ct(image, placeholder-bg, var(--rise-bg-elevated));
 		@include reset-custom-color;
 	}
 
@@ -74,7 +78,7 @@
 				transparent 75%
 			);
 			background-size: 200% 100%;
-			animation: base-image-shimmer 1.5s ease-in-out infinite;
+			animation: base-image-shimmer calc(var(--rise-duration-loop) * 1.5) ease-in-out infinite;
 		}
 	}
 
@@ -87,8 +91,8 @@
 		justify-content: center;
 		gap: sz(4px);
 		padding: sz(8px);
-		background-color: var(--rise-bg-elevated);
-		color: var(--rise-text-dimmed);
+		background-color: ct(image, error-bg, var(--rise-bg-elevated));
+		color: ct(image, error-text, var(--rise-text-dimmed));
 		text-align: center;
 		container-type: inline-size;
 		@include reset-custom-color;
@@ -103,6 +107,16 @@
 		}
 	}
 }
+
+.base-image-placeholder-leave-active {
+	transition: opacity var(--rise-duration) var(--rise-ease);
+}
+
+.base-image-placeholder-leave-to {
+	opacity: 0;
+}
+
+@include enter-fade(base-image-zoom);
 
 @keyframes base-image-shimmer {
 	from {
@@ -121,8 +135,8 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background-color: var(--rise-media-backdrop);
-	color: var(--rise-media-text);
+	background-color: ct(image, zoom-bg, var(--rise-media-backdrop));
+	color: ct(image, zoom-text, var(--rise-media-text));
 	font-family: var(--rise-font-sans);
 
 	&-toolbar {
@@ -134,8 +148,8 @@
 		align-items: center;
 		gap: sz(4px);
 		padding: sz(4px);
-		border-radius: var(--rise-radius-full);
-		background-color: var(--rise-media-surface);
+		border-radius: ct(image, zoom-toolbar-radius, var(--rise-radius-full));
+		background-color: ct(image, zoom-toolbar-bg, var(--rise-media-surface));
 		backdrop-filter: blur(8px);
 		transform: translateX(-50%);
 	}
@@ -282,7 +296,7 @@
 			opacity: 1;
 
 			&::after {
-				box-shadow: inset 0 0 0 2px var(--rise-primary);
+				box-shadow: inset 0 0 0 2px ct(image, zoom-thumb-ring-selected, var(--rise-primary));
 			}
 		}
 	}

@@ -1,7 +1,7 @@
 <template>
 	<div
-		class="base-marquee"
 		:class="[
+			ui('root'),
 			variantClass,
 			`base-marquee--${direction}`,
 			{
@@ -16,21 +16,21 @@
 		:style="[sizeScaleStyle, variantStyle, customColorStyle, motionStyle]"
 		role="marquee"
 		:aria-label="rootLabel">
-		<div ref="viewportRef" class="base-marquee__viewport" :class="classes.viewport" :tabindex="viewportTabindex">
-			<div ref="trackRef" class="base-marquee__track">
+		<div ref="viewportRef" :class="[ui('viewport'), classes.viewport]" :tabindex="viewportTabindex">
+			<div ref="trackRef" :class="ui('track')">
 				<div
 					v-for="group in groupCount"
 					:key="group"
-					class="base-marquee__group"
+					:class="ui('group')"
 					:role="items ? 'list' : undefined"
 					:aria-hidden="group > 1 ? 'true' : undefined"
 					:inert="group > 1 || undefined">
 					<template v-if="items">
 						<template v-for="(item, index) in items" :key="index">
-							<span class="base-marquee__item" :class="classes.item" role="listitem">
+							<span :class="[ui('item'), classes.item]" role="listitem">
 								<slot name="item" :item="item" :index="index">{{ item }}</slot>
 							</span>
-							<span v-if="$slots.separator" class="base-marquee__separator" aria-hidden="true">
+							<span v-if="$slots.separator" :class="ui('separator')" aria-hidden="true">
 								<slot name="separator" />
 							</span>
 						</template>
@@ -42,7 +42,7 @@
 		<BaseButton
 			v-if="hasPauseControl"
 			variant="ghost"
-			class="base-marquee__button"
+			:class="ui('button')"
 			:custom-class="classes.button"
 			:size-scale="sizeScale"
 			:aria-label="isPaused ? UI_MARQUEE.PLAY : UI_MARQUEE.PAUSE"
@@ -81,6 +81,7 @@ const emit = defineEmits<BaseMarqueeEmits>()
 defineSlots<BaseMarqueeSlots<T>>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

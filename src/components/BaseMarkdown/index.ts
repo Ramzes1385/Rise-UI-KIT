@@ -1,5 +1,6 @@
-export { MARKDOWN_VARIANTS } from './types/BaseMarkdown.types'
+export { MARKDOWN_PARTS, MARKDOWN_VARIANTS } from './types/BaseMarkdown.types'
 export type {
+	BaseMarkdownPart,
 	BaseMarkdownProps,
 	MarkdownAlign,
 	MarkdownBlock,
