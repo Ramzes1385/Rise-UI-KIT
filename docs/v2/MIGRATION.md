@@ -1773,3 +1773,11 @@ API кита не меняется. В Storybook добавлены пример
   BaseImageMap и BaseImageMapEditor — задача small-fixes-9b.
 - **Отключение всего компонента** (`isDisabled` у BaseCalendar, BaseTransfer, BaseSignaturePad; у BaseSignaturePad — и отключённая форма) — по-прежнему нативный `disabled` у этих кнопок.
 - **Приложениям:** селекторы `button:disabled` и проверки `toBeDisabled()` / `disabled` для перечисленных кнопок на пределе замените на `[aria-disabled='true']` (`toHaveAttribute('aria-disabled', 'true')`) или класс `.base-button--disabled`. `toBeDisabled()` Testing Library на `aria-disabled` не срабатывает.
+
+## Задача fix-image-rotation: BaseImage и useImageZoom — поворот
+
+- **`rotation` копится без `% 360`:** вправо 360°, 450°…, влево — в минус (−90°, −360°…). Переход CSS всегда идёт в сторону нажатия. Кто сравнивал `rotation` с 0/90/180/270 — берите `((rotation % 360) + 360) % 360`.
+- **`resetZoom()`** (кнопка «Сбросить масштаб», клавиша «0») возвращает поворот к ближайшему полному обороту (270° → 360°, 90° → 0°), а не всегда к 0°. Масштаб и сдвиг — к начальным, как раньше.
+- **Новое в `useImageZoom`:** `resetView()` — масштаб, сдвиг и поворот ровно к 0° (открытие, закрытие, смена изображения галереи — теперь через него); `isZoomAnimated` — включены ли плавные переходы (нет при `prefers-reduced-motion` и при перетаскивании рамки миникарты); `isMinimapDragging`.
+- **`zoomImageStyle`:** на 90°/270° `scale()` включает множитель вписывания (≤ 1), `scalePercent` — прежний масштаб пользователя без множителя. **`minimapImageStyle`** — `scale(<вписывание>) rotate(<угол>)` вместо `rotate(<угол>)`.
+- **DOM просмотра BaseImage:** у корня `.base-image__zoom` модификатор `base-image__zoom--animated` (переходы `transform`); `img` просмотра и миникарты пересоздаются при смене адреса (`key`), без перехода от прежнего угла.
