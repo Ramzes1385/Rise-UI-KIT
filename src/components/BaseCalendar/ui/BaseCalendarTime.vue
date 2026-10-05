@@ -1,20 +1,20 @@
 <template>
-	<div class="base-calendar__time" :class="classes.time" role="group" :aria-labelledby="captionId">
-		<span :id="captionId" class="base-calendar__time-caption">{{ UI_CALENDAR.TIME }}</span>
-		<div class="base-calendar__time-fields">
+	<div :class="[ui('time'), classes.time]" role="group" :aria-labelledby="captionId">
+		<span :id="captionId" :class="ui('time-caption')">{{ UI_CALENDAR.TIME }}</span>
+		<div :class="ui('time-fields')">
 			<BaseInput
 				v-model="hoursModel"
-				class="base-calendar__time-input"
+				:class="ui('time-input')"
 				type="number"
 				:label="UI_CALENDAR.HOURS"
 				:size-scale="sizeScale"
 				:is-disabled="isDisabled"
 				@change="commitTime"
 				@blur="resetDrafts" />
-			<span class="base-calendar__time-sep" aria-hidden="true">:</span>
+			<span :class="ui('time-sep')" aria-hidden="true">:</span>
 			<BaseInput
 				v-model="minutesModel"
-				class="base-calendar__time-input"
+				:class="ui('time-input')"
 				type="number"
 				:label="UI_CALENDAR.MINUTES"
 				:size-scale="sizeScale"
@@ -22,10 +22,10 @@
 				@change="commitTime"
 				@blur="resetDrafts" />
 			<template v-if="showSeconds">
-				<span class="base-calendar__time-sep" aria-hidden="true">:</span>
+				<span :class="ui('time-sep')" aria-hidden="true">:</span>
 				<BaseInput
 					v-model="secondsModel"
-					class="base-calendar__time-input"
+					:class="ui('time-input')"
 					type="number"
 					:label="UI_CALENDAR.SECONDS"
 					:size-scale="sizeScale"
@@ -36,7 +36,7 @@
 			<BaseButton
 				v-if="!is24Hour"
 				variant="outline"
-				class="base-calendar__time-ampm"
+				:class="ui('time-ampm')"
 				:size-scale="sizeScale"
 				:is-disabled="isDisabled"
 				@click="emit('toggleAmPm')">
@@ -57,5 +57,5 @@ const props = defineProps<BaseCalendarTimeProps>()
 
 const emit = defineEmits<BaseCalendarTimeEmits>()
 
-const { captionId, hoursModel, minutesModel, secondsModel, resetDrafts, commitTime } = useBaseCalendarTime(props, emit)
+const { ui, captionId, hoursModel, minutesModel, secondsModel, resetDrafts, commitTime } = useBaseCalendarTime(props, emit)
 </script>

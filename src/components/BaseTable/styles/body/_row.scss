@@ -4,7 +4,7 @@
 
 .base-table {
 	&__tr {
-		--tbl-row-hover: var(--tbl-hover, var(--rise-bg-muted));
+		--tbl-row-hover: var(--tbl-hover, #{ct(table, row-bg-hover, var(--rise-bg-muted))});
 
 		&:not(.base-table__tr--child, .base-table__tr--nested, .base-table__tr--expanded-content) {
 			@include hover {
@@ -13,8 +13,8 @@
 		}
 
 		&.base-table__tr--selected {
-			--tbl-row-bg: var(--rise-primary-soft);
-			--tbl-row-hover: var(--rise-primary-soft-hover);
+			--tbl-row-bg: #{ct(table, row-bg-selected, var(--rise-primary-soft))};
+			--tbl-row-hover: #{ct(table, row-bg-selected, var(--rise-primary-soft-hover))};
 		}
 
 		&--disabled {
@@ -35,7 +35,19 @@
 		}
 
 		&--child > .base-table__td--expand + .base-table__td {
-			padding-left: calc(#{sz(var(--tbl-pad-left))} + #{sz(20px)});
+			padding-left: calc(#{space(var(--tbl-pad-left))} + #{sz(20px)});
 		}
+	}
+}
+
+@include motion-safe {
+	.base-table__tbody--reveal > .base-table__tr:not(.base-table__tr--expanded-content, .base-table__tr--nested) {
+		animation: base-table-reveal var(--rise-duration-slow) var(--rise-ease-out) both;
+	}
+}
+
+@keyframes base-table-reveal {
+	from {
+		opacity: 0;
 	}
 }

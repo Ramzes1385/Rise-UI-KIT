@@ -1,4 +1,6 @@
 import { computed, ref, useSlots } from 'vue'
+import { useCalendarUi } from './useCalendarUi'
+import { hideLeaving } from './useCalendarMotion'
 import { useClickOutside } from '@composables/overlay/useClickOutside'
 import type { BaseCalendarDaysProps } from '../types/BaseCalendarDays.types'
 
@@ -42,6 +44,8 @@ export function useBaseCalendarDays(props: BaseCalendarDaysProps) {
 	)
 
 	return {
+		ui: useCalendarUi(),
+		hideLeaving,
 		popoverRef,
 		hasDaySlot,
 		cells: computed(() =>

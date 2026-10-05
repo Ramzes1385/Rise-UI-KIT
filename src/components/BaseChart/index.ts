@@ -1,6 +1,7 @@
-export { CHART_ANIMATIONS, CHART_UPDATE_ANIMATIONS, CHART_VARIANTS } from './types/BaseChart.types'
+export { CHART_ANIMATIONS, CHART_PARTS, CHART_UPDATE_ANIMATIONS, CHART_VARIANTS } from './types/BaseChart.types'
 export type {
 	BaseChartEmits,
+	BaseChartPart,
 	BaseChartProps,
 	BaseChartSlots,
 	ChartAnimation,

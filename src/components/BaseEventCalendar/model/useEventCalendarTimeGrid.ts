@@ -1,9 +1,9 @@
 import type { ComputedRef } from 'vue'
 import { computed, nextTick, ref, watch } from 'vue'
-import type { EventCalendarWorkHours } from '../types/BaseEventCalendar.types'
 import { eventTime, formatHeaderDay, formatTime } from './eventCalendarFormat'
 import type { CalendarTimeSegment, CalendarWeekSegment } from '@utils/calendar/eventUtils'
 import { columnKey, columnName, itemsOfResource } from './resources/eventCalendarResources'
+import type { EventCalendarView, EventCalendarWorkHours } from '../types/BaseEventCalendar.types'
 import { addDays, daysBetween, layoutDay, layoutWeek, toDayKey } from '@utils/calendar/eventUtils'
 import type {
 	EventCalendarContext,
@@ -35,6 +35,8 @@ function percent(value: number): string {
 
 function useTimeScroll(context: EventCalendarContext) {
 	const scrollRef = ref<HTMLElement | null>(null)
+	let keptView: EventCalendarView | null = null
+	let keptTop = 0
 	function scrollToStart(): void {
 		const minute = (context.props.workHours && parseMinutes(context.props.workHours.start)) ?? DEFAULT_SCROLL_MINUTE
 		nextTick(() => {
@@ -42,9 +44,22 @@ function useTimeScroll(context: EventCalendarContext) {
 			if (element) element.scrollTop = (element.scrollHeight * minute) / MINUTES_PER_DAY
 		})
 	}
-	watch(scrollRef, element => element && scrollToStart())
-	watch(context.view, scrollToStart)
-	return scrollRef
+	watch(scrollRef, element => {
+		if (!element) return
+		if (keptView === context.view.value) element.scrollTop = keptTop
+		else scrollToStart()
+	})
+	watch(context.view, () => {
+		keptView = null
+		scrollToStart()
+	})
+	return {
+		scrollRef,
+		handleTimeScroll(event: Event): void {
+			keptView = context.view.value
+			keptTop = (event.target as HTMLElement).scrollTop
+		},
+	}
 }
 
 function useTimeColumns(context: EventCalendarContext, dayCount: ComputedRef<number>) {
@@ -113,7 +128,7 @@ export function useEventCalendarTimeGrid(context: EventCalendarContext) {
 	const { props, period, now } = context
 	const dayCount = computed(() => daysBetween(period.value.start, period.value.end))
 	return {
-		scrollRef: useTimeScroll(context),
+		...useTimeScroll(context),
 		...useTimeColumns(context, dayCount),
 		...useAllDay(context, dayCount),
 		timedStyle: (segment: CalendarTimeSegment) => ({

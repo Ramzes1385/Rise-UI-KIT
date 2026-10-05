@@ -1,6 +1,7 @@
-export { CALENDAR_VARIANTS } from './types/BaseCalendar.types'
+export { CALENDAR_PARTS, CALENDAR_VARIANTS } from './types/BaseCalendar.types'
 export type {
 	BaseCalendarEmits,
+	BaseCalendarPart,
 	BaseCalendarProps,
 	BaseCalendarSlots,
 	CalendarConstraints,

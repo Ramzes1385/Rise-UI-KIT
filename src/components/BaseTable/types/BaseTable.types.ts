@@ -1,11 +1,55 @@
 import type { InjectionKey, Ref } from 'vue'
 import type { PaddingProp } from '@composables/base/usePadding'
+import type { UiClassFn, UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import type { VisiblePageItem } from '@utils/navigation/paginationUtils/types/paginationUtils.types'
 import type { TableExportFormat, TableExportOptions } from '@utils/data/tableExportUtils/types/tableExportUtils.types'
 
 export const TABLE_VARIANTS = ['default', 'bordered', 'striped'] as const
+
+/**
+ * Части таблицы для пропа `ui` (БЭМ-элементы `.base-table__<часть>`, `root` — корень):
+ * body — рамка со всем содержимым; header — слот `header` над таблицей; toolbar — панель инструментов; search — поиск;
+ * filters — фильтры; settings — меню видимости колонок; export — меню выгрузки; active-filters — метки активных фильтров;
+ * content — область таблицы с подложкой загрузки; wrapper — прокручиваемая обёртка `<table>`; loading-overlay — подложка
+ * со спиннером при перезагрузке; table — `<table>`; thead — шапка; th — ячейка шапки; sort-btn — кнопка сортировки в шапке;
+ * resizer — ручка ширины колонки; tbody — тело; tr — строка данных (и дочерние, раскрытые, вложенные строки; не скелетон
+ * и не строка «нет данных»); td — ячейка; expand-btn — кнопка раскрытия строки; expanded-wrapper — содержимое раскрытой
+ * строки; nested-wrapper — вложенная таблица; load-more — кнопка «Загрузить ещё»; footer-bar — полоса пагинации;
+ * page-size — выбор размера страницы; pagination-info — подпись с диапазоном строк; footer — слот `footer`.
+ */
+export const TABLE_PARTS = [
+	'body',
+	'header',
+	'toolbar',
+	'search',
+	'filters',
+	'settings',
+	'export',
+	'active-filters',
+	'content',
+	'wrapper',
+	'loading-overlay',
+	'table',
+	'thead',
+	'th',
+	'sort-btn',
+	'resizer',
+	'tbody',
+	'tr',
+	'td',
+	'expand-btn',
+	'expanded-wrapper',
+	'nested-wrapper',
+	'load-more',
+	'footer-bar',
+	'page-size',
+	'pagination-info',
+	'footer',
+] as const
+
+export type BaseTablePart = (typeof TABLE_PARTS)[number]
 
 export type SortDirection = 'asc' | 'desc' | null
 
@@ -234,6 +278,15 @@ export interface BaseTableProps extends BaseComponentProps<
 	 * `table`), `sheetName` — имя листа Excel, `delimiter`, `locale`, `hasBom`, `isFormulaSafe` — CSV
 	 */
 	exportOptions?: TableExportOptions
+	/**
+	 * Классы частей таблицы (`root`, `th`, `tr`, `td`, `toolbar`…) — добавляются к классам кита. Глобально —
+	 * `createUiKitPlugin({ defaults: { BaseTable: { ui } } })`, классы плагина и экземпляра склеиваются. Вложенная
+	 * таблица (`nestedConfig`) получает только глобальные классы.
+	 *
+	 * @example
+	 * <BaseTable :columns="columns" :rows="rows" :ui="{ th: 'uppercase', td: 'tabular-nums' }" />
+	 */
+	ui?: UiProp<BaseTablePart>
 }
 
 /**
@@ -307,6 +360,9 @@ export interface TableExpandTransitionCallbacks {
 }
 
 export const TABLE_EXPAND_TRANSITION_KEY = Symbol('TABLE_EXPAND_TRANSITION') as InjectionKey<TableExpandTransitionCallbacks>
+
+/** Классы частей из пропа `ui` и `defaults.BaseTable.ui` плагина — для частей таблицы (provide/inject) */
+export const TABLE_UI_KEY = Symbol('TABLE_UI') as InjectionKey<UiClassFn<BaseTablePart>>
 
 export interface BaseTableSlots {
 	/** Над таблицей и панелью инструментов: заголовок, описание, свои кнопки */

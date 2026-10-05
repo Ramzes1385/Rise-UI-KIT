@@ -1,7 +1,8 @@
 <template>
 	<BaseCard
-		class="base-calendar"
+		ref="rootRef"
 		:class="[
+			ui('root'),
 			variantClass,
 			{
 				'base-calendar--week-numbers': resolvedProps.showWeekNumber,
@@ -15,11 +16,11 @@
 		:size-scale="resolvedProps.sizeScale"
 		:aria-disabled="resolvedProps.isDisabled ? 'true' : undefined"
 		:style="[sizeScaleStyle, customColorStyle, variantStyle]">
-		<div v-if="resolvedProps.showNavigation" class="base-calendar__header" :class="classes.header">
+		<div v-if="resolvedProps.showNavigation" :class="[ui('header'), classes.header]">
 			<slot name="header" :month="currentMonth" :year="currentYear">
 				<BaseButton
 					variant="ghost"
-					class="base-calendar__nav-btn"
+					:class="ui('nav-btn')"
 					:aria-label="navLabels.prev"
 					:size-scale="resolvedProps.sizeScale"
 					:is-disabled="resolvedProps.isDisabled || !canPrev"
@@ -30,16 +31,16 @@
 				<BaseButton
 					v-if="resolvedProps.canSwitchView"
 					variant="ghost"
-					class="base-calendar__title-btn"
+					:class="ui('title-btn')"
 					:size-scale="resolvedProps.sizeScale"
 					:is-disabled="resolvedProps.isDisabled"
 					@click="switchView">
-					<span class="base-calendar__title">{{ headerTitle }}</span>
+					<span :class="ui('title')">{{ headerTitle }}</span>
 				</BaseButton>
-				<span v-else class="base-calendar__title">{{ headerTitle }}</span>
+				<span v-else :class="ui('title')">{{ headerTitle }}</span>
 				<BaseButton
 					variant="ghost"
-					class="base-calendar__nav-btn"
+					:class="ui('nav-btn')"
 					:aria-label="navLabels.next"
 					:size-scale="resolvedProps.sizeScale"
 					:is-disabled="resolvedProps.isDisabled || !canNext"
@@ -49,60 +50,66 @@
 				</BaseButton>
 			</slot>
 		</div>
-		<div v-else class="base-calendar__header base-calendar__header--simple" :class="classes.header">
-			<span class="base-calendar__title">{{ headerTitle }}</span>
+		<div v-else :class="[ui('header'), 'base-calendar__header--simple', classes.header]">
+			<span :class="ui('title')">{{ headerTitle }}</span>
 		</div>
 
-		<BaseCalendarDays
-			v-if="currentView === 'days'"
-			:show-week-number="resolvedProps.showWeekNumber"
-			:ordered-weekdays="orderedWeekdays"
-			:calendar-days="calendarDays"
-			:is-disabled="resolvedProps.isDisabled"
-			:locale="resolvedProps.locale"
-			:classes="classes"
-			:is-today="isToday"
-			:is-selected="isSelected"
-			:is-day-disabled="isDayDisabled"
-			:is-weekend="isWeekend"
-			:is-in-range="isInRange"
-			:get-highlight="getHighlight"
-			:get-row-week-number="getRowWeekNumber"
-			:is-same-day="isSameDay"
-			:day-classes="dayClasses"
-			:popover-date="popoverDate"
-			:popover-highlights="popoverHighlights"
-			:close-popover="closePopover"
-			@day-click="handleDayClick">
-			<template v-if="$slots.day" #day="slotProps">
-				<slot name="day" v-bind="slotProps" />
-			</template>
-			<template v-if="$slots['date-popover']" #date-popover="slotProps">
-				<slot name="date-popover" v-bind="slotProps" />
-			</template>
-		</BaseCalendarDays>
+		<Transition :name="viewTransition" :css="isAnimated" @before-leave="hideLeaving">
+			<BaseCalendarDays
+				v-if="currentView === 'days'"
+				:key="viewKey"
+				:show-week-number="resolvedProps.showWeekNumber"
+				:ordered-weekdays="orderedWeekdays"
+				:calendar-days="calendarDays"
+				:is-disabled="resolvedProps.isDisabled"
+				:locale="resolvedProps.locale"
+				:classes="classes"
+				:is-today="isToday"
+				:is-selected="isSelected"
+				:is-day-disabled="isDayDisabled"
+				:is-weekend="isWeekend"
+				:is-in-range="isInRange"
+				:get-highlight="getHighlight"
+				:get-row-week-number="getRowWeekNumber"
+				:is-same-day="isSameDay"
+				:day-classes="dayClasses"
+				:popover-date="popoverDate"
+				:popover-highlights="popoverHighlights"
+				:close-popover="closePopover"
+				:period="period"
+				:slide-name="slideName"
+				:is-animated="isAnimated"
+				@day-click="handleDayClick">
+				<template v-if="$slots.day" #day="slotProps">
+					<slot name="day" v-bind="slotProps" />
+				</template>
+				<template v-if="$slots['date-popover']" #date-popover="slotProps">
+					<slot name="date-popover" v-bind="slotProps" />
+				</template>
+			</BaseCalendarDays>
 
-		<BaseCalendarMonths
-			v-if="currentView === 'months'"
-			:month-names="monthNames"
-			:current-month="currentMonth"
-			:is-disabled="resolvedProps.isDisabled"
-			:classes="classes"
-			@select="selectMonth" />
+			<BaseCalendarMonths
+				v-else-if="currentView === 'months'"
+				:key="viewKey"
+				:month-names="monthNames"
+				:current-month="currentMonth"
+				:is-disabled="resolvedProps.isDisabled"
+				:classes="classes"
+				@select="selectMonth" />
 
-		<div v-if="currentView === 'years'" class="base-calendar__years" :class="classes.years">
-			<button
-				v-for="year in yearRange"
-				:key="year"
-				type="button"
-				class="base-calendar__year-btn"
-				:class="{ 'base-calendar__year-btn--current': year === currentYear }"
-				:aria-current="year === currentYear ? 'true' : undefined"
-				:disabled="resolvedProps.isDisabled"
-				@click="selectYear(year)">
-				{{ year }}
-			</button>
-		</div>
+			<div v-else :key="viewKey" :class="[ui('years'), classes.years]">
+				<button
+					v-for="year in yearRange"
+					:key="year"
+					type="button"
+					:class="[ui('year-btn'), { 'base-calendar__year-btn--current': year === currentYear }]"
+					:aria-current="year === currentYear ? 'true' : undefined"
+					:disabled="resolvedProps.isDisabled"
+					@click="selectYear(year)">
+					{{ year }}
+				</button>
+			</div>
+		</Transition>
 
 		<BaseCalendarTime
 			v-if="resolvedProps.showTime"
@@ -121,10 +128,10 @@
 			@toggle-am-pm="toggleAmPm"
 			@time-change="handleTimeChange" />
 
-		<div v-if="resolvedProps.showTodayButton" class="base-calendar__footer" :class="classes.footer">
+		<div v-if="resolvedProps.showTodayButton" :class="[ui('footer'), classes.footer]">
 			<BaseButton
 				variant="ghost"
-				class="base-calendar__today-btn"
+				:class="ui('today-btn')"
 				:size-scale="resolvedProps.sizeScale"
 				:is-disabled="resolvedProps.isDisabled"
 				@click="handleTodayClick">
@@ -156,6 +163,14 @@ defineSlots<BaseCalendarSlots>()
 const isAm = defineModel<boolean>('isAm', { default: true })
 
 const {
+	ui,
+	rootRef,
+	period,
+	slideName,
+	viewKey,
+	viewTransition,
+	isAnimated,
+	hideLeaving,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

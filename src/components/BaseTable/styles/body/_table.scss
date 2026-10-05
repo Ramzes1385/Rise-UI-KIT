@@ -15,14 +15,14 @@
 	}
 
 	&__col--check {
-		width: calc(#{sz(var(--tbl-pad-left))} + #{sz(16px)});
+		width: calc(#{space(var(--tbl-pad-left))} + #{sz(16px)});
 	}
 
 	&__col--number {
-		width: calc(#{sz(var(--tbl-pad-left))} + #{sz(32px)});
+		width: calc(#{space(var(--tbl-pad-left))} + #{sz(32px)});
 	}
 
 	&__col--expand {
-		width: calc(#{sz(var(--tbl-pad-left))} + #{sz(24px)});
+		width: calc(#{space(var(--tbl-pad-left))} + #{sz(24px)});
 	}
 }

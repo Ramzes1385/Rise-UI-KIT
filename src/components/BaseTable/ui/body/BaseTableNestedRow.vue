@@ -1,14 +1,15 @@
 <template>
-	<tr v-if="nestedConfig && row.children?.length" class="base-table__tr base-table__tr--nested" :class="trClass">
-		<td :colspan="totalColumns" class="base-table__td base-table__td--nested" :class="tdClass">
+	<tr v-if="nestedConfig && row.children?.length" :class="[ui('tr'), 'base-table__tr--nested', trClass]">
+		<td :colspan="totalColumns" :class="[ui('td'), 'base-table__td--nested', tdClass]">
 			<Transition
+				:css="false"
 				@before-enter="transitionCallbacks.onExpandBeforeEnter"
 				@enter="transitionCallbacks.onExpandEnter"
 				@after-enter="transitionCallbacks.onExpandAfterEnter"
 				@before-leave="transitionCallbacks.onCollapseBeforeLeave"
 				@leave="transitionCallbacks.onCollapseLeave"
 				@after-leave="transitionCallbacks.onCollapseAfterLeave">
-				<div v-if="isExpanded(row)" class="base-table__nested-wrapper">
+				<div v-if="isExpanded(row)" :class="ui('nested-wrapper')">
 					<h4 v-if="nestedConfig.title" class="base-table__nested-title">{{ nestedConfig.title }}</h4>
 					<BaseTable :columns="nestedConfig.columns" :rows="row.children" :size-scale="sizeScale" />
 				</div>
@@ -17,15 +18,15 @@
 	</tr>
 
 	<template v-else-if="row.children?.length && isExpanded(row)">
-		<tr v-for="child in row.children" :key="`${row.id}-${child.id}`" class="base-table__tr base-table__tr--child" :class="trClass">
-			<td v-if="isSelectable" class="base-table__td base-table__td--check" :class="tdClass"></td>
-			<td v-if="hasRowNumber" class="base-table__td base-table__td--number" :class="tdClass"></td>
-			<td class="base-table__td base-table__td--expand" :class="tdClass"></td>
+		<tr v-for="child in row.children" :key="`${row.id}-${child.id}`" :class="[ui('tr'), 'base-table__tr--child', trClass]">
+			<td v-if="isSelectable" :class="[ui('td'), 'base-table__td--check', tdClass]"></td>
+			<td v-if="hasRowNumber" :class="[ui('td'), 'base-table__td--number', tdClass]"></td>
+			<td :class="[ui('td'), 'base-table__td--expand', tdClass]"></td>
 			<td
 				v-for="column in columns"
 				:key="`child-${column.key}`"
-				class="base-table__td"
 				:class="[
+					ui('td'),
 					`base-table__td--${column.align || 'left'}`,
 					column.isSticky ? `base-table__td--sticky-${column.isSticky}` : '',
 					column.cellClass,
@@ -49,5 +50,5 @@ defineProps<BaseTableNestedRowProps>()
 
 defineSlots<BaseTableNestedRowSlots>()
 
-const { transitionCallbacks } = useTableExpandTransition()
+const { ui, transitionCallbacks } = useTableExpandTransition()
 </script>

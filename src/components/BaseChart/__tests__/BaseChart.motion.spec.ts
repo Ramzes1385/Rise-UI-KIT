@@ -1,6 +1,9 @@
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import BaseChart from '../ui/BaseChart.vue'
+import { dirname, resolve } from 'node:path'
 import type { ChartSeries } from '../types/BaseChart.types'
 import { fireEvent, render, screen } from '@testing-library/vue'
 
@@ -181,5 +184,21 @@ describe('BaseChart движение', () => {
 		} finally {
 			globalThis.ResizeObserver = original
 		}
+	})
+})
+
+describe('BaseChart — движение в стилях', () => {
+	const styles = readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), '../styles/BaseChart.style.scss'), 'utf-8')
+
+	it('только токены движения: чисел в s и ms нет', () => {
+		expect(styles).not.toMatch(/\b\d*\.?\d+m?s\b/)
+		expect(styles).toMatch(/animation-duration: var\(--rise-duration-xslow\)/)
+		expect(styles).toMatch(/calc\(var\(--rise-motion-stagger\) \* var\(--base-chart-order, 0\)\)/)
+	})
+
+	it('маркеры и подсказка двигаются transform, а не left/top', () => {
+		expect(styles).toMatch(/transform: translate\(var\(--base-chart-marker-x, 0\), var\(--base-chart-marker-y, 0\)\)/)
+		expect(styles).toMatch(/transform: translateX\(var\(--base-chart-guide-x, 0\)\)/)
+		expect(styles).toMatch(/transform var\(--rise-duration-fast\) var\(--rise-ease\)/)
 	})
 })

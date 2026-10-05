@@ -1,11 +1,10 @@
 <template>
-	<div class="base-calendar__months" :class="classes.months">
+	<div :class="[ui('months'), classes.months]">
 		<button
 			v-for="(name, index) in monthNames"
 			:key="index"
 			type="button"
-			class="base-calendar__month-btn"
-			:class="{ 'base-calendar__month-btn--current': index === currentMonth }"
+			:class="[ui('month-btn'), { 'base-calendar__month-btn--current': index === currentMonth }]"
 			:aria-current="index === currentMonth ? 'true' : undefined"
 			:disabled="isDisabled"
 			@click="emit('select', index)">
@@ -15,9 +14,12 @@
 </template>
 
 <script setup lang="ts">
+import { useCalendarUi } from '../model/useCalendarUi'
 import type { BaseCalendarMonthsEmits, BaseCalendarMonthsProps } from '../types/BaseCalendarMonths.types'
 
 defineProps<BaseCalendarMonthsProps>()
 
 const emit = defineEmits<BaseCalendarMonthsEmits>()
+
+const ui = useCalendarUi()
 </script>

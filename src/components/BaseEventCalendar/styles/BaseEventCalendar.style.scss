@@ -3,29 +3,29 @@
 	--lane-height: #{sz(22px)};
 	--slot-height: #{sz(24px)};
 	--axis-width: #{sz(56px)};
-	--grid-line: var(--rise-border-muted);
+	--grid-line: #{ct(event-calendar, cell-border, var(--rise-border-muted))};
 	--grid-line-strong: var(--rise-border);
 
 	display: flex;
 	flex-direction: column;
-	gap: sz(12px);
+	gap: space(12px);
 	box-sizing: border-box;
 	min-width: 0;
-	padding: sz(12px);
-	border: 1px solid var(--rise-border);
-	border-radius: sz(var(--rise-radius-lg));
+	padding: space(12px);
+	border: 1px solid ct(event-calendar, border, var(--rise-border));
+	border-radius: sz(ct(event-calendar, radius, var(--rise-radius-lg)));
 	@include custom-text(color, var(--rise-text));
 	@include text-size(sm);
-	@include custom-bg(background-color, var(--rise-bg));
+	@include custom-bg(background-color, ct(event-calendar, bg, var(--rise-bg)));
 
 	&--soft {
 		border-color: transparent;
-		@include custom-bg(background-color, var(--rise-bg-elevated));
+		@include custom-bg(background-color, ct(event-calendar, bg, var(--rise-bg-elevated)));
 	}
 
 	&--outline {
-		border-color: var(--rise-border-accented);
-		@include custom-bg(background-color, transparent);
+		border-color: ct(event-calendar, border, var(--rise-border-accented));
+		@include custom-bg(background-color, ct(event-calendar, bg, transparent));
 	}
 
 	&--ghost {
@@ -38,7 +38,7 @@
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
-		gap: sz(8px) sz(12px);
+		gap: space(8px 12px);
 	}
 
 	&__nav {
@@ -59,6 +59,27 @@
 		@include visually-hidden;
 	}
 
+	&__view {
+		position: relative;
+		min-width: 0;
+
+		&:has(> .base-event-calendar__view-leaving) {
+			overflow: clip;
+		}
+	}
+
+	&__view-leaving {
+		position: absolute;
+		inset: 0 0 auto;
+		pointer-events: none;
+	}
+
+	@include motion-safe {
+		@include enter-slide(base-event-calendar__view-next, left);
+		@include enter-slide(base-event-calendar__view-prev, right);
+		@include enter-scale(base-event-calendar__view-change);
+	}
+
 	&__month {
 		display: grid;
 		border: 1px solid var(--grid-line);
@@ -71,13 +92,25 @@
 		grid-template-columns: repeat(7, minmax(0, 1fr));
 	}
 
+	&__weekdays,
+	&__resource-head,
+	&__time-head {
+		background-color: ct(event-calendar, header-bg, transparent);
+	}
+
+	&__weekdays,
+	&__time-grid > :first-child {
+		border-top-left-radius: inherit;
+		border-top-right-radius: inherit;
+	}
+
 	&__weekday {
-		padding: sz(6px) sz(8px);
+		padding: space(6px 8px);
 		border-bottom: 1px solid var(--grid-line);
 		font-weight: var(--rise-font-weight-medium);
 		text-align: center;
 		@include text-size(xs);
-		@include custom-text(color, var(--rise-text-toned));
+		@include custom-text(color, ct(event-calendar, header-text, var(--rise-text-toned)));
 	}
 
 	&__week + &__week &__day {
@@ -90,7 +123,7 @@
 		gap: sz(2px);
 		min-width: 0;
 		min-height: sz(96px);
-		padding: sz(4px) 0;
+		padding: space(ct(event-calendar, cell-padding-y, 4px)) 0;
 		outline-offset: -2px;
 		@include focus-ring(-2px);
 
@@ -101,6 +134,12 @@
 		&--outside {
 			@include custom-text(color, var(--rise-text-muted));
 			@include custom-bg(background-color, var(--rise-bg-muted));
+		}
+	}
+
+	&__day:not(.base-event-calendar__day--outside, .base-event-calendar__day--selected) {
+		@include hover {
+			background-color: ct(event-calendar, cell-bg-hover, transparent);
 		}
 	}
 
@@ -116,7 +155,7 @@
 	&__day--today &__day-number {
 		font-weight: var(--rise-font-weight-semibold);
 		color: var(--rise-on-primary);
-		background-color: var(--rise-primary);
+		background-color: ct(event-calendar, today-bg, var(--rise-primary));
 	}
 
 	&__lanes {
@@ -131,16 +170,17 @@
 		box-sizing: border-box;
 		min-width: 0;
 		margin: 0;
-		padding: 0 sz(6px);
+		padding: 0 space(ct(event-calendar, event-padding-x, 6px));
 		border: 0;
 		border-left: sz(3px) solid var(--event-color);
-		border-radius: sz(var(--rise-radius-sm));
+		border-radius: sz(ct(event-calendar, event-radius, var(--rise-radius-sm)));
 		font: inherit;
 		color: var(--rise-text);
 		text-align: start;
 		background-color: color-mix(in srgb, var(--event-color) 16%, var(--rise-bg));
 		cursor: pointer;
-		@include text-size(xs);
+		font-size: sz(ct(event-calendar, event-font-size, var(--rise-font-size-xs)));
+		line-height: sz(var(--rise-line-height-xs));
 		@include transition-colors;
 		@include focus-ring(1px);
 
@@ -186,8 +226,9 @@
 		&--item {
 			width: 100%;
 			min-height: sz(32px);
-			padding: sz(4px) sz(8px);
-			@include text-size(sm);
+			padding: space(4px) space(ct(event-calendar, event-padding-x, 8px));
+			font-size: sz(ct(event-calendar, event-font-size, var(--rise-font-size-sm)));
+			line-height: sz(var(--rise-line-height-sm));
 		}
 
 		&--block {
@@ -197,7 +238,7 @@
 			align-items: stretch;
 			gap: 0;
 			min-height: sz(18px);
-			padding: sz(2px) sz(6px);
+			padding: sz(2px) space(ct(event-calendar, event-padding-x, 6px));
 			overflow: hidden;
 			border: 1px solid var(--rise-bg);
 			border-left: sz(3px) solid var(--event-color);
@@ -259,7 +300,7 @@
 	&__popover {
 		display: flex;
 		flex-direction: column;
-		gap: sz(4px);
+		gap: space(4px);
 		min-width: sz(220px);
 	}
 
@@ -271,11 +312,11 @@
 	&__list {
 		display: flex;
 		flex-direction: column;
-		gap: sz(12px);
+		gap: space(12px);
 	}
 
 	&__agenda-date {
-		padding: sz(6px) sz(8px);
+		padding: space(6px 8px);
 		border-radius: sz(var(--rise-radius-sm));
 		font-weight: var(--rise-font-weight-semibold);
 		@include custom-bg(background-color, var(--rise-bg-muted));
@@ -284,7 +325,7 @@
 	&__agenda-items {
 		display: flex;
 		flex-direction: column;
-		gap: sz(4px);
+		gap: space(4px);
 		margin: sz(4px) 0 0;
 		padding: 0;
 		list-style: none;
@@ -295,7 +336,7 @@
 	}
 
 	&__empty {
-		padding: sz(32px) sz(16px);
+		padding: space(32px 16px);
 		@include custom-text(color, var(--rise-text-toned));
 		text-align: center;
 	}
@@ -339,12 +380,12 @@
 	}
 
 	&__header-day {
-		padding: sz(6px) sz(8px);
+		padding: space(6px 8px);
 		border-bottom: 1px solid var(--grid-line);
 		border-left: 1px solid var(--grid-line);
 		font-weight: var(--rise-font-weight-medium);
 		text-align: center;
-		@include custom-text(color, var(--rise-text-toned));
+		@include custom-text(color, ct(event-calendar, header-text, var(--rise-text-toned)));
 
 		&--today {
 			color: var(--rise-primary);

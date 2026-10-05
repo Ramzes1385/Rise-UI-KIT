@@ -1,23 +1,22 @@
 <template>
-	<tbody class="base-table__tbody" :class="tbodyClass">
+	<tbody ref="tbodyRef" :class="[ui('tbody'), { 'base-table__tbody--reveal': isRevealing }, tbodyClass]">
 		<template v-if="isLoading && !rows.length">
 			<tr v-for="skeletonRow in skeletonRows" :key="skeletonRow" class="base-table__tr--skeleton" :class="trClass">
-				<td v-if="isSelectable" class="base-table__td base-table__td--check" :class="tdClass">
+				<td v-if="isSelectable" :class="[ui('td'), 'base-table__td--check', tdClass]">
 					<span class="base-table__skeleton">
 						<BaseSkeleton shape="rect" class="base-table__skeleton-box" />
 					</span>
 				</td>
-				<td v-if="hasRowNumber" class="base-table__td base-table__td--number" :class="tdClass">
+				<td v-if="hasRowNumber" :class="[ui('td'), 'base-table__td--number', tdClass]">
 					<span class="base-table__skeleton">
 						<BaseSkeleton shape="text" width="60%" />
 					</span>
 				</td>
-				<td v-if="hasExpandableRows" class="base-table__td base-table__td--expand" :class="tdClass"></td>
+				<td v-if="hasExpandableRows" :class="[ui('td'), 'base-table__td--expand', tdClass]"></td>
 				<td
 					v-for="(column, columnIndex) in columns"
 					:key="column.key"
-					class="base-table__td"
-					:class="[`base-table__td--${column.align || 'left'}`, tdClass]">
+					:class="[ui('td'), `base-table__td--${column.align || 'left'}`, tdClass]">
 					<span class="base-table__skeleton">
 						<BaseSkeleton shape="text" :width="getSkeletonWidth(skeletonRow, columnIndex)" />
 					</span>
@@ -26,7 +25,7 @@
 		</template>
 
 		<tr v-else-if="!isLoading && rows.length === 0" :class="trClass">
-			<td :colspan="totalColumns" class="base-table__td base-table__td--empty" :class="tdClass">
+			<td :colspan="totalColumns" :class="[ui('td'), 'base-table__td--empty', tdClass]">
 				<slot name="empty" :is-filtered="isFiltered">
 					<BaseEmpty variant="ghost" :title="emptyText" :custom-class="emptyClasses" :size-scale="sizeScale" />
 				</slot>
@@ -102,7 +101,7 @@
 		</template>
 
 		<tr v-if="isLoading && rows.length && loadMode === 'infinite'" :class="trClass">
-			<td :colspan="totalColumns" class="base-table__td base-table__td--loading-more" :class="tdClass">
+			<td :colspan="totalColumns" :class="[ui('td'), 'base-table__td--loading-more', tdClass]">
 				<BaseLoader has-label :custom-class="loadingMoreClasses" :size-scale="sizeScale" />
 			</td>
 		</tr>
@@ -132,5 +131,6 @@ const emit = defineEmits<BaseTableBodyEmits>()
 
 defineSlots<BaseTableBodySlots>()
 
-const { emptyClasses, loadingMoreClasses, getSkeletonWidth, getRowTabIndex, setActiveRow } = useBaseTableBody(props)
+const { ui, tbodyRef, isRevealing, emptyClasses, loadingMoreClasses, getSkeletonWidth, getRowTabIndex, setActiveRow } =
+	useBaseTableBody(props)
 </script>

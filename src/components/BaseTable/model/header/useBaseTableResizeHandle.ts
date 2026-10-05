@@ -1,3 +1,4 @@
+import { useTableUi } from '../useTableUi'
 import { onMounted, ref, watch } from 'vue'
 import type { BaseTableResizeHandleEmits, BaseTableResizeHandleProps } from '../../types/header/BaseTableResizeHandle.types'
 
@@ -27,6 +28,7 @@ export function useBaseTableResizeHandle(props: BaseTableResizeHandleProps, emit
 	onMounted(measure)
 	watch(() => props.column.width, measure, { flush: 'post' })
 	return {
+		ui: useTableUi(),
 		handleRef,
 		width,
 		maxWidth,

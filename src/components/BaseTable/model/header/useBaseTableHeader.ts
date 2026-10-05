@@ -1,9 +1,11 @@
 import { useId } from 'vue'
+import { useTableUi } from '../useTableUi'
 import type { TableColumn } from '../../types/BaseTable.types'
 import type { BaseTableHeaderProps } from '../../types/header/BaseTableHeader.types'
 
 export function useBaseTableHeader(props: BaseTableHeaderProps) {
 	return {
+		ui: useTableUi(),
 		idPrefix: useId(),
 		getAriaSort(column: TableColumn): 'ascending' | 'descending' | 'none' | undefined {
 			if (!column.isSortable) return undefined

@@ -1,7 +1,7 @@
 <template>
 	<tr
-		class="base-table__tr"
 		:class="[
+			ui('tr'),
 			{
 				'base-table__tr--even': rowIndex % 2 === 1,
 				'base-table__tr--selected': isSelected,
@@ -17,7 +17,7 @@
 		@click="onClick"
 		@keydown="onKeydown"
 		@focus="emit('row-focus', row)">
-		<td v-if="isSelectable" class="base-table__td base-table__td--check" :class="tdClass" @click.stop>
+		<td v-if="isSelectable" :class="[ui('td'), 'base-table__td--check', tdClass]" @click.stop>
 			<BaseCheckbox
 				:model-value="isSelected"
 				:is-disabled="!!row.isDisabled"
@@ -25,15 +25,15 @@
 				:size-scale="sizeScale"
 				@update:model-value="emit('toggle-row', row)" />
 		</td>
-		<td v-if="hasRowNumber" class="base-table__td base-table__td--number" :class="tdClass">
+		<td v-if="hasRowNumber" :class="[ui('td'), 'base-table__td--number', tdClass]">
 			{{ rowNumber }}
 		</td>
-		<td v-if="hasExpandableRows" class="base-table__td base-table__td--expand" :class="tdClass">
+		<td v-if="hasExpandableRows" :class="[ui('td'), 'base-table__td--expand', tdClass]">
 			<BaseButton
 				v-if="isExpandable"
 				variant="ghost"
 				:padding="expandButtonPadding"
-				class="base-table__expand-btn"
+				:class="ui('expand-btn')"
 				:aria-label="isExpanded ? TABLE_TEXT.COLLAPSE_ROW : TABLE_TEXT.EXPAND_ROW"
 				:aria-expanded="isExpanded ? 'true' : 'false'"
 				:size-scale="sizeScale"
@@ -44,8 +44,8 @@
 		<td
 			v-for="column in columns"
 			:key="column.key"
-			class="base-table__td"
 			:class="[
+				ui('td'),
 				`base-table__td--${column.align || 'left'}`,
 				column.isSticky ? `base-table__td--sticky-${column.isSticky}` : '',
 				column.cellClass,
@@ -74,5 +74,5 @@ const emit = defineEmits<BaseTableRowEmits>()
 
 defineSlots<BaseTableRowSlots>()
 
-const { expandButtonPadding, isExpandable, onClick, onKeydown } = useBaseTableRow(props, emit)
+const { ui, expandButtonPadding, isExpandable, onClick, onKeydown } = useBaseTableRow(props, emit)
 </script>

@@ -1,6 +1,7 @@
-export { EVENT_CALENDAR_VARIANTS, EVENT_CALENDAR_VIEWS } from './types/BaseEventCalendar.types'
+export { EVENT_CALENDAR_PARTS, EVENT_CALENDAR_VARIANTS, EVENT_CALENDAR_VIEWS } from './types/BaseEventCalendar.types'
 export type {
 	BaseEventCalendarEmits,
+	BaseEventCalendarPart,
 	BaseEventCalendarProps,
 	BaseEventCalendarSlots,
 	EventCalendarChange,

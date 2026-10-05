@@ -1,8 +1,8 @@
 <template>
-	<div v-if="showToolbar" class="base-table__toolbar" :class="toolbarClass">
+	<div v-if="showToolbar" :class="[ui('toolbar'), toolbarClass]">
 		<slot name="toolbar-prepend"></slot>
 
-		<div v-if="hasSearch" class="base-table__search" :class="searchClass">
+		<div v-if="hasSearch" :class="[ui('search'), searchClass]">
 			<BaseInput
 				:model-value="searchQuery"
 				:label="TABLE_TEXT.SEARCH_LABEL"
@@ -18,7 +18,7 @@
 			</BaseInput>
 		</div>
 
-		<div v-if="hasFilters" class="base-table__filters" :class="filtersClass">
+		<div v-if="hasFilters" :class="[ui('filters'), filtersClass]">
 			<BaseSelect
 				class="base-table__filter-field"
 				:model-value="filterColumn"
@@ -48,7 +48,7 @@
 			</BaseButton>
 		</div>
 
-		<div v-if="hasColumnSettings" class="base-table__settings" :class="settingsClass">
+		<div v-if="hasColumnSettings" :class="[ui('settings'), settingsClass]">
 			<BaseDropdownMenu
 				:is-open="isSettingsOpen"
 				:items="columnItems"
@@ -65,7 +65,7 @@
 			</BaseDropdownMenu>
 		</div>
 
-		<div v-if="exportItems.length" class="base-table__export" :class="exportClass">
+		<div v-if="exportItems.length" :class="[ui('export'), exportClass]">
 			<BaseDropdownMenu
 				:is-open="isExportOpen"
 				:items="exportItems"
@@ -82,7 +82,7 @@
 			</BaseDropdownMenu>
 		</div>
 
-		<div v-if="activeFilters.length" class="base-table__active-filters" :class="activeFiltersClass">
+		<div v-if="activeFilters.length" :class="[ui('active-filters'), activeFiltersClass]">
 			<BaseBadge
 				v-for="(filter, index) in activeFilters"
 				:key="index"
@@ -122,5 +122,5 @@ const emit = defineEmits<BaseTableToolbarEmits>()
 
 defineSlots<BaseTableToolbarSlots>()
 
-const { hiddenLabel, columnItems } = useBaseTableToolbar(props, emit)
+const { ui, hiddenLabel, columnItems } = useBaseTableToolbar(props, emit)
 </script>

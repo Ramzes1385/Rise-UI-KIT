@@ -1,7 +1,7 @@
 <template>
 	<div
 		ref="handleRef"
-		class="base-table__resizer"
+		:class="ui('resizer')"
 		role="separator"
 		tabindex="0"
 		aria-orientation="vertical"
@@ -24,5 +24,5 @@ const props = defineProps<BaseTableResizeHandleProps>()
 
 const emit = defineEmits<BaseTableResizeHandleEmits>()
 
-const { handleRef, width, minWidth, maxWidth, onKeydown } = useBaseTableResizeHandle(props, emit)
+const { ui, handleRef, width, minWidth, maxWidth, onKeydown } = useBaseTableResizeHandle(props, emit)
 </script>

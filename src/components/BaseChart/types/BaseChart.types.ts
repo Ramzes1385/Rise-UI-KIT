@@ -1,4 +1,5 @@
 import type { Ref } from 'vue'
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /** Вид графика: `line` — линии, `area` — линии с заливкой до нуля, `bar` — столбики (группами или стопкой при `isStacked`) */
@@ -21,6 +22,45 @@ export const CHART_UPDATE_ANIMATIONS = ['tween', 'none'] as const
 
 /** Смена данных */
 export type ChartUpdateAnimation = (typeof CHART_UPDATE_ANIMATIONS)[number]
+
+/**
+ * Части графика для пропа `ui` (БЭМ-элементы `.base-chart__<часть>`, `root` — корень `<figure>`):
+ * empty — пустое состояние; body — сетка осей и области графика; y-axis — колонка меток оси Y; y-tick — метка оси Y;
+ * plot — область графика (фокус, подсказка); svg — рисунок; grid — линия сетки; shapes — группа фигур рядов;
+ * area — заливка области; line — линия ряда; bar — столбик; guide — вертикальная направляющая у активной точки;
+ * marker — точка ряда у активной точки; tooltip — подсказка; tooltip-label — подпись точки в подсказке;
+ * tooltip-row — строка ряда в подсказке; tooltip-name — имя ряда; tooltip-value — значение;
+ * swatch — цветной квадрат ряда (подсказка и легенда); x-axis — полоса меток оси X; x-tick — метка оси X;
+ * legend — список легенды; legend-item — кнопка ряда в легенде.
+ */
+export const CHART_PARTS = [
+	'empty',
+	'body',
+	'y-axis',
+	'y-tick',
+	'plot',
+	'svg',
+	'grid',
+	'shapes',
+	'area',
+	'line',
+	'bar',
+	'guide',
+	'marker',
+	'tooltip',
+	'tooltip-label',
+	'tooltip-row',
+	'tooltip-name',
+	'tooltip-value',
+	'swatch',
+	'x-axis',
+	'x-tick',
+	'legend',
+	'legend-item',
+] as const
+
+/** Часть графика для пропа `ui` */
+export type BaseChartPart = (typeof CHART_PARTS)[number]
 
 /** Ряд данных: имя для легенды, подсказки и таблицы; значения по порядку подписей `labels`; `null` — нет значения (разрыв линии) */
 export interface ChartSeries {
@@ -186,6 +226,14 @@ export interface BaseChartProps extends BaseComponentProps<ChartVariant, 'root' 
 	formatValue?: (value: number) => string
 	/** Свой формат подписи оси X; важнее `labelFormat` */
 	formatLabel?: (label: ChartLabel) => string
+	/**
+	 * Классы частей графика (`root`, `plot`, `tooltip`, `legend`, `legend-item`, `x-tick`…) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseChart: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseChart :series="series" :labels="labels" label="Выручка" :ui="{ tooltip: 'shadow-lg', legend: 'justify-center' }" />
+	 */
+	ui?: UiProp<BaseChartPart>
 }
 
 /**

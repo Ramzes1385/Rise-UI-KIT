@@ -3,18 +3,22 @@
 @use '@styles/functions' as *;
 
 .base-table {
-	--tbl-pad-top: 12px;
-	--tbl-pad-right: 16px;
-	--tbl-pad-bottom: 12px;
-	--tbl-pad-left: 16px;
-	@include custom-bg(--tbl-bg, var(--rise-bg));
+	--tbl-pad-top: #{ct(table, cell-padding-y, 12px)};
+	--tbl-pad-right: #{ct(table, cell-padding-x, 16px)};
+	--tbl-pad-bottom: #{ct(table, cell-padding-y, 12px)};
+	--tbl-pad-left: #{ct(table, cell-padding-x, 16px)};
+	@include custom-bg(--tbl-bg, ct(table, bg, var(--rise-bg)));
+	@include custom-bg(--tbl-head-bg, ct(table, header-bg, ct(table, bg, var(--rise-bg))));
 	--tbl-hover: var(--custom-bg-hover);
-	@include custom-text(--tbl-text, var(--rise-text));
-	@include custom-text(--tbl-head-text, var(--rise-text-highlighted));
+	--tbl-border: #{ct(table, border, var(--rise-border))};
+	--tbl-font-size: #{sz(ct(table, font-size, var(--rise-font-size-sm)))};
+	@include custom-text(--tbl-text, ct(table, text, var(--rise-text)));
+	@include custom-text(--tbl-head-text, ct(table, header-text, var(--rise-text-highlighted)));
 
 	width: 100%;
 	font-family: var(--rise-font-sans);
-	@include text-size(sm);
+	font-size: var(--tbl-font-size);
+	line-height: sz(var(--rise-line-height-sm));
 	color: var(--tbl-text);
 
 	&__body {
@@ -22,20 +26,20 @@
 
 		box-sizing: border-box;
 		width: 100%;
-		border: 1px solid var(--rise-border);
-		border-radius: sz(var(--rise-radius-lg));
+		border: 1px solid var(--tbl-border);
+		border-radius: sz(ct(table, radius, var(--rise-radius-lg)));
 		background-color: var(--tbl-bg);
 		overflow: hidden;
 	}
 
 	&__header {
-		padding: sz(12px 16px);
-		border-bottom: 1px solid var(--rise-border);
+		padding: space(12px 16px);
+		border-bottom: 1px solid var(--tbl-border);
 	}
 
 	&__footer {
-		padding: sz(12px 16px);
-		border-top: 1px solid var(--rise-border);
+		padding: space(12px 16px);
+		border-top: 1px solid var(--tbl-border);
 		background-color: var(--rise-bg-muted);
 	}
 
@@ -47,13 +51,16 @@
 	&--bordered {
 		.base-table__th + .base-table__th,
 		.base-table__td + .base-table__td {
-			border-left: 1px solid var(--rise-border);
+			border-left: 1px solid var(--tbl-border);
 		}
 	}
 
 	&--striped {
 		.base-table__tr {
-			--tbl-row-hover: var(--tbl-hover, color-mix(in srgb, var(--rise-bg-accented) 60%, var(--rise-bg-muted)));
+			--tbl-row-hover: var(
+				--tbl-hover,
+				#{ct(table, row-bg-hover, color-mix(in srgb, var(--rise-bg-accented) 60%, var(--rise-bg-muted)))}
+			);
 		}
 
 		.base-table__tr--even {

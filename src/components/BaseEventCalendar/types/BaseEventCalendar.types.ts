@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import type { CalendarEvent, CalendarEventDate, CalendarRange, NormalizedCalendarEvent } from '@utils/calendar/eventUtils'
 
@@ -13,6 +14,62 @@ export type EventCalendarVariant = (typeof EVENT_CALENDAR_VARIANTS)[number]
 export const EVENT_CALENDAR_VIEWS = ['month', 'week', 'day', 'list'] as const
 
 export type EventCalendarView = (typeof EVENT_CALENDAR_VIEWS)[number]
+
+/**
+ * Части календаря для пропа `ui` (БЭМ-элементы `.base-event-calendar__<часть>`, `root` — сам календарь):
+ * toolbar — панель; nav — «Сегодня» и стрелки; title — заголовок периода; views — переключатель видов (корень
+ * BaseSegmented); view — область вида под панелью (в ней сменяются сетки); month — сетка месяца; weekdays — строка
+ * дней недели; weekday — день недели; week — неделя месяца; day — день месяца; day-number — число дня; lanes — полосы
+ * событий дня; event — событие во всех видах; event-time — время события; event-title — название события; more —
+ * «+N ещё» (корень BasePopover); more-button — кнопка «+N ещё»; popover — список событий дня в поповере;
+ * popover-title — дата в поповере; list — вид «Список»; agenda-day — день списка; agenda-date — дата дня списка;
+ * agenda-items — события дня списка `<ul>`; empty — пустой список; time-grid — сетка недели и дня; resource-head —
+ * строка ресурсов; resource — заголовок ресурса; time-head — строка дней; header-day — заголовок дня; all-day — строка
+ * «Весь день»; all-day-label — подпись «Весь день»; all-day-events — события на весь день; time-body — прокручиваемая
+ * часть сетки; axis — шкала времени; axis-slot — шаг шкалы; column — колонка дня; now — линия «Сейчас».
+ */
+export const EVENT_CALENDAR_PARTS = [
+	'toolbar',
+	'nav',
+	'title',
+	'views',
+	'view',
+	'month',
+	'weekdays',
+	'weekday',
+	'week',
+	'day',
+	'day-number',
+	'lanes',
+	'event',
+	'event-time',
+	'event-title',
+	'more',
+	'more-button',
+	'popover',
+	'popover-title',
+	'list',
+	'agenda-day',
+	'agenda-date',
+	'agenda-items',
+	'empty',
+	'time-grid',
+	'resource-head',
+	'resource',
+	'time-head',
+	'header-day',
+	'all-day',
+	'all-day-label',
+	'all-day-events',
+	'time-body',
+	'axis',
+	'axis-slot',
+	'column',
+	'now',
+] as const
+
+/** Часть календаря для пропа `ui` */
+export type BaseEventCalendarPart = (typeof EVENT_CALENDAR_PARTS)[number]
 
 /** Рабочие часы: `start` и `end` — `ЧЧ:ММ`, `days` — рабочие дни недели (0 — воскресенье); по умолчанию пн–пт */
 export interface EventCalendarWorkHours {
@@ -74,6 +131,14 @@ export interface BaseEventCalendarProps extends BaseComponentProps<EventCalendar
 	 * в месяце и списке — как обычно. Перенос в колонку другого ресурса меняет `resourceId` в `event-change`
 	 */
 	resources?: EventCalendarResource[]
+	/**
+	 * Классы частей календаря (`root`, `toolbar`, `month`, `day`, `event`, `column`…) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseEventCalendar: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseEventCalendar :events="events" :ui="{ day: 'min-h-32', event: 'rounded-full' }" />
+	 */
+	ui?: UiProp<BaseEventCalendarPart>
 }
 
 /** Событие, которое нажали: исходное, начало и конец показа (у повтора — этого повтора) */

@@ -6,23 +6,23 @@
 	&__load-more {
 		display: flex;
 		justify-content: center;
-		padding: sz(12px 16px);
-		border-top: 1px solid var(--rise-border);
+		padding: space(12px 16px);
+		border-top: 1px solid var(--tbl-border);
 	}
 
 	&__footer-bar {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
-		gap: sz(12px);
-		padding: sz(12px 16px);
-		border-top: 1px solid var(--rise-border);
+		gap: space(12px);
+		padding: space(12px 16px);
+		border-top: 1px solid var(--tbl-border);
 	}
 
 	&__page-size {
 		display: flex;
 		align-items: center;
-		gap: sz(8px);
+		gap: space(8px);
 	}
 
 	&__page-size-label,

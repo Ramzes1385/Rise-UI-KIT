@@ -22,7 +22,7 @@ function contains(element: HTMLElement, point: ScreenPoint, isColumn: boolean): 
 }
 
 function elementAtPoint(root: HTMLElement | null, selector: string, point: ScreenPoint): HTMLElement | null {
-	const elements = Array.from(root?.querySelectorAll<HTMLElement>(selector) ?? [])
+	const elements = Array.from(root?.querySelectorAll<HTMLElement>(`${selector}[data-day]`) ?? [])
 	return elements.find(element => contains(element, point, selector === TIME_COLUMN)) ?? null
 }
 

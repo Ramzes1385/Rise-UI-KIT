@@ -1,8 +1,70 @@
+import type { Ref } from 'vue'
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export const CALENDAR_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
 export type CalendarVariant = (typeof CALENDAR_VARIANTS)[number]
+
+/**
+ * Части календаря для пропа `ui` (БЭМ-элементы `.base-calendar__<часть>`, `root` — корень):
+ * header — шапка; nav-btn — стрелки «назад» и «вперёд»; title-btn — кнопка заголовка (смена вида); title — текст заголовка;
+ * days — вид «дни» (дни недели и сетка); weekdays — строка дней недели; weekday — день недели; week-num-header — заголовок
+ * колонки номеров недель; week-num — номер недели; grid — сетка дней; day-wrapper — ячейка дня; day — кнопка дня;
+ * day-dot — точка события; popover — всплывающая карточка дня; popover-arrow — её стрелка; popover-date — дата в карточке;
+ * popover-highlights — список событий; popover-highlight — событие; popover-highlight-dot — точка события в списке;
+ * months — вид «месяцы»; month-btn — кнопка месяца; years — вид «годы»; year-btn — кнопка года; time — блок времени;
+ * time-caption — подпись «Время»; time-fields — поля времени; time-input — поле часов, минут или секунд;
+ * time-sep — двоеточие; time-ampm — переключатель AM/PM; footer — подвал; today-btn — кнопка «Сегодня».
+ */
+export const CALENDAR_PARTS = [
+	'header',
+	'nav-btn',
+	'title-btn',
+	'title',
+	'days',
+	'weekdays',
+	'weekday',
+	'week-num-header',
+	'week-num',
+	'grid',
+	'day-wrapper',
+	'day',
+	'day-dot',
+	'popover',
+	'popover-arrow',
+	'popover-date',
+	'popover-highlights',
+	'popover-highlight',
+	'popover-highlight-dot',
+	'months',
+	'month-btn',
+	'years',
+	'year-btn',
+	'time',
+	'time-caption',
+	'time-fields',
+	'time-input',
+	'time-sep',
+	'time-ampm',
+	'footer',
+	'today-btn',
+] as const
+
+export type BaseCalendarPart = (typeof CALENDAR_PARTS)[number]
+
+/** Последняя смена отображения: `view` — дни ↔ месяцы ↔ годы, `next` и `prev` — период вперёд или назад */
+export type CalendarChange = 'view' | 'next' | 'prev'
+
+/** Состояние календаря, по которому выбирается движение: вид, месяц и год */
+export interface CalendarMotionSource {
+	/** Текущий вид */
+	currentView: Ref<CalendarView>
+	/** Отображаемый месяц (0-11) */
+	currentMonth: Ref<number>
+	/** Отображаемый год */
+	currentYear: Ref<number>
+}
 
 export type CalendarSelectionMode = 'single' | 'range' | 'multiple'
 
@@ -105,6 +167,14 @@ export interface BaseCalendarProps extends BaseComponentProps<
 	initialMonth?: number
 	/** Начальный год. Если не задан — текущий */
 	initialYear?: number
+	/**
+	 * Классы частей календаря (`root`, `header`, `title`, `grid`, `day`, `months`, `footer`…) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseCalendar: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseCalendar v-model="date" :ui="{ title: 'tracking-wide', day: 'font-medium' }" />
+	 */
+	ui?: UiProp<BaseCalendarPart>
 }
 
 export interface BaseCalendarEmits {

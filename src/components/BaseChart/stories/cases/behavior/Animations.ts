@@ -6,11 +6,8 @@ import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type { ChartSeries } from '../../../types/BaseChart.types'
 import { CHART_ANIMATIONS } from '../../../types/BaseChart.types'
-import { literal, STORY_WAIT_TIMEOUT, storySource, useStorySetup } from '@/stories/helpers'
+import { motionPresetsStory, STORY_WAIT_TIMEOUT } from '@/stories/helpers'
 
-const presets = ['none', 'subtle', 'standard', 'expressive']
-const animations = CHART_ANIMATIONS
-const labels = MONTHS.slice(0, 6)
 const first: ChartSeries[] = [
 	{ name: 'Выручка', values: [120, 135, 150, 142, 168, 180] },
 	{ name: 'Расходы', values: [90, 95, 110, 105, 118, 126] },
@@ -19,87 +16,74 @@ const next: ChartSeries[] = [
 	{ name: 'Выручка', values: [210, 160, 240, 190, 260, 300] },
 	{ name: 'Расходы', values: [60, 120, 80, 140, 100, 150] },
 ]
-const STATE = { replay: 0, isNext: false, hidden: [] as string[] }
+const phases = [
+	{ series: first, hidden: [] as string[] },
+	{ series: next, hidden: [] as string[] },
+	{ series: next, hidden: ['Расходы'] },
+]
 
-const template = `
-	<div class="story-stack">
-		<div class="story-row">
-			<BaseButton @click="replay += 1">Повторить</BaseButton>
-			<BaseButton variant="soft" @click="isNext = !isNext">Новые данные</BaseButton>
-			<BaseButton variant="soft" @click="hidden = hidden.length ? [] : ['Расходы']">
-				{{ hidden.length ? 'Показать ряд' : 'Скрыть ряд' }}
-			</BaseButton>
+const motion = motionPresetsStory({
+	item: `
+		<div v-for="animation in ['grow', 'draw', 'fade', 'none']" :key="animation + Math.floor(step / 3)" class="story-col">
+			<span class="story-label">{{ animation }}</span>
+			<BaseChart
+				v-bind="args"
+				:animation="animation"
+				:label="'Появление ' + animation"
+				:labels="labels"
+				:series="phases[step % 3].series"
+				:hidden-series="phases[step % 3].hidden" />
 		</div>
-		<div class="story-grid">
-			<div v-for="preset in presets" :key="preset" class="story-stack" :data-rise-motion="preset">
-				<span class="story-label">{{ preset }}</span>
-				<template v-for="animation in animations" :key="animation + replay">
-					<span class="story-label">{{ animation }}</span>
-					<BaseChart
-						v-bind="args"
-						:animation="animation"
-						:label="animation + ', ' + preset"
-						:labels="labels"
-						:series="isNext ? next : first"
-						:hidden-series="hidden"
-						:height="120"
-						:has-legend="false" />
-				</template>
-			</div>
-		</div>
-	</div>
-`
+	`,
+	components: { BaseButton, BaseChart },
+	imports: ['BaseChart'],
+	state: { step: 0, labels: MONTHS.slice(0, 6), phases },
+	action: 'step++',
+	trigger: 'Следующий шаг',
+	omit: ['animation', 'label', 'labels', 'series', 'hiddenSeries'],
+})
 
 export const Animations: StoryObj<typeof meta> = {
+	name: 'Анимации',
 	parameters: {
 		controls: { include: ['variant', 'isStacked', 'updateAnimation', 'hasGrid'] },
 		docs: {
 			description: {
 				story: [
-					'Анимации: колонки — пресеты движения `data-rise-motion` (`none`, `subtle`, `standard`, `expressive`), строки — появление `animation`.',
-					'«Повторить» монтирует графики заново, «Новые данные» — твин значений и шкалы Y (`updateAnimation`), «Скрыть ряд» — ряд гаснет, стопка плавно пересчитывается. Вид — `variant` и `isStacked` в Controls.',
-					"Длительность — `--rise-duration-xslow`, кривая — `--rise-ease-emphasized`, задержка между столбиками и рядами — `--rise-motion-stagger`. Выключить движение в приложении: `animation: 'none'` и `updateAnimation: 'none'` через `defaults.BaseChart`; системное «уменьшить движение» и пресет `none` выключают его сами.",
+					'Появление `animation` (строки в каждой колонке: `grow`, `draw`, `fade`, `none`) в четырёх пресетах движения `data-rise-motion` (колонки).',
+					'«Следующий шаг» по кругу: новые данные — значения и шкала Y плавно переходят к новым (`updateAnimation`) →',
+					'ряд «Расходы» скрыт — гаснет, стопка и шкала пересчитываются плавно → графики монтируются заново и снова показывают появление.',
+					'Вид — `variant` и `isStacked` в Controls.',
+					'',
+					'Появление — `--rise-duration-xslow` и кривая `--rise-ease-emphasized`, задержка между столбиками и рядами — `--rise-motion-stagger`;',
+					'смена набора точек — перекрёстное затухание `--rise-duration-slow`, подсказка и маркеры — `--rise-duration-fast`.',
+					'В пресете `none` и при «уменьшить движение» в системе график сразу в конечном виде. Выключить в приложении —',
+					"`createUiKitPlugin({ motion: 'none' })`, `reducedMotion: 'always'` или `defaults: { BaseChart: { animation: 'none', updateAnimation: 'none' } }`.",
 				].join('\n'),
 			},
-			source: storySource({
-				template,
-				imports: ['BaseButton', 'BaseChart', 'CHART_ANIMATIONS', 'type ChartSeries'],
-				state: STATE,
-				types: { hidden: 'string[]' },
-				script: [
-					`const presets = ${literal(presets)}`,
-					'const animations = CHART_ANIMATIONS',
-					`const labels = ${literal(labels)}`,
-					`const first: ChartSeries[] = ${literal(first)}`,
-					`const next: ChartSeries[] = ${literal(next)}`,
-				].join('\n'),
-				omit: ['animation', 'label', 'labels', 'series', 'hiddenSeries', 'height', 'hasLegend'],
-			}),
+			source: motion.source,
 		},
 	},
-	args: { variant: 'bar' },
-	render: args => ({
-		components: { BaseButton, BaseChart },
-		setup: useStorySetup(args, {
-			state: STATE,
-			data: { presets, animations, labels, first, next },
-		}),
-		template,
-	}),
+	args: { variant: 'bar', height: 120, hasLegend: false },
+	render: motion.render,
 	play: async ({ canvas, canvasElement, userEvent }) => {
+		const count = CHART_ANIMATIONS.length * 4
+		const step = canvas.getByRole('button', { name: 'Следующий шаг' })
 		const settled = () => expect(canvasElement.querySelectorAll('.base-chart__y-tick--outside')).toHaveLength(0)
-		await expect(canvas.getAllByRole('img')).toHaveLength(presets.length * animations.length)
+		await expect(canvas.getAllByRole('img')).toHaveLength(count)
 		await expect(canvasElement.querySelector('[data-rise-motion="standard"] .base-chart__shapes--grow')).not.toBeNull()
-		await userEvent.click(canvas.getByRole('button', { name: 'Новые данные' }))
+
+		await userEvent.click(step)
 		await waitFor(settled, { timeout: STORY_WAIT_TIMEOUT })
 		await expect(canvas.getAllByRole('img')[0]).toHaveAccessibleName(/значения от 60 до 300$/)
-		await userEvent.click(canvas.getByRole('button', { name: 'Скрыть ряд' }))
-		await waitFor(() =>
-			expect(canvasElement.querySelectorAll('.base-chart__bar--hidden, .base-chart__line--hidden').length).toBeGreaterThan(0),
-		)
+
+		await userEvent.click(step)
+		await waitFor(() => expect(canvasElement.querySelectorAll('.base-chart__bar--hidden').length).toBeGreaterThan(0))
 		await waitFor(settled, { timeout: STORY_WAIT_TIMEOUT })
-		await userEvent.click(canvas.getByRole('button', { name: 'Показать ряд' }))
-		await userEvent.click(canvas.getByRole('button', { name: 'Повторить' }))
-		await expect(canvas.getAllByRole('img')).toHaveLength(presets.length * animations.length)
+
+		await userEvent.click(step)
+		await expect(canvas.getAllByRole('img')).toHaveLength(count)
+		await expect(canvasElement.querySelectorAll('.base-chart__bar--hidden')).toHaveLength(0)
+		await expect(canvas.getAllByRole('img')[0]).not.toHaveAccessibleName(/300$/)
 	},
 }

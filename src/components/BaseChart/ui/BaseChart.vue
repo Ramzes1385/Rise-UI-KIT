@@ -1,24 +1,22 @@
 <template>
-	<figure class="base-chart" :class="[variantClass, classes.root]" :style="sizeScaleStyle">
-		<div v-if="isEmpty" class="base-chart__empty" :style="{ minHeight: plotHeight }">
+	<figure :class="[ui('root'), variantClass, classes.root]" :style="sizeScaleStyle">
+		<div v-if="isEmpty" :class="ui('empty')" :style="{ minHeight: plotHeight }">
 			<slot name="empty">{{ UI_TEXT.EMPTY }}</slot>
 		</div>
 		<template v-else>
-			<div class="base-chart__body">
-				<div class="base-chart__y-axis" :style="{ height: plotHeight }" aria-hidden="true">
+			<div :class="ui('body')">
+				<div :class="ui('y-axis')" :style="{ height: plotHeight }" aria-hidden="true">
 					<span
 						v-for="tick in yTicks"
 						:key="tick.text"
-						class="base-chart__y-tick"
-						:class="{ 'base-chart__y-tick--outside': tick.isOutside }"
+						:class="[ui('y-tick'), { 'base-chart__y-tick--outside': tick.isOutside }]"
 						:style="tick.shift ? { transform: `translateY(${tick.shift}px)` } : undefined">
 						{{ tick.text }}
 					</span>
 				</div>
 				<div
 					ref="plot"
-					class="base-chart__plot"
-					:class="classes.plot"
+					:class="[ui('plot'), classes.plot]"
 					:style="{ height: plotHeight }"
 					tabindex="0"
 					role="img"
@@ -28,32 +26,29 @@
 					@pointerleave="handlePointerLeave"
 					@keydown="handleKeydown"
 					@blur="handlePointerLeave">
-					<svg class="base-chart__svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+					<svg :class="ui('svg')" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
 						<template v-if="hasGrid">
 							<line
 								v-for="tick in yTicks"
 								:key="tick.text"
-								class="base-chart__grid"
-								:class="{ 'base-chart__grid--outside': tick.isOutside }"
+								:class="[ui('grid'), { 'base-chart__grid--outside': tick.isOutside }]"
 								x1="0"
 								x2="100"
 								:y1="tick.position"
 								:y2="tick.position" />
 						</template>
 						<Transition name="base-chart-swap" :css="isSwapAnimated">
-							<g :key="shapesKey" class="base-chart__shapes" :class="shapesClass">
+							<g :key="shapesKey" :class="[ui('shapes'), shapesClass]">
 								<template v-for="view in seriesViews" :key="view.name">
 									<path
 										v-if="view.area"
-										class="base-chart__area"
-										:class="{ 'base-chart__area--hidden': view.isHidden }"
+										:class="[ui('area'), { 'base-chart__area--hidden': view.isHidden }]"
 										:style="{ '--base-chart-order': view.order }"
 										:d="view.area"
 										:fill="view.color" />
 									<path
 										v-if="view.line"
-										class="base-chart__line"
-										:class="{ 'base-chart__line--hidden': view.isHidden }"
+										:class="[ui('line'), { 'base-chart__line--hidden': view.isHidden }]"
 										:style="{ '--base-chart-order': view.order }"
 										:d="view.line"
 										:stroke="view.color"
@@ -62,8 +57,10 @@
 								<rect
 									v-for="bar in bars"
 									:key="bar.key"
-									class="base-chart__bar"
-									:class="{ 'base-chart__bar--hidden': bar.isHidden, 'base-chart__bar--negative': bar.isNegative }"
+									:class="[
+										ui('bar'),
+										{ 'base-chart__bar--hidden': bar.isHidden, 'base-chart__bar--negative': bar.isNegative },
+									]"
 									:style="{ '--base-chart-order': bar.order }"
 									:x="bar.x"
 									:y="bar.y"
@@ -72,12 +69,12 @@
 									:fill="bar.color" />
 							</g>
 						</Transition>
-						<line v-if="guide !== null" class="base-chart__guide" :x1="guide" :x2="guide" y1="0" y2="100" />
+						<line v-if="guide !== null" :class="ui('guide')" :x1="guide" :x2="guide" y1="0" y2="100" />
 					</svg>
 					<span
 						v-for="marker in markers"
 						:key="marker.key"
-						class="base-chart__marker"
+						:class="ui('marker')"
 						:style="{
 							'--base-chart-marker-x': `${marker.offsetX}px`,
 							'--base-chart-marker-y': `${marker.offsetY}px`,
@@ -86,26 +83,27 @@
 						aria-hidden="true" />
 					<div
 						v-if="point"
-						class="base-chart__tooltip"
-						:class="[{ 'base-chart__tooltip--start': (guide ?? 0) > 50 }, classes.tooltip]"
+						:class="[ui('tooltip'), { 'base-chart__tooltip--start': (guide ?? 0) > 50 }, classes.tooltip]"
 						:style="{ '--base-chart-guide-x': `${guideOffset}px` }"
 						aria-hidden="true">
 						<slot name="tooltip" :point="point">
-							<strong class="base-chart__tooltip-label">{{ point.label }}</strong>
-							<span v-for="value in point.values" :key="value.name" class="base-chart__tooltip-row">
-								<span class="base-chart__swatch" :style="{ backgroundColor: value.color }" />
-								<span class="base-chart__tooltip-name">{{ value.name }}</span>
-								<span class="base-chart__tooltip-value">{{ value.text }}</span>
+							<strong :class="ui('tooltip-label')">{{ point.label }}</strong>
+							<span v-for="value in point.values" :key="value.name" :class="ui('tooltip-row')">
+								<span :class="ui('swatch')" :style="{ backgroundColor: value.color }" />
+								<span :class="ui('tooltip-name')">{{ value.name }}</span>
+								<span :class="ui('tooltip-value')">{{ value.text }}</span>
 							</span>
 						</slot>
 					</div>
 				</div>
-				<div class="base-chart__x-axis" aria-hidden="true">
+				<div :class="ui('x-axis')" aria-hidden="true">
 					<span
 						v-for="tick in xTicks"
 						:key="tick.position"
-						class="base-chart__x-tick"
-						:class="{ 'base-chart__x-tick--start': tick.position <= 0, 'base-chart__x-tick--end': tick.position >= 100 }"
+						:class="[
+							ui('x-tick'),
+							{ 'base-chart__x-tick--start': tick.position <= 0, 'base-chart__x-tick--end': tick.position >= 100 },
+						]"
 						:style="{ left: `${tick.position}%` }">
 						{{ tick.text }}
 					</span>
@@ -113,15 +111,14 @@
 			</div>
 			<span :id="hintId" class="base-chart__hidden">{{ UI_CHARTS.CHART_HINT }}</span>
 			<span class="base-chart__hidden" role="status">{{ announcement }}</span>
-			<ul v-if="hasLegend" class="base-chart__legend" :class="classes.legend" :aria-label="UI_CHARTS.LEGEND">
+			<ul v-if="hasLegend" :class="[ui('legend'), classes.legend]" :aria-label="UI_CHARTS.LEGEND">
 				<li v-for="view in seriesViews" :key="view.name">
 					<button
 						type="button"
-						class="base-chart__legend-item"
-						:class="{ 'base-chart__legend-item--hidden': view.isHidden }"
+						:class="[ui('legend-item'), { 'base-chart__legend-item--hidden': view.isHidden }]"
 						:aria-pressed="!view.isHidden"
 						@click="toggleSeries(view.name)">
-						<span class="base-chart__swatch" :style="{ backgroundColor: view.color }" aria-hidden="true" />
+						<span :class="ui('swatch')" :style="{ backgroundColor: view.color }" aria-hidden="true" />
 						{{ view.name }}
 					</button>
 				</li>
@@ -180,6 +177,7 @@ const emit = defineEmits<BaseChartEmits>()
 defineSlots<BaseChartSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	classes,

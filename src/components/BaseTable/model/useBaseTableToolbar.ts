@@ -1,4 +1,5 @@
 import { computed } from 'vue'
+import { useTableUi } from './useTableUi'
 import type { DropdownMenuItem } from '@components/BaseDropdownMenu'
 import type { BaseTableToolbarEmits, BaseTableToolbarProps } from '../types/toolbar/BaseTableToolbar.types'
 
@@ -14,5 +15,5 @@ export function useBaseTableToolbar(props: BaseTableToolbarProps, emit: BaseTabl
 		})),
 	)
 
-	return { hiddenLabel: HIDDEN_LABEL, columnItems }
+	return { ui: useTableUi(), hiddenLabel: HIDDEN_LABEL, columnItems }
 }

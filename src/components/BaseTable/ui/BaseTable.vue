@@ -1,7 +1,7 @@
 <template>
-	<div class="base-table" :class="classes.root" :style="[paddingStyle, sizeScaleStyle, variantStyle, customColorStyle]">
-		<div class="base-table__body" :class="[variantClass, classes.body]">
-			<div v-if="$slots.header" class="base-table__header" :class="classes.header">
+	<div :class="[ui('root'), classes.root]" :style="[paddingStyle, sizeScaleStyle, variantStyle, customColorStyle]">
+		<div :class="[ui('body'), variantClass, classes.body]">
+			<div v-if="$slots.header" :class="[ui('header'), classes.header]">
 				<slot name="header"></slot>
 			</div>
 			<BaseTableToolbar
@@ -45,17 +45,16 @@
 				</template>
 			</BaseTableToolbar>
 
-			<div class="base-table__content">
+			<div :class="ui('content')">
 				<div
 					ref="tableWrapperRef"
-					class="base-table__wrapper"
-					:class="[classes.wrapper, { 'base-table__wrapper--loading': isLoading && rows.length }]"
+					:class="[ui('wrapper'), classes.wrapper, { 'base-table__wrapper--loading': isLoading && rows.length }]"
 					:style="height ? { maxHeight: height } : undefined"
 					:tabindex="isScrollable ? 0 : undefined"
 					@scroll="handleScroll">
 					<table
-						class="base-table__table"
 						:class="[
+							ui('table'),
 							classes.table,
 							{ 'base-table__table--fixed': useFixedLayout, 'base-table__table--sticky-service': hasStickyService },
 						]"
@@ -140,14 +139,14 @@
 
 				<BaseLoader
 					v-if="isLoading && rows.length"
-					class="base-table__loading-overlay"
+					:class="ui('loading-overlay')"
 					:custom-class="classes.loadingOverlay"
 					is-overlay
 					has-label
 					:size-scale="sizeScale" />
 			</div>
 
-			<div v-if="loadMode === 'button' && hasMoreRows" class="base-table__load-more" :class="classes.loadMore">
+			<div v-if="loadMode === 'button' && hasMoreRows" :class="[ui('load-more'), classes.loadMore]">
 				<BaseButton
 					variant="outline"
 					:is-loading="isLoading"
@@ -158,8 +157,8 @@
 				</BaseButton>
 			</div>
 
-			<div v-if="hasPageSizeControl || hasPagination" class="base-table__footer-bar" :class="classes.footerBar">
-				<div v-if="hasPageSizeControl" class="base-table__page-size" :class="classes.pageSize">
+			<div v-if="hasPageSizeControl || hasPagination" :class="[ui('footer-bar'), classes.footerBar]">
+				<div v-if="hasPageSizeControl" :class="[ui('page-size'), classes.pageSize]">
 					<span class="base-table__page-size-label">{{ TABLE_TEXT.PAGE_SIZE }}</span>
 					<BaseSelect
 						class="base-table__page-size-select"
@@ -179,7 +178,7 @@
 					:pagination-info="paginationInfo"
 					:page-size-select-options="pageSizeSelectOptions"
 					:handle-page-size-change="handlePageSizeChange">
-					<span class="base-table__pagination-info" :class="classes.paginationInfo">{{ paginationInfo }}</span>
+					<span :class="[ui('pagination-info'), classes.paginationInfo]">{{ paginationInfo }}</span>
 					<BasePagination
 						v-model="currentPage"
 						:total="processedRows.length"
@@ -189,7 +188,7 @@
 				</slot>
 			</div>
 
-			<div v-if="$slots.footer" class="base-table__footer" :class="classes.footer">
+			<div v-if="$slots.footer" :class="[ui('footer'), classes.footer]">
 				<slot name="footer"></slot>
 			</div>
 		</div>
@@ -232,6 +231,7 @@ const emit = defineEmits<BaseTableEmits>()
 defineSlots<BaseTableSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

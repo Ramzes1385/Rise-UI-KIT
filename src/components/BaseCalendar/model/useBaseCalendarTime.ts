@@ -1,4 +1,5 @@
 import { computed, ref, useId } from 'vue'
+import { useCalendarUi } from './useCalendarUi'
 import type { BaseCalendarTimeEmits, BaseCalendarTimeProps } from '../types/BaseCalendarTime.types'
 
 function to12h(h: number): number {
@@ -67,6 +68,7 @@ export function useBaseCalendarTime(props: BaseCalendarTimeProps, emit: BaseCale
 	}
 
 	return {
+		ui: useCalendarUi(),
 		captionId,
 		hoursModel: hours.model,
 		minutesModel: minutes.model,

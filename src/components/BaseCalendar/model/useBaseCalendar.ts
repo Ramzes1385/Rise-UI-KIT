@@ -1,6 +1,8 @@
 import { computed } from 'vue'
 import type { Ref } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
+import { provideCalendarUi } from './useCalendarUi'
+import { useCalendarMotion } from './useCalendarMotion'
 import { useCalendar } from '@composables/calendar/useCalendar'
 import { isolateFormField } from '@composables/form/useFormContext'
 import { useBaseComponent } from '@composables/base/useBaseComponent'
@@ -88,6 +90,8 @@ export function useBaseCalendar(props: BaseCalendarProps, emit: BaseCalendarEmit
 
 	return {
 		...standard,
+		ui: provideCalendarUi(props),
+		...useCalendarMotion(calendar),
 		resolvedProps,
 		calendar,
 		...calendar,

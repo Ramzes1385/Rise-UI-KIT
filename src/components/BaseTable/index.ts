@@ -1,7 +1,8 @@
-export { TABLE_VARIANTS } from './types/BaseTable.types'
+export { TABLE_PARTS, TABLE_VARIANTS } from './types/BaseTable.types'
 export type {
 	BaseTableEmits,
 	BaseTableExpose,
+	BaseTablePart,
 	BaseTableProps,
 	BaseTableSlots,
 	ColumnFilter,

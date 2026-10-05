@@ -1,3 +1,4 @@
+import { useUi } from '@composables/base/useUi'
 import { useChartActive } from './useChartActive'
 import { useChartMotion } from './useChartMotion'
 import { useChartAxes, useChartData, useChartShapes } from './useChartData'
@@ -39,6 +40,7 @@ export function useBaseChart(props: BaseChartProps, emit: BaseChartEmits) {
 	const id = useId()
 	return {
 		...useStandardBaseComponent('base-chart', props, ['root', 'plot', 'legend', 'tooltip']),
+		ui: useUi(props, 'base-chart'),
 		...useChartAxes(props, data, layout),
 		...useChartActive(props, data, layout),
 		...useChartShapes(props, data, motion.view),

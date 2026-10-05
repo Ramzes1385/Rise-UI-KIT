@@ -1,15 +1,16 @@
 import type { ComputedRef, Ref } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import { TABLE_TEXT, UI_TEXT } from '@/locales/messages'
 import { useBaseTableExport } from './useBaseTableExport'
 import { usePadding } from '@composables/base/usePadding'
 import { useTableStickyOffsets } from './useTableStickyOffsets'
 import { isolateFormField } from '@composables/form/useFormContext'
-import { TABLE_EXPAND_TRANSITION_KEY } from '../types/BaseTable.types'
 import { useVirtualList } from '@composables/interaction/useVirtualList'
 import { useTableComposition } from '@composables/table/useTableComposition'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { useExpandTransition } from '@composables/interaction/useExpandTransition'
 import { useScrollableRegion } from '@composables/interaction/useScrollableRegion'
+import { TABLE_EXPAND_TRANSITION_KEY, TABLE_UI_KEY } from '../types/BaseTable.types'
 import type { BaseTableEmits, TableColumn, TableProps } from '../types/BaseTable.types'
 import { computed, getCurrentInstance, onBeforeUnmount, provide, ref, useSlots, watch } from 'vue'
 
@@ -178,6 +179,8 @@ function hasRowClickListener(): boolean {
 export function useBaseTable(props: TableProps, emit: BaseTableEmits) {
 	isolateFormField()
 	const standard = useStandardBaseComponent('base-table', props, TABLE_ELEMENTS)
+	const ui = useUi(props, 'base-table')
+	provide(TABLE_UI_KEY, ui)
 	const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--tbl-pad' })
 	const expand = useRowExpand()
 	const features = useTableFeatures(props)
@@ -188,6 +191,7 @@ export function useBaseTable(props: TableProps, emit: BaseTableEmits) {
 
 	return {
 		...standard,
+		ui,
 		paginationMaxVisible: PAGINATION_MAX_VISIBLE,
 		paddingStyle: computed(() => (props.padding === undefined ? undefined : paddingStyle.value)),
 		expand,

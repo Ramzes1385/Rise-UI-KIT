@@ -1,8 +1,10 @@
 import type { ComputedRef, Ref, ShallowRef } from 'vue'
+import type { UiClassFn } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { CalendarTimeSegment, CalendarWeekSegment, NormalizedCalendarEvent } from '@utils/calendar/eventUtils'
 import type {
 	BaseEventCalendarEmits,
+	BaseEventCalendarPart,
 	BaseEventCalendarProps,
 	EventCalendarPeriod,
 	EventCalendarResource,
@@ -15,6 +17,9 @@ export type EventCalendarProps = PropsWithDefaults<
 	BaseEventCalendarProps,
 	'events' | 'view' | 'views' | 'slotDuration' | 'maxEventsPerDay' | 'hasNowIndicator' | 'isSelectable' | 'isEditable' | 'resources'
 >
+
+/** Как сменилась сетка: `next` и `prev` — период вперёд и назад (сдвиг по направлению), `change` — вид (затухание с масштабом) */
+export type EventCalendarViewMotion = 'next' | 'prev' | 'change'
 
 /** Событие, которое сейчас переносят или растягивают: ключ показа и новое время; `isBlocked` — `canMove` запретил */
 export interface EventCalendarDraft {
@@ -188,3 +193,12 @@ export interface EventCalendarPress {
 
 /** Объявление переноса с клавиатуры: ключ строки словаря `eventCalendar` */
 export type EventCalendarAnnouncement = 'PICKED' | 'MOVED' | 'DROPPED' | 'CANCELLED' | 'BLOCKED'
+
+/** Источники классов дней, колонок и событий: проп `ui`, `customClass` и состояния выделения, переноса и размера */
+export interface EventCalendarClassSources {
+	ui: UiClassFn<BaseEventCalendarPart>
+	classes: ComputedRef<Record<string, string | undefined>>
+	editClass: (item: NormalizedCalendarEvent) => Record<string, boolean>
+	isDaySelected: (day: EventCalendarMonthDay) => boolean
+	isCompact: (segment: CalendarTimeSegment) => boolean
+}

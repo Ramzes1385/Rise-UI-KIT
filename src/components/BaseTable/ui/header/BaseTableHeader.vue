@@ -1,7 +1,7 @@
 <template>
-	<thead class="base-table__thead" :class="theadClass">
+	<thead :class="[ui('thead'), theadClass]">
 		<tr :class="trClass" :aria-rowindex="isVirtual ? 1 : undefined">
-			<th v-if="isSelectable" class="base-table__th base-table__th--check" :class="thClass">
+			<th v-if="isSelectable" :class="[ui('th'), 'base-table__th--check', thClass]">
 				<BaseCheckbox
 					:model-value="isAllSelected"
 					:is-indeterminate="isSomeSelected"
@@ -10,15 +10,15 @@
 					:size-scale="sizeScale"
 					@update:model-value="emit('toggle-all')" />
 			</th>
-			<th v-if="hasRowNumber" class="base-table__th base-table__th--number" :class="thClass">#</th>
-			<th v-if="hasExpandableRows" class="base-table__th base-table__th--expand" :class="thClass">
+			<th v-if="hasRowNumber" :class="[ui('th'), 'base-table__th--number', thClass]">#</th>
+			<th v-if="hasExpandableRows" :class="[ui('th'), 'base-table__th--expand', thClass]">
 				<span class="base-table__visually-hidden">{{ UI_TEXT.EXPAND }}</span>
 			</th>
 			<th
 				v-for="column in columns"
 				:key="column.key"
-				class="base-table__th"
 				:class="[
+					ui('th'),
 					`base-table__th--${column.align || 'left'}`,
 					{
 						'base-table__th--sortable': column.isSortable,
@@ -35,7 +35,7 @@
 				<template v-if="column.isSortable">
 					<button
 						type="button"
-						class="base-table__sort-btn"
+						:class="ui('sort-btn')"
 						:aria-describedby="getSortPriority(column) ? `${idPrefix}-${column.key}-priority` : undefined">
 						<slot :name="`header-${column.key}`" :column="column" :sort-direction="getSortDirection(column.key)">
 							<span class="base-table__th-label">{{ column.label }}</span>
@@ -77,5 +77,5 @@ const emit = defineEmits<BaseTableHeaderEmits>()
 
 defineSlots<BaseTableHeaderSlots>()
 
-const { idPrefix, getAriaSort, getSortIcon, getSortPriority } = useBaseTableHeader(props)
+const { ui, idPrefix, getAriaSort, getSortIcon, getSortPriority } = useBaseTableHeader(props)
 </script>

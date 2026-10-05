@@ -41,3 +41,5 @@ export const Resources = cases.Resources
 export const ResourceSlot = cases.ResourceSlot
 export const Ics = cases.Ics
 export const ManyEvents = cases.ManyEvents
+export const Theming = cases.Theming
+export const Animations = cases.Animations

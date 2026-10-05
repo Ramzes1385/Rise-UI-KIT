@@ -7,12 +7,13 @@
 		position: sticky;
 		top: 0;
 		z-index: 2;
-		padding: sz(var(--tbl-pad-top)) sz(var(--tbl-pad-right)) sz(var(--tbl-pad-bottom)) sz(var(--tbl-pad-left));
+		padding: space(var(--tbl-pad-top) var(--tbl-pad-right) var(--tbl-pad-bottom) var(--tbl-pad-left));
 		border-bottom: 1px solid var(--rise-border-accented);
-		background-color: var(--tbl-bg);
+		background-color: var(--tbl-head-bg);
 		color: var(--tbl-head-text);
-		@include text-size(sm);
-		font-weight: var(--rise-font-weight-semibold);
+		font-size: var(--tbl-font-size);
+		line-height: sz(var(--rise-line-height-sm));
+		font-weight: ct(table, header-font-weight, var(--rise-font-weight-semibold));
 		text-align: left;
 		white-space: nowrap;
 		vertical-align: middle;
@@ -28,13 +29,13 @@
 		&--sticky-left {
 			left: 0;
 			z-index: 3;
-			box-shadow: inset -1px 0 0 var(--rise-border);
+			box-shadow: inset -1px 0 0 var(--tbl-border);
 		}
 
 		&--sticky-right {
 			right: 0;
 			z-index: 3;
-			box-shadow: inset 1px 0 0 var(--rise-border);
+			box-shadow: inset 1px 0 0 var(--tbl-border);
 		}
 	}
 
@@ -110,18 +111,16 @@
 			top: 0;
 			right: 0;
 			bottom: 0;
-			width: 1px;
-			height: sz(16px);
-			margin: auto 0;
+			width: 2px;
 			background-color: var(--rise-border-accented);
-			@include transition(height, background-color);
+			clip-path: inset(calc(50% - #{sz(8px)}) 0 calc(50% - #{sz(8px)}) 1px);
+			@include transition(clip-path, background-color);
 		}
 
 		@include hover {
 			&::after {
-				width: 2px;
-				height: 100%;
 				background-color: var(--rise-primary);
+				clip-path: inset(0);
 			}
 		}
 

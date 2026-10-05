@@ -37,6 +37,12 @@ export interface BaseCalendarDaysProps {
 	popoverHighlights: CalendarHighlight[]
 	/** Функция закрытия popover */
 	closePopover: () => void
+	/** Отображаемый период (год × 12 + месяц) — ключ сетки: при смене сетка уезжает и приезжает */
+	period: number
+	/** Имя `<Transition>` смены периода: `base-calendar-slide-next` или `base-calendar-slide-prev` */
+	slideName: string
+	/** Движение включено: при `false` (пресет `none`, «уменьшить движение») сетка меняется сразу */
+	isAnimated: boolean
 }
 
 export interface BaseCalendarDaysEmits {

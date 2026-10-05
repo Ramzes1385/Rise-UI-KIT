@@ -1,18 +1,20 @@
 .base-calendar {
 	--calendar-text: var(--custom-text, var(--rise-text));
-	--calendar-heading: var(--custom-text, var(--rise-text-highlighted));
-	--calendar-hover-bg: var(--custom-bg-hover, var(--rise-bg-elevated));
+	--calendar-heading: var(--custom-text, #{ct(calendar, header-text, var(--rise-text-highlighted))});
+	--calendar-hover-bg: var(--custom-bg-hover, #{ct(calendar, day-bg-hover, var(--rise-bg-elevated))});
 	--calendar-accent: var(--custom-bg-active, var(--rise-primary));
-	--calendar-accent-hover: var(--custom-bg-active, var(--rise-primary-hover));
-	--calendar-on-accent: var(--custom-text-active, var(--rise-on-primary));
+	--calendar-selected-bg: var(--custom-bg-active, #{ct(calendar, day-bg-selected, var(--rise-primary))});
+	--calendar-selected-bg-hover: var(--custom-bg-active, #{ct(calendar, day-bg-selected, var(--rise-primary-hover))});
+	--calendar-on-accent: var(--custom-text-active, #{ct(calendar, day-text-selected, var(--rise-on-primary))});
+	--calendar-day-size: #{ct(calendar, day-height, 32px)};
 
 	user-select: none;
 
 	&.base-card {
-		--card-pad-top: 12px;
-		--card-pad-right: 12px;
-		--card-pad-bottom: 12px;
-		--card-pad-left: 12px;
+		--card-pad-top: #{ct(calendar, padding, 12px)};
+		--card-pad-right: #{ct(calendar, padding, 12px)};
+		--card-pad-bottom: #{ct(calendar, padding, 12px)};
+		--card-pad-left: #{ct(calendar, padding, 12px)};
 
 		width: fit-content;
 		max-width: 100%;
@@ -23,8 +25,8 @@
 		@include reset-custom-color;
 		display: flex;
 		align-items: center;
-		gap: sz(4px);
-		margin-bottom: sz(8px);
+		gap: space(4px);
+		margin-bottom: space(8px);
 
 		&--simple {
 			justify-content: center;
@@ -54,7 +56,7 @@
 		flex: 1 1 auto;
 		min-width: 0;
 		@include text-size(sm);
-		font-weight: var(--rise-font-weight-semibold);
+		font-weight: ct(calendar, header-font-weight, var(--rise-font-weight-semibold));
 		color: var(--calendar-heading);
 		text-align: center;
 		@include truncate;
@@ -76,11 +78,11 @@
 	}
 
 	&__weekdays {
-		margin-bottom: sz(4px);
+		margin-bottom: space(4px);
 	}
 
 	&__grid {
-		row-gap: sz(4px);
+		row-gap: space(4px);
 	}
 
 	&__weekday,
@@ -108,7 +110,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		min-height: sz(32px);
+		min-height: sz(var(--calendar-day-size));
 	}
 
 	&__day {
@@ -118,11 +120,11 @@
 		align-items: center;
 		justify-content: center;
 		box-sizing: border-box;
-		width: sz(32px);
-		height: sz(32px);
+		width: sz(var(--calendar-day-size));
+		height: sz(var(--calendar-day-size));
 		padding: 0;
 		border: 0;
-		border-radius: var(--rise-radius-full);
+		border-radius: ct(calendar, day-radius, var(--rise-radius-full));
 		background-color: transparent;
 		color: var(--calendar-text);
 		font: inherit;
@@ -151,6 +153,7 @@
 		&--today {
 			color: var(--calendar-accent);
 			font-weight: var(--rise-font-weight-semibold);
+			box-shadow: inset 0 0 0 sz(1px) ct(calendar, day-ring, transparent);
 		}
 
 		&--range {
@@ -165,18 +168,18 @@
 		}
 
 		&--selected {
-			background-color: var(--calendar-accent);
+			background-color: var(--calendar-selected-bg);
 			color: var(--calendar-on-accent);
 
 			@include hover {
-				background-color: var(--calendar-accent-hover);
+				background-color: var(--calendar-selected-bg-hover);
 			}
 		}
 
 		&--custom {
 			width: 100%;
 			height: auto;
-			min-height: sz(32px);
+			min-height: sz(var(--calendar-day-size));
 			padding: sz(2px);
 			border-radius: sz(var(--rise-radius-md));
 		}
@@ -222,7 +225,7 @@
 		box-sizing: border-box;
 		min-width: sz(180px);
 		margin-top: sz(6px);
-		padding: sz(8px) sz(12px);
+		padding: space(8px 12px);
 		@include floating-surface;
 		white-space: nowrap;
 		user-select: text;
@@ -305,7 +308,7 @@
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
 		grid-auto-rows: 1fr;
-		gap: sz(4px);
+		gap: space(4px);
 		min-height: sz(240px);
 	}
 
@@ -340,9 +343,9 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: sz(8px);
-		margin-top: sz(8px);
-		padding-top: sz(8px);
+		gap: space(8px);
+		margin-top: space(8px);
+		padding-top: space(8px);
 		border-top: 1px solid var(--rise-border);
 	}
 
@@ -393,8 +396,8 @@
 		@include reset-custom-color;
 		display: flex;
 		justify-content: center;
-		margin-top: sz(8px);
-		padding-top: sz(8px);
+		margin-top: space(8px);
+		padding-top: space(8px);
 		border-top: 1px solid var(--rise-border);
 	}
 
@@ -409,4 +412,15 @@
 			opacity: 1;
 		}
 	}
+}
+
+@include enter-slide(base-calendar-slide-next, left);
+@include enter-slide(base-calendar-slide-prev, right);
+@include enter-scale(base-calendar-view);
+
+.base-calendar-slide-next-leave-active,
+.base-calendar-slide-prev-leave-active,
+.base-calendar-view-leave-active {
+	position: absolute;
+	pointer-events: none;
 }

@@ -1,4 +1,5 @@
 import { computed } from 'vue'
+import { useTableUi } from '../useTableUi'
 import type { BaseTableRowEmits, BaseTableRowProps } from '../../types/body/BaseTableRow.types'
 
 const EXPAND_BUTTON_PADDING = { x: 3, y: 3 }
@@ -22,6 +23,7 @@ function focusSiblingRow(row: HTMLElement, key: string): void {
 
 export function useBaseTableRow(props: BaseTableRowProps, emit: BaseTableRowEmits) {
 	return {
+		ui: useTableUi(),
 		expandButtonPadding: EXPAND_BUTTON_PADDING,
 		isExpandable: computed(() => Boolean(props.row.isExpandable || props.row.children?.length)),
 		onClick(event: MouseEvent): void {
