@@ -1833,3 +1833,11 @@ API кита не меняется. В Storybook добавлены пример
 - Новые CSS-переменные корня (точки стилизации): `--base-pie-chart-appear-duration`, `--base-pie-chart-update-duration`, `--base-pie-chart-ease` (`--rise-ease-emphasized`, до пресетов движения — `--rise-ease`).
 - Новая константа `PIE_CHART_ANIMATIONS` в экспорте компонента.
 - Центральное число кольца пока меняется сразу: твин числа — после `useTween` (задача motion-chart).
+## Задача motion-countdown: BaseCountdown — плавная смена цифр
+
+- **Новый проп `digitAnimation`**: `'roll' | 'flip' | 'fade' | 'blur' | 'none'`, по умолчанию `roll` (можно поменять через `defaults` плагина). Тип `CountdownDigitAnimation` и список `COUNTDOWN_DIGIT_ANIMATIONS` — из `@ramzes1385/rise-ui-kit`. Поломок нет.
+  ```vue
+  <BaseCountdown :to="saleEnd" digit-animation="flip" />
+  ```
+- **Поведение по умолчанию изменилось:** цифры меняются с анимацией `roll` (≈300 мс), меняются только изменившиеся разряды. Прежний вид — `digit-animation="none"` или `createUiKitPlugin({ defaults: { BaseCountdown: { digitAnimation: 'none' } } })`. При `prefers-reduced-motion: reduce` цифры меняются сразу.
+- **DOM:** при анимации внутри `.base-countdown__value` и `.base-countdown__clock` — разряды `.base-countdown__slot` с `.base-countdown__digit[data-char]`, разделители — `.base-countdown__slot--static`; на корне — классы `base-countdown--digits-<режим>` и `base-countdown--count-down|up`. `textContent` значения прежний, но в момент смены (≈300 мс) в DOM есть и уходящая цифра (класс `base-countdown-<режим>-leave-active`): тесты приложений, которые читают `textContent` цифр, — с `digitAnimation: 'none'` или без уходящих элементов. Текст для скринридера и `aria-*` не менялись.
