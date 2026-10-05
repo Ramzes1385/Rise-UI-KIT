@@ -130,13 +130,15 @@
 							:disabled="isDisabled"
 							@focus="onCueFocus(item.index)"
 							@click="chooseCue(item)">
-							<span class="base-audio-player__cue-time">{{ item.time }}</span>
+							<span class="base-audio-player__cue-time">{{ item.time }}</span
+							>{{ ' ' }}
 							<span v-if="item.speaker" class="base-audio-player__cue-speaker">
 								<template v-for="(part, index) in item.speakerParts" :key="index">
 									<mark v-if="part.isMatch" class="base-audio-player__match">{{ part.text }}</mark>
 									<template v-else>{{ part.text }}</template>
 								</template>
 							</span>
+							{{ ' ' }}
 							<span class="base-audio-player__cue-text">
 								<template v-for="(part, index) in item.parts" :key="index">
 									<mark v-if="part.isMatch" class="base-audio-player__match">{{ part.text }}</mark>

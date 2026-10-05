@@ -59,7 +59,7 @@ export function useAudioTranscript(props: BaseAudioPlayerProps, emit: BaseAudioP
 		isOpen: () => open.isOpen.value,
 	})
 	const close = (): void => {
-		const toggle = panelRef.value?.parentElement?.querySelector<HTMLElement>(TOGGLE)
+		const toggle = panelRef.value?.closest('.base-audio-player')?.querySelector<HTMLElement>(TOGGLE)
 		open.setOpen(false)
 		void nextTick(() => toggle?.focus())
 	}

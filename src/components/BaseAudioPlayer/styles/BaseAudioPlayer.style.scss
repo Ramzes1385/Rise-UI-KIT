@@ -105,6 +105,7 @@
 	}
 
 	&__transcript {
+		position: relative;
 		display: flex;
 		flex-direction: column;
 		grid-column: 1 / -1;
@@ -154,7 +155,7 @@
 	}
 
 	&__transcript-result:empty {
-		display: none;
+		@include visually-hidden;
 	}
 
 	&__transcript-result,

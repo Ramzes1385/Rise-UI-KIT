@@ -56,6 +56,9 @@ export function transcriptToText(cues: AudioTranscriptCue[], duration: number): 
 }
 
 export function transcriptFileName(title: string): string {
-	const name = title.replace(/[\\/:*?"<>|]+/g, ' ').trim()
+	const name = title
+		.replace(/[\\/:*?"<>|]+/g, ' ')
+		.replace(/\s+/g, ' ')
+		.trim()
 	return `${name || 'transcript'}.txt`
 }
