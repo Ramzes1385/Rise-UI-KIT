@@ -106,15 +106,33 @@ describe('BaseImageMapEditor холст: выбор мышью', () => {
 		expect(emitted()['update:selected']).toBeUndefined()
 	})
 
-	it('pointercancel завершает протяжку, движение без протяжки ничего не меняет', async () => {
+	it('pointercancel при переносе возвращает объект на место без шага истории; движение без протяжки ничего не меняет', async () => {
 		const { container, stage, emitted } = renderEditor()
 		await fireEvent.pointerMove(stage(), at(0.4, 0.4))
 		await fireEvent.pointerUp(stage(), at(0.4, 0.4))
 		expect(emitted()['update:modelValue']).toBeUndefined()
+		const before = objectEl(container, 'r1').getAttribute('x')
 		await fireEvent.pointerDown(objectEl(container, 'r1'), at(0.2, 0.2))
 		await fireEvent.pointerMove(stage(), at(0.3, 0.3))
+		expect(objectEl(container, 'r1').getAttribute('x')).not.toBe(before)
 		await fireEvent.pointerCancel(stage(), at(0.3, 0.3))
 		expect(stage()).not.toHaveClass('base-image-map-editor__stage--dragging')
+		expect(objectEl(container, 'r1').getAttribute('x')).toBe(before)
+		expect(emitted()['update:modelValue']).toBeUndefined()
+		expect(screen.getByRole('button', { name: 'Отменить (Ctrl+Z)' })).toHaveAttribute('aria-disabled', 'true')
+	})
+
+	it('pointercancel при протяжке ручки возвращает размер; следующая протяжка — обычный шаг', async () => {
+		const { container, stage, emitted } = renderEditor({ selected: 'r1' })
+		const handle = (): HTMLElement => container.querySelector('[data-editor-handle="2"]') as HTMLElement
+		const width = objectEl(container, 'r1').getAttribute('width')
+		await fireEvent.pointerDown(handle(), at(0.3, 0.3))
+		await fireEvent.pointerMove(stage(), at(0.5, 0.4))
+		expect(objectEl(container, 'r1').getAttribute('width')).not.toBe(width)
+		await fireEvent.pointerCancel(stage(), at(0.5, 0.4))
+		expect(objectEl(container, 'r1').getAttribute('width')).toBe(width)
+		expect(emitted()['update:modelValue']).toBeUndefined()
+		await drag(stage(), { target: handle(), from: [0.3, 0.3], to: [0.5, 0.4] })
 		expect(emitted()['update:modelValue']).toHaveLength(1)
 	})
 
