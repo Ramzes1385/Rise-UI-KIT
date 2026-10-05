@@ -21,7 +21,7 @@ const PARTS = [
 const PROPS = {
 	label: 'Пароль',
 	isRequired: true,
-	type: 'password',
+	type: 'password' as const,
 	prefix: 'P',
 	postfix: 'S',
 	error: 'Ошибка',
@@ -41,7 +41,7 @@ describe('BaseInput: проп ui', () => {
 
 	it('без ui — только класс кита; классы плагина и экземпляра склеиваются', () => {
 		const { container } = render(BaseInput, {
-			props: { label: 'Имя', ui: { field: 'own' } },
+			props: { modelValue: '', label: 'Имя', ui: { field: 'own' } },
 			global: { plugins: [createUiKitPlugin({ defaults: { BaseInput: { ui: { field: 'app', wrapper: 'app-wrapper' } } } })] },
 		})
 
