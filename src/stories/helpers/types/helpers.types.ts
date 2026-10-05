@@ -1,5 +1,6 @@
 import type { Component } from 'vue'
 import type { ARG_GROUP } from '../controls/argTypes'
+import type { ThemePresetName } from '@utils/theme/themeUtils'
 import type { userEvent as defaultUserEvent } from 'storybook/test'
 
 export type ArgGroup = (typeof ARG_GROUP)[keyof typeof ARG_GROUP]
@@ -99,3 +100,6 @@ export interface MotionPresetsStoryOptions {
 	/** Аргументы-слоты — как `slots` у `useStorySetup` */
 	slots?: readonly string[]
 }
+
+/** Бренд историй — глобал Storybook `brand`: пресет `THEME_PRESETS` или `custom` — тема из «Foundations/Конструктор темы» */
+export type StoryBrand = ThemePresetName | 'custom'

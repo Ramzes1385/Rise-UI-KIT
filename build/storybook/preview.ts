@@ -1,6 +1,8 @@
 /**
- * Тема (`data-theme` на <html> iframe), язык и пресет движения (`data-rise-motion`) переключаются глобальными переменными
- * Storybook `theme`/`locale`/`motion`; для скриншотов — `?globals=theme:dark;motion:none`.
+ * Режим (`data-theme` на <html> iframe), бренд (`data-rise-theme`), язык и пресет движения (`data-rise-motion`) переключаются
+ * глобальными переменными Storybook `theme`/`brand`/`locale`/`motion`; для скриншотов — `?globals=theme:dark;motion:none`.
+ * `theme` — светлая или тёмная, `brand` — тема `createTheme()` поверх неё (пресеты и `custom` из конструктора): одна область
+ * темы — `data-rise-theme` × `data-theme` на одном элементе (src/stories/helpers/theme/brand.ts).
  */
 
 import { setup } from '@storybook/vue3-vite'
@@ -9,7 +11,7 @@ import { LINK_COMPONENT_KEY } from '../../src/composables/interaction/useLink/us
 import { setLocale } from '../../src/locales/state'
 import { MOTION_PRESETS, type MotionPreset } from '../../src/composables/app/useMotion/types/useMotion.types'
 import { MOTION_ATTRIBUTE } from '../../src/composables/app/useMotion/motionTokens'
-import { STORY_WAIT_TIMEOUT, StoryRouterLink } from '../../src/stories/helpers'
+import { applyStoryBrand, STORY_BRAND_DEFAULT, STORY_WAIT_TIMEOUT, StoryRouterLink } from '../../src/stories/helpers'
 import type { Decorator, Preview } from '@storybook/vue3-vite'
 import { theme as docsTheme } from './theme'
 
@@ -102,6 +104,8 @@ guardDocsFrameFocus()
 const withTheme: Decorator = (story, context) => {
 	const theme: Theme = context.globals.theme === 'dark' ? 'dark' : 'light'
 	document.documentElement.setAttribute('data-theme', theme)
+	// бренд — после режима, на тот же <html>: область темы — `data-rise-theme` и `data-theme` на одном элементе
+	applyStoryBrand(context.globals.brand)
 	return story()
 }
 
@@ -139,6 +143,21 @@ const preview: Preview = {
 				dynamicTitle: true,
 			},
 		},
+		brand: {
+			description: 'Бренд: тема createTheme() поверх режима «Тема» — пресеты THEME_PRESETS и custom из «Конструктора темы»',
+			toolbar: {
+				title: 'Бренд',
+				icon: 'paintbrush',
+				items: [
+					{ value: 'rise', title: 'Rise — кит как есть' },
+					{ value: 'corporate', title: 'Corporate' },
+					{ value: 'playful', title: 'Playful' },
+					{ value: 'minimal', title: 'Minimal' },
+					{ value: 'custom', title: 'Custom — из конструктора' },
+				],
+				dynamicTitle: true,
+			},
+		},
 		motion: {
 			description: 'Пресет движения: длительности, кривые, сдвиг и масштаб появления',
 			toolbar: {
@@ -169,6 +188,7 @@ const preview: Preview = {
 
 	initialGlobals: {
 		theme: 'light',
+		brand: STORY_BRAND_DEFAULT,
 		motion: 'standard',
 		locale: 'ru',
 	},
@@ -183,7 +203,7 @@ const preview: Preview = {
 				order: [
 					'Introduction',
 					'Foundations',
-					['Colors', 'Typography', 'Radius & Shadows', 'Sizing', 'Theming', 'Motion'],
+					['Colors', 'Typography', 'Radius & Shadows', 'Sizing', 'Theming', 'Конструктор темы', 'Motion'],
 					'Blocks',
 					['Auth', 'Settings', 'Dashboard'],
 					'Element',
