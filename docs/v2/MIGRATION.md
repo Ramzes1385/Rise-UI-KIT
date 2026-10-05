@@ -1921,4 +1921,15 @@ API кита не меняется. В Storybook добавлены пример
 - Разбор — общий `parseSubtitles`/`decodeSubtitles` (`@utils/media/subtitleUtils`); файл по адресу загружается `fetch` без cookies других сайтов (по умолчанию `same-origin`); смена `transcript` отменяет прежнюю загрузку.
 - **Умолчания BaseAudioPlayer теперь через `kitDefaults`:** `defaults.BaseAudioPlayer` и `defaults.global` из `createUiKitPlugin` действуют на `bars`, `isExclusive`, `sizeScale` (раньше игнорировались).
 - Словарь: новый раздел `transcript` (`UI_TRANSCRIPT`) — `TITLE`, `CUES`, `SEARCH`, `SEARCH_PLACEHOLDER`, `FOUND`, `NOT_FOUND`, `DOWNLOAD`, `LOADING`, `ERROR`, `EMPTY`, `FOLLOW`. Свой язык через `defineLocale` — добавьте раздел.
+## Задача qr-security: безопасность BaseQrCode
+
+- **Имя картинки по умолчанию без данных кода.** Было «QR-код: <весь value>», стало «QR-код: ссылка на <хост>» для `http(s)://` и «QR-код» для остального: секреты `otpauth://` и токены входа не попадают в дерево доступности и озвучку. Свой `label` — как раньше. Тесты приложений, которые ищут картинку по имени «QR-код: <текст>», — на новое имя или на свой `label`. Словарь: `qrCode.LABEL` теперь без `{value}`, новые `qrCode.LABEL_LINK` (`{host}`) и `qrCode.REVEAL`.
+- **DOM:** `role="img"` и `aria-label` переехали с корня `.base-qr-code` на новый `.base-qr-code__box` (внутри корня — рамка, фон, скругление); корень — колонка: код и подпись `.base-qr-code__caption`. Классы корня (`--outline`, `--overflow`, `customClass.root`) — на месте; новый `--concealed`.
+- **Новые пропсы:** `isConcealed` (секретный код за заглушкой и кнопкой «Показать QR-код»), `revealTimeout` (мс до повторного скрытия), `showValue: boolean | 'host'` (подпись под кодом). События `reveal`, `conceal`; методы через ref `reveal()`, `conceal()` рядом с `getSvg()`. Типы `BaseQrCodeEmits`, `QrShowValue`.
+- **Версии 1–40** вместо 1–10: до 2953 байт при L, 2331 при M, 1273 при H. Текст, который раньше давал сообщение «слишком длинный», теперь строится кодом большей версии; с логотипом код может стать крупнее версии 10.
+- **Логотип только с безопасной схемой:** относительный адрес, `https:`, `http:`, `blob:`, `data:image/(png|jpeg|gif|webp|svg+xml)`. Иное (`javascript:`, `data:text/html`…) не рисуется, код строится как без логотипа (уровень M), в консоли — предупреждение.
+- **Предупреждения в консоли** (один раз на значение): логотип с чужого origin, модули светлее фона, контраст модулей и фона ниже 3:1, `margin` меньше 2.
+- **Умолчания через `kitDefaults`:** все пропсы BaseQrCode можно задать в `createUiKitPlugin({ defaults: { BaseQrCode: … } })` (раньше `defaults` молча не действовали).
+- **Новая утилита `gostPaymentText(payment)`** в `@ramzes1385/rise-ui-kit/utils` (тип `GostPayment`) — строка ГОСТ Р 56042-2014 в UTF-8 с проверкой БИК, счетов, ИНН, КПП и суммы в копейках.
+- **Внутреннее:** проверки реквизитов перенесены из `BaseRequisiteInput/model/requisites/requisiteChecks.ts` в `@utils/data/requisiteUtils`; публичный экспорт `isValidInn`, `isValidBik`… из пакета — без изменений.
 

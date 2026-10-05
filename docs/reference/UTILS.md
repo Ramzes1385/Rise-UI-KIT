@@ -153,6 +153,29 @@ dadataRequisites(first) // { inn: '7707083893', kpp: '773601001', ogrn: '1027700
 
 ---
 
+## paymentQrUtils
+
+Платёжная строка ГОСТ Р 56042-2014 для QR-кода оплаты по реквизитам: `gostPaymentText(payment)` → `ST00012|Name=…|PersonalAcc=…|BankName=…|BIC=…|CorrespAcc=…` и необязательные `PayeeINN`, `KPP`, `Purpose`, `Sum`, затем `extra` (прочие реквизиты стандарта по имени). Кодировка — UTF-8 (`2` в заголовке), так её кодирует `BaseQrCode`. Сумма — `sumKopecks`, целое число копеек. БИК, ключи расчётного и корреспондентского счёта, ИНН и КПП проверяются функциями `BaseRequisiteInput` (`isValidBik`, `isValidAccount`, …); неверное значение, пустой обязательный реквизит или `|` в значении — исключение `[rise-ui-kit] …`: это ошибка в данных приложения, молча её не чинят. Предел длины строки утилита не навязывает — его даёт ёмкость QR (до 2331 байта при M).
+
+```ts
+import { gostPaymentText } from '@ramzes1385/rise-ui-kit/utils'
+
+const value = gostPaymentText({
+	name: 'ООО «Ромашка»',
+	personalAcc: '40702810938000012345',
+	bankName: 'ПАО СБЕРБАНК',
+	bic: '044525225',
+	correspAcc: '30101810400000000225',
+	payeeInn: '7707083893',
+	purpose: 'Оплата по счёту № 42',
+	sumKopecks: 1250000,
+})
+```
+
+Ссылку СБП кит не собирает: её выдаёт банк через НСПК, с подписью `crc`.
+
+---
+
 ## scriptUtils
 
 `loadScript(src, options)` загружает внешний скрипт по требованию: один тег `<script async>` на адрес, повторный вызов ждёт ту же загрузку, после ошибки тег удаляется и следующий вызов пробует снова. `callbackName` — имя глобальной функции, которую вызовет сам скрипт (параметр `callback=` у Google Maps), `attributes` — атрибуты тега (`nonce`). `forgetScript(src)` убирает тег и запись о загрузке. На ней BaseMap загружает API поставщиков карт.
@@ -290,6 +313,7 @@ navigationUtils
 numberInputUtils
 oklchUtils
 paginationUtils
+paymentQrUtils
 rangeUtils
 ratingUtils
 recurrenceUtils
