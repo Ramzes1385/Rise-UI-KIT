@@ -239,6 +239,8 @@ export const ruBase = {
 		NAVIGATION_UNSAFE_URL: 'Переход по небезопасному URL заблокирован: {url}',
 		SEO_MISSING_FIELDS: '{component}: в SEO-разметке {type} нет обязательных полей: {fields}. Передайте их в seo.data',
 		TREE_REPEATED_ID: 'BaseTree: id узлов встречаются в дереве повторно (цикл в children или дубль): {ids}. Повторы не показаны',
+		MAP_LANGUAGE_FIXED:
+			'BaseMap: язык API «{provider}» задан первой загрузкой скрипта — «{current}»; запрошенный «{requested}» не применён. Один язык на страницу',
 		IMAGE_MAP_TIME_ZONE: 'BaseImageMap: неизвестный часовой пояс «{zone}» — часы работы считаются по поясу браузера',
 		IMAGE_MAP_HOURS_RANGE: 'BaseImageMap: интервал часов работы «{range}» объекта «{id}» пропущен — ожидается «10:00-22:00»',
 		IMAGE_MAP_ROUTE_LAYER:

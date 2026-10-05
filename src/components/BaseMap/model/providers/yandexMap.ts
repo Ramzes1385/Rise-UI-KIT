@@ -1,3 +1,4 @@
+import { loadProviderApi } from './apiScript'
 import { loadScript } from '@utils/dom/scriptUtils'
 import { createMarkerElement } from './markerElement'
 import type { MapCoordinates, MapMarker, MapView } from '../../types/BaseMap.types'
@@ -11,7 +12,13 @@ const location = (view: MapView) => ({ center: toYandex(view.center), zoom: view
 
 async function yandexApi(apiKey: string, language: string): Promise<YandexMapsApi> {
 	const maps = window as unknown as MapsWindow
-	if (!maps.ymaps3) await loadScript(`https://api-maps.yandex.ru/v3/?apikey=${encodeURIComponent(apiKey)}&lang=${language}`)
+	await loadProviderApi({
+		provider: 'yandex',
+		apiKey,
+		language,
+		isLoaded: () => Boolean(maps.ymaps3),
+		load: lang => loadScript(`https://api-maps.yandex.ru/v3/?apikey=${encodeURIComponent(apiKey)}&lang=${lang}`),
+	})
 	const api = maps.ymaps3 as YandexMapsApi
 	await api.ready
 	return api

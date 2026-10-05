@@ -106,3 +106,22 @@ export interface GoogleMapsApi {
 	}
 	event: { clearInstanceListeners: (instance: object) => void }
 }
+
+/** Загрузка API поставщика для ключа: язык зафиксирован первой загрузкой, `pending` — пока скрипт грузится */
+export interface ProviderApiLoad {
+	/** Язык, с которым загружен (или грузится) скрипт API */
+	language: string
+	/** Идущая загрузка; `null` — скрипт уже на странице */
+	pending: Promise<void> | null
+	/** Языки, о которых уже предупреждали — по одному разу на загрузку */
+	warned: Set<string>
+}
+
+/** Запрос загрузки API поставщика: `isLoaded` — API уже на странице, `load(language)` — сама загрузка скрипта */
+export interface ProviderApiRequest {
+	provider: string
+	apiKey: string
+	language: string
+	isLoaded: () => boolean
+	load: (language: string) => Promise<void>
+}

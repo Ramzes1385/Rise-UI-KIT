@@ -1,3 +1,4 @@
+import { loadProviderApi } from './apiScript'
 import { loadScript } from '@utils/dom/scriptUtils'
 import { createMarkerElement } from './markerElement'
 import type { MapMarker } from '../../types/BaseMap.types'
@@ -7,10 +8,16 @@ const CALLBACK = '__riseGoogleMapsReady'
 
 async function googleApi(apiKey: string, language: string): Promise<GoogleMapsApi> {
 	const maps = window as unknown as MapsWindow
-	if (!maps.google?.maps?.Map) {
-		const query = `key=${encodeURIComponent(apiKey)}&language=${language}&libraries=marker&loading=async&callback=${CALLBACK}`
-		await loadScript(`https://maps.googleapis.com/maps/api/js?${query}`, { callbackName: CALLBACK })
-	}
+	await loadProviderApi({
+		provider: 'google',
+		apiKey,
+		language,
+		isLoaded: () => Boolean(maps.google?.maps?.Map),
+		load: lang => {
+			const query = `key=${encodeURIComponent(apiKey)}&language=${lang}&libraries=marker&loading=async&callback=${CALLBACK}`
+			return loadScript(`https://maps.googleapis.com/maps/api/js?${query}`, { callbackName: CALLBACK })
+		},
+	})
 	return maps.google?.maps as GoogleMapsApi
 }
 
