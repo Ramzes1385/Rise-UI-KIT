@@ -294,7 +294,7 @@ export const Animations: StoryObj<typeof meta> = {
 
 ## Задача storybook-yandex-key: ключ Яндекс Карт в историях BaseMap
 
-Ключ лежит только в `.env.local` владельца: `STORYBOOK_YANDEX_MAPS_API_KEY=…` (шаблон — `.env.example`; `.env.*` в `.gitignore`). Storybook отдаёт в браузер только переменные с префиксом `STORYBOOK_`. Значение ключа не попадает в репозиторий, код, истории, снимки и документы.
+Ключ лежит только в `.env.local` владельца: `STORYBOOK_YANDEX_MAPS_API_KEY=…` (шаблон — `.env.example`; `.env.*` в `.gitignore`). Storybook отдаёт в браузер только переменные с префиксом `STORYBOOK_`. Значение ключа не попадает в репозиторий, код, истории, снимки и документы. В кабинете разработчика Яндекса у ключа обязательно заполнено «Ограничение по HTTP Referer» (для Storybook — `localhost`): JS API 3.0 работает только с такими ключами, без него продукт JavaScript API у ключа «Не настроен», а история показывает «Карта не загрузилась».
 
 - **Где читается.** `STORY_YANDEX_MAPS_KEY` и декоратор `withYandexMapsKey` из `@/stories/helpers` (`render/yandexMapsKey.ts`). История с живой картой — `decorators: [withYandexMapsKey]` (BaseMap: Default — песочница; Variants и Sizes показывают заглушку и индикатор, с живой картой там нечего сравнивать). Шаблон и «Show code» не меняются: ключа нет ни в `args`, ни в Controls, ни в URL истории, ни в коде примера.
 - **Как подаётся.** Как `defaults: { BaseMap: { apiKey } }` плагина (`DEFAULTS_KEY`) — тем же путём, каким приложение задаёт ключ. Явный `apiKey` в `args` перекрывает его: `'demo'` у Markers и Loading (демо-поставщик без сети), ввод в Controls. Истории с заглушкой по замыслу (Providers, Seo) декоратор не подключают.
