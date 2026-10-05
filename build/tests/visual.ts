@@ -1,4 +1,7 @@
-/** Время зафиксировано на STORY_TODAY (15 мая 2025, 10:30), чтобы календари и относительные даты не зависели от дня прогона. */
+/**
+ * Время зафиксировано на STORY_TODAY (15 мая 2025, 10:30), чтобы календари и относительные даты не зависели от дня прогона.
+ * Пресет движения — `none`: JS-анимации (твины чисел и графиков) сразу в конечном состоянии; CSS останавливает `animations: 'disabled'`.
+ */
 
 import { expect, type Page } from '@playwright/test'
 
@@ -28,7 +31,7 @@ export async function openStory(
 ): Promise<void> {
 	await page.clock.setFixedTime(new Date(2025, 4, 15, 10, 30))
 	await page.setViewportSize({ width, height })
-	await page.goto(`/iframe.html?id=${id}&viewMode=story&globals=theme:${theme}`)
+	await page.goto(`/iframe.html?id=${id}&viewMode=story&globals=theme:${theme};motion:none`)
 	await page.locator('#storybook-root > *').first().waitFor({ timeout: 25_000 })
 	await page.waitForFunction(
 		phases => phases.includes((window as PreviewWindow).__STORYBOOK_PREVIEW__?.currentRender?.phase ?? ''),

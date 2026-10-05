@@ -1,7 +1,7 @@
 /**
  * «Show code» — точный код превью (STORIES_GUIDE, раздел 8). История со своим `render` берёт код из
- * `storySource()` или `staticStorySource()`; если свой `render` у meta компонента, код для историй без своего
- * `render` задаёт `parameters.docs.source` в `stories/parameters.ts`. Код, написанный вручную (`source.code`),
+ * `storySource()` или `staticStorySource()` (у истории «Анимации» — `.source` из `motionPresetsStory()`); если свой
+ * `render` у meta компонента, код для историй без своего `render` задаёт `parameters.docs.source` в `stories/parameters.ts`. Код, написанный вручную (`source.code`),
  * не допускается: он расходится с превью. Состояние шаблона — `state` помощников, а не `ref` в константе модуля:
  * такое состояние общее для всех показов истории и в код не попадает. Проверяются истории компонентов и витрины
  * `src/stories/blocks`, `src/stories/composables` и `src/stories/foundations`. `--group=Element` проверяет один раздел.
@@ -16,6 +16,8 @@ const COMPONENTS = join(ROOT, 'src/components')
 /** Витрины без компонента: `src/stories/<раздел>/<Имя>/` — истории и `parameters.ts` прямо в папке */
 const STORY_SECTIONS = ['src/stories/blocks', 'src/stories/composables', 'src/stories/foundations'].map(path => join(ROOT, path))
 const SOURCE_HELPERS = new Set(['storySource', 'staticStorySource'])
+/** Помощники, которые возвращают `{ source }` из `storySource()` вместе с шаблоном (`motion.source`) */
+const STORY_HELPERS = new Set(['motionPresetsStory'])
 const REACTIVE = new Set(['ref', 'shallowRef', 'reactive', 'computed'])
 
 function parseArgs(argv) {
@@ -67,7 +69,14 @@ function resolveIdentifier(file, name, depth = 0) {
 /** Код истории собран помощником: вызов `storySource()`/`staticStorySource()` или константа с ним */
 function isExactSource(file, node) {
 	if (isHelperCall(node)) return true
+	if (node && ts.isPropertyAccessExpression(node) && node.name.getText() === 'source') return isStoryHelper(file, node.expression)
 	return !!node && ts.isIdentifier(node) && isHelperCall(resolveIdentifier(file, node.getText()))
+}
+
+/** `motion` в `motion.source` — константа с вызовом помощника истории (`motionPresetsStory({ … })`) */
+function isStoryHelper(file, node) {
+	const value = ts.isIdentifier(node) ? resolveIdentifier(file, node.getText()) : null
+	return !!value && ts.isCallExpression(value) && STORY_HELPERS.has(value.expression.getText())
 }
 
 const docsSource = parameters => property(property(parameters, 'docs'), 'source')

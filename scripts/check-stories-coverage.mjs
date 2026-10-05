@@ -1,6 +1,6 @@
 /** Поддерживает и старую структуру (BaseComponent/BaseComponent.stories.ts), и новую (BaseComponent/stories/BaseComponent.stories.ts). */
 
-import { existsSync, readdirSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 
 const ROOT = resolve(process.cwd())
@@ -19,6 +19,19 @@ function findStoryPath(componentDir, componentName) {
 	}
 
 	return null
+}
+
+/** История «Анимации» (решение research-motion): пока группы движения не прошли — только предупреждение */
+const ANIMATIONS_EXPORT = /export const Animations\b/
+
+function reportAnimations(storyPaths) {
+	const missing = storyPaths.filter(([, path]) => !ANIMATIONS_EXPORT.test(readFileSync(path, 'utf8'))).map(([name]) => name)
+	if (missing.length === 0) {
+		console.log('✅ История Animations есть у всех компонентов.\n')
+		return
+	}
+	console.log(`⚠️  Нет истории Animations («Анимации») у ${missing.length} из ${storyPaths.length} компонентов (пока предупреждение):`)
+	console.log(`   ${missing.join(', ')}\n`)
 }
 
 function checkCoverage() {
@@ -43,6 +56,7 @@ function checkCoverage() {
 
 	const missingStories = []
 	const coveredStories = []
+	const storyPaths = []
 
 	for (const component of baseComponents) {
 		const componentDir = join(COMPONENTS_DIR, component)
@@ -50,6 +64,7 @@ function checkCoverage() {
 
 		if (storyPath) {
 			coveredStories.push(component)
+			storyPaths.push([component, storyPath])
 		} else {
 			missingStories.push(component)
 		}
@@ -59,6 +74,7 @@ function checkCoverage() {
 	console.log(`Всего обнаружено компонентов Base*: ${baseComponents.length}`)
 	console.log(`Покрыто stories: ${coveredStories.length}`)
 	console.log(`Отсутствуют stories: ${missingStories.length}\n`)
+	reportAnimations(storyPaths)
 
 	if (missingStories.length > 0) {
 		console.log('❌ Следующие компоненты не имеют .stories.ts файлов:')

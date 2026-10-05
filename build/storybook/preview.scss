@@ -99,3 +99,30 @@ body.sb-show-main,
 		vertical-align: bottom;
 	}
 }
+
+/** История «Анимации»: кнопка «Повторить» и колонки пресетов движения (`data-rise-motion` на каждой). */
+.story-motion {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 16px;
+	width: 100%;
+
+	&__presets {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(var(--story-motion-min, 160px), 1fr));
+		gap: 12px;
+		width: 100%;
+	}
+
+	&__preset {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 8px;
+		min-width: 0;
+		padding: 12px;
+		border: 1px dashed var(--rise-border);
+		border-radius: var(--rise-radius-lg);
+	}
+}

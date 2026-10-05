@@ -1,9 +1,14 @@
-/** Тема (`data-theme` на <html> iframe) и язык переключаются глобальными переменными Storybook `theme`/`locale`; для скриншотов — `?globals=theme:dark`. */
+/**
+ * Тема (`data-theme` на <html> iframe), язык и пресет движения (`data-rise-motion`) переключаются глобальными переменными
+ * Storybook `theme`/`locale`/`motion`; для скриншотов — `?globals=theme:dark;motion:none`.
+ */
 
 import { setup } from '@storybook/vue3-vite'
 import { configure } from 'storybook/test'
 import { LINK_COMPONENT_KEY } from '../../src/composables/interaction/useLink/useLink'
 import { setLocale } from '../../src/locales/state'
+import { MOTION_PRESETS, type MotionPreset } from '../../src/composables/app/useMotion/types/useMotion.types'
+import { MOTION_ATTRIBUTE } from '../../src/composables/app/useMotion/motionTokens'
 import { STORY_WAIT_TIMEOUT, StoryRouterLink } from '../../src/stories/helpers'
 import type { Decorator, Preview } from '@storybook/vue3-vite'
 import { theme as docsTheme } from './theme'
@@ -100,6 +105,13 @@ const withTheme: Decorator = (story, context) => {
 	return story()
 }
 
+/** Пресет движения всей страницы — как опция плагина `motion`; области внутри истории задают свой `data-rise-motion` */
+const withMotion: Decorator = (story, context) => {
+	const motion = context.globals.motion as MotionPreset
+	document.documentElement.setAttribute(MOTION_ATTRIBUTE, MOTION_PRESETS.includes(motion) ? motion : 'standard')
+	return story()
+}
+
 /** Язык строк кита: тексты stories остаются русскими, меняются строки самих компонентов и формат дат */
 const withLocale: Decorator = (story, context) => {
 	setLocale(context.globals.locale === 'en' ? 'en' : 'ru')
@@ -127,6 +139,20 @@ const preview: Preview = {
 				dynamicTitle: true,
 			},
 		},
+		motion: {
+			description: 'Пресет движения: длительности, кривые, сдвиг и масштаб появления',
+			toolbar: {
+				title: 'Движение',
+				icon: 'transfer',
+				items: [
+					{ value: 'none', title: 'Нет' },
+					{ value: 'subtle', title: 'Сдержанно' },
+					{ value: 'standard', title: 'Стандарт' },
+					{ value: 'expressive', title: 'Выразительно' },
+				],
+				dynamicTitle: true,
+			},
+		},
 		locale: {
 			description: 'Язык строк компонентов',
 			toolbar: {
@@ -143,10 +169,11 @@ const preview: Preview = {
 
 	initialGlobals: {
 		theme: 'light',
+		motion: 'standard',
 		locale: 'ru',
 	},
 
-	decorators: [withTheme, withLocale],
+	decorators: [withTheme, withMotion, withLocale],
 
 	parameters: {
 		layout: 'padded',
@@ -156,7 +183,7 @@ const preview: Preview = {
 				order: [
 					'Introduction',
 					'Foundations',
-					['Colors', 'Typography', 'Radius & Shadows', 'Sizing', 'Theming'],
+					['Colors', 'Typography', 'Radius & Shadows', 'Sizing', 'Theming', 'Motion'],
 					'Blocks',
 					['Auth', 'Settings', 'Dashboard'],
 					'Element',

@@ -75,3 +75,26 @@ export interface StorySourceContext {
 	argTypes?: Record<string, { table?: { category?: string }; mapping?: Record<string, unknown> } | undefined>
 	component?: unknown
 }
+
+/** Настройки `motionPresetsStory` — истории «Анимации» с колонками пресетов движения */
+export interface MotionPresetsStoryOptions {
+	/**
+	 * Разметка одной колонки — повторяется в каждой колонке пресета. Перезапуск — `:key="replay"` (кнопка «Повторить»
+	 * делает `replay++`) или своё состояние через `action`. В разметке нет `id`: колонок четыре
+	 */
+	item: string
+	/** Компоненты шаблона, обязательно с `BaseButton` для кнопки «Повторить» */
+	components: Readonly<Record<string, unknown>>
+	/** Что импортировать из пакета кита для «Show code» (`BaseButton` добавляется сам) */
+	imports: readonly string[]
+	/** Состояние шаблона сверх `replay` (`{ isOpen: false }`) */
+	state?: Readonly<Record<string, unknown>>
+	/** Выражение кнопки, по умолчанию `replay++` */
+	action?: string
+	/** Подпись кнопки, по умолчанию «Повторить» */
+	trigger?: string
+	/** Аргументы, которые шаблон задаёт сам, — как `omit` у `storySource` */
+	omit?: readonly string[]
+	/** Аргументы-слоты — как `slots` у `useStorySetup` */
+	slots?: readonly string[]
+}

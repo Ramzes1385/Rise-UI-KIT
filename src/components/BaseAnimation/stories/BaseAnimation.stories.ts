@@ -19,3 +19,4 @@ export const Default = cases.Default
 export const Names = cases.Names
 export const List = cases.List
 export const Collapse = cases.Collapse
+export const Animations = cases.Animations
