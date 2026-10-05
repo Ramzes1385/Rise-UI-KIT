@@ -1,9 +1,8 @@
 <template>
-	<transition name="base-back-top">
+	<Transition name="base-back-top" :css="!isInstant">
 		<BaseFab
 			v-if="isVisible"
-			class="base-back-top"
-			:class="classes.root"
+			:class="[ui('root'), classes.root]"
 			:variant="variant"
 			:label="label ?? UI_ARIA.BACK_TO_TOP"
 			:icon="icon"
@@ -12,9 +11,10 @@
 			:is-contained="isContained"
 			:size-scale="sizeScale"
 			:color="color"
+			:ui="{ icon: ui('icon'), label: ui('label') }"
 			:custom-class="{ icon: classes.icon, label: classes.label }"
 			@click="handleClick" />
-	</transition>
+	</Transition>
 </template>
 
 <script setup lang="ts">
@@ -41,5 +41,5 @@ const props = withDefaults(
 
 const emit = defineEmits<BaseBackTopEmits>()
 
-const { classes, isVisible, handleClick } = useBaseBackTop(props, emit)
+const { ui, classes, isVisible, isInstant, handleClick } = useBaseBackTop(props, emit)
 </script>

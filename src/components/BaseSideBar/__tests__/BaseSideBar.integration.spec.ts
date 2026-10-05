@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import BaseSideBar from '../ui/BaseSideBar.vue'
 import { describe, expect, it, vi } from 'vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import { BASE_SIDEBAR_STUBS, preventLinkNavigation } from './BaseSideBar.test-utils'
 
 preventLinkNavigation()
@@ -58,7 +58,7 @@ describe('BaseSideBar integration', () => {
 
 		await fireEvent.click(screen.getByRole('button', { name: 'Свернуть' }))
 
-		expect(sidebar).toHaveClass('base-side-bar--collapsed')
+		await waitFor(() => expect(sidebar).toHaveClass('base-side-bar--collapsed'))
 		expect(screen.getByRole('button', { name: 'Развернуть' })).toBeInTheDocument()
 	})
 

@@ -1,3 +1,4 @@
+import { useUi } from '@composables/base/useUi'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseMenuEmits, BaseMenuItem, BaseMenuProps } from '../types/BaseMenu.types'
 
@@ -19,6 +20,7 @@ export function useBaseMenu(props: BaseMenuProps, emit: BaseMenuEmits) {
 
 	return {
 		...useStandardBaseComponent('base-menu', props, ['root', 'group', 'item', 'icon', 'label', 'divider']),
+		ui: useUi(props, 'base-menu'),
 		isLink,
 		itemAttrs: (item: BaseMenuItem): Record<string, unknown> => itemAttrs(item, props.sizeScale),
 		handleItemClick,

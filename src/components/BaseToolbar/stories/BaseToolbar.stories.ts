@@ -23,3 +23,5 @@ export const Vertical = cases.Vertical
 export const Disabled = cases.Disabled
 export const WithFieldAndMenu = cases.WithFieldAndMenu
 export const Keyboard = cases.Keyboard
+export const Theming = cases.Theming
+export const Animations = cases.Animations

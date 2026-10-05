@@ -2,14 +2,20 @@
 	<component :is="shellComponent" v-bind="shellProps">
 		<aside
 			v-bind="$attrs"
-			class="base-side-bar"
-			:class="[{ 'base-side-bar--collapsed': isCollapsedState, 'base-side-bar--mobile': isMobileMode }, variantClass, classes.root]"
+			ref="rootRef"
+			:class="[
+				ui('root'),
+				{ 'base-side-bar--collapsed': isCollapsedView, 'base-side-bar--mobile': isMobileMode },
+				variantClass,
+				collapseMotionClass,
+				classes.root,
+			]"
 			:style="[variantStyle, customColorStyle, sizeScaleStyle, widthStyle, collapsedWidthStyle, paddingStyle, gapStyle]"
 			role="complementary">
-			<div v-if="hasHeader" class="base-side-bar__header" :class="classes.header">
-				<template v-if="!isCollapsedState">
+			<div v-if="hasHeader" :class="[ui('header'), classes.header]">
+				<template v-if="!isCollapsedView">
 					<slot name="header">
-						<h3 v-if="title" class="base-side-bar__title" :class="classes.title">{{ title }}</h3>
+						<h3 v-if="title" :class="[ui('title'), classes.title]">{{ title }}</h3>
 					</slot>
 				</template>
 
@@ -17,7 +23,7 @@
 					<BaseButton
 						variant="ghost"
 						:aria-label="toggleLabel"
-						class="base-side-bar__toggle"
+						:class="ui('toggle')"
 						:custom-class="classes.toggle"
 						@click="handleToggle">
 						<BaseIcon :name="toggleIcon" />
@@ -26,11 +32,10 @@
 			</div>
 
 			<nav
-				v-if="hasNavigation && !isLoading && (!isCollapsedState || hasItems)"
-				class="base-side-bar__navigation"
-				:class="classes.navigation"
+				v-if="hasNavigation && !isLoading && (!isCollapsedView || hasItems)"
+				:class="[ui('navigation'), classes.navigation]"
 				:aria-label="navigationLabelText">
-				<slot v-if="!isCollapsedState && $slots.navigation" name="navigation" />
+				<slot v-if="!isCollapsedView && $slots.navigation" name="navigation" />
 
 				<BaseSideBarNavigation
 					v-else-if="hasItems"
@@ -39,7 +44,7 @@
 					:active-path="activePath"
 					:active-match="activeMatch"
 					:link-component="resolvedLinkComponent"
-					:is-collapsed="isCollapsedState"
+					:is-collapsed="isCollapsedView"
 					@item-click="handleItemClick">
 					<template v-if="$slots.item" #item="slotProps">
 						<slot name="item" v-bind="slotProps" />
@@ -59,22 +64,22 @@
 				</BaseSideBarNavigation>
 			</nav>
 
-			<div v-if="isLoading" class="base-side-bar__loading" :class="classes.loading">
+			<div v-if="isLoading" :class="[ui('loading'), classes.loading]">
 				<BaseSkeleton shape="rect" :width="'100%'" :height="20" />
 				<BaseSkeleton shape="rect" :width="'82%'" :height="20" />
 				<BaseSkeleton shape="rect" :width="'64%'" :height="20" />
 				<BaseSkeleton shape="rect" :width="'92%'" :height="20" />
 			</div>
 
-			<div v-if="hasBody && !isCollapsedState && !isLoading" class="base-side-bar__body" :class="classes.body">
+			<div v-if="hasBody && !isCollapsedView && !isLoading" :class="[ui('body'), classes.body]">
 				<slot />
 			</div>
 
-			<div v-if="hasFooter && !isLoading" class="base-side-bar__footer" :class="classes.footer">
+			<div v-if="hasFooter && !isLoading" :class="[ui('footer'), classes.footer]">
 				<slot name="footer" />
 			</div>
 
-			<div v-if="hasCollapsedContent && isCollapsedState" class="base-side-bar__collapsed" :class="classes.collapsed">
+			<div v-if="hasCollapsedContent && isCollapsedView" :class="[ui('collapsed'), classes.collapsed]">
 				<slot name="collapsedContent" />
 			</div>
 		</aside>
@@ -117,6 +122,8 @@ const emit = defineEmits<BaseSideBarEmits>()
 defineSlots<BaseSideBarSlots>()
 
 const {
+	rootRef,
+	ui,
 	variantClass,
 	variantStyle,
 	customColorStyle,
@@ -127,7 +134,8 @@ const {
 	widthStyle,
 	collapsedWidthStyle,
 	gapStyle,
-	isCollapsedState,
+	isCollapsedView,
+	collapseMotionClass,
 	isMobileMode,
 	shellComponent,
 	shellProps,

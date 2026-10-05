@@ -1,6 +1,7 @@
-export { BREADCRUMBS_VARIANTS } from './types/BaseBreadcrumbs.types'
+export { BREADCRUMBS_PARTS, BREADCRUMBS_VARIANTS } from './types/BaseBreadcrumbs.types'
 export type {
 	BaseBreadcrumbsEmits,
+	BaseBreadcrumbsPart,
 	BaseBreadcrumbsProps,
 	BaseBreadcrumbsSlots,
 	BreadcrumbItem,

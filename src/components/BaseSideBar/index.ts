@@ -1,4 +1,4 @@
-export { SIDEBAR_BADGE_COLORS, SIDEBAR_VARIANTS } from './types/BaseSideBar.types'
+export { SIDEBAR_BADGE_COLORS, SIDEBAR_PARTS, SIDEBAR_VARIANTS } from './types/BaseSideBar.types'
 
 export type {
 	BaseSideBarEmits,
@@ -6,6 +6,7 @@ export type {
 	BaseSideBarNavigationEmits,
 	BaseSideBarNavigationProps,
 	BaseSideBarNavigationSlots,
+	BaseSideBarPart,
 	BaseSideBarProps,
 	BaseSideBarSlots,
 	SideBarActiveMatch,

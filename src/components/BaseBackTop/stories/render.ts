@@ -1,8 +1,9 @@
+import { NEWS } from './shared'
 import BaseBackTop from '../ui/BaseBackTop.vue'
 import type { Meta } from '@storybook/vue3-vite'
 import { storySource, useStorySetup } from '@/stories/helpers'
 
-const news = Array.from({ length: 40 }, (_, index) => `Новость ${index + 1}: склад в Волгограде принял ${20 + index} поставок`)
+const news = NEWS
 
 const template = `
 	<div style="position: relative; max-width: 480px">

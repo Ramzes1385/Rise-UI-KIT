@@ -1,10 +1,21 @@
 import type { Component } from 'vue'
+import type { UiProp } from '@composables/base/useUi'
 import type { PaddingProp } from '@composables/base/usePadding'
 import type { BreakpointName } from '@composables/app/useBreakpoint'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export const SIDEBAR_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
+
+/**
+ * Части панели для пропа `ui` (БЭМ-элементы `.base-side-bar__<часть>`, `root` — сама панель):
+ * header — шапка с заголовком и кнопкой сворачивания, title — заголовок из `title`, toggle — кнопка «Свернуть»/«Развернуть»,
+ * navigation — ориентир `<nav>` с пунктами, loading — заглушки загрузки, body — основное содержимое (слот по умолчанию),
+ * footer — подвал, collapsed — содержимое свёрнутой панели (слот `collapsedContent`).
+ */
+export const SIDEBAR_PARTS = ['header', 'title', 'toggle', 'navigation', 'loading', 'body', 'footer', 'collapsed'] as const
+
+export type BaseSideBarPart = (typeof SIDEBAR_PARTS)[number]
 
 export type SideBarItemKey = string | number
 
@@ -68,7 +79,8 @@ export interface SideBarItem {
 	/**
 	 * Дочерние элементы.
 	 *
-	 * Пункт без `to` раскрывает их по клику, пункт с `to` показывает всегда. В свёрнутой панели пункт с детьми
+	 * Пункт без `to` раскрывает их по клику (высота и прозрачность на токенах движения; при выключенном движении — сразу),
+	 * пункт с `to` показывает всегда. В свёрнутой панели пункт с детьми
 	 * открывает меню справа: сам пункт (если у него есть `to`) и его дети.
 	 */
 	children?: SideBarItem[]
@@ -107,7 +119,14 @@ export interface BaseSideBarProps extends BaseComponentProps<
 	(typeof SIDEBAR_VARIANTS)[number],
 	'root' | 'header' | 'title' | 'toggle' | 'navigation' | 'loading' | 'body' | 'footer' | 'collapsed'
 > {
-	/** v-model свёрнутого состояния (undefined = внутреннее управление) */
+	/**
+	 * v-model свёрнутого состояния (undefined = внутреннее управление).
+	 *
+	 * Смена анимирована на токенах движения: при сворачивании подписи гаснут (`--rise-duration-fast`), затем панель сужается;
+	 * при разворачивании панель расширяется, затем подписи проявляются. Ширина — `--rise-duration-slow` на кривой
+	 * `--rise-ease-emphasized`. При выключенном движении (`prefers-reduced-motion`, пресет `none`, `reducedMotion: 'always'`)
+	 * панель сразу в конечном состоянии. События `update:isCollapsed`, `collapse`, `expand` приходят сразу по нажатию.
+	 */
 	isCollapsed?: boolean
 
 	/** Заголовок сайдбара */
@@ -198,6 +217,16 @@ export interface BaseSideBarProps extends BaseComponentProps<
 
 	/** v-model открытой панели в мобильном режиме */
 	isMobileOpen?: boolean
+
+	/**
+	 * Классы частей панели (`root`, `header`, `title`, `toggle`, `navigation`, `loading`, `body`, `footer`, `collapsed`) —
+	 * добавляются к классам кита. Глобально — `createUiKitPlugin({ defaults: { BaseSideBar: { ui } } })`, классы плагина
+	 * и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseSideBar :items="items" :ui="{ root: 'shadow-lg', title: 'tracking-wide' }" />
+	 */
+	ui?: UiProp<BaseSideBarPart>
 }
 
 export interface BaseSideBarEmits {

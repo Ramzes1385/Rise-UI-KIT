@@ -1,4 +1,5 @@
 import { computed } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import type { BaseLinkEmits, BaseLinkProps } from '../types/BaseLink.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { resolveLink, useLinkComponent } from '@composables/interaction/useLink'
@@ -14,6 +15,7 @@ export function useBaseLink(props: BaseLinkProps, emit: BaseLinkEmits) {
 
 	return {
 		...useStandardBaseComponent('base-link', props, ['root', 'external']),
+		ui: useUi(props, 'base-link'),
 		link,
 		isNewTab: computed(() => link.value.hasTarget && props.target === '_blank'),
 		handleClick(event: MouseEvent): void {

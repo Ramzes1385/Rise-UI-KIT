@@ -28,3 +28,5 @@ export const WithDividers = cases.WithDividers
 export const ItemClickHandler = cases.ItemClickHandler
 export const Keyboard = cases.Keyboard
 export const Links = cases.Links
+export const Theming = cases.Theming
+export const Animations = cases.Animations

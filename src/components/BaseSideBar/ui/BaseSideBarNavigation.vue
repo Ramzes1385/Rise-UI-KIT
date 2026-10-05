@@ -1,5 +1,6 @@
 <template>
 	<ul
+		ref="rootRef"
 		class="base-side-bar-nav"
 		:class="{ 'base-side-bar-nav--nested': level > 0 && !isGroup, 'base-side-bar-nav--group': isGroup }"
 		role="list">
@@ -102,6 +103,7 @@
 					:aria-current="isCurrentItemActive(item) ? 'page' : undefined"
 					:aria-disabled="item.isDisabled || undefined"
 					:aria-expanded="getItemAriaExpanded(item)"
+					:aria-controls="getItemAriaControls(item, index)"
 					@click="handleClick(item, $event)">
 					<slot name="item" v-bind="getSlotProps(item)">
 						<span v-if="item.icon" class="base-side-bar-nav__icon">
@@ -137,33 +139,39 @@
 					</slot>
 				</component>
 
-				<div v-if="shouldRenderChildren(item)" class="base-side-bar-nav__children">
-					<BaseSideBarNavigation
-						:items="item.children"
-						:level="level + 1"
-						:active-key="activeKey"
-						:active-path="activePath"
-						:active-match="activeMatch"
-						:link-component="linkComponent"
-						:is-collapsed="isCollapsed"
-						@item-click="handleChildItemClick">
-						<template v-if="$slots.item" #item="slotProps">
-							<slot name="item" v-bind="slotProps" />
-						</template>
+				<Transition name="base-side-bar-nav-expand" :css="!isExpandInstant">
+					<div v-if="shouldRenderChildren(item)" :id="getChildrenId(index)" class="base-side-bar-nav__collapse">
+						<div class="base-side-bar-nav__collapse-body">
+							<div class="base-side-bar-nav__children">
+								<BaseSideBarNavigation
+									:items="item.children"
+									:level="level + 1"
+									:active-key="activeKey"
+									:active-path="activePath"
+									:active-match="activeMatch"
+									:link-component="linkComponent"
+									:is-collapsed="isCollapsed"
+									@item-click="handleChildItemClick">
+									<template v-if="$slots.item" #item="slotProps">
+										<slot name="item" v-bind="slotProps" />
+									</template>
 
-						<template v-if="$slots.icon" #icon="slotProps">
-							<slot name="icon" v-bind="slotProps" />
-						</template>
+									<template v-if="$slots.icon" #icon="slotProps">
+										<slot name="icon" v-bind="slotProps" />
+									</template>
 
-						<template v-if="$slots.label" #label="slotProps">
-							<slot name="label" v-bind="slotProps" />
-						</template>
+									<template v-if="$slots.label" #label="slotProps">
+										<slot name="label" v-bind="slotProps" />
+									</template>
 
-						<template v-if="$slots.badge" #badge="slotProps">
-							<slot name="badge" v-bind="slotProps" />
-						</template>
-					</BaseSideBarNavigation>
-				</div>
+									<template v-if="$slots.badge" #badge="slotProps">
+										<slot name="badge" v-bind="slotProps" />
+									</template>
+								</BaseSideBarNavigation>
+							</div>
+						</div>
+					</div>
+				</Transition>
 
 				<BaseSeparator v-if="item.hasDivider && !isCollapsed" class="base-side-bar-nav__divider" />
 			</li>
@@ -207,6 +215,10 @@ const {
 	isItemExpanded,
 	shouldRenderChildren,
 	getItemAriaExpanded,
+	getItemAriaControls,
+	getChildrenId,
+	rootRef,
+	isExpandInstant,
 	isItemActive,
 	isCurrentItemActive,
 	handleClick,

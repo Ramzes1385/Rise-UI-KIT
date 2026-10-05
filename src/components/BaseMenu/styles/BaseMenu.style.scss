@@ -2,9 +2,12 @@
 	display: flex;
 	flex-direction: column;
 	min-width: sz(180px);
-	padding: sz(4px);
+	padding: space(ct(menu, padding, 4px));
 	@include floating-surface;
-	@include custom-bg(background-color, var(--rise-bg));
+	border-color: ct(menu, border, var(--rise-border));
+	border-radius: sz(ct(menu, radius, var(--rise-radius-md)));
+	box-shadow: ct(menu, shadow, var(--rise-shadow-lg));
+	@include custom-bg(background-color, ct(menu, bg, var(--rise-bg)));
 	@include transition-colors;
 
 	&__group {
@@ -14,12 +17,14 @@
 
 	&__item {
 		@include menu-item;
-		@include custom-text(color, var(--rise-text));
+		padding: sz(ct(menu, item-padding-y, 6px)) sz(ct(menu, item-padding-x, 8px));
+		border-radius: sz(ct(menu, item-radius, var(--rise-radius-md)));
+		@include custom-text(color, ct(menu, item-text, var(--rise-text)));
 		@include focus-ring(-2px);
 
 		@include hover {
-			background-color: var(--custom-bg-hover, var(--rise-bg-elevated));
-			color: var(--custom-text-hover, var(--custom-text, var(--rise-text-highlighted)));
+			background-color: var(--custom-bg-hover, #{ct(menu, item-bg-hover, var(--rise-bg-elevated))});
+			color: var(--custom-text-hover, var(--custom-text, #{ct(menu, item-text-hover, var(--rise-text-highlighted))}));
 
 			.base-menu__icon {
 				color: inherit;
@@ -27,11 +32,11 @@
 		}
 
 		&:focus-visible {
-			background-color: var(--custom-bg-hover, var(--rise-bg-elevated));
+			background-color: var(--custom-bg-hover, #{ct(menu, item-bg-hover, var(--rise-bg-elevated))});
 		}
 
 		@include active {
-			background-color: var(--rise-bg-accented);
+			background-color: ct(menu, item-bg-active, var(--rise-bg-accented));
 		}
 
 		&--disabled {
@@ -42,7 +47,7 @@
 			display: flex;
 			@include text-size(sm);
 			text-decoration: none;
-			@include custom-text(color, var(--rise-text));
+			@include custom-text(color, ct(menu, item-text, var(--rise-text)));
 
 			@include hover {
 				text-decoration: none;
@@ -64,7 +69,7 @@
 
 	&__divider.base-separator {
 		width: auto;
-		margin: sz(4px) sz(-4px);
+		margin: sz(4px) calc(-1 * #{space(ct(menu, padding, 4px))});
 	}
 
 	&--ghost {
@@ -74,12 +79,12 @@
 	}
 
 	&--outline {
-		border-color: var(--rise-border-accented);
+		border-color: ct(menu, border, var(--rise-border-accented));
 		box-shadow: none;
 	}
 
 	&--shadow {
-		box-shadow: var(--rise-shadow-xl);
+		box-shadow: ct(menu, shadow, var(--rise-shadow-xl));
 	}
 
 	&--soft {

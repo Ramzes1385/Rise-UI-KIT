@@ -144,7 +144,7 @@ describe('BaseBreadcrumbs integration', () => {
 
 	describe('доступность', () => {
 		it('рендерит ориентир navigation «Хлебные крошки», текущей страницей помечен только последний элемент', () => {
-			const { container } = render(BaseBreadcrumbs, { props: { items: ITEMS } })
+			const { container } = render(BaseBreadcrumbs, { props: { items: ITEMS }, global: { stubs: { TransitionGroup: false } } })
 
 			const nav = screen.getByRole('navigation', { name: 'Хлебные крошки' })
 			expect(within(nav).getByRole('list')).toBeInTheDocument()

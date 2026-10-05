@@ -292,6 +292,23 @@ describe('BaseMegaMenu: каскад — край экрана и мобильн
 		expect(document.querySelector('.base-mega-menu__sub--flip')).toBeNull()
 	})
 
+	it('замер уровня не учитывает стартовый сдвиг перехода появления', async () => {
+		setViewport(1024)
+		renderMenu()
+		mockRects({ Электроника: 1012 })
+		const original = globalThis.getComputedStyle
+		vi.spyOn(globalThis, 'getComputedStyle').mockImplementation((element: Element) => {
+			const style = original(element)
+			if (element.getAttribute('aria-label') !== 'Электроника') return style
+			return new Proxy(style, {
+				get: (target, key) => (key === 'transform' ? 'matrix(1, 0, 0, 1, -8, 0)' : Reflect.get(target, key, target)),
+			})
+		})
+
+		await fireEvent.click(button(/Электроника/))
+		await waitFor(() => expect(list('Электроника')).toHaveClass('base-mega-menu__sub--below'))
+	})
+
 	it('после закрытия и повторного открытия меряет уровень заново', async () => {
 		renderMenu()
 		const rects = mockRects({ Электроника: 1400 })

@@ -1,4 +1,5 @@
 import type { Ref } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import type { BaseToolbarProps } from '../types/BaseToolbar.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
@@ -63,6 +64,7 @@ export function useBaseToolbar(props: BaseToolbarProps) {
 
 	return {
 		...standard,
+		ui: useUi(props, 'base-toolbar'),
 		rootRef,
 		handleKeydown(event: KeyboardEvent): void {
 			const target = event.target as HTMLElement

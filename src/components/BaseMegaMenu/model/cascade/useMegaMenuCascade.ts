@@ -51,6 +51,7 @@ export function useMegaMenuCascade(props: MegaMenuPanelProps, select: MegaMenuCa
 		select,
 		handleEnter,
 		toggle: (entry: MegaMenuLinkEntry): void => (isExpanded(entry) ? closeFrom(entry.depth) : open(entry)),
+		isMotionReduced: (): boolean => Boolean(props.isMotionReduced),
 		...useCascadeKeyboard(cascade),
 	}
 	provide(MEGA_MENU_CASCADE_KEY, context)

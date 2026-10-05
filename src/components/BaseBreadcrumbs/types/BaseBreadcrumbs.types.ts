@@ -1,9 +1,20 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { LinkComponent } from '@composables/interaction/useLink'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { SeoComponentProps } from '@composables/seo/useStructuredData'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export const BREADCRUMBS_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
+
+/**
+ * Части крошек для пропа `ui` (БЭМ-элементы `.base-breadcrumbs__<часть>`, `root` — сам `<nav>`):
+ * `list` — список `<ol>`; `item` — пункт `<li>`; `link` — ссылка или кнопка крошки (и ссылка «домой»);
+ * `current` — текущая страница; `text` — подпись крошки; `icon` — иконка крошки; `sep` — обёртка разделителя;
+ * `ellipsis-btn` — кнопка «…», раскрывающая свёрнутые крошки
+ */
+export const BREADCRUMBS_PARTS = ['list', 'item', 'link', 'current', 'text', 'icon', 'sep', 'ellipsis-btn'] as const
+
+export type BaseBreadcrumbsPart = (typeof BREADCRUMBS_PARTS)[number]
 
 export interface BreadcrumbItem {
 	/** Заголовок */
@@ -44,7 +55,10 @@ export interface BaseBreadcrumbsProps
 	items: BreadcrumbItem[]
 	/** Разделитель */
 	separator?: BreadcrumbSeparator
-	/** Максимальное количество видимых элементов (0 = все) */
+	/**
+	 * Максимальное количество видимых элементов (0 = все). Начало пути сворачивается в «…»; раскрытые крошки
+	 * проявляются с лёгким масштабом на токенах движения, при выключенном движении — сразу
+	 */
 	maxItems?: number
 	/** Показывать иконку дома вместо первой крошки */
 	showHome?: boolean
@@ -52,6 +66,14 @@ export interface BaseBreadcrumbsProps
 	homeIcon?: string
 	/** Компонент ссылок на маршруты. По умолчанию — из плагина, RouterLink (если подключён vue-router) или `a` */
 	linkComponent?: LinkComponent
+	/**
+	 * Классы частей крошек (`root`, `list`, `item`, `link`, `current`, `text`, `icon`, `sep`, `ellipsis-btn`) — добавляются
+	 * к классам кита. Глобально — `createUiKitPlugin({ defaults: { BaseBreadcrumbs: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseBreadcrumbs :items="items" :ui="{ link: 'font-semibold', sep: 'opacity-50' }" />
+	 */
+	ui?: UiProp<BaseBreadcrumbsPart>
 }
 
 export interface BaseBreadcrumbsEmits {

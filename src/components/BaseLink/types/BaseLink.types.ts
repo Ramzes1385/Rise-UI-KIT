@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import type { LinkComponent, LinkTo } from '@composables/interaction/useLink'
 
@@ -6,6 +7,14 @@ import type { LinkComponent, LinkTo } from '@composables/interaction/useLink'
  * `ghost` — цвет текста вокруг, подчёркивание при наведении, для навигации и списков ссылок
  */
 export const LINK_VARIANTS = ['default', 'ghost'] as const
+
+/**
+ * Части ссылки для пропа `ui` (БЭМ-элементы `.base-link__<часть>`, `root` — сама ссылка):
+ * `external` — значок «↗» у ссылки в новой вкладке; `hint` — скрытая подсказка «открывается в новой вкладке» для скринридера
+ */
+export const LINK_PARTS = ['external', 'hint'] as const
+
+export type BaseLinkPart = (typeof LINK_PARTS)[number]
 
 export interface BaseLinkProps extends BaseComponentProps<(typeof LINK_VARIANTS)[number], 'root' | 'external'> {
 	/** Маршрут приложения: строка или объект для RouterLink. Внешний адрес (`https://…`) открывается обычной ссылкой */
@@ -22,6 +31,14 @@ export interface BaseLinkProps extends BaseComponentProps<(typeof LINK_VARIANTS)
 	isDisabled?: boolean
 	/** Компонент ссылок на маршруты. По умолчанию — из плагина, RouterLink (если подключён vue-router) или `a` */
 	linkComponent?: LinkComponent
+	/**
+	 * Классы частей ссылки (`root`, `external`, `hint`) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseLink: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseLink href="https://example.com" target="_blank" label="Документация" :ui="{ root: 'font-semibold', external: 'opacity-60' }" />
+	 */
+	ui?: UiProp<BaseLinkPart>
 }
 
 export interface BaseLinkEmits {

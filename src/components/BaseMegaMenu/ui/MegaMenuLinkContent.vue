@@ -1,13 +1,13 @@
 <template>
-	<span v-if="link.icon" class="base-mega-menu__link-icon" aria-hidden="true">
+	<span v-if="link.icon" :class="ui('link-icon')" aria-hidden="true">
 		<BaseIcon :name="link.icon" />
 	</span>
 	<span class="base-mega-menu__link-text">
-		<span class="base-mega-menu__link-label">
+		<span :class="ui('link-label')">
 			{{ link.label }}
 			<BaseBadge v-if="link.badge" variant="soft" class="base-mega-menu__link-badge" :label="link.badge" />
 		</span>
-		<span v-if="link.description" class="base-mega-menu__link-desc">{{ link.description }}</span>
+		<span v-if="link.description" :class="ui('link-desc')">{{ link.description }}</span>
 	</span>
 </template>
 

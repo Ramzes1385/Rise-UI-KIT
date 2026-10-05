@@ -1,10 +1,11 @@
 .base-breadcrumbs {
-	--breadcrumbs-gap: #{sz(6px)};
+	--breadcrumbs-gap: #{sz(ct(breadcrumbs, gap, 6px))};
 
 	display: block;
 	width: 100%;
-	@include text-size(sm);
-	@include custom-text(color, var(--rise-text-muted));
+	font-size: sz(ct(breadcrumbs, font-size, var(--rise-font-size-sm)));
+	line-height: sz(var(--rise-line-height-sm));
+	@include custom-text(color, ct(breadcrumbs, text, var(--rise-text-muted)));
 
 	&__list {
 		display: flex;
@@ -35,13 +36,13 @@
 		background-color: transparent;
 		color: inherit;
 		font: inherit;
-		font-weight: var(--rise-font-weight-medium);
+		font-weight: ct(breadcrumbs, font-weight, var(--rise-font-weight-medium));
 		text-align: left;
 		text-decoration: none;
 		cursor: pointer;
 		@include transition-colors;
 		@include focus-ring;
-		@include custom-text-hover(color, var(--rise-text));
+		@include custom-text-hover(color, ct(breadcrumbs, text-hover, var(--rise-text)));
 	}
 
 	&__ellipsis-btn {
@@ -64,8 +65,8 @@
 		align-items: center;
 		gap: var(--breadcrumbs-gap);
 		min-width: 0;
-		font-weight: var(--rise-font-weight-medium);
-		color: var(--custom-text-active, var(--rise-text-highlighted));
+		font-weight: ct(breadcrumbs, font-weight, var(--rise-font-weight-medium));
+		color: var(--custom-text-active, #{ct(breadcrumbs, current-text, var(--rise-text-highlighted))});
 	}
 
 	&__icon {
@@ -77,7 +78,7 @@
 		align-items: center;
 		justify-content: center;
 		flex-shrink: 0;
-		color: var(--rise-text-dimmed);
+		color: ct(breadcrumbs, sep-text, var(--rise-text-dimmed));
 		user-select: none;
 	}
 
@@ -88,7 +89,7 @@
 	}
 
 	&--ghost {
-		--breadcrumbs-gap: #{sz(2px)};
+		--breadcrumbs-gap: #{sz(ct(breadcrumbs, gap, 2px))};
 	}
 
 	&--ghost &__link,
@@ -110,23 +111,29 @@
 		display: inline-block;
 		width: auto;
 		max-width: 100%;
-		padding: sz(var(--rise-control-padding-y)) sz(12px);
+		padding: sz(var(--rise-control-padding-y) ct(breadcrumbs, padding-x, 12px));
 		border: 1px solid transparent;
-		border-radius: sz(var(--rise-radius-md));
+		border-radius: sz(ct(breadcrumbs, radius, var(--rise-radius-md)));
 	}
 
 	&--outline {
-		border-color: var(--rise-border);
-		@include custom-bg(background-color, transparent);
+		border-color: ct(breadcrumbs, border, var(--rise-border));
+		@include custom-bg(background-color, ct(breadcrumbs, bg, transparent));
 	}
 
 	&--shadow {
-		border-color: var(--rise-border);
-		box-shadow: var(--rise-shadow-sm);
-		@include custom-bg(background-color, var(--rise-bg));
+		border-color: ct(breadcrumbs, border, var(--rise-border));
+		box-shadow: ct(breadcrumbs, shadow, var(--rise-shadow-sm));
+		@include custom-bg(background-color, ct(breadcrumbs, bg, var(--rise-bg)));
 	}
 
 	&--soft {
-		@include custom-bg(background-color, var(--rise-bg-muted));
+		@include custom-bg(background-color, ct(breadcrumbs, bg, var(--rise-bg-muted)));
 	}
+}
+
+@include enter-scale('base-breadcrumbs-reveal');
+
+.base-breadcrumbs-reveal-move {
+	transition: transform var(--rise-duration) var(--rise-ease-out);
 }

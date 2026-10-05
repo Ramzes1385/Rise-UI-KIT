@@ -1,8 +1,8 @@
 <template>
-	<div class="base-mega-menu__content" :class="{ 'base-mega-menu__content--promo': item.promo }">
+	<div :class="[ui('content'), { 'base-mega-menu__content--promo': item.promo }]">
 		<div v-if="item.groups?.length" class="base-mega-menu__groups" :style="{ '--mega-menu-columns': groupCount() }">
-			<div v-for="(group, index) in item.groups" :key="group.title ?? index" class="base-mega-menu__group" :class="classes.group">
-				<p v-if="group.title" :id="groupTitleId(index)" class="base-mega-menu__group-title">{{ group.title }}</p>
+			<div v-for="(group, index) in item.groups" :key="group.title ?? index" :class="[ui('group'), classes.group]">
+				<p v-if="group.title" :id="groupTitleId(index)" :class="ui('group-title')">{{ group.title }}</p>
 				<ul class="base-mega-menu__links" role="list" :aria-labelledby="group.title ? groupTitleId(index) : undefined">
 					<MegaMenuLinks
 						:links="group.items"
@@ -10,6 +10,7 @@
 						:parent-id="groupLinksId(index)"
 						:group="group"
 						:item="item"
+						:ui="ui"
 						:link-class="classes.link">
 						<template v-if="$slots.link" #link="slotProps">
 							<slot name="link" v-bind="slotProps" />
@@ -19,7 +20,7 @@
 			</div>
 		</div>
 
-		<div v-if="item.promo" class="base-mega-menu__promo" :class="classes.promo">
+		<div v-if="item.promo" :class="[ui('promo'), classes.promo]">
 			<slot name="promo" :promo="item.promo" :item="item">
 				<img v-if="item.promo.image" class="base-mega-menu__promo-image" :src="item.promo.image" alt="" />
 				<p class="base-mega-menu__promo-title">{{ item.promo.title }}</p>

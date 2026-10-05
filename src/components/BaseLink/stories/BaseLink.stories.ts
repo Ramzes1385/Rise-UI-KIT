@@ -23,3 +23,5 @@ export const Disabled = cases.Disabled
 export const LongContent = cases.LongContent
 export const External = cases.External
 export const UnsafeUrl = cases.UnsafeUrl
+export const Theming = cases.Theming
+export const Animations = cases.Animations

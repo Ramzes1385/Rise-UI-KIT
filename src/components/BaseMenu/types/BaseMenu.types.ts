@@ -1,6 +1,16 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export const MENU_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
+
+/**
+ * Части меню для пропа `ui` (БЭМ-элементы `.base-menu__<часть>`, `root` — панель меню):
+ * group — группа пунктов, item — пункт (кнопка или ссылка), icon — иконка пункта, label — текст пункта,
+ * divider — разделитель между группами и после пункта с `hasDivider`.
+ */
+export const MENU_PARTS = ['group', 'item', 'icon', 'label', 'divider'] as const
+
+export type BaseMenuPart = (typeof MENU_PARTS)[number]
 
 export interface BaseMenuItem {
 	/** Заголовок */
@@ -30,6 +40,14 @@ export interface BaseMenuProps extends BaseComponentProps<
 > {
 	/** Список элементов */
 	items: BaseMenuItem[][]
+	/**
+	 * Классы частей меню (`root`, `group`, `item`, `icon`, `label`, `divider`) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseMenu: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseMenu :items="items" :ui="{ root: 'w-64', item: 'gap-3', label: 'font-medium' }" />
+	 */
+	ui?: UiProp<BaseMenuPart>
 }
 
 export interface BaseMenuEmits {

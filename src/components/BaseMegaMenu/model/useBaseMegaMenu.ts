@@ -1,8 +1,10 @@
 import { computed, ref } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
 import { useMegaMenuHover } from './useMegaMenuHover'
 import { useMegaMenuState } from './useMegaMenuState'
 import { getItemKey, hasPanel } from './megaMenuItems'
+import { useMotion } from '@composables/app/useMotion'
 import { calcIconScale } from '@utils/media/iconUtils'
 import { useLayer } from '@composables/app/useLayerStack'
 import { useMegaMenuKeyboard } from './useMegaMenuKeyboard'
@@ -58,6 +60,8 @@ export function useBaseMegaMenu(props: MegaMenuProps, emit: BaseMegaMenuEmits) {
 
 	return {
 		...useStandardBaseComponent('base-mega-menu', props, MEGA_MENU_ELEMENTS),
+		ui: useUi(props, 'base-mega-menu'),
+		isMotionReduced: useMotion(rootRef).isReduced,
 		...state,
 		...mobile,
 		...hover,

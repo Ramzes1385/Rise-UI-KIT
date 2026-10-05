@@ -4,10 +4,15 @@ import type { MegaMenuSubPlacement } from '../../types/BaseMegaMenu.types'
 
 const MOBILE_SELECTOR = '.base-mega-menu--mobile'
 
+function enterShiftX(element: Element): number {
+	const matrix = /^matrix\(([^)]+)\)$/.exec(getComputedStyle(element).transform)
+	return matrix ? Number(matrix[1].split(',')[4]) || 0 : 0
+}
+
 function measure(subId: string): MegaMenuSubPlacement {
 	const element = document.getElementById(subId)
 	if (!element || element.closest(MOBILE_SELECTOR)) return 'side'
-	return resolvePlacement(element.getBoundingClientRect(), window.innerWidth)
+	return resolvePlacement({ right: element.getBoundingClientRect().right - enterShiftX(element) }, window.innerWidth)
 }
 
 export function useCascadePlacement() {

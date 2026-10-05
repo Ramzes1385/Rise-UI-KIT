@@ -1,12 +1,12 @@
 <template>
-	<div class="base-menu" :class="[variantClass, classes.root]" :style="[sizeScaleStyle, variantStyle, customColorStyle]">
-		<div v-for="(group, gIndex) in items" :key="gIndex" class="base-menu__group" :class="classes.group">
+	<div :class="[ui('root'), variantClass, classes.root]" :style="[sizeScaleStyle, variantStyle, customColorStyle]">
+		<div v-for="(group, gIndex) in items" :key="gIndex" :class="[ui('group'), classes.group]">
 			<template v-for="(item, iIndex) in group" :key="iIndex">
 				<component
 					:is="isLink(item) ? BaseLink : 'div'"
 					v-bind="itemAttrs(item)"
-					class="base-menu__item"
 					:class="[
+						ui('item'),
 						{
 							'base-menu__item--disabled': item.isDisabled,
 						},
@@ -16,19 +16,17 @@
 					@keydown="handleItemKeydown(item, $event)">
 					<BaseIcon
 						v-if="item.icon"
-						class="base-menu__icon"
-						:class="classes.icon"
+						:class="[ui('icon'), classes.icon]"
 						:name="item.icon"
 						:size-scale="calcIconScale('sm', sizeScale)" />
-					<span class="base-menu__label" :class="classes.label">{{ item.label }}</span>
+					<span :class="[ui('label'), classes.label]">{{ item.label }}</span>
 				</component>
 				<BaseSeparator
 					v-if="item.hasDivider && iIndex < group.length - 1"
-					class="base-menu__divider"
-					:class="classes.divider"
+					:class="[ui('divider'), classes.divider]"
 					:size-scale="sizeScale" />
 			</template>
-			<BaseSeparator v-if="gIndex < items.length - 1" class="base-menu__divider" :class="classes.divider" :size-scale="sizeScale" />
+			<BaseSeparator v-if="gIndex < items.length - 1" :class="[ui('divider'), classes.divider]" :size-scale="sizeScale" />
 		</div>
 	</div>
 </template>
@@ -55,6 +53,6 @@ const props = withDefaults(
 const emit = defineEmits<BaseMenuEmits>()
 defineSlots<BaseMenuSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, isLink, itemAttrs, handleItemClick, handleItemKeydown } =
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, ui, isLink, itemAttrs, handleItemClick, handleItemKeydown } =
 	useBaseMenu(props, emit)
 </script>

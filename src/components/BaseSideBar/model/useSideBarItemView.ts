@@ -32,6 +32,7 @@ export function useSideBarItemView(props: BaseSideBarNavigationProps, onSelect: 
 		hasFlyout,
 		isGroupItem: (item: SideBarItem): boolean => item.type === 'group',
 		getGroupLabelId: (index: number): string => `${baseId}-group-${index}`,
+		getChildrenId: (index: number): string => `${baseId}-children-${index}`,
 		getBadgeColor: (item: SideBarItem): SideBarBadgeColor => item.badgeColor ?? 'neutral',
 		getCollapsedLabel: (item: SideBarItem): string => (item.badge === undefined ? item.label : `${item.label}, ${item.badge}`),
 		getFlyoutItems(item: SideBarItem): DropdownMenuItems {

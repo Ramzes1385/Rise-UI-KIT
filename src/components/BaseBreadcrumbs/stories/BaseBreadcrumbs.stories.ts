@@ -28,3 +28,5 @@ export const CustomSlots = cases.CustomSlots
 export const Collapsed = cases.Collapsed
 export const Keyboard = cases.Keyboard
 export const Seo = cases.Seo
+export const Theming = cases.Theming
+export const Animations = cases.Animations

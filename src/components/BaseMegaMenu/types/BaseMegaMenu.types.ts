@@ -1,4 +1,5 @@
 import type { LinkTo } from '@composables/interaction/useLink'
+import type { UiClassFn, UiProp } from '@composables/base/useUi'
 import type { BreakpointName } from '@composables/app/useBreakpoint'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
@@ -6,6 +7,37 @@ import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 export const MEGA_MENU_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
 export type MegaMenuVariant = (typeof MEGA_MENU_VARIANTS)[number]
+
+/**
+ * Части меню для пропа `ui` (БЭМ-элементы `.base-mega-menu__<часть>`, `root` — `<nav>`): bar — строка разделов;
+ * toggle — кнопка «Меню» мобильного вида; list — список разделов; item — пункт списка; trigger — раздел (кнопка или
+ * ссылка); end — правая часть строки (слот `end`); panel — панель раздела (и раскрытая под разделом в мобильном виде);
+ * content — содержимое панели; group — колонка; group-title — заголовок колонки; link — ссылка в колонке; sub — вложенный
+ * уровень ссылок; link-icon — плитка иконки ссылки; link-label — название ссылки; link-desc — пояснение; promo — промо-блок.
+ */
+export const MEGA_MENU_PARTS = [
+	'bar',
+	'toggle',
+	'list',
+	'item',
+	'trigger',
+	'end',
+	'panel',
+	'content',
+	'group',
+	'group-title',
+	'link',
+	'sub',
+	'link-icon',
+	'link-label',
+	'link-desc',
+	'promo',
+] as const
+
+export type BaseMegaMenuPart = (typeof MEGA_MENU_PARTS)[number]
+
+/** Классы частей меню из пропа `ui` — для внутренних частей */
+type MegaMenuUi = UiClassFn<BaseMegaMenuPart>
 
 /** Как открывается панель раздела: hover — наведением с задержкой и кликом, click — только кликом */
 export type MegaMenuTrigger = 'click' | 'hover'
@@ -113,6 +145,14 @@ export interface BaseMegaMenuProps extends BaseComponentProps<
 	mobileBreakpoint?: BreakpointName
 	/** Имя ориентира навигации. По умолчанию «Главное меню» */
 	ariaLabel?: string
+	/**
+	 * Классы частей меню (`root`, `bar`, `trigger`, `panel`, `link`… — см. `MEGA_MENU_PARTS`) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseMegaMenu: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseMegaMenu :items="items" :ui="{ bar: 'shadow-sm', panel: 'rounded-2xl', link: 'gap-4' }" />
+	 */
+	ui?: UiProp<BaseMegaMenuPart>
 }
 
 export interface BaseMegaMenuEmits {
@@ -169,6 +209,10 @@ export interface MegaMenuPanelProps {
 	classes: Partial<Record<'group' | 'link' | 'promo', string>>
 	/** Задержки наведения; без них вложенные уровни открываются только кликом и с клавиатуры */
 	hoverDelays?: MegaMenuHoverDelays
+	/** Классы частей из пропа `ui` */
+	ui: MegaMenuUi
+	/** Движение выключено (пресет `none`, «уменьшить движение»): вложенные уровни появляются сразу */
+	isMotionReduced?: boolean
 }
 
 /** Где открыт вложенный уровень: справа от пункта или, если справа не хватает места, под строкой пункта у её правого края */
@@ -201,11 +245,15 @@ export interface MegaMenuLinksProps {
 	item: MegaMenuItem
 	/** Класс ссылки из customClass */
 	linkClass?: string
+	/** Классы частей из пропа `ui` */
+	ui: MegaMenuUi
 }
 
 export interface MegaMenuLinkContentProps {
 	/** Ссылка */
 	link: MegaMenuLink
+	/** Классы частей из пропа `ui` */
+	ui: MegaMenuUi
 }
 
 export type MegaMenuLinksSlots = Pick<BaseMegaMenuSlots, 'link'>
@@ -234,6 +282,8 @@ export interface MegaMenuCascadeContext {
 	handleEnter: (entry: MegaMenuLinkEntry, event: PointerEvent) => void
 	/** Клавиши на пункте */
 	handleKeydown: (entry: MegaMenuLinkEntry, event: KeyboardEvent) => void
+	/** Движение выключено: уровни появляются без перехода */
+	isMotionReduced: () => boolean
 }
 
 export interface MegaMenuPanelEmits {

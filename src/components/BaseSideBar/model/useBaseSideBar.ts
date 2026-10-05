@@ -1,3 +1,4 @@
+import { useUi } from '@composables/base/useUi'
 import { computed, ref, useSlots, watch } from 'vue'
 import { UI_ARIA, UI_TEXT } from '@/locales/messages'
 import { SideBarPassthrough } from './SideBarPassthrough'
@@ -5,6 +6,7 @@ import { BaseSlideover } from '@components/BaseSlideover'
 import { usePadding } from '@composables/base/usePadding'
 import { useBreakpoint } from '@composables/app/useBreakpoint'
 import { useLinkComponent } from '@composables/interaction/useLink'
+import { useSideBarCollapseMotion } from './useSideBarCollapseMotion'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { useExplicitPropDetection } from '@composables/base/useExplicitPropDetection'
 import type { BaseSideBarEmits, SideBarItem, SideBarProps } from '../types/BaseSideBar.types'
@@ -95,13 +97,18 @@ export function useBaseSideBar(props: SideBarProps, emit: BaseSideBarEmits) {
 	const collapsed = useCollapsedState(props, emit)
 	const mobile = useSideBarMobile(props, emit)
 	const appLinkComponent = useLinkComponent()
+	const rootRef = ref<HTMLElement | null>(null)
+	const isCollapsedState = computed(() => !mobile.isMobileMode.value && collapsed.isCollapsedState.value)
 
 	return {
+		rootRef,
+		ui: useUi(props, 'base-side-bar'),
 		resolvedLinkComponent: computed(() => props.linkComponent ?? appLinkComponent),
 		...useStandardBaseComponent('base-side-bar', props, SIDEBAR_ELEMENTS),
 		...useSideBarLayout(props),
 		...collapsed,
-		isCollapsedState: computed(() => !mobile.isMobileMode.value && collapsed.isCollapsedState.value),
+		isCollapsedState,
+		...useSideBarCollapseMotion(() => isCollapsedState.value, rootRef),
 		...mobile,
 		toggleIcon: 'menu',
 		...useSideBarSections(props, mobile.isMobileMode),

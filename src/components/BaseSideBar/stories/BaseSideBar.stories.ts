@@ -36,3 +36,5 @@ export const Controlled = cases.Controlled
 export const CollapsedMenu = cases.CollapsedMenu
 export const Mobile = cases.Mobile
 export const Keyboard = cases.Keyboard
+export const Theming = cases.Theming
+export const Animations = cases.Animations

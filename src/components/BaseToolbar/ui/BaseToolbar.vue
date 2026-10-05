@@ -1,8 +1,7 @@
 <template>
 	<div
 		ref="rootRef"
-		class="base-toolbar"
-		:class="[variantClass, `base-toolbar--${orientation}`, classes.root]"
+		:class="[ui('root'), variantClass, `base-toolbar--${orientation}`, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		role="toolbar"
 		:aria-label="ariaLabel"
@@ -30,6 +29,6 @@ const props = withDefaults(
 )
 defineSlots<BaseToolbarSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, rootRef, handleKeydown, handleFocusin } =
+const { ui, sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, rootRef, handleKeydown, handleFocusin } =
 	useBaseToolbar(props)
 </script>

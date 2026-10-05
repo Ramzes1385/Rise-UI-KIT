@@ -1,15 +1,14 @@
 <template>
 	<component
 		:is="link.is"
-		class="base-link"
-		:class="[variantClass, { 'base-link--disabled': !link.hasTarget }, classes.root]"
+		:class="[ui('root'), variantClass, { 'base-link--disabled': !link.hasTarget }, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		v-bind="link.attrs"
 		@click="handleClick">
 		<slot>{{ label }}</slot>
-		<span v-if="isNewTab" class="base-link__external" :class="classes.external">
+		<span v-if="isNewTab" :class="[ui('external'), classes.external]">
 			<span aria-hidden="true">↗</span>
-			<span class="base-link__hint"> {{ UI_ARIA.OPENS_IN_NEW_TAB }}</span>
+			<span :class="ui('hint')"> {{ UI_ARIA.OPENS_IN_NEW_TAB }}</span>
 		</span>
 	</component>
 </template>
@@ -34,5 +33,5 @@ const props = withDefaults(
 const emit = defineEmits<BaseLinkEmits>()
 defineSlots<BaseLinkSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, link, isNewTab, handleClick } = useBaseLink(props, emit)
+const { ui, sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, link, isNewTab, handleClick } = useBaseLink(props, emit)
 </script>

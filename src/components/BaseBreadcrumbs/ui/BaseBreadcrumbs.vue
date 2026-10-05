@@ -1,25 +1,24 @@
 <template>
 	<nav
-		class="base-breadcrumbs"
-		:class="[variantClass, classes.root]"
+		ref="rootRef"
+		:class="[ui('root'), variantClass, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		:aria-label="UI_ARIA.BREADCRUMBS_NAV">
 		<component :is="'script'" v-if="structuredData" type="application/ld+json" v-html="structuredData" />
 
-		<ol class="base-breadcrumbs__list" :class="classes.list">
-			<li v-if="showHome && items.length" class="base-breadcrumbs__item base-breadcrumbs__item--home" :class="classes.item">
+		<TransitionGroup tag="ol" :name="revealName" :css="isRevealAnimated" :class="[ui('list'), classes.list]" @leave="leaveAtOnce">
+			<li v-if="showHome && items.length" key="home" :class="[ui('item'), 'base-breadcrumbs__item--home', classes.item]">
 				<slot name="home">
 					<component
 						:is="getLink(items[0]!).is"
 						v-bind="getLink(items[0]!).attrs"
-						class="base-breadcrumbs__link base-breadcrumbs__link--home"
-						:class="classes.link"
+						:class="[ui('link'), 'base-breadcrumbs__link--home', classes.link]"
 						:aria-label="items[0]?.label"
 						@click="handleItemClick(items[0]!)">
 						<BaseIcon :name="homeIcon" :size-scale="iconScale" :custom-class="classes.homeIcon" />
 					</component>
 				</slot>
-				<span class="base-breadcrumbs__sep" :class="classes.separator" aria-hidden="true">
+				<span :class="[ui('sep'), classes.separator]" aria-hidden="true">
 					<slot name="separator" :index="-1">
 						<BreadcrumbsSeparator
 							:separator="separator"
@@ -31,11 +30,15 @@
 			</li>
 
 			<template v-if="canCollapse">
-				<li class="base-breadcrumbs__item base-breadcrumbs__item--ellipsis" :class="classes.item">
+				<li key="ellipsis" :class="[ui('item'), 'base-breadcrumbs__item--ellipsis', classes.item]">
 					<button
 						type="button"
-						class="base-breadcrumbs__link base-breadcrumbs__ellipsis-btn"
-						:class="[{ 'base-breadcrumbs__ellipsis-btn--expanded': isExpanded }, classes.ellipsisBtn]"
+						:class="[
+							ui('link'),
+							ui('ellipsis-btn'),
+							{ 'base-breadcrumbs__ellipsis-btn--expanded': isExpanded },
+							classes.ellipsisBtn,
+						]"
 						:aria-label="toggleLabel"
 						:aria-expanded="isExpanded"
 						@click="toggleExpanded">
@@ -43,8 +46,8 @@
 						<template v-else>…</template>
 					</button>
 				</li>
-				<li v-if="!isExpanded" class="base-breadcrumbs__item" :class="classes.item" aria-hidden="true">
-					<span class="base-breadcrumbs__sep" :class="classes.separator">
+				<li v-if="!isExpanded" key="ellipsis-sep" :class="[ui('item'), classes.item]" aria-hidden="true">
+					<span :class="[ui('sep'), classes.separator]">
 						<slot name="separator" :index="0">
 							<BreadcrumbsSeparator
 								:separator="separator"
@@ -58,37 +61,35 @@
 
 			<li
 				v-for="(item, index) in visibleItems"
-				:key="`${item?.label ?? ''}-${index}`"
-				class="base-breadcrumbs__item"
-				:class="[{ 'base-breadcrumbs__item--current': isCurrent(index) }, classes.item]">
+				:key="`${realIndex(index)}-${item?.label ?? ''}`"
+				:class="[ui('item'), { 'base-breadcrumbs__item--current': isCurrent(index) }, classes.item]">
 				<slot name="item" :item="item" :index="realIndex(index)">
 					<component
 						:is="getLink(item).is"
 						v-if="!isCurrent(index)"
 						v-bind="getLink(item).attrs"
-						class="base-breadcrumbs__link"
-						:class="classes.link"
+						:class="[ui('link'), classes.link]"
 						@click="handleItemClick(item)">
 						<BaseIcon
 							v-if="item.icon"
 							:name="item.icon"
 							:size-scale="iconScale"
-							class="base-breadcrumbs__icon"
+							:class="ui('icon')"
 							:custom-class="classes.itemIcon" />
-						<span class="base-breadcrumbs__text" :class="classes.itemText">{{ item.label }}</span>
+						<span :class="[ui('text'), classes.itemText]">{{ item.label }}</span>
 					</component>
-					<span v-else class="base-breadcrumbs__current" :class="classes.current" aria-current="page">
+					<span v-else :class="[ui('current'), classes.current]" aria-current="page">
 						<BaseIcon
 							v-if="item.icon"
 							:name="item.icon"
 							:size-scale="iconScale"
-							class="base-breadcrumbs__icon"
+							:class="ui('icon')"
 							:custom-class="classes.currentIcon" />
-						<span class="base-breadcrumbs__text" :class="classes.currentText">{{ item.label }}</span>
+						<span :class="[ui('text'), classes.currentText]">{{ item.label }}</span>
 					</span>
 				</slot>
 
-				<span v-if="!isCurrent(index)" class="base-breadcrumbs__sep" :class="classes.separator" aria-hidden="true">
+				<span v-if="!isCurrent(index)" :class="[ui('sep'), classes.separator]" aria-hidden="true">
 					<slot name="separator" :index="realIndex(index)">
 						<BreadcrumbsSeparator
 							:separator="separator"
@@ -98,7 +99,7 @@
 					</slot>
 				</span>
 			</li>
-		</ol>
+		</TransitionGroup>
 	</nav>
 </template>
 
@@ -129,6 +130,11 @@ const emit = defineEmits<BaseBreadcrumbsEmits>()
 defineSlots<BaseBreadcrumbsSlots>()
 
 const {
+	ui,
+	rootRef,
+	revealName,
+	isRevealAnimated,
+	leaveAtOnce,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

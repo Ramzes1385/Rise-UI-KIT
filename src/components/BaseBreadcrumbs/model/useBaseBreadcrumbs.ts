@@ -1,6 +1,9 @@
+import type { Ref } from 'vue'
 import { computed, ref, watch } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
 import { getLocale, pluralize } from '@/locales/state'
+import { useMotion } from '@composables/app/useMotion'
 import { calcIconScale } from '@utils/media/iconUtils'
 import type { ResolvedLink } from '@composables/interaction/useLink'
 import type { StructuredData } from '@utils/seo/structuredDataUtils'
@@ -42,6 +45,7 @@ function breadcrumbsSchema(items: BreadcrumbItem[], { url }: StructuredDataConte
 
 function useVisibleItems(props: BreadcrumbsProps) {
 	const isExpanded = ref(false)
+	const isToggled = ref(false)
 	const trailItems = computed<BreadcrumbItem[]>(() => (props.showHome && props.items.length > 1 ? props.items.slice(1) : props.items))
 	const canCollapse = computed(() => props.maxItems > 0 && trailItems.value.length > props.maxItems)
 	const isCollapsed = computed(() => canCollapse.value && !isExpanded.value)
@@ -51,11 +55,13 @@ function useVisibleItems(props: BreadcrumbsProps) {
 		() => props.items,
 		() => {
 			isExpanded.value = false
+			isToggled.value = false
 		},
 	)
 
 	return {
 		isExpanded,
+		isToggled,
 		canCollapse,
 		visibleItems: computed<BreadcrumbItem[]>(() => (isCollapsed.value ? trailItems.value.slice(-props.maxItems) : trailItems.value)),
 		collapsedItems,
@@ -66,6 +72,7 @@ function useVisibleItems(props: BreadcrumbsProps) {
 		),
 		toggleExpanded(): void {
 			isExpanded.value = !isExpanded.value
+			isToggled.value = true
 		},
 	}
 }
@@ -88,14 +95,29 @@ function useItemLinks(props: BreadcrumbsProps, emit: BaseBreadcrumbsEmits) {
 	}
 }
 
+function useReveal(isToggled: Ref<boolean>) {
+	const rootRef = ref<HTMLElement | null>(null)
+	const motion = useMotion(rootRef)
+	const isRevealAnimated = computed(() => isToggled.value && !motion.isReduced.value)
+
+	return {
+		rootRef,
+		isRevealAnimated,
+		revealName: computed(() => (isRevealAnimated.value ? 'base-breadcrumbs-reveal' : 'base-breadcrumbs-static')),
+		leaveAtOnce: (_el: Element, done: () => void): void => done(),
+	}
+}
+
 export function useBaseBreadcrumbs(props: BreadcrumbsProps, emit: BaseBreadcrumbsEmits) {
 	const standard = useStandardBaseComponent('base-breadcrumbs', props, BREADCRUMBS_ELEMENTS)
-	const visible = useVisibleItems(props)
+	const { isToggled, ...visible } = useVisibleItems(props)
 	const { visibleItems } = visible
 
 	return {
 		...standard,
 		...visible,
+		...useReveal(isToggled),
+		ui: useUi(props, 'base-breadcrumbs'),
 		iconScale: computed(() => calcIconScale('sm', props.sizeScale)),
 		...useStructuredData(
 			'BaseBreadcrumbs',

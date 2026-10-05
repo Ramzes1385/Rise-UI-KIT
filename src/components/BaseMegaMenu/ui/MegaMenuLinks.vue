@@ -8,8 +8,9 @@
 			v-if="hasChildren(entry.link)"
 			:id="entry.id"
 			type="button"
-			class="base-mega-menu__link base-mega-menu__link--parent"
 			:class="[
+				ui('link'),
+				'base-mega-menu__link--parent',
 				{ 'base-mega-menu__link--expanded': isExpanded(entry), 'base-mega-menu__link--disabled': entry.link.isDisabled },
 				linkClass,
 			]"
@@ -20,15 +21,14 @@
 			@click="toggle(entry)"
 			@keydown="handleKeydown(entry, $event)">
 			<slot name="link" :link="entry.link" :depth="depth" :group="group" :item="item">
-				<MegaMenuLinkContent :link="entry.link" />
+				<MegaMenuLinkContent :link="entry.link" :ui="ui" />
 			</slot>
 			<BaseIcon name="chevron-right" class="base-mega-menu__link-chevron" />
 		</button>
 
 		<BaseLink
 			v-else
-			class="base-mega-menu__link"
-			:class="[{ 'base-mega-menu__link--disabled': entry.link.isDisabled }, linkClass]"
+			:class="[ui('link'), { 'base-mega-menu__link--disabled': entry.link.isDisabled }, linkClass]"
 			variant="ghost"
 			:to="entry.link.to"
 			:href="entry.link.href"
@@ -37,29 +37,31 @@
 			v-on="leafListeners(entry)"
 			@click="select(entry.link, $event)">
 			<slot name="link" :link="entry.link" :depth="depth" :group="group" :item="item">
-				<MegaMenuLinkContent :link="entry.link" />
+				<MegaMenuLinkContent :link="entry.link" :ui="ui" />
 			</slot>
 		</BaseLink>
 
-		<ul
-			v-if="isExpanded(entry)"
-			:id="entry.subId"
-			class="base-mega-menu__links base-mega-menu__sub"
-			:class="{ 'base-mega-menu__sub--below': isBelow(entry) }"
-			role="list"
-			:aria-label="entry.link.label">
-			<MegaMenuLinks
-				:links="entry.link.children ?? []"
-				:depth="depth + 1"
-				:parent-id="entry.id"
-				:group="group"
-				:item="item"
-				:link-class="linkClass">
-				<template v-if="$slots.link" #link="slotProps">
-					<slot name="link" v-bind="slotProps" />
-				</template>
-			</MegaMenuLinks>
-		</ul>
+		<Transition name="base-mega-menu-sub" :css="!isMotionReduced()">
+			<ul
+				v-if="isExpanded(entry)"
+				:id="entry.subId"
+				:class="['base-mega-menu__links', ui('sub'), { 'base-mega-menu__sub--below': isBelow(entry) }]"
+				role="list"
+				:aria-label="entry.link.label">
+				<MegaMenuLinks
+					:links="entry.link.children ?? []"
+					:depth="depth + 1"
+					:parent-id="entry.id"
+					:group="group"
+					:item="item"
+					:ui="ui"
+					:link-class="linkClass">
+					<template v-if="$slots.link" #link="slotProps">
+						<slot name="link" v-bind="slotProps" />
+					</template>
+				</MegaMenuLinks>
+			</ul>
+		</Transition>
 	</li>
 </template>
 
@@ -75,6 +77,17 @@ defineOptions({ name: 'MegaMenuLinks' })
 const props = defineProps<MegaMenuLinksProps>()
 defineSlots<MegaMenuLinksSlots>()
 
-const { entries, getItemKey, hasChildren, leafListeners, isExpanded, isBelow, toggle, select, handleEnter, handleKeydown } =
-	useMegaMenuLinks(props)
+const {
+	entries,
+	getItemKey,
+	hasChildren,
+	leafListeners,
+	isExpanded,
+	isBelow,
+	isMotionReduced,
+	toggle,
+	select,
+	handleEnter,
+	handleKeydown,
+} = useMegaMenuLinks(props)
 </script>

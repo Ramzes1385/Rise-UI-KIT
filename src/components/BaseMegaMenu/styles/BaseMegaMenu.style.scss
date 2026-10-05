@@ -17,10 +17,10 @@
 		align-items: center;
 		gap: sz(8px);
 		min-height: sz(52px);
-		padding: sz(8px 12px);
-		border: 1px solid var(--rise-border);
-		border-radius: sz(var(--rise-radius-lg));
-		@include custom-bg(background-color, var(--rise-bg));
+		padding: sz(ct(mega-menu, padding-y, 8px) ct(mega-menu, padding-x, 12px));
+		border: 1px solid ct(mega-menu, border, var(--rise-border));
+		border-radius: sz(ct(mega-menu, radius, var(--rise-radius-lg)));
+		@include custom-bg(background-color, ct(mega-menu, bg, var(--rise-bg)));
 		@include transition-colors;
 	}
 
@@ -51,10 +51,10 @@
 		border: none;
 		border-radius: sz(var(--rise-radius-md));
 		background-color: transparent;
-		@include custom-text(color, var(--rise-text-toned));
+		@include custom-text(color, ct(mega-menu, trigger-text, var(--rise-text-toned)));
 		font: inherit;
 		@include text-size(sm);
-		font-weight: var(--rise-font-weight-medium);
+		font-weight: ct(mega-menu, trigger-font-weight, var(--rise-font-weight-medium));
 		text-decoration: none;
 		white-space: nowrap;
 		cursor: pointer;
@@ -62,8 +62,8 @@
 		@include focus-ring;
 
 		@include hover {
-			background-color: var(--custom-bg-hover, var(--rise-bg-elevated));
-			color: var(--custom-text-hover, var(--rise-text-highlighted));
+			background-color: var(--custom-bg-hover, #{ct(mega-menu, trigger-bg-hover, var(--rise-bg-elevated))});
+			color: var(--custom-text-hover, #{ct(mega-menu, trigger-text-hover, var(--rise-text-highlighted))});
 			text-decoration: none;
 		}
 
@@ -74,14 +74,14 @@
 	}
 
 	&__trigger--open {
-		background-color: var(--custom-bg-hover, var(--rise-bg-elevated));
-		color: var(--custom-text-hover, var(--rise-text-highlighted));
+		background-color: var(--custom-bg-hover, #{ct(mega-menu, trigger-bg-hover, var(--rise-bg-elevated))});
+		color: var(--custom-text-hover, #{ct(mega-menu, trigger-text-hover, var(--rise-text-highlighted))});
 	}
 
 	&__trigger--active,
 	&__trigger--active.base-link {
 		position: relative;
-		color: var(--custom-text-hover, var(--rise-text-highlighted));
+		color: var(--custom-text-hover, #{ct(mega-menu, trigger-text-hover, var(--rise-text-highlighted))});
 
 		&::after {
 			position: absolute;
@@ -147,9 +147,9 @@
 		right: 0;
 		left: 0;
 		z-index: var(--rise-z-overlay);
-		padding: sz(20px);
+		padding: space(ct(mega-menu, panel-padding, 20px));
 		@include floating-surface;
-		border-radius: sz(var(--rise-radius-lg));
+		border-radius: sz(ct(mega-menu, panel-radius, var(--rise-radius-lg)));
 		@include reset-custom-color;
 
 		&::before {
@@ -238,7 +238,7 @@
 		@include transition-colors;
 
 		@include hover {
-			background-color: var(--rise-bg-muted);
+			background-color: ct(mega-menu, link-bg-hover, var(--rise-bg-muted));
 			color: var(--rise-text-highlighted);
 			text-decoration: none;
 
@@ -271,7 +271,7 @@
 	}
 
 	&__link--expanded {
-		background-color: var(--rise-bg-muted);
+		background-color: ct(mega-menu, link-bg-hover, var(--rise-bg-muted));
 		color: var(--rise-text-highlighted);
 	}
 
@@ -467,7 +467,7 @@
 	}
 
 	&--outline &__bar {
-		border-color: var(--rise-border-accented);
+		border-color: ct(mega-menu, border, var(--rise-border-accented));
 	}
 
 	&--shadow &__bar {
@@ -481,7 +481,7 @@
 
 	&--soft &__trigger {
 		@include hover {
-			background-color: var(--custom-bg-hover, var(--rise-bg-accented));
+			background-color: var(--custom-bg-hover, #{ct(mega-menu, trigger-bg-hover, var(--rise-bg-accented))});
 		}
 	}
 }
@@ -498,4 +498,27 @@
 	@include motion-safe {
 		transform: translateY(#{sz(-4px)});
 	}
+}
+
+@include enter-slide('base-mega-menu-reveal', down);
+
+@include enter-fade('base-mega-menu-swap');
+
+.base-mega-menu-swap-leave-active {
+	position: absolute;
+	inset: space(ct(mega-menu, panel-padding, 20px));
+	overflow: hidden;
+	pointer-events: none;
+}
+
+@include enter-slide('base-mega-menu-sub', right);
+
+.base-mega-menu--mobile .base-mega-menu-sub-enter-from,
+.base-mega-menu__sub--below.base-mega-menu-sub-enter-from {
+	transform: translateY(calc(var(--rise-motion-distance) * -1));
+}
+
+.base-mega-menu--mobile .base-mega-menu-sub-leave-to,
+.base-mega-menu__sub--below.base-mega-menu-sub-leave-to {
+	transform: translateY(var(--rise-motion-distance));
 }

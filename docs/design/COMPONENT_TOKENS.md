@@ -5,6 +5,23 @@
 Токены уровня 3 кит только читает (с запасным значением) и нигде не объявляет: задайте их на `:root`, в теме
 или на контейнере — правило имён и порядок силы в DESIGN_SYSTEM.md, §1.
 
+## BaseAiMessage
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-ai-message-avatar-bg` | avatar | bg | — | `linear-gradient(135deg, var(--rise-primary), color-mix(in oklab, var(--rise-primary) 60%, #7c3aed))` |
+| `--rise-ai-message-avatar-radius` | avatar | radius | — | `10px` |
+| `--rise-ai-message-body-bg` | body | bg | — | `var(--rise-bg-elevated)` |
+| `--rise-ai-message-body-border` | body | border | — | `var(--rise-border-accented)` |
+| `--rise-ai-message-body-padding-x` | body | padding-x | — | `16px` |
+| `--rise-ai-message-body-padding-y` | body | padding-y | — | `12px` |
+| `--rise-ai-message-body-radius` | body | radius | — | `var(--rise-radius-lg)` |
+| `--rise-ai-message-font-size` | корень | font-size | — | `var(--rise-font-size-sm)` |
+| `--rise-ai-message-gap` | корень | gap | — | `12px` |
+| `--rise-ai-message-name-font-weight` | name | font-weight | — | `var(--rise-font-weight-semibold)` |
+| `--rise-ai-message-name-text` | name | text | — | `var(--rise-text-highlighted)` |
+| `--rise-ai-message-text` | корень | text | — | `var(--rise-text)` |
+
 ## BaseAlert
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
@@ -137,6 +154,23 @@
 | `--rise-bottom-nav-text-active` | корень | text | active | `var(--rise-text-highlighted)` |
 | `--rise-bottom-nav-text-hover` | корень | text | hover | `var(--rise-text)` |
 
+## BaseBreadcrumbs
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-breadcrumbs-bg` | корень | bg | — | `transparent` |
+| `--rise-breadcrumbs-border` | корень | border | — | `var(--rise-border)` |
+| `--rise-breadcrumbs-current-text` | current | text | — | `var(--rise-text-highlighted)` |
+| `--rise-breadcrumbs-font-size` | корень | font-size | — | `var(--rise-font-size-sm)` |
+| `--rise-breadcrumbs-font-weight` | корень | font-weight | — | `var(--rise-font-weight-medium)` |
+| `--rise-breadcrumbs-gap` | корень | gap | — | `6px` |
+| `--rise-breadcrumbs-padding-x` | корень | padding-x | — | `12px` |
+| `--rise-breadcrumbs-radius` | корень | radius | — | `var(--rise-radius-md)` |
+| `--rise-breadcrumbs-sep-text` | sep | text | — | `var(--rise-text-dimmed)` |
+| `--rise-breadcrumbs-shadow` | корень | shadow | — | `var(--rise-shadow-sm)` |
+| `--rise-breadcrumbs-text` | корень | text | — | `var(--rise-text-muted)` |
+| `--rise-breadcrumbs-text-hover` | корень | text | hover | `var(--rise-text)` |
+
 ## BaseButton
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
@@ -210,6 +244,23 @@
 | `--rise-cascader-radius` | корень | radius | — | `var(--rise-input-radius, var(--rise-control-radius))` |
 | `--rise-cascader-text` | корень | text | — | `var(--rise-text-highlighted)` |
 
+## BaseChat
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-chat-bg` | корень | bg | — | `transparent` |
+| `--rise-chat-bubble-bg` | bubble | bg | — | `var(--rise-bg-elevated)` |
+| `--rise-chat-bubble-border` | bubble | border | — | `transparent` |
+| `--rise-chat-bubble-me-bg` | bubble-me | bg | — | `var(--rise-primary-soft)` |
+| `--rise-chat-bubble-padding-x` | bubble | padding-x | — | `12px` |
+| `--rise-chat-bubble-padding-y` | bubble | padding-y | — | `8px` |
+| `--rise-chat-bubble-radius` | bubble | radius | — | `var(--rise-radius-lg)` |
+| `--rise-chat-bubble-shadow` | bubble | shadow | — | `none` |
+| `--rise-chat-bubble-text` | bubble | text | — | `var(--rise-text)` |
+| `--rise-chat-list-gap` | list | gap | — | `4px` |
+| `--rise-chat-list-padding-x` | list | padding-x | — | `8px` |
+| `--rise-chat-list-padding-y` | list | padding-y | — | `12px` |
+
 ## BaseCheckbox
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
@@ -275,6 +326,23 @@
 | `--rise-color-picker-thumb-border` | thumb | border | — | `var(--picker-white)` |
 | `--rise-color-picker-thumb-shadow` | thumb | shadow | — | `var(--picker-thumb-shadow)` |
 
+## BaseCommentThread
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-comment-thread-author-font-weight` | author | font-weight | — | `var(--rise-font-weight-semibold)` |
+| `--rise-comment-thread-author-text` | author | text | — | `var(--rise-text-highlighted)` |
+| `--rise-comment-thread-bg` | корень | bg | — | `var(--rise-bg)` |
+| `--rise-comment-thread-border` | корень | border | — | `var(--rise-border)` |
+| `--rise-comment-thread-font-size` | корень | font-size | — | `var(--rise-font-size-sm)` |
+| `--rise-comment-thread-gap` | корень | gap | — | `16px` |
+| `--rise-comment-thread-like-text-checked` | like | text | checked | `var(--rise-primary-text)` |
+| `--rise-comment-thread-padding` | корень | padding | — | `16px` |
+| `--rise-comment-thread-radius` | корень | radius | — | `var(--rise-radius-lg)` |
+| `--rise-comment-thread-shadow` | корень | shadow | — | `none` |
+| `--rise-comment-thread-text` | корень | text | — | `var(--rise-text)` |
+| `--rise-comment-thread-time-text` | time | text | — | `var(--rise-text-toned)` |
+
 ## BaseCryptoProSign
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
@@ -305,6 +373,38 @@
 | `--rise-date-picker-panel-text` | panel | text | — | `var(--rise-text)` |
 | `--rise-date-picker-title-font-weight` | title | font-weight | — | `var(--rise-font-weight-semibold)` |
 | `--rise-date-picker-title-text` | title | text | — | `var(--rise-text-highlighted)` |
+
+## BaseEditor
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-editor-bg` | корень | bg | — | `var(--rise-bg)` |
+| `--rise-editor-border` | корень | border | — | `var(--rise-border-accented)` |
+| `--rise-editor-border-focus` | корень | border | focus | `var(--rise-primary)` |
+| `--rise-editor-content-padding-x` | content | padding-x | — | `16px` |
+| `--rise-editor-content-padding-y` | content | padding-y | — | `12px` |
+| `--rise-editor-radius` | корень | radius | — | `var(--rise-control-radius)` |
+| `--rise-editor-shadow` | корень | shadow | — | `none` |
+| `--rise-editor-text` | корень | text | — | `var(--rise-text)` |
+| `--rise-editor-toolbar-bg` | toolbar | bg | — | `transparent` |
+| `--rise-editor-toolbar-border` | toolbar | border | — | `var(--rise-border)` |
+| `--rise-editor-toolbar-padding-x` | toolbar | padding-x | — | `10px` |
+| `--rise-editor-toolbar-padding-y` | toolbar | padding-y | — | `6px` |
+
+## BaseEmojiPicker
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-emoji-picker-bg` | корень | bg | — | `var(--rise-bg)` |
+| `--rise-emoji-picker-border` | корень | border | — | `var(--rise-border)` |
+| `--rise-emoji-picker-emoji-bg-hover` | emoji | bg | hover | `var(--rise-bg-elevated)` |
+| `--rise-emoji-picker-emoji-font-size` | emoji | font-size | — | `22px` |
+| `--rise-emoji-picker-emoji-radius` | emoji | radius | — | `var(--rise-radius-md)` |
+| `--rise-emoji-picker-heading-text` | heading | text | — | `var(--rise-text-muted)` |
+| `--rise-emoji-picker-radius` | корень | radius | — | `var(--rise-radius-lg)` |
+| `--rise-emoji-picker-tab-bg-hover` | tab | bg | hover | `var(--rise-bg-muted)` |
+| `--rise-emoji-picker-tab-border-selected` | tab | border | selected | `var(--rise-primary)` |
+| `--rise-emoji-picker-text` | корень | text | — | `var(--rise-text)` |
 
 ## BaseFab
 
@@ -450,6 +550,17 @@
 | `--rise-kbd-shadow` | корень | shadow | — | `none` |
 | `--rise-kbd-text` | корень | text | — | `var(--rise-text-highlighted)` |
 
+## BaseLink
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-link-font-size` | корень | font-size | — | `1em` |
+| `--rise-link-font-weight` | корень | font-weight | — | `inherit` |
+| `--rise-link-radius` | корень | radius | — | `var(--rise-radius-xs)` |
+| `--rise-link-ring` | корень | ring | — | `var(--rise-focus-ring)` |
+| `--rise-link-text` | корень | text | — | `var(--rise-primary-text)` |
+| `--rise-link-text-hover` | корень | text | hover | `var(--rise-primary-text)` |
+
 ## BaseLoader
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
@@ -494,6 +605,23 @@
 | `--rise-marquee-text` | корень | text | — | `var(--rise-text)` |
 | `--rise-marquee-viewport-height` | viewport | height | — | `160px` |
 
+## BaseMegaMenu
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-mega-menu-bg` | корень | bg | — | `var(--rise-bg)` |
+| `--rise-mega-menu-border` | корень | border | — | `var(--rise-border)` |
+| `--rise-mega-menu-link-bg-hover` | link | bg | hover | `var(--rise-bg-muted)` |
+| `--rise-mega-menu-padding-x` | корень | padding-x | — | `12px` |
+| `--rise-mega-menu-padding-y` | корень | padding-y | — | `8px` |
+| `--rise-mega-menu-panel-padding` | panel | padding | — | `20px` |
+| `--rise-mega-menu-panel-radius` | panel | radius | — | `var(--rise-radius-lg)` |
+| `--rise-mega-menu-radius` | корень | radius | — | `var(--rise-radius-lg)` |
+| `--rise-mega-menu-trigger-bg-hover` | trigger | bg | hover | `var(--rise-bg-elevated)` |
+| `--rise-mega-menu-trigger-font-weight` | trigger | font-weight | — | `var(--rise-font-weight-medium)` |
+| `--rise-mega-menu-trigger-text` | trigger | text | — | `var(--rise-text-toned)` |
+| `--rise-mega-menu-trigger-text-hover` | trigger | text | hover | `var(--rise-text-highlighted)` |
+
 ## BaseMention
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
@@ -510,6 +638,23 @@
 | `--rise-mention-popup-shadow` | popup | shadow | — | `var(--rise-shadow-lg)` |
 | `--rise-mention-radius` | корень | radius | — | `var(--rise-input-radius, var(--rise-control-radius))` |
 | `--rise-mention-text` | корень | text | — | `var(--rise-text-highlighted)` |
+
+## BaseMenu
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-menu-bg` | корень | bg | — | `var(--rise-bg)` |
+| `--rise-menu-border` | корень | border | — | `var(--rise-border)` |
+| `--rise-menu-item-bg-active` | item | bg | active | `var(--rise-bg-accented)` |
+| `--rise-menu-item-bg-hover` | item | bg | hover | `var(--rise-bg-elevated)` |
+| `--rise-menu-item-padding-x` | item | padding-x | — | `8px` |
+| `--rise-menu-item-padding-y` | item | padding-y | — | `6px` |
+| `--rise-menu-item-radius` | item | radius | — | `var(--rise-radius-md)` |
+| `--rise-menu-item-text` | item | text | — | `var(--rise-text)` |
+| `--rise-menu-item-text-hover` | item | text | hover | `var(--rise-text-highlighted)` |
+| `--rise-menu-padding` | корень | padding | — | `4px` |
+| `--rise-menu-radius` | корень | radius | — | `var(--rise-radius-md)` |
+| `--rise-menu-shadow` | корень | shadow | — | `var(--rise-shadow-lg)` |
 
 ## BasePagination
 
@@ -572,6 +717,21 @@
 | `--rise-progress-svg-width` | svg | width | — | `64px` |
 | `--rise-progress-track-bg` | track | bg | — | `var(--rise-bg-accented)` |
 
+## BasePromptInput
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-prompt-input-bg` | корень | bg | — | `var(--rise-input-bg, var(--rise-bg))` |
+| `--rise-prompt-input-border` | корень | border | — | `var(--rise-input-border, var(--rise-border-accented))` |
+| `--rise-prompt-input-border-focus` | корень | border | focus | `var(--rise-input-border-focus, var(--rise-primary))` |
+| `--rise-prompt-input-button-icon-size` | button | icon-size | — | `16px` |
+| `--rise-prompt-input-button-radius` | button | radius | — | `50%` |
+| `--rise-prompt-input-control-font-size` | control | font-size | — | `var(--rise-control-font-size)` |
+| `--rise-prompt-input-gap` | корень | gap | — | `6px` |
+| `--rise-prompt-input-radius` | корень | radius | — | `var(--rise-input-radius, var(--rise-control-radius))` |
+| `--rise-prompt-input-text` | корень | text | — | `var(--rise-text-highlighted)` |
+| `--rise-prompt-input-toolbar-gap` | toolbar | gap | — | `8px` |
+
 ## BaseQrCode
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
@@ -633,6 +793,22 @@
 | `--rise-rating-value-font-size` | value | font-size | — | `14px` |
 | `--rise-rating-value-font-weight` | value | font-weight | — | `var(--rise-font-weight-medium)` |
 | `--rise-rating-value-text` | value | text | — | `var(--rise-text-toned)` |
+
+## BaseReasoning
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-reasoning-bg` | корень | bg | — | `transparent` |
+| `--rise-reasoning-border` | корень | border | — | `var(--rise-border)` |
+| `--rise-reasoning-content-border` | content | border | — | `var(--rise-border)` |
+| `--rise-reasoning-font-size` | корень | font-size | — | `var(--rise-font-size-sm)` |
+| `--rise-reasoning-padding-x` | корень | padding-x | — | `12px` |
+| `--rise-reasoning-padding-y` | корень | padding-y | — | `8px` |
+| `--rise-reasoning-radius` | корень | radius | — | `var(--rise-radius-md)` |
+| `--rise-reasoning-text` | корень | text | — | `var(--rise-text-muted)` |
+| `--rise-reasoning-trigger-font-weight` | trigger | font-weight | — | `var(--rise-font-weight-medium)` |
+| `--rise-reasoning-trigger-gap` | trigger | gap | — | `6px` |
+| `--rise-reasoning-trigger-text-hover` | trigger | text | hover | `var(--rise-text-highlighted)` |
 
 ## BaseSearch
 
@@ -697,6 +873,23 @@
 | `--rise-separator-content-padding-x` | content | padding-x | — | `12px` |
 | `--rise-separator-content-padding-y` | content | padding-y | — | `0px` |
 | `--rise-separator-content-text` | content | text | — | `var(--rise-text-muted)` |
+
+## BaseSideBar
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-side-bar-bg` | корень | bg | — | `var(--rise-bg)` |
+| `--rise-side-bar-border` | корень | border | — | `var(--rise-border)` |
+| `--rise-side-bar-indicator-bg` | indicator | bg | — | `var(--rise-primary)` |
+| `--rise-side-bar-item-bg-hover` | item | bg | hover | `var(--rise-bg-accented)` |
+| `--rise-side-bar-item-bg-selected` | item | bg | selected | `var(--rise-primary-soft)` |
+| `--rise-side-bar-item-radius` | item | radius | — | `var(--rise-radius-md)` |
+| `--rise-side-bar-item-text` | item | text | — | `var(--rise-text-muted)` |
+| `--rise-side-bar-item-text-hover` | item | text | hover | `var(--rise-text-highlighted)` |
+| `--rise-side-bar-item-text-selected` | item | text | selected | `var(--rise-primary-text)` |
+| `--rise-side-bar-radius` | корень | radius | — | `var(--rise-radius-lg)` |
+| `--rise-side-bar-shadow` | корень | shadow | — | `none` |
+| `--rise-side-bar-text` | корень | text | — | `var(--rise-text)` |
 
 ## BaseSignaturePad
 
@@ -821,6 +1014,34 @@
 | `--rise-textarea-padding-y` | корень | padding-y | — | `var(--rise-control-padding-y)` |
 | `--rise-textarea-radius` | корень | radius | — | `var(--rise-input-radius, var(--rise-control-radius))` |
 | `--rise-textarea-text` | корень | text | — | `var(--rise-text-highlighted)` |
+
+## BaseToolCall
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-tool-call-bg` | корень | bg | — | `var(--rise-bg)` |
+| `--rise-tool-call-border` | корень | border | — | `var(--rise-border)` |
+| `--rise-tool-call-code-bg` | code | bg | — | `var(--rise-bg-muted)` |
+| `--rise-tool-call-code-radius` | code | radius | — | `var(--rise-radius-sm)` |
+| `--rise-tool-call-content-gap` | content | gap | — | `10px` |
+| `--rise-tool-call-padding-x` | корень | padding-x | — | `12px` |
+| `--rise-tool-call-radius` | корень | radius | — | `var(--rise-radius-md)` |
+| `--rise-tool-call-text` | корень | text | — | `var(--rise-text)` |
+| `--rise-tool-call-title-font-weight` | title | font-weight | — | `var(--rise-font-weight-medium)` |
+| `--rise-tool-call-trigger-bg-hover` | trigger | bg | hover | `var(--rise-bg-muted)` |
+| `--rise-tool-call-trigger-gap` | trigger | gap | — | `8px` |
+| `--rise-tool-call-trigger-padding-y` | trigger | padding-y | — | `8px` |
+
+## BaseToolbar
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-toolbar-bg` | корень | bg | — | `transparent` |
+| `--rise-toolbar-border` | корень | border | — | `transparent` |
+| `--rise-toolbar-gap` | корень | gap | — | `4px` |
+| `--rise-toolbar-padding` | корень | padding | — | `4px` |
+| `--rise-toolbar-radius` | корень | radius | — | `var(--rise-radius-md)` |
+| `--rise-toolbar-shadow` | корень | shadow | — | `none` |
 
 ## BaseTransfer
 
