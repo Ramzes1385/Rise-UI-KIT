@@ -89,7 +89,7 @@ describe('BaseImageMapEditor панель: свойства объекта', () 
 		expect(modelObject(emitted, 'r1')).toMatchObject({ title: 'Зал Б' })
 		await fireEvent.click(screen.getByRole('button', { name: 'Отменить (Ctrl+Z)' }))
 		expect(modelObject(emitted, 'r1')).toMatchObject({ title: 'Зал' })
-		expect(screen.getByRole('button', { name: 'Отменить (Ctrl+Z)' })).toBeDisabled()
+		expect(screen.getByRole('button', { name: 'Отменить (Ctrl+Z)' })).toHaveAttribute('aria-disabled', 'true')
 	})
 
 	it('id: пустой и занятый не применяются, новый — сохраняет выделение', async () => {
@@ -237,14 +237,14 @@ describe('BaseImageMapEditor панель: объектные кнопки', () 
 		expect(modelObject(emitted, 'point-1')).toMatchObject({ x: 0.52, y: 0.52, title: 'Вход' })
 		expect(emitted()['update:selected']).toEqual([['point-1']])
 		await rerender({ modelValue: makeSvgMap(), selected: 's1' })
-		expect(screen.getByRole('button', { name: 'Дублировать (Ctrl+D)' })).toBeDisabled()
+		expect(screen.getByRole('button', { name: 'Дублировать (Ctrl+D)' })).toHaveAttribute('aria-disabled', 'true')
 		expect(screen.getByRole('button', { name: 'Удалить (Delete)' })).toBeEnabled()
 	})
 
 	it('без выделения «Удалить» и «Дублировать» недоступны', () => {
 		renderEditor()
-		expect(screen.getByRole('button', { name: 'Дублировать (Ctrl+D)' })).toBeDisabled()
-		expect(screen.getByRole('button', { name: 'Удалить (Delete)' })).toBeDisabled()
+		expect(screen.getByRole('button', { name: 'Дублировать (Ctrl+D)' })).toHaveAttribute('aria-disabled', 'true')
+		expect(screen.getByRole('button', { name: 'Удалить (Delete)' })).toHaveAttribute('aria-disabled', 'true')
 	})
 
 	it('Ctrl+D без выделения и при isDisabled ничего не делает; deleteSelected при isDisabled — тоже', async () => {
@@ -265,8 +265,8 @@ describe('BaseImageMapEditor панель: этажи', () => {
 	it('кнопки этажей: выбор, «Выше»/«Ниже» недоступны на краях', async () => {
 		const { emitted } = renderEditor()
 		expect(screen.getByRole('button', { name: 'Первый' })).toHaveAttribute('aria-current', 'true')
-		expect(screen.getByRole('button', { name: 'Выше: «Первый»' })).toBeDisabled()
-		expect(screen.getByRole('button', { name: 'Ниже: «Второй»' })).toBeDisabled()
+		expect(screen.getByRole('button', { name: 'Выше: «Первый»' })).toHaveAttribute('aria-disabled', 'true')
+		expect(screen.getByRole('button', { name: 'Ниже: «Второй»' })).toHaveAttribute('aria-disabled', 'true')
 		await fireEvent.click(screen.getByRole('button', { name: 'Ниже: «Первый»' }))
 		const model = lastModel(emitted)
 		expect(model.layers.map(layer => layer.id)).toEqual(['l2', 'l1'])

@@ -21,6 +21,7 @@
 					variant="ghost"
 					:aria-label="UI_IMAGE_MAP_EDITOR.UNDO"
 					:is-disabled="isDisabled || !canUndo"
+					:is-focusable-when-disabled="!isDisabled"
 					@click="commands.undo">
 					<template #left><BaseIcon name="rotate-left" /></template>
 				</BaseButton>
@@ -28,6 +29,7 @@
 					variant="ghost"
 					:aria-label="UI_IMAGE_MAP_EDITOR.REDO"
 					:is-disabled="isDisabled || !canRedo"
+					:is-focusable-when-disabled="!isDisabled"
 					@click="commands.redo">
 					<template #left><BaseIcon name="rotate-right" /></template>
 				</BaseButton>
@@ -37,6 +39,7 @@
 					variant="ghost"
 					:aria-label="UI_IMAGE_MAP_EDITOR.DUPLICATE"
 					:is-disabled="isDisabled || !selected || selected.type === 'svg'"
+					:is-focusable-when-disabled="!isDisabled"
 					@click="commands.duplicate">
 					<template #left><BaseIcon name="copy" /></template>
 				</BaseButton>
@@ -44,6 +47,7 @@
 					variant="ghost"
 					:aria-label="UI_IMAGE_MAP_EDITOR.DELETE"
 					:is-disabled="isDisabled || !selected"
+					:is-focusable-when-disabled="!isDisabled"
 					@click="commands.deleteSelected">
 					<template #left><BaseIcon name="trash" /></template>
 				</BaseButton>
@@ -77,6 +81,7 @@
 					variant="ghost"
 					:aria-label="UI_ARIA.ZOOM_IN"
 					:is-disabled="zoom.isMaxZoom.value || isPreview"
+					is-focusable-when-disabled
 					@click="zoom.zoomIn">
 					<template #left><BaseIcon name="plus" /></template>
 				</BaseButton>
@@ -84,6 +89,7 @@
 					variant="ghost"
 					:aria-label="UI_ARIA.ZOOM_OUT"
 					:is-disabled="zoom.isMinZoom.value || isPreview"
+					is-focusable-when-disabled
 					@click="zoom.zoomOut">
 					<template #left><BaseIcon name="minus" /></template>
 				</BaseButton>

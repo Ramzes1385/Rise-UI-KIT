@@ -39,7 +39,7 @@ describe('BaseImageMapEditor клавиатура: выбор', () => {
 		expect(modelObject(emitted, 'r1')).toMatchObject({ x: 0.3 })
 		await fireEvent.click(screen.getByRole('button', { name: 'Отменить (Ctrl+Z)' }))
 		expect(modelObject(emitted, 'r1')).toMatchObject({ x: 0.1 })
-		expect(screen.getByRole('button', { name: 'Отменить (Ctrl+Z)' })).toBeDisabled()
+		expect(screen.getByRole('button', { name: 'Отменить (Ctrl+Z)' })).toHaveAttribute('aria-disabled', 'true')
 	})
 
 	it('стрелки без выделения и у svg-объекта ничего не меняют', async () => {

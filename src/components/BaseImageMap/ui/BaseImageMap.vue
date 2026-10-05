@@ -36,6 +36,7 @@
 								variant="ghost"
 								:aria-label="UI_ARIA.ZOOM_IN"
 								:is-disabled="zoom.isMaxZoom.value"
+								is-focusable-when-disabled
 								@click="zoom.zoomIn">
 								<template #left><BaseIcon name="plus" /></template>
 							</BaseButton>
@@ -43,6 +44,7 @@
 								variant="ghost"
 								:aria-label="UI_ARIA.ZOOM_OUT"
 								:is-disabled="zoom.isMinZoom.value"
+								is-focusable-when-disabled
 								@click="zoom.zoomOut">
 								<template #left><BaseIcon name="minus" /></template>
 							</BaseButton>

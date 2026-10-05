@@ -35,5 +35,5 @@ export interface EditorFocusTarget {
 	focus: () => void
 }
 
-/** Список панели, после удаления из которого переводится фокус */
-export type EditorPanelList = 'layer' | 'group'
+/** Строки и кнопки панели, на которые переводится фокус: строки этажей и групп, «Выше» и «Ниже» этажа */
+export type EditorPanelList = 'layer' | 'group' | 'up' | 'down'

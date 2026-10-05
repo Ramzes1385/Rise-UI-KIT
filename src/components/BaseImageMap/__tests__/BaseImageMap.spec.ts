@@ -246,7 +246,7 @@ describe('BaseImageMap — панель', () => {
 		render(BaseImageMap, { props: { data } })
 		expect(screen.getByRole('group', { name: 'Масштаб' })).toBeInTheDocument()
 		expect(screen.getByRole('button', { name: 'Увеличить' })).toBeEnabled()
-		expect(screen.getByRole('button', { name: 'Уменьшить' })).toBeDisabled()
+		expect(screen.getByRole('button', { name: 'Уменьшить' })).toHaveAttribute('aria-disabled', 'true')
 		expect(screen.getByRole('button', { name: 'Сбросить масштаб' })).toBeInTheDocument()
 	})
 

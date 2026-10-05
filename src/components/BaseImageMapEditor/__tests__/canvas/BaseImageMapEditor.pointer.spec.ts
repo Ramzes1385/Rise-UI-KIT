@@ -34,7 +34,7 @@ describe('BaseImageMapEditor холст: выбор мышью', () => {
 		expect(emitted()['update:modelValue']).toHaveLength(1)
 		await fireEvent.click(screen.getByRole('button', { name: 'Отменить (Ctrl+Z)' }))
 		expect(modelObject<ImageMapRect>(emitted, 'r1')).toMatchObject({ x: 0.1, y: 0.1 })
-		expect(screen.getByRole('button', { name: 'Отменить (Ctrl+Z)' })).toBeDisabled()
+		expect(screen.getByRole('button', { name: 'Отменить (Ctrl+Z)' })).toHaveAttribute('aria-disabled', 'true')
 	})
 
 	it('объект не уходит за край картинки', async () => {

@@ -46,17 +46,21 @@
 						<span class="base-image-map-editor__item-title">{{ layer.title }}</span>
 					</button>
 					<BaseButton
+						:ref="trackRow('up', layer.id)"
 						variant="ghost"
 						:aria-label="formatMessage(UI_IMAGE_MAP_EDITOR.MOVE_UP, { title: layer.title })"
 						:is-disabled="isDisabled || index === 0"
-						@click="panel.moveLayer(layer.id, -1)">
+						:is-focusable-when-disabled="!isDisabled"
+						@click="moveLayer(layer.id, -1)">
 						<template #left><BaseIcon name="chevron-up" /></template>
 					</BaseButton>
 					<BaseButton
+						:ref="trackRow('down', layer.id)"
 						variant="ghost"
 						:aria-label="formatMessage(UI_IMAGE_MAP_EDITOR.MOVE_DOWN, { title: layer.title })"
 						:is-disabled="isDisabled || index === data.layers.length - 1"
-						@click="panel.moveLayer(layer.id, 1)">
+						:is-focusable-when-disabled="!isDisabled"
+						@click="moveLayer(layer.id, 1)">
 						<template #left><BaseIcon name="chevron-down" /></template>
 					</BaseButton>
 					<BaseButton
@@ -120,5 +124,5 @@ const props = defineProps<ImageMapEditorPanelProps>()
 
 defineEmits<ImageMapEditorPanelEmits>()
 
-const { addLayerRef, addGroupRef, trackRow, removeLayer, removeGroup } = useImageMapEditorPanel(props)
+const { addLayerRef, addGroupRef, trackRow, moveLayer, removeLayer, removeGroup } = useImageMapEditorPanel(props)
 </script>

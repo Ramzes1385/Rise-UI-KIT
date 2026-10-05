@@ -68,14 +68,33 @@ describe('BaseImageMap zoom — кнопки и клавиши', () => {
 		expect(viewport).not.toHaveClass('base-image-map__viewport--zoomed')
 	})
 
-	it('масштаб не превышает maxZoom, «Увеличить» на пределе неактивна', async () => {
+	it('масштаб не превышает maxZoom; «Увеличить» на пределе — aria-disabled и остаётся в фокусе', async () => {
 		const user = userEvent.setup()
 		const { container } = await renderMap({ maxZoom: 2 })
 		const zoomIn = screen.getByRole('button', { name: 'Увеличить' })
-		await user.click(zoomIn)
-		await user.click(zoomIn)
+		zoomIn.focus()
+		await user.keyboard('{Enter}')
+		await user.keyboard('{Enter}')
 		expect(stageTransform(container)).toContain('scale(2)')
-		expect(zoomIn).toBeDisabled()
+		expect(zoomIn).toHaveAttribute('aria-disabled', 'true')
+		expect(zoomIn).not.toHaveAttribute('disabled')
+		expect(zoomIn).toHaveFocus()
+		await user.keyboard('{Enter}')
+		expect(stageTransform(container)).toContain('scale(2)')
+		await user.tab()
+		expect(screen.getByRole('button', { name: 'Уменьшить' })).toHaveFocus()
+	})
+
+	it('«Уменьшить» до минимума остаётся в фокусе', async () => {
+		const user = userEvent.setup()
+		const { container } = await renderMap()
+		await user.click(screen.getByRole('button', { name: 'Увеличить' }))
+		const zoomOut = screen.getByRole('button', { name: 'Уменьшить' })
+		zoomOut.focus()
+		await user.keyboard('{Enter}')
+		expect(stageTransform(container)).toBe('translate(0px, 0px) scale(1)')
+		expect(zoomOut).toHaveAttribute('aria-disabled', 'true')
+		expect(zoomOut).toHaveFocus()
 	})
 
 	it('клавиши +, =, -, 0 в окне карты; с Ctrl, Alt или ⌘ — не трогают масштаб', async () => {
