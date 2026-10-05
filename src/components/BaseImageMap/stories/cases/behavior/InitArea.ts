@@ -17,7 +17,7 @@ export const InitArea: StoryObj<typeof meta> = {
 	args: { initArea: { x: 0.5, y: 0.1, width: 0.45, height: 0.45 }, hasZoomToActive: true, defaultAction: 'none' },
 	play: async ({ canvas, canvasElement, userEvent }) => {
 		const stage = canvasElement.querySelector('.base-image-map__stage') as HTMLElement
-		await expect(canvas.getByRole('button', { name: 'Уменьшить' })).toBeEnabled()
+		await expect(canvas.getByRole('button', { name: 'Уменьшить' })).not.toHaveAttribute('aria-disabled')
 		const initial = stage.style.transform
 		await tabTo(canvas.getByRole('button', { name: 'Вершина' }), userEvent)
 		await userEvent.keyboard('{Enter}')
