@@ -1,3 +1,4 @@
+import { Box3 } from 'three'
 import { useSceneTheme } from './useSceneTheme'
 import { loadModelLayer } from './loadModelLayer'
 import { loadLayerSurface } from './loadLayerSurface'
@@ -29,6 +30,15 @@ function startLoads(options: SceneOptions, job: Omit<SceneSurfaceJob, 'layer' | 
 				onError: options.onModelError,
 			})
 	})
+}
+
+function objectBox(content: SceneContent | null, id: string): Box3 | null {
+	const entry = content?.objects.get(id)
+	if (!content || !entry) return null
+	content.root.updateMatrixWorld(true)
+	const box = new Box3()
+	entry.meshes.forEach(mesh => box.expandByObject(mesh))
+	return box.isEmpty() ? null : box
 }
 
 export function useImageMap3DScene(options: SceneOptions) {
@@ -80,5 +90,5 @@ export function useImageMap3DScene(options: SceneOptions) {
 
 	useSceneTheme(() => recolor(options, content.value))
 
-	return { content, clear }
+	return { content, objectBox: (id: string) => objectBox(content.value, id) }
 }

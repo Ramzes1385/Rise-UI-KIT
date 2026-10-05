@@ -10,13 +10,46 @@
 			<template v-if="$slots['directory-empty']" #directory-empty><slot name="directory-empty" /></template>
 		</BaseImageMap>
 		<template v-else>
-			<div v-if="layerOptions.length > 1" class="base-image-map-3d__toolbar" :class="classes.toolbar">
+			<div v-if="layerOptions.length > 1 || hasZoomControls" class="base-image-map-3d__toolbar" :class="classes.toolbar">
 				<BaseSegmented
+					v-if="layerOptions.length > 1"
 					:custom-class="classes.layers"
 					:model-value="activeLayer?.id"
 					:options="layerOptions"
 					:aria-label="UI_IMAGE_MAP.LAYERS"
 					@update:model-value="setLayer(String($event))" />
+				<div
+					v-if="hasZoomControls"
+					class="base-image-map-3d__camera"
+					:class="classes.camera"
+					role="group"
+					:aria-label="UI_IMAGE_MAP_3D.CAMERA">
+					<BaseButton
+						variant="ghost"
+						:aria-label="UI_ARIA.ZOOM_IN"
+						:is-disabled="camera.isMaxZoom.value"
+						is-focusable-when-disabled
+						@click="camera.zoomIn">
+						<template #left><BaseIcon name="plus" /></template>
+					</BaseButton>
+					<BaseButton
+						variant="ghost"
+						:aria-label="UI_ARIA.ZOOM_OUT"
+						:is-disabled="camera.isMinZoom.value"
+						is-focusable-when-disabled
+						@click="camera.zoomOut">
+						<template #left><BaseIcon name="minus" /></template>
+					</BaseButton>
+					<BaseButton variant="ghost" :aria-label="UI_IMAGE_MAP_3D.ROTATE_LEFT" @click="camera.rotate(-15)">
+						<template #left><BaseIcon name="rotate-left" /></template>
+					</BaseButton>
+					<BaseButton variant="ghost" :aria-label="UI_IMAGE_MAP_3D.ROTATE_RIGHT" @click="camera.rotate(15)">
+						<template #left><BaseIcon name="rotate-right" /></template>
+					</BaseButton>
+					<BaseButton variant="ghost" :aria-label="UI_IMAGE_MAP_3D.RESET_CAMERA" @click="camera.resetCamera()">
+						<template #left><BaseIcon name="rotate-ccw" /></template>
+					</BaseButton>
+				</div>
 			</div>
 			<div
 				ref="viewportRef"
@@ -26,8 +59,12 @@
 				tabindex="0"
 				role="group"
 				:aria-label="mapLabel"
-				:aria-roledescription="UI_IMAGE_MAP_3D.ROLE">
+				:aria-roledescription="UI_IMAGE_MAP_3D.ROLE"
+				:aria-describedby="hintId"
+				@keydown="onKeydown"
+				@wheel.capture="onWheel">
 				<canvas v-if="hasCanvas" ref="canvasRef" class="base-image-map-3d__canvas" :class="classes.canvas" aria-hidden="true" />
+				<p :id="hintId" class="base-image-map-3d__hint">{{ UI_IMAGE_MAP_3D.KEYBOARD_HINT }}</p>
 			</div>
 		</template>
 		<p class="base-image-map-3d__status" :class="classes.status" role="status">{{ statusText }}</p>
@@ -36,11 +73,13 @@
 
 <script setup lang="ts">
 import '../styles/BaseImageMap3D.style.scss'
+import { BaseIcon } from '@components/BaseIcon'
+import { BaseButton } from '@components/BaseButton'
 import { BaseImageMap } from '@components/BaseImageMap'
 import { BaseSegmented } from '@components/BaseSegmented'
 import { kitDefaults } from '@composables/base/useDefaults'
 import { useBaseImageMap3D } from '../model/useBaseImageMap3D'
-import { UI_IMAGE_MAP, UI_IMAGE_MAP_3D } from '@/locales/messages'
+import { UI_ARIA, UI_IMAGE_MAP, UI_IMAGE_MAP_3D } from '@/locales/messages'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseImageMap3DEmits, BaseImageMap3DProps, BaseImageMap3DSlots } from '../types/BaseImageMap3D.types'
 
@@ -95,6 +134,10 @@ const {
 	layerOptions,
 	activeLayer,
 	setLayer,
+	camera,
+	onKeydown,
+	onWheel,
+	hintId,
 	exposed,
 } = useBaseImageMap3D(props, emit)
 

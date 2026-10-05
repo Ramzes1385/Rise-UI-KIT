@@ -1,13 +1,10 @@
 import { warn3dData } from './validate3d'
 import { hasWebGL } from './webglSupport'
-import { useImageMap3DLayer } from './useImageMap3DLayer'
-import { createWebGLRenderer } from './scene/createRenderer'
-import { useImageMap3DScene } from './viewport/useImageMap3DScene'
+import { useImageMap3DStage } from './useImageMap3DStage'
 import { UI_IMAGE_MAP, UI_IMAGE_MAP_3D } from '@/locales/messages'
-import { useImageMap3DViewport } from './viewport/useImageMap3DViewport'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
-import { computed, onMounted, ref, shallowRef, useTemplateRef, watch } from 'vue'
 import type { ImageMap2DBindings } from '../types/internal/imageMap3dInternal.types'
+import { computed, onMounted, ref, shallowRef, useId, useTemplateRef, watch } from 'vue'
 import type {
 	BaseImageMap3DEmits,
 	BaseImageMap3DExpose,
@@ -101,7 +98,15 @@ function useViewportView(props: ImageMap3DProps) {
 }
 
 export function useBaseImageMap3D(props: ImageMap3DProps, emit: BaseImageMap3DEmits) {
-	const base = useStandardBaseComponent('base-image-map-3d', props, ['root', 'toolbar', 'layers', 'viewport', 'canvas', 'status'])
+	const base = useStandardBaseComponent('base-image-map-3d', props, [
+		'root',
+		'toolbar',
+		'layers',
+		'camera',
+		'viewport',
+		'canvas',
+		'status',
+	])
 	const viewportRef = useTemplateRef<HTMLElement>('viewportRef')
 	const canvasRef = useTemplateRef<HTMLCanvasElement>('canvasRef')
 	const fallback = useFallback(emit)
@@ -111,33 +116,20 @@ export function useBaseImageMap3D(props: ImageMap3DProps, emit: BaseImageMap3DEm
 	const hasCanvas = computed(() => shownView.value === '3d' && fallback.isSupported.value === true)
 	const { mapLabel, viewportStyle } = useViewportView(props)
 
-	const viewport = useImageMap3DViewport({
+	const stage = useImageMap3DStage({
+		props,
+		emit,
 		canvasRef,
 		hostRef: viewportRef,
-		getData: () => props.data,
-		getFactory: () => props.rendererFactory ?? createWebGLRenderer,
 		onError: () => {
 			fallback.hasRenderError.value = true
 		},
 	})
-
-	const layers = useImageMap3DLayer(props, emit)
-	useImageMap3DScene({
-		...viewport,
-		hostRef: viewportRef,
-		getData: () => props.data,
-		getLayerId: () => layers.activeLayer.value?.id,
-		getLayerMode: () => props.layerMode,
-		getActive: () => props.active,
-		getConfigureLoader: () => props.configureLoader,
-		onModelError: () => {
-			fallback.hasRenderError.value = true
-		},
-	})
+	const { camera, layers } = stage
 
 	watch(() => props.data, warn3dData, { immediate: true })
 
-	const exposed: BaseImageMap3DExpose = { invalidate: viewport.invalidate, setView, setLayer: layers.setLayer }
+	const exposed: BaseImageMap3DExpose = { ...stage.exposed, setView }
 
 	return {
 		...base,
@@ -150,6 +142,10 @@ export function useBaseImageMap3D(props: ImageMap3DProps, emit: BaseImageMap3DEm
 		layerOptions: layers.layerOptions,
 		activeLayer: layers.activeLayer,
 		setLayer: layers.setLayer,
+		camera,
+		onKeydown: stage.onKeydown,
+		onWheel: stage.onWheel,
+		hintId: `${useId()}-hint`,
 		exposed,
 	}
 }

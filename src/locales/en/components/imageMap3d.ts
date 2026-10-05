@@ -6,6 +6,13 @@ export const enImageMap3d = {
 		/** `role="status"` message when the plan is shown instead of 3D */
 		FALLBACK_UNSUPPORTED: 'This browser does not support 3D — showing the plan',
 		FALLBACK_ERROR: 'Could not start 3D — showing the plan',
+		/** Camera button group */
+		CAMERA: 'Camera',
+		ROTATE_LEFT: 'Rotate left',
+		ROTATE_RIGHT: 'Rotate right',
+		RESET_CAMERA: 'Reset view',
+		/** Map region hint for screen readers (`aria-describedby`) */
+		KEYBOARD_HINT: 'Shift and arrows — rotate and tilt, plus and minus — zoom, 0 — initial view, Ctrl and mouse wheel — zoom',
 		/** Data field warning; `{path}` — field path, `{expected}` — one of EXPECT_* */
 		INVALID_FIELD: 'BaseImageMap3D: {path} = {value} is ignored — expected {expected}',
 		/** Floor model node not found; `{layer}` — layer id, `{name}` — node name, `{id}` — object id */

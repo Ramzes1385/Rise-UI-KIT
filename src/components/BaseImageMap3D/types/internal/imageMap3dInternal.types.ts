@@ -1,9 +1,29 @@
 import type { Ref, ShallowRef } from 'vue'
 import type { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
+import type { UseTweenReturn } from '@composables/interaction/useTween'
+import type { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import type { BaseImageMapProps } from '@components/BaseImageMap/types/BaseImageMap.types'
-import type { Color, Group, Material, Mesh, MeshStandardMaterial, Object3D, Scene } from 'three'
-import type { ImageMap3DLayerMode, ImageMap3DRenderer, ImageMap3DRendererFactory } from '../BaseImageMap3D.types'
 import type { ImageMap3DData, ImageMap3DLayer, ImageMap3DObject, ImageMapLayerModel } from '../imageMap3dData.types'
+import type {
+	Box3,
+	Color,
+	Group,
+	Material,
+	Mesh,
+	MeshStandardMaterial,
+	Object3D,
+	OrthographicCamera,
+	PerspectiveCamera,
+	Scene,
+} from 'three'
+import type {
+	BaseImageMap3DEmits,
+	ImageMap3DCamera,
+	ImageMap3DLayerMode,
+	ImageMap3DProps,
+	ImageMap3DRenderer,
+	ImageMap3DRendererFactory,
+} from '../BaseImageMap3D.types'
 
 /** Правило проверки 3D-поля данных */
 export type ImageMap3DFieldRule = 'number' | 'positive' | 'nonNegative' | 'text' | 'vector' | 'model' | 'object'
@@ -31,6 +51,8 @@ export interface ImageMap3DViewportOptions {
 	getData: () => ImageMap3DData
 	/** Фабрика рендерера */
 	getFactory: () => ImageMap3DRendererFactory
+	/** Вид камеры */
+	getCameraKind: () => ImageMap3DCamera
 	/** Рендерер не создался */
 	onError: (error: unknown) => void
 }
@@ -177,4 +199,68 @@ export interface SceneModelJob extends Omit<SceneSurfaceJob, 'floor'> {
 	configure?: (loader: GLTFLoader) => void
 	/** Модель не загрузилась */
 	onError: (error: unknown) => void
+}
+
+/** Камера сцены: ортографическая (изометрия) или перспективная */
+export type ImageMap3DViewCamera = OrthographicCamera | PerspectiveCamera
+
+/** Положение камеры: цель `[x, y, z]`, азимут и полярный угол (радианы), масштаб */
+export type CameraPose = [number, number, number, number, number, number]
+
+/** Действие камеры по клавише */
+export type CameraKeyAction =
+	{ type: 'rotate'; degrees: number } | { type: 'tilt'; degrees: number } | { type: 'zoom'; direction: 1 | -1 } | { type: 'reset' }
+
+/** Параметры управления камерой */
+export interface CameraOptions {
+	/** Камера сцены */
+	camera: Readonly<ShallowRef<ImageMap3DViewCamera>>
+	/** Рендерер: есть — работают OrbitControls */
+	renderer: Readonly<ShallowRef<ImageMap3DRenderer | null>>
+	/** Холст: к нему подключаются OrbitControls */
+	canvasRef: Readonly<Ref<HTMLCanvasElement | null>>
+	/** Данные карты */
+	getData: () => ImageMap3DData
+	/** Id активного этажа: камера смотрит на его высоту */
+	getLayerId: () => string | undefined
+	/** Вращение и наклон указателем */
+	getHasOrbit: () => boolean
+	/** Границы мешей объекта в сцене; нет объекта — `null` */
+	getObjectBox: (id: string) => Box3 | null
+	/** Запросить кадр */
+	invalidate: () => void
+}
+
+/** Параметры 3D-сцены компонента: область, этажи, содержимое и камера */
+export interface StageOptions {
+	/** Пропсы компонента */
+	props: ImageMap3DProps
+	/** События компонента */
+	emit: BaseImageMap3DEmits
+	/** Холст */
+	canvasRef: Readonly<Ref<HTMLCanvasElement | null>>
+	/** Область карты */
+	hostRef: Readonly<Ref<HTMLElement | null>>
+	/** Рендерер не создался или модель этажа не загрузилась */
+	onError: (error: unknown) => void
+}
+
+/** Положение камеры: твин, масштаб, OrbitControls и переходы */
+export interface CameraPoseState {
+	/** Твин положения камеры */
+	tween: UseTweenReturn<CameraPose>
+	/** Текущий масштаб */
+	zoom: Ref<number>
+	/** OrbitControls, пока есть рендерер */
+	controls: ShallowRef<OrbitControls | null>
+	/** Положение камеры сейчас */
+	current: () => CameraPose
+	/** Запомнить положение после жеста */
+	sync: () => void
+	/** Плавно перейти к положению */
+	goTo: (pose: CameraPose) => void
+	/** Сразу поставить положение */
+	jump: (pose: CameraPose) => void
+	/** Последнее показанное положение */
+	lastPose: () => CameraPose | null
 }

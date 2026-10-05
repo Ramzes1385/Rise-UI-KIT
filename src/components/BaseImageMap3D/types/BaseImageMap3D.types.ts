@@ -57,7 +57,7 @@ export const IMAGE_MAP_3D_FALLBACK_REASONS = ['unsupported', 'error'] as const
 export type ImageMap3DFallbackReason = (typeof IMAGE_MAP_3D_FALLBACK_REASONS)[number]
 
 /** Элементы для `customClass` */
-type ImageMap3DClassKey = 'root' | 'toolbar' | 'layers' | 'viewport' | 'canvas' | 'status'
+type ImageMap3DClassKey = 'root' | 'toolbar' | 'layers' | 'camera' | 'viewport' | 'canvas' | 'status'
 
 /** Пропсы BaseImageMap, которых у 3D-карты нет или они свои: колесо, предел и начальная область масштаба — у камеры */
 type ImageMap2DOnlyProp = 'data' | 'wheelZoom' | 'maxZoom' | 'initArea' | 'variant' | 'sizeScale' | 'color' | 'customClass'
@@ -140,4 +140,14 @@ export interface BaseImageMap3DExpose {
 	setView: (view: ImageMap3DView) => void
 	/** Показать этаж по id (то же, что `v-model:layer`) */
 	setLayer: (id: string) => void
+	/** Плавно вернуть камеру к начальному виду активного этажа */
+	resetCamera: () => void
+	/** Повернуть камеру вокруг вертикали на `degrees` градусов (плюс — по часовой стрелке при взгляде сверху) */
+	rotate: (degrees: number) => void
+	/** Приблизить в 1,5 раза (до 8×) */
+	zoomIn: () => void
+	/** Отдалить в 1,5 раза (до 0,5×) */
+	zoomOut: () => void
+	/** Плавно показать объект: камера смотрит на его центр, объект занимает около трети области */
+	zoomToObject: (id: string) => void
 }

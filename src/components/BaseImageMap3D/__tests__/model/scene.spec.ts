@@ -1,7 +1,7 @@
 import { DATA_3D } from '../imageMap3d.test-utils'
+import { sceneCenter, sceneExtent } from '../../model/scene/sceneCamera'
 import { disposeMaterial, disposeObject } from '../../model/scene/disposeObject'
-import { BoxGeometry, Group, Mesh, MeshBasicMaterial, OrthographicCamera, Texture, Vector3 } from 'three'
-import { createCamera, fitCamera, placeCamera, sceneCenter, sceneExtent } from '../../model/scene/sceneCamera'
+import { BoxGeometry, Group, Mesh, MeshBasicMaterial, Texture, Vector3 } from 'three'
 
 describe('disposeObject', () => {
 	it('освобождает геометрии, материалы (один раз) и их текстуры, очищает узел', () => {
@@ -37,23 +37,5 @@ describe('sceneCamera', () => {
 	it('центр — середина первого слоя; без слоёв — начало координат', () => {
 		expect(sceneCenter(DATA_3D)).toEqual(new Vector3(400, 0, 200))
 		expect(sceneCenter({ layers: [], objects: [] })).toEqual(new Vector3())
-	})
-
-	it('камера изометрии: ортографическая, смотрит на центр сверху под углом', () => {
-		const camera = createCamera()
-		expect(camera).toBeInstanceOf(OrthographicCamera)
-		placeCamera(camera, DATA_3D)
-		const direction = camera.getWorldDirection(new Vector3())
-		expect(direction.y).toBeLessThan(0)
-		expect(camera.position.y).toBeGreaterThan(0)
-		expect(camera.position.x - 400).toBeCloseTo(camera.position.z - 200)
-	})
-
-	it('fitCamera подгоняет пропорции под область', () => {
-		const camera = createCamera()
-		fitCamera(camera, { width: 400, height: 200 }, 100)
-		expect([camera.left, camera.right, camera.top, camera.bottom]).toEqual([-100, 100, 50, -50])
-		fitCamera(camera, { width: 100, height: 0 }, 2)
-		expect(camera.right).toBe(100)
 	})
 })

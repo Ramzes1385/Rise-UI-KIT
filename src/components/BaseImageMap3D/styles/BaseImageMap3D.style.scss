@@ -11,6 +11,17 @@
 		gap: sz(8px);
 	}
 
+	&__camera {
+		display: inline-flex;
+		align-items: center;
+		gap: sz(2px);
+		margin-inline-start: auto;
+	}
+
+	&__hint {
+		@include visually-hidden;
+	}
+
 	&__viewport {
 		position: relative;
 		overflow: hidden;

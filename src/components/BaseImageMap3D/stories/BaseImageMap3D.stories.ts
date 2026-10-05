@@ -20,3 +20,4 @@ export const Fallback2D = cases.Fallback2D
 export const RendererFallback = cases.RendererFallback
 export const Floors3D = cases.Floors3D
 export const Glb = cases.Glb
+export const CameraKeyboard = cases.CameraKeyboard

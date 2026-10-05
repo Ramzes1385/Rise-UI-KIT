@@ -243,7 +243,8 @@ describe('BaseImageMap3D: 2D-вид', () => {
 		mockWebGL(true)
 		const { container } = render(BaseImageMap3D, { props: { data: DATA_3D, view: '2d' } })
 		const own = render(BaseImageMap, { props: { data: DATA_3D } })
-		expect(container.querySelector('.base-image-map')?.innerHTML).toBe(own.container.querySelector('.base-image-map')?.innerHTML)
+		const markup = (root: Element | null | undefined) => root?.innerHTML.replace(/rise-segmented-v-\d+/g, 'rise-segmented')
+		expect(markup(container.querySelector('.base-image-map'))).toBe(markup(own.container.querySelector('.base-image-map')))
 	})
 
 	it('умолчания переопределяются настройками плагина', () => {
