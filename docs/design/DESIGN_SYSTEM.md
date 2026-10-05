@@ -187,6 +187,8 @@
 
 Рантайм: `applyTheme(theme, { target, nonce })` — `<style data-rise-theme-style="имя">` в `<head>` (один на тему) и атрибуты на области; без `document` ничего не делает. `useTheme()` — общее управление (`theme`, `themes`, `css`, `setTheme`, `configure`), `createThemeController()` — отдельное. Плагин: `theme`, `themes`, `themeNonce`.
 
+**Темы в Storybook.** На панели два переключателя: «Тема» — режим (`data-theme`: светлая, тёмная) и «Бренд» — тема `createTheme()` поверх режима (`data-rise-theme` на том же `<html>`): `rise` — кит как есть (без `data-rise-theme`), `corporate`, `playful`, `minimal` и `custom` — последняя тема страницы **Foundations → Конструктор темы**. Режим и бренд сочетаются как в приложении: `brand × theme` = `data-rise-theme × data-theme` на одном элементе. Ссылка на историю в нужной теме — `?globals=theme:dark;brand:corporate`; прогон историй — `node scripts/check-stories.mjs --themes=light,dark,corporate,playful,minimal`. Конструктор собирает `ThemeInput`, показывает компоненты в светлой и тёмной, контраст пар `THEME_CONTRAST_PAIRS` и выдаёт код: `applyTheme(createTheme({...}))` или готовый CSS для подключения без JS.
+
 ## 2. Размеры и масштаб
 
 - Размер компонента задаёт `sizeScale` — число в процентах. 100 — базовый размер.
