@@ -119,11 +119,18 @@ function restoreOuterApi(): void {
 	else target.ymaps3 = outerApi
 }
 
-export function installDemoYandex(options: { isPending?: boolean } = {}): () => void {
+function demoReady(options: { isPending?: boolean; isFailing?: boolean }): Promise<void> {
+	if (options.isFailing) return Promise.reject(new Error('demo: сервис недоступен'))
+	return options.isPending ? new Promise(() => undefined) : Promise.resolve()
+}
+
+export function installDemoYandex(options: { isPending?: boolean; isFailing?: boolean } = {}): () => void {
 	if (installed === 0) outerApi = target.ymaps3
 	installed++
 	target.ymaps3 = {
-		ready: options.isPending ? new Promise(() => undefined) : Promise.resolve(),
+		get ready() {
+			return demoReady(options)
+		},
 		YMap: DemoMap,
 		YMapDefaultSchemeLayer: DemoLayer,
 		YMapDefaultFeaturesLayer: DemoLayer,

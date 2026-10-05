@@ -1,10 +1,9 @@
 import BaseMap from '../../../ui/BaseMap.vue'
 import type meta from '../../BaseMap.stories'
-import { MOSCOW, OFFICES } from '../../shared'
 import { expect, waitFor } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { installDemoYandex } from '../../demoProvider'
-import { literal, storySource, tabTo, useStorySetup } from '@/stories/helpers'
+import { MOSCOW, OFFICES, liveOrDemo } from '../../shared'
+import { literal, storySource, tabTo, useStorySetup, withYandexMapsKey } from '@/stories/helpers'
 
 const state = { center: MOSCOW, zoom: 12, selected: '—' }
 
@@ -19,14 +18,15 @@ export const Markers: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
 			description: {
-				story: 'Метки — кнопки: Tab переходит между ними, Enter выбирает, событие `marker-click` передаёт метку. Центр и масштаб — `v-model:center` и `v-model:zoom`. В превью вместо Яндекс Карт — демо-поставщик без сети, поэтому ключ `demo`; в приложении — ваш ключ.',
+				story: 'Метки — кнопки: Tab переходит между ними, Enter выбирает, событие `marker-click` передаёт метку. Центр и масштаб — `v-model:center` и `v-model:zoom`. С ключом из `.env.local` — Яндекс Карты, без него — демо-поставщик без сети (ключ `demo`); в приложении — ваш ключ.',
 			},
 			source: storySource({ template, imports: ['BaseMap'], state, script: `const markers = ${literal(OFFICES)}` }),
 			story: { inline: false, height: '420px' },
 		},
 	},
-	args: { apiKey: 'demo' },
-	beforeEach: () => installDemoYandex(),
+	decorators: [withYandexMapsKey],
+	args: liveOrDemo.args,
+	beforeEach: liveOrDemo.beforeEach,
 	render: args => ({
 		components: { BaseMap },
 		setup: useStorySetup(args, { state, data: { markers: OFFICES } }),

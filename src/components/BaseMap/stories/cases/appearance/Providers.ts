@@ -1,9 +1,10 @@
-import { expect } from 'storybook/test'
+import { isLiveMap } from '../../shared'
 import BaseMap from '../../../ui/BaseMap.vue'
 import type meta from '../../BaseMap.stories'
+import { expect, waitFor } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { MAP_PROVIDERS } from '../../../types/BaseMap.types'
-import { storySource, useStorySetup } from '@/stories/helpers'
+import { storySource, useStorySetup, withYandexMapsKey } from '@/stories/helpers'
 
 const template = `
 	<div class="story-grid" style="--story-grid-min: 280px">
@@ -12,6 +13,7 @@ const template = `
 `
 
 export const Providers: StoryObj<typeof meta> = {
+	decorators: [withYandexMapsKey],
 	parameters: {
 		docs: {
 			description: {
@@ -28,7 +30,14 @@ export const Providers: StoryObj<typeof meta> = {
 		template,
 	}),
 	play: async ({ canvas }) => {
+		const yandex = canvas.getByRole('region', { name: 'yandex' })
+		if (isLiveMap) {
+			await expect(canvas.getByRole('region', { name: 'google' })).toHaveTextContent('Нужен Map ID')
+			await waitFor(() => expect(yandex).not.toHaveAttribute('aria-busy'))
+			await expect(yandex).not.toHaveTextContent('Нужен ключ API')
+			return
+		}
 		await expect(canvas.getByRole('region', { name: 'google' })).toHaveTextContent('Google Maps')
-		await expect(canvas.getByRole('region', { name: 'yandex' })).toHaveTextContent('Яндекс Карты')
+		await expect(yandex).toHaveTextContent('Яндекс Карты')
 	},
 }

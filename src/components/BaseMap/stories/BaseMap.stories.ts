@@ -17,8 +17,11 @@ export default meta
 
 export const Default = cases.Default
 export const Markers = cases.Markers
+export const Navigation = cases.Navigation
+export const ClickToAdd = cases.ClickToAdd
 export const Providers = cases.Providers
 export const Variants = cases.Variants
 export const Sizes = cases.Sizes
 export const Loading = cases.Loading
 export const Seo = cases.Seo
+export const Placeholder = cases.Placeholder

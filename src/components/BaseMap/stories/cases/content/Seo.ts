@@ -3,7 +3,7 @@ import { expect } from 'storybook/test'
 import BaseMap from '../../../ui/BaseMap.vue'
 import type meta from '../../BaseMap.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { storySource, useStorySetup, withJsonLd } from '@/stories/helpers'
+import { storySource, useStorySetup, withJsonLd, withYandexMapsKey } from '@/stories/helpers'
 
 const template = `
 	<BaseMap v-bind="args" />
@@ -19,7 +19,7 @@ export const Seo: StoryObj<typeof meta> = {
 			},
 		},
 	},
-	decorators: [withJsonLd],
+	decorators: [withJsonLd, withYandexMapsKey],
 	parameters: {
 		docs: {
 			description: {
