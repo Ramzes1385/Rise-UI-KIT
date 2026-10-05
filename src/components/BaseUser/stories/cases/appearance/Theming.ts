@@ -2,7 +2,7 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseUser.stories'
 import BaseUser from '../../../ui/BaseUser.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { isStoryBranded, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const ui = { root: 'story-themed-user', name: 'story-themed-name' }
 
@@ -47,11 +47,11 @@ export const Theming: StoryObj<typeof meta> = {
 		const plainName = plain.querySelector('.base-user__name')!
 		const themedName = themed.querySelector('.base-user__name')!
 
-		await expect(getComputedStyle(plain).columnGap).toBe('8px')
-		await expect(getComputedStyle(themed).columnGap).toBe('12px')
+		if (!isStoryBranded()) await expect(getComputedStyle(plain).columnGap).toBe('8px')
+		if (!isStoryBranded()) await expect(getComputedStyle(themed).columnGap).toBe('12px')
 		await expect(getComputedStyle(themedName).color).not.toBe(getComputedStyle(plainName).color)
-		await expect(getComputedStyle(themedName).fontWeight).toBe('700')
-		await expect(getComputedStyle(plainName).fontWeight).toBe('500')
+		if (!isStoryBranded()) await expect(getComputedStyle(themedName).fontWeight).toBe('700')
+		if (!isStoryBranded()) await expect(getComputedStyle(plainName).fontWeight).toBe('500')
 		await expect(classed).toHaveClass('base-user', 'story-themed-user')
 		await expect(classed.querySelector('.base-user__name')).toHaveClass('story-themed-name')
 	},

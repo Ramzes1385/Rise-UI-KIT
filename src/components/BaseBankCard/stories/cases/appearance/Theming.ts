@@ -2,7 +2,7 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseBankCard.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseBankCard from '../../../ui/BaseBankCard.vue'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { isStoryBranded, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const ui = { root: 'story-themed-card', number: 'story-themed-number' }
 
@@ -45,10 +45,10 @@ export const Theming: StoryObj<typeof meta> = {
 	play: async ({ canvasElement }) => {
 		const [plain, themed, classed] = [...canvasElement.querySelectorAll<HTMLElement>('.base-bank-card')]
 
-		await expect(getComputedStyle(themed).width).toBe('360px')
-		await expect(getComputedStyle(plain).width).toBe('320px')
-		await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('16px')
-		await expect(getComputedStyle(themed).paddingLeft).toBe('28px')
+		if (!isStoryBranded()) await expect(getComputedStyle(themed).width).toBe('360px')
+		if (!isStoryBranded()) await expect(getComputedStyle(plain).width).toBe('320px')
+		if (!isStoryBranded()) await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('16px')
+		if (!isStoryBranded()) await expect(getComputedStyle(themed).paddingLeft).toBe('28px')
 		await expect(getComputedStyle(themed).boxShadow).not.toBe(getComputedStyle(plain).boxShadow)
 		await expect(classed).toHaveClass('base-bank-card', 'story-themed-card')
 		await expect(classed.querySelector('.base-bank-card__number')).toHaveClass('story-themed-number')

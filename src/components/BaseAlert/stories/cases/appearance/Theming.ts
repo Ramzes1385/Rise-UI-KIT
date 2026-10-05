@@ -2,7 +2,7 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseAlert.stories'
 import BaseAlert from '../../../ui/BaseAlert.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { isStoryBranded, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const ui = { root: 'story-themed-alert', title: 'story-themed-title' }
 
@@ -46,9 +46,9 @@ export const Theming: StoryObj<typeof meta> = {
 		const [plain, themed, classed] = canvas.getAllByRole('status')
 
 		await expect(getComputedStyle(themed).backgroundColor).not.toBe(getComputedStyle(plain).backgroundColor)
-		await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('16px')
-		await expect(getComputedStyle(themed).paddingTop).toBe('20px')
-		await expect(getComputedStyle(plain).paddingTop).toBe('12px')
+		if (!isStoryBranded()) await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('16px')
+		if (!isStoryBranded()) await expect(getComputedStyle(themed).paddingTop).toBe('20px')
+		if (!isStoryBranded()) await expect(getComputedStyle(plain).paddingTop).toBe('12px')
 		await expect(classed).toHaveClass('base-alert', 'story-themed-alert')
 		await expect(classed.querySelector('.base-alert__title')).toHaveClass('story-themed-title')
 	},

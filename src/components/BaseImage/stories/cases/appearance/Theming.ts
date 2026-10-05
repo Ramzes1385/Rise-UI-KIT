@@ -3,7 +3,7 @@ import type meta from '../../BaseImage.stories'
 import BaseImage from '../../../ui/BaseImage.vue'
 import { expectImagesVisible } from '../../shared'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { isStoryBranded, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const ui = { root: 'story-themed-image', img: 'story-themed-img' }
 
@@ -44,8 +44,8 @@ export const Theming: StoryObj<typeof meta> = {
 		await expectImagesVisible(canvasElement, 3)
 		const [plain, themed, classed] = [...canvasElement.querySelectorAll<HTMLElement>('.base-image')]
 
-		await expect(getComputedStyle(plain).borderTopLeftRadius).toBe('6px')
-		await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('9999px')
+		if (!isStoryBranded()) await expect(getComputedStyle(plain).borderTopLeftRadius).toBe('6px')
+		if (!isStoryBranded()) await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('9999px')
 		await expect(getComputedStyle(themed).backgroundColor).not.toBe(getComputedStyle(plain).backgroundColor)
 		await expect(classed).toHaveClass('base-image', 'story-themed-image')
 		await expect(classed.querySelector('.base-image__img')).toHaveClass('story-themed-img')

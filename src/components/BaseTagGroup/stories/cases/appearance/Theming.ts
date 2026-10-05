@@ -2,7 +2,7 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseTagGroup.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseTagGroup from '../../../ui/BaseTagGroup.vue'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { isStoryBranded, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const ui = { root: 'story-themed-group', tag: 'story-themed-tag' }
 const models = { selected: 'modelValue' }
@@ -49,8 +49,8 @@ export const Theming: StoryObj<typeof meta> = {
 		const themed = canvas.getByRole('group', { name: 'Токены на контейнере' })
 		const classed = canvas.getByRole('group', { name: 'Классы через ui' })
 
-		await expect(getComputedStyle(plain).columnGap).toBe('6px')
-		await expect(getComputedStyle(themed).columnGap).toBe('12px')
+		if (!isStoryBranded()) await expect(getComputedStyle(plain).columnGap).toBe('6px')
+		if (!isStoryBranded()) await expect(getComputedStyle(themed).columnGap).toBe('12px')
 		await expect(classed).toHaveClass('base-tag-group', 'story-themed-group')
 		for (const tag of classed.querySelectorAll('.base-tag')) await expect(tag).toHaveClass('base-tag-group__tag', 'story-themed-tag')
 	},

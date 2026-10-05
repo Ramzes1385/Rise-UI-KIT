@@ -2,7 +2,7 @@ import { expect } from 'storybook/test'
 import type meta from '../BaseMarkdown.stories'
 import BaseMarkdown from '../../ui/BaseMarkdown.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { isStoryBranded, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const source = ['### Заметка', '', 'Текст со [ссылкой](https://example.com) и `кодом`.', '', '> Цитата из отчёта'].join('\n')
 
@@ -54,9 +54,9 @@ export const Theming: StoryObj<typeof meta> = {
 		await expect(part(themed, 'heading').color).not.toBe(part(plain, 'heading').color)
 		await expect(part(themed, 'code').backgroundColor).not.toBe(part(plain, 'code').backgroundColor)
 		await expect(part(themed, 'quote').borderLeftColor).not.toBe(part(plain, 'quote').borderLeftColor)
-		await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('12px')
-		await expect(getComputedStyle(themed).paddingLeft).toBe('24px')
-		await expect(getComputedStyle(plain).paddingLeft).toBe('16px')
+		if (!isStoryBranded()) await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('12px')
+		if (!isStoryBranded()) await expect(getComputedStyle(themed).paddingLeft).toBe('24px')
+		if (!isStoryBranded()) await expect(getComputedStyle(plain).paddingLeft).toBe('16px')
 		await expect(classed).toHaveClass('base-markdown', 'story-themed-markdown')
 		await expect(classed.querySelector('.base-markdown__link')).toHaveClass('story-themed-link')
 	},

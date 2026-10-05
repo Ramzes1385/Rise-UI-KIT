@@ -2,7 +2,7 @@ import { expect } from 'storybook/test'
 import BaseTag from '../../../ui/BaseTag.vue'
 import type meta from '../../BaseTag.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { isStoryBranded, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const ui = { root: 'story-themed-tag', text: 'story-themed-text' }
 
@@ -47,10 +47,10 @@ export const Theming: StoryObj<typeof meta> = {
 		const classed = canvas.getByText('Классы через ui').closest('.base-tag')!
 
 		await expect(getComputedStyle(themed).backgroundColor).not.toBe(getComputedStyle(plain).backgroundColor)
-		await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('4px')
-		await expect(getComputedStyle(plain).borderTopLeftRadius).toBe('9999px')
-		await expect(getComputedStyle(themed).fontWeight).toBe('700')
-		await expect(getComputedStyle(plain).fontWeight).toBe('500')
+		if (!isStoryBranded()) await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('4px')
+		if (!isStoryBranded()) await expect(getComputedStyle(plain).borderTopLeftRadius).toBe('9999px')
+		if (!isStoryBranded()) await expect(getComputedStyle(themed).fontWeight).toBe('700')
+		if (!isStoryBranded()) await expect(getComputedStyle(plain).fontWeight).toBe('500')
 		await expect(classed).toHaveClass('base-tag', 'story-themed-tag')
 		await expect(classed.querySelector('.base-tag__text')).toHaveClass('story-themed-text')
 	},

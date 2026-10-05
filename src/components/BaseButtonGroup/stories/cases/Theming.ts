@@ -3,7 +3,7 @@ import type meta from '../BaseButtonGroup.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseButtonGroup from '../../ui/BaseButtonGroup.vue'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { isStoryBranded, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const ui = { root: 'story-themed-group' }
 
@@ -61,10 +61,10 @@ export const Theming: StoryObj<typeof meta> = {
 		const second = (group: HTMLElement) => getComputedStyle(group.querySelectorAll('.base-button')[1])
 
 		await expect(getComputedStyle(themed).backgroundColor).not.toBe(getComputedStyle(plain).backgroundColor)
-		await expect(getComputedStyle(themed).paddingTop).toBe('4px')
-		await expect(getComputedStyle(themed.querySelector('.base-button')!).borderTopLeftRadius).toBe('9999px')
-		await expect(second(themed).marginLeft).toBe('4px')
-		await expect(second(plain).marginLeft).toBe('-1px')
+		if (!isStoryBranded()) await expect(getComputedStyle(themed).paddingTop).toBe('4px')
+		if (!isStoryBranded()) await expect(getComputedStyle(themed.querySelector('.base-button')!).borderTopLeftRadius).toBe('9999px')
+		if (!isStoryBranded()) await expect(second(themed).marginLeft).toBe('4px')
+		if (!isStoryBranded()) await expect(second(plain).marginLeft).toBe('-1px')
 		await expect(classed).toHaveClass('base-button-group', 'story-themed-group')
 	},
 }

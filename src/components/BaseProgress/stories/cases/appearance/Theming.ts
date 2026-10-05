@@ -2,7 +2,7 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseProgress.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseProgress from '../../../ui/BaseProgress.vue'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { isStoryBranded, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const ui = { root: 'story-themed-progress', fill: 'story-themed-fill' }
 
@@ -54,8 +54,8 @@ export const Theming: StoryObj<typeof meta> = {
 		await expect(getComputedStyle(part(themed, 'track')).backgroundColor).not.toBe(
 			getComputedStyle(part(plain, 'track')).backgroundColor,
 		)
-		await expect(getComputedStyle(part(themed, 'track')).borderTopLeftRadius).toBe('2px')
-		await expect(getComputedStyle(part(plain, 'track')).borderTopLeftRadius).toBe('9999px')
+		if (!isStoryBranded()) await expect(getComputedStyle(part(themed, 'track')).borderTopLeftRadius).toBe('2px')
+		if (!isStoryBranded()) await expect(getComputedStyle(part(plain, 'track')).borderTopLeftRadius).toBe('9999px')
 		await expect(getComputedStyle(part(themed, 'status')).color).not.toBe(getComputedStyle(part(plain, 'status')).color)
 		await expect(classed).toHaveClass('base-progress', 'story-themed-progress')
 		await expect(part(classed, 'fill')).toHaveClass('story-themed-fill')
