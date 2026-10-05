@@ -9,6 +9,7 @@
 | [reference/COMPONENTS.md](./reference/COMPONENTS.md) | Справочник компонентов: назначение, основные props и события, примеры |
 | [reference/COMPOSABLES.md](./reference/COMPOSABLES.md) | Composables кита и примеры |
 | [reference/UTILS.md](./reference/UTILS.md) | Утилиты кита и примеры |
+| [reference/MAP3D.md](./reference/MAP3D.md) | 3D-карта этажей, вход `/map3d`: установка `three`, данные, модели GLB, доступность, фолбэк |
 | [reference/DEVELOPMENT.md](./reference/DEVELOPMENT.md) | Разработка: стек, структура, Storybook, проверки, сборка, CI |
 | [CONTRIBUTING.md](./CONTRIBUTING.md) | Полное руководство по ведению репозитория: ветки, задачи, коммиты, PR, релизы, заготовка нового компонента |
 | [v2/PLAN.md](./v2/PLAN.md) | План версии 2.0: порции работы, решения, статус |

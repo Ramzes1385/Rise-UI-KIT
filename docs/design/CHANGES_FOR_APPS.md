@@ -228,6 +228,12 @@
   - `allowedChars` у BaseInput теперь работает (раньше игнорировался);
   - `show` у BaseAnimation по умолчанию реактивный;
   - BaseTextarea с `maxlength` показывает счётчик.
+- **BaseImageMap3D — 3D-карта этажей** (задача map3d, [MAP3D.md](../reference/MAP3D.md)): только для приложений, которым она нужна; остальным делать ничего не надо — основной вход three.js не тянет.
+  - Импорт — из `@ramzes1385/rise-ui-kit/map3d`, не из корня пакета: в корень, `/components` и плагин компонент не входит.
+  - Установить `three` (необязательная peer-зависимость, `>=0.180.0 <0.200.0`) и в dev `@types/three`. Без `three` сборка падает на импорте `/map3d` ошибкой разрешения `three`.
+  - Модели этажей GLB (`layer.model.url`) отдавать со своего домена или CDN с CORS; закрытое хранилище — через посредник приложения.
+  - Сжатые модели (DRACO, KTX2, meshopt) — декодеры приложения через проп `configureLoader(loader)`; кит их не подключает.
+  - JSON карты общий с BaseImageMap и BaseImageMapEditor: 3D-поля (`layer.elevation`, `layer.model`, `object.height3d`, `object.meshName`, `scene3d`) необязательны, редактор их сохраняет, 2D-карта их не читает. Без WebGL карта показывает 2D и шлёт `fallback`.
 - **Внутренние константы** (`@constants`, в пакет не экспортируются): добавлены `TABLE_TEXT`, `UI_RATING` и тексты `UI_CHAT_TEXT`/`UI_EDITOR`; удалены `ROW_SELECTION_WIDTH`, `ROW_NUMBER_WIDTH` и `ROW_EXPAND_WIDTH`.
 
 ## Токены

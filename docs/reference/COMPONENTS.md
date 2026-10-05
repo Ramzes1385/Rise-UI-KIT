@@ -3528,9 +3528,9 @@ BaseWaveform
 
 ---
 
-## BaseImageMap3D (задача map3d-base, часть 1 из 4)
+## BaseImageMap3D
 
-3D-карта этажей на three.js — отдельный вход `@ramzes1385/rise-ui-kit/map3d`; в корень пакета и в плагин не входит. `three` (>=0.180 <0.200) — необязательная peer-зависимость: ставит только приложение с 3D-картой. Данные — те же `ImageMapData`, что у BaseImageMap, плюс необязательные 3D-поля (`ImageMap3DData`).
+3D-карта этажей на three.js (задача map3d, части 1–4) — отдельный вход `@ramzes1385/rise-ui-kit/map3d`; в корень пакета, `/components` и плагин не входит. `three` (`>=0.180.0 <0.200.0`) — необязательная peer-зависимость: ставит только приложение с 3D-картой. Данные — те же `ImageMapData`, что у BaseImageMap и BaseImageMapEditor, плюс необязательные 3D-поля (`ImageMap3DData`). Установка, формат 3D-полей, модели GLB, клавиатура, фолбэк и ограничения — [MAP3D.md](./MAP3D.md).
 
 ```vue
 <script setup lang="ts">
@@ -3539,15 +3539,36 @@ import { BaseImageMap3D } from '@ramzes1385/rise-ui-kit/map3d'
 import type { ImageMap3DData, ImageMap3DView } from '@ramzes1385/rise-ui-kit/map3d'
 
 const view = ref<ImageMap3DView>('3d')
+const active = ref<string | null>(null)
 const data: ImageMap3DData = { layers: [{ id: 'f1', title: 'Этаж 1', image: '/plan-1.svg', width: 1000, height: 600, elevation: 0 }], objects: [] }
 </script>
 
 <template>
-	<BaseImageMap3D v-model:view="view" :data="data" height="480px" @fallback="reason => console.info('Показан план:', reason)" />
+	<BaseImageMap3D v-model:view="view" v-model:active="active" :data="data" has-directory height="480px" @fallback="reason => console.info('Показан план:', reason)" />
 </template>
 ```
 
-- `v-model:view` — `3d` (по умолчанию) или `2d`: BaseImageMap с теми же данными, пропсами, событиями и слотами. Без WebGL или если рендерер не создался — автоматически 2D, сообщение `role="status"` и событие `fallback` (`unsupported` или `error`).
-- Пропсы — как у BaseImageMap (кроме `wheelZoom`, `maxZoom`, `initArea`), плюс `view`, `rendererFactory` (своя фабрика рендерера; по умолчанию `WebGLRenderer`). Через `ref`: `invalidate()` — перерисовать сцену в ближайшем кадре, `setView(view)`.
-- 3D-поля данных: `layer.model` (`{ url, scale?, position?, rotationY? }`, GLB/GLTF), `layer.elevation`, `object.height3d`, `object.meshName`, `data.scene3d` (`floorGap`, `floorThickness`, `objectHeight`). Неверные поля — предупреждение в консоли при разработке.
-- В части 1 сцена пустая: пол, объекты, модели, камера с вращением, выбор и маршруты в 3D — части 2–4.
+**Пропсы.** Все пропсы BaseImageMap с теми же умолчаниями, кроме `wheelZoom`, `maxZoom`, `initArea` (у камеры свои пределы): `data`, `layer` и `active` (v-model), `defaultAction`, `hasZoomControls`, `hasTooltip`, `hasZoomToActive`, `isPulsing` (в 3D не используется), `sheetBreakpoint`, `hasDirectory`, `directoryPosition`, `directoryView`, `directoryGroupBy`, `directoryScope`, `hasSearch`, `search` и `filters` (v-model), `hasFilters`, `hasLegend` и `hasFullscreen` (работают только в 2D-виде), `hasDeepLinking`, `deepLinkParam`, `hasRoutes`, `route` (v-model), `height`, `ariaLabel`. Свои:
+
+| Проп | Тип | По умолчанию | Описание |
+|---|---|---|---|
+| `data` | `ImageMap3DData` | — | JSON карты с необязательными 3D-полями |
+| `view` | `'3d' \| '2d'` | `'3d'` | Вид, `v-model:view`; `2d` — BaseImageMap с теми же данными. Без WebGL — 2D при любом значении |
+| `camera` | `'isometric' \| 'perspective'` | `'isometric'` | Ортографическая изометрия или перспектива |
+| `layerMode` | `'stack' \| 'single'` | `'stack'` | Этажи стопкой (неактивные полупрозрачны) или только активный |
+| `hasOrbit` | `boolean` | `true` | Вращение и наклон мышью и касанием; масштаб и сдвиг работают всегда |
+| `has2dToggle` | `boolean` | `false` | Переключатель «3D / 2D» над картой |
+| `configureLoader` | `(loader: GLTFLoader) => void` | — | Настроить загрузчик моделей: DRACO, KTX2, meshopt приложения |
+| `rendererFactory` | `(canvas) => ImageMap3DRenderer` | `WebGLRenderer` | Свой рендерер; ошибка внутри — 2D и `fallback('error')` |
+| `variant`, `sizeScale`, `color` | | `default`, 100 | Оформление области, как у BaseImageMap |
+| `customClass` | объект | — | Части `root`, `views`, `toolbar`, `layers`, `camera`, `viewport`, `canvas`, `point`, `tooltip`, `popup`, `directory`, `filters`, `route`, `status` |
+
+**События.** `update:view`, `update:layer`, `update:active`, `update:search`, `update:filters`, `update:route`, `select(object)`, `hover(object | null)`, `layer-change(id)`, `route-change(result | null)`, `fallback(reason)` — `unsupported` (нет WebGL) или `error` (рендерер не создался, модель не загрузилась). В 2D-виде `select` и `hover` шлёт BaseImageMap, `layer-change` и `route-change` — только 3D-модель (без дублей).
+
+**Слоты** — как у BaseImageMap: `tooltip` (`{ object, group, hours }` — карточка у объекта), `popup` (`{ object, group, hours, close }` — окно объекта), `point` (`{ object, group, isActive }` — метка над сценой), `directory-item`, `directory-empty`.
+
+**Методы через `ref`** (`BaseImageMap3DExpose`): `invalidate()` — перерисовать сцену в ближайшем кадре; `setView(view)`; `setLayer(id)`; `resetCamera()`; `rotate(degrees)`; `zoomIn()`, `zoomOut()` (×1,5, пределы 0,5–8×); `zoomToObject(id)` — этаж объекта и камера на нём; `clearFilters()`; `showRoute(from, to)`, `clearRoute()`. Метода `resetZoom` нет — `resetCamera`.
+
+**Экспорт входа `/map3d`**: `BaseImageMap3D`; константы `IMAGE_MAP_3D_VIEWS`, `IMAGE_MAP_3D_CAMERAS`, `IMAGE_MAP_3D_LAYER_MODES`, `IMAGE_MAP_3D_FALLBACK_REASONS`; типы `BaseImageMap3DProps`, `BaseImageMap3DEmits`, `BaseImageMap3DSlots`, `BaseImageMap3DExpose`, `ImageMap3DView`, `ImageMap3DCamera`, `ImageMap3DLayerMode`, `ImageMap3DFallbackReason`, `ImageMap3DRenderer`, `ImageMap3DRendererFactory`, `ImageMap3DData`, `ImageMap3DLayer`, `ImageMap3DObject`, `ImageMap3DObjectFields`, `ImageMapLayerModel`, `ImageMapScene3D`.
+
+**Доступность.** Область карты — одна точка Tab: стрелки — к соседнему объекту по экрану, Home/End, Enter/Space — открыть, Escape, PageUp/PageDown — этажи, Shift + стрелки — поворот и наклон, `+`/`-`/`0` — масштаб и исходный вид; объект и этаж объявляет `aria-live`. Объекты по отдельности не фокусируются — основной путь для скринридера каталог (`hasDirectory`) или 2D-вид (`has2dToggle`).

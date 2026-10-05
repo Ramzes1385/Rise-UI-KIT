@@ -2135,3 +2135,14 @@ API кита не меняется. В Storybook добавлены пример
 - **Цвета сцены**: `transparent` и недопустимый CSS-цвет в стилях объектов дают запасной серый (`#808080`), а не чёрный или цвет текста.
 - **`zoomToObject(id)` во время перехода камеры** ведёт от конечного положения текущего перехода, как кнопки.
 - **Словарь `imageMap3d`** (ru, en): новые `MODEL_NODE_SHARED`, `MODEL_LOAD_FAILED`; `KEYBOARD_HINT` называет «Ctrl или ⌘ и колесо мыши».
+
+## BaseImageMap3D (сводно, части 1–4)
+
+Одним местом: что 3D-карта меняет для приложения. Подробности по частям — разделы выше «BaseImageMap3D (часть 1)», «(часть 2)», «(часть 3)», «(правки по проверке части 2)»; справочник — docs/reference/MAP3D.md и COMPONENTS.md, «BaseImageMap3D».
+
+- **Только добавления.** Основной вход, `/components`, плагин и BaseImageMap не меняют API; приложениям без 3D-карты делать ничего не нужно, `three` они не ставят.
+- **Новый вход `@ramzes1385/rise-ui-kit/map3d`** — `BaseImageMap3D`, константы `IMAGE_MAP_3D_*` и типы `ImageMap3D*` (часть 1). `three` `>=0.180.0 <0.200.0` — optional peer; без него импорт `/map3d` не собирается (ошибка разрешения `three`), основной вход собирается.
+- **Данные** — `ImageMapData` плюс необязательные `layer.elevation`, `layer.model` (GLB: `url`, `scale`, `position`, `rotationY`), `object.height3d`, `object.meshName`, `scene3d` (`floorGap`, `floorThickness`, `objectHeight`); `IMAGE_MAP_DATA_VERSION` = 1 (часть 1). Неверные поля игнорируются с предупреждением в dev.
+- **Сцена и камера** — пол с картинкой плана, выдавленные объекты, этаж из GLB, `camera`, `layerMode`, `hasOrbit`, `configureLoader`, кнопки и клавиши камеры, expose `setLayer`, `resetCamera`, `rotate`, `zoomIn`, `zoomOut`, `zoomToObject` (часть 2).
+- **Взаимодействие** — выбор и наведение, карточка, метки `point`, каталог и фильтры, клавиатура и `aria-live`, маршруты трубкой, `has2dToggle`, expose `clearFilters`, `showRoute`, `clearRoute`; `view="2d"`, выбранный приложением, больше не шлёт `fallback` (часть 3).
+- **Редактор и документы** (часть 4): справочник входа docs/reference/MAP3D.md, раздел README «3D-карта этажей», CHANGES_FOR_APPS; поля 3D в BaseImageMapEditor — раздел «BaseImageMap3D (часть 4)» ниже.

@@ -395,7 +395,22 @@ const size = utils.formatFileSize(1024) // то же, что formatFileSize(1024
 
 Видеоплеер `BaseMediaPlayer` и его типы — только из подпути `@ramzes1385/rise-ui-kit/media`: в корень пакета и в плагин он не входит, поэтому приложения без плеера его код не загружают.
 
-Подпути из `package.json#exports`: `/components`, `/composables`, `/utils`, `/icons` (константы спрайта и `createIconPlugin`), `/media` (видеоплеер), `/styles` (`/styles.css`), `/icons.svg`.
+Подпути из `package.json#exports`: `/components`, `/composables`, `/utils`, `/icons` (константы спрайта и `createIconPlugin`), `/media` (видеоплеер), `/map3d` (3D-карта этажей), `/styles` (`/styles.css`), `/icons.svg`.
+
+### 3D-карта этажей
+
+3D-карта `BaseImageMap3D` (этажи стопкой, модели GLB, камера, выбор, каталог и маршруты на three.js) — только из подпути `@ramzes1385/rise-ui-kit/map3d`, как плеер из `/media`. Ей нужен `three` — необязательная peer-зависимость, которую ставит только приложение с 3D-картой:
+
+```bash
+npm i three
+npm i -D @types/three
+```
+
+```ts
+import { BaseImageMap3D } from '@ramzes1385/rise-ui-kit/map3d'
+```
+
+Без `three` основной вход работает как прежде, а импорт `/map3d` не соберётся. Данные — тот же JSON, что у `BaseImageMap` и `BaseImageMapEditor`, плюс необязательные 3D-поля; без WebGL карта сама показывает 2D-план. Подробно — [docs/reference/MAP3D.md](docs/reference/MAP3D.md).
 
 Не рекомендуется импортировать внутренние файлы из `dist` напрямую:
 
@@ -420,6 +435,7 @@ import { BaseButton } from '@ramzes1385/rise-ui-kit'
 | [Компоненты](docs/reference/COMPONENTS.md) | Справочник: назначение, основные props и события, примеры |
 | [Composables](docs/reference/COMPOSABLES.md) | `useDebounce`, `useClickOutside`, `useEscapeKey`, `useFocusTrap`, `useHotkeys` и другие |
 | [Utils](docs/reference/UTILS.md) | Даты, файлы, цвета, субтитры, медиа, проверка ссылок, координаты `position: fixed` |
+| [3D-карта этажей](docs/reference/MAP3D.md) | Вход `/map3d`: установка `three`, 3D-поля данных, модели GLB, камера, клавиатура, фолбэк на 2D |
 | [SEO-разметка](docs/reference/SEO.md) | Проп `seo`: JSON-LD schema.org у компонентов и проверка в Google Rich Results и Яндекс Вебмастере |
 | [Переход на 2.0](docs/v2/MIGRATION.md) | Что изменилось для приложения и что сделать при обновлении с 1.x |
 | [Что заметит приложение после редизайна](docs/design/CHANGES_FOR_APPS.md) | Значения по умолчанию, DOM, доступность, токены |
