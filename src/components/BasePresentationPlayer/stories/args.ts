@@ -16,6 +16,7 @@ export const args = {
 	'onSlide-complete': fn(),
 	onProgress: fn(),
 	onComplete: fn(),
+	'onSpeech-error': fn(),
 	variant: 'default',
 	sizeScale: 100,
 } satisfies Meta<typeof BasePresentationPlayer>['args']

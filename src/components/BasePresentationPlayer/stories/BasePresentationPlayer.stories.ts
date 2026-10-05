@@ -26,5 +26,7 @@ export const Resume = cases.Resume
 export const Captions = cases.Captions
 export const SlideList = cases.SlideList
 export const Speech = cases.Speech
+export const SpeechService = cases.SpeechService
+export const SpeechYandex = cases.SpeechYandex
 export const Quiz = cases.Quiz
 export const Loading = cases.Loading

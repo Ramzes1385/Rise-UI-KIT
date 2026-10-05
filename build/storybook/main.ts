@@ -10,6 +10,7 @@ import { createScssOptions } from '../config/css.ts'
 import { createSpritePlugin } from '../plugins/sprite.ts'
 import { createSlotDocsPlugin } from '../plugins/slotDocs.ts'
 import { createVueDocgenPlugin, STORYBOOK_DOCGEN_PLUGIN_NAME } from '../plugins/vueDocgen.ts'
+import { createTtsPlugin } from './tts.ts'
 
 const PROJECT_ROOT = resolve(process.cwd())
 
@@ -36,7 +37,7 @@ const config: StorybookConfig = {
 		disableTelemetry: true,
 	},
 
-	viteFinal(config) {
+	viteFinal(config, { configType }) {
 		const merged = mergeConfig(config, {
 			root: PROJECT_ROOT,
 			server: {
@@ -63,6 +64,8 @@ const config: StorybookConfig = {
 			createSlotDocsPlugin(),
 			svgLoader({ defaultImport: 'component', svgo: true }),
 			createSpritePlugin(),
+			// Озвучка SpeechKit для истории SpeechYandex — только dev-сервер: ключ из .env.local не должен попасть в сборку
+			...(configType === 'DEVELOPMENT' ? [createTtsPlugin(PROJECT_ROOT)] : []),
 		]
 		return merged
 	},

@@ -10,7 +10,7 @@ import type { PresentationSlide } from '../types/BasePresentationPlayer.types'
 
 export const PRESENTATION_VOICE = presentationVoice
 
-const SLIDE_VOICES = [slideVoice1, slideVoice2, slideVoice3] as const
+export const SLIDE_VOICES = [slideVoice1, slideVoice2, slideVoice3] as const
 
 const SLIDE_CAPTIONS = [slideCaptions1, slideCaptions2, slideCaptions3] as const
 
@@ -54,6 +54,6 @@ export function notedSlides(extra: Partial<PresentationSlide> = {}): Presentatio
 	return voicedSlides(extra).map((slide, index) => (SLIDE_NOTES[index] ? { ...slide, notes: SLIDE_NOTES[index] } : slide))
 }
 
-export function spokenSlides(duration: number): PresentationSlide[] {
+export function spokenSlides(duration?: number): PresentationSlide[] {
 	return SLIDES.map(({ hue, ...slide }, index) => ({ ...slide, image: slideImage(hue), speech: SLIDE_SPEECH[index], duration }))
 }
