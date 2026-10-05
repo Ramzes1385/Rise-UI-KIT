@@ -1,7 +1,7 @@
 /** Глобальный prelude инжектится во все стили компонентов, кроме самих модулей-источников — иначе Sass-ошибка «Module loop». */
 
 import type { CSSOptions } from 'vite'
-import { isProductionMode } from '../utils/helpers'
+import { isProductionMode } from '../utils/helpers.ts'
 
 const GLOBAL_SCSS_PRELUDE = ['@use "@styles/variables" as *;', '@use "@styles/mixins" as *;', '@use "@styles/functions" as *;', ''].join(
 	'\n',

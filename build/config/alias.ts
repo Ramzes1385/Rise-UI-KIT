@@ -1,7 +1,7 @@
 /** TypeScript читает свою копию алиасов в paths tsconfig.app.json — держать в соответствии. */
 
 import type { AliasOptions } from 'vite'
-import { resolveFromRoot } from '../utils/helpers'
+import { resolveFromRoot } from '../utils/helpers.ts'
 
 const SOURCE_DIR = 'src'
 
