@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { FieldInputAttrs } from '@composables/form/useFormContext'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
@@ -13,6 +14,15 @@ export const INPUT_TAGS_VARIANTS = [
 	'filled',
 	'underline',
 ] as const satisfies readonly InputVariant[]
+
+/**
+ * Части поля тегов для пропа `ui` (БЭМ-элементы `.base-input-tags__<часть>`, `root` — обёртка компонента): list — список
+ * тегов, tag — тег, text — текст тега, remove — кнопка удаления, status — скрытое объявление для чтения с экрана.
+ * Рамку и строку ввода рисует BaseInput: их классы — `customClass.field` и токены `--rise-input-*`.
+ */
+export const INPUT_TAGS_PARTS = ['list', 'tag', 'text', 'remove', 'status'] as const
+
+export type BaseInputTagsPart = (typeof INPUT_TAGS_PARTS)[number]
 
 export interface BaseInputTagsProps extends BaseComponentProps<InputVariant, 'root' | 'field' | 'list' | 'tag' | 'remove'> {
 	/** Теги (v-model) */
@@ -43,6 +53,14 @@ export interface BaseInputTagsProps extends BaseComponentProps<InputVariant, 'ro
 	ariaLabel?: string
 	/** Атрибуты нативного поля (`name`, `data-*`, свой `id`) */
 	inputAttrs?: FieldInputAttrs
+	/**
+	 * Классы частей поля тегов (`root`, `list`, `tag`, `text`, `remove`, `status` — см. `INPUT_TAGS_PARTS`) — добавляются
+	 * к классам кита. Глобально — `defaults.BaseInputTags.ui` плагина, классы склеиваются.
+	 *
+	 * @example
+	 * <BaseInputTags :ui="{ tag: 'font-mono', remove: 'opacity-70' }" />
+	 */
+	ui?: UiProp<BaseInputTagsPart>
 }
 
 export interface BaseInputTagsEmits {

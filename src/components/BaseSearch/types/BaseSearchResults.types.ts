@@ -1,4 +1,5 @@
-import type { SearchResult } from './BaseSearch.types'
+import type { UiClassFn } from '@composables/base/useUi'
+import type { BaseSearchPart, SearchResult } from './BaseSearch.types'
 
 export interface BaseSearchResultsProps {
 	visibleResults: SearchResult[]
@@ -11,6 +12,12 @@ export interface BaseSearchResultsProps {
 	listboxId?: string
 	/** Имя списка результатов для скринридера */
 	listboxLabel?: string
+	/** Классы частей поиска (`ui` компонента BaseSearch) */
+	ui: UiClassFn<BaseSearchPart>
+	/** Движение выключено (пресет `none`, «уменьшить движение»): смена состояний без перехода */
+	isMotionReduced?: boolean
+	/** Пресет движения области поля (`data-rise-motion`) для панели в слое страницы — только если он задан у предка поля */
+	motionAttrs?: Record<string, string>
 }
 
 export interface BaseSearchResultsEmits {

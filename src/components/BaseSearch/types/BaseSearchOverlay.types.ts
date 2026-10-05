@@ -1,5 +1,6 @@
-import type { SearchResult, SearchVariant } from './BaseSearch.types'
+import type { UiClassFn } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
+import type { BaseSearchPart, SearchResult, SearchVariant } from './BaseSearch.types'
 
 export interface BaseSearchOverlayProps extends BaseComponentProps<SearchVariant, 'root'> {
 	panel: 'modal' | 'sidebar'
@@ -23,6 +24,8 @@ export interface BaseSearchOverlayProps extends BaseComponentProps<SearchVariant
 	comboboxAttributes?: Record<string, string | undefined>
 	/** Статус для скринридера: сколько найдено */
 	resultsStatus?: string
+	/** Классы частей поиска (`ui` компонента BaseSearch) */
+	ui: UiClassFn<BaseSearchPart>
 }
 
 export interface BaseSearchOverlayEmits {

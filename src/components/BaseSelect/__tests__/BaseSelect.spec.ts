@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/vitest'
+import { mount } from '@vue/test-utils'
 import BaseSelect from '../ui/BaseSelect.vue'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import type { BaseSelectOption } from '../types/BaseSelect.types'
@@ -352,6 +353,22 @@ describe('BaseSelect unit', () => {
 			expect(container.querySelector('.base-select__label')).toHaveClass('custom-label')
 			expect(container.querySelector('.base-select__trigger')).toHaveClass('custom-trigger')
 			expect(container.querySelector('.base-select__error-text')).toHaveClass('custom-error')
+		})
+	})
+
+	describe('defineExpose', () => {
+		it('focus и blur управляют фокусом триггера', () => {
+			const wrapper = mount(BaseSelect, {
+				props: { modelValue: '', options: OPTIONS, ariaLabel: 'Материал' },
+				attachTo: document.body,
+			})
+			const trigger = wrapper.get('.base-select__trigger').element
+
+			wrapper.vm.focus()
+			expect(trigger).toHaveFocus()
+			wrapper.vm.blur()
+			expect(trigger).not.toHaveFocus()
+			wrapper.unmount()
 		})
 	})
 })

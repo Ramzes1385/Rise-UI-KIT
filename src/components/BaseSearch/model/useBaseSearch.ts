@@ -1,6 +1,8 @@
 import type { Ref } from 'vue'
 import { computed, ref, useId } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
+import { useSearchMotion } from './useSearchMotion'
 import { getSearchOptionId } from './searchOptionId'
 import { getLocale, pluralize } from '@/locales/state'
 import type BaseSearchInput from '../ui/BaseSearchInput.vue'
@@ -127,9 +129,13 @@ export function useBaseSearch(props: SearchProps, emit: BaseSearchEmits) {
 	const inputs = useSearchInputs(props)
 	const resolvedPlaceholder = computed<string>(() => props.placeholder ?? UI_TEXT.SEARCH_PLACEHOLDER)
 	const search = useSearch(props, emit, inputs)
+	const ui = useUi(props, 'base-search')
 
 	return {
 		...standard,
+		ui,
+		dropdownClass: computed(() => ({ root: standard.classes.value.dropdown, panel: ui('panel') })),
+		...useSearchMotion(rootRef),
 		rootRef,
 		baseInputRef: inputs.baseInputRef,
 		overlayRef: inputs.overlayRef,

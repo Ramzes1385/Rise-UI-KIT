@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
@@ -6,6 +7,50 @@ export const SEARCH_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft',
 export type SearchVariant = (typeof SEARCH_VARIANTS)[number]
 
 export type SearchMode = 'default' | 'modal' | 'sidebar'
+
+/**
+ * Части поиска для пропа `ui` (БЭМ-элементы `.base-search__<часть>`, `root` — обёртка компонента): trigger — поле на
+ * странице, field — поле ввода (BaseInput), icon — значок поиска, actions — правая группа поля, loading — индикатор
+ * загрузки, clear — кнопка очистки, live — скрытый статус для экранного диктора, panel — выпадающая панель результатов
+ * (режим `default`), modal-overlay, modal, modal-header, modal-close, modal-results — подложка, окно, шапка, кнопка
+ * закрытия и область результатов режима `modal`; sidebar-overlay, sidebar, sidebar-header, sidebar-close,
+ * sidebar-results — то же для режима `sidebar`; status — строка «Загрузка…», listbox — список результатов,
+ * result — пункт, result-image, result-icon, result-content, result-title, result-desc, result-category — части
+ * пункта, match — совпадение с запросом, empty — «Ничего не найдено».
+ */
+export const SEARCH_PARTS = [
+	'trigger',
+	'field',
+	'icon',
+	'actions',
+	'loading',
+	'clear',
+	'live',
+	'panel',
+	'modal-overlay',
+	'modal',
+	'modal-header',
+	'modal-close',
+	'modal-results',
+	'sidebar-overlay',
+	'sidebar',
+	'sidebar-header',
+	'sidebar-close',
+	'sidebar-results',
+	'status',
+	'listbox',
+	'result',
+	'result-image',
+	'result-icon',
+	'result-content',
+	'result-title',
+	'result-desc',
+	'result-category',
+	'match',
+	'empty',
+] as const
+
+export type BaseSearchPart = (typeof SEARCH_PARTS)[number]
 
 export interface SearchResult {
 	/** Идентификатор */
@@ -87,6 +132,15 @@ export interface BaseSearchProps extends BaseComponentProps<
 	isDisabled?: boolean
 	/** Текст ошибки */
 	error?: string
+	/**
+	 * Классы частей поиска (`root`, `field`, `panel`, `modal`, `result`, `empty`… — см. `SEARCH_PARTS`) — добавляются
+	 * к классам кита. Глобально — `defaults.BaseSearch.ui` плагина, классы склеиваются. Рамку и фон поля задают токены
+	 * `--rise-input-*` и `ui` у BaseInput.
+	 *
+	 * @example
+	 * <BaseSearch :ui="{ panel: 'shadow-xl', result: 'rounded-lg' }" />
+	 */
+	ui?: UiProp<BaseSearchPart>
 }
 
 export interface BaseSearchEmits {

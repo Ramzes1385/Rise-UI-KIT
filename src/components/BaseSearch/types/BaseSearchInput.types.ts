@@ -1,4 +1,5 @@
-import type { SearchVariant } from './BaseSearch.types'
+import type { UiClassFn } from '@composables/base/useUi'
+import type { BaseSearchPart, SearchVariant } from './BaseSearch.types'
 
 export interface BaseSearchInputProps {
 	modelValue: string
@@ -14,6 +15,8 @@ export interface BaseSearchInputProps {
 	classes: Record<string, string | undefined>
 	/** ARIA-атрибуты поля как combobox (role, aria-expanded, aria-controls, aria-activedescendant): ставятся на <input> */
 	comboboxAttributes?: Record<string, string | undefined>
+	/** Классы частей поиска (`ui` компонента BaseSearch) */
+	ui: UiClassFn<BaseSearchPart>
 }
 
 export interface BaseSearchInputEmits {

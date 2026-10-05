@@ -76,6 +76,17 @@
 | `--rise-bank-card-shadow` | корень | shadow | — | `var(--rise-shadow-md)` |
 | `--rise-bank-card-text` | корень | text | — | `var(--rise-color-neutral-50)` |
 | `--rise-bank-card-width` | корень | width | — | `320px` |
+## BaseAutocomplete
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-autocomplete-empty-text` | empty | text | — | `var(--rise-text-muted)` |
+| `--rise-autocomplete-list-gap` | list | gap | — | `1px` |
+| `--rise-autocomplete-option-bg-hover` | option | bg | hover | `var(--rise-bg-elevated)` |
+| `--rise-autocomplete-option-bg-selected` | option | bg | selected | `transparent` |
+| `--rise-autocomplete-option-padding-x` | option | padding-x | — | `8px` |
+| `--rise-autocomplete-option-padding-y` | option | padding-y | — | `6px` |
+| `--rise-autocomplete-option-text` | option | text | — | `var(--rise-text)` |
 
 ## BaseButton
 
@@ -358,6 +369,36 @@
 | `--rise-input-number-button-text-hover` | button | text | hover | `var(--rise-text-highlighted)` |
 | `--rise-input-number-button-width` | button | width | — | `32px` |
 
+## BaseInputTags
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-input-tags-gap` | корень | gap | — | `4px` |
+| `--rise-input-tags-remove-bg-hover` | remove | bg | hover | `var(--rise-bg-accented)` |
+| `--rise-input-tags-tag-bg` | tag | bg | — | `var(--rise-bg-elevated)` |
+| `--rise-input-tags-tag-border` | tag | border | — | `var(--rise-border)` |
+| `--rise-input-tags-tag-height` | tag | height | — | `22px` |
+| `--rise-input-tags-tag-padding-x` | tag | padding-x | — | `8px` |
+| `--rise-input-tags-tag-radius` | tag | radius | — | `var(--rise-radius-sm)` |
+| `--rise-input-tags-tag-text` | tag | text | — | `var(--rise-text-highlighted)` |
+
+## BaseMention
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-mention-bg` | корень | bg | — | `var(--rise-input-bg, var(--rise-bg))` |
+| `--rise-mention-border` | корень | border | — | `var(--rise-input-border, var(--rise-border-accented))` |
+| `--rise-mention-border-focus` | корень | border | focus | `var(--rise-input-border-focus, var(--rise-primary))` |
+| `--rise-mention-option-bg-hover` | option | bg | hover | `var(--rise-bg-elevated)` |
+| `--rise-mention-option-text` | option | text | — | `var(--rise-text)` |
+| `--rise-mention-padding-x` | корень | padding-x | — | `var(--rise-control-padding-x)` |
+| `--rise-mention-padding-y` | корень | padding-y | — | `var(--rise-control-padding-y)` |
+| `--rise-mention-popup-bg` | popup | bg | — | `var(--rise-bg)` |
+| `--rise-mention-popup-radius` | popup | radius | — | `var(--rise-radius-md)` |
+| `--rise-mention-popup-shadow` | popup | shadow | — | `var(--rise-shadow-lg)` |
+| `--rise-mention-radius` | корень | radius | — | `var(--rise-input-radius, var(--rise-control-radius))` |
+| `--rise-mention-text` | корень | text | — | `var(--rise-text-highlighted)` |
+
 ## BasePhoneInput
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
@@ -389,6 +430,42 @@
 | `--rise-pin-radius` | корень | radius | — | `var(--rise-input-radius, var(--rise-control-radius))` |
 | `--rise-pin-text` | корень | text | — | `var(--rise-text-highlighted)` |
 | `--rise-pin-width` | корень | width | — | `32px` |
+
+## BaseSearch
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-search-icon-text` | icon | text | — | `var(--rise-text-muted)` |
+| `--rise-search-match-bg` | match | bg | — | `var(--rise-primary-soft)` |
+| `--rise-search-overlay-bg` | overlay | bg | — | `var(--rise-overlay)` |
+| `--rise-search-panel-bg` | panel | bg | — | `var(--rise-bg)` |
+| `--rise-search-panel-border` | panel | border | — | `var(--rise-border)` |
+| `--rise-search-panel-padding` | panel | padding | — | `4px` |
+| `--rise-search-panel-radius` | panel | radius | — | `var(--rise-radius-lg)` |
+| `--rise-search-panel-shadow` | panel | shadow | — | `var(--rise-shadow-xl)` |
+| `--rise-search-result-bg-hover` | result | bg | hover | `var(--rise-bg-elevated)` |
+| `--rise-search-result-bg-selected` | result | bg | selected | `var(--rise-bg-elevated)` |
+| `--rise-search-result-gap` | result | gap | — | `8px` |
+| `--rise-search-result-text` | result | text | — | `var(--rise-text)` |
+
+## BaseSelect
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-select-bg` | корень | bg | — | `var(--rise-input-bg, var(--rise-bg))` |
+| `--rise-select-border` | корень | border | — | `var(--rise-input-border, var(--rise-border-accented))` |
+| `--rise-select-border-focus` | корень | border | focus | `var(--rise-input-border-focus, var(--rise-primary))` |
+| `--rise-select-option-bg-hover` | option | bg | hover | `var(--rise-bg-elevated)` |
+| `--rise-select-option-bg-selected` | option | bg | selected | `transparent` |
+| `--rise-select-option-padding-x` | option | padding-x | — | `8px` |
+| `--rise-select-option-padding-y` | option | padding-y | — | `6px` |
+| `--rise-select-option-text-selected` | option | text | selected | `var(--rise-text-highlighted)` |
+| `--rise-select-padding-x` | корень | padding-x | — | `var(--rise-control-padding-x)` |
+| `--rise-select-padding-y` | корень | padding-y | — | `var(--rise-control-padding-y)` |
+| `--rise-select-radius` | корень | radius | — | `var(--rise-input-radius, var(--rise-control-radius))` |
+| `--rise-select-tag-bg` | tag | bg | — | `var(--rise-primary-soft)` |
+| `--rise-select-tag-text` | tag | text | — | `var(--rise-primary-text)` |
+| `--rise-select-text` | корень | text | — | `var(--rise-text-highlighted)` |
 
 ## BaseTextarea
 

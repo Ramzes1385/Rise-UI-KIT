@@ -1,4 +1,5 @@
-import type { BaseSelectOption } from './BaseSelect.types'
+import type { UiClassFn } from '@composables/base/useUi'
+import type { BaseSelectOption, BaseSelectPart } from './BaseSelect.types'
 
 export interface BaseSelectDropdownProps {
 	/** Отфильтрованные опции */
@@ -11,6 +12,10 @@ export interface BaseSelectDropdownProps {
 	sizeScale: number
 	/** Проверка, выбрана ли опция */
 	isSelected: (value: string | number) => boolean
+	/** Классы частей из пропа `ui` селекта: БЭМ-класс кита и классы приложения */
+	partClass: UiClassFn<BaseSelectPart>
+	/** Движение выключено (пресет `none`, «уменьшить движение»): галочка появляется сразу */
+	isMotionReduced: boolean
 	/** Объект CSS-классов для кастомизации элементов дропдауна */
 	classes: Record<string, string | undefined>
 	/** CSS-стили масштабирования */

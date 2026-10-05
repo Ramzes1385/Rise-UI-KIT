@@ -16,10 +16,10 @@
 	&__options {
 		display: flex;
 		flex-direction: column;
-		gap: 1px;
+		gap: ct(autocomplete, list-gap, 1px);
 		max-height: sz(240px);
 		margin: 0;
-		padding: sz(4px);
+		padding: space(4px);
 		overflow-y: auto;
 		list-style: none;
 		@include scrollbar-thin;
@@ -34,13 +34,20 @@
 		flex-direction: column;
 		align-items: flex-start;
 		gap: 0;
+		padding: sz(ct(autocomplete, option-padding-y, 6px)) sz(ct(autocomplete, option-padding-x, 8px));
+		color: ct(autocomplete, option-text, var(--rise-text));
 
-		&--active {
-			background-color: var(--rise-bg-elevated);
-			color: var(--rise-text-highlighted);
+		@include hover {
+			background-color: ct(autocomplete, option-bg-hover, var(--rise-bg-elevated));
 		}
 
 		&--selected {
+			background-color: ct(autocomplete, option-bg-selected, transparent);
+			color: var(--rise-text-highlighted);
+		}
+
+		&--active {
+			background-color: ct(autocomplete, option-bg-hover, var(--rise-bg-elevated));
 			color: var(--rise-text-highlighted);
 		}
 
@@ -61,11 +68,14 @@
 	}
 
 	&__empty {
-		padding: sz(8px 12px);
-		color: var(--rise-text-muted);
+		padding: space(8px 12px);
+		color: ct(autocomplete, empty-text, var(--rise-text-muted));
 	}
 
 	&__status {
 		@include visually-hidden;
 	}
 }
+
+@include enter-fade(base-autocomplete-state);
+@include enter-fade(base-autocomplete-option);

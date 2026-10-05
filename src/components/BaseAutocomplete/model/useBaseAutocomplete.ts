@@ -1,11 +1,14 @@
 import type { ComputedRef } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
 import { computed, ref, useId, watch } from 'vue'
 import { getLocale, pluralize } from '@/locales/state'
 import type { BaseInput } from '@components/BaseInput'
+import { useMotion } from '@composables/app/useMotion'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import { useFormDisabled } from '@composables/form/useFormContext'
-import type { AutocompleteOption, AutocompleteProps, BaseAutocompleteEmits } from '../types/BaseAutocomplete.types'
+import { AUTOCOMPLETE_INPUT_PARTS } from '../types/BaseAutocomplete.types'
+import type { AutocompleteOption, AutocompleteProps, BaseAutocompleteEmits, BaseAutocompletePart } from '../types/BaseAutocomplete.types'
 
 function defaultFilter(option: AutocompleteOption, text: string): boolean {
 	return option.label.toLocaleLowerCase(getLocale().intl).includes(text.toLocaleLowerCase(getLocale().intl))
@@ -240,6 +243,23 @@ function useAutocompleteView(props: AutocompleteProps, ctx: ReturnType<typeof us
 	}
 }
 
+function useAutocompleteUi(props: AutocompleteProps, panelClass: () => string | undefined) {
+	const ui = useUi(props, 'base-autocomplete')
+	const inner = (part: string): string =>
+		ui(part as BaseAutocompletePart)
+			.slice(`base-autocomplete__${part}`.length)
+			.trim()
+	const rootRef = ref<HTMLElement | null>(null)
+	return {
+		ui,
+		rootRef,
+		isMotionReduced: useMotion(rootRef).isReduced,
+		inputUi: computed(() => Object.fromEntries(AUTOCOMPLETE_INPUT_PARTS.map(part => [part, inner(part)]))),
+		panelClass: computed(() => [panelClass(), inner('panel')].filter(Boolean).join(' ') || undefined),
+		leaveAtOnce: (_el: Element, done: () => void): void => done(),
+	}
+}
+
 export function useBaseAutocomplete(props: AutocompleteProps, emit: BaseAutocompleteEmits) {
 	const { classes } = useCustomClass({ getClass: () => props.customClass, elementKeys: ['root', 'field', 'panel', 'option', 'empty'] })
 	const inputRef = ref<InstanceType<typeof BaseInput> | null>(null)
@@ -252,6 +272,7 @@ export function useBaseAutocomplete(props: AutocompleteProps, emit: BaseAutocomp
 	)
 
 	return {
+		...useAutocompleteUi(props, () => classes.value.panel),
 		classes,
 		inputRef,
 		listboxId,

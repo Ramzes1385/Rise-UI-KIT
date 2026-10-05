@@ -1,3 +1,13 @@
+@include enter-scale(base-input-tags-tag);
+
+.base-input-tags-tag-move {
+	transition: transform var(--rise-duration) var(--rise-ease-out);
+}
+
+.base-input-tags-tag-leave-active {
+	position: absolute;
+}
+
 .base-input-tags {
 	display: block;
 	width: 100%;
@@ -5,7 +15,7 @@
 	&--has-tags .base-input__wrapper {
 		flex-wrap: wrap;
 		align-items: center;
-		gap: sz(4px);
+		gap: sz(ct(input-tags, gap, 4px));
 		padding-left: sz(4px);
 	}
 
@@ -15,9 +25,10 @@
 	}
 
 	&__list {
+		position: relative;
 		display: flex;
 		flex-wrap: wrap;
-		gap: sz(4px);
+		gap: sz(ct(input-tags, gap, 4px));
 		max-width: 100%;
 		margin: 0;
 		padding: sz(4px) 0;
@@ -29,12 +40,12 @@
 		align-items: center;
 		gap: sz(2px);
 		max-width: 100%;
-		height: sz(22px);
-		padding: 0 sz(2px) 0 sz(8px);
-		border: 1px solid var(--rise-border);
-		border-radius: sz(var(--rise-radius-sm));
-		background-color: var(--rise-bg-elevated);
-		color: var(--rise-text-highlighted);
+		height: sz(ct(input-tags, tag-height, 22px));
+		padding: 0 sz(2px) 0 sz(ct(input-tags, tag-padding-x, 8px));
+		border: 1px solid ct(input-tags, tag-border, var(--rise-border));
+		border-radius: sz(ct(input-tags, tag-radius, var(--rise-radius-sm)));
+		background-color: ct(input-tags, tag-bg, var(--rise-bg-elevated));
+		color: ct(input-tags, tag-text, var(--rise-text-highlighted));
 		@include text-size(xs);
 	}
 
@@ -59,7 +70,7 @@
 		@include focus-ring(1px);
 
 		@include hover {
-			background-color: var(--rise-bg-accented);
+			background-color: ct(input-tags, remove-bg-hover, var(--rise-bg-accented));
 			color: var(--rise-text-highlighted);
 		}
 	}

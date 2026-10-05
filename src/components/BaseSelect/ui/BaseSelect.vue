@@ -1,7 +1,7 @@
 <template>
 	<BaseDropdown
 		v-model:is-open="isOpen"
-		class="base-select__dropdown"
+		:class="ui('dropdown')"
 		position="bottom-start"
 		:match-width="true"
 		:size-scale="sizeScale"
@@ -9,8 +9,8 @@
 		:custom-class="classes.dropdown"
 		@close="handleClose">
 		<div
-			class="base-select"
 			:class="[
+				ui('root'),
 				variantClass,
 				{
 					'base-select--open': isOpen,
@@ -28,17 +28,16 @@
 				tag="span"
 				:label="label"
 				:is-required="isRequired"
-				class-name="base-select__label"
+				:class-name="ui('label')"
 				:custom-class="classes.label"
-				required-class-name="base-select__required"
+				:required-class-name="ui('required')"
 				:required-custom-class="classes.required"
 				:size-scale="sizeScale"
 				@click="focusTrigger" />
 
 			<div
 				ref="selectRef"
-				class="base-select__trigger"
-				:class="classes.trigger"
+				:class="[ui('trigger'), classes.trigger]"
 				role="combobox"
 				:tabindex="isControlDisabled ? undefined : 0"
 				aria-haspopup="listbox"
@@ -50,60 +49,58 @@
 				@click="toggleDropdown"
 				@keydown="handleTriggerKeydown">
 				<slot name="trigger" :is-open="isOpen" :selected-label="selectedLabel" :selected-labels="selectedLabels">
-					<div class="base-select__values" :class="classes.values">
-						<template v-if="hasTags">
-							<slot v-if="$slots.tag" name="tag" :labels="selectedLabels" :items="selectedItems" :remove="removeValue" />
-							<template v-else>
-								<BaseBadge
-									v-for="item in selectedItems"
-									:key="item.value"
-									variant="soft"
-									class="base-select__tag"
-									:custom-class="classes.tag"
-									:size-scale="sizeScale">
-									<BaseText
-										tag="span"
-										class="base-select__tag-text"
-										:custom-class="classes.tagText"
-										:size-scale="sizeScale"
-										>{{ item.label }}</BaseText
-									>
-									<button
-										v-if="!isControlDisabled"
-										type="button"
-										class="base-select__tag-close"
-										:class="classes.tagClose"
-										tabindex="-1"
-										:aria-label="`${UI_TEXT.DELETE} ${item.label}`"
-										@click.stop="removeValue(item.value)">
-										<BaseIcon name="x-mark" :size-scale="calcIconScale('xs', sizeScale)" />
-									</button>
-								</BaseBadge>
-							</template>
-						</template>
-						<template v-else-if="!isMultiple && selectedOption">
+					<div :class="[ui('values'), classes.values]">
+						<slot
+							v-if="hasTags && $slots.tag"
+							name="tag"
+							:labels="selectedLabels"
+							:items="selectedItems"
+							:remove="removeValue" />
+						<TransitionGroup
+							v-else-if="isMultiple"
+							name="base-select-tag"
+							:css="!isMotionReduced"
+							@before-leave="holdLeavingTag">
+							<BaseBadge
+								v-for="item in selectedItems"
+								:key="item.value"
+								variant="soft"
+								:class="ui('tag')"
+								:custom-class="classes.tag"
+								:size-scale="sizeScale">
+								<BaseText tag="span" :class="ui('tag-text')" :custom-class="classes.tagText" :size-scale="sizeScale">{{
+									item.label
+								}}</BaseText>
+								<button
+									v-if="!isControlDisabled"
+									type="button"
+									:class="[ui('tag-close'), classes.tagClose]"
+									tabindex="-1"
+									:aria-label="`${UI_TEXT.DELETE} ${item.label}`"
+									@click.stop="removeValue(item.value)">
+									<BaseIcon name="x-mark" :size-scale="calcIconScale('xs', sizeScale)" />
+								</button>
+							</BaseBadge>
+						</TransitionGroup>
+						<template v-if="!isMultiple && selectedOption">
 							<slot name="selected" :option="selectedOption">
 								<BaseText
 									v-if="selectedOption.icon"
 									tag="span"
-									class="base-select__icon"
+									:class="ui('icon')"
 									:custom-class="classes.icon"
 									:size-scale="sizeScale"
 									>{{ selectedOption.icon }}</BaseText
 								>
-								<BaseText
-									tag="span"
-									class="base-select__value-text"
-									:custom-class="classes.valueText"
-									:size-scale="sizeScale"
-									>{{ selectedLabel }}</BaseText
-								>
+								<BaseText tag="span" :class="ui('value-text')" :custom-class="classes.valueText" :size-scale="sizeScale">{{
+									selectedLabel
+								}}</BaseText>
 							</slot>
 						</template>
 						<BaseText
-							v-else
+							v-else-if="!hasTags"
 							tag="span"
-							class="base-select__placeholder"
+							:class="ui('placeholder')"
 							:custom-class="classes.placeholder"
 							:size-scale="sizeScale"
 							>{{ resolvedPlaceholder }}</BaseText
@@ -111,7 +108,7 @@
 					</div>
 				</slot>
 				<BaseIcon
-					class="base-select__arrow"
+					:class="ui('arrow')"
 					:custom-class="classes.arrow"
 					name="chevron-down"
 					:size-scale="calcIconScale('sm', sizeScale)" />
@@ -120,7 +117,7 @@
 			<FormFieldError
 				:id="errorId"
 				:error="formField.error"
-				class-name="base-select__error-text"
+				:class-name="ui('error-text')"
 				:custom-class="classes.errorText"
 				:size-scale="sizeScale" />
 		</div>
@@ -134,6 +131,8 @@
 				:size-scale="sizeScale"
 				:is-selected="isSelected"
 				:classes="classes"
+				:part-class="ui"
+				:is-motion-reduced="isMotionReduced"
 				:size-scale-style="sizeScaleStyle"
 				:listbox-id="listboxId"
 				:labelledby="triggerLabelledBy"
@@ -229,6 +228,9 @@ const {
 	focusTrigger,
 	handleTriggerKeydown,
 	handleSearchKeydown,
+	ui,
+	isMotionReduced,
+	holdLeavingTag,
 	exposed,
 } = useBaseSelect(props, emit)
 

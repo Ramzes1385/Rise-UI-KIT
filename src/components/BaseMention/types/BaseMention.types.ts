@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /**
@@ -5,6 +6,29 @@ import type { BaseComponentProps } from '@composables/base/useBaseComponent'
  * `outline` — рамка без фона, `ghost` — без рамки и фона
  */
 export const MENTION_VARIANTS = ['default', 'soft', 'outline', 'ghost'] as const
+
+/**
+ * Части поля для пропа `ui` (БЭМ-элементы `.base-mention__<часть>`, `root` — обёртка компонента): label, field — обёртка
+ * поля и попапа, control — `<textarea>`, popup — всплывающий список, list, option, avatar, option-text, option-label,
+ * option-value — `@имя`, option-description, empty — «Никого не найдено», error.
+ */
+export const MENTION_PARTS = [
+	'label',
+	'field',
+	'control',
+	'popup',
+	'list',
+	'option',
+	'avatar',
+	'option-text',
+	'option-label',
+	'option-value',
+	'option-description',
+	'empty',
+	'error',
+] as const
+
+export type BaseMentionPart = (typeof MENTION_PARTS)[number]
 
 /** Кого можно упомянуть: `value` вставляется после символа-триггера (`@anna`), `label` показывается в списке */
 export interface MentionOption {
@@ -46,6 +70,14 @@ export interface BaseMentionProps extends BaseComponentProps<
 	error?: string
 	/** Отключает поле */
 	isDisabled?: boolean
+	/**
+	 * Классы частей поля (`root`, `control`, `popup`, `option`… — см. `MENTION_PARTS`) — добавляются к классам кита.
+	 * Глобально — `defaults.BaseMention.ui` плагина, классы склеиваются.
+	 *
+	 * @example
+	 * <BaseMention :ui="{ control: 'font-mono', popup: 'shadow-xl' }" />
+	 */
+	ui?: UiProp<BaseMentionPart>
 }
 
 /**

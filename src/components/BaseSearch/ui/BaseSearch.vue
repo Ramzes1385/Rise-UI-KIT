@@ -22,6 +22,7 @@
 			:results-status="resultsStatus"
 			:color="color"
 			:custom-class="customClass"
+			:ui="ui"
 			@update:model-value="handleInput"
 			@keydown="handleKeydown"
 			@clear="handleClear"
@@ -52,8 +53,7 @@
 	<div
 		v-else
 		ref="rootRef"
-		class="base-search"
-		:class="[variantClass, { 'base-search--disabled': isDisabled, 'base-search--loading': isLoading }, classes.root]"
+		:class="[ui('root'), variantClass, { 'base-search--disabled': isDisabled, 'base-search--loading': isLoading }, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<BaseDropdown
 			v-model:is-open="isOpen"
@@ -61,7 +61,7 @@
 			:match-width="true"
 			:prevent-mousedown="false"
 			:size-scale="sizeScale"
-			:custom-class="classes.dropdown"
+			:custom-class="dropdownClass"
 			@close="handleClose">
 			<BaseSearchInput
 				ref="baseInputRef"
@@ -76,7 +76,8 @@
 				:is-loading="isLoading"
 				:classes="classes"
 				:combobox-attributes="comboboxAttributes"
-				class="base-search__trigger"
+				:ui="ui"
+				:class="ui('trigger')"
 				@update:model-value="handleInput"
 				@keydown="handleKeydown"
 				@focus="handleFocus"
@@ -93,6 +94,9 @@
 					:classes="classes"
 					:listbox-id="listboxId"
 					:listbox-label="resolvedPlaceholder"
+					:ui="ui"
+					:is-motion-reduced="isMotionReduced"
+					:motion-attrs="motionAttrs"
 					@select="handleSelect"
 					@highlight="highlightedIndex = $event">
 					<template #result="slotProps">
@@ -116,7 +120,7 @@
 				</BaseSearchResults>
 			</template>
 		</BaseDropdown>
-		<span class="base-search__live" role="status">{{ resultsStatus }}</span>
+		<span :class="ui('live')" role="status">{{ resultsStatus }}</span>
 	</div>
 </template>
 
@@ -160,6 +164,10 @@ const {
 	variantStyle,
 	customColorStyle,
 	classes,
+	ui,
+	dropdownClass,
+	isMotionReduced,
+	motionAttrs,
 	rootRef,
 	baseInputRef,
 	overlayRef,

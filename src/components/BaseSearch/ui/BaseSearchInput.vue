@@ -1,7 +1,7 @@
 <template>
 	<BaseInput
 		ref="inputRef"
-		class="base-search__field"
+		:class="ui('field')"
 		:model-value="modelValue"
 		:label="placeholder"
 		:placeholder="placeholder"
@@ -16,20 +16,20 @@
 		@focus="handleFocus"
 		@blur="handleBlur">
 		<template v-if="hasIcon" #prefix>
-			<BaseIcon name="search" class="base-search__icon" :custom-class="classes.icon" :size-scale="calcIconScale('sm', sizeScale)" />
+			<BaseIcon name="search" :class="ui('icon')" :custom-class="classes.icon" :size-scale="calcIconScale('sm', sizeScale)" />
 		</template>
 		<template v-if="isLoading || (hasClear && modelValue)" #suffix>
-			<span class="base-search__actions">
+			<span :class="ui('actions')">
 				<BaseLoader
 					v-if="isLoading"
-					class="base-search__loading"
+					:class="ui('loading')"
 					:custom-class="classes.loading"
 					variant="spinner"
 					:size-scale="sizeScale / 2" />
 				<BaseButton
 					v-if="hasClear && modelValue"
 					variant="ghost"
-					class="base-search__clear"
+					:class="ui('clear')"
 					:custom-class="classes.clear"
 					:size-scale="sizeScale"
 					:aria-label="UI_ARIA.CLEAR_VALUE"

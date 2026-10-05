@@ -1,5 +1,5 @@
 <template>
-	<div class="base-input-tags" :class="[{ 'base-input-tags--has-tags': modelValue.length > 0 }, classes.root]">
+	<div ref="rootRef" :class="[ui('root'), { 'base-input-tags--has-tags': modelValue.length > 0 }, classes.root]">
 		<BaseInput
 			ref="inputRef"
 			:model-value="draft"
@@ -21,31 +21,28 @@
 			@focus="emit('focus', $event)"
 			@paste="handlePaste">
 			<template v-if="modelValue.length > 0" #prefix>
-				<ul
-					class="base-input-tags__list"
-					:class="classes.list"
-					:aria-label="UI_ARIA.TAGS"
-					:aria-disabled="isControlDisabled ? 'true' : undefined">
-					<li v-for="(tag, index) in modelValue" :key="`${tag}-${index}`" class="base-input-tags__tag" :class="classes.tag">
-						<span class="base-input-tags__text">{{ tag }}</span>
-						<button
-							v-if="canEdit"
-							:ref="element => setRemoveButton(element, index)"
-							type="button"
-							class="base-input-tags__remove"
-							:class="classes.remove"
-							tabindex="-1"
-							:aria-label="formatMessage(UI_ARIA.TAG_REMOVE, { name: tag })"
-							@mousedown.prevent
-							@click="removeAt(index, true)"
-							@keydown="handleTagKeydown($event, index)">
-							<BaseIcon name="x-mark" :size-scale="calcIconScale('xs', sizeScale)" />
-						</button>
-					</li>
+				<ul :class="[ui('list'), classes.list]" :aria-label="UI_ARIA.TAGS" :aria-disabled="isControlDisabled ? 'true' : undefined">
+					<TransitionGroup name="base-input-tags-tag" :css="!isMotionReduced" @before-leave="holdLeavingTag">
+						<li v-for="(tag, index) in modelValue" :key="tagKeys[index]" :class="[ui('tag'), classes.tag]">
+							<span :class="ui('text')">{{ tag }}</span>
+							<button
+								v-if="canEdit"
+								:ref="element => setRemoveButton(element, index)"
+								type="button"
+								:class="[ui('remove'), classes.remove]"
+								tabindex="-1"
+								:aria-label="formatMessage(UI_ARIA.TAG_REMOVE, { name: tag })"
+								@mousedown.prevent
+								@click="removeAt(index, true)"
+								@keydown="handleTagKeydown($event, index)">
+								<BaseIcon name="x-mark" :size-scale="calcIconScale('xs', sizeScale)" />
+							</button>
+						</li>
+					</TransitionGroup>
 				</ul>
 			</template>
 		</BaseInput>
-		<span class="base-input-tags__status" role="status">{{ announcement }}</span>
+		<span :class="ui('status')" role="status">{{ announcement }}</span>
 	</div>
 </template>
 
@@ -79,6 +76,11 @@ const emit = defineEmits<BaseInputTagsEmits>()
 
 const {
 	classes,
+	ui,
+	rootRef,
+	isMotionReduced,
+	tagKeys,
+	holdLeavingTag,
 	inputRef,
 	draft,
 	announcement,

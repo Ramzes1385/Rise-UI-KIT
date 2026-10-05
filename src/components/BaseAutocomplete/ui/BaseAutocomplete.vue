@@ -1,14 +1,14 @@
 <template>
-	<div class="base-autocomplete" :class="classes.root">
+	<div ref="rootRef" :class="[ui('root'), classes.root]">
 		<BaseDropdown
 			v-model:is-open="isOpen"
-			class="base-autocomplete__dropdown"
+			:class="ui('dropdown')"
 			position="bottom-start"
 			:match-width="true"
 			:padding="0"
 			:prevent-mousedown="true"
 			:size-scale="sizeScale"
-			:custom-class="{ panel: classes.panel }">
+			:custom-class="{ panel: panelClass }">
 			<BaseInput
 				ref="inputRef"
 				:model-value="query"
@@ -24,6 +24,7 @@
 				:size-scale="sizeScale"
 				:color="color"
 				:custom-class="{ field: classes.field }"
+				:ui="inputUi"
 				@update:model-value="handleInput"
 				@keydown="handleKeydown"
 				@blur="handleBlur"
@@ -31,19 +32,22 @@
 				@click="handleClick" />
 
 			<template #dropdown>
-				<div class="base-autocomplete__panel-content">
-					<ul
+				<div :class="ui('panel-content')">
+					<TransitionGroup
 						:id="listboxId"
-						class="base-autocomplete__options"
-						:class="{ 'base-autocomplete__options--empty': visibleOptions.length === 0 }"
+						tag="ul"
+						name="base-autocomplete-option"
+						:css="!isMotionReduced"
+						:class="[ui('options'), { 'base-autocomplete__options--empty': visibleOptions.length === 0 }]"
 						role="listbox"
-						:aria-label="label || ariaLabel || placeholder">
+						:aria-label="label || ariaLabel || placeholder"
+						@leave="leaveAtOnce">
 						<li
 							v-for="(option, index) in visibleOptions"
 							:id="optionId(index)"
 							:key="option.value"
-							class="base-autocomplete__option"
 							:class="[
+								ui('option'),
 								{
 									'base-autocomplete__option--active': index === activeIndex,
 									'base-autocomplete__option--selected': option.value === modelValue,
@@ -61,26 +65,26 @@
 								:option="option"
 								:is-active="index === activeIndex"
 								:is-selected="option.value === modelValue">
-								<span class="base-autocomplete__option-label">
+								<span :class="ui('option-label')">
 									<template v-for="(part, partIndex) in highlight(option.label)" :key="partIndex">
-										<mark v-if="part.isMatch" class="base-autocomplete__match">{{ part.text }}</mark>
+										<mark v-if="part.isMatch" :class="ui('match')">{{ part.text }}</mark>
 										<template v-else>{{ part.text }}</template>
 									</template>
 								</span>
-								<span v-if="option.description" class="base-autocomplete__option-description">{{
-									option.description
-								}}</span>
+								<span v-if="option.description" :class="ui('option-description')">{{ option.description }}</span>
 							</slot>
 						</li>
-					</ul>
-					<div v-if="isLoading" class="base-autocomplete__empty" :class="classes.empty">{{ UI_TEXT.LOADING }}</div>
-					<div v-else-if="visibleOptions.length === 0" class="base-autocomplete__empty" :class="classes.empty">
-						<slot name="empty">{{ UI_TEXT.NO_RESULTS }}</slot>
-					</div>
+					</TransitionGroup>
+					<Transition name="base-autocomplete-state" :css="!isMotionReduced" @leave="leaveAtOnce">
+						<div v-if="isLoading" key="loading" :class="[ui('empty'), classes.empty]">{{ UI_TEXT.LOADING }}</div>
+						<div v-else-if="visibleOptions.length === 0" key="empty" :class="[ui('empty'), classes.empty]">
+							<slot name="empty">{{ UI_TEXT.NO_RESULTS }}</slot>
+						</div>
+					</Transition>
 				</div>
 			</template>
 		</BaseDropdown>
-		<span class="base-autocomplete__status" role="status">{{ statusText }}</span>
+		<span :class="ui('status')" role="status">{{ statusText }}</span>
 	</div>
 </template>
 
@@ -112,6 +116,12 @@ const emit = defineEmits<BaseAutocompleteEmits>()
 defineSlots<BaseAutocompleteSlots>()
 
 const {
+	ui,
+	inputUi,
+	panelClass,
+	rootRef,
+	isMotionReduced,
+	leaveAtOnce,
 	classes,
 	inputRef,
 	listboxId,

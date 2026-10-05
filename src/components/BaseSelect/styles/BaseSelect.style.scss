@@ -2,12 +2,23 @@
 	width: 100%;
 }
 
+@include enter-scale(base-select-tag);
+@include enter-scale(base-select-check);
+
+.base-select-tag-move {
+	transition: transform var(--rise-duration) var(--rise-ease-out);
+}
+
+.base-select-tag-leave-active {
+	position: absolute;
+}
+
 .base-select {
 	display: flex;
 	flex-direction: column;
 	gap: sz(6px);
 	width: 100%;
-	@include custom-text(color, var(--rise-text-highlighted));
+	@include custom-text(color, ct(select, text, var(--rise-text-highlighted)));
 
 	&__label {
 		@include field-label;
@@ -28,11 +39,11 @@
 		box-sizing: border-box;
 		width: 100%;
 		min-width: 0;
-		padding: sz(var(--rise-control-padding-y)) sz(var(--rise-control-padding-x));
+		padding: sz(ct(select, padding-y, var(--rise-control-padding-y))) sz(ct(select, padding-x, var(--rise-control-padding-x)));
 		outline: none;
 		cursor: pointer;
 		@include control-text;
-		@include field-box;
+		@include field-box(select);
 	}
 
 	&--open &__trigger {
@@ -41,6 +52,7 @@
 	}
 
 	&__values {
+		position: relative;
 		display: flex;
 		flex: 1;
 		flex-wrap: wrap;
@@ -83,11 +95,16 @@
 	}
 
 	&--has-tags &__trigger {
-		padding-left: sz(var(--rise-control-padding-y));
+		padding-left: sz(ct(select, padding-y, var(--rise-control-padding-y)));
 	}
 
 	&__tag {
 		max-width: 100%;
+	}
+
+	&__values &__tag {
+		@include custom-bg(background-color, ct(select, tag-bg, var(--rise-primary-soft)));
+		@include custom-text(color, ct(select, tag-text, var(--rise-primary-text)));
 	}
 
 	&__tag &__tag-text {
@@ -196,7 +213,7 @@
 		display: flex;
 		align-items: center;
 		gap: sz(6px);
-		padding: 0 sz(10px);
+		padding: 0 space(10px);
 		border-bottom: 1px solid var(--rise-border);
 		color: var(--rise-text-muted);
 		@include transition-colors;
@@ -225,7 +242,7 @@
 
 	&__header,
 	&__footer {
-		padding: sz(4px);
+		padding: space(4px);
 	}
 
 	&__header {
@@ -242,7 +259,7 @@
 		gap: 1px;
 		max-height: sz(240px);
 		margin: 0;
-		padding: sz(4px);
+		padding: space(4px);
 		overflow-y: auto;
 		list-style: none;
 		@include scrollbar-thin;
@@ -254,14 +271,23 @@
 
 	&__option {
 		@include menu-item;
+		padding: space(ct(select, option-padding-y, 6px)) space(ct(select, option-padding-x, 8px));
+
+		@include hover {
+			background-color: ct(select, option-bg-hover, var(--rise-bg-elevated));
+		}
+
+		&--selected {
+			background-color: ct(select, option-bg-selected, transparent);
+		}
 
 		&--active {
-			background-color: var(--rise-bg-elevated);
+			background-color: ct(select, option-bg-hover, var(--rise-bg-elevated));
 			color: var(--rise-text-highlighted);
 		}
 
 		&--selected {
-			color: var(--rise-text-highlighted);
+			color: ct(select, option-text-selected, var(--rise-text-highlighted));
 		}
 
 		&--disabled {
@@ -324,7 +350,7 @@
 	}
 
 	&__no-results {
-		padding: sz(12px 8px);
+		padding: space(12px 8px);
 		color: var(--rise-text-muted);
 		text-align: center;
 		@include text-size(sm);

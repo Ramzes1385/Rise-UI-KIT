@@ -19,8 +19,10 @@ export default meta
 
 export const Default = cases.Default
 export const Variants = cases.Variants
+export const Theming = cases.Theming
 export const Disabled = cases.Disabled
 export const WithError = cases.WithError
 export const LongContent = cases.LongContent
 export const Validation = cases.Validation
 export const Keyboard = cases.Keyboard
+export const Animations = cases.Animations

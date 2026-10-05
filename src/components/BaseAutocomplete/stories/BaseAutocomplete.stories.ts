@@ -25,3 +25,5 @@ export const Empty = cases.Empty
 export const CustomValue = cases.CustomValue
 export const Remote = cases.Remote
 export const Keyboard = cases.Keyboard
+export const Theming = cases.Theming
+export const Animations = cases.Animations

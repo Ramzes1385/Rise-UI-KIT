@@ -1,7 +1,7 @@
 <template>
 	<div
-		class="base-search"
-		:class="[variantClass, `base-search--${panel}`, { 'base-search--disabled': isDisabled }, classes.root]"
+		ref="rootRef"
+		:class="[ui('root'), variantClass, `base-search--${panel}`, { 'base-search--disabled': isDisabled }, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<BaseInput
 			:model-value="modelValue"
@@ -11,23 +11,24 @@
 			:size-scale="sizeScale"
 			:is-disabled="isDisabled"
 			:error="error"
-			class="base-search__trigger base-search__field"
+			:class="[ui('trigger'), ui('field')]"
 			:custom-class="classes.trigger"
 			readonly
 			type="text"
 			@focus="open">
 			<template v-if="hasIcon" #prefix>
-				<BaseIcon
-					name="search"
-					class="base-search__icon"
-					:custom-class="classes.icon"
-					:size-scale="calcIconScale('sm', sizeScale)" />
+				<BaseIcon name="search" :class="ui('icon')" :custom-class="classes.icon" :size-scale="calcIconScale('sm', sizeScale)" />
 			</template>
 		</BaseInput>
 	</div>
 	<Teleport defer :to="teleportTarget">
-		<Transition :name="`base-search-${panel}`">
-			<div v-if="isOpen" :class="[overlayClass, classes[`${prefix}Overlay`]]" :style="layerStyle" @click.self="close">
+		<Transition :name="`base-search-${panel}`" :css="!isMotionReduced">
+			<div
+				v-if="isOpen"
+				:class="[overlayClass, classes[`${prefix}Overlay`]]"
+				:style="layerStyle"
+				v-bind="motionAttrs"
+				@click.self="close">
 				<div :class="panelClass" :style="sizeScaleStyle" role="dialog" :aria-label="UI_ARIA.SEARCH">
 					<div :class="headerClass">
 						<BaseSearchInput
@@ -44,6 +45,7 @@
 							:input-class="inputClass"
 							:classes="classes"
 							:combobox-attributes="comboboxAttributes"
+							:ui="ui"
 							@update:model-value="emit('update:modelValue', $event)"
 							@keydown="emit('keydown', $event)"
 							@clear="emit('clear')" />
@@ -57,39 +59,44 @@
 							<BaseIcon name="close" :custom-class="closeIconCustomClass" :size-scale="sizeScale" />
 						</BaseButton>
 					</div>
-					<span class="base-search__live" role="status">{{ resultsStatus }}</span>
-					<div v-if="shouldShowResults && modelValue" :class="resultsClass">
-						<BaseSearchResults
-							:visible-results="visibleResults"
-							:query="modelValue"
-							:is-loading="isLoading"
-							:size-scale="sizeScale"
-							:highlighted-index="highlightedIndex"
-							:classes="classes"
-							:listbox-id="listboxId"
-							:listbox-label="searchPlaceholder"
-							@select="emit('select', $event)"
-							@highlight="emit('highlight', $event)">
-							<template #result="slotProps">
-								<slot name="result" v-bind="slotProps" />
-							</template>
-							<template #results="slotProps">
-								<slot name="results" v-bind="slotProps" />
-							</template>
-							<template #result-before="slotProps">
-								<slot name="result-before" v-bind="slotProps" />
-							</template>
-							<template #result-after="slotProps">
-								<slot name="result-after" v-bind="slotProps" />
-							</template>
-							<template #empty>
-								<slot name="empty" />
-							</template>
-							<template #loading>
-								<slot name="loading" />
-							</template>
-						</BaseSearchResults>
-					</div>
+					<span :class="ui('live')" role="status">{{ resultsStatus }}</span>
+					<Transition name="base-search-results" :css="!isMotionReduced">
+						<div v-if="shouldShowResults && modelValue" :class="resultsClass">
+							<BaseSearchResults
+								:visible-results="visibleResults"
+								:query="modelValue"
+								:is-loading="isLoading"
+								:size-scale="sizeScale"
+								:highlighted-index="highlightedIndex"
+								:classes="classes"
+								:listbox-id="listboxId"
+								:listbox-label="searchPlaceholder"
+								:ui="ui"
+								:is-motion-reduced="isMotionReduced"
+								:motion-attrs="motionAttrs"
+								@select="emit('select', $event)"
+								@highlight="emit('highlight', $event)">
+								<template #result="slotProps">
+									<slot name="result" v-bind="slotProps" />
+								</template>
+								<template #results="slotProps">
+									<slot name="results" v-bind="slotProps" />
+								</template>
+								<template #result-before="slotProps">
+									<slot name="result-before" v-bind="slotProps" />
+								</template>
+								<template #result-after="slotProps">
+									<slot name="result-after" v-bind="slotProps" />
+								</template>
+								<template #empty>
+									<slot name="empty" />
+								</template>
+								<template #loading>
+									<slot name="loading" />
+								</template>
+							</BaseSearchResults>
+						</div>
+					</Transition>
 				</div>
 			</div>
 		</Transition>
@@ -125,6 +132,9 @@ const {
 	variantStyle,
 	customColorStyle,
 	isOpen,
+	rootRef,
+	isMotionReduced,
+	motionAttrs,
 	layerStyle,
 	inputRef,
 	prefix,

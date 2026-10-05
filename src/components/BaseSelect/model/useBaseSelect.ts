@@ -1,6 +1,8 @@
-import type { ComputedRef } from 'vue'
 import { computed, ref, useId } from 'vue'
+import type { ComputedRef, Ref } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
+import { useMotion } from '@composables/app/useMotion'
 import { useFormField } from '@composables/form/useFormField'
 import { useSelect, useSelectKeys } from '@composables/form/useSelect'
 import type { BaseSelectEmits, SelectProps } from '../types/BaseSelect.types'
@@ -98,6 +100,20 @@ function useSelectKeyboard(props: SelectProps, select: ReturnType<typeof useSele
 	}
 }
 
+function useSelectMotion(selectRef: Ref<HTMLDivElement | null>) {
+	const motion = useMotion(selectRef)
+
+	return {
+		isMotionReduced: motion.isReduced,
+		holdLeavingTag(element: Element): void {
+			const tag = element as HTMLElement
+			tag.style.left = `${tag.offsetLeft}px`
+			tag.style.top = `${tag.offsetTop}px`
+			tag.style.width = `${tag.offsetWidth}px`
+		},
+	}
+}
+
 export function useBaseSelect(props: SelectProps, emit: BaseSelectEmits) {
 	const standard = useStandardBaseComponent('base-select', props, SELECT_ELEMENTS)
 	const field = useSelectField(props)
@@ -107,6 +123,8 @@ export function useBaseSelect(props: SelectProps, emit: BaseSelectEmits) {
 	return {
 		...standard,
 		...field,
+		ui: useUi(props, 'base-select'),
+		...useSelectMotion(selectRef),
 		resolvedPlaceholder: computed(() => props.placeholder ?? UI_TEXT.SELECT_PLACEHOLDER),
 		selectRef,
 		...select,

@@ -4,7 +4,7 @@
 	gap: sz(6px);
 	width: 100%;
 	min-width: 0;
-	@include custom-text(color, var(--rise-text-highlighted));
+	@include custom-text(color, ct(mention, text, var(--rise-text-highlighted)));
 
 	&__label {
 		@include field-label;
@@ -21,13 +21,13 @@
 		width: 100%;
 		min-width: 0;
 		margin: 0;
-		padding: sz(var(--rise-control-padding-y)) sz(var(--rise-control-padding-x));
+		padding: sz(ct(mention, padding-y, var(--rise-control-padding-y))) sz(ct(mention, padding-x, var(--rise-control-padding-x)));
 		color: inherit;
 		font: inherit;
 		@include control-text;
 		resize: vertical;
 		outline: none;
-		@include field-box;
+		@include field-box(mention);
 
 		&::placeholder {
 			color: var(--rise-text-dimmed);
@@ -43,7 +43,12 @@
 		box-sizing: border-box;
 		width: min(100%, #{sz(320px)});
 		overflow: hidden;
-		@include floating-surface;
+		background-color: ct(mention, popup-bg, var(--rise-bg));
+		color: var(--rise-text);
+		border: 1px solid var(--rise-border);
+		border-radius: sz(ct(mention, popup-radius, var(--rise-radius-md)));
+		box-shadow: ct(mention, popup-shadow, var(--rise-shadow-lg));
+		transform-origin: top left;
 	}
 
 	&__list {
@@ -52,7 +57,7 @@
 		gap: 1px;
 		max-height: sz(264px);
 		margin: 0;
-		padding: sz(4px);
+		padding: space(4px);
 		overflow-y: auto;
 		list-style: none;
 		@include scrollbar-thin;
@@ -61,9 +66,14 @@
 	&__option {
 		@include menu-item;
 		gap: sz(10px);
+		color: ct(mention, option-text, var(--rise-text));
+
+		@include hover {
+			background-color: ct(mention, option-bg-hover, var(--rise-bg-elevated));
+		}
 
 		&--active {
-			background-color: var(--rise-bg-elevated);
+			background-color: ct(mention, option-bg-hover, var(--rise-bg-elevated));
 			color: var(--rise-text-highlighted);
 		}
 	}
@@ -123,7 +133,7 @@
 
 	&__empty {
 		margin: 0;
-		padding: sz(12px);
+		padding: space(12px);
 		color: var(--rise-text-muted);
 		@include text-size(sm);
 	}
@@ -156,3 +166,5 @@
 		@include field-error;
 	}
 }
+
+@include enter-scale(base-mention-popup);

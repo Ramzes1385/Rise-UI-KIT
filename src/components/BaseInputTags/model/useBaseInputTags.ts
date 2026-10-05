@@ -2,7 +2,9 @@ import type { ComputedRef, Ref } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
 import { computed, nextTick, ref } from 'vue'
 import { formatMessage } from '@/locales/state'
+import { useUi } from '@composables/base/useUi'
 import type { BaseInput } from '@components/BaseInput'
+import { useMotion } from '@composables/app/useMotion'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import { useFormDisabled } from '@composables/form/useFormContext'
 import type { BaseInputTagsEmits, InputTagsProps } from '../types/BaseInputTags.types'
@@ -18,7 +20,8 @@ function useTagFocus(inputRef: Ref<InstanceType<typeof BaseInput> | null>) {
 	const removeButtons: (HTMLElement | undefined)[] = []
 	return {
 		setRemoveButton(element: unknown, index: number): void {
-			removeButtons[index] = element instanceof HTMLElement ? element : undefined
+			if (element instanceof HTMLElement) removeButtons[index] = element
+			else if (!removeButtons[index]?.isConnected) removeButtons[index] = undefined
 		},
 		focusInput(): void {
 			inputRef.value?.focus()
@@ -154,6 +157,25 @@ function createFieldKeydown(
 	}
 }
 
+function useTagMotion(props: InputTagsProps) {
+	const rootRef = ref<HTMLElement | null>(null)
+	const motion = useMotion(rootRef)
+
+	return {
+		rootRef,
+		isMotionReduced: motion.isReduced,
+		tagKeys: computed(() =>
+			props.modelValue.map((tag, index) => `${tag}#${props.modelValue.slice(0, index).filter(item => item === tag).length}`),
+		),
+		holdLeavingTag(element: Element): void {
+			const tag = element as HTMLElement
+			tag.style.left = `${tag.offsetLeft}px`
+			tag.style.top = `${tag.offsetTop}px`
+			tag.style.width = `${tag.offsetWidth}px`
+		},
+	}
+}
+
 export function useBaseInputTags(props: InputTagsProps, emit: BaseInputTagsEmits) {
 	const { classes } = useCustomClass({ getClass: () => props.customClass, elementKeys: ['root', 'field', 'list', 'tag', 'remove'] })
 	const inputRef = ref<InstanceType<typeof BaseInput> | null>(null)
@@ -169,6 +191,8 @@ export function useBaseInputTags(props: InputTagsProps, emit: BaseInputTagsEmits
 
 	return {
 		classes,
+		ui: useUi(props, 'base-input-tags'),
+		...useTagMotion(props),
 		inputRef,
 		draft,
 		announcement,

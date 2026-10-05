@@ -1,4 +1,6 @@
 import type { Ref } from 'vue'
+import { useUi } from '@composables/base/useUi'
+import { useMotion } from '@composables/app/useMotion'
 import { computed, nextTick, ref, useId, watch } from 'vue'
 import { useFieldControl } from '@composables/form/useFormContext'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
@@ -106,6 +108,7 @@ function useMentionActions(
 }
 
 export function useBaseMention(props: BaseMentionProps, emit: BaseMentionEmits) {
+	const rootRef = ref<HTMLElement | null>(null)
 	const controlRef = ref<HTMLTextAreaElement | null>(null)
 	const textState = useMentionText(props, emit, controlRef)
 	const state = useMentionState(props, emit)
@@ -118,6 +121,9 @@ export function useBaseMention(props: BaseMentionProps, emit: BaseMentionEmits) 
 		...useStandardBaseComponent('base-mention', props, ['root', 'label', 'control', 'list', 'error']),
 		...useMentionControl(props),
 		...useMentionActions(props, emit, { ...textState, state }),
+		ui: useUi(props, 'base-mention'),
+		rootRef,
+		isMotionReduced: useMotion(rootRef).isReduced,
 		controlRef,
 		text: textState.text,
 		listId,

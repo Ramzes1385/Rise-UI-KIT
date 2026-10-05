@@ -84,6 +84,15 @@ describe('BaseSearch integration', () => {
 		})
 	})
 
+	it('текст, у которого нижний регистр другой длины, показывается без выделения', async () => {
+		const user = userEvent.setup()
+		render(BaseSearch, { props: { modelValue: 'стамбул', results: [{ id: 1, title: 'İstanbul' }], isRemote: true } })
+
+		await user.click(screen.getByRole('combobox'))
+		expect(document.querySelector('.base-search__result-title')).toHaveTextContent('İstanbul')
+		expect(document.querySelector('.base-search__match')).not.toBeInTheDocument()
+	})
+
 	describe('combobox и список результатов (APG)', () => {
 		const RESULTS = [
 			{ id: 1, title: 'Закат в горах' },

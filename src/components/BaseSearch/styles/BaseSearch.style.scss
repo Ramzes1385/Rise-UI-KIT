@@ -15,7 +15,7 @@
 		flex-shrink: 0;
 		padding-left: sz(var(--rise-control-padding-x));
 		margin-right: sz(2px);
-		color: var(--rise-text-muted);
+		color: ct(search, icon-text, var(--rise-text-muted));
 	}
 
 	&--underline &__icon {
@@ -58,10 +58,15 @@
 
 	&__result {
 		@include menu-item;
-		gap: sz(8px);
+		gap: sz(ct(search, result-gap, 8px));
+		color: ct(search, result-text, var(--rise-text));
+
+		@include hover {
+			background-color: ct(search, result-bg-hover, var(--rise-bg-elevated));
+		}
 
 		&--highlighted {
-			background-color: var(--rise-bg-elevated);
+			background-color: ct(search, result-bg-selected, var(--rise-bg-elevated));
 			color: var(--rise-text-highlighted);
 		}
 	}
@@ -119,14 +124,14 @@
 
 	&__match {
 		border-radius: sz(var(--rise-radius-xs));
-		background-color: var(--rise-primary-soft);
+		background-color: ct(search, match-bg, var(--rise-primary-soft));
 		color: var(--rise-text-highlighted);
 		text-decoration: none;
 	}
 
 	&__empty,
 	&__status {
-		padding: sz(12px 8px);
+		padding: space(12px 8px);
 		color: var(--rise-text-muted);
 		text-align: center;
 		@include text-size(sm);
@@ -141,7 +146,7 @@
 		position: fixed;
 		inset: 0;
 		z-index: calc(var(--rise-z-overlay) + var(--rise-layer-index, 0));
-		background-color: var(--rise-overlay);
+		background-color: ct(search, overlay-bg, var(--rise-overlay));
 	}
 
 	&__modal-overlay {
@@ -158,10 +163,10 @@
 		flex-direction: column;
 		box-sizing: border-box;
 		overflow: hidden;
-		border: 1px solid var(--rise-border);
-		background-color: var(--rise-bg);
+		border: 1px solid ct(search, panel-border, var(--rise-border));
+		background-color: ct(search, panel-bg, var(--rise-bg));
 		color: var(--rise-text);
-		box-shadow: var(--rise-shadow-xl);
+		box-shadow: ct(search, panel-shadow, var(--rise-shadow-xl));
 		@include text-size(sm);
 	}
 
@@ -169,7 +174,7 @@
 		width: 100%;
 		max-width: sz(640px);
 		max-height: 100%;
-		border-radius: sz(var(--rise-radius-lg));
+		border-radius: sz(ct(search, panel-radius, var(--rise-radius-lg)));
 	}
 
 	&__modal-header,
@@ -178,8 +183,8 @@
 		flex: none;
 		align-items: flex-start;
 		gap: sz(8px);
-		padding: sz(12px);
-		border-bottom: 1px solid var(--rise-border);
+		padding: space(12px);
+		border-bottom: 1px solid ct(search, panel-border, var(--rise-border));
 	}
 
 	&__modal-close.base-button,
@@ -195,7 +200,7 @@
 
 	&__modal-results,
 	&__sidebar-results {
-		padding: sz(4px);
+		padding: space(ct(search, panel-padding, 4px));
 		overflow-y: auto;
 		@include scrollbar-thin;
 	}
@@ -219,35 +224,42 @@
 	}
 }
 
-.base-search-modal-enter-active,
-.base-search-modal-leave-active,
-.base-search-sidebar-enter-active,
-.base-search-sidebar-leave-active {
-	@include transition(opacity);
+.base-dropdown__panel.base-search__panel {
+	--dd-pad-top: #{ct(search, panel-padding, 4px)};
+	--dd-pad-right: #{ct(search, panel-padding, 4px)};
+	--dd-pad-bottom: #{ct(search, panel-padding, 4px)};
+	--dd-pad-left: #{ct(search, panel-padding, 4px)};
 
-	.base-search__modal,
-	.base-search__sidebar {
-		transition-property: opacity, transform;
-		transition-duration: var(--rise-duration);
-		transition-timing-function: var(--rise-ease-out);
-	}
+	border-radius: sz(ct(search, panel-radius, var(--rise-radius-md)));
+	background-color: ct(search, panel-bg, var(--dd-bg));
 }
 
-.base-search-modal-enter-from,
-.base-search-modal-leave-to {
-	opacity: 0;
+@include enter-fade(base-search-modal);
+@include enter-fade(base-search-sidebar);
+@include enter-fade(base-search-results);
+@include enter-fade(base-search-state);
 
-	.base-search__modal {
-		opacity: 0;
-		transform: scale(0.95);
-	}
+.base-search-modal-enter-active .base-search__modal,
+.base-search-sidebar-enter-active .base-search__sidebar {
+	transition:
+		opacity var(--rise-duration) var(--rise-ease-out),
+		transform var(--rise-duration) var(--rise-ease-out);
 }
 
-.base-search-sidebar-enter-from,
-.base-search-sidebar-leave-to {
-	opacity: 0;
+.base-search-modal-leave-active .base-search__modal,
+.base-search-sidebar-leave-active .base-search__sidebar {
+	transition:
+		opacity var(--rise-duration-fast) var(--rise-ease-in),
+		transform var(--rise-duration-fast) var(--rise-ease-in);
+}
 
-	.base-search__sidebar {
-		transform: translateX(100%);
-	}
+.base-search-modal-enter-from .base-search__modal,
+.base-search-modal-leave-to .base-search__modal {
+	opacity: 0;
+	transform: scale(var(--rise-motion-scale-from));
+}
+
+.base-search-sidebar-enter-from .base-search__sidebar,
+.base-search-sidebar-leave-to .base-search__sidebar {
+	transform: translateX(100%);
 }

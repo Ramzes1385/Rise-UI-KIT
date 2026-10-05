@@ -1,5 +1,5 @@
-import { expect } from 'storybook/test'
 import type meta from '../BaseMention.stories'
+import { expect, waitFor } from 'storybook/test'
 import BaseMention from '../../ui/BaseMention.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { storySource, useStorySetup } from '@/stories/helpers'
@@ -35,7 +35,7 @@ export const Default: StoryObj<typeof meta> = {
 		await userEvent.keyboard('{ArrowDown}{ArrowDown}')
 		await expect(field).toHaveAttribute('aria-activedescendant', canvas.getAllByRole('option')[2].id)
 		await userEvent.keyboard('{Escape}')
-		await expect(canvas.queryByRole('listbox')).toBeNull()
+		await waitFor(() => expect(canvas.queryByRole('listbox')).toBeNull())
 		await userEvent.type(field, ' @xyz')
 		await expect(canvas.getByRole('status')).toHaveTextContent('Никого не нашлось')
 	},
