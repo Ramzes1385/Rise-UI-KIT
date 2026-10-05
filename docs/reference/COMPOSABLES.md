@@ -445,3 +445,20 @@ const signature = await sign(file, { thumbprint: certificates.value[0].thumbprin
 - Как проверить подпись в приложении — только с настоящим плагином: КриптоПро CSP, ЭЦП Browser plug-in и расширение браузера, тестовый сертификат (например, с тестового УЦ КриптоПро) в личном хранилище. Откройте страницу с `useCryptoPro`, дождитесь `status.state === 'ready'`, вызовите `getCertificates()` и `sign()`; подпись проверьте на странице проверки подписи КриптоПро или в КриптоАРМ. В модульных тестах приложения подменяйте `window.cadesplugin` своим объектом с нужными методами или мокайте `useCryptoPro` целиком.
 - Код работы с плагином (диагностика, сертификаты, подпись) — отдельный чанк, который загружается динамически при первой проверке: приложение, которое только импортирует вход `composables`, его не скачивает.
 - Ограничения: настоящую подпись CI не проверяет (нужны CSP, плагин и ключ); подпись больших файлов, хэш, штамп времени и проверка подписи — компонент BaseCryptoProSign (new-cryptopro-ui).
+
+## useTheme, applyTheme (задача theme-api)
+
+```ts
+import { applyTheme, createTheme, useTheme } from '@ramzes1385/rise-ui-kit'
+
+applyTheme(createTheme({ name: 'brand', primary: '#0f766e' }))            // <html data-rise-theme="brand" data-theme="system">
+applyTheme(createTheme({ name: 'promo', primary: '#7c3aed' }), { target: promoSection, nonce })
+
+const { theme, themes, css, setTheme, configure } = useTheme()
+setTheme('corporate')                // пресет по имени; false — имя неизвестно
+setTheme(createTheme({ … }))         // своя тема: регистрируется и выбирается
+```
+
+- `applyTheme(theme, { target?, nonce? })`: `<style data-rise-theme-style="имя">` в `<head>` — один на тему, повторный вызов обновляет его; CSP `nonce`. На `target` (по умолчанию `<html>`) — `data-rise-theme`, а если нет `data-theme` — режим ближайшего предка с `data-theme` или `system`. Без `document` (SSR) ничего не делает.
+- `useTheme(options?)` — одно общее управление: `theme` (имя текущей темы или `null`, только чтение), `themes` (пресеты и зарегистрированные), `css` (CSS текущей темы — для `<style>` при SSR), `setTheme`, `configure({ themes, nonce })`. `themes` и `nonce` из `options` учитываются при каждом вызове, `target` — при первом. `createThemeController(options)` — отдельное управление (тема части интерфейса, тесты).
+- Плагин: `createUiKitPlugin({ theme: 'corporate' | Theme, themes: Theme[], themeNonce })` настраивает то же общее управление и ставит тему при установке.

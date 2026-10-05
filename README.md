@@ -109,6 +109,34 @@ import '@fontsource-variable/jetbrains-mono/index.css'
 - **Контраст.** Пары «текст/фон» токенов проходят WCAG 2.2 AA в обеих темах — `npm run test:contrast`, отчёт [docs/design/contrast.md](docs/design/contrast.md).
 - **Переменные 1.x** (`--color-accent`, `--color-text-muted`, `--border-radius-base`…) оставлены алиасами новых токенов для CSS приложения, но компоненты их больше не читают: перекрашивайте через `--rise-*`. В 2.0 алиасы остаются, удалены они будут в следующей мажорной версии.
 
+### Темы за 5 минут
+
+Свой облик — из цвета бренда и нескольких входов. `createTheme()` строит палитру 50…950 в OKLCH и гарантирует контраст WCAG 2.2 AA в светлой и тёмной теме (светлый бренд для кнопок затемняется — `theme.adjusted`).
+
+```ts
+import { createApp } from 'vue'
+import { createTheme, createUiKitPlugin } from '@ramzes1385/rise-ui-kit'
+
+const brand = createTheme({
+  name: 'brand',             // → <html data-rise-theme="brand">
+  primary: '#0f766e',        // единственный обязательный цвет
+  neutral: 'tinted',         // 'tinted' (серый с тоном бренда) | 'gray' | HEX: '#64748b'
+  radius: 'lg',              // 'none' | 'sm' | 'md' | 'lg' | 'full' | число px
+  density: 'compact',        // 'compact' | 'default' | 'comfortable' | множитель
+  font: { sans: '"Golos Text", system-ui, sans-serif' },
+  shadows: 'soft',           // 'none' | 'soft' | 'default' | 'strong' | множитель
+  motion: 'subtle',          // 'none' | 'subtle' | 'default' | 'expressive'
+})
+
+createApp(App).use(createUiKitPlugin({ theme: brand })) // или theme: 'corporate' — готовый пресет
+```
+
+- **Пресеты** `THEME_PRESETS`: `rise` (вид кита), `corporate` (админки и таблицы), `playful` (потребительские приложения), `minimal` (инструменты и документация). Переключение в рантайме — `useTheme().setTheme('playful')` или `setTheme(createTheme({…}))`; список — `useTheme().themes`.
+- **Без JS** — `brand.css` можно положить в CSS приложения как есть: это только CSS-переменные на `[data-rise-theme="brand"]`. **SSR** — `useTheme().css` (строка для `<style>` в `<head>`); на сервере `applyTheme` ничего не делает. **CSP** — `createUiKitPlugin({ themeNonce })` или `applyTheme(theme, { nonce })`.
+- **Тема на области** — `applyTheme(theme, { target: element })`: ставит `data-rise-theme` и, если его нет, `data-theme` (режим ближайшего предка). Правило: `data-rise-theme` и `data-theme` — на одном элементе.
+- Не заданный вход тема не трогает: значение остаётся от кита или от `:root` приложения. Что угодно ещё — вход `tokens` (`{ '--rise-button-radius': '999px' }`); чёрному бренду в тёмной теме — `primaryDark: '#fafafa'`.
+- Проверка своей темы — `createTheme(…).contrast` (все пары `npm run test:contrast`, у каждой `ok`). Подробно — [DESIGN_SYSTEM, «Темы бренда»](docs/design/DESIGN_SYSTEM.md).
+
 ---
 
 ## Иконки

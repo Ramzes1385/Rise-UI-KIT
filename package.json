@@ -83,7 +83,7 @@
     "test:a11y:coverage": "node scripts/check-a11y-coverage.mjs",
     "test:stories": "node scripts/check-stories.mjs",
     "test:stories-coverage": "node scripts/check-stories-coverage.mjs",
-    "test:contrast": "node scripts/check-contrast.mjs",
+    "test:contrast": "node scripts/check-contrast.mjs --theme=all",
     "test:l10n": "node scripts/check-l10n.mjs",
     "test:story-source": "node scripts/check-story-source.mjs",
     "test:slot-docs": "node scripts/check-slot-docs.mjs",

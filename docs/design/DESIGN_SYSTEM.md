@@ -126,6 +126,47 @@
 
 Переменные 1.x (`--color-accent`, `--color-text-muted`, `--border-radius-base`, `--shadow-md`…) оставлены алиасами новых токенов. Их можно читать в CSS приложения, но компоненты их больше не используют. Поэтому переопределение `--color-accent` компоненты не перекрашивает — используйте `--rise-color-primary-*` или `--rise-primary`. В 2.0 алиасы остаются, удалены они будут в следующей мажорной версии.
 
+### 1.6. Темы бренда (`createTheme`)
+
+Тема — несколько входов → **литералы сидов** (уровень 1) на селекторе `[data-rise-theme="имя"][data-rise-theme]` (специфичность 0,2,0 — сильнее `:root` кита при любом порядке подключения). Семантику тема не пишет: кит пересчитывает её на `[data-theme]` из унаследованных сидов. Отсюда правило: **область темы — `data-rise-theme` и `data-theme` на одном элементе** (`applyTheme` ставит оба).
+
+Файлы: `src/utils/theme/oklchUtils` (sRGB ⇄ OKLCH, гамут, контраст), `src/utils/theme/themeUtils` (`createPalette`, `createNeutralPalette`, `createTheme`, `THEME_PRESETS`, `THEME_CONTRAST_PAIRS`), `src/composables/app/useTheme` (`applyTheme`, `useTheme`). Зависимостей нет.
+
+| Вход | Сиды | Значения |
+|---|---|---|
+| `primary` (обязателен) | `--rise-color-primary-50…950` | HEX бренда встаёт ровно на 700; светлый затемняется до 4.5:1 с белым (`adjusted`) |
+| `primaryDark` | `--rise-color-primary-300`, `-400` только в тёмном режиме | свой бренд тёмной темы (чёрный бренд → светлая кнопка) |
+| `neutral` | `--rise-color-neutral-0…950` | `tinted` (по умолчанию: хрома 0.012 тона бренда, `neutral-0` — почти белый) · `gray` · HEX (тон и хрома ≤ 0.04) |
+| `success`, `info`, `warning`, `error` | палитры ролей | HEX на главном оттенке кита (700 / 600); не задан — палитра кита |
+| `palettes` | палитры как есть | готовые оттенки вместо генератора (так устроен `rise`) |
+| `radius` | `--rise-radius` | `none` 0 · `sm` 2px · `md` 4px · `lg` 8px · `full` 14px · число px |
+| `density` | `--rise-density` | `compact` 0.75 · `default` 1 · `comfortable` 1.25 · число |
+| `shadows` | `--rise-shadow-strength` | `none` 0 · `soft` 0.6 · `default` 1 · `strong` 1.8 · число |
+| `font` | `--rise-font-sans`, `-heading` (по умолчанию = sans), `-mono` | стеки; `@font-face` подключает приложение |
+| `motion` | `--rise-duration-fast/-/-slow`, `--rise-ease` | `none` 0.01ms · `subtle` 100/150/200ms · `default` как в ките · `expressive` 200/320/450ms с отскоком; тема с `motion` сама обнуляет длительности при `prefers-reduced-motion` |
+| `tokens` | любые `--rise-*` | сиды и токены компонентов поверх сгенерированного |
+
+Не заданный вход не выводится — значение наследуется от кита или `:root` приложения. Значения очищаются от `{ } < > ;`, имя приводится к `[a-z0-9-]`.
+
+Генерация палитры (эталон — прототип решения research-theming):
+1. Бренд → OKLCH, встаёт на 700, если даёт 4.5:1 с `--rise-on-primary` (белый); иначе светлота уменьшается до порога.
+2. Остальные оттенки — лестница светлоты OKLCH: светлее главного — со сдвигом от бренда (50 и 100 не темнее L 0.97 и 0.92), темнее — пропорционально светлоте бренда (у чёрного бренда оттенки не слипаются); хрома по кривой, в гамут sRGB — уменьшением хромы.
+3. Дотяжка оттенков пар контраста: 800 на 50 ≥ 4.5; 400 на `#262626` ≥ 4.5 (заливка тёмной темы и текст на ней); 300 на `#333333` ≥ 4.5 (текст роли на мягком фоне тёмной). Нейтраль: 500 и 700 на `neutral-0`, 400 и 200 на 900 ≥ 4.5; если бренд не берёт 4.5:1 на тонированном `neutral-0`, фон — белый.
+4. Тёмная тема — из тех же палитр существующими `dark-tokens` (400/300/950, `color-mix` мягких фонов).
+
+Контраст: `createTheme().contrast` — все пары `THEME_CONTRAST_PAIRS` (их же проверяет `scripts/check-contrast.mjs`) в обоих режимах; юнит-тест — сетка 216 брендов × 4 нейтрали без провалов. `npm run test:contrast` = `check-contrast.mjs --theme=all`: кит и 4 пресета × 2 режима (сиды пресета поверх `_tokens.scss`), отчёт — [contrast.md](./contrast.md) по разделам; расхождение генератора с `_tokens.scss` больше 0.05 — предупреждение «поправьте `resolveThemeColors`».
+
+Пресеты (`THEME_PRESETS`):
+
+| Пресет | Бренд | Нейтраль | Радиус | Плотность | Шрифт | Тени | Движение |
+|---|---|---|---|---|---|---|---|
+| `rise` | палитры кита дословно | кит (zinc) | md | default | Inter (кит) | default | default |
+| `corporate` | `#1d4ed8` | slate `#64748b` | sm | compact | системный стек | soft | subtle |
+| `playful` | `#7c3aed` | тонированная | full | comfortable | заголовки Nunito | strong | expressive |
+| `minimal` | `#18181b`, тёмная `#fafafa` | серый | none | default | ui-monospace / JetBrains Mono | none | none |
+
+Рантайм: `applyTheme(theme, { target, nonce })` — `<style data-rise-theme-style="имя">` в `<head>` (один на тему) и атрибуты на области; без `document` ничего не делает. `useTheme()` — общее управление (`theme`, `themes`, `css`, `setTheme`, `configure`), `createThemeController()` — отдельное. Плагин: `theme`, `themes`, `themeNonce`.
+
 ## 2. Размеры и масштаб
 
 - Размер компонента задаёт `sizeScale` — число в процентах. 100 — базовый размер.

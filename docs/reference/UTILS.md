@@ -244,6 +244,7 @@ getCodeLanguageName('py') // 'Python'
 ## Список utils
 
 ```txt
+
 cardUtils
 clipboardUtils
 codeHighlightUtils
@@ -264,6 +265,7 @@ mediaUtils
 menuUtils
 navigationUtils
 numberInputUtils
+oklchUtils
 paginationUtils
 rangeUtils
 ratingUtils
@@ -273,9 +275,30 @@ scriptUtils
 structuredDataUtils
 subtitleUtils
 tableUtils
+themeUtils
 timeUtils
 tooltipUtils
 treeUtils
 typeUtils
 urlUtils
 ```
+
+## oklchUtils, themeUtils (задача theme-api)
+
+```ts
+import { createTheme, createPalette, THEME_PRESETS, contrastRatio } from '@ramzes1385/rise-ui-kit/utils'
+
+const theme = createTheme({ name: 'brand', primary: '#0f766e', neutral: '#64748b', radius: 'lg' })
+theme.css       // "[data-rise-theme='brand'][data-rise-theme] { --rise-color-primary-50: …; … }"
+theme.vars      // { '--rise-color-primary-700': '#0f766e', … } — сиды основного правила
+theme.darkVars  // сиды только тёмного режима (из primaryDark), иначе {}
+theme.contrast  // [{ mode, fg, bg, fgColor, bgColor, ratio, min, ok, informational, kind }, …]
+theme.adjusted  // true — бренд сдвинут по светлоте ради контраста
+
+createPalette('#7c3aed').shades[700] // '#7c3aed'; createPalette(seed, 400) — главный оттенок тёмной темы
+contrastRatio('#c2410c', '#ffffff')  // 5.18
+```
+
+- **oklchUtils** (`src/utils/theme/oklchUtils`): `rgbToOklch`, `hexToOklch`, `oklchToRgb`, `oklchToHex` (вне гамута sRGB цвет теряет хрому при той же светлоте и тоне — `toGamut`), `relativeLuminance` и `contrastRatio` по WCAG 2.2. Тип `OklchColor { l, c, h }`. HEX-разбор — из `data/colorUtils`.
+- **themeUtils** (`src/utils/theme/themeUtils`): `createTheme(input)` — вход `ThemeInput` и вывод `Theme` описаны в DESIGN_SYSTEM, раздел 1.6; `createPalette(seed, mainShade = 700)` — палитра 50…950 (`ThemePaletteResult`: `shades`, `seed`, `main`, `adjusted`); `createNeutralPalette(kind, primary)` — нейтраль с `0`; `resolveThemeColors(vars, mode)` — семантические цвета режима так же, как их считает `_tokens.scss`; `themeContrast(vars, darkVars)` и `THEME_CONTRAST_PAIRS` — пары `check-contrast.mjs`; `THEME_PRESETS` (`rise`, `corporate`, `playful`, `minimal`), `KIT_PALETTES`, `KIT_MAIN_SHADES`, `KIT_CODE_COLORS`; списки входов `THEME_RADII`, `THEME_DENSITIES`, `THEME_SHADOWS`, `THEME_MOTIONS`, `THEME_PRESET_NAMES`, `THEME_ROLES`, `THEME_SHADES`.
+- Чистые функции: работают в SSR, Node и тестах. Из корня пакета экспортируются `createTheme`, `THEME_PRESETS` и типы `Theme`, `ThemeInput`, `ThemePresetName`.
