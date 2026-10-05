@@ -1,6 +1,7 @@
-export { COMMENT_THREAD_VARIANTS } from './types/BaseCommentThread.types'
+export { COMMENT_THREAD_PARTS, COMMENT_THREAD_VARIANTS } from './types/BaseCommentThread.types'
 export type {
 	BaseCommentThreadEmits,
+	BaseCommentThreadPart,
 	BaseCommentThreadProps,
 	CommentAuthor,
 	CommentItem,

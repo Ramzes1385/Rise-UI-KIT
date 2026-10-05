@@ -1,5 +1,7 @@
+export { CHAT_PARTS } from './types/BaseChat.types'
 export type {
 	BaseChatEmits,
+	BaseChatPart,
 	BaseChatProps,
 	BaseChatSlots,
 	ChatBadge,

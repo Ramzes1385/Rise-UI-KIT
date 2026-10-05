@@ -6,29 +6,33 @@
 		role="log"
 		:aria-label="UI_CHAT_TEXT.MESSAGES_ARIA"
 		@scroll="handleListScroll">
-		<ChatMessageItem
-			v-for="message in messages"
-			:key="message.id"
-			:message="message"
-			:is-group="isGroup"
-			:is-selection-mode="isSelectionMode"
-			:is-selected="selectedSet.has(message.id)"
-			:is-context-active="activeContextMessageId === message.id"
-			:size-scale="sizeScale"
-			:search-query="searchQuery"
-			:all-images-urls="allImagesUrls"
-			:badges="senderBadges(message)"
-			:max-badges="maxBadges"
-			@avatar-click="handleAvatarClick(message)"
-			@select="handleSelect(message.id)"
-			@reply-action="handleReplyAction(message)"
-			@context-menu="handleContextMenu($event, message)"
-			@reply-click="handleReplyClick"
-			@download="handleDownload"
-			@file-click="handleFileClick"
-			@mention-click="handleMentionClick"
-			@command-click="handleCommandClick"
-			@reaction-toggle="handleToggleReaction(message.id, $event)" />
+		<TransitionGroup :name="enterName" @before-leave="handleBeforeLeave">
+			<ChatMessageItem
+				v-for="message in messages"
+				:key="message.id"
+				:class="messageClass"
+				:bubble-class="bubbleClass"
+				:message="message"
+				:is-group="isGroup"
+				:is-selection-mode="isSelectionMode"
+				:is-selected="selectedSet.has(message.id)"
+				:is-context-active="activeContextMessageId === message.id"
+				:size-scale="sizeScale"
+				:search-query="searchQuery"
+				:all-images-urls="allImagesUrls"
+				:badges="senderBadges(message)"
+				:max-badges="maxBadges"
+				@avatar-click="handleAvatarClick(message)"
+				@select="handleSelect(message.id)"
+				@reply-action="handleReplyAction(message)"
+				@context-menu="handleContextMenu($event, message)"
+				@reply-click="handleReplyClick"
+				@download="handleDownload"
+				@file-click="handleFileClick"
+				@mention-click="handleMentionClick"
+				@command-click="handleCommandClick"
+				@reaction-toggle="handleToggleReaction(message.id, $event)" />
+		</TransitionGroup>
 
 		<BaseEmpty
 			v-if="messages.length === 0 && !isTyping"
@@ -41,7 +45,8 @@
 
 		<div
 			v-if="isTyping"
-			class="base-chat-message-list__item base-chat-message-list__item--other base-chat-message-list__item--typing-indicator">
+			class="base-chat-message-list__item base-chat-message-list__item--other base-chat-message-list__item--typing-indicator"
+			:class="messageClass">
 			<BaseAvatar
 				v-if="avatar"
 				:src="avatar"
@@ -49,7 +54,7 @@
 				:size-scale="sizeScale"
 				class="base-chat-message-list__avatar" />
 			<div class="base-chat-message-list__bubble-wrapper">
-				<div class="base-chat-message-list__bubble base-chat-message-list__bubble--typing">
+				<div class="base-chat-message-list__bubble base-chat-message-list__bubble--typing" :class="bubbleClass">
 					<BaseLoader variant="dots" :label="typingLabel" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
 				</div>
 			</div>
@@ -126,6 +131,8 @@ const {
 	handleContextMenuDelete,
 	handleMentionClick,
 	handleCommandClick,
+	enterName,
+	handleBeforeLeave,
 	selectedSet,
 	activeContextMessageId,
 	isSelectionMode,

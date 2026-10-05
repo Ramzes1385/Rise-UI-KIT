@@ -5,3 +5,5 @@ export const COMMENT_THREAD_KEY: InjectionKey<CommentThreadContext> = Symbol('ri
 
 export const countComments = (comments: readonly CommentItem[]): number =>
 	comments.reduce((sum, comment) => sum + 1 + countComments(comment.replies ?? []), 0)
+
+export const leaveAtOnce = (_el: Element, done: () => void): void => done()

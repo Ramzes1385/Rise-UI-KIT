@@ -25,6 +25,10 @@ export interface ChatMessageListProps extends BaseComponentProps<string, 'root'>
 	members?: ChatMember[]
 	/** Сколько значков видно рядом с именем отправителя */
 	maxBadges?: number
+	/** Классы строки сообщения (часть `message` пропа `ui` у BaseChat) */
+	messageClass?: string
+	/** Классы пузыря сообщения (часть `bubble` пропа `ui` у BaseChat) */
+	bubbleClass?: string
 }
 
 export interface ChatMessageListEmits {

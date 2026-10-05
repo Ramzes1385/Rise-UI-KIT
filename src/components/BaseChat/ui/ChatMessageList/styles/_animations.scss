@@ -17,3 +17,13 @@
 		transform: scale(1);
 	}
 }
+
+@include enter-slide('base-chat-message', up);
+
+.base-chat-message-move {
+	transition: transform var(--rise-duration) var(--rise-ease);
+}
+
+.base-chat-message-leave-active {
+	position: absolute;
+}

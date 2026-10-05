@@ -4,8 +4,8 @@ import { formatRelativeTime } from '@utils/data/dateUtils'
 import { computed, inject, nextTick, ref, useId } from 'vue'
 import type { CommentNodeProps } from '../types/CommentNode.types'
 import { formatMessage, getLocale, pluralize } from '@/locales/state'
-import { COMMENT_THREAD_KEY, countComments } from './thread/commentTree'
 import type { CommentThreadContext } from '../types/BaseCommentThread.types'
+import { COMMENT_THREAD_KEY, countComments, leaveAtOnce } from './thread/commentTree'
 
 function useNodeTexts(props: CommentNodeProps, isCollapsed: () => boolean) {
 	return {
@@ -29,6 +29,9 @@ export function useCommentNode(props: CommentNodeProps) {
 	const focusReplyButton = (): Promise<void> => nextTick(() => (replyButtonRef.value?.$el as HTMLElement | undefined)?.focus())
 	return {
 		...useNodeTexts(props, () => isCollapsed.value),
+		ui: context.ui,
+		isMotionReduced: computed(() => context.isMotionReduced()),
+		leaveAtOnce,
 		authorId: `${ownId}-author`,
 		repliesId: `${ownId}-replies`,
 		replyButtonRef,

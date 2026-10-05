@@ -1,9 +1,11 @@
+import { useUi } from '@composables/base/useUi'
 import { getLocale, pluralize } from '@/locales/state'
+import { useMotion } from '@composables/app/useMotion'
 import { computed, provide, ref, shallowRef } from 'vue'
 import { useStructuredData } from '@composables/seo/useStructuredData'
-import { COMMENT_THREAD_KEY, countComments } from './thread/commentTree'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { StructuredDataContext } from '@composables/seo/useStructuredData'
+import { COMMENT_THREAD_KEY, countComments, leaveAtOnce } from './thread/commentTree'
 import type { StructuredData, StructuredDataObject } from '@utils/seo/structuredDataUtils'
 import type { CommentItem, CommentThreadProps, BaseCommentThreadEmits } from '../types/BaseCommentThread.types'
 
@@ -38,6 +40,9 @@ function threadSchema(comments: CommentItem[], { url }: StructuredDataContext): 
 export function useBaseCommentThread(props: CommentThreadProps, emit: BaseCommentThreadEmits) {
 	const replyTo = ref<string | null>(null)
 	const collapsed = shallowRef<ReadonlySet<string>>(new Set())
+	const rootRef = ref<HTMLElement | null>(null)
+	const motion = useMotion(rootRef)
+	const ui = useUi(props, 'base-comment-thread')
 	provide(COMMENT_THREAD_KEY, {
 		now: () => props.now,
 		maxDepth: () => props.maxDepth,
@@ -53,8 +58,14 @@ export function useBaseCommentThread(props: CommentThreadProps, emit: BaseCommen
 		},
 		toggleLike: comment => emit('like', { id: comment.id, isLiked: !comment.isLiked }),
 		toggleReplies: id => (collapsed.value = toggled(collapsed.value, id)),
+		isMotionReduced: () => motion.isReduced.value,
+		ui,
 	})
 	return {
+		rootRef,
+		ui,
+		isMotionReduced: motion.isReduced,
+		leaveAtOnce,
 		...useStandardBaseComponent('base-comment-thread', props, ['root', 'list', 'composer']),
 		countText: computed(() => pluralize(getLocale().plural.COMMENTS, countComments(props.comments))),
 		...useStructuredData(

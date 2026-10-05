@@ -1,13 +1,13 @@
 <template>
 	<BaseCard
-		class="base-chat"
-		:class="[variantClass, classes.root]"
+		:class="[ui('root'), variantClass, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle, { height: height }]"
 		:size-scale="sizeScale"
 		:padding="0">
-		<div class="base-chat__body">
+		<div :class="ui('body')">
 			<ChatHeader
 				v-if="title"
+				:class="ui('header')"
 				:title="title"
 				:subtitle="subtitle"
 				:avatar="avatar"
@@ -21,6 +21,7 @@
 				@info-click="handleInfoClick" />
 
 			<ChatPinnedPanel
+				:class="ui('pinned')"
 				:pinned-messages="pinnedMessages"
 				v-model:current-index="currentPinnedIndex"
 				:current-user-role="currentUserRole"
@@ -30,6 +31,9 @@
 
 			<ChatMessageList
 				ref="messageListRef"
+				:class="ui('list')"
+				:message-class="ui('message')"
+				:bubble-class="ui('bubble')"
 				:messages="filteredMessages"
 				:size-scale="sizeScale"
 				:search-query="searchQuery"
@@ -56,6 +60,7 @@
 
 			<ChatInput
 				v-show="selectedMessageIds.length === 0"
+				:class="ui('input')"
 				:size-scale="sizeScale"
 				:replying-to="replyingTo"
 				:quick-replies="quickReplies"
@@ -72,6 +77,7 @@
 
 			<ChatSelectionToolbar
 				v-if="selectedMessageIds.length > 0"
+				:class="ui('toolbar')"
 				:selected-count="selectedMessageIds.length"
 				:size-scale="sizeScale"
 				@forward="handleForwardSelected"
@@ -158,6 +164,7 @@ const emit = defineEmits<BaseChatEmits>()
 defineSlots<BaseChatSlots>()
 
 const {
+	ui,
 	variantClass,
 	variantStyle,
 	sizeScaleStyle,

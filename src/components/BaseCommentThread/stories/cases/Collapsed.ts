@@ -1,4 +1,4 @@
-import { expect } from 'storybook/test'
+import { expect, waitFor } from 'storybook/test'
 import type meta from '../BaseCommentThread.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 
@@ -15,6 +15,6 @@ export const Collapsed: StoryObj<typeof meta> = {
 		await userEvent.click(toggle)
 		await expect(toggle).toHaveAttribute('aria-expanded', 'false')
 		await expect(toggle).toHaveTextContent('Показать 3 ответа')
-		await expect(canvas.queryByText('Добавила в ТЗ, пункт 4.2.')).not.toBeVisible()
+		await waitFor(() => expect(canvas.queryByText('Добавила в ТЗ, пункт 4.2.')).not.toBeVisible())
 	},
 }

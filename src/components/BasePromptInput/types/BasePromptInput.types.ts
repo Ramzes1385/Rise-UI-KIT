@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /**
@@ -5,6 +6,16 @@ import type { BaseComponentProps } from '@composables/base/useBaseComponent'
  * `outline` — рамка без фона, `ghost` — без рамки и фона (для встраивания в свою панель)
  */
 export const PROMPT_INPUT_VARIANTS = ['default', 'soft', 'outline', 'ghost'] as const
+
+/**
+ * Части поля запроса для пропа `ui` (БЭМ-элементы `.base-prompt-input__<часть>`, `root` — обёртка компонента):
+ * label — подпись, box — рамка с полем и панелью, control — `<textarea>`, toolbar — панель под полем,
+ * start и end — левая и правая группы панели (слоты), action — место кнопки «Отправить» / «Остановить ответ»,
+ * button — сама кнопка, error — текст ошибки.
+ */
+export const PROMPT_INPUT_PARTS = ['label', 'box', 'control', 'toolbar', 'start', 'end', 'action', 'button', 'error'] as const
+
+export type BasePromptInputPart = (typeof PROMPT_INPUT_PARTS)[number]
 
 /**
  * Пропсы компонента BasePromptInput
@@ -23,7 +34,10 @@ export interface BasePromptInputProps extends BaseComponentProps<
 	error?: string
 	/** Отключает поле и кнопки */
 	isDisabled?: boolean
-	/** Идёт ответ: вместо «Отправить» — «Остановить ответ» (событие `stop`), Enter не отправляет */
+	/**
+	 * Идёт ответ: вместо «Отправить» — «Остановить ответ» (событие `stop`), Enter не отправляет.
+	 * Кнопки сменяются перекрёстно — прозрачность и масштаб на токенах движения; при выключенном движении — сразу
+	 */
 	isGenerating?: boolean
 	/** Высота пустого поля в строках */
 	rows?: number
@@ -33,6 +47,14 @@ export interface BasePromptInputProps extends BaseComponentProps<
 	maxlength?: number
 	/** Имя поля для отправки формы */
 	name?: string
+	/**
+	 * Классы частей поля (`root`, `box`, `control`, `toolbar`, `button`… — см. `PROMPT_INPUT_PARTS`) — добавляются к классам кита.
+	 * Глобально — `defaults.BasePromptInput.ui` плагина, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BasePromptInput :ui="{ box: 'shadow-lg', control: 'font-mono' }" />
+	 */
+	ui?: UiProp<BasePromptInputPart>
 }
 
 /**

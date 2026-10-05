@@ -144,4 +144,92 @@ describe('useAutoScroll', () => {
 
 		expect(el.scrollTop).toBe(0)
 	})
+
+	describe('плавная прокрутка', () => {
+		function scrollable(scrollHeight = 1000) {
+			const el = document.createElement('div')
+			Object.defineProperty(el, 'scrollHeight', { value: scrollHeight, configurable: true })
+			Object.defineProperty(el, 'scrollTop', { value: 0, writable: true, configurable: true })
+			const scrollTo = vi.fn()
+			Object.defineProperty(el, 'scrollTo', { value: scrollTo, configurable: true })
+			document.body.append(el)
+			return { el, scrollTo }
+		}
+
+		afterEach(() => {
+			document.documentElement.removeAttribute('data-rise-motion')
+			document.body.innerHTML = ''
+		})
+
+		it('при монтировании прокручивает сразу, без scrollTo', async () => {
+			const { el, scrollTo } = scrollable(500)
+
+			withSetup(() => useAutoScroll({ container: ref(el), enabled: () => true, watchSource: () => 0 }))
+
+			await vi.waitFor(() => expect(el.scrollTop).toBe(500))
+			expect(scrollTo).not.toHaveBeenCalled()
+		})
+
+		it('изменение watchSource прокручивает плавно', async () => {
+			const { el, scrollTo } = scrollable()
+			const source = ref(0)
+			withSetup(() => useAutoScroll({ container: ref(el), enabled: () => true, watchSource: () => source.value }))
+			await nextTick()
+			el.scrollTop = 0
+
+			source.value = 1
+
+			await vi.waitFor(() => expect(scrollTo).toHaveBeenCalledWith({ top: 1000, behavior: 'smooth' }))
+			expect(el.scrollTop).toBe(0)
+		})
+
+		it('scrollToBottom прокручивает плавно', async () => {
+			const { el, scrollTo } = scrollable()
+			const { scrollToBottom } = withSetup(() => useAutoScroll({ container: ref(el), enabled: () => true, watchSource: () => 0 }))
+
+			scrollToBottom()
+
+			await vi.waitFor(() => expect(scrollTo).toHaveBeenCalledWith({ top: 1000, behavior: 'smooth' }))
+		})
+
+		it('isSmooth() === false — сразу к низу', async () => {
+			const { el, scrollTo } = scrollable()
+			const { scrollToBottom } = withSetup(() =>
+				useAutoScroll({ container: ref(el), enabled: () => true, watchSource: () => 0, isSmooth: () => false }),
+			)
+			await nextTick()
+			el.scrollTop = 0
+
+			scrollToBottom()
+
+			await vi.waitFor(() => expect(el.scrollTop).toBe(1000))
+			expect(scrollTo).not.toHaveBeenCalled()
+		})
+
+		it('пресет none — сразу к низу', async () => {
+			document.documentElement.setAttribute('data-rise-motion', 'none')
+			const { el, scrollTo } = scrollable()
+			const { scrollToBottom } = withSetup(() => useAutoScroll({ container: ref(el), enabled: () => true, watchSource: () => 0 }))
+			await nextTick()
+			el.scrollTop = 0
+
+			scrollToBottom()
+
+			await vi.waitFor(() => expect(el.scrollTop).toBe(1000))
+			expect(scrollTo).not.toHaveBeenCalled()
+		})
+
+		it('без Element.scrollTo (старые среды) — через scrollTop', async () => {
+			const el = document.createElement('div')
+			Object.defineProperty(el, 'scrollHeight', { value: 800, configurable: true })
+			Object.defineProperty(el, 'scrollTop', { value: 0, writable: true, configurable: true })
+			const { scrollToBottom } = withSetup(() => useAutoScroll({ container: ref(el), enabled: () => true, watchSource: () => 0 }))
+			await nextTick()
+			el.scrollTop = 0
+
+			scrollToBottom()
+
+			await vi.waitFor(() => expect(el.scrollTop).toBe(800))
+		})
+	})
 })

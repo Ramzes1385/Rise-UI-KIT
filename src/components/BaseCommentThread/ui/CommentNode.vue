@@ -1,21 +1,21 @@
 <template>
-	<li class="base-comment-thread__comment">
-		<article class="base-comment-thread__card" :aria-labelledby="authorId">
-			<span class="base-comment-thread__avatar" aria-hidden="true">
+	<li :class="ui('comment')">
+		<article :class="ui('card')" :aria-labelledby="authorId">
+			<span :class="ui('avatar')" aria-hidden="true">
 				<BaseAvatar :src="comment.author.avatar" :name="comment.author.name" :size-scale="sizeScale" />
 			</span>
 			<div class="base-comment-thread__content">
-				<div class="base-comment-thread__meta">
-					<span :id="authorId" class="base-comment-thread__author">{{ comment.author.name }}</span>
+				<div :class="ui('meta')">
+					<span :id="authorId" :class="ui('author')">{{ comment.author.name }}</span>
 					<span v-if="parentAuthor" class="base-comment-thread__reply-to">
 						<BaseIcon name="reply" :size-scale="sizeScale * 0.75" aria-hidden="true" />
 						<span class="base-comment-thread__sr-only">{{ UI_COMMENT_THREAD.IN_REPLY_TO }}</span>
 						{{ parentAuthor }}
 					</span>
-					<time class="base-comment-thread__time" :datetime="iso">{{ time }}</time>
+					<time :class="ui('time')" :datetime="iso">{{ time }}</time>
 				</div>
-				<p class="base-comment-thread__text">{{ comment.text }}</p>
-				<div class="base-comment-thread__actions">
+				<p :class="ui('text')">{{ comment.text }}</p>
+				<div :class="ui('actions')">
 					<BaseButton
 						class="base-comment-thread__like"
 						variant="ghost"
@@ -53,19 +53,26 @@
 					@cancel="cancelReply" />
 			</div>
 		</article>
-		<ul
-			v-if="replies.length"
-			v-show="!isCollapsed"
-			:id="repliesId"
-			class="base-comment-thread__replies"
-			:class="{ 'base-comment-thread__replies--flat': isFlat }">
-			<CommentNode
-				v-for="reply in replies"
-				:key="reply.id"
-				:comment="reply"
-				:depth="depth + 1"
-				:parent-author="isFlat ? comment.author.name : undefined" />
-		</ul>
+		<Transition name="base-comment-thread-expand" :css="!isMotionReduced">
+			<div v-if="replies.length" v-show="!isCollapsed" class="base-comment-thread__replies-expand">
+				<div class="base-comment-thread__replies-body">
+					<TransitionGroup
+						:id="repliesId"
+						tag="ul"
+						name="base-comment-thread-item"
+						:css="!isMotionReduced"
+						:class="[ui('replies'), { 'base-comment-thread__replies--flat': isFlat }]"
+						@leave="leaveAtOnce">
+						<CommentNode
+							v-for="reply in replies"
+							:key="reply.id"
+							:comment="reply"
+							:depth="depth + 1"
+							:parent-author="isFlat ? comment.author.name : undefined" />
+					</TransitionGroup>
+				</div>
+			</div>
+		</Transition>
 	</li>
 </template>
 
@@ -81,6 +88,9 @@ import type { CommentNodeProps } from '../types/CommentNode.types'
 const props = defineProps<CommentNodeProps>()
 
 const {
+	ui,
+	isMotionReduced,
+	leaveAtOnce,
 	authorId,
 	repliesId,
 	replyButtonRef,

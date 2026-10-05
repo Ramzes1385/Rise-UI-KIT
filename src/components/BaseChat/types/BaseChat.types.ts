@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { VoiceRecording } from '@components/BaseVoiceRecorder'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
@@ -107,6 +108,16 @@ export interface ChatCommand {
  */
 export const CHAT_VARIANTS = ['bubble', 'flat', 'modern'] as const
 
+/**
+ * Части чата для пропа `ui` (БЭМ-элементы `.base-chat__<часть>`, `root` — сам чат):
+ * body — колонка внутри карточки; header — шапка; pinned — панель закреплённых; list — лента сообщений;
+ * message — строка сообщения (и индикатора «печатает»); bubble — пузырь сообщения; input — поле ввода;
+ * toolbar — панель выделенных сообщений.
+ */
+export const CHAT_PARTS = ['body', 'header', 'pinned', 'list', 'message', 'bubble', 'input', 'toolbar'] as const
+
+export type BaseChatPart = (typeof CHAT_PARTS)[number]
+
 export interface BaseChatProps extends BaseComponentProps<(typeof CHAT_VARIANTS)[number], 'root'> {
 	messages: ChatMessage[]
 	title: string
@@ -130,6 +141,15 @@ export interface BaseChatProps extends BaseComponentProps<(typeof CHAT_VARIANTS)
 	hasVoiceMessages?: boolean
 	/** Источник звука для голосовых вместо микрофона — как `requestStream` у BaseVoiceRecorder */
 	requestVoiceStream?: () => Promise<MediaStream>
+	/**
+	 * Классы частей чата (`root`, `body`, `header`, `pinned`, `list`, `message`, `bubble`, `input`, `toolbar`) —
+	 * добавляются к классам кита. Глобально — `createUiKitPlugin({ defaults: { BaseChat: { ui } } })`,
+	 * классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseChat :messages="messages" title="Поддержка" :ui="{ bubble: 'shadow-sm', list: 'px-4' }" />
+	 */
+	ui?: UiProp<BaseChatPart>
 }
 
 export interface BaseChatEmits {

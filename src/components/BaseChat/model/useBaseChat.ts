@@ -1,4 +1,5 @@
 import { ref } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import { useChatState } from '@composables/chat/useChatState'
 import { useChatActions } from '@composables/chat/useChatActions'
 import type { VoiceRecording } from '@components/BaseVoiceRecorder'
@@ -32,6 +33,7 @@ export function useBaseChat(props: BaseChatProps, emit: BaseChatEmits) {
 
 	return {
 		...standard,
+		ui: useUi(props, 'base-chat'),
 		messageListRef,
 		...state,
 		...deleteConfirm,

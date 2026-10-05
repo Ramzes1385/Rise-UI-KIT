@@ -183,7 +183,7 @@ describe('BaseChat integration', () => {
 			Element.prototype.scrollBy = scrollBy
 			vi.stubGlobal(
 				'matchMedia',
-				vi.fn(() => ({ matches: true })),
+				vi.fn(() => ({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() })),
 			)
 			const { container } = renderChat({ messages: PINNED })
 

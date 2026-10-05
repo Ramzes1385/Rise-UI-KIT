@@ -14,6 +14,8 @@ export interface ChatMessageItemProps {
 	badges?: ChatBadge[]
 	/** Сколько значков видно рядом с именем */
 	maxBadges?: number
+	/** Классы пузыря (часть `bubble` пропа `ui` у BaseChat) */
+	bubbleClass?: string
 }
 
 export interface ChatMessageItemEmits {

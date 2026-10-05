@@ -1,15 +1,21 @@
 <template>
 	<section
-		class="base-comment-thread"
-		:class="[variantClass, classes.root]"
+		ref="rootRef"
+		:class="[ui('root'), variantClass, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		:aria-label="label ?? UI_COMMENT_THREAD.TITLE">
 		<component :is="'script'" v-if="structuredData" type="application/ld+json" v-html="structuredData" />
-		<p class="base-comment-thread__count">{{ countText }}</p>
-		<ul v-if="comments.length" class="base-comment-thread__list" :class="classes.list">
+		<p :class="ui('count')">{{ countText }}</p>
+		<TransitionGroup
+			v-if="comments.length"
+			tag="ul"
+			name="base-comment-thread-item"
+			:css="!isMotionReduced"
+			:class="[ui('list'), classes.list]"
+			@leave="leaveAtOnce">
 			<CommentNode v-for="comment in comments" :key="comment.id" :comment="comment" :depth="0" />
-		</ul>
-		<p v-else class="base-comment-thread__empty">{{ UI_COMMENT_THREAD.EMPTY }}</p>
+		</TransitionGroup>
+		<p v-else :class="ui('empty')">{{ UI_COMMENT_THREAD.EMPTY }}</p>
 		<CommentComposer
 			v-if="!isReadonly"
 			:class="classes.composer"
@@ -46,6 +52,18 @@ const props = withDefaults(
 
 const emit = defineEmits<BaseCommentThreadEmits>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, countText, submitRoot, structuredData } =
-	useBaseCommentThread(props, emit)
+const {
+	rootRef,
+	ui,
+	isMotionReduced,
+	leaveAtOnce,
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	countText,
+	submitRoot,
+	structuredData,
+} = useBaseCommentThread(props, emit)
 </script>

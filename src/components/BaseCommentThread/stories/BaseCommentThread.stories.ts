@@ -24,3 +24,5 @@ export const Empty = cases.Empty
 export const Variants = cases.Variants
 export const Sizes = cases.Sizes
 export const Seo = cases.Seo
+export const Theming = cases.Theming
+export const Animations = cases.Animations

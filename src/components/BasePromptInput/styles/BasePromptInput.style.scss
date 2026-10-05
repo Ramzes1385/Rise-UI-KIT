@@ -1,10 +1,10 @@
 .base-prompt-input {
 	display: flex;
 	flex-direction: column;
-	gap: sz(6px);
+	gap: sz(ct(prompt-input, gap, 6px));
 	width: 100%;
 	min-width: 0;
-	@include custom-text(color, var(--rise-text-highlighted));
+	@include custom-text(color, ct(prompt-input, text, var(--rise-text-highlighted)));
 
 	&__label {
 		@include field-label;
@@ -15,8 +15,7 @@
 		flex-direction: column;
 		box-sizing: border-box;
 		min-width: 0;
-		border-radius: sz(var(--rise-radius-lg));
-		@include field-box;
+		@include field-box(prompt-input);
 	}
 
 	&__control {
@@ -32,6 +31,7 @@
 		color: inherit;
 		font: inherit;
 		@include control-text;
+		font-size: sz(ct(prompt-input, control-font-size, var(--rise-control-font-size)));
 		resize: none;
 		outline: none;
 		@include scrollbar-thin;
@@ -45,7 +45,7 @@
 	&__toolbar {
 		display: flex;
 		align-items: center;
-		gap: sz(8px);
+		gap: sz(ct(prompt-input, toolbar-gap, 8px));
 		padding: sz(6px) sz(8px) sz(8px);
 	}
 
@@ -65,6 +65,12 @@
 		margin-left: auto;
 	}
 
+	&__action {
+		position: relative;
+		display: flex;
+		flex: none;
+	}
+
 	&__button.base-button {
 		--btn-pad-top: 0px;
 		--btn-pad-right: 0px;
@@ -75,11 +81,11 @@
 		flex: none;
 		width: sz(32px);
 		height: sz(32px);
-		border-radius: 50%;
+		border-radius: ct(prompt-input, button-radius, 50%);
 
 		.base-icon {
-			width: sz(16px);
-			height: sz(16px);
+			width: sz(ct(prompt-input, button-icon-size, 16px));
+			height: sz(ct(prompt-input, button-icon-size, 16px));
 		}
 	}
 
@@ -127,4 +133,11 @@
 	&__hint {
 		@include visually-hidden;
 	}
+}
+
+@include enter-scale('base-prompt-input-action');
+
+.base-prompt-input-action-leave-active {
+	position: absolute;
+	inset: 0;
 }

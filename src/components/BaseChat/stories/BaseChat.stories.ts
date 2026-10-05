@@ -38,3 +38,5 @@ export const MentionsAndCommands = cases.MentionsAndCommands
 export const Keyboard = cases.Keyboard
 export const EmojiPicker = cases.EmojiPicker
 export const VoiceMessages = cases.VoiceMessages
+export const Theming = cases.Theming
+export const Animations = cases.Animations

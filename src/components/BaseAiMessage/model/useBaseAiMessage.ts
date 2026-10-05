@@ -1,4 +1,5 @@
 import { onBeforeUnmount, ref } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseAiMessageEmits, BaseAiMessageProps } from '../types/BaseAiMessage.types'
 
@@ -18,6 +19,7 @@ export function useBaseAiMessage(props: BaseAiMessageProps, emit: BaseAiMessageE
 	onBeforeUnmount(() => clearTimeout(timer))
 	return {
 		...useStandardBaseComponent('base-ai-message', props, ['root', 'body']),
+		ui: useUi(props, 'base-ai-message'),
 		isCopied,
 		async copy(): Promise<void> {
 			const content = props.content ?? ''

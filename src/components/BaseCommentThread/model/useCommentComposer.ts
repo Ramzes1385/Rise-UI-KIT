@@ -1,4 +1,6 @@
-import { computed, onMounted, ref } from 'vue'
+import { computed, inject, onMounted, ref } from 'vue'
+import { COMMENT_THREAD_KEY } from './thread/commentTree'
+import type { CommentThreadContext } from '../types/BaseCommentThread.types'
 import type { CommentComposerEmits, CommentComposerProps } from '../types/CommentComposer.types'
 
 export function useCommentComposer(props: CommentComposerProps, emit: CommentComposerEmits) {
@@ -14,6 +16,7 @@ export function useCommentComposer(props: CommentComposerProps, emit: CommentCom
 		draft.value = ''
 	}
 	return {
+		ui: (inject(COMMENT_THREAD_KEY) as CommentThreadContext).ui,
 		draft,
 		textareaRef,
 		canSend: computed(() => draft.value.trim().length > 0),

@@ -1,5 +1,7 @@
 import type { Ref } from 'vue'
 import { UI_AI } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
+import { useMotion } from '@composables/app/useMotion'
 import { useFieldControl } from '@composables/form/useFormContext'
 import { computed, nextTick, onMounted, ref, useId, watch } from 'vue'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
@@ -65,6 +67,8 @@ export function useBasePromptInput(props: BasePromptInputProps, emit: BasePrompt
 	return {
 		...useStandardBaseComponent('base-prompt-input', props, ['root', 'label', 'box', 'control', 'toolbar', 'error']),
 		...usePromptControl(props),
+		ui: useUi(props, 'base-prompt-input'),
+		isActionInstant: useMotion(controlRef).isReduced,
 		controlRef,
 		text,
 		canSubmit,

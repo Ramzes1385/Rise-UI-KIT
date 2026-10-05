@@ -1,6 +1,7 @@
 import { computed } from 'vue'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { useAutoScroll } from '@composables/interaction/useAutoScroll'
+import { useChatMessageMotion } from '../../../model/useChatMessageMotion'
 import type { ChatBadge, ChatMessage } from '../../../types/BaseChat.types'
 import { useChatMessageActions } from '@composables/chat/useChatMessageActions'
 import type { ChatMessageListEmits, MessageListProps } from '../types/ChatMessageList.types'
@@ -8,14 +9,21 @@ import type { ChatMessageListEmits, MessageListProps } from '../types/ChatMessag
 export function useChatMessageList(props: MessageListProps, emit: ChatMessageListEmits) {
 	const actions = useChatMessageActions({ selectedMessageIds: computed(() => props.selectedMessageIds), emit })
 	const badgesBySender = computed(() => new Map(props.members.map(member => [member.id, member.badges ?? []])))
+	const motion = useChatMessageMotion(
+		() => props.messages.map(message => message.id),
+		() => props.searchQuery ?? '',
+	)
 	useAutoScroll({
 		container: actions.listRef,
 		enabled: () => true,
 		watchSource: () => props.messages.length + (props.isTyping ? 1 : 0),
+		isSmooth: motion.isAppending,
 	})
 
 	return {
 		...actions,
+		enterName: motion.enterName,
+		handleBeforeLeave: motion.handleBeforeLeave,
 		selectedSet: computed(() => new Set(props.selectedMessageIds)),
 		activeContextMessageId: computed(() => actions.contextMenu.value.message?.id ?? null),
 		isSelectionMode: computed(() => props.selectedMessageIds.length > 0),

@@ -1,14 +1,15 @@
 .base-comment-thread {
 	display: flex;
 	flex-direction: column;
-	gap: sz(16px);
+	gap: sz(ct(comment-thread, gap, 16px));
 	box-sizing: border-box;
 	min-width: 0;
-	padding: sz(16px);
-	border: 1px solid var(--rise-border);
-	border-radius: sz(var(--rise-radius-lg));
-	@include custom-bg(background-color, var(--rise-bg));
-	@include custom-text(color, var(--rise-text));
+	padding: space(ct(comment-thread, padding, 16px));
+	border: 1px solid ct(comment-thread, border, var(--rise-border));
+	border-radius: sz(ct(comment-thread, radius, var(--rise-radius-lg)));
+	box-shadow: ct(comment-thread, shadow, none);
+	@include custom-bg(background-color, ct(comment-thread, bg, var(--rise-bg)));
+	@include custom-text(color, ct(comment-thread, text, var(--rise-text)));
 
 	&--ghost {
 		padding: 0;
@@ -82,13 +83,13 @@
 	}
 
 	&__author {
-		color: var(--rise-text-highlighted);
-		font-weight: var(--rise-font-weight-semibold);
+		color: ct(comment-thread, author-text, var(--rise-text-highlighted));
+		font-weight: ct(comment-thread, author-font-weight, var(--rise-font-weight-semibold));
 		@include text-size(sm);
 	}
 
 	&__time {
-		color: var(--rise-text-toned);
+		color: ct(comment-thread, time-text, var(--rise-text-toned));
 		@include text-size(xs);
 	}
 
@@ -108,9 +109,10 @@
 
 	&__text {
 		margin: 0;
+		font-size: sz(ct(comment-thread, font-size, var(--rise-font-size-sm)));
+		line-height: sz(var(--rise-line-height-sm));
 		white-space: pre-wrap;
 		overflow-wrap: anywhere;
-		@include text-size(sm);
 	}
 
 	&__actions {
@@ -121,7 +123,7 @@
 	}
 
 	&__like[aria-pressed='true'] {
-		color: var(--rise-primary-text);
+		color: ct(comment-thread, like-text-checked, var(--rise-primary-text));
 	}
 
 	&__composer--reply {
@@ -143,4 +145,20 @@
 		color: var(--rise-text-toned);
 		@include text-size(sm);
 	}
+}
+
+@include enter-slide('base-comment-thread-item', up);
+
+.base-comment-thread-item-move {
+	transition: transform var(--rise-duration) var(--rise-ease-out);
+}
+
+.base-comment-thread-expand-enter-active,
+.base-comment-thread-expand-leave-active {
+	@include expand-rows-open;
+}
+
+.base-comment-thread-expand-enter-from,
+.base-comment-thread-expand-leave-to {
+	@include expand-rows;
 }

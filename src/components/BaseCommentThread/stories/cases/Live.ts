@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { expect } from 'storybook/test'
+import { expect, waitFor } from 'storybook/test'
 import type meta from '../BaseCommentThread.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseCommentThread from '../../ui/BaseCommentThread.vue'
@@ -103,7 +103,7 @@ export const Live: StoryObj<typeof meta> = {
 	play: async ({ canvas, userEvent }) => {
 		await userEvent.type(canvas.getByRole('textbox', { name: 'Новый комментарий' }), 'Готова помочь с тестами')
 		await userEvent.click(canvas.getByRole('button', { name: 'Отправить' }))
-		await expect(canvas.getByText('Готова помочь с тестами')).toBeVisible()
+		await waitFor(() => expect(canvas.getByText('Готова помочь с тестами')).toBeVisible())
 		await expect(canvas.getByText('6 комментариев')).toBeVisible()
 		await userEvent.click(canvas.getByRole('button', { name: 'Нравится · 1' }))
 		await expect(canvas.getByRole('button', { name: 'Нравится · 2' })).toHaveAttribute('aria-pressed', 'true')

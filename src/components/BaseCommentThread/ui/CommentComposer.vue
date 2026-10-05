@@ -1,6 +1,6 @@
 <template>
-	<form class="base-comment-thread__composer" :class="{ 'base-comment-thread__composer--reply': isReply }" @submit.prevent="submit">
-		<span v-if="author" class="base-comment-thread__avatar" aria-hidden="true">
+	<form :class="[ui('composer'), { 'base-comment-thread__composer--reply': isReply }]" @submit.prevent="submit">
+		<span v-if="author" :class="ui('avatar')" aria-hidden="true">
 			<BaseAvatar :src="author.avatar" :name="author.name" :size-scale="sizeScale" />
 		</span>
 		<div class="base-comment-thread__composer-body">
@@ -35,5 +35,5 @@ const props = defineProps<CommentComposerProps>()
 
 const emit = defineEmits<CommentComposerEmits>()
 
-const { draft, textareaRef, canSend, submit, cancel, handleKeydown } = useCommentComposer(props, emit)
+const { ui, draft, textareaRef, canSend, submit, cancel, handleKeydown } = useCommentComposer(props, emit)
 </script>

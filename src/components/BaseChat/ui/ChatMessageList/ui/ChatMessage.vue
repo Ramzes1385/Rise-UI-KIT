@@ -40,7 +40,7 @@
 				<ChatBadges v-if="badges.length > 0" :badges="badges" :max="maxBadges" :size-scale="sizeScale" />
 			</div>
 
-			<div class="base-chat-message-list__bubble">
+			<div class="base-chat-message-list__bubble" :class="bubbleClass">
 				<div
 					v-if="!isSelectionMode"
 					class="base-chat-message-list__actions"

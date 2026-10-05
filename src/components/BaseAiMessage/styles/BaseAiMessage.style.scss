@@ -1,12 +1,13 @@
 .base-ai-message {
 	display: flex;
 	align-items: flex-start;
-	gap: sz(12px);
+	gap: sz(ct(ai-message, gap, 12px));
 	box-sizing: border-box;
 	min-width: 0;
 	max-width: 100%;
-	@include text-size(sm);
-	@include custom-text(color, var(--rise-text));
+	font-size: sz(ct(ai-message, font-size, var(--rise-font-size-sm)));
+	line-height: sz(var(--rise-line-height-sm));
+	@include custom-text(color, ct(ai-message, text, var(--rise-text)));
 
 	&__avatar {
 		display: inline-flex;
@@ -16,8 +17,12 @@
 		width: sz(32px);
 		height: sz(32px);
 		overflow: hidden;
-		border-radius: sz(10px);
-		background-image: linear-gradient(135deg, var(--rise-primary), color-mix(in oklab, var(--rise-primary) 60%, #7c3aed));
+		border-radius: sz(ct(ai-message, avatar-radius, 10px));
+		background-image: ct(
+			ai-message,
+			avatar-bg,
+			linear-gradient(135deg, var(--rise-primary), color-mix(in oklab, var(--rise-primary) 60%, #7c3aed))
+		);
 		color: var(--rise-on-primary);
 
 		.base-icon {
@@ -48,8 +53,8 @@
 	}
 
 	&__name {
-		font-weight: var(--rise-font-weight-semibold);
-		@include custom-text(color, var(--rise-text-highlighted));
+		font-weight: ct(ai-message, name-font-weight, var(--rise-font-weight-semibold));
+		@include custom-text(color, ct(ai-message, name-text, var(--rise-text-highlighted)));
 	}
 
 	&__time {
@@ -60,16 +65,16 @@
 
 	&--soft &__body,
 	&--outline &__body {
-		padding: sz(12px) sz(16px);
-		border-radius: sz(var(--rise-radius-lg));
+		padding: space(ct(ai-message, body-padding-y, 12px) ct(ai-message, body-padding-x, 16px));
+		border-radius: sz(ct(ai-message, body-radius, var(--rise-radius-lg)));
 	}
 
 	&--soft &__body {
-		@include custom-bg(background-color, var(--rise-bg-elevated));
+		@include custom-bg(background-color, ct(ai-message, body-bg, var(--rise-bg-elevated)));
 	}
 
 	&--outline &__body {
-		border: 1px solid var(--rise-border-accented);
+		border: 1px solid ct(ai-message, body-border, var(--rise-border-accented));
 	}
 
 	&--soft &__header,
@@ -173,3 +178,6 @@
 		@include visually-hidden;
 	}
 }
+
+@include enter-slide('base-ai-message-actions', up);
+@include enter-slide('base-ai-message-error', up);
