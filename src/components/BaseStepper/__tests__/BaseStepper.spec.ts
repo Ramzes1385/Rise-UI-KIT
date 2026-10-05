@@ -145,13 +145,14 @@ describe('BaseStepper unit', () => {
 			expect(container.querySelector('.base-stepper')?.classList.contains('base-stepper--animated')).toBe(true)
 		})
 
-		it('должен устанавливать CSS-переменную прогресса', () => {
+		it('должен отмечать --passed шаги до текущего, включая шаг с ошибкой', () => {
 			const { container } = render(BaseStepper, {
-				props: { modelValue: 2, items: ITEMS },
+				props: { modelValue: 3, items: [{ label: 'А' }, { label: 'Б', isError: true }, { label: 'В' }, { label: 'Г' }] },
 			})
 
-			const stepper = container.querySelector('.base-stepper') as HTMLElement
-			expect(stepper.style.getPropertyValue('--stepper-progress-scale')).toBe('0.5')
+			const steps = [...container.querySelectorAll('.base-stepper__step')]
+			expect(steps.map(step => step.classList.contains('base-stepper__step--passed'))).toEqual([true, true, false, false])
+			expect(container.querySelector('.base-stepper')).not.toHaveAttribute('style')
 		})
 	})
 
@@ -287,14 +288,13 @@ describe('BaseStepper unit', () => {
 		})
 	})
 
-	describe('progressStyle', () => {
-		it('не должен устанавливать CSS-переменные прогресса когда один шаг', () => {
+	describe('линия прогресса', () => {
+		it('не должен отмечать --passed первый шаг', () => {
 			const { container } = render(BaseStepper, {
 				props: { modelValue: 1, items: [{ label: 'Один' }] },
 			})
 
-			const el = container.querySelector('.base-stepper') as HTMLElement
-			expect(el.style.getPropertyValue('--stepper-progress-scale')).toBe('')
+			expect(container.querySelector('.base-stepper__step--passed')).toBeNull()
 		})
 	})
 

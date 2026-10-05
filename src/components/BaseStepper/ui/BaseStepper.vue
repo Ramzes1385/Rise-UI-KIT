@@ -2,12 +2,12 @@
 	<div
 		class="base-stepper"
 		:class="[`base-stepper--${orientation}`, `base-stepper--${shape}`, variantClass, classes.root]"
-		:style="[sizeScaleStyle, variantStyle, customColorStyle, progressStyle]">
+		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<div v-if="$slots.header" class="base-stepper__header" :class="classes.header">
 			<slot name="header" />
 		</div>
 
-		<ol class="base-stepper__items" :class="classes.items">
+		<ol ref="itemsRef" class="base-stepper__items" :class="classes.items" :tabindex="isItemsFocusable ? 0 : undefined">
 			<li
 				v-for="(step, index) in items"
 				:key="index"
@@ -16,6 +16,7 @@
 					{
 						'base-stepper__step--active': stepState(index).isActive,
 						'base-stepper__step--completed': stepState(index).isCompleted,
+						'base-stepper__step--passed': isStepPassed(index),
 						'base-stepper__step--error': stepState(index).isError,
 						'base-stepper__step--disabled': stepState(index).isDisabled,
 					},
@@ -93,9 +94,11 @@ const {
 	variantStyle,
 	customColorStyle,
 	classes,
-	progressStyle,
+	itemsRef,
+	isItemsFocusable,
 	optionalLabel,
 	stepState,
+	isStepPassed,
 	statusText,
 	isStepClickable,
 	handleStepClick,

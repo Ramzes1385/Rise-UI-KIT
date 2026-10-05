@@ -15,6 +15,11 @@ export const LongContent: StoryObj<typeof meta> = {
 	play: async ({ canvas }) => {
 		for (const step of canvas.getAllByRole('button')) {
 			await expect(step.scrollWidth).toBeLessThanOrEqual(step.clientWidth)
+			const box = step.getBoundingClientRect()
+			for (const text of step.querySelectorAll('.base-stepper__label, .base-stepper__description')) {
+				const rect = text.getBoundingClientRect()
+				await expect(rect.left >= box.left - 1 && rect.right <= box.right + 1).toBe(true)
+			}
 		}
 	},
 }
