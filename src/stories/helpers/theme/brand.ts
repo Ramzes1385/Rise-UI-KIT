@@ -8,6 +8,8 @@
  * пресет `corporate`. Для URL и скриншотов: `?globals=brand:corporate;theme:dark`.
  */
 
+import { watch } from 'vue'
+import type { Ref } from 'vue'
 import { applyTheme } from '@composables/app/useTheme'
 import type { StoryBrand } from '../types/helpers.types'
 import type { Theme, ThemeInput } from '@utils/theme/themeUtils'
@@ -67,4 +69,29 @@ export function applyStoryBrand(brand: unknown, root: HTMLElement = document.doc
 		return
 	}
 	applyTheme(brandTheme(brand), { target: root })
+}
+
+/** Сохраняет входы конструктора для бренда `custom`; имя темы всегда `custom` */
+function saveCustomTheme(input: ThemeInput): void {
+	try {
+		window.localStorage.setItem(CUSTOM_THEME_KEY, JSON.stringify({ ...input, name: CUSTOM_BRAND }))
+	} catch {
+		// хранилище закрыто (приватный режим) — бренд `custom` останется умолчанием
+	}
+}
+
+/**
+ * Конструктор темы → бренд `custom`: входы сохраняются при каждом изменении, а если бренд `custom` уже выбран —
+ * тема на `<html>` обновляется сразу. Только для превью: в «Show code» не попадает.
+ */
+export function watchCustomBrand(input: Ref<ThemeInput>): void {
+	watch(
+		input,
+		value => {
+			saveCustomTheme(value)
+			const root = document.documentElement
+			if (root.getAttribute('data-rise-theme') === CUSTOM_BRAND) applyStoryBrand(CUSTOM_BRAND, root)
+		},
+		{ immediate: true },
+	)
 }
