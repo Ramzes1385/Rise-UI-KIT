@@ -39,10 +39,20 @@ function layerIndex(layers: ImageMapLayer[], id: string): number {
 	return layers.findIndex(layer => layer.id === id)
 }
 
+const warnedNodes = new WeakMap<ImageMapLayer[], Set<string>>()
+
+function warnLayerOnce(input: StepsInput, id: string, layer: string): void {
+	const warned = warnedNodes.get(input.layers) ?? new Set<string>()
+	warnedNodes.set(input.layers, warned)
+	if (warned.has(id)) return
+	warned.add(id)
+	warn(UI_WARNINGS.IMAGE_MAP_ROUTE_LAYER, { id, layer })
+}
+
 function nodeLayerIndex(input: StepsInput, id: string): number {
 	const layer = input.graph.layerOf(input.graph.nodes.get(id) as RouteNode)
 	const index = layerIndex(input.layers, layer)
-	if (index < 0) warn(UI_WARNINGS.IMAGE_MAP_ROUTE_LAYER, { id, layer })
+	if (index < 0) warnLayerOnce(input, id, layer)
 	return index
 }
 

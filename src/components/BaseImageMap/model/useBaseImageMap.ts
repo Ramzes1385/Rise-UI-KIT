@@ -15,6 +15,7 @@ import { useImageMapEvents } from './interaction/useImageMapEvents'
 import { useImageMapFullscreen } from './zoom/useImageMapFullscreen'
 import { useImageMapActions } from './interaction/useImageMapActions'
 import { useImageMapOverlay } from './interaction/useImageMapOverlay'
+import type BaseButton from '@components/BaseButton/ui/BaseButton.vue'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { ResolvedImageMapObject } from '../types/internal/imageMapModel.types'
 import type { BaseImageMapEmits, BaseImageMapExpose, ImageMapProps } from '../types/BaseImageMap.types'
@@ -42,6 +43,7 @@ function useRefs() {
 		viewportRef: ref<HTMLElement | null>(null),
 		stageRef: ref<HTMLElement | null>(null),
 		svgContainerRef: ref<HTMLElement | null>(null),
+		zoomInRef: ref<InstanceType<typeof BaseButton> | null>(null),
 		renderedSvgIds: shallowRef<ReadonlySet<string>>(new Set()),
 	}
 }
@@ -116,7 +118,9 @@ function useViewportFocus(core: ReturnType<typeof useMapCore>): void {
 	watch(
 		() => zoom.isMinZoom.value,
 		isMinZoom => {
-			if (isMinZoom && document.activeElement === refs.viewportRef.value) focus.focusObject(focus.tabbableId.value)
+			if (!isMinZoom || document.activeElement !== refs.viewportRef.value) return
+			if (focus.tabbableId.value) focus.focusObject(focus.tabbableId.value)
+			else refs.zoomInRef.value?.focus()
 		},
 	)
 }

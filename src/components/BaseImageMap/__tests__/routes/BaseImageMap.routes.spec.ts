@@ -278,13 +278,14 @@ describe('routeSteps', () => {
 			edges: [],
 			transitions: [{ id: 'lift', type: 'elevator', nodes: ['b', 'a'] }],
 		}
-		const graph = buildRouteGraph({ routes, layers: LAYERS, isStepFree: false })
+		const layers = [...LAYERS]
+		const graph = buildRouteGraph({ routes, layers, isStepFree: false })
 		const up = routeSteps({
 			graph,
 			path: findRoutePath(graph, ['b'], ['a'])!,
 			from: shop('b', 'Б'),
 			to: shop('a', 'А'),
-			layers: LAYERS,
+			layers,
 		})
 		expect(up[2]?.text).toBe('Поднимитесь на лифте: 2 этаж')
 		const down = routeSteps({
@@ -292,10 +293,34 @@ describe('routeSteps', () => {
 			path: findRoutePath(graph, ['a'], ['b'])!,
 			from: shop('a', 'А'),
 			to: shop('b', 'Б'),
-			layers: LAYERS,
+			layers,
 		})
 		expect(down[2]?.text).toBe('Спуститесь на лифте: roof')
 		expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('узел маршрута «b» стоит на слое «roof»'))
+		warnSpy.mockRestore()
+	})
+
+	it('предупреждение о слое — один раз на узел для тех же data.layers, для новых — снова', () => {
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+		const routes: ImageMapRoutes = {
+			nodes: [
+				{ id: 'a', layer: 'floor-2', x: 0, y: 0 },
+				{ id: 'b', layer: 'roof', x: 0, y: 0 },
+			],
+			edges: [],
+			transitions: [{ id: 'lift', type: 'elevator', nodes: ['b', 'a'] }],
+		}
+		const steps = (layers: typeof LAYERS): void => {
+			const graph = buildRouteGraph({ routes, layers, isStepFree: false })
+			routeSteps({ graph, path: findRoutePath(graph, ['b'], ['a'])!, from: shop('b', 'Б'), to: shop('a', 'А'), layers })
+		}
+		const layers = [...LAYERS]
+		steps(layers)
+		steps(layers)
+		const roofWarnings = (): number => warnSpy.mock.calls.filter(([text]) => String(text).includes('«roof»')).length
+		expect(roofWarnings()).toBe(1)
+		steps([...LAYERS])
+		expect(roofWarnings()).toBe(2)
 		warnSpy.mockRestore()
 	})
 

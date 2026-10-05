@@ -32,6 +32,7 @@
 						:aria-label="UI_IMAGE_MAP.ZOOM">
 						<template v-if="hasZoomControls">
 							<BaseButton
+								ref="zoomInRef"
 								variant="ghost"
 								:aria-label="UI_ARIA.ZOOM_IN"
 								:is-disabled="zoom.isMaxZoom.value"
@@ -312,6 +313,7 @@ const {
 	viewportRef,
 	stageRef,
 	svgContainerRef,
+	zoomInRef,
 	isFullscreen,
 	isFullscreenSupported,
 	toggleFullscreen,

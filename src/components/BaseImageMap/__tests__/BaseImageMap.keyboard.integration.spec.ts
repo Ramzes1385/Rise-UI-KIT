@@ -81,6 +81,19 @@ describe('BaseImageMap клавиатура — панорама окна', () =
 		expect(document.activeElement).toBe(objectElement(container, 'a'))
 	})
 
+	it('масштаб вернулся к 1 с фокусом на окне, доступных объектов нет — фокус на «Увеличить»', async () => {
+		const user = userEvent.setup()
+		mockViewport()
+		const data: ImageMapData = { ...SIMPLE_DATA, objects: SIMPLE_DATA.objects.map(object => ({ ...object, isDisabled: true })) }
+		const { container } = render(BaseImageMap, { props: { data, ...BASE_PROPS } })
+		await nextTick()
+		const viewport = container.querySelector('.base-image-map__viewport') as HTMLElement
+		await user.click(screen.getByRole('button', { name: 'Увеличить' }))
+		viewport.focus()
+		await user.keyboard('0')
+		expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Увеличить' }))
+	})
+
 	it('масштаб вернулся к 1 кнопкой — фокус остаётся на кнопке', async () => {
 		const user = userEvent.setup()
 		await renderMap()
