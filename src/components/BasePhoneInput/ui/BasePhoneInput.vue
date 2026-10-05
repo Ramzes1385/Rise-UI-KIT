@@ -1,7 +1,6 @@
 <template>
 	<BaseInput
-		class="base-phone-input"
-		:class="classes.root"
+		:class="[ui('root'), classes.root]"
 		:model-value="digits"
 		type="tel"
 		:mask="country.mask"
@@ -24,6 +23,7 @@
 				:is-disabled="isControlDisabled"
 				:size-scale="sizeScale"
 				:country-class="classes.country"
+				:ui="ui"
 				@update:model-value="handleCountry" />
 		</template>
 	</BaseInput>
@@ -53,6 +53,6 @@ const props = withDefaults(
 
 const emit = defineEmits<BasePhoneInputEmits>()
 
-const { classes, isControlDisabled, countries, country, digits, placeholderText, handleInput, handleCountry, handlePaste } =
+const { ui, classes, isControlDisabled, countries, country, digits, placeholderText, handleInput, handleCountry, handlePaste } =
 	useBasePhoneInput(props, emit)
 </script>

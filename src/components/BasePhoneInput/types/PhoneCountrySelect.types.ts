@@ -1,4 +1,5 @@
-import type { PhoneCountry } from './BasePhoneInput.types'
+import type { UiClassFn } from '@composables/base/useUi'
+import type { BasePhoneInputPart, PhoneCountry } from './BasePhoneInput.types'
 
 /** Пропсы списка стран у поля телефона */
 export interface PhoneCountrySelectProps {
@@ -12,6 +13,8 @@ export interface PhoneCountrySelectProps {
 	sizeScale: number
 	/** Свой класс обёртки (`customClass.country` поля) */
 	countryClass?: string
+	/** Классы частей поля (`ui` компонента BasePhoneInput) */
+	ui: UiClassFn<BasePhoneInputPart>
 }
 
 /** События списка стран */

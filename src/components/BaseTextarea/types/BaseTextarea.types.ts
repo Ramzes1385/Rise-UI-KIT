@@ -1,8 +1,17 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { FieldInputAttrs } from '@composables/form/useFormContext'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export const TEXTAREA_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
+
+/**
+ * Части поля для пропа `ui` (БЭМ-элементы `.base-textarea__<часть>`, `root` — обёртка компонента): label, required — звёздочка,
+ * field — `<textarea>`, error-text, counter — счётчик символов.
+ */
+export const TEXTAREA_PARTS = ['label', 'required', 'field', 'error-text', 'counter'] as const
+
+export type BaseTextareaPart = (typeof TEXTAREA_PARTS)[number]
 
 export interface BaseTextareaProps extends BaseComponentProps<
 	(typeof TEXTAREA_VARIANTS)[number],
@@ -34,6 +43,14 @@ export interface BaseTextareaProps extends BaseComponentProps<
 	ariaLabel?: string
 	/** Атрибуты нативного `<textarea>`: `autocomplete`, `aria-*`, `data-*`; `id` — свой id поля */
 	inputAttrs?: FieldInputAttrs
+	/**
+	 * Классы частей поля (`root`, `field`, `label`, `counter`… — см. `TEXTAREA_PARTS`) — добавляются к классам кита.
+	 * Глобально — `defaults.BaseTextarea.ui` плагина, классы склеиваются.
+	 *
+	 * @example
+	 * <BaseTextarea :ui="{ field: 'font-mono', counter: 'text-xs' }" />
+	 */
+	ui?: UiProp<BaseTextareaPart>
 }
 
 export interface BaseTextareaEmits {

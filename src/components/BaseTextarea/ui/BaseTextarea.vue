@@ -1,7 +1,7 @@
 <template>
 	<div
-		class="base-textarea"
 		:class="[
+			ui('root'),
 			variantClass,
 			{
 				'base-textarea--error': control.hasError.value,
@@ -18,9 +18,9 @@
 			:for-id="textareaId"
 			:label="label"
 			:is-required="isRequired"
-			class-name="base-textarea__label"
+			:class-name="ui('label')"
 			:custom-class="classes.label"
-			required-class-name="base-textarea__required"
+			:required-class-name="ui('required')"
 			:required-custom-class="classes.required"
 			:size-scale="sizeScale" />
 
@@ -28,8 +28,7 @@
 			v-bind="nativeAttrs"
 			:id="textareaId"
 			ref="textareaRef"
-			class="base-textarea__field"
-			:class="classes.field"
+			:class="[ui('field'), classes.field]"
 			:value="modelValue"
 			:placeholder="placeholder"
 			:rows="rows"
@@ -43,11 +42,11 @@
 		<FormFieldError
 			:id="errorId"
 			:error="formField.error"
-			class-name="base-textarea__error-text"
+			:class-name="ui('error-text')"
 			:custom-class="classes.errorText"
 			:size-scale="sizeScale" />
 
-		<span v-if="hasCounter" :id="counterId" class="base-textarea__counter">{{ characterCount }}/{{ maxlength }}</span>
+		<span v-if="hasCounter" :id="counterId" :class="ui('counter')">{{ characterCount }}/{{ maxlength }}</span>
 	</div>
 </template>
 
@@ -77,6 +76,7 @@ const emit = defineEmits<BaseTextareaEmits>()
 defineSlots<BaseTextareaSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

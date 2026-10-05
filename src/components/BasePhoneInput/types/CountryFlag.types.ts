@@ -12,4 +12,6 @@ export type FlagCircle = readonly [number, number, number]
 export interface CountryFlagProps {
 	/** Код страны ISO 3166: `RU`; для страны без своего флага — нейтральная плашка с кодом */
 	code: string
+	/** Класс флага: `base-phone-input__flag` и классы части `flag` из `ui` */
+	className: string
 }

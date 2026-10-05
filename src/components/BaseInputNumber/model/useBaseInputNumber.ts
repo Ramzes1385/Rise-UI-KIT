@@ -1,9 +1,11 @@
 import type { Ref } from 'vue'
 import { computed, ref, watch } from 'vue'
 import { formatNumber } from '@/locales/state'
+import { useUi } from '@composables/base/useUi'
 import type { BaseInput } from '@components/BaseInput'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import { useFormDisabled } from '@composables/form/useFormContext'
+import { INPUT_NUMBER_PARTS } from '../types/BaseInputNumber.types'
 import { clampNumber, parseNumberInput, roundToPrecision, stepPrecision } from '@utils/form/numberInputUtils'
 import type { BaseInputNumberEmits, InputNumberProps, NumberCommit, NumberDraft } from '../types/BaseInputNumber.types'
 
@@ -84,6 +86,18 @@ function useSpinbuttonAttrs(props: InputNumberProps, precision: Readonly<Ref<num
 	}))
 }
 
+function useInputNumberUi(props: InputNumberProps) {
+	const ui = useUi(props, 'base-input-number')
+	const ownClasses = (part: (typeof INPUT_NUMBER_PARTS)[number]) => ui(part).slice(`base-input-number__${part}`.length).trim()
+
+	return {
+		ui,
+		inputUi: computed(() =>
+			Object.fromEntries(INPUT_NUMBER_PARTS.filter(part => part !== 'button').map(part => [part, ownClasses(part)])),
+		),
+	}
+}
+
 export function useBaseInputNumber(props: InputNumberProps, emit: BaseInputNumberEmits) {
 	const text = useNumberDraft(props)
 	const actions = useNumberCommit(props, emit, text)
@@ -105,6 +119,7 @@ export function useBaseInputNumber(props: InputNumberProps, emit: BaseInputNumbe
 	}
 
 	return {
+		...useInputNumberUi(props),
 		inputRef,
 		exposed: {
 			focus: () => inputRef.value?.focus(),

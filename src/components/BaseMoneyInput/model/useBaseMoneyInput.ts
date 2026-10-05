@@ -1,10 +1,22 @@
 import { getLocale } from '@/locales/state'
+import { useUi } from '@composables/base/useUi'
 import { computed, ref, shallowRef, watch } from 'vue'
+import { MONEY_INPUT_PARTS } from '../types/BaseMoneyInput.types'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import { useFormDisabled } from '@composables/form/useFormContext'
 import { clampNumber, roundToPrecision } from '@utils/form/numberInputUtils'
 import type { BaseMoneyInputEmits, BaseMoneyInputProps } from '../types/BaseMoneyInput.types'
 import { caretAfter, cleanMoney, countMeaningful, draftText, formatMoney, moneyFormat, parseMoney } from './money/moneyFormat'
+
+function useWrapperUi(props: BaseMoneyInputProps) {
+	const ui = useUi(props, 'base-money-input')
+	return {
+		ui,
+		inputUi: computed(() =>
+			Object.fromEntries(MONEY_INPUT_PARTS.map(part => [part, ui(part).slice(`base-money-input__${part}`.length).trim()])),
+		),
+	}
+}
 
 export function useBaseMoneyInput(props: BaseMoneyInputProps, emit: BaseMoneyInputEmits) {
 	const format = computed(() => moneyFormat(getLocale(), { currency: props.currency ?? 'RUB', min: props.min ?? 0 }))
@@ -22,6 +34,7 @@ export function useBaseMoneyInput(props: BaseMoneyInputProps, emit: BaseMoneyInp
 		emit('update:modelValue', next)
 	}
 	return {
+		...useWrapperUi(props),
 		classes: useCustomClass({ getClass: () => props.customClass, elementKeys: ['root', 'field'] }).classes,
 		isControlDisabled: useFormDisabled(() => props.isDisabled),
 		symbol: computed(() => format.value.symbol),

@@ -1,5 +1,5 @@
 <template>
-	<svg class="base-phone-input__flag" viewBox="0 0 30 20" aria-hidden="true" focusable="false">
+	<svg :class="className" viewBox="0 0 30 20" aria-hidden="true" focusable="false">
 		<component :is="item.tag" v-for="(item, index) in shapes" :key="index" v-bind="item.attrs">{{ item.text }}</component>
 	</svg>
 </template>

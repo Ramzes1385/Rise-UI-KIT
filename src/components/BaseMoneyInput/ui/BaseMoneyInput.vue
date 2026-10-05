@@ -1,7 +1,6 @@
 <template>
 	<BaseInput
-		class="base-money-input"
-		:class="classes.root"
+		:class="[ui('root'), classes.root]"
 		:model-value="display"
 		:variant="variant"
 		:label="label"
@@ -15,6 +14,7 @@
 		:size-scale="sizeScale"
 		:color="color"
 		:custom-class="{ field: classes.field }"
+		:ui="inputUi"
 		@input="handleInput"
 		@focus="handleFocus"
 		@blur="handleBlur" />
@@ -44,5 +44,8 @@ const props = withDefaults(
 
 const emit = defineEmits<BaseMoneyInputEmits>()
 
-const { classes, isControlDisabled, symbol, isSymbolFirst, display, handleFocus, handleInput, handleBlur } = useBaseMoneyInput(props, emit)
+const { ui, inputUi, classes, isControlDisabled, symbol, isSymbolFirst, display, handleFocus, handleInput, handleBlur } = useBaseMoneyInput(
+	props,
+	emit,
+)
 </script>

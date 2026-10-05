@@ -67,20 +67,24 @@
 			<slot name="suffix" />
 		</div>
 
-		<div v-if="passwordRuleResults.length > 0" :class="[ui('password-rules'), classes.passwordRules]">
-			<div
-				v-for="rule in passwordRuleResults"
-				:key="rule.key"
-				:class="[ui('password-rule'), { 'base-input__password-rule--valid': rule.isValid }, classes.passwordRule]">
-				<span :class="ui('password-rule-icon')"
-					><BaseIcon
-						:name="rule.isValid ? 'check' : 'x-mark'"
-						:custom-class="classes.passwordRuleIcon"
-						:size-scale="calcIconScale('xs', sizeScale)"
-				/></span>
-				<span :class="ui('password-rule-label')">{{ rule.label }}</span>
+		<Transition name="base-input-rules">
+			<div v-if="passwordRuleResults.length > 0" :class="[ui('password-rules'), classes.passwordRules]">
+				<div
+					v-for="rule in passwordRuleResults"
+					:key="rule.key"
+					:class="[ui('password-rule'), { 'base-input__password-rule--valid': rule.isValid }, classes.passwordRule]">
+					<span :class="ui('password-rule-icon')"
+						><Transition name="base-input-rule-icon"
+							><BaseIcon
+								:key="rule.isValid ? 'check' : 'x-mark'"
+								:name="rule.isValid ? 'check' : 'x-mark'"
+								:custom-class="classes.passwordRuleIcon"
+								:size-scale="calcIconScale('xs', sizeScale)" /></Transition
+					></span>
+					<span :class="ui('password-rule-label')">{{ rule.label }}</span>
+				</div>
 			</div>
-		</div>
+		</Transition>
 
 		<FormFieldError
 			:id="errorId"

@@ -1,8 +1,10 @@
 import { formatMessage } from '@/locales/state'
+import { useUi } from '@composables/base/useUi'
 import { UI_REQUISITES } from '@/locales/messages'
 import { computed, ref, shallowRef, watch } from 'vue'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import { useFormDisabled } from '@composables/form/useFormContext'
+import { REQUISITE_INPUT_PARTS } from '../types/BaseRequisiteInput.types'
 import { cleanRequisite, REQUISITE_RULES } from './requisites/requisiteRules'
 import type { BaseRequisiteInputEmits, BaseRequisiteInputProps, RequisiteStatus } from '../types/BaseRequisiteInput.types'
 
@@ -35,6 +37,16 @@ function errorText(status: RequisiteStatus, props: BaseRequisiteInputProps): str
 	return props.kind === 'kpp' || props.kind === 'bik' ? UI_REQUISITES.FORMAT : UI_REQUISITES.CHECKSUM
 }
 
+function useWrapperUi(props: BaseRequisiteInputProps) {
+	const ui = useUi(props, 'base-requisite-input')
+	return {
+		ui,
+		inputUi: computed(() =>
+			Object.fromEntries(REQUISITE_INPUT_PARTS.map(part => [part, ui(part).slice(`base-requisite-input__${part}`.length).trim()])),
+		),
+	}
+}
+
 export function useBaseRequisiteInput(props: BaseRequisiteInputProps, emit: BaseRequisiteInputEmits) {
 	const value = shallowRef(cleanRequisite(props.modelValue ?? '', props.kind))
 	watch(
@@ -47,6 +59,7 @@ export function useBaseRequisiteInput(props: BaseRequisiteInputProps, emit: Base
 	const status = computed(() => statusOf(value.value, props))
 	const isFull = computed(() => value.value.length === Math.max(...REQUISITE_RULES[props.kind].lengths))
 	return {
+		...useWrapperUi(props),
 		classes: useCustomClass({ getClass: () => props.customClass, elementKeys: ['root', 'field'] }).classes,
 		isControlDisabled: useFormDisabled(() => props.isDisabled),
 		value,

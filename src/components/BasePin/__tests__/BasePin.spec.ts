@@ -1,5 +1,8 @@
 import '@testing-library/jest-dom/vitest'
 import BasePin from '../ui/BasePin.vue'
+import { mount } from '@vue/test-utils'
+import { defineComponent, h } from 'vue'
+import { useBasePin } from '../model/useBasePin'
 import { render, screen } from '@testing-library/vue'
 
 describe('BasePin unit', () => {
@@ -190,6 +193,37 @@ describe('BasePin unit', () => {
 			expect(container.querySelector('.base-pin__cells')).toHaveClass('custom-cells')
 			expect(container.querySelector('.base-pin__input')).toHaveClass('custom-input')
 			expect(container.querySelector('.base-pin__error-text')).toHaveClass('custom-error')
+		})
+	})
+
+	describe('defineExpose', () => {
+		it('focus и blur переводят фокус на первую ячейку и снимают его', () => {
+			const wrapper = mount(BasePin, { props: { modelValue: '' }, attachTo: document.body })
+			const first = wrapper.find('.base-pin__input').element
+
+			wrapper.vm.focus()
+			expect(first).toHaveFocus()
+			wrapper.vm.blur()
+			expect(first).not.toHaveFocus()
+			wrapper.unmount()
+		})
+	})
+
+	describe('useBasePin', () => {
+		it('событие ввода не от <input> игнорируется', () => {
+			const emit = vi.fn()
+			let model!: ReturnType<typeof useBasePin>
+			mount(
+				defineComponent({
+					setup() {
+						model = useBasePin({ modelValue: '', length: 4 }, emit)
+						return () => h('div')
+					},
+				}),
+			)
+
+			model.handleInput(new Event('input'), 0)
+			expect(emit).not.toHaveBeenCalled()
 		})
 	})
 })

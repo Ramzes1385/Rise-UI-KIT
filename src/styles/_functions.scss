@@ -1,4 +1,5 @@
 @use 'sass:list';
+@use 'sass:meta';
 @use 'sass:string';
 
 @function sz($values) {
@@ -31,9 +32,14 @@
 }
 
 // Токен компонента (уровень 3): кит читает --rise-<компонент>-<свойство> с запасным значением и нигде его не объявляет.
-// $component: null — только запасное значение (общие миксины, вызванные без имени компонента)
+// $component: null — только запасное значение (общие миксины, вызванные без имени компонента).
+// Запасное значение — тот же токен (`field-box(input)` с общим `--rise-input-*`) — возвращается как есть, без повтора.
 @function ct($component, $prop, $fallback) {
 	@if $component == null {
+		@return $fallback;
+	}
+
+	@if string.index(meta.inspect($fallback), 'var(--rise-#{$component}-#{$prop},') == 1 {
 		@return $fallback;
 	}
 

@@ -25,3 +25,5 @@ export const WithError = cases.WithError
 export const Readonly = cases.Readonly
 export const DecimalStep = cases.DecimalStep
 export const Keyboard = cases.Keyboard
+export const Theming = cases.Theming
+export const Animations = cases.Animations

@@ -1,8 +1,7 @@
 <template>
 	<BaseInput
 		ref="inputRef"
-		class="base-input-number"
-		:class="[{ 'base-input-number--controls': showControls }, classes.root]"
+		:class="[ui('root'), { 'base-input-number--controls': showControls }, classes.root]"
 		:model-value="draft"
 		:variant="variant"
 		:label="label"
@@ -16,6 +15,7 @@
 		:size-scale="sizeScale"
 		:color="color"
 		:custom-class="{ field: classes.field }"
+		:ui="inputUi"
 		@update:model-value="handleInput"
 		@keydown="handleKeydown"
 		@blur="handleBlur"
@@ -23,7 +23,7 @@
 		<template v-if="showControls" #prefix>
 			<BaseButton
 				variant="ghost"
-				class="base-input-number__button"
+				:class="ui('button')"
 				:custom-class="classes.button"
 				tabindex="-1"
 				:aria-label="UI_ARIA.NUMBER_DECREASE"
@@ -37,7 +37,7 @@
 		<template v-if="showControls" #postfix>
 			<BaseButton
 				variant="ghost"
-				class="base-input-number__button"
+				:class="ui('button')"
 				:custom-class="classes.button"
 				tabindex="-1"
 				:aria-label="UI_ARIA.NUMBER_INCREASE"
@@ -80,6 +80,8 @@ const props = withDefaults(
 const emit = defineEmits<BaseInputNumberEmits>()
 
 const {
+	ui,
+	inputUi,
 	inputRef,
 	exposed,
 	classes,

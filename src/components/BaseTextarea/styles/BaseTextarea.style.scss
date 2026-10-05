@@ -4,7 +4,7 @@
 	align-content: start;
 	gap: sz(6px 12px);
 	width: 100%;
-	@include custom-text(color, var(--rise-text-highlighted));
+	@include custom-text(color, ct(textarea, text, var(--rise-text-highlighted)));
 
 	&--has-counter {
 		grid-template-columns: minmax(0, 1fr) auto;
@@ -26,13 +26,13 @@
 		width: 100%;
 		min-width: 0;
 		margin: 0;
-		padding: sz(var(--rise-control-padding-y)) sz(var(--rise-control-padding-x));
+		padding: sz(ct(textarea, padding-y, var(--rise-control-padding-y))) sz(ct(textarea, padding-x, var(--rise-control-padding-x)));
 		color: inherit;
 		font: inherit;
 		@include control-text;
 		resize: vertical;
 		outline: none;
-		@include field-box;
+		@include field-box(textarea);
 
 		&::placeholder {
 			color: var(--rise-text-dimmed);
@@ -43,6 +43,8 @@
 	&--autosize &__field {
 		resize: none;
 		overflow: hidden;
+		transition-property:
+			color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, box-shadow, opacity, height;
 	}
 
 	&--outline &__field {
@@ -101,7 +103,7 @@
 		grid-column: 2;
 		place-self: baseline end;
 		@include text-size(xs);
-		color: var(--rise-text-muted);
+		color: ct(textarea, counter-text, var(--rise-text-muted));
 		font-variant-numeric: tabular-nums;
 		white-space: nowrap;
 	}

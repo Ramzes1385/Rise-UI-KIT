@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import type { InputVariant } from '@components/BaseInput/types/BaseInput.types'
 
@@ -33,6 +34,14 @@ export interface RequisiteRule {
 }
 
 /**
+ * Части поля реквизита для пропа `ui` (`root` — корень). Своих БЭМ-элементов у обёртки нет: части принадлежат внутреннему
+ * BaseInput и передаются ему — label, required — звёздочка, wrapper — рамка поля, field — `<input>`, error-text.
+ */
+export const REQUISITE_INPUT_PARTS = ['label', 'required', 'wrapper', 'field', 'error-text'] as const
+
+export type BaseRequisiteInputPart = (typeof REQUISITE_INPUT_PARTS)[number]
+
+/**
  * Пропсы компонента BaseRequisiteInput
  */
 export interface BaseRequisiteInputProps extends BaseComponentProps<InputVariant, 'root' | 'field'> {
@@ -52,6 +61,14 @@ export interface BaseRequisiteInputProps extends BaseComponentProps<InputVariant
 	isRequired?: boolean
 	/** Отключает поле */
 	isDisabled?: boolean
+	/**
+	 * Классы частей поля (`root`, `wrapper`, `field`, `label`… — см. `REQUISITE_INPUT_PARTS`) — добавляются к классам кита.
+	 * Глобально — `defaults.BaseRequisiteInput.ui` плагина, классы склеиваются.
+	 *
+	 * @example
+	 * <BaseRequisiteInput kind="inn" :ui="{ wrapper: 'ring-1', field: 'font-mono' }" />
+	 */
+	ui?: UiProp<BaseRequisiteInputPart>
 }
 
 /**

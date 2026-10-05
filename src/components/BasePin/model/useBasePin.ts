@@ -1,14 +1,36 @@
 import type { Ref } from 'vue'
 import { formatMessage } from '@/locales'
-import { computed, ref, useId } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
+import { computed, ref, useId, watch } from 'vue'
+import { useMotion } from '@composables/app/useMotion'
 import { toHTMLInputElement } from '@utils/dom/domUtils'
 import { useFormField } from '@composables/form/useFormField'
 import type { BasePinEmits, PinProps } from '../types/BasePin.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 
+const POP_SAFETY_MS = 50
+
 function normalizeValue(value: string, length: number): string[] {
 	return Array.from({ length }, (_, index) => value[index] || ' ')
+}
+
+function useCellPop(rootRef: Ref<HTMLElement | null>) {
+	const motion = useMotion(rootRef)
+	const popped = ref<number[]>([])
+	const settle = (indexes: number[]): void => {
+		popped.value = popped.value.filter(index => !indexes.includes(index))
+	}
+
+	return {
+		isPopped: (index: number): boolean => popped.value.includes(index),
+		settlePop: (index: number): void => settle([index]),
+		pop(indexes: number[]): void {
+			if (motion.isReduced.value || indexes.length === 0) return
+			popped.value = [...new Set([...popped.value, ...indexes])]
+			window.setTimeout(() => settle(indexes), motion.duration() + POP_SAFETY_MS)
+		},
+	}
 }
 
 function useCellInput(props: PinProps, emit: BasePinEmits, inputRefs: Ref<HTMLInputElement[]>) {
@@ -72,16 +94,22 @@ export function useBasePin(props: PinProps, emit: BasePinEmits) {
 	const standard = useStandardBaseComponent('base-pin', props, ['root', 'cells', 'input', 'errorText'])
 	const inputRefs = ref<HTMLInputElement[]>([])
 	const rootRef = ref<HTMLElement | null>(null)
+	const cellPop = useCellPop(rootRef)
+	const cells = computed(() => normalizeValue(props.modelValue, props.length).map(char => (char === ' ' ? '' : char)))
+	watch(cells, (next, prev) => cellPop.pop(next.flatMap((char, index) => (char && char !== prev[index] ? [index] : []))))
 
 	return {
 		...standard,
+		ui: useUi(props, 'base-pin'),
 		formField,
 		hasError: computed(() => Boolean(formField.error)),
 		errorId,
 		inputRefs,
 		rootRef,
 		cellLabel: (position: number): string => formatMessage(UI_ARIA.PIN_CELL, { position, length: props.length }),
-		cells: computed(() => normalizeValue(props.modelValue, props.length).map(char => (char === ' ' ? '' : char))),
+		cells,
+		isPopped: cellPop.isPopped,
+		settlePop: cellPop.settlePop,
 		...useCellInput(props, emit, inputRefs),
 		...useCellKeys(props, emit, inputRefs),
 		exposed: {

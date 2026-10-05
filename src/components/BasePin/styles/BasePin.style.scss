@@ -3,26 +3,27 @@
 	flex-direction: column;
 	gap: sz(6px);
 	max-width: 100%;
-	@include custom-text(color, var(--rise-text-highlighted));
+	@include custom-text(color, ct(pin, text, var(--rise-text-highlighted)));
 
 	&__cells {
 		display: flex;
-		gap: sz(6px);
+		gap: sz(ct(pin, gap, 6px));
 	}
 
 	&__input {
 		box-sizing: border-box;
-		width: sz(32px);
-		height: sz(32px);
+		width: sz(ct(pin, width, 32px));
+		height: sz(ct(pin, height, 32px));
 		margin: 0;
 		padding: 0;
 		color: inherit;
 		font: inherit;
-		@include control-text;
-		font-weight: var(--rise-font-weight-medium);
+		font-size: sz(ct(pin, font-size, var(--rise-control-font-size)));
+		line-height: sz(var(--rise-control-line-height));
+		font-weight: ct(pin, font-weight, var(--rise-font-weight-medium));
 		text-align: center;
 		outline: none;
-		@include field-box;
+		@include field-box(pin);
 
 		&::-webkit-outer-spin-button,
 		&::-webkit-inner-spin-button {
@@ -33,6 +34,16 @@
 		&[type='number'] {
 			-moz-appearance: textfield;
 			appearance: textfield;
+		}
+	}
+
+	&__input--filled {
+		border-color: ct(pin, border-checked, ct(pin, border, var(--rise-border-accented)));
+	}
+
+	&__input--pop {
+		@include motion-safe {
+			animation: base-pin-pop var(--rise-duration) var(--rise-ease-spring);
 		}
 	}
 
@@ -78,5 +89,11 @@
 
 	& &__error-text {
 		@include field-error;
+	}
+}
+
+@keyframes base-pin-pop {
+	from {
+		transform: scale(var(--rise-motion-scale-from));
 	}
 }

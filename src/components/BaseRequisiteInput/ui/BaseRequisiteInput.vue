@@ -1,7 +1,6 @@
 <template>
 	<BaseInput
-		class="base-requisite-input"
-		:class="classes.root"
+		:class="[ui('root'), classes.root]"
 		:model-value="value"
 		:mask="mask"
 		:variant="variant"
@@ -14,6 +13,7 @@
 		:size-scale="sizeScale"
 		:color="color"
 		:custom-class="{ field: classes.field }"
+		:ui="inputUi"
 		@update:model-value="handleInput"
 		@focus="handleFocus"
 		@blur="handleBlur" />
@@ -41,8 +41,6 @@ const props = withDefaults(
 
 const emit = defineEmits<BaseRequisiteInputEmits>()
 
-const { classes, isControlDisabled, value, mask, fieldLabel, shownError, handleInput, handleFocus, handleBlur } = useBaseRequisiteInput(
-	props,
-	emit,
-)
+const { ui, inputUi, classes, isControlDisabled, value, mask, fieldLabel, shownError, handleInput, handleFocus, handleBlur } =
+	useBaseRequisiteInput(props, emit)
 </script>

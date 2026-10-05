@@ -7,12 +7,30 @@
 
 		flex-shrink: 0;
 		align-self: stretch;
-		width: sz(32px);
+		width: sz(ct(input-number, button-width, 32px));
 		border-radius: 0;
-		color: var(--rise-text-muted);
+		color: ct(input-number, button-text, var(--rise-text-muted));
+		@include custom-bg(background-color, ct(input-number, button-bg, transparent));
+		@include custom-bg-hover(background-color, ct(input-number, button-bg-hover, var(--rise-bg-elevated)));
+		@include custom-bg-active(background-color, ct(input-number, button-bg-active, var(--rise-bg-elevated)));
+
+		.base-icon__svg {
+			width: ct(input-number, button-icon-size, sz(20px));
+			height: ct(input-number, button-icon-size, sz(20px));
+		}
 
 		@include hover {
-			color: var(--rise-text-highlighted);
+			color: ct(input-number, button-text-hover, var(--rise-text-highlighted));
+		}
+
+		@include active {
+			.base-icon__svg {
+				transform: scale(var(--rise-motion-scale-from));
+			}
+		}
+
+		&.base-button--disabled {
+			color: ct(input-number, button-text-disabled, var(--rise-text-muted));
 		}
 	}
 

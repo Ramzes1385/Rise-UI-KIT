@@ -1,8 +1,8 @@
 <template>
 	<div
 		ref="rootRef"
-		class="base-pin"
 		:class="[
+			ui('root'),
 			{
 				'base-pin--disabled': isDisabled,
 				'base-pin--error': hasError,
@@ -12,15 +12,14 @@
 		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		role="group">
-		<div class="base-pin__cells" :class="classes.cells">
+		<div :class="[ui('cells'), classes.cells]">
 			<input
 				v-for="i in length"
 				:key="i"
 				ref="inputRefs"
 				:type="type"
 				maxlength="1"
-				class="base-pin__input"
-				:class="classes.input"
+				:class="[ui('input'), { 'base-pin__input--filled': cells[i - 1], 'base-pin__input--pop': isPopped(i - 1) }, classes.input]"
 				:value="cells[i - 1]"
 				:disabled="isDisabled"
 				:aria-label="cellLabel(i)"
@@ -28,13 +27,14 @@
 				:aria-describedby="hasError ? errorId : undefined"
 				@input="handleInput($event, i - 1)"
 				@keydown="handleKeyDown($event, i - 1)"
-				@paste="handlePaste" />
+				@paste="handlePaste"
+				@animationend="settlePop(i - 1)" />
 		</div>
 
 		<FormFieldError
 			:id="errorId"
 			:error="formField.error"
-			class-name="base-pin__error-text"
+			:class-name="ui('error-text')"
 			:custom-class="classes.errorText"
 			:size-scale="sizeScale" />
 	</div>
@@ -62,6 +62,7 @@ const emit = defineEmits<BasePinEmits>()
 defineSlots<BasePinSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,
@@ -74,6 +75,8 @@ const {
 	rootRef,
 	cellLabel,
 	cells,
+	isPopped,
+	settlePop,
 	handleInput,
 	handlePaste,
 	handleKeyDown,

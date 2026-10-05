@@ -1,4 +1,5 @@
 import type { Ref } from 'vue'
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { FieldInputAttrs } from '@composables/form/useFormContext'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
@@ -14,6 +15,15 @@ export const INPUT_NUMBER_VARIANTS = [
 	'filled',
 	'underline',
 ] as const satisfies readonly InputVariant[]
+
+/**
+ * Части поля числа для пропа `ui`: `button` — кнопки −/+ (`.base-input-number__button`), `root` — корень. Остальные
+ * части принадлежат внутреннему BaseInput и передаются ему: label, required — звёздочка, wrapper — рамка поля,
+ * field — `<input>`, error-text.
+ */
+export const INPUT_NUMBER_PARTS = ['label', 'required', 'wrapper', 'field', 'button', 'error-text'] as const
+
+export type BaseInputNumberPart = (typeof INPUT_NUMBER_PARTS)[number]
 
 export interface BaseInputNumberProps extends BaseComponentProps<InputVariant, 'root' | 'field' | 'button'> {
 	/** Число (v-model); `null` — поле пустое */
@@ -46,6 +56,14 @@ export interface BaseInputNumberProps extends BaseComponentProps<InputVariant, '
 	inputAttrs?: FieldInputAttrs
 	/** Значение для скринридера (`aria-valuetext`), например «3 гостя» */
 	formatValueText?: (value: number) => string
+	/**
+	 * Классы частей поля (`root`, `button`, `wrapper`, `field`… — см. `INPUT_NUMBER_PARTS`) — добавляются к классам кита.
+	 * Глобально — `defaults.BaseInputNumber.ui` плагина, классы склеиваются.
+	 *
+	 * @example
+	 * <BaseInputNumber :ui="{ button: 'text-accent', field: 'font-mono' }" />
+	 */
+	ui?: UiProp<BaseInputNumberPart>
 }
 
 export interface BaseInputNumberEmits {

@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import type { InputVariant } from '@components/BaseInput/types/BaseInput.types'
 
@@ -24,6 +25,15 @@ export interface MoneyFormat {
 }
 
 /**
+ * Части поля суммы для пропа `ui` (`root` — корень). Своих БЭМ-элементов у обёртки нет: части принадлежат внутреннему
+ * BaseInput и передаются ему — label, required — звёздочка, wrapper — рамка поля, prefix и postfix — знак валюты,
+ * field — `<input>`, error-text.
+ */
+export const MONEY_INPUT_PARTS = ['label', 'required', 'wrapper', 'prefix', 'field', 'postfix', 'error-text'] as const
+
+export type BaseMoneyInputPart = (typeof MONEY_INPUT_PARTS)[number]
+
+/**
  * Пропсы компонента BaseMoneyInput
  */
 export interface BaseMoneyInputProps extends BaseComponentProps<InputVariant, 'root' | 'field'> {
@@ -45,6 +55,14 @@ export interface BaseMoneyInputProps extends BaseComponentProps<InputVariant, 'r
 	isRequired?: boolean
 	/** Отключает поле */
 	isDisabled?: boolean
+	/**
+	 * Классы частей поля (`root`, `wrapper`, `field`, `prefix`… — см. `MONEY_INPUT_PARTS`) — добавляются к классам кита.
+	 * Глобально — `defaults.BaseMoneyInput.ui` плагина, классы склеиваются.
+	 *
+	 * @example
+	 * <BaseMoneyInput :ui="{ prefix: 'text-success', field: 'font-mono' }" />
+	 */
+	ui?: UiProp<BaseMoneyInputPart>
 }
 
 /**

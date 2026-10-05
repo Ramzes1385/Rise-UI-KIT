@@ -4,7 +4,7 @@
 		flex: none;
 		align-self: stretch;
 		margin-right: sz(4px);
-		border-right: 1px solid var(--rise-border);
+		border-right: 1px solid ct(phone-input, country-border, var(--rise-border));
 	}
 
 	&__trigger {
@@ -21,7 +21,7 @@
 		@include transition-colors;
 
 		@include hover {
-			background-color: color-mix(in srgb, var(--rise-bg-elevated) 70%, transparent);
+			background-color: ct(phone-input, trigger-bg-hover, color-mix(in srgb, var(--rise-bg-elevated) 70%, transparent));
 		}
 
 		&:focus-visible {
@@ -52,8 +52,8 @@
 		width: sz(21px);
 		height: sz(14px);
 		overflow: hidden;
-		border-radius: 2px;
-		box-shadow: 0 0 0 1px color-mix(in srgb, var(--rise-text) 14%, transparent);
+		border-radius: ct(phone-input, flag-radius, 2px);
+		box-shadow: ct(phone-input, flag-shadow, 0 0 0 1px color-mix(in srgb, var(--rise-text) 14%, transparent));
 	}
 
 	&__flag-empty {
@@ -79,7 +79,7 @@
 	&__list {
 		display: flex;
 		flex-direction: column;
-		gap: 1px;
+		gap: space(ct(phone-input, list-gap, 1px));
 		min-width: sz(240px);
 		max-height: sz(296px);
 		margin: 0;
@@ -94,15 +94,22 @@
 	&__option {
 		@include menu-item;
 		gap: sz(10px);
+		padding: space(ct(phone-input, option-padding-y, 6px)) space(ct(phone-input, option-padding-x, 8px));
+		color: ct(phone-input, option-text, var(--rise-text));
 
-		&--active {
-			background-color: var(--rise-bg-elevated);
-			color: var(--rise-text-highlighted);
+		@include hover {
+			background-color: ct(phone-input, option-bg-hover, var(--rise-bg-elevated));
 		}
 
 		&--selected {
-			color: var(--rise-text-highlighted);
+			background-color: ct(phone-input, option-bg-selected, transparent);
+			color: ct(phone-input, option-text-selected, var(--rise-text-highlighted));
 			font-weight: var(--rise-font-weight-medium);
+		}
+
+		&--active {
+			background-color: ct(phone-input, option-bg-hover, var(--rise-bg-elevated));
+			color: var(--rise-text-highlighted);
 		}
 	}
 
@@ -122,4 +129,10 @@
 		height: sz(16px);
 		color: var(--rise-primary);
 	}
+}
+
+@include enter-scale(base-phone-input-flag);
+
+.base-phone-input-flag-leave-active {
+	position: absolute;
 }

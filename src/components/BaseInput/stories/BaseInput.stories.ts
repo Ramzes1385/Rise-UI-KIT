@@ -34,3 +34,4 @@ export const PasswordRules = cases.PasswordRules
 export const Mask = cases.Mask
 export const AllowedChars = cases.AllowedChars
 export const Keyboard = cases.Keyboard
+export const Animations = cases.Animations

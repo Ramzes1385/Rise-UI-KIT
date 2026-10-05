@@ -1,3 +1,4 @@
+import { useUi } from '@composables/base/useUi'
 import { computed, shallowRef, watch } from 'vue'
 import { PHONE_COUNTRIES } from './phone/phoneCountries'
 import { useCustomClass } from '@composables/base/useCustomClass'
@@ -35,6 +36,7 @@ export function useBasePhoneInput(props: BasePhoneInputProps, emit: BasePhoneInp
 		emit('update:country', next.code)
 	}
 	return {
+		ui: useUi(props, 'base-phone-input'),
 		classes: useCustomClass({ getClass: () => props.customClass, elementKeys: ['root', 'field', 'country'] }).classes,
 		isControlDisabled: useFormDisabled(() => props.isDisabled),
 		country,

@@ -1,4 +1,6 @@
 import type { Ref } from 'vue'
+import { useUi } from '@composables/base/useUi'
+import { useMotion } from '@composables/app/useMotion'
 import { toHTMLTextAreaElement } from '@utils/dom/domUtils'
 import { useFormField } from '@composables/form/useFormField'
 import { useFieldControl } from '@composables/form/useFormContext'
@@ -39,17 +41,40 @@ function useTextareaControl(props: TextareaProps) {
 	}
 }
 
+function contentHeight(el: HTMLTextAreaElement): number {
+	el.style.height = 'auto'
+	const { borderTopWidth, borderBottomWidth } = getComputedStyle(el)
+	const borders = (Number.parseFloat(borderTopWidth) || 0) + (Number.parseFloat(borderBottomWidth) || 0)
+	return el.scrollHeight + borders
+}
+
+function animateHeight(el: HTMLTextAreaElement): void {
+	const from = el.offsetHeight
+	el.style.transition = 'none'
+	const to = contentHeight(el)
+	el.style.height = `${from}px`
+	void el.offsetHeight
+	el.style.transition = ''
+	el.style.height = `${to}px`
+}
+
 function useAutosize(props: TextareaProps, textareaRef: Ref<HTMLTextAreaElement | null>) {
-	const adjustHeight = (): void => {
+	const motion = useMotion(textareaRef)
+	const setHeight = (isAnimated: boolean): void => {
 		const el = textareaRef.value
 		if (!el || !props.isAutosize) return
-		el.style.height = 'auto'
-		const { borderTopWidth, borderBottomWidth } = getComputedStyle(el)
-		const borders = (Number.parseFloat(borderTopWidth) || 0) + (Number.parseFloat(borderBottomWidth) || 0)
-		el.style.height = `${el.scrollHeight + borders}px`
+		if (isAnimated && !motion.isReduced.value) animateHeight(el)
+		else el.style.height = `${contentHeight(el)}px`
 	}
+	const adjustHeight = (): void => setHeight(false)
+	const pending = { isScheduled: false }
 	const scheduleAdjust = (): void => {
-		if (props.isAutosize) nextTick(adjustHeight)
+		if (!props.isAutosize || pending.isScheduled) return
+		pending.isScheduled = true
+		nextTick(() => {
+			pending.isScheduled = false
+			setHeight(true)
+		})
 	}
 
 	watch(() => props.modelValue, scheduleAdjust)
@@ -60,7 +85,9 @@ function useAutosize(props: TextareaProps, textareaRef: Ref<HTMLTextAreaElement 
 			else if (textareaRef.value) textareaRef.value.style.height = ''
 		},
 	)
-	onMounted(scheduleAdjust)
+	onMounted(() => {
+		if (props.isAutosize) nextTick(adjustHeight)
+	})
 
 	return { adjustHeight, scheduleAdjust }
 }
@@ -75,6 +102,7 @@ export function useBaseTextarea(props: TextareaProps, emit: BaseTextareaEmits) {
 		...standard,
 		...field,
 		textareaRef,
+		ui: useUi(props, 'base-textarea'),
 		handleInput(e: Event): void {
 			const target = toHTMLTextAreaElement(e.target)
 			if (!target) return

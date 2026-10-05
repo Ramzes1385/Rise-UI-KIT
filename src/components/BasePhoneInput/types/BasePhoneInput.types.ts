@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import type { InputVariant } from '@components/BaseInput/types/BaseInput.types'
 
@@ -29,6 +30,28 @@ export interface ParsedPhone {
 }
 
 /**
+ * Части поля телефона для пропа `ui` (БЭМ-элементы `.base-phone-input__<часть>`, `root` — обёртка компонента, корень BaseInput):
+ * country — выбор страны слева в поле, trigger — кнопка выбора страны, flag — флаг (в кнопке и в списке), hidden — скрытое
+ * название страны для экранного диктора, dial — код страны в кнопке, chevron — стрелка, list — список стран, option — строка
+ * списка, option-name — название страны, option-dial — код страны в строке, check — отметка выбранной страны.
+ */
+export const PHONE_INPUT_PARTS = [
+	'country',
+	'trigger',
+	'flag',
+	'hidden',
+	'dial',
+	'chevron',
+	'list',
+	'option',
+	'option-name',
+	'option-dial',
+	'check',
+] as const
+
+export type BasePhoneInputPart = (typeof PHONE_INPUT_PARTS)[number]
+
+/**
  * Пропсы компонента BasePhoneInput
  */
 export interface BasePhoneInputProps extends BaseComponentProps<InputVariant, 'root' | 'field' | 'country'> {
@@ -48,6 +71,15 @@ export interface BasePhoneInputProps extends BaseComponentProps<InputVariant, 'r
 	isRequired?: boolean
 	/** Отключает поле и выбор страны */
 	isDisabled?: boolean
+	/**
+	 * Классы частей поля (`root`, `country`, `trigger`, `flag`, `list`, `option`… — см. `PHONE_INPUT_PARTS`) — добавляются
+	 * к классам кита. Глобально — `defaults.BasePhoneInput.ui` плагина, классы склеиваются. Части самого поля ввода —
+	 * токены `--rise-input-*` и `ui` у BaseInput.
+	 *
+	 * @example
+	 * <BasePhoneInput :ui="{ trigger: 'px-3', option: 'text-base' }" />
+	 */
+	ui?: UiProp<BasePhoneInputPart>
 }
 
 /**

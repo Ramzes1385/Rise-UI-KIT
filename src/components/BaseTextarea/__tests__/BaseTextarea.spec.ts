@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { nextTick } from 'vue'
 import BaseTextarea from '../ui/BaseTextarea.vue'
+import { defineComponent, h, nextTick, ref } from 'vue'
 import { fireEvent, render, screen } from '@testing-library/vue'
 
 function emulateScrollHeight(textarea: HTMLTextAreaElement, getContentHeight: () => number): void {
@@ -486,5 +486,28 @@ describe('BaseTextarea: имя и атрибуты поля', () => {
 
 		await rerender({ name: 'comment' })
 		expect(textarea).toHaveAttribute('name', 'comment')
+	})
+})
+
+describe('BaseTextarea: expose', () => {
+	it('focus и blur управляют фокусом поля', async () => {
+		const exposedRef = ref<{ focus: () => void; blur: () => void } | null>(null)
+		render(defineComponent({ setup: () => () => h(BaseTextarea, { modelValue: '', ref: exposedRef }) }))
+		await nextTick()
+
+		exposedRef.value!.focus()
+		expect(screen.getByRole('textbox')).toHaveFocus()
+		exposedRef.value!.blur()
+		expect(screen.getByRole('textbox')).not.toHaveFocus()
+	})
+
+	it('input без textarea в target не меняет значение', () => {
+		const { emitted } = render(BaseTextarea, { props: { modelValue: '' } })
+		const event = new Event('input')
+		Object.defineProperty(event, 'target', { value: null })
+
+		screen.getByRole('textbox').dispatchEvent(event)
+
+		expect(emitted()['update:modelValue']).toBeUndefined()
 	})
 })

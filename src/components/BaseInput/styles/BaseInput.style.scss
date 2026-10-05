@@ -104,7 +104,7 @@
 		@include custom-bg(background-color, transparent);
 
 		&:focus-within {
-			box-shadow: 0 1px 0 0 var(--rise-primary);
+			box-shadow: 0 1px 0 0 ct(input, border-focus, var(--rise-primary));
 		}
 	}
 
@@ -193,6 +193,7 @@
 		gap: sz(6px);
 		color: var(--rise-text-muted);
 		@include text-size(xs);
+		@include transition-colors(var(--rise-duration));
 
 		&--valid {
 			color: var(--rise-success);
@@ -200,10 +201,17 @@
 	}
 
 	&__password-rule-icon {
-		display: inline-flex;
+		display: inline-grid;
+
+		> * {
+			grid-area: 1 / 1;
+		}
 	}
 
 	&__password-rule-label {
 		color: inherit;
 	}
 }
+
+@include enter-slide(base-input-rules, down);
+@include enter-pop(base-input-rule-icon);
