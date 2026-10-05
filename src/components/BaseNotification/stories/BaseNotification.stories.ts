@@ -29,3 +29,5 @@ export const Actions = cases.Actions
 export const Persistent = cases.Persistent
 export const PauseOnHover = cases.PauseOnHover
 export const Keyboard = cases.Keyboard
+export const Theming = cases.Theming
+export const Animations = cases.Animations

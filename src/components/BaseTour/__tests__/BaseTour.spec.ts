@@ -82,7 +82,7 @@ describe('BaseTour unit', () => {
 			expect(document.querySelector('.base-tour__dot')).not.toBeInTheDocument()
 			const fill = document.querySelector<HTMLElement>('.base-tour__progress-bar-fill')
 			expect(fill).toBeInTheDocument()
-			expect(fill?.style.width).toBe('0%')
+			expect(document.querySelector<HTMLElement>('.base-tour__progress-bar')?.style.getPropertyValue('--tour-progress')).toBe('0')
 		})
 
 		it('заполняет полосу прогресса пропорционально текущему шагу', async () => {
@@ -93,8 +93,8 @@ describe('BaseTour unit', () => {
 			render(BaseTour, { props: { isOpen: true, steps: manySteps, step: 5 } })
 			await screen.findByText('Шаг 6')
 
-			const fill = document.querySelector<HTMLElement>('.base-tour__progress-bar-fill')
-			expect(fill?.style.width).toBe('50%')
+			const bar = document.querySelector<HTMLElement>('.base-tour__progress-bar')
+			expect(bar?.style.getPropertyValue('--tour-progress')).toBe('50')
 		})
 
 		it('не рендерит кнопку пропуска при showSkip=false', async () => {

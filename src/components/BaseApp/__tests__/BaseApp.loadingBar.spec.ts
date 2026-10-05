@@ -2,12 +2,17 @@ import '@testing-library/jest-dom/vitest'
 import { h, nextTick } from 'vue'
 import BaseApp from '../ui/BaseApp.vue'
 import { setLocale } from '@/locales/state'
+import { createUiKitPlugin } from '@/plugin'
 import { render, screen } from '@testing-library/vue'
 import type { BaseAppLoadingBarOptions } from '../types/BaseApp.types'
 import { LOADING_BAR_HIDE_MS, LOADING_BAR_START, loadingBarStore, useLoadingBar } from '@composables/app/useLoadingBar/useLoadingBar'
 
 function renderApp(loadingBar?: BaseAppLoadingBarOptions) {
-	return render(BaseApp, { props: { loadingBar }, slots: { default: () => h('main', 'Приложение') } })
+	return render(BaseApp, {
+		props: { loadingBar },
+		slots: { default: () => h('main', 'Приложение') },
+		global: { stubs: { Transition: false } },
+	})
 }
 
 beforeEach(() => {
@@ -21,6 +26,27 @@ afterEach(() => {
 })
 
 describe('BaseApp: полоса загрузки', () => {
+	it('появляется через Transition base-app-loading-bar', async () => {
+		renderApp()
+		useLoadingBar().start()
+		await nextTick()
+
+		expect(screen.getByRole('progressbar')).toHaveClass('base-app-loading-bar-enter-active')
+	})
+
+	it('классы ui и defaults.BaseApp.ui добавляются к полосе, класс кита не меняется', async () => {
+		render(BaseApp, {
+			props: { ui: { 'loading-bar': 'own-bar' } },
+			global: { plugins: [createUiKitPlugin({ defaults: { BaseApp: { ui: { 'loading-bar': 'app-bar' } } } })] },
+		})
+		useLoadingBar().start()
+		await nextTick()
+
+		const bar = screen.getByRole('progressbar')
+		expect(bar).toHaveAttribute('class', expect.stringContaining('base-app-loading-bar base-app-loading-bar--loading app-bar own-bar'))
+		expect(bar).not.toHaveClass('base-app__loading-bar')
+	})
+
 	it('без загрузки полосы нет', () => {
 		renderApp()
 
@@ -36,7 +62,7 @@ describe('BaseApp: полоса загрузки', () => {
 		expect(bar).not.toHaveAttribute('aria-valuenow')
 		expect(bar).toHaveClass('base-app-loading-bar--loading')
 		expect(bar.style.getPropertyValue('--loading-bar-progress')).toBe(String(LOADING_BAR_START))
-		expect(bar.style.getPropertyValue('--loading-bar-height')).toBe('3px')
+		expect(bar.style.getPropertyValue('--loading-bar-height')).toBe('')
 	})
 
 	it('стоит перед приложением, а приложение не оборачивает', async () => {
@@ -86,6 +112,9 @@ describe('BaseApp: полоса загрузки', () => {
 
 		vi.advanceTimersByTime(LOADING_BAR_HIDE_MS)
 		await nextTick()
+		expect(element).toHaveClass('base-app-loading-bar-leave-active')
+
+		await vi.advanceTimersByTimeAsync(100)
 		expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
 	})
 

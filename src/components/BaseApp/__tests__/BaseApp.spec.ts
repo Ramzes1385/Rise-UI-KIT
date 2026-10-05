@@ -47,6 +47,7 @@ describe('BaseApp', () => {
 		const { container } = render(BaseApp, {
 			attrs: { class: 'lost', 'data-x': '1' },
 			slots: { default: () => h('main', 'Приложение') },
+			global: { stubs: { Transition: false } },
 		})
 
 		expect(container.firstElementChild?.tagName).toBe('MAIN')

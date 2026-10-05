@@ -1,3 +1,5 @@
+export { TOUR_PARTS } from './types/BaseTour.types'
+export type { BaseTourPart } from './types/BaseTour.types'
 export { TOUR_PLACEMENTS } from './types/BaseTour.types'
 export type {
 	BaseTourProps,

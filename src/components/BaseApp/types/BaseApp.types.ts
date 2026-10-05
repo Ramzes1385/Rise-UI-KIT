@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { LocaleInput } from '@/locales/types/locales.types'
 import type { TeleportTarget } from '@composables/app/useTeleportTarget'
 import type { NOTIFICATION_VARIANTS, NotificationPosition } from '@components/BaseNotification/types/BaseNotification.types'
@@ -16,9 +17,14 @@ export interface BaseAppToasterOptions {
 	sizeScale?: number
 }
 
+/** Части приложения для пропа `ui`: loading-bar — полоса загрузки `useLoadingBar()` (класс `base-app-loading-bar`) */
+export const APP_PARTS = ['loading-bar'] as const
+
+export type BaseAppPart = (typeof APP_PARTS)[number]
+
 /** Полоса загрузки `useLoadingBar()` */
 export interface BaseAppLoadingBarOptions {
-	/** Толщина полосы, px (3) */
+	/** Толщина полосы, px. Без значения — токен `--rise-app-loading-bar-height` (3px) */
 	height?: number
 	/** Имя полосы для скринридера. По умолчанию — из словаря: «Загрузка страницы» */
 	label?: string
@@ -39,6 +45,13 @@ export interface BaseAppProps {
 	 * или элемент. По умолчанию — из `createUiKitPlugin({ teleportTo })` или `body`. Читается при монтировании
 	 */
 	teleportTo?: TeleportTarget
+	/**
+	 * Классы частей приложения: добавляются к классам кита, глобальные — `defaults.BaseApp.ui`.
+	 *
+	 * @example
+	 * <BaseApp :ui="{ 'loading-bar': 'shadow-md' }" />
+	 */
+	ui?: UiProp<BaseAppPart>
 }
 
 export interface BaseAppSlots {

@@ -1,6 +1,7 @@
 import type BaseTour from '../ui/BaseTour.vue'
 import type { Meta } from '@storybook/vue3-vite'
 import { TOUR_PLACEMENTS } from '../types/BaseTour.types'
+import { ENTER_ANIMATIONS } from '@composables/app/useMotion'
 import { hiddenArgTypes, propGroup, ARG_GROUP } from '@/stories/helpers'
 
 export const argTypes = {
@@ -14,6 +15,8 @@ export const argTypes = {
 	showProgress: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
 	showArrow: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
 	showSkip: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
+	animation: { control: 'inline-radio', options: ENTER_ANIMATIONS, table: propGroup(ARG_GROUP.appearance) },
+	ui: { control: false },
 	customClass: { control: 'object', table: propGroup(ARG_GROUP.appearance) },
 	isOpen: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 	step: { control: { type: 'number', min: 0 }, table: propGroup(ARG_GROUP.state) },

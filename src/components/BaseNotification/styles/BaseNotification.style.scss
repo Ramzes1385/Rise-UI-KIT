@@ -2,7 +2,7 @@
 	position: fixed;
 	z-index: var(--rise-z-toast);
 	box-sizing: border-box;
-	width: calc(#{sz(360px)} + #{sz(32px)});
+	width: calc(#{sz(ct(notification, width, 360px))} + #{sz(32px)});
 	max-width: 100%;
 	max-height: 100%;
 	padding: sz(16px);
@@ -11,32 +11,44 @@
 	@include scrollbar-thin;
 
 	&--top-left {
+		--overlay-slide: calc(var(--rise-motion-distance) * -1) 0;
+
 		top: 0;
 		left: 0;
 	}
 
 	&--top-right {
+		--overlay-slide: var(--rise-motion-distance) 0;
+
 		top: 0;
 		right: 0;
 	}
 
 	&--top-center {
+		--overlay-slide: 0 calc(var(--rise-motion-distance) * -1);
+
 		top: 0;
 		left: 50%;
 		translate: -50% 0;
 	}
 
 	&--bottom-left {
+		--overlay-slide: calc(var(--rise-motion-distance) * -1) 0;
+
 		bottom: 0;
 		left: 0;
 	}
 
 	&--bottom-right {
+		--overlay-slide: var(--rise-motion-distance) 0;
+
 		right: 0;
 		bottom: 0;
 	}
 
 	&--bottom-center {
+		--overlay-slide: 0 var(--rise-motion-distance);
+
 		bottom: 0;
 		left: 50%;
 		translate: -50% 0;
@@ -47,7 +59,7 @@
 		inset: auto;
 		z-index: auto;
 		width: 100%;
-		max-width: sz(360px);
+		max-width: sz(ct(notification, width, 360px));
 		max-height: none;
 		padding: 0;
 		overflow: visible;
@@ -67,7 +79,7 @@
 	position: relative;
 	display: flex;
 	flex-direction: column;
-	gap: sz(8px);
+	gap: sz(ct(notification, gap, 8px));
 }
 
 .base-notification-item {
@@ -82,14 +94,14 @@
 	gap: sz(12px);
 	box-sizing: border-box;
 	width: 100%;
-	padding: sz(16px);
+	padding: space(ct(notification, padding, 16px));
 	overflow: hidden;
-	border: 1px solid var(--rise-border);
-	border-radius: sz(var(--rise-radius-lg));
-	@include custom-bg(background-color, var(--rise-bg));
-	@include custom-text(color, var(--rise-text));
+	border: 1px solid ct(notification, border, var(--rise-border));
+	border-radius: sz(ct(notification, radius, var(--rise-radius-lg)));
+	@include custom-bg(background-color, ct(notification, bg, var(--rise-bg)));
+	@include custom-text(color, ct(notification, text, var(--rise-text)));
 	@include text-size(sm);
-	box-shadow: var(--rise-shadow-lg);
+	box-shadow: ct(notification, shadow, var(--rise-shadow-lg));
 	pointer-events: auto;
 
 	&--success {
@@ -124,8 +136,11 @@
 	}
 
 	&__title.base-text {
+		--text-weight: #{ct(notification-title, font-weight, var(--rise-font-weight-semibold))};
+
 		margin: 0;
-		@include text-size(sm);
+		font-size: sz(ct(notification-title, font-size, var(--rise-font-size-sm)));
+		line-height: sz(var(--rise-line-height-sm));
 		@include custom-text(color, var(--rise-text-highlighted));
 		overflow-wrap: anywhere;
 	}
@@ -205,16 +220,10 @@
 	}
 }
 
-.base-notification-move,
-.base-notification-enter-active,
-.base-notification-leave-active {
-	@include transition(opacity, transform);
-}
+@include overlay-animation(base-notification, '.base-notification-item');
 
-.base-notification-enter-from,
-.base-notification-leave-to {
-	opacity: 0;
-	transform: scale(0.96);
+.base-notification-move {
+	transition: transform var(--rise-duration) var(--rise-ease-emphasized);
 }
 
 .base-notification-leave-active {

@@ -1,4 +1,6 @@
 import type { Ref } from 'vue'
+import type { UiProp } from '@composables/base/useUi'
+import type { EnterAnimation } from '@composables/app/useMotion'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
@@ -6,6 +8,34 @@ import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 export const TOUR_PLACEMENTS = ['top', 'bottom', 'left', 'right', 'auto'] as const
 
 export type TourPlacement = (typeof TOUR_PLACEMENTS)[number]
+
+/**
+ * Части тура для пропа `ui`: root — слой тура, overlay — затемнение без цели, spotlight — подсветка цели, card — карточка,
+ * arrow — стрелка карточки, panel — оформление карточки (без своего слота), header — шапка, title — заголовок,
+ * close — кнопка «Пропустить», content — текст шага, footer — подвал, progress — точки шагов, dot — точка,
+ * progress-bar — полоса прогресса, progress-bar-fill — заполнение полосы, counter — счётчик «1 / 3», actions — кнопки
+ */
+export const TOUR_PARTS = [
+	'root',
+	'overlay',
+	'spotlight',
+	'card',
+	'arrow',
+	'panel',
+	'header',
+	'title',
+	'close',
+	'content',
+	'footer',
+	'progress',
+	'dot',
+	'progress-bar',
+	'progress-bar-fill',
+	'counter',
+	'actions',
+] as const
+
+export type BaseTourPart = (typeof TOUR_PARTS)[number]
 
 export interface TourStep {
 	/**
@@ -114,6 +144,20 @@ export interface BaseTourProps extends BaseComponentProps<
 	 * экрана — стрелка на её верхнем крае, если элемент выше карточки. По умолчанию включена
 	 */
 	showArrow?: boolean
+	/**
+	 * Появление и уход карточки: `scale` (по умолчанию) — масштаб от стороны цели, `fade` — только прозрачность,
+	 * `slide` — сдвиг со стороны цели, `pop` — масштаб с пружиной, `none` — сразу. Слой тура с затемнением проявляется
+	 * плавно (в `none` — сразу). Длительности — токены движения и пресет `data-rise-motion`; при «уменьшить движение» —
+	 * сразу. Глобально — `defaults.BaseTour.animation` или `defaults.global.animation`
+	 */
+	animation?: EnterAnimation
+	/**
+	 * Классы частей тура: добавляются к БЭМ-классам кита, глобальные — `defaults.BaseTour.ui`.
+	 *
+	 * @example
+	 * <BaseTour :ui="{ panel: 'rounded-3xl', 'progress-bar-fill': 'bg-emerald-500' }" />
+	 */
+	ui?: UiProp<BaseTourPart>
 }
 
 /** Контекст, передаваемый в default-слот карточки тура */

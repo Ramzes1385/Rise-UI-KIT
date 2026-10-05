@@ -1,14 +1,13 @@
 <template>
 	<section
-		class="base-notification-center"
-		:class="[variantClass, classes.root]"
+		:class="[ui('root'), variantClass, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		:aria-labelledby="titleId">
-		<div class="base-notification-center__header" :class="classes.header">
-			<span :id="titleId" class="base-notification-center__title">{{ title ?? UI_NOTIFICATION_CENTER.TITLE }}</span>
-			<span class="base-notification-center__count" role="status">{{ unreadText }}</span>
+		<div :class="[ui('header'), classes.header]">
+			<span :id="titleId" :class="ui('title')">{{ title ?? UI_NOTIFICATION_CENTER.TITLE }}</span>
+			<span :class="ui('count')" role="status">{{ unreadText }}</span>
 			<BaseButton
-				class="base-notification-center__read-all"
+				:class="ui('read-all')"
 				variant="ghost"
 				:size-scale="sizeScale * 0.875"
 				:is-disabled="!unread"
@@ -25,34 +24,35 @@
 			is-block
 			:size-scale="sizeScale * 0.875"
 			@update:model-value="setFilter" />
-		<ul v-if="visible.length" class="base-notification-center__list" :class="classes.list" :style="{ maxHeight: `${maxHeight}px` }">
+		<TransitionGroup
+			v-if="visible.length"
+			name="base-notification-center-item"
+			tag="ul"
+			:class="[ui('list'), classes.list]"
+			:style="{ maxHeight: `${maxHeight}px` }">
 			<li
 				v-for="item in visible"
 				:key="item.id"
-				class="base-notification-center__item"
-				:class="[classes.item, { 'base-notification-center__item--unread': !item.isRead }]">
-				<button type="button" class="base-notification-center__main" @click="select(item)">
-					<BaseAvatar
-						v-if="item.avatar"
-						class="base-notification-center__avatar"
-						:src="item.avatar"
-						alt=""
-						:size-scale="sizeScale" />
-					<span v-else class="base-notification-center__icon" aria-hidden="true"><BaseIcon :name="item.icon ?? 'bell'" /></span>
-					<span class="base-notification-center__body">
-						<span class="base-notification-center__item-title">{{ item.title }}</span>
+				:class="[ui('item'), classes.item, { 'base-notification-center__item--unread': !item.isRead }]">
+				<button type="button" :class="ui('main')" @click="select(item)">
+					<BaseAvatar v-if="item.avatar" :class="ui('avatar')" :src="item.avatar" alt="" :size-scale="sizeScale" />
+					<span v-else :class="ui('icon')" aria-hidden="true"><BaseIcon :name="item.icon ?? 'bell'" /></span>
+					<span :class="ui('body')">
+						<span :class="ui('item-title')">{{ item.title }}</span>
 						{{ ' ' }}
-						<span v-if="item.text" class="base-notification-center__text">{{ item.text }}</span>
+						<span v-if="item.text" :class="ui('text')">{{ item.text }}</span>
 						{{ ' ' }}
-						<time class="base-notification-center__time" :datetime="isoOf(item)">{{ timeOf(item) }}</time>
+						<time :class="ui('time')" :datetime="isoOf(item)">{{ timeOf(item) }}</time>
 					</span>
 					{{ ' ' }}
-					<span v-if="!item.isRead" class="base-notification-center__dot">
-						<span class="base-notification-center__hidden">{{ UI_NOTIFICATION_CENTER.UNREAD_ITEM }}</span>
-					</span>
+					<Transition name="base-notification-center-dot">
+						<span v-if="!item.isRead" :class="ui('dot')">
+							<span class="base-notification-center__hidden">{{ UI_NOTIFICATION_CENTER.UNREAD_ITEM }}</span>
+						</span>
+					</Transition>
 				</button>
 				<BaseButton
-					class="base-notification-center__toggle"
+					:class="ui('toggle')"
 					variant="ghost"
 					:size-scale="sizeScale * 0.875"
 					:aria-label="item.isRead ? UI_NOTIFICATION_CENTER.MARK_UNREAD : UI_NOTIFICATION_CENTER.MARK_READ"
@@ -60,8 +60,8 @@
 					<template #left><BaseIcon :name="item.isRead ? 'rotate-ccw' : 'check'" /></template>
 				</BaseButton>
 			</li>
-		</ul>
-		<p v-else class="base-notification-center__empty">
+		</TransitionGroup>
+		<p v-else :class="ui('empty')">
 			{{ filter === 'unread' ? UI_NOTIFICATION_CENTER.EMPTY_UNREAD : UI_NOTIFICATION_CENTER.EMPTY }}
 		</p>
 	</section>
@@ -74,6 +74,7 @@ import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
 import { BaseSegmented } from '@components/BaseSegmented'
 import { UI_NOTIFICATION_CENTER } from '@/locales/messages'
+import { kitDefaults } from '@composables/base/useDefaults'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import { useBaseNotificationCenter } from '../model/useBaseNotificationCenter'
 import type {
@@ -82,20 +83,24 @@ import type {
 	BaseNotificationCenterSlots,
 } from '../types/BaseNotificationCenter.types'
 
-const props = withDefaults(defineProps<BaseNotificationCenterProps>(), {
-	variant: 'default',
-	filter: undefined,
-	title: undefined,
-	now: undefined,
-	maxHeight: 360,
-	sizeScale: SIZE_SCALE_DEFAULT,
-})
+const props = withDefaults(
+	defineProps<BaseNotificationCenterProps>(),
+	kitDefaults('BaseNotificationCenter', {
+		variant: 'default',
+		filter: undefined,
+		title: undefined,
+		now: undefined,
+		maxHeight: 360,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseNotificationCenterEmits>()
 
 defineSlots<BaseNotificationCenterSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

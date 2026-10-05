@@ -1,8 +1,37 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /** Варианты оформления BaseNotificationCenter: default — панель с рамкой и отступами, ghost — без рамки и фона (для поповера). */
 export const NOTIFICATION_CENTER_VARIANTS = ['default', 'ghost'] as const
+
+/**
+ * Части панели для пропа `ui`: header — шапка, title — заголовок, count — «N непрочитанных», read-all — «Прочитать все»,
+ * list — список, item — пункт, main — кнопка пункта, avatar, icon — картинка или значок слева, body — текст пункта,
+ * item-title — заголовок пункта, text — подробности, time — время, dot — точка «не прочитано»,
+ * toggle — «Прочитано / Не прочитано», empty — пустой список.
+ */
+export const NOTIFICATION_CENTER_PARTS = [
+	'root',
+	'header',
+	'title',
+	'count',
+	'read-all',
+	'list',
+	'item',
+	'main',
+	'avatar',
+	'icon',
+	'body',
+	'item-title',
+	'text',
+	'time',
+	'dot',
+	'toggle',
+	'empty',
+] as const
+
+export type BaseNotificationCenterPart = (typeof NOTIFICATION_CENTER_PARTS)[number]
 
 /** Фильтр списка: все уведомления или только непрочитанные */
 export const NOTIFICATION_FILTERS = ['all', 'unread'] as const
@@ -45,6 +74,13 @@ export interface BaseNotificationCenterProps extends BaseComponentProps<
 	now?: Date
 	/** Наибольшая высота списка в пикселях: дальше — прокрутка */
 	maxHeight?: number
+	/**
+	 * Классы частей панели: добавляются к БЭМ-классам кита, глобальные — `defaults.BaseNotificationCenter.ui`.
+	 *
+	 * @example
+	 * <BaseNotificationCenter v-model:items="items" :ui="{ item: 'rounded-xl', dot: 'bg-red-500' }" />
+	 */
+	ui?: UiProp<BaseNotificationCenterPart>
 }
 
 /**

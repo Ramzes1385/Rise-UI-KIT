@@ -22,12 +22,15 @@
 
 .base-tour__spotlight {
 	position: fixed;
+	top: 0;
+	left: 0;
 	box-sizing: border-box;
+	border-radius: ct(tour-spotlight, radius, 8px);
 	pointer-events: none;
 	box-shadow:
-		0 0 0 2px var(--rise-primary),
+		0 0 0 2px ct(tour-spotlight, ring, var(--rise-primary)),
 		0 0 0 9999px var(--rise-overlay);
-	@include transition(top, left, width, height, border-radius);
+	@include transition(transform, width, height, border-radius);
 }
 
 .base-tour__spotlight--focusing {
@@ -39,25 +42,33 @@
 	position: fixed;
 	z-index: 1;
 	pointer-events: auto;
-	width: sz(320px);
+	width: sz(ct(tour-card, width, 320px));
 	max-width: calc(100vw - #{sz(32px)});
 
 	&--top {
+		--overlay-slide: 0 var(--rise-motion-distance);
+
 		transform: translate(calc(-50% + var(--tour-card-shift, 0px)), -100%);
 		transform-origin: bottom center;
 	}
 
 	&--bottom {
+		--overlay-slide: 0 calc(var(--rise-motion-distance) * -1);
+
 		transform: translate(calc(-50% + var(--tour-card-shift, 0px)), 0);
 		transform-origin: top center;
 	}
 
 	&--left {
+		--overlay-slide: var(--rise-motion-distance) 0;
+
 		transform: translate(-100%, calc(-50% + var(--tour-card-shift, 0px)));
 		transform-origin: right center;
 	}
 
 	&--right {
+		--overlay-slide: calc(var(--rise-motion-distance) * -1) 0;
+
 		transform: translate(0, calc(-50% + var(--tour-card-shift, 0px)));
 		transform-origin: left center;
 	}
@@ -82,8 +93,8 @@
 	box-sizing: border-box;
 	width: sz(10px);
 	height: sz(10px);
-	border: 1px solid var(--rise-border);
-	background-color: var(--rise-bg);
+	border: 1px solid ct(tour-card, border, var(--rise-border));
+	background-color: ct(tour-card, bg, var(--rise-bg));
 	pointer-events: none;
 
 	.base-tour__card--arrow-top > & {
@@ -123,13 +134,13 @@
 	display: flex;
 	flex-direction: column;
 	box-sizing: border-box;
-	padding: sz(16px);
-	border: 1px solid var(--rise-border);
-	border-radius: sz(var(--rise-radius-lg));
-	background-color: var(--rise-bg);
-	color: var(--rise-text);
+	padding: space(ct(tour-card, padding, 16px));
+	border: 1px solid ct(tour-card, border, var(--rise-border));
+	border-radius: sz(ct(tour-card, radius, var(--rise-radius-lg)));
+	background-color: ct(tour-card, bg, var(--rise-bg));
+	color: ct(tour-card, text, var(--rise-text));
 	@include text-size(sm);
-	box-shadow: var(--rise-shadow-lg);
+	box-shadow: ct(tour-card, shadow, var(--rise-shadow-lg));
 }
 
 .base-tour__header {
@@ -143,7 +154,8 @@
 	flex: 1;
 	min-width: 0;
 	margin: 0;
-	@include text-size(sm);
+	font-size: sz(ct(tour-title, font-size, var(--rise-font-size-sm)));
+	line-height: sz(var(--rise-line-height-sm));
 	color: var(--rise-text-highlighted);
 	overflow-wrap: anywhere;
 }
@@ -203,15 +215,21 @@
 	height: sz(4px);
 	overflow: hidden;
 	border-radius: var(--rise-radius-full);
-	background-color: var(--rise-bg-accented);
+	background-color: ct(tour-progress-bar, bg, var(--rise-bg-accented));
 }
 
 .base-tour__progress-bar-fill {
+	--tour-progress-clip: calc(100% - var(--tour-progress, 0) * 1%);
+
 	display: block;
 	height: 100%;
-	border-radius: inherit;
-	background-color: var(--rise-primary);
-	@include transition(width);
+	background-color: ct(tour-progress-bar-fill, bg, var(--rise-primary));
+	clip-path: inset(0 var(--tour-progress-clip) 0 0 round var(--rise-radius-full));
+	@include transition(clip-path);
+
+	&:dir(rtl) {
+		clip-path: inset(0 0 0 var(--tour-progress-clip) round var(--rise-radius-full));
+	}
 }
 
 .base-tour__counter.base-text {
@@ -228,19 +246,22 @@
 	margin-left: auto;
 }
 
-.base-tour-card-enter-active,
-.base-tour-card-leave-active {
-	transition-property: opacity, scale;
-	transition-duration: var(--rise-duration-slow);
-	transition-timing-function: var(--rise-ease-out);
+.base-tour-enter-active {
+	transition: opacity var(--rise-duration) var(--rise-ease-out);
 }
 
-.base-tour-card-leave-active {
-	transition-duration: var(--rise-duration-fast);
+.base-tour-leave-active {
+	transition: opacity var(--rise-duration-fast) var(--rise-ease-in);
 }
 
-.base-tour-card-enter-from,
-.base-tour-card-leave-to {
+.base-tour-enter-from,
+.base-tour-leave-to {
 	opacity: 0;
-	scale: 0.92;
 }
+
+.base-tour--animation-none.base-tour-enter-active,
+.base-tour--animation-none.base-tour-leave-active {
+	transition: none;
+}
+
+@include overlay-animation(base-tour-card, '.base-tour__card', null, var(--rise-duration-slow), var(--rise-duration-fast));

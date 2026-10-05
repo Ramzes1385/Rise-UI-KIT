@@ -24,3 +24,5 @@ export const OverlayFromCode = cases.OverlayFromCode
 export const LayerContainer = cases.LayerContainer
 export const LoadingBar = cases.LoadingBar
 export const RouterLoadingBar = cases.RouterLoadingBar
+export const Theming = cases.Theming
+export const Animations = cases.Animations

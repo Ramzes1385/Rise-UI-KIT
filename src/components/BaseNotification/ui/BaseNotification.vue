@@ -2,50 +2,51 @@
 	<Teleport defer :to="teleportTarget" :disabled="isContained">
 		<div
 			ref="containerRef"
-			class="base-notification"
 			:class="[
+				ui('root'),
 				`base-notification--${position}`,
 				{ 'base-notification--contained': isContained, 'base-notification--paused': isPaused },
 				classes.root,
 			]"
 			:style="sizeScaleStyle"
+			v-bind="themeAttrs"
 			role="region"
-			:aria-label="UI_ARIA.NOTIFICATIONS"
+			:aria-label="ariaLabel ?? UI_ARIA.NOTIFICATIONS"
 			@mouseenter="isHovered = true"
 			@mouseleave="isHovered = false"
 			@focusin="isFocusWithin = true"
 			@focusout="handleFocusOut">
-			<TransitionGroup name="base-notification" tag="div" class="base-notification-list">
+			<TransitionGroup name="base-notification" tag="div" :class="ui('list')">
 				<div
 					v-for="notification in list"
 					:key="notification.id"
-					class="base-notification-item"
-					:class="[`base-notification-item--${notification.type || 'info'}`, getVariantClass(notification), classes.notification]"
+					:class="[
+						ui('item'),
+						`base-notification-item--${notification.type || 'info'}`,
+						animationClass,
+						getVariantClass(notification),
+						classes.notification,
+					]"
 					:style="[variantStyle, customColorStyle]"
 					:role="notification.type === 'error' ? 'alert' : 'status'">
 					<BaseIcon
 						:name="typeIconMap[notification.type || 'info']"
 						:size-scale="calcIconScale('md', sizeScale)"
-						class="base-notification-item__icon"
+						:class="ui('icon')"
 						:custom-class="classes.icon" />
-					<div class="base-notification-item__content" :class="classes.content">
-						<BaseText
-							tag="h4"
-							:size-scale="sizeScale"
-							:weight="TEXT_WEIGHT.SEMIBOLD"
-							class="base-notification-item__title"
-							:custom-class="classes.title">
+					<div :class="[ui('content'), classes.content]">
+						<BaseText tag="h4" :size-scale="sizeScale" :class="ui('title')" :custom-class="classes.title">
 							{{ notification.title }}
 						</BaseText>
 						<BaseText
 							v-if="notification.description"
 							tag="p"
 							:size-scale="sizeScale"
-							class="base-notification-item__description"
+							:class="ui('description')"
 							:custom-class="classes.description">
 							{{ notification.description }}
 						</BaseText>
-						<div v-if="notification.actions?.length" class="base-notification-item__actions" :class="classes.actions">
+						<div v-if="notification.actions?.length" :class="[ui('actions'), classes.actions]">
 							<BaseButton
 								v-for="action in notification.actions"
 								:key="action.label"
@@ -58,7 +59,7 @@
 					</div>
 					<BaseButton
 						variant="ghost"
-						class="base-notification-item__close"
+						:class="ui('close')"
 						:size-scale="sizeScale"
 						:custom-class="classes.close"
 						:aria-label="UI_ARIA.CLOSE"
@@ -68,8 +69,7 @@
 					<div
 						v-if="!notification.isPersistent"
 						:key="getTimerKey(notification)"
-						class="base-notification-item__progress"
-						:class="classes.progress"
+						:class="[ui('progress'), classes.progress]"
 						:style="{ animationDuration: `${getDuration(notification)}ms` }"></div>
 				</div>
 			</TransitionGroup>
@@ -82,10 +82,10 @@ import '@components/BaseIcon/styles/BaseIcon.style.scss'
 import '../styles/BaseNotification.style.scss'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
+import { BaseText } from '@components/BaseText'
 import { BaseButton } from '@components/BaseButton'
 import { calcIconScale } from '@utils/media/iconUtils'
 import { kitDefaults } from '@composables/base/useDefaults'
-import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import { DEFAULT_DURATION, useBaseNotification } from '../model/useBaseNotification'
 import type { BaseNotificationEmits, BaseNotificationProps, BaseNotificationSlots } from '../types/BaseNotification.types'
@@ -100,6 +100,7 @@ const props = withDefaults(
 		sizeScale: SIZE_SCALE_DEFAULT,
 		isContained: false,
 		isPersistent: false,
+		animation: 'scale',
 	}),
 )
 const emit = defineEmits<BaseNotificationEmits>()
@@ -125,6 +126,9 @@ const {
 	remove,
 	runAction,
 	exposed,
+	ui,
+	animationClass,
+	themeAttrs,
 } = useBaseNotification(props, emit)
 
 defineExpose(exposed)

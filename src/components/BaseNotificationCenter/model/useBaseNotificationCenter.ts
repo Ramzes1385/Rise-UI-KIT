@@ -1,3 +1,4 @@
+import { useUi } from '@composables/base/useUi'
 import { computed, ref, useId, watch } from 'vue'
 import { getLocale, pluralize } from '@/locales/state'
 import { formatRelativeTime } from '@utils/data/dateUtils'
@@ -40,6 +41,7 @@ export function useBaseNotificationCenter(props: NotificationCenterProps, emit: 
 	}
 	return {
 		...useStandardBaseComponent('base-notification-center', props, ['root', 'header', 'list', 'item']),
+		ui: useUi(props, 'base-notification-center'),
 		titleId: `${useId()}-title`,
 		filter,
 		setFilter,

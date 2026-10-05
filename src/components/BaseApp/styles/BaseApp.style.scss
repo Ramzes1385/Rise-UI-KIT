@@ -2,8 +2,8 @@
 	position: fixed;
 	inset: 0 0 auto;
 	z-index: var(--rise-z-max);
-	height: var(--loading-bar-height);
-	background-color: var(--rise-primary);
+	height: var(--loading-bar-height, #{ct(app-loading-bar, height, 3px)});
+	background-color: ct(app-loading-bar, bg, var(--rise-primary));
 	pointer-events: none;
 	transform: scaleX(var(--loading-bar-progress));
 	transform-origin: left center;
@@ -30,4 +30,19 @@
 	@include motion-reduce {
 		transform: none;
 	}
+}
+
+.base-app-loading-bar-enter-active {
+	transition:
+		opacity var(--rise-duration-fast) var(--rise-ease-out),
+		transform var(--rise-duration) var(--rise-ease);
+}
+
+.base-app-loading-bar-leave-active {
+	transition: opacity var(--rise-duration-fast) var(--rise-ease-in);
+}
+
+.base-app-loading-bar-enter-from,
+.base-app-loading-bar-leave-to {
+	opacity: 0;
 }

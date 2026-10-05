@@ -1,3 +1,5 @@
+import type { UiProp } from '@composables/base/useUi'
+import type { EnterAnimation } from '@composables/app/useMotion'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export const NOTIFICATION_TYPES = ['success', 'error', 'warning', 'info'] as const
@@ -10,6 +12,26 @@ export const NOTIFICATION_TYPES = ['success', 'error', 'warning', 'info'] as con
 export const NOTIFICATION_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
 export const NOTIFICATION_POSITIONS = ['top-left', 'top-right', 'top-center', 'bottom-left', 'bottom-right', 'bottom-center'] as const
+
+/**
+ * Части уведомлений для пропа `ui`: root — область (`.base-notification`), list — список (`.base-notification-list`),
+ * item — карточка (`.base-notification-item`), icon, content, title, description, actions, close, progress — части
+ * карточки (`.base-notification-item__<часть>`).
+ */
+export const NOTIFICATION_PARTS = [
+	'root',
+	'list',
+	'item',
+	'icon',
+	'content',
+	'title',
+	'description',
+	'actions',
+	'close',
+	'progress',
+] as const
+
+export type BaseNotificationPart = (typeof NOTIFICATION_PARTS)[number]
 
 export type NotificationPosition = (typeof NOTIFICATION_POSITIONS)[number]
 
@@ -52,6 +74,22 @@ export interface BaseNotificationProps extends BaseComponentProps<
 	items?: NotificationItem[]
 	/** Ключ для принудительного добавления уведомления при изменении */
 	notificationKey?: string | number
+	/** Имя области для скринридера; по умолчанию «Уведомления». Нужно, когда на странице несколько областей уведомлений */
+	ariaLabel?: string
+	/**
+	 * Появление и уход карточек: `scale` (по умолчанию) — прозрачность и масштаб, `fade` — прозрачность, `slide` — сдвиг
+	 * со стороны угла `position` (справа — справа, по центру сверху — сверху) на `--rise-motion-distance`, `pop` — масштаб
+	 * с пружиной, `none` — сразу. Соседи сдвигаются плавно. Пресет движения — `data-rise-motion` области, где стоит компонент;
+	 * при «уменьшить движение» — сразу. Глобально — `defaults.BaseNotification.animation`
+	 */
+	animation?: EnterAnimation
+	/**
+	 * Классы частей: добавляются к классам кита, глобальные — `defaults.BaseNotification.ui`.
+	 *
+	 * @example
+	 * <BaseNotification :ui="{ item: 'rounded-2xl', title: 'tracking-wide' }" />
+	 */
+	ui?: UiProp<BaseNotificationPart>
 }
 
 export interface NotificationItem extends Omit<BaseNotificationProps, 'items'> {

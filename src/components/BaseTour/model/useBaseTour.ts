@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
 import { useTourTarget } from './useTourTarget'
+import { useUi } from '@composables/base/useUi'
 import { useTourAnnouncer } from './useTourAnnouncer'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useBreakpoint } from '@composables/app/useBreakpoint'
@@ -10,9 +11,9 @@ import { useCustomClass } from '@composables/base/useCustomClass'
 import { useScrollLock } from '@composables/overlay/useScrollLock'
 import { useTourArrow } from '@composables/navigation/useTourArrow'
 import { useTourLogic } from '@composables/navigation/useTourLogic'
-import { useTeleportTarget } from '@composables/app/useTeleportTarget'
 import type { BaseTourEmits, TourProps } from '../types/BaseTour.types'
 import { useTourCoordination } from '@composables/navigation/useTourCoordination'
+import { useOwnThemeAttrs, useTeleportTarget } from '@composables/app/useTeleportTarget'
 
 const TOUR_ELEMENTS = [
 	'root',
@@ -54,6 +55,25 @@ function useTourSteps(props: TourProps, emit: BaseTourEmits, internalIndex: Ref<
 		recalculate: logic.recalculate,
 	})
 	return { activeIndex, isMobile, logic, coordination }
+}
+
+function toSpotlightStyle(props: TourProps, style: Record<string, string> | null): Record<string, string> | null {
+	if (!style) return null
+	const { top, left, borderRadius, ...size } = style
+	const radius: Record<string, string> = props.radius === undefined && borderRadius !== '0' ? {} : { borderRadius }
+	return { ...size, ...radius, transform: `translate(${left}, ${top})` }
+}
+
+function useTourView(props: TourProps, steps: ReturnType<typeof useTourSteps>) {
+	const { spotlightStyle, progressPercent } = steps.coordination
+	return {
+		ui: useUi(props, 'base-tour'),
+		themeAttrs: useOwnThemeAttrs(() => props.isOpen),
+		animationClass: computed((): string => `base-tour--animation-${props.animation ?? 'scale'}`),
+		cardAnimationClass: computed((): string => `base-tour__card--animation-${props.animation ?? 'scale'}`),
+		spotlightStyle: computed(() => toSpotlightStyle(props, spotlightStyle.value)),
+		progressStyle: computed(() => ({ '--tour-progress': String(progressPercent.value) })),
+	}
 }
 
 function useCardFocus(props: TourProps, getLinkedElements: () => HTMLElement[]): Ref<HTMLElement | null> {
@@ -136,6 +156,7 @@ export function useBaseTour(props: TourProps, emit: BaseTourEmits) {
 		arrowSide: computed(() => (props.showArrow === false ? null : arrowSide.value)),
 		arrowStyle,
 		...steps.coordination,
+		...useTourView(props, steps),
 		isCentered: steps.logic.isCentered,
 		isCardShown: access.isCardShown,
 		isModal: computed((): boolean => !access.isTargetInteractive.value),

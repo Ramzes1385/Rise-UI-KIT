@@ -20,3 +20,5 @@ export const InPopover = cases.InPopover
 export const Empty = cases.Empty
 export const Variants = cases.Variants
 export const Sizes = cases.Sizes
+export const Theming = cases.Theming
+export const Animations = cases.Animations

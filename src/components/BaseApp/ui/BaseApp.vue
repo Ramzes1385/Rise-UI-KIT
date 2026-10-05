@@ -1,10 +1,12 @@
 <template>
-	<div
-		v-if="loadingBar.isVisible.value"
-		:class="loadingBar.classes.value"
-		:style="loadingBar.styles.value"
-		role="progressbar"
-		:aria-label="loadingBar.label.value" />
+	<Transition name="base-app-loading-bar">
+		<div
+			v-if="loadingBar.isVisible.value"
+			:class="loadingBar.classes.value"
+			:style="loadingBar.styles.value"
+			role="progressbar"
+			:aria-label="loadingBar.label.value" />
+	</Transition>
 	<slot />
 	<BaseNotification
 		:items="toasts.items.value"

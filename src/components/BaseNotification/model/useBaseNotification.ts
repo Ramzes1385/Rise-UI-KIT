@@ -1,9 +1,12 @@
 import type { ComputedRef } from 'vue'
-import { useTeleportTarget } from '@composables/app/useTeleportTarget'
+import { useUi } from '@composables/base/useUi'
+import type { UiClassFn } from '@composables/base/useUi'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useOwnThemeAttrs, useTeleportTarget } from '@composables/app/useTeleportTarget'
 import { DEFAULT_VARIANT, useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type {
 	AutoCloseTimer,
+	BaseNotificationPart,
 	BaseNotificationEmits,
 	BaseNotificationProps,
 	NotificationAction,
@@ -21,6 +24,25 @@ const TYPE_ICONS: Record<string, string> = {
 	info: 'info',
 }
 const NOTIFICATION_ELEMENTS = ['root', 'notification', 'icon', 'content', 'title', 'description', 'actions', 'close', 'progress']
+
+const PART_CLASSES: Partial<Record<BaseNotificationPart, string>> = {
+	root: 'base-notification',
+	list: 'base-notification-list',
+	item: 'base-notification-item',
+}
+
+function useNotificationUi(props: BaseNotificationProps): UiClassFn<BaseNotificationPart> {
+	const ui = useUi(props, 'base-notification')
+	return part => [PART_CLASSES[part] ?? `base-notification-item__${part}`, ...ui(part).split(' ').slice(1)].join(' ')
+}
+
+function useNotificationLook(props: BaseNotificationProps, list: ComputedRef<NotificationItem[]>) {
+	return {
+		ui: useNotificationUi(props),
+		animationClass: computed(() => `base-notification-item--animation-${props.animation ?? 'scale'}`),
+		themeAttrs: useOwnThemeAttrs(() => list.value.length > 0),
+	}
+}
 
 function resolveDuration(duration: number | undefined): number {
 	if (duration !== undefined && Number.isFinite(duration) && duration > 0) return Math.min(duration, MAX_TIMEOUT)
@@ -181,5 +203,6 @@ export function useBaseNotification(props: BaseNotificationProps, emit: BaseNoti
 			remove(id)
 		},
 		exposed: { add, remove },
+		...useNotificationLook(props, list),
 	}
 }

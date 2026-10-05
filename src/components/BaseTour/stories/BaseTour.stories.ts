@@ -28,3 +28,5 @@ export const CustomContent = cases.CustomContent
 export const NoTarget = cases.NoTarget
 export const TargetInteraction = cases.TargetInteraction
 export const Keyboard = cases.Keyboard
+export const Theming = cases.Theming
+export const Animations = cases.Animations

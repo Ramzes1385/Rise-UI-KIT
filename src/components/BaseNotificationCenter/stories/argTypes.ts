@@ -10,4 +10,5 @@ export const argTypes = {
 	title: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	now: { control: 'date', table: propGroup(ARG_GROUP.behavior) },
 	maxHeight: { control: { type: 'number', min: 160, max: 800, step: 20 }, table: propGroup(ARG_GROUP.appearance) },
+	ui: { control: false },
 } satisfies Meta<typeof BaseNotificationCenter>['argTypes']
