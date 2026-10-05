@@ -1,5 +1,9 @@
 /// <reference types="vite/client" />
 
+interface ImportMetaEnv {
+	readonly STORYBOOK_YANDEX_MAPS_API_KEY?: string
+}
+
 declare module '*.scss'
 declare module '*.css'
 

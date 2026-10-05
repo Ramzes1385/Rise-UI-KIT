@@ -3,7 +3,6 @@ import type { Meta } from '@storybook/vue3-vite'
 
 export const args = {
 	provider: 'yandex',
-	apiKey: '',
 	zoom: 10,
 	height: '360px',
 	variant: 'default',

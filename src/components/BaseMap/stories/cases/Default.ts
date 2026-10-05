@@ -1,18 +1,31 @@
-import { expect } from 'storybook/test'
 import type meta from '../BaseMap.stories'
+import { expect, waitFor } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
+import { STORY_YANDEX_MAPS_KEY, withYandexMapsKey } from '@/stories/helpers'
+
+const SCRIPT = 'script[src*="api-maps.yandex.ru"]'
 
 export const Default: StoryObj<typeof meta> = {
+	decorators: [withYandexMapsKey],
 	parameters: {
 		docs: {
 			description: {
-				story: 'Без ключа внешний скрипт не загружается — вместо карты заглушка. Выберите поставщика и вставьте свой ключ в `apiKey` в Controls, и карта загрузится (ключ никуда не сохраняется).',
+				story: [
+					'Без ключа внешний скрипт не загружается — вместо карты заглушка. Выберите поставщика и вставьте свой ключ в `apiKey` в Controls, и карта загрузится (ключ никуда не сохраняется).',
+					'Ключ Яндекс Карт можно положить в `.env.local`: `STORYBOOK_YANDEX_MAPS_API_KEY=…` (шаблон — `.env.example`). Его подхватят истории «Default», «Variants» и «Sizes» на dev-сервере (`npm run storybook`); в статическую сборку и в автоматические прогоны ключ не попадает.',
+				].join('\n'),
 			},
 		},
 	},
 	play: async ({ canvas }) => {
 		const map = canvas.getByRole('region', { name: 'Карта' })
+		if (STORY_YANDEX_MAPS_KEY) {
+			await waitFor(() => expect(document.querySelector(SCRIPT)).not.toBeNull())
+			await expect(map).not.toHaveTextContent('Нужен ключ API')
+			return
+		}
 		await expect(map).toHaveTextContent('Нужен ключ API')
-		await expect(document.querySelector('script[src*="api-maps.yandex.ru"]')).toBeNull()
+		await expect(canvas.getByText(/положите его в \.env\.local/i)).toBeVisible()
+		await expect(document.querySelector(SCRIPT)).toBeNull()
 	},
 }

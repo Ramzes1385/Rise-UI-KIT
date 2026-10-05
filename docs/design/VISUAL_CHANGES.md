@@ -1472,3 +1472,9 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 
 - **Вид по умолчанию не меняется.** Новые сиды (`--rise-color-neutral-0` = `#fff`, `--rise-density` = 1, `--rise-shadow-strength` = 1, `--rise-font-heading` = стек `--rise-font-sans`, `--rise-control-*-base` = 5/10/6px) дают прежние значения; токены компонентов BaseButton, BaseInput, BaseCard читаются с прежними значениями по умолчанию. Корень BaseButton и BaseCard получил явное `box-shadow: none` (раньше — значение по умолчанию того же вида), шапка BaseCard — `background-color: transparent`.
 - **Новые истории** (снимков в `*.visual.spec.ts` нет): `element-basebutton--theming`, `element-basecard--theming`, `form-baseinput--theming` — по умолчанию, токены компонента на контейнере, плотность 0.75 (карточка) и классы через `ui`.
+
+## Задача storybook-yandex-key: ключ Яндекс Карт в историях BaseMap
+
+- **Без ключа** (статическая сборка, скриншот-тесты, `check-stories`, любой прогон через Playwright): в историях `media-basemap--default`, `--variants` и `--sizes` та же заглушка «Нужен ключ API», а под превью — строка-подсказка (12 px, цвет `--rise-text-muted`): «Ключ Яндекс Карт не задан. Положите его в .env.local — STORYBOOK_YANDEX_MAPS_API_KEY=… — и перезапустите npm run storybook: в статическую сборку ключ не попадает.» Строка входит в область снимка `#storybook-root`. Эталонов `base-map-*` в репозитории нет (`find tests -iname '*base-map*'` пусто) — владелец снимает их уже с подсказкой.
+- **С ключом** (dev-сервер, обычный браузер): вместо заглушки — живая карта Яндекса, подсказки нет. В снимки это не попадает: автоматические прогоны ключ не используют.
+- Остальные истории BaseMap (`--markers`, `--loading`, `--providers`, `--seo`) не менялись.

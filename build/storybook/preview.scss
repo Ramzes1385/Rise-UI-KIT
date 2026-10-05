@@ -67,6 +67,14 @@ body.sb-show-main,
 	border-radius: 8px;
 }
 
+/** Подсказка под историей (декоратор withYandexMapsKey): чего не хватает для живого примера. */
+.story-hint {
+	margin: 0;
+	font-size: 12px;
+	line-height: 16px;
+	color: var(--rise-text-muted);
+}
+
 /** Витрина JSON-LD под историями с SEO (декоратор withJsonLd): разметка компонента, как её прочитает поисковик. */
 .story-json-ld {
 	margin: 0;
