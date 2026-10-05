@@ -1,8 +1,8 @@
 import { expect } from 'storybook/test'
-import { TO, TO_SCRIPT } from '../../shared'
 import type meta from '../../BaseCountdown.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseCountdown from '../../../ui/BaseCountdown.vue'
+import { TO, TO_SCRIPT, displayText } from '../../shared'
 import { storySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
@@ -33,10 +33,10 @@ export const Layouts: StoryObj<typeof meta> = {
 		template,
 	}),
 	play: async ({ canvasElement }) => {
-		const clocks = [...canvasElement.querySelectorAll('.base-countdown__clock')].map(clock => clock.textContent ?? '')
+		const clocks = [...canvasElement.querySelectorAll('.base-countdown__clock')].map(displayText)
 		await expect(clocks[0]).toMatch(/^2 дн\. 05:4\d:\d\d$/)
 		await expect(clocks[1]).toMatch(/^53:4\d:\d\d$/)
 		const last = canvasElement.querySelectorAll('.base-countdown')[3]
-		await expect([...last.querySelectorAll('.base-countdown__value')].map(value => value.textContent)).toEqual(['2', '06'])
+		await expect([...last.querySelectorAll('.base-countdown__value')].map(displayText)).toEqual(['2', '06'])
 	},
 }

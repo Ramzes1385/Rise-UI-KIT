@@ -6,6 +6,7 @@ export const args = {
 	label: 'До конца распродажи',
 	layout: 'blocks',
 	isLive: false,
+	digitAnimation: 'roll',
 	variant: 'default',
 	sizeScale: 100,
 } satisfies Meta<typeof BaseCountdown>['args']

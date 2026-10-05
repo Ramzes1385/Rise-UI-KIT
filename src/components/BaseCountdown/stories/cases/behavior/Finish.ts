@@ -1,3 +1,4 @@
+import { displayText } from '../../shared'
 import type meta from '../../BaseCountdown.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseCountdown from '../../../ui/BaseCountdown.vue'
@@ -39,7 +40,7 @@ export const Finish: StoryObj<typeof meta> = {
 		template,
 	}),
 	play: async ({ canvas, canvasElement, args }) => {
-		await expect(canvasElement.querySelectorAll('.base-countdown__value')[1].textContent).toMatch(/^0[1-3]$/)
+		await expect(displayText(canvasElement.querySelectorAll('.base-countdown__value')[1])).toMatch(/^0[1-3]$/)
 		await waitFor(() => expect(canvas.getByRole('status')).toHaveTextContent('Можно регистрироваться'), {
 			timeout: STORY_WAIT_TIMEOUT + 4000,
 		})
