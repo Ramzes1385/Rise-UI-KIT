@@ -6,11 +6,6 @@ import { columnCards, focusTarget, isSamePlace, locateCard, moveCard, stepPlace 
 
 const IDLE_KEYS = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', ' ', 'Enter'])
 
-const FLIP = {
-	items: { selector: '[data-card-id]', key: 'cardId' },
-	containers: { selector: '[data-column-id]', key: 'columnId' },
-}
-
 function useKanbanFocus(context: KanbanBoardContext) {
 	const activeId = ref<string | null>(null)
 	return {
@@ -49,7 +44,6 @@ function kanbanSortable(context: KanbanBoardContext, focusCard: (cardId: string)
 		onAnnounce: (message, cardId) => context.announce(message, cardId),
 		focusItem: focusCard,
 		settlingClass: 'base-kanban__ghost--settling',
-		flip: { source: () => context.cards.value, ...FLIP },
 	})
 }
 

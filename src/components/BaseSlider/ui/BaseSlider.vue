@@ -1,7 +1,7 @@
 <template>
 	<div
-		class="base-slider"
 		:class="[
+			ui('root'),
 			{
 				'base-slider--vertical': isVertical,
 				'base-slider--dragging': isDragging,
@@ -22,24 +22,22 @@
 		@focusout="onFocusOut">
 		<slot name="header" />
 
-		<div class="base-slider__body">
-			<div class="base-slider__stage">
+		<div :class="ui('body')">
+			<div :class="ui('stage')">
 				<BaseButton
 					v-if="hasRotationControl"
 					variant="ghost"
-					class="base-slider__rotation"
-					:class="classes.rotation"
+					:class="[ui('rotation'), classes.rotation]"
 					:aria-label="rotationLabel"
 					:size-scale="sizeScale"
 					data-slider-rotation
 					@click="toggleRotation">
 					<BaseIcon :name="isAutoplayStopped ? 'play' : 'pause'" />
 				</BaseButton>
-				<div v-if="hasArrows && canNavigate" class="base-slider__arrows" :class="classes.arrows">
+				<div v-if="hasArrows && canNavigate" :class="[ui('arrows'), classes.arrows]">
 					<BaseButton
 						:variant="arrowVariant"
-						class="base-slider__arrow base-slider__arrow--prev"
-						:class="classes.arrow"
+						:class="[ui('arrow'), 'base-slider__arrow--prev', classes.arrow]"
 						:aria-label="UI_ARIA.SLIDER_PREV"
 						:is-disabled="!isLoop && currentIndex === 0"
 						is-focusable-when-disabled
@@ -53,8 +51,7 @@
 					</BaseButton>
 					<BaseButton
 						:variant="arrowVariant"
-						class="base-slider__arrow base-slider__arrow--next"
-						:class="classes.arrow"
+						:class="[ui('arrow'), 'base-slider__arrow--next', classes.arrow]"
 						:aria-label="UI_ARIA.SLIDER_NEXT"
 						:is-disabled="!isLoop && currentIndex >= maxIndex"
 						is-focusable-when-disabled
@@ -70,8 +67,7 @@
 
 				<div
 					ref="viewportRef"
-					class="base-slider__viewport"
-					:class="classes.viewport"
+					:class="[ui('viewport'), classes.viewport]"
 					@touchstart="onTouchStart"
 					@touchmove="onTouchMove"
 					@touchend="onTouchEnd"
@@ -79,12 +75,11 @@
 					@mousedown="onDragStart"
 					@click.capture="onClickCapture"
 					@dragstart.prevent>
-					<div class="base-slider__track" :class="classes.track" :style="trackStyle" :aria-live="liveMode">
+					<div :class="[ui('track'), classes.track]" :style="trackStyle" :aria-live="liveMode">
 						<div
 							v-for="(item, index) in items"
 							:key="index"
-							class="base-slider__slide"
-							:class="[{ 'base-slider__slide--active': index === currentIndex }, classes.slide]"
+							:class="[ui('slide'), { 'base-slider__slide--active': index === currentIndex }, classes.slide]"
 							:style="[slideStyle, slideEffectStyle(index)]"
 							role="group"
 							:aria-roledescription="UI_CAROUSEL.SLIDE_ROLE"
@@ -95,7 +90,7 @@
 									v-if="item.type === 'video'"
 									:src="item.src"
 									:poster="item.poster"
-									class="base-slider__video"
+									:class="ui('video')"
 									controls
 									muted
 									loop
@@ -105,18 +100,15 @@
 									v-else
 									:src="item.src"
 									:alt="item.alt || ''"
-									class="base-slider__image"
+									:class="ui('image')"
 									:border-radius="0"
 									loading="lazy"
 									:zoom-config="{ hasZoom: isZoomable }" />
 							</slot>
-							<div
-								v-if="hasCaption && (item.title || item.description)"
-								class="base-slider__caption"
-								:class="classes.caption">
+							<div v-if="hasCaption && (item.title || item.description)" :class="[ui('caption'), classes.caption]">
 								<slot name="caption" :item="item" :index="index">
-									<h3 v-if="item.title" class="base-slider__title" :class="classes.title">{{ item.title }}</h3>
-									<p v-if="item.description" class="base-slider__desc" :class="classes.desc">{{ item.description }}</p>
+									<h3 v-if="item.title" :class="[ui('title'), classes.title]">{{ item.title }}</h3>
+									<p v-if="item.description" :class="[ui('desc'), classes.desc]">{{ item.description }}</p>
 								</slot>
 							</div>
 						</div>
@@ -124,30 +116,24 @@
 				</div>
 			</div>
 
-			<div v-if="hasNavigation && canNavigate" class="base-slider__navigation" :class="classes.navigation">
-				<div v-if="navigation === 'dots' || navigation === 'both'" class="base-slider__dots" :class="classes.dots">
+			<div v-if="hasNavigation && canNavigate" :class="[ui('navigation'), classes.navigation]">
+				<div v-if="navigation === 'dots' || navigation === 'both'" :class="[ui('dots'), classes.dots]">
 					<button
 						v-for="(_, page) in pageCount"
 						:key="page"
 						type="button"
-						class="base-slider__dot"
-						:class="[{ 'base-slider__dot--active': page === currentPage }, classes.dot]"
+						:class="[ui('dot'), { 'base-slider__dot--active': page === currentPage }, classes.dot]"
 						:aria-label="slideLabel(page * perGroup)"
 						:aria-current="page === currentPage ? 'true' : undefined"
 						@click="goToPage(page)"></button>
 				</div>
 
-				<div
-					v-if="navigation === 'thumbnails' || navigation === 'both'"
-					ref="thumbsRef"
-					class="base-slider__thumbs"
-					:class="classes.thumbs">
+				<div v-if="navigation === 'thumbnails' || navigation === 'both'" ref="thumbsRef" :class="[ui('thumbs'), classes.thumbs]">
 					<button
 						v-for="(item, index) in items"
 						:key="index"
 						type="button"
-						class="base-slider__thumb"
-						:class="[{ 'base-slider__thumb--active': index === currentIndex }, classes.thumb]"
+						:class="[ui('thumb'), { 'base-slider__thumb--active': index === currentIndex }, classes.thumb]"
 						:aria-label="slideLabel(index)"
 						:aria-current="index === currentIndex ? 'true' : undefined"
 						@click="goTo(index)"
@@ -155,9 +141,9 @@
 						<BaseImage
 							:src="item.type === 'video' ? item.poster || '' : item.src"
 							alt=""
-							class="base-slider__thumb-image"
+							:class="ui('thumb-image')"
 							:border-radius="0" />
-						<span v-if="item.type === 'video'" class="base-slider__thumb-play">
+						<span v-if="item.type === 'video'" :class="ui('thumb-play')">
 							<BaseIcon name="play" :size-scale="calcIconScale('sm', sizeScale)" />
 						</span>
 					</button>
@@ -210,6 +196,7 @@ const emit = defineEmits<BaseSliderEmits>()
 defineSlots<BaseSliderSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	classes,
 	viewportRef,

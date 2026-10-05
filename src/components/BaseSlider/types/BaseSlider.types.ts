@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 /**
  * Элемент слайдера
@@ -38,6 +39,39 @@ export type SliderNavigation = 'dots' | 'thumbnails' | 'both' | 'none'
 export const SLIDER_THUMBNAILS_POSITIONS = ['bottom', 'left', 'right'] as const
 
 export type SliderThumbnailsPosition = (typeof SLIDER_THUMBNAILS_POSITIONS)[number]
+
+/**
+ * Части слайдера для пропа `ui` (БЭМ-элементы `.base-slider__<часть>`, `root` — корень-область карусели):
+ * body — слайды и навигация; stage — область слайдов со стрелками; rotation — кнопка автопрокрутки; arrows — блок стрелок;
+ * arrow — стрелка «назад» или «вперёд»; viewport — окно ленты; track — лента слайдов; slide — слайд;
+ * video — видео слайда; image — картинка слайда; caption — подпись поверх слайда; title — заголовок подписи; desc — описание;
+ * navigation — точки и миниатюры; dots — ряд точек; dot — точка (у текущей страницы — вытянутая);
+ * thumbs — лента миниатюр; thumb — миниатюра; thumb-image — картинка миниатюры; thumb-play — значок видео на миниатюре.
+ */
+export const SLIDER_PARTS = [
+	'body',
+	'stage',
+	'rotation',
+	'arrows',
+	'arrow',
+	'viewport',
+	'track',
+	'slide',
+	'video',
+	'image',
+	'caption',
+	'title',
+	'desc',
+	'navigation',
+	'dots',
+	'dot',
+	'thumbs',
+	'thumb',
+	'thumb-image',
+	'thumb-play',
+] as const
+
+export type BaseSliderPart = (typeof SLIDER_PARTS)[number]
 
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
@@ -108,6 +142,14 @@ export interface BaseSliderProps extends Omit<
 	isZoomable?: boolean
 	/** Имя карусели для скринридера (`aria-label` области); по умолчанию «Карусель» из словаря */
 	label?: string
+	/**
+	 * Классы частей слайдера (`root`, `viewport`, `slide`, `caption`, `dot`, `thumb`…) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseSlider: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseSlider :items="items" :ui="{ viewport: 'rounded-none', caption: 'text-left' }" />
+	 */
+	ui?: UiProp<BaseSliderPart>
 }
 
 /** Методы экземпляра BaseSlider (`ref`) */

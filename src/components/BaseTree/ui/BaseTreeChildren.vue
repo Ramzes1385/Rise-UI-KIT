@@ -1,11 +1,11 @@
 <template>
 	<div
 		v-if="children.length && wasExpanded"
-		class="base-tree__children"
-		:class="[{ 'base-tree__children--open': isExpanded }, treeContext.classes.value.children]"
-		:style="isExpanded ? undefined : collapsedStyle"
-		role="group">
-		<div class="base-tree__children-inner" role="none">
+		:class="[treeContext.ui('children'), { 'base-tree__children--open': isOpen }, treeContext.classes.value.children]"
+		role="group"
+		:aria-hidden="isExpanded ? undefined : true"
+		:inert="isExpanded ? undefined : true">
+		<div :class="treeContext.ui('children-inner')" role="none">
 			<BaseTreeNode
 				v-for="(child, index) in children"
 				:key="child.id"
@@ -45,5 +45,5 @@ import type { BaseTreeChildrenProps, BaseTreeChildrenSlots } from '../types/Base
 defineProps<BaseTreeChildrenProps>()
 defineSlots<BaseTreeChildrenSlots>()
 
-const { treeContext, collapsedStyle } = useBaseTreeChildren()
+const { treeContext } = useBaseTreeChildren()
 </script>

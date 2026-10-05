@@ -1,21 +1,25 @@
-import type { KanbanCard } from './BaseKanban.types'
+import type { UiClassFn } from '@composables/base/useUi'
+import type { BaseKanbanPart, KanbanCard } from './BaseKanban.types'
 
 /**
  * Пропсы содержимого карточки по умолчанию: обложка, метки, название, описание и строка с номером, приоритетом,
- * сроком, счётчиками и исполнителями; `today` — дата для сроков, `isDone` — карточка в колонке завершённых
+ * сроком, счётчиками и исполнителями; `today` — дата для сроков, `isDone` — карточка в колонке завершённых,
+ * `ui` — классы частей доски
  */
 export interface KanbanCardContentProps {
 	card: KanbanCard
 	today: Date
 	isDone: boolean
+	ui: UiClassFn<BaseKanbanPart>
 }
 
 /**
  * Поле названия карточки: добавление внизу колонки (`isRepeating` — после Enter поле очищается для следующей
- * карточки, `submitLabel` — подпись кнопки) и переименование на месте карточки
+ * карточки, `submitLabel` — подпись кнопки) и переименование на месте карточки; `ui` — классы частей доски
  */
 export interface KanbanTextEditorProps {
 	value: string
+	ui: UiClassFn<BaseKanbanPart>
 	label: string
 	submitLabel?: string
 	isRepeating?: boolean

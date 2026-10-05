@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /** Вид диаграммы: `donut` — кольцо с итогом в центре, `pie` — круг */
@@ -8,6 +9,28 @@ export const PIE_CHART_VARIANTS = ['donut', 'pie'] as const
  * `fade` — проявляется, `none` — сразу. Обновление данных перетекает плавно во всех режимах, кроме `none`
  */
 export const PIE_CHART_ANIMATIONS = ['sweep', 'grow', 'fade', 'none'] as const
+
+/**
+ * Части диаграммы для пропа `ui` (БЭМ-элементы `.base-pie-chart__<часть>`, `root` — корень `<figure>`):
+ * chart — квадрат диаграммы; svg — рисунок; track — кольцо-подложка; segment — дуга части (и уходящая из данных);
+ * center — итог и подпись в центре кольца (`variant="donut"`); legend — список легенды; item — строка легенды;
+ * swatch — цветной квадрат; name — подпись части; value — значение; percent — доля в процентах.
+ */
+export const PIE_CHART_PARTS = [
+	'chart',
+	'svg',
+	'track',
+	'segment',
+	'center',
+	'legend',
+	'item',
+	'swatch',
+	'name',
+	'value',
+	'percent',
+] as const
+
+export type BasePieChartPart = (typeof PIE_CHART_PARTS)[number]
 
 /** Часть целого: подпись, значение и свой цвет (по умолчанию — цвет графиков по порядку) */
 export interface PieSegment {
@@ -60,4 +83,12 @@ export interface BasePieChartProps extends BaseComponentProps<(typeof PIE_CHART_
 	 * ни при обновлении данных. При «уменьшить движение» в системе — сразу конечный вид. По умолчанию `sweep`
 	 */
 	animation?: (typeof PIE_CHART_ANIMATIONS)[number]
+	/**
+	 * Классы частей диаграммы (`root`, `chart`, `segment`, `center`, `legend`, `item`, `value`…) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BasePieChart: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BasePieChart :segments="segments" label="Задачи" :ui="{ legend: 'gap-2', value: 'font-bold' }" />
+	 */
+	ui?: UiProp<BasePieChartPart>
 }

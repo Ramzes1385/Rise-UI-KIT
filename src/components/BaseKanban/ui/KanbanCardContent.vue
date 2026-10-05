@@ -1,18 +1,17 @@
 <template>
 	<span
 		v-if="coverStyle"
-		class="base-kanban__cover"
-		:class="{ 'base-kanban__cover--image': Boolean(card.coverImage) }"
+		:class="[ui('cover'), { 'base-kanban__cover--image': Boolean(card.coverImage) }]"
 		:style="coverStyle"
 		aria-hidden="true"></span>
-	<span v-if="meta.labels.length" class="base-kanban__labels">
+	<span v-if="meta.labels.length" :class="ui('labels')">
 		<span v-for="label in meta.labels" :key="label.text" class="base-kanban__label" :class="`base-kanban__label--${label.color}`">
 			{{ label.text }}
 		</span>
 	</span>
-	<span class="base-kanban__card-title">{{ card.title }}</span>
-	<span v-if="card.description" class="base-kanban__card-description">{{ card.description }}</span>
-	<span v-if="meta.hasFooter" class="base-kanban__meta" aria-hidden="true">
+	<span :class="ui('card-title')">{{ card.title }}</span>
+	<span v-if="card.description" :class="ui('card-description')">{{ card.description }}</span>
+	<span v-if="meta.hasFooter" :class="ui('meta')" aria-hidden="true">
 		<span class="base-kanban__meta-info">
 			<span v-if="card.key" class="base-kanban__key">{{ card.key }}</span>
 			<BaseTooltip v-if="meta.priority" class="base-kanban__priority-tooltip" :text="meta.priority.label">

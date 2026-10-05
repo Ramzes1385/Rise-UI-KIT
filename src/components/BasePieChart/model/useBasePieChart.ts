@@ -1,6 +1,7 @@
 import { computed, ref } from 'vue'
 import { UI_CHARTS } from '@/locales/messages'
 import { formatNumber } from '@/locales/state'
+import { useUi } from '@composables/base/useUi'
 import { usePieSegments } from './usePieSegments'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { foldSegments, PIE_RADIUS, RADIUS, segmentViews } from './chart/pieGeometry'
@@ -14,6 +15,7 @@ export function useBasePieChart(props: BasePieChartProps) {
 	return {
 		...useStandardBaseComponent('base-pie-chart', props, ['root', 'legend']),
 		...usePieSegments(props, views),
+		ui: useUi(props, 'base-pie-chart'),
 		animationClass: computed(() => `base-pie-chart--animation-${props.animation ?? 'sweep'}`),
 		circleRadius: computed(() => (props.variant === 'pie' ? PIE_RADIUS : RADIUS)),
 		views,

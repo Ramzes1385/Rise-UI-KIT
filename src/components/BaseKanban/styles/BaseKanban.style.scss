@@ -1,6 +1,4 @@
 .base-kanban {
-	--kanban-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
-
 	box-sizing: border-box;
 	max-width: 100%;
 	@include text-size(sm);
@@ -9,7 +7,7 @@
 	&__board {
 		display: flex;
 		align-items: flex-start;
-		gap: sz(12px);
+		gap: space(ct(kanban, gap, 12px));
 		padding-bottom: sz(4px);
 		overflow-x: auto;
 		@include scrollbar-thin;
@@ -19,12 +17,12 @@
 		display: flex;
 		flex: none;
 		flex-direction: column;
-		gap: sz(8px);
+		gap: space(8px);
 		box-sizing: border-box;
 		width: sz(272px);
-		padding: sz(8px);
-		border-radius: sz(var(--rise-radius-lg));
-		@include custom-bg(background-color, var(--rise-bg-muted));
+		padding: space(ct(kanban, column-padding-y, 8px) ct(kanban, column-padding-x, 8px));
+		border-radius: sz(ct(kanban, column-radius, var(--rise-radius-lg)));
+		@include custom-bg(background-color, ct(kanban, column-bg, var(--rise-bg-muted)));
 	}
 
 	&__header {
@@ -39,8 +37,8 @@
 	&__title {
 		flex: 1 1 auto;
 		min-width: 0;
-		font-weight: var(--rise-font-weight-semibold);
-		@include custom-text(color, var(--rise-text-highlighted));
+		font-weight: ct(kanban, header-font-weight, var(--rise-font-weight-semibold));
+		@include custom-text(color, ct(kanban, header-text, var(--rise-text-highlighted)));
 		@include truncate;
 	}
 
@@ -172,12 +170,30 @@
 	}
 
 	&__list {
+		position: relative;
 		display: flex;
 		flex-direction: column;
-		gap: sz(8px);
+		gap: space(8px);
 		margin: 0;
 		padding: 0;
 		list-style: none;
+	}
+
+	@include enter-scale(base-kanban__item);
+
+	& &__item-leave-active {
+		position: absolute;
+		pointer-events: none;
+	}
+
+	& &__item--moved {
+		opacity: 1;
+		transform: none;
+		transition: none;
+	}
+
+	& &__item--moved.base-kanban__item-leave-active {
+		visibility: hidden;
 	}
 
 	&__card,
@@ -186,12 +202,12 @@
 		flex-direction: column;
 		gap: sz(6px);
 		box-sizing: border-box;
-		padding: sz(10px) sz(12px);
-		border: 1px solid var(--rise-border);
-		border-radius: sz(var(--rise-radius-md));
-		background-color: var(--rise-bg);
+		padding: space(10px 12px);
+		border: 1px solid ct(kanban, card-border, var(--rise-border));
+		border-radius: sz(ct(kanban, card-radius, var(--rise-radius-md)));
+		background-color: ct(kanban, card-bg, var(--rise-bg));
 		color: var(--rise-text);
-		box-shadow: var(--rise-shadow-xs);
+		box-shadow: ct(kanban, card-shadow, var(--rise-shadow-xs));
 		text-align: left;
 		user-select: none;
 	}
@@ -203,10 +219,10 @@
 
 		@include motion-safe {
 			transition:
-				border-color 0.15s var(--kanban-ease),
-				background-color 0.15s var(--kanban-ease),
-				box-shadow 0.2s var(--kanban-ease),
-				scale 0.2s var(--kanban-ease);
+				border-color var(--rise-duration-fast) var(--rise-ease-out),
+				background-color var(--rise-duration-fast) var(--rise-ease-out),
+				box-shadow var(--rise-duration) var(--rise-ease-out),
+				scale var(--rise-duration) var(--rise-ease-out);
 		}
 
 		@include hover {
@@ -248,8 +264,8 @@
 
 		@include motion-safe {
 			rotate: 2deg;
-			transition: rotate 0.18s ease-out;
-			animation: base-kanban-lift 0.18s var(--kanban-ease);
+			transition: rotate var(--rise-duration-fast) var(--rise-ease-out);
+			animation: base-kanban-lift var(--rise-duration-fast) var(--rise-ease-out);
 		}
 	}
 
@@ -424,7 +440,7 @@
 		text-align: center;
 
 		@include motion-safe {
-			animation: base-kanban-appear 0.2s var(--kanban-ease);
+			animation: base-kanban-appear var(--rise-duration) var(--rise-ease-out);
 		}
 	}
 
@@ -438,17 +454,17 @@
 	}
 
 	&--soft &__column {
-		@include custom-bg(background-color, var(--rise-bg-elevated));
+		@include custom-bg(background-color, ct(kanban, column-bg, var(--rise-bg-elevated)));
 	}
 
 	&--outline &__column {
-		border: 1px solid var(--rise-border);
-		@include custom-bg(background-color, transparent);
+		border: 1px solid ct(kanban, column-border, var(--rise-border));
+		@include custom-bg(background-color, ct(kanban, column-bg, transparent));
 	}
 
 	&--ghost &__column {
 		padding: 0;
-		@include custom-bg(background-color, transparent);
+		@include custom-bg(background-color, ct(kanban, column-bg, transparent));
 	}
 
 	&__hint,

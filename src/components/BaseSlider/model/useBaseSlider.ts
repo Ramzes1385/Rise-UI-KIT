@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
 import { formatMessage } from '@/locales'
+import { useUi } from '@composables/base/useUi'
 import { useSliderThumbs } from './useSliderThumbs'
 import { computed, onBeforeUnmount, watch } from 'vue'
 import { useSlider } from '@composables/range/useSlider'
@@ -145,6 +146,7 @@ export function useBaseSlider(props: SliderProps, emit: BaseSliderEmits) {
 	watch(slider.currentIndex, videos.pauseHiddenVideos, { flush: 'post' })
 
 	return {
+		ui: useUi(props, 'base-slider'),
 		sizeScaleStyle,
 		classes,
 		...slider,

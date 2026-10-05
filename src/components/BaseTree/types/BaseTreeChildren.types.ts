@@ -4,8 +4,12 @@ export interface BaseTreeChildrenProps {
 	children: TreeNode[]
 	depth: number
 	sizeScale: number
+	/** Ветка раскрыта (состояние дерева): от него — `inert` и `aria-hidden` свёрнутой ветки */
 	isExpanded: boolean
+	/** Ветка уже раскрывалась: дети монтируются при первом раскрытии */
 	wasExpanded: boolean
+	/** Ветка раскрыта на экране: класс `--open`. При первом раскрытии ставится после монтирования свёрнутой ветки — без рывка */
+	isOpen: boolean
 }
 
 export interface BaseTreeChildrenSlots {

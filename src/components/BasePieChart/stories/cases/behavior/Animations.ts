@@ -1,92 +1,69 @@
 import type meta from '../../BasePieChart.stories'
+import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BasePieChart from '../../../ui/BasePieChart.vue'
 import { expect, userEvent, waitFor } from 'storybook/test'
-import BaseButton from '@components/BaseButton/ui/BaseButton.vue'
 import { CANCELLED, TASKS_BY_STATUS, TASKS_NEXT_WEEK } from '../../shared'
-import { literal, STORY_WAIT_TIMEOUT, storySource, useStorySetup } from '@/stories/helpers'
-import { PIE_CHART_ANIMATIONS, PIE_CHART_VARIANTS } from '../../../types/BasePieChart.types'
+import { motionPresetsStory, STORY_WAIT_TIMEOUT } from '@/stories/helpers'
 
-const examples = PIE_CHART_VARIANTS.flatMap(variant => PIE_CHART_ANIMATIONS.map(animation => ({ variant, animation })))
-const tasks = TASKS_BY_STATUS
-const nextTasks = TASKS_NEXT_WEEK
-const extra = CANCELLED
-const state = { replay: 0, isNext: false, hasExtra: false }
+const phases = [TASKS_BY_STATUS, TASKS_NEXT_WEEK, [...TASKS_NEXT_WEEK, CANCELLED]]
 
-const template = `
-	<div class="story-stack">
-		<div class="story-row">
-			<BaseButton @click="replay++">Повторить</BaseButton>
-			<BaseButton variant="outline" :aria-pressed="isNext" @click="isNext = !isNext">Новые данные</BaseButton>
-			<BaseButton variant="outline" :aria-pressed="hasExtra" @click="hasExtra = !hasExtra">Добавить сегмент</BaseButton>
+const motion = motionPresetsStory({
+	item: `
+		<div v-for="animation in ['sweep', 'grow', 'fade', 'none']" :key="animation + Math.floor(step / 3)" class="story-col">
+			<span class="story-label">{{ animation }}</span>
+			<BasePieChart v-bind="args" :animation="animation" :segments="phases[step % 3]" />
 		</div>
-		<div class="story-grid" style="--story-grid-min: 300px">
-			<div v-for="example in examples" :key="example.variant + example.animation + replay" class="story-col">
-				<span class="story-label">{{ example.variant }} · {{ example.animation }}</span>
-				<BasePieChart
-					v-bind="args"
-					:variant="example.variant"
-					:animation="example.animation"
-					:segments="[...(isNext ? nextTasks : tasks), ...(hasExtra ? [extra] : [])]" />
-			</div>
-		</div>
-	</div>
-`
+	`,
+	components: { BaseButton, BasePieChart },
+	imports: ['BasePieChart'],
+	state: { step: 0, phases },
+	action: 'step++',
+	trigger: 'Следующий шаг',
+	omit: ['animation', 'segments'],
+})
 
 export const Animations: StoryObj<typeof meta> = {
+	name: 'Анимации',
 	parameters: {
 		docs: {
 			description: {
 				story: [
-					'Появление `animation`: `sweep` — части по очереди набегают по кругу, `grow` — круг вырастает из центра,',
-					'`fade` — проявляется, `none` — сразу. «Повторить» — показать появление ещё раз.',
+					'Появление `animation` (строки в каждой колонке) в четырёх пресетах движения `data-rise-motion` (колонки):',
+					'`sweep` — части по очереди набегают по кругу, `grow` — круг вырастает из центра, `fade` — проявляется, `none` — сразу.',
+					'«Следующий шаг» по кругу: новые данные (длина и начало дуг перетекают, «На проверке» сжимается и удаляется) →',
+					'новая часть «Отменено» растёт из нуля → диаграммы монтируются заново и снова показывают появление. Вид — `variant` в Controls.',
 					'',
-					'«Новые данные» и «Добавить сегмент» — обновление: части сопоставляются по `label`, длина и начало дуги',
-					'перетекают, новая часть растёт из нуля, ушедшая («На проверке») сжимается и удаляется. В `none` — сразу.',
-					'',
-					'Длительности — токены: появление `--rise-duration-xslow` (до пресетов движения — ⁵⁄₃ от `--rise-duration-slow`),',
-					'обновление `--rise-duration-slow`, подсветка `--rise-duration-fast`. При «уменьшить движение» в системе',
-					"диаграмма сразу в конечном виде. Выключить во всём приложении — `createUiKitPlugin({ defaults: { BasePieChart: { animation: 'none' } } })`.",
+					'Длительности — токены: появление `--rise-duration-xslow`, обновление `--rise-duration-slow`, подсветка части при',
+					'наведении `--rise-duration-fast`; кривая — `--rise-ease-emphasized`, у `grow` — `--rise-ease-spring`.',
+					'В пресете `none` и при «уменьшить движение» в системе диаграмма сразу в конечном виде. Выключить в приложении —',
+					"`createUiKitPlugin({ motion: 'none' })`, `reducedMotion: 'always'` или `defaults: { BasePieChart: { animation: 'none' } }`.",
 				].join('\n'),
 			},
-			source: storySource({
-				template,
-				imports: ['BaseButton', 'BasePieChart'],
-				state,
-				script: [
-					`const examples = ${literal(examples)}`,
-					`const tasks = ${literal(tasks)}`,
-					`const nextTasks = ${literal(nextTasks)}`,
-					`const extra = ${literal(extra)}`,
-				].join('\n'),
-				omit: ['variant', 'animation', 'segments'],
-			}),
+			source: motion.source,
 		},
-		controls: { include: ['size', 'sizeScale'] },
+		controls: { include: ['variant', 'size', 'sizeScale'] },
 	},
-	args: { size: 120 },
-	render: args => ({
-		components: { BaseButton, BasePieChart },
-		setup: useStorySetup(args, { state, data: { examples, tasks, nextTasks, extra } }),
-		template,
-	}),
+	args: { size: 96 },
+	render: motion.render,
 	play: async ({ canvas, canvasElement }) => {
 		const charts = () => [...canvasElement.querySelectorAll('.base-pie-chart')]
 		const segmentsOf = (chart: Element) => chart.querySelectorAll('.base-pie-chart__segment')
-		await expect(charts()).toHaveLength(8)
-		await expect(canvas.getByText('donut · sweep')).toBeInTheDocument()
+		const next = canvas.getByRole('button', { name: 'Следующий шаг' })
+		await expect(charts()).toHaveLength(16)
 
-		await userEvent.click(canvas.getByRole('button', { name: 'Новые данные' }))
+		await userEvent.click(next)
 		await expect(canvas.queryAllByText('На проверке')).toHaveLength(0)
 		await waitFor(() => charts().forEach(chart => expect(segmentsOf(chart)).toHaveLength(3)), { timeout: STORY_WAIT_TIMEOUT })
 
-		canvas.getByRole('button', { name: 'Добавить сегмент' }).focus()
+		next.focus()
 		await userEvent.keyboard('{Enter}')
-		await expect(canvas.getAllByText('Отменено')).toHaveLength(8)
+		await expect(canvas.getAllByText('Отменено')).toHaveLength(16)
 		await waitFor(() => charts().forEach(chart => expect(segmentsOf(chart)).toHaveLength(4)))
 
-		await userEvent.click(canvas.getByRole('button', { name: 'Повторить' }))
-		await expect(charts()).toHaveLength(8)
-		await expect(canvas.getByRole('button', { name: 'Новые данные' })).toHaveAttribute('aria-pressed', 'true')
+		await userEvent.click(next)
+		await expect(canvas.getAllByText('На проверке')).toHaveLength(16)
+		await expect(canvas.queryAllByText('Отменено')).toHaveLength(0)
+		await waitFor(() => charts().forEach(chart => expect(segmentsOf(chart)).toHaveLength(4)))
 	},
 }

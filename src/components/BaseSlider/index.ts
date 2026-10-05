@@ -1,6 +1,7 @@
-export { SLIDER_ANIMATIONS } from './types/BaseSlider.types'
+export { SLIDER_ANIMATIONS, SLIDER_PARTS } from './types/BaseSlider.types'
 export type {
 	BaseSliderEmits,
+	BaseSliderPart,
 	BaseSliderProps,
 	BaseSliderSlots,
 	SliderAnimation,

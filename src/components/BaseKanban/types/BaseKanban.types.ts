@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { ComputedRef, Ref, ShallowRef } from 'vue'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import type { DropdownMenuItem } from '@components/BaseDropdownMenu/types/BaseDropdownMenu.types'
@@ -7,6 +8,41 @@ import type { DropdownMenuItem } from '@components/BaseDropdownMenu/types/BaseDr
  * `outline` — колонки в рамке без фона, `ghost` — без подложки колонок
  */
 export const KANBAN_VARIANTS = ['default', 'soft', 'outline', 'ghost'] as const
+
+/**
+ * Части доски для пропа `ui` (БЭМ-элементы `.base-kanban__<часть>`, `root` — сама доска):
+ * board — полоса колонок; column — колонка; header — шапка колонки; dot — цветная точка колонки; title — название колонки;
+ * count — счётчик карточек; toggle — кнопка «Свернуть» (корень BaseButton); list — список карточек `<ul>`;
+ * item — пункт списка `<li>`; card — карточка; cover — обложка; labels — строка меток; card-title — название карточки;
+ * card-description — описание карточки; meta — нижняя строка карточки (номер, срок, счётчики, исполнители);
+ * empty — текст пустой колонки; add — кнопка «Добавить карточку» (корень BaseButton); editor — поле добавления и
+ * переименования; field — его `<textarea>`; ghost — копия карточки под курсором при перетаскивании мышью.
+ */
+export const KANBAN_PARTS = [
+	'board',
+	'column',
+	'header',
+	'dot',
+	'title',
+	'count',
+	'toggle',
+	'list',
+	'item',
+	'card',
+	'cover',
+	'labels',
+	'card-title',
+	'card-description',
+	'meta',
+	'empty',
+	'add',
+	'editor',
+	'field',
+	'ghost',
+] as const
+
+/** Часть доски для пропа `ui` */
+export type BaseKanbanPart = (typeof KANBAN_PARTS)[number]
 
 /** Приоритеты задачи, как в Jira: от самого низкого к самому высокому */
 export const KANBAN_PRIORITIES = ['lowest', 'low', 'medium', 'high', 'highest'] as const
@@ -143,6 +179,14 @@ export interface BaseKanbanProps extends BaseComponentProps<(typeof KANBAN_VARIA
 	createCardId?: () => string
 	/** Только просмотр: карточки не перетаскиваются, не открываются, меню карточки не показывается */
 	isDisabled?: boolean
+	/**
+	 * Классы частей доски (`root`, `column`, `header`, `list`, `card`, `card-title`, `ghost`…) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseKanban: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseKanban v-model:cards="cards" :columns="columns" :ui="{ column: 'bg-slate-50', card: 'shadow-none' }" />
+	 */
+	ui?: UiProp<BaseKanbanPart>
 }
 
 /**

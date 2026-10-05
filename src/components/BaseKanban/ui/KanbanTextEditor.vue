@@ -1,6 +1,6 @@
 <template>
-	<div ref="rootRef" class="base-kanban__editor" @keydown="handleKeydown" @focusout="handleFocusOut">
-		<textarea ref="fieldRef" class="base-kanban__field" :value="text" :aria-label="label" rows="2" @input="handleInput" />
+	<div ref="rootRef" :class="ui('editor')" @keydown="handleKeydown" @focusout="handleFocusOut">
+		<textarea ref="fieldRef" :class="ui('field')" :value="text" :aria-label="label" rows="2" @input="handleInput" />
 		<div v-if="submitLabel" class="base-kanban__editor-actions">
 			<BaseButton :size-scale="sizeScale" @mousedown.prevent @click="submit">{{ submitLabel }}</BaseButton>
 			<BaseButton variant="ghost" :size-scale="sizeScale" :aria-label="UI_KANBAN.CANCEL" @mousedown.prevent @click="cancel">

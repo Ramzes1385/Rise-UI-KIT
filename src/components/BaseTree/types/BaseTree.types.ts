@@ -1,4 +1,5 @@
 import type { ComputedRef, InjectionKey, Ref } from 'vue'
+import type { UiClassFn, UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
@@ -7,6 +8,29 @@ export type TreeSelectionMode = 'none' | 'single' | 'multiple'
 export type TreeArrowPosition = 'left' | 'right'
 
 export const TREE_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
+
+/**
+ * Части дерева для пропа `ui` (БЭМ-элементы `.base-tree__<часть>`, `root` — корень `role="tree"`):
+ * node — узел (строка и его ветка); header — строка узла (`role="treeitem"`); arrow — шеврон раскрытия;
+ * checkbox — флажок узла в режиме `multiple`; icon — иконка узла; label — подпись; link — ссылка в подписи (`to`/`href`);
+ * actions — действия справа; children — ветка детей (`role="group"`, раскрывается по высоте);
+ * children-inner — содержимое ветки; row — строка виртуального списка (`isVirtual`).
+ */
+export const TREE_PARTS = [
+	'node',
+	'header',
+	'arrow',
+	'checkbox',
+	'icon',
+	'label',
+	'link',
+	'actions',
+	'children',
+	'children-inner',
+	'row',
+] as const
+
+export type BaseTreePart = (typeof TREE_PARTS)[number]
 
 export interface TreeNode {
 	/** Уникальный идентификатор */
@@ -57,6 +81,8 @@ export interface TreeContext {
 	tabIndexOf: (id: string) => number
 	/** Узел получил фокус: стрелки продолжат от него */
 	setActive: (id: string) => void
+	/** Классы частей из пропа `ui` и `defaults.BaseTree.ui` плагина */
+	ui: UiClassFn<BaseTreePart>
 	/** Элемент заголовка узла (treeitem) — для перевода фокуса с клавиатуры */
 	registerHeader: (id: string, element: HTMLElement) => void
 	/** Снять регистрацию; элемент сверяется — узел с тем же id мог уже смонтироваться в другом месте дерева */
@@ -100,6 +126,14 @@ export interface BaseTreeProps extends BaseComponentProps<
 	height?: number | string
 	/** Высота узла до замера при `isVirtual`, px */
 	itemSize?: number
+	/**
+	 * Классы частей дерева (`root`, `node`, `header`, `arrow`, `label`, `children`…) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseTree: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseTree :items="items" :ui="{ header: 'rounded-full', label: 'font-medium' }" />
+	 */
+	ui?: UiProp<BaseTreePart>
 }
 
 export interface BaseTreeEmits {

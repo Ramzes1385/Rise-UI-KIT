@@ -2,10 +2,10 @@
 	display: flex;
 	flex-direction: column;
 	min-width: sz(200px);
-	padding: sz(4px);
+	padding: space(4px);
 	font-family: var(--rise-font-sans);
 	@include text-size(sm);
-	@include custom-bg(background-color, transparent);
+	@include custom-bg(background-color, ct(tree, bg, transparent));
 	@include custom-text(color, var(--rise-text));
 
 	&--ghost {
@@ -14,9 +14,9 @@
 
 	&--outline,
 	&--shadow {
-		border: 1px solid var(--rise-border);
+		border: 1px solid ct(tree, border, var(--rise-border));
 		border-radius: sz(var(--rise-radius-lg));
-		@include custom-bg(background-color, var(--rise-bg));
+		@include custom-bg(background-color, ct(tree, bg, var(--rise-bg)));
 	}
 
 	&--shadow {
@@ -25,7 +25,7 @@
 
 	&--soft {
 		border-radius: sz(var(--rise-radius-lg));
-		@include custom-bg(background-color, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg)));
+		@include custom-bg(background-color, ct(tree, bg, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg))));
 	}
 
 	&__node {
@@ -35,22 +35,26 @@
 
 	&__header {
 		@include menu-item;
-		@include custom-text(color, var(--rise-text));
+		min-height: ct(tree, item-height, auto);
+		gap: space(ct(tree, item-gap, 6px));
+		padding: space(6px ct(tree, item-padding-x, 8px));
+		border-radius: sz(ct(tree, item-radius, var(--rise-radius-md)));
+		@include custom-text(color, ct(tree, item-text, var(--rise-text)));
 		@include focus-ring(-2px);
 
 		@include hover {
-			background-color: var(--custom-bg-hover, var(--rise-bg-elevated));
+			background-color: var(--custom-bg-hover, #{ct(tree, item-bg-hover, var(--rise-bg-elevated))});
 			color: var(--custom-text-hover, var(--custom-text, var(--rise-text-highlighted)));
 		}
 	}
 
 	&__node--selected > &__header {
-		background-color: var(--rise-primary-soft);
-		color: var(--rise-primary-text);
+		background-color: ct(tree, item-bg-selected, var(--rise-primary-soft));
+		color: ct(tree, item-text-selected, var(--rise-primary-text));
 
 		@include hover {
-			background-color: var(--rise-primary-soft-hover);
-			color: var(--rise-primary-text);
+			background-color: ct(tree, item-bg-selected, var(--rise-primary-soft-hover));
+			color: ct(tree, item-text-selected, var(--rise-primary-text));
 		}
 
 		.base-tree__arrow,
@@ -71,7 +75,7 @@
 		width: sz(16px);
 		height: sz(16px);
 		color: var(--rise-text-muted);
-		@include transition(transform);
+		transition: transform var(--rise-duration-slow) var(--rise-ease-emphasized);
 
 		&--expanded {
 			transform: rotate(90deg);
@@ -112,7 +116,7 @@
 		@include reset-custom-color;
 		display: flex;
 		align-items: center;
-		gap: sz(4px);
+		gap: space(4px);
 		flex-shrink: 0;
 		margin: sz(-4px) 0;
 		opacity: 0;
@@ -134,23 +138,19 @@
 	}
 
 	&__children {
-		display: grid;
-		grid-template-rows: 0fr;
+		@include expand-rows;
 		margin-left: sz(15px);
-		padding-left: sz(4px);
-		border-left: 1px solid var(--rise-border);
-		@include transition(grid-template-rows);
+		padding-left: space(ct(tree, children-padding-x, 4px));
+		border-left: 1px solid ct(tree, children-border, var(--rise-border));
 
 		&--open {
-			grid-template-rows: 1fr;
+			@include expand-rows-open;
 		}
 	}
 
 	&__children-inner {
 		display: flex;
 		flex-direction: column;
-		min-height: 0;
-		overflow: hidden;
 	}
 }
 
@@ -174,13 +174,15 @@
 }
 
 .base-tree__node--flat {
-	padding-left: calc(var(--base-tree-depth, 0) * #{sz(20px)});
+	--base-tree-indent: calc(#{sz(16px)} + #{space(ct(tree, children-padding-x, 4px))});
+
+	padding-left: calc(var(--base-tree-depth, 0) * var(--base-tree-indent));
 	background-image: repeating-linear-gradient(
 		to right,
 		transparent 0 #{sz(15px)},
-		var(--rise-border) #{sz(15px)} calc(#{sz(15px)} + 1px),
-		transparent calc(#{sz(15px)} + 1px) #{sz(20px)}
+		#{ct(tree, children-border, var(--rise-border))} #{sz(15px)} calc(#{sz(15px)} + 1px),
+		transparent calc(#{sz(15px)} + 1px) var(--base-tree-indent)
 	);
 	background-repeat: no-repeat;
-	background-size: calc(var(--base-tree-depth, 0) * #{sz(20px)}) 100%;
+	background-size: calc(var(--base-tree-depth, 0) * var(--base-tree-indent)) 100%;
 }

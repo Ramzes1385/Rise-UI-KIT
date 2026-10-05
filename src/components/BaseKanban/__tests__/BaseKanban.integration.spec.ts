@@ -1,7 +1,10 @@
 import '@testing-library/jest-dom/vitest'
+import { config } from '@vue/test-utils'
 import BaseKanban from '../ui/BaseKanban.vue'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
+
+config.global.stubs = { ...config.global.stubs, 'transition-group': false }
 
 describe('BaseKanban integration', () => {
 	it('Tab на доску, Space, стрелка вправо, Space — карточка в соседней колонке', async () => {

@@ -2,7 +2,7 @@ import type { ComputedRef } from 'vue'
 import { TREE_CONTEXT_KEY } from '../types/BaseTree.types'
 import type { TreeContext } from '../types/BaseTree.types'
 import type { BaseTreeNodeProps } from '../types/BaseTreeNode.types'
-import { computed, inject, onMounted, onUpdated, ref, useId, watch } from 'vue'
+import { computed, inject, nextTick, onMounted, onUpdated, ref, useId, watch } from 'vue'
 
 const ACTION_FOCUSABLE = 'a[href], button, input, select, textarea, [tabindex], [contenteditable="true"]'
 const SAVED_TABINDEX = 'data-rise-tree-tabindex'
@@ -55,23 +55,33 @@ function useHeaderRegistration(props: BaseTreeNodeProps, treeContext: TreeContex
 	}
 }
 
-function useNodeState(props: BaseTreeNodeProps, treeContext: TreeContext) {
+function useBranchOpen(isExpanded: ComputedRef<boolean>, getHeader: () => HTMLElement | null) {
+	const wasExpanded = ref(isExpanded.value)
+	const isOpen = ref(isExpanded.value)
+	watch(isExpanded, async expanded => {
+		if (expanded && !wasExpanded.value) {
+			wasExpanded.value = true
+			await nextTick()
+			getHeader()?.parentElement?.getBoundingClientRect()
+		}
+		isOpen.value = isExpanded.value
+	})
+	return { wasExpanded, isOpen }
+}
+
+function useNodeState(props: BaseTreeNodeProps, treeContext: TreeContext, getHeader: () => HTMLElement | null) {
 	const childNodes = computed(() => treeContext.childrenOf(props.node))
 	const hasChildren = computed(() => childNodes.value.length > 0)
 	const isExpanded = computed(() => treeContext.expandedSet.value.has(props.node.id))
 	const isSelected = computed(() => treeContext.selectedSet.value.has(props.node.id))
 	const isIndeterminate = computed(() => treeContext.indeterminateSet.value.has(props.node.id))
-	const wasExpanded = ref(isExpanded.value)
-	watch(isExpanded, expanded => {
-		if (expanded && !wasExpanded.value) wasExpanded.value = true
-	})
 
 	return {
 		hasChildren,
 		isExpanded,
 		isSelected,
 		isIndeterminate,
-		wasExpanded,
+		...useBranchOpen(isExpanded, getHeader),
 		childNodes,
 		ariaChecked: computed(() => {
 			if (treeContext.selectionMode.value !== 'multiple') return undefined
@@ -122,7 +132,7 @@ export function useBaseTreeNode(props: BaseTreeNodeProps) {
 	const treeContext = getTreeContext()
 	const labelId = `rise-tree-${useId()}-label`
 	const header = useHeaderRegistration(props, treeContext)
-	const state = useNodeState(props, treeContext)
+	const state = useNodeState(props, treeContext, header.getHeader)
 	const { actionsRef } = useActionsTabOrder(state.tabIndex)
 
 	return {

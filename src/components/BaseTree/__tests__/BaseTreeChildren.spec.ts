@@ -25,6 +25,7 @@ describe('BaseTreeChildren', () => {
 					sizeScale: 100,
 					isExpanded: true,
 					wasExpanded: true,
+					isOpen: true,
 				},
 			}),
 		).toThrow('BaseTreeChildren: TreeContext not found')

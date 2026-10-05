@@ -1,18 +1,17 @@
 <template>
 	<div
 		ref="rootRef"
-		class="base-kanban"
-		:class="[variantClass, classes.root, { 'base-kanban--disabled': isDisabled, 'base-kanban--dragging': Boolean(drag) }]"
+		:class="[ui('root'), variantClass, classes.root, { 'base-kanban--disabled': isDisabled, 'base-kanban--dragging': Boolean(drag) }]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		role="group"
 		:aria-label="UI_KANBAN.BOARD">
 		<BaseContextMenu :items="menuItems" :is-disabled="isDisabled" :aria-label="UI_KANBAN.MENU" :size-scale="sizeScale">
-			<div class="base-kanban__board" @contextmenu="handleBoardContextMenu">
+			<div :class="ui('board')" @contextmenu="handleBoardContextMenu">
 				<div
 					v-for="view in columnsView"
 					:key="view.column.id"
-					class="base-kanban__column"
 					:class="[
+						ui('column'),
 						classes.column,
 						{
 							'base-kanban__column--over': view.isOverLimit,
@@ -22,14 +21,14 @@
 					]"
 					:style="view.column.color ? { '--kanban-column-color': view.column.color } : undefined"
 					:data-column-id="view.column.id">
-					<div class="base-kanban__header">
-						<span v-if="view.column.color" class="base-kanban__dot" aria-hidden="true" />
-						<span class="base-kanban__title">{{ view.column.title }}</span>
-						<span class="base-kanban__count" aria-hidden="true">{{ view.count }}</span>
+					<div :class="ui('header')">
+						<span v-if="view.column.color" :class="ui('dot')" aria-hidden="true" />
+						<span :class="ui('title')">{{ view.column.title }}</span>
+						<span :class="ui('count')" aria-hidden="true">{{ view.count }}</span>
 						<BaseButton
 							v-if="isCollapsible"
 							variant="ghost"
-							class="base-kanban__toggle"
+							:class="ui('toggle')"
 							:aria-label="collapseLabel(view)"
 							:aria-expanded="view.isCollapsed ? 'false' : 'true'"
 							:size-scale="sizeScale"
@@ -38,11 +37,19 @@
 						</BaseButton>
 					</div>
 					<template v-if="!view.isCollapsed">
-						<ul class="base-kanban__list" :aria-label="view.label">
-							<li v-for="card in view.cards" :key="card.id" class="base-kanban__item">
+						<TransitionGroup
+							tag="ul"
+							:class="ui('list')"
+							:aria-label="view.label"
+							name="base-kanban__item"
+							@before-enter="handleItemBeforeEnter"
+							@after-enter="handleItemAfterEnter"
+							@before-leave="handleItemBeforeLeave">
+							<li v-for="card in view.cards" :key="card.id" :class="ui('item')">
 								<KanbanTextEditor
 									v-if="card.id === renamingId"
 									:value="card.title"
+									:ui="ui"
 									:label="UI_KANBAN.RENAME_LABEL"
 									:size-scale="sizeScale"
 									@submit="saveRename(card, $event)"
@@ -50,8 +57,8 @@
 									@leave="saveRename(card, $event, false)" />
 								<div
 									v-else
-									class="base-kanban__card"
 									:class="[
+										ui('card'),
 										classes.card,
 										{
 											'base-kanban__card--grabbed': card.id === grabbedId,
@@ -70,19 +77,20 @@
 									@focus="handleCardFocus(card)"
 									@keydown="handleCardKeydown($event, card)">
 									<slot name="card" :card="card" :is-dragging="card.id === grabbedId || isPlaceholder(card)">
-										<KanbanCardContent :card="card" :today="today" :is-done="isDoneColumn(card.columnId)" />
+										<KanbanCardContent :card="card" :today="today" :is-done="isDoneColumn(card.columnId)" :ui="ui" />
 									</slot>
 									<span :id="summaryId(card)" class="base-kanban__summary">{{ cardSummary(card) }}</span>
 								</div>
 							</li>
-						</ul>
-						<p v-if="view.cards.length === 0 && addingColumnId !== view.column.id" class="base-kanban__empty">
+						</TransitionGroup>
+						<p v-if="view.cards.length === 0 && addingColumnId !== view.column.id" :class="ui('empty')">
 							{{ view.emptyText }}
 						</p>
 						<template v-if="isEditable && !isDisabled">
 							<KanbanTextEditor
 								v-if="addingColumnId === view.column.id"
 								value=""
+								:ui="ui"
 								:label="composerLabel(view.column)"
 								:submit-label="UI_KANBAN.ADD"
 								:size-scale="sizeScale"
@@ -90,12 +98,7 @@
 								@submit="addCard(view.column.id, $event)"
 								@cancel="closeAdd"
 								@leave="leaveAdd" />
-							<BaseButton
-								v-else
-								variant="ghost"
-								class="base-kanban__add"
-								:size-scale="sizeScale"
-								@click="startAdd(view.column.id)">
+							<BaseButton v-else variant="ghost" :class="ui('add')" :size-scale="sizeScale" @click="startAdd(view.column.id)">
 								<template #left><BaseIcon name="plus" /></template>
 								{{ UI_KANBAN.ADD_CARD }}
 							</BaseButton>
@@ -109,13 +112,13 @@
 			<div
 				v-if="drag"
 				ref="ghostRef"
-				class="base-kanban__ghost"
+				:class="ui('ghost')"
 				:style="[sizeScaleStyle, ghostStyle]"
 				v-bind="inheritedTheme"
 				aria-hidden="true">
 				<div class="base-kanban__ghost-card" :class="classes.card">
 					<slot name="card" :card="drag.item" :is-dragging="true">
-						<KanbanCardContent :card="drag.item" :today="today" :is-done="isDoneColumn(drag.item.columnId)" />
+						<KanbanCardContent :card="drag.item" :today="today" :is-done="isDoneColumn(drag.item.columnId)" :ui="ui" />
 					</slot>
 				</div>
 			</div>
@@ -161,6 +164,7 @@ const {
 	variantStyle,
 	customColorStyle,
 	classes,
+	ui,
 	rootRef,
 	ghostRef,
 	columnsView,
@@ -195,5 +199,8 @@ const {
 	handleCardClick,
 	handleCardFocus,
 	handleCardKeydown,
+	handleItemBeforeEnter,
+	handleItemAfterEnter,
+	handleItemBeforeLeave,
 } = useBaseKanban(props, emit)
 </script>

@@ -1,8 +1,12 @@
 <template>
 	<div
 		ref="rootRef"
-		class="base-tree"
-		:class="[variantClass, { 'base-tree--arrow-right': arrowPosition === 'right', 'base-tree--virtual': isVirtual }, classes.root]"
+		:class="[
+			ui('root'),
+			variantClass,
+			{ 'base-tree--arrow-right': arrowPosition === 'right', 'base-tree--virtual': isVirtual },
+			classes.root,
+		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle, virtualStyle]"
 		role="tree"
 		:aria-label="ariaLabel"
@@ -12,7 +16,7 @@
 				v-for="entry in virtualItems"
 				:key="entry.key"
 				:ref="element => measureElement(element, entry.index)"
-				class="base-tree__row"
+				:class="ui('row')"
 				role="none"
 				:style="{ transform: `translateY(${entry.start}px)` }">
 				<BaseTreeNode
@@ -78,6 +82,7 @@ const emit = defineEmits<BaseTreeEmits>()
 defineSlots<BaseTreeSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

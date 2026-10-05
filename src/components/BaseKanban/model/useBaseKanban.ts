@@ -1,7 +1,9 @@
 import { computed, useId } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import { useKanbanMenu } from './board/useKanbanMenu'
 import { cardSummary, toDay } from './card/kanbanCardMeta'
 import { useKanbanEditing } from './edit/useKanbanEditing'
+import { useKanbanMotion } from './motion/useKanbanMotion'
 import { useKanbanColumns } from './board/useKanbanColumns'
 import { useKanbanContext } from './board/useKanbanContext'
 import { useKanbanSortable } from './drag/useKanbanSortable'
@@ -30,6 +32,8 @@ export function useBaseKanban(props: BaseKanbanProps, emit: BaseKanbanEmits) {
 	const menu = useKanbanMenu(context, editing)
 	return {
 		...useStandardBaseComponent('base-kanban', props, ['root', 'column', 'card']),
+		ui: useUi(props, 'base-kanban'),
+		...useKanbanMotion(context),
 		...sortable,
 		...editing,
 		...useKanbanColumns(context),

@@ -1,4 +1,6 @@
 import type { ComputedRef } from 'vue'
+import { useUi } from '@composables/base/useUi'
+import type { UiClassFn } from '@composables/base/useUi'
 import { TREE_CONTEXT_KEY } from '../types/BaseTree.types'
 import { findTypeaheadIndex } from '@utils/navigation/menuUtils'
 import { isolateFormField } from '@composables/form/useFormContext'
@@ -6,7 +8,7 @@ import { useTreeState } from '@composables/navigation/useTreeState'
 import { useVirtualList } from '@composables/interaction/useVirtualList'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { computed, nextTick, onBeforeUnmount, provide, ref, toRef } from 'vue'
-import type { BaseTreeEmits, TreeNode, TreeProps, VisibleNode } from '../types/BaseTree.types'
+import type { BaseTreeEmits, BaseTreePart, TreeNode, TreeProps, VisibleNode } from '../types/BaseTree.types'
 
 const TREE_ELEMENTS = ['root', 'node', 'header', 'arrow', 'checkbox', 'icon', 'label', 'actions', 'children']
 const TYPEAHEAD_RESET = 500
@@ -132,6 +134,7 @@ function provideTreeContext(
 	tree: ReturnType<typeof useTreeModel>,
 	parts: {
 		classes: ComputedRef<Record<string, string | undefined>>
+		ui: UiClassFn<BaseTreePart>
 		tab: ReturnType<typeof useTabbable>
 		headers: ReturnType<typeof useHeaders>
 	},
@@ -149,6 +152,7 @@ function provideTreeContext(
 		toggleNode: tree.toggleNode,
 		selectNode: tree.selectNode,
 		classes: computed(() => parts.classes.value),
+		ui: parts.ui,
 		tabIndexOf: (id: string) => (id === parts.tab.tabbableId.value ? 0 : -1),
 		setActive: (id: string) => {
 			parts.tab.activeId.value = id
@@ -204,6 +208,7 @@ function createTreeKeys(
 
 export function useBaseTree(props: TreeProps, emit: BaseTreeEmits) {
 	const standard = useStandardBaseComponent('base-tree', props, TREE_ELEMENTS)
+	const ui = useUi(props, 'base-tree')
 	const tree = useTreeModel(props, emit)
 	const rootNodes = tree.roots
 	const visibleNodes = computed((): VisibleNode[] => collectVisible(rootNodes.value, tree.expandedSet.value, tree.childrenOf))
@@ -212,10 +217,11 @@ export function useBaseTree(props: TreeProps, emit: BaseTreeEmits) {
 	const headers = useHeaders(props, visibleNodes, virtual.scrollToIndex)
 	const typeahead = useTreeTypeahead(visibleNodes, tab.currentIndex, headers.focusNode)
 	const keys = createTreeKeys(tree, headers, typeahead)
-	provideTreeContext(props, tree, { classes: standard.classes, tab, headers })
+	provideTreeContext(props, tree, { classes: standard.classes, ui, tab, headers })
 
 	return {
 		...standard,
+		ui,
 		rootNodes,
 		visibleNodes,
 		rootRef: virtual.rootRef,

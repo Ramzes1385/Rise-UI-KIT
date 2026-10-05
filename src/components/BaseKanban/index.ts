@@ -1,6 +1,7 @@
-export { KANBAN_LABEL_COLORS, KANBAN_PRIORITIES, KANBAN_VARIANTS } from './types/BaseKanban.types'
+export { KANBAN_LABEL_COLORS, KANBAN_PARTS, KANBAN_PRIORITIES, KANBAN_VARIANTS } from './types/BaseKanban.types'
 export type {
 	BaseKanbanEmits,
+	BaseKanbanPart,
 	BaseKanbanProps,
 	BaseKanbanSlots,
 	KanbanAssignee,

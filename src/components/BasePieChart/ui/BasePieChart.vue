@@ -1,18 +1,12 @@
 <template>
-	<figure
-		ref="root"
-		class="base-pie-chart"
-		:class="[variantClass, animationClass, classes.root]"
-		:style="sizeScaleStyle"
-		:aria-label="label">
-		<div class="base-pie-chart__chart" :style="{ width: `${size}px`, height: `${size}px` }">
-			<svg class="base-pie-chart__svg" viewBox="0 0 42 42" aria-hidden="true">
-				<circle class="base-pie-chart__track" cx="21" cy="21" :r="circleRadius" pathLength="100" />
+	<figure ref="root" :class="[ui('root'), variantClass, animationClass, classes.root]" :style="sizeScaleStyle" :aria-label="label">
+		<div :class="ui('chart')" :style="{ width: `${size}px`, height: `${size}px` }">
+			<svg :class="ui('svg')" viewBox="0 0 42 42" aria-hidden="true">
+				<circle :class="ui('track')" cx="21" cy="21" :r="circleRadius" pathLength="100" />
 				<circle
 					v-for="segment in segments"
 					:key="segment.label"
-					class="base-pie-chart__segment"
-					:class="segmentClass(segment)"
+					:class="[ui('segment'), segmentClass(segment)]"
 					:style="segmentStyle(segment)"
 					cx="21"
 					cy="21"
@@ -25,23 +19,22 @@
 					@pointerenter="setActive(segment.label)"
 					@pointerleave="setActive(null)" />
 			</svg>
-			<div v-if="variant === 'donut'" class="base-pie-chart__center" aria-hidden="true">
+			<div v-if="variant === 'donut'" :class="ui('center')" aria-hidden="true">
 				<strong>{{ activeView ? format(activeView.value) : total }}</strong>
 				<span>{{ activeView ? activeView.label : label }}</span>
 			</div>
 		</div>
-		<ul class="base-pie-chart__legend" :class="classes.legend">
+		<ul :class="[ui('legend'), classes.legend]">
 			<li
 				v-for="view in views"
 				:key="view.label"
-				class="base-pie-chart__item"
-				:class="{ 'base-pie-chart__item--active': activeView?.label === view.label }"
+				:class="[ui('item'), { 'base-pie-chart__item--active': activeView?.label === view.label }]"
 				@pointerenter="setActive(view.label)"
 				@pointerleave="setActive(null)">
-				<span class="base-pie-chart__swatch" :style="{ backgroundColor: view.color }" aria-hidden="true" />
-				<span class="base-pie-chart__name">{{ view.label }}</span>
-				<span class="base-pie-chart__value">{{ format(view.value) }}</span>
-				<span class="base-pie-chart__percent">{{ percentText(view) }}</span>
+				<span :class="ui('swatch')" :style="{ backgroundColor: view.color }" aria-hidden="true" />
+				<span :class="ui('name')">{{ view.label }}</span>
+				<span :class="ui('value')">{{ format(view.value) }}</span>
+				<span :class="ui('percent')">{{ percentText(view) }}</span>
 			</li>
 		</ul>
 	</figure>
@@ -66,6 +59,7 @@ const props = withDefaults(
 )
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	animationClass,

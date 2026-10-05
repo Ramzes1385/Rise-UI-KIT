@@ -6,10 +6,10 @@
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: sz(24px);
+	gap: space(ct(pie-chart, gap, 24px));
 	box-sizing: border-box;
 	margin: 0;
-	color: var(--rise-text);
+	color: ct(pie-chart, text, var(--rise-text));
 	@include text-size(sm);
 
 	&__chart {
@@ -30,7 +30,7 @@
 	}
 
 	&__track {
-		stroke: var(--rise-bg-elevated);
+		stroke: ct(pie-chart, track-bg, var(--rise-bg-elevated));
 	}
 
 	&__segment {
@@ -88,9 +88,9 @@
 		pointer-events: none;
 
 		strong {
-			color: var(--rise-text-highlighted);
+			color: ct(pie-chart, center-text, var(--rise-text-highlighted));
 			@include text-size(lg);
-			font-weight: var(--rise-font-weight-semibold);
+			font-weight: ct(pie-chart, center-font-weight, var(--rise-font-weight-semibold));
 		}
 
 		span {
@@ -105,7 +105,7 @@
 		display: flex;
 		flex: 1 1 sz(200px);
 		flex-direction: column;
-		gap: sz(6px);
+		gap: space(ct(pie-chart, legend-gap, 6px));
 		min-width: 0;
 		margin: 0;
 		padding: 0;
@@ -117,18 +117,18 @@
 		grid-template-columns: auto 1fr auto auto;
 		align-items: center;
 		gap: sz(8px);
-		padding: sz(2px) sz(6px);
-		border-radius: sz(var(--rise-radius-sm));
+		padding: space(ct(pie-chart, item-padding-y, 2px) ct(pie-chart, item-padding-x, 6px));
+		border-radius: sz(ct(pie-chart, item-radius, var(--rise-radius-sm)));
 	}
 
 	&__item--active {
-		background-color: var(--rise-bg-elevated);
+		background-color: ct(pie-chart, item-bg-active, var(--rise-bg-elevated));
 	}
 
 	&__swatch {
 		width: sz(10px);
 		height: sz(10px);
-		border-radius: 2px;
+		border-radius: var(--rise-radius-xs);
 	}
 
 	&__name {
@@ -137,8 +137,8 @@
 	}
 
 	&__value {
-		color: var(--rise-text-highlighted);
-		font-weight: var(--rise-font-weight-medium);
+		color: ct(pie-chart, value-text, var(--rise-text-highlighted));
+		font-weight: ct(pie-chart, value-font-weight, var(--rise-font-weight-medium));
 		font-variant-numeric: tabular-nums;
 	}
 

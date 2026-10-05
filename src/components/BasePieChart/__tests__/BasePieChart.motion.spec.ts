@@ -1,5 +1,8 @@
 import '@testing-library/jest-dom/vitest'
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import { createUiKitPlugin } from '@/plugin'
+import { dirname, resolve } from 'node:path'
 import BasePieChart from '../ui/BasePieChart.vue'
 import { fireEvent, render } from '@testing-library/vue'
 
@@ -146,5 +149,14 @@ describe('BasePieChart — анимации', () => {
 		await fireEvent.pointerEnter(circles(container)[0])
 		expect(circles(container)[1]).toHaveClass('base-pie-chart__segment--dimmed')
 		expect(circles(container)[2]).toHaveClass('base-pie-chart__segment--dimmed')
+	})
+})
+
+describe('BasePieChart — длительности в стилях', () => {
+	const styles = readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), '../styles/BasePieChart.style.scss'), 'utf-8')
+
+	it('только токены движения: чисел в s и ms нет, подсветка части — --rise-duration-fast (обнуляется при reduce)', () => {
+		expect(styles).not.toMatch(/\b\d*\.?\d+m?s\b/)
+		expect(styles).toMatch(/opacity var\(--rise-duration-fast\) var\(--rise-ease\)/)
 	})
 })

@@ -1,7 +1,10 @@
 import '@testing-library/jest-dom/vitest'
+import { config } from '@vue/test-utils'
 import BaseKanban from '../ui/BaseKanban.vue'
 import type { KanbanCard, KanbanColumn } from '../types/BaseKanban.types'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
+
+config.global.stubs = { ...config.global.stubs, 'transition-group': false }
 
 const COLUMNS: KanbanColumn[] = [
 	{ id: 'todo', title: 'План' },
