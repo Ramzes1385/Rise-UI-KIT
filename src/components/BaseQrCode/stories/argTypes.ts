@@ -16,5 +16,8 @@ export const argTypes = {
 	finderShape: { control: 'inline-radio', options: QR_FINDER_SHAPES, table: propGroup(ARG_GROUP.appearance) },
 	finderColor: { control: 'color', table: propGroup(ARG_GROUP.appearance) },
 	logo: { control: 'text', table: propGroup(ARG_GROUP.content) },
+	isConcealed: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+	revealTimeout: { control: { type: 'number', min: 0, step: 1000 }, table: propGroup(ARG_GROUP.behavior) },
+	showValue: { control: 'select', options: [false, true, 'host'], table: propGroup(ARG_GROUP.content) },
 	logoSize: { control: { type: 'range', min: 0.1, max: 0.3, step: 0.02 }, table: propGroup(ARG_GROUP.appearance) },
 } satisfies Meta<typeof BaseQrCode>['argTypes']

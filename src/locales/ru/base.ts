@@ -253,5 +253,9 @@ export const ruBase = {
 			'BaseQrCode: контраст модулей {module} и фона {background} — {ratio}:1, меньше 3:1 — часть сканеров код не прочитает',
 		QR_SMALL_MARGIN:
 			'BaseQrCode: поле вокруг кода — {margin} в модулях, меньше 2; стандарт требует 4, без поля сканеры хуже находят код',
+		PAYMENT_QR_REQUIRED: 'gostPaymentText: реквизит {key} не задан',
+		PAYMENT_QR_INVALID: 'gostPaymentText: неверное значение реквизита {key}: «{value}»',
+		PAYMENT_QR_SEPARATOR: 'gostPaymentText: символ «|» в реквизите {key} — он разделяет реквизиты строки; уберите его из данных',
+		PAYMENT_QR_KEY: 'gostPaymentText: имя реквизита «{key}» в extra недопустимо — нужны латинские буквы и цифры, без основных полей',
 	},
 }

@@ -4,6 +4,7 @@ export * from './data/codeHighlightUtils'
 export * from './data/colorUtils'
 export * from './data/dateUtils'
 export * from './data/dadataUtils'
+export * from './data/paymentQrUtils'
 export * from './dom/domUtils'
 export {
 	ALIGN_MAP,

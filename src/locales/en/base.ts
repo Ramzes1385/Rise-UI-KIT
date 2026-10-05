@@ -232,5 +232,10 @@ export const enBase = {
 			'BaseQrCode: contrast of modules {module} and background {background} is {ratio}:1, below 3:1 — some scanners will not read the code',
 		QR_SMALL_MARGIN:
 			'BaseQrCode: the quiet zone is {margin} modules — less than 2; the standard requires 4, without it scanners find the code worse',
+		PAYMENT_QR_REQUIRED: 'gostPaymentText: the {key} field is not set',
+		PAYMENT_QR_INVALID: 'gostPaymentText: invalid {key} value: “{value}”',
+		PAYMENT_QR_SEPARATOR: 'gostPaymentText: the “|” character in {key} separates fields of the string; remove it from the data',
+		PAYMENT_QR_KEY:
+			'gostPaymentText: the field name “{key}” in extra is not allowed — use Latin letters and digits, not the main fields',
 	},
 }
