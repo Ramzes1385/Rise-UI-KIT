@@ -1,14 +1,13 @@
 <template>
 	<div
 		ref="rootRef"
-		class="base-filter-builder"
-		:class="[variantClass, classes.root, { 'base-filter-builder--disabled': isDisabled }]"
+		:class="[ui('root'), variantClass, classes.root, { 'base-filter-builder--disabled': isDisabled }]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		role="group"
 		:aria-label="UI_FILTER_BUILDER.LABEL">
-		<div v-if="rows.length > 1" class="base-filter-builder__match">
+		<div v-if="rows.length > 1" :class="ui('match')">
 			<span :id="matchId">{{ UI_FILTER_BUILDER.MATCH }}</span>
-			<span class="base-filter-builder__select base-filter-builder__select--inline">
+			<span :class="[ui('select'), 'base-filter-builder__select--inline']">
 				<select :aria-labelledby="matchId" :value="match" :disabled="isDisabled" @change="setMatch">
 					<option value="all">{{ UI_FILTER_BUILDER.MATCH_ALL }}</option>
 					<option value="any">{{ UI_FILTER_BUILDER.MATCH_ANY }}</option>
@@ -16,12 +15,12 @@
 				<BaseIcon name="chevron-down" />
 			</span>
 		</div>
-		<p v-if="rows.length === 0" class="base-filter-builder__empty">{{ UI_FILTER_BUILDER.EMPTY }}</p>
-		<ol v-else class="base-filter-builder__list">
-			<li v-for="(row, index) in rows" :key="row.condition.id" :data-condition-id="row.condition.id">
-				<div class="base-filter-builder__row" :class="classes.row" role="group" :aria-label="conditionLabel(index)">
-					<span class="base-filter-builder__joiner" aria-hidden="true">{{ joiner(index) }}</span>
-					<span class="base-filter-builder__select">
+		<p v-if="rows.length === 0" :class="ui('empty')">{{ UI_FILTER_BUILDER.EMPTY }}</p>
+		<TransitionGroup v-else tag="ol" :class="ui('list')" name="base-filter-builder__item" @before-leave="holdLeavingPlace">
+			<li v-for="(row, index) in rows" :key="row.condition.id" :class="ui('item')" :data-condition-id="row.condition.id">
+				<div :class="[ui('row'), classes.row]" role="group" :aria-label="conditionLabel(index)">
+					<span :class="ui('joiner')" aria-hidden="true">{{ joiner(index) }}</span>
+					<span :class="ui('select')">
 						<select
 							:aria-label="UI_FILTER_BUILDER.FIELD"
 							:value="row.condition.field"
@@ -31,7 +30,7 @@
 						</select>
 						<BaseIcon name="chevron-down" />
 					</span>
-					<span class="base-filter-builder__select">
+					<span :class="ui('select')">
 						<select
 							:aria-label="UI_FILTER_BUILDER.OPERATOR"
 							:value="row.condition.operator"
@@ -44,7 +43,7 @@
 						<BaseIcon name="chevron-down" />
 					</span>
 					<template v-if="row.valueKind !== 'none'">
-						<span v-if="row.inputType === 'select'" class="base-filter-builder__select base-filter-builder__value">
+						<span v-if="row.inputType === 'select'" :class="[ui('select'), ui('value')]">
 							<select
 								:aria-label="UI_FILTER_BUILDER.VALUE"
 								:value="row.condition.value"
@@ -59,7 +58,7 @@
 						</span>
 						<input
 							v-else
-							class="base-filter-builder__input base-filter-builder__value"
+							:class="[ui('input'), ui('value')]"
 							:type="row.inputType"
 							:inputmode="row.inputType === 'number' ? 'decimal' : undefined"
 							:aria-label="row.valueKind === 'range' ? UI_FILTER_BUILDER.VALUE_FROM : UI_FILTER_BUILDER.VALUE"
@@ -68,7 +67,7 @@
 							@input="setValue(row.condition.id, { value: ($event.target as HTMLInputElement).value })" />
 						<input
 							v-if="row.valueKind === 'range'"
-							class="base-filter-builder__input base-filter-builder__value"
+							:class="[ui('input'), ui('value')]"
 							:type="row.inputType"
 							:inputmode="row.inputType === 'number' ? 'decimal' : undefined"
 							:aria-label="UI_FILTER_BUILDER.VALUE_TO"
@@ -78,7 +77,7 @@
 					</template>
 					<BaseButton
 						variant="ghost"
-						class="base-filter-builder__remove"
+						:class="ui('remove')"
 						:aria-label="removeLabel(index)"
 						:is-disabled="isDisabled"
 						:size-scale="sizeScale"
@@ -87,11 +86,11 @@
 					</BaseButton>
 				</div>
 			</li>
-		</ol>
-		<div class="base-filter-builder__actions" :class="classes.actions">
+		</TransitionGroup>
+		<div :class="[ui('actions'), classes.actions]">
 			<BaseButton
 				variant="ghost"
-				class="base-filter-builder__button base-filter-builder__add"
+				:class="[ui('button'), ui('add')]"
 				:is-disabled="isDisabled || fields.length === 0"
 				:size-scale="sizeScale"
 				@click="addCondition">
@@ -101,7 +100,7 @@
 			<BaseButton
 				v-if="rows.length"
 				variant="ghost"
-				class="base-filter-builder__button"
+				:class="ui('button')"
 				:is-disabled="isDisabled"
 				:size-scale="sizeScale"
 				@click="clear">
@@ -129,6 +128,8 @@ const props = withDefaults(defineProps<BaseFilterBuilderProps>(), {
 const emit = defineEmits<BaseFilterBuilderEmits>()
 
 const {
+	ui,
+	holdLeavingPlace,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

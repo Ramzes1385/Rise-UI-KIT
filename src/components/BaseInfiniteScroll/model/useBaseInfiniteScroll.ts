@@ -1,4 +1,5 @@
 import { UI_TEXT } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type {
@@ -83,6 +84,7 @@ export function useBaseInfiniteScroll(props: BaseInfiniteScrollProps, emit: Base
 
 	return {
 		...standard,
+		ui: useUi(props, 'base-infinite-scroll'),
 		status,
 		sentinelRef,
 		message: computed(() => statusMessage(status.value, props)),

@@ -1,4 +1,5 @@
 import { formatMessage } from '@/locales/state'
+import { useUi } from '@composables/base/useUi'
 import { UI_FILTER_BUILDER } from '@/locales/messages'
 import { computed, nextTick, ref, shallowRef, useId, watch } from 'vue'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
@@ -50,6 +51,15 @@ function useFilterFocus(rootRef: { value: HTMLElement | null }) {
 	}
 }
 
+function holdLeavingPlace(element: Element): void {
+	const item = element as HTMLElement
+	item.style.left = `${item.offsetLeft}px`
+	item.style.top = `${item.offsetTop}px`
+	item.style.width = `${item.offsetWidth}px`
+	item.inert = true
+	item.setAttribute('aria-hidden', 'true')
+}
+
 export function useBaseFilterBuilder(props: BaseFilterBuilderProps, emit: BaseFilterBuilderEmits) {
 	const { group, commit, patch } = useFilterGroup(props, emit)
 	const rootRef = ref<HTMLElement | null>(null)
@@ -59,6 +69,8 @@ export function useBaseFilterBuilder(props: BaseFilterBuilderProps, emit: BaseFi
 	const conditions = computed(() => group.value.conditions)
 	return {
 		...useStandardBaseComponent('base-filter-builder', props, ['root', 'row', 'actions']),
+		ui: useUi(props, 'base-filter-builder'),
+		holdLeavingPlace,
 		rootRef,
 		matchId: `${idPrefix}-match`,
 		match: computed(() => group.value.match),

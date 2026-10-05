@@ -1,5 +1,6 @@
 import { computed } from 'vue'
 import { formatMessage } from '@/locales/state'
+import { useUi } from '@composables/base/useUi'
 import { UI_TEXT_DIFF } from '@/locales/messages'
 import { diffLines, splitRows } from './diff/textDiff'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
@@ -15,6 +16,7 @@ export function useBaseTextDiff(props: BaseTextDiffProps) {
 	}))
 	return {
 		...useStandardBaseComponent('base-text-diff', props, ['root', 'table']),
+		ui: useUi(props, 'base-text-diff'),
 		lines,
 		rows: computed(() => splitRows(lines.value)),
 		counts,

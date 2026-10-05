@@ -3,20 +3,20 @@
 	flex-direction: column;
 	box-sizing: border-box;
 	min-width: 0;
-	border: 1px solid var(--rise-border);
-	border-radius: sz(var(--rise-radius-md));
+	border: 1px solid ct(json-viewer, border, var(--rise-border));
+	border-radius: sz(ct(json-viewer, radius, var(--rise-radius-md)));
 	@include text-size(sm);
-	@include custom-bg(background-color, var(--rise-bg));
-	@include custom-text(color, var(--rise-text));
+	@include custom-bg(background-color, ct(json-viewer, bg, var(--rise-bg)));
+	@include custom-text(color, ct(json-viewer, text, var(--rise-text)));
 
 	&--soft {
 		border-color: transparent;
-		@include custom-bg(background-color, var(--rise-bg-muted));
+		@include custom-bg(background-color, ct(json-viewer, bg, var(--rise-bg-muted)));
 	}
 
 	&--outline {
-		border-color: var(--rise-border-accented);
-		@include custom-bg(background-color, transparent);
+		border-color: ct(json-viewer, border, var(--rise-border-accented));
+		@include custom-bg(background-color, ct(json-viewer, bg, transparent));
 	}
 
 	&--ghost {
@@ -28,9 +28,10 @@
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
-		gap: sz(4px);
-		padding: sz(4px);
-		border-bottom: 1px solid var(--rise-border);
+		gap: space(ct(json-viewer, toolbar-gap, 4px));
+		padding: space(4px);
+		border-bottom: 1px solid ct(json-viewer, border, var(--rise-border));
+		background-color: ct(json-viewer, toolbar-bg, transparent);
 	}
 
 	&__status {
@@ -41,7 +42,7 @@
 	}
 
 	&__tree {
-		padding: sz(4px);
+		padding: space(ct(json-viewer, padding-y, 4px) ct(json-viewer, padding-x, 4px));
 	}
 
 	&__node {
@@ -57,7 +58,7 @@
 	}
 
 	&__key {
-		color: var(--rise-text-highlighted);
+		color: ct(json-viewer, key-text, var(--rise-text-highlighted));
 	}
 
 	&__colon {

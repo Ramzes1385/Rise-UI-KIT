@@ -1,7 +1,8 @@
-export { INFINITE_SCROLL_VARIANTS } from './types/BaseInfiniteScroll.types'
+export { INFINITE_SCROLL_PARTS, INFINITE_SCROLL_VARIANTS } from './types/BaseInfiniteScroll.types'
 export type {
 	BaseInfiniteScrollEmits,
 	BaseInfiniteScrollExpose,
+	BaseInfiniteScrollPart,
 	BaseInfiniteScrollProps,
 	BaseInfiniteScrollSlots,
 	InfiniteScrollLoadEvent,

@@ -1,21 +1,19 @@
 <template>
 	<div
 		ref="viewportRef"
-		class="base-virtual-list"
-		:class="[variantClass, classes.root]"
+		:class="[ui('root'), variantClass, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, viewportStyle]"
 		role="list"
 		:aria-label="ariaLabel"
 		:tabindex="isScrollable ? 0 : undefined"
 		@focusin="handleFocusin"
 		@focusout="handleFocusout">
-		<div class="base-virtual-list__inner" role="none" :style="{ height: `${totalSize}px` }">
+		<div :class="ui('inner')" role="none" :style="{ height: `${totalSize}px` }">
 			<div
 				v-for="entry in virtualItems"
 				:key="entry.key"
 				:ref="element => measureElement(element, entry.index)"
-				class="base-virtual-list__item"
-				:class="classes.item"
+				:class="[ui('item'), classes.item]"
 				:style="{ transform: `translateY(${entry.start}px)` }"
 				role="listitem"
 				:aria-setsize="items.length"
@@ -48,6 +46,7 @@ const props = withDefaults(
 defineSlots<BaseVirtualListSlots<T>>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

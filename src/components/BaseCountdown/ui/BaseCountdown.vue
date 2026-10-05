@@ -1,27 +1,33 @@
 <template>
 	<div
-		class="base-countdown"
-		:class="[variantClass, `base-countdown--${layout}`, digitClasses, { 'base-countdown--finished': parts.isFinished }, classes.root]"
+		:class="[
+			ui('root'),
+			variantClass,
+			`base-countdown--${layout}`,
+			digitClasses,
+			{ 'base-countdown--finished': parts.isFinished },
+			classes.root,
+		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		role="timer"
 		:aria-live="isLive ? 'polite' : 'off'"
 		aria-atomic="true">
-		<div v-if="parts.isFinished && $slots.finished" class="base-countdown__finished">
+		<div v-if="parts.isFinished && $slots.finished" :class="ui('finished')">
 			<slot name="finished" />
 		</div>
 		<template v-else>
-			<span class="base-countdown__spoken">{{ spoken }}</span>
-			<div class="base-countdown__display" aria-hidden="true">
+			<span :class="ui('spoken')">{{ spoken }}</span>
+			<div :class="ui('display')" aria-hidden="true">
 				<slot v-bind="parts">
-					<span v-if="layout === 'inline'" class="base-countdown__clock" :class="classes.value">
-						<CountdownDigits :text="clock" :digits="clockDigits" :animation="digitAnimation" />
+					<span v-if="layout === 'inline'" :class="[ui('clock'), classes.value]">
+						<CountdownDigits :text="clock" :digits="clockDigits" :animation="digitAnimation" :ui="ui" />
 					</span>
 					<template v-else>
-						<span v-for="cell in cells" :key="cell.unit" class="base-countdown__unit" :class="classes.unit">
-							<span class="base-countdown__value" :class="classes.value">
-								<CountdownDigits :text="cell.value" :digits="cell.digits" :animation="digitAnimation" />
+						<span v-for="cell in cells" :key="cell.unit" :class="[ui('unit'), classes.unit]">
+							<span :class="[ui('value'), classes.value]">
+								<CountdownDigits :text="cell.value" :digits="cell.digits" :animation="digitAnimation" :ui="ui" />
 							</span>
-							<span class="base-countdown__caption" :class="classes.caption">{{ cell.caption }}</span>
+							<span :class="[ui('caption'), classes.caption]">{{ cell.caption }}</span>
 						</span>
 					</template>
 				</slot>
@@ -56,6 +62,7 @@ const emit = defineEmits<BaseCountdownEmits>()
 defineSlots<BaseCountdownSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

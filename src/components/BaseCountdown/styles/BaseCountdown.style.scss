@@ -1,11 +1,11 @@
 .base-countdown {
 	--base-countdown-digit-duration: min(var(--rise-duration-slow), 600ms);
-	--base-countdown-digit-ease: var(--rise-ease-spring, var(--rise-ease-emphasized, cubic-bezier(0.2, 0, 0, 1)));
+	--base-countdown-digit-ease: var(--rise-ease-spring);
 
 	position: relative;
 	display: inline-flex;
 	max-width: 100%;
-	color: var(--rise-text);
+	color: ct(countdown, text, var(--rise-text));
 	@include text-size(sm);
 
 	&__spoken {
@@ -15,7 +15,7 @@
 	&__display {
 		display: flex;
 		flex-wrap: wrap;
-		gap: sz(8px);
+		gap: space(ct(countdown, gap, 8px));
 	}
 
 	&__unit {
@@ -25,22 +25,23 @@
 		gap: sz(2px);
 		box-sizing: border-box;
 		min-width: sz(64px);
-		padding: sz(8px) sz(10px);
-		border: 1px solid var(--rise-border);
-		border-radius: sz(var(--rise-radius-md));
-		@include custom-bg(background-color, var(--rise-bg));
+		padding: space(ct(countdown, unit-padding-y, 8px) ct(countdown, unit-padding-x, 10px));
+		border: 1px solid ct(countdown, unit-border, var(--rise-border));
+		border-radius: sz(ct(countdown, unit-radius, var(--rise-radius-md)));
+		@include custom-bg(background-color, ct(countdown, unit-bg, var(--rise-bg)));
 	}
 
 	&__value {
-		font-weight: var(--rise-font-weight-semibold);
+		font-weight: ct(countdown, value-font-weight, var(--rise-font-weight-semibold));
 		font-variant-numeric: tabular-nums;
-		@include text-size(2xl);
-		@include custom-text(color, var(--rise-text-highlighted));
+		font-size: sz(ct(countdown, value-font-size, var(--rise-font-size-2xl)));
+		line-height: sz(var(--rise-line-height-2xl));
+		@include custom-text(color, ct(countdown, value-text, var(--rise-text-highlighted)));
 	}
 
 	&__caption {
 		@include text-size(xs);
-		@include custom-text(color, var(--rise-text-muted));
+		@include custom-text(color, ct(countdown, caption-text, var(--rise-text-muted)));
 	}
 
 	&--soft &__unit {
@@ -53,7 +54,7 @@
 	}
 
 	&--outline &__unit {
-		border-color: var(--rise-border-accented);
+		border-color: ct(countdown, unit-border, var(--rise-border-accented));
 		@include custom-bg(background-color, transparent);
 	}
 
@@ -65,10 +66,11 @@
 	}
 
 	&__clock {
-		font-weight: var(--rise-font-weight-semibold);
+		font-weight: ct(countdown, value-font-weight, var(--rise-font-weight-semibold));
 		font-variant-numeric: tabular-nums;
-		@include text-size(lg);
-		@include custom-text(color, var(--rise-text-highlighted));
+		font-size: sz(ct(countdown, clock-font-size, var(--rise-font-size-lg)));
+		line-height: sz(var(--rise-line-height-lg));
+		@include custom-text(color, ct(countdown, value-text, var(--rise-text-highlighted)));
 	}
 
 	&--finished &__value,

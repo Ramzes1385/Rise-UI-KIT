@@ -1,4 +1,5 @@
 import type { Ref } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import { UI_COUNTDOWN } from '@/locales/messages'
 import { useReducedMotion } from '@composables/app/useReducedMotion'
 import { countdownDigits, segmentDigits } from './digits/countdownDigits'
@@ -85,6 +86,7 @@ export function useBaseCountdown(props: BaseCountdownProps, emit: BaseCountdownE
 	return {
 		...useStandardBaseComponent('base-countdown', props, ['root', 'unit', 'value', 'caption']),
 		...useDigitMotion(props, remaining),
+		ui: useUi(props, 'base-countdown'),
 		parts,
 		cells: computed(() =>
 			units.value.map((unit: CountdownUnit) => {

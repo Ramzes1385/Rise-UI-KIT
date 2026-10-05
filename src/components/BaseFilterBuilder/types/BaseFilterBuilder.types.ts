@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /**
@@ -5,6 +6,33 @@ import type { BaseComponentProps } from '@composables/base/useBaseComponent'
  * `outline` — рамка без фона, `ghost` — без рамки и отступов (внутри поповера или панели таблицы)
  */
 export const FILTER_BUILDER_VARIANTS = ['default', 'soft', 'outline', 'ghost'] as const
+
+/**
+ * Части конструктора фильтров для пропа `ui` (БЭМ-элементы `.base-filter-builder__<часть>`, `root` — сам конструктор):
+ * match — строка связки «Показывать строки, где выполняются»; select — обёртка выпадающего списка со стрелкой;
+ * empty — подсказка «Условий нет»; list — список условий `<ol>`; item — пункт списка с условием; row — строка условия
+ * (группа «Условие N»); joiner — связка «Где», «и», «или»; input — поле ввода значения; value — поле значения (список или ввод);
+ * remove — кнопка удаления условия (корень BaseButton); actions — строка кнопок под условиями; button — кнопки
+ * «Добавить условие» и «Сбросить»; add — кнопка «Добавить условие».
+ */
+export const FILTER_BUILDER_PARTS = [
+	'match',
+	'select',
+	'empty',
+	'list',
+	'item',
+	'row',
+	'joiner',
+	'input',
+	'value',
+	'remove',
+	'actions',
+	'button',
+	'add',
+] as const
+
+/** Часть конструктора фильтров для пропа `ui` */
+export type BaseFilterBuilderPart = (typeof FILTER_BUILDER_PARTS)[number]
 
 /** Типы полей: от типа зависят сравнения и поле значения */
 export const FILTER_BUILDER_FIELD_TYPES = ['text', 'number', 'date', 'select', 'boolean'] as const
@@ -85,6 +113,14 @@ export interface BaseFilterBuilderProps extends BaseComponentProps<(typeof FILTE
 	modelValue?: FilterBuilderGroup
 	/** Отключает изменение фильтра */
 	isDisabled?: boolean
+	/**
+	 * Классы частей конструктора (`root`, `list`, `item`, `row`, `select`, `input`, `remove`, `add`…) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseFilterBuilder: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseFilterBuilder v-model="filter" :fields="fields" :ui="{ row: 'my-filter-row', add: 'my-filter-add' }" />
+	 */
+	ui?: UiProp<BaseFilterBuilderPart>
 }
 
 /**

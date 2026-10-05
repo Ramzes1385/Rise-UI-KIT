@@ -1,7 +1,17 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /** У компонента одно оформление: строка состояния под списком */
 export const INFINITE_SCROLL_VARIANTS = ['default'] as const
+
+/**
+ * Части ленты для пропа `ui` (БЭМ-элементы `.base-infinite-scroll__<часть>`, `root` — обёртка списка):
+ * sentinel — невидимая метка конца списка, за которой следит подгрузка; footer — строка состояния под списком;
+ * loader — индикатор загрузки (появляется и гаснет плавно); message — текст состояния (`role="status"`).
+ */
+export const INFINITE_SCROLL_PARTS = ['sentinel', 'footer', 'loader', 'message'] as const
+
+export type BaseInfiniteScrollPart = (typeof INFINITE_SCROLL_PARTS)[number]
 
 /**
  * Режим подгрузки: `intersect` — сама, когда конец списка подходит к краю области; `manual` — кнопкой «Загрузить ещё»
@@ -34,6 +44,14 @@ export interface BaseInfiniteScrollProps extends BaseComponentProps<(typeof INFI
 	errorText?: string
 	/** Кнопка в режиме manual (по умолчанию «Загрузить еще») */
 	loadMoreText?: string
+	/**
+	 * Классы частей ленты (`root`, `sentinel`, `footer`, `loader`, `message`) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseInfiniteScroll: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseInfiniteScroll :ui="{ footer: 'sticky bottom-0', message: 'italic' }" @load="onLoad">…</BaseInfiniteScroll>
+	 */
+	ui?: UiProp<BaseInfiniteScrollPart>
 }
 
 export interface BaseInfiniteScrollEmits {

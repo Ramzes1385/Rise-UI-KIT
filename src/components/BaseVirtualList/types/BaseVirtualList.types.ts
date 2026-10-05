@@ -1,9 +1,18 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import type { VirtualAlign, VirtualKey } from '@composables/interaction/useVirtualList'
 
 /** У списка одно оформление: строки рисует слот */
 export const VIRTUAL_LIST_VARIANTS = ['default'] as const
+
+/**
+ * Части списка для пропа `ui` (БЭМ-элементы `.base-virtual-list__<часть>`, `root` — прокручиваемая область `role="list"`):
+ * inner — внутренний блок высотой всего списка; item — строка (`role="listitem"`), её содержимое рисует слот.
+ */
+export const VIRTUAL_LIST_PARTS = ['inner', 'item'] as const
+
+export type BaseVirtualListPart = (typeof VIRTUAL_LIST_PARTS)[number]
 
 export interface BaseVirtualListProps<T = unknown> extends BaseComponentProps<(typeof VIRTUAL_LIST_VARIANTS)[number], 'root' | 'item'> {
 	/** Элементы списка */
@@ -18,6 +27,14 @@ export interface BaseVirtualListProps<T = unknown> extends BaseComponentProps<(t
 	height?: number | string
 	/** Имя списка для скринридера */
 	ariaLabel?: string
+	/**
+	 * Классы частей списка (`root`, `inner`, `item`) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseVirtualList: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseVirtualList :items="items" :ui="{ root: 'rounded-lg border', item: 'border-b' }" />
+	 */
+	ui?: UiProp<BaseVirtualListPart>
 }
 
 export interface BaseVirtualListSlots<T = unknown> {

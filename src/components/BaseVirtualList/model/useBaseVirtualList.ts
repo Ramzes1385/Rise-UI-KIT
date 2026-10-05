@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
 import { computed, ref } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import type { VirtualListProps } from '../types/BaseVirtualList.types'
 import { useVirtualList } from '@composables/interaction/useVirtualList'
 import type { VirtualKey } from '@composables/interaction/useVirtualList'
@@ -41,6 +42,7 @@ export function useBaseVirtualList<T>(props: VirtualListProps<T>) {
 
 	return {
 		...useStandardBaseComponent('base-virtual-list', props, ['root', 'item']),
+		ui: useUi(props, 'base-virtual-list'),
 		viewportRef,
 		viewportStyle: computed(() => ({ height: typeof props.height === 'number' ? `${props.height}px` : props.height })),
 		handleFocusin,

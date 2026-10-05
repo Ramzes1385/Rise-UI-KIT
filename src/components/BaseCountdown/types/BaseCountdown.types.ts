@@ -1,3 +1,4 @@
+import type { UiClassFn, UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /**
@@ -15,6 +16,16 @@ export const COUNTDOWN_UNITS = ['days', 'hours', 'minutes', 'seconds'] as const
  * `blur` — затухание с размытием, `none` — без анимации
  */
 export const COUNTDOWN_DIGIT_ANIMATIONS = ['roll', 'flip', 'fade', 'blur', 'none'] as const
+
+/**
+ * Части отсчёта для пропа `ui` (БЭМ-элементы `.base-countdown__<часть>`, `root` — корень с `role="timer"`):
+ * finished — слот `finished` после окончания; spoken — скрытый текст для скринридера; display — видимое табло;
+ * clock — значение строкой (`layout="inline"`); unit — ячейка «число и подпись»; value — число ячейки;
+ * caption — подпись единицы; slot — разряд или разделитель; digit — цифра разряда (меняется с анимацией).
+ */
+export const COUNTDOWN_PARTS = ['finished', 'spoken', 'display', 'clock', 'unit', 'value', 'caption', 'slot', 'digit'] as const
+
+export type BaseCountdownPart = (typeof COUNTDOWN_PARTS)[number]
 
 /** Единица отсчёта: дни, часы, минуты, секунды */
 export type CountdownUnit = (typeof COUNTDOWN_UNITS)[number]
@@ -49,6 +60,8 @@ export interface CountdownDigitsProps {
 	digits: readonly CountdownDigit[]
 	/** Анимация; `none` — и при «уменьшить движение» */
 	animation: CountdownDigitAnimation
+	/** Классы частей из пропа `ui` BaseCountdown: `ui('digit')` → БЭМ-класс и классы приложения */
+	ui: UiClassFn<BaseCountdownPart>
 }
 
 /** Раскладка: `blocks` — ячейки «число и подпись», `inline` — строкой, как часы: «2 дн. 03:12:45» */
@@ -96,6 +109,14 @@ export interface BaseCountdownProps extends BaseComponentProps<(typeof COUNTDOWN
 	 * При «уменьшить движение» в системе цифры меняются сразу
 	 */
 	digitAnimation?: CountdownDigitAnimation
+	/**
+	 * Классы частей отсчёта (`root`, `unit`, `value`, `caption`, `clock`, `digit`…) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseCountdown: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseCountdown :to="to" :ui="{ unit: 'shadow-sm', caption: 'uppercase' }" />
+	 */
+	ui?: UiProp<BaseCountdownPart>
 }
 
 /**

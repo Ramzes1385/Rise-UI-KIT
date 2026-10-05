@@ -21,3 +21,5 @@ export const Default = cases.Default
 export const Manual = cases.Manual
 export const WithError = cases.WithError
 export const Keyboard = cases.Keyboard
+export const Theming = cases.Theming
+export const Animations = cases.Animations

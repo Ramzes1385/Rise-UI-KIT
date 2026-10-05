@@ -1,22 +1,22 @@
 .base-filter-builder {
 	display: flex;
 	flex-direction: column;
-	gap: sz(10px);
+	gap: space(ct(filter-builder, gap, 10px));
 	box-sizing: border-box;
 	min-width: 0;
 	max-width: 100%;
-	padding: sz(12px);
-	border: 1px solid var(--rise-border);
-	border-radius: sz(var(--rise-radius-lg));
+	padding: space(ct(filter-builder, padding-y, 12px) ct(filter-builder, padding-x, 12px));
+	border: 1px solid ct(filter-builder, border, var(--rise-border));
+	border-radius: sz(ct(filter-builder, radius, var(--rise-radius-lg)));
 	@include text-size(sm);
-	@include custom-text(color, var(--rise-text));
-	@include custom-bg(background-color, var(--rise-bg));
+	@include custom-text(color, ct(filter-builder, text, var(--rise-text)));
+	@include custom-bg(background-color, ct(filter-builder, bg, var(--rise-bg)));
 
 	&__match {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
-		gap: sz(8px);
+		gap: space(8px);
 	}
 
 	&__empty {
@@ -25,25 +25,37 @@
 	}
 
 	&__list {
+		position: relative;
 		display: flex;
 		flex-direction: column;
-		gap: sz(8px);
+		gap: space(8px);
 		margin: 0;
 		padding: 0;
 		list-style: none;
+	}
+
+	@include enter-transform(base-filter-builder__item, translateY(calc(var(--rise-motion-distance) * -1)), none);
+
+	& &__item-move {
+		transition: transform var(--rise-duration) var(--rise-ease-emphasized);
+	}
+
+	& &__item-leave-active {
+		position: absolute;
+		pointer-events: none;
 	}
 
 	&__row {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
-		gap: sz(8px);
+		gap: space(8px);
 	}
 
 	&__joiner {
 		flex: none;
 		width: sz(36px);
-		@include custom-text(color, var(--rise-text-muted));
+		@include custom-text(color, ct(filter-builder, joiner-text, var(--rise-text-muted)));
 		text-align: right;
 	}
 
@@ -64,7 +76,7 @@
 		font: inherit;
 		@include control-text;
 		outline: none;
-		@include field-box;
+		@include field-box(filter-builder-field);
 	}
 
 	&__select select {
@@ -126,7 +138,7 @@
 	&__actions {
 		display: flex;
 		flex-wrap: wrap;
-		gap: sz(4px);
+		gap: space(4px);
 		margin-left: sz(-8px);
 	}
 
@@ -145,12 +157,12 @@
 
 	&--soft {
 		border-color: transparent;
-		@include custom-bg(background-color, var(--rise-bg-muted));
+		@include custom-bg(background-color, ct(filter-builder, bg, var(--rise-bg-muted)));
 	}
 
 	&--outline {
-		border-color: var(--rise-border-accented);
-		@include custom-bg(background-color, transparent);
+		border-color: ct(filter-builder, border, var(--rise-border-accented));
+		@include custom-bg(background-color, ct(filter-builder, bg, transparent));
 	}
 
 	&--ghost {

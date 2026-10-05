@@ -21,3 +21,5 @@ export const Sizes = cases.Sizes
 export const CustomColor = cases.CustomColor
 export const Toolbar = cases.Toolbar
 export const ExpandDepth = cases.ExpandDepth
+export const Theming = cases.Theming
+export const Animations = cases.Animations

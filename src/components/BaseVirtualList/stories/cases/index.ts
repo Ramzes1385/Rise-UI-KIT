@@ -1,3 +1,5 @@
 export { Default } from './Default'
 export { VariableHeight } from './VariableHeight'
 export { Keyboard } from './Keyboard'
+export { Theming } from './Theming'
+export { Animations } from './Animations'

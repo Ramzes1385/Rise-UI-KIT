@@ -1,14 +1,15 @@
 <template>
 	<div
-		class="base-infinite-scroll"
-		:class="[variantClass, classes.root]"
+		:class="[ui('root'), variantClass, classes.root]"
 		:style="[sizeScaleStyle, variantStyle]"
 		:aria-busy="status === 'loading' ? 'true' : undefined">
 		<slot />
-		<div ref="sentinelRef" class="base-infinite-scroll__sentinel" aria-hidden="true" />
-		<div class="base-infinite-scroll__footer" :class="[{ 'base-infinite-scroll__footer--empty': isFooterEmpty }, classes.status]">
-			<BaseLoader v-if="status === 'loading'" class="base-infinite-scroll__loader" :size-scale="sizeScale" aria-hidden="true" />
-			<span class="base-infinite-scroll__message" role="status">{{ message }}</span>
+		<div ref="sentinelRef" :class="ui('sentinel')" aria-hidden="true" />
+		<div :class="[ui('footer'), { 'base-infinite-scroll__footer--empty': isFooterEmpty }, classes.status]">
+			<Transition name="base-infinite-scroll-loader">
+				<BaseLoader v-if="status === 'loading'" :class="ui('loader')" :size-scale="sizeScale" aria-hidden="true" />
+			</Transition>
+			<span :class="ui('message')" role="status">{{ message }}</span>
 			<BaseButton v-if="status === 'error'" variant="soft" :size-scale="sizeScale" @click="load">{{ UI_TEXT.RETRY }}</BaseButton>
 			<BaseButton v-else-if="status === 'idle' && mode === 'manual'" variant="soft" :size-scale="sizeScale" @click="load">
 				{{ loadMoreText ?? UI_TEXT.LOAD_MORE }}
@@ -44,7 +45,7 @@ const props = withDefaults(
 const emit = defineEmits<BaseInfiniteScrollEmits>()
 defineSlots<BaseInfiniteScrollSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, classes, status, sentinelRef, message, isFooterEmpty, load, exposed } =
+const { ui, sizeScaleStyle, variantClass, variantStyle, classes, status, sentinelRef, message, isFooterEmpty, load, exposed } =
 	useBaseInfiniteScroll(props, emit)
 
 defineExpose<BaseInfiniteScrollExpose>(exposed)

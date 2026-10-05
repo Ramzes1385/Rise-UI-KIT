@@ -1,4 +1,5 @@
 import { ref, watch, computed } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import { UI_JSON_VIEWER } from '@/locales/messages'
 import type { TreeNode } from '@components/BaseTree'
 import { buildJsonTree, expandedUpTo } from './json/jsonTree'
@@ -26,6 +27,7 @@ export function useBaseJsonViewer(props: BaseJsonViewerProps, emit: BaseJsonView
 	)
 	return {
 		...useStandardBaseComponent('base-json-viewer', props, ['root', 'toolbar', 'tree']),
+		ui: useUi(props, 'base-json-viewer'),
 		items: computed(() => tree.value.items),
 		expandedIds,
 		status,

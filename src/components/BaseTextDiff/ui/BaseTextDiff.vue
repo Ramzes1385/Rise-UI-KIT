@@ -1,16 +1,12 @@
 <template>
-	<figure
-		class="base-text-diff"
-		:class="[variantClass, classes.root]"
-		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
-		:aria-label="label">
-		<figcaption class="base-text-diff__summary">
+	<figure :class="[ui('root'), variantClass, classes.root]" :style="[sizeScaleStyle, variantStyle, customColorStyle]" :aria-label="label">
+		<figcaption :class="ui('summary')">
 			<span class="base-text-diff__hidden">{{ summary }}</span>
-			<span class="base-text-diff__count base-text-diff__count--added" aria-hidden="true">+{{ counts.added }}</span>
-			<span class="base-text-diff__count base-text-diff__count--removed" aria-hidden="true">−{{ counts.removed }}</span>
-			<span v-if="!hasChanges" class="base-text-diff__same">{{ UI_TEXT_DIFF.NO_CHANGES }}</span>
+			<span :class="[ui('count'), 'base-text-diff__count--added']" aria-hidden="true">+{{ counts.added }}</span>
+			<span :class="[ui('count'), 'base-text-diff__count--removed']" aria-hidden="true">−{{ counts.removed }}</span>
+			<span v-if="!hasChanges" :class="ui('same')">{{ UI_TEXT_DIFF.NO_CHANGES }}</span>
 		</figcaption>
-		<table v-if="mode === 'split'" class="base-text-diff__table base-text-diff__table--split" :class="classes.table">
+		<table v-if="mode === 'split'" :class="[ui('table'), 'base-text-diff__table--split', classes.table]">
 			<thead>
 				<tr>
 					<th scope="col" colspan="2">{{ beforeLabel ?? UI_TEXT_DIFF.BEFORE }}</th>
@@ -18,22 +14,22 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr v-for="(row, index) in rows" :key="index" class="base-text-diff__row">
-					<td class="base-text-diff__number" :class="cellClass(row.left)">{{ row.left?.before }}</td>
-					<td class="base-text-diff__text" :class="cellClass(row.left)">
+				<tr v-for="(row, index) in rows" :key="index" :class="ui('row')">
+					<td :class="[ui('number'), cellClass(row.left)]">{{ row.left?.before }}</td>
+					<td :class="[ui('text'), cellClass(row.left)]">
 						<span class="base-text-diff__hidden">{{ changeText(row.left) }}</span>
-						<TextDiffText v-if="row.left" :parts="row.left.parts" />
+						<TextDiffText v-if="row.left" :parts="row.left.parts" :word-class="ui('word')" />
 					</td>
-					<td class="base-text-diff__number" :class="cellClass(row.right)">{{ row.right?.after }}</td>
-					<td class="base-text-diff__text" :class="cellClass(row.right)">
+					<td :class="[ui('number'), cellClass(row.right)]">{{ row.right?.after }}</td>
+					<td :class="[ui('text'), cellClass(row.right)]">
 						<span class="base-text-diff__hidden">{{ changeText(row.right) }}</span>
-						<TextDiffText v-if="row.right" :parts="row.right.parts" />
+						<TextDiffText v-if="row.right" :parts="row.right.parts" :word-class="ui('word')" />
 					</td>
 				</tr>
 			</tbody>
 		</table>
-		<table v-else class="base-text-diff__table" :class="classes.table">
-			<thead class="base-text-diff__head">
+		<table v-else :class="[ui('table'), classes.table]">
+			<thead :class="ui('head')">
 				<tr>
 					<th scope="col">
 						<span class="base-text-diff__hidden">{{ UI_TEXT_DIFF.BEFORE }}</span>
@@ -50,14 +46,14 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr v-for="(line, index) in lines" :key="index" class="base-text-diff__row" :class="cellClass(line)">
-					<td class="base-text-diff__number">{{ line.before }}</td>
-					<td class="base-text-diff__number">{{ line.after }}</td>
-					<td class="base-text-diff__sign">
+				<tr v-for="(line, index) in lines" :key="index" :class="[ui('row'), cellClass(line)]">
+					<td :class="ui('number')">{{ line.before }}</td>
+					<td :class="ui('number')">{{ line.after }}</td>
+					<td :class="ui('sign')">
 						<span aria-hidden="true">{{ signOf(line) }}</span>
 						<span class="base-text-diff__hidden">{{ changeText(line) }}</span>
 					</td>
-					<td class="base-text-diff__text"><TextDiffText :parts="line.parts" /></td>
+					<td :class="ui('text')"><TextDiffText :parts="line.parts" :word-class="ui('word')" /></td>
 				</tr>
 			</tbody>
 		</table>
@@ -82,6 +78,7 @@ const props = withDefaults(defineProps<BaseTextDiffProps>(), {
 })
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,
