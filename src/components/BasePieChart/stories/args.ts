@@ -8,5 +8,6 @@ export const args = {
 	variant: 'donut',
 	maxSegments: 6,
 	size: 160,
+	animation: 'sweep',
 	sizeScale: 100,
 } satisfies Meta<typeof BasePieChart>['args']

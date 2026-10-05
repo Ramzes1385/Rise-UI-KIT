@@ -16,5 +16,6 @@ const meta = {
 export default meta
 
 export const Default = cases.Default
+export const Animations = cases.Animations
 export const Other = cases.Other
 export const Variants = cases.Variants

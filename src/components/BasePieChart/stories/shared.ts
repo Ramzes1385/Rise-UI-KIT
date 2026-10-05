@@ -17,3 +17,11 @@ export const TRAFFIC: PieSegment[] = [
 	{ label: 'Мессенджеры', value: 330 },
 	{ label: 'Прочие сайты', value: 190 },
 ]
+
+export const TASKS_NEXT_WEEK: PieSegment[] = [
+	{ label: 'Готово', value: 58 },
+	{ label: 'В работе', value: 22 },
+	{ label: 'К выполнению', value: 14 },
+]
+
+export const CANCELLED: PieSegment = { label: 'Отменено', value: 12 }
