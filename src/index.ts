@@ -1,7 +1,7 @@
 import './styles/kit.scss'
 export * from './components'
 export * as composables from './composables'
-export { useColorMode, useLoadingBar, useLocale, useOverlay, useToast } from './composables'
+export { applyTheme, useColorMode, useLoadingBar, useLocale, useOverlay, useTheme, useToast } from './composables'
 export type {
 	ColorMode,
 	IconMap,
@@ -11,6 +11,7 @@ export type {
 	ResolvedColorMode,
 	ToastAction,
 	ToastId,
+	ThemeController,
 	ToastOptions,
 	UiKitDefaults,
 	UseLocaleReturn,
@@ -21,3 +22,5 @@ export * as icons from './icons'
 export { createUiKitPlugin, default, UI_COMPONENTS, uiKitPlugin } from './plugin'
 export type { UiKitPluginOptions } from './plugin'
 export * as utils from './utils'
+export { createTheme, THEME_PRESETS } from './utils'
+export type { Theme, ThemeInput, ThemePresetName } from './utils'

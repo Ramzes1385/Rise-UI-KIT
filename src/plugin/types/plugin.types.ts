@@ -2,6 +2,7 @@ import type { LocaleInput } from '../../locales/types/locales.types'
 import type { IconMap } from '../../composables/app/useIcon/types/useIcon.types'
 import type { LinkComponent } from '../../composables/interaction/useLink/types/useLink.types'
 import type { UiKitDefaults } from '../../composables/base/useDefaults/types/useDefaults.types'
+import type { Theme, ThemePresetName } from '../../utils/theme/themeUtils/types/themeUtils.types'
 import type { TeleportTarget } from '../../composables/app/useTeleportTarget/types/useTeleportTarget.types'
 
 export interface UiKitPluginOptions {
@@ -35,4 +36,13 @@ export interface UiKitPluginOptions {
 	 * По умолчанию `body`. Свой контейнер нужен, например, в полноэкранном режиме
 	 */
 	teleportTo?: TeleportTarget
+	/**
+	 * Тема приложения: имя пресета (`'corporate'`, `'playful'`, `'minimal'`, `'rise'`) или тема из `createTheme()`.
+	 * Ставится на `<html>` при установке плагина; переключение — `useTheme().setTheme()`. При SSR — `useTheme().css`
+	 */
+	theme?: Theme | ThemePresetName
+	/** Свои темы из `createTheme()`: выбираются по имени через `useTheme().setTheme(name)` */
+	themes?: Theme[]
+	/** CSP nonce для `<style>` тем, которые вставляет кит */
+	themeNonce?: string
 }

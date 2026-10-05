@@ -6,6 +6,8 @@ import { defineComponent, h, inject } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
 import { createUiKitPlugin, UI_COMPONENTS, uiKitPlugin } from '@/plugin'
 import { TELEPORT_TARGET_KEY } from '@composables/app/useTeleportTarget/useTeleportTarget'
+import { useTheme } from '@composables/app/useTheme/useTheme'
+import { createTheme } from '@utils/theme/themeUtils'
 import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseLink } from '@components/BaseLink'
@@ -92,5 +94,19 @@ describe('createUiKitPlugin', () => {
 		expect(wrapper.text()).toBe('#layers')
 		expect(UI_ARIA.BREADCRUMBS_NAV).toBe('Breadcrumbs')
 		setLocale('ru')
+	})
+	it('theme, themes и themeNonce: тема на html, style с nonce, свои темы доступны useTheme', () => {
+		const brand = createTheme({ name: 'brand', primary: '#0f766e' })
+		mount(defineComponent({ setup: () => () => h('div') }), {
+			global: { plugins: [createUiKitPlugin({ theme: 'corporate', themes: [brand], themeNonce: 'nonce-1' })] },
+		})
+
+		expect(document.documentElement.getAttribute('data-rise-theme')).toBe('corporate')
+		expect(document.head.querySelector<HTMLStyleElement>('style[data-rise-theme-style="corporate"]')?.nonce).toBe('nonce-1')
+		expect(useTheme().themes.value).toContain('brand')
+		mount(defineComponent({ setup: () => () => h('div') }), { global: { plugins: [createUiKitPlugin({ themes: [brand] })] } })
+		expect(useTheme().theme.value).toBe('corporate')
+		document.documentElement.removeAttribute('data-rise-theme')
+		document.documentElement.removeAttribute('data-theme')
 	})
 })
