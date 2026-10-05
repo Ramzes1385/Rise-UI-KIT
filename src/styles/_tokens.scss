@@ -141,6 +141,9 @@ $light-main-shade: (
 	--rise-duration-fast: 150ms;
 	--rise-duration: 200ms;
 	--rise-duration-slow: 300ms;
+	// Период бесконечных анимаций (спиннеры, пульсация, шиммер): пресеты и «уменьшить движение» его не обнуляют —
+	// спиннер крутится всегда, декоративные петли выключает `motion-safe`. Компонент берёт кратное: `calc(var(--rise-duration-loop) * 0.8)`.
+	--rise-duration-loop: 1s;
 	--rise-ease: cubic-bezier(0.4, 0, 0.2, 1);
 	--rise-ease-out: cubic-bezier(0, 0, 0.2, 1);
 	--rise-ease-in: cubic-bezier(0.4, 0, 1, 1);
