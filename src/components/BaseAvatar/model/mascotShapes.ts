@@ -1,4 +1,4 @@
-import type { AvatarMascot, AvatarMood, AvatarMoodShape, AvatarPupilOffset } from '../types/BaseAvatar.types'
+import type { AvatarMascotName, AvatarMood, AvatarMoodShape, AvatarPupilOffset } from '../types/BaseAvatar.types'
 
 const mirror = (brow: readonly number[]): number[] => [-brow[4], brow[5], -brow[2], brow[3], -brow[0], brow[1]]
 
@@ -39,7 +39,7 @@ export const MASCOT_MOODS: Record<AvatarMood, AvatarMoodShape> = {
 	},
 }
 
-export const MASCOT_FACES: Record<Exclude<AvatarMascot, 'none'>, AvatarPupilOffset> = {
+export const MASCOT_FACES: Record<Exclude<AvatarMascotName, 'none'>, AvatarPupilOffset> = {
 	sprout: { x: 32, y: 37 },
 	cloud: { x: 32, y: 38 },
 	droplet: { x: 32, y: 42 },

@@ -15,15 +15,16 @@ const template = `
 	</div>
 `
 
-export const Mascot: StoryObj<typeof meta> = {
+export const Password: StoryObj<typeof meta> = {
+	name: 'Пароль',
 	parameters: {
 		controls: { include: ['variant', 'sizeScale', 'shape', 'ring'] },
 		docs: {
 			description: {
 				story: [
 					'Росток — SVG-персонаж кита (`mascot="sprout"`). Глаза следят за курсором по всей странице: поводите мышью вокруг.',
-					'`isEyesClosed` закрывает глаза — здесь, пока фокус в поле пароля, как на странице входа.',
-					'При `prefers-reduced-motion` персонаж смотрит прямо и не реагирует на курсор.',
+					'`isEyesClosed` плавно закрывает глаза — здесь, пока фокус в поле пароля, как на странице входа.',
+					'При `prefers-reduced-motion` персонаж смотрит прямо, не реагирует на курсор и закрывает глаза сразу.',
 				].join('\n'),
 			},
 			source: storySource({
@@ -44,17 +45,14 @@ export const Mascot: StoryObj<typeof meta> = {
 		const mascot = canvas.getByRole('img', { name: 'Росток' })
 		const rect = mascot.getBoundingClientRect()
 		const isReduced = matchMedia('(prefers-reduced-motion: reduce)').matches
+		const pupil = canvasElement.querySelector('.base-avatar__mascot-pupil')
+		const eyes = canvasElement.querySelector('.base-avatar__mascot-eyes')
 		document.dispatchEvent(new PointerEvent('pointermove', { clientX: rect.right + 400, clientY: rect.top + rect.height / 2 }))
-		await waitFor(() =>
-			expect(canvasElement.querySelector('.base-avatar__mascot-pupils')).toHaveAttribute(
-				'transform',
-				isReduced ? 'translate(0 0)' : 'translate(3 0)',
-			),
-		)
+		await waitFor(() => expect(pupil).toHaveAttribute('transform', isReduced ? 'translate(0 0)' : 'translate(3 0)'), { timeout: 3000 })
 		await userEvent.tab()
 		await expect(canvas.getByLabelText('Пароль')).toHaveFocus()
-		await waitFor(() => expect(canvasElement.querySelector('.base-avatar__mascot-lids')).not.toBeNull())
+		await waitFor(() => expect(eyes).toHaveAttribute('opacity', '0'), { timeout: 3000 })
 		await userEvent.tab()
-		await waitFor(() => expect(canvasElement.querySelector('.base-avatar__mascot-pupils')).not.toBeNull())
+		await waitFor(() => expect(eyes).toHaveAttribute('opacity', '1'), { timeout: 3000 })
 	},
 }

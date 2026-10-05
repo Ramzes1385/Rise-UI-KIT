@@ -21,7 +21,7 @@ export const AVATAR_MOODS = ['idle', 'happy', 'surprised', 'sad', 'sleepy', 'thi
 
 export type AvatarMood = (typeof AVATAR_MOODS)[number]
 
-export type AvatarMascot = (typeof AVATAR_MASCOTS)[number]
+export type AvatarMascotName = (typeof AVATAR_MASCOTS)[number]
 
 /** Насколько зрачок смещается от центра глаза, в единицах `viewBox` персонажа. */
 export const AVATAR_MASCOT_PUPIL_RANGE = 3
@@ -174,7 +174,7 @@ export interface BaseAvatarSlots {
 
 export interface AvatarMascotProps {
 	/** Персонаж */
-	mascot: Exclude<AvatarMascot, 'none'>
+	mascot: Exclude<AvatarMascotName, 'none'>
 	/** Подпись персонажа для скринридеров; пустая — персонаж декоративный. */
 	label?: string
 	/** Персонаж закрывает глаза. */

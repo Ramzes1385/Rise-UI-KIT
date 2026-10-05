@@ -10,6 +10,8 @@ export const args = {
 	ring: 'none',
 	mascot: 'none',
 	isEyesClosed: false,
+	isBlinking: false,
+	mood: 'idle',
 	isDisabled: false,
 	sizeScale: 100,
 } satisfies Meta<typeof BaseAvatar>['args']

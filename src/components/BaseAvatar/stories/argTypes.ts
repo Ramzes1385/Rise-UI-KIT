@@ -1,7 +1,7 @@
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseAvatar from '../ui/BaseAvatar.vue'
 import { baseArgTypes, propGroup, ARG_GROUP } from '@/stories/helpers'
-import { AVATAR_VARIANTS, AVATAR_SHAPES, AVATAR_RINGS, AVATAR_MASCOTS } from '../types/BaseAvatar.types'
+import { AVATAR_VARIANTS, AVATAR_SHAPES, AVATAR_RINGS, AVATAR_MASCOTS, AVATAR_MOODS } from '../types/BaseAvatar.types'
 
 export const argTypes = {
 	...baseArgTypes({ variants: AVATAR_VARIANTS }),
@@ -14,5 +14,7 @@ export const argTypes = {
 	mascot: { control: 'inline-radio', options: AVATAR_MASCOTS, table: propGroup(ARG_GROUP.content) },
 	isOnline: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 	isEyesClosed: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+	isBlinking: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+	mood: { control: 'inline-radio', options: AVATAR_MOODS, table: propGroup(ARG_GROUP.state) },
 	default: { control: false },
 } satisfies Meta<typeof BaseAvatar>['argTypes']
