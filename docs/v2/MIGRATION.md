@@ -1804,4 +1804,18 @@ API кита не меняется. В Storybook добавлены пример
 - `BOTTOM_NAV_VARIANTS` пополнился: `floating`, `glass`, `notched` (прежние `default`, `soft`, `outline`, `ghost` не изменились). Код, который перебирает `BOTTOM_NAV_VARIANTS` или сужает `BottomNavVariant` исчерпывающим `switch`, увидит три новых значения.
 - Новое поле `BottomNavItem.isPrimary` — главное действие для `notched` (учитывается первый такой пункт); в остальных вариантах пункт обычный. В `BottomNavEntry` — новое поле `isPrimary`.
 - Разметка: список `ul.base-bottom-nav__list` теперь обёрнут в `div.base-bottom-nav__bar` (новый ключ `customClass.bar`). Стили приложения с селектором `.base-bottom-nav > .base-bottom-nav__list` нужно поправить на `.base-bottom-nav__bar > .base-bottom-nav__list`. У `floating` и `glass` в обёртке — декоративный `span.base-bottom-nav__indicator` (`aria-hidden`); у главного пункта `notched` — класс `base-bottom-nav__link--primary`.
+## Задача feat-bankcard-cover: обложка банковской карты
+
+Новое API, прежнее поведение не меняется.
+
+- **BaseBankCard — `cover`, `hasCoverOverlay`, слот `cover`.** `cover` — адрес картинки (`https:`, `http:`, `data:image/`, `blob:`, путь от корня или относительный, имя файла `.avif/.gif/.jpg/.jpeg/.png/.svg/.webp` без скобок) или значение CSS `background` (градиент, цвет, `url(…)`). Картинка — `<img alt="" decoding="async">` с `object-fit: cover`; не загрузилась — убирается, виден фон (`background` или фон марки). Слот `cover` — своё содержимое обложки вместо пропа. `hasCoverOverlay` (по умолчанию `true`, можно задать через `defaults`) — затемнение `--rise-media-scrim` поверх обложки для контраста AA светлого текста. В полном виде обложка — на всей карте, в `isCompact` — на мини-карте вместо плашки марки (класс `base-bank-card__brand--cover`). У корня с обложкой — класс `base-bank-card--cover`.
+  ```vue
+  <BaseBankCard brand="visa" last4="4242" cover="/img/cards/travel.jpg" />
+  <BaseBankCard brand="visa" last4="4242">
+  	<template #cover><img :src="small" :srcset="srcset" sizes="320px" alt="" /></template>
+  </BaseBankCard>
+  ```
+- **BaseCardInput — `previewCover`, `hasPreviewCoverOverlay`, слот `previewCover`** (при `hasPreview`): то же на лицевой стороне превью (класс `base-card-input__face--cover`); оборот с кодом — без обложки. Новый тип `BaseCardInputSlots`.
+- Обложка скрыта от чтения с экрана (`aria-hidden`); картинке в слоте давайте пустой `alt`.
+- Внутреннее: общий компонент `CardCover` (`BaseBankCard/ui/CardCover.vue`, классы `card-cover`, `card-cover__layer`, `card-cover__image`, `card-cover__fill`, `card-cover__overlay`) и `cardCoverLayer()` в `@utils/form/cardFaceUtils` (не входит в публичный вход `utils`).
 

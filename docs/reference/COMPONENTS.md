@@ -203,6 +203,7 @@ const country = ref('RU')
 - Значки марок: Visa, Mastercard, American Express, Discover, JCB, Diners Club — Font Awesome Free 7.3.1 Brands (CC BY 4.0, Fonticons, Inc.); остальные — плашка с названием, пока приложение не передаст официальный знак из брендбука в `brandIcons` (`{ mir: '/img/mir.svg' }`).
 - Безопасность: у полей нет `name` (обычная отправка формы не унесёт номер на сервер магазина), `autocomplete` — `cc-number`, `cc-exp`, `cc-csc`, `cc-name`, клавиатура цифровая; ничего не пишется в `localStorage` и консоль. Свои поля карты на странице магазина — это PCI DSS SAQ A-EP (у CloudPayments ещё ежеквартальное ASV-сканирование); для SAQ A нужна форма эквайера в iframe или переход на его страницу.
 - Карта-превью (`hasPreview`): над полями — лицевая сторона с номером (ненабранные цифры — точки), именем, сроком и маркой; пока фокус в поле кода, карта переворачивается оборотом с кодом (точками). Фон — по марке (`CARD_BRAND_BACKGROUNDS`, градиенты палитры кита, не фирменные цвета) или свой `previewBackground` (любое значение CSS `background`). Превью скрыто от чтения с экрана — всё то же есть в полях; при `prefers-reduced-motion` карта переворачивается без анимации.
+- Обложка лицевой стороны превью — `previewCover` (как `cover` у BaseBankCard: картинка или CSS `background`) или слот `previewCover`; затемнение для контраста AA — `hasPreviewCoverOverlay` (по умолчанию есть). Оборот с кодом — на фоне `previewBackground` или марки.
 - Оплата через CloudPayments: скрипт `https://checkout.cloudpayments.ru/checkout.js` подключает приложение, кит его не грузит.
 
 ```ts
@@ -228,6 +229,12 @@ const cryptogram = await card.value.tokenize() // криптограмма → �
 - `brand` — id марки, своя марка (`defineCardBrand`) или `null`; `last4`; `expiry` — `{ month, year }` или `ММ/ГГ`; `holder` — только в полном виде; `label` или слот `default` — название карты («Основная»).
 - «Истекла» — по `expiry` и текущей дате; `isExpired` задаёт явно (например, по ответу эквайера).
 - Значки марок — как в BaseCardInput (Font Awesome Free Brands или `brandIcons`, иначе плашка с названием); свой фон полной карты — `background`.
+- Обложка — `cover`: адрес картинки (`https:`, `data:image/`, `blob:`, путь или имя файла картинки) или значение CSS `background` (градиент, цвет); своё содержимое (картинка с `srcset`, `<picture>`) — слот `cover`. Обложка рисуется поверх фона (`background` или фона марки виден, пока картинка грузится или если не загрузилась). Поверх неё — затемнение `--rise-media-scrim`: светлый текст читается с контрастом AA на любой картинке; `hasCoverOverlay: false` снимает его (контраст своей обложки проверяет приложение). В `isCompact` обложка — на мини-карте вместо плашки марки. Обложка декоративна (`aria-hidden`).
+
+  ```vue
+  <BaseBankCard brand="mir" last4="9019" cover="/img/cards/travel.jpg" />
+  <BaseBankCard brand="visa" last4="4242" cover="linear-gradient(135deg, var(--rise-color-primary-800), var(--rise-color-success-900))" :has-cover-overlay="false" />
+  ```
 - Варианты (`default`, `soft`, `outline`, `ghost`) меняют только строку `isCompact`. Компонент только показывает карту: выбор делает обёртка приложения (BaseRadio, пункт BaseSelect, кнопка).
 - Чтение с экрана получает одну фразу — «Visa, номер заканчивается на 4242, срок до 12/30» (или «срок истёк …»); точки, значок и подписи скрыты.
 
