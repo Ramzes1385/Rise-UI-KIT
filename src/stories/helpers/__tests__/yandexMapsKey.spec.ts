@@ -1,3 +1,4 @@
+import type { Component } from 'vue'
 import { mount } from '@vue/test-utils'
 import { defineComponent, h, inject } from 'vue'
 import { DEFAULTS_KEY } from '@composables/base/useDefaults/useDefaults'
@@ -12,11 +13,15 @@ const Probe = defineComponent({
 	},
 })
 
-function mountDecorated(key: string) {
-	const scope = createYandexMapsKeyDecorator(key)({} as never, {} as never) as unknown as {
-		components: { Scope: ReturnType<typeof defineComponent> }
-	}
-	return mount(scope.components.Scope, { slots: { default: () => h(Probe) } })
+interface Decorated {
+	components: { StoryYandexMapsKey: Component }
+	setup: () => { apiKey: string; hint: string }
+}
+
+function decorate(key: string, viewMode: 'story' | 'docs') {
+	const options = createYandexMapsKeyDecorator(key)(() => ({}), { viewMode } as never) as unknown as Decorated
+	const props = options.setup()
+	return { props, wrapper: mount(options.components.StoryYandexMapsKey, { props, slots: { default: () => h(Probe) } }) }
 }
 
 describe('resolveYandexMapsKey', () => {
@@ -39,18 +44,27 @@ describe('resolveYandexMapsKey', () => {
 })
 
 describe('createYandexMapsKeyDecorator', () => {
-	it('с ключом: превью получает defaults.BaseMap.apiKey, подсказки нет', () => {
-		const wrapper = mountDecorated(KEY)
+	it('холст с ключом: превью получает defaults.BaseMap.apiKey, подсказки нет', () => {
+		const { props, wrapper } = decorate(KEY, 'story')
 
+		expect(props).toEqual({ apiKey: KEY, hint: '' })
 		expect(wrapper.get('output').text()).toBe(JSON.stringify({ BaseMap: { apiKey: KEY } }))
 		expect(wrapper.find('.story-hint').exists()).toBe(false)
 	})
 
-	it('без ключа: defaults не заданы, под превью подсказка про .env.local', () => {
-		const wrapper = mountDecorated('')
+	it('холст без ключа: defaults не заданы, под превью подсказка про .env.local', () => {
+		const { wrapper } = decorate('', 'story')
 
 		expect(wrapper.get('output').text()).toBe('null')
 		expect(wrapper.get('.story-hint').text()).toContain('.env.local')
 		expect(wrapper.get('.story-hint').text()).toContain('STORYBOOK_YANDEX_MAPS_API_KEY')
+	})
+
+	it('история прямо на странице Docs: ни ключа, ни подсказки — window.ymaps3 один на страницу', () => {
+		const { props, wrapper } = decorate(KEY, 'docs')
+
+		expect(props).toEqual({ apiKey: '', hint: '' })
+		expect(wrapper.get('output').text()).toBe('null')
+		expect(wrapper.find('.story-hint').exists()).toBe(false)
 	})
 })

@@ -110,7 +110,18 @@ class DemoMap {
 
 const target = window as unknown as { ymaps3?: unknown }
 
+let outerApi: unknown
+
+let installed = 0
+
+function restoreOuterApi(): void {
+	if (outerApi === undefined) delete target.ymaps3
+	else target.ymaps3 = outerApi
+}
+
 export function installDemoYandex(options: { isPending?: boolean } = {}): () => void {
+	if (installed === 0) outerApi = target.ymaps3
+	installed++
 	target.ymaps3 = {
 		ready: options.isPending ? new Promise(() => undefined) : Promise.resolve(),
 		YMap: DemoMap,
@@ -119,7 +130,11 @@ export function installDemoYandex(options: { isPending?: boolean } = {}): () => 
 		YMapListener: DemoListener,
 		YMapMarker: DemoMarker,
 	}
+	let isActive = true
 	return () => {
-		delete target.ymaps3
+		if (!isActive) return
+		isActive = false
+		installed--
+		if (installed === 0) restoreOuterApi()
 	}
 }

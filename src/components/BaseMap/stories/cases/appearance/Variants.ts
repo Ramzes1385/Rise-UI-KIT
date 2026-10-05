@@ -2,7 +2,7 @@ import BaseMap from '../../../ui/BaseMap.vue'
 import type meta from '../../BaseMap.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { MAP_VARIANTS } from '../../../types/BaseMap.types'
-import { storySource, useStorySetup, withYandexMapsKey } from '@/stories/helpers'
+import { storySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
 	<div class="story-grid" style="--story-grid-min: 260px">
@@ -11,7 +11,6 @@ const template = `
 `
 
 export const Variants: StoryObj<typeof meta> = {
-	decorators: [withYandexMapsKey],
 	parameters: {
 		docs: {
 			description: {

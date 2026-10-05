@@ -64,7 +64,7 @@ npm run storybook
 - **Тема** переключается кнопкой «Тема» на панели инструментов; для ссылок и скриншотов — параметр `&globals=theme:dark`.
 - **Stories каждого компонента** устроены одинаково: `Default` (песочница с рабочим v-model) → варианты, размеры, кастомный цвет → состояния → сценарии → `Keyboard`. Правила — [design/STORIES_GUIDE.md](../design/STORIES_GUIDE.md).
 - Описания props из JSDoc попадают во вкладку Docs: в `build/storybook/main.ts` плагин `vite:vue` подключается раньше docgen-плагина Storybook (при обратном порядке описания молча терялись).
-- **Ключ Яндекс Карт для историй BaseMap:** скопируйте `.env.example` в `.env.local` (файл в `.gitignore`), впишите `STORYBOOK_YANDEX_MAPS_API_KEY=<ключ>` и перезапустите `npm run storybook` — истории «Default», «Variants» и «Sizes» покажут живую карту. Без ключа — заглушка с подсказкой. Ключ читает только dev-сервер: в статическую сборку (`build-storybook`), скриншот-тесты и `check-stories` он не попадает. Подробности — [design/STORIES_GUIDE.md](../design/STORIES_GUIDE.md), «Задача storybook-yandex-key».
+- **Ключ Яндекс Карт для историй BaseMap:** скопируйте `.env.example` в `.env.local` (файл в `.gitignore`), впишите `STORYBOOK_YANDEX_MAPS_API_KEY=<ключ>` и перезапустите `npm run storybook` — история «Default» покажет живую карту (на холсте и в рамке на странице Docs). Без ключа — заглушка с подсказкой. Ключ читает только dev-сервер: в статическую сборку (`build-storybook`), скриншот-тесты и `check-stories` он не попадает. Подробности — [design/STORIES_GUIDE.md](../design/STORIES_GUIDE.md), «Задача storybook-yandex-key».
 - Новый компонент — `npm run create:component -- InputNumber --group=Form --kind=form` (CONTRIBUTING, раздел 3.2).
 
 ---

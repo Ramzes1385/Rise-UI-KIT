@@ -22,6 +22,7 @@ export const Markers: StoryObj<typeof meta> = {
 				story: 'Метки — кнопки: Tab переходит между ними, Enter выбирает, событие `marker-click` передаёт метку. Центр и масштаб — `v-model:center` и `v-model:zoom`. В превью вместо Яндекс Карт — демо-поставщик без сети, поэтому ключ `demo`; в приложении — ваш ключ.',
 			},
 			source: storySource({ template, imports: ['BaseMap'], state, script: `const markers = ${literal(OFFICES)}` }),
+			story: { inline: false, height: '420px' },
 		},
 	},
 	args: { apiKey: 'demo' },

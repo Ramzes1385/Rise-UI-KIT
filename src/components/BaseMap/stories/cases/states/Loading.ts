@@ -9,6 +9,7 @@ export const Loading: StoryObj<typeof meta> = {
 			description: {
 				story: 'Пока скрипт поставщика загружается, поверх карты — индикатор «Загрузка карты...», у области `aria-busy`. Здесь демо-поставщик не отвечает никогда.',
 			},
+			story: { inline: false, height: '400px' },
 		},
 	},
 	args: { apiKey: 'demo' },
