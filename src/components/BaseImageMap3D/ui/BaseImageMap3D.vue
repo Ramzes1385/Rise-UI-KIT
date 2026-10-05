@@ -135,6 +135,17 @@
 					<p :id="hintId" class="base-image-map-3d__hint">{{ UI_IMAGE_MAP_3D.KEYBOARD_HINT }}</p>
 					<p class="base-image-map-3d__hint" aria-live="polite">{{ liveText }}</p>
 				</div>
+				<ImageMapRoutePanel
+					v-if="hasRoutes && data.routes"
+					:custom-class="classes.route"
+					:options="map.routes.routeOptions.value"
+					:value="map.routes.route.value"
+					:steps="map.routes.routeSteps.value"
+					:summary="map.routes.routeSummary.value"
+					:is-unreachable="map.routes.isRouteUnreachable.value"
+					:has-step-free="map.routes.hasStepFree.value"
+					@update:value="map.routes.setRoute"
+					@show-layer="map.routes.showRouteLayer" />
 			</div>
 			<ImageMapDirectory
 				v-if="hasDirectory"
@@ -198,6 +209,7 @@ import { useBaseImageMap3D } from '../model/useBaseImageMap3D'
 import ImageMapCard from '@components/BaseImageMap/ui/ImageMapCard.vue'
 import { UI_ARIA, UI_IMAGE_MAP, UI_IMAGE_MAP_3D } from '@/locales/messages'
 import ImageMapDirectory from '@components/BaseImageMap/ui/ImageMapDirectory.vue'
+import ImageMapRoutePanel from '@components/BaseImageMap/ui/ImageMapRoutePanel.vue'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseImageMap3DEmits, BaseImageMap3DProps, BaseImageMap3DSlots } from '../types/BaseImageMap3D.types'
 

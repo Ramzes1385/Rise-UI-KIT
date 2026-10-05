@@ -7,6 +7,7 @@ import type { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import type { ImageMapPoint } from '@components/BaseImageMap/types/imageMapData.types'
 import type { BaseImageMapProps } from '@components/BaseImageMap/types/BaseImageMap.types'
 import type { Center } from '@components/BaseImageMap/types/internal/imageMapInternal.types'
+import type { RouteGraph, RoutePath } from '@components/BaseImageMap/types/ImageMapRoutes.types'
 import type { ResolvedImageMapObject } from '@components/BaseImageMap/types/internal/imageMapModel.types'
 import type { ImageMap3DData, ImageMap3DLayer, ImageMap3DObject, ImageMapLayerModel } from '../imageMap3dData.types'
 import type {
@@ -24,11 +25,13 @@ import type {
 	Group,
 	Material,
 	Mesh,
+	MeshBasicMaterial,
 	MeshStandardMaterial,
 	Object3D,
 	OrthographicCamera,
 	PerspectiveCamera,
 	Scene,
+	TubeGeometry,
 } from 'three'
 
 /** Правило проверки 3D-поля данных */
@@ -389,3 +392,32 @@ export interface ScenePickQuery {
 
 /** 3D-сцена компонента: область, содержимое, камера, оверлей и состояние */
 export type ImageMap3DStage = ReturnType<typeof useImageMap3DStage>
+
+/** Трубка маршрута в сцене: группа (трубка и метки начала и конца), геометрия для роста и материалы */
+export interface RouteTube {
+	group: Group
+	geometry: TubeGeometry
+	materials: Record<'line' | 'start' | 'end', MeshBasicMaterial>
+}
+
+/** Найденный путь маршрута: граф и узлы */
+interface Route3DPath {
+	graph: RouteGraph
+	path: RoutePath
+}
+
+/** Параметры маршрута в сцене */
+export interface RouteTubeOptions {
+	/** Сцена three */
+	scene: Scene
+	/** Рендерер: есть — маршрут рисуется */
+	renderer: Readonly<ShallowRef<ImageMap3DRenderer | null>>
+	/** Область карты: цвета темы */
+	hostRef: Readonly<Ref<HTMLElement | null>>
+	/** Данные карты: высоты этажей */
+	getData: () => ImageMap3DData
+	/** Найденный путь или `null` */
+	getRoute: () => Route3DPath | null
+	/** Запросить кадр */
+	invalidate: () => void
+}

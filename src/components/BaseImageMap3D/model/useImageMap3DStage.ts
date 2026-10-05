@@ -1,6 +1,7 @@
 import { computed } from 'vue'
 import { toNdc } from './interaction/projection'
 import { cameraKeyAction } from './camera/cameraKeys'
+import { useRouteTube } from './viewport/useRouteTube'
 import { pickObjectId } from './interaction/pickObject'
 import { createWebGLRenderer } from './scene/createRenderer'
 import { useSceneOverlay } from './interaction/useSceneOverlay'
@@ -79,6 +80,7 @@ export function useImageMap3DStage(options: StageOptions) {
 		getActive: () => map.actions.localActive.value,
 		getHover: () => map.overlay.hoverId.value,
 	})
+	useRouteTube({ ...viewport, hostRef: options.hostRef, getData: () => props.data, getRoute: () => map.routes.routePath.value })
 	return { viewport, scene, camera, overlay, state }
 }
 
