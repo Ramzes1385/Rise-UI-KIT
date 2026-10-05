@@ -15,7 +15,8 @@ function sampleColor(context: CanvasRenderingContext2D, css: string): Color {
 	context.fillStyle = FALLBACK_COLOR
 	context.fillStyle = css
 	context.fillRect(0, 0, 1, 1)
-	const [red, green, blue] = context.getImageData(0, 0, 1, 1).data
+	const [red, green, blue, alpha] = context.getImageData(0, 0, 1, 1).data
+	if (!alpha) return new Color(FALLBACK_COLOR)
 	return new Color().setRGB(red / 255, green / 255, blue / 255, 'srgb')
 }
 
@@ -35,8 +36,9 @@ export function createColorResolver(host: HTMLElement): SceneColorResolver {
 		if (cached) return cached
 		context ??= document.createElement('canvas').getContext('2d', { willReadFrequently: true })
 		host.append(probe)
+		probe.style.color = ''
 		probe.style.color = css
-		const color = parseCssColor(getComputedStyle(probe).color || css, context)
+		const color = parseCssColor(probe.style.color ? getComputedStyle(probe).color || css : FALLBACK_COLOR, context)
 		probe.remove()
 		cache.set(css, color)
 		return color

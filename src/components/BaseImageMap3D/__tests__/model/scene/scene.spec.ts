@@ -1,6 +1,6 @@
-import { DATA_3D } from '../imageMap3d.test-utils'
-import { sceneCenter, sceneExtent } from '../../model/scene/sceneCamera'
-import { disposeMaterial, disposeObject } from '../../model/scene/disposeObject'
+import { DATA_3D } from '../../imageMap3d.test-utils'
+import { sceneCenter, sceneExtent } from '../../../model/scene/sceneCamera'
+import { disposeMaterial, disposeObject } from '../../../model/scene/disposeObject'
 import { BoxGeometry, Group, Mesh, MeshBasicMaterial, Texture, Vector3 } from 'three'
 
 describe('disposeObject', () => {

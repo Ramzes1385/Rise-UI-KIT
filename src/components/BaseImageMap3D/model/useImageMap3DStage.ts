@@ -133,5 +133,5 @@ export function useStageInput(options: StageOptions, stage: ImageMap3DStage, ann
 		runCameraAction(stage.camera, action)
 	}
 
-	return { ...pointer, onKeydown, onWheel: (event: WheelEvent) => stage.camera.allowWheelZoom(event.ctrlKey || event.metaKey) }
+	return { ...pointer, onKeydown, onWheel: stage.camera.wheelZoom }
 }

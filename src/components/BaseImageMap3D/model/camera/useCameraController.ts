@@ -1,4 +1,5 @@
 import { MathUtils } from 'three'
+import { ROTATE_STEP } from './cameraKeys'
 import { useTween } from '@composables/interaction/useTween'
 import { sceneCenter, sceneExtent } from '../scene/sceneCamera'
 import { layerElevation, sceneSettings } from '../scene/sceneLayout'
@@ -8,6 +9,9 @@ import type { CameraOptions, CameraPose, CameraPoseState } from '../../types/int
 import { CAMERA_LIMITS, applyPose, baseDistance, clampPose, defaultPose, easeInOutCubic, objectPose, readPose } from './cameraPose'
 
 const ZOOM_STEP = 1.5
+const WHEEL_SPEED = 0.004
+const WHEEL_LINE = 16
+const WHEEL_PAGE = 400
 
 function homePose(options: CameraOptions): CameraPose {
 	const data = options.getData()
@@ -34,13 +38,14 @@ function createControls(options: CameraOptions, canvas: HTMLCanvasElement): Orbi
 		minDistance: distance / CAMERA_LIMITS.maxZoom,
 		maxDistance: distance / CAMERA_LIMITS.minZoom,
 		enableRotate: options.getHasOrbit(),
+		enableZoom: false,
 	})
 	return controls
 }
 
 function useCameraPose(options: CameraOptions): CameraPoseState {
 	const goal = shallowRef<CameraPose>(homePose(options))
-	const tween = useTween(goal, { duration: 'xslow', easing: easeInOutCubic })
+	const tween = useTween(goal, { duration: 'xslow', easing: easeInOutCubic, target: options.canvasRef })
 	const zoom = ref(1)
 	const controls = shallowRef<OrbitControls | null>(null)
 	let lastPose: CameraPose | null = null
@@ -130,6 +135,11 @@ function zoomBy(pose: CameraPose, factor: number): CameraPose {
 	return [pose[0], pose[1], pose[2], pose[3], pose[4], pose[5] * factor]
 }
 
+function wheelFactor(event: WheelEvent): number {
+	const scale = [1, WHEEL_LINE, WHEEL_PAGE][event.deltaMode] ?? 1
+	return MathUtils.clamp(Math.exp(-event.deltaY * scale * WHEEL_SPEED), 1 / ZOOM_STEP, ZOOM_STEP)
+}
+
 export function useCameraController(options: CameraOptions) {
 	const state = useCameraPose(options)
 	useOrbitControls(options, state)
@@ -140,22 +150,24 @@ export function useCameraController(options: CameraOptions) {
 		state.goTo([pose[0], homePose(options)[1], pose[2], pose[3], pose[4], pose[5]])
 	})
 
+	const rotate = (degrees: number) => state.goTo(turn(state.next(), 3, degrees))
+
 	return {
 		resetCamera: () => state.goTo(homePose(options)),
-		rotate: (degrees: number) => state.goTo(turn(state.next(), 3, degrees)),
+		rotate,
+		rotateLeft: () => rotate(-ROTATE_STEP),
+		rotateRight: () => rotate(ROTATE_STEP),
 		tilt: (degrees: number) => state.goTo(turn(state.next(), 4, degrees)),
 		zoomIn: () => state.goTo(zoomBy(state.next(), ZOOM_STEP)),
 		zoomOut: () => state.goTo(zoomBy(state.next(), 1 / ZOOM_STEP)),
 		zoomToObject: (id: string) => {
 			const box = options.getObjectBox(id)
-			if (box) state.goTo(objectPose(box, state.current(), sceneExtent(options.getData())))
+			if (box) state.goTo(objectPose(box, state.next(), sceneExtent(options.getData())))
 		},
-		allowWheelZoom: (isAllowed: boolean) => {
-			const controls = state.controls.value
-			if (controls) controls.enableZoom = isAllowed
-			queueMicrotask(() => {
-				if (controls) controls.enableZoom = true
-			})
+		wheelZoom: (event: WheelEvent) => {
+			if (!(event.ctrlKey || event.metaKey) || !state.controls.value || event.deltaY === 0) return
+			event.preventDefault()
+			state.goTo(zoomBy(state.next(), wheelFactor(event)))
 		},
 		isMaxZoom: computed(() => state.zoom.value >= CAMERA_LIMITS.maxZoom - 1e-6),
 		isMinZoom: computed(() => state.zoom.value <= CAMERA_LIMITS.minZoom + 1e-6),

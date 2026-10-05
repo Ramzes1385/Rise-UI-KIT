@@ -59,10 +59,10 @@
 							@click="camera.zoomOut">
 							<template #left><BaseIcon name="minus" /></template>
 						</BaseButton>
-						<BaseButton variant="ghost" :aria-label="UI_IMAGE_MAP_3D.ROTATE_LEFT" @click="camera.rotate(-15)">
+						<BaseButton variant="ghost" :aria-label="UI_IMAGE_MAP_3D.ROTATE_LEFT" @click="camera.rotateLeft">
 							<template #left><BaseIcon name="rotate-left" /></template>
 						</BaseButton>
-						<BaseButton variant="ghost" :aria-label="UI_IMAGE_MAP_3D.ROTATE_RIGHT" @click="camera.rotate(15)">
+						<BaseButton variant="ghost" :aria-label="UI_IMAGE_MAP_3D.ROTATE_RIGHT" @click="camera.rotateRight">
 							<template #left><BaseIcon name="rotate-right" /></template>
 						</BaseButton>
 						<BaseButton variant="ghost" :aria-label="UI_IMAGE_MAP_3D.RESET_CAMERA" @click="camera.resetCamera()">

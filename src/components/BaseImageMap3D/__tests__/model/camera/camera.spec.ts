@@ -1,5 +1,5 @@
-import { cameraKeyAction } from '../../model/camera/cameraKeys'
-import type { CameraPose } from '../../types/internal/imageMap3dInternal.types'
+import { cameraKeyAction } from '../../../model/camera/cameraKeys'
+import type { CameraPose } from '../../../types/internal/imageMap3dInternal.types'
 import { Box3, MathUtils, OrthographicCamera, PerspectiveCamera, Vector3 } from 'three'
 import {
 	CAMERA_LIMITS,
@@ -12,7 +12,7 @@ import {
 	fitViewCamera,
 	objectPose,
 	readPose,
-} from '../../model/camera/cameraPose'
+} from '../../../model/camera/cameraPose'
 
 describe('положение камеры', () => {
 	it('createViewCamera: изометрия — ортографическая, перспектива — 35°', () => {

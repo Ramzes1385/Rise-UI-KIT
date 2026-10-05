@@ -1,6 +1,6 @@
 import { Vector3 } from 'three'
-import type { ImageMap3DData } from '../../types/imageMap3dData.types'
-import { createRouteTube, growRoute, routePoints } from '../../model/scene/routeTube'
+import type { ImageMap3DData } from '../../../types/imageMap3dData.types'
+import { createRouteTube, growRoute, routePoints } from '../../../model/scene/routeTube'
 import { buildRouteGraph, findRoutePath, objectNodes } from '@components/BaseImageMap/model/routes/routeGraph'
 
 const DATA: ImageMap3DData = {

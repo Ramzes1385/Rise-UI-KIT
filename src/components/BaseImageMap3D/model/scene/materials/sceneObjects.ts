@@ -30,13 +30,21 @@ export function adoptModelNode(
 	const material = createObjectMaterial()
 	const meshes: Mesh[] = []
 	node.traverse(child => {
-		if (!(child instanceof Mesh)) return
+		if (!(child instanceof Mesh) || child.userData.objectId !== undefined) return
 		child.material = material
 		child.renderOrder = OBJECT_RENDER_ORDER
 		child.userData.objectId = ids.id
 		meshes.push(child)
 	})
 	return { ...ids, material, meshes, source: 'model', colors, state: 'base' }
+}
+
+export function hasTakenMesh(node: Object3D): boolean {
+	let isTaken = false
+	node.traverse(child => {
+		if (child instanceof Mesh && child.userData.objectId !== undefined) isTaken = true
+	})
+	return isTaken
 }
 
 export function paintObject(entry: SceneObjectEntry, layerOpacity: number): void {

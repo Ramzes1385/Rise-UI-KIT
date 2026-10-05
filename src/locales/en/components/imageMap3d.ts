@@ -13,7 +13,7 @@ export const enImageMap3d = {
 		RESET_CAMERA: 'Reset view',
 		/** Map region hint for screen readers (`aria-describedby`) */
 		KEYBOARD_HINT:
-			'Arrows — objects, Enter — open, Escape — clear focus, PageUp and PageDown — floors; Shift and arrows — rotate and tilt, plus and minus — zoom, 0 — initial view, Ctrl and mouse wheel — zoom',
+			'Arrows — objects, Enter — open, Escape — clear focus, PageUp and PageDown — floors; Shift and arrows — rotate and tilt, plus and minus — zoom, 0 — initial view, Ctrl or ⌘ and mouse wheel — zoom',
 		/** View switch above the map */
 		VIEW: 'Map view',
 		VIEW_3D: '3D',
@@ -26,6 +26,11 @@ export const enImageMap3d = {
 		INVALID_FIELD: 'BaseImageMap3D: {path} = {value} is ignored — expected {expected}',
 		/** Floor model node not found; `{layer}` — layer id, `{name}` — node name, `{id}` — object id */
 		MODEL_NODE_MISSING: 'BaseImageMap3D: the floor model «{layer}» has no node «{name}» — object «{id}» is extruded from its shape',
+		/** Model node already belongs to another object (shared `meshName` or nested node); `{layer}`, `{name}`, `{id}` — as above */
+		MODEL_NODE_SHARED:
+			'BaseImageMap3D: meshes of node «{name}» in the floor model «{layer}» already belong to another object — object «{id}» took only free meshes, or is extruded from its shape if none are free',
+		/** Floor model failed to load; `{layer}` — layer id, `{url}` — address, `{error}` — error */
+		MODEL_LOAD_FAILED: 'BaseImageMap3D: the floor model «{layer}» ({url}) failed to load — showing the plan. {error}',
 		EXPECT_NUMBER: 'a finite number',
 		EXPECT_POSITIVE: 'a number greater than 0',
 		EXPECT_NON_NEGATIVE: 'a number not less than 0',

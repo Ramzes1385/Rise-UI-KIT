@@ -52,7 +52,7 @@ afterEach(() => {
 	document.documentElement.removeAttribute('data-rise-motion')
 })
 
-async function renderCamera(props: Record<string, unknown> = {}) {
+async function renderCamera(props: Record<string, unknown> = {}, container?: HTMLElement) {
 	const renderer = createFakeRenderer()
 	const exposed = ref<BaseImageMap3DExpose | null>(null)
 	const connect = vi.spyOn(OrbitControls.prototype, 'connect')
@@ -62,7 +62,7 @@ async function renderCamera(props: Record<string, unknown> = {}) {
 			() =>
 				h(BaseImageMap3D, { data: DATA, rendererFactory: () => renderer, ...attrs, ref: exposed }),
 	})
-	const result = render(Host, { attrs: props })
+	const result = render(Host, { attrs: props, ...(container ? { container } : {}) })
 	await waitFor(() => expect(connect).toHaveBeenCalled())
 	const controls = (): OrbitControls => connect.mock.contexts.at(-1) as OrbitControls
 	const camera = (): Camera => {
@@ -182,20 +182,41 @@ describe('BaseImageMap3D: камера', () => {
 		expect((camera() as OrthographicCamera).zoom).toBeCloseTo(1.5)
 	})
 
-	it('hasOrbit: false — без вращения указателем; колесо масштабирует только с Ctrl или ⌘', async () => {
-		const { controls, rerender, container } = await renderCamera({ hasOrbit: false })
+	it('hasOrbit: false — без вращения указателем; масштаб OrbitControls выключен всегда', async () => {
+		const { controls, rerender } = await renderCamera({ hasOrbit: false })
 		expect(controls().enableRotate).toBe(false)
+		expect(controls().enableZoom).toBe(false)
 		await rerender({ hasOrbit: true })
 		expect(controls().enableRotate).toBe(true)
+		expect(controls().enableZoom).toBe(false)
+	})
+
+	it('колесо без Ctrl и ⌘ не масштабирует и не мешает прокрутке; с Ctrl или ⌘ — масштаб по знаку deltaY', async () => {
+		const { camera, container } = await renderCamera()
 		const canvas = container.querySelector('canvas') as HTMLCanvasElement
-		const seen: boolean[] = []
-		canvas.addEventListener('wheel', () => seen.push(controls().enableZoom))
-		canvas.dispatchEvent(new WheelEvent('wheel', { bubbles: true, deltaY: 10 }))
-		canvas.dispatchEvent(new WheelEvent('wheel', { bubbles: true, deltaY: 10, ctrlKey: true }))
-		canvas.dispatchEvent(new WheelEvent('wheel', { bubbles: true, deltaY: 10, metaKey: true }))
-		expect(seen).toEqual([false, true, true])
+		const wheel = async (init: WheelEventInit) => {
+			const event = new WheelEvent('wheel', { bubbles: true, cancelable: true, ...init })
+			canvas.dispatchEvent(event)
+			await nextTick()
+			return event
+		}
+		const zoom = () => (camera() as OrthographicCamera).zoom
+		expect((await wheel({ deltaY: -100 })).defaultPrevented).toBe(false)
+		expect((await wheel({ deltaY: 100, shiftKey: true })).defaultPrevented).toBe(false)
 		await Promise.resolve()
-		expect(controls().enableZoom).toBe(true)
+		expect((await wheel({ deltaY: -100 })).defaultPrevented).toBe(false)
+		expect(zoom()).toBe(1)
+		expect((await wheel({ deltaY: -300, ctrlKey: true })).defaultPrevented).toBe(true)
+		expect(zoom()).toBeCloseTo(1.5)
+		expect((await wheel({ deltaY: 300, metaKey: true })).defaultPrevented).toBe(true)
+		expect(zoom()).toBeCloseTo(1)
+		expect((await wheel({ deltaY: -5, ctrlKey: true })).defaultPrevented).toBe(true)
+		expect(zoom()).toBeCloseTo(Math.exp(0.02))
+		expect((await wheel({ deltaY: 1, deltaMode: 1, ctrlKey: true })).defaultPrevented).toBe(true)
+		expect(zoom()).toBeCloseTo(Math.exp(0.02 - 0.064))
+		expect((await wheel({ deltaY: 0, ctrlKey: true })).defaultPrevented).toBe(false)
+		expect((await wheel({ deltaY: -1, deltaMode: 2, ctrlKey: true })).defaultPrevented).toBe(true)
+		expect(zoom()).toBeCloseTo(Math.exp(0.02 - 0.064) * 1.5)
 	})
 
 	it('жест OrbitControls останавливает переход и запоминает положение; новые данные — исходный вид', async () => {
@@ -241,6 +262,16 @@ describe('BaseImageMap3D: плавные переходы камеры', () => {
 		flushFrames(1000)
 		await nextTick()
 		expect((camera() as OrthographicCamera).zoom).toBeCloseTo(1.5)
+	})
+
+	it('пресет движения берётся у предка карты: data-rise-motion="none" на обёртке — переход сразу', async () => {
+		const wrapper = document.body.appendChild(document.createElement('section'))
+		wrapper.setAttribute('data-rise-motion', 'none')
+		const { camera } = await renderCamera({}, wrapper.appendChild(document.createElement('div')))
+		expect(document.documentElement).not.toHaveAttribute('data-rise-motion')
+		await fireEvent.click(screen.getByRole('button', { name: 'Увеличить' }))
+		expect((camera() as OrthographicCamera).zoom).toBeCloseTo(1.5)
+		wrapper.remove()
 	})
 
 	it('нажатия во время перехода копятся: два «Увеличить» — 2,25', async () => {

@@ -1,6 +1,6 @@
 import type { CameraKeyAction } from '../../types/internal/imageMap3dInternal.types'
 
-const ROTATE_STEP = 15
+export const ROTATE_STEP = 15
 const TILT_STEP = 10
 
 const SHIFT_KEYS: Record<string, CameraKeyAction> = {

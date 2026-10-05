@@ -204,6 +204,14 @@ export interface SceneModelItem {
 	root: Object3D
 }
 
+/** Итог подключения модели этажа: какие объекты не нашли свой узел и чей узел уже занят другим объектом */
+export interface ModelAttachResult {
+	/** Id объектов без узла в модели — выдавлены по своей фигуре */
+	missing: string[]
+	/** Id объектов, чей узел (или его меши) уже занят другим объектом: занятые меши не переназначаются */
+	shared: string[]
+}
+
 /** Загрузка модели этажа */
 export interface SceneModelJob extends Omit<SceneSurfaceJob, 'floor'> {
 	/** Модель слоя */

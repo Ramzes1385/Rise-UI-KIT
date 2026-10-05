@@ -112,17 +112,46 @@ describe('BaseImageMap3D: сцена', () => {
 		await waitFor(() => expect(materialOf(scene, 'cafe').opacity).toBeCloseTo(0.7))
 	})
 
-	it('смена темы пересчитывает цвета', async () => {
-		const getComputed = vi.spyOn(window, 'getComputedStyle')
-		await renderScene()
-		const calls = getComputed.mock.calls.length
+	it('смена темы пересчитывает цвета материалов', async () => {
+		const original = window.getComputedStyle.bind(window)
+		const themed = () => (document.documentElement.getAttribute('data-theme') === 'dark' ? 'rgb(10, 20, 30)' : 'rgb(200, 100, 50)')
+		vi.spyOn(window, 'getComputedStyle').mockImplementation((element, pseudo) => {
+			const style = original(element, pseudo)
+			if (!(element instanceof HTMLSpanElement && element.hidden)) return style
+			return new Proxy(style, {
+				get: (target, key) => {
+					if (key === 'color') return themed()
+					const value = Reflect.get(target, key)
+					return typeof value === 'function' ? value.bind(target) : value
+				},
+			})
+		})
+		const { scene } = await renderScene()
+		expect(materialOf(scene, 'shop').color.getHexString()).toBe('c86432')
 		document.documentElement.setAttribute('data-theme', 'dark')
-		await waitFor(() => expect(getComputed.mock.calls.length).toBeGreaterThan(calls))
+		await waitFor(() => expect(materialOf(scene, 'shop').color.getHexString()).toBe('0a141e'))
 		document.documentElement.removeAttribute('data-theme')
-		await new Promise(resolve => setTimeout(resolve, 0))
+		await waitFor(() => expect(materialOf(scene, 'shop').color.getHexString()).toBe('c86432'))
 	})
 
-	it('один этаж — без переключателя; новые данные перестраивают сцену; размонтирование отменяет загрузки', async () => {
+	it('новые данные освобождают геометрии, материалы и текстуры прежнего содержимого', async () => {
+		const texture = new Texture()
+		textureLoad.mockResolvedValue(texture)
+		const { scene, rerender } = await renderScene()
+		await waitFor(() => expect(textureLoad).toHaveBeenCalled())
+		await new Promise(resolve => setTimeout(resolve, 0))
+		const shop = scene.getObjectByName('shop') as Mesh<BoxGeometry, MeshStandardMaterial>
+		const geometry = vi.spyOn(shop.geometry, 'dispose')
+		const material = vi.spyOn(shop.material, 'dispose')
+		const textureDispose = vi.spyOn(texture, 'dispose')
+		await rerender({ data: DATA_3D })
+		await waitFor(() => expect(scene.getObjectByName('shop')).toBeUndefined())
+		expect(geometry).toHaveBeenCalled()
+		expect(material).toHaveBeenCalled()
+		expect(textureDispose).toHaveBeenCalled()
+	})
+
+	it('один этаж — без переключателя; новые данные отменяют загрузки прежних и перестраивают сцену', async () => {
 		const fetchMock = vi.fn(() => new Promise(() => undefined))
 		vi.stubGlobal('fetch', fetchMock)
 		const data = { layers: [{ id: 'u', title: 'U', svgUrl: '/u.svg', width: 10, height: 10 }], objects: [] }
@@ -232,6 +261,22 @@ describe('BaseImageMap3D: сцена', () => {
 		reject(new Error('late'))
 		await new Promise(resolve => setTimeout(resolve, 0))
 		expect(onFallback).toHaveBeenCalledOnce()
+	})
+
+	it('ошибка модели: предупреждение в dev; новые данные — новая попытка 3D', async () => {
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+		const onFallback = vi.fn()
+		const data = { layers: [{ id: 'm', title: 'M', width: 100, height: 100, model: { url: 'm.glb' } }], objects: [] }
+		const configureLoader = vi.fn(loader => {
+			loader.loadAsync = vi.fn(async () => Promise.reject(new Error('404')))
+		})
+		const { container, rerender } = await renderScene({ data, configureLoader, onFallback })
+		await waitFor(() => expect(onFallback).toHaveBeenCalledWith('error'))
+		expect(warn).toHaveBeenCalledWith(expect.stringContaining('модель этажа «m» (m.glb) не загрузилась'))
+		expect(container.querySelector('canvas')).toBeNull()
+		await rerender({ data: DATA_3D })
+		await waitFor(() => expect(container.querySelector('canvas')).not.toBeNull())
+		expect(screen.getByRole('status')).toHaveTextContent('')
 	})
 
 	it('модель, загруженная после размонтирования, освобождается', async () => {

@@ -1,10 +1,10 @@
-import { applyLayerMode } from '../../model/scene/sceneState'
-import { buildSceneContent } from '../../model/scene/buildScene'
-import { pickObjectId } from '../../model/interaction/pickObject'
-import type { ImageMap3DData } from '../../types/imageMap3dData.types'
-import { createViewCamera, fitViewCamera } from '../../model/camera/cameraPose'
+import { applyLayerMode } from '../../../model/scene/sceneState'
+import { buildSceneContent } from '../../../model/scene/buildScene'
+import { pickObjectId } from '../../../model/interaction/pickObject'
+import type { ImageMap3DData } from '../../../types/imageMap3dData.types'
+import { createViewCamera, fitViewCamera } from '../../../model/camera/cameraPose'
 import { Box3, Color, OrthographicCamera, PerspectiveCamera, Vector2, Vector3 } from 'three'
-import { boxAnchor, boxCenter, placeCard, projectPoint, toNdc } from '../../model/interaction/projection'
+import { boxAnchor, boxCenter, placeCard, projectPoint, toNdc } from '../../../model/interaction/projection'
 
 const DATA: ImageMap3DData = {
 	layers: [

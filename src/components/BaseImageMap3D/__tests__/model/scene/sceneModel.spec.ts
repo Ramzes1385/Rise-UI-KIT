@@ -1,9 +1,9 @@
-import { applyLayerMode } from '../../model/scene/sceneState'
-import { buildSceneContent } from '../../model/scene/buildScene'
-import { attachModel } from '../../model/scene/gltf/attachModel'
-import type { ImageMap3DData } from '../../types/imageMap3dData.types'
+import { applyLayerMode } from '../../../model/scene/sceneState'
+import { buildSceneContent } from '../../../model/scene/buildScene'
+import { attachModel } from '../../../model/scene/gltf/attachModel'
+import type { ImageMap3DData } from '../../../types/imageMap3dData.types'
 import { BoxGeometry, Color, Group, Mesh, MeshStandardMaterial } from 'three'
-import { findModelNode, loadLayerModel, placeModel } from '../../model/scene/gltf/layerModel'
+import { findModelNode, loadLayerModel, placeModel } from '../../../model/scene/gltf/layerModel'
 
 const resolve = (css: string): Color => new Color(css.startsWith('var(') ? '#336699' : css)
 
@@ -74,8 +74,8 @@ describe('модель этажа', () => {
 		const { root, shared, replaced } = modelRoot()
 		const disposeReplaced = vi.spyOn(replaced, 'dispose')
 		const disposeShared = vi.spyOn(shared, 'dispose')
-		const missing = attachModel(content, { data: DATA, layerId: 'mall', root }, resolve)
-		expect(missing).toEqual(['kiosk', 'ghost'])
+		const result = attachModel(content, { data: DATA, layerId: 'mall', root }, resolve)
+		expect(result).toEqual({ missing: ['kiosk', 'ghost'], shared: [] })
 		expect(content.objects.get('shop-1')).toMatchObject({ source: 'model', layerId: 'mall' })
 		expect(content.objects.get('shop-1')?.meshes.map(item => item.name)).toEqual(['shop-1-walls', 'shop-1-roof'])
 		expect(content.objects.get('cafe')?.meshes.map(item => item.name)).toEqual(['Cafe_Main'])
@@ -98,8 +98,59 @@ describe('модель этажа', () => {
 
 	it('attachModel: неизвестный этаж или этаж без слоя в данных — ничего', () => {
 		const content = buildSceneContent(DATA, resolve)
-		expect(attachModel(content, { data: DATA, layerId: 'nope', root: new Group() }, resolve)).toEqual([])
-		expect(attachModel(content, { data: { ...DATA, layers: [] }, layerId: 'mall', root: new Group() }, resolve)).toEqual([])
+		expect(attachModel(content, { data: DATA, layerId: 'nope', root: new Group() }, resolve)).toEqual({ missing: [], shared: [] })
+		expect(attachModel(content, { data: { ...DATA, layers: [] }, layerId: 'mall', root: new Group() }, resolve)).toEqual({
+			missing: [],
+			shared: [],
+		})
+	})
+
+	it('attachModel: занятые меши не переназначаются — общий meshName и вложенный узел', () => {
+		const data: ImageMap3DData = {
+			layers: [{ id: 'mall', title: 'ТЦ', width: 1000, height: 600, model: { url: 'mall.glb' } }],
+			objects: [
+				{ id: 'hall', type: 'rect', title: 'Зал', x: 0, y: 0, width: 0.5, height: 0.5 },
+				{ id: 'twin', type: 'rect', title: 'Двойник', x: 0.5, y: 0.5, width: 0.1, height: 0.1, meshName: 'hall' },
+				{ id: 'stand', type: 'rect', title: 'Стенд', x: 0.2, y: 0.2, width: 0.1, height: 0.1 },
+			],
+		}
+		const hall = new Group()
+		hall.name = 'hall'
+		const stand = mesh('stand')
+		hall.add(mesh('hall-floor'), stand)
+		const root = new Group()
+		root.add(hall)
+		const content = buildSceneContent(data, resolve)
+		const dispose = vi.spyOn(MeshStandardMaterial.prototype, 'dispose')
+		const result = attachModel(content, { data, layerId: 'mall', root }, resolve)
+		expect(result).toEqual({ missing: [], shared: ['twin', 'stand'] })
+		const hallEntry = content.objects.get('hall')
+		expect(hallEntry?.meshes.map(item => item.name)).toEqual(['hall-floor', 'stand'])
+		expect(stand.material).toBe(hallEntry?.material)
+		expect(stand.userData.objectId).toBe('hall')
+		expect(content.objects.get('twin')?.source).toBe('shape')
+		expect(content.objects.get('stand')?.source).toBe('shape')
+		expect(dispose.mock.contexts).not.toContain(hallEntry?.material)
+	})
+
+	it('attachModel: узел занят частично — объект берёт только свободные меши', () => {
+		const data: ImageMap3DData = {
+			layers: [{ id: 'mall', title: 'ТЦ', width: 1000, height: 600, model: { url: 'mall.glb' } }],
+			objects: [
+				{ id: 'roof', type: 'rect', title: 'Крыша', x: 0, y: 0, width: 0.5, height: 0.5 },
+				{ id: 'block', type: 'rect', title: 'Корпус', x: 0, y: 0, width: 0.5, height: 0.5 },
+			],
+		}
+		const block = new Group()
+		block.name = 'block'
+		const roof = mesh('roof')
+		block.add(roof, mesh('walls'))
+		const root = new Group()
+		root.add(block)
+		const content = buildSceneContent(data, resolve)
+		expect(attachModel(content, { data, layerId: 'mall', root }, resolve)).toEqual({ missing: [], shared: ['block'] })
+		expect(content.objects.get('roof')?.meshes).toEqual([roof])
+		expect(content.objects.get('block')?.meshes.map(item => item.name)).toEqual(['walls'])
 	})
 
 	it('модель без baseOpacity считается непрозрачной', () => {

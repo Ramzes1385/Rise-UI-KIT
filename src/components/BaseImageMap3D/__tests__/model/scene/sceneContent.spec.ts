@@ -1,12 +1,12 @@
 import type { MeshStandardMaterial } from 'three'
-import type { ImageMap3DData } from '../../types/imageMap3dData.types'
-import { buildSceneContent, objectColors, paintFloor } from '../../model/scene/buildScene'
+import type { ImageMap3DData } from '../../../types/imageMap3dData.types'
+import { buildSceneContent, objectColors, paintFloor } from '../../../model/scene/buildScene'
 import { Color, Group, Mesh, BoxGeometry, MeshBasicMaterial, Texture, TextureLoader } from 'three'
-import type { SceneObjectState, SceneStateColor } from '../../types/internal/imageMap3dInternal.types'
-import { createColorResolver, parseCssColor, stateColors } from '../../model/scene/materials/sceneColors'
-import { addSvgObjects, applyLayerMode, INACTIVE_LAYER_OPACITY, recolorScene } from '../../model/scene/sceneState'
-import { loadLayerSvg, loadSvgTexture, loadTexture, svgTextureMarkup } from '../../model/scene/materials/layerTexture'
-import { adoptModelNode, createShapeEntry, paintObject, setObjectState } from '../../model/scene/materials/sceneObjects'
+import type { SceneObjectState, SceneStateColor } from '../../../types/internal/imageMap3dInternal.types'
+import { createColorResolver, parseCssColor, stateColors } from '../../../model/scene/materials/sceneColors'
+import { addSvgObjects, applyLayerMode, INACTIVE_LAYER_OPACITY, recolorScene } from '../../../model/scene/sceneState'
+import { loadLayerSvg, loadSvgTexture, loadTexture, svgTextureMarkup } from '../../../model/scene/materials/layerTexture'
+import { adoptModelNode, createShapeEntry, paintObject, setObjectState } from '../../../model/scene/materials/sceneObjects'
 
 const resolveFake = (css: string): Color => new Color(css.startsWith('var(') ? '#123456' : css)
 
@@ -57,6 +57,19 @@ describe('цвета сцены', () => {
 		expect(parseCssColor('#abcdef', null).getHexString()).toBe('abcdef')
 		expect(parseCssColor('color(srgb 1 0 0)', null).getHexString()).toBe('808080')
 		expect(parseCssColor('  ', fakeContext([1, 2, 3, 255])).getHexString()).toBe('808080')
+		expect(parseCssColor('transparent', fakeContext([0, 0, 0, 0])).getHexString()).toBe('808080')
+		expect(parseCssColor('transparent', null).getHexString()).toBe('808080')
+	})
+
+	it('createColorResolver: недопустимый цвет — серый, а не цвет текста или прошлое значение', () => {
+		const host = document.createElement('div')
+		host.style.color = 'rgb(1, 2, 3)'
+		document.body.append(host)
+		vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null)
+		const resolve = createColorResolver(host)
+		expect(resolve('rgb(10, 20, 30)').getHexString()).toBe('0a141e')
+		expect(resolve('not-a-color').getHexString()).toBe('808080')
+		host.remove()
 	})
 
 	it('createColorResolver: вычисленный цвет в области карты, кэш на значение', () => {

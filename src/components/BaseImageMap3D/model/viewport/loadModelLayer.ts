@@ -7,17 +7,17 @@ import { loadLayerModel } from '../scene/gltf/layerModel'
 import { isDevelopmentBuild } from '@utils/seo/structuredDataUtils'
 import type { SceneModelJob } from '../../types/internal/imageMap3dInternal.types'
 
-function warnMissing(job: SceneModelJob, missing: string[]): void {
-	const objects = isDevelopmentBuild() ? job.data.objects.filter(object => missing.includes(object.id)) : []
-	objects.forEach(object =>
-		warn(UI_IMAGE_MAP_3D.MODEL_NODE_MISSING, { layer: job.layer.id, name: objectMeshName(object), id: object.id }),
-	)
+function warnObjects(job: SceneModelJob, ids: string[], message: string): void {
+	const objects = isDevelopmentBuild() ? job.data.objects.filter(object => ids.includes(object.id)) : []
+	objects.forEach(object => warn(message, { layer: job.layer.id, name: objectMeshName(object), id: object.id }))
 }
 
 export async function loadModelLayer(job: SceneModelJob): Promise<void> {
 	const { layer, signal } = job
 	const root = await loadLayerModel(job.model, job.configure).catch((error: unknown) => {
-		if (!signal.aborted) job.onError(error)
+		if (signal.aborted) return null
+		if (isDevelopmentBuild()) warn(UI_IMAGE_MAP_3D.MODEL_LOAD_FAILED, { layer: layer.id, url: job.model.url, error: String(error) })
+		job.onError(error)
 		return null
 	})
 	if (!root) return
@@ -25,6 +25,8 @@ export async function loadModelLayer(job: SceneModelJob): Promise<void> {
 		disposeObject(root)
 		return
 	}
-	warnMissing(job, attachModel(job.content, { data: job.data, layerId: layer.id, root }, job.resolve))
+	const result = attachModel(job.content, { data: job.data, layerId: layer.id, root }, job.resolve)
+	warnObjects(job, result.missing, UI_IMAGE_MAP_3D.MODEL_NODE_MISSING)
+	warnObjects(job, result.shared, UI_IMAGE_MAP_3D.MODEL_NODE_SHARED)
 	job.onUpdate()
 }

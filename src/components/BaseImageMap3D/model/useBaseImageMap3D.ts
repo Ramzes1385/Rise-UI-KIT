@@ -97,6 +97,12 @@ function useViewModel(props: ImageMap3DProps, emit: BaseImageMap3DEmits) {
 	watch(view, value => {
 		if (value === '3d') fallback.hasRenderError.value = false
 	})
+	watch(
+		() => props.data,
+		() => {
+			fallback.hasRenderError.value = false
+		},
+	)
 
 	function setView(value: ImageMap3DView): void {
 		if (value === '3d') fallback.hasRenderError.value = false

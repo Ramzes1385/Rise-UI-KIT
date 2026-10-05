@@ -1,10 +1,10 @@
-import { objectShapes } from '../../model/scene/geometry/objectShapes'
-import { extrudeShapes } from '../../model/scene/geometry/extrudeShapes'
-import type { ImageMap3DObject } from '../../types/imageMap3dData.types'
-import { createFloor, setFloorTexture } from '../../model/scene/geometry/floor'
-import { parseSvgPaths, svgElementShapes } from '../../model/scene/geometry/svgShapes'
+import { objectShapes } from '../../../model/scene/geometry/objectShapes'
+import { extrudeShapes } from '../../../model/scene/geometry/extrudeShapes'
+import type { ImageMap3DObject } from '../../../types/imageMap3dData.types'
+import { createFloor, setFloorTexture } from '../../../model/scene/geometry/floor'
+import { parseSvgPaths, svgElementShapes } from '../../../model/scene/geometry/svgShapes'
 import { Box3, ExtrudeGeometry, Mesh, MeshStandardMaterial, Texture, Vector3 } from 'three'
-import { layerElevation, objectHeight, objectLayerId, objectMeshName, sceneSettings } from '../../model/scene/sceneLayout'
+import { layerElevation, objectHeight, objectLayerId, objectMeshName, sceneSettings } from '../../../model/scene/sceneLayout'
 
 const LAYER = { id: 'f1', title: 'Этаж', width: 1000, height: 600 }
 
@@ -138,6 +138,20 @@ describe('svgShapes', () => {
 		const [group] = svgElementShapes(paths, 'shop-2')
 		expect(Math.min(...group.getPoints().map(point => point.x))).toBe(500)
 		expect(svgElementShapes(paths, 'none')).toEqual([])
+	})
+
+	it('viewBox с ненулевым началом: фигуры сдвигаются на minX и minY; запятые, нули и неверный viewBox — без сдвига', () => {
+		const rect = '<rect id="shop" x="150" y="80" width="100" height="40"/>'
+		const bounds = (viewBox: string) => {
+			const [shape] = svgElementShapes(parseSvgPaths(`<svg xmlns="http://www.w3.org/2000/svg" ${viewBox}>${rect}</svg>`), 'shop')
+			const points = shape.getPoints()
+			return [Math.min(...points.map(point => point.x)), Math.min(...points.map(point => point.y))]
+		}
+		expect(bounds('viewBox="100 50 800 400"')).toEqual([50, 30])
+		expect(bounds('viewBox="-50,0,800,400"')).toEqual([200, 80])
+		expect(bounds('viewBox="0 0 800 400"')).toEqual([150, 80])
+		expect(bounds('viewBox="a b c d"')).toEqual([150, 80])
+		expect(bounds('')).toEqual([150, 80])
 	})
 
 	it('пустая разметка — нет путей', () => {
