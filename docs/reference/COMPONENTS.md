@@ -887,6 +887,26 @@ const rows = [
 ```vue
 <BaseTable :columns="columns" :rows="orders" height="480px" is-virtual />
 ```
+
+Выгрузка в CSV и Excel — `features.export` (`true` или `['csv']`, `['xlsx']`): в панели инструментов кнопка «Экспорт» с меню форматов. В файл попадают строки после поиска, фильтров и сортировки со всех страниц и видимые колонки по порядку; выбраны строки — только они. Значение колонки — текст `formatter`, `exportValue` отдаёт своё (число, `Date` — Excel считает их). CSV — UTF-8 с меткой для Excel, разделитель по языку кита (`;` для русского); XLSX — свой писатель без зависимостей. Событие `export` (`{ format, rows, columns, preventDefault }`) приходит до скачивания, `preventDefault()` отменяет его; `exportData(format, options)` — то же из кода через `ref`.
+
+```vue
+<script setup lang="ts">
+import { useTemplateRef } from 'vue'
+import { BaseTable, type TableColumn } from '@ramzes1385/rise-ui-kit'
+
+const columns: TableColumn[] = [
+	{ key: 'customer', label: 'Покупатель' },
+	{ key: 'total', label: 'Сумма', formatter: value => `${value} ₽`, exportValue: value => value },
+]
+const table = useTemplateRef('table')
+</script>
+
+<template>
+	<BaseTable ref="table" :columns="columns" :rows="orders" :features="{ export: true }" :export-options="{ fileName: 'orders' }" />
+	<button type="button" @click="table?.exportData('xlsx', { onlySelected: false })">Все заказы в Excel</button>
+</template>
+```
 ---
 
 ## BasePagination

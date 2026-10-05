@@ -1898,3 +1898,20 @@ API кита не меняется. В Storybook добавлены пример
   - текст пропа `error` связан с холстом: `aria-describedby` холста — подсказка и id текста ошибки;
   - системная отмена указателя (`pointercancel`) при переносе объекта или протяжке ручки возвращает объект на место и не пишет шаг истории (раньше фиксировала промежуточное положение и слала `update:modelValue`);
   - внутреннее: панель свойств вынесена в `ui/ImageMapEditorPanel.vue` (FOLLOW_UPS № 67); фокус после удаления этажа и группы — по ref, без поиска по классам и `data-add` (атрибут `data-add` у кнопок «Добавить этаж» / «Добавить группу» убран).
+## Задача feat-table-export: выгрузка BaseTable в CSV и Excel
+
+Изменения только добавляют возможности, прежний код работает как раньше.
+
+- **BaseTable — `features.export`** (`true` — CSV и Excel, массив — только названные форматы): в панели инструментов кнопка «Экспорт» (`base-table__export`, класс через `customClass.export`) с меню форматов. Панель инструментов появляется и без других `features`, если экспорт включён.
+- **Что выгружается:** строки после поиска, фильтров и сортировки со всех страниц (не только текущая); выбраны строки — только выбранные, меню пишет «Только выбранные строки: N». Колонки — видимые по порядку. Значение — `exportValue(value, row)`, иначе текст `formatter`, иначе значение из `row.data`.
+- **Новое поле колонки `exportValue`** — значение для файла вместо текста `formatter`: число или `Date` в Excel остаются числом и датой.
+  ```ts
+  { key: 'total', label: 'Сумма', formatter: formatRub, exportValue: value => value }
+  ```
+- **Новый проп `exportOptions`** — `fileName` (без расширения, по умолчанию `table`), `sheetName`, `delimiter`, `locale`, `hasBom`, `isFormulaSafe`.
+- **Новое событие `export`** — `{ format, rows, columns, preventDefault }` до скачивания; `preventDefault()` отменяет скачивание (например, выгрузка на сервере).
+- **Новый метод через `ref` — `exportData(format, { onlySelected?, visibleColumnsOnly?, ...exportOptions })`**: возвращает `false`, если обработчик `export` отменил скачивание. Типы `BaseTableExpose`, `TableExportEvent`, `TableExportDataOptions`.
+- **Утилиты `tableExportUtils`** (`@ramzes1385/rise-ui-kit/utils`): `toCsv`, `toXlsx`, `createTableExportBlob`, `downloadTableExport`, `tableExportFileName`, `TABLE_EXPORT_FORMATS`; типы `TableExportData`, `TableExportColumn`, `TableExportRow`, `TableExportFormat`, `TableExportOptions`, `TableCsvOptions`, `TableXlsxOptions`.
+- **Словарь:** новый раздел `tableExport` (`BUTTON`, `CSV`, `XLSX`, `SELECTED`) — свой язык через `defineLocale()` должен его заполнить (у `ru` и `en` он есть).
+- **Без новых зависимостей:** CSV и XLSX (ZIP без сжатия, CRC-32) пишет код кита; размер входа `utils` вырос.
+

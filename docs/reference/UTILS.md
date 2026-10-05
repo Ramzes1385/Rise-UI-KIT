@@ -220,6 +220,29 @@ const imported = parseIcs(file) // VEVENT → события; RRULE и EXDATE о
 
 ---
 
+## tableExportUtils
+
+Выгрузка таблицы в CSV и XLSX без зависимостей — основа кнопки «Экспорт» BaseTable; подходит и для своих таблиц.
+
+```ts
+import { toCsv, toXlsx, createTableExportBlob, downloadTableExport } from '@ramzes1385/rise-ui-kit/utils'
+
+const table = {
+	columns: [{ key: 'name', label: 'Имя' }, { key: 'total', label: 'Сумма' }, { key: 'date', label: 'Дата' }],
+	rows: [{ name: 'Анна', total: 12490.5, date: new Date(2026, 9, 5) }],
+}
+toCsv(table) // '\uFEFFИмя;Сумма;Дата\r\nАнна;12490,5;2026-10-05\r\n' при русском языке кита
+toXlsx(table, { sheetName: 'Заказы' }) // Uint8Array книги .xlsx
+downloadTableExport('xlsx', table, { fileName: 'orders' }) // orders.xlsx через Blob и downloadFile
+```
+
+- `toCsv(table, { delimiter?, locale?, hasBom?, isFormulaSafe? })` — RFC 4180, строки через CRLF. Разделитель по умолчанию — `;` для языков с десятичной запятой (`ru`, `de`), иначе `,`; числа — с десятичным знаком языка; даты — `ГГГГ-ММ-ДД` или `ГГГГ-ММ-ДД ЧЧ:ММ:СС`. Метка UTF-8 по умолчанию: без неё Excel читает кириллицу как ANSI. `isFormulaSafe` (по умолчанию `true`) ставит апостроф перед текстом, начинающимся с `=`, `+`, `-`, `@`, табуляции или возврата каретки, — защита от CSV-инъекции формул; числа не меняются.
+- `toXlsx(table, { sheetName? })` — книга SpreadsheetML (ECMA-376) с одним листом в архиве ZIP без сжатия: заголовки жирные и закреплены, числа, `Date` (формат даты по языку Excel) и логические значения — своими типами, остальное — текстом; ширина колонок — по содержимому. Имя листа — до 31 знака, без `[]:*?/\`.
+- `null`, `undefined`, пустая строка, `NaN` и неверная дата — пустая ячейка.
+- `createTableExportBlob(format, table, options?)` — `Blob` с типом файла; `downloadTableExport(format, table, options?)` — скачать (`fileName` без расширения, по умолчанию `table`); `tableExportFileName(format, name?)` — имя с расширением.
+
+---
+
 ## codeHighlightUtils
 
 Подсветка кода без зависимостей — основа BaseCode и блоков кода BaseMarkdown.
@@ -274,6 +297,7 @@ requisiteUtils
 scriptUtils
 structuredDataUtils
 subtitleUtils
+tableExportUtils
 tableUtils
 themeUtils
 timeUtils
