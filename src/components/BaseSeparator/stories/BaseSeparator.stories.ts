@@ -25,3 +25,5 @@ export const Thickness = cases.Thickness
 export const CustomColor = cases.CustomColor
 export const WithSlot = cases.WithSlot
 export const Spacing = cases.Spacing
+export const Theming = cases.Theming
+export const Animations = cases.Animations

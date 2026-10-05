@@ -1,47 +1,72 @@
 $progress-stripe: color-mix(in srgb, var(--rise-on-primary) 20%, transparent);
 $progress-light: color-mix(in srgb, var(--progress-color) 35%, var(--rise-bg));
+$progress-radius: ct(progress, radius, var(--rise-radius-full));
 
 .base-progress {
-	@include custom-bg('--progress-color', var(--custom-text, var(--rise-primary)));
+	@include custom-bg('--progress-color', var(--custom-text, #{ct(progress-fill, bg, var(--rise-primary))}));
 
 	position: relative;
 	display: flex;
 
 	&--line {
 		flex-direction: column;
-		gap: sz(8px);
+		gap: sz(ct(progress, gap, 8px));
 		width: 100%;
 	}
 
 	&__status {
 		display: flex;
-		justify-content: flex-end;
-		min-width: fit-content;
-		@include text-size(sm);
-		color: var(--rise-text-muted);
+		container-type: inline-size;
+		font-size: sz(ct(progress, font-size, var(--rise-font-size-sm)));
+		line-height: sz(var(--rise-line-height-sm));
+		color: ct(progress-status, text, var(--rise-text-muted));
 		font-variant-numeric: tabular-nums;
 		white-space: nowrap;
-		@include transition(width);
+	}
+
+	&__status-text {
+		--progress-label-shift: max(0px, calc(var(--progress-percent, 0) * 1cqw - 100%));
+
+		transform: translateX(var(--progress-label-shift));
+		@include transition(transform);
+
+		&:dir(rtl) {
+			transform: translateX(calc(var(--progress-label-shift) * -1));
+		}
 	}
 
 	&__track {
 		position: relative;
 		container-type: inline-size;
 		width: 100%;
-		height: sz(8px);
-		border-radius: var(--rise-radius-full);
-		background-color: var(--rise-bg-accented);
+		height: sz(ct(progress, height, 8px));
+		border-radius: $progress-radius;
+		background-color: ct(progress-track, bg, var(--rise-bg-accented));
+	}
+
+	&__bar {
+		height: 100%;
+		border-radius: inherit;
 	}
 
 	&__fill {
+		--progress-clip: calc(100% - var(--progress-percent, 0) * 1%);
+
 		height: 100%;
 		border-radius: inherit;
+		border-start-end-radius: 0;
+		border-end-end-radius: 0;
 		background-color: var(--progress-color);
 		background-image: var(--progress-stripes, none), var(--progress-paint, none);
 		background-size:
 			sz(16px) sz(16px),
 			100cqw 100%;
-		@include transition(width);
+		clip-path: inset(0 var(--progress-clip) 0 0 round 0 #{$progress-radius} #{$progress-radius} 0);
+		@include transition(clip-path);
+
+		&:dir(rtl) {
+			clip-path: inset(0 0 0 var(--progress-clip) round #{$progress-radius} 0 0 #{$progress-radius});
+		}
 	}
 
 	&--circle {
@@ -52,13 +77,13 @@ $progress-light: color-mix(in srgb, var(--progress-color) 35%, var(--rise-bg));
 	}
 
 	&__svg {
-		width: sz(64px);
-		height: sz(64px);
+		width: sz(ct(progress-svg, width, 64px));
+		height: sz(ct(progress-svg, width, 64px));
 		transform: rotate(-90deg);
 	}
 
 	&__track-circle {
-		stroke: var(--rise-bg-accented);
+		stroke: ct(progress-track, bg, var(--rise-bg-accented));
 	}
 
 	&__fill-circle {
@@ -68,9 +93,10 @@ $progress-light: color-mix(in srgb, var(--progress-color) 35%, var(--rise-bg));
 
 	&__circle-label {
 		position: absolute;
-		@include text-size(sm);
-		font-weight: var(--rise-font-weight-semibold);
-		color: var(--rise-text-highlighted);
+		font-size: sz(ct(progress, font-size, var(--rise-font-size-sm)));
+		line-height: sz(var(--rise-line-height-sm));
+		font-weight: ct(progress-circle-label, font-weight, var(--rise-font-weight-semibold));
+		color: ct(progress-circle-label, text, var(--rise-text-highlighted));
 		font-variant-numeric: tabular-nums;
 	}
 
@@ -99,8 +125,8 @@ $progress-light: color-mix(in srgb, var(--progress-color) 35%, var(--rise-bg));
 		mask: repeating-linear-gradient(90deg, currentcolor 0 sz(10px), transparent sz(10px) sz(13px));
 	}
 
-	&--glow &__fill {
-		box-shadow: 0 0 8px color-mix(in srgb, var(--progress-color) 60%, transparent);
+	&--glow &__bar {
+		filter: drop-shadow(0 0 4px color-mix(in srgb, var(--progress-color) 60%, transparent));
 	}
 
 	&--indeterminate &__track {
@@ -108,8 +134,9 @@ $progress-light: color-mix(in srgb, var(--progress-color) 35%, var(--rise-bg));
 	}
 
 	&--indeterminate &__fill {
-		width: 100%;
+		border-radius: inherit;
 		opacity: 0.4;
+		clip-path: none;
 	}
 
 	&--indeterminate &__fill-circle {
@@ -119,22 +146,22 @@ $progress-light: color-mix(in srgb, var(--progress-color) 35%, var(--rise-bg));
 
 	@include motion-safe {
 		&--striped &__fill {
-			animation: base-progress-stripes 1s linear infinite;
+			animation: base-progress-stripes var(--rise-duration-loop) linear infinite;
 		}
 
 		&--pulse &__fill,
 		&--pulse &__fill-circle {
-			animation: base-progress-pulse 2s var(--rise-ease) infinite;
+			animation: base-progress-pulse calc(var(--rise-duration-loop) * 2) var(--rise-ease) infinite;
 		}
 
-		&--glow &__fill {
-			animation: base-progress-glow 2s var(--rise-ease) infinite;
+		&--glow &__bar {
+			animation: base-progress-glow calc(var(--rise-duration-loop) * 2) var(--rise-ease) infinite;
 		}
 
 		&--flow &__fill {
 			--progress-paint: linear-gradient(90deg, var(--progress-color), #{$progress-light}, var(--progress-color));
 
-			animation: base-progress-flow 2.5s linear infinite;
+			animation: base-progress-flow calc(var(--rise-duration-loop) * 2.5) linear infinite;
 		}
 
 		&--flow#{&}--fill-rainbow &__fill {
@@ -144,7 +171,7 @@ $progress-light: color-mix(in srgb, var(--progress-color) 35%, var(--rise-bg));
 		&--indeterminate &__fill {
 			width: 40%;
 			opacity: 1;
-			animation: base-progress-indeterminate 1.5s var(--rise-ease) infinite;
+			animation: base-progress-indeterminate calc(var(--rise-duration-loop) * 1.5) var(--rise-ease) infinite;
 		}
 
 		&--indeterminate &__fill-circle {
@@ -153,7 +180,7 @@ $progress-light: color-mix(in srgb, var(--progress-color) 35%, var(--rise-bg));
 		}
 
 		&--indeterminate &__svg {
-			animation: base-progress-spin 1s linear infinite;
+			animation: base-progress-spin var(--rise-duration-loop) linear infinite;
 		}
 	}
 }
@@ -200,11 +227,11 @@ $progress-light: color-mix(in srgb, var(--progress-color) 35%, var(--rise-bg));
 @keyframes base-progress-glow {
 	0%,
 	100% {
-		box-shadow: 0 0 4px color-mix(in srgb, var(--progress-color) 40%, transparent);
+		filter: drop-shadow(0 0 2px color-mix(in srgb, var(--progress-color) 40%, transparent));
 	}
 
 	50% {
-		box-shadow: 0 0 12px color-mix(in srgb, var(--progress-color) 70%, transparent);
+		filter: drop-shadow(0 0 6px color-mix(in srgb, var(--progress-color) 70%, transparent));
 	}
 }
 

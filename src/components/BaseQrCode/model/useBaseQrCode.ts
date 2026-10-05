@@ -4,6 +4,7 @@ import { encodeQr } from './encode/qrCode'
 import { useQrReveal } from './useQrReveal'
 import { useQrWarnings } from './qrWarnings'
 import { UI_QR_CODE } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
 import { computed, type ComputedRef } from 'vue'
 import { captionText, defaultLabel } from './qrLabel'
 import { placeholderParts } from './draw/qrPlaceholder'
@@ -64,6 +65,7 @@ export function useBaseQrCode(props: BaseQrCodeProps, emit: BaseQrCodeEmits) {
 	const { isHidden, reveal, conceal, revealByButton } = useQrReveal(props, emit)
 	return {
 		...useStandardBaseComponent('base-qr-code', props, ['root']),
+		ui: useUi(props, 'base-qr-code'),
 		parts,
 		isHidden,
 		revealByButton,

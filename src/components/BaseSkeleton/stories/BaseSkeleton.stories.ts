@@ -19,6 +19,7 @@ export default meta
 
 export const Default = cases.Default
 export const Shapes = cases.Shapes
+export const Theming = cases.Theming
 export const Animations = cases.Animations
 export const Sizes = cases.Sizes
 export const CustomColor = cases.CustomColor

@@ -3,7 +3,7 @@
 	box-sizing: border-box;
 	flex-direction: column;
 	flex-shrink: 0;
-	gap: sz(6px);
+	gap: sz(ct(qr-code, gap, 6px));
 	width: sz(var(--qr-size));
 	max-width: 100%;
 
@@ -12,7 +12,8 @@
 		position: relative;
 		box-sizing: border-box;
 		overflow: hidden;
-		border-radius: sz(var(--rise-radius-md));
+		border-radius: sz(ct(qr-code, radius, var(--rise-radius-md)));
+		box-shadow: ct(qr-code, shadow, none);
 		background-color: var(--qr-background);
 		aspect-ratio: 1;
 
@@ -20,8 +21,8 @@
 	}
 
 	&--outline &__box {
-		border: 1px solid var(--rise-border);
-		padding: sz(4px);
+		border: 1px solid ct(qr-code, border, var(--rise-border));
+		padding: sz(ct(qr-code, padding, 4px));
 	}
 
 	&__svg {
@@ -56,12 +57,13 @@
 	&__caption {
 		display: -webkit-box;
 		overflow: hidden;
-		color: var(--rise-text-toned);
+		color: ct(qr-code-caption, text, var(--rise-text-toned));
 		text-align: center;
 		overflow-wrap: anywhere;
 		-webkit-box-orient: vertical;
 		-webkit-line-clamp: 2;
 		line-clamp: 2;
-		@include text-size(xs);
+		font-size: sz(ct(qr-code-caption, font-size, var(--rise-font-size-xs)));
+		line-height: sz(var(--rise-line-height-xs));
 	}
 }

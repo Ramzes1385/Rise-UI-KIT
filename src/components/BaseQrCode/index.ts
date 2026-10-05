@@ -2,6 +2,7 @@ export { QR_CODE_VARIANTS, QR_ERROR_LEVELS, QR_FINDER_SHAPES, QR_MODULE_SHAPES }
 export type {
 	BaseQrCodeEmits,
 	BaseQrCodeExpose,
+	BaseQrCodePart,
 	BaseQrCodeProps,
 	QrErrorLevel,
 	QrFinderShape,

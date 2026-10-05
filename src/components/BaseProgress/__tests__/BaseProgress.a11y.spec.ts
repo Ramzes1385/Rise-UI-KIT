@@ -37,7 +37,7 @@ describe('BaseProgress доступность и complete', () => {
 
 			expect(emitted()).not.toHaveProperty('complete')
 			expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '99')
-			expect(screen.getByText('99%')).toBeInTheDocument()
+			expect(await screen.findByText('99%')).toBeInTheDocument()
 		})
 
 		it('должен эмитить complete один раз при достижении максимума', async () => {

@@ -19,7 +19,7 @@
 	&__line {
 		flex: 1 1 0;
 		border: 0 solid;
-		@include custom-bg(border-color, var(--rise-border));
+		@include custom-bg(border-color, ct(separator, border, var(--rise-border)));
 	}
 
 	&--horizontal &__line {
@@ -45,17 +45,18 @@
 	}
 
 	&__content {
-		--sep-pad-y: 0px;
-		--sep-pad-x: 12px;
+		--sep-pad-y: #{ct(separator-content, padding-y, 0px)};
+		--sep-pad-x: #{ct(separator-content, padding-x, 12px)};
 
 		display: flex;
 		flex-shrink: 0;
 		align-items: center;
 		justify-content: center;
 		padding: sz(var(--sep-pad-y)) sz(var(--sep-pad-x));
-		@include text-size(xs);
-		font-weight: var(--rise-font-weight-medium);
-		@include custom-text(color, var(--rise-text-muted));
+		font-size: sz(ct(separator-content, font-size, var(--rise-font-size-xs)));
+		line-height: sz(var(--rise-line-height-xs));
+		font-weight: ct(separator-content, font-weight, var(--rise-font-weight-medium));
+		@include custom-text(color, ct(separator-content, text, var(--rise-text-muted)));
 		white-space: nowrap;
 	}
 

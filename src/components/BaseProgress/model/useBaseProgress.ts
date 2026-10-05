@@ -1,6 +1,9 @@
 import { formatMessage } from '@/locales'
+import type { ComputedRef, Ref } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
-import { computed, useId, watch } from 'vue'
+import { useUi } from '@composables/base/useUi'
+import { computed, ref, useId, watch } from 'vue'
+import { useTween } from '@composables/interaction/useTween'
 import { useSizeScale } from '@composables/base/useSizeScale'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import { useCustomColor } from '@composables/base/useCustomColor'
@@ -34,11 +37,39 @@ function toPercent(ratio: number): number {
 	return ratio < 1 ? Math.min(percent, 99) : percent
 }
 
-export function useBaseProgress(props: ProgressProps, emit: BaseProgressEmits) {
-	const ratio = computed(() => toRatio(props))
-	const percent = computed(() => toPercent(ratio.value))
+function useProgressCircle(props: ProgressProps, percent: ComputedRef<number>) {
 	const gradientId = `base-progress-${useId()}`
 	const gradientStops = computed(() => GRADIENT_STOPS[props.fill] ?? [])
+
+	return {
+		circleViewBox: `0 0 ${CIRCLE_VIEWBOX} ${CIRCLE_VIEWBOX}`,
+		circleCenter: CIRCLE_CENTER,
+		circleStroke: CIRCLE_STROKE,
+		circleRadius: CIRCLE_RADIUS,
+		circumference: CIRCUMFERENCE,
+		gradientId,
+		gradientStops,
+		circleStrokeStyle: computed(() => (gradientStops.value.length ? { stroke: `url(#${gradientId})` } : undefined)),
+		circleOffset: computed(() => (props.isIndeterminate ? CIRCUMFERENCE : CIRCUMFERENCE * (1 - percent.value / 100))),
+	}
+}
+
+function useProgressLabel(props: ProgressProps, percent: ComputedRef<number>, rootRef: Ref<HTMLElement | null>) {
+	const tween = useTween(() => percent.value, { duration: 'base', target: rootRef })
+	const percentStyle = computed(() => ({ '--progress-percent': percent.value }))
+
+	return {
+		displayPercent: computed(() => Math.round(tween.value.value)),
+		percentStyle,
+		fillStyle: computed(() => (props.isIndeterminate ? undefined : percentStyle.value)),
+		isLabelVisible: computed(() => props.hasLabel && !props.isIndeterminate),
+	}
+}
+
+export function useBaseProgress(props: ProgressProps, emit: BaseProgressEmits) {
+	const rootRef = ref<HTMLElement | null>(null)
+	const ratio = computed(() => toRatio(props))
+	const percent = computed(() => toPercent(ratio.value))
 	watch(
 		() => ratio.value >= 1,
 		isComplete => {
@@ -51,21 +82,14 @@ export function useBaseProgress(props: ProgressProps, emit: BaseProgressEmits) {
 		...useCustomClass({ getClass: () => props.customClass, elementKeys: PROGRESS_ELEMENTS }),
 		...useSizeScale({ getScale: () => props.sizeScale }),
 		...useCustomColor({ getColor: () => props.color }),
+		...useProgressCircle(props, percent),
+		...useProgressLabel(props, percent, rootRef),
+		ui: useUi(props, 'base-progress'),
+		rootRef,
 		percent,
 		valueText: computed(() =>
 			props.isIndeterminate ? UI_ARIA.PROGRESS_INDETERMINATE : formatMessage(UI_ARIA.PROGRESS_VALUE, { percent: percent.value }),
 		),
-		isLabelVisible: computed(() => props.hasLabel && !props.isIndeterminate),
-		fillStyle: computed(() => (props.isIndeterminate ? undefined : { width: `${percent.value}%` })),
-		circleViewBox: `0 0 ${CIRCLE_VIEWBOX} ${CIRCLE_VIEWBOX}`,
-		circleCenter: CIRCLE_CENTER,
-		circleStroke: CIRCLE_STROKE,
-		circleRadius: CIRCLE_RADIUS,
-		circumference: CIRCUMFERENCE,
 		fillClass: computed(() => (props.fill === 'solid' ? '' : `base-progress--fill-${props.fill}`)),
-		gradientId,
-		gradientStops,
-		circleStrokeStyle: computed(() => (gradientStops.value.length ? { stroke: `url(#${gradientId})` } : undefined)),
-		circleOffset: computed(() => (props.isIndeterminate ? CIRCUMFERENCE : CIRCUMFERENCE * (1 - percent.value / 100))),
 	}
 }

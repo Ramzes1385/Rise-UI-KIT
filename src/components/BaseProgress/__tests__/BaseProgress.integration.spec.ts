@@ -12,7 +12,7 @@ describe('BaseProgress integration', () => {
 			const status = container.querySelector('.base-progress__status') as HTMLElement
 			expect(status).toHaveTextContent('50%')
 			expect(status.nextElementSibling).toHaveClass('base-progress__track')
-			expect(status.style.width).toBe('50%')
+			expect(status.style.getPropertyValue('--progress-percent')).toBe('50')
 			expect(screen.getByRole('progressbar')).toHaveTextContent('50%')
 		})
 
@@ -119,7 +119,7 @@ describe('BaseProgress integration', () => {
 			})
 
 			const fill = container.querySelector('.base-progress__fill')
-			expect(fill?.getAttribute('style')).toContain('width: 40%')
+			expect(fill?.getAttribute('style')).toContain('--progress-percent: 40;')
 		})
 	})
 

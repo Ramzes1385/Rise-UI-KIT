@@ -1,5 +1,14 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
+
+/**
+ * Части разделителя для пропа `ui` (БЭМ-элементы `.base-separator__<часть>`, `root` — корень с `role="separator"`):
+ * line — линия (с подписью их две), content — подпись или содержимое слота между линиями.
+ */
+export const SEPARATOR_PARTS = ['line', 'content'] as const
+
+export type BaseSeparatorPart = (typeof SEPARATOR_PARTS)[number]
 
 export type SeparatorOrientation = 'horizontal' | 'vertical'
 
@@ -18,6 +27,14 @@ export interface BaseSeparatorProps extends BaseComponentProps<string, 'root' | 
 	 * у вертикальной. Без пропа — из стилей: 12px вдоль линии вокруг подписи, 0 поперёк. Отрицательное и NaN не применяются.
 	 */
 	spacing?: number
+	/**
+	 * Классы частей разделителя (`root`, `line`, `content`) — добавляются к классам кита; `line` получают обе линии.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseSeparator: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseSeparator label="или" :ui="{ content: 'uppercase tracking-wide' }" />
+	 */
+	ui?: UiProp<BaseSeparatorPart>
 }
 
 /**

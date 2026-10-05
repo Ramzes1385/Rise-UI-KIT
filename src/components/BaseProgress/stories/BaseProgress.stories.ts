@@ -21,6 +21,7 @@ export const Default = cases.Default
 export const Sizes = cases.Sizes
 export const Circle = cases.Circle
 export const CustomColor = cases.CustomColor
+export const Theming = cases.Theming
 export const Animations = cases.Animations
 export const Fills = cases.Fills
 export const Indeterminate = cases.Indeterminate

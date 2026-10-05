@@ -1,6 +1,7 @@
 export { Default } from './Default'
 export { Shapes } from './appearance/Shapes'
-export { Animations } from './Animations'
+export { Theming } from './appearance/Theming'
+export { Animations } from './behavior/Animations'
 export { Sizes } from './appearance/Sizes'
 export { CustomColor } from './appearance/CustomColor'
 export { CardPlaceholder } from './CardPlaceholder'

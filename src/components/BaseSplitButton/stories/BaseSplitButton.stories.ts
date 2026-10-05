@@ -23,3 +23,5 @@ export const Sizes = cases.Sizes
 export const Disabled = cases.Disabled
 export const Loading = cases.Loading
 export const Keyboard = cases.Keyboard
+export const Theming = cases.Theming
+export const Animations = cases.Animations

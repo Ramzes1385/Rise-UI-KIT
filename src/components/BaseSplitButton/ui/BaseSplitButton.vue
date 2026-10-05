@@ -1,7 +1,7 @@
 <template>
-	<div class="base-split-button" :class="[`base-split-button--${variant}`, classes.root]" role="group" :aria-label="label">
+	<div :class="[ui('root'), `base-split-button--${variant}`, classes.root]" role="group" :aria-label="label">
 		<BaseButton
-			class="base-split-button__main"
+			:class="ui('main')"
 			:custom-class="{ root: classes.main }"
 			:variant="variant"
 			:size-scale="sizeScale"
@@ -12,19 +12,18 @@
 			<slot>{{ label }}</slot>
 		</BaseButton>
 		<BaseDropdownMenu
-			class="base-split-button__menu"
+			:class="ui('menu')"
 			:items="items"
 			position="bottom-end"
 			:aria-label="menuLabel ?? UI_ARIA.MORE_ACTIONS"
 			@select="(item, event) => emit('select', item, event)">
 			<BaseButton
-				class="base-split-button__toggle"
+				:class="ui('toggle')"
 				:custom-class="{ root: classes.toggle }"
 				:variant="variant"
 				:size-scale="sizeScale"
 				:color="color"
 				:is-disabled="isDisabled"
-				:padding="{ x: 8, y: 5 }"
 				:aria-label="menuLabel ?? UI_ARIA.MORE_ACTIONS">
 				<BaseIcon name="chevron-down" :size-scale="calcIconScale('sm', sizeScale)" />
 			</BaseButton>
@@ -57,5 +56,5 @@ const props = withDefaults(
 const emit = defineEmits<BaseSplitButtonEmits>()
 defineSlots<BaseSplitButtonSlots>()
 
-const { classes } = useBaseSplitButton(props)
+const { ui, classes } = useBaseSplitButton(props)
 </script>

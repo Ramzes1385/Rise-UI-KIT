@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /** Варианты оформления BaseQrCode: default — код на светлой подложке со скруглением, outline — ещё и рамка */
@@ -8,6 +9,15 @@ export const QR_CODE_VARIANTS = ['default', 'outline'] as const
  * Чем выше уровень, тем плотнее код при том же тексте
  */
 export const QR_ERROR_LEVELS = ['L', 'M', 'Q', 'H'] as const
+
+/**
+ * Части кода для пропа `ui` (БЭМ-элементы `.base-qr-code__<часть>`, `root` — корень):
+ * box — квадрат с кодом, svg — картинка кода, modules — контур модулей, finder — контур «глазков», logo — логотип,
+ * message — сообщение «текст не помещается», reveal — кнопка «Показать QR-код» у секретного кода, caption — подпись под кодом.
+ */
+export const QR_CODE_PARTS = ['box', 'svg', 'modules', 'finder', 'logo', 'message', 'reveal', 'caption'] as const
+
+export type BaseQrCodePart = (typeof QR_CODE_PARTS)[number]
 
 /** Уровень коррекции ошибок */
 export type QrErrorLevel = (typeof QR_ERROR_LEVELS)[number]
@@ -156,6 +166,14 @@ export interface BaseQrCodeProps extends BaseComponentProps<(typeof QR_CODE_VARI
 	 * куда ведёт код, до сканирования; для не-ссылок 'host' ничего не выводит. У скрытого кода подписи нет
 	 */
 	showValue?: QrShowValue
+	/**
+	 * Классы частей кода (`root`, `box`, `svg`, `modules`, `finder`, `logo`, `message`, `reveal`, `caption`) — добавляются
+	 * к классам кита. Глобально — `createUiKitPlugin({ defaults: { BaseQrCode: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseQrCode value="https://rise.dev" :ui="{ box: 'shadow-md', caption: 'font-mono' }" show-value="host" />
+	 */
+	ui?: UiProp<BaseQrCodePart>
 }
 
 /** Подпись под кодом: false — нет, true — весь текст, 'host' — хост ссылки */

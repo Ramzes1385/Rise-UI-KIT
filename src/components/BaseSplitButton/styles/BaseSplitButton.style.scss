@@ -19,15 +19,20 @@
 	}
 
 	&__menu {
-		margin-left: -1px;
+		margin-left: ct(split-button, gap, -1px);
 	}
 
 	&__toggle.base-button {
+		--btn-pad-top: 5px;
+		--btn-pad-bottom: 5px;
+		--btn-pad-left: #{ct(split-button-toggle, padding-x, 8px)};
+		--btn-pad-right: #{ct(split-button-toggle, padding-x, 8px)};
+
 		border-top-left-radius: 0;
 		border-bottom-left-radius: 0;
 	}
 
 	&--default &__toggle.base-button {
-		box-shadow: inset 1px 0 0 color-mix(in srgb, currentcolor 30%, transparent);
+		box-shadow: inset 1px 0 0 ct(split-button-toggle, border, color-mix(in srgb, currentcolor 30%, transparent));
 	}
 }

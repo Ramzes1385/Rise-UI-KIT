@@ -1,30 +1,29 @@
 <template>
 	<div
-		class="base-qr-code"
-		:class="[variantClass, classes.root, { 'base-qr-code--overflow': !view, 'base-qr-code--concealed': isHidden }]"
+		:class="[ui('root'), variantClass, classes.root, { 'base-qr-code--overflow': !view, 'base-qr-code--concealed': isHidden }]"
 		:style="[sizeScaleStyle, { '--qr-size': `${size}px`, '--qr-background': background }]">
 		<div
 			ref="boxRef"
-			class="base-qr-code__box"
+			:class="ui('box')"
 			:role="isHidden ? undefined : 'img'"
 			:aria-label="isHidden ? undefined : accessibleLabel"
 			:tabindex="isConcealed ? -1 : undefined">
-			<svg v-if="view" class="base-qr-code__svg" :viewBox="`0 0 ${view.viewSize} ${view.viewSize}`" aria-hidden="true">
+			<svg v-if="view" :class="ui('svg')" :viewBox="`0 0 ${view.viewSize} ${view.viewSize}`" aria-hidden="true">
 				<rect :width="view.viewSize" :height="view.viewSize" :fill="view.colors.background" shape-rendering="crispEdges" />
 				<path
-					class="base-qr-code__modules"
+					:class="ui('modules')"
 					:d="view.modules"
 					:fill="view.colors.module"
 					:shape-rendering="view.crisp.modules ? 'crispEdges' : undefined" />
 				<path
-					class="base-qr-code__finder"
+					:class="ui('finder')"
 					:d="view.finder"
 					:fill="view.colors.finder"
 					fill-rule="evenodd"
 					:shape-rendering="view.crisp.finder ? 'crispEdges' : undefined" />
 				<image
 					v-if="view.logo"
-					class="base-qr-code__logo"
+					:class="ui('logo')"
 					:href="view.logo.href"
 					:x="view.logo.x"
 					:y="view.logo.y"
@@ -32,12 +31,12 @@
 					:height="view.logo.size"
 					preserveAspectRatio="xMidYMid meet" />
 			</svg>
-			<span v-else class="base-qr-code__message" aria-hidden="true">{{ UI_QR_CODE.TOO_LONG }}</span>
-			<BaseButton v-if="isHidden" class="base-qr-code__reveal" :size-scale="sizeScale" @click="revealByButton">
+			<span v-else :class="ui('message')" aria-hidden="true">{{ UI_QR_CODE.TOO_LONG }}</span>
+			<BaseButton v-if="isHidden" :class="ui('reveal')" :size-scale="sizeScale" @click="revealByButton">
 				{{ UI_QR_CODE.REVEAL }}
 			</BaseButton>
 		</div>
-		<span v-if="caption" class="base-qr-code__caption">{{ caption }}</span>
+		<span v-if="caption" :class="ui('caption')">{{ caption }}</span>
 	</div>
 </template>
 
@@ -74,7 +73,7 @@ const props = withDefaults(
 
 const emit = defineEmits<BaseQrCodeEmits>()
 
-const { sizeScaleStyle, variantClass, classes, view, isHidden, revealByButton, background, caption, accessibleLabel, exposed } =
+const { ui, sizeScaleStyle, variantClass, classes, view, isHidden, revealByButton, background, caption, accessibleLabel, exposed } =
 	useBaseQrCode(props, emit)
 
 defineExpose<BaseQrCodeExpose>(exposed)

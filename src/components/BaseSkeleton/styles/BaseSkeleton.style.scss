@@ -1,15 +1,15 @@
 .base-skeleton {
 	position: relative;
 	overflow: hidden;
-	background-color: var(--rise-bg-elevated);
+	background-color: ct(skeleton, bg, var(--rise-bg-elevated));
 
 	&--text {
-		height: sz(16px);
-		border-radius: sz(var(--rise-radius-sm));
+		height: sz(ct(skeleton, height, 16px));
+		border-radius: sz(ct(skeleton, radius, var(--rise-radius-sm)));
 	}
 
 	&--rect {
-		border-radius: sz(var(--rise-radius-md));
+		border-radius: sz(ct(skeleton, radius, var(--rise-radius-md)));
 	}
 
 	&--circle {
@@ -19,7 +19,7 @@
 
 	@include motion-safe {
 		&--pulse {
-			animation: base-skeleton-pulse 2s var(--rise-ease) infinite;
+			animation: base-skeleton-pulse calc(var(--rise-duration-loop) * 2) var(--rise-ease) infinite;
 		}
 
 		&--animated::after {
@@ -33,10 +33,12 @@
 				transparent
 			);
 			transform: translateX(-100%);
-			animation: base-skeleton-shimmer 1.5s var(--rise-ease) infinite;
+			animation: base-skeleton-shimmer calc(var(--rise-duration-loop) * 1.5) var(--rise-ease) infinite;
 		}
 	}
 }
+
+@include enter-fade(base-skeleton);
 
 @keyframes base-skeleton-pulse {
 	50% {

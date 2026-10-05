@@ -1,7 +1,7 @@
 <template>
 	<div
-		class="base-skeleton"
 		:class="[
+			ui('root'),
 			`base-skeleton--${shape}`,
 			{
 				'base-skeleton--animated': isAnimated,
@@ -30,5 +30,5 @@ const props = withDefaults(
 	}),
 )
 
-const { classes, skeletonStyle } = useBaseSkeleton(props)
+const { ui, classes, skeletonStyle } = useBaseSkeleton(props)
 </script>

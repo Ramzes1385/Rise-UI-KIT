@@ -191,7 +191,7 @@ describe('BaseProgress unit', () => {
 			})
 
 			expect(container.querySelector('.base-progress')?.getAttribute('aria-valuenow')).toBe('0')
-			expect(container.querySelector('.base-progress__fill')?.getAttribute('style')).toContain('width: 0%')
+			expect(container.querySelector('.base-progress__fill')?.getAttribute('style')).toContain('--progress-percent: 0;')
 		})
 
 		it('должен устанавливать 50% когда value=50', () => {
@@ -200,7 +200,7 @@ describe('BaseProgress unit', () => {
 			})
 
 			expect(container.querySelector('.base-progress')?.getAttribute('aria-valuenow')).toBe('50')
-			expect(container.querySelector('.base-progress__fill')?.getAttribute('style')).toContain('width: 50%')
+			expect(container.querySelector('.base-progress__fill')?.getAttribute('style')).toContain('--progress-percent: 50;')
 		})
 
 		it('должен устанавливать 100% когда value=100', () => {
@@ -209,7 +209,7 @@ describe('BaseProgress unit', () => {
 			})
 
 			expect(container.querySelector('.base-progress')?.getAttribute('aria-valuenow')).toBe('100')
-			expect(container.querySelector('.base-progress__fill')?.getAttribute('style')).toContain('width: 100%')
+			expect(container.querySelector('.base-progress__fill')?.getAttribute('style')).toContain('--progress-percent: 100;')
 		})
 
 		it('должен ограничивать value сверху при value>max', () => {
@@ -353,7 +353,7 @@ describe('BaseProgress unit', () => {
 				props: { value: 75, isIndeterminate: true },
 			})
 
-			expect((container.querySelector('.base-progress__fill') as HTMLElement).style.width).toBe('')
+			expect(container.querySelector('.base-progress__fill')).not.toHaveAttribute('style')
 		})
 
 		it('не должен сообщать aria-valuenow когда isIndeterminate=true (значение неизвестно)', () => {

@@ -1,5 +1,13 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
+
+/**
+ * Части скелетона для пропа `ui`: своих БЭМ-элементов нет — только `root` (сам блок-заглушка).
+ */
+export const SKELETON_PARTS = [] as const
+
+export type BaseSkeletonPart = (typeof SKELETON_PARTS)[number]
 
 export interface BaseSkeletonProps extends Omit<BaseComponentProps<string, 'root'>, 'color'> {
 	/**
@@ -20,6 +28,14 @@ export interface BaseSkeletonProps extends Omit<BaseComponentProps<string, 'root
 	color?: string
 	/** Мерцание прозрачностью. Отключается при системной настройке «уменьшить движение». */
 	isPulse?: boolean
+	/**
+	 * Классы частей скелетона (`root`) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseSkeleton: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseSkeleton shape="text" width="60%" :ui="{ root: 'my-skeleton' }" />
+	 */
+	ui?: UiProp<BaseSkeletonPart>
 }
 
 export type BaseSkeletonEmits = Record<string, never>

@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
@@ -7,6 +8,25 @@ export const PROGRESS_ANIMATIONS = ['none', 'striped', 'pulse', 'glow', 'flow'] 
 
 /** Заливка: `solid` — цвет, `gradient` — от светлого к цвету, `rainbow` — радуга по всей шкале, `segments` — полоса из делений. */
 export const PROGRESS_FILLS = ['solid', 'gradient', 'rainbow', 'segments'] as const
+
+/**
+ * Части индикатора для пропа `ui` (БЭМ-элементы `.base-progress__<часть>`, `root` — корень с `role="progressbar"`):
+ * status — строка подписи над полосой, status-text — текст подписи, track — дорожка, bar — слой заливки (на нём свечение `glow`),
+ * fill — заливка полосы, svg — кольцо, track-circle — дорожка кольца, fill-circle — заливка кольца, circle-label — подпись в центре кольца.
+ */
+export const PROGRESS_PARTS = [
+	'status',
+	'status-text',
+	'track',
+	'bar',
+	'fill',
+	'svg',
+	'track-circle',
+	'fill-circle',
+	'circle-label',
+] as const
+
+export type BaseProgressPart = (typeof PROGRESS_PARTS)[number]
 
 export type ProgressShape = (typeof PROGRESS_SHAPES)[number]
 
@@ -50,6 +70,15 @@ export interface BaseProgressProps extends BaseComponentProps<
 	 * По умолчанию — «Прогресс»; внешний aria-labelledby имеет приоритет.
 	 */
 	ariaLabel?: string
+	/**
+	 * Классы частей индикатора (`root`, `status`, `status-text`, `track`, `bar`, `fill`, `svg`, `track-circle`, `fill-circle`,
+	 * `circle-label`) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseProgress: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseProgress :value="40" :ui="{ track: 'shadow-inner', fill: 'bg-emerald-500' }" />
+	 */
+	ui?: UiProp<BaseProgressPart>
 }
 
 export interface BaseProgressEmits {

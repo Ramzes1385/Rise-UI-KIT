@@ -1,4 +1,5 @@
 import { computed, useId } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import { useSizeScale } from '@composables/base/useSizeScale'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import { useCustomColor } from '@composables/base/useCustomColor'
@@ -22,6 +23,7 @@ export function useBaseSeparator(props: SeparatorProps) {
 		...useCustomClass({ getClass: () => props.customClass, elementKeys: ['root', 'line', 'content'] }),
 		...useSizeScale({ getScale: () => props.sizeScale }),
 		...useCustomColor({ getColor: () => props.color }),
+		ui: useUi(props, 'base-separator'),
 		contentId: useId(),
 		spacingStyle: computed(() =>
 			spacing.value === undefined ? undefined : { '--sep-pad-y': `${spacing.value}px`, '--sep-pad-x': `${spacing.value * 2}px` },

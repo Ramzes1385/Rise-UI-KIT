@@ -1,4 +1,5 @@
 import { computed } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import { nonNegativeProp } from '@utils/form/numberPropUtils'
 import type { SkeletonProps } from '../types/BaseSkeleton.types'
 import { useCustomClass } from '@composables/base/useCustomClass'
@@ -35,6 +36,7 @@ export function useBaseSkeleton(props: SkeletonProps) {
 	const height = computed(() => checkedDimension('height', props.height))
 	return {
 		...useCustomClass({ getClass: () => props.customClass, elementKeys: ['root'] }),
+		ui: useUi(props, 'base-skeleton'),
 		skeletonStyle: computed(() => skeletonStyles(props, { width: width.value, height: height.value })),
 	}
 }

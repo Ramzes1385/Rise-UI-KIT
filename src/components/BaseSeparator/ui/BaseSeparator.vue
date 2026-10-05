@@ -1,8 +1,8 @@
 <template>
 	<div
-		class="base-separator"
 		:style="[rootStyle, sizeScaleStyle, customColorStyle]"
 		:class="[
+			ui('root'),
 			`base-separator--${orientation}`,
 			{
 				'base-separator--dashed': isDashed,
@@ -14,15 +14,15 @@
 		:aria-orientation="orientation"
 		:aria-labelledby="label || $slots.default ? contentId : undefined">
 		<template v-if="!label && !$slots.default">
-			<div class="base-separator__line" :class="classes.line"></div>
+			<div :class="[ui('line'), classes.line]"></div>
 		</template>
 
 		<template v-if="label || $slots.default">
-			<div class="base-separator__line base-separator__line--before" :class="classes.line"></div>
-			<span :id="contentId" class="base-separator__content" :style="spacingStyle" :class="classes.content">
+			<div :class="[ui('line'), 'base-separator__line--before', classes.line]"></div>
+			<span :id="contentId" :class="[ui('content'), classes.content]" :style="spacingStyle">
 				<slot>{{ label }}</slot>
 			</span>
-			<div class="base-separator__line base-separator__line--after" :class="classes.line"></div>
+			<div :class="[ui('line'), 'base-separator__line--after', classes.line]"></div>
 		</template>
 	</div>
 </template>
@@ -46,5 +46,5 @@ const props = withDefaults(
 )
 defineSlots<BaseSeparatorSlots>()
 
-const { classes, sizeScaleStyle, customColorStyle, contentId, spacingStyle, rootStyle } = useBaseSeparator(props)
+const { ui, classes, sizeScaleStyle, customColorStyle, contentId, spacingStyle, rootStyle } = useBaseSeparator(props)
 </script>
