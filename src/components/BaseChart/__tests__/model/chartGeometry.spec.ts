@@ -1,5 +1,5 @@
 import type { ChartFrame } from '../../types/BaseChart.types'
-import { areaPath, barRect, linePath, nearestIndex, tickIndexes, xPosition, yPosition } from '../../model/chart/chartGeometry'
+import { areaPath, bandSlot, barRect, linePath, nearestIndex, tickIndexes, xPosition, yPosition } from '../../model/chart/chartGeometry'
 
 const domain = { min: 0, max: 10, ticks: [0, 5, 10] }
 const points: ChartFrame = { count: 3, domain, isBand: false }
@@ -38,13 +38,30 @@ describe('геометрия графика', () => {
 	})
 
 	it('делит полосу между рядами группы и сужает одиночный столбик', () => {
-		expect(barRect([0, 5], { index: 1, order: 1, total: 2 }, bands)).toEqual({ x: 25 + 3.75 + 8.75, y: 50, width: 8.75, height: 50 })
-		expect(barRect([0, 10], { index: 0, order: 0, total: 1 }, bands)).toEqual({ x: 5, y: 0, width: 15, height: 100 })
+		const second = barRect([0, 5], { ...bandSlot(1, 2), index: 1 }, bands)
+		expect(second.x).toBeCloseTo(25 + 3.75 + 8.75)
+		expect(second.width).toBeCloseTo(8.75)
+		expect(second).toMatchObject({ y: 50, height: 50 })
+		const single = barRect([0, 10], { ...bandSlot(0, 1), index: 0 }, bands)
+		expect(single.x).toBeCloseTo(5)
+		expect(single.width).toBeCloseTo(15)
+		expect(single).toMatchObject({ y: 0, height: 100 })
+	})
+
+	it('место в полосе: доли полосы, у скрытого ряда — нулевая ширина на своём месте, без рядов — как один', () => {
+		expect(bandSlot(0, 1).offset).toBeCloseTo(0.2)
+		expect(bandSlot(0, 1).width).toBeCloseTo(0.6)
+		expect(bandSlot(1, 2).offset).toBeCloseTo(0.15 + 0.35)
+		expect(bandSlot(1, 2, true)).toEqual({ offset: bandSlot(1, 2).offset, width: 0 })
+		expect(bandSlot(0, 0)).toEqual(bandSlot(0, 1))
 	})
 
 	it('рисует отрицательный столбик вниз от основания', () => {
 		const frame: ChartFrame = { count: 1, domain: { min: -10, max: 10, ticks: [] }, isBand: true }
-		expect(barRect([0, -5], { index: 0, order: 0, total: 1 }, frame)).toEqual({ x: 20, y: 50, width: 60, height: 25 })
+		const rect = barRect([0, -5], { ...bandSlot(0, 1), index: 0 }, frame)
+		expect(rect.x).toBeCloseTo(20)
+		expect(rect.width).toBeCloseTo(60)
+		expect(rect).toMatchObject({ y: 50, height: 25 })
 	})
 
 	it('находит ближайшую точку и полосу, зажимая края', () => {

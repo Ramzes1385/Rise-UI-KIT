@@ -1,5 +1,5 @@
-import { defineComponent, ref } from 'vue'
 import { render } from '@testing-library/vue'
+import { computed, defineComponent, ref } from 'vue'
 import { useBaseChart } from '../../model/useBaseChart'
 import { useChartActive } from '../../model/useChartActive'
 import type { BaseChartProps } from '../../types/BaseChart.types'
@@ -20,12 +20,16 @@ describe('модель графика без значений по умолча�
 		)
 		expect(chart?.plotHeight.value).toBe('240px')
 		expect(chart?.yTicks.value).toHaveLength(6)
+		expect(chart?.shapesClass.value).toBe('base-chart__shapes--grow')
+		expect(chart?.isSwapAnimated.value).toBe(true)
 	})
 
 	it('на пустых данных не рисует деления Y и игнорирует указатель и клавиши', () => {
 		const data = useChartData(empty, ref([]))
-		const axes = useChartAxes(empty, data, ref(6))
-		const active = useChartActive(empty, data)
+		const view = { spans: data.spans, slots: data.slots, frame: data.frame }
+		const layout = { view, width: ref(0), height: computed(() => 240), maxXTicks: ref(6) }
+		const axes = useChartAxes(empty, data, layout)
+		const active = useChartActive(empty, data, layout)
 		expect(data.isEmpty.value).toBe(true)
 		expect(axes.yTicks.value).toEqual([])
 		const event = { key: 'ArrowRight', preventDefault: vi.fn() } as unknown as KeyboardEvent
@@ -34,6 +38,7 @@ describe('модель графика без значений по умолча�
 		expect(active.activeIndex.value).toBeNull()
 		expect(event.preventDefault).not.toHaveBeenCalled()
 		expect(active.guide.value).toBeNull()
+		expect(active.guideOffset.value).toBe(0)
 	})
 
 	it('подпись вне массива подписей — пустая строка', () => {

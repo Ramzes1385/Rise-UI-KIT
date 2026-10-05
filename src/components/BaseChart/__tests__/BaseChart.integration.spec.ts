@@ -18,6 +18,17 @@ const tooltip = (container: Element) => container.querySelector('.base-chart__to
 const legendButton = (name: string) => screen.getByRole('button', { name })
 
 describe('BaseChart integration', () => {
+	beforeEach(() => {
+		vi.stubGlobal(
+			'matchMedia',
+			vi.fn(() => ({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() })),
+		)
+	})
+
+	afterEach(() => {
+		vi.unstubAllGlobals()
+	})
+
 	describe('подсказка мышью', () => {
 		it('показывает ближайшую точку, пунктир и метки видимых рядов со значением', async () => {
 			const { container } = render(BaseChart, { props })
@@ -26,7 +37,7 @@ describe('BaseChart integration', () => {
 			expect(tip).toHaveAttribute('aria-hidden', 'true')
 			expect(tip).toHaveTextContent('ФевВыручка240Расходынет значения')
 			expect(tip).not.toHaveClass('base-chart__tooltip--start')
-			expect(tip).toHaveStyle({ left: '25%' })
+			expect(tip).toHaveAttribute('style', expect.stringContaining('--base-chart-guide-x: 0px'))
 			expect(container.querySelector('.base-chart__guide')).toHaveAttribute('x1', '25')
 			expect(container.querySelectorAll('.base-chart__marker')).toHaveLength(1)
 		})
@@ -198,10 +209,11 @@ describe('BaseChart integration', () => {
 			await user.click(legendButton('Расходы'))
 			expect(legendButton('Расходы')).toHaveAttribute('aria-pressed', 'false')
 			expect(legendButton('Расходы')).toHaveClass('base-chart__legend-item--hidden')
-			expect(container.querySelectorAll('.base-chart__line')).toHaveLength(1)
+			expect(container.querySelectorAll('.base-chart__line--hidden')).toHaveLength(1)
+			expect(container.querySelectorAll('.base-chart__line')).toHaveLength(2)
 			expect(plot()).toHaveAccessibleName('Финансы: Выручка; значения от 120 до 240')
 			await user.click(legendButton('Расходы'))
-			expect(container.querySelectorAll('.base-chart__line')).toHaveLength(2)
+			expect(container.querySelectorAll('.base-chart__line--hidden')).toHaveLength(0)
 			expect(emitted('update:hiddenSeries')).toEqual([[['Расходы']], [[]]])
 		})
 
@@ -212,7 +224,9 @@ describe('BaseChart integration', () => {
 				Math.max(...[...container.querySelectorAll('.base-chart__bar')].map(bar => Number(bar.getAttribute('height'))))
 			expect(container.querySelectorAll('.base-chart__bar')).toHaveLength(9)
 			await user.click(legendButton('Выручка'))
-			expect(container.querySelectorAll('.base-chart__bar')).toHaveLength(4)
+			const hidden = [...container.querySelectorAll('.base-chart__bar--hidden')]
+			expect(hidden).toHaveLength(5)
+			expect(hidden.every(bar => Number(bar.getAttribute('height')) === 0)).toBe(true)
 			expect(container.querySelector('.base-chart__y-tick:last-child')).toHaveTextContent('100')
 			expect(tallest()).toBeCloseTo(90)
 		})

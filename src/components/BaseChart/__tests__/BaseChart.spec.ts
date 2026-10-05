@@ -19,6 +19,17 @@ const yTicks = (container: Element) => [...container.querySelectorAll('.base-cha
 const xTicks = (container: Element) => [...container.querySelectorAll('.base-chart__x-tick')].map(tick => tick.textContent?.trim())
 
 describe('BaseChart unit', () => {
+	beforeEach(() => {
+		vi.stubGlobal(
+			'matchMedia',
+			vi.fn(() => ({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() })),
+		)
+	})
+
+	afterEach(() => {
+		vi.unstubAllGlobals()
+	})
+
 	it('рендерит область графика со сводкой и подсказкой про стрелки', () => {
 		render(BaseChart, { props })
 		const plot = screen.getByRole('img', { name: 'Финансы: Выручка, Расходы; значения от 60 до 240' })

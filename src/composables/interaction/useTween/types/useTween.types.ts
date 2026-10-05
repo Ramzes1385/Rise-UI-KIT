@@ -23,7 +23,7 @@ export interface TweenRun<T extends TweenValue> {
  * Опции composable useTween
  */
 export interface UseTweenOptions<T extends TweenValue> {
-	/** Начальное значение: при монтировании твин идёт от него к источнику (появление). Без него — сразу значение источника */
+	/** Начальное значение появления: после монтирования твин идёт от него к источнику (до монтирования и на сервере — значение источника). Без него — сразу значение источника */
 	from?: T
 	/** Длительность по токену `--rise-duration*` (по умолчанию `xslow`) */
 	duration?: MotionDuration

@@ -20,7 +20,7 @@ import { onBeforeUnmount, onMounted, readonly, ref, shallowReadonly, shallowRef,
 export function useTween<T extends TweenValue>(source: MaybeRefOrGetter<T>, options: UseTweenOptions<T> = {}): UseTweenReturn<T> {
 	const motion = useMotion(options.target)
 	const easing = options.easing ?? easeOutCubic
-	const value = shallowRef<T>(options.from ?? toValue(source))
+	const value = shallowRef<T>(toValue(source))
 	const isRunning = ref(false)
 	let frame = 0
 
