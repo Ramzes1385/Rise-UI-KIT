@@ -3,7 +3,7 @@ import { formatMessage } from '@/locales/state'
 import { routeLines, routeMarkers } from './routeView'
 import { routeSteps, walkedMeters } from './routeSteps'
 import { UI_IMAGE_MAP_ROUTES } from '@/locales/messages'
-import type { MapCore } from '../../types/internal/imageMapInternal.types'
+import type { MapParts } from '../../types/internal/imageMapInternal.types'
 import type { BaseImageMapEmits, ImageMapProps } from '../../types/BaseImageMap.types'
 import { buildRouteGraph, findRoutePath, isStepFree, objectNodes } from './routeGraph'
 import type { ImageMapRouteResult, ImageMapRouteValue, RouteSearch } from '../../types/ImageMapRoutes.types'
@@ -27,7 +27,7 @@ function useRouteModel(props: ImageMapProps, emit: BaseImageMapEmits) {
 	}
 }
 
-function useRouteSearch(props: ImageMapProps, core: MapCore, getRoute: () => ImageMapRouteValue) {
+function useRouteSearch(props: ImageMapProps, core: MapParts, getRoute: () => ImageMapRouteValue) {
 	return computed((): RouteSearch | null => {
 		const { routes, layers } = props.data
 		const { from: fromId, to: toId, isStepFree } = getRoute()
@@ -72,7 +72,7 @@ function summaryText(search: RouteSearch | null): string {
 	return formatMessage(UI_IMAGE_MAP_ROUTES.SUMMARY_METERS, { ...names, meters })
 }
 
-function useRouteOptions(props: ImageMapProps, core: MapCore) {
+function useRouteOptions(props: ImageMapProps, core: MapParts) {
 	return computed(() => {
 		const layers = props.data.layers
 		const items = core.data.resolved.value.filter(item => !item.isDisabled && !item.object.isHiddenInDirectory)
@@ -89,7 +89,7 @@ function useRouteOptions(props: ImageMapProps, core: MapCore) {
 	})
 }
 
-export function useImageMapRoutes(props: ImageMapProps, emit: BaseImageMapEmits, core: MapCore) {
+export function useImageMapRoutes(props: ImageMapProps, emit: BaseImageMapEmits, core: MapParts) {
 	const { localRoute, setRoute } = useRouteModel(props, emit)
 	const search = useRouteSearch(props, core, () => localRoute.value)
 
@@ -104,10 +104,12 @@ export function useImageMapRoutes(props: ImageMapProps, emit: BaseImageMapEmits,
 		{ immediate: true },
 	)
 
+	const routePath = computed(() => (search.value?.path ? { graph: search.value.graph, path: search.value.path } : null))
+
 	const currentPath = computed(() => {
-		const value = search.value
+		const value = routePath.value
 		const layer = core.data.currentLayer.value
-		return value?.path && layer ? { graph: value.graph, path: value.path, layer } : null
+		return value && layer ? { ...value, layer } : null
 	})
 
 	return {
@@ -127,6 +129,7 @@ export function useImageMapRoutes(props: ImageMapProps, emit: BaseImageMapEmits,
 		routeMarkers: computed(() =>
 			currentPath.value ? routeMarkers(currentPath.value.graph, currentPath.value.path, currentPath.value.layer.id) : [],
 		),
+		routePath,
 		showRouteLayer: (layer: string): void => core.actions.setLayer(layer),
 		routeExpose: {
 			showRoute: (from: string, to: string): void => setRoute({ ...localRoute.value, from, to }),

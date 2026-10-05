@@ -5,10 +5,9 @@ import { loadLayerSurface } from './loadLayerSurface'
 import { disposeObject } from '../scene/disposeObject'
 import { buildSceneContent } from '../scene/buildScene'
 import { onBeforeUnmount, shallowRef, watch } from 'vue'
-import { setObjectState } from '../scene/materials/sceneObjects'
-import { applyLayerMode, recolorScene } from '../scene/sceneState'
 import { createColorResolver } from '../scene/materials/sceneColors'
-import type { SceneContent, SceneOptions, SceneSurfaceJob } from '../../types/internal/imageMap3dInternal.types'
+import { applyLayerMode, applyObjectStates, recolorScene } from '../scene/sceneState'
+import type { SceneContent, SceneObjectEntry, SceneOptions, SceneSurfaceJob } from '../../types/internal/imageMap3dInternal.types'
 
 function recolor(options: SceneOptions, content: SceneContent | null): void {
 	const host = options.hostRef.value
@@ -34,7 +33,10 @@ function startLoads(options: SceneOptions, job: Omit<SceneSurfaceJob, 'layer' | 
 
 function objectBox(content: SceneContent | null, id: string): Box3 | null {
 	const entry = content?.objects.get(id)
-	if (!content || !entry) return null
+	return content && entry ? meshesBox(content, entry) : null
+}
+
+function meshesBox(content: SceneContent, entry: SceneObjectEntry): Box3 | null {
 	content.root.updateMatrixWorld(true)
 	const box = new Box3()
 	entry.meshes.forEach(mesh => box.expandByObject(mesh))
@@ -57,9 +59,7 @@ export function useImageMap3DScene(options: SceneOptions) {
 	function applyState(): void {
 		if (!content.value) return
 		applyLayerMode(content.value, options.getLayerId(), options.getLayerMode())
-		content.value.objects.forEach(entry => setObjectState(content.value as SceneContent, entry.id, 'base'))
-		const active = options.getActive()
-		if (active) setObjectState(content.value, active, 'active')
+		applyObjectStates(content.value, { hover: options.getHover(), active: options.getActive(), hidden: options.getHidden() })
 		options.invalidate()
 	}
 
@@ -84,7 +84,7 @@ export function useImageMap3DScene(options: SceneOptions) {
 		{ flush: 'post' },
 	)
 
-	watch([options.getLayerId, options.getLayerMode, options.getActive], applyState)
+	watch([options.getLayerId, options.getLayerMode, options.getActive, options.getHover, options.getHidden], applyState)
 
 	onBeforeUnmount(clear)
 

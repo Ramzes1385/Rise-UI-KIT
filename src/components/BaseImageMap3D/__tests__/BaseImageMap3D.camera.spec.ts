@@ -123,7 +123,7 @@ describe('BaseImageMap3D: камера', () => {
 		await waitFor(() => expect(zoomOut).toHaveAttribute('aria-disabled', 'true'))
 	})
 
-	it('клавиши в области карты: Shift+стрелки, +, −, 0; прочие клавиши не перехватываются', async () => {
+	it('клавиши в области карты: Shift+стрелки, +, −, 0; чужие клавиши не перехватываются', async () => {
 		const { camera, controls } = await renderCamera()
 		const region = screen.getByRole('group', { name: 'Этаж 1' })
 		await fireEvent.keyDown(region, { key: 'ArrowRight', shiftKey: true })
@@ -138,7 +138,7 @@ describe('BaseImageMap3D: камера', () => {
 		expect((camera() as OrthographicCamera).zoom).toBeCloseTo(1)
 		await fireEvent.keyDown(region, { key: '0' })
 		expect(MathUtils.radToDeg(azimuth(camera(), controls().target))).toBeCloseTo(45)
-		const event = new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true })
+		const event = new KeyboardEvent('keydown', { key: 'F2', bubbles: true, cancelable: true })
 		region.dispatchEvent(event)
 		expect(event.defaultPrevented).toBe(false)
 	})
@@ -146,6 +146,7 @@ describe('BaseImageMap3D: камера', () => {
 	it('zoomToObject: камера смотрит на центр объекта; неизвестный id — без движения', async () => {
 		const { exposed, controls, camera } = await renderCamera()
 		exposed.value?.zoomToObject('shop')
+		await nextTick()
 		await nextTick()
 		camera()
 		expect(controls().target.x).toBeCloseTo(500)

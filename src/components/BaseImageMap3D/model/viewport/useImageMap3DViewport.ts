@@ -11,7 +11,7 @@ const MAX_PIXEL_RATIO = 2
 export function useImageMap3DViewport(options: ImageMap3DViewportOptions) {
 	const scene = new Scene()
 	const camera = shallowRef(createViewCamera(options.getCameraKind()))
-	const { renderer, invalidate, release } = useRenderLoop(scene, () => camera.value)
+	const { renderer, invalidate, release, onFrame } = useRenderLoop(scene, () => camera.value)
 	let observer: ResizeObserver | null = null
 
 	function resize(width: number, height: number): void {
@@ -61,5 +61,5 @@ export function useImageMap3DViewport(options: ImageMap3DViewportOptions) {
 
 	onBeforeUnmount(stop)
 
-	return { scene, camera, renderer, invalidate }
+	return { scene, camera, renderer, invalidate, onFrame }
 }

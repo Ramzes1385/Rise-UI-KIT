@@ -1,11 +1,25 @@
 import type { Ref, ShallowRef } from 'vue'
+import type { useImageMap3DMap } from '../../model/useImageMap3DMap'
 import type { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import type { UseTweenReturn } from '@composables/interaction/useTween'
+import type { useImageMap3DStage } from '../../model/useImageMap3DStage'
 import type { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+import type { ImageMapPoint } from '@components/BaseImageMap/types/imageMapData.types'
 import type { BaseImageMapProps } from '@components/BaseImageMap/types/BaseImageMap.types'
+import type { Center } from '@components/BaseImageMap/types/internal/imageMapInternal.types'
+import type { ResolvedImageMapObject } from '@components/BaseImageMap/types/internal/imageMapModel.types'
 import type { ImageMap3DData, ImageMap3DLayer, ImageMap3DObject, ImageMapLayerModel } from '../imageMap3dData.types'
 import type {
+	ImageMap3DCamera,
+	ImageMap3DLayerMode,
+	ImageMap3DProps,
+	ImageMap3DRenderer,
+	ImageMap3DRendererFactory,
+} from '../BaseImageMap3D.types'
+import type {
 	Box3,
+	Camera,
+	Vector2,
 	Color,
 	Group,
 	Material,
@@ -16,14 +30,6 @@ import type {
 	PerspectiveCamera,
 	Scene,
 } from 'three'
-import type {
-	BaseImageMap3DEmits,
-	ImageMap3DCamera,
-	ImageMap3DLayerMode,
-	ImageMap3DProps,
-	ImageMap3DRenderer,
-	ImageMap3DRendererFactory,
-} from '../BaseImageMap3D.types'
 
 /** Правило проверки 3D-поля данных */
 export type ImageMap3DFieldRule = 'number' | 'positive' | 'nonNegative' | 'text' | 'vector' | 'model' | 'object'
@@ -173,6 +179,10 @@ export interface SceneOptions {
 	getLayerMode: () => ImageMap3DLayerMode
 	/** Id выбранного объекта */
 	getActive: () => string | null
+	/** Id объекта под указателем или в фокусе клавиатуры */
+	getHover: () => string | null
+	/** Id объектов, скрытых фильтрами и поиском: их меши не рисуются и не выбираются */
+	getHidden: () => ReadonlySet<string>
 	/** Запросить кадр */
 	invalidate: () => void
 	/** Настройка загрузчика моделей этажей (`configureLoader`) */
@@ -235,8 +245,10 @@ export interface CameraOptions {
 export interface StageOptions {
 	/** Пропсы компонента */
 	props: ImageMap3DProps
-	/** События компонента */
-	emit: BaseImageMap3DEmits
+	/** Ядро карты: данные, выбор, наведение */
+	map: Map3DParts
+	/** Карточка объекта */
+	cardRef: Readonly<Ref<HTMLElement | null>>
 	/** Холст */
 	canvasRef: Readonly<Ref<HTMLCanvasElement | null>>
 	/** Область карты */
@@ -266,3 +278,114 @@ export interface CameraPoseState {
 	/** Последнее показанное положение */
 	lastPose: () => CameraPose | null
 }
+
+/** Размер области карты, px */
+export interface ScreenSize {
+	width: number
+	height: number
+}
+
+/** Точка сцены на экране: координаты в области карты (px) и видна ли она камере */
+export interface ScreenSpot {
+	x: number
+	y: number
+	isVisible: boolean
+}
+
+/** Положение карточки объекта: якорь (px) и сторона — над объектом или под ним у верхнего края */
+export interface CardPlacement {
+	left: number
+	top: number
+	isBelow: boolean
+}
+
+/** Метка `point` над сценой */
+export interface ScenePointView {
+	/** Объект */
+	item: ResolvedImageMapObject
+	/** Данные точки */
+	point: ImageMapPoint
+	/** Атрибуты элемента: id объекта для выбора указателем */
+	attributes: Record<string, string>
+	/** Положение и цвета */
+	style: Record<string, string>
+	/** Точка перед камерой и внутри области */
+	isVisible: boolean
+	/** Выбрана */
+	isActive: boolean
+	/** Под указателем или в фокусе клавиатуры */
+	isHovered: boolean
+}
+
+/** Указатель над сценой */
+export interface ScenePointerOptions {
+	/** Id объекта под точкой экрана (clientX, clientY) */
+	pickAt: (x: number, y: number) => string | null
+	/** Объект под указателем */
+	setHover: (id: string | null) => void
+	/** Выбрать объект */
+	activate: (id: string, event: Event) => void
+}
+
+/** Клавиатура объектов сцены */
+export interface SceneKeyboardOptions {
+	/** Центры доступных объектов активного этажа на экране */
+	centers: () => Center[]
+	/** Объект в фокусе клавиатуры */
+	getFocus: () => string | null
+	/** Выбранный объект */
+	getActive: () => string | null
+	/** Перевести фокус клавиатуры на объект (или снять) */
+	focus: (id: string | null) => void
+	/** Выбрать объект */
+	activate: (id: string, event: Event) => void
+	/** Соседний этаж: 1 — выше, -1 — ниже */
+	stepLayer: (step: 1 | -1) => void
+}
+
+/** Карточка объекта и метки над сценой */
+export interface SceneOverlayOptions {
+	/** Область карты */
+	hostRef: Readonly<Ref<HTMLElement | null>>
+	/** Карточка: её размер нужен, чтобы не выйти за край */
+	cardRef: Readonly<Ref<HTMLElement | null>>
+	/** Камера */
+	getCamera: () => ImageMap3DViewCamera
+	/** Подписка на каждый нарисованный кадр */
+	onFrame: (hook: () => void) => void
+	/** Запросить кадр */
+	invalidate: () => void
+	/** Границы мешей объекта */
+	objectBox: (id: string) => Box3 | null
+	/** Данные карты: высота этажей */
+	getData: () => ImageMap3DData
+	/** Объект карточки */
+	getCardItem: () => ResolvedImageMapObject | undefined
+	/** Точки активного этажа */
+	getPoints: () => ResolvedImageMapObject[]
+	/** Выбранный объект */
+	getActive: () => string | null
+	/** Объект под указателем или в фокусе */
+	getHover: () => string | null
+}
+
+/** Ядро 2D-карты (данные, фильтры, часы, действия, каталог, маршруты) для 3D */
+export interface Map3DOptions {
+	/** Корень компонента */
+	rootRef: Readonly<Ref<HTMLElement | null>>
+	/** Показать объект камерой */
+	zoomTo: (id: string) => void
+}
+
+/** Ядро 2D-карты в 3D: данные, фильтры, часы, действия, оверлей, каталог, маршруты и `setHover` */
+export type Map3DParts = ReturnType<typeof useImageMap3DMap>
+
+/** Выбор объекта лучом: активный этаж, камера и точка экрана в нормализованных координатах */
+export interface ScenePickQuery {
+	layerId: string | undefined
+	camera: Camera
+	ndc: Vector2
+}
+
+/** 3D-сцена компонента: область, содержимое, камера, оверлей и состояние */
+export type ImageMap3DStage = ReturnType<typeof useImageMap3DStage>

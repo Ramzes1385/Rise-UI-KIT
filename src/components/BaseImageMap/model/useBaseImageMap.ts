@@ -13,10 +13,10 @@ import { useImageMapFocus } from './interaction/useImageMapFocus'
 import { useImageMapFilters } from './directory/useImageMapFilters'
 import { useImageMapEvents } from './interaction/useImageMapEvents'
 import { useImageMapFullscreen } from './zoom/useImageMapFullscreen'
-import { useImageMapActions } from './interaction/useImageMapActions'
 import { useImageMapOverlay } from './interaction/useImageMapOverlay'
 import type BaseButton from '@components/BaseButton/ui/BaseButton.vue'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import { areaZoom, useImageMapActions } from './interaction/useImageMapActions'
 import type { ResolvedImageMapObject } from '../types/internal/imageMapModel.types'
 import type { BaseImageMapEmits, BaseImageMapExpose, ImageMapProps } from '../types/BaseImageMap.types'
 
@@ -70,7 +70,12 @@ export function useMapCore(props: ImageMapProps, emit: BaseImageMapEmits) {
 		hasTooltip: () => props.hasTooltip,
 		getSheetBreakpoint: () => props.sheetBreakpoint,
 	})
-	const actions = useImageMapActions(props, emit, { ...refs, ...data, openPopup: overlay.openPopup, zoomToArea: zoom.zoomToArea })
+	const actions = useImageMapActions(props, emit, {
+		...refs,
+		...data,
+		openPopup: overlay.openPopup,
+		zoomTo: areaZoom(refs.stageRef, zoom.zoomToArea),
+	})
 	const focus = useImageMapFocus({
 		...refs,
 		getView: () => data.view.value,

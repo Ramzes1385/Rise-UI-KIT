@@ -1,3 +1,4 @@
+import type { Ref } from 'vue'
 import { nextTick, ref, watch } from 'vue'
 import { objectArea } from '../data/shapeGeometry'
 import type { ImageMapArea } from '../../types/imageMapData.types'
@@ -17,6 +18,13 @@ function elementArea(stage: HTMLElement | null, id: string): ImageMapArea | unde
 		y: (rect.top - box.top) / box.height,
 		width: rect.width / box.width,
 		height: rect.height / box.height,
+	}
+}
+
+export function areaZoom(stageRef: Ref<HTMLElement | null>, zoomToArea: (area: ImageMapArea, scale?: number) => void) {
+	return (item: ResolvedImageMapObject): void => {
+		const area = item.object.type === 'svg' ? elementArea(stageRef.value, item.object.id) : objectArea(item.object)
+		if (area) zoomToArea(area, item.object.zoom)
 	}
 }
 
@@ -64,8 +72,7 @@ export function useImageMapActions(props: ImageMapProps, emit: BaseImageMapEmits
 		if (!item || !layer) return
 		setLayer(layer)
 		await nextTick()
-		const area = item.object.type === 'svg' ? elementArea(context.stageRef.value, id) : objectArea(item.object)
-		if (area) context.zoomToArea(area, item.object.zoom)
+		context.zoomTo(item)
 	}
 
 	function runAction(item: ResolvedImageMapObject, event: Event | undefined): void {

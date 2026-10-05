@@ -144,7 +144,7 @@ describe('BaseImageMap3D: 3D-вид', () => {
 
 	it('setLayer: известный этаж — события; тот же или неизвестный — ничего', async () => {
 		const onLayerChange = vi.fn()
-		const { exposed } = renderMap({ onLayerChange })
+		const { exposed } = renderMap({ onLayerChange, layer: 'f1' })
 		await waitFor(() => expect(exposed.value).not.toBeNull())
 		exposed.value?.setLayer('f1')
 		exposed.value?.setLayer('nope')
@@ -174,13 +174,14 @@ describe('BaseImageMap3D: 3D-вид', () => {
 describe('BaseImageMap3D: 2D-вид', () => {
 	it('без WebGL (jsdom) — BaseImageMap, статус и событие unsupported', async () => {
 		mockWebGL(false)
-		const { rendererFactory, emitted } = renderMap()
+		const onFallback = vi.fn()
+		const { rendererFactory } = renderMap({ onFallback })
 		await waitFor(() =>
 			expect(document.querySelector('.base-image-map-3d__status')).toHaveTextContent('Браузер не поддерживает 3D — показан план'),
 		)
 		expect(rendererFactory).not.toHaveBeenCalled()
 		expect(screen.getByRole('button', { name: 'Магазин' })).toBeInTheDocument()
-		expect(emitted()).toBeDefined()
+		expect(onFallback).toHaveBeenCalledWith('unsupported')
 	})
 
 	it('передаёт BaseImageMap данные, пропсы и оформление, но не свои пропсы', async () => {

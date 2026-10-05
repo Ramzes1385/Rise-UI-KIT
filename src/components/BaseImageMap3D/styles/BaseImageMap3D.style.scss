@@ -3,6 +3,20 @@
 	flex-direction: column;
 	gap: space(2);
 	min-width: 0;
+	container: base-image-map-3d / inline-size;
+
+	&__views {
+		align-self: flex-start;
+	}
+
+	&__layout,
+	&__main {
+		display: flex;
+		flex-direction: column;
+		gap: space(2);
+		min-width: 0;
+		min-height: 0;
+	}
 
 	&__toolbar {
 		display: flex;
@@ -50,6 +64,92 @@
 		touch-action: none;
 	}
 
+	&__points {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+	}
+
+	&__point {
+		position: absolute;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: sz(2px);
+		cursor: pointer;
+		pointer-events: auto;
+		transform: translate(-50%, -100%);
+
+		&--disabled {
+			cursor: default;
+			opacity: 0.5;
+		}
+	}
+
+	&__marker {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		box-sizing: border-box;
+		width: sz(28px);
+		height: sz(28px);
+		border: 2px solid var(--rise-bg);
+		border-radius: var(--rise-radius-full);
+		background-color: var(--im-fill, var(--rise-primary));
+		box-shadow: var(--rise-shadow-md);
+		color: var(--rise-on-primary);
+		font-size: sz(15px);
+		@include transition(transform, background-color);
+
+		.base-image-map-3d__point--hover & {
+			background-color: var(--im-fill-hover, var(--im-fill, var(--rise-primary)));
+			transform: scale(1.12);
+		}
+
+		.base-image-map-3d__point--active & {
+			background-color: var(--im-fill-active, var(--im-fill, var(--rise-primary)));
+			box-shadow:
+				0 0 0 3px var(--rise-bg),
+				0 0 0 5px var(--im-fill-active, var(--im-fill, var(--rise-primary)));
+		}
+	}
+
+	&__label {
+		max-width: sz(160px);
+		padding: sz(1px) sz(6px);
+		border-radius: sz(var(--rise-radius-sm));
+		background-color: var(--rise-bg);
+		box-shadow: var(--rise-shadow-xs);
+		color: var(--rise-text);
+		white-space: nowrap;
+		@include text-size(xs);
+		@include truncate;
+	}
+
+	&__card {
+		position: absolute;
+		z-index: 1;
+		box-sizing: border-box;
+		max-width: min(#{sz(280px)}, calc(100% - #{sz(16px)}));
+		padding: sz(12px) sz(16px);
+		overflow-wrap: anywhere;
+		border: 1px solid var(--rise-border);
+		border-radius: sz(var(--rise-radius-md));
+		background-color: var(--rise-bg);
+		box-shadow: var(--rise-shadow-lg);
+		color: var(--rise-text);
+		pointer-events: none;
+		transform: translate(-50%, -100%);
+
+		&--below {
+			transform: translate(-50%, 0);
+		}
+
+		&--pending {
+			visibility: hidden;
+		}
+	}
+
 	&__status {
 		margin: 0;
 		color: var(--rise-text-muted);
@@ -57,6 +157,38 @@
 
 		&:empty {
 			@include visually-hidden;
+		}
+	}
+}
+
+@container base-image-map-3d (min-width: 641px) {
+	.base-image-map-3d__layout--with-directory {
+		display: grid;
+		grid-template-columns: minmax(sz(220px), 1fr) minmax(0, 2.6fr);
+		align-items: stretch;
+
+		.base-image-map-3d__main {
+			grid-column: 2;
+			grid-row: 1;
+		}
+
+		.base-image-map-3d__directory {
+			contain: size;
+			grid-column: 1;
+			grid-row: 1;
+			max-height: none;
+		}
+	}
+
+	.base-image-map-3d__layout--end {
+		grid-template-columns: minmax(0, 2.6fr) minmax(sz(220px), 1fr);
+
+		.base-image-map-3d__main {
+			grid-column: 1;
+		}
+
+		.base-image-map-3d__directory {
+			grid-column: 2;
 		}
 	}
 }

@@ -51,6 +51,7 @@ export function useImageMapFilters(props: ImageMapProps, emit: BaseImageMapEmits
 		hasSelection: computed(() => activeFilters.value.some(filter => Boolean(values.value[filter.id]?.length))),
 		isShown: (object: ImageMapObject): boolean =>
 			matchesFilters(object, activeFilters.value, values.value) && (!isOpenNowOn.value || Boolean(isOpenNow?.(object.id))),
+		setFilters: commit,
 		setFilter(id: string, next: string[]): void {
 			commit({ ...values.value, [id]: next })
 		},

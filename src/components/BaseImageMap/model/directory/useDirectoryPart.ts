@@ -1,13 +1,13 @@
 import { nextTick } from 'vue'
 import { useImageMapDeepLink } from './useImageMapDeepLink'
 import { useImageMapDirectory } from './useImageMapDirectory'
-import type { MapCore } from '../../types/internal/imageMapInternal.types'
+import type { MapParts } from '../../types/internal/imageMapInternal.types'
 import { focusDirectoryStart, keepFocusInDirectory } from './directoryFocus'
 import type { BaseImageMapEmits, ImageMapProps } from '../../types/BaseImageMap.types'
 import type { ResolvedImageMapObject } from '../../types/internal/imageMapModel.types'
 import type { ImageMapFilterToggle } from '../../types/internal/ImageMapDirectory.types'
 
-function useDirectoryHandlers(props: ImageMapProps, emit: BaseImageMapEmits, core: MapCore) {
+function useDirectoryHandlers(props: ImageMapProps, emit: BaseImageMapEmits, core: MapParts) {
 	const { refs, data, actions, overlay, filters } = core
 	return {
 		selectFromDirectory(id: string, event: Event): void {
@@ -40,7 +40,7 @@ function useDirectoryHandlers(props: ImageMapProps, emit: BaseImageMapEmits, cor
 	}
 }
 
-export function useDirectoryPart(props: ImageMapProps, emit: BaseImageMapEmits, core: MapCore) {
+export function useDirectoryPart(props: ImageMapProps, emit: BaseImageMapEmits, core: MapParts) {
 	const { data, actions, overlay, filters } = core
 	const handlers = useDirectoryHandlers(props, emit, core)
 	const directory = useImageMapDirectory(props, {

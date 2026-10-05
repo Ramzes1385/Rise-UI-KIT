@@ -57,7 +57,21 @@ export const IMAGE_MAP_3D_FALLBACK_REASONS = ['unsupported', 'error'] as const
 export type ImageMap3DFallbackReason = (typeof IMAGE_MAP_3D_FALLBACK_REASONS)[number]
 
 /** Элементы для `customClass` */
-type ImageMap3DClassKey = 'root' | 'toolbar' | 'layers' | 'camera' | 'viewport' | 'canvas' | 'status'
+type ImageMap3DClassKey =
+	| 'root'
+	| 'views'
+	| 'toolbar'
+	| 'layers'
+	| 'camera'
+	| 'viewport'
+	| 'canvas'
+	| 'point'
+	| 'tooltip'
+	| 'popup'
+	| 'directory'
+	| 'filters'
+	| 'route'
+	| 'status'
 
 /** Пропсы BaseImageMap, которых у 3D-карты нет или они свои: колесо, предел и начальная область масштаба — у камеры */
 type ImageMap2DOnlyProp = 'data' | 'wheelZoom' | 'maxZoom' | 'initArea' | 'variant' | 'sizeScale' | 'color' | 'customClass'
@@ -84,6 +98,11 @@ export interface BaseImageMap3DProps
 	 * Кит сам эти декодеры не подключает
 	 */
 	configureLoader?: (loader: GLTFLoader) => void
+	/**
+	 * Переключатель «3D / 2D» над картой: 2D — BaseImageMap с теми же данными, выбранным объектом и этажом.
+	 * По умолчанию `false`; без WebGL переключатель не показывается
+	 */
+	has2dToggle?: boolean
 }
 
 /** Пропсы после `withDefaults` */
@@ -113,6 +132,7 @@ export type ImageMap3DProps = PropsWithDefaults<
 	| 'camera'
 	| 'layerMode'
 	| 'hasOrbit'
+	| 'has2dToggle'
 >
 
 /**
@@ -148,6 +168,12 @@ export interface BaseImageMap3DExpose {
 	zoomIn: () => void
 	/** Отдалить в 1,5 раза (до 0,5×) */
 	zoomOut: () => void
-	/** Плавно показать объект: камера смотрит на его центр, объект занимает около трети области */
+	/** Показать объект: его этаж и камера на центре объекта (объект занимает около трети области) */
 	zoomToObject: (id: string) => void
+	/** Сбросить поиск и фильтры каталога */
+	clearFilters: () => void
+	/** Построить маршрут между объектами (то же, что `v-model:route`) */
+	showRoute: (from: string, to: string) => void
+	/** Убрать маршрут */
+	clearRoute: () => void
 }

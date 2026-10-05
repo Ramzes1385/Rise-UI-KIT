@@ -12,7 +12,16 @@ export const enImageMap3d = {
 		ROTATE_RIGHT: 'Rotate right',
 		RESET_CAMERA: 'Reset view',
 		/** Map region hint for screen readers (`aria-describedby`) */
-		KEYBOARD_HINT: 'Shift and arrows — rotate and tilt, plus and minus — zoom, 0 — initial view, Ctrl and mouse wheel — zoom',
+		KEYBOARD_HINT:
+			'Arrows — objects, Enter — open, Escape — clear focus, PageUp and PageDown — floors; Shift and arrows — rotate and tilt, plus and minus — zoom, 0 — initial view, Ctrl and mouse wheel — zoom',
+		/** View switch above the map */
+		VIEW: 'Map view',
+		VIEW_3D: '3D',
+		VIEW_2D: '2D',
+		/** `aria-live` announcement when moving with arrows; `{name}` — object, `{layer}` — floor */
+		OBJECT_LIVE: '{name}, {layer}',
+		/** `aria-live` announcement when the floor changes */
+		LAYER_LIVE: 'Floor shown: {layer}',
 		/** Data field warning; `{path}` — field path, `{expected}` — one of EXPECT_* */
 		INVALID_FIELD: 'BaseImageMap3D: {path} = {value} is ignored — expected {expected}',
 		/** Floor model node not found; `{layer}` — layer id, `{name}` — node name, `{id}` — object id */

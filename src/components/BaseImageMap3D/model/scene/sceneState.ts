@@ -1,6 +1,6 @@
 import { objectLayerId } from './sceneLayout'
-import { paintObject } from './materials/sceneObjects'
 import { parseSvgPaths, svgElementShapes } from './geometry/svgShapes'
+import { paintObject, setObjectState } from './materials/sceneObjects'
 import type { ImageMap3DLayerMode } from '../../types/BaseImageMap3D.types'
 import { addShapeObject, fadeFloor, objectColors, paintFloor } from './buildScene'
 import type { ImageMap3DData, ImageMap3DObject } from '../../types/imageMap3dData.types'
@@ -18,6 +18,20 @@ export function applyLayerMode(content: SceneContent, activeLayerId: string | un
 		fadeFloor(layer)
 	})
 	content.objects.forEach(entry => paintObject(entry, content.layers.get(entry.layerId)?.opacity ?? 1))
+}
+
+export function applyObjectStates(
+	content: SceneContent,
+	state: { hover: string | null; active: string | null; hidden: ReadonlySet<string> },
+): void {
+	content.objects.forEach(entry => {
+		setObjectState(content, entry.id, 'base')
+		entry.meshes.forEach(mesh => {
+			mesh.visible = !state.hidden.has(entry.id)
+		})
+	})
+	if (state.hover) setObjectState(content, state.hover, 'hover')
+	if (state.active) setObjectState(content, state.active, 'active')
 }
 
 export function recolorScene(content: SceneContent, data: ImageMap3DData, resolve: SceneColorResolver): void {

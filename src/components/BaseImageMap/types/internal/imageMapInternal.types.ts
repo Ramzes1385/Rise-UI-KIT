@@ -51,7 +51,7 @@ export interface ActionContext {
 	findObject: (id: string | null) => ResolvedImageMapObject | undefined
 	layerOf: (id: string) => string | undefined
 	openPopup: (id: string) => void
-	zoomToArea: (area: ImageMapArea, scale?: number) => void
+	zoomTo: (item: ResolvedImageMapObject) => void
 }
 
 export interface Center {
@@ -61,7 +61,7 @@ export interface Center {
 }
 
 export interface OverlayOptions {
-	rootRef: Ref<HTMLElement | null>
+	rootRef: Readonly<Ref<HTMLElement | null>>
 	stageRef: Ref<HTMLElement | null>
 	findObject: (id: string | null) => ResolvedImageMapObject | undefined
 	hasTooltip: () => boolean
@@ -165,7 +165,17 @@ export interface DirectoryContext {
 	filters: ReturnType<typeof useImageMapFilters>
 }
 
-export type MapCore = ReturnType<typeof useMapCore>
+type MapCore = ReturnType<typeof useMapCore>
+
+/** Часть ядра карты, которой пользуются каталог, deep link и маршруты: её собирает и BaseImageMap3D */
+export interface MapParts {
+	refs: { rootRef: Readonly<Ref<HTMLElement | null>> }
+	hours: MapCore['hours']
+	filters: MapCore['filters']
+	data: MapCore['data']
+	actions: MapCore['actions']
+	overlay: Pick<MapCore['overlay'], 'hoverId' | 'openPopup' | 'findObject'>
+}
 
 export interface DeepLinkContext {
 	findObject: (id: string | null) => ResolvedImageMapObject | undefined
