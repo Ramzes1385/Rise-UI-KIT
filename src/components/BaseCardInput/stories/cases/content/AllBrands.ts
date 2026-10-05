@@ -1,7 +1,7 @@
 import { CARD_SAMPLES } from '../../shared'
-import { expect, within } from 'storybook/test'
 import type meta from '../../BaseCardInput.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
+import { expect, waitFor, within } from 'storybook/test'
 import BaseCardInput from '../../../ui/BaseCardInput.vue'
 import { literal, staticStorySource } from '@/stories/helpers'
 
@@ -40,7 +40,7 @@ export const AllBrands: StoryObj<typeof meta> = {
 			await userEvent.click(number)
 			await userEvent.paste(sample.number)
 			await expect(number).toHaveValue(sample.number)
-			await expect(group.getByRole('img', { name: `Марка карты: ${sample.name}` })).toBeVisible()
+			await waitFor(() => expect(group.getByRole('img', { name: `Марка карты: ${sample.name}` })).toBeVisible())
 		}
 	},
 }

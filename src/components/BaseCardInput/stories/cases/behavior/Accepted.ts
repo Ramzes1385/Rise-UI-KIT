@@ -21,13 +21,13 @@ export const Accepted: StoryObj<typeof meta> = {
 		const number = canvas.getByLabelText('Номер карты')
 		await userEvent.click(number)
 		await userEvent.keyboard(AMEX_NUMBER)
-		await expect(canvas.getByRole('img', { name: 'Марка карты: American Express' })).toBeVisible()
+		await waitFor(() => expect(canvas.getByRole('img', { name: 'Марка карты: American Express' })).toBeVisible())
 		await userEvent.tab()
 		await waitFor(() => expect(number).toHaveAccessibleDescription('Карты American Express не принимаются'))
 
 		await userEvent.clear(number)
 		await userEvent.paste(MIR_NUMBER)
-		await expect(canvas.getByRole('img', { name: 'Марка карты: Мир' })).toBeVisible()
+		await waitFor(() => expect(canvas.getByRole('img', { name: 'Марка карты: Мир' })).toBeVisible())
 		await userEvent.tab()
 		await waitFor(() => expect(canvas.queryByText('Карты American Express не принимаются')).toBeNull())
 	},

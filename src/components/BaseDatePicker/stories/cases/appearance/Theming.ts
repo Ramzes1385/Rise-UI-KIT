@@ -1,8 +1,8 @@
 import { findPanel } from '../../shared'
 import type meta from '../../BaseDatePicker.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
+import { expect, waitFor, screen } from 'storybook/test'
 import BaseDatePicker from '../../../ui/BaseDatePicker.vue'
-import { expect, waitFor, within, screen } from 'storybook/test'
 import { literal, storyDate, storySource, useStorySetup } from '@/stories/helpers'
 
 const ui = { wrapper: 'story-themed-wrapper', 'icon-btn': 'story-themed-icon', panel: 'story-themed-panel', header: 'story-themed-header' }
@@ -64,7 +64,7 @@ export const Theming: StoryObj<typeof meta> = {
 		const panel = await findPanel()
 		await expect(panel).toHaveClass('date-picker-panel', 'base-date-picker__panel', 'story-themed-panel')
 		await expect(panel.querySelector('.date-picker-panel__header')).toHaveClass('story-themed-header')
-		await expect(within(panel).getAllByRole('button', { name: /месяц|год/ })).toHaveLength(4)
+		await expect(panel.querySelectorAll('.date-picker-panel__nav-btn.base-date-picker__nav-btn')).toHaveLength(4)
 		await userEvent.keyboard('{Escape}')
 		await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
 	},
