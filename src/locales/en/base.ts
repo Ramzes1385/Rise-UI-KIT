@@ -222,5 +222,15 @@ export const enBase = {
 		IMAGE_MAP_HOURS_RANGE: 'BaseImageMap: opening hours range "{range}" of the object "{id}" is skipped — expected "10:00-22:00"',
 		IMAGE_MAP_ROUTE_LAYER:
 			'BaseImageMap: route node "{id}" is on the layer "{layer}" that is not in data.layers — up or down is taken from the order of transition nodes',
+		QR_UNSAFE_LOGO:
+			'BaseQrCode: the logo with an unsafe scheme is not shown: {url}. Allowed: a relative URL, https:, http:, blob: and data:image/(png|jpeg|gif|webp|svg+xml)',
+		QR_EXTERNAL_LOGO:
+			'BaseQrCode: the logo loads from a third-party server {origin} — the request reveals the page address and the image can be swapped on the server. Use a data URI or your own domain',
+		QR_INVERTED:
+			'BaseQrCode: modules {module} are lighter than the background {background} — not every scanner reads an inverted code. Use dark modules on a light background',
+		QR_LOW_CONTRAST:
+			'BaseQrCode: contrast of modules {module} and background {background} is {ratio}:1, below 3:1 — some scanners will not read the code',
+		QR_SMALL_MARGIN:
+			'BaseQrCode: the quiet zone is {margin} modules — less than 2; the standard requires 4, without it scanners find the code worse',
 	},
 }

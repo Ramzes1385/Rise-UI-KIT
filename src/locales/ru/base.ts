@@ -243,5 +243,15 @@ export const ruBase = {
 		IMAGE_MAP_HOURS_RANGE: 'BaseImageMap: интервал часов работы «{range}» объекта «{id}» пропущен — ожидается «10:00-22:00»',
 		IMAGE_MAP_ROUTE_LAYER:
 			'BaseImageMap: узел маршрута «{id}» стоит на слое «{layer}», которого нет в data.layers — вверх или вниз определено по порядку узлов перехода',
+		QR_UNSAFE_LOGO:
+			'BaseQrCode: логотип с небезопасной схемой не показан: {url}. Допустимы относительный адрес, https:, http:, blob: и data:image/(png|jpeg|gif|webp|svg+xml)',
+		QR_EXTERNAL_LOGO:
+			'BaseQrCode: логотип грузится с чужого сервера {origin} — запрос раскрывает адрес страницы, а картинку могут подменить на сервере. Используйте data URI или свой домен',
+		QR_INVERTED:
+			'BaseQrCode: модули {module} светлее фона {background} — инвертированный код читают не все сканеры. Нужны тёмные модули на светлом фоне',
+		QR_LOW_CONTRAST:
+			'BaseQrCode: контраст модулей {module} и фона {background} — {ratio}:1, меньше 3:1 — часть сканеров код не прочитает',
+		QR_SMALL_MARGIN:
+			'BaseQrCode: поле вокруг кода — {margin} в модулях, меньше 2; стандарт требует 4, без поля сканеры хуже находят код',
 	},
 }
