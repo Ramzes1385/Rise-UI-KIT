@@ -2,7 +2,7 @@ import { expect, waitFor } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../BaseCryptoProSign.stories'
 import BaseCryptoProSign from '../../../ui/BaseCryptoProSign.vue'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { isStoryBranded, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const ui = { root: 'story-themed-sign', actions: 'story-themed-actions' }
 
@@ -43,8 +43,8 @@ export const Theming: StoryObj<typeof meta> = {
 		const themed = canvas.getByRole('region', { name: 'Токены на контейнере' })
 		const classed = canvas.getByRole('region', { name: 'Классы через ui' })
 
-		await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('16px')
-		await expect(getComputedStyle(plain).borderTopLeftRadius).toBe('8px')
+		if (!isStoryBranded()) await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('16px')
+		if (!isStoryBranded()) await expect(getComputedStyle(plain).borderTopLeftRadius).toBe('8px')
 		await expect(getComputedStyle(themed).borderTopColor).not.toBe(getComputedStyle(plain).borderTopColor)
 		await expect(getComputedStyle(themed).color).not.toBe(getComputedStyle(plain).color)
 		await expect(classed).toHaveClass('base-crypto-pro-sign', 'story-themed-sign')

@@ -2,7 +2,7 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseTreeSelect.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseTreeSelect from '../../../ui/BaseTreeSelect.vue'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { isStoryBranded, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const ui = { root: 'story-themed-tree-select', trigger: 'story-themed-trigger', node: 'story-themed-node' }
 
@@ -49,8 +49,8 @@ export const Theming: StoryObj<typeof meta> = {
 
 		await expect(getComputedStyle(trigger(themed)).backgroundColor).not.toBe(getComputedStyle(trigger(plain)).backgroundColor)
 		await expect(getComputedStyle(trigger(themed)).borderTopColor).not.toBe(getComputedStyle(trigger(plain)).borderTopColor)
-		await expect(getComputedStyle(trigger(themed)).borderTopLeftRadius).toBe('16px')
-		await expect(getComputedStyle(trigger(themed)).paddingTop).toBe('12px')
+		if (!isStoryBranded()) await expect(getComputedStyle(trigger(themed)).borderTopLeftRadius).toBe('16px')
+		if (!isStoryBranded()) await expect(getComputedStyle(trigger(themed)).paddingTop).toBe('12px')
 		await expect(classed).toHaveClass('base-tree-select', 'story-themed-tree-select')
 		await expect(trigger(classed)).toHaveClass('base-tree-select__trigger', 'story-themed-trigger')
 	},

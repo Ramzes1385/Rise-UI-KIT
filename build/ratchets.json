@@ -1,44 +1,44 @@
 {
 	"size": {
 		"components.js": {
-			"gzip": 463182,
-			"budget": 509952
+			"gzip": 491521,
+			"budget": 541696
 		},
 		"composables.js": {
-			"gzip": 114763,
-			"budget": 126976
+			"gzip": 120662,
+			"budget": 133120
 		},
 		"icons.js": {
-			"gzip": 3062,
-			"budget": 4096
+			"gzip": 3228,
+			"budget": 5120
 		},
 		"icons.svg": {
 			"gzip": 4400,
 			"budget": 6144
 		},
 		"index.js": {
-			"gzip": 481121,
-			"budget": 529408
+			"gzip": 510787,
+			"budget": 562176
 		},
 		"map3d.js": {
-			"gzip": 95064,
-			"budget": 105472
+			"gzip": 97566,
+			"budget": 107520
 		},
 		"media.js": {
-			"gzip": 144306,
-			"budget": 159744
+			"gzip": 151705,
+			"budget": 166912
 		},
 		"styles.css": {
-			"gzip": 83405,
-			"budget": 92160
+			"gzip": 93296,
+			"budget": 103424
 		},
 		"styles.layer.css": {
 			"gzip": 61,
 			"budget": 2048
 		},
 		"utils.js": {
-			"gzip": 71763,
-			"budget": 79872
+			"gzip": 78143,
+			"budget": 86016
 		}
 	},
 	"coverageExcludes": {

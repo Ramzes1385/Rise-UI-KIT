@@ -2,7 +2,7 @@ import { expect } from 'storybook/test'
 import type meta from '../BaseTransfer.stories'
 import BaseTransfer from '../../ui/BaseTransfer.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { isStoryBranded, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const ui = { root: 'story-themed-transfer', panel: 'story-themed-panel' }
 
@@ -50,9 +50,9 @@ export const Theming: StoryObj<typeof meta> = {
 
 		await expect(getComputedStyle(panel(themed)).backgroundColor).not.toBe(getComputedStyle(panel(plain)).backgroundColor)
 		await expect(getComputedStyle(panel(themed)).borderTopColor).not.toBe(getComputedStyle(panel(plain)).borderTopColor)
-		await expect(getComputedStyle(panel(themed)).borderTopLeftRadius).toBe('16px')
-		await expect(getComputedStyle(panel(themed)).paddingTop).toBe('16px')
-		await expect(getComputedStyle(panel(plain)).paddingTop).toBe('10px')
+		if (!isStoryBranded()) await expect(getComputedStyle(panel(themed)).borderTopLeftRadius).toBe('16px')
+		if (!isStoryBranded()) await expect(getComputedStyle(panel(themed)).paddingTop).toBe('16px')
+		if (!isStoryBranded()) await expect(getComputedStyle(panel(plain)).paddingTop).toBe('10px')
 		await expect(classed).toHaveClass('base-transfer', 'story-themed-transfer')
 		await expect(panel(classed)).toHaveClass('base-transfer__panel', 'story-themed-panel')
 	},

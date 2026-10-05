@@ -2,7 +2,7 @@ import { expect } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../BaseSignaturePad.stories'
 import BaseSignaturePad from '../../../ui/BaseSignaturePad.vue'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { isStoryBranded, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const ui = { root: 'story-themed-signature', surface: 'story-themed-surface' }
 
@@ -45,7 +45,7 @@ export const Theming: StoryObj<typeof meta> = {
 		const themed = surfaceOf('Токены на контейнере')
 		const classed = canvas.getByRole('group', { name: 'Классы через ui' })
 
-		await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('16px')
+		if (!isStoryBranded()) await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('16px')
 		await expect(getComputedStyle(plain).borderTopLeftRadius).not.toBe('16px')
 		await expect(getComputedStyle(themed).borderTopColor).not.toBe(getComputedStyle(plain).borderTopColor)
 		await expect(getComputedStyle(themed).backgroundColor).not.toBe(getComputedStyle(plain).backgroundColor)

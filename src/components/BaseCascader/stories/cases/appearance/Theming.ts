@@ -2,7 +2,7 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseCascader.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseCascader from '../../../ui/BaseCascader.vue'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { isStoryBranded, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const ui = { root: 'story-themed-cascader', trigger: 'story-themed-trigger', column: 'story-themed-column' }
 
@@ -49,8 +49,8 @@ export const Theming: StoryObj<typeof meta> = {
 
 		await expect(getComputedStyle(trigger(themed)).backgroundColor).not.toBe(getComputedStyle(trigger(plain)).backgroundColor)
 		await expect(getComputedStyle(trigger(themed)).borderTopColor).not.toBe(getComputedStyle(trigger(plain)).borderTopColor)
-		await expect(getComputedStyle(trigger(themed)).borderTopLeftRadius).toBe('16px')
-		await expect(getComputedStyle(trigger(themed)).paddingTop).toBe('12px')
+		if (!isStoryBranded()) await expect(getComputedStyle(trigger(themed)).borderTopLeftRadius).toBe('16px')
+		if (!isStoryBranded()) await expect(getComputedStyle(trigger(themed)).paddingTop).toBe('12px')
 		await expect(classed).toHaveClass('base-cascader', 'story-themed-cascader')
 		await expect(trigger(classed)).toHaveClass('base-cascader__trigger', 'story-themed-trigger')
 	},

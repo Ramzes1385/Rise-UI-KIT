@@ -74,6 +74,7 @@ export const Result: StoryObj<typeof meta> = {
 	play: async ({ canvas, userEvent }) => {
 		await waitFor(() => expect(canvas.getByRole('slider', { name: 'Масштаб' })).not.toHaveAttribute('aria-disabled', 'true'))
 		await userEvent.click(canvas.getByRole('button', { name: 'Сохранить аватар' }))
-		await expect(await canvas.findByRole('img', { name: 'Новый аватар' })).toBeVisible()
+		const avatarImage = await canvas.findByRole('img', { name: 'Новый аватар' })
+		await waitFor(() => expect(avatarImage).toBeVisible())
 	},
 }

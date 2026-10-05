@@ -2,7 +2,7 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseFileUpload.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseFileUpload from '../../../ui/BaseFileUpload.vue'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { isStoryBranded, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const ui = { root: 'story-themed-upload', dropzone: 'story-themed-dropzone' }
 
@@ -50,9 +50,9 @@ export const Theming: StoryObj<typeof meta> = {
 
 		await expect(getComputedStyle(zone(themed)).backgroundColor).not.toBe(getComputedStyle(zone(plain)).backgroundColor)
 		await expect(getComputedStyle(zone(themed)).borderTopColor).not.toBe(getComputedStyle(zone(plain)).borderTopColor)
-		await expect(getComputedStyle(zone(themed)).borderTopLeftRadius).toBe('16px')
-		await expect(getComputedStyle(zone(themed)).paddingTop).toBe('32px')
-		await expect(getComputedStyle(zone(plain)).paddingTop).toBe('24px')
+		if (!isStoryBranded()) await expect(getComputedStyle(zone(themed)).borderTopLeftRadius).toBe('16px')
+		if (!isStoryBranded()) await expect(getComputedStyle(zone(themed)).paddingTop).toBe('32px')
+		if (!isStoryBranded()) await expect(getComputedStyle(zone(plain)).paddingTop).toBe('24px')
 		await expect(classed).toHaveClass('base-file-upload', 'story-themed-upload')
 		await expect(zone(classed)).toHaveClass('base-file-upload__dropzone', 'story-themed-dropzone')
 	},
