@@ -1,3 +1,5 @@
+import type { UiProp } from '@composables/base/useUi'
+import type { BaseEditorPart } from './BaseEditor.types'
 import type { BaseSelectOption } from '@components/BaseSelect'
 
 interface EditorActiveStates {
@@ -38,6 +40,8 @@ export interface BaseEditorToolbarProps {
 	isTextColorActive: boolean
 	/** Активен ли цвет фона */
 	isBackgroundColorActive: boolean
+	/** Классы частей из пропа `ui` редактора (`toolbar`, `group`, `btn`) */
+	ui?: UiProp<BaseEditorPart>
 }
 
 export interface BaseEditorToolbarEmits {

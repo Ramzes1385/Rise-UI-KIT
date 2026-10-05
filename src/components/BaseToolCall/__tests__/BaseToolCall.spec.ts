@@ -58,7 +58,7 @@ describe('BaseToolCall', () => {
 
 	it('слоты output и default', () => {
 		render(BaseToolCall, {
-			props: { name: 'list', result: [1, 2] },
+			props: { name: 'list', result: [1, 2], isOpen: true },
 			slots: {
 				output: '<template #output="{ result }"><b>Всего: {{ result.length }}</b></template>',
 				default: '<button type="button">Разрешить</button>',
@@ -66,7 +66,7 @@ describe('BaseToolCall', () => {
 		})
 
 		expect(screen.getByText('Всего: 2')).toBeInTheDocument()
-		expect(screen.getByRole('button', { name: 'Разрешить', hidden: true })).toBeInTheDocument()
+		expect(screen.getByRole('button', { name: 'Разрешить' })).toBeInTheDocument()
 	})
 
 	it('вариант, масштаб и customClass', () => {

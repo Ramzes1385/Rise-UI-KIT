@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /**
@@ -5,6 +6,15 @@ import type { BaseComponentProps } from '@composables/base/useBaseComponent'
  * `outline` — рамка без фона, `ghost` — без рамки и фона (внутри поповера или меню)
  */
 export const EMOJI_PICKER_VARIANTS = ['default', 'soft', 'outline', 'ghost'] as const
+
+/**
+ * Части пикера для пропа `ui` (БЭМ-элементы `.base-emoji-picker__<часть>`, `root` — сама панель):
+ * search — строка поиска с иконкой, input — поле поиска, nav — ряд вкладок разделов, tab — вкладка раздела,
+ * grid — прокручиваемая сетка, heading — заголовок раздела, emoji — ячейка-кнопка эмодзи, preview — строка предпросмотра
+ */
+export const EMOJI_PICKER_PARTS = ['search', 'input', 'nav', 'tab', 'grid', 'heading', 'emoji', 'preview'] as const
+
+export type BaseEmojiPickerPart = (typeof EMOJI_PICKER_PARTS)[number]
 
 /** Разделы эмодзи в порядке Unicode */
 export const EMOJI_CATEGORIES = ['smileys', 'people', 'nature', 'food', 'travel', 'activities', 'objects', 'symbols'] as const
@@ -52,6 +62,14 @@ export interface BaseEmojiPickerProps extends BaseComponentProps<
 	hasPreview?: boolean
 	/** Отключает поиск и выбор */
 	isDisabled?: boolean
+	/**
+	 * Классы частей пикера (`root`, `search`, `input`, `nav`, `tab`, `grid`, `heading`, `emoji`, `preview`) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseEmojiPicker: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseEmojiPicker :ui="{ root: 'shadow-lg', emoji: 'rounded-full' }" />
+	 */
+	ui?: UiProp<BaseEmojiPickerPart>
 }
 
 /**

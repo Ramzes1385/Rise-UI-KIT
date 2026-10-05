@@ -32,3 +32,5 @@ export const MediaAndLinks = cases.MediaAndLinks
 export const CodeMode = cases.CodeMode
 export const SanitizedContent = cases.SanitizedContent
 export const Keyboard = cases.Keyboard
+export const Theming = cases.Theming
+export const Animations = cases.Animations

@@ -5,20 +5,20 @@
 	display: flex;
 	flex-direction: column;
 	box-sizing: border-box;
-	width: calc(var(--emoji-columns, 8) * var(--emoji-cell) + #{sz(16px)});
+	width: calc(var(--emoji-columns, 8) * var(--emoji-cell) + #{space(16px)});
 	max-width: 100%;
 	overflow: hidden;
-	border: 1px solid var(--rise-border);
-	border-radius: sz(var(--rise-radius-lg));
+	border: 1px solid ct(emoji-picker, border, var(--rise-border));
+	border-radius: sz(ct(emoji-picker, radius, var(--rise-radius-lg)));
 	@include text-size(sm);
-	@include custom-text(color, var(--rise-text));
-	@include custom-bg(background-color, var(--rise-bg));
+	@include custom-text(color, ct(emoji-picker, text, var(--rise-text)));
+	@include custom-bg(background-color, ct(emoji-picker, bg, var(--rise-bg)));
 
 	&__search {
 		display: flex;
 		align-items: center;
 		gap: sz(8px);
-		margin: sz(8px) sz(8px) 0;
+		margin: space(8px 8px 0);
 		padding: 0 sz(10px);
 		border: 1px solid var(--rise-border-accented);
 		border-radius: sz(var(--rise-control-radius));
@@ -59,7 +59,7 @@
 		display: flex;
 		justify-content: space-between;
 		gap: sz(2px);
-		padding: sz(6px) sz(8px) 0;
+		padding: space(6px 8px 0);
 		border-bottom: 1px solid var(--rise-border);
 	}
 
@@ -84,12 +84,12 @@
 		@include focus-ring(-2px);
 
 		@include hover {
-			background-color: var(--rise-bg-muted);
+			background-color: ct(emoji-picker, tab-bg-hover, var(--rise-bg-muted));
 			opacity: 1;
 		}
 
 		&[aria-current='true'] {
-			border-bottom-color: var(--rise-primary);
+			border-bottom-color: ct(emoji-picker, tab-border-selected, var(--rise-primary));
 			opacity: 1;
 		}
 	}
@@ -97,7 +97,7 @@
 	&__grid {
 		position: relative;
 		height: sz(264px);
-		padding: 0 sz(8px) sz(8px);
+		padding: space(0 8px 8px);
 		overflow-y: auto;
 		overscroll-behavior: contain;
 		@include scrollbar-thin;
@@ -109,8 +109,8 @@
 		z-index: 1;
 		margin: 0;
 		padding: sz(8px) sz(4px) sz(4px);
-		@include custom-bg(background-color, var(--rise-bg));
-		@include custom-text(color, var(--rise-text-muted));
+		@include custom-bg(background-color, ct(emoji-picker, bg, var(--rise-bg)));
+		@include custom-text(color, ct(emoji-picker, heading-text, var(--rise-text-muted)));
 		@include text-size(xs);
 		font-weight: var(--rise-font-weight-medium);
 	}
@@ -128,21 +128,21 @@
 		height: var(--emoji-cell);
 		padding: 0;
 		border: 0;
-		border-radius: sz(var(--rise-radius-md));
+		border-radius: sz(ct(emoji-picker, emoji-radius, var(--rise-radius-md)));
 		background-color: transparent;
 		font-family: var(--emoji-font);
-		font-size: sz(22px);
+		font-size: sz(ct(emoji-picker, emoji-font-size, 22px));
 		line-height: 1;
 		cursor: pointer;
+		@include transition-colors;
+		transition-property: color, background-color, box-shadow, transform;
 		@include focus-ring(-2px);
 
 		@include hover {
-			background-color: var(--rise-bg-elevated);
+			background-color: ct(emoji-picker, emoji-bg-hover, var(--rise-bg-elevated));
 		}
 
 		@include motion-safe {
-			transition: transform 0.12s var(--rise-ease);
-
 			&:active {
 				transform: scale(0.9);
 			}
@@ -164,7 +164,7 @@
 		align-items: center;
 		gap: sz(10px);
 		min-height: sz(48px);
-		padding: sz(6px) sz(12px);
+		padding: space(6px 12px);
 		border-top: 1px solid var(--rise-border);
 	}
 
@@ -195,7 +195,7 @@
 	}
 
 	&--outline {
-		border-color: var(--rise-border-accented);
+		border-color: ct(emoji-picker, border, var(--rise-border-accented));
 	}
 
 	&--ghost {

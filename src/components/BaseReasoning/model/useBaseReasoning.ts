@@ -1,5 +1,6 @@
 import { UI_AI } from '@/locales/messages'
 import { formatMessage } from '@/locales/state'
+import { useUi } from '@composables/base/useUi'
 import { computed, ref, useId, watch } from 'vue'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseReasoningEmits, BaseReasoningProps } from '../types/BaseReasoning.types'
@@ -63,6 +64,7 @@ export function useBaseReasoning(props: BaseReasoningProps, emit: BaseReasoningE
 	const seconds = useThinkingTime(props)
 	return {
 		...useStandardBaseComponent('base-reasoning', props, ['root', 'trigger', 'content']),
+		ui: useUi(props, 'base-reasoning'),
 		...useReasoningOpen(props, emit),
 		contentId: `rise-reasoning-${useId()}`,
 		seconds,

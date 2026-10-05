@@ -1,18 +1,16 @@
 <template>
 	<div
 		v-if="hasToolbar && !isReadonly"
-		class="base-editor__toolbar"
-		:class="classes.toolbar"
+		:class="[ui('toolbar'), classes.toolbar]"
 		role="toolbar"
 		:aria-label="UI_EDITOR.TOOLBAR_LABEL"
 		@mousedown.prevent>
 		<slot name="toolbar">
-			<div v-for="group in buttonGroups" :key="group.key" class="base-editor__group" :class="classes.group">
+			<div v-for="group in buttonGroups" :key="group.key" :class="[ui('group'), classes.group]">
 				<BaseTooltip v-for="btn in group.items" :key="btn.icon" :text="btn.label" position="top" :size-scale="sizeScale">
 					<BaseButton
 						variant="ghost"
-						class="base-editor__btn"
-						:class="[{ 'base-editor__btn--active': activeStates[btn.activeKey] }, classes.btn]"
+						:class="[ui('btn'), { 'base-editor__btn--active': activeStates[btn.activeKey] }, classes.btn]"
 						:size-scale="sizeScale"
 						:aria-label="btn.label"
 						:aria-pressed="activeStates[btn.activeKey] ? 'true' : 'false'"
@@ -22,7 +20,7 @@
 				</BaseTooltip>
 			</div>
 
-			<div class="base-editor__group" :class="classes.group">
+			<div :class="[ui('group'), classes.group]">
 				<BaseTooltip :text="UI_EDITOR.TEXT_COLOR" position="top" :size-scale="sizeScale">
 					<BaseColorPicker
 						v-model="textColorModel"
@@ -65,7 +63,7 @@
 				</BaseTooltip>
 			</div>
 
-			<div class="base-editor__group" :class="classes.group">
+			<div :class="[ui('group'), classes.group]">
 				<div class="base-editor__heading-select" :class="classes.headingSelect">
 					<BaseSelect
 						v-model="headingValue"
@@ -77,12 +75,11 @@
 				</div>
 			</div>
 
-			<div class="base-editor__group" :class="classes.group">
+			<div :class="[ui('group'), classes.group]">
 				<BaseTooltip :text="UI_EDITOR.LINK" position="top" :size-scale="sizeScale">
 					<BaseButton
 						variant="ghost"
-						class="base-editor__btn"
-						:class="[classes.btn]"
+						:class="[ui('btn'), classes.btn]"
 						:size-scale="sizeScale"
 						:aria-label="UI_EDITOR.LINK"
 						@click="emit('insertLink')">
@@ -90,7 +87,7 @@
 					</BaseButton>
 				</BaseTooltip>
 				<BaseTooltip :text="UI_EDITOR.IMAGE" position="top" :size-scale="sizeScale">
-					<label class="base-editor__btn base-editor__btn--file" :class="classes.btn" @mousedown.stop>
+					<label :class="[ui('btn'), 'base-editor__btn--file', classes.btn]" @mousedown.stop>
 						<BaseIcon name="image" :size-scale="iconScale" />
 						<input
 							type="file"
@@ -102,7 +99,7 @@
 					</label>
 				</BaseTooltip>
 				<BaseTooltip :text="UI_EDITOR.VIDEO" position="top" :size-scale="sizeScale">
-					<label class="base-editor__btn base-editor__btn--file" :class="classes.btn" @mousedown.stop>
+					<label :class="[ui('btn'), 'base-editor__btn--file', classes.btn]" @mousedown.stop>
 						<BaseIcon name="video" :size-scale="iconScale" />
 						<input
 							type="file"
@@ -115,12 +112,11 @@
 				</BaseTooltip>
 			</div>
 
-			<div class="base-editor__group" :class="classes.group">
+			<div :class="[ui('group'), classes.group]">
 				<BaseTooltip :text="UI_EDITOR.CLEAR_FORMAT" position="top" :size-scale="sizeScale">
 					<BaseButton
 						variant="ghost"
-						class="base-editor__btn"
-						:class="[classes.btn]"
+						:class="[ui('btn'), classes.btn]"
 						:size-scale="sizeScale"
 						:aria-label="UI_EDITOR.CLEAR_FORMAT"
 						@click="emit('clearAllFormatting')">
@@ -130,8 +126,7 @@
 				<BaseTooltip :text="UI_EDITOR.DIVIDER" position="top" :size-scale="sizeScale">
 					<BaseButton
 						variant="ghost"
-						class="base-editor__btn"
-						:class="[classes.btn]"
+						:class="[ui('btn'), classes.btn]"
 						:size-scale="sizeScale"
 						:aria-label="UI_EDITOR.DIVIDER"
 						@click="emit('insertSeparator')">
@@ -141,8 +136,7 @@
 				<BaseTooltip :text="isCodeMode ? UI_EDITOR.VISUAL_MODE : UI_EDITOR.CODE_MODE" position="top" :size-scale="sizeScale">
 					<BaseButton
 						variant="ghost"
-						class="base-editor__btn"
-						:class="[{ 'base-editor__btn--active': isCodeMode }, classes.btn]"
+						:class="[ui('btn'), { 'base-editor__btn--active': isCodeMode }, classes.btn]"
 						:size-scale="sizeScale"
 						:aria-label="UI_EDITOR.CODE_MODE"
 						:aria-pressed="isCodeMode ? 'true' : 'false'"
@@ -171,6 +165,6 @@ const emit = defineEmits<BaseEditorToolbarEmits>()
 
 defineSlots<BaseEditorToolbarSlots>()
 
-const { headingValue, textColorModel, backgroundColorModel, iconScale, controlScale, colorPickerClasses, buttonGroups } =
+const { ui, headingValue, textColorModel, backgroundColorModel, iconScale, controlScale, colorPickerClasses, buttonGroups } =
 	useBaseEditorToolbar(props)
 </script>

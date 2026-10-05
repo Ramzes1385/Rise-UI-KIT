@@ -7,11 +7,11 @@
 	min-width: 0;
 	max-width: 100%;
 	overflow: hidden;
-	border: 1px solid var(--rise-border);
-	border-radius: sz(var(--rise-radius-md));
+	border: 1px solid ct(tool-call, border, var(--rise-border));
+	border-radius: sz(ct(tool-call, radius, var(--rise-radius-md)));
 	@include text-size(sm);
-	@include custom-text(color, var(--rise-text));
-	@include custom-bg(background-color, var(--rise-bg));
+	@include custom-text(color, ct(tool-call, text, var(--rise-text)));
+	@include custom-bg(background-color, ct(tool-call, bg, var(--rise-bg)));
 
 	&--running {
 		--tool-call-status: var(--rise-primary);
@@ -28,10 +28,10 @@
 	&__trigger {
 		display: flex;
 		align-items: center;
-		gap: sz(8px);
+		gap: sz(ct(tool-call, trigger-gap, 8px));
 		width: 100%;
 		min-width: 0;
-		padding: sz(8px) sz(12px);
+		padding: space(ct(tool-call, trigger-padding-y, 8px) ct(tool-call, padding-x, 12px));
 		border: 0;
 		background-color: transparent;
 		color: inherit;
@@ -42,7 +42,7 @@
 		@include focus-ring(-2px);
 
 		@include hover {
-			background-color: var(--rise-bg-muted);
+			background-color: ct(tool-call, trigger-bg-hover, var(--rise-bg-muted));
 		}
 	}
 
@@ -76,7 +76,7 @@
 	&__title {
 		display: block;
 		min-width: 0;
-		font-weight: var(--rise-font-weight-medium);
+		font-weight: ct(tool-call, title-font-weight, var(--rise-font-weight-medium));
 		@include truncate;
 	}
 
@@ -118,31 +118,20 @@
 	}
 
 	&__collapse {
-		display: grid;
-		grid-template-rows: 0fr;
-		@include transition(grid-template-rows);
+		@include expand-rows;
 	}
 
 	&--open &__collapse {
-		grid-template-rows: 1fr;
+		@include expand-rows-open;
 	}
 
 	&__content {
 		display: flex;
 		flex-direction: column;
-		gap: sz(10px);
-		min-height: 0;
+		gap: sz(ct(tool-call, content-gap, 10px));
 		overflow: hidden;
-		padding: 0 sz(12px);
-		opacity: 0;
-		@include transition(opacity, padding);
-	}
-
-	&--open &__content {
-		padding-top: sz(10px);
-		padding-bottom: sz(12px);
-		border-top: 1px solid var(--rise-border);
-		opacity: 1;
+		padding: space(10px ct(tool-call, padding-x, 12px) 12px);
+		border-top: 1px solid ct(tool-call, border, var(--rise-border));
 	}
 
 	&__section {
@@ -163,8 +152,8 @@
 		margin: 0;
 		padding: sz(8px) sz(10px);
 		overflow: auto;
-		border-radius: sz(var(--rise-radius-sm));
-		background-color: var(--rise-bg-muted);
+		border-radius: sz(ct(tool-call, code-radius, var(--rise-radius-sm)));
+		background-color: ct(tool-call, code-bg, var(--rise-bg-muted));
 		color: var(--rise-text-highlighted);
 		font-family: var(--rise-font-mono);
 		@include text-size(xs);
@@ -195,17 +184,17 @@
 
 	&--soft {
 		border-color: transparent;
-		@include custom-bg(background-color, var(--rise-bg-muted));
+		@include custom-bg(background-color, ct(tool-call, bg, var(--rise-bg-muted)));
 	}
 
 	&--soft &__trigger {
 		@include hover {
-			background-color: var(--rise-bg-elevated);
+			background-color: ct(tool-call, trigger-bg-hover, var(--rise-bg-elevated));
 		}
 	}
 
 	&--soft &__code {
-		background-color: var(--rise-bg);
+		background-color: ct(tool-call, code-bg, var(--rise-bg));
 	}
 
 	&--soft &__content,
@@ -214,13 +203,13 @@
 		border-top: 0;
 	}
 
-	&--soft.base-tool-call--open &__content,
-	&--outline.base-tool-call--open &__content {
+	&--soft &__content,
+	&--outline &__content {
 		padding-top: 0;
 	}
 
 	&--outline {
-		border-color: var(--rise-border-accented);
+		border-color: ct(tool-call, border, var(--rise-border-accented));
 		@include custom-bg(background-color, transparent);
 	}
 

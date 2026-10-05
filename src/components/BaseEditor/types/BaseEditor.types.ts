@@ -1,7 +1,17 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export const EDITOR_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
+
+/**
+ * Части редактора для пропа `ui` (БЭМ-элементы `.base-editor__<часть>`, `root` — сам редактор): toolbar — панель инструментов,
+ * group — группа кнопок панели, btn — кнопка панели (форматирование, ссылка, медиа, режим кода), content — область текста,
+ * code — поле HTML-кода в режиме кода (BaseTextarea), context-menu — меню размера медиа
+ */
+export const EDITOR_PARTS = ['toolbar', 'group', 'btn', 'content', 'code', 'context-menu'] as const
+
+export type BaseEditorPart = (typeof EDITOR_PARTS)[number]
 
 export type EditorFormat = 'bold' | 'italic' | 'underline' | 'strike'
 
@@ -34,6 +44,14 @@ export interface BaseEditorProps extends BaseComponentProps<
 	hasToolbar?: boolean
 	/** Автофокус */
 	isAutofocus?: boolean
+	/**
+	 * Классы частей редактора (`root`, `toolbar`, `group`, `btn`, `content`, `code`, `context-menu`) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseEditor: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseEditor v-model="html" :ui="{ root: 'shadow-sm', content: 'prose' }" />
+	 */
+	ui?: UiProp<BaseEditorPart>
 }
 
 export interface BaseEditorEmits {

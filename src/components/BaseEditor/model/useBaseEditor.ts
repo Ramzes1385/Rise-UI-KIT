@@ -1,5 +1,6 @@
 import type { ComputedRef, Ref } from 'vue'
 import { UI_EDITOR } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
 import { EDITOR_MENU_SCALE_RATIO } from './editorScale'
 import type { BaseSelectOption } from '@components/BaseSelect'
 import { useLayerIndex } from '@composables/app/useLayerStack'
@@ -160,6 +161,7 @@ export function useBaseEditor(props: EditorProps, emit: BaseEditorEmits) {
 
 	return {
 		...standard,
+		ui: useUi(props, 'base-editor'),
 		teleportTarget,
 		isLocked,
 		editorRef,

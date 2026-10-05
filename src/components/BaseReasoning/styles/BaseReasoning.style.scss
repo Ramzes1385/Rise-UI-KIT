@@ -4,15 +4,16 @@
 	box-sizing: border-box;
 	min-width: 0;
 	max-width: 100%;
-	@include text-size(sm);
-	@include custom-text(color, var(--rise-text-muted));
-	@include custom-bg(background-color, transparent);
+	font-size: sz(ct(reasoning, font-size, var(--rise-font-size-sm)));
+	line-height: sz(var(--rise-line-height-sm));
+	@include custom-text(color, ct(reasoning, text, var(--rise-text-muted)));
+	@include custom-bg(background-color, ct(reasoning, bg, transparent));
 
 	&__trigger {
 		display: inline-flex;
 		align-self: flex-start;
 		align-items: center;
-		gap: sz(6px);
+		gap: sz(ct(reasoning, trigger-gap, 6px));
 		max-width: 100%;
 		padding: sz(4px) sz(6px);
 		margin-left: sz(-6px);
@@ -21,14 +22,14 @@
 		background-color: transparent;
 		color: inherit;
 		font: inherit;
-		font-weight: var(--rise-font-weight-medium);
+		font-weight: ct(reasoning, trigger-font-weight, var(--rise-font-weight-medium));
 		text-align: left;
 		cursor: pointer;
 		@include transition-colors;
 		@include focus-ring;
 
 		@include hover {
-			color: var(--rise-text-highlighted);
+			color: ct(reasoning, trigger-text-hover, var(--rise-text-highlighted));
 		}
 	}
 
@@ -50,7 +51,7 @@
 			background-size: 250% 100%;
 			background-clip: text;
 			color: transparent;
-			animation: base-reasoning-shimmer 2s linear infinite;
+			animation: base-reasoning-shimmer calc(var(--rise-duration-loop) * 2) linear infinite;
 		}
 	}
 
@@ -66,13 +67,11 @@
 	}
 
 	&__collapse {
-		display: grid;
-		grid-template-rows: 0fr;
-		@include transition(grid-template-rows);
+		@include expand-rows;
 	}
 
 	&--open &__collapse {
-		grid-template-rows: 1fr;
+		@include expand-rows-open;
 	}
 
 	&__content {
@@ -80,27 +79,21 @@
 		margin-top: sz(4px);
 		padding-left: sz(12px);
 		overflow: hidden;
-		border-left: sz(2px) solid var(--rise-border);
-		opacity: 0;
-		@include transition(opacity);
-	}
-
-	&--open &__content {
-		opacity: 1;
+		border-left: sz(2px) solid ct(reasoning, content-border, var(--rise-border));
 	}
 
 	&--soft,
 	&--outline {
-		padding: sz(8px) sz(12px);
-		border-radius: sz(var(--rise-radius-md));
+		padding: space(ct(reasoning, padding-y, 8px) ct(reasoning, padding-x, 12px));
+		border-radius: sz(ct(reasoning, radius, var(--rise-radius-md)));
 	}
 
 	&--soft {
-		@include custom-bg(background-color, var(--rise-bg-muted));
+		@include custom-bg(background-color, ct(reasoning, bg, var(--rise-bg-muted)));
 	}
 
 	&--outline {
-		border: 1px solid var(--rise-border);
+		border: 1px solid ct(reasoning, border, var(--rise-border));
 	}
 
 	&--soft &__trigger,

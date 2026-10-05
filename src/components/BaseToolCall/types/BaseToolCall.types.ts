@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /**
@@ -11,6 +12,16 @@ export const TOOL_CALL_STATUSES = ['pending', 'running', 'success', 'error'] as 
 
 /** Состояние вызова инструмента */
 export type ToolCallStatus = (typeof TOOL_CALL_STATUSES)[number]
+
+/**
+ * Части вызова для пропа `ui` (БЭМ-элементы `.base-tool-call__<часть>`, `root` — сама карточка): trigger — заголовок-кнопка,
+ * status — значок или индикатор состояния, title — название действия, name — имя инструмента, state — состояние словом,
+ * arrow — шеврон, collapse — сворачиваемая область, content — подробности, code — блоки параметров и результата,
+ * error — текст ошибки
+ */
+export const TOOL_CALL_PARTS = ['trigger', 'status', 'title', 'name', 'state', 'arrow', 'collapse', 'content', 'code', 'error'] as const
+
+export type BaseToolCallPart = (typeof TOOL_CALL_PARTS)[number]
 
 /**
  * Пропсы компонента BaseToolCall
@@ -28,8 +39,20 @@ export interface BaseToolCallProps extends BaseComponentProps<(typeof TOOL_CALL_
 	result?: unknown
 	/** Текст ошибки при `status="error"` */
 	error?: string
-	/** Подробности раскрыты (`v-model:is-open`) */
+	/**
+	 * Подробности раскрыты (`v-model:is-open`). Раскрываются и сворачиваются по высоте (строки сетки 0fr↔1fr) с проявлением,
+	 * шеврон поворачивается; при выключенном движении — сразу
+	 */
 	isOpen?: boolean
+	/**
+	 * Классы частей вызова (`root`, `trigger`, `status`, `title`, `name`, `state`, `arrow`, `collapse`, `content`, `code`, `error`) —
+	 * добавляются к классам кита. Глобально — `createUiKitPlugin({ defaults: { BaseToolCall: { ui } } })`, классы плагина
+	 * и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseToolCall name="search_docs" :ui="{ root: 'shadow-sm', code: 'text-xs' }" />
+	 */
+	ui?: UiProp<BaseToolCallPart>
 }
 
 /**

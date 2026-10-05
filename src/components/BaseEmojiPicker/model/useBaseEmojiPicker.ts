@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
 import { currentLocale } from '@/locales/state'
+import { useUi } from '@composables/base/useUi'
 import { nextEmojiIndex } from './emojiNavigation'
 import { buildSections, emojiKey, loadEmojiData } from './emojiData'
 import { computed, nextTick, ref, shallowRef, useId, watch } from 'vue'
@@ -116,6 +117,7 @@ export function useBaseEmojiPicker(props: BaseEmojiPickerProps, emit: BaseEmojiP
 	}
 	return {
 		...useStandardBaseComponent('base-emoji-picker', props, ['root', 'search', 'nav', 'grid', 'preview']),
+		ui: useUi(props, 'base-emoji-picker'),
 		...state,
 		...focus,
 		...useEmojiScroll(state, scrollRef),

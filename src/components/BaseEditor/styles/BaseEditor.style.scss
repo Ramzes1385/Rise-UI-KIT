@@ -30,10 +30,11 @@
 	flex-direction: column;
 	min-width: 0;
 	overflow: hidden;
-	border: 1px solid var(--rise-border-accented);
-	border-radius: sz(var(--rise-control-radius));
-	background-color: var(--rise-bg);
-	color: var(--rise-text);
+	border: 1px solid ct(editor, border, var(--rise-border-accented));
+	border-radius: sz(ct(editor, radius, var(--rise-control-radius)));
+	background-color: ct(editor, bg, var(--rise-bg));
+	box-shadow: ct(editor, shadow, none);
+	color: ct(editor, text, var(--rise-text));
 	@include transition-colors;
 
 	&__toolbar {
@@ -43,8 +44,9 @@
 		flex-wrap: wrap;
 		align-items: center;
 		gap: sz(4px 2px);
-		padding: sz(6px 10px);
-		border-bottom: 1px solid var(--rise-border);
+		padding: sz(ct(editor, toolbar-padding-y, 6px) ct(editor, toolbar-padding-x, 10px));
+		border-bottom: 1px solid ct(editor, toolbar-border, var(--rise-border));
+		background-color: ct(editor, toolbar-bg, transparent);
 		user-select: none;
 	}
 
@@ -132,7 +134,7 @@
 		box-sizing: border-box;
 		min-height: sz(var(--editor-min-height));
 		max-height: sz(var(--editor-max-height));
-		padding: sz(12px 16px);
+		padding: sz(ct(editor, content-padding-y, 12px) ct(editor, content-padding-x, 16px));
 		overflow-y: auto;
 		overflow-wrap: anywhere;
 		outline: none;
@@ -290,7 +292,7 @@
 	&__code.base-textarea .base-textarea__field {
 		min-height: sz(var(--editor-min-height));
 		max-height: sz(var(--editor-max-height));
-		padding: sz(12px 16px);
+		padding: sz(ct(editor, content-padding-y, 12px) ct(editor, content-padding-x, 16px));
 		border: 0;
 		border-radius: 0;
 		@include custom-bg(background-color, transparent);
@@ -311,7 +313,7 @@
 		gap: sz(12px);
 		box-sizing: border-box;
 		width: sz(232px);
-		padding: sz(12px);
+		padding: space(12px);
 		@include floating-surface;
 		@include text-size(sm);
 	}
@@ -343,7 +345,7 @@
 	}
 
 	&--shadow {
-		box-shadow: var(--rise-shadow-xs);
+		box-shadow: ct(editor, shadow, var(--rise-shadow-xs));
 	}
 
 	&--readonly {
@@ -351,7 +353,7 @@
 	}
 
 	&--focused {
-		border-color: var(--rise-primary);
-		box-shadow: 0 0 0 1px var(--rise-primary);
+		border-color: ct(editor, border-focus, var(--rise-primary));
+		box-shadow: 0 0 0 1px ct(editor, border-focus, var(--rise-primary));
 	}
 }

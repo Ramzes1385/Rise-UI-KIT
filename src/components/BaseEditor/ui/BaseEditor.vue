@@ -1,8 +1,8 @@
 <template>
 	<div
-		class="base-editor"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		:class="[
+			ui('root'),
 			{
 				'base-editor--readonly': isLocked,
 				'base-editor--focused': isFocused,
@@ -15,6 +15,7 @@
 			:active-states="activeStates"
 			:size-scale="sizeScale"
 			:classes="classes"
+			:ui="props.ui"
 			:is-code-mode="isCodeMode"
 			:is-readonly="isLocked"
 			:has-toolbar="hasToolbar"
@@ -45,8 +46,7 @@
 		<div
 			v-if="!isCodeMode"
 			ref="editorRef"
-			class="base-editor__content"
-			:class="[{ 'base-editor__content--empty': isEmpty }, classes.content]"
+			:class="[ui('content'), { 'base-editor__content--empty': isEmpty }, classes.content]"
 			:contenteditable="!isLocked"
 			role="textbox"
 			aria-multiline="true"
@@ -69,7 +69,7 @@
 		<BaseTextarea
 			v-if="isCodeMode"
 			ref="codeTextareaRef"
-			class="base-editor__code"
+			:class="ui('code')"
 			:custom-class="classes.code"
 			:label="UI_EDITOR.CODE_LABEL"
 			is-autosize
@@ -84,7 +84,7 @@
 			<div
 				v-if="contextMenu.isVisible"
 				ref="contextMenuRef"
-				class="base-editor__context-menu"
+				:class="ui('context-menu')"
 				role="dialog"
 				:aria-label="UI_EDITOR.MEDIA_MENU_LABEL"
 				:style="[sizeScaleStyle, { left: contextMenu.x + 'px', top: contextMenu.y + 'px' }, layerStyle]"
@@ -142,6 +142,7 @@ const emit = defineEmits<BaseEditorEmits>()
 defineSlots<BaseEditorSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

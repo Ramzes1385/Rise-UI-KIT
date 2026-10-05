@@ -1,4 +1,5 @@
 import { UI_AI } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
 import { computed, ref, useId, watch } from 'vue'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseToolCallEmits, BaseToolCallProps, ToolCallStatus } from '../types/BaseToolCall.types'
@@ -49,6 +50,7 @@ export function useBaseToolCall(props: BaseToolCallProps, emit: BaseToolCallEmit
 	const status = computed<ToolCallStatus>(() => props.status ?? 'pending')
 	return {
 		...useStandardBaseComponent('base-tool-call', props, ['root', 'trigger', 'content']),
+		ui: useUi(props, 'base-tool-call'),
 		...useToolCallOpen(props, emit),
 		contentId: `rise-tool-call-${useId()}`,
 		statusIcon: computed(() => STATUS_ICONS[status.value]),

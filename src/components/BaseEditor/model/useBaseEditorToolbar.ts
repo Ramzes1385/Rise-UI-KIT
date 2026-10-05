@@ -1,5 +1,6 @@
 import { computed, ref } from 'vue'
 import { UI_EDITOR } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
 import { calcIconScale } from '@utils/media/iconUtils'
 import { EDITOR_MENU_SCALE_RATIO } from './editorScale'
 import type { BaseEditorToolbarProps, ToolbarButton } from '../types/BaseEditorToolbar.types'
@@ -72,6 +73,7 @@ function blockGroups(): { key: string; items: ToolbarButton[] }[] {
 
 export function useBaseEditorToolbar(props: BaseEditorToolbarProps) {
 	return {
+		ui: useUi(props, 'base-editor'),
 		headingValue: ref<string | number>('p'),
 		textColorModel: ref(props.textColor),
 		backgroundColorModel: ref(props.backgroundColor),
