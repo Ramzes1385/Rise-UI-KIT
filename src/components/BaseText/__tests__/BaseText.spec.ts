@@ -63,12 +63,12 @@ describe('BaseText unit', () => {
 	})
 
 	describe('пропс weight', () => {
-		it('должен устанавливать font-weight: 400 по умолчанию', () => {
+		it('по умолчанию (400) берёт начертание из токена --rise-text-font-weight', () => {
 			const { container } = render(BaseText, {
 				slots: { default: 'Текст' },
 			})
 
-			expect(container.querySelector('.base-text')?.getAttribute('style')).toContain('font-weight: 400')
+			expect(container.querySelector('.base-text')?.getAttribute('style')).toContain('font-weight: var(--text-weight)')
 		})
 
 		it('должен устанавливать font-weight: 700 когда weight=700', () => {

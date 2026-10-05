@@ -20,7 +20,7 @@ const template = `
 
 export const Theming: StoryObj<typeof meta> = {
 	name: 'Токены',
-	args: { variant: 'soft' },
+	args: { variant: 'outline' },
 	parameters: {
 		controls: { include: ['variant', 'sizeScale'] },
 		docs: {

@@ -1,4 +1,4 @@
-import { expect } from 'storybook/test'
+import { expect, waitFor } from 'storybook/test'
 import type meta from '../../BaseTagGroup.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseTagGroup from '../../../ui/BaseTagGroup.vue'
@@ -26,6 +26,7 @@ export const Removable: StoryObj<typeof meta> = {
 				story: [
 					'Удаление: кнопка «Удалить метку …» или Delete и Backspace — событие `remove`; приложение убирает метку из `items`.',
 					'Фокус переходит на следующую метку, у последней — на предыдущую: клавиатура не теряет место.',
+					'Удалённая метка гаснет на своём месте, соседи плавно сдвигаются — история «Анимации».',
 				].join('\n'),
 			},
 			source: storySource({
@@ -44,7 +45,7 @@ export const Removable: StoryObj<typeof meta> = {
 	}),
 	play: async ({ canvas, userEvent }) => {
 		await userEvent.click(canvas.getByRole('button', { name: 'Удалить метку Санкт-Петербург' }))
-		await expect(canvas.queryByText('Санкт-Петербург')).toBeNull()
+		await waitFor(() => expect(canvas.queryByText('Санкт-Петербург')).toBeNull())
 		const kazan = canvas.getByRole('button', { name: 'Удалить метку Казань' })
 		await expect(kazan).toHaveFocus()
 		await userEvent.keyboard('{Delete}')

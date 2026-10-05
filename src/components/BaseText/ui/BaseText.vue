@@ -1,8 +1,7 @@
 <template>
 	<component
 		:is="tag"
-		class="base-text"
-		:class="[modifierClasses, classes.root]"
+		:class="[ui('root'), modifierClasses, classes.root]"
 		:style="[sizeScaleStyle, weightStyle, customColorStyle, maxLinesStyle]">
 		<slot />
 	</component>
@@ -29,5 +28,5 @@ const props = withDefaults(
 )
 defineSlots<BaseTextSlots>()
 
-const { classes, sizeScaleStyle, customColorStyle, weightStyle, maxLinesStyle, modifierClasses } = useBaseText(props)
+const { ui, classes, sizeScaleStyle, customColorStyle, weightStyle, maxLinesStyle, modifierClasses } = useBaseText(props)
 </script>

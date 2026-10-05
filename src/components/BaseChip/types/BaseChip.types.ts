@@ -11,9 +11,9 @@ export const CHIP_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] a
 
 /**
  * Части индикатора для пропа `ui` (БЭМ-элементы `.base-chip__<часть>`, `root` — обёртка):
- * badge — индикатор в углу, value — его значение (меняется с анимацией по ключу).
+ * badge — индикатор в углу (новое значение «выпрыгивает» без перемонтирования: фокус и узел сохраняются).
  */
-export const CHIP_PARTS = ['badge', 'value'] as const
+export const CHIP_PARTS = ['badge'] as const
 
 export type BaseChipPart = (typeof CHIP_PARTS)[number]
 
@@ -29,7 +29,7 @@ export interface BaseChipProps extends BaseComponentProps<(typeof CHIP_VARIANTS)
 	/** Максимальное число (если больше — показывается max+) */
 	maxValue?: number
 	/**
-	 * Классы частей (`root`, `badge`, `value`) — добавляются к классам кита.
+	 * Классы частей (`root`, `badge`) — добавляются к классам кита.
 	 * Глобально — `createUiKitPlugin({ defaults: { BaseChip: { ui } } })`, классы плагина и экземпляра склеиваются.
 	 *
 	 * @example

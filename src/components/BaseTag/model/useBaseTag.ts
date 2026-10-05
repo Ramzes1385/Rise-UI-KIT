@@ -1,6 +1,7 @@
 import { computed } from 'vue'
 import { formatMessage } from '@/locales'
 import { UI_TAG } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
 import { calcIconScale } from '@utils/media/iconUtils'
 import type { BaseTagEmits, TagProps } from '../types/BaseTag.types'
 import { useClickable } from '@composables/interaction/useClickable'
@@ -33,6 +34,7 @@ export function useBaseTag(props: TagProps, emit: BaseTagEmits) {
 
 	return {
 		...useStandardBaseComponent('base-tag', props, ['root', 'main', 'icon', 'text', 'remove']),
+		ui: useUi(props, 'base-tag'),
 		iconScale: computed(() => calcIconScale('sm', props.sizeScale)),
 		isMainFocusable,
 		mainTag: computed(() => (props.isSelectable ? 'button' : 'span')),

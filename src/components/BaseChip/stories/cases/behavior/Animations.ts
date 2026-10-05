@@ -32,7 +32,7 @@ export const Animations: StoryObj<typeof meta> = {
 				story: [
 					'Счётчик 0 → 1 → 2 → 3 → 0 в четырёх пресетах движения. Индикатор появляется и исчезает с масштабом и прозрачностью',
 					'(`--rise-duration`, `--rise-duration-fast`, кривая появления — `--rise-ease-spring`), новое значение «выпрыгивает»',
-					'по ключу; глубина масштаба считается от `--rise-motion-scale-from`. В пресете `none` и при «уменьшить движение» —',
+					'на том же узле (фокус не теряется); глубина масштаба считается от `--rise-motion-scale-from`. В пресете `none` и при «уменьшить движение» —',
 					"сразу конечное состояние. Выключить движение в приложении — `createUiKitPlugin({ motion: 'none' })` или",
 					"`reducedMotion: 'always'`.",
 				].join('\n'),
@@ -44,8 +44,8 @@ export const Animations: StoryObj<typeof meta> = {
 	play: async ({ canvas, canvasElement, userEvent }) => {
 		const next = canvas.getByRole('button', { name: 'Следующее значение' })
 		await userEvent.click(next)
-		await waitFor(() => expect(canvasElement.querySelectorAll('.base-chip__value')).toHaveLength(4))
-		for (const value of canvasElement.querySelectorAll('.base-chip__value')) await expect(value).toHaveTextContent('1')
+		await waitFor(() => expect(canvasElement.querySelectorAll('.base-chip__badge')).toHaveLength(4))
+		for (const badge of canvasElement.querySelectorAll('.base-chip__badge')) await expect(badge).toHaveTextContent('1')
 		await userEvent.click(next)
 		await userEvent.click(next)
 		await userEvent.click(next)

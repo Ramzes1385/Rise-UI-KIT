@@ -4,15 +4,19 @@
 		<Transition name="base-chip__badge">
 			<span
 				v-if="isVisible"
-				:class="[ui('badge'), `base-chip__badge--${placement}`, { 'base-chip__badge--clickable': isClickable }, classes.badge]"
+				:class="[
+					ui('badge'),
+					`base-chip__badge--${placement}`,
+					bumpClass,
+					{ 'base-chip__badge--clickable': isClickable },
+					classes.badge,
+				]"
 				:style="customColorStyle"
 				v-bind="clickableAttributes"
 				:aria-label="badgeLabel"
 				@click="handleBadgeClick"
 				@keydown="handleKeydown">
-				<Transition name="base-chip__value">
-					<span :key="displayContent" :class="ui('value')">{{ displayContent }}</span>
-				</Transition>
+				{{ displayContent }}
 			</span>
 		</Transition>
 	</div>
@@ -49,6 +53,7 @@ const {
 	classes,
 	isVisible,
 	displayContent,
+	bumpClass,
 	isClickable,
 	clickableAttributes,
 	badgeLabel,

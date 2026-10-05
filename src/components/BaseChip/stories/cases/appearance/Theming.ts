@@ -6,7 +6,7 @@ import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { literal, storySource, useStorySetup } from '@/stories/helpers'
 
-const ui = { badge: 'story-themed-badge', value: 'story-themed-value' }
+const ui = { root: 'story-themed-chip', badge: 'story-themed-badge' }
 
 const template = `
 	<div class="story-row" style="padding: 12px; gap: 32px;">
@@ -33,7 +33,7 @@ export const Theming: StoryObj<typeof meta> = {
 				story: [
 					'Перекраска без пропов. Токены индикатора `--rise-chip-badge-*` — `bg`, `text`, `border`, `radius`, `shadow`',
 					'(кольцо вокруг индикатора), `height`, `padding-x`, `font-size`, `font-weight` — кит только читает: задайте их на `:root`,',
-					'в теме или на контейнере — как здесь. Проп `ui` добавляет классы к частям (`root`, `badge`, `value`);',
+					'в теме или на контейнере — как здесь. Проп `ui` добавляет классы к частям (`root`, `badge`);',
 					'глобально — `defaults.BaseChip.ui` плагина.',
 				].join('\n'),
 			},
@@ -60,6 +60,6 @@ export const Theming: StoryObj<typeof meta> = {
 		await expect(plain.height).toBe('18px')
 		await expect(themed.fontWeight).toBe('700')
 		await expect(badge('Классы через ui')).toHaveClass('base-chip__badge', 'story-themed-badge')
-		await expect(badge('Классы через ui').querySelector('.base-chip__value')).toHaveClass('story-themed-value')
+		await expect(badge('Классы через ui').closest('.base-chip')).toHaveClass('story-themed-chip')
 	},
 }

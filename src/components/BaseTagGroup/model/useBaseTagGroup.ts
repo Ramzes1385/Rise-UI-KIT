@@ -1,8 +1,10 @@
 import { nextTick, ref } from 'vue'
 import { UI_TAG } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseTagGroupEmits, TagGroupItem, TagGroupProps, TagValue } from '../types/BaseTagGroup.types'
 
+const TAG = '.base-tag-group__tag:not(.base-tag-group__tag-leave-active)'
 const FOCUSABLE = '.base-tag__main[tabindex="0"], button.base-tag__main:not(:disabled), .base-tag__remove:not(:disabled)'
 
 function findFocusable(tags: HTMLElement[], index: number): HTMLElement | undefined {
@@ -17,6 +19,12 @@ function findFocusable(tags: HTMLElement[], index: number): HTMLElement | undefi
 function toList(value: TagGroupProps['modelValue']): TagValue[] {
 	if (Array.isArray(value)) return value
 	return value === null || value === undefined ? [] : [value]
+}
+
+function holdLeavingPlace(element: Element): void {
+	const tag = element as HTMLElement
+	tag.style.left = `${tag.offsetLeft}px`
+	tag.style.top = `${tag.offsetTop}px`
 }
 
 export function useBaseTagGroup(props: TagGroupProps, emit: BaseTagGroupEmits) {
@@ -36,7 +44,7 @@ export function useBaseTagGroup(props: TagGroupProps, emit: BaseTagGroupEmits) {
 	}
 
 	function focusAfterRemove(index: number): void {
-		const tags = [...(rootRef.value?.querySelectorAll<HTMLElement>('.base-tag') ?? [])]
+		const tags = [...(rootRef.value?.querySelectorAll<HTMLElement>(TAG) ?? [])]
 		const target = findFocusable(tags, Math.min(index, tags.length - 1)) ?? rootRef.value
 		target?.focus()
 	}
@@ -50,7 +58,9 @@ export function useBaseTagGroup(props: TagGroupProps, emit: BaseTagGroupEmits) {
 
 	return {
 		...useStandardBaseComponent('base-tag-group', props, ['root', 'tag']),
+		ui: useUi(props, 'base-tag-group'),
 		rootRef,
+		holdLeavingPlace,
 		groupLabel: () => props.label ?? UI_TAG.GROUP,
 		isItemSelected,
 		isItemRemovable: (item: TagGroupItem) => item.isRemovable ?? props.isRemovable,

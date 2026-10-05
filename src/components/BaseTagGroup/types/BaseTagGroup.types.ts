@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import type { TAG_VARIANTS, TagTone } from '@components/BaseTag/types/BaseTag.types'
@@ -7,6 +8,14 @@ import type { TAG_VARIANTS, TagTone } from '@components/BaseTag/types/BaseTag.ty
  * или `null`), multiple — несколько (`modelValue` — массив). Выбираемые метки — кнопки-переключатели с `aria-pressed`
  */
 export const TAG_GROUP_SELECTION_MODES = ['none', 'single', 'multiple'] as const
+
+/**
+ * Части группы для пропа `ui` (БЭМ-элементы `.base-tag-group__<часть>`, `root` — сама группа):
+ * tag — каждая метка (класс добавляется к корню BaseTag).
+ */
+export const TAG_GROUP_PARTS = ['tag'] as const
+
+export type BaseTagGroupPart = (typeof TAG_GROUP_PARTS)[number]
 
 /** Режим выбора группы меток */
 export type TagGroupSelectionMode = (typeof TAG_GROUP_SELECTION_MODES)[number]
@@ -51,6 +60,14 @@ export interface BaseTagGroupProps extends BaseComponentProps<(typeof TAG_VARIAN
 	label?: string
 	/** Выключить все метки */
 	isDisabled?: boolean
+	/**
+	 * Классы частей группы (`root`, `tag`) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseTagGroup: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseTagGroup :items="items" :ui="{ root: 'gap-3', tag: 'shadow-sm' }" />
+	 */
+	ui?: UiProp<BaseTagGroupPart>
 }
 
 /**

@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
@@ -15,6 +16,14 @@ export const TAG_TONES = ['neutral', 'primary', 'info', 'success', 'warning', 'e
 
 /** Цвет роли метки */
 export type TagTone = (typeof TAG_TONES)[number]
+
+/**
+ * Части метки для пропа `ui` (БЭМ-элементы `.base-tag__<часть>`, `root` — сама метка):
+ * main — текст со значком (кнопка у выбираемой), icon — значок или галочка, text — текст, remove — кнопка удаления.
+ */
+export const TAG_PARTS = ['main', 'icon', 'text', 'remove'] as const
+
+export type BaseTagPart = (typeof TAG_PARTS)[number]
 
 /** Элементы метки для `customClass` */
 type TagElement = 'root' | 'main' | 'icon' | 'text' | 'remove'
@@ -45,6 +54,14 @@ export interface BaseTagProps extends BaseComponentProps<(typeof TAG_VARIANTS)[n
 	removeLabel?: string
 	/** Выключенная метка: не выбирается, не удаляется, без фокуса */
 	isDisabled?: boolean
+	/**
+	 * Классы частей метки (`root`, `main`, `icon`, `text`, `remove`) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseTag: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseTag label="Vue" :ui="{ root: 'shadow-sm', text: 'tracking-wide' }" />
+	 */
+	ui?: UiProp<BaseTagPart>
 }
 
 /**

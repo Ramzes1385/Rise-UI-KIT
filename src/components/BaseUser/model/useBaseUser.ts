@@ -1,4 +1,5 @@
 import { computed } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import type { BaseUserProps } from '../types/BaseUser.types'
 import type { StructuredData } from '@utils/seo/structuredDataUtils'
 import { useStructuredData } from '@composables/seo/useStructuredData'
@@ -14,6 +15,7 @@ export function useBaseUser(props: BaseUserProps) {
 
 	return {
 		...useStandardBaseComponent('base-user', props, ['root', 'avatar', 'name', 'description']),
+		ui: useUi(props, 'base-user'),
 		isLink,
 		...useStructuredData(
 			'BaseUser',

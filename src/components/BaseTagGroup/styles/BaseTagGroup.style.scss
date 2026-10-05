@@ -1,11 +1,23 @@
 .base-tag-group {
+	position: relative;
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: sz(6px);
+	gap: sz(ct(tag-group, gap, 6px));
 	min-width: 0;
 
 	&:focus {
 		outline: none;
+	}
+
+	@include enter-pop(base-tag-group__tag);
+
+	& &__tag-move {
+		transition: transform var(--rise-duration) var(--rise-ease-spring);
+	}
+
+	& &__tag-leave-active {
+		position: absolute;
+		pointer-events: none;
 	}
 }

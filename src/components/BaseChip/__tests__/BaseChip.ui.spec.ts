@@ -12,7 +12,6 @@ describe('BaseChip: проп ui', () => {
 
 		expect(root.className).toMatch(/^base-chip( |$)/)
 		expect(root.querySelector('.base-chip__badge')).toHaveAttribute('class', 'base-chip__badge base-chip__badge--top-right')
-		expect(root.querySelector('.base-chip__value')).toHaveAttribute('class', 'base-chip__value')
 	})
 
 	it('классы частей добавляются к классам кита, модификаторы и customClass сохраняются', () => {
@@ -22,7 +21,7 @@ describe('BaseChip: проп ui', () => {
 				variant: 'soft',
 				placement: 'bottom-left',
 				customClass: { root: 'own-root', badge: 'own-badge' },
-				ui: { root: 'u-root', badge: 'u-badge', value: 'u-value' },
+				ui: { root: 'u-root', badge: 'u-badge' },
 			},
 			slots: SLOTS,
 		})
@@ -30,17 +29,19 @@ describe('BaseChip: проп ui', () => {
 
 		expect(root).toHaveClass('base-chip', 'u-root', 'base-chip--soft', 'own-root')
 		expect(root.querySelector('.base-chip__badge')).toHaveClass('u-badge', 'own-badge', 'base-chip__badge--bottom-left')
-		expect(root.querySelector('.base-chip__value')).toHaveClass('u-value')
 	})
 
 	it('классы из defaults.BaseChip.ui плагина склеиваются с классами экземпляра', () => {
 		const { container } = render(BaseChip, {
-			props: { content: 3, ui: { value: 'own-value' } },
+			props: { content: 3, ui: { badge: 'own-badge' } },
 			slots: SLOTS,
-			global: { plugins: [createUiKitPlugin({ defaults: { BaseChip: { ui: { root: 'app-root', value: 'app-value' } } } })] },
+			global: { plugins: [createUiKitPlugin({ defaults: { BaseChip: { ui: { root: 'app-root', badge: 'app-badge' } } } })] },
 		})
 
 		expect(container.querySelector('.base-chip')).toHaveClass('base-chip', 'app-root')
-		expect(container.querySelector('.base-chip__value')).toHaveAttribute('class', 'base-chip__value app-value own-value')
+		expect(container.querySelector('.base-chip__badge')).toHaveAttribute(
+			'class',
+			'base-chip__badge app-badge own-badge base-chip__badge--top-right',
+		)
 	})
 })

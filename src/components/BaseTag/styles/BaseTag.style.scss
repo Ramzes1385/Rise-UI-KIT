@@ -1,13 +1,13 @@
 .base-tag {
 	@include reset-custom-color;
 
-	--tag-soft: var(--rise-bg-muted);
-	--tag-soft-hover: var(--rise-bg-accented);
-	--tag-text: var(--rise-text);
-	--tag-border: var(--rise-border);
-	--tag-solid: var(--rise-primary);
+	--tag-soft: #{ct(tag, bg, var(--rise-bg-muted))};
+	--tag-soft-hover: #{ct(tag, bg-hover, var(--rise-bg-accented))};
+	--tag-text: #{ct(tag, text, var(--rise-text))};
+	--tag-border: #{ct(tag, border, var(--rise-border))};
+	--tag-solid: #{ct(tag, bg-selected, var(--rise-primary))};
 	--tag-solid-hover: var(--rise-primary-hover);
-	--tag-on-solid: var(--rise-on-primary);
+	--tag-on-solid: #{ct(tag, text-selected, var(--rise-on-primary))};
 
 	display: inline-flex;
 	align-items: center;
@@ -15,10 +15,11 @@
 	max-width: 100%;
 	min-width: 0;
 	border: 1px solid var(--tag-border);
-	border-radius: var(--rise-radius-full);
+	border-radius: sz(ct(tag, radius, var(--rise-radius-full)));
 	vertical-align: middle;
-	@include text-size(sm);
-	font-weight: var(--rise-font-weight-medium);
+	font-size: sz(ct(tag, font-size, var(--rise-font-size-sm)));
+	line-height: sz(var(--rise-line-height-sm));
+	font-weight: ct(tag, font-weight, var(--rise-font-weight-medium));
 	white-space: nowrap;
 	@include custom-bg(background-color, var(--tag-soft));
 	@include custom-text(color, var(--tag-text));
@@ -60,12 +61,13 @@
 	}
 
 	&__main {
+		position: relative;
 		display: inline-flex;
 		align-items: center;
-		gap: sz(4px);
+		gap: sz(ct(tag, gap, 4px));
 		min-width: 0;
 		margin: 0;
-		padding: sz(2px) sz(10px);
+		padding: sz(ct(tag, padding-y, 2px)) sz(ct(tag, padding-x, 10px));
 		border: 0;
 		border-radius: inherit;
 		background: none;
@@ -127,5 +129,12 @@
 
 	&--disabled#{&}--interactive &__remove:disabled {
 		opacity: 1;
+	}
+
+	@include enter-pop(base-tag__icon, calc(var(--rise-motion-scale-from) * 0.5));
+	@include enter-pop(base-tag__remove, calc(var(--rise-motion-scale-from) * 0.5));
+
+	&__main:has(> .base-tag__icon-enter-active) > .base-tag__icon-leave-active {
+		position: absolute;
 	}
 }

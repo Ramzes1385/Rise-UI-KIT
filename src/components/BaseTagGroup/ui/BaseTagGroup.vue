@@ -1,32 +1,34 @@
 <template>
 	<div
 		ref="rootRef"
-		class="base-tag-group"
-		:class="[variantClass, classes.root]"
+		:class="[ui('root'), variantClass, classes.root]"
 		:style="[sizeScaleStyle, variantStyle]"
 		role="group"
 		:aria-label="groupLabel()"
 		tabindex="-1">
-		<BaseTag
-			v-for="(item, index) in items"
-			:key="item.value"
-			:label="item.label"
-			:icon="item.icon"
-			:tone="item.tone ?? tone"
-			:variant="variant"
-			:color="color"
-			:size-scale="sizeScale"
-			:custom-class="classes.tag"
-			:is-selectable="selectionMode !== 'none'"
-			:is-selected="isItemSelected(item)"
-			:is-removable="isItemRemovable(item)"
-			:is-disabled="isItemDisabled(item)"
-			@update:is-selected="handleSelect(item, $event)"
-			@remove="handleRemove(item, index)">
-			<template v-if="$slots.tag" #default>
-				<slot name="tag" :item="item" :is-selected="isItemSelected(item)" />
-			</template>
-		</BaseTag>
+		<TransitionGroup name="base-tag-group__tag" @before-leave="holdLeavingPlace">
+			<BaseTag
+				v-for="(item, index) in items"
+				:key="item.value"
+				:class="ui('tag')"
+				:label="item.label"
+				:icon="item.icon"
+				:tone="item.tone ?? tone"
+				:variant="variant"
+				:color="color"
+				:size-scale="sizeScale"
+				:custom-class="classes.tag"
+				:is-selectable="selectionMode !== 'none'"
+				:is-selected="isItemSelected(item)"
+				:is-removable="isItemRemovable(item)"
+				:is-disabled="isItemDisabled(item)"
+				@update:is-selected="handleSelect(item, $event)"
+				@remove="handleRemove(item, index)">
+				<template v-if="$slots.tag" #default>
+					<slot name="tag" :item="item" :is-selected="isItemSelected(item)" />
+				</template>
+			</BaseTag>
+		</TransitionGroup>
 	</div>
 </template>
 
@@ -54,11 +56,13 @@ const emit = defineEmits<BaseTagGroupEmits>()
 defineSlots<BaseTagGroupSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,
 	classes,
 	rootRef,
+	holdLeavingPlace,
 	groupLabel,
 	isItemSelected,
 	isItemRemovable,

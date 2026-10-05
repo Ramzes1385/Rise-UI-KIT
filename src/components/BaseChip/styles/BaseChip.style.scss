@@ -54,8 +54,12 @@
 		@include focus-ring;
 	}
 
-	&__value {
-		display: inline-block;
+	&__badge--bump-0 {
+		animation: base-chip-bump-0 var(--rise-duration) var(--rise-ease-spring);
+	}
+
+	&__badge--bump-1 {
+		animation: base-chip-bump-1 var(--rise-duration) var(--rise-ease-spring);
 	}
 
 	&--soft &__badge {
@@ -100,18 +104,14 @@
 	scale: calc(1 - (1 - var(--rise-motion-scale-from)) * 10);
 }
 
-.base-chip__value-enter-active {
-	transition:
-		opacity var(--rise-duration) var(--rise-ease-out),
-		transform var(--rise-duration) var(--rise-ease-spring);
+@keyframes base-chip-bump-0 {
+	from {
+		scale: calc(1 - (1 - var(--rise-motion-scale-from)) * 4);
+	}
 }
 
-.base-chip__value-enter-from {
-	opacity: 0;
-	transform: scale(calc(1 - (1 - var(--rise-motion-scale-from)) * 4));
-}
-
-.base-chip__value-leave-active {
-	position: absolute;
-	opacity: 0;
+@keyframes base-chip-bump-1 {
+	from {
+		scale: calc(1 - (1 - var(--rise-motion-scale-from)) * 4);
+	}
 }

@@ -1,8 +1,11 @@
 .base-text {
+	--text-weight: #{ct(text, font-weight, var(--rise-font-weight-normal))};
+
 	margin: 0;
 	font-family: var(--rise-font-sans);
-	@include text-size(sm);
-	@include custom-text(color, var(--rise-text));
+	font-size: sz(ct(text, font-size, var(--rise-font-size-sm)));
+	line-height: sz(var(--rise-line-height-sm));
+	@include custom-text(color, ct(text, text, var(--rise-text)));
 
 	&--nowrap {
 		white-space: nowrap;

@@ -1,7 +1,7 @@
 <template>
 	<span
-		class="base-tag"
 		:class="[
+			ui('root'),
 			variantClass,
 			`base-tag--tone-${tone}`,
 			{
@@ -14,31 +14,28 @@
 		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		@keydown="handleRootKeydown">
-		<component
-			:is="mainTag"
-			class="base-tag__main"
-			:class="classes.main"
-			v-bind="mainAttributes"
-			@click="handleClick"
-			@keydown="handleKeydown">
-			<BaseIcon v-if="isSelected" name="check" class="base-tag__icon" :custom-class="classes.icon" :size-scale="iconScale" />
-			<span v-else-if="$slots.icon" class="base-tag__icon" :class="classes.icon"><slot name="icon" /></span>
-			<BaseIcon v-else-if="icon" :name="icon" class="base-tag__icon" :custom-class="classes.icon" :size-scale="iconScale" />
-			<span class="base-tag__text" :class="classes.text">
+		<component :is="mainTag" :class="[ui('main'), classes.main]" v-bind="mainAttributes" @click="handleClick" @keydown="handleKeydown">
+			<Transition name="base-tag__icon">
+				<BaseIcon v-if="isSelected" name="check" :class="ui('icon')" :custom-class="classes.icon" :size-scale="iconScale" />
+				<span v-else-if="$slots.icon" :class="[ui('icon'), classes.icon]"><slot name="icon" /></span>
+				<BaseIcon v-else-if="icon" :name="icon" :class="ui('icon')" :custom-class="classes.icon" :size-scale="iconScale" />
+			</Transition>
+			<span :class="[ui('text'), classes.text]">
 				<slot>{{ label }}</slot>
 			</span>
 		</component>
-		<button
-			v-if="isRemovable"
-			type="button"
-			class="base-tag__remove"
-			:class="classes.remove"
-			:aria-label="removeButtonLabel"
-			:tabindex="removeTabindex"
-			:disabled="isDisabled"
-			@click="handleRemove">
-			<BaseIcon name="close" :size-scale="iconScale" />
-		</button>
+		<Transition name="base-tag__remove">
+			<button
+				v-if="isRemovable"
+				type="button"
+				:class="[ui('remove'), classes.remove]"
+				:aria-label="removeButtonLabel"
+				:tabindex="removeTabindex"
+				:disabled="isDisabled"
+				@click="handleRemove">
+				<BaseIcon name="close" :size-scale="iconScale" />
+			</button>
+		</Transition>
 	</span>
 </template>
 
@@ -67,6 +64,7 @@ const emit = defineEmits<BaseTagEmits>()
 defineSlots<BaseTagSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,
