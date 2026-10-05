@@ -1,5 +1,6 @@
 import { computed } from 'vue'
 import { getLocale } from '@/locales/state'
+import { useUi } from '@composables/base/useUi'
 import type { BaseTimelineProps } from '../types/BaseTimeline.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 
@@ -31,6 +32,7 @@ export function useBaseTimeline(props: BaseTimelineProps) {
 
 	return {
 		...useStandardBaseComponent('base-timeline', props, ['root', 'item', 'marker', 'content', 'day', 'date', 'media']),
+		ui: useUi(props, 'base-timeline'),
 		isDateSide: computed(() => props.datePosition === 'side' && props.orientation !== 'horizontal'),
 		dayLabel: (index: number): string | undefined => dayLabel(props, index),
 		currentIndex,

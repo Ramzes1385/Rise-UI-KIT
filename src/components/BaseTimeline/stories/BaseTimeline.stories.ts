@@ -24,3 +24,5 @@ export const Horizontal = cases.Horizontal
 export const CustomItem = cases.CustomItem
 export const Chronology = cases.Chronology
 export const ItemById = cases.ItemById
+export const Theming = cases.Theming
+export const Animations = cases.Animations

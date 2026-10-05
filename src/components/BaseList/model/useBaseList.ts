@@ -1,6 +1,7 @@
 import { computed, ref, useId } from 'vue'
 import { useListRows } from './useListRows'
 import { UI_LIST } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
 import { useListOrder } from './order/useListOrder'
 import { useListFocus } from './keyboard/useListFocus'
 import { useListSortable } from './order/useListSortable'
@@ -59,6 +60,7 @@ export function useBaseList<T extends ListItem>(props: ListProps<T>, emit: BaseL
 	}
 	return {
 		...useStandardBaseComponent('base-list', props, ['root', 'label', 'list', 'item', 'error']),
+		ui: useUi(props, 'base-list'),
 		...parts.rows,
 		...useListIds(props),
 		listRef: parts.listRef,

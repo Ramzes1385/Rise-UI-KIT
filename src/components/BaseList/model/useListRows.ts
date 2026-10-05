@@ -1,8 +1,29 @@
-import { computed, type ComputedRef, type Ref } from 'vue'
 import { useVirtualList } from '@composables/interaction/useVirtualList'
 import type { ListItem, ListProps, ListRow } from '../types/BaseList.types'
+import { computed, defineComponent, TransitionGroup, type ComputedRef, type Ref } from 'vue'
 
 const VIRTUAL_HEIGHT = 360
+
+const PlainRows = defineComponent({
+	name: 'BaseListRows',
+	setup:
+		(_, { slots }) =>
+		() =>
+			slots.default?.(),
+})
+
+function holdLeavingRow(element: Element): void {
+	const row = element as HTMLElement
+	row.style.top = `${row.offsetTop}px`
+	row.style.left = `${row.offsetLeft}px`
+	row.style.width = `${row.offsetWidth}px`
+	row.removeAttribute('data-list-id')
+	row.setAttribute('aria-hidden', 'true')
+}
+
+const ANIMATED_ROWS = { is: TransitionGroup, attrs: { name: 'base-list__item', onBeforeLeave: holdLeavingRow } }
+
+const PLAIN_ROWS = { is: PlainRows, attrs: {} }
 
 const cssLength = (value: number | string | undefined): string | undefined => (typeof value === 'number' ? `${value}px` : value)
 
@@ -20,6 +41,7 @@ export function useListRows<T extends ListItem>(
 		pinnedIndex: () => (state.activeIndex() < 0 ? undefined : state.activeIndex()),
 	})
 	return {
+		rowsGroup: computed(() => (props.isVirtual ? PLAIN_ROWS : ANIMATED_ROWS)),
 		rows: computed((): ListRow<T>[] => {
 			if (!props.isVirtual) return state.shown.value.map((item, index) => ({ item, index }))
 			return virtual.items.value.map(entry => ({ item: state.shown.value[entry.index], index: entry.index, start: entry.start }))

@@ -6,6 +6,7 @@
 	min-width: 0;
 	@include text-size(sm);
 	@include custom-text(color, var(--rise-text));
+	@include enter-scale(base-list__item);
 
 	&__label {
 		@include field-label;
@@ -15,9 +16,10 @@
 		box-sizing: border-box;
 		overflow-y: auto;
 		overscroll-behavior: contain;
-		border: 1px solid var(--rise-border);
-		border-radius: sz(var(--rise-radius-md));
-		@include custom-bg(background-color, var(--rise-bg));
+		border: 1px solid ct(list, border, var(--rise-border));
+		border-radius: sz(ct(list, radius, var(--rise-radius-md)));
+		box-shadow: ct(list, shadow, none);
+		@include custom-bg(background-color, ct(list, bg, var(--rise-bg)));
 		@include scrollbar-thin;
 	}
 
@@ -42,7 +44,7 @@
 	&__list {
 		position: relative;
 		margin: 0;
-		padding: sz(4px);
+		padding: space(4px);
 		list-style: none;
 	}
 
@@ -54,20 +56,31 @@
 	&__item {
 		display: flex;
 		align-items: center;
-		gap: sz(10px);
+		gap: space(ct(list, item-gap, 10px));
 		box-sizing: border-box;
-		min-height: sz(40px);
-		padding: sz(8px 10px);
-		border-radius: sz(var(--rise-radius-sm));
+		min-height: sz(ct(list, item-height, 40px));
+		padding: space(ct(list, item-padding-y, 8px) ct(list, item-padding-x, 10px));
+		border-radius: sz(ct(list, item-radius, var(--rise-radius-sm)));
 		cursor: pointer;
-		@include custom-text(color, var(--rise-text));
+		@include custom-text(color, ct(list, item-text, var(--rise-text)));
 		user-select: none;
 		outline: none;
 		@include transition-colors;
 		@include focus-ring(-2px);
 
 		@include hover {
-			background-color: var(--rise-bg-elevated);
+			background-color: ct(list, item-bg-hover, var(--rise-bg-elevated));
+		}
+	}
+
+	& &__item-leave-active {
+		position: absolute;
+		pointer-events: none;
+	}
+
+	@include motion-safe {
+		& &__item-move {
+			transition: transform var(--rise-duration) var(--rise-ease-emphasized);
 		}
 	}
 
@@ -89,7 +102,7 @@
 	}
 
 	&__item--selected {
-		background-color: var(--rise-primary-soft);
+		background-color: ct(list, item-bg-selected, var(--rise-primary-soft));
 		@include custom-text(color, var(--rise-text-highlighted));
 
 		@include hover {
@@ -168,7 +181,7 @@
 	}
 
 	&__empty {
-		padding: sz(24px 16px);
+		padding: space(24px 16px);
 		color: var(--rise-text-toned);
 		text-align: center;
 	}
@@ -195,11 +208,11 @@
 	&__ghost-item {
 		display: flex;
 		align-items: center;
-		gap: sz(10px);
+		gap: space(ct(list, item-gap, 10px));
 		box-sizing: border-box;
-		padding: sz(8px 10px);
+		padding: space(ct(list, item-padding-y, 8px) ct(list, item-padding-x, 10px));
 		border: 1px solid var(--rise-border);
-		border-radius: sz(var(--rise-radius-sm));
+		border-radius: sz(ct(list, item-radius, var(--rise-radius-sm)));
 		background-color: var(--rise-bg);
 		color: var(--rise-text);
 		box-shadow: var(--rise-shadow-lg);

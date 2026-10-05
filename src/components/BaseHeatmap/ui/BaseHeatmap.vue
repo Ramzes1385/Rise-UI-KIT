@@ -1,23 +1,17 @@
 <template>
-	<div class="base-heatmap" :class="[variantClass, classes.root]" :style="[sizeScaleStyle, { '--heatmap-color': mark }]">
-		<div ref="scrollRef" class="base-heatmap__scroll" role="img" :aria-label="summary" :tabindex="isScrollable ? 0 : undefined">
-			<svg class="base-heatmap__svg" :width="width + 28" :height="step * 7 + 18" aria-hidden="true">
-				<text v-for="month in months" :key="month.key" class="base-heatmap__caption" :x="28 + month.week * step" y="10">
+	<div :class="[ui('root'), variantClass, classes.root]" :style="[sizeScaleStyle, { '--heatmap-color': mark }]">
+		<div ref="scrollRef" :class="ui('scroll')" role="img" :aria-label="summary" :tabindex="isScrollable ? 0 : undefined">
+			<svg :class="ui('svg')" :width="width + 28" :height="step * 7 + 18" aria-hidden="true">
+				<text v-for="month in months" :key="month.key" :class="ui('caption')" :x="28 + month.week * step" y="10">
 					{{ month.label }}
 				</text>
-				<text
-					v-for="day in weekdays"
-					:key="day.index"
-					class="base-heatmap__caption"
-					x="0"
-					:y="18 + day.index * step + cellSize - 2">
+				<text v-for="day in weekdays" :key="day.index" :class="ui('caption')" x="0" :y="18 + day.index * step + cellSize - 2">
 					{{ day.label }}
 				</text>
 				<rect
 					v-for="cell in cells"
 					:key="cell.key"
-					class="base-heatmap__cell"
-					:class="[`base-heatmap__cell--${cell.level}`, { 'base-heatmap__cell--active': active === cell }]"
+					:class="[ui('cell'), `base-heatmap__cell--${cell.level}`, { 'base-heatmap__cell--active': active === cell }]"
 					:x="28 + cell.week * step"
 					:y="18 + cell.weekday * step"
 					:width="cellSize"
@@ -26,11 +20,11 @@
 					@pointerleave="setActive(null)" />
 			</svg>
 		</div>
-		<div class="base-heatmap__footer" aria-hidden="true">
-			<span class="base-heatmap__tooltip">{{ tooltip }}</span>
-			<span class="base-heatmap__scale">
+		<div :class="ui('footer')" aria-hidden="true">
+			<span :class="ui('tooltip')">{{ tooltip }}</span>
+			<span :class="ui('scale')">
 				{{ UI_CHARTS.LESS }}
-				<span v-for="level in 5" :key="level" class="base-heatmap__swatch" :class="`base-heatmap__cell--${level - 1}`" />
+				<span v-for="level in 5" :key="level" :class="[ui('swatch'), `base-heatmap__cell--${level - 1}`]" />
 				{{ UI_CHARTS.MORE }}
 			</span>
 		</div>
@@ -70,5 +64,6 @@ const {
 	tooltip,
 	summary,
 	setActive,
+	ui,
 } = useBaseHeatmap(props)
 </script>

@@ -33,4 +33,4 @@ export const PEOPLE: ListItem[] = STORY_USERS.map(user => ({
 }))
 
 export const listTitles = (canvasElement: HTMLElement): string[] =>
-	[...canvasElement.querySelectorAll('.base-list__title')].map(element => element.textContent ?? '')
+	[...canvasElement.querySelectorAll('[data-list-id] .base-list__title')].map(element => element.textContent ?? '')

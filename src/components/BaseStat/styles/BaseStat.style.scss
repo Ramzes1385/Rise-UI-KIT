@@ -1,15 +1,19 @@
+$stat-padding-y: ct(stat, padding-y, 16px);
+$stat-padding-x: ct(stat, padding-x, 16px);
+
 .base-stat {
 	position: relative;
 	display: flex;
 	flex-direction: column;
-	gap: sz(12px);
+	gap: space(ct(stat, gap, 12px));
 	box-sizing: border-box;
 	min-width: 0;
-	padding: sz(16px);
-	border: 1px solid var(--rise-border);
-	border-radius: sz(var(--rise-radius-lg));
+	padding: space($stat-padding-y $stat-padding-x);
+	border: 1px solid ct(stat, border, var(--rise-border));
+	border-radius: sz(ct(stat, radius, var(--rise-radius-lg)));
+	box-shadow: ct(stat, shadow, none);
 	@include text-size(sm);
-	@include custom-bg(background-color, var(--rise-bg));
+	@include custom-bg(background-color, ct(stat, bg, var(--rise-bg)));
 	@include custom-text(color, var(--rise-text));
 
 	&--soft {
@@ -42,16 +46,27 @@
 	}
 
 	&__label {
-		@include custom-text(color, var(--rise-text-muted));
+		@include custom-text(color, ct(stat-label, text, var(--rise-text-muted)));
 	}
 
 	&__value {
+		display: grid;
 		margin: 0;
-		font-weight: var(--rise-font-weight-semibold);
+		font-size: sz(ct(stat-value, font-size, var(--rise-font-size-2xl)));
+		line-height: sz(var(--rise-line-height-2xl));
+		font-weight: ct(stat-value, font-weight, var(--rise-font-weight-semibold));
 		font-variant-numeric: tabular-nums;
 		overflow-wrap: anywhere;
-		@include text-size(2xl);
-		@include custom-text(color, var(--rise-text-highlighted));
+		@include custom-text(color, ct(stat-value, text, var(--rise-text-highlighted)));
+
+		> * {
+			grid-area: 1 / 1;
+			min-width: 0;
+		}
+	}
+
+	&__sr {
+		@include visually-hidden;
 	}
 
 	&__change {
@@ -67,6 +82,7 @@
 	&__trend,
 	&__delta {
 		font-weight: var(--rise-font-weight-medium);
+		@include transition-colors;
 	}
 
 	&__change--positive &__trend,
@@ -81,10 +97,10 @@
 
 	&__icon {
 		position: absolute;
-		top: sz(16px);
-		right: sz(16px);
+		top: space($stat-padding-y);
+		right: space($stat-padding-x);
 		display: flex;
-		color: var(--rise-text-muted);
+		color: ct(stat-icon, text, var(--rise-text-muted));
 	}
 
 	&--with-icon &__label {
@@ -99,4 +115,18 @@
 	&__chart {
 		min-width: 0;
 	}
+}
+
+@include enter-fade(base-stat-swap);
+
+.base-stat-appear-enter-active {
+	transition: opacity var(--rise-duration) var(--rise-ease-out);
+}
+
+.base-stat-appear-enter-from {
+	opacity: 0;
+}
+
+.base-stat-appear-leave-active {
+	display: none;
 }

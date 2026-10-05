@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /**
@@ -5,6 +6,17 @@ import type { BaseComponentProps } from '@composables/base/useBaseComponent'
  * `outline` — заметная рамка без фона, `ghost` — без рамки и фона (внутри своей карточки)
  */
 export const STAT_VARIANTS = ['default', 'soft', 'outline', 'ghost'] as const
+
+/**
+ * Части карточки для пропа `ui` (БЭМ-элементы `.base-stat__<часть>`, `root` — корень):
+ * body — список `dl` с подписью, значением и изменением, label — подпись `dt`, value — ячейка значения `dd`,
+ * content — значение внутри ячейки (текст или слот `value`; заглушка загрузки сменяется им с перекрёстным затуханием),
+ * change — строка изменения `dd`, trend — стрелка направления, delta — число изменения, period — подпись периода `changeLabel`,
+ * icon — значок в углу (слот `icon`), chart — место графика (слот `chart`).
+ */
+export const STAT_PARTS = ['body', 'label', 'value', 'content', 'change', 'trend', 'delta', 'period', 'icon', 'chart'] as const
+
+export type BaseStatPart = (typeof STAT_PARTS)[number]
 
 /** Направление изменения: `up` — рост, `down` — снижение, `flat` — без изменений */
 export type StatTrend = 'up' | 'down' | 'flat'
@@ -35,6 +47,14 @@ export interface BaseStatProps extends BaseComponentProps<(typeof STAT_VARIANTS)
 	isInverse?: boolean
 	/** Загрузка: вместо значения и изменения — заглушки, на корне `aria-busy` */
 	isLoading?: boolean
+	/**
+	 * Классы частей карточки (`root`, `body`, `label`, `value`, `content`, `change`, `trend`, `delta`, `period`, `icon`, `chart`) —
+	 * добавляются к классам кита. Глобально — `createUiKitPlugin({ defaults: { BaseStat: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseStat label="Выручка" :value="4820000" :ui="{ root: 'shadow-md', value: 'text-emerald-600' }" />
+	 */
+	ui?: UiProp<BaseStatPart>
 }
 
 /**

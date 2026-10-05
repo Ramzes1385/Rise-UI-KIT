@@ -1,32 +1,44 @@
 <template>
 	<div
-		class="base-stat"
-		:class="[variantClass, classes.root, { 'base-stat--with-icon': !!$slots.icon }]"
+		ref="rootRef"
+		:class="[ui('root'), variantClass, classes.root, { 'base-stat--with-icon': !!$slots.icon }]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		:aria-busy="isLoading || undefined">
-		<dl class="base-stat__body">
-			<dt class="base-stat__label" :class="classes.label">
+		<dl :class="ui('body')">
+			<dt :class="[ui('label'), classes.label]">
 				<slot name="label">{{ label }}</slot>
 			</dt>
-			<dd class="base-stat__value" :class="classes.value">
-				<BaseSkeleton v-if="isLoading" width="60%" :height="28" />
-				<slot v-else name="value" :formatted="formattedValue">{{ formattedValue }}</slot>
+			<dd :class="[ui('value'), classes.value]">
+				<Transition name="base-stat-swap">
+					<BaseSkeleton v-if="isLoading" width="60%" :height="28" />
+					<span v-else :class="ui('content')">
+						<slot name="value" :formatted="formattedValue">
+							<template v-if="isValueTweening">
+								<span aria-hidden="true">{{ displayValue }}</span>
+								<span class="base-stat__sr">{{ formattedValue }}</span>
+							</template>
+							<template v-else>{{ formattedValue }}</template>
+						</slot>
+					</span>
+				</Transition>
 			</dd>
-			<dd v-if="isLoading && hasChange" class="base-stat__change" :class="classes.change">
+			<dd v-if="isLoading && hasChange" :class="[ui('change'), classes.change]">
 				<BaseSkeleton width="40%" />
 			</dd>
-			<dd v-else-if="hasChange" class="base-stat__change" :class="[`base-stat__change--${tone}`, classes.change]">
-				<slot name="change" :formatted="formattedChange" :trend="trend" :tone="tone">
-					<BaseIcon class="base-stat__trend" :name="trendIcon.name" :is-flip-y="trendIcon.isFlipY" />
-					<span class="base-stat__delta">{{ formattedChange }}</span
-					><span v-if="changeLabel" class="base-stat__period">{{ ` ${changeLabel}` }}</span>
-				</slot>
-			</dd>
+			<Transition name="base-stat-appear">
+				<dd v-if="!isLoading && hasChange" :class="[ui('change'), `base-stat__change--${tone}`, classes.change]">
+					<slot name="change" :formatted="formattedChange" :trend="trend" :tone="tone">
+						<BaseIcon :class="ui('trend')" :name="trendIcon.name" :is-flip-y="trendIcon.isFlipY" />
+						<span :class="ui('delta')">{{ formattedChange }}</span
+						><span v-if="changeLabel" :class="ui('period')">{{ ` ${changeLabel}` }}</span>
+					</slot>
+				</dd>
+			</Transition>
 		</dl>
-		<div v-if="$slots.icon" class="base-stat__icon">
+		<div v-if="$slots.icon" :class="ui('icon')">
 			<slot name="icon" />
 		</div>
-		<div v-if="$slots.chart" class="base-stat__chart" :class="classes.chart">
+		<div v-if="$slots.chart" :class="[ui('chart'), classes.chart]">
 			<slot name="chart" />
 		</div>
 	</div>
@@ -70,5 +82,9 @@ const {
 	trend,
 	tone,
 	trendIcon,
+	ui,
+	rootRef,
+	isValueTweening,
+	displayValue,
 } = useBaseStat(props)
 </script>

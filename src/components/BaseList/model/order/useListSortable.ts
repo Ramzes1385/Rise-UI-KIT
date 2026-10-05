@@ -4,8 +4,6 @@ import { useSortable } from '@composables/interaction/useSortable'
 import type { ListItem, ListProps } from '../../types/BaseList.types'
 import { dropIndex, indexOfId, rowElement, stepIndex } from './listOrder'
 
-const FLIP_ITEMS = { selector: '[data-list-id]', key: 'listId' }
-
 export function useListSortable<T extends ListItem>(
 	props: ListProps<T>,
 	listRef: Ref<HTMLElement | null>,
@@ -35,6 +33,5 @@ export function useListSortable<T extends ListItem>(
 		focusItem: deps.focusItem,
 		moveKeys: ['ArrowUp', 'ArrowDown', 'Home', 'End'],
 		settlingClass: 'base-list__ghost--settling',
-		flip: props.isVirtual ? undefined : { source: () => order.shown.value, items: FLIP_ITEMS },
 	})
 }

@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /**
@@ -5,6 +6,16 @@ import type { BaseComponentProps } from '@composables/base/useBaseComponent'
  * outline — кольцо цвета события на фоне страницы
  */
 export const TIMELINE_VARIANTS = ['default', 'soft', 'outline'] as const
+
+/**
+ * Части ленты для пропа `ui` (БЭМ-элементы `.base-timeline__<часть>`, `root` — сам `<ol>`):
+ * item — событие (`<li>`); date — дата или время; marker — круг маркера; icon — иконка в маркере; dot — точка в маркере
+ * без иконки; line — линия до следующего события; content — колонка с текстом; day — заголовок дня при `isGrouped`;
+ * title — заголовок события; description — описание; media — картинка события (BaseImage).
+ */
+export const TIMELINE_PARTS = ['item', 'date', 'marker', 'icon', 'dot', 'line', 'content', 'day', 'title', 'description', 'media'] as const
+
+export type BaseTimelinePart = (typeof TIMELINE_PARTS)[number]
 
 export type TimelineColor = 'primary' | 'success' | 'warning' | 'error' | 'info' | 'neutral'
 
@@ -54,6 +65,14 @@ export interface BaseTimelineProps extends BaseComponentProps<
 	isGrouped?: boolean
 	/** Место даты: над заголовком (`top`, по умолчанию) или колонкой слева от ленты (`side`, только вертикальная лента) */
 	datePosition?: TimelineDatePosition
+	/**
+	 * Классы частей ленты (`root`, `item`, `marker`, `dot`, `line`, `title`…) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseTimeline: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseTimeline :items="events" :ui="{ marker: 'shadow-md', title: 'uppercase' }" />
+	 */
+	ui?: UiProp<BaseTimelinePart>
 }
 
 export interface BaseTimelineSlots {

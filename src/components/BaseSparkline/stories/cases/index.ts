@@ -1,3 +1,5 @@
 export { Default } from './Default'
 export { StatTiles } from './content/StatTiles'
 export { Variants } from './appearance/Variants'
+export { Theming } from './appearance/Theming'
+export { Animations } from './behavior/Animations'

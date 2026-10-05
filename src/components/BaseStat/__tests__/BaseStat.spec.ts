@@ -16,6 +16,7 @@ describe('BaseStat unit', () => {
 	})
 
 	it('форматирует число по valueFormat и языку кита', async () => {
+		document.documentElement.setAttribute('data-rise-motion', 'none')
 		const { container, rerender } = render(BaseStat, {
 			props: { label: 'Выручка', value: 4_820_000, valueFormat: { style: 'currency', currency: 'RUB', notation: 'compact' } },
 		})
@@ -23,6 +24,7 @@ describe('BaseStat unit', () => {
 		setLocale('en')
 		await rerender({ value: 1500 })
 		expect(text(container.querySelector('.base-stat__value'))).toBe('RUB 1.5K')
+		document.documentElement.removeAttribute('data-rise-motion')
 	})
 
 	it('строку выводит как есть, без значения — пусто', async () => {

@@ -35,3 +35,5 @@ export const SortableSelect = cases.SortableSelect
 export const CanMove = cases.CanMove
 export const Filtered = cases.Filtered
 export const Virtual = cases.Virtual
+export const Theming = cases.Theming
+export const Animations = cases.Animations

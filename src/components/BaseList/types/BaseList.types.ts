@@ -1,4 +1,5 @@
 import type { ComputedRef } from 'vue'
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { SortableMove } from '@composables/interaction/useSortable'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
@@ -14,6 +15,33 @@ export const LIST_VARIANTS = ['default', 'soft', 'outline', 'ghost'] as const
  * `single` и `multiple` — список выбора по APG Listbox (`role="listbox"`, у строк `role="option"`)
  */
 export const LIST_SELECTION_MODES = ['none', 'single', 'multiple'] as const
+
+/**
+ * Части списка для пропа `ui` (БЭМ-элементы `.base-list__<часть>`, `root` — корень): label — видимая подпись;
+ * viewport — область прокрутки в рамке; list — сам `<ul>`; item — строка; grip — значок «перетащить»; prefix — значок
+ * или аватар слева; text — колонка текста; title — текст строки; description — описание; meta — подпись справа;
+ * check — галочка выбранной строки; actions — кнопки действий; empty — пустой список; error — текст ошибки;
+ * ghost — перетаскиваемая копия строки (телепортируется в `body`).
+ */
+export const LIST_PARTS = [
+	'label',
+	'viewport',
+	'list',
+	'item',
+	'grip',
+	'prefix',
+	'text',
+	'title',
+	'description',
+	'meta',
+	'check',
+	'actions',
+	'empty',
+	'error',
+	'ghost',
+] as const
+
+export type BaseListPart = (typeof LIST_PARTS)[number]
 
 export type ListVariant = (typeof LIST_VARIANTS)[number]
 
@@ -85,6 +113,14 @@ export interface BaseListProps<T extends ListItem = ListItem> extends BaseCompon
 	overscan?: number
 	/** Текст пустого списка (по умолчанию из словаря) */
 	emptyText?: string
+	/**
+	 * Классы частей списка (`root`, `viewport`, `item`, `title`, `ghost`…) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseList: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseList :items="items" aria-label="Разделы" :ui="{ viewport: 'shadow-sm', title: 'font-semibold' }" />
+	 */
+	ui?: UiProp<BaseListPart>
 }
 
 /** Пропсы после `withDefaults` */

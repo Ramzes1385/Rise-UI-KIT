@@ -1,13 +1,12 @@
 <template>
 	<ol
-		class="base-timeline"
-		:class="[variantClass, `base-timeline--${orientation}`, { 'base-timeline--date-side': isDateSide }, classes.root]"
+		:class="[ui('root'), variantClass, `base-timeline--${orientation}`, { 'base-timeline--date-side': isDateSide }, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<li
 			v-for="(item, index) in items"
 			:key="item.id"
-			class="base-timeline__item"
 			:class="[
+				ui('item'),
 				`base-timeline__item--${item.color ?? 'primary'}`,
 				{
 					'base-timeline__item--current': index === currentIndex,
@@ -18,19 +17,18 @@
 			:aria-current="index === currentIndex ? 'step' : undefined">
 			<time
 				v-if="isDateSide && item.date"
-				class="base-timeline__date base-timeline__date--side"
-				:class="classes.date"
+				:class="[ui('date'), 'base-timeline__date--side', classes.date]"
 				:datetime="dateTime(item.date)"
 				>{{ formatDate(item.date) }}</time
 			>
-			<span v-else-if="isDateSide" class="base-timeline__date base-timeline__date--side" />
-			<span class="base-timeline__marker" :class="classes.marker" aria-hidden="true">
-				<BaseIcon v-if="item.icon" :name="item.icon" class="base-timeline__icon" :size-scale="calcIconScale('sm', sizeScale)" />
-				<span v-else class="base-timeline__dot" />
+			<span v-else-if="isDateSide" :class="[ui('date'), 'base-timeline__date--side']" />
+			<span :class="[ui('marker'), classes.marker]" aria-hidden="true">
+				<BaseIcon v-if="item.icon" :name="item.icon" :class="ui('icon')" :size-scale="calcIconScale('sm', sizeScale)" />
+				<span v-else :class="ui('dot')" />
 			</span>
-			<span v-if="index < items.length - 1" class="base-timeline__line" aria-hidden="true" />
-			<div class="base-timeline__content" :class="classes.content">
-				<span v-if="dayLabel(index)" class="base-timeline__day" :class="classes.day">{{ dayLabel(index) }}</span>
+			<span v-if="index < items.length - 1" :class="ui('line')" aria-hidden="true" />
+			<div :class="[ui('content'), classes.content]">
+				<span v-if="dayLabel(index)" :class="[ui('day'), classes.day]">{{ dayLabel(index) }}</span>
 				<slot
 					v-if="$slots[`item-${item.id}`]"
 					:name="`item-${item.id}`"
@@ -39,18 +37,14 @@
 					:is-current="index === currentIndex"
 					:is-upcoming="isUpcoming(index)" />
 				<slot v-else name="item" :item="item" :index="index" :is-current="index === currentIndex" :is-upcoming="isUpcoming(index)">
-					<time
-						v-if="item.date && !isDateSide"
-						class="base-timeline__date"
-						:class="classes.date"
-						:datetime="dateTime(item.date)"
-						>{{ formatDate(item.date) }}</time
-					>
-					<span class="base-timeline__title">{{ item.title }}</span>
-					<span v-if="item.description" class="base-timeline__description">{{ item.description }}</span>
+					<time v-if="item.date && !isDateSide" :class="[ui('date'), classes.date]" :datetime="dateTime(item.date)">{{
+						formatDate(item.date)
+					}}</time>
+					<span :class="ui('title')">{{ item.title }}</span>
+					<span v-if="item.description" :class="ui('description')">{{ item.description }}</span>
 					<BaseImage
 						v-if="item.media"
-						class="base-timeline__media"
+						:class="ui('media')"
 						:custom-class="{ root: classes.media }"
 						:src="item.media.src"
 						:alt="item.media.alt"
@@ -88,6 +82,7 @@ const props = withDefaults(
 defineSlots<BaseTimelineSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

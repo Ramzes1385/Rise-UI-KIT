@@ -1,4 +1,5 @@
 .base-timeline {
+	--timeline-marker: #{ct(timeline, marker-height, 24px)};
 	display: flex;
 	flex-direction: column;
 	margin: 0;
@@ -9,8 +10,8 @@
 		--timeline-color: var(--rise-primary);
 		position: relative;
 		display: flex;
-		gap: sz(12px);
-		padding-bottom: sz(24px);
+		gap: space(ct(timeline, item-gap, 12px));
+		padding-bottom: space(ct(timeline, gap, 24px));
 
 		&:last-child {
 			padding-bottom: 0;
@@ -45,28 +46,28 @@
 		align-items: center;
 		justify-content: center;
 		flex-shrink: 0;
-		width: sz(24px);
-		height: sz(24px);
+		width: sz(var(--timeline-marker));
+		height: sz(var(--timeline-marker));
 		border: 2px solid transparent;
-		border-radius: 50%;
-		background-color: var(--timeline-color);
-		color: var(--rise-on-primary);
+		border-radius: ct(timeline, marker-radius, 50%);
+		background-color: ct(timeline, marker-bg, var(--timeline-color));
+		color: ct(timeline, marker-text, var(--rise-on-primary));
 	}
 
 	&__dot {
-		width: sz(8px);
-		height: sz(8px);
+		width: sz(ct(timeline, dot-height, 8px));
+		height: sz(ct(timeline, dot-height, 8px));
 		border-radius: 50%;
 		background-color: currentcolor;
 	}
 
 	&__line {
 		position: absolute;
-		top: sz(24px);
+		top: sz(var(--timeline-marker));
 		bottom: 0;
-		left: calc(var(--timeline-side-offset, 0px) + #{sz(12px)} - 1px);
+		left: calc(var(--timeline-side-offset, 0px) + #{sz(calc(var(--timeline-marker) / 2))} - 1px);
 		width: 2px;
-		background-color: var(--rise-border);
+		background-color: ct(timeline, line-bg, var(--rise-border));
 	}
 
 	&__content {
@@ -91,7 +92,7 @@
 	}
 
 	&--date-side {
-		--timeline-side-offset: #{sz(100px)};
+		--timeline-side-offset: calc(#{sz(88px)} + #{space(ct(timeline, item-gap, 12px))});
 	}
 
 	&__day {
@@ -110,14 +111,15 @@
 	}
 
 	&__title {
-		@include text-size(sm);
-		font-weight: var(--rise-font-weight-medium);
-		color: var(--rise-text);
+		font-size: sz(ct(timeline, title-font-size, var(--rise-font-size-sm)));
+		line-height: sz(var(--rise-line-height-sm));
+		font-weight: ct(timeline, title-font-weight, var(--rise-font-weight-medium));
+		color: ct(timeline, title-text, var(--rise-text));
 	}
 
 	&__description {
 		@include text-size(sm);
-		color: var(--rise-text-muted);
+		color: ct(timeline, description-text, var(--rise-text-muted));
 	}
 
 	&__item--current &__title {
@@ -129,14 +131,14 @@
 	}
 
 	&--soft &__marker {
-		background-color: color-mix(in srgb, var(--timeline-color) 15%, var(--rise-bg));
-		color: var(--timeline-color);
+		background-color: ct(timeline, marker-bg, color-mix(in srgb, var(--timeline-color) 15%, var(--rise-bg)));
+		color: ct(timeline, marker-text, var(--timeline-color));
 	}
 
 	&--outline &__marker {
 		border-color: var(--timeline-color);
-		background-color: var(--rise-bg);
-		color: var(--timeline-color);
+		background-color: ct(timeline, marker-bg, var(--rise-bg));
+		color: ct(timeline, marker-text, var(--timeline-color));
 	}
 
 	&--horizontal {
@@ -147,14 +149,14 @@
 	&--horizontal &__item {
 		flex: 1 0 sz(160px);
 		flex-direction: column;
-		padding-right: sz(16px);
+		padding-right: space(ct(timeline, gap, 16px));
 		padding-bottom: 0;
 	}
 
 	&--horizontal &__line {
-		top: calc(#{sz(12px)} - 1px);
+		top: calc(#{sz(calc(var(--timeline-marker) / 2))} - 1px);
 		right: 0;
-		left: sz(24px);
+		left: sz(var(--timeline-marker));
 		width: auto;
 		height: 2px;
 	}

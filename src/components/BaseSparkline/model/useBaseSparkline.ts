@@ -1,5 +1,7 @@
 import { computed, ref } from 'vue'
 import { UI_CHARTS } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
+import { useTween } from '@composables/interaction/useTween'
 import { formatMessage, formatNumber } from '@/locales/state'
 import type { BaseSparklineProps } from '../types/BaseSparkline.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
@@ -8,16 +10,20 @@ import { areaPath, barHeight, linePath, nearestIndex, sparklinePoints } from './
 export function useBaseSparkline(props: BaseSparklineProps) {
 	const height = computed(() => props.height ?? 32)
 	const format = (value: number): string => (props.formatValue ?? formatNumber)(value)
-	const points = computed(() => sparklinePoints(props.values, { height: height.value, labels: props.labels ?? [] }))
+	const rootRef = ref<HTMLElement | null>(null)
+	const tween = useTween(() => props.values, { target: rootRef })
+	const points = computed(() => sparklinePoints(tween.value.value, { height: height.value, labels: props.labels ?? [] }))
 	const activeIndex = ref<number | null>(null)
 	return {
 		...useStandardBaseComponent('base-sparkline', props, ['root']),
+		ui: useUi(props, 'base-sparkline'),
+		rootRef,
 		height,
 		points,
 		line: computed(() => linePath(points.value)),
 		area: computed(() => areaPath(points.value, height.value)),
-		barHeight: (value: number): string => `${barHeight(value, props.values)}%`,
-		stroke: computed(() => props.markColor ?? 'var(--rise-primary)'),
+		barHeight: (value: number): string => `${barHeight(value, tween.value.value)}%`,
+		stroke: computed(() => props.markColor),
 		active: computed(() => (activeIndex.value === null ? null : points.value[activeIndex.value])),
 		format,
 		summary: computed(() => {

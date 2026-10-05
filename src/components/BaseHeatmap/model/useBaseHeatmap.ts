@@ -1,4 +1,5 @@
 import { UI_CHARTS } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
 import { ref, computed, shallowRef } from 'vue'
 import { formatMessage, formatNumber, getLocale } from '@/locales/state'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
@@ -19,6 +20,7 @@ export function useBaseHeatmap(props: BaseHeatmapProps) {
 	const scrollRef = ref<HTMLElement | null>(null)
 	return {
 		...useStandardBaseComponent('base-heatmap', props, ['root']),
+		ui: useUi(props, 'base-heatmap'),
 		scrollRef,
 		isScrollable: useScrollableRegion({ elementRef: scrollRef, orientation: 'horizontal' }).isScrollable,
 		cells,
@@ -30,7 +32,7 @@ export function useBaseHeatmap(props: BaseHeatmapProps) {
 		width: computed(() => (cells.value[cells.value.length - 1].week + 1) * (CELL + GAP)),
 		cellSize: CELL,
 		step: CELL + GAP,
-		mark: computed(() => props.markColor ?? 'var(--rise-chart-3)'),
+		mark: computed(() => props.markColor),
 		active,
 		tooltip: computed(() => (active.value ? `${format(active.value.value)} · ${dateText(active.value.date)}` : '')),
 		summary: computed(() => {

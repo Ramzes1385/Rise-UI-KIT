@@ -1,3 +1,5 @@
+$sparkline-mark: var(--sparkline-color, #{ct(sparkline-mark, bg, var(--rise-primary))});
+
 .base-sparkline {
 	position: relative;
 	box-sizing: border-box;
@@ -15,7 +17,7 @@
 
 	&__line {
 		fill: none;
-		stroke: var(--sparkline-color);
+		stroke: $sparkline-mark;
 		stroke-width: 2px;
 		stroke-linecap: round;
 		stroke-linejoin: round;
@@ -23,7 +25,7 @@
 	}
 
 	&__area {
-		fill: var(--sparkline-color);
+		fill: $sparkline-mark;
 		fill-opacity: 0.1;
 		stroke: none;
 	}
@@ -33,8 +35,8 @@
 		width: 8px;
 		height: 8px;
 		border-radius: 50%;
-		background-color: var(--sparkline-color);
-		box-shadow: 0 0 0 2px var(--rise-bg);
+		background-color: $sparkline-mark;
+		box-shadow: 0 0 0 2px ct(sparkline-dot, border, var(--rise-bg));
 		transform: translate(-50%, -50%);
 		pointer-events: none;
 	}
@@ -42,15 +44,15 @@
 	&__bars {
 		display: flex;
 		align-items: flex-end;
-		gap: 2px;
+		gap: ct(sparkline-bars, gap, 2px);
 		height: 100%;
 	}
 
 	&__bar {
 		flex: 1 1 0;
 		max-width: 24px;
-		border-radius: 2px 2px 0 0;
-		background-color: var(--sparkline-color);
+		border-radius: ct(sparkline-bar, radius, 2px) ct(sparkline-bar, radius, 2px) 0 0;
+		background-color: $sparkline-mark;
 		opacity: 0.85;
 	}
 
@@ -65,12 +67,12 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		padding: sz(4px) sz(8px);
-		border: 1px solid var(--rise-border);
-		border-radius: sz(var(--rise-radius-sm));
-		background-color: var(--rise-bg);
-		box-shadow: var(--rise-shadow-md);
-		color: var(--rise-text-muted);
+		padding: space(ct(sparkline-tooltip, padding-y, 4px) ct(sparkline-tooltip, padding-x, 8px));
+		border: 1px solid ct(sparkline-tooltip, border, var(--rise-border));
+		border-radius: sz(ct(sparkline-tooltip, radius, var(--rise-radius-sm)));
+		background-color: ct(sparkline-tooltip, bg, var(--rise-bg));
+		box-shadow: ct(sparkline-tooltip, shadow, var(--rise-shadow-md));
+		color: ct(sparkline-tooltip, text, var(--rise-text-muted));
 		white-space: nowrap;
 		transform: translateX(-50%);
 		pointer-events: none;

@@ -2,6 +2,7 @@ import '@testing-library/jest-dom/vitest'
 import { nextTick, ref } from 'vue'
 import BaseList from '../ui/BaseList.vue'
 import { createUiKitPlugin } from '@/plugin'
+import { mergeShown } from '../model/order/listOrder'
 import type { BaseListExpose, ListItem } from '../types/BaseList.types'
 import { fireEvent, render, screen, within } from '@testing-library/vue'
 
@@ -322,5 +323,13 @@ describe('BaseList unit', () => {
 			global: { plugins: [createUiKitPlugin({ defaults: { BaseList: { selectionMode: 'multiple' } } })] },
 		})
 		expect(screen.getByRole('listbox')).toHaveAttribute('aria-multiselectable', 'true')
+	})
+})
+
+describe('listOrder', () => {
+	it('mergeShown: единственная показанная строка без соседей встаёт в конец полного списка', () => {
+		const full = [ROWS[0], ROWS[1], ROWS[2]]
+
+		expect(mergeShown(full, [ROWS[0]], 'a').map(row => row.id)).toEqual(['b', 'c', 'a'])
 	})
 })
