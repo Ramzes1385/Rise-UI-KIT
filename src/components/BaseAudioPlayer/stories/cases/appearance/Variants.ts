@@ -1,6 +1,6 @@
-import type meta from '../BaseAudioPlayer.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import BaseAudioPlayer from '../../ui/BaseAudioPlayer.vue'
+import type meta from '../../BaseAudioPlayer.stories'
+import BaseAudioPlayer from '../../../ui/BaseAudioPlayer.vue'
 import { storySource, useStorySetup } from '@/stories/helpers'
 
 const template = `

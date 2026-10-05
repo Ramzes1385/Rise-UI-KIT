@@ -15,4 +15,6 @@ export const argTypes = {
 	playbackRates: { control: 'object', table: propGroup(ARG_GROUP.behavior) },
 	isExclusive: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	isDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+	transcript: { control: 'text', table: propGroup(ARG_GROUP.content) },
+	isTranscriptOpen: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 } satisfies Meta<typeof BaseAudioPlayer>['argTypes']

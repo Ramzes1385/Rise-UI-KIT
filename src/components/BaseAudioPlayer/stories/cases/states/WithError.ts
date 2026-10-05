@@ -1,5 +1,5 @@
-import type meta from '../BaseAudioPlayer.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
+import type meta from '../../BaseAudioPlayer.stories'
 import { STORY_WAIT_TIMEOUT } from '@/stories/helpers'
 import { expect, waitFor, within } from 'storybook/test'
 

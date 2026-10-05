@@ -1,6 +1,6 @@
 import { expect, waitFor } from 'storybook/test'
-import type meta from '../BaseAudioPlayer.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
+import type meta from '../../BaseAudioPlayer.stories'
 
 export const DecodedWaveform: StoryObj<typeof meta> = {
 	parameters: {

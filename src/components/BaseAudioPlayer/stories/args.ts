@@ -13,6 +13,7 @@ export const args = {
 	playbackRates: [1, 1.5, 2],
 	isExclusive: true,
 	isDisabled: false,
+	isTranscriptOpen: false,
 	variant: 'default',
 	sizeScale: 100,
 	onPlay: fn(),
@@ -20,4 +21,5 @@ export const args = {
 	onEnded: fn(),
 	onError: fn(),
 	'onUpdate:currentTime': fn(),
+	'onUpdate:isTranscriptOpen': fn(),
 } satisfies Meta<typeof BaseAudioPlayer>['args']

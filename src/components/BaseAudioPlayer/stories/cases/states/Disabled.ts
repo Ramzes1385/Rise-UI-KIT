@@ -1,6 +1,6 @@
 import { expect } from 'storybook/test'
-import type meta from '../BaseAudioPlayer.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
+import type meta from '../../BaseAudioPlayer.stories'
 
 export const Disabled: StoryObj<typeof meta> = {
 	parameters: { docs: { description: { story: 'Недоступный плеер: кнопки и волна не реагируют и не получают фокус.' } } },

@@ -18,6 +18,8 @@ export default meta
 
 export const Default = cases.Default
 export const DecodedWaveform = cases.DecodedWaveform
+export const Transcript = cases.Transcript
+export const TranscriptLecture = cases.TranscriptLecture
 export const Variants = cases.Variants
 export const Sizes = cases.Sizes
 export const WithError = cases.WithError
