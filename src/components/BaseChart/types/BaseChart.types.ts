@@ -1,3 +1,4 @@
+import type { Ref } from 'vue'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /** Вид графика: `line` — линии, `area` — линии с заливкой до нуля, `bar` — столбики (группами или стопкой при `isStacked`) */
@@ -8,6 +9,18 @@ export type ChartVariant = (typeof CHART_VARIANTS)[number]
 
 /** Подпись точки по оси X: строка как есть, число — через `Intl.NumberFormat`, дата — через `Intl.DateTimeFormat` языка кита */
 export type ChartLabel = string | number | Date
+
+/** Появление графика: `grow` — столбики растут от базовой линии, линии и области поднимаются от неё; `draw` — линии рисуются, области проявляются; `fade` — проявление; `none` — сразу */
+export const CHART_ANIMATIONS = ['grow', 'draw', 'fade', 'none'] as const
+
+/** Появление графика */
+export type ChartAnimation = (typeof CHART_ANIMATIONS)[number]
+
+/** Смена данных: `tween` — значения и шкала Y плавно переходят к новым (при смене числа точек или пропусков — перекрёстное затухание); `none` — сразу */
+export const CHART_UPDATE_ANIMATIONS = ['tween', 'none'] as const
+
+/** Смена данных */
+export type ChartUpdateAnimation = (typeof CHART_UPDATE_ANIMATIONS)[number]
 
 /** Ряд данных: имя для легенды, подсказки и таблицы; значения по порядку подписей `labels`; `null` — нет значения (разрыв линии) */
 export interface ChartSeries {
@@ -39,6 +52,8 @@ export interface ChartSeriesView {
 	isHidden: boolean
 	line: string
 	area: string
+	/** Порядок ряда — задержка появления (`--rise-motion-stagger`) */
+	order: number
 }
 
 /** Прямоугольник столбика в процентах области графика */
@@ -53,12 +68,36 @@ export interface ChartRect {
 export interface ChartBarView extends ChartRect {
 	key: string
 	color: string
+	/** Ряд скрыт: столбик сжат до нулевой ширины и прозрачен */
+	isHidden: boolean
+	/** Значение меньше нуля: столбик растёт вниз от базовой линии */
+	isNegative: boolean
+	/** Порядок точки — задержка появления (`--rise-motion-stagger`) */
+	order: number
+}
+
+/** Место столбиков ряда в полосе точки: смещение и ширина в долях полосы (у скрытого ряда ширина 0) */
+export interface ChartSlot {
+	offset: number
+	width: number
+}
+
+/** Состояние графика, которое плавно переходит при смене данных: границы шкалы Y, места рядов в полосе и отрезки значений */
+export interface ChartMotionState {
+	min: number
+	max: number
+	slots: ChartSlot[]
+	spans: ChartSpan[][]
 }
 
 /** Метка оси: текст и положение в процентах (X — слева, Y — сверху) */
 export interface ChartTick {
 	text: string
 	position: number
+	/** Сдвиг подписи оси Y от места в конечной шкале, px — пока шкала плавно переходит */
+	shift?: number
+	/** Метка вне текущей шкалы (во время перехода шкалы) — скрыта */
+	isOutside?: boolean
 }
 
 /** Метка активной точки линии: цвет и положение в процентах */
@@ -67,6 +106,9 @@ export interface ChartMarker {
 	color: string
 	x: number
 	y: number
+	/** Положение в области графика, px: маркер двигается через `transform` */
+	offsetX: number
+	offsetY: number
 }
 
 /** Отрезок значения в точке: основание и вершина (у стопки основание — сумма рядов ниже); `null` — нет значения */
@@ -84,6 +126,21 @@ export interface ChartFrame {
 	count: number
 	domain: ChartDomain
 	isBand: boolean
+}
+
+/** Отрисовываемое состояние: во время перехода — промежуточные отрезки, места рядов и шкала */
+export interface ChartView {
+	spans: Readonly<Ref<ChartSpan[][]>>
+	slots: Readonly<Ref<ChartSlot[]>>
+	frame: Readonly<Ref<ChartFrame>>
+}
+
+/** Раскладка области графика: отрисовываемое состояние, ширина и высота в px, наибольшее число подписей оси X */
+export interface ChartLayout {
+	view: ChartView
+	width: Readonly<Ref<number>>
+	height: Readonly<Ref<number>>
+	maxXTicks: Readonly<Ref<number>>
 }
 
 /** Строка таблицы для скринридера: подпись и значения всех рядов */
@@ -121,6 +178,10 @@ export interface BaseChartProps extends BaseComponentProps<ChartVariant, 'root' 
 	valueFormat?: Intl.NumberFormatOptions
 	/** Формат подписей-дат через `Intl.DateTimeFormat`. По умолчанию `{ day: 'numeric', month: 'short' }` */
 	labelFormat?: Intl.DateTimeFormatOptions
+	/** Появление графика при монтировании. По умолчанию `grow` */
+	animation?: ChartAnimation
+	/** Переход при новых данных и скрытии рядов. По умолчанию `tween` */
+	updateAnimation?: ChartUpdateAnimation
 	/** Свой формат значения; важнее `valueFormat` */
 	formatValue?: (value: number) => string
 	/** Свой формат подписи оси X; важнее `labelFormat` */

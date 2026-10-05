@@ -39,14 +39,15 @@ export function seriesSpans(values: readonly (number | null)[], count: number): 
 	})
 }
 
-export function stackSpans(series: readonly (readonly (number | null)[])[], count: number): ChartSpan[][] {
+export function stackSpans(series: readonly (readonly (number | null)[])[], count: number, hidden: readonly boolean[] = []): ChartSpan[][] {
 	const positive = new Array<number>(count).fill(0)
 	const negative = new Array<number>(count).fill(0)
-	return series.map(values =>
+	return series.map((values, order) =>
 		seriesSpans(values, count).map((span, index) => {
 			if (!span) return null
 			const sums = span[1] >= 0 ? positive : negative
 			const base = sums[index]
+			if (hidden[order]) return [base, base] as const
 			sums[index] = base + span[1]
 			return [base, base + span[1]] as const
 		}),

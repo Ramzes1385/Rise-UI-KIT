@@ -6,7 +6,14 @@
 		<template v-else>
 			<div class="base-chart__body">
 				<div class="base-chart__y-axis" :style="{ height: plotHeight }" aria-hidden="true">
-					<span v-for="tick in yTicks" :key="tick.position" class="base-chart__y-tick">{{ tick.text }}</span>
+					<span
+						v-for="tick in yTicks"
+						:key="tick.text"
+						class="base-chart__y-tick"
+						:class="{ 'base-chart__y-tick--outside': tick.isOutside }"
+						:style="tick.shift ? { transform: `translateY(${tick.shift}px)` } : undefined">
+						{{ tick.text }}
+					</span>
 				</div>
 				<div
 					ref="plot"
@@ -25,39 +32,63 @@
 						<template v-if="hasGrid">
 							<line
 								v-for="tick in yTicks"
-								:key="tick.position"
+								:key="tick.text"
 								class="base-chart__grid"
+								:class="{ 'base-chart__grid--outside': tick.isOutside }"
 								x1="0"
 								x2="100"
 								:y1="tick.position"
 								:y2="tick.position" />
 						</template>
-						<template v-for="view in seriesViews" :key="view.name">
-							<path v-if="view.area && !view.isHidden" class="base-chart__area" :d="view.area" :fill="view.color" />
-							<path v-if="view.line && !view.isHidden" class="base-chart__line" :d="view.line" :stroke="view.color" />
-						</template>
-						<rect
-							v-for="bar in bars"
-							:key="bar.key"
-							class="base-chart__bar"
-							:x="bar.x"
-							:y="bar.y"
-							:width="bar.width"
-							:height="bar.height"
-							:fill="bar.color" />
+						<Transition name="base-chart-swap" :css="isSwapAnimated">
+							<g :key="shapesKey" class="base-chart__shapes" :class="shapesClass">
+								<template v-for="view in seriesViews" :key="view.name">
+									<path
+										v-if="view.area"
+										class="base-chart__area"
+										:class="{ 'base-chart__area--hidden': view.isHidden }"
+										:style="{ '--base-chart-order': view.order }"
+										:d="view.area"
+										:fill="view.color" />
+									<path
+										v-if="view.line"
+										class="base-chart__line"
+										:class="{ 'base-chart__line--hidden': view.isHidden }"
+										:style="{ '--base-chart-order': view.order }"
+										:d="view.line"
+										:stroke="view.color"
+										pathLength="1" />
+								</template>
+								<rect
+									v-for="bar in bars"
+									:key="bar.key"
+									class="base-chart__bar"
+									:class="{ 'base-chart__bar--hidden': bar.isHidden, 'base-chart__bar--negative': bar.isNegative }"
+									:style="{ '--base-chart-order': bar.order }"
+									:x="bar.x"
+									:y="bar.y"
+									:width="bar.width"
+									:height="bar.height"
+									:fill="bar.color" />
+							</g>
+						</Transition>
 						<line v-if="guide !== null" class="base-chart__guide" :x1="guide" :x2="guide" y1="0" y2="100" />
 					</svg>
 					<span
 						v-for="marker in markers"
 						:key="marker.key"
 						class="base-chart__marker"
-						:style="{ left: `${marker.x}%`, top: `${marker.y}%`, backgroundColor: marker.color }"
+						:style="{
+							'--base-chart-marker-x': `${marker.offsetX}px`,
+							'--base-chart-marker-y': `${marker.offsetY}px`,
+							backgroundColor: marker.color,
+						}"
 						aria-hidden="true" />
 					<div
 						v-if="point"
 						class="base-chart__tooltip"
 						:class="[{ 'base-chart__tooltip--start': (guide ?? 0) > 50 }, classes.tooltip]"
-						:style="{ left: `${guide}%` }"
+						:style="{ '--base-chart-guide-x': `${guideOffset}px` }"
 						aria-hidden="true">
 						<slot name="tooltip" :point="point">
 							<strong class="base-chart__tooltip-label">{{ point.label }}</strong>
@@ -139,6 +170,8 @@ const props = withDefaults(
 		yTickCount: 5,
 		valueFormat: undefined,
 		labelFormat: undefined,
+		animation: 'grow',
+		updateAnimation: 'tween',
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )
@@ -162,6 +195,10 @@ const {
 	point,
 	markers,
 	guide,
+	guideOffset,
+	shapesKey,
+	shapesClass,
+	isSwapAnimated,
 	announcement,
 	handlePointerMove,
 	handlePointerLeave,

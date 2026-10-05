@@ -1,4 +1,4 @@
-import type { ChartFrame, ChartRect, ChartSpan } from '../../types/BaseChart.types'
+import type { ChartFrame, ChartRect, ChartSlot, ChartSpan } from '../../types/BaseChart.types'
 
 const BAND_FILL = 0.7
 const STACK_FILL = 0.6
@@ -48,19 +48,19 @@ export function areaPath(spans: readonly ChartSpan[], frame: ChartFrame): string
 		.join(' ')
 }
 
-export function barRect(
-	span: readonly [number, number],
-	slot: { index: number; order: number; total: number },
-	frame: ChartFrame,
-): ChartRect {
+export function bandSlot(order: number, total: number, isHidden = false): ChartSlot {
+	const fill = total > 1 ? BAND_FILL : STACK_FILL
+	const width = fill / Math.max(1, total)
+	return { offset: (1 - fill) / 2 + order * width, width: isHidden ? 0 : width }
+}
+
+export function barRect(span: readonly [number, number], slot: ChartSlot & { index: number }, frame: ChartFrame): ChartRect {
 	const band = 100 / frame.count
-	const fill = slot.total > 1 ? BAND_FILL : STACK_FILL
-	const width = (band * fill) / slot.total
 	const top = yPosition(Math.max(span[0], span[1]), frame)
 	return {
-		x: slot.index * band + (band * (1 - fill)) / 2 + slot.order * width,
+		x: (slot.index + slot.offset) * band,
 		y: top,
-		width,
+		width: slot.width * band,
 		height: Math.max(0, yPosition(Math.min(span[0], span[1]), frame) - top),
 	}
 }

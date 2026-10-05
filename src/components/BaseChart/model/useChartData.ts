@@ -2,21 +2,26 @@ import { computed, type Ref } from 'vue'
 import { UI_CHARTS } from '@/locales/messages'
 import { formatMessage, formatNumber, getLocale } from '@/locales/state'
 import { chartDomain, seriesSpans, spanExtent, stackSpans } from './chart/chartScale'
-import { areaPath, barRect, linePath, tickIndexes, xPosition, yPosition } from './chart/chartGeometry'
+import { areaPath, bandSlot, barRect, linePath, tickIndexes, xPosition, yPosition } from './chart/chartGeometry'
 import type {
 	BaseChartProps,
 	ChartBarView,
 	ChartFrame,
 	ChartLabel,
 	ChartSeriesView,
+	ChartSlot,
 	ChartSpan,
 	ChartTableRow,
 	ChartTick,
+	ChartLayout,
+	ChartView,
 } from '../types/BaseChart.types'
 
 const DEFAULT_LABEL_FORMAT: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short' }
 const DEFAULT_Y_TICKS = 5
 const PALETTE_SIZE = 8
+const PERCENT = 100
+const OUTSIDE_TOLERANCE = 0.5
 
 export const isFiniteValue = (value: number | null | undefined): value is number => typeof value === 'number' && Number.isFinite(value)
 
@@ -37,12 +42,23 @@ function useChartFormat(props: BaseChartProps) {
 function chartSpans(props: BaseChartProps, hidden: ReadonlySet<string>): ChartSpan[][] {
 	const count = props.labels.length
 	if (!props.isStacked) return props.series.map(series => seriesSpans(series.values, count))
-	const visible = props.series.filter(series => !hidden.has(series.name))
-	const stacked = stackSpans(
-		visible.map(series => series.values),
+	return stackSpans(
+		props.series.map(series => series.values),
 		count,
+		props.series.map(series => hidden.has(series.name)),
 	)
-	return props.series.map(series => (hidden.has(series.name) ? seriesSpans(series.values, count) : stacked[visible.indexOf(series)]))
+}
+
+function useChartLayout(props: BaseChartProps, hidden: Ref<ReadonlySet<string>>) {
+	const visibleIndexes = computed(() => props.series.flatMap((series, index) => (hidden.value.has(series.name) ? [] : [index])))
+	const slots = computed<ChartSlot[]>(() => {
+		const total = props.isStacked ? 1 : visibleIndexes.value.length
+		return props.series.map((series, index) => {
+			const order = props.isStacked ? 0 : visibleIndexes.value.filter(visible => visible < index).length
+			return bandSlot(order, total, hidden.value.has(series.name))
+		})
+	})
+	return { visibleIndexes, slots }
 }
 
 export function useChartData(props: BaseChartProps, hiddenNames: Ref<readonly string[]>) {
@@ -51,7 +67,8 @@ export function useChartData(props: BaseChartProps, hiddenNames: Ref<readonly st
 	const count = computed(() => props.labels.length)
 	const isEmpty = computed(() => !count.value || !props.series.length)
 	const spans = computed(() => chartSpans(props, hidden.value))
-	const visibleIndexes = computed(() => props.series.flatMap((series, index) => (hidden.value.has(series.name) ? [] : [index])))
+	const { visibleIndexes, slots } = useChartLayout(props, hidden)
+	const colors = computed(() => props.series.map((series, index) => seriesColor(series.color, index)))
 	const frame = computed<ChartFrame>(() => ({
 		count: count.value,
 		isBand: props.variant === 'bar',
@@ -63,47 +80,62 @@ export function useChartData(props: BaseChartProps, hiddenNames: Ref<readonly st
 			props.yTickCount ?? DEFAULT_Y_TICKS,
 		),
 	}))
+	return { formatValue, formatLabel, hidden, count, isEmpty, spans, visibleIndexes, slots, colors, frame }
+}
+
+function chartBars(props: BaseChartProps, data: ReturnType<typeof useChartData>, view: ChartView): ChartBarView[] {
+	if (props.variant !== 'bar' || data.isEmpty.value) return []
+	return props.series.flatMap((series, seriesIndex) =>
+		view.spans.value[seriesIndex].flatMap((span, index) =>
+			span
+				? [
+						{
+							key: `${seriesIndex}-${index}`,
+							color: data.colors.value[seriesIndex],
+							isHidden: data.hidden.value.has(series.name),
+							isNegative: span[1] < span[0],
+							order: index,
+							...barRect(span, { ...view.slots.value[seriesIndex], index }, view.frame.value),
+						},
+					]
+				: [],
+		),
+	)
+}
+
+export function useChartShapes(props: BaseChartProps, data: ReturnType<typeof useChartData>, view: ChartView) {
 	const seriesViews = computed<ChartSeriesView[]>(() =>
 		props.series.map((series, index) => ({
 			name: series.name,
-			color: seriesColor(series.color, index),
-			isHidden: hidden.value.has(series.name),
-			line: props.variant === 'bar' || isEmpty.value ? '' : linePath(spans.value[index], frame.value),
-			area: props.variant === 'area' && !isEmpty.value ? areaPath(spans.value[index], frame.value) : '',
+			color: data.colors.value[index],
+			isHidden: data.hidden.value.has(series.name),
+			order: index,
+			line: props.variant === 'bar' || data.isEmpty.value ? '' : linePath(view.spans.value[index], view.frame.value),
+			area: props.variant === 'area' && !data.isEmpty.value ? areaPath(view.spans.value[index], view.frame.value) : '',
 		})),
 	)
-	const bars = computed<ChartBarView[]>(() => {
-		if (props.variant !== 'bar' || isEmpty.value) return []
-		const total = props.isStacked ? 1 : visibleIndexes.value.length
-		return visibleIndexes.value.flatMap((seriesIndex, order) =>
-			spans.value[seriesIndex].flatMap((span, index) =>
-				span
-					? [
-							{
-								key: `${seriesIndex}-${index}`,
-								color: seriesViews.value[seriesIndex].color,
-								...barRect(span, { index, order: props.isStacked ? 0 : order, total }, frame.value),
-							},
-						]
-					: [],
-			),
-		)
-	})
-	return { formatValue, formatLabel, hidden, count, isEmpty, spans, visibleIndexes, frame, seriesViews, bars }
+	return { seriesViews, bars: computed(() => chartBars(props, data, view)) }
 }
 
-export function useChartAxes(props: BaseChartProps, data: ReturnType<typeof useChartData>, maxXTicks: Ref<number>) {
+function axisTicks(data: ReturnType<typeof useChartData>, view: ChartView, height: number): ChartTick[] {
+	if (data.isEmpty.value) return []
+	return data.frame.value.domain.ticks.map(value => {
+		const position = yPosition(value, view.frame.value)
+		const shift = ((position - yPosition(value, data.frame.value)) / PERCENT) * height
+		return {
+			text: data.formatValue(value),
+			position,
+			shift: Math.abs(shift) < OUTSIDE_TOLERANCE ? 0 : shift,
+			isOutside: position < -OUTSIDE_TOLERANCE || position > PERCENT + OUTSIDE_TOLERANCE,
+		}
+	})
+}
+
+export function useChartAxes(props: BaseChartProps, data: ReturnType<typeof useChartData>, layout: ChartLayout) {
 	return {
-		yTicks: computed<ChartTick[]>(() =>
-			data.isEmpty.value
-				? []
-				: data.frame.value.domain.ticks.map(value => ({
-						text: data.formatValue(value),
-						position: yPosition(value, data.frame.value),
-					})),
-		),
+		yTicks: computed<ChartTick[]>(() => axisTicks(data, layout.view, layout.height.value)),
 		xTicks: computed<ChartTick[]>(() =>
-			tickIndexes(data.count.value, maxXTicks.value).map(index => ({
+			tickIndexes(data.count.value, layout.maxXTicks.value).map(index => ({
 				text: data.formatLabel(props.labels[index]),
 				position: xPosition(index, data.frame.value),
 			})),

@@ -33,6 +33,14 @@
 		white-space: nowrap;
 	}
 
+	&__y-tick--outside,
+	&__grid--outside,
+	&__line--hidden,
+	&__area--hidden,
+	&__bar--hidden {
+		opacity: 0;
+	}
+
 	&__plot {
 		position: relative;
 		min-width: 0;
@@ -66,6 +74,15 @@
 		opacity: 0.18;
 	}
 
+	&__bar {
+		transform-box: fill-box;
+		transform-origin: bottom;
+	}
+
+	&__bar--negative {
+		transform-origin: top;
+	}
+
 	&__guide {
 		stroke: var(--rise-border-accented);
 		stroke-width: 1;
@@ -81,7 +98,9 @@
 		border-radius: 50%;
 		box-sizing: border-box;
 		pointer-events: none;
-		transform: translate(-50%, -50%);
+		top: 0;
+		left: 0;
+		transform: translate(var(--base-chart-marker-x, 0), var(--base-chart-marker-y, 0)) translate(-50%, -50%);
 	}
 
 	&__tooltip {
@@ -99,12 +118,13 @@
 		box-shadow: var(--rise-shadow-md);
 		pointer-events: none;
 		white-space: nowrap;
-		transform: translateX(sz(12px));
+		left: 0;
+		transform: translateX(var(--base-chart-guide-x, 0)) translateX(sz(12px));
 		@include text-size(xs);
 	}
 
 	&__tooltip--start {
-		transform: translateX(calc(-100% - #{sz(12px)}));
+		transform: translateX(var(--base-chart-guide-x, 0)) translateX(calc(-100% - #{sz(12px)}));
 	}
 
 	&__tooltip-label {
@@ -213,10 +233,83 @@
 
 	@include motion-safe {
 		&__bar,
-		&__marker {
+		&__marker,
+		&__tooltip {
 			transition:
 				opacity var(--rise-duration-fast) var(--rise-ease),
 				transform var(--rise-duration-fast) var(--rise-ease);
 		}
+
+		&__line,
+		&__area,
+		&__grid,
+		&__y-tick {
+			transition: opacity var(--rise-duration) var(--rise-ease);
+		}
+
+		&__shapes--grow &__bar,
+		&__shapes--fade &__bar,
+		&__shapes--draw &__bar,
+		&__shapes--fade &__line,
+		&__shapes--fade &__area,
+		&__shapes--draw &__line,
+		&__shapes--draw &__area {
+			animation-duration: var(--rise-duration-xslow, 500ms);
+			animation-timing-function: var(--rise-ease-emphasized, var(--rise-ease-out));
+			animation-delay: calc(var(--rise-motion-stagger, 30ms) * var(--base-chart-order, 0));
+			animation-fill-mode: backwards;
+		}
+
+		&__shapes--grow &__bar,
+		&__shapes--draw &__bar {
+			animation-name: base-chart-grow;
+		}
+
+		&__shapes--fade &__bar,
+		&__shapes--fade &__line,
+		&__shapes--fade &__area,
+		&__shapes--draw &__area {
+			animation-name: base-chart-fade;
+		}
+
+		&__shapes--draw &__line {
+			animation-name: base-chart-draw;
+		}
+	}
+}
+
+@include motion-safe {
+	.base-chart-swap-enter-active,
+	.base-chart-swap-leave-active {
+		transition: opacity var(--rise-duration-slow) var(--rise-ease);
+	}
+
+	.base-chart-swap-enter-from,
+	.base-chart-swap-leave-to {
+		opacity: 0;
+	}
+}
+
+@keyframes base-chart-grow {
+	from {
+		transform: scaleY(0);
+	}
+}
+
+@keyframes base-chart-fade {
+	from {
+		opacity: 0;
+	}
+}
+
+@keyframes base-chart-draw {
+	from {
+		stroke-dasharray: 1;
+		stroke-dashoffset: 1;
+	}
+
+	to {
+		stroke-dasharray: 1;
+		stroke-dashoffset: 0;
 	}
 }
