@@ -8,6 +8,8 @@ export const ruImageMap3d = {
 		FALLBACK_ERROR: 'Не удалось запустить 3D — показан план',
 		/** Предупреждение о поле данных; `{path}` — путь к полю, `{expected}` — одно из EXPECT_* */
 		INVALID_FIELD: 'BaseImageMap3D: {path} = {value} не учтено — ожидается {expected}',
+		/** Узел модели этажа не найден; `{layer}` — id слоя, `{name}` — имя узла, `{id}` — id объекта */
+		MODEL_NODE_MISSING: 'BaseImageMap3D: в модели этажа «{layer}» нет узла «{name}» — объект «{id}» выдавлен по своей фигуре',
 		EXPECT_NUMBER: 'конечное число',
 		EXPECT_POSITIVE: 'число больше 0',
 		EXPECT_NON_NEGATIVE: 'число не меньше 0',

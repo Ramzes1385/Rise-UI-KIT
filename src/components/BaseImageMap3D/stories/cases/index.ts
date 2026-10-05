@@ -1,3 +1,5 @@
 export { Default } from './Default'
 export { Fallback2D } from './behavior/Fallback2D'
 export { RendererFallback } from './behavior/RendererFallback'
+export { Floors3D } from './behavior/Floors3D'
+export { Glb } from './content/Glb'

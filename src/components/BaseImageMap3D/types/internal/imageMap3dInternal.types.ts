@@ -1,8 +1,9 @@
 import type { Ref, ShallowRef } from 'vue'
-import type { Color, Group, Mesh, MeshStandardMaterial, Scene } from 'three'
+import type { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import type { BaseImageMapProps } from '@components/BaseImageMap/types/BaseImageMap.types'
-import type { ImageMap3DData, ImageMap3DLayer, ImageMap3DObject } from '../imageMap3dData.types'
+import type { Color, Group, Material, Mesh, MeshStandardMaterial, Object3D, Scene } from 'three'
 import type { ImageMap3DLayerMode, ImageMap3DRenderer, ImageMap3DRendererFactory } from '../BaseImageMap3D.types'
+import type { ImageMap3DData, ImageMap3DLayer, ImageMap3DObject, ImageMapLayerModel } from '../imageMap3dData.types'
 
 /** Правило проверки 3D-поля данных */
 export type ImageMap3DFieldRule = 'number' | 'positive' | 'nonNegative' | 'text' | 'vector' | 'model' | 'object'
@@ -88,6 +89,8 @@ export interface SceneLayerEntry {
 	elevation: number
 	/** Материалы пола: плита и картинка слоя */
 	floorMaterials: MeshStandardMaterial[]
+	/** Материалы модели этажа, кроме мешей объектов: исходная непрозрачность — `userData.baseOpacity` */
+	modelMaterials: Material[]
 	/** Непрозрачность этажа: 1 — активный или режим `single`; меньше — неактивный в стопке */
 	opacity: number
 }
@@ -150,4 +153,28 @@ export interface SceneOptions {
 	getActive: () => string | null
 	/** Запросить кадр */
 	invalidate: () => void
+	/** Настройка загрузчика моделей этажей (`configureLoader`) */
+	getConfigureLoader: () => ((loader: GLTFLoader) => void) | undefined
+	/** Модель этажа не загрузилась */
+	onModelError: (error: unknown) => void
+}
+
+/** Загруженная модель этажа для сцены */
+export interface SceneModelItem {
+	/** Данные карты */
+	data: ImageMap3DData
+	/** Id слоя модели */
+	layerId: string
+	/** Корень модели: уже масштабирован и сдвинут по `layer.model` */
+	root: Object3D
+}
+
+/** Загрузка модели этажа */
+export interface SceneModelJob extends Omit<SceneSurfaceJob, 'floor'> {
+	/** Модель слоя */
+	model: ImageMapLayerModel
+	/** Настройка загрузчика приложением (`configureLoader`) */
+	configure?: (loader: GLTFLoader) => void
+	/** Модель не загрузилась */
+	onError: (error: unknown) => void
 }

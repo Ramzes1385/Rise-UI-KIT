@@ -129,6 +129,10 @@ export function useBaseImageMap3D(props: ImageMap3DProps, emit: BaseImageMap3DEm
 		getLayerId: () => layers.activeLayer.value?.id,
 		getLayerMode: () => props.layerMode,
 		getActive: () => props.active,
+		getConfigureLoader: () => props.configureLoader,
+		onModelError: () => {
+			fallback.hasRenderError.value = true
+		},
 	})
 
 	watch(() => props.data, warn3dData, { immediate: true })

@@ -8,6 +8,8 @@ export const enImageMap3d = {
 		FALLBACK_ERROR: 'Could not start 3D — showing the plan',
 		/** Data field warning; `{path}` — field path, `{expected}` — one of EXPECT_* */
 		INVALID_FIELD: 'BaseImageMap3D: {path} = {value} is ignored — expected {expected}',
+		/** Floor model node not found; `{layer}` — layer id, `{name}` — node name, `{id}` — object id */
+		MODEL_NODE_MISSING: 'BaseImageMap3D: the floor model «{layer}» has no node «{name}» — object «{id}» is extruded from its shape',
 		EXPECT_NUMBER: 'a finite number',
 		EXPECT_POSITIVE: 'a number greater than 0',
 		EXPECT_NON_NEGATIVE: 'a number not less than 0',

@@ -1,0 +1,113 @@
+import { applyLayerMode } from '../../model/scene/sceneState'
+import { buildSceneContent } from '../../model/scene/buildScene'
+import { attachModel } from '../../model/scene/gltf/attachModel'
+import type { ImageMap3DData } from '../../types/imageMap3dData.types'
+import { BoxGeometry, Color, Group, Mesh, MeshStandardMaterial } from 'three'
+import { findModelNode, loadLayerModel, placeModel } from '../../model/scene/gltf/layerModel'
+
+const resolve = (css: string): Color => new Color(css.startsWith('var(') ? '#336699' : css)
+
+const DATA: ImageMap3DData = {
+	layers: [{ id: 'mall', title: 'ТЦ', width: 1000, height: 600, model: { url: 'mall.glb' } }],
+	objects: [
+		{ id: 'shop-1', type: 'svg', title: 'Магазин 1', elementId: 'shop-1' },
+		{ id: 'cafe', type: 'rect', title: 'Кафе', x: 0.1, y: 0.1, width: 0.1, height: 0.1, meshName: 'Cafe Main' },
+		{ id: 'kiosk', type: 'rect', title: 'Киоск', x: 0.5, y: 0.5, width: 0.1, height: 0.1 },
+		{ id: 'ghost', type: 'svg', title: 'Призрак', elementId: 'ghost' },
+		{ id: 'info', type: 'point', title: 'Справочная', x: 0.5, y: 0.5 },
+		{ id: 'other', type: 'rect', title: 'Другой этаж', x: 0, y: 0, width: 0.1, height: 0.1, layer: 'nope' },
+	],
+}
+
+function mesh(name: string, material = new MeshStandardMaterial()): Mesh {
+	const item = new Mesh(new BoxGeometry(10, 10, 10), material)
+	item.name = name
+	return item
+}
+
+function modelRoot() {
+	const shared = new MeshStandardMaterial({ opacity: 0.5 })
+	const replaced = new MeshStandardMaterial()
+	const shop = new Group()
+	shop.name = 'shop-1'
+	shop.add(mesh('shop-1-walls', replaced), mesh('shop-1-roof', replaced))
+	const root = new Group()
+	root.add(shop, mesh('Cafe_Main'), mesh('slab', shared), mesh('info'))
+	return { root, shared, replaced }
+}
+
+describe('модель этажа', () => {
+	it('placeModel: масштаб, сдвиг и поворот; неверные поля — умолчания', () => {
+		const root = placeModel(new Group(), { url: 'a.glb', scale: 2, position: [1, 2, 3], rotationY: 90 })
+		expect(root.scale.toArray()).toEqual([2, 2, 2])
+		expect(root.position.toArray()).toEqual([1, 2, 3])
+		expect(root.rotation.y).toBeCloseTo(Math.PI / 2)
+		const plain = placeModel(new Group(), { url: 'a.glb', scale: -1, position: [1, Number.NaN, 3] as never, rotationY: 'x' as never })
+		expect([plain.scale.x, plain.position.x, plain.rotation.y]).toEqual([1, 0, 0])
+	})
+
+	it('findModelNode: по имени и по имени, очищенному GLTFLoader (пробелы → _)', () => {
+		const { root } = modelRoot()
+		expect(findModelNode(root, 'shop-1')?.name).toBe('shop-1')
+		expect(findModelNode(root, 'Cafe Main')?.name).toBe('Cafe_Main')
+		expect(findModelNode(root, 'none')).toBeUndefined()
+	})
+
+	it('loadLayerModel: configureLoader получает загрузчик до загрузки; сцена модели размещается', async () => {
+		const scene = new Group()
+		const configure = vi.fn(loader => {
+			loader.loadAsync = vi.fn(async () => ({ scene }))
+		})
+		const root = await loadLayerModel({ url: 'mall.glb', scale: 3 }, configure)
+		expect(configure).toHaveBeenCalledOnce()
+		expect(configure.mock.calls[0][0].loadAsync).toHaveBeenCalledWith('mall.glb')
+		expect(root).toBe(scene)
+		expect(root.scale.x).toBe(3)
+	})
+
+	it('loadLayerModel без configureLoader загружает адрес модели', async () => {
+		await expect(loadLayerModel({ url: 'data:application/octet-stream;base64,AAAA' })).rejects.toBeDefined()
+	})
+
+	it('attachModel: меши объектов по meshName ?? id, остальные объекты выдавливаются, точки пропускаются', () => {
+		const content = buildSceneContent(DATA, resolve)
+		const { root, shared, replaced } = modelRoot()
+		const disposeReplaced = vi.spyOn(replaced, 'dispose')
+		const disposeShared = vi.spyOn(shared, 'dispose')
+		const missing = attachModel(content, { data: DATA, layerId: 'mall', root }, resolve)
+		expect(missing).toEqual(['kiosk', 'ghost'])
+		expect(content.objects.get('shop-1')).toMatchObject({ source: 'model', layerId: 'mall' })
+		expect(content.objects.get('shop-1')?.meshes.map(item => item.name)).toEqual(['shop-1-walls', 'shop-1-roof'])
+		expect(content.objects.get('cafe')?.meshes.map(item => item.name)).toEqual(['Cafe_Main'])
+		expect(content.objects.get('kiosk')?.source).toBe('shape')
+		expect(content.objects.has('ghost')).toBe(false)
+		expect(content.objects.has('info')).toBe(false)
+		expect(disposeReplaced).toHaveBeenCalledOnce()
+		expect(disposeShared).not.toHaveBeenCalled()
+		const layer = content.layers.get('mall')
+		expect(layer?.modelMaterials).toHaveLength(2)
+		expect(layer?.group.children).toContain(root)
+		applyLayerMode(content, 'other', 'stack')
+		expect(shared.opacity).toBeCloseTo(0.125)
+		expect(shared.depthWrite).toBe(false)
+		applyLayerMode(content, 'mall', 'stack')
+		expect(shared.opacity).toBe(0.5)
+		const plain = layer?.modelMaterials.find(material => material !== shared) as MeshStandardMaterial
+		expect([plain.opacity, plain.depthWrite]).toEqual([1, true])
+	})
+
+	it('attachModel: неизвестный этаж или этаж без слоя в данных — ничего', () => {
+		const content = buildSceneContent(DATA, resolve)
+		expect(attachModel(content, { data: DATA, layerId: 'nope', root: new Group() }, resolve)).toEqual([])
+		expect(attachModel(content, { data: { ...DATA, layers: [] }, layerId: 'mall', root: new Group() }, resolve)).toEqual([])
+	})
+
+	it('модель без baseOpacity считается непрозрачной', () => {
+		const content = buildSceneContent(DATA, resolve)
+		const layer = content.layers.get('mall')
+		const material = new MeshStandardMaterial()
+		if (layer) layer.modelMaterials = [material]
+		applyLayerMode(content, 'x', 'stack')
+		expect(material.opacity).toBe(0.25)
+	})
+})

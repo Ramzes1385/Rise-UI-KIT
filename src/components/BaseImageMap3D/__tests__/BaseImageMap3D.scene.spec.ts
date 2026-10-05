@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom/vitest'
-import { Mesh, Texture, TextureLoader } from 'three'
 import BaseImageMap3D from '../ui/BaseImageMap3D.vue'
 import type { MeshStandardMaterial, Scene } from 'three'
 import type { ImageMap3DData } from '../types/imageMap3dData.types'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import { createFakeRenderer, DATA_3D, mockWebGL } from './imageMap3d.test-utils'
+import { BoxGeometry, Group, Mesh, MeshBasicMaterial, Texture, TextureLoader } from 'three'
 
 const SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400"><rect id="hall" x="100" y="100" width="200" height="100"/></svg>'
 
@@ -48,7 +48,10 @@ afterEach(() => {
 
 async function renderScene(props: Record<string, unknown> = {}) {
 	const renderer = createFakeRenderer()
-	const result = render(BaseImageMap3D, { props: { data: DATA, rendererFactory: () => renderer, ...props } })
+	const configureLoader = (loader: { loadAsync: unknown }) => {
+		loader.loadAsync = async () => ({ scene: new Group() })
+	}
+	const result = render(BaseImageMap3D, { props: { data: DATA, rendererFactory: () => renderer, configureLoader, ...props } })
 	await waitFor(() => expect(renderer.setPixelRatio).toHaveBeenCalled())
 	const frame = vi.mocked(requestAnimationFrame).mock.calls.at(-1)?.[0]
 	frame?.(0)
@@ -186,6 +189,65 @@ describe('BaseImageMap3D: сцена', () => {
 		document.documentElement.removeAttribute('data-theme')
 		await new Promise(resolve => setTimeout(resolve, 0))
 		expect(renderer.render).not.toHaveBeenCalled()
+	})
+
+	it('модель этажа: configureLoader, меши по id, предупреждение о ненайденных узлах', async () => {
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+		const model = new Group()
+		const node = new Mesh(new BoxGeometry(), new MeshBasicMaterial())
+		node.name = 'm-shop'
+		model.add(node)
+		const configureLoader = vi.fn(loader => {
+			loader.loadAsync = vi.fn(async () => ({ scene: model }))
+		})
+		const data = {
+			layers: [{ id: 'm', title: 'M', width: 100, height: 100, model: { url: 'm.glb' } }],
+			objects: [
+				{ id: 'm-shop', type: 'svg', title: 'Shop', elementId: 'm-shop' },
+				{ id: 'm-box', type: 'rect', title: 'Box', x: 0, y: 0, width: 0.5, height: 0.5 },
+			],
+		}
+		const { scene } = await renderScene({ data, configureLoader })
+		await waitFor(() => expect(scene.getObjectByName('m-shop')).toBe(node))
+		expect(configureLoader).toHaveBeenCalledOnce()
+		expect(node.userData.objectId).toBe('m-shop')
+		expect(scene.getObjectByName('m-box')).toBeInstanceOf(Mesh)
+		expect(warn).toHaveBeenCalledWith(expect.stringContaining('нет узла «m-box»'))
+	})
+
+	it('модель не загрузилась — 2D и событие fallback(error); после размонтирования — без события', async () => {
+		const onFallback = vi.fn()
+		const data = { layers: [{ id: 'm', title: 'M', width: 100, height: 100, model: { url: 'm.glb' } }], objects: [] }
+		const configureLoader = vi.fn(loader => {
+			loader.loadAsync = vi.fn(async () => Promise.reject(new Error('404')))
+		})
+		await renderScene({ data, configureLoader, onFallback })
+		await waitFor(() => expect(onFallback).toHaveBeenCalledWith('error'))
+		let reject: (error: Error) => void = () => undefined
+		const late = vi.fn(loader => {
+			loader.loadAsync = vi.fn(() => new Promise((_, fail) => (reject = fail)))
+		})
+		const second = await renderScene({ data, configureLoader: late, onFallback })
+		second.unmount()
+		reject(new Error('late'))
+		await new Promise(resolve => setTimeout(resolve, 0))
+		expect(onFallback).toHaveBeenCalledOnce()
+	})
+
+	it('модель, загруженная после размонтирования, освобождается', async () => {
+		let resolveModel: (value: unknown) => void = () => undefined
+		const model = new Group()
+		const geometry = new BoxGeometry()
+		model.add(new Mesh(geometry, new MeshBasicMaterial()))
+		const dispose = vi.spyOn(geometry, 'dispose')
+		const configureLoader = vi.fn(loader => {
+			loader.loadAsync = vi.fn(() => new Promise(resolve => (resolveModel = resolve)))
+		})
+		const data = { layers: [{ id: 'm', title: 'M', width: 100, height: 100, model: { url: 'm.glb' } }], objects: [] }
+		const { unmount } = await renderScene({ data, configureLoader })
+		unmount()
+		resolveModel({ scene: model })
+		await waitFor(() => expect(dispose).toHaveBeenCalled())
 	})
 
 	it('системная тема без matchMedia не ломает сцену', async () => {

@@ -45,6 +45,10 @@ export function fadeFloor(entry: SceneLayerEntry): void {
 		material.opacity = entry.opacity
 		material.depthWrite = entry.opacity >= 1
 	})
+	entry.modelMaterials.forEach(material => {
+		material.opacity = Number(material.userData.baseOpacity ?? 1) * entry.opacity
+		material.depthWrite = material.opacity >= 1
+	})
 }
 
 export function paintFloor(entry: SceneLayerEntry, resolve: SceneColorResolver): void {
@@ -61,7 +65,7 @@ function createLayerEntry(layer: ImageMap3DLayer, index: number, content: SceneC
 	group.userData.layerId = layer.id
 	const elevation = layerElevation(layer, index, content.settings)
 	group.position.y = elevation
-	const entry: SceneLayerEntry = { id: layer.id, group, elevation, floorMaterials: [], opacity: 1 }
+	const entry: SceneLayerEntry = { id: layer.id, group, elevation, floorMaterials: [], modelMaterials: [], opacity: 1 }
 	if (!layer.model) {
 		const { floor, slab, top } = createFloor(layer, content.settings.floorThickness)
 		group.add(floor)
