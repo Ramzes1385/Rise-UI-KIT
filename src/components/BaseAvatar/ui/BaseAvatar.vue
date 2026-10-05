@@ -15,7 +15,14 @@
 		@keydown="handleKeydown">
 		<div class="base-avatar__content" :class="classes.content">
 			<slot>
-				<AvatarMascot v-if="mascot !== 'none'" :label="alt" :is-eyes-closed="isEyesClosed" :class="classes.mascot" />
+				<AvatarMascot
+					v-if="mascot !== 'none'"
+					:mascot="mascot"
+					:label="alt"
+					:mood="currentMood"
+					:is-eyes-closed="isEyesClosed"
+					:is-blinking="isBlinking"
+					:class="classes.mascot" />
 				<img
 					v-else-if="src && !hasImageError"
 					:src="src"
@@ -39,7 +46,7 @@ import { UI_CHAT_TEXT } from '@/locales/messages'
 import { useBaseAvatar } from '../model/useBaseAvatar'
 import { kitDefaults } from '@composables/base/useDefaults'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
-import type { BaseAvatarEmits, BaseAvatarProps, BaseAvatarSlots } from '../types/BaseAvatar.types'
+import type { BaseAvatarEmits, BaseAvatarExpose, BaseAvatarProps, BaseAvatarSlots } from '../types/BaseAvatar.types'
 
 const props = withDefaults(
 	defineProps<BaseAvatarProps>(),
@@ -51,6 +58,8 @@ const props = withDefaults(
 		ring: 'none',
 		mascot: 'none',
 		isEyesClosed: false,
+		isBlinking: true,
+		mood: 'idle',
 		isDisabled: false,
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
@@ -74,5 +83,9 @@ const {
 	buttonLabel,
 	handleClick,
 	handleKeydown,
+	currentMood,
+	react,
 } = useBaseAvatar(props, emit)
+
+defineExpose<BaseAvatarExpose>({ react })
 </script>
