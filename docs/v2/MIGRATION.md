@@ -1819,3 +1819,17 @@ API кита не меняется. В Storybook добавлены пример
 - Обложка скрыта от чтения с экрана (`aria-hidden`); картинке в слоте давайте пустой `alt`.
 - Внутреннее: общий компонент `CardCover` (`BaseBankCard/ui/CardCover.vue`, классы `card-cover`, `card-cover__layer`, `card-cover__image`, `card-cover__fill`, `card-cover__overlay`) и `cardCoverLayer()` в `@utils/form/cardFaceUtils` (не входит в публичный вход `utils`).
 
+## Задача motion-pie: BasePieChart — анимации появления и обновления
+
+- **Новый проп `animation`: `'sweep' | 'grow' | 'fade' | 'none'`**, по умолчанию `sweep` (можно сменить через `defaults` плагина). `sweep` — части по очереди набегают по кругу (задержка — накопленная доля, длительность — доля от `--rise-duration-xslow`, до пресетов движения — ⁵⁄₃ от `--rise-duration-slow`, то есть 0,5 с); `grow` — круг вырастает из центра (`scale(0.6) → 1` и прозрачность); `fade` — проявляется; `none` — без анимации ни при появлении, ни при обновлении.
+  ```vue
+  <BasePieChart :segments="segments" label="задач" animation="grow" />
+  ```
+  Выключить во всём приложении: `createUiKitPlugin({ defaults: { BasePieChart: { animation: 'none' } } })`.
+- **Обновление данных перетекает** (кроме `none`): части сопоставляются по `label`, длина и начало дуги меняются CSS-переходом `stroke-dasharray` / `stroke-dashoffset` за `--rise-duration-slow`; новая часть растёт из нуля, ушедшая сжимается до нуля и удаляется из DOM после перехода (`transitionend` или страховочный таймер — полторы длительности). Пока часть сжимается, она есть в SVG (класс `base-pie-chart__segment--leaving`, без событий указателя), но не в легенде.
+- **«Уменьшить движение»** в системе — сразу конечный вид, ушедшая часть удаляется без ожидания.
+- **BasePieChart теперь берёт значения по умолчанию через `kitDefaults`**: `variant`, `maxSegments`, `size`, `animation`, `sizeScale` можно задать в `defaults.BasePieChart` и `defaults.global` (раньше `defaults` плагина для BasePieChart не действовали).
+- Подсветка части при наведении — `var(--rise-duration-fast) var(--rise-ease)` вместо `0.15s ease`: при «уменьшить движение» теперь тоже отключается.
+- Новые CSS-переменные корня (точки стилизации): `--base-pie-chart-appear-duration`, `--base-pie-chart-update-duration`, `--base-pie-chart-ease` (`--rise-ease-emphasized`, до пресетов движения — `--rise-ease`).
+- Новая константа `PIE_CHART_ANIMATIONS` в экспорте компонента.
+- Центральное число кольца пока меняется сразу: твин числа — после `useTween` (задача motion-chart).
