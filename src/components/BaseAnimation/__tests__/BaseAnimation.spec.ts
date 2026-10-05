@@ -188,4 +188,28 @@ describe('BaseAnimation unit', () => {
 			expect(el).toHaveClass('custom-animation-root')
 		})
 	})
+
+	describe('collapse', () => {
+		it('оборачивает содержимое во внутренний блок для раскрытия строкой сетки', () => {
+			const { container } = render(BaseAnimation, {
+				props: { show: true, name: 'collapse' },
+				slots: { default: '<p>Контент</p>' },
+			})
+
+			const root = container.querySelector('.base-animation')
+			expect(root).toHaveClass('base-animation--collapse')
+			expect(root?.querySelector(':scope > .base-animation__inner > p')).toHaveTextContent('Контент')
+		})
+
+		it('другие анимации — без обёртки', () => {
+			const { container } = render(BaseAnimation, {
+				props: { show: true, name: 'fade' },
+				slots: { default: '<p>Контент</p>' },
+			})
+
+			const root = container.querySelector('.base-animation')
+			expect(root).not.toHaveClass('base-animation--collapse')
+			expect(root?.querySelector(':scope > p')).toHaveTextContent('Контент')
+		})
+	})
 })
