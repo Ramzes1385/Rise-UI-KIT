@@ -1,4 +1,5 @@
 import { UI_TEXT } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
 import { computed, provide, ref, watch } from 'vue'
 import { useCascaderField } from './useCascaderField'
 import { useCascaderValue } from './useCascaderValue'
@@ -45,6 +46,7 @@ function useCascaderState(props: CascaderProps, emit: BaseCascaderEmits) {
 function useCascaderActions(props: CascaderProps, state: ReturnType<typeof useCascaderState>, onBlur: () => void) {
 	const { levels, nav, value, search } = state
 	const isOpen = ref(false)
+	const isRevealing = ref(false)
 
 	function close(): void {
 		isOpen.value = false
@@ -68,12 +70,16 @@ function useCascaderActions(props: CascaderProps, state: ReturnType<typeof useCa
 	watch(
 		isOpen,
 		open => {
-			if (open) void nav.reveal(value.paths.value[value.paths.value.length - 1] ?? [])
+			if (!open) return
+			isRevealing.value = true
+			void nav.reveal(value.paths.value[value.paths.value.length - 1] ?? []).then(() => {
+				isRevealing.value = false
+			})
 		},
 		{ flush: 'sync' },
 	)
 
-	return { isOpen, close, commit, choose }
+	return { isOpen, isRevealing, close, commit, choose }
 }
 
 function useCascaderKeys(
@@ -146,7 +152,7 @@ function buildPanelContext(
 		ids: ReturnType<typeof useCascaderIds>
 		aria: ReturnType<typeof useTriggerAria>
 	},
-): CascaderPanelContext {
+): Omit<CascaderPanelContext, 'ui' | 'isRevealing'> {
 	const { standard, field } = base
 	const { state, actions, keys, ids, aria } = core
 	const { nav, value, search } = state
@@ -186,6 +192,7 @@ function buildPanelContext(
 
 export function useBaseCascader(props: CascaderProps, emit: BaseCascaderEmits) {
 	const standard = useStandardBaseComponent('base-cascader', props, CASCADER_ELEMENTS)
+	const ui = useUi(props, 'base-cascader')
 	const field = useCascaderField(props)
 	const state = useCascaderState(props, emit)
 	const actions = useCascaderActions(props, state, field.formField.onBlur)
@@ -195,10 +202,15 @@ export function useBaseCascader(props: CascaderProps, emit: BaseCascaderEmits) {
 	const { value } = state
 	const aria = useTriggerAria(state, () => actions.isOpen.value, ids)
 
-	provide(CASCADER_PANEL_KEY, buildPanelContext(props, { standard, field }, { state, actions, keys, ids, aria }))
+	provide(CASCADER_PANEL_KEY, {
+		...buildPanelContext(props, { standard, field }, { state, actions, keys, ids, aria }),
+		ui,
+		isRevealing: actions.isRevealing,
+	})
 
 	return {
 		...standard,
+		ui,
 		...field,
 		...value,
 		isOpen: actions.isOpen,

@@ -1,7 +1,7 @@
 <template>
 	<BaseDropdown
 		v-model:is-open="isOpen"
-		class="base-tree-select__dropdown"
+		:class="ui('dropdown')"
 		position="bottom-start"
 		:match-width="true"
 		:size-scale="sizeScale"
@@ -9,8 +9,8 @@
 		:custom-class="classes.dropdown"
 		@close="handleClose">
 		<div
-			class="base-tree-select"
 			:class="[
+				ui('root'),
 				variantClass,
 				{
 					'base-tree-select--open': isOpen,
@@ -28,17 +28,16 @@
 				tag="span"
 				:label="label"
 				:is-required="isRequired"
-				class-name="base-tree-select__label"
+				:class-name="ui('label')"
 				:custom-class="classes.label"
-				required-class-name="base-tree-select__required"
+				:required-class-name="ui('required')"
 				:required-custom-class="classes.required"
 				:size-scale="sizeScale"
 				@click="focusTrigger" />
 
 			<div
 				ref="triggerRef"
-				class="base-tree-select__trigger"
-				:class="classes.trigger"
+				:class="[ui('trigger'), classes.trigger]"
 				role="combobox"
 				:tabindex="isControlDisabled ? undefined : 0"
 				aria-haspopup="tree"
@@ -50,7 +49,7 @@
 				:aria-disabled="isControlDisabled ? 'true' : undefined"
 				@click="toggleDropdown"
 				@keydown="handleKeydown">
-				<div class="base-tree-select__values" :class="classes.values">
+				<div :class="[ui('values'), classes.values]">
 					<template v-if="tagNodes.length || moreCount">
 						<slot v-if="$slots.tag" name="tag" :nodes="tagNodes" :remove="removeValue" />
 						<template v-else>
@@ -58,21 +57,16 @@
 								v-for="node in tagNodes"
 								:key="node.id"
 								variant="soft"
-								class="base-tree-select__tag"
+								:class="ui('tag')"
 								:custom-class="classes.tag"
 								:size-scale="sizeScale">
-								<BaseText
-									tag="span"
-									class="base-tree-select__tag-text"
-									:custom-class="classes.tagText"
-									:size-scale="sizeScale"
-									>{{ node.label }}</BaseText
-								>
+								<BaseText tag="span" :class="ui('tag-text')" :custom-class="classes.tagText" :size-scale="sizeScale">{{
+									node.label
+								}}</BaseText>
 								<button
 									v-if="!isControlDisabled && !node.isDisabled"
 									type="button"
-									class="base-tree-select__tag-close"
-									:class="classes.tagClose"
+									:class="[ui('tag-close'), classes.tagClose]"
 									tabindex="-1"
 									:aria-label="`${UI_TEXT.DELETE} ${node.label}`"
 									@click.stop="removeValue(node.id)">
@@ -80,37 +74,23 @@
 								</button>
 							</BaseBadge>
 						</template>
-						<BaseBadge
-							v-if="moreCount"
-							variant="soft"
-							class="base-tree-select__more"
-							:custom-class="classes.more"
-							:size-scale="sizeScale"
+						<BaseBadge v-if="moreCount" variant="soft" :class="ui('more')" :custom-class="classes.more" :size-scale="sizeScale"
 							>+{{ moreCount }}</BaseBadge
 						>
 					</template>
 					<template v-else-if="selectedNode">
 						<slot name="selected" :node="selectedNode">
-							<BaseText
-								tag="span"
-								class="base-tree-select__value-text"
-								:custom-class="classes.valueText"
-								:size-scale="sizeScale"
-								>{{ selectedNode.label }}</BaseText
-							>
+							<BaseText tag="span" :class="ui('value-text')" :custom-class="classes.valueText" :size-scale="sizeScale">{{
+								selectedNode.label
+							}}</BaseText>
 						</slot>
 					</template>
-					<BaseText
-						v-else
-						tag="span"
-						class="base-tree-select__placeholder"
-						:custom-class="classes.placeholder"
-						:size-scale="sizeScale"
-						>{{ resolvedPlaceholder }}</BaseText
-					>
+					<BaseText v-else tag="span" :class="ui('placeholder')" :custom-class="classes.placeholder" :size-scale="sizeScale">{{
+						resolvedPlaceholder
+					}}</BaseText>
 				</div>
 				<BaseIcon
-					class="base-tree-select__arrow"
+					:class="ui('arrow')"
 					:custom-class="classes.arrow"
 					name="chevron-down"
 					:size-scale="calcIconScale('sm', sizeScale)" />
@@ -119,7 +99,7 @@
 			<FormFieldError
 				:id="errorId"
 				:error="formField.error"
-				class-name="base-tree-select__error-text"
+				:class-name="ui('error-text')"
 				:custom-class="classes.errorText"
 				:size-scale="sizeScale" />
 		</div>
@@ -135,6 +115,7 @@
 				:selected-set="selectedSet"
 				:indeterminate-set="indeterminateSet"
 				:classes="classes"
+				:ui="ui"
 				:size-scale-style="sizeScaleStyle"
 				:tree-id="treeId"
 				:popup-id="popupId"
@@ -194,6 +175,7 @@ const emit = defineEmits<BaseTreeSelectEmits>()
 defineSlots<BaseTreeSelectSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

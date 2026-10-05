@@ -1,4 +1,5 @@
 import type { ComputedRef, Ref } from 'vue'
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { ListItem, ListItemSlotProps } from '@components/BaseList'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
@@ -11,6 +12,28 @@ export const TRANSFER_VARIANTS = ['default', 'soft', 'outline', 'ghost'] as cons
 
 /** Стороны: `source` — «Доступно» (строки не из v-model), `target` — «Выбрано» (строки из v-model) */
 export const TRANSFER_SIDES = ['source', 'target'] as const
+
+/**
+ * Части BaseTransfer для пропа `ui` (БЭМ-элементы `.base-transfer__<часть>`, `root` — весь компонент): label — подпись,
+ * body — ряд панелей и кнопок, panel — панель списка, header, title, count — счётчик, search — поиск, all — «Выбрать все»,
+ * list — обёртка списка, actions — кнопки переноса, move — кнопка переноса, error — текст ошибки.
+ */
+export const TRANSFER_PARTS = [
+	'label',
+	'body',
+	'panel',
+	'header',
+	'title',
+	'count',
+	'search',
+	'all',
+	'list',
+	'actions',
+	'move',
+	'error',
+] as const
+
+export type BaseTransferPart = (typeof TRANSFER_PARTS)[number]
 
 export type TransferVariant = (typeof TRANSFER_VARIANTS)[number]
 
@@ -54,6 +77,14 @@ export interface BaseTransferProps<T extends ListItem = ListItem> extends BaseCo
 	isVirtual?: boolean
 	/** Текст пустой панели (по умолчанию из словаря; если строки скрыл поиск — «Ничего не найдено») */
 	emptyText?: string
+	/**
+	 * Классы частей (`root`, `panel`, `header`, `list`, `actions`… — см. `TRANSFER_PARTS`) — добавляются к классам кита.
+	 * Глобально — `defaults.BaseTransfer.ui` плагина, классы склеиваются.
+	 *
+	 * @example
+	 * <BaseTransfer v-model="selected" :items="items" :ui="{ panel: 'shadow-sm', actions: 'gap-4' }" />
+	 */
+	ui?: UiProp<BaseTransferPart>
 }
 
 /** Пропсы после `withDefaults` */
@@ -113,4 +144,30 @@ export interface TransferPanelsState<T extends ListItem = ListItem> {
 	checkable: (side: TransferSide) => T[]
 	checkedOn: (side: TransferSide) => string[]
 	checkedShown: (side: TransferSide) => T[]
+}
+
+/** Строка списка до изменения v-model: элемент, его прямоугольник, сторона и id */
+export interface TransferSnapshotItem {
+	element: HTMLElement
+	rect: DOMRect
+	side: TransferSide
+	id: string
+}
+
+/** Строки обоих списков до изменения v-model: ключ `<сторона>:<id>` */
+export type TransferSnapshot = Map<string, TransferSnapshotItem>
+
+/** Кадры и параметры Web Animations API */
+export type TransferKeyframes = Parameters<HTMLElement['animate']>[0]
+
+export type TransferAnimationOptions = Parameters<HTMLElement['animate']>[1]
+
+/** Параметры угасания перенесённой строки: корень, сдвиг, длительность (мс) и кривые из токенов */
+export interface TransferMotionTiming {
+	root: HTMLElement
+	/** `--rise-motion-distance` корня */
+	distance: string
+	/** `--rise-duration-fast` — угасание ушедшей строки */
+	fast: number
+	easing: (name?: 'base' | 'in' | 'out') => string
 }

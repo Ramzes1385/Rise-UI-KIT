@@ -7,7 +7,7 @@
 	flex-direction: column;
 	gap: sz(6px);
 	width: 100%;
-	@include custom-text(color, var(--rise-text-highlighted));
+	@include custom-text(color, ct(cascader, text, var(--rise-text-highlighted)));
 
 	&__label {
 		@include field-label;
@@ -28,16 +28,16 @@
 		box-sizing: border-box;
 		width: 100%;
 		min-width: 0;
-		padding: sz(var(--rise-control-padding-y)) sz(var(--rise-control-padding-x));
+		padding: sz(ct(cascader, padding-y, var(--rise-control-padding-y))) sz(ct(cascader, padding-x, var(--rise-control-padding-x)));
 		outline: none;
 		cursor: pointer;
 		@include control-text;
-		@include field-box;
+		@include field-box(cascader);
 	}
 
 	&--open &__trigger {
-		border-color: var(--rise-primary);
-		box-shadow: 0 0 0 1px var(--rise-primary);
+		border-color: ct(cascader, border-focus, var(--rise-primary));
+		box-shadow: 0 0 0 1px ct(cascader, border-focus, var(--rise-primary));
 	}
 
 	&__values {
@@ -74,7 +74,7 @@
 	}
 
 	&--has-tags &__trigger {
-		padding-left: sz(var(--rise-control-padding-y));
+		padding-left: sz(ct(cascader, padding-y, var(--rise-control-padding-y)));
 	}
 
 	&__tag {
@@ -188,7 +188,7 @@
 		display: flex;
 		align-items: center;
 		gap: sz(6px);
-		padding: 0 sz(10px);
+		padding: 0 space(10px);
 		border-bottom: 1px solid var(--rise-border);
 		color: var(--rise-text-muted);
 		@include transition-colors;
@@ -225,7 +225,7 @@
 		display: flex;
 		flex-direction: column;
 		flex-shrink: 0;
-		width: sz(200px);
+		width: sz(ct(cascader, column-width, 200px));
 		min-height: sz(120px);
 
 		& + & {
@@ -240,7 +240,7 @@
 		gap: 1px;
 		max-height: sz(280px);
 		margin: 0;
-		padding: sz(4px);
+		padding: space(4px);
 		overflow-y: auto;
 		list-style: none;
 		@include scrollbar-thin;
@@ -258,18 +258,18 @@
 		@include menu-item;
 
 		&--expanded {
-			background-color: var(--rise-bg-elevated);
+			background-color: ct(cascader, option-bg-open, var(--rise-bg-elevated));
 		}
 
 		&--active {
-			background-color: var(--rise-bg-elevated);
+			background-color: ct(cascader, option-bg-active, var(--rise-bg-elevated));
 			box-shadow: inset 0 0 0 1px var(--rise-border-accented);
 			color: var(--rise-text-highlighted);
 		}
 
 		&--selected {
 			color: var(--rise-text-highlighted);
-			font-weight: 500;
+			font-weight: ct(cascader, option-font-weight-selected, var(--rise-font-weight-medium));
 		}
 
 		&--disabled {
@@ -328,8 +328,8 @@
 	}
 
 	&__option--selected &__checkbox {
-		border-color: var(--rise-primary);
-		background-color: var(--rise-primary);
+		border-color: ct(cascader, checkbox-bg-checked, var(--rise-primary));
+		background-color: ct(cascader, checkbox-bg-checked, var(--rise-primary));
 	}
 
 	&__empty,
@@ -340,7 +340,7 @@
 		align-items: center;
 		justify-content: center;
 		gap: sz(8px);
-		padding: sz(12px 8px);
+		padding: space(12px 8px);
 		color: var(--rise-text-muted);
 		text-align: center;
 		@include text-size(sm);
@@ -351,3 +351,5 @@
 		}
 	}
 }
+
+@include enter-slide(base-cascader-column, right);

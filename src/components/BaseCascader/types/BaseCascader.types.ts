@@ -1,5 +1,6 @@
 import type { ComputedRef, InjectionKey, Ref } from 'vue'
 import type { TreeIndex } from '@utils/navigation/treeUtils'
+import type { UiClassFn, UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { FieldInputAttrs } from '@composables/form/useFormContext'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
@@ -11,6 +12,39 @@ import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 export const CASCADER_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft', 'underline'] as const
 
 type CascaderVariant = (typeof CASCADER_VARIANTS)[number]
+
+/**
+ * Части BaseCascader для пропа `ui` (БЭМ-элементы `.base-cascader__<часть>`, `root` — поле с подписью и ошибкой):
+ * dropdown — обёртка выпадающей панели, label, required, trigger — поле, values — значения в поле, tag, tag-text,
+ * tag-close, placeholder, value-text, arrow, error-text; панель: panel, search, search-input, columns — ряд колонок,
+ * column — колонка уровня, options — список уровня, option — строка узла, results — результаты поиска, status, empty.
+ */
+export const CASCADER_PARTS = [
+	'dropdown',
+	'label',
+	'required',
+	'trigger',
+	'values',
+	'tag',
+	'tag-text',
+	'tag-close',
+	'placeholder',
+	'value-text',
+	'arrow',
+	'error-text',
+	'panel',
+	'search',
+	'search-input',
+	'columns',
+	'column',
+	'options',
+	'option',
+	'results',
+	'status',
+	'empty',
+] as const
+
+export type BaseCascaderPart = (typeof CASCADER_PARTS)[number]
 
 export interface BaseCascaderNode {
 	/** Уникальный во всём дереве идентификатор */
@@ -130,6 +164,14 @@ export interface BaseCascaderProps extends BaseComponentProps<
 	isDisabled?: boolean
 	/** Текст ошибки под полем */
 	error?: string
+	/**
+	 * Классы частей поля и панели (`root`, `trigger`, `panel`, `column`, `option`… — см. `CASCADER_PARTS`) — добавляются
+	 * к классам кита. Глобально — `defaults.BaseCascader.ui` плагина, классы склеиваются.
+	 *
+	 * @example
+	 * <BaseCascader :items="regions" :ui="{ trigger: 'ring-1', column: 'w-56' }" />
+	 */
+	ui?: UiProp<BaseCascaderPart>
 }
 
 export interface BaseCascaderEmits {
@@ -194,6 +236,10 @@ export interface CascaderPanelContext {
 	sizeScale: () => number | undefined
 	sizeScaleStyle: ComputedRef<Record<string, string> | undefined>
 	classes: ComputedRef<Record<string, string | undefined>>
+	/** Классы частей из пропа `ui` и `defaults.BaseCascader.ui` */
+	ui: UiClassFn<BaseCascaderPart>
+	/** Идёт раскрытие пути значения при открытии: колонки появляются без анимации */
+	isRevealing: Ref<boolean>
 	rootLabelledBy: ComputedRef<string | undefined>
 	rootLabel: ComputedRef<string>
 	hasChildren: (node: BaseCascaderNode) => boolean

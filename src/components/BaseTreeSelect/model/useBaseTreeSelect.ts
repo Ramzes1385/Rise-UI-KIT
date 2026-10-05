@@ -1,6 +1,7 @@
 import { computed, ref, watch } from 'vue'
 import type { ComputedRef, Ref } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
 import { useTreeSelectKeys } from './useTreeSelectKeys'
 import { useTreeSelectTree } from './useTreeSelectTree'
 import { useTreeSelectField } from './useTreeSelectField'
@@ -78,6 +79,7 @@ function useTreeSelectActions(props: TreeSelectProps, model: ReturnType<typeof u
 function useTreeSelectDisplay(props: TreeSelectProps, model: ReturnType<typeof useTreeSelectTree>, treeId: string) {
 	const { valueNodes } = model
 	return {
+		ui: useUi(props, 'base-tree-select'),
 		popupId: computed(() => (model.rows.value.length && !props.isLoading ? treeId : `${treeId}-panel`)),
 		selectedNode: computed(() => (props.isMultiple ? undefined : valueNodes.value[0])),
 		tagNodes: computed(() => (props.isMultiple ? valueNodes.value.slice(0, props.maxTagCount ?? valueNodes.value.length) : [])),

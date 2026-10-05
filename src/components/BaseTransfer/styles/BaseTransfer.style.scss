@@ -14,29 +14,29 @@
 	&__body {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-		gap: sz(12px);
+		gap: space(ct(transfer, gap, 12px));
 		align-items: center;
 	}
 
 	&__panel {
 		display: flex;
 		flex-direction: column;
-		gap: sz(8px);
+		gap: space(ct(transfer, panel-gap, 8px));
 		box-sizing: border-box;
 		min-width: 0;
-		padding: sz(10px);
-		border: 1px solid var(--rise-border);
-		border-radius: sz(var(--rise-radius-md));
-		@include custom-bg(background-color, var(--rise-bg));
+		padding: space(ct(transfer, panel-padding, 10px));
+		border: 1px solid ct(transfer, panel-border, var(--rise-border));
+		border-radius: sz(ct(transfer, panel-radius, var(--rise-radius-md)));
+		@include custom-bg(background-color, ct(transfer, panel-bg, var(--rise-bg)));
 	}
 
 	&--soft &__panel {
 		border-color: transparent;
-		@include custom-bg(background-color, var(--rise-bg-elevated));
+		@include custom-bg(background-color, ct(transfer, panel-bg, var(--rise-bg-elevated)));
 	}
 
 	&--outline &__panel {
-		border-color: var(--rise-border-accented);
+		border-color: ct(transfer, panel-border, var(--rise-border-accented));
 	}
 
 	&--ghost &__panel {
@@ -57,14 +57,14 @@
 	}
 
 	&__title {
-		font-weight: 600;
+		font-weight: ct(transfer, title-font-weight, var(--rise-font-weight-semibold));
 		@include truncate;
-		@include custom-text(color, var(--rise-text-highlighted));
+		@include custom-text(color, ct(transfer, title-text, var(--rise-text-highlighted)));
 	}
 
 	&__count {
 		flex-shrink: 0;
-		@include custom-text(color, var(--rise-text-toned));
+		@include custom-text(color, ct(transfer, count-text, var(--rise-text-toned)));
 		font-variant-numeric: tabular-nums;
 	}
 
@@ -77,7 +77,15 @@
 	}
 
 	&__list {
+		position: relative;
 		min-width: 0;
+	}
+
+	& &__ghost {
+		position: absolute;
+		box-sizing: border-box;
+		margin: 0;
+		pointer-events: none;
 	}
 
 	&__actions {

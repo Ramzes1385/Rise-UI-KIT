@@ -1,27 +1,26 @@
 <template>
 	<div
-		class="base-transfer"
-		:class="[variantClass, classes.root, { 'base-transfer--error': Boolean(error), 'base-transfer--disabled': isDisabled }]"
+		ref="rootRef"
+		:class="[ui('root'), variantClass, classes.root, { 'base-transfer--error': Boolean(error), 'base-transfer--disabled': isDisabled }]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		role="group"
 		:aria-labelledby="label ? ids.label : undefined"
 		:aria-label="label ? undefined : ariaLabel">
-		<span v-if="label" :id="ids.label" class="base-transfer__label" :class="classes.label">{{ label }}</span>
-		<div class="base-transfer__body">
+		<span v-if="label" :id="ids.label" :class="[ui('label'), classes.label]">{{ label }}</span>
+		<div :class="ui('body')">
 			<template v-for="panel in panels" :key="panel.side">
 				<section
-					class="base-transfer__panel"
-					:class="[`base-transfer__panel--${panel.side}`, classes.panel]"
+					:class="[ui('panel'), `base-transfer__panel--${panel.side}`, classes.panel]"
 					role="group"
 					:aria-labelledby="titleId(panel.side)"
 					:aria-describedby="describedBy(panel.side)">
-					<div class="base-transfer__header" :class="classes.header">
-						<span :id="titleId(panel.side)" class="base-transfer__title">{{ panel.title }}</span>
-						<span class="base-transfer__count">{{ formatCount(panel) }}</span>
+					<div :class="[ui('header'), classes.header]">
+						<span :id="titleId(panel.side)" :class="ui('title')">{{ panel.title }}</span>
+						<span :class="ui('count')">{{ formatCount(panel) }}</span>
 					</div>
 					<BaseInput
 						v-if="isSearchable"
-						class="base-transfer__search"
+						:class="ui('search')"
 						:model-value="panel.query"
 						:placeholder="UI_TRANSFER.SEARCH"
 						:aria-label="formatSearchLabel(panel)"
@@ -33,14 +32,14 @@
 						</template>
 					</BaseInput>
 					<BaseCheckbox
-						class="base-transfer__all"
+						:class="ui('all')"
 						:model-value="panel.isAllChecked"
 						:is-indeterminate="panel.isSomeChecked"
 						:label="UI_TRANSFER.SELECT_ALL"
 						:is-disabled="isDisabled || !panel.shownCount"
 						:size-scale="sizeScale"
 						@update:model-value="toggleAll(panel.side)" />
-					<div class="base-transfer__list" :class="classes.list" @keydown="handleListKeydown($event, panel.side)">
+					<div :class="[ui('list'), classes.list]" @keydown="handleListKeydown($event, panel.side)">
 						<BaseList
 							:ref="list => setListRef(panel.side, list)"
 							:items="panel.items"
@@ -68,9 +67,9 @@
 					</div>
 					<span :id="hintId(panel.side)" class="base-transfer__hint">{{ panel.hint }}</span>
 				</section>
-				<div v-if="panel.side === 'source'" class="base-transfer__actions" :class="classes.actions">
+				<div v-if="panel.side === 'source'" :class="[ui('actions'), classes.actions]">
 					<BaseButton
-						class="base-transfer__move"
+						:class="ui('move')"
 						variant="outline"
 						:is-disabled="!canMove('target')"
 						:is-focusable-when-disabled="!isDisabled"
@@ -80,7 +79,7 @@
 						<BaseIcon class="base-transfer__move-icon" name="chevron-right" />
 					</BaseButton>
 					<BaseButton
-						class="base-transfer__move"
+						:class="ui('move')"
 						variant="outline"
 						:is-disabled="!canMove('source')"
 						:is-focusable-when-disabled="!isDisabled"
@@ -92,7 +91,7 @@
 				</div>
 			</template>
 		</div>
-		<p v-if="error" :id="ids.error" class="base-transfer__error" :class="classes.error">{{ error }}</p>
+		<p v-if="error" :id="ids.error" :class="[ui('error'), classes.error]">{{ error }}</p>
 		<span class="base-transfer__status" role="status">{{ announcement }}</span>
 	</div>
 </template>
@@ -126,6 +125,8 @@ const emit = defineEmits<BaseTransferEmits>()
 defineSlots<BaseTransferSlots<T>>()
 
 const {
+	ui,
+	rootRef,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

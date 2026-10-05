@@ -36,5 +36,7 @@ export function useBaseCascaderPanel() {
 		isActive: (column: CascaderColumn, nodeId: string): boolean =>
 			column.level === context.activeLevel.value && nodeId === context.activeId.value,
 		isExpanded: (column: CascaderColumn, nodeId: string): boolean => context.expandedPath.value[column.level] === nodeId,
+		columnKey: (column: CascaderColumn): string => column.parent?.id ?? '',
+		removeColumn: (_: Element, done: () => void): void => done(),
 	}
 }

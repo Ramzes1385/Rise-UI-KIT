@@ -1,7 +1,7 @@
 .base-file-upload {
 	display: flex;
 	flex-direction: column;
-	gap: sz(8px);
+	gap: sz(ct(file-upload, gap, 8px));
 
 	&__input {
 		display: none;
@@ -18,12 +18,17 @@
 		align-items: center;
 		justify-content: center;
 		gap: sz(4px);
-		padding: sz(24px 16px);
-		border: 1px dashed var(--rise-border-accented);
-		border-radius: sz(var(--rise-radius-lg));
+		padding: space(ct(file-upload, dropzone-padding-y, 24px) ct(file-upload, dropzone-padding-x, 16px));
+		border: 1px dashed ct(file-upload, dropzone-border, var(--rise-border-accented));
+		border-radius: sz(ct(file-upload, dropzone-radius, var(--rise-radius-lg)));
 		text-align: center;
 		cursor: pointer;
-		@include custom-bg-all(background-color, var(--rise-bg), var(--rise-bg-elevated), var(--rise-bg-elevated));
+		@include custom-bg-all(
+			background-color,
+			ct(file-upload, dropzone-bg, var(--rise-bg)),
+			ct(file-upload, dropzone-bg-hover, var(--rise-bg-elevated)),
+			ct(file-upload, dropzone-bg-hover, var(--rise-bg-elevated))
+		);
 		@include transition-colors;
 		@include focus-ring;
 
@@ -114,9 +119,10 @@
 	}
 
 	&__list {
+		position: relative;
 		display: flex;
 		flex-direction: column;
-		gap: sz(8px);
+		gap: space(8px);
 		margin: 0;
 		padding: 0;
 		list-style: none;
@@ -127,10 +133,10 @@
 		display: flex;
 		align-items: center;
 		gap: sz(12px);
-		padding: sz(8px);
-		border: 1px solid var(--rise-border);
-		border-radius: sz(var(--rise-radius-md));
-		background-color: var(--rise-bg);
+		padding: space(ct(file-upload, item-padding, 8px));
+		border: 1px solid ct(file-upload, item-border, var(--rise-border));
+		border-radius: sz(ct(file-upload, item-radius, var(--rise-radius-md)));
+		background-color: ct(file-upload, item-bg, var(--rise-bg));
 	}
 
 	&__preview {
@@ -244,4 +250,15 @@
 	&__live {
 		@include visually-hidden;
 	}
+}
+
+@include enter-slide(base-file-upload-item, up);
+
+.base-file-upload-item-move {
+	transition: transform var(--rise-duration) var(--rise-ease);
+}
+
+.base-file-upload-item-leave-active {
+	position: absolute;
+	box-sizing: border-box;
 }

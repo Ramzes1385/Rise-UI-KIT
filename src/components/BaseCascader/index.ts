@@ -1,5 +1,6 @@
-export { CASCADER_VARIANTS } from './types/BaseCascader.types'
+export { CASCADER_PARTS, CASCADER_VARIANTS } from './types/BaseCascader.types'
 export type {
+	BaseCascaderPart,
 	BaseCascaderEmits,
 	BaseCascaderNode,
 	BaseCascaderProps,

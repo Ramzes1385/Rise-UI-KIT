@@ -1,8 +1,38 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { FormFieldExpose } from '@composables/form/useFormField'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export const FILE_UPLOAD_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
+
+/**
+ * Части BaseFileUpload для пропа `ui` (БЭМ-элементы `.base-file-upload__<часть>`, `root` — весь компонент): label,
+ * dropzone — зона выбора, icon, text, drop-text, hint; список: list, item — строка файла, preview, info, name, meta,
+ * status, file-error, progress, retry, remove; errors — список ошибок, error-item.
+ */
+export const FILE_UPLOAD_PARTS = [
+	'label',
+	'dropzone',
+	'icon',
+	'text',
+	'drop-text',
+	'hint',
+	'list',
+	'item',
+	'preview',
+	'info',
+	'name',
+	'meta',
+	'status',
+	'file-error',
+	'progress',
+	'retry',
+	'remove',
+	'errors',
+	'error-item',
+] as const
+
+export type BaseFileUploadPart = (typeof FILE_UPLOAD_PARTS)[number]
 
 /**
  * Статус файла в списке:
@@ -107,6 +137,14 @@ export interface BaseFileUploadProps extends BaseComponentProps<
 	emptyText?: string
 	/** Текст ошибки */
 	error?: string
+	/**
+	 * Классы частей (`root`, `dropzone`, `list`, `item`, `name`… — см. `FILE_UPLOAD_PARTS`) — добавляются к классам кита.
+	 * Глобально — `defaults.BaseFileUpload.ui` плагина, классы склеиваются.
+	 *
+	 * @example
+	 * <BaseFileUpload :ui="{ dropzone: 'min-h-40', item: 'shadow-sm' }" />
+	 */
+	ui?: UiProp<BaseFileUploadPart>
 }
 
 export interface BaseFileUploadEmits {

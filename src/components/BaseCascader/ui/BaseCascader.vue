@@ -1,7 +1,7 @@
 <template>
 	<BaseDropdown
 		v-model:is-open="isOpen"
-		class="base-cascader__dropdown"
+		:class="ui('dropdown')"
 		position="bottom-start"
 		max-height="none"
 		:size-scale="sizeScale"
@@ -9,8 +9,8 @@
 		:custom-class="classes.dropdown"
 		@close="handleClose">
 		<div
-			class="base-cascader"
 			:class="[
+				ui('root'),
 				variantClass,
 				{
 					'base-cascader--open': isOpen,
@@ -28,17 +28,16 @@
 				tag="span"
 				:label="label"
 				:is-required="isRequired"
-				class-name="base-cascader__label"
+				:class-name="ui('label')"
 				:custom-class="classes.label"
-				required-class-name="base-cascader__required"
+				:required-class-name="ui('required')"
 				:required-custom-class="classes.required"
 				:size-scale="sizeScale"
 				@click="focusTrigger" />
 
 			<div
 				ref="triggerRef"
-				class="base-cascader__trigger"
-				:class="classes.trigger"
+				:class="[ui('trigger'), classes.trigger]"
 				role="combobox"
 				:tabindex="isControlDisabled ? undefined : 0"
 				aria-haspopup="listbox"
@@ -50,20 +49,20 @@
 				:aria-disabled="isControlDisabled ? 'true' : undefined"
 				@click="toggle"
 				@keydown="handleTriggerKeydown">
-				<div class="base-cascader__values" :class="classes.values">
+				<div :class="[ui('values'), classes.values]">
 					<template v-if="hasTags">
 						<BaseBadge
 							v-for="tag in tags"
 							:key="tag.key"
 							variant="soft"
-							class="base-cascader__tag"
+							:class="ui('tag')"
 							:custom-class="classes.tag"
 							:size-scale="sizeScale">
-							<BaseText tag="span" class="base-cascader__tag-text" :size-scale="sizeScale">{{ tag.text }}</BaseText>
+							<BaseText tag="span" :class="ui('tag-text')" :size-scale="sizeScale">{{ tag.text }}</BaseText>
 							<button
 								v-if="!isControlDisabled"
 								type="button"
-								class="base-cascader__tag-close"
+								:class="ui('tag-close')"
 								tabindex="-1"
 								:aria-label="`${UI_TEXT.DELETE} ${tag.text}`"
 								@click.stop="remove(tag.path)">
@@ -73,26 +72,17 @@
 					</template>
 					<template v-else-if="singlePath.length">
 						<slot name="selected" :path="singlePath" :labels="singleLabels" :nodes="singleNodes">
-							<BaseText
-								tag="span"
-								class="base-cascader__value-text"
-								:custom-class="classes.valueText"
-								:size-scale="sizeScale"
-								>{{ displayText }}</BaseText
-							>
+							<BaseText tag="span" :class="ui('value-text')" :custom-class="classes.valueText" :size-scale="sizeScale">{{
+								displayText
+							}}</BaseText>
 						</slot>
 					</template>
-					<BaseText
-						v-else
-						tag="span"
-						class="base-cascader__placeholder"
-						:custom-class="classes.placeholder"
-						:size-scale="sizeScale"
-						>{{ resolvedPlaceholder }}</BaseText
-					>
+					<BaseText v-else tag="span" :class="ui('placeholder')" :custom-class="classes.placeholder" :size-scale="sizeScale">{{
+						resolvedPlaceholder
+					}}</BaseText>
 				</div>
 				<BaseIcon
-					class="base-cascader__arrow"
+					:class="ui('arrow')"
 					:custom-class="classes.arrow"
 					name="chevron-down"
 					:size-scale="calcIconScale('sm', sizeScale)" />
@@ -101,7 +91,7 @@
 			<FormFieldError
 				:id="errorId"
 				:error="formField.error"
-				class-name="base-cascader__error-text"
+				:class-name="ui('error-text')"
 				:custom-class="classes.errorText"
 				:size-scale="sizeScale" />
 		</div>
@@ -156,6 +146,7 @@ const emit = defineEmits<BaseCascaderEmits>()
 defineSlots<BaseCascaderSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

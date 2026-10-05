@@ -1,5 +1,6 @@
-export { FILE_UPLOAD_STATUSES, FILE_UPLOAD_VARIANTS } from './types/BaseFileUpload.types'
+export { FILE_UPLOAD_PARTS, FILE_UPLOAD_STATUSES, FILE_UPLOAD_VARIANTS } from './types/BaseFileUpload.types'
 export type {
+	BaseFileUploadPart,
 	BaseFileUploadEmits,
 	BaseFileUploadExpose,
 	BaseFileUploadProps,

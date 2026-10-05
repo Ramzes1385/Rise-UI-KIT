@@ -1,9 +1,11 @@
-import { useId } from 'vue'
+import { ref, useId } from 'vue'
 import { titleOf } from './transferSides'
 import { formatMessage } from '@/locales/state'
+import { useUi } from '@composables/base/useUi'
 import { UI_TRANSFER } from '@/locales/messages'
 import { useTransferMove } from './useTransferMove'
 import type { ListItem } from '@components/BaseList'
+import { useTransferMotion } from './useTransferMotion'
 import { useTransferChecks, useTransferPanels } from './useTransferPanels'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseTransferEmits, BaseTransferExpose, TransferPanel, TransferProps, TransferSide } from '../types/BaseTransfer.types'
@@ -22,9 +24,11 @@ function useTransferIds<T extends ListItem>(props: TransferProps<T>) {
 }
 
 export function useBaseTransfer<T extends ListItem>(props: TransferProps<T>, emit: BaseTransferEmits) {
+	const rootRef = ref<HTMLElement | null>(null)
 	const state = useTransferPanels(props)
 	const checks = useTransferChecks(props, state)
 	const move = useTransferMove(props, emit, state)
+	useTransferMotion(props, rootRef)
 	const exposed: BaseTransferExpose = {
 		transfer: (to, ids) => {
 			move.transfer(to, ids)
@@ -32,6 +36,8 @@ export function useBaseTransfer<T extends ListItem>(props: TransferProps<T>, emi
 	}
 	return {
 		...useStandardBaseComponent('base-transfer', props, TRANSFER_ELEMENTS),
+		ui: useUi(props, 'base-transfer'),
+		rootRef,
 		...useTransferIds(props),
 		panels: checks.panels,
 		filterOf: state.search.filterOf,

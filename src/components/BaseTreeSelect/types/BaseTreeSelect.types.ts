@@ -1,4 +1,5 @@
 import type { ComputedRef, Ref } from 'vue'
+import type { UiProp } from '@composables/base/useUi'
 import type { TreeIndex } from '@utils/navigation/treeUtils'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { FieldInputAttrs } from '@composables/form/useFormContext'
@@ -21,6 +22,41 @@ export const TREE_SELECT_CHECKED_STRATEGIES = ['child', 'parent', 'all'] as cons
 export type TreeSelectCheckedStrategy = (typeof TREE_SELECT_CHECKED_STRATEGIES)[number]
 
 export type TreeSelectValue = string | string[]
+
+/**
+ * Части BaseTreeSelect для пропа `ui` (БЭМ-элементы `.base-tree-select__<часть>`, `root` — поле с подписью и ошибкой):
+ * dropdown — обёртка выпадающей панели, label, required, trigger — поле, values, tag, tag-text, tag-close, more — метка
+ * «+N», placeholder, value-text, arrow, error-text; панель: panel, search, search-input, status — загрузка и пустое
+ * состояние, tree — список, node — строка узла, toggle — стрелка раскрытия, checkbox, icon, node-label, check — галочка.
+ */
+export const TREE_SELECT_PARTS = [
+	'dropdown',
+	'label',
+	'required',
+	'trigger',
+	'values',
+	'tag',
+	'tag-text',
+	'tag-close',
+	'more',
+	'placeholder',
+	'value-text',
+	'arrow',
+	'error-text',
+	'panel',
+	'search',
+	'search-input',
+	'status',
+	'tree',
+	'node',
+	'toggle',
+	'checkbox',
+	'icon',
+	'node-label',
+	'check',
+] as const
+
+export type BaseTreeSelectPart = (typeof TREE_SELECT_PARTS)[number]
 
 type TreeSelectElement =
 	| 'root'
@@ -91,6 +127,14 @@ export interface BaseTreeSelectProps extends BaseComponentProps<(typeof TREE_SEL
 	isDisabled?: boolean
 	/** Текст ошибки */
 	error?: string
+	/**
+	 * Классы частей поля и панели (`root`, `trigger`, `panel`, `tree`, `node`… — см. `TREE_SELECT_PARTS`) — добавляются
+	 * к классам кита. Глобально — `defaults.BaseTreeSelect.ui` плагина, классы склеиваются.
+	 *
+	 * @example
+	 * <BaseTreeSelect :items="tree" :ui="{ trigger: 'ring-1', node: 'rounded-none' }" />
+	 */
+	ui?: UiProp<BaseTreeSelectPart>
 }
 
 /**

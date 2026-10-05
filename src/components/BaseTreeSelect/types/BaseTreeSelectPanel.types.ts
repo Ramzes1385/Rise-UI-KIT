@@ -1,5 +1,6 @@
-import type { TreeSelectRow } from './BaseTreeSelect.types'
+import type { UiClassFn } from '@composables/base/useUi'
 import type { TreeNode } from '@components/BaseTree/types/BaseTree.types'
+import type { BaseTreeSelectPart, TreeSelectRow } from './BaseTreeSelect.types'
 
 /**
  * Пропсы выпадающей панели BaseTreeSelect: поиск, дерево, загрузка и пустое состояние
@@ -21,6 +22,8 @@ export interface BaseTreeSelectPanelProps {
 	indeterminateSet: Set<string>
 	/** Объект CSS-классов для кастомизации элементов */
 	classes: Record<string, string | undefined>
+	/** Классы частей из пропа `ui` поля и `defaults.BaseTreeSelect.ui` */
+	ui: UiClassFn<BaseTreeSelectPart>
 	/** CSS-стили масштабирования */
 	sizeScaleStyle: Record<string, string> | undefined
 	/** id дерева (`role="tree"`): на него ссылается `aria-controls` поля */

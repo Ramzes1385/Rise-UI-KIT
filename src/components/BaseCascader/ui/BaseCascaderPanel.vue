@@ -1,6 +1,6 @@
 <template>
-	<div :id="panelId" class="base-cascader__panel" :class="classes.panel" :style="sizeScaleStyle">
-		<div v-if="isSearchable()" class="base-cascader__search" :class="classes.search">
+	<div :id="panelId" :class="[ui('panel'), classes.panel]" :style="sizeScaleStyle">
+		<div v-if="isSearchable()" :class="[ui('search'), classes.search]">
 			<BaseIcon name="search" class="base-cascader__search-icon" :size-scale="calcIconScale('sm', sizeScale())" />
 			<input
 				ref="searchRef"
@@ -11,7 +11,7 @@
 				:aria-controls="controls"
 				:aria-activedescendant="activeDescendant"
 				autocomplete="off"
-				class="base-cascader__search-input"
+				:class="ui('search-input')"
 				@click.stop
 				@keydown="handleSearchKeydown" />
 		</div>
@@ -19,8 +19,7 @@
 		<template v-if="isSearching">
 			<ul
 				:id="resultsId"
-				class="base-cascader__results"
-				:class="classes.results"
+				:class="[ui('results'), classes.results]"
 				role="listbox"
 				:aria-label="UI_ARIA.SEARCH"
 				:aria-multiselectable="isMultiple() ? 'true' : undefined">
@@ -28,8 +27,8 @@
 					v-for="(result, index) in results"
 					:id="resultId(index)"
 					:key="result.path.join('/')"
-					class="base-cascader__option"
 					:class="[
+						ui('option'),
 						{
 							'base-cascader__option--active': index === activeResult,
 							'base-cascader__option--selected': isPathSelected(result.path),
@@ -56,23 +55,28 @@
 					</slot>
 				</li>
 			</ul>
-			<div v-if="!results.length" class="base-cascader__empty" :class="classes.empty">
+			<div v-if="!results.length" :class="[ui('empty'), classes.empty]">
 				<slot name="empty">
 					<BaseText tag="span" :size-scale="sizeScale()">{{ UI_TEXT.NO_RESULTS }}</BaseText>
 				</slot>
 			</div>
 		</template>
 
-		<div v-else class="base-cascader__columns" :class="classes.columns">
+		<TransitionGroup
+			v-else
+			tag="div"
+			name="base-cascader-column"
+			:css="!isRevealing"
+			@leave="removeColumn"
+			:class="[ui('columns'), classes.columns]">
 			<div
 				v-for="column in columns"
-				:key="column.level"
-				class="base-cascader__column"
-				:class="[`base-cascader__column--${column.status}`, classes.column]">
+				:key="columnKey(column)"
+				:class="[ui('column'), `base-cascader__column--${column.status}`, classes.column]">
 				<template v-if="column.status === 'ready'">
 					<ul
 						:id="columnId(column.level)"
-						class="base-cascader__options"
+						:class="ui('options')"
 						role="listbox"
 						:aria-labelledby="columnLabelledBy(column)"
 						:aria-label="columnLabel(column)"
@@ -81,8 +85,8 @@
 							v-for="(node, index) in column.nodes"
 							:id="optionId(column.level, index)"
 							:key="node.id"
-							class="base-cascader__option"
 							:class="[
+								ui('option'),
 								{
 									'base-cascader__option--active': isActive(column, node.id),
 									'base-cascader__option--expanded': isExpanded(column, node.id),
@@ -137,23 +141,23 @@
 							</slot>
 						</li>
 					</ul>
-					<div v-if="!column.nodes.length" class="base-cascader__empty" :class="classes.empty">
+					<div v-if="!column.nodes.length" :class="[ui('empty'), classes.empty]">
 						<slot name="empty">
 							<BaseText tag="span" :size-scale="sizeScale()">{{ UI_TEXT.EMPTY }}</BaseText>
 						</slot>
 					</div>
 				</template>
-				<div v-else-if="column.status === 'loading'" class="base-cascader__status" :class="classes.status">
+				<div v-else-if="column.status === 'loading'" :class="[ui('status'), classes.status]">
 					<BaseLoader :label="UI_TEXT.LOADING" :size-scale="sizeScale()" />
 				</div>
-				<div v-else class="base-cascader__status" :class="classes.status">
+				<div v-else :class="[ui('status'), classes.status]">
 					<BaseText tag="p" role="alert" class="base-cascader__status-text" :size-scale="sizeScale()">{{
 						UI_TEXT.LOAD_ERROR
 					}}</BaseText>
 					<BaseButton variant="soft" :size-scale="sizeScale()" @click="retry(column)">{{ UI_TEXT.RETRY }}</BaseButton>
 				</div>
 			</div>
-		</div>
+		</TransitionGroup>
 	</div>
 </template>
 
@@ -170,7 +174,11 @@ import type { BaseCascaderSlots } from '../types/BaseCascader.types'
 defineSlots<Pick<BaseCascaderSlots, 'option' | 'empty'>>()
 
 const {
+	ui,
 	classes,
+	isRevealing,
+	columnKey,
+	removeColumn,
 	sizeScaleStyle,
 	sizeScale,
 	isSearchable,

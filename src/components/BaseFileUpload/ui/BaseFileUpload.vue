@@ -1,9 +1,9 @@
 <template>
 	<div
 		ref="rootRef"
-		class="base-file-upload"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		:class="[
+			ui('root'),
 			{
 				'base-file-upload--disabled': isControlDisabled,
 				'base-file-upload--dragover': isDragOver,
@@ -28,18 +28,17 @@
 			:for-id="inputId"
 			:label="label"
 			:is-required="isRequired"
-			class-name="base-file-upload__label"
+			:class-name="ui('label')"
 			:custom-class="classes.label"
 			:size-scale="sizeScale" />
 
 		<div
 			ref="dropzoneRef"
-			class="base-file-upload__dropzone"
 			role="button"
 			:tabindex="isControlDisabled ? -1 : 0"
 			:aria-disabled="isControlDisabled || undefined"
 			:aria-describedby="hasError ? errorsId : undefined"
-			:class="[{ 'base-file-upload__dropzone--active': isDragOver }, classes.dropzone]"
+			:class="[ui('dropzone'), { 'base-file-upload__dropzone--active': isDragOver }, classes.dropzone]"
 			@click="triggerUpload"
 			@keydown.enter.self.prevent="triggerUpload"
 			@keydown.space.self.prevent="triggerUpload"
@@ -47,23 +46,26 @@
 			@dragleave="handleDragLeave"
 			@drop.prevent="handleZoneDrop">
 			<slot name="trigger">
-				<BaseIcon name="upload" class="base-file-upload__icon" />
-				<span class="base-file-upload__text" :class="classes.text">{{ buttonText ?? UI_TEXT.FILE_SELECT }}</span>
-				<span v-if="emptyText" class="base-file-upload__drop-text" :class="classes.dropText">{{ emptyText }}</span>
-				<span v-if="accept || maxSize" class="base-file-upload__hint" :class="classes.hint">
+				<BaseIcon name="upload" :class="ui('icon')" />
+				<span :class="[ui('text'), classes.text]">{{ buttonText ?? UI_TEXT.FILE_SELECT }}</span>
+				<span v-if="emptyText" :class="[ui('drop-text'), classes.dropText]">{{ emptyText }}</span>
+				<span v-if="accept || maxSize" :class="[ui('hint'), classes.hint]">
 					<span v-if="accept">{{ formatHint }}</span>
 					<span v-if="maxSize">{{ UI_TEXT.FILE_MAX_SIZE_PREFIX }} {{ maxSize }} {{ UI_TEXT.FILE_MAX_SIZE_SUFFIX }}</span>
 				</span>
 			</slot>
 		</div>
 
-		<ul v-if="uploadedFiles.length > 0" class="base-file-upload__list" :class="classes.list">
-			<li
-				v-for="item in uploadedFiles"
-				:key="item.id"
-				class="base-file-upload__item"
-				:class="[`base-file-upload__item--${item.status}`, classes.item]">
-				<div class="base-file-upload__preview" :class="classes.preview" :style="previewStyle">
+		<TransitionGroup
+			v-if="uploadedFiles.length > 0 || leavingCount > 0"
+			tag="ul"
+			name="base-file-upload-item"
+			:class="[ui('list'), classes.list]"
+			@before-leave="pinLeavingItem"
+			@after-leave="releaseLeavingItem"
+			@leave-cancelled="releaseLeavingItem">
+			<li v-for="item in uploadedFiles" :key="item.id" :class="[ui('item'), `base-file-upload__item--${item.status}`, classes.item]">
+				<div :class="[ui('preview'), classes.preview]" :style="previewStyle">
 					<BaseImage
 						v-if="item.previewUrl"
 						:src="item.previewUrl"
@@ -76,25 +78,24 @@
 					<BaseIcon v-else :name="fileIconName(item)" class="base-file-upload__file-icon" />
 				</div>
 
-				<div class="base-file-upload__info" :class="classes.info">
+				<div :class="[ui('info'), classes.info]">
 					<BaseTooltip class="base-file-upload__name-tooltip" :text="item.name" :size-scale="sizeScale">
-						<span class="base-file-upload__name" :class="classes.name">{{ item.name }}</span>
+						<span :class="[ui('name'), classes.name]">{{ item.name }}</span>
 					</BaseTooltip>
-					<div class="base-file-upload__meta" :class="classes.meta">
+					<div :class="[ui('meta'), classes.meta]">
 						<span v-if="item.extension" class="base-file-upload__ext" :class="classes.ext">{{
 							item.extension.toUpperCase()
 						}}</span>
 						<span class="base-file-upload__size" :class="classes.size">{{ formatSize(item.size) }}</span>
 						<span
 							v-if="item.status !== 'selected'"
-							class="base-file-upload__status"
-							:class="[`base-file-upload__status--${item.status}`, classes.status]">
+							:class="[ui('status'), `base-file-upload__status--${item.status}`, classes.status]">
 							<template v-if="item.status === 'done'">{{ UI_TEXT.FILE_STATUS_DONE }}</template>
 							<template v-else-if="item.status === 'uploading'">{{ item.progress }}%</template>
 							<template v-else>{{ UI_TEXT.FILE_STATUS_ERROR }}</template>
 						</span>
 					</div>
-					<span v-if="item.status === 'error' && item.error" class="base-file-upload__file-error" :class="classes.fileError">{{
+					<span v-if="item.status === 'error' && item.error" :class="[ui('file-error'), classes.fileError]">{{
 						item.error
 					}}</span>
 					<BaseProgress
@@ -104,13 +105,13 @@
 						:aria-label="item.name"
 						:size-scale="sizeScale"
 						:custom-class="classes.progress"
-						class="base-file-upload__progress" />
+						:class="ui('progress')" />
 				</div>
 
 				<BaseButton
 					v-if="item.status === 'error'"
 					variant="ghost"
-					class="base-file-upload__retry"
+					:class="ui('retry')"
 					:custom-class="classes.retry"
 					:aria-label="formatMessage(UI_FILE_UPLOAD.RETRY, { name: item.name })"
 					:is-disabled="isControlDisabled"
@@ -120,7 +121,7 @@
 				</BaseButton>
 				<BaseButton
 					variant="ghost"
-					class="base-file-upload__remove"
+					:class="ui('remove')"
 					:custom-class="classes.remove"
 					:aria-label="`${UI_TEXT.DELETE} ${item.name}`"
 					:is-disabled="isControlDisabled"
@@ -129,7 +130,7 @@
 					<template #left><BaseIcon name="close" :size-scale="calcIconScale('sm', sizeScale)" /></template>
 				</BaseButton>
 			</li>
-		</ul>
+		</TransitionGroup>
 
 		<div class="base-file-upload__alert" role="alert">
 			<BaseAnimation
@@ -139,12 +140,8 @@
 				is-group
 				tag="ul"
 				:custom-class="classes.errors"
-				class="base-file-upload__errors">
-				<li
-					v-for="(err, index) in displayErrors"
-					:key="err + index"
-					class="base-file-upload__error-item"
-					:class="classes.errorItem">
+				:class="ui('errors')">
+				<li v-for="(err, index) in displayErrors" :key="err + index" :class="[ui('error-item'), classes.errorItem]">
 					{{ err }}
 				</li>
 			</BaseAnimation>
@@ -193,6 +190,10 @@ const emit = defineEmits<BaseFileUploadEmits>()
 defineSlots<BaseFileUploadSlots>()
 
 const {
+	ui,
+	leavingCount,
+	pinLeavingItem,
+	releaseLeavingItem,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

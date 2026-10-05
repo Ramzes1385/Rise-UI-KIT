@@ -1,5 +1,6 @@
-import { computed, ref, useId } from 'vue'
 import type { ComputedRef, Ref } from 'vue'
+import { useUi } from '@composables/base/useUi'
+import { computed, ref, useId, watch } from 'vue'
 import { toHTMLInputElement } from '@utils/dom/domUtils'
 import { useFormField } from '@composables/form/useFormField'
 import { useFormDisabled } from '@composables/form/useFormContext'
@@ -34,6 +35,29 @@ const FILE_UPLOAD_ELEMENTS = [
 ]
 
 const PREVIEW_ZOOM = Object.freeze({ hasZoom: true })
+
+function useLeavingItems(files: Ref<UploadedFile[]>) {
+	const leavingCount = ref(0)
+	watch(
+		() => files.value.map(file => file.id),
+		(next, prev) => {
+			const kept = new Set(next)
+			leavingCount.value += prev.filter(id => !kept.has(id)).length
+		},
+		{ flush: 'pre' },
+	)
+	return {
+		leavingCount,
+		pinLeavingItem(element: Element): void {
+			const item = element as HTMLElement
+			Object.assign(item.style, { top: `${item.offsetTop}px`, left: `${item.offsetLeft}px`, width: `${item.offsetWidth}px` })
+			item.setAttribute('aria-hidden', 'true')
+		},
+		releaseLeavingItem(): void {
+			leavingCount.value = Math.max(leavingCount.value - 1, 0)
+		},
+	}
+}
 
 function fileIconName(item: UploadedFile): string {
 	if (item.type.startsWith('image/')) return 'image'
@@ -134,6 +158,8 @@ export function useBaseFileUpload(props: FileUploadProps, emit: BaseFileUploadEm
 
 	return {
 		...standard,
+		ui: useUi(props, 'base-file-upload'),
+		...useLeavingItems(state.uploadedFiles),
 		isControlDisabled,
 		fileInput,
 		rootRef,

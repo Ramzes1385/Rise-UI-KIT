@@ -1,5 +1,6 @@
-export { TRANSFER_SIDES, TRANSFER_VARIANTS } from './types/BaseTransfer.types'
+export { TRANSFER_PARTS, TRANSFER_SIDES, TRANSFER_VARIANTS } from './types/BaseTransfer.types'
 export type {
+	BaseTransferPart,
 	BaseTransferEmits,
 	BaseTransferExpose,
 	BaseTransferProps,

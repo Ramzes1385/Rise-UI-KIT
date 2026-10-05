@@ -1,5 +1,6 @@
-export { TREE_SELECT_CHECKED_STRATEGIES, TREE_SELECT_VARIANTS } from './types/BaseTreeSelect.types'
+export { TREE_SELECT_PARTS, TREE_SELECT_CHECKED_STRATEGIES, TREE_SELECT_VARIANTS } from './types/BaseTreeSelect.types'
 export type {
+	BaseTreeSelectPart,
 	BaseTreeSelectEmits,
 	BaseTreeSelectProps,
 	BaseTreeSelectSlots,
