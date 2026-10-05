@@ -1383,3 +1383,8 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 - **Вертикаль:** отрезок после пройденного шага с ошибкой залит акцентом (раньше — серый); зазор отрезков прежний (4px).
 - **LongContent на узкой ширине:** второй шаг шире остальных — по слову «подтверждающих».
 - Скриншот-тест `BaseStepper.visual.spec.ts` (shapes, vertical, sizes, disabled, with-icons, long-content) не запускался: эталонов BaseStepper в `tests/visual-snapshots` нет. Сравнение «до/после» — страница `.rise-transfer\review\fix-stepper-layout.html`.
+## Задача feat-slider-vertical-thumbs: BaseSlider — вертикальная лента миниатюр
+
+- Новые истории `data-baseslider--thumbnails-left` и `data-baseslider--thumbnails-right` (снимков нет): лента миниатюр столбцом слева или справа от слайдов, отступ от слайдов 12px (8px навигации + 4px ленты, как под слайдами), у `right` с `navigation="both"` — столбец точек между слайдами и миниатюрами, активная точка вытянута по вертикали. Лента прокручивается по высоте, вокруг миниатюр 4px — кольцо фокуса не обрезается.
+- Прежние истории не меняются: при `thumbnailsPosition="bottom"` новая обёртка `base-slider__body` — `display: contents`. Не проверено попиксельно: снимков «было/стало» не снимал (проверка — `check-stories --filter=baseslider`).
+- Уже 480px по ширине слайдера боковая лента возвращается под слайды — тот же вид, что у `Thumbnails`.

@@ -1355,6 +1355,12 @@ const slides = [
 <BaseSlider ref="slider" :items="slides" label="Новинки" is-autoplay :autoplay-interval="5000" />
 ```
 
+Миниатюры (`navigation="thumbnails"` или `"both"`) по умолчанию под слайдами; `thumbnails-position="left"` или `"right"` ставит вертикальную ленту сбоку. Лента прокручивается и сама докручивается до текущей миниатюры, не забирая фокус; стрелки клавиатуры (↑/↓ у вертикальной ленты, ←/→ у горизонтальной), Home и End переводят фокус по миниатюрам и листают слайд. Уже 480px по ширине слайдера боковая лента возвращается вниз (container query), поэтому ширину слайдеру с боковой лентой задаёт родитель.
+
+```vue
+<BaseSlider :items="slides" navigation="thumbnails" thumbnails-position="left" height="360px" />
+```
+
 ---
 
 ## BaseMediaPlayer
