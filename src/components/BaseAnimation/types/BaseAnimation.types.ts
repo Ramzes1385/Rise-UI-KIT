@@ -27,7 +27,10 @@ export interface BaseAnimationProps extends Pick<BaseComponentProps<string, 'roo
 	show?: boolean
 	/**
 	 * Анимация: `fade`, `slide-up`/`-down`/`-left`/`-right`, `scale`, `bounce`, `rotate`, `flip`, `zoom`, `collapse`;
-	 * `list` — для списков (`isGroup`). Длительности — из токенов `--rise-duration*`, при prefers-reduced-motion переход мгновенный.
+	 * `list` — для списков (`isGroup`). Длительности, сдвиг и масштаб — токены движения (`--rise-duration*`,
+	 * `--rise-motion-distance`, `--rise-motion-scale-from`), поэтому пресет `data-rise-motion` меняет и их; при «уменьшить
+	 * движение» и пресете `none` переход мгновенный. `collapse` раскрывает по высоте через строку сетки `0fr ↔ 1fr`
+	 * (содержимое обёрнуто в `.base-animation__inner`).
 	 */
 	name?: TransitionName
 	/**

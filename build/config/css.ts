@@ -7,7 +7,7 @@ const GLOBAL_SCSS_PRELUDE = ['@use "@styles/variables" as *;', '@use "@styles/mi
 	'\n',
 )
 
-const GLOBAL_SCSS_FILES = ['_tokens.scss', '_variables.scss', '_mixins.scss', '_functions.scss']
+const GLOBAL_SCSS_FILES = ['_tokens.scss', '_motion.scss', '_variables.scss', '_mixins.scss', '_functions.scss']
 
 function shouldSkipImport(filename: string): boolean {
 	return GLOBAL_SCSS_FILES.some(file => filename.endsWith(file))

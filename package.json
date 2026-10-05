@@ -219,7 +219,21 @@
       "custom-property-empty-line-before": null,
       "scss/double-slash-comment-empty-line-before": null,
       "scss/comment-no-empty": null,
-      "scss/at-if-no-null": null
+      "scss/at-if-no-null": null,
+      "declaration-property-value-disallowed-list": [
+        {
+          "/^transition(-property)?$/": [
+            "/(^|[\\s,])(min-|max-)?(width|height|top|left|right|bottom|inset|margin|padding)(-[a-z-]+)?($|[\\s,])/"
+          ],
+          "/^(transition|animation)(-duration|-delay)?$/": [
+            "/(^|[\\s,(])(\\d*\\.)?\\d*[1-9]\\d*m?s($|[\\s,)])/"
+          ]
+        },
+        {
+          "severity": "warning",
+          "message": "Движение: переходы только по transform и opacity, длительности — токены var(--rise-duration…) (DESIGN_SYSTEM, «Движение»); исключение — отключение на строку с причиной"
+        }
+      ]
     },
     "overrides": [
       {

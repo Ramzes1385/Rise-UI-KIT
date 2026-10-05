@@ -56,7 +56,7 @@ describe('useExpandTransition', () => {
 
 			expect(el.style.height).toBe('120px')
 			expect(el.style.opacity).toBe('1')
-			expect(el.style.transition).toContain('height 300ms ease')
+			expect(el.style.transition).toContain('height 300ms var(--rise-ease-emphasized)')
 
 			el.dispatchEvent(new Event('transitionend'))
 
@@ -109,7 +109,7 @@ describe('useExpandTransition', () => {
 
 			expect(el.style.height).toBe('0px')
 			expect(el.style.opacity).toBe('0')
-			expect(el.style.transition).toContain('height 300ms ease')
+			expect(el.style.transition).toContain('height 300ms var(--rise-ease-emphasized)')
 
 			el.dispatchEvent(new Event('transitionend'))
 
@@ -147,7 +147,7 @@ describe('useExpandTransition', () => {
 			onEnter(el, vi.fn())
 			flushRaf()
 
-			expect(el.style.transition).toContain('height 500ms ease')
+			expect(el.style.transition).toContain('height 500ms var(--rise-ease-emphasized)')
 		})
 	})
 
@@ -203,7 +203,7 @@ describe('useExpandTransition', () => {
 			onEnter(el, done)
 			flushRaf()
 
-			expect(el.style.transition).toContain('height 300ms ease')
+			expect(el.style.transition).toContain('height 300ms var(--rise-ease-emphasized)')
 			expect(done).not.toHaveBeenCalled()
 		})
 
@@ -214,7 +214,7 @@ describe('useExpandTransition', () => {
 
 			onEnter(el, vi.fn())
 
-			expect(el.style.transition).toContain('height 300ms ease')
+			expect(el.style.transition).toContain('height 300ms var(--rise-ease-emphasized)')
 		})
 	})
 

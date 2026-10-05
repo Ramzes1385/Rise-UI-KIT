@@ -223,3 +223,116 @@
 		color: var(--rise-text-highlighted);
 	}
 }
+
+// Движение (docs/design/DESIGN_SYSTEM.md, «Движение»). Длительности, кривые, сдвиг и масштаб — токены пресета,
+// поэтому `data-rise-motion` и «уменьшить движение» действуют и здесь без отдельных правил.
+
+// Раскрытие по высоте `auto` без замера: строка сетки 0fr ↔ 1fr. Свёрнутое скрыто и от фокуса (visibility);
+// у единственного потомка — `min-height: 0`. Открытое состояние — `expand-rows-open` на том же элементе.
+@mixin expand-rows {
+	display: grid;
+	grid-template-rows: 0fr;
+	opacity: 0;
+	visibility: hidden;
+	transition:
+		grid-template-rows var(--rise-duration-slow) var(--rise-ease-emphasized),
+		opacity var(--rise-duration) var(--rise-ease),
+		visibility 0s linear var(--rise-duration-slow);
+
+	> * {
+		min-height: 0;
+		overflow: hidden;
+	}
+}
+
+@mixin expand-rows-open {
+	grid-template-rows: 1fr;
+	opacity: 1;
+	visibility: visible;
+	transition:
+		grid-template-rows var(--rise-duration-slow) var(--rise-ease-emphasized),
+		opacity var(--rise-duration) var(--rise-ease),
+		visibility 0s;
+}
+
+// Классы `<Transition name="…">`: появление дольше и мягче, уход короче. Подключаются на верхнем уровне файла стилей.
+@mixin enter-fade($name) {
+	.#{$name}-enter-active {
+		transition: opacity var(--rise-duration) var(--rise-ease-out);
+	}
+
+	.#{$name}-leave-active {
+		transition: opacity var(--rise-duration-fast) var(--rise-ease-in);
+	}
+
+	.#{$name}-enter-from,
+	.#{$name}-leave-to {
+		opacity: 0;
+	}
+}
+
+@mixin enter-transform($name, $from, $to: $from, $ease: var(--rise-ease-out)) {
+	.#{$name}-enter-active {
+		transition:
+			opacity var(--rise-duration) var(--rise-ease-out),
+			transform var(--rise-duration) $ease;
+	}
+
+	.#{$name}-leave-active {
+		transition:
+			opacity var(--rise-duration-fast) var(--rise-ease-in),
+			transform var(--rise-duration-fast) var(--rise-ease-in);
+	}
+
+	.#{$name}-enter-from {
+		opacity: 0;
+		transform: $from;
+	}
+
+	.#{$name}-leave-to {
+		opacity: 0;
+		transform: $to;
+	}
+}
+
+@mixin enter-scale($name, $from: var(--rise-motion-scale-from)) {
+	@include enter-transform($name, scale($from));
+}
+
+// Пружина (`--rise-ease-spring`) — только у появления: перелёт есть лишь в пресете `expressive`.
+@mixin enter-pop($name, $from: var(--rise-motion-scale-from)) {
+	@include enter-transform($name, scale($from), $ease: var(--rise-ease-spring));
+}
+
+// $dir — откуда въезжает содержимое: `up` — снизу вверх, `down`, `left` — справа налево, `right`. Уход — дальше по ходу.
+@mixin enter-slide($name, $dir: up, $distance: var(--rise-motion-distance)) {
+	$axis: 'X';
+	$sign: -1;
+	@if $dir == up or $dir == down {
+		$axis: 'Y';
+	}
+	@if $dir == up or $dir == left {
+		$sign: 1;
+	}
+	@include enter-transform($name, translate#{$axis }(calc(#{$distance} * #{$sign})), translate#{$axis }(calc(#{$distance} * #{-$sign})));
+}
+
+// Скользящий индикатор для `useSlidingIndicator`: позиция — transform, размер — ширина и высота абсолютного элемента
+// (раскладку соседей не трогает, как у индикатора вкладок MUI). Первый замер — без перехода (`$instant-selector`).
+@mixin sliding-indicator($instant-selector: '&--instant') {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: var(--indicator-w, 0);
+	height: var(--indicator-h, 0);
+	transform: translate(var(--indicator-x, 0), var(--indicator-y, 0));
+	pointer-events: none;
+	// stylelint-disable-next-line declaration-property-value-disallowed-list -- размер абсолютного индикатора: исключение решения research-motion, 2.4
+	transition-property: transform, width, height;
+	transition-duration: var(--rise-duration);
+	transition-timing-function: var(--rise-ease-spring);
+
+	#{$instant-selector} {
+		transition: none;
+	}
+}

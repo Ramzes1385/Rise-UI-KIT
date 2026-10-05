@@ -6,94 +6,12 @@ $leave: var(--rise-duration-fast) var(--rise-ease-in);
 	position: relative;
 }
 
-.fade-enter-active {
-	transition: opacity $enter;
-}
-
-.fade-leave-active {
-	transition: opacity $leave;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-	opacity: 0;
-}
-
-.slide-up-enter-active,
-.slide-down-enter-active,
-.slide-left-enter-active,
-.slide-right-enter-active {
-	transition:
-		opacity $enter,
-		transform $enter;
-}
-
-.slide-up-leave-active,
-.slide-down-leave-active,
-.slide-left-leave-active,
-.slide-right-leave-active {
-	transition:
-		opacity $leave,
-		transform $leave;
-}
-
-.slide-up-enter-from {
-	opacity: 0;
-	transform: translateY(sz(16px));
-}
-
-.slide-up-leave-to {
-	opacity: 0;
-	transform: translateY(sz(-16px));
-}
-
-.slide-down-enter-from {
-	opacity: 0;
-	transform: translateY(sz(-16px));
-}
-
-.slide-down-leave-to {
-	opacity: 0;
-	transform: translateY(sz(16px));
-}
-
-.slide-left-enter-from {
-	opacity: 0;
-	transform: translateX(sz(16px));
-}
-
-.slide-left-leave-to {
-	opacity: 0;
-	transform: translateX(sz(-16px));
-}
-
-.slide-right-enter-from {
-	opacity: 0;
-	transform: translateX(sz(-16px));
-}
-
-.slide-right-leave-to {
-	opacity: 0;
-	transform: translateX(sz(16px));
-}
-
-.scale-enter-active {
-	transition:
-		opacity $enter,
-		transform $enter;
-}
-
-.scale-leave-active {
-	transition:
-		opacity $leave,
-		transform $leave;
-}
-
-.scale-enter-from,
-.scale-leave-to {
-	opacity: 0;
-	transform: scale(0.95);
-}
+@include enter-fade('fade');
+@include enter-slide('slide-up', up, calc(var(--rise-motion-distance) * 2));
+@include enter-slide('slide-down', down, calc(var(--rise-motion-distance) * 2));
+@include enter-slide('slide-left', left, calc(var(--rise-motion-distance) * 2));
+@include enter-slide('slide-right', right, calc(var(--rise-motion-distance) * 2));
+@include enter-scale('scale');
 
 .bounce-enter-active {
 	animation: base-animation-bounce-in $enter-slow;
@@ -194,27 +112,37 @@ $leave: var(--rise-duration-fast) var(--rise-ease-in);
 	transform: scale(0);
 }
 
+.base-animation--collapse {
+	display: grid;
+	grid-template-rows: 1fr;
+}
+
+.base-animation__inner {
+	min-height: 0;
+}
+
 .collapse-enter-active,
 .collapse-leave-active {
-	interpolate-size: allow-keywords;
-	overflow: hidden;
+	> .base-animation__inner {
+		overflow: hidden;
+	}
 }
 
 .collapse-enter-active {
 	transition:
-		height $enter,
+		grid-template-rows $enter,
 		opacity $enter;
 }
 
 .collapse-leave-active {
 	transition:
-		height $leave,
+		grid-template-rows $leave,
 		opacity $leave;
 }
 
 .collapse-enter-from,
 .collapse-leave-to {
-	height: 0;
+	grid-template-rows: 0fr;
 	opacity: 0;
 }
 
@@ -238,7 +166,7 @@ $leave: var(--rise-duration-fast) var(--rise-ease-in);
 
 .list-enter-from {
 	opacity: 0;
-	transform: translateX(sz(30px));
+	transform: translateX(calc(var(--rise-motion-distance) * 3.75));
 }
 
 .list-leave-to {

@@ -1,16 +1,13 @@
 /** Composable: Vue transition-хуки анимации expand/collapse */
 import { toHTMLElement } from '@utils/dom/domUtils'
+import { readMotionDuration } from '@composables/app/useMotion'
 import type { ExpandFrame, UseExpandTransitionOptions, UseExpandTransitionReturn } from './types/useExpandTransition.types'
 
-const DEFAULT_DURATION = 300
 const FALLBACK_MARGIN = 50
-const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
+const HEIGHT_EASING = 'var(--rise-ease-emphasized)'
+const OPACITY_EASING = 'var(--rise-ease)'
 
 const pendingTransitions = new WeakMap<HTMLElement, () => void>()
-
-function isMotionReduced(): boolean {
-	return typeof window.matchMedia === 'function' && window.matchMedia(REDUCED_MOTION_QUERY).matches
-}
 
 function resetStyles(el: HTMLElement): void {
 	el.style.height = ''
@@ -20,7 +17,7 @@ function resetStyles(el: HTMLElement): void {
 }
 
 function applyTransition(el: HTMLElement, duration: number): void {
-	el.style.transition = `height ${duration}ms ease, opacity ${duration}ms ease`
+	el.style.transition = `height ${duration}ms ${HEIGHT_EASING}, opacity ${duration}ms ${OPACITY_EASING}`
 }
 
 function cancelPending(el: HTMLElement): void {
@@ -59,9 +56,16 @@ function finishInstantly(el: HTMLElement, done: () => void): void {
 	done()
 }
 
+/** Длительность кадра: заданная явно — только если движение не выключено; иначе — токен `--rise-duration-slow` элемента */
+function resolveDuration(el: HTMLElement, duration: number | undefined): number {
+	const fromTokens = readMotionDuration(el, 'slow')
+	if (fromTokens === 0 || duration === undefined) return fromTokens
+	return duration
+}
+
 function animate(el: HTMLElement, frame: ExpandFrame, done: () => void): void {
 	cancelPending(el)
-	if (frame.duration <= 0 || isMotionReduced()) {
+	if (frame.duration <= 0) {
 		finishInstantly(el, done)
 		return
 	}
@@ -75,7 +79,9 @@ function animate(el: HTMLElement, frame: ExpandFrame, done: () => void): void {
 
 /**
  * Хуки `<Transition>` для раскрытия по высоте: от 0 до `scrollHeight` и обратно, с прозрачностью.
- * При `prefers-reduced-motion: reduce` и при `duration: 0` анимации нет — элемент сразу в конечном состоянии.
+ * Длительность по умолчанию — токен `--rise-duration-slow` элемента (пресет `data-rise-motion` действует), кривая высоты —
+ * `--rise-ease-emphasized`, прозрачности — `--rise-ease`. При «уменьшить движение», пресете `none`,
+ * `reducedMotion: 'always'` и при `duration: 0` анимации нет — элемент сразу в конечном состоянии.
  *
  * @example
  * ```ts
@@ -84,8 +90,6 @@ function animate(el: HTMLElement, frame: ExpandFrame, done: () => void): void {
  * ```
  */
 function useExpandTransition(options: UseExpandTransitionOptions = {}): UseExpandTransitionReturn {
-	const duration = options.duration ?? DEFAULT_DURATION
-
 	function onBeforeEnter(el: Element): void {
 		const htmlEl = toHTMLElement(el)!
 		htmlEl.style.height = '0'
@@ -95,7 +99,7 @@ function useExpandTransition(options: UseExpandTransitionOptions = {}): UseExpan
 
 	function onEnter(el: Element, done: () => void): void {
 		const htmlEl = toHTMLElement(el)!
-		animate(htmlEl, { height: `${htmlEl.scrollHeight}px`, opacity: '1', duration }, done)
+		animate(htmlEl, { height: `${htmlEl.scrollHeight}px`, opacity: '1', duration: resolveDuration(htmlEl, options.duration) }, done)
 	}
 
 	function onAfterEnter(el: Element): void {
@@ -109,7 +113,8 @@ function useExpandTransition(options: UseExpandTransitionOptions = {}): UseExpan
 	}
 
 	function onLeave(el: Element, done: () => void): void {
-		animate(toHTMLElement(el)!, { height: '0', opacity: '0', duration }, done)
+		const htmlEl = toHTMLElement(el)!
+		animate(htmlEl, { height: '0', opacity: '0', duration: resolveDuration(htmlEl, options.duration) }, done)
 	}
 
 	function onAfterLeave(el: Element): void {

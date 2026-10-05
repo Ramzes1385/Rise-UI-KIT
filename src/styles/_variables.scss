@@ -1,4 +1,5 @@
 @use './tokens';
+@use './motion';
 
 $breakpoints: (
 	'xs': 320px,

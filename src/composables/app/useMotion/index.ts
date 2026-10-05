@@ -1,3 +1,18 @@
 export { useMotion } from './useMotion'
-export { MOTION_DURATIONS } from './types/useMotion.types'
-export type { MotionDuration, UseMotionReturn } from './types/useMotion.types'
+export {
+	MOTION_ATTRIBUTE,
+	REDUCED_MOTION_ATTRIBUTE,
+	isMotionReduced,
+	readMotionDuration,
+	readMotionEasing,
+	readMotionPreset,
+} from './motionTokens'
+export { MOTION_DURATIONS, MOTION_EASINGS, MOTION_PRESETS, REDUCED_MOTION_MODES } from './types/useMotion.types'
+export type {
+	MotionDurationName,
+	MotionEasingName,
+	MotionPreset,
+	MotionTarget,
+	ReducedMotionMode,
+	UseMotionReturn,
+} from './types/useMotion.types'

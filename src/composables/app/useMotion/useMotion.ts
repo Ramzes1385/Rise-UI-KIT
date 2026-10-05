@@ -1,67 +1,75 @@
-/** Composable: настройки движения для JS-анимаций — признак выключенного движения и длительности из токенов `--rise-duration*` */
+/** Composable: пресет движения, признак «движение выключено», длительности и кривые из токенов — для JS-анимаций */
 
-import type { MaybeRefOrGetter } from 'vue'
-import { computed, onMounted, ref, toValue } from 'vue'
 import { useReducedMotion } from '@composables/app/useReducedMotion'
-import type { MotionDuration, UseMotionReturn } from './types/useMotion.types'
+import { computed, onBeforeUnmount, onMounted, ref, toValue } from 'vue'
+import type { MotionTarget, UseMotionReturn } from './types/useMotion.types'
+import {
+	MOTION_ATTRIBUTE,
+	REDUCED_MOTION_ATTRIBUTE,
+	isMotionAlwaysReduced,
+	readMotionDuration,
+	readMotionEasing,
+	readMotionPreset,
+} from './motionTokens'
 
-const MOTION_ATTRIBUTE = 'data-rise-motion'
-const NO_MOTION_PRESET = 'none'
-const SECOND_MS = 1000
-const MIN_DURATION_MS = 1
+const attributeVersion = ref(0)
+let observer: MutationObserver | null = null
+let subscribers = 0
 
-const FALLBACK_DURATIONS: Record<MotionDuration, number> = {
-	fast: 150,
-	base: 200,
-	slow: 300,
-	xslow: 500,
+function subscribe(): void {
+	subscribers++
+	if (observer || typeof MutationObserver === 'undefined') return
+	observer = new MutationObserver(() => {
+		attributeVersion.value++
+	})
+	observer.observe(document.documentElement, {
+		attributes: true,
+		subtree: true,
+		attributeFilter: [MOTION_ATTRIBUTE, REDUCED_MOTION_ATTRIBUTE],
+	})
 }
 
-function tokenName(name: MotionDuration): string {
-	return name === 'base' ? '--rise-duration' : `--rise-duration-${name}`
-}
-
-function parseDuration(raw: string): number {
-	const value = raw.trim()
-	const amount = Number.parseFloat(value)
-	if (!Number.isFinite(amount)) return Number.NaN
-	return value.endsWith('ms') ? amount : amount * SECOND_MS
+function unsubscribe(): void {
+	subscribers--
+	if (subscribers > 0) return
+	observer?.disconnect()
+	observer = null
 }
 
 /**
- * Настройки движения для JS-анимаций: одни и те же токены управляют CSS и JS.
- * `isReduced` — системная настройка «уменьшить движение» или пресет `data-rise-motion="none"` у элемента или предка
- * (пресет читается при монтировании). `duration(name)` читает `--rise-duration*` из `getComputedStyle` элемента
- * (без элемента — корня документа), без токена — значение пресета `standard`; при выключенном движении — `0`.
+ * Пресет движения и токены для JS-анимаций. Пресет — у ближайшего предка элемента с `data-rise-motion`
+ * (без элемента — у `<html>`), меняется вместе с атрибутом. Длительности читаются из CSS того же элемента, поэтому
+ * пресет на области страницы действует и на JS. При `isReduced` длительность — `0`: анимацию нужно пропустить
+ * и сразу поставить конечное состояние. Вызывать в `setup`.
  *
  * @example
  * ```ts
- * const root = useTemplateRef<HTMLElement>('root')
+ * const root = ref<HTMLElement | null>(null)
  * const motion = useMotion(root)
- * const ms = motion.duration('xslow')
+ * element.animate(frames, { duration: motion.duration('slow'), easing: motion.easing('spring') })
  * ```
  */
-export function useMotion(target?: MaybeRefOrGetter<Element | null | undefined>): UseMotionReturn {
+export function useMotion(target?: MotionTarget): UseMotionReturn {
 	const isSystemReduced = useReducedMotion()
-	const isNonePreset = ref(false)
+	const element = (): Element | null => toValue(target) ?? null
 
-	function element(): Element {
-		return toValue(target) ?? document.documentElement
-	}
+	onMounted(subscribe)
+	onBeforeUnmount(unsubscribe)
 
-	onMounted(() => {
-		const preset = element().closest(`[${MOTION_ATTRIBUTE}]`)?.getAttribute(MOTION_ATTRIBUTE)
-		isNonePreset.value = preset === NO_MOTION_PRESET
+	const preset = computed(() => {
+		void attributeVersion.value
+		return readMotionPreset(element())
 	})
 
-	const isReduced = computed(() => isSystemReduced.value || isNonePreset.value)
+	const isReduced = computed(() => {
+		void attributeVersion.value
+		return isSystemReduced.value || isMotionAlwaysReduced() || preset.value === 'none'
+	})
 
-	function duration(name: MotionDuration = 'base'): number {
-		if (isReduced.value) return 0
-		const parsed = parseDuration(getComputedStyle(element()).getPropertyValue(tokenName(name)))
-		if (Number.isNaN(parsed)) return FALLBACK_DURATIONS[name]
-		return parsed < MIN_DURATION_MS ? 0 : parsed
+	return {
+		preset,
+		isReduced,
+		duration: (name = 'base') => (isReduced.value ? 0 : readMotionDuration(element(), name)),
+		easing: (name = 'base') => readMotionEasing(element(), name),
 	}
-
-	return { isReduced, duration }
 }

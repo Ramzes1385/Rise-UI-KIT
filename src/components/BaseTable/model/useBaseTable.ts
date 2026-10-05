@@ -14,7 +14,6 @@ import type { BaseTableEmits, TableColumn, TableProps } from '../types/BaseTable
 import { computed, getCurrentInstance, onBeforeUnmount, provide, ref, useSlots, watch } from 'vue'
 
 const PAGINATION_MAX_VISIBLE = 4
-const EXPAND_DURATION_MS = 300
 const INFINITE_SCROLL_THRESHOLD = 50
 const TABLE_ELEMENTS = [
 	'root',
@@ -42,7 +41,7 @@ const TABLE_ELEMENTS = [
 ]
 
 function useRowExpand() {
-	const expand = useExpandTransition({ duration: EXPAND_DURATION_MS })
+	const expand = useExpandTransition()
 	provide(TABLE_EXPAND_TRANSITION_KEY, {
 		onExpandBeforeEnter: expand.onBeforeEnter,
 		onExpandEnter: expand.onEnter,

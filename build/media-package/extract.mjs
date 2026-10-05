@@ -76,7 +76,7 @@ function copyKitScss(target) {
 	mkdirSync(dir, { recursive: true })
 	for (const name of KIT_SCSS) {
 		const lines = readFileSync(join(ROOT, 'src/styles', name), 'utf8').split('\n')
-		const body = lines.slice(lines.findIndex(line => !line.startsWith('//'))).filter(line => !line.startsWith("@use './tokens'"))
+		const body = lines.slice(lines.findIndex(line => !line.startsWith('//'))).filter(line => !/^@use '\.\/(tokens|motion)'/.test(line))
 		const header = `// Копия src/styles/${name} из Rise UI Kit без токенов: переменные --rise-* приходят из styles.css кита`
 		writeFileSync(join(dir, name), [header, ...body].join('\n'))
 	}

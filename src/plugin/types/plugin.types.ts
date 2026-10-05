@@ -4,6 +4,7 @@ import type { LinkComponent } from '../../composables/interaction/useLink/types/
 import type { UiKitDefaults } from '../../composables/base/useDefaults/types/useDefaults.types'
 import type { Theme, ThemePresetName } from '../../utils/theme/themeUtils/types/themeUtils.types'
 import type { TeleportTarget } from '../../composables/app/useTeleportTarget/types/useTeleportTarget.types'
+import type { MotionPreset, ReducedMotionMode } from '../../composables/app/useMotion/types/useMotion.types'
 
 export interface UiKitPluginOptions {
 	/** Префикс для глобальных имён компонентов. */
@@ -45,4 +46,15 @@ export interface UiKitPluginOptions {
 	themes?: Theme[]
 	/** CSP nonce для `<style>` тем, которые вставляет кит */
 	themeNonce?: string
+	/**
+	 * Пресет движения всей страницы: `none`, `subtle`, `standard` (сегодняшние значения), `expressive`. Ставит атрибут
+	 * `data-rise-motion` на `<html>`, если его там ещё нет; на любой области страницы пресет меняется тем же атрибутом.
+	 * Без опции — `standard`
+	 */
+	motion?: MotionPreset
+	/**
+	 * `user` (по умолчанию) — системная настройка «уменьшить движение» главнее пресета; `always` — движение выключено
+	 * всегда (киоски, тесты): атрибут `data-rise-reduced-motion="always"` на `<html>`. Отключить системную настройку нельзя
+	 */
+	reducedMotion?: ReducedMotionMode
 }
