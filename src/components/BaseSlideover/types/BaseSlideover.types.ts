@@ -1,4 +1,6 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PaddingProp } from '@composables/base/usePadding'
+import type { EnterAnimation } from '@composables/app/useMotion'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
@@ -11,6 +13,14 @@ export type SlideoverSide = 'left' | 'right'
 export const SLIDEOVER_VARIANTS = ['default', 'shadow', 'ghost'] as const
 
 export type SlideoverVariant = (typeof SLIDEOVER_VARIANTS)[number]
+
+/**
+ * Части панели для пропа `ui`: root — затемнение, panel — панель, header — шапка, title — заголовок,
+ * close — кнопка «Закрыть», body — содержимое, footer — подвал.
+ */
+export const SLIDEOVER_PARTS = ['root', 'panel', 'header', 'title', 'close', 'body', 'footer'] as const
+
+export type BaseSlideoverPart = (typeof SLIDEOVER_PARTS)[number]
 
 /** Из общих props действуют `variant` (оформление панели), `sizeScale` (отступы, кегль, ширина панели) и `color` (фон и текст панели). */
 export interface BaseSlideoverProps extends BaseComponentProps<
@@ -56,6 +66,20 @@ export interface BaseSlideoverProps extends BaseComponentProps<
 	 * для точечного управления. По умолчанию — из стилей: 16px по вертикали и 20px по горизонтали.
 	 */
 	padding?: PaddingProp
+	/**
+	 * Появление и уход панели: `slide` (по умолчанию) — въезд со своего края на всю ширину панели, `fade` — только
+	 * прозрачность, `scale` — масштаб от своего края, `pop` — масштаб с пружиной, `none` — сразу. Длительности — токены
+	 * движения и пресет `data-rise-motion`; при «уменьшить движение» — сразу. Глобально — `defaults.BaseSlideover.animation`
+	 * или `defaults.global.animation`
+	 */
+	animation?: EnterAnimation
+	/**
+	 * Классы частей панели: добавляются к БЭМ-классам кита, глобальные — `defaults.BaseSlideover.ui`.
+	 *
+	 * @example
+	 * <BaseSlideover :ui="{ panel: 'rounded-none', footer: 'justify-between' }" />
+	 */
+	ui?: UiProp<BaseSlideoverPart>
 }
 
 export interface BaseSlideoverEmits {

@@ -7,8 +7,9 @@ export {
 	readMotionEasing,
 	readMotionPreset,
 } from './motionTokens'
-export { MOTION_DURATIONS, MOTION_EASINGS, MOTION_PRESETS, REDUCED_MOTION_MODES } from './types/useMotion.types'
+export { ENTER_ANIMATIONS, MOTION_DURATIONS, MOTION_EASINGS, MOTION_PRESETS, REDUCED_MOTION_MODES } from './types/useMotion.types'
 export type {
+	EnterAnimation,
 	MotionDurationName,
 	MotionEasingName,
 	MotionPreset,

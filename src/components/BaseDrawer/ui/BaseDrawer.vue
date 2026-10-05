@@ -3,18 +3,19 @@
 		<transition name="base-drawer">
 			<div
 				v-if="isOpen"
-				class="base-drawer"
 				:class="[
+					ui('root'),
+					animationClass,
 					`base-drawer--${direction}`,
 					{ 'base-drawer--no-overlay': !hasOverlay, 'base-drawer--dragging': isDragging },
 					classes.root,
 				]"
 				:style="[sizeScaleStyle, customColorStyle, layerStyle]"
+				v-bind="themeAttrs"
 				@click.self="handleOverlayClick">
 				<div
 					ref="panelRef"
-					class="base-drawer__panel"
-					:class="[`base-drawer__panel--${direction}`, classes.panel]"
+					:class="[ui('panel'), `base-drawer__panel--${direction}`, classes.panel]"
 					:style="dragStyle"
 					role="dialog"
 					aria-modal="true"
@@ -25,27 +26,27 @@
 					@pointermove="handlePointermove"
 					@pointerup="handlePointerup"
 					@pointercancel="resetDrag">
-					<div v-if="hasHandle" class="base-drawer__handle" :class="classes.handle" aria-hidden="true" />
-					<div v-if="hasHeader" class="base-drawer__header" :class="classes.header">
+					<div v-if="hasHandle" :class="[ui('handle'), classes.handle]" aria-hidden="true" />
+					<div v-if="hasHeader" :class="[ui('header'), classes.header]">
 						<slot name="header">
 							<BaseText
 								:id="titleId"
 								tag="h2"
 								:weight="TEXT_WEIGHT.SEMIBOLD"
-								class="base-drawer__title"
+								:class="ui('title')"
 								:custom-class="classes.title">
 								{{ title }}
 							</BaseText>
 						</slot>
-						<BaseButton variant="ghost" class="base-drawer__close" :aria-label="UI_ARIA.CLOSE" @click="handleClose">
+						<BaseButton variant="ghost" :class="ui('close')" :aria-label="UI_ARIA.CLOSE" @click="handleClose">
 							<BaseIcon name="close" />
 						</BaseButton>
 					</div>
-					<p v-if="description" :id="descriptionId" class="base-drawer__description">{{ description }}</p>
-					<div ref="bodyRef" class="base-drawer__body" :class="classes.body" :tabindex="isBodyScrollable ? 0 : undefined">
+					<p v-if="description" :id="descriptionId" :class="ui('description')">{{ description }}</p>
+					<div ref="bodyRef" :class="[ui('body'), classes.body]" :tabindex="isBodyScrollable ? 0 : undefined">
 						<slot />
 					</div>
-					<footer v-if="slots.footer" class="base-drawer__footer" :class="classes.footer">
+					<footer v-if="slots.footer" :class="[ui('footer'), classes.footer]">
 						<slot name="footer" />
 					</footer>
 				</div>
@@ -77,6 +78,7 @@ const props = withDefaults(
 		closeOnEscape: true,
 		hasOverlay: true,
 		sizeScale: SIZE_SCALE_DEFAULT,
+		animation: 'slide',
 	}),
 )
 const emit = defineEmits<BaseDrawerEmits>()
@@ -104,5 +106,8 @@ const {
 	handlePointerdown,
 	handlePointermove,
 	handlePointerup,
+	ui,
+	animationClass,
+	themeAttrs,
 } = useBaseDrawer(props, emit)
 </script>

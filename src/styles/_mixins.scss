@@ -328,6 +328,95 @@
 	@include enter-transform($name, translate#{$axis }(calc(#{$distance} * #{$sign})), translate#{$axis }(calc(#{$distance} * #{-$sign})));
 }
 
+// Проп `animation` оверлея (fade | scale | slide | pop | none): появление и уход `<Transition name="$name">`.
+// $host — элемент с классами перехода и модификатором `<host>--animation-<имя>`; $panel — что двигается внутри
+// (окно над затемнением) или null — двигается сам $host. Движение — свойствами `scale` и `translate`, не `transform`:
+// позиционирование панели через transform не ломается. Сторона slide — `--overlay-slide` (по умолчанию снизу
+// на `--rise-motion-distance`), точка масштаба — `transform-origin` панели (от якоря).
+@mixin overlay-animation($name, $host, $panel: null, $duration: var(--rise-duration), $leave: var(--rise-duration-fast)) {
+	#{$host} {
+		--overlay-scale: 1;
+		--overlay-translate: 0 0;
+		--overlay-ease: var(--rise-ease-out);
+
+		&--animation-scale,
+		&--animation-pop {
+			--overlay-scale: var(--rise-motion-scale-from);
+		}
+
+		&--animation-pop {
+			--overlay-ease: var(--rise-ease-spring);
+		}
+
+		&--animation-slide {
+			--overlay-translate: var(--overlay-slide, 0 var(--rise-motion-distance));
+		}
+	}
+
+	.#{$name}-enter-active {
+		@if $panel {
+			transition: opacity $duration var(--rise-ease-out);
+
+			#{$panel} {
+				transition:
+					opacity $duration var(--rise-ease-out),
+					scale $duration var(--overlay-ease),
+					translate $duration var(--overlay-ease);
+			}
+		} @else {
+			transition:
+				opacity $duration var(--rise-ease-out),
+				scale $duration var(--overlay-ease),
+				translate $duration var(--overlay-ease);
+		}
+	}
+
+	.#{$name}-leave-active {
+		@if $panel {
+			transition: opacity $leave var(--rise-ease-in);
+
+			#{$panel} {
+				transition:
+					opacity $leave var(--rise-ease-in),
+					scale $leave var(--rise-ease-in),
+					translate $leave var(--rise-ease-in);
+			}
+		} @else {
+			transition:
+				opacity $leave var(--rise-ease-in),
+				scale $leave var(--rise-ease-in),
+				translate $leave var(--rise-ease-in);
+		}
+	}
+
+	.#{$name}-enter-from,
+	.#{$name}-leave-to {
+		opacity: 0;
+
+		@if $panel {
+			#{$panel} {
+				opacity: 0;
+				scale: var(--overlay-scale);
+				translate: var(--overlay-translate);
+			}
+		} @else {
+			scale: var(--overlay-scale);
+			translate: var(--overlay-translate);
+		}
+	}
+
+	#{$host}--animation-none.#{$name}-enter-active,
+	#{$host}--animation-none.#{$name}-leave-active {
+		transition: none;
+
+		@if $panel {
+			#{$panel} {
+				transition: none;
+			}
+		}
+	}
+}
+
 // Скользящий индикатор для `useSlidingIndicator`: позиция — transform, размер — ширина и высота абсолютного элемента
 // (раскладку соседей не трогает, как у индикатора вкладок MUI). Первый замер — без перехода (`$instant-selector`).
 @mixin sliding-indicator($instant-selector: '&--instant') {

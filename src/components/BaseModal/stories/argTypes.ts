@@ -1,6 +1,7 @@
 import type BaseModal from '../ui/BaseModal.vue'
 import type { Meta } from '@storybook/vue3-vite'
 import { MODAL_VARIANTS } from '../types/BaseModal.types'
+import { ENTER_ANIMATIONS } from '@composables/app/useMotion'
 import { baseArgTypes, propGroup, ARG_GROUP, slotArgType } from '@/stories/helpers'
 
 export const argTypes = {
@@ -12,6 +13,8 @@ export const argTypes = {
 	closeOnOverlay: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	closeOnEscape: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	isContained: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+	animation: { control: 'inline-radio', options: ENTER_ANIMATIONS, table: propGroup(ARG_GROUP.appearance) },
+	ui: { control: false },
 	default: slotArgType('Текст в теле окна'),
 	footer: { control: false },
 } satisfies Meta<typeof BaseModal>['argTypes']

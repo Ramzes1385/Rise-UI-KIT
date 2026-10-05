@@ -1,7 +1,7 @@
 .base-command-palette {
 	&__content {
 		align-self: flex-start;
-		max-width: sz(640px);
+		max-width: sz(ct(command-palette-content, width, 640px));
 		margin-top: 12vh;
 		overflow: hidden;
 	}
@@ -16,7 +16,7 @@
 		display: flex;
 		align-items: center;
 		gap: sz(10px);
-		padding: 0 sz(16px);
+		padding: space(0 16px);
 		border-bottom: 1px solid var(--rise-border);
 		color: var(--rise-text-muted);
 
@@ -30,7 +30,7 @@
 	&__input {
 		flex: 1 1 auto;
 		min-width: 0;
-		height: sz(52px);
+		height: sz(ct(command-palette-input, height, 52px));
 		margin: 0;
 		padding: 0;
 		border: 0;
@@ -38,7 +38,8 @@
 		background: transparent;
 		color: var(--rise-text-highlighted);
 		font: inherit;
-		@include text-size(md);
+		font-size: sz(ct(command-palette-input, font-size, var(--rise-font-size-md)));
+		line-height: sz(var(--rise-line-height-md));
 
 		&::placeholder {
 			color: var(--rise-text-muted);
@@ -50,7 +51,7 @@
 		flex-direction: column;
 		gap: sz(4px);
 		max-height: sz(360px);
-		padding: sz(8px);
+		padding: space(8px);
 		overflow-y: auto;
 		@include scrollbar-thin;
 
@@ -66,8 +67,9 @@
 
 	&__group-title {
 		padding: sz(6px) sz(8px) sz(4px);
-		color: var(--rise-text-muted);
-		@include text-size(xs);
+		color: ct(command-palette-group-title, text, var(--rise-text-muted));
+		font-size: sz(ct(command-palette-group-title, font-size, var(--rise-font-size-xs)));
+		line-height: sz(var(--rise-line-height-xs));
 		font-weight: var(--rise-font-weight-medium);
 	}
 
@@ -76,16 +78,17 @@
 		align-items: center;
 		gap: sz(10px);
 		min-height: sz(40px);
-		padding: sz(6px) sz(8px);
-		border-radius: sz(var(--rise-radius-md));
+		padding: sz(ct(command-palette-option, padding-y, 6px) ct(command-palette-option, padding-x, 8px));
+		border-radius: sz(ct(command-palette-option, radius, var(--rise-radius-md)));
 		color: var(--rise-text);
 		cursor: pointer;
 		@include text-size(sm);
+		@include transition-colors;
 	}
 
 	&__option--active {
-		background-color: var(--rise-bg-elevated);
-		color: var(--rise-text-highlighted);
+		background-color: ct(command-palette-option, bg-selected, var(--rise-bg-elevated));
+		color: ct(command-palette-option, text-selected, var(--rise-text-highlighted));
 	}
 
 	&__option--disabled {
@@ -125,7 +128,7 @@
 
 	&__empty {
 		margin: 0;
-		padding: sz(24px) sz(16px);
+		padding: space(24px 16px);
 		color: var(--rise-text-muted);
 		text-align: center;
 	}
@@ -134,10 +137,11 @@
 		display: flex;
 		flex-wrap: wrap;
 		gap: sz(16px);
-		padding: sz(8px) sz(16px);
+		padding: space(8px 16px);
 		border-top: 1px solid var(--rise-border);
 		color: var(--rise-text-muted);
-		@include text-size(xs);
+		font-size: sz(ct(command-palette-footer, font-size, var(--rise-font-size-xs)));
+		line-height: sz(var(--rise-line-height-xs));
 
 		span {
 			display: inline-flex;

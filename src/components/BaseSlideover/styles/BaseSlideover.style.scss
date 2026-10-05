@@ -2,7 +2,15 @@
 	position: fixed;
 	inset: 0;
 	z-index: calc(var(--rise-z-overlay) + var(--rise-layer-index, 0));
-	background-color: var(--rise-overlay);
+	background-color: ct(slideover, bg, var(--rise-overlay));
+
+	&--right {
+		--overlay-slide: 100% 0;
+	}
+
+	&--left {
+		--overlay-slide: -100% 0;
+	}
 
 	&--contained {
 		position: absolute;
@@ -18,10 +26,10 @@
 	}
 
 	&__panel {
-		--slideover-pad-top: 16px;
-		--slideover-pad-right: 20px;
-		--slideover-pad-bottom: 16px;
-		--slideover-pad-left: 20px;
+		--slideover-pad-top: #{ct(slideover-panel, padding-y, 16px)};
+		--slideover-pad-right: #{ct(slideover-panel, padding-x, 20px)};
+		--slideover-pad-bottom: #{ct(slideover-panel, padding-y, 16px)};
+		--slideover-pad-left: #{ct(slideover-panel, padding-x, 20px)};
 
 		position: absolute;
 		top: 0;
@@ -29,24 +37,26 @@
 		display: flex;
 		flex-direction: column;
 		box-sizing: border-box;
-		width: calc(#{sz(420px)} * var(--slideover-width-scale, 1));
+		width: calc(#{sz(ct(slideover-panel, width, 420px))} * var(--slideover-width-scale, 1));
 		max-width: 100%;
 		overflow: hidden;
-		border: 1px solid var(--rise-border);
-		@include custom-bg(background-color, var(--rise-bg));
-		@include custom-text(color, var(--rise-text));
+		border: 1px solid ct(slideover-panel, border, var(--rise-border));
+		@include custom-bg(background-color, ct(slideover-panel, bg, var(--rise-bg)));
+		@include custom-text(color, ct(slideover-panel, text, var(--rise-text)));
 		@include text-size(sm);
-		box-shadow: var(--rise-shadow-xl);
+		box-shadow: ct(slideover-panel, shadow, var(--rise-shadow-xl));
 		outline: none;
 
 		&--right {
 			right: 0;
-			border-radius: sz(var(--rise-radius-lg)) 0 0 sz(var(--rise-radius-lg));
+			border-radius: sz(ct(slideover-panel, radius, var(--rise-radius-lg))) 0 0 sz(ct(slideover-panel, radius, var(--rise-radius-lg)));
+			transform-origin: right center;
 		}
 
 		&--left {
 			left: 0;
-			border-radius: 0 sz(var(--rise-radius-lg)) sz(var(--rise-radius-lg)) 0;
+			border-radius: 0 sz(ct(slideover-panel, radius, var(--rise-radius-lg))) sz(ct(slideover-panel, radius, var(--rise-radius-lg))) 0;
+			transform-origin: left center;
 		}
 
 		&--full {
@@ -64,7 +74,7 @@
 		flex: none;
 		align-items: center;
 		gap: sz(12px);
-		padding: sz(var(--slideover-pad-top)) sz(var(--slideover-pad-right)) sz(var(--slideover-pad-bottom)) sz(var(--slideover-pad-left));
+		padding: space(var(--slideover-pad-top) var(--slideover-pad-right) var(--slideover-pad-bottom) var(--slideover-pad-left));
 		border-bottom: 1px solid var(--rise-border);
 	}
 
@@ -72,7 +82,8 @@
 		flex: 1;
 		min-width: 0;
 		margin: 0;
-		@include text-size(base);
+		font-size: sz(ct(slideover-title, font-size, var(--rise-font-size-base)));
+		line-height: sz(var(--rise-line-height-base));
 		@include custom-text(color, var(--rise-text-highlighted));
 		overflow-wrap: anywhere;
 	}
@@ -90,7 +101,7 @@
 	&__body {
 		flex: 1 1 auto;
 		min-height: 0;
-		padding: sz(var(--slideover-pad-top)) sz(var(--slideover-pad-right)) sz(var(--slideover-pad-bottom)) sz(var(--slideover-pad-left));
+		padding: space(var(--slideover-pad-top) var(--slideover-pad-right) var(--slideover-pad-bottom) var(--slideover-pad-left));
 		overflow-y: auto;
 		@include scrollbar-thin;
 		@include focus-ring(-2px);
@@ -104,7 +115,7 @@
 		align-items: center;
 		justify-content: flex-end;
 		gap: sz(8px);
-		padding: sz(var(--slideover-pad-top)) sz(var(--slideover-pad-right)) sz(var(--slideover-pad-bottom)) sz(var(--slideover-pad-left));
+		padding: space(var(--slideover-pad-top) var(--slideover-pad-right) var(--slideover-pad-bottom) var(--slideover-pad-left));
 		border-top: 1px solid var(--rise-border);
 		@include reset-custom-color;
 	}
@@ -125,24 +136,4 @@
 	}
 }
 
-.base-slideover-enter-active,
-.base-slideover-leave-active {
-	@include transition(opacity);
-
-	.base-slideover__panel {
-		@include transition(transform);
-	}
-}
-
-.base-slideover-enter-from,
-.base-slideover-leave-to {
-	opacity: 0;
-
-	.base-slideover__panel--right {
-		transform: translateX(100%);
-	}
-
-	.base-slideover__panel--left {
-		transform: translateX(-100%);
-	}
-}
+@include overlay-animation(base-slideover, '.base-slideover', '.base-slideover__panel');

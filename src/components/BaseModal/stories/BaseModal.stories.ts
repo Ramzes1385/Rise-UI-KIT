@@ -30,3 +30,5 @@ export const WithList = cases.WithList
 export const FromPopover = cases.FromPopover
 export const Keyboard = cases.Keyboard
 export const Blocking = cases.Blocking
+export const Theming = cases.Theming
+export const Animations = cases.Animations

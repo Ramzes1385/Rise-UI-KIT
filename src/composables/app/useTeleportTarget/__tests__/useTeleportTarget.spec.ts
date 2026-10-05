@@ -1,6 +1,13 @@
 import { mount } from '@vue/test-utils'
-import { defineComponent, h, nextTick, ref } from 'vue'
-import { readThemeAttrs, TELEPORT_TARGET_KEY, useInheritedTheme, useInheritedThemeAttrs, useTeleportTarget } from '../useTeleportTarget'
+import { defineComponent, effectScope, h, nextTick, ref, Teleport } from 'vue'
+import {
+	readThemeAttrs,
+	TELEPORT_TARGET_KEY,
+	useInheritedTheme,
+	useInheritedThemeAttrs,
+	useOwnThemeAttrs,
+	useTeleportTarget,
+} from '../useTeleportTarget'
 
 describe('useTeleportTarget', () => {
 	it('body по умолчанию, вне компонента и без настройки', () => {
@@ -92,6 +99,15 @@ describe('readThemeAttrs', () => {
 		expect(readThemeAttrs(anchor)).toEqual({ 'data-theme': 'light', 'data-rise-theme': 'playful' })
 	})
 
+	it('пресет движения data-rise-motion ищется так же независимо', () => {
+		const area = document.createElement('div')
+		area.setAttribute('data-rise-motion', 'subtle')
+		const anchor = document.createElement('button')
+		area.append(anchor)
+
+		expect(readThemeAttrs(anchor)).toEqual({ 'data-rise-motion': 'subtle' })
+	})
+
 	it('без атрибутов у предков и без якоря — пустой объект', () => {
 		expect(readThemeAttrs(document.createElement('button'))).toEqual({})
 		expect(readThemeAttrs(null)).toEqual({})
@@ -141,5 +157,40 @@ describe('useInheritedThemeAttrs', () => {
 		isOpen.value = false
 		await nextTick()
 		expect(attrs.value).toEqual({ 'data-rise-theme': 'minimal' })
+	})
+})
+
+describe('useOwnThemeAttrs', () => {
+	it('якорь — родитель места компонента в разметке (метки телепорта)', async () => {
+		const area = document.createElement('div')
+		area.setAttribute('data-rise-motion', 'expressive')
+		area.setAttribute('data-theme', 'dark')
+		document.body.append(area)
+		const isOpen = ref(false)
+		let attrs!: ReturnType<typeof useOwnThemeAttrs>
+		const Comp = defineComponent({
+			setup: () => {
+				attrs = useOwnThemeAttrs(() => isOpen.value)
+				return () => h(Teleport, { to: 'body' }, [h('div', { class: 'panel' })])
+			},
+		})
+		const wrapper = mount(Comp, { attachTo: area })
+		expect(attrs.value).toEqual({})
+
+		isOpen.value = true
+		await nextTick()
+		expect(attrs.value).toEqual({ 'data-theme': 'dark', 'data-rise-motion': 'expressive' })
+		wrapper.unmount()
+		area.remove()
+	})
+
+	it('вне компонента (без экземпляра) — пустой объект', () => {
+		let attrs!: ReturnType<typeof useOwnThemeAttrs>
+		const scope = effectScope()
+		scope.run(() => {
+			attrs = useOwnThemeAttrs(() => true)
+		})
+		expect(attrs.value).toEqual({})
+		scope.stop()
 	})
 })

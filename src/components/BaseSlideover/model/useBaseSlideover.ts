@@ -1,13 +1,14 @@
 import type { ComputedRef, Ref } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import { computed, ref, useId, useSlots } from 'vue'
 import { usePopup } from '@composables/overlay/usePopup'
 import { usePadding } from '@composables/base/usePadding'
 import { useLayerIndex } from '@composables/app/useLayerStack'
 import { useFocusTrap } from '@composables/overlay/useFocusTrap'
-import { useTeleportTarget } from '@composables/app/useTeleportTarget'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { useScrollableRegion } from '@composables/interaction/useScrollableRegion'
 import type { BaseSlideoverEmits, SlideoverProps } from '../types/BaseSlideover.types'
+import { useOwnThemeAttrs, useTeleportTarget } from '@composables/app/useTeleportTarget'
 
 const SLIDEOVER_ELEMENTS = ['root', 'panel', 'header', 'title', 'body', 'footer']
 
@@ -80,6 +81,9 @@ export function useBaseSlideover(props: SlideoverProps, emit: BaseSlideoverEmits
 		...layout,
 		...useSlideoverSections(props),
 		layerStyle: useLayerIndex(() => props.isOpen),
+		ui: useUi(props, 'base-slideover'),
+		animationClass: computed(() => `base-slideover--animation-${props.animation ?? 'slide'}`),
+		themeAttrs: useOwnThemeAttrs(() => props.isOpen),
 		...useSlideoverClose(props, emit, dialog),
 		...dialog,
 	}

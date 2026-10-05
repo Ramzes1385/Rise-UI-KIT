@@ -28,3 +28,5 @@ export const Contained = cases.Contained
 export const Padding = cases.Padding
 export const Keyboard = cases.Keyboard
 export const NonModal = cases.NonModal
+export const Theming = cases.Theming
+export const Animations = cases.Animations

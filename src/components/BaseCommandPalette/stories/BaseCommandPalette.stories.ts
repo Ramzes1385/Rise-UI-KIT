@@ -20,3 +20,5 @@ export const Open = cases.Open
 export const Empty = cases.Empty
 export const Variants = cases.Variants
 export const HotkeyScope = cases.HotkeyScope
+export const Theming = cases.Theming
+export const Animations = cases.Animations

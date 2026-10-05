@@ -3,8 +3,9 @@
 		<transition name="base-modal" @after-leave="emit('after-leave')">
 			<div
 				v-if="isOpen"
-				class="base-modal"
 				:class="[
+					ui('root'),
+					animationClass,
 					variantClass,
 					fullScreenClass,
 					isContained && 'base-modal--contained',
@@ -12,24 +13,24 @@
 					classes.root,
 				]"
 				:style="[sizeScaleStyle, variantStyle, customColorStyle, layerStyle]"
+				v-bind="themeAttrs"
 				@click.self="handleOverlayClick">
 				<div
 					ref="contentRef"
-					class="base-modal__content"
-					:class="classes.content"
+					:class="[ui('content'), classes.content]"
 					:role="dialogRole"
 					:aria-modal="isModal ? 'true' : undefined"
 					:aria-labelledby="title ? titleId : undefined"
 					:aria-label="title ? undefined : ariaLabel"
 					:aria-describedby="ariaDescribedby">
-					<div v-if="title" class="base-modal__header" :class="classes.header">
-						<div class="base-modal__header-left" :class="classes.headerLeft">
+					<div v-if="title" :class="[ui('header'), classes.header]">
+						<div :class="[ui('header-left'), classes.headerLeft]">
 							<BaseText
 								:id="titleId"
 								tag="h3"
 								:size-scale="sizeScale"
 								:weight="TEXT_WEIGHT.SEMIBOLD"
-								class="base-modal__title"
+								:class="ui('title')"
 								:custom-class="classes.title"
 								>{{ title }}</BaseText
 							>
@@ -37,7 +38,7 @@
 						<BaseButton
 							variant="ghost"
 							:size-scale="sizeScale"
-							class="base-modal__close"
+							:class="ui('close')"
 							:custom-class="classes.close"
 							:aria-label="UI_ARIA.CLOSE"
 							@click="handleClose">
@@ -45,11 +46,11 @@
 						</BaseButton>
 					</div>
 
-					<div ref="bodyRef" class="base-modal__body" :class="classes.body" :tabindex="isBodyScrollable ? 0 : undefined">
+					<div ref="bodyRef" :class="[ui('body'), classes.body]" :tabindex="isBodyScrollable ? 0 : undefined">
 						<slot />
 					</div>
 
-					<footer v-if="hasFooter" class="base-modal__footer" :class="classes.footer">
+					<footer v-if="hasFooter" :class="[ui('footer'), classes.footer]">
 						<slot name="footer" />
 					</footer>
 				</div>
@@ -80,6 +81,7 @@ const props = withDefaults(
 		isContained: false,
 		hasOverlay: true,
 		dialogRole: 'dialog',
+		animation: 'scale',
 	}),
 )
 const emit = defineEmits<BaseModalEmits>()
@@ -102,5 +104,8 @@ const {
 	titleId,
 	isBodyScrollable,
 	isModal,
+	ui,
+	animationClass,
+	themeAttrs,
 } = useBaseModal(props, emit)
 </script>

@@ -2,7 +2,23 @@
 	position: fixed;
 	inset: 0;
 	z-index: calc(var(--rise-z-overlay) + var(--rise-layer-index, 0));
-	background-color: var(--rise-overlay);
+	background-color: ct(drawer, bg, var(--rise-overlay));
+
+	&--bottom {
+		--overlay-slide: 0 100%;
+	}
+
+	&--top {
+		--overlay-slide: 0 -100%;
+	}
+
+	&--left {
+		--overlay-slide: -100% 0;
+	}
+
+	&--right {
+		--overlay-slide: 100% 0;
+	}
 
 	&--no-overlay {
 		background-color: transparent;
@@ -18,13 +34,13 @@
 		flex-direction: column;
 		box-sizing: border-box;
 		overflow: hidden;
-		border: 1px solid var(--rise-border);
-		@include custom-bg(background-color, var(--rise-bg));
-		@include custom-text(color, var(--rise-text));
+		border: 1px solid ct(drawer-panel, border, var(--rise-border));
+		@include custom-bg(background-color, ct(drawer-panel, bg, var(--rise-bg)));
+		@include custom-text(color, ct(drawer-panel, text, var(--rise-text)));
 		@include text-size(sm);
-		box-shadow: var(--rise-shadow-xl);
+		box-shadow: ct(drawer-panel, shadow, var(--rise-shadow-xl));
 		outline: none;
-		@include transition(transform);
+		@include transition(translate);
 
 		&--bottom,
 		&--top {
@@ -36,33 +52,37 @@
 		&--bottom {
 			bottom: 0;
 			border-bottom: none;
-			border-radius: sz(16px) sz(16px) 0 0;
+			border-radius: sz(ct(drawer-panel, radius, var(--rise-radius-2xl))) sz(ct(drawer-panel, radius, var(--rise-radius-2xl))) 0 0;
+			transform-origin: bottom center;
 		}
 
 		&--top {
 			top: 0;
 			border-top: none;
-			border-radius: 0 0 sz(16px) sz(16px);
+			border-radius: 0 0 sz(ct(drawer-panel, radius, var(--rise-radius-2xl))) sz(ct(drawer-panel, radius, var(--rise-radius-2xl)));
+			transform-origin: top center;
 		}
 
 		&--left,
 		&--right {
 			top: 0;
 			bottom: 0;
-			width: sz(360px);
+			width: sz(ct(drawer-panel, width, 360px));
 			max-width: 90vw;
 		}
 
 		&--left {
 			left: 0;
 			border-left: none;
-			border-radius: 0 sz(16px) sz(16px) 0;
+			border-radius: 0 sz(ct(drawer-panel, radius, var(--rise-radius-2xl))) sz(ct(drawer-panel, radius, var(--rise-radius-2xl))) 0;
+			transform-origin: left center;
 		}
 
 		&--right {
 			right: 0;
 			border-right: none;
-			border-radius: sz(16px) 0 0 sz(16px);
+			border-radius: sz(ct(drawer-panel, radius, var(--rise-radius-2xl))) 0 0 sz(ct(drawer-panel, radius, var(--rise-radius-2xl)));
+			transform-origin: right center;
 		}
 	}
 
@@ -72,8 +92,8 @@
 		width: sz(36px);
 		height: sz(4px);
 		margin: sz(8px) auto 0;
-		border-radius: 999px;
-		background-color: var(--rise-border-accented);
+		border-radius: var(--rise-radius-full);
+		background-color: ct(drawer-handle, bg, var(--rise-border-accented));
 		cursor: grab;
 		touch-action: none;
 	}
@@ -106,25 +126,26 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: sz(12px);
-		padding: sz(12px) sz(20px) sz(8px);
+		padding: space(12px ct(drawer-panel, padding-x, 20px) 8px);
 		touch-action: none;
 	}
 
 	&__title {
 		margin: 0;
-		@include text-size(md);
+		font-size: sz(ct(drawer-title, font-size, var(--rise-font-size-md)));
+		line-height: sz(var(--rise-line-height-md));
 	}
 
 	&__description {
 		margin: 0;
-		padding: 0 sz(20px) sz(8px);
-		color: var(--rise-text-muted);
+		padding: space(0 ct(drawer-panel, padding-x, 20px) 8px);
+		color: ct(drawer-description, text, var(--rise-text-muted));
 	}
 
 	&__body {
 		flex: 1 1 auto;
 		min-height: 0;
-		padding: sz(8px) sz(20px) sz(16px);
+		padding: space(8px ct(drawer-panel, padding-x, 20px) 16px);
 		overflow-y: auto;
 		@include scrollbar-thin;
 		@include focus-ring(-2px);
@@ -134,33 +155,9 @@
 		display: flex;
 		justify-content: flex-end;
 		gap: sz(8px);
-		padding: sz(12px) sz(20px) sz(16px);
+		padding: space(12px ct(drawer-panel, padding-x, 20px) 16px);
 		border-top: 1px solid var(--rise-border);
 	}
 }
 
-.base-drawer-enter-active,
-.base-drawer-leave-active {
-	@include transition(opacity);
-}
-
-.base-drawer-enter-from,
-.base-drawer-leave-to {
-	opacity: 0;
-
-	.base-drawer__panel--bottom {
-		transform: translateY(100%);
-	}
-
-	.base-drawer__panel--top {
-		transform: translateY(-100%);
-	}
-
-	.base-drawer__panel--left {
-		transform: translateX(-100%);
-	}
-
-	.base-drawer__panel--right {
-		transform: translateX(100%);
-	}
-}
+@include overlay-animation(base-drawer, '.base-drawer', '.base-drawer__panel');

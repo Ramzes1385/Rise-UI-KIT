@@ -1,3 +1,5 @@
+import type { UiProp } from '@composables/base/useUi'
+import type { EnterAnimation } from '@composables/app/useMotion'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import type { ModalVariant } from '@components/BaseModal/types/BaseModal.types'
 
@@ -9,6 +11,33 @@ export const COMMAND_PALETTE_VARIANTS = ['default', 'ghost', 'shadow'] as const 
  * внутри блока, в котором стоит палитра (несколько палитр на одной странице, примеры в документации)
  */
 export const COMMAND_PALETTE_HOTKEY_SCOPES = ['global', 'container'] as const
+
+/**
+ * Части палитры для пропа `ui` (`root` — затемнение окна): content — окно, body — тело окна, search — строка поиска,
+ * input — поле, list — список, group — группа, group-title — заголовок группы, option — команда, icon — значок команды,
+ * text — название и пояснение, label — название, description — пояснение, shortcut — сочетание клавиш,
+ * empty — «Ничего не найдено», footer — подсказка с клавишами.
+ */
+export const COMMAND_PALETTE_PARTS = [
+	'root',
+	'content',
+	'body',
+	'search',
+	'input',
+	'list',
+	'group',
+	'group-title',
+	'option',
+	'icon',
+	'text',
+	'label',
+	'description',
+	'shortcut',
+	'empty',
+	'footer',
+] as const
+
+export type BaseCommandPalettePart = (typeof COMMAND_PALETTE_PARTS)[number]
 
 /** Где работает сочетание клавиш палитры */
 export type CommandPaletteHotkeyScope = (typeof COMMAND_PALETTE_HOTKEY_SCOPES)[number]
@@ -63,6 +92,24 @@ export interface BaseCommandPaletteProps extends BaseComponentProps<ModalVariant
 	placeholder?: string
 	/** Имя окна для скринридера; по умолчанию «Палитра команд» */
 	ariaLabel?: string
+	/**
+	 * Палитра внутри ближайшего позиционированного контейнера, без телепорта (демо, документация, встроенная панель).
+	 * Такое окно немодальное: без aria-modal, ловушки фокуса и блокировки прокрутки страницы
+	 */
+	isContained?: boolean
+	/**
+	 * Появление и уход окна (проп `animation` BaseModal): `scale` (по умолчанию) — масштаб от центра, `fade` —
+	 * прозрачность, `slide` — снизу, `pop` — масштаб с пружиной, `none` — сразу. При «уменьшить движение» — сразу.
+	 * Глобально — `defaults.BaseCommandPalette.animation`
+	 */
+	animation?: EnterAnimation
+	/**
+	 * Классы частей палитры: добавляются к БЭМ-классам кита, глобальные — `defaults.BaseCommandPalette.ui`.
+	 *
+	 * @example
+	 * <BaseCommandPalette :commands="commands" :ui="{ content: 'rounded-3xl', option: 'gap-4' }" />
+	 */
+	ui?: UiProp<BaseCommandPalettePart>
 }
 
 /**

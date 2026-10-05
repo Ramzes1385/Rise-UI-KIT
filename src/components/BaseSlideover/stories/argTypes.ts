@@ -1,5 +1,6 @@
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseSlideover from '../ui/BaseSlideover.vue'
+import { ENTER_ANIMATIONS } from '@composables/app/useMotion'
 import { SLIDEOVER_VARIANTS } from '../types/BaseSlideover.types'
 import { baseArgTypes, propGroup, ARG_GROUP } from '@/stories/helpers'
 
@@ -16,6 +17,8 @@ export const argTypes = {
 	closeOnEscape: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	isContained: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	container: { control: false, table: propGroup(ARG_GROUP.behavior) },
+	animation: { control: 'inline-radio', options: ENTER_ANIMATIONS, table: propGroup(ARG_GROUP.appearance) },
+	ui: { control: false },
 	default: { control: false },
 	header: { control: false },
 	footer: { control: false },

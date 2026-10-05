@@ -7,14 +7,17 @@
 		:variant="variant"
 		:size-scale="sizeScale"
 		:color="color"
-		:custom-class="{ root: classes.root, content: 'base-confirm' }"
+		:animation="animation"
+		:ui="{ content: ui('root') }"
+		:custom-class="{ root: classes.root }"
 		@close="finish(false)"
 		@after-leave="emit('after-leave')">
-		<p v-if="description" :id="descriptionId" class="base-confirm__description" :class="classes.description">{{ description }}</p>
+		<p v-if="description" :id="descriptionId" :class="[ui('description'), classes.description]">{{ description }}</p>
 		<template #footer>
 			<BaseButton
 				variant="outline"
 				:size-scale="sizeScale"
+				:class="ui('cancel')"
 				:custom-class="classes.cancel"
 				:autofocus="isDanger"
 				@click="finish(false)">
@@ -23,6 +26,7 @@
 			<BaseButton
 				:size-scale="sizeScale"
 				:color="isDanger ? dangerColor : undefined"
+				:class="ui('confirm')"
 				:custom-class="classes.confirm"
 				:autofocus="!isDanger"
 				@click="finish(true)">
@@ -48,10 +52,11 @@ const props = withDefaults(
 		variant: DEFAULT_VARIANT,
 		sizeScale: SIZE_SCALE_DEFAULT,
 		isDanger: false,
+		animation: 'scale',
 	}),
 )
 
 const emit = defineEmits<BaseConfirmEmits>()
 
-const { classes, dangerColor, descriptionId, finish } = useBaseConfirm(props, emit)
+const { classes, ui, dangerColor, descriptionId, finish } = useBaseConfirm(props, emit)
 </script>

@@ -25,6 +25,15 @@ export const MOTION_EASINGS = ['base', 'out', 'in', 'emphasized', 'spring'] as c
 
 export type MotionEasingName = (typeof MOTION_EASINGS)[number]
 
+/**
+ * Появление и уход оверлеев (проп `animation`): `fade` — прозрачность; `scale` — прозрачность и масштаб от якоря
+ * (`--rise-motion-scale-from`); `slide` — сдвиг со стороны якоря или края (`--rise-motion-distance`); `pop` — масштаб
+ * с пружиной `--rise-ease-spring` (перелёт — в пресете `expressive`); `none` — сразу, без перехода
+ */
+export const ENTER_ANIMATIONS = ['fade', 'scale', 'slide', 'pop', 'none'] as const
+
+export type EnterAnimation = (typeof ENTER_ANIMATIONS)[number]
+
 /** Элемент, от которого читаются токены движения: ref, геттер или сам элемент; без него — `<html>` */
 export type MotionTarget = MaybeRefOrGetter<Element | null | undefined>
 

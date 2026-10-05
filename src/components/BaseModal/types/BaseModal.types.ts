@@ -1,3 +1,5 @@
+import type { UiProp } from '@composables/base/useUi'
+import type { EnterAnimation } from '@composables/app/useMotion'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /**
@@ -7,6 +9,14 @@ import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 export const MODAL_VARIANTS = ['default', 'ghost', 'shadow'] as const
 
 export type ModalVariant = (typeof MODAL_VARIANTS)[number]
+
+/**
+ * Части окна для пропа `ui` (кроме `root` — затемнение): content — окно, header — шапка, header-left — левая часть шапки,
+ * title — заголовок, close — кнопка «Закрыть», body — содержимое, footer — подвал.
+ */
+export const MODAL_PARTS = ['root', 'content', 'header', 'header-left', 'title', 'close', 'body', 'footer'] as const
+
+export type BaseModalPart = (typeof MODAL_PARTS)[number]
 
 export type ModalFullScreen = 'width' | 'height' | 'both'
 
@@ -44,6 +54,19 @@ export interface BaseModalProps extends BaseComponentProps<
 	ariaDescribedby?: string
 	/** Имя окна для скринридера, когда видимого заголовка нет: «Палитра команд», «Просмотр фото» */
 	ariaLabel?: string
+	/**
+	 * Появление и уход окна: `scale` (по умолчанию) — масштаб от центра, `fade` — только прозрачность, `slide` — снизу,
+	 * `pop` — масштаб с пружиной, `none` — сразу. Длительности — токены движения и пресет `data-rise-motion`;
+	 * при «уменьшить движение» — сразу. Глобально — `defaults.BaseModal.animation` или `defaults.global.animation`
+	 */
+	animation?: EnterAnimation
+	/**
+	 * Классы частей окна: добавляются к БЭМ-классам кита, глобальные — `defaults.BaseModal.ui`.
+	 *
+	 * @example
+	 * <BaseModal :ui="{ content: 'rounded-3xl', footer: 'justify-between' }" />
+	 */
+	ui?: UiProp<BaseModalPart>
 }
 
 export interface BaseModalEmits {

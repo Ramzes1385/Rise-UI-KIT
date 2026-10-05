@@ -23,3 +23,5 @@ export const Danger = cases.Danger
 export const LongContent = cases.LongContent
 export const FromCode = cases.FromCode
 export const Keyboard = cases.Keyboard
+export const Theming = cases.Theming
+export const Animations = cases.Animations

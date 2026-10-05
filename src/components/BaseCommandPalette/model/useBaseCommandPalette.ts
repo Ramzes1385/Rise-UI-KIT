@@ -1,3 +1,4 @@
+import { useUi } from '@composables/base/useUi'
 import { UI_COMMAND_PALETTE } from '@/locales/messages'
 import { useHotkeys } from '@composables/interaction/useHotkeys'
 import { useCustomClass } from '@composables/base/useCustomClass'
@@ -83,12 +84,14 @@ export function useBaseCommandPalette(props: BaseCommandPaletteProps, emit: Base
 		Enter: () => list.options.value[list.activeIndex.value] && run(list.options.value[list.activeIndex.value].command),
 	}
 	const { classes } = useCustomClass({ getClass: () => props.customClass, elementKeys: ['root', 'input', 'option'] })
+	const ui = useUi(props, 'base-command-palette')
 	return {
+		ui,
 		classes,
 		modalClass: computed(() => ({
-			root: ['base-command-palette', classes.value.root].filter(Boolean).join(' '),
-			content: 'base-command-palette__content',
-			body: 'base-command-palette__body',
+			root: [ui('root'), classes.value.root].filter(Boolean).join(' '),
+			content: ui('content'),
+			body: ui('body'),
 		})),
 		isOpen,
 		setOpen,

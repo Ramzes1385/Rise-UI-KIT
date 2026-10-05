@@ -1,12 +1,13 @@
 import type { Ref } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import { usePopup } from '@composables/overlay/usePopup'
 import { computed, ref, useId, useSlots, watch } from 'vue'
 import { useLayerIndex } from '@composables/app/useLayerStack'
 import { useFocusTrap } from '@composables/overlay/useFocusTrap'
-import { useTeleportTarget } from '@composables/app/useTeleportTarget'
 import type { BaseDrawerEmits, DrawerProps } from '../types/BaseDrawer.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { useScrollableRegion } from '@composables/interaction/useScrollableRegion'
+import { useOwnThemeAttrs, useTeleportTarget } from '@composables/app/useTeleportTarget'
 
 const CLOSE_RATIO = 0.25
 const DRAWER_ELEMENTS = ['root', 'panel', 'handle', 'header', 'title', 'body', 'footer']
@@ -42,10 +43,10 @@ function useDragOffset(props: DrawerProps) {
 		dragOffset,
 		isDismissing,
 		dragStyle: computed(() => {
-			const axis = isVertical.value ? 'Y' : 'X'
-			if (isDismissing.value) return { transform: `translate${axis}(${closeSign.value * 100}%)` }
+			const offset = (value: string) => (isVertical.value ? `0 ${value}` : `${value} 0`)
+			if (isDismissing.value) return { translate: offset(`${closeSign.value * 100}%`) }
 			if (!isDragging.value) return undefined
-			return { transform: `translate${axis}(${closeSign.value * dragOffset.value}px)`, transition: 'none' }
+			return { translate: offset(`${closeSign.value * dragOffset.value}px`), transition: 'none' }
 		}),
 		resetDrag(): void {
 			isDragging.value = false
@@ -112,6 +113,9 @@ export function useBaseDrawer(props: DrawerProps, emit: BaseDrawerEmits) {
 		slots,
 		teleportTarget,
 		layerStyle,
+		ui: useUi(props, 'base-drawer'),
+		animationClass: computed(() => `base-drawer--animation-${props.animation ?? 'slide'}`),
+		themeAttrs: useOwnThemeAttrs(() => props.isOpen),
 		titleId,
 		descriptionId,
 		hasHeader: computed(() => Boolean(slots.header) || Boolean(props.title)),

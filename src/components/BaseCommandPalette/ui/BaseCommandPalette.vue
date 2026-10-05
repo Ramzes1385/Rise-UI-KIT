@@ -5,13 +5,14 @@
 		:variant="variant"
 		:size-scale="sizeScale"
 		:color="color"
+		:animation="animation"
+		:is-contained="isContained"
 		:custom-class="modalClass"
 		@update:is-open="setOpen">
-		<div class="base-command-palette__search">
+		<div :class="ui('search')">
 			<BaseIcon name="search" />
 			<input
-				class="base-command-palette__input"
-				:class="classes.input"
+				:class="[ui('input'), classes.input]"
 				type="text"
 				role="combobox"
 				aria-autocomplete="list"
@@ -26,20 +27,20 @@
 				@input="handleInput"
 				@keydown="handleKeydown" />
 		</div>
-		<div :id="listId" class="base-command-palette__list" role="listbox" :aria-label="UI_COMMAND_PALETTE.COMMANDS">
+		<div :id="listId" :class="ui('list')" role="listbox" :aria-label="UI_COMMAND_PALETTE.COMMANDS">
 			<div
 				v-for="group in groups"
 				:key="group.id"
-				class="base-command-palette__group"
+				:class="ui('group')"
 				role="group"
 				:aria-labelledby="group.name ? group.id : undefined">
-				<div v-if="group.name" :id="group.id" class="base-command-palette__group-title" role="presentation">{{ group.name }}</div>
+				<div v-if="group.name" :id="group.id" :class="ui('group-title')" role="presentation">{{ group.name }}</div>
 				<div
 					v-for="option in group.options"
 					:id="option.id"
 					:key="option.id"
-					class="base-command-palette__option"
 					:class="[
+						ui('option'),
 						classes.option,
 						{
 							'base-command-palette__option--active': option.index === activeIndex,
@@ -52,24 +53,22 @@
 					@mousemove="setActive(option.index)"
 					@click="run(option.command)">
 					<slot name="command" :command="option.command" :is-active="option.index === activeIndex">
-						<BaseIcon v-if="option.command.icon" :name="option.command.icon" class="base-command-palette__icon" />
-						<span class="base-command-palette__text">
-							<span class="base-command-palette__label">{{ option.command.label }}</span>
-							<span v-if="option.command.description" class="base-command-palette__description">{{
-								option.command.description
-							}}</span>
+						<BaseIcon v-if="option.command.icon" :name="option.command.icon" :class="ui('icon')" />
+						<span :class="ui('text')">
+							<span :class="ui('label')">{{ option.command.label }}</span>
+							<span v-if="option.command.description" :class="ui('description')">{{ option.command.description }}</span>
 						</span>
-						<span v-if="option.keys.length" class="base-command-palette__shortcut" aria-hidden="true">
+						<span v-if="option.keys.length" :class="ui('shortcut')" aria-hidden="true">
 							<BaseKbd v-for="key in option.keys" :key="key" :value="key" :size-scale="sizeScale" />
 						</span>
 					</slot>
 				</div>
 			</div>
 		</div>
-		<p v-if="groups.length === 0" class="base-command-palette__empty">
+		<p v-if="groups.length === 0" :class="ui('empty')">
 			<slot name="empty" :query="query">{{ UI_COMMAND_PALETTE.EMPTY }}</slot>
 		</p>
-		<div class="base-command-palette__footer" aria-hidden="true">
+		<div :class="ui('footer')" aria-hidden="true">
 			<span
 				><BaseKbd value="arrowup" :size-scale="sizeScale" /><BaseKbd value="arrowdown" :size-scale="sizeScale" />{{
 					UI_COMMAND_PALETTE.HINT_MOVE
@@ -101,7 +100,9 @@ const props = withDefaults(
 		hotkeyScope: 'global',
 		placeholder: undefined,
 		ariaLabel: undefined,
+		isContained: false,
 		sizeScale: SIZE_SCALE_DEFAULT,
+		animation: 'scale',
 	}),
 )
 
@@ -110,6 +111,7 @@ const emit = defineEmits<BaseCommandPaletteEmits>()
 defineSlots<BaseCommandPaletteSlots>()
 
 const {
+	ui,
 	classes,
 	modalClass,
 	isOpen,

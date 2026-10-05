@@ -6,8 +6,8 @@
 	align-items: center;
 	justify-content: center;
 	box-sizing: border-box;
-	padding: sz(16px);
-	background-color: var(--rise-overlay);
+	padding: sz(ct(modal, padding, 16px));
+	background-color: ct(modal, bg, var(--rise-overlay));
 
 	&--contained {
 		position: absolute;
@@ -22,15 +22,15 @@
 		flex-direction: column;
 		box-sizing: border-box;
 		width: 100%;
-		max-width: sz(500px);
+		max-width: sz(ct(modal-content, width, 500px));
 		max-height: 100%;
 		overflow: hidden;
-		border: 1px solid var(--rise-border);
-		border-radius: sz(var(--rise-radius-lg));
-		@include custom-bg(background-color, var(--rise-bg));
-		@include custom-text(color, var(--rise-text));
+		border: 1px solid ct(modal-content, border, var(--rise-border));
+		border-radius: sz(ct(modal-content, radius, var(--rise-radius-lg)));
+		@include custom-bg(background-color, ct(modal-content, bg, var(--rise-bg)));
+		@include custom-text(color, ct(modal-content, text, var(--rise-text)));
 		@include text-size(sm);
-		box-shadow: var(--rise-shadow-xl);
+		box-shadow: ct(modal-content, shadow, var(--rise-shadow-xl));
 		outline: none;
 	}
 
@@ -49,7 +49,7 @@
 		flex: none;
 		align-items: center;
 		gap: sz(12px);
-		padding: sz(16px) sz(20px);
+		padding: space(ct(modal-content, padding-y, 16px) ct(modal-content, padding-x, 20px));
 		border-bottom: 1px solid var(--rise-border);
 	}
 
@@ -63,7 +63,8 @@
 
 	&__title.base-text {
 		margin: 0;
-		@include text-size(base);
+		font-size: sz(ct(modal-title, font-size, var(--rise-font-size-base)));
+		line-height: sz(var(--rise-line-height-base));
 		@include custom-text(color, var(--rise-text-highlighted));
 		overflow-wrap: anywhere;
 	}
@@ -80,7 +81,7 @@
 	&__body {
 		flex: 1 1 auto;
 		min-height: 0;
-		padding: sz(16px) sz(20px);
+		padding: space(ct(modal-content, padding-y, 16px) ct(modal-content, padding-x, 20px));
 		overflow-y: auto;
 		@include scrollbar-thin;
 		@include focus-ring(-2px);
@@ -94,7 +95,7 @@
 		align-items: center;
 		justify-content: flex-end;
 		gap: sz(8px);
-		padding: sz(16px) sz(20px);
+		padding: space(ct(modal-content, padding-y, 16px) ct(modal-content, padding-x, 20px));
 		border-top: 1px solid var(--rise-border);
 		@include reset-custom-color;
 	}
@@ -115,21 +116,4 @@
 	}
 }
 
-.base-modal-enter-active,
-.base-modal-leave-active {
-	@include transition(opacity);
-
-	.base-modal__content {
-		@include transition(opacity, transform);
-	}
-}
-
-.base-modal-enter-from,
-.base-modal-leave-to {
-	opacity: 0;
-
-	.base-modal__content {
-		opacity: 0;
-		transform: scale(0.95);
-	}
-}
+@include overlay-animation(base-modal, '.base-modal', '.base-modal__content');

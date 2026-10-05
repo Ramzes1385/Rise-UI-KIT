@@ -3,8 +3,9 @@
 		<transition name="base-slideover">
 			<div
 				v-if="isOpen"
-				class="base-slideover"
 				:class="[
+					ui('root'),
+					animationClass,
 					`base-slideover--${side}`,
 					variantClass,
 					isFullWidth && 'base-slideover--full',
@@ -13,37 +14,37 @@
 					classes.root,
 				]"
 				:style="[widthStyle, sizeScaleStyle, variantStyle, customColorStyle, layerStyle]"
+				v-bind="themeAttrs"
 				@click.self="handleOverlayClick">
 				<div
 					ref="panelRef"
-					class="base-slideover__panel"
-					:class="[`base-slideover__panel--${side}`, isFullWidth && 'base-slideover__panel--full', classes.panel]"
+					:class="[ui('panel'), `base-slideover__panel--${side}`, isFullWidth && 'base-slideover__panel--full', classes.panel]"
 					:style="panelStyle"
 					role="dialog"
 					:aria-modal="isModal ? 'true' : undefined"
 					:aria-labelledby="hasDefaultTitle ? titleId : undefined">
-					<div v-if="hasHeader" class="base-slideover__header" :class="classes.header">
+					<div v-if="hasHeader" :class="[ui('header'), classes.header]">
 						<slot name="header">
 							<BaseText
 								v-if="title"
 								:id="titleId"
 								tag="h3"
 								:weight="TEXT_WEIGHT.SEMIBOLD"
-								class="base-slideover__title"
+								:class="ui('title')"
 								:custom-class="classes.title"
 								>{{ title }}</BaseText
 							>
 						</slot>
-						<BaseButton variant="ghost" class="base-slideover__close" :aria-label="UI_ARIA.CLOSE" @click="handleClose">
+						<BaseButton variant="ghost" :class="ui('close')" :aria-label="UI_ARIA.CLOSE" @click="handleClose">
 							<BaseIcon name="close" />
 						</BaseButton>
 					</div>
 
-					<div ref="bodyRef" class="base-slideover__body" :class="classes.body" :tabindex="isBodyScrollable ? 0 : undefined">
+					<div ref="bodyRef" :class="[ui('body'), classes.body]" :tabindex="isBodyScrollable ? 0 : undefined">
 						<slot />
 					</div>
 
-					<footer v-if="hasFooter" class="base-slideover__footer" :class="classes.footer">
+					<footer v-if="hasFooter" :class="[ui('footer'), classes.footer]">
 						<slot name="footer" />
 					</footer>
 				</div>
@@ -75,6 +76,7 @@ const props = withDefaults(
 		isContained: false,
 		hasOverlay: true,
 		padding: undefined,
+		animation: 'slide',
 	}),
 )
 const emit = defineEmits<BaseSlideoverEmits>()
@@ -102,5 +104,8 @@ const {
 	titleId,
 	isBodyScrollable,
 	isModal,
+	ui,
+	animationClass,
+	themeAttrs,
 } = useBaseSlideover(props, emit)
 </script>

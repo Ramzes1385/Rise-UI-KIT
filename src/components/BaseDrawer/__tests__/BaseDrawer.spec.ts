@@ -61,12 +61,12 @@ describe('BaseDrawer unit', () => {
 		await fireEvent.pointerDown(handle, { button: 0, clientY: 100, pointerId: 1 })
 		expect(document.querySelector('.base-drawer')).toHaveClass('base-drawer--dragging')
 		await fireEvent.pointerMove(panel(), { clientY: 60 })
-		expect(panel().style.transform).toBe('translateY(0px)')
+		expect(panel().style.translate).toBe('0 0px')
 		await fireEvent.pointerMove(panel(), { clientY: 300 })
-		expect(panel().style.transform).toBe('translateY(200px)')
+		expect(panel().style.translate).toBe('0 200px')
 		await fireEvent.pointerUp(panel())
 		expect(emitted()['update:isOpen']).toEqual([[false]])
-		expect(panel().style.transform).toBe('translateY(100%)')
+		expect(panel().style.translate).toBe('0 100%')
 		await rerender({ isOpen: true, title: 'Фильтры' })
 		await rerender({ isOpen: false })
 		expect(document.querySelector('.base-drawer')).not.toBeInTheDocument()
@@ -79,7 +79,7 @@ describe('BaseDrawer unit', () => {
 		await fireEvent.pointerMove(panel(), { clientY: 150 })
 		await fireEvent.pointerUp(panel())
 		expect(emitted()['update:isOpen']).toBeUndefined()
-		expect(panel().style.transform).toBe('')
+		expect(panel().style.translate).toBe('')
 	})
 
 	it('не тянут: тело, кнопка в шапке, правая кнопка мыши, isDraggable=false; pointercancel сбрасывает', async () => {
@@ -89,7 +89,7 @@ describe('BaseDrawer unit', () => {
 		await fireEvent.pointerDown(document.querySelector('.base-drawer__handle') as HTMLElement, { button: 2, clientY: 0 })
 		await fireEvent.pointerMove(panel(), { clientY: 300 })
 		await fireEvent.pointerUp(panel())
-		expect(panel().style.transform).toBe('')
+		expect(panel().style.translate).toBe('')
 		await fireEvent.pointerDown(document.querySelector('.base-drawer__handle') as HTMLElement, { button: 0, clientY: 0 })
 		await fireEvent.pointerCancel(panel())
 		expect(document.querySelector('.base-drawer')).not.toHaveClass('base-drawer--dragging')
@@ -99,15 +99,15 @@ describe('BaseDrawer unit', () => {
 	})
 
 	it.each([
-		{ direction: 'top', axis: 'clientY', delta: -120, transform: 'translateY(-120px)' },
-		{ direction: 'left', axis: 'clientX', delta: -60, transform: 'translateX(-60px)' },
-		{ direction: 'right', axis: 'clientX', delta: 60, transform: 'translateX(60px)' },
-	] as const)('край $direction: тянется к своему краю', async ({ direction, axis, delta, transform }) => {
+		{ direction: 'top', axis: 'clientY', delta: -120, translate: '0 -120px' },
+		{ direction: 'left', axis: 'clientX', delta: -60, translate: '-60px 0' },
+		{ direction: 'right', axis: 'clientX', delta: 60, translate: '60px 0' },
+	] as const)('край $direction: тянется к своему краю', async ({ direction, axis, delta, translate }) => {
 		const { emitted } = setup({ direction })
 		Object.defineProperty(panel(), 'offsetWidth', { value: 300, configurable: true })
 		await fireEvent.pointerDown(document.querySelector('.base-drawer__handle') as HTMLElement, { button: 0, [axis]: 200 })
 		await fireEvent.pointerMove(panel(), { [axis]: 200 + delta })
-		expect(panel().style.transform).toBe(transform)
+		expect(panel().style.translate).toBe(translate)
 		await fireEvent.pointerUp(panel())
 		expect(emitted()['update:isOpen']).toEqual(direction === 'top' ? [[false]] : undefined)
 	})

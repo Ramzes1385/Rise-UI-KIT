@@ -1,10 +1,11 @@
 .base-modal__content.base-confirm {
-	max-width: sz(400px);
+	max-width: sz(ct(confirm, width, 400px));
 }
 
 .base-confirm__description {
 	margin: 0;
-	@include text-size(sm);
-	color: var(--rise-text-muted);
+	font-size: sz(ct(confirm-description, font-size, var(--rise-font-size-sm)));
+	line-height: sz(var(--rise-line-height-sm));
+	color: ct(confirm-description, text, var(--rise-text-muted));
 	overflow-wrap: anywhere;
 }
