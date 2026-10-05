@@ -2146,3 +2146,12 @@ API кита не меняется. В Storybook добавлены пример
 - **Сцена и камера** — пол с картинкой плана, выдавленные объекты, этаж из GLB, `camera`, `layerMode`, `hasOrbit`, `configureLoader`, кнопки и клавиши камеры, expose `setLayer`, `resetCamera`, `rotate`, `zoomIn`, `zoomOut`, `zoomToObject` (часть 2).
 - **Взаимодействие** — выбор и наведение, карточка, метки `point`, каталог и фильтры, клавиатура и `aria-live`, маршруты трубкой, `has2dToggle`, expose `clearFilters`, `showRoute`, `clearRoute`; `view="2d"`, выбранный приложением, больше не шлёт `fallback` (часть 3).
 - **Редактор и документы** (часть 4): справочник входа docs/reference/MAP3D.md, раздел README «3D-карта этажей», CHANGES_FOR_APPS; поля 3D в BaseImageMapEditor — раздел «BaseImageMap3D (часть 4)» ниже.
+
+## BaseImageMap3D (часть 4)
+
+Добавления в BaseImageMapEditor; API других компонентов не меняется.
+
+- **BaseImageMapEditor: проп `has3dFields?: boolean`** (по умолчанию `false`, `defaults.BaseImageMapEditor`) — поля 3D в панели свойств: у объекта `height3d` и `meshName` (раздел «3D»), у показанного этажа `elevation` и модель GLB `model` (`url`, с адресом — `scale`, `position` по осям, `rotationY`), у карты `scene3d` (`floorGap`, `floorThickness`, `objectHeight`). Пустое поле удаляет значение; пустой адрес модели удаляет `model` целиком; `position` из нулей удаляется. Неверное значение не записывается — ошибка под полем («Ожидается число больше 0»).
+- **JSON**: импорт и экспорт сохраняли и сохраняют 3D-поля (без `has3dFields` они не показываются, но не теряются); проверка импорта 3D-поля не отклоняет — неверные игнорирует карта.
+- **Словарь `mapEditor`** (ru, en): `SECTION_3D`, `FIELD_HEIGHT_3D`, `FIELD_MESH_NAME`, `LAYER_3D`, `FIELD_ELEVATION`, `FIELD_MODEL_URL`, `FIELD_MODEL_SCALE`, `FIELD_MODEL_X`, `FIELD_MODEL_Y`, `FIELD_MODEL_Z`, `FIELD_MODEL_ROTATION`, `SCENE_3D`, `FIELD_FLOOR_GAP`, `FIELD_FLOOR_THICKNESS`, `FIELD_OBJECT_HEIGHT`, `FIELD_3D_INVALID` — свой язык через `defineLocale` должен их содержать.
+- **Граница входа `/map3d`**: основной вход берёт из папки BaseImageMap3D только `model/validate3d.ts` (проверка 3D-полей без three); тест `build/tests/packageBoundaries.spec.ts` разрешает только его и проверяет, что основной вход не достигает `three`.
