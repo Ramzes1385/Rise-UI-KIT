@@ -16,6 +16,7 @@ export const argTypes = {
 	isLoading: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 	features: { control: 'object', table: propGroup(ARG_GROUP.behavior) },
 	behavior: { control: 'object', table: propGroup(ARG_GROUP.behavior) },
+	exportOptions: { control: 'object', table: propGroup(ARG_GROUP.behavior) },
 	pageSize: { control: { type: 'number', min: 0 }, table: propGroup(ARG_GROUP.behavior) },
 	pageSizeOptions: { control: 'object', table: propGroup(ARG_GROUP.behavior) },
 	loadMode: { control: 'inline-radio', options: ['pagination', 'button', 'infinite'], table: propGroup(ARG_GROUP.behavior) },

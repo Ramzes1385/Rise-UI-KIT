@@ -25,6 +25,7 @@ export const Loading = cases.Loading
 export const LongContent = cases.LongContent
 export const Sorting = cases.Sorting
 export const Selection = cases.Selection
+export const Export = cases.Export
 export const Toolbar = cases.Toolbar
 export const Pagination = cases.Pagination
 export const LoadMore = cases.LoadMore

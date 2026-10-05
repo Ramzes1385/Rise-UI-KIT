@@ -20,13 +20,14 @@ function exportFormats(props: TableProps): ComputedRef<TableExportFormat[]> {
 	})
 }
 
+function exportValue(column: TableColumn, row: TableRow): unknown {
+	const value = row.data[column.key]
+	if (column.exportValue) return column.exportValue(value, row)
+	return column.formatter ? column.formatter(value, row) : value
+}
+
 function toExportRow(row: TableRow, columns: TableColumn[]): TableExportRow {
-	return Object.fromEntries(
-		columns.map(column => {
-			const value = row.data[column.key]
-			return [column.key, column.formatter ? column.formatter(value, row) : value]
-		}),
-	)
+	return Object.fromEntries(columns.map(column => [column.key, exportValue(column, row)]))
 }
 
 export function useBaseTableExport(props: TableProps, emit: BaseTableEmits, source: TableExportSource) {

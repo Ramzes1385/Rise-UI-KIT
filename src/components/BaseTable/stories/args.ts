@@ -30,4 +30,5 @@ export const args = {
 	'onLoad-more': fn(),
 	'onColumn-resize': fn(),
 	'onColumns-change': fn(),
+	onExport: fn(),
 } satisfies Meta<typeof BaseTable>['args']

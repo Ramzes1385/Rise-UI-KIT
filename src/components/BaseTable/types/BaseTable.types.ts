@@ -64,6 +64,11 @@ export interface TableColumn {
 	cellClass?: string
 	/** Форматтер значения */
 	formatter?: (value: unknown, row: TableRow) => string
+	/**
+	 * Значение колонки в выгрузке (`features.export`, `exportData`) вместо `formatter`: число или `Date` сохраняют тип
+	 * в Excel. Без него выгружается текст `formatter`, а без `formatter` — значение из `row.data`
+	 */
+	exportValue?: (value: unknown, row: TableRow) => unknown
 }
 
 export interface SortState {

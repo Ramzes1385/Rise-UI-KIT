@@ -14,12 +14,13 @@ const columns: TableColumn[] = [
 	{ key: 'name', label: 'Имя', isSortable: true },
 	{ key: 'amount', label: 'Сумма', formatter: value => `${value} ₽` },
 	{ key: 'note', label: 'Заметка', isHidden: true },
+	{ key: 'date', label: 'Дата', formatter: () => 'текст', exportValue: (value, row) => new Date(String(value ?? row.id)) },
 ]
 
 const rows: TableRow[] = [
-	{ id: 1, data: { name: 'Борис', amount: 20, note: 'б' } },
-	{ id: 2, data: { name: 'Анна', amount: 10, note: 'а' } },
-	{ id: 3, data: { name: 'Вера', amount: 30, note: 'в' } },
+	{ id: 1, data: { name: 'Борис', amount: 20, note: 'б', date: '2026-01-02' } },
+	{ id: 2, data: { name: 'Анна', amount: 10, note: 'а', date: '2026-01-01' } },
+	{ id: 3, data: { name: 'Вера', amount: 30, note: 'в', date: '2026-01-03' } },
 ]
 
 const download = vi.mocked(downloadTableExport)
@@ -62,14 +63,14 @@ describe('BaseTable — экспорт', () => {
 		const [payload] = wrapper.emitted('export')?.[0] as [TableExportEvent]
 		expect(payload.format).toBe('xlsx')
 		expect(payload.rows.map(row => row.id)).toEqual([1, 2, 3])
-		expect(payload.columns.map(column => column.key)).toEqual(['name', 'amount'])
+		expect(payload.columns.map(column => column.key)).toEqual(['name', 'amount', 'date'])
 		expect(download).toHaveBeenCalledWith(
 			'xlsx',
 			{
 				rows: [
-					{ name: 'Борис', amount: '20 ₽' },
-					{ name: 'Анна', amount: '10 ₽' },
-					{ name: 'Вера', amount: '30 ₽' },
+					{ name: 'Борис', amount: '20 ₽', date: new Date('2026-01-02') },
+					{ name: 'Анна', amount: '10 ₽', date: new Date('2026-01-01') },
+					{ name: 'Вера', amount: '30 ₽', date: new Date('2026-01-03') },
 				],
 				columns: payload.columns,
 			},
@@ -92,8 +93,8 @@ describe('BaseTable — экспорт', () => {
 		expect(exportedNames()).toEqual(['Анна', 'Борис', 'Вера'])
 		expect(download.mock.lastCall?.[2]).toEqual({ fileName: 'b', sheetName: 'Лист' })
 		expose(wrapper).exportData('csv', { visibleColumnsOnly: false })
-		expect(download.mock.lastCall?.[1].columns.map(column => column.key)).toEqual(['name', 'amount', 'note'])
-		expect(download.mock.lastCall?.[1].rows[0]).toEqual({ name: 'Анна', amount: '10 ₽', note: 'а' })
+		expect(download.mock.lastCall?.[1].columns.map(column => column.key)).toEqual(['name', 'amount', 'note', 'date'])
+		expect(download.mock.lastCall?.[1].rows[0]).toEqual({ name: 'Анна', amount: '10 ₽', note: 'а', date: new Date('2026-01-01') })
 		wrapper.unmount()
 	})
 
