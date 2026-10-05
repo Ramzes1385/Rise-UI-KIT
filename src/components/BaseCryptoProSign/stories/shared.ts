@@ -1,5 +1,7 @@
+import type { CadesSignPlugin } from '../types/cadesSign.types'
 import { createCryptoProSignEmulation } from '../model/emulation/cryptoProSignEmulation'
 import type { CryptoProSignEmulationOptions } from '../types/cryptoProSignEmulation.types'
+import type { CadesAbout } from '@composables/crypto/useCryptoPro/types/cadesplugin.types'
 
 export const DOCUMENT_TEXT = 'Акт сверки № 15 от 15.05.2025'
 
@@ -16,4 +18,39 @@ export function emulate(options: CryptoProSignEmulationOptions = {}): () => () =
 
 export function textFile(name: string, size: number): File {
 	return new File(['А'.repeat(Math.ceil(size / 2))], name, { type: 'text/plain' })
+}
+
+type PluginWindow = { cadesplugin?: CadesSignPlugin }
+
+function slowAbout(about: CadesAbout, pause: () => Promise<void>): CadesAbout {
+	return {
+		PluginVersion: about.PluginVersion,
+		CSPVersion: (provider, type) => pause().then(() => about.CSPVersion(provider, type)),
+		CSPName: type => about.CSPName(type),
+	}
+}
+
+const SLOW_OBJECTS = new Set(['CAdESCOM.About', 'CAdESCOM.CPSigner'])
+
+function slowPlugin(plugin: CadesSignPlugin, delay: number): CadesSignPlugin {
+	const pause = (): Promise<void> => new Promise(resolve => setTimeout(resolve, delay))
+	const createObject = async (name: Parameters<CadesSignPlugin['CreateObjectAsync']>[0]): Promise<unknown> => {
+		if (SLOW_OBJECTS.has(name)) await pause()
+		const created = await plugin.CreateObjectAsync(name)
+		return name === 'CAdESCOM.About' ? slowAbout(created as unknown as CadesAbout, pause) : created
+	}
+	return {
+		then: (onFulfilled, onRejected) => pause().then(() => plugin.then(onFulfilled, onRejected)),
+		CreateObjectAsync: createObject as CadesSignPlugin['CreateObjectAsync'],
+		getLastError: error => plugin.getLastError(error),
+	}
+}
+
+export function emulateSteps(delay = 500): () => () => void {
+	return () => {
+		const restore = createCryptoProSignEmulation().install()
+		const target = window as unknown as PluginWindow
+		target.cadesplugin = slowPlugin(target.cadesplugin!, delay)
+		return restore
+	}
 }

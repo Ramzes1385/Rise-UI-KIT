@@ -1,3 +1,4 @@
+import { useUi } from '@composables/base/useUi'
 import { UI_CRYPTOPRO } from '@/locales/messages'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useCryptoProSignSource } from './useCryptoProSignSource'
@@ -69,6 +70,7 @@ export function useBaseCryptoProSign(props: BaseCryptoProSignProps, emit: BaseCr
 	})
 	return {
 		...useStandardBaseComponent('base-crypto-pro-sign', props, ['root']),
+		ui: useUi(props, 'base-crypto-pro-sign'),
 		...useCryptoProSignStatus(crypto.status),
 		...source,
 		...certificates,

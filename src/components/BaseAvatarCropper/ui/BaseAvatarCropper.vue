@@ -1,21 +1,21 @@
 <template>
 	<div
-		class="base-avatar-cropper"
 		:class="[
+			ui('root'),
 			variantClass,
 			classes.root,
 			`base-avatar-cropper--${shape}`,
 			{
 				'base-avatar-cropper--loading': !isLoaded,
 				'base-avatar-cropper--dragging': isDragging,
+				'base-avatar-cropper--stepping': isStepping,
 				'base-avatar-cropper--disabled': isDisabled,
 			},
 		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle, { '--cropper-size': `${size}px` }]">
 		<div
 			ref="areaRef"
-			class="base-avatar-cropper__area"
-			:class="classes.area"
+			:class="[ui('area'), classes.area]"
 			role="group"
 			:tabindex="isDisabled ? undefined : 0"
 			:aria-roledescription="UI_AVATAR_CROPPER.ROLE"
@@ -27,21 +27,21 @@
 			@keydown="handleKeydown">
 			<img
 				ref="imageRef"
-				class="base-avatar-cropper__image"
+				:class="ui('image')"
 				:src="src"
 				alt=""
 				draggable="false"
 				:style="imageStyle"
 				@load="handleLoad"
 				@error="handleError" />
-			<span class="base-avatar-cropper__frame" aria-hidden="true" />
-			<span v-if="hasError" class="base-avatar-cropper__message" role="alert">{{ UI_AVATAR_CROPPER.ERROR }}</span>
-			<span :id="hintId" class="base-avatar-cropper__hint">{{ UI_AVATAR_CROPPER.HINT }}</span>
+			<span :class="ui('frame')" aria-hidden="true" />
+			<span v-if="hasError" :class="ui('message')" role="alert">{{ UI_AVATAR_CROPPER.ERROR }}</span>
+			<span :id="hintId" :class="ui('hint')">{{ UI_AVATAR_CROPPER.HINT }}</span>
 		</div>
-		<div class="base-avatar-cropper__zoom" :class="classes.zoom">
-			<span class="base-avatar-cropper__zoom-label" aria-hidden="true">{{ UI_AVATAR_CROPPER.ZOOM }}</span>
+		<div :class="[ui('zoom'), classes.zoom]">
+			<span :class="ui('zoom-label')" aria-hidden="true">{{ UI_AVATAR_CROPPER.ZOOM }}</span>
 			<BaseRange
-				class="base-avatar-cropper__range"
+				:class="ui('range')"
 				:model-value="zoom"
 				:min="1"
 				:max="maxZoom"
@@ -75,6 +75,7 @@ const props = withDefaults(defineProps<BaseAvatarCropperProps>(), {
 const emit = defineEmits<BaseAvatarCropperEmits>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,
@@ -88,6 +89,7 @@ const {
 	imageStyle,
 	zoom,
 	isDragging,
+	isStepping,
 	handleLoad,
 	handleError,
 	handlePointerDown,

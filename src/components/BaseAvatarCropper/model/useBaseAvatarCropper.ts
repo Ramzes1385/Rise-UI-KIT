@@ -2,8 +2,9 @@ import { cropBlob } from './crop/cropBlob'
 import { useCropDrag } from './useCropDrag'
 import { useCropKeys } from './useCropKeys'
 import { useCropView } from './useCropView'
+import { useUi } from '@composables/base/useUi'
 import { panView, unitSize } from './crop/cropGeometry'
-import { computed, ref, shallowRef, useId, watch } from 'vue'
+import { computed, ref, shallowRef, useId, watch, type Ref } from 'vue'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { AvatarImageSize, AvatarBlobOptions, AvatarCropperProps, BaseAvatarCropperEmits } from '../types/BaseAvatarCropper.types'
 
@@ -31,6 +32,14 @@ function useCropImage(props: AvatarCropperProps, emit: BaseAvatarCropperEmits) {
 	}
 }
 
+function stepping(isStepping: Ref<boolean>) {
+	return <Args extends unknown[]>(isStep: boolean, action: (...args: Args) => void) =>
+		(...args: Args): void => {
+			isStepping.value = isStep
+			action(...args)
+		}
+}
+
 export function useBaseAvatarCropper(props: AvatarCropperProps, emit: BaseAvatarCropperEmits) {
 	const areaRef = ref<HTMLElement | null>(null)
 	const imageRef = ref<HTMLImageElement | null>(null)
@@ -53,12 +62,14 @@ export function useBaseAvatarCropper(props: AvatarCropperProps, emit: BaseAvatar
 		zoomTo: crop.zoomTo,
 		reset: crop.reset,
 	})
+	const stepped = stepping(crop.isStepping)
 	const getBlob = (options?: AvatarBlobOptions): Promise<Blob | null> =>
 		imageRef.value && crop.crop.value
 			? cropBlob({ image: imageRef.value, crop: crop.crop.value }, props.shape, options)
 			: Promise.resolve(null)
 	return {
 		...useStandardBaseComponent('base-avatar-cropper', props, ['root', 'area', 'zoom']),
+		ui: useUi(props, 'base-avatar-cropper'),
 		areaRef,
 		imageRef,
 		hintId: `${useId()}-hint`,
@@ -67,11 +78,13 @@ export function useBaseAvatarCropper(props: AvatarCropperProps, emit: BaseAvatar
 		imageStyle: crop.style,
 		zoom: computed(() => Math.round(crop.zoom.value * 100) / 100),
 		isDragging: drag.isDragging,
+		isStepping: crop.isStepping,
 		handleLoad: loading.handleLoad,
 		handleError: loading.handleError,
-		handlePointerDown: drag.handlePointerDown,
-		...keys,
-		setZoom: crop.zoomTo,
-		exposed: { getBlob, reset: crop.reset },
+		handlePointerDown: stepped(false, drag.handlePointerDown),
+		handleKeydown: stepped(true, keys.handleKeydown),
+		handleWheel: stepped(false, keys.handleWheel),
+		setZoom: stepped(false, crop.zoomTo),
+		exposed: { getBlob, reset: stepped(true, crop.reset) },
 	}
 }

@@ -1,5 +1,11 @@
-export { CRYPTO_PRO_SIGN_LEVELS, CRYPTO_PRO_SIGN_MODES, CRYPTO_PRO_SIGN_VARIANTS } from './types/BaseCryptoProSign.types'
+export {
+	CRYPTO_PRO_SIGN_PARTS,
+	CRYPTO_PRO_SIGN_LEVELS,
+	CRYPTO_PRO_SIGN_MODES,
+	CRYPTO_PRO_SIGN_VARIANTS,
+} from './types/BaseCryptoProSign.types'
 export type {
+	BaseCryptoProSignPart,
 	CryptoProSignMode,
 	CryptoProSignLevel,
 	CryptoProSignResult,

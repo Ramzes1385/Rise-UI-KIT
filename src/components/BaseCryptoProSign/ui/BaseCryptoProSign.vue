@@ -1,11 +1,11 @@
 <template>
 	<section
-		class="base-crypto-pro-sign"
-		:class="[variantClass, classes.root, { 'base-crypto-pro-sign--disabled': isDisabled }]"
+		:class="[ui('root'), variantClass, classes.root, { 'base-crypto-pro-sign--disabled': isDisabled }]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		:aria-label="regionLabel"
 		:aria-busy="isBusy || status.state === 'checking'">
 		<BaseCryptoProSignStatus
+			:class="ui('status')"
 			:status="status"
 			:steps="steps"
 			:help="statusHelp"
@@ -14,12 +14,12 @@
 			@retry="refresh" />
 		<template v-if="isReady">
 			<template v-if="!isVerify">
-				<p v-if="hasNoCertificates" class="base-crypto-pro-sign__empty">
+				<p v-if="hasNoCertificates" :class="ui('empty')">
 					{{ UI_CRYPTOPRO.NO_CERTIFICATES }}
 				</p>
 				<BaseSelect
 					v-else
-					class="base-crypto-pro-sign__certificate"
+					:class="ui('certificate')"
 					:model-value="thumbprintValue"
 					:options="certificateOptions"
 					:label="UI_CRYPTOPRO.CERTIFICATE"
@@ -28,7 +28,7 @@
 					@update:model-value="selectCertificate" />
 			</template>
 			<template v-else>
-				<p v-if="signature" class="base-crypto-pro-sign__source">
+				<p v-if="signature" :class="ui('source')">
 					{{ UI_CRYPTOPRO.SIGNATURE_GIVEN }}
 				</p>
 				<BaseFileUpload
@@ -39,7 +39,7 @@
 					@change="pickSignature"
 					@remove="removeSignature" />
 			</template>
-			<p v-if="data !== undefined" class="base-crypto-pro-sign__source">
+			<p v-if="data !== undefined" :class="ui('source')">
 				{{ sourceText }}
 			</p>
 			<BaseFileUpload
@@ -55,12 +55,12 @@
 					:label="UI_CRYPTOPRO.TYPE"
 					:is-disabled="isDisabled"
 					@update:model-value="selectDetached" />
-				<p v-if="isHash" class="base-crypto-pro-sign__hint">
+				<p v-if="isHash" :class="ui('hint')">
 					{{ hashHint }}
 				</p>
 			</template>
 			<BaseProgress v-if="progress !== null" :value="progressPercent" :aria-label="UI_CRYPTOPRO.HASHING" has-label />
-			<div class="base-crypto-pro-sign__actions">
+			<div :class="ui('actions')">
 				<BaseButton :is-loading="isBusy" :is-disabled="!canRun" @click="isVerify ? verify() : sign()">
 					{{ isVerify ? UI_CRYPTOPRO.VERIFY : UI_CRYPTOPRO.SIGN }}
 				</BaseButton>
@@ -71,10 +71,17 @@
 					{{ UI_CRYPTOPRO.DOWNLOAD }}
 				</BaseButton>
 			</div>
-			<BaseCryptoProSignResult :sign-result="isVerify ? null : signResult" :verify-result="isVerify ? verifyResult : null" />
+			<BaseCryptoProSignResult
+				:class="ui('result')"
+				:sign-result="isVerify ? null : signResult"
+				:verify-result="isVerify ? verifyResult : null" />
 		</template>
-		<BaseAlert v-if="actionError" type="error" :title="actionError.message" :description="actionError.detail" />
-		<p class="base-crypto-pro-sign__live" role="status">
+		<div :class="[ui('error'), { 'base-crypto-pro-sign__error--open': actionError }]">
+			<div class="base-crypto-pro-sign__error-body">
+				<BaseAlert v-if="actionError" type="error" :title="actionError.message" :description="actionError.detail" />
+			</div>
+		</div>
+		<p :class="ui('live')" role="status">
 			{{ announcement }}
 		</p>
 	</section>
@@ -119,6 +126,7 @@ const props = withDefaults(
 const emit = defineEmits<BaseCryptoProSignEmits>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

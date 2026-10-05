@@ -1,4 +1,5 @@
 import { computed, ref, useId } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import { UI_SIGNATURE_PAD } from '@/locales/messages'
 import { signaturePng } from './signature/signaturePng'
 import { useSignatureDrawing } from './useSignatureDrawing'
@@ -55,6 +56,7 @@ export function useBaseSignaturePad(props: SignaturePadProps, emit: BaseSignatur
 	const exporter = useSignatureExport(props)
 	return {
 		...useStandardBaseComponent('base-signature-pad', props, ['root', 'label', 'surface', 'toolbar', 'error']),
+		ui: useUi(props, 'base-signature-pad'),
 		labelId: `${ownId}-label`,
 		errorId,
 		surfaceRef,

@@ -6,7 +6,9 @@ const shortSide = (image: AvatarImageSize): number => Math.min(image.width, imag
 
 const clamp = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, value))
 
-const percent = (value: number): string => `${Math.round(value * 10000) / 10000}%`
+const round = (value: number, digits: number): number => Math.round(value * 10 ** digits) / 10 ** digits
+
+const percent = (value: number): string => `${round(value, 4)}%`
 
 export const initialView = (image: AvatarImageSize): AvatarView => ({ zoom: 1, centerX: image.width / 2, centerY: image.height / 2 })
 
@@ -45,11 +47,8 @@ export const unitSize = (view: AvatarView, image: AvatarImageSize, areaWidth: nu
 	(areaWidth * FRAME_SHARE * view.zoom) / shortSide(image)
 
 export function imageStyle(view: AvatarView, image: AvatarImageSize): Record<string, string> {
-	const scale = (view.zoom / shortSide(image)) * FRAME_SHARE * 100
-	return {
-		width: percent(image.width * scale),
-		height: percent(image.height * scale),
-		left: percent(50 - view.centerX * scale),
-		top: percent(50 - view.centerY * scale),
-	}
+	const scale = (view.zoom / shortSide(image)) * FRAME_SHARE
+	const x = percent(50 - view.centerX * scale * 100)
+	const y = percent(((50 - view.centerY * scale * 100) * image.width) / image.height)
+	return { aspectRatio: `${image.width} / ${image.height}`, transform: `translate(${x}, ${y}) scale(${round(image.width * scale, 6)})` }
 }

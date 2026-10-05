@@ -1,11 +1,11 @@
 .base-signature-pad {
 	display: flex;
 	flex-direction: column;
-	gap: sz(6px);
+	gap: ct(signature-pad, gap, sz(6px));
 	width: 100%;
 	min-width: 0;
 	max-width: sz(var(--signature-width));
-	@include custom-text(color, var(--rise-text-highlighted));
+	@include custom-text(color, ct(signature-pad, text, var(--rise-text-highlighted)));
 
 	&__label {
 		@include field-label;
@@ -17,7 +17,7 @@
 		width: 100%;
 		overflow: hidden;
 		aspect-ratio: var(--signature-ratio);
-		@include field-box;
+		@include field-box(signature-pad-surface);
 	}
 
 	&__canvas {
@@ -42,8 +42,8 @@
 		right: sz(20px);
 		bottom: 24%;
 		left: sz(20px);
-		border-bottom: 1px solid var(--rise-border-accented);
-		color: var(--rise-text-toned);
+		border-bottom: 1px solid ct(signature-pad, baseline-border, var(--rise-border-accented));
+		color: ct(signature-pad, baseline-text, var(--rise-text-toned));
 		line-height: 1;
 		pointer-events: none;
 		@include text-size(lg);
@@ -56,7 +56,7 @@
 		align-items: center;
 		justify-content: center;
 		padding: sz(8px) sz(16px);
-		color: var(--rise-text-toned);
+		color: ct(signature-pad, hint-text, var(--rise-text-toned));
 		text-align: center;
 		pointer-events: none;
 		@include text-size(sm);
@@ -65,7 +65,7 @@
 	&__toolbar {
 		display: flex;
 		flex-wrap: wrap;
-		gap: sz(4px);
+		gap: ct(signature-pad, toolbar-gap, space(4px));
 	}
 
 	&__error {
@@ -95,3 +95,5 @@
 		cursor: not-allowed;
 	}
 }
+
+@include enter-fade(base-signature-pad-fade);

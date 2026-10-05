@@ -1,9 +1,21 @@
 import type { Ref } from 'vue'
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import type { CryptoProFailure, CryptoProCertificate } from '@composables/crypto/useCryptoPro'
 
 /** Варианты оформления: `default` — рамка и фон, `soft` — фон без рамки, `outline` — только рамка, `ghost` — без рамки и фона */
 export const CRYPTO_PRO_SIGN_VARIANTS = ['default', 'soft', 'outline', 'ghost'] as const
+
+/**
+ * Части компонента для пропа `ui` (БЭМ-элементы `.base-crypto-pro-sign__<часть>`, `root` — корень `section`):
+ * status — диагностика плагина по шагам, empty — «нет сертификатов», certificate — выбор сертификата, source — что подписываем,
+ * hint — подсказка о подписи по хэшу, actions — кнопки, result — итог подписи или проверки, error — блок ошибки действия,
+ * live — скрытый live-регион для скринридера.
+ */
+export const CRYPTO_PRO_SIGN_PARTS = ['status', 'empty', 'certificate', 'source', 'hint', 'actions', 'result', 'error', 'live'] as const
+
+/** Часть компонента для пропа `ui` */
+export type BaseCryptoProSignPart = (typeof CRYPTO_PRO_SIGN_PARTS)[number]
 
 /** Режимы: подпись и проверка подписи */
 export const CRYPTO_PRO_SIGN_MODES = ['sign', 'verify'] as const
@@ -122,6 +134,14 @@ export interface BaseCryptoProSignProps extends BaseComponentProps<(typeof CRYPT
 	hasDownload?: boolean
 	/** Отключает поля и кнопки */
 	isDisabled?: boolean
+	/**
+	 * Классы частей (`root`, `status`, `empty`, `certificate`, `source`, `hint`, `actions`, `result`, `error`, `live`) — добавляются
+	 * к классам кита. Глобально — `createUiKitPlugin({ defaults: { BaseCryptoProSign: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseCryptoProSign :data="text" :ui="{ root: 'shadow-none', actions: 'justify-end' }" />
+	 */
+	ui?: UiProp<BaseCryptoProSignPart>
 }
 
 /** События компонента BaseCryptoProSign */

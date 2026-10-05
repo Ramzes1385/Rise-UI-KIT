@@ -1,7 +1,7 @@
 <template>
 	<div
-		class="base-signature-pad"
 		:class="[
+			ui('root'),
 			variantClass,
 			classes.root,
 			{ 'base-signature-pad--error': Boolean(error), 'base-signature-pad--disabled': isControlDisabled },
@@ -22,23 +22,25 @@
 			:id="labelId"
 			tag="span"
 			:label="label"
-			class-name="base-signature-pad__label"
+			:class-name="ui('label')"
 			:custom-class="classes.label"
 			:size-scale="sizeScale" />
-		<div class="base-signature-pad__surface" :class="classes.surface">
-			<span class="base-signature-pad__baseline" aria-hidden="true">×</span>
-			<span v-if="isEmpty" class="base-signature-pad__hint" aria-hidden="true">{{ placeholder ?? UI_SIGNATURE_PAD.HINT }}</span>
+		<div :class="[ui('surface'), classes.surface]">
+			<span :class="ui('baseline')" aria-hidden="true">×</span>
+			<Transition name="base-signature-pad-fade">
+				<span v-if="isEmpty" :class="ui('hint')" aria-hidden="true">{{ placeholder ?? UI_SIGNATURE_PAD.HINT }}</span>
+			</Transition>
 			<svg
 				ref="surfaceRef"
-				class="base-signature-pad__canvas"
+				:class="ui('canvas')"
 				:viewBox="`0 0 ${width} ${height}`"
 				role="img"
 				:aria-label="inkLabel"
 				@pointerdown="handlePointerDown">
-				<path v-if="path" class="base-signature-pad__ink" :d="path" :stroke-width="lineWidth" />
+				<path v-if="path" :class="ui('ink')" :d="path" :stroke-width="lineWidth" />
 			</svg>
 		</div>
-		<div class="base-signature-pad__toolbar" :class="classes.toolbar">
+		<div :class="[ui('toolbar'), classes.toolbar]">
 			<BaseButton
 				variant="ghost"
 				:size-scale="sizeScale * 0.875"
@@ -60,7 +62,7 @@
 			v-if="error"
 			:id="errorId"
 			:error="error"
-			class-name="base-signature-pad__error"
+			:class-name="ui('error')"
 			:custom-class="classes.error"
 			:size-scale="sizeScale" />
 	</div>
@@ -91,6 +93,7 @@ const props = withDefaults(defineProps<BaseSignaturePadProps>(), {
 const emit = defineEmits<BaseSignaturePadEmits>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

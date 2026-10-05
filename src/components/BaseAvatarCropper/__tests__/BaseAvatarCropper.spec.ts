@@ -31,12 +31,11 @@ describe('BaseAvatarCropper unit', () => {
 		expect(area).toHaveAttribute('tabindex', '0')
 	})
 
-	it('после загрузки: кадр по центру в v-model и положение фото в процентах', async () => {
+	it('после загрузки: кадр по центру в v-model, положение фото — transform', async () => {
 		const { container, emitted } = render(BaseAvatarCropper, { props: { src: SRC } })
 		const image = await loadImage(container)
 		expect(lastCrop(emitted())).toEqual({ x: 150, y: 0, size: 500 })
-		expect(image.style.width).toBe('134.4%')
-		expect(image.style.left).toBe('-17.2%')
+		expect(image.style.transform).toBe('translate(-17.2%, 12.8%) scale(1.344)')
 		expect(container.firstElementChild).not.toHaveClass('base-avatar-cropper--loading')
 	})
 
@@ -44,7 +43,7 @@ describe('BaseAvatarCropper unit', () => {
 		const { container, emitted } = render(BaseAvatarCropper, { props: { src: SRC, crop: { x: 300, y: 125, size: 250 } } })
 		const image = await loadImage(container)
 		expect(emitted()['update:crop']).toBeUndefined()
-		expect(image.style.width).toBe('268.8%')
+		expect(image.style.transform).toContain('scale(2.688)')
 	})
 
 	it('клавиши: стрелки сдвигают фото, плюс и минус меняют масштаб, ноль сбрасывает', async () => {
@@ -123,7 +122,7 @@ describe('BaseAvatarCropper unit', () => {
 		const { container, emitted, rerender } = render(BaseAvatarCropper, { props: { src: SRC } })
 		const image = await loadImage(container)
 		await rerender({ src: SRC, crop: { x: 300, y: 125, size: 250 } })
-		expect(image.style.width).toBe('268.8%')
+		expect(image.style.transform).toContain('scale(2.688)')
 		await rerender({ src: SRC, crop: { x: 300, y: 125, size: 250 } })
 		expect(emitted()['update:crop']).toHaveLength(1)
 		await rerender({ src: 'data:image/png;base64,BBBB', crop: undefined })

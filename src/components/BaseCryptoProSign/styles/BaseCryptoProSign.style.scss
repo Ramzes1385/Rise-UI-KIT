@@ -1,17 +1,19 @@
 .base-crypto-pro-sign {
+	--crypto-pro-sign-gap: #{ct(crypto-pro-sign, gap, space(16px))};
+
 	display: flex;
 	flex-direction: column;
-	gap: sz(16px);
+	gap: var(--crypto-pro-sign-gap);
 	box-sizing: border-box;
 	min-width: 0;
 	max-width: 100%;
-	padding: sz(16px);
-	border: 1px solid var(--rise-border);
-	border-radius: sz(var(--rise-radius-lg));
+	padding: ct(crypto-pro-sign, padding, space(16px));
+	border: 1px solid ct(crypto-pro-sign, border, var(--rise-border));
+	border-radius: sz(ct(crypto-pro-sign, radius, var(--rise-radius-lg)));
 	@include text-size(sm);
-	@include custom-bg(background-color, var(--rise-bg));
-	@include custom-text(color, var(--rise-text));
-	@include custom-text(--crypto-pro-sign-text, var(--rise-text));
+	@include custom-bg(background-color, ct(crypto-pro-sign, bg, var(--rise-bg)));
+	@include custom-text(color, ct(crypto-pro-sign, text, var(--rise-text)));
+	@include custom-text(--crypto-pro-sign-text, ct(crypto-pro-sign, text, var(--rise-text)));
 
 	& :is(.base-select, .base-segmented, .base-file-upload) :is(.base-select__label, .base-segmented__label, .base-file-upload__label) {
 		color: var(--crypto-pro-sign-text);
@@ -54,7 +56,20 @@
 	&__actions {
 		display: flex;
 		flex-wrap: wrap;
-		gap: sz(8px);
+		gap: ct(crypto-pro-sign, actions-gap, sz(8px));
+	}
+
+	&__error {
+		margin-top: calc(var(--crypto-pro-sign-gap) * -1);
+		@include expand-rows;
+
+		&--open {
+			@include expand-rows-open;
+		}
+	}
+
+	&__error-body > * {
+		margin-top: var(--crypto-pro-sign-gap);
 	}
 
 	&__live {
@@ -63,9 +78,11 @@
 }
 
 .base-crypto-pro-sign-status {
+	--crypto-pro-sign-status-gap: #{sz(12px)};
+
 	display: flex;
 	flex-direction: column;
-	gap: sz(12px);
+	gap: var(--crypto-pro-sign-status-gap);
 
 	&__versions {
 		margin: 0;
@@ -121,15 +138,28 @@
 	&__state {
 		@include visually-hidden;
 	}
+
+	&__error {
+		margin-top: calc(var(--crypto-pro-sign-status-gap) * -1);
+		@include expand-rows;
+
+		&--open {
+			@include expand-rows-open;
+		}
+	}
+
+	&__error-body > * {
+		margin-top: var(--crypto-pro-sign-status-gap);
+	}
 }
 
 .base-crypto-pro-sign-result {
 	display: flex;
 	align-items: flex-start;
-	gap: sz(10px);
-	padding: sz(12px);
+	gap: ct(crypto-pro-sign, result-gap, sz(10px));
+	padding: ct(crypto-pro-sign, result-padding, space(12px));
 	border: 1px solid var(--rise-success-border);
-	border-radius: sz(var(--rise-radius-md));
+	border-radius: sz(ct(crypto-pro-sign, result-radius, var(--rise-radius-md)));
 	background-color: var(--rise-success-soft);
 	color: var(--rise-success-text);
 
@@ -153,7 +183,7 @@
 
 	&__title,
 	&__name {
-		font-weight: 600;
+		font-weight: var(--rise-font-weight-semibold);
 	}
 
 	&__signers {
@@ -171,6 +201,9 @@
 		overflow-wrap: anywhere;
 	}
 }
+
+@include enter-fade(base-crypto-pro-sign-fade);
+@include enter-slide(base-crypto-pro-sign-slide);
 
 @keyframes base-crypto-pro-sign-spin {
 	to {

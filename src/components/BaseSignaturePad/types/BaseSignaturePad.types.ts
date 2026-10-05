@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
@@ -38,6 +39,16 @@ export interface SignatureRenderOptions extends SignaturePngOptions {
 	lineWidth: number
 }
 
+/**
+ * Части поля подписи для пропа `ui` (БЭМ-элементы `.base-signature-pad__<часть>`, `root` — корень):
+ * label — подпись над полем, surface — поле, baseline — линия «×», hint — подсказка в пустом поле, canvas — SVG для рисования,
+ * ink — линии подписи, toolbar — кнопки «Отменить» и «Очистить», error — текст ошибки.
+ */
+export const SIGNATURE_PAD_PARTS = ['label', 'surface', 'baseline', 'hint', 'canvas', 'ink', 'toolbar', 'error'] as const
+
+/** Часть поля подписи для пропа `ui` */
+export type BaseSignaturePadPart = (typeof SIGNATURE_PAD_PARTS)[number]
+
 /** Связь рисования с полем: где рисуют, размер в единицах штрихов, можно ли рисовать и куда отдать штрих */
 export interface SignatureDrawingOptions {
 	surface: () => Element | null
@@ -71,6 +82,14 @@ export interface BaseSignaturePadProps extends BaseComponentProps<
 	error?: string
 	/** Отключает поле: рисовать, отменять и очищать нельзя */
 	isDisabled?: boolean
+	/**
+	 * Классы частей (`root`, `label`, `surface`, `baseline`, `hint`, `canvas`, `ink`, `toolbar`, `error`) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseSignaturePad: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseSignaturePad v-model="strokes" :ui="{ surface: 'bg-white', toolbar: 'justify-end' }" />
+	 */
+	ui?: UiProp<BaseSignaturePadPart>
 }
 
 /**

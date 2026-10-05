@@ -22,3 +22,5 @@ export const Variants = cases.Variants
 export const Sizes = cases.Sizes
 export const Disabled = cases.Disabled
 export const LoadError = cases.LoadError
+export const Theming = cases.Theming
+export const Animations = cases.Animations

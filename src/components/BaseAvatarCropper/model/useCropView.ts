@@ -1,10 +1,11 @@
 import type { Ref } from 'vue'
-import { computed, shallowRef, watch } from 'vue'
+import { computed, ref, shallowRef, watch } from 'vue'
 import { clampView, cropToView, imageStyle, initialView, sameCrop, viewToCrop } from './crop/cropGeometry'
 import type { AvatarView, AvatarImageSize, AvatarCropperProps, BaseAvatarCropperEmits } from '../types/BaseAvatarCropper.types'
 
 export function useCropView(props: AvatarCropperProps, emit: BaseAvatarCropperEmits, image: Ref<AvatarImageSize | null>) {
 	const view = shallowRef<AvatarView | null>(null)
+	const isStepping = ref(false)
 	const crop = computed(() => (view.value && image.value ? viewToCrop(view.value, image.value) : undefined))
 	const setView = (next: AvatarView): void => {
 		if (!image.value) return
@@ -14,17 +15,21 @@ export function useCropView(props: AvatarCropperProps, emit: BaseAvatarCropperEm
 	}
 	watch(image, size => {
 		view.value = null
+		isStepping.value = false
 		if (size) setView(props.crop ? cropToView(props.crop, size, props.maxZoom) : initialView(size))
 	})
 	watch(
 		() => props.crop,
 		value => {
-			if (value && image.value && !sameCrop(crop.value, value)) view.value = cropToView(value, image.value, props.maxZoom)
+			if (!value || !image.value || sameCrop(crop.value, value)) return
+			isStepping.value = true
+			view.value = cropToView(value, image.value, props.maxZoom)
 		},
 	)
 	return {
 		view,
 		crop,
+		isStepping,
 		setView,
 		style: computed(() => (view.value && image.value ? imageStyle(view.value, image.value) : {})),
 		zoom: computed(() => view.value?.zoom ?? 1),

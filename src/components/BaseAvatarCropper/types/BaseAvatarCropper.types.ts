@@ -1,8 +1,19 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /** Варианты оформления BaseAvatarCropper: default — область без рамки, outline — с рамкой accented. */
 export const AVATAR_CROPPER_VARIANTS = ['default', 'outline'] as const
+
+/**
+ * Части кадрировщика для пропа `ui` (БЭМ-элементы `.base-avatar-cropper__<часть>`, `root` — корень):
+ * area — область кадрирования, image — фото, frame — рамка кадра с затемнением вокруг, message — сообщение об ошибке загрузки,
+ * hint — скрытая подсказка для скринридера, zoom — строка масштаба, zoom-label — подпись «Масштаб», range — ползунок масштаба.
+ */
+export const AVATAR_CROPPER_PARTS = ['area', 'image', 'frame', 'message', 'hint', 'zoom', 'zoom-label', 'range'] as const
+
+/** Часть кадрировщика для пропа `ui` */
+export type BaseAvatarCropperPart = (typeof AVATAR_CROPPER_PARTS)[number]
 
 /** Форма кадра: circle — круглый аватар, square — квадратный со скруглением */
 export const AVATAR_CROP_SHAPES = ['circle', 'square'] as const
@@ -58,6 +69,14 @@ export interface BaseAvatarCropperProps extends BaseComponentProps<(typeof AVATA
 	label?: string
 	/** Отключает кадрирование: перетаскивание, клавиши и ползунок */
 	isDisabled?: boolean
+	/**
+	 * Классы частей (`root`, `area`, `image`, `frame`, `message`, `hint`, `zoom`, `zoom-label`, `range`) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseAvatarCropper: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseAvatarCropper :src="src" :ui="{ area: 'rounded-none', frame: 'ring-2' }" />
+	 */
+	ui?: UiProp<BaseAvatarCropperPart>
 }
 
 /**

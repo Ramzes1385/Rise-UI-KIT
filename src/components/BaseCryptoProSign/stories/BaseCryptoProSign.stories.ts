@@ -31,3 +31,5 @@ export const CustomColor = cases.CustomColor
 export const Disabled = cases.Disabled
 export const Loading = cases.Loading
 export const Empty = cases.Empty
+export const Theming = cases.Theming
+export const Animations = cases.Animations

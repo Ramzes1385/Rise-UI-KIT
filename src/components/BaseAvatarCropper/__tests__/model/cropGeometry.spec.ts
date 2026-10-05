@@ -41,6 +41,9 @@ describe('геометрия кадра', () => {
 	})
 
 	it('положение фото в области — в процентах: кадр занимает 84% области', () => {
-		expect(imageStyle(initialView(LANDSCAPE), LANDSCAPE)).toEqual({ width: '134.4%', height: '84%', left: '-17.2%', top: '8%' })
+		expect(imageStyle(initialView(LANDSCAPE), LANDSCAPE)).toEqual({
+			aspectRatio: '800 / 500',
+			transform: 'translate(-17.2%, 12.8%) scale(1.344)',
+		})
 	})
 })

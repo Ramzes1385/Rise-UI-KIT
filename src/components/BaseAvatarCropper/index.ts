@@ -1,5 +1,6 @@
-export { AVATAR_CROP_SHAPES, AVATAR_CROPPER_VARIANTS } from './types/BaseAvatarCropper.types'
+export { AVATAR_CROPPER_PARTS, AVATAR_CROP_SHAPES, AVATAR_CROPPER_VARIANTS } from './types/BaseAvatarCropper.types'
 export type {
+	BaseAvatarCropperPart,
 	AvatarBlobOptions,
 	AvatarCrop,
 	AvatarCropShape,
