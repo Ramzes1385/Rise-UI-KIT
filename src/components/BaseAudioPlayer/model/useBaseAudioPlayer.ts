@@ -1,6 +1,7 @@
 import { UI_AUDIO } from '@/locales/messages'
 import { isSafeUrl } from '@utils/data/urlUtils'
 import { formatMessage, formatNumber } from '@/locales/state'
+import { useAudioTranscript } from './transcript/useAudioTranscript'
 import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { decodeWaveformPeaks, formatMediaTime } from '@utils/media/mediaUtils'
@@ -139,10 +140,19 @@ export function useBaseAudioPlayer(props: BaseAudioPlayerProps, emit: BaseAudioP
 		if (playing === audioRef.value) playing = null
 	})
 	return {
-		...useStandardBaseComponent('base-audio-player', props, ['root', 'button', 'waveform', 'time', 'rate']),
+		...useStandardBaseComponent('base-audio-player', props, [
+			'root',
+			'button',
+			'waveform',
+			'time',
+			'rate',
+			'transcriptToggle',
+			'transcript',
+		]),
 		...handlers,
 		...actions,
 		...useRate(props, audioRef, () => state.rate),
+		...useAudioTranscript(props, emit, { currentTime: () => state.currentTime, duration: () => duration.value, seek: actions.seek }),
 		audioRef,
 		state,
 		duration,

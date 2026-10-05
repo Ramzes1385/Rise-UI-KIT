@@ -27,6 +27,9 @@ export const UI_AUDIO = localized('audio')
 /** Редактор субтитров */
 export const UI_SUBTITLES = localized('subtitles')
 
+/** Расшифровка записи в BaseAudioPlayer */
+export const UI_TRANSCRIPT = localized('transcript')
+
 /** Таблица: тексты и доступные имена элементов управления */
 export const TABLE_TEXT = localized('table')
 

@@ -18,7 +18,7 @@ export interface AudioPlayerError {
  */
 export interface BaseAudioPlayerProps extends BaseComponentProps<
 	(typeof AUDIO_PLAYER_VARIANTS)[number],
-	'root' | 'button' | 'waveform' | 'time' | 'rate'
+	'root' | 'button' | 'waveform' | 'time' | 'rate' | 'transcriptToggle' | 'transcript'
 > {
 	/** Адрес записи: относительный или http:, https:, blob:, data: */
 	src: string
@@ -40,6 +40,14 @@ export interface BaseAudioPlayerProps extends BaseComponentProps<
 	isExclusive?: boolean
 	/** Плеер недоступен: кнопки и волна не реагируют */
 	isDisabled?: boolean
+	/**
+	 * Расшифровка записи: текст WebVTT или SubRip либо адрес файла `.vtt`/`.srt` (http:, https:, blob:, data:).
+	 * Говорящий — тег `<v Имя>` из WebVTT. С расшифровкой у плеера появляется кнопка выдвижной панели:
+	 * реплики со временем, переход по клику, подсветка текущей, поиск и скачивание текстом
+	 */
+	transcript?: string
+	/** Панель расшифровки открыта (`v-model:is-transcript-open`) */
+	isTranscriptOpen?: boolean
 }
 
 /**
@@ -56,6 +64,8 @@ export interface BaseAudioPlayerEmits {
 	(event: 'error', error: AudioPlayerError): void
 	/** Новая позиция: воспроизведение, перемотка по волне или клавишами */
 	(event: 'update:currentTime', time: number): void
+	/** Панель расшифровки открыли или закрыли */
+	(event: 'update:isTranscriptOpen', isOpen: boolean): void
 }
 
 /**

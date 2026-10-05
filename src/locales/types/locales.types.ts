@@ -32,6 +32,7 @@ export interface UiKitLocale {
 	presentation: Section<'presentation'>
 	audio: Section<'audio'>
 	subtitles: Section<'subtitles'>
+	transcript: Section<'transcript'>
 	chat: Section<'chat'>
 	editor: Section<'editor'>
 	table: Section<'table'>

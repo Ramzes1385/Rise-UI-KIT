@@ -6,6 +6,7 @@ import { ruMedia } from './media'
 import { ruPlural } from './plural'
 import { ruCard } from './components/card'
 import { ruMapEditor } from './components/mapEditor'
+import { ruTranscript } from './components/transcript'
 import { ruPresentation } from './components/presentation'
 import { ruEventCalendar } from './components/eventCalendar'
 /** Русский словарь кита (язык по умолчанию); ключи совпадают с `UI_TEXT`, `UI_ARIA` и др.; `{name}` — место для значения (formatMessage), `plural` — формы чисел (Intl.PluralRules). */
@@ -24,5 +25,6 @@ export const ru = {
 	...ruChat,
 	...ruData,
 	...ruEventCalendar,
+	...ruTranscript,
 	plural: ruPlural,
 }
