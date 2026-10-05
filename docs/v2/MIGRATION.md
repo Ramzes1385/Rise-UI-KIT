@@ -2079,3 +2079,25 @@ API кита не меняется. В Storybook добавлены пример
   - BaseSignaturePad — подсказка «Подпишите здесь» появляется и уходит растворением.
   - BaseCryptoProSign — **DOM**: у корней статуса и итога классы `base-crypto-pro-sign__status` и `__result`; шаги, версии и итог сменяются `<Transition>`, ошибки раскрываются `expand-rows` (свёрнутые обёртки ошибок есть в DOM); live-регион статуса прежний.
 - **Storybook**: у каждого из 17 — истории `Theming` («Токены»: токены на контейнере и `ui`) и `Animations` («Анимации»: колонки пресетов движения).
+## BaseImageMap3D (часть 2)
+
+Только добавления в BaseImageMap3D (вход `/map3d`); BaseImageMap и основной вход не меняются.
+
+- **Сцена строится из данных**: пол каждого этажа — плита с картинкой слоя сверху (`image`, `svg`, `svgUrl`; SVG очищается тем же белым списком, что у 2D, и растеризуется в текстуру), объекты `rect`, `ellipse`, `polygon` и `svg` (элемент SVG слоя по `elementId`) выдавлены на `height3d` (по умолчанию `scene3d.objectHeight` = 0,03 × большая сторона слоя). Этажи по `elevation` (по умолчанию номер × `scene3d.floorGap`). Точки (`point`) в 3D пока не показываются — часть 3.
+- **Этаж из модели**: `layer.model` (GLB или GLTF) грузится `GLTFLoader`; узел объекта ищется по `meshName ?? id` (и по имени, очищенному загрузчиком: пробелы → `_`); все меши узла окрашиваются по состоянию объекта. Узла нет — объект выдавливается по своей фигуре и предупреждение в dev. Модель не загрузилась — 2D, `role="status"` «Не удалось запустить 3D — показан план» и `fallback('error')`.
+- **Новые пропсы**: `camera?: 'isometric' | 'perspective'` (по умолчанию `isometric`), `layerMode?: 'stack' | 'single'` (по умолчанию `stack`: неактивные этажи с непрозрачностью 0,25; `single` — только активный), `hasOrbit?: boolean` (по умолчанию `true`), `configureLoader?: (loader: GLTFLoader) => void` — подключить DRACO, KTX2 или meshopt приложения:
+  ```ts
+  import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js'
+  const draco = new DRACOLoader().setDecoderPath('/draco/')
+  // <BaseImageMap3D :data="data" :configure-loader="loader => loader.setDRACOLoader(draco)" />
+  ```
+- **Новые константы и типы** входа `/map3d`: `IMAGE_MAP_3D_CAMERAS`, `IMAGE_MAP_3D_LAYER_MODES`, `ImageMap3DCamera`, `ImageMap3DLayerMode`.
+- **`v-model:layer` и `layer-change` в 3D-виде**: переключатель этажей (BaseSegmented «Этажи») над областью, если этажей больше одного; смена этажа ведёт камеру на его высоту.
+- **Камера**: OrbitControls — вращение и наклон левой кнопкой или одним пальцем, сдвиг правой или двумя; наклон 5–75° от вертикали, масштаб 0,5–8×. Колесо масштабирует только с Ctrl или ⌘ (как `wheelZoom: 'ctrl'` у BaseImageMap), без них прокручивается страница; щипок на тачпаде работает.
+- **Клавиши в области карты**: Shift + ←/→ — поворот на 15°, Shift + ↑/↓ — наклон на 10°, `+`/`=` и `-` — масштаб, `0` — исходный вид. Стрелки без Shift камера не забирает (они для объектов в части 3). Подсказка — `aria-describedby`.
+- **Кнопки камеры** (`hasZoomControls`, группа «Камера»): «Увеличить», «Уменьшить» (на пределе — `aria-disabled`, фокус остаётся), «Повернуть влево», «Повернуть вправо», «Сбросить вид».
+- **Expose**: `setLayer(id)`, `resetCamera()`, `rotate(degrees)`, `zoomIn()`, `zoomOut()`, `zoomToObject(id)`.
+- **Движение**: переходы камеры — `useTween` по токену `--rise-duration-xslow` (500 мс в пресете standard), ease-in-out; при `prefers-reduced-motion`, пресете `none` и `reducedMotion: 'always'` — сразу.
+- **Цвета**: стили объектов и групп те же, что у 2D (`base`/`hover`/`active`, `fill`, `fillOpacity`); CSS-цвета и `var(--rise-*)` берутся из `getComputedStyle` в области карты и пересчитываются при смене `data-theme`, `data-rise-theme` и системной темы. Непрозрачность по умолчанию в 3D — 0,7 / 0,85 / 1 (у 2D 0,2 / 0,4 / 0,55), свой `fillOpacity` стиля учитывается. Пол — `--rise-bg-muted` (без картинки), бока плиты — `--rise-border`.
+- **`customClass`**: новые части `toolbar`, `layers`, `camera`.
+- **Словарь `imageMap3d`** (ru, en): `CAMERA`, `ROTATE_LEFT`, `ROTATE_RIGHT`, `RESET_CAMERA`, `KEYBOARD_HINT`, `MODEL_NODE_MISSING`.
