@@ -95,6 +95,7 @@ $light-main-shade: (
 
 @mixin static-tokens {
 	--rise-font-sans: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+	--rise-font-heading: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
 	--rise-font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
 	--rise-font-size-2xs: 10px;
@@ -122,10 +123,13 @@ $light-main-shade: (
 	--rise-radius: 4px;
 	--rise-radius-full: 9999px;
 
-	--rise-control-padding-y: 5px;
-	--rise-control-padding-x: 10px;
-	--rise-control-gap: 6px;
+	--rise-density: 1;
+	--rise-control-padding-y-base: 5px;
+	--rise-control-padding-x-base: 10px;
+	--rise-control-gap-base: 6px;
 	--rise-control-icon-size: 16px;
+
+	--rise-shadow-strength: 1;
 
 	--rise-disabled-opacity: 0.5;
 
@@ -163,6 +167,9 @@ $light-main-shade: (
 	--rise-radius-xl: calc(var(--rise-radius) * 3);
 	--rise-radius-2xl: calc(var(--rise-radius) * 4);
 
+	--rise-control-padding-y: calc(var(--rise-control-padding-y-base) * var(--rise-density));
+	--rise-control-padding-x: calc(var(--rise-control-padding-x-base) * var(--rise-density));
+	--rise-control-gap: calc(var(--rise-control-gap-base) * var(--rise-density));
 	--rise-control-font-size: var(--rise-font-size-sm);
 	--rise-control-line-height: var(--rise-line-height-sm);
 	--rise-control-radius: var(--rise-radius-md);
@@ -174,12 +181,14 @@ $light-main-shade: (
 			--rise-color-#{$role}-#{$shade}: #{$value};
 		}
 	}
+
+	--rise-color-neutral-0: #fff;
 }
 
 @mixin light-tokens {
 	color-scheme: light;
 
-	--rise-bg: #fff;
+	--rise-bg: #{palette('neutral', 0)};
 	--rise-bg-muted: #{palette('neutral', 50)};
 	--rise-bg-elevated: #{palette('neutral', 100)};
 	--rise-bg-accented: #{palette('neutral', 200)};
@@ -190,7 +199,7 @@ $light-main-shade: (
 	--rise-text-toned: #{palette('neutral', 600)};
 	--rise-text: #{palette('neutral', 700)};
 	--rise-text-highlighted: #{palette('neutral', 900)};
-	--rise-text-inverted: #fff;
+	--rise-text-inverted: #{palette('neutral', 0)};
 
 	--rise-border: #{palette('neutral', 200)};
 	--rise-border-muted: #{palette('neutral', 200)};
@@ -232,11 +241,19 @@ $light-main-shade: (
 	--rise-code-property: #953800;
 	--rise-code-variable: #953800;
 
-	--rise-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 5%);
-	--rise-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 10%), 0 1px 2px -1px rgb(0 0 0 / 10%);
-	--rise-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 10%), 0 2px 4px -2px rgb(0 0 0 / 10%);
-	--rise-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 10%), 0 4px 6px -4px rgb(0 0 0 / 10%);
-	--rise-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 10%), 0 8px 10px -6px rgb(0 0 0 / 10%);
+	--rise-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / calc(5% * var(--rise-shadow-strength)));
+	--rise-shadow-sm:
+		0 1px 3px 0 rgb(0 0 0 / calc(10% * var(--rise-shadow-strength))),
+		0 1px 2px -1px rgb(0 0 0 / calc(10% * var(--rise-shadow-strength)));
+	--rise-shadow-md:
+		0 4px 6px -1px rgb(0 0 0 / calc(10% * var(--rise-shadow-strength))),
+		0 2px 4px -2px rgb(0 0 0 / calc(10% * var(--rise-shadow-strength)));
+	--rise-shadow-lg:
+		0 10px 15px -3px rgb(0 0 0 / calc(10% * var(--rise-shadow-strength))),
+		0 4px 6px -4px rgb(0 0 0 / calc(10% * var(--rise-shadow-strength)));
+	--rise-shadow-xl:
+		0 20px 25px -5px rgb(0 0 0 / calc(10% * var(--rise-shadow-strength))),
+		0 8px 10px -6px rgb(0 0 0 / calc(10% * var(--rise-shadow-strength)));
 }
 
 @mixin dark-tokens {
@@ -246,19 +263,19 @@ $light-main-shade: (
 	--rise-bg-muted: #{palette('neutral', 800)};
 	--rise-bg-elevated: #{palette('neutral', 800)};
 	--rise-bg-accented: #{palette('neutral', 700)};
-	--rise-bg-inverted: #fff;
+	--rise-bg-inverted: #{palette('neutral', 0)};
 
 	--rise-text-dimmed: #{palette('neutral', 500)};
 	--rise-text-muted: #{palette('neutral', 400)};
 	--rise-text-toned: #{palette('neutral', 300)};
 	--rise-text: #{palette('neutral', 200)};
-	--rise-text-highlighted: #fff;
+	--rise-text-highlighted: #{palette('neutral', 0)};
 	--rise-text-inverted: #{palette('neutral', 900)};
 
 	--rise-border: #{palette('neutral', 800)};
 	--rise-border-muted: #{palette('neutral', 700)};
 	--rise-border-accented: #{palette('neutral', 700)};
-	--rise-border-inverted: #fff;
+	--rise-border-inverted: #{palette('neutral', 0)};
 
 	@each $role in $roles {
 		--rise-#{$role}: #{palette($role, 400)};
@@ -273,11 +290,19 @@ $light-main-shade: (
 	--rise-focus-ring: var(--rise-primary);
 	--rise-overlay: color-mix(in srgb, var(--rise-bg-elevated) 75%, transparent);
 
-	--rise-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 30%);
-	--rise-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 40%), 0 1px 2px -1px rgb(0 0 0 / 40%);
-	--rise-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 40%), 0 2px 4px -2px rgb(0 0 0 / 40%);
-	--rise-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 50%), 0 4px 6px -4px rgb(0 0 0 / 50%);
-	--rise-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 60%), 0 8px 10px -6px rgb(0 0 0 / 60%);
+	--rise-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / calc(30% * var(--rise-shadow-strength)));
+	--rise-shadow-sm:
+		0 1px 3px 0 rgb(0 0 0 / calc(40% * var(--rise-shadow-strength))),
+		0 1px 2px -1px rgb(0 0 0 / calc(40% * var(--rise-shadow-strength)));
+	--rise-shadow-md:
+		0 4px 6px -1px rgb(0 0 0 / calc(40% * var(--rise-shadow-strength))),
+		0 2px 4px -2px rgb(0 0 0 / calc(40% * var(--rise-shadow-strength)));
+	--rise-shadow-lg:
+		0 10px 15px -3px rgb(0 0 0 / calc(50% * var(--rise-shadow-strength))),
+		0 4px 6px -4px rgb(0 0 0 / calc(50% * var(--rise-shadow-strength)));
+	--rise-shadow-xl:
+		0 20px 25px -5px rgb(0 0 0 / calc(60% * var(--rise-shadow-strength))),
+		0 8px 10px -6px rgb(0 0 0 / calc(60% * var(--rise-shadow-strength)));
 
 	--rise-chart-1: #3987e5;
 	--rise-chart-2: #d95926;
@@ -349,7 +374,7 @@ $light-main-shade: (
 	--color-sidebar-soft-footer-bg: var(--rise-bg-elevated);
 
 	--font-family-base: var(--rise-font-sans);
-	--font-family-heading: var(--rise-font-sans);
+	--font-family-heading: var(--rise-font-heading);
 	--font-family-mono: var(--rise-font-mono);
 
 	--transition-base: var(--rise-duration) var(--rise-ease);
@@ -395,7 +420,9 @@ $light-main-shade: (
 }
 
 @media (prefers-reduced-motion: reduce) {
-	:root {
+	:root,
+	[data-theme],
+	[data-rise-theme] {
 		--rise-duration-fast: 0.01ms;
 		--rise-duration: 0.01ms;
 		--rise-duration-slow: 0.01ms;

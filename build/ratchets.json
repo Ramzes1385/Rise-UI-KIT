@@ -28,6 +28,10 @@
 			"gzip": 83405,
 			"budget": 92160
 		},
+		"styles.layer.css": {
+			"gzip": 61,
+			"budget": 2048
+		},
 		"utils.js": {
 			"gzip": 71763,
 			"budget": 79872

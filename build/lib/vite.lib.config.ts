@@ -8,6 +8,9 @@ import { createResolveConfig } from '../config/resolve'
 import { createPlugins } from '../plugins'
 import { createCssDedupePlugin } from '../plugins/cssDedupe'
 
+/** `@ramzes1385/rise-ui-kit/styles.layer.css`: весь кит в слое `rise` — стили приложения без слоя сильнее без `!important` */
+const LAYER_CSS = "@import url('./styles.css') layer(rise);\n"
+
 /**
  * Типы для `import '@ramzes1385/rise-ui-kit/styles'` (exports в package.json): без них TypeScript у потребителя
  * не находит объявление модуля стилей. Файл кладётся в dist вместе со сборкой.
@@ -17,6 +20,7 @@ function createStylesTypesPlugin(): Plugin {
 		name: 'rise:styles-types',
 		generateBundle() {
 			this.emitFile({ type: 'asset', fileName: 'styles.d.ts', source: 'declare const styles: string\n\nexport default styles\n' })
+			this.emitFile({ type: 'asset', fileName: 'styles.layer.css', source: LAYER_CSS })
 		},
 	}
 }

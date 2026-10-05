@@ -14,3 +14,23 @@
 
 	@return $result;
 }
+
+// Отступы поверхностей (карточки, окна, таблицы, меню): как sz(), но с множителем плотности темы --rise-density
+@function space($values) {
+	$result: ();
+
+	@each $value in $values {
+		@if $value == 0 {
+			$result: list.append($result, 0, space);
+		} @else {
+			$result: list.append($result, string.unquote('calc(#{$value} * var(--size-scale, 1) * var(--rise-density, 1))'), space);
+		}
+	}
+
+	@return $result;
+}
+
+// Токен компонента (уровень 3): кит читает --rise-<компонент>-<свойство> с запасным значением и нигде его не объявляет
+@function ct($component, $prop, $fallback) {
+	@return string.unquote('var(--rise-#{$component}-#{$prop}, #{$fallback})');
+}
