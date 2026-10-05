@@ -19,3 +19,4 @@ export const Default = cases.Default
 export const Open = cases.Open
 export const Empty = cases.Empty
 export const Variants = cases.Variants
+export const HotkeyScope = cases.HotkeyScope

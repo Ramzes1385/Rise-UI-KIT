@@ -5,6 +5,15 @@ import type { ModalVariant } from '@components/BaseModal/types/BaseModal.types'
 export const COMMAND_PALETTE_VARIANTS = ['default', 'ghost', 'shadow'] as const satisfies readonly ModalVariant[]
 
 /**
+ * Где работает `hotkey`: `global` — на всей странице (как ⌘K в большинстве приложений), `container` — только когда фокус
+ * внутри блока, в котором стоит палитра (несколько палитр на одной странице, примеры в документации)
+ */
+export const COMMAND_PALETTE_HOTKEY_SCOPES = ['global', 'container'] as const
+
+/** Где работает сочетание клавиш палитры */
+export type CommandPaletteHotkeyScope = (typeof COMMAND_PALETTE_HOTKEY_SCOPES)[number]
+
+/**
  * Команда: название, группа («Навигация», «Файл»), пояснение, значок, сочетание клавиш для подсказки (`mod+shift+p`)
  * и слова для поиска. `onSelect` выполняется после закрытия палитры
  */
@@ -45,6 +54,11 @@ export interface BaseCommandPaletteProps extends BaseComponentProps<ModalVariant
 	commands: readonly CommandItem[]
 	/** Сочетание, которое открывает и закрывает палитру; по умолчанию `mod+k` (⌘K или Ctrl+K), `null` — без него */
 	hotkey?: string | null
+	/**
+	 * Где работает `hotkey`: `global` (по умолчанию) — на всей странице; `container` — только когда фокус внутри блока,
+	 * в котором стоит палитра. Закрывает открытую палитру Escape
+	 */
+	hotkeyScope?: CommandPaletteHotkeyScope
 	/** Подсказка в поле поиска */
 	placeholder?: string
 	/** Имя окна для скринридера; по умолчанию «Палитра команд» */

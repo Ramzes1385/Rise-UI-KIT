@@ -6,6 +6,7 @@ import type BaseCommandPalette from '../ui/BaseCommandPalette.vue'
 export const args = {
 	commands: COMMANDS,
 	hotkey: 'mod+k',
+	hotkeyScope: 'global',
 	variant: 'default',
 	sizeScale: 100,
 	onSelect: fn(),

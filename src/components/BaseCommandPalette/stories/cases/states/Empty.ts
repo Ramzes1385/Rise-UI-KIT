@@ -3,6 +3,7 @@ import { expect, screen, within } from 'storybook/test'
 import type meta from '../../BaseCommandPalette.stories'
 
 export const Empty: StoryObj<typeof meta> = {
+	tags: ['!autodocs'],
 	parameters: { docs: { description: { story: 'Ничего не найдено: текст под полем поиска, его можно заменить слотом `empty`.' } } },
 	args: { isOpen: true, hotkey: null, commands: [] },
 	play: async () => {

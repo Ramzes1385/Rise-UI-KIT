@@ -1,4 +1,5 @@
 export { Default } from './Default'
 export { Open } from './states/Open'
 export { Empty } from './states/Empty'
+export { HotkeyScope } from './behavior/HotkeyScope'
 export { Variants } from './appearance/Variants'

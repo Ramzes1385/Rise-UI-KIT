@@ -3,6 +3,7 @@ import { expect, screen, within } from 'storybook/test'
 import type meta from '../../BaseCommandPalette.stories'
 
 export const Open: StoryObj<typeof meta> = {
+	tags: ['!autodocs'],
 	parameters: {
 		docs: { description: { story: 'Открытая палитра: группы, значки, сочетания клавиш, недоступная команда и подсказка внизу.' } },
 	},

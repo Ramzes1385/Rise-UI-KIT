@@ -1,8 +1,8 @@
 import { UI_COMMAND_PALETTE } from '@/locales/messages'
 import { useHotkeys } from '@composables/interaction/useHotkeys'
 import { useCustomClass } from '@composables/base/useCustomClass'
-import { computed, nextTick, ref, shallowRef, useId, watch } from 'vue'
 import { groupCommands, matchesCommand, nextEnabled } from './commands/commandSearch'
+import { computed, getCurrentInstance, nextTick, onMounted, ref, shallowRef, useId, watch } from 'vue'
 import type { BaseCommandPaletteEmits, BaseCommandPaletteProps, CommandItem } from '../types/BaseCommandPalette.types'
 
 function useOpenState(props: BaseCommandPaletteProps, emit: BaseCommandPaletteEmits) {
@@ -17,8 +17,22 @@ function useOpenState(props: BaseCommandPaletteProps, emit: BaseCommandPaletteEm
 		isOpen.value = value
 		emit('update:isOpen', value)
 	}
-	useHotkeys(() => (props.hotkey === null ? {} : { [props.hotkey ?? 'mod+k']: () => setOpen(!isOpen.value) }))
+	useHotkeys(() => (props.hotkey === null ? {} : { [props.hotkey ?? 'mod+k']: () => setOpen(!isOpen.value) }), {
+		target: useHotkeyTarget(props),
+	})
 	return { isOpen, setOpen }
+}
+
+function useHotkeyTarget(props: BaseCommandPaletteProps) {
+	const container = shallowRef<HTMLElement | null>(null)
+	const instance = getCurrentInstance()
+	onMounted(() => {
+		container.value = (instance?.proxy?.$el as Node | null)?.parentElement ?? null
+	})
+	return (): EventTarget | null => {
+		if (props.hotkeyScope === 'container') return container.value
+		return typeof window === 'undefined' ? null : window
+	}
 }
 
 function useCommandList(props: BaseCommandPaletteProps, isOpen: { value: boolean }) {

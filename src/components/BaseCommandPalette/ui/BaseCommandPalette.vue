@@ -98,6 +98,7 @@ const props = withDefaults(
 		variant: DEFAULT_VARIANT,
 		isOpen: undefined,
 		hotkey: 'mod+k',
+		hotkeyScope: 'global',
 		placeholder: undefined,
 		ariaLabel: undefined,
 		sizeScale: SIZE_SCALE_DEFAULT,

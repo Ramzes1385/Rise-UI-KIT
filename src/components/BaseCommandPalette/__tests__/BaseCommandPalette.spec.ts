@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom/vitest'
 import { setLocale } from '@/locales/state'
+import { defineComponent, nextTick, ref } from 'vue'
 import BaseCommandPalette from '../ui/BaseCommandPalette.vue'
 import type { CommandItem } from '../types/BaseCommandPalette.types'
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
@@ -131,5 +132,34 @@ describe('BaseCommandPalette', () => {
 		await rerender({ hotkey: null })
 		await fireEvent.keyDown(window, { key: 'p', code: 'KeyP', ctrlKey: true })
 		expect(emitted('update:isOpen')).toHaveLength(2)
+	})
+
+	it('hotkeyScope="container": сочетание только при фокусе внутри блока палитры; global — на всей странице', async () => {
+		const scope = ref<'container' | 'global'>('container')
+		render(
+			defineComponent({
+				components: { BaseCommandPalette },
+				setup: () => ({ scope, commands: COMMANDS }),
+				template: `
+					<div>
+						<input aria-label="Снаружи" />
+						<section><input aria-label="Внутри" /><BaseCommandPalette :commands="commands" :hotkey-scope="scope" /></section>
+					</div>
+				`,
+			}),
+		)
+		const press = (target: Element | Window) => fireEvent.keyDown(target, { key: 'k', code: 'KeyK', ctrlKey: true })
+
+		await press(window)
+		await press(screen.getByRole('textbox', { name: 'Снаружи' }))
+		expect(screen.queryByRole('dialog')).toBeNull()
+		await press(screen.getByRole('textbox', { name: 'Внутри' }))
+		expect(dialog()).toBeInTheDocument()
+		await fireEvent.keyDown(search(), { key: 'Escape' })
+		await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
+		scope.value = 'global'
+		await nextTick()
+		await press(screen.getByRole('textbox', { name: 'Снаружи' }))
+		expect(dialog()).toBeInTheDocument()
 	})
 })
