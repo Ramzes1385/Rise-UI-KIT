@@ -41,6 +41,59 @@ async function loadFonts(): Promise<void> {
 	await Promise.all(FONT_SAMPLES.map(font => document.fonts.load(font, 'Aa Яя 09')))
 }
 
+/** Внутренний объект Storybook: текущая отрисовка story и её настройки (`autoplay` — запускать ли play) */
+type PreviewWindow = Window & { __STORYBOOK_PREVIEW__?: { currentRender?: { renderOptions?: { autoplay?: boolean } } } }
+
+/** Story в рамке на странице Docs: `docs.story.inline: false` даёт iframe с id `iframe--<id story>` */
+const isDocsFrame = (): boolean => window.frameElement?.id.startsWith('iframe--') === true
+
+/**
+ * В рамке на странице Docs play не запускается: Docs показывает начальное состояние, оверлеи открываются кликом,
+ * а не сами при загрузке страницы. На холсте story, в check-stories и скриншот-тестах play работает как прежде.
+ * `autoplay` — внутренняя настройка Storybook; если её не станет, play просто снова запустится.
+ */
+function holdPlayInDocsFrame(): void {
+	const render = isDocsFrame() ? (window as PreviewWindow).__STORYBOOK_PREVIEW__?.currentRender : undefined
+	if (render?.renderOptions) render.renderOptions.autoplay = false
+}
+
+/**
+ * В рамке на странице Docs фокус (в том числе `autofocus`) и `scrollIntoView` ждут первого нажатия или клика
+ * пользователя на странице. Иначе окно, открытое через `args` (BaseTour, BasePopconfirm), забирало фокус или
+ * прокручивало к цели, и браузер прокручивал вместе с ним страницу Docs.
+ */
+function guardDocsFrameFocus(): void {
+	if (!isDocsFrame()) return
+	let isUserActive = false
+	const activate = (event: Event): void => {
+		if (event.isTrusted) isUserActive = true
+	}
+	for (const target of [window, window.parent]) {
+		target.addEventListener('pointerdown', activate, true)
+		target.addEventListener('keydown', activate, true)
+	}
+	window.addEventListener(
+		'focusin',
+		event => {
+			if (isUserActive || !(event.target instanceof HTMLElement)) return
+			const frame = window.frameElement as HTMLElement
+			event.target.blur()
+			frame.blur()
+		},
+		true,
+	)
+	const { focus } = HTMLElement.prototype
+	const { scrollIntoView } = Element.prototype
+	HTMLElement.prototype.focus = function focusInDocsFrame(this: HTMLElement, options?: FocusOptions): void {
+		if (isUserActive) focus.call(this, options)
+	}
+	Element.prototype.scrollIntoView = function scrollInDocsFrame(this: Element, options?: boolean | ScrollIntoViewOptions): void {
+		if (isUserActive) scrollIntoView.call(this, options)
+	}
+}
+
+guardDocsFrameFocus()
+
 const withTheme: Decorator = (story, context) => {
 	const theme: Theme = context.globals.theme === 'dark' ? 'dark' : 'light'
 	document.documentElement.setAttribute('data-theme', theme)
@@ -56,7 +109,10 @@ const withLocale: Decorator = (story, context) => {
 const preview: Preview = {
 	tags: ['autodocs'],
 
-	beforeEach: loadFonts,
+	beforeEach: async () => {
+		holdPlayInDocsFrame()
+		await loadFonts()
+	},
 
 	globalTypes: {
 		theme: {
