@@ -28,6 +28,6 @@ export const Fields3D: StoryObj<typeof meta> = {
 		await expect(within(scene).getByText('Ожидается число больше 0')).toBeVisible()
 		await userEvent.keyboard('{ArrowUp}')
 		await expect(within(scene).queryByText('Ожидается число больше 0')).not.toBeInTheDocument()
-		await expect(thickness).toHaveValue('1')
+		await expect(thickness).toHaveAttribute('aria-valuenow', '1')
 	},
 }
