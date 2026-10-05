@@ -9,7 +9,7 @@ const ui = { root: 'story-themed-sign', actions: 'story-themed-actions' }
 const template = `
 	<div class="story-row" style="align-items: flex-start">
 		<BaseCryptoProSign v-bind="args" aria-label="По умолчанию" />
-		<div style="display: contents; --rise-crypto-pro-sign-radius: var(--rise-radius-2xl); --rise-crypto-pro-sign-border: var(--rise-primary); --rise-crypto-pro-sign-bg: var(--rise-bg-elevated);">
+		<div style="display: contents; --rise-crypto-pro-sign-radius: var(--rise-radius-2xl); --rise-crypto-pro-sign-border: var(--rise-primary); --rise-crypto-pro-sign-text: var(--rise-text-highlighted);">
 			<BaseCryptoProSign v-bind="args" aria-label="Токены на контейнере" />
 		</div>
 		<BaseCryptoProSign v-bind="args" aria-label="Классы через ui" :ui="ui" />
@@ -46,7 +46,7 @@ export const Theming: StoryObj<typeof meta> = {
 		await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('16px')
 		await expect(getComputedStyle(plain).borderTopLeftRadius).toBe('8px')
 		await expect(getComputedStyle(themed).borderTopColor).not.toBe(getComputedStyle(plain).borderTopColor)
-		await expect(getComputedStyle(themed).backgroundColor).not.toBe(getComputedStyle(plain).backgroundColor)
+		await expect(getComputedStyle(themed).color).not.toBe(getComputedStyle(plain).color)
 		await expect(classed).toHaveClass('base-crypto-pro-sign', 'story-themed-sign')
 		await waitFor(() => expect(classed.querySelector('.base-crypto-pro-sign__actions')).toHaveClass('story-themed-actions'))
 	},

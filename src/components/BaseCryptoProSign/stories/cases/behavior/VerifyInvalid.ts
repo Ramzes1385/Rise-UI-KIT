@@ -21,8 +21,8 @@ export const VerifyInvalid: StoryObj<typeof meta> = {
 		await tabTo(button, userEvent)
 		await userEvent.keyboard('{Enter}')
 		await waitFor(() => expect(args.onVerified).toHaveBeenCalledWith(expect.objectContaining({ isValid: false, isDetached: true })))
-		await expect(canvas.getAllByText('Подпись не прошла проверку')[0]).toBeVisible()
-		await expect(canvas.getByText(/0x80091007/)).toBeVisible()
+		await waitFor(() => expect(canvas.getAllByText('Подпись не прошла проверку')[0]).toBeVisible())
+		await waitFor(() => expect(canvas.getByText(/0x80091007/)).toBeVisible())
 		await expect(args.onError).not.toHaveBeenCalled()
 	},
 }

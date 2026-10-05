@@ -45,7 +45,7 @@ export const Default: StoryObj<typeof meta> = {
 		await userEvent.keyboard('{Enter}')
 		await waitFor(() => expect(args.onSigned).toHaveBeenCalledTimes(1))
 		await expect(args.onSigned).toHaveBeenCalledWith(expect.objectContaining({ detached: false, isHash: false, fileName: 'act' }))
-		await expect(canvas.getAllByText('Подпись создана: act.sig')[0]).toBeVisible()
+		await waitFor(() => expect(canvas.getAllByText('Подпись создана: act.sig')[0]).toBeVisible())
 		await expect(canvas.getByRole('button', { name: 'Скачать подпись' })).toBeEnabled()
 	},
 }

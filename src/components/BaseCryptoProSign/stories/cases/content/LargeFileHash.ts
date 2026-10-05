@@ -28,7 +28,7 @@ export const LargeFileHash: StoryObj<typeof meta> = {
 		await tabTo(button, userEvent)
 		await userEvent.keyboard('{Enter}')
 		await waitFor(() => expect(args.onSigned).toHaveBeenCalledWith(expect.objectContaining({ detached: true, isHash: true })))
-		await expect(canvas.getAllByText('Подпись создана: report.txt.sig')[0]).toBeVisible()
+		await waitFor(() => expect(canvas.getAllByText('Подпись создана: report.txt.sig')[0]).toBeVisible())
 		await expect(canvas.queryByRole('progressbar')).not.toBeInTheDocument()
 	},
 }

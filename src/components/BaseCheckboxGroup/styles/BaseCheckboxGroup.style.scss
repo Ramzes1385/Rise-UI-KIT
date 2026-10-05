@@ -6,7 +6,6 @@
 
 	& &__label {
 		@include field-label;
-		font-weight: ct(checkbox-group, label-font-weight, var(--rise-font-weight-medium));
 		color: ct(checkbox-group, label-text, var(--rise-text));
 	}
 

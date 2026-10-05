@@ -22,6 +22,6 @@ export const Detached: StoryObj<typeof meta> = {
 		await tabTo(button, userEvent)
 		await userEvent.keyboard('{Enter}')
 		await waitFor(() => expect(args.onSigned).toHaveBeenCalledWith(expect.objectContaining({ detached: true, isHash: false })))
-		await expect(canvas.getAllByText('Подпись создана: act.sig')[0]).toBeVisible()
+		await waitFor(() => expect(canvas.getAllByText('Подпись создана: act.sig')[0]).toBeVisible())
 	},
 }

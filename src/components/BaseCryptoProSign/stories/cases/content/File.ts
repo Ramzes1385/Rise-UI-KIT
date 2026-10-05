@@ -26,6 +26,6 @@ export const File: StoryObj<typeof meta> = {
 		await tabTo(button, userEvent)
 		await userEvent.keyboard('{Enter}')
 		await waitFor(() => expect(args.onSigned).toHaveBeenCalledWith(expect.objectContaining({ fileName: 'act.txt', isHash: false })))
-		await expect(canvas.getAllByText('Подпись создана: act.txt.sig')[0]).toBeVisible()
+		await waitFor(() => expect(canvas.getAllByText('Подпись создана: act.txt.sig')[0]).toBeVisible())
 	},
 }

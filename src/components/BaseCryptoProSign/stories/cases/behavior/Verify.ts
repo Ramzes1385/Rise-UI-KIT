@@ -24,8 +24,8 @@ export const Verify: StoryObj<typeof meta> = {
 		await tabTo(button, userEvent)
 		await userEvent.keyboard('{Enter}')
 		await waitFor(() => expect(args.onVerified).toHaveBeenCalledWith(expect.objectContaining({ isValid: true, isDetached: false })))
-		await expect(canvas.getAllByText('Подпись верна')[0]).toBeVisible()
-		await expect(canvas.getByText('Иванов Иван Иванович')).toBeVisible()
+		await waitFor(() => expect(canvas.getAllByText('Подпись верна')[0]).toBeVisible())
+		await waitFor(() => expect(canvas.getByText('Иванов Иван Иванович')).toBeVisible())
 		await expect(args.onError).not.toHaveBeenCalled()
 	},
 }

@@ -21,7 +21,7 @@ export const NoPlugin: StoryObj<typeof meta> = {
 		const steps = await canvas.findByRole('list', { name: 'Проверяем КриптоПро' })
 		await waitFor(() => expect(args.onError).toHaveBeenCalledWith(expect.objectContaining({ code: 'noPlugin' })))
 		await expect(within(steps).getByText('КриптоПро ЭЦП Browser plug-in').closest('li')).toHaveTextContent('ошибка')
-		await expect(canvas.getByText(/Установите КриптоПро ЭЦП Browser plug-in/)).toBeVisible()
+		await waitFor(() => expect(canvas.getByText(/Установите КриптоПро ЭЦП Browser plug-in/)).toBeVisible())
 		await expect(canvas.getByRole('link', { name: /КриптоПро/ })).toHaveAttribute(
 			'href',
 			'https://www.cryptopro.ru/products/cades/plugin',
