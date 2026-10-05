@@ -7,8 +7,13 @@ import { motionPresetsStory } from '@/stories/helpers'
 
 const motion = motionPresetsStory({
 	item: `
-		<BaseAlert :key="replay" v-bind="args" />
+		<Transition name="base-alert">
+			<BaseAlert v-if="isOpen" v-bind="args" @close="isOpen = false" />
+		</Transition>
 	`,
+	state: { isOpen: true },
+	action: 'isOpen = !isOpen',
+	trigger: 'Показать или скрыть',
 	components: { BaseAlert, BaseButton },
 	imports: ['BaseAlert'],
 	slots: ['default', 'actions'],
@@ -23,9 +28,9 @@ export const Animations: StoryObj<typeof meta> = {
 		docs: {
 			description: {
 				story: [
-					'Уход при закрытии в четырёх пресетах движения: нажмите «Закрыть» в каждой колонке, «Повторить» вернёт алерты.',
-					'Уход — прозрачность и масштаб (`--rise-duration-fast`, `--rise-ease-in`, `--rise-motion-scale-from`); событие `close`',
-					'приходит после анимации. В `none` и при «уменьшить движение» алерт исчезает сразу и `close` приходит в том же клике.',
+					'Появление и уход в четырёх пресетах движения: «Закрыть» или кнопка сверху. Рецепт: `<Transition name="base-alert">`',
+					'вокруг `v-if` — классы перехода на токенах есть в ките: прозрачность и масштаб (`--rise-duration`, `--rise-duration-fast`,',
+					'`--rise-motion-scale-from`). Событие `close` приходит сразу, скрывает алерт приложение. В `none` и при «уменьшить движение» — сразу.',
 					"Выключить движение в приложении — `createUiKitPlugin({ motion: 'none' })` или `reducedMotion: 'always'`.",
 				].join('\n'),
 			},
@@ -34,9 +39,9 @@ export const Animations: StoryObj<typeof meta> = {
 	},
 	render: motion.render,
 	play: async ({ canvas, userEvent }) => {
-		for (const close of canvas.getAllByRole('button', { name: 'Закрыть' })) await userEvent.click(close)
+		await userEvent.click(canvas.getAllByRole('button', { name: 'Закрыть' })[0])
 		await waitFor(() => expect(canvas.queryAllByRole('status')).toHaveLength(0))
-		await userEvent.click(canvas.getByRole('button', { name: 'Повторить' }))
+		await userEvent.click(canvas.getByRole('button', { name: 'Показать или скрыть' }))
 		await waitFor(() => expect(canvas.getAllByRole('status')).toHaveLength(4))
 	},
 }

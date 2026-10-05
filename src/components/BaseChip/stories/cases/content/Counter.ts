@@ -1,7 +1,7 @@
-import { expect } from 'storybook/test'
 import type meta from '../../BaseChip.stories'
 import BaseChip from '../../../ui/BaseChip.vue'
 import { BaseIcon } from '@components/BaseIcon'
+import { expect, waitFor } from 'storybook/test'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { storySource, useStorySetup } from '@/stories/helpers'
@@ -45,7 +45,7 @@ export const Counter: StoryObj<typeof meta> = {
 		await expect(canvasElement.querySelector('.base-chip__badge')).toBeNull()
 		const button = canvas.getByRole('button', { name: 'Корзина, товаров: 0' })
 		await userEvent.click(button)
-		await expect(canvas.getByText('1')).toBeVisible()
+		await waitFor(() => expect(canvas.getByText('1')).toBeVisible())
 		await expect(button).toHaveAccessibleName('Корзина, товаров: 1')
 	},
 }

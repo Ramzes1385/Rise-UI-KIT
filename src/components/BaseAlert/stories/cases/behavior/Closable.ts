@@ -1,6 +1,6 @@
 import { MESSAGES } from '../../shared'
+import { expect } from 'storybook/test'
 import type meta from '../../BaseAlert.stories'
-import { expect, waitFor } from 'storybook/test'
 import BaseAlert from '../../../ui/BaseAlert.vue'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
@@ -26,8 +26,7 @@ export const Closable: StoryObj<typeof meta> = {
 		docs: {
 			description: {
 				story: [
-					'Закрытие: кнопка «Закрыть» скрывает алерт с анимацией ухода (прозрачность и масштаб на токенах движения),',
-					'после неё приходит событие `close` — родитель убирает алерт из разметки (`v-if`). При выключенном движении — сразу.',
+					'Закрытие: кнопка «Закрыть» вызывает событие `close`, а скрывает алерт родитель (`v-if`).',
 					'После закрытия здесь появляется кнопка «Показать снова».',
 				].join('\n'),
 			},
@@ -41,9 +40,9 @@ export const Closable: StoryObj<typeof meta> = {
 	}),
 	play: async ({ canvas, userEvent, args }) => {
 		await userEvent.click(canvas.getByRole('button', { name: 'Закрыть' }))
-		await waitFor(() => expect(args.onClose).toHaveBeenCalledOnce())
-		await waitFor(() => expect(canvas.queryByRole('status')).toBeNull())
-		await userEvent.click(await canvas.findByRole('button', { name: 'Показать снова' }))
+		await expect(args.onClose).toHaveBeenCalledOnce()
+		await expect(canvas.queryByRole('status')).toBeNull()
+		await userEvent.click(canvas.getByRole('button', { name: 'Показать снова' }))
 		await expect(canvas.getByRole('status')).toHaveTextContent(MESSAGES.success.title)
 	},
 }

@@ -1,6 +1,6 @@
+import { expect } from 'storybook/test'
 import { tabTo } from '@/stories/helpers'
 import type meta from '../../BaseAlert.stories'
-import { expect, waitFor } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
 
 export const Keyboard: StoryObj<typeof meta> = {
@@ -8,7 +8,7 @@ export const Keyboard: StoryObj<typeof meta> = {
 		docs: {
 			description: {
 				story: [
-					'Клавиатура: Tab переводит фокус на «Закрыть», Enter закрывает (событие `close` — после анимации ухода). На заливке роли кольцо фокуса — цвета текста,',
+					'Клавиатура: Tab переводит фокус на «Закрыть», Enter закрывает. На заливке роли кольцо фокуса — цвета текста,',
 					'чтобы не слиться с фоном.',
 				].join('\n'),
 			},
@@ -22,6 +22,6 @@ export const Keyboard: StoryObj<typeof meta> = {
 		await expect(getComputedStyle(close).outlineStyle).toBe('solid')
 		await expect(getComputedStyle(close).outlineColor).toBe(getComputedStyle(canvas.getByRole('status')).color)
 		await userEvent.keyboard('{Enter}')
-		await waitFor(() => expect(args.onClose).toHaveBeenCalledOnce())
+		await expect(args.onClose).toHaveBeenCalledOnce()
 	},
 }

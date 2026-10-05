@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/vitest'
+import { defineComponent, ref } from 'vue'
 import BaseAlert from '../ui/BaseAlert.vue'
 import { createUiKitPlugin } from '@/plugin'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
@@ -45,44 +46,28 @@ describe('BaseAlert: проп ui', () => {
 	})
 })
 
-describe('BaseAlert: уход при закрытии', () => {
-	afterEach(() => {
-		document.documentElement.removeAttribute('data-rise-reduced-motion')
+describe('BaseAlert: уход при закрытии (рецепт Transition base-alert)', () => {
+	it('close приходит сразу, алерт сам не скрывается', async () => {
+		const { emitted } = render(BaseAlert, { props: PROPS })
+
+		await fireEvent.click(screen.getByRole('button', { name: 'Закрыть' }))
+
+		expect(emitted().close).toHaveLength(1)
+		expect(screen.getByRole('status')).toBeInTheDocument()
 	})
 
-	it('кнопка «Закрыть» запускает уход, close приходит после анимации, оповещение уходит из разметки', async () => {
-		const { emitted } = render(BaseAlert, { props: PROPS, ...transitionOn })
+	it('в <Transition name="base-alert"> с v-if родителя уход идёт классами base-alert-leave-*', async () => {
+		const Host = defineComponent({
+			components: { BaseAlert },
+			setup: () => ({ isOpen: ref(true), props: PROPS }),
+			template: '<Transition name="base-alert"><BaseAlert v-if="isOpen" v-bind="props" @close="isOpen = false" /></Transition>',
+		})
+		render(Host, transitionOn)
 		const root = screen.getByRole('status')
 
 		await fireEvent.click(screen.getByRole('button', { name: 'Закрыть' }))
 
 		expect(root).toHaveClass('base-alert-leave-active')
-		expect(emitted()).not.toHaveProperty('close')
-		await waitFor(() => expect(emitted().close).toHaveLength(1))
-		expect(screen.queryByRole('status')).not.toBeInTheDocument()
-	})
-
-	it('при выключенном движении — сразу: без классов ухода, close в том же клике', async () => {
-		document.documentElement.setAttribute('data-rise-reduced-motion', 'always')
-		const { emitted } = render(BaseAlert, { props: PROPS, ...transitionOn })
-
-		await fireEvent.click(screen.getByRole('button', { name: 'Закрыть' }))
-
-		expect(emitted().close).toHaveLength(1)
-		expect(screen.queryByRole('status')).not.toBeInTheDocument()
-		expect(document.querySelector('.base-alert-leave-active')).toBeNull()
-	})
-
-	it('пресет none на контейнере тоже закрывает сразу', async () => {
-		const host = document.createElement('div')
-		host.setAttribute('data-rise-motion', 'none')
-		document.body.append(host)
-		const { emitted } = render(BaseAlert, { props: PROPS, container: host, ...transitionOn })
-
-		await fireEvent.click(screen.getByRole('button', { name: 'Закрыть' }))
-
-		expect(emitted().close).toHaveLength(1)
-		expect(screen.queryByRole('status')).not.toBeInTheDocument()
-		host.remove()
+		await waitFor(() => expect(screen.queryByRole('status')).not.toBeInTheDocument())
 	})
 })
