@@ -1,35 +1,42 @@
 <template>
-	<figure class="base-pie-chart" :class="[variantClass, classes.root]" :style="sizeScaleStyle" :aria-label="label">
+	<figure
+		ref="root"
+		class="base-pie-chart"
+		:class="[variantClass, animationClass, classes.root]"
+		:style="sizeScaleStyle"
+		:aria-label="label">
 		<div class="base-pie-chart__chart" :style="{ width: `${size}px`, height: `${size}px` }">
 			<svg class="base-pie-chart__svg" viewBox="0 0 42 42" aria-hidden="true">
 				<circle class="base-pie-chart__track" cx="21" cy="21" :r="circleRadius" pathLength="100" />
 				<circle
-					v-for="(view, index) in views"
-					:key="view.label"
+					v-for="segment in segments"
+					:key="segment.label"
 					class="base-pie-chart__segment"
-					:class="{ 'base-pie-chart__segment--dimmed': activeIndex !== null && activeIndex !== index }"
+					:class="segmentClass(segment)"
+					:style="segmentStyle(segment)"
 					cx="21"
 					cy="21"
 					:r="circleRadius"
 					pathLength="100"
-					:stroke="view.color"
-					:stroke-dasharray="view.dash"
-					:stroke-dashoffset="view.offset"
-					@pointerenter="setActive(index)"
+					:stroke="segment.color"
+					:stroke-dasharray="segment.dash"
+					:stroke-dashoffset="segment.offset"
+					@transitionend="onTransitionEnd(segment, $event)"
+					@pointerenter="setActive(segment.label)"
 					@pointerleave="setActive(null)" />
 			</svg>
 			<div v-if="variant === 'donut'" class="base-pie-chart__center" aria-hidden="true">
-				<strong>{{ activeIndex === null ? total : format(views[activeIndex].value) }}</strong>
-				<span>{{ activeIndex === null ? label : views[activeIndex].label }}</span>
+				<strong>{{ activeView ? format(activeView.value) : total }}</strong>
+				<span>{{ activeView ? activeView.label : label }}</span>
 			</div>
 		</div>
 		<ul class="base-pie-chart__legend" :class="classes.legend">
 			<li
-				v-for="(view, index) in views"
+				v-for="view in views"
 				:key="view.label"
 				class="base-pie-chart__item"
-				:class="{ 'base-pie-chart__item--active': activeIndex === index }"
-				@pointerenter="setActive(index)"
+				:class="{ 'base-pie-chart__item--active': activeView?.label === view.label }"
+				@pointerenter="setActive(view.label)"
 				@pointerleave="setActive(null)">
 				<span class="base-pie-chart__swatch" :style="{ backgroundColor: view.color }" aria-hidden="true" />
 				<span class="base-pie-chart__name">{{ view.label }}</span>
@@ -43,17 +50,36 @@
 <script setup lang="ts">
 import '../styles/BasePieChart.style.scss'
 import { useBasePieChart } from '../model/useBasePieChart'
+import { kitDefaults } from '@composables/base/useDefaults'
 import type { BasePieChartProps } from '../types/BasePieChart.types'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 
-const props = withDefaults(defineProps<BasePieChartProps>(), {
-	variant: 'donut',
-	maxSegments: 6,
-	size: 160,
-	formatValue: undefined,
-	sizeScale: SIZE_SCALE_DEFAULT,
-})
+const props = withDefaults(
+	defineProps<BasePieChartProps>(),
+	kitDefaults('BasePieChart', {
+		variant: 'donut',
+		maxSegments: 6,
+		size: 160,
+		animation: 'sweep',
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
-const { sizeScaleStyle, variantClass, classes, circleRadius, views, activeIndex, total, format, percentText, setActive } =
-	useBasePieChart(props)
+const {
+	sizeScaleStyle,
+	variantClass,
+	animationClass,
+	classes,
+	circleRadius,
+	segments,
+	views,
+	activeView,
+	total,
+	format,
+	percentText,
+	segmentClass,
+	segmentStyle,
+	onTransitionEnd,
+	setActive,
+} = useBasePieChart(props)
 </script>

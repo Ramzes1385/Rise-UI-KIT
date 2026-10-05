@@ -58,7 +58,10 @@ describe('BasePieChart', () => {
 		expect(container.querySelector('.base-pie-chart__segment')).toHaveAttribute('r', '10.5')
 		expect((container.querySelector('.base-pie-chart__chart') as HTMLElement).style.width).toBe('120px')
 		await rerender({ segments: [{ label: 'Одна', value: 4 }], variant: 'donut' })
-		expect(container.querySelector('.base-pie-chart__segment')).toHaveAttribute('stroke-dasharray', '100 0')
+		expect(container.querySelector('.base-pie-chart__segment:not(.base-pie-chart__segment--leaving)')).toHaveAttribute(
+			'stroke-dasharray',
+			'100 0',
+		)
 		await rerender({ segments: [{ label: 'Пусто', value: 0 }] })
 		expect(screen.getByRole('listitem')).toHaveTextContent('Пусто00%')
 		setLocale('en')

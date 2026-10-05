@@ -1,4 +1,8 @@
 .base-pie-chart {
+	--base-pie-chart-appear-duration: var(--rise-duration-xslow, calc(var(--rise-duration-slow) * 5 / 3));
+	--base-pie-chart-update-duration: var(--rise-duration-slow);
+	--base-pie-chart-ease: var(--rise-ease-emphasized, var(--rise-ease));
+
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
@@ -30,7 +34,37 @@
 	}
 
 	&__segment {
-		transition: opacity 0.15s ease;
+		transition:
+			stroke-dasharray var(--base-pie-chart-update-duration) var(--base-pie-chart-ease),
+			stroke-dashoffset var(--base-pie-chart-update-duration) var(--base-pie-chart-ease),
+			opacity var(--rise-duration-fast) var(--rise-ease);
+	}
+
+	&__segment--leaving {
+		pointer-events: none;
+	}
+
+	&--animation-none &__segment {
+		transition: opacity var(--rise-duration-fast) var(--rise-ease);
+	}
+
+	@include motion-safe {
+		&--animation-sweep &__segment--sweep {
+			animation: base-pie-chart-sweep calc(var(--pie-share) * var(--base-pie-chart-appear-duration)) linear
+				calc(var(--pie-start) * var(--base-pie-chart-appear-duration)) backwards;
+		}
+
+		&__segment--added {
+			animation: base-pie-chart-sweep var(--base-pie-chart-update-duration) var(--base-pie-chart-ease) backwards;
+		}
+
+		&--animation-grow &__chart {
+			animation: base-pie-chart-grow var(--base-pie-chart-appear-duration) var(--rise-ease-spring, var(--rise-ease-out)) backwards;
+		}
+
+		&--animation-fade &__chart {
+			animation: base-pie-chart-fade var(--base-pie-chart-appear-duration) var(--rise-ease-out) backwards;
+		}
 	}
 
 	&__segment--dimmed {
@@ -113,5 +147,24 @@
 		color: var(--rise-text-muted);
 		font-variant-numeric: tabular-nums;
 		text-align: right;
+	}
+}
+
+@keyframes base-pie-chart-sweep {
+	from {
+		stroke-dasharray: 0 100;
+	}
+}
+
+@keyframes base-pie-chart-grow {
+	from {
+		opacity: 0;
+		transform: scale(0.6);
+	}
+}
+
+@keyframes base-pie-chart-fade {
+	from {
+		opacity: 0;
 	}
 }

@@ -27,6 +27,7 @@ export function segmentViews(segments: readonly PieSegment[]): PieSegmentView[] 
 			value: segment.value,
 			color: segment.color as string,
 			percent,
+			start,
 			dash: `${length} ${CIRCUMFERENCE - length}`,
 			offset: 25 - start,
 		}

@@ -3,6 +3,12 @@ import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 /** Вид диаграммы: `donut` — кольцо с итогом в центре, `pie` — круг */
 export const PIE_CHART_VARIANTS = ['donut', 'pie'] as const
 
+/**
+ * Появление диаграммы: `sweep` — части по очереди набегают по кругу, `grow` — круг вырастает из центра,
+ * `fade` — проявляется, `none` — сразу. Обновление данных перетекает плавно во всех режимах, кроме `none`
+ */
+export const PIE_CHART_ANIMATIONS = ['sweep', 'grow', 'fade', 'none'] as const
+
 /** Часть целого: подпись, значение и свой цвет (по умолчанию — цвет графиков по порядку) */
 export interface PieSegment {
 	label: string
@@ -16,8 +22,23 @@ export interface PieSegmentView {
 	value: number
 	color: string
 	percent: number
+	/** Начало части на окружности, % от полного круга */
+	start: number
 	dash: string
 	offset: number
+}
+
+/** Часть на круге: вместе с ушедшими из данных, которые ещё сжимаются */
+export interface PieSegmentRender extends PieSegmentView {
+	/**
+	 * Как часть появилась: `sweep` — с диаграммой по кругу, `added` — позже, вместе с новыми данными, `static` — сразу.
+	 * Не меняется, пока часть на круге: иначе анимация появления запустится заново
+	 */
+	entry: 'sweep' | 'added' | 'static'
+	/** Начало и доля части в момент появления, 0…1: задержка и длительность `sweep` */
+	enter: { start: number; share: number }
+	/** Части уже нет в данных: она сжимается до нуля и затем удаляется */
+	isLeaving: boolean
 }
 
 /**
@@ -34,4 +55,9 @@ export interface BasePieChartProps extends BaseComponentProps<(typeof PIE_CHART_
 	size?: number
 	/** Формат значения в легенде, подсказке и центре кольца */
 	formatValue?: (value: number) => string
+	/**
+	 * Появление: `sweep` — по кругу, `grow` — из центра, `fade` — проявление, `none` — без анимации ни при появлении,
+	 * ни при обновлении данных. При «уменьшить движение» в системе — сразу конечный вид. По умолчанию `sweep`
+	 */
+	animation?: (typeof PIE_CHART_ANIMATIONS)[number]
 }
