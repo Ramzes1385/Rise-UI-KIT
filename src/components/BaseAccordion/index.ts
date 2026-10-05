@@ -3,6 +3,7 @@ export {
 	ACCORDION_DENSITIES,
 	ACCORDION_DIVIDERS,
 	ACCORDION_HEADING_LEVELS,
+	ACCORDION_PARTS,
 	ACCORDION_VARIANTS,
 } from './types/BaseAccordion.types'
 export type {
@@ -12,6 +13,7 @@ export type {
 	AccordionHeadingLevel,
 	BaseAccordionEmits,
 	BaseAccordionItem,
+	BaseAccordionPart,
 	BaseAccordionProps,
 	BaseAccordionSlots,
 } from './types/BaseAccordion.types'

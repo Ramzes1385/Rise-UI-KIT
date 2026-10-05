@@ -26,3 +26,5 @@ export const LongContent = cases.LongContent
 export const Wrapped = cases.Wrapped
 export const MaxHeight = cases.MaxHeight
 export const Copy = cases.Copy
+export const Theming = cases.Theming
+export const Animations = cases.Animations

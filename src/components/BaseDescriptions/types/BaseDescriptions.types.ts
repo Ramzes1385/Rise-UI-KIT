@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /**
@@ -11,6 +12,28 @@ export const DESCRIPTIONS_VARIANTS = ['default', 'soft', 'outline', 'ghost'] as 
  * vertical — подпись над значением
  */
 export const DESCRIPTIONS_LAYOUTS = ['horizontal', 'vertical'] as const
+
+/**
+ * Части списка для пропа `ui` (БЭМ-элементы `.base-descriptions__<часть>`, `root` — корень):
+ * header — строка заголовка; title — заголовок; extra — действия справа от заголовка; list — `dl` с полями;
+ * item — поле (пара `dt`/`dd`); label — подпись поля (`dt`); value — значение (`dd`); content — текст значения;
+ * empty-value — текст пустого значения («—»); copy — кнопка «Копировать»; empty — текст, когда полей нет.
+ */
+export const DESCRIPTIONS_PARTS = [
+	'header',
+	'title',
+	'extra',
+	'list',
+	'item',
+	'label',
+	'value',
+	'content',
+	'empty-value',
+	'copy',
+	'empty',
+] as const
+
+export type BaseDescriptionsPart = (typeof DESCRIPTIONS_PARTS)[number]
 
 /** Раскладка поля BaseDescriptions */
 export type DescriptionsLayout = (typeof DESCRIPTIONS_LAYOUTS)[number]
@@ -64,6 +87,15 @@ export interface BaseDescriptionsProps extends BaseComponentProps<(typeof DESCRI
 	emptyValue?: string
 	/** Текст, когда полей нет (заменяется слотом empty); по умолчанию — из словаря («Нет данных») */
 	emptyText?: string
+	/**
+	 * Классы частей списка (`root`, `header`, `title`, `extra`, `list`, `item`, `label`, `value`, `content`, `empty-value`,
+	 * `copy`, `empty`) — добавляются к классам кита. Глобально — `createUiKitPlugin({ defaults: { BaseDescriptions: { ui } } })`,
+	 * классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseDescriptions :items="items" :ui="{ label: 'my-label', value: 'my-value' }" />
+	 */
+	ui?: UiProp<BaseDescriptionsPart>
 }
 
 /**

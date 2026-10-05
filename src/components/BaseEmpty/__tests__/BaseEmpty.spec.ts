@@ -8,8 +8,8 @@ import { render, screen } from '@testing-library/vue'
 const STYLES = readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), '../styles/BaseEmpty.style.scss'), 'utf-8')
 
 function resolvePx(declaration: string, sizeScale: string): number[] {
-	const values = declaration.match(/^sz\(([^)]+)\)$/)?.[1]
-	if (!values) throw new Error(`Ожидалось значение через sz(): ${declaration}`)
+	const values = declaration.replace(/ct\([\w-]+, [\w-]+, ([^)]+)\)/g, '$1').match(/^(?:sz|space)\(([^)]+)\)$/)?.[1]
+	if (!values) throw new Error(`Ожидалось значение через sz() или space(): ${declaration}`)
 	const factor = sizeScale === '' ? 1 : Number(sizeScale)
 	return values
 		.trim()

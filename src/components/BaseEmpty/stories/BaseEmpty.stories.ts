@@ -24,3 +24,5 @@ export const CustomColor = cases.CustomColor
 export const Slots = cases.Slots
 export const InCard = cases.InCard
 export const NoResults = cases.NoResults
+export const Theming = cases.Theming
+export const Animations = cases.Animations

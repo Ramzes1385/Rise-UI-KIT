@@ -2,6 +2,7 @@ import { computed, ref } from 'vue'
 import { useCodeCopy } from './useCodeCopy'
 import { UI_CODE } from '@/locales/messages'
 import { formatMessage } from '@/locales/state'
+import { useUi } from '@composables/base/useUi'
 import type { BaseCodeEmits, CodeProps } from '../types/BaseCode.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { useScrollableRegion } from '@composables/interaction/useScrollableRegion'
@@ -35,6 +36,8 @@ export function useBaseCode(props: CodeProps, emit: BaseCodeEmits) {
 	return {
 		...base,
 		...copying,
+		ui: useUi(props, 'base-code'),
+		copyIcon: computed(() => (copying.isCopied.value ? 'check' : 'copy')),
 		copyLabel,
 		preRef,
 		isScrollable,

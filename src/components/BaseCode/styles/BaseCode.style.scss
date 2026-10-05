@@ -9,10 +9,10 @@ $code-token-types: keyword, string, number, comment, function, tag, attribute, p
 	min-width: 0;
 	max-width: 100%;
 	overflow: hidden;
-	border: 1px solid var(--rise-border);
-	border-radius: sz(var(--rise-radius-md));
-	@include custom-bg(background-color, var(--rise-bg-muted));
-	@include custom-text(color, var(--rise-text-highlighted));
+	border: 1px solid ct(code, border, var(--rise-border));
+	border-radius: sz(ct(code, radius, var(--rise-radius-md)));
+	@include custom-bg(background-color, ct(code, bg, var(--rise-bg-muted)));
+	@include custom-text(color, ct(code, text, var(--rise-text-highlighted)));
 
 	&--soft {
 		border-color: transparent;
@@ -20,18 +20,19 @@ $code-token-types: keyword, string, number, comment, function, tag, attribute, p
 	}
 
 	&--outline {
-		border-color: var(--rise-border-accented);
+		border-color: ct(code, border, var(--rise-border-accented));
 		@include custom-bg(background-color, var(--rise-bg));
 	}
 
 	&__header {
 		display: flex;
 		align-items: center;
-		gap: sz(8px);
-		min-height: sz(32px);
-		padding: sz(4px) sz(4px) sz(4px) sz(12px);
-		border-bottom: 1px solid var(--rise-border);
-		color: var(--rise-text-toned);
+		gap: space(8px);
+		min-height: sz(ct(code, header-height, 32px));
+		padding: space(4px 4px 4px 12px);
+		border-bottom: 1px solid ct(code, border, var(--rise-border));
+		background-color: ct(code, header-bg, transparent);
+		color: ct(code, header-text, var(--rise-text-toned));
 		@include text-size(xs);
 	}
 
@@ -51,17 +52,17 @@ $code-token-types: keyword, string, number, comment, function, tag, attribute, p
 		--btn-pad-left: 8px;
 
 		flex-shrink: 0;
-		border-radius: sz(var(--rise-radius-sm));
-		color: var(--rise-text-toned);
+		border-radius: sz(ct(code, copy-radius, var(--rise-radius-sm)));
+		color: ct(code, copy-text, var(--rise-text-toned));
 		@include text-size(xs);
 	}
 
 	&__pre {
 		margin: 0;
-		padding: sz(12px) 0;
+		padding: space(ct(code, padding-y, 12px)) 0;
 		overflow: auto;
 		font-family: var(--rise-font-mono);
-		@include text-size(xs);
+		font-size: sz(ct(code, font-size, var(--rise-font-size-xs)));
 		line-height: 1.6;
 		tab-size: 4;
 		font-variant-ligatures: none;
@@ -88,7 +89,7 @@ $code-token-types: keyword, string, number, comment, function, tag, attribute, p
 
 	&__line {
 		display: flex;
-		padding-inline: sz(16px);
+		padding-inline: space(ct(code, padding-x, 16px));
 
 		&--highlighted {
 			background-color: var(--rise-primary-soft);
@@ -128,7 +129,7 @@ $code-token-types: keyword, string, number, comment, function, tag, attribute, p
 
 	&__empty {
 		margin: 0;
-		padding-inline: sz(16px);
+		padding-inline: space(ct(code, padding-x, 16px));
 		color: var(--rise-text-toned);
 		font-family: var(--rise-font-sans);
 	}
@@ -136,4 +137,6 @@ $code-token-types: keyword, string, number, comment, function, tag, attribute, p
 	&__status {
 		@include visually-hidden;
 	}
+
+	@include enter-pop(base-code__copy-icon, calc(var(--rise-motion-scale-from) * 0.5));
 }

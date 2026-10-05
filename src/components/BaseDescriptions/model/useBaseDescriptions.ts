@@ -1,4 +1,5 @@
 import { formatMessage } from '@/locales/state'
+import { useUi } from '@composables/base/useUi'
 import { useColumnCount } from './useColumnCount'
 import { UI_DESCRIPTIONS } from '@/locales/messages'
 import { ref, computed, onBeforeUnmount } from 'vue'
@@ -28,6 +29,7 @@ function useItemCopy(props: BaseDescriptionsProps, emit: BaseDescriptionsEmits) 
 		status,
 		copiedKey,
 		canCopy: (item: DescriptionsItem): boolean => (item.isCopyable ?? props.isCopyable ?? false) && !isEmptyValue(item.value),
+		copyIcon: (item: DescriptionsItem): string => (copiedKey.value === item.key ? 'check' : 'copy'),
 		copyLabel: (item: DescriptionsItem): string => formatMessage(UI_DESCRIPTIONS.COPY, { label: item.label }),
 		async copy(item: DescriptionsItem): Promise<void> {
 			const text = item.copyText ?? String(item.value)
@@ -50,6 +52,7 @@ export function useBaseDescriptions(props: BaseDescriptionsProps, emit: BaseDesc
 	return {
 		...useStandardBaseComponent('base-descriptions', props, ['root', 'header', 'list']),
 		...useItemCopy(props, emit),
+		ui: useUi(props, 'base-descriptions'),
 		listRef,
 		columnCount,
 		listStyle: computed(() => ({

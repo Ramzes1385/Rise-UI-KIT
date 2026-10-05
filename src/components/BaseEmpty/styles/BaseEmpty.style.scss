@@ -3,16 +3,16 @@
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	gap: sz(16px);
+	gap: space(ct(empty, gap, 16px));
 	box-sizing: border-box;
 	width: 100%;
-	padding: sz(32px 24px);
-	border: 1px dashed var(--rise-border-accented);
-	border-radius: sz(var(--rise-radius-lg));
+	padding: space(ct(empty, padding-y, 32px) ct(empty, padding-x, 24px));
+	border: 1px dashed ct(empty, border, var(--rise-border-accented));
+	border-radius: sz(ct(empty, radius, var(--rise-radius-lg)));
 	text-align: center;
 	@include text-size(sm);
-	@include custom-bg(background-color, transparent);
-	@include custom-text(color, var(--rise-text-muted));
+	@include custom-bg(background-color, ct(empty, bg, transparent));
+	@include custom-text(color, ct(empty, text, var(--rise-text-muted)));
 
 	&--soft {
 		border-color: transparent;
@@ -26,34 +26,41 @@
 
 	&__icon-wrapper {
 		display: flex;
-		@include custom-text(color, var(--rise-text-dimmed));
+		@include custom-text(color, ct(empty, icon-text, var(--rise-text-dimmed)));
+	}
+
+	&__icon-wrapper .base-icon__svg {
+		width: ct(empty, icon-size, sz(20px));
+		height: ct(empty, icon-size, sz(20px));
 	}
 
 	&__content {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: sz(4px);
+		gap: space(4px);
 		max-width: sz(384px);
 		overflow-wrap: break-word;
 	}
 
 	& &__title {
-		@include custom-text(color, var(--rise-text-highlighted));
+		font-size: sz(ct(empty, title-font-size, var(--rise-font-size-sm)));
+		@include custom-text(color, ct(empty, title-text, var(--rise-text-highlighted)));
 	}
 
 	& &__description {
 		color: inherit;
+		font-size: sz(ct(empty, description-font-size, var(--rise-font-size-sm)));
 	}
 
 	&__body {
-		margin-top: sz(4px);
+		margin-top: space(4px);
 	}
 
 	&__actions {
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: center;
-		gap: sz(8px);
+		gap: space(8px);
 	}
 }

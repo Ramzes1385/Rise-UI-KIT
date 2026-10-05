@@ -1,4 +1,5 @@
 import { formatMessage } from '@/locales/state'
+import { useUi } from '@composables/base/useUi'
 import { UI_CHECKLIST } from '@/locales/messages'
 import { computed, shallowRef, useId, watch } from 'vue'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
@@ -37,6 +38,13 @@ function row(item: ChecklistItem, context: { prefix: string; index: number; isDo
 	}
 }
 
+function holdLeavingPlace(element: Element): void {
+	const item = element as HTMLElement
+	item.style.left = `${item.offsetLeft}px`
+	item.style.top = `${item.offsetTop}px`
+	item.style.width = `${item.offsetWidth}px`
+}
+
 export function useBaseChecklist(props: BaseChecklistProps, emit: BaseChecklistEmits) {
 	const prefix = `rise-checklist-${useId()}`
 	const { isDone, toggle } = useCompleted(props, emit)
@@ -44,6 +52,8 @@ export function useBaseChecklist(props: BaseChecklistProps, emit: BaseChecklistE
 	const doneCount = computed(() => props.items.filter(item => isDone(item.id)).length)
 	return {
 		...useStandardBaseComponent('base-checklist', props, ['root', 'item']),
+		ui: useUi(props, 'base-checklist'),
+		holdLeavingPlace,
 		titleId: `${prefix}-title`,
 		heading: computed(() => props.title ?? UI_CHECKLIST.TITLE),
 		doneCount,

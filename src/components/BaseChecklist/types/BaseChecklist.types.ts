@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /**
@@ -5,6 +6,32 @@ import type { BaseComponentProps } from '@composables/base/useBaseComponent'
  * `outline` — рамка без фона, `ghost` — без рамки и отступов (внутри панели или меню)
  */
 export const CHECKLIST_VARIANTS = ['default', 'soft', 'outline', 'ghost'] as const
+
+/**
+ * Части чек-листа для пропа `ui` (БЭМ-элементы `.base-checklist__<часть>`, `root` — сам чек-лист):
+ * header — шапка; title — заголовок; count — счётчик «2 из 5»; progress — полоса прогресса (класс на корне BaseProgress);
+ * list — список шагов `<ol>`; item — шаг; checkbox — флажок; body — текст и кнопка шага; line — строка названия и метки;
+ * label — название шага; next — метка «Следующий шаг»; description — пояснение; action — кнопка действия (корень BaseButton);
+ * done — сообщение «Всё готово».
+ */
+export const CHECKLIST_PARTS = [
+	'header',
+	'title',
+	'count',
+	'progress',
+	'list',
+	'item',
+	'checkbox',
+	'body',
+	'line',
+	'label',
+	'next',
+	'description',
+	'action',
+	'done',
+] as const
+
+export type BaseChecklistPart = (typeof CHECKLIST_PARTS)[number]
 
 /** Шаг: название, пояснение и подпись кнопки действия (например, «Открыть настройки») */
 export interface ChecklistItem {
@@ -37,6 +64,14 @@ export interface BaseChecklistProps extends BaseComponentProps<(typeof CHECKLIST
 	title?: string
 	/** Только просмотр: флажки и кнопки неактивны */
 	isDisabled?: boolean
+	/**
+	 * Классы частей чек-листа (`root`, `header`, `title`, `list`, `item`, `label`, `done`…) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseChecklist: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseChecklist :items="steps" :ui="{ item: 'rounded-none', label: 'font-semibold' }" />
+	 */
+	ui?: UiProp<BaseChecklistPart>
 }
 
 /**

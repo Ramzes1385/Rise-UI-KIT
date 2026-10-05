@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { SeoComponentProps } from '@composables/seo/useStructuredData'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
@@ -18,6 +19,28 @@ export const ACCORDION_DENSITIES = ['compact', 'default', 'comfortable'] as cons
 
 /** Уровень заголовка пункта: `<h2>`…`<h6>` */
 export const ACCORDION_HEADING_LEVELS = [2, 3, 4, 5, 6] as const
+
+/**
+ * Части аккордеона для пропа `ui` (БЭМ-элементы `.base-accordion__<часть>`, `root` — корень):
+ * item — пункт; heading — заголовок `<hN>`; header — кнопка пункта; icon — иконка заголовка; title — обёртка подписи и пояснения;
+ * label — подпись; description — пояснение под подписью; arrow — стрелка; collapse — раскрывающаяся панель;
+ * content — содержимое панели; text — текст пункта из `content` (без слота).
+ */
+export const ACCORDION_PARTS = [
+	'item',
+	'heading',
+	'header',
+	'icon',
+	'title',
+	'label',
+	'description',
+	'arrow',
+	'collapse',
+	'content',
+	'text',
+] as const
+
+export type BaseAccordionPart = (typeof ACCORDION_PARTS)[number]
 
 export type AccordionHeadingLevel = (typeof ACCORDION_HEADING_LEVELS)[number]
 
@@ -88,6 +111,14 @@ export interface BaseAccordionProps
 	density?: AccordionDensity
 	/** Открытый пункт выделен: заголовок и стрелка цвета primary, у `separated` — рамка primary */
 	isAccented?: boolean
+	/**
+	 * Классы частей аккордеона (`root`, `item`, `header`, `label`, `arrow`, `collapse`, `content`…) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseAccordion: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseAccordion :items="items" :ui="{ header: 'font-semibold', content: 'text-base' }" />
+	 */
+	ui?: UiProp<BaseAccordionPart>
 }
 
 export interface BaseAccordionEmits {

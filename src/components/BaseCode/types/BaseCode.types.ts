@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
@@ -6,6 +7,16 @@ import type { BaseComponentProps } from '@composables/base/useBaseComponent'
  * `outline` — фон страницы в рамке. Цвета подсветки — токены `--rise-code-*`, контраст AA на всех трёх фонах
  */
 export const CODE_VARIANTS = ['default', 'soft', 'outline'] as const
+
+/**
+ * Части блока кода для пропа `ui` (БЭМ-элементы `.base-code__<часть>`, `root` — корень):
+ * header — шапка с названием и кнопками; title — название в шапке; copy — кнопка «Копировать»;
+ * pre — прокручиваемая область кода; code — элемент `<code>` со строками; line — строка; number — номер строки;
+ * text — текст строки; empty — надпись вместо пустого кода.
+ */
+export const CODE_PARTS = ['header', 'title', 'copy', 'pre', 'code', 'line', 'number', 'text', 'empty'] as const
+
+export type BaseCodePart = (typeof CODE_PARTS)[number]
 
 /**
  * Пропсы компонента BaseCode
@@ -36,6 +47,14 @@ export interface BaseCodeProps extends BaseComponentProps<(typeof CODE_VARIANTS)
 	maxHeight?: number
 	/** Имя области кода для скринридера; по умолчанию «Код, <язык>» */
 	label?: string
+	/**
+	 * Классы частей блока (`root`, `header`, `title`, `copy`, `pre`, `code`, `line`, `number`, `text`, `empty`) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseCode: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseCode code="npm i" :ui="{ header: 'my-code-header', line: 'my-code-line' }" />
+	 */
+	ui?: UiProp<BaseCodePart>
 }
 
 export interface BaseCodeEmits {

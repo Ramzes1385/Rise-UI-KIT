@@ -1,13 +1,14 @@
 .base-accordion {
-	--accordion-pad-x: 0px;
-	--accordion-divider: var(--rise-border);
-	--accordion-header-hover: transparent;
+	--accordion-pad-x: #{ct(accordion, header-padding-x, 0px)};
+	--accordion-divider: #{ct(accordion, border, var(--rise-border))};
+	--accordion-header-hover: #{ct(accordion, header-bg-hover, transparent)};
 	--accordion-divider-style: solid;
-	--accordion-pad-y: 14px;
+	--accordion-pad-y: #{ct(accordion, header-padding-y, 14px)};
 
 	display: flex;
 	flex-direction: column;
 	width: 100%;
+	background-color: ct(accordion, bg, transparent);
 
 	&__item {
 		border-bottom: 1px var(--accordion-divider-style) var(--accordion-divider);
@@ -31,13 +32,14 @@
 		border: 0;
 		font-family: inherit;
 		text-align: start;
-		padding: sz(var(--accordion-pad-y)) sz(var(--accordion-pad-x));
+		padding: space(var(--accordion-pad-y) var(--accordion-pad-x));
 		border-radius: sz(var(--rise-radius-md));
 		@include text-size(sm);
-		font-weight: var(--rise-font-weight-medium);
+		font-size: sz(ct(accordion, header-font-size, var(--rise-font-size-sm)));
+		font-weight: ct(accordion, header-font-weight, var(--rise-font-weight-medium));
 		cursor: pointer;
 		user-select: none;
-		@include custom-text(color, var(--rise-text-highlighted));
+		@include custom-text(color, ct(accordion, header-text, var(--rise-text-highlighted)));
 		@include custom-bg-all(background-color, transparent, var(--accordion-header-hover), var(--accordion-header-hover));
 		@include transition-colors;
 		@include focus-ring;
@@ -85,7 +87,9 @@
 		justify-content: center;
 		margin-left: auto;
 		color: var(--rise-text-muted);
-		@include transition(transform, color);
+		transition:
+			transform var(--rise-duration-slow) var(--rise-ease-emphasized),
+			color var(--rise-duration) var(--rise-ease);
 	}
 
 	&__item--open &__arrow {
@@ -93,28 +97,23 @@
 	}
 
 	&__collapse {
-		display: grid;
-		grid-template-rows: 0fr;
-		@include transition(grid-template-rows);
+		@include expand-rows;
 	}
 
 	&__collapse--open {
-		grid-template-rows: 1fr;
+		@include expand-rows-open;
 	}
 
 	&__content {
-		min-height: 0;
-		overflow: hidden;
-		padding: 0 sz(var(--accordion-pad-x));
+		padding: 0 space(var(--accordion-pad-x));
 		@include text-size(sm);
-		color: var(--rise-text-muted);
-		opacity: 0;
-		@include transition(opacity, padding);
-	}
+		color: ct(accordion, content-text, var(--rise-text-muted));
 
-	&__collapse--open &__content {
-		padding-bottom: sz(var(--accordion-pad-y));
-		opacity: 1;
+		&::after {
+			content: '';
+			display: block;
+			height: space(var(--accordion-pad-y));
+		}
 	}
 
 	&__text {
@@ -128,12 +127,12 @@
 	&--outline,
 	&--shadow,
 	&--soft {
-		--accordion-pad-x: 16px;
-		--accordion-header-hover: var(--rise-bg-muted);
+		--accordion-pad-x: #{ct(accordion, header-padding-x, 16px)};
+		--accordion-header-hover: #{ct(accordion, header-bg-hover, var(--rise-bg-muted))};
 
 		overflow: hidden;
 		border: 1px solid transparent;
-		border-radius: sz(var(--rise-radius-lg));
+		border-radius: sz(ct(accordion, radius, var(--rise-radius-lg)));
 	}
 
 	&--outline &__header,
@@ -144,38 +143,40 @@
 	}
 
 	&--outline {
-		border-color: var(--rise-border);
+		border-color: ct(accordion, border, var(--rise-border));
 	}
 
 	&--shadow {
-		border-color: var(--rise-border);
-		background-color: var(--rise-bg);
-		box-shadow: var(--rise-shadow-sm);
+		border-color: ct(accordion, border, var(--rise-border));
+		background-color: ct(accordion, bg, var(--rise-bg));
+		box-shadow: ct(accordion, shadow, var(--rise-shadow-sm));
 	}
 
 	&--soft {
-		--accordion-divider: var(--rise-border-accented);
-		--accordion-header-hover: var(--rise-bg-elevated);
+		--accordion-divider: #{ct(accordion, border, var(--rise-border-accented))};
+		--accordion-header-hover: #{ct(accordion, header-bg-hover, var(--rise-bg-elevated))};
 
-		background-color: color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg));
+		background-color: ct(accordion, bg, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg)));
 	}
 
 	&--separated {
-		--accordion-pad-x: 16px;
-		--accordion-header-hover: var(--rise-bg-muted);
+		--accordion-pad-x: #{ct(accordion, header-padding-x, 16px)};
+		--accordion-header-hover: #{ct(accordion, header-bg-hover, var(--rise-bg-muted))};
 
-		gap: sz(8px);
+		gap: space(ct(accordion, gap, 8px));
+		background-color: transparent;
 	}
 
 	&--separated &__item {
 		overflow: hidden;
-		border: 1px solid var(--rise-border);
-		border-radius: sz(var(--rise-radius-lg));
-		background-color: var(--rise-bg);
+		border: 1px solid ct(accordion, border, var(--rise-border));
+		border-radius: sz(ct(accordion, radius, var(--rise-radius-lg)));
+		background-color: ct(accordion, bg, var(--rise-bg));
+		box-shadow: ct(accordion, shadow, none);
 		@include transition(border-color);
 
 		&:last-child {
-			border-bottom: 1px solid var(--rise-border);
+			border-bottom: 1px solid ct(accordion, border, var(--rise-border));
 		}
 	}
 
@@ -185,11 +186,11 @@
 	}
 
 	&--divider-solid {
-		--accordion-divider: var(--rise-border);
+		--accordion-divider: #{ct(accordion, border, var(--rise-border))};
 	}
 
 	&--divider-dashed {
-		--accordion-divider: var(--rise-border-accented);
+		--accordion-divider: #{ct(accordion, border, var(--rise-border-accented))};
 		--accordion-divider-style: dashed;
 	}
 
@@ -216,7 +217,7 @@
 	}
 
 	&--arrow-start &__content {
-		padding-left: calc((var(--accordion-pad-x) + 26px) * var(--size-scale, 1));
+		padding-left: calc((var(--accordion-pad-x) * var(--rise-density, 1) + 26px) * var(--size-scale, 1));
 	}
 
 	&--icon-swap &__arrow,

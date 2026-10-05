@@ -1,16 +1,16 @@
 .base-descriptions {
-	--base-descriptions-gap-x: #{sz(24px)};
-	--base-descriptions-gap-y: #{sz(12px)};
+	--base-descriptions-gap-x: #{space(24px)};
+	--base-descriptions-gap-y: #{space(ct(descriptions, gap, 12px))};
 
 	position: relative;
 	box-sizing: border-box;
 	min-width: 0;
-	padding: sz(16px);
-	border: 1px solid var(--rise-border);
-	border-radius: sz(var(--rise-radius-lg));
+	padding: space(ct(descriptions, padding-y, 16px) ct(descriptions, padding-x, 16px));
+	border: 1px solid ct(descriptions, border, var(--rise-border));
+	border-radius: sz(ct(descriptions, radius, var(--rise-radius-lg)));
 	@include text-size(sm);
-	@include custom-bg(background-color, var(--rise-bg));
-	@include custom-text(color, var(--rise-text));
+	@include custom-bg(background-color, ct(descriptions, bg, var(--rise-bg)));
+	@include custom-text(color, ct(descriptions, text, var(--rise-text)));
 
 	&--soft {
 		border-color: transparent;
@@ -18,7 +18,7 @@
 	}
 
 	&--outline {
-		border-color: var(--rise-border-accented);
+		border-color: ct(descriptions, border, var(--rise-border-accented));
 		@include custom-bg(background-color, transparent);
 	}
 
@@ -33,8 +33,8 @@
 		flex-wrap: wrap;
 		align-items: center;
 		justify-content: space-between;
-		gap: sz(8px) sz(16px);
-		margin-bottom: sz(12px);
+		gap: space(8px 16px);
+		margin-bottom: space(12px);
 	}
 
 	&__title {
@@ -70,7 +70,7 @@
 
 		display: flex;
 		flex-wrap: wrap;
-		gap: sz(2px) sz(12px);
+		gap: space(2px 12px);
 		min-width: 0;
 	}
 
@@ -85,7 +85,9 @@
 				calc((100% - (var(--base-descriptions-span) - 1) * var(--base-descriptions-gap-x)) / var(--base-descriptions-span) * 0.4)
 			);
 		min-width: 0;
-		color: var(--rise-text-toned);
+		background-color: ct(descriptions, label-bg, transparent);
+		color: ct(descriptions, label-text, var(--rise-text-toned));
+		font-weight: ct(descriptions, label-font-weight, inherit);
 		overflow-wrap: break-word;
 	}
 
@@ -96,7 +98,8 @@
 		gap: sz(4px);
 		min-width: 0;
 		margin: 0;
-		color: var(--rise-text-highlighted);
+		color: ct(descriptions, value-text, var(--rise-text-highlighted));
+		font-weight: ct(descriptions, value-font-weight, inherit);
 	}
 
 	&--vertical &__label,
@@ -132,4 +135,6 @@
 	&__status {
 		@include visually-hidden;
 	}
+
+	@include enter-pop(base-descriptions__copy-icon, calc(var(--rise-motion-scale-from) * 0.5));
 }

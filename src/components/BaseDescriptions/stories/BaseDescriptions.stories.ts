@@ -25,3 +25,5 @@ export const Copyable = cases.Copyable
 export const CustomSlots = cases.CustomSlots
 export const Empty = cases.Empty
 export const LongContent = cases.LongContent
+export const Theming = cases.Theming
+export const Animations = cases.Animations

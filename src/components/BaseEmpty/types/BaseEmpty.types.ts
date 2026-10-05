@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /**
@@ -7,6 +8,15 @@ import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 export const EMPTY_VARIANTS = ['default', 'ghost', 'soft'] as const
 
 export type EmptyVariant = (typeof EMPTY_VARIANTS)[number]
+
+/**
+ * Части пустого состояния для пропа `ui` (БЭМ-элементы `.base-empty__<часть>`, `root` — корень):
+ * icon-wrapper — обёртка иконки или иллюстрации; content — колонка с заголовком, описанием и телом; title — заголовок;
+ * description — описание; body — содержимое слота по умолчанию; actions — кнопки действий.
+ */
+export const EMPTY_PARTS = ['icon-wrapper', 'content', 'title', 'description', 'body', 'actions'] as const
+
+export type BaseEmptyPart = (typeof EMPTY_PARTS)[number]
 
 export interface BaseEmptyProps extends BaseComponentProps<
 	EmptyVariant,
@@ -18,6 +28,14 @@ export interface BaseEmptyProps extends BaseComponentProps<
 	description?: string
 	/** Имя иконки по умолчанию */
 	icon?: string
+	/**
+	 * Классы частей (`root`, `icon-wrapper`, `content`, `title`, `description`, `body`, `actions`) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseEmpty: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseEmpty title="Пусто" :ui="{ root: 'my-empty', title: 'my-empty-title' }" />
+	 */
+	ui?: UiProp<BaseEmptyPart>
 }
 
 export interface BaseEmptyEmits {

@@ -1,3 +1,4 @@
+import { useUi } from '@composables/base/useUi'
 import { computed, ref, useId, watch } from 'vue'
 import { toHTMLElement } from '@utils/dom/domUtils'
 import type { StructuredData } from '@utils/seo/structuredDataUtils'
@@ -142,6 +143,7 @@ export function useBaseAccordion(props: BaseAccordionProps, emit: BaseAccordionE
 
 	return {
 		...useStandardBaseComponent('base-accordion', props, ACCORDION_ELEMENTS),
+		ui: useUi(props, 'base-accordion'),
 		...useOpenItems(props, emit),
 		...useAccordionAppearance(props),
 		getHeaderId: (index: number): string => `${baseId}-header-${index}`,

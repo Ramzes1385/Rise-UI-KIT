@@ -1,16 +1,16 @@
 .base-checklist {
 	display: flex;
 	flex-direction: column;
-	gap: sz(12px);
+	gap: space(ct(checklist, gap, 12px));
 	box-sizing: border-box;
 	min-width: 0;
 	max-width: 100%;
-	padding: sz(16px);
-	border: 1px solid var(--rise-border);
-	border-radius: sz(var(--rise-radius-lg));
+	padding: space(ct(checklist, padding-y, 16px) ct(checklist, padding-x, 16px));
+	border: 1px solid ct(checklist, border, var(--rise-border));
+	border-radius: sz(ct(checklist, radius, var(--rise-radius-lg)));
 	@include text-size(sm);
-	@include custom-bg(background-color, var(--rise-bg));
-	@include custom-text(color, var(--rise-text));
+	@include custom-bg(background-color, ct(checklist, bg, var(--rise-bg)));
+	@include custom-text(color, ct(checklist, text, var(--rise-text)));
 
 	&__header {
 		display: flex;
@@ -23,7 +23,7 @@
 		min-width: 0;
 		color: var(--rise-text-highlighted);
 		@include text-size(md);
-		font-weight: var(--rise-font-weight-semibold);
+		font-weight: ct(checklist, title-font-weight, var(--rise-font-weight-semibold));
 	}
 
 	&__count {
@@ -33,9 +33,10 @@
 	}
 
 	&__list {
+		position: relative;
 		display: flex;
 		flex-direction: column;
-		gap: sz(4px);
+		gap: space(4px);
 		margin: 0;
 		padding: 0;
 		list-style: none;
@@ -45,13 +46,24 @@
 		display: flex;
 		align-items: flex-start;
 		gap: sz(10px);
-		padding: sz(8px);
-		border-radius: sz(var(--rise-radius-md));
+		padding: space(8px);
+		border-radius: sz(ct(checklist, item-radius, var(--rise-radius-md)));
 		@include transition-colors;
 	}
 
 	&__item--next {
-		background-color: var(--rise-primary-soft);
+		background-color: ct(checklist, item-bg-active, var(--rise-primary-soft));
+	}
+
+	@include enter-slide(base-checklist__item, down);
+
+	& &__item-move {
+		transition: transform var(--rise-duration) var(--rise-ease-emphasized);
+	}
+
+	& &__item-leave-active {
+		position: absolute;
+		pointer-events: none;
 	}
 
 	&__checkbox {
@@ -85,14 +97,16 @@
 	}
 
 	&__label {
-		color: var(--rise-text-highlighted);
+		color: ct(checklist, label-text, var(--rise-text-highlighted));
 		font-weight: var(--rise-font-weight-medium);
+		text-decoration: line-through transparent;
 		cursor: pointer;
+		@include transition-colors;
 	}
 
 	&__item--done &__label {
-		color: var(--rise-text-muted);
-		text-decoration: line-through;
+		color: ct(checklist, label-text-checked, var(--rise-text-muted));
+		text-decoration-color: currentcolor;
 	}
 
 	&__next {
@@ -114,6 +128,8 @@
 		margin-top: sz(4px);
 	}
 
+	@include enter-slide(base-checklist__done, up);
+
 	&__done {
 		display: flex;
 		align-items: center;
@@ -134,7 +150,7 @@
 
 	&--soft {
 		border-color: transparent;
-		@include custom-bg(background-color, var(--rise-bg-muted));
+		@include custom-bg(background-color, ct(checklist, bg, var(--rise-bg-muted)));
 	}
 
 	&--soft &__next {
@@ -142,8 +158,8 @@
 	}
 
 	&--outline {
-		border-color: var(--rise-border-accented);
-		@include custom-bg(background-color, transparent);
+		border-color: ct(checklist, border, var(--rise-border-accented));
+		@include custom-bg(background-color, ct(checklist, bg, transparent));
 	}
 
 	&--ghost {

@@ -1,45 +1,49 @@
 <template>
 	<div
-		class="base-checklist"
-		:class="[variantClass, classes.root, { 'base-checklist--complete': isComplete, 'base-checklist--disabled': isDisabled }]"
+		:class="[
+			ui('root'),
+			variantClass,
+			classes.root,
+			{ 'base-checklist--complete': isComplete, 'base-checklist--disabled': isDisabled },
+		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		role="group"
 		:aria-labelledby="titleId">
-		<div class="base-checklist__header">
-			<span :id="titleId" class="base-checklist__title">{{ heading }}</span>
-			<span class="base-checklist__count" aria-hidden="true">{{ progressText }}</span>
+		<div :class="ui('header')">
+			<span :id="titleId" :class="ui('title')">{{ heading }}</span>
+			<span :class="ui('count')" aria-hidden="true">{{ progressText }}</span>
 		</div>
 		<BaseProgress
+			:class="ui('progress')"
 			:value="doneCount"
 			:max="items.length || 1"
 			:aria-label="UI_CHECKLIST.PROGRESS_LABEL"
 			:aria-valuetext="progressText"
 			:size-scale="sizeScale" />
-		<ol class="base-checklist__list">
+		<TransitionGroup tag="ol" :class="ui('list')" name="base-checklist__item" @before-leave="holdLeavingPlace">
 			<li
 				v-for="row in rows"
 				:key="row.item.id"
-				class="base-checklist__item"
-				:class="[classes.item, { 'base-checklist__item--done': row.isDone, 'base-checklist__item--next': row.isNext }]">
+				:class="[ui('item'), classes.item, { 'base-checklist__item--done': row.isDone, 'base-checklist__item--next': row.isNext }]">
 				<input
 					:id="row.checkboxId"
 					type="checkbox"
-					class="base-checklist__checkbox"
+					:class="ui('checkbox')"
 					:checked="row.isDone"
 					:disabled="isDisabled"
 					:aria-describedby="row.describedBy"
 					@change="toggle(row.item.id)" />
-				<div class="base-checklist__body">
-					<div class="base-checklist__line">
-						<label :for="row.checkboxId" class="base-checklist__label">{{ row.item.title }}</label>
-						<span v-if="row.isNext" :id="row.nextId" class="base-checklist__next">{{ UI_CHECKLIST.NEXT }}</span>
+				<div :class="ui('body')">
+					<div :class="ui('line')">
+						<label :for="row.checkboxId" :class="ui('label')">{{ row.item.title }}</label>
+						<span v-if="row.isNext" :id="row.nextId" :class="ui('next')">{{ UI_CHECKLIST.NEXT }}</span>
 					</div>
-					<p v-if="row.item.description" :id="row.descriptionId" class="base-checklist__description">
+					<p v-if="row.item.description" :id="row.descriptionId" :class="ui('description')">
 						{{ row.item.description }}
 					</p>
 					<BaseButton
 						v-if="row.item.actionLabel && !row.isDone"
-						class="base-checklist__action"
+						:class="ui('action')"
 						:variant="row.isNext ? 'default' : 'outline'"
 						:size-scale="sizeScale"
 						:is-disabled="isDisabled"
@@ -48,11 +52,13 @@
 					</BaseButton>
 				</div>
 			</li>
-		</ol>
-		<p v-if="isComplete" class="base-checklist__done" role="status">
-			<BaseIcon name="check-circle" />
-			<slot name="done">{{ UI_CHECKLIST.DONE }}</slot>
-		</p>
+		</TransitionGroup>
+		<Transition name="base-checklist__done">
+			<p v-if="isComplete" :class="ui('done')" role="status">
+				<BaseIcon name="check-circle" />
+				<slot name="done">{{ UI_CHECKLIST.DONE }}</slot>
+			</p>
+		</Transition>
 	</div>
 </template>
 
@@ -78,6 +84,8 @@ const emit = defineEmits<BaseChecklistEmits>()
 defineSlots<BaseChecklistSlots>()
 
 const {
+	ui,
+	holdLeavingPlace,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

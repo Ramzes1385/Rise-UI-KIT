@@ -1,41 +1,42 @@
 <template>
 	<div
-		class="base-code"
-		:class="[variantClass, { 'base-code--wrapped': isWrapped, 'base-code--numbered': hasLineNumbers }, classes.root]"
+		:class="[ui('root'), variantClass, { 'base-code--wrapped': isWrapped, 'base-code--numbered': hasLineNumbers }, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle, numberWidth]">
-		<div v-if="hasHeader" class="base-code__header" :class="classes.header">
-			<span class="base-code__title">
+		<div v-if="hasHeader" :class="[ui('header'), classes.header]">
+			<span :class="ui('title')">
 				<slot name="header">{{ title || languageName }}</slot>
 			</span>
 			<slot name="actions" />
 			<BaseButton
 				v-if="hasCopyButton && !isEmpty"
 				variant="ghost"
-				class="base-code__copy"
+				:class="ui('copy')"
 				:size-scale="sizeScale"
 				:aria-label="copyLabel"
 				@click="copy">
-				<template #left><BaseIcon :name="isCopied ? 'check' : 'copy'" /></template>
+				<template #left>
+					<Transition name="base-code__copy-icon" mode="out-in">
+						<BaseIcon :key="copyIcon" :name="copyIcon" />
+					</Transition>
+				</template>
 				{{ isCopied ? UI_CODE.COPIED : UI_CODE.COPY }}
 			</BaseButton>
 		</div>
 		<div
 			ref="preRef"
-			class="base-code__pre"
-			:class="classes.pre"
+			:class="[ui('pre'), classes.pre]"
 			:style="preStyle"
 			:tabindex="isScrollable ? 0 : undefined"
 			:role="isScrollable ? 'region' : undefined"
 			:aria-label="isScrollable ? regionLabel : undefined">
-			<p v-if="isEmpty" class="base-code__empty">{{ UI_CODE.EMPTY }}</p>
-			<code v-else class="base-code__code">
+			<p v-if="isEmpty" :class="ui('empty')">{{ UI_CODE.EMPTY }}</p>
+			<code v-else :class="ui('code')">
 				<span
 					v-for="line in lines"
 					:key="line.number"
-					class="base-code__line"
-					:class="[{ 'base-code__line--highlighted': line.isHighlighted }, classes.line]">
-					<span v-if="hasLineNumbers" class="base-code__number" aria-hidden="true">{{ line.number }}</span>
-					<span class="base-code__text">
+					:class="[ui('line'), { 'base-code__line--highlighted': line.isHighlighted }, classes.line]">
+					<span v-if="hasLineNumbers" :class="ui('number')" aria-hidden="true">{{ line.number }}</span>
+					<span :class="ui('text')">
 						<span
 							v-for="(token, index) in line.tokens"
 							:key="index"
@@ -78,6 +79,7 @@ const emit = defineEmits<BaseCodeEmits>()
 defineSlots<BaseCodeSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,
@@ -93,6 +95,7 @@ const {
 	preStyle,
 	numberWidth,
 	isCopied,
+	copyIcon,
 	status,
 	copy,
 } = useBaseCode(props, emit)

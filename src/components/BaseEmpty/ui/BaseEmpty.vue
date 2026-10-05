@@ -1,37 +1,32 @@
 <template>
-	<div class="base-empty" :class="[variantClass, classes.root]" :style="[sizeScaleStyle, variantStyle, customColorStyle]">
-		<div class="base-empty__icon-wrapper" :class="classes.iconWrapper">
+	<div :class="[ui('root'), variantClass, classes.root]" :style="[sizeScaleStyle, variantStyle, customColorStyle]">
+		<div :class="[ui('icon-wrapper'), classes.iconWrapper]">
 			<slot name="icon">
 				<BaseIcon :name="emptyIcon" :size-scale="calcIconScale('lg', sizeScale)" :custom-class="classes.icon" />
 			</slot>
 		</div>
 
-		<div class="base-empty__content" :class="classes.content">
+		<div :class="[ui('content'), classes.content]">
 			<BaseText
 				v-if="title"
 				tag="h3"
 				:weight="TEXT_WEIGHT.MEDIUM"
 				:size-scale="sizeScale"
-				class="base-empty__title"
+				:class="ui('title')"
 				:custom-class="classes.title">
 				{{ title }}
 			</BaseText>
 
-			<BaseText
-				v-if="description"
-				tag="p"
-				:size-scale="sizeScale"
-				class="base-empty__description"
-				:custom-class="classes.description">
+			<BaseText v-if="description" tag="p" :size-scale="sizeScale" :class="ui('description')" :custom-class="classes.description">
 				{{ description }}
 			</BaseText>
 
-			<div v-if="$slots.default" class="base-empty__body" :class="classes.body">
+			<div v-if="$slots.default" :class="[ui('body'), classes.body]">
 				<slot />
 			</div>
 		</div>
 
-		<div v-if="$slots.actions" class="base-empty__actions" :class="classes.actions">
+		<div v-if="$slots.actions" :class="[ui('actions'), classes.actions]">
 			<slot name="actions" />
 		</div>
 	</div>
@@ -57,5 +52,5 @@ const props = withDefaults(
 
 defineSlots<BaseEmptySlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, emptyIcon } = useBaseEmpty(props)
+const { ui, sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, emptyIcon } = useBaseEmpty(props)
 </script>

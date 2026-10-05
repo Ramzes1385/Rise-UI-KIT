@@ -1,27 +1,23 @@
 <template>
-	<div
-		class="base-accordion"
-		:class="[variantClass, appearanceClass, classes.root]"
-		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
+	<div :class="[ui('root'), variantClass, appearanceClass, classes.root]" :style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<component :is="'script'" v-if="structuredData" type="application/ld+json" v-html="structuredData" />
 
 		<div
 			v-for="(item, index) in items"
 			:key="itemKey(index)"
-			class="base-accordion__item"
 			:class="[
+				ui('item'),
 				{
 					'base-accordion__item--open': isOpen(index),
 					'base-accordion__item--disabled': item.isDisabled,
 				},
 				classes.item,
 			]">
-			<component :is="`h${headingLevel}`" class="base-accordion__heading" :class="classes.heading">
+			<component :is="`h${headingLevel}`" :class="[ui('heading'), classes.heading]">
 				<button
 					:id="getHeaderId(index)"
 					type="button"
-					class="base-accordion__header"
-					:class="classes.header"
+					:class="[ui('header'), classes.header]"
 					:aria-expanded="isOpen(index)"
 					:aria-controls="getPanelId(index)"
 					:aria-labelledby="`${getHeaderId(index)}-label`"
@@ -33,21 +29,18 @@
 						v-if="item.icon"
 						:name="item.icon"
 						:size-scale="calcIconScale('sm', sizeScale)"
-						class="base-accordion__icon"
+						:class="ui('icon')"
 						:custom-class="classes.icon" />
-					<span class="base-accordion__title">
-						<span :id="`${getHeaderId(index)}-label`" class="base-accordion__label" :class="classes.label">{{
-							item.label
-						}}</span>
+					<span :class="ui('title')">
+						<span :id="`${getHeaderId(index)}-label`" :class="[ui('label'), classes.label]">{{ item.label }}</span>
 						<span
 							v-if="item.description"
 							:id="`${getHeaderId(index)}-description`"
-							class="base-accordion__description"
-							:class="classes.description"
+							:class="[ui('description'), classes.description]"
 							>{{ item.description }}</span
 						>
 					</span>
-					<span v-if="hasArrow" class="base-accordion__arrow" :class="classes.arrow">
+					<span v-if="hasArrow" :class="[ui('arrow'), classes.arrow]">
 						<BaseIcon
 							:name="arrowIconName(isOpen(index))"
 							:size-scale="calcIconScale('md', sizeScale)"
@@ -58,15 +51,14 @@
 
 			<div
 				:id="getPanelId(index)"
-				class="base-accordion__collapse"
-				:class="[{ 'base-accordion__collapse--open': isOpen(index) }, classes.collapse]"
+				:class="[ui('collapse'), { 'base-accordion__collapse--open': isOpen(index) }, classes.collapse]"
 				role="region"
 				:aria-labelledby="`${getHeaderId(index)}-label`"
 				:aria-hidden="isOpen(index) ? undefined : true"
 				:inert="isOpen(index) ? undefined : true">
-				<div class="base-accordion__content" :class="classes.content">
+				<div :class="[ui('content'), classes.content]">
 					<slot :name="item.slot || 'default'" :item="item">
-						<p class="base-accordion__text" :class="classes.contentText">{{ item.content }}</p>
+						<p :class="[ui('text'), classes.contentText]">{{ item.content }}</p>
 					</slot>
 				</div>
 			</div>
@@ -103,6 +95,7 @@ const emit = defineEmits<BaseAccordionEmits>()
 defineSlots<BaseAccordionSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

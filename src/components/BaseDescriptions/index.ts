@@ -1,6 +1,7 @@
-export { DESCRIPTIONS_LAYOUTS, DESCRIPTIONS_VARIANTS } from './types/BaseDescriptions.types'
+export { DESCRIPTIONS_LAYOUTS, DESCRIPTIONS_PARTS, DESCRIPTIONS_VARIANTS } from './types/BaseDescriptions.types'
 export type {
 	BaseDescriptionsEmits,
+	BaseDescriptionsPart,
 	BaseDescriptionsProps,
 	BaseDescriptionsSlots,
 	DescriptionsCopyEvent,
