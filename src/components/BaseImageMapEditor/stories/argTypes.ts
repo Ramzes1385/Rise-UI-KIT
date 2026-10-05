@@ -14,6 +14,7 @@ export const argTypes = {
 	nudgeStep: { control: { type: 'number', min: 0.001, max: 0.1, step: 0.001 }, table: propGroup(ARG_GROUP.behavior) },
 	hasPreview: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	fileName: { control: 'text', table: propGroup(ARG_GROUP.behavior) },
+	has3dFields: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	height: { control: 'text', table: propGroup(ARG_GROUP.appearance) },
 	error: { control: 'text', table: propGroup(ARG_GROUP.state) },
 	isDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },

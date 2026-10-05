@@ -30,3 +30,4 @@ export const Preview = cases.Preview
 export const CustomToolbar = cases.CustomToolbar
 export const MouseEditing = cases.MouseEditing
 export const Keyboard = cases.Keyboard
+export const Fields3D = cases.Fields3D

@@ -278,6 +278,7 @@ const props = withDefaults(
 		nudgeStep: 0.005,
 		hasPreview: true,
 		fileName: 'image-map.json',
+		has3dFields: false,
 		variant: DEFAULT_VARIANT,
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),

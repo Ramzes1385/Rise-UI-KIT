@@ -1,5 +1,6 @@
-import { IMAGE_MAP_HOTSPOTS } from '@components/BaseImageMap/stories/fixtures'
 import type { ImageMapData } from '@components/BaseImageMap/types/imageMapData.types'
+import type { ImageMap3DData } from '@components/BaseImageMap3D/types/imageMap3dData.types'
+import { IMAGE_MAP_FLOORS, IMAGE_MAP_HOTSPOTS } from '@components/BaseImageMap/stories/fixtures'
 
 const LONG_TITLES: Record<string, string> = {
 	peak: 'Смотровая площадка на вершине горы с видом на долину, озеро и соседний хребет',
@@ -33,4 +34,15 @@ export function pointAt(stage: HTMLElement, x: number, y: number): { clientX: nu
 
 export function statusOf(canvasElement: HTMLElement): HTMLElement {
 	return canvasElement.querySelector('[role="status"]') as HTMLElement
+}
+
+export const IMAGE_MAP_3D_FIELDS: ImageMap3DData = {
+	...IMAGE_MAP_FLOORS,
+	layers: IMAGE_MAP_FLOORS.layers.map((layer, index) =>
+		index === 1 ? { ...layer, elevation: 240, model: { url: '/maps/floor-2.glb', scale: 1.5, rotationY: 90 } } : layer,
+	),
+	objects: IMAGE_MAP_FLOORS.objects.map(object =>
+		object.id === 'f1-shop-1' ? { ...object, height3d: 40, meshName: 'Shop_101' } : object,
+	),
+	scene3d: { floorGap: 220 },
 }

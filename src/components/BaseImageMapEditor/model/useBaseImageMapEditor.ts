@@ -44,7 +44,7 @@ function useCommands(core: ReturnType<typeof useCore>, panel: ReturnType<typeof 
 function useParts(props: ImageMapEditorProps, core: ReturnType<typeof useCore>) {
 	const { ctx, tool, selection, doc, svgContainerRef } = core
 	const pointer = useEditorPointer(ctx, tool)
-	const panel = useEditorPanel(ctx, selection.setLayer)
+	const panel = useEditorPanel(ctx, selection.setLayer, () => props.has3dFields)
 	const commands = useCommands(core, panel)
 	const keyboard = useEditorKeyboard(props, ctx, { tool, commands })
 	const canvas = useEditorCanvas(ctx, tool, {

@@ -3,7 +3,10 @@ import { objectSections } from './objectFields'
 import { formatMessage } from '@/locales/state'
 import { applyField, parsePoints } from './applyField'
 import { groupFields, layerFields } from './mapFields'
+import { useEditor3dFields } from './useEditor3dFields'
 import { UI_IMAGE_MAP_EDITOR } from '@/locales/messages'
+import { object3dIssue, object3dSection } from './fields3d'
+import type { ImageMapObject } from '@components/BaseImageMap/types/imageMapData.types'
 import type { EditorContext, EditorFieldValue as FieldValue } from '../../types/imageMapEditorInternal.types'
 import {
 	addGroup,
@@ -22,7 +25,7 @@ function indexOf(items: { id: string }[], id: string): number {
 	return items.findIndex(item => item.id === id)
 }
 
-function useObjectFields(ctx: EditorContext) {
+function useObjectFields(ctx: EditorContext, has3d: () => boolean) {
 	const errors = ref<Record<string, string>>({})
 	const selectedId = computed(() => ctx.selection.getSelected()?.id)
 	watch(selectedId, () => {
@@ -38,8 +41,8 @@ function useObjectFields(ctx: EditorContext) {
 		'geo.points': value => (parsePoints(value) ? undefined : UI_IMAGE_MAP_EDITOR.POINTS_INVALID),
 	}
 
-	function validate(key: string, value: FieldValue): string | undefined {
-		return validators[key]?.(String(value ?? '').trim())
+	function validate(object: ImageMapObject, key: string, value: FieldValue): string | undefined {
+		return validators[key]?.(String(value ?? '').trim()) ?? object3dIssue(object, key, value)
 	}
 
 	function write(id: string, key: string, value: FieldValue): void {
@@ -55,12 +58,15 @@ function useObjectFields(ctx: EditorContext) {
 	return {
 		sections: computed(() => {
 			const selected = ctx.selection.getSelected()
-			return selected ? objectSections(selected, ctx.doc.getData(), errors.value) : []
+			if (!selected) return []
+			const sections = objectSections(selected, ctx.doc.getData(), errors.value)
+			return has3d() ? [...sections, object3dSection(selected, errors.value)] : sections
 		}),
 		setField(key: string, value: FieldValue): void {
-			const id = selectedId.value
-			if (!id || ctx.isDisabled()) return
-			const error = validate(key, value)
+			const selected = ctx.selection.getSelected()
+			if (!selected || ctx.isDisabled()) return
+			const id = selected.id
+			const error = validate(selected, key, value)
 			errors.value = { ...errors.value, [key]: error ?? '' }
 			if (error) return
 			write(id, key, value)
@@ -138,9 +144,10 @@ function useObjectActions(ctx: EditorContext) {
 	}
 }
 
-export function useEditorPanel(ctx: EditorContext, setLayer: (id: string) => void) {
+export function useEditorPanel(ctx: EditorContext, setLayer: (id: string) => void, has3d: () => boolean) {
 	return {
-		...useObjectFields(ctx),
+		...useObjectFields(ctx, has3d),
+		...useEditor3dFields(ctx, has3d),
 		...useMapFields(ctx),
 		...useLayerActions(ctx, setLayer),
 		...useObjectActions(ctx),

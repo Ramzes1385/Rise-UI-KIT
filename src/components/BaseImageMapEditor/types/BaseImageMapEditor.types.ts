@@ -52,12 +52,17 @@ export interface BaseImageMapEditorProps extends BaseComponentProps<ImageMapEdit
 	height?: string
 	/** Имя файла при экспорте JSON */
 	fileName?: string
+	/**
+	 * Поля 3D в панели свойств для BaseImageMap3D (вход `/map3d`): высота и узел модели объекта, высота и модель GLB этажа,
+	 * общие настройки сцены. По умолчанию `false`; 3D-поля JSON сохраняются и без них
+	 */
+	has3dFields?: boolean
 }
 
 /** Пропсы после `withDefaults` */
 export type ImageMapEditorProps = PropsWithDefaults<
 	BaseImageMapEditorProps,
-	'selected' | 'tool' | 'isDisabled' | 'historyLimit' | 'nudgeStep' | 'hasPreview' | 'fileName'
+	'selected' | 'tool' | 'isDisabled' | 'historyLimit' | 'nudgeStep' | 'hasPreview' | 'fileName' | 'has3dFields'
 >
 
 /**

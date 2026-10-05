@@ -27,6 +27,10 @@ const EXPECTED: Record<ImageMap3DFieldRule, () => string> = {
 	object: () => UI_IMAGE_MAP_3D.EXPECT_OBJECT,
 }
 
+export function expectedText(rule: ImageMap3DFieldRule): string {
+	return EXPECTED[rule]()
+}
+
 function check(issues: ImageMap3DIssue[], issue: ImageMap3DIssue): boolean {
 	if (issue.value === undefined || RULES[issue.rule](issue.value)) return true
 	issues.push(issue)
@@ -65,6 +69,6 @@ function formatValue(value: unknown): string {
 export function warn3dData(data: ImageMap3DData): void {
 	if (!isDevelopmentBuild()) return
 	validate3dData(data).forEach(issue =>
-		warn(UI_IMAGE_MAP_3D.INVALID_FIELD, { path: issue.path, value: formatValue(issue.value), expected: EXPECTED[issue.rule]() }),
+		warn(UI_IMAGE_MAP_3D.INVALID_FIELD, { path: issue.path, value: formatValue(issue.value), expected: expectedText(issue.rule) }),
 	)
 }

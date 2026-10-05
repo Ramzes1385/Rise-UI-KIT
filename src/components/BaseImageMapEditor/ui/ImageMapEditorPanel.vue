@@ -86,6 +86,12 @@
 			</BaseButton>
 		</section>
 
+		<ImageMapEditorPanel3d
+			v-if="panel.scene3dFields.value.length"
+			:panel="panel"
+			:layer-title="currentLayer?.title"
+			:is-disabled="isDisabled" />
+
 		<section class="base-image-map-editor__section">
 			<h3 class="base-image-map-editor__heading">{{ UI_IMAGE_MAP_EDITOR.GROUPS }}</h3>
 			<fieldset v-for="group in panel.groups.value" :key="group.id" class="base-image-map-editor__fieldset">
@@ -117,6 +123,7 @@ import { BaseButton } from '@components/BaseButton'
 import { UI_IMAGE_MAP_EDITOR } from '@/locales/messages'
 import { typeLabel } from '../model/canvas/useEditorTool'
 import ImageMapEditorField from './ImageMapEditorField.vue'
+import ImageMapEditorPanel3d from './ImageMapEditorPanel3d.vue'
 import { useImageMapEditorPanel } from '../model/panel/useImageMapEditorPanel'
 import type { ImageMapEditorPanelEmits, ImageMapEditorPanelProps } from '../types/ImageMapEditorPanel.types'
 

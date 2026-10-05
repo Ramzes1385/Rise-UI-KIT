@@ -168,6 +168,8 @@ describe('границы плеера', () => {
 /** Где разрешён `three` (вход `/map3d`): остальной кит и его входы WebGL-движок не тянут */
 const MAP3D_DIR = join(SRC, 'components/BaseImageMap3D')
 const MAP3D_ENTRY = join(SRC, 'map3d.ts')
+/** Модули BaseImageMap3D, которые берёт основной вход (BaseImageMapEditor проверяет 3D-поля JSON): без three и сцены */
+const MAP3D_SHARED = ['model/validate3d.ts']
 
 function importsThree(file: string): boolean {
 	return runtimeSpecifiers(file).some(specifier => /^three(\/.*)?$/.test(specifier))
@@ -197,9 +199,13 @@ describe('границы входа /map3d', () => {
 		expect(offenders).toEqual([])
 	})
 
-	it('входы кита и /media не достигают BaseImageMap3D', () => {
+	it('входы кита и /media достигают из BaseImageMap3D только проверки данных без three (редактор карты)', () => {
 		const reachable = [...reachableFrom([...KIT_ENTRIES, 'components/BaseMediaPlayer/index.ts'])]
-		expect(reachable.filter(file => file.startsWith(MAP3D_DIR + sep)).map(file => relative(ROOT, file))).toEqual([])
+		const fromMap3d = reachable
+			.filter(file => file.startsWith(MAP3D_DIR + sep))
+			.map(file => relative(MAP3D_DIR, file).split(sep).join('/'))
+		expect(fromMap3d.filter(file => !MAP3D_SHARED.includes(file))).toEqual([])
+		expect(reachable.filter(importsThree).map(file => relative(ROOT, file))).toEqual([])
 	})
 
 	it('вход /map3d импортирует three', () => {

@@ -37,3 +37,13 @@ export interface EditorFocusTarget {
 
 /** Строки и кнопки панели, на которые переводится фокус: строки этажей и групп, «Выше» и «Ниже» этажа */
 export type EditorPanelList = 'layer' | 'group' | 'up' | 'down'
+
+/** Пропсы раздела «3D» панели свойств (внутренний компонент) */
+export interface ImageMapEditorPanel3dProps {
+	/** Поля и действия панели */
+	panel: ReturnType<typeof useEditorPanel>
+	/** Название показанного этажа — подпись полей 3D этажа */
+	layerTitle?: string
+	/** Редактор отключён */
+	isDisabled: boolean
+}

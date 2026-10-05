@@ -88,7 +88,7 @@ describe('useEditorPanel', () => {
 		const ghost = { type: 'point', id: 'ghost', title: 'Нет', x: 0, y: 0 } as ImageMapObject
 		const data: ImageMapData = { version: 1, layers: [{ id: 'l1', title: 'Слой', width: 1, height: 1 }], objects: [] }
 		const ctx = fakeContext(data, ghost)
-		const panel = inScope(() => useEditorPanel(ctx, vi.fn()))
+		const panel = inScope(() => useEditorPanel(ctx, vi.fn(), () => false))
 		panel.setField('title', 'Новое')
 		expect(ctx.doc.apply).toHaveBeenCalledOnce()
 		expect(data.objects).toEqual([])
