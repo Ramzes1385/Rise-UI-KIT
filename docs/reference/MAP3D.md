@@ -15,7 +15,7 @@ npm i -D @types/three
 ```
 
 - `three` — **необязательная peer-зависимость** кита: `>=0.180.0 <0.200.0` (кит проверен на 0.186). Ставит только приложение, которое импортирует `/map3d`.
-- Без `three` основной вход (`@ramzes1385/rise-ui-kit`, `/components` и остальные) собирается и работает как прежде. Импорт `/map3d` без `three` падает **при сборке** ошибкой разрешения модуля — Vite пишет `Rollup failed to resolve import "three" from ".../dist/map3d.js"` (dev-сервер — `Failed to resolve import "three"`). Это ожидаемо: установите `three`.
+- Без `three` основной вход (`@ramzes1385/rise-ui-kit`, `/components` и остальные) собирается и работает как прежде — проверено сборкой Vite 8 и `vue-tsc` в чистом приложении без `three`. Импорт `/map3d` без `three` падает **при сборке**: Vite 8 подменяет отсутствующую необязательную peer-зависимость пустым модулем и пишет `[MISSING_EXPORT] "AmbientLight" is not exported by "__vite-optional-peer-dep:three:@ramzes1385/rise-ui-kit"` (по строке на каждый класс three); другие сборщики — `Could not resolve "three"`. Это ожидаемо: установите `three`. TypeScript без `@types/three` на типах `/map3d` пишет `Cannot find module 'three'`.
 - Стили карты уже в общем `@ramzes1385/rise-ui-kit/styles` (`styles.css` или `styles.layer.css`); отдельного CSS у входа нет.
 
 ```vue
@@ -55,7 +55,7 @@ const data: ImageMap3DData = {
 </template>
 ```
 
-Вход не нужно регистрировать в плагине: импортируйте компонент там, где он нужен (как `BaseMediaPlayer` из `/media`). Ленивая загрузка — `defineAsyncComponent(() => import('@ramzes1385/rise-ui-kit/map3d').then(m => m.BaseImageMap3D))`: карта и three.js попадут в отдельный чанк и загрузятся при первом показе.
+Вход не нужно регистрировать в плагине: импортируйте компонент там, где он нужен (как `BaseMediaPlayer` из `/media`). Ленивая загрузка — `defineAsyncComponent(() => import('@ramzes1385/rise-ui-kit/map3d').then(m => m.BaseImageMap3D))`: карта и three.js попадут в отдельный чанк и загрузятся при первом показе (в чистом приложении на Vite 8 — ≈270 КБ gzip вместе с three и общими частями кита, основной чанк — ≈31 КБ).
 
 ## Формат данных
 
