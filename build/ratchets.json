@@ -1,36 +1,36 @@
 {
 	"size": {
 		"components.js": {
-			"gzip": 458630,
-			"budget": 504832
+			"gzip": 463182,
+			"budget": 509952
 		},
 		"composables.js": {
-			"gzip": 113944,
-			"budget": 125952
+			"gzip": 114763,
+			"budget": 126976
 		},
 		"icons.js": {
 			"gzip": 3062,
 			"budget": 4096
 		},
 		"icons.svg": {
-			"gzip": 4354,
+			"gzip": 4400,
 			"budget": 6144
 		},
 		"index.js": {
-			"gzip": 442992,
-			"budget": 487424
+			"gzip": 481121,
+			"budget": 529408
 		},
 		"media.js": {
-			"gzip": 133524,
-			"budget": 147456
+			"gzip": 144306,
+			"budget": 159744
 		},
 		"styles.css": {
-			"gzip": 76127,
-			"budget": 83968
+			"gzip": 83405,
+			"budget": 92160
 		},
 		"utils.js": {
-			"gzip": 64880,
-			"budget": 71680
+			"gzip": 71763,
+			"budget": 79872
 		}
 	},
 	"coverageExcludes": {
