@@ -1,4 +1,4 @@
-import { DOWNLOAD_PROTOCOLS, isExternalUrl, isSafeUrl, normalizeLinkUrl } from '../urlUtils'
+import { DOWNLOAD_PROTOCOLS, isEmailFormat, isExternalUrl, isSafeUrl, normalizeLinkUrl } from '../urlUtils'
 
 describe('urlUtils.isSafeUrl', () => {
 	it.each([
@@ -84,5 +84,15 @@ describe('urlUtils.isExternalUrl', () => {
 
 	it.each(['/docs', 'docs/intro', './relative', '#anchor', '?page=2', ''])('%s — путь приложения', url => {
 		expect(isExternalUrl(url)).toBe(false)
+	})
+})
+
+describe('urlUtils.isEmailFormat', () => {
+	it('синтаксис адреса почты: имя, @, домен с точкой, без пробелов', () => {
+		expect(isEmailFormat('a@b.ru')).toBe(true)
+		expect(isEmailFormat('  team@example.com ')).toBe(true)
+		expect(isEmailFormat('a@b')).toBe(false)
+		expect(isEmailFormat('a b@c.ru')).toBe(false)
+		expect(isEmailFormat('@b.ru')).toBe(false)
 	})
 })

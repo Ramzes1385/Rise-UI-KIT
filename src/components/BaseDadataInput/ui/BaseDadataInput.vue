@@ -2,13 +2,13 @@
 	<BaseAutocomplete
 		class="base-dadata-input"
 		:class="classes.root"
-		:model-value="value || null"
+		:model-value="fieldValue"
 		:options="options"
 		:variant="variant"
 		:label="label"
 		:aria-label="label ? undefined : kindLabel"
 		:placeholder="placeholder"
-		:error="error"
+		:error="shownError"
 		:is-disabled="isDisabled"
 		:is-required="isRequired"
 		:is-loading="isLoading"
@@ -19,7 +19,10 @@
 		is-remote
 		is-custom-allowed
 		@update:model-value="handleChange"
-		@search="search" />
+		@search="handleSearch"
+		@blur="handleBlur">
+		<template #empty>{{ emptyText }}</template>
+	</BaseAutocomplete>
 </template>
 
 <script setup lang="ts">
@@ -34,7 +37,10 @@ const props = withDefaults(
 	kitDefaults('BaseDadataInput', {
 		variant: DEFAULT_VARIANT,
 		modelValue: '',
+		suggestion: null,
 		kind: 'address',
+		isStrict: false,
+		precision: 'any',
 		token: undefined,
 		baseUrl: undefined,
 		count: 7,
@@ -48,5 +54,6 @@ const props = withDefaults(
 
 const emit = defineEmits<BaseDadataInputEmits>()
 
-const { classes, value, isLoading, options, kindLabel, inputAttrs, search, handleChange } = useBaseDadataInput(props, emit)
+const { classes, fieldValue, isLoading, shownError, emptyText, options, kindLabel, inputAttrs, handleSearch, handleChange, handleBlur } =
+	useBaseDadataInput(props, emit)
 </script>

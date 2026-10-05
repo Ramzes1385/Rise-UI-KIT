@@ -13,12 +13,35 @@ export const DADATA_INPUT_VARIANTS = [
 	'underline',
 ] as const satisfies readonly InputVariant[]
 
+/** Требуемая точность адреса: `any` — любая подсказка, `city` — до города или населённого пункта, `street` — до улицы (или дома без улицы), `house` — до дома, `flat` — до квартиры */
+export const DADATA_PRECISIONS = ['any', 'city', 'street', 'house', 'flat'] as const
+
+/** Точность адреса для `precision` */
+export type DadataPrecision = (typeof DADATA_PRECISIONS)[number]
+
 /**
  * Пропсы компонента BaseDadataInput
  */
 export interface BaseDadataInputProps extends BaseComponentProps<InputVariant, 'root' | 'field' | 'panel' | 'option'> {
 	/** Значение (`v-model`): выбранная подсказка или набранный текст */
 	modelValue?: string
+	/**
+	 * Выбранная подсказка целиком (`v-model:suggestion`): `value`, `unrestrictedValue` и все данные сервиса в `data`
+	 * (`fias_id`, `geo_lat`, `house`, `flat`, ИНН, БИК…). Правка текста после выбора сбрасывает её в `null`;
+	 * текст, совпавший с подсказкой при уходе из поля, её выбирает
+	 */
+	suggestion?: DadataSuggestion | null
+	/**
+	 * Только из подсказок: свой текст не подтверждает значение — при уходе из поля без выбора текст остаётся,
+	 * `suggestion` — `null`, под полем ошибка «Выберите вариант из списка», событие `validate(false)`
+	 */
+	isStrict?: boolean
+	/**
+	 * Требуемая точность адреса (только `kind="address"`). Подсказка ниже уровня не подтверждается: в поле — её текст
+	 * с пробелом и новый поиск, при уходе из поля — ошибка «Укажите дом» и т. п. Уровень — по полям `data`:
+	 * `city`/`settlement`, `street` (или `house`), `house`, `flat`
+	 */
+	precision?: DadataPrecision
 	/** Вид подсказок: `address` — адрес, `party` — организация или ИП, `bank` — банк, `fio` — ФИО, `email` — почта */
 	kind?: DadataKind
 	/**
@@ -42,9 +65,12 @@ export interface BaseDadataInputProps extends BaseComponentProps<InputVariant, '
 	label?: string
 	/** Подсказка в пустом поле */
 	placeholder?: string
-	/** Текст ошибки под полем */
+	/**
+	 * Текст ошибки под полем; важнее встроенных проверок. Встроенные (после ухода из поля): обязательное поле,
+	 * `isStrict`, `precision`, формат почты у `email`, контрольное число ИНН/ОГРН и формат БИК у запроса из цифр
+	 */
 	error?: string
-	/** Обязательное поле */
+	/** Обязательное поле: пустое после ухода из поля — ошибка и `validate(false)` */
 	isRequired?: boolean
 	/** Отключает поле */
 	isDisabled?: boolean
@@ -61,4 +87,11 @@ export interface BaseDadataInputEmits {
 	 * `correspondentAccount` у банка) — их можно передать в BaseRequisiteInput
 	 */
 	(event: 'select', suggestion: DadataSuggestion, requisites: DadataRequisites): void
+	/** Выбранная подсказка (`v-model:suggestion`): объект при выборе, `null` — правка текста, очистка, неполный адрес */
+	(event: 'update:suggestion', suggestion: DadataSuggestion | null): void
+	/**
+	 * Итог встроенных проверок при уходе из поля и при выборе подсказки: `true` — значение подходит,
+	 * `false` — ошибка, `null` — поле пустое и необязательное
+	 */
+	(event: 'validate', isValid: boolean | null): void
 }

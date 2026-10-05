@@ -1,1 +1,1 @@
-export { DOWNLOAD_PROTOCOLS, isExternalUrl, isSafeUrl, NAVIGATION_PROTOCOLS, normalizeLinkUrl } from './urlUtils'
+export { DOWNLOAD_PROTOCOLS, isEmailFormat, isExternalUrl, isSafeUrl, NAVIGATION_PROTOCOLS, normalizeLinkUrl } from './urlUtils'

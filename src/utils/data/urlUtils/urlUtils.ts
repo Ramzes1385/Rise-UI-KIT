@@ -48,6 +48,11 @@ const HOST_WITH_PORT_RE = /^[\w-]+(\.[\w-]+)*:\d+([/?#]|$)/
 /** Схемы, у которых после двоеточия сразу идут данные: tel:88005553535 не должен стать хостом с портом */
 const DATA_SCHEME_RE = /^(mailto|tel):/i
 
+/** Похоже на адрес почты по синтаксису (`name@domain.tld`, без пробелов); существование ящика не проверяется */
+function isEmailFormat(text: string): boolean {
+	return EMAIL_RE.test(text.trim())
+}
+
 /**
  * Приводит введённый пользователем адрес к ссылке: `example.com` → `https://example.com`,
  * `localhost:3000` → `https://localhost:3000`, `team@example.com` → `mailto:team@example.com`.
@@ -71,4 +76,4 @@ function isExternalUrl(url: string): boolean {
 	return normalized.startsWith('//') || SCHEME_RE.test(normalized)
 }
 
-export { DOWNLOAD_PROTOCOLS, isExternalUrl, isSafeUrl, NAVIGATION_PROTOCOLS, normalizeLinkUrl }
+export { DOWNLOAD_PROTOCOLS, isEmailFormat, isExternalUrl, isSafeUrl, NAVIGATION_PROTOCOLS, normalizeLinkUrl }

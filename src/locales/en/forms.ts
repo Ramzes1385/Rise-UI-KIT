@@ -97,13 +97,21 @@ export const enForms = {
 		INCOMPLETE: 'Digits required: {count}',
 		OR: 'or',
 	},
-	/** Подсказки DaData: названия полей по виду подсказок */
+	/** Подсказки DaData: названия полей по виду подсказок и встроенные проверки */
 	dadata: {
 		ADDRESS: 'Address',
 		PARTY: 'Company or sole trader',
 		BANK: 'Bank',
 		FIO: 'Full name',
 		EMAIL: 'Email',
+		CHOOSE_OPTION: 'Choose an option from the list',
+		NEED_CITY: 'Specify the city or locality',
+		NEED_STREET: 'Specify the street',
+		NEED_HOUSE: 'Specify the house',
+		NEED_FLAT: 'Specify the apartment',
+		EMAIL_FORMAT: 'Invalid email address',
+		CHECKSUM: 'Invalid check digit: {name}',
+		FORMAT: 'Invalid format: {name}',
 	},
 	signaturePad: {
 		LABEL: 'Signature',

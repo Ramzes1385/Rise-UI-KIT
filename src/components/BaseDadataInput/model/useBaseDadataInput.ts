@@ -1,8 +1,9 @@
-import { computed, shallowRef, watch } from 'vue'
-import { UI_DADATA, UI_REQUISITES } from '@/locales/messages'
+import { computed, ref, shallowRef, watch } from 'vue'
 import { useCustomClass } from '@composables/base/useCustomClass'
+import { UI_DADATA, UI_REQUISITES, UI_TEXT } from '@/locales/messages'
 import type { DadataKind, DadataSuggestion } from '@utils/data/dadataUtils'
 import { useRemoteSuggestions } from '@composables/form/useRemoteSuggestions'
+import { builtInError, digitError, meetsPrecision, precisionOf } from './dadataChecks'
 import type { BaseDadataInputEmits, BaseDadataInputProps } from '../types/BaseDadataInput.types'
 import { createDadataSource, dadataAddressText, dadataRequisites } from '@utils/data/dadataUtils'
 
@@ -37,12 +38,25 @@ function useDadataSource(props: BaseDadataInputProps) {
 	return () => props.source ?? builtIn.value
 }
 
-export function useBaseDadataInput(props: BaseDadataInputProps, emit: BaseDadataInputEmits) {
-	const { suggestions, isLoading, search } = useRemoteSuggestions({
-		source: useDadataSource(props),
-		minChars: () => props.minChars ?? 3,
-		debounce: () => props.debounce ?? 300,
-	})
+function useSuggestionModel(props: BaseDadataInputProps, emit: BaseDadataInputEmits) {
+	const suggestion = shallowRef<DadataSuggestion | null>(props.suggestion ?? null)
+	watch(
+		() => props.suggestion,
+		next => {
+			suggestion.value = next ?? null
+		},
+	)
+	return {
+		suggestion,
+		setSuggestion(next: DadataSuggestion | null): void {
+			if (next === suggestion.value) return
+			suggestion.value = next
+			emit('update:suggestion', next)
+		},
+	}
+}
+
+function useValueModel(props: BaseDadataInputProps, emit: BaseDadataInputEmits) {
 	const value = shallowRef(props.modelValue ?? '')
 	watch(
 		() => props.modelValue,
@@ -50,22 +64,97 @@ export function useBaseDadataInput(props: BaseDadataInputProps, emit: BaseDadata
 			value.value = next ?? ''
 		},
 	)
+	return {
+		value,
+		setValue(next: string): void {
+			value.value = next
+			emit('update:modelValue', next)
+		},
+	}
+}
+
+function useValidation(props: BaseDadataInputProps, value: () => string, suggestion: () => DadataSuggestion | null) {
+	const isTouched = ref(false)
+	const error = computed(() => builtInError(props, value(), suggestion()))
+	return {
+		isTouched,
+		validity: computed<boolean | null>(() => {
+			if (error.value) return false
+			return value().trim() ? true : null
+		}),
+		shownError: computed(() => props.error || (isTouched.value ? error.value : '')),
+	}
+}
+
+function useDadataState(props: BaseDadataInputProps, emit: BaseDadataInputEmits) {
+	const remote = useRemoteSuggestions({
+		source: useDadataSource(props),
+		minChars: () => props.minChars ?? 3,
+		debounce: () => props.debounce ?? 300,
+	})
+	const valueModel = useValueModel(props, emit)
+	const suggestionModel = useSuggestionModel(props, emit)
+	const validation = useValidation(
+		props,
+		() => valueModel.value.value,
+		() => suggestionModel.suggestion.value,
+	)
+	return { ...remote, ...valueModel, ...suggestionModel, ...validation, digitMessage: shallowRef(''), isEditing: ref(false) }
+}
+
+function useHandlers(props: BaseDadataInputProps, emit: BaseDadataInputEmits, state: ReturnType<typeof useDadataState>) {
+	const runSearch = (query: string): void => {
+		state.digitMessage.value = digitError(props.kind ?? 'address', query)
+		if (!state.digitMessage.value) return state.search(query)
+		state.cancel()
+		state.suggestions.value = []
+		state.isLoading.value = false
+	}
+	const handleChange = (next: string | number | null): void => {
+		const text = String(next ?? '')
+		const found = state.suggestions.value.find(item => item.value === text)
+		state.isEditing.value = false
+		if (found && !meetsPrecision(found, precisionOf(props))) {
+			state.setValue(`${text} `)
+			state.setSuggestion(null)
+			return runSearch(state.value.value)
+		}
+		state.setValue(text)
+		state.setSuggestion(found ?? null)
+		if (!found) return
+		emit('select', found, dadataRequisites(found))
+		emit('validate', state.validity.value)
+	}
+	return {
+		handleChange,
+		handleSearch(query: string): void {
+			state.isEditing.value = true
+			state.isTouched.value = false
+			if (state.suggestion.value && query !== state.suggestion.value.value) state.setSuggestion(null)
+			runSearch(query)
+		},
+		handleBlur(): void {
+			if (state.isEditing.value) handleChange('')
+			state.isTouched.value = true
+			emit('validate', state.validity.value)
+		},
+	}
+}
+
+export function useBaseDadataInput(props: BaseDadataInputProps, emit: BaseDadataInputEmits) {
+	const state = useDadataState(props, emit)
 	const kind = computed(() => props.kind ?? 'address')
 	return {
 		classes: useCustomClass({ getClass: () => props.customClass, elementKeys: ['root', 'field', 'panel', 'option'] }).classes,
-		value,
-		isLoading,
+		fieldValue: computed(() => (state.isEditing.value ? null : state.value.value || null)),
+		isLoading: state.isLoading,
+		shownError: state.shownError,
+		emptyText: computed(() => state.digitMessage.value || UI_TEXT.NO_RESULTS),
 		kindLabel: computed(() => UI_DADATA[KIND_LABELS[kind.value]]),
 		inputAttrs: computed(() => INPUT_ATTRS[kind.value]),
 		options: computed(() =>
-			suggestions.value.map(item => ({ value: item.value, label: item.value, description: describe(kind.value, item) })),
+			state.suggestions.value.map(item => ({ value: item.value, label: item.value, description: describe(kind.value, item) })),
 		),
-		search,
-		handleChange(next: string | number | null): void {
-			value.value = String(next ?? '')
-			emit('update:modelValue', value.value)
-			const suggestion = suggestions.value.find(item => item.value === value.value)
-			if (suggestion) emit('select', suggestion, dadataRequisites(suggestion))
-		},
+		...useHandlers(props, emit, state),
 	}
 }
