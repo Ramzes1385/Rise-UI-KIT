@@ -1,7 +1,7 @@
 <template>
 	<div
-		class="base-segmented"
 		:class="[
+			ui('root'),
 			variantClass,
 			{
 				'base-segmented--block': isBlock,
@@ -20,15 +20,26 @@
 			:id="labelId"
 			tag="span"
 			:label="label"
-			class-name="base-segmented__label"
+			:class-name="ui('label')"
 			:custom-class="classes.label"
 			:size-scale="sizeScale" />
-		<div class="base-segmented__track" :class="classes.track">
+		<div ref="trackRef" :class="[ui('track'), classes.track]" :style="indicatorStyle">
+			<span
+				v-if="isIndicatorVisible"
+				:class="[
+					ui('indicator'),
+					{
+						'base-segmented__indicator--instant': isIndicatorInstant,
+						'base-segmented__indicator--disabled': isIndicatorDisabled,
+					},
+				]"
+				aria-hidden="true"></span>
 			<label
 				v-for="option in options"
 				:key="option.value"
-				class="base-segmented__segment"
+				data-indicator-item
 				:class="[
+					ui('segment'),
 					{
 						'base-segmented__segment--checked': option.value === modelValue,
 						'base-segmented__segment--disabled': isControlDisabled || option.isDisabled,
@@ -37,24 +48,20 @@
 				]">
 				<input
 					type="radio"
-					class="base-segmented__input"
+					:class="ui('input')"
 					:name="radioName"
 					:value="option.value"
 					:checked="option.value === modelValue"
 					:disabled="isControlDisabled || option.isDisabled"
 					@change="select(option.value)" />
-				<BaseIcon
-					v-if="option.icon"
-					:name="option.icon"
-					class="base-segmented__icon"
-					:size-scale="calcIconScale('sm', sizeScale)" />
-				<span class="base-segmented__text">{{ option.label }}</span>
+				<BaseIcon v-if="option.icon" :name="option.icon" :class="ui('icon')" :size-scale="calcIconScale('sm', sizeScale)" />
+				<span :class="ui('text')">{{ option.label }}</span>
 			</label>
 		</div>
 		<FormFieldError
 			:id="errorId"
 			:error="error ?? ''"
-			class-name="base-segmented__error"
+			:class-name="ui('error')"
 			:custom-class="classes.error"
 			:size-scale="sizeScale" />
 	</div>
@@ -84,6 +91,7 @@ const props = withDefaults(
 const emit = defineEmits<BaseSegmentedEmits>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,
@@ -95,6 +103,11 @@ const {
 	isControlDisabled,
 	control,
 	labelledBy,
+	trackRef,
+	indicatorStyle,
+	isIndicatorVisible,
+	isIndicatorInstant,
+	isIndicatorDisabled,
 	select,
 } = useBaseSegmented(props, emit)
 </script>

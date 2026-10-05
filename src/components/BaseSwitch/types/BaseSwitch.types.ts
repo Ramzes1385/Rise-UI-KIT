@@ -1,8 +1,32 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { FieldInputAttrs } from '@composables/form/useFormContext'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export const SWITCH_VARIANTS = ['default', 'outline', 'shadow'] as const
+
+/**
+ * Части переключателя для пропа `ui` (БЭМ-элементы `.base-switch__<часть>`, `root` — корень):
+ * row — строка переключателя и подписи, wrapper — обёртка поля, input — нативный `<input role="switch">`,
+ * slider — дорожка, handle — бегунок, content — колонка подписи и описания, caption — `<label>` подписи,
+ * label — подпись из пропа, required — звёздочка, description — описание, error — область ошибки, error-text — текст ошибки.
+ */
+export const SWITCH_PARTS = [
+	'row',
+	'wrapper',
+	'input',
+	'slider',
+	'handle',
+	'content',
+	'caption',
+	'label',
+	'required',
+	'description',
+	'error',
+	'error-text',
+] as const
+
+export type BaseSwitchPart = (typeof SWITCH_PARTS)[number]
 
 export interface BaseSwitchProps extends BaseComponentProps<
 	(typeof SWITCH_VARIANTS)[number],
@@ -24,6 +48,14 @@ export interface BaseSwitchProps extends BaseComponentProps<
 	ariaLabel?: string
 	/** Атрибуты нативного `<input>`: `name`, `value`, `aria-*`, `data-*`; `id` — свой id переключателя */
 	inputAttrs?: FieldInputAttrs
+	/**
+	 * Классы частей переключателя (`root`, `slider`, `handle`, `label`… — см. `SWITCH_PARTS`) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseSwitch: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseSwitch v-model="isOn" label="Уведомления" :ui="{ slider: 'shadow-inner', handle: 'shadow-lg' }" />
+	 */
+	ui?: UiProp<BaseSwitchPart>
 }
 
 export interface BaseSwitchEmits {

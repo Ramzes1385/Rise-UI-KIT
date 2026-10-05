@@ -1,11 +1,11 @@
 .base-radio {
-	--radio-border: var(--rise-border-accented);
-	--radio-bg: var(--rise-bg);
-	--radio-bg-hover: var(--rise-bg-elevated);
-	--radio-checked-border: var(--custom-bg, var(--rise-primary));
+	--radio-border: #{ct(radio, circle-border, var(--rise-border-accented))};
+	--radio-bg: #{ct(radio, circle-bg, var(--rise-bg))};
+	--radio-bg-hover: #{ct(radio, circle-bg-hover, var(--rise-bg-elevated))};
+	--radio-checked-border: var(--custom-bg, #{ct(radio, circle-border-checked, var(--rise-primary))});
 	--radio-checked-bg-hover: var(--custom-bg-hover, var(--custom-bg, var(--rise-primary-hover)));
-	@include custom-bg(--radio-checked-bg, var(--rise-primary));
-	@include custom-text(--radio-dot, var(--rise-on-primary));
+	@include custom-bg(--radio-checked-bg, ct(radio, circle-bg-checked, var(--rise-primary)));
+	@include custom-text(--radio-dot, ct(radio, dot-bg, var(--rise-on-primary)));
 
 	display: flex;
 	flex-direction: column;
@@ -23,12 +23,12 @@
 	&__options {
 		display: flex;
 		flex-wrap: wrap;
-		gap: sz(8px 16px);
+		gap: sz(ct(radio, options-gap, 8px)) sz(calc(#{ct(radio, options-gap, 8px)} * 2));
 		max-width: 100%;
 
 		&--vertical {
 			flex-direction: column;
-			gap: sz(8px);
+			gap: sz(ct(radio, options-gap, 8px));
 		}
 	}
 
@@ -51,12 +51,12 @@
 	}
 
 	&--shadow .base-radio-item__circle {
-		box-shadow: var(--rise-shadow-xs);
+		box-shadow: ct(radio, circle-shadow, var(--rise-shadow-xs));
 	}
 
 	&--bordered {
 		.base-radio__options {
-			gap: sz(8px);
+			gap: sz(ct(radio, options-gap, 8px));
 		}
 
 		.base-radio-item {
@@ -107,7 +107,7 @@
 	gap: sz(8px);
 	max-width: 100%;
 	@include text-size(sm);
-	color: var(--rise-text);
+	color: ct(radio, item-text, var(--rise-text));
 	cursor: pointer;
 	user-select: none;
 
@@ -139,6 +139,7 @@
 		border: 1px solid var(--radio-border);
 		border-radius: var(--rise-radius-full);
 		background-color: var(--radio-bg);
+		box-shadow: ct(radio, circle-shadow, none);
 		pointer-events: none;
 		@include transition-colors;
 	}
@@ -149,7 +150,7 @@
 	}
 
 	&__input:focus-visible + &__circle {
-		outline: 2px solid var(--rise-focus-ring);
+		outline: 2px solid ct(radio, circle-ring, var(--rise-focus-ring));
 		outline-offset: 2px;
 	}
 
@@ -161,7 +162,7 @@
 	}
 
 	&__option-label {
-		font-weight: var(--rise-font-weight-medium);
+		font-weight: ct(radio, option-label-font-weight, var(--rise-font-weight-medium));
 	}
 
 	&--disabled {
@@ -178,3 +179,5 @@
 		}
 	}
 }
+
+@include enter-pop(base-radio-dot, 0);

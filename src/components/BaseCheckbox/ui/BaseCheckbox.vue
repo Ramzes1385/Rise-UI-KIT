@@ -1,8 +1,8 @@
 <template>
 	<div
 		ref="rootRef"
-		class="base-checkbox"
 		:class="[
+			ui('root'),
 			variantClass,
 			{
 				'base-checkbox--disabled': isDisabled,
@@ -11,39 +11,40 @@
 			classes.root,
 		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
-		<label class="base-checkbox__label-wrapper" :class="classes.labelWrapper">
-			<span class="base-checkbox__wrapper" :class="classes.wrapper">
+		<label :class="[ui('label-wrapper'), classes.labelWrapper]">
+			<span :class="[ui('wrapper'), classes.wrapper]">
 				<input
 					v-bind="nativeAttrs"
 					type="checkbox"
-					class="base-checkbox__input"
-					:class="classes.input"
+					:class="[ui('input'), classes.input]"
 					:checked="modelValue"
 					:indeterminate="isIndeterminate"
 					:disabled="isDisabled"
 					@change="handleChange" />
-				<span class="base-checkbox__box" :class="classes.box" aria-hidden="true">
-					<BaseIcon
-						v-if="modelValue || isIndeterminate"
-						:name="isIndeterminate ? 'minus' : 'check'"
-						:size-scale="calcIconScale('sm', sizeScale)"
-						class="base-checkbox__icon"
-						:custom-class="classes.icon" />
+				<span :class="[ui('box'), classes.box]" aria-hidden="true">
+					<Transition name="base-checkbox-mark">
+						<BaseIcon
+							v-if="modelValue || isIndeterminate"
+							:name="isIndeterminate ? 'minus' : 'check'"
+							:size-scale="calcIconScale('sm', sizeScale)"
+							:class="ui('icon')"
+							:custom-class="classes.icon" />
+					</Transition>
 				</span>
 			</span>
 			<FormFieldLabel
 				v-if="label"
 				tag="span"
 				:label="label"
-				class-name="base-checkbox__label"
+				:class-name="ui('label')"
 				:custom-class="classes.label"
 				:size-scale="sizeScale" />
 		</label>
-		<div :id="errorId" class="base-checkbox__error">
+		<div :id="errorId" :class="ui('error')">
 			<slot name="error">
 				<FormFieldError
 					:error="formField.error"
-					class-name="base-checkbox__error-text"
+					:class-name="ui('error-text')"
 					:custom-class="classes.errorText"
 					:size-scale="sizeScale" />
 			</slot>
@@ -77,6 +78,7 @@ const emit = defineEmits<BaseCheckboxEmits>()
 defineSlots<BaseCheckboxSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

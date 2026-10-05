@@ -1,8 +1,8 @@
 <template>
 	<div
 		ref="rootRef"
-		class="base-switch"
 		:class="[
+			ui('root'),
 			classes.root,
 			variantClass,
 			{
@@ -12,37 +12,36 @@
 			},
 		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
-		<div class="base-switch__row" :class="classes.row" @click="handleRowClick">
-			<span class="base-switch__wrapper" :class="classes.wrapper">
+		<div :class="[ui('row'), classes.row]" @click="handleRowClick">
+			<span :class="[ui('wrapper'), classes.wrapper]">
 				<input
 					v-bind="nativeAttrs"
 					ref="inputRef"
 					type="checkbox"
 					role="switch"
-					class="base-switch__input"
-					:class="classes.input"
+					:class="[ui('input'), classes.input]"
 					:checked="modelValue"
 					:disabled="isDisabled"
 					@change="handleChange" />
-				<span class="base-switch__slider" :class="classes.slider" aria-hidden="true">
-					<span class="base-switch__handle" :class="classes.handle"></span>
+				<span :class="[ui('slider'), classes.slider]" aria-hidden="true">
+					<span :class="[ui('handle'), classes.handle]"></span>
 				</span>
 			</span>
-			<span class="base-switch__content" :class="classes.content">
-				<label v-if="hasCaption || isRequired" class="base-switch__caption" :class="classes.caption" :for="inputId">
+			<span :class="[ui('content'), classes.content]">
+				<label v-if="hasCaption || isRequired" :class="[ui('caption'), classes.caption]" :for="inputId">
 					<slot name="label">
 						<FormFieldLabel
 							v-if="label"
 							tag="span"
 							:label="label"
-							class-name="base-switch__label"
+							:class-name="ui('label')"
 							:custom-class="classes.label"
 							:size-scale="sizeScale" />
 					</slot>
 					<BaseText
 						v-if="isRequired"
 						tag="span"
-						class="base-switch__required"
+						:class="ui('required')"
 						:custom-class="classes.required"
 						:size-scale="sizeScale"
 						aria-hidden="true"
@@ -50,16 +49,16 @@
 					>
 					<slot v-if="!hasLabel" />
 				</label>
-				<span v-if="hasDescription" :id="descriptionId" class="base-switch__description" :class="classes.description">
+				<span v-if="hasDescription" :id="descriptionId" :class="[ui('description'), classes.description]">
 					<slot />
 				</span>
 			</span>
 		</div>
-		<div :id="errorId" class="base-switch__error">
+		<div :id="errorId" :class="ui('error')">
 			<slot name="error">
 				<FormFieldError
 					:error="formField.error"
-					class-name="base-switch__error-text"
+					:class-name="ui('error-text')"
 					:custom-class="classes.errorText"
 					:size-scale="sizeScale" />
 			</slot>
@@ -92,6 +91,7 @@ const emit = defineEmits<BaseSwitchEmits>()
 defineSlots<BaseSwitchSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

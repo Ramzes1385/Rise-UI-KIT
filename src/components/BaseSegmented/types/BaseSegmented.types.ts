@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /**
@@ -6,6 +7,15 @@ import type { BaseComponentProps } from '@composables/base/useBaseComponent'
  * soft — выбранный сегмент в мягком основном цвете; outline — дорожка с рамкой, выбранный сегмент с рамкой основного цвета
  */
 export const SEGMENTED_VARIANTS = ['default', 'soft', 'outline'] as const
+
+/**
+ * Части для пропа `ui` (БЭМ-элементы `.base-segmented__<часть>`, `root` — корень): label — заголовок, track — дорожка,
+ * indicator — подложка выбранного сегмента (один элемент на дорожку, переезжает при выборе), segment — `<label>` сегмента,
+ * input — нативный radio, icon — иконка, text — подпись сегмента, error — текст ошибки.
+ */
+export const SEGMENTED_PARTS = ['label', 'track', 'indicator', 'segment', 'input', 'icon', 'text', 'error'] as const
+
+export type BaseSegmentedPart = (typeof SEGMENTED_PARTS)[number]
 
 export interface SegmentedOption {
 	/** Значение: уходит в v-model при выборе */
@@ -38,6 +48,14 @@ export interface BaseSegmentedProps extends BaseComponentProps<
 	isBlock?: boolean
 	/** Текст ошибки под группой */
 	error?: string
+	/**
+	 * Классы частей (`root`, `track`, `indicator`, `segment`… — см. `SEGMENTED_PARTS`) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseSegmented: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseSegmented v-model="period" :options="periods" :ui="{ track: 'rounded-full', indicator: 'rounded-full' }" />
+	 */
+	ui?: UiProp<BaseSegmentedPart>
 }
 
 export interface BaseSegmentedEmits {

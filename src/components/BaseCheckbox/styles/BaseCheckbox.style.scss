@@ -1,11 +1,11 @@
 .base-checkbox {
-	--checkbox-border: var(--rise-border-accented);
-	--checkbox-bg: var(--rise-bg);
-	--checkbox-bg-hover: var(--rise-bg-elevated);
-	--checkbox-checked-border: var(--custom-bg, var(--rise-primary));
+	--checkbox-border: #{ct(checkbox, box-border, var(--rise-border-accented))};
+	--checkbox-bg: #{ct(checkbox, box-bg, var(--rise-bg))};
+	--checkbox-bg-hover: #{ct(checkbox, box-bg-hover, var(--rise-bg-elevated))};
+	--checkbox-checked-border: var(--custom-bg, #{ct(checkbox, box-border-checked, var(--rise-primary))});
 	--checkbox-checked-bg-hover: var(--custom-bg-hover, var(--custom-bg, var(--rise-primary-hover)));
-	@include custom-bg(--checkbox-checked-bg, var(--rise-primary));
-	@include custom-text(--checkbox-icon, var(--rise-on-primary));
+	@include custom-bg(--checkbox-checked-bg, ct(checkbox, box-bg-checked, var(--rise-primary)));
+	@include custom-text(--checkbox-icon, ct(checkbox, icon-text, var(--rise-on-primary)));
 
 	display: flex;
 	flex-direction: column;
@@ -15,7 +15,7 @@
 	&__label-wrapper {
 		display: inline-flex;
 		align-items: flex-start;
-		gap: sz(8px);
+		gap: sz(ct(checkbox, label-wrapper-gap, 8px));
 		max-width: 100%;
 		cursor: pointer;
 		user-select: none;
@@ -47,8 +47,9 @@
 		width: sz(16px);
 		height: sz(16px);
 		border: 1px solid var(--checkbox-border);
-		border-radius: sz(var(--rise-radius-sm));
+		border-radius: sz(ct(checkbox, box-radius, var(--rise-radius-sm)));
 		background-color: var(--checkbox-bg);
+		box-shadow: ct(checkbox, box-shadow, none);
 		pointer-events: none;
 		@include transition-colors;
 	}
@@ -60,7 +61,7 @@
 	}
 
 	&__input:focus-visible + &__box {
-		outline: 2px solid var(--rise-focus-ring);
+		outline: 2px solid ct(checkbox, box-ring, var(--rise-focus-ring));
 		outline-offset: 2px;
 	}
 
@@ -70,7 +71,7 @@
 
 	& &__label {
 		@include text-size(sm);
-		color: var(--rise-text);
+		color: ct(checkbox, label-text, var(--rise-text));
 	}
 
 	&__error:empty {
@@ -117,7 +118,7 @@
 	}
 
 	&--shadow &__box {
-		box-shadow: var(--rise-shadow-xs);
+		box-shadow: ct(checkbox, box-shadow, var(--rise-shadow-xs));
 	}
 
 	&--error {
@@ -128,3 +129,5 @@
 		@include disabled-state;
 	}
 }
+
+@include enter-scale(base-checkbox-mark, 0.5);

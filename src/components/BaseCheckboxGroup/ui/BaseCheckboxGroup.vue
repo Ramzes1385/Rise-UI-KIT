@@ -1,7 +1,6 @@
 <template>
 	<div
-		class="base-checkbox-group"
-		:class="[variantClass, classes.root, { 'base-checkbox-group--error': control.hasError.value }]"
+		:class="[ui('root'), variantClass, classes.root, { 'base-checkbox-group--error': control.hasError.value }]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		role="group"
 		:aria-labelledby="labelledBy"
@@ -12,16 +11,16 @@
 			tag="span"
 			:label="label"
 			:is-required="isRequired"
-			class-name="base-checkbox-group__label"
+			:class-name="ui('label')"
 			:custom-class="classes.label"
-			required-class-name="base-checkbox-group__required"
+			:required-class-name="ui('required')"
 			:required-custom-class="classes.required"
 			:size-scale="sizeScale" />
 
-		<div class="base-checkbox-group__options" :class="[{ 'base-checkbox-group__options--vertical': isVertical }, classes.options]">
+		<div :class="[ui('options'), { 'base-checkbox-group__options--vertical': isVertical }, classes.options]">
 			<BaseCheckbox
 				v-if="hasSelectAll"
-				class="base-checkbox-group__select-all"
+				:class="ui('select-all')"
 				:variant="variant"
 				:label="selectAllLabel ?? UI_TEXT.SELECT_ALL_OPTIONS"
 				:model-value="isAllChecked"
@@ -33,7 +32,7 @@
 			<BaseCheckbox
 				v-for="option in options"
 				:key="option.value"
-				class="base-checkbox-group__checkbox"
+				:class="ui('checkbox')"
 				:variant="variant"
 				:label="option.label"
 				:model-value="checkedSet.has(option.value)"
@@ -46,7 +45,7 @@
 		<FormFieldError
 			:id="errorId"
 			:error="error ?? ''"
-			class-name="base-checkbox-group__error"
+			:class-name="ui('error')"
 			:custom-class="classes.error"
 			:size-scale="sizeScale" />
 	</div>
@@ -78,6 +77,7 @@ const props = withDefaults(
 const emit = defineEmits<BaseCheckboxGroupEmits>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

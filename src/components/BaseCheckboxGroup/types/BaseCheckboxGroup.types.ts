@@ -1,8 +1,18 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /** Варианты оформления: те же, что у BaseCheckbox, — вариант получает каждый флажок группы */
 export const CHECKBOX_GROUP_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
+
+/**
+ * Части группы для пропа `ui` (БЭМ-элементы `.base-checkbox-group__<часть>`, `root` — корень):
+ * label — заголовок, required — звёздочка, options — список флажков, select-all — флажок «Выбрать все»,
+ * checkbox — каждый флажок варианта (корень BaseCheckbox), error — текст ошибки.
+ */
+export const CHECKBOX_GROUP_PARTS = ['label', 'required', 'options', 'select-all', 'checkbox', 'error'] as const
+
+export type BaseCheckboxGroupPart = (typeof CHECKBOX_GROUP_PARTS)[number]
 
 export interface CheckboxGroupOption {
 	/** Значение: попадает в массив v-model, когда флажок отмечен */
@@ -35,6 +45,14 @@ export interface BaseCheckboxGroupProps extends BaseComponentProps<
 	hasSelectAll?: boolean
 	/** Подпись флажка «Выбрать все» (по умолчанию из словаря: «Выбрать все») */
 	selectAllLabel?: string
+	/**
+	 * Классы частей группы (`root`, `options`, `checkbox`, `select-all`… — см. `CHECKBOX_GROUP_PARTS`) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseCheckboxGroup: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseCheckboxGroup v-model="days" :options="weekdays" :ui="{ options: 'grid grid-cols-2', checkbox: 'py-1' }" />
+	 */
+	ui?: UiProp<BaseCheckboxGroupPart>
 }
 
 export interface BaseCheckboxGroupEmits {

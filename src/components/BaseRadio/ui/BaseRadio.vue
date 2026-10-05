@@ -1,8 +1,8 @@
 <template>
 	<div
 		ref="rootRef"
-		class="base-radio"
 		:class="[
+			ui('root'),
 			{
 				'base-radio--error': control.hasError.value,
 			},
@@ -18,40 +18,41 @@
 			tag="span"
 			:label="label"
 			:is-required="isRequired"
-			class-name="base-radio__label"
+			:class-name="ui('label')"
 			:custom-class="classes.label"
-			required-class-name="base-radio__required"
+			:required-class-name="ui('required')"
 			:required-custom-class="classes.required"
 			:size-scale="sizeScale" />
 
-		<div class="base-radio__options" :class="[{ 'base-radio__options--vertical': isVertical }, classes.options]">
+		<div :class="[ui('options'), { 'base-radio__options--vertical': isVertical }, classes.options]">
 			<label
 				v-for="option in options"
 				:key="option.value"
-				class="base-radio-item"
 				:class="[
+					ui('item'),
 					{
 						'base-radio-item--disabled': option.isDisabled,
 						'base-radio-item--error': control.hasError.value,
 					},
 					classes.radio,
 				]">
-				<span class="base-radio-item__wrapper" :class="classes.wrapper">
+				<span :class="[ui('wrapper'), classes.wrapper]">
 					<input
 						type="radio"
-						class="base-radio-item__input"
-						:class="classes.input"
+						:class="[ui('input'), classes.input]"
 						:name="name"
 						:value="option.value"
 						:checked="modelValue === option.value"
 						:disabled="option.isDisabled"
 						@change="handleChange(option.value)" />
-					<span class="base-radio-item__circle" :class="classes.circle" aria-hidden="true">
-						<span v-if="modelValue === option.value" class="base-radio-item__dot" :class="classes.dot"></span>
+					<span :class="[ui('circle'), classes.circle]" aria-hidden="true">
+						<Transition name="base-radio-dot">
+							<span v-if="modelValue === option.value" :class="[ui('dot'), classes.dot]"></span>
+						</Transition>
 					</span>
 				</span>
 				<slot name="option" :option="option" :is-checked="modelValue === option.value">
-					<span class="base-radio-item__option-label" :class="classes.optionLabel">{{ option.label }}</span>
+					<span :class="[ui('option-label'), classes.optionLabel]">{{ option.label }}</span>
 				</slot>
 			</label>
 		</div>
@@ -59,7 +60,7 @@
 		<FormFieldError
 			:id="errorId"
 			:error="formField.error"
-			class-name="base-radio__error-text"
+			:class-name="ui('error-text')"
 			:custom-class="classes.errorText"
 			:size-scale="sizeScale" />
 	</div>
@@ -88,6 +89,7 @@ const emit = defineEmits<BaseRadioEmits>()
 defineSlots<BaseRadioSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

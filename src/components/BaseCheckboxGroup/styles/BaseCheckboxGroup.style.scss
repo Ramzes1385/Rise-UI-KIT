@@ -2,10 +2,12 @@
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
-	gap: sz(6px);
+	gap: sz(ct(checkbox-group, gap, 6px));
 
 	& &__label {
 		@include field-label;
+		font-weight: ct(checkbox-group, label-font-weight, var(--rise-font-weight-medium));
+		color: ct(checkbox-group, label-text, var(--rise-text));
 	}
 
 	& &__required {
@@ -15,18 +17,19 @@
 	&__options {
 		display: flex;
 		flex-wrap: wrap;
-		gap: sz(8px 16px);
+		gap: sz(ct(checkbox-group, options-gap, 8px)) sz(calc(#{ct(checkbox-group, options-gap, 8px)} * 2));
 		max-width: 100%;
 
 		&--vertical {
 			flex-direction: column;
-			gap: sz(8px);
+			gap: sz(ct(checkbox-group, options-gap, 8px));
 		}
 	}
 
 	& &__error {
 		display: block;
 		@include field-error;
+		color: ct(checkbox-group, error-text, var(--rise-error));
 	}
 
 	&--error .base-checkbox {

@@ -1,9 +1,9 @@
 .base-switch {
-	--switch-track: var(--rise-bg-accented);
-	--switch-thumb: var(--rise-bg);
-	--switch-checked-thumb: var(--rise-bg);
+	--switch-track: #{ct(switch, slider-bg, var(--rise-bg-accented))};
+	--switch-thumb: #{ct(switch, handle-bg, var(--rise-bg))};
+	--switch-checked-thumb: #{ct(switch, handle-bg-checked, var(--rise-bg))};
 	--switch-checked-track-hover: var(--custom-bg-hover, var(--custom-bg, var(--rise-primary-hover)));
-	@include custom-bg(--switch-checked-track, var(--rise-primary));
+	@include custom-bg(--switch-checked-track, ct(switch, slider-bg-checked, var(--rise-primary)));
 
 	display: inline-flex;
 	flex-direction: column;
@@ -14,7 +14,7 @@
 	&__row {
 		display: inline-flex;
 		align-items: flex-start;
-		gap: sz(8px);
+		gap: sz(ct(switch, row-gap, 8px));
 		max-width: 100%;
 		cursor: pointer;
 		user-select: none;
@@ -45,6 +45,7 @@
 		height: sz(20px);
 		border-radius: var(--rise-radius-full);
 		background-color: var(--switch-track);
+		box-shadow: ct(switch, slider-shadow, none);
 		pointer-events: none;
 		@include transition-colors;
 	}
@@ -57,7 +58,7 @@
 		height: sz(16px);
 		border-radius: var(--rise-radius-full);
 		background-color: var(--switch-thumb);
-		box-shadow: var(--rise-shadow-sm);
+		box-shadow: ct(switch, handle-shadow, var(--rise-shadow-sm));
 		@include transition(transform, background-color);
 	}
 
@@ -71,7 +72,7 @@
 	}
 
 	&__input:focus-visible + &__slider {
-		outline: 2px solid var(--rise-focus-ring);
+		outline: 2px solid ct(switch, slider-ring, var(--rise-focus-ring));
 		outline-offset: 2px;
 	}
 
@@ -83,7 +84,7 @@
 
 	& &__label {
 		@include text-size(sm);
-		color: var(--rise-text);
+		color: ct(switch, label-text, var(--rise-text));
 	}
 
 	& &__required {
@@ -93,7 +94,7 @@
 
 	&__description {
 		display: block;
-		color: var(--rise-text-muted);
+		color: ct(switch, description-text, var(--rise-text-muted));
 	}
 
 	&__error:empty {
@@ -139,11 +140,11 @@
 	}
 
 	&--shadow &__slider {
-		box-shadow: var(--rise-shadow-xs);
+		box-shadow: ct(switch, slider-shadow, var(--rise-shadow-xs));
 	}
 
 	&--shadow &__handle {
-		box-shadow: var(--rise-shadow-md);
+		box-shadow: ct(switch, handle-shadow, var(--rise-shadow-md));
 	}
 
 	&--error &__slider,

@@ -1,3 +1,4 @@
+import { useUi } from '@composables/base/useUi'
 import { useFormField } from '@composables/form/useFormField'
 import { useFieldControl } from '@composables/form/useFormContext'
 import { toHTMLElement, toHTMLInputElement } from '@utils/dom/domUtils'
@@ -82,6 +83,7 @@ export function useBaseSwitch(props: SwitchProps, emit: BaseSwitchEmits) {
 	return {
 		...useStandardBaseComponent('base-switch', props, SWITCH_ELEMENTS),
 		...field,
+		ui: useUi(props, 'base-switch'),
 		rootRef,
 		inputRef,
 		handleChange(event: Event): void {

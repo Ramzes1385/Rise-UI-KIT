@@ -1,4 +1,5 @@
 import { computed, ref, useId } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import { toHTMLInputElement } from '@utils/dom/domUtils'
 import { useFormField } from '@composables/form/useFormField'
 import { useFieldControl } from '@composables/form/useFormContext'
@@ -38,6 +39,7 @@ export function useBaseCheckbox(props: CheckboxProps, emit: BaseCheckboxEmits) {
 	return {
 		...useStandardBaseComponent('base-checkbox', props, CHECKBOX_ELEMENTS),
 		...field,
+		ui: useUi(props, 'base-checkbox'),
 		rootRef,
 		handleChange(event: Event): void {
 			const target = toHTMLInputElement(event.target)

@@ -1,4 +1,5 @@
 import { computed, useId } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseCheckboxGroupEmits, CheckboxGroupProps } from '../types/BaseCheckboxGroup.types'
 import { isolateFormField, useFieldControl, useFormDisabled } from '@composables/form/useFormContext'
@@ -65,6 +66,7 @@ function useCheckedValues(props: CheckboxGroupProps, emit: BaseCheckboxGroupEmit
 export function useBaseCheckboxGroup(props: CheckboxGroupProps, emit: BaseCheckboxGroupEmits) {
 	return {
 		...useStandardBaseComponent('base-checkbox-group', props, GROUP_ELEMENTS),
+		ui: useUi(props, 'base-checkbox-group'),
 		...useGroupField(props),
 		...useCheckedValues(props, emit),
 	}
