@@ -1,8 +1,9 @@
-export { COUNTDOWN_UNITS, COUNTDOWN_VARIANTS } from './types/BaseCountdown.types'
+export { COUNTDOWN_DIGIT_ANIMATIONS, COUNTDOWN_UNITS, COUNTDOWN_VARIANTS } from './types/BaseCountdown.types'
 export type {
 	BaseCountdownEmits,
 	BaseCountdownProps,
 	BaseCountdownSlots,
+	CountdownDigitAnimation,
 	CountdownLayout,
 	CountdownParts,
 	CountdownUnit,

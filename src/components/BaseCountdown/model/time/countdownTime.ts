@@ -1,7 +1,7 @@
 import { UI_COUNTDOWN } from '@/locales/messages'
 import { COUNTDOWN_UNITS } from '../../types/BaseCountdown.types'
 import { formatMessage, formatNumber, getLocale } from '@/locales/state'
-import type { CountdownParts, CountdownUnit } from '../../types/BaseCountdown.types'
+import type { CountdownParts, CountdownSegment, CountdownUnit } from '../../types/BaseCountdown.types'
 
 const UNIT_MS: Record<CountdownUnit, number> = { days: 86_400_000, hours: 3_600_000, minutes: 60_000, seconds: 1000 }
 
@@ -48,9 +48,16 @@ export function padded(value: number): string {
 	return formatNumber(value, { minimumIntegerDigits: 2, useGrouping: false })
 }
 
+export function clockSegments(parts: CountdownParts, units: readonly CountdownUnit[]): CountdownSegment[] {
+	const clock = units.filter(unit => unit !== 'days').map(unit => ({ unit, text: padded(parts[unit]) }))
+	const days = units.includes('days') && parts.days > 0 ? [{ unit: 'days' as const, text: unitText(parts.days, 'days', 'short') }] : []
+	return [...days, ...clock]
+}
+
 export function clockText(parts: CountdownParts, units: readonly CountdownUnit[]): string {
-	const clock = units.filter(unit => unit !== 'days').map(unit => padded(parts[unit]))
-	const days = units.includes('days') && parts.days > 0 ? unitText(parts.days, 'days', 'short') : ''
+	const segments = clockSegments(parts, units)
+	const days = segments[0]?.unit === 'days' ? segments[0].text : ''
+	const clock = segments.filter(segment => segment.unit !== 'days').map(segment => segment.text)
 	return [days, clock.join(':')].filter(Boolean).join(' ')
 }
 

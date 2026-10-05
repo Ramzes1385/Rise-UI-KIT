@@ -1,4 +1,7 @@
 .base-countdown {
+	--base-countdown-digit-duration: min(var(--rise-duration-slow), 600ms);
+	--base-countdown-digit-ease: var(--rise-ease-spring, var(--rise-ease-emphasized, cubic-bezier(0.2, 0, 0, 1)));
+
 	position: relative;
 	display: inline-flex;
 	max-width: 100%;
@@ -71,5 +74,131 @@
 	&--finished &__value,
 	&--finished &__clock {
 		color: var(--rise-text-muted);
+	}
+
+	&__slot {
+		position: relative;
+		display: inline-block;
+		vertical-align: top;
+	}
+
+	&__slot--static {
+		white-space: pre;
+	}
+
+	&__digit {
+		display: inline-block;
+		vertical-align: top;
+	}
+
+	&--digits-roll &__slot {
+		overflow: hidden;
+	}
+
+	&--digits-flip &__slot {
+		perspective: 3em;
+	}
+}
+
+.base-countdown-roll-leave-active,
+.base-countdown-flip-leave-active,
+.base-countdown-fade-leave-active,
+.base-countdown-blur-leave-active {
+	position: absolute;
+	inset: 0;
+}
+
+@include motion-safe {
+	.base-countdown-roll-enter-active,
+	.base-countdown-roll-leave-active {
+		transition: transform var(--base-countdown-digit-duration) var(--base-countdown-digit-ease);
+	}
+
+	.base-countdown-roll-enter-from,
+	.base-countdown--count-up .base-countdown-roll-leave-to {
+		transform: translateY(-100%);
+	}
+
+	.base-countdown-roll-leave-to,
+	.base-countdown--count-up .base-countdown-roll-enter-from {
+		transform: translateY(100%);
+	}
+
+	.base-countdown-fade-enter-active,
+	.base-countdown-fade-leave-active {
+		transition: opacity var(--base-countdown-digit-duration) var(--base-countdown-digit-ease);
+	}
+
+	.base-countdown-blur-enter-active,
+	.base-countdown-blur-leave-active {
+		transition:
+			opacity var(--base-countdown-digit-duration) var(--base-countdown-digit-ease),
+			filter var(--base-countdown-digit-duration) var(--base-countdown-digit-ease);
+	}
+
+	.base-countdown-fade-enter-from,
+	.base-countdown-fade-leave-to {
+		opacity: 0;
+	}
+
+	.base-countdown-blur-enter-from,
+	.base-countdown-blur-leave-to {
+		opacity: 0;
+		filter: blur(0.15em);
+	}
+
+	.base-countdown-flip-enter-active,
+	.base-countdown-flip-leave-active {
+		visibility: hidden;
+		transition: opacity var(--base-countdown-digit-duration) linear;
+
+		&::before,
+		&::after {
+			position: absolute;
+			inset: 0;
+			visibility: visible;
+			backface-visibility: hidden;
+			content: attr(data-char);
+		}
+
+		&::before {
+			clip-path: inset(0 0 50% 0);
+		}
+
+		&::after {
+			clip-path: inset(50% 0 0 0);
+		}
+	}
+
+	.base-countdown-flip-leave-active::before {
+		z-index: 2;
+		animation: base-countdown-flip-top var(--base-countdown-digit-duration) var(--base-countdown-digit-ease) both;
+	}
+
+	.base-countdown-flip-enter-active::after {
+		z-index: 2;
+		animation: base-countdown-flip-bottom var(--base-countdown-digit-duration) var(--base-countdown-digit-ease) both;
+	}
+}
+
+@keyframes base-countdown-flip-top {
+	0% {
+		transform: rotateX(0);
+	}
+
+	50%,
+	100% {
+		transform: rotateX(-90deg);
+	}
+}
+
+@keyframes base-countdown-flip-bottom {
+	0%,
+	50% {
+		transform: rotateX(90deg);
+	}
+
+	100% {
+		transform: rotateX(0);
 	}
 }

@@ -1,8 +1,17 @@
+import type { Ref } from 'vue'
 import { UI_COUNTDOWN } from '@/locales/messages'
+import { useReducedMotion } from '@composables/app/useReducedMotion'
+import { countdownDigits, segmentDigits } from './digits/countdownDigits'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { computed, getCurrentInstance, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import type { BaseCountdownEmits, BaseCountdownProps, CountdownParts, CountdownUnit } from '../types/BaseCountdown.types'
-import { clockText, orderedUnits, padded, splitRemaining, spokenTime, toTimestamp, unitCaption } from './time/countdownTime'
+import { clockSegments, clockText, orderedUnits, padded, splitRemaining, spokenTime, toTimestamp, unitCaption } from './time/countdownTime'
+import type {
+	BaseCountdownEmits,
+	BaseCountdownProps,
+	CountdownDirection,
+	CountdownParts,
+	CountdownUnit,
+} from '../types/BaseCountdown.types'
 
 const isHydrating = (): boolean => Boolean(getCurrentInstance()?.vnode.el)
 
@@ -52,6 +61,19 @@ function cellValue(parts: CountdownParts, unit: CountdownUnit, isPending: boolea
 	return unit === 'days' ? String(parts.days) : padded(parts[unit])
 }
 
+function useDigitMotion(props: BaseCountdownProps, remaining: Ref<number>) {
+	const isReducedMotion = useReducedMotion()
+	const direction = ref<CountdownDirection>('down')
+	watch(remaining, (next, previous) => {
+		direction.value = next > previous ? 'up' : 'down'
+	})
+	const animation = computed(() => (isReducedMotion.value ? 'none' : (props.digitAnimation ?? 'roll')))
+	return {
+		digitAnimation: animation,
+		digitClasses: computed(() => [`base-countdown--digits-${animation.value}`, `base-countdown--count-${direction.value}`]),
+	}
+}
+
 export function useBaseCountdown(props: BaseCountdownProps, emit: BaseCountdownEmits) {
 	const { remaining, isPending } = useTicker(
 		() => toTimestamp(props.to),
@@ -62,15 +84,18 @@ export function useBaseCountdown(props: BaseCountdownProps, emit: BaseCountdownE
 	const label = computed(() => props.label || UI_COUNTDOWN.LABEL)
 	return {
 		...useStandardBaseComponent('base-countdown', props, ['root', 'unit', 'value', 'caption']),
+		...useDigitMotion(props, remaining),
 		parts,
 		cells: computed(() =>
-			units.value.map((unit: CountdownUnit) => ({
-				unit,
-				value: cellValue(parts.value, unit, isPending.value),
-				caption: unitCaption(parts.value[unit], unit),
-			})),
+			units.value.map((unit: CountdownUnit) => {
+				const value = cellValue(parts.value, unit, isPending.value)
+				return { unit, value, digits: countdownDigits(value, unit), caption: unitCaption(parts.value[unit], unit) }
+			}),
 		),
 		clock: computed(() => (isPending.value ? PENDING_CLOCK : clockText(parts.value, units.value))),
+		clockDigits: computed(() =>
+			isPending.value ? countdownDigits(PENDING_CLOCK, 'pending') : segmentDigits(clockSegments(parts.value, units.value)),
+		),
 		spoken: computed(() => (isPending.value ? label.value : spokenTime(remaining.value, label.value))),
 	}
 }

@@ -9,8 +9,47 @@ export const COUNTDOWN_VARIANTS = ['default', 'soft', 'outline', 'ghost'] as con
 /** Единицы отсчёта от большей к меньшей */
 export const COUNTDOWN_UNITS = ['days', 'hours', 'minutes', 'seconds'] as const
 
+/**
+ * Смена цифр: `roll` — новая цифра въезжает сверху, старая уходит вниз (при отсчёте вверх — наоборот),
+ * `flip` — табло: верхняя половина откидывается, нижняя раскрывается, `fade` — перекрёстное затухание,
+ * `blur` — затухание с размытием, `none` — без анимации
+ */
+export const COUNTDOWN_DIGIT_ANIMATIONS = ['roll', 'flip', 'fade', 'blur', 'none'] as const
+
 /** Единица отсчёта: дни, часы, минуты, секунды */
 export type CountdownUnit = (typeof COUNTDOWN_UNITS)[number]
+
+/** Анимация смены цифр */
+export type CountdownDigitAnimation = (typeof COUNTDOWN_DIGIT_ANIMATIONS)[number]
+
+/** Направление отсчёта для `roll`: `down` — время убывает, `up` — выросло (цель отодвинули) */
+export type CountdownDirection = 'down' | 'up'
+
+/** Символ табло: цифра анимируется, остальное (разделители, подписи) — статично */
+export interface CountdownDigit {
+	/** Ключ разряда: `<единица>-<позиция с конца>` — `seconds-0`, `minutes-1`; у разделителя — `sep-<единица>` */
+	key: string
+	/** Символ */
+	char: string
+	/** Цифра — меняется с анимацией */
+	isDigit: boolean
+}
+
+/** Часть строки-часов: значение одной единицы — `{ unit: 'minutes', text: '05' }` */
+export interface CountdownSegment {
+	unit: CountdownUnit
+	text: string
+}
+
+/** Пропсы внутреннего компонента разрядов */
+export interface CountdownDigitsProps {
+	/** Весь текст значения — без анимации выводится как есть */
+	text: string
+	/** Разряды значения */
+	digits: readonly CountdownDigit[]
+	/** Анимация; `none` — и при «уменьшить движение» */
+	animation: CountdownDigitAnimation
+}
 
 /** Раскладка: `blocks` — ячейки «число и подпись», `inline` — строкой, как часы: «2 дн. 03:12:45» */
 export type CountdownLayout = 'blocks' | 'inline'
@@ -52,6 +91,11 @@ export interface BaseCountdownProps extends BaseComponentProps<(typeof COUNTDOWN
 	 * По умолчанию выключено: время читается, когда пользователь дойдёт до таймера
 	 */
 	isLive?: boolean
+	/**
+	 * Анимация смены цифр. Меняются только изменившиеся разряды, разделители и подписи статичны.
+	 * При «уменьшить движение» в системе цифры меняются сразу
+	 */
+	digitAnimation?: CountdownDigitAnimation
 }
 
 /**
