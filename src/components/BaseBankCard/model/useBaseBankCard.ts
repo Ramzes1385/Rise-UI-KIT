@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, useSlots } from 'vue'
 import { UI_CARD } from '@/locales/messages'
 import { formatMessage } from '@/locales/state'
 import type { BaseBankCardProps } from '../types/BaseBankCard.types'
@@ -29,6 +29,8 @@ function isPastExpiry(expiry: CardExpiry | undefined, now = new Date()): boolean
 }
 
 export function useBaseBankCard(props: BaseBankCardProps) {
+	const slots = useSlots()
+	const hasCover = computed(() => Boolean(props.cover || slots.cover))
 	const brand = computed(() => resolveBrand(props.brand))
 	const expiry = computed(() => resolveExpiry(props.expiry))
 	const expiryText = computed(() => (expiry.value ? formatExpiry(expiry.value) : ''))
@@ -47,8 +49,9 @@ export function useBaseBankCard(props: BaseBankCardProps) {
 		isExpired,
 		summary,
 		maskedNumber: computed(() => `${CARD_FACE_DOT.repeat(MASK_LENGTH)} ${props.last4 ?? ''}`),
+		hasCover,
 		faceStyle: computed(() =>
-			props.isCompact ? undefined : { '--base-bank-card-bg': cardFaceBackground(brand.value, props.background) },
+			props.isCompact && !hasCover.value ? undefined : { '--base-bank-card-bg': cardFaceBackground(brand.value, props.background) },
 		),
 	}
 }

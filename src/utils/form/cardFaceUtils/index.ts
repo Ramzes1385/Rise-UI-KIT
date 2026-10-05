@@ -4,6 +4,7 @@ export {
 	CARD_FACE_DEFAULT_BACKGROUND,
 	CARD_FACE_DOT,
 	cardBrandName,
+	cardCoverLayer,
 	cardFaceBackground,
 	maskedCardNumber,
 } from './cardFaceUtils'

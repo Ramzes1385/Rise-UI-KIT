@@ -3,6 +3,7 @@ export type {
 	BaseCardInputEmits,
 	BaseCardInputExpose,
 	BaseCardInputProps,
+	BaseCardInputSlots,
 	CardData,
 	CardInputField,
 	CardInputLayout,

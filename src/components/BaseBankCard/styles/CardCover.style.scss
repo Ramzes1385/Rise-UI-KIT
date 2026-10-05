@@ -1,0 +1,29 @@
+.card-cover {
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	overflow: hidden;
+	border-radius: inherit;
+	pointer-events: none;
+
+	&__layer,
+	&__overlay {
+		position: absolute;
+		inset: 0;
+	}
+
+	&__layer > * {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	&__fill {
+		background: var(--card-cover-fill);
+	}
+
+	&__overlay {
+		background: var(--rise-media-scrim);
+	}
+}

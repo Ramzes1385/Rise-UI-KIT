@@ -1,10 +1,11 @@
 /**
- * Утилиты: лицо банковской карты — маска номера, фон по марке, название марки для подписей.
+ * Утилиты: лицо банковской карты — маска номера, фон по марке, обложка, название марки для подписей.
  * Внутренний модуль: общий для BaseCardInput и BaseBankCard, в публичный вход `utils` не входит
  */
 
 import { UI_CARD } from '@/locales/messages'
 import type { CardBrand } from '@utils/form/cardUtils'
+import type { CardCoverLayer } from './types/cardFaceUtils.types'
 
 const DEFAULT_GAPS: readonly number[] = [4, 8, 12, 16]
 const DEFAULT_LENGTH = 16
@@ -53,4 +54,19 @@ export function maskedCardNumber(digits: string, brand: CardBrand | undefined): 
 export function cardFaceBackground(brand: CardBrand | undefined, custom: string | undefined): string {
 	if (custom) return custom
 	return (brand && CARD_BRAND_BACKGROUNDS[brand.id]) || CARD_FACE_DEFAULT_BACKGROUND
+}
+
+const COVER_IMAGE_PREFIX = /^(?:https?:|data:image\/|blob:|\/|\.{1,2}\/)/i
+const COVER_IMAGE_EXTENSION = /\.(?:avif|gif|jpe?g|png|svg|webp)(?:[?#].*)?$/i
+
+/**
+ * Обложка карты по значению `cover`: адрес картинки (`https:`, `data:image/`, `blob:`, путь от корня или относительный,
+ * имя файла картинки без скобок) — картинкой, остальное (градиент, цвет, `url(…)`) — как CSS `background`
+ */
+export function cardCoverLayer(cover: string | undefined): CardCoverLayer {
+	const value = cover?.trim()
+	if (!value) return {}
+	if (COVER_IMAGE_PREFIX.test(value)) return { image: value }
+	if (value.includes('(') || !COVER_IMAGE_EXTENSION.test(value)) return { fill: value }
+	return { image: value }
 }

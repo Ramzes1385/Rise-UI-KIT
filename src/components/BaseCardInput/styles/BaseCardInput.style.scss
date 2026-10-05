@@ -59,6 +59,11 @@
 			align-items: center;
 		}
 
+		&--cover {
+			isolation: isolate;
+			text-shadow: 0 1px 2px var(--rise-media-scrim);
+		}
+
 		&--back {
 			align-content: start;
 			padding: sz(20px 0);

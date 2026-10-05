@@ -185,3 +185,60 @@ describe('BaseBankCard сохранённая карта', () => {
 		expect(root(container)).toHaveClass('base-bank-card--compact')
 	})
 })
+
+describe('BaseBankCard обложка', () => {
+	const IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg"/%3E'
+	const GRADIENT = 'linear-gradient(135deg, var(--rise-color-primary-700), var(--rise-color-primary-950))'
+	const root = (container: Element) => container.querySelector('.base-bank-card') as HTMLElement
+	const cover = (container: Element) => container.querySelector('.card-cover') as HTMLElement | null
+
+	it('без обложки — слоя нет', () => {
+		const { container } = render(BaseBankCard, { props: { brand: 'visa', last4: '4242' } })
+		expect(cover(container)).toBeNull()
+		expect(root(container)).not.toHaveClass('base-bank-card--cover')
+	})
+
+	it('полный вид: картинка на всей карте, затемнение по умолчанию, фон марки остаётся под ней', () => {
+		const { container } = render(BaseBankCard, { props: { brand: 'visa', last4: '4242', cover: IMAGE } })
+		expect(root(container)).toHaveClass('base-bank-card--cover')
+		expect(cover(container)?.parentElement).toBe(root(container))
+		expect(cover(container)?.querySelector('img')).toHaveAttribute('src', IMAGE)
+		expect(cover(container)?.querySelector('.card-cover__overlay')).not.toBeNull()
+		expect(root(container).style.getPropertyValue('--base-bank-card-bg')).toBe(CARD_BRAND_BACKGROUNDS.visa)
+	})
+
+	it('градиент без затемнения: hasCoverOverlay = false', () => {
+		const { container } = render(BaseBankCard, { props: { cover: GRADIENT, hasCoverOverlay: false } })
+		expect(cover(container)?.querySelector('.card-cover__fill')).not.toBeNull()
+		expect(cover(container)?.querySelector('.card-cover__overlay')).toBeNull()
+	})
+
+	it('слот cover без пропа', () => {
+		const { container } = render(BaseBankCard, { slots: { cover: '<i class="my-cover" />' } })
+		expect(root(container)).toHaveClass('base-bank-card--cover')
+		expect(cover(container)?.querySelector('.my-cover')).not.toBeNull()
+	})
+
+	it('компактный вид: мини-карта с обложкой вместо плашки марки, фон по марке под ней', () => {
+		const { container } = render(BaseBankCard, { props: { brand: 'visa', last4: '4242', isCompact: true, cover: IMAGE } })
+		const brand = container.querySelector('.base-bank-card__brand') as HTMLElement
+		expect(brand).toHaveClass('base-bank-card__brand--cover')
+		expect(cover(container)?.parentElement).toBe(brand)
+		expect(brand.querySelector('.card-brand-mark')).not.toBeNull()
+		expect(root(container).style.getPropertyValue('--base-bank-card-bg')).toBe(CARD_BRAND_BACKGROUNDS.visa)
+	})
+
+	it('компактный вид без обложки — без фона карты', () => {
+		const { container } = render(BaseBankCard, { props: { isCompact: true } })
+		expect(container.querySelector('.base-bank-card__brand')).not.toHaveClass('base-bank-card__brand--cover')
+		expect(root(container).style.getPropertyValue('--base-bank-card-bg')).toBe('')
+	})
+
+	it('умолчания из плагина: hasCoverOverlay', () => {
+		const { container } = render(BaseBankCard, {
+			props: { cover: IMAGE },
+			global: { plugins: [createUiKitPlugin({ defaults: { BaseBankCard: { hasCoverOverlay: false } } })] },
+		})
+		expect(cover(container)?.querySelector('.card-cover__overlay')).toBeNull()
+	})
+})

@@ -7,6 +7,7 @@ import {
 	CARD_FACE_DEFAULT_BACKGROUND,
 	CARD_FACE_DOT,
 	cardBrandName,
+	cardCoverLayer,
 	cardFaceBackground,
 	maskedCardNumber,
 } from '..'
@@ -87,6 +88,43 @@ describe('cardFaceUtils', () => {
 			const ids = new Set(CARD_BRANDS.map(brand => brand.id))
 			expect(Object.keys(CARD_BRAND_ICON_PATHS).every(id => ids.has(id))).toBe(true)
 			expect(CARD_BRAND_ICON_VIEW_BOX).toBe('0 0 576 512')
+		})
+	})
+
+	describe('cardCoverLayer', () => {
+		it('пусто — без слоя', () => {
+			expect(cardCoverLayer(undefined)).toEqual({})
+			expect(cardCoverLayer('   ')).toEqual({})
+		})
+
+		it.each([
+			'https://cdn.example.com/cover.jpg',
+			'http://example.com/a',
+			'data:image/png;base64,AAAA',
+			'blob:https://example.com/1',
+			'/static/cover',
+			'./cover.png',
+			'../img/cover.webp',
+			'cover.JPEG',
+			'img/cover.svg?v=2',
+			'img/cover.avif#x',
+		])('адрес картинки %s — image', value => {
+			expect(cardCoverLayer(value)).toEqual({ image: value })
+		})
+
+		it.each([
+			'linear-gradient(135deg, var(--rise-color-primary-700), var(--rise-color-primary-950))',
+			'var(--rise-color-primary-800)',
+			'#123456',
+			'url(cover.png)',
+			'url(cover.png?v=1)',
+			'rebeccapurple',
+		])('CSS-значение %s — fill', value => {
+			expect(cardCoverLayer(value)).toEqual({ fill: value })
+		})
+
+		it('обрезает пробелы по краям', () => {
+			expect(cardCoverLayer('  /cover.png ')).toEqual({ image: '/cover.png' })
 		})
 	})
 })

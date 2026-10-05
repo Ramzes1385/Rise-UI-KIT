@@ -81,6 +81,13 @@ export interface BaseCardInputProps extends BaseComponentProps<
 	hasPreview?: boolean
 	/** Свой фон превью — значение CSS `background` (градиент, картинка). По умолчанию — фон по марке из `CARD_BRAND_BACKGROUNDS` */
 	previewBackground?: string
+	/**
+	 * Обложка лицевой стороны превью: адрес картинки или значение CSS `background` — как `cover` у BaseBankCard.
+	 * Рисуется поверх `previewBackground`; заменяется слотом `previewCover`
+	 */
+	previewCover?: string
+	/** Затемнение поверх обложки превью (токен `--rise-media-scrim`) для контраста AA текста карты; по умолчанию есть */
+	hasPreviewCoverOverlay?: boolean
 	/** Поле имени владельца (по умолчанию есть) */
 	hasHolder?: boolean
 	/** Адаптер эквайера для метода `tokenize()` */
@@ -93,6 +100,14 @@ export interface BaseCardInputProps extends BaseComponentProps<
 	isRequired?: boolean
 	/** Отключает поля */
 	isDisabled?: boolean
+}
+
+/**
+ * Слоты компонента BaseCardInput
+ */
+export interface BaseCardInputSlots {
+	/** Своё содержимое обложки лицевой стороны превью вместо `previewCover` (при `hasPreview`) */
+	previewCover?: () => unknown
 }
 
 /**

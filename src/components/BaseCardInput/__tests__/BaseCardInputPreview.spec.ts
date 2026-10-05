@@ -177,3 +177,33 @@ describe('BaseCardInput превью', () => {
 		expect(outside).not.toMatch(/__preview-inner\s*\{[^}]*transition/)
 	})
 })
+
+describe('BaseCardInput превью: обложка', () => {
+	const IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg"/%3E'
+	const front = (container: Element) => container.querySelector('.base-card-input__face--front') as HTMLElement
+
+	it('без previewCover — обложки нет', () => {
+		const { container } = renderPreview()
+		expect(front(container)).not.toHaveClass('base-card-input__face--cover')
+		expect(container.querySelector('.card-cover')).toBeNull()
+	})
+
+	it('previewCover — картинка на лицевой стороне с затемнением; оборот без обложки', () => {
+		const { container } = renderPreview({ previewCover: IMAGE })
+		expect(front(container)).toHaveClass('base-card-input__face--cover')
+		expect(front(container).querySelector('.card-cover img')).toHaveAttribute('src', IMAGE)
+		expect(front(container).querySelector('.card-cover__overlay')).not.toBeNull()
+		expect(container.querySelector('.base-card-input__face--back .card-cover')).toBeNull()
+	})
+
+	it('hasPreviewCoverOverlay = false — без затемнения', () => {
+		const { container } = renderPreview({ previewCover: 'var(--rise-color-primary-800)', hasPreviewCoverOverlay: false })
+		expect(container.querySelector('.card-cover__fill')).not.toBeNull()
+		expect(container.querySelector('.card-cover__overlay')).toBeNull()
+	})
+
+	it('слот previewCover', () => {
+		const { container } = render(BaseCardInput, { props: { hasPreview: true }, slots: { previewCover: '<i class="my-cover" />' } })
+		expect(front(container).querySelector('.card-cover .my-cover')).not.toBeNull()
+	})
+})

@@ -32,6 +32,17 @@ export interface BaseBankCardProps extends BaseComponentProps<BankCardVariant, '
 	brandIcons?: Readonly<Record<string, string>>
 	/** Свой фон полной карты — значение CSS `background`. По умолчанию — фон по марке */
 	background?: string
+	/**
+	 * Обложка карты: адрес картинки (`https:`, `data:image/`, `blob:`, путь) или значение CSS `background` (градиент, цвет).
+	 * Рисуется поверх фона (`background` или фона марки виден, пока картинка грузится или если она не загрузилась).
+	 * В полном виде — на всей карте, в `isCompact` — на мини-карте вместо плашки марки. Заменяется слотом `cover`
+	 */
+	cover?: string
+	/**
+	 * Затемнение поверх обложки (токен `--rise-media-scrim`): светлый текст карты читается на любой картинке с контрастом AA.
+	 * Выключайте только для своей тёмной обложки, проверив контраст
+	 */
+	hasCoverOverlay?: boolean
 }
 
 /**
@@ -40,4 +51,6 @@ export interface BaseBankCardProps extends BaseComponentProps<BankCardVariant, '
 export interface BaseBankCardSlots {
 	/** Название карты вместо `label` (бейдж «Основная», значок) */
 	default?: () => unknown
+	/** Своё содержимое обложки вместо `cover`: картинка с `srcset`, `<picture>`, узор. Растягивается на всю карту, затемнение — как у `cover` */
+	cover?: () => unknown
 }

@@ -4,12 +4,21 @@
 		:class="[
 			variantClass,
 			isCompact ? 'base-bank-card--compact' : 'base-bank-card--full',
-			{ 'base-bank-card--expired': isExpired },
+			{ 'base-bank-card--expired': isExpired, 'base-bank-card--cover': hasCover },
 			classes.root,
 		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle, faceStyle]">
+		<CardCover v-if="!isCompact && hasCover" :cover="cover" :has-overlay="hasCoverOverlay">
+			<slot name="cover" />
+		</CardCover>
 		<span class="base-bank-card__summary">{{ summary }}</span>
-		<span class="base-bank-card__brand" :class="classes.brand" aria-hidden="true">
+		<span
+			class="base-bank-card__brand"
+			:class="[{ 'base-bank-card__brand--cover': isCompact && hasCover }, classes.brand]"
+			aria-hidden="true">
+			<CardCover v-if="isCompact && hasCover" :cover="cover" :has-overlay="hasCoverOverlay">
+				<slot name="cover" />
+			</CardCover>
 			<CardBrandMark v-if="brand" :brand="brand" :brand-icons="brandIcons" />
 		</span>
 		<span v-if="label || $slots.default" class="base-bank-card__label" :class="classes.label">
@@ -26,6 +35,7 @@
 
 <script setup lang="ts">
 import '../styles/BaseBankCard.style.scss'
+import CardCover from './CardCover.vue'
 import { UI_CARD } from '@/locales/messages'
 import CardBrandMark from './CardBrandMark.vue'
 import { useBaseBankCard } from '../model/useBaseBankCard'
@@ -42,6 +52,7 @@ const props = withDefaults(
 		last4: '',
 		isCompact: false,
 		isExpired: undefined,
+		hasCoverOverlay: true,
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )
@@ -60,5 +71,6 @@ const {
 	summary,
 	maskedNumber,
 	faceStyle,
+	hasCover,
 } = useBaseBankCard(props)
 </script>

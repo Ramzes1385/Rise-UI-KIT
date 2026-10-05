@@ -21,7 +21,12 @@
 			:style="preview.style"
 			aria-hidden="true">
 			<div class="base-card-input__preview-inner">
-				<div class="base-card-input__face base-card-input__face--front">
+				<div
+					class="base-card-input__face base-card-input__face--front"
+					:class="{ 'base-card-input__face--cover': preview.hasCover }">
+					<CardCover v-if="preview.hasCover" :cover="previewCover" :has-overlay="hasPreviewCoverOverlay">
+						<slot name="previewCover" />
+					</CardCover>
 					<span class="base-card-input__chip" />
 					<CardBrandMark
 						v-if="preview.brand"
@@ -93,10 +98,11 @@ import { BaseInput } from '@components/BaseInput'
 import { FormFieldError } from '@components/BaseFormField'
 import { kitDefaults } from '@composables/base/useDefaults'
 import { useBaseCardInput } from '../model/useBaseCardInput'
+import CardCover from '@components/BaseBankCard/ui/CardCover.vue'
 import { CARD_BRAND_ICON_VIEW_BOX } from '@utils/form/cardFaceUtils'
 import CardBrandMark from '@components/BaseBankCard/ui/CardBrandMark.vue'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
-import type { BaseCardInputEmits, BaseCardInputProps } from '../types/BaseCardInput.types'
+import type { BaseCardInputEmits, BaseCardInputProps, BaseCardInputSlots } from '../types/BaseCardInput.types'
 
 const props = withDefaults(
 	defineProps<BaseCardInputProps>(),
@@ -105,6 +111,7 @@ const props = withDefaults(
 		modelValue: null,
 		layout: 'stacked',
 		hasPreview: false,
+		hasPreviewCoverOverlay: true,
 		hasHolder: true,
 		isRequired: false,
 		isDisabled: false,
@@ -113,6 +120,8 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<BaseCardInputEmits>()
+
+defineSlots<BaseCardInputSlots>()
 
 const {
 	sizeScaleStyle,

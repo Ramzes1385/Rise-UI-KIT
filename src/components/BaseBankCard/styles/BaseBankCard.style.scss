@@ -82,6 +82,12 @@
 		font-size: sz(var(--rise-font-size-xs));
 	}
 
+	&--full.base-bank-card--cover {
+		position: relative;
+		isolation: isolate;
+		text-shadow: 0 1px 2px var(--rise-media-scrim);
+	}
+
 	&--full.base-bank-card--expired {
 		filter: grayscale(0.6);
 	}
@@ -103,6 +109,17 @@
 		justify-content: center;
 		@include custom-text(color, var(--rise-text-highlighted));
 		font-size: sz(var(--rise-font-size-sm));
+	}
+
+	&--compact &__brand--cover {
+		position: relative;
+		isolation: isolate;
+		aspect-ratio: 85.6 / 53.98;
+		overflow: hidden;
+		border-radius: sz(var(--rise-radius-sm));
+		background: var(--base-bank-card-bg);
+		color: var(--rise-color-neutral-50);
+		font-size: sz(var(--rise-font-size-xs));
 	}
 
 	&--compact &__number {
