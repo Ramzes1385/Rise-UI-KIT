@@ -3525,3 +3525,29 @@ BaseWaveform
 - `titles` — свои заголовки панелей, `height` — высота списков (по умолчанию 280px), `is-virtual` — тысячи строк, `empty-text`, `error`, `is-disabled`, `variant` (`default`, `soft`, `outline`, `ghost`), `size-scale`, `color`.
 - Событие `change` — `{ to: 'target' | 'source', ids }`. Через `ref`: `transfer(to, ids?)` — перенести по id (по умолчанию — отмеченные), например для своей кнопки «Перенести всё».
 - Слоты: `item` (данные строки BaseList и `side`), `empty` (`{ side }`). На узком экране (меньше 640px) панели идут друг под другом, стрелки кнопок — вниз и вверх.
+
+---
+
+## BaseImageMap3D (задача map3d-base, часть 1 из 4)
+
+3D-карта этажей на three.js — отдельный вход `@ramzes1385/rise-ui-kit/map3d`; в корень пакета и в плагин не входит. `three` (>=0.180 <0.200) — необязательная peer-зависимость: ставит только приложение с 3D-картой. Данные — те же `ImageMapData`, что у BaseImageMap, плюс необязательные 3D-поля (`ImageMap3DData`).
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseImageMap3D } from '@ramzes1385/rise-ui-kit/map3d'
+import type { ImageMap3DData, ImageMap3DView } from '@ramzes1385/rise-ui-kit/map3d'
+
+const view = ref<ImageMap3DView>('3d')
+const data: ImageMap3DData = { layers: [{ id: 'f1', title: 'Этаж 1', image: '/plan-1.svg', width: 1000, height: 600, elevation: 0 }], objects: [] }
+</script>
+
+<template>
+	<BaseImageMap3D v-model:view="view" :data="data" height="480px" @fallback="reason => console.info('Показан план:', reason)" />
+</template>
+```
+
+- `v-model:view` — `3d` (по умолчанию) или `2d`: BaseImageMap с теми же данными, пропсами, событиями и слотами. Без WebGL или если рендерер не создался — автоматически 2D, сообщение `role="status"` и событие `fallback` (`unsupported` или `error`).
+- Пропсы — как у BaseImageMap (кроме `wheelZoom`, `maxZoom`, `initArea`), плюс `view`, `rendererFactory` (своя фабрика рендерера; по умолчанию `WebGLRenderer`). Через `ref`: `invalidate()` — перерисовать сцену в ближайшем кадре, `setView(view)`.
+- 3D-поля данных: `layer.model` (`{ url, scale?, position?, rotationY? }`, GLB/GLTF), `layer.elevation`, `object.height3d`, `object.meshName`, `data.scene3d` (`floorGap`, `floorThickness`, `objectHeight`). Неверные поля — предупреждение в консоли при разработке.
+- В части 1 сцена пустая: пол, объекты, модели, камера с вращением, выбор и маршруты в 3D — части 2–4.

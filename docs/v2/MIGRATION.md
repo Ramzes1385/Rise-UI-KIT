@@ -2015,3 +2015,12 @@ API кита не меняется. В Storybook добавлены пример
 - **Поправка поведения синтеза браузера**: переход со слайда с `speech` на слайд с `audio` без `duration` больше не вызывает лишний конец слайда (раньше следующий слайд мог быть пропущен). Слайд, который потерял часы до показа (голоса браузера не нашлись за 1,5 с, сервис ответил ошибкой, `duration` нет), больше не листается сам — его конец наступает при нажатии «Пуск»; во время показа — как раньше, сразу.
 - **Storybook**: истории `SpeechService` (заглушка сервиса, play) и `SpeechYandex` (живой SpeechKit через dev-middleware `POST /__rise/tts`, ключ `YANDEX_SPEECHKIT_API_KEY` в `.env.local`, только локальный `npm run storybook`); `.env.example`.
 
+## BaseImageMap3D (часть 1)
+
+Только добавления, существующий API не меняется.
+
+- **Новый вход пакета `@ramzes1385/rise-ui-kit/map3d`** (`dist/map3d.js`, типы `dist/map3d.d.ts`): компонент `BaseImageMap3D`, константы `IMAGE_MAP_3D_VIEWS`, `IMAGE_MAP_3D_FALLBACK_REASONS`, типы `BaseImageMap3DProps`, `BaseImageMap3DEmits`, `BaseImageMap3DSlots`, `BaseImageMap3DExpose`, `ImageMap3DView`, `ImageMap3DFallbackReason`, `ImageMap3DRenderer`, `ImageMap3DRendererFactory`, `ImageMap3DData`, `ImageMap3DLayer`, `ImageMap3DObject`, `ImageMap3DObjectFields`, `ImageMapLayerModel`, `ImageMapScene3D`. В корень пакета, `/components` и плагин компонент не входит.
+- **`three` — необязательная peer-зависимость** (`>=0.180.0 <0.200.0`, `peerDependenciesMeta.three.optional`): приложению без 3D-карты ставить его не нужно, основной вход его не импортирует (`three` внешний в сборке, правило eslint и тест границ пакета). Приложению с 3D-картой: `npm i three` (типы — `@types/three` в dev, они нужны для `.d.ts` входа).
+- **Данные**: `ImageMap3DData` — `ImageMapData` с необязательными `layer.model`, `layer.elevation`, `object.height3d`, `object.meshName`, `data.scene3d`; `IMAGE_MAP_DATA_VERSION` остаётся 1. Любая `ImageMapData` подходит без правок; BaseImageMap поля 3D не читает.
+- **Поведение**: `v-model:view` (`3d` | `2d`), событие `fallback(reason)`; без WebGL — BaseImageMap и сообщение «Браузер не поддерживает 3D — показан план». Предупреждения о неверных 3D-полях (`console.warn`, `[rise-ui-kit] BaseImageMap3D: …`) — только при `NODE_ENV !== 'production'`.
+- **Словарь**: новый раздел `imageMap3d` (ru, en) — свой язык через `defineLocale` должен его содержать.
