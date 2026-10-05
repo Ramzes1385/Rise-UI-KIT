@@ -88,6 +88,7 @@ export function useBaseImageMapEditor(props: ImageMapEditorProps, emit: BaseImag
 		importError: announcer.importError,
 		isPreview: ref(false),
 		helpId: useId(),
+		errorId: useId(),
 		toolOptions: computed(toolOptions),
 		help: computed(() => canvasHelp(props, tool.tool.value)),
 		exposed: {

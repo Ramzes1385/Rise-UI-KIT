@@ -119,7 +119,7 @@
 						tabindex="0"
 						role="application"
 						:aria-label="UI_IMAGE_MAP_EDITOR.CANVAS"
-						:aria-describedby="helpId"
+						:aria-describedby="error ? `${helpId} ${errorId}` : helpId"
 						@pointerdown="pointer.handlePointerDown"
 						@pointermove="pointer.handlePointerMove"
 						@pointerup="pointer.handlePointerUp"
@@ -190,6 +190,13 @@
 							:style="canvas.cursorStyle.value"
 							aria-hidden="true" />
 					</div>
+					<div v-if="canvas.isSvgLoading.value" class="base-image-map-editor__svg-state">{{ UI_IMAGE_MAP.LOADING }}</div>
+					<div
+						v-if="canvas.hasSvgError.value"
+						class="base-image-map-editor__svg-state base-image-map-editor__svg-state--error"
+						role="alert">
+						{{ UI_IMAGE_MAP.ERROR }}
+					</div>
 				</div>
 				<div v-else class="base-image-map-editor__empty">
 					<BaseText tag="p">{{ UI_IMAGE_MAP_EDITOR.EMPTY }}</BaseText>
@@ -200,115 +207,21 @@
 				</div>
 				<BaseText v-if="currentLayer && !isPreview" :id="helpId" tag="p" class="base-image-map-editor__help">{{ help }}</BaseText>
 				<p v-if="importError" class="base-image-map-editor__error" :class="classes.error" role="alert">{{ importError }}</p>
-				<p v-if="error" class="base-image-map-editor__error" :class="classes.error">{{ error }}</p>
+				<p v-if="error" :id="errorId" class="base-image-map-editor__error" :class="classes.error">{{ error }}</p>
 				<div class="base-image-map-editor__status" role="status">{{ status }}</div>
 			</div>
 
-			<aside class="base-image-map-editor__panel" :class="classes.panel">
-				<section v-if="currentLayer" class="base-image-map-editor__section">
-					<h3 class="base-image-map-editor__heading">{{ UI_IMAGE_MAP_EDITOR.OBJECTS }}</h3>
-					<ul v-if="canvas.objects.value.length" class="base-image-map-editor__list">
-						<li v-for="object in canvas.objects.value" :key="object.id">
-							<button
-								type="button"
-								class="base-image-map-editor__item"
-								:class="{ 'base-image-map-editor__item--selected': object.id === selected?.id }"
-								:aria-current="object.id === selected?.id ? 'true' : undefined"
-								@click="select(object.id)">
-								<span class="base-image-map-editor__item-title">{{ object.title }}</span>
-								<span class="base-image-map-editor__item-type">{{ typeLabel(object.type) }}</span>
-							</button>
-						</li>
-					</ul>
-					<BaseText v-else tag="p" class="base-image-map-editor__hint">{{ UI_IMAGE_MAP_EDITOR.NO_OBJECTS }}</BaseText>
-				</section>
-
-				<section v-if="currentLayer" class="base-image-map-editor__section">
-					<h3 class="base-image-map-editor__heading">{{ UI_IMAGE_MAP_EDITOR.PROPERTIES }}</h3>
-					<BaseText v-if="!selected" tag="p" class="base-image-map-editor__hint">{{
-						UI_IMAGE_MAP_EDITOR.NOTHING_SELECTED
-					}}</BaseText>
-					<fieldset v-for="section in panel.sections.value" :key="section.id" class="base-image-map-editor__fieldset">
-						<legend class="base-image-map-editor__legend">{{ section.title }}</legend>
-						<ImageMapEditorField
-							v-for="field in section.fields"
-							:key="field.key"
-							:field="field"
-							:is-disabled="isDisabled"
-							@update="panel.setField(field.key, $event)" />
-					</fieldset>
-				</section>
-
-				<section class="base-image-map-editor__section">
-					<h3 class="base-image-map-editor__heading">{{ UI_IMAGE_MAP_EDITOR.LAYERS }}</h3>
-					<ul v-if="data.layers.length" class="base-image-map-editor__list">
-						<li v-for="(layer, index) in data.layers" :key="layer.id" class="base-image-map-editor__row">
-							<button
-								type="button"
-								class="base-image-map-editor__item"
-								:class="{ 'base-image-map-editor__item--selected': layer.id === currentLayer?.id }"
-								:aria-current="layer.id === currentLayer?.id ? 'true' : undefined"
-								@click="setLayer(layer.id)">
-								<span class="base-image-map-editor__item-title">{{ layer.title }}</span>
-							</button>
-							<BaseButton
-								variant="ghost"
-								:aria-label="formatMessage(UI_IMAGE_MAP_EDITOR.MOVE_UP, { title: layer.title })"
-								:is-disabled="isDisabled || index === 0"
-								@click="panel.moveLayer(layer.id, -1)">
-								<template #left><BaseIcon name="chevron-up" /></template>
-							</BaseButton>
-							<BaseButton
-								variant="ghost"
-								:aria-label="formatMessage(UI_IMAGE_MAP_EDITOR.MOVE_DOWN, { title: layer.title })"
-								:is-disabled="isDisabled || index === data.layers.length - 1"
-								@click="panel.moveLayer(layer.id, 1)">
-								<template #left><BaseIcon name="chevron-down" /></template>
-							</BaseButton>
-							<BaseButton
-								variant="ghost"
-								:aria-label="formatMessage(UI_IMAGE_MAP_EDITOR.DELETE_LAYER, { title: layer.title })"
-								:is-disabled="isDisabled"
-								@click="panel.removeLayer(layer.id, $event)">
-								<template #left><BaseIcon name="trash" /></template>
-							</BaseButton>
-						</li>
-					</ul>
-					<div v-if="currentLayer" class="base-image-map-editor__fields">
-						<ImageMapEditorField
-							v-for="field in panel.layerFields.value"
-							:key="field.key"
-							:field="field"
-							:is-disabled="isDisabled"
-							@update="panel.setLayerField(field.key, $event)" />
-					</div>
-					<BaseButton variant="outline" :is-disabled="isDisabled" data-add="layer" @click="files.openBackground('add')">
-						<template #left><BaseIcon name="plus" /></template>
-						{{ UI_IMAGE_MAP_EDITOR.ADD_LAYER }}
-					</BaseButton>
-				</section>
-
-				<section class="base-image-map-editor__section">
-					<h3 class="base-image-map-editor__heading">{{ UI_IMAGE_MAP_EDITOR.GROUPS }}</h3>
-					<fieldset v-for="group in panel.groups.value" :key="group.id" class="base-image-map-editor__fieldset">
-						<legend class="base-image-map-editor__legend">{{ group.title }}</legend>
-						<ImageMapEditorField
-							v-for="field in group.fields"
-							:key="field.key"
-							:field="field"
-							:is-disabled="isDisabled"
-							@update="panel.setGroupField(group.id, field.key, $event)" />
-						<BaseButton variant="ghost" :is-disabled="isDisabled" @click="panel.removeGroup(group.id, $event)">
-							<template #left><BaseIcon name="trash" /></template>
-							{{ formatMessage(UI_IMAGE_MAP_EDITOR.DELETE_GROUP, { title: group.title }) }}
-						</BaseButton>
-					</fieldset>
-					<BaseButton variant="outline" :is-disabled="isDisabled" data-add="group" @click="panel.addGroup">
-						<template #left><BaseIcon name="plus" /></template>
-						{{ UI_IMAGE_MAP_EDITOR.ADD_GROUP }}
-					</BaseButton>
-				</section>
-			</aside>
+			<ImageMapEditorPanel
+				:data="data"
+				:current-layer="currentLayer"
+				:selected="selected"
+				:objects="canvas.objects.value"
+				:panel="panel"
+				:is-disabled="isDisabled"
+				:panel-class="classes.panel"
+				@select="select"
+				@set-layer="setLayer"
+				@add-layer="files.openBackground('add')" />
 		</div>
 
 		<input
@@ -332,17 +245,15 @@
 
 <script setup lang="ts">
 import '../styles/BaseImageMapEditor.style.scss'
-import { formatMessage } from '@/locales/state'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { BaseButton } from '@components/BaseButton'
 import { BaseImageMap } from '@components/BaseImageMap'
-import { typeLabel } from '../model/canvas/useEditorTool'
 import { BaseSegmented } from '@components/BaseSegmented'
-import ImageMapEditorField from './ImageMapEditorField.vue'
+import ImageMapEditorPanel from './ImageMapEditorPanel.vue'
 import { kitDefaults } from '@composables/base/useDefaults'
-import { UI_ARIA, UI_IMAGE_MAP_EDITOR } from '@/locales/messages'
 import { useBaseImageMapEditor } from '../model/useBaseImageMapEditor'
+import { UI_ARIA, UI_IMAGE_MAP, UI_IMAGE_MAP_EDITOR } from '@/locales/messages'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type {
 	BaseImageMapEditorEmits,
@@ -393,6 +304,7 @@ const {
 	importError,
 	isPreview,
 	helpId,
+	errorId,
 	toolOptions,
 	help,
 	pointer,

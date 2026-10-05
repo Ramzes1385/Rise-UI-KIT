@@ -55,11 +55,28 @@
 	}
 
 	&__viewport {
+		position: relative;
 		overflow: auto;
 		max-height: 70vh;
 		border-radius: sz(var(--rise-radius-md));
 		background-color: var(--rise-bg-muted);
 		@include scrollbar-thin;
+	}
+
+	&__svg-state {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: sz(16px);
+		color: var(--rise-text-muted);
+		text-align: center;
+		pointer-events: none;
+
+		&--error {
+			color: var(--rise-error);
+		}
 	}
 
 	&__stage {
