@@ -7,7 +7,7 @@ import {
 	isValidKpp,
 	isValidOgrn,
 	isValidSnils,
-} from './requisiteChecks'
+} from '@utils/data/requisiteUtils'
 
 export const REQUISITE_RULES: Record<RequisiteKind, RequisiteRule> = {
 	inn: { mask: '############', lengths: [10, 12], check: isValidInn },

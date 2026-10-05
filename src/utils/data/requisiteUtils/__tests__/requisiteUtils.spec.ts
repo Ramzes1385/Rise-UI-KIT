@@ -6,7 +6,7 @@ import {
 	isValidKpp,
 	isValidOgrn,
 	isValidSnils,
-} from '../../model/requisites/requisiteChecks'
+} from '../requisiteUtils'
 
 describe('проверка реквизитов', () => {
 	it('ИНН организации и человека', () => {

@@ -9,4 +9,4 @@ export {
 	isValidKpp,
 	isValidOgrn,
 	isValidSnils,
-} from './model/requisites/requisiteChecks'
+} from '@utils/data/requisiteUtils'

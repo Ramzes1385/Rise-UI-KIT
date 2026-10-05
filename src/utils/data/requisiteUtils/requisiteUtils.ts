@@ -1,3 +1,4 @@
+/** Утилиты: проверка контрольных чисел реквизитов (ИНН, КПП, ОГРН, БИК, счета, СНИЛС) */
 const weighted = (value: string, weights: readonly number[]): number =>
 	weights.reduce((sum, weight, index) => sum + weight * Number(value[index]), 0)
 
