@@ -1,5 +1,5 @@
 import type { MaybeRefOrGetter, Ref, ShallowRef } from 'vue'
-import type { MotionDuration } from '@composables/app/useMotion'
+import type { MotionDurationName as MotionDuration } from '@composables/app/useMotion'
 
 /** Значение твина: число или массив чисел одной длины */
 export type TweenValue = number | readonly number[]
