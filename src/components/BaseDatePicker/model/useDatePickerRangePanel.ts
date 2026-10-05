@@ -1,4 +1,5 @@
 import { computed } from 'vue'
+import { partClassOf } from './datePickerUi'
 import { toBaseCalendarProps, withoutTimeBlock } from './datePickerCalendarConfig'
 import type { DatePickerRangePanelEmits, DatePickerRangePanelProps } from '../types/DatePickerRangePanel.types'
 
@@ -11,6 +12,7 @@ export function useDatePickerRangePanel(props: DatePickerRangePanelProps, emit: 
 	)
 
 	return {
+		ui: partClassOf(props),
 		calendarBindings,
 		secondaryCalendarBindings: computed(() => withoutTimeBlock(calendarBindings.value)),
 		handleModelUpdate: (value: Date | null): void => emit('model-update', value),

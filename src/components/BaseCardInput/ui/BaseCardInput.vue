@@ -1,8 +1,7 @@
 <template>
 	<fieldset
 		ref="rootRef"
-		class="base-card-input"
-		:class="[variantClass, `base-card-input--${layout}`, { 'base-card-input--disabled': isControlDisabled }, classes.root]"
+		:class="[ui('root'), variantClass, `base-card-input--${layout}`, { 'base-card-input--disabled': isControlDisabled }, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		:disabled="isControlDisabled"
 		:aria-labelledby="label ? undefined : control.fieldLabelId.value"
@@ -10,47 +9,46 @@
 		:aria-describedby="control.aria.value['aria-describedby']">
 		<legend
 			v-if="label || !control.fieldLabelId.value"
-			class="base-card-input__legend"
-			:class="[{ 'base-card-input__legend--hidden': !label }, classes.legend]">
+			:class="[ui('legend'), { 'base-card-input__legend--hidden': !label }, classes.legend]">
 			{{ label || UI_CARD.GROUP }}
 		</legend>
 		<div
 			v-if="preview"
-			class="base-card-input__preview"
-			:class="[{ 'base-card-input__preview--flipped': preview.isFlipped }, classes.preview]"
+			:class="[ui('preview'), { 'base-card-input__preview--flipped': preview.isFlipped }, classes.preview]"
 			:style="preview.style"
 			aria-hidden="true">
-			<div class="base-card-input__preview-inner">
-				<div
-					class="base-card-input__face base-card-input__face--front"
-					:class="{ 'base-card-input__face--cover': preview.hasCover }">
+			<div :class="ui('preview-inner')">
+				<div :class="[ui('face'), 'base-card-input__face--front', { 'base-card-input__face--cover': preview.hasCover }]">
 					<CardCover v-if="preview.hasCover" :cover="previewCover" :has-overlay="hasPreviewCoverOverlay">
 						<slot name="previewCover" />
 					</CardCover>
-					<span class="base-card-input__chip" />
-					<CardBrandMark
-						v-if="preview.brand"
-						class="base-card-input__face-brand"
-						:brand="preview.brand"
-						:brand-icons="brandIcons" />
-					<span class="base-card-input__face-number">{{ preview.number }}</span>
-					<span v-if="preview.hasHolder" class="base-card-input__face-holder">{{ preview.holder }}</span>
-					<span class="base-card-input__face-expiry">
-						<span class="base-card-input__face-caption">{{ UI_CARD.EXPIRY }}</span>
+					<span :class="ui('chip')" />
+					<Transition name="base-card-input-brand">
+						<CardBrandMark
+							v-if="preview.brand"
+							:key="preview.brand.id"
+							:class="ui('face-brand')"
+							:brand="preview.brand"
+							:brand-icons="brandIcons" />
+					</Transition>
+					<span :class="ui('face-number')">{{ preview.number }}</span>
+					<span v-if="preview.hasHolder" :class="ui('face-holder')">{{ preview.holder }}</span>
+					<span :class="ui('face-expiry')">
+						<span :class="ui('face-caption')">{{ UI_CARD.EXPIRY }}</span>
 						{{ preview.expiry }}
 					</span>
 				</div>
-				<div class="base-card-input__face base-card-input__face--back">
-					<span class="base-card-input__stripe" />
-					<span class="base-card-input__face-code">{{ preview.code }}</span>
+				<div :class="[ui('face'), 'base-card-input__face--back']">
+					<span :class="ui('stripe')" />
+					<span :class="ui('face-code')">{{ preview.code }}</span>
 				</div>
 			</div>
 		</div>
-		<div class="base-card-input__fields">
+		<div :class="ui('fields')">
 			<BaseInput
 				v-for="item in fieldViews"
 				:key="item.field"
-				:class="`base-card-input__${item.field}`"
+				:class="ui(item.field)"
 				:model-value="item.text"
 				:variant="variant"
 				:label="item.label"
@@ -66,26 +64,33 @@
 				@keydown="handleKeydown(item.field, $event)"
 				@focus="handleFocus(item.field)"
 				@blur="handleBlur(item.field)">
-				<template v-if="item.field === 'number' && brandView" #suffix>
-					<span class="base-card-input__brand" :class="classes.brand" role="img" :aria-label="brandView.label">
-						<img v-if="brandView.image" class="base-card-input__brand-image" :src="brandView.image" alt="" />
-						<svg
-							v-else-if="brandView.path"
-							class="base-card-input__brand-icon"
-							:viewBox="CARD_BRAND_ICON_VIEW_BOX"
-							aria-hidden="true">
-							<path :d="brandView.path" fill="currentColor" />
-						</svg>
-						<span v-else class="base-card-input__brand-name" aria-hidden="true">{{ brandView.name }}</span>
-					</span>
+				<template v-if="item.field === 'number'" #suffix>
+					<Transition name="base-card-input-brand">
+						<span
+							v-if="brandView"
+							:key="brandView.name"
+							:class="[ui('brand'), classes.brand]"
+							role="img"
+							:aria-label="brandView.label">
+							<img v-if="brandView.image" :class="ui('brand-image')" :src="brandView.image" alt="" />
+							<svg
+								v-else-if="brandView.path"
+								:class="ui('brand-icon')"
+								:viewBox="CARD_BRAND_ICON_VIEW_BOX"
+								aria-hidden="true">
+								<path :d="brandView.path" fill="currentColor" />
+							</svg>
+							<span v-else :class="ui('brand-name')" aria-hidden="true">{{ brandView.name }}</span>
+						</span>
+					</Transition>
 				</template>
 			</BaseInput>
 		</div>
-		<span class="base-card-input__live" aria-live="polite">{{ brandView?.label }}</span>
+		<span :class="ui('live')" aria-live="polite">{{ brandView?.label }}</span>
 		<FormFieldError
 			:id="errorId"
 			:error="error || ''"
-			class-name="base-card-input__error"
+			:class-name="ui('error')"
 			:custom-class="classes.error"
 			:size-scale="sizeScale" />
 	</fieldset>
@@ -124,6 +129,7 @@ const emit = defineEmits<BaseCardInputEmits>()
 defineSlots<BaseCardInputSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

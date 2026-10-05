@@ -2,10 +2,12 @@ import type { Ref } from 'vue'
 import { computed, ref } from 'vue'
 import { useEyeDropper } from './useEyeDropper'
 import { formatMessage } from '@/locales/state'
+import { useUi } from '@composables/base/useUi'
 import { useRecentColors } from './useRecentColors'
 import { UI_COLOR_PICKER } from '@/locales/messages'
 import { useColorPickerArea } from './useColorPickerArea'
 import { useColorPickerFields } from './useColorPickerFields'
+import { useColorPickerMotion } from './useColorPickerMotion'
 import { useFormField } from '@composables/form/useFormField'
 import { formatColor, parseColor } from '@utils/data/colorUtils'
 import { useCustomClass } from '@composables/base/useCustomClass'
@@ -60,14 +62,17 @@ export function useBaseColorPicker(props: ColorPickerProps, emit: BaseColorPicke
 	const formField = useFormField({ value: () => props.modelValue })
 	const picker = usePicker(props, emit)
 	const recent = useRecentColors(props, emit, { isOpen, picker })
+	const motion = useColorPickerMotion(picker, swatchRef)
 
 	return {
+		ui: useUi(props, 'base-color-picker'),
 		classes,
 		swatchRef,
 		isOpen,
 		picker,
 		triggerAttrs: useTriggerAttrs(props, picker),
-		...useColorPickerArea(picker),
+		...motion,
+		...useColorPickerArea(picker, motion.isDragging),
 		...useColorPickerFields(props, picker),
 		...recent,
 		hasSwatches: computed(

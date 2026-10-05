@@ -1,5 +1,6 @@
 import { computed } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
 import { useSizeScale } from '@composables/base/useSizeScale'
 import { useFormField } from '@composables/form/useFormField'
 import { useCustomClass } from '@composables/base/useCustomClass'
@@ -59,6 +60,7 @@ export function useBaseDatePicker(props: DatePickerProps, emit: BaseDatePickerEm
 	const state = useDatePickerState({ props, resolvedProps, emit, calendarConfig })
 
 	return {
+		ui: useUi(props, 'base-date-picker'),
 		resolvedProps,
 		formField,
 		sizeScaleStyle,

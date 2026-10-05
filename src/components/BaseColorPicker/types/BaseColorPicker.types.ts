@@ -1,4 +1,6 @@
+import type { CSSProperties } from 'vue'
 import type { ColorFormat } from '@utils/data/colorUtils'
+import type { UiClassFn, UiProp } from '@composables/base/useUi'
 import type { FieldInputAttrs } from '@composables/form/useFormContext'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
@@ -6,6 +8,45 @@ import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 export const COLOR_PICKER_POSITIONS = ['top', 'bottom', 'left', 'right'] as const
 
 export type ColorPickerPosition = (typeof COLOR_PICKER_POSITIONS)[number]
+
+/**
+ * Части выбора цвета для пропа `ui` (БЭМ-элементы `.base-color-picker__<часть>`, `root` — корень): swatch — образец-триггер,
+ * popover — всплывающая панель, panel — содержимое панели, area — область насыщенности и яркости, marker — её маркер,
+ * controls, eyedropper — пипетка, preview, sliders, track — шкала с бегунком, thumb — бегунок, hue, alpha, fields, formats,
+ * format — кнопка формата, inputs, channel, hex, channel-input, channel-caption, library, swatches — группа образцов,
+ * swatches-label, presets, preset — образец цвета, reset.
+ */
+export const COLOR_PICKER_PARTS = [
+	'swatch',
+	'popover',
+	'panel',
+	'area',
+	'marker',
+	'controls',
+	'eyedropper',
+	'preview',
+	'sliders',
+	'track',
+	'thumb',
+	'hue',
+	'alpha',
+	'fields',
+	'formats',
+	'format',
+	'inputs',
+	'channel',
+	'hex',
+	'channel-input',
+	'channel-caption',
+	'library',
+	'swatches',
+	'swatches-label',
+	'presets',
+	'preset',
+	'reset',
+] as const
+
+export type BaseColorPickerPart = (typeof COLOR_PICKER_PARTS)[number]
 
 /** Именованная палитра под пресетами: подпись и цвета */
 export interface ColorPalette {
@@ -54,6 +95,14 @@ export interface BaseColorPickerProps extends BaseComponentProps<string, 'root' 
 	ariaLabel?: string
 	/** Атрибуты кнопки-образца: `id`, `aria-*`, `data-*` */
 	triggerAttrs?: FieldInputAttrs
+	/**
+	 * Классы частей выбора цвета (`root`, `swatch`, `panel`, `area`, `marker`, `preset`… — см. `COLOR_PICKER_PARTS`) — добавляются
+	 * к классам кита. Глобально — `defaults.BaseColorPicker.ui` плагина, классы склеиваются.
+	 *
+	 * @example
+	 * <BaseColorPicker v-model="color" :ui="{ swatch: 'rounded-full', preset: 'ring-1' }" />
+	 */
+	ui?: UiProp<BaseColorPickerPart>
 }
 
 export interface BaseColorPickerEmits {
@@ -108,6 +157,15 @@ export interface ColorSwatchesProps {
 	isSelected: (color: string) => boolean
 	/** Класс образца (`customClass.preset`) */
 	swatchClass?: string
+	/** Классы частей из пропа `ui` выбора цвета: БЭМ-класс кита и классы приложения */
+	ui: UiClassFn<BaseColorPickerPart>
+}
+
+/** Стиль положения маркера области: координаты в процентах области и цвет */
+export interface ColorPickerMarkerStyle extends CSSProperties {
+	'--picker-marker-x': string
+	'--picker-marker-y': string
+	backgroundColor: string
 }
 
 export interface ColorSwatchesEmits {

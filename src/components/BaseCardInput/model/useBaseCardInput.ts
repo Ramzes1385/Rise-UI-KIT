@@ -2,6 +2,7 @@ import { codeLength } from './card/cardText'
 import { UI_CARD } from '@/locales/messages'
 import { useCardFields } from './useCardFields'
 import { formatMessage } from '@/locales/state'
+import { useUi } from '@composables/base/useUi'
 import { computed, ref, useId, watch } from 'vue'
 import { useCardPreview } from './face/useCardPreview'
 import { formatCardNumber } from '@utils/form/cardUtils'
@@ -114,6 +115,7 @@ export function useBaseCardInput(props: BaseCardInputProps, emit: BaseCardInputE
 			'brand',
 			'error',
 		]),
+		ui: useUi(props, 'base-card-input'),
 		rootRef,
 		errorId,
 		control,

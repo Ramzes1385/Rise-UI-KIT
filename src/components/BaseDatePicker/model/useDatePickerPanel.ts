@@ -1,5 +1,7 @@
-import { computed, ref } from 'vue'
-import type { ComputedRef } from 'vue'
+import { computed, ref, watch } from 'vue'
+import type { ComputedRef, Ref } from 'vue'
+import { partClassOf } from './datePickerUi'
+import { useMotion } from '@composables/app/useMotion'
 import { useLayerIndex } from '@composables/app/useLayerStack'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import { useTeleportTarget } from '@composables/app/useTeleportTarget'
@@ -62,6 +64,19 @@ function useCalendarBindings(props: DatePickerPanelProps, isSingleMonth: () => b
 	}
 }
 
+function useMonthMotion(currentBaseDate: Ref<Date>, panelRef: Ref<HTMLElement | null>) {
+	const direction = ref<'next' | 'prev'>('next')
+	watch(currentBaseDate, (next, prev) => {
+		direction.value = next.getTime() < prev.getTime() ? 'prev' : 'next'
+	})
+	const { isReduced } = useMotion(panelRef)
+	return {
+		monthTransition: computed(() => `date-picker-month-${direction.value}`),
+		monthMode: computed(() => (isReduced.value ? 'default' : 'out-in')),
+		isMotionReduced: isReduced,
+	}
+}
+
 function createRelays(emit: DatePickerPanelEmits) {
 	return {
 		handleModelUpdate: (value: Date | null): void => emit('model-update', value),
@@ -80,6 +95,8 @@ export function useDatePickerPanel(props: DatePickerPanelProps, emit: DatePicker
 	const navigation = useNavigation(props, resolvedProps)
 
 	return {
+		ui: partClassOf(props),
+		...useMonthMotion(navigation.currentBaseDate, panelRef),
 		teleportTarget,
 		resolvedProps,
 		layerStyle,

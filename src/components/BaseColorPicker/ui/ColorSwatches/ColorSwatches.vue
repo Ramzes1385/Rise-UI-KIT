@@ -1,13 +1,12 @@
 <template>
-	<div class="base-color-picker__swatches" role="group" :aria-label="label ?? ariaLabel">
-		<span v-if="label" class="base-color-picker__swatches-label" aria-hidden="true">{{ label }}</span>
-		<div class="base-color-picker__presets">
+	<div :class="ui('swatches')" role="group" :aria-label="label ?? ariaLabel">
+		<span v-if="label" :class="ui('swatches-label')" aria-hidden="true">{{ label }}</span>
+		<div :class="ui('presets')">
 			<button
 				v-for="color in colors"
 				:key="color"
 				type="button"
-				class="base-color-picker__preset"
-				:class="[{ 'base-color-picker__preset--selected': isSelected(color) }, swatchClass]"
+				:class="[ui('preset'), { 'base-color-picker__preset--selected': isSelected(color) }, swatchClass]"
 				:style="{ backgroundColor: color, '--picker-swatch-color': color }"
 				:aria-label="`${UI_COLOR_PICKER.PRESET} ${color}`"
 				:aria-pressed="isSelected(color) ? 'true' : 'false'"

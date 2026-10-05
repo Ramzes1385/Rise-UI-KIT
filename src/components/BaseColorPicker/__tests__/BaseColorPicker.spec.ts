@@ -222,7 +222,9 @@ describe('BaseColorPicker — unit', () => {
 			await fireEvent.keyDown(area, { key: 'Enter' })
 			const updates = emitted()['update:modelValue'] as string[][]
 			expect(updates).toHaveLength(4)
-			expect(area.querySelector('.base-color-picker__marker')).toHaveStyle({ left: '9%', top: '59%' })
+			const marker = area.querySelector<HTMLElement>('.base-color-picker__marker')!
+			expect(marker.style.getPropertyValue('--picker-marker-x')).toBe('9')
+			expect(marker.style.getPropertyValue('--picker-marker-y')).toBe('59')
 		})
 
 		it('выбранный пресет отмечен aria-pressed и классом, класс пресета из customClass', async () => {

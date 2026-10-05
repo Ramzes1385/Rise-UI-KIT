@@ -1,10 +1,11 @@
+import type { Ref } from 'vue'
 import { onBeforeUnmount, ref } from 'vue'
 import type { UseColorPickerReturn } from '@composables/form/useColorPicker'
 
 const AREA_STEP = 0.01
 const AREA_STEP_LARGE = 0.1
 
-export function useColorPickerArea(picker: UseColorPickerReturn) {
+export function useColorPickerArea(picker: UseColorPickerReturn, isDragging: Ref<boolean>) {
 	const areaRef = ref<HTMLElement | null>(null)
 	let stopAreaDrag: (() => void) | null = null
 
@@ -20,16 +21,20 @@ export function useColorPickerArea(picker: UseColorPickerReturn) {
 	return {
 		areaRef,
 		handleAreaPointerDown(event: PointerEvent): void {
+			isDragging.value = true
 			applyAreaPoint(event.clientX, event.clientY)
 			const handlePointerMove = (moveEvent: PointerEvent): void => applyAreaPoint(moveEvent.clientX, moveEvent.clientY)
 			const handlePointerUp = (): void => stopAreaDrag?.()
 			stopAreaDrag = (): void => {
 				window.removeEventListener('pointermove', handlePointerMove)
 				window.removeEventListener('pointerup', handlePointerUp)
+				window.removeEventListener('pointercancel', handlePointerUp)
+				isDragging.value = false
 				stopAreaDrag = null
 			}
 			window.addEventListener('pointermove', handlePointerMove)
 			window.addEventListener('pointerup', handlePointerUp)
+			window.addEventListener('pointercancel', handlePointerUp)
 		},
 		handleAreaKeydown(event: KeyboardEvent): void {
 			const step = event.shiftKey ? AREA_STEP_LARGE : AREA_STEP

@@ -20,6 +20,7 @@ const template = `
 `
 
 export const Theming: StoryObj<typeof meta> = {
+	name: 'Токены',
 	args: { options: GENRES, isMultiple: true, placeholder: 'Выберите жанры' },
 	parameters: {
 		controls: { include: ['variant', 'sizeScale', 'isDisabled', 'error'] },

@@ -1,7 +1,9 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { FieldInputAttrs } from '@composables/form/useFormContext'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import type { InputVariant } from '@components/BaseInput/types/BaseInput.types'
+import type { BaseAutocompletePart } from '@components/BaseAutocomplete/types/BaseAutocomplete.types'
 
 /** Варианты оформления — как у BaseInput */
 export const TIME_PICKER_VARIANTS = [
@@ -13,6 +15,31 @@ export const TIME_PICKER_VARIANTS = [
 	'filled',
 	'underline',
 ] as const satisfies readonly InputVariant[]
+
+/**
+ * Части поля времени для пропа `ui` (`root` — корень). Своих БЭМ-элементов у обёртки нет: части принадлежат внутреннему
+ * BaseAutocomplete и передаются ему — dropdown, panel — панель списка, panel-content, options — список, option — пункт,
+ * option-label, match — совпадение с набранным, empty — «Ничего не найдено», status — скрытый live-регион; части поля
+ * BaseInput — label, required — звёздочка, wrapper — рамка поля, field — `<input>`, error-text.
+ */
+export const TIME_PICKER_PARTS = [
+	'dropdown',
+	'panel',
+	'panel-content',
+	'options',
+	'option',
+	'option-label',
+	'match',
+	'empty',
+	'status',
+	'label',
+	'required',
+	'wrapper',
+	'field',
+	'error-text',
+] as const satisfies readonly BaseAutocompletePart[]
+
+export type BaseTimePickerPart = (typeof TIME_PICKER_PARTS)[number]
 
 export interface BaseTimePickerProps extends BaseComponentProps<InputVariant, 'root' | 'field' | 'panel' | 'option'> {
 	/** Время `HH:MM` (v-model); `null` — не выбрано */
@@ -39,6 +66,14 @@ export interface BaseTimePickerProps extends BaseComponentProps<InputVariant, 'r
 	ariaLabel?: string
 	/** Атрибуты нативного поля (`name`, `data-*`, свой `id`) */
 	inputAttrs?: FieldInputAttrs
+	/**
+	 * Классы частей поля (`root`, `wrapper`, `field`, `option`, `panel`… — см. `TIME_PICKER_PARTS`) — добавляются к классам кита
+	 * на элементах внутренних BaseAutocomplete, BaseInput и BaseDropdown. Глобально — `defaults.BaseTimePicker.ui` плагина, классы склеиваются.
+	 *
+	 * @example
+	 * <BaseTimePicker :ui="{ wrapper: 'shadow-sm', option: 'font-mono' }" />
+	 */
+	ui?: UiProp<BaseTimePickerPart>
 }
 
 export interface BaseTimePickerEmits {

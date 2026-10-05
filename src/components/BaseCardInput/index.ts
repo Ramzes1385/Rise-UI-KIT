@@ -1,6 +1,7 @@
-export { CARD_INPUT_FIELDS, CARD_INPUT_LAYOUTS, CARD_INPUT_VARIANTS } from './types/BaseCardInput.types'
+export { CARD_INPUT_FIELDS, CARD_INPUT_LAYOUTS, CARD_INPUT_PARTS, CARD_INPUT_VARIANTS } from './types/BaseCardInput.types'
 export type {
 	BaseCardInputEmits,
+	BaseCardInputPart,
 	BaseCardInputExpose,
 	BaseCardInputProps,
 	BaseCardInputSlots,

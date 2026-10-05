@@ -1,5 +1,7 @@
+import { useUi } from '@composables/base/useUi'
 import { computed, ref, shallowRef, watch } from 'vue'
 import { useCustomClass } from '@composables/base/useCustomClass'
+import { DADATA_INPUT_PARTS } from '../types/BaseDadataInput.types'
 import { UI_DADATA, UI_REQUISITES, UI_TEXT } from '@/locales/messages'
 import type { DadataKind, DadataSuggestion } from '@utils/data/dadataUtils'
 import { useRemoteSuggestions } from '@composables/form/useRemoteSuggestions'
@@ -141,10 +143,21 @@ function useHandlers(props: BaseDadataInputProps, emit: BaseDadataInputEmits, st
 	}
 }
 
+function useWrapperUi(props: BaseDadataInputProps) {
+	const ui = useUi(props, 'base-dadata-input')
+	return {
+		ui,
+		autocompleteUi: computed(() =>
+			Object.fromEntries(DADATA_INPUT_PARTS.map(part => [part, ui(part).slice(`base-dadata-input__${part}`.length).trim()])),
+		),
+	}
+}
+
 export function useBaseDadataInput(props: BaseDadataInputProps, emit: BaseDadataInputEmits) {
 	const state = useDadataState(props, emit)
 	const kind = computed(() => props.kind ?? 'address')
 	return {
+		...useWrapperUi(props),
 		classes: useCustomClass({ getClass: () => props.customClass, elementKeys: ['root', 'field', 'panel', 'option'] }).classes,
 		fieldValue: computed(() => (state.isEditing.value ? null : state.value.value || null)),
 		isLoading: state.isLoading,

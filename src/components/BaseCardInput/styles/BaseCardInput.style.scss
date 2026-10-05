@@ -1,7 +1,7 @@
 .base-card-input {
 	display: flex;
 	flex-direction: column;
-	gap: sz(6px);
+	gap: ct(card-input, gap, sz(6px));
 	min-width: 0;
 	margin: 0;
 	padding: 0;
@@ -24,8 +24,8 @@
 		aspect-ratio: 85.6 / 53.98;
 		margin-bottom: sz(6px);
 		perspective: sz(1000px);
-		color: var(--rise-color-neutral-50);
-		font-size: sz(var(--rise-font-size-sm));
+		color: ct(card-input, face-text, var(--rise-color-neutral-50));
+		font-size: ct(card-input, face-font-size, sz(var(--rise-font-size-sm)));
 	}
 
 	&__preview-inner {
@@ -48,9 +48,9 @@
 		display: grid;
 		overflow: hidden;
 		padding: sz(16px 20px);
-		border-radius: sz(var(--rise-radius-xl));
-		background: var(--base-card-input-face-bg);
-		box-shadow: var(--rise-shadow-md);
+		border-radius: ct(card-input, face-radius, sz(var(--rise-radius-xl)));
+		background: var(--base-card-input-face-custom-bg, #{ct(card-input, face-bg, var(--base-card-input-face-bg))});
+		box-shadow: ct(card-input, face-shadow, var(--rise-shadow-md));
 		backface-visibility: hidden;
 
 		&--front {
@@ -112,7 +112,7 @@
 
 	&__face-caption {
 		font-family: var(--rise-font-sans);
-		font-size: sz(10px);
+		font-size: sz(var(--rise-font-size-2xs));
 		text-transform: uppercase;
 		opacity: 0.75;
 	}
@@ -137,7 +137,7 @@
 	&__fields {
 		display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: sz(12px);
+		gap: ct(card-input, fields-gap, sz(12px));
 	}
 
 	&__number,
@@ -187,17 +187,17 @@
 		flex-shrink: 0;
 		align-items: center;
 		margin-inline-end: sz(8px);
-		color: var(--rise-text-muted);
+		color: ct(card-input, brand-text, var(--rise-text-muted));
 	}
 
 	&__brand-icon {
 		width: auto;
-		height: sz(22px);
+		height: ct(card-input, brand-icon-size, sz(22px));
 	}
 
 	&__brand-image {
 		width: auto;
-		height: sz(22px);
+		height: ct(card-input, brand-icon-size, sz(22px));
 	}
 
 	&__brand-name {
@@ -216,4 +216,10 @@
 		color: var(--rise-error);
 		font-size: sz(var(--rise-font-size-xs));
 	}
+}
+
+@include enter-scale(base-card-input-brand);
+
+.base-card-input-brand-leave-active {
+	position: absolute;
 }

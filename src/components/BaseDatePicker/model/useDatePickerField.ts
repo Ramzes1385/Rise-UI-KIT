@@ -1,5 +1,6 @@
 import { computed, ref, watchPostEffect } from 'vue'
 import type { BaseInput } from '@components/BaseInput'
+import { inputUiOf, partClassOf } from './datePickerUi'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import { useExplicitPropDetection } from '@composables/base/useExplicitPropDetection'
 import type { DatePickerFieldEmits, DatePickerFieldProps } from '../types/DatePickerField.types'
@@ -26,6 +27,7 @@ export function useDatePickerField(props: DatePickerFieldProps, emit: DatePicker
 		elementKeys: ['root', 'input', 'clearBtn', 'clearIcon', 'iconBtn', 'calendarIcon'],
 	})
 	const inputRef = ref<InstanceType<typeof BaseInput> | null>(null)
+	const ui = partClassOf(props)
 
 	watchPostEffect(() => {
 		const input = inputRef.value?.inputRef
@@ -33,6 +35,8 @@ export function useDatePickerField(props: DatePickerFieldProps, emit: DatePicker
 	})
 
 	return {
+		ui,
+		inputUi: computed(() => inputUiOf(ui)),
 		resolvedProps,
 		classes,
 		inputRef,

@@ -1,4 +1,6 @@
+import type { UiClassFn } from '@composables/base/useUi'
 import type { InputVariant } from '@components/BaseInput'
+import type { BaseDatePickerPart } from './BaseDatePicker.types'
 import type { CustomColor } from '@composables/base/useCustomColor'
 import type { CustomClassProp } from '@composables/base/useCustomClass'
 
@@ -31,6 +33,8 @@ export interface DatePickerFieldProps {
 	sizeScale?: number
 	/** Кастомные классы */
 	customClass?: CustomClassProp
+	/** Классы частей дейтпикера: `ui` родителя (`.base-date-picker__<часть>` и классы из пропа `ui`) */
+	partClass?: UiClassFn<BaseDatePickerPart>
 }
 
 export interface DatePickerFieldEmits {

@@ -34,3 +34,5 @@ export const WeekNumbers = cases.WeekNumbers
 export const CustomIcon = cases.CustomIcon
 export const NavigationTooltips = cases.NavigationTooltips
 export const Keyboard = cases.Keyboard
+export const Theming = cases.Theming
+export const Animations = cases.Animations

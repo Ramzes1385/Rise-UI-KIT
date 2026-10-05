@@ -7,16 +7,17 @@
 				role="dialog"
 				:aria-label="UI_TEXT.SELECT_DATE"
 				class="date-picker-panel"
-				:class="[{ 'date-picker-panel--multi': safeMonthsCount > 1 }, classes.root]"
+				:class="[ui('panel'), { 'date-picker-panel--multi': safeMonthsCount > 1 }, classes.root]"
 				:style="[resolvedProps.panelStyle, layerStyle]"
 				:data-theme="resolvedProps.theme"
 				:data-rise-theme="resolvedProps.riseTheme">
-				<div class="date-picker-panel__header">
-					<div class="date-picker-panel__nav-group">
+				<div class="date-picker-panel__header" :class="ui('header')">
+					<div class="date-picker-panel__nav-group" :class="ui('nav-group')">
 						<BaseTooltip :text="UI_ARIA.PREV_YEAR" :size-scale="resolvedProps.sizeScale">
 							<BaseButton
 								variant="ghost"
 								class="date-picker-panel__nav-btn date-picker-panel__nav-btn--double"
+								:class="ui('nav-btn')"
 								:aria-label="UI_ARIA.PREV_YEAR"
 								:size-scale="resolvedProps.sizeScale"
 								@click="handlePrevYear">
@@ -28,6 +29,7 @@
 							<BaseButton
 								variant="ghost"
 								class="date-picker-panel__nav-btn"
+								:class="ui('nav-btn')"
 								:aria-label="UI_ARIA.PREV_MONTH"
 								:size-scale="resolvedProps.sizeScale"
 								@click="handlePrevRange">
@@ -36,13 +38,14 @@
 						</BaseTooltip>
 					</div>
 
-					<span class="date-picker-panel__year-title">{{ displayYear }}</span>
+					<span class="date-picker-panel__year-title" :class="ui('year-title')">{{ displayYear }}</span>
 
-					<div class="date-picker-panel__nav-group date-picker-panel__nav-group--next">
+					<div class="date-picker-panel__nav-group date-picker-panel__nav-group--next" :class="ui('nav-group')">
 						<BaseTooltip :text="UI_ARIA.NEXT_MONTH" :size-scale="resolvedProps.sizeScale">
 							<BaseButton
 								variant="ghost"
 								class="date-picker-panel__nav-btn"
+								:class="ui('nav-btn')"
 								:aria-label="UI_ARIA.NEXT_MONTH"
 								:size-scale="resolvedProps.sizeScale"
 								@click="handleNextRange">
@@ -53,6 +56,7 @@
 							<BaseButton
 								variant="ghost"
 								class="date-picker-panel__nav-btn date-picker-panel__nav-btn--double"
+								:class="ui('nav-btn')"
 								:aria-label="UI_ARIA.NEXT_YEAR"
 								:size-scale="resolvedProps.sizeScale"
 								@click="handleNextYear">
@@ -63,52 +67,56 @@
 					</div>
 				</div>
 
-				<div class="date-picker-panel__months">
-					<DatePickerRangePanel
-						v-if="resolvedProps.selectionMode === 'range'"
-						:model-value="modelValue"
-						:model-value-end="modelValueEnd"
-						:selected-dates="selectedDates"
-						:calendar-variant="resolvedProps.calendarVariant"
-						:calendar-config="resolvedCalendarConfig"
-						:size-scale="resolvedProps.sizeScale"
-						:month-items="monthItems"
-						@model-update="handleModelUpdate"
-						@model-end-update="handleModelEndUpdate"
-						@selected-update="handleSelectedUpdate"
-						@range-select="handleRangeSelect"
-						@month-change="handleMonthChange"
-						@year-change="handleYearChange" />
-
-					<template v-else>
-						<BaseCalendar
-							v-for="(item, index) in monthItems"
-							:key="item.key"
-							class="date-picker-panel__calendar"
-							v-bind="index === 0 ? calendarBindings : secondaryCalendarBindings"
+				<Transition :name="monthTransition" :mode="monthMode" :css="!isMotionReduced">
+					<div :key="monthItems[0].key" class="date-picker-panel__months" :class="ui('months')">
+						<DatePickerRangePanel
+							v-if="resolvedProps.selectionMode === 'range'"
 							:model-value="modelValue"
 							:model-value-end="modelValueEnd"
 							:selected-dates="selectedDates"
-							:selection-mode="resolvedProps.selectionMode"
-							:variant="resolvedProps.calendarVariant"
+							:calendar-variant="resolvedProps.calendarVariant"
+							:calendar-config="resolvedCalendarConfig"
 							:size-scale="resolvedProps.sizeScale"
-							:initial-month="item.month"
-							:initial-year="item.year"
-							@update:model-value="handleModelUpdate"
-							@update:model-value-end="handleModelEndUpdate"
-							@update:selected-dates="handleSelectedUpdate"
+							:month-items="monthItems"
+							:part-class="partClass"
+							@model-update="handleModelUpdate"
+							@model-end-update="handleModelEndUpdate"
+							@selected-update="handleSelectedUpdate"
 							@range-select="handleRangeSelect"
-							@month-change="m => handleMonthChange(m, index)"
-							@year-change="y => handleYearChange(y, index)" />
-					</template>
-				</div>
+							@month-change="handleMonthChange"
+							@year-change="handleYearChange" />
+
+						<template v-else>
+							<BaseCalendar
+								v-for="(item, index) in monthItems"
+								:key="item.key"
+								class="date-picker-panel__calendar"
+								:class="ui('calendar')"
+								v-bind="index === 0 ? calendarBindings : secondaryCalendarBindings"
+								:model-value="modelValue"
+								:model-value-end="modelValueEnd"
+								:selected-dates="selectedDates"
+								:selection-mode="resolvedProps.selectionMode"
+								:variant="resolvedProps.calendarVariant"
+								:size-scale="resolvedProps.sizeScale"
+								:initial-month="item.month"
+								:initial-year="item.year"
+								@update:model-value="handleModelUpdate"
+								@update:model-value-end="handleModelEndUpdate"
+								@update:selected-dates="handleSelectedUpdate"
+								@range-select="handleRangeSelect"
+								@month-change="m => handleMonthChange(m, index)"
+								@year-change="y => handleYearChange(y, index)" />
+						</template>
+					</div>
+				</Transition>
 			</div>
 		</Transition>
 	</Teleport>
 </template>
 
 <script setup lang="ts">
-import './DatePickerPanel.style.scss'
+import '../../styles/DatePickerPanel.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
 import { UI_ARIA, UI_TEXT } from '@/locales/messages'
@@ -124,6 +132,10 @@ const props = defineProps<DatePickerPanelProps>()
 const emit = defineEmits<DatePickerPanelEmits>()
 
 const {
+	ui,
+	monthTransition,
+	monthMode,
+	isMotionReduced,
 	teleportTarget,
 	resolvedProps,
 	layerStyle,

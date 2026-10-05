@@ -1,5 +1,5 @@
 <template>
-	<div ref="wrapperRef" class="base-date-picker" :class="classes.root" :style="[sizeScaleStyle, customColorStyle]">
+	<div ref="wrapperRef" :class="[ui('root'), classes.root]" :style="[sizeScaleStyle, customColorStyle]">
 		<DatePickerField
 			:display-value="displayValue"
 			:placeholder="resolvedProps.placeholder"
@@ -15,6 +15,8 @@
 			:color="color"
 			:size-scale="resolvedProps.sizeScale"
 			:custom-class="classes.field"
+			:class="ui('field')"
+			:part-class="ui"
 			@field-click="handleFieldClick"
 			@keyboard-open="handleKeyboardOpen"
 			@clear-click="handleClear"
@@ -39,6 +41,7 @@
 			:theme="currentTheme"
 			:rise-theme="currentRiseTheme"
 			:custom-class="classes.panel"
+			:part-class="ui"
 			@model-update="handleModelUpdate"
 			@model-end-update="handleModelEndUpdate"
 			@selected-update="handleSelectedDatesUpdate"
@@ -59,6 +62,7 @@ const emit = defineEmits<BaseDatePickerEmits>()
 defineSlots<BaseDatePickerSlots>()
 
 const {
+	ui,
 	resolvedProps,
 	formField,
 	sizeScaleStyle,

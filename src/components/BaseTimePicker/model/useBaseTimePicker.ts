@@ -1,4 +1,6 @@
 import { computed, ref } from 'vue'
+import { useUi } from '@composables/base/useUi'
+import { TIME_PICKER_PARTS } from '../types/BaseTimePicker.types'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import type { TimePickerProps } from '../types/BaseTimePicker.types'
 import type { AutocompleteOption, BaseAutocomplete } from '@components/BaseAutocomplete'
@@ -14,10 +16,21 @@ function normalizeTime(props: TimePickerProps, text: string): string | null {
 	return time
 }
 
+function useWrapperUi(props: TimePickerProps) {
+	const ui = useUi(props, 'base-time-picker')
+	return {
+		ui,
+		autocompleteUi: computed(() =>
+			Object.fromEntries(TIME_PICKER_PARTS.map(part => [part, ui(part).slice(`base-time-picker__${part}`.length).trim()])),
+		),
+	}
+}
+
 export function useBaseTimePicker(props: TimePickerProps) {
 	const autocompleteRef = ref<InstanceType<typeof BaseAutocomplete> | null>(null)
 
 	return {
+		...useWrapperUi(props),
 		...useCustomClass({ getClass: () => props.customClass, elementKeys: ['root', 'field', 'panel', 'option'] }),
 		autocompleteRef,
 		options: computed((): AutocompleteOption[] =>

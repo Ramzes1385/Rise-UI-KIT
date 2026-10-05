@@ -1,5 +1,7 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import type { InputVariant } from '@components/BaseInput/types/BaseInput.types'
+import { AUTOCOMPLETE_PARTS } from '@components/BaseAutocomplete/types/BaseAutocomplete.types'
 
 /** Варианты оформления — как у BaseInput и BaseAutocomplete */
 export const ADDRESS_INPUT_VARIANTS = [
@@ -34,6 +36,16 @@ export interface DadataAddressOptions {
 }
 
 /**
+ * Части поля адреса для пропа `ui` (`root` — корень). Своих БЭМ-элементов у обёртки нет: части принадлежат внутреннему
+ * BaseAutocomplete и передаются ему — те же, что `AUTOCOMPLETE_PARTS`: список подсказок (dropdown, panel, panel-content,
+ * options, option, option-label, match, option-description, empty, status) и части поля BaseInput (label, required, wrapper,
+ * field, error-text).
+ */
+export const ADDRESS_INPUT_PARTS = [...AUTOCOMPLETE_PARTS] as const
+
+export type BaseAddressInputPart = (typeof ADDRESS_INPUT_PARTS)[number]
+
+/**
  * Пропсы компонента BaseAddressInput
  */
 export interface BaseAddressInputProps extends BaseComponentProps<InputVariant, 'root' | 'field' | 'panel' | 'option'> {
@@ -55,6 +67,14 @@ export interface BaseAddressInputProps extends BaseComponentProps<InputVariant, 
 	isRequired?: boolean
 	/** Отключает поле */
 	isDisabled?: boolean
+	/**
+	 * Классы частей (`root`, `option`, `empty`, `panel`, `wrapper`, `field`… — см. `ADDRESS_INPUT_PARTS`) — добавляются к классам кита.
+	 * Передаются частям внутреннего BaseAutocomplete (его проп `ui`). Глобально — `defaults.BaseAddressInput.ui` плагина, классы склеиваются.
+	 *
+	 * @example
+	 * <BaseAddressInput :ui="{ option: 'py-2', wrapper: 'shadow-sm' }" :source="source" />
+	 */
+	ui?: UiProp<BaseAddressInputPart>
 }
 
 /**

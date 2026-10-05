@@ -29,3 +29,5 @@ export const Formats = cases.Formats
 export const Resettable = cases.Resettable
 export const Keyboard = cases.Keyboard
 export const AriaLabel = cases.AriaLabel
+export const Theming = cases.Theming
+export const Animations = cases.Animations

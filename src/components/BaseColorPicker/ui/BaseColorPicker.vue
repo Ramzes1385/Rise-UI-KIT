@@ -4,15 +4,18 @@
 		:position="position"
 		max-height="calc(100vh - 16px)"
 		:size-scale="sizeScale"
-		:custom-class="{ root: classes.root }"
-		class="base-color-picker">
+		:custom-class="{ root: classes.root, panel: ui('popover') }"
+		:class="ui('root')">
 		<template #trigger>
 			<button
 				v-bind="triggerAttrs"
 				ref="swatchRef"
 				type="button"
-				class="base-color-picker__swatch"
-				:class="[{ 'base-color-picker__swatch--translucent': !hasTransparentSwatch && alphaPercent < 100 }, classes.swatch]"
+				:class="[
+					ui('swatch'),
+					{ 'base-color-picker__swatch--translucent': !hasTransparentSwatch && alphaPercent < 100 },
+					classes.swatch,
+				]"
 				:style="hasTransparentSwatch ? undefined : { backgroundColor: swatchColor, '--picker-swatch-color': swatchColor }"
 				:disabled="isDisabled"
 				:aria-expanded="isOpen ? 'true' : 'false'">
@@ -20,10 +23,12 @@
 			</button>
 		</template>
 
-		<div class="base-color-picker__panel" :class="classes.panel">
+		<div
+			:class="[ui('panel'), { 'base-color-picker__panel--instant': isMotionInstant }, classes.panel]"
+			:data-rise-motion="motionScope">
 			<div
 				ref="areaRef"
-				class="base-color-picker__area"
+				:class="ui('area')"
 				:style="{ backgroundColor: picker.hueColor.value }"
 				role="slider"
 				tabindex="0"
@@ -34,93 +39,100 @@
 				:aria-valuetext="picker.hex.value"
 				@pointerdown="handleAreaPointerDown"
 				@keydown="handleAreaKeydown">
-				<span class="base-color-picker__marker" :style="[picker.markerStyle.value, { backgroundColor: picker.hex.value }]" />
+				<span :class="ui('marker')" :style="markerStyle" />
 			</div>
 
-			<div class="base-color-picker__controls">
+			<div :class="ui('controls')">
 				<BaseTooltip
 					v-if="isEyeDropperSupported && !isEyeDropperHidden"
 					:text="UI_COLOR_PICKER.EYE_DROPPER"
 					:size-scale="sizeScale">
 					<BaseButton
 						variant="outline"
-						class="base-color-picker__eyedropper"
+						:class="ui('eyedropper')"
 						:aria-label="UI_COLOR_PICKER.EYE_DROPPER"
 						:size-scale="sizeScale"
 						@click="pickFromScreen">
 						<BaseIcon name="eyedropper" :size-scale="sizeScale" aria-label="" />
 					</BaseButton>
 				</BaseTooltip>
-				<span class="base-color-picker__preview" :style="{ '--picker-swatch-color': swatchColor }" aria-hidden="true" />
-				<div class="base-color-picker__sliders">
-					<input
-						class="base-color-picker__hue"
-						type="range"
-						min="0"
-						max="360"
-						:aria-label="UI_COLOR_PICKER.HUE"
-						:value="picker.hsv.value.h"
-						@input="handleHueInput" />
-					<input
-						v-if="hasAlpha"
-						class="base-color-picker__alpha"
-						type="range"
-						min="0"
-						max="100"
-						:aria-label="UI_COLOR_PICKER.ALPHA"
-						:aria-valuetext="`${alphaPercent}%`"
-						:value="alphaPercent"
-						:style="{ '--picker-alpha-color': picker.hex.value }"
-						@input="handleAlphaInput" />
+				<span :class="ui('preview')" :style="{ '--picker-swatch-color': swatchColor }" aria-hidden="true" />
+				<div :class="ui('sliders')">
+					<div :class="ui('track')" :style="hueThumbStyle">
+						<input
+							:class="ui('hue')"
+							type="range"
+							min="0"
+							max="360"
+							:aria-label="UI_COLOR_PICKER.HUE"
+							:value="picker.hsv.value.h"
+							@pointerdown="handleSliderPointerDown"
+							@input="handleHueInput" />
+						<span :class="ui('thumb')" aria-hidden="true" />
+					</div>
+					<div v-if="hasAlpha" :class="ui('track')" :style="alphaThumbStyle">
+						<input
+							:class="ui('alpha')"
+							type="range"
+							min="0"
+							max="100"
+							:aria-label="UI_COLOR_PICKER.ALPHA"
+							:aria-valuetext="`${alphaPercent}%`"
+							:value="alphaPercent"
+							:style="{ '--picker-alpha-color': picker.hex.value }"
+							@pointerdown="handleSliderPointerDown"
+							@input="handleAlphaInput" />
+						<span :class="ui('thumb')" aria-hidden="true" />
+					</div>
 				</div>
 			</div>
 
-			<div v-if="!isHexHidden" class="base-color-picker__fields" :class="classes.fields">
-				<div v-if="formats.length > 1" class="base-color-picker__formats" role="group" :aria-label="UI_COLOR_PICKER.FORMAT">
+			<div v-if="!isHexHidden" :class="[ui('fields'), classes.fields]">
+				<div v-if="formats.length > 1" :class="ui('formats')" role="group" :aria-label="UI_COLOR_PICKER.FORMAT">
 					<button
 						v-for="item in formats"
 						:key="item"
 						type="button"
-						class="base-color-picker__format"
-						:class="{ 'base-color-picker__format--active': item === inputFormat }"
+						:class="[ui('format'), { 'base-color-picker__format--active': item === inputFormat }]"
 						:aria-pressed="item === inputFormat ? 'true' : 'false'"
 						@click="setInputFormat(item)">
 						{{ formatLabel(item) }}
 					</button>
 				</div>
-				<div class="base-color-picker__inputs">
-					<label v-if="inputFormat === 'hex'" class="base-color-picker__channel base-color-picker__channel--hex">
+				<div :class="ui('inputs')">
+					<label v-if="inputFormat === 'hex'" :class="[ui('channel'), 'base-color-picker__channel--hex']">
 						<input
-							class="base-color-picker__hex"
+							:class="ui('hex')"
 							type="text"
 							spellcheck="false"
 							autocomplete="off"
 							:aria-label="UI_COLOR_PICKER.HEX_VALUE"
 							:value="hexText"
 							@change="handleHexChange" />
-						<span class="base-color-picker__channel-caption" aria-hidden="true">{{ UI_COLOR_PICKER.FORMAT_HEX }}</span>
+						<span :class="ui('channel-caption')" aria-hidden="true">{{ UI_COLOR_PICKER.FORMAT_HEX }}</span>
 					</label>
-					<label v-for="channel in channels" :key="channel.key" class="base-color-picker__channel">
+					<label v-for="channel in channels" :key="channel.key" :class="ui('channel')">
 						<input
-							class="base-color-picker__channel-input"
+							:class="ui('channel-input')"
 							type="number"
 							min="0"
 							:max="channel.max"
 							:aria-label="channel.label"
 							:value="channel.value"
 							@change="handleChannelChange(channel, $event)" />
-						<span class="base-color-picker__channel-caption" aria-hidden="true">{{ channel.short }}</span>
+						<span :class="ui('channel-caption')" aria-hidden="true">{{ channel.short }}</span>
 					</label>
 				</div>
 			</div>
 
-			<div v-if="hasSwatches" class="base-color-picker__library">
+			<div v-if="hasSwatches" :class="ui('library')">
 				<ColorSwatches
 					v-if="!isPresetsHidden"
 					:aria-label="UI_COLOR_PICKER.PRESETS"
 					:colors="presets"
 					:is-selected="isSwatchSelected"
 					:swatch-class="classes.preset"
+					:ui="ui"
 					@select="handleSwatchSelect" />
 				<ColorSwatches
 					v-for="palette in palettes"
@@ -129,6 +141,7 @@
 					:colors="palette.colors"
 					:is-selected="isSwatchSelected"
 					:swatch-class="classes.preset"
+					:ui="ui"
 					@select="handleSwatchSelect" />
 				<ColorSwatches
 					v-if="recentColors.length > 0"
@@ -136,13 +149,14 @@
 					:colors="recentColors"
 					:is-selected="isSwatchSelected"
 					:swatch-class="classes.preset"
+					:ui="ui"
 					@select="handleSwatchSelect" />
 			</div>
 
 			<BaseButton
 				v-if="isResettable"
 				variant="outline"
-				class="base-color-picker__reset"
+				:class="ui('reset')"
 				:custom-class="classes.reset"
 				:size-scale="sizeScale"
 				@click="handleReset">
@@ -191,6 +205,7 @@ const emit = defineEmits<BaseColorPickerEmits>()
 defineSlots<BaseColorPickerSlots>()
 
 const {
+	ui,
 	classes,
 	swatchRef,
 	isOpen,
@@ -199,6 +214,12 @@ const {
 	areaRef,
 	handleAreaPointerDown,
 	handleAreaKeydown,
+	isMotionInstant,
+	motionScope,
+	markerStyle,
+	hueThumbStyle,
+	alphaThumbStyle,
+	handleSliderPointerDown,
 	inputFormat,
 	channels,
 	hexText,

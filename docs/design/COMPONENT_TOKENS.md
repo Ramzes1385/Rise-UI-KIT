@@ -189,6 +189,52 @@
 | `--rise-image-zoom-thumb-ring-selected` | zoom-thumb | ring | selected | `var(--rise-primary)` |
 | `--rise-image-zoom-toolbar-bg` | zoom-toolbar | bg | — | `var(--rise-media-surface)` |
 | `--rise-image-zoom-toolbar-radius` | zoom-toolbar | radius | — | `var(--rise-radius-full)` |
+## BaseCardInput
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-card-input-brand-icon-size` | brand | icon-size | — | `sz(22px)` |
+| `--rise-card-input-brand-text` | brand | text | — | `var(--rise-text-muted)` |
+| `--rise-card-input-face-bg` | face | bg | — | `var(--base-card-input-face-bg)` |
+| `--rise-card-input-face-font-size` | face | font-size | — | `sz(var(--rise-font-size-sm))` |
+| `--rise-card-input-face-radius` | face | radius | — | `sz(var(--rise-radius-xl))` |
+| `--rise-card-input-face-shadow` | face | shadow | — | `var(--rise-shadow-md)` |
+| `--rise-card-input-face-text` | face | text | — | `var(--rise-color-neutral-50)` |
+| `--rise-card-input-fields-gap` | fields | gap | — | `sz(12px)` |
+| `--rise-card-input-gap` | корень | gap | — | `sz(6px)` |
+
+## BaseColorPicker
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-color-picker-bg` | корень | bg | — | `var(--rise-input-bg, var(--rise-bg))` |
+| `--rise-color-picker-border` | корень | border | — | `var(--rise-input-border, var(--rise-border-accented))` |
+| `--rise-color-picker-border-focus` | корень | border | focus | `var(--rise-input-border-focus, var(--rise-primary))` |
+| `--rise-color-picker-panel-bg` | panel | bg | — | `var(--custom-bg, var(--rise-bg))` |
+| `--rise-color-picker-panel-padding` | panel | padding | — | `space(12px 16px)` |
+| `--rise-color-picker-panel-radius` | panel | radius | — | `var(--rise-radius-md)` |
+| `--rise-color-picker-panel-shadow` | panel | shadow | — | `var(--rise-shadow-lg)` |
+| `--rise-color-picker-preset-radius` | preset | radius | — | `var(--rise-radius-full)` |
+| `--rise-color-picker-preset-ring-selected` | preset | ring | selected | `var(--rise-primary)` |
+| `--rise-color-picker-radius` | корень | radius | — | `var(--rise-input-radius, var(--rise-control-radius))` |
+| `--rise-color-picker-thumb-border` | thumb | border | — | `var(--picker-white)` |
+| `--rise-color-picker-thumb-shadow` | thumb | shadow | — | `var(--picker-thumb-shadow)` |
+
+## BaseDatePicker
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-date-picker-icon-text` | icon | text | — | `var(--rise-text-muted)` |
+| `--rise-date-picker-icon-text-hover` | icon | text | hover | `var(--rise-text-highlighted)` |
+| `--rise-date-picker-panel-bg` | panel | bg | — | `var(--rise-bg)` |
+| `--rise-date-picker-panel-border` | panel | border | — | `var(--rise-border)` |
+| `--rise-date-picker-panel-gap` | panel | gap | — | `4px` |
+| `--rise-date-picker-panel-padding` | panel | padding | — | `4px` |
+| `--rise-date-picker-panel-radius` | panel | radius | — | `var(--rise-radius-md)` |
+| `--rise-date-picker-panel-shadow` | panel | shadow | — | `var(--rise-shadow-lg)` |
+| `--rise-date-picker-panel-text` | panel | text | — | `var(--rise-text)` |
+| `--rise-date-picker-title-font-weight` | title | font-weight | — | `var(--rise-font-weight-semibold)` |
+| `--rise-date-picker-title-text` | title | text | — | `var(--rise-text-highlighted)` |
 
 ## BaseInput
 

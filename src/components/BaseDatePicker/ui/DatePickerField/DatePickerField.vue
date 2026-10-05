@@ -12,15 +12,16 @@
 			:color="color"
 			:size-scale="resolvedProps.sizeScale"
 			:custom-class="classes.input"
+			:ui="inputUi"
 			@click="handleFieldClick"
 			@keydown="handleFieldKeydown">
 			<template #suffix>
-				<div class="date-picker-field__suffix">
+				<div class="date-picker-field__suffix" :class="ui('suffix')">
 					<BaseButton
 						v-if="resolvedProps.isClearable && resolvedProps.hasValue"
 						variant="ghost"
 						class="date-picker-field__clear-btn"
-						:class="classes.clearBtn"
+						:class="[ui('clear-btn'), classes.clearBtn]"
 						:aria-label="UI_ARIA.CLEAR_VALUE"
 						:size-scale="resolvedProps.sizeScale"
 						:is-disabled="resolvedProps.isDisabled"
@@ -35,7 +36,7 @@
 						<BaseButton
 							variant="ghost"
 							class="date-picker-field__icon-btn"
-							:class="classes.iconBtn"
+							:class="[ui('icon-btn'), classes.iconBtn]"
 							:aria-label="UI_ARIA.OPEN_CALENDAR"
 							aria-haspopup="dialog"
 							:aria-expanded="resolvedProps.isOpen ? 'true' : 'false'"
@@ -56,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-import './DatePickerField.style.scss'
+import '../../styles/DatePickerField.style.scss'
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
@@ -70,8 +71,6 @@ const props = defineProps<DatePickerFieldProps>()
 const emit = defineEmits<DatePickerFieldEmits>()
 defineSlots<DatePickerFieldSlots>()
 
-const { resolvedProps, classes, inputRef, handleFieldClick, handleClearClick, handleIconClick, handleFieldKeydown } = useDatePickerField(
-	props,
-	emit,
-)
+const { ui, inputUi, resolvedProps, classes, inputRef, handleFieldClick, handleClearClick, handleIconClick, handleFieldKeydown } =
+	useDatePickerField(props, emit)
 </script>

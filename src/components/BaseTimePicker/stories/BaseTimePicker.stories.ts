@@ -23,3 +23,5 @@ export const Disabled = cases.Disabled
 export const WithError = cases.WithError
 export const TypedTime = cases.TypedTime
 export const Keyboard = cases.Keyboard
+export const Theming = cases.Theming
+export const Animations = cases.Animations

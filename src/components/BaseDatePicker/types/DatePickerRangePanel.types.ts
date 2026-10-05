@@ -1,4 +1,6 @@
+import type { UiClassFn } from '@composables/base/useUi'
 import type { CalendarVariant } from '@components/BaseCalendar'
+import type { BaseDatePickerPart } from './BaseDatePicker.types'
 import type { BaseDatePickerCalendarConfig } from './BaseDatePickerCalendar.types'
 
 interface DatePickerRangePanelMonthItem {
@@ -15,6 +17,8 @@ export interface DatePickerRangePanelProps {
 	calendarConfig: BaseDatePickerCalendarConfig
 	sizeScale: number
 	monthItems: DatePickerRangePanelMonthItem[]
+	/** Классы частей дейтпикера: `ui` родителя (`.base-date-picker__<часть>` и классы из пропа `ui`) */
+	partClass?: UiClassFn<BaseDatePickerPart>
 }
 
 export interface DatePickerRangePanelEmits {

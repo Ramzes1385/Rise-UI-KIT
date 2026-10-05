@@ -1,7 +1,7 @@
 <template>
 	<BaseAutocomplete
 		ref="autocompleteRef"
-		class="base-time-picker"
+		:class="ui('root')"
 		:model-value="modelValue"
 		:options="options"
 		:filter="filterTime"
@@ -19,6 +19,7 @@
 		:size-scale="sizeScale"
 		:color="color"
 		:custom-class="{ root: classes.root, field: classes.field, panel: classes.panel, option: classes.option }"
+		:ui="autocompleteUi"
 		@update:model-value="emit('update:modelValue', toTime($event))"
 		@change="emit('change', toTime($event))"
 		@blur="emit('blur', $event)"
@@ -48,7 +49,7 @@ const props = withDefaults(
 
 const emit = defineEmits<BaseTimePickerEmits>()
 
-const { classes, autocompleteRef, options, filterTime, normalizeTime, toTime, exposed } = useBaseTimePicker(props)
+const { ui, autocompleteUi, classes, autocompleteRef, options, filterTime, normalizeTime, toTime, exposed } = useBaseTimePicker(props)
 
 defineExpose(exposed)
 </script>

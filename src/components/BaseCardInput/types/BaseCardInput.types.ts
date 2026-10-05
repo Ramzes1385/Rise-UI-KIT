@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import type { InputVariant } from '@components/BaseInput/types/BaseInput.types'
 import type { CardBrand, CardBrandOptions, CardBrandRef, CardExpiry } from '@utils/form/cardUtils'
@@ -24,6 +25,42 @@ export const CARD_INPUT_FIELDS = ['number', 'expiry', 'code', 'holder'] as const
 
 /** Поле карты */
 export type CardInputField = (typeof CARD_INPUT_FIELDS)[number]
+
+/**
+ * Части поля карты для пропа `ui` (БЭМ-элементы `.base-card-input__<часть>`, `root` — `<fieldset>`): legend — подпись группы,
+ * preview — карта-превью, preview-inner — поворачиваемая часть, face — сторона карты (лицевая и оборот), chip, face-brand —
+ * марка на лицевой стороне, face-number, face-holder, face-expiry, face-caption — подпись «Срок», stripe — магнитная полоса,
+ * face-code — код на обороте, fields — сетка полей, number, expiry, code, holder — поля (корни BaseInput), brand — марка
+ * в поле номера, brand-image, brand-icon, brand-name — её картинка, значок или название, live — скрытый live-регион марки,
+ * error — общая ошибка под полями.
+ */
+export const CARD_INPUT_PARTS = [
+	'legend',
+	'preview',
+	'preview-inner',
+	'face',
+	'chip',
+	'face-brand',
+	'face-number',
+	'face-holder',
+	'face-expiry',
+	'face-caption',
+	'stripe',
+	'face-code',
+	'fields',
+	'number',
+	'expiry',
+	'code',
+	'holder',
+	'brand',
+	'brand-image',
+	'brand-icon',
+	'brand-name',
+	'live',
+	'error',
+] as const
+
+export type BaseCardInputPart = (typeof CARD_INPUT_PARTS)[number]
 
 /**
  * Значение `v-model` — сводка без номера и кода: её можно хранить в состоянии формы и проверять схемой BaseForm.
@@ -100,6 +137,14 @@ export interface BaseCardInputProps extends BaseComponentProps<
 	isRequired?: boolean
 	/** Отключает поля */
 	isDisabled?: boolean
+	/**
+	 * Классы частей (`root`, `preview`, `face`, `fields`, `number`, `brand`… — см. `CARD_INPUT_PARTS`) — добавляются к классам кита.
+	 * `number`, `expiry`, `code`, `holder` — корни полей BaseInput. Глобально — `defaults.BaseCardInput.ui` плагина, классы склеиваются.
+	 *
+	 * @example
+	 * <BaseCardInput :ui="{ face: 'shadow-lg', fields: 'gap-4', brand: 'opacity-80' }" />
+	 */
+	ui?: UiProp<BaseCardInputPart>
 }
 
 /**

@@ -1,3 +1,5 @@
+import type { UiClassFn } from '@composables/base/useUi'
+import type { BaseDatePickerPart } from './BaseDatePicker.types'
 import type { CustomClassProp } from '@composables/base/useCustomClass'
 import type { CalendarSelectionMode, CalendarVariant } from '@components/BaseCalendar'
 import type { BaseDatePickerCalendarConfig, BaseDatePickerCalendarProps } from './BaseDatePickerCalendar.types'
@@ -29,6 +31,8 @@ export interface DatePickerPanelProps extends BaseDatePickerCalendarProps {
 	customClass?: CustomClassProp
 	/** Общая конфигурация календаря */
 	calendarConfig?: BaseDatePickerCalendarConfig
+	/** Классы частей дейтпикера: `ui` родителя (`.base-date-picker__<часть>` и классы из пропа `ui`) */
+	partClass?: UiClassFn<BaseDatePickerPart>
 }
 
 export interface DatePickerPanelEmits {

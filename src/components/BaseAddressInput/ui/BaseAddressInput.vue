@@ -1,7 +1,6 @@
 <template>
 	<BaseAutocomplete
-		class="base-address-input"
-		:class="classes.root"
+		:class="[ui('root'), classes.root]"
 		:model-value="value || null"
 		:options="options"
 		:variant="variant"
@@ -15,6 +14,7 @@
 		:size-scale="sizeScale"
 		:color="color"
 		:custom-class="{ field: classes.field, panel: classes.panel, option: classes.option }"
+		:ui="autocompleteUi"
 		is-remote
 		is-custom-allowed
 		@update:model-value="handleChange"
@@ -43,5 +43,5 @@ const props = withDefaults(
 
 const emit = defineEmits<BaseAddressInputEmits>()
 
-const { classes, value, isLoading, options, search, handleChange } = useBaseAddressInput(props, emit)
+const { ui, autocompleteUi, classes, value, isLoading, options, search, handleChange } = useBaseAddressInput(props, emit)
 </script>

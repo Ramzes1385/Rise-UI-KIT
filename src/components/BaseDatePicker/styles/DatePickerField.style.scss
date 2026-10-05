@@ -16,10 +16,10 @@
 		--btn-pad-left: 3px;
 
 		flex: none;
-		color: var(--rise-text-muted);
+		color: ct(date-picker, icon-text, var(--rise-text-muted));
 
 		@include hover {
-			color: var(--rise-text-highlighted);
+			color: ct(date-picker, icon-text-hover, var(--rise-text-highlighted));
 		}
 	}
 

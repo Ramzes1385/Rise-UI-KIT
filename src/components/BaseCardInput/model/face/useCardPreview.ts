@@ -20,7 +20,10 @@ export function useCardPreview(props: BaseCardInputProps, fields: ReturnType<typ
 			hasHolder: props.hasHolder !== false,
 			isFlipped: focused.value === 'code',
 			hasCover: Boolean(props.previewCover || slots.previewCover),
-			style: { '--base-card-input-face-bg': cardFaceBackground(brand, props.previewBackground) },
+			style: {
+				'--base-card-input-face-bg': cardFaceBackground(brand, props.previewBackground),
+				'--base-card-input-face-custom-bg': props.previewBackground,
+			},
 		}
 	})
 	return {

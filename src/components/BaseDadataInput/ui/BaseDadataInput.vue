@@ -1,7 +1,6 @@
 <template>
 	<BaseAutocomplete
-		class="base-dadata-input"
-		:class="classes.root"
+		:class="[ui('root'), classes.root]"
 		:model-value="fieldValue"
 		:options="options"
 		:variant="variant"
@@ -16,6 +15,7 @@
 		:size-scale="sizeScale"
 		:color="color"
 		:custom-class="{ field: classes.field, panel: classes.panel, option: classes.option }"
+		:ui="autocompleteUi"
 		is-remote
 		is-custom-allowed
 		@update:model-value="handleChange"
@@ -54,6 +54,19 @@ const props = withDefaults(
 
 const emit = defineEmits<BaseDadataInputEmits>()
 
-const { classes, fieldValue, isLoading, shownError, emptyText, options, kindLabel, inputAttrs, handleSearch, handleChange, handleBlur } =
-	useBaseDadataInput(props, emit)
+const {
+	ui,
+	autocompleteUi,
+	classes,
+	fieldValue,
+	isLoading,
+	shownError,
+	emptyText,
+	options,
+	kindLabel,
+	inputAttrs,
+	handleSearch,
+	handleChange,
+	handleBlur,
+} = useBaseDadataInput(props, emit)
 </script>

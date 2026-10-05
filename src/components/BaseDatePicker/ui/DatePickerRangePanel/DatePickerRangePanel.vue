@@ -3,6 +3,7 @@
 		v-for="(item, index) in monthItems"
 		:key="item.key"
 		class="date-picker-panel__calendar"
+		:class="ui('calendar')"
 		v-bind="index === 0 ? calendarBindings : secondaryCalendarBindings"
 		:model-value="modelValue"
 		:model-value-end="modelValueEnd"
@@ -29,6 +30,13 @@ const props = defineProps<DatePickerRangePanelProps>()
 
 const emit = defineEmits<DatePickerRangePanelEmits>()
 
-const { calendarBindings, secondaryCalendarBindings, handleModelUpdate, handleModelEndUpdate, handleSelectedUpdate, handleRangeSelect } =
-	useDatePickerRangePanel(props, emit)
+const {
+	ui,
+	calendarBindings,
+	secondaryCalendarBindings,
+	handleModelUpdate,
+	handleModelEndUpdate,
+	handleSelectedUpdate,
+	handleRangeSelect,
+} = useDatePickerRangePanel(props, emit)
 </script>

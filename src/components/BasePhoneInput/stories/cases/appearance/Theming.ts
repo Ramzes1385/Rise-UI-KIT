@@ -19,6 +19,7 @@ const template = `
 `
 
 export const Theming: StoryObj<typeof meta> = {
+	name: 'Токены',
 	parameters: {
 		controls: { include: ['variant', 'sizeScale', 'isDisabled', 'error'] },
 		docs: {
