@@ -114,6 +114,9 @@
 | 75 | BaseProgress в RTL с `fill="gradient"`/`"rainbow"`: градиент привязан к шкале, зеркалить ли его — не решено | BaseProgress | theme-element: переход заливки на `clip-path` | patch | S |
 | 76 | Папки больше 7 файлов после theme-element: `stories/cases` у BaseIcon, BaseKbd, BaseLoader, BaseMarkdown; `__tests__` у BaseImage — разложить по подпапкам | эти компоненты | theme-element | patch | S |
 | 77 | BaseTag: ширина метки при появлении значка или галочки без замены меняется рывком (анимация ширины запрещена правилом движения) | BaseTag | theme-element | patch | S |
+| 78 | BaseDropdown не переносит `data-rise-motion` на телепортированную панель (`readThemeAttrs`): пресет движения области не действует на списки Autocomplete/Select/PhoneInput, колонки subtle/expressive в историях `Animations` не различаются | BaseDropdown (overlay) | theme-form-a: найдено вне группы, панель — зона theme-overlay-layout | patch | S |
+| 79 | BaseSelect `--open`: рамка `var(--rise-primary)` напрямую, токен `--rise-select-border-focus` не читает — нужен общий миксин раскрытого поля | BaseSelect | theme-form-a: найдено после сдачи группы | patch | S |
+| 80 | BaseTooltip: отложенный `hide` (HIDE_DELAY_MS) после сноса jsdom зовёт `cancelAnimationFrame` → «Unhandled error: cancelAnimationFrame is not defined» в чужом файле (DatePickerPanel.compose.spec под нагрузкой, 1 раз из 3 прогонов); нужен guard `typeof cancelAnimationFrame === 'function'` в `loop.stop()` и размонтирование в тестах с тултипами | BaseTooltip (overlay) | theme-form-a: проверка оркестратора; зона theme-overlay-layout | patch | S |
 
 ² Ограничения тестовой среды Storybook:
 - `resetAllMocksLoader` после `updateArgs` (переменные `models` в `useStorySetup`) стирает вызовы шпионов `fn()`: история, которая проверяет шпионов после ввода, держит значение в `state`;

@@ -1516,6 +1516,7 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 - **Попиксельное сравнение до и после** (сессия, 234 истории Element, существовавшие до задачи, × 2 темы, `motion:none`, reduce, порог 8/255): совпали все, кроме переписанных историй «Анимации» (Avatar, Progress, Skeleton — другой размер) и субпиксельных краёв: BaseProgress `--sizes` (нижний ряд сглаживания заливки и правый скруглённый конец, 0,5 % пикселей), `--fills` (правый конец, 0,02 %), BaseTagGroup `--default` (метка с галочкой, 0,1 %), BaseAvatarGroup `--media` (левый край, 0,05 %), BaseAvatar `--clickable` (1 пиксель).
 - **Скриншот-тесты:** эталонов группы Element в репозитории нет (`tests/visual-snapshots` — только BaseFooter, BaseHeader, BaseSplitter), прогон `--update-snapshots=none` по 27 файлам падает «snapshot doesn't exist» и до, и после задачи. Вместо него сессия сравнила попиксельно снимки историй до и после (статус theme-element).
 - **Новые истории** у всех 27 компонентов группы (снимков в `*.visual.spec.ts` нет): `element-basex--theming` («Токены») и `element-basex--animations` («Анимации»), кроме уже бывших Animations у Animation, Avatar, Skeleton.
+
 ## Задача theme-form-a: темизация и движение полей Form A
 
 - **Вид в покое не меняется.** Стили 18 полей скомпилированы до и после: отличия — только обёртки `var(--rise-<компонент>-…, <прежнее>)`, `space()` вместо `sz()` у отступов панелей (при `--rise-density: 1` то же значение), классы переходов. Скриншот-тесты — `--update-snapshots=none`.

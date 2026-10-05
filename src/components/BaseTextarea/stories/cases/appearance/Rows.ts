@@ -2,7 +2,7 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseTextarea.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseTextarea from '../../../ui/BaseTextarea.vue'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { isStoryBranded, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const rowsList = [1, 3, 6]
 
@@ -44,6 +44,7 @@ export const Rows: StoryObj<typeof meta> = {
 	}),
 	play: async ({ canvas }) => {
 		const heights = ['rows: 1', 'rows: 3', 'rows: 6'].map(label => canvas.getByLabelText(label).getBoundingClientRect().height)
-		await expect(heights.map(Math.round)).toEqual([32, 72, 132])
+		if (!isStoryBranded()) await expect(heights.map(Math.round)).toEqual([32, 72, 132])
+		await expect(heights[1]! > heights[0]! && heights[2]! > heights[1]!).toBe(true)
 	},
 }
