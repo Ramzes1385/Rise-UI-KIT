@@ -1933,3 +1933,17 @@ API кита не меняется. В Storybook добавлены пример
 - **Новая утилита `gostPaymentText(payment)`** в `@ramzes1385/rise-ui-kit/utils` (тип `GostPayment`) — строка ГОСТ Р 56042-2014 в UTF-8 с проверкой БИК, счетов, ИНН, КПП и суммы в копейках.
 - **Внутреннее:** проверки реквизитов перенесены из `BaseRequisiteInput/model/requisites/requisiteChecks.ts` в `@utils/data/requisiteUtils`; публичный экспорт `isValidInn`, `isValidBik`… из пакета — без изменений.
 
+## Задача feat-avatar-mascot: маскот BaseAvatar — плавный и больше персонажей
+
+- **`mascot` — новые значения** `cloud` (Облачко), `droplet` (Капля), `pebble` (Камешек), `spark` (Искра) — собственные персонажи кита, у всех общее лицо и движение; цвета — токены (`--rise-info`, `--rise-chart-1`, `--rise-text-muted`, `--rise-warning`). `sprout` — прежний.
+- **Новый проп `mood`**: `'idle' | 'happy' | 'surprised' | 'sad' | 'sleepy' | 'thinking'`, по умолчанию `idle` (вид прежний). Рот и брови перетекают при смене; `sad`, `sleepy`, `thinking` уводят взгляд от курсора. Константа `AVATAR_MOODS`, типы `AvatarMood`, `AvatarMascotName`.
+- **Новый проп `isBlinking`** (по умолчанию `true`): персонаж моргает каждые 2,5–6 с, иногда дважды. В тестах и скриншотах приложения выключайте: `:is-blinking="false"` или `defaults: { BaseAvatar: { isBlinking: false } }`.
+- **Метод `react(mood, ms = 1200)`** через `ref` (тип `BaseAvatarExpose`): ненадолго показать настроение и вернуться к `mood`.
+  ```vue
+  <BaseAvatar ref="avatar" mascot="cloud" alt="Облачко" />
+  <!-- avatar.value?.react('happy') после успешной отправки формы -->
+  ```
+- **Поведение:** зрачки и наклон головы (до ±4°) идут за курсором на JS-пружине — один общий слушатель `pointermove` и один `requestAnimationFrame` на все маскоты страницы; кадры идут, только пока персонаж движется. CSS-переход зрачков снят. `isEyesClosed` закрывает глаза плавно (раньше — подмена разметки). Персонаж «дышит» (CSS-анимация под `prefers-reduced-motion: no-preference`).
+- **Уменьшение движения:** при `prefers-reduced-motion: reduce` и внутри `[data-rise-motion="none"]` — зрачки в центре, без наклона, моргания и дыхания; `mood` и `isEyesClosed` применяются сразу.
+- **DOM (для тестов приложений):** вместо `<g class="base-avatar__mascot-lids">` (появлялась при `isEyesClosed`) и `<g class="base-avatar__mascot-pupils">` — постоянные `.base-avatar__mascot-eyes` (атрибуты `transform="scale(1 …)"` и `opacity`), `.base-avatar__mascot-pupil` у каждого зрачка и `.base-avatar__mascot-lid` (веко, `opacity`). На корне SVG — классы `base-avatar__mascot--<персонаж>` и `base-avatar__mascot--mood-<настроение>`; `base-avatar__mascot--closed` — как раньше. Проверяйте закрытые глаза по классу `--closed`, а не по наличию `.base-avatar__mascot-lids`.
+- **Истории:** `element-baseavatar--mascot` переименована в `--password` («Пароль»); новые — `--mascots`, `--moods`, `--animations`.
