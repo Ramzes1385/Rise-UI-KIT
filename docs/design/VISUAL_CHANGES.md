@@ -1506,12 +1506,13 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 - **BaseProgress, движение:** смена значения — заливка через `clip-path`, подпись через `transform`, число плавно (`useTween`).
 - **BaseCard `isHoverable`/`@click`:** при наведении подъём `translateY(calc(var(--rise-motion-distance) / -4))` — standard −2px, subtle −1px, expressive −4px, `none`/reduce — без сдвига; вместе с рамкой и тенью за `--rise-duration-fast`.
 - **BaseButton:** при включении и выключении `isLoading` содержимое гаснет и проявляется, спиннер проявляется плавно.
-- **BaseAlert:** при закрытии гаснет и слегка уменьшается (`enter-scale`, `--rise-duration-fast`), раньше — рывком.
+- **BaseAlert:** в рецепте `<Transition name="base-alert">` (история «Анимации») появляется и уходит с прозрачностью и масштабом; без обёртки — как раньше.
 - **BaseAvatar:** фото проявляется после загрузки (`--rise-duration`), точка «в сети» — «pop».
 - **BaseAvatarGroup, BaseTagGroup:** новые пункты — «pop», удалённые гаснут на месте, соседи сдвигаются `transform`.
 - **BaseBadge, BaseChip:** новое значение «выпрыгивает» (Badge — `enter-pop` текста, Chip — масштаб самого индикатора), индикатор Chip появляется и уходит с масштабом.
 - **BaseColorModeButton:** солнце и луна сменяются перекрёстно с поворотом (раньше рывком).
 - **BaseImage:** плейсхолдер гаснет поверх уже показанной картинки (раньше исчезал сразу, картинка проявлялась из прозрачности); окно просмотра появляется и уходит затуханием.
 - **BaseTag:** галочка и × появляются с «pop» и уходят за `--rise-duration-fast`; ширина метки при появлении значка без замены меняется рывком (анимация ширины запрещена правилом 6.3).
+- **Попиксельное сравнение до и после** (сессия, 234 истории Element, существовавшие до задачи, × 2 темы, `motion:none`, reduce, порог 8/255): совпали все, кроме переписанных историй «Анимации» (Avatar, Progress, Skeleton — другой размер) и субпиксельных краёв: BaseProgress `--sizes` (нижний ряд сглаживания заливки и правый скруглённый конец, 0,5 % пикселей), `--fills` (правый конец, 0,02 %), BaseTagGroup `--default` (метка с галочкой, 0,1 %), BaseAvatarGroup `--media` (левый край, 0,05 %), BaseAvatar `--clickable` (1 пиксель).
 - **Скриншот-тесты:** эталонов группы Element в репозитории нет (`tests/visual-snapshots` — только BaseFooter, BaseHeader, BaseSplitter), прогон `--update-snapshots=none` по 27 файлам падает «snapshot doesn't exist» и до, и после задачи. Вместо него сессия сравнила попиксельно снимки историй до и после (статус theme-element).
 - **Новые истории** у всех 27 компонентов группы (снимков в `*.visual.spec.ts` нет): `element-basex--theming` («Токены») и `element-basex--animations` («Анимации»), кроме уже бывших Animations у Animation, Avatar, Skeleton.
