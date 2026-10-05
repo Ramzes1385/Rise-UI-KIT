@@ -5,6 +5,8 @@
  * не допускается: он расходится с превью. Состояние шаблона — `state` помощников, а не `ref` в константе модуля:
  * такое состояние общее для всех показов истории и в код не попадает. Проверяются истории компонентов и витрины
  * `src/stories/blocks`, `src/stories/composables` и `src/stories/foundations`. `--group=Element` проверяет один раздел.
+ * Компонент, которого нет в корне пакета (`src/components/index.ts`, например BaseImageMap3D, BaseMediaPlayer), в `imports`
+ * не допускается: он импортируется из своего входа через `importsFrom`.
  */
 
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
@@ -127,9 +129,34 @@ function moduleRefs(file) {
 		.map(item => item.name.getText())
 }
 
+/** Компоненты кита вне корня пакета: папки `src/components`, которых нет в `src/components/index.ts` */
+const OUTSIDE_ROOT = (() => {
+	const index = readFileSync(join(COMPONENTS, 'index.ts'), 'utf-8')
+	return new Set(readdirSync(COMPONENTS).filter(name => /^Base/.test(name) && !index.includes(`'./${name}'`)))
+})()
+
+/** Имена из `imports` вызовов `storySource()`/`staticStorySource()`, которых нет в корне пакета */
+function rootImportsOutside(file) {
+	const found = []
+	const visit = node => {
+		if (isHelperCall(node)) {
+			const imports = property(node.arguments[0], 'imports')
+			for (const item of imports && ts.isArrayLiteralExpression(imports) ? imports.elements : [])
+				if (ts.isStringLiteral(item) && OUTSIDE_ROOT.has(item.text)) found.push(item.text)
+		}
+		ts.forEachChild(node, visit)
+	}
+	visit(sourceFile(file))
+	return found
+}
+
 function checkComponent(dir, meta) {
 	const problems = []
 	const at = file => relative(ROOT, file)
+	for (const file of listFiles(dir)) {
+		for (const name of rootImportsOutside(file))
+			problems.push(`${at(file)}: ${name} нет в корне пакета — импорт через importsFrom из его входа`)
+	}
 	for (const file of listFiles(dir)) {
 		for (const name of moduleRefs(file)) problems.push(`${at(file)}: ${name} — ref в константе модуля, нужен state`)
 	}

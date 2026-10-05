@@ -25,7 +25,7 @@ export const Seo: StoryObj<typeof meta> = {
 					'а для видео в выдаче желательны `description` и `duration` (ISO 8601) — их компонент не знает, они в `seo.data`.',
 				].join('\n'),
 			},
-			source: storySource({ template, imports: ['BaseMediaPlayer'] }),
+			source: storySource({ template, imports: [], importsFrom: { '@ramzes1385/rise-ui-kit/media': ['BaseMediaPlayer'] } }),
 		},
 	},
 	render: args => ({

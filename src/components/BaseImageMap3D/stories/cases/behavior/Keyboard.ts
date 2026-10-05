@@ -23,7 +23,8 @@ export const Keyboard: StoryObj<typeof meta> = {
 			},
 			source: storySource({
 				template,
-				imports: ['BaseImageMap3D'],
+				imports: [],
+				importsFrom: { '@ramzes1385/rise-ui-kit/map3d': ['BaseImageMap3D'] },
 				models: MODELS,
 				types: { layer: 'string', active: 'string | null' },
 			}),

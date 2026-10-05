@@ -2156,3 +2156,8 @@ API кита не меняется. В Storybook добавлены пример
 - **JSON**: импорт и экспорт сохраняли и сохраняют 3D-поля (без `has3dFields` они не показываются, но не теряются); проверка импорта 3D-поля не отклоняет — неверные игнорирует карта.
 - **Словарь `mapEditor`** (ru, en): `SECTION_3D`, `FIELD_HEIGHT_3D`, `FIELD_MESH_NAME`, `LAYER_3D`, `FIELD_ELEVATION`, `FIELD_MODEL_URL`, `FIELD_MODEL_SCALE`, `FIELD_MODEL_X`, `FIELD_MODEL_Y`, `FIELD_MODEL_Z`, `FIELD_MODEL_ROTATION`, `SCENE_3D`, `FIELD_FLOOR_GAP`, `FIELD_FLOOR_THICKNESS`, `FIELD_OBJECT_HEIGHT`, `FIELD_3D_INVALID` — свой язык через `defineLocale` должен их содержать.
 - **Граница входа `/map3d`**: основной вход берёт из папки BaseImageMap3D только `model/validate3d.ts` (проверка 3D-полей без three); тест `build/tests/packageBoundaries.spec.ts` разрешает только его и проверяет, что основной вход не достигает `three`.
+
+## BaseImageMap3D (правки по итоговой проверке, map3d-fix3)
+
+- **Фокус объекта с клавиатуры снимается, когда объект пропадает с экрана.** Смена этажа (PageUp/PageDown, переключатель, `v-model:layer`) и фильтр, скрывший объект в фокусе, снимают фокус и карточку (`hover(null)`); Enter и Space после этого ничего не выбирают. При смене этажа `aria-live` объявляет этаж, при скрытии фильтром — очищается. Раньше Enter после PageUp выбирал объект прежнего этажа.
+- **«Show code» историй** BaseImageMap3D (и BaseMediaPlayer «SEO», BaseSubtitleEditor «С плеером») импортирует компонент из его входа: `import { BaseImageMap3D } from '@ramzes1385/rise-ui-kit/map3d'`, `import { BaseMediaPlayer } from '@ramzes1385/rise-ui-kit/media'`. API не менялся; `test:story-source` теперь ловит компонент вне корня пакета в `imports`.

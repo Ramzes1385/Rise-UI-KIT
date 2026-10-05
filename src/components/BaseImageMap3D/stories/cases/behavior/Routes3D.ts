@@ -24,7 +24,8 @@ export const Routes3D: StoryObj<typeof meta> = {
 			},
 			source: storySource({
 				template,
-				imports: ['BaseImageMap3D', 'type ImageMapRouteValue'],
+				imports: ['type ImageMapRouteValue'],
+				importsFrom: { '@ramzes1385/rise-ui-kit/map3d': ['BaseImageMap3D'] },
 				models: MODELS,
 				types: { layer: 'string', route: 'ImageMapRouteValue | null' },
 			}),

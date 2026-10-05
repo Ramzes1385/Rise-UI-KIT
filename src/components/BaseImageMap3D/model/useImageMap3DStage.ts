@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { toNdc } from './interaction/projection'
 import { cameraKeyAction } from './camera/cameraKeys'
 import { useRouteTube } from './viewport/useRouteTube'
@@ -95,8 +95,25 @@ function sceneCenters(options: StageOptions, stage: ImageMap3DStage): Center[] {
 	})
 }
 
+function useVisibleFocus(options: StageOptions, announce: (id: string | null) => void) {
+	const { map } = options
+	const visibleIds = computed((): ReadonlySet<string> => new Set((map.data.view.value?.objects ?? []).map(item => item.object.id)))
+	const getFocus = (): string | null => {
+		const id = map.overlay.hoverId.value
+		return id && visibleIds.value.has(id) ? id : null
+	}
+	watch([visibleIds, () => map.data.currentLayer.value?.id], ([ids, layer], [, prevLayer]) => {
+		const id = map.overlay.hoverId.value
+		if (!id || ids.has(id)) return
+		map.setHover(null)
+		if (layer === prevLayer) announce(null)
+	})
+	return getFocus
+}
+
 export function useStageInput(options: StageOptions, stage: ImageMap3DStage, announce: (id: string | null) => void) {
 	const { map } = options
+	const getFocus = useVisibleFocus(options, announce)
 	const pointer = useScenePointer({
 		pickAt: (x, y) => {
 			const content = stage.scene.content.value
@@ -110,7 +127,7 @@ export function useStageInput(options: StageOptions, stage: ImageMap3DStage, ann
 	})
 	const onSceneKey = useSceneKeyboard({
 		centers: () => sceneCenters(options, stage),
-		getFocus: () => map.overlay.hoverId.value,
+		getFocus,
 		getActive: () => map.actions.localActive.value,
 		focus: id => {
 			map.setHover(id)

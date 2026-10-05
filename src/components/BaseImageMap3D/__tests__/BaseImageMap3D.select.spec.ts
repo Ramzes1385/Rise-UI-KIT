@@ -258,6 +258,42 @@ describe('BaseImageMap3D: клавиатура', () => {
 		expect(arrow.defaultPrevented).toBe(false)
 	})
 
+	it('ArrowRight → PageUp → Enter ничего не выбирает: смена этажа снимает фокус объекта и карточку', async () => {
+		const onSelect = vi.fn()
+		const onHover = vi.fn()
+		const { region } = await renderSelect({ onSelect, onHover, defaultAction: 'none' })
+		await fireEvent.keyDown(region(), { key: 'ArrowRight' })
+		await nextTick()
+		expect(region().querySelector('[role="tooltip"]')).toHaveTextContent('Зал')
+		await fireEvent.keyDown(region(), { key: 'PageUp' })
+		await nextTick()
+		expect(onHover).toHaveBeenLastCalledWith(null)
+		expect(region().querySelector('[role="tooltip"]')).toBeNull()
+		expect(region().querySelector('[aria-live="polite"]')).toHaveTextContent('Показан этаж: Этаж 2')
+		await fireEvent.keyDown(region(), { key: 'Enter' })
+		await fireEvent.keyDown(region(), { key: ' ' })
+		expect(onSelect).not.toHaveBeenCalled()
+		await fireEvent.keyDown(region(), { key: 'ArrowRight' })
+		expect(region().querySelector('[aria-live="polite"]')).toHaveTextContent('Крыша, Этаж 2')
+	})
+
+	it('фильтр скрыл объект в фокусе — Enter не выбирает, фокус и объявление сняты', async () => {
+		const onSelect = vi.fn()
+		const { region, rerender } = await renderSelect({ onSelect, defaultAction: 'none', filters: {} })
+		await fireEvent.keyDown(region(), { key: 'ArrowLeft' })
+		await fireEvent.keyDown(region(), { key: 'ArrowLeft' })
+		const live = region().querySelector('[aria-live="polite"]') as HTMLElement
+		expect(live).toHaveTextContent('Левый, Этаж 1')
+		await rerender({ filters: { kind: ['food'] } })
+		await nextTick()
+		expect(live).toHaveTextContent('')
+		await fireEvent.keyDown(region(), { key: 'Enter' })
+		expect(onSelect).not.toHaveBeenCalled()
+		const escape = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })
+		region().dispatchEvent(escape)
+		expect(escape.defaultPrevented).toBe(false)
+	})
+
 	it('подсказка области называет клавиши объектов', async () => {
 		const { region } = await renderSelect()
 		expect(region()).toHaveAccessibleDescription(expect.stringContaining('Стрелки — объекты, Enter — открыть'))

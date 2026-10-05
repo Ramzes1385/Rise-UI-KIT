@@ -38,8 +38,11 @@ export const WithPlayer: StoryObj<typeof meta> = {
 			},
 			source: staticStorySource({
 				template,
-				imports: ['BaseMediaPlayer', 'BaseSubtitleEditor'],
-				importsFrom: { '@ramzes1385/rise-ui-kit/utils': ['serializeSubtitles', 'type SubtitleCue'] },
+				imports: ['BaseSubtitleEditor'],
+				importsFrom: {
+					'@ramzes1385/rise-ui-kit/media': ['BaseMediaPlayer'],
+					'@ramzes1385/rise-ui-kit/utils': ['serializeSubtitles', 'type SubtitleCue'],
+				},
 				vue: ['computed', 'ref', 'watch'],
 				script,
 			}),

@@ -19,7 +19,13 @@ export const Glb: StoryObj<typeof meta> = {
 			description: {
 				story: 'Этаж из GLB-модели (`layer.model`): меши магазинов, лестницы и лифта названы id объектов карты и подсвечиваются их цветами — выбранный магазин окрашен цветом `active`. Модель сгенерирована скриптом `scripts/generate-map3d-demo.mjs`. DRACO, KTX2 и meshopt приложение подключает само через `configureLoader`.',
 			},
-			source: storySource({ template, imports: ['BaseImageMap3D'], models: MODELS, types: { active: 'string | null' } }),
+			source: storySource({
+				template,
+				imports: [],
+				importsFrom: { '@ramzes1385/rise-ui-kit/map3d': ['BaseImageMap3D'] },
+				models: MODELS,
+				types: { active: 'string | null' },
+			}),
 		},
 	},
 	args: { data: MALL_FLOOR_MODEL, active: 'f1-shop-2' },

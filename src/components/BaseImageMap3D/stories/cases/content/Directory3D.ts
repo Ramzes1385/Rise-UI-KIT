@@ -24,7 +24,8 @@ export const Directory3D: StoryObj<typeof meta> = {
 			},
 			source: storySource({
 				template,
-				imports: ['BaseImageMap3D'],
+				imports: [],
+				importsFrom: { '@ramzes1385/rise-ui-kit/map3d': ['BaseImageMap3D'] },
 				models: MODELS,
 				types: { view: "'3d' | '2d'", layer: 'string', active: 'string | null' },
 			}),

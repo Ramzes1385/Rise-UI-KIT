@@ -22,7 +22,8 @@ export const RendererFallback: StoryObj<typeof meta> = {
 			},
 			source: storySource({
 				template,
-				imports: ['BaseImageMap3D'],
+				imports: [],
+				importsFrom: { '@ramzes1385/rise-ui-kit/map3d': ['BaseImageMap3D'] },
 				script: "const failingRenderer = () => {\n\tthrow new Error('WebGL недоступен')\n}",
 			}),
 		},

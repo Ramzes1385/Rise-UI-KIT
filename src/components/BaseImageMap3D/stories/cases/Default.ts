@@ -18,7 +18,13 @@ export const Default: StoryObj<typeof meta> = {
 			description: {
 				story: 'Песочница: область 3D-карты с холстом WebGL. Область достижима клавишей Tab, скринридер называет её «3D-карта». Наведение подсвечивает объект и показывает карточку, щелчок выбирает; стрелки в области — между объектами. Props — в панели Controls.',
 			},
-			source: storySource({ template, imports: ['BaseImageMap3D'], models: MODELS, types: { view: "'3d' | '2d'" } }),
+			source: storySource({
+				template,
+				imports: [],
+				importsFrom: { '@ramzes1385/rise-ui-kit/map3d': ['BaseImageMap3D'] },
+				models: MODELS,
+				types: { view: "'3d' | '2d'" },
+			}),
 		},
 	},
 	render: args => ({
