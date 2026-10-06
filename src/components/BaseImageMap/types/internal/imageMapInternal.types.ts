@@ -109,6 +109,21 @@ export interface Frame {
 	stageHeight: number
 }
 
+/** Окно карты в пикселях раскладки: размер с рамкой (`offsetWidth`, `offsetHeight`) и толщина рамки слева и сверху (`clientLeft`, `clientTop`) */
+export interface ElementLayout {
+	width: number
+	height: number
+	borderLeft: number
+	borderTop: number
+}
+
+/** Действия вида для сохранения его при ресайзе и замене данных: сброс, текущий вид, применить вид */
+export interface ViewKeeperActions {
+	reset: () => void
+	current: () => ImageMapView
+	apply: (next: ImageMapView) => void
+}
+
 export interface ScreenPoint {
 	x: number
 	y: number

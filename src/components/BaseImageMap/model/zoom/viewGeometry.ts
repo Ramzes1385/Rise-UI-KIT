@@ -1,6 +1,7 @@
 import type { ImageMapArea } from '../../types/imageMapData.types'
+import type { SvgLayerSize } from '../../types/internal/svgViewport.types'
 import type { ImageMapBox, ImageMapView } from '../../types/internal/imageMapModel.types'
-import type { Frame, ScreenBox, ScreenPoint } from '../../types/internal/imageMapInternal.types'
+import type { ElementLayout, Frame, ScreenBox, ScreenPoint } from '../../types/internal/imageMapInternal.types'
 
 export function fitStage(
 	viewport: { width: number; height: number },
@@ -47,13 +48,17 @@ function axisRatio(page: number, inner: number): number {
 	return inner / page
 }
 
-export function pageRatio(box: ImageMapBox, size: { width: number; height: number }): ScreenPoint {
+export function pageRatio(box: ImageMapBox, size: SvgLayerSize): ScreenPoint {
 	return { x: axisRatio(box.width, size.width), y: axisRatio(box.height, size.height) }
 }
 
-export function toViewportPoint(client: ScreenPoint, box: ImageMapBox, size: { width: number; height: number }): ScreenPoint {
-	const ratio = pageRatio(box, size)
-	return { x: (client.x - box.left) * ratio.x, y: (client.y - box.top) * ratio.y }
+export function layoutOf(element: HTMLElement): ElementLayout {
+	return { width: element.offsetWidth, height: element.offsetHeight, borderLeft: element.clientLeft, borderTop: element.clientTop }
+}
+
+export function toViewportPoint(client: ScreenPoint, box: ImageMapBox, layout: ElementLayout): ScreenPoint {
+	const ratio = pageRatio(box, layout)
+	return { x: (client.x - box.left) * ratio.x - layout.borderLeft, y: (client.y - box.top) * ratio.y - layout.borderTop }
 }
 
 export function clampScale(scale: number, maxScale: number): number {

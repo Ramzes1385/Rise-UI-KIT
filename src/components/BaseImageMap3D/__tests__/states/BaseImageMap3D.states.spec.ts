@@ -90,13 +90,13 @@ describe('BaseImageMap3D: ошибка плана этажа', () => {
 			vi.fn(() => Promise.reject(new Error('offline'))),
 		)
 		const { overlay, status, region } = await renderStates({ layers: [remote('u', 'Этаж U')], objects: [hall] })
-		await waitFor(() => expect(status()).toHaveTextContent('Не удалось загрузить план этажа: Этаж U'))
+		await waitFor(() => expect(status()).toHaveTextContent('Не удалось загрузить: Этаж U'))
 		expect(overlay()).toHaveClass('base-image-map-3d__state--error')
-		expect(overlay()).toHaveTextContent('Не удалось загрузить план этажа: Этаж U')
+		expect(overlay()).toHaveTextContent('Не удалось загрузить: Этаж U')
 		expect(region()).toHaveAttribute('aria-busy', 'false')
 		expect(warn).toHaveBeenCalledWith(expect.stringContaining('план этажа «u» не загрузился'))
 		expect(screen.getAllByRole('status')).toHaveLength(1)
-		expect(screen.queryByText('Не удалось загрузить план этажа: Этаж U', { ignore: '[aria-hidden="true"] *' })).toBe(status())
+		expect(screen.queryByText('Не удалось загрузить: Этаж U', { ignore: '[aria-hidden="true"] *' })).toBe(status())
 		expect(status()).toHaveClass('base-image-map-3d__status--hidden')
 	})
 
@@ -106,16 +106,16 @@ describe('BaseImageMap3D: ошибка плана этажа', () => {
 			vi.fn(async () => ({ ok: false, text: async () => '' })),
 		)
 		const { status, rerender } = await renderStates({ layers: [remote('u', 'U')], objects: [] })
-		await waitFor(() => expect(status()).toHaveTextContent('Не удалось загрузить план этажа: U'))
+		await waitFor(() => expect(status()).toHaveTextContent('Не удалось загрузить: U'))
 		await rerender({ data: { layers: [{ id: 'w', title: 'W', svg: '<div>не svg</div>', width: 100, height: 100 }], objects: [] } })
-		await waitFor(() => expect(status()).toHaveTextContent('Не удалось загрузить план этажа: W'))
+		await waitFor(() => expect(status()).toHaveTextContent('Не удалось загрузить: W'))
 	})
 
 	it('картинка или текстура пола не загрузились — ошибка этажа; объекты SVG при этом уже добавлены', async () => {
 		textureLoad.mockRejectedValue(new Error('404'))
 		const data = { layers: [{ id: 'u', title: 'U', svg: SVG, width: 800, height: 400 }], objects: [hall] }
 		const { status, renderer } = await renderStates(data)
-		await waitFor(() => expect(status()).toHaveTextContent('Не удалось загрузить план этажа: U'))
+		await waitFor(() => expect(status()).toHaveTextContent('Не удалось загрузить: U'))
 		const frame = vi.mocked(requestAnimationFrame).mock.calls.at(-1)?.[0]
 		frame?.(0)
 		const scene = renderer.render.mock.calls.at(-1)?.[0]
@@ -129,7 +129,7 @@ describe('BaseImageMap3D: ошибка плана этажа', () => {
 		)
 		const layers = [remote('a', 'Первый'), remote('b', 'Второй'), remote('c', 'Третий')]
 		const { status } = await renderStates({ layers, objects: [] })
-		await waitFor(() => expect(status()).toHaveTextContent('Не удалось загрузить план этажа: Первый, Второй'))
+		await waitFor(() => expect(status()).toHaveTextContent('Не удалось загрузить: Первый, Второй'))
 		expect(status()).not.toHaveTextContent('Третий')
 	})
 
@@ -152,7 +152,7 @@ describe('BaseImageMap3D: ошибка плана этажа', () => {
 		const fetchMock = vi.fn(() => Promise.reject(new Error('offline')))
 		vi.stubGlobal('fetch', fetchMock)
 		const { status, rerender } = await renderStates({ layers: [remote('u', 'U')], objects: [] })
-		await waitFor(() => expect(status()).toHaveTextContent('Не удалось загрузить план этажа: U'))
+		await waitFor(() => expect(status()).toHaveTextContent('Не удалось загрузить: U'))
 		fetchMock.mockImplementation(async () => respond(SVG) as never)
 		await rerender({ data: { layers: [remote('v', 'V')], objects: [] } })
 		await waitFor(() => expect(status()).toHaveTextContent(''))

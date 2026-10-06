@@ -17,6 +17,7 @@ const RULES: Record<ImageMap3DFieldRule, (value: unknown) => boolean> = {
 	object: isRecord,
 	list: Array.isArray,
 	flag: value => typeof value === 'boolean',
+	svgOnly: () => false,
 }
 
 const EXPECTED: Record<ImageMap3DFieldRule, () => string> = {
@@ -29,6 +30,7 @@ const EXPECTED: Record<ImageMap3DFieldRule, () => string> = {
 	object: () => UI_IMAGE_MAP_3D.EXPECT_OBJECT,
 	list: () => UI_IMAGE_MAP_3D.EXPECT_LIST,
 	flag: () => UI_IMAGE_MAP_3D.EXPECT_FLAG,
+	svgOnly: () => UI_IMAGE_MAP_3D.EXPECT_SVG_OBJECT,
 }
 
 export function expectedText(rule: ImageMap3DFieldRule): string {
@@ -53,6 +55,10 @@ function checkLayer(issues: ImageMap3DIssue[], layer: ImageMap3DLayer): void {
 
 function checkParts(issues: ImageMap3DIssue[], object: ImageMap3DObject): void {
 	const path = `objects["${object.id}"].parts`
+	if (object.type !== 'svg') {
+		check(issues, { path, value: object.parts, rule: 'svgOnly' })
+		return
+	}
 	if (!check(issues, { path, value: object.parts, rule: 'list' }) || !Array.isArray(object.parts)) return
 	object.parts.forEach((part, index) => {
 		const partPath = `${path}[${index}]`

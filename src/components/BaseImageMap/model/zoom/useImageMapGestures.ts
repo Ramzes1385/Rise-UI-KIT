@@ -1,5 +1,5 @@
-import { toViewportPoint } from './viewGeometry'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { layoutOf, toViewportPoint } from './viewGeometry'
 import type { ImageMapView } from '../../types/internal/imageMapModel.types'
 import type { GestureOptions, GestureView, PointerStart, ScreenPoint } from '../../types/internal/imageMapInternal.types'
 
@@ -11,10 +11,7 @@ const WHEEL_PAGE = 400
 const WHEEL_FACTOR_LIMIT = 4
 
 function localPoint(event: { clientX: number; clientY: number }, element: HTMLElement): ScreenPoint {
-	return toViewportPoint({ x: event.clientX, y: event.clientY }, element.getBoundingClientRect(), {
-		width: element.clientWidth,
-		height: element.clientHeight,
-	})
+	return toViewportPoint({ x: event.clientX, y: event.clientY }, element.getBoundingClientRect(), layoutOf(element))
 }
 
 function wheelFactor(event: WheelEvent): number {

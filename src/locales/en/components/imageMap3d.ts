@@ -40,10 +40,13 @@ export const enImageMap3d = {
 		/** `use` references in the floor SVG exceeded the copy limit; `{uses}` — reference limit, `{elements}` — copied element limit */
 		SVG_USE_LIMIT:
 			'BaseImageMap3D: the floor SVG expands too many use references (more than {uses} references or {elements} copied elements) — the remaining use references are not shown',
+		/** An SVG element of an object or part lies inside another such element; `{layer}` — layer id, `{inner}` and `{outer}` — `elementId` */
+		SVG_ELEMENT_NESTED:
+			'BaseImageMap3D: in the SVG of floor «{layer}» element «{inner}» lies inside «{outer}» — its shape is extruded twice: for «{inner}» and as part of «{outer}»',
 		/** Floor plan (SVG, image or texture) failed to load; `{layer}` — layer id, `{error}` — error */
 		LAYER_LOAD_FAILED: 'BaseImageMap3D: the plan of floor «{layer}» failed to load — the floor is shown without it. {error}',
 		/** Message on the map when a floor plan failed to load; `{layers}` — floor titles separated by commas */
-		LAYER_ERROR: 'Could not load the floor plan: {layers}',
+		LAYER_ERROR: 'Could not load: {layers}',
 		/** Floor model failed to load; `{layer}` — layer id, `{url}` — address, `{error}` — error */
 		MODEL_LOAD_FAILED: 'BaseImageMap3D: the floor model «{layer}» ({url}) failed to load — showing the plan. {error}',
 		EXPECT_NUMBER: 'a finite number',
@@ -55,5 +58,6 @@ export const enImageMap3d = {
 		EXPECT_OBJECT: 'an object',
 		EXPECT_LIST: 'an array',
 		EXPECT_FLAG: 'true or false',
+		EXPECT_SVG_OBJECT: 'only on an object with type: "svg"',
 	},
 }

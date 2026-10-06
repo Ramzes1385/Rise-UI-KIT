@@ -163,7 +163,7 @@ describe('BaseImageMap3D: список объектов для скринрид�
 	it('объект с адресом — ссылка (внешняя — target и rel), окно — aria-haspopup, отключённый — кнопка', async () => {
 		await env.renderMap({ data: LINKS })
 		const list = listOf('Список объектов, Этаж 1')
-		const site = list.getByRole('link', { name: 'Сайт' })
+		const site = list.getByRole('link', { name: 'Сайт (откроется в новой вкладке)' })
 		expect(site).toHaveAttribute('href', 'https://example.com/shop')
 		expect(site).toHaveAttribute('target', '_blank')
 		expect(site).toHaveAttribute('rel', 'noopener noreferrer')
@@ -186,7 +186,7 @@ describe('BaseImageMap3D: список объектов для скринрид�
 		const onSelect = vi.fn()
 		const onUpdateActive = vi.fn()
 		await env.renderMap({ data: LINKS, onSelect, 'onUpdate:active': onUpdateActive })
-		await fireEvent.click(listOf('Список объектов, Этаж 1').getByRole('link', { name: 'Сайт' }))
+		await fireEvent.click(listOf('Список объектов, Этаж 1').getByRole('link', { name: 'Сайт (откроется в новой вкладке)' }))
 		document.removeEventListener('click', stop)
 		expect(onSelect).toHaveBeenCalledWith(expect.objectContaining({ id: 'site' }))
 		expect(onUpdateActive).toHaveBeenCalledWith('site')

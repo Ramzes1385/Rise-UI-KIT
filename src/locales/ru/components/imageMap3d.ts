@@ -40,10 +40,13 @@ export const ruImageMap3d = {
 		/** Ссылки `use` в SVG этажа превысили предел копий; `{uses}` — предел ссылок, `{elements}` — предел скопированных элементов */
 		SVG_USE_LIMIT:
 			'BaseImageMap3D: SVG этажа раскрывает слишком много ссылок use (больше {uses} ссылок или {elements} копий элементов) — остальные ссылки use не показаны',
+		/** Элемент SVG объекта или части лежит внутри другого такого же; `{layer}` — id слоя, `{inner}` и `{outer}` — `elementId` */
+		SVG_ELEMENT_NESTED:
+			'BaseImageMap3D: в SVG этажа «{layer}» элемент «{inner}» лежит внутри «{outer}» — его фигура выдавлена дважды: у «{inner}» и в составе «{outer}»',
 		/** План этажа (SVG, картинка или текстура) не загрузился; `{layer}` — id слоя, `{error}` — ошибка */
 		LAYER_LOAD_FAILED: 'BaseImageMap3D: план этажа «{layer}» не загрузился — этаж показан без него. {error}',
-		/** Сообщение на карте, если план этажа не загрузился; `{layers}` — названия этажей через запятую */
-		LAYER_ERROR: 'Не удалось загрузить план этажа: {layers}',
+		/** Сообщение на карте, если планы этажей не загрузились, без привязки к их числу; `{layers}` — названия этажей через запятую */
+		LAYER_ERROR: 'Не удалось загрузить: {layers}',
 		/** Модель этажа не загрузилась; `{layer}` — id слоя, `{url}` — адрес, `{error}` — ошибка */
 		MODEL_LOAD_FAILED: 'BaseImageMap3D: модель этажа «{layer}» ({url}) не загрузилась — показан план. {error}',
 		EXPECT_NUMBER: 'конечное число',
@@ -55,5 +58,6 @@ export const ruImageMap3d = {
 		EXPECT_OBJECT: 'объект',
 		EXPECT_LIST: 'массив',
 		EXPECT_FLAG: 'true или false',
+		EXPECT_SVG_OBJECT: 'только у объекта type: "svg"',
 	},
 }

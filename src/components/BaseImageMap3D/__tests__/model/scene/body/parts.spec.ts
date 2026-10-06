@@ -148,6 +148,7 @@ describe('размеры частей и рамка сцены', () => {
 				5,
 				'a',
 				{ elementId: '' },
+				{ elementId: '   ' },
 				{ elementId: 7 },
 				{ elementId: 'a', height3d: -1, base3d: 'x' },
 				{ elementId: 'b', height3d: 3, base3d: 2 },
@@ -159,6 +160,31 @@ describe('размеры частей и рамка сцены', () => {
 		])
 		expect(svgPartSpecs({ ...object, parts: 'a' } as unknown as ImageMap3DObject, settings)).toEqual([])
 		expect(svgPartSpecs({ id: 'y', type: 'svg', title: 'Y', elementId: 'y' }, settings)).toEqual([])
+	})
+
+	it('вложенные элементы объектов и частей: предупреждение о каждой паре в dev, в боевой сборке — тишина', () => {
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+		const data: ImageMap3DData = {
+			...mapWith({ parts: [{ elementId: 'podium' }] }),
+			objects: [
+				...mapWith({ parts: [{ elementId: 'podium' }] }).objects,
+				{ id: 'tower', type: 'svg', title: 'Башня', elementId: 'tower' },
+				{ id: 'whole', type: 'svg', title: 'Всё', elementId: 'pavilion' },
+			],
+		}
+		build(data)
+		expect(warn.mock.calls.map(([message]) => message)).toEqual([
+			expect.stringContaining('элемент «podium» лежит внутри «pavilion»'),
+			expect.stringContaining('элемент «tower» лежит внутри «pavilion»'),
+		])
+		warn.mockClear()
+		build(mapWith({ parts: PARTS }))
+		expect(warn).not.toHaveBeenCalled()
+		vi.stubEnv('NODE_ENV', 'production')
+		build(data)
+		expect(warn).not.toHaveBeenCalled()
+		vi.unstubAllEnvs()
+		warn.mockRestore()
 	})
 
 	it('objectTop: верх самой высокой части; без parts и у других видов — высота объекта', () => {

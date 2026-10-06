@@ -57,7 +57,8 @@ export function svgViewBox(root: Element, layer: SvgLayerSize): SvgViewBox {
 
 export function ensureViewBox(root: Element, layer: SvgLayerSize): void {
 	if (root.hasAttribute('viewBox') && parseViewBox(root.getAttribute('viewBox'))) return
-	if (!isValidLayerSize(layer)) return
+	const hasOwnSize = Boolean(parseSvgLength(root.getAttribute('width')) && parseSvgLength(root.getAttribute('height')))
+	if (!hasOwnSize && !isValidLayerSize(layer)) return
 	const box = svgViewBox(root, layer)
 	root.setAttribute('viewBox', `${box.x} ${box.y} ${box.width} ${box.height}`)
 }

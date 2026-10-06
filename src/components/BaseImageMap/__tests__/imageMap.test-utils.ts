@@ -31,6 +31,12 @@ export function mockViewport(size = VIEWPORT): void {
 	vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockImplementation(function (this: HTMLElement) {
 		return pick(this, size.height)
 	})
+	vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockImplementation(function (this: HTMLElement) {
+		return pick(this, size.width)
+	})
+	vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockImplementation(function (this: HTMLElement) {
+		return pick(this, size.height)
+	})
 }
 
 export function mockRects(

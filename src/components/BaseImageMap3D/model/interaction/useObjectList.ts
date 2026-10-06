@@ -1,8 +1,8 @@
 import type { Ref } from 'vue'
 import { formatMessage } from '@/locales/state'
 import { computed, nextTick, useTemplateRef, watch } from 'vue'
-import { UI_IMAGE_MAP, UI_IMAGE_MAP_3D } from '@/locales/messages'
 import type { ImageMap3DProps } from '../../types/BaseImageMap3D.types'
+import { UI_ARIA, UI_IMAGE_MAP, UI_IMAGE_MAP_3D } from '@/locales/messages'
 import type { Map3DParts, ObjectListEntry } from '../../types/internal/imageMap3dInternal.types'
 import type { ResolvedImageMapObject } from '@components/BaseImageMap/types/internal/imageMapModel.types'
 
@@ -13,9 +13,11 @@ function linkAttributes(item: ResolvedImageMapObject): Record<string, string | u
 }
 
 function objectEntry(item: ResolvedImageMapObject, activeId: string | null): ObjectListEntry {
+	const isLink = Boolean(item.href && !item.isDisabled)
 	return {
 		item,
-		tag: item.href && !item.isDisabled ? 'a' : 'button',
+		tag: isLink ? 'a' : 'button',
+		label: isLink && item.object.isLinkExternal ? `${item.object.title} ${UI_ARIA.OPENS_IN_NEW_TAB}` : item.object.title,
 		attributes: {
 			...linkAttributes(item),
 			'aria-current': item.object.id === activeId ? 'true' : undefined,

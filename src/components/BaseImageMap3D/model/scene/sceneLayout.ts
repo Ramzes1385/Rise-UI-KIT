@@ -46,7 +46,7 @@ export function svgPartSpecs(object: ImageMap3DObject, settings: SceneSettings):
 	const height = objectHeight(object, settings)
 	return parts
 		.filter(isRecord)
-		.filter(part => typeof part.elementId === 'string' && part.elementId !== '')
+		.filter(part => typeof part.elementId === 'string' && part.elementId.trim() !== '')
 		.map(part => ({
 			elementId: String(part.elementId),
 			height: pickNumber(part.height3d, value => value >= 0, height),

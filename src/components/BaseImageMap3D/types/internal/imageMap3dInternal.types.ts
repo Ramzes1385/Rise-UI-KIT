@@ -39,7 +39,8 @@ import type {
 } from 'three'
 
 /** Правило проверки 3D-поля данных */
-export type ImageMap3DFieldRule = 'number' | 'positive' | 'nonNegative' | 'text' | 'vector' | 'model' | 'object' | 'list' | 'flag'
+export type ImageMap3DFieldRule =
+	'number' | 'positive' | 'nonNegative' | 'text' | 'vector' | 'model' | 'object' | 'list' | 'flag' | 'svgOnly'
 
 /** Неверное 3D-поле данных: путь, значение и нарушенное правило */
 export interface ImageMap3DIssue {
@@ -562,7 +563,12 @@ export interface RouteTubeOptions {
 
 /** Запись списка объектов для скринридера: объект, тег (ссылка или кнопка) и атрибуты */
 export interface ObjectListEntry {
+	/** Объект карты */
 	item: ResolvedImageMapObject
+	/** Тег: `a` — у объекта есть адрес и он не отключён, иначе `button` */
 	tag: 'a' | 'button'
+	/** Текст записи: название объекта; у внешней ссылки — с пометкой «откроется в новой вкладке» */
+	label: string
+	/** Атрибуты: адрес, `target` и `rel` внешней ссылки, `aria-current`, `aria-disabled`, `aria-haspopup` */
 	attributes: Record<string, string | undefined>
 }

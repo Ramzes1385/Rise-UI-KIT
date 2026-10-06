@@ -8,10 +8,13 @@ import {
 	revealOffset,
 	scaleForArea,
 	toViewportPoint,
+	layoutOf,
 	zoomAround,
 } from '../../model/zoom/viewGeometry'
 
 const FRAME = { viewportWidth: 400, viewportHeight: 200, stageWidth: 400, stageHeight: 200 }
+
+const LAYOUT = { width: 400, height: 200, borderLeft: 0, borderTop: 0 }
 
 describe('viewGeometry', () => {
 	it('fitStage вписывает слой в окно с сохранением пропорций', () => {
@@ -98,15 +101,29 @@ describe('viewGeometry', () => {
 
 	it('toViewportPoint при дробной высоте окна не сдвигает точку', () => {
 		const box = { left: 25, top: 65, width: 1050, height: 656.25 }
-		expect(toViewportPoint({ x: 325, y: 465 }, box, { width: 1050, height: 656 })).toEqual({ x: 300, y: 400 })
+		expect(toViewportPoint({ x: 325, y: 465 }, box, { width: 1050, height: 656, borderLeft: 0, borderTop: 0 })).toEqual({
+			x: 300,
+			y: 400,
+		})
+	})
+
+	it('рамка окна шире 1 px (customClass) — не CSS-масштаб: размер берётся с рамкой, точка — от внутреннего края', () => {
+		const layout = { width: 406, height: 206, borderLeft: 3, borderTop: 3 }
+		expect(toViewportPoint({ x: 153, y: 93 }, { left: 100, top: 40, width: 406, height: 206 }, layout)).toEqual({ x: 50, y: 50 })
+		expect(toViewportPoint({ x: 126.5, y: 66.5 }, { left: 100, top: 40, width: 203, height: 103 }, layout)).toEqual({ x: 50, y: 50 })
+	})
+
+	it('layoutOf — offsetWidth, offsetHeight, clientLeft и clientTop элемента', () => {
+		const element = { offsetWidth: 406, offsetHeight: 206, clientLeft: 3, clientTop: 2 } as HTMLElement
+		expect(layoutOf(element)).toEqual({ width: 406, height: 206, borderLeft: 3, borderTop: 2 })
 	})
 
 	it('toViewportPoint переводит точку страницы во внутренние пиксели окна, в том числе при CSS-масштабе', () => {
-		expect(toViewportPoint({ x: 150, y: 90 }, { left: 100, top: 40, width: 400, height: 200 }, { width: 400, height: 200 })).toEqual({
+		expect(toViewportPoint({ x: 150, y: 90 }, { left: 100, top: 40, width: 400, height: 200 }, LAYOUT)).toEqual({
 			x: 50,
 			y: 50,
 		})
-		expect(toViewportPoint({ x: 150, y: 90 }, { left: 100, top: 40, width: 200, height: 100 }, { width: 400, height: 200 })).toEqual({
+		expect(toViewportPoint({ x: 150, y: 90 }, { left: 100, top: 40, width: 200, height: 100 }, LAYOUT)).toEqual({
 			x: 100,
 			y: 100,
 		})

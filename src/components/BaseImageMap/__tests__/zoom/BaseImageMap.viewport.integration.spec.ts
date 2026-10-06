@@ -105,6 +105,17 @@ describe('BaseImageMap — размер окна', () => {
 		expect(stageTransform(container)).toBe('translate(-200px, -125px) scale(1.5)')
 	})
 
+	it('замена данных с тем же слоем и размером во время плавного перехода не обрывает его', async () => {
+		const { container, rerender } = await renderMap()
+		await userEvent.setup().click(screen.getByRole('button', { name: 'Увеличить' }))
+		const stage = container.querySelector('.base-image-map__stage') as HTMLElement
+		expect(stage).toHaveClass('base-image-map__stage--animated')
+		await rerender({ data: { ...SIMPLE_DATA, layers: SIMPLE_DATA.layers.map(layer => ({ ...layer })) }, ...BASE_PROPS })
+		await nextTick()
+		expect(stage).toHaveClass('base-image-map__stage--animated')
+		expect(stageTransform(container)).toBe('translate(-200px, -125px) scale(1.5)')
+	})
+
 	it('смена слоя: план другой пропорции сбрасывает вид, план того же размера — сохраняет', async () => {
 		const data: ImageMapData = {
 			layers: [
@@ -167,7 +178,7 @@ describe('BaseImageMap — щипок и колесо', () => {
 		['строках', { deltaY: -3, deltaMode: 1 }, /scale\(1\.1007/],
 		['страницах', { deltaY: -0.5, deltaMode: 2 }, /scale\(1\.4918/],
 		['пикселях', { deltaY: -100, deltaMode: 0 }, /scale\(1\.2214/],
-	])('колесо в %s даёт один и тот же масштаб на один и тот же пройденный путь', async (_name, init, expected) => {
+	])('колесо в %s переводит шаг в пиксели (строка — 16, страница — 400) и масштабирует по нему', async (_name, init, expected) => {
 		const { container, viewport } = await renderMap({ wheelZoom: 'always', maxZoom: 8 })
 		viewport.dispatchEvent(new WheelEvent('wheel', init))
 		await nextTick()

@@ -1667,7 +1667,7 @@ function onSpeechError({ slide, error }: PresentationSpeechError) {
 - Свой поставщик — любой объект `PresentationSpeechProvider`: `synthesize` может вернуть и адрес (`string`) готового файла, например из кэша CDN, или Blob локальной модели (так подключается `piper-tts-web`: без зависимостей в ките). Отмену по `signal` поддержите, чтобы не платить за фразы слайдов, которые зритель пролистал.
 - Субтитры и стенограмма — как у записи: `slides[].captions` (если сервис вернул и разметку времени — соберите WebVTT) и `slides[].notes`; меток времени кит сам не строит.
 
-Посредник на Node без зависимостей (пример для SpeechKit REST v1; ключ — в переменной окружения сервера, не `VITE_*` и не `STORYBOOK_*`). Тот же код работает dev-middleware Storybook (`build/storybook/tts.ts`):
+Посредник на Node без зависимостей (пример для SpeechKit REST v1; ключ — в переменной окружения сервера, не `VITE_*` и не `STORYBOOK_*`). Так же отвечает dev-middleware Storybook (`build/storybook/tts.ts`): битый JSON — 400, сервис недоступен или ответил ошибкой — 502:
 
 ```js
 // server/tts.mjs — Node 18+
@@ -1694,11 +1694,16 @@ createServer(async (req, res) => {
 	const { text = '', voice = 'filipp', lang = 'ru', format = 'mp3' } = body
 	if (typeof text !== 'string' || !text.trim() || text.length > 5000) return res.writeHead(400).end() // v1: до 5000 символов
 	// Здесь же — своя авторизация пользователя, лимит запросов и кэш по хешу текста
-	const upstream = await fetch('https://tts.api.cloud.yandex.net/speech/v1/tts:synthesize', {
-		method: 'POST',
-		headers: { Authorization: `Api-Key ${KEY}` },
-		body: new URLSearchParams({ text, lang: LANGS[lang] ?? lang, voice, format }),
-	})
+	let upstream
+	try {
+		upstream = await fetch('https://tts.api.cloud.yandex.net/speech/v1/tts:synthesize', {
+			method: 'POST',
+			headers: { Authorization: `Api-Key ${KEY}` },
+			body: new URLSearchParams({ text, lang: LANGS[lang] ?? lang, voice, format }),
+		})
+	} catch {
+		return res.writeHead(502).end() // сеть или DNS: отклонение fetch тоже роняло бы процесс
+	}
 	if (!upstream.ok) return res.writeHead(502).end()
 	res.writeHead(200, { 'Content-Type': CONTENT_TYPES[format] ?? 'application/octet-stream', 'Cache-Control': 'private, max-age=86400' })
 	res.end(Buffer.from(await upstream.arrayBuffer()))

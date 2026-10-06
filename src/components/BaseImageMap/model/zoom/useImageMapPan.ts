@@ -1,7 +1,7 @@
 import type { Ref } from 'vue'
 import { ZOOM_STEP } from './useImageMapView'
 import type { useImageMapView } from './useImageMapView'
-import { pageRatio, revealOffset, toViewportPoint } from './viewGeometry'
+import { layoutOf, pageRatio, revealOffset, toViewportPoint } from './viewGeometry'
 
 const PAN_SHARE = 0.1
 const REVEAL_MARGIN = 16
@@ -13,8 +13,6 @@ export function useImageMapPan(zoom: ReturnType<typeof useImageMapView>, viewpor
 		zoom.setView({ ...view, x: view.x + dx, y: view.y + dy }, false)
 	}
 
-	const sizeOf = (viewport: HTMLElement) => ({ width: viewport.clientWidth, height: viewport.clientHeight })
-
 	return {
 		revealElement(element: Element): boolean {
 			const viewport = viewportRef.value
@@ -22,7 +20,7 @@ export function useImageMapPan(zoom: ReturnType<typeof useImageMapView>, viewpor
 			const box = viewport.getBoundingClientRect()
 			const offset = revealOffset(element.getBoundingClientRect(), box, REVEAL_MARGIN)
 			if (!offset.x && !offset.y) return false
-			const ratio = pageRatio(box, sizeOf(viewport))
+			const ratio = pageRatio(box, layoutOf(viewport))
 			shift(offset.x * ratio.x, offset.y * ratio.y)
 			return true
 		},
@@ -30,7 +28,7 @@ export function useImageMapPan(zoom: ReturnType<typeof useImageMapView>, viewpor
 			const rect = element.getBoundingClientRect()
 			const viewport = viewportRef.value as HTMLElement
 			const center = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
-			const point = toViewportPoint(center, viewport.getBoundingClientRect(), sizeOf(viewport))
+			const point = toViewportPoint(center, viewport.getBoundingClientRect(), layoutOf(viewport))
 			zoom.zoomBy(isZoomIn ? ZOOM_STEP : 1 / ZOOM_STEP, point)
 		},
 		isPanKey: (key: string): boolean => key in PAN_KEYS,

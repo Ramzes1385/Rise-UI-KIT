@@ -124,10 +124,19 @@ describe('ensureViewBox', () => {
 		expect(valid.getAttribute('viewBox')).toBe('-10 -5 100 50')
 	})
 
-	it('без размера слоя ничего не делает', () => {
+	it('без размера слоя и без width и height корня ничего не делает', () => {
 		const target = root()
 		ensureViewBox(target, { width: 0, height: 0 })
 		expect(target.hasAttribute('viewBox')).toBe(false)
+		const halfSized = root('width="400"')
+		ensureViewBox(halfSized, { width: 0, height: 0 })
+		expect(halfSized.hasAttribute('viewBox')).toBe(false)
+	})
+
+	it('неверный размер слоя: viewBox берётся из width и height корня', () => {
+		const target = root('width="400" height="200"')
+		ensureViewBox(target, { width: 0, height: 0 })
+		expect(target.getAttribute('viewBox')).toBe('0 0 400 200')
 	})
 })
 

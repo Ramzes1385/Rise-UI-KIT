@@ -160,7 +160,7 @@
 							tabindex="-1"
 							@focus="onObjectFocus(entry.item)"
 							@click="onObjectClick(entry.item, $event)">
-							{{ entry.item.object.title }}
+							{{ entry.label }}
 						</component>
 					</li>
 				</ul>

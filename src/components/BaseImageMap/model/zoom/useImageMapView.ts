@@ -2,8 +2,8 @@ import type { ComputedRef, Ref } from 'vue'
 import type { ImageMapArea } from '../../types/imageMapData.types'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { ImageMapView } from '../../types/internal/imageMapModel.types'
-import type { Frame, ScreenPoint, ViewOptions } from '../../types/internal/imageMapInternal.types'
 import { clampScale, clampView, fitArea, fitStage, retargetView, scaleForArea, zoomAround } from './viewGeometry'
+import type { Frame, ScreenPoint, ViewKeeperActions, ViewOptions } from '../../types/internal/imageMapInternal.types'
 
 export const ZOOM_STEP = 1.5
 const OBJECT_SHARE = 1 / 3
@@ -40,16 +40,22 @@ function useFrame(options: ViewOptions) {
 	})
 }
 
-function useViewKeeper(
-	options: ViewOptions,
-	frame: ComputedRef<Frame>,
-	view: { reset: () => void; current: () => ImageMapView; apply: (next: ImageMapView) => void },
-): void {
+function isSameFrame(frame: Frame, other: Frame): boolean {
+	return (
+		frame.viewportWidth === other.viewportWidth &&
+		frame.viewportHeight === other.viewportHeight &&
+		frame.stageWidth === other.stageWidth &&
+		frame.stageHeight === other.stageHeight
+	)
+}
+
+function useViewKeeper(options: ViewOptions, frame: ComputedRef<Frame>, view: ViewKeeperActions): void {
 	let previous = frame.value
 	let previousLayer = options.getLayer()?.id
 	watch(
 		() => [frame.value, options.getLayer()?.id] as const,
 		([next, layerId]) => {
+			if (layerId === previousLayer && isSameFrame(previous, next)) return
 			const from = previous
 			const isOtherStage = layerId !== previousLayer && (from.stageWidth !== next.stageWidth || from.stageHeight !== next.stageHeight)
 			previous = next

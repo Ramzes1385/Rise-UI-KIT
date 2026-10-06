@@ -34,6 +34,11 @@ async function readJson(req: IncomingMessage): Promise<TtsBody> {
 	return raw ? (JSON.parse(raw) as TtsBody) : {}
 }
 
+function errorStatus(error: unknown): number {
+	if (error instanceof SyntaxError) return 400
+	return error instanceof TypeError ? 502 : 500
+}
+
 function end(res: ServerResponse, status: number, message = ''): void {
 	res.writeHead(status, { 'Content-Type': 'text/plain; charset=utf-8' })
 	res.end(message)
@@ -70,7 +75,7 @@ export function createTtsPlugin(root: string): Plugin {
 				if (!key) return end(res, 503, 'Нет ключа: YANDEX_SPEECHKIT_API_KEY в .env.local')
 				readJson(req)
 					.then(body => synthesize(key, body, res))
-					.catch((error: unknown) => end(res, 500, error instanceof Error ? error.message : String(error)))
+					.catch((error: unknown) => end(res, errorStatus(error), error instanceof Error ? error.message : String(error)))
 			})
 		},
 	}

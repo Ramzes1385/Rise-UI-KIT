@@ -1,8 +1,8 @@
 import { objectLayerId } from './sceneLayout'
-import { svgParts } from './geometry/svgParts'
 import { parseSvgPaths } from './geometry/svgShapes'
 import { paintObject, setObjectState } from './materials/sceneObjects'
 import type { ImageMap3DLayerMode } from '../../types/BaseImageMap3D.types'
+import { svgElementIds, svgParts, warnNestedElements } from './geometry/svgParts'
 import { addShapeObject, fadeFloor, objectColors, paintFloor } from './buildScene'
 import type { ImageMap3DData, ImageMap3DObject } from '../../types/imageMap3dData.types'
 import type { ImageMapSvgObject } from '@components/BaseImageMap/types/imageMapData.types'
@@ -58,6 +58,7 @@ export function addSvgObjects(
 	)
 	const layer = data.layers.find(entry => entry.id === layerId)
 	const paths = svgObjects.length && layer ? parseSvgPaths(markup, layer) : []
+	warnNestedElements(paths, new Set(svgObjects.flatMap(object => svgElementIds(object, content.settings))), layerId)
 	return svgObjects.filter(object => {
 		const parts = svgParts(object, { paths, layerId }, content.settings)
 		return addShapeObject(content, { object, layerId, colors: objectColors(object, data, resolve) }, parts)
