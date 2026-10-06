@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom/vitest'
 import BaseImageMap3D from '../ui/BaseImageMap3D.vue'
-import type { Mesh, Scene, TubeGeometry } from 'three'
 import { defineComponent, h, nextTick, ref } from 'vue'
 import type { ImageMap3DData } from '../types/imageMap3dData.types'
 import { createFakeRenderer, mockWebGL } from './imageMap3d.test-utils'
 import type { BaseImageMap3DExpose } from '../types/BaseImageMap3D.types'
+import type { Mesh, MeshStandardMaterial, Scene, TubeGeometry } from 'three'
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
 
 const DATA: ImageMap3DData = {
@@ -69,6 +69,22 @@ afterEach(() => {
 	document.documentElement.removeAttribute('data-rise-theme')
 })
 
+function mockThemeColors(): void {
+	const original = window.getComputedStyle.bind(window)
+	const themed = () => (document.documentElement.getAttribute('data-rise-theme') === 'dark' ? 'rgb(10, 20, 30)' : 'rgb(200, 100, 50)')
+	vi.spyOn(window, 'getComputedStyle').mockImplementation((element, pseudo) => {
+		const style = original(element, pseudo)
+		if (!(element instanceof HTMLSpanElement && element.hidden)) return style
+		return new Proxy(style, {
+			get: (target, key) => {
+				if (key === 'color') return themed()
+				const value = Reflect.get(target, key)
+				return typeof value === 'function' ? value.bind(target) : value
+			},
+		})
+	})
+}
+
 async function renderRoutes(props: Record<string, unknown> = {}) {
 	const renderer = createFakeRenderer()
 	const exposed = ref<BaseImageMap3DExpose | null>(null)
@@ -115,19 +131,40 @@ describe('BaseImageMap3D: маршруты', () => {
 
 	it('шаг маршрута показывает свой этаж; clearRoute убирает трубку; тема перекрашивает', async () => {
 		document.documentElement.setAttribute('data-rise-motion', 'none')
+		mockThemeColors()
 		const onLayerChange = vi.fn()
 		const { tube, exposed, scene } = await renderRoutes({ route: { from: 'start', to: 'goal' }, onLayerChange })
 		const steps = screen.getAllByRole('button').filter(button => /Кафе|2/.test(button.textContent ?? ''))
 		await fireEvent.click(steps.at(-1) as HTMLElement)
 		await waitFor(() => expect(onLayerChange).toHaveBeenCalledWith('f2'))
-		const material = (tube() as Mesh).material
+		const material = (tube() as Mesh<TubeGeometry, MeshStandardMaterial>).material
+		expect(material.color.getHexString()).toBe('c86432')
 		document.documentElement.setAttribute('data-rise-theme', 'dark')
-		await waitFor(() => expect(material).toBeDefined())
+		await waitFor(() => expect(material.color.getHexString()).toBe('0a141e'))
 		exposed.value?.clearRoute()
 		await nextTick()
 		await nextTick()
 		flushFrames()
 		expect(scene().getObjectByName('rise-route')).toBeUndefined()
+	})
+
+	it('пресет движения берётся у предка карты: data-rise-motion="none" на обёртке — линия сразу целиком', async () => {
+		const wrapper = document.body.appendChild(document.createElement('section'))
+		wrapper.setAttribute('data-rise-motion', 'none')
+		const renderer = createFakeRenderer()
+		render(BaseImageMap3D, {
+			props: { data: DATA, rendererFactory: () => renderer, hasRoutes: true, route: { from: 'start', to: 'goal' } },
+			container: wrapper.appendChild(document.createElement('div')),
+		})
+		await waitFor(() => expect(renderer.setPixelRatio).toHaveBeenCalled())
+		await nextTick()
+		await nextTick()
+		flushFrames()
+		expect(document.documentElement).not.toHaveAttribute('data-rise-motion')
+		const scene = renderer.render.mock.calls.at(-1)?.[0] as Scene
+		const geometry = (scene.getObjectByName('rise-route')?.children[0] as Mesh<TubeGeometry>).geometry
+		expect(geometry.drawRange.count).toBe(geometry.index?.count)
+		wrapper.remove()
 	})
 
 	it('уход в 2D освобождает трубку; панель маршрута — и в 2D', async () => {

@@ -35,5 +35,6 @@ export function objectLayerId(object: ImageMap3DObject, data: ImageMap3DData): s
 }
 
 export function objectMeshName(object: ImageMap3DObject): string {
-	return typeof object.meshName === 'string' && object.meshName.trim() ? object.meshName : object.id
+	const name = typeof object.meshName === 'string' ? object.meshName.trim() : ''
+	return name || object.id
 }

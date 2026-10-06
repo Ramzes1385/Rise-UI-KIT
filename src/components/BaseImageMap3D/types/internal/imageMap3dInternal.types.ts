@@ -329,6 +329,16 @@ export interface ScenePointView {
 }
 
 /** Указатель над сценой */
+/** Последнее положение указателя: наведение по нему считается раз в кадр */
+export interface PointerSpot {
+	/** Элемент под указателем (метка точки) */
+	target: EventTarget | null
+	/** clientX */
+	x: number
+	/** clientY */
+	y: number
+}
+
 export interface ScenePointerOptions {
 	/** Id объекта под точкой экрана (clientX, clientY) */
 	pickAt: (x: number, y: number) => string | null

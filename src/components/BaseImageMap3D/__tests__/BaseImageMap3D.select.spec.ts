@@ -1,13 +1,13 @@
 import '@testing-library/jest-dom/vitest'
-import { Vector3 } from 'three'
 import type { VNode } from 'vue'
+import { Raycaster, Vector3 } from 'three'
 import BaseImageMap3D from '../ui/BaseImageMap3D.vue'
 import { defineComponent, h, nextTick, ref } from 'vue'
 import type { ImageMap3DData } from '../types/imageMap3dData.types'
-import type { Camera, Mesh, MeshStandardMaterial, Scene } from 'three'
 import { createFakeRenderer, mockWebGL } from './imageMap3d.test-utils'
 import type { BaseImageMap3DExpose } from '../types/BaseImageMap3D.types'
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
+import type { Camera, Mesh, MeshStandardMaterial, OrthographicCamera, Scene } from 'three'
 
 const DATA: ImageMap3DData = {
 	layers: [
@@ -131,6 +131,8 @@ describe('BaseImageMap3D: выбор объектов', () => {
 		const { region, screenOf, material } = await renderSelect({ onHover })
 		const base = material('hall').opacity
 		await fireEvent.pointerMove(region(), { ...screenOf(HALL), pointerType: 'mouse' })
+		expect(onHover).not.toHaveBeenCalled()
+		flushFrames()
 		expect(onHover).toHaveBeenLastCalledWith(expect.objectContaining({ id: 'hall' }))
 		await nextTick()
 		const card = region().querySelector('[role="tooltip"]') as HTMLElement
@@ -148,6 +150,7 @@ describe('BaseImageMap3D: выбор объектов', () => {
 		expect(onHover).toHaveBeenLastCalledWith(null)
 		expect(screen.queryByRole('tooltip')).toBeNull()
 		await fireEvent.pointerMove(region(), { ...screenOf(HALL), pointerType: 'touch' })
+		flushFrames()
 		expect(onHover).toHaveBeenCalledTimes(2)
 	})
 
@@ -170,10 +173,13 @@ describe('BaseImageMap3D: выбор объектов', () => {
 		const { region, container, unmount } = await renderSelect({}, { tooltip: () => h('span', 'из слота') })
 		const marker = container.querySelector('[data-image-map-object="kiosk"]') as HTMLElement
 		await fireEvent.pointerMove(marker, { pointerType: 'mouse' })
+		flushFrames()
 		expect(await within(region()).findByText('из слота')).toBeInTheDocument()
 		unmount()
 		const next = await renderSelect({ hasTooltip: false })
 		await fireEvent.pointerMove(next.region(), { ...next.screenOf(HALL), pointerType: 'mouse' })
+		flushFrames()
+		await nextTick()
 		expect(screen.queryByRole('tooltip')).toBeNull()
 	})
 
@@ -296,7 +302,9 @@ describe('BaseImageMap3D: клавиатура', () => {
 
 	it('подсказка области называет клавиши объектов', async () => {
 		const { region } = await renderSelect()
-		expect(region()).toHaveAccessibleDescription(expect.stringContaining('Стрелки — объекты, Enter — открыть'))
+		expect(region()).toHaveAccessibleDescription(
+			expect.stringContaining('Стрелки — объекты, Home и End — первый и последний, Enter или пробел — открыть, Escape — снять фокус'),
+		)
 	})
 })
 
@@ -444,5 +452,140 @@ describe('BaseImageMap3D: переход в 2D (замечания провер�
 		await waitFor(() => expect(factory).toHaveBeenCalledTimes(3))
 		await waitFor(() => expect(container.querySelector('.base-image-map-3d__viewport')).toBeInTheDocument())
 		expect(container.querySelector('.base-image-map-3d__status')).toHaveTextContent('')
+	})
+})
+
+describe('BaseImageMap3D: фокус, наведение и касание (map3d-polish)', () => {
+	it('уход Tab из карты снимает фокус объекта и карточку; переход к кнопкам карты — нет', async () => {
+		const onHover = vi.fn()
+		const { region } = await renderSelect({ onHover })
+		const outside = document.body.appendChild(document.createElement('button'))
+		region().focus()
+		await fireEvent.keyDown(region(), { key: 'ArrowRight' })
+		await nextTick()
+		const live = region().querySelector('[aria-live="polite"]') as HTMLElement
+		const zoomIn = screen.getByRole('button', { name: 'Увеличить' })
+		await fireEvent.focusOut(region(), { relatedTarget: zoomIn })
+		expect(region().querySelector('[role="tooltip"]')).toHaveTextContent('Зал')
+		expect(live).toHaveTextContent('Зал, Этаж 1')
+		await fireEvent.focusOut(region(), { relatedTarget: outside })
+		await nextTick()
+		expect(onHover).toHaveBeenLastCalledWith(null)
+		expect(region().querySelector('[role="tooltip"]')).toBeNull()
+		expect(live).toHaveTextContent('')
+		await fireEvent.focusOut(region(), { relatedTarget: null })
+		expect(onHover).toHaveBeenCalledTimes(2)
+		outside.remove()
+	})
+
+	it('Escape в окне, открытом с клавиатуры, возвращает фокус на область карты', async () => {
+		const { region } = await renderSelect()
+		region().focus()
+		await fireEvent.keyDown(region(), { key: 'ArrowRight' })
+		await fireEvent.keyDown(region(), { key: 'Enter' })
+		const dialog = await screen.findByRole('dialog', { name: 'Зал' })
+		await waitFor(() => expect(dialog).toContainElement(document.activeElement as HTMLElement))
+		await fireEvent.keyDown(dialog, { key: 'Escape' })
+		await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
+		await waitFor(() => expect(document.activeElement).toBe(region()))
+	})
+
+	it('10 pointermove за кадр — один луч по последней позиции; уход указателя отменяет кадр', async () => {
+		const onHover = vi.fn()
+		const { region, screenOf } = await renderSelect({ onHover })
+		const intersect = vi.spyOn(Raycaster.prototype, 'intersectObjects')
+		const hall = screenOf(HALL)
+		for (let step = 0; step < 9; step += 1)
+			await fireEvent.pointerMove(region(), { clientX: 790, clientY: 395 + step / 10, pointerType: 'mouse' })
+		await fireEvent.pointerMove(region(), { ...hall, pointerType: 'mouse' })
+		expect(intersect).not.toHaveBeenCalled()
+		flushFrames()
+		expect(intersect).toHaveBeenCalledOnce()
+		expect(onHover).toHaveBeenCalledOnce()
+		expect(onHover).toHaveBeenLastCalledWith(expect.objectContaining({ id: 'hall' }))
+		await fireEvent.pointerMove(region(), { ...screenOf(LEFT), pointerType: 'mouse' })
+		await fireEvent.pointerLeave(region())
+		expect(cancelAnimationFrame).toHaveBeenCalled()
+		flushFrames()
+		expect(intersect).toHaveBeenCalledOnce()
+		expect(onHover).toHaveBeenLastCalledWith(null)
+	})
+
+	it('касание: до 4 px — выбор, больше 4 px — прокрутка или жест, без выбора', async () => {
+		const onSelect = vi.fn()
+		const { region, screenOf } = await renderSelect({ onSelect, defaultAction: 'none' })
+		const point = screenOf(LEFT)
+		await fireEvent.pointerDown(region(), { ...point, pointerType: 'touch', pointerId: 1 })
+		await fireEvent.pointerUp(region(), { ...point, pointerType: 'touch', pointerId: 1 })
+		await fireEvent.click(region(), { clientX: point.clientX + 6, clientY: point.clientY })
+		expect(onSelect).not.toHaveBeenCalled()
+		await fireEvent.pointerDown(region(), { ...point, pointerType: 'touch', pointerId: 2 })
+		await fireEvent.pointerUp(region(), { ...point, pointerType: 'touch', pointerId: 2 })
+		await fireEvent.click(region(), { clientX: point.clientX + 4, clientY: point.clientY })
+		expect(onSelect).toHaveBeenCalledWith(expect.objectContaining({ id: 'left' }))
+	})
+
+	it('стрелки, Home и End ведут только по объектам на экране', async () => {
+		const { region, exposed, camera } = await renderSelect()
+		for (let step = 0; step < 4; step += 1) {
+			exposed.value?.zoomIn()
+			await nextTick()
+		}
+		flushFrames()
+		expect((camera() as OrthographicCamera).zoom).toBeCloseTo(1.5 ** 4)
+		const live = region().querySelector('[aria-live="polite"]') as HTMLElement
+		await fireEvent.keyDown(region(), { key: 'End' })
+		expect(live).toHaveTextContent('Зал, Этаж 1')
+		await fireEvent.keyDown(region(), { key: 'ArrowLeft' })
+		expect(live).toHaveTextContent('Зал, Этаж 1')
+		await fireEvent.keyDown(region(), { key: 'ArrowRight' })
+		expect(live).toHaveTextContent('Зал, Этаж 1')
+	})
+
+	it('объявление объекта не остаётся после 2D-вида; имя области — ariaLabel и этаж', async () => {
+		const { region, exposed, rerender } = await renderSelect({ ariaLabel: 'Торговый центр' })
+		expect(screen.getByRole('group', { name: 'Торговый центр, Этаж 1' })).toBe(region())
+		await fireEvent.keyDown(region(), { key: 'ArrowRight' })
+		expect(region().querySelector('[aria-live="polite"]')).toHaveTextContent('Зал, Этаж 1')
+		exposed.value?.setView('2d')
+		await nextTick()
+		exposed.value?.setLayer('f2')
+		await nextTick()
+		exposed.value?.setView('3d')
+		await nextTick()
+		await waitFor(() => expect(screen.getByRole('group', { name: 'Торговый центр, Этаж 2' })).toBeInTheDocument())
+		expect(region().querySelector('[aria-live="polite"]')).toHaveTextContent('')
+		await rerender({ data: { ...DATA, layers: [] } })
+		expect(screen.getByRole('group', { name: 'Торговый центр' })).toBeInTheDocument()
+	})
+
+	it('customClass: ключи 3D-вида попадают на свои элементы', async () => {
+		const keys = [
+			'root',
+			'views',
+			'toolbar',
+			'layers',
+			'camera',
+			'viewport',
+			'canvas',
+			'point',
+			'tooltip',
+			'popup',
+			'directory',
+			'status',
+		]
+		const customClass = Object.fromEntries(keys.map(key => [key, `my-${key}`]))
+		const { container, region } = await renderSelect({ customClass, has2dToggle: true, hasDirectory: true })
+		region().focus()
+		await fireEvent.keyDown(region(), { key: 'ArrowRight' })
+		await nextTick()
+		const own = ['root', 'views', 'toolbar', 'layers', 'camera', 'viewport', 'canvas', 'point', 'tooltip', 'directory', 'status']
+		own.forEach(key => expect(container.querySelector(`.my-${key}`), key).toBeInTheDocument())
+		expect(container.querySelector('.my-viewport')).toBe(region())
+		expect(container.querySelector('.my-tooltip')).toHaveTextContent('Зал')
+		expect(container.querySelector('.my-point')).toHaveAttribute('data-image-map-object', 'kiosk')
+		await fireEvent.keyDown(region(), { key: 'Enter' })
+		await screen.findByRole('dialog', { name: 'Зал' })
+		expect(document.querySelector('.my-popup')).toBeInTheDocument()
 	})
 })

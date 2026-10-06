@@ -50,7 +50,7 @@ export interface ImageMap3DRenderer {
 /** Фабрика рендерера: получает холст карты и возвращает рендерер; ошибка внутри — карта переходит в 2D */
 export type ImageMap3DRendererFactory = (canvas: HTMLCanvasElement) => ImageMap3DRenderer
 
-/** Почему показан 2D-вид, хотя просили 3D: unsupported — нет WebGL; error — рендерер не создался */
+/** Почему показан 2D-вид, хотя просили 3D: unsupported — нет WebGL; error — рендерер не создался или модель этажа не загрузилась */
 export const IMAGE_MAP_3D_FALLBACK_REASONS = ['unsupported', 'error'] as const
 
 /** Причина перехода в 2D */
@@ -141,7 +141,7 @@ export type ImageMap3DProps = PropsWithDefaults<
 export interface BaseImageMap3DEmits extends BaseImageMapEmits {
 	/** Сменился вид (`v-model:view`) */
 	(event: 'update:view', view: ImageMap3DView): void
-	/** Карта показала 2D вместо 3D: нет WebGL или рендерер не создался */
+	/** Карта показала 2D вместо 3D: нет WebGL, рендерер не создался или модель этажа не загрузилась */
 	(event: 'fallback', reason: ImageMap3DFallbackReason): void
 }
 

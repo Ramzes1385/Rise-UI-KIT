@@ -123,7 +123,7 @@ describe('модель этажа', () => {
 		const content = buildSceneContent(data, resolve)
 		const dispose = vi.spyOn(MeshStandardMaterial.prototype, 'dispose')
 		const result = attachModel(content, { data, layerId: 'mall', root }, resolve)
-		expect(result).toEqual({ missing: [], shared: ['twin', 'stand'] })
+		expect(result).toEqual({ missing: [], shared: ['stand', 'twin'] })
 		const hallEntry = content.objects.get('hall')
 		expect(hallEntry?.meshes.map(item => item.name)).toEqual(['hall-floor', 'stand'])
 		expect(stand.material).toBe(hallEntry?.material)
@@ -131,6 +131,24 @@ describe('модель этажа', () => {
 		expect(content.objects.get('twin')?.source).toBe('shape')
 		expect(content.objects.get('stand')?.source).toBe('shape')
 		expect(dispose.mock.contexts).not.toContain(hallEntry?.material)
+	})
+
+	it('attachModel: общий meshName не зависит от порядка — узел достаётся объекту с тем же id', () => {
+		const data: ImageMap3DData = {
+			layers: [{ id: 'mall', title: 'ТЦ', width: 1000, height: 600, model: { url: 'mall.glb' } }],
+			objects: [
+				{ id: 'twin', type: 'rect', title: 'Двойник', x: 0.5, y: 0.5, width: 0.1, height: 0.1, meshName: 'hall' },
+				{ id: 'hall', type: 'rect', title: 'Зал', x: 0, y: 0, width: 0.5, height: 0.5, meshName: 'hall' },
+				{ id: 'echo', type: 'rect', title: 'Эхо', x: 0.6, y: 0.6, width: 0.1, height: 0.1, meshName: 'hall' },
+			],
+		}
+		const root = new Group()
+		root.add(mesh('hall'))
+		const content = buildSceneContent(data, resolve)
+		expect(attachModel(content, { data, layerId: 'mall', root }, resolve)).toEqual({ missing: [], shared: ['twin', 'echo'] })
+		expect(content.objects.get('hall')?.source).toBe('model')
+		expect(content.objects.get('twin')?.source).toBe('shape')
+		expect(content.objects.get('echo')?.source).toBe('shape')
 	})
 
 	it('attachModel: узел занят частично — объект берёт только свободные меши', () => {

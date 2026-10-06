@@ -27,7 +27,7 @@ export interface ImageMap3DLayer extends ImageMapLayer {
 export interface ImageMap3DObjectFields {
 	/** Высота выдавливания в единицах слоя; по умолчанию `scene3d.objectHeight` (не `height`: у `rect` это размер) */
 	height3d?: number
-	/** Имя узла в модели этажа; по умолчанию `id` объекта */
+	/** Имя узла в модели этажа; по умолчанию `id` объекта. Пробелы по краям не учитываются; узел с тем же именем, что `id` объекта, достаётся ему, остальным объектам с этим `meshName` — свободные меши */
 	meshName?: string
 }
 

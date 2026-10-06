@@ -115,7 +115,7 @@ function useViewModel(props: ImageMap3DProps, emit: BaseImageMap3DEmits) {
 	return { fallback, setView, shownView }
 }
 
-function useLiveRegion(props: ImageMap3DProps, map: Map3DParts) {
+function useLiveRegion(props: ImageMap3DProps, map: Map3DParts, getView: () => ImageMap3DView) {
 	const liveText = ref('')
 	const layerTitle = (id: string | undefined) => {
 		const layer = props.data.layers.find(entry => entry.id === id)
@@ -128,6 +128,10 @@ function useLiveRegion(props: ImageMap3DProps, map: Map3DParts) {
 			liveText.value = formatMessage(UI_IMAGE_MAP_3D.LAYER_LIVE, { layer: layerTitle(id) })
 		},
 	)
+
+	watch(getView, () => {
+		liveText.value = ''
+	})
 
 	return {
 		liveText,
@@ -149,7 +153,11 @@ function usePresentation(
 	classes: Readonly<Ref<Record<string, string | undefined>>>,
 ) {
 	return {
-		mapLabel: computed(() => props.ariaLabel ?? map.data.currentLayer.value?.title ?? UI_IMAGE_MAP.LABEL),
+		mapLabel: computed(() => {
+			const layer = map.data.currentLayer.value?.title
+			if (!props.ariaLabel) return layer ?? UI_IMAGE_MAP.LABEL
+			return layer ? formatMessage(UI_IMAGE_MAP_3D.REGION_LABEL, { label: props.ariaLabel, layer }) : props.ariaLabel
+		}),
 		viewportStyle: computed(() => {
 			const layer = map.data.currentLayer.value
 			if (props.height) return { height: props.height }
@@ -201,7 +209,7 @@ export function useBaseImageMap3D(props: ImageMap3DProps, emit: BaseImageMap3DEm
 		},
 	}
 	const stage = useImageMap3DStage(stageOptions)
-	const live = useLiveRegion(props, map)
+	const live = useLiveRegion(props, map, () => shownView.value)
 	const input = useStageInput(stageOptions, stage, live.announce)
 
 	watch(() => props.data, warn3dData, { immediate: true })

@@ -5,6 +5,7 @@ import { disposeMaterial } from '../disposeObject'
 import { objectShapes } from '../geometry/objectShapes'
 import { objectColors, addShapeObject } from '../buildScene'
 import { objectLayerId, objectMeshName } from '../sceneLayout'
+import type { ImageMap3DObject } from '../../../types/imageMap3dData.types'
 import { adoptModelNode, hasTakenMesh, paintObject } from '../materials/sceneObjects'
 import type { ModelAttachResult, SceneColorResolver, SceneContent, SceneModelItem } from '../../../types/internal/imageMap3dInternal.types'
 
@@ -25,28 +26,34 @@ function shareLayerMaterials(materials: Set<Material>): Material[] {
 	})
 }
 
+function byOwnNameFirst(objects: ImageMap3DObject[]): ImageMap3DObject[] {
+	const isOwn = (object: ImageMap3DObject) => objectMeshName(object) === object.id
+	return [...objects.filter(isOwn), ...objects.filter(object => !isOwn(object))]
+}
+
 function adoptObjects(content: SceneContent, item: SceneModelItem, resolve: SceneColorResolver): ModelAttachResult {
 	const { data, layerId, root } = item
 	const source = data.layers.find(entry => entry.id === layerId)
 	const layer = content.layers.get(layerId)
 	const result: ModelAttachResult = { missing: [], shared: [] }
 	if (!layer || !source) return result
-	data.objects
-		.filter(object => object.type !== 'point' && objectLayerId(object, data) === layerId && !content.objects.has(object.id))
-		.forEach(object => {
-			const colors = objectColors(object, data, resolve)
-			const node = findModelNode(root, objectMeshName(object))
-			if (node && hasTakenMesh(node)) result.shared.push(object.id)
-			const entry = node ? adoptModelNode({ id: object.id, layerId }, node, colors) : null
-			if (!entry?.meshes.length) {
-				entry?.material.dispose()
-				if (!node) result.missing.push(object.id)
-				addShapeObject(content, { object, layerId, colors }, objectShapes(object, source))
-				return
-			}
-			content.objects.set(object.id, entry)
-			paintObject(entry, layer.opacity)
-		})
+	const objects = data.objects.filter(
+		object => object.type !== 'point' && objectLayerId(object, data) === layerId && !content.objects.has(object.id),
+	)
+	byOwnNameFirst(objects).forEach(object => {
+		const colors = objectColors(object, data, resolve)
+		const node = findModelNode(root, objectMeshName(object))
+		if (node && hasTakenMesh(node)) result.shared.push(object.id)
+		const entry = node ? adoptModelNode({ id: object.id, layerId }, node, colors) : null
+		if (!entry?.meshes.length) {
+			entry?.material.dispose()
+			if (!node) result.missing.push(object.id)
+			addShapeObject(content, { object, layerId, colors }, objectShapes(object, source))
+			return
+		}
+		content.objects.set(object.id, entry)
+		paintObject(entry, layer.opacity)
+	})
 	return result
 }
 

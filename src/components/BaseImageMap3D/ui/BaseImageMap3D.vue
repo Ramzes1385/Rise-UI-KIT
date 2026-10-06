@@ -81,9 +81,12 @@
 					:aria-roledescription="UI_IMAGE_MAP_3D.ROLE"
 					:aria-describedby="cardItem ? `${hintId} ${map.overlay.tooltipDomId}` : hintId"
 					@keydown="onKeydown"
+					@focusout="onFocusOut"
 					@wheel.capture="onWheel"
 					@pointerdown="onPointerDown"
 					@pointermove="onPointerMove"
+					@pointerup="onPointerUp"
+					@pointercancel="onPointerUp"
 					@pointerleave="onPointerLeave"
 					@click="onClick">
 					<canvas v-if="hasCanvas" ref="canvasRef" class="base-image-map-3d__canvas" :class="classes.canvas" aria-hidden="true" />
@@ -274,9 +277,11 @@ const {
 	cardItem,
 	points,
 	onKeydown,
+	onFocusOut,
 	onWheel,
 	onPointerDown,
 	onPointerMove,
+	onPointerUp,
 	onPointerLeave,
 	onClick,
 	hintId,

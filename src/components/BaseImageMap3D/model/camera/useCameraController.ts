@@ -25,6 +25,10 @@ function homePose(options: CameraOptions): CameraPose {
 	return defaultPose(center)
 }
 
+function setTouchAction(canvas: HTMLElement, hasOrbit: boolean): void {
+	canvas.style.touchAction = hasOrbit ? 'none' : 'pan-x pan-y'
+}
+
 function createControls(options: CameraOptions, canvas: HTMLCanvasElement): OrbitControls {
 	const controls = new OrbitControls(options.camera.value, canvas)
 	const distance = baseDistance(options.camera.value, sceneExtent(options.getData()))
@@ -40,6 +44,7 @@ function createControls(options: CameraOptions, canvas: HTMLCanvasElement): Orbi
 		enableRotate: options.getHasOrbit(),
 		enableZoom: false,
 	})
+	setTouchAction(canvas, options.getHasOrbit())
 	return controls
 }
 
@@ -121,7 +126,10 @@ function useOrbitControls(options: CameraOptions, state: CameraPoseState): void 
 	)
 
 	watch(options.getHasOrbit, value => {
-		if (state.controls.value) state.controls.value.enableRotate = value
+		const controls = state.controls.value
+		if (!controls) return
+		controls.enableRotate = value
+		setTouchAction(controls.domElement as HTMLElement, value)
 	})
 
 	onBeforeUnmount(stop)
@@ -146,7 +154,7 @@ export function useCameraController(options: CameraOptions) {
 
 	watch(options.getData, () => state.jump(homePose(options)))
 	watch(options.getLayerId, () => {
-		const pose = state.current()
+		const pose = state.next()
 		state.goTo([pose[0], homePose(options)[1], pose[2], pose[3], pose[4], pose[5]])
 	})
 
@@ -168,6 +176,9 @@ export function useCameraController(options: CameraOptions) {
 			if (!(event.ctrlKey || event.metaKey) || !state.controls.value || event.deltaY === 0) return
 			event.preventDefault()
 			state.goTo(zoomBy(state.next(), wheelFactor(event)))
+		},
+		pinchZoom: (factor: number) => {
+			if (state.controls.value) state.jump(zoomBy(state.next(), factor))
 		},
 		isMaxZoom: computed(() => state.zoom.value >= CAMERA_LIMITS.maxZoom - 1e-6),
 		isMinZoom: computed(() => state.zoom.value <= CAMERA_LIMITS.minZoom + 1e-6),

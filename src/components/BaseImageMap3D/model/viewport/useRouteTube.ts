@@ -17,7 +17,7 @@ function paintRoute(tube: RouteTube | null, host: HTMLElement | null): void {
 }
 
 export function useRouteTube(options: RouteTubeOptions) {
-	const progress = useTween<number>(() => 1, { duration: 'xslow' })
+	const progress = useTween<number>(() => 1, { duration: 'xslow', target: options.hostRef })
 	let tube: RouteTube | null = null
 
 	function clear(): void {

@@ -13,7 +13,9 @@ export const enImageMap3d = {
 		RESET_CAMERA: 'Reset view',
 		/** Map region hint for screen readers (`aria-describedby`) */
 		KEYBOARD_HINT:
-			'Arrows — objects, Enter — open, Escape — clear focus, PageUp and PageDown — floors; Shift and arrows — rotate and tilt, plus and minus — zoom, 0 — initial view, Ctrl or ⌘ and mouse wheel — zoom',
+			'Arrows — objects, Home and End — first and last, Enter or Space — open, Escape — clear object focus, PageUp and PageDown — floors; Shift and arrows — rotate and tilt, plus and minus — zoom, 0 — initial view, Ctrl or ⌘ with the mouse wheel and a two-finger pinch — zoom',
+		/** Map region name from `ariaLabel` and the floor; `{label}` — `ariaLabel`, `{layer}` — current floor */
+		REGION_LABEL: '{label}, {layer}',
 		/** View switch above the map */
 		VIEW: 'Map view',
 		VIEW_3D: '3D',

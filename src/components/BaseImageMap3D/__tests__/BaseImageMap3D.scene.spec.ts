@@ -220,7 +220,7 @@ describe('BaseImageMap3D: сцена', () => {
 		expect(renderer.render).not.toHaveBeenCalled()
 	})
 
-	it('модель этажа: configureLoader, меши по id, предупреждение о ненайденных узлах', async () => {
+	it('модель этажа: configureLoader, меши по id, предупреждения о ненайденных и занятых узлах', async () => {
 		const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 		const model = new Group()
 		const node = new Mesh(new BoxGeometry(), new MeshBasicMaterial())
@@ -234,6 +234,7 @@ describe('BaseImageMap3D: сцена', () => {
 			objects: [
 				{ id: 'm-shop', type: 'svg', title: 'Shop', elementId: 'm-shop' },
 				{ id: 'm-box', type: 'rect', title: 'Box', x: 0, y: 0, width: 0.5, height: 0.5 },
+				{ id: 'm-twin', type: 'rect', title: 'Twin', x: 0.5, y: 0.5, width: 0.2, height: 0.2, meshName: 'm-shop' },
 			],
 		}
 		const { scene } = await renderScene({ data, configureLoader })
@@ -242,6 +243,11 @@ describe('BaseImageMap3D: сцена', () => {
 		expect(node.userData.objectId).toBe('m-shop')
 		expect(scene.getObjectByName('m-box')).toBeInstanceOf(Mesh)
 		expect(warn).toHaveBeenCalledWith(expect.stringContaining('нет узла «m-box»'))
+		expect(warn).toHaveBeenCalledWith(
+			expect.stringContaining('меши узла «m-shop» в модели этажа «m» уже заняты другим объектом — объект «m-twin»'),
+		)
+		expect(warn).not.toHaveBeenCalledWith(expect.stringContaining('нет узла «m-shop»'))
+		expect(scene.getObjectByName('m-twin')).toBeInstanceOf(Mesh)
 	})
 
 	it('модель не загрузилась — 2D и событие fallback(error); после размонтирования — без события', async () => {

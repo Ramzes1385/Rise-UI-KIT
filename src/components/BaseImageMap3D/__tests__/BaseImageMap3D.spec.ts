@@ -87,7 +87,7 @@ describe('BaseImageMap3D: 3D-вид', () => {
 	it('ResizeObserver меняет размер и перерисовывает по требованию: один кадр на несколько запросов', async () => {
 		const { renderer, rendererFactory, exposed } = renderMap({ height: '300px', ariaLabel: 'Торговый центр' })
 		await waitFor(() => expect(rendererFactory).toHaveBeenCalledOnce())
-		const region = screen.getByRole('group', { name: 'Торговый центр' })
+		const region = screen.getByRole('group', { name: 'Торговый центр, Этаж 1' })
 		expect(region).toHaveStyle({ height: '300px' })
 		expect(observe).toHaveBeenCalledWith(region)
 		const raf = vi.mocked(requestAnimationFrame)

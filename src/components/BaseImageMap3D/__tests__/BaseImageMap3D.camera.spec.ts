@@ -241,6 +241,51 @@ describe('BaseImageMap3D: камера', () => {
 		const region = document.querySelector('.base-image-map')
 		expect(region).toBeInTheDocument()
 		unmount()
+		const second = await renderCamera()
+		const controls = second.controls()
+		expect(dispose).toHaveBeenCalledOnce()
+		second.unmount()
+		expect(dispose).toHaveBeenCalledTimes(2)
+		expect(dispose.mock.contexts.at(-1)).toBe(controls)
+	})
+
+	it('касание: при hasOrbit — touch-action none, без него — pan-x pan-y (палец прокручивает страницу)', async () => {
+		const { container, rerender, exposed } = await renderCamera({ hasOrbit: false })
+		const canvas = container.querySelector('canvas') as HTMLCanvasElement
+		expect(canvas.style.touchAction).toBe('pan-x pan-y')
+		await rerender({ hasOrbit: true })
+		expect(canvas.style.touchAction).toBe('none')
+		await rerender({ hasOrbit: false })
+		expect(canvas.style.touchAction).toBe('pan-x pan-y')
+		exposed.value?.setView('2d')
+		await nextTick()
+		await nextTick()
+		await rerender({ hasOrbit: true })
+		expect(container.querySelector('canvas')).toBeNull()
+	})
+
+	it('щипок двумя пальцами меняет масштаб, как Ctrl и колесо; один палец и мышь — нет', async () => {
+		const { camera, container } = await renderCamera()
+		const region = container.querySelector('.base-image-map-3d__viewport') as HTMLElement
+		const zoom = () => (camera() as OrthographicCamera).zoom
+		await fireEvent.pointerDown(region, { pointerType: 'mouse', pointerId: 9, clientX: 0, clientY: 0 })
+		await fireEvent.pointerDown(region, { pointerType: 'touch', pointerId: 1, clientX: 100, clientY: 100 })
+		await fireEvent.pointerMove(region, { pointerType: 'touch', pointerId: 1, clientX: 150, clientY: 100 })
+		await fireEvent.pointerMove(region, { pointerType: 'mouse', pointerId: 9, clientX: 300, clientY: 0 })
+		expect(zoom()).toBe(1)
+		await fireEvent.pointerDown(region, { pointerType: 'touch', pointerId: 2, clientX: 250, clientY: 100 })
+		await fireEvent.pointerMove(region, { pointerType: 'touch', pointerId: 2, clientX: 350, clientY: 100 })
+		expect(zoom()).toBeCloseTo(2)
+		await fireEvent.pointerMove(region, { pointerType: 'touch', pointerId: 1, clientX: 250, clientY: 100 })
+		expect(zoom()).toBeCloseTo(1)
+		await fireEvent.pointerMove(region, { pointerType: 'touch', pointerId: 2, clientX: 250, clientY: 100 })
+		expect(zoom()).toBeCloseTo(1)
+		await fireEvent.pointerMove(region, { pointerType: 'touch', pointerId: 2, clientX: 2000, clientY: 100 })
+		expect(zoom()).toBeCloseTo(1)
+		await fireEvent.pointerUp(region, { pointerType: 'touch', pointerId: 2 })
+		await fireEvent.pointerCancel(region, { pointerType: 'touch', pointerId: 1 })
+		await fireEvent.pointerMove(region, { pointerType: 'touch', pointerId: 1, clientX: 900, clientY: 100 })
+		expect(zoom()).toBeCloseTo(1)
 	})
 
 	it('без кнопок масштаба (hasZoomControls: false) и с одним этажом — без панели', async () => {
@@ -272,6 +317,19 @@ describe('BaseImageMap3D: плавные переходы камеры', () => {
 		await fireEvent.click(screen.getByRole('button', { name: 'Увеличить' }))
 		expect((camera() as OrthographicCamera).zoom).toBeCloseTo(1.5)
 		wrapper.remove()
+	})
+
+	it('смена этажа во время поворота не теряет поворот: переход от цели, а не от промежуточного положения', async () => {
+		const { camera, controls } = await renderCamera()
+		await fireEvent.click(screen.getByRole('button', { name: 'Повернуть вправо' }))
+		flushFrames(10)
+		await nextTick()
+		await fireEvent.click(screen.getByRole('radio', { name: 'Этаж 2' }))
+		flushFrames(10)
+		flushFrames(1000)
+		await nextTick()
+		expect(MathUtils.radToDeg(azimuth(camera(), controls().target))).toBeCloseTo(60)
+		expect(controls().target.y).toBe(300)
 	})
 
 	it('нажатия во время перехода копятся: два «Увеличить» — 2,25', async () => {

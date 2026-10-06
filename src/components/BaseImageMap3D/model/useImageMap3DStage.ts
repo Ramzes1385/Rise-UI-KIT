@@ -3,6 +3,7 @@ import { toNdc } from './interaction/projection'
 import { cameraKeyAction } from './camera/cameraKeys'
 import { useRouteTube } from './viewport/useRouteTube'
 import { pickObjectId } from './interaction/pickObject'
+import { useScenePinch } from './interaction/useScenePinch'
 import { createWebGLRenderer } from './scene/createRenderer'
 import { useSceneOverlay } from './interaction/useSceneOverlay'
 import { useScenePointer } from './interaction/useScenePointer'
@@ -91,7 +92,7 @@ function sceneCenters(options: StageOptions, stage: ImageMap3DStage): Center[] {
 	return items.flatMap(item => {
 		const world = stage.overlay.anchorOf(item)
 		const spot = world ? stage.overlay.project(world, size) : null
-		return spot ? [{ id: item.object.id, x: spot.x, y: spot.y }] : []
+		return spot?.isVisible ? [{ id: item.object.id, x: spot.x, y: spot.y }] : []
 	})
 }
 
@@ -111,9 +112,19 @@ function useVisibleFocus(options: StageOptions, announce: (id: string | null) =>
 	return getFocus
 }
 
-export function useStageInput(options: StageOptions, stage: ImageMap3DStage, announce: (id: string | null) => void) {
+function useFocusLeave(options: StageOptions, announce: (id: string | null) => void) {
 	const { map } = options
-	const getFocus = useVisibleFocus(options, announce)
+	return function onFocusOut(event: FocusEvent): void {
+		const next = event.relatedTarget
+		if (map.overlay.popupId.value || (next instanceof Node && map.refs.rootRef.value?.contains(next))) return
+		if (!map.overlay.hoverId.value) return
+		map.setHover(null)
+		announce(null)
+	}
+}
+
+function useStagePointer(options: StageOptions, stage: ImageMap3DStage) {
+	const { map } = options
 	const pointer = useScenePointer({
 		pickAt: (x, y) => {
 			const content = stage.scene.content.value
@@ -125,6 +136,24 @@ export function useStageInput(options: StageOptions, stage: ImageMap3DStage, ann
 		setHover: map.setHover,
 		activate: map.actions.activate,
 	})
+	const pinch = useScenePinch(stage.camera.pinchZoom)
+	return {
+		...pointer,
+		onPointerDown(event: PointerEvent): void {
+			pointer.onPointerDown(event)
+			pinch.onPointerDown(event)
+		},
+		onPointerMove(event: PointerEvent): void {
+			pointer.onPointerMove(event)
+			pinch.onPointerMove(event)
+		},
+		onPointerUp: pinch.onPointerUp,
+	}
+}
+
+export function useStageInput(options: StageOptions, stage: ImageMap3DStage, announce: (id: string | null) => void) {
+	const { map } = options
+	const getFocus = useVisibleFocus(options, announce)
 	const onSceneKey = useSceneKeyboard({
 		centers: () => sceneCenters(options, stage),
 		getFocus,
@@ -150,5 +179,10 @@ export function useStageInput(options: StageOptions, stage: ImageMap3DStage, ann
 		runCameraAction(stage.camera, action)
 	}
 
-	return { ...pointer, onKeydown, onWheel: stage.camera.wheelZoom }
+	return {
+		...useStagePointer(options, stage),
+		onKeydown,
+		onFocusOut: useFocusLeave(options, announce),
+		onWheel: stage.camera.wheelZoom,
+	}
 }
