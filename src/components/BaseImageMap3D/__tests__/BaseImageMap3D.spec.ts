@@ -25,6 +25,12 @@ function triggerResize(width: number, height: number): void {
 	resizeCallback?.([{ contentRect: { width, height } } as ResizeObserverEntry], {} as ResizeObserver)
 }
 
+function runPendingFrames(): void {
+	vi.mocked(requestAnimationFrame)
+		.mock.calls.slice()
+		.forEach(([callback]) => callback(0))
+}
+
 beforeEach(() => {
 	resizeCallback = null
 	vi.stubGlobal('ResizeObserver', TestResizeObserver)
@@ -79,20 +85,24 @@ describe('BaseImageMap3D: 3D-вид', () => {
 	})
 
 	it('ResizeObserver меняет размер и перерисовывает по требованию: один кадр на несколько запросов', async () => {
-		const { renderer, exposed } = renderMap({ height: '300px', ariaLabel: 'Торговый центр' })
-		await waitFor(() => expect(observe).toHaveBeenCalledOnce())
-		expect(screen.getByRole('group', { name: 'Торговый центр' })).toHaveStyle({ height: '300px' })
+		const { renderer, rendererFactory, exposed } = renderMap({ height: '300px', ariaLabel: 'Торговый центр' })
+		await waitFor(() => expect(rendererFactory).toHaveBeenCalledOnce())
+		const region = screen.getByRole('group', { name: 'Торговый центр' })
+		expect(region).toHaveStyle({ height: '300px' })
+		expect(observe).toHaveBeenCalledWith(region)
+		const raf = vi.mocked(requestAnimationFrame)
+		const pending = raf.mock.calls.length
 		triggerResize(0, 100)
 		expect(renderer.setSize).not.toHaveBeenCalled()
 		triggerResize(640, 320)
 		expect(renderer.setSize).toHaveBeenCalledWith(640, 320, false)
 		exposed.value?.invalidate()
-		expect(requestAnimationFrame).toHaveBeenCalledOnce()
-		const frame = vi.mocked(requestAnimationFrame).mock.calls[0][0]
-		frame(0)
+		expect(raf).toHaveBeenCalledTimes(pending)
+		runPendingFrames()
 		expect(renderer.render).toHaveBeenCalledOnce()
+		const scheduled = raf.mock.calls.length
 		exposed.value?.invalidate()
-		expect(requestAnimationFrame).toHaveBeenCalledTimes(2)
+		expect(raf).toHaveBeenCalledTimes(scheduled + 1)
 	})
 
 	it('смена данных переставляет камеру', async () => {
@@ -164,7 +174,7 @@ describe('BaseImageMap3D: 3D-вид', () => {
 			sceneArg.value = value
 		})
 		triggerResize(10, 10)
-		vi.mocked(requestAnimationFrame).mock.calls[0][0](0)
+		runPendingFrames()
 		;(sceneArg.value as { add: (mesh: Mesh) => void }).add(new Mesh(geometry, material))
 		exposed.value?.setView('2d')
 		await waitFor(() => expect(spies.every(spy => spy.mock.calls.length === 1)).toBe(true))

@@ -1,7 +1,7 @@
-import { expect, within } from 'storybook/test'
 import { IMAGE_MAP_3D_FIELDS } from '../../shared'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../BaseImageMapEditor.stories'
+import { expect, waitFor, within } from 'storybook/test'
 
 export const Fields3D: StoryObj<typeof meta> = {
 	parameters: {
@@ -25,9 +25,9 @@ export const Fields3D: StoryObj<typeof meta> = {
 		const thickness = within(scene).getByRole('spinbutton', { name: 'Толщина плиты этажа' })
 		await userEvent.click(thickness)
 		await userEvent.keyboard('0')
-		await expect(within(scene).getByText('Ожидается число больше 0')).toBeVisible()
+		await waitFor(() => expect(within(scene).getByText('Ожидается число больше 0')).toBeVisible())
 		await userEvent.keyboard('{ArrowUp}')
-		await expect(within(scene).queryByText('Ожидается число больше 0')).not.toBeInTheDocument()
+		await waitFor(() => expect(within(scene).queryByText('Ожидается число больше 0')).not.toBeInTheDocument())
 		await expect(thickness).toHaveAttribute('aria-valuenow', '1')
 	},
 }
