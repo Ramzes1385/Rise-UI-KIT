@@ -2182,6 +2182,7 @@ API кита не меняется. В Storybook добавлены пример
 - **BaseChat:** сообщения — `TransitionGroup`, анимация только у новых сообщений в конце (история, поиск и первый показ — без анимации); индикатор набора — от `--rise-duration-loop`. **BaseCommentThread:** комментарии появляются `enter-slide`, ответы раскрываются `expand-rows` (обёртка `__replies-expand > __replies-body`, `v-show` на обёртке). **BaseAiMessage:** блоки ошибки и действий появляются сдвигом. **BasePromptInput:** кнопки «Отправить»/«Остановить» в `span.base-prompt-input__action`, смена масштабом. **BaseReasoning, BaseToolCall:** раскрытие `expand-rows` (у ToolCall — обёртка `__collapse-body`); свёрнутое содержимое в DOM с `visibility: hidden`; добавлены `kitDefaults('BaseReasoning')`/`kitDefaults('BaseToolCall')` — их пропсы можно задать в `defaults` плагина. Мерцание Reasoning — от `--rise-duration-loop`.
 - **`useAutoScroll`**: новая опция `isSmooth?: () => boolean` (по умолчанию `true`) — прокрутка `scrollTo({ behavior: 'smooth' })`; первая прокрутка при монтировании, `isSmooth() === false`, reduce и `motion: 'none'` — мгновенно.
 - **Storybook**: у каждого из 20 — истории `Theming` («Токены») и `Animations` («Анимации»).
+
 ## Задача theme-data: темизация и движение группы Data
 
 Добавление без ломки, кроме отмеченного «**DOM**»: вид по умолчанию прежний, публичные БЭМ-классы не переименованы. Компоненты (24): Accordion, Calendar, Chart, Checklist, Code, Countdown, Descriptions, Empty, EventCalendar, FilterBuilder, Heatmap, InfiniteScroll, JsonViewer, Kanban, List, PieChart, Slider, Sparkline, Stat, Table, TextDiff, Timeline, Tree, VirtualList.
@@ -2204,6 +2205,7 @@ API кита не меняется. В Storybook добавлены пример
   - BaseCode, BaseDescriptions — иконка «копировать ↔ скопировано» сменяется `<Transition mode="out-in">` (pop); BaseInfiniteScroll — загрузчик появляется и уходит растворением. Без стабов смена асинхронная.
   - BaseChart, BasePieChart, BaseCountdown — движение прежнее (только токены без запасных значений); скругление образцов легенды — `--rise-radius-xs`.
 - **Storybook**: у каждого из 24 — истории `Theming` («Токены»: токены на контейнере и `ui`) и `Animations` («Анимации»: колонки пресетов `none`/`subtle`/`standard`/`expressive`, многошаговые — шаги по кругу).
+
 ## Задача theme-overlay-layout: темизация и движение групп Overlay и Layout
 
 Добавление без ломки: вид по умолчанию прежний, публичные БЭМ-классы не переименованы. Компоненты: Overlay — BaseApp, BaseCommandPalette, BaseConfirm, BaseContextMenu, BaseDrawer, BaseDropdown, BaseDropdownMenu, BaseModal, BaseNotification, BaseNotificationCenter, BasePopconfirm, BasePopover, BaseSlideover, BaseTooltip, BaseTour; Layout — BaseContainer, BaseFooter, BaseHeader, BaseLayout, BaseScrollArea, BaseSplitter.
