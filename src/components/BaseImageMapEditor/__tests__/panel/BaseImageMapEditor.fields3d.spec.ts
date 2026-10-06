@@ -73,11 +73,9 @@ describe('BaseImageMapEditor: поля 3D', () => {
 		const wrapper = mountEditor()
 		await setField(wrapper, 'model.scale', 0)
 		await setField(wrapper, 'floorThickness', 0)
-		await setField(wrapper, 'meshName', '   ')
 		expect(wrapper.emitted('update:modelValue')).toBeUndefined()
 		expect(field(wrapper, 'model.scale')?.props('field')).toMatchObject({ error: 'Ожидается число больше 0' })
 		expect(field(wrapper, 'floorThickness')?.props('field')).toMatchObject({ error: 'Ожидается число больше 0' })
-		expect(field(wrapper, 'meshName')?.props('field')).toMatchObject({ error: 'Ожидается непустая строка' })
 		await setField(wrapper, 'model.scale', 1)
 		expect(field(wrapper, 'model.scale')?.props('field')).toMatchObject({ error: '' })
 	})
@@ -122,5 +120,76 @@ describe('BaseImageMapEditor: поля 3D', () => {
 			global: { plugins: [createUiKitPlugin({ defaults: { BaseImageMapEditor: { has3dFields: true } } })] },
 		})
 		expect(field(wrapper, 'height3d')).toBeDefined()
+	})
+
+	it('meshName: пробелы в начале отбрасываются, только пробелы — поле удаляется; пробел внутри имени набирается', async () => {
+		const wrapper = mountEditor()
+		await setField(wrapper, 'meshName', '  Cafe ')
+		expect(lastData(wrapper).objects[0]).toMatchObject({ meshName: 'Cafe ' })
+		await setField(wrapper, 'meshName', '  Cafe Main')
+		expect(lastData(wrapper).objects[0]).toMatchObject({ meshName: 'Cafe Main' })
+		await setField(wrapper, 'meshName', '   ')
+		expect(lastData(wrapper).objects[0]).not.toHaveProperty('meshName')
+		expect(field(wrapper, 'meshName')?.props('field')).toMatchObject({ error: '' })
+	})
+
+	it('у раздела объекта и заголовка 3D разные имена; min полей «> 0» — больше нуля', () => {
+		renderEditor({ modelValue: map3d(), has3dFields: true, selected: 'r1' })
+		expect(screen.getAllByRole('heading', { name: '3D' })).toHaveLength(1)
+		expect(screen.getByRole('group', { name: 'Объект в 3D' })).toBeInTheDocument()
+		expect(screen.queryByRole('group', { name: '3D' })).toBeNull()
+		const wrapper = mountEditor()
+		expect(field(wrapper, 'model.scale')?.props('field')).toMatchObject({ min: 0.01 })
+		expect(field(wrapper, 'floorThickness')?.props('field')).toMatchObject({ min: 0.01 })
+		expect(field(wrapper, 'floorGap')?.props('field')).toMatchObject({ min: 0 })
+		expect(field(wrapper, 'height3d')?.props('field')).toMatchObject({ min: 0 })
+	})
+
+	it('правки одного 3D-поля подряд — один шаг отмены (П5 части 4)', async () => {
+		const wrapper = mountEditor()
+		const api = wrapper.vm as unknown as BaseImageMapEditorExpose
+		await setField(wrapper, 'floorGap', 160)
+		await setField(wrapper, 'floorGap', 170)
+		await setField(wrapper, 'floorGap', 180)
+		await setField(wrapper, 'model.rotationY', 10)
+		await setField(wrapper, 'model.rotationY', 20)
+		expect(lastData(wrapper).layers[0]?.model).toMatchObject({ rotationY: 20 })
+		api.undo()
+		await nextTick()
+		expect(lastData(wrapper).layers[0]?.model).not.toHaveProperty('rotationY')
+		expect(lastData(wrapper).scene3d).toEqual({ floorGap: 180 })
+		api.undo()
+		await nextTick()
+		expect(lastData(wrapper).scene3d).toEqual({ floorGap: 150 })
+	})
+
+	it('смена выделения сбрасывает ошибки 3D-полей объекта (П6 части 4)', async () => {
+		const wrapper = mountEditor()
+		await setField(wrapper, 'height3d', -1)
+		expect(field(wrapper, 'height3d')?.props('field')).toMatchObject({ error: 'Ожидается число не меньше 0' })
+		const other = map3d().objects[1]?.id as string
+		await wrapper.setProps({ selected: other })
+		expect(field(wrapper, 'height3d')?.props('field')).not.toMatchObject({ error: 'Ожидается число не меньше 0' })
+		await wrapper.setProps({ selected: 'r1' })
+		expect(field(wrapper, 'height3d')?.props('field')).not.toMatchObject({ error: 'Ожидается число не меньше 0' })
+	})
+
+	it('ошибки полей этажа и сцены сбрасываются после отмены и импорта', async () => {
+		const wrapper = mountEditor()
+		const api = wrapper.vm as unknown as BaseImageMapEditorExpose
+		const error = { error: 'Ожидается число больше 0' }
+		await setField(wrapper, 'objectHeight', 25)
+		await setField(wrapper, 'floorThickness', 0)
+		await setField(wrapper, 'model.scale', 0)
+		expect(field(wrapper, 'floorThickness')?.props('field')).toMatchObject(error)
+		api.undo()
+		await nextTick()
+		expect(field(wrapper, 'floorThickness')?.props('field')).not.toMatchObject(error)
+		expect(field(wrapper, 'model.scale')?.props('field')).not.toMatchObject(error)
+		await setField(wrapper, 'floorThickness', 0)
+		expect(field(wrapper, 'floorThickness')?.props('field')).toMatchObject(error)
+		expect(api.importJson(JSON.stringify(map3d()))).toBe(true)
+		await nextTick()
+		expect(field(wrapper, 'floorThickness')?.props('field')).not.toMatchObject(error)
 	})
 })

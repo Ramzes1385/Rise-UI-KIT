@@ -108,6 +108,8 @@ export const ruMapEditor = {
 		FIELD_LAYER_HEIGHT: 'Высота картинки',
 		/** Поля 3D для BaseImageMap3D (`has3dFields`) */
 		SECTION_3D: '3D',
+		/** Раздел полей 3D выбранного объекта */
+		OBJECT_3D: 'Объект в 3D',
 		FIELD_HEIGHT_3D: 'Высота в 3D',
 		FIELD_MESH_NAME: 'Узел в модели этажа',
 		LAYER_3D: 'Этаж «{title}»',

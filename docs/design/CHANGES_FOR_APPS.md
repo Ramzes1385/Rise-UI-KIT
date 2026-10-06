@@ -234,6 +234,8 @@
   - Модели этажей GLB (`layer.model.url`) отдавать со своего домена или CDN с CORS; закрытое хранилище — через посредник приложения.
   - Сжатые модели (DRACO, KTX2, meshopt) — декодеры приложения через проп `configureLoader(loader)`; кит их не подключает.
   - JSON карты общий с BaseImageMap и BaseImageMapEditor: 3D-поля (`layer.elevation`, `layer.model`, `object.height3d`, `object.meshName`, `scene3d`) необязательны, редактор их сохраняет, 2D-карта их не читает. Без WebGL карта показывает 2D и шлёт `fallback`.
+  - Редактор BaseImageMapEditor показывает поля 3D в панели свойств только с пропом `has3dFields` (по умолчанию `false`; или `defaults.BaseImageMapEditor.has3dFields` в плагине). Без него 3D-поля не видны, но импорт и экспорт JSON их сохраняют.
+  - Касание (map3d-polish): при `hasOrbit: false` палец над картой прокручивает страницу; при `hasOrbit: true` (по умолчанию) жесты забирает камера, щипок двумя пальцами — масштаб. Уход Tab из карты снимает фокус объекта и карточку; имя области с `ariaLabel` теперь включает этаж.
 - **Внутренние константы** (`@constants`, в пакет не экспортируются): добавлены `TABLE_TEXT`, `UI_RATING` и тексты `UI_CHAT_TEXT`/`UI_EDITOR`; удалены `ROW_SELECTION_WIDTH`, `ROW_NUMBER_WIDTH` и `ROW_EXPAND_WIDTH`.
 
 ## Токены

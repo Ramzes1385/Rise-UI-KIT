@@ -29,7 +29,7 @@ function keys(fields: EditorField[]): string[] {
 describe('fields3d: объект', () => {
 	it('раздел 3D: высота и узел модели, плейсхолдер узла — id', () => {
 		const section = object3dSection({ ...RECT, height3d: 40, meshName: 'Shop_A' } as ImageMapObject, { height3d: 'ошибка' })
-		expect(section).toMatchObject({ id: '3d', title: t.SECTION_3D })
+		expect(section).toMatchObject({ id: '3d', title: t.OBJECT_3D })
 		expect(section.fields[0]).toMatchObject({ key: 'height3d', kind: 'number', value: 40, min: 0, error: 'ошибка' })
 		expect(section.fields[1]).toMatchObject({ key: 'meshName', kind: 'text', value: 'Shop_A', placeholder: 'shop' })
 		const empty = object3dSection(RECT, {})
@@ -102,7 +102,7 @@ describe('fields3d: сцена', () => {
 		const fields = scene3dFields({ floorGap: 200 }, { floorThickness: 'x' })
 		expect(keys(fields)).toEqual(['floorGap', 'floorThickness', 'objectHeight'])
 		expect(fields.map(field => field.value)).toEqual([200, null, null])
-		expect(fields[1]).toMatchObject({ label: t.FIELD_FLOOR_THICKNESS, min: 0, error: 'x' })
+		expect(fields[1]).toMatchObject({ label: t.FIELD_FLOOR_THICKNESS, min: 0.01, error: 'x' })
 		expect(scene3dFields(undefined, {}).map(field => field.value)).toEqual([null, null, null])
 	})
 

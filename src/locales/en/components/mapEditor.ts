@@ -96,6 +96,8 @@ export const enMapEditor = {
 		FIELD_LAYER_WIDTH: 'Image width',
 		FIELD_LAYER_HEIGHT: 'Image height',
 		SECTION_3D: '3D',
+		/** 3D fields section of the selected object */
+		OBJECT_3D: 'Object in 3D',
 		FIELD_HEIGHT_3D: 'Height in 3D',
 		FIELD_MESH_NAME: 'Node in the floor model',
 		LAYER_3D: 'Floor “{title}”',

@@ -1610,3 +1610,8 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
   - BaseImageCompare `--default` 8 px, `--variants` ≈1280 px — сглаживание линии и ручки (`transform` вместо `left`) и шевроны ручки; геометрия та же (сравнено глазами).
   - BaseMap `--theming` — история переделана (токены `--rise-map-*` и `ui` вместо `customClass`).
   - BaseMediaPlayer (`--cover`, `--video-cover`, `--episodes`, `--ads`, `--vast-ads`, `--colors`, `--title-and-logo`, `--mini-player`, `--seo` и др.), BaseImageMap `--directory`, BaseVoiceRecorder `--preview`, BaseSubtitleEditor `--with-player`, BasePresentationPlayer `--strict`, `--slide-list`: расхождение того же порядка, что шум между двумя снимками «до» — недетерминированные истории (буферизация видео, порядок завершения play); `--directory` при повторном прогоне совпал попиксельно. BaseMediaPlayer `--context-menu`, `--watch-party`, `--seek-preview`, `--banners-and-achievements` — полоса буферизации шкалы и адрес демо-файла с портом сервера в тексте меню (артефакт сравнения), вид плеера тот же. BasePresentationPlayer `--loading`, `--speech-service` ≈145 px и BaseImageMap `--filters` (тёмная) 6 px — сглаживание бегунка шкалы и краёв; на глаз не видно.
+
+## Задача map3d-polish
+
+- **BaseImageMapEditor с `has3dFields`** (история «Поля 3D», `media-baseimagemapeditor--fields-3-d`): подпись группы полей объекта — «Объект в 3D» вместо «3D» (было два элемента «3D»: подпись группы и заголовок раздела). Больше ничего не меняется; у полей «Масштаб модели» и «Толщина плиты этажа» нижний предел 0,01 вместо 0 — видно только при стрелке вниз у предела.
+- **BaseImageMap3D**: вид не меняется (WebGL в снимки не входит). Поведение касания, фокуса и наведения — docs/v2/MIGRATION.md, «BaseImageMap3D (polish)».

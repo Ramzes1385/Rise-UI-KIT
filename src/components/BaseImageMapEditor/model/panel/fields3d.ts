@@ -25,6 +25,10 @@ const LAYER_PATHS: Record<string, string> = {
 
 const SCENE_KEYS = ['floorGap', 'floorThickness', 'objectHeight']
 
+const POSITIVE_MIN = 0.01
+
+const SCENE_MIN: Record<string, number> = { floorGap: 0, floorThickness: POSITIVE_MIN, objectHeight: 0 }
+
 function numberField(key: string, label: string, value: unknown): EditorField {
 	return { key, kind: 'number', label, value: typeof value === 'number' ? value : null, precision: 2 }
 }
@@ -56,7 +60,7 @@ export function object3dSection(object: ImageMapObject, errors: Record<string, s
 	const fields = object as ImageMap3DObject
 	return {
 		id: '3d',
-		title: t.SECTION_3D,
+		title: t.OBJECT_3D,
 		fields: [
 			{ ...numberField('height3d', t.FIELD_HEIGHT_3D, fields.height3d), min: 0, error: errors.height3d },
 			{
@@ -69,6 +73,10 @@ export function object3dSection(object: ImageMapObject, errors: Record<string, s
 			},
 		],
 	}
+}
+
+export function normalize3dValue(key: string, value: FieldValue): FieldValue {
+	return key === 'meshName' && typeof value === 'string' ? value.trimStart() : value
 }
 
 export function object3dIssue(object: ImageMapObject, key: string, value: FieldValue): string | undefined {
@@ -93,7 +101,7 @@ function modelFields(model: ImageMapLayerModel | undefined): EditorField[] {
 	const axes = [t.FIELD_MODEL_X, t.FIELD_MODEL_Y, t.FIELD_MODEL_Z]
 	return [
 		url,
-		{ ...numberField('model.scale', t.FIELD_MODEL_SCALE, model.scale), min: 0 },
+		{ ...numberField('model.scale', t.FIELD_MODEL_SCALE, model.scale), min: POSITIVE_MIN },
 		...AXES.map((key, index) => numberField(key, axes[index] as string, position[index])),
 		numberField('model.rotationY', t.FIELD_MODEL_ROTATION, model.rotationY),
 	]
@@ -143,7 +151,7 @@ export function scene3dFields(scene: ImageMapScene3D | undefined, errors: Record
 	const labels = [t.FIELD_FLOOR_GAP, t.FIELD_FLOOR_THICKNESS, t.FIELD_OBJECT_HEIGHT]
 	return SCENE_KEYS.map((key, index) => ({
 		...numberField(key, labels[index] as string, scene?.[key as keyof ImageMapScene3D]),
-		min: 0,
+		min: SCENE_MIN[key],
 		error: errors[key],
 	}))
 }

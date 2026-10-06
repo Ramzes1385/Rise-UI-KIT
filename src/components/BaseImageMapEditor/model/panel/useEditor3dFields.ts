@@ -23,6 +23,10 @@ export function useEditor3dFields(ctx: EditorContext, isEnabled: () => boolean) 
 			layerErrors.errors.value = {}
 		},
 	)
+	watch(ctx.doc.getData, () => {
+		layerErrors.errors.value = {}
+		sceneErrors.errors.value = {}
+	})
 
 	return {
 		layer3dFields: computed(() => {

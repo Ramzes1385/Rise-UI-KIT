@@ -40,8 +40,14 @@ export const Glb: StoryObj<typeof meta> = {
 		await expect(region).toHaveFocus()
 		await waitFor(() => expect(canvasElement.querySelector('canvas')).not.toBeNull())
 		const modelUrl = new URL(MALL_FLOOR_MODEL.layers[0].model?.url ?? '', location.href).href
-		await waitFor(() => expect(performance.getEntriesByName(modelUrl)).not.toHaveLength(0), { timeout: 5000 })
-		await new Promise(resolve => setTimeout(resolve, 300))
+		await waitFor(
+			() =>
+				expect(
+					(performance.getEntriesByName(modelUrl).at(-1) as PerformanceResourceTiming | undefined)?.responseEnd,
+				).toBeGreaterThan(0),
+			{ timeout: 5000 },
+		)
+		await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
 		await expect(args.onFallback).not.toHaveBeenCalled()
 		await expect(canvasElement.querySelector('canvas')).not.toBeNull()
 		await expect(canvas.getByRole('status')).toHaveTextContent('')

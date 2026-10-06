@@ -5,7 +5,7 @@ import { applyField, parsePoints } from './applyField'
 import { groupFields, layerFields } from './mapFields'
 import { useEditor3dFields } from './useEditor3dFields'
 import { UI_IMAGE_MAP_EDITOR } from '@/locales/messages'
-import { object3dIssue, object3dSection } from './fields3d'
+import { normalize3dValue, object3dIssue, object3dSection } from './fields3d'
 import type { ImageMapObject } from '@components/BaseImageMap/types/imageMapData.types'
 import type { EditorContext, EditorFieldValue as FieldValue } from '../../types/imageMapEditorInternal.types'
 import {
@@ -62,10 +62,11 @@ function useObjectFields(ctx: EditorContext, has3d: () => boolean) {
 			const sections = objectSections(selected, ctx.doc.getData(), errors.value)
 			return has3d() ? [...sections, object3dSection(selected, errors.value)] : sections
 		}),
-		setField(key: string, value: FieldValue): void {
+		setField(key: string, input: FieldValue): void {
 			const selected = ctx.selection.getSelected()
 			if (!selected || ctx.isDisabled()) return
 			const id = selected.id
+			const value = normalize3dValue(key, input)
 			const error = validate(selected, key, value)
 			errors.value = { ...errors.value, [key]: error ?? '' }
 			if (error) return
