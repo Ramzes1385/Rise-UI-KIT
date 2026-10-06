@@ -1,9 +1,9 @@
-import type { Ref } from 'vue'
+import type { ComputedRef, Ref } from 'vue'
 import type { ImageMapArea } from '../../types/imageMapData.types'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { ImageMapView } from '../../types/internal/imageMapModel.types'
 import type { Frame, ScreenPoint, ViewOptions } from '../../types/internal/imageMapInternal.types'
-import { clampScale, clampView, fitArea, fitStage, scaleForArea, zoomAround } from './viewGeometry'
+import { clampScale, clampView, fitArea, fitStage, retargetView, scaleForArea, zoomAround } from './viewGeometry'
 
 export const ZOOM_STEP = 1.5
 const OBJECT_SHARE = 1 / 3
@@ -40,6 +40,26 @@ function useFrame(options: ViewOptions) {
 	})
 }
 
+function useViewKeeper(
+	options: ViewOptions,
+	frame: ComputedRef<Frame>,
+	view: { reset: () => void; current: () => ImageMapView; apply: (next: ImageMapView) => void },
+): void {
+	let previous = frame.value
+	let previousLayer = options.getLayer()?.id
+	watch(
+		() => [frame.value, options.getLayer()?.id] as const,
+		([next, layerId]) => {
+			const from = previous
+			const isOtherStage = layerId !== previousLayer && (from.stageWidth !== next.stageWidth || from.stageHeight !== next.stageHeight)
+			previous = next
+			previousLayer = layerId
+			if (isOtherStage || !from.viewportWidth || !from.viewportHeight) view.reset()
+			else view.apply(retargetView(view.current(), from, next))
+		},
+	)
+}
+
 export function useImageMapView(options: ViewOptions) {
 	const frame = useFrame(options)
 	const view = ref<ImageMapView>({ scale: 1, x: 0, y: 0 })
@@ -66,10 +86,11 @@ export function useImageMapView(options: ViewOptions) {
 		setView(fitArea(area, frame.value, clampScale(scale ?? Math.max(fitted, view.value.scale), options.getMaxZoom())), true)
 	}
 
-	watch(
-		(['viewportWidth', 'viewportHeight', 'stageWidth', 'stageHeight'] as const).map(key => () => frame.value[key]),
-		() => resetZoom(false),
-	)
+	useViewKeeper(options, frame, {
+		reset: () => resetZoom(false),
+		current: () => view.value,
+		apply: next => setView(next, false),
+	})
 
 	return {
 		view,
@@ -81,6 +102,7 @@ export function useImageMapView(options: ViewOptions) {
 		zoomOut: (): void => zoomBy(1 / ZOOM_STEP),
 		resetZoom,
 		zoomToArea,
+		limitScale: (scale: number): number => clampScale(scale, options.getMaxZoom()),
 		isMinZoom: computed((): boolean => view.value.scale <= 1),
 		isMaxZoom: computed((): boolean => view.value.scale >= options.getMaxZoom()),
 		stageStyle: computed((): Record<string, string> => ({

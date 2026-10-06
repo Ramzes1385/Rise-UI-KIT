@@ -180,7 +180,7 @@
 			v-if="map.overlay.popupItem.value"
 			:is-open="true"
 			:title="map.overlay.popupItem.value.object.title"
-			:direction="map.overlay.isSheet.value ? 'bottom' : undefined"
+			v-bind="map.overlay.isSheet.value ? { direction: 'bottom' } : {}"
 			:custom-class="{ root: classes.popup }"
 			@close="map.overlay.closePopup"
 			@update:is-open="map.overlay.closePopup">

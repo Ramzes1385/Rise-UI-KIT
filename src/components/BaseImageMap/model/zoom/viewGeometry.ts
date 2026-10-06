@@ -1,5 +1,5 @@
 import type { ImageMapArea } from '../../types/imageMapData.types'
-import type { ImageMapView } from '../../types/internal/imageMapModel.types'
+import type { ImageMapBox, ImageMapView } from '../../types/internal/imageMapModel.types'
 import type { Frame, ScreenBox, ScreenPoint } from '../../types/internal/imageMapInternal.types'
 
 export function fitStage(
@@ -27,6 +27,26 @@ export function clampView(view: ImageMapView, frame: Frame): ImageMapView {
 export function zoomAround(view: ImageMapView, point: ScreenPoint, scale: number): ImageMapView {
 	const ratio = scale / view.scale
 	return { scale, x: point.x - (point.x - view.x) * ratio, y: point.y - (point.y - view.y) * ratio }
+}
+
+export function retargetView(view: ImageMapView, from: Frame, to: Frame): ImageMapView {
+	if (!from.stageWidth || !from.stageHeight || !to.stageWidth || !to.stageHeight) return view
+	const fractionX = (from.viewportWidth / 2 - view.x) / (from.stageWidth * view.scale)
+	const fractionY = (from.viewportHeight / 2 - view.y) / (from.stageHeight * view.scale)
+	return {
+		scale: view.scale,
+		x: to.viewportWidth / 2 - fractionX * to.stageWidth * view.scale,
+		y: to.viewportHeight / 2 - fractionY * to.stageHeight * view.scale,
+	}
+}
+
+export function pageRatio(box: ImageMapBox, size: { width: number; height: number }): ScreenPoint {
+	return { x: box.width && size.width ? size.width / box.width : 1, y: box.height && size.height ? size.height / box.height : 1 }
+}
+
+export function toViewportPoint(client: ScreenPoint, box: ImageMapBox, size: { width: number; height: number }): ScreenPoint {
+	const ratio = pageRatio(box, size)
+	return { x: (client.x - box.left) * ratio.x, y: (client.y - box.top) * ratio.y }
 }
 
 export function clampScale(scale: number, maxScale: number): number {

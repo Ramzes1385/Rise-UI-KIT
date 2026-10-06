@@ -1,6 +1,6 @@
 import { sanitizeSvg } from './sanitizeSvg'
 import type { ImageMapLayer } from '../../types/imageMapData.types'
-import { ref, useId, watch, onMounted, watchPostEffect } from 'vue'
+import { computed, ref, useId, watch, onMounted, watchPostEffect } from 'vue'
 import type { SvgBinding, SvgOptions } from '../../types/internal/imageMapInternal.types'
 
 export function attributeSelector(name: string, value: string): string {
@@ -8,10 +8,16 @@ export function attributeSelector(name: string, value: string): string {
 }
 
 export function useSvgMarkup(getLayer: () => ImageMapLayer | undefined, prefix: string) {
-	const markup = ref('')
+	const source = ref('')
 	const isLoading = ref(false)
-	const hasError = ref(false)
+	const hasLoadError = ref(false)
 	let request = 0
+
+	const markup = computed(() => {
+		const layer = getLayer()
+		return source.value ? sanitizeSvg(source.value, prefix, { width: layer?.width ?? 0, height: layer?.height ?? 0 }) : ''
+	})
+	const hasError = computed(() => hasLoadError.value || (Boolean(source.value) && !markup.value))
 
 	async function load(url: string, token: number): Promise<void> {
 		isLoading.value = true
@@ -19,10 +25,10 @@ export function useSvgMarkup(getLayer: () => ImageMapLayer | undefined, prefix: 
 			const response = await fetch(url)
 			const text = response.ok ? await response.text() : ''
 			if (token !== request) return
-			markup.value = sanitizeSvg(text, prefix)
-			hasError.value = !markup.value
+			source.value = text
+			hasLoadError.value = !text
 		} catch {
-			if (token === request) hasError.value = true
+			if (token === request) hasLoadError.value = true
 		} finally {
 			if (token === request) isLoading.value = false
 		}
@@ -34,8 +40,8 @@ export function useSvgMarkup(getLayer: () => ImageMapLayer | undefined, prefix: 
 			([svg, svgUrl]) => {
 				request++
 				isLoading.value = false
-				markup.value = svg ? sanitizeSvg(svg, prefix) : ''
-				hasError.value = Boolean(svg) && !markup.value
+				hasLoadError.value = false
+				source.value = svg ?? ''
 				if (!svg && svgUrl) void load(svgUrl, request)
 			},
 			{ immediate: true },

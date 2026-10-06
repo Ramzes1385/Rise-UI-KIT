@@ -54,7 +54,8 @@ export function addSvgObjects(
 		(object): object is ImageMap3DObject & ImageMapSvgObject =>
 			object.type === 'svg' && objectLayerId(object, data) === layerId && !content.objects.has(object.id),
 	)
-	const paths = svgObjects.length ? parseSvgPaths(markup) : []
+	const layer = data.layers.find(entry => entry.id === layerId)
+	const paths = svgObjects.length && layer ? parseSvgPaths(markup, layer) : []
 	return svgObjects.filter(object => {
 		const shapes = svgElementShapes(paths, object.elementId)
 		return addShapeObject(content, { object, layerId, colors: objectColors(object, data, resolve) }, shapes)

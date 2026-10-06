@@ -115,6 +115,36 @@ describe('BaseImageMap svg — встроенный план', () => {
 		expect(container.querySelector('script')).toBeNull()
 	})
 
+	it('SVG без viewBox получает его по размеру слоя и пересчитывается при смене размера слоя', async () => {
+		const bare = '<svg xmlns="http://www.w3.org/2000/svg"><rect id="room" width="500" height="300"/></svg>'
+		const data: ImageMapData = {
+			layers: [{ id: 'plan', title: 'План', svg: bare, width: 1000, height: 600 }],
+			objects: [{ id: 'room', type: 'svg', elementId: 'room', title: 'Комната' }],
+		}
+		const { container, rerender } = render(BaseImageMap, { props: { data, ...BASE_PROPS } })
+		await screen.findByRole('button', { name: 'Комната' })
+		const root = (): Element | null => container.querySelector('.base-image-map__svg > svg')
+		expect(root()?.getAttribute('viewBox')).toBe('0 0 1000 600')
+		expect(root()?.getAttribute('width')).toBe('100%')
+		await rerender({ data: { ...data, layers: [{ ...data.layers[0], width: 2000, height: 1200 }] }, ...BASE_PROPS })
+		await waitFor(() => expect(root()?.getAttribute('viewBox')).toBe('0 0 2000 1200'))
+		expect(await screen.findByRole('button', { name: 'Комната' })).toBeInTheDocument()
+	})
+
+	it('SVG с width и height без viewBox берёт их размер, заданный viewBox остаётся как есть', async () => {
+		const sized = '<svg xmlns="http://www.w3.org/2000/svg" width="500" height="300"><rect id="room" width="5" height="5"/></svg>'
+		const boxed = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 -10 200 100"><rect id="room" width="5" height="5"/></svg>'
+		const layer = { id: 'plan', title: 'План', width: 1000, height: 600 }
+		const objects: ImageMapData['objects'] = [{ id: 'room', type: 'svg', elementId: 'room', title: 'Комната' }]
+		const first = render(BaseImageMap, { props: { data: { layers: [{ ...layer, svg: sized }], objects }, ...BASE_PROPS } })
+		await screen.findByRole('button', { name: 'Комната' })
+		expect(first.container.querySelector('.base-image-map__svg > svg')?.getAttribute('viewBox')).toBe('0 0 500 300')
+		first.unmount()
+		const second = render(BaseImageMap, { props: { data: { layers: [{ ...layer, svg: boxed }], objects }, ...BASE_PROPS } })
+		await screen.findByRole('button', { name: 'Комната' })
+		expect(second.container.querySelector('.base-image-map__svg > svg')?.getAttribute('viewBox')).toBe('-10 -10 200 100')
+	})
+
 	it('невалидный встроенный SVG не рисует план, сообщение об ошибке появляется после монтирования', async () => {
 		const data: ImageMapData = {
 			layers: [{ id: 'plan', title: 'План', svg: '<svg><rect></svg>', width: 100, height: 100 }],

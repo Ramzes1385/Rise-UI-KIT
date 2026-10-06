@@ -185,6 +185,17 @@ describe('сборка сцены', () => {
 		expect(addSvgObjects(content, { data: DATA, layerId: 'f1', markup: SVG }, resolveFake)).toBe(0)
 	})
 
+	it('addSvgObjects ставит фигуры по viewBox слоя: масштаб и сдвиг те же, что у картинки пола', () => {
+		const scaled =
+			'<svg xmlns="http://www.w3.org/2000/svg" viewBox="10 5 50 25"><rect id="room" x="15" y="10" width="10" height="10"/></svg>'
+		const content = buildSceneContent(DATA, resolveFake)
+		addSvgObjects(content, { data: DATA, layerId: 'f2', markup: scaled }, resolveFake)
+		const geometry = content.objects.get('room')?.meshes[0].geometry
+		geometry?.computeBoundingBox()
+		const box = geometry?.boundingBox
+		expect([box?.min.x, box?.max.x, box?.min.z, box?.max.z].map(Number)).toEqual([10, 30, 10, 30])
+	})
+
 	it('applyLayerMode: stack — все этажи, неактивные полупрозрачны; single — только активный', () => {
 		const content = buildSceneContent(DATA, resolveFake)
 		applyLayerMode(content, 'f2', 'stack')
@@ -246,6 +257,16 @@ describe('текстуры слоя', () => {
 		)
 		expect(big.documentElement.getAttribute('width')).toBe('4096')
 		expect(big.documentElement.getAttribute('viewBox')).toBe('0 0 8192 4096')
+	})
+
+	it('svgTextureMarkup: viewBox берётся из width и height самого SVG, неверный viewBox заменяется, верный остаётся', () => {
+		const layer = { id: 'a', title: 'A', width: 100, height: 50 }
+		const viewBoxOf = (svg: string): string | null =>
+			new DOMParser().parseFromString(svgTextureMarkup(svg, layer), 'image/svg+xml').documentElement.getAttribute('viewBox')
+		const ns = 'xmlns="http://www.w3.org/2000/svg"'
+		expect(viewBoxOf(`<svg ${ns} width="50" height="25"/>`)).toBe('0 0 50 25')
+		expect(viewBoxOf(`<svg ${ns} viewBox="0 0 0 0"/>`)).toBe('0 0 100 50')
+		expect(viewBoxOf(`<svg ${ns} viewBox="-5 -5 40 20"/>`)).toBe('-5 -5 40 20')
 	})
 
 	it('loadTexture и loadSvgTexture: цветовое пространство sRGB, адрес Blob освобождается', async () => {

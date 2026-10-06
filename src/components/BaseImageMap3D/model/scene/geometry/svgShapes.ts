@@ -1,33 +1,26 @@
 import type { Shape, ShapePath } from 'three'
 import { SVGLoader } from 'three/addons/loaders/SVGLoader.js'
 import { attributeSelector } from '@components/BaseImageMap/model/svg/useImageMapSvg'
+import type { SvgLayerSize } from '@components/BaseImageMap/types/internal/svgViewport.types'
+import { mappingTransform, svgLayerMapping } from '@components/BaseImageMap/model/svg/svgViewport'
 
 const SVG_NS = 'http://www.w3.org/2000/svg'
 
-function viewBoxOrigin(root: Element): [number, number] | null {
-	const box = (root.getAttribute('viewBox') ?? '')
-		.trim()
-		.split(/[\s,]+/)
-		.map(Number)
-	if (box.length !== 4 || box.some(value => !Number.isFinite(value))) return null
-	return box[0] || box[1] ? [box[0], box[1]] : null
-}
-
-function shiftToViewBox(markup: string): string {
+function mapToLayer(markup: string, layer: SvgLayerSize): string {
 	const document = new DOMParser().parseFromString(markup, 'image/svg+xml')
 	const root = document.documentElement
-	const origin = viewBoxOrigin(root)
-	if (!origin) return markup
+	const transform = mappingTransform(svgLayerMapping(root, layer))
+	if (!transform) return markup
 	const group = document.createElementNS(SVG_NS, 'g')
-	group.setAttribute('transform', `translate(${-origin[0]} ${-origin[1]})`)
+	group.setAttribute('transform', transform)
 	group.append(...root.childNodes)
 	root.append(group)
 	return new XMLSerializer().serializeToString(document)
 }
 
-export function parseSvgPaths(markup: string): ShapePath[] {
+export function parseSvgPaths(markup: string, layer: SvgLayerSize): ShapePath[] {
 	if (!markup) return []
-	return new SVGLoader().parse(shiftToViewBox(markup)).paths
+	return new SVGLoader().parse(mapToLayer(markup, layer)).paths
 }
 
 function belongsTo(path: ShapePath, elementId: string): boolean {

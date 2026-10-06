@@ -1,3 +1,4 @@
+import { toViewportPoint } from './viewGeometry'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import type { ImageMapView } from '../../types/internal/imageMapModel.types'
 import type { GestureOptions, GestureView, PointerStart, ScreenPoint } from '../../types/internal/imageMapInternal.types'
@@ -5,10 +6,20 @@ import type { GestureOptions, GestureView, PointerStart, ScreenPoint } from '../
 const DRAG_THRESHOLD = 4
 const WHEEL_SENSITIVITY = 0.002
 const HINT_DURATION = 1500
+const WHEEL_LINE = 16
+const WHEEL_PAGE = 400
+const WHEEL_FACTOR_LIMIT = 4
 
 function localPoint(event: { clientX: number; clientY: number }, element: HTMLElement): ScreenPoint {
-	const rect = element.getBoundingClientRect()
-	return { x: event.clientX - rect.left, y: event.clientY - rect.top }
+	return toViewportPoint({ x: event.clientX, y: event.clientY }, element.getBoundingClientRect(), {
+		width: element.clientWidth,
+		height: element.clientHeight,
+	})
+}
+
+function wheelFactor(event: WheelEvent): number {
+	const unit = [1, WHEEL_LINE, WHEEL_PAGE][event.deltaMode] ?? 1
+	return Math.min(Math.max(Math.exp(-event.deltaY * unit * WHEEL_SENSITIVITY), 1 / WHEEL_FACTOR_LIMIT), WHEEL_FACTOR_LIMIT)
 }
 
 function pinchMetrics(pointers: Map<number, ScreenPoint>): { distance: number; center: ScreenPoint } {
@@ -36,7 +47,7 @@ function useWheel(options: GestureOptions, zoom: GestureView) {
 		event.preventDefault()
 		isHintVisible.value = false
 		options.onInteract()
-		zoom.zoomBy(Math.exp(-event.deltaY * WHEEL_SENSITIVITY), localPoint(event, viewport), false)
+		zoom.zoomBy(wheelFactor(event), localPoint(event, viewport), false)
 	}
 
 	onMounted(() => options.viewportRef.value?.addEventListener('wheel', handleWheel, { passive: false }))
@@ -52,10 +63,11 @@ function snapshot(pointers: Map<number, ScreenPoint>, view: ImageMapView): Point
 	return { pointers: new Map(pointers), view: { ...view }, ...pinchMetrics(pointers) }
 }
 
-function movedView(start: PointerStart, pointers: Map<number, ScreenPoint>): ImageMapView {
+function movedView(start: PointerStart, pointers: Map<number, ScreenPoint>, limitScale: (scale: number) => number): ImageMapView {
 	const { distance, center } = pinchMetrics(pointers)
-	const ratio = start.distance && pointers.size > 1 ? distance / start.distance : 1
-	const scale = start.view.scale * ratio
+	const wanted = start.distance && pointers.size > 1 ? distance / start.distance : 1
+	const scale = limitScale(start.view.scale * wanted)
+	const ratio = scale / start.view.scale
 	const anchorX = center.x - (start.center.x - start.view.x) * ratio
 	const anchorY = center.y - (start.center.y - start.view.y) * ratio
 	return { scale, x: anchorX, y: anchorY }
@@ -79,7 +91,7 @@ export function useImageMapGestures(options: GestureOptions, zoom: GestureView) 
 		const viewport = options.viewportRef.value
 		if (!viewport || !start || !pointers.has(event.pointerId)) return
 		pointers.set(event.pointerId, localPoint(event, viewport))
-		const next = movedView(start, pointers)
+		const next = movedView(start, pointers, zoom.limitScale)
 		if (!wasDragged && Math.hypot(next.x - start.view.x, next.y - start.view.y) < DRAG_THRESHOLD && pointers.size < 2) return
 		if (!wasDragged) viewport.setPointerCapture?.(event.pointerId)
 		wasDragged = true

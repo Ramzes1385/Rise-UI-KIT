@@ -118,6 +118,7 @@ export interface GestureView {
 	view: Ref<ImageMapView>
 	setView: (next: ImageMapView, animated: boolean) => void
 	zoomBy: (factor: number, point?: ScreenPoint, animated?: boolean) => void
+	limitScale: (scale: number) => number
 }
 
 export interface GestureOptions {

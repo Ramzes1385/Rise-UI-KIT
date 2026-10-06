@@ -208,6 +208,34 @@ describe('sanitizeSvg — векторы XSS (результат разбира�
 	})
 })
 
+describe('sanitizeSvg: соответствие размеру слоя', () => {
+	const LAYER = { width: 1000, height: 600 }
+	const bare = (attributes = ''): string => `<svg xmlns="http://www.w3.org/2000/svg" ${attributes}><rect width="5" height="5"/></svg>`
+
+	it('SVG без viewBox получает его по размеру слоя, чтобы растягиваться вместе с подложкой и фигурами', () => {
+		const root = parse(sanitizeSvg(bare(), PREFIX, LAYER))
+		expect(root.getAttribute('viewBox')).toBe('0 0 1000 600')
+		expect(root.getAttribute('width')).toBe('100%')
+		expect(root.getAttribute('height')).toBe('100%')
+	})
+
+	it('без viewBox размер берётся из width и height самого SVG, в том числе с единицами', () => {
+		expect(parse(sanitizeSvg(bare('width="500" height="300"'), PREFIX, LAYER)).getAttribute('viewBox')).toBe('0 0 500 300')
+		expect(parse(sanitizeSvg(bare('width="2in" height="1in"'), PREFIX, LAYER)).getAttribute('viewBox')).toBe('0 0 192 96')
+		expect(parse(sanitizeSvg(bare('width="50%" height="50%"'), PREFIX, LAYER)).getAttribute('viewBox')).toBe('0 0 1000 600')
+	})
+
+	it('заданный viewBox не меняется, неверный заменяется', () => {
+		expect(parse(sanitizeSvg(bare('viewBox="-10 -10 200 100"'), PREFIX, LAYER)).getAttribute('viewBox')).toBe('-10 -10 200 100')
+		expect(parse(sanitizeSvg(bare('viewBox="0 0 0 0"'), PREFIX, LAYER)).getAttribute('viewBox')).toBe('0 0 1000 600')
+	})
+
+	it('без размера слоя и без самого слоя viewBox не добавляется', () => {
+		expect(parse(sanitizeSvg(bare(), PREFIX, { width: 0, height: 0 })).hasAttribute('viewBox')).toBe(false)
+		expect(parse(sanitizeSvg(bare(), PREFIX)).hasAttribute('viewBox')).toBe(false)
+	})
+})
+
 describe('cleanSvg', () => {
 	it('чистит, но оставляет xmlns, размеры и id без префикса', () => {
 		const markup = wrap('<rect id="r" width="5" height="5" onclick="x()"/><script>alert(1)</script>', 'width="10" height="10"')

@@ -1,3 +1,6 @@
+import { ensureViewBox } from './svgViewport'
+import type { SvgLayerSize } from '../../types/internal/svgViewport.types'
+
 const SVG_NS = 'http://www.w3.org/2000/svg'
 
 const ALLOWED_TAGS = new Set([
@@ -189,10 +192,11 @@ export function cleanSvg(markup: string): string {
 	return root ? new XMLSerializer().serializeToString(root) : ''
 }
 
-export function sanitizeSvg(markup: string, idPrefix: string): string {
+export function sanitizeSvg(markup: string, idPrefix: string, layer?: SvgLayerSize): string {
 	const root = cleanRoot(markup)
 	if (!root) return ''
 	prefixIds(root, idPrefix)
+	if (layer) ensureViewBox(root, layer)
 	root.setAttribute('width', '100%')
 	root.setAttribute('height', '100%')
 	return root.outerHTML

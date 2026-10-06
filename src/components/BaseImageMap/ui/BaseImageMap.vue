@@ -230,7 +230,7 @@
 			v-if="overlay.popupItem.value"
 			:is-open="true"
 			:title="overlay.popupItem.value.object.title"
-			:direction="overlay.isSheet.value ? 'bottom' : undefined"
+			v-bind="overlay.isSheet.value ? { direction: 'bottom' } : {}"
 			:custom-class="{ root: classes.popup }"
 			@close="overlay.closePopup"
 			@update:is-open="overlay.closePopup">

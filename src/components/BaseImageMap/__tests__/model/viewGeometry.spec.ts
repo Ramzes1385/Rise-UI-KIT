@@ -1,4 +1,15 @@
-import { clampScale, clampView, fitArea, fitStage, revealOffset, scaleForArea, zoomAround } from '../../model/zoom/viewGeometry'
+import {
+	clampScale,
+	clampView,
+	fitArea,
+	fitStage,
+	pageRatio,
+	retargetView,
+	revealOffset,
+	scaleForArea,
+	toViewportPoint,
+	zoomAround,
+} from '../../model/zoom/viewGeometry'
 
 const FRAME = { viewportWidth: 400, viewportHeight: 200, stageWidth: 400, stageHeight: 200 }
 
@@ -51,5 +62,42 @@ describe('viewGeometry', () => {
 		expect(revealOffset({ left: -50, top: -30, right: -30, bottom: -10 }, viewport, 10)).toEqual({ x: 60, y: 40 })
 		expect(revealOffset({ left: 420, top: 250, right: 440, bottom: 270 }, viewport, 10)).toEqual({ x: -50, y: -80 })
 		expect(revealOffset({ left: 300, top: 0, right: 900, bottom: 20 }, viewport, 10)).toEqual({ x: -290, y: 10 })
+	})
+
+	it('retargetView держит в центре окна ту же точку карты при смене размера окна', () => {
+		const view = { scale: 2, x: -100, y: -50 }
+		const larger = { viewportWidth: 800, viewportHeight: 400, stageWidth: 800, stageHeight: 400 }
+		expect(retargetView(view, FRAME, larger)).toEqual({ scale: 2, x: -200, y: -100 })
+		expect(retargetView(retargetView(view, FRAME, larger), larger, FRAME)).toEqual(view)
+	})
+
+	it('retargetView учитывает поля вокруг сцены, когда окно другой пропорции', () => {
+		const square = { viewportWidth: 400, viewportHeight: 400, stageWidth: 400, stageHeight: 200 }
+		expect(retargetView({ scale: 2, x: -100, y: -50 }, FRAME, square)).toEqual({ scale: 2, x: -100, y: 50 })
+	})
+
+	it('retargetView не меняет вид, если у сцены нет размера', () => {
+		const view = { scale: 2, x: -100, y: -50 }
+		expect(retargetView(view, { ...FRAME, stageWidth: 0 }, FRAME)).toBe(view)
+		expect(retargetView(view, FRAME, { ...FRAME, stageHeight: 0 })).toBe(view)
+		expect(retargetView(view, { ...FRAME, stageHeight: 0 }, FRAME)).toBe(view)
+		expect(retargetView(view, FRAME, { ...FRAME, stageWidth: 0 })).toBe(view)
+	})
+
+	it('pageRatio — отношение внутреннего размера к размеру на странице, 1 при нулевом размере', () => {
+		expect(pageRatio({ left: 0, top: 0, width: 200, height: 100 }, { width: 400, height: 400 })).toEqual({ x: 2, y: 4 })
+		expect(pageRatio({ left: 0, top: 0, width: 0, height: 100 }, { width: 400, height: 50 })).toEqual({ x: 1, y: 0.5 })
+		expect(pageRatio({ left: 0, top: 0, width: 200, height: 100 }, { width: 0, height: 0 })).toEqual({ x: 1, y: 1 })
+	})
+
+	it('toViewportPoint переводит точку страницы во внутренние пиксели окна, в том числе при CSS-масштабе', () => {
+		expect(toViewportPoint({ x: 150, y: 90 }, { left: 100, top: 40, width: 400, height: 200 }, { width: 400, height: 200 })).toEqual({
+			x: 50,
+			y: 50,
+		})
+		expect(toViewportPoint({ x: 150, y: 90 }, { left: 100, top: 40, width: 200, height: 100 }, { width: 400, height: 200 })).toEqual({
+			x: 100,
+			y: 100,
+		})
 	})
 })

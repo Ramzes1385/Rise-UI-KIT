@@ -129,9 +129,21 @@ describe('svgShapes', () => {
 	const markup =
 		'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600"><rect id="shop-1" x="100" y="120" width="200" height="60"/>' +
 		'<g id="shop-2" transform="translate(500 0)"><path d="M0 0 H100 V100 H0 Z"/></g><circle cx="900" cy="500" r="20"/></svg>'
+	const PLAN = { width: 800, height: 400 }
+	const ns = 'xmlns="http://www.w3.org/2000/svg"'
+
+	function boundsOf(svg: string, layer = PLAN, id = 'shop'): [number, number, number, number] {
+		const [shape] = svgElementShapes(parseSvgPaths(svg, layer), id)
+		const points = shape.getPoints()
+		const xs = points.map(point => point.x)
+		const ys = points.map(point => point.y)
+		return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)]
+	}
+
+	const rect = '<rect id="shop" x="150" y="80" width="100" height="40"/>'
 
 	it('находит фигуры элемента по id, в том числе внутри группы с трансформацией', () => {
-		const paths = parseSvgPaths(markup)
+		const paths = parseSvgPaths(markup, LAYER)
 		const [shape] = svgElementShapes(paths, 'shop-1')
 		const xs = shape.getPoints().map(point => point.x)
 		expect([Math.min(...xs), Math.max(...xs)]).toEqual([100, 300])
@@ -141,21 +153,39 @@ describe('svgShapes', () => {
 	})
 
 	it('viewBox с ненулевым началом: фигуры сдвигаются на minX и minY; запятые, нули и неверный viewBox — без сдвига', () => {
-		const rect = '<rect id="shop" x="150" y="80" width="100" height="40"/>'
-		const bounds = (viewBox: string) => {
-			const [shape] = svgElementShapes(parseSvgPaths(`<svg xmlns="http://www.w3.org/2000/svg" ${viewBox}>${rect}</svg>`), 'shop')
-			const points = shape.getPoints()
-			return [Math.min(...points.map(point => point.x)), Math.min(...points.map(point => point.y))]
-		}
-		expect(bounds('viewBox="100 50 800 400"')).toEqual([50, 30])
-		expect(bounds('viewBox="-50,0,800,400"')).toEqual([200, 80])
-		expect(bounds('viewBox="0 0 800 400"')).toEqual([150, 80])
-		expect(bounds('viewBox="a b c d"')).toEqual([150, 80])
-		expect(bounds('')).toEqual([150, 80])
+		expect(boundsOf(`<svg ${ns} viewBox="100 50 800 400">${rect}</svg>`)).toEqual([50, 30, 150, 70])
+		expect(boundsOf(`<svg ${ns} viewBox="-50,0,800,400">${rect}</svg>`)).toEqual([200, 80, 300, 120])
+		expect(boundsOf(`<svg ${ns} viewBox="0 0 800 400">${rect}</svg>`)).toEqual([150, 80, 250, 120])
+		expect(boundsOf(`<svg ${ns} viewBox="a b c d">${rect}</svg>`)).toEqual([150, 80, 250, 120])
+		expect(boundsOf(`<svg ${ns}>${rect}</svg>`)).toEqual([150, 80, 250, 120])
+	})
+
+	it('viewBox меньше слоя: фигуры масштабируются так же, как картинка пола', () => {
+		expect(boundsOf(`<svg ${ns} viewBox="0 0 400 200">${rect}</svg>`)).toEqual([300, 160, 500, 240])
+		expect(boundsOf(`<svg ${ns} viewBox="0 0 1600 800">${rect}</svg>`)).toEqual([75, 40, 125, 60])
+	})
+
+	it('другие пропорции viewBox: по умолчанию вписывание по центру, xMinYMin — к углу, slice — с обрезкой, none — растяжение', () => {
+		const wide = (ratio = '') => `<svg ${ns} viewBox="0 0 400 100" ${ratio}>${rect}</svg>`
+		expect(boundsOf(wide())).toEqual([300, 260, 500, 340])
+		expect(boundsOf(wide('preserveAspectRatio="xMinYMin meet"'))).toEqual([300, 160, 500, 240])
+		expect(boundsOf(wide('preserveAspectRatio="xMaxYMax meet"'))).toEqual([300, 360, 500, 440])
+		expect(boundsOf(wide('preserveAspectRatio="xMidYMid slice"'))).toEqual([200, 320, 600, 480])
+		expect(boundsOf(wide('preserveAspectRatio="none"'))).toEqual([300, 320, 500, 480])
+	})
+
+	it('без viewBox размер берётся из width и height корня, а без них — из слоя', () => {
+		expect(boundsOf(`<svg ${ns} width="400" height="200">${rect}</svg>`)).toEqual([300, 160, 500, 240])
+		expect(boundsOf(`<svg ${ns} width="400">${rect}</svg>`)).toEqual([150, 80, 250, 120])
+	})
+
+	it('вложенные трансформации и ненулевое начало viewBox вместе', () => {
+		const nested = `<svg ${ns} viewBox="-100 -50 400 200"><g transform="translate(100 50)"><g transform="scale(2)"><rect id="shop" x="10" y="10" width="20" height="10"/></g></g></svg>`
+		expect(boundsOf(nested)).toEqual([440, 240, 520, 280])
 	})
 
 	it('пустая разметка — нет путей', () => {
-		expect(parseSvgPaths('')).toEqual([])
+		expect(parseSvgPaths('', LAYER)).toEqual([])
 	})
 })
 
