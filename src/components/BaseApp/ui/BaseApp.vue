@@ -14,6 +14,7 @@
 		:duration="toaster?.duration"
 		:variant="toaster?.variant"
 		:size-scale="toaster?.sizeScale"
+		:aria-label="toaster?.ariaLabel"
 		@remove="toasts.remove" />
 	<component
 		:is="overlay.component"

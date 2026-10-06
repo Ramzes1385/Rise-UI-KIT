@@ -28,7 +28,8 @@ const template = `
 	</div>
 `
 
-const popupOf = async (text: string): Promise<HTMLElement> => (await screen.findByText(text)).closest<HTMLElement>('[role="tooltip"]')!
+const popupOf = async (text: string): Promise<HTMLElement> =>
+	(await screen.findAllByText(text)).map(node => node.closest<HTMLElement>('[role="tooltip"]')).find(Boolean)!
 
 export const Theming: StoryObj<typeof meta> = {
 	name: 'Токены',

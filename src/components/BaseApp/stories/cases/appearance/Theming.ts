@@ -15,13 +15,13 @@ const template = `
 			<BaseButton variant="outline" @click="loadingBar.finish">Завершить</BaseButton>
 		</div>
 		<div class="story-frame story-medium" style="height: 48px; contain: layout;">
-			<BaseApp>По умолчанию</BaseApp>
+			<BaseApp :toaster="{ ariaLabel: 'Уведомления: по умолчанию' }">По умолчанию</BaseApp>
 		</div>
 		<div class="story-frame story-medium" style="height: 48px; contain: layout; --rise-app-loading-bar-bg: var(--rise-success); --rise-app-loading-bar-height: 6px;">
-			<BaseApp>Токены на контейнере</BaseApp>
+			<BaseApp :toaster="{ ariaLabel: 'Уведомления: токены' }">Токены на контейнере</BaseApp>
 		</div>
 		<div class="story-frame story-medium" style="height: 48px; contain: layout;">
-			<BaseApp :ui="ui">Классы через ui</BaseApp>
+			<BaseApp :toaster="{ ariaLabel: 'Уведомления: классы' }" :ui="ui">Классы через ui</BaseApp>
 		</div>
 	</div>
 `

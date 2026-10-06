@@ -16,7 +16,7 @@ const state = { openFrame: null }
 const template = `
 	<div class="story-row">
 		<div class="story-frame story-medium" style="height: 280px; overflow: hidden; transform: translateZ(0);">
-			<BaseApp teleport-to="#drawer-theming-plain">
+			<BaseApp teleport-to="#drawer-theming-plain" :toaster="{ ariaLabel: 'Уведомления: по умолчанию' }">
 				<BaseButton variant="outline" @click="openFrame = 'plain'">По умолчанию</BaseButton>
 				<BaseDrawer v-bind="args" title="По умолчанию" :is-open="openFrame === 'plain'" @update:is-open="openFrame = null">
 					<BaseText>Панель без настроек.</BaseText>
@@ -25,7 +25,7 @@ const template = `
 			</BaseApp>
 		</div>
 		<div class="story-frame story-medium" style="height: 280px; overflow: hidden; transform: translateZ(0); --rise-drawer-panel-bg: var(--rise-primary-soft); --rise-drawer-panel-text: var(--rise-primary-text); --rise-drawer-panel-radius: var(--rise-radius-xl); --rise-drawer-panel-padding-x: 28px; --rise-drawer-title-font-size: var(--rise-font-size-lg); --rise-drawer-handle-bg: var(--rise-primary);">
-			<BaseApp teleport-to="#drawer-theming-tokens">
+			<BaseApp teleport-to="#drawer-theming-tokens" :toaster="{ ariaLabel: 'Уведомления: токены' }">
 				<BaseButton variant="outline" @click="openFrame = 'tokens'">Токены на контейнере</BaseButton>
 				<BaseDrawer v-bind="args" title="Токены на контейнере" :is-open="openFrame === 'tokens'" @update:is-open="openFrame = null">
 					<BaseText>Фон, текст, радиус, отступы и ручка.</BaseText>
@@ -34,7 +34,7 @@ const template = `
 			</BaseApp>
 		</div>
 		<div class="story-frame story-medium" style="height: 280px; overflow: hidden; transform: translateZ(0);">
-			<BaseApp teleport-to="#drawer-theming-ui">
+			<BaseApp teleport-to="#drawer-theming-ui" :toaster="{ ariaLabel: 'Уведомления: классы' }">
 				<BaseButton variant="outline" @click="openFrame = 'ui'">Классы через ui</BaseButton>
 				<BaseDrawer v-bind="args" title="Классы через ui" :ui="ui" :is-open="openFrame === 'ui'" @update:is-open="openFrame = null">
 					<BaseText>Классы добавлены к панели и заголовку.</BaseText>

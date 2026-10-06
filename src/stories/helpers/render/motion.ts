@@ -27,7 +27,7 @@ function presetColumn(preset: MotionPreset, item: string): string {
 	return [
 		`\t\t<div class="story-motion__preset" data-rise-motion="${preset}">`,
 		`\t\t\t<span class="story-label">${PRESET_LABELS[preset]}</span>`,
-		indent(item, '\t\t\t'),
+		indent(item.replaceAll('%preset%', preset), '\t\t\t'),
 		'\t\t</div>',
 	].join('\n')
 }

@@ -148,7 +148,7 @@
 	&__description.base-text {
 		margin: sz(4px) 0 0;
 		@include text-size(sm);
-		@include custom-text(color, var(--rise-text-muted));
+		@include custom-text(color, ct(notification-description, text, var(--rise-text-muted)));
 		overflow-wrap: anywhere;
 	}
 

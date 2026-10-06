@@ -129,10 +129,23 @@ function toPanelSpace(point: { top: number; left: number }, panel: HTMLElement |
 	return { top: point.top - origin.y, left: point.left - origin.x }
 }
 
-/** Размер панели и ширина её рамки; до отрисовки — нули */
+/**
+ * Размер панели и ширина её рамки; до отрисовки — нули. `offsetWidth` округлён до целого, а дробную ширину знает только
+ * `getBoundingClientRect` — его искажает масштаб появления (scale < 1), поэтому берётся большее из двух: панель не выходит
+ * за отступ от края окна ни на дробную долю пикселя. Не отрисованная панель (offset = 0) — нули: rect у неё не настоящий
+ */
 function measurePanel(panel: HTMLElement | null): Pick<Geometry, 'size' | 'border'> {
 	if (!panel) return { size: { width: 0, height: 0 }, border: { left: 0, top: 0 } }
-	return { size: { width: panel.offsetWidth, height: panel.offsetHeight }, border: { left: panel.clientLeft, top: panel.clientTop } }
+	const rect = panel.getBoundingClientRect()
+	return {
+		size: { width: preciseSize(panel.offsetWidth, rect.width), height: preciseSize(panel.offsetHeight, rect.height) },
+		border: { left: panel.clientLeft, top: panel.clientTop },
+	}
+}
+
+/** Дробный размер из rect, если панель уже отрисована (offset > 0); иначе — 0, как до отрисовки */
+function preciseSize(offset: number, rect: number): number {
+	return offset > 0 ? Math.max(offset, rect) : 0
 }
 
 /** Стрелка панели: сторона панели, обращённая к триггеру, и расстояние от начала этой стороны до середины триггера */

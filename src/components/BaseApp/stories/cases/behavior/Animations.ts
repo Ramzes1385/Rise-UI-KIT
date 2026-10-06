@@ -11,7 +11,7 @@ const LOADING_MS = 1200
 const motion = motionPresetsStory({
 	item: `
 		<div class="story-frame" style="height: 48px; contain: layout;">
-			<BaseApp v-bind="args">Полоса загрузки</BaseApp>
+			<BaseApp v-bind="args" :toaster="{ ariaLabel: 'Уведомления %preset%' }">Полоса загрузки</BaseApp>
 		</div>
 	`,
 	action: 'replay',

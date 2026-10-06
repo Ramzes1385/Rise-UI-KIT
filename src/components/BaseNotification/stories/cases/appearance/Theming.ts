@@ -11,7 +11,7 @@ const OWN_ARGS = ['title', 'ariaLabel']
 const template = `
 	<div class="story-stack story-medium">
 		<BaseNotification v-bind="args" title="По умолчанию" aria-label="Уведомления по умолчанию" />
-		<div style="--rise-notification-bg: var(--rise-primary-soft); --rise-notification-text: var(--rise-primary-text); --rise-notification-border: var(--rise-primary-border); --rise-notification-radius: var(--rise-radius-2xl); --rise-notification-padding: 20px; --rise-notification-title-font-size: var(--rise-font-size-base);">
+		<div style="--rise-notification-bg: var(--rise-primary-soft); --rise-notification-text: var(--rise-primary-text); --rise-notification-description-text: var(--rise-primary-text); --rise-notification-border: var(--rise-primary-border); --rise-notification-radius: var(--rise-radius-2xl); --rise-notification-padding: 20px; --rise-notification-title-font-size: var(--rise-font-size-base);">
 			<BaseNotification v-bind="args" title="Токены на контейнере" aria-label="Уведомления с токенами" />
 		</div>
 		<BaseNotification v-bind="args" title="Классы через ui" aria-label="Уведомления с классами" :ui="ui" />

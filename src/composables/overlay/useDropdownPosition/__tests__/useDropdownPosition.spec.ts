@@ -121,6 +121,13 @@ describe('useDropdownPosition', () => {
 		expect(setup({ position: 'right-start', trigger: rect(740, 400) }).api.coords.value.top).toBe(768 - 50 - VIEWPORT_MARGIN)
 	})
 
+	it('дробная ширина панели (offsetWidth округлён) — у края окна отступ не меньше VIEWPORT_MARGIN', () => {
+		const panel = createPanel(201, 50)
+		panel.getBoundingClientRect = () => rect(0, 0, { width: 201.45, height: 49.6 })
+		const { api } = setup({ trigger: rect(950, 10), panel })
+		expect(api.coords.value.left + 201.45).toBeLessThanOrEqual(1024 - VIEWPORT_MARGIN)
+	})
+
 	it('размер окна — без полосы прокрутки (clientWidth), когда он известен', () => {
 		vi.spyOn(document.documentElement, 'clientWidth', 'get').mockReturnValue(1000)
 		vi.spyOn(document.documentElement, 'clientHeight', 'get').mockReturnValue(700)

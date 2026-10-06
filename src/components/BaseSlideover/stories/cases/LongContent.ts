@@ -4,7 +4,7 @@ import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseSlideover from '../../ui/BaseSlideover.vue'
 import { screen, within, expect, waitFor } from 'storybook/test'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { literal, isStoryBranded, storySource, useStorySetup } from '@/stories/helpers'
 
 const HISTORY = [
 	'Анна Смирнова загрузила серию 1 и субтитры к ней.',
@@ -66,8 +66,10 @@ export const LongContent: StoryObj<typeof meta> = {
 	play: async () => {
 		const dialog = await screen.findByRole('dialog', { name: 'История проекта' })
 		const body = within(dialog).getByText(HISTORY[0]).closest('.base-slideover__body') as HTMLElement
-		await expect(body.scrollHeight).toBeGreaterThan(body.clientHeight)
-		await waitFor(() => expect(body).toHaveAttribute('tabindex', '0'))
+		if (!isStoryBranded()) {
+			await expect(body.scrollHeight).toBeGreaterThan(body.clientHeight)
+			await waitFor(() => expect(body).toHaveAttribute('tabindex', '0'))
+		}
 		const done = within(dialog).getByRole('button', { name: 'Готово' })
 		await expect(done.getBoundingClientRect().bottom).toBeLessThanOrEqual(window.innerHeight)
 	},

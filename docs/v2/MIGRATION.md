@@ -2204,3 +2204,41 @@ API кита не меняется. В Storybook добавлены пример
   - BaseCode, BaseDescriptions — иконка «копировать ↔ скопировано» сменяется `<Transition mode="out-in">` (pop); BaseInfiniteScroll — загрузчик появляется и уходит растворением. Без стабов смена асинхронная.
   - BaseChart, BasePieChart, BaseCountdown — движение прежнее (только токены без запасных значений); скругление образцов легенды — `--rise-radius-xs`.
 - **Storybook**: у каждого из 24 — истории `Theming` («Токены»: токены на контейнере и `ui`) и `Animations` («Анимации»: колонки пресетов `none`/`subtle`/`standard`/`expressive`, многошаговые — шаги по кругу).
+## Задача theme-overlay-layout: темизация и движение групп Overlay и Layout
+
+Добавление без ломки: вид по умолчанию прежний, публичные БЭМ-классы не переименованы. Компоненты: Overlay — BaseApp, BaseCommandPalette, BaseConfirm, BaseContextMenu, BaseDrawer, BaseDropdown, BaseDropdownMenu, BaseModal, BaseNotification, BaseNotificationCenter, BasePopconfirm, BasePopover, BaseSlideover, BaseTooltip, BaseTour; Layout — BaseContainer, BaseFooter, BaseHeader, BaseLayout, BaseScrollArea, BaseSplitter.
+
+- **Токены компонентов** (уровень 3, кит только читает с прежним значением по умолчанию): `--rise-app-loading-bar-*`, `--rise-command-palette-*`, `--rise-confirm-*`, `--rise-context-menu-*`, `--rise-drawer-*`, `--rise-dropdown-panel-*`, `--rise-dropdown-menu-*`, `--rise-modal-*`, `--rise-notification-*`, `--rise-notification-center-*`, `--rise-popconfirm-*`, `--rise-popover-*`, `--rise-slideover-*`, `--rise-tooltip-*`, `--rise-tour-*`, `--rise-container-*`, `--rise-footer-*`, `--rise-header-*`, `--rise-layout-*`, `--rise-scroll-area-*`, `--rise-splitter-*` — от 2 (BaseApp, BaseContainer) до 14 на компонент; полный список — docs/design/COMPONENT_TOKENS.md.
+- **Проп `ui`** у всех 21: классы частей, добавляются к классам кита; глобально — `defaults.<BaseX>.ui`. Части — константы `<X>_PARTS` и типы `Base<X>Part` (экспорт из компонента): `MODAL_PARTS` (`root`, `content`, `header`, `header-left`, `title`, `close`, `body`, `footer`), `DRAWER_PARTS`, `SLIDEOVER_PARTS`, `CONFIRM_PARTS`, `POPCONFIRM_PARTS`, `DROPDOWN_PARTS` (`root`, `panel`, `arrow`), `DROPDOWN_MENU_PARTS`, `CONTEXT_MENU_PARTS`, `POPOVER_PARTS`, `TOOLTIP_PARTS` (`root`, `popup`, `text`), `COMMAND_PALETTE_PARTS`, `NOTIFICATION_PARTS`, `NOTIFICATION_CENTER_PARTS`, `TOUR_PARTS`, `APP_PARTS` (`loading-bar`), `CONTAINER_PARTS`, `FOOTER_PARTS`, `HEADER_PARTS`, `LAYOUT_PARTS`, `SCROLL_AREA_PARTS`, `SPLITTER_PARTS`.
+  ```vue
+  <BaseModal v-model="isOpen" title="Профиль" :ui="{ content: 'rounded-3xl', footer: 'justify-between' }" />
+  ```
+- **Проп `animation`** (новый, тип `EnterAnimation`, значения — константа `ENTER_ANIMATIONS` из `useMotion`): `fade` — прозрачность; `scale` — прозрачность и масштаб от `--rise-motion-scale-from`; `slide` — сдвиг на `--rise-motion-distance` со стороны якоря (у шторок — от края); `pop` — масштаб с пружиной `--rise-ease-spring` (перелёт — в пресете `expressive`); `none` — сразу, без перехода. Глобально — `defaults.<BaseX>.animation` или `defaults.global.animation`. Умолчания сохраняют прежний вид:
+  | Компонент | По умолчанию |
+  |---|---|
+  | BaseModal, BaseConfirm, BaseCommandPalette, BasePopconfirm, BaseDropdown, BaseDropdownMenu, BaseContextMenu, BasePopover, BaseTour (карточка), BaseNotification | `scale` |
+  | BaseDrawer, BaseSlideover | `slide` |
+  | BaseTooltip | `fade` |
+  ```vue
+  <BaseDropdownMenu :items="items" animation="slide" />
+  <BaseModal v-model="isOpen" animation="none" />
+  ```
+  - **`transform-origin` от якоря**: панели BaseDropdown (и всё на нём — DropdownMenu, Select, Autocomplete…), BasePopover, BaseTooltip, BasePopconfirm, BaseContextMenu масштабируются из точки якоря, `slide` сдвигает панель со стороны якоря — после переворота (flip) сторона пересчитывается. BaseNotification при `slide` выезжает со стороны своего угла.
+  - Движение — CSS-свойствами `scale` и `translate` (не `transform`): позиционирование панелей через `transform` не ломается. Длительности и кривые — токены `--rise-duration*`/`--rise-ease*`; при `prefers-reduced-motion`, пресете `none` и `reducedMotion: 'always'` — сразу конечное состояние.
+- **Тема и пресет движения области на телепортированных панелях**: `readThemeAttrs` (`useTeleportTarget`) кроме `data-rise-theme`/`data-theme` копирует `data-rise-motion` (FOLLOW_UPS № 78) — пресет области (`<div data-rise-motion="subtle">`) теперь действует на панели BaseDropdown, BaseTooltip и всех компонентов на `useInheritedThemeAttrs`. Новый `useOwnThemeAttrs(isOpen)` — те же атрибуты для оверлеев, корень которых — `Teleport` (якорь — место компонента в разметке): BaseModal, BaseDrawer, BaseSlideover, BaseNotification, BaseTour и окна на их основе (BaseConfirm, BaseCommandPalette). **DOM**: на корне телепортированной панели при открытии появляются атрибуты `data-rise-theme`/`data-theme`/`data-rise-motion` предков; приложению, которое задавало тему окон глобально на `<html>`, ничего менять не нужно.
+- **Прочее движение**:
+  - BaseDropdownMenu и BaseContextMenu — галочки и точки пунктов появляются `<Transition>` (`pop`).
+  - BaseNotificationCenter — пункты в `<TransitionGroup>` (появление и уход через `transform`/`opacity`), точка «не прочитано» — `pop`; пропсы оформлены через `kitDefaults` (действует `defaults.BaseNotificationCenter`).
+  - BaseTour — слой проявляется; **DOM**: подсветка (spotlight) двигается `transform: translate()`, а не `top`/`left` (в style — `width`, `height`, `transform`); полоса прогресса — `clip-path` вместо `width`.
+  - BaseApp — полоса загрузки проявляется и угасает `<Transition name="base-app-loading-bar">` на токенах движения; высота и цвет — токены `--rise-app-loading-bar-height`, `--rise-app-loading-bar-bg` (CSS-переменная `--loading-bar-height` по-прежнему главнее).
+  - BaseLayout — мобильный сайдбар выезжает и проявляется на токенах движения (`@starting-style`, `display` allow-discrete; при reduce — сразу).
+  - BaseTooltip — цикл позиционирования не зовёт `requestAnimationFrame`/`cancelAnimationFrame`, если их нет в среде (FOLLOW_UPS № 80: тесты и SSR).
+- **Новые пропсы** (добавление): BaseCommandPalette `isContained` — палитра внутри ближайшего позиционированного контейнера, без телепорта (встроенная панель, документация); такое окно немодальное — без `aria-modal`, ловушки фокуса и блокировки прокрутки. BaseNotification `ariaLabel` — имя области для скринридера (по умолчанию «Уведомления»); нужно, когда на странице несколько областей уведомлений (axe `landmark-unique`).
+  ```vue
+  <BaseNotification aria-label="Уведомления чата" position="bottom-right" />
+  ```
+  BaseApp `toaster.ariaLabel` — то же для области уведомлений `useToast()`, когда на странице несколько BaseApp: `<BaseApp :toaster="{ ariaLabel: 'Уведомления панели' }">`.
+- **Цвет опасного пункта меню на цветной панели** (BaseDropdownMenu, BaseContextMenu с `color.text`): красный смешивается с текстом панели (`color-mix(in oklab, var(--rise-error) 70%, <текст панели>)`) — на мягком фоне роли контраст ≥ 4,5:1 и в бренде corporate; без `color` — прежний `--rise-error`.
+- **Позиция панели у края окна** (`useDropdownPosition`): размер отрисованной панели — большее из `offsetWidth`/`offsetHeight` и `getBoundingClientRect()`; панель дробной ширины больше не заходит за отступ 8 px от края окна на долю пикселя (сдвиг панелей ≤ 1 px).
+- **Токен описания уведомления** `--rise-notification-description-text` (по умолчанию `--rise-text-muted`) — для мягкого фона роли задавайте вместе с текстом роли (`--rise-text-muted` на `--rise-primary-soft` в corporate — 4,49:1).
+- **Storybook**: у каждого из 21 — истории `Theming` («Токены»: токены на контейнере и `ui`) и `Animations` («Анимации»: колонки пресетов движения; у оверлеев — ещё значения `animation`).

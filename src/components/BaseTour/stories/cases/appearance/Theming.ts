@@ -13,19 +13,19 @@ const classedSteps = [{ title: 'Классы через ui', content: 'Клас�
 const template = `
 	<div class="story-row">
 		<div class="story-frame story-medium" style="height: 260px; contain: layout;">
-			<BaseApp teleport-to="#tour-layer-plain">
+			<BaseApp teleport-to="#tour-layer-plain" :toaster="{ ariaLabel: 'Уведомления: по умолчанию' }">
 				<BaseTour v-bind="args" is-open :steps="plainSteps" />
 				<div id="tour-layer-plain" />
 			</BaseApp>
 		</div>
-		<div class="story-frame story-medium" style="height: 260px; contain: layout; --rise-tour-card-bg: var(--rise-primary-soft); --rise-tour-card-text: var(--rise-primary-text); --rise-tour-card-radius: var(--rise-radius-2xl); --rise-tour-card-padding: 24px; --rise-tour-title-font-size: var(--rise-font-size-lg);">
-			<BaseApp teleport-to="#tour-layer-themed">
+		<div class="story-frame story-medium" style="height: 260px; contain: layout; --rise-tour-card-bg: color-mix(in srgb, var(--rise-primary-soft) 50%, var(--rise-bg)); --rise-tour-card-text: var(--rise-primary-text); --rise-tour-card-radius: var(--rise-radius-2xl); --rise-tour-card-padding: 24px; --rise-tour-title-font-size: var(--rise-font-size-lg);">
+			<BaseApp teleport-to="#tour-layer-themed" :toaster="{ ariaLabel: 'Уведомления: токены' }">
 				<BaseTour v-bind="args" is-open :steps="themedSteps" />
 				<div id="tour-layer-themed" />
 			</BaseApp>
 		</div>
 		<div class="story-frame story-medium" style="height: 260px; contain: layout;">
-			<BaseApp teleport-to="#tour-layer-classed">
+			<BaseApp teleport-to="#tour-layer-classed" :toaster="{ ariaLabel: 'Уведомления: классы' }">
 				<BaseTour v-bind="args" is-open :steps="classedSteps" :ui="ui" />
 				<div id="tour-layer-classed" />
 			</BaseApp>

@@ -15,6 +15,11 @@ export interface BaseAppToasterOptions {
 	variant?: (typeof NOTIFICATION_VARIANTS)[number]
 	/** Масштаб уведомлений в процентах (100) */
 	sizeScale?: number
+	/**
+	 * Имя области уведомлений для скринридера; по умолчанию «Уведомления». Нужно, когда на странице несколько BaseApp
+	 * (встроенные панели, витрины): одинаковые области — нарушение `landmark-unique`
+	 */
+	ariaLabel?: string
 }
 
 /** Части приложения для пропа `ui`: loading-bar — полоса загрузки `useLoadingBar()` (класс `base-app-loading-bar`) */

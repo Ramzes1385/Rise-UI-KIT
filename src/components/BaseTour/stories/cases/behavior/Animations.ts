@@ -22,7 +22,7 @@ const column = ([preset, label]: (typeof presets)[number]): string => `
 			<div class="story-motion__preset" data-rise-motion="${preset}">
 				<span class="story-label">${label}</span>
 				<div class="story-frame" style="height: 260px; contain: layout;">
-					<BaseApp teleport-to="#tour-layer-${preset}">
+					<BaseApp teleport-to="#tour-layer-${preset}" :toaster="{ ariaLabel: 'Уведомления ${preset}' }">
 						<BaseTour v-bind="args" v-model:is-open="isOpen" :steps="steps" />
 						<div id="tour-layer-${preset}" />
 					</BaseApp>

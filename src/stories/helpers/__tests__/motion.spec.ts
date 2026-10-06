@@ -22,6 +22,21 @@ describe('motionPresetsStory', () => {
 		)
 	})
 
+	it('%preset% в разметке — имя пресета своей колонки', () => {
+		const { template } = motionPresetsStory({
+			item: '<BaseApp :toaster="{ ariaLabel: \'Уведомления %preset%\' }" />',
+			components: {},
+			imports: [],
+		})
+
+		expect([...template.matchAll(/Уведомления (\w+)/g)].map(([, preset]) => preset)).toEqual([
+			'none',
+			'subtle',
+			'standard',
+			'expressive',
+		])
+	})
+
 	it('своё действие и подпись кнопки', () => {
 		const { template } = motionPresetsStory({ item, components: {}, imports: [], action: 'isOpen = !isOpen', trigger: 'Открыть' })
 

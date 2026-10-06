@@ -36,8 +36,6 @@
 	}
 
 	&__item {
-		--dm-icon-size: #{sz(var(--dm-item-icon-size))};
-
 		@include menu-item;
 		padding: sz(var(--dm-item-padding-y) var(--dm-item-padding-x));
 		border-radius: sz(var(--dm-item-radius));
@@ -70,7 +68,7 @@
 
 		&--danger,
 		&--danger:focus {
-			color: var(--rise-error);
+			color: color-mix(in oklab, var(--rise-error) 70%, var(--dm-panel-text, var(--rise-error)));
 
 			.base-dropdown-menu__icon {
 				color: inherit;
@@ -120,8 +118,8 @@
 		@include transition-colors;
 
 		.base-icon__svg {
-			width: var(--dm-icon-size);
-			height: var(--dm-icon-size);
+			width: sz(calc(var(--dm-item-icon-size) * 1.25));
+			height: sz(calc(var(--dm-item-icon-size) * 1.25));
 		}
 	}
 

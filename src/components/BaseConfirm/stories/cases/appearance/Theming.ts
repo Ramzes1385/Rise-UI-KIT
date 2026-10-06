@@ -15,21 +15,21 @@ const state = { openFrame: null }
 const template = `
 	<div class="story-row">
 		<div class="story-frame story-medium" style="height: 300px; overflow: hidden; transform: translateZ(0);">
-			<BaseApp teleport-to="#confirm-theming-plain">
+			<BaseApp teleport-to="#confirm-theming-plain" :toaster="{ ariaLabel: 'Уведомления: по умолчанию' }">
 				<BaseButton variant="outline" @click="openFrame = 'plain'">По умолчанию</BaseButton>
 				<BaseConfirm v-bind="args" title="По умолчанию" :is-open="openFrame === 'plain'" @update:is-open="openFrame = null" />
 				<div id="confirm-theming-plain" />
 			</BaseApp>
 		</div>
 		<div class="story-frame story-medium" style="height: 300px; overflow: hidden; transform: translateZ(0); --rise-confirm-width: 320px; --rise-confirm-description-text: var(--rise-primary-text); --rise-confirm-description-font-size: var(--rise-font-size-base);">
-			<BaseApp teleport-to="#confirm-theming-tokens">
+			<BaseApp teleport-to="#confirm-theming-tokens" :toaster="{ ariaLabel: 'Уведомления: токены' }">
 				<BaseButton variant="outline" @click="openFrame = 'tokens'">Токены на контейнере</BaseButton>
 				<BaseConfirm v-bind="args" title="Токены на контейнере" :is-open="openFrame === 'tokens'" @update:is-open="openFrame = null" />
 				<div id="confirm-theming-tokens" />
 			</BaseApp>
 		</div>
 		<div class="story-frame story-medium" style="height: 300px; overflow: hidden; transform: translateZ(0);">
-			<BaseApp teleport-to="#confirm-theming-ui">
+			<BaseApp teleport-to="#confirm-theming-ui" :toaster="{ ariaLabel: 'Уведомления: классы' }">
 				<BaseButton variant="outline" @click="openFrame = 'ui'">Классы через ui</BaseButton>
 				<BaseConfirm v-bind="args" title="Классы через ui" :ui="ui" :is-open="openFrame === 'ui'" @update:is-open="openFrame = null" />
 				<div id="confirm-theming-ui" />

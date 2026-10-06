@@ -291,6 +291,7 @@ export const Animations: StoryObj<typeof meta> = {
   - В описании — какие токены управляют движением и как выключить его в приложении (`motion: 'none'`, `reducedMotion: 'always'`).
   - Play — только конечное состояние через `waitFor` (не середину кадра); `check-stories` прогоняет истории с «уменьшить движение», середину перехода проверяет e2e (`src/stories/foundations/Motion/__tests__/motion.e2e.spec.ts`: анимации ставятся на паузу на середине через `getAnimations()`).
   - Статичным компонентам (Text, Kbd, Separator, Container…) — появление через BaseAnimation (`fade`, `slide-up`, `scale`) тем же помощником.
+- **Разные имена в колонках**: `%preset%` в `item` заменяется именем пресета колонки (`none`, `subtle`…) — для того, что на странице должно различаться: `aria-label` областей (несколько BaseApp — `:toaster="{ ariaLabel: 'Уведомления %preset%' }"`, иначе axe `landmark-unique`), `id` слоя телепорта.
 - **Проверка покрытия**: `npm run test:stories-coverage` перечисляет компоненты без истории `Animations` — пока предупреждением; последняя группа движения переведёт его в ошибку.
 - Пример — `Element/BaseAnimation` → «Анимации», страница `Foundations/Motion` («Токены», «Кривые», «Появление»).
 
