@@ -280,6 +280,7 @@
 	}
 
 	&__line-fill {
+		position: absolute;
 		z-index: 1;
 		background-color: var(--stepper-accent);
 		pointer-events: none;

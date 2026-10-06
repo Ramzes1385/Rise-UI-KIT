@@ -155,7 +155,13 @@
 
 .base-comment-thread-expand-enter-active,
 .base-comment-thread-expand-leave-active {
+	display: grid;
 	@include expand-rows-open;
+
+	> * {
+		min-height: 0;
+		overflow: hidden;
+	}
 }
 
 .base-comment-thread-expand-enter-from,

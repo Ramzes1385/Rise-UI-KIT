@@ -1,6 +1,6 @@
 import { items } from '../../shared'
-import { expect } from 'storybook/test'
 import type meta from '../../BaseAnchor.stories'
+import { expect, waitFor } from 'storybook/test'
 import BaseAnchor from '../../../ui/BaseAnchor.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { literal, storySource, useStorySetup } from '@/stories/helpers'
@@ -22,9 +22,13 @@ export const CustomColor: StoryObj<typeof meta> = {
 		setup: useStorySetup(args, { data: { items } }),
 		template,
 	}),
-	play: async ({ canvas }) => {
+	play: async ({ canvas, canvasElement }) => {
 		const current = canvas.getByRole('link', { name: 'Обзор' })
-		await expect(getComputedStyle(current, '::before').backgroundColor).toBe('rgb(109, 40, 217)')
+		await waitFor(() => {
+			const indicator = canvasElement.querySelector<HTMLElement>('.base-anchor__indicator')
+			expect(indicator).not.toBeNull()
+			expect(getComputedStyle(indicator!).backgroundColor).toBe('rgb(109, 40, 217)')
+		})
 		await expect(current).toHaveAttribute('aria-current', 'location')
 	},
 }

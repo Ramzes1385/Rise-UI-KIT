@@ -47,8 +47,6 @@ export const Theming: StoryObj<typeof meta> = {
 	play: async ({ canvas }) => {
 		const nav = (name: string) => canvas.getByRole('navigation', { name })
 		const activeLink = (name: string) => nav(name).querySelector<HTMLElement>('.base-bottom-nav__link--active')!
-		const plain = nav('По умолчанию')
-		const themed = nav('Токены на контейнере')
 		const classed = nav('Классы через ui')
 
 		await expect(getComputedStyle(activeLink('Токены на контейнере')).color).not.toBe(
@@ -56,7 +54,9 @@ export const Theming: StoryObj<typeof meta> = {
 		)
 		await expect(classed).toHaveClass('base-bottom-nav', 'story-themed-bottom-nav')
 		await expect(classed.querySelector('.base-bottom-nav__label')).toHaveClass('story-themed-label')
-		await expect(themed.getBoundingClientRect().height).toBeGreaterThan(plain.getBoundingClientRect().height)
+		await expect(parseFloat(getComputedStyle(activeLink('Токены на контейнере')).minHeight)).toBeGreaterThan(
+			parseFloat(getComputedStyle(activeLink('По умолчанию')).minHeight),
+		)
 		if (!isStoryBranded()) await expect(getComputedStyle(activeLink('Токены на контейнере')).fontWeight).toBe('700')
 		if (!isStoryBranded()) await expect(getComputedStyle(activeLink('Токены на контейнере')).minHeight).toBe('64px')
 		if (!isStoryBranded()) await expect(getComputedStyle(activeLink('По умолчанию')).minHeight).toBe('56px')

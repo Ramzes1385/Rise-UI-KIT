@@ -27,6 +27,7 @@ export const Animations: StoryObj<typeof meta> = {
 	name: 'Анимации',
 	args: { width: 220 },
 	parameters: {
+		a11y: { config: { rules: [{ id: 'landmark-unique', enabled: false }] } },
 		controls: { include: ['variant', 'width', 'collapsedWidth', 'sizeScale'] },
 		docs: {
 			description: {
@@ -38,6 +39,7 @@ export const Animations: StoryObj<typeof meta> = {
 					'(`grid-template-rows`) за `--rise-duration-slow` с проявлением за `--rise-duration`; шеврон поворачивается.',
 					'В `none` и при «уменьшить движение» панель и подменю сразу в конечном состоянии.',
 					"Выключить в приложении — `createUiKitPlugin({ motion: 'none' })` или `reducedMotion: 'always'`.",
+					'В превью четыре боковые панели с одним именем ориентира, поэтому правило axe `landmark-unique` у этой истории выключено.',
 				].join('\n'),
 			},
 			source: motion.source,

@@ -23,6 +23,7 @@ export const Theming: StoryObj<typeof meta> = {
 	name: 'Токены',
 	args: { width: 240 },
 	parameters: {
+		a11y: { config: { rules: [{ id: 'landmark-unique', enabled: false }] } },
 		controls: { include: ['variant', 'width', 'sizeScale'] },
 		docs: {
 			description: {
@@ -33,6 +34,7 @@ export const Theming: StoryObj<typeof meta> = {
 					'Список — docs/design/COMPONENT_TOKENS.md.',
 					'Проп `ui` добавляет классы к частям (`root`, `header`, `title`, `toggle`, `navigation`, `loading`, `body`, `footer`,',
 					'`collapsed`); глобально — `defaults.BaseSideBar.ui` плагина.',
+					'В превью три боковые панели с одним именем ориентира, поэтому правило axe `landmark-unique` у этой истории выключено.',
 				].join('\n'),
 			},
 			source: storySource({

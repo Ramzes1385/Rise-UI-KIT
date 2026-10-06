@@ -31,6 +31,7 @@ const motion = motionPresetsStory({
 export const Animations: StoryObj<typeof meta> = {
 	name: 'Анимации',
 	parameters: {
+		a11y: { config: { rules: [{ id: 'landmark-unique', enabled: false }] } },
 		controls: { include: ['variant', 'sizeScale'] },
 		docs: {
 			description: {
@@ -42,6 +43,7 @@ export const Animations: StoryObj<typeof meta> = {
 					'с угасанием за `--rise-duration`; «Показать» — обратно.',
 					"В `none` и при «уменьшить движение» — сразу. Выключить в приложении — `createUiKitPlugin({ motion: 'none' })`",
 					"или `reducedMotion: 'always'`.",
+					'В превью четыре ветки с одним именем ориентира, поэтому правило axe `landmark-unique` у этой истории выключено.',
 				].join('\n'),
 			},
 			source: motion.source,

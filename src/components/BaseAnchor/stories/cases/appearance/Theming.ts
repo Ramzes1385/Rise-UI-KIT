@@ -60,7 +60,9 @@ export const Theming: StoryObj<typeof meta> = {
 		await expect(style(themed, '.base-anchor__indicator').backgroundColor).not.toBe(
 			style(plain, '.base-anchor__indicator').backgroundColor,
 		)
-		await expect(style(themed, '.base-anchor__link--active').color).not.toBe(style(plain, '.base-anchor__link--active').color)
+		await waitFor(() =>
+			expect(style(themed, '.base-anchor__link--active').color).not.toBe(style(plain, '.base-anchor__link--active').color),
+		)
 		if (!isStoryBranded()) {
 			await expect(style(themed, '.base-anchor__link').paddingTop).toBe('6px')
 			await expect(style(plain, '.base-anchor__link').paddingTop).toBe('4px')

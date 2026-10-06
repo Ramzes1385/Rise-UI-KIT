@@ -47,8 +47,8 @@ const motion = motionPresetsStory({
 	`,
 	components: { BaseMegaMenu, BaseButton },
 	imports: ['BaseMegaMenu'],
-	state: { openKey: 'products', items },
-	action: "openKey = openKey === 'products' ? 'resources' : 'products'",
+	state: { openKey: 'products', section: 'products', items },
+	action: "section = section === 'products' ? 'resources' : 'products'; openKey = section",
 	trigger: 'Сменить раздел',
 	slots: omit,
 	omit,
@@ -58,6 +58,7 @@ export const Animations: StoryObj<typeof meta> = {
 	name: 'Анимации',
 	args: { trigger: 'click' },
 	parameters: {
+		a11y: { config: { rules: [{ id: 'landmark-unique', enabled: false }] } },
 		controls: { include: ['variant', 'sizeScale'] },
 		docs: {
 			description: {
@@ -69,6 +70,7 @@ export const Animations: StoryObj<typeof meta> = {
 					'сверху. В мобильном виде список разделов и панель под разделом съезжают сверху и проявляются. В `none` и при',
 					"«уменьшить движение» всё меняется сразу. Выключить в приложении — `createUiKitPlugin({ motion: 'none' })` или",
 					"`reducedMotion: 'always'`.",
+					'В превью четыре меню с одним именем ориентира, поэтому правило axe `landmark-unique` у этой истории выключено.',
 				].join('\n'),
 			},
 			source: motion.source,

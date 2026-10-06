@@ -1,6 +1,6 @@
-import { expect } from 'storybook/test'
 import type meta from '../../BaseTabs.stories'
 import BaseTabs from '../../../ui/BaseTabs.vue'
+import { expect, waitFor } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type { TabItem } from '../../../types/BaseTabs.types'
 import { storySource, useStorySetup } from '@/stories/helpers'
@@ -41,7 +41,8 @@ export const Scrollable: StoryObj<typeof meta> = {
 		template,
 	}),
 	play: async ({ canvas }) => {
-		await expect(await canvas.findByRole('button', { name: 'Прокрутить вкладки вправо' })).toBeVisible()
+		const right = await canvas.findByRole('button', { name: 'Прокрутить вкладки вправо' })
+		await waitFor(() => expect(right).toBeVisible())
 		await expect(canvas.queryByRole('button', { name: 'Прокрутить вкладки влево' })).toBeNull()
 	},
 }

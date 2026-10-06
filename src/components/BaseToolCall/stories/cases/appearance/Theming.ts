@@ -9,7 +9,7 @@ const ui = { root: 'story-themed-tool-call', trigger: 'story-themed-trigger' }
 const template = `
 	<div class="story-stack story-medium">
 		<BaseToolCall v-bind="args" title="По умолчанию" />
-		<div style="--rise-tool-call-bg: var(--rise-primary-soft); --rise-tool-call-border: var(--rise-primary); --rise-tool-call-radius: var(--rise-radius-2xl); --rise-tool-call-padding-x: 20px; --rise-tool-call-title-font-weight: var(--rise-font-weight-bold);">
+		<div style="--rise-tool-call-bg: var(--rise-bg-muted); --rise-tool-call-border: var(--rise-primary); --rise-tool-call-radius: var(--rise-radius-2xl); --rise-tool-call-padding-x: 20px; --rise-tool-call-title-font-weight: var(--rise-font-weight-bold);">
 			<BaseToolCall v-bind="args" title="Токены на контейнере" />
 		</div>
 		<BaseToolCall v-bind="args" title="Классы через ui" :ui="ui" />

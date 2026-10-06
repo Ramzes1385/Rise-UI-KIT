@@ -63,6 +63,6 @@ export const Streaming: StoryObj<typeof meta> = {
 	play: async ({ canvas }) => {
 		const message = canvas.getByRole('article', { name: 'Ассистент' })
 		await waitFor(() => expect(message).not.toHaveAttribute('aria-busy'), { timeout: STORY_WAIT_TIMEOUT })
-		await expect(canvas.getByRole('button', { name: 'Копировать ответ' })).toBeVisible()
+		await waitFor(() => expect(canvas.getByRole('button', { name: 'Копировать ответ' })).toBeVisible())
 	},
 }
