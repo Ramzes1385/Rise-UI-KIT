@@ -30,3 +30,5 @@ export const SpeechService = cases.SpeechService
 export const SpeechYandex = { ...cases.SpeechYandex, tags: ['!test', '!autodocs'] }
 export const Quiz = cases.Quiz
 export const Loading = cases.Loading
+export const Theming = cases.Theming
+export const Animations = cases.Animations

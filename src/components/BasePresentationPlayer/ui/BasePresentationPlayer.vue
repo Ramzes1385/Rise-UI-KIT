@@ -1,8 +1,9 @@
 <template>
 	<div
 		ref="rootRef"
-		class="base-media-player base-presentation-player"
+		class="base-media-player"
 		:class="[
+			ui('root'),
 			variantClass,
 			{
 				'base-media-player--idle': isIdle,
@@ -16,9 +17,9 @@
 		tabindex="-1"
 		:aria-label="title">
 		<div class="base-media-player__dock">
-			<div class="base-presentation-player__stage" :class="classes.stage" @click="onStageClick">
+			<div :class="[ui('stage'), classes.stage, { 'base-presentation-player__stage--backward': isBackward }]" @click="onStageClick">
 				<Transition name="base-presentation-player__slide" mode="out-in">
-					<div v-if="slide" :key="slide.id" class="base-presentation-player__slide">
+					<div v-if="slide" :key="slide.id" :class="ui('slide')">
 						<slot name="slide" :slide="slide" :index="index" v-bind="slideActions">
 							<video
 								v-if="videoSrc"
@@ -68,10 +69,10 @@
 					<MediaIcon name="play" />
 				</button>
 			</div>
-			<div v-if="isDoneScreen" class="base-presentation-player__done">
-				<MediaIcon class="base-presentation-player__done-icon" name="trophy" />
-				<p class="base-presentation-player__done-title">{{ doneTitle }}</p>
-				<p class="base-presentation-player__done-text">{{ doneText }}</p>
+			<div v-if="isDoneScreen" :class="ui('done')">
+				<MediaIcon :class="ui('done-icon')" name="trophy" />
+				<p :class="ui('done-title')">{{ doneTitle }}</p>
+				<p :class="ui('done-text')">{{ doneText }}</p>
 				<BaseButton variant="soft" :size-scale="sizeScale" @click="play">{{ UI_PRESENTATION.REPLAY }}</BaseButton>
 			</div>
 			<Transition name="base-media-player__resume">
@@ -104,8 +105,7 @@
 							@click="previous" />
 						<MediaControlButton :icon="playIcon" :label="playLabel" @click="togglePlay" />
 						<span
-							class="base-presentation-player__next"
-							:class="{ 'base-presentation-player__next--locked': isNextLocked }"
+							:class="[ui('next'), { 'base-presentation-player__next--locked': isNextLocked }]"
 							:style="{ '--presentation-lock': lockPercent }">
 							<MediaControlButton
 								icon="next"
@@ -114,7 +114,7 @@
 								:aria-disabled="index >= count - 1 || isNextLocked || undefined"
 								:aria-describedby="isNextLocked ? lockHintId : undefined"
 								@click="next" />
-							<svg v-if="isNextLocked" class="base-presentation-player__ring" viewBox="0 0 36 36" aria-hidden="true">
+							<svg v-if="isNextLocked" :class="ui('ring')" viewBox="0 0 36 36" aria-hidden="true">
 								<circle class="base-presentation-player__ring-track" cx="18" cy="18" r="16" />
 								<circle class="base-presentation-player__ring-fill" cx="18" cy="18" r="16" pathLength="100" />
 							</svg>
@@ -184,11 +184,12 @@
 					</div>
 				</div>
 			</div>
-			<Transition name="base-media-player__episodes" :duration="{ enter: 720, leave: 240 }">
+			<Transition name="base-media-player__episodes" :duration="panelDuration">
 				<section
 					v-if="panelView"
 					ref="panelRef"
-					class="base-media-player__episodes base-presentation-player__panel"
+					class="base-media-player__episodes"
+					:class="ui('panel')"
 					:aria-label="panelView === 'notes' ? UI_PRESENTATION.NOTES : UI_PRESENTATION.SLIDE_LIST"
 					@keydown="onPanelKeydown">
 					<div class="base-media-player__episodes-header">
@@ -211,15 +212,12 @@
 						<span v-else class="base-media-player__episodes-title">{{ UI_PRESENTATION.SLIDE_LIST }}</span>
 						<MediaControlButton icon="close" :label="UI_ARIA.CLOSE" @click="closePanel" />
 					</div>
-					<div v-if="panelView === 'notes'" class="base-presentation-player__notes" tabindex="-1">
-						<p v-if="slide" class="base-presentation-player__notes-title">{{ index + 1 }}. {{ slide.title }}</p>
-						<p
-							v-for="(paragraph, paragraphIndex) in notesParagraphs"
-							:key="paragraphIndex"
-							class="base-presentation-player__notes-text">
+					<div v-if="panelView === 'notes'" :class="ui('notes')" tabindex="-1">
+						<p v-if="slide" :class="ui('notes-title')">{{ index + 1 }}. {{ slide.title }}</p>
+						<p v-for="(paragraph, paragraphIndex) in notesParagraphs" :key="paragraphIndex" :class="ui('notes-text')">
 							{{ paragraph }}
 						</p>
-						<p v-if="!notesParagraphs.length" class="base-presentation-player__notes-text">{{ UI_PRESENTATION.NOTES_EMPTY }}</p>
+						<p v-if="!notesParagraphs.length" :class="ui('notes-text')">{{ UI_PRESENTATION.NOTES_EMPTY }}</p>
 					</div>
 					<ol v-else class="base-media-player__episodes-list">
 						<li v-for="card in slideCards" :key="card.id" :style="{ '--media-item-index': card.index }">
@@ -246,15 +244,13 @@
 								<span class="base-media-player__episode-info">
 									<span class="base-media-player__episode-name">{{ card.title }}</span>
 								</span>
-								<span v-if="card.isLocked" class="base-presentation-player__card-mark">
+								<span v-if="card.isLocked" :class="ui('card-mark')">
 									<svg class="base-presentation-player__lock" viewBox="0 0 448 512" aria-hidden="true">
 										<path :d="PRESENTATION_LOCK_ICON" />
 									</svg>
 									<span class="base-media-player__visually-hidden">{{ UI_PRESENTATION.SLIDE_LOCKED }}</span>
 								</span>
-								<span
-									v-else-if="card.isCompleted"
-									class="base-presentation-player__card-mark base-presentation-player__card-mark--done">
+								<span v-else-if="card.isCompleted" :class="[ui('card-mark'), 'base-presentation-player__card-mark--done']">
 									<MediaIcon name="check" />
 									<span class="base-media-player__visually-hidden">{{ UI_PRESENTATION.SLIDE_DONE }}</span>
 								</span>
@@ -400,6 +396,9 @@ const {
 	slideActions,
 	UI_ARIA,
 	PRESENTATION_LOCK_ICON,
+	ui,
+	isBackward,
+	panelDuration,
 } = useBasePresentationPlayer(props, emit)
 
 defineExpose<BasePresentationPlayerExpose>({ play, pause, next, previous, goTo })

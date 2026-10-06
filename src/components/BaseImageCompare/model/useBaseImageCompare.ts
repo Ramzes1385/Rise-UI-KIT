@@ -1,4 +1,5 @@
 import { formatMessage } from '@/locales/state'
+import { useUi } from '@composables/base/useUi'
 import { UI_IMAGE_COMPARE } from '@/locales/messages'
 import { computed, onBeforeUnmount, ref, shallowRef, watch } from 'vue'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
@@ -54,6 +55,7 @@ export function useBaseImageCompare(props: BaseImageCompareProps, emit: BaseImag
 	onBeforeUnmount(stop)
 	return {
 		...useStandardBaseComponent('base-image-compare', props, ['root', 'handle']),
+		ui: useUi(props, 'base-image-compare'),
 		rootRef,
 		position,
 		isDragging,

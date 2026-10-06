@@ -24,6 +24,7 @@ export const Variants = cases.Variants
 export const Sizes = cases.Sizes
 export const Heights = cases.Heights
 export const Theming = cases.Theming
+export const Animations = cases.Animations
 export const Loading = cases.Loading
 export const Seo = cases.Seo
 export const Placeholder = cases.Placeholder

@@ -119,12 +119,19 @@ function restoreOuterApi(): void {
 	else target.ymaps3 = outerApi
 }
 
-function demoReady(options: { isPending?: boolean; isFailing?: boolean }): Promise<void> {
-	if (options.isFailing) return Promise.reject(new Error('demo: сервис недоступен'))
-	return options.isPending ? new Promise(() => undefined) : Promise.resolve()
+interface DemoOptions {
+	isPending?: boolean
+	isFailing?: boolean
+	delay?: number
 }
 
-export function installDemoYandex(options: { isPending?: boolean; isFailing?: boolean } = {}): () => void {
+function demoReady(options: DemoOptions): Promise<void> {
+	if (options.isFailing) return Promise.reject(new Error('demo: сервис недоступен'))
+	if (options.isPending) return new Promise(() => undefined)
+	return options.delay ? new Promise(resolve => setTimeout(resolve, options.delay)) : Promise.resolve()
+}
+
+export function installDemoYandex(options: DemoOptions = {}): () => void {
 	if (installed === 0) outerApi = target.ymaps3
 	installed++
 	target.ymaps3 = {

@@ -1,7 +1,36 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /** Варианты оформления BasePresentationPlayer: один — тёмный кадр плеера BaseMediaPlayer */
 export const PRESENTATION_PLAYER_VARIANTS = ['default'] as const
+
+/**
+ * Части BasePresentationPlayer для пропа `ui` (БЭМ-элементы `.base-presentation-player__<часть>`, `root` — весь плеер):
+ * stage — кадр со слайдами, slide — текущий слайд, next — обёртка кнопки «Далее», ring — кольцо замка вокруг «Далее»,
+ * done — экран «Презентация пройдена», done-icon, done-title, done-text — его значок, заголовок и текст, panel — боковая
+ * панель «Список слайдов» и «Стенограмма», notes — стенограмма, notes-title, notes-text — её заголовок и абзацы,
+ * card-mark — отметка карточки слайда (замок или галочка). Части оболочки BaseMediaPlayer (`.base-media-player__*`) —
+ * у BaseMediaPlayer
+ */
+export const PRESENTATION_PLAYER_PARTS = [
+	'root',
+	'stage',
+	'slide',
+	'next',
+	'ring',
+	'done',
+	'done-icon',
+	'done-title',
+	'done-text',
+	'panel',
+	'notes',
+	'notes-title',
+	'notes-text',
+	'card-mark',
+] as const
+
+/** Часть BasePresentationPlayer для пропа `ui` */
+export type BasePresentationPlayerPart = (typeof PRESENTATION_PLAYER_PARTS)[number]
 
 /** Варианты оформления */
 export type PresentationPlayerVariant = (typeof PRESENTATION_PLAYER_VARIANTS)[number]
@@ -182,6 +211,14 @@ export interface BasePresentationPlayerProps extends BaseComponentProps<Presenta
 	 * `synthesize`. Смена поставщика или `speechVoice` сбрасывает кэш озвучки
 	 */
 	speechProvider?: PresentationSpeechProvider
+	/**
+	 * Классы частей (`root`, `stage`, `slide`, `done`, `panel`, `notes`… — см. `PRESENTATION_PLAYER_PARTS`) — добавляются
+	 * к классам кита. Глобально — `defaults.BasePresentationPlayer.ui` плагина, классы склеиваются.
+	 *
+	 * @example
+	 * <BasePresentationPlayer :slides="slides" title="Курс" :ui="{ stage: 'rounded-xl', done: 'backdrop-blur' }" />
+	 */
+	ui?: UiProp<BasePresentationPlayerPart>
 }
 
 /** События компонента BasePresentationPlayer */

@@ -1,6 +1,7 @@
 export { default as BaseMap } from './ui/BaseMap.vue'
-export { MAP_PROVIDERS, MAP_VARIANTS } from './types/BaseMap.types'
+export { MAP_PARTS, MAP_PROVIDERS, MAP_VARIANTS } from './types/BaseMap.types'
 export type {
+	BaseMapPart,
 	BaseMapEmits,
 	BaseMapProps,
 	BaseMapSlots,

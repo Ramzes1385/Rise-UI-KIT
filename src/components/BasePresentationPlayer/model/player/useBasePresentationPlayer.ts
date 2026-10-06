@@ -1,6 +1,8 @@
 import type { Ref } from 'vue'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { safeUrl } from '../playback/timeline'
+import { useUi } from '@composables/base/useUi'
+import { useMotion } from '@composables/app/useMotion'
 import { UI_PRESENTATION, formatMessage } from './messages'
 import { usePresentationFlow } from './usePresentationFlow'
 import { usePresentationScreen } from './usePresentationScreen'
@@ -117,6 +119,18 @@ function useContentView(
 	}
 }
 
+function useStageMotion(index: () => number, root: Readonly<Ref<HTMLElement | null>>) {
+	const motion = useMotion(root)
+	const isBackward = ref(false)
+	watch(index, (current, previous) => {
+		isBackward.value = current < previous
+	})
+	return {
+		isBackward,
+		panelDuration: computed(() => ({ enter: motion.duration('slow') * 2.4, leave: motion.duration('base') * 1.2 })),
+	}
+}
+
 function useElements() {
 	return {
 		rootRef: ref<HTMLElement | null>(null),
@@ -161,6 +175,8 @@ export function useBasePresentationPlayer(props: BasePresentationPlayerProps, em
 
 	return {
 		...useStandardBaseComponent('base-presentation-player', props, CLASS_KEYS),
+		ui: useUi(props, 'base-presentation-player'),
+		...useStageMotion(() => flow.index.value, elements.rootRef),
 		...elements,
 		...flow,
 		...screen,

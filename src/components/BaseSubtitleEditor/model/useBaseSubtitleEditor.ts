@@ -1,4 +1,6 @@
+import { useCueKeys } from './useCueKeys'
 import { formatMessage } from '@/locales/state'
+import { useUi } from '@composables/base/useUi'
 import { UI_SUBTITLES } from '@/locales/messages'
 import { downloadFile } from '@utils/media/fileUtils'
 import { formatCueTime, parseCueTime } from './cueTime'
@@ -7,28 +9,40 @@ import { computed, nextTick, reactive, ref, useId } from 'vue'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { SubtitleCue, SubtitleFormat } from '@utils/media/subtitleUtils'
 import { decodeSubtitles, parseSubtitles, serializeSubtitles } from '@utils/media/subtitleUtils'
-import type { BaseSubtitleEditorEmits, BaseSubtitleEditorProps } from '../types/BaseSubtitleEditor.types'
+import type { BaseSubtitleEditorEmits, BaseSubtitleEditorProps, CueEntry } from '../types/BaseSubtitleEditor.types'
 
 const FALLBACK_DURATION = 10
 
-function sorted(cues: SubtitleCue[]): SubtitleCue[] {
-	return [...cues].sort((a, b) => a.start - b.start)
+function sorted(entries: CueEntry[]): CueEntry[] {
+	return [...entries].sort((a, b) => a.cue.start - b.cue.start)
 }
 
-function useCueEditing(props: BaseSubtitleEditorProps, emit: BaseSubtitleEditorEmits, idPrefix: string) {
+function useCueEditing(props: BaseSubtitleEditorProps, emit: BaseSubtitleEditorEmits, cueKeys: ReturnType<typeof useCueKeys>) {
 	const drafts = reactive<Record<string, string>>({})
 	const errors = reactive<Record<string, string>>({})
+	const fieldKey = (index: number, edge: 'start' | 'end'): string => `${cueKeys.keys.value[index]}:${edge}`
 	const replace = (index: number, patch: Partial<SubtitleCue>): void =>
-		emit('update:cues', sorted(props.cues.map((cue, position) => (position === index ? { ...cue, ...patch } : cue))))
+		emit(
+			'update:cues',
+			cueKeys.plan(
+				sorted(
+					cueKeys
+						.entries()
+						.map((entry, position) => (position === index ? { ...entry, cue: { ...entry.cue, ...patch } } : entry)),
+				),
+			),
+		)
 	return {
 		drafts,
 		errors,
-		timeValue: (index: number, edge: 'start' | 'end'): string => drafts[`${index}:${edge}`] ?? formatCueTime(props.cues[index][edge]),
+		fieldError: (index: number, edge: 'start' | 'end'): string | undefined => errors[fieldKey(index, edge)],
+		timeValue: (index: number, edge: 'start' | 'end'): string =>
+			drafts[fieldKey(index, edge)] ?? formatCueTime(props.cues[index][edge]),
 		setDraft(index: number, edge: 'start' | 'end', value: string): void {
-			drafts[`${index}:${edge}`] = value
+			drafts[fieldKey(index, edge)] = value
 		},
 		commitTime(index: number, edge: 'start' | 'end'): void {
-			const key = `${index}:${edge}`
+			const key = fieldKey(index, edge)
 			const time = drafts[key] === undefined ? props.cues[index][edge] : parseCueTime(drafts[key])
 			const next = { ...props.cues[index], ...(time === null ? {} : { [edge]: time }) }
 			delete errors[key]
@@ -40,19 +54,23 @@ function useCueEditing(props: BaseSubtitleEditorProps, emit: BaseSubtitleEditorE
 		},
 		updateText: (index: number, text: string): void => replace(index, { text }),
 		remove(index: number): void {
-			emit(
-				'update:cues',
-				props.cues.filter((_, position) => position !== index),
-			)
+			emit('update:cues', cueKeys.plan(cueKeys.entries().filter((_, position) => position !== index)))
 		},
-		async add(): Promise<void> {
-			const start = props.currentTime ?? 0
-			const cue = { start, end: start + (props.cueLength ?? 2), text: '' }
-			const next = sorted([...props.cues, cue])
-			emit('update:cues', next)
-			await nextTick()
-			document.getElementById(`${idPrefix}-text-${next.indexOf(cue)}`)?.focus()
-		},
+	}
+}
+
+function useCueAdding(
+	props: BaseSubtitleEditorProps,
+	emit: BaseSubtitleEditorEmits,
+	{ cueKeys, idPrefix }: { cueKeys: ReturnType<typeof useCueKeys>; idPrefix: string },
+) {
+	return async (): Promise<void> => {
+		const start = props.currentTime ?? 0
+		const cue = { start, end: start + (props.cueLength ?? 2), text: '' }
+		const next = cueKeys.plan(sorted([...cueKeys.entries(), { cue, key: cueKeys.newKey() }]))
+		emit('update:cues', next)
+		await nextTick()
+		document.getElementById(`${idPrefix}-text-${next.indexOf(cue)}`)?.focus()
 	}
 }
 
@@ -99,9 +117,16 @@ function useTimeline(props: BaseSubtitleEditorProps, emit: BaseSubtitleEditorEmi
 
 export function useBaseSubtitleEditor(props: BaseSubtitleEditorProps, emit: BaseSubtitleEditorEmits) {
 	const idPrefix = `base-subtitle-editor-${useId()}`
+	const cueKeys = useCueKeys(() => props.cues)
 	return {
 		...useStandardBaseComponent('base-subtitle-editor', props, ['root', 'timeline', 'cue', 'list']),
-		...useCueEditing(props, emit, idPrefix),
+		ui: useUi(props, 'base-subtitle-editor'),
+		keys: cueKeys.keys,
+		leavingCount: cueKeys.leavingCount,
+		pinLeavingRow: cueKeys.pinLeavingRow,
+		releaseLeavingRow: cueKeys.releaseLeavingRow,
+		...useCueEditing(props, emit, cueKeys),
+		add: useCueAdding(props, emit, { cueKeys, idPrefix }),
 		...useCueFiles(props, emit),
 		...useTimeline(props, emit),
 		idPrefix,

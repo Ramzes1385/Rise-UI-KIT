@@ -1,10 +1,9 @@
 <template>
 	<section
-		class="base-subtitle-editor"
-		:class="[variantClass, { 'base-subtitle-editor--disabled': isDisabled }, classes.root]"
+		:class="[ui('root'), variantClass, { 'base-subtitle-editor--disabled': isDisabled }, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		:aria-label="UI_SUBTITLES.EDITOR">
-		<div class="base-subtitle-editor__toolbar">
+		<div :class="ui('toolbar')">
 			<BaseButton variant="soft" :size-scale="sizeScale" :is-disabled="isDisabled" @click="add">
 				<template #left><BaseIcon name="plus" /></template>
 				{{ UI_SUBTITLES.ADD }}
@@ -33,55 +32,53 @@
 				{{ exportLabel(format) }}
 			</BaseButton>
 		</div>
-		<div
-			class="base-subtitle-editor__timeline"
-			:class="classes.timeline"
-			:title="UI_SUBTITLES.TIMELINE"
-			aria-hidden="true"
-			@click="seekTimeline">
+		<div :class="[ui('timeline'), classes.timeline]" :title="UI_SUBTITLES.TIMELINE" aria-hidden="true" @click="seekTimeline">
 			<span
 				v-for="(cue, index) in cues"
 				:key="index"
-				class="base-subtitle-editor__block"
-				:class="[{ 'base-subtitle-editor__block--active': index === activeIndex }, classes.cue]"
+				:class="[ui('block'), { 'base-subtitle-editor__block--active': index === activeIndex }, classes.cue]"
 				:style="cueStyle(cue)"
 				:title="cueLabel(cue, index)"
 				@click.stop="goTo(index)"></span>
-			<span class="base-subtitle-editor__playhead" :style="playheadStyle"></span>
+			<span :class="ui('playhead')" :style="playheadStyle"></span>
 		</div>
-		<p v-if="!cues.length" class="base-subtitle-editor__empty">{{ UI_SUBTITLES.EMPTY }}</p>
-		<ol v-else class="base-subtitle-editor__list" :class="classes.list">
+		<p v-if="!cues.length && !leavingCount" :class="ui('empty')">{{ UI_SUBTITLES.EMPTY }}</p>
+		<TransitionGroup
+			v-if="cues.length || leavingCount"
+			tag="ol"
+			name="base-subtitle-editor-row"
+			:class="[ui('list'), classes.list]"
+			@before-leave="pinLeavingRow"
+			@after-leave="releaseLeavingRow"
+			@leave-cancelled="releaseLeavingRow">
 			<li
 				v-for="(cue, index) in cues"
-				:key="index"
-				class="base-subtitle-editor__row"
-				:class="{ 'base-subtitle-editor__row--active': index === activeIndex }"
+				:key="keys[index]"
+				:class="[ui('row'), { 'base-subtitle-editor__row--active': index === activeIndex }]"
 				:aria-current="index === activeIndex ? 'true' : undefined">
-				<span class="base-subtitle-editor__number" aria-hidden="true">{{ index + 1 }}</span>
-				<span v-for="edge in ['start', 'end'] as const" :key="edge" class="base-subtitle-editor__time">
+				<span :class="ui('number')" aria-hidden="true">{{ index + 1 }}</span>
+				<span v-for="edge in ['start', 'end'] as const" :key="edge" :class="ui('time')">
 					<input
-						class="base-subtitle-editor__input"
+						:class="ui('input')"
 						:value="timeValue(index, edge)"
 						:aria-label="label(edge === 'start' ? UI_SUBTITLES.START : UI_SUBTITLES.END, index)"
-						:aria-invalid="errors[`${index}:${edge}`] ? 'true' : undefined"
-						:title="errors[`${index}:${edge}`] || UI_SUBTITLES.TIME_HINT"
+						:aria-invalid="fieldError(index, edge) ? 'true' : undefined"
+						:title="fieldError(index, edge) || UI_SUBTITLES.TIME_HINT"
 						:disabled="isDisabled"
 						inputmode="decimal"
 						@input="setDraft(index, edge, ($event.target as HTMLInputElement).value)"
 						@change="commitTime(index, edge)" />
-					<span v-if="errors[`${index}:${edge}`]" class="base-subtitle-editor__error" role="alert">{{
-						errors[`${index}:${edge}`]
-					}}</span>
+					<span v-if="fieldError(index, edge)" :class="ui('error')" role="alert">{{ fieldError(index, edge) }}</span>
 				</span>
 				<textarea
 					:id="`${idPrefix}-text-${index}`"
-					class="base-subtitle-editor__text"
+					:class="ui('text')"
 					:value="cue.text"
 					rows="2"
 					:aria-label="label(UI_SUBTITLES.TEXT, index)"
 					:disabled="isDisabled"
 					@input="updateText(index, ($event.target as HTMLTextAreaElement).value)"></textarea>
-				<span class="base-subtitle-editor__actions">
+				<span :class="ui('actions')">
 					<BaseButton variant="ghost" :size-scale="sizeScale" :aria-label="label(UI_SUBTITLES.GO_TO, index)" @click="goTo(index)">
 						<template #left><BaseIcon name="play" /></template>
 					</BaseButton>
@@ -95,7 +92,7 @@
 					</BaseButton>
 				</span>
 			</li>
-		</ol>
+		</TransitionGroup>
 	</section>
 </template>
 
@@ -118,12 +115,17 @@ const props = withDefaults(defineProps<BaseSubtitleEditorProps>(), {
 const emit = defineEmits<BaseSubtitleEditorEmits>()
 
 const {
+	ui,
+	keys,
+	leavingCount,
+	pinLeavingRow,
+	releaseLeavingRow,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,
 	customColorStyle,
 	classes,
-	errors,
+	fieldError,
 	timeValue,
 	setDraft,
 	commitTime,

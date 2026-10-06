@@ -1,15 +1,15 @@
 .base-subtitle-editor {
 	display: flex;
 	flex-direction: column;
-	gap: sz(12px);
+	gap: space(ct(subtitle-editor, gap, 12px));
 	box-sizing: border-box;
 	width: 100%;
 	min-width: 0;
-	padding: sz(12px);
-	border: 1px solid var(--rise-border);
-	border-radius: sz(var(--rise-radius-lg));
-	@include custom-bg(background-color, var(--rise-bg));
-	@include custom-text(color, var(--rise-text));
+	padding: space(ct(subtitle-editor, padding, 12px));
+	border: 1px solid ct(subtitle-editor, border, var(--rise-border));
+	border-radius: sz(ct(subtitle-editor, radius, var(--rise-radius-lg)));
+	@include custom-bg(background-color, ct(subtitle-editor, bg, var(--rise-bg)));
+	@include custom-text(color, ct(subtitle-editor, text, var(--rise-text)));
 
 	&--soft {
 		border-color: transparent;
@@ -33,9 +33,9 @@
 
 	&__timeline {
 		position: relative;
-		height: sz(28px);
+		height: sz(ct(subtitle-editor-timeline, height, 28px));
 		border-radius: sz(var(--rise-radius-sm));
-		background-color: var(--rise-bg-accented);
+		background-color: ct(subtitle-editor-timeline, bg, var(--rise-bg-accented));
 		cursor: pointer;
 	}
 
@@ -45,10 +45,10 @@
 		bottom: sz(4px);
 		min-width: 2px;
 		border-radius: sz(var(--rise-radius-sm));
-		background-color: color-mix(in srgb, var(--rise-primary) 45%, transparent);
+		background-color: ct(subtitle-editor-block, bg, color-mix(in srgb, var(--rise-primary) 45%, transparent));
 
 		&--active {
-			background-color: var(--rise-primary);
+			background-color: ct(subtitle-editor-block, bg-active, var(--rise-primary));
 		}
 	}
 
@@ -69,9 +69,10 @@
 	}
 
 	&__list {
+		position: relative;
 		display: flex;
 		flex-direction: column;
-		gap: sz(6px);
+		gap: space(6px);
 		margin: 0;
 		padding: 0;
 		list-style: none;
@@ -82,11 +83,11 @@
 		grid-template-columns: sz(24px) sz(96px) sz(96px) minmax(0, 1fr) auto;
 		align-items: start;
 		gap: sz(6px);
-		padding: sz(6px);
-		border-radius: sz(var(--rise-radius-md));
+		padding: space(6px);
+		border-radius: sz(ct(subtitle-editor-row, radius, var(--rise-radius-md)));
 
 		&--active {
-			background-color: var(--rise-primary-soft);
+			background-color: ct(subtitle-editor-row, bg-active, var(--rise-primary-soft));
 		}
 	}
 
@@ -144,4 +145,15 @@
 		display: flex;
 		gap: sz(2px);
 	}
+}
+
+@include enter-slide(base-subtitle-editor-row, up);
+
+.base-subtitle-editor-row-move {
+	transition: transform var(--rise-duration) var(--rise-ease);
+}
+
+.base-subtitle-editor-row-leave-active {
+	position: absolute;
+	box-sizing: border-box;
 }

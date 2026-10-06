@@ -19,3 +19,5 @@ export const Default = cases.Default
 export const WithPlayer = cases.WithPlayer
 export const Empty = cases.Empty
 export const Disabled = cases.Disabled
+export const Theming = cases.Theming
+export const Animations = cases.Animations

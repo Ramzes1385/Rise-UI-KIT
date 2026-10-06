@@ -1,5 +1,10 @@
-export { PRESENTATION_NAVIGATION_MODES, PRESENTATION_PLAYER_VARIANTS } from './types/BasePresentationPlayer.types'
+export {
+	PRESENTATION_NAVIGATION_MODES,
+	PRESENTATION_PLAYER_PARTS,
+	PRESENTATION_PLAYER_VARIANTS,
+} from './types/BasePresentationPlayer.types'
 export type {
+	BasePresentationPlayerPart,
 	PresentationSlide,
 	PresentationProgress,
 	PresentationNavigation,

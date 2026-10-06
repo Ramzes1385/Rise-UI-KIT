@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { SeoComponentProps } from '@composables/seo/useStructuredData'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
@@ -33,6 +34,16 @@ export interface MapView {
 	zoom: number
 }
 
+/**
+ * Части BaseMap для пропа `ui` (БЭМ-элементы `.base-map__<часть>`, `root` — вся область карты): canvas — слой, в который
+ * поставщик рисует карту; placeholder — заглушка без ключа, без Map ID или при ошибке.
+ * Метки `.base-map__marker` создаёт поставщик карты — их оформляют токены `--rise-map-marker-*` и `--rise-map-tooltip-*`
+ */
+export const MAP_PARTS = ['canvas', 'placeholder'] as const
+
+/** Часть BaseMap для пропа `ui` */
+export type BaseMapPart = (typeof MAP_PARTS)[number]
+
 /** Состояние карты: нет ключа, нет Map ID (Google), загрузка скрипта, готова, ошибка загрузки */
 export type MapStatus = 'no-key' | 'no-map-id' | 'loading' | 'ready' | 'error'
 
@@ -64,6 +75,14 @@ export interface BaseMapProps extends SeoComponentProps, BaseComponentProps<MapV
 	mapId?: string
 	/** Имя карты для экранного диктора; по умолчанию «Карта» */
 	ariaLabel?: string
+	/**
+	 * Классы частей (`root`, `canvas`, `placeholder` — см. `MAP_PARTS`) — добавляются к классам кита.
+	 * Глобально — `defaults.BaseMap.ui` плагина, классы склеиваются.
+	 *
+	 * @example
+	 * <BaseMap :ui="{ root: 'shadow-lg', placeholder: 'p-8' }" />
+	 */
+	ui?: UiProp<BaseMapPart>
 }
 
 /**

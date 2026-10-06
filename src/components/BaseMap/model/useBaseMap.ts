@@ -1,4 +1,5 @@
 import { UI_MAP } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
 import { formatMessage, getLocale } from '@/locales/state'
 import { MAP_PROVIDER_ENTRIES } from './providers/registry'
 import { useStructuredData } from '@composables/seo/useStructuredData'
@@ -126,6 +127,7 @@ export function useBaseMap(props: BaseMapProps, emit: BaseMapEmits) {
 	const providerName = computed(() => MAP_PROVIDER_ENTRIES[props.provider ?? 'yandex'].name())
 	return {
 		...useStandardBaseComponent('base-map', props, ['root', 'canvas', 'placeholder']),
+		ui: useUi(props, 'base-map'),
 		...useStructuredData(
 			'BaseMap',
 			() => props.seo,

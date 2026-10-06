@@ -1,17 +1,11 @@
-@property --compare-position {
-	syntax: '<percentage>';
-	inherits: true;
-	initial-value: 50%;
-}
-
 .base-image-compare {
 	position: relative;
 	box-sizing: border-box;
 	max-width: 100%;
 	overflow: hidden;
-	border: 1px solid var(--rise-border);
-	border-radius: sz(var(--rise-radius-lg));
-	background-color: var(--rise-bg-muted);
+	border: 1px solid ct(image-compare, border, var(--rise-border));
+	border-radius: sz(ct(image-compare, radius, var(--rise-radius-lg)));
+	background-color: ct(image-compare, bg, var(--rise-bg-muted));
 	cursor: ew-resize;
 	user-select: none;
 	touch-action: pan-y;
@@ -39,11 +33,11 @@
 		position: absolute;
 		top: sz(10px);
 		padding: sz(2px) sz(8px);
-		border-radius: sz(var(--rise-radius-full));
-		background-color: rgb(0 0 0 / 65%);
-		color: #fff;
+		border-radius: sz(ct(image-compare-label, radius, var(--rise-radius-full)));
+		background-color: ct(image-compare-label, bg, color-mix(in srgb, var(--rise-media-shade) 65%, transparent));
+		color: ct(image-compare-label, text, var(--rise-media-text));
 		@include text-size(xs);
-		font-weight: var(--rise-font-weight-medium);
+		font-weight: ct(image-compare-label, font-weight, var(--rise-font-weight-medium));
 		pointer-events: none;
 	}
 
@@ -55,33 +49,40 @@
 		right: sz(10px);
 	}
 
+	&__track {
+		position: absolute;
+		inset: 0;
+		transform: translateX(var(--compare-position));
+		pointer-events: none;
+	}
+
 	&__divider {
 		position: absolute;
 		top: 0;
 		bottom: 0;
-		left: var(--compare-position);
-		width: 2px;
-		background-color: #fff;
-		box-shadow: 0 0 0 1px rgb(0 0 0 / 25%);
+		left: 0;
+		width: ct(image-compare-divider, width, 2px);
+		background-color: ct(image-compare-divider, bg, var(--rise-media-highlight));
+		box-shadow: 0 0 0 1px color-mix(in srgb, var(--rise-media-shade) 25%, transparent);
 		transform: translateX(-50%);
-		pointer-events: none;
 	}
 
 	&__handle {
 		position: absolute;
 		top: 50%;
-		left: var(--compare-position);
+		left: 0;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		width: sz(36px);
 		height: sz(36px);
 		border-radius: 50%;
-		background-color: #fff;
-		box-shadow: var(--rise-shadow-md);
-		color: #18181b;
+		background-color: ct(image-compare-handle, bg, var(--rise-media-highlight));
+		box-shadow: ct(image-compare-handle, shadow, var(--rise-shadow-md));
+		color: ct(image-compare-handle, text, var(--rise-media-text-inverted));
 		transform: translate(-50%, -50%);
 		cursor: ew-resize;
+		pointer-events: auto;
 		@include focus-ring(3px);
 
 		.base-icon {
@@ -97,10 +98,17 @@
 	}
 
 	@include motion-safe {
-		transition: --compare-position 0.32s cubic-bezier(0.22, 1, 0.36, 1);
-
-		&--dragging {
-			transition-duration: 0.08s;
+		.base-image-compare__track {
+			transition: transform var(--rise-duration-slow) var(--rise-ease-emphasized);
 		}
+
+		.base-image-compare__before {
+			transition: clip-path var(--rise-duration-slow) var(--rise-ease-emphasized);
+		}
+	}
+
+	&--dragging &__track,
+	&--dragging &__before {
+		transition: none;
 	}
 }

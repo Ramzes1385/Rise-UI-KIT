@@ -1,24 +1,27 @@
 <template>
 	<div
-		class="base-map"
-		:class="[variantClass, classes.root, `base-map--${status}`]"
+		:class="[ui('root'), variantClass, classes.root, `base-map--${status}`]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle, rootStyle]"
 		role="region"
 		:aria-label="label"
 		:aria-busy="status === 'loading' ? 'true' : undefined">
 		<component :is="'script'" v-if="structuredData" type="application/ld+json" v-html="structuredData" />
-		<div v-show="status === 'loading' || status === 'ready'" ref="canvasRef" class="base-map__canvas" :class="classes.canvas" />
-		<BaseLoader v-if="status === 'loading'" is-overlay has-label :label="UI_MAP.LOADING" />
-		<div v-if="isPlaceholder" class="base-map__placeholder" :class="classes.placeholder">
-			<slot name="placeholder" :status="status">
-				<BaseEmpty
-					variant="ghost"
-					icon="map-pin"
-					:title="placeholderTitle"
-					:description="placeholderText"
-					:size-scale="sizeScale" />
-			</slot>
-		</div>
+		<div v-show="status === 'loading' || status === 'ready'" ref="canvasRef" :class="[ui('canvas'), classes.canvas]" />
+		<Transition name="base-map-loader">
+			<BaseLoader v-if="status === 'loading'" is-overlay has-label :label="UI_MAP.LOADING" />
+		</Transition>
+		<Transition name="base-map-placeholder">
+			<div v-if="isPlaceholder" :class="[ui('placeholder'), classes.placeholder]">
+				<slot name="placeholder" :status="status">
+					<BaseEmpty
+						variant="ghost"
+						icon="map-pin"
+						:title="placeholderTitle"
+						:description="placeholderText"
+						:size-scale="sizeScale" />
+				</slot>
+			</div>
+		</Transition>
 	</div>
 </template>
 
@@ -51,6 +54,7 @@ const emit = defineEmits<BaseMapEmits>()
 defineSlots<BaseMapSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,
