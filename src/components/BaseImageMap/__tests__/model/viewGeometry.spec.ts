@@ -90,6 +90,17 @@ describe('viewGeometry', () => {
 		expect(pageRatio({ left: 0, top: 0, width: 200, height: 100 }, { width: 0, height: 0 })).toEqual({ x: 1, y: 1 })
 	})
 
+	it('pageRatio не принимает округление clientWidth и clientHeight за CSS-масштаб: расхождение до 1 px — это 1', () => {
+		expect(pageRatio({ left: 0, top: 0, width: 1050, height: 656.25 }, { width: 1050, height: 656 })).toEqual({ x: 1, y: 1 })
+		expect(pageRatio({ left: 0, top: 0, width: 1049.4, height: 656.9 }, { width: 1050, height: 656 })).toEqual({ x: 1, y: 1 })
+		expect(pageRatio({ left: 0, top: 0, width: 1048.9, height: 654 }, { width: 1050, height: 656 }).x).toBeCloseTo(1.00105, 4)
+	})
+
+	it('toViewportPoint при дробной высоте окна не сдвигает точку', () => {
+		const box = { left: 25, top: 65, width: 1050, height: 656.25 }
+		expect(toViewportPoint({ x: 325, y: 465 }, box, { width: 1050, height: 656 })).toEqual({ x: 300, y: 400 })
+	})
+
 	it('toViewportPoint переводит точку страницы во внутренние пиксели окна, в том числе при CSS-масштабе', () => {
 		expect(toViewportPoint({ x: 150, y: 90 }, { left: 100, top: 40, width: 400, height: 200 }, { width: 400, height: 200 })).toEqual({
 			x: 50,

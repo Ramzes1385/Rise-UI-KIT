@@ -40,8 +40,15 @@ export function retargetView(view: ImageMapView, from: Frame, to: Frame): ImageM
 	}
 }
 
+const ROUNDING_TOLERANCE = 1
+
+function axisRatio(page: number, inner: number): number {
+	if (!page || !inner || Math.abs(inner - page) <= ROUNDING_TOLERANCE) return 1
+	return inner / page
+}
+
 export function pageRatio(box: ImageMapBox, size: { width: number; height: number }): ScreenPoint {
-	return { x: box.width && size.width ? size.width / box.width : 1, y: box.height && size.height ? size.height / box.height : 1 }
+	return { x: axisRatio(box.width, size.width), y: axisRatio(box.height, size.height) }
 }
 
 export function toViewportPoint(client: ScreenPoint, box: ImageMapBox, size: { width: number; height: number }): ScreenPoint {
