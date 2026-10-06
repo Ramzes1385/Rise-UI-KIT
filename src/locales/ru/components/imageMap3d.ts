@@ -34,6 +34,9 @@ export const ruImageMap3d = {
 		/** Элемент SVG этажа не дал фигуры для 3D; `{layer}` — id слоя, `{element}` — `elementId`, `{id}` — id объекта */
 		SVG_SHAPE_MISSING:
 			'BaseImageMap3D: в SVG этажа «{layer}» нет фигуры для элемента «{element}» (элемента нет, он скрыт, без площади или не поддерживается) — объект «{id}» в 3D не показан',
+		/** Элемент SVG части объекта не дал фигуры для 3D; `{layer}` — id слоя, `{element}` — `elementId` части, `{id}` — id объекта */
+		SVG_PART_MISSING:
+			'BaseImageMap3D: в SVG этажа «{layer}» нет фигуры для части «{element}» объекта «{id}» (элемента нет, он скрыт, без площади или не поддерживается) — часть в 3D не показана',
 		/** План этажа (SVG, картинка или текстура) не загрузился; `{layer}` — id слоя, `{error}` — ошибка */
 		LAYER_LOAD_FAILED: 'BaseImageMap3D: план этажа «{layer}» не загрузился — этаж показан без него. {error}',
 		/** Сообщение на карте, если план этажа не загрузился; `{layers}` — названия этажей через запятую */
@@ -47,5 +50,7 @@ export const ruImageMap3d = {
 		EXPECT_VECTOR: 'массив из трёх чисел [x, y, z]',
 		EXPECT_MODEL: 'объект { url }',
 		EXPECT_OBJECT: 'объект',
+		EXPECT_LIST: 'массив',
+		EXPECT_FLAG: 'true или false',
 	},
 }

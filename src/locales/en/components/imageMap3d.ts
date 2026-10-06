@@ -34,6 +34,9 @@ export const enImageMap3d = {
 		/** SVG element of the floor gave no shape for 3D; `{layer}` — layer id, `{element}` — `elementId`, `{id}` — object id */
 		SVG_SHAPE_MISSING:
 			'BaseImageMap3D: the SVG of floor «{layer}» has no shape for element «{element}» (it is missing, hidden, has no area or is unsupported) — object «{id}» is not shown in 3D',
+		/** SVG element of an object part gave no shape for 3D; `{layer}` — layer id, `{element}` — part `elementId`, `{id}` — object id */
+		SVG_PART_MISSING:
+			'BaseImageMap3D: the SVG of floor «{layer}» has no shape for part «{element}» of object «{id}» (it is missing, hidden, has no area or is unsupported) — the part is not shown in 3D',
 		/** Floor plan (SVG, image or texture) failed to load; `{layer}` — layer id, `{error}` — error */
 		LAYER_LOAD_FAILED: 'BaseImageMap3D: the plan of floor «{layer}» failed to load — the floor is shown without it. {error}',
 		/** Message on the map when a floor plan failed to load; `{layers}` — floor titles separated by commas */
@@ -47,5 +50,7 @@ export const enImageMap3d = {
 		EXPECT_VECTOR: 'an array of three numbers [x, y, z]',
 		EXPECT_MODEL: 'an object { url }',
 		EXPECT_OBJECT: 'an object',
+		EXPECT_LIST: 'an array',
+		EXPECT_FLAG: 'true or false',
 	},
 }

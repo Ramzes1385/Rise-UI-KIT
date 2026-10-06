@@ -96,7 +96,7 @@
 						class="base-image-map-3d__state"
 						:class="`base-image-map-3d__state--${loadState.kind}`"
 						aria-hidden="true">
-						{{ loadState.text }}
+						<span class="base-image-map-3d__state-text">{{ loadState.text }}</span>
 					</div>
 					<div v-if="points.length" class="base-image-map-3d__points" aria-hidden="true">
 						<span

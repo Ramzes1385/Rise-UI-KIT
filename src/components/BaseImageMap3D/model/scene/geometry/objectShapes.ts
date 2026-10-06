@@ -1,5 +1,7 @@
 import { Shape } from 'three'
+import { objectHeight } from '../sceneLayout'
 import type { ImageMap3DObject } from '../../../types/imageMap3dData.types'
+import type { SceneSettings, SceneShapePart } from '../../../types/internal/imageMap3dInternal.types'
 import type { ImageMapArea, ImageMapLayer, ImageMapEllipse, ImageMapRect } from '@components/BaseImageMap/types/imageMapData.types'
 
 const isFiniteNumber = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value)
@@ -68,4 +70,8 @@ function createShape(object: ImageMap3DObject, layer: ImageMapLayer): Shape | nu
 export function objectShapes(object: ImageMap3DObject, layer: ImageMapLayer): Shape[] {
 	const shape = createShape(object, layer)
 	return shape ? [shape] : []
+}
+
+export function objectParts(object: ImageMap3DObject, layer: ImageMapLayer, settings: SceneSettings): SceneShapePart[] {
+	return [{ shapes: objectShapes(object, layer), height: objectHeight(object, settings), base: 0 }]
 }

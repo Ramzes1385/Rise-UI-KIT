@@ -19,10 +19,13 @@ import type {
 } from '../BaseImageMap3D.types'
 import type {
 	Box3,
+	BufferGeometry,
 	Camera,
 	Vector2,
 	Color,
 	Group,
+	LineBasicMaterial,
+	LineSegments,
 	Material,
 	Mesh,
 	MeshBasicMaterial,
@@ -31,11 +34,12 @@ import type {
 	OrthographicCamera,
 	PerspectiveCamera,
 	Scene,
+	Shape,
 	TubeGeometry,
 } from 'three'
 
 /** Правило проверки 3D-поля данных */
-export type ImageMap3DFieldRule = 'number' | 'positive' | 'nonNegative' | 'text' | 'vector' | 'model' | 'object'
+export type ImageMap3DFieldRule = 'number' | 'positive' | 'nonNegative' | 'text' | 'vector' | 'model' | 'object' | 'list' | 'flag'
 
 /** Неверное 3D-поле данных: путь, значение и нарушенное правило */
 export interface ImageMap3DIssue {
@@ -81,6 +85,10 @@ export interface SceneSettings {
 	floorThickness: number
 	/** Высота выдавливания объектов без `height3d` */
 	objectHeight: number
+	/** Скос кромок тел объектов; 0 — без скоса */
+	bevel: number
+	/** Контур по рёбрам тел объектов */
+	outline: boolean
 }
 
 /** Рамка сцены для камеры: границы стопки этажей и размеры, по которым подбирается кадр */
@@ -132,14 +140,56 @@ export interface SceneObjectEntry {
 	layerId: string
 	/** Общий материал всех мешей объекта; цвет и непрозрачность меняются по состоянию */
 	material: MeshStandardMaterial
-	/** Меши объекта: выдавленная фигура или узлы модели этажа */
+	/** Меши объекта: выдавленные фигуры (по одной на часть) или узлы модели этажа */
 	meshes: Mesh[]
+	/** Контуры по рёбрам тел: по одному на меш фигуры; у объектов из модели этажа их нет */
+	lines: LineSegments[]
+	/** Общий материал контуров; меняется по состоянию объекта */
+	outline: LineBasicMaterial | null
 	/** Откуда меши: выдавливание фигуры или модель этажа */
 	source: 'shape' | 'model'
 	/** Цвета состояний */
 	colors: Record<SceneObjectState, SceneStateColor>
 	/** Текущее состояние */
 	state: SceneObjectState
+}
+
+/** Тело для выдавливания: высота, основание над полом и размер скоса */
+export interface SceneBody {
+	/** Высота тела: от основания до верха */
+	height: number
+	/** Высота основания над полом этажа; 0 — тело стоит на полу */
+	base: number
+	/** Размер скоса кромок; 0 — без скоса */
+	bevel: number
+}
+
+/** Часть объекта для выдавливания: фигуры и размеры по высоте */
+export interface SceneShapePart {
+	/** Фигуры части: контуры и дыры */
+	shapes: Shape[]
+	/** Высота части */
+	height: number
+	/** Высота основания над полом этажа */
+	base: number
+}
+
+/** Размеры части объекта `svg` после проверки полей: элемент, высота и основание */
+export interface ScenePartSpec {
+	/** `id` элемента SVG */
+	elementId: string
+	/** Высота части */
+	height: number
+	/** Высота основания над полом этажа */
+	base: number
+}
+
+/** Геометрии тела объекта: по одной на часть */
+export interface SceneBodySet {
+	/** Выдавленные геометрии */
+	geometries: BufferGeometry[]
+	/** Строить контур по рёбрам */
+	hasOutline: boolean
 }
 
 /** Этаж в сцене */

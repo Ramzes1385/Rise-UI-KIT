@@ -21,6 +21,7 @@ export type {
 	ImageMap3DLayer,
 	ImageMap3DObject,
 	ImageMap3DObjectFields,
+	ImageMap3DObjectPart,
 	ImageMapLayerModel,
 	ImageMapScene3D,
 } from './types/imageMap3dData.types'

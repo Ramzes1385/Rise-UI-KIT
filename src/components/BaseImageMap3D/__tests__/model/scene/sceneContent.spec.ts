@@ -112,7 +112,7 @@ describe('цвета сцены', () => {
 
 describe('объекты сцены', () => {
 	it('createShapeEntry: меш с id объекта и общим материалом', () => {
-		const entry = createShapeEntry({ id: 'x', layerId: 'f1' }, new BoxGeometry(), COLORS)
+		const entry = createShapeEntry({ id: 'x', layerId: 'f1' }, { geometries: [new BoxGeometry()], hasOutline: false }, COLORS)
 		expect(entry).toMatchObject({ id: 'x', layerId: 'f1', source: 'shape', state: 'base' })
 		expect(entry.meshes[0].userData.objectId).toBe('x')
 		expect(entry.meshes[0].material).toBe(entry.material)
@@ -221,7 +221,9 @@ describe('сборка сцены', () => {
 
 	it('recolorScene пересчитывает цвета по новой теме', () => {
 		const content = buildSceneContent(DATA, resolveFake)
-		content.objects.set('orphan', { ...createShapeEntry({ id: 'orphan', layerId: 'missing' }, new BoxGeometry(), COLORS) })
+		content.objects.set('orphan', {
+			...createShapeEntry({ id: 'orphan', layerId: 'missing' }, { geometries: [new BoxGeometry()], hasOutline: false }, COLORS),
+		})
 		recolorScene(content, DATA, css => new Color(css.startsWith('var(') ? '#000000' : css))
 		expect(content.layers.get('f1')?.floorMaterials[0].color.getHexString()).toBe('000000')
 		expect(content.objects.get('b')?.material.color.getHexString()).toBe('000000')

@@ -57,6 +57,41 @@ describe('validate3dData', () => {
 		])
 	})
 
+	it('находит неверные части объекта и новые поля scene3d', () => {
+		const data = {
+			layers: [layer],
+			objects: [
+				{
+					id: 'a',
+					type: 'svg',
+					title: 'А',
+					elementId: 'a',
+					parts: [{ elementId: 'p1', height3d: 5, base3d: 2 }, { elementId: ' ', height3d: -1, base3d: Number.NaN }, null],
+				},
+				{ id: 'b', type: 'svg', title: 'Б', elementId: 'b', parts: 'p1' },
+			],
+			scene3d: { bevel: -1, outline: 'yes' },
+		} as unknown as ImageMap3DData
+		expect(validate3dData(data).map(({ path, rule }) => [path, rule])).toEqual([
+			['objects["a"].parts[1].elementId', 'text'],
+			['objects["a"].parts[1].height3d', 'nonNegative'],
+			['objects["a"].parts[1].base3d', 'nonNegative'],
+			['objects["a"].parts[2]', 'object'],
+			['objects["b"].parts', 'list'],
+			['scene3d.bevel', 'nonNegative'],
+			['scene3d.outline', 'flag'],
+		])
+	})
+
+	it('части без elementId и верные части с остальными полями', () => {
+		const data = {
+			layers: [layer],
+			objects: [{ id: 'a', type: 'svg', title: 'А', elementId: 'a', parts: [{ height3d: 5 }, { elementId: 'p', base3d: 0 }] }],
+			scene3d: { bevel: 0, outline: false },
+		} as unknown as ImageMap3DData
+		expect(validate3dData(data).map(({ path, rule }) => [path, rule])).toEqual([['objects["a"].parts[0].elementId', 'text']])
+	})
+
 	it('scene3d не объектом', () => {
 		const data = { layers: [], objects: [], scene3d: [1] } as unknown as ImageMap3DData
 		expect(validate3dData(data)).toEqual([{ path: 'scene3d', value: [1], rule: 'object' }])
@@ -76,6 +111,19 @@ describe('warn3dData', () => {
 			'[rise-ui-kit] BaseImageMap3D: layers["f1"].model.position = [0,0] не учтено — ожидается массив из трёх чисел [x, y, z]',
 			'[rise-ui-kit] BaseImageMap3D: objects["a"].height3d = -1 не учтено — ожидается число не меньше 0',
 			'[rise-ui-kit] BaseImageMap3D: scene3d = 5 не учтено — ожидается объект',
+		])
+	})
+
+	it('пишет ожидания для списков и флагов', () => {
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+		warn3dData({
+			layers: [layer],
+			objects: [{ id: 'b', type: 'svg', title: 'Б', elementId: 'b', parts: 'p1' }],
+			scene3d: { outline: 1 },
+		} as unknown as ImageMap3DData)
+		expect(warn.mock.calls.map(call => call[0])).toEqual([
+			'[rise-ui-kit] BaseImageMap3D: objects["b"].parts = "p1" не учтено — ожидается массив',
+			'[rise-ui-kit] BaseImageMap3D: scene3d.outline = 1 не учтено — ожидается true или false',
 		])
 	})
 

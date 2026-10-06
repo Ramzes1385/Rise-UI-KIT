@@ -1,6 +1,6 @@
 import { Box3, Vector3 } from 'three'
 import type { ImageMap3DData, ImageMap3DLayer } from '../../types/imageMap3dData.types'
-import { layerElevation, objectHeight, objectLayerId, sceneSettings } from './sceneLayout'
+import { layerElevation, objectLayerId, objectTop, sceneSettings } from './sceneLayout'
 import type { SceneFrame, SceneSettings } from '../../types/internal/imageMap3dInternal.types'
 
 const isSize = (value: number): boolean => Number.isFinite(value) && value > 0
@@ -8,7 +8,7 @@ const isSize = (value: number): boolean => Number.isFinite(value) && value > 0
 function bodyHeight(data: ImageMap3DData, layer: ImageMap3DLayer, settings: SceneSettings): number {
 	return data.objects.reduce((height, object) => {
 		const isBody = object.type !== 'point' && objectLayerId(object, data) === layer.id
-		return isBody ? Math.max(height, objectHeight(object, settings)) : height
+		return isBody ? Math.max(height, objectTop(object, settings)) : height
 	}, 0)
 }
 

@@ -1,8 +1,6 @@
-import { warn } from '@/locales/warn'
 import { objectLayerId } from './sceneLayout'
-import { UI_IMAGE_MAP_3D } from '@/locales/messages'
-import { isDevelopmentBuild } from '@utils/seo/structuredDataUtils'
-import { parseSvgPaths, svgElementShapes } from './geometry/svgShapes'
+import { svgParts } from './geometry/svgParts'
+import { parseSvgPaths } from './geometry/svgShapes'
 import { paintObject, setObjectState } from './materials/sceneObjects'
 import type { ImageMap3DLayerMode } from '../../types/BaseImageMap3D.types'
 import { addShapeObject, fadeFloor, objectColors, paintFloor } from './buildScene'
@@ -29,8 +27,9 @@ export function applyObjectStates(
 ): void {
 	content.objects.forEach(entry => {
 		setObjectState(content, entry.id, 'base')
-		entry.meshes.forEach(mesh => {
-			mesh.visible = !state.hidden.has(entry.id)
+		const isVisible = !state.hidden.has(entry.id)
+		;[...entry.meshes, ...entry.lines].forEach(node => {
+			node.visible = isVisible
 		})
 	})
 	if (state.hover) setObjectState(content, state.hover, 'hover')
@@ -60,10 +59,7 @@ export function addSvgObjects(
 	const layer = data.layers.find(entry => entry.id === layerId)
 	const paths = svgObjects.length && layer ? parseSvgPaths(markup, layer) : []
 	return svgObjects.filter(object => {
-		const shapes = svgElementShapes(paths, object.elementId)
-		if (!shapes.length && isDevelopmentBuild()) {
-			warn(UI_IMAGE_MAP_3D.SVG_SHAPE_MISSING, { layer: layerId, element: object.elementId, id: object.id })
-		}
-		return addShapeObject(content, { object, layerId, colors: objectColors(object, data, resolve) }, shapes)
+		const parts = svgParts(object, { paths, layerId }, content.settings)
+		return addShapeObject(content, { object, layerId, colors: objectColors(object, data, resolve) }, parts)
 	}).length
 }

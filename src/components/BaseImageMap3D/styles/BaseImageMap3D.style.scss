@@ -85,6 +85,14 @@
 		text-align: center;
 		pointer-events: none;
 
+		&-text {
+			max-width: 100%;
+			padding: sz(6px) sz(12px);
+			border-radius: var(--rise-radius-md);
+			background-color: var(--rise-bg);
+			box-shadow: var(--rise-shadow-sm);
+		}
+
 		&--error {
 			color: var(--rise-error);
 		}

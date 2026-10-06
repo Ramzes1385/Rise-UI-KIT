@@ -1,13 +1,13 @@
 import { createFloor } from './geometry/floor'
-import { objectShapes } from './geometry/objectShapes'
+import { objectParts } from './geometry/objectShapes'
+import type { Mesh, MeshStandardMaterial } from 'three'
 import { extrudeShapes } from './geometry/extrudeShapes'
 import { AmbientLight, DirectionalLight, Group } from 'three'
-import type { Mesh, MeshStandardMaterial, Shape } from 'three'
 import { createShapeEntry, paintObject } from './materials/sceneObjects'
+import { layerElevation, objectLayerId, sceneSettings } from './sceneLayout'
 import { resolveObject } from '@components/BaseImageMap/model/data/resolveObject'
 import { FLOOR_COLOR, FLOOR_SIDE_COLOR, stateColors } from './materials/sceneColors'
 import type { ImageMapData } from '@components/BaseImageMap/types/imageMapData.types'
-import { layerElevation, objectHeight, objectLayerId, sceneSettings } from './sceneLayout'
 import type { ImageMap3DData, ImageMap3DLayer, ImageMap3DObject } from '../../types/imageMap3dData.types'
 import type {
 	SceneColorResolver,
@@ -16,6 +16,7 @@ import type {
 	SceneObjectEntry,
 	SceneObjectState,
 	SceneShapeItem,
+	SceneShapePart,
 	SceneStateColor,
 } from '../../types/internal/imageMap3dInternal.types'
 
@@ -77,12 +78,14 @@ function createLayerEntry(layer: ImageMap3DLayer, index: number, content: SceneC
 	return entry
 }
 
-export function addShapeObject(content: SceneContent, item: SceneShapeItem, shapes: Shape[]): SceneObjectEntry | null {
+export function addShapeObject(content: SceneContent, item: SceneShapeItem, parts: SceneShapePart[]): SceneObjectEntry | null {
 	const layer = content.layers.get(item.layerId)
-	const geometry = extrudeShapes(shapes, objectHeight(item.object, content.settings))
-	if (!layer || !geometry) return null
-	const entry = createShapeEntry({ id: item.object.id, layerId: layer.id }, geometry, item.colors)
-	layer.group.add(...entry.meshes)
+	if (!layer) return null
+	const { bevel, outline } = content.settings
+	const geometries = parts.flatMap(part => extrudeShapes(part.shapes, { height: part.height, base: part.base, bevel }) ?? [])
+	if (!geometries.length) return null
+	const entry = createShapeEntry({ id: item.object.id, layerId: layer.id }, { geometries, hasOutline: outline }, item.colors)
+	layer.group.add(...entry.meshes, ...entry.lines)
 	content.objects.set(item.object.id, entry)
 	paintObject(entry, layer.opacity)
 	return entry
@@ -103,7 +106,11 @@ export function buildSceneContent(data: ImageMap3DData, resolve: SceneColorResol
 	data.objects.forEach(object => {
 		const layer = layersById.get(objectLayerId(object, data) ?? '')
 		if (!layer || layer.model || !SHAPE_TYPES.has(object.type)) return
-		addShapeObject(content, { object, layerId: layer.id, colors: objectColors(object, data, resolve) }, objectShapes(object, layer))
+		addShapeObject(
+			content,
+			{ object, layerId: layer.id, colors: objectColors(object, data, resolve) },
+			objectParts(object, layer, settings),
+		)
 	})
 	return content
 }

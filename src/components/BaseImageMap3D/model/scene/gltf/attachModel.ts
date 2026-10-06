@@ -2,7 +2,7 @@ import { Mesh } from 'three'
 import { findModelNode } from './layerModel'
 import type { Material, Object3D } from 'three'
 import { disposeMaterial } from '../disposeObject'
-import { objectShapes } from '../geometry/objectShapes'
+import { objectParts } from '../geometry/objectShapes'
 import { objectColors, addShapeObject } from '../buildScene'
 import { objectLayerId, objectMeshName } from '../sceneLayout'
 import type { ImageMap3DObject } from '../../../types/imageMap3dData.types'
@@ -48,7 +48,7 @@ function adoptObjects(content: SceneContent, item: SceneModelItem, resolve: Scen
 		if (!entry?.meshes.length) {
 			entry?.material.dispose()
 			if (!node) result.missing.push(object.id)
-			addShapeObject(content, { object, layerId, colors }, objectShapes(object, source))
+			addShapeObject(content, { object, layerId, colors }, objectParts(object, source, content.settings))
 			return
 		}
 		content.objects.set(object.id, entry)

@@ -9,7 +9,7 @@ import { layerElevation, objectHeight, objectLayerId, objectMeshName, sceneSetti
 const LAYER = { id: 'f1', title: 'Этаж', width: 1000, height: 600 }
 
 function boxOf(object: ImageMap3DObject, height = 12): Box3 {
-	const geometry = extrudeShapes(objectShapes(object, LAYER), height) as ExtrudeGeometry
+	const geometry = extrudeShapes(objectShapes(object, LAYER), { height, base: 0, bevel: 0 }) as ExtrudeGeometry
 	geometry.computeBoundingBox()
 	return geometry.boundingBox as Box3
 }
@@ -26,12 +26,14 @@ describe('sceneLayout', () => {
 			floorGap: 250,
 			floorThickness: 4,
 			objectHeight: 30,
+			bevel: 2,
+			outline: true,
 		})
 	})
 
 	it('свои значения scene3d; неверные заменяются умолчаниями', () => {
 		const data = { layers: [LAYER], objects: [], scene3d: { floorGap: 100, floorThickness: 8, objectHeight: 0 } }
-		expect(sceneSettings(data)).toEqual({ extent: 1000, floorGap: 100, floorThickness: 8, objectHeight: 0 })
+		expect(sceneSettings(data)).toEqual({ extent: 1000, floorGap: 100, floorThickness: 8, objectHeight: 0, bevel: 2, outline: true })
 		const wrong = { layers: [LAYER], objects: [], scene3d: { floorGap: -1, floorThickness: 0, objectHeight: Number.NaN } }
 		expect(sceneSettings(wrong)).toMatchObject({ floorGap: 250, floorThickness: 4, objectHeight: 30 })
 		expect(sceneSettings({ layers: [LAYER], objects: [], scene3d: null as never }).floorGap).toBe(250)
@@ -116,7 +118,7 @@ describe('выдавливание фигур', () => {
 			{ id: 'i', title: 'I', type: 'svg', elementId: 'x' },
 		] as unknown as ImageMap3DObject[]
 		expect(invalid.map(object => objectShapes(object, LAYER).length)).toEqual([0, 0, 0, 0, 0, 0, 0, 0, 0])
-		expect(extrudeShapes([], 10)).toBeNull()
+		expect(extrudeShapes([], { height: 10, base: 0, bevel: 0 })).toBeNull()
 	})
 
 	it('нулевая высота даёт тонкую плиту, а не пустую геометрию', () => {
