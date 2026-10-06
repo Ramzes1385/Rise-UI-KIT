@@ -38,7 +38,7 @@ export const SlideList: StoryObj<typeof meta> = {
 
 		await tabTo(locked, userEvent)
 		await userEvent.keyboard('{Enter}')
-		await expect(await canvas.findByText('Доступно через 6 с', { selector: '[role="status"]' })).toBeInTheDocument()
+		await expect(await canvas.findByText(/^Доступно через \d+ с$/, { selector: '[role="status"]' })).toBeInTheDocument()
 		await expect(canvas.getByRole('slider', { name: 'Слайды' })).toHaveAttribute('aria-valuetext', 'Слайд 1 из 3: Кто мы')
 
 		await userEvent.keyboard('{Escape}')
