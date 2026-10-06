@@ -1,4 +1,4 @@
-import { sceneFrame } from '../../../model/scene/sceneFrame'
+import { sceneFrame } from '../../../model/camera/sceneFrame'
 import { applyLayerMode } from '../../../model/scene/sceneState'
 import { buildSceneContent } from '../../../model/scene/buildScene'
 import { pickObjectId } from '../../../model/interaction/pickObject'

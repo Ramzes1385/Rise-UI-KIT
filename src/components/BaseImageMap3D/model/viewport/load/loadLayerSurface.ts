@@ -1,10 +1,10 @@
 import { warn } from '@/locales/warn'
-import { addSvgObjects } from '../scene/sceneState'
 import { UI_IMAGE_MAP_3D } from '@/locales/messages'
-import { setFloorTexture } from '../scene/geometry/floor'
+import { addSvgObjects } from '../../scene/sceneState'
+import { setFloorTexture } from '../../scene/geometry/floor'
 import { isDevelopmentBuild } from '@utils/seo/structuredDataUtils'
-import type { SceneSurfaceJob } from '../../types/internal/imageMap3dInternal.types'
-import { loadLayerSvg, loadSvgTexture, loadTexture } from '../scene/materials/layerTexture'
+import type { SceneSurfaceJob } from '../../../types/internal/imageMap3dInternal.types'
+import { loadLayerSvg, loadSvgTexture, loadTexture } from '../../scene/materials/layerTexture'
 
 async function floorTexture(job: SceneSurfaceJob, markup: string) {
 	if (markup) return loadSvgTexture(markup, job.layer)

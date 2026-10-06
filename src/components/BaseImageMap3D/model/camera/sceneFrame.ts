@@ -1,7 +1,7 @@
 import { Box3, Vector3 } from 'three'
 import type { ImageMap3DData, ImageMap3DLayer } from '../../types/imageMap3dData.types'
-import { layerElevation, objectLayerId, objectTop, sceneSettings } from './sceneLayout'
 import type { SceneFrame, SceneSettings } from '../../types/internal/imageMap3dInternal.types'
+import { layerElevation, objectLayerId, objectTop, sceneSettings } from '../scene/sceneLayout'
 
 const isSize = (value: number): boolean => Number.isFinite(value) && value > 0
 

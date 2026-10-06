@@ -1,4 +1,4 @@
-import { sceneFrame } from '../../../model/scene/sceneFrame'
+import { sceneFrame } from '../../../model/camera/sceneFrame'
 import { cameraKeyAction } from '../../../model/camera/cameraKeys'
 import type { ImageMap3DData } from '../../../types/imageMap3dData.types'
 import { Box3, MathUtils, OrthographicCamera, PerspectiveCamera, Vector3 } from 'three'

@@ -1,6 +1,6 @@
 import { DATA_3D } from '../../imageMap3d.test-utils'
-import { sceneFrame } from '../../../model/scene/sceneFrame'
-import { sceneExtent } from '../../../model/scene/sceneCamera'
+import { sceneFrame } from '../../../model/camera/sceneFrame'
+import { sceneExtent } from '../../../model/scene/sceneLayout'
 import type { ImageMap3DData } from '../../../types/imageMap3dData.types'
 import { disposeMaterial, disposeObject } from '../../../model/scene/disposeObject'
 import { BoxGeometry, Group, Mesh, MeshBasicMaterial, Texture, Vector3 } from 'three'
@@ -29,7 +29,7 @@ describe('disposeObject', () => {
 	})
 })
 
-describe('sceneCamera', () => {
+describe('sceneExtent', () => {
 	it('размер сцены — большая сторона слоёв; без слоёв — 1000', () => {
 		expect(sceneExtent(DATA_3D)).toBe(800)
 		expect(sceneExtent({ layers: [{ id: 'x', title: 'X', width: Number.NaN, height: -1 }], objects: [] })).toBe(1000)

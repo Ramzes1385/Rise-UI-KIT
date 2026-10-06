@@ -1,11 +1,11 @@
 import { warn } from '@/locales/warn'
 import { UI_IMAGE_MAP_3D } from '@/locales/messages'
-import { objectMeshName } from '../scene/sceneLayout'
-import { disposeObject } from '../scene/disposeObject'
-import { attachModel } from '../scene/gltf/attachModel'
-import { loadLayerModel } from '../scene/gltf/layerModel'
+import { objectMeshName } from '../../scene/sceneLayout'
+import { disposeObject } from '../../scene/disposeObject'
+import { attachModel } from '../../scene/gltf/attachModel'
+import { loadLayerModel } from '../../scene/gltf/layerModel'
 import { isDevelopmentBuild } from '@utils/seo/structuredDataUtils'
-import type { SceneModelJob } from '../../types/internal/imageMap3dInternal.types'
+import type { SceneModelJob } from '../../../types/internal/imageMap3dInternal.types'
 
 function warnObjects(job: SceneModelJob, ids: string[], message: string): void {
 	const objects = isDevelopmentBuild() ? job.data.objects.filter(object => ids.includes(object.id)) : []

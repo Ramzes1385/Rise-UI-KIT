@@ -547,3 +547,10 @@ export interface RouteTubeOptions {
 	/** Запросить кадр */
 	invalidate: () => void
 }
+
+/** Запись списка объектов для скринридера: объект, тег (ссылка или кнопка) и атрибуты */
+export interface ObjectListEntry {
+	item: ResolvedImageMapObject
+	tag: 'a' | 'button'
+	attributes: Record<string, string | undefined>
+}

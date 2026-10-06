@@ -1,4 +1,4 @@
-import { sceneFrame } from '../../../../model/scene/sceneFrame'
+import { sceneFrame } from '../../../../model/camera/sceneFrame'
 import { pickObjectId } from '../../../../model/interaction/pickObject'
 import { Box3, Color, OrthographicCamera, Shape, Vector2 } from 'three'
 import { addSvgObjects, applyObjectStates } from '../../../../model/scene/sceneState'

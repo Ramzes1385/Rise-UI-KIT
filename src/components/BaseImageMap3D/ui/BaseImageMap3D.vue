@@ -146,6 +146,19 @@
 					<p :id="hintId" class="base-image-map-3d__hint">{{ UI_IMAGE_MAP_3D.KEYBOARD_HINT }}</p>
 					<p class="base-image-map-3d__hint" aria-live="polite">{{ liveText }}</p>
 				</div>
+				<ul v-if="objectEntries.length" class="base-image-map-3d__objects" :aria-label="objectsLabel" @focusout="onFocusOut">
+					<li v-for="entry in objectEntries" :key="entry.item.object.id">
+						<component
+							:is="entry.tag"
+							v-bind="entry.attributes"
+							class="base-image-map-3d__object"
+							tabindex="-1"
+							@focus="onObjectFocus(entry.item)"
+							@click="onObjectClick(entry.item, $event)">
+							{{ entry.item.object.title }}
+						</component>
+					</li>
+				</ul>
 				<ImageMapRoutePanel
 					v-if="hasRoutes && data.routes"
 					:custom-class="classes.route"
@@ -294,6 +307,10 @@ const {
 	onPointerLeave,
 	onClick,
 	hintId,
+	objectEntries,
+	objectsLabel,
+	onObjectClick,
+	onObjectFocus,
 	exposed,
 } = useBaseImageMap3D(props, emit)
 

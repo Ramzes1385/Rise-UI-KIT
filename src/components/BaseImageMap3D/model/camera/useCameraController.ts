@@ -1,7 +1,7 @@
 import type { ComputedRef } from 'vue'
+import { sceneFrame } from './sceneFrame'
 import { ROTATE_STEP } from './cameraKeys'
 import { MathUtils, Vector3 } from 'three'
-import { sceneFrame } from '../scene/sceneFrame'
 import { useTween } from '@composables/interaction/useTween'
 import { layerElevation, sceneSettings } from '../scene/sceneLayout'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'

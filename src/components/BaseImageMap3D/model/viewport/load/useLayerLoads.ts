@@ -1,5 +1,5 @@
 import { computed, ref } from 'vue'
-import type { LayerLoads } from '../../types/internal/imageMap3dInternal.types'
+import type { LayerLoads } from '../../../types/internal/imageMap3dInternal.types'
 
 export function useLayerLoads(): LayerLoads {
 	const pending = ref(0)

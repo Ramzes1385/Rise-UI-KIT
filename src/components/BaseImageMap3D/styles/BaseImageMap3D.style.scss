@@ -36,6 +36,10 @@
 		@include visually-hidden;
 	}
 
+	&__objects {
+		@include visually-hidden;
+	}
+
 	&__viewport {
 		position: relative;
 		overflow: hidden;

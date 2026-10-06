@@ -1,13 +1,18 @@
-import { sceneExtent } from './sceneCamera'
 import type { ScenePartSpec, SceneSettings } from '../../types/internal/imageMap3dInternal.types'
 import type { ImageMap3DData, ImageMap3DLayer, ImageMap3DObject } from '../../types/imageMap3dData.types'
 
+const DEFAULT_EXTENT = 1000
 const FLOOR_GAP_RATIO = 0.25
 const OBJECT_HEIGHT_RATIO = 0.03
 const FLOOR_THICKNESS = 4
 const BEVEL_RATIO = 0.002
 
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value)
+
+export function sceneExtent(data: ImageMap3DData): number {
+	const sizes = data.layers.flatMap(layer => [layer.width, layer.height]).filter(size => Number.isFinite(size) && size > 0)
+	return sizes.length ? Math.max(...sizes) : DEFAULT_EXTENT
+}
 
 function pickNumber(value: unknown, isValid: (value: number) => boolean, fallback: number): number {
 	return typeof value === 'number' && Number.isFinite(value) && isValid(value) ? value : fallback

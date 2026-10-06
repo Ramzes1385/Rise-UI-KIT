@@ -1,7 +1,7 @@
 import { Scene } from 'three'
 import { watchContext } from './watchContext'
 import { useRenderLoop } from './useRenderLoop'
-import { sceneFrame } from '../scene/sceneFrame'
+import { sceneFrame } from '../camera/sceneFrame'
 import { disposeObject } from '../scene/disposeObject'
 import { onBeforeUnmount, shallowRef, watch } from 'vue'
 import { createViewCamera, fitViewCamera } from '../camera/cameraPose'

@@ -3,6 +3,7 @@ import { warn3dData } from './validate3d'
 import { hasWebGL } from './webglSupport'
 import { formatMessage } from '@/locales/state'
 import { useImageMap3DMap } from './useImageMap3DMap'
+import { useObjectList } from './interaction/useObjectList'
 import { UI_IMAGE_MAP, UI_IMAGE_MAP_3D } from '@/locales/messages'
 import { useImageMap3DStage, useStageInput } from './useImageMap3DStage'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
@@ -234,6 +235,7 @@ export function useBaseImageMap3D(props: ImageMap3DProps, emit: BaseImageMap3DEm
 		...base,
 		...usePresentation(props, map, base.classes),
 		...input,
+		...useObjectList(props, map),
 		map,
 		shownView,
 		setView,
