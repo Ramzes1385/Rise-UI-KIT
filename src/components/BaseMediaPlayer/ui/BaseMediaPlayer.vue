@@ -1,8 +1,8 @@
 <template>
 	<div
 		ref="rootRef"
-		class="base-media-player"
 		:class="[
+			ui('root'),
 			variantClass,
 			rotationClass,
 			{
@@ -42,8 +42,7 @@
 				@update:is-open="setContextMenuOpen">
 				<video
 					ref="mediaRef"
-					class="base-media-player__media"
-					:class="classes.media"
+					:class="[ui('media'), classes.media]"
 					:src="src"
 					:poster="posterSrc"
 					:preload="preload"
@@ -62,7 +61,7 @@
 					@ended="onMediaEvent.ended"></video>
 				<audio ref="audioRef" class="base-media-player__audio" preload="auto" :crossorigin="crossorigin"></audio>
 				<Transition name="base-media-player__cover">
-					<div v-if="isCoverVisible" class="base-media-player__cover" aria-hidden="true">
+					<div v-if="isCoverVisible" :class="ui('cover')" aria-hidden="true">
 						<img v-if="posterSrc" class="base-media-player__cover-media" :src="posterSrc" alt="" />
 						<video
 							v-if="posterVideoSrc"
@@ -77,16 +76,13 @@
 					</div>
 				</Transition>
 				<Transition name="base-media-player__paused">
-					<div
-						v-if="isPauseScreen"
-						class="base-media-player__paused"
-						:class="{ 'base-media-player__paused--next': nextCountdown !== null }">
-						<button type="button" class="base-media-player__big-play" tabindex="-1" aria-hidden="true" @click="actions.play">
+					<div v-if="isPauseScreen" :class="[ui('paused'), { 'base-media-player__paused--next': nextCountdown !== null }]">
+						<button type="button" :class="ui('big-play')" tabindex="-1" aria-hidden="true" @click="actions.play">
 							<MediaIcon :name="pauseScreenIcon" />
 						</button>
 					</div>
 				</Transition>
-				<div v-if="captionLines.length || isCaptionDragging" class="base-media-player__captions">
+				<div v-if="captionLines.length || isCaptionDragging" :class="ui('captions')">
 					<div
 						class="base-media-player__caption-box"
 						:class="captionBoxClass"
@@ -121,30 +117,29 @@
 					<span class="base-media-player__seek-hint-label">{{ seekHintText }}</span>
 				</div>
 				<MediaCastOverlay />
-				<div v-if="hasTitle || logoSrc" class="base-media-player__top" :class="`base-media-player__top--logo-${logoPosition}`">
-					<span v-if="hasTitle" class="base-media-player__title" :class="classes.title">
+				<div v-if="hasTitle || logoSrc" :class="[ui('top'), `base-media-player__top--logo-${logoPosition}`]">
+					<span v-if="hasTitle" :class="[ui('title'), classes.title]">
 						{{ title }}
 						<span v-if="episodeTitle" class="base-media-player__episode">· {{ episodeTitle }}</span>
 					</span>
 					<a
 						v-if="logoSrc && logoLink"
-						class="base-media-player__logo"
-						:class="classes.logo"
+						:class="[ui('logo'), classes.logo]"
 						:href="logoLink"
 						target="_blank"
 						rel="noopener noreferrer"
 						:aria-label="logoAlt">
 						<img class="base-media-player__logo-image" :src="logoSrc" alt="" />
 					</a>
-					<img v-else-if="logoSrc" class="base-media-player__logo" :class="classes.logo" :src="logoSrc" :alt="logoAlt ?? ''" />
+					<img v-else-if="logoSrc" :class="[ui('logo'), classes.logo]" :src="logoSrc" :alt="logoAlt ?? ''" />
 				</div>
 				<Transition name="base-media-player__loader">
-					<div v-if="isBuffering" class="base-media-player__loader" role="status" :aria-label="UI_PLAYER.LOADING">
+					<div v-if="isBuffering" :class="ui('loader')" role="status" :aria-label="UI_PLAYER.LOADING">
 						<MediaIcon name="loading" />
 					</div>
 				</Transition>
-				<div v-if="isStartScreen" class="base-media-player__start">
-					<button type="button" class="base-media-player__big-play" tabindex="-1" aria-hidden="true" @click="actions.play">
+				<div v-if="isStartScreen" :class="ui('start')">
+					<button type="button" :class="ui('big-play')" tabindex="-1" aria-hidden="true" @click="actions.play">
 						<MediaIcon name="play" />
 					</button>
 					<p v-if="isAutoplayBlocked" class="base-media-player__hint" role="status">{{ errorMessage }}</p>
@@ -159,7 +154,7 @@
 					<template v-if="$slots.banner" #banner="bannerProps"><slot name="banner" v-bind="bannerProps" /></template>
 				</MediaNotices>
 				<Transition name="base-media-player__resume">
-					<div v-if="resumeTime !== null" class="base-media-player__resume">
+					<div v-if="resumeTime !== null" :class="ui('resume')">
 						<span>{{ resumeText }}</span>
 						<BaseButton variant="soft" :size-scale="sizeScale" @click="resume">{{ UI_PLAYER.RESUME_YES }}</BaseButton>
 						<BaseButton variant="ghost" class="base-media-player__button" :size-scale="sizeScale" @click="dismissResume">
@@ -169,11 +164,7 @@
 				</Transition>
 				<MediaStatsPanel v-if="isStatsOpen" :rows="statsRows" :events="statsEvents" @close="toggleStats" @copy="copyStats" />
 				<Transition name="base-media-player__skip">
-					<button
-						v-if="skipChapter && !activeAdSegment"
-						type="button"
-						class="base-media-player__skip"
-						@click="skipCurrentChapter">
+					<button v-if="skipChapter && !activeAdSegment" type="button" :class="ui('skip')" @click="skipCurrentChapter">
 						{{ skipLabel }}
 						<MediaIcon name="skip" />
 					</button>
@@ -357,6 +348,7 @@ const {
 	skipLabel,
 	nextCountdown,
 	exposed,
+	ui,
 	isAdPlaying,
 	isClipPlaying,
 	isCasting,

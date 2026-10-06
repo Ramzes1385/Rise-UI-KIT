@@ -1,5 +1,6 @@
 import { UI_AUDIO } from '@/locales/messages'
 import { formatMessage } from '@/locales/state'
+import { useUi } from '@composables/base/useUi'
 import { formatMediaTime, resampleLevels } from '@utils/media/mediaUtils'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { computed, onBeforeUnmount, reactive, ref, shallowRef, watch } from 'vue'
@@ -221,6 +222,7 @@ export function useBaseVoiceRecorder(props: BaseVoiceRecorderProps, emit: BaseVo
 	const actions = useRecorderActions(props, emit, flow)
 	return {
 		...useStandardBaseComponent('base-voice-recorder', props, ['root', 'meter', 'preview']),
+		ui: useUi(props, 'base-voice-recorder'),
 		...actions,
 		...useRecorderTexts(flow),
 		state: flow.state,

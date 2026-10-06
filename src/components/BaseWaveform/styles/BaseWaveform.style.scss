@@ -1,16 +1,16 @@
 .base-waveform {
-	@include custom-bg('--waveform-color', var(--custom-text, var(--rise-primary)));
-	--waveform-rest: var(--rise-border-accented);
+	@include custom-bg('--waveform-color', var(--custom-text, #{ct(waveform-fill, bg, var(--rise-primary))}));
+	--waveform-rest: #{ct(waveform-bar, bg, var(--rise-border-accented))};
 
 	position: relative;
 	display: flex;
 	align-items: center;
-	gap: sz(2px);
+	gap: sz(ct(waveform, gap, 2px));
 	box-sizing: border-box;
 	width: 100%;
 	min-width: 0;
-	height: sz(40px);
-	border-radius: sz(var(--rise-radius-sm));
+	height: sz(ct(waveform, height, 40px));
+	border-radius: sz(ct(waveform, radius, var(--rise-radius-sm)));
 	cursor: pointer;
 	touch-action: none;
 	user-select: none;
@@ -27,10 +27,14 @@
 
 	&__bar {
 		flex: 1 1 0;
+		align-self: stretch;
 		min-width: 1px;
-		border-radius: var(--rise-radius-full);
+		border-radius: ct(waveform-bar, radius, var(--rise-radius-full));
 		background-color: var(--waveform-rest);
-		@include transition(background-color);
+		transform-origin: center;
+		transition:
+			background-color var(--rise-duration) var(--rise-ease),
+			transform var(--rise-duration) var(--rise-ease-out);
 
 		&--played {
 			background-color: var(--waveform-color);
@@ -41,11 +45,11 @@
 		position: absolute;
 		top: 0;
 		bottom: 0;
-		border-radius: sz(var(--rise-radius-sm));
-		background-color: color-mix(in srgb, var(--waveform-color) 18%, transparent);
+		border-radius: sz(ct(waveform, radius, var(--rise-radius-sm)));
+		background-color: ct(waveform-selection, bg, color-mix(in srgb, var(--waveform-color) 18%, transparent));
 		box-shadow:
-			inset 2px 0 0 var(--waveform-color),
-			inset -2px 0 0 var(--waveform-color);
+			inset 2px 0 0 ct(waveform-selection, border, var(--waveform-color)),
+			inset -2px 0 0 ct(waveform-selection, border, var(--waveform-color));
 		pointer-events: none;
 	}
 

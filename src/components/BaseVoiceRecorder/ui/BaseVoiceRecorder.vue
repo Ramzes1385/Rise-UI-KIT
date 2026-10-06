@@ -1,17 +1,16 @@
 <template>
 	<div
-		class="base-voice-recorder"
-		:class="[variantClass, `base-voice-recorder--${state}`, { 'base-voice-recorder--disabled': isDisabled }, classes.root]"
+		:class="[ui('root'), variantClass, `base-voice-recorder--${state}`, { 'base-voice-recorder--disabled': isDisabled }, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<template v-if="state === 'recording' || state === 'requesting'">
-			<span class="base-voice-recorder__dot" aria-hidden="true"></span>
-			<span class="base-voice-recorder__time">{{ timeText }}</span>
-			<span class="base-voice-recorder__meter" :class="classes.meter" aria-hidden="true">
+			<span :class="ui('dot')" aria-hidden="true"></span>
+			<span :class="ui('time')">{{ timeText }}</span>
+			<span :class="[ui('meter'), classes.meter]" aria-hidden="true">
 				<span
 					v-for="(level, index) in live"
 					:key="index"
-					class="base-voice-recorder__level"
-					:style="{ height: `${Math.max(level, 0.06) * 100}%` }"></span>
+					:class="ui('level')"
+					:style="{ transform: `scaleY(${Math.max(level, 0.06)})` }"></span>
 			</span>
 			<BaseButton variant="ghost" :size-scale="sizeScale" :aria-label="UI_AUDIO.CANCEL" @click="cancel">
 				<template #left><BaseIcon name="close" /></template>
@@ -22,8 +21,7 @@
 		</template>
 		<template v-else-if="state === 'preview' && previewUrl && recording">
 			<BaseAudioPlayer
-				class="base-voice-recorder__preview"
-				:class="classes.preview"
+				:class="[ui('preview'), classes.preview]"
 				:src="previewUrl"
 				:title="UI_AUDIO.PREVIEW"
 				:peaks="recording.peaks"
@@ -39,12 +37,12 @@
 			</BaseButton>
 		</template>
 		<template v-else>
-			<p v-if="state === 'error'" class="base-voice-recorder__error">{{ errorText }}</p>
+			<p v-if="state === 'error'" :class="ui('error')">{{ errorText }}</p>
 			<BaseButton variant="soft" :size-scale="sizeScale" :aria-label="UI_AUDIO.RECORD" :is-disabled="isDisabled" @click="start">
 				<template #left><BaseIcon name="mic" /></template>
 			</BaseButton>
 		</template>
-		<span class="base-voice-recorder__status" role="status">{{ statusText }}</span>
+		<span :class="ui('status')" role="status">{{ statusText }}</span>
 	</div>
 </template>
 
@@ -73,6 +71,7 @@ const {
 	variantStyle,
 	customColorStyle,
 	classes,
+	ui,
 	state,
 	live,
 	previewUrl,

@@ -1,7 +1,7 @@
 <template>
 	<div
-		class="base-audio-player"
 		:class="[
+			ui('root'),
 			variantClass,
 			{
 				'base-audio-player--disabled': isDisabled,
@@ -28,20 +28,22 @@
 			@ratechange="onRateChange"
 			@error="onError"></audio>
 		<BaseButton
-			class="base-audio-player__button"
-			:class="classes.button"
+			:class="[ui('button'), classes.button]"
 			:variant="variant === 'ghost' ? 'ghost' : 'soft'"
 			:size-scale="sizeScale"
 			:aria-label="playLabel"
 			:is-disabled="isDisabled"
 			@click="togglePlay">
-			<template #left><BaseIcon :name="state.isPaused ? 'play' : 'pause'" /></template>
+			<template #left>
+				<Transition name="base-audio-player__icon">
+					<BaseIcon :key="state.isPaused ? 'play' : 'pause'" :name="state.isPaused ? 'play' : 'pause'" />
+				</Transition>
+			</template>
 		</BaseButton>
-		<div class="base-audio-player__body">
-			<span v-if="hasTitle" class="base-audio-player__title">{{ title }}</span>
+		<div :class="ui('body')">
+			<span v-if="hasTitle" :class="ui('title')">{{ title }}</span>
 			<BaseWaveform
-				class="base-audio-player__waveform"
-				:class="classes.waveform"
+				:class="[ui('waveform'), classes.waveform]"
 				:peaks="peaks"
 				:duration="duration"
 				:current-time="state.currentTime"
@@ -51,11 +53,11 @@
 				:is-disabled="isDisabled"
 				@update:current-time="seek" />
 		</div>
-		<span class="base-audio-player__time" :class="classes.time">{{ timeText }}</span>
+		<span :class="[ui('time'), classes.time]">{{ timeText }}</span>
 		<BaseButton
 			v-if="hasRates"
 			variant="ghost"
-			class="base-audio-player__rate"
+			:class="ui('rate')"
 			:custom-class="classes.rate"
 			:aria-label="rateLabel"
 			:is-disabled="isDisabled"
@@ -66,7 +68,7 @@
 		<BaseButton
 			v-if="hasTranscript"
 			variant="ghost"
-			class="base-audio-player__transcript-toggle"
+			:class="ui('transcript-toggle')"
 			:custom-class="classes.transcriptToggle"
 			:aria-label="UI_TRANSCRIPT.TITLE"
 			:aria-expanded="isTranscriptOpen"
@@ -81,14 +83,13 @@
 				v-if="hasTranscript && isTranscriptOpen"
 				:id="transcriptId"
 				ref="panelRef"
-				class="base-audio-player__transcript"
-				:class="classes.transcript"
+				:class="[ui('transcript'), classes.transcript]"
 				:aria-label="UI_TRANSCRIPT.TITLE"
 				@keydown="onPanelKeydown">
-				<div class="base-audio-player__transcript-tools">
+				<div :class="ui('transcript-tools')">
 					<BaseInput
 						v-model="transcriptQuery"
-						class="base-audio-player__transcript-search"
+						:class="ui('transcript-search')"
 						:aria-label="UI_TRANSCRIPT.SEARCH"
 						:placeholder="UI_TRANSCRIPT.SEARCH_PLACEHOLDER"
 						:is-disabled="transcriptStatus !== 'ready'"
@@ -97,7 +98,7 @@
 					</BaseInput>
 					<BaseButton
 						variant="ghost"
-						class="base-audio-player__transcript-download"
+						:class="ui('transcript-download')"
 						:aria-label="UI_TRANSCRIPT.DOWNLOAD"
 						:is-disabled="!canDownloadTranscript"
 						:size-scale="sizeScale"
@@ -105,16 +106,16 @@
 						<template #left><BaseIcon name="download" /></template>
 					</BaseButton>
 				</div>
-				<p class="base-audio-player__transcript-result" role="status">{{ transcriptResult }}</p>
-				<p v-if="transcriptStatus === 'loading'" class="base-audio-player__transcript-note">{{ UI_TRANSCRIPT.LOADING }}</p>
-				<p v-else-if="transcriptStatus === 'error'" class="base-audio-player__transcript-note" role="alert">
+				<p :class="ui('transcript-result')" role="status">{{ transcriptResult }}</p>
+				<p v-if="transcriptStatus === 'loading'" :class="ui('transcript-note')">{{ UI_TRANSCRIPT.LOADING }}</p>
+				<p v-else-if="transcriptStatus === 'error'" :class="ui('transcript-note')" role="alert">
 					{{ UI_TRANSCRIPT.ERROR }}
 				</p>
-				<p v-else-if="!canDownloadTranscript" class="base-audio-player__transcript-note">{{ UI_TRANSCRIPT.EMPTY }}</p>
+				<p v-else-if="!canDownloadTranscript" :class="ui('transcript-note')">{{ UI_TRANSCRIPT.EMPTY }}</p>
 				<ol
 					v-if="transcriptItems.length"
 					ref="listRef"
-					class="base-audio-player__transcript-list"
+					:class="ui('transcript-list')"
 					:aria-label="UI_TRANSCRIPT.CUES"
 					@keydown="onListKeydown"
 					@wheel.passive="pauseFollow"
@@ -122,24 +123,23 @@
 					<li v-for="item in transcriptItems" :key="item.index">
 						<button
 							type="button"
-							class="base-audio-player__cue"
-							:class="{ 'base-audio-player__cue--current': item.isCurrent }"
+							:class="[ui('cue'), { 'base-audio-player__cue--current': item.isCurrent }]"
 							:data-cue-index="item.index"
 							:tabindex="item.index === rovingIndex ? 0 : -1"
 							:aria-current="item.isCurrent ? 'true' : undefined"
 							:disabled="isDisabled"
 							@focus="onCueFocus(item.index)"
 							@click="chooseCue(item)">
-							<span class="base-audio-player__cue-time">{{ item.time }}</span
+							<span :class="ui('cue-time')">{{ item.time }}</span
 							>{{ ' ' }}
-							<span v-if="item.speaker" class="base-audio-player__cue-speaker">
+							<span v-if="item.speaker" :class="ui('cue-speaker')">
 								<template v-for="(part, index) in item.speakerParts" :key="index">
 									<mark v-if="part.isMatch" class="base-audio-player__match">{{ part.text }}</mark>
 									<template v-else>{{ part.text }}</template>
 								</template>
 							</span>
 							{{ ' ' }}
-							<span class="base-audio-player__cue-text">
+							<span :class="ui('cue-text')">
 								<template v-for="(part, index) in item.parts" :key="index">
 									<mark v-if="part.isMatch" class="base-audio-player__match">{{ part.text }}</mark>
 									<template v-else>{{ part.text }}</template>
@@ -151,14 +151,14 @@
 				<BaseButton
 					v-if="isFollowPaused && transcriptStatus === 'ready'"
 					variant="soft"
-					class="base-audio-player__transcript-follow"
+					:class="ui('transcript-follow')"
 					:size-scale="sizeScale"
 					@click="followCurrent">
 					{{ UI_TRANSCRIPT.FOLLOW }}
 				</BaseButton>
 			</section>
 		</Transition>
-		<p v-if="state.error" class="base-audio-player__error" role="alert">{{ UI_AUDIO.ERROR }}</p>
+		<p v-if="state.error" :class="ui('error')" role="alert">{{ UI_AUDIO.ERROR }}</p>
 	</div>
 </template>
 
@@ -192,6 +192,7 @@ const {
 	variantStyle,
 	customColorStyle,
 	classes,
+	ui,
 	audioRef,
 	state,
 	duration,

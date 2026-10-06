@@ -2,6 +2,7 @@ import type { Ref } from 'vue'
 import { UI_PLAYER } from '../messages'
 import { usePlayerSeo } from './usePlayerSeo'
 import { computed, provide, watch } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import { usePlayerTools } from './usePlayerTools'
 import { usePlayerModels } from './usePlayerModels'
 import { usePlayerCast } from '../cast/usePlayerCast'
@@ -307,6 +308,7 @@ export function createPlayerContext(props: MediaPlayerProps, playerEmit: BaseMed
 
 	return {
 		...useStandardBaseComponent('base-media-player', props, CLASS_KEYS),
+		ui: useUi(props, 'base-media-player'),
 		props,
 		...useLabels(state),
 		...cover,

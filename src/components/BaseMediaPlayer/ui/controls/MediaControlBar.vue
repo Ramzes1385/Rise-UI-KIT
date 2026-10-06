@@ -1,8 +1,7 @@
 <template>
-	<div ref="controlsRef" class="base-media-player__controls" :class="classes.controls">
+	<div ref="controlsRef" :class="[ui('controls'), classes.controls]">
 		<MediaSlider
-			class="base-media-player__seek"
-			:class="classes.seek"
+			:class="[ui('seek'), classes.seek]"
 			:model-value="state.currentTime"
 			:max="state.duration"
 			:step="props.seekStep"
@@ -230,6 +229,7 @@ const {
 	chapterLabel,
 	chapters,
 	classes,
+	ui,
 	controlsRef,
 	currentChapter,
 	currentTimeText,

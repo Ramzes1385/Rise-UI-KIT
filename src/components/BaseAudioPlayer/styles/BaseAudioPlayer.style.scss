@@ -2,15 +2,15 @@
 	display: grid;
 	grid-template-columns: auto minmax(0, 1fr) auto auto;
 	align-items: center;
-	column-gap: sz(10px);
+	column-gap: sz(ct(audio-player, gap, 10px));
 	box-sizing: border-box;
 	width: 100%;
 	min-width: 0;
-	padding: sz(8px) sz(12px);
-	border: 1px solid var(--rise-border);
-	border-radius: sz(var(--rise-radius-lg));
-	@include custom-bg(background-color, var(--rise-bg));
-	@include custom-text(color, var(--rise-text));
+	padding: space(ct(audio-player, padding-y, 8px) ct(audio-player, padding-x, 12px));
+	border: 1px solid ct(audio-player, border, var(--rise-border));
+	border-radius: sz(ct(audio-player, radius, var(--rise-radius-lg)));
+	@include custom-bg(background-color, ct(audio-player, bg, var(--rise-bg)));
+	@include custom-text(color, ct(audio-player, text, var(--rise-text)));
 
 	&--soft {
 		border-color: transparent;
@@ -33,7 +33,7 @@
 	}
 
 	&__button {
-		border-radius: var(--rise-radius-full);
+		border-radius: ct(audio-player, button-radius, var(--rise-radius-full));
 	}
 
 	&__body {
@@ -46,7 +46,7 @@
 	&__title {
 		@include text-size(sm);
 		@include truncate;
-		font-weight: var(--rise-font-weight-medium);
+		font-weight: ct(audio-player, title-font-weight, var(--rise-font-weight-medium));
 	}
 
 	&__waveform {
@@ -109,10 +109,10 @@
 		display: flex;
 		flex-direction: column;
 		grid-column: 1 / -1;
-		gap: sz(6px);
+		gap: space(6px);
 		min-width: 0;
-		margin-top: sz(8px);
-		padding-top: sz(8px);
+		margin-top: space(8px);
+		padding-top: space(8px);
 		border-top: 1px solid var(--rise-border-muted);
 		transform-origin: top;
 
@@ -174,7 +174,7 @@
 		position: relative;
 		display: flex;
 		flex-direction: column;
-		gap: sz(2px);
+		gap: space(2px);
 		max-height: sz(240px);
 		margin: 0;
 		padding: 0;
@@ -189,9 +189,9 @@
 		grid-template-columns: auto minmax(0, 1fr);
 		column-gap: sz(10px);
 		width: 100%;
-		padding: sz(6px) sz(8px);
+		padding: space(6px 8px);
 		border: 0;
-		border-radius: var(--rise-radius-md);
+		border-radius: ct(audio-player, cue-radius, var(--rise-radius-md));
 		background-color: transparent;
 		color: inherit;
 		font: inherit;
@@ -212,8 +212,8 @@
 		}
 
 		&--current {
-			background-color: var(--rise-primary-soft);
-			box-shadow: inset 3px 0 0 var(--rise-primary);
+			background-color: ct(audio-player, cue-bg-selected, var(--rise-primary-soft));
+			box-shadow: inset 3px 0 0 ct(audio-player, cue-border-selected, var(--rise-primary));
 		}
 	}
 
@@ -253,5 +253,22 @@
 
 	&__transcript-follow {
 		align-self: center;
+	}
+}
+
+.base-audio-player__icon-leave-active {
+	display: none;
+}
+
+@include motion-safe {
+	.base-audio-player__icon-enter-active {
+		transition:
+			opacity var(--rise-duration) var(--rise-ease-out),
+			transform var(--rise-duration) var(--rise-ease-spring);
+	}
+
+	.base-audio-player__icon-enter-from {
+		opacity: 0;
+		transform: scale(calc(var(--rise-motion-scale-from) * 0.5));
 	}
 }

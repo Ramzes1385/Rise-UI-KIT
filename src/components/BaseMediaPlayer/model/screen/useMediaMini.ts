@@ -1,3 +1,4 @@
+import { useMotion } from '@composables/app/useMotion'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { MediaMiniOptions } from '../../types/playback/MediaScreen.types'
 
@@ -7,6 +8,7 @@ export function useMediaMini(options: MediaMiniOptions) {
 	const isScrolledPast = ref(false)
 	const isActive = ref(false)
 	const isDismissed = ref(false)
+	const motion = useMotion(options.root)
 	let observer: IntersectionObserver | undefined
 	onMounted(() => {
 		const root = options.root.value
@@ -39,7 +41,7 @@ export function useMediaMini(options: MediaMiniOptions) {
 			options.pause()
 		},
 		expandMini(): void {
-			options.root.value?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+			options.root.value?.scrollIntoView({ behavior: motion.isReduced.value ? 'auto' : 'smooth', block: 'center' })
 		},
 	}
 }

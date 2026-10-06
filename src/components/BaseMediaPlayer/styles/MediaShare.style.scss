@@ -44,15 +44,15 @@
 	}
 
 	&__share-networks--back &__share-list {
-		mask-image: linear-gradient(to right, transparent, black #{sz(48px)});
+		mask-image: linear-gradient(to right, transparent, var(--rise-media-shade) #{sz(48px)});
 	}
 
 	&__share-networks--forward &__share-list {
-		mask-image: linear-gradient(to left, transparent, black #{sz(48px)});
+		mask-image: linear-gradient(to left, transparent, var(--rise-media-shade) #{sz(48px)});
 	}
 
 	&__share-networks--back.base-media-player__share-networks--forward &__share-list {
-		mask-image: linear-gradient(to right, transparent, black #{sz(48px)} calc(100% - #{sz(48px)}), transparent);
+		mask-image: linear-gradient(to right, transparent, var(--rise-media-shade) #{sz(48px)} calc(100% - #{sz(48px)}), transparent);
 	}
 
 	&__share-item {
@@ -78,7 +78,7 @@
 		background: none;
 		color: var(--media-text);
 		font: inherit;
-		font-size: sz(12px);
+		font-size: sz(var(--rise-font-size-xs));
 		line-height: 1.3;
 		text-decoration: none;
 		cursor: pointer;
@@ -86,7 +86,7 @@
 
 		@include hover {
 			.base-media-player__share-tile {
-				box-shadow: 0 8px 20px color-mix(in srgb, var(--media-share-color, white) 40%, transparent);
+				box-shadow: 0 8px 20px color-mix(in srgb, var(--media-share-color, var(--rise-media-highlight)) 40%, transparent);
 				transform: translateY(-3px) scale(1.06);
 			}
 
@@ -106,8 +106,8 @@
 		width: sz(48px);
 		height: sz(48px);
 		border-radius: sz(14px);
-		background-color: var(--media-share-color, rgb(255 255 255 / 12%));
-		color: white;
+		background-color: var(--media-share-color, color-mix(in srgb, var(--rise-media-highlight) 12%, transparent));
+		color: var(--media-text);
 		transition:
 			transform var(--media-normal) var(--media-spring),
 			box-shadow var(--media-normal) var(--media-ease);
@@ -146,7 +146,7 @@
 		border: 1px solid var(--media-border);
 		border-radius: sz(10px);
 		background-color: var(--media-panel-solid);
-		box-shadow: 0 4px 14px rgb(0 0 0 / 45%);
+		box-shadow: 0 4px 14px color-mix(in srgb, var(--rise-media-shade) 45%, transparent);
 		color: var(--media-text);
 		cursor: pointer;
 		transition: transform var(--media-normal) var(--media-spring);
@@ -184,7 +184,7 @@
 		padding: 0 sz(12px);
 		border: 1px solid var(--media-border);
 		border-radius: sz(10px);
-		background-color: rgb(255 255 255 / 6%);
+		background-color: color-mix(in srgb, var(--rise-media-highlight) 6%, transparent);
 		color: var(--media-text);
 		font: inherit;
 		font-size: sz(13px);
@@ -201,10 +201,10 @@
 		border: 0;
 		border-radius: sz(10px);
 		background-color: var(--media-primary-strong);
-		color: white;
+		color: var(--media-text);
 		font: inherit;
 		font-size: sz(13px);
-		font-weight: 600;
+		font-weight: var(--rise-font-weight-semibold);
 		cursor: pointer;
 		transition:
 			background-color var(--media-normal) var(--media-ease),
@@ -217,7 +217,7 @@
 		}
 
 		@include hover {
-			background-color: color-mix(in oklab, var(--media-primary-strong) 88%, white);
+			background-color: color-mix(in oklab, var(--media-primary-strong) 88%, var(--rise-media-highlight));
 		}
 
 		&:active {
@@ -226,10 +226,10 @@
 	}
 
 	&__share-copy--done {
-		background-color: #15803d;
+		background-color: var(--rise-color-success-700);
 
 		@include hover {
-			background-color: #15803d;
+			background-color: var(--rise-color-success-700);
 		}
 	}
 

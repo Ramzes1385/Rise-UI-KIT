@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /**
@@ -5,6 +6,14 @@ import type { BaseComponentProps } from '@composables/base/useBaseComponent'
  * soft — светлее и спокойнее, для пузырей чата и плотных списков
  */
 export const WAVEFORM_VARIANTS = ['default', 'soft'] as const
+
+/**
+ * Части BaseWaveform для пропа `ui` (БЭМ-элементы `.base-waveform__<часть>`, `root` — вся шкала): bar — столбик волны,
+ * selection — подсветка выделенного фрагмента, hint — скрытое описание фрагмента для скринридера.
+ */
+export const WAVEFORM_PARTS = ['bar', 'selection', 'hint'] as const
+
+export type BaseWaveformPart = (typeof WAVEFORM_PARTS)[number]
 
 /** Фрагмент записи, секунды */
 export interface WaveformRange {
@@ -32,6 +41,14 @@ export interface BaseWaveformProps extends BaseComponentProps<(typeof WAVEFORM_V
 	step?: number
 	/** Шкала только показывает позицию: не получает фокус и не меняет позицию */
 	isDisabled?: boolean
+	/**
+	 * Классы частей (`root`, `bar`, `selection`, `hint` — см. `WAVEFORM_PARTS`) — добавляются к классам кита.
+	 * Глобально — `defaults.BaseWaveform.ui` плагина, классы склеиваются.
+	 *
+	 * @example
+	 * <BaseWaveform :ui="{ root: 'rounded-none', bar: 'opacity-80' }" />
+	 */
+	ui?: UiProp<BaseWaveformPart>
 }
 
 /**

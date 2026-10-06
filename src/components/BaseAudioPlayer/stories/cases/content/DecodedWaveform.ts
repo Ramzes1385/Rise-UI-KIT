@@ -15,7 +15,8 @@ export const DecodedWaveform: StoryObj<typeof meta> = {
 	},
 	args: { peaks: undefined, hasTitle: true, title: 'Запись с собрания, 14 мая', variant: 'soft' },
 	play: async ({ canvasElement }) => {
-		const heights = (): string[] => [...canvasElement.querySelectorAll<HTMLElement>('.base-waveform__bar')].map(bar => bar.style.height)
+		const heights = (): string[] =>
+			[...canvasElement.querySelectorAll<HTMLElement>('.base-waveform__bar')].map(bar => bar.style.transform)
 		await waitFor(() => expect(new Set(heights()).size).toBeGreaterThan(3), { timeout: 4000 })
 	},
 }

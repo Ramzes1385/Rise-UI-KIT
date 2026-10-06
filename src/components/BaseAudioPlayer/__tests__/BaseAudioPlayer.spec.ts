@@ -117,11 +117,11 @@ describe('BaseAudioPlayer', () => {
 		decodeWaveformPeaks.mockImplementationOnce(() => new Promise(resolve => (resolveFirst = resolve)))
 		decodeWaveformPeaks.mockResolvedValueOnce([1, 0.5, 0.25])
 		const { container, rerender } = setup({ peaks: undefined, bars: 3 })
-		const heights = (): string[] => [...container.querySelectorAll<HTMLElement>('.base-waveform__bar')].map(bar => bar.style.height)
-		expect(heights()).toEqual(['30%', '30%', '30%'])
+		const heights = (): string[] => [...container.querySelectorAll<HTMLElement>('.base-waveform__bar')].map(bar => bar.style.transform)
+		expect(heights()).toEqual(['scaleY(0.3)', 'scaleY(0.3)', 'scaleY(0.3)'])
 		await rerender({ src: '/other.webm' })
 		resolveFirst([0.1, 0.1, 0.1])
-		await vi.waitFor(() => expect(heights()).toEqual(['100%', '50%', '25%']))
+		await vi.waitFor(() => expect(heights()).toEqual(['scaleY(1)', 'scaleY(0.5)', 'scaleY(0.25)']))
 		expect(decodeWaveformPeaks.mock.calls).toEqual([
 			['/voice.webm', 3],
 			['/other.webm', 3],

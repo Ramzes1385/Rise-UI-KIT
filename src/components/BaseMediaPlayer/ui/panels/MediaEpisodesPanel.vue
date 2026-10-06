@@ -1,5 +1,5 @@
 <template>
-	<Transition name="base-media-player__episodes" :duration="{ enter: 720, leave: 240 }">
+	<Transition name="base-media-player__episodes" :duration="transitionDuration">
 		<section
 			v-if="isEpisodesOpen"
 			ref="panelRef"
@@ -107,6 +107,7 @@ import { useMediaEpisodesPanel } from '../../model/panels/useMediaEpisodesPanel'
 
 const {
 	panelRef,
+	transitionDuration,
 	isEpisodesOpen,
 	seasonId,
 	seasonTabs,

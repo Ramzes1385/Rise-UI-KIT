@@ -1,49 +1,39 @@
-$media-surface: black;
-$media-text: white;
-$media-scrim: rgb(0 0 0 / 72%);
-$media-control-hover: color-mix(in srgb, white 16%, transparent);
-$media-control-active: color-mix(in srgb, white 24%, transparent);
-$media-buffered: color-mix(in srgb, white 56%, transparent);
-$media-big-play: color-mix(in srgb, black 56%, transparent);
-$media-caption-semi: color-mix(in srgb, black 75%, transparent);
-$media-ad: #fc0;
-
 .base-media-player {
 	position: relative;
 	display: block;
 	width: 100%;
 	overflow: clip;
 	border-radius: var(--media-radius);
-	--media-radius: #{sz(12px)};
-	--media-ease: cubic-bezier(0.22, 1, 0.36, 1);
-	--media-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+	--media-radius: #{sz(ct(media-player, radius, 12px))};
+	--media-ease: var(--rise-ease-emphasized);
+	--media-spring: var(--rise-ease-spring);
 	--media-fast: calc(var(--rise-duration-fast) * 1.2);
 	--media-normal: calc(var(--rise-duration) * 1.3);
 	--media-slow: calc(var(--rise-duration-slow) * 1.4);
-	--media-text: #fff;
-	--media-muted: #a1a1aa;
-	--media-primary: #f97316;
-	--media-primary-strong: #c2410c;
+	--media-text: #{ct(media-player, text, var(--rise-media-text))};
+	--media-muted: var(--rise-media-text-dimmed);
+	--media-primary: var(--rise-media-accent);
+	--media-primary-strong: var(--rise-media-accent-strong);
 	--media-primary-soft: color-mix(in srgb, var(--media-primary) 22%, transparent);
 	--media-glow: color-mix(in srgb, var(--media-primary) 45%, transparent);
 	--media-accent: var(--media-primary);
-	--media-shade: black;
-	--media-overlay: rgb(0 0 0 / 85%);
-	--media-panel: rgb(18 18 18 / 86%);
-	--media-panel-solid: rgb(24 24 24 / 96%);
-	--media-hover: rgb(255 255 255 / 12%);
-	--media-border: rgb(255 255 255 / 10%);
+	--media-shade: var(--rise-media-shade);
+	--media-overlay: color-mix(in srgb, var(--rise-media-shade) 85%, transparent);
+	--media-panel: #{ct(media-player, panel-bg, var(--rise-media-panel))};
+	--media-panel-solid: #{ct(media-player, dialog-bg, var(--rise-media-panel-solid))};
+	--media-hover: color-mix(in srgb, var(--rise-media-highlight) 12%, transparent);
+	--media-border: color-mix(in srgb, var(--rise-media-highlight) 10%, transparent);
 	--media-overlay-base: calc(var(--media-controls-height, #{sz(80px)}) + #{sz(8px)});
 	--media-banner-space: 0px;
 	--media-overlay-bottom: calc(var(--media-overlay-base) + var(--media-banner-space));
 
-	background-color: $media-surface;
-	color: $media-text;
+	background-color: ct(media-player, bg, var(--rise-media-shade));
+	color: var(--media-text);
 	font-family: var(--rise-font-sans);
 	@include focus-ring(-2px);
 
 	&[data-theme] {
-		--rise-focus-ring: #{$media-text};
+		--rise-focus-ring: var(--media-text);
 	}
 
 	&--idle {
@@ -80,11 +70,16 @@ $media-ad: #fc0;
 		max-width: min(#{sz(500px)}, 100%);
 		padding: sz(8px) sz(16px);
 		border-radius: sz(8px);
-		background-image: linear-gradient(to right, rgb(0 0 0 / 88%) 0%, rgb(0 0 0 / 66%) 70%, transparent 100%);
-		font-size: sz(18px);
-		font-weight: var(--rise-font-weight-bold);
+		background-image: linear-gradient(
+			to right,
+			color-mix(in srgb, var(--rise-media-shade) 88%, transparent) 0%,
+			color-mix(in srgb, var(--rise-media-shade) 66%, transparent) 70%,
+			transparent 100%
+		);
+		font-size: sz(ct(media-player, title-font-size, 18px));
+		font-weight: ct(media-player, title-font-weight, var(--rise-font-weight-bold));
 		line-height: 1.4;
-		text-shadow: 0 1px 6px rgb(0 0 0 / 80%);
+		text-shadow: 0 1px 6px color-mix(in srgb, var(--rise-media-shade) 80%, transparent);
 		@include truncate;
 		transition:
 			opacity var(--media-normal) var(--media-ease),
@@ -103,7 +98,7 @@ $media-ad: #fc0;
 		max-height: sz(32px);
 		margin-left: auto;
 		opacity: 0.85;
-		filter: drop-shadow(0 1px 4px rgb(0 0 0 / 60%));
+		filter: drop-shadow(0 1px 4px color-mix(in srgb, var(--rise-media-shade) 60%, transparent));
 		pointer-events: auto;
 		@include focus-ring;
 	}
@@ -155,8 +150,8 @@ $media-ad: #fc0;
 		border: 1px solid var(--media-border);
 		border-radius: sz(10px);
 		background-color: var(--media-panel);
-		box-shadow: 0 10px 30px rgb(0 0 0 / 45%);
-		font-size: sz(14px);
+		box-shadow: 0 10px 30px color-mix(in srgb, var(--rise-media-shade) 45%, transparent);
+		font-size: sz(var(--rise-font-size-sm));
 		backdrop-filter: blur(10px);
 		transform: translateX(-50%);
 		transition: bottom var(--media-slow) var(--media-ease);
@@ -206,19 +201,19 @@ $media-ad: #fc0;
 		@include transition(translate);
 
 		&--color-white {
-			color: white;
+			color: var(--rise-media-highlight);
 		}
 
 		&--color-yellow {
-			color: yellow;
+			color: var(--rise-media-caption-yellow);
 		}
 
 		&--color-green {
-			color: lime;
+			color: var(--rise-media-caption-green);
 		}
 
 		&--color-cyan {
-			color: cyan;
+			color: var(--rise-media-caption-cyan);
 		}
 
 		&--dragging {
@@ -248,18 +243,18 @@ $media-ad: #fc0;
 	}
 
 	&__caption-box--background-semi &__caption-line {
-		background-color: $media-caption-semi;
+		background-color: color-mix(in srgb, var(--rise-media-shade) 75%, transparent);
 	}
 
 	&__caption-box--background-solid &__caption-line {
-		background-color: $media-surface;
+		background-color: var(--rise-media-shade);
 	}
 
 	&__caption-box--background-none &__caption-line {
 		text-shadow:
-			0 0 0.1em $media-surface,
-			0 0 0.2em $media-surface,
-			0.05em 0.05em 0.1em $media-surface;
+			0 0 0.1em var(--rise-media-shade),
+			0 0 0.2em var(--rise-media-shade),
+			0.05em 0.05em 0.1em var(--rise-media-shade);
 	}
 
 	&__caption--italic {
@@ -282,7 +277,7 @@ $media-ad: #fc0;
 		border: 1px solid var(--media-border);
 		border-radius: sz(8px);
 		background-color: var(--media-overlay);
-		box-shadow: 0 8px 20px rgb(0 0 0 / 40%);
+		box-shadow: 0 8px 20px color-mix(in srgb, var(--rise-media-shade) 40%, transparent);
 		@include text-size(xs);
 		font-variant-numeric: tabular-nums;
 		white-space: nowrap;
@@ -322,13 +317,18 @@ $media-ad: #fc0;
 		height: sz(90px);
 		overflow: hidden;
 		border-radius: sz(6px);
-		background-color: $media-surface;
+		background-color: var(--rise-media-shade);
 	}
 
 	&__preview-frame--loading {
-		background-image: linear-gradient(90deg, rgb(255 255 255 / 4%), rgb(255 255 255 / 12%), rgb(255 255 255 / 4%));
+		background-image: linear-gradient(
+			90deg,
+			color-mix(in srgb, var(--rise-media-highlight) 4%, transparent),
+			color-mix(in srgb, var(--rise-media-highlight) 12%, transparent),
+			color-mix(in srgb, var(--rise-media-highlight) 4%, transparent)
+		);
 		background-size: 200% 100%;
-		animation: base-media-player-shimmer 1.2s linear infinite;
+		animation: base-media-player-shimmer calc(var(--rise-duration-loop) * 1.2) linear infinite;
 	}
 
 	&__preview-sprite {
@@ -339,15 +339,15 @@ $media-ad: #fc0;
 		max-width: sz(160px);
 		padding-inline: sz(4px);
 		overflow: hidden;
-		font-size: sz(12px);
-		font-weight: 600;
+		font-size: sz(var(--rise-font-size-xs));
+		font-weight: var(--rise-font-weight-semibold);
 		text-overflow: ellipsis;
 	}
 
 	&__preview-time {
 		padding-inline: sz(4px);
 		font-size: sz(13px);
-		font-weight: 500;
+		font-weight: var(--rise-font-weight-medium);
 	}
 
 	&--ad &__controls,
@@ -361,7 +361,7 @@ $media-ad: #fc0;
 
 	&__ad--clip &__ad-label {
 		background-color: var(--media-primary);
-		color: #fff;
+		color: var(--media-text);
 	}
 
 	&__ad--clip &__ad-progress {
@@ -378,7 +378,7 @@ $media-ad: #fc0;
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-end;
-		background-color: $media-surface;
+		background-color: var(--rise-media-shade);
 	}
 
 	&__ad-media {
@@ -401,21 +401,21 @@ $media-ad: #fc0;
 		align-items: center;
 		gap: sz(8px);
 		padding: sz(24px) sz(12px) sz(8px);
-		background-image: linear-gradient(to top, $media-scrim, transparent);
+		background-image: linear-gradient(to top, color-mix(in srgb, var(--rise-media-shade) 72%, transparent), transparent);
 	}
 
 	&__ad-label {
 		margin-right: auto;
 		padding: sz(2px) sz(8px);
 		border-radius: sz(var(--rise-radius-sm));
-		background-color: $media-ad;
-		color: $media-surface;
+		background-color: var(--rise-media-ad);
+		color: var(--rise-media-shade);
 		@include text-size(xs);
 		font-weight: var(--rise-font-weight-semibold);
 	}
 
 	&__ad-link {
-		color: $media-text;
+		color: var(--media-text);
 		@include text-size(sm);
 		@include focus-ring;
 	}
@@ -423,14 +423,14 @@ $media-ad: #fc0;
 	&__ad-wait {
 		padding: sz(6px) sz(12px);
 		border-radius: sz(var(--rise-radius-md));
-		background-color: $media-scrim;
+		background-color: color-mix(in srgb, var(--rise-media-shade) 72%, transparent);
 		@include text-size(sm);
 	}
 
 	&__ad-progress {
 		position: relative;
 		height: sz(3px);
-		background-color: $media-ad;
+		background-color: var(--rise-media-ad);
 	}
 
 	&__ad-segment {
@@ -450,7 +450,7 @@ $media-ad: #fc0;
 		position: absolute;
 		top: 0;
 		bottom: 0;
-		background-color: $media-ad;
+		background-color: var(--rise-media-ad);
 	}
 
 	&__slider-marker {
@@ -459,7 +459,7 @@ $media-ad: #fc0;
 		width: sz(4px);
 		height: sz(10px);
 		border-radius: sz(2px);
-		background-color: $media-ad;
+		background-color: var(--rise-media-ad);
 		pointer-events: none;
 		transform: translate(-50%, -50%);
 	}
@@ -490,7 +490,7 @@ $media-ad: #fc0;
 	&--audio &__title {
 		padding: 0;
 		background-image: none;
-		font-size: sz(16px);
+		font-size: sz(var(--rise-font-size-base));
 		text-shadow: none;
 	}
 
@@ -520,7 +520,7 @@ $media-ad: #fc0;
 
 		&--remote {
 			justify-content: flex-end;
-			background-color: $media-scrim;
+			background-color: color-mix(in srgb, var(--rise-media-shade) 72%, transparent);
 			pointer-events: auto;
 		}
 	}
@@ -532,7 +532,7 @@ $media-ad: #fc0;
 		margin: auto 0;
 		padding: sz(8px) sz(16px);
 		border-radius: sz(10px);
-		background-color: $media-scrim;
+		background-color: color-mix(in srgb, var(--rise-media-shade) 72%, transparent);
 		@include text-size(base);
 	}
 
@@ -551,9 +551,9 @@ $media-ad: #fc0;
 		align-items: center;
 		justify-content: center;
 		padding: sz(16px);
-		border: 2px dashed $media-text;
+		border: 2px dashed var(--rise-media-highlight);
 		border-radius: sz(var(--rise-radius-md));
-		background-color: $media-scrim;
+		background-color: color-mix(in srgb, var(--rise-media-shade) 72%, transparent);
 		@include text-size(base);
 		font-weight: var(--rise-font-weight-semibold);
 		text-align: center;
@@ -569,9 +569,9 @@ $media-ad: #fc0;
 
 	&__button.base-button {
 		--custom-bg: transparent;
-		--custom-bg-hover: #{$media-control-hover};
-		--custom-bg-active: #{$media-control-active};
-		--custom-text: #{$media-text};
+		--custom-bg-hover: var(--rise-media-control-hover);
+		--custom-bg-active: var(--rise-media-control-active);
+		--custom-text: var(--media-text);
 		--btn-pad-top: 6px;
 		--btn-pad-right: 6px;
 		--btn-pad-bottom: 6px;
@@ -600,7 +600,7 @@ $media-ad: #fc0;
 		height: sz(5px);
 		overflow: hidden;
 		border-radius: sz(3px);
-		background-color: rgb(255 255 255 / 20%);
+		background-color: color-mix(in srgb, var(--rise-media-highlight) 20%, transparent);
 		@include transition(height);
 	}
 
@@ -647,19 +647,19 @@ $media-ad: #fc0;
 	&__slider-buffered {
 		width: 100%;
 		border-radius: 0;
-		background-color: rgb(255 255 255 / 30%);
+		background-color: color-mix(in srgb, var(--rise-media-highlight) 30%, transparent);
 		transform-origin: left center;
 	}
 
 	&__slider-track--segmented &__slider-buffered {
-		background-color: rgb(255 255 255 / 15%);
+		background-color: color-mix(in srgb, var(--rise-media-highlight) 15%, transparent);
 	}
 
 	&__slider-fill {
 		width: 100%;
 		border-radius: 0;
-		background-color: var(--media-primary);
-		box-shadow: 0 0 4px rgb(0 0 0 / 20%);
+		background-color: ct(media-player, progress-bg, var(--media-primary));
+		box-shadow: 0 0 4px color-mix(in srgb, var(--rise-media-shade) 20%, transparent);
 		transform-origin: left center;
 	}
 
@@ -682,7 +682,7 @@ $media-ad: #fc0;
 		overflow: hidden;
 		border-inline: 1px solid transparent;
 		background-clip: padding-box;
-		background-color: color-mix(in srgb, var(--segment-color, #fff) 35%, transparent);
+		background-color: color-mix(in srgb, var(--segment-color, var(--rise-media-highlight)) 35%, transparent);
 		transition:
 			transform var(--media-normal) var(--media-ease),
 			filter var(--media-normal) var(--media-ease);
@@ -718,7 +718,7 @@ $media-ad: #fc0;
 		&__seek &__slider-fill,
 		&__seek &__slider-segment-fill,
 		&__seek &__slider-rail {
-			transition: transform 250ms linear;
+			transition: transform calc(var(--rise-duration) * 1.25) linear;
 		}
 
 		&__seek.base-media-player__slider--dragging &__slider-fill,
@@ -738,7 +738,7 @@ $media-ad: #fc0;
 		width: sz(12px);
 		height: sz(12px);
 		border-radius: sz(4px);
-		background-color: $media-text;
+		background-color: var(--rise-media-highlight);
 		transform: translate(-50%, -50%);
 		@include focus-ring;
 	}
@@ -748,8 +748,8 @@ $media-ad: #fc0;
 		height: sz(18px);
 		border-radius: sz(6px);
 		border: 2px solid var(--media-text);
-		background-color: var(--media-primary);
-		box-shadow: 0 2px 4px rgb(0 0 0 / 30%);
+		background-color: ct(media-player, thumb-bg, var(--media-primary));
+		box-shadow: 0 2px 4px color-mix(in srgb, var(--rise-media-shade) 30%, transparent);
 		transform: translate(-50%, -50%) scale(0);
 		transition: transform var(--media-normal) var(--media-spring);
 	}

@@ -2,6 +2,7 @@ export { MEDIA_ERROR_CODES } from './types/playback/MediaCore.types'
 export {
 	MEDIA_LOGO_POSITIONS,
 	MEDIA_PLAYER_MODES,
+	MEDIA_PLAYER_PARTS,
 	MEDIA_PLAYER_VARIANTS,
 	MEDIA_PRELOAD_MODES,
 	MEDIA_REPORT_REASONS,
@@ -20,6 +21,7 @@ export type {
 	MediaLogoPosition,
 	MediaReport,
 	MediaReportReason,
+	BaseMediaPlayerPart,
 	BaseMediaPlayerEmits,
 	BaseMediaPlayerProps,
 	BaseMediaPlayerSlots,
@@ -58,7 +60,7 @@ export type { MediaShareEvent, MediaShareNetwork } from './types/panels/MediaSha
 export type { MediaIconName, MediaIconProps } from './types/controls/MediaIcon.types'
 export { default as MediaIcon } from './ui/controls/MediaIcon.vue'
 export { default as BaseMediaPlayer } from './ui/BaseMediaPlayer.vue'
-export { PRESENTATION_NAVIGATION_MODES, PRESENTATION_PLAYER_VARIANTS } from '@components/BasePresentationPlayer'
+export { PRESENTATION_NAVIGATION_MODES, PRESENTATION_PLAYER_PARTS, PRESENTATION_PLAYER_VARIANTS } from '@components/BasePresentationPlayer'
 export type {
 	PresentationSlide,
 	PresentationProgress,
@@ -70,6 +72,7 @@ export type {
 	PresentationSpeechError,
 	PresentationSpeechRequest,
 	PresentationSpeechProvider,
+	BasePresentationPlayerPart,
 	BasePresentationPlayerEmits,
 	BasePresentationPlayerProps,
 	BasePresentationPlayerSlots,

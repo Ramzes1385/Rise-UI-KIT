@@ -1,5 +1,5 @@
 <template>
-	<Transition name="base-media-player__chapters" :duration="{ enter: 720, leave: 240 }">
+	<Transition name="base-media-player__chapters" :duration="transitionDuration">
 		<section
 			v-if="isChaptersOpen"
 			ref="panelRef"
@@ -35,5 +35,5 @@ import { UI_ARIA, UI_PLAYER } from '../../model/messages'
 import MediaControlButton from '../controls/MediaControlButton.vue'
 import { useMediaChaptersPanel } from '../../model/panels/useMediaChaptersPanel'
 
-const { panelRef, isChaptersOpen, chapterItems, chooseChapter, close, onKeydown } = useMediaChaptersPanel()
+const { panelRef, transitionDuration, isChaptersOpen, chapterItems, chooseChapter, close, onKeydown } = useMediaChaptersPanel()
 </script>

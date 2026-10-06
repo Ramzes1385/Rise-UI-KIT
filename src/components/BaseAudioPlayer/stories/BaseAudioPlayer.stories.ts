@@ -22,5 +22,7 @@ export const Transcript = cases.Transcript
 export const TranscriptLecture = cases.TranscriptLecture
 export const Variants = cases.Variants
 export const Sizes = cases.Sizes
+export const Theming = cases.Theming
 export const WithError = cases.WithError
 export const Disabled = cases.Disabled
+export const Animations = cases.Animations

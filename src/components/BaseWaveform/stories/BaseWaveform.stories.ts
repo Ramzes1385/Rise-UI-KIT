@@ -20,4 +20,6 @@ export const Selection = cases.Selection
 export const Variants = cases.Variants
 export const Sizes = cases.Sizes
 export const CustomColor = cases.CustomColor
+export const Theming = cases.Theming
 export const Disabled = cases.Disabled
+export const Animations = cases.Animations

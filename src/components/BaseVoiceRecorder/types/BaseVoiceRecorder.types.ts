@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /** Варианты BaseVoiceRecorder: default — панель с рамкой, soft — приподнятый фон без рамки */
@@ -7,6 +8,15 @@ export const VOICE_RECORDER_VARIANTS = ['default', 'soft'] as const
 export const VOICE_RECORDER_STATES = ['idle', 'requesting', 'recording', 'preview', 'error'] as const
 
 export type VoiceRecorderState = (typeof VOICE_RECORDER_STATES)[number]
+
+/**
+ * Части BaseVoiceRecorder для пропа `ui` (БЭМ-элементы `.base-voice-recorder__<часть>`, `root` — вся панель):
+ * dot — мигающая точка записи, time — время записи, meter — индикатор уровня, level — столбик уровня,
+ * preview — плеер готовой записи, error — текст ошибки, status — скрытый статус для скринридера.
+ */
+export const VOICE_RECORDER_PARTS = ['dot', 'time', 'meter', 'level', 'preview', 'error', 'status'] as const
+
+export type BaseVoiceRecorderPart = (typeof VOICE_RECORDER_PARTS)[number]
 
 /** Готовая запись: файл, его MIME, длительность в секундах и амплитуды для волны (0…1) */
 export interface VoiceRecording {
@@ -45,6 +55,14 @@ export interface BaseVoiceRecorderProps extends BaseComponentProps<(typeof VOICE
 	requestStream?: () => Promise<MediaStream>
 	/** Запись недоступна */
 	isDisabled?: boolean
+	/**
+	 * Классы частей (`root`, `dot`, `meter`, `level`, `preview`… — см. `VOICE_RECORDER_PARTS`) — добавляются к классам кита.
+	 * Глобально — `defaults.BaseVoiceRecorder.ui` плагина, классы склеиваются.
+	 *
+	 * @example
+	 * <BaseVoiceRecorder :ui="{ root: 'shadow-sm', level: 'opacity-80' }" />
+	 */
+	ui?: UiProp<BaseVoiceRecorderPart>
 }
 
 /**

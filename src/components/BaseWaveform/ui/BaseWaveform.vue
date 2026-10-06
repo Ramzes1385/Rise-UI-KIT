@@ -1,8 +1,8 @@
 <template>
 	<div
 		ref="rootRef"
-		class="base-waveform"
 		:class="[
+			ui('root'),
 			variantClass,
 			{ 'base-waveform--disabled': isDisabled, 'base-waveform--selectable': isSelectable && !isDisabled },
 			classes.root,
@@ -25,17 +25,11 @@
 		<span
 			v-for="(bar, index) in bars"
 			:key="index"
-			class="base-waveform__bar"
-			:class="[{ 'base-waveform__bar--played': bar.isPlayed }, classes.bar]"
-			:style="{ height: bar.height }"
+			:class="[ui('bar'), { 'base-waveform__bar--played': bar.isPlayed }, classes.bar]"
+			:style="{ transform: bar.scale }"
 			aria-hidden="true"></span>
-		<span
-			v-if="selection"
-			class="base-waveform__selection"
-			:class="classes.selection"
-			:style="selectionStyle"
-			aria-hidden="true"></span>
-		<span v-if="selection" :id="selectionId" class="base-waveform__hint">{{ selectionText }}</span>
+		<span v-if="selection" :class="[ui('selection'), classes.selection]" :style="selectionStyle" aria-hidden="true"></span>
+		<span v-if="selection" :id="selectionId" :class="ui('hint')">{{ selectionText }}</span>
 	</div>
 </template>
 
@@ -61,6 +55,7 @@ const {
 	variantStyle,
 	customColorStyle,
 	classes,
+	ui,
 	bars,
 	selectionStyle,
 	valueText,

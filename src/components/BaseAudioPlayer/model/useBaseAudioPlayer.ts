@@ -1,4 +1,5 @@
 import { UI_AUDIO } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
 import { isSafeUrl } from '@utils/data/urlUtils'
 import { formatMessage, formatNumber } from '@/locales/state'
 import { useAudioTranscript } from './transcript/useAudioTranscript'
@@ -149,6 +150,7 @@ export function useBaseAudioPlayer(props: BaseAudioPlayerProps, emit: BaseAudioP
 			'transcriptToggle',
 			'transcript',
 		]),
+		ui: useUi(props, 'base-audio-player'),
 		...handlers,
 		...actions,
 		...useRate(props, audioRef, () => state.rate),

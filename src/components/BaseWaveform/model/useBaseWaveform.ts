@@ -1,5 +1,6 @@
 import { UI_AUDIO } from '@/locales/messages'
 import { formatMessage } from '@/locales/state'
+import { useUi } from '@composables/base/useUi'
 import { formatMediaTime } from '@utils/media/mediaUtils'
 import { computed, onBeforeUnmount, onMounted, ref, useId } from 'vue'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
@@ -134,7 +135,7 @@ function useWaveformView(props: BaseWaveformProps, barCount: Readonly<{ value: n
 	return {
 		bars: computed(() =>
 			levels.value.map((peak, index) => ({
-				height: `${Math.max(Math.min(peak, 1), MIN_BAR) * 100}%`,
+				scale: `scaleY(${Math.max(Math.min(peak, 1), MIN_BAR)})`,
 				isPlayed: (index + 0.5) / levels.value.length <= fraction.value,
 			})),
 		),
@@ -164,6 +165,7 @@ export function useBaseWaveform(props: BaseWaveformProps, emit: BaseWaveformEmit
 	const rootRef = ref<HTMLElement | null>(null)
 	return {
 		...useStandardBaseComponent('base-waveform', props, ['root', 'bar', 'selection']),
+		ui: useUi(props, 'base-waveform'),
 		rootRef,
 		...useWaveformView(props, useBarCount(rootRef)),
 		...useWaveformPointer(props, emit),

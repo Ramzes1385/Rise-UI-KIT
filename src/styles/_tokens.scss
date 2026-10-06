@@ -160,6 +160,27 @@ $light-main-shade: (
 	--rise-media-text: #fff;
 	--rise-media-text-toned: color-mix(in srgb, #fff 85%, transparent);
 	--rise-media-text-muted: color-mix(in srgb, #fff 72%, transparent);
+	--rise-media-text-dimmed: #a1a1aa;
+	--rise-media-text-inverted: #0f172a;
+	// Основа затемнений и бликов поверх видео: компоненты смешивают их через color-mix (`color-mix(in srgb, var(--rise-media-shade) 45%, transparent)`)
+	--rise-media-shade: #000;
+	--rise-media-highlight: #fff;
+	// Акцент медиаплеера (прогресс, ползунок, кнопка повтора) и тёплый оттенок его градиентов; реклама — отдельный жёлтый
+	--rise-media-accent: #f97316;
+	--rise-media-accent-strong: #c2410c;
+	--rise-media-accent-light: #fbbf24;
+	--rise-media-ad: #fc0;
+	// Панели и меню поверх видео: полупрозрачная, плотная и шторка списка серий
+	--rise-media-panel: rgb(18 18 18 / 86%);
+	--rise-media-panel-solid: rgb(24 24 24 / 96%);
+	--rise-media-sheet: linear-gradient(160deg, rgb(32 32 32 / 97%) 0%, rgb(10 10 10 / 97%) 100%);
+	// Цвета субтитров на выбор зрителя (стандартные цвета телетекста)
+	--rise-media-caption-yellow: #ff0;
+	--rise-media-caption-green: #0f0;
+	--rise-media-caption-cyan: #0ff;
+	// Иллюстрации экрана ошибки плеера: небо «ретро» и фон «глитч»
+	--rise-media-error-sky: linear-gradient(to bottom, #050102 0%, #1b0802 40%, #4a1606 58%, #0c0302 58.4%, #030101 100%);
+	--rise-media-error-glitch: linear-gradient(135deg, #0b0b0b 0%, #160a04 100%);
 }
 
 @mixin derived-tokens {

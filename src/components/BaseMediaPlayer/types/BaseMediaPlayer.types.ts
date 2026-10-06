@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { MediaErrorEffect } from './overlays/MediaError.types'
 import type { MediaHlsConstructor } from './playback/MediaHls.types'
 import type { MediaAudioTrackItem } from './content/MediaAudio.types'
@@ -48,6 +49,31 @@ export interface MediaReport {
 export type MediaPreload = (typeof MEDIA_PRELOAD_MODES)[number]
 
 export type MediaPlayerMode = (typeof MEDIA_PLAYER_MODES)[number]
+
+/**
+ * Части BaseMediaPlayer для пропа `ui` (БЭМ-элементы `.base-media-player__<часть>`, `root` — весь плеер): media — `<video>`,
+ * cover — обложка до запуска, paused — экран паузы, start — экран запуска, big-play — большая кнопка «Смотреть»,
+ * captions — слой субтитров, top — верхняя полоса, title — название, logo — логотип, loader — индикатор загрузки,
+ * resume — плашка «Продолжить с …», skip — «Пропустить заставку», controls — панель управления, seek — шкала перемотки.
+ */
+export const MEDIA_PLAYER_PARTS = [
+	'media',
+	'cover',
+	'paused',
+	'start',
+	'big-play',
+	'captions',
+	'top',
+	'title',
+	'logo',
+	'loader',
+	'resume',
+	'skip',
+	'controls',
+	'seek',
+] as const
+
+export type BaseMediaPlayerPart = (typeof MEDIA_PLAYER_PARTS)[number]
 
 export interface BaseMediaPlayerProps
 	extends
@@ -215,6 +241,14 @@ export interface BaseMediaPlayerProps
 	earnedAchievements?: string[]
 	/** Приложение-приёмник Google Cast, если приложение подключило скрипт Cast; по умолчанию Default Media Receiver */
 	castReceiverId?: string
+	/**
+	 * Классы частей (`root`, `media`, `controls`, `seek`, `title`… — см. `MEDIA_PLAYER_PARTS`) — добавляются к классам кита.
+	 * Глобально — `defaults.BaseMediaPlayer.ui` плагина, классы склеиваются.
+	 *
+	 * @example
+	 * <BaseMediaPlayer :ui="{ root: 'rounded-none', controls: 'backdrop-blur' }" />
+	 */
+	ui?: UiProp<BaseMediaPlayerPart>
 }
 
 export interface BaseMediaPlayerEmits {

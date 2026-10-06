@@ -18,7 +18,7 @@
 		overflow: clip;
 		border-radius: sz(12px);
 		background-color: var(--media-shade);
-		box-shadow: 0 16px 48px rgb(0 0 0 / 45%);
+		box-shadow: 0 16px 48px color-mix(in srgb, var(--rise-media-shade) 45%, transparent);
 
 		@include motion-safe {
 			animation: base-media-player-mini var(--media-slow) var(--media-ease);
@@ -37,7 +37,7 @@
 		justify-content: center;
 		gap: sz(8px);
 		color: var(--media-muted);
-		font-size: sz(14px);
+		font-size: sz(var(--rise-font-size-sm));
 
 		.base-media-player__icon {
 			width: sz(28px);
@@ -53,7 +53,7 @@
 		display: flex;
 		gap: sz(2px);
 		border-radius: sz(8px);
-		background-color: rgb(0 0 0 / 60%);
+		background-color: var(--rise-media-surface);
 		opacity: 0;
 		transition: opacity var(--media-normal) var(--media-ease);
 
@@ -117,9 +117,9 @@
 		flex-direction: column;
 		box-sizing: border-box;
 		width: min(#{sz(400px)}, 100%);
-		background-image: linear-gradient(160deg, rgb(32 32 32 / 97%) 0%, rgb(10 10 10 / 97%) 100%);
-		box-shadow: -4px 0 24px rgb(0 0 0 / 50%);
-		color: white;
+		background-image: ct(media-player, episodes-bg, var(--rise-media-sheet));
+		box-shadow: -4px 0 24px color-mix(in srgb, var(--rise-media-shade) 50%, transparent);
+		color: var(--media-text);
 	}
 
 	&__episodes-header {
@@ -128,7 +128,7 @@
 		justify-content: space-between;
 		gap: sz(8px);
 		padding: sz(10px) sz(10px) sz(10px) sz(20px);
-		border-bottom: 1px solid rgb(255 255 255 / 10%);
+		border-bottom: 1px solid color-mix(in srgb, var(--rise-media-highlight) 10%, transparent);
 
 		.base-media-player__control::after {
 			--media-tip-right: 0px;
@@ -142,8 +142,8 @@
 
 	&__episodes-title {
 		color: var(--media-text);
-		font-size: sz(18px);
-		font-weight: 700;
+		font-size: sz(var(--rise-font-size-lg));
+		font-weight: var(--rise-font-weight-bold);
 	}
 
 	&__episodes-views {
@@ -151,7 +151,7 @@
 		gap: sz(4px);
 		padding: sz(3px);
 		border-radius: sz(10px);
-		background-color: rgb(255 255 255 / 6%);
+		background-color: color-mix(in srgb, var(--rise-media-highlight) 6%, transparent);
 	}
 
 	&__episodes-view {
@@ -162,7 +162,7 @@
 		color: var(--media-muted);
 		font: inherit;
 		font-size: sz(15px);
-		font-weight: 700;
+		font-weight: var(--rise-font-weight-bold);
 		white-space: nowrap;
 		cursor: pointer;
 		@include transition(background-color, color);
@@ -173,7 +173,7 @@
 		}
 
 		&[aria-pressed='true'] {
-			background-color: rgb(255 255 255 / 12%);
+			background-color: color-mix(in srgb, var(--rise-media-highlight) 12%, transparent);
 			color: var(--media-text);
 		}
 	}
@@ -192,8 +192,8 @@
 	&__actors-title {
 		margin: 0 0 sz(8px) sz(4px);
 		color: var(--media-muted);
-		font-size: sz(12px);
-		font-weight: 700;
+		font-size: sz(var(--rise-font-size-xs));
+		font-weight: var(--rise-font-weight-bold);
 		letter-spacing: 0.04em;
 		text-transform: uppercase;
 	}
@@ -212,7 +212,7 @@
 		gap: sz(12px);
 		padding: sz(8px) sz(10px);
 		border-radius: sz(10px);
-		background-color: rgb(255 255 255 / 5%);
+		background-color: color-mix(in srgb, var(--rise-media-highlight) 5%, transparent);
 
 		@include motion-safe {
 			animation: base-media-player-actor-in var(--media-slow) var(--media-ease) both;
@@ -226,9 +226,9 @@
 		border-radius: sz(12px);
 
 		.base-avatar__content {
-			background-color: rgb(255 255 255 / 10%);
+			background-color: color-mix(in srgb, var(--rise-media-highlight) 10%, transparent);
 			color: var(--media-text);
-			font-weight: 700;
+			font-weight: var(--rise-font-weight-bold);
 		}
 	}
 
@@ -241,14 +241,14 @@
 
 	&__actor-name {
 		color: var(--media-text);
-		font-size: sz(14px);
-		font-weight: 600;
+		font-size: sz(var(--rise-font-size-sm));
+		font-weight: var(--rise-font-weight-semibold);
 		@include truncate;
 	}
 
 	&__actor-role {
 		color: var(--media-muted);
-		font-size: sz(12px);
+		font-size: sz(var(--rise-font-size-xs));
 		@include truncate;
 	}
 
@@ -267,7 +267,7 @@
 		height: sz(30px);
 		border-radius: sz(9px);
 		background-color: var(--media-share-color);
-		color: white;
+		color: var(--media-text);
 		transition:
 			transform var(--media-normal) var(--media-spring),
 			box-shadow var(--media-normal) var(--media-ease);
@@ -294,34 +294,34 @@
 		gap: sz(8px);
 		padding: sz(12px) sz(16px);
 		overflow-x: auto;
-		border-bottom: 1px solid rgb(255 255 255 / 10%);
+		border-bottom: 1px solid color-mix(in srgb, var(--rise-media-highlight) 10%, transparent);
 		@include scrollbar-thin;
 	}
 
 	&__episodes-tab {
 		flex: none;
 		padding: sz(6px) sz(14px);
-		border: 1px solid rgb(255 255 255 / 12%);
+		border: 1px solid color-mix(in srgb, var(--rise-media-highlight) 12%, transparent);
 		border-radius: sz(8px);
 		background-color: transparent;
 		color: var(--media-muted);
 		font: inherit;
-		font-size: sz(14px);
-		font-weight: 600;
+		font-size: sz(var(--rise-font-size-sm));
+		font-weight: var(--rise-font-weight-semibold);
 		white-space: nowrap;
 		cursor: pointer;
 		@include transition(background-color, border-color, color);
 		@include focus-ring;
 
 		@include hover {
-			background-color: rgb(255 255 255 / 6%);
+			background-color: color-mix(in srgb, var(--rise-media-highlight) 6%, transparent);
 			color: var(--media-text);
 		}
 
 		&[aria-pressed='true'] {
 			border-color: var(--media-primary-strong);
 			background-color: var(--media-primary-strong);
-			color: white;
+			color: var(--media-text);
 		}
 	}
 
@@ -347,7 +347,7 @@
 		padding: sz(10px);
 		border: 2px solid transparent;
 		border-radius: sz(10px);
-		background-color: rgb(255 255 255 / 5%);
+		background-color: color-mix(in srgb, var(--rise-media-highlight) 5%, transparent);
 		color: inherit;
 		font: inherit;
 		text-align: left;
@@ -359,7 +359,7 @@
 		@include focus-ring;
 
 		@include hover {
-			background-color: rgb(255 255 255 / 10%);
+			background-color: color-mix(in srgb, var(--rise-media-highlight) 10%, transparent);
 			transform: translateX(#{sz(-4px)});
 		}
 	}
@@ -377,16 +377,16 @@
 		width: sz(28px);
 		height: sz(28px);
 		border-radius: sz(6px);
-		background-color: rgb(255 255 255 / 10%);
+		background-color: color-mix(in srgb, var(--rise-media-highlight) 10%, transparent);
 		color: var(--media-text);
-		font-size: sz(14px);
-		font-weight: 700;
+		font-size: sz(var(--rise-font-size-sm));
+		font-weight: var(--rise-font-weight-bold);
 		font-variant-numeric: tabular-nums;
 	}
 
 	&__episode-card--current &__episode-number {
 		background-color: var(--media-primary-strong);
-		color: white;
+		color: var(--media-text);
 	}
 
 	&__episode-cover {
@@ -396,7 +396,11 @@
 		aspect-ratio: 16 / 9;
 		overflow: hidden;
 		border-radius: sz(6px);
-		background-image: linear-gradient(135deg, rgb(58 58 58), rgb(30 30 30));
+		background-image: linear-gradient(
+			135deg,
+			color-mix(in srgb, var(--rise-media-highlight) 22.75%, var(--rise-media-shade)),
+			color-mix(in srgb, var(--rise-media-highlight) 11.76%, var(--rise-media-shade))
+		);
 	}
 
 	&__episode-image {
@@ -412,9 +416,9 @@
 		bottom: sz(4px);
 		padding: sz(1px) sz(5px);
 		border-radius: sz(4px);
-		background-color: rgb(0 0 0 / 75%);
+		background-color: color-mix(in srgb, var(--rise-media-shade) 75%, transparent);
 		font-size: sz(11px);
-		font-weight: 600;
+		font-weight: var(--rise-font-weight-semibold);
 		font-variant-numeric: tabular-nums;
 	}
 
@@ -426,8 +430,8 @@
 
 	&__episode-name {
 		color: var(--media-text);
-		font-size: sz(14px);
-		font-weight: 600;
+		font-size: sz(var(--rise-font-size-sm));
+		font-weight: var(--rise-font-weight-semibold);
 		@include truncate;
 	}
 
@@ -435,7 +439,7 @@
 		display: -webkit-box;
 		overflow: hidden;
 		color: var(--media-muted);
-		font-size: sz(12px);
+		font-size: sz(var(--rise-font-size-xs));
 		line-height: 1.35;
 		-webkit-box-orient: vertical;
 		-webkit-line-clamp: 2;
@@ -449,19 +453,19 @@
 		box-sizing: border-box;
 		width: min(#{sz(340px)}, calc(100vw - #{sz(32px)}));
 		padding: sz(14px);
-		font-size: sz(14px);
+		font-size: sz(var(--rise-font-size-sm));
 	}
 
 	&__watch-title {
 		margin: 0;
-		font-size: sz(16px);
-		font-weight: 700;
+		font-size: sz(var(--rise-font-size-base));
+		font-weight: var(--rise-font-weight-bold);
 	}
 
 	&__watch-hint {
 		margin: sz(-4px) 0 0;
 		color: var(--media-muted);
-		font-size: sz(12px);
+		font-size: sz(var(--rise-font-size-xs));
 		line-height: 1.4;
 	}
 
@@ -480,7 +484,7 @@
 		padding: 0 sz(10px);
 		border: 1px solid var(--media-border);
 		border-radius: sz(8px);
-		background-color: rgb(255 255 255 / 6%);
+		background-color: color-mix(in srgb, var(--rise-media-highlight) 6%, transparent);
 		color: var(--media-text);
 		font: inherit;
 		font-size: sz(13px);
@@ -491,7 +495,7 @@
 		}
 
 		&[aria-invalid='true'] {
-			border-color: #ef4444;
+			border-color: var(--rise-color-error-500);
 		}
 	}
 
@@ -504,11 +508,11 @@
 		padding: 0 sz(12px);
 		border: 0;
 		border-radius: sz(8px);
-		background-color: rgb(255 255 255 / 10%);
+		background-color: color-mix(in srgb, var(--rise-media-highlight) 10%, transparent);
 		color: var(--media-text);
 		font: inherit;
 		font-size: sz(13px);
-		font-weight: 600;
+		font-weight: var(--rise-font-weight-semibold);
 		cursor: pointer;
 		@include transition(background-color);
 		@include focus-ring;
@@ -519,30 +523,30 @@
 		}
 
 		@include hover {
-			background-color: rgb(255 255 255 / 18%);
+			background-color: color-mix(in srgb, var(--rise-media-highlight) 18%, transparent);
 		}
 	}
 
 	&__watch-button--primary {
 		background-color: var(--media-primary-strong);
-		color: white;
+		color: var(--media-text);
 
 		@include hover {
-			background-color: color-mix(in oklab, var(--media-primary-strong) 88%, white);
+			background-color: color-mix(in oklab, var(--media-primary-strong) 88%, var(--rise-media-highlight));
 		}
 	}
 
 	&__watch-error {
 		margin: sz(-4px) 0 0;
-		color: #f87171;
-		font-size: sz(12px);
+		color: var(--rise-color-error-400);
+		font-size: sz(var(--rise-font-size-xs));
 	}
 
 	&__watch-subtitle {
 		margin: sz(4px) 0 0;
 		color: var(--media-muted);
-		font-size: sz(12px);
-		font-weight: 600;
+		font-size: sz(var(--rise-font-size-xs));
+		font-weight: var(--rise-font-weight-semibold);
 		letter-spacing: 0.04em;
 		text-transform: uppercase;
 	}
@@ -573,10 +577,10 @@
 		height: sz(32px);
 		overflow: hidden;
 		border-radius: sz(10px);
-		background-image: linear-gradient(135deg, #fbbf24, var(--media-primary-strong));
-		color: white;
-		font-size: sz(12px);
-		font-weight: 700;
+		background-image: linear-gradient(135deg, var(--rise-media-accent-light), var(--media-primary-strong));
+		color: var(--media-text);
+		font-size: sz(var(--rise-font-size-xs));
+		font-weight: var(--rise-font-weight-bold);
 	}
 
 	&__watch-image {
@@ -593,13 +597,13 @@
 	}
 
 	&__watch-name {
-		font-weight: 600;
+		font-weight: var(--rise-font-weight-semibold);
 		@include truncate;
 	}
 
 	&__watch-email {
 		color: var(--media-muted);
-		font-size: sz(12px);
+		font-size: sz(var(--rise-font-size-xs));
 		@include truncate;
 	}
 
@@ -607,15 +611,15 @@
 		flex: none;
 		padding: sz(2px) sz(8px);
 		border-radius: sz(6px);
-		background-color: rgb(255 255 255 / 10%);
+		background-color: color-mix(in srgb, var(--rise-media-highlight) 10%, transparent);
 		color: color-mix(in srgb, var(--media-text) 82%, transparent);
 		font-size: sz(11px);
-		font-weight: 600;
+		font-weight: var(--rise-font-weight-semibold);
 	}
 
 	&__watch-status--joined {
-		background-color: rgb(34 197 94 / 18%);
-		color: #4ade80;
+		background-color: color-mix(in srgb, var(--rise-color-success-500) 18%, transparent);
+		color: var(--rise-color-success-400);
 	}
 
 	&__watch-empty {
@@ -634,8 +638,12 @@
 		box-sizing: border-box;
 		width: min(#{sz(340px)}, 86%);
 		border-right: 1px solid var(--media-border);
-		background-color: rgb(10 10 10 / 55%);
-		box-shadow: 8px 0 32px rgb(0 0 0 / 35%);
+		background-color: color-mix(
+			in srgb,
+			color-mix(in srgb, var(--rise-media-highlight) 3.92%, var(--rise-media-shade)) 55%,
+			transparent
+		);
+		box-shadow: 8px 0 32px color-mix(in srgb, var(--rise-media-shade) 35%, transparent);
 		color: var(--media-text);
 		backdrop-filter: blur(18px) saturate(140%);
 	}
@@ -655,8 +663,8 @@
 	}
 
 	&__chapters-title {
-		font-size: sz(18px);
-		font-weight: 700;
+		font-size: sz(var(--rise-font-size-lg));
+		font-weight: var(--rise-font-weight-bold);
 	}
 
 	&__chapters-list {
@@ -693,13 +701,13 @@
 		@include focus-ring(-2px);
 
 		@include hover {
-			background-color: rgb(255 255 255 / 8%);
+			background-color: color-mix(in srgb, var(--rise-media-highlight) 8%, transparent);
 			transform: translateX(#{sz(4px)});
 		}
 	}
 
 	&__chapter-item--current {
-		background-color: rgb(255 255 255 / 11%);
+		background-color: color-mix(in srgb, var(--rise-media-highlight) 11%, transparent);
 	}
 
 	&__chapter-mark {
@@ -711,8 +719,8 @@
 	}
 
 	&__chapter-name {
-		font-size: sz(14px);
-		font-weight: 600;
+		font-size: sz(var(--rise-font-size-sm));
+		font-weight: var(--rise-font-weight-semibold);
 		@include truncate;
 	}
 

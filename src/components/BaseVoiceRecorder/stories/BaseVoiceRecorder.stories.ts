@@ -17,7 +17,9 @@ const meta = {
 export default meta
 
 export const Default = cases.Default
+export const Theming = cases.Theming
 export const DemoMicrophone = cases.DemoMicrophone
 export const Preview = cases.Preview
 export const Denied = cases.Denied
 export const Disabled = cases.Disabled
+export const Animations = cases.Animations

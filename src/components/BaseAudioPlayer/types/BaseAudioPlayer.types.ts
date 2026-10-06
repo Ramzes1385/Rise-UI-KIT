@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /**
@@ -5,6 +6,38 @@ import type { BaseComponentProps } from '@composables/base/useBaseComponent'
  * ghost — без фона и рамки, цвета от текста вокруг (голосовое сообщение в пузыре чата)
  */
 export const AUDIO_PLAYER_VARIANTS = ['default', 'soft', 'ghost'] as const
+
+/**
+ * Части BaseAudioPlayer для пропа `ui` (БЭМ-элементы `.base-audio-player__<часть>`, `root` — весь плеер): button — пуск и пауза,
+ * body — колонка с названием и волной, title, waveform, time — время, rate — кнопка скорости, error — текст ошибки;
+ * расшифровка: transcript-toggle — кнопка панели, transcript — панель, transcript-tools — строка поиска, transcript-search,
+ * transcript-download, transcript-result — итог поиска, transcript-note — состояние загрузки, transcript-list — список реплик,
+ * cue — реплика, cue-time, cue-speaker, cue-text, transcript-follow — кнопка «к текущей реплике».
+ */
+export const AUDIO_PLAYER_PARTS = [
+	'button',
+	'body',
+	'title',
+	'waveform',
+	'time',
+	'rate',
+	'error',
+	'transcript-toggle',
+	'transcript',
+	'transcript-tools',
+	'transcript-search',
+	'transcript-download',
+	'transcript-result',
+	'transcript-note',
+	'transcript-list',
+	'cue',
+	'cue-time',
+	'cue-speaker',
+	'cue-text',
+	'transcript-follow',
+] as const
+
+export type BaseAudioPlayerPart = (typeof AUDIO_PLAYER_PARTS)[number]
 
 /** Ошибка воспроизведения: запись не загрузилась или браузер не разрешил запуск */
 export interface AudioPlayerError {
@@ -48,6 +81,14 @@ export interface BaseAudioPlayerProps extends BaseComponentProps<
 	transcript?: string
 	/** Панель расшифровки открыта (`v-model:is-transcript-open`) */
 	isTranscriptOpen?: boolean
+	/**
+	 * Классы частей (`root`, `button`, `waveform`, `time`, `transcript`, `cue`… — см. `AUDIO_PLAYER_PARTS`) — добавляются к классам кита.
+	 * Глобально — `defaults.BaseAudioPlayer.ui` плагина, классы склеиваются.
+	 *
+	 * @example
+	 * <BaseAudioPlayer src="/voice.webm" title="Голосовое" :ui="{ root: 'shadow-sm', time: 'font-mono' }" />
+	 */
+	ui?: UiProp<BaseAudioPlayerPart>
 }
 
 /**
