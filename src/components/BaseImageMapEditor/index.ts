@@ -1,5 +1,6 @@
-export { IMAGE_MAP_EDITOR_TOOLS, IMAGE_MAP_EDITOR_VARIANTS } from './types/BaseImageMapEditor.types'
+export { IMAGE_MAP_EDITOR_PARTS, IMAGE_MAP_EDITOR_TOOLS, IMAGE_MAP_EDITOR_VARIANTS } from './types/BaseImageMapEditor.types'
 export type {
+	BaseImageMapEditorPart,
 	BaseImageMapEditorEmits,
 	BaseImageMapEditorExpose,
 	BaseImageMapEditorProps,

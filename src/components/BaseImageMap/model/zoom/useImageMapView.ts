@@ -67,7 +67,7 @@ export function useImageMapView(options: ViewOptions) {
 	}
 
 	watch(
-		() => [frame.value.viewportWidth, frame.value.viewportHeight, options.getLayer()?.id],
+		(['viewportWidth', 'viewportHeight', 'stageWidth', 'stageHeight'] as const).map(key => () => frame.value[key]),
 		() => resetZoom(false),
 	)
 

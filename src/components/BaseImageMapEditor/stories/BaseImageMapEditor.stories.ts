@@ -19,6 +19,7 @@ export default meta
 
 export const Default = cases.Default
 export const Variants = cases.Variants
+export const Theming = cases.Theming
 export const Disabled = cases.Disabled
 export const WithError = cases.WithError
 export const Empty = cases.Empty
@@ -31,3 +32,4 @@ export const CustomToolbar = cases.CustomToolbar
 export const MouseEditing = cases.MouseEditing
 export const Keyboard = cases.Keyboard
 export const Fields3D = cases.Fields3D
+export const Animations = cases.Animations

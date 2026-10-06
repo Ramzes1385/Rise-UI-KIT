@@ -1,7 +1,7 @@
 <template>
 	<section
-		class="base-image-map-editor"
 		:class="[
+			ui('root'),
 			variantClass,
 			classes.root,
 			{ 'base-image-map-editor--error': Boolean(error), 'base-image-map-editor--disabled': isDisabled },
@@ -9,14 +9,14 @@
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		:aria-label="label ?? UI_IMAGE_MAP_EDITOR.LABEL"
 		@keydown="keyboard.handleRootKeydown">
-		<div class="base-image-map-editor__toolbar" :class="classes.toolbar">
+		<div :class="[ui('toolbar'), classes.toolbar]">
 			<BaseSegmented
 				:model-value="tool.tool.value"
 				:options="toolOptions"
 				:aria-label="UI_IMAGE_MAP_EDITOR.TOOLS"
 				:is-disabled="isDisabled || isPreview || !currentLayer"
 				@update:model-value="tool.setTool($event as ImageMapEditorTool)" />
-			<div class="base-image-map-editor__group" role="group" :aria-label="UI_IMAGE_MAP_EDITOR.HISTORY">
+			<div :class="ui('group')" role="group" :aria-label="UI_IMAGE_MAP_EDITOR.HISTORY">
 				<BaseButton
 					variant="ghost"
 					:aria-label="UI_IMAGE_MAP_EDITOR.UNDO"
@@ -34,7 +34,7 @@
 					<template #left><BaseIcon name="rotate-right" /></template>
 				</BaseButton>
 			</div>
-			<div class="base-image-map-editor__group" role="group" :aria-label="UI_IMAGE_MAP_EDITOR.OBJECT_ACTIONS">
+			<div :class="ui('group')" role="group" :aria-label="UI_IMAGE_MAP_EDITOR.OBJECT_ACTIONS">
 				<BaseButton
 					variant="ghost"
 					:aria-label="UI_IMAGE_MAP_EDITOR.DUPLICATE"
@@ -55,7 +55,7 @@
 			<BaseButton v-if="tool.polygon.points.value.length >= 3" variant="soft" @click="tool.polygon.finish">
 				{{ UI_IMAGE_MAP_EDITOR.FINISH_POLYGON }}
 			</BaseButton>
-			<div class="base-image-map-editor__group" role="group" :aria-label="UI_IMAGE_MAP_EDITOR.FILES">
+			<div :class="ui('group')" role="group" :aria-label="UI_IMAGE_MAP_EDITOR.FILES">
 				<BaseButton variant="ghost" :is-disabled="isDisabled" @click="files.openBackground('replace')">
 					<template #left><BaseIcon name="image" /></template>
 					{{ currentLayer ? UI_IMAGE_MAP_EDITOR.REPLACE_IMAGE : UI_IMAGE_MAP_EDITOR.OPEN_IMAGE }}
@@ -76,7 +76,7 @@
 					{{ UI_IMAGE_MAP_EDITOR.EXPORT_JSON }}
 				</BaseButton>
 			</div>
-			<div class="base-image-map-editor__group" role="group" :aria-label="UI_IMAGE_MAP_EDITOR.ZOOM">
+			<div :class="ui('group')" role="group" :aria-label="UI_IMAGE_MAP_EDITOR.ZOOM">
 				<BaseButton
 					variant="ghost"
 					:aria-label="UI_ARIA.ZOOM_IN"
@@ -106,18 +106,14 @@
 			<slot name="toolbar" />
 		</div>
 
-		<div class="base-image-map-editor__layout">
-			<div class="base-image-map-editor__main">
+		<div :class="ui('layout')">
+			<div :class="ui('main')">
 				<BaseImageMap v-if="isPreview && currentLayer" :data="data" :layer="currentLayer.id" @update:layer="setLayer" />
-				<div
-					v-else-if="currentLayer"
-					class="base-image-map-editor__viewport"
-					:class="classes.canvas"
-					:style="height ? { height } : undefined">
+				<div v-else-if="currentLayer" :class="[ui('viewport'), classes.canvas]" :style="height ? { height } : undefined">
 					<div
 						ref="stageRef"
-						class="base-image-map-editor__stage"
 						:class="[
+							ui('stage'),
 							`base-image-map-editor__stage--${tool.tool.value}`,
 							{ 'base-image-map-editor__stage--dragging': tool.drag.value },
 						]"
@@ -204,16 +200,16 @@
 						{{ UI_IMAGE_MAP.ERROR }}
 					</div>
 				</div>
-				<div v-else class="base-image-map-editor__empty">
+				<div v-else :class="ui('empty')">
 					<BaseText tag="p">{{ UI_IMAGE_MAP_EDITOR.EMPTY }}</BaseText>
 					<BaseButton :is-disabled="isDisabled" @click="files.openBackground('add')">
 						<template #left><BaseIcon name="image" /></template>
 						{{ UI_IMAGE_MAP_EDITOR.OPEN_IMAGE }}
 					</BaseButton>
 				</div>
-				<BaseText v-if="currentLayer && !isPreview" :id="helpId" tag="p" class="base-image-map-editor__help">{{ help }}</BaseText>
-				<p v-if="importError" class="base-image-map-editor__error" :class="classes.error" role="alert">{{ importError }}</p>
-				<p v-if="error" :id="errorId" class="base-image-map-editor__error" :class="classes.error">{{ error }}</p>
+				<BaseText v-if="currentLayer && !isPreview" :id="helpId" tag="p" :class="ui('help')">{{ help }}</BaseText>
+				<p v-if="importError" :class="[ui('error'), classes.error]" role="alert">{{ importError }}</p>
+				<p v-if="error" :id="errorId" :class="[ui('error'), classes.error]">{{ error }}</p>
 				<div class="base-image-map-editor__status" role="status">{{ status }}</div>
 			</div>
 
@@ -225,6 +221,7 @@
 				:panel="panel"
 				:is-disabled="isDisabled"
 				:panel-class="classes.panel"
+				:ui="ui"
 				@select="select"
 				@set-layer="setLayer"
 				@add-layer="files.openBackground('add')" />
@@ -289,6 +286,7 @@ const emit = defineEmits<BaseImageMapEditorEmits>()
 defineSlots<BaseImageMapEditorSlots>()
 
 const {
+	ui,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

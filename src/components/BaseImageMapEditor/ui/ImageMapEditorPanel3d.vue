@@ -1,8 +1,8 @@
 <template>
-	<section class="base-image-map-editor__section">
-		<h3 class="base-image-map-editor__heading">{{ UI_IMAGE_MAP_EDITOR.SECTION_3D }}</h3>
-		<fieldset v-if="panel.layer3dFields.value.length" class="base-image-map-editor__fieldset">
-			<legend class="base-image-map-editor__legend">
+	<section :class="ui('section')">
+		<h3 :class="ui('heading')">{{ UI_IMAGE_MAP_EDITOR.SECTION_3D }}</h3>
+		<fieldset v-if="panel.layer3dFields.value.length" :class="ui('fieldset')">
+			<legend :class="ui('legend')">
 				{{ formatMessage(UI_IMAGE_MAP_EDITOR.LAYER_3D, { title: layerTitle ?? '' }) }}
 			</legend>
 			<ImageMapEditorField
@@ -12,8 +12,8 @@
 				:is-disabled="isDisabled"
 				@update="panel.setLayer3dField(field.key, $event)" />
 		</fieldset>
-		<fieldset class="base-image-map-editor__fieldset">
-			<legend class="base-image-map-editor__legend">{{ UI_IMAGE_MAP_EDITOR.SCENE_3D }}</legend>
+		<fieldset :class="ui('fieldset')">
+			<legend :class="ui('legend')">{{ UI_IMAGE_MAP_EDITOR.SCENE_3D }}</legend>
 			<ImageMapEditorField
 				v-for="field in panel.scene3dFields.value"
 				:key="field.key"

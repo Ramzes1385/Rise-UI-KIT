@@ -147,13 +147,13 @@ describe('BaseImageMap zoom — кнопки и клавиши', () => {
 		}
 	})
 
-	it('смена слоя сбрасывает вид без анимации', async () => {
+	it('смена слоя того же размера сохраняет вид', async () => {
 		const user = userEvent.setup()
 		const { container } = await renderMap({ data: IMAGE_MAP_FLOORS })
 		await user.click(screen.getByRole('button', { name: 'Увеличить' }))
+		const zoomed = stageTransform(container)
 		await user.click(screen.getByRole('radio', { name: '2' }))
-		expect(stageTransform(container)).toBe('translate(0px, 10px) scale(1)')
-		expect(container.querySelector('.base-image-map__stage')).not.toHaveClass('base-image-map__stage--animated')
+		expect(stageTransform(container)).toBe(zoomed)
 	})
 })
 

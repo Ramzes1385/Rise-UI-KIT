@@ -1,8 +1,7 @@
 <template>
 	<section
 		ref="rootRef"
-		class="base-image-map"
-		:class="[variantClass, classes.root, { 'base-image-map--fullscreen': isFullscreen }]"
+		:class="[ui('root'), variantClass, classes.root, { 'base-image-map--fullscreen': isFullscreen }]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		:aria-label="mapLabel">
 		<div
@@ -14,11 +13,10 @@
 			<div class="base-image-map__main">
 				<div
 					v-if="layerOptions.length > 1 || hasZoomControls || (hasFullscreen && isFullscreenSupported)"
-					class="base-image-map__toolbar"
-					:class="classes.toolbar">
+					:class="[ui('toolbar'), classes.toolbar]">
 					<BaseSegmented
 						v-if="layerOptions.length > 1"
-						class="base-image-map__layers"
+						:class="ui('layers')"
 						:custom-class="classes.layers"
 						:model-value="view?.layer.id"
 						:options="layerOptions"
@@ -26,8 +24,7 @@
 						@update:model-value="setLayer(String($event))" />
 					<div
 						v-if="hasZoomControls || hasFullscreen"
-						class="base-image-map__zoom"
-						:class="classes.zoom"
+						:class="[ui('zoom'), classes.zoom]"
 						role="group"
 						:aria-label="UI_IMAGE_MAP.ZOOM">
 						<template v-if="hasZoomControls">
@@ -65,8 +62,8 @@
 
 				<div
 					ref="viewportRef"
-					class="base-image-map__viewport"
 					:class="[
+						ui('viewport'),
 						classes.viewport,
 						{
 							'base-image-map__viewport--zoomed': !zoom.isMinZoom.value,
@@ -82,65 +79,65 @@
 					@pointerup="gestures.handlePointerUp"
 					@pointercancel="gestures.handlePointerUp"
 					@keydown="handleViewportKeydown">
-					<div
-						v-if="view"
-						ref="stageRef"
-						class="base-image-map__stage"
-						:class="[classes.stage, { 'base-image-map__stage--animated': zoom.isAnimated.value }]"
-						:style="zoom.stageStyle.value"
-						@click="handleStageClick"
-						@auxclick="handleStageAuxClick"
-						@pointerover="handleStagePointerOver"
-						@pointerleave="handleStagePointerLeave"
-						@focusin="handleStageFocusIn"
-						@focusout="handleStageFocusOut">
-						<img
-							v-if="view.layer.image && !svgMarkup"
-							class="base-image-map__image"
-							:src="view.layer.image"
-							:alt="view.layer.imageAlt ?? ''"
-							draggable="false" />
-						<div v-if="svgMarkup" ref="svgContainerRef" class="base-image-map__svg" v-html="svgMarkup" />
-						<svg
-							v-if="shapes.length"
-							class="base-image-map__shapes"
-							:viewBox="`0 0 ${view.layer.width} ${view.layer.height}`"
-							preserveAspectRatio="none"
-							role="presentation">
+					<Transition name="base-image-map__stage" :css="!isLayerFadeOff" @before-leave="hideLeavingStage">
+						<div
+							v-if="view"
+							:key="view.layer.id"
+							ref="stageRef"
+							:class="[ui('stage'), classes.stage, { 'base-image-map__stage--animated': zoom.isAnimated.value }]"
+							:style="zoom.stageStyle.value"
+							@click="handleStageClick"
+							@auxclick="handleStageAuxClick"
+							@pointerover="handleStagePointerOver"
+							@pointerleave="handleStagePointerLeave"
+							@focusin="handleStageFocusIn"
+							@focusout="handleStageFocusOut">
+							<img
+								v-if="view.layer.image && !svgMarkup"
+								:class="ui('image')"
+								:src="view.layer.image"
+								:alt="view.layer.imageAlt ?? ''"
+								draggable="false" />
+							<div v-if="svgMarkup" ref="svgContainerRef" :class="ui('svg')" v-html="svgMarkup" />
+							<svg
+								v-if="shapes.length"
+								:class="ui('shapes')"
+								:viewBox="`0 0 ${view.layer.width} ${view.layer.height}`"
+								preserveAspectRatio="none"
+								role="presentation">
+								<component
+									:is="shape.geometry.tag"
+									v-for="shape in shapes"
+									:key="shape.item.object.id"
+									v-bind="{ ...shape.geometry.attributes, ...shape.attributes }"
+									:class="[ui('object'), shape.classes, classes.object]"
+									:style="shape.item.style"
+									vector-effect="non-scaling-stroke" />
+							</svg>
+							<ImageMapRouteLine
+								v-if="routeLines.length || routeMarkers.length"
+								:lines="routeLines"
+								:markers="routeMarkers"
+								:width="view.layer.width"
+								:height="view.layer.height" />
 							<component
-								:is="shape.geometry.tag"
-								v-for="shape in shapes"
-								:key="shape.item.object.id"
-								v-bind="{ ...shape.geometry.attributes, ...shape.attributes }"
-								class="base-image-map__object"
-								:class="[shape.classes, classes.object]"
-								:style="shape.item.style"
-								vector-effect="non-scaling-stroke" />
-						</svg>
-						<ImageMapRouteLine
-							v-if="routeLines.length || routeMarkers.length"
-							:lines="routeLines"
-							:markers="routeMarkers"
-							:width="view.layer.width"
-							:height="view.layer.height" />
-						<component
-							:is="point.tag"
-							v-for="point in points"
-							:key="point.item.object.id"
-							v-bind="point.attributes"
-							class="base-image-map__object base-image-map__point"
-							:class="[point.classes, classes.object, classes.point]"
-							:style="point.style">
-							<span class="base-image-map__marker" aria-hidden="true">
-								<slot name="point" :object="point.item.object" :group="point.item.group" :is-active="point.isActive">
-									<BaseIcon
-										v-if="point.point.icon ?? point.item.group?.icon"
-										:name="(point.point.icon ?? point.item.group?.icon) as string" />
-								</slot>
-							</span>
-							<span v-if="point.point.label" class="base-image-map__label" aria-hidden="true">{{ point.point.label }}</span>
-						</component>
-					</div>
+								:is="point.tag"
+								v-for="point in points"
+								:key="point.item.object.id"
+								v-bind="point.attributes"
+								:class="[ui('object'), ui('point'), point.classes, classes.object, classes.point]"
+								:style="point.style">
+								<span :class="ui('marker')" aria-hidden="true">
+									<slot name="point" :object="point.item.object" :group="point.item.group" :is-active="point.isActive">
+										<BaseIcon
+											v-if="point.point.icon ?? point.item.group?.icon"
+											:name="(point.point.icon ?? point.item.group?.icon) as string" />
+									</slot>
+								</span>
+								<span v-if="point.point.label" :class="ui('label')" aria-hidden="true">{{ point.point.label }}</span>
+							</component>
+						</div>
+					</Transition>
 					<div v-if="!view" class="base-image-map__status">{{ UI_IMAGE_MAP.EMPTY }}</div>
 					<template v-else>
 						<div class="base-image-map__status" role="status">{{ isSvgLoading ? UI_IMAGE_MAP.LOADING : '' }}</div>
@@ -148,14 +145,11 @@
 							{{ hasSvgError ? UI_IMAGE_MAP.ERROR : '' }}
 						</div>
 					</template>
-					<div v-if="gestures.isWheelHintVisible.value" class="base-image-map__hint" aria-hidden="true">{{ wheelHint }}</div>
+					<div v-if="gestures.isWheelHintVisible.value" :class="ui('hint')" aria-hidden="true">{{ wheelHint }}</div>
 				</div>
-				<ul v-if="legend.length" class="base-image-map__legend" :class="classes.legend" :aria-label="UI_IMAGE_MAP.LEGEND">
-					<li v-for="group in legend" :key="group.id" class="base-image-map__legend-item">
-						<span
-							class="base-image-map__swatch"
-							:style="group.color ? { '--im-swatch': group.color } : undefined"
-							aria-hidden="true">
+				<ul v-if="legend.length" :class="[ui('legend'), classes.legend]" :aria-label="UI_IMAGE_MAP.LEGEND">
+					<li v-for="group in legend" :key="group.id" :class="ui('legend-item')">
+						<span :class="ui('swatch')" :style="group.color ? { '--im-swatch': group.color } : undefined" aria-hidden="true">
 							<BaseIcon v-if="group.icon" :name="group.icon" />
 						</span>
 						{{ group.title }}
@@ -216,8 +210,7 @@
 			<template #dropdown>
 				<div
 					:id="overlay.tooltipDomId"
-					class="base-image-map__tooltip"
-					:class="classes.tooltip"
+					:class="[ui('tooltip'), classes.tooltip]"
 					role="tooltip"
 					@mouseenter="overlay.cancelHide"
 					@mouseleave="overlay.scheduleHide">
@@ -365,6 +358,9 @@ const {
 	routeMarkers,
 	showRouteLayer,
 	exposed,
+	ui,
+	isLayerFadeOff,
+	hideLeavingStage,
 } = useBaseImageMap(props, emit)
 
 defineExpose(exposed)

@@ -1,6 +1,8 @@
+import { useUi } from '@composables/base/useUi'
 import { UI_IMAGE_MAP } from '@/locales/messages'
 import { useImageMapSvg } from './svg/useImageMapSvg'
 import { useImageMapPan } from './zoom/useImageMapPan'
+import { useMotion } from '@composables/app/useMotion'
 import { computed, ref, shallowRef, watch } from 'vue'
 import { useImageMapData } from './data/useImageMapData'
 import { useImageMapView } from './zoom/useImageMapView'
@@ -148,6 +150,9 @@ export function useBaseImageMap(props: ImageMapProps, emit: BaseImageMapEmits) {
 
 	return {
 		...useStandardBaseComponent('base-image-map', props, CLASS_KEYS),
+		ui: useUi(props, 'base-image-map'),
+		isLayerFadeOff: useMotion(refs.rootRef).isReduced,
+		hideLeavingStage: (element: Element) => element.setAttribute('inert', ''),
 		...refs,
 		...useImageMapFullscreen(refs.rootRef),
 		...objects,

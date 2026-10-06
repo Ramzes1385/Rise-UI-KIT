@@ -1,19 +1,19 @@
 .base-image-map-editor {
 	display: flex;
 	flex-direction: column;
-	gap: sz(8px);
+	gap: space(ct(image-map-editor, gap, 8px));
 	box-sizing: border-box;
 	width: 100%;
 	min-width: 0;
 	container: base-image-map-editor / inline-size;
-	padding: sz(8px);
-	border: 1px solid var(--rise-border);
-	border-radius: sz(var(--rise-radius-lg));
+	padding: space(ct(image-map-editor, padding, 8px));
+	border: 1px solid ct(image-map-editor, border, var(--rise-border));
+	border-radius: sz(ct(image-map-editor, radius, var(--rise-radius-lg)));
 	color: var(--rise-text);
-	@include custom-bg(background-color, var(--rise-bg));
+	@include custom-bg(background-color, ct(image-map-editor, bg, var(--rise-bg)));
 
 	&--outline {
-		border-color: var(--rise-border-accented);
+		border-color: ct(image-map-editor, border, var(--rise-border-accented));
 		@include custom-bg(background-color, transparent);
 	}
 
@@ -44,13 +44,13 @@
 	&__layout {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
-		gap: sz(12px);
+		gap: space(12px);
 	}
 
 	&__main {
 		display: flex;
 		flex-direction: column;
-		gap: sz(6px);
+		gap: space(6px);
 		min-width: 0;
 	}
 
@@ -58,8 +58,8 @@
 		position: relative;
 		overflow: auto;
 		max-height: 70vh;
-		border-radius: sz(var(--rise-radius-md));
-		background-color: var(--rise-bg-muted);
+		border-radius: sz(ct(image-map-editor, viewport-radius, var(--rise-radius-md)));
+		background-color: ct(image-map-editor, viewport-bg, var(--rise-bg-muted));
 		@include scrollbar-thin;
 	}
 
@@ -201,7 +201,7 @@
 		width: sz(12px);
 		height: sz(12px);
 		border: 2px solid var(--rise-primary);
-		border-radius: sz(3px);
+		border-radius: sz(calc(var(--rise-radius) * 0.75));
 		background-color: var(--rise-bg);
 		transform: translate(-50%, -50%);
 		cursor: nwse-resize;
@@ -245,9 +245,9 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: sz(12px);
+		gap: space(12px);
 		min-height: sz(240px);
-		padding: sz(24px);
+		padding: space(24px);
 		border: 1px dashed var(--rise-border-accented);
 		border-radius: sz(var(--rise-radius-md));
 		color: var(--rise-text-toned);
@@ -274,7 +274,7 @@
 	&__panel {
 		display: flex;
 		flex-direction: column;
-		gap: sz(16px);
+		gap: space(ct(image-map-editor, panel-gap, 16px));
 		min-width: 0;
 	}
 
@@ -283,19 +283,19 @@
 	&__fieldset {
 		display: flex;
 		flex-direction: column;
-		gap: sz(8px);
+		gap: space(8px);
 	}
 
 	&__heading {
 		margin: 0;
-		color: var(--rise-text-highlighted);
+		color: ct(image-map-editor, heading-text, var(--rise-text-highlighted));
 		@include text-size(base);
 	}
 
 	&__fieldset {
 		min-width: 0;
 		margin: 0;
-		padding: sz(8px 10px 10px);
+		padding: space(8px 10px 10px);
 		border: 1px solid var(--rise-border);
 		border-radius: sz(var(--rise-radius-md));
 	}
@@ -312,7 +312,7 @@
 	&__list {
 		display: flex;
 		flex-direction: column;
-		gap: sz(2px);
+		gap: space(2px);
 		max-height: sz(240px);
 		margin: 0;
 		padding: 0;
@@ -337,7 +337,7 @@
 		width: 100%;
 		min-width: 0;
 		margin: 0;
-		padding: sz(6px 8px);
+		padding: space(6px 8px);
 		border: 1px solid transparent;
 		border-radius: sz(var(--rise-radius-md));
 		background: none;
@@ -350,12 +350,12 @@
 		@include focus-ring(0);
 
 		@include hover {
-			background-color: var(--rise-bg-elevated);
+			background-color: ct(image-map-editor, item-bg-hover, var(--rise-bg-elevated));
 		}
 
 		&--selected {
-			border-color: var(--rise-primary);
-			background-color: var(--rise-bg-elevated);
+			border-color: ct(image-map-editor, item-border-selected, var(--rise-primary));
+			background-color: ct(image-map-editor, item-bg-selected, var(--rise-bg-elevated));
 		}
 	}
 

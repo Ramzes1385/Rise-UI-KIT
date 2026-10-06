@@ -1,13 +1,12 @@
 <template>
-	<aside class="base-image-map-editor__panel" :class="panelClass">
-		<section v-if="currentLayer" class="base-image-map-editor__section">
-			<h3 class="base-image-map-editor__heading">{{ UI_IMAGE_MAP_EDITOR.OBJECTS }}</h3>
-			<ul v-if="objects.length" class="base-image-map-editor__list">
+	<aside :class="[ui('panel'), panelClass]">
+		<section v-if="currentLayer" :class="ui('section')">
+			<h3 :class="ui('heading')">{{ UI_IMAGE_MAP_EDITOR.OBJECTS }}</h3>
+			<ul v-if="objects.length" :class="ui('list')">
 				<li v-for="object in objects" :key="object.id">
 					<button
 						type="button"
-						class="base-image-map-editor__item"
-						:class="{ 'base-image-map-editor__item--selected': object.id === selected?.id }"
+						:class="[ui('item'), { 'base-image-map-editor__item--selected': object.id === selected?.id }]"
 						:aria-current="object.id === selected?.id ? 'true' : undefined"
 						@click="$emit('select', object.id)">
 						<span class="base-image-map-editor__item-title">{{ object.title }}</span>
@@ -18,11 +17,11 @@
 			<BaseText v-else tag="p" class="base-image-map-editor__hint">{{ UI_IMAGE_MAP_EDITOR.NO_OBJECTS }}</BaseText>
 		</section>
 
-		<section v-if="currentLayer" class="base-image-map-editor__section">
-			<h3 class="base-image-map-editor__heading">{{ UI_IMAGE_MAP_EDITOR.PROPERTIES }}</h3>
+		<section v-if="currentLayer" :class="ui('section')">
+			<h3 :class="ui('heading')">{{ UI_IMAGE_MAP_EDITOR.PROPERTIES }}</h3>
 			<BaseText v-if="!selected" tag="p" class="base-image-map-editor__hint">{{ UI_IMAGE_MAP_EDITOR.NOTHING_SELECTED }}</BaseText>
-			<fieldset v-for="section in panel.sections.value" :key="section.id" class="base-image-map-editor__fieldset">
-				<legend class="base-image-map-editor__legend">{{ section.title }}</legend>
+			<fieldset v-for="section in panel.sections.value" :key="section.id" :class="ui('fieldset')">
+				<legend :class="ui('legend')">{{ section.title }}</legend>
 				<ImageMapEditorField
 					v-for="field in section.fields"
 					:key="field.key"
@@ -32,15 +31,14 @@
 			</fieldset>
 		</section>
 
-		<section class="base-image-map-editor__section">
-			<h3 class="base-image-map-editor__heading">{{ UI_IMAGE_MAP_EDITOR.LAYERS }}</h3>
-			<ul v-if="data.layers.length" class="base-image-map-editor__list">
+		<section :class="ui('section')">
+			<h3 :class="ui('heading')">{{ UI_IMAGE_MAP_EDITOR.LAYERS }}</h3>
+			<ul v-if="data.layers.length" :class="ui('list')">
 				<li v-for="(layer, index) in data.layers" :key="layer.id" class="base-image-map-editor__row">
 					<button
 						:ref="trackRow('layer', layer.id)"
 						type="button"
-						class="base-image-map-editor__item"
-						:class="{ 'base-image-map-editor__item--selected': layer.id === currentLayer?.id }"
+						:class="[ui('item'), { 'base-image-map-editor__item--selected': layer.id === currentLayer?.id }]"
 						:aria-current="layer.id === currentLayer?.id ? 'true' : undefined"
 						@click="$emit('set-layer', layer.id)">
 						<span class="base-image-map-editor__item-title">{{ layer.title }}</span>
@@ -90,12 +88,13 @@
 			v-if="panel.scene3dFields.value.length"
 			:panel="panel"
 			:layer-title="currentLayer?.title"
-			:is-disabled="isDisabled" />
+			:is-disabled="isDisabled"
+			:ui="ui" />
 
-		<section class="base-image-map-editor__section">
-			<h3 class="base-image-map-editor__heading">{{ UI_IMAGE_MAP_EDITOR.GROUPS }}</h3>
-			<fieldset v-for="group in panel.groups.value" :key="group.id" class="base-image-map-editor__fieldset">
-				<legend class="base-image-map-editor__legend">{{ group.title }}</legend>
+		<section :class="ui('section')">
+			<h3 :class="ui('heading')">{{ UI_IMAGE_MAP_EDITOR.GROUPS }}</h3>
+			<fieldset v-for="group in panel.groups.value" :key="group.id" :class="ui('fieldset')">
+				<legend :class="ui('legend')">{{ group.title }}</legend>
 				<ImageMapEditorField
 					v-for="field in group.fields"
 					:key="field.key"

@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import type { ImageMapData } from '@components/BaseImageMap/types/imageMapData.types'
@@ -20,6 +21,35 @@ export const IMAGE_MAP_EDITOR_TOOLS = ['select', 'point', 'rect', 'ellipse', 'po
 
 /** Инструмент редактора */
 export type ImageMapEditorTool = (typeof IMAGE_MAP_EDITOR_TOOLS)[number]
+
+/**
+ * Части BaseImageMapEditor для пропа `ui` (БЭМ-элементы `.base-image-map-editor__<часть>`, `root` — весь редактор):
+ * toolbar — панель инструментов, group — группа кнопок, layout — холст и панель, main — колонка холста,
+ * viewport — область прокрутки холста, stage — холст, empty — пустое состояние, help — подсказка под холстом,
+ * error — текст ошибки, panel — панель свойств, section — раздел панели, heading — заголовок раздела,
+ * list — список объектов или этажей, item — строка списка, fieldset — группа полей, legend — подпись группы полей.
+ */
+export const IMAGE_MAP_EDITOR_PARTS = [
+	'toolbar',
+	'group',
+	'layout',
+	'main',
+	'viewport',
+	'stage',
+	'empty',
+	'help',
+	'error',
+	'panel',
+	'section',
+	'heading',
+	'list',
+	'item',
+	'fieldset',
+	'legend',
+] as const
+
+/** Часть BaseImageMapEditor для пропа `ui` */
+export type BaseImageMapEditorPart = (typeof IMAGE_MAP_EDITOR_PARTS)[number]
 
 /** Элементы для `customClass` */
 type ImageMapEditorClassKey = 'root' | 'toolbar' | 'canvas' | 'panel' | 'error'
@@ -57,6 +87,14 @@ export interface BaseImageMapEditorProps extends BaseComponentProps<ImageMapEdit
 	 * общие настройки сцены. По умолчанию `false`; 3D-поля JSON сохраняются и без них
 	 */
 	has3dFields?: boolean
+	/**
+	 * Классы частей (`root`, `toolbar`, `viewport`, `panel`, `item`… — см. `IMAGE_MAP_EDITOR_PARTS`) — добавляются к классам кита.
+	 * Глобально — `defaults.BaseImageMapEditor.ui` плагина, классы склеиваются.
+	 *
+	 * @example
+	 * <BaseImageMapEditor v-model="map" :ui="{ viewport: 'shadow-inner', panel: 'gap-6' }" />
+	 */
+	ui?: UiProp<BaseImageMapEditorPart>
 }
 
 /** Пропсы после `withDefaults` */

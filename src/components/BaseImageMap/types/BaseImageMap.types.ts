@@ -1,3 +1,4 @@
+import type { UiProp } from '@composables/base/useUi'
 import type { ImageMapHoursState } from './ImageMapHours.types'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
@@ -48,6 +49,36 @@ export type ImageMapDirectoryPosition = (typeof IMAGE_MAP_DIRECTORY_POSITIONS)[n
 
 /** Выбранные значения фильтров: id фильтра → значения вариантов */
 export type ImageMapFilterValues = Record<string, string[]>
+
+/**
+ * Части BaseImageMap для пропа `ui` (БЭМ-элементы `.base-image-map__<часть>`, `root` — вся карта): toolbar — панель над картой,
+ * layers — переключатель этажей, zoom — кнопки масштаба, viewport — окно карты, stage — план (изображение и объекты),
+ * image — изображение слоя, svg — SVG-план, shapes — слой фигур, object — фигура или точка, point — точка, marker — значок точки,
+ * label — подпись точки, hint — подсказка про колесо мыши, legend — легенда, legend-item — строка легенды, swatch — образец цвета,
+ * tooltip — подсказка объекта.
+ */
+export const IMAGE_MAP_PARTS = [
+	'toolbar',
+	'layers',
+	'zoom',
+	'viewport',
+	'stage',
+	'image',
+	'svg',
+	'shapes',
+	'object',
+	'point',
+	'marker',
+	'label',
+	'hint',
+	'legend',
+	'legend-item',
+	'swatch',
+	'tooltip',
+] as const
+
+/** Часть BaseImageMap для пропа `ui` (или `root`) */
+export type BaseImageMapPart = (typeof IMAGE_MAP_PARTS)[number]
 
 /** Элементы для `customClass` */
 type ImageMapClassKey =
@@ -133,6 +164,14 @@ export interface BaseImageMapProps extends BaseComponentProps<ImageMapVariant, I
 	hasRoutes?: boolean
 	/** Запрос маршрута (`v-model:route`): `{ from, to, isStepFree }`; линия рисуется и без панели */
 	route?: ImageMapRouteValue | null
+	/**
+	 * Классы частей (`root`, `viewport`, `stage`, `point`, `legend`, `tooltip`… — см. `IMAGE_MAP_PARTS`) — добавляются к классам кита.
+	 * Глобально — `defaults.BaseImageMap.ui` плагина, классы склеиваются.
+	 *
+	 * @example
+	 * <BaseImageMap :data="plan" :ui="{ root: 'shadow-sm', viewport: 'rounded-none' }" />
+	 */
+	ui?: UiProp<BaseImageMapPart>
 }
 
 /** Пропсы после `withDefaults` */

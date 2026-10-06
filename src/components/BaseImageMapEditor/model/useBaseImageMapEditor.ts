@@ -1,4 +1,5 @@
 import { computed, ref, useId } from 'vue'
+import { useUi } from '@composables/base/useUi'
 import { useEditorFiles } from './io/useEditorFiles'
 import { useEditorTool } from './canvas/useEditorTool'
 import { useEditorPanel } from './panel/useEditorPanel'
@@ -70,6 +71,7 @@ export function useBaseImageMapEditor(props: ImageMapEditorProps, emit: BaseImag
 
 	return {
 		...useStandardBaseComponent('base-image-map-editor', props, CLASS_KEYS),
+		ui: useUi(props, 'base-image-map-editor'),
 		...parts,
 		stageRef: core.stageRef,
 		svgContainerRef: core.svgContainerRef,

@@ -3,6 +3,7 @@ export {
 	IMAGE_MAP_DIRECTORY_POSITIONS,
 	IMAGE_MAP_DIRECTORY_SCOPES,
 	IMAGE_MAP_DIRECTORY_VIEWS,
+	IMAGE_MAP_PARTS,
 	IMAGE_MAP_VARIANTS,
 	IMAGE_MAP_WHEEL_MODES,
 } from './types/BaseImageMap.types'
@@ -15,6 +16,7 @@ export {
 } from './types/imageMapData.types'
 export type {
 	BaseImageMapEmits,
+	BaseImageMapPart,
 	BaseImageMapExpose,
 	BaseImageMapProps,
 	BaseImageMapSlots,

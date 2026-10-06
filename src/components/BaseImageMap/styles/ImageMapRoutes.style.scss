@@ -27,7 +27,7 @@
 		stroke-width: 4px;
 
 		@include motion-safe {
-			animation: base-image-map-route calc(var(--rise-duration-slow) * 3) linear infinite;
+			animation: base-image-map-route calc(var(--rise-duration-loop) * 0.9) linear infinite;
 		}
 	}
 
@@ -56,13 +56,13 @@
 	&__route {
 		display: flex;
 		flex-direction: column;
-		gap: sz(8px);
+		gap: space(8px);
 		min-width: 0;
 	}
 
 	&__route-title {
 		margin: 0;
-		font-weight: 600;
+		font-weight: var(--rise-font-weight-semibold);
 		@include text-size(base);
 	}
 
@@ -99,7 +99,7 @@
 	&__route-steps {
 		display: flex;
 		flex-direction: column;
-		gap: sz(2px);
+		gap: space(2px);
 		margin: 0;
 		padding: 0;
 		list-style: none;
@@ -117,9 +117,9 @@
 		box-sizing: border-box;
 		width: 100%;
 		margin: 0;
-		padding: sz(6px 8px);
+		padding: space(6px 8px);
 		border: 0;
-		border-radius: sz(var(--rise-radius-md));
+		border-radius: sz(ct(image-map, route-step-radius, var(--rise-radius-md)));
 		background: none;
 		color: inherit;
 		font: inherit;
@@ -138,11 +138,11 @@
 		}
 
 		&:hover {
-			background-color: var(--rise-bg-muted);
+			background-color: ct(image-map, route-step-bg-hover, var(--rise-bg-muted));
 		}
 
 		&--transition {
-			font-weight: 600;
+			font-weight: var(--rise-font-weight-semibold);
 		}
 	}
 
