@@ -10,7 +10,7 @@ const ui = { root: 'story-themed-countdown', unit: 'story-themed-unit', caption:
 const template = `
 	<div class="story-stack">
 		<BaseCountdown v-bind="args" :to="to" />
-		<div style="--rise-countdown-unit-bg: var(--rise-primary-soft); --rise-countdown-unit-border: var(--rise-primary); --rise-countdown-unit-radius: var(--rise-radius-full); --rise-countdown-unit-padding-x: 16px; --rise-countdown-value-text: var(--rise-primary); --rise-countdown-value-font-weight: var(--rise-font-weight-bold); --rise-countdown-gap: 4px;">
+		<div style="--rise-countdown-unit-bg: var(--rise-primary-soft); --rise-countdown-caption-text: var(--rise-primary-text); --rise-countdown-unit-border: var(--rise-primary); --rise-countdown-unit-radius: var(--rise-radius-full); --rise-countdown-unit-padding-x: 16px; --rise-countdown-value-text: var(--rise-primary); --rise-countdown-value-font-weight: var(--rise-font-weight-bold); --rise-countdown-gap: 4px;">
 			<BaseCountdown v-bind="args" :to="to" />
 		</div>
 		<BaseCountdown v-bind="args" :to="to" :ui="ui" />

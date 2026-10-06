@@ -10,7 +10,7 @@ const ui = { root: 'story-themed-stat', value: 'story-themed-value' }
 const template = `
 	<div style="${GRID_STYLE}">
 		<BaseStat v-bind="args" label="По умолчанию" />
-		<div style="--rise-stat-bg: var(--rise-primary-soft); --rise-stat-border: var(--rise-primary); --rise-stat-radius: var(--rise-radius-xs); --rise-stat-shadow: var(--rise-shadow-md); --rise-stat-padding-x: 24px; --rise-stat-label-text: var(--rise-primary-text); --rise-stat-value-text: var(--rise-primary-text); --rise-stat-value-font-weight: var(--rise-font-weight-bold);">
+		<div style="--rise-stat-bg: var(--rise-bg-muted); --rise-stat-border: var(--rise-primary); --rise-stat-radius: var(--rise-radius-xs); --rise-stat-shadow: var(--rise-shadow-md); --rise-stat-padding-x: 24px; --rise-stat-label-text: var(--rise-primary-text); --rise-stat-value-text: var(--rise-primary-text); --rise-stat-value-font-weight: var(--rise-font-weight-bold);">
 			<BaseStat v-bind="args" label="Токены на контейнере" />
 		</div>
 		<BaseStat v-bind="args" label="Классы через ui" :ui="ui" />

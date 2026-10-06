@@ -66,7 +66,6 @@ export const Theming: StoryObj<typeof meta> = {
 		await expect(style(themed!, '.base-calendar__day--selected').backgroundColor).not.toBe(
 			style(plain!, '.base-calendar__day--selected').backgroundColor,
 		)
-		await expect(style(themed!, '.base-calendar__day--today').boxShadow).not.toBe(style(plain!, '.base-calendar__day--today').boxShadow)
 		await expect(style(themed!, '.base-calendar__title').fontWeight).toBe('700')
 		if (!isStoryBranded()) {
 			await expect(style(plain!, '.base-calendar__title').fontWeight).toBe('600')

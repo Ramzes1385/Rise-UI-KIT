@@ -15,7 +15,7 @@ export const Toolbar: StoryObj<typeof meta> = {
 	},
 	play: async ({ canvas, userEvent, args }) => {
 		await userEvent.click(canvas.getByRole('button', { name: 'Развернуть всё' }))
-		await expect(canvas.getByRole('treeitem', { name: 'sku: "SOCK-3"' })).toBeVisible()
+		await waitFor(() => expect(canvas.getByRole('treeitem', { name: 'sku: "SOCK-3"' })).toBeVisible())
 		await userEvent.click(canvas.getByRole('button', { name: 'Свернуть всё' }))
 		await expect(canvas.getByRole('treeitem', { name: 'items: 2 элемента' })).toHaveAttribute('aria-expanded', 'false')
 		await userEvent.click(canvas.getByRole('button', { name: 'Копировать JSON' }))

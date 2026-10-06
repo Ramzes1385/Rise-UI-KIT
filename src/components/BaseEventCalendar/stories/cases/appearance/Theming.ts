@@ -14,7 +14,7 @@ const ui = {
 const template = `
 	<div style="display: grid; gap: 24px">
 		<BaseEventCalendar v-bind="args" aria-label="По умолчанию" />
-		<div style="--rise-event-calendar-bg: var(--rise-bg-elevated); --rise-event-calendar-border: var(--rise-primary); --rise-event-calendar-radius: var(--rise-radius-xl); --rise-event-calendar-header-bg: var(--rise-primary-soft); --rise-event-calendar-header-text: var(--rise-primary-text); --rise-event-calendar-cell-border: var(--rise-border-accented); --rise-event-calendar-cell-bg-hover: var(--rise-primary-soft); --rise-event-calendar-cell-padding-y: 8px; --rise-event-calendar-event-radius: var(--rise-radius-full); --rise-event-calendar-event-font-size: var(--rise-font-size-sm); --rise-event-calendar-event-padding-x: 10px; --rise-event-calendar-today-bg: var(--rise-success);">
+		<div style="--rise-event-calendar-bg: var(--rise-bg-elevated); --rise-event-calendar-border: var(--rise-primary); --rise-event-calendar-radius: var(--rise-radius-xl); --rise-event-calendar-header-bg: var(--rise-primary-soft); --rise-event-calendar-header-text: var(--rise-primary-text); --rise-event-calendar-cell-border: var(--rise-primary-soft); --rise-event-calendar-cell-bg-hover: var(--rise-primary-soft); --rise-event-calendar-cell-padding-y: 8px; --rise-event-calendar-event-radius: var(--rise-radius-full); --rise-event-calendar-event-font-size: var(--rise-font-size-sm); --rise-event-calendar-event-padding-x: 10px; --rise-event-calendar-today-bg: var(--rise-success);">
 			<BaseEventCalendar v-bind="args" aria-label="Токены на контейнере" />
 		</div>
 		<BaseEventCalendar v-bind="args" aria-label="Классы через ui" :ui="ui" />

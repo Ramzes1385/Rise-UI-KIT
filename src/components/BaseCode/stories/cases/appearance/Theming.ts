@@ -9,7 +9,7 @@ const ui = { root: 'story-themed-code', header: 'story-themed-header', line: 'st
 const template = `
 	<div class="story-grid" style="--story-grid-min: 280px; align-items: start;">
 		<BaseCode v-bind="args" title="По умолчанию" />
-		<div style="--rise-code-bg: var(--rise-bg-elevated); --rise-code-border: var(--rise-primary); --rise-code-radius: var(--rise-radius-xl); --rise-code-header-bg: var(--rise-primary-soft); --rise-code-header-text: var(--rise-text-highlighted); --rise-code-copy-text: var(--rise-text-highlighted); --rise-code-font-size: var(--rise-font-size-sm); --rise-code-padding-y: 16px; --rise-code-padding-x: 20px;">
+		<div style="--rise-code-bg: var(--rise-bg); --rise-code-border: var(--rise-primary); --rise-code-radius: var(--rise-radius-xl); --rise-code-header-bg: var(--rise-primary-soft); --rise-code-header-text: var(--rise-text-highlighted); --rise-code-copy-text: var(--rise-text-highlighted); --rise-code-font-size: var(--rise-font-size-sm); --rise-code-padding-y: 16px; --rise-code-padding-x: 20px;">
 			<BaseCode v-bind="args" title="Токены на контейнере" />
 		</div>
 		<BaseCode v-bind="args" title="Классы через ui" :ui="ui" />

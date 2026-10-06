@@ -1,4 +1,5 @@
 import { computed, shallowRef, watch } from 'vue'
+import { toDayKey } from '@utils/calendar/eventUtils'
 import { useMotion } from '@composables/app/useMotion'
 import type { EventCalendarContext, EventCalendarViewMotion } from '../../types/BaseEventCalendarModel.types'
 
@@ -46,7 +47,8 @@ export function useEventCalendarMotion(context: EventCalendarContext) {
 		hideLeaving(element)
 	}
 	function handleViewEnter(element: Element): void {
-		if (focus) element.querySelector<HTMLElement>(focus)?.focus()
+		const selector = focus?.startsWith('[data-day=') ? `[data-day="${toDayKey(context.date.value)}"]` : focus
+		if (selector) element.querySelector<HTMLElement>(selector)?.focus()
 		focus = null
 	}
 	return {

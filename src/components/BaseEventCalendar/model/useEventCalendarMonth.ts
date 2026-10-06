@@ -61,7 +61,7 @@ export function useEventCalendarMonth(context: EventCalendarContext) {
 	const focusedKey = computed(() => toDayKey(date.value))
 
 	function focusDay(): void {
-		nextTick(() => gridRef.value?.querySelector<HTMLElement>(`[data-day="${focusedKey.value}"]`)?.focus())
+		nextTick(() => context.rootRef.value?.querySelector<HTMLElement>(`[data-day="${focusedKey.value}"]`)?.focus())
 	}
 
 	return {

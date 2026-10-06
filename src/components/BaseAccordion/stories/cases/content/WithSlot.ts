@@ -38,8 +38,8 @@ export const WithSlot: StoryObj<typeof meta> = {
 		setup: useStorySetup(args),
 		template,
 	}),
-	play: async ({ canvas, userEvent }) => {
-		const link = canvas.getByRole('link', { name: 'support@example.com', hidden: true })
+	play: async ({ canvas, canvasElement, userEvent }) => {
+		const link = canvasElement.querySelector<HTMLAnchorElement>('a[href="mailto:support@example.com"]')!
 		link.focus()
 		await expect(link).not.toHaveFocus()
 

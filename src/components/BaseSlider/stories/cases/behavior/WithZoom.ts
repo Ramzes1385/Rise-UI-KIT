@@ -32,7 +32,8 @@ export const WithZoom: StoryObj<typeof meta> = {
 		await expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
 
 		await userEvent.click(canvas.getByRole('button', { name: 'Горы в тумане' }))
-		await expect(await screen.findByRole('dialog', { name: 'Просмотр изображения: Горы в тумане' })).toBeVisible()
+		const dialog = await screen.findByRole('dialog', { name: 'Просмотр изображения: Горы в тумане' })
+		await waitFor(() => expect(dialog).toBeVisible())
 		await userEvent.keyboard('{Escape}')
 		await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
 	},

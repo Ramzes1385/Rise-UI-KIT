@@ -55,6 +55,10 @@
 		background-color: ct(checklist, item-bg-active, var(--rise-primary-soft));
 	}
 
+	&__item--next &__description {
+		@include custom-text(color, var(--rise-text-toned));
+	}
+
 	@include enter-slide(base-checklist__item, down);
 
 	& &__item-move {

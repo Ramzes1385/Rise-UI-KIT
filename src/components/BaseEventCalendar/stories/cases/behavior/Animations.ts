@@ -43,6 +43,7 @@ export const Animations: StoryObj<typeof meta> = {
 	name: 'Анимации',
 	parameters: {
 		controls: { include: ['variant', 'sizeScale', 'maxEventsPerDay'] },
+		a11y: { config: { rules: [{ id: 'landmark-unique', enabled: false }] } },
 		docs: {
 			description: {
 				story: [
@@ -55,6 +56,8 @@ export const Animations: StoryObj<typeof meta> = {
 					'Чтобы календарь поместился в четыре колонки, вид уменьшен (`size-scale` 70, одно событие в дне), панель заменена',
 					'заголовком периода через слот `toolbar`. В пресете `none` и при «уменьшить движение» — сразу конечное состояние.',
 					"Выключить движение в приложении — `createUiKitPlugin({ motion: 'none' })` или `reducedMotion: 'always'`.",
+					'Календари в колонках одинаковые, поэтому правило axe `landmark-unique` у этой истории выключено: в приложении',
+					'у каждого календаря своё имя `aria-label`.',
 				].join('\n'),
 			},
 			source: motion.source,
