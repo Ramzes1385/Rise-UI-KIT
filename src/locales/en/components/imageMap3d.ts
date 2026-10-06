@@ -31,6 +31,13 @@ export const enImageMap3d = {
 		/** Model node already belongs to another object (shared `meshName` or nested node); `{layer}`, `{name}`, `{id}` — as above */
 		MODEL_NODE_SHARED:
 			'BaseImageMap3D: meshes of node «{name}» in the floor model «{layer}» already belong to another object — object «{id}» took only free meshes, or is extruded from its shape if none are free',
+		/** SVG element of the floor gave no shape for 3D; `{layer}` — layer id, `{element}` — `elementId`, `{id}` — object id */
+		SVG_SHAPE_MISSING:
+			'BaseImageMap3D: the SVG of floor «{layer}» has no shape for element «{element}» (it is missing, hidden, has no area or is unsupported) — object «{id}» is not shown in 3D',
+		/** Floor plan (SVG, image or texture) failed to load; `{layer}` — layer id, `{error}` — error */
+		LAYER_LOAD_FAILED: 'BaseImageMap3D: the plan of floor «{layer}» failed to load — the floor is shown without it. {error}',
+		/** Message on the map when a floor plan failed to load; `{layers}` — floor titles separated by commas */
+		LAYER_ERROR: 'Could not load the floor plan: {layers}',
 		/** Floor model failed to load; `{layer}` — layer id, `{url}` — address, `{error}` — error */
 		MODEL_LOAD_FAILED: 'BaseImageMap3D: the floor model «{layer}» ({url}) failed to load — showing the plan. {error}',
 		EXPECT_NUMBER: 'a finite number',

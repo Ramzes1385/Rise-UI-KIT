@@ -1,4 +1,5 @@
 import { Box3 } from 'three'
+import { useLayerLoads } from './useLayerLoads'
 import { useSceneTheme } from './useSceneTheme'
 import { loadModelLayer } from './loadModelLayer'
 import { loadLayerSurface } from './loadLayerSurface'
@@ -7,7 +8,13 @@ import { buildSceneContent } from '../scene/buildScene'
 import { onBeforeUnmount, shallowRef, watch } from 'vue'
 import { createColorResolver } from '../scene/materials/sceneColors'
 import { applyLayerMode, applyObjectStates, recolorScene } from '../scene/sceneState'
-import type { SceneContent, SceneObjectEntry, SceneOptions, SceneSurfaceJob } from '../../types/internal/imageMap3dInternal.types'
+import type {
+	LayerLoads,
+	SceneContent,
+	SceneObjectEntry,
+	SceneOptions,
+	SceneSurfaceJob,
+} from '../../types/internal/imageMap3dInternal.types'
 
 function recolor(options: SceneOptions, content: SceneContent | null): void {
 	const host = options.hostRef.value
@@ -16,18 +23,16 @@ function recolor(options: SceneOptions, content: SceneContent | null): void {
 	options.invalidate()
 }
 
-function startLoads(options: SceneOptions, job: Omit<SceneSurfaceJob, 'layer' | 'floor'>): void {
+function startLoads(options: SceneOptions, job: Omit<SceneSurfaceJob, 'layer' | 'floor' | 'onFailure'>, loads: LayerLoads): void {
 	job.data.layers.forEach(layer => {
 		const floor = job.content.layers.get(layer.id)?.floorMaterials[1]
-		if (floor) void loadLayerSurface({ ...job, layer, floor })
-		else if (layer.model)
-			void loadModelLayer({
-				...job,
-				layer,
-				model: layer.model,
-				configure: options.getConfigureLoader(),
-				onError: options.onModelError,
-			})
+		if (floor) {
+			const onFailure = () => loads.fail(layer.id, job.signal)
+			loads.track(job.signal, loadLayerSurface({ ...job, layer, floor, onFailure }))
+		} else if (layer.model) {
+			const model = { ...job, layer, model: layer.model, configure: options.getConfigureLoader(), onError: options.onModelError }
+			loads.track(job.signal, loadModelLayer(model))
+		}
 	})
 }
 
@@ -45,11 +50,13 @@ function meshesBox(content: SceneContent, entry: SceneObjectEntry): Box3 | null 
 
 export function useImageMap3DScene(options: SceneOptions) {
 	const content = shallowRef<SceneContent | null>(null)
+	const loads = useLayerLoads()
 	let controller: AbortController | null = null
 
 	function clear(): void {
 		controller?.abort()
 		controller = null
+		loads.reset()
 		if (!content.value) return
 		options.scene.remove(content.value.root)
 		disposeObject(content.value.root)
@@ -71,7 +78,7 @@ export function useImageMap3DScene(options: SceneOptions) {
 		content.value = built
 		options.scene.add(built.root)
 		applyState()
-		startLoads(options, { content: built, data, resolve, signal: controller.signal, onUpdate: applyState })
+		startLoads(options, { content: built, data, resolve, signal: controller.signal, onUpdate: applyState }, loads)
 	}
 
 	watch(
@@ -90,5 +97,10 @@ export function useImageMap3DScene(options: SceneOptions) {
 
 	useSceneTheme(() => recolor(options, content.value))
 
-	return { content, objectBox: (id: string) => objectBox(content.value, id) }
+	return {
+		content,
+		objectBox: (id: string) => objectBox(content.value, id),
+		isLoading: loads.isLoading,
+		failedLayerIds: loads.failedLayerIds,
+	}
 }

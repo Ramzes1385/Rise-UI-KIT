@@ -43,6 +43,8 @@ beforeEach(() => {
 	)
 	vi.stubGlobal('cancelAnimationFrame', vi.fn())
 	vi.spyOn(performance, 'now').mockImplementation(() => now)
+	vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(800)
+	vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(400)
 	mockWebGL(true)
 })
 
@@ -86,7 +88,7 @@ describe('BaseImageMap3D: камера', () => {
 		const view = camera() as OrthographicCamera
 		expect(view).toBeInstanceOf(OrthographicCamera)
 		expect(view.zoom).toBe(1)
-		expect(controls().target).toEqual(new Vector3(400, 0, 200))
+		expect(controls().target).toEqual(new Vector3(400, 148, 200))
 		expect(MathUtils.radToDeg(azimuth(view, controls().target))).toBeCloseTo(45)
 		expect(controls().domElement).toBe(container.querySelector('canvas'))
 		expect(controls().enableRotate).toBe(true)
@@ -151,7 +153,7 @@ describe('BaseImageMap3D: камера', () => {
 		camera()
 		expect(controls().target.x).toBeCloseTo(500)
 		expect(controls().target.z).toBeCloseTo(250)
-		expect((camera() as OrthographicCamera).zoom).toBeCloseTo(800 / 600)
+		expect((camera() as OrthographicCamera).zoom).toBeCloseTo(1.2268, 3)
 		exposed.value?.zoomToObject('nope')
 		expect(controls().target.x).toBeCloseTo(500)
 		exposed.value?.rotate(90)
@@ -160,14 +162,66 @@ describe('BaseImageMap3D: камера', () => {
 		exposed.value?.resetCamera()
 		await nextTick()
 		camera()
-		expect(controls().target).toEqual(new Vector3(400, 0, 200))
+		expect(controls().target).toEqual(new Vector3(400, 148, 200))
 	})
 
-	it('смена этажа ведёт камеру на его высоту', async () => {
+	it('смена этажа на обзорном масштабе не двигает камеру: стопка этажей остаётся в кадре целиком', async () => {
 		const { controls, camera } = await renderCamera()
 		await fireEvent.click(screen.getByRole('radio', { name: 'Этаж 2' }))
 		camera()
+		expect(controls().target).toEqual(new Vector3(400, 148, 200))
+	})
+
+	it('смена этажа при увеличении ведёт камеру на высоту этажа; на обзорном масштабе — к центру стопки', async () => {
+		const { controls, camera } = await renderCamera()
+		await fireEvent.click(screen.getByRole('button', { name: 'Увеличить' }))
+		await fireEvent.click(screen.getByRole('radio', { name: 'Этаж 2' }))
+		camera()
 		expect(controls().target.y).toBe(300)
+		await fireEvent.click(screen.getByRole('button', { name: 'Уменьшить' }))
+		await fireEvent.click(screen.getByRole('radio', { name: 'Этаж 1' }))
+		camera()
+		expect(controls().target.y).toBe(148)
+	})
+
+	it('один этаж: камера на высоте активного этажа; смена режима возвращает вид к обзору нового режима', async () => {
+		const { controls, camera, rerender } = await renderCamera({ layerMode: 'single' })
+		expect(controls().target).toEqual(new Vector3(400, 0, 200))
+		await fireEvent.click(screen.getByRole('radio', { name: 'Этаж 2' }))
+		camera()
+		expect(controls().target).toEqual(new Vector3(400, 300, 200))
+		await rerender({ layerMode: 'stack' })
+		camera()
+		expect(controls().target).toEqual(new Vector3(400, 148, 200))
+		await rerender({ layerMode: 'single' })
+		camera()
+		expect(controls().target).toEqual(new Vector3(400, 300, 200))
+	})
+
+	it('панорамирование ограничено стопкой этажей с запасом: цель и камера смещаются вместе, вид не меняется', async () => {
+		const { controls, camera } = await renderCamera()
+		const view = camera()
+		const offset = view.position.clone().sub(controls().target)
+		controls().target.set(5000, -900, -5000)
+		view.position.copy(controls().target).add(offset)
+		controls().dispatchEvent({ type: 'change' })
+		const margin = Math.hypot(800, 400) / 2 / 10
+		expect(controls().target.x).toBeCloseTo(800 + margin)
+		expect(controls().target.y).toBeCloseTo(-4 - margin)
+		expect(controls().target.z).toBeCloseTo(-margin)
+		expect(view.position.clone().sub(controls().target).distanceTo(offset)).toBeLessThan(1e-6)
+		controls().target.set(100, 10, 100)
+		controls().dispatchEvent({ type: 'change' })
+		expect(controls().target).toEqual(new Vector3(100, 10, 100))
+	})
+
+	it('перспектива: пределы расстояния OrbitControls следуют за размером сцены', async () => {
+		const { controls, rerender } = await renderCamera({ camera: 'perspective' })
+		const before = controls().maxDistance
+		expect(controls().minDistance).toBeCloseTo(before / 16)
+		await rerender({ data: { ...DATA, layers: [{ id: 'f1', title: 'Этаж 1', width: 8000, height: 4000 }] } })
+		await waitFor(() => expect(controls().maxDistance).toBeGreaterThan(before * 5))
+		expect(controls().minDistance).toBeCloseTo(controls().maxDistance / 16)
 	})
 
 	it('перспектива: своя камера, масштаб — расстояние до цели', async () => {
@@ -228,7 +282,7 @@ describe('BaseImageMap3D: камера', () => {
 		await nextTick()
 		expect(screen.getByRole('button', { name: 'Увеличить' })).not.toHaveAttribute('aria-disabled')
 		await rerender({ data: { ...DATA, layers: [{ id: 'x', title: 'X', width: 100, height: 100 }] } })
-		await waitFor(() => expect(controls().target).toEqual(new Vector3(50, 0, 50)))
+		await waitFor(() => expect(controls().target).toEqual(new Vector3(50, -2, 50)))
 		expect((camera() as OrthographicCamera).zoom).toBe(1)
 	})
 
@@ -320,7 +374,7 @@ describe('BaseImageMap3D: плавные переходы камеры', () => {
 	})
 
 	it('смена этажа во время поворота не теряет поворот: переход от цели, а не от промежуточного положения', async () => {
-		const { camera, controls } = await renderCamera()
+		const { camera, controls } = await renderCamera({ layerMode: 'single' })
 		await fireEvent.click(screen.getByRole('button', { name: 'Повернуть вправо' }))
 		flushFrames(10)
 		await nextTick()

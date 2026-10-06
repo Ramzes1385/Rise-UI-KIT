@@ -1,3 +1,4 @@
+import { sceneFrame } from '../../../model/scene/sceneFrame'
 import { applyLayerMode } from '../../../model/scene/sceneState'
 import { buildSceneContent } from '../../../model/scene/buildScene'
 import { pickObjectId } from '../../../model/interaction/pickObject'
@@ -53,7 +54,7 @@ describe('BaseImageMap3D: выбор лучом и проекция', () => {
 	it('изометрическая и перспективная камеры карты: центр сцены — в центре области', () => {
 		;(['isometric', 'perspective'] as const).forEach(kind => {
 			const camera = createViewCamera(kind)
-			fitViewCamera(camera, { width: 800, height: 400 }, 800)
+			fitViewCamera(camera, { width: 800, height: 400 }, { frame: sceneFrame(DATA), mode: 'stack' })
 			camera.position.set(400 + 600, 600, 200 + 600)
 			camera.lookAt(400, 0, 200)
 			const spot = projectPoint(new Vector3(400, 0, 200), camera, { width: 800, height: 400 })

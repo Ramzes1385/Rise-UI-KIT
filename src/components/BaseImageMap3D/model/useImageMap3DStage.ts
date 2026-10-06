@@ -47,6 +47,7 @@ export function useImageMap3DStage(options: StageOptions) {
 		getData: () => props.data,
 		getFactory: () => props.rendererFactory ?? createWebGLRenderer,
 		getCameraKind: () => props.camera,
+		getLayerMode: () => props.layerMode,
 		onError: options.onError,
 	})
 	const scene = useImageMap3DScene({
@@ -66,6 +67,7 @@ export function useImageMap3DStage(options: StageOptions) {
 		canvasRef: options.canvasRef,
 		getData: () => props.data,
 		getLayerId: () => state.layerId.value,
+		getLayerMode: () => props.layerMode,
 		getHasOrbit: () => props.hasOrbit,
 		getObjectBox: scene.objectBox,
 	})

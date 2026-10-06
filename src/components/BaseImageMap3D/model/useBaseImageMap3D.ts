@@ -7,7 +7,7 @@ import { UI_IMAGE_MAP, UI_IMAGE_MAP_3D } from '@/locales/messages'
 import { useImageMap3DStage, useStageInput } from './useImageMap3DStage'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { computed, onMounted, ref, shallowRef, useId, useTemplateRef, watch } from 'vue'
-import type { ImageMap2DBindings, ImageMap3DStage, Map3DParts } from '../types/internal/imageMap3dInternal.types'
+import type { ImageMap2DBindings, ImageMap3DLoadState, ImageMap3DStage, Map3DParts } from '../types/internal/imageMap3dInternal.types'
 import type {
 	BaseImageMap3DEmits,
 	BaseImageMap3DExpose,
@@ -82,6 +82,21 @@ function useFallback(emit: BaseImageMap3DEmits, getView: () => ImageMap3DView) {
 	})
 
 	return { isSupported, hasRenderError, reason, statusText }
+}
+
+function useLoadState(props: ImageMap3DProps, scene: ImageMap3DStage['scene']) {
+	const state = computed((): ImageMap3DLoadState | null => {
+		const failed = props.data.layers.filter(layer => scene.failedLayerIds.value.includes(layer.id))
+		if (failed.length)
+			return {
+				kind: 'error',
+				text: formatMessage(UI_IMAGE_MAP_3D.LAYER_ERROR, { layers: failed.map(layer => layer.title).join(', ') }),
+			}
+		if (!props.data.layers.length) return { kind: 'empty', text: UI_IMAGE_MAP.EMPTY }
+		return scene.isLoading.value ? { kind: 'loading', text: UI_IMAGE_MAP.LOADING } : null
+	})
+	const announcement = computed(() => (state.value && state.value.kind !== 'loading' ? state.value.text : ''))
+	return { state, announcement }
 }
 
 function useViewModel(props: ImageMap3DProps, emit: BaseImageMap3DEmits) {
@@ -209,6 +224,7 @@ export function useBaseImageMap3D(props: ImageMap3DProps, emit: BaseImageMap3DEm
 		},
 	}
 	const stage = useImageMap3DStage(stageOptions)
+	const loadState = useLoadState(props, stage.scene)
 	const live = useLiveRegion(props, map, () => shownView.value)
 	const input = useStageInput(stageOptions, stage, live.announce)
 
@@ -223,7 +239,8 @@ export function useBaseImageMap3D(props: ImageMap3DProps, emit: BaseImageMap3DEm
 		setView,
 		hasCanvas: computed(() => shownView.value === '3d' && fallback.isSupported.value === true),
 		hasViewSwitch: computed(() => props.has2dToggle && fallback.isSupported.value !== false),
-		statusText: fallback.statusText,
+		statusText: computed(() => fallback.statusText.value || loadState.announcement.value),
+		loadState: loadState.state,
 		liveText: live.liveText,
 		mapBindings: useMapBindings(props, emit, map),
 		camera: stage.camera,

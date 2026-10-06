@@ -526,7 +526,7 @@ describe('BaseImageMap3D: фокус, наведение и касание (map3
 	})
 
 	it('стрелки, Home и End ведут только по объектам на экране', async () => {
-		const { region, exposed, camera } = await renderSelect()
+		const { region, exposed, camera } = await renderSelect({ layerMode: 'single' })
 		for (let step = 0; step < 4; step += 1) {
 			exposed.value?.zoomIn()
 			await nextTick()

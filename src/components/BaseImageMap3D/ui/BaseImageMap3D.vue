@@ -73,10 +73,11 @@
 				<div
 					ref="viewportRef"
 					class="base-image-map-3d__viewport"
-					:class="classes.viewport"
+					:class="[classes.viewport, { 'base-image-map-3d__viewport--empty': !map.data.currentLayer.value }]"
 					:style="viewportStyle"
 					tabindex="0"
 					role="group"
+					:aria-busy="loadState?.kind === 'loading'"
 					:aria-label="mapLabel"
 					:aria-roledescription="UI_IMAGE_MAP_3D.ROLE"
 					:aria-describedby="cardItem ? `${hintId} ${map.overlay.tooltipDomId}` : hintId"
@@ -90,6 +91,13 @@
 					@pointerleave="onPointerLeave"
 					@click="onClick">
 					<canvas v-if="hasCanvas" ref="canvasRef" class="base-image-map-3d__canvas" :class="classes.canvas" aria-hidden="true" />
+					<div
+						v-if="loadState"
+						class="base-image-map-3d__state"
+						:class="`base-image-map-3d__state--${loadState.kind}`"
+						aria-hidden="true">
+						{{ loadState.text }}
+					</div>
 					<div v-if="points.length" class="base-image-map-3d__points" aria-hidden="true">
 						<span
 							v-for="point in points"
@@ -268,6 +276,7 @@ const {
 	mapLabel,
 	viewportStyle,
 	statusText,
+	loadState,
 	liveText,
 	mapBindings,
 	layerOptions,

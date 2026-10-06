@@ -47,6 +47,10 @@
 		@include focus-ring;
 	}
 
+	&__viewport--empty {
+		min-height: sz(160px);
+	}
+
 	&--outline &__viewport {
 		border-color: var(--rise-border-accented);
 		@include custom-bg(background-color, transparent);
@@ -68,6 +72,28 @@
 		position: absolute;
 		inset: 0;
 		pointer-events: none;
+	}
+
+	&__state {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: sz(16px);
+		color: var(--rise-text-muted);
+		text-align: center;
+		pointer-events: none;
+
+		&--error {
+			color: var(--rise-error);
+		}
+
+		&--loading {
+			@include motion-safe {
+				animation: base-image-map-3d-state-in var(--rise-duration) var(--rise-ease) var(--rise-duration-slow) both;
+			}
+		}
 	}
 
 	&__point {
@@ -190,5 +216,15 @@
 		.base-image-map-3d__directory {
 			grid-column: 2;
 		}
+	}
+}
+
+@keyframes base-image-map-3d-state-in {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
 	}
 }

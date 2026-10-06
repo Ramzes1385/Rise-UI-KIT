@@ -126,6 +126,73 @@ describe('BaseImageMap3D: 3D-вид', () => {
 		expect(renderer.forceContextLoss).toHaveBeenCalledOnce()
 	})
 
+	describe('потеря графического контекста', () => {
+		afterEach(() => {
+			vi.useRealTimers()
+		})
+
+		const loseContext = (canvas: HTMLCanvasElement): Event => {
+			const event = new Event('webglcontextlost', { cancelable: true })
+			canvas.dispatchEvent(event)
+			return event
+		}
+
+		it('событие отменяется, чтобы браузер мог вернуть контекст; возврат перерисовывает кадр без ошибки', async () => {
+			const onFallback = vi.fn()
+			const { renderer, exposed } = renderMap({ onFallback })
+			await waitFor(() => expect(observe).toHaveBeenCalled())
+			triggerResize(640, 320)
+			runPendingFrames()
+			vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+			expect(loseContext(renderer.domElement).defaultPrevented).toBe(true)
+			vi.advanceTimersByTime(2999)
+			const raf = vi.mocked(requestAnimationFrame)
+			const scheduled = raf.mock.calls.length
+			renderer.domElement.dispatchEvent(new Event('webglcontextrestored'))
+			expect(raf).toHaveBeenCalledTimes(scheduled + 1)
+			vi.advanceTimersByTime(10_000)
+			expect(onFallback).not.toHaveBeenCalled()
+			expect(exposed.value).not.toBeNull()
+			expect(document.querySelector('canvas')).toBeInTheDocument()
+		})
+
+		it('контекст не вернулся за 3 секунды — показан план, причина error', async () => {
+			const onFallback = vi.fn()
+			const { renderer, container } = renderMap({ onFallback })
+			await waitFor(() => expect(observe).toHaveBeenCalled())
+			vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+			loseContext(renderer.domElement)
+			vi.advanceTimersByTime(2999)
+			expect(onFallback).not.toHaveBeenCalled()
+			vi.advanceTimersByTime(1)
+			vi.useRealTimers()
+			await waitFor(() => expect(onFallback).toHaveBeenCalledExactlyOnceWith('error'))
+			await waitFor(() => expect(container.querySelector('.base-image-map')).toBeInTheDocument())
+			expect(container.querySelector('.base-image-map-3d__status')).toHaveTextContent('Не удалось запустить 3D — показан план')
+			expect(container.querySelector('canvas')).toBeNull()
+		})
+
+		it('повторная потеря перезапускает ожидание; размонтирование снимает слушатели и таймер', async () => {
+			const onFallback = vi.fn()
+			const { renderer, unmount } = renderMap({ onFallback })
+			await waitFor(() => expect(observe).toHaveBeenCalled())
+			const remove = vi.spyOn(renderer.domElement, 'removeEventListener')
+			vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+			loseContext(renderer.domElement)
+			vi.advanceTimersByTime(2000)
+			loseContext(renderer.domElement)
+			vi.advanceTimersByTime(2000)
+			expect(onFallback).not.toHaveBeenCalled()
+			expect(vi.getTimerCount()).toBe(1)
+			unmount()
+			expect(vi.getTimerCount()).toBe(0)
+			expect(remove).toHaveBeenCalledWith('webglcontextlost', expect.any(Function))
+			expect(remove).toHaveBeenCalledWith('webglcontextrestored', expect.any(Function))
+			vi.advanceTimersByTime(10_000)
+			expect(onFallback).not.toHaveBeenCalled()
+		})
+	})
+
 	it('без фабрики берёт WebGLRenderer three.js; ошибка создания — 2D, статус и событие error', async () => {
 		const onFallback = vi.fn()
 		render(BaseImageMap3D, { props: { data: DATA_3D, onFallback } })

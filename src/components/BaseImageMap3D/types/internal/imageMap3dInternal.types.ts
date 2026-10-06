@@ -1,4 +1,4 @@
-import type { Ref, ShallowRef } from 'vue'
+import type { ComputedRef, Ref, ShallowRef } from 'vue'
 import type { useImageMap3DMap } from '../../model/useImageMap3DMap'
 import type { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import type { UseTweenReturn } from '@composables/interaction/useTween'
@@ -62,7 +62,9 @@ export interface ImageMap3DViewportOptions {
 	getFactory: () => ImageMap3DRendererFactory
 	/** Вид камеры */
 	getCameraKind: () => ImageMap3DCamera
-	/** Рендерер не создался */
+	/** Режим этажей: от него зависит рамка кадра */
+	getLayerMode: () => ImageMap3DLayerMode
+	/** Рендерер не создался или графический контекст потерян и не вернулся */
 	onError: (error: unknown) => void
 }
 
@@ -79,6 +81,36 @@ export interface SceneSettings {
 	floorThickness: number
 	/** Высота выдавливания объектов без `height3d` */
 	objectHeight: number
+}
+
+/** Рамка сцены для камеры: границы стопки этажей и размеры, по которым подбирается кадр */
+export interface SceneFrame {
+	/** Границы стопки: планы всех этажей по X и Z, по Y — от низа плиты нижнего этажа до верха самых высоких объектов */
+	bounds: Box3
+	/** Радиус окружности вокруг центра плана, описанной вокруг стопки: кадр не обрежет сцену при любом повороте */
+	radius: number
+	/** Половина высоты стопки по оси Y: режим `stack` смотрит на середину стопки */
+	stackHalf: number
+	/** Наибольшая высота одного этажа над его плоскостью или под ней: режим `single` смотрит на этаж */
+	floorHalf: number
+}
+
+/** Рамка сцены и режим этажей: по ним подбирается кадр камеры */
+export interface SceneFraming {
+	/** Рамка сцены */
+	frame: SceneFrame
+	/** Режим этажей */
+	mode: ImageMap3DLayerMode
+}
+
+/** Точка на ободе цилиндра сцены в системе камеры начального вида: по ней подбирается кадр перспективной камеры */
+export interface SceneRimPoint {
+	/** Смещение вбок от оси взгляда по модулю */
+	sideways: number
+	/** Смещение вверх от оси взгляда по модулю */
+	up: number
+	/** Смещение к камере вдоль оси взгляда: больше — ближе к камере */
+	toward: number
 }
 
 /** Цвет и непрозрачность материала в одном состоянии */
@@ -164,6 +196,30 @@ export interface SceneSurfaceJob {
 	signal: AbortSignal
 	/** Что-то добавилось — нужен кадр */
 	onUpdate: () => void
+	/** План этажа не загрузился: SVG, картинка или текстура пола */
+	onFailure: () => void
+}
+
+/** Учёт загрузок этажей: идёт ли загрузка и у каких этажей план не загрузился */
+export interface LayerLoads {
+	/** Хотя бы одна загрузка идёт */
+	isLoading: ComputedRef<boolean>
+	/** Id этажей, чей план не загрузился */
+	failedLayerIds: ComputedRef<string[]>
+	/** Начать заново: сцена перестроена или освобождена */
+	reset: () => void
+	/** Учесть загрузку: пока `task` не завершилась, `isLoading` истинно; отменённая загрузка не считается */
+	track: (signal: AbortSignal, task: Promise<void>) => void
+	/** Отметить этаж как не загрузившийся; отменённая загрузка не считается */
+	fail: (layerId: string, signal: AbortSignal) => void
+}
+
+/** Состояние карты вместо сцены: загрузка, пустые данные или ошибка загрузки плана этажа */
+export interface ImageMap3DLoadState {
+	/** Вид состояния */
+	kind: 'loading' | 'empty' | 'error'
+	/** Текст на карте и для скринридера */
+	text: string
 }
 
 /** Параметры содержимого сцены */
@@ -213,7 +269,7 @@ export interface ModelAttachResult {
 }
 
 /** Загрузка модели этажа */
-export interface SceneModelJob extends Omit<SceneSurfaceJob, 'floor'> {
+export interface SceneModelJob extends Omit<SceneSurfaceJob, 'floor' | 'onFailure'> {
 	/** Модель слоя */
 	model: ImageMapLayerModel
 	/** Настройка загрузчика приложением (`configureLoader`) */
@@ -244,6 +300,8 @@ export interface CameraOptions {
 	getData: () => ImageMap3DData
 	/** Id активного этажа: камера смотрит на его высоту */
 	getLayerId: () => string | undefined
+	/** Режим этажей: `stack` — камера на середине стопки, `single` — на активном этаже */
+	getLayerMode: () => ImageMap3DLayerMode
 	/** Вращение и наклон указателем */
 	getHasOrbit: () => boolean
 	/** Границы мешей объекта в сцене; нет объекта — `null` */

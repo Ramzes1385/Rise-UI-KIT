@@ -1,4 +1,7 @@
+import { warn } from '@/locales/warn'
 import { objectLayerId } from './sceneLayout'
+import { UI_IMAGE_MAP_3D } from '@/locales/messages'
+import { isDevelopmentBuild } from '@utils/seo/structuredDataUtils'
 import { parseSvgPaths, svgElementShapes } from './geometry/svgShapes'
 import { paintObject, setObjectState } from './materials/sceneObjects'
 import type { ImageMap3DLayerMode } from '../../types/BaseImageMap3D.types'
@@ -58,6 +61,9 @@ export function addSvgObjects(
 	const paths = svgObjects.length && layer ? parseSvgPaths(markup, layer) : []
 	return svgObjects.filter(object => {
 		const shapes = svgElementShapes(paths, object.elementId)
+		if (!shapes.length && isDevelopmentBuild()) {
+			warn(UI_IMAGE_MAP_3D.SVG_SHAPE_MISSING, { layer: layerId, element: object.elementId, id: object.id })
+		}
 		return addShapeObject(content, { object, layerId, colors: objectColors(object, data, resolve) }, shapes)
 	}).length
 }

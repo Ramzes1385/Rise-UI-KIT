@@ -1,37 +1,65 @@
-import { MathUtils } from 'three'
+import type { ComputedRef } from 'vue'
 import { ROTATE_STEP } from './cameraKeys'
+import { MathUtils, Vector3 } from 'three'
+import { sceneFrame } from '../scene/sceneFrame'
 import { useTween } from '@composables/interaction/useTween'
-import { sceneCenter, sceneExtent } from '../scene/sceneCamera'
 import { layerElevation, sceneSettings } from '../scene/sceneLayout'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { computed, onBeforeUnmount, ref, shallowRef, watch } from 'vue'
-import type { CameraOptions, CameraPose, CameraPoseState } from '../../types/internal/imageMap3dInternal.types'
-import { CAMERA_LIMITS, applyPose, baseDistance, clampPose, defaultPose, easeInOutCubic, objectPose, readPose } from './cameraPose'
+import type { CameraOptions, CameraPose, CameraPoseState, SceneFrame, SceneFraming } from '../../types/internal/imageMap3dInternal.types'
+import {
+	CAMERA_LIMITS,
+	applyPose,
+	baseDistance,
+	clampPose,
+	defaultPose,
+	easeInOutCubic,
+	limitTarget,
+	objectPose,
+	readPose,
+	visibleHalf,
+} from './cameraPose'
 
 const ZOOM_STEP = 1.5
+const FOLLOW_ZOOM = 1.05
 const WHEEL_SPEED = 0.004
 const WHEEL_LINE = 16
 const WHEEL_PAGE = 400
 
-function homePose(options: CameraOptions): CameraPose {
+function floorY(options: CameraOptions): number {
 	const data = options.getData()
 	const index = Math.max(
 		data.layers.findIndex(layer => layer.id === options.getLayerId()),
 		0,
 	)
 	const layer = data.layers[index]
-	const center = sceneCenter(data)
-	center.y = layer ? layerElevation(layer, index, sceneSettings(data)) : 0
+	return layer ? layerElevation(layer, index, sceneSettings(data)) : 0
+}
+
+function homePose(options: CameraOptions, framing: SceneFraming): CameraPose {
+	const center = framing.frame.bounds.getCenter(new Vector3())
+	if (framing.mode === 'single') center.y = floorY(options)
 	return defaultPose(center)
+}
+
+function distanceLimits(options: CameraOptions, framing: SceneFraming): { minDistance: number; maxDistance: number } {
+	const distance = baseDistance(options.camera.value, framing)
+	return { minDistance: distance / CAMERA_LIMITS.maxZoom, maxDistance: distance / CAMERA_LIMITS.minZoom }
+}
+
+function limitPan(controls: OrbitControls, frame: SceneFrame): void {
+	const limited = limitTarget(controls.target, frame)
+	if (limited.equals(controls.target)) return
+	controls.object.position.add(limited.clone().sub(controls.target))
+	controls.target.copy(limited)
 }
 
 function setTouchAction(canvas: HTMLElement, hasOrbit: boolean): void {
 	canvas.style.touchAction = hasOrbit ? 'none' : 'pan-x pan-y'
 }
 
-function createControls(options: CameraOptions, canvas: HTMLCanvasElement): OrbitControls {
+function createControls(options: CameraOptions, canvas: HTMLCanvasElement, framing: SceneFraming): OrbitControls {
 	const controls = new OrbitControls(options.camera.value, canvas)
-	const distance = baseDistance(options.camera.value, sceneExtent(options.getData()))
 	Object.assign(controls, {
 		enableDamping: false,
 		screenSpacePanning: false,
@@ -39,8 +67,7 @@ function createControls(options: CameraOptions, canvas: HTMLCanvasElement): Orbi
 		maxPolarAngle: CAMERA_LIMITS.maxPolar,
 		minZoom: CAMERA_LIMITS.minZoom,
 		maxZoom: CAMERA_LIMITS.maxZoom,
-		minDistance: distance / CAMERA_LIMITS.maxZoom,
-		maxDistance: distance / CAMERA_LIMITS.minZoom,
+		...distanceLimits(options, framing),
 		enableRotate: options.getHasOrbit(),
 		enableZoom: false,
 	})
@@ -48,14 +75,14 @@ function createControls(options: CameraOptions, canvas: HTMLCanvasElement): Orbi
 	return controls
 }
 
-function useCameraPose(options: CameraOptions): CameraPoseState {
-	const goal = shallowRef<CameraPose>(homePose(options))
+function useCameraPose(options: CameraOptions, framing: ComputedRef<SceneFraming>): CameraPoseState {
+	const goal = shallowRef<CameraPose>(homePose(options, framing.value))
 	const tween = useTween(goal, { duration: 'xslow', easing: easeInOutCubic, target: options.canvasRef })
 	const zoom = ref(1)
 	const controls = shallowRef<OrbitControls | null>(null)
 	let lastPose: CameraPose | null = null
 
-	const distance = () => baseDistance(options.camera.value, sceneExtent(options.getData()))
+	const distance = () => baseDistance(options.camera.value, framing.value)
 
 	function show(pose: CameraPose): void {
 		const target = applyPose(options.camera.value, pose, distance())
@@ -67,17 +94,17 @@ function useCameraPose(options: CameraOptions): CameraPoseState {
 
 	function current(): CameraPose {
 		const target = controls.value?.target
-		return target ? readPose(options.camera.value, target, distance()) : (lastPose ?? homePose(options))
+		return target ? readPose(options.camera.value, target, distance()) : (lastPose ?? homePose(options, framing.value))
 	}
 
 	function goTo(pose: CameraPose): void {
 		const from = current()
-		goal.value = clampPose(pose)
+		goal.value = clampPose(pose, framing.value.frame)
 		tween.replay(from)
 	}
 
 	function jump(pose: CameraPose): void {
-		goal.value = clampPose(pose)
+		goal.value = clampPose(pose, framing.value.frame)
 		tween.replay(goal.value)
 		show(goal.value)
 	}
@@ -96,18 +123,19 @@ function useCameraPose(options: CameraOptions): CameraPoseState {
 	return { tween, zoom, controls, current, next, sync, goTo, jump, lastPose: () => lastPose }
 }
 
-function useOrbitControls(options: CameraOptions, state: CameraPoseState): void {
+function useOrbitControls(options: CameraOptions, state: CameraPoseState, framing: ComputedRef<SceneFraming>): void {
 	function stop(): void {
 		state.controls.value?.dispose()
 		state.controls.value = null
 	}
 
 	function start(canvas: HTMLCanvasElement): void {
-		const pose = state.lastPose() ?? homePose(options)
+		const pose = state.lastPose() ?? homePose(options, framing.value)
 		stop()
-		const controls = createControls(options, canvas)
+		const controls = createControls(options, canvas, framing.value)
 		controls.addEventListener('start', () => state.tween.stop())
 		controls.addEventListener('change', () => {
+			limitPan(controls, framing.value.frame)
 			state.sync()
 			options.invalidate()
 		})
@@ -124,6 +152,11 @@ function useOrbitControls(options: CameraOptions, state: CameraPoseState): void 
 		},
 		{ flush: 'post' },
 	)
+
+	watch(framing, value => {
+		const controls = state.controls.value
+		if (controls) Object.assign(controls, distanceLimits(options, value))
+	})
 
 	watch(options.getHasOrbit, value => {
 		const controls = state.controls.value
@@ -149,19 +182,22 @@ function wheelFactor(event: WheelEvent): number {
 }
 
 export function useCameraController(options: CameraOptions) {
-	const state = useCameraPose(options)
-	useOrbitControls(options, state)
+	const framing = computed((): SceneFraming => ({ frame: sceneFrame(options.getData()), mode: options.getLayerMode() }))
+	const state = useCameraPose(options, framing)
+	useOrbitControls(options, state, framing)
 
-	watch(options.getData, () => state.jump(homePose(options)))
+	watch(options.getData, () => state.jump(homePose(options, framing.value)))
+	watch(options.getLayerMode, () => state.goTo(homePose(options, framing.value)))
 	watch(options.getLayerId, () => {
 		const pose = state.next()
-		state.goTo([pose[0], homePose(options)[1], pose[2], pose[3], pose[4], pose[5]])
+		const y = pose[5] > FOLLOW_ZOOM ? floorY(options) : homePose(options, framing.value)[1]
+		state.goTo([pose[0], y, pose[2], pose[3], pose[4], pose[5]])
 	})
 
 	const rotate = (degrees: number) => state.goTo(turn(state.next(), 3, degrees))
 
 	return {
-		resetCamera: () => state.goTo(homePose(options)),
+		resetCamera: () => state.goTo(homePose(options, framing.value)),
 		rotate,
 		rotateLeft: () => rotate(-ROTATE_STEP),
 		rotateRight: () => rotate(ROTATE_STEP),
@@ -170,7 +206,10 @@ export function useCameraController(options: CameraOptions) {
 		zoomOut: () => state.goTo(zoomBy(state.next(), 1 / ZOOM_STEP)),
 		zoomToObject: (id: string) => {
 			const box = options.getObjectBox(id)
-			if (box) state.goTo(objectPose(box, state.next(), sceneExtent(options.getData())))
+			if (box)
+				state.goTo(
+					objectPose(box, state.next(), visibleHalf(options.camera.value, baseDistance(options.camera.value, framing.value))),
+				)
 		},
 		wheelZoom: (event: WheelEvent) => {
 			if (!(event.ctrlKey || event.metaKey) || !state.controls.value || event.deltaY === 0) return
