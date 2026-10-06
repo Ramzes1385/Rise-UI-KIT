@@ -75,6 +75,7 @@
 |---|---|---|---|---|
 | `--rise-app-loading-bar-bg` | loading-bar | bg | — | `var(--rise-primary)` |
 | `--rise-app-loading-bar-height` | loading-bar | height | — | `3px` |
+
 ## BaseAudioPlayer
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
@@ -809,16 +810,6 @@
 | `--rise-image-zoom-toolbar-bg` | zoom-toolbar | bg | — | `var(--rise-media-surface)` |
 | `--rise-image-zoom-toolbar-radius` | zoom-toolbar | radius | — | `var(--rise-radius-full)` |
 
-## BaseInfiniteScroll
-
-| Токен | Часть | Свойство | Состояние | По умолчанию |
-|---|---|---|---|---|
-| `--rise-infinite-scroll-footer-bg` | footer | bg | — | `transparent` |
-| `--rise-infinite-scroll-footer-font-size` | footer | font-size | — | `var(--rise-font-size-sm)` |
-| `--rise-infinite-scroll-footer-gap` | footer | gap | — | `8px` |
-| `--rise-infinite-scroll-footer-height` | footer | height | — | `48px` |
-| `--rise-infinite-scroll-footer-padding-y` | footer | padding-y | — | `8px` |
-| `--rise-infinite-scroll-footer-text` | footer | text | — | `var(--rise-text-muted)` |
 ## BaseImageCompare
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
@@ -874,6 +865,17 @@
 | `--rise-image-map-editor-radius` | корень | radius | — | `var(--rise-radius-lg)` |
 | `--rise-image-map-editor-viewport-bg` | viewport | bg | — | `var(--rise-bg-muted)` |
 | `--rise-image-map-editor-viewport-radius` | viewport | radius | — | `var(--rise-radius-md)` |
+
+## BaseInfiniteScroll
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-infinite-scroll-footer-bg` | footer | bg | — | `transparent` |
+| `--rise-infinite-scroll-footer-font-size` | footer | font-size | — | `var(--rise-font-size-sm)` |
+| `--rise-infinite-scroll-footer-gap` | footer | gap | — | `8px` |
+| `--rise-infinite-scroll-footer-height` | footer | height | — | `48px` |
+| `--rise-infinite-scroll-footer-padding-y` | footer | padding-y | — | `8px` |
+| `--rise-infinite-scroll-footer-text` | footer | text | — | `var(--rise-text-muted)` |
 
 ## BaseInplace
 
@@ -1073,6 +1075,22 @@
 | `--rise-marquee-text` | корень | text | — | `var(--rise-text)` |
 | `--rise-marquee-viewport-height` | viewport | height | — | `160px` |
 
+## BaseMediaPlayer
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-media-player-bg` | корень | bg | — | `var(--rise-media-shade)` |
+| `--rise-media-player-dialog-bg` | dialog | bg | — | `var(--rise-media-panel-solid)` |
+| `--rise-media-player-episodes-bg` | episodes | bg | — | `var(--rise-media-sheet)` |
+| `--rise-media-player-menu-radius` | menu | radius | — | `10px` |
+| `--rise-media-player-panel-bg` | panel | bg | — | `var(--rise-media-panel)` |
+| `--rise-media-player-progress-bg` | progress | bg | — | `var(--media-primary)` |
+| `--rise-media-player-radius` | корень | radius | — | `12px` |
+| `--rise-media-player-text` | корень | text | — | `var(--rise-media-text)` |
+| `--rise-media-player-thumb-bg` | thumb | bg | — | `var(--media-primary)` |
+| `--rise-media-player-title-font-size` | title | font-size | — | `18px` |
+| `--rise-media-player-title-font-weight` | title | font-weight | — | `var(--rise-font-weight-bold)` |
+
 ## BaseMegaMenu
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
@@ -1089,21 +1107,6 @@
 | `--rise-mega-menu-trigger-font-weight` | trigger | font-weight | — | `var(--rise-font-weight-medium)` |
 | `--rise-mega-menu-trigger-text` | trigger | text | — | `var(--rise-text-toned)` |
 | `--rise-mega-menu-trigger-text-hover` | trigger | text | hover | `var(--rise-text-highlighted)` |
-## BaseMediaPlayer
-
-| Токен | Часть | Свойство | Состояние | По умолчанию |
-|---|---|---|---|---|
-| `--rise-media-player-bg` | корень | bg | — | `var(--rise-media-shade)` |
-| `--rise-media-player-dialog-bg` | dialog | bg | — | `var(--rise-media-panel-solid)` |
-| `--rise-media-player-episodes-bg` | episodes | bg | — | `var(--rise-media-sheet)` |
-| `--rise-media-player-menu-radius` | menu | radius | — | `10px` |
-| `--rise-media-player-panel-bg` | panel | bg | — | `var(--rise-media-panel)` |
-| `--rise-media-player-progress-bg` | progress | bg | — | `var(--media-primary)` |
-| `--rise-media-player-radius` | корень | radius | — | `12px` |
-| `--rise-media-player-text` | корень | text | — | `var(--rise-media-text)` |
-| `--rise-media-player-thumb-bg` | thumb | bg | — | `var(--media-primary)` |
-| `--rise-media-player-title-font-size` | title | font-size | — | `18px` |
-| `--rise-media-player-title-font-weight` | title | font-weight | — | `var(--rise-font-weight-bold)` |
 
 ## BaseMention
 
@@ -1271,6 +1274,7 @@
 | `--rise-popover-inner-padding-x` | inner | padding-x | — | `16px` |
 | `--rise-popover-inner-padding-y` | inner | padding-y | — | `12px` |
 | `--rise-popover-panel-width` | panel | width | — | `320px` |
+
 ## BasePresentationPlayer
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
@@ -1614,6 +1618,7 @@
 | `--rise-stepper-label-text-active` | label | text | active | `var(--rise-text-highlighted)` |
 | `--rise-stepper-line-bg` | line | bg | — | `var(--rise-border-accented)` |
 | `--rise-stepper-text-checked` | корень | text | checked | `var(--rise-on-primary)` |
+
 ## BaseSubtitleEditor
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
@@ -1880,6 +1885,7 @@
 | `--rise-virtual-list-item-padding-x` | item | padding-x | — | `0` |
 | `--rise-virtual-list-item-padding-y` | item | padding-y | — | `0` |
 | `--rise-virtual-list-radius` | корень | radius | — | `0` |
+
 ## BaseVoiceRecorder
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
