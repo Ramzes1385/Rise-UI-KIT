@@ -1,7 +1,27 @@
+import type { Component } from 'vue'
 import { createSSRApp, h, nextTick } from 'vue'
 import { renderToString } from 'vue/server-renderer'
-import BaseImageMap3D from '../../ui/BaseImageMap3D.vue'
 import { createFakeRenderer, DATA_3D, mockWebGL } from '../imageMap3d.test-utils'
+
+const BROWSER_GLOBALS = [
+	'window',
+	'document',
+	'navigator',
+	'DOMParser',
+	'MutationObserver',
+	'ResizeObserver',
+	'requestAnimationFrame',
+	'cancelAnimationFrame',
+	'matchMedia',
+]
+
+let BaseImageMap3D: Component
+
+async function serverSide(): Promise<void> {
+	BROWSER_GLOBALS.forEach(name => vi.stubGlobal(name, undefined))
+	vi.resetModules()
+	BaseImageMap3D = (await import('../../ui/BaseImageMap3D.vue')).default
+}
 
 const app = (props: Record<string, unknown> = {}) => createSSRApp({ render: () => h(BaseImageMap3D, { data: DATA_3D, ...props }) })
 
@@ -11,9 +31,8 @@ describe('BaseImageMap3D SSR', () => {
 		vi.restoreAllMocks()
 	})
 
-	it('рендерится без window и document: область карты и список объектов, без холста', async () => {
-		vi.stubGlobal('window', undefined)
-		vi.stubGlobal('document', undefined)
+	it('рендерится без window, document, navigator, DOMParser, MutationObserver и rAF: область карты и список объектов, без холста', async () => {
+		await serverSide()
 		const html = await renderToString(app())
 		expect(html).toContain('base-image-map-3d__viewport')
 		expect(html).toContain('aria-roledescription="3D-карта"')
@@ -23,16 +42,14 @@ describe('BaseImageMap3D SSR', () => {
 	})
 
 	it('view="2d" на сервере — обычная BaseImageMap', async () => {
-		vi.stubGlobal('window', undefined)
-		vi.stubGlobal('document', undefined)
+		await serverSide()
 		const html = await renderToString(app({ view: '2d', has2dToggle: true }))
 		expect(html).toContain('base-image-map')
 		expect(html).not.toContain('base-image-map-3d__viewport')
 	})
 
 	it('гидратация без расхождений; холст появляется только после монтирования', async () => {
-		vi.stubGlobal('window', undefined)
-		vi.stubGlobal('document', undefined)
+		await serverSide()
 		const html = await renderToString(app())
 		vi.unstubAllGlobals()
 		const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)

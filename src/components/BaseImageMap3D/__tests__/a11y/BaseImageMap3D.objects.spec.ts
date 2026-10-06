@@ -193,6 +193,57 @@ describe('BaseImageMap3D: список объектов для скринрид�
 		expect(open).not.toHaveBeenCalled()
 	})
 
+	it('перерисовка списка не теряет фокус: объект с action layer, смена этажа и фильтр переводят его на область карты', async () => {
+		const data: ImageMap3DData = {
+			...DATA,
+			objects: [
+				...DATA.objects,
+				{
+					id: 'stairs',
+					type: 'rect',
+					title: 'Лестница',
+					x: 0.1,
+					y: 0.1,
+					width: 0.1,
+					height: 0.1,
+					layer: 'f1',
+					action: 'layer',
+					targetLayer: 'f2',
+				},
+			],
+		}
+		const { region, exposed, rerender } = await env.renderMap({ data })
+		listOf('Список объектов, Этаж 1').getByRole('button', { name: 'Лестница' }).focus()
+		await fireEvent.click(listOf('Список объектов, Этаж 1').getByRole('button', { name: 'Лестница' }))
+		await waitFor(() => expect(namesOf('Список объектов, Этаж 2')).toEqual(['Крыша']))
+		await waitFor(() => expect(document.activeElement).toBe(region()))
+		listOf('Список объектов, Этаж 2').getByRole('button', { name: 'Крыша' }).focus()
+		exposed.value?.setLayer('f1')
+		await waitFor(() => expect(document.activeElement).toBe(region()))
+		listOf('Список объектов, Этаж 1').getByRole('button', { name: 'Закрыто' }).focus()
+		await rerender({ data, filters: { kind: ['food'] } })
+		await waitFor(() => expect(namesOf('Список объектов, Этаж 1')).toEqual(['Зал', 'Киоск']))
+		expect(document.activeElement).toBe(region())
+	})
+
+	it('фокус вне списка и уцелевшая кнопка не трогаются при перерисовке', async () => {
+		const { exposed, rerender } = await env.renderMap({ data: DATA })
+		const outside = document.createElement('button')
+		document.body.append(outside)
+		outside.focus()
+		exposed.value?.setLayer('f2')
+		await waitFor(() => expect(namesOf('Список объектов, Этаж 2')).toEqual(['Крыша']))
+		expect(document.activeElement).toBe(outside)
+		outside.remove()
+		exposed.value?.setLayer('f1')
+		await waitFor(() => expect(namesOf('Список объектов, Этаж 1')).toHaveLength(3))
+		const hall = listOf('Список объектов, Этаж 1').getByRole('button', { name: 'Зал' })
+		hall.focus()
+		await rerender({ data: DATA, filters: { kind: ['food'] } })
+		await waitFor(() => expect(namesOf('Список объектов, Этаж 1')).toEqual(['Зал', 'Киоск']))
+		expect(document.activeElement).toBe(hall)
+	})
+
 	it('те же объекты в 2D и в 3D: названия кнопок списка и областей 2D совпадают, выбор сохраняется', async () => {
 		const { container } = await env.renderMap({ data: DATA, has2dToggle: true, defaultAction: 'none' })
 		const names3d = namesOf('Список объектов, Этаж 1')

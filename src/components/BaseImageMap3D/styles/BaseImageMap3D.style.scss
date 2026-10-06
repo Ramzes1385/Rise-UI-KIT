@@ -193,7 +193,8 @@
 		color: var(--rise-text-muted);
 		@include control-text;
 
-		&:empty {
+		&:empty,
+		&--hidden {
 			@include visually-hidden;
 		}
 	}

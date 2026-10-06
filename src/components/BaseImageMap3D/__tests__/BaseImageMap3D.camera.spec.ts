@@ -7,7 +7,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { createFakeRenderer, mockWebGL } from './imageMap3d.test-utils'
 import type { BaseImageMap3DExpose } from '../types/BaseImageMap3D.types'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
-import { MathUtils, OrthographicCamera, PerspectiveCamera, Spherical, Vector3 } from 'three'
+import { BoxGeometry, Group, MathUtils, Mesh, MeshBasicMaterial, OrthographicCamera, PerspectiveCamera, Spherical, Vector3 } from 'three'
 
 const DATA: ImageMap3DData = {
 	layers: [
@@ -340,7 +340,38 @@ describe('BaseImageMap3D: камера', () => {
 		await fireEvent.pointerCancel(region, { pointerType: 'touch', pointerId: 1 })
 		await fireEvent.pointerMove(region, { pointerType: 'touch', pointerId: 1, clientX: 900, clientY: 100 })
 		expect(zoom()).toBeCloseTo(1)
+		await fireEvent.pointerDown(region, { pointerType: 'touch', pointerId: 3, clientX: 100, clientY: 100 })
+		await fireEvent.pointerDown(region, { pointerType: 'touch', pointerId: 4, clientX: 200, clientY: 100 })
+		await fireEvent.pointerMove(region, { pointerType: 'touch', pointerId: 4, clientX: 300, clientY: 100 })
+		expect(zoom()).toBeCloseTo(2)
 	})
+
+	it.each(['isometric', 'perspective'] as const)(
+		'модель этажа выше объектов: после загрузки кадр и near/far расширяются по ней (%s)',
+		async kind => {
+			const tower = new Mesh(new BoxGeometry(100, 900, 100), new MeshBasicMaterial())
+			tower.position.set(400, 450, 200)
+			const model = new Group()
+			model.add(tower)
+			let resolveModel: (value: unknown) => void = () => undefined
+			const configureLoader = (loader: { loadAsync: unknown }) => {
+				loader.loadAsync = () => new Promise(resolve => (resolveModel = resolve))
+			}
+			const data: ImageMap3DData = {
+				layers: [{ id: 'm', title: 'M', width: 800, height: 400, model: { url: 'm.glb' } }],
+				objects: [],
+			}
+			const { camera } = await renderCamera({ data, configureLoader, camera: kind })
+			const corners = [-1, 1].flatMap(x => [0, 900].flatMap(y => [-1, 1].map(z => new Vector3(400 + x * 50, y, 200 + z * 50))))
+			const reach = (view: Camera) => {
+				view.updateMatrixWorld(true)
+				return Math.max(...corners.map(point => Math.max(...point.clone().project(view).toArray().map(Math.abs))))
+			}
+			expect(reach(camera())).toBeGreaterThan(1)
+			resolveModel({ scene: model })
+			await waitFor(() => expect(reach(camera())).toBeLessThanOrEqual(1))
+		},
+	)
 
 	it('без кнопок масштаба (hasZoomControls: false) и с одним этажом — без панели', async () => {
 		await renderCamera({ hasZoomControls: false, data: { ...DATA, layers: [DATA.layers[0]] } })
@@ -384,6 +415,22 @@ describe('BaseImageMap3D: плавные переходы камеры', () => {
 		await nextTick()
 		expect(MathUtils.radToDeg(azimuth(camera(), controls().target))).toBeCloseTo(60)
 		expect(controls().target.y).toBe(300)
+	})
+
+	it('без движения (motion none) два шага в одном тике — два шага: масштаб 2,25, поворот на два шага', async () => {
+		const wrapper = document.body.appendChild(document.createElement('section'))
+		wrapper.setAttribute('data-rise-motion', 'none')
+		const { camera, controls, exposed } = await renderCamera({}, wrapper.appendChild(document.createElement('div')))
+		const start = MathUtils.radToDeg(azimuth(camera(), controls().target))
+		exposed.value?.zoomIn()
+		exposed.value?.zoomIn()
+		await nextTick()
+		expect((camera() as OrthographicCamera).zoom).toBeCloseTo(2.25)
+		exposed.value?.rotate(15)
+		exposed.value?.rotate(15)
+		await nextTick()
+		expect(MathUtils.radToDeg(azimuth(camera(), controls().target)) - start).toBeCloseTo(30)
+		wrapper.remove()
 	})
 
 	it('нажатия во время перехода копятся: два «Увеличить» — 2,25', async () => {

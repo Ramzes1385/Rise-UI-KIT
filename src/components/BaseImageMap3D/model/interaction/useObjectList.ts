@@ -1,5 +1,6 @@
-import { computed } from 'vue'
+import type { Ref } from 'vue'
 import { formatMessage } from '@/locales/state'
+import { computed, nextTick, useTemplateRef, watch } from 'vue'
 import { UI_IMAGE_MAP, UI_IMAGE_MAP_3D } from '@/locales/messages'
 import type { ImageMap3DProps } from '../../types/BaseImageMap3D.types'
 import type { Map3DParts, ObjectListEntry } from '../../types/internal/imageMap3dInternal.types'
@@ -24,11 +25,25 @@ function objectEntry(item: ResolvedImageMapObject, activeId: string | null): Obj
 	}
 }
 
-export function useObjectList(props: ImageMap3DProps, map: Map3DParts) {
+function isFocusLost(): boolean {
+	return !document.activeElement || document.activeElement === document.body
+}
+
+function keepFocus(listRef: Readonly<Ref<HTMLElement | null>>, hostRef: Readonly<Ref<HTMLElement | null>>): void {
+	if (!listRef.value?.contains(document.activeElement)) return
+	void nextTick(() => {
+		if (isFocusLost()) hostRef.value?.focus()
+	})
+}
+
+export function useObjectList(props: ImageMap3DProps, map: Map3DParts, hostRef: Readonly<Ref<HTMLElement | null>>) {
+	const listRef = useTemplateRef<HTMLElement>('objectsRef')
+	const objectEntries = computed((): ObjectListEntry[] =>
+		props.hasDirectory ? [] : (map.data.view.value?.objects ?? []).map(item => objectEntry(item, map.actions.localActive.value)),
+	)
+	watch(objectEntries, () => keepFocus(listRef, hostRef), { flush: 'pre' })
 	return {
-		objectEntries: computed((): ObjectListEntry[] =>
-			props.hasDirectory ? [] : (map.data.view.value?.objects ?? []).map(item => objectEntry(item, map.actions.localActive.value)),
-		),
+		objectEntries,
 		objectsLabel: computed(() =>
 			formatMessage(UI_IMAGE_MAP_3D.REGION_LABEL, { label: UI_IMAGE_MAP.DIRECTORY, layer: map.data.currentLayer.value?.title ?? '' }),
 		),

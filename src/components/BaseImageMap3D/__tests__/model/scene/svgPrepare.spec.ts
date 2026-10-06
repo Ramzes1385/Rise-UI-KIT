@@ -82,6 +82,33 @@ describe('use: ссылки на элементы разворачиваются
 		const paths = parseSvgPaths(svg(`<defs>${levels.join('')}</defs><use id="boom" href="#l7"/>`), LAYER)
 		expect(paths.length).toBeLessThanOrEqual(500)
 	})
+
+	it('цепочка a1…a8 по 10 use вне defs: объём копий ограничен, раскрытие останавливается с предупреждением', () => {
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+		const fan = (level: number) => Array.from({ length: 10 }, () => `<use href="#a${level}"/>`).join('')
+		const levels = ['<g id="a0"><rect width="1" height="1"/></g>']
+		for (let level = 1; level <= 8; level += 1) levels.push(`<g id="a${level}">${fan(level - 1)}</g>`)
+		const started = performance.now()
+		const paths = parseSvgPaths(svg(levels.join('')), LAYER)
+		expect(performance.now() - started).toBeLessThan(5000)
+		expect(paths.length).toBeLessThanOrEqual(20_000)
+		expect(svgElementShapes(paths, 'a1')).toHaveLength(10)
+		expect(svgElementShapes(paths, 'a8')).toEqual([])
+		expect(warn).toHaveBeenCalledTimes(1)
+		expect(warn.mock.calls[0][0]).toContain('слишком много ссылок use')
+		warn.mockRestore()
+	})
+
+	it('в пределе объёма копий раскрываются все use и предупреждения нет', () => {
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+		const fan = (level: number) => Array.from({ length: 10 }, () => `<use href="#a${level}"/>`).join('')
+		const levels = ['<g id="a0"><rect width="1" height="1"/></g>']
+		for (let level = 1; level <= 3; level += 1) levels.push(`<g id="a${level}">${fan(level - 1)}</g>`)
+		const paths = parseSvgPaths(svg(levels.join('')), LAYER)
+		expect(svgElementShapes(paths, 'a3')).toHaveLength(1000)
+		expect(warn).not.toHaveBeenCalled()
+		warn.mockRestore()
+	})
 })
 
 describe('скрытые и нерисуемые элементы не выдавливаются', () => {
@@ -104,6 +131,21 @@ describe('скрытые и нерисуемые элементы не выда�
 		const body = '<rect id="a" display="inline" width="5" height="5"/><rect id="b" style="visibility: visible" width="5" height="5"/>'
 		expect(shapesOf(body, 'a')).toHaveLength(1)
 		expect(shapesOf(body, 'b')).toHaveLength(1)
+	})
+
+	it('visibility hidden у группы не скрывает потомка с visibility visible, остальных скрывает', () => {
+		const body =
+			'<g id="group" visibility="hidden"><rect id="shown" visibility="visible" width="5" height="5"/><rect id="gone" width="5" height="5"/>' +
+			'<g style="visibility: inherit"><rect id="inherited" width="5" height="5"/></g></g>'
+		const paths = parseSvgPaths(svg(body), LAYER)
+		expect(svgElementShapes(paths, 'shown')).toHaveLength(1)
+		expect(svgElementShapes(paths, 'gone')).toEqual([])
+		expect(svgElementShapes(paths, 'inherited')).toEqual([])
+	})
+
+	it('display none у родителя скрывает и потомка с visibility visible', () => {
+		const body = '<g display="none"><rect id="shown" visibility="visible" width="5" height="5"/></g>'
+		expect(shapesOf(body, 'shown')).toEqual([])
 	})
 
 	it.each(['clipPath', 'mask', 'pattern', 'symbol'])('%s вне defs не рисуется', tag => {

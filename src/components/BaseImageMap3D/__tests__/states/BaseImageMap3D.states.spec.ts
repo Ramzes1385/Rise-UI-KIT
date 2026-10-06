@@ -47,9 +47,10 @@ async function renderStates(data: ImageMap3DData, props: Record<string, unknown>
 	const result = render(BaseImageMap3D, { props: { data, rendererFactory: () => renderer, ...props } })
 	await waitFor(() => expect(renderer.setPixelRatio).toHaveBeenCalled())
 	await nextTick()
-	const region = (): HTMLElement => document.querySelector('.base-image-map-3d__viewport') as HTMLElement
-	const status = (): HTMLElement => document.querySelector('.base-image-map-3d__status') as HTMLElement
-	const overlay = (): HTMLElement | null => document.querySelector('.base-image-map-3d__state')
+	const region = (): HTMLElement =>
+		screen.getByRole('group', { name: (_, element) => element.getAttribute('aria-roledescription') === '3D-карта' })
+	const status = (): HTMLElement => screen.getByRole('status')
+	const overlay = (): HTMLElement | null => region().querySelector(':scope > [aria-hidden="true"]:not(canvas)')
 	return { ...result, renderer, region, status, overlay }
 }
 
@@ -94,7 +95,9 @@ describe('BaseImageMap3D: ошибка плана этажа', () => {
 		expect(overlay()).toHaveTextContent('Не удалось загрузить план этажа: Этаж U')
 		expect(region()).toHaveAttribute('aria-busy', 'false')
 		expect(warn).toHaveBeenCalledWith(expect.stringContaining('план этажа «u» не загрузился'))
-		expect(screen.getByRole('status')).toBe(status())
+		expect(screen.getAllByRole('status')).toHaveLength(1)
+		expect(screen.queryByText('Не удалось загрузить план этажа: Этаж U', { ignore: '[aria-hidden="true"] *' })).toBe(status())
+		expect(status()).toHaveClass('base-image-map-3d__status--hidden')
 	})
 
 	it('ответ с ошибкой HTTP и SVG, не прошедший очистку, — тоже ошибка', async () => {
@@ -162,6 +165,7 @@ describe('BaseImageMap3D: пустые данные', () => {
 		expect(overlay()).toHaveTextContent('Нет слоёв карты')
 		expect(overlay()).toHaveClass('base-image-map-3d__state--empty')
 		expect(status()).toHaveTextContent('Нет слоёв карты')
+		expect(status()).toHaveClass('base-image-map-3d__status--hidden')
 		expect(region()).toHaveClass('base-image-map-3d__viewport--empty')
 	})
 
@@ -182,7 +186,8 @@ describe('BaseImageMap3D: пустые данные', () => {
 				},
 			},
 		})
-		await waitFor(() => expect(document.querySelector('.base-image-map-3d__status')).toHaveTextContent('Не удалось запустить 3D'))
+		await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Не удалось запустить 3D'))
+		expect(screen.getByRole('status')).not.toHaveClass('base-image-map-3d__status--hidden')
 		result.unmount()
 	})
 })

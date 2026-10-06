@@ -21,7 +21,7 @@ const ISO_AZIMUTH = Math.PI / 4
 const ISO_POLAR = MathUtils.degToRad(90 - 35)
 const PERSPECTIVE_FOV = 35
 const MIN_FOV = 10
-const MAX_FOV = 100
+const MAX_FOV = 60
 const REFERENCE_ASPECT = 1.5
 const MIN_ASPECT = 0.1
 const ORTHO_DISTANCE = 3
@@ -81,12 +81,12 @@ function perspectiveFov(framing: SceneFraming, distance: number, aspect: number)
 
 export function baseDistance(camera: ImageMap3DViewCamera, framing: SceneFraming): number {
 	if (camera instanceof OrthographicCamera) return Math.hypot(framing.frame.radius, frameRange(framing)) * ORTHO_DISTANCE
-	return perspectiveDistance(framing, REFERENCE_ASPECT, PERSPECTIVE_FOV)
+	return Math.max(perspectiveDistance(framing, REFERENCE_ASPECT, PERSPECTIVE_FOV), perspectiveDistance(framing, camera.aspect, MAX_FOV))
 }
 
 function fitPerspective(camera: PerspectiveCamera, aspect: number, framing: SceneFraming): void {
-	const distance = baseDistance(camera, framing)
 	camera.aspect = aspect
+	const distance = baseDistance(camera, framing)
 	camera.fov = perspectiveFov(framing, distance, aspect)
 	camera.near = distance * PERSPECTIVE_NEAR
 	camera.far = distance * PERSPECTIVE_FAR

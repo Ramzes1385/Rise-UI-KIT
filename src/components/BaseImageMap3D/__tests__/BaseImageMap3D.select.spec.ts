@@ -478,6 +478,24 @@ describe('BaseImageMap3D: фокус, наведение и касание (map3
 		outside.remove()
 	})
 
+	it('уход из окна браузера (document.hasFocus() = false) не снимает объект и карточку; Tab за карту — снимает', async () => {
+		const onHover = vi.fn()
+		const { region } = await renderSelect({ onHover })
+		region().focus()
+		await fireEvent.keyDown(region(), { key: 'ArrowRight' })
+		await nextTick()
+		const hasFocus = vi.spyOn(document, 'hasFocus').mockReturnValue(false)
+		await fireEvent.focusOut(region(), { relatedTarget: null })
+		await nextTick()
+		expect(region().querySelector('[role="tooltip"]')).toHaveTextContent('Зал')
+		expect(onHover).not.toHaveBeenLastCalledWith(null)
+		hasFocus.mockReturnValue(true)
+		await fireEvent.focusOut(region(), { relatedTarget: null })
+		await nextTick()
+		expect(onHover).toHaveBeenLastCalledWith(null)
+		expect(region().querySelector('[role="tooltip"]')).toBeNull()
+	})
+
 	it('Escape в окне, открытом с клавиатуры, возвращает фокус на область карты', async () => {
 		const { region } = await renderSelect()
 		region().focus()

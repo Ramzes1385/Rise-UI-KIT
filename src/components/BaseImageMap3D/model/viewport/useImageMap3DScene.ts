@@ -30,7 +30,17 @@ function startLoads(options: SceneOptions, job: Omit<SceneSurfaceJob, 'layer' | 
 			const onFailure = () => loads.fail(layer.id, job.signal)
 			loads.track(job.signal, loadLayerSurface({ ...job, layer, floor, onFailure }))
 		} else if (layer.model) {
-			const model = { ...job, layer, model: layer.model, configure: options.getConfigureLoader(), onError: options.onModelError }
+			const onBounds = (bounds: Box3) => {
+				options.modelBounds.value = [...options.modelBounds.value, bounds]
+			}
+			const model = {
+				...job,
+				layer,
+				model: layer.model,
+				configure: options.getConfigureLoader(),
+				onError: options.onModelError,
+				onBounds,
+			}
 			loads.track(job.signal, loadModelLayer(model))
 		}
 	})
@@ -57,6 +67,7 @@ export function useImageMap3DScene(options: SceneOptions) {
 		controller?.abort()
 		controller = null
 		loads.reset()
+		if (options.modelBounds.value.length) options.modelBounds.value = []
 		if (!content.value) return
 		options.scene.remove(content.value.root)
 		disposeObject(content.value.root)

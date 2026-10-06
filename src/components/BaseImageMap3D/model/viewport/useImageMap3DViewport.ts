@@ -1,7 +1,6 @@
 import { Scene } from 'three'
 import { watchContext } from './watchContext'
 import { useRenderLoop } from './useRenderLoop'
-import { sceneFrame } from '../camera/sceneFrame'
 import { disposeObject } from '../scene/disposeObject'
 import { onBeforeUnmount, shallowRef, watch } from 'vue'
 import { createViewCamera, fitViewCamera } from '../camera/cameraPose'
@@ -26,11 +25,13 @@ export function useImageMap3DViewport(options: ImageMap3DViewportOptions) {
 	const camera = shallowRef(createViewCamera(options.getCameraKind()))
 	const { renderer, invalidate, release, onFrame } = useRenderLoop(scene, () => camera.value)
 	const disposers: Array<() => void> = []
+	const fitted = shallowRef(0)
 
 	function resize(width: number, height: number): void {
 		if (!renderer.value || width <= 0 || height <= 0) return
 		renderer.value.setSize(width, height, false)
-		fitViewCamera(camera.value, { width, height }, { frame: sceneFrame(options.getData()), mode: options.getLayerMode() })
+		fitViewCamera(camera.value, { width, height }, options.getFraming())
+		fitted.value += 1
 		invalidate()
 	}
 
@@ -66,7 +67,7 @@ export function useImageMap3DViewport(options: ImageMap3DViewportOptions) {
 
 	const refit = () => resize(options.hostRef.value?.clientWidth ?? 0, options.hostRef.value?.clientHeight ?? 0)
 
-	watch([options.getData, options.getLayerMode], refit)
+	watch(options.getFraming, refit)
 
 	watch(options.getCameraKind, kind => {
 		camera.value = createViewCamera(kind)
@@ -75,5 +76,5 @@ export function useImageMap3DViewport(options: ImageMap3DViewportOptions) {
 
 	onBeforeUnmount(stop)
 
-	return { scene, camera, renderer, invalidate, onFrame }
+	return { scene, camera, renderer, invalidate, onFrame, fitted }
 }

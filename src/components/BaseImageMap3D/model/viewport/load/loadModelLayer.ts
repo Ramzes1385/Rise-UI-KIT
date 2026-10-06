@@ -1,3 +1,4 @@
+import { Box3 } from 'three'
 import { warn } from '@/locales/warn'
 import { UI_IMAGE_MAP_3D } from '@/locales/messages'
 import { objectMeshName } from '../../scene/sceneLayout'
@@ -26,6 +27,8 @@ export async function loadModelLayer(job: SceneModelJob): Promise<void> {
 		return
 	}
 	const result = attachModel(job.content, { data: job.data, layerId: layer.id, root }, job.resolve)
+	job.content.root.updateMatrixWorld(true)
+	job.onBounds(new Box3().setFromObject(root))
 	warnObjects(job, result.missing, UI_IMAGE_MAP_3D.MODEL_NODE_MISSING)
 	warnObjects(job, result.shared, UI_IMAGE_MAP_3D.MODEL_NODE_SHARED)
 	job.onUpdate()

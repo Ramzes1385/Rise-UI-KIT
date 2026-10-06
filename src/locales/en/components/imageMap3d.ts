@@ -37,6 +37,9 @@ export const enImageMap3d = {
 		/** SVG element of an object part gave no shape for 3D; `{layer}` — layer id, `{element}` — part `elementId`, `{id}` — object id */
 		SVG_PART_MISSING:
 			'BaseImageMap3D: the SVG of floor «{layer}» has no shape for part «{element}» of object «{id}» (it is missing, hidden, has no area or is unsupported) — the part is not shown in 3D',
+		/** `use` references in the floor SVG exceeded the copy limit; `{uses}` — reference limit, `{elements}` — copied element limit */
+		SVG_USE_LIMIT:
+			'BaseImageMap3D: the floor SVG expands too many use references (more than {uses} references or {elements} copied elements) — the remaining use references are not shown',
 		/** Floor plan (SVG, image or texture) failed to load; `{layer}` — layer id, `{error}` — error */
 		LAYER_LOAD_FAILED: 'BaseImageMap3D: the plan of floor «{layer}» failed to load — the floor is shown without it. {error}',
 		/** Message on the map when a floor plan failed to load; `{layers}` — floor titles separated by commas */

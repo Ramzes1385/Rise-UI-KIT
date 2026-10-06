@@ -82,7 +82,9 @@ export function addShapeObject(content: SceneContent, item: SceneShapeItem, part
 	const layer = content.layers.get(item.layerId)
 	if (!layer) return null
 	const { bevel, outline } = content.settings
-	const geometries = parts.flatMap(part => extrudeShapes(part.shapes, { height: part.height, base: part.base, bevel }) ?? [])
+	const geometries = parts.flatMap(
+		part => extrudeShapes(part.shapes, { height: part.height, base: part.base, bevel, curveSegments: part.curveSegments }) ?? [],
+	)
 	if (!geometries.length) return null
 	const entry = createShapeEntry({ id: item.object.id, layerId: layer.id }, { geometries, hasOutline: outline }, item.colors)
 	layer.group.add(...entry.meshes, ...entry.lines)

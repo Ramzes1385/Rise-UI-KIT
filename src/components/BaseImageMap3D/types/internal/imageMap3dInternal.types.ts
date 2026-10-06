@@ -60,14 +60,12 @@ export interface ImageMap3DViewportOptions {
 	canvasRef: Readonly<Ref<HTMLCanvasElement | null>>
 	/** Элемент, по размеру которого рисуется сцена */
 	hostRef: Readonly<Ref<HTMLElement | null>>
-	/** Данные карты: по ним подбирается камера */
-	getData: () => ImageMap3DData
+	/** Рамка кадра и режим этажей: по ним подбирается камера */
+	getFraming: () => SceneFraming
 	/** Фабрика рендерера */
 	getFactory: () => ImageMap3DRendererFactory
 	/** Вид камеры */
 	getCameraKind: () => ImageMap3DCamera
-	/** Режим этажей: от него зависит рамка кадра */
-	getLayerMode: () => ImageMap3DLayerMode
 	/** Рендерер не создался или графический контекст потерян и не вернулся */
 	onError: (error: unknown) => void
 }
@@ -162,6 +160,8 @@ export interface SceneBody {
 	base: number
 	/** Размер скоса кромок; 0 — без скоса */
 	bevel: number
+	/** Отрезков на кривую контура; нет — по умолчанию выдавливания */
+	curveSegments?: number
 }
 
 /** Часть объекта для выдавливания: фигуры и размеры по высоте */
@@ -172,6 +172,8 @@ export interface SceneShapePart {
 	height: number
 	/** Высота основания над полом этажа */
 	base: number
+	/** Отрезков на кривую контура: у фигур SVG меньше — у них много кривых */
+	curveSegments?: number
 }
 
 /** Размеры части объекта `svg` после проверки полей: элемент, высота и основание */
@@ -298,6 +300,8 @@ export interface SceneOptions {
 	getConfigureLoader: () => ((loader: GLTFLoader) => void) | undefined
 	/** Модель этажа не загрузилась */
 	onModelError: (error: unknown) => void
+	/** Границы загруженных моделей этажей: по ним расширяется рамка кадра */
+	modelBounds: ShallowRef<Box3[]>
 }
 
 /** Загруженная модель этажа для сцены */
@@ -326,6 +330,8 @@ export interface SceneModelJob extends Omit<SceneSurfaceJob, 'floor' | 'onFailur
 	configure?: (loader: GLTFLoader) => void
 	/** Модель не загрузилась */
 	onError: (error: unknown) => void
+	/** Модель этажа добавлена в сцену; `bounds` — её границы в координатах сцены */
+	onBounds: (bounds: Box3) => void
 }
 
 /** Камера сцены: ортографическая (изометрия) или перспективная */
@@ -348,6 +354,10 @@ export interface CameraOptions {
 	canvasRef: Readonly<Ref<HTMLCanvasElement | null>>
 	/** Данные карты */
 	getData: () => ImageMap3DData
+	/** Рамка кадра и режим этажей */
+	getFraming: () => SceneFraming
+	/** Счётчик подгонок камеры под размер области: после подгонки поза применяется заново */
+	fitted: Readonly<ShallowRef<number>>
 	/** Id активного этажа: камера смотрит на его высоту */
 	getLayerId: () => string | undefined
 	/** Режим этажей: `stack` — камера на середине стопки, `single` — на активном этаже */
@@ -386,7 +396,7 @@ export interface CameraPoseState {
 	controls: ShallowRef<OrbitControls | null>
 	/** Положение камеры сейчас */
 	current: () => CameraPose
-	/** Основа следующего шага: цель идущего перехода (нажатия копятся) или положение сейчас */
+	/** Основа следующего шага: цель идущего или ещё не показанного перехода (нажатия копятся) или положение сейчас */
 	next: () => CameraPose
 	/** Запомнить положение после жеста */
 	sync: () => void
@@ -394,6 +404,8 @@ export interface CameraPoseState {
 	goTo: (pose: CameraPose) => void
 	/** Сразу поставить положение */
 	jump: (pose: CameraPose) => void
+	/** Применить положение к камере без перехода (после подгонки камеры под область) */
+	show: (pose: CameraPose) => void
 	/** Последнее показанное положение */
 	lastPose: () => CameraPose | null
 }
@@ -436,7 +448,6 @@ export interface ScenePointView {
 	isHovered: boolean
 }
 
-/** Указатель над сценой */
 /** Последнее положение указателя: наведение по нему считается раз в кадр */
 export interface PointerSpot {
 	/** Элемент под указателем (метка точки) */
@@ -447,6 +458,7 @@ export interface PointerSpot {
 	y: number
 }
 
+/** Указатель над сценой */
 export interface ScenePointerOptions {
 	/** Id объекта под точкой экрана (clientX, clientY) */
 	pickAt: (x: number, y: number) => string | null

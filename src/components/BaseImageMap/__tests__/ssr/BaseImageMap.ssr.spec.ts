@@ -1,5 +1,5 @@
+import type { Component } from 'vue'
 import { createSSRApp, h } from 'vue'
-import BaseImageMap from '../../ui/BaseImageMap.vue'
 import { renderToString } from 'vue/server-renderer'
 import type { ImageMapData } from '../../types/imageMapData.types'
 
@@ -16,6 +16,26 @@ const DATA: ImageMapData = {
 	],
 }
 
+const BROWSER_GLOBALS = [
+	'window',
+	'document',
+	'navigator',
+	'DOMParser',
+	'MutationObserver',
+	'ResizeObserver',
+	'requestAnimationFrame',
+	'cancelAnimationFrame',
+	'matchMedia',
+]
+
+let BaseImageMap: Component
+
+async function serverSide(): Promise<void> {
+	BROWSER_GLOBALS.forEach(name => vi.stubGlobal(name, undefined))
+	vi.resetModules()
+	BaseImageMap = (await import('../../ui/BaseImageMap.vue')).default
+}
+
 const app = (props: Record<string, unknown> = {}) => createSSRApp({ render: () => h(BaseImageMap, { data: DATA, ...props }) })
 
 describe('BaseImageMap SSR', () => {
@@ -23,9 +43,8 @@ describe('BaseImageMap SSR', () => {
 		vi.unstubAllGlobals()
 	})
 
-	it('рендерится без window и document: растровый слой, фигуры и переключатель этажей', async () => {
-		vi.stubGlobal('window', undefined)
-		vi.stubGlobal('document', undefined)
+	it('рендерится без window, document, navigator, DOMParser, MutationObserver и rAF: растровый слой, фигуры и переключатель этажей', async () => {
+		await serverSide()
 		const html = await renderToString(app())
 		expect(html).toContain('base-image-map')
 		expect(html).toContain('plan-1.png')
@@ -33,9 +52,8 @@ describe('BaseImageMap SSR', () => {
 		expect(html).toContain('Этаж 2')
 	})
 
-	it('слой с SVG рендерится без window и document', async () => {
-		vi.stubGlobal('window', undefined)
-		vi.stubGlobal('document', undefined)
+	it('слой с SVG рендерится без window, document, navigator, DOMParser, MutationObserver и rAF', async () => {
+		await serverSide()
 		const html = await renderToString(app({ layer: 'f2' }))
 		expect(html).toContain('base-image-map')
 	})

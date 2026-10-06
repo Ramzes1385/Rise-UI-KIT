@@ -1,5 +1,7 @@
-import { computed, watch } from 'vue'
+import type { Box3 } from 'three'
+import { sceneFrame } from './camera/sceneFrame'
 import { toNdc } from './interaction/projection'
+import { computed, shallowRef, watch } from 'vue'
 import { cameraKeyAction } from './camera/cameraKeys'
 import { useRouteTube } from './viewport/useRouteTube'
 import { pickObjectId } from './interaction/pickObject'
@@ -12,7 +14,7 @@ import { useCameraController } from './camera/useCameraController'
 import { useImageMap3DScene } from './viewport/useImageMap3DScene'
 import { useImageMap3DViewport } from './viewport/useImageMap3DViewport'
 import type { Center } from '@components/BaseImageMap/types/internal/imageMapInternal.types'
-import type { CameraKeyAction, ImageMap3DStage, StageOptions } from '../types/internal/imageMap3dInternal.types'
+import type { CameraKeyAction, ImageMap3DStage, SceneFraming, StageOptions } from '../types/internal/imageMap3dInternal.types'
 
 function runCameraAction(camera: ReturnType<typeof useCameraController>, action: CameraKeyAction): void {
 	if (action.type === 'rotate') camera.rotate(action.degrees)
@@ -38,16 +40,22 @@ function useStageState(options: StageOptions) {
 	}
 }
 
+function useStageFraming(props: StageOptions['props']) {
+	const modelBounds = shallowRef<Box3[]>([])
+	const framing = computed((): SceneFraming => ({ frame: sceneFrame(props.data, modelBounds.value), mode: props.layerMode }))
+	return { modelBounds, getFraming: () => framing.value }
+}
+
 export function useImageMap3DStage(options: StageOptions) {
 	const { props, map } = options
 	const state = useStageState(options)
+	const { modelBounds, getFraming } = useStageFraming(props)
 	const viewport = useImageMap3DViewport({
 		canvasRef: options.canvasRef,
 		hostRef: options.hostRef,
-		getData: () => props.data,
+		getFraming,
 		getFactory: () => props.rendererFactory ?? createWebGLRenderer,
 		getCameraKind: () => props.camera,
-		getLayerMode: () => props.layerMode,
 		onError: options.onError,
 	})
 	const scene = useImageMap3DScene({
@@ -61,11 +69,13 @@ export function useImageMap3DStage(options: StageOptions) {
 		getHidden: () => state.hidden.value,
 		getConfigureLoader: () => props.configureLoader,
 		onModelError: options.onError,
+		modelBounds,
 	})
 	const camera = useCameraController({
 		...viewport,
 		canvasRef: options.canvasRef,
 		getData: () => props.data,
+		getFraming,
 		getLayerId: () => state.layerId.value,
 		getLayerMode: () => props.layerMode,
 		getHasOrbit: () => props.hasOrbit,
@@ -118,7 +128,7 @@ function useFocusLeave(options: StageOptions, announce: (id: string | null) => v
 	const { map } = options
 	return function onFocusOut(event: FocusEvent): void {
 		const next = event.relatedTarget
-		if (map.overlay.popupId.value || (next instanceof Node && map.refs.rootRef.value?.contains(next))) return
+		if (!document.hasFocus() || map.overlay.popupId.value || (next instanceof Node && map.refs.rootRef.value?.contains(next))) return
 		if (!map.overlay.hoverId.value) return
 		map.setHover(null)
 		announce(null)

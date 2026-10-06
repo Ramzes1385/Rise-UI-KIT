@@ -1,7 +1,7 @@
+import type { BufferGeometry } from 'three'
 import { Box3, Shape, Vector3 } from 'three'
-import type { BufferGeometry, ExtrudeGeometry } from 'three'
 import type { SceneBody } from '../../../../types/internal/imageMap3dInternal.types'
-import { bevelSizes, extrudeShapes, shapeHalfWidth } from '../../../../model/scene/geometry/extrudeShapes'
+import { bevelSizes, extrudeShapes, shapeHalfWidth, shapeNarrowest } from '../../../../model/scene/geometry/extrudeShapes'
 
 function rect(box: number[]): Shape {
 	const [x, y, width, height] = box
@@ -28,9 +28,42 @@ function ring(): Shape {
 	return shape
 }
 
-function build(shapes: Shape[], body: Partial<SceneBody> & { height: number }): ExtrudeGeometry {
-	return extrudeShapes(shapes, { base: 0, bevel: 0, ...body }) as ExtrudeGeometry
+function build(shapes: Shape[], body: Partial<SceneBody> & { height: number }): BufferGeometry {
+	return extrudeShapes(shapes, { base: 0, bevel: 0, ...body }) as BufferGeometry
 }
+
+function corridor(width: number): Shape {
+	const half = width / 2
+	const shape = new Shape()
+	;[
+		[0, 0],
+		[100, 0],
+		[100, 50 - half],
+		[150, 50 - half],
+		[150, 0],
+		[250, 0],
+		[250, 100],
+		[150, 100],
+		[150, 50 + half],
+		[100, 50 + half],
+		[100, 100],
+		[0, 100],
+	].forEach(([x, y], index) => (index ? shape.lineTo(x, y) : shape.moveTo(x, y)))
+	shape.closePath()
+	return shape
+}
+
+function bumpy(curves: number): Shape {
+	const shape = new Shape()
+	shape.moveTo(0, 0)
+	for (let index = 0; index < curves; index += 1) shape.quadraticCurveTo(index * 10 + 5, -4, index * 10 + 10, 0)
+	shape.lineTo(curves * 10, 40)
+	shape.lineTo(0, 40)
+	shape.closePath()
+	return shape
+}
+
+const triangles = (geometry: BufferGeometry): number => geometry.getAttribute('position').count / 3
 
 function bounds(geometry: BufferGeometry, level?: number): Box3 {
 	const box = new Box3()
@@ -129,7 +162,7 @@ describe('extrudeShapes со скосом', () => {
 		line.lineTo(10, 0)
 		line.lineTo(20, 0)
 		line.closePath()
-		expect(bevelSizes([line], 10, 2).size).toBe(0)
+		expect(bevelSizes(line, 10, { bevel: 2 }).size).toBe(0)
 		expect(build([line], { height: 10, bevel: 2 }).getAttribute('position').count).toBeGreaterThan(0)
 	})
 })
@@ -154,11 +187,45 @@ describe('shapeHalfWidth и bevelSizes', () => {
 		expect(shapeHalfWidth(new Shape())).toBe(0)
 	})
 
-	it('размеры скоса: по высоте — четверть, по ширине — половина половинной толщины, самая тонкая фигура объекта', () => {
-		const sizes = bevelSizes([rect([0, 0, 100, 60]), rect([0, 0, 200, 4])], 40, 3)
-		expect(sizes.thickness).toBe(3)
-		expect(sizes.size).toBeCloseTo(0.98, 2)
-		expect(bevelSizes([rect([0, 0, 100, 60])], 8, 5)).toEqual({ thickness: 2, size: 5 })
-		expect(bevelSizes([rect([0, 0, 100, 60])], 8, 0)).toEqual({ thickness: 0, size: 0 })
+	it('размеры скоса: по высоте — четверть, по ширине — половина половинной толщины фигуры', () => {
+		expect(bevelSizes(rect([0, 0, 200, 4]), 40, { bevel: 3 })).toEqual({ thickness: 3, size: expect.closeTo(0.98, 2) })
+		expect(bevelSizes(rect([0, 0, 100, 60]), 8, { bevel: 5 })).toEqual({ thickness: 2, size: 5 })
+		expect(bevelSizes(rect([0, 0, 100, 60]), 8, { bevel: 0 })).toEqual({ thickness: 0, size: 0 })
+	})
+
+	it('перемычка шириной 2: скос не больше половины ширины перемычки, хотя площадь на периметр больше', () => {
+		const shape = corridor(2)
+		expect(shapeHalfWidth(shape)).toBeGreaterThan(10)
+		expect(shapeNarrowest(shape, 100)).toBeCloseTo(2, 6)
+		expect(bevelSizes(shape, 40, { bevel: 4 }).size).toBeLessThanOrEqual(0.5)
+		const top = bounds(build([shape], { height: 40, bevel: 4 }), 40)
+		expect(top.max.x - top.min.x).toBeGreaterThan(248)
+	})
+
+	it('кратчайшее расстояние — между противоположными сторонами: гладкая кривая из коротких отрезков не сужает фигуру', () => {
+		expect(shapeNarrowest(circle(0, 0, 10), 100)).toBeGreaterThan(19)
+		expect(shapeNarrowest(rect([0, 0, 200, 4]), 100)).toBeCloseTo(4, 6)
+	})
+
+	it('кратчайшее расстояние ограничено пределом: дальше предела не считается', () => {
+		expect(shapeNarrowest(rect([0, 0, 100, 60]), 5)).toBe(5)
+		expect(shapeNarrowest(rect([0, 0, 100, 60]), 1000)).toBeCloseTo(60, 6)
+		expect(shapeNarrowest(new Shape(), 3)).toBe(3)
+	})
+
+	it('скос считается по каждой фигуре: мелкая фигура не выключает скос у крупной', () => {
+		const geometry = build([rect([0, 0, 100, 60]), rect([200, 0, 1, 1])], { height: 40, bevel: 4 })
+		const top = bounds(geometry, 40)
+		expect(top.min.x).toBeCloseTo(4, 4)
+		expect(top.min.z).toBeCloseTo(0.125, 4)
+		expect(top.max.x).toBeCloseTo(200.875, 4)
+		expect(geometry.getAttribute('normal').count).toBe(geometry.getAttribute('position').count)
+		expect(geometry.getAttribute('uv').count).toBe(geometry.getAttribute('position').count)
+	})
+
+	it('меньше отрезков на кривую — не больше половины треугольников фигуры из 40 кривых', () => {
+		const dense = triangles(build([bumpy(40)], { height: 20, bevel: 1 }))
+		const svg = triangles(build([bumpy(40)], { height: 20, bevel: 1, curveSegments: 10 }))
+		expect(svg).toBeLessThanOrEqual(dense / 2)
 	})
 })

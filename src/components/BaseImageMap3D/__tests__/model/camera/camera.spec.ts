@@ -95,6 +95,17 @@ describe('положение камеры', () => {
 		expect(ortho.far).toBeGreaterThan(distance + Math.hypot(FRAME.radius, FRAME.stackHalf))
 	})
 
+	it('sceneFrame: границы загруженных моделей расширяют рамку и высоту этажа; пустая граница не мешает', () => {
+		const tall = new Box3(new Vector3(100, -50, 100), new Vector3(300, 1500, 200))
+		const frame = sceneFrame(STACK_DATA, [tall, new Box3()])
+		expect(frame.bounds.max.y).toBe(1500)
+		expect(frame.bounds.min.y).toBe(-50)
+		expect(frame.stackHalf).toBeGreaterThan(FRAME.stackHalf)
+		expect(frame.floorHalf).toBe(1550)
+		expect(frame.radius).toBe(FRAME.radius)
+		expect(sceneFrame(STACK_DATA, [])).toEqual(FRAME)
+	})
+
 	it('fitViewCamera, перспектива: угол обзора подстраивается под пропорции и ограничен, near и far от расстояния', () => {
 		const perspective = createViewCamera('perspective') as PerspectiveCamera
 		fitViewCamera(perspective, { width: 300, height: 100 }, STACK)
@@ -102,8 +113,10 @@ describe('положение камеры', () => {
 		const wide = perspective.fov
 		fitViewCamera(perspective, { width: 100, height: 300 }, STACK)
 		expect(perspective.fov).toBeGreaterThan(wide)
+		const portrait = baseDistance(perspective, STACK)
 		fitViewCamera(perspective, { width: 1, height: 3000 }, STACK)
-		expect(perspective.fov).toBe(100)
+		expect(perspective.fov).toBeCloseTo(60, 5)
+		expect(baseDistance(perspective, STACK)).toBeGreaterThan(portrait)
 		fitViewCamera(perspective, { width: 3000, height: 1 }, STACK)
 		expect(perspective.fov).toBeCloseTo(wide)
 		expect(perspective.fov).toBeGreaterThanOrEqual(10)
@@ -120,10 +133,12 @@ describe('положение камеры', () => {
 		{ name: 'изометрия, один этаж', kind: 'isometric', aspect: 1.6, mode: 'single' },
 		{ name: 'перспектива, широкая область', kind: 'perspective', aspect: 1.6, mode: 'stack' },
 		{ name: 'перспектива, портрет', kind: 'perspective', aspect: 0.5, mode: 'stack' },
+		{ name: 'перспектива, узкий портрет 0,33', kind: 'perspective', aspect: 0.33, mode: 'stack' },
 	] as const)('кадр вмещает всю сцену при любом повороте: $name', ({ kind, aspect, mode }) => {
 		const framing: SceneFraming = { frame: FRAME, mode }
 		const camera = createViewCamera(kind)
 		fitViewCamera(camera, { width: aspect * 400, height: 400 }, framing)
+		if (camera instanceof PerspectiveCamera) expect(camera.fov).toBeLessThanOrEqual(60)
 		const box = mode === 'stack' ? FRAME.bounds : new Box3(new Vector3(0, -4, 0), new Vector3(1000, 40, 600))
 		for (let degrees = 0; degrees < 360; degrees += 15) {
 			placeAtHome(camera, framing, MathUtils.degToRad(degrees))

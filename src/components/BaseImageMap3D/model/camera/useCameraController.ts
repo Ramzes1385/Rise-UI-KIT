@@ -1,5 +1,4 @@
 import type { ComputedRef } from 'vue'
-import { sceneFrame } from './sceneFrame'
 import { ROTATE_STEP } from './cameraKeys'
 import { MathUtils, Vector3 } from 'three'
 import { useTween } from '@composables/interaction/useTween'
@@ -81,12 +80,14 @@ function useCameraPose(options: CameraOptions, framing: ComputedRef<SceneFraming
 	const zoom = ref(1)
 	const controls = shallowRef<OrbitControls | null>(null)
 	let lastPose: CameraPose | null = null
+	let isPending = false
 
 	const distance = () => baseDistance(options.camera.value, framing.value)
 
 	function show(pose: CameraPose): void {
 		const target = applyPose(options.camera.value, pose, distance())
 		lastPose = pose
+		isPending = false
 		zoom.value = pose[5]
 		controls.value?.target.copy(target)
 		options.invalidate()
@@ -100,6 +101,7 @@ function useCameraPose(options: CameraOptions, framing: ComputedRef<SceneFraming
 	function goTo(pose: CameraPose): void {
 		const from = current()
 		goal.value = clampPose(pose, framing.value.frame)
+		isPending = true
 		tween.replay(from)
 	}
 
@@ -110,7 +112,7 @@ function useCameraPose(options: CameraOptions, framing: ComputedRef<SceneFraming
 	}
 
 	function next(): CameraPose {
-		return tween.isRunning.value ? goal.value : current()
+		return tween.isRunning.value || isPending ? goal.value : current()
 	}
 
 	function sync(): void {
@@ -120,7 +122,7 @@ function useCameraPose(options: CameraOptions, framing: ComputedRef<SceneFraming
 
 	watch(tween.value, show)
 
-	return { tween, zoom, controls, current, next, sync, goTo, jump, lastPose: () => lastPose }
+	return { tween, zoom, controls, current, next, sync, goTo, jump, show, lastPose: () => lastPose }
 }
 
 function useOrbitControls(options: CameraOptions, state: CameraPoseState, framing: ComputedRef<SceneFraming>): void {
@@ -153,10 +155,15 @@ function useOrbitControls(options: CameraOptions, state: CameraPoseState, framin
 		{ flush: 'post' },
 	)
 
-	watch(framing, value => {
+	function refit(): void {
 		const controls = state.controls.value
-		if (controls) Object.assign(controls, distanceLimits(options, value))
-	})
+		if (!controls) return
+		Object.assign(controls, distanceLimits(options, framing.value))
+		const pose = state.lastPose()
+		if (pose && !state.tween.isRunning.value) state.show(pose)
+	}
+
+	watch(options.fitted, refit)
 
 	watch(options.getHasOrbit, value => {
 		const controls = state.controls.value
@@ -166,6 +173,10 @@ function useOrbitControls(options: CameraOptions, state: CameraPoseState, framin
 	})
 
 	onBeforeUnmount(stop)
+}
+
+function isSamePose(pose: CameraPose, other: CameraPose): boolean {
+	return pose.every((value, index) => Math.abs(value - other[index]) < 1e-6)
 }
 
 function turn(pose: CameraPose, index: 3 | 4, degrees: number): CameraPose {
@@ -182,11 +193,15 @@ function wheelFactor(event: WheelEvent): number {
 }
 
 export function useCameraController(options: CameraOptions) {
-	const framing = computed((): SceneFraming => ({ frame: sceneFrame(options.getData()), mode: options.getLayerMode() }))
+	const framing = computed((): SceneFraming => options.getFraming())
 	const state = useCameraPose(options, framing)
 	useOrbitControls(options, state, framing)
 
 	watch(options.getData, () => state.jump(homePose(options, framing.value)))
+	watch(framing, (value, old) => {
+		const pose = state.lastPose()
+		if (value.mode === old.mode && pose && isSamePose(pose, homePose(options, old))) state.jump(homePose(options, value))
+	})
 	watch(options.getLayerMode, () => state.goTo(homePose(options, framing.value)))
 	watch(options.getLayerId, () => {
 		const pose = state.next()

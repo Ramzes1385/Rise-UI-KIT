@@ -146,7 +146,12 @@
 					<p :id="hintId" class="base-image-map-3d__hint">{{ UI_IMAGE_MAP_3D.KEYBOARD_HINT }}</p>
 					<p class="base-image-map-3d__hint" aria-live="polite">{{ liveText }}</p>
 				</div>
-				<ul v-if="objectEntries.length" class="base-image-map-3d__objects" :aria-label="objectsLabel" @focusout="onFocusOut">
+				<ul
+					v-if="objectEntries.length"
+					ref="objectsRef"
+					class="base-image-map-3d__objects"
+					:aria-label="objectsLabel"
+					@focusout="onFocusOut">
 					<li v-for="entry in objectEntries" :key="entry.item.object.id">
 						<component
 							:is="entry.tag"
@@ -195,7 +200,12 @@
 				</template>
 			</ImageMapDirectory>
 		</div>
-		<p class="base-image-map-3d__status" :class="classes.status" role="status">{{ statusText }}</p>
+		<p
+			class="base-image-map-3d__status"
+			:class="[classes.status, { 'base-image-map-3d__status--hidden': !isStatusShown }]"
+			role="status">
+			{{ statusText }}
+		</p>
 		<component
 			:is="map.overlay.isSheet.value ? BaseDrawer : BaseModal"
 			v-if="map.overlay.popupItem.value"
@@ -289,6 +299,7 @@ const {
 	mapLabel,
 	viewportStyle,
 	statusText,
+	isStatusShown,
 	loadState,
 	liveText,
 	mapBindings,

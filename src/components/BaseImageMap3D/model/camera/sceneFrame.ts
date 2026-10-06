@@ -12,10 +12,14 @@ function bodyHeight(data: ImageMap3DData, layer: ImageMap3DLayer, settings: Scen
 	}, 0)
 }
 
-export function sceneFrame(data: ImageMap3DData): SceneFrame {
+function modelHeight(models: readonly Box3[]): number {
+	return models.reduce((height, box) => Math.max(height, box.isEmpty() ? 0 : box.max.y - box.min.y), 0)
+}
+
+export function sceneFrame(data: ImageMap3DData, models: readonly Box3[] = []): SceneFrame {
 	const settings = sceneSettings(data)
 	const bounds = new Box3()
-	let floorHalf = settings.floorThickness
+	let floorHalf = Math.max(settings.floorThickness, modelHeight(models))
 	data.layers.forEach((layer, index) => {
 		const elevation = layerElevation(layer, index, settings)
 		const body = bodyHeight(data, layer, settings)
@@ -23,6 +27,7 @@ export function sceneFrame(data: ImageMap3DData): SceneFrame {
 		bounds.expandByPoint(new Vector3(0, elevation - settings.floorThickness, 0))
 		bounds.expandByPoint(new Vector3(isSize(layer.width) ? layer.width : 0, elevation + body, isSize(layer.height) ? layer.height : 0))
 	})
+	models.forEach(box => bounds.union(box))
 	if (bounds.isEmpty()) bounds.set(new Vector3(), new Vector3(settings.extent, 0, settings.extent))
 	const size = bounds.getSize(new Vector3())
 	return { bounds, radius: Math.hypot(size.x, size.z) / 2, stackHalf: size.y / 2, floorHalf }
