@@ -17,6 +17,7 @@ export const Animations: StoryObj<typeof meta> = {
 	name: 'Анимации',
 	args: { title: 'Смена слайдов' },
 	parameters: {
+		a11y: { config: { rules: [{ id: 'landmark-unique', enabled: false }] } },
 		maxWidth: 1400,
 		controls: { include: ['navigation', 'sizeScale'] },
 		docs: {
@@ -29,6 +30,7 @@ export const Animations: StoryObj<typeof meta> = {
 					'`--rise-duration` × 1,2. В пресете `none` и при «уменьшить движение» сдвиг 0, а смена слайда и панели мгновенные.',
 					"«Повторить» монтирует плееры заново. Выключить движение в приложении — `createUiKitPlugin({ motion: 'none' })`",
 					"или `reducedMotion: 'always'`; системная настройка «уменьшить движение» действует всегда.",
+					'Одинаковые экземпляры для сравнения — регионы с одним именем, поэтому правило axe `landmark-unique` у этой истории выключено.',
 				].join('\n'),
 			},
 			source: motion.source,

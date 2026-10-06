@@ -9,7 +9,7 @@ const ui = { root: 'story-themed-compare', handle: 'story-themed-handle' }
 const template = `
 	<div class="story-stack" style="max-width: 560px">
 		<BaseImageCompare v-bind="args" before-label="По умолчанию" />
-		<div style="--rise-image-compare-radius: var(--rise-radius-2xl); --rise-image-compare-border: var(--rise-primary); --rise-image-compare-label-bg: var(--rise-primary); --rise-image-compare-divider-width: 4px; --rise-image-compare-handle-bg: var(--rise-primary); --rise-image-compare-handle-text: var(--rise-text-inverted);">
+		<div style="--rise-image-compare-radius: var(--rise-radius-2xl); --rise-image-compare-border: var(--rise-primary); --rise-image-compare-label-bg: var(--rise-primary); --rise-image-compare-divider-width: 4px; --rise-image-compare-handle-bg: var(--rise-primary); --rise-image-compare-handle-text: var(--rise-on-primary); --rise-image-compare-label-text: var(--rise-on-primary);">
 			<BaseImageCompare v-bind="args" before-label="Токены на контейнере" />
 		</div>
 		<BaseImageCompare v-bind="args" before-label="Классы через ui" :ui="ui" />

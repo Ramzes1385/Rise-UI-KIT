@@ -20,6 +20,7 @@ export const Animations: StoryObj<typeof meta> = {
 	args: { data: IMAGE_MAP_FLOORS, hasFullscreen: false },
 	decorators: [() => ({ template: '<div style="--story-motion-min: 320px;"><story /></div>' })],
 	parameters: {
+		a11y: { config: { rules: [{ id: 'landmark-unique', enabled: false }] } },
 		controls: { include: ['variant', 'sizeScale'] },
 		docs: {
 			description: {
@@ -30,6 +31,7 @@ export const Animations: StoryObj<typeof meta> = {
 					'(`--rise-duration-slow`, `--rise-ease`); жесты и колесо мыши двигают план без задержки. Точки и строки списка меняют цвет',
 					"плавно (`--rise-duration-fast`). Выключить движение в приложении — `createUiKitPlugin({ motion: 'none' })` или",
 					"`reducedMotion: 'always'`: этаж меняется сразу, без растворения; системная настройка «уменьшить движение» действует всегда.",
+					'Одинаковые экземпляры для сравнения — регионы с одним именем, поэтому правило axe `landmark-unique` у этой истории выключено.',
 				].join('\n'),
 			},
 			source: motion.source,

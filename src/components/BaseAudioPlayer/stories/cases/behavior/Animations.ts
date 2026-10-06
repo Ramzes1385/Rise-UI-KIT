@@ -28,6 +28,7 @@ export const Animations: StoryObj<typeof meta> = {
 	},
 	decorators: [() => ({ template: '<div style="--story-motion-min: 360px;"><story /></div>' })],
 	parameters: {
+		a11y: { config: { rules: [{ id: 'landmark-unique', enabled: false }] } },
 		controls: { include: ['variant', 'sizeScale'] },
 		docs: {
 			description: {
@@ -38,6 +39,7 @@ export const Animations: StoryObj<typeof meta> = {
 					'(`transform` и `opacity`, `--rise-duration`), текущая реплика подсвечивается цветом. Прогресс на волне — цвет столбиков,',
 					'без анимации ширины. «Повторить» монтирует плееры заново. Выключить движение в приложении —',
 					"`createUiKitPlugin({ motion: 'none' })` или `reducedMotion: 'always'`; системная настройка «уменьшить движение» действует всегда.",
+					'Одинаковые экземпляры для сравнения — регионы с одним именем, поэтому правило axe `landmark-unique` у этой истории выключено.',
 				].join('\n'),
 			},
 			source: motion.source,

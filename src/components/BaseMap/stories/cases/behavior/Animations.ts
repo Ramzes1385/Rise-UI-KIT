@@ -19,6 +19,7 @@ export const Animations: StoryObj<typeof meta> = {
 	name: 'Анимации',
 	args: { apiKey: 'demo', height: '180px', zoom: 12, markers: OFFICES.slice(0, 2) },
 	parameters: {
+		a11y: { config: { rules: [{ id: 'landmark-unique', enabled: false }] } },
 		controls: { include: ['variant', 'sizeScale'] },
 		docs: {
 			description: {
@@ -30,6 +31,7 @@ export const Animations: StoryObj<typeof meta> = {
 					'Сама карта — дело поставщика: её панорамирование и масштаб кит не анимирует.',
 					"Выключить движение в приложении — `createUiKitPlugin({ motion: 'none' })` или `reducedMotion: 'always'`;",
 					'системная настройка «уменьшить движение» действует всегда.',
+					'Одинаковые экземпляры для сравнения — регионы с одним именем, поэтому правило axe `landmark-unique` у этой истории выключено.',
 				].join('\n'),
 			},
 			source: motion.source,

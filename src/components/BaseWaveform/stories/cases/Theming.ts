@@ -9,7 +9,7 @@ const ui = { root: 'story-themed-waveform', bar: 'story-themed-bar' }
 const template = `
 	<div class="story-stack">
 		<BaseWaveform v-bind="args" label="По умолчанию" />
-		<div style="--rise-waveform-fill-bg: var(--rise-success); --rise-waveform-bar-bg: var(--rise-bg-accented); --rise-waveform-height: 56px; --rise-waveform-gap: 4px; --rise-waveform-bar-radius: var(--rise-radius-xs);">
+		<div style="--rise-waveform-fill-bg: var(--rise-success); --rise-waveform-bar-bg: var(--rise-primary-soft); --rise-waveform-height: 56px; --rise-waveform-gap: 4px; --rise-waveform-bar-radius: var(--rise-radius-xs);">
 			<BaseWaveform v-bind="args" label="Токены на контейнере" />
 		</div>
 		<BaseWaveform v-bind="args" label="Классы через ui" :ui="ui" />

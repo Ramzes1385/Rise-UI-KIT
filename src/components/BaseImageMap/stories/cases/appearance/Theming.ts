@@ -19,6 +19,7 @@ const template = `
 export const Theming: StoryObj<typeof meta> = {
 	name: 'Токены',
 	parameters: {
+		a11y: { config: { rules: [{ id: 'landmark-unique', enabled: false }] } },
 		controls: { include: ['variant', 'sizeScale'] },
 		docs: {
 			description: {
@@ -30,6 +31,7 @@ export const Theming: StoryObj<typeof meta> = {
 					'`route-step-bg-hover` (список — docs/design/COMPONENT_TOKENS.md). Отступы карты и списков умножаются на плотность темы `--rise-density`.',
 					'Проп `ui` добавляет классы к частям (`root`, `toolbar`, `viewport`, `stage`, `point`, `marker`, `legend`, `tooltip`… — `IMAGE_MAP_PARTS`);',
 					'для всех карт приложения — `defaults.BaseImageMap.ui` плагина.',
+					'Одинаковые экземпляры для сравнения — регионы с одним именем, поэтому правило axe `landmark-unique` у этой истории выключено.',
 				].join('\n'),
 			},
 			source: storySource({

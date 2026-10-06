@@ -114,3 +114,26 @@ describe('BasePresentationPlayer: движение', () => {
 		expect(await closedPanelAfter(60)).toBe(true)
 	})
 })
+
+describe('BasePresentationPlayer: прокрутка стенограммы', () => {
+	afterEach(() => {
+		vi.restoreAllMocks()
+	})
+
+	it('длинная стенограмма доступна с клавиатуры (tabindex 0), короткая — только программный фокус', async () => {
+		const wrapper = await mountContent({ slides: NOTES_SLIDES })
+		await wrapper.get('.base-presentation-player__notes-button').trigger('click')
+		await nextTick()
+		await nextTick()
+		expect(partOf(wrapper, 'notes').attributes('tabindex')).toBe('-1')
+		wrapper.unmount()
+
+		vi.spyOn(HTMLElement.prototype, 'scrollHeight', 'get').mockReturnValue(400)
+		vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(100)
+		const long = await mountContent({ slides: NOTES_SLIDES })
+		await long.get('.base-presentation-player__notes-button').trigger('click')
+		await nextTick()
+		await nextTick()
+		expect(partOf(long, 'notes').attributes('tabindex')).toBe('0')
+	})
+})

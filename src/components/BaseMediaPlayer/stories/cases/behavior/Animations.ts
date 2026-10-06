@@ -17,6 +17,7 @@ export const Animations: StoryObj<typeof meta> = {
 	name: 'Анимации',
 	args: { title: 'Анимации плеера', idleTimeout: 1500 },
 	parameters: {
+		a11y: { config: { rules: [{ id: 'landmark-unique', enabled: false }] } },
 		maxWidth: 1400,
 		controls: { include: ['idleTimeout', 'sizeScale'] },
 		docs: {
@@ -31,6 +32,7 @@ export const Animations: StoryObj<typeof meta> = {
 					"«Повторить» монтирует плееры заново. Выключить движение в приложении — `createUiKitPlugin({ motion: 'none' })`",
 					"или `reducedMotion: 'always'`; системная настройка «уменьшить движение» действует всегда, мини-плеер тогда",
 					'возвращается к месту на странице без плавной прокрутки.',
+					'Одинаковые экземпляры для сравнения — регионы с одним именем, поэтому правило axe `landmark-unique` у этой истории выключено.',
 				].join('\n'),
 			},
 			source: motion.source,

@@ -19,6 +19,7 @@ const template = `
 export const Theming: StoryObj<typeof meta> = {
 	name: 'Токены',
 	parameters: {
+		a11y: { config: { rules: [{ id: 'landmark-unique', enabled: false }] } },
 		controls: { include: ['variant', 'sizeScale'] },
 		docs: {
 			description: {
@@ -29,6 +30,7 @@ export const Theming: StoryObj<typeof meta> = {
 					'(список — docs/design/COMPONENT_TOKENS.md). Отступы панели и списка умножаются на плотность темы `--rise-density`. Проп `ui`',
 					'добавляет классы к частям (`root`, `toolbar`, `timeline`, `list`, `row`, `text`… — `SUBTITLE_EDITOR_PARTS`); для всех',
 					'редакторов приложения — `defaults.BaseSubtitleEditor.ui` плагина.',
+					'Одинаковые экземпляры для сравнения — регионы с одним именем, поэтому правило axe `landmark-unique` у этой истории выключено.',
 				].join('\n'),
 			},
 			source: storySource({ template, imports: ['BaseSubtitleEditor'], script: `const ui = ${literal(ui)}` }),

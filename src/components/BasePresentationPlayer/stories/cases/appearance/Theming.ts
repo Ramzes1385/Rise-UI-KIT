@@ -22,6 +22,7 @@ export const Theming: StoryObj<typeof meta> = {
 	name: 'Токены',
 	args: { navigation: 'linear', slides: notedSlides({ minDuration: 30 }) },
 	parameters: {
+		a11y: { config: { rules: [{ id: 'landmark-unique', enabled: false }] } },
 		maxWidth: 1400,
 		controls: { include: ['navigation', 'sizeScale'] },
 		docs: {
@@ -35,6 +36,7 @@ export const Theming: StoryObj<typeof meta> = {
 					'«Пройдено» и стенограммы умножаются на плотность темы `--rise-density`. Проп `ui` добавляет классы к частям',
 					'(`root`, `stage`, `slide`, `next`, `done`, `panel`, `notes`… — `PRESENTATION_PLAYER_PARTS`); для всех плееров',
 					'приложения — `defaults.BasePresentationPlayer.ui` плагина. Проверка: у каждого плеера открыта «Стенограмма».',
+					'Одинаковые экземпляры для сравнения — регионы с одним именем, поэтому правило axe `landmark-unique` у этой истории выключено.',
 				].join('\n'),
 			},
 			source: storySource({

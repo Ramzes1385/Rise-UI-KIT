@@ -212,7 +212,7 @@
 						<span v-else class="base-media-player__episodes-title">{{ UI_PRESENTATION.SLIDE_LIST }}</span>
 						<MediaControlButton icon="close" :label="UI_ARIA.CLOSE" @click="closePanel" />
 					</div>
-					<div v-if="panelView === 'notes'" :class="ui('notes')" tabindex="-1">
+					<div v-if="panelView === 'notes'" :class="ui('notes')" :tabindex="isNotesScrollable ? 0 : -1">
 						<p v-if="slide" :class="ui('notes-title')">{{ index + 1 }}. {{ slide.title }}</p>
 						<p v-for="(paragraph, paragraphIndex) in notesParagraphs" :key="paragraphIndex" :class="ui('notes-text')">
 							{{ paragraph }}
@@ -386,6 +386,7 @@ const {
 	hasNotes,
 	panelView,
 	panelRef,
+	isNotesScrollable,
 	togglePanel,
 	showPanelView,
 	closePanel,

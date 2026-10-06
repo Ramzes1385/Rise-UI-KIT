@@ -21,6 +21,7 @@ const motion = motionPresetsStory({
 export const Animations: StoryObj<typeof meta> = {
 	name: 'Анимации',
 	parameters: {
+		a11y: { config: { rules: [{ id: 'landmark-unique', enabled: false }] } },
 		maxWidth: 1600,
 		controls: { include: ['variant', 'sizeScale'] },
 		docs: {
@@ -32,6 +33,7 @@ export const Animations: StoryObj<typeof meta> = {
 					'(`position: absolute`, `--rise-duration-fast`, скрыта от скринридера), соседи съезжают плавно (FLIP через `transform`).',
 					"Выключить движение в приложении — `createUiKitPlugin({ motion: 'none' })` или `reducedMotion: 'always'`; системная",
 					'настройка «уменьшить движение» действует всегда.',
+					'Одинаковые экземпляры для сравнения — регионы с одним именем, поэтому правило axe `landmark-unique` у этой истории выключено.',
 				].join('\n'),
 			},
 			source: motion.source,

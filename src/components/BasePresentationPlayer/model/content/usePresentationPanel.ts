@@ -1,6 +1,7 @@
 import { safeUrl } from '../playback/timeline'
 import { formatMediaTime } from '@utils/media/mediaUtils'
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { useScrollableRegion } from '@composables/interaction/useScrollableRegion'
 import type { BasePresentationPlayerProps } from '../../types/BasePresentationPlayer.types'
 import type { PresentationPanelSource, PresentationPanelView, PresentationSlideCard } from '../../types/PresentationModel.types'
 
@@ -43,28 +44,32 @@ function useSlideCards(props: BasePresentationPlayerProps, source: PresentationP
 
 export function usePresentationPanel(props: BasePresentationPlayerProps, source: PresentationPanelSource) {
 	const panelRef = ref<HTMLElement | null>(null)
+	const notesRef = ref<HTMLElement | null>(null)
 	const view = ref<PresentationPanelView | null>(null)
 	const opened = ref<PresentationPanelView>('slides')
 	const leave = (): void => {
 		const hadFocus = panelRef.value?.contains(document.activeElement)
 		view.value = null
+		notesRef.value = null
 		if (hadFocus) source.root()?.querySelector<HTMLElement>(TRIGGERS[opened.value])?.focus()
 	}
 	const open = (name: PresentationPanelView): void => {
 		view.value = name
 		opened.value = name
-		void nextTick(() =>
+		void nextTick(() => {
+			notesRef.value = panelRef.value?.querySelector<HTMLElement>(FOCUS.notes[0]) ?? null
 			FOCUS[name]
 				.map(selector => panelRef.value?.querySelector<HTMLElement>(selector))
 				.find(Boolean)
-				?.focus(),
-		)
+				?.focus()
+		})
 	}
 	useOutsidePress(panelRef, () => view.value !== null, leave)
 	const notes = computed(() => props.slides[source.index()]?.notes?.trim() ?? '')
 
 	return {
 		panelRef,
+		isNotesScrollable: useScrollableRegion({ elementRef: notesRef }).isScrollable,
 		panelView: view,
 		hasNotes: computed(() => props.slides.some(slide => Boolean(slide.notes?.trim()))),
 		notesParagraphs: computed(() => (notes.value ? notes.value.split(/\n\s*\n/).map(text => text.trim()) : [])),
