@@ -144,6 +144,7 @@
 - **BaseImageMap** (new-image-map-2):
   - панель (`__toolbar`) и окно карты (`__viewport`) теперь внутри `.base-image-map__layout > .base-image-map__main` — селекторы вида `.base-image-map > .base-image-map__viewport` перестанут работать, используйте `.base-image-map .base-image-map__viewport` или `customClass`;
   - на корне `container: base-image-map / inline-size`: корень больше не растягивается по содержимому — в контейнере без явной ширины (flex-элемент с `width: auto`, `inline-block`) задайте ширину карте.
+- **BaseImageMap3D** (maps-detail): без `hasDirectory` рядом с областью карты — скрытый визуально `ul.base-image-map-3d__objects` (кнопки объектов текущего этажа, `tabindex="-1"`); текст состояния слоя лежит в `span.base-image-map-3d__state-text` внутри `.base-image-map-3d__state` (плашка с фоном темы). Тесты приложения, которые ищут `button` или `role="button"` внутри карты, увидят кнопки списка — сужайте поиск до `.base-image-map-3d__viewport`.
 
 ## Доступность
 
@@ -217,6 +218,11 @@
 - Тесты приложений, которые проверяли `toBeDisabled()` или атрибут `disabled` у этих кнопок, — теперь `toHaveAttribute('aria-disabled', 'true')`; CSS `button:disabled` — `[aria-disabled='true']` или `.base-button--disabled`. При `isDisabled` всего компонента — по-прежнему `disabled`.
 - Свои кнопки так же: `<BaseButton :is-disabled="…" is-focusable-when-disabled>` (MIGRATION, small-fixes-9a).
 
+**BaseImageMap3D (maps-detail)**
+
+- Без каталога карта даёт скринридеру скрытый список объектов текущего этажа: `ul` «Список объектов, Этаж 1», кнопки с `aria-current` у выбранного, `aria-disabled` у отключённого, `aria-haspopup="dialog"` у объектов с окном, ссылки `<a>` у объектов-ссылок. Нажатие — как щелчок по объекту (`select`, `update:active`, окно или действие). В Tab список не входит — для клавиатуры стрелки в области. Подробности — [MAP3D.md](../reference/MAP3D.md), «Выбор, клавиатура и скринридер».
+- Загрузка плана этажа помечена `aria-busy` без озвучивания; ошибка загрузки и карта без слоёв — единственный `role="status"` поверх сцены.
+
 ## Новое в API
 
 - **BaseRange:** необязательный проп `ariaLabel`.
@@ -236,6 +242,7 @@
   - JSON карты общий с BaseImageMap и BaseImageMapEditor: 3D-поля (`layer.elevation`, `layer.model`, `object.height3d`, `object.meshName`, `scene3d`) необязательны, редактор их сохраняет, 2D-карта их не читает. Без WebGL карта показывает 2D и шлёт `fallback`.
   - Редактор BaseImageMapEditor показывает поля 3D в панели свойств только с пропом `has3dFields` (по умолчанию `false`; или `defaults.BaseImageMapEditor.has3dFields` в плагине). Без него 3D-поля не видны, но импорт и экспорт JSON их сохраняют.
   - Касание (map3d-polish): при `hasOrbit: false` палец над картой прокручивает страницу; при `hasOrbit: true` (по умолчанию) жесты забирает камера, щипок двумя пальцами — масштаб. Уход Tab из карты снимает фокус объекта и карточку; имя области с `ariaLabel` теперь включает этаж.
+  - Подробные объекты (maps-detail): `object.parts` (части объекта `svg` — свой элемент SVG, `height3d`, `base3d`), `scene3d.bevel` (скос кромок) и `scene3d.outline` (контур по рёбрам; по умолчанию включён — `outline: false` и `bevel: 0` возвращают прежние плоские призмы). Тип `ImageMap3DObjectPart` экспортируется из `/map3d`. Соответствие SVG и слоя, поддерживаемые элементы SVG — MAP3D.md, «План в SVG».
 - **BasePresentationPlayer — озвучка сервисом** (presentation-tts): проп `speechProvider`, событие `speech-error` (`{ slide, error }`, слайд откатывается на синтез браузера) и утилита `createFetchSpeechProvider` из `@ramzes1385/rise-ui-kit/utils`. Ключ сервиса синтеза — только на сервере приложения: браузер ходит в свой посредник; пример посредника (Node и edge) — docs/reference/COMPONENTS.md, BasePresentationPlayer → «Озвучка через сервис».
 - **Внутренние константы** (`@constants`, в пакет не экспортируются): добавлены `TABLE_TEXT`, `UI_RATING` и тексты `UI_CHAT_TEXT`/`UI_EDITOR`; удалены `ROW_SELECTION_WIDTH`, `ROW_NUMBER_WIDTH` и `ROW_EXPAND_WIDTH`.
 
