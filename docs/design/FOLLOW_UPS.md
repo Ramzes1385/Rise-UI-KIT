@@ -205,10 +205,10 @@
 ## Задача wave2-fix
 
 - Закрыто из «Задача core1»: производные масштабы, равные ровно 100 (BaseSearch, BasePopconfirm; BaseConfirm не затронут), решение «разделить `--custom-text` и `--custom-bg` в `inherit-custom-color`» (не разделяем: пара текст + фон нужна на наведении), `create:component` и `custom-color-scope`.
-- Тот же приём `calcDerivedScale` пока не применён к другим долям `sizeScale`: `* 0.875` в BaseSignaturePad, BaseCommentThread (композер), BaseNotificationCenter и `* 0.75` в BaseCommentThread (узел). Результат ровно 100 при редких `sizeScale` (≈114,29 и ≈133,33).
-- Кнопки BaseInputNumber берут цвет текста не через `--custom-text`, а через `ct(input-number, button-text)`: `color` поля красит только их фон. Решить отдельно, нужна ли передача текста.
+- Тот же приём `calcDerivedScale` пока не применён к другим долям `sizeScale`: ~~`* 0.875` в BaseSignaturePad~~ (сделано при сведении волны 3, см. «Задача polish-1»), BaseCommentThread (композер), BaseNotificationCenter и `* 0.75` в BaseCommentThread (узел). Результат ровно 100 при редких `sizeScale` (≈114,29 и ≈133,33).
+- ~~Кнопки BaseInputNumber берут цвет текста не через `--custom-text`, а через `ct(input-number, button-text)`: `color` поля красит только их фон. Решить отдельно, нужна ли передача текста.~~ — polish-1: при `color` текст кнопок берётся из `--custom-text`.
 
 ## Задача polish-1
 
-- `calcDerivedScale` (`@utils/media/iconUtils`, задача wave2-fix) у долей 0.875 и 0.75 в BaseSignaturePad (кнопки «Отменить» и «Очистить», `sizeScale * 0.875`): помощника в базе fa23fc58 нет, он придёт со слиянием wave2-fix — после него заменить умножение в `BaseSignaturePad.vue` (при `sizeScale` ≈114 результат ровно 100 читается как «наследовать»). То же осталось у BaseCommentThread и BaseNotificationCenter (зона compose-1).
+- ~~`calcDerivedScale` (`@utils/media/iconUtils`, задача wave2-fix) у долей 0.875 и 0.75 в BaseSignaturePad (кнопки «Отменить» и «Очистить», `sizeScale * 0.875`): помощника в базе fa23fc58 нет, он придёт со слиянием wave2-fix — после него заменить умножение в `BaseSignaturePad.vue` (при `sizeScale` ≈114 результат ровно 100 читается как «наследовать»).~~ — сделано при сведении волны 3 (оркестратор), тест в `BaseSignaturePad.compose.spec.ts`. Осталось у BaseCommentThread и BaseNotificationCenter (зона compose-1).
 - `ImageMapDirectory` и `ImageMapRoutePanel` используются и в BaseImageMap3D: там проп `ui` не передан, части получают только классы кита. Если у BaseImageMap3D появится `ui`, передать его так же.

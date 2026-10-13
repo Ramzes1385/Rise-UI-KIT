@@ -27,3 +27,22 @@ describe('BaseSignaturePad: подпись и ошибка на FormFieldLabel/F
 		expect(screen.getByText('Ошибка')).toHaveClass('base-signature-pad__error', 'my-error')
 	})
 })
+
+describe('BaseSignaturePad: масштаб кнопок панели', () => {
+	const buttonScales = () =>
+		[...document.querySelectorAll<HTMLElement>('.base-signature-pad__toolbar button')].map(button =>
+			button.style.getPropertyValue('--size-scale'),
+		)
+
+	it('кнопки — 87,5% масштаба компонента', () => {
+		render(BaseSignaturePad, { props: { sizeScale: 120 } })
+
+		expect(buttonScales()).toEqual(['1.05', '1.05'])
+	})
+
+	it('если 87,5% масштаба дают ровно 100, он закрепляется (100.01), а не «наследовать»', () => {
+		render(BaseSignaturePad, { props: { sizeScale: 800 / 7 } })
+
+		expect(buttonScales()).toEqual(['1.0001', '1.0001'])
+	})
+})

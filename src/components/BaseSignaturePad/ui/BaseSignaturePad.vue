@@ -43,7 +43,7 @@
 		<div :class="[ui('toolbar'), classes.toolbar]">
 			<BaseButton
 				variant="ghost"
-				:size-scale="sizeScale * 0.875"
+				:size-scale="calcDerivedScale(sizeScale, 0.875)"
 				:is-disabled="isEmpty || isControlDisabled"
 				:is-focusable-when-disabled="!isControlDisabled"
 				@click="undo">
@@ -51,7 +51,7 @@
 			</BaseButton>
 			<BaseButton
 				variant="ghost"
-				:size-scale="sizeScale * 0.875"
+				:size-scale="calcDerivedScale(sizeScale, 0.875)"
 				:is-disabled="isEmpty || isControlDisabled"
 				:is-focusable-when-disabled="!isControlDisabled"
 				@click="clear">
@@ -72,6 +72,7 @@
 import '../styles/BaseSignaturePad.style.scss'
 import { BaseButton } from '@components/BaseButton'
 import { UI_SIGNATURE_PAD } from '@/locales/messages'
+import { calcDerivedScale } from '@utils/media/iconUtils'
 import { useBaseSignaturePad } from '../model/useBaseSignaturePad'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
