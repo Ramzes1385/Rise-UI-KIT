@@ -40,10 +40,12 @@
 							:aria-selected="index === activeIndex ? 'true' : 'false'"
 							@mousedown.prevent
 							@click="select(option)">
-							<img v-if="option.avatar" :class="ui('avatar')" :src="option.avatar" alt="" />
-							<span v-else :class="[ui('avatar'), 'base-mention__avatar--initial']" aria-hidden="true">{{
-								option.label.charAt(0)
-							}}</span>
+							<BaseAvatar
+								:class="ui('avatar')"
+								:src="option.avatar"
+								:name="option.label"
+								:size-scale="(sizeScale * 7) / 8"
+								aria-hidden="true" />
 							<span :class="ui('option-text')">
 								<span :class="ui('option-label')">{{ option.label }}</span>
 								<span :class="ui('option-value')">{{ trigger }}{{ option.value }}</span>
@@ -68,6 +70,7 @@
 <script setup lang="ts">
 import '../styles/BaseMention.style.scss'
 import { UI_MENTION } from '@/locales/messages'
+import { BaseAvatar } from '@components/BaseAvatar'
 import { useBaseMention } from '../model/useBaseMention'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'

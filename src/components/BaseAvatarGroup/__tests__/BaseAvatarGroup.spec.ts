@@ -13,7 +13,7 @@ describe('BaseAvatarGroup', () => {
 		expect(screen.getAllByRole('listitem')).toHaveLength(4)
 		expect(container.querySelector('.base-avatar')).toHaveAttribute('aria-hidden', 'true')
 		expect(screen.getByText('Анна')).toHaveClass('base-avatar-group__name')
-		expect(screen.getByText('+3')).toHaveAttribute('aria-hidden', 'true')
+		expect(screen.getByText('+3').closest('.base-avatar')).toHaveAttribute('aria-hidden', 'true')
 		expect(screen.getByText('и ещё 3')).toBeInTheDocument()
 	})
 

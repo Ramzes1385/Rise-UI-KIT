@@ -26,7 +26,7 @@ describe('BaseAiMessage', () => {
 		const { container } = render(BaseAiMessage, { props: { content: 'Привет', name: 'Rise', avatar: '/bot.png' } })
 
 		expect(screen.getByRole('article', { name: 'Rise' })).toBeInTheDocument()
-		expect(container.querySelector('.base-ai-message__avatar-image')).toHaveAttribute('src', '/bot.png')
+		expect(container.querySelector('.base-ai-message__avatar-image img')).toHaveAttribute('src', '/bot.png')
 		expect(container.querySelector('.base-ai-message__avatar .base-icon')).toBeNull()
 	})
 

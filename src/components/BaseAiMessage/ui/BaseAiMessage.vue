@@ -5,7 +5,13 @@
 		:aria-label="name || UI_AI.ASSISTANT"
 		:aria-busy="isStreaming ? 'true' : undefined">
 		<span :class="ui('avatar')" aria-hidden="true">
-			<img v-if="avatar" class="base-ai-message__avatar-image" :src="avatar" alt="" />
+			<BaseAvatar
+				v-if="avatar"
+				class="base-ai-message__avatar-image"
+				:src="avatar"
+				:name="name"
+				shape="square"
+				:size-scale="(sizeScale * 4) / 5" />
 			<BaseIcon v-else name="star-filled" />
 		</span>
 		<div :class="[ui('body'), classes.body]">
@@ -58,6 +64,7 @@
 import '../styles/BaseAiMessage.style.scss'
 import { UI_AI } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
+import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
 import { BaseLoader } from '@components/BaseLoader'
 import { BaseMarkdown } from '@components/BaseMarkdown'

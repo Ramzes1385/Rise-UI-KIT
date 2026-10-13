@@ -81,20 +81,6 @@
 
 	&__avatar {
 		flex: none;
-		width: sz(28px);
-		height: sz(28px);
-		border-radius: 50%;
-		object-fit: cover;
-	}
-
-	&__avatar--initial {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		background-color: var(--rise-bg-accented);
-		color: var(--rise-text-highlighted);
-		@include text-size(xs);
-		font-weight: var(--rise-font-weight-semibold);
 	}
 
 	&__option-text {

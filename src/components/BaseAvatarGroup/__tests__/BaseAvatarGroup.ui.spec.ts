@@ -17,10 +17,12 @@ describe('BaseAvatarGroup: проп ui', () => {
 		expect(container.querySelector('ul')).toHaveAttribute('class', 'base-avatar-group')
 		expect(first).toHaveAttribute('class', 'base-avatar-group__item')
 		expect(first.querySelector('.base-avatar-group__name')).toHaveAttribute('class', 'base-avatar-group__name')
-		expect(container.querySelector('.base-avatar-group__more')).toHaveAttribute(
-			'class',
-			'base-avatar-group__item base-avatar-group__more base-avatar-group__more--circle',
+		expect(container.querySelector('.base-avatar-group__more')).toHaveClass(
+			'base-avatar',
+			'base-avatar-group__more',
+			'base-avatar-group__more--circle',
 		)
+		expect(container.querySelector('.base-avatar-group__more')?.parentElement).toHaveAttribute('class', 'base-avatar-group__item')
 		expect(container.querySelector('.base-avatar-group__count')).toHaveAttribute('class', 'base-avatar-group__count')
 	})
 
@@ -34,7 +36,7 @@ describe('BaseAvatarGroup: проп ui', () => {
 		expect(container.querySelector('ul')).toHaveClass('base-avatar-group', 'u-root', 'base-avatar-group--soft', 'own-root')
 		expect(items(container)[0]).toHaveClass('u-item')
 		expect(container.querySelector('.base-avatar-group__name')).toHaveClass('u-name')
-		expect(container.querySelector('.base-avatar-group__more')).toHaveClass('u-item', 'u-more', 'own-more')
+		expect(container.querySelector('.base-avatar-group__more')).toHaveClass('u-more', 'own-more')
 		expect(container.querySelector('.base-avatar-group__count')).toHaveClass('u-count')
 	})
 

@@ -361,13 +361,10 @@
 		background-color: var(--rise-bg-muted);
 	}
 
-	&__promo-image {
+	&__promo-image.base-image {
 		display: block;
-		width: 100%;
-		aspect-ratio: 16 / 9;
 		margin-bottom: sz(6px);
 		border-radius: sz(var(--rise-radius-md));
-		object-fit: cover;
 	}
 
 	&__promo-title {

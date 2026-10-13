@@ -28,7 +28,7 @@ describe('BaseMention: проп ui', () => {
 		for (const part of MENTION_PARTS.filter(part => part !== 'empty')) {
 			expect(root.querySelector(`.base-mention__${part}`), part).toHaveClass(`u-${part}`)
 		}
-		expect(root.querySelector('.base-mention__avatar--initial')).toHaveClass('u-avatar')
+		expect(root.querySelector('.base-mention__avatar')).toHaveClass('u-avatar')
 
 		await typeAt(container.querySelector('textarea')!, '@нет')
 		expect(root.querySelector('.base-mention__empty')).toHaveClass('u-empty')

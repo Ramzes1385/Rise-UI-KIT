@@ -22,22 +22,19 @@
 		@include visually-hidden;
 	}
 
-	&__more {
-		align-items: center;
-		justify-content: center;
+	&__more.base-avatar {
 		width: sz(ct(avatar-group, more-width, 32px));
 		height: sz(ct(avatar-group, more-height, var(--rise-avatar-group-more-width, 32px)));
 		border-radius: var(--rise-radius-full);
 		background-color: ct(avatar-group, more-bg, var(--rise-bg-elevated));
-		box-shadow: 0 0 0 2px ct(avatar-group, ring, var(--rise-bg));
 		color: ct(avatar-group, more-text, var(--rise-text-highlighted));
 		font-size: sz(ct(avatar-group, more-font-size, var(--rise-font-size-xs)));
 		line-height: sz(var(--rise-line-height-xs));
 		font-weight: ct(avatar-group, more-font-weight, var(--rise-font-weight-medium));
+	}
 
-		&--square {
-			border-radius: sz(ct(avatar-group, more-radius, var(--rise-radius-md)));
-		}
+	&__more--square.base-avatar {
+		border-radius: sz(ct(avatar-group, more-radius, var(--rise-radius-md)));
 	}
 }
 

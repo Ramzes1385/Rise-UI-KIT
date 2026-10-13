@@ -22,7 +22,14 @@
 
 		<div v-if="item.promo" :class="[ui('promo'), classes.promo]">
 			<slot name="promo" :promo="item.promo" :item="item">
-				<img v-if="item.promo.image" class="base-mega-menu__promo-image" :src="item.promo.image" alt="" />
+				<BaseImage
+					v-if="item.promo.image"
+					class="base-mega-menu__promo-image"
+					:src="item.promo.image"
+					alt=""
+					aspect-ratio="16 / 9"
+					fit="cover"
+					width="100%" />
 				<p class="base-mega-menu__promo-title">{{ item.promo.title }}</p>
 				<p v-if="item.promo.description" class="base-mega-menu__promo-desc">{{ item.promo.description }}</p>
 				<BaseLink
@@ -43,6 +50,7 @@
 import MegaMenuLinks from './MegaMenuLinks.vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseLink } from '@components/BaseLink'
+import { BaseImage } from '@components/BaseImage'
 import { useMegaMenuPanel } from '../model/useMegaMenuPanel'
 import type { MegaMenuPanelEmits, MegaMenuPanelProps, MegaMenuPanelSlots } from '../types/BaseMegaMenu.types'
 

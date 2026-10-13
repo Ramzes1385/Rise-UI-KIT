@@ -19,10 +19,18 @@
 				aria-hidden="true" />
 			<span :class="ui('name')">{{ item.name }}</span>
 		</li>
-		<li v-if="restCount > 0" key="more" :class="[ui('item'), ui('more'), `base-avatar-group__more--${shape}`, classes.more]">
-			<Transition name="base-avatar-group-count">
-				<span :key="restCount" :class="ui('count')" aria-hidden="true">+{{ restCount }}</span>
-			</Transition>
+		<li v-if="restCount > 0" key="more" :class="[ui('item'), classes.item]">
+			<BaseAvatar
+				:class="[ui('more'), `base-avatar-group__more--${shape}`, classes.more]"
+				:variant="variant"
+				:shape="shape"
+				:size-scale="sizeScale"
+				:color="color"
+				aria-hidden="true">
+				<Transition name="base-avatar-group-count">
+					<span :key="restCount" :class="ui('count')">+{{ restCount }}</span>
+				</Transition>
+			</BaseAvatar>
 			<span :class="ui('name')">{{ formatMessage(UI_ARIA.AVATARS_MORE, { n: restCount }) }}</span>
 		</li>
 	</TransitionGroup>

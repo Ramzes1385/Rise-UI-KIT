@@ -48,8 +48,8 @@ describe('BaseMention', () => {
 		const { container } = render(BaseMention, { props: { options: TEAM } })
 
 		await typeAt(screen.getByRole('textbox') as HTMLTextAreaElement, '@')
-		expect(container.querySelector('img.base-mention__avatar')).toHaveAttribute('src', '/anna.png')
-		expect(container.querySelector('.base-mention__avatar--initial')).toHaveTextContent('И')
+		expect(container.querySelector('.base-mention__avatar img')).toHaveAttribute('src', '/anna.png')
+		expect(container.querySelector('.base-mention__avatar .base-avatar__initials')).toHaveTextContent('ИП')
 		expect(container.querySelector('.base-mention__option-description')).toHaveTextContent('Дизайн')
 	})
 
