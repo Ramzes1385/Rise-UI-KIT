@@ -60,7 +60,11 @@ export interface BaseHoverCardSlots {
 	 * (`span`, `BaseAvatar`) получает `tabindex="0"`, чтобы карточку можно было открыть с клавиатуры
 	 */
 	trigger?: (props: { isOpen: boolean }) => unknown
-	/** Содержимое карточки. Это дополнение к триггеру: всё важное должно быть доступно и без карточки */
+	/**
+	 * Содержимое карточки. Это дополнение к триггеру: всё важное должно быть доступно и без карточки.
+	 * С клавиатуры до содержимого не добраться (карточка в `body`, Tab уходит мимо, потеря фокуса триггером закрывает её),
+	 * поэтому интерактивные элементы в ней недоступны — для них нужен `BasePopover`
+	 */
 	default?: () => unknown
 }
 
@@ -74,6 +78,7 @@ export interface HoverIntent {
 	handlePointerenter: (event: PointerEvent) => void
 	handlePointerleave: (event: PointerEvent) => void
 	handlePointerdown: (event: PointerEvent) => void
+	handleKeydown: () => void
 	handleClick: () => void
 	handleFocusin: () => void
 	handleFocusout: (event: FocusEvent) => void

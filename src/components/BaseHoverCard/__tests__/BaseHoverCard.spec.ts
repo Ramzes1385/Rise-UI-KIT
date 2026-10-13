@@ -229,6 +229,16 @@ describe('BaseHoverCard unit', () => {
 			await advance(1000)
 			expect(inner()).toBeNull()
 		})
+
+		it('касание, затем Tab: фокус с клавиатуры открывает карточку сразу', async () => {
+			const rendered = render(BaseHoverCard, { slots: SLOTS })
+			const area = trigger(rendered.container)
+			await fireEvent.pointerDown(area, { pointerType: 'touch' })
+			await fireEvent.keyDown(area, { key: 'Tab' })
+			await fireEvent.focusIn(screen.getByRole('link', { name: 'Профиль' }))
+			await nextTick()
+			expect(screen.getByText('Карточка')).toBeInTheDocument()
+		})
 	})
 
 	describe('клавиатура и фокус', () => {

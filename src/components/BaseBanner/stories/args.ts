@@ -9,6 +9,7 @@ export const args = {
 	text: MESSAGES.primary,
 	hasIcon: true,
 	isClosable: false,
+	isLive: false,
 	isOpen: true,
 	position: 'static',
 	sizeScale: 100,

@@ -37,7 +37,7 @@ export const Positions: StoryObj<typeof meta> = {
 		template,
 	}),
 	play: async ({ canvas }) => {
-		const [center, left, right] = canvas.getAllByRole('dialog').map(dialog => ({
+		const [center, left, right] = canvas.getAllByRole('region').map(dialog => ({
 			dialog: dialog.getBoundingClientRect(),
 			frame: (dialog.parentElement as HTMLElement).getBoundingClientRect(),
 		}))

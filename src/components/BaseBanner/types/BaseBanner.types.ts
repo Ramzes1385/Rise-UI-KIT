@@ -47,10 +47,17 @@ export interface BaseBannerProps extends BaseComponentProps<
 	isOpen?: boolean
 	/**
 	 * Ключ запоминания закрытия в `localStorage` (`rise-banner:<ключ>`): закрытое объявление не показывается снова.
-	 * Хранилище читается после монтирования (SSR без падений); если оно недоступно, объявление просто показывается.
+	 * Хранилище читается после монтирования (SSR без падений); пока оно не прочитано, объявление не выводится вовсе —
+	 * запомненное закрытие не мигает и скрывается без анимации. Если хранилище недоступно, объявление просто показывается.
 	 * Вернуть показ — `v-model:is-open` в `true` или удалить запись.
 	 */
 	storageKey?: string
+	/**
+	 * Озвучивать появление: `warning` и `error` — `role="alert"`, остальные — `role="status"` (вместо `region`, имя `label` остаётся).
+	 * Нужно, когда объявление появляется уже после загрузки страницы по событию приложения (потеря соединения, новая версия);
+	 * для объявления, которое есть в разметке с самого начала, не нужно: оно читается как обычная область
+	 */
+	isLive?: boolean
 	/** Положение: `static` — в потоке, `sticky` — прилипает к верху */
 	position?: BannerPosition
 	/** Доступное имя области объявления (`aria-label`); по умолчанию — «Объявление» из словаря */
@@ -66,7 +73,7 @@ export interface BaseBannerProps extends BaseComponentProps<
 }
 
 export interface BaseBannerEmits {
-	/** Изменился показ объявления: закрытие кнопкой или запомненное закрытие из `storageKey` (`v-model:is-open`) */
+	/** Изменился показ объявления: закрытие кнопкой или запомненное закрытие из `storageKey` (`v-model:is-open`). После закрытия фокус, бывший внутри объявления, переходит на следующий фокусируемый элемент страницы */
 	(event: 'update:isOpen', value: boolean): void
 	/** Объявление закрыто кнопкой «Закрыть» (не приходит при запомненном закрытии из `storageKey`) */
 	(event: 'close'): void
@@ -81,4 +88,4 @@ export interface BaseBannerSlots {
 	action?: () => unknown
 }
 
-export type BannerProps = PropsWithDefaults<BaseBannerProps, 'type' | 'hasIcon' | 'isClosable' | 'isOpen' | 'position'>
+export type BannerProps = PropsWithDefaults<BaseBannerProps, 'type' | 'hasIcon' | 'isClosable' | 'isOpen' | 'isLive' | 'position'>

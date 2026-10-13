@@ -1,9 +1,9 @@
 <template>
 	<Transition name="base-cookie-consent">
 		<div
-			v-if="isShown"
-			role="dialog"
-			aria-modal="false"
+			v-if="isVisible"
+			ref="rootRef"
+			role="region"
 			:aria-labelledby="titleId"
 			:aria-describedby="descriptionId"
 			:class="[
@@ -92,6 +92,14 @@
 				<BaseButton
 					:size-scale="sizeScale"
 					:padding="buttonPadding"
+					:class="ui('reject-all')"
+					:custom-class="classes.rejectAll"
+					@click="rejectAll">
+					{{ UI_COOKIE_CONSENT.REJECT_ALL }}
+				</BaseButton>
+				<BaseButton
+					:size-scale="sizeScale"
+					:padding="buttonPadding"
 					:class="ui('accept-all')"
 					:custom-class="classes.acceptAll"
 					@click="acceptAll">
@@ -136,7 +144,8 @@ const {
 	variantStyle,
 	customColorStyle,
 	classes,
-	isShown,
+	isVisible,
+	rootRef,
 	isSettingsShown,
 	isChecked,
 	toggle,
@@ -149,6 +158,7 @@ const {
 	consentTitle,
 	consentDescription,
 	acceptAll,
+	rejectAll,
 	acceptSelected,
 } = useBaseCookieConsent(props, emit)
 </script>

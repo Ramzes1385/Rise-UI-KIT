@@ -19,7 +19,7 @@ export type CookieConsentPosition = (typeof COOKIE_CONSENT_POSITIONS)[number]
  * Части окна согласия для пропа `ui` (БЭМ-элементы `.base-cookie-consent__<часть>`, `root` — окно):
  * content — заголовок и описание, title — заголовок, description — описание, settings — список категорий,
  * category — строка категории, category-description — описание категории под переключателем, hint — пометка «Всегда включены», actions — ряд кнопок,
- * customize / accept-selected / accept-all — кнопки.
+ * customize / accept-selected / reject-all / accept-all — кнопки.
  */
 export const COOKIE_CONSENT_PARTS = [
 	'content',
@@ -32,6 +32,7 @@ export const COOKIE_CONSENT_PARTS = [
 	'actions',
 	'customize',
 	'accept-selected',
+	'reject-all',
 	'accept-all',
 ] as const
 
@@ -49,6 +50,11 @@ export interface CookieCategory {
 	isRequired?: boolean
 }
 
+/**
+ * Окно согласия — немодальная область (`role="region"`, имя — заголовок), как у баннера cookies в GOV.UK Design System: страница под ним остаётся
+ * доступной, фокус окно не перехватывает и не удерживает, Escape не закрывает (решение принимается явным выбором). Кнопки «Отклонить все» и
+ * «Принять все» одного вида: отказ не сложнее согласия.
+ */
 export interface BaseCookieConsentProps extends BaseComponentProps<
 	CookieConsentVariant,
 	| 'root'
@@ -61,6 +67,7 @@ export interface BaseCookieConsentProps extends BaseComponentProps<
 	| 'actions'
 	| 'customize'
 	| 'acceptSelected'
+	| 'rejectAll'
 	| 'acceptAll'
 > {
 	/** Категории cookies. Обязательные (`isRequired`) всегда входят в выбор */
@@ -77,7 +84,9 @@ export interface BaseCookieConsentProps extends BaseComponentProps<
 	description?: string
 	/**
 	 * Ключ запоминания решения в `localStorage` (`rise-cookie-consent:<ключ>`): принятое решение не показывается снова,
-	 * а выбор восстанавливается в `v-model` после монтирования. Если хранилище недоступно, окно показывается при каждой загрузке.
+	 * а выбор восстанавливается в `v-model` после монтирования. Пока хранилище не прочитано (до монтирования, SSR), окно не выводится вовсе:
+	 * сохранённое решение не мигает и окно скрывается без анимации. Событие `accept` при восстановлении не приходит — только `update:modelValue`,
+	 * `change` и `update:isOpen`. Если хранилище недоступно, окно показывается при каждой загрузке.
 	 */
 	storageKey?: string
 	/** Положение окна */
@@ -86,7 +95,7 @@ export interface BaseCookieConsentProps extends BaseComponentProps<
 	isContained?: boolean
 	/**
 	 * Классы частей окна (`root`, `content`, `title`, `description`, `settings`, `category`, `category-description`, `hint`, `actions`, `customize`,
-	 * `accept-selected`, `accept-all`) — добавляются к классам кита.
+	 * `accept-selected`, `reject-all`, `accept-all`) — добавляются к классам кита.
 	 * Глобально — `createUiKitPlugin({ defaults: { BaseCookieConsent: { ui } } })`, классы плагина и экземпляра склеиваются.
 	 *
 	 * @example
@@ -96,7 +105,7 @@ export interface BaseCookieConsentProps extends BaseComponentProps<
 }
 
 export interface BaseCookieConsentEmits {
-	/** Изменился выбор категорий: переключателем, восстановлением из `storageKey` или кнопкой «Принять все» (`v-model`) */
+	/** Изменился выбор категорий: переключателем, восстановлением из `storageKey` или кнопками «Принять все» и «Отклонить все» (`v-model`) */
 	(event: 'update:modelValue', value: string[]): void
 	/** Окно показано или закрыто (`v-model:is-open`) */
 	(event: 'update:isOpen', value: boolean): void
@@ -104,7 +113,11 @@ export interface BaseCookieConsentEmits {
 	(event: 'update:isSettingsOpen', value: boolean): void
 	/** Выбор изменился (переключатель, «Принять все», восстановление из `storageKey`): `id` выбранных категорий, обязательные включены */
 	(event: 'change', value: string[]): void
-	/** Пользователь принял решение — «Принять все» или «Только выбранные»: `id` разрешённых категорий. Окно после этого закрывается */
+	/**
+	 * Пользователь принял решение — «Принять все», «Отклонить все» (в `value` только обязательные категории) или «Только выбранные»:
+	 * `id` разрешённых категорий. Окно после этого закрывается, а фокус, бывший внутри, переходит на следующий фокусируемый элемент страницы.
+	 * Только действие пользователя: при восстановлении сохранённого решения из `storageKey` событие не приходит
+	 */
 	(event: 'accept', value: string[]): void
 }
 

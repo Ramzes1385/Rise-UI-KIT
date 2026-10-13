@@ -29,6 +29,6 @@ describe('BaseCookieConsent integration', () => {
 		screen.getByRole('button', { name: UI_COOKIE_CONSENT.ACCEPT_ALL }).focus()
 		await user.keyboard('{Enter}')
 		expect(emitted('accept')).toEqual([[['necessary', 'analytics']]])
-		expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+		expect(screen.queryByRole('region')).not.toBeInTheDocument()
 	})
 })

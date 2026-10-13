@@ -35,7 +35,7 @@ export const Variants: StoryObj<typeof meta> = {
 		template,
 	}),
 	play: async ({ canvas }) => {
-		const [base, outline, soft] = canvas.getAllByRole('dialog')
+		const [base, outline, soft] = canvas.getAllByRole('region')
 		await expect(getComputedStyle(base).boxShadow).not.toBe('none')
 		await expect(getComputedStyle(outline).boxShadow).toBe('none')
 		await expect(getComputedStyle(soft).boxShadow).toBe('none')

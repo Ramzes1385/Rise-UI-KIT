@@ -35,17 +35,18 @@ describe('BaseCookieConsent unit', () => {
 	})
 
 	describe('окно', () => {
-		it('диалог без модальности, имя из заголовка, описание из текста', () => {
+		it('область (region) с именем из заголовка и описанием из текста, не диалог', () => {
 			render(BaseCookieConsent)
-			const dialog = screen.getByRole('dialog', { name: UI_COOKIE_CONSENT.TITLE })
-			expect(dialog).toHaveAttribute('aria-modal', 'false')
+			const dialog = screen.getByRole('region', { name: UI_COOKIE_CONSENT.TITLE })
+			expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+			expect(dialog).not.toHaveAttribute('aria-modal')
 			expect(dialog).toHaveAccessibleDescription(UI_COOKIE_CONSENT.DESCRIPTION)
 			expect(screen.getByRole('heading', { level: 2, name: UI_COOKIE_CONSENT.TITLE })).toBeInTheDocument()
 		})
 
 		it('title и description заменяют тексты по умолчанию', () => {
 			render(BaseCookieConsent, { props: { title: 'Куки', description: 'Свой текст' } })
-			const dialog = screen.getByRole('dialog', { name: 'Куки' })
+			const dialog = screen.getByRole('region', { name: 'Куки' })
 			expect(dialog).toHaveAccessibleDescription('Свой текст')
 			expect(screen.queryByText(UI_COOKIE_CONSENT.DESCRIPTION)).not.toBeInTheDocument()
 		})
@@ -63,11 +64,11 @@ describe('BaseCookieConsent unit', () => {
 
 		it('isOpen=false скрывает окно, смена на true показывает', async () => {
 			const { rerender } = render(BaseCookieConsent, { props: { isOpen: false } })
-			expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+			expect(screen.queryByRole('region')).not.toBeInTheDocument()
 			await rerender({ isOpen: true })
-			expect(screen.getByRole('dialog')).toBeInTheDocument()
+			expect(screen.getByRole('region')).toBeInTheDocument()
 			await rerender({ isOpen: false })
-			expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+			expect(screen.queryByRole('region')).not.toBeInTheDocument()
 		})
 	})
 
@@ -224,7 +225,7 @@ describe('BaseCookieConsent unit', () => {
 			expect(emitted('update:modelValue')).toEqual([[all]])
 			expect(emitted('accept')).toEqual([[all]])
 			expect(emitted('update:isOpen')).toEqual([[false]])
-			expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+			expect(screen.queryByRole('region')).not.toBeInTheDocument()
 		})
 
 		it('«Принять все» при полном выборе: change не эмитится', async () => {
@@ -237,6 +238,43 @@ describe('BaseCookieConsent unit', () => {
 			expect(emitted('accept')).toHaveLength(1)
 		})
 
+		it('«Отклонить все»: accept только с обязательными категориями, окно скрыто', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseCookieConsent, {
+				props: { categories: CATEGORIES, modelValue: ['necessary', 'analytics', 'ads'], storageKey: 'site' },
+			})
+			await screen.findByRole('region')
+			await user.click(screen.getByRole('button', { name: UI_COOKIE_CONSENT.REJECT_ALL }))
+			expect(emitted('accept')).toEqual([[['necessary']]])
+			expect(emitted('change')).toEqual([[['necessary']]])
+			expect(emitted('update:isOpen')).toEqual([[false]])
+			expect(JSON.parse(localStorage.getItem(STORAGE_KEY) as string)).toEqual(['necessary'])
+			expect(screen.queryByRole('region')).not.toBeInTheDocument()
+		})
+
+		it('«Отклонить все» и «Принять все» одного вида', () => {
+			render(BaseCookieConsent, { props: { categories: CATEGORIES } })
+			const reject = screen.getByRole('button', { name: UI_COOKIE_CONSENT.REJECT_ALL })
+			const accept = screen.getByRole('button', { name: UI_COOKIE_CONSENT.ACCEPT_ALL })
+			expect(reject.className.replace('reject-all', '')).toBe(accept.className.replace('accept-all', ''))
+		})
+
+		it('после решения фокус с кнопки переходит на следующий элемент страницы', async () => {
+			const user = userEvent.setup()
+			render({
+				render: () => h('div', [h(BaseCookieConsent, { categories: CATEGORIES }), h('a', { href: '#next' }, 'Дальше')]),
+			})
+			await user.click(screen.getByRole('button', { name: UI_COOKIE_CONSENT.ACCEPT_ALL }))
+			expect(screen.getByRole('link', { name: 'Дальше' })).toHaveFocus()
+		})
+
+		it('после решения без следующего элемента фокус уходит в body', async () => {
+			const user = userEvent.setup()
+			render(BaseCookieConsent, { props: { categories: CATEGORIES } })
+			await user.click(screen.getByRole('button', { name: UI_COOKIE_CONSENT.REJECT_ALL }))
+			expect(document.activeElement).toBe(document.body)
+		})
+
 		it('«Только выбранные»: accept с текущим выбором', async () => {
 			const user = userEvent.setup()
 			const { emitted } = render(BaseCookieConsent, { props: { categories: CATEGORIES, isSettingsOpen: true } })
@@ -244,7 +282,7 @@ describe('BaseCookieConsent unit', () => {
 			await user.click(screen.getByRole('button', { name: UI_COOKIE_CONSENT.ACCEPT_SELECTED }))
 			expect(emitted('accept')).toEqual([[['necessary', 'analytics']]])
 			expect(emitted('update:isOpen')).toEqual([[false]])
-			expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+			expect(screen.queryByRole('region')).not.toBeInTheDocument()
 		})
 	})
 
@@ -252,7 +290,7 @@ describe('BaseCookieConsent unit', () => {
 		it('после accept пишет JSON-массив в localStorage', async () => {
 			const user = userEvent.setup()
 			render(BaseCookieConsent, { props: { categories: CATEGORIES, storageKey: 'site', isSettingsOpen: true } })
-			await user.click(screen.getByRole('switch', { name: 'Реклама' }))
+			await user.click(await screen.findByRole('switch', { name: 'Реклама' }))
 			expect(localStorage.getItem(STORAGE_KEY)).toBeNull()
 			await user.click(screen.getByRole('button', { name: UI_COOKIE_CONSENT.ACCEPT_SELECTED }))
 			expect(JSON.parse(localStorage.getItem(STORAGE_KEY) as string)).toEqual(['necessary', 'ads'])
@@ -261,7 +299,7 @@ describe('BaseCookieConsent unit', () => {
 		it('записанное решение: выбор восстановлен с нормализацией, окно скрыто, accept не эмитится', async () => {
 			localStorage.setItem(STORAGE_KEY, JSON.stringify(['ads', 'ghost']))
 			const { emitted } = render(BaseCookieConsent, { props: { categories: CATEGORIES, storageKey: 'site' } })
-			await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+			await waitFor(() => expect(screen.queryByRole('region')).not.toBeInTheDocument())
 			expect(emitted('update:modelValue')).toEqual([[['necessary', 'ads']]])
 			expect(emitted('change')).toEqual([[['necessary', 'ads']]])
 			expect(emitted('update:isOpen')).toEqual([[false]])
@@ -272,16 +310,16 @@ describe('BaseCookieConsent unit', () => {
 			['битый JSON', '{oops'],
 			['не массив', '{"a":1}'],
 			['массив не строк', '[1,2]'],
-		])('%s в хранилище: окно показывается', (_name, raw) => {
+		])('%s в хранилище: окно показывается', async (_name, raw) => {
 			localStorage.setItem(STORAGE_KEY, raw)
 			const { emitted } = render(BaseCookieConsent, { props: { categories: CATEGORIES, storageKey: 'site' } })
-			expect(screen.getByRole('dialog')).toBeInTheDocument()
+			expect(await screen.findByRole('region')).toBeInTheDocument()
 			expect(emitted('change')).toBeUndefined()
 		})
 
-		it('пустая запись: окно показывается', () => {
+		it('пустая запись: окно показывается', async () => {
 			render(BaseCookieConsent, { props: { categories: CATEGORIES, storageKey: 'site' } })
-			expect(screen.getByRole('dialog')).toBeInTheDocument()
+			expect(await screen.findByRole('region')).toBeInTheDocument()
 		})
 
 		it('недоступное хранилище: окно показывается, accept не падает', async () => {
@@ -292,7 +330,7 @@ describe('BaseCookieConsent unit', () => {
 				throw new Error('denied')
 			})
 			const { emitted } = render(BaseCookieConsent, { props: { categories: CATEGORIES, storageKey: 'site' } })
-			expect(screen.getByRole('dialog')).toBeInTheDocument()
+			expect(await screen.findByRole('region')).toBeInTheDocument()
 			await userEvent.setup().click(screen.getByRole('button', { name: UI_COOKIE_CONSENT.ACCEPT_SELECTED }))
 			expect(emitted('accept')).toHaveLength(1)
 		})
@@ -311,7 +349,7 @@ describe('BaseCookieConsent unit', () => {
 		it('setLocale("en") меняет тексты', () => {
 			setLocale('en')
 			render(BaseCookieConsent, { props: { categories: CATEGORIES } })
-			expect(screen.getByRole('dialog', { name: 'We use cookies' })).toBeInTheDocument()
+			expect(screen.getByRole('region', { name: 'We use cookies' })).toBeInTheDocument()
 			expect(screen.getByRole('button', { name: 'Customize' })).toBeInTheDocument()
 			expect(screen.getByRole('button', { name: 'Accept all' })).toBeInTheDocument()
 			expect(screen.getByRole('button', { name: 'Only selected' })).toBeInTheDocument()
@@ -321,7 +359,12 @@ describe('BaseCookieConsent unit', () => {
 			const html = await renderToString(
 				createSSRApp({ render: () => h(BaseCookieConsent, { categories: CATEGORIES, storageKey: 'site' }) }),
 			)
-			expect(html).toContain('role="dialog"')
+			expect(html).not.toContain(UI_COOKIE_CONSENT.TITLE)
+		})
+
+		it('renderToString без storageKey отдаёт окно как область', async () => {
+			const html = await renderToString(createSSRApp({ render: () => h(BaseCookieConsent, { categories: CATEGORIES }) }))
+			expect(html).toContain('role="region"')
 			expect(html).toContain(UI_COOKIE_CONSENT.TITLE)
 		})
 	})

@@ -70,7 +70,7 @@ export const LongContent: StoryObj<typeof meta> = {
 		template,
 	}),
 	play: async ({ canvas }) => {
-		const dialog = canvas.getByRole('dialog')
+		const dialog = canvas.getByRole('region')
 		const frame = dialog.parentElement as HTMLElement
 		await expect(dialog.scrollHeight).toBeGreaterThan(dialog.clientHeight)
 		await expect(dialog.getBoundingClientRect().top).toBeGreaterThanOrEqual(frame.getBoundingClientRect().top)

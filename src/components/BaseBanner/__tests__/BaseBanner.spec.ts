@@ -171,6 +171,37 @@ describe('BaseBanner unit', () => {
 			expect(screen.queryByRole('region')).not.toBeInTheDocument()
 		})
 
+		it('после закрытия фокус с кнопки переходит на следующий элемент страницы', async () => {
+			render({
+				render: () => h('div', [h(BaseBanner, { isClosable: true }), h('a', { href: '#next' }, 'Дальше')]),
+			})
+			screen.getByRole('button', { name: UI_ARIA.CLOSE }).focus()
+
+			await fireEvent.click(screen.getByRole('button', { name: UI_ARIA.CLOSE }))
+
+			expect(screen.getByRole('link', { name: 'Дальше' })).toHaveFocus()
+		})
+
+		it('после закрытия без следующего элемента фокус уходит в body', async () => {
+			render(BaseBanner, { props: { isClosable: true } })
+			screen.getByRole('button', { name: UI_ARIA.CLOSE }).focus()
+
+			await fireEvent.click(screen.getByRole('button', { name: UI_ARIA.CLOSE }))
+
+			expect(document.activeElement).toBe(document.body)
+		})
+
+		it('фокус вне баннера при закрытии не трогается', async () => {
+			render({
+				render: () => h('div', [h('button', 'Другая'), h(BaseBanner, { isOpen: true })]),
+			})
+			screen.getByRole('button', { name: 'Другая' }).focus()
+
+			await nextTick()
+
+			expect(screen.getByRole('button', { name: 'Другая' })).toHaveFocus()
+		})
+
 		it('isOpen=false изначально — баннера нет, смена на true показывает', async () => {
 			const { rerender } = render(BaseBanner, { props: { isOpen: false } })
 
@@ -188,7 +219,7 @@ describe('BaseBanner unit', () => {
 		it('закрытие записывает rise-banner:<ключ> = closed', async () => {
 			render(BaseBanner, { props: { isClosable: true, storageKey: 'promo' } })
 
-			await fireEvent.click(screen.getByRole('button', { name: UI_ARIA.CLOSE }))
+			await fireEvent.click(await screen.findByRole('button', { name: UI_ARIA.CLOSE }))
 
 			expect(localStorage.getItem(STORAGE_NAME)).toBe('closed')
 		})
@@ -203,10 +234,10 @@ describe('BaseBanner unit', () => {
 			expect(emitted('close')).toBeUndefined()
 		})
 
-		it('без записи баннер показан', () => {
+		it('без записи баннер показан после чтения хранилища', async () => {
 			const { emitted } = render(BaseBanner, { props: { storageKey: 'promo' } })
 
-			expect(screen.getByRole('region')).toBeInTheDocument()
+			expect(await screen.findByRole('region')).toBeInTheDocument()
 			expect(emitted('update:isOpen')).toBeUndefined()
 		})
 
@@ -219,7 +250,7 @@ describe('BaseBanner unit', () => {
 			})
 			const { emitted } = render(BaseBanner, { props: { isClosable: true, storageKey: 'promo' } })
 
-			expect(screen.getByRole('region')).toBeInTheDocument()
+			expect(await screen.findByRole('region')).toBeInTheDocument()
 
 			await fireEvent.click(screen.getByRole('button', { name: UI_ARIA.CLOSE }))
 
@@ -239,11 +270,32 @@ describe('BaseBanner unit', () => {
 		})
 	})
 
+	describe('isLive', () => {
+		it.each([
+			['primary', 'status'],
+			['info', 'status'],
+			['success', 'status'],
+			['warning', 'alert'],
+			['error', 'alert'],
+		] as const)('isLive у типа %s — role %s с именем области', (type, role) => {
+			render(BaseBanner, { props: { type, isLive: true } })
+
+			expect(screen.getByRole(role, { name: UI_BANNER.LABEL })).toBeInTheDocument()
+			expect(screen.queryByRole('region')).not.toBeInTheDocument()
+		})
+	})
+
 	describe('SSR', () => {
-		it('renderToString не падает и отдаёт область', async () => {
+		it('renderToString с storageKey не выводит баннер до чтения хранилища', async () => {
 			const html = await renderToString(
 				createSSRApp({ render: () => h(BaseBanner, { text: 'Скидка', isClosable: true, storageKey: 'promo' }) }),
 			)
+
+			expect(html).not.toContain('base-banner')
+		})
+
+		it('renderToString без storageKey отдаёт область', async () => {
+			const html = await renderToString(createSSRApp({ render: () => h(BaseBanner, { text: 'Скидка' }) }))
 
 			expect(html).toContain('base-banner')
 			expect(html).toContain('Скидка')

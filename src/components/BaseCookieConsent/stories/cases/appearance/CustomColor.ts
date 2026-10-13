@@ -26,7 +26,7 @@ export const CustomColor: StoryObj<typeof meta> = {
 		template,
 	}),
 	play: async ({ canvas }) => {
-		await expect(getComputedStyle(canvas.getByRole('dialog')).backgroundColor).toBe('rgb(109, 40, 217)')
+		await expect(getComputedStyle(canvas.getByRole('region')).backgroundColor).toBe('rgb(109, 40, 217)')
 		await expect(getComputedStyle(canvas.getByRole('heading', { name: 'Мы используем cookies' })).color).toBe('rgb(255, 255, 255)')
 	},
 }

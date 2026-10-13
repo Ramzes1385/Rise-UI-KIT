@@ -12,6 +12,7 @@ export const argTypes = {
 	hasIcon: { control: 'boolean', table: propGroup(ARG_GROUP.content) },
 	label: { control: 'text', table: propGroup(ARG_GROUP.a11y) },
 	isClosable: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+	isLive: { control: 'boolean', table: propGroup(ARG_GROUP.a11y) },
 	isOpen: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 	storageKey: { control: 'text', table: propGroup(ARG_GROUP.behavior) },
 	default: slotArgType('Текст объявления (заменяет text)'),

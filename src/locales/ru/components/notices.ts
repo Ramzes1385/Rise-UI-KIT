@@ -22,6 +22,7 @@ export const ruNotices = {
 		TITLE: 'Мы используем cookies',
 		DESCRIPTION: 'Они нужны для работы сайта и помогают сделать его лучше. Выберите, какие cookies разрешить.',
 		ACCEPT_ALL: 'Принять все',
+		REJECT_ALL: 'Отклонить все',
 		ACCEPT_SELECTED: 'Только выбранные',
 		CUSTOMIZE: 'Настроить',
 		CUSTOMIZE_CLOSE: 'Свернуть настройки',

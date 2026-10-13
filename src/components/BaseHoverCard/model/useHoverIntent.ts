@@ -30,6 +30,9 @@ export function useHoverIntent(options: HoverIntentOptions): HoverIntent & { can
 		handlePointerleave(event) {
 			if (event.pointerType !== 'touch') schedule(false, options.closeDelay())
 		},
+		handleKeydown() {
+			pointerType = 'mouse'
+		},
 		handleClick() {
 			if (pointerType === 'touch') schedule(!options.isOpen(), 0)
 		},

@@ -33,7 +33,7 @@ export const Sizes: StoryObj<typeof meta> = {
 		template,
 	}),
 	play: async ({ canvas }) => {
-		const heights = canvas.getAllByRole('dialog').map(dialog => dialog.getBoundingClientRect().height)
+		const heights = canvas.getAllByRole('region').map(dialog => dialog.getBoundingClientRect().height)
 		await expect(heights).toHaveLength(presets.length)
 		await expect(heights[0]).toBeLessThan(heights[heights.length - 1])
 	},

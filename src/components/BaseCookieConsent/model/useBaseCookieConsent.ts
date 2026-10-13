@@ -2,6 +2,7 @@ import { useUi } from '@composables/base/useUi'
 import { UI_COOKIE_CONSENT } from '@/locales/messages'
 import { computed, onMounted, ref, useId, watch } from 'vue'
 import { readStorage, writeStorage } from '@utils/data/storageUtils'
+import { useDismissFocus } from '@composables/interaction/useDismissFocus'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseCookieConsentEmits, CookieConsentProps } from '../types/BaseCookieConsent.types'
 import { allIds, isSameSelection, normalizeSelection, parseStoredSelection } from './cookieSelection'
@@ -18,6 +19,7 @@ const CONSENT_ELEMENTS = [
 	'actions',
 	'customize',
 	'acceptSelected',
+	'rejectAll',
 	'acceptAll',
 ]
 const STORAGE_PREFIX = 'rise-cookie-consent:'
@@ -53,6 +55,9 @@ function useConsentSelection(props: CookieConsentProps, emit: BaseCookieConsentE
 
 function useConsentState(props: CookieConsentProps, emit: BaseCookieConsentEmits) {
 	const isShown = ref(props.isOpen)
+	const isReady = ref(!props.storageKey)
+	const rootRef = ref<HTMLElement | null>(null)
+	const { releaseFocus } = useDismissFocus({ elementRef: rootRef })
 	const isSettingsShown = ref(props.isSettingsOpen)
 
 	watch(
@@ -68,8 +73,15 @@ function useConsentState(props: CookieConsentProps, emit: BaseCookieConsentEmits
 		},
 	)
 
+	watch(isShown, shown => {
+		if (!shown) releaseFocus()
+	})
+
 	return {
 		isShown,
+		isReady,
+		rootRef,
+		isVisible: computed(() => isReady.value && isShown.value),
 		isSettingsShown,
 		hide(): void {
 			isShown.value = false
@@ -80,6 +92,22 @@ function useConsentState(props: CookieConsentProps, emit: BaseCookieConsentEmits
 			emit('update:isSettingsOpen', isSettingsShown.value)
 		},
 	}
+}
+
+function useStoredDecision(
+	storageName: () => string | null,
+	select: (ids: string[]) => void,
+	state: ReturnType<typeof useConsentState>,
+): void {
+	onMounted(() => {
+		const name = storageName()
+		const stored = name ? parseStoredSelection(readStorage(name)) : null
+		if (stored) {
+			select(stored)
+			state.hide()
+		}
+		state.isReady.value = true
+	})
 }
 
 export function useBaseCookieConsent(props: CookieConsentProps, emit: BaseCookieConsentEmits) {
@@ -95,18 +123,13 @@ export function useBaseCookieConsent(props: CookieConsentProps, emit: BaseCookie
 		state.hide()
 	}
 
-	onMounted(() => {
-		const name = storageName()
-		const stored = name ? parseStoredSelection(readStorage(name)) : null
-		if (!stored) return
-		selection.select(stored)
-		state.hide()
-	})
+	useStoredDecision(storageName, selection.select, state)
 
 	return {
 		...useStandardBaseComponent('base-cookie-consent', props, CONSENT_ELEMENTS),
 		ui: useUi(props, 'base-cookie-consent'),
-		isShown: state.isShown,
+		isVisible: state.isVisible,
+		rootRef: state.rootRef,
 		isSettingsShown: state.isSettingsShown,
 		toggleSettings: state.toggleSettings,
 		isChecked: selection.isChecked,
@@ -120,6 +143,11 @@ export function useBaseCookieConsent(props: CookieConsentProps, emit: BaseCookie
 		consentDescription: computed((): string => props.description || UI_COOKIE_CONSENT.DESCRIPTION),
 		acceptAll(): void {
 			const ids = allIds(props.categories)
+			selection.select(ids)
+			finish(ids)
+		},
+		rejectAll(): void {
+			const ids = normalizeSelection([], props.categories)
 			selection.select(ids)
 			finish(ids)
 		},

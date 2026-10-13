@@ -22,6 +22,7 @@ export const enNotices = {
 		TITLE: 'We use cookies',
 		DESCRIPTION: 'They keep the site working and help us improve it. Choose which cookies to allow.',
 		ACCEPT_ALL: 'Accept all',
+		REJECT_ALL: 'Reject all',
 		ACCEPT_SELECTED: 'Only selected',
 		CUSTOMIZE: 'Customize',
 		CUSTOMIZE_CLOSE: 'Hide settings',

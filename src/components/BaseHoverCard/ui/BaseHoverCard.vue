@@ -21,6 +21,7 @@
 			@pointerenter="handlePointerenter"
 			@pointerleave="handlePointerleave"
 			@pointerdown="handlePointerdown"
+			@keydown="handleKeydown"
 			@click="handleClick"
 			@focusin="handleFocusin"
 			@focusout="handleFocusout">
@@ -79,6 +80,7 @@ const {
 	handlePointerenter,
 	handlePointerleave,
 	handlePointerdown,
+	handleKeydown,
 	handleClick,
 	handleFocusin,
 	handleFocusout,

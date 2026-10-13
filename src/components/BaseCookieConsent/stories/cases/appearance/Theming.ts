@@ -42,7 +42,7 @@ export const Theming: StoryObj<typeof meta> = {
 		template,
 	}),
 	play: async ({ canvas }) => {
-		const [plain, themed, classed] = canvas.getAllByRole('dialog')
+		const [plain, themed, classed] = canvas.getAllByRole('region')
 
 		await expect(getComputedStyle(themed).backgroundColor).not.toBe(getComputedStyle(plain).backgroundColor)
 		if (!isStoryBranded()) await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('16px')

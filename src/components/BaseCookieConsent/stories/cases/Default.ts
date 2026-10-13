@@ -17,7 +17,7 @@ export const Default: StoryObj<typeof meta> = {
 			description: {
 				story: [
 					'Песочница: окно в нижней части рамки (`isContained`), три категории — «Необходимые» обязательна. Меняйте props в Controls.',
-					'«Принять все» сообщает `accept` со всеми `id` и закрывает окно.',
+					'«Принять все» сообщает `accept` со всеми `id` и закрывает окно; «Отклонить все» — только с обязательными.',
 				].join('\n'),
 			},
 			source: storySource({ template, imports: ['BaseCookieConsent'] }),
@@ -29,15 +29,17 @@ export const Default: StoryObj<typeof meta> = {
 		template,
 	}),
 	play: async ({ canvas, userEvent, args }) => {
-		await expect(canvas.getByRole('dialog', { name: 'Мы используем cookies' })).toHaveAttribute('aria-modal', 'false')
+		await expect(canvas.getByRole('region', { name: 'Мы используем cookies' })).toBeInTheDocument()
 		await userEvent.tab()
 		await expect(canvas.getByRole('button', { name: 'Настроить' })).toHaveFocus()
 		await userEvent.tab()
 		await expect(canvas.getByRole('button', { name: 'Только выбранные' })).toHaveFocus()
 		await userEvent.tab()
+		await expect(canvas.getByRole('button', { name: 'Отклонить все' })).toHaveFocus()
+		await userEvent.tab()
 		await expect(canvas.getByRole('button', { name: 'Принять все' })).toHaveFocus()
 		await userEvent.keyboard('{Enter}')
 		await expect(args.onAccept).toHaveBeenCalledWith(ALL_IDS)
-		await waitFor(() => expect(canvas.queryByRole('dialog')).not.toBeInTheDocument())
+		await waitFor(() => expect(canvas.queryByRole('region')).not.toBeInTheDocument())
 	},
 }

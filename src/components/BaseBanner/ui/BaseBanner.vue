@@ -1,8 +1,9 @@
 <template>
 	<Transition :css="false" v-bind="expand">
 		<div
-			v-if="isShown"
-			role="region"
+			v-if="isVisible"
+			ref="rootRef"
+			:role="bannerRole"
 			:class="[ui('root'), `base-banner--${type}`, `base-banner--${position}`, variantClass, classes.root]"
 			:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 			:aria-label="bannerLabel">
@@ -64,6 +65,7 @@ const props = withDefaults(
 		hasIcon: true,
 		isClosable: false,
 		isOpen: true,
+		isLive: false,
 		position: 'static',
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
@@ -80,7 +82,9 @@ const {
 	customColorStyle,
 	classes,
 	expand,
-	isShown,
+	isVisible,
+	rootRef,
+	bannerRole,
 	closeButtonPadding,
 	bannerIcon,
 	bannerLabel,

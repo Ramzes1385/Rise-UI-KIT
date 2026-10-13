@@ -37,7 +37,7 @@ export const Remembered: StoryObj<typeof meta> = {
 		localStorage.removeItem(STORAGE_NAME)
 		await userEvent.click(canvas.getByRole('button', { name: 'Принять все' }))
 		await expect(JSON.parse(localStorage.getItem(STORAGE_NAME) as string)).toEqual(ALL_IDS)
-		await waitFor(() => expect(canvas.queryByRole('dialog')).not.toBeInTheDocument())
+		await waitFor(() => expect(canvas.queryByRole('region')).not.toBeInTheDocument())
 		localStorage.removeItem(STORAGE_NAME)
 	},
 }

@@ -38,10 +38,10 @@ export const Animations: StoryObj<typeof meta> = {
 	},
 	render: motion.render,
 	play: async ({ canvas, userEvent }) => {
-		await expect(canvas.getAllByRole('dialog')).toHaveLength(4)
+		await expect(canvas.getAllByRole('region')).toHaveLength(4)
 		await userEvent.click(canvas.getAllByRole('button', { name: 'Принять все' })[0])
-		await waitFor(() => expect(canvas.queryAllByRole('dialog')).toHaveLength(0))
+		await waitFor(() => expect(canvas.queryAllByRole('region')).toHaveLength(0))
 		await userEvent.click(canvas.getByRole('button', { name: 'Показать или скрыть' }))
-		await waitFor(() => expect(canvas.getAllByRole('dialog')).toHaveLength(4))
+		await waitFor(() => expect(canvas.getAllByRole('region')).toHaveLength(4))
 	},
 }

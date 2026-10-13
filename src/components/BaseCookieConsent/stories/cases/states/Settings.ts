@@ -48,6 +48,6 @@ export const Settings: StoryObj<typeof meta> = {
 
 		await userEvent.click(canvas.getByRole('button', { name: 'Только выбранные' }))
 		await expect(args.onAccept).toHaveBeenCalledWith(['necessary', 'analytics'])
-		await waitFor(() => expect(canvas.queryByRole('dialog')).not.toBeInTheDocument())
+		await waitFor(() => expect(canvas.queryByRole('region')).not.toBeInTheDocument())
 	},
 }

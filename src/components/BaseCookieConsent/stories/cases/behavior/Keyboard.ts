@@ -15,7 +15,7 @@ export const Keyboard: StoryObj<typeof meta> = {
 		docs: {
 			description: {
 				story: [
-					'Клавиатура: Tab идёт по кнопкам — «Настроить», «Только выбранные», «Принять все» (окно фокус не перехватывает и не удерживает).',
+					'Клавиатура: Tab идёт по кнопкам — «Настроить», «Только выбранные», «Отклонить все», «Принять все» (окно фокус не перехватывает и не удерживает).',
 					'Enter на «Настроить» раскрывает список категорий (`aria-expanded`, `aria-controls`), повторный Enter сворачивает.',
 				].join('\n'),
 			},
@@ -38,8 +38,11 @@ export const Keyboard: StoryObj<typeof meta> = {
 		await userEvent.tab()
 		await expect(canvas.getByRole('button', { name: 'Только выбранные' })).toHaveFocus()
 		await userEvent.tab()
+		await expect(canvas.getByRole('button', { name: 'Отклонить все' })).toHaveFocus()
+		await userEvent.tab()
 		await expect(canvas.getByRole('button', { name: 'Принять все' })).toHaveFocus()
 
+		await userEvent.tab({ shift: true })
 		await userEvent.tab({ shift: true })
 		await userEvent.tab({ shift: true })
 		await expect(customize).toHaveFocus()
