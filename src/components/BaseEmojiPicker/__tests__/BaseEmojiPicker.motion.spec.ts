@@ -1,6 +1,6 @@
 import { resolve } from 'node:path'
-import { compileString } from 'sass'
 import { readFileSync } from 'node:fs'
+import { compileString } from 'sass-embedded'
 
 const STYLES = resolve(__dirname, '../../../styles')
 const PRELUDE = '@use "variables" as *;\n@use "mixins" as *;\n@use "functions" as *;\n'

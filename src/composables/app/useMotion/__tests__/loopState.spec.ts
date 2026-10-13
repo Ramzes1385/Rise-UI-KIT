@@ -1,7 +1,7 @@
 import { resolve } from 'node:path'
-import { compileString } from 'sass'
 import { readFileSync } from 'node:fs'
 import { pathToFileURL } from 'node:url'
+import { compileString } from 'sass-embedded'
 
 const SRC = resolve(__dirname, '../../../..')
 const STYLES = resolve(SRC, 'styles')

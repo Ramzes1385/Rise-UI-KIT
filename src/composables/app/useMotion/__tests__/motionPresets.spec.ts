@@ -1,5 +1,5 @@
 import { resolve } from 'node:path'
-import { compileString } from 'sass'
+import { compileString } from 'sass-embedded'
 import { readMotionDuration } from '../motionTokens'
 import { MOTION_PRESETS } from '../types/useMotion.types'
 
