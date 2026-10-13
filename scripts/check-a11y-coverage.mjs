@@ -135,7 +135,6 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseImageMapEditor',
 	'BaseImageMap3D',
 	'BaseHoverCard',
-
 	'BaseDashboardGrid',
 	'BaseGantt',
 ])
@@ -201,7 +200,6 @@ const INTERACTIVE_WITH_DISABLED = new Set([
 	'BaseCryptoProSign',
 	'BaseImageMapEditor',
 	'BaseHoverCard',
-
 	'BaseDashboardGrid',
 	'BaseGantt',
 ])

@@ -201,10 +201,9 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseFooter,
 	BaseForm,
 	BaseFormField,
+	BaseGantt,
 	BaseGrid,
 	BaseGridItem,
-
-	BaseGantt,
 	BaseHeader,
 	BaseHeatmap,
 	BaseHoverCard,
