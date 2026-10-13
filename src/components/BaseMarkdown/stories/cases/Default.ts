@@ -12,12 +12,12 @@ export const Default: StoryObj<typeof meta> = {
 	},
 	play: async ({ canvas, userEvent }) => {
 		await expect(canvas.getByRole('heading', { level: 2, name: 'Отчёт о выпуске' })).toBeVisible()
-		await expect(canvas.getByRole('link', { name: 'журнале изменений' })).toHaveAttribute('rel', 'noopener noreferrer')
+		await expect(canvas.getByRole('link', { name: /журнале изменений/ })).toHaveAttribute('rel', 'noopener noreferrer')
 		await expect(canvas.getByRole('table')).toBeVisible()
 		await expect(canvas.getAllByRole('img', { name: 'Выполнено' })).toHaveLength(2)
 		const code = canvas.getByText((_, element) => element?.tagName === 'CODE' && /const answer/.test(element.textContent ?? ''))
 		await expect(code.closest('pre')).not.toBeNull()
 		await userEvent.tab()
-		await expect(canvas.getByRole('link', { name: 'журнале изменений' })).toHaveFocus()
+		await expect(canvas.getByRole('link', { name: /журнале изменений/ })).toHaveFocus()
 	},
 }

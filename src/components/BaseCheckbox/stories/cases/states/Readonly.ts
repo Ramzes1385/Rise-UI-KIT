@@ -40,10 +40,10 @@ export const Readonly: StoryObj<typeof meta> = {
 		const off = canvas.getByRole('checkbox', { name: 'Согласие не получено' })
 		await expect(off).toHaveAttribute('aria-readonly', 'true')
 		await expect(off).toBeEnabled()
-		await userEvent.click(canvas.getByText('Согласие не получено'))
-		await expect(off).not.toBeChecked()
 		await userEvent.tab()
 		await expect(off).toHaveFocus()
+		await userEvent.click(canvas.getByText('Согласие не получено'))
+		await expect(off).not.toBeChecked()
 		await expect(canvas.getByRole('checkbox', { name: 'Договор подписан' })).toBeChecked()
 	},
 }

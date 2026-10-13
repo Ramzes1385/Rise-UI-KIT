@@ -26,6 +26,6 @@ export const Safety: StoryObj<typeof meta> = {
 		await expect(canvasElement.querySelector('script, [onerror]')).toBeNull()
 		await expect(canvas.getByText(/<script>alert\(1\)<\/script>/)).toBeVisible()
 		await expect(canvas.queryByRole('link', { name: 'Нажми меня' })).toBeNull()
-		await expect(canvas.getByRole('link', { name: 'пример' })).toHaveAttribute('href', 'https://example.com')
+		await expect(canvas.getByRole('link', { name: /пример/ })).toHaveAttribute('href', 'https://example.com')
 	},
 }

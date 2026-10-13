@@ -23,7 +23,7 @@ export const Ads: StoryObj<typeof meta> = {
 		const player = within(canvasElement.querySelector('.base-media-player') as HTMLElement)
 		await userEvent.click(canvas.getAllByRole('button', { name: 'Воспроизвести' })[0])
 		const ad = await player.findByRole('region', { name: 'Реклама' })
-		await expect(within(ad).getByRole('link', { name: 'Перейти на сайт' })).toHaveAttribute('rel', 'noopener noreferrer sponsored')
+		await expect(within(ad).getByRole('link', { name: /Перейти на сайт/ })).toHaveAttribute('rel', 'noopener noreferrer sponsored')
 		await userEvent.click(await within(ad).findByRole('button', { name: 'Пропустить рекламу' }, { timeout: 3000 }))
 		await waitFor(() => expect(player.queryByRole('region', { name: 'Реклама' })).toBeNull())
 	},
