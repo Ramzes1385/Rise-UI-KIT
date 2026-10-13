@@ -55,8 +55,8 @@ $progress-radius: ct(progress, radius, var(--rise-radius-full));
 
 		height: 100%;
 		border-radius: inherit;
-		border-start-end-radius: 0;
-		border-end-end-radius: 0;
+		border-top-right-radius: 0;
+		border-bottom-right-radius: 0;
 		background-color: var(--progress-color);
 		background-image: var(--progress-stripes, none), var(--progress-paint, none);
 		background-size:
@@ -66,6 +66,9 @@ $progress-radius: ct(progress, radius, var(--rise-radius-full));
 		@include transition(clip-path);
 
 		[dir='rtl'] & {
+			border-radius: inherit;
+			border-top-left-radius: 0;
+			border-bottom-left-radius: 0;
 			clip-path: inset(0 0 0 var(--progress-clip) round #{$progress-radius} 0 0 #{$progress-radius});
 		}
 	}
