@@ -1,9 +1,9 @@
 import type { ComputedRef, Ref } from 'vue'
 import { useUi } from '@composables/base/useUi'
-import { calcIconScale } from '@utils/media/iconUtils'
 import { computed, nextTick, ref, useId, watch } from 'vue'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import type { CustomColor } from '@composables/base/useCustomColor'
+import { calcDerivedScale, calcIconScale } from '@utils/media/iconUtils'
 import { useTriggerAttributes } from '@composables/overlay/useTriggerAttributes'
 import type { BasePopconfirmEmits, PopconfirmProps } from '../types/BasePopconfirm.types'
 
@@ -40,7 +40,7 @@ function usePopconfirmView(props: PopconfirmProps) {
 		dangerColor: DANGER_COLOR,
 		hasArrow: computed(() => props.showArrow !== false && props.variant !== 'ghost'),
 		rootClass: computed((): string => ['base-popconfirm-root', classes.value.root].filter(Boolean).join(' ')),
-		buttonScale: computed(() => props.sizeScale * BUTTON_SCALE_RATIO),
+		buttonScale: computed(() => calcDerivedScale(props.sizeScale, BUTTON_SCALE_RATIO)),
 		iconScale: computed(() => calcIconScale('sm', props.sizeScale)),
 	}
 }

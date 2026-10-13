@@ -62,3 +62,22 @@ describe('BasePopconfirm: анимация', () => {
 		expect(panel()).toHaveClass('base-dropdown__panel--animation-pop')
 	})
 })
+
+describe('BasePopconfirm: масштаб кнопок', () => {
+	const buttonScales = () =>
+		[...document.querySelectorAll<HTMLElement>('.base-popconfirm__actions button')].map(button =>
+			button.style.getPropertyValue('--size-scale'),
+		)
+
+	it('кнопки — 87,5% масштаба компонента', () => {
+		render(BasePopconfirm, { props: { ...PROPS, sizeScale: 120 }, slots: SLOTS })
+
+		expect(buttonScales()).toEqual(['1.05', '1.05'])
+	})
+
+	it('если 87,5% масштаба дают ровно 100, он закрепляется (100.01), а не «наследовать»', () => {
+		render(BasePopconfirm, { props: { ...PROPS, sizeScale: 800 / 7 }, slots: SLOTS })
+
+		expect(buttonScales()).toEqual(['1.0001', '1.0001'])
+	})
+})

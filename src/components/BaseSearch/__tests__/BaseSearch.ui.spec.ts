@@ -88,3 +88,21 @@ describe('BaseSearch: проп ui', () => {
 		expect(document.querySelector('.base-search__result-title')!.className).not.toMatch(/\b(app|own)\b/)
 	})
 })
+
+describe('BaseSearch: масштаб загрузчика', () => {
+	afterEach(() => {
+		document.body.innerHTML = ''
+	})
+
+	it('загрузчик вдвое меньше поля: при sizeScale 100 — 50%', () => {
+		render(BaseSearch, { props: { modelValue: 'закат', results: RESULTS, isLoading: true, sizeScale: 100 } })
+
+		expect(document.querySelector<HTMLElement>('.base-search__loading')?.style.getPropertyValue('--size-scale')).toBe('0.5')
+	})
+
+	it('при sizeScale 200 масштаб загрузчика закреплён (100.01), а не «наследовать»', () => {
+		render(BaseSearch, { props: { modelValue: 'закат', results: RESULTS, isLoading: true, sizeScale: 200 } })
+
+		expect(document.querySelector<HTMLElement>('.base-search__loading')?.style.getPropertyValue('--size-scale')).toBe('1.0001')
+	})
+})

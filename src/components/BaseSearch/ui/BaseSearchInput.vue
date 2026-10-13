@@ -25,7 +25,7 @@
 					:class="ui('loading')"
 					:custom-class="classes.loading"
 					variant="spinner"
-					:size-scale="sizeScale / 2" />
+					:size-scale="calcDerivedScale(sizeScale, 0.5)" />
 				<BaseButton
 					v-if="hasClear && modelValue"
 					variant="ghost"
@@ -49,8 +49,8 @@ import { BaseIcon } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
 import { BaseButton } from '@components/BaseButton'
 import { BaseLoader } from '@components/BaseLoader'
-import { calcIconScale } from '@utils/media/iconUtils'
 import { useBaseSearchInput } from '../model/useBaseSearchInput'
+import { calcDerivedScale, calcIconScale } from '@utils/media/iconUtils'
 import type { BaseSearchInputEmits, BaseSearchInputExpose, BaseSearchInputProps } from '../types/BaseSearchInput.types'
 
 const props = defineProps<BaseSearchInputProps>()

@@ -265,6 +265,7 @@ function styleTemplate(n, kind, variants) {
 	if (kind === 'form') {
 		return [
 			`.${n.kebab} {`,
+			'\t@include custom-color-scope;',
 			'\tdisplay: flex;',
 			'\tflex-direction: column;',
 			'\tgap: sz(6px);',
@@ -312,6 +313,7 @@ function styleTemplate(n, kind, variants) {
 	const interactive = kind === 'interactive'
 	return [
 		`.${n.kebab} {`,
+		'\t@include custom-color-scope;',
 		'\tdisplay: inline-flex;',
 		'\talign-items: center;',
 		'\tgap: sz(6px);',
@@ -327,7 +329,7 @@ function styleTemplate(n, kind, variants) {
 		'\t@include custom-text(color, var(--rise-text));',
 		...(interactive
 			? [
-					'\t@include interactive;',
+					'\t@include transition-colors;',
 					'\t@include focus-ring;',
 					'',
 					'\t@include hover {',

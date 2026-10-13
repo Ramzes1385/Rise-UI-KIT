@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { calcIconScale, ICON_SCALE } from '../iconUtils'
+import { calcDerivedScale, calcIconScale, ICON_SCALE } from '../iconUtils'
 
 describe('iconUtils', () => {
 	describe('ICON_SCALE', () => {
@@ -52,6 +52,30 @@ describe('iconUtils', () => {
 
 		it('возвращает 0 при parentScale 0', () => {
 			expect(calcIconScale('md', 0)).toBe(0)
+		})
+	})
+
+	describe('calcDerivedScale', () => {
+		it('умножает масштаб родителя на долю без округления', () => {
+			expect(calcDerivedScale(100, 0.5)).toBe(50)
+			expect(calcDerivedScale(150, 0.875)).toBe(131.25)
+		})
+
+		it('фиксирует размер, когда результат при масштабированном родителе ровно 100', () => {
+			expect(calcDerivedScale(200, 0.5)).toBe(100.01)
+		})
+
+		it('фиксирует и результат, который из-за дробей чуть отличается от 100', () => {
+			expect(calcDerivedScale(800 / 7, 0.875)).toBe(100.01)
+		})
+
+		it('при родителе 100 и доле 1 остаётся наследованием', () => {
+			expect(calcDerivedScale(100, 1)).toBe(100)
+		})
+
+		it('не трогает результат, отличный от 100', () => {
+			expect(calcDerivedScale(120, 0.5)).toBe(60)
+			expect(calcDerivedScale(101, 1)).toBe(101)
 		})
 	})
 })

@@ -202,6 +202,12 @@
 - Производные масштабы, равные ровно 100, вне `calcIconScale`: `sizeScale / 2` у BaseLoader в BaseSearchInput при `sizeScale` 200 (получает 100 = «наследовать», загрузчик остаётся вдвое крупнее) и `sizeScale * 0.875` у кнопок BaseConfirm и BasePopconfirm при `sizeScale` ≈114. Редкие значения; общий помощник «закрепить масштаб» — отдельной задачей.
 - Сброс `--custom-*` на корнях проверяет `npm run test:custom-color` (`scripts/check-custom-color-scope.mjs`). Новый компонент, чьи стили читают `--custom-*`, обязан подключить `@include custom-color-scope` в корневое правило; `create:component` пока этого не делает.
 
+## Задача wave2-fix
+
+- Закрыто из «Задача core1»: производные масштабы, равные ровно 100 (BaseSearch, BasePopconfirm; BaseConfirm не затронут), решение «разделить `--custom-text` и `--custom-bg` в `inherit-custom-color`» (не разделяем: пара текст + фон нужна на наведении), `create:component` и `custom-color-scope`.
+- Тот же приём `calcDerivedScale` пока не применён к другим долям `sizeScale`: `* 0.875` в BaseSignaturePad, BaseCommentThread (композер), BaseNotificationCenter и `* 0.75` в BaseCommentThread (узел). Результат ровно 100 при редких `sizeScale` (≈114,29 и ≈133,33).
+- Кнопки BaseInputNumber берут цвет текста не через `--custom-text`, а через `ct(input-number, button-text)`: `color` поля красит только их фон. Решить отдельно, нужна ли передача текста.
+
 ## Задача polish-1
 
 - `calcDerivedScale` (`@utils/media/iconUtils`, задача wave2-fix) у долей 0.875 и 0.75 в BaseSignaturePad (кнопки «Отменить» и «Очистить», `sizeScale * 0.875`): помощника в базе fa23fc58 нет, он придёт со слиянием wave2-fix — после него заменить умножение в `BaseSignaturePad.vue` (при `sizeScale` ≈114 результат ровно 100 читается как «наследовать»). То же осталось у BaseCommentThread и BaseNotificationCenter (зона compose-1).

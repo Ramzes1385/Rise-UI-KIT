@@ -2365,6 +2365,14 @@ API кита не меняется. В Storybook добавлены пример
 - **`calcIconScale(scale, parentScale)`** (`@utils/media/iconUtils`): при `parentScale` не 100 результат, который получился ровно 100, возвращается как `100.01`. `useSizeScale` читает 100 как «наследовать», поэтому иконка получала масштаб предка (иконка пароля BaseInput при `sizeScale` 125 была 25px вместо 20px); 100.01 закрепляет размер, отличие от 100 меньше 0,01 px. При `parentScale` 100 (по умолчанию) результат прежний. `sizeScale` по умолчанию и `useSizeScale` не менялись. Иконки, которые это затрагивает: стрелка BaseSelect, иконка пароля и кнопка очистки BaseInput и другие места, где `calcIconScale('sm', sizeScale)` при `sizeScale` 125 (и `'xs'` при `sizeScale` ≈167).
 - **Проверка в CI**: `npm run test:custom-color` (`scripts/check-custom-color-scope.mjs`) — каждый компонент, чьи стили читают `--custom-*`, обязан сбрасывать их на корне; входит в `ci:validate`.
 
+## Задача wave2-fix: замечания проверки wave2
+
+Правки вида и поведения мелкие; API не ломается.
+
+- **BaseSideBar: кнопка сворачивания на цветной подложке** берёт `color` панели (`bg` и `text`, включая `hover`) через `inherit-custom-color`: иконка читается на любой подложке (контраст ≥ 3:1, WCAG 1.4.11), при наведении подсвечивается цветом `hover` панели. Раньше иконка была приглушённой (`--rise-text-muted`), а на тёмной подложке в светлой теме терялась.
+- **`calcDerivedScale(parentScale, ratio)`** (`@utils/media/iconUtils`): масштаб вложенного компонента как доля масштаба родителя без округления. Как и `calcIconScale`, при `parentScale` не 100 отдаёт `100.01` вместо ровно 100 (`useSizeScale` читает 100 как «наследовать»). Применён к загрузчику BaseSearch (`sizeScale / 2`, при 200) и кнопкам BasePopconfirm (`sizeScale * 0.875`, при ≈114,29). В BaseConfirm кнопки получают `sizeScale` без доли, закреплять нечего.
+- **`npm run create:component`**: стили заготовки (`display`, `interactive`, `form`) подключают `@include custom-color-scope` на корне, и `npm run test:custom-color` проходит на свежем компоненте. Заготовка `interactive` ссылалась на несуществующий миксин `interactive` и не компилировалась, теперь — `transition-colors`.
+
 ## Задача polish-1: хвосты плана 13.10
 
 - **Токены** (разведены запасные значения одного токена): `--rise-tabs-indicator-bg` теперь красит только индикатор underline и arc (`--rise-primary`); подложка pills и rounded — новый `--rise-tabs-pills-indicator-bg` (`--rise-bg`). `--rise-anchor-indicator-bg` — полоска вертикального и горизонтального якоря; подложка `soft` — `--rise-anchor-soft-indicator-bg`. Приложение, которое красило оба вида одним токеном, задаёт два.
