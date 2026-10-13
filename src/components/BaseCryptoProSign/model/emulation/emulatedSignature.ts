@@ -70,5 +70,6 @@ export function decodeSignature(value: string): EmulatedSignature {
 		signingTime: fields.signingTime ?? '',
 		timeStamp: fields.timeStamp ?? '',
 		content: fields.content ?? '',
+		cosigners: fields.cosigners ?? '',
 	}
 }

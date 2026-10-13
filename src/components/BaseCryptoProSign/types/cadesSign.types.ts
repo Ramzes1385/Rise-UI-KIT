@@ -73,6 +73,10 @@ interface CadesSigners {
 export interface CadesSignSignedData extends CadesSignedData {
 	/** Отсоединённая подпись хэша; результат — Base64 */
 	SignHash(hash: CadesHashedData, signer: CadesSigner, type: number): Promise<string>
+	/** Добавляет вторую подпись к подписи, проверенной `VerifyCades` (присоединённой или отсоединённой с `propset_Content`); результат — Base64 */
+	CoSignCades(signer: CadesSigner, type: number): Promise<string>
+	/** Добавляет вторую подпись к отсоединённой подписи, проверенной `VerifyHash` по тому же хэшу; результат — Base64 */
+	CoSignHash(hash: CadesHashedData, signer: CadesSigner, type: number): Promise<string>
 	/** Проверка подписи; отсоединённой — после `propset_Content` с теми же данными */
 	VerifyCades(signature: string, type: number, isDetached: boolean): Promise<void>
 	/** Проверка отсоединённой подписи по хэшу данных */

@@ -48,6 +48,39 @@ async function signHashed(
 	return signedData.SignHash(hashed, context.signer, LEVEL_TYPES[request.level])
 }
 
+async function coSignContent(plugin: CadesSignPlugin, signer: CadesSignSigner, request: CryptoProSignRequest): Promise<string> {
+	const signedData = await plugin.CreateObjectAsync('CAdESCOM.CadesSignedData')
+	if (request.detached) {
+		await signedData.propset_ContentEncoding(CADES.BASE64_TO_BINARY)
+		await signedData.propset_Content(bytesToBase64(await toBytes(request.data)))
+	}
+	await signedData.VerifyCades(request.coSignature as string, CADES_SIGN.CADES_BES, request.detached)
+	return signedData.CoSignCades(signer, LEVEL_TYPES[request.level])
+}
+
+async function coSignHashed(
+	plugin: CadesSignPlugin,
+	context: { signer: CadesSignSigner; certificate: CadesCertificate },
+	request: CryptoProSignRequest,
+): Promise<string> {
+	const algorithm = await hashAlgorithm(context.certificate)
+	const hashed = await hashData(plugin, request.data, { algorithm, onProgress: request.onProgress })
+	const signedData = await plugin.CreateObjectAsync('CAdESCOM.CadesSignedData')
+	await signedData.VerifyHash(hashed, request.coSignature as string, CADES_SIGN.CADES_BES)
+	return signedData.CoSignHash(hashed, context.signer, LEVEL_TYPES[request.level])
+}
+
+async function produce(
+	plugin: CadesSignPlugin,
+	context: { signer: CadesSignSigner; certificate: CadesCertificate },
+	request: CryptoProSignRequest,
+): Promise<string> {
+	if (request.coSignature) {
+		return request.isHash ? coSignHashed(plugin, context, request) : coSignContent(plugin, context.signer, request)
+	}
+	return request.isHash ? signHashed(plugin, context, request) : signContent(plugin, context.signer, request)
+}
+
 export async function signRequest(plugin: CadesSignPlugin, request: CryptoProSignRequest): Promise<string> {
 	const base = plugin as unknown as CadesPlugin
 	const store = await openStore(base)
@@ -55,9 +88,7 @@ export async function signRequest(plugin: CadesSignPlugin, request: CryptoProSig
 		const { certificate, info } = await findCertificate(store, request.thumbprint)
 		if (!info.hasPrivateKey) throw new CryptoProError('noPrivateKey', info.thumbprint)
 		const signer = await createSigner(plugin, certificate, request)
-		const signature = request.isHash
-			? await signHashed(plugin, { signer, certificate }, request)
-			: await signContent(plugin, signer, request)
+		const signature = await produce(plugin, { signer, certificate }, request)
 		return signature.replace(/\s+/g, '')
 	} finally {
 		await closeStore(store)

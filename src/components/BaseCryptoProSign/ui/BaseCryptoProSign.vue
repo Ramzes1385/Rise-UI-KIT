@@ -27,7 +27,7 @@
 					:is-disabled="isDisabled || isLoadingCertificates"
 					@update:model-value="selectCertificate" />
 			</template>
-			<template v-else>
+			<template v-if="needsSignature">
 				<p v-if="signature" :class="ui('source')">
 					{{ UI_CRYPTOPRO.SIGNATURE_GIVEN }}
 				</p>
@@ -44,11 +44,15 @@
 			</p>
 			<BaseFileUpload
 				v-else
-				:label="isVerify ? UI_CRYPTOPRO.DOCUMENT_VERIFY : UI_CRYPTOPRO.DOCUMENT"
-				:is-disabled="isDisabled"
+				:label="needsSignature ? UI_CRYPTOPRO.DOCUMENT_VERIFY : UI_CRYPTOPRO.DOCUMENT"
+				:is-multiple="isBatch"
+				:is-disabled="isDisabled || isRunning"
 				@change="pickFile"
 				@remove="removeFile" />
-			<template v-if="!isVerify">
+			<p v-if="isBatch && hasHashFiles" :class="ui('hint')">
+				{{ hashHint }}
+			</p>
+			<template v-if="!needsSignature && !isBatch">
 				<BaseSegmented
 					:model-value="detachedValue"
 					:options="detachedOptions"
@@ -59,16 +63,32 @@
 					{{ hashHint }}
 				</p>
 			</template>
-			<BaseProgress v-if="progress !== null" :value="progressPercent" :aria-label="UI_CRYPTOPRO.HASHING" has-label />
+			<BaseProgress v-if="progress !== null && !isBatch" :value="progressPercent" :aria-label="UI_CRYPTOPRO.HASHING" has-label />
+			<BaseProgress v-if="isRunning" :value="batchPercent" :aria-label="UI_CRYPTOPRO.BATCH_PROGRESS" has-label />
+			<BaseCryptoProSignBatch
+				v-if="isBatch && batchItems.length"
+				:class="ui('batch')"
+				:items="batchItems"
+				:has-download="hasDownload"
+				@download="downloadItem" />
 			<div :class="ui('actions')">
-				<BaseButton :is-loading="isBusy" :is-disabled="!canRun" @click="isVerify ? verify() : sign()">
-					{{ isVerify ? UI_CRYPTOPRO.VERIFY : UI_CRYPTOPRO.SIGN }}
+				<BaseButton :is-loading="isBusy" :is-disabled="!canRun" @click="run">
+					{{ runLabel }}
 				</BaseButton>
-				<BaseButton v-if="signResult && hasDownload && !isVerify" variant="outline" @click="download">
+				<BaseButton v-if="isRunning" variant="outline" :is-disabled="isCancelling" @click="cancel">
+					{{ UI_CRYPTOPRO.BATCH_CANCEL }}
+				</BaseButton>
+				<BaseButton v-if="signResult && hasDownload && !isVerify && !isBatch" variant="outline" @click="download">
 					<template #left>
 						<BaseIcon name="download" />
 					</template>
 					{{ UI_CRYPTOPRO.DOWNLOAD }}
+				</BaseButton>
+				<BaseButton v-if="isBatch && hasBatchDownload && hasDownload && !isRunning" variant="outline" @click="downloadAll">
+					<template #left>
+						<BaseIcon name="download" />
+					</template>
+					{{ UI_CRYPTOPRO.BATCH_DOWNLOAD_ALL }}
 				</BaseButton>
 			</div>
 			<BaseCryptoProSignResult
@@ -98,6 +118,7 @@ import { BaseProgress } from '@components/BaseProgress'
 import { BaseSegmented } from '@components/BaseSegmented'
 import { BaseFileUpload } from '@components/BaseFileUpload'
 import { kitDefaults } from '@composables/base/useDefaults'
+import BaseCryptoProSignBatch from './BaseCryptoProSignBatch.vue'
 import BaseCryptoProSignResult from './BaseCryptoProSignResult.vue'
 import BaseCryptoProSignStatus from './BaseCryptoProSignStatus.vue'
 import { useBaseCryptoProSign } from '../model/useBaseCryptoProSign'
@@ -118,6 +139,7 @@ const props = withDefaults(
 		scriptUrl: undefined,
 		timeout: 30000,
 		hasDownload: true,
+		isMultiple: false,
 		isDisabled: false,
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
@@ -139,6 +161,20 @@ const {
 	versionsText,
 	isReady,
 	isVerify,
+	needsSignature,
+	isBatch,
+	hasHashFiles,
+	batchItems,
+	batchPercent,
+	isRunning,
+	isCancelling,
+	hasBatchDownload,
+	downloadItem,
+	downloadAll,
+	cancel,
+	signAll,
+	run,
+	runLabel,
 	hasNoCertificates,
 	thumbprintValue,
 	certificateOptions,
@@ -168,5 +204,5 @@ const {
 	refresh,
 } = useBaseCryptoProSign(props, emit)
 
-defineExpose<BaseCryptoProSignExpose>({ check: refresh, sign, verify })
+defineExpose<BaseCryptoProSignExpose>({ check: refresh, sign, signAll, cancel, verify })
 </script>

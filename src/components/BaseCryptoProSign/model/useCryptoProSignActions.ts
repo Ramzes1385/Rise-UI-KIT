@@ -1,29 +1,19 @@
-import { warn } from '@/locales/warn'
+import { ref, shallowRef } from 'vue'
 import { readyPlugin } from './cades/plugin'
-import { signRequest } from './cades/signing'
-import { markRaw, ref, shallowRef } from 'vue'
 import { formatMessage } from '@/locales/state'
-import { base64ToBlob } from './cryptoProSignFormat'
-import { downloadFile } from '@utils/media/fileUtils'
+import { UI_CRYPTOPRO } from '@/locales/messages'
 import { verifySignature } from './cades/verification'
-import { UI_CRYPTOPRO, UI_WARNINGS } from '@/locales/messages'
-import { toCryptoProError } from '@composables/crypto/useCryptoPro/core/errors'
-import type { CadesPlugin, CadesWindow } from '@composables/crypto/useCryptoPro/types/cadesplugin.types'
-import { CryptoProError, type CryptoProFailure, type CryptoProCertificate } from '@composables/crypto/useCryptoPro'
+import { CryptoProError, type CryptoProFailure } from '@composables/crypto/useCryptoPro'
+import { downloadSignature, ensureReady, pluginError, signWith } from './signing/cryptoProSignJob'
 import type {
-	CryptoProSignLevel,
-	CryptoProSignActionState,
-	CryptoProSignSource,
+	CryptoProSignJob,
 	CryptoProSignResult,
 	CryptoProVerifyResult,
 	BaseCryptoProSignEmits,
 	BaseCryptoProSignProps,
+	CryptoProSignActionState,
 	CryptoProSignActionContext,
 } from '../types/BaseCryptoProSign.types'
-
-function pluginError(error: unknown): CryptoProError {
-	return markRaw(toCryptoProError(error, (window as CadesWindow).cadesplugin as CadesPlugin | undefined))
-}
 
 function useCryptoProSignActionState(emit: BaseCryptoProSignEmits) {
 	const isBusy = ref(false)
@@ -56,31 +46,6 @@ function useCryptoProSignActionState(emit: BaseCryptoProSignEmits) {
 	}
 }
 
-async function ensureReady(context: CryptoProSignActionContext): Promise<boolean> {
-	return context.isReady.value || context.check()
-}
-
-function signLevel(props: BaseCryptoProSignProps): CryptoProSignLevel {
-	return props.level ?? 'bes'
-}
-
-async function signWith(
-	props: BaseCryptoProSignProps,
-	context: CryptoProSignActionContext,
-	state: CryptoProSignActionState,
-): Promise<CryptoProSignResult> {
-	const certificate = context.certificate.value as CryptoProCertificate
-	const isHash = context.isHash.value
-	const detached = isHash || context.isDetached.value
-	const level = signLevel(props)
-	const tsaAddress = props.tsaAddress ?? ''
-	if (level !== 'bes' && !tsaAddress) warn(UI_WARNINGS.CRYPTOPRO_NO_TSA, { level })
-	const data = context.source.value as CryptoProSignSource
-	const request = { data, thumbprint: certificate.thumbprint, detached, level, tsaAddress, isHash, onProgress: state.onProgress }
-	const signature = await signRequest(readyPlugin().plugin, request)
-	return { signature, detached, isHash, level, certificate, fileName: context.fileName.value }
-}
-
 async function verifyWith(
 	context: CryptoProSignActionContext,
 	state: CryptoProSignActionState,
@@ -98,7 +63,7 @@ async function verifyWith(
 	}
 }
 
-async function guarded<T>(state: CryptoProSignActionState, action: () => Promise<T | null>): Promise<T | null> {
+export async function guarded<T>(state: CryptoProSignActionState, action: () => Promise<T | null>): Promise<T | null> {
 	if (state.isBusy.value) return null
 	state.start()
 	try {
@@ -111,11 +76,19 @@ async function guarded<T>(state: CryptoProSignActionState, action: () => Promise
 	}
 }
 
-function downloadSignature(result: CryptoProSignResult | null): void {
-	if (!result) return
-	const url = URL.createObjectURL(base64ToBlob(result.signature))
-	downloadFile(url, `${result.fileName}.sig`)
-	setTimeout(() => URL.revokeObjectURL(url), 1000)
+async function buildJob(
+	props: BaseCryptoProSignProps,
+	context: CryptoProSignActionContext,
+	onProgress: (progress: number) => void,
+): Promise<CryptoProSignJob | null> {
+	const source = context.source.value
+	const isHash = context.isHash.value
+	const base = { data: source ?? '', fileName: context.fileName.value, isHash, onProgress }
+	if (props.mode !== 'cosign') {
+		return source === undefined ? null : { ...base, detached: isHash || context.isDetached.value }
+	}
+	const coSignature = await context.readSignature()
+	return coSignature ? { ...base, detached: source !== undefined, coSignature } : null
 }
 
 export function useCryptoProSignActions(props: BaseCryptoProSignProps, emit: BaseCryptoProSignEmits, context: CryptoProSignActionContext) {
@@ -126,10 +99,12 @@ export function useCryptoProSignActions(props: BaseCryptoProSignProps, emit: Bas
 	const sign = (): Promise<CryptoProSignResult | null> =>
 		guarded(state, async () => {
 			signResult.value = null
-			if (!context.certificate.value || context.source.value === undefined || !(await ensureReady(context))) return null
-			const result = await signWith(props, context, state)
+			const job = await buildJob(props, context, state.onProgress)
+			if (!context.certificate.value || !job || !(await ensureReady(context))) return null
+			const result = await signWith(props, context, job)
 			signResult.value = result
-			state.announcement.value = formatMessage(UI_CRYPTOPRO.SIGNED, { name: `${result.fileName}.sig` })
+			const text = result.isCoSign ? UI_CRYPTOPRO.COSIGNED : UI_CRYPTOPRO.SIGNED
+			state.announcement.value = formatMessage(text, { name: `${result.fileName}.sig` })
 			emit('signed', result)
 			return result
 		})

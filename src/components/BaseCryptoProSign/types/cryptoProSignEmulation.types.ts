@@ -29,6 +29,8 @@ export interface EmulatedSignature {
 	signingTime: string
 	timeStamp: string
 	content: string
+	/** Вторые подписанты: `отпечаток~время подписи~штамп` через запятую; у подписи с одним подписантом пусто */
+	cosigners?: string
 }
 
 /** Внутреннее: хэш эмуляции, который считается по частям */
@@ -56,4 +58,6 @@ export interface SignatureFields {
 	digest: string
 	content: string
 	detached: boolean
+	/** Подпись, к которой добавляется вторая: её данные и подписанты остаются */
+	previous?: EmulatedSignature
 }

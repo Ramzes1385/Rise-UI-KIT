@@ -18,9 +18,10 @@ async function signatureFromFile(file: File): Promise<string> {
 }
 
 export function useCryptoProSignSource(props: BaseCryptoProSignProps) {
-	const pickedFile = shallowRef<File | null>(null)
+	const pickedFiles = shallowRef<File[]>([])
 	const signatureFile = shallowRef<File | null>(null)
-	const source = computed(() => props.data ?? pickedFile.value ?? undefined)
+	const isBatch = computed(() => Boolean(props.isMultiple) && props.mode === 'sign' && props.data === undefined)
+	const source = computed(() => (isBatch.value ? undefined : (props.data ?? pickedFiles.value[0])))
 	const fileName = computed(() => {
 		const value = source.value
 		if (value instanceof File && value.name) return value.name
@@ -29,16 +30,22 @@ export function useCryptoProSignSource(props: BaseCryptoProSignProps) {
 	const isHash = computed(() => source.value instanceof Blob && source.value.size > (props.hashThreshold ?? Infinity))
 	return {
 		source,
+		isBatch,
+		files: pickedFiles,
+		hasHashFiles: computed(() => pickedFiles.value.some(file => file.size > (props.hashThreshold ?? Infinity))),
 		fileName,
 		isHash,
 		hasSignature: computed(() => Boolean(props.signature) || signatureFile.value !== null),
-		sourceText: computed(() => (props.data === undefined ? '' : describeSource(props.data, fileName.value, props.mode === 'verify'))),
-		hashHint: computed(() => formatMessage(UI_CRYPTOPRO.HASH_HINT, { size: formatFileSize(props.hashThreshold ?? 0) })),
+		sourceText: computed(() => (props.data === undefined ? '' : describeSource(props.data, fileName.value, props.mode))),
+		hashHint: computed(() => {
+			const text = isBatch.value ? UI_CRYPTOPRO.HASH_HINT_BATCH : UI_CRYPTOPRO.HASH_HINT
+			return formatMessage(text, { size: formatFileSize(props.hashThreshold ?? 0) })
+		}),
 		pickFile: (files: File[]): void => {
-			pickedFile.value = files[0] ?? null
+			pickedFiles.value = isBatch.value ? files : files.slice(0, 1)
 		},
-		removeFile: (): void => {
-			pickedFile.value = null
+		removeFile: (removed?: { file: File }): void => {
+			pickedFiles.value = isBatch.value && removed ? pickedFiles.value.filter(file => file !== removed.file) : []
 		},
 		pickSignature: (files: File[]): void => {
 			signatureFile.value = files[0] ?? null

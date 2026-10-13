@@ -2,6 +2,7 @@ import { UI_CRYPTOPRO } from '@/locales/messages'
 import { formatFileSize } from '@utils/media/fileUtils'
 import type { BaseSelectOption } from '@components/BaseSelect'
 import { formatMessage, getLocale, pluralize } from '@/locales/state'
+import type { CryptoProSignMode } from '../types/BaseCryptoProSign.types'
 import type { CryptoProCertificate } from '@composables/crypto/useCryptoPro'
 
 const DAY = 24 * 60 * 60 * 1000
@@ -37,9 +38,14 @@ export function certificateOption(certificate: CryptoProCertificate, now: Date):
 	}
 }
 
-export function describeSource(source: string | Blob, fileName: string, isVerify = false): string {
+function textSource(mode: CryptoProSignMode): string {
+	if (mode === 'verify') return UI_CRYPTOPRO.SOURCE_TEXT_VERIFY
+	return mode === 'cosign' ? UI_CRYPTOPRO.SOURCE_TEXT_COSIGN : UI_CRYPTOPRO.SOURCE_TEXT
+}
+
+export function describeSource(source: string | Blob, fileName: string, mode: CryptoProSignMode = 'sign'): string {
 	const size = formatFileSize(typeof source === 'string' ? new TextEncoder().encode(source).length : source.size)
-	if (typeof source === 'string') return formatMessage(isVerify ? UI_CRYPTOPRO.SOURCE_TEXT_VERIFY : UI_CRYPTOPRO.SOURCE_TEXT, { size })
+	if (typeof source === 'string') return formatMessage(textSource(mode), { size })
 	return formatMessage(UI_CRYPTOPRO.SOURCE_FILE, { name: fileName, size })
 }
 

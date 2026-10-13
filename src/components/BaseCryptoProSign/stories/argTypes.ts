@@ -16,6 +16,7 @@ export const argTypes = {
 	hashThreshold: { control: { type: 'number', min: 0 }, table: propGroup(ARG_GROUP.behavior) },
 	scriptUrl: { control: 'text', table: propGroup(ARG_GROUP.behavior) },
 	timeout: { control: { type: 'number', min: 0 }, table: propGroup(ARG_GROUP.behavior) },
+	isMultiple: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	hasDownload: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
 	isDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 } satisfies Meta<typeof BaseCryptoProSign>['argTypes']

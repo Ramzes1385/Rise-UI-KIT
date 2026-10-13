@@ -342,6 +342,7 @@ describe('BaseCryptoProSign — модель', () => {
 				signingTime: '',
 				timeStamp: '',
 				content: '',
+				cosigners: '',
 			})
 		})
 	})

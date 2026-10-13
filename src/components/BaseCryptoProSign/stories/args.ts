@@ -8,6 +8,7 @@ export const args = {
 	fileName: 'act',
 	isDisabled: false,
 	onSigned: fn(),
+	'onSigned-all': fn(),
 	onVerified: fn(),
 	onError: fn(),
 	variant: 'default',

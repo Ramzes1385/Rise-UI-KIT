@@ -21,7 +21,11 @@ function signerLines(signer: CryptoProVerifySigner): string[] {
 export function useBaseCryptoProSignResult(props: BaseCryptoProSignResultProps) {
 	return {
 		signedText: computed(() =>
-			props.signResult ? formatMessage(UI_CRYPTOPRO.SIGNED, { name: `${props.signResult.fileName}.sig` }) : '',
+			props.signResult
+				? formatMessage(props.signResult.isCoSign ? UI_CRYPTOPRO.COSIGNED : UI_CRYPTOPRO.SIGNED, {
+						name: `${props.signResult.fileName}.sig`,
+					})
+				: '',
 		),
 		verifyTitle: computed(() => (props.verifyResult?.isValid ? UI_CRYPTOPRO.VALID : UI_CRYPTOPRO.INVALID)),
 		signers: computed((): CryptoProSignerView[] =>

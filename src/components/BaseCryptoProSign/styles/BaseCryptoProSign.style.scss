@@ -154,6 +154,81 @@
 	}
 }
 
+.base-crypto-pro-sign-batch {
+	display: flex;
+	flex-direction: column;
+	gap: sz(8px);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+
+	&__item {
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr) auto auto;
+		align-items: center;
+		gap: sz(4px) sz(8px);
+		padding: space(8px) space(12px);
+		border: 1px solid var(--rise-border);
+		border-radius: sz(var(--rise-radius-md));
+
+		&--signed {
+			border-color: var(--rise-success-border);
+		}
+
+		&--failed {
+			border-color: var(--rise-error-border);
+		}
+
+		&--signed .base-crypto-pro-sign-batch__icon {
+			color: var(--rise-success-text);
+		}
+
+		&--failed .base-crypto-pro-sign-batch__icon {
+			color: var(--rise-error-text);
+		}
+	}
+
+	&__dot {
+		box-sizing: border-box;
+		width: sz(16px);
+		height: sz(16px);
+		border: 2px solid var(--rise-border-accented);
+		border-radius: 50%;
+	}
+
+	&__item--signing &__dot {
+		border-color: var(--rise-primary);
+		border-right-color: transparent;
+
+		@include motion-safe {
+			animation: base-crypto-pro-sign-spin calc(var(--rise-duration-slow) * 3) linear infinite;
+		}
+	}
+
+	&__name {
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		font-weight: var(--rise-font-weight-semibold);
+	}
+
+	&__meta {
+		@include custom-text(color, var(--rise-text-muted));
+		@include text-size(xs);
+	}
+
+	&__progress,
+	&__error {
+		grid-column: 2 / -1;
+	}
+
+	&__error {
+		color: var(--rise-error-text);
+		overflow-wrap: anywhere;
+	}
+}
+
 .base-crypto-pro-sign-result {
 	display: flex;
 	align-items: flex-start;

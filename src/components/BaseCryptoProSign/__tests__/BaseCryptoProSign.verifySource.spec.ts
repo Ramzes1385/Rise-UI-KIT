@@ -14,9 +14,9 @@ afterEach(() => {
 
 describe('BaseCryptoProSign — строка данных в режиме проверки', () => {
 	it('describeSource — текст для проверки и текст для подписи', () => {
-		expect(describeSource('abc', 'x', true)).toBe('Проверяем подпись текста, 3 Б')
-		expect(describeSource('abc', 'x', false)).toBe('Подписываем текст, 3 Б')
-		expect(describeSource(new Blob(['abcd']), 'act', true)).toBe('Документ: act, 4 Б')
+		expect(describeSource('abc', 'x', 'verify')).toBe('Проверяем подпись текста, 3 Б')
+		expect(describeSource('abc', 'x', 'sign')).toBe('Подписываем текст, 3 Б')
+		expect(describeSource(new Blob(['abcd']), 'act', 'verify')).toBe('Документ: act, 4 Б')
 	})
 
 	it('mode="verify" со строкой data — «Проверяем подпись текста», без «Подписываем»', async () => {

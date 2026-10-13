@@ -140,7 +140,16 @@ function signerError(context: EmulatedSignContext, state: EmulatedSignerState | 
 	return type !== CADES_SIGN.CADES_BES && !state?.tsaAddress ? EMULATED_SIGN_ERRORS.noTsa : null
 }
 
+function cosignerEntry(context: EmulatedSignContext, state: EmulatedSignerState, type: number): string {
+	const timeStamp = type === CADES_SIGN.CADES_BES ? '' : context.now.toISOString()
+	return [state.thumbprint, state.signingTime?.toISOString() ?? '', timeStamp].join('~')
+}
+
 function describeSignature(context: EmulatedSignContext, state: EmulatedSignerState, fields: SignatureFields): EmulatedSignature {
+	if (fields.previous) {
+		const added = cosignerEntry(context, state, fields.type)
+		return { ...fields.previous, cosigners: [fields.previous.cosigners ?? '', added].filter(Boolean).join(',') }
+	}
 	const level = LEVELS[fields.type] ?? 'BES'
 	return {
 		level,
@@ -150,6 +159,7 @@ function describeSignature(context: EmulatedSignContext, state: EmulatedSignerSt
 		signingTime: state.signingTime?.toISOString() ?? '',
 		timeStamp: level === 'BES' ? '' : context.now.toISOString(),
 		content: fields.detached ? '' : fields.content,
+		cosigners: '',
 	}
 }
 
@@ -161,14 +171,16 @@ async function createSignature(context: EmulatedSignContext, by: CadesSignSigner
 	return encodeSignature(describeSignature(context, state as EmulatedSignerState, fields))
 }
 
-function presetFrom(signature: EmulatedSignature): EmulatedSignerState {
+function presetFrom(thumbprint: string, signingTime: string, timeStamp: string): EmulatedSignerState {
 	const date = (value: string): Date | null => (value ? new Date(value) : null)
-	return {
-		thumbprint: signature.thumbprint,
-		tsaAddress: '',
-		signingTime: date(signature.signingTime),
-		timeStamp: date(signature.timeStamp),
-	}
+	return { thumbprint, tsaAddress: '', signingTime: date(signingTime), timeStamp: date(timeStamp) }
+}
+
+function presetsOf(signature: EmulatedSignature): EmulatedSignerState[] {
+	const added = signature.cosigners
+		? signature.cosigners.split(',').map(entry => presetFrom(...(entry.split('~') as [string, string, string])))
+		: []
+	return [presetFrom(signature.thumbprint, signature.signingTime, signature.timeStamp), ...added]
 }
 
 function checkContent(signature: EmulatedSignature, isDetached: boolean, content: string): void {
@@ -179,12 +191,26 @@ function checkContent(signature: EmulatedSignature, isDetached: boolean, content
 	if (digestOf(data, bits) !== signature.digest) throw new Error(EMULATED_SIGN_ERRORS.badHash)
 }
 
+function verifiedState(context: EmulatedSignContext) {
+	let verified: CadesSignSigner[] = []
+	let previous: EmulatedSignature | undefined
+	return {
+		verify: (signature: EmulatedSignature): void => {
+			previous = signature
+			verified = presetsOf(signature).map(preset => signer(context, preset))
+		},
+		coSign: async (by: CadesSignSigner, type: number): Promise<string> => {
+			if (!previous) throw new Error(EMULATED_SIGN_ERRORS.badFormat)
+			const { digest, content, detached } = previous
+			return createSignature(context, by, { type, digest, content, detached, previous })
+		},
+		signers: (): CadesSignSigner[] => verified,
+	}
+}
+
 export function signedData(context: EmulatedSignContext): CadesSignSignedData {
 	let content = ''
-	let verified: CadesSignSigner[] = []
-	const verify = (signature: EmulatedSignature): void => {
-		verified = [signer(context, presetFrom(signature))]
-	}
+	const { verify, coSign, signers } = verifiedState(context)
 	return {
 		propset_ContentEncoding: async value => record(context, 'CadesSignedData.propset_ContentEncoding', [value]),
 		propset_Content: async value => {
@@ -200,6 +226,14 @@ export function signedData(context: EmulatedSignContext): CadesSignSignedData {
 			const digest = context.hashes.get(hash)?.value() ?? ''
 			return createSignature(context, by as CadesSignSigner, { type, digest, content: '', detached: true })
 		},
+		CoSignCades: async (by, type) => {
+			record(context, 'CadesSignedData.CoSignCades', ['CPSigner', type])
+			return coSign(by as CadesSignSigner, type)
+		},
+		CoSignHash: async (hash, by, type) => {
+			record(context, 'CadesSignedData.CoSignHash', ['HashedData', 'CPSigner', type])
+			return coSign(by as CadesSignSigner, type)
+		},
 		VerifyCades: async (value, type, isDetached) => {
 			record(context, 'CadesSignedData.VerifyCades', [value.length, type, isDetached])
 			const signature = decodeSignature(value)
@@ -213,7 +247,7 @@ export function signedData(context: EmulatedSignContext): CadesSignSignedData {
 			verify(signature)
 		},
 		get Signers() {
-			const list = verified
+			const list = signers()
 			return Promise.resolve({
 				Count: Promise.resolve(list.length),
 				Item: async (index: number) => list[index - 1] as CadesSignSigner,

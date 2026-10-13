@@ -6,7 +6,7 @@ export const parameters = {
 		description: {
 			component: [
 				'Электронная подпись через КриптоПро ЭЦП Browser plug-in: диагностика плагина по шагам, выбор сертификата, подпись',
-				'CAdES присоединённая или отсоединённая (`v-model:detached`), большой файл — по хэшу, файл `.sig` и проверка подписи (`mode="verify"`).',
+				'CAdES присоединённая или отсоединённая (`v-model:detached`), большой файл — по хэшу, файл `.sig` проверка подписи (`mode="verify"`), вторая подпись к документу (`mode="cosign"`) и очередь из нескольких файлов (`is-multiple`).',
 				'Построен на `useCryptoPro`; npm-пакеты КриптоПро не нужны.',
 				'',
 				'**Как подключить `cadesplugin_api.js`.** Скрипт КриптоПро (https://www.cryptopro.ru/sites/default/files/products/cades/cadesplugin_api.js)',
@@ -21,7 +21,7 @@ export const parameters = {
 				'',
 				'- Документ больше `hashThreshold` (10 МБ) подписывается по хэшу ГОСТ Р 34.11-2012 (256 или 512 по ключу) — только отсоединённой подписью.',
 				'- Уровни `level`: `bes`, `t` и `xlt1` (два последних — со штампом времени, нужен `tsa-address`).',
-				'- События `signed`, `verified`, `error`; методы `check()`, `sign()`, `verify()`.',
+				'- События `signed` (при `is-multiple` — на каждый файл), `signed-all`, `verified`, `error`; методы `check()`, `sign()`, `signAll()`, `cancel()`, `verify()`.',
 				'- Доступность: корень — `section` с именем «Электронная подпись», ход и итог объявляются в `role="status"`.',
 				'',
 				'**В историях плагин эмулирован:** внутренняя эмуляция кита ставит `window.cadesplugin` с четырьмя сертификатами',
