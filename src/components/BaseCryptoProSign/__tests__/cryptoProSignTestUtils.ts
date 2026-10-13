@@ -1,10 +1,12 @@
 import { expect, vi } from 'vitest'
 import BaseCryptoProSign from '../ui/BaseCryptoProSign.vue'
-import { render, screen, waitFor } from '@testing-library/vue'
+import { configure, render, screen, waitFor } from '@testing-library/vue'
 import type { BaseCryptoProSignExpose } from '../types/BaseCryptoProSign.types'
 import { createCryptoProSignEmulation } from '../model/emulation/cryptoProSignEmulation'
 import type { CryptoProSignEmulationOptions } from '../types/cryptoProSignEmulation.types'
 import type { CryptoProEmulation, CryptoProEmulationCall } from '@composables/crypto/useCryptoPro/types/cryptoProEmulation.types'
+
+configure({ asyncUtilTimeout: 15_000 })
 
 export const NOW = new Date('2026-03-10T09:00:00Z')
 

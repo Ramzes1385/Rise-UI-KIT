@@ -323,39 +323,61 @@ describe('codeHighlightUtils: Vue', () => {
 
 describe('codeHighlightUtils: время разбора больших входов', () => {
 	const SIZE = 100 * 1024
-	/** Предел с запасом на покрытие и параллельный прогон (обычно 1–200 мс); квадратичный разбор 100 КБ занимал ≈20 с */
-	const LIMIT_MS = 1000
+	/** Во сколько раз вход растёт между замерами: линейный разбор растёт ≈вдвое, квадратичный — вчетверо */
+	const GROWTH = 2
+	/** Допустимый рост времени: между линейным (2) и квадратичным (4) */
+	const MAX_RATIO = 3
+	let size = SIZE
 
 	function repeatTo(part: string): string {
-		return part.repeat(Math.ceil(SIZE / part.length))
+		return part.repeat(Math.ceil(size / part.length))
 	}
 
-	const cases: [string, string, string][] = [
-		['CSS: data-URI в url() без ;', 'css', `.a { background: url(data:image/png;base64,${repeatTo('QUJD')}); }`],
-		['CSS: слова без скобок и ;', 'css', repeatTo('a ')],
-		['CSS: текст с двоеточиями без ;', 'css', repeatTo('a: b ')],
-		['CSS: цвета и псевдоклассы без {', 'css', repeatTo('#fff ::x .y ')],
-		['CSS: незакрытые скобки условий', 'css', repeatTo('a:(')],
-		['CSS: обычный код', 'css', repeatTo('.a > b:hover { color: #fff; width: calc(100% - 2px) }\n')],
-		['SCSS: значения без ; и скобок', 'scss', repeatTo('a: b ')],
-		['SCSS: data-URI', 'scss', `$a: url(data:image/svg+xml;utf8,${repeatTo('%3Csvg ')});`],
-		['HTML: style без ;', 'html', `<style>${repeatTo('a: b ')}</style>`],
-		['Vue: style lang="scss" без ;', 'vue', `<style lang="scss">${repeatTo('a ')}</style>`],
-		['TypeScript: незакрытая шаблонная строка', 'ts', `\`${repeatTo('${a} ')}`],
-		['TypeScript: пробелы и имена', 'ts', repeatTo('a   ')],
-		['JSON', 'json', repeatTo('{"a": 1, "b": [true, null]}\n')],
-		['HTML: одни <', 'html', repeatTo('<')],
-		['Vue: незакрытое {{', 'vue', `{{${repeatTo('a ')}`],
-		['Bash: $ и ${ без }', 'bash', repeatTo('$ ${a ')],
-		['Python: незакрытая """ и слова', 'python', `${repeatTo('def a(): pass\n')}"""${repeatTo('a ')}`],
+	/** Лучшее из трёх замеров после прогрева: меньше шума от нагрузки машины и сборки мусора */
+	function bestTime(build: () => string, language: string, scale: number): number {
+		size = Math.round(SIZE / scale)
+		const code = build()
+		tokenizeCode(code, language)
+		const times = [0, 1, 2].map(() => {
+			const start = performance.now()
+			tokenizeCode(code, language)
+			return performance.now() - start
+		})
+		return Math.min(...times)
+	}
+
+	const cases: [string, string, () => string][] = [
+		['CSS: data-URI в url() без ;', 'css', () => `.a { background: url(data:image/png;base64,${repeatTo('QUJD')}); }`],
+		['CSS: слова без скобок и ;', 'css', () => repeatTo('a ')],
+		['CSS: текст с двоеточиями без ;', 'css', () => repeatTo('a: b ')],
+		['CSS: цвета и псевдоклассы без {', 'css', () => repeatTo('#fff ::x .y ')],
+		['CSS: незакрытые скобки условий', 'css', () => repeatTo('a:(')],
+		['CSS: обычный код', 'css', () => repeatTo('.a > b:hover { color: #fff; width: calc(100% - 2px) }\n')],
+		['SCSS: значения без ; и скобок', 'scss', () => repeatTo('a: b ')],
+		['SCSS: data-URI', 'scss', () => `$a: url(data:image/svg+xml;utf8,${repeatTo('%3Csvg ')});`],
+		['HTML: style без ;', 'html', () => `<style>${repeatTo('a: b ')}</style>`],
+		['Vue: style lang="scss" без ;', 'vue', () => `<style lang="scss">${repeatTo('a ')}</style>`],
+		['TypeScript: незакрытая шаблонная строка', 'ts', () => `\`${repeatTo('${a} ')}`],
+		['TypeScript: пробелы и имена', 'ts', () => repeatTo('a   ')],
+		['JSON', 'json', () => repeatTo('{"a": 1, "b": [true, null]}\n')],
+		['HTML: одни <', 'html', () => repeatTo('<')],
+		['Vue: незакрытое {{', 'vue', () => `{{${repeatTo('a ')}`],
+		['Bash: $ и ${ без }', 'bash', () => repeatTo('$ ${a ')],
+		['Python: незакрытая """ и слова', 'python', () => `${repeatTo('def a(): pass\n')}"""${repeatTo('a ')}`],
 	]
 
-	it.each(cases)('%s — быстрее предела, склейка равна исходнику', (_name, language, code) => {
-		const start = performance.now()
-		const tokens = tokenizeCode(code, language)
-		const time = performance.now() - start
-		expect(tokens.map(token => token.value).join('')).toBe(code)
-		expect(time).toBeLessThan(LIMIT_MS)
+	it.each(cases)('%s — время растёт не быстрее линейного, склейка равна исходнику', (_name, language, build) => {
+		size = SIZE
+		const code = build()
+		expect(
+			tokenizeCode(code, language)
+				.map(token => token.value)
+				.join(''),
+		).toBe(code)
+		const small = Math.max(bestTime(build, language, GROWTH), 1)
+		const large = bestTime(build, language, 1)
+		size = SIZE
+		expect(large).toBeLessThan(small * MAX_RATIO)
 	})
 
 	it('время CSS растёт линейно: вдвое больший вход — меньше чем втрое дольше (квадратичный рост — вчетверо)', () => {
