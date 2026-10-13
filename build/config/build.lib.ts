@@ -1,6 +1,9 @@
 import { resolve } from 'node:path'
 import type { BuildOptions } from 'vite'
 
+/** Тяжёлые компоненты `src/plugin/registry/lazy.ts`: каждый — в свой чанк, который плагин грузит по `import()` */
+const LAZY_COMPONENTS = ['BaseCalendar', 'BaseChat', 'BaseDatePicker', 'BaseEditor', 'BaseFileUpload', 'BaseTable']
+
 export function createLibBuildConfig(): BuildOptions {
 	return {
 		outDir: 'dist',
@@ -26,10 +29,24 @@ export function createLibBuildConfig(): BuildOptions {
 
 		rollupOptions: {
 			external: ['vue', /^three(\/.*)?$/],
+			// Нужно для includeDependenciesRecursively: false (ниже); у входов могут появиться служебные имена экспорта (в .d.ts их нет)
+			preserveEntrySignatures: 'allow-extension',
 
 			output: {
 				entryFileNames: '[name].js',
+				strictExecutionOrder: true,
 				chunkFileNames: 'chunks/[name]-[hash].js',
+
+				// Тяжёлые компоненты плагина — в свои чанки без общих зависимостей: потребитель, которому нужен только
+				// createUiKitPlugin, грузит их по import() (FOLLOW_UPS № 58)
+				codeSplitting: {
+					includeDependenciesRecursively: false,
+					groups: LAZY_COMPONENTS.map(component => ({
+						name: `lazy-${component}`,
+						test: new RegExp(`[\\/]src[\\/]components[\\/]${component}[\\/](?:ui|model|styles)[\\/]`),
+						priority: 10,
+					})),
+				},
 
 				assetFileNames: assetInfo => {
 					const name = assetInfo.name ?? ''
