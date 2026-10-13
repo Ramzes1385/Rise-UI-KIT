@@ -96,4 +96,22 @@ describe('BaseEditor: поле формы', () => {
 		const textbox = screen.getByRole('textbox', { name: 'Текст статьи' })
 		expect(textbox).toHaveAttribute('aria-invalid', 'true')
 	})
+
+	it('скрытое поле name получает очищенный HTML, а не сырое значение', () => {
+		const { container } = render(BaseEditor, {
+			props: { name: 'body', modelValue: '<p>текст</p><script>alert(1)</script><img src="x" onerror="alert(1)">' },
+			global: { stubs },
+		})
+
+		const value = container.querySelector<HTMLInputElement>('input[type="hidden"][name="body"]')?.value ?? ''
+		expect(value).toContain('текст')
+		expect(value).not.toMatch(/<script|onerror/i)
+	})
+
+	it('скрытое поле name использует собственную функцию sanitize', () => {
+		const sanitize = vi.fn(() => '<p>чисто</p>')
+		const { container } = render(BaseEditor, { props: { name: 'body', modelValue: '<p>сырой</p>', sanitize }, global: { stubs } })
+
+		expect(container.querySelector<HTMLInputElement>('input[type="hidden"][name="body"]')?.value).toBe('<p>чисто</p>')
+	})
 })

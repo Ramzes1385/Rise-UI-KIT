@@ -129,8 +129,8 @@ describe('useTableDataUtils', () => {
 
 		it('дата: значение с временем, Date и timestamp сравниваются по дню', () => {
 			const onDay = filter('date', 'eq', '2025-05-14')
-			expect(matchesFilter(dateRow('2025-05-14T18:30:00Z'), onDay, { column: date })).toBe(true)
-			expect(matchesFilter(dateRow(new Date('2025-05-14T12:00:00Z')), onDay, { column: date })).toBe(true)
+			expect(matchesFilter(dateRow('2025-05-14T18:30:00Z'), onDay, { column: date, timeZone: 'UTC' })).toBe(true)
+			expect(matchesFilter(dateRow(new Date('2025-05-14T12:00:00Z')), onDay, { column: date, timeZone: 'UTC' })).toBe(true)
 			expect(matchesFilter(dateRow(Date.UTC(2025, 4, 14, 23, 59)), onDay, { column: date, timeZone: 'UTC' })).toBe(true)
 			expect(matchesFilter(dateRow('14.05.2025'), filter('date', 'gt', '2025-01-01'), { column: date })).toBe(false)
 		})

@@ -1,5 +1,5 @@
-import { isSameDay, toDateOnly } from '@utils/data/dateUtils'
 /** Composable: управление выбором дат календаря — диапазон, отключённые даты, подсветки */
+import { isSameDay, toDateOnly } from '@utils/data/dateUtils'
 import { createDayMarkers, resolveToday } from './calendarUtils'
 import type { UseCalendarDateStateOptions } from './types/useCalendarDateState.types'
 

@@ -45,53 +45,38 @@ function useTableData(options: UseTableDataOptions): UseTableDataReturn {
 		getFilterLabel,
 	} = useTableFilter({ columns, onFilter })
 
-	const { sortStates, getSortDirection, getSortIndex, handleSort } = useTableSort({ isMultiSort, onSort })
+	const sort = useTableSort({ isMultiSort, onSort })
 
 	/** Обработанные строки (поиск + фильтры + сортировка) */
-	const processedRows = useTableProcessedRows({ rows, columns, searchQuery, activeFilters, sortStates, locale: sortLocale, timeZone })
+	const processedRows = useTableProcessedRows({
+		rows,
+		columns,
+		searchQuery,
+		activeFilters,
+		sortStates: sort.sortStates,
+		locale: sortLocale,
+		timeZone,
+	})
 
-	const {
-		currentPage,
-		localPageSize,
-		displayedRows,
-		totalCount,
-		totalPages,
-		visiblePages,
-		hasMoreRows,
-		loadMore,
-		resetPage,
-		handlePageSizeChange,
-	} = useTablePagination({ processedRows, loadMode, pageSize, hasMore, onPageSizeChange, page, onPageChange, totalRows })
+	const pagination = useTablePagination({ processedRows, loadMode, pageSize, hasMore, onPageSizeChange, page, onPageChange, totalRows })
 
 	const { addFilter, removeFilter, handleSearchInputWithReset } = createTableDataActions({
 		baseAddFilter,
 		baseRemoveFilter,
 		handleSearchInput,
-		resetPage,
+		resetPage: pagination.resetPage,
 	})
 
 	return {
+		...sort,
+		...pagination,
 		searchQuery,
-		sortStates,
 		activeFilters,
-		currentPage,
-		localPageSize,
 		processedRows,
-		displayedRows,
-		totalCount,
-		totalPages,
-		visiblePages,
-		hasMoreRows,
-		getSortDirection,
-		getSortIndex,
-		handleSort,
 		handleSearchInput: handleSearchInputWithReset,
 		addFilter,
 		removeFilter,
 		getFilterLabel,
-		handlePageSizeChange,
-		loadMore,
-		resetPage,
 	}
 }
 

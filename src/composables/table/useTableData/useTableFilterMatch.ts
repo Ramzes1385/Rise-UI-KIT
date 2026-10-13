@@ -1,5 +1,5 @@
-import type { FilterScope } from './types/useTableDataUtils.types'
 /** Утилиты: проверка строки таблицы по фильтру колонки — текст, числа, даты, выбор из списка */
+import type { FilterScope } from './types/useTableDataUtils.types'
 import { toCalendarDay, toSortKey } from '@utils/navigation/tableUtils'
 import type { ColumnFilter, TableRow } from '@components/BaseTable/types/BaseTable.types'
 import type { FilterCheck, FilterSpan, OrderedMode } from './types/useTableFilterMatch.types'

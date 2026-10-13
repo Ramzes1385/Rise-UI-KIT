@@ -1,7 +1,7 @@
+/** Composable: изменение ширины колонок таблицы указателем (мышь, касание, перо) */
 import { useResizeDrag } from './useResizeDrag'
 import { toHTMLElement } from '@utils/dom/domUtils'
 import { createKeyboardResize } from './createKeyboardResize'
-/** Composable: изменение ширины колонок таблицы указателем (мышь, касание, перо) */
 import { getCurrentInstance, onBeforeUnmount, ref } from 'vue'
 import type { ResizeColumn, ResizeState, UseColumnResizeParams } from './types/useColumnResize.types'
 import { applyResizeWidths, createIdleResizeState, findSiblingKey, measureSiblingWidth } from './useColumnResizeUtils'

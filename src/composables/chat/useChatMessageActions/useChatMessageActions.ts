@@ -1,5 +1,5 @@
-import type { Ref } from 'vue'
 /** Composable: действия над сообщениями чата */
+import type { Ref } from 'vue'
 import { nextTick, ref } from 'vue'
 import { useScrollToMessage } from './useScrollToMessage'
 import { useChatContextMenu, useChatContextMenuItems } from './useChatContextMenu'

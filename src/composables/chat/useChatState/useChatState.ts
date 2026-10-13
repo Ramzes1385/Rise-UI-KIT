@@ -1,5 +1,5 @@
-import { computed, nextTick, ref, watch } from 'vue'
 /** Composable: оркестратор состояния чата */
+import { computed, nextTick, ref, watch } from 'vue'
 import { useChatEdit } from '@composables/chat/useChatEdit'
 import { useChatReply } from '@composables/chat/useChatReply'
 import { useChatSearch } from '@composables/chat/useChatSearch'

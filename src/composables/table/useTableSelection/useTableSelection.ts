@@ -1,14 +1,10 @@
 /** Composable: управление выбором строк таблицы */
-import { computed, ref, watch } from 'vue'
+import { watch } from 'vue'
+import { useTableSelectedIds } from './useTableSelectedIds'
+import { useTableSelectAllState } from './useTableSelectAllState'
 import type { TableRow } from '@components/BaseTable/types/BaseTable.types'
+import { collectDisabledSelectedIds, collectRowFlags, mergeSelectedIds, toggleSelectedId } from './useTableSelectionUtils'
 import type { SelectionSyncState, UseTableSelectionOptions, UseTableSelectionReturn } from './types/useTableSelection.types'
-import {
-	collectDisabledSelectedIds,
-	collectRowFlags,
-	collectSelectedIds,
-	mergeSelectedIds,
-	toggleSelectedId,
-} from './useTableSelectionUtils'
 
 /** Смена rows не сбрасывает выбор: выпадают только исчезнувшие строки, о потере выбора сообщает onSelectionLost */
 function syncSelectionWithRows(state: SelectionSyncState): void {
@@ -33,14 +29,7 @@ function syncSelectionWithRows(state: SelectionSyncState): void {
 
 function useTableSelection(options: UseTableSelectionOptions): UseTableSelectionReturn {
 	const { rows, filteredRows = rows, onSelect, onSelectedIdsChange } = options
-	const isControlled = (): boolean => options.selectedIds?.() !== undefined
-
-	const internalIds = ref<Set<string | number>>(collectSelectedIds(rows.value))
-	const selectedIds = computed((): Set<string | number> => {
-		const controlled = options.selectedIds?.()
-		return controlled ? new Set(controlled) : internalIds.value
-	})
-	const selectedRows = computed((): TableRow[] => rows.value.filter(row => selectedIds.value.has(row.id)))
+	const { isControlled, internalIds, selectedIds, selectedRows } = useTableSelectedIds(options)
 
 	function applySelection(next: Set<string | number>): void {
 		if (!isControlled()) internalIds.value = next
@@ -59,24 +48,7 @@ function useTableSelection(options: UseTableSelectionOptions): UseTableSelection
 		return selectedIds.value.has(row.id)
 	}
 
-	/** Строки, на которые действует «Выбрать все»: прошедшие поиск и фильтры (на всех страницах), кроме disabled */
-	const selectableFilteredRows = computed((): TableRow[] => {
-		return filteredRows.value.filter(row => !row.isDisabled)
-	})
-
-	/** Все ли доступные строки отфильтрованного набора выбраны */
-	const isAllSelected = computed((): boolean => {
-		const selectable = selectableFilteredRows.value
-		return selectable.length > 0 && selectable.every(r => selectedIds.value.has(r.id))
-	})
-
-	/** Выбрана часть доступных строк отфильтрованного набора — «Выбрать все» в частичном состоянии */
-	const isSomeSelected = computed((): boolean => {
-		return !isAllSelected.value && selectableFilteredRows.value.some(r => selectedIds.value.has(r.id))
-	})
-
-	/** Доступных строк в отфильтрованном наборе нет (всё скрыто поиском или отключено) — «Выбрать все» неактивен */
-	const isSelectAllDisabled = computed((): boolean => selectableFilteredRows.value.length === 0)
+	const { selectableFilteredRows, isAllSelected, isSomeSelected, isSelectAllDisabled } = useTableSelectAllState(filteredRows, selectedIds)
 
 	function toggleRow(row: TableRow): void {
 		applySelection(toggleSelectedId(selectedIds.value, row.id))
