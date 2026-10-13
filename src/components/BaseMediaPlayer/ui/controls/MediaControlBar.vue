@@ -175,7 +175,12 @@
 					@click="toggleFullscreen" />
 			</div>
 		</div>
-		<Transition name="base-media-player__row" @enter="onSeekRowEnter" @leave="onSeekRowLeave">
+		<Transition
+			name="base-media-player__row"
+			@enter="onSeekRowEnter"
+			@leave="onSeekRowLeave"
+			@enter-cancelled="onSeekRowEnterCancelled"
+			@leave-cancelled="onSeekRowLeaveCancelled">
 			<div v-if="isSeekRowOpen" class="base-media-player__bar base-media-player__bar--secondary">
 				<div class="base-media-player__group">
 					<MediaControlButton
@@ -254,6 +259,8 @@ const {
 	isTheater,
 	muteLabel,
 	onSeekRowEnter,
+	onSeekRowEnterCancelled,
+	onSeekRowLeaveCancelled,
 	onSeekRowLeave,
 	nextEpisode,
 	pipLabel,

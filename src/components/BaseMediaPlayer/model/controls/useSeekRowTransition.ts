@@ -1,6 +1,7 @@
 import { readMotionDuration, readMotionEasing } from '@composables/app/useMotion'
 
 const DURATION_SCALE = 1.3
+const running = new WeakMap<Element, Animation>()
 
 function px(value: number): string {
 	return `${value}px`
@@ -24,13 +25,21 @@ function play(el: Element, order: 'open' | 'close', done: () => void): void {
 	const gap = parseFloat(getComputedStyle(row.parentElement ?? row).rowGap) || 0
 	const frames = [closedFrame(gap), openFrame(row)]
 	const animation = row.animate(order === 'open' ? frames : frames.reverse(), { duration, easing: readMotionEasing(row, 'emphasized') })
+	running.set(row, animation)
 	animation.onfinish = done
 	animation.oncancel = done
+}
+
+function cancel(el: Element): void {
+	running.get(el)?.cancel()
+	running.delete(el)
 }
 
 export function useSeekRowTransition() {
 	return {
 		onSeekRowEnter: (el: Element, done: () => void): void => play(el, 'open', done),
 		onSeekRowLeave: (el: Element, done: () => void): void => play(el, 'close', done),
+		onSeekRowEnterCancelled: cancel,
+		onSeekRowLeaveCancelled: cancel,
 	}
 }

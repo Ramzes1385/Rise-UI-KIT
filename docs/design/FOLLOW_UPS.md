@@ -239,3 +239,9 @@
 - BaseDashboardGrid: ручка перетаскивания лежит поверх содержимого в правом верхнем углу карточки; виджетам с важным контентом в этом углу в режиме редактирования стоит оставить отступ (`ui.body` или токен `--rise-dashboard-grid-padding-x`).
 - Словарь `src/locales/{ru,en}/components/` дошёл до 8 файлов: словари новых компонентов лежат в подпапках по разделам Storybook (`layout/` — BaseDashboardGrid, `data/` — BaseGantt), чтобы `test:folders` проходил.
 - BaseGantt: зависимости рисуются только «окончание — начало»; другие типы связей (начало — начало и т. д.), критический путь и перенос зависимых задач при сдвиге не поддерживаются.
+
+## Задача wave3-fix
+
+- `src/components/BaseMediaPlayer/styles/MediaOverlays.style.scss` (строка с `animation: base-media-player-countdown var(--media-next-duration) …`): у `var(--media-next-duration)` нет запасного значения (раньше `var(--media-next-seconds, 5)`). Сейчас переменную всегда ставит inline-стиль, поломки нет; файл правят compose-1 и compose-3, поэтому запасное значение (`5s`) добавить после их слияния (patch, S).
+- BaseCookieConsent: `calc(sz(36px) + sz(8px))` в стилях повторяет геометрию BaseSwitch — вынести в токен или миксин, когда у BaseSwitch появится общий размер (patch, S).
+- У «Отклонить все» и новых состояний BaseBanner/BaseCookieConsent нет эталонов скриншотов (их создаёт владелец).

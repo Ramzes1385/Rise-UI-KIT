@@ -1701,6 +1701,7 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 - **BaseInputNumber** (`form-baseinputnumber--custom-color`, если есть): с `color` текст кнопок «+»/«−» берёт цвет `--custom-text`; без `color` и в остальных историях вид тот же.
 - **BaseTabs / BaseAnchor**: до первого замера (до гидратации при SSR) активный пункт underline/arc и вертикального/горизонтального якоря рисует полоску сам; после замера — как раньше, снимки не меняются.
 - **BaseImageMap**: только новые части `ui`, вид не меняется.
+- **BaseMediaPlayer, уточнение (проверка волны 3)**: в историях `settings`, `colors`, `theming`, `cover` попиксельное сравнение с базой нашло расхождения до 14–58/255 по каналу (108 px у строки кнопок): сглаживание после перевода на `translate`/сетку и кадр видео; на глаз снимки одинаковы. При сверке эталонов ожидайте эту разницу.
 
 ## Задача components-1a: BaseResult, BaseWatermark, BaseBanner, BaseCookieConsent
 
@@ -1769,3 +1770,8 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 Новый компонент, существующие истории не меняются. Эталонов снимков у новых историй нет — их создаёт владелец (спецификация `BaseFormWizard.visual.spec.ts` лежит рядом).
 
 - **BaseFormWizard** (`form-baseformwizard--default`, `--variants`, `--sizes`, `--disabled`, `--loading`, `--empty`, `--long-content`): степпер сверху, под ним заголовок шага с описанием, поля шага и ряд кнопок справа («Назад» прижата влево); варианты `outline` и `soft` — рамка и мягкий фон вокруг мастера. В `disabled` весь мастер полупрозрачный; в `loading` кнопка «Готово» с индикатором, форма заблокирована и затемнена слоем загрузки; в `empty` — пустое состояние вместо степпера и кнопок; в `long-content` степпер прокручивается по горизонтали, тексты переносятся.
+
+## Задача wave3-fix: правки после проверки волны 3
+
+- **BaseCookieConsent** (`overlay-basecookieconsent--default`, `--settings`, `--positions`, `--sizes`, `--variants`, `--theming`, `--long-content`, `--animations`, `--keyboard`): в ряду кнопок появилась «Отклонить все» того же вида, что «Принять все» (залитая), между «Только выбранные» и «Принять все»; ряд раньше переносится на следующую строку. Эталонов у этих историй нет.
+- **BaseBanner** (`element-basebanner--*` с `storageKey`, `--remembered`): объявление с `storageKey` появляется после монтирования (с анимацией раскрытия), а не в первом кадре; без `storageKey` вид тот же.

@@ -1,6 +1,7 @@
 import { useSeekRowTransition } from '../../model/controls/useSeekRowTransition'
 
 interface FakeAnimation {
+	cancel: () => void
 	onfinish: (() => void) | null
 	oncancel: (() => void) | null
 }
@@ -13,7 +14,7 @@ function setup(): { row: HTMLElement; animate: ReturnType<typeof vi.fn>; animati
 	parent.append(row)
 	document.body.append(parent)
 	Object.defineProperty(row, 'offsetHeight', { configurable: true, value: 48 })
-	const animation: FakeAnimation = { onfinish: null, oncancel: null }
+	const animation: FakeAnimation = { cancel: vi.fn(), onfinish: null, oncancel: null }
 	const animate = vi.fn(() => animation)
 	row.animate = animate as unknown as HTMLElement['animate']
 	return { row, animate, animation }
@@ -51,6 +52,28 @@ describe('useSeekRowTransition: раскрытие второго ряда', () 
 		expect(frames[1]).toMatchObject({ maxHeight: '0px', opacity: 0 })
 		animation.oncancel?.()
 		expect(done).toHaveBeenCalledTimes(1)
+	})
+
+	it('отмена перехода при открытии и закрытии отменяет анимацию: ряд остаётся в конечном состоянии без inline-стилей', () => {
+		const { row, animation } = setup()
+		const transition = useSeekRowTransition()
+
+		transition.onSeekRowEnter(row, vi.fn())
+		transition.onSeekRowEnterCancelled(row)
+		expect(animation.cancel).toHaveBeenCalledTimes(1)
+
+		transition.onSeekRowLeave(row, vi.fn())
+		transition.onSeekRowLeaveCancelled(row)
+		expect(animation.cancel).toHaveBeenCalledTimes(2)
+		expect(row.getAttribute('style')).toBe('padding-top: 6px;')
+	})
+
+	it('отмена без запущенной анимации ничего не делает', () => {
+		const { row, animation } = setup()
+
+		useSeekRowTransition().onSeekRowEnterCancelled(row)
+
+		expect(animation.cancel).not.toHaveBeenCalled()
 	})
 
 	it('ряд без родителя: отступ между рядами считается нулевым', () => {

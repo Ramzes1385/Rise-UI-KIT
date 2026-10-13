@@ -2,6 +2,23 @@
 
 Composables кита импортируются из подпути `@ramzes1385/rise-ui-kit/composables` или как namespace `composables` из корня пакета (`import { composables } from '@ramzes1385/rise-ui-kit'`). Именованного экспорта composables из корня нет. Вызывайте их внутри `setup` / `<script setup>`: они подписываются на хуки жизненного цикла компонента. Сервисы всего приложения — `useToast`, `useOverlay`, `useConfirm`, `useLoadingBar`, `useColorMode`, `useLocale` — импортируются из корня пакета по имени (см. [README](../../README.md#публичный-api)).
 
+## useDismissFocus
+
+Перенос фокуса со скрываемого блока (объявление, окно согласия) на следующий элемент страницы, чтобы он не терялся в `body`.
+
+```ts
+import { useDismissFocus } from '@ramzes1385/rise-ui-kit/composables'
+
+const rootRef = ref<HTMLElement | null>(null)
+const { releaseFocus } = useDismissFocus({ elementRef: rootRef })
+watch(isShown, shown => { if (!shown) releaseFocus() })
+```
+
+- `releaseFocus()` работает, только если фокус сейчас внутри блока: он переходит на следующий элемент после блока, достижимый по Tab (не скрытый `hidden` и `inert`); если такого нет, фокус снимается и уходит на `document.body`. Фокус вне блока не трогается.
+- Вызывать до удаления блока из DOM (watcher с `flush: 'pre'` по умолчанию).
+
+---
+
 ## useDebounce
 
 Отложенный вызов функции (`useDebounceFn`) или отложенное значение (`useDebounce`).

@@ -226,6 +226,23 @@ const json = serializeJsonLd({ '@type': 'Organization', name: 'Rise', url: 'http
 
 ---
 
+## storageUtils
+
+`readStorage(key)` и `writeStorage(key, value)` — безопасная работа с `localStorage` (на них держится `storageKey` у BaseBanner и BaseCookieConsent).
+
+```ts
+import { readStorage, writeStorage } from '@ramzes1385/rise-ui-kit/utils'
+
+const saved = readStorage('my-app:theme') // строка или null
+const isSaved = writeStorage('my-app:theme', 'dark') // true или false
+```
+
+- `readStorage` возвращает строку или `null`: ключа нет либо хранилища нет.
+- `writeStorage` возвращает `true`, если записано, и `false`, если нет.
+- Хранилища нет (SSR, где `localStorage` не определён), доступ запрещён настройками браузера или приватным режимом, место переполнено — функции не бросают исключений: чтение даёт `null`, запись `false`. На сервере значение недоступно, поэтому компоненты кита не выводят запомненное состояние, пока не прочитают его на клиенте (после монтирования).
+
+---
+
 ## domUtils
 
 `getFixedOrigin(container)` — где на экране начало координат для `position: fixed` внутри `container`. Обычно это окно (`{ x: 0, y: 0 }`), но предок с `transform`, `filter`, `contain` или `container-type` становится точкой отсчёта: так Storybook оборачивает истории на странице Docs, так же ведут себя анимированные окна. Выпадающие панели, подсказки и контекстное меню кита уже учитывают это; функция нужна своим fixed-элементам.
@@ -340,6 +357,7 @@ recurrenceUtils
 requisiteUtils
 scriptUtils
 speechProviderUtils
+storageUtils
 structuredDataUtils
 subtitleUtils
 tableExportUtils

@@ -210,6 +210,10 @@ function collect() {
 	return { tokens, errors }
 }
 
+const GAP_NOTE =
+	'Один токен `gap` перекрывает все именованные размеры `gap` (`xs`…`xl`): после его задания пропы `gap="xs"` и `gap="xl"` дают один и тот же промежуток; `gap="none"` токен не меняет.'
+const NOTES = { BaseStack: GAP_NOTE, BaseGrid: GAP_NOTE }
+
 function renderDoc(tokens) {
 	const lines = [
 		'# Токены компонентов',
@@ -223,7 +227,9 @@ function renderDoc(tokens) {
 	const folders = [...tokens.keys()].sort()
 	if (!folders.length) lines.push('Пока ни один компонент не читает токены уровня 3.', '')
 	for (const folder of folders) {
-		lines.push(`## ${folder}`, '', '| Токен | Часть | Свойство | Состояние | По умолчанию |', '|---|---|---|---|---|')
+		lines.push(`## ${folder}`, '')
+		if (NOTES[folder]) lines.push(NOTES[folder], '')
+		lines.push('| Токен | Часть | Свойство | Состояние | По умолчанию |', '|---|---|---|---|---|')
 		for (const [name, item] of [...tokens.get(folder)].sort(([a], [b]) => a.localeCompare(b))) {
 			lines.push(
 				`| \`${name}\` | ${item.part ?? 'корень'} | ${item.prop} | ${item.state ?? '—'} | \`${item.fallback.replaceAll('|', '\\|')}\` |`,

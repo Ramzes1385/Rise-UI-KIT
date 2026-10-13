@@ -3648,6 +3648,7 @@ import { BaseButton, BaseResult } from '@ramzes1385/rise-ui-kit'
 ```
 
 - Пропы: `content` (строка или массив строк), `image` (+ `width`, `height`), `rotate` (-22), `gap` (число или `[x, y]`, 64), `opacity` (0.15), `zIndex` (9), `fontSize` (16), `textColor` (`#808080`), `isProtected`, `ui` (`root`, `layer`), `customClass`.
+- `textColor` по умолчанию `#808080`: `var()` в SVG-узоре не работает, поэтому цвет темы взять нельзя. Тайл считается один раз при построении узора: веб-шрифт, загрузившийся позже, не пересчитывает его — приложение может пересоздать компонент сменой `key` после `document.fonts.ready`.
 - Слой знака: `aria-hidden`, `pointer-events: none`. Текст рисуется SVG, картинка — canvas (для адреса без CORS — повтор без поворота). Узор строится после монтирования, SSR не падает.
 - `isProtected` возвращает удалённый слой и прежние `style`, `class`, `hidden`, `aria-hidden`. Это защита от случайной правки в DevTools, а не от намеренного обхода (правила в таблице стилей она не видит): документы, где это важно, маркируют на сервере.
 
@@ -3665,11 +3666,12 @@ import { BaseButton, BaseResult } from '@ramzes1385/rise-ui-kit'
 
 - Пропы: `type` (`primary`, `info`, `success`, `warning`, `error`), `text`, `icon`, `hasIcon`, `isClosable`, `isOpen` (`v-model:is-open`), `storageKey`, `position` (`static`, `sticky`), `label`, `variant` (`default`, `outline`, `soft`), `sizeScale`, `color`, `ui`.
 - Слоты `default`, `icon`, `action`; события `update:isOpen`, `close`.
-- `role="region"` с `aria-label` (по умолчанию «Объявление»). `storageKey` хранит закрытие в `localStorage` (`rise-banner:<ключ>`); читается после монтирования, недоступное хранилище не ломает показ.
+- `role="region"` с `aria-label` (по умолчанию «Объявление»). Объявление, которое появляется после загрузки страницы по событию приложения (потеря связи, новая версия), озвучивается с `isLive`: `role="status"`, для `warning` и `error` — `role="alert"` (как `isLive` у BaseResult). После закрытия фокус, бывший внутри, переходит на следующий фокусируемый элемент страницы.
+- `storageKey` хранит закрытие в `localStorage` (`rise-banner:<ключ>`); читается после монтирования, пока не прочитано — объявление не выводится вовсе (запомненное закрытие не мигает и скрывается без анимации), недоступное хранилище не ломает показ.
 
 ### BaseCookieConsent
 
-Немодальное окно согласия на cookies (`role="dialog"`, `aria-modal="false"`): фокус не перехватывается, Escape не закрывает.
+Немодальное окно согласия на cookies (`role="region"`, имя — заголовок, как баннер cookies в GOV.UK): фокус не перехватывается, Escape не закрывает; после решения фокус, бывший в окне, переходит на следующий фокусируемый элемент страницы.
 
 ```vue
 <template>
@@ -3678,8 +3680,8 @@ import { BaseButton, BaseResult } from '@ramzes1385/rise-ui-kit'
 ```
 
 - Пропы: `categories` (`id`, `label`, `description`, `isRequired`), `modelValue` (`v-model`, `id` выбранных; обязательные всегда в выборе), `isOpen`, `isSettingsOpen`, `title`, `description`, `storageKey`, `position` (`bottom`, `bottom-left`, `bottom-right`), `isContained`, `variant` (`default`, `outline`, `soft`), `sizeScale`, `color`, `ui`.
-- Кнопки: «Настроить» (раскрывает переключатели BaseSwitch), «Только выбранные», «Принять все». События: `update:modelValue`, `update:isOpen`, `update:isSettingsOpen`, `change` (выбор изменён) и `accept` (решение принято, `id` разрешённых категорий).
-- `storageKey` запоминает решение (`rise-cookie-consent:<ключ>`): после монтирования выбор восстанавливается через `update:modelValue` и `change`, окно скрывается, `accept` не приходит.
+- Кнопки: «Настроить» (раскрывает переключатели BaseSwitch), «Только выбранные», «Отклонить все» (только обязательные категории; того же вида, что «Принять все»: отказ не сложнее согласия), «Принять все». События: `update:modelValue`, `update:isOpen`, `update:isSettingsOpen`, `change` (выбор изменён) и `accept` (решение принято, `id` разрешённых категорий).
+- `storageKey` запоминает решение (`rise-cookie-consent:<ключ>`): после монтирования выбор восстанавливается через `update:modelValue` и `change`, окно скрывается, `accept` не приходит (это только действие пользователя). Пока хранилище не прочитано (до монтирования, SSR), окно не выводится вовсе: сохранённое решение не мигает.
 
 
 ---
@@ -3688,9 +3690,9 @@ import { BaseButton, BaseResult } from '@ramzes1385/rise-ui-kit'
 
 ### BaseHoverCard
 
-Карточка при наведении и фокусе на триггер (профиль, предпросмотр ссылки). Строится на панели BaseDropdown: переворот и сдвиг у края окна, стрелка, телепорт в `body` (или в цель `teleportTo` плагина), тема области триггера. Это дополнение к триггеру: всё важное должно быть доступно и без карточки — в карточку нельзя перейти клавишей Tab.
+Карточка при наведении и фокусе на триггер (профиль, предпросмотр ссылки). Строится на панели BaseDropdown: переворот и сдвиг у края окна, стрелка, телепорт в `body` (или в цель `teleportTo` плагина), тема области триггера. Это дополнение к триггеру: всё важное должно быть доступно и без карточки — в карточку нельзя перейти клавишей Tab: она в `body`, а потеря фокуса триггером её закрывает (так же у HoverCard в Radix). Интерактивное содержимое — для `BasePopover`.
 
-- Триггер — слот `trigger` (ссылка, имя, `BaseAvatar`); содержимое — слот по умолчанию. `open-delay` (по умолчанию 300 мс) и `close-delay` (150 мс); при фокусе с клавиатуры карточка открывается сразу. Указатель можно перевести на саму карточку — она не закроется.
+- Триггер — слот `trigger` (ссылка, имя, `BaseAvatar`); содержимое — слот по умолчанию. `open-delay` (по умолчанию 300 мс) и `close-delay` (150 мс); при фокусе с клавиатуры карточка открывается сразу — и после касания: нажатие клавиши сбрасывает признак «касание». Указатель можно перевести на саму карточку — она не закроется.
 - Escape закрывает; на касании карточка открывается нажатием на триггер, закрывается нажатием снаружи.
 - `v-model:is-open`, события `open` и `close`, `is-disabled`, `position` (12 положений, как у BaseDropdown), `variant`, `animation`, `max-height`.
 - Доступность: открытая карточка связана с триггером через `aria-describedby`; триггер без фокусируемого элемента получает `tabindex="0"`. `aria-expanded` не ставится: карточка не раскрывающийся блок.
@@ -3705,7 +3707,7 @@ import { BaseButton, BaseResult } from '@ramzes1385/rise-ui-kit'
 
 ### BaseStack
 
-Flex-примитив: `direction` (`column`, `row`, `*-reverse`), `gap` (`none`, `xs` 4px, `sm` 8px, `md` 16px, `lg` 24px, `xl` 32px), `align`, `justify`, `is-wrap`, `is-inline`, `tag`. Промежутки масштабируются `sizeScale` и плотностью темы; токен `--rise-stack-gap` задаёт промежуток для любого `gap`, кроме `none`.
+Flex-примитив: `direction` (`column`, `row`, `*-reverse`), `gap` (`none`, `xs` 4px, `sm` 8px, `md` 16px, `lg` 24px, `xl` 32px), `align`, `justify`, `is-wrap`, `is-inline`, `tag`. Промежутки масштабируются `sizeScale` и плотностью темы; токен `--rise-stack-gap` задаёт промежуток для любого `gap`, кроме `none`, и перекрывает все именованные размеры сразу (`xs`…`xl` дают один и тот же промежуток).
 
 ```vue
 <BaseStack direction="row" gap="sm" align="center"><BaseAvatar /><span>Анна</span></BaseStack>
@@ -3713,7 +3715,7 @@ Flex-примитив: `direction` (`column`, `row`, `*-reverse`), `gap` (`none`
 
 ### BaseGrid и BaseGridItem
 
-CSS-сетка колонок равной ширины. `cols` — число или объект по брейкпоинтам (`{ base: 1, md: 2, lg: 4 }`; `sm` 480px, `md` 768px, `lg` 1024px, `xl` 1440px — те же, что у `useBreakpoint`), по умолчанию 12; `gap`, `row-gap` — как `gap` у BaseStack. Адаптивность — на CSS-переменных и медиа-запросах: без JavaScript, без мерцания при SSR. Ячейка BaseGridItem: `span` (число, `full` или объект по брейкпоинтам), `offset` (колонка начала минус один, абсолютно), `order`. Любые другие дочерние элементы занимают по одной колонке.
+CSS-сетка колонок равной ширины. `cols` — число или объект по брейкпоинтам (`{ base: 1, md: 2, lg: 4 }`; `sm` 480px, `md` 768px, `lg` 1024px, `xl` 1440px — те же, что у `useBreakpoint`), по умолчанию 12; `gap`, `row-gap` — как `gap` у BaseStack. Адаптивность — на CSS-переменных и медиа-запросах: без JavaScript, без мерцания при SSR. Ячейка BaseGridItem: `span` (число, `full` или объект по брейкпоинтам), `offset` (колонка начала минус один, абсолютно), `order`. Любые другие дочерние элементы занимают по одной колонке. У BaseGridItem нет пропов `customClass` и `sizeScale` (ячейка не масштабируется сама, масштаб берётся от BaseGrid); обычные `class` и `style` работают как у любого корня.
 
 ```vue
 <BaseGrid :cols="{ base: 1, md: 12 }" gap="lg">
