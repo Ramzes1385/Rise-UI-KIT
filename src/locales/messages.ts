@@ -154,5 +154,8 @@ export const UI_BANNER = localized('banner')
 /** Согласие на cookies BaseCookieConsent */
 export const UI_COOKIE_CONSENT = localized('cookieConsent')
 
+/** Сетка виджетов BaseDashboardGrid */
+export const UI_DASHBOARD_GRID = localized('dashboardGrid')
+
 /** Предупреждения в консоли */
 export const UI_WARNINGS = localized('warnings')

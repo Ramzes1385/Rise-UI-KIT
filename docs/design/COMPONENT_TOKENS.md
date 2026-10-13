@@ -572,6 +572,19 @@
 | `--rise-crypto-pro-sign-result-radius` | result | radius | — | `var(--rise-radius-md)` |
 | `--rise-crypto-pro-sign-text` | корень | text | — | `var(--rise-text)` |
 
+## BaseDashboardGrid
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-dashboard-grid-bg` | корень | bg | — | `var(--rise-bg)` |
+| `--rise-dashboard-grid-border` | корень | border | — | `var(--rise-border)` |
+| `--rise-dashboard-grid-padding-x` | корень | padding-x | — | `16px` |
+| `--rise-dashboard-grid-padding-y` | корень | padding-y | — | `16px` |
+| `--rise-dashboard-grid-radius` | корень | radius | — | `var(--rise-radius-lg)` |
+| `--rise-dashboard-grid-shadow` | корень | shadow | — | `none` |
+| `--rise-dashboard-grid-shadow-active` | корень | shadow | active | `var(--rise-shadow-lg)` |
+| `--rise-dashboard-grid-text` | корень | text | — | `var(--rise-text)` |
+
 ## BaseDatePicker
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |

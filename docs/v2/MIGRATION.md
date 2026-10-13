@@ -2431,3 +2431,12 @@ API кита не меняется. В Storybook добавлены пример
 - **Пусто и загрузка через BaseEmpty** в BaseAutocomplete, BaseCommandPalette, BaseCommentThread, BaseNotificationCenter, BaseSearch, BaseSubtitleEditor, панелях статистики и совместного просмотра BaseMediaPlayer: вместо `<p>`/`<li>` с текстом внутри лежит корень `base-empty base-empty--compact`. Часть `ui.empty` теперь добавляет класс к корню BaseEmpty.
 - **BaseImage**: заглушка загрузки — BaseSkeleton (класс `base-image__shimmer base-skeleton`), анимация `base-image-shimmer` удалена. Разделитель тулбара BaseImageZoom — BaseSeparator (`orientation="vertical"`), класс `base-image__zoom-divider` сохранён.
 - `hr` в BaseMarkdown не менялся.
+
+## components-2b: BaseDashboardGrid
+
+Новый компонент `Layout/BaseDashboardGrid` (сетка виджетов); существующий код не меняется. API — в `docs/reference/COMPONENTS.md`, раздел «Новые компоненты (задача components-2b)».
+
+- Регистрируется плагином и экспортируется из кита вместе с типами `DashboardLayoutItem`, `DashboardLayouts`, `DashboardGridChange`, `DashboardBreakpoint` и константами `DASHBOARD_BREAKPOINTS`, `DASHBOARD_COMPACT_TYPES`, `DASHBOARD_GRID_VARIANTS`.
+- Новый раздел словаря `dashboardGrid` (`UI_DASHBOARD_GRID`) и ключ `warnings.DASHBOARD_GRID_DUPLICATE_ID`: приложение с собственным языком через `defineLocale()` добавляет переводы.
+- Токены `--rise-dashboard-grid-*` (список — `docs/design/COMPONENT_TOKENS.md`).
+- Сетка не хранит раскладку сама, если родитель её не принимает: без `v-model:layout` результат переноса остаётся внутри компонента до следующей смены `layout`. Раскладка, пришедшая из пропа, исправляется на экране (границы, пересечения, пределы `min*`/`max*`), но обратно не отправляется до первого действия пользователя.

@@ -3428,6 +3428,7 @@ BaseContextMenu
 BaseCookieConsent
 BaseCryptoProSign
 BaseDadataInput
+BaseDashboardGrid
 BaseDatePicker
 BaseDescriptions
 BaseDrawer
@@ -3727,3 +3728,39 @@ CSS-сетка колонок равной ширины. `cols` — число �
 ```vue
 <BaseAffix :offset-top="16" has-shadow @change="onFixed"><BaseToolbar /></BaseAffix>
 ```
+
+## Новые компоненты (задача components-2b)
+
+### BaseDashboardGrid
+
+Сетка виджетов для панелей управления: виджеты занимают клетки, их переносят и растягивают мышью, пером, касанием и с клавиатуры, остальные расступаются и уплотняются вверх.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseDashboardGrid, type DashboardLayoutItem } from '@ramzes1385/rise-ui-kit'
+
+const layout = ref<DashboardLayoutItem[]>([
+	{ id: 'revenue', label: 'Выручка', x: 0, y: 0, w: 4, h: 2, minW: 3 },
+	{ id: 'orders', label: 'Заказы', x: 4, y: 0, w: 4, h: 2 },
+	{ id: 'summary', label: 'Сводка', x: 0, y: 2, w: 12, h: 1, isStatic: true },
+])
+</script>
+
+<template>
+	<BaseDashboardGrid v-model:layout="layout" is-editable>
+		<template #item="{ item }">
+			<strong>{{ item.label }}</strong>
+		</template>
+	</BaseDashboardGrid>
+</template>
+```
+
+- Виджет раскладки: `{ id, x, y, w, h, minW?, minH?, maxW?, maxH?, isStatic?, label? }` (клетки с нуля). Некорректную раскладку (выход за сетку, пересечения, повторы `id`) сетка исправляет на экране и сама не отправляет; повтор `id` — предупреждение в консоли.
+- Пропы: `layout` (`v-model:layout`), `layouts` (`v-model:layouts`, `{ sm, md, lg }`), `cols` (число или `{ sm, md, lg }`, 12), `rowHeight` (80 px), `gap` (16 px), `breakpoints` (`{ sm: 0, md: 640, lg: 1024 }` по ширине самой сетки), `compactType` (`vertical` — по умолчанию, `none`), `isEditable`, `isDisabled`, `label`, `variant` (`default`, `soft`, `outline` — вид карточек), `sizeScale`, `color`, `ui` (`root`, `item`, `body`, `handle`, `resize`, `placeholder`, `empty`, `status`, `hint`), `customClass`.
+- Слоты: `item` (`{ item, isDragging, isGrabbed }`), `handle` (`{ item }` — вместо значка ручки), `empty`. События: `update:layout`, `update:layouts`, `change` (`{ layout, layouts?, breakpoint, id, action }`, `action` — `move` или `resize`); все приходят по окончании переноса, а не на каждом шаге.
+- Адаптивность: с `layouts` сетка выбирает раскладку по своей ширине; для брейкпоинта без раскладки берётся ближайшая шире и подгоняется под его число колонок. Правка меняет только раскладку текущего брейкпоинта (`update:layouts` несёт все). Без `layouts` брейкпоинт всегда `lg`, а `cols` в виде объекта даёт значение `lg`.
+- Перенос: мышью и пером — за карточку (кнопки, ссылки, поля и элементы с `data-no-drag` внутри не начинают перенос), касанием — за ручку в углу карточки (`touch-action: none` только у неё, чтобы страница прокручивалась); размер — за уголок. Pointer events и `setPointerCapture`; на месте виджета остаётся «призрак» клетки. Escape во время переноса и `pointercancel` возвращают раскладку.
+- Клавиатура (в режиме редактирования виджеты в порядке Tab): Enter или пробел берёт, стрелки двигают, Shift со стрелками меняют размер, Enter кладёт, Escape или уход фокуса отменяет. Каждый шаг объявляется в скрытом `role="status"` (тексты — раздел `dashboardGrid` словаря); у виджета `aria-describedby` указывает на скрытую подсказку.
+- Закреплённый виджет (`isStatic`) нельзя ни двигать, ни растягивать, он не получает фокус; остальные его обходят. Столкновения: задетые виджеты сдвигаются вниз; при перетаскивании вниз на соседа они меняются местами.
+- Движение виджетов — `transform`, `width`, `height` за `--rise-duration`; при «уменьшить движение» и пресете `none` — сразу. Токены `--rise-dashboard-grid-*` (`bg`, `text`, `border`, `radius`, `shadow`, `shadow-active`, `padding-x`, `padding-y`), словарь — раздел `dashboardGrid`.

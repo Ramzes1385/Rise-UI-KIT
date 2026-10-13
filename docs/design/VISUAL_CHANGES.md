@@ -1751,3 +1751,9 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 - **BaseEmpty** (`element-baseempty--compact`, новая история): компактный вариант в одну строку без рамки.
 - **BaseAutocomplete, BaseCommandPalette, BaseCommentThread, BaseNotificationCenter, BaseSearch, BaseSubtitleEditor, панели статистики и совместного просмотра плеера**: пустой список и загрузка — компактный BaseEmpty (по центру, цвет `--rise-text-dimmed`, отступы по токенам `--rise-empty-compact-*`) вместо простой строки текста.
 - **BaseImage**: шиммер загрузки — BaseSkeleton (анимация и цвет BaseSkeleton вместо собственного бегущего градиента); разделитель тулбара зума — BaseSeparator той же высоты и цвета.
+
+## Задача components-2b: BaseDashboardGrid
+
+Новый компонент, существующие истории не меняются. Эталонов снимков у новых историй нет — их создаёт владелец (спецификация `BaseDashboardGrid.visual.spec.ts` лежит рядом).
+
+- **BaseDashboardGrid** (`layout-basedashboardgrid--default`, `--static-items`, `--responsive`, `--variants`, `--sizes`, `--disabled`, `--empty`, `--long-content`): карточки виджетов на сетке 12 колонок (рамка 1px, радиус `--rise-radius-lg`, фон `--rise-bg`); в режиме редактирования в правом верхнем углу карточки значок-ручка, в правом нижнем — уголок изменения размера; закреплённый виджет — с пунктирной рамкой. Во время переноса карточка идёт за курсором с тенью `--rise-shadow-lg`, на месте остаётся «призрак» клетки (пунктирная рамка `--rise-primary`, заливка 12%). `Responsive` снимает три контейнера (640, 440 и 300 px) с разными раскладками.

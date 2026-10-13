@@ -135,6 +135,8 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseImageMapEditor',
 	'BaseImageMap3D',
 	'BaseHoverCard',
+
+	'BaseDashboardGrid',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */
@@ -198,6 +200,8 @@ const INTERACTIVE_WITH_DISABLED = new Set([
 	'BaseCryptoProSign',
 	'BaseImageMapEditor',
 	'BaseHoverCard',
+
+	'BaseDashboardGrid',
 ])
 
 /** Формовые компоненты, требующие story Error */
@@ -280,6 +284,7 @@ const EMPTY_COMPONENTS = new Set([
 	'BaseCascader',
 	'BaseCode',
 	'BaseCryptoProSign',
+	'BaseDashboardGrid',
 ])
 
 const LONG_CONTENT_COMPONENTS = new Set([
@@ -325,6 +330,7 @@ const LONG_CONTENT_COMPONENTS = new Set([
 	'BaseTreeSelect',
 	'BaseCascader',
 	'BaseCode',
+	'BaseDashboardGrid',
 ])
 
 const REQUIRED_STORIES_INTERACTIVE = ['Default', 'Disabled']

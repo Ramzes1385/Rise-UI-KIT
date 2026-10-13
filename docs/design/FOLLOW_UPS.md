@@ -231,3 +231,9 @@
 
 - № 89 (переходы раскладки BaseMediaPlayer) уже зачёркнут: сделано polish-1.
 - Правило «Движение» stylelint и требование истории `Animations` в `test:stories-coverage` теперь ошибки. Новые компоненты (волна 4: BaseFormWizard, BaseFileManager, BaseDashboardGrid, BaseGantt) проходят проверки только с историей `Animations` и переходами без размеров.
+
+## Задача components-2b
+
+- BaseDashboardGrid: перенос указателем в историях не проверяется play: `setPointerCapture` на синтетическом `pointerId` из `userEvent.pointer` в реальном Chromium бросает `NotFoundError`. Перенос и изменение размера указателем покрыты unit- и интеграционными тестами (`__tests__/BaseDashboardGrid.integration.spec.ts`), клавиатурный режим — историями `Keyboard` и `StaticItems`. Если понадобится play с переносом, его надо делать в e2e (Playwright с настоящей мышью).
+- BaseDashboardGrid: во время переноса у края окна страница не прокручивается сама (нет автопрокрутки); на длинной сетке виджет переносят по частям или клавиатурой.
+- BaseDashboardGrid: ручка перетаскивания лежит поверх содержимого в правом верхнем углу карточки; виджетам с важным контентом в этом углу в режиме редактирования стоит оставить отступ (`ui.body` или токен `--rise-dashboard-grid-padding-x`).

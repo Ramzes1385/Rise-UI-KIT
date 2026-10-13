@@ -132,6 +132,7 @@ import { BaseCheckboxGroup } from '../../components/BaseCheckboxGroup'
 import { BaseCommentThread } from '../../components/BaseCommentThread'
 import { BaseCookieConsent } from '../../components/BaseCookieConsent'
 import { BaseCryptoProSign } from '../../components/BaseCryptoProSign'
+import { BaseDashboardGrid } from '../../components/BaseDashboardGrid'
 import { BaseEventCalendar } from '../../components/BaseEventCalendar'
 import { BaseFilterBuilder } from '../../components/BaseFilterBuilder'
 import { BaseVoiceRecorder } from '../../components/BaseVoiceRecorder'
@@ -160,16 +161,16 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseAvatarGroup,
 	BaseBackTop,
 	BaseBadge,
-	BaseBottomNav,
 	BaseBankCard,
 	BaseBanner,
+	BaseBottomNav,
 	BaseBreadcrumbs,
 	BaseButton,
 	BaseButtonGroup,
 	BaseCard,
+	BaseCardInput,
 	BaseCascader,
 	BaseChart,
-	BaseCardInput,
 	BaseCheckbox,
 	BaseCheckboxGroup,
 	BaseChecklist,
@@ -186,6 +187,7 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseCountdown,
 	BaseCryptoProSign,
 	BaseDadataInput,
+	BaseDashboardGrid,
 	BaseDescriptions,
 	BaseDrawer,
 	BaseDropdown,
