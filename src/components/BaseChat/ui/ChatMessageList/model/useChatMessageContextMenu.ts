@@ -65,6 +65,7 @@ export function useChatMessageContextMenu(props: ChatMessageContextMenuProps, em
 		handleReply: (): void => emit('reply'),
 		handleSelect: (): void => emit('select'),
 		handleCopy: (): void => emit('copy'),
+		handleEdit: (): void => emit('edit'),
 		handlePin: (): void => emit('pin'),
 		handleDelete: (): void => emit('delete'),
 		exposed: { menuRef },

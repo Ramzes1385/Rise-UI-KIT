@@ -5,8 +5,12 @@ export type {
 	BaseChatProps,
 	BaseChatSlots,
 	ChatBadge,
+	ChatCommand,
+	ChatInfoTab,
 	ChatMember,
 	ChatMessage,
+	ChatMessageAttachment,
+	ChatMessageReaction,
 	ChatMessageSender,
 	ChatMessageStatus,
 } from './types/BaseChat.types'

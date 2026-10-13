@@ -1,8 +1,9 @@
 import '@testing-library/jest-dom/vitest'
+import { UI_CHAT_TEXT } from '@/locales/messages'
 import userEvent from '@testing-library/user-event'
 import ChatInput from '../../ui/ChatInput/ChatInput.vue'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import type { ChatCommand, ChatMember, ChatMessage } from '../../types/BaseChat.types'
 
 const MEMBERS: ChatMember[] = [
@@ -164,7 +165,7 @@ describe('ChatInput unit', () => {
 	})
 
 	describe('навигация по автодополнению с клавиатуры', () => {
-		it('должен выбирать упоминание по Enter с переключением по стрелкам', async () => {
+		it('Enter на открытой подсказке @ только выбирает участника и не отправляет сообщение; отправка — следующим Enter', async () => {
 			const user = userEvent.setup()
 			const { emitted } = render(ChatInput, { props: { isGroup: true, members: MEMBERS } })
 
@@ -177,8 +178,29 @@ describe('ChatInput unit', () => {
 			await fireEvent.keyDown(input, { key: 'ArrowUp' })
 			await fireEvent.keyDown(input, { key: 'Enter' })
 
+			await waitFor(() => expect(getInput().value).toBe('@Анна '))
+			await waitFor(() => expect(screen.queryByRole('listbox')).toBeNull())
+			expect(emitted().send).toBeUndefined()
+
+			await fireEvent.keyDown(input, { key: 'Enter' })
+
 			const sendEvents = emitted().send as Array<[{ text: string }]>
+			expect(sendEvents).toHaveLength(1)
 			expect(sendEvents[0][0].text).toBe('@Анна')
+		})
+
+		it('стрелка вниз сдвигает выбор, и Enter подставляет второго участника без отправки', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(ChatInput, { props: { isGroup: true, members: MEMBERS } })
+
+			const input = getInput()
+			await user.type(input, '@')
+			await screen.findByRole('listbox')
+			await fireEvent.keyDown(input, { key: 'ArrowDown' })
+			await fireEvent.keyDown(input, { key: 'Enter' })
+
+			await waitFor(() => expect(getInput().value).toBe('@Борис '))
+			expect(emitted().send).toBeUndefined()
 		})
 
 		it('должен закрывать список упоминаний клавишей Escape (keydown и keyup) и связывать поле со списком', async () => {
@@ -216,7 +238,7 @@ describe('ChatInput unit', () => {
 			expect(container.querySelector('.base-chat-input__autocomplete--mentions')).toBeNull()
 		})
 
-		it('должен выбирать команду по Enter с переключением по стрелкам', async () => {
+		it('Enter на открытой подсказке / только подставляет команду и не отправляет сообщение; отправка — следующим Enter', async () => {
 			const user = userEvent.setup()
 			const { emitted } = render(ChatInput, { props: { isGroup: true, members: MEMBERS, commands: COMMANDS } })
 
@@ -229,7 +251,14 @@ describe('ChatInput unit', () => {
 			await fireEvent.keyDown(input, { key: 'ArrowUp' })
 			await fireEvent.keyDown(input, { key: 'Enter' })
 
+			await waitFor(() => expect(getInput().value).toBe('/help '))
+			await waitFor(() => expect(screen.queryByRole('listbox')).toBeNull())
+			expect(emitted().send).toBeUndefined()
+
+			await fireEvent.keyDown(input, { key: 'Enter' })
+
 			const sendEvents = emitted().send as Array<[{ text: string }]>
+			expect(sendEvents).toHaveLength(1)
 			expect(sendEvents[0][0].text).toBe('/help')
 		})
 
@@ -553,6 +582,99 @@ describe('ChatInput unit', () => {
 
 			const events = emitted()['quick-reply'] as Array<[string]>
 			expect(events[0][0]).toBe('Спасибо')
+		})
+	})
+
+	describe('режим правки', () => {
+		const EDITING: ChatMessage = { id: '7', text: 'Старый текст', sender: 'me', time: '10:00' }
+
+		async function renderEditing() {
+			const view = render(ChatInput, { props: {} })
+			await view.rerender({ editingMessage: EDITING })
+			await waitFor(() => expect(getInput().value).toBe('Старый текст'))
+			return view
+		}
+
+		it('показывает панель «Изменение сообщения» с текстом и заполняет поле', async () => {
+			await renderEditing()
+
+			expect(screen.getByText(UI_CHAT_TEXT.EDITING)).toBeInTheDocument()
+			expect(screen.getAllByText('Старый текст').length).toBeGreaterThan(0)
+		})
+
+		it('без правки панели нет, а кнопка отправки называется «Отправить»', () => {
+			render(ChatInput, { props: {} })
+
+			expect(screen.queryByText(UI_CHAT_TEXT.EDITING)).not.toBeInTheDocument()
+			expect(screen.queryByRole('button', { name: UI_CHAT_TEXT.CANCEL_EDIT_ARIA })).not.toBeInTheDocument()
+			expect(screen.queryByRole('button', { name: UI_CHAT_TEXT.SAVE_EDIT_ARIA })).not.toBeInTheDocument()
+			expect(screen.getByRole('button', { name: UI_CHAT_TEXT.SEND_ARIA })).toBeInTheDocument()
+		})
+
+		it('кнопка отправки в режиме правки называется «Сохранить изменение сообщения»', async () => {
+			render(ChatInput, { props: { editingMessage: EDITING } })
+
+			expect(await screen.findByRole('button', { name: UI_CHAT_TEXT.SAVE_EDIT_ARIA })).toBeInTheDocument()
+			expect(screen.queryByRole('button', { name: UI_CHAT_TEXT.SEND_ARIA })).not.toBeInTheDocument()
+		})
+
+		it('кнопка «Отменить изменение сообщения» эмитит cancel-edit', async () => {
+			const { emitted } = render(ChatInput, { props: { editingMessage: EDITING } })
+
+			await fireEvent.click(screen.getByRole('button', { name: UI_CHAT_TEXT.CANCEL_EDIT_ARIA }))
+
+			expect(emitted()['cancel-edit']).toHaveLength(1)
+		})
+
+		it('Enter с изменённым текстом эмитит edit, а не send', async () => {
+			const user = userEvent.setup()
+			const { emitted } = await renderEditing()
+
+			await user.type(getInput(), ' и новый{Enter}')
+
+			expect(emitted().edit).toEqual([[{ text: 'Старый текст и новый' }]])
+			expect(emitted().send).toBeUndefined()
+		})
+
+		it('кнопка сохранения эмитит edit', async () => {
+			const user = userEvent.setup()
+			const { emitted } = await renderEditing()
+			await user.type(getInput(), '!')
+
+			await user.click(screen.getByRole('button', { name: UI_CHAT_TEXT.SAVE_EDIT_ARIA }))
+
+			expect(emitted().edit).toEqual([[{ text: 'Старый текст!' }]])
+		})
+
+		it('Enter без изменений текста эмитит cancel-edit', async () => {
+			const user = userEvent.setup()
+			const { emitted } = await renderEditing()
+
+			await user.type(getInput(), '{Enter}')
+
+			expect(emitted()['cancel-edit']).toHaveLength(1)
+			expect(emitted().edit).toBeUndefined()
+		})
+
+		it('Escape эмитит cancel-edit', async () => {
+			const user = userEvent.setup()
+			const { emitted } = await renderEditing()
+
+			await user.type(getInput(), '{Escape}')
+
+			expect(emitted()['cancel-edit']).toHaveLength(1)
+		})
+
+		it('по окончании правки возвращается набранный до неё черновик', async () => {
+			const user = userEvent.setup()
+			const { rerender } = render(ChatInput, { props: {} })
+			await user.type(getInput(), 'Черновик')
+
+			await rerender({ editingMessage: EDITING })
+			await waitFor(() => expect(getInput().value).toBe('Старый текст'))
+			await rerender({ editingMessage: null })
+
+			await waitFor(() => expect(getInput().value).toBe('Черновик'))
 		})
 	})
 })

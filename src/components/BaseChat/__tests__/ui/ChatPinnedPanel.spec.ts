@@ -99,4 +99,46 @@ describe('ChatPinnedPanel unit', () => {
 			expect(screen.getByText('📎 Файл')).toBeInTheDocument()
 		})
 	})
+
+	describe('индекс вне списка (CHAT-6)', () => {
+		it('индекс больше длины показывает последний закреп и счётчик «2 из 2», а не «3 из 2»', () => {
+			render(ChatPinnedPanel, {
+				props: { pinnedMessages: [message('1', { text: 'Первый' }), message('2', { text: 'Второй' })], currentIndex: 2 },
+			})
+
+			expect(screen.getByText(/\(2 из 2\)/)).toBeInTheDocument()
+			expect(screen.queryByText(/3 из 2/)).not.toBeInTheDocument()
+			expect(screen.getByText('Второй')).toBeInTheDocument()
+		})
+
+		it('отрицательный индекс показывает первый закреп', () => {
+			render(ChatPinnedPanel, {
+				props: { pinnedMessages: [message('1', { text: 'Первый' }), message('2', { text: 'Второй' })], currentIndex: -4 },
+			})
+
+			expect(screen.getByText(/\(1 из 2\)/)).toBeInTheDocument()
+			expect(screen.getByText('Первый')).toBeInTheDocument()
+		})
+
+		it('переходы считаются от показанного закрепа, а не от выходящего за список индекса', async () => {
+			const { emitted } = render(ChatPinnedPanel, {
+				props: { pinnedMessages: [message('1'), message('2')], currentIndex: 5 },
+			})
+
+			await fireEvent.click(screen.getByLabelText('Следующее закреплённое сообщение'))
+			await fireEvent.click(screen.getByLabelText('Предыдущее закреплённое сообщение'))
+
+			expect(emitted()['update:currentIndex']).toEqual([[0], [0]])
+		})
+
+		it('клик по панели ведёт к показанному закрепу', async () => {
+			const { emitted } = render(ChatPinnedPanel, {
+				props: { pinnedMessages: [message('1'), message('2')], currentIndex: 9 },
+			})
+
+			await fireEvent.click(document.querySelector('.base-chat-pinned-panel__content')!)
+
+			expect(emitted().click?.[0]).toEqual(['2'])
+		})
+	})
 })

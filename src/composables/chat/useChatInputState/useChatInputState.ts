@@ -1,6 +1,7 @@
 /** Composable: управление состоянием ввода чата */
 import { nextTick, ref, watch } from 'vue'
 import { focusCaretLater } from './chatInputText'
+import { useChatEditField } from './useChatEditField'
 import { useSuggestionKeys } from './useSuggestionKeys'
 import { useChatAttachments } from './useChatAttachments'
 import { useChatSuggestions } from './useChatSuggestions'
@@ -21,12 +22,14 @@ function useChatInputState(options: UseChatInputStateOptions) {
 	}
 
 	const { sendMessage: emitMessage, ...attachmentState } = useChatAttachments({ emit, text })
-	function sendMessage(messageText?: string): void {
-		emitMessage(messageText)
+	const edit = useChatEditField({ props, emit, text, getInputElement })
+	function sendMessage(): void {
+		if (edit.submit()) return
+		emitMessage()
 		getInputElement()?.focus()
 	}
 	const suggestions = useChatSuggestions({ props, text, getInputElement })
-	const { handleSuggestionKey } = useSuggestionKeys(suggestions, sendMessage)
+	const { handleSuggestionKey } = useSuggestionKeys(suggestions)
 
 	watch(text, () => {
 		nextTick(() => {
@@ -38,6 +41,7 @@ function useChatInputState(options: UseChatInputStateOptions) {
 		// Enter во время IME-композиции (японский, китайский, корейский) подтверждает ввод, а не отправляет сообщение
 		if (event.isComposing || event.keyCode === IME_KEY_CODE) return
 		if (handleSuggestionKey(event)) return
+		if (edit.cancelOnEscape(event)) return
 		if (event.key === 'Enter' && !event.shiftKey) {
 			event.preventDefault()
 			sendMessage()

@@ -46,6 +46,11 @@
 				:current-user-role="currentUserRole"
 				:members="members"
 				:max-badges="maxBadges"
+				:last-read-message-id="lastReadMessageId"
+				:today="today"
+				:is-loading="isLoading"
+				:has-more-messages="hasMoreMessages"
+				:is-loading-more="isLoadingMore"
 				@avatar-click="handleAvatarClick"
 				@message-select="handleMessageSelect"
 				@reply-click="handleReplyClick"
@@ -53,16 +58,21 @@
 				@message-reaction="handleMessageReaction"
 				@download-file="handleDownloadFile"
 				@file-click="handleDownloadFile"
+				@message-edit="handleMessageEdit"
+				@load-more="$emit('load-more')"
 				@pin-message="handlePin"
+				@unpin-message="handleUnpin"
 				@delete-message="handleDeleteSingle"
 				@mention-click="handleMentionClick"
 				@command-click="handleCommandClick" />
 
 			<ChatInput
+				:key="chatId"
 				v-show="selectedMessageIds.length === 0"
 				:class="ui('input')"
 				:size-scale="sizeScale"
 				:replying-to="replyingTo"
+				:editing-message="editingMessage"
 				:quick-replies="quickReplies"
 				:members="members"
 				:commands="commands"
@@ -72,6 +82,8 @@
 				@send="handleSend"
 				@send-voice="handleSendVoice"
 				@attach="handleAttach"
+				@edit="handleEdit"
+				@cancel-edit="handleCancelEdit"
 				@cancel-reply="handleCancelReply"
 				@quick-reply="handleQuickReply" />
 
@@ -101,6 +113,23 @@
 				</template>
 			</BaseModal>
 
+			<BaseModal
+				:is-open="memberConfirm.isOpen"
+				:is-contained="true"
+				:size-scale="sizeScale"
+				:title="memberConfirmTitle"
+				@update:is-open="handleCancelMember">
+				<p class="base-chat__confirm-text">{{ memberConfirmText }}</p>
+				<template #footer>
+					<BaseButton variant="outline" :size-scale="sizeScale" @click="handleCancelMember">
+						{{ UI_TEXT.CANCEL }}
+					</BaseButton>
+					<BaseButton :size-scale="sizeScale" class="base-chat__confirm-delete-btn" @click="handleConfirmMember">
+						{{ UI_TEXT.CONFIRM }}
+					</BaseButton>
+				</template>
+			</BaseModal>
+
 			<ChatSlideover
 				v-model:is-open="isInfoOpen"
 				v-model:active-tab="activeTab"
@@ -114,7 +143,10 @@
 				:messages="messages"
 				:current-user-role="currentUserRole"
 				:max-badges="maxBadges"
+				:current-user-id="currentUserId"
+				:companion-status="companionStatus"
 				:size-scale="sizeScale"
+				@add-member="handleAddMember"
 				@file-click="handleDownloadFile"
 				@download-file="handleDownloadFile"
 				@write-message="handleWriteMessage"
@@ -157,6 +189,10 @@ const props = withDefaults(
 		commands: () => [],
 		currentUserRole: 'member',
 		maxBadges: CHAT_MAX_BADGES,
+		isLoading: false,
+		hasMoreMessages: false,
+		isLoadingMore: false,
+		autoDownload: true,
 	}),
 )
 const emit = defineEmits<BaseChatEmits>()
@@ -185,6 +221,16 @@ const {
 	handleMessageSelect,
 	handleMessageReply,
 	handleCancelReply,
+	editingMessage,
+	handleMessageEdit,
+	handleCancelEdit,
+	handleEdit,
+	handleAddMember,
+	memberConfirm,
+	memberConfirmTitle,
+	memberConfirmText,
+	handleConfirmMember,
+	handleCancelMember,
 	handleAvatarClick,
 	handleInfoClick,
 	handleScrollToPinned,

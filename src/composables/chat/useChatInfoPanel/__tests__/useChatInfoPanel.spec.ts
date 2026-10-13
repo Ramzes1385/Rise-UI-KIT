@@ -56,4 +56,16 @@ describe('useChatInfoPanel unit', () => {
 		expect(panel.selectedMemberId.value).toBeNull()
 		expect(onInfoClick).toHaveBeenCalledTimes(2)
 	})
+
+	it('closeInfo закрывает панель, возвращает вкладку «Инфо» и снимает выбор участника без событий', () => {
+		const { panel, onInfoClick } = setup()
+		panel.handleAvatarClick('user-1')
+
+		panel.closeInfo()
+
+		expect(panel.isInfoOpen.value).toBe(false)
+		expect(panel.activeTab.value).toBe('info')
+		expect(panel.selectedMemberId.value).toBeNull()
+		expect(onInfoClick).not.toHaveBeenCalled()
+	})
 })

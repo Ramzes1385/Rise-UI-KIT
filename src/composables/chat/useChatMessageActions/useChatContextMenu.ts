@@ -91,7 +91,7 @@ function useChatContextMenu(options: UseChatContextMenuOptions) {
 	return { contextMenuRef, contextMenu, handleContextMenu, closeContextMenu, handleListScroll }
 }
 
-/** Описание: пункты контекстного меню — реакция, ответ, выбор, копирование, пин, удаление; после пункта меню закрывается */
+/** Описание: пункты контекстного меню — реакция, ответ, выбор, копирование, правка, пин (или открепление), удаление; после пункта меню закрывается */
 function useChatContextMenuItems(menu: ReturnType<typeof useChatContextMenu>, emit: UseChatMessageActionsOptions['emit']) {
 	const { contextMenu, closeContextMenu } = menu
 
@@ -116,7 +116,11 @@ function useChatContextMenuItems(menu: ReturnType<typeof useChatContextMenu>, em
 		handleContextMenuReply: menuItem(message => emit('message-reply', message)),
 		handleContextMenuSelect: menuItem(message => emit('message-select', message.id)),
 		handleContextMenuCopy,
-		handleContextMenuPin: menuItem(message => emit('pin-message', message.id)),
+		handleContextMenuEdit: menuItem(message => emit('message-edit', message)),
+		handleContextMenuPin: menuItem(message => {
+			if (message.isPinned) emit('unpin-message', message.id)
+			else emit('pin-message', message.id)
+		}),
 		handleContextMenuDelete: menuItem(message => emit('delete-message', message.id)),
 	}
 }

@@ -15,6 +15,7 @@ export interface ChatMessageContextMenuEmits {
 	(event: 'reply'): void
 	(event: 'select'): void
 	(event: 'copy'): void
+	(event: 'edit'): void
 	(event: 'pin'): void
 	(event: 'delete'): void
 	/** Закрытие с клавиатуры (Escape, Tab) */

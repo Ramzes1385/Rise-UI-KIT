@@ -9,6 +9,7 @@ export const enPlural = {
 	JSON_ITEMS: { one: '{n} item', other: '{n} items' },
 	SIGNATURE_STROKES: { one: '{n} stroke', other: '{n} strokes' },
 	NOTIFICATIONS_UNREAD: { one: '{n} new', other: '{n} new' },
+	CHAT_UNREAD: { one: '{n} unread message', other: '{n} unread messages' },
 	REPLIES: { one: '{n} reply', other: '{n} replies' },
 	BADGES_MORE: { one: '{n} more badge', other: '{n} more badges' },
 	BREADCRUMBS_HIDDEN: { one: 'Show {n} more section', other: 'Show {n} more sections' },

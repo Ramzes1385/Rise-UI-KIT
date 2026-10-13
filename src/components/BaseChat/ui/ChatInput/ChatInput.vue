@@ -29,6 +29,22 @@
 			</BaseButton>
 		</div>
 
+		<div v-if="editingMessage" class="base-chat-input__reply-bar base-chat-input__edit-bar">
+			<BaseIcon name="edit" :size-scale="sizeScale * CHAT_SCALE.SMALL" class="base-chat-input__reply-icon" />
+			<div class="base-chat-input__reply-content">
+				<span class="base-chat-input__reply-sender">{{ UI_CHAT_TEXT.EDITING }}</span>
+				<span class="base-chat-input__reply-text">{{ editingMessage.text }}</span>
+			</div>
+			<BaseButton
+				variant="ghost"
+				:size-scale="sizeScale"
+				class="base-chat-input__reply-cancel"
+				:aria-label="UI_CHAT_TEXT.CANCEL_EDIT_ARIA"
+				@click="handleCancelEdit">
+				<BaseIcon name="close" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
+			</BaseButton>
+		</div>
+
 		<ChatFilePreview v-if="attachments.length > 0" :attachments="attachments" :size-scale="sizeScale" @remove="removeAttachment" />
 
 		<div v-if="isVoiceMode" class="base-chat-input__controls base-chat-input__controls--voice">
@@ -164,9 +180,9 @@
 				:size-scale="sizeScale"
 				:is-disabled="!text.trim() && attachments.length === 0"
 				class="base-chat-input__send-btn"
-				:aria-label="UI_CHAT_TEXT.SEND_ARIA"
+				:aria-label="editingMessage ? UI_CHAT_TEXT.SAVE_EDIT_ARIA : UI_CHAT_TEXT.SEND_ARIA"
 				@click="handleSend">
-				<BaseIcon name="send" :size-scale="sizeScale" />
+				<BaseIcon :name="editingMessage ? 'check' : 'send'" :size-scale="sizeScale" />
 			</BaseButton>
 		</div>
 	</div>
@@ -190,6 +206,7 @@ import type { ChatInputEmits, ChatInputProps } from './types/ChatInput.types'
 const props = withDefaults(defineProps<ChatInputProps>(), {
 	sizeScale: SIZE_SCALE_DEFAULT,
 	replyingTo: null,
+	editingMessage: null,
 	quickReplies: () => [],
 	members: () => [],
 	commands: () => [],
@@ -222,6 +239,7 @@ const {
 	setTextareaRef,
 	handleKeyUp,
 	handleCancelReply,
+	handleCancelEdit,
 	handleQuickReply,
 	isVoiceMode,
 	voiceState,

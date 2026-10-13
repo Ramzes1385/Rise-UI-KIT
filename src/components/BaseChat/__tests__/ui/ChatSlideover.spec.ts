@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom/vitest'
 import { describe, expect, it } from 'vitest'
+import { UI_CHAT_TEXT } from '@/locales/messages'
 import ChatSlideover from '../../ui/ChatSlideover/ChatSlideover.vue'
 import type { ChatMember, ChatMessage } from '../../types/BaseChat.types'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
@@ -156,6 +157,35 @@ describe('ChatSlideover unit', () => {
 			expect(emitted()['update:isOpen']).toBeUndefined()
 		})
 
+		it('меню участника с клавиатуры: ArrowDown ставит фокус на первый пункт, стрелки двигают, Escape возвращает фокус на кнопку', async () => {
+			render(ChatSlideover, { props: baseProps({ isGroup: true, members: MEMBERS, currentUserRole: 'admin' }) })
+
+			const trigger = screen.getByRole('button', { name: 'Действия с участником Борис' })
+			trigger.focus()
+			await fireEvent.keyDown(trigger, { key: 'ArrowDown' })
+			const items = await screen.findAllByRole('menuitem')
+			await waitFor(() => expect(items[0]).toHaveFocus())
+
+			await fireEvent.keyDown(items[0], { key: 'ArrowDown' })
+			expect(items[1]).toHaveFocus()
+			await fireEvent.keyDown(items[1], { key: 'End' })
+			expect(items[items.length - 1]).toHaveFocus()
+			await fireEvent.keyDown(items[items.length - 1], { key: 'Home' })
+			expect(items[0]).toHaveFocus()
+
+			await fireEvent.keyDown(items[0], { key: 'Escape' })
+			await waitFor(() => expect(document.querySelector('.base-chat-slideover__admin-dropdown')).toBeNull())
+			expect(trigger).toHaveFocus()
+		})
+
+		it('Enter на кнопке меню участника открывает меню и ставит фокус на первый пункт', async () => {
+			render(ChatSlideover, { props: baseProps({ isGroup: true, members: MEMBERS, currentUserRole: 'admin' }) })
+
+			await fireEvent.click(screen.getByRole('button', { name: 'Действия с участником Анна' }))
+			const first = (await screen.findAllByRole('menuitem'))[0]
+			await waitFor(() => expect(first).toHaveFocus())
+		})
+
 		it('должен эмитить update-member-role при смене роли (разжаловать админа)', async () => {
 			const { emitted } = render(ChatSlideover, {
 				props: baseProps({ isGroup: true, members: MEMBERS, currentUserRole: 'admin' }),
@@ -200,8 +230,56 @@ describe('ChatSlideover unit', () => {
 			await fireEvent.click(screen.getByLabelText('Действия с участником Анна'))
 			await fireEvent.click(screen.getByText('Забанить'))
 
-			const events = emitted()['ban-member'] as Array<[{ memberId: string }]>
-			expect(events[0][0].memberId).toBe('a1')
+			expect(emitted()['ban-member']).toEqual([[{ memberId: 'a1' }]])
+		})
+
+		it('бан отдаёт только memberId, без захардкоженных причины и числа предупреждений', async () => {
+			const { emitted } = render(ChatSlideover, {
+				props: baseProps({ isGroup: true, members: MEMBERS, currentUserRole: 'admin' }),
+			})
+
+			await fireEvent.click(screen.getByLabelText('Действия с участником Борис'))
+			await fireEvent.click(screen.getByText('Забанить'))
+
+			const payload = (emitted()['ban-member'] as Array<[Record<string, unknown>]>)[0][0]
+			expect(Object.keys(payload)).toEqual(['memberId'])
+		})
+
+		it('админ не видит действий над собой: по умолчанию это участник me', () => {
+			render(ChatSlideover, {
+				props: baseProps({ isGroup: true, members: MEMBERS, currentUserRole: 'admin' }),
+			})
+
+			expect(screen.getByLabelText('Действия с участником Анна')).toBeInTheDocument()
+			expect(screen.queryByLabelText('Действия с участником Я')).not.toBeInTheDocument()
+		})
+
+		it('currentUserId заменяет me: действия скрыты у него, а у участника me появляются', () => {
+			render(ChatSlideover, {
+				props: baseProps({ isGroup: true, members: MEMBERS, currentUserRole: 'admin', currentUserId: 'a1' }),
+			})
+
+			expect(screen.queryByLabelText('Действия с участником Анна')).not.toBeInTheDocument()
+			expect(screen.getByLabelText('Действия с участником Я')).toBeInTheDocument()
+			expect(screen.getByLabelText('Действия с участником Борис')).toBeInTheDocument()
+		})
+
+		it('админу доступна кнопка «Добавить участника», и она эмитит add-member без данных', async () => {
+			const { emitted } = render(ChatSlideover, {
+				props: baseProps({ isGroup: true, members: MEMBERS, currentUserRole: 'admin' }),
+			})
+
+			await fireEvent.click(screen.getByRole('button', { name: UI_CHAT_TEXT.ADD_MEMBER }))
+
+			expect(emitted()['add-member']).toEqual([[]])
+		})
+
+		it('обычному участнику кнопки «Добавить участника» нет', () => {
+			render(ChatSlideover, {
+				props: baseProps({ isGroup: true, members: MEMBERS, currentUserRole: 'member' }),
+			})
+
+			expect(screen.queryByRole('button', { name: UI_CHAT_TEXT.ADD_MEMBER })).not.toBeInTheDocument()
 		})
 
 		it('не должен показывать админ-действия для обычного участника', () => {
@@ -237,6 +315,30 @@ describe('ChatSlideover unit', () => {
 			})
 
 			expect(screen.getByText('в сети')).toBeInTheDocument()
+		})
+
+		it('companionStatus offline имеет приоритет над словом «в сети» в подзаголовке', () => {
+			render(ChatSlideover, {
+				props: baseProps({ activeTab: 'profile', isGroup: false, title: 'Анна', subtitle: 'в сети', companionStatus: 'offline' }),
+			})
+
+			expect(screen.getByText('не в сети')).toBeInTheDocument()
+			expect(screen.queryByText('в сети', { selector: '.base-chat-slideover__profile *' })).not.toBeInTheDocument()
+		})
+
+		it('companionStatus online имеет приоритет над подзаголовком «была давно»', () => {
+			render(ChatSlideover, {
+				props: baseProps({
+					activeTab: 'profile',
+					isGroup: false,
+					title: 'Анна',
+					subtitle: 'была давно',
+					companionStatus: 'online',
+				}),
+			})
+
+			expect(screen.getByText('в сети')).toBeInTheDocument()
+			expect(screen.queryByText('не в сети')).not.toBeInTheDocument()
 		})
 
 		it('должен эмитить write-message и закрывать панель при клике "Написать сообщение"', async () => {

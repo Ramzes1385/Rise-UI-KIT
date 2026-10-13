@@ -56,6 +56,17 @@
 						<h4 :id="`${idPrefix}-members`" class="base-chat-slideover__section-title">
 							{{ UI_CHAT_TEXT.PARTICIPANTS_TITLE }}
 						</h4>
+						<BaseButton
+							v-if="currentUserRole === 'admin'"
+							variant="outline"
+							:size-scale="sizeScale"
+							class="base-chat-slideover__add-member"
+							@click="handleAddMember">
+							<template #left>
+								<BaseIcon name="plus" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
+							</template>
+							{{ UI_CHAT_TEXT.ADD_MEMBER }}
+						</BaseButton>
 						<ul class="base-chat-slideover__members-scroll">
 							<li v-for="member in members" :key="member.id" class="base-chat-slideover__member-item">
 								<button type="button" class="base-chat-slideover__member-main" @click="handleMemberClick(member.id)">
@@ -78,13 +89,14 @@
 								</button>
 
 								<div
-									v-if="currentUserRole === 'admin' && member.id !== 'me'"
+									v-if="currentUserRole === 'admin' && member.id !== (currentUserId ?? 'me')"
 									class="base-chat-slideover__member-actions"
 									@keydown.esc="handleAdminMenuEscape($event, member.id)">
 									<BaseDropdown
 										:is-open="activeAdminMenuId === member.id"
 										position="bottom-end"
 										:padding="4"
+										:prevent-mousedown="false"
 										:size-scale="sizeScale"
 										@close="closeAdminMenu">
 										<BaseButton
@@ -95,12 +107,14 @@
 											:aria-label="`${UI_CHAT_TEXT.MEMBER_ACTIONS} ${member.name}`"
 											aria-haspopup="menu"
 											:aria-expanded="activeAdminMenuId === member.id ? 'true' : 'false'"
-											@click="toggleAdminMenu(member.id)">
+											@click="toggleAdminMenu(member.id)"
+											@keydown.down.prevent="openAdminMenu(member.id)">
 											<BaseIcon name="chevron-down" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
 										</BaseButton>
 
 										<template #dropdown>
 											<div
+												:id="`${idPrefix}-menu-${member.id}`"
 												class="base-chat-slideover__admin-dropdown"
 												role="menu"
 												:aria-label="`${UI_CHAT_TEXT.MEMBER_ACTIONS} ${member.name}`">
@@ -273,6 +287,7 @@ const {
 	closeAdminMenu,
 	setAdminTriggerRef,
 	toggleAdminMenu,
+	openAdminMenu,
 	handleAdminMenuEscape,
 	handleChangeRole,
 	handleKick,
@@ -280,5 +295,6 @@ const {
 	handleMemberClick,
 	handleBackToInfo,
 	handleWriteMessage,
+	handleAddMember,
 } = useChatSlideover(props, emit)
 </script>

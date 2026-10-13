@@ -57,6 +57,79 @@ describe('useMessageParser', () => {
 		})
 	})
 
+	describe('parseMessageText: Unicode и границы', () => {
+		const { parseMessageText } = useMessageParser()
+
+		it('email не считается упоминанием', () => {
+			expect(parseMessageText('пиши на user@example.com')).toEqual([{ type: 'text', value: 'пиши на user@example.com' }])
+		})
+
+		it('упоминание после email-подобного слова в той же строке остаётся упоминанием', () => {
+			expect(parseMessageText('user@example.com и @anna')).toEqual([
+				{ type: 'text', value: 'user@example.com и ' },
+				{ type: 'mention', value: '@anna' },
+			])
+		})
+
+		it.each(['@Іванка', '@Їжак', '@Євген', '@Анна', '@müller'])('распознаёт упоминание %s', mention => {
+			expect(parseMessageText(`Привіт ${mention}`)).toEqual([
+				{ type: 'text', value: 'Привіт ' },
+				{ type: 'mention', value: mention },
+			])
+		})
+
+		it.each(['/допомога', '/їсти', '/єдиний', '/café'])('распознаёт команду %s', command => {
+			expect(parseMessageText(`Тут ${command}`)).toEqual([
+				{ type: 'text', value: 'Тут' },
+				{ type: 'text', value: ' ' },
+				{ type: 'command', value: command },
+			])
+		})
+
+		it.each(['.', ',', ';', ':', '!', '?', ')', '»', '”', '"', "'", '?!'])('хвостовая пунктуация %s не входит в ссылку', tail => {
+			expect(parseMessageText(`Смотри https://example.com/a${tail} Дальше`)).toEqual([
+				{ type: 'text', value: 'Смотри ' },
+				{ type: 'link', value: 'https://example.com/a' },
+				{ type: 'text', value: `${tail} Дальше` },
+			])
+		})
+
+		it('пунктуация внутри ссылки сохраняется', () => {
+			expect(parseMessageText('https://example.com/a.b?x=1,2')).toEqual([{ type: 'link', value: 'https://example.com/a.b?x=1,2' }])
+		})
+
+		it('ссылка в конце строки с точкой', () => {
+			expect(parseMessageText('Сайт https://example.com.')).toEqual([
+				{ type: 'text', value: 'Сайт ' },
+				{ type: 'link', value: 'https://example.com' },
+				{ type: 'text', value: '.' },
+			])
+		})
+
+		it.each(['Https://example.com', 'HTTPS://EXAMPLE.COM', 'hTTp://example.com'])('схема в любом регистре: %s — ссылка', url => {
+			expect(parseMessageText(`Открой ${url}, пожалуйста`)).toEqual([
+				{ type: 'text', value: 'Открой ' },
+				{ type: 'link', value: url },
+				{ type: 'text', value: ', пожалуйста' },
+			])
+		})
+
+		it.each(['\n', '\t'])('команда после %j отдаёт пробельный символ отдельным текстом, а command — без него', whitespace => {
+			expect(parseMessageText(`Строка${whitespace}/start`)).toEqual([
+				{ type: 'text', value: 'Строка' },
+				{ type: 'text', value: whitespace },
+				{ type: 'command', value: '/start' },
+			])
+		})
+
+		it('команда в самом начале текста', () => {
+			expect(parseMessageText('/start now')).toEqual([
+				{ type: 'command', value: '/start' },
+				{ type: 'text', value: ' now' },
+			])
+		})
+	})
+
 	describe('getHighlightedParts', () => {
 		it('должен возвращать текст как единую часть без поискового запроса', () => {
 			const { getHighlightedParts } = useMessageParser()

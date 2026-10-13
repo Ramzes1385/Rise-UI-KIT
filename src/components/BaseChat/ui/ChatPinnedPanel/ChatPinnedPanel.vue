@@ -3,11 +3,11 @@
 		<button type="button" class="base-chat-pinned-panel__content" @click="handlePanelClick">
 			<BaseIcon name="pin" :size-scale="sizeScale * CHAT_SCALE.SMALL" class="base-chat-pinned-panel__pin-icon" />
 			<Transition name="base-chat-pinned-panel-swap" mode="out-in">
-				<span :key="currentIndex" class="base-chat-pinned-panel__text-wrapper">
+				<span :key="displayIndex" class="base-chat-pinned-panel__text-wrapper">
 					<span class="base-chat-pinned-panel__title">
 						{{ UI_CHAT_TEXT.PINNED_MESSAGE }}
 						{{
-							pinnedMessages.length > 1 ? `(${currentIndex + 1} ${UI_CHAT_TEXT.PINNED_COUNTER} ${pinnedMessages.length})` : ''
+							pinnedMessages.length > 1 ? `(${displayIndex + 1} ${UI_CHAT_TEXT.PINNED_COUNTER} ${pinnedMessages.length})` : ''
 						}}
 					</span>
 					<span class="base-chat-pinned-panel__preview">{{ currentMessageText }}</span>
@@ -65,5 +65,5 @@ const props = withDefaults(defineProps<ChatPinnedPanelProps>(), {
 
 const emit = defineEmits<ChatPinnedPanelEmits>()
 
-const { currentMessageText, handlePrev, handleNext, handlePanelClick, handleUnpin } = useChatPinnedPanel(props, emit)
+const { displayIndex, currentMessageText, handlePrev, handleNext, handlePanelClick, handleUnpin } = useChatPinnedPanel(props, emit)
 </script>

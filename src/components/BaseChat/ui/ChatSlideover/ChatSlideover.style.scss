@@ -107,6 +107,10 @@
 		color: var(--rise-text-muted);
 	}
 
+	&__add-member {
+		align-self: flex-start;
+	}
+
 	&__members-scroll {
 		display: flex;
 		flex-direction: column;

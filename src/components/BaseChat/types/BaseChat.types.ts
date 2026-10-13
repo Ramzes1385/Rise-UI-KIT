@@ -41,6 +41,11 @@ export interface ChatMessage {
 	senderId?: string
 	/** Время отправки (например, "10:15") */
 	time: string
+	/**
+	 * Момент отправки: ISO-строка, миллисекунды или `Date`. По нему между сообщениями разных дней появляются разделители
+	 * («Сегодня», «Вчера», дата по языку кита). Без `createdAt` разделитель не выводится
+	 */
+	createdAt?: string | number | Date
 	/** Дата отправки (например, "12 мая 2024") — для группировки медиа/файлов/ссылок */
 	date?: string
 	/** Имя отправителя */
@@ -49,6 +54,8 @@ export interface ChatMessage {
 	senderAvatar?: string
 	/** Статус доставки сообщения */
 	status?: ChatMessageStatus
+	/** Сообщение изменено: рядом со временем появляется пометка «изменено». Выставляет приложение после события `edit` */
+	isEdited?: boolean
 	/** Вложения к сообщению */
 	attachments?: ChatMessageAttachment[]
 	/** ID сообщения, на которое сделан ответ */
@@ -130,8 +137,35 @@ export interface BaseChatProps extends BaseComponentProps<(typeof CHAT_VARIANTS)
 	members?: ChatMember[]
 	quickReplies?: string[]
 	commands?: ChatCommand[]
-	/** Не используется: закреплённые сообщения берутся из `messages[].isPinned` */
+	/**
+	 * Закреплённые сообщения для панели под шапкой. Без пропа панель строится из `messages[].isPinned`; с ним — ровно из
+	 * переданного списка (например, когда закрепы приходят отдельно от загруженной части истории)
+	 */
 	pinnedMessages?: ChatMessage[]
+	/**
+	 * Идентификатор чата. Когда он меняется у того же экземпляра (чат переключили в списке диалогов), сбрасываются ответ,
+	 * редактирование, выделение, поиск, открытая панель «Информация» и черновик в поле ввода
+	 */
+	chatId?: string | number
+	/** Идентификатор текущего пользователя: админ не видит действия над собой в списке участников. По умолчанию — участник `me` */
+	currentUserId?: string
+	/** Статус собеседника в личном чате (в групповом берётся из `members[].status`). Без него — по тексту `subtitle` */
+	companionStatus?: 'online' | 'offline'
+	/**
+	 * Последнее прочитанное сообщение. Перед первым непрочитанным чужим сообщением после него появляется разделитель
+	 * «Непрочитанные» со счётчиком, а лента при открытии прокручивается к нему, а не к концу
+	 */
+	lastReadMessageId?: string
+	/** Текущий день для «Сегодня» и «Вчера» в разделителях дат (по умолчанию — сегодня); в историях и тестах — фиксированный */
+	today?: string | number | Date
+	/** Первая загрузка ленты: вместо сообщений выводится скелетон */
+	isLoading?: boolean
+	/** Есть ли более старые сообщения: пока `true`, прокрутка к началу ленты вызывает событие `load-more` */
+	hasMoreMessages?: boolean
+	/** Идёт подгрузка более старых сообщений: события `load-more` не повторяются, вверху ленты — индикатор */
+	isLoadingMore?: boolean
+	/** Скачивать файл при клике по вложению. `false` — только событие `download-file` (файлы с авторизацией скачивает приложение) */
+	autoDownload?: boolean
 	currentUserRole?: 'admin' | 'member'
 	/** Описание чата или собеседника для панели «Информация»; без него блок описания не выводится */
 	description?: string
@@ -158,17 +192,23 @@ export interface BaseChatEmits {
 	/** Записано голосовое сообщение: приложение загружает `recording.blob` и добавляет сообщение с вложением `type: 'audio'` */
 	(event: 'send-voice', payload: { recording: VoiceRecording; replyToId?: string }): void
 	(event: 'avatar-click', senderId: string): void
+	/** Изменился запрос поиска по сообщениям (в том числе очищен при закрытии поиска) */
 	(event: 'search', query: string): void
 	(event: 'message-select', messageId: string): void
 	(event: 'info-click'): void
 	(event: 'message-reaction', payload: { messageId: string; emoji: string }): void
 	(event: 'quick-reply', text: string): void
 	(event: 'download-file', file: ChatMessageAttachment): void
-	(event: 'delete-messages', messageIds: string[]): void
-	(event: 'forward-messages', messageIds: string[]): void
-	(event: 'pin-message', messageId: string): void
-	(event: 'unpin-message', messageId: string): void
-	(event: 'add-member', member: ChatMember): void
+	/** `delete-messages` — удаление подтверждено в диалоге; `forward-messages` — «Переслать» в панели выбора */
+	(event: 'delete-messages' | 'forward-messages', messageIds: string[]): void
+	/** `pin-message` — «Закрепить» в меню сообщения (админ); `unpin-message` — «Открепить» в меню или крестик панели закреплённых */
+	(event: 'pin-message' | 'unpin-message', messageId: string): void
+	/** Админ нажал «Добавить участника» в панели «Информация» группового чата: выбор участника — на стороне приложения */
+	(event: 'add-member'): void
+	/** Автор подтвердил изменённый текст своего сообщения: приложение обновляет сообщение и ставит `isEdited` */
+	(event: 'edit', payload: { messageId: string; text: string }): void
+	/** Лента прокручена к началу, пока `hasMoreMessages` и не `isLoadingMore`: приложение подгружает более старые сообщения */
+	(event: 'load-more'): void
 	(event: 'kick-member', memberId: string): void
 	(event: 'ban-member', payload: { memberId: string; reason?: string; warningsCount?: number }): void
 	(event: 'update-member-role', payload: { memberId: string; role: string }): void

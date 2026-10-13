@@ -1,6 +1,17 @@
 /** Composable: разбор текста сообщения на сегменты */
 import type { MessageToken, TextPart, UseMessageParserOptions, UseMessageParserReturn } from './types/useMessageParser.types'
 
+/** Буква любого алфавита (в том числе і, ї, є), цифра или подчёркивание: имя упоминания и команды */
+const WORD = String.raw`[\p{L}\p{N}_]`
+/** Знаки, которыми заканчивается предложение со ссылкой: в адрес они не входят */
+const URL_TAIL = String.raw`[.,;:!?)»”"']*`
+const TOKEN_REGEX = new RegExp(
+	String.raw`(https?:\/\/[^\s]+?(?=${URL_TAIL}(?:\s|$))|(?<![\p{L}\p{N}_.])@${WORD}+|(?:^|\s)\/${WORD}+)`,
+	'giu',
+)
+const MENTION_REGEX = new RegExp(String.raw`^@${WORD}+$`, 'u')
+const COMMAND_REGEX = new RegExp(String.raw`^(\s?)\/${WORD}+$`, 'u')
+
 /**
  * Composable для разбора текста сообщения на сегменты: упоминания, команды, ссылки, текст.
  */
@@ -31,19 +42,18 @@ function useMessageParser(options: UseMessageParserOptions = {}): UseMessagePars
 
 	function parseMessageText(text: string): MessageToken[] {
 		if (!text) return []
-		const tokenRegex = /(https?:\/\/[^\s]+|@[\wА-Яа-яЁё]+|(?:^|\s)\/[\wА-Яа-яЁё]+)/g
-		const parts = text.split(tokenRegex)
+		const parts = text.split(TOKEN_REGEX)
 		const tokens: MessageToken[] = []
 		for (const part of parts) {
 			if (!part) continue
 			if (/^https?:\/\//i.test(part)) {
 				tokens.push({ type: 'link', value: part })
-			} else if (/^@[\wА-Яа-яЁё]+$/.test(part)) {
+			} else if (MENTION_REGEX.test(part)) {
 				tokens.push({ type: 'mention', value: part })
-			} else if (/^\s?\/[\wА-Яа-яЁё]+$/.test(part)) {
-				const leadingSpace = part.startsWith(' ')
-				if (leadingSpace) tokens.push({ type: 'text', value: ' ' })
-				tokens.push({ type: 'command', value: leadingSpace ? part.slice(1) : part })
+			} else if (COMMAND_REGEX.test(part)) {
+				const leading = part.startsWith('/') ? '' : part[0]
+				if (leading) tokens.push({ type: 'text', value: leading })
+				tokens.push({ type: 'command', value: part.slice(leading.length) })
 			} else {
 				tokens.push({ type: 'text', value: part })
 			}

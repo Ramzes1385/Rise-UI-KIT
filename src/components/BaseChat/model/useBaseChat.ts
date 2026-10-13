@@ -7,6 +7,7 @@ import { isolateFormField } from '@composables/form/useFormContext'
 import type { BaseChatEmits, BaseChatProps } from '../types/BaseChat.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { useChatDeleteConfirm } from '@composables/chat/useChatDeleteConfirm'
+import { useChatMemberConfirm } from '@composables/chat/useChatMemberConfirm'
 import type { MessageListExposed } from '@composables/chat/useChatActions/types/useChatActions.types'
 
 export function useBaseChat(props: BaseChatProps, emit: BaseChatEmits) {
@@ -29,6 +30,14 @@ export function useBaseChat(props: BaseChatProps, emit: BaseChatEmits) {
 		handleAvatarClick: state.handleAvatarClick,
 		handleCancelReply: state.handleCancelReply,
 		openInfo: state.openInfo,
+		editingMessage: state.editingMessage,
+		handleCancelEdit: state.handleCancelEdit,
+		isAutoDownload: () => props.autoDownload !== false,
+	})
+	const memberConfirm = useChatMemberConfirm({
+		getMemberName: memberId => props.members?.find(member => member.id === memberId)?.name ?? memberId,
+		onKick: memberId => emit('kick-member', memberId),
+		onBan: payload => emit('ban-member', payload),
 	})
 
 	return {
@@ -38,6 +47,7 @@ export function useBaseChat(props: BaseChatProps, emit: BaseChatEmits) {
 		...state,
 		...deleteConfirm,
 		...actions,
+		...memberConfirm,
 		handleSendVoice(recording: VoiceRecording): void {
 			emit('send-voice', { recording, replyToId: state.replyingTo.value?.id || undefined })
 			state.handleCancelReply()

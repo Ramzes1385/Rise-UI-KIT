@@ -13,7 +13,8 @@ const template = `
 			@message-reaction="react"
 			@delete-messages="remove"
 			@pin-message="pin"
-			@unpin-message="unpin" />
+			@unpin-message="unpin"
+			@edit="edit" />
 	</div>
 `
 

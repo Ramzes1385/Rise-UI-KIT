@@ -122,6 +122,28 @@ describe('useChatMessageActions', () => {
 			expect(actions.contextMenu.value.message).toBeNull()
 		})
 
+		it('пункт «Закрепить» у закреплённого сообщения отдаёт unpin-message, а не pin-message', () => {
+			const { actions, emit } = setup()
+			actions.handleContextMenu(rightClick(), { ...message, isPinned: true })
+
+			actions.handleContextMenuPin()
+
+			expect(emit).toHaveBeenCalledWith('unpin-message', 'm1')
+			expect(emit).not.toHaveBeenCalledWith('pin-message', expect.anything())
+			expect(actions.contextMenu.value.isOpen).toBe(false)
+		})
+
+		it('пункт «Изменить» отдаёт message-edit с сообщением и закрывает меню', () => {
+			const own: ChatMessage = { ...message, sender: 'me' }
+			const { actions, emit } = setup()
+			actions.handleContextMenu(rightClick(), own)
+
+			actions.handleContextMenuEdit()
+
+			expect(emit).toHaveBeenCalledWith('message-edit', own)
+			expect(actions.contextMenu.value.isOpen).toBe(false)
+		})
+
 		it('«Копировать» кладёт текст в буфер обмена', async () => {
 			const writeText = vi.fn<(text: string) => Promise<void>>().mockResolvedValue()
 			vi.stubGlobal('navigator', { clipboard: { writeText } })

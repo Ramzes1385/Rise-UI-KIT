@@ -10,6 +10,13 @@ export const ruPlural = {
 	JSON_ITEMS: { one: '{n} элемент', few: '{n} элемента', many: '{n} элементов', other: '{n} элемента' },
 	SIGNATURE_STROKES: { one: '{n} штрих', few: '{n} штриха', many: '{n} штрихов', other: '{n} штриха' },
 	NOTIFICATIONS_UNREAD: { one: '{n} новое', few: '{n} новых', many: '{n} новых', other: '{n} новых' },
+	/** Разделитель ленты чата: сколько сообщений не прочитано */
+	CHAT_UNREAD: {
+		one: '{n} непрочитанное сообщение',
+		few: '{n} непрочитанных сообщения',
+		many: '{n} непрочитанных сообщений',
+		other: '{n} непрочитанных сообщения',
+	},
 	REPLIES: { one: '{n} ответ', few: '{n} ответа', many: '{n} ответов', other: '{n} ответа' },
 	BADGES_MORE: { one: 'Ещё {n} значок', few: 'Ещё {n} значка', many: 'Ещё {n} значков', other: 'Ещё {n} значка' },
 	/** Кнопка «…» BaseBreadcrumbs: сколько крошек скрыто */

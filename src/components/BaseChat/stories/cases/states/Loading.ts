@@ -1,30 +1,24 @@
 import { expect } from 'storybook/test'
 import type meta from '../../BaseChat.stories'
-import { STORY_TODAY } from '@/stories/helpers'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { PRIVATE_MESSAGES, timeOf } from '../../shared'
 
 export const Loading: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
 			description: {
 				story: [
-					'Ожидание. У BaseChat нет состояния загрузки истории: ожидание показывают статус `sending` у своего сообщения',
-					'(спиннер) и `isTyping` — «печатает» в шапке и точки в ленте. Оба индикатора — `role="status"` с доступным именем.',
+					'Первая загрузка ленты (`isLoading`): вместо сообщений — скелетон с `role="status"` и именем «Загрузка сообщений».',
+					'Подгрузка более ранних сообщений (`isLoadingMore`) показывает индикатор вверху ленты — см. историю Load More.',
+					'Ожидание отправки и набор текста собеседником — история Sending.',
 				].join('\n'),
 			},
 		},
 	},
-	args: {
-		messages: [
-			...PRIVATE_MESSAGES.slice(0, 2),
-			{ id: 'sending', sender: 'me', text: 'Отправляю обновлённые макеты…', status: 'sending', time: timeOf(STORY_TODAY) },
-		],
-		isTyping: true,
-	},
+	args: { isLoading: true, quickReplies: [] },
 	play: async ({ canvas }) => {
-		await expect(canvas.getByRole('status', { name: 'Отправляется' })).toBeInTheDocument()
-		await expect(canvas.getByRole('status', { name: 'Печатает' })).toBeInTheDocument()
-		await expect(canvas.getByRole('img', { name: 'Прочитано' })).toBeInTheDocument()
+		const log = canvas.getByRole('log', { name: 'Сообщения' })
+		await expect(canvas.getByRole('status', { name: 'Загрузка сообщений' })).toBeInTheDocument()
+		await expect(log.querySelectorAll('.base-chat-message-list__item')).toHaveLength(0)
+		await expect(canvas.queryByText('Сообщений пока нет')).not.toBeInTheDocument()
 	},
 }

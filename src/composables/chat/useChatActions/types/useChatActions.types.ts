@@ -12,6 +12,10 @@ export interface UseChatActionsOptions {
 	messageListRef: Ref<MessageListExposed | null>
 	handleAvatarClick: (senderId: string) => void
 	handleCancelReply: () => void
+	editingMessage: Ref<ChatMessage | null>
+	handleCancelEdit: () => void
+	/** Скачивать файл при клике по вложению (проп `autoDownload`); `false` — только событие `download-file` */
+	isAutoDownload: () => boolean
 	/** Открыть «Информацию» о чате — по аватару в шапке. Без неё аватар шапки открывает профиль, как аватар сообщения */
 	openInfo?: () => void
 }

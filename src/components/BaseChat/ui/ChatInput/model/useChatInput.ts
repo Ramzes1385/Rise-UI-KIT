@@ -41,6 +41,7 @@ export function useChatInput(props: ChatInputProps, emit: ChatInputEmits) {
 			state.checkAutocomplete()
 		},
 		handleCancelReply: (): void => emit('cancel-reply'),
+		handleCancelEdit: (): void => emit('cancel-edit'),
 		handleQuickReply: (reply: string): void => emit('quick-reply', reply),
 	}
 }

@@ -1,0 +1,93 @@
+@use '@styles/functions' as *;
+@use '@styles/mixins' as *;
+
+.base-chat-message-list {
+	overflow-anchor: none;
+
+	&__divider {
+		display: flex;
+		flex: none;
+		align-items: center;
+		gap: sz(12px);
+		padding: sz(4px) sz(8px);
+		@include text-size(xs);
+		font-weight: var(--rise-font-weight-medium);
+		color: var(--rise-text-muted);
+		user-select: none;
+
+		&::before,
+		&::after {
+			content: '';
+			flex: 1;
+			height: 1px;
+			background-color: var(--rise-border);
+		}
+
+		&--unread {
+			color: var(--rise-primary);
+
+			&::before,
+			&::after {
+				background-color: var(--rise-primary);
+				opacity: 0.4;
+			}
+		}
+	}
+
+	&__divider-label {
+		flex: none;
+	}
+
+	&__loading-more {
+		position: sticky;
+		top: 0;
+		z-index: 2;
+		display: flex;
+		flex: none;
+		justify-content: center;
+		height: 0;
+		margin-block-end: calc(-1 * #{sz(var(--chat-list-gap))});
+		overflow: visible;
+
+		> * {
+			padding: sz(4px);
+			border-radius: var(--rise-radius-full);
+			background-color: var(--rise-bg-elevated);
+			box-shadow: var(--rise-shadow-sm);
+		}
+	}
+
+	&__skeleton {
+		display: flex;
+		flex: none;
+		flex-direction: column;
+		gap: sz(12px);
+		padding: sz(4px) sz(8px);
+	}
+
+	&__skeleton-row {
+		display: flex;
+		align-items: flex-end;
+		gap: sz(8px);
+
+		&--me {
+			justify-content: flex-end;
+		}
+	}
+
+	&__jump {
+		position: sticky;
+		bottom: sz(4px);
+		z-index: 2;
+		display: flex;
+		flex: none;
+		justify-content: center;
+		height: 0;
+		overflow: visible;
+
+		> * {
+			box-shadow: var(--rise-shadow-md);
+			transform: translateY(-100%);
+		}
+	}
+}

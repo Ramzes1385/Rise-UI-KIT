@@ -36,6 +36,16 @@
 				<span>{{ UI_CHAT_TEXT.COPY }}</span>
 			</button>
 			<button
+				v-if="message?.sender === 'me' && message.text"
+				type="button"
+				role="menuitem"
+				tabindex="-1"
+				class="base-chat-context-menu__item"
+				@click="handleEdit">
+				<BaseIcon name="edit" :size-scale="sizeScale * CHAT_SCALE.SMALL" class="base-chat-context-menu__icon" />
+				<span>{{ UI_CHAT_TEXT.EDIT }}</span>
+			</button>
+			<button
 				v-if="currentUserRole === 'admin'"
 				type="button"
 				role="menuitem"
@@ -86,6 +96,7 @@ const {
 	handleReply,
 	handleSelect,
 	handleCopy,
+	handleEdit,
 	handlePin,
 	handleDelete,
 	exposed,

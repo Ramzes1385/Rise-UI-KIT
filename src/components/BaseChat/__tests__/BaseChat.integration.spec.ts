@@ -560,11 +560,15 @@ describe('BaseChat integration', () => {
 
 			await fireEvent.click(screen.getByLabelText('Действия с участником Анна'))
 			await fireEvent.click(screen.getByText('Исключить'))
-			expect(emitted()['kick-member']).toBeTruthy()
+			expect(emitted()['kick-member']).toBeUndefined()
+			await fireEvent.click(await screen.findByRole('button', { name: 'Подтвердить' }))
+			expect(emitted()['kick-member']).toEqual([['a1']])
 
 			await fireEvent.click(screen.getByLabelText('Действия с участником Анна'))
 			await fireEvent.click(screen.getByText('Забанить'))
-			expect(emitted()['ban-member']).toBeTruthy()
+			expect(emitted()['ban-member']).toBeUndefined()
+			await fireEvent.click(await screen.findByRole('button', { name: 'Подтвердить' }))
+			expect(emitted()['ban-member']).toEqual([[{ memberId: 'a1' }]])
 
 			expect(container).toBeTruthy()
 		})

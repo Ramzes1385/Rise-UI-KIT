@@ -35,5 +35,9 @@ export const args = {
 	'onUpdate-member-role': fn(),
 	'onMention-click': fn(),
 	'onCommand-click': fn(),
+	onEdit: fn(),
+	'onLoad-more': fn(),
+	onSearch: fn(),
+	'onAdd-member': fn(),
 	onError: fn(),
 } satisfies Meta<typeof BaseChat>['args']

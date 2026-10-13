@@ -2,6 +2,8 @@ import type { ChatMember, ChatMessage } from '@components/BaseChat/types/BaseCha
 
 export interface UseChatStateProps {
 	messages: ChatMessage[]
+	pinnedMessages?: ChatMessage[]
+	chatId?: string | number
 	isGroup?: boolean
 	members?: ChatMember[]
 	currentUserRole?: 'admin' | 'member'
@@ -9,6 +11,7 @@ export interface UseChatStateProps {
 
 export interface UseChatStateEmit {
 	(event: 'message-select', messageId: string): void
+	(event: 'search', query: string): void
 	(event: 'avatar-click', senderId: string): void
 	(event: 'info-click'): void
 	(event: 'pin-message', messageId: string): void

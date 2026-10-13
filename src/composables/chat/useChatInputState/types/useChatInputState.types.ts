@@ -1,14 +1,18 @@
 import type { ComputedRef, Ref } from 'vue'
-import type { ChatCommand, ChatMember, ChatMessageAttachment } from '@components/BaseChat/types/BaseChat.types'
+import type { ChatCommand, ChatMember, ChatMessage, ChatMessageAttachment } from '@components/BaseChat/types/BaseChat.types'
 
 export interface UseChatInputStateOptions {
 	props: {
 		members?: ChatMember[]
 		commands?: ChatCommand[]
+		/** Сообщение, которое правят: поле заполняется его текстом, Enter отправляет `edit`, Escape отменяет */
+		editingMessage?: ChatMessage | null
 	}
 	emit: {
 		(event: 'send', payload: { text: string; attachments?: ChatMessageAttachment[] }): void
 		(event: 'attach', files: FileList): void
+		(event: 'edit', payload: { text: string }): void
+		(event: 'cancel-edit'): void
 	}
 }
 
@@ -62,4 +66,12 @@ export interface ChatSuggestionKeysSource {
 export interface UseChatAttachmentsOptions {
 	emit: UseChatInputStateOptions['emit']
 	text: Ref<string>
+}
+
+/** Параметры режима правки: поле ввода, его текст и события */
+export interface UseChatEditFieldOptions {
+	props: UseChatInputStateOptions['props']
+	emit: UseChatInputStateOptions['emit']
+	text: Ref<string>
+	getInputElement: () => ChatInputElement | null
 }

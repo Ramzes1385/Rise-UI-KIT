@@ -33,7 +33,15 @@ function useChatInfoPanel(options: UseChatInfoPanelOptions) {
 		options.onInfoClick()
 	}
 
+	/** Закрыть панель и вернуть вкладку «Инфо» без выбранного участника (смена чата) */
+	function closeInfo(): void {
+		isInfoOpen.value = false
+		activeTab.value = 'info'
+		selectedMemberId.value = null
+	}
+
 	return {
+		closeInfo,
 		isInfoOpen,
 		activeTab,
 		selectedMemberId,

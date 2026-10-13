@@ -1,7 +1,10 @@
 import { ref } from 'vue'
 import { useChatActions } from '../useChatActions'
+import { downloadFile } from '@utils/media/fileUtils'
 import type { MessageListExposed, UseChatActionsOptions } from '../types/useChatActions.types'
 import type { ChatMessage, ChatMessageAttachment } from '@components/BaseChat/types/BaseChat.types'
+
+vi.mock('@utils/media/fileUtils', () => ({ downloadFile: vi.fn() }))
 
 function setup(overrides: Partial<UseChatActionsOptions> = {}) {
 	const emit = vi.fn()
@@ -13,6 +16,9 @@ function setup(overrides: Partial<UseChatActionsOptions> = {}) {
 		messageListRef: ref<MessageListExposed | null>({ scrollToMessage }),
 		handleAvatarClick: vi.fn<(senderId: string) => void>(),
 		handleCancelReply: vi.fn<() => void>(),
+		editingMessage: ref<ChatMessage | null>(null),
+		handleCancelEdit: vi.fn<() => void>(),
+		isAutoDownload: () => true,
 		...overrides,
 	}
 	return { actions: useChatActions(options), emit, options, scrollToMessage }
@@ -79,12 +85,51 @@ describe('useChatActions', () => {
 		expect(emit).toHaveBeenCalledWith('send', { text: 'Ответ', attachments: [file], replyToId: 'm7' })
 	})
 
-	it('скачивание файла отдаёт событие download-file', () => {
+	it('скачивание файла отдаёт событие download-file и скачивает файл', () => {
+		vi.mocked(downloadFile).mockClear()
 		const { actions, emit } = setup()
 
 		actions.handleDownloadFile(file)
 
+		expect(downloadFile).toHaveBeenCalledWith(file.url, file.name)
 		expect(emit).toHaveBeenCalledWith('download-file', file)
+	})
+
+	it('при autoDownload=false отдаёт только событие download-file без скачивания', () => {
+		vi.mocked(downloadFile).mockClear()
+		const { actions, emit } = setup({ isAutoDownload: () => false })
+
+		actions.handleDownloadFile(file)
+
+		expect(downloadFile).not.toHaveBeenCalled()
+		expect(emit).toHaveBeenCalledWith('download-file', file)
+	})
+
+	it('правка отдаёт edit с id редактируемого сообщения и закрывает режим правки', () => {
+		const editingMessage = ref<ChatMessage | null>({ id: 'm3', text: 'Старый', sender: 'me', time: '10:00' })
+		const { actions, emit, options } = setup({ editingMessage })
+
+		actions.handleEdit({ text: 'Новый' })
+
+		expect(emit).toHaveBeenCalledWith('edit', { messageId: 'm3', text: 'Новый' })
+		expect(options.handleCancelEdit).toHaveBeenCalledOnce()
+	})
+
+	it('правка без редактируемого сообщения ничего не отдаёт, но сбрасывает режим', () => {
+		const { actions, emit, options } = setup()
+
+		actions.handleEdit({ text: 'Новый' })
+
+		expect(emit).not.toHaveBeenCalled()
+		expect(options.handleCancelEdit).toHaveBeenCalledOnce()
+	})
+
+	it('добавление участника отдаёт add-member без данных', () => {
+		const { actions, emit } = setup()
+
+		actions.handleAddMember()
+
+		expect(emit).toHaveBeenCalledWith('add-member')
 	})
 
 	it.each([
@@ -94,8 +139,6 @@ describe('useChatActions', () => {
 		['handlePin', 'pin-message', 'm1'],
 		['handleUnpin', 'unpin-message', 'm1'],
 		['handleWriteMessage', 'avatar-click', 'u1'],
-		['handleKickMember', 'kick-member', 'u1'],
-		['handleBanMember', 'ban-member', { memberId: 'u1', reason: 'спам', warningsCount: 2 }],
 		['handleUpdateMemberRole', 'update-member-role', { memberId: 'u1', role: 'admin' }],
 		['handleMentionClick', 'mention-click', '@anna'],
 		['handleCommandClick', 'command-click', '/help'],

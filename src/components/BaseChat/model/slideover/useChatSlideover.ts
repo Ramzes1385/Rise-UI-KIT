@@ -44,7 +44,11 @@ function usePanelFocus(props: ChatSlideoverPanelProps, contentRef: Ref<HTMLEleme
 	)
 }
 
-function useAdminMenu(emit: ChatSlideoverEmits) {
+function focusFirstMenuItem(idPrefix: string, memberId: string): void {
+	nextTick(() => document.getElementById(`${idPrefix}-menu-${memberId}`)?.querySelector<HTMLElement>('[role="menuitem"]')?.focus())
+}
+
+function useAdminMenu(emit: ChatSlideoverEmits, idPrefix: string) {
 	const activeAdminMenuId = ref<string | null>(null)
 	const adminTriggerRefs = new Map<string, { focus: () => void }>()
 	const closeAdminMenu = (): void => {
@@ -59,6 +63,11 @@ function useAdminMenu(emit: ChatSlideoverEmits) {
 		},
 		toggleAdminMenu(memberId: string): void {
 			activeAdminMenuId.value = activeAdminMenuId.value === memberId ? null : memberId
+			if (activeAdminMenuId.value) focusFirstMenuItem(idPrefix, memberId)
+		},
+		openAdminMenu(memberId: string): void {
+			activeAdminMenuId.value = memberId
+			focusFirstMenuItem(idPrefix, memberId)
 		},
 		handleAdminMenuEscape(event: KeyboardEvent, memberId: string): void {
 			if (activeAdminMenuId.value !== memberId) return
@@ -75,7 +84,7 @@ function useAdminMenu(emit: ChatSlideoverEmits) {
 			closeAdminMenu()
 		},
 		handleBan(memberId: string): void {
-			emit('ban-member', { memberId, reason: UI_CHAT_TEXT.VIOLATION, warningsCount: 1 })
+			emit('ban-member', { memberId })
 			closeAdminMenu()
 		},
 	}
@@ -114,7 +123,7 @@ function usePanelMember(props: ChatSlideoverPanelProps) {
 					name: props.title,
 					avatar: props.avatar,
 					role: 'member',
-					status: detectOnlineStatus(props.subtitle),
+					status: props.companionStatus ?? detectOnlineStatus(props.subtitle),
 				}
 			}
 			if (!props.selectedMemberId) return null
@@ -126,7 +135,7 @@ function usePanelMember(props: ChatSlideoverPanelProps) {
 export function useChatSlideover(props: ChatSlideoverPanelProps, emit: ChatSlideoverEmits) {
 	const idPrefix = useId()
 	const contentRef = ref<HTMLElement | null>(null)
-	const admin = useAdminMenu(emit)
+	const admin = useAdminMenu(emit, idPrefix)
 	usePanelFocus(props, contentRef, admin.closeAdminMenu)
 
 	return {
@@ -144,6 +153,9 @@ export function useChatSlideover(props: ChatSlideoverPanelProps, emit: ChatSlide
 		handleBackToInfo(): void {
 			emit('update:selectedMemberId', null)
 			emit('update:activeTab', 'info')
+		},
+		handleAddMember(): void {
+			emit('add-member')
 		},
 		handleWriteMessage(memberId: string): void {
 			emit('write-message', memberId)

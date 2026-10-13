@@ -1,7 +1,7 @@
-import type meta from '../../BaseChat.stories'
 import { within, expect } from 'storybook/test'
+import type meta from '../../../BaseChat.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { GROUP_CHAT, GROUP_MESSAGES, COMMANDS, MARIA } from '../../shared'
+import { GROUP_CHAT, GROUP_MESSAGES, COMMANDS, MARIA } from '../../../shared'
 
 export const MentionsAndCommands: StoryObj<typeof meta> = {
 	parameters: {
@@ -9,7 +9,8 @@ export const MentionsAndCommands: StoryObj<typeof meta> = {
 			description: {
 				story: [
 					'Подсказки: «@» открывает список участников, «/» — список команд (или кнопка «</>» слева). Список связан с полем',
-					'(`aria-activedescendant`), стрелки выбирают пункт, Escape закрывает. Enter подставляет выбранное и сразу отправляет.',
+					'(`aria-activedescendant`), стрелки выбирают пункт, Escape закрывает. Enter подставляет выбранное и сообщение не',
+					'отправляет: отправка — следующим Enter (история Mention Enter).',
 				].join('\n'),
 			},
 		},
@@ -29,6 +30,9 @@ export const MentionsAndCommands: StoryObj<typeof meta> = {
 		const commands = await canvas.findByRole('listbox', { name: 'Команды чата' })
 		await userEvent.keyboard('{ArrowDown}')
 		await expect(within(commands).getByRole('option', { name: /\/status/ })).toHaveAttribute('aria-selected', 'true')
+		await userEvent.keyboard('{Enter}')
+		await expect(field).toHaveValue('/status ')
+		await expect(args.onSend).not.toHaveBeenCalled()
 		await userEvent.keyboard('{Enter}')
 		await expect(args.onSend).toHaveBeenCalledWith(expect.objectContaining({ text: '/status' }))
 	},

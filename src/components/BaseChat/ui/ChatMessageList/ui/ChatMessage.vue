@@ -105,6 +105,7 @@
 						:aria-label="UI_CHAT_TEXT.PINNED_LABEL"
 						:size-scale="sizeScale * CHAT_SCALE.STATUS"
 						class="base-chat-message-list__pin-icon" />
+					<span v-if="message.isEdited" class="base-chat-message-list__edited">{{ UI_CHAT_TEXT.EDITED }}</span>
 					<span class="base-chat-message-list__time">{{ message.time }}</span>
 					<template v-if="message.sender === 'me' && message.status">
 						<BaseLoader

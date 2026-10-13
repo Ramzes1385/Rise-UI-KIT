@@ -2,15 +2,17 @@
 import { getNextSuggestionIndex } from './chatInputText'
 import type { ChatSuggestionKeysSource, SuggestionList } from './types/useChatInputState.types'
 
-/** Обработчик клавиш для открытого списка подсказок; onPick получает текст после подстановки выбранного по Enter */
-function useSuggestionKeys(suggestions: ChatSuggestionKeysSource, onPick: (nextText: string) => void) {
+/**
+ * Обработчик клавиш для открытого списка подсказок. Enter выбирает активный пункт (APG combobox) и сообщение не отправляет:
+ * отправка — следующим Enter, когда список закрыт.
+ */
+function useSuggestionKeys(suggestions: ChatSuggestionKeysSource) {
 	const { showMentions, showCommands, activeSuggestionIndex, filteredMembers, filteredCommands, replaceCurrentWord } = suggestions
 
 	function pickSuggestion(list: SuggestionList): void {
 		const selected = list.items[activeSuggestionIndex.value]
 		if (!selected) return
-		const nextText = replaceCurrentWord(list.prefix, selected.name)
-		if (nextText) onPick(nextText)
+		replaceCurrentWord(list.prefix, selected.name)
 	}
 
 	/** Стрелки, Enter и Escape в списке подсказок; true — клавиша обработана */

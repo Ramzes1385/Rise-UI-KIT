@@ -12,16 +12,18 @@ function previewText(message: ChatMessage): string {
 }
 
 export function useChatPinnedPanel(props: ChatPinnedPanelProps, emit: ChatPinnedPanelEmits) {
+	const displayIndex = computed((): number => Math.max(0, Math.min(props.currentIndex, props.pinnedMessages.length - 1)))
 	const currentMessage = computed((): ChatMessage | null => {
-		return props.pinnedMessages[props.currentIndex] || null
+		return props.pinnedMessages[displayIndex.value] || null
 	})
 	const step = (offset: 1 | -1): void => {
 		const len = props.pinnedMessages.length
 		if (len <= 1) return
-		emit('update:currentIndex', (props.currentIndex + offset + len) % len)
+		emit('update:currentIndex', (displayIndex.value + offset + len) % len)
 	}
 
 	return {
+		displayIndex,
 		currentMessageText: computed((): string => {
 			if (!currentMessage.value) return ''
 			return previewText(currentMessage.value)

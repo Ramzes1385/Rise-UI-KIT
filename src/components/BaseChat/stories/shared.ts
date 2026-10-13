@@ -14,6 +14,10 @@ export function sentAt(hours: number, minutes: number, days = 0): Pick<ChatMessa
 	return { time: timeOf(date), date: `${date.getDate()} ${MONTHS[date.getMonth()]} ${date.getFullYear()}` }
 }
 
+export function sentOn(days: number, hours: number, minutes: number): Pick<ChatMessage, 'time' | 'date' | 'createdAt'> {
+	return { ...sentAt(hours, minutes, days), createdAt: storyDate(days, hours, minutes).toISOString() }
+}
+
 export function storyFile(id: string, name: string, size: string): ChatMessageAttachment {
 	return { id, name, size, type: 'file', url: `data:text/plain;charset=utf-8,${encodeURIComponent(`Файл ${name} из примера BaseChat`)}` }
 }
@@ -246,6 +250,10 @@ function pin(id: string): void {
 function unpin(id: string): void {
 	update(id, () => ({ isPinned: false }))
 }
+
+function edit({ messageId, text }: { messageId: string; text: string }): void {
+	update(messageId, () => ({ text, isEdited: true }))
+}
 `
 
 export function useStoryMessages(args: { messages: ChatMessage[] }) {
@@ -319,7 +327,11 @@ export function useStoryMessages(args: { messages: ChatMessage[] }) {
 		update(id, () => ({ isPinned: false }))
 	}
 
-	return { messages, send, sendVoice, react, remove, pin, unpin }
+	function edit({ messageId, text }: { messageId: string; text: string }): void {
+		update(messageId, () => ({ text, isEdited: true }))
+	}
+
+	return { messages, send, sendVoice, react, remove, pin, unpin, edit }
 }
 
 export function getMessage(canvasElement: HTMLElement, id: string): HTMLElement {

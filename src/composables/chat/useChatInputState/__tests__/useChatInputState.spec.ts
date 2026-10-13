@@ -1,4 +1,4 @@
-import { nextTick } from 'vue'
+import { nextTick, reactive } from 'vue'
 import { useChatInputState } from '../useChatInputState'
 import type { UseChatInputStateOptions } from '../types/useChatInputState.types'
 import type { ChatCommand, ChatMember } from '@components/BaseChat/types/BaseChat.types'
@@ -121,25 +121,50 @@ describe('useChatInputState', () => {
 			expect(context.state.activeSuggestionIndex.value).toBe(0)
 		})
 
-		it('Enter вставляет выбранного участника и отправляет сообщение', async () => {
+		it('Enter на подсказке @ только выбирает участника и не отправляет сообщение', async () => {
+			const context = setup()
+			await type(context, 'Привет @бо')
+
+			const enter = key('Enter')
+			context.state.handleKeyDown(enter)
+			await nextTick()
+
+			expect(enter.defaultPrevented).toBe(true)
+			expect(context.emit).not.toHaveBeenCalled()
+			expect(context.state.text.value).toBe('Привет @Борис ')
+			expect(context.state.showMentions.value).toBe(false)
+		})
+
+		it('следующий Enter при закрытом списке отправляет сообщение с упоминанием', async () => {
 			const context = setup()
 			await type(context, 'Привет @бо')
 			const focus = vi.spyOn(context.input, 'focus')
+			context.state.handleKeyDown(key('Enter'))
+			expect(context.emit).not.toHaveBeenCalled()
+			await type(context, context.state.text.value)
+			expect(context.state.showMentions.value).toBe(false)
 
 			context.state.handleKeyDown(key('Enter'))
-			await nextTick()
 
+			expect(context.emit).toHaveBeenCalledOnce()
 			expect(context.emit).toHaveBeenCalledWith('send', { text: 'Привет @Борис', attachments: undefined })
 			expect(context.state.text.value).toBe('')
 			expect(focus).toHaveBeenCalled()
 		})
 
-		it('Enter в списке команд вставляет команду', async () => {
+		it('Enter в списке команд только вставляет команду, отправка — следующим Enter', async () => {
 			const context = setup()
 			await type(context, '/mu')
 
 			context.state.handleKeyDown(key('Enter'))
 
+			expect(context.emit).not.toHaveBeenCalled()
+			expect(context.state.text.value).toBe('/mute ')
+			expect(context.state.showCommands.value).toBe(false)
+			await type(context, context.state.text.value)
+			expect(context.state.showCommands.value).toBe(false)
+
+			context.state.handleKeyDown(key('Enter'))
 			expect(context.emit).toHaveBeenCalledWith('send', { text: '/mute', attachments: undefined })
 		})
 
@@ -293,6 +318,114 @@ describe('useChatInputState', () => {
 			state.handleSend()
 
 			expect(emit).not.toHaveBeenCalled()
+		})
+	})
+
+	describe('режим правки', () => {
+		const editing = { id: 'm1', text: 'Старый текст', sender: 'me' as const, time: '10:00' }
+
+		async function setupEditing(draft = '') {
+			const props = reactive<UseChatInputStateOptions['props']>({ members, commands, editingMessage: null })
+			const context = setup(props)
+			if (draft) await type(context, draft)
+			return { ...context, props }
+		}
+
+		it('при появлении правки поле заполняется текстом сообщения, а по её окончании возвращается черновик', async () => {
+			const context = await setupEditing('Черновик')
+
+			context.props.editingMessage = editing
+			await nextTick()
+			expect(context.state.text.value).toBe('Старый текст')
+
+			context.props.editingMessage = null
+			await nextTick()
+			expect(context.state.text.value).toBe('Черновик')
+
+			context.props.editingMessage = editing
+			await nextTick()
+			context.props.editingMessage = null
+			await nextTick()
+			expect(context.state.text.value).toBe('Черновик')
+		})
+
+		it('смена одного редактируемого сообщения на другое не затирает черновик', async () => {
+			const context = await setupEditing('Черновик')
+			context.props.editingMessage = editing
+			await nextTick()
+
+			context.props.editingMessage = { ...editing, id: 'm2', text: 'Другое' }
+			await nextTick()
+			expect(context.state.text.value).toBe('Другое')
+
+			context.props.editingMessage = null
+			await nextTick()
+			expect(context.state.text.value).toBe('Черновик')
+		})
+
+		it('Enter отправляет edit с обрезанным текстом, а не send', async () => {
+			const context = await setupEditing()
+			context.props.editingMessage = editing
+			await nextTick()
+			context.state.text.value = '  Новый текст  '
+
+			context.state.handleKeyDown(key('Enter'))
+
+			expect(context.emit).toHaveBeenCalledOnce()
+			expect(context.emit).toHaveBeenCalledWith('edit', { text: 'Новый текст' })
+		})
+
+		it('Enter с неизменённым текстом отменяет правку', async () => {
+			const context = await setupEditing()
+			context.props.editingMessage = editing
+			await nextTick()
+
+			context.state.handleKeyDown(key('Enter'))
+
+			expect(context.emit).toHaveBeenCalledOnce()
+			expect(context.emit).toHaveBeenCalledWith('cancel-edit')
+		})
+
+		it('Enter с пустым текстом ничего не отправляет', async () => {
+			const context = await setupEditing()
+			context.props.editingMessage = editing
+			await nextTick()
+			context.state.text.value = '   '
+
+			context.state.handleKeyDown(key('Enter'))
+
+			expect(context.emit).not.toHaveBeenCalled()
+		})
+
+		it('Escape в режиме правки отменяет её', async () => {
+			const context = await setupEditing()
+			context.props.editingMessage = editing
+			await nextTick()
+
+			const escape = key('Escape')
+			context.state.handleKeyDown(escape)
+
+			expect(escape.defaultPrevented).toBe(true)
+			expect(context.emit).toHaveBeenCalledWith('cancel-edit')
+		})
+
+		it('смена undefined на null не трогает поле', async () => {
+			const props = reactive<UseChatInputStateOptions['props']>({ members, commands })
+			const context = setup(props)
+			await type(context, 'Черновик')
+
+			props.editingMessage = null
+			await nextTick()
+
+			expect(context.state.text.value).toBe('Черновик')
+		})
+
+		it('Escape вне режима правки ничего не отменяет', async () => {
+			const context = await setupEditing()
+
+			context.state.handleKeyDown(key('Escape'))
+
+			expect(context.emit).not.toHaveBeenCalled()
 		})
 	})
 

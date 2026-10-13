@@ -33,54 +33,57 @@ describe('useChatState unit', () => {
 	})
 
 	describe('закрепленные сообщения', () => {
-		it('возвращает null, когда закрепов нет', () => {
+		it('без закрепов список пуст', () => {
 			const { state } = setup([message('1'), message('2')])
-			expect(state.currentPinnedMessage.value).toBeNull()
 			expect(state.pinnedMessages.value).toHaveLength(0)
+			expect(state.currentPinnedIndex.value).toBe(0)
 		})
 
 		it('показывает последнее закреплённое сообщение', () => {
 			const { state } = setup([message('1', { isPinned: true }), message('2', { isPinned: true })])
-			expect(state.pinnedMessages.value).toHaveLength(2)
+			expect(state.pinnedMessages.value.map(item => item.id)).toEqual(['1', '2'])
 			expect(state.currentPinnedIndex.value).toBe(1)
-			expect(state.currentPinnedMessage.value?.id).toBe('2')
 		})
 
-		it('возвращает null, когда индекс указывает мимо массива закрепов', () => {
-			const { state } = setup([message('1', { isPinned: true })])
-			state.currentPinnedIndex.value = -1
-			expect(state.currentPinnedMessage.value).toBeNull()
+		it('проп pinnedMessages имеет приоритет над isPinned в сообщениях', () => {
+			const external = [message('9', { isPinned: true }), message('8')]
+			const messages = [message('1', { isPinned: true })]
+			const emit = vi.fn() as unknown as Emit
+			const scope = effectScope()
+			const state = scope.run(() => useChatState({ messages, pinnedMessages: external }, emit)) as ReturnType<typeof useChatState>
+			expect(state.pinnedMessages.value.map(item => item.id)).toEqual(['9', '8'])
+			expect(state.currentPinnedIndex.value).toBe(1)
+			scope.stop()
 		})
 
-		it('корректирует индекс, если он вышел за границы', async () => {
-			const { state } = setup([message('1', { isPinned: true }), message('2', { isPinned: true })])
-			state.currentPinnedIndex.value = 5
+		it('пустой проп pinnedMessages не падает обратно на isPinned', () => {
+			const emit = vi.fn() as unknown as Emit
+			const scope = effectScope()
+			const state = scope.run(() =>
+				useChatState({ messages: [message('1', { isPinned: true })], pinnedMessages: [] }, emit),
+			) as ReturnType<typeof useChatState>
+			expect(state.pinnedMessages.value).toEqual([])
+			expect(state.currentPinnedIndex.value).toBe(0)
+			scope.stop()
+		})
+
+		it('индекс не выходит за список, когда закрепов становится меньше (не «3 из 2»)', async () => {
+			const props = reactive({
+				messages: [message('1', { isPinned: true }), message('2', { isPinned: true }), message('3', { isPinned: true })],
+			})
+			const scope = effectScope()
+			const state = scope.run(() => useChatState(props, vi.fn() as unknown as Emit)) as ReturnType<typeof useChatState>
+			expect(state.currentPinnedIndex.value).toBe(2)
+
+			props.messages = props.messages.map(item => (item.id === '3' ? { ...item, isPinned: false } : item))
 			await nextTick()
-			expect(state.currentPinnedMessage.value?.id).toBe('2')
 			expect(state.currentPinnedIndex.value).toBe(1)
-		})
 
-		it('перелистывает закрепы вперёд по кругу', () => {
-			const { state } = setup([message('1', { isPinned: true }), message('2', { isPinned: true })])
-			state.handleNextPinned()
+			props.messages = props.messages.map(item => ({ ...item, isPinned: false }))
+			await nextTick()
+			expect(state.pinnedMessages.value).toHaveLength(0)
 			expect(state.currentPinnedIndex.value).toBe(0)
-			state.handleNextPinned()
-			expect(state.currentPinnedIndex.value).toBe(1)
-		})
-
-		it('перелистывает закрепы назад по кругу', () => {
-			const { state } = setup([message('1', { isPinned: true }), message('2', { isPinned: true })])
-			state.handlePrevPinned()
-			expect(state.currentPinnedIndex.value).toBe(0)
-			state.handlePrevPinned()
-			expect(state.currentPinnedIndex.value).toBe(1)
-		})
-
-		it('не перелистывает, когда закреп один', () => {
-			const { state } = setup([message('1', { isPinned: true })])
-			state.handleNextPinned()
-			state.handlePrevPinned()
-			expect(state.currentPinnedIndex.value).toBe(0)
+			scope.stop()
 		})
 
 		it('новый закреп сразу становится показанным, откреп не сдвигает показанный', async () => {
@@ -89,17 +92,15 @@ describe('useChatState unit', () => {
 			})
 			const scope = effectScope()
 			const state = scope.run(() => useChatState(props, vi.fn() as unknown as Emit)) as ReturnType<typeof useChatState>
-			expect(state.currentPinnedMessage.value?.id).toBe('3')
+			expect(state.currentPinnedIndex.value).toBe(1)
 
 			props.messages = props.messages.map(item => (item.id === '2' ? { ...item, isPinned: true } : item))
 			await nextTick()
-			expect(state.currentPinnedIndex.value).toBe(1)
-			expect(state.currentPinnedMessage.value?.id).toBe('2')
+			expect(state.pinnedMessages.value[state.currentPinnedIndex.value]?.id).toBe('2')
 
 			props.messages = props.messages.map(item => (item.id === '3' ? { ...item, isPinned: false } : item))
 			await nextTick()
-			expect(state.currentPinnedIndex.value).toBe(1)
-			expect(state.currentPinnedMessage.value?.id).toBe('2')
+			expect(state.pinnedMessages.value[state.currentPinnedIndex.value]?.id).toBe('2')
 			scope.stop()
 		})
 	})
@@ -219,6 +220,27 @@ describe('useChatState unit', () => {
 			expect(state.currentPinnedIndex.value).toBe(1)
 		})
 
+		it('единственный закреп при клике остаётся показанным', () => {
+			const { state } = setup([message('1', { isPinned: true })])
+			state.handleScrollToPinned('1')
+			expect(state.currentPinnedIndex.value).toBe(0)
+		})
+
+		it('открепление сдвигает показанный закреп в границы списка', async () => {
+			const props = reactive({ messages: [message('1', { isPinned: true }), message('2', { isPinned: true })] })
+			const scope = effectScope()
+			const state = scope.run(() => useChatState(props, vi.fn() as unknown as Emit)) as ReturnType<typeof useChatState>
+			state.handleScrollToPinned('2')
+			expect(state.currentPinnedIndex.value).toBe(0)
+
+			props.messages = props.messages.map(item => (item.id === '1' ? { ...item, isPinned: false } : item))
+			await nextTick()
+
+			expect(state.pinnedMessages.value.map(item => item.id)).toEqual(['2'])
+			expect(state.currentPinnedIndex.value).toBe(0)
+			scope.stop()
+		})
+
 		it('делегирует скролл к сообщению во внешний callback', () => {
 			const scrollToMessage = vi.fn()
 			const { state } = setup([message('1')], { scrollToMessage })
@@ -230,6 +252,96 @@ describe('useChatState unit', () => {
 		it('не падает без внешнего callback скролла', () => {
 			const { state } = setup([message('1')])
 			expect(() => state.handleScrollToPinned('1')).not.toThrow()
+		})
+	})
+
+	describe('правка сообщения', () => {
+		it('начинает правку своего сообщения и отменяет её', () => {
+			const own = message('1', { sender: 'me' })
+			const { state } = setup([own])
+
+			state.handleMessageEdit(own)
+			expect(state.editingMessage.value?.id).toBe('1')
+
+			state.handleCancelEdit()
+			expect(state.editingMessage.value).toBeNull()
+		})
+
+		it('чужое сообщение править нельзя', () => {
+			const { state } = setup([message('1')])
+
+			state.handleMessageEdit(message('1'))
+
+			expect(state.editingMessage.value).toBeNull()
+		})
+	})
+
+	describe('поиск и событие search', () => {
+		it('эмитит search при смене запроса и при сбросе', async () => {
+			const { state, emit } = setup([message('1')])
+
+			state.searchQuery.value = 'мир'
+			await nextTick()
+			expect(emit).toHaveBeenLastCalledWith('search', 'мир')
+
+			state.searchQuery.value = ''
+			await nextTick()
+			expect(emit).toHaveBeenLastCalledWith('search', '')
+			expect(emit).toHaveBeenCalledTimes(2)
+		})
+
+		it('не эмитит search, пока запрос не менялся', async () => {
+			const { emit } = setup([message('1')])
+			await nextTick()
+			expect(emit).not.toHaveBeenCalledWith('search', expect.anything())
+		})
+	})
+
+	describe('смена чата (chatId)', () => {
+		it('сбрасывает ответ, правку, выделение, поиск, панель информации и индекс закрепа', async () => {
+			const own = message('1', { sender: 'me', isPinned: true })
+			const props = reactive({
+				chatId: 'a',
+				messages: [own, message('2', { isPinned: true }), message('3', { isPinned: true })],
+			})
+			const emit = vi.fn() as unknown as Emit
+			const scope = effectScope()
+			const state = scope.run(() => useChatState(props, emit)) as ReturnType<typeof useChatState>
+			state.handleMessageReply(own)
+			state.handleMessageEdit(own)
+			state.handleMessageSelect('2')
+			state.isSearching.value = true
+			state.searchQuery.value = 'текст'
+			state.handleAvatarClick('u1')
+			expect(state.currentPinnedIndex.value).toBe(2)
+
+			props.chatId = 'b'
+			await nextTick()
+
+			expect(state.replyingTo.value).toBeNull()
+			expect(state.editingMessage.value).toBeNull()
+			expect(state.selectedMessageIds.value).toEqual([])
+			expect(state.isSearching.value).toBe(false)
+			expect(state.searchQuery.value).toBe('')
+			expect(state.isInfoOpen.value).toBe(false)
+			expect(state.activeTab.value).toBe('info')
+			expect(state.selectedMemberId.value).toBeNull()
+			expect(state.currentPinnedIndex.value).toBe(0)
+			scope.stop()
+		})
+
+		it('без смены chatId состояние остаётся', async () => {
+			const own = message('1', { sender: 'me' })
+			const props = reactive({ chatId: 'a', messages: [own] })
+			const scope = effectScope()
+			const state = scope.run(() => useChatState(props, vi.fn() as unknown as Emit)) as ReturnType<typeof useChatState>
+			state.handleMessageReply(own)
+
+			props.messages = [own, message('2')]
+			await nextTick()
+
+			expect(state.replyingTo.value?.id).toBe('1')
+			scope.stop()
 		})
 	})
 })

@@ -11,6 +11,8 @@ export interface UseChatMessageActionsOptions {
 		(event: 'download-file', file: ChatMessageAttachment): void
 		(event: 'file-click', file: ChatMessageAttachment): void
 		(event: 'pin-message', messageId: string): void
+		(event: 'unpin-message', messageId: string): void
+		(event: 'message-edit', message: ChatMessage): void
 		(event: 'delete-message', messageId: string): void
 		(event: 'mention-click', mention: string): void
 		(event: 'command-click', command: string): void

@@ -6,6 +6,8 @@ export interface ChatInputProps {
 	sizeScale?: number
 	/** Сообщение, на которое пишется ответ */
 	replyingTo?: ChatMessage | null
+	/** Сообщение, которое правят: поле заполняется его текстом, над полем — панель «Изменение сообщения» */
+	editingMessage?: ChatMessage | null
 	/** Панель быстрых ответов */
 	quickReplies?: string[]
 	/** Список участников для упоминаний */
@@ -24,6 +26,8 @@ export interface ChatInputEmits {
 	(event: 'send', payload: { text: string; attachments?: ChatMessageAttachment[] }): void
 	(event: 'attach', files: FileList): void
 	(event: 'send-voice', recording: VoiceRecording): void
+	(event: 'edit', payload: { text: string }): void
+	(event: 'cancel-edit'): void
 	(event: 'cancel-reply'): void
 	(event: 'quick-reply', text: string): void
 }

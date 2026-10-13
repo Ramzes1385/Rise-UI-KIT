@@ -3,10 +3,10 @@ import { downloadFile } from '@utils/media/fileUtils'
 import type { UseChatActionsOptions } from './types/useChatActions.types'
 import type { ChatMessageAttachment } from '@components/BaseChat/types/BaseChat.types'
 
-/** Скачивает вложение и сообщает о нём событием `download-file`; ошибку — событием `error` */
-function downloadAttachment(emit: UseChatActionsOptions['emit'], file: ChatMessageAttachment): void {
+/** Скачивает вложение (если `isAutoDownload`) и сообщает о нём событием `download-file`; ошибку — событием `error` */
+function downloadAttachment(emit: UseChatActionsOptions['emit'], file: ChatMessageAttachment, isAutoDownload: boolean): void {
 	try {
-		downloadFile(file.url, file.name)
+		if (isAutoDownload) downloadFile(file.url, file.name)
 		emit('download-file', file)
 	} catch (e) {
 		/* istanbul ignore next — defensive: создание DOM-элемента не бросает в стандартной среде */
@@ -17,6 +17,7 @@ function downloadAttachment(emit: UseChatActionsOptions['emit'], file: ChatMessa
 /** Описание: предоставляет обработчики действий чата — отправка, ответ, вложение, реакции, пин/удаление, аватар и команды */
 function useChatActions(options: UseChatActionsOptions) {
 	const { emit, replyingTo, getAvatar, messageListRef, handleAvatarClick, handleCancelReply, openInfo } = options
+	const { editingMessage, handleCancelEdit, isAutoDownload } = options
 
 	/** Аватар в шапке — это чат или собеседник целиком: открывает «Информацию», а не профиль участника */
 	function handleHeaderAvatarClick(): void {
@@ -40,19 +41,25 @@ function useChatActions(options: UseChatActionsOptions) {
 		handleCancelReply()
 	}
 
+	function handleEdit(payload: { text: string }): void {
+		const message = editingMessage.value
+		if (message) emit('edit', { messageId: message.id, text: payload.text })
+		handleCancelEdit()
+	}
+
 	return {
+		handleEdit,
 		handleHeaderAvatarClick,
 		handleReplyClick,
 		handleSend,
 		handleAttach: (files: FileList) => emit('attach', files),
 		handleMessageReaction: (payload: { messageId: string; emoji: string }) => emit('message-reaction', payload),
 		handleQuickReply: (text: string) => emit('quick-reply', text),
-		handleDownloadFile: (file: ChatMessageAttachment) => downloadAttachment(emit, file),
+		handleDownloadFile: (file: ChatMessageAttachment) => downloadAttachment(emit, file, isAutoDownload()),
 		handlePin: (messageId: string) => emit('pin-message', messageId),
 		handleUnpin: (messageId: string) => emit('unpin-message', messageId),
 		handleWriteMessage: (memberId: string) => emit('avatar-click', memberId),
-		handleKickMember: (memberId: string) => emit('kick-member', memberId),
-		handleBanMember: (payload: { memberId: string; reason?: string; warningsCount?: number }) => emit('ban-member', payload),
+		handleAddMember: () => emit('add-member'),
 		handleUpdateMemberRole: (payload: { memberId: string; role: string }) => emit('update-member-role', payload),
 		handleMentionClick: (mention: string) => emit('mention-click', mention),
 		handleCommandClick: (command: string) => emit('command-click', command),

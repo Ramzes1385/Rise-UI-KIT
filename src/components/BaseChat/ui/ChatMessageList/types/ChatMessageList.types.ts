@@ -25,6 +25,16 @@ export interface ChatMessageListProps extends BaseComponentProps<string, 'root'>
 	members?: ChatMember[]
 	/** Сколько значков видно рядом с именем отправителя */
 	maxBadges?: number
+	/** Последнее прочитанное сообщение: перед первым чужим после него — разделитель «Непрочитанные» */
+	lastReadMessageId?: string
+	/** Текущий день для «Сегодня» и «Вчера» в разделителях дат */
+	today?: string | number | Date
+	/** Первая загрузка: вместо сообщений — скелетон */
+	isLoading?: boolean
+	/** Есть ли более старые сообщения для подгрузки */
+	hasMoreMessages?: boolean
+	/** Идёт подгрузка старых сообщений */
+	isLoadingMore?: boolean
 	/** Классы строки сообщения (часть `message` пропа `ui` у BaseChat) */
 	messageClass?: string
 	/** Классы пузыря сообщения (часть `bubble` пропа `ui` у BaseChat) */
@@ -36,6 +46,10 @@ export interface ChatMessageListEmits {
 	(event: 'message-select', messageId: string): void
 	(event: 'reply-click', replyToId: string): void
 	(event: 'message-reply', message: ChatMessage): void
+	/** «Изменить» в меню своего сообщения */
+	(event: 'message-edit', message: ChatMessage): void
+	/** Прокрутка дошла до начала ленты: нужны более старые сообщения */
+	(event: 'load-more'): void
 	(event: 'message-reaction', payload: { messageId: string; emoji: string }): void
 	(event: 'download-file', file: ChatMessageAttachment): void
 	(event: 'file-click', file: ChatMessageAttachment): void
