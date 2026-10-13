@@ -8,7 +8,7 @@ import BaseCookieConsent from '../../../ui/BaseCookieConsent.vue'
 const motion = motionPresetsStory({
 	item: `
 		<div class="story-frame" style="height: 360px; background: var(--rise-bg-muted)">
-			<BaseCookieConsent v-bind="args" v-model:is-open="isOpen" />
+			<BaseCookieConsent v-bind="args" v-model:is-open="isOpen" label="Cookies %preset%" />
 		</div>
 	`,
 	state: { isOpen: true },
@@ -17,7 +17,7 @@ const motion = motionPresetsStory({
 	components: { BaseCookieConsent, BaseButton },
 	imports: ['BaseCookieConsent'],
 	slots: ['default', 'isOpen'],
-	omit: ['default', 'isOpen'],
+	omit: ['default', 'isOpen', 'label'],
 })
 
 export const Animations: StoryObj<typeof meta> = {

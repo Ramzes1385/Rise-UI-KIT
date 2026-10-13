@@ -3679,7 +3679,7 @@ import { BaseButton, BaseResult } from '@ramzes1385/rise-ui-kit'
 </template>
 ```
 
-- Пропы: `categories` (`id`, `label`, `description`, `isRequired`), `modelValue` (`v-model`, `id` выбранных; обязательные всегда в выборе), `isOpen`, `isSettingsOpen`, `title`, `description`, `storageKey`, `position` (`bottom`, `bottom-left`, `bottom-right`), `isContained`, `variant` (`default`, `outline`, `soft`), `sizeScale`, `color`, `ui`.
+- Пропы: `categories` (`id`, `label`, `description`, `isRequired`), `modelValue` (`v-model`, `id` выбранных; обязательные всегда в выборе), `isOpen`, `isSettingsOpen`, `title`, `description`, `storageKey`, `label` (`aria-label` области вместо заголовка — для страниц с несколькими окнами), `position` (`bottom`, `bottom-left`, `bottom-right`), `isContained`, `variant` (`default`, `outline`, `soft`), `sizeScale`, `color`, `ui`.
 - Кнопки: «Настроить» (раскрывает переключатели BaseSwitch), «Только выбранные», «Отклонить все» (только обязательные категории; того же вида, что «Принять все»: отказ не сложнее согласия), «Принять все». События: `update:modelValue`, `update:isOpen`, `update:isSettingsOpen`, `change` (выбор изменён) и `accept` (решение принято, `id` разрешённых категорий).
 - `storageKey` запоминает решение (`rise-cookie-consent:<ключ>`): после монтирования выбор восстанавливается через `update:modelValue` и `change`, окно скрывается, `accept` не приходит (это только действие пользователя). Пока хранилище не прочитано (до монтирования, SSR), окно не выводится вовсе: сохранённое решение не мигает.
 

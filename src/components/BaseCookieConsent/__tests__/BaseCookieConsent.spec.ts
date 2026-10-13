@@ -44,6 +44,12 @@ describe('BaseCookieConsent unit', () => {
 			expect(screen.getByRole('heading', { level: 2, name: UI_COOKIE_CONSENT.TITLE })).toBeInTheDocument()
 		})
 
+		it('label заменяет имя области (aria-label вместо aria-labelledby)', () => {
+			render(BaseCookieConsent, { props: { label: 'Cookies сайта' } })
+			const region = screen.getByRole('region', { name: 'Cookies сайта' })
+			expect(region).not.toHaveAttribute('aria-labelledby')
+		})
+
 		it('title и description заменяют тексты по умолчанию', () => {
 			render(BaseCookieConsent, { props: { title: 'Куки', description: 'Свой текст' } })
 			const dialog = screen.getByRole('region', { name: 'Куки' })

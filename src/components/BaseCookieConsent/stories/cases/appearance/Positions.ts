@@ -12,7 +12,7 @@ const template = `
 		<div v-for="position in positions" :key="position">
 			<span class="story-label">{{ position }}</span>
 			<div class="story-frame" style="height: 280px; background: var(--rise-bg-muted)">
-				<BaseCookieConsent v-bind="args" :position="position" />
+				<BaseCookieConsent v-bind="args" :position="position" :label="'Cookies ' + position" />
 			</div>
 		</div>
 	</div>

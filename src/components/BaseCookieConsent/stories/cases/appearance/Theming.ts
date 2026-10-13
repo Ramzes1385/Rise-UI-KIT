@@ -9,13 +9,13 @@ const ui = { root: 'story-themed-consent', title: 'story-themed-title' }
 const template = `
 	<div class="story-stack">
 		<div class="story-frame" style="height: 240px; background: var(--rise-bg-muted)">
-			<BaseCookieConsent v-bind="args" />
+			<BaseCookieConsent v-bind="args" label="Cookies 1" />
 		</div>
 		<div class="story-frame" style="height: 240px; background: var(--rise-bg-muted); --rise-cookie-consent-bg: var(--rise-primary-soft); --rise-cookie-consent-text: var(--rise-primary-text); --rise-cookie-consent-title-text: var(--rise-primary-text); --rise-cookie-consent-radius: var(--rise-radius-2xl); --rise-cookie-consent-padding-y: 24px; --rise-cookie-consent-title-font-size: var(--rise-font-size-lg);">
-			<BaseCookieConsent v-bind="args" />
+			<BaseCookieConsent v-bind="args" label="Cookies 2" />
 		</div>
 		<div class="story-frame" style="height: 240px; background: var(--rise-bg-muted)">
-			<BaseCookieConsent v-bind="args" :ui="ui" />
+			<BaseCookieConsent v-bind="args" :ui="ui" label="Cookies 3" />
 		</div>
 	</div>
 `

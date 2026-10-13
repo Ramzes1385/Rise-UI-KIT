@@ -8,6 +8,7 @@ export const argTypes = {
 	categories: { control: 'object', table: propGroup(ARG_GROUP.content) },
 	modelValue: { control: 'object', table: propGroup(ARG_GROUP.state) },
 	title: { control: 'text', table: propGroup(ARG_GROUP.content) },
+	label: { control: 'text', table: propGroup(ARG_GROUP.a11y) },
 	description: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	default: slotArgType('Описание (заменяет description): например, со ссылкой на политику конфиденциальности'),
 	isOpen: { control: 'boolean', table: propGroup(ARG_GROUP.state) },

@@ -4,7 +4,8 @@
 			v-if="isVisible"
 			ref="rootRef"
 			role="region"
-			:aria-labelledby="titleId"
+			:aria-label="label"
+			:aria-labelledby="label ? undefined : titleId"
 			:aria-describedby="descriptionId"
 			:class="[
 				ui('root'),

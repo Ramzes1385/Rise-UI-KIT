@@ -10,7 +10,7 @@ const template = `
 		<div v-for="variant in COOKIE_CONSENT_VARIANTS" :key="variant">
 			<span class="story-label">{{ variant }}</span>
 			<div class="story-frame" style="height: 240px; background: var(--rise-bg-muted)">
-				<BaseCookieConsent v-bind="args" :variant="variant" />
+				<BaseCookieConsent v-bind="args" :variant="variant" :label="'Cookies ' + variant" />
 			</div>
 		</div>
 	</div>

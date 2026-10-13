@@ -11,7 +11,7 @@ const template = `
 		<div v-for="preset in presets" :key="preset.name">
 			<span class="story-label">{{ preset.label }}</span>
 			<div class="story-frame" style="height: 260px; background: var(--rise-bg-muted)">
-				<BaseCookieConsent v-bind="args" :size-scale="preset.sizeScale" />
+				<BaseCookieConsent v-bind="args" :size-scale="preset.sizeScale" :label="'Cookies ' + preset.name" />
 			</div>
 		</div>
 	</div>

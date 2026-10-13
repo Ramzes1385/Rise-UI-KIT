@@ -80,6 +80,8 @@ export interface BaseCookieConsentProps extends BaseComponentProps<
 	isSettingsOpen?: boolean
 	/** Заголовок (по умолчанию — из словаря) */
 	title?: string
+	/** Доступное имя области (`aria-label`) вместо заголовка. Нужно, если на странице несколько окон: у области в одной роли имена должны различаться */
+	label?: string
 	/** Описание (по умолчанию — из словаря; заменяется слотом default) */
 	description?: string
 	/**
