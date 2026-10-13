@@ -81,6 +81,10 @@ export interface UiKitLocale {
 	cookieConsent: Section<'cookieConsent'>
 	dashboardGrid: Section<'dashboardGrid'>
 	gantt: Section<'gantt'>
+
+	fileManager: Section<'fileManager'>
+	formWizard: Section<'formWizard'>
+	datePicker: Section<'datePicker'>
 	warnings: Section<'warnings'>
 	plural: { readonly [P in keyof Base['plural']]: PluralForms }
 }

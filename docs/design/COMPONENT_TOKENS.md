@@ -598,6 +598,7 @@
 | `--rise-date-picker-panel-radius` | panel | radius | — | `var(--rise-radius-md)` |
 | `--rise-date-picker-panel-shadow` | panel | shadow | — | `var(--rise-shadow-lg)` |
 | `--rise-date-picker-panel-text` | panel | text | — | `var(--rise-text)` |
+| `--rise-date-picker-presets-border` | presets | border | — | `var(--rise-border)` |
 | `--rise-date-picker-title-font-weight` | title | font-weight | — | `var(--rise-font-weight-semibold)` |
 | `--rise-date-picker-title-text` | title | text | — | `var(--rise-text-highlighted)` |
 
@@ -747,6 +748,20 @@
 | `--rise-fab-shadow` | корень | shadow | — | `var(--rise-shadow-lg)` |
 | `--rise-fab-text` | корень | text | — | `var(--rise-on-primary)` |
 
+## BaseFileManager
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-file-manager-bg` | корень | bg | — | `var(--rise-bg)` |
+| `--rise-file-manager-border` | корень | border | — | `var(--rise-border)` |
+| `--rise-file-manager-entry-bg-hover` | entry | bg | hover | `var(--rise-bg-elevated)` |
+| `--rise-file-manager-entry-bg-selected` | entry | bg | selected | `var(--rise-primary-soft)` |
+| `--rise-file-manager-entry-radius` | entry | radius | — | `var(--rise-radius-md)` |
+| `--rise-file-manager-entry-text-selected` | entry | text | selected | `var(--rise-primary-text)` |
+| `--rise-file-manager-radius` | корень | radius | — | `var(--rise-radius-lg)` |
+| `--rise-file-manager-sidebar-width` | sidebar | width | — | `220px` |
+| `--rise-file-manager-tile-min-width` | tile-min | width | — | `120px` |
+
 ## BaseFileUpload
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
@@ -847,6 +862,20 @@
 | `--rise-gantt-row-border` | row | border | — | `var(--rise-border-muted)` |
 | `--rise-gantt-text` | корень | text | — | `var(--rise-text)` |
 | `--rise-gantt-today-bg` | today | bg | — | `var(--rise-error)` |
+
+## BaseFormWizard
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-form-wizard-bg` | корень | bg | — | `transparent` |
+| `--rise-form-wizard-border` | корень | border | — | `var(--rise-border)` |
+| `--rise-form-wizard-gap` | корень | gap | — | `20px` |
+| `--rise-form-wizard-padding-x` | корень | padding-x | — | `24px` |
+| `--rise-form-wizard-padding-y` | корень | padding-y | — | `20px` |
+| `--rise-form-wizard-radius` | корень | radius | — | `var(--rise-radius-lg)` |
+| `--rise-form-wizard-text` | корень | text | — | `var(--rise-text-muted)` |
+| `--rise-form-wizard-title-font-size` | title | font-size | — | `var(--rise-font-size-lg)` |
+| `--rise-form-wizard-title-text` | title | text | — | `var(--rise-text-highlighted)` |
 
 ## BaseHeader
 

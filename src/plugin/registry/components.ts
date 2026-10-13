@@ -100,6 +100,7 @@ import { BaseSeparator } from '../../components/BaseSeparator'
 import { BaseSlideover } from '../../components/BaseSlideover'
 import { BaseSparkline } from '../../components/BaseSparkline'
 import { BaseWatermark } from '../../components/BaseWatermark'
+import { BaseFormWizard } from '../../components/BaseFormWizard'
 import { BaseJsonViewer } from '../../components/BaseJsonViewer'
 import { BaseMoneyInput } from '../../components/BaseMoneyInput'
 import { BasePagination } from '../../components/BasePagination'
@@ -117,6 +118,8 @@ import { BaseContextMenu } from '../../components/BaseContextMenu'
 import { BaseDadataInput } from '../../components/BaseDadataInput'
 import { BaseEmojiPicker } from '../../components/BaseEmojiPicker'
 import { BaseGrid, BaseGridItem } from '../../components/BaseGrid'
+
+import { BaseFileManager } from '../../components/BaseFileManager'
 import { BaseInputNumber } from '../../components/BaseInputNumber'
 import { BasePromptInput } from '../../components/BasePromptInput'
 import { BaseSplitButton } from '../../components/BaseSplitButton'
@@ -197,6 +200,7 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseEmpty,
 	BaseEventCalendar,
 	BaseFab,
+	BaseFileManager,
 	BaseFilterBuilder,
 	BaseFooter,
 	BaseForm,
@@ -204,6 +208,8 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseGantt,
 	BaseGrid,
 	BaseGridItem,
+
+	BaseFormWizard,
 	BaseHeader,
 	BaseHeatmap,
 	BaseHoverCard,

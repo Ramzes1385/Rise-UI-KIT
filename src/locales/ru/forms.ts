@@ -1,4 +1,4 @@
-/** Формы: фильтр таблицы, календарь, выбор цвета, конструктор фильтров */
+/** Формы: фильтр таблицы, календарь, диапазоны BaseDatePicker, выбор цвета, конструктор фильтров */
 export const ruForms = {
 	filter: {
 		COLUMN: 'Колонка',
@@ -14,6 +14,23 @@ export const ruForms = {
 		HOURS: 'Часы',
 		MINUTES: 'Минуты',
 		SECONDS: 'Секунды',
+	},
+	datePicker: {
+		/** Доступное имя группы готовых периодов в панели */
+		PRESETS: 'Готовые периоды',
+		PRESET_TODAY: 'Сегодня',
+		PRESET_YESTERDAY: 'Вчера',
+		PRESET_LAST_7_DAYS: '7 дней',
+		PRESET_LAST_30_DAYS: '30 дней',
+		PRESET_THIS_MONTH: 'Этот месяц',
+		PRESET_LAST_MONTH: 'Прошлый месяц',
+		/** Ошибки ручного ввода периода; `{example}` — пример в формате языка, `{days}` — число дней (`plural.DAYS`) */
+		ERROR_FORMAT: 'Не удалось разобрать период. Пример: {example}',
+		ERROR_UNAVAILABLE: 'Эти даты недоступны для выбора',
+		ERROR_MIN_DAYS: 'Период короче допустимого: минимум {days}',
+		ERROR_MAX_DAYS: 'Период длиннее допустимого: максимум {days}',
+		/** Предупреждение: свой период без `range` и `getRange` или с повторным `id` пропускается; `{id}` — его `id` */
+		PRESET_INVALID: 'BaseDatePicker: период «{id}» пропущен — нужен уникальный id, label и range или getRange',
 	},
 	colorPicker: {
 		SELECTED_COLOR: 'Выбранный цвет',

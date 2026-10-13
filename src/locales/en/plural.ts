@@ -1,5 +1,6 @@
 export const enPlural = {
 	DATES_SELECTED: { one: '{n} date selected', other: '{n} dates selected' },
+	DAYS: { one: '{n} day', other: '{n} days' },
 	PARTICIPANTS: { one: '{n} member', other: '{n} members' },
 	CARDS: { one: '{n} card', other: '{n} cards' },
 	COMMENTS: { one: '{n} comment', other: '{n} comments' },
@@ -14,4 +15,6 @@ export const enPlural = {
 	GANTT_DAYS: { one: '{n} day', other: '{n} days' },
 	CRYPTOPRO_EXPIRES: { one: 'expires in {n} day', other: 'expires in {n} days' },
 	SEARCH_RESULTS: { one: '{n} result found', other: '{n} results found' },
+	FILE_MANAGER_ITEMS: { one: '{n} item', other: '{n} items' },
+	FILE_MANAGER_SELECTED: { one: '{n} selected', other: '{n} selected' },
 }

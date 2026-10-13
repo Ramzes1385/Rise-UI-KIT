@@ -1,4 +1,4 @@
-/** Формы: фильтр таблицы, календарь, выбор цвета, конструктор фильтров */
+/** Формы: фильтр таблицы, календарь, диапазоны BaseDatePicker, выбор цвета, конструктор фильтров */
 export const enForms = {
 	filter: {
 		COLUMN: 'Column',
@@ -12,6 +12,20 @@ export const enForms = {
 		HOURS: 'Hours',
 		MINUTES: 'Minutes',
 		SECONDS: 'Seconds',
+	},
+	datePicker: {
+		PRESETS: 'Preset periods',
+		PRESET_TODAY: 'Today',
+		PRESET_YESTERDAY: 'Yesterday',
+		PRESET_LAST_7_DAYS: '7 days',
+		PRESET_LAST_30_DAYS: '30 days',
+		PRESET_THIS_MONTH: 'This month',
+		PRESET_LAST_MONTH: 'Last month',
+		ERROR_FORMAT: 'Could not read the period. Example: {example}',
+		ERROR_UNAVAILABLE: 'These dates are not available',
+		ERROR_MIN_DAYS: 'The period is too short: at least {days}',
+		ERROR_MAX_DAYS: 'The period is too long: at most {days}',
+		PRESET_INVALID: 'BaseDatePicker: period "{id}" skipped - it needs a unique id, label and range or getRange',
 	},
 	colorPicker: {
 		SELECTED_COLOR: 'Selected color',

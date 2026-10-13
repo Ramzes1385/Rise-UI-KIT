@@ -11,8 +11,11 @@ import { ruMapEditor } from './components/mapEditor'
 import { ruImageMap3d } from './components/imageMap3d'
 import { ruTranscript } from './components/transcript'
 import { ruPresentation } from './components/presentation'
+import { ruFormWizard } from './components/form/formWizard'
 import { ruEventCalendar } from './components/eventCalendar'
 import { ruDashboardGrid } from './components/layout/dashboardGrid'
+
+import { ruFileManager } from './components/data/fileManager'
 /** Русский словарь кита (язык по умолчанию); ключи совпадают с `UI_TEXT`, `UI_ARIA` и др.; `{name}` — место для значения (formatMessage), `plural` — формы чисел (Intl.PluralRules). */
 export const ru = {
 	code: 'ru',
@@ -34,5 +37,8 @@ export const ru = {
 	...ruNotices,
 	...ruDashboardGrid,
 	...ruGantt,
+
+	...ruFileManager,
+	...ruFormWizard,
 	plural: ruPlural,
 }

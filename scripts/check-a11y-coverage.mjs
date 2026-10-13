@@ -137,6 +137,9 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseHoverCard',
 	'BaseDashboardGrid',
 	'BaseGantt',
+
+	'BaseFileManager',
+	'BaseFormWizard',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */
@@ -202,6 +205,9 @@ const INTERACTIVE_WITH_DISABLED = new Set([
 	'BaseHoverCard',
 	'BaseDashboardGrid',
 	'BaseGantt',
+
+	'BaseFileManager',
+	'BaseFormWizard',
 ])
 
 /** Формовые компоненты, требующие story Error */
@@ -236,6 +242,7 @@ const FORM_COMPONENTS = new Set([
 	'BaseTreeSelect',
 	'BaseCascader',
 	'BaseImageMapEditor',
+	'BaseFormWizard',
 ])
 
 const LOADING_COMPONENTS = new Set([
@@ -253,6 +260,9 @@ const LOADING_COMPONENTS = new Set([
 	'BaseCascader',
 	'BaseCryptoProSign',
 	'BaseGantt',
+
+	'BaseFileManager',
+	'BaseFormWizard',
 ])
 
 const EMPTY_COMPONENTS = new Set([
@@ -287,6 +297,9 @@ const EMPTY_COMPONENTS = new Set([
 	'BaseCryptoProSign',
 	'BaseDashboardGrid',
 	'BaseGantt',
+
+	'BaseFileManager',
+	'BaseFormWizard',
 ])
 
 const LONG_CONTENT_COMPONENTS = new Set([
@@ -334,6 +347,9 @@ const LONG_CONTENT_COMPONENTS = new Set([
 	'BaseCode',
 	'BaseDashboardGrid',
 	'BaseGantt',
+
+	'BaseFileManager',
+	'BaseFormWizard',
 ])
 
 const REQUIRED_STORIES_INTERACTIVE = ['Default', 'Disabled']

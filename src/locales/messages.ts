@@ -160,5 +160,14 @@ export const UI_DASHBOARD_GRID = localized('dashboardGrid')
 /** Диаграмма Ганта BaseGantt */
 export const UI_GANTT = localized('gantt')
 
+/** Файловый менеджер BaseFileManager */
+export const UI_FILE_MANAGER = localized('fileManager')
+
+/** Многошаговая форма BaseFormWizard */
+export const UI_FORM_WIZARD = localized('formWizard')
+
+/** Диапазоны BaseDatePicker: готовые периоды, ошибки ввода */
+export const UI_DATE_PICKER = localized('datePicker')
+
 /** Предупреждения в консоли */
 export const UI_WARNINGS = localized('warnings')

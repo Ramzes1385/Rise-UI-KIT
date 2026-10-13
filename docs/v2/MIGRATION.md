@@ -2449,3 +2449,12 @@ API кита не меняется. В Storybook добавлены пример
 - Новый раздел словаря `gantt` (`UI_GANTT`) и форма числа `plural.GANTT_DAYS`: приложение с собственным языком через `defineLocale()` добавляет переводы. Словарь лежит в `src/locales/<язык>/components/data/gantt.ts`.
 - Токены `--rise-gantt-*` (список — `docs/design/COMPONENT_TOKENS.md`).
 - Диаграмма не хранит даты сама: `update:task` и `task-change` приходят по окончании жеста, подставьте задачу в свой массив `tasks`.
+
+## components-2a: BaseFormWizard
+
+Новый компонент, изменений в существующих нет. API — в `docs/reference/COMPONENTS.md`, раздел «components-2a: BaseFormWizard».
+
+- **BaseFormWizard** (`Form`): многошаговая форма на `BaseStepper`, `BaseForm` и `BaseButton`; регистрируется плагином и экспортируется из кита.
+- Новый раздел словаря `formWizard` (`UI_FORM_WIZARD`): приложение с собственным языком через `defineLocale()` добавляет переводы кнопок «Назад», «Далее», «Готово», «Пропустить», объявления «Шаг N из M» и пустого состояния.
+- Токены `--rise-form-wizard-*` (список — `docs/design/COMPONENT_TOKENS.md`).
+- Шаги задаются массивом `steps`, текущий — `v-model:step` (`id` шага, не номер, в отличие от `modelValue` у `BaseStepper`). Поля шага — слот `#step-<id>`; проверка шага — `schema` (Standard Schema) и `validate` у шага.

@@ -12,8 +12,11 @@ import { enImageMap3d } from './components/imageMap3d'
 import { enTranscript } from './components/transcript'
 import type { UiKitLocale } from '../types/locales.types'
 import { enPresentation } from './components/presentation'
+import { enFormWizard } from './components/form/formWizard'
 import { enEventCalendar } from './components/eventCalendar'
 import { enDashboardGrid } from './components/layout/dashboardGrid'
+
+import { enFileManager } from './components/data/fileManager'
 
 /** Английский словарь кита. Ключи и места для значений — как в русском (`ru/`) */
 export const en: UiKitLocale = {
@@ -34,5 +37,8 @@ export const en: UiKitLocale = {
 	...enNotices,
 	...enDashboardGrid,
 	...enGantt,
+
+	...enFileManager,
+	...enFormWizard,
 	plural: enPlural,
 }

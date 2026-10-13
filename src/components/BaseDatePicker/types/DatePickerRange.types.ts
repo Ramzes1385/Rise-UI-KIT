@@ -109,7 +109,7 @@ export interface DatePickerRangeResolved {
 }
 
 /** Действия над значением дейтпикера, которыми пользуется ввод и выбор периода */
-export interface DatePickerRangeActions {
+interface DatePickerRangeActions {
 	handleClear: () => void
 	handleModelUpdate: (value: Date | null) => void
 	handleModelEndUpdate: (value: Date | null) => void

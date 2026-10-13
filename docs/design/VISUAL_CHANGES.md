@@ -1763,3 +1763,9 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 Новый компонент, существующие истории не меняются. Эталонов снимков у новых историй нет — их создаёт владелец (спецификация `BaseGantt.visual.spec.ts` лежит рядом).
 
 - **BaseGantt** (`data-basegantt--default`, `--scales`, `--dependencies`, `--milestones`, `--editable`, `--variants`, `--sizes`, `--disabled`, `--loading`, `--empty`, `--long-content`): слева список задач с деревом, справа шкала времени с полосами (радиус `--rise-gantt-bar-radius`, высота 22px), заливка прогресса внутри полосы, веха — ромб, зависимости — стрелки поверх сетки, линия «сегодня» цвета `--rise-error`; рамка и скругление корня — `--rise-gantt-border`, `--rise-gantt-radius`. Загрузка — скелетон на месте строк, пустое состояние — `BaseEmpty`.
+
+## components-2a: BaseFormWizard
+
+Новый компонент, существующие истории не меняются. Эталонов снимков у новых историй нет — их создаёт владелец (спецификация `BaseFormWizard.visual.spec.ts` лежит рядом).
+
+- **BaseFormWizard** (`form-baseformwizard--default`, `--variants`, `--sizes`, `--disabled`, `--loading`, `--empty`, `--long-content`): степпер сверху, под ним заголовок шага с описанием, поля шага и ряд кнопок справа («Назад» прижата влево); варианты `outline` и `soft` — рамка и мягкий фон вокруг мастера. В `disabled` весь мастер полупрозрачный; в `loading` кнопка «Готово» с индикатором, форма заблокирована и затемнена слоем загрузки; в `empty` — пустое состояние вместо степпера и кнопок; в `long-content` степпер прокручивается по горизонтали, тексты переносятся.

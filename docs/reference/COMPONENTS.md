@@ -3443,6 +3443,7 @@ BaseFilterBuilder
 BaseFooter
 BaseForm
 BaseFormField
+BaseFormWizard
 BaseHeader
 BaseHeatmap
 BaseIcon
@@ -3797,3 +3798,47 @@ function onUpdate(task: GanttTask) {
 - Мышь: перетаскивание полосы сдвигает даты, края меняют длительность (pointer events, `setPointerCapture`). Вехи только сдвигаются. Даты привязаны к столбцам шкалы.
 - Производительность: строки за пределами `height` не отрисовываются (виртуализация по окну прокрутки с запасом 4 строки); полосы и стрелки рассчитываются по датам.
 - Движение — `transform` полос за `--rise-duration`, при «уменьшить движение» сразу. Токены `--rise-gantt-*`, словарь — раздел `gantt`.
+
+## components-2a: BaseFormWizard
+
+Многошаговая форма (раздел Storybook `Form`): степпер сверху, содержимое шага, кнопки «Назад», «Пропустить», «Далее» / «Готово». Собран из `BaseStepper`, `BaseForm`, `BaseButton` и `BaseEmpty`; поля внутри шага — обычные `BaseFormField` и контролы кита.
+
+```vue
+<template>
+	<BaseFormWizard v-model:step="step" :steps="steps" :state="state" @finish="save" :is-loading="isSaving">
+		<template #step-account>
+			<BaseFormField label="Почта" name="email" is-required>
+				<BaseInput v-model="state.email" type="email" />
+			</BaseFormField>
+		</template>
+		<template #step-profile>
+			<BaseFormField label="Имя" name="name"><BaseInput v-model="state.name" /></BaseFormField>
+		</template>
+		<template #step-confirm>
+			<p>Почта: {{ state.email }}</p>
+		</template>
+	</BaseFormWizard>
+</template>
+
+<script setup lang="ts">
+const step = ref('account')
+const state = reactive({ email: '', name: '' })
+const steps = [
+	{ id: 'account', title: 'Аккаунт', schema: emailSchema },
+	{ id: 'profile', title: 'Профиль', isOptional: true },
+	{ id: 'confirm', title: 'Подтверждение', validate: async () => (await isFree(state.email)) || 'Почта занята' },
+]
+</script>
+```
+
+- Шаг (`FormWizardStep`): `id` (уникален; имя слота `#step-<id>`), `title`, `description`, `isOptional`, `schema` (Standard Schema — проверяет `state`), `validate` (функция, может быть асинхронной: `true` или ничего — пройден, `false` — не пройден, строка — не пройден с сообщением под полями).
+- Пропы: `steps`, `step` (`v-model:step`, `id` текущего шага; без него открыт первый), `state` (данные, которые проверяют `schema` шагов и получает `finish`), `isLinear` (по умолчанию `true`), `isLoading`, `isDisabled`, `titleTag` (`h2`…`h6`, по умолчанию `h2`), `variant` (`default`, `outline`, `soft`), `sizeScale`, `color`, `ui` (`header`, `content`, `title`, `description`, `error`, `actions`, `back`, `skip`, `next`), `customClass`.
+- Слоты: `#step-<id>` — поля шага; `default` — для шагов без своего слота. Оба получают `{ step, index, stepNumber, isFirst, isLast }`.
+- События: `update:step`; `step-change` (`{ to, from }`); `next` (`id` шага, который прошёл проверку и закрывается); `back` (`id` закрываемого шага); `skip` (`id` пропущенного); `invalid` (`id` шага, не прошедшего проверку); `finish` (`state`).
+- Expose: `next()` (то же, что «Далее» / «Готово»), `back()`, `goTo(id)`, `validate()`; все возвращают `boolean` (или `Promise<boolean>`).
+- Проверка перед «Далее»: сначала `schema` шага (ошибки показывают `BaseFormField` с тем же `name`, фокус на первом поле с ошибкой), затем `validate`. Не пройден — мастер остаётся на шаге, шаг в степпере помечен ошибкой, приходит `invalid`. Пока проверка идёт, «Далее» показывает загрузку. Enter в поле шага отправляет форму шага — то же, что «Далее».
+- `isLinear` (включён): вперёд — только на следующий шаг и после проверки, степпер не даёт перескочить; назад — всегда и без проверки. Выключен: шаги в степпере выбираются свободно без проверки, «Готово» проверяет все шаги по порядку и возвращает на первый непройденный.
+- Необязательный шаг (`isOptional`): в степпере подпись «Необязательно», рядом с «Далее» кнопка «Пропустить» (без проверки, событие `skip`); на последнем шаге её нет.
+- Завершение: на последнем шаге «Готово» после проверки сообщает `finish(state)`. На время сохранения приложение включает `isLoading`: «Готово» в загрузке (`aria-busy`), «Назад», степпер и поля заблокированы, повторной отправки нет.
+- Доступность: после смены шага фокус на заголовке шага (`tabindex="-1"`), live-регион `role="status"` объявляет «Шаг N из M: название» (текст появляется после первой смены шага); область шага — `role="group"` с именем из заголовка и описанием; ряд кнопок — группа «Навигация по шагам».
+- Токены `--rise-form-wizard-*`, словарь — раздел `formWizard` (`UI_FORM_WIZARD`).
