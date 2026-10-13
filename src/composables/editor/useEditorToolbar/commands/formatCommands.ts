@@ -119,11 +119,10 @@ function handleKeyDown(ctx: UseToolbarCommandsOptions, event: KeyboardEvent): vo
 		applyFormat(ctx, hotkeyCommand)
 		return
 	}
-	if (event.key !== 'Enter' || event.shiftKey) return
-	const node = getCaretNode()
-	if (isInsideList(node, ctx.editorRef.value!, 'UL') || isInsideList(node, ctx.editorRef.value!, 'OL')) return
+	// Enter без Shift — абзац или пункт списка по умолчанию браузера (разделитель абзацев задаёт defaultParagraphSeparator)
+	if (event.key !== 'Enter' || !event.shiftKey || event.ctrlKey || event.metaKey || event.altKey) return
 	event.preventDefault()
-	document.execCommand('insertHTML', false, '<br>')
+	document.execCommand('insertLineBreak', false)
 	nextTick(ctx.updateActiveStates)
 	ctx.onInput()
 }

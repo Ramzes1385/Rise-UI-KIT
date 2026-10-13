@@ -10,13 +10,17 @@ function useEditorToolbar(options: UseEditorToolbarOptions) {
 
 	const selection = useToolbarSelection({ editorRef })
 	const codeMode = useToolbarCodeMode({ editorRef, codeTextareaRef, onInput, sanitize: options.sanitize })
-	const mediaMenu = useToolbarMediaMenu({ onInput, isReadonly: options.isReadonly })
+	const mediaMenu = useToolbarMediaMenu({ editorRef, onInput, isReadonly: options.isReadonly })
+	const saveSelection = (): void => {
+		selection.saveSelection()
+		mediaMenu.refreshMediaSelection()
+	}
 	const commands = useToolbarCommands({
 		editorRef,
 		onInput,
 		activeStates: selection.activeStates,
 		updateActiveStates: selection.updateActiveStates,
-		saveSelection: selection.saveSelection,
+		saveSelection,
 		restoreSelection: selection.restoreSelection,
 		ensureSelection: selection.ensureSelection,
 		isCodeMode: codeMode.isCodeMode,
@@ -29,6 +33,7 @@ function useEditorToolbar(options: UseEditorToolbarOptions) {
 
 	return {
 		...selection,
+		saveSelection,
 		...codeMode,
 		...mediaMenu,
 		...commands,

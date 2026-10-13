@@ -1,6 +1,7 @@
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { UI_EDITOR } from '@/locales/messages'
 import { useUi } from '@composables/base/useUi'
+import { useToolbarRoving } from './useToolbarRoving'
 import { calcIconScale } from '@utils/media/iconUtils'
 import { EDITOR_MENU_SCALE_RATIO } from './editorScale'
 import type { BaseEditorToolbarProps, ToolbarButton } from '../types/BaseEditorToolbar.types'
@@ -65,18 +66,28 @@ function blockGroups(): { key: string; items: ToolbarButton[] }[] {
 			key: 'block',
 			items: [
 				{ icon: 'quote', label: UI_EDITOR.QUOTE, activeKey: 'isBlockquote', action: 'blockquote', type: 'block' },
-				{ icon: 'code', label: UI_EDITOR.CODE_BLOCK, activeKey: 'isPre', action: 'pre', type: 'block' },
+				{ icon: 'code-block', label: UI_EDITOR.CODE_BLOCK, activeKey: 'isPre', action: 'pre', type: 'block' },
 			] as ToolbarButton[],
 		},
 	]
 }
 
 export function useBaseEditorToolbar(props: BaseEditorToolbarProps) {
+	const textColorModel = ref(props.textColor)
+	watch(
+		() => props.textColor,
+		color => {
+			if (!props.isTextColorActive) textColorModel.value = color
+		},
+	)
 	return {
+		...useToolbarRoving(),
 		ui: useUi(props, 'base-editor'),
 		headingValue: ref<string | number>('p'),
-		textColorModel: ref(props.textColor),
+		textColorModel,
 		backgroundColorModel: ref(props.backgroundColor),
+		imageInputRef: ref<HTMLInputElement | null>(null),
+		videoInputRef: ref<HTMLInputElement | null>(null),
 		iconScale: computed(() => calcIconScale('sm', props.sizeScale)),
 		controlScale: computed(() => props.sizeScale * EDITOR_MENU_SCALE_RATIO),
 		colorPickerClasses: computed(() => ({ swatch: props.classes.colorPicker })),

@@ -13,6 +13,7 @@ const UI = {
 	content: 'u-content',
 	code: 'u-code',
 	'context-menu': 'u-menu',
+	frame: 'u-frame',
 }
 
 describe('BaseEditor: проп ui', () => {
@@ -31,7 +32,7 @@ describe('BaseEditor: проп ui', () => {
 			'class',
 			'base-editor__content base-editor__content--empty',
 		)
-		expect(container.querySelector('label.base-editor__btn')).toHaveAttribute('class', 'base-editor__btn base-editor__btn--file')
+		expect(container.querySelector('.base-editor__frame')).toHaveAttribute('class', 'base-editor__frame')
 	})
 
 	it('классы частей добавляются к классам кита, модификаторы и customClass сохраняются', async () => {
@@ -49,7 +50,8 @@ describe('BaseEditor: проп ui', () => {
 		expect(container.querySelector('.base-editor__toolbar')).toHaveClass('u-toolbar', 'own-toolbar')
 		expect(container.querySelector('.base-editor__group')).toHaveClass('u-group')
 		expect(screen.getByRole('button', { name: 'Жирный' })).toHaveClass('base-editor__btn', 'u-btn', 'own-btn')
-		expect(container.querySelector('label.base-editor__btn')).toHaveClass('base-editor__btn--file', 'u-btn', 'own-btn')
+		expect(screen.getByRole('button', { name: 'Изображение' })).toHaveClass('base-editor__btn', 'u-btn', 'own-btn')
+		expect(container.querySelector('.base-editor__frame')).toHaveClass('u-frame')
 		expect(container.querySelector('.base-editor__content')).toHaveClass('u-content', 'own-content')
 
 		await fireEvent.contextMenu(container.querySelector('.base-editor__content img') as HTMLImageElement)

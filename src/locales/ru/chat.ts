@@ -144,6 +144,7 @@ export const ruChat = {
 		CODE_LABEL: 'HTML-код',
 		/** Доступное имя меню размера медиа */
 		MEDIA_MENU_LABEL: 'Размер медиа',
+		MEDIA_SETTINGS: 'Размер и удаление медиа',
 	},
 	/** Markdown: блок кода и задачи в списке */
 	markdown: {

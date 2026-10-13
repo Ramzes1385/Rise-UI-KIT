@@ -34,3 +34,6 @@ export const SanitizedContent = cases.SanitizedContent
 export const Keyboard = cases.Keyboard
 export const Theming = cases.Theming
 export const Animations = cases.Animations
+export const EditorAsyncModel = cases.EditorAsyncModel
+export const EditorToolbarKeyboard = cases.EditorToolbarKeyboard
+export const EditorValidation = cases.EditorValidation

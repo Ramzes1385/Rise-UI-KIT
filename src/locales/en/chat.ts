@@ -140,6 +140,7 @@ export const enChat = {
 		TOOLBAR_LABEL: 'Formatting',
 		CODE_LABEL: 'HTML code',
 		MEDIA_MENU_LABEL: 'Media size',
+		MEDIA_SETTINGS: 'Media size and removal',
 	},
 	markdown: {
 		COPY_CODE: 'Copy',

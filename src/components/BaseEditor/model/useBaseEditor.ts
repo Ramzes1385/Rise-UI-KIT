@@ -2,16 +2,53 @@ import type { ComputedRef, Ref } from 'vue'
 import { UI_EDITOR } from '@/locales/messages'
 import { useUi } from '@composables/base/useUi'
 import { EDITOR_MENU_SCALE_RATIO } from './editorScale'
+import { consumeEcho, rememberEmitted } from './editorDraft'
 import type { BaseSelectOption } from '@components/BaseSelect'
 import { escapeHtml, sanitizeHtml } from '@utils/dom/htmlUtils'
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useEditorState } from '@composables/editor/useEditorState'
+import { computed, nextTick, onMounted, ref, useId, watch } from 'vue'
 import { useEditorToolbar } from '@composables/editor/useEditorToolbar'
 import type { BaseEditorEmits, EditorProps } from '../types/BaseEditor.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
-import { isolateFormField, useFormDisabled } from '@composables/form/useFormContext'
+import { isolateFormField, useFieldControl, useFormDisabled } from '@composables/form/useFormContext'
 
-const EDITOR_ELEMENTS = ['root', 'toolbar', 'btn', 'group', 'colorPicker', 'headingSelect', 'fileInput', 'content', 'code']
+const EDITOR_ELEMENTS = [
+	'root',
+	'toolbar',
+	'btn',
+	'group',
+	'colorPicker',
+	'headingSelect',
+	'fileInput',
+	'content',
+	'code',
+	'label',
+	'errorText',
+]
+const MENU_KEY = 'ContextMenu'
+
+function isMediaMenuKey(event: KeyboardEvent): boolean {
+	return event.key === MENU_KEY || (event.key === 'F10' && event.shiftKey)
+}
+
+function useEditorField(props: EditorProps) {
+	const ownId = useId()
+	const labelId = `${ownId}-label`
+	const errorId = `${ownId}-error`
+	const control = useFieldControl({
+		describedBy: () => (props.error ? errorId : undefined),
+		hasError: () => Boolean(props.error),
+		isLabelable: false,
+		hasOwnLabel: () => Boolean(props.label),
+	})
+	return {
+		labelId,
+		errorId,
+		control,
+		contentId: control.id,
+		labelledBy: computed(() => (props.label ? labelId : control.fieldLabelId.value)),
+	}
+}
 
 function headingOptions(): BaseSelectOption[] {
 	return [
@@ -34,9 +71,8 @@ function getRangeFromPoint(x: number, y: number): Range | null {
 function useEditorEngine(
 	emit: BaseEditorEmits,
 	refs: { editorRef: Ref<HTMLDivElement | null>; codeTextareaRef: Ref<{ textareaRef: HTMLTextAreaElement | null } | null> },
-	options: { isLocked: ComputedRef<boolean>; sanitize: (html: string) => string },
+	options: { isLocked: ComputedRef<boolean>; sanitize: (html: string) => string; pending: string[] },
 ) {
-	let handleInput: () => void = () => {}
 	const toolbar = useEditorToolbar({
 		...refs,
 		onInput: () => handleInput(),
@@ -51,18 +87,22 @@ function useEditorEngine(
 		resetColor: toolbar.resetColor,
 		resetBackgroundColor: toolbar.resetBackgroundColor,
 	})
-	handleInput = () => {
+	const emitValue = (value: string): void => {
+		rememberEmitted(options.pending, value)
+		emit('update:modelValue', value)
+	}
+	function handleInput(): void {
 		if (toolbar.isCodeMode.value) {
-			emit('update:modelValue', options.sanitize(toolbar.codeContent.value))
+			emitValue(options.sanitize(toolbar.codeContent.value))
 			return
 		}
 		if (!refs.editorRef.value) return
 		toolbar.convertInlineHtml()
-		emit('update:modelValue', options.sanitize(refs.editorRef.value.innerHTML))
+		emitValue(options.sanitize(refs.editorRef.value.innerHTML))
 		toolbar.updateActiveStates()
 		state.checkEmpty()
 	}
-	return { toolbar, state, handleInput: (): void => handleInput() }
+	return { toolbar, state, handleInput }
 }
 
 function useSafeInsert(isLocked: ComputedRef<boolean>, sanitize: (html: string) => string) {
@@ -93,7 +133,7 @@ function useSafeInsert(isLocked: ComputedRef<boolean>, sanitize: (html: string) 
 	}
 }
 
-function useMediaMenu(editorRef: Ref<HTMLDivElement | null>, toolbar: ReturnType<typeof useEditorToolbar>): void {
+function useMediaMenu(editorRef: Ref<HTMLDivElement | null>, toolbar: ReturnType<typeof useEditorToolbar>) {
 	const { contextMenu, contextMenuRef } = toolbar
 	watch(
 		() => contextMenu.isVisible,
@@ -105,12 +145,27 @@ function useMediaMenu(editorRef: Ref<HTMLDivElement | null>, toolbar: ReturnType
 			if (contextMenuRef.value?.contains(document.activeElement)) editorRef.value?.focus()
 		},
 	)
+	return {
+		handleKeyDown(event: KeyboardEvent): void {
+			if (!isMediaMenuKey(event) || !toolbar.selectedMedia.value) {
+				toolbar.handleKeyDown(event)
+				return
+			}
+			event.preventDefault()
+			toolbar.openSelectedMediaMenu()
+		},
+	}
 }
 
 function useContentSync(
 	props: EditorProps,
 	editorRef: Ref<HTMLDivElement | null>,
-	ctx: { isLocked: ComputedRef<boolean>; sanitize: (html: string) => string; engine: ReturnType<typeof useEditorEngine> },
+	ctx: {
+		isLocked: ComputedRef<boolean>
+		sanitize: (html: string) => string
+		engine: ReturnType<typeof useEditorEngine>
+		pending: string[]
+	},
 ): void {
 	const { toolbar, state } = ctx.engine
 	watch(
@@ -124,7 +179,7 @@ function useContentSync(
 	watch(
 		() => props.modelValue,
 		(newVal: string) => {
-			if (!editorRef.value || editorRef.value.innerHTML === newVal) return
+			if (consumeEcho(ctx.pending, newVal) || !editorRef.value || editorRef.value.innerHTML === newVal) return
 			editorRef.value.innerHTML = ctx.sanitize(newVal)
 			state.checkEmpty()
 		},
@@ -132,27 +187,34 @@ function useContentSync(
 	onMounted(() => {
 		if (editorRef.value && props.modelValue) editorRef.value.innerHTML = ctx.sanitize(props.modelValue)
 		state.checkEmpty()
+		state.refreshTextColor()
 		if (props.isAutofocus) editorRef.value?.focus()
 	})
 }
 
 export function useBaseEditor(props: EditorProps, emit: BaseEditorEmits) {
-	const isLocked = useFormDisabled(() => props.isReadonly)
+	const isDisabled = useFormDisabled(() => props.isDisabled)
+	const isLocked = computed(() => props.isReadonly || isDisabled.value)
+	const field = useEditorField(props)
 	isolateFormField()
 	const standard = useStandardBaseComponent('base-editor', props, EDITOR_ELEMENTS)
 	const editorRef = ref<HTMLDivElement | null>(null)
 	const codeTextareaRef = ref<{ textareaRef: HTMLTextAreaElement | null } | null>(null)
 	const sanitize = (html: string): string => (props.sanitize ?? sanitizeHtml)(html)
-	const engine = useEditorEngine(emit, { editorRef, codeTextareaRef }, { isLocked, sanitize })
+	const pending: string[] = []
+	const engine = useEditorEngine(emit, { editorRef, codeTextareaRef }, { isLocked, sanitize, pending })
 	const insert = useSafeInsert(isLocked, sanitize)
-	useMediaMenu(editorRef, engine.toolbar)
+	const mediaMenu = useMediaMenu(editorRef, engine.toolbar)
 	const mediaMenuAnchor = computed(() => ({ x: engine.toolbar.contextMenu.x, y: engine.toolbar.contextMenu.y }))
-	useContentSync(props, editorRef, { isLocked, sanitize, engine })
+	useContentSync(props, editorRef, { isLocked, sanitize, engine, pending })
 
 	return {
 		...standard,
+		...field,
 		ui: useUi(props, 'base-editor'),
 		isLocked,
+		isDisabled,
+		focusContent: (): void => editorRef.value?.focus(),
 		editorRef,
 		codeTextareaRef,
 		menuControlScale: computed(() => props.sizeScale * EDITOR_MENU_SCALE_RATIO),
@@ -161,8 +223,11 @@ export function useBaseEditor(props: EditorProps, emit: BaseEditorEmits) {
 		mediaMenuAnchor,
 		...engine.state,
 		handleInput: engine.handleInput,
+		handleKeyDown: mediaMenu.handleKeyDown,
 		...insert,
 		handleFocus(): void {
+			if (typeof document.execCommand === 'function') document.execCommand('defaultParagraphSeparator', false, 'p')
+			engine.state.refreshTextColor()
 			engine.state.isFocused.value = true
 			emit('focus')
 		},

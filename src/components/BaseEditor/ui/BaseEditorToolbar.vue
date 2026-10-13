@@ -1,10 +1,13 @@
 <template>
 	<div
 		v-if="hasToolbar && !isReadonly"
+		ref="toolbarRef"
 		:class="[ui('toolbar'), classes.toolbar]"
 		role="toolbar"
 		:aria-label="UI_EDITOR.TOOLBAR_LABEL"
-		@mousedown.prevent>
+		@mousedown.prevent
+		@focusin="handleFocusIn"
+		@keydown="handleKeyDown">
 		<slot name="toolbar">
 			<div v-for="group in buttonGroups" :key="group.key" :class="[ui('group'), classes.group]">
 				<BaseTooltip v-for="btn in group.items" :key="btn.icon" :text="btn.label" position="top" :size-scale="sizeScale">
@@ -87,28 +90,54 @@
 					</BaseButton>
 				</BaseTooltip>
 				<BaseTooltip :text="UI_EDITOR.IMAGE" position="top" :size-scale="sizeScale">
-					<label :class="[ui('btn'), 'base-editor__btn--file', classes.btn]" @mousedown.stop>
+					<BaseButton
+						variant="ghost"
+						:class="[ui('btn'), classes.btn]"
+						:size-scale="sizeScale"
+						:aria-label="UI_EDITOR.IMAGE"
+						@click="imageInputRef?.click()">
 						<BaseIcon name="image" :size-scale="iconScale" />
-						<input
-							type="file"
-							accept="image/*"
-							class="base-editor__file-input"
-							:class="classes.fileInput"
-							:aria-label="UI_EDITOR.IMAGE"
-							@change="(e: Event) => emit('handleImageUpload', e)" />
-					</label>
+					</BaseButton>
 				</BaseTooltip>
+				<input
+					ref="imageInputRef"
+					type="file"
+					accept="image/*"
+					tabindex="-1"
+					aria-hidden="true"
+					class="base-editor__file-input"
+					:class="classes.fileInput"
+					@change="(e: Event) => emit('handleImageUpload', e)" />
 				<BaseTooltip :text="UI_EDITOR.VIDEO" position="top" :size-scale="sizeScale">
-					<label :class="[ui('btn'), 'base-editor__btn--file', classes.btn]" @mousedown.stop>
+					<BaseButton
+						variant="ghost"
+						:class="[ui('btn'), classes.btn]"
+						:size-scale="sizeScale"
+						:aria-label="UI_EDITOR.VIDEO"
+						@click="videoInputRef?.click()">
 						<BaseIcon name="video" :size-scale="iconScale" />
-						<input
-							type="file"
-							accept="video/*"
-							class="base-editor__file-input"
-							:class="classes.fileInput"
-							:aria-label="UI_EDITOR.VIDEO"
-							@change="(e: Event) => emit('handleVideoUpload', e)" />
-					</label>
+					</BaseButton>
+				</BaseTooltip>
+				<input
+					ref="videoInputRef"
+					type="file"
+					accept="video/*"
+					tabindex="-1"
+					aria-hidden="true"
+					class="base-editor__file-input"
+					:class="classes.fileInput"
+					@change="(e: Event) => emit('handleVideoUpload', e)" />
+				<BaseTooltip :text="UI_EDITOR.MEDIA_SETTINGS" position="top" :size-scale="sizeScale">
+					<BaseButton
+						variant="ghost"
+						:class="[ui('btn'), classes.btn]"
+						:size-scale="sizeScale"
+						is-focusable-when-disabled
+						:is-disabled="!isMediaSelected"
+						:aria-label="UI_EDITOR.MEDIA_SETTINGS"
+						@click="emit('openMediaMenu')">
+						<BaseIcon name="settings" :size-scale="iconScale" />
+					</BaseButton>
 				</BaseTooltip>
 			</div>
 
@@ -165,6 +194,19 @@ const emit = defineEmits<BaseEditorToolbarEmits>()
 
 defineSlots<BaseEditorToolbarSlots>()
 
-const { ui, headingValue, textColorModel, backgroundColorModel, iconScale, controlScale, colorPickerClasses, buttonGroups } =
-	useBaseEditorToolbar(props)
+const {
+	ui,
+	toolbarRef,
+	handleFocusIn,
+	handleKeyDown,
+	headingValue,
+	textColorModel,
+	backgroundColorModel,
+	imageInputRef,
+	videoInputRef,
+	iconScale,
+	controlScale,
+	colorPickerClasses,
+	buttonGroups,
+} = useBaseEditorToolbar(props)
 </script>

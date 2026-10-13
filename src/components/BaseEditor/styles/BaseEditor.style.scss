@@ -29,14 +29,30 @@
 
 	display: flex;
 	flex-direction: column;
+	gap: sz(6px);
 	min-width: 0;
-	overflow: hidden;
-	border: 1px solid ct(editor, border, var(--rise-border-accented));
-	border-radius: sz(ct(editor, radius, var(--rise-control-radius)));
-	background-color: ct(editor, bg, var(--rise-bg));
-	box-shadow: ct(editor, shadow, none);
-	color: ct(editor, text, var(--rise-text));
-	@include transition-colors;
+
+	&__label {
+		@include field-label;
+		cursor: default;
+	}
+
+	&__error-text {
+		@include field-error;
+	}
+
+	&__frame {
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+		overflow: hidden;
+		border: 1px solid ct(editor, border, var(--rise-border-accented));
+		border-radius: sz(ct(editor, radius, var(--rise-control-radius)));
+		background-color: ct(editor, bg, var(--rise-bg));
+		box-shadow: ct(editor, shadow, none);
+		color: ct(editor, text, var(--rise-text));
+		@include transition-colors;
+	}
 
 	&__toolbar {
 		@include reset-custom-color;
@@ -56,7 +72,7 @@
 		align-items: center;
 		gap: sz(2px);
 
-		& + &::before {
+		&:not(:last-of-type)::after {
 			content: '';
 			flex: none;
 			width: 1px;
@@ -83,15 +99,6 @@
 
 		@include hover {
 			background-color: var(--rise-primary-soft-hover);
-		}
-	}
-
-	&__btn--file {
-		@include base-editor-tool-button;
-
-		&:has(:focus-visible) {
-			outline: 2px solid var(--rise-focus-ring);
-			outline-offset: 2px;
 		}
 	}
 
@@ -270,7 +277,7 @@
 		}
 	}
 
-	&:not(&--readonly) &__content :where(img, video) {
+	&:not(&--readonly, &--disabled) &__content :where(img, video) {
 		cursor: context-menu;
 		@include transition(outline-color);
 		outline: 2px solid transparent;
@@ -333,30 +340,43 @@
 		gap: sz(8px);
 	}
 
-	&--outline {
+	&--outline &__frame {
 		background-color: transparent;
 	}
 
-	&--soft {
+	&--soft &__frame {
 		border-color: transparent;
 		background-color: color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg));
 	}
 
-	&--ghost {
+	&--ghost &__frame {
 		border-color: transparent;
 		background-color: transparent;
 	}
 
-	&--shadow {
+	&--shadow &__frame {
 		box-shadow: ct(editor, shadow, var(--rise-shadow-xs));
 	}
 
-	&--readonly {
+	&--readonly &__frame {
 		background-color: var(--rise-bg-muted);
 	}
 
-	&--focused {
+	&--disabled &__frame {
+		@include disabled-state;
+		background-color: var(--rise-bg-muted);
+	}
+
+	&--focused &__frame {
 		border-color: ct(editor, border-focus, var(--rise-primary));
 		box-shadow: 0 0 0 1px ct(editor, border-focus, var(--rise-primary));
+	}
+
+	&--error &__frame {
+		border-color: var(--rise-error);
+	}
+
+	&--error &__frame:focus-within {
+		box-shadow: 0 0 0 1px var(--rise-error);
 	}
 }

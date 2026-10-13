@@ -15,8 +15,8 @@ export const Keyboard: StoryObj<typeof meta> = {
 		docs: {
 			description: {
 				story: [
-					'Клавиатура: Tab проходит по кнопкам тулбара и попадает в текст (видно кольцо фокуса), Shift+Tab возвращает',
-					'к последней кнопке. Ctrl+B / Ctrl+I / Ctrl+U (⌘ на macOS) переключают начертание выделенного текста.',
+					'Клавиатура: Tab входит в тулбар одной остановкой и попадает в текст (видно кольцо фокуса), Shift+Tab возвращает',
+					'на последнюю кнопку тулбара. Ctrl+B / Ctrl+I / Ctrl+U (⌘ на macOS) переключают начертание выделенного текста.',
 				].join('\n'),
 			},
 			source: storySource({ template, imports: ['BaseEditor'], state, omit: ['toolbar'] }),
@@ -45,6 +45,6 @@ export const Keyboard: StoryObj<typeof meta> = {
 		await waitFor(() => expect(canvas.getByRole('button', { name: 'Курсив' })).toHaveAttribute('aria-pressed', 'true'))
 
 		await userEvent.tab({ shift: true })
-		await expect(canvas.getByRole('button', { name: 'Режим кода' })).toHaveFocus()
+		await expect(bold).toHaveFocus()
 	},
 }

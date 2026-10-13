@@ -298,37 +298,20 @@ describe('BaseEditor unit', () => {
 		})
 	})
 
-	describe('mousedown по label медиа', () => {
-		it('останавливает всплытие mousedown на label изображения (модификатор .stop)', async () => {
-			const { container } = render(BaseEditor, {
-				props: { hasToolbar: true },
-				global: globalConfig,
-			})
+	describe('загрузка медиа с кнопок', () => {
+		it.each([
+			['Изображение', 'image/*'],
+			['Видео', 'video/*'],
+		])('кнопка «%s» открывает выбор файла скрытого поля', async (name, accept) => {
+			const { container } = render(BaseEditor, { props: { hasToolbar: true }, global: globalConfig })
+			const input = container.querySelector<HTMLInputElement>(`input[accept="${accept}"]`) as HTMLInputElement
+			const click = vi.spyOn(input, 'click')
 
-			const imageLabel = container.querySelector('input[accept="image/*"]')?.closest('label') as HTMLElement
-			expect(imageLabel).toBeInTheDocument()
+			await fireEvent.click(screen.getByRole('button', { name }))
 
-			const onParentMouseDown = vi.fn()
-			imageLabel.parentElement?.addEventListener('mousedown', onParentMouseDown)
-			await fireEvent.mouseDown(imageLabel)
-
-			expect(onParentMouseDown).not.toHaveBeenCalled()
-		})
-
-		it('останавливает всплытие mousedown на label видео (модификатор .stop)', async () => {
-			const { container } = render(BaseEditor, {
-				props: { hasToolbar: true },
-				global: globalConfig,
-			})
-
-			const videoLabel = container.querySelector('input[accept="video/*"]')?.closest('label') as HTMLElement
-			expect(videoLabel).toBeInTheDocument()
-
-			const onParentMouseDown = vi.fn()
-			videoLabel.parentElement?.addEventListener('mousedown', onParentMouseDown)
-			await fireEvent.mouseDown(videoLabel)
-
-			expect(onParentMouseDown).not.toHaveBeenCalled()
+			expect(click).toHaveBeenCalledOnce()
+			expect(input).toHaveAttribute('tabindex', '-1')
+			expect(input).toHaveAttribute('aria-hidden', 'true')
 		})
 	})
 
@@ -404,8 +387,8 @@ describe('BaseEditor unit', () => {
 			expect(within(toolbar).getByRole('button', { name: 'Жирный' })).toHaveAttribute('aria-pressed', 'false')
 			expect(within(toolbar).getByRole('button', { name: 'Цитата' })).toHaveAttribute('aria-pressed', 'false')
 			expect(within(toolbar).getByRole('button', { name: 'Ссылка' })).not.toHaveAttribute('aria-pressed')
-			expect(within(toolbar).getByLabelText('Изображение')).toHaveAttribute('type', 'file')
-			expect(within(toolbar).getByLabelText('Видео')).toHaveAttribute('type', 'file')
+			expect(within(toolbar).getByRole('button', { name: 'Изображение' })).not.toHaveAttribute('aria-pressed')
+			expect(within(toolbar).getByRole('button', { name: 'Видео' })).not.toHaveAttribute('aria-pressed')
 			expect(within(toolbar).getByRole('button', { name: /^Цвет текста, выбран / })).toHaveAttribute('aria-expanded', 'false')
 			expect(within(toolbar).getByRole('button', { name: /^Цвет фона, выбран / })).toHaveAttribute('aria-expanded', 'false')
 		})

@@ -40,6 +40,8 @@ export interface BaseEditorToolbarProps {
 	isTextColorActive: boolean
 	/** Активен ли цвет фона */
 	isBackgroundColorActive: boolean
+	/** Изображение или видео выделено целиком: кнопка размера и удаления медиа доступна */
+	isMediaSelected: boolean
 	/** Классы частей из пропа `ui` редактора (`toolbar`, `group`, `btn`) */
 	ui?: UiProp<BaseEditorPart>
 }
@@ -53,6 +55,7 @@ export interface BaseEditorToolbarEmits {
 	(event: 'handleVideoUpload', payload: Event): void
 	(event: 'clearAllFormatting'): void
 	(event: 'insertSeparator'): void
+	(event: 'openMediaMenu'): void
 	(event: 'toggleCodeMode'): void
 	(event: 'saveSelection'): void
 	(event: 'handleTextColor', color: string): void

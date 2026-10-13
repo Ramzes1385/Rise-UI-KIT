@@ -7,9 +7,10 @@ export const EDITOR_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft']
 /**
  * Части редактора для пропа `ui` (БЭМ-элементы `.base-editor__<часть>`, `root` — сам редактор): toolbar — панель инструментов,
  * group — группа кнопок панели, btn — кнопка панели (форматирование, ссылка, медиа, режим кода), content — область текста,
- * code — поле HTML-кода в режиме кода (BaseTextarea), context-menu — меню размера медиа
+ * code — поле HTML-кода в режиме кода (BaseTextarea), context-menu — меню размера медиа,
+ * frame — рамка с панелью и областью текста, label — заголовок поля, error-text — текст ошибки
  */
-export const EDITOR_PARTS = ['toolbar', 'group', 'btn', 'content', 'code', 'context-menu'] as const
+export const EDITOR_PARTS = ['toolbar', 'group', 'btn', 'content', 'code', 'context-menu', 'frame', 'label', 'error-text'] as const
 
 export type BaseEditorPart = (typeof EDITOR_PARTS)[number]
 
@@ -21,7 +22,7 @@ export type EditorHeading = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p'
 
 export interface BaseEditorProps extends BaseComponentProps<
 	(typeof EDITOR_VARIANTS)[number],
-	'root' | 'toolbar' | 'btn' | 'group' | 'colorPicker' | 'headingSelect' | 'fileInput' | 'content' | 'code'
+	'root' | 'toolbar' | 'btn' | 'group' | 'colorPicker' | 'headingSelect' | 'fileInput' | 'content' | 'code' | 'label' | 'errorText'
 > {
 	/**
 	 * HTML-содержимое. Перед показом в редакторе и перед `update:modelValue` очищается функцией `sanitize`:
@@ -38,8 +39,14 @@ export interface BaseEditorProps extends BaseComponentProps<
 	sanitize?: (html: string) => string
 	/** Плейсхолдер */
 	placeholder?: string
-	/** Только чтение */
+	/** Только чтение: текст можно выделять и копировать, панель инструментов скрыта */
 	isReadonly?: boolean
+	/** Отключённое состояние: как у полей кита, текст не редактируется и не получает фокус. Отключённая BaseForm отключает и редактор */
+	isDisabled?: boolean
+	/** Заголовок поля: даёт области текста имя (`aria-labelledby`), клик по нему переводит фокус в редактор */
+	label?: string
+	/** Текст ошибки под редактором: рамка становится красной, область текста получает `aria-invalid` и `aria-describedby` */
+	error?: string
 	/** Показывать панель инструментов */
 	hasToolbar?: boolean
 	/** Автофокус */
@@ -65,4 +72,4 @@ export interface BaseEditorSlots {
 	toolbar?: () => unknown
 }
 
-export type EditorProps = PropsWithDefaults<BaseEditorProps, 'modelValue' | 'isReadonly' | 'isAutofocus' | 'sizeScale'>
+export type EditorProps = PropsWithDefaults<BaseEditorProps, 'modelValue' | 'isReadonly' | 'isDisabled' | 'isAutofocus' | 'sizeScale'>

@@ -667,7 +667,7 @@ describe('useEditorToolbar', () => {
 	})
 
 	describe('Keyboard and HTML conversion', () => {
-		it('handleKeyDown Enter', () => {
+		it('handleKeyDown Enter без Shift оставляет абзац браузеру', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
 			const { handleKeyDown } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 			const event = {
@@ -677,8 +677,32 @@ describe('useEditorToolbar', () => {
 			} as unknown as KeyboardEvent
 
 			handleKeyDown(event)
+			expect(event.preventDefault).not.toHaveBeenCalled()
+			expect(document.execCommand).not.toHaveBeenCalled()
+		})
+
+		it('handleKeyDown Shift+Enter вставляет перенос строки <br>', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { handleKeyDown } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			const event = {
+				key: 'Enter',
+				shiftKey: true,
+				preventDefault: vi.fn(),
+			} as unknown as KeyboardEvent
+
+			handleKeyDown(event)
 			expect(event.preventDefault).toHaveBeenCalled()
-			expect(document.execCommand).toHaveBeenCalledWith('insertHTML', false, '<br>')
+			expect(document.execCommand).toHaveBeenCalledWith('insertLineBreak', false)
+			expect(onInput).toHaveBeenCalled()
+		})
+
+		it('handleKeyDown Ctrl+Shift+Enter не перехватывается', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { handleKeyDown } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			const event = { key: 'Enter', shiftKey: true, ctrlKey: true, preventDefault: vi.fn() } as unknown as KeyboardEvent
+
+			handleKeyDown(event)
+			expect(event.preventDefault).not.toHaveBeenCalled()
 		})
 
 		it('handleKeyDown не Enter', () => {
