@@ -23,6 +23,7 @@
 }
 
 .base-editor {
+	@include custom-color-scope;
 	--editor-min-height: 160px;
 	--editor-max-height: 600px;
 
@@ -281,6 +282,7 @@
 	}
 
 	&__code.base-textarea {
+		@include inherit-custom-color;
 		flex: 1;
 		min-width: 0;
 	}

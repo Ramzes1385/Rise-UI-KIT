@@ -1,4 +1,5 @@
 .base-header {
+	@include custom-color-scope;
 	box-sizing: border-box;
 	width: 100%;
 	border-bottom: 1px solid ct(header, border, var(--rise-border));

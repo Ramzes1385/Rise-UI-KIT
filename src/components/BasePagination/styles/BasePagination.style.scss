@@ -1,4 +1,5 @@
 .base-pagination {
+	@include custom-color-scope;
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
@@ -36,6 +37,7 @@
 	}
 
 	&__page--current.base-button {
+		@include inherit-custom-color;
 		--custom-text: var(--custom-text-active, #{ct(pagination, page-text-selected, var(--rise-on-primary))});
 	}
 

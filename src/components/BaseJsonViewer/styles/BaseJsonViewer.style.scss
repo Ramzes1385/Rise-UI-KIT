@@ -1,4 +1,5 @@
 .base-json-viewer {
+	@include custom-color-scope;
 	display: flex;
 	flex-direction: column;
 	box-sizing: border-box;

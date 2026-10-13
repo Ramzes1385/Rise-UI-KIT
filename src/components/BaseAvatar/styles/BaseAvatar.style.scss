@@ -1,4 +1,5 @@
 .base-avatar {
+	@include custom-color-scope;
 	position: relative;
 	display: inline-flex;
 	flex-shrink: 0;

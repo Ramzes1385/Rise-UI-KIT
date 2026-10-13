@@ -1,4 +1,5 @@
 .base-filter-builder {
+	@include custom-color-scope;
 	display: flex;
 	flex-direction: column;
 	gap: space(ct(filter-builder, gap, 10px));

@@ -1,6 +1,7 @@
 $gap: sz(ct(form-field, gap, 6px));
 
 .base-form-field {
+	@include custom-color-scope;
 	display: flex;
 	flex-direction: column;
 	gap: $gap;

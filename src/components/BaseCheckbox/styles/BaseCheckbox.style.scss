@@ -1,4 +1,5 @@
 .base-checkbox {
+	@include custom-color-scope;
 	--checkbox-border: #{ct(checkbox, box-border, var(--rise-border-accented))};
 	--checkbox-bg: #{ct(checkbox, box-bg, var(--rise-bg))};
 	--checkbox-bg-hover: #{ct(checkbox, box-bg-hover, var(--rise-bg-elevated))};

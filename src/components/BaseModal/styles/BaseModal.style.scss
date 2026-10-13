@@ -1,4 +1,5 @@
 .base-modal {
+	@include custom-color-scope;
 	position: fixed;
 	inset: 0;
 	z-index: calc(var(--rise-z-overlay) + var(--rise-layer-index, 0));
@@ -62,6 +63,7 @@
 	}
 
 	&__title.base-text {
+		@include inherit-custom-color;
 		margin: 0;
 		font-size: sz(ct(modal-title, font-size, var(--rise-font-size-base)));
 		line-height: sz(var(--rise-line-height-base));
@@ -70,6 +72,7 @@
 	}
 
 	&__close.base-button {
+		@include inherit-custom-color;
 		--btn-pad-top: 5px;
 		--btn-pad-right: 5px;
 		--btn-pad-bottom: 5px;

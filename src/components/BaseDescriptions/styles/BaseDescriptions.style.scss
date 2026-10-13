@@ -1,4 +1,5 @@
 .base-descriptions {
+	@include custom-color-scope;
 	--base-descriptions-gap-x: #{space(24px)};
 	--base-descriptions-gap-y: #{space(ct(descriptions, gap, 12px))};
 

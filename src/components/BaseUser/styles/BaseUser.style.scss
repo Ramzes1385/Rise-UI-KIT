@@ -1,4 +1,5 @@
 .base-user {
+	@include custom-color-scope;
 	display: inline-flex;
 	align-items: center;
 	gap: space(ct(user, gap, 8px));

@@ -1,4 +1,5 @@
 .base-text {
+	@include custom-color-scope;
 	--text-weight: #{ct(text, font-weight, var(--rise-font-weight-normal))};
 
 	margin: 0;

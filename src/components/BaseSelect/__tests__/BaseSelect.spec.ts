@@ -198,6 +198,15 @@ describe('BaseSelect unit', () => {
 			expect(select.style.getPropertyValue('--size-scale')).toBe('1.5')
 		})
 
+		it('должен фиксировать размер стрелки при sizeScale=125', () => {
+			const { container } = render(BaseSelect, {
+				props: { modelValue: '', options: OPTIONS, sizeScale: 125 },
+			})
+
+			const arrow = container.querySelector('.base-select__arrow') as HTMLElement
+			expect(arrow.style.getPropertyValue('--size-scale')).toBe('1.0001')
+		})
+
 		it('не должен устанавливать --size-scale при sizeScale=100', () => {
 			const { container } = render(BaseSelect, {
 				props: { modelValue: '', options: OPTIONS, sizeScale: 100 },

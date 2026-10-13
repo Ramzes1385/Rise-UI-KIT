@@ -1,4 +1,5 @@
 .base-anchor {
+	@include custom-color-scope;
 	--anchor-indent: #{sz(12px)};
 	--anchor-mark: var(--custom-bg, #{ct(anchor, indicator-bg, var(--rise-primary))});
 

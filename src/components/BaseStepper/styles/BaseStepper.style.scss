@@ -1,4 +1,5 @@
 .base-stepper {
+	@include custom-color-scope;
 	--stepper-size: #{sz(ct(stepper-indicator, width, 28px))};
 	--stepper-line: #{sz(2px)};
 	--stepper-line-gap: #{sz(4px)};

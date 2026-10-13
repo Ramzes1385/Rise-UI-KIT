@@ -1,4 +1,5 @@
 .base-subtitle-editor {
+	@include custom-color-scope;
 	display: flex;
 	flex-direction: column;
 	gap: space(ct(subtitle-editor, gap, 12px));

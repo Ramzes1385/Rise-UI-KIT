@@ -1,4 +1,5 @@
 .base-separator {
+	@include custom-color-scope;
 	--sep-spacing: 0px;
 
 	display: flex;

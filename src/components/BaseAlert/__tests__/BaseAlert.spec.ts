@@ -119,6 +119,13 @@ describe('BaseAlert unit', () => {
 			expect((closeButton.querySelector('.base-icon') as HTMLElement).style.getPropertyValue('--size-scale')).toBe('')
 		})
 
+		it('должен масштабировать иконку алерта вместе с компонентом при sizeScale=125', () => {
+			const { container } = render(BaseAlert, { props: { sizeScale: 125 } })
+
+			const icon = container.querySelector('.base-alert__icon-wrapper .base-icon') as HTMLElement
+			expect(icon.style.getPropertyValue('--size-scale')).toBe('1.25')
+		})
+
 		it('должен эмитить close при клике на кнопку закрытия', async () => {
 			const { emitted, container } = render(BaseAlert, { props: { isClosable: true } })
 

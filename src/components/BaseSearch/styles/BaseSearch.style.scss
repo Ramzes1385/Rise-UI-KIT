@@ -1,10 +1,15 @@
 .base-search {
+	@include custom-color-scope;
 	display: flex;
 	width: 100%;
 	@include custom-text(color, var(--rise-text-highlighted));
 
 	.base-dropdown {
 		width: 100%;
+	}
+
+	&__field {
+		@include inherit-custom-color;
 	}
 
 	&__field .base-input__label {

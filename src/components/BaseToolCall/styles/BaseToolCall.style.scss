@@ -1,4 +1,5 @@
 .base-tool-call {
+	@include custom-color-scope;
 	--tool-call-status: var(--rise-text-muted);
 
 	display: flex;

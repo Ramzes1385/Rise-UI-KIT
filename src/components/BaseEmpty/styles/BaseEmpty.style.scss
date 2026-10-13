@@ -1,4 +1,5 @@
 .base-empty {
+	@include custom-color-scope;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -44,6 +45,7 @@
 	}
 
 	& &__title {
+		@include inherit-custom-color;
 		font-size: sz(ct(empty, title-font-size, var(--rise-font-size-sm)));
 		@include custom-text(color, ct(empty, title-text, var(--rise-text-highlighted)));
 	}

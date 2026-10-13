@@ -1,4 +1,5 @@
 .base-crypto-pro-sign {
+	@include custom-color-scope;
 	--crypto-pro-sign-gap: #{ct(crypto-pro-sign, gap, space(16px))};
 
 	display: flex;

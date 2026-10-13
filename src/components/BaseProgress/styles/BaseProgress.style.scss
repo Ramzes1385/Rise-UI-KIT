@@ -3,6 +3,7 @@ $progress-light: color-mix(in srgb, var(--progress-color) 35%, var(--rise-bg));
 $progress-radius: ct(progress, radius, var(--rise-radius-full));
 
 .base-progress {
+	@include custom-color-scope;
 	@include custom-bg('--progress-color', var(--custom-text, #{ct(progress-fill, bg, var(--rise-primary))}));
 
 	position: relative;

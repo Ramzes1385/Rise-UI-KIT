@@ -175,6 +175,24 @@ describe('BaseInput unit', () => {
 			expect(container.firstElementChild?.getAttribute('style')).toContain('--size-scale: 1.5')
 		})
 
+		it('должен фиксировать размер иконки пароля при sizeScale=125: иконка 20px, а не 25px', () => {
+			const { container } = render(BaseInput, {
+				props: { modelValue: '', type: 'password', sizeScale: 125 },
+			})
+
+			const icon = container.querySelector('.base-input__password-toggle .base-icon') as HTMLElement
+			expect(icon.style.getPropertyValue('--size-scale')).toBe('1.0001')
+		})
+
+		it('должен оставлять иконку пароля наследующей масштаб при sizeScale=100', () => {
+			const { container } = render(BaseInput, {
+				props: { modelValue: '', type: 'password', sizeScale: 100 },
+			})
+
+			const icon = container.querySelector('.base-input__password-toggle .base-icon') as HTMLElement
+			expect(icon.style.getPropertyValue('--size-scale')).toBe('0.8')
+		})
+
 		it('должен устанавливать --size-scale когда sizeScale=0.75', () => {
 			const { container } = render(BaseInput, {
 				props: { modelValue: '', sizeScale: 75 },

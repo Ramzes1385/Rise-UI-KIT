@@ -5,6 +5,10 @@
 	max-width: 100%;
 	vertical-align: baseline;
 
+	.base-input {
+		@include inherit-custom-color;
+	}
+
 	&__display {
 		max-width: 100%;
 		margin: 0;

@@ -1,4 +1,5 @@
 .base-transfer {
+	@include custom-color-scope;
 	display: flex;
 	flex-direction: column;
 	gap: sz(6px);
@@ -68,7 +69,12 @@
 		font-variant-numeric: tabular-nums;
 	}
 
+	& &__all {
+		@include inherit-custom-color;
+	}
+
 	& &__all .base-checkbox__label {
+		@include inherit-custom-color;
 		@include custom-text(color, var(--rise-text));
 	}
 

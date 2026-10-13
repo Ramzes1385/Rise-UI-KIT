@@ -1,4 +1,5 @@
 .base-link {
+	@include custom-color-scope;
 	display: inline;
 	font-size: calc(#{ct(link, font-size, 1em)} * var(--size-scale, 1));
 	font-weight: ct(link, font-weight, inherit);

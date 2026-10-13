@@ -1,4 +1,5 @@
 .base-segmented {
+	@include custom-color-scope;
 	--segment-checked-bg: var(--custom-bg, #{ct(segmented, indicator-bg, var(--rise-bg))});
 	--segment-checked-text: var(--custom-text, #{ct(segmented, segment-text-checked, var(--rise-text-highlighted))});
 	--segment-checked-shadow: #{ct(segmented, indicator-shadow, var(--rise-shadow-sm))};

@@ -1,4 +1,5 @@
 .base-button {
+	@include custom-color-scope;
 	--btn-pad-top: #{ct(button, padding-y, var(--rise-control-padding-y))};
 	--btn-pad-right: #{ct(button, padding-x, var(--rise-control-padding-x))};
 	--btn-pad-bottom: #{ct(button, padding-y, var(--rise-control-padding-y))};

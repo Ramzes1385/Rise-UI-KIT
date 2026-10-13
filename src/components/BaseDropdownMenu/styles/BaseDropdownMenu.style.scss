@@ -1,4 +1,5 @@
 .base-dropdown-menu {
+	@include custom-color-scope;
 	display: inline-flex;
 	vertical-align: middle;
 
@@ -36,6 +37,7 @@
 	}
 
 	&__item {
+		@include inherit-custom-color;
 		@include menu-item;
 		padding: sz(var(--dm-item-padding-y) var(--dm-item-padding-x));
 		border-radius: sz(var(--dm-item-radius));

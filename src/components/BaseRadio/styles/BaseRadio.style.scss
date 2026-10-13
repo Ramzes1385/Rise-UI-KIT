@@ -1,4 +1,5 @@
 .base-radio {
+	@include custom-color-scope;
 	--radio-border: #{ct(radio, circle-border, var(--rise-border-accented))};
 	--radio-bg: #{ct(radio, circle-bg, var(--rise-bg))};
 	--radio-bg-hover: #{ct(radio, circle-bg-hover, var(--rise-bg-elevated))};

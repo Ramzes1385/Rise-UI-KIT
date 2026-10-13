@@ -4,6 +4,10 @@
 	align-items: flex-start;
 	gap: sz(ct(checkbox-group, gap, 6px));
 
+	.base-checkbox {
+		@include inherit-custom-color;
+	}
+
 	& &__label {
 		@include field-label;
 		color: ct(checkbox-group, label-text, var(--rise-text));

@@ -1,4 +1,5 @@
 .base-drawer {
+	@include custom-color-scope;
 	position: fixed;
 	inset: 0;
 	z-index: calc(var(--rise-z-overlay) + var(--rise-layer-index, 0));

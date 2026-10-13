@@ -1,6 +1,7 @@
 $code-token-types: keyword, string, number, comment, function, tag, attribute, property, variable;
 
 .base-code {
+	@include custom-color-scope;
 	--base-code-number-width: 1ch;
 
 	display: flex;

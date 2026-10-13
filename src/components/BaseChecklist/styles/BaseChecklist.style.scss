@@ -1,4 +1,5 @@
 .base-checklist {
+	@include custom-color-scope;
 	display: flex;
 	flex-direction: column;
 	gap: space(ct(checklist, gap, 12px));

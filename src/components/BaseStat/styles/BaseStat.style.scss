@@ -2,6 +2,7 @@ $stat-padding-y: ct(stat, padding-y, 16px);
 $stat-padding-x: ct(stat, padding-x, 16px);
 
 .base-stat {
+	@include custom-color-scope;
 	position: relative;
 	display: flex;
 	flex-direction: column;

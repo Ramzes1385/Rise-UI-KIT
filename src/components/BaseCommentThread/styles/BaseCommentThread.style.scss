@@ -1,4 +1,5 @@
 .base-comment-thread {
+	@include custom-color-scope;
 	display: flex;
 	flex-direction: column;
 	gap: sz(ct(comment-thread, gap, 16px));

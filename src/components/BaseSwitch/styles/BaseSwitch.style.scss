@@ -1,4 +1,5 @@
 .base-switch {
+	@include custom-color-scope;
 	--switch-track: #{ct(switch, slider-bg, var(--rise-bg-accented))};
 	--switch-thumb: #{ct(switch, handle-bg, var(--rise-bg))};
 	--switch-checked-thumb: #{ct(switch, handle-bg-checked, var(--rise-bg))};

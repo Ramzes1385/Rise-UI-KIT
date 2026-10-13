@@ -3,6 +3,7 @@
 }
 
 .base-cascader {
+	@include custom-color-scope;
 	display: flex;
 	flex-direction: column;
 	gap: sz(6px);

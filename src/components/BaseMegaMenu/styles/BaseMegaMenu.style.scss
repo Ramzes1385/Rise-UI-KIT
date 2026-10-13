@@ -1,4 +1,5 @@
 .base-mega-menu {
+	@include custom-color-scope;
 	--mega-menu-gap: 4px;
 
 	position: relative;
@@ -42,6 +43,7 @@
 
 	&__trigger,
 	&__trigger.base-link {
+		@include inherit-custom-color;
 		display: inline-flex;
 		align-items: center;
 		gap: sz(6px);

@@ -1,4 +1,5 @@
 .base-notification {
+	@include custom-color-scope;
 	position: fixed;
 	z-index: var(--rise-z-toast);
 	box-sizing: border-box;
@@ -136,6 +137,7 @@
 	}
 
 	&__title.base-text {
+		@include inherit-custom-color;
 		--text-weight: #{ct(notification-title, font-weight, var(--rise-font-weight-semibold))};
 
 		margin: 0;
@@ -146,6 +148,7 @@
 	}
 
 	&__description.base-text {
+		@include inherit-custom-color;
 		margin: sz(4px) 0 0;
 		@include text-size(sm);
 		@include custom-text(color, ct(notification-description, text, var(--rise-text-muted)));
@@ -153,6 +156,7 @@
 	}
 
 	&__close.base-button {
+		@include inherit-custom-color;
 		--btn-pad-top: 3px;
 		--btn-pad-right: 3px;
 		--btn-pad-bottom: 3px;

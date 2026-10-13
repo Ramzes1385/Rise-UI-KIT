@@ -1,4 +1,5 @@
 .base-image {
+	@include custom-color-scope;
 	position: relative;
 	display: inline-block;
 	overflow: hidden;

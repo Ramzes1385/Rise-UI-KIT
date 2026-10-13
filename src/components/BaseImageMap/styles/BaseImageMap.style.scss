@@ -1,4 +1,5 @@
 .base-image-map {
+	@include custom-color-scope;
 	position: relative;
 	display: flex;
 	flex-direction: column;
@@ -43,6 +44,11 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: sz(8px);
+
+		.base-button,
+		.base-segmented {
+			@include inherit-custom-color;
+		}
 	}
 
 	&__zoom {

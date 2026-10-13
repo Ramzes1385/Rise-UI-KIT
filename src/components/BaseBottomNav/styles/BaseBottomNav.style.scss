@@ -1,4 +1,5 @@
 .base-bottom-nav {
+	@include custom-color-scope;
 	--bottom-nav-indicator: color-mix(in srgb, var(--custom-bg-active, var(--rise-primary)) 16%, transparent);
 	--bottom-nav-bar-padding: 0px;
 	--bottom-nav-notch-radius: #{sz(34px)};

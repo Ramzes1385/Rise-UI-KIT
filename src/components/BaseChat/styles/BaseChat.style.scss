@@ -1,4 +1,5 @@
 .base-chat {
+	@include custom-color-scope;
 	--chat-title-color: var(--custom-text, var(--rise-text-highlighted));
 
 	position: relative;

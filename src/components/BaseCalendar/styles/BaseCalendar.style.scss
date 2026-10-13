@@ -1,4 +1,5 @@
 .base-calendar {
+	@include custom-color-scope;
 	--calendar-text: var(--custom-text, var(--rise-text));
 	--calendar-heading: var(--custom-text, #{ct(calendar, header-text, var(--rise-text-highlighted))});
 	--calendar-hover-bg: var(--custom-bg-hover, #{ct(calendar, day-bg-hover, var(--rise-bg-elevated))});

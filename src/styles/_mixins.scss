@@ -127,6 +127,23 @@
 	--custom-text-focus: initial;
 }
 
+@mixin custom-color-scope {
+	@at-root :where(#{&}) {
+		@include reset-custom-color;
+	}
+}
+
+@mixin inherit-custom-color {
+	--custom-bg: inherit;
+	--custom-bg-hover: inherit;
+	--custom-bg-active: inherit;
+	--custom-bg-focus: inherit;
+	--custom-text: inherit;
+	--custom-text-hover: inherit;
+	--custom-text-active: inherit;
+	--custom-text-focus: inherit;
+}
+
 @mixin custom-bg($property, $fallback) {
 	#{$property}: var(--custom-bg, #{$fallback});
 }

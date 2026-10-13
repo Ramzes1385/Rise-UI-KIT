@@ -1,4 +1,5 @@
 .base-badge {
+	@include custom-color-scope;
 	display: inline-flex;
 	align-items: center;
 	gap: sz(ct(badge, gap, 4px));

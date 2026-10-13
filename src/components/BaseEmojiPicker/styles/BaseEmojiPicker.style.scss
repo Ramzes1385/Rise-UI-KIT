@@ -1,4 +1,5 @@
 .base-emoji-picker {
+	@include custom-color-scope;
 	--emoji-cell: #{sz(36px)};
 	--emoji-font: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
 

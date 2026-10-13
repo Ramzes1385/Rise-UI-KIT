@@ -1,4 +1,5 @@
 .base-waveform {
+	@include custom-color-scope;
 	@include custom-bg('--waveform-color', var(--custom-text, #{ct(waveform-fill, bg, var(--rise-primary))}));
 	--waveform-rest: #{ct(waveform-bar, bg, var(--rise-border-accented))};
 

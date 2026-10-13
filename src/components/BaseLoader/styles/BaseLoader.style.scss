@@ -1,4 +1,5 @@
 .base-loader {
+	@include custom-color-scope;
 	@include custom-text('--loader-color', ct(loader, text, var(--rise-primary)));
 
 	display: inline-flex;

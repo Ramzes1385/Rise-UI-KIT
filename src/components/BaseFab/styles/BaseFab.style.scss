@@ -1,4 +1,5 @@
 .base-fab {
+	@include custom-color-scope;
 	--fab-offset: #{sz(24px)};
 	position: fixed;
 	z-index: calc(var(--rise-z-overlay) - 1);

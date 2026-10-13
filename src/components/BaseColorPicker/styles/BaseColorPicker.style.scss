@@ -5,6 +5,7 @@
 }
 
 .base-color-picker {
+	@include custom-color-scope;
 	display: inline-flex;
 
 	&__swatch {

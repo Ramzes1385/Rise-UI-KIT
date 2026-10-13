@@ -1,4 +1,5 @@
 .base-slideover {
+	@include custom-color-scope;
 	position: fixed;
 	inset: 0;
 	z-index: calc(var(--rise-z-overlay) + var(--rise-layer-index, 0));
@@ -79,6 +80,7 @@
 	}
 
 	&__title.base-text {
+		@include inherit-custom-color;
 		flex: 1;
 		min-width: 0;
 		margin: 0;
@@ -89,6 +91,7 @@
 	}
 
 	&__close.base-button {
+		@include inherit-custom-color;
 		--btn-pad-top: 5px;
 		--btn-pad-right: 5px;
 		--btn-pad-bottom: 5px;

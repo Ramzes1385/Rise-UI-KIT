@@ -6,6 +6,7 @@
 }
 
 .base-side-bar {
+	@include custom-color-scope;
 	--sidebar-width: 280px;
 	--sidebar-collapsed-width: 68px;
 	--sidebar-gap: 4px;
@@ -461,7 +462,6 @@
 	}
 
 	&__divider.base-separator {
-		@include custom-bg-reset;
 		width: auto;
 		margin: sz(8px) sz(var(--sidebar-item-pad-x));
 	}

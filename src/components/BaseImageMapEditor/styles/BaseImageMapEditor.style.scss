@@ -1,4 +1,5 @@
 .base-image-map-editor {
+	@include custom-color-scope;
 	display: flex;
 	flex-direction: column;
 	gap: space(ct(image-map-editor, gap, 8px));

@@ -1,4 +1,5 @@
 .base-prompt-input {
+	@include custom-color-scope;
 	display: flex;
 	flex-direction: column;
 	gap: sz(ct(prompt-input, gap, 6px));

@@ -1,4 +1,5 @@
 .base-countdown {
+	@include custom-color-scope;
 	--base-countdown-digit-duration: min(var(--rise-duration-slow), 600ms);
 	--base-countdown-digit-ease: var(--rise-ease-spring);
 

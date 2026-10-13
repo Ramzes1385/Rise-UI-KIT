@@ -1,4 +1,5 @@
 .base-range {
+	@include custom-color-scope;
 	display: flex;
 	flex-direction: column;
 	gap: sz(ct(range, gap, 8px));
@@ -24,6 +25,7 @@
 	}
 
 	&__label &__label-value {
+		@include inherit-custom-color;
 		@include custom-text(color, ct(range, label-value-text, var(--rise-text-highlighted)));
 		font-variant-numeric: tabular-nums;
 	}

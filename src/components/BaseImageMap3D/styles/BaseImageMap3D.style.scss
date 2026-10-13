@@ -1,4 +1,5 @@
 .base-image-map-3d {
+	@include custom-color-scope;
 	display: flex;
 	flex-direction: column;
 	gap: space(2);

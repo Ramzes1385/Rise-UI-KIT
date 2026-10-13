@@ -1,4 +1,5 @@
 .base-tabs {
+	@include custom-color-scope;
 	display: flex;
 	flex-direction: column;
 	width: 100%;
@@ -50,6 +51,7 @@
 	}
 
 	&__tab.base-button {
+		@include inherit-custom-color;
 		--btn-pad-left: #{ct(tabs, tab-padding-x, 12px)};
 		--btn-pad-right: #{ct(tabs, tab-padding-x, 12px)};
 
@@ -111,7 +113,7 @@
 		--btn-pad-right: var(--rise-control-padding-y);
 
 		flex-shrink: 0;
-		@include custom-text(color, var(--rise-text-muted));
+		color: var(--rise-text-muted);
 	}
 
 	&__content {

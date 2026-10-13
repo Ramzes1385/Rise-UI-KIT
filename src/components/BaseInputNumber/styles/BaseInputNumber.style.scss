@@ -1,5 +1,8 @@
 .base-input-number {
+	@include custom-color-scope;
+
 	&__button.base-button {
+		@include inherit-custom-color;
 		--btn-pad-top: 0px;
 		--btn-pad-right: 0px;
 		--btn-pad-bottom: 0px;

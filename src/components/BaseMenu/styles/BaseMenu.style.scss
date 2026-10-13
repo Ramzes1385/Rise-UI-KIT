@@ -1,4 +1,5 @@
 .base-menu {
+	@include custom-color-scope;
 	display: flex;
 	flex-direction: column;
 	min-width: sz(180px);
@@ -16,6 +17,7 @@
 	}
 
 	&__item {
+		@include inherit-custom-color;
 		@include menu-item;
 		padding: sz(ct(menu, item-padding-y, 6px)) sz(ct(menu, item-padding-x, 8px));
 		border-radius: sz(ct(menu, item-radius, var(--rise-radius-md)));

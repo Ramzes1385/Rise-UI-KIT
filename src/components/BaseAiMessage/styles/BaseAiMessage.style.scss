@@ -1,4 +1,5 @@
 .base-ai-message {
+	@include custom-color-scope;
 	display: flex;
 	align-items: flex-start;
 	gap: sz(ct(ai-message, gap, 12px));
@@ -120,6 +121,10 @@
 		}
 	}
 
+	&__content {
+		@include inherit-custom-color;
+	}
+
 	&__actions {
 		display: flex;
 		flex-wrap: wrap;
@@ -154,6 +159,7 @@
 	}
 
 	&__action.base-button {
+		@include inherit-custom-color;
 		--btn-pad-top: 4px;
 		--btn-pad-right: 8px;
 		--btn-pad-bottom: 4px;

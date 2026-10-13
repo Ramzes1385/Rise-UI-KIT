@@ -1,4 +1,5 @@
 .base-breadcrumbs {
+	@include custom-color-scope;
 	--breadcrumbs-gap: #{sz(ct(breadcrumbs, gap, 6px))};
 
 	display: block;

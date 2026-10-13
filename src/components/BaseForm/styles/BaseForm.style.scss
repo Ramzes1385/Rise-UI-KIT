@@ -1,4 +1,5 @@
 .base-form {
+	@include custom-color-scope;
 	position: relative;
 	box-sizing: border-box;
 	width: 100%;

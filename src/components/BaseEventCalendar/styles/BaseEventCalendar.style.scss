@@ -1,4 +1,5 @@
 .base-event-calendar {
+	@include custom-color-scope;
 	--event-color: var(--rise-primary);
 	--lane-height: #{sz(22px)};
 	--slot-height: #{sz(24px)};

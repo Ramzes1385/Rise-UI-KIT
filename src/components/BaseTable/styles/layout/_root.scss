@@ -3,6 +3,7 @@
 @use '@styles/functions' as *;
 
 .base-table {
+	@include custom-color-scope;
 	--tbl-pad-top: #{ct(table, cell-padding-y, 12px)};
 	--tbl-pad-right: #{ct(table, cell-padding-x, 16px)};
 	--tbl-pad-bottom: #{ct(table, cell-padding-y, 12px)};

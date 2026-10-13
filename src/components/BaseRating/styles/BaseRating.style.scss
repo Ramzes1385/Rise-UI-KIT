@@ -1,4 +1,5 @@
 .base-rating {
+	@include custom-color-scope;
 	--rating-empty: #{ct(rating, star-text, var(--rise-border-accented))};
 	@include custom-text(--rating-fill, ct(rating, star-fill-text, var(--rise-primary)));
 	--rating-fill-hover: var(--custom-text-hover, var(--custom-text, #{ct(rating, star-fill-text-hover, var(--rise-primary-hover))}));

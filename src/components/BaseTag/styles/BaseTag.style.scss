@@ -1,4 +1,5 @@
 .base-tag {
+	@include custom-color-scope;
 	@include reset-custom-color;
 
 	--tag-soft: #{ct(tag, bg, var(--rise-bg-muted))};

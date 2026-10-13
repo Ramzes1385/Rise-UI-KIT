@@ -1,4 +1,5 @@
 .base-pin {
+	@include custom-color-scope;
 	display: inline-flex;
 	flex-direction: column;
 	gap: sz(6px);

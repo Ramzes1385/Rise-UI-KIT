@@ -1,4 +1,5 @@
 .base-card {
+	@include custom-color-scope;
 	--card-pad-top: #{ct(card, padding-y, 16px)};
 	--card-pad-right: #{ct(card, padding-x, 20px)};
 	--card-pad-bottom: #{ct(card, padding-y, 16px)};
@@ -88,11 +89,13 @@
 	}
 
 	& &__title {
+		@include inherit-custom-color;
 		@include text-size(base);
 		@include custom-text(color, var(--rise-text-highlighted));
 	}
 
 	& &__subtitle {
+		@include inherit-custom-color;
 		@include custom-text(color, var(--rise-text-muted));
 	}
 

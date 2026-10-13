@@ -1,4 +1,5 @@
 .base-alert {
+	@include custom-color-scope;
 	--alert-role: var(--rise-info);
 	--alert-on-role: var(--rise-on-info);
 	--alert-soft: var(--rise-info-soft);
@@ -77,6 +78,7 @@
 
 	& &__title,
 	& &__text {
+		@include inherit-custom-color;
 		color: inherit;
 	}
 

@@ -1,4 +1,5 @@
 .base-kanban {
+	@include custom-color-scope;
 	box-sizing: border-box;
 	max-width: 100%;
 	@include text-size(sm);
@@ -68,6 +69,7 @@
 
 	&__toggle.base-button,
 	&__add.base-button {
+		@include inherit-custom-color;
 		flex: none;
 		border-radius: sz(var(--rise-radius-sm));
 		@include custom-text(color, var(--rise-text-muted));

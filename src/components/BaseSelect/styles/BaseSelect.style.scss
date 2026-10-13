@@ -14,6 +14,7 @@
 }
 
 .base-select {
+	@include custom-color-scope;
 	display: flex;
 	flex-direction: column;
 	gap: sz(6px);
@@ -98,6 +99,7 @@
 	}
 
 	&__tag {
+		@include inherit-custom-color;
 		max-width: 100%;
 	}
 

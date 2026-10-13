@@ -37,6 +37,19 @@ describe('iconUtils', () => {
 			expect(calcIconScale('xs', 33)).toBe(20)
 		})
 
+		it('фиксирует размер, когда результат при масштабированном родителе ровно 100', () => {
+			expect(calcIconScale('sm', 125)).toBe(100.01)
+			expect(calcIconScale('xs', 167)).toBe(100.01)
+		})
+
+		it('не фиксирует размер при родителе 100: md остаётся 100 (наследование)', () => {
+			expect(calcIconScale('md', 100)).toBe(100)
+		})
+
+		it('не трогает результат, отличный от 100', () => {
+			expect(calcIconScale('sm', 150)).toBe(120)
+		})
+
 		it('возвращает 0 при parentScale 0', () => {
 			expect(calcIconScale('md', 0)).toBe(0)
 		})

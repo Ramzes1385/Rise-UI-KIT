@@ -11,6 +11,7 @@
 }
 
 .base-marquee {
+	@include custom-color-scope;
 	--marquee-fade: #{sz(48px)};
 
 	display: flex;

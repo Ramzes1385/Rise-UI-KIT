@@ -1,4 +1,5 @@
 .base-file-upload {
+	@include custom-color-scope;
 	display: flex;
 	flex-direction: column;
 	gap: sz(ct(file-upload, gap, 8px));

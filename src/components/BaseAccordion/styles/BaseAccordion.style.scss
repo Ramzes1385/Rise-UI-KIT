@@ -1,4 +1,5 @@
 .base-accordion {
+	@include custom-color-scope;
 	--accordion-pad-x: #{ct(accordion, header-padding-x, 0px)};
 	--accordion-divider: #{ct(accordion, border, var(--rise-border))};
 	--accordion-header-hover: #{ct(accordion, header-bg-hover, transparent)};

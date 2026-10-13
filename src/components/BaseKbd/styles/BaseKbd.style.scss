@@ -1,4 +1,5 @@
 .base-kbd {
+	@include custom-color-scope;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
