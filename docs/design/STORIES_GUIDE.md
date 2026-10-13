@@ -201,7 +201,7 @@ Stories, которые нужны только как проверка (кла�
   - история без Controls — `staticStorySource(...)`. Картинки data URI уходят в константы `<script setup>`, длинные — сокращаются: `const before = 'data:image/svg+xml,…'`;
   - общий `render` у meta (`stories/render.ts`) экспортирует и `source`; `parameters.ts` компонента ставит его в `docs.source` — так код получают все истории без своего `render`;
   - проверка — `npm run test:story-source` (один раздел — `-- --group=Element`): история со своим `render` без `storySource()`, код, написанный вручную, и общий `render` без `docs.source` — ошибка;
-  - классы-помощники (`story-row`, `story-label` и другие из списка выше) в шаблоне можно оставлять: «Show code» добавит их правила блоком `<style scoped>`. Правила лежат в `src/stories/helpers/render/storyStyles.ts`, тест сверяет их с `build/storybook/preview.scss` — новый класс-помощник добавляйте в оба места.
+  - классы-помощники (`story-row`, `story-label` и другие из списка выше) в шаблоне можно оставлять: «Show code» добавит их правила блоком `<style scoped>`. Правила лежат в `src/stories/helpers/render/code/storyStyles.ts`, тест сверяет их с `build/storybook/preview.scss` — новый класс-помощник добавляйте в оба места.
 
 ## 9. Visual- и e2e-тесты
 

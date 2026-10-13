@@ -5,8 +5,8 @@ import { CryptoProError } from '@composables/crypto/useCryptoPro'
 import { CADES } from '@composables/crypto/useCryptoPro/core/constants'
 import type { CadesSignPlugin, CadesSignSigner } from '../../types/cadesSign.types'
 import type { CryptoProSignLevel, CryptoProSignRequest } from '../../types/BaseCryptoProSign.types'
-import { closeStore, findCertificate, openStore } from '@composables/crypto/useCryptoPro/core/certificates'
 import type { CadesPlugin, CadesCertificate } from '@composables/crypto/useCryptoPro/types/cadesplugin.types'
+import { closeStore, findCertificate, openStore } from '@composables/crypto/useCryptoPro/core/operations/certificates'
 
 const LEVEL_TYPES: Record<CryptoProSignLevel, number> = {
 	bes: CADES_SIGN.CADES_BES,

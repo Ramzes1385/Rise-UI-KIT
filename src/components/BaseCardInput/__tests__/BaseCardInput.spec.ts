@@ -4,7 +4,7 @@ import BaseCardInput from '../ui/BaseCardInput.vue'
 import { render, screen } from '@testing-library/vue'
 import { caretAfterDigits } from '../model/card/cardText'
 import type { CardInputField } from '../types/BaseCardInput.types'
-import { field, pressBackspace, typeInto } from './cardInputHelpers'
+import { field, pressBackspace, typeInto } from './payment/cardInputHelpers'
 
 describe('BaseCardInput unit', () => {
 	describe('разметка', () => {

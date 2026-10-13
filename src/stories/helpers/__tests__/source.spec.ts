@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
-import { STORY_STYLES } from '../render/storyStyles'
-import { literal, staticStorySource, storySource, templateSource } from '../render/source'
+import { STORY_STYLES } from '../render/code/storyStyles'
+import { literal, staticStorySource, storySource, templateSource } from '../render/code/source'
 
 const COMPONENT = {
 	props: {

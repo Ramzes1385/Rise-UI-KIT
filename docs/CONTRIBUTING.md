@@ -526,6 +526,7 @@ src/components/BaseComponent/
 подпапок в разных папках по возможности совпадают: тест лежит в той же области, что и модель, которую он проверяет. В корне
 остаются общие файлы: главный компонент `ui/BaseX.vue`, публичные типы `types/BaseX.types.ts`, тексты `model/messages.ts`,
 история `stories/cases/Default.ts`. Правило касается всего проекта, в том числе `src/composables` и `src/utils`.
+Правило проверяет `npm run test:folders` (`scripts/check-folder-size.mjs`, входит в `ci:validate` и `test:all`): в любой папке `src/**` не больше 7 файлов. Единственное исключение — `src/icons/svg` (набор значков: один файл — один значок, спрайт собирает `build/plugins/sprite.ts`); исключения добавляются в `ALLOWED` скрипта с причиной.
 
 Пример — BaseMediaPlayer:
 
@@ -555,8 +556,8 @@ src/utils/        dom/ data/ media/ form/ navigation/
 В компонентах так же: BaseTable — `ui/{body,header,toolbar}/`, `types/{body,header,toolbar}/`,
 `styles/{body,panels,layout}/`; BaseChat — `model/slideover/`, `__tests__/{ui,browser}/`,
 `ui/ChatMessageList/styles/message/`; BaseDatePicker — `__tests__/{ui,browser}/`. Тесты e2e и скриншотные лежат в
-`__tests__/browser/`. Папки с медиафайлами историй (`stories/media/`) и SVG-иконками (`src/icons/svg/`) — это ресурсы,
-правило на них не распространяется.
+`__tests__/browser/`. Медиафайлы историй раскладываются по типу (`stories/media/{video,images,subtitles}/`); SVG-иконки
+(`src/icons/svg/`) — единственное исключение, оно записано в `ALLOWED` скрипта `check-folder-size.mjs`.
 
 Истории (С.12): в `stories/cases/` — `appearance/` (варианты, размеры, цвета, формы, раскладка, положение),
 `states/` (disabled, readonly, загрузка, пусто, ошибки), `content/` (слоты, значки, длинное и своё содержимое) и

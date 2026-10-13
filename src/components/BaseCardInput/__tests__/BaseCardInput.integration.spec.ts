@@ -5,8 +5,8 @@ import BaseCardInput from '../ui/BaseCardInput.vue'
 import { defineCardBrand } from '@utils/form/cardUtils'
 import { BaseFormField } from '@components/BaseFormField'
 import type { StandardSchemaV1 } from '@utils/form/formUtils'
-import { field, fillValidCard, typeInto } from './cardInputHelpers'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
+import { field, fillValidCard, typeInto } from './payment/cardInputHelpers'
 import type { BaseCardInputExpose, BaseCardInputProps, CardInputValue } from '../types/BaseCardInput.types'
 
 const YEAR = new Date().getFullYear()

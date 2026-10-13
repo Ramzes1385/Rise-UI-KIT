@@ -2,7 +2,7 @@ import { hashData } from './hashing'
 import { CADES_SIGN } from './constants'
 import { bytesToBase64, toBytes } from './plugin'
 import { CADES } from '@composables/crypto/useCryptoPro/core/constants'
-import { ownerName, parseSubject } from '@composables/crypto/useCryptoPro/core/subject'
+import { ownerName, parseSubject } from '@composables/crypto/useCryptoPro/core/operations/subject'
 import type { CryptoProVerifySigner, CryptoProVerifyRequest } from '../../types/BaseCryptoProSign.types'
 import type { CadesSignPlugin, CadesSignSigner, CadesSignSignedData } from '../../types/cadesSign.types'
 

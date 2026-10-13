@@ -2,7 +2,7 @@ import type { Component } from 'vue'
 import { mount } from '@vue/test-utils'
 import { defineComponent, h, inject } from 'vue'
 import { DEFAULTS_KEY } from '@composables/base/useDefaults/useDefaults'
-import { createYandexMapsKeyDecorator, resolveYandexMapsKey, STORY_YANDEX_MAPS_KEY } from '../render/yandexMapsKey'
+import { createYandexMapsKeyDecorator, resolveYandexMapsKey, STORY_YANDEX_MAPS_KEY } from '../render/data/yandexMapsKey'
 
 const KEY = 'fake-key-for-test'
 

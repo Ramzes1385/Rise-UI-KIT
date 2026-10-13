@@ -1,4 +1,4 @@
-import { motionPresetsStory } from '../render/motion'
+import { motionPresetsStory } from '../render/decorators/motion'
 
 const item = `
 		<BaseAnimation :key="replay" v-bind="args">

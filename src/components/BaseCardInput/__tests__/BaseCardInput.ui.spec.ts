@@ -2,7 +2,7 @@ import '@testing-library/jest-dom/vitest'
 import { createUiKitPlugin } from '@/plugin'
 import { render } from '@testing-library/vue'
 import BaseCardInput from '../ui/BaseCardInput.vue'
-import { field, typeInto } from './cardInputHelpers'
+import { field, typeInto } from './payment/cardInputHelpers'
 import { CARD_INPUT_PARTS } from '../types/BaseCardInput.types'
 import type { BaseCardInputPart } from '../types/BaseCardInput.types'
 

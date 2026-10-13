@@ -1,5 +1,5 @@
 @use './variables';
-@use './fonts';
+@use './fonts/fonts';
 @use './kit';
 
 // Только Storybook и playground: шрифт кита на всей странице. В пакет (dist/styles.css) входит лишь kit.scss.

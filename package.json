@@ -103,6 +103,7 @@
     "test:story-source": "node scripts/check-story-source.mjs",
     "test:slot-docs": "node scripts/check-slot-docs.mjs",
     "test:ratchets": "node scripts/check-ratchets.mjs",
+    "test:folders": "node scripts/check-folder-size.mjs",
     "create:component": "node scripts/create-component.mjs",
     "generate:emoji-data": "node scripts/generate-emoji-data.mjs",
     "pretest:components:coverage": "node scripts/invalidate-merged-coverage.mjs",
@@ -118,7 +119,7 @@
     "test:e2e": "playwright test --config build/tests/playwright.config.ts --project=e2e-chromium",
     "test:visual": "playwright test --config build/tests/playwright.config.ts --project=visual-chromium",
     "test:visual:update": "playwright test --config build/tests/playwright.config.ts --project=visual-chromium --update-snapshots",
-    "test:all": "npm run test:components:coverage && npm run test:composables:coverage && npm run test:utils:coverage && npm run test:e2e && npm run test:visual",
+    "test:all": "npm run test:components:coverage && npm run test:composables:coverage && npm run test:utils:coverage && npm run test:e2e && npm run test:visual && npm run test:folders",
     "build": "npm run build:lib",
     "build:lib": "npm run build:lib:js && npm run build:lib:types && npm run build:lib:resolve-aliases",
     "build:lib:js": "vite build --config build/lib/vite.lib.config.ts",
@@ -127,7 +128,7 @@
     "pack:dry": "npm run build:lib && npm pack --dry-run",
     "release": "semantic-release --extends ./build/release/semantic-release.config.cjs",
     "release:dry": "semantic-release --dry-run --extends ./build/release/semantic-release.local.config.cjs",
-    "ci:validate": "npm run lint && npm run lint:styles && npm run lint:unused && npm run format:check && npm run typecheck && npm run test:unit && npm run pack:dry && npm run test:ratchets",
+    "ci:validate": "npm run lint && npm run lint:styles && npm run lint:unused && npm run format:check && npm run typecheck && npm run test:unit && npm run pack:dry && npm run test:ratchets && npm run test:folders",
     "ci:release": "npm run release"
   },
   "dependencies": {

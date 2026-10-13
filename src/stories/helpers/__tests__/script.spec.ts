@@ -1,4 +1,4 @@
-import { scriptSource } from '../render/script'
+import { scriptSource } from '../render/code/script'
 
 const MODULE = [
 	"import { ref } from 'vue'",

@@ -1,9 +1,9 @@
 import { avatarImage } from '@/stories/helpers'
-import seriesVideo from '@components/BaseMediaPlayer/stories/media/demo.webm'
-import seriesCover from '@components/BaseMediaPlayer/stories/media/demo-cover.webp'
-import posterEpisode1 from '@components/BaseMediaPlayer/stories/media/demo-episode-1.webp'
-import posterEpisode2 from '@components/BaseMediaPlayer/stories/media/demo-episode-2.webp'
-import posterEpisode3 from '@components/BaseMediaPlayer/stories/media/demo-episode-3.webp'
+import seriesVideo from '@components/BaseMediaPlayer/stories/media/video/demo.webm'
+import seriesCover from '@components/BaseMediaPlayer/stories/media/images/demo-cover.webp'
+import posterEpisode1 from '@components/BaseMediaPlayer/stories/media/images/demo-episode-1.webp'
+import posterEpisode2 from '@components/BaseMediaPlayer/stories/media/images/demo-episode-2.webp'
+import posterEpisode3 from '@components/BaseMediaPlayer/stories/media/images/demo-episode-3.webp'
 
 export const seriesMedia = {
 	video: seriesVideo,

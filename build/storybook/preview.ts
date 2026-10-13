@@ -17,7 +17,7 @@ import { theme as docsTheme } from './theme'
 
 // @font-face регистрируются до токенов, чтобы Inter/JetBrains Mono были доступны сразу:
 // иначе Linux CI рендерит DejaVu Sans, а Windows — Segoe UI, и visual-тесты получают лишний pixel-diff.
-import '../../src/styles/_fonts.scss'
+import '../../src/styles/fonts/_fonts.scss'
 import '../../src/styles/index.scss'
 import './preview.scss'
 

@@ -354,7 +354,7 @@
 - `src/styles/_mixins.scss` — миксины (таблица ниже).
 - `src/styles/_functions.scss` — `sz()`, `space()`, `ct()`.
 - `src/styles/_variables.scss` — брейкпоинты и подключение токенов. Карта `$breakpoints` совпадает с `BREAKPOINTS` из `useBreakpoint` — это проверяет тест.
-- `src/styles/_fonts.scss` — `@font-face` для Inter Variable и JetBrains Mono Variable из `@fontsource-variable`; `src/styles/index.scss` — токены, шрифты и базовый шрифт страницы для Storybook (в `dist/styles.css` не входит, FOLLOW_UPS № 8).
+- `src/styles/fonts/_fonts.scss` — `@font-face` для Inter Variable и JetBrains Mono Variable из `@fontsource-variable`; `src/styles/index.scss` — токены, шрифты и базовый шрифт страницы для Storybook (в `dist/styles.css` не входит, FOLLOW_UPS № 8).
 - `build/storybook/preview.scss` — раскладки примеров в Storybook (`story-row`, `story-col`, `story-grid`…).
 - `src/stories/` — страницы Foundations и хелперы stories.
 - `scripts/check-contrast.mjs` — проверка контраста токенов.

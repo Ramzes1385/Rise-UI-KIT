@@ -44,7 +44,7 @@ const ALLOWED = [
 		reason: 'статус собеседника из данных приложения: «онлайн» распознаётся на обоих языках',
 	},
 	{
-		file: 'src/composables/crypto/useCryptoPro/core/subject.ts',
+		file: 'src/composables/crypto/useCryptoPro/core/operations/subject.ts',
 		reason: 'имена полей субъекта сертификата (ИНН, ОГРН, СНИЛС) — так их отдаёт КриптоПро, это ключи разбора, а не текст',
 	},
 	{

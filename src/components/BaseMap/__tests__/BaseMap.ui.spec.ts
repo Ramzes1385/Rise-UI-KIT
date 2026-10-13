@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom/vitest'
 import BaseMap from '../ui/BaseMap.vue'
-import { fakeYandex } from './fakeYandex'
 import { createUiKitPlugin } from '@/plugin'
 import { MAP_PARTS } from '../types/BaseMap.types'
+import { fakeYandex } from './providers/fakeYandex'
 import { loadScript } from '@utils/dom/scriptUtils'
 import { render, waitFor } from '@testing-library/vue'
 

@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { h } from 'vue'
 import BaseMap from '../ui/BaseMap.vue'
-import { fakeYandex } from './fakeYandex'
+import { fakeYandex } from './providers/fakeYandex'
 import { loadScript } from '@utils/dom/scriptUtils'
 import type { MapMarker } from '../types/BaseMap.types'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'

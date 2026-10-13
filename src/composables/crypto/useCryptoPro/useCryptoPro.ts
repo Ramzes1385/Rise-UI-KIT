@@ -14,7 +14,7 @@ import type {
 const DEFAULT_TIMEOUT = 30000
 
 /** Код работы с плагином — отдельный чанк: приложение, которое только импортирует вход, его не загружает */
-const loadPlugin = () => import('./core/plugin')
+const loadPlugin = () => import('./core/plugin/plugin')
 
 function initialStatus(): CryptoProStatus {
 	return {
