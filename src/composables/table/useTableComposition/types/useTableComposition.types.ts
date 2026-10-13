@@ -7,6 +7,9 @@ export interface UseTableCompositionOptions {
 	loadMode: ComputedRef<string>
 	pageSize: ComputedRef<number>
 	hasMore?: ComputedRef<boolean>
+	page?: ComputedRef<number | undefined>
+	totalRows?: ComputedRef<number | undefined>
+	selectedIds?: ComputedRef<Array<string | number> | undefined>
 	isMultiSort: ComputedRef<boolean>
 	searchDebounce: ComputedRef<number>
 	expandedIds?: ComputedRef<Array<string | number> | undefined>

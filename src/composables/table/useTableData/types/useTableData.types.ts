@@ -28,6 +28,12 @@ export interface UseTableDataOptions {
 	onFilter?: (filters: ColumnFilter[]) => void
 	/** Callback при изменении размера страницы */
 	onPageSizeChange?: (size: number) => void
+	/** Страница снаружи (`v-model:page`); `undefined` — страница внутренняя */
+	page?: () => number | undefined
+	/** Callback при смене страницы */
+	onPageChange?: (page: number) => void
+	/** Всего строк на сервере (серверная пагинация): `rows` — только текущая страница */
+	totalRows?: () => number | undefined
 }
 
 export interface UseTableDataReturn {
@@ -45,6 +51,8 @@ export interface UseTableDataReturn {
 	processedRows: ComputedRef<TableRow[]>
 	/** Отображаемые строки */
 	displayedRows: ComputedRef<TableRow[]>
+	/** Всего строк: `totalRows` с сервера или число обработанных строк */
+	totalCount: Ref<number>
 	/** Общее количество страниц */
 	totalPages: Ref<number>
 	/** Видимые номера страниц */

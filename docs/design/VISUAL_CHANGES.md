@@ -1898,3 +1898,11 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 - **BaseChart** (`data-basechart--with-gaps`): 2 px. Код BaseChart и история `with-gaps` в волне не менялись (изменена только история `Animations`); причина не установлена, похоже на сдвиг линии в кадре анимации. Перепроверить на следующем прогоне до/после; пока считать шумом.
 - **BaseInput** `type="search"`: справа появляется крестик «Очистить», пока в поле есть текст; нативный крестик WebKit скрыт. У поля с текстом правый отступ 36 px. Затрагивает истории с поиском (BaseCommandPalette, BaseEmojiPicker, ChatHeader, BaseInput — `Search`).
 - **BaseDashboardGrid**, **BaseFormWizard**, **BaseMap**, **BaseGantt**, **BaseSearch**, **BaseTooltip**, **BaseFileManager**: визуальных изменений нет (доступность и поведение).
+
+## Задача table-2
+
+Эталонов снимков не создавал и не обновлял; существующие истории BaseTable не меняются (новые пропсы не заданы).
+
+Порция 1 (страница и выбор снаружи):
+
+- Новые истории `data-basetable--controlled-pagination`, `--server-total-rows`, `--controlled-selection`: таблица со своими кнопками рядом, подписью-статусом под ней; сама таблица выглядит как обычная.

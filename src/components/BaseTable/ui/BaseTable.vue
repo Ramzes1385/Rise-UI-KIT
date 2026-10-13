@@ -179,7 +179,7 @@
 					<span :class="[ui('pagination-info'), classes.paginationInfo]">{{ paginationInfo }}</span>
 					<BasePagination
 						v-model="currentPage"
-						:total="processedRows.length"
+						:total="totalCount"
 						:page-size="localPageSize"
 						:max-visible="paginationMaxVisible"
 						:size-scale="sizeScale" />
@@ -220,6 +220,9 @@ const props = withDefaults(
 		searchDebounce: 300,
 		sortLocale: undefined,
 		expandedIds: undefined,
+		page: undefined,
+		totalRows: undefined,
+		selectedIds: undefined,
 		isRowInteractive: undefined,
 		sizeScale: SIZE_SCALE_DEFAULT,
 		padding: undefined,
@@ -250,7 +253,7 @@ const {
 	activeFilters,
 	currentPage,
 	localPageSize,
-	processedRows,
+	totalCount,
 	displayedRows,
 	totalPages,
 	visiblePages,
@@ -323,7 +326,8 @@ const {
 	exportItems,
 	isExportOpen,
 	exportData,
+	clearSelection,
 } = useBaseTable(props, emit)
 
-defineExpose<BaseTableExpose>({ exportData })
+defineExpose<BaseTableExpose>({ exportData, clearSelection })
 </script>

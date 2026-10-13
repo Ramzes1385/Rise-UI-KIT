@@ -133,4 +133,65 @@ describe('useTablePagination', () => {
 		hasMore.value = false
 		expect(hasMoreRows.value).toBe(false)
 	})
+
+	describe('страница снаружи и totalRows', () => {
+		it('page задаёт страницу, смена сообщается в onPageChange и не меняет её сама', () => {
+			const onPageChange = vi.fn()
+			const { currentPage, displayedRows } = useTablePagination({
+				processedRows: testRows,
+				loadMode: () => 'pagination',
+				pageSize: ref(2),
+				page: () => 2,
+				onPageChange,
+			})
+			expect(displayedRows.value[0].data.name).toBe('Вика')
+			currentPage.value = 1
+			expect(onPageChange).toHaveBeenCalledWith(1)
+			expect(currentPage.value).toBe(2)
+			currentPage.value = 2
+			expect(onPageChange).toHaveBeenCalledTimes(1)
+		})
+
+		it('без page страница внутренняя, номер меньше 1 приводится к 1', () => {
+			const onPageChange = vi.fn()
+			const { currentPage } = useTablePagination({
+				processedRows: testRows,
+				loadMode: () => 'pagination',
+				pageSize: ref(2),
+				page: () => undefined,
+				onPageChange,
+			})
+			currentPage.value = 2
+			expect(currentPage.value).toBe(2)
+			currentPage.value = -3
+			expect(currentPage.value).toBe(1)
+		})
+
+		it('totalRows считает страницы и totalCount по серверному числу, строки не нарезаются', () => {
+			const { totalPages, totalCount, displayedRows } = useTablePagination({
+				processedRows: testRows,
+				loadMode: () => 'pagination',
+				pageSize: ref(2),
+				totalRows: () => 9,
+			})
+			expect(totalCount.value).toBe(9)
+			expect(totalPages.value).toBe(5)
+			expect(displayedRows.value).toHaveLength(4)
+		})
+
+		it('управляемая страница не сдвигается, пока данных нет, но сдвигается, когда строки появились', async () => {
+			const rows = ref<TableRow[]>([])
+			const onPageChange = vi.fn()
+			useTablePagination({
+				processedRows: rows,
+				loadMode: () => 'pagination',
+				pageSize: ref(2),
+				page: () => 5,
+				onPageChange,
+			})
+			rows.value = testRows.value.slice(0, 1)
+			await nextTick()
+			expect(onPageChange).toHaveBeenCalledWith(1)
+		})
+	})
 })

@@ -5,9 +5,20 @@ import type { UseTableDataReturn } from '@composables/table/useTableData/types/u
 
 /** Состояние данных: поиск, фильтры, страницы и строки */
 function pickDataState(data: UseTableDataReturn) {
-	const { searchQuery, activeFilters, currentPage, localPageSize, processedRows, displayedRows, totalPages, visiblePages, hasMoreRows } =
-		data
-	return { searchQuery, activeFilters, currentPage, localPageSize, processedRows, displayedRows, totalPages, visiblePages, hasMoreRows }
+	const { searchQuery, activeFilters, currentPage, localPageSize, processedRows, displayedRows, totalCount } = data
+	const { totalPages, visiblePages, hasMoreRows } = data
+	return {
+		searchQuery,
+		activeFilters,
+		currentPage,
+		localPageSize,
+		processedRows,
+		displayedRows,
+		totalCount,
+		totalPages,
+		visiblePages,
+		hasMoreRows,
+	}
 }
 
 /** Состояние и действия колонок без внутренних filterableColumns и snapshotColumns */

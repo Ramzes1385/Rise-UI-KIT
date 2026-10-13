@@ -222,3 +222,76 @@ describe('useTableSelection', () => {
 		expect(isSelectAllDisabled.value).toBe(true)
 	})
 })
+
+describe('useTableSelection: управляемый выбор и clearSelection', () => {
+	const makeRows = (): TableRow[] => [
+		{ id: '1', data: {} },
+		{ id: '2', data: {}, isDisabled: true },
+		{ id: '3', data: {} },
+	]
+
+	it('selectedIds снаружи: isSelected берёт набор из опции, а не из row.isSelected', () => {
+		const rows = ref<TableRow[]>(makeRows().map(row => ({ ...row, isSelected: true })))
+		const ids = ref<string[]>(['3'])
+		const { isSelected, selectedIds } = useTableSelection({ rows, selectedIds: () => ids.value })
+		expect(rows.value.map(row => isSelected(row))).toEqual([false, false, true])
+		ids.value = ['1', '99']
+		expect([...selectedIds.value]).toEqual(['1', '99'])
+	})
+
+	it('toggleRow в управляемом режиме сообщает новый набор и не меняет внутренний', () => {
+		const rows = ref<TableRow[]>(makeRows())
+		const onSelectedIdsChange = vi.fn()
+		const onSelect = vi.fn()
+		const { isSelected, toggleRow } = useTableSelection({ rows, onSelect, selectedIds: () => ['99'], onSelectedIdsChange })
+		toggleRow(rows.value[0])
+		expect(onSelectedIdsChange).toHaveBeenCalledWith(['99', '1'])
+		expect(onSelect).toHaveBeenCalledWith([rows.value[0]])
+		expect(isSelected(rows.value[0])).toBe(false)
+	})
+
+	it('toggleAll сохраняет выбранные id, которых нет в rows (другие страницы)', () => {
+		const rows = ref<TableRow[]>(makeRows())
+		const onSelectedIdsChange = vi.fn()
+		const { toggleAll } = useTableSelection({ rows, selectedIds: () => ['99'], onSelectedIdsChange })
+		toggleAll()
+		expect(onSelectedIdsChange).toHaveBeenCalledWith(['99', '1', '3'])
+	})
+
+	it('смена rows не пересобирает управляемый выбор и не вызывает колбэки', async () => {
+		const rows = ref<TableRow[]>(makeRows())
+		const onSelectedIdsChange = vi.fn()
+		useTableSelection({ rows, selectedIds: () => ['1'], onSelectedIdsChange })
+		rows.value = [{ id: '5', data: {}, isSelected: true }]
+		await nextTick()
+		expect(onSelectedIdsChange).not.toHaveBeenCalled()
+	})
+
+	it('исчезнувшая строка внутреннего выбора сообщается и в onSelectedIdsChange', async () => {
+		const rows = ref<TableRow[]>(makeRows())
+		const onSelectedIdsChange = vi.fn()
+		const { toggleRow } = useTableSelection({ rows, onSelectedIdsChange })
+		toggleRow(rows.value[0])
+		toggleRow(rows.value[2])
+		onSelectedIdsChange.mockClear()
+		rows.value = rows.value.slice(1)
+		await nextTick()
+		expect(onSelectedIdsChange).toHaveBeenCalledWith(['3'])
+	})
+
+	it('clearSelection снимает выбор, включая disabled, и молчит, если выбора нет', () => {
+		const rows = ref<TableRow[]>([
+			{ id: '1', data: {}, isSelected: true },
+			{ id: '2', data: {}, isDisabled: true, isSelected: true },
+		])
+		const onSelect = vi.fn()
+		const onSelectedIdsChange = vi.fn()
+		const { clearSelection, selectedIds } = useTableSelection({ rows, onSelect, onSelectedIdsChange })
+		clearSelection()
+		expect(selectedIds.value.size).toBe(0)
+		expect(onSelect).toHaveBeenCalledWith([])
+		expect(onSelectedIdsChange).toHaveBeenCalledWith([])
+		clearSelection()
+		expect(onSelectedIdsChange).toHaveBeenCalledTimes(1)
+	})
+})

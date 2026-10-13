@@ -255,8 +255,31 @@ export interface BaseTableProps extends BaseComponentProps<
 	emptyFilteredText?: string
 	/** Высота таблицы (для фиксированного заголовка) */
 	height?: string
-	/** Размер страницы */
+	/**
+	 * Размер страницы (`v-model:pageSize`): число строк на странице, `0` — без пагинации. Выбор размера в футере и
+	 * `pageSize` из пропса возвращают на первую страницу; новый размер приходит в `update:pageSize` и `page-size-change`
+	 */
 	pageSize?: number
+	/**
+	 * Номер текущей страницы с 1 (`v-model:page`). Заданный проп переходит на управление снаружи: клик по пагинации,
+	 * сброс страницы поиском или фильтром и сдвиг на последнюю существующую страницу только сообщают номер в
+	 * `update:page` (и `page-change`), страницей остаётся значение пропса. Без пропса страница внутренняя
+	 */
+	page?: number
+	/**
+	 * Всего строк на сервере (серверная пагинация): `rows` — только текущая страница, а число страниц, подпись
+	 * «1–10 из 100» и пагинация считаются по `totalRows`. В режиме `pagination` строки не нарезаются по `pageSize`; в
+	 * `button` и `infinite` подгрузка продолжается, пока в `rows` меньше `totalRows`. Поиск, фильтры и сортировка
+	 * по-прежнему применяются к переданным строкам: для серверных передайте на сервер события `search`, `filter`, `sort`
+	 */
+	totalRows?: number
+	/**
+	 * Выбранные строки (`v-model:selectedIds`): массив `id`. Заданный проп переходит на управление снаружи — `isSelected`
+	 * строк не учитывается, клик по чекбоксам и «Выбрать все» только сообщают новый набор в `update:selectedIds` (и
+	 * `select`), а id строк, которых нет в `rows` (другая страница серверной пагинации), сохраняются. Без пропса выбор
+	 * внутренний: стартует с `isSelected` строк. Снять весь выбор — `clearSelection()` через `ref`
+	 */
+	selectedIds?: Array<string | number>
 	/** Варианты размера страницы для селектора */
 	pageSizeOptions?: number[]
 	/** Режим подгрузки */
@@ -364,6 +387,12 @@ export interface BaseTableExpose {
 	 * Возвращает `false`, если обработчик `export` отменил скачивание
 	 */
 	exportData: (format: TableExportFormat, options?: TableExportDataOptions) => boolean
+	/**
+	 * Снимает выбор со всех строк, в том числе отключённых и не попавших в `rows`; сообщает пустой набор в
+	 * `update:selectedIds` и `select`. Ничего не делает, если выбора нет. Для `v-model:selectedIds` достаточно
+	 * присвоить пустой массив, метод нужен при внутреннем выборе
+	 */
+	clearSelection: () => void
 }
 
 export interface BaseTableEmits {
@@ -374,7 +403,10 @@ export interface BaseTableEmits {
 	(event: 'expand', row: TableRow): void
 	(event: 'update:expandedIds', ids: Array<string | number>): void
 	(event: 'page-change', page: number): void
+	(event: 'update:page', page: number): void
 	(event: 'page-size-change', size: number): void
+	(event: 'update:pageSize', size: number): void
+	(event: 'update:selectedIds', ids: Array<string | number>): void
 	(event: 'load-more'): void
 	(event: 'row-click', row: TableRow): void
 	(event: 'column-resize', key: string, width: number): void

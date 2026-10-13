@@ -14,4 +14,6 @@ export interface UseTableDisplayedRowsOptions {
 	loadedCount: Ref<number>
 	/** Есть ли строки, которые родитель ещё не передал (серверная подгрузка) */
 	hasMore?: () => boolean
+	/** Всего строк на сервере: в режиме страниц строки не нарезаются, в button и infinite подгрузка идёт, пока их меньше */
+	totalRows?: () => number | undefined
 }

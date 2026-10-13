@@ -22,11 +22,19 @@ function toggleSelectedId(selectedIds: Set<string | number>, id: string | number
 	return next
 }
 
-/** ID выбранных disabled-строк: их выбор не меняется массовым переключением */
+/**
+ * ID, которые массовое переключение не меняет: выбранные disabled-строки (пользователь не может изменить их и чекбоксом)
+ * и выбранные id, которых нет в `rows` (управляемый выбор держит id строк других страниц серверной пагинации)
+ */
 function collectDisabledSelectedIds(rows: TableRow[], selectedIds: Set<string | number>): Set<string | number> {
 	const next = new Set<string | number>()
+	const known = new Set<string | number>()
 	for (const row of rows) {
+		known.add(row.id)
 		if (row.isDisabled && selectedIds.has(row.id)) next.add(row.id)
+	}
+	for (const id of selectedIds) {
+		if (!known.has(id)) next.add(id)
 	}
 	return next
 }

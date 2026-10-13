@@ -7,9 +7,17 @@ import type { VisiblePageItem } from '@utils/navigation/paginationUtils/types/pa
 import type { UseTablePaginationOptions, UseTablePaginationReturn } from './types/useTablePagination.types'
 
 function useTablePagination(options: UseTablePaginationOptions): UseTablePaginationReturn {
-	const { processedRows, loadMode, pageSize, hasMore = () => false, onPageSizeChange } = options
+	const { processedRows, loadMode, pageSize, hasMore = () => false, onPageSizeChange, page, onPageChange, totalRows } = options
 
-	const currentPage = ref(1)
+	const internalPage = ref(1)
+	const currentPage = computed({
+		get: (): number => Math.max(1, page?.() ?? internalPage.value),
+		set: (value: number): void => {
+			if (value === currentPage.value) return
+			if (page?.() === undefined) internalPage.value = value
+			onPageChange?.(value)
+		},
+	})
 	const localPageSize = ref(pageSize.value)
 
 	const effectivePageSize = computed((): number => {
@@ -26,10 +34,13 @@ function useTablePagination(options: UseTablePaginationOptions): UseTablePaginat
 		localPageSize,
 		loadedCount,
 		hasMore,
+		totalRows,
 	})
 
+	const totalCount = computed((): number => totalRows?.() ?? processedRows.value.length)
+
 	const totalPages = computed((): number => {
-		return calcTotalPages(processedRows.value.length, localPageSize.value)
+		return calcTotalPages(totalCount.value, localPageSize.value)
 	})
 
 	const visiblePages = computed((): VisiblePageItem[] => {
@@ -46,7 +57,8 @@ function useTablePagination(options: UseTablePaginationOptions): UseTablePaginat
 	})
 
 	watch(totalPages, total => {
-		if (currentPage.value > total) currentPage.value = Math.max(total, 1)
+		const isAwaitingData = page?.() !== undefined && totalCount.value === 0
+		if (!isAwaitingData && currentPage.value > total) currentPage.value = Math.max(total, 1)
 	})
 
 	watch(pageSize, newSize => {
@@ -59,6 +71,7 @@ function useTablePagination(options: UseTablePaginationOptions): UseTablePaginat
 		currentPage,
 		localPageSize,
 		displayedRows,
+		totalCount,
 		totalPages,
 		visiblePages,
 		hasMoreRows,

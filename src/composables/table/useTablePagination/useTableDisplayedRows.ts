@@ -4,12 +4,12 @@ import type { TableRow } from '@components/BaseTable/types/BaseTable.types'
 import type { UseTableDisplayedRowsOptions } from './types/useTableDisplayedRows.types'
 
 function useTableDisplayedRows(options: UseTableDisplayedRowsOptions) {
-	const { processedRows, loadMode, currentPage, localPageSize, loadedCount, hasMore = () => false } = options
+	const { processedRows, loadMode, currentPage, localPageSize, loadedCount, hasMore = () => false, totalRows = () => undefined } = options
 
 	const displayedRows = computed((): TableRow[] => {
 		const mode = loadMode()
 		if (mode === 'pagination') {
-			if (!localPageSize.value) return processedRows.value
+			if (!localPageSize.value || totalRows() !== undefined) return processedRows.value
 			const start = (currentPage.value - 1) * localPageSize.value
 			return processedRows.value.slice(start, start + localPageSize.value)
 		}
@@ -22,7 +22,10 @@ function useTableDisplayedRows(options: UseTableDisplayedRowsOptions) {
 	const hasMoreRows = computed((): boolean => {
 		const mode = loadMode()
 		if (mode === 'button' || mode === 'infinite') {
-			return hasMore() || loadedCount.value < processedRows.value.length
+			const total = totalRows()
+			return (
+				hasMore() || loadedCount.value < processedRows.value.length || (total !== undefined && processedRows.value.length < total)
+			)
 		}
 		return false
 	})

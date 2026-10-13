@@ -13,6 +13,12 @@ export interface UseTablePaginationOptions {
 	hasMore?: () => boolean
 	/** Callback при изменении размера страницы */
 	onPageSizeChange?: (size: number) => void
+	/** Страница снаружи (`v-model:page`): при заданном значении номер страницы управляется родителем; `undefined` — внутренний */
+	page?: () => number | undefined
+	/** Callback при смене страницы: пользователем, сбросом поиска или фильтра, сдвигом на последнюю существующую */
+	onPageChange?: (page: number) => void
+	/** Всего строк на сервере: страница `processedRows` — вся текущая страница, число страниц и подпись считаются по нему */
+	totalRows?: () => number | undefined
 }
 
 export interface UseTablePaginationReturn {
@@ -22,6 +28,8 @@ export interface UseTablePaginationReturn {
 	localPageSize: Ref<number>
 	/** Отображаемые строки */
 	displayedRows: ComputedRef<TableRow[]>
+	/** Всего строк: `totalRows` с сервера или число обработанных строк */
+	totalCount: ComputedRef<number>
 	/** Общее количество страниц */
 	totalPages: ComputedRef<number>
 	/** Видимые номера страниц */

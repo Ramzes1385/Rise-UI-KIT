@@ -40,4 +40,31 @@ describe('useTableDisplayedRows', () => {
 		expect(ids(displayedRows.value)).toHaveLength(5)
 		expect(hasMoreRows.value).toBe(false)
 	})
+
+	it('totalRows в режиме pagination: строки уже страница, не нарезаются', () => {
+		const { displayedRows } = useTableDisplayedRows({
+			processedRows,
+			loadMode: () => 'pagination',
+			currentPage: ref(2),
+			localPageSize: ref(2),
+			loadedCount: ref(3),
+			totalRows: () => 50,
+		})
+		expect(ids(displayedRows.value)).toEqual([1, 2, 3, 4, 5])
+	})
+
+	it('totalRows в button и infinite: подгрузка идёт, пока строк меньше totalRows', () => {
+		const make = (total: number | undefined) =>
+			useTableDisplayedRows({
+				processedRows,
+				loadMode: () => 'button',
+				currentPage: ref(1),
+				localPageSize: ref(5),
+				loadedCount: ref(5),
+				totalRows: () => total,
+			}).hasMoreRows.value
+		expect(make(8)).toBe(true)
+		expect(make(5)).toBe(false)
+		expect(make(undefined)).toBe(false)
+	})
 })

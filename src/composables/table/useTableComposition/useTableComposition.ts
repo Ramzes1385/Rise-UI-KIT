@@ -1,5 +1,5 @@
 /** Composable: агрегация логики таблицы */
-import { computed, watch } from 'vue'
+import { computed } from 'vue'
 import { calcRowNumber } from '@utils/navigation/tableUtils'
 import { calcPageInfo } from '@utils/navigation/paginationUtils'
 import { useTableCompositionModel } from './useTableCompositionModel'
@@ -9,13 +9,9 @@ import { pickColumnsState, pickDataHandlers, pickDataState, pickToolbarState } f
 
 /** Описание: агрегирует логику таблицы — сортировка, фильтрация, поиск, пагинация, выбор строк, раскрытие, ресайз колонок и infinite scroll */
 function useTableComposition(options: UseTableCompositionOptions) {
-	const { loadMode, pageSizeOptions, emit } = options
+	const { loadMode, pageSizeOptions } = options
 	const { tableColumns, data, selection, expand, toolbar } = useTableCompositionModel(options)
-	const { currentPage, localPageSize, processedRows } = data
-
-	watch(currentPage, newPage => {
-		emit('page-change', newPage)
-	})
+	const { currentPage, localPageSize, totalCount } = data
 
 	const pageSizeSelectOptions = computed(() => {
 		return pageSizeOptions.value.map(size => ({
@@ -28,7 +24,7 @@ function useTableComposition(options: UseTableCompositionOptions) {
 		return calcPageInfo({
 			current: currentPage.value,
 			pageSize: localPageSize.value,
-			total: processedRows.value.length,
+			total: totalCount.value,
 		})
 	})
 
@@ -50,6 +46,7 @@ function useTableComposition(options: UseTableCompositionOptions) {
 		isSomeSelected: selection.isSomeSelected,
 		isSelectAllDisabled: selection.isSelectAllDisabled,
 		isSelected: selection.isSelected,
+		clearSelection: selection.clearSelection,
 		isExpanded: expand.isExpanded,
 		toggleExpand: expand.toggleExpand,
 		handleRowClick: expand.handleRowClick,

@@ -46,3 +46,6 @@ export const InfiniteWithoutHeight = cases.InfiniteWithoutHeight
 export const ExpandedIds = cases.ExpandedIds
 export const SortLocale = cases.SortLocale
 export const ColumnResizeTouch = cases.ColumnResizeTouch
+export const ControlledPagination = cases.ControlledPagination
+export const ServerTotalRows = cases.ServerTotalRows
+export const ControlledSelection = cases.ControlledSelection
