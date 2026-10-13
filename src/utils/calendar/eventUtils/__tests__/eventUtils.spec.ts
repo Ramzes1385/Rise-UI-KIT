@@ -132,7 +132,7 @@ describe('eventUtils', () => {
 		})
 
 		describe('переход на летнее время (Europe/Berlin)', () => {
-			const savedTz = process.env.TZ
+			const savedTz = process.env.TZ ?? Intl.DateTimeFormat().resolvedOptions().timeZone
 			beforeEach(() => {
 				process.env.TZ = 'Europe/Berlin'
 			})

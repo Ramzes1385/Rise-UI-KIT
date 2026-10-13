@@ -2,7 +2,7 @@
 
 import ts from 'typescript'
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
-import { dirname, join, relative, resolve, sep } from 'node:path'
+import { dirname, join, normalize, relative, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
@@ -33,7 +33,7 @@ const EXTENSIONS = ['.ts', '.vue', '/index.ts']
 function resolveFile(base: string): string | null {
 	if (existsSync(base) && statSync(base).isFile()) return base
 	for (const ext of EXTENSIONS) {
-		if (existsSync(base + ext)) return base + ext
+		if (existsSync(base + ext)) return normalize(base + ext)
 	}
 	return null
 }

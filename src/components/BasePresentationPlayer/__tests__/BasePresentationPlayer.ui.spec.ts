@@ -70,7 +70,11 @@ describe('BasePresentationPlayer: проп ui', () => {
 })
 
 describe('BasePresentationPlayer: движение', () => {
+	beforeEach(() => {
+		vi.useFakeTimers()
+	})
 	afterEach(() => {
+		vi.useRealTimers()
 		vi.unstubAllGlobals()
 		vi.restoreAllMocks()
 		document.documentElement.removeAttribute('data-rise-motion')
@@ -96,7 +100,7 @@ describe('BasePresentationPlayer: движение', () => {
 		await wrapper.get('.base-presentation-player__slides-button').trigger('click')
 		await nextTick()
 		await wrapper.get('.base-presentation-player__slides-button').trigger('click')
-		await new Promise(resolve => setTimeout(resolve, ms))
+		await vi.advanceTimersByTimeAsync(ms)
 		return !wrapper.find('.base-presentation-player__panel').exists()
 	}
 
