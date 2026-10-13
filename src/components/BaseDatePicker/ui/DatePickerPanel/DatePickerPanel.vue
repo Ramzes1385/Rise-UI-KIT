@@ -7,11 +7,35 @@
 				role="dialog"
 				:aria-label="UI_TEXT.SELECT_DATE"
 				class="date-picker-panel"
-				:class="[ui('panel'), { 'date-picker-panel--multi': safeMonthsCount > 1 }, classes.root]"
+				:class="[
+					ui('panel'),
+					{ 'date-picker-panel--multi': safeMonthsCount > 1, 'date-picker-panel--presets': hasPresets },
+					classes.root,
+				]"
 				:style="[resolvedProps.panelStyle, layerStyle]"
 				:data-theme="resolvedProps.theme"
 				:data-rise-theme="resolvedProps.riseTheme"
 				:data-rise-motion="resolvedProps.motionPreset">
+				<div
+					v-if="hasPresets"
+					class="date-picker-panel__presets"
+					:class="ui('presets')"
+					role="group"
+					:aria-label="UI_DATE_PICKER.PRESETS">
+					<BaseButton
+						v-for="preset in resolvedProps.presets"
+						:key="preset.id"
+						:variant="preset.isActive ? 'soft' : 'ghost'"
+						class="date-picker-panel__preset"
+						:class="[ui('preset'), { 'date-picker-panel__preset--active': preset.isActive }]"
+						:aria-pressed="preset.isActive ? 'true' : 'false'"
+						:is-disabled="preset.isDisabled"
+						:size-scale="resolvedProps.sizeScale"
+						@click="handlePresetSelect(preset.id)">
+						{{ preset.label }}
+					</BaseButton>
+				</div>
+
 				<div class="date-picker-panel__header" :class="ui('header')">
 					<div class="date-picker-panel__nav-group" :class="ui('nav-group')">
 						<BaseTooltip :text="UI_ARIA.PREV_YEAR" :size-scale="resolvedProps.sizeScale">
@@ -79,6 +103,8 @@
 							:calendar-config="resolvedCalendarConfig"
 							:size-scale="resolvedProps.sizeScale"
 							:month-items="monthItems"
+							:min-days="minDays"
+							:max-days="maxDays"
 							:part-class="partClass"
 							@model-update="handleModelUpdate"
 							@model-end-update="handleModelEndUpdate"
@@ -120,11 +146,11 @@
 import '../../styles/DatePickerPanel.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
-import { UI_ARIA, UI_TEXT } from '@/locales/messages'
 import { BaseTooltip } from '@components/BaseTooltip'
 import { calcIconScale } from '@utils/media/iconUtils'
 import { BaseCalendar } from '@components/BaseCalendar'
 import { useDatePickerPanel } from '../../model/useDatePickerPanel'
+import { UI_ARIA, UI_DATE_PICKER, UI_TEXT } from '@/locales/messages'
 import DatePickerRangePanel from '../DatePickerRangePanel/DatePickerRangePanel.vue'
 import type { DatePickerPanelEmits, DatePickerPanelProps } from '../../types/DatePickerPanel.types'
 
@@ -143,6 +169,7 @@ const {
 	classes,
 	panelRef,
 	safeMonthsCount,
+	hasPresets,
 	displayYear,
 	monthItems,
 	handleMonthChange,
@@ -158,6 +185,7 @@ const {
 	handleModelEndUpdate,
 	handleSelectedUpdate,
 	handleRangeSelect,
+	handlePresetSelect,
 	exposed,
 } = useDatePickerPanel(props, emit)
 

@@ -15,7 +15,16 @@ async function openPanel(): Promise<void> {
 describe('BaseDatePicker: проп ui', () => {
 	it('свои части получают БЭМ-класс дейтпикера и классы ui, части BaseInput — только классы ui', async () => {
 		const { container } = render(BaseDatePicker, {
-			props: { modelValue: new Date(2026, 8, 10), label: 'Дата', isRequired: true, error: 'Ошибка', isClearable: true, ui },
+			props: {
+				modelValue: new Date(2026, 8, 10),
+				selectionMode: 'range',
+				presets: true,
+				label: 'Дата',
+				isRequired: true,
+				error: 'Ошибка',
+				isClearable: true,
+				ui,
+			},
 		})
 		await openPanel()
 
@@ -28,6 +37,7 @@ describe('BaseDatePicker: проп ui', () => {
 		expect(document.querySelector('.base-date-picker__panel')).toHaveClass('date-picker-panel')
 		expect(document.querySelectorAll('.base-date-picker__nav-btn.date-picker-panel__nav-btn')).toHaveLength(4)
 		expect(document.querySelectorAll('.base-date-picker__nav-group')).toHaveLength(2)
+		expect(document.querySelectorAll('.base-date-picker__preset')).toHaveLength(6)
 		expect(document.querySelector('.base-input__field')!.className).not.toMatch(/base-date-picker__/)
 	})
 

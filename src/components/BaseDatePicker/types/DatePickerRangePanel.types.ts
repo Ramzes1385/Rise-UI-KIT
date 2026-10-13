@@ -17,6 +17,10 @@ export interface DatePickerRangePanelProps {
 	calendarConfig: BaseDatePickerCalendarConfig
 	sizeScale: number
 	monthItems: DatePickerRangePanelMonthItem[]
+	/** Наименьшая длина диапазона в днях: пока выбрано только начало, слишком близкие дни отключены */
+	minDays?: number | null
+	/** Наибольшая длина диапазона в днях: пока выбрано только начало, слишком далёкие дни отключены */
+	maxDays?: number | null
 	/** Классы частей дейтпикера: `ui` родителя (`.base-date-picker__<часть>` и классы из пропа `ui`) */
 	partClass?: UiClassFn<BaseDatePickerPart>
 }

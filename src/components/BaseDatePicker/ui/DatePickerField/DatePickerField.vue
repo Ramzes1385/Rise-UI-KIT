@@ -14,7 +14,9 @@
 			:custom-class="classes.input"
 			:ui="inputUi"
 			@click="handleFieldClick"
-			@keydown="handleFieldKeydown">
+			@blur="handleBlur"
+			@keydown="handleFieldKeydown"
+			@update:model-value="handleInput">
 			<template #suffix>
 				<div class="date-picker-field__suffix" :class="ui('suffix')">
 					<BaseButton
@@ -71,6 +73,17 @@ const props = defineProps<DatePickerFieldProps>()
 const emit = defineEmits<DatePickerFieldEmits>()
 defineSlots<DatePickerFieldSlots>()
 
-const { ui, inputUi, resolvedProps, classes, inputRef, handleFieldClick, handleClearClick, handleIconClick, handleFieldKeydown } =
-	useDatePickerField(props, emit)
+const {
+	ui,
+	inputUi,
+	resolvedProps,
+	classes,
+	inputRef,
+	handleFieldClick,
+	handleClearClick,
+	handleIconClick,
+	handleInput,
+	handleBlur,
+	handleFieldKeydown,
+} = useDatePickerField(props, emit)
 </script>

@@ -1,7 +1,7 @@
-import type meta from '../../BaseDatePicker.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import BaseDatePicker from '../../../ui/BaseDatePicker.vue'
-import { docsFrame, findPanel, dayName } from '../../shared'
+import type meta from '../../../BaseDatePicker.stories'
+import BaseDatePicker from '../../../../ui/BaseDatePicker.vue'
+import { docsFrame, findPanel, dayName } from '../../../shared'
 import { expect, within, waitFor, screen } from 'storybook/test'
 import { storyDate, storySource, useStorySetup } from '@/stories/helpers'
 

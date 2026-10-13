@@ -19,6 +19,10 @@ export interface UseDatePickerStateOptions {
 			isMultiMonth: boolean
 			/** Предел числа месяцев в панели при isMultiMonth */
 			maxMonths?: number
+			/** Заданное число месяцев в панели: вместо подсчёта по ширине поля */
+			monthsShown?: number | null
+			/** В панели колонка готовых периодов: её ширина вычитается при подсчёте месяцев */
+			hasPresets?: boolean
 			sizeScale: number
 			closeOnClickOutside: boolean
 			closeOnEscape: boolean
@@ -76,6 +80,8 @@ export interface DatePickerMonthsFit {
 	showWeekNumber?: boolean
 	/** Предел числа месяцев */
 	maxMonths?: number
+	/** Ширина колонки готовых периодов, px (до масштабирования) */
+	presetsWidth: number
 }
 
 export interface UseDatePickerPanelSizeOptions extends Pick<UseDatePickerStateOptions, 'resolvedProps' | 'calendarConfig'> {

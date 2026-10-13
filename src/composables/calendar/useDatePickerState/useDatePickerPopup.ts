@@ -58,7 +58,7 @@ function useDatePickerPopup(options: UseDatePickerPopupOptions) {
 		dropdownRef: panelEl,
 		position: () => 'bottom-start',
 		gap: () => resolvedProps.value.gap,
-		matchWidth: () => resolvedProps.value.isMultiMonth,
+		matchWidth: () => resolvedProps.value.isMultiMonth && !resolvedProps.value.monthsShown,
 		// Панель с календарём и временем выше 320px (высота списков BaseDropdown) — ограничена только окном
 		maxHeight: () => PANEL_MAX_HEIGHT,
 		isOpen: () => isOpen.value,

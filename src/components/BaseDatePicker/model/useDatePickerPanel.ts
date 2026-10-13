@@ -36,6 +36,7 @@ function resolvePanelProps(props: DatePickerPanelProps) {
 		selectedDates: props.selectedDates ?? [],
 		monthsCount: props.monthsCount ?? 1,
 		panelStyle: props.panelStyle ?? {},
+		presets: props.presets ?? [],
 		...resolveAreaAttrs(props),
 	}
 }
@@ -86,6 +87,7 @@ function createRelays(emit: DatePickerPanelEmits) {
 		handleModelEndUpdate: (value: Date | null): void => emit('model-end-update', value),
 		handleSelectedUpdate: (value: Date[]): void => emit('selected-update', value),
 		handleRangeSelect: (start: Date, end: Date): void => emit('range-select', start, end),
+		handlePresetSelect: (id: string): void => emit('preset-select', id),
 	}
 }
 
@@ -102,6 +104,7 @@ export function useDatePickerPanel(props: DatePickerPanelProps, emit: DatePicker
 		...useMonthMotion(navigation.currentBaseDate, panelRef),
 		teleportTarget,
 		resolvedProps,
+		hasPresets: computed(() => resolvedProps.value.selectionMode === 'range' && resolvedProps.value.presets.length > 0),
 		layerStyle,
 		classes,
 		panelRef,

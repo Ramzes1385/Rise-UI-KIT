@@ -363,7 +363,30 @@ describe('useDatePickerState', () => {
 		expect(state.panelStyle.value).toMatchObject({ maxHeight: 'calc(100vh - 16px)', width: expect.stringMatching(/px$/) })
 	})
 
+	it('с заданным числом месяцев панель не растягивается до ширины поля', async () => {
+		const { state, attachPanel } = setup({ resolved: { isMultiMonth: true, monthsShown: 2 } })
+		attachPanel()
+		state.handleFieldClick()
+		await nextTick()
+
+		expect(state.panelStyle.value).toMatchObject({ maxHeight: 'calc(100vh - 16px)' })
+		expect(state.panelStyle.value).not.toHaveProperty('width')
+	})
+
 	describe('число месяцев в панели', () => {
+		it('колонка готовых периодов уменьшает место для месяцев', () => {
+			expect(setup({ resolved: { isMultiMonth: true }, width: 900 }).state.computedMonthsCount.value).toBe(3)
+			expect(setup({ resolved: { isMultiMonth: true, hasPresets: true }, width: 900 }).state.computedMonthsCount.value).toBe(2)
+		})
+
+		it('monthsShown заменяет подсчёт по ширине и не зависит от isMultiMonth и maxMonths', () => {
+			expect(setup({ resolved: { monthsShown: 2 }, width: 100 }).state.computedMonthsCount.value).toBe(2)
+			expect(
+				setup({ resolved: { isMultiMonth: true, maxMonths: 1, monthsShown: 3 }, width: 2000 }).state.computedMonthsCount.value,
+			).toBe(3)
+			expect(setup({ resolved: { isMultiMonth: true, monthsShown: null }, width: 900 }).state.computedMonthsCount.value).toBe(3)
+		})
+
 		it('без isMultiMonth — один месяц', () => {
 			const { state } = setup({ width: 2000 })
 			expect(state.computedMonthsCount.value).toBe(1)

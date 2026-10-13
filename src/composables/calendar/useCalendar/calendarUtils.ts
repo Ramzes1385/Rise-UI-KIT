@@ -110,14 +110,18 @@ function isOutsideLimits(timestamp: number, limits: CalendarDayLimits): boolean 
 	)
 }
 
+/** Проверка дня по ограничениям: отключённые даты и дни недели, границы `minDate`/`maxDate`/`disableFrom`/`disableTo` */
+function createDayAvailability(limits: CalendarDayLimits): (date: Date) => boolean {
+	return date => {
+		const dateOnly = toDateOnly(date)
+		return isDisabledByList(dateOnly, limits) || isOutsideLimits(dateOnly.getTime(), limits)
+	}
+}
+
 /** Отметки дня: отключён ли он, выходной ли, его подсветка и события */
 function createDayMarkers(options: CalendarDayMarkerOptions) {
 	const { highlights, weekends } = options
-
-	function isDayDisabled(date: Date): boolean {
-		const dateOnly = toDateOnly(date)
-		return isDisabledByList(dateOnly, options) || isOutsideLimits(dateOnly.getTime(), options)
-	}
+	const isDayDisabled = createDayAvailability(options)
 
 	function isWeekend(date: Date): boolean {
 		const w = weekends()
@@ -145,6 +149,7 @@ function createDayMarkers(options: CalendarDayMarkerOptions) {
 export {
 	buildMonthDays,
 	buildYearRange,
+	createDayAvailability,
 	createDayMarkers,
 	getMonthNames,
 	getWeekdayNames,

@@ -1,16 +1,18 @@
 <template>
 	<div ref="wrapperRef" :class="[ui('root'), classes.root]" :style="[sizeScaleStyle, customColorStyle]">
 		<DatePickerField
-			:display-value="displayValue"
+			:display-value="fieldText"
 			:placeholder="resolvedProps.placeholder"
 			:label="resolvedProps.label"
-			:error="formField.error"
+			:error="fieldError"
 			:is-disabled="resolvedProps.isDisabled"
 			:is-readonly="resolvedProps.isReadonly"
 			:is-required="resolvedProps.isRequired"
 			:is-open="isOpen"
 			:is-clearable="resolvedProps.isClearable"
 			:has-value="hasValue"
+			:is-editable="isFieldEditable"
+			:has-draft="hasDraft"
 			:input-variant="resolvedProps.inputVariant"
 			:color="color"
 			:size-scale="resolvedProps.sizeScale"
@@ -19,6 +21,9 @@
 			:part-class="ui"
 			@field-click="handleFieldClick"
 			@keyboard-open="handleKeyboardOpen"
+			@text-input="handleTextInput"
+			@text-commit="handleTextCommit"
+			@text-cancel="handleTextCancel"
 			@clear-click="handleClear"
 			@icon-click="handleFieldClick">
 			<template #icon>
@@ -37,6 +42,9 @@
 			:calendar-config="calendarConfig"
 			:size-scale="resolvedProps.sizeScale"
 			:months-count="computedMonthsCount"
+			:presets="presetItems"
+			:min-days="resolvedProps.minDays"
+			:max-days="resolvedProps.maxDays"
 			:panel-style="panelStyle"
 			:theme="currentTheme"
 			:rise-theme="currentRiseTheme"
@@ -46,18 +54,23 @@
 			@model-update="handleModelUpdate"
 			@model-end-update="handleModelEndUpdate"
 			@selected-update="handleSelectedDatesUpdate"
-			@range-select="handleRangeSelect" />
+			@range-select="handleRangeSelect"
+			@preset-select="handlePresetSelect" />
 	</div>
 </template>
 
 <script setup lang="ts">
 import '../styles/BaseDatePicker.style.scss'
+import { kitDefaults } from '@composables/base/useDefaults'
 import { useBaseDatePicker } from '../model/useBaseDatePicker'
 import DatePickerField from './DatePickerField/DatePickerField.vue'
 import DatePickerPanel from './DatePickerPanel/DatePickerPanel.vue'
 import type { BaseDatePickerEmits, BaseDatePickerProps, BaseDatePickerSlots } from '../types/BaseDatePicker.types'
 
-const props = defineProps<BaseDatePickerProps>()
+const props = withDefaults(
+	defineProps<BaseDatePickerProps>(),
+	kitDefaults('BaseDatePicker', { presets: false, monthsShown: undefined, minDays: undefined, maxDays: undefined }),
+)
 
 const emit = defineEmits<BaseDatePickerEmits>()
 defineSlots<BaseDatePickerSlots>()
@@ -65,7 +78,7 @@ defineSlots<BaseDatePickerSlots>()
 const {
 	ui,
 	resolvedProps,
-	formField,
+	fieldError,
 	sizeScaleStyle,
 	customColorStyle,
 	classes,
@@ -82,7 +95,10 @@ const {
 	activeValueEnd,
 	activeDates,
 	hasValue,
-	displayValue,
+	fieldText,
+	isFieldEditable,
+	hasDraft,
+	presetItems,
 	handleFieldClick,
 	handleKeyboardOpen,
 	handleClear,
@@ -90,6 +106,10 @@ const {
 	handleModelEndUpdate,
 	handleSelectedDatesUpdate,
 	handleRangeSelect,
+	handleTextInput,
+	handleTextCommit,
+	handleTextCancel,
+	handlePresetSelect,
 	exposed,
 } = useBaseDatePicker(props, emit)
 

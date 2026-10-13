@@ -30,7 +30,7 @@ export const Theming: StoryObj<typeof meta> = {
 					'Перекраска без пропов. Токены `--rise-date-picker-*` кит только читает: задайте их на `:root`, в теме или на контейнере.',
 					'Рамку и фон поля рисует BaseInput — для них действуют `--rise-input-*`; свои токены поля — кнопки справа: `icon-text`,',
 					'`icon-text-hover`. Панель: `panel-bg`, `panel-text`, `panel-border`, `panel-radius`, `panel-shadow`, `panel-padding`,',
-					'`panel-gap`; год в шапке — `title-text`, `title-font-weight`. Панель открывается в слое страницы (`teleport`), поэтому её',
+					'`panel-gap`; колонка готовых периодов диапазона — `presets-border`; год в шапке — `title-text`, `title-font-weight`. Панель открывается в слое страницы (`teleport`), поэтому её',
 					'токены задавайте на `:root` или в теме, а не на контейнере поля. Сетку дней рисует BaseCalendar — у него свои токены.',
 					'Проп `ui` добавляет классы к частям поля и панели (`root`, `wrapper`, `icon-btn`, `panel`, `header`, `nav-btn`, `calendar`…).',
 				].join('\n'),

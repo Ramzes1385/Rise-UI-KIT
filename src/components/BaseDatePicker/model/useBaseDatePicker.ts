@@ -3,10 +3,12 @@ import { UI_TEXT } from '@/locales/messages'
 import { useUi } from '@composables/base/useUi'
 import { useSizeScale } from '@composables/base/useSizeScale'
 import { useFormField } from '@composables/form/useFormField'
+import { useDatePickerRange } from './range/useDatePickerRange'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import { useCustomColor } from '@composables/base/useCustomColor'
 import { resolveDatePickerCalendarConfig } from './datePickerCalendarConfig'
 import { useDatePickerState } from '@composables/calendar/useDatePickerState'
+import { normalizeDayLimit, resolveRangeLimits } from './range/dateRangeLimits'
 import { useExplicitPropDetection } from '@composables/base/useExplicitPropDetection'
 import type { BaseDatePickerEmits, DatePickerProps } from '../types/BaseDatePicker.types'
 
@@ -27,7 +29,17 @@ function resolveLayoutProps(props: DatePickerProps) {
 	return {
 		gap: props.gap ?? 4,
 		maxMonths: props.maxMonths ?? Number.POSITIVE_INFINITY,
+		monthsShown: normalizeDayLimit(props.monthsShown),
 	}
+}
+
+function hasPresetsColumn(props: DatePickerProps): boolean {
+	const { presets, selectionMode } = props
+	return selectionMode === 'range' && (presets === true || (Array.isArray(presets) && presets.length > 0))
+}
+
+function resolveRangeProps(props: DatePickerProps) {
+	return { presets: props.presets ?? false, hasPresets: hasPresetsColumn(props), ...resolveRangeLimits(props.minDays, props.maxDays) }
 }
 
 function resolveFlagProps(
@@ -45,11 +57,19 @@ function resolveFlagProps(
 	}
 }
 
+function withTextReset<Args extends unknown[]>(handler: (...args: Args) => void, reset: () => void): (...args: Args) => void {
+	return (...args) => {
+		reset()
+		handler(...args)
+	}
+}
+
 export function useBaseDatePicker(props: DatePickerProps, emit: BaseDatePickerEmits) {
 	const { wasPropPassed, resolveBooleanPropDefault } = useExplicitPropDetection()
 	const resolvedProps = computed(() => ({
 		...resolveDisplayProps(props),
 		...resolveLayoutProps(props),
+		...resolveRangeProps(props),
 		...resolveFlagProps(props, resolveBooleanPropDefault),
 	}))
 	const formField = useFormField({ value: () => props.modelValue ?? null, error: () => props.error, isRequired: () => props.isRequired })
@@ -58,6 +78,7 @@ export function useBaseDatePicker(props: DatePickerProps, emit: BaseDatePickerEm
 	const { classes } = useCustomClass({ getClass: () => props.customClass, elementKeys: ['root', 'field', 'panel'] })
 	const calendarConfig = computed(() => resolveDatePickerCalendarConfig(props, wasPropPassed, props.calendarConfig))
 	const state = useDatePickerState({ props, resolvedProps, emit, calendarConfig })
+	const range = useDatePickerRange({ resolvedProps, calendarConfig, emit, ...state, actions: state })
 
 	return {
 		ui: useUi(props, 'base-date-picker'),
@@ -68,6 +89,12 @@ export function useBaseDatePicker(props: DatePickerProps, emit: BaseDatePickerEm
 		classes,
 		calendarConfig,
 		...state,
+		...range,
+		handleClear: withTextReset(state.handleClear, range.handleTextCancel),
+		handleModelUpdate: withTextReset(state.handleModelUpdate, range.handleTextCancel),
+		handleModelEndUpdate: withTextReset(state.handleModelEndUpdate, range.handleTextCancel),
+		handleRangeSelect: withTextReset(state.handleRangeSelect, range.handleTextCancel),
+		fieldError: computed(() => formField.error || range.inputError.value),
 		exposed: { rootRef: state.wrapperRef, validate: formField.validate, reset: formField.reset },
 	}
 }

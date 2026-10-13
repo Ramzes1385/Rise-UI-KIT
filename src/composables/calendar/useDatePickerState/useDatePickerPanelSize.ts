@@ -2,6 +2,9 @@
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import type { DatePickerMonthsFit, UseDatePickerPanelSizeOptions } from './types/useDatePickerState.types'
 
+/** Ширина колонки готовых периодов (кнопки с подписью «Прошлый месяц» и отступы), px до масштабирования */
+const PRESETS_COLUMN_WIDTH = 140
+
 /**
  * Сколько месяцев помещается в панель шириной с поле. Размеры повторяют стили панели и BaseCalendar
  * (DatePickerPanel.style.scss, BaseCalendar.style.scss): 7 колонок по 36px, отступ календаря 4px, рамка 1px,
@@ -12,7 +15,7 @@ function countFittingMonths(fit: DatePickerMonthsFit): number {
 	const gridWidth = (7 * 36 + (fit.showWeekNumber ? 28 : 0)) * scale
 	const calendarWidth = gridWidth + 2 * 4 * scale + 2
 	const gap = 8 * scale
-	const panelChrome = 2 * 4 * scale + 2
+	const panelChrome = 2 * 4 * scale + 2 + fit.presetsWidth * scale
 
 	// N календарей: N × calendarWidth + (N − 1) × gap + panelChrome ≤ ширина поля
 	const count = Math.floor((fit.width - panelChrome + gap) / (calendarWidth + gap))
@@ -27,13 +30,16 @@ function useDatePickerPanelSize(options: UseDatePickerPanelSizeOptions) {
 	let resizeObserver: ResizeObserver | null = null
 
 	const computedMonthsCount = computed((): number => {
-		if (!resolvedProps.value.isMultiMonth) return 1
+		const { monthsShown, isMultiMonth } = resolvedProps.value
+		if (monthsShown) return monthsShown
+		if (!isMultiMonth) return 1
 
 		return countFittingMonths({
 			sizeScale: resolvedProps.value.sizeScale,
 			showWeekNumber: calendarConfig.value.showWeekNumber,
 			width: wrapperWidth.value || (wrapperRef.value?.clientWidth ?? 0),
 			maxMonths: resolvedProps.value.maxMonths,
+			presetsWidth: resolvedProps.value.hasPresets ? PRESETS_COLUMN_WIDTH : 0,
 		})
 	})
 

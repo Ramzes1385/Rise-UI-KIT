@@ -5,6 +5,10 @@ import { useCustomClass } from '@composables/base/useCustomClass'
 import { useExplicitPropDetection } from '@composables/base/useExplicitPropDetection'
 import type { DatePickerFieldEmits, DatePickerFieldProps } from '../types/DatePickerField.types'
 
+function resolveEditingProps(props: DatePickerFieldProps) {
+	return { isEditable: props.isEditable ?? false, hasDraft: props.hasDraft ?? false }
+}
+
 function useFieldResolvedProps(props: DatePickerFieldProps) {
 	const { resolveBooleanPropDefault } = useExplicitPropDetection()
 	return computed(() => ({
@@ -16,6 +20,7 @@ function useFieldResolvedProps(props: DatePickerFieldProps) {
 		isClearable: props.isClearable ?? false,
 		isOpen: props.isOpen ?? false,
 		hasValue: props.hasValue ?? false,
+		...resolveEditingProps(props),
 		sizeScale: props.sizeScale ?? 100,
 	}))
 }
@@ -34,6 +39,17 @@ export function useDatePickerField(props: DatePickerFieldProps, emit: DatePicker
 		if (input) input.readOnly = resolvedProps.value.isReadonly
 	})
 
+	function handleDraftKey(event: KeyboardEvent): boolean {
+		const { isEditable, hasDraft } = resolvedProps.value
+		if (!isEditable || !hasDraft) return false
+		if (event.key === 'Escape') emit('text-cancel')
+		if (event.key === 'Enter') {
+			event.preventDefault()
+			emit('text-commit')
+		}
+		return event.key === 'Enter'
+	}
+
 	return {
 		ui,
 		inputUi: computed(() => inputUiOf(ui)),
@@ -43,8 +59,14 @@ export function useDatePickerField(props: DatePickerFieldProps, emit: DatePicker
 		handleFieldClick: (): void => emit('field-click'),
 		handleClearClick: (): void => emit('clear-click'),
 		handleIconClick: (): void => emit('icon-click'),
+		handleInput(value: string): void {
+			if (resolvedProps.value.isEditable) emit('text-input', value)
+		},
+		handleBlur(): void {
+			if (resolvedProps.value.isEditable) emit('text-commit')
+		},
 		handleFieldKeydown(event: KeyboardEvent): void {
-			if (resolvedProps.value.isDisabled) return
+			if (resolvedProps.value.isDisabled || handleDraftKey(event)) return
 			if (event.key !== 'Enter' && event.key !== 'ArrowDown') return
 			event.preventDefault()
 			emit('keyboard-open')

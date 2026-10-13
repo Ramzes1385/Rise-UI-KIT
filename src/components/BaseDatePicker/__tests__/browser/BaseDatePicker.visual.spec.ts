@@ -1,7 +1,7 @@
 import { test } from '@playwright/test'
 import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../../build/tests/visual'
 
-const STORIES = ['default', 'variants', 'with-error', 'range-selection', 'with-time'] as const
+const STORIES = ['default', 'variants', 'with-error', 'range-selection', 'range-presets', 'two-months', 'with-time'] as const
 
 for (const theme of VISUAL_THEMES) {
 	test.describe(`BaseDatePicker · ${theme}`, () => {
