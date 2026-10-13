@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
 import { render } from '@testing-library/vue'
-import BasePagination from '../ui/BasePagination.vue'
+import BasePagination from '../../ui/BasePagination.vue'
 
 function box(left: number, width: number): DOMRect {
 	return { left, top: 0, width, height: 32, right: left + width, bottom: 32, x: left, y: 0, toJSON: () => ({}) } as DOMRect

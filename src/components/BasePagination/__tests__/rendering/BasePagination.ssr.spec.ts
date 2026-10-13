@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom/vitest'
 import { createSSRApp, h } from 'vue'
 import { renderToString } from 'vue/server-renderer'
-import BasePagination from '../ui/BasePagination.vue'
 import { render, waitFor } from '@testing-library/vue'
+import BasePagination from '../../ui/BasePagination.vue'
 
 const PROPS = { modelValue: 2, total: 50, pageSize: 10 }
 

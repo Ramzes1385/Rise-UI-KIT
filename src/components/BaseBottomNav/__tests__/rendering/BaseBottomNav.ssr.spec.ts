@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { createSSRApp, h } from 'vue'
-import BaseBottomNav from '../ui/BaseBottomNav.vue'
 import { renderToString } from 'vue/server-renderer'
+import BaseBottomNav from '../../ui/BaseBottomNav.vue'
 import { render, waitFor } from '@testing-library/vue'
 
 const PROPS = {

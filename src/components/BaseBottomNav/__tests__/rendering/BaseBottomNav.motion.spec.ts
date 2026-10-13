@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import BaseBottomNav from '../ui/BaseBottomNav.vue'
-import type { BottomNavItem } from '../types/BaseBottomNav.types'
+import BaseBottomNav from '../../ui/BaseBottomNav.vue'
+import type { BottomNavItem } from '../../types/BaseBottomNav.types'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 
 const ITEMS: BottomNavItem[] = [
