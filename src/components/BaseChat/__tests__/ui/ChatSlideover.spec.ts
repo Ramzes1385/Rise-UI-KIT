@@ -129,20 +129,20 @@ describe('ChatSlideover unit', () => {
 
 	describe('админ-действия над участниками', () => {
 		it('должен открывать и закрывать админ-меню участника', async () => {
-			const { container } = render(ChatSlideover, {
+			render(ChatSlideover, {
 				props: baseProps({ isGroup: true, members: MEMBERS, currentUserRole: 'admin' }),
 			})
 
 			const adminBtn = screen.getByLabelText('Действия с участником Анна')
 			await fireEvent.click(adminBtn)
-			expect(container.querySelector('.base-chat-slideover__admin-dropdown')).toBeInTheDocument()
+			expect(document.querySelector('.base-chat-slideover__admin-dropdown')).toBeInTheDocument()
 
 			await fireEvent.click(adminBtn)
-			expect(container.querySelector('.base-chat-slideover__admin-dropdown')).toBeNull()
+			expect(document.querySelector('.base-chat-slideover__admin-dropdown')).toBeNull()
 		})
 
 		it('Escape в меню участника закрывает только меню, панель остаётся открытой', async () => {
-			const { container, emitted } = render(ChatSlideover, {
+			const { emitted } = render(ChatSlideover, {
 				props: baseProps({ isGroup: true, members: MEMBERS, currentUserRole: 'admin' }),
 			})
 
@@ -152,7 +152,7 @@ describe('ChatSlideover unit', () => {
 
 			await fireEvent.keyDown(screen.getByRole('menuitem', { name: 'Разжаловать' }), { key: 'Escape' })
 
-			expect(container.querySelector('.base-chat-slideover__admin-dropdown')).toBeNull()
+			expect(document.querySelector('.base-chat-slideover__admin-dropdown')).toBeNull()
 			expect(emitted()['update:isOpen']).toBeUndefined()
 		})
 

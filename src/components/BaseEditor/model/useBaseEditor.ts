@@ -3,16 +3,13 @@ import { UI_EDITOR } from '@/locales/messages'
 import { useUi } from '@composables/base/useUi'
 import { EDITOR_MENU_SCALE_RATIO } from './editorScale'
 import type { BaseSelectOption } from '@components/BaseSelect'
-import { useLayerIndex } from '@composables/app/useLayerStack'
 import { escapeHtml, sanitizeHtml } from '@utils/dom/htmlUtils'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
-import { useEscapeKey } from '@composables/overlay/useEscapeKey'
 import { useEditorState } from '@composables/editor/useEditorState'
 import { useEditorToolbar } from '@composables/editor/useEditorToolbar'
 import type { BaseEditorEmits, EditorProps } from '../types/BaseEditor.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { isolateFormField, useFormDisabled } from '@composables/form/useFormContext'
-import { useInheritedThemeAttrs, useTeleportTarget } from '@composables/app/useTeleportTarget'
 
 const EDITOR_ELEMENTS = ['root', 'toolbar', 'btn', 'group', 'colorPicker', 'headingSelect', 'fileInput', 'content', 'code']
 
@@ -96,14 +93,8 @@ function useSafeInsert(isLocked: ComputedRef<boolean>, sanitize: (html: string) 
 	}
 }
 
-function useMediaMenu(editorRef: Ref<HTMLDivElement | null>, toolbar: ReturnType<typeof useEditorToolbar>) {
-	const { contextMenu, contextMenuRef, closeContextMenu } = toolbar
-	const inheritedTheme = useInheritedThemeAttrs(
-		() => editorRef.value,
-		() => contextMenu.isVisible,
-	)
-	const layerStyle = useLayerIndex(() => contextMenu.isVisible)
-	useEscapeKey({ isActive: () => contextMenu.isVisible, callback: closeContextMenu })
+function useMediaMenu(editorRef: Ref<HTMLDivElement | null>, toolbar: ReturnType<typeof useEditorToolbar>): void {
+	const { contextMenu, contextMenuRef } = toolbar
 	watch(
 		() => contextMenu.isVisible,
 		isVisible => {
@@ -114,7 +105,6 @@ function useMediaMenu(editorRef: Ref<HTMLDivElement | null>, toolbar: ReturnType
 			if (contextMenuRef.value?.contains(document.activeElement)) editorRef.value?.focus()
 		},
 	)
-	return { inheritedTheme, layerStyle }
 }
 
 function useContentSync(
@@ -147,7 +137,6 @@ function useContentSync(
 }
 
 export function useBaseEditor(props: EditorProps, emit: BaseEditorEmits) {
-	const teleportTarget = useTeleportTarget()
 	const isLocked = useFormDisabled(() => props.isReadonly)
 	isolateFormField()
 	const standard = useStandardBaseComponent('base-editor', props, EDITOR_ELEMENTS)
@@ -156,13 +145,12 @@ export function useBaseEditor(props: EditorProps, emit: BaseEditorEmits) {
 	const sanitize = (html: string): string => (props.sanitize ?? sanitizeHtml)(html)
 	const engine = useEditorEngine(emit, { editorRef, codeTextareaRef }, { isLocked, sanitize })
 	const insert = useSafeInsert(isLocked, sanitize)
-	const menu = useMediaMenu(editorRef, engine.toolbar)
+	useMediaMenu(editorRef, engine.toolbar)
 	useContentSync(props, editorRef, { isLocked, sanitize, engine })
 
 	return {
 		...standard,
 		ui: useUi(props, 'base-editor'),
-		teleportTarget,
 		isLocked,
 		editorRef,
 		codeTextareaRef,
@@ -172,7 +160,6 @@ export function useBaseEditor(props: EditorProps, emit: BaseEditorEmits) {
 		...engine.state,
 		handleInput: engine.handleInput,
 		...insert,
-		...menu,
 		handleFocus(): void {
 			engine.state.isFocused.value = true
 			emit('focus')

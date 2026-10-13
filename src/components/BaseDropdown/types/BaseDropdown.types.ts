@@ -31,11 +31,35 @@ export type DropdownPosition =
 	| 'right-end'
 	| 'right'
 
+/**
+ * Точка (`width` и `height` не заданы) или прямоугольник в координатах окна, как у `getBoundingClientRect()`
+ */
+export interface DropdownAnchorRect {
+	/** Левый край, px */
+	x: number
+	/** Верхний край, px */
+	y: number
+	/** Ширина, px (0 — точка) */
+	width?: number
+	/** Высота, px (0 — точка) */
+	height?: number
+}
+
+/** Виртуальный элемент, как в Floating UI: всё, у чего есть `getBoundingClientRect()` (в том числе настоящий элемент) */
+export interface DropdownAnchorElement {
+	getBoundingClientRect: () => DOMRect
+}
+
+/** Якорь панели вместо триггера: точка, прямоугольник или виртуальный элемент; прямоугольник элемента читается при каждом пересчёте */
+export type DropdownAnchor = DropdownAnchorRect | DropdownAnchorElement
+
 export interface BaseDropdownProps extends BaseComponentProps<(typeof DROPDOWN_VARIANTS)[number], 'root' | 'panel' | 'arrow'> {
 	/** Открыт ли список */
 	isOpen?: boolean
 	/** Позиция относительно триггера */
 	position?: DropdownPosition
+	/** Якорь вместо триггера: точка `{ x, y }`, прямоугольник `{ x, y, width, height }` в координатах окна или виртуальный элемент (`getBoundingClientRect`) — меню у курсора, окно у каретки */
+	anchor?: DropdownAnchor
 	/** Отступ от триггера (px) */
 	gap?: number
 	/** Максимальная высота */

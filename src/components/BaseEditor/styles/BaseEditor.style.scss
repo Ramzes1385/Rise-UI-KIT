@@ -308,16 +308,17 @@
 	}
 
 	&__context-menu {
-		position: fixed;
-		z-index: calc(var(--rise-z-overlay) + var(--rise-layer-index, 0));
-		display: flex;
-		flex-direction: column;
-		gap: sz(12px);
 		box-sizing: border-box;
 		width: sz(232px);
 		padding: space(12px);
 		@include floating-surface;
 		@include text-size(sm);
+	}
+
+	&__context-menu-body {
+		display: flex;
+		flex-direction: column;
+		gap: sz(12px);
 	}
 
 	&__context-menu-row {

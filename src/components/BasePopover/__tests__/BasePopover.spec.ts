@@ -351,4 +351,36 @@ describe('BasePopover: кнопка и диалог', () => {
 		expect(emitted('update:isOpen')).toEqual([[true], [false]])
 		expect(emitted('close')).toHaveLength(1)
 	})
+
+	describe('якорь вместо триггера', () => {
+		it('с anchor и без слота trigger обёртка триггера не рисуется', () => {
+			const { container } = render(BasePopover, { props: { isOpen: false, anchor: { x: 10, y: 20 } } })
+
+			expect(container.querySelector('.base-popover__trigger')).not.toBeInTheDocument()
+		})
+
+		it('с anchor и слотом trigger триггер остаётся', () => {
+			const { container } = render(BasePopover, { props: { isOpen: false, anchor: { x: 10, y: 20 } }, slots: SLOTS })
+
+			expect(container.querySelector('.base-popover__trigger')).toBeInTheDocument()
+		})
+
+		it('панель встаёт у точки якоря, имя диалога — ariaLabel', async () => {
+			render(BasePopover, {
+				props: { isOpen: true, anchor: { x: 120, y: 80 }, position: 'bottom', ariaLabel: 'Меню у курсора' },
+				slots: { default: '<p>Контент</p>' },
+			})
+
+			const dialog = await screen.findByRole('dialog', { name: 'Меню у курсора' })
+			expect(dialog).not.toHaveAttribute('aria-labelledby')
+			const panel = dialog.closest('.base-dropdown__panel') as HTMLElement
+			expect(panel.style.top).toBe('90px')
+		})
+
+		it('без ariaLabel диалог по-прежнему назван триггером', async () => {
+			render(BasePopover, { props: { isOpen: true }, slots: SLOTS })
+
+			expect(await screen.findByRole('dialog')).toHaveAttribute('aria-labelledby')
+		})
+	})
 })

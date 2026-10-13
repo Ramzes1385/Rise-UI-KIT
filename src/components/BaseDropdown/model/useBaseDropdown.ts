@@ -63,6 +63,7 @@ function usePanelPosition(props: DropdownProps, wrapperRef: Ref<HTMLElement | nu
 		matchWidth: () => props.matchWidth,
 		maxHeight: () => props.maxHeight,
 		isOpen: () => props.isOpen,
+		anchor: () => props.anchor,
 	})
 }
 

@@ -1,7 +1,7 @@
 /** Composable: позиционирование выпадающей панели с переворотом и сдвигом у края окна */
 import { getFixedOrigin } from '@utils/dom/domUtils'
-import type { DropdownPosition } from '@components/BaseDropdown/types/BaseDropdown.types'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, type Ref, watch } from 'vue'
+import type { DropdownAnchor, DropdownPosition } from '@components/BaseDropdown/types/BaseDropdown.types'
 import type { Align, Edge, Geometry, Side, Size, UseDropdownPositionOptions } from './types/useDropdownPosition.types'
 
 /** Отступ панели от края окна при сдвиге, px */
@@ -161,8 +161,16 @@ function useArrowState(initialSide: Side) {
 	}
 }
 
-/** Rect триггера (первый дочерний элемент обёртки), без триггера — самой обёртки */
-function getTriggerRect(wrapper: HTMLElement | null): DOMRect | null {
+/** Rect виртуального якоря: точка, прямоугольник в координатах окна или виртуальный элемент */
+function anchorRect(anchor: DropdownAnchor): DOMRect {
+	if ('getBoundingClientRect' in anchor) return anchor.getBoundingClientRect()
+	const { x, y, width = 0, height = 0 } = anchor
+	return { x, y, width, height, left: x, top: y, right: x + width, bottom: y + height, toJSON: () => ({ x, y, width, height }) }
+}
+
+/** Rect якоря-точки, если он задан; иначе триггера (первый дочерний элемент обёртки), без триггера — самой обёртки */
+function getTriggerRect(wrapper: HTMLElement | null, anchor: DropdownAnchor | undefined): DOMRect | null {
+	if (anchor) return anchorRect(anchor)
 	if (!wrapper) return null
 	const trigger = wrapper.firstElementChild
 	if (trigger) return trigger.getBoundingClientRect()
@@ -219,7 +227,7 @@ function useRepositionListeners(
 }
 
 /**
- * Позиция выпадающей панели (`position: fixed`) у триггера. Если на выбранной стороне не хватает места,
+ * Позиция выпадающей панели (`position: fixed`) у триггера или у виртуального якоря (`anchor` — точка либо прямоугольник в координатах окна). Если на выбранной стороне не хватает места,
  * а на противоположной хватает, панель переворачивается; вдоль края окна она сдвигается, чтобы не выйти за него.
  * Пересчёт — при открытии, прокрутке, изменении окна, размера панели и триггера; слушатели есть только у открытой панели.
  *
@@ -237,7 +245,7 @@ function useRepositionListeners(
  * ```
  */
 function useDropdownPosition(options: UseDropdownPositionOptions) {
-	const { wrapperRef, dropdownRef, position, gap, matchWidth, maxHeight, isOpen } = options
+	const { wrapperRef, dropdownRef, position, gap, matchWidth, maxHeight, isOpen, anchor } = options
 
 	const coords = ref({ top: 0, left: 0 })
 	const triggerWidth = ref(0)
@@ -249,7 +257,7 @@ function useDropdownPosition(options: UseDropdownPositionOptions) {
 	function updatePosition(): void {
 		if (!isOpen()) return
 
-		const rect = getTriggerRect(wrapperRef.value)
+		const rect = getTriggerRect(wrapperRef.value, anchor?.())
 		if (!rect) return
 
 		triggerWidth.value = rect.width
@@ -287,7 +295,7 @@ function useDropdownPosition(options: UseDropdownPositionOptions) {
 		listen()
 	})
 
-	watch([gap, position, matchWidth], refresh)
+	watch([gap, position, matchWidth, () => anchor?.()], refresh)
 
 	onMounted(() => {
 		if (!isOpen()) return

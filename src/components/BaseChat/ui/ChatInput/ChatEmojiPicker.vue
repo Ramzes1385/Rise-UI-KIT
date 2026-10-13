@@ -1,18 +1,25 @@
 <template>
-	<div ref="emojiWrapperRef" class="base-chat-input__emoji-wrapper" @keydown.esc="handleEscape">
-		<BaseButton
-			ref="triggerRef"
-			variant="ghost"
-			:size-scale="sizeScale"
-			class="base-chat-input__emoji-btn"
-			:aria-label="UI_CHAT_TEXT.EMOJI_ARIA"
-			aria-haspopup="dialog"
-			:aria-expanded="isEmojiOpen ? 'true' : 'false'"
-			@click="toggleEmoji">
-			<BaseIcon name="smile" :size-scale="sizeScale" />
-		</BaseButton>
+	<BasePopover
+		v-model:is-open="isEmojiOpen"
+		class="base-chat-input__emoji-wrapper"
+		position="top"
+		variant="ghost"
+		max-height="none"
+		:size-scale="sizeScale"
+		:aria-label="UI_CHAT_TEXT.EMOJI_LIST"
+		:ui="{ inner: 'base-chat-input__emoji-popover' }">
+		<template #trigger>
+			<BaseButton
+				ref="triggerRef"
+				variant="ghost"
+				:size-scale="sizeScale"
+				class="base-chat-input__emoji-btn"
+				:aria-label="UI_CHAT_TEXT.EMOJI_ARIA">
+				<BaseIcon name="smile" :size-scale="sizeScale" />
+			</BaseButton>
+		</template>
 
-		<div v-if="isEmojiOpen" ref="popoverRef" class="base-chat-input__emoji-popover" role="dialog" :aria-label="UI_CHAT_TEXT.EMOJI_LIST">
+		<div ref="popoverRef">
 			<BaseEmojiPicker
 				v-model:recent="recentEmojis"
 				variant="ghost"
@@ -21,13 +28,14 @@
 				class="base-chat-input__emoji-picker"
 				@select="selectEmoji" />
 		</div>
-	</div>
+	</BasePopover>
 </template>
 
 <script setup lang="ts">
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
+import { BasePopover } from '@components/BasePopover'
 import { BaseEmojiPicker } from '@components/BaseEmojiPicker'
 import { useChatEmojiPicker } from './model/useChatEmojiPicker'
 import type { ChatEmojiPickerEmits, ChatEmojiPickerProps } from './types/ChatEmojiPicker.types'
@@ -36,6 +44,5 @@ defineProps<ChatEmojiPickerProps>()
 
 const emit = defineEmits<ChatEmojiPickerEmits>()
 
-const { isEmojiOpen, emojiWrapperRef, triggerRef, popoverRef, recentEmojis, toggleEmoji, selectEmoji, handleEscape } =
-	useChatEmojiPicker(emit)
+const { isEmojiOpen, triggerRef, popoverRef, recentEmojis, selectEmoji } = useChatEmojiPicker(emit)
 </script>

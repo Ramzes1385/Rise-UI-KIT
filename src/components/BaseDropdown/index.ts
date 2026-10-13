@@ -4,6 +4,9 @@ export type {
 	BaseDropdownPart,
 	BaseDropdownProps,
 	BaseDropdownSlots,
+	DropdownAnchor,
+	DropdownAnchorElement,
+	DropdownAnchorRect,
 	DropdownPosition,
 } from './types/BaseDropdown.types'
 export { default as BaseDropdown } from './ui/BaseDropdown.vue'

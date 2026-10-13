@@ -6,16 +6,17 @@
 		:aria-label="navLabel"
 		@focusout="handleFocusOut">
 		<div :class="[ui('bar'), classes.bar]">
-			<button
+			<BaseButton
 				v-if="isMobileMode"
-				type="button"
+				variant="ghost"
 				:class="ui('toggle')"
+				:size-scale="sizeScale"
 				:aria-expanded="isMobileOpen"
 				:aria-controls="listId"
 				@click="toggleMobile">
-				<BaseIcon :name="isMobileOpen ? 'close' : 'menu'" :size-scale="iconScale" />
-				<span>{{ mobileToggleLabel }}</span>
-			</button>
+				<template #left><BaseIcon :name="isMobileOpen ? 'close' : 'menu'" :size-scale="iconScale" /></template>
+				{{ mobileToggleLabel }}
+			</BaseButton>
 
 			<Transition name="base-mega-menu-reveal" :css="!isMotionReduced">
 				<ul v-show="!isMobileMode || isMobileOpen" :id="listId" ref="listRef" :class="[ui('list'), classes.list]" role="list">
@@ -131,6 +132,7 @@ import '../styles/BaseMegaMenu.style.scss'
 import MegaMenuPanel from './MegaMenuPanel.vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseLink } from '@components/BaseLink'
+import { BaseButton } from '@components/BaseButton'
 import { useBaseMegaMenu } from '../model/useBaseMegaMenu'
 import { kitDefaults } from '@composables/base/useDefaults'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'

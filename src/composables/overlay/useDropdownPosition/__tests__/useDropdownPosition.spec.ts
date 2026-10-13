@@ -2,8 +2,8 @@
 
 import { nextTick, ref } from 'vue'
 import { mount } from '@vue/test-utils'
-import type { DropdownPosition } from '@components/BaseDropdown/types/BaseDropdown.types'
 import { ARROW_EDGE_OFFSET, useDropdownPosition, VIEWPORT_MARGIN } from '../useDropdownPosition'
+import type { DropdownAnchor, DropdownPosition } from '@components/BaseDropdown/types/BaseDropdown.types'
 
 const GAP = 4
 
@@ -38,11 +38,13 @@ function setup(
 		isOpen?: boolean
 		matchWidth?: boolean
 		wrapper?: HTMLElement | null
+		anchor?: DropdownAnchor
 	} = {},
 ) {
 	const position = ref<DropdownPosition>(options.position ?? 'bottom-start')
 	const isOpen = ref(options.isOpen ?? true)
 	const gap = ref(GAP)
+	const anchor = ref<DropdownAnchor | undefined>(options.anchor)
 	const matchWidth = ref(options.matchWidth ?? false)
 	const wrapperRef = ref<HTMLElement | null>(
 		options.wrapper === undefined ? createWrapper(options.trigger === undefined ? rect(300, 400) : options.trigger) : options.wrapper,
@@ -59,11 +61,12 @@ function setup(
 				matchWidth: () => matchWidth.value,
 				maxHeight: () => '320px',
 				isOpen: () => isOpen.value,
+				anchor: () => anchor.value,
 			})
 			return () => null
 		},
 	})
-	return { api, position, isOpen, gap, matchWidth, wrapperRef, dropdownRef, wrapper }
+	return { api, position, isOpen, gap, matchWidth, wrapperRef, dropdownRef, wrapper, anchor }
 }
 
 afterEach(() => {
@@ -372,6 +375,45 @@ describe('useDropdownPosition', () => {
 
 			api.updatePosition()
 			expect(api.arrow.value).toBe(before)
+		})
+	})
+
+	describe('якорь вместо триггера', () => {
+		it('точка: панель встаёт у точки с отступом, триггер игнорируется', () => {
+			const { api } = setup({ position: 'bottom-start', anchor: { x: 120, y: 80 } })
+
+			expect(api.coords.value).toEqual({ top: 80 + GAP, left: 120 })
+		})
+
+		it('прямоугольник: сторона и выравнивание считаются от его краёв', () => {
+			const { api } = setup({ position: 'right-start', anchor: { x: 100, y: 50, width: 60, height: 30 } })
+
+			expect(api.coords.value).toEqual({ top: 50, left: 100 + 60 + GAP })
+		})
+
+		it('виртуальный элемент: прямоугольник читается при каждом пересчёте', () => {
+			let box = rect(200, 300)
+			const { api } = setup({ position: 'bottom-start', anchor: { getBoundingClientRect: () => box } })
+			expect(api.coords.value).toEqual({ top: 240 + GAP, left: 300 })
+
+			box = rect(100, 50)
+			api.updatePosition()
+			expect(api.coords.value).toEqual({ top: 140 + GAP, left: 50 })
+		})
+
+		it('смена якоря пересчитывает позицию открытой панели', async () => {
+			const { api, anchor } = setup({ position: 'bottom-start', anchor: { x: 10, y: 10 } })
+
+			anchor.value = { x: 300, y: 200 }
+			await nextTick()
+			expect(api.coords.value).toEqual({ top: 200 + GAP, left: 300 })
+		})
+
+		it('точка у края окна: панель переворачивается и сдвигается внутрь окна', () => {
+			const { api } = setup({ position: 'bottom-start', anchor: { x: 1020, y: 760 } })
+
+			expect(api.coords.value.top).toBeLessThan(760)
+			expect(api.coords.value.left).toBe(1024 - 100 - VIEWPORT_MARGIN)
 		})
 	})
 })

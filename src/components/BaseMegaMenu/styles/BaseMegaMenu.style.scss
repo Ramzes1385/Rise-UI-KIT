@@ -121,26 +121,16 @@
 		@include reset-custom-color;
 	}
 
-	&__toggle {
-		display: inline-flex;
-		align-items: center;
-		gap: sz(8px);
-		min-height: sz(36px);
-		padding: sz(0 12px);
-		border: none;
-		border-radius: sz(var(--rise-radius-md));
-		background-color: transparent;
-		@include custom-text(color, var(--rise-text-highlighted));
-		font: inherit;
-		@include text-size(sm);
-		font-weight: var(--rise-font-weight-semibold);
-		cursor: pointer;
-		@include transition-colors;
-		@include focus-ring;
+	&__toggle.base-button {
+		--btn-pad-top: 0px;
+		--btn-pad-bottom: 0px;
+		--btn-pad-left: 12px;
+		--btn-pad-right: 12px;
 
-		@include hover {
-			background-color: var(--custom-bg-hover, var(--rise-bg-elevated));
-		}
+		min-height: sz(36px);
+		font-weight: var(--rise-font-weight-semibold);
+		@include custom-text(color, var(--rise-text-highlighted));
+		@include text-size(sm);
 	}
 
 	&__panel {

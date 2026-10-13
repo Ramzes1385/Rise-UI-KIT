@@ -170,10 +170,6 @@
 	}
 
 	&__emoji-popover {
-		position: absolute;
-		bottom: calc(100% + #{sz(8px)});
-		left: 0;
-		z-index: 20;
 		@include floating-surface;
 	}
 

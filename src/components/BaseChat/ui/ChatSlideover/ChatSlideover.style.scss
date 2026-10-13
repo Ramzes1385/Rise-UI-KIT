@@ -168,16 +168,10 @@
 	}
 
 	&__admin-dropdown {
-		position: absolute;
-		top: calc(100% + #{sz(4px)});
-		right: 0;
-		z-index: 1;
 		display: flex;
 		flex-direction: column;
 		gap: sz(2px);
 		min-width: sz(180px);
-		padding: sz(4px);
-		@include floating-surface;
 	}
 
 	&__dropdown-item {

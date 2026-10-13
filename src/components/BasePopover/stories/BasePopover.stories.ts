@@ -24,6 +24,7 @@ export const Sizes = cases.Sizes
 export const CustomColor = cases.CustomColor
 export const LongContent = cases.LongContent
 export const WithForm = cases.WithForm
+export const Anchor = cases.Anchor
 export const NestedList = cases.NestedList
 export const Keyboard = cases.Keyboard
 export const TextTrigger = cases.TextTrigger

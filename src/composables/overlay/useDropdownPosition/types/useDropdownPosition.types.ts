@@ -1,5 +1,5 @@
 import type { Ref } from 'vue'
-import type { DropdownPosition } from '@components/BaseDropdown/types/BaseDropdown.types'
+import type { DropdownAnchor, DropdownPosition } from '@components/BaseDropdown/types/BaseDropdown.types'
 
 export interface UseDropdownPositionOptions {
 	/** Ref на wrapper-элемент (содержит триггер) */
@@ -16,6 +16,8 @@ export interface UseDropdownPositionOptions {
 	maxHeight: () => string
 	/** Открыт ли dropdown */
 	isOpen: () => boolean
+	/** Виртуальный якорь (точка или прямоугольник в координатах окна) вместо триггера */
+	anchor?: () => DropdownAnchor | undefined
 }
 
 export type Side = 'top' | 'bottom' | 'left' | 'right'

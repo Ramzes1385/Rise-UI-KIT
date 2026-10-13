@@ -2,6 +2,7 @@
 	<BaseDropdown
 		v-model:is-open="isOpenLocal"
 		:position="position"
+		:anchor="anchor"
 		:variant="variant"
 		:color="color"
 		:gap="10"
@@ -15,12 +16,22 @@
 		:show-arrow="variant !== 'ghost'"
 		:custom-class="{ root: rootClass, panel: classes.panel, arrow: arrowClass }"
 		@close="handleClose">
-		<div ref="triggerRef" :class="[ui('trigger'), classes.trigger]" @click="toggle" @keydown="handleTriggerKeydown">
+		<div
+			v-if="$slots.trigger || !anchor"
+			ref="triggerRef"
+			:class="[ui('trigger'), classes.trigger]"
+			@click="toggle"
+			@keydown="handleTriggerKeydown">
 			<slot name="trigger" :is-open="isOpenLocal" :trigger-props="triggerAttributes" />
 		</div>
 
 		<template #dropdown>
-			<div :id="panelId" :class="[ui('inner'), classes.inner]" role="dialog" :aria-labelledby="triggerId">
+			<div
+				:id="panelId"
+				:class="[ui('inner'), classes.inner]"
+				role="dialog"
+				:aria-label="ariaLabel"
+				:aria-labelledby="ariaLabel ? undefined : triggerId">
 				<slot />
 			</div>
 		</template>
@@ -40,6 +51,8 @@ const props = withDefaults(
 	kitDefaults('BasePopover', {
 		isOpen: false,
 		position: 'bottom',
+		anchor: undefined,
+		ariaLabel: undefined,
 		maxHeight: '320px',
 		variant: DEFAULT_VARIANT,
 		sizeScale: SIZE_SCALE_DEFAULT,

@@ -80,15 +80,18 @@
 			@focus="handleFocus"
 			@blur="handleBlur" />
 
-		<Teleport defer :to="teleportTarget">
-			<div
-				v-if="contextMenu.isVisible"
-				ref="contextMenuRef"
-				:class="ui('context-menu')"
-				role="dialog"
-				:aria-label="UI_EDITOR.MEDIA_MENU_LABEL"
-				:style="[sizeScaleStyle, { left: contextMenu.x + 'px', top: contextMenu.y + 'px' }, layerStyle]"
-				v-bind="inheritedTheme">
+		<BasePopover
+			:is-open="contextMenu.isVisible"
+			:anchor="{ x: contextMenu.x, y: contextMenu.y }"
+			position="bottom-start"
+			variant="ghost"
+			max-height="none"
+			animation="fade"
+			:size-scale="sizeScale"
+			:aria-label="UI_EDITOR.MEDIA_MENU_LABEL"
+			:ui="{ inner: ui('context-menu') }"
+			@close="closeContextMenu">
+			<div ref="contextMenuRef" class="base-editor__context-menu-body">
 				<div class="base-editor__context-menu-row" @keydown.enter.prevent="applyMediaSize">
 					<BaseInput
 						:model-value="contextMenu.width"
@@ -110,7 +113,7 @@
 					<BaseButton :size-scale="menuControlScale" @click="applyMediaSize">{{ UI_EDITOR.APPLY }}</BaseButton>
 				</div>
 			</div>
-		</Teleport>
+		</BasePopover>
 	</div>
 </template>
 
@@ -119,6 +122,7 @@ import '../styles/BaseEditor.style.scss'
 import { UI_EDITOR } from '@/locales/messages'
 import { BaseInput } from '@components/BaseInput'
 import { BaseButton } from '@components/BaseButton'
+import { BasePopover } from '@components/BasePopover'
 import { useBaseEditor } from '../model/useBaseEditor'
 import BaseEditorToolbar from './BaseEditorToolbar.vue'
 import { BaseTextarea } from '@components/BaseTextarea'
@@ -148,7 +152,6 @@ const {
 	variantStyle,
 	customColorStyle,
 	classes,
-	teleportTarget,
 	isLocked,
 	editorRef,
 	codeTextareaRef,
@@ -157,6 +160,7 @@ const {
 	activeStates,
 	contextMenu,
 	contextMenuRef,
+	closeContextMenu,
 	isCodeMode,
 	codeContent,
 	applyFormat,
@@ -188,8 +192,6 @@ const {
 	isInternalDrag,
 	handlePaste,
 	handleDrop,
-	inheritedTheme,
-	layerStyle,
 	handleFocus,
 	handleBlur,
 } = useBaseEditor(props, emit)

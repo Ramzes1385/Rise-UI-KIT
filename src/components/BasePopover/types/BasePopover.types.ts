@@ -1,4 +1,5 @@
 import type { UiProp } from '@composables/base/useUi'
+import type { DropdownAnchor } from '@components/BaseDropdown'
 import type { EnterAnimation } from '@composables/app/useMotion'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
@@ -24,6 +25,14 @@ export interface BasePopoverProps extends BaseComponentProps<PopoverVariant, 'ro
 	isOpen?: boolean
 	/** Позиция */
 	position?: PopoverPosition
+	/**
+	 * Якорь вместо триггера: точка `{ x, y }`, прямоугольник `{ x, y, width, height }` в координатах окна или виртуальный элемент
+	 * (`{ getBoundingClientRect }`, как в Floating UI; подойдёт и обычный элемент) — для окна у точки клика, каретки, ячейки.
+	 * Слот `trigger` тогда не нужен; имя диалога — `ariaLabel`
+	 */
+	anchor?: DropdownAnchor
+	/** Имя диалога (`aria-label`), когда триггера нет и `aria-labelledby` ссылаться не на что — например, при `anchor` */
+	ariaLabel?: string
 	/** Предел высоты панели (CSS-длина): содержимое выше прокручивается. По умолчанию `320px`, как у BaseDropdown */
 	maxHeight?: string
 	/**

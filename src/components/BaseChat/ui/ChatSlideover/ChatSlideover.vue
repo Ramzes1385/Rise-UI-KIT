@@ -81,57 +81,65 @@
 									v-if="currentUserRole === 'admin' && member.id !== 'me'"
 									class="base-chat-slideover__member-actions"
 									@keydown.esc="handleAdminMenuEscape($event, member.id)">
-									<BaseButton
-										:ref="element => setAdminTriggerRef(member.id, element)"
-										variant="ghost"
+									<BaseDropdown
+										:is-open="activeAdminMenuId === member.id"
+										position="bottom-end"
+										:padding="4"
 										:size-scale="sizeScale"
-										class="base-chat-slideover__admin-btn"
-										:aria-label="`${UI_CHAT_TEXT.MEMBER_ACTIONS} ${member.name}`"
-										aria-haspopup="menu"
-										:aria-expanded="activeAdminMenuId === member.id ? 'true' : 'false'"
-										@click="toggleAdminMenu(member.id)">
-										<BaseIcon name="chevron-down" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
-									</BaseButton>
+										@close="closeAdminMenu">
+										<BaseButton
+											:ref="element => setAdminTriggerRef(member.id, element)"
+											variant="ghost"
+											:size-scale="sizeScale"
+											class="base-chat-slideover__admin-btn"
+											:aria-label="`${UI_CHAT_TEXT.MEMBER_ACTIONS} ${member.name}`"
+											aria-haspopup="menu"
+											:aria-expanded="activeAdminMenuId === member.id ? 'true' : 'false'"
+											@click="toggleAdminMenu(member.id)">
+											<BaseIcon name="chevron-down" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
+										</BaseButton>
 
-									<div
-										v-if="activeAdminMenuId === member.id"
-										class="base-chat-slideover__admin-dropdown"
-										role="menu"
-										:aria-label="`${UI_CHAT_TEXT.MEMBER_ACTIONS} ${member.name}`">
-										<button
-											type="button"
-											role="menuitem"
-											class="base-chat-slideover__dropdown-item"
-											@click="handleChangeRole(member.id, member.role === 'admin' ? 'member' : 'admin')">
-											<BaseIcon
-												name="file-config"
-												:size-scale="sizeScale * CHAT_SCALE.SMALL"
-												class="base-chat-slideover__dropdown-icon" />
-											{{ member.role === 'admin' ? UI_CHAT_TEXT.DEMOTE : UI_CHAT_TEXT.MAKE_ADMIN }}
-										</button>
-										<button
-											type="button"
-											role="menuitem"
-											class="base-chat-slideover__dropdown-item base-chat-slideover__dropdown-item--danger"
-											@click="handleKick(member.id)">
-											<BaseIcon
-												name="x-circle"
-												:size-scale="sizeScale * CHAT_SCALE.SMALL"
-												class="base-chat-slideover__dropdown-icon" />
-											{{ UI_CHAT_TEXT.EXCLUDE }}
-										</button>
-										<button
-											type="button"
-											role="menuitem"
-											class="base-chat-slideover__dropdown-item base-chat-slideover__dropdown-item--danger"
-											@click="handleBan(member.id)">
-											<BaseIcon
-												name="alert-triangle"
-												:size-scale="sizeScale * CHAT_SCALE.SMALL"
-												class="base-chat-slideover__dropdown-icon" />
-											{{ UI_CHAT_TEXT.BAN }}
-										</button>
-									</div>
+										<template #dropdown>
+											<div
+												class="base-chat-slideover__admin-dropdown"
+												role="menu"
+												:aria-label="`${UI_CHAT_TEXT.MEMBER_ACTIONS} ${member.name}`">
+												<button
+													type="button"
+													role="menuitem"
+													class="base-chat-slideover__dropdown-item"
+													@click="handleChangeRole(member.id, member.role === 'admin' ? 'member' : 'admin')">
+													<BaseIcon
+														name="file-config"
+														:size-scale="sizeScale * CHAT_SCALE.SMALL"
+														class="base-chat-slideover__dropdown-icon" />
+													{{ member.role === 'admin' ? UI_CHAT_TEXT.DEMOTE : UI_CHAT_TEXT.MAKE_ADMIN }}
+												</button>
+												<button
+													type="button"
+													role="menuitem"
+													class="base-chat-slideover__dropdown-item base-chat-slideover__dropdown-item--danger"
+													@click="handleKick(member.id)">
+													<BaseIcon
+														name="x-circle"
+														:size-scale="sizeScale * CHAT_SCALE.SMALL"
+														class="base-chat-slideover__dropdown-icon" />
+													{{ UI_CHAT_TEXT.EXCLUDE }}
+												</button>
+												<button
+													type="button"
+													role="menuitem"
+													class="base-chat-slideover__dropdown-item base-chat-slideover__dropdown-item--danger"
+													@click="handleBan(member.id)">
+													<BaseIcon
+														name="alert-triangle"
+														:size-scale="sizeScale * CHAT_SCALE.SMALL"
+														class="base-chat-slideover__dropdown-icon" />
+													{{ UI_CHAT_TEXT.BAN }}
+												</button>
+											</div>
+										</template>
+									</BaseDropdown>
 								</div>
 							</li>
 						</ul>
@@ -228,6 +236,7 @@ import { UI_CHAT_TEXT } from '@/locales/messages'
 import { CHAT_SCALE } from '../../model/chatScale'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
+import { BaseDropdown } from '@components/BaseDropdown'
 import ChatSlideoverFiles from './ChatSlideoverFiles.vue'
 import ChatSlideoverLinks from './ChatSlideoverLinks.vue'
 import ChatSlideoverMedia from './ChatSlideoverMedia.vue'
@@ -261,6 +270,7 @@ const {
 	handleTabsKeydown,
 	getMemberRoleLabel,
 	activeAdminMenuId,
+	closeAdminMenu,
 	setAdminTriggerRef,
 	toggleAdminMenu,
 	handleAdminMenuEscape,

@@ -415,14 +415,14 @@ describe('ChatInput unit', () => {
 
 	describe('эмодзи', () => {
 		it('должен открывать BaseEmojiPicker и вставлять выбранный эмодзи в поле', async () => {
-			const { container } = render(ChatInput)
+			render(ChatInput)
 
 			await fireEvent.click(screen.getByLabelText('Открыть выбор эмодзи'))
-			expect(container.querySelector('.base-chat-input__emoji-popover .base-emoji-picker')).toBeInTheDocument()
+			expect(document.querySelector('.base-chat-input__emoji-popover .base-emoji-picker')).toBeInTheDocument()
 			await fireEvent.click(await screen.findByRole('button', { name: 'широко улыбается' }))
 
 			expect(getInput().value).toBe('😀')
-			expect(container.querySelector('.base-chat-input__emoji-popover')).toBeNull()
+			expect(document.querySelector('.base-chat-input__emoji-popover')).toBeNull()
 		})
 
 		it('должен вставлять эмодзи в позицию курсора, заменяя выделение, и возвращать фокус в поле', async () => {
@@ -441,14 +441,14 @@ describe('ChatInput unit', () => {
 
 		it('должен ставить фокус в поиск эмодзи при открытии и закрывать по Escape с возвратом фокуса', async () => {
 			const user = userEvent.setup()
-			const { container } = render(ChatInput)
+			render(ChatInput)
 			const trigger = screen.getByLabelText('Открыть выбор эмодзи')
 
 			await user.click(trigger)
 			await vi.waitFor(() => expect(screen.getByRole('searchbox', { name: 'Поиск эмодзи' })).toHaveFocus())
 			await user.keyboard('{Escape}')
 
-			expect(container.querySelector('.base-chat-input__emoji-popover')).toBeNull()
+			expect(document.querySelector('.base-chat-input__emoji-popover')).toBeNull()
 			expect(trigger).toHaveFocus()
 		})
 
@@ -478,37 +478,37 @@ describe('ChatInput unit', () => {
 		})
 
 		it('должен закрывать поповер эмодзи по клику снаружи', async () => {
-			const { container } = render(ChatInput)
+			render(ChatInput)
 
 			await fireEvent.click(screen.getByLabelText('Открыть выбор эмодзи'))
-			expect(container.querySelector('.base-chat-input__emoji-popover')).toBeInTheDocument()
+			expect(document.querySelector('.base-chat-input__emoji-popover')).toBeInTheDocument()
 
 			await fireEvent.mouseDown(document.body)
 
-			expect(container.querySelector('.base-chat-input__emoji-popover')).toBeNull()
+			expect(document.querySelector('.base-chat-input__emoji-popover')).toBeNull()
 		})
 
 		it('должен переключать поповер эмодзи повторным кликом', async () => {
-			const { container } = render(ChatInput)
+			render(ChatInput)
 
 			const btn = screen.getByLabelText('Открыть выбор эмодзи')
 			await fireEvent.click(btn)
-			expect(container.querySelector('.base-chat-input__emoji-popover')).toBeInTheDocument()
+			expect(document.querySelector('.base-chat-input__emoji-popover')).toBeInTheDocument()
 
 			await fireEvent.click(btn)
-			expect(container.querySelector('.base-chat-input__emoji-popover')).toBeNull()
+			expect(document.querySelector('.base-chat-input__emoji-popover')).toBeNull()
 		})
 
 		it('не должен закрывать поповер при клике внутри обёртки эмодзи', async () => {
-			const { container } = render(ChatInput)
+			render(ChatInput)
 
 			await fireEvent.click(screen.getByLabelText('Открыть выбор эмодзи'))
-			const popover = container.querySelector('.base-chat-input__emoji-popover') as HTMLElement
+			const popover = document.querySelector('.base-chat-input__emoji-popover') as HTMLElement
 			expect(popover).toBeInTheDocument()
 
 			await fireEvent.mouseDown(popover)
 
-			expect(container.querySelector('.base-chat-input__emoji-popover')).toBeInTheDocument()
+			expect(document.querySelector('.base-chat-input__emoji-popover')).toBeInTheDocument()
 		})
 	})
 
