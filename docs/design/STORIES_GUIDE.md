@@ -74,8 +74,8 @@ export const Variants: StoryObj<typeof meta> = {
 | `Form` | BaseAddressInput, BaseAutocomplete, BaseAvatarCropper, BaseCheckbox, BaseCheckboxGroup, BaseColorPicker, BaseDadataInput, BaseDatePicker, BaseFileUpload, BaseForm, BaseFormField, BaseInplace, BaseInput, BaseInputNumber, BaseInputTags, BaseMention, BaseMoneyInput, BasePhoneInput, BasePin, BaseRadio, BaseRange, BaseRating, BaseRequisiteInput, BaseSearch, BaseSegmented, BaseSelect, BaseSignaturePad, BaseSwitch, BaseTextarea, BaseTimePicker |
 | `Data` | BaseAccordion, BaseCalendar, BaseChecklist, BaseEmpty, BaseFilterBuilder, BaseHeatmap, BaseInfiniteScroll, BaseJsonViewer, BaseKanban, BaseList, BasePieChart, BaseSlider, BaseSparkline, BaseTable, BaseTextDiff, BaseTimeline, BaseTree, BaseVirtualList |
 | `Navigation` | BaseBackTop, BaseBreadcrumbs, BaseLink, BaseMegaMenu, BaseMenu, BasePagination, BaseSideBar, BaseStepper, BaseTabs, BaseToolbar |
-| `Layout` | BaseContainer, BaseFooter, BaseHeader, BaseLayout, BaseScrollArea, BaseSplitter |
-| `Overlay` | BaseApp, BaseCommandPalette, BaseConfirm, BaseContextMenu, BaseDrawer, BaseDropdown, BaseDropdownMenu, BaseModal, BaseNotification, BaseNotificationCenter, BasePopconfirm, BasePopover, BaseSlideover, BaseTooltip, BaseTour |
+| `Layout` | BaseAffix, BaseContainer, BaseFooter, BaseGrid, BaseHeader, BaseLayout, BaseScrollArea, BaseSplitter, BaseStack |
+| `Overlay` | BaseApp, BaseCommandPalette, BaseConfirm, BaseContextMenu, BaseDrawer, BaseDropdown, BaseDropdownMenu, BaseHoverCard, BaseModal, BaseNotification, BaseNotificationCenter, BasePopconfirm, BasePopover, BaseSlideover, BaseTooltip, BaseTour |
 | `Chat` | BaseAiMessage, BaseChat, BaseCommentThread, BaseEmojiPicker, BasePromptInput, BaseReasoning, BaseToolCall |
 | `Editor` | BaseEditor |
 | `Media` | BaseAudioPlayer, BaseImageCompare, BaseMap, BaseMediaPlayer, BaseSubtitleEditor, BaseVoiceRecorder, BaseWaveform |

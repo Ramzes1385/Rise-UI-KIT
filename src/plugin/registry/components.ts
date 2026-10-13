@@ -25,6 +25,7 @@ import { BaseText } from '../../components/BaseText'
 import { BaseTour } from '../../components/BaseTour'
 import { BaseTree } from '../../components/BaseTree'
 import { BaseUser } from '../../components/BaseUser'
+import { BaseAffix } from '../../components/BaseAffix'
 import { BaseAlert } from '../../components/BaseAlert'
 import { BaseBadge } from '../../components/BaseBadge'
 import { BaseChart } from '../../components/BaseChart'
@@ -34,6 +35,7 @@ import { BaseInput } from '../../components/BaseInput'
 import { BaseModal } from '../../components/BaseModal'
 import { BaseRadio } from '../../components/BaseRadio'
 import { BaseRange } from '../../components/BaseRange'
+import { BaseStack } from '../../components/BaseStack'
 import { BaseAnchor } from '../../components/BaseAnchor'
 import { BaseAvatar } from '../../components/BaseAvatar'
 import { BaseBanner } from '../../components/BaseBanner'
@@ -89,6 +91,7 @@ import { BaseChecklist } from '../../components/BaseChecklist'
 import { BaseContainer } from '../../components/BaseContainer'
 import { BaseCountdown } from '../../components/BaseCountdown'
 import { BaseFormField } from '../../components/BaseFormField'
+import { BaseHoverCard } from '../../components/BaseHoverCard'
 import { BaseInputTags } from '../../components/BaseInputTags'
 import { BaseReasoning } from '../../components/BaseReasoning'
 import { BaseSegmented } from '../../components/BaseSegmented'
@@ -112,6 +115,7 @@ import { BaseColorPicker } from '../../components/BaseColorPicker'
 import { BaseContextMenu } from '../../components/BaseContextMenu'
 import { BaseDadataInput } from '../../components/BaseDadataInput'
 import { BaseEmojiPicker } from '../../components/BaseEmojiPicker'
+import { BaseGrid, BaseGridItem } from '../../components/BaseGrid'
 import { BaseInputNumber } from '../../components/BaseInputNumber'
 import { BasePromptInput } from '../../components/BasePromptInput'
 import { BaseSplitButton } from '../../components/BaseSplitButton'
@@ -143,6 +147,7 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	...LAZY_COMPONENTS,
 	BaseAccordion,
 	BaseAddressInput,
+	BaseAffix,
 	BaseAiMessage,
 	BaseAlert,
 	BaseAnchor,
@@ -193,8 +198,11 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseFooter,
 	BaseForm,
 	BaseFormField,
+	BaseGrid,
+	BaseGridItem,
 	BaseHeader,
 	BaseHeatmap,
+	BaseHoverCard,
 	BaseIcon,
 	BaseImage,
 	BaseImageCompare,
@@ -250,6 +258,7 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseSparkline,
 	BaseSplitButton,
 	BaseSplitter,
+	BaseStack,
 	BaseStat,
 	BaseStepper,
 	BaseSubtitleEditor,

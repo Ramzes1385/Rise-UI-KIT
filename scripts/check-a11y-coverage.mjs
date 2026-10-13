@@ -134,6 +134,7 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseCryptoProSign',
 	'BaseImageMapEditor',
 	'BaseImageMap3D',
+	'BaseHoverCard',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */
@@ -196,6 +197,7 @@ const INTERACTIVE_WITH_DISABLED = new Set([
 	'BaseCascader',
 	'BaseCryptoProSign',
 	'BaseImageMapEditor',
+	'BaseHoverCard',
 ])
 
 /** Формовые компоненты, требующие story Error */

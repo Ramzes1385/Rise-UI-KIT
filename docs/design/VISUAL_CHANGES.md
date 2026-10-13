@@ -1710,3 +1710,12 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 - **BaseWatermark** (`element-basewatermark--text`, `--multi-line`, `--image`, `--protected`): диагональный узор знака с прозрачностью 0.15 поверх карточки; ряды смещены по диагонали.
 - **BaseBanner** (`element-basebanner--types`, `--variants`, `--sizes`, `--with-action`, `--long-content`, `--sticky`): полоса на всю ширину с иконкой, текстом по центру, действием и кнопкой закрытия.
 - **BaseCookieConsent** (`overlay-basecookieconsent--default`, `--settings`, `--positions`, `--long-content`): карточка с тенью внизу области; в настройках — переключатели категорий, обязательная включена и отключена.
+
+## components-1b: BaseHoverCard, BaseStack, BaseGrid, BaseAffix
+
+Четыре новых компонента: эталонов скриншотов нет (создаёт владелец), существующие снимки не затронуты.
+
+- **BaseHoverCard** (`overlay-basehovercard--…`): карточка при наведении на панели BaseDropdown со стрелкой. Для снимков истории открывают карточки через `isOpen`: `placement` (четыре стороны), `variants` (пять вариантов, у `ghost` нет фона и стрелки), `sizes` (`sizeScale` 87,5 / 100 / 112,5), `custom-color` (фон и текст через `color`), `long-content` (предел высоты 140px, прокрутка внутри), `theming` (токены `--rise-hover-card-*` и классы `ui`). Интерактивные истории (`default`, `profile`, `link`, `delays`, `disabled`, `keyboard`, `animations`) в снимки не входят.
+- **BaseStack** (`layout-basestack--…`): раскладка flex. `directions` (четыре направления), `gaps` (шесть промежутков 0–32px), `align`, `justify`, `wrap` (перенос в блоке 360px), `sizes` (промежутки при `sizeScale` 75–125).
+- **BaseGrid** (`layout-basegrid--…`): сетка CSS Grid. `default` (12 колонок, ячейки по `span` 4), `basic` (4 колонки), `responsive` (на ширине снимка 800px действует шаг `md`: 3 колонки, ячейки по 6 колонок), `spans` (`span`, `offset`, `full`, `order`), `gaps` (шесть промежутков и `rowGap`).
+- **BaseAffix** (`layout-baseaffix--…`): закреплённый блок в прокручиваемой области. `default`, `top`, `bottom`, `in-container` показывают блок на месте до прокрутки; `with-shadow` и `theming` после play остаются прокрученными: блок закреплён и под ним видна тень (в `theming` у средней области сплошная тень цвета `--rise-primary` через токен `--rise-affix-shadow`).

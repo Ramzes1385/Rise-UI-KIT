@@ -1,0 +1,74 @@
+$gaps: (
+	'xs': 4px,
+	'sm': 8px,
+	'md': 16px,
+	'lg': 24px,
+	'xl': 32px,
+);
+$media-steps: ('sm', 'md', 'lg', 'xl');
+$steps: ('base', 'sm', 'md', 'lg', 'xl');
+
+@function responsive-var($prefix, $step, $fallback) {
+	$result: $fallback;
+
+	@each $name in $steps {
+		$result: var(--#{$prefix}-#{$name}, $result);
+
+		@if $name == $step {
+			@return $result;
+		}
+	}
+
+	@return $result;
+}
+
+@mixin reset-steps($prefix) {
+	@each $step in $steps {
+		--#{$prefix}-#{$step}: initial;
+	}
+}
+
+@mixin responsive($property, $prefix, $fallback) {
+	#{$property}: responsive-var($prefix, 'base', $fallback);
+
+	@each $step in $media-steps {
+		@media (min-width: breakpoint($step)) {
+			#{$property}: responsive-var($prefix, $step, $fallback);
+		}
+	}
+}
+
+.base-grid {
+	display: grid;
+	box-sizing: border-box;
+	grid-template-columns: repeat(var(--base-grid-columns), minmax(0, 1fr));
+	min-width: 0;
+	@include reset-steps(base-grid-cols);
+	@include responsive(--base-grid-columns, base-grid-cols, 12);
+
+	&--gap-none {
+		gap: 0;
+	}
+
+	@each $name, $size in $gaps {
+		&--gap-#{$name} {
+			gap: space(ct(grid, gap, $size));
+		}
+
+		&--row-gap-#{$name} {
+			row-gap: space($size);
+		}
+	}
+
+	&--row-gap-none {
+		row-gap: 0;
+	}
+}
+
+.base-grid-item {
+	min-width: 0;
+	@include reset-steps(base-grid-item-column);
+	@include reset-steps(base-grid-item-order);
+	@include responsive(grid-column, base-grid-item-column, auto);
+	@include responsive(order, base-grid-item-order, 0);
+}

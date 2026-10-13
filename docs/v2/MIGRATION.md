@@ -2388,3 +2388,15 @@ API кита не меняется. В Storybook добавлены пример
 - Новые разделы словаря `result`, `banner`, `cookieConsent` (`UI_RESULT`, `UI_BANNER`, `UI_COOKIE_CONSENT`): приложение с собственным языком через `defineLocale()` добавляет переводы этих разделов.
 - Токены `--rise-result-*`, `--rise-banner-*`, `--rise-cookie-consent-*` (список — `docs/design/COMPONENT_TOKENS.md`). У BaseWatermark токенов нет: настройка — пропами.
 - Запоминание закрытия (`storageKey` у BaseBanner и BaseCookieConsent) пишет в `localStorage` ключи `rise-banner:<ключ>` и `rise-cookie-consent:<ключ>`.
+
+
+## Новые компоненты: components-1b (BaseHoverCard, BaseStack, BaseGrid, BaseAffix)
+
+Новые компоненты, изменений в существующих нет.
+
+- `BaseHoverCard` (Overlay) — карточка при наведении и фокусе: `v-model:is-open`, `position`, `open-delay`, `close-delay`, `is-disabled`, `max-height`, `animation`, `variant`; события `update:isOpen`, `open`, `close`; слоты `trigger` (`{ isOpen }`) и по умолчанию. Экспорт: `BaseHoverCard`, `HOVER_CARD_VARIANTS`, `HOVER_CARD_PARTS`, типы `BaseHoverCardProps`, `BaseHoverCardEmits`, `BaseHoverCardSlots`, `BaseHoverCardPart`, `HoverCardVariant`.
+- `BaseStack` (Layout) — flex-примитив: `direction`, `gap`, `align`, `justify`, `is-wrap`, `is-inline`, `tag`. Экспорт: `BaseStack`, `STACK_*`, типы `BaseStackProps`, `BaseStackSlots`, `StackGap` и др.
+- `BaseGrid` и `BaseGridItem` (Layout) — сетка: `cols`, `gap`, `row-gap`, `tag`; ячейка — `span`, `offset`, `order` (число или объект по брейкпоинтам `base`, `sm`, `md`, `lg`, `xl`). Экспорт: `BaseGrid`, `BaseGridItem`, `GRID_VARIANTS`, `GRID_BREAKPOINTS`, `GRID_PARTS`, `GRID_ITEM_PARTS`, типы `GridResponsive`, `GridSpan`, `GridBreakpoint` и др.
+- `BaseAffix` (Layout) — прилипающий блок: `offset-top`, `offset-bottom`, `target`, `has-shadow`, событие `change`, слот с `isFixed`. Экспорт: `BaseAffix`, `AFFIX_VARIANTS`, `AFFIX_PARTS`, типы `BaseAffixProps`, `BaseAffixEmits`, `BaseAffixSlots`, `AffixTarget`.
+- Плагин регистрирует `BaseHoverCard`, `BaseStack`, `BaseGrid`, `BaseGridItem`, `BaseAffix` глобально; настройки по умолчанию — `defaults.BaseHoverCard` и т. д. Токены: `--rise-stack-gap`, `--rise-grid-gap`, `--rise-affix-shadow`, `--rise-hover-card-*` (таблица — `docs/design/COMPONENT_TOKENS.md`).
+- Новых строк словаря нет: у компонентов нет собственных текстов.

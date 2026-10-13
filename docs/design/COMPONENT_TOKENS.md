@@ -22,6 +22,12 @@
 | `--rise-accordion-radius` | корень | radius | — | `var(--rise-radius-lg)` |
 | `--rise-accordion-shadow` | корень | shadow | — | `var(--rise-shadow-sm)` |
 
+## BaseAffix
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-affix-shadow` | корень | shadow | — | `var(--rise-shadow-md)` |
+
 ## BaseAiMessage
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
@@ -798,6 +804,12 @@
 | `--rise-form-field-radius` | корень | radius | — | `var(--rise-radius-lg)` |
 | `--rise-form-field-shadow` | корень | shadow | — | `var(--rise-shadow-sm)` |
 
+## BaseGrid
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-grid-gap` | корень | gap | — | `$size` |
+
 ## BaseHeader
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
@@ -825,6 +837,15 @@
 | `--rise-heatmap-mark-bg` | mark | bg | — | `var(--rise-chart-3)` |
 | `--rise-heatmap-scroll-radius` | scroll | radius | — | `var(--rise-radius-sm)` |
 | `--rise-heatmap-tooltip-text` | tooltip | text | — | `var(--rise-text)` |
+
+## BaseHoverCard
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-hover-card-inner-font-size` | inner | font-size | — | `var(--rise-font-size-sm)` |
+| `--rise-hover-card-inner-padding-x` | inner | padding-x | — | `16px` |
+| `--rise-hover-card-inner-padding-y` | inner | padding-y | — | `12px` |
+| `--rise-hover-card-panel-width` | panel | width | — | `320px` |
 
 ## BaseIcon
 
@@ -1638,6 +1659,12 @@
 | `--rise-splitter-separator-bg-hover` | separator | bg | hover | `var(--rise-primary)` |
 | `--rise-splitter-separator-ring` | separator | ring | — | `var(--rise-focus-ring)` |
 | `--rise-splitter-separator-width` | separator | width | — | `9px` |
+
+## BaseStack
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-stack-gap` | корень | gap | — | `$size` |
 
 ## BaseStat
 

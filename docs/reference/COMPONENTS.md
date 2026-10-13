@@ -3666,3 +3666,52 @@ import { BaseButton, BaseResult } from '@ramzes1385/rise-ui-kit'
 - Пропы: `categories` (`id`, `label`, `description`, `isRequired`), `modelValue` (`v-model`, `id` выбранных; обязательные всегда в выборе), `isOpen`, `isSettingsOpen`, `title`, `description`, `storageKey`, `position` (`bottom`, `bottom-left`, `bottom-right`), `isContained`, `variant` (`default`, `outline`, `soft`), `sizeScale`, `color`, `ui`.
 - Кнопки: «Настроить» (раскрывает переключатели BaseSwitch), «Только выбранные», «Принять все». События: `update:modelValue`, `update:isOpen`, `update:isSettingsOpen`, `change` (выбор изменён) и `accept` (решение принято, `id` разрешённых категорий).
 - `storageKey` запоминает решение (`rise-cookie-consent:<ключ>`): после монтирования выбор восстанавливается через `update:modelValue` и `change`, окно скрывается, `accept` не приходит.
+
+
+---
+
+## Новые компоненты (задача components-1b)
+
+### BaseHoverCard
+
+Карточка при наведении и фокусе на триггер (профиль, предпросмотр ссылки). Строится на панели BaseDropdown: переворот и сдвиг у края окна, стрелка, телепорт в `body` (или в цель `teleportTo` плагина), тема области триггера. Это дополнение к триггеру: всё важное должно быть доступно и без карточки — в карточку нельзя перейти клавишей Tab.
+
+- Триггер — слот `trigger` (ссылка, имя, `BaseAvatar`); содержимое — слот по умолчанию. `open-delay` (по умолчанию 300 мс) и `close-delay` (150 мс); при фокусе с клавиатуры карточка открывается сразу. Указатель можно перевести на саму карточку — она не закроется.
+- Escape закрывает; на касании карточка открывается нажатием на триггер, закрывается нажатием снаружи.
+- `v-model:is-open`, события `open` и `close`, `is-disabled`, `position` (12 положений, как у BaseDropdown), `variant`, `animation`, `max-height`.
+- Доступность: открытая карточка связана с триггером через `aria-describedby`; триггер без фокусируемого элемента получает `tabindex="0"`. `aria-expanded` не ставится: карточка не раскрывающийся блок.
+
+```vue
+<BaseHoverCard position="bottom-start">
+	<template #trigger><a href="/users/anna">@anna</a></template>
+	<strong>Анна Петрова</strong>
+	<p>Дизайнер, Казань</p>
+</BaseHoverCard>
+```
+
+### BaseStack
+
+Flex-примитив: `direction` (`column`, `row`, `*-reverse`), `gap` (`none`, `xs` 4px, `sm` 8px, `md` 16px, `lg` 24px, `xl` 32px), `align`, `justify`, `is-wrap`, `is-inline`, `tag`. Промежутки масштабируются `sizeScale` и плотностью темы; токен `--rise-stack-gap` задаёт промежуток для любого `gap`, кроме `none`.
+
+```vue
+<BaseStack direction="row" gap="sm" align="center"><BaseAvatar /><span>Анна</span></BaseStack>
+```
+
+### BaseGrid и BaseGridItem
+
+CSS-сетка колонок равной ширины. `cols` — число или объект по брейкпоинтам (`{ base: 1, md: 2, lg: 4 }`; `sm` 480px, `md` 768px, `lg` 1024px, `xl` 1440px — те же, что у `useBreakpoint`), по умолчанию 12; `gap`, `row-gap` — как `gap` у BaseStack. Адаптивность — на CSS-переменных и медиа-запросах: без JavaScript, без мерцания при SSR. Ячейка BaseGridItem: `span` (число, `full` или объект по брейкпоинтам), `offset` (колонка начала минус один, абсолютно), `order`. Любые другие дочерние элементы занимают по одной колонке.
+
+```vue
+<BaseGrid :cols="{ base: 1, md: 12 }" gap="lg">
+	<BaseGridItem :span="{ base: 'full', md: 8 }">Содержимое</BaseGridItem>
+	<BaseGridItem :span="{ base: 'full', md: 4 }">Боковая колонка</BaseGridItem>
+</BaseGrid>
+```
+
+### BaseAffix
+
+Блок, прилипающий при прокрутке (`position: sticky`): `offset-top` и `offset-bottom` (px; без обоих — к верху с отступом 0), `target` — контейнер прокрутки (селектор, элемент или окно по умолчанию), событие `change(isFixed)`, слот получает `isFixed`, `has-shadow` — тень у прилипшего блока (токен `--rise-affix-shadow`). Прилипание блока определяет IntersectionObserver (без него, например при SSR, блок «не прилип»; сама прилипающая раскладка остаётся CSS). Блок прилипает к ближайшему предку с прокруткой и не выходит за пределы родителя.
+
+```vue
+<BaseAffix :offset-top="16" has-shadow @change="onFixed"><BaseToolbar /></BaseAffix>
+```
