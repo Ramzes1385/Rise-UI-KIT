@@ -1,6 +1,7 @@
 import type { ComputedRef, Ref } from 'vue'
 import { UI_EDITOR } from '@/locales/messages'
 import { useUi } from '@composables/base/useUi'
+import { createEditorApi } from './editorExpose'
 import { useEditorField } from './useEditorField'
 import { EDITOR_MENU_SCALE_RATIO } from './editorScale'
 import { useEditorComposition } from './editorComposition'
@@ -232,6 +233,16 @@ export function useBaseEditor(props: EditorProps, emit: BaseEditorEmits) {
 	const link = useEditorLinkDialog(engine.toolbar, isLocked)
 	const mediaMenu = useMediaMenu(editorRef, engine.toolbar, { composition: engine.composition, openLinkDialog: link.openLinkDialog })
 	useContentSync(props, editorRef, { isLocked, sanitize, engine, pending, composition: engine.composition })
+	const api = createEditorApi({
+		editorRef,
+		toolbar: engine.toolbar,
+		isLocked,
+		isEmpty: engine.state.isEmpty,
+		sanitize,
+		handleInput: engine.handleInput,
+		formField: field.formField,
+		openLinkDialog: link.openLinkDialog,
+	})
 
 	return {
 		...standard,
@@ -253,6 +264,8 @@ export function useBaseEditor(props: EditorProps, emit: BaseEditorEmits) {
 		handleInput: engine.handleInput,
 		handleKeyDown: mediaMenu.handleKeyDown,
 		...insert,
+		exposed: api.exposed,
+		toolbarSlotProps: api.slotProps,
 		...useEditorFocus(emit, engine, field.formField),
 	}
 }

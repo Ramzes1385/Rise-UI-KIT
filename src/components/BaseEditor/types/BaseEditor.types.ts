@@ -1,6 +1,7 @@
 import type { UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
+import type { EditorActiveStates } from '@composables/editor/useEditorToolbar'
 
 export const EDITOR_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 
@@ -100,11 +101,59 @@ export interface BaseEditorEmits {
 }
 
 export interface BaseEditorSlots {
-	/** Свои кнопки в конце панели инструментов — после стандартных */
-	toolbar?: () => unknown
+	/**
+	 * Своя панель инструментов: заменяет стандартные кнопки. Значения слота — команды и состояние редактора
+	 * (`applyFormat`, `insertHtml`, `activeStates`…); клики по панели не уводят выделение из текста
+	 *
+	 * @example
+	 * <BaseEditor v-model="html"><template #toolbar="{ applyFormat, activeStates }">…</template></BaseEditor>
+	 */
+	toolbar?: (props: BaseEditorToolbarSlotProps) => unknown
 }
 
 export type EditorProps = PropsWithDefaults<
 	BaseEditorProps,
 	'modelValue' | 'isReadonly' | 'isDisabled' | 'isRequired' | 'isAutofocus' | 'sizeScale'
 >
+
+/** Значения слота `toolbar`: команды и состояние для собственных кнопок панели */
+export interface BaseEditorToolbarSlotProps {
+	/** Активные форматы под кареткой (`isBold`, `isItalic`, `isUnorderedList`…) и блок `formatBlock` */
+	activeStates: EditorActiveStates
+	/** Включён режим HTML-кода */
+	isCodeMode: boolean
+	/** Редактор только для чтения или отключён: команды ничего не меняют */
+	isLocked: boolean
+	/** Применить начертание или список: `bold`, `italic`, `underline`, `strikeThrough`, `justifyLeft`, `insertUnorderedList`… */
+	applyFormat: (command: string) => void
+	/** Сменить блок: `p`, `h1`–`h6`, `blockquote`, `pre` */
+	applyBlock: (tag: string) => void
+	/** Вставить HTML (очищается `sanitize`) в место выделения */
+	insertHtml: (html: string) => void
+	/** Открыть диалог ссылки */
+	openLinkDialog: () => void
+	/** Переключить режим кода */
+	toggleCodeMode: () => void
+	/** Вернуть фокус в область текста или поле кода */
+	focus: () => void
+}
+
+/** Методы, доступные через `ref` на BaseEditor (`defineExpose`) */
+export interface BaseEditorExpose {
+	/** Область текста (`contenteditable`); в режиме кода — null */
+	rootRef: HTMLDivElement | null
+	/** Перевести фокус в область текста (в режиме кода — в поле кода) */
+	focus: () => void
+	/** Снять фокус с редактора */
+	blur: () => void
+	/** Текущий очищенный HTML (то же значение, что уходит в `update:modelValue`) */
+	getHtml: () => string
+	/** Вставить HTML (очищается `sanitize`) в место выделения или каретки; в режиме чтения ничего не делает */
+	insertHtml: (html: string) => void
+	/** Пуст ли редактор: нет текста и медиа */
+	isEmpty: boolean
+	/** Проверить обязательность (`isRequired`) и показать ошибку; true — значение допустимо */
+	validate: () => boolean
+	/** Сбросить состояние «ушёл фокус»: ошибка обязательного поля скрывается */
+	reset: () => void
+}

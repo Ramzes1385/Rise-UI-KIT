@@ -57,7 +57,7 @@
 				@reset-text-color="resetTextColor"
 				@reset-background-color="resetBackgroundColor">
 				<template v-if="$slots.toolbar" #toolbar>
-					<slot name="toolbar" />
+					<slot name="toolbar" v-bind="toolbarSlotProps" />
 				</template>
 			</BaseEditorToolbar>
 
@@ -231,6 +231,8 @@ const {
 	errorId,
 	control,
 	formField,
+	exposed,
+	toolbarSlotProps,
 	formValue,
 	handleCompositionStart,
 	handleCompositionEnd,
@@ -287,4 +289,6 @@ const {
 	handleFocus,
 	handleBlur,
 } = useBaseEditor(props, emit)
+
+defineExpose(exposed)
 </script>

@@ -11,6 +11,18 @@ export function isLinkHotkey(event: KeyboardEvent): boolean {
 	return (event.ctrlKey || event.metaKey) && !event.shiftKey && !event.altKey && event.code === 'KeyK'
 }
 
+function openedDialogState(toolbar: EditorToolbar): EditorLinkDialogState {
+	const current = toolbar.readLink()
+	return {
+		...toolbar.getLinkPoint(),
+		url: current?.url ?? '',
+		isNewTab: current?.isNewTab ?? false,
+		hasLink: Boolean(current),
+		error: '',
+		isVisible: true,
+	}
+}
+
 function useLinkDialogFocus(dialog: EditorLinkDialogState, dialogRef: Ref<HTMLElement | null>, toolbar: EditorToolbar): void {
 	watch(
 		() => dialog.isVisible,
@@ -33,15 +45,7 @@ export function useEditorLinkDialog(toolbar: EditorToolbar, isLocked: ComputedRe
 	function openLinkDialog(): void {
 		if (isLocked.value) return
 		toolbar.saveSelection()
-		const current = toolbar.readLink()
-		Object.assign(linkDialog, {
-			...toolbar.getLinkPoint(),
-			url: current?.url ?? '',
-			isNewTab: current?.isNewTab ?? false,
-			hasLink: Boolean(current),
-			error: '',
-			isVisible: true,
-		})
+		Object.assign(linkDialog, openedDialogState(toolbar))
 	}
 
 	function closeLinkDialog(): void {
