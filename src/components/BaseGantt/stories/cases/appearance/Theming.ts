@@ -45,7 +45,10 @@ export const Theming: StoryObj<typeof meta> = {
 		await expect(getComputedStyle(themed.querySelector('.base-gantt__today') as HTMLElement).backgroundColor).not.toBe(
 			getComputedStyle(plain.querySelector('.base-gantt__today') as HTMLElement).backgroundColor,
 		)
-		if (!isStoryBranded()) await expect(getComputedStyle(themed.querySelector('.base-gantt__bar') as HTMLElement).height).toBe('14px')
+		if (!isStoryBranded())
+			await expect(
+				getComputedStyle(themed.querySelector('.base-gantt__bar:not(.base-gantt__bar--summary)') as HTMLElement).height,
+			).toBe('14px')
 		if (!isStoryBranded()) await expect(getComputedStyle(plain.querySelector('.base-gantt__bar') as HTMLElement).height).toBe('22px')
 		await expect(classed).toHaveClass('base-gantt', 'story-themed-gantt')
 		await expect(classed.querySelector('.base-gantt__bar')).toHaveClass('story-themed-bar')

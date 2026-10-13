@@ -839,7 +839,7 @@
 | `--rise-gantt-dependencies-border` | dependencies | border | — | `var(--rise-text-dimmed)` |
 | `--rise-gantt-grid-border` | grid | border | — | `var(--rise-border-muted)` |
 | `--rise-gantt-header-bg` | header | bg | — | `var(--rise-bg-elevated)` |
-| `--rise-gantt-header-text` | header | text | — | `var(--rise-text-muted)` |
+| `--rise-gantt-header-text` | header | text | — | `var(--rise-text-toned)` |
 | `--rise-gantt-name-bg` | name | bg | — | `var(--rise-bg)` |
 | `--rise-gantt-name-bg-hover` | name | bg | hover | `var(--rise-bg-elevated)` |
 | `--rise-gantt-radius` | корень | radius | — | `var(--rise-radius-lg)` |

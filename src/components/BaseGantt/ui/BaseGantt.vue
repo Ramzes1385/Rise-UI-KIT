@@ -14,7 +14,11 @@
 		</BaseEmpty>
 
 		<template v-else>
-			<div ref="scroller" :class="[ui('viewport'), classes.viewport]" @scroll.passive="onScroll">
+			<div
+				ref="scroller"
+				:class="[ui('viewport'), classes.viewport]"
+				:tabindex="isDisabled ? 0 : undefined"
+				@scroll.passive="onScroll">
 				<div class="base-gantt__canvas" :style="canvasStyle">
 					<div class="base-gantt__layer" aria-hidden="true" :style="layerStyle">
 						<svg :class="[ui('dependencies'), classes.dependencies]" :width="chartWidth" :height="bodyHeight">
@@ -35,11 +39,8 @@
 						:aria-disabled="isDisabled || undefined">
 						<div role="row" aria-rowindex="1" :class="[ui('header'), classes.header]">
 							<div role="columnheader" class="base-gantt__header-name">{{ UI_GANTT.TASK_COLUMN }}</div>
-							<div
-								role="columnheader"
-								class="base-gantt__header-timeline"
-								:aria-label="UI_GANTT.TIMELINE"
-								:style="timelineStyle">
+							<div role="columnheader" class="base-gantt__header-timeline" :style="timelineStyle">
+								<span class="base-gantt__sr-only">{{ UI_GANTT.TIMELINE }}</span>
 								<span
 									v-for="cell in headerTop"
 									:key="cell.key"

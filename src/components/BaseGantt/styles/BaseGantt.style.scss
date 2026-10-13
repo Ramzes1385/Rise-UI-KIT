@@ -24,6 +24,10 @@ $gantt-handle: sz(8px);
 		@include disabled-state;
 	}
 
+	&__viewport:focus-visible {
+		@include focus-ring;
+	}
+
 	&__viewport {
 		position: relative;
 		flex: 1 1 auto;
@@ -90,7 +94,7 @@ $gantt-handle: sz(8px);
 		height: var(--gantt-header-height);
 		border-bottom: 1px solid $gantt-row-border;
 		background-color: ct(gantt-header, bg, var(--rise-bg-elevated));
-		color: ct(gantt-header, text, var(--rise-text-muted));
+		color: ct(gantt-header, text, var(--rise-text-toned));
 		font-size: sz(var(--rise-font-size-xs));
 		font-weight: var(--rise-font-weight-medium);
 	}
@@ -106,6 +110,10 @@ $gantt-handle: sz(8px);
 		padding: sz(6px) sz(12px);
 		border-right: 1px solid $gantt-row-border;
 		background-color: ct(gantt-header, bg, var(--rise-bg-elevated));
+	}
+
+	&__sr-only {
+		@include visually-hidden;
 	}
 
 	&__header-timeline {
