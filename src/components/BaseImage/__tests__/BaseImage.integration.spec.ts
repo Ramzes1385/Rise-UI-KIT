@@ -68,7 +68,7 @@ describe('BaseImage integration', () => {
 			const zoomOverlay = container.ownerDocument.querySelector('.base-image__zoom')
 			expect(zoomOverlay).toBeInTheDocument()
 
-			await fireEvent.click(zoomOverlay!)
+			await fireEvent.click(container.ownerDocument.querySelector('.base-image__zoom-stage')!)
 
 			expect(container.ownerDocument.querySelector('.base-image__zoom')).not.toBeInTheDocument()
 		})
@@ -84,7 +84,7 @@ describe('BaseImage integration', () => {
 			const zoomOverlay = container.ownerDocument.querySelector('.base-image__zoom')
 			expect(zoomOverlay).toBeInTheDocument()
 
-			await fireEvent.click(zoomOverlay!)
+			await fireEvent.click(container.ownerDocument.querySelector('.base-image__zoom-stage')!)
 
 			expect(container.ownerDocument.querySelector('.base-image__zoom')).toBeInTheDocument()
 		})

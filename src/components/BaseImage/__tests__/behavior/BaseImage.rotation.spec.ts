@@ -63,7 +63,7 @@ describe('BaseImage: поворот в просмотре', () => {
 
 	it('П6: просмотр с переходами, перетаскивание рамки миникарты их выключает', async () => {
 		const user = await openZoom()
-		const dialog = screen.getByRole('dialog')
+		const dialog = document.querySelector('.base-image__zoom')!
 		expect(dialog).toHaveClass('base-image__zoom--animated')
 		await clickTimes(user, 'Увеличить', 1)
 		const minimap = document.querySelector<HTMLElement>('.base-image__minimap')!
@@ -78,7 +78,7 @@ describe('BaseImage: поворот в просмотре', () => {
 
 	it('просмотр: колесо, загрузка изображений, клик по миникарте и стрелка влево', async () => {
 		const user = await openZoom({ gallery: ['img1.jpg', 'img2.jpg'] })
-		const dialog = screen.getByRole('dialog')
+		const dialog = document.querySelector<HTMLElement>('.base-image__zoom-stage')!
 		await fireEvent.wheel(dialog, { deltaY: -100 })
 		expect(dialog).toHaveTextContent('125%')
 		await fireEvent.load(zoomImg())

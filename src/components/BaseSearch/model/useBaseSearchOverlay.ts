@@ -1,19 +1,25 @@
+import { UI_ARIA } from '@/locales/messages'
 import { computed, nextTick, ref } from 'vue'
 import { useSearchMotion } from './useSearchMotion'
 import type BaseSearchInput from '../ui/BaseSearchInput.vue'
-import { useLayerIndex } from '@composables/app/useLayerStack'
-import { useEscapeKey } from '@composables/overlay/useEscapeKey'
-import { useScrollLock } from '@composables/overlay/useScrollLock'
-import { useTeleportTarget } from '@composables/app/useTeleportTarget'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseSearchOverlayExpose, BaseSearchOverlayProps } from '../types/BaseSearchOverlay.types'
 
+function joinClasses(...classes: (string | undefined)[]): string {
+	return classes.filter(Boolean).join(' ')
+}
+
 function useLayerClasses(props: BaseSearchOverlayProps) {
 	const prefix = computed(() => props.panel)
+	const overlayClass = computed(() => joinClasses(props.ui(`${prefix.value}-overlay`), props.classes[`${prefix.value}Overlay`]))
+	const panelClass = computed(() => joinClasses(props.ui(prefix.value), props.classes[prefix.value]))
 	return {
 		prefix,
-		overlayClass: computed(() => props.ui(`${prefix.value}-overlay`)),
-		panelClass: computed(() => [props.ui(prefix.value), props.classes[prefix.value]]),
+		dialogProps: computed(() => ({
+			ariaLabel: UI_ARIA.SEARCH,
+			sizeScale: props.sizeScale,
+			customClass: { root: overlayClass.value, [prefix.value === 'modal' ? 'content' : 'panel']: panelClass.value },
+		})),
 		headerClass: computed(() => [props.ui(`${prefix.value}-header`), props.classes[`${prefix.value}Header`]]),
 		inputClass: computed(() => props.classes[`${prefix.value}Input`]),
 		closeBtnClass: computed(() => props.ui(`${prefix.value}-close`)),
@@ -24,30 +30,28 @@ function useLayerClasses(props: BaseSearchOverlayProps) {
 }
 
 export function useBaseSearchOverlay(props: BaseSearchOverlayProps, emit: (event: 'close') => void) {
-	const teleportTarget = useTeleportTarget()
 	const { sizeScaleStyle, variantClass, variantStyle, customColorStyle } = useStandardBaseComponent('base-search', props)
 	const isOpen = ref(false)
 	const rootRef = ref<HTMLElement | null>(null)
-	const layerStyle = useLayerIndex(() => isOpen.value)
 	const inputRef = ref<InstanceType<typeof BaseSearchInput> | null>(null)
-	const { lock, unlock } = useScrollLock()
+	let isFocusReturning = false
 	const close = (): void => {
 		isOpen.value = false
-		unlock()
+		isFocusReturning = true
+		nextTick(() => {
+			isFocusReturning = false
+		})
 		emit('close')
 	}
-	useEscapeKey({ isActive: () => isOpen.value, callback: () => close() })
 	const open = (): void => {
-		if (props.isDisabled) return
+		if (props.isDisabled || isFocusReturning) return
 		isOpen.value = true
-		lock()
 		nextTick(() => {
 			inputRef.value?.focus()
 		})
 	}
 
 	return {
-		teleportTarget,
 		sizeScaleStyle,
 		variantClass,
 		variantStyle,
@@ -55,11 +59,13 @@ export function useBaseSearchOverlay(props: BaseSearchOverlayProps, emit: (event
 		isOpen,
 		rootRef,
 		...useSearchMotion(rootRef),
-		layerStyle,
 		inputRef,
 		...useLayerClasses(props),
 		open,
 		close,
+		onDialogToggle: (value: boolean): void => {
+			if (!value) close()
+		},
 		exposed: { focus: (): void => inputRef.value?.focus(), open, close } satisfies BaseSearchOverlayExpose,
 	}
 }

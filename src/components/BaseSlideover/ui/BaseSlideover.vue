@@ -22,7 +22,8 @@
 					:style="panelStyle"
 					role="dialog"
 					:aria-modal="isModal ? 'true' : undefined"
-					:aria-labelledby="hasDefaultTitle ? titleId : undefined">
+					:aria-labelledby="hasDefaultTitle ? titleId : undefined"
+					:aria-label="hasDefaultTitle ? undefined : ariaLabel">
 					<div v-if="hasHeader" :class="[ui('header'), classes.header]">
 						<slot name="header">
 							<BaseText

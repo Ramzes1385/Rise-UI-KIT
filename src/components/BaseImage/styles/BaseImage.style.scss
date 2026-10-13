@@ -108,19 +108,35 @@
 	opacity: 0;
 }
 
-@include enter-fade(base-image-zoom);
-
-.base-image__zoom {
-	position: fixed;
-	inset: 0;
-	z-index: var(--rise-z-max);
-	display: flex;
-	align-items: center;
-	justify-content: center;
+.base-modal.base-image__zoom {
+	padding: 0;
 	background-color: ct(image, zoom-bg, var(--rise-media-backdrop));
 	color: ct(image, zoom-text, var(--rise-media-text));
 	font-family: var(--rise-font-sans);
+}
 
+.base-modal__content.base-image__zoom-dialog {
+	border: 0;
+	border-radius: 0;
+	color: inherit;
+}
+
+.base-modal__body.base-image__zoom-body {
+	position: relative;
+	padding: 0;
+	overflow: hidden;
+	color: inherit;
+}
+
+.base-image__zoom-stage {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.base-image__zoom {
 	&-toolbar {
 		position: absolute;
 		top: sz(16px);
@@ -248,20 +264,28 @@
 		scrollbar-width: none;
 	}
 
-	&-thumb {
+	&-thumb.base-button {
+		--btn-pad-top: 0px;
+		--btn-pad-right: 0px;
+		--btn-pad-bottom: 0px;
+		--btn-pad-left: 0px;
+
 		position: relative;
 		flex: none;
 		width: sz(48px);
 		height: sz(48px);
-		padding: 0;
 		border: 0;
 		border-radius: sz(var(--rise-radius-md));
 		overflow: hidden;
 		background: none;
-		cursor: pointer;
 		opacity: 0.6;
-		@include transition-colors;
-		@include focus-ring;
+
+		.base-button__content,
+		.base-button__label {
+			display: block;
+			width: 100%;
+			height: 100%;
+		}
 
 		&::after {
 			content: '';
@@ -275,7 +299,7 @@
 			opacity: 1;
 		}
 
-		&--active {
+		&.base-image__zoom-thumb--active {
 			opacity: 1;
 
 			&::after {

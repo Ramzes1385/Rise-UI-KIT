@@ -2,7 +2,7 @@ import '@testing-library/jest-dom/vitest'
 import { UI_TEXT } from '@/locales/messages'
 import BaseSearch from '../ui/BaseSearch.vue'
 import userEvent from '@testing-library/user-event'
-import { render, screen } from '@testing-library/vue'
+import { render, screen, waitFor } from '@testing-library/vue'
 
 vi.mock('@composables/overlay/useClickOutside', () => ({ useClickOutside: vi.fn() }))
 vi.mock('@composables/overlay/useEscapeKey', () => ({ useEscapeKey: vi.fn() }))
@@ -165,6 +165,32 @@ describe('BaseSearch integration', () => {
 
 			await user.click(screen.getByRole('button', { name: 'Закрыть' }))
 			expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+		})
+
+		it('закрытие возвращает фокус на поле-триггер, окно не открывается снова', async () => {
+			const user = userEvent.setup()
+			render(BaseSearch, { props: { mode: 'modal', placeholder: 'Поиск по проекту' } })
+
+			const trigger = screen.getByRole('textbox', { name: 'Поиск по проекту' })
+			await user.click(trigger)
+			expect(screen.getByRole('dialog', { name: 'Поиск' })).toHaveAttribute('aria-modal', 'true')
+			await user.click(screen.getByRole('button', { name: 'Закрыть' }))
+
+			await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+			expect(trigger).toHaveFocus()
+		})
+	})
+
+	describe('режим sidebar', () => {
+		it('панель — модальный диалог «Поиск» с кнопкой «Закрыть»', async () => {
+			const user = userEvent.setup()
+			render(BaseSearch, { props: { mode: 'sidebar', placeholder: 'Поиск по проекту' } })
+
+			await user.click(screen.getByRole('textbox', { name: 'Поиск по проекту' }))
+			expect(screen.getByRole('dialog', { name: 'Поиск' })).toHaveAttribute('aria-modal', 'true')
+
+			await user.click(screen.getByRole('button', { name: 'Закрыть' }))
+			await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
 		})
 	})
 })

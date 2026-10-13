@@ -42,17 +42,17 @@ describe('BaseImage: движение', () => {
 
 		await fireEvent.click(trigger)
 		const dialog = screen.getByRole('dialog')
-		expect(dialog).toHaveClass('base-image__zoom')
+		expect(dialog.closest('.base-modal')).toHaveClass('base-image__zoom')
 		expect(emitted()['zoom-open']).toHaveLength(1)
 
 		await fireEvent.click(screen.getByRole('button', { name: 'Закрыть' }))
 		expect(emitted()['zoom-close']).toHaveLength(1)
-		expect(dialog).toHaveClass('base-image-zoom-leave-active')
+		expect(dialog.closest('.base-modal')).toHaveClass('base-modal-leave-active')
 		await waitFor(() => expect(document.activeElement).toBe(trigger))
 		await waitFor(() => expect(document.querySelector('.base-image__zoom')).toBeNull())
 
 		await fireEvent.click(trigger)
-		expect(screen.getByRole('dialog')).toHaveClass('base-image__zoom')
+		expect(screen.getByRole('dialog').closest('.base-modal')).toHaveClass('base-image__zoom')
 	})
 
 	it('без длительностей перехода (reduce, пресет none) окно и плейсхолдер убираются без события transitionend', async () => {

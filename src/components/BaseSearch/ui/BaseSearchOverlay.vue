@@ -21,96 +21,87 @@
 			</template>
 		</BaseInput>
 	</div>
-	<Teleport defer :to="teleportTarget">
-		<Transition :name="`base-search-${panel}`" :css="!isMotionReduced">
-			<div
-				v-if="isOpen"
-				:class="[overlayClass, classes[`${prefix}Overlay`]]"
-				:style="layerStyle"
-				v-bind="motionAttrs"
-				@click.self="close">
-				<div :class="panelClass" :style="sizeScaleStyle" role="dialog" :aria-label="UI_ARIA.SEARCH">
-					<div :class="headerClass">
-						<BaseSearchInput
-							ref="inputRef"
-							:model-value="modelValue"
-							:placeholder="searchPlaceholder"
-							:variant="variant"
-							:size-scale="sizeScale"
-							:is-disabled="isDisabled"
-							:error="error"
-							:has-icon="hasIcon"
-							:has-clear="hasClear"
-							:is-loading="isLoading"
-							:input-class="inputClass"
-							:classes="classes"
-							:combobox-attributes="comboboxAttributes"
-							:ui="ui"
-							@update:model-value="emit('update:modelValue', $event)"
-							@keydown="emit('keydown', $event)"
-							@clear="emit('clear')" />
-						<BaseButton
-							variant="ghost"
-							:class="closeBtnClass"
-							:custom-class="closeBtnCustomClass"
-							:size-scale="sizeScale"
-							:aria-label="UI_ARIA.CLOSE"
-							@click="close">
-							<BaseIcon name="close" :custom-class="closeIconCustomClass" :size-scale="sizeScale" />
-						</BaseButton>
-					</div>
-					<span :class="ui('live')" role="status">{{ resultsStatus }}</span>
-					<Transition name="base-search-results" :css="!isMotionReduced">
-						<div v-if="shouldShowResults && modelValue" :class="resultsClass">
-							<BaseSearchResults
-								:visible-results="visibleResults"
-								:query="modelValue"
-								:is-loading="isLoading"
-								:size-scale="sizeScale"
-								:highlighted-index="highlightedIndex"
-								:classes="classes"
-								:listbox-id="listboxId"
-								:listbox-label="searchPlaceholder"
-								:ui="ui"
-								:is-motion-reduced="isMotionReduced"
-								:motion-attrs="motionAttrs"
-								@select="emit('select', $event)"
-								@highlight="emit('highlight', $event)">
-								<template #result="slotProps">
-									<slot name="result" v-bind="slotProps" />
-								</template>
-								<template #results="slotProps">
-									<slot name="results" v-bind="slotProps" />
-								</template>
-								<template #result-before="slotProps">
-									<slot name="result-before" v-bind="slotProps" />
-								</template>
-								<template #result-after="slotProps">
-									<slot name="result-after" v-bind="slotProps" />
-								</template>
-								<template #empty>
-									<slot name="empty" />
-								</template>
-								<template #loading>
-									<slot name="loading" />
-								</template>
-							</BaseSearchResults>
-						</div>
-					</Transition>
-				</div>
+	<component :is="panel === 'modal' ? BaseModal : BaseSlideover" :is-open="isOpen" v-bind="dialogProps" @update:is-open="onDialogToggle">
+		<div :class="headerClass">
+			<BaseSearchInput
+				ref="inputRef"
+				:model-value="modelValue"
+				:placeholder="searchPlaceholder"
+				:variant="variant"
+				:size-scale="sizeScale"
+				:is-disabled="isDisabled"
+				:error="error"
+				:has-icon="hasIcon"
+				:has-clear="hasClear"
+				:is-loading="isLoading"
+				:input-class="inputClass"
+				:classes="classes"
+				:combobox-attributes="comboboxAttributes"
+				:ui="ui"
+				@update:model-value="emit('update:modelValue', $event)"
+				@keydown="emit('keydown', $event)"
+				@clear="emit('clear')" />
+			<BaseButton
+				variant="ghost"
+				:class="closeBtnClass"
+				:custom-class="closeBtnCustomClass"
+				:size-scale="sizeScale"
+				:aria-label="UI_ARIA.CLOSE"
+				@click="close">
+				<BaseIcon name="close" :custom-class="closeIconCustomClass" :size-scale="sizeScale" />
+			</BaseButton>
+		</div>
+		<span :class="ui('live')" role="status">{{ resultsStatus }}</span>
+		<Transition name="base-search-results" :css="!isMotionReduced">
+			<div v-if="shouldShowResults && modelValue" :class="resultsClass">
+				<BaseSearchResults
+					:visible-results="visibleResults"
+					:query="modelValue"
+					:is-loading="isLoading"
+					:size-scale="sizeScale"
+					:highlighted-index="highlightedIndex"
+					:classes="classes"
+					:listbox-id="listboxId"
+					:listbox-label="searchPlaceholder"
+					:ui="ui"
+					:is-motion-reduced="isMotionReduced"
+					:motion-attrs="motionAttrs"
+					@select="emit('select', $event)"
+					@highlight="emit('highlight', $event)">
+					<template #result="slotProps">
+						<slot name="result" v-bind="slotProps" />
+					</template>
+					<template #results="slotProps">
+						<slot name="results" v-bind="slotProps" />
+					</template>
+					<template #result-before="slotProps">
+						<slot name="result-before" v-bind="slotProps" />
+					</template>
+					<template #result-after="slotProps">
+						<slot name="result-after" v-bind="slotProps" />
+					</template>
+					<template #empty>
+						<slot name="empty" />
+					</template>
+					<template #loading>
+						<slot name="loading" />
+					</template>
+				</BaseSearchResults>
 			</div>
 		</Transition>
-	</Teleport>
+	</component>
 </template>
 
 <script setup lang="ts">
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
+import { BaseModal } from '@components/BaseModal'
 import BaseSearchInput from './BaseSearchInput.vue'
 import { BaseButton } from '@components/BaseButton'
 import { calcIconScale } from '@utils/media/iconUtils'
 import BaseSearchResults from './BaseSearchResults.vue'
+import { BaseSlideover } from '@components/BaseSlideover'
 import { useBaseSearchOverlay } from '../model/useBaseSearchOverlay'
 import type {
 	BaseSearchOverlayEmits,
@@ -126,7 +117,6 @@ const emit = defineEmits<BaseSearchOverlayEmits>()
 defineSlots<BaseSearchOverlaySlots>()
 
 const {
-	teleportTarget,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,
@@ -135,11 +125,9 @@ const {
 	rootRef,
 	isMotionReduced,
 	motionAttrs,
-	layerStyle,
+	dialogProps,
+	onDialogToggle,
 	inputRef,
-	prefix,
-	overlayClass,
-	panelClass,
 	headerClass,
 	inputClass,
 	closeBtnClass,

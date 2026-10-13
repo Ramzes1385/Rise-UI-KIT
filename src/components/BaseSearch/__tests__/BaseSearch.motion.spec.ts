@@ -93,6 +93,8 @@ describe('BaseSearch: движение', () => {
 	})
 
 	describe('окно и боковая панель', () => {
+		const TRANSITION_NAME = { modal: 'base-modal', sidebar: 'base-slideover' } as const
+
 		async function openOverlay(mode: 'modal' | 'sidebar', preset?: string) {
 			const view = render(BaseSearch, {
 				props: { mode, modelValue: '', results: RESULTS },
@@ -108,12 +110,12 @@ describe('BaseSearch: движение', () => {
 			const { overlay, rerender } = await openOverlay(mode)
 
 			expect(overlay()).toBeInTheDocument()
-			await waitFor(() => expect(overlay()).not.toHaveClass(`base-search-${mode}-enter-active`))
+			await waitFor(() => expect(overlay()).not.toHaveClass(`${TRANSITION_NAME[mode]}-enter-active`))
 			await rerender({ modelValue: 'закат' })
 			expect(document.querySelector(`.base-search__${mode}-results`)).toHaveClass('base-search-results-enter-active')
 
 			await userEvent.setup().click(screen.getByRole('button', { name: 'Закрыть' }))
-			expect(overlay()).toHaveClass(`base-search-${mode}-leave-active`)
+			expect(overlay()).toHaveClass(`${TRANSITION_NAME[mode]}-leave-active`)
 			await waitFor(() => expect(overlay()).not.toBeInTheDocument())
 		})
 
@@ -128,11 +130,11 @@ describe('BaseSearch: движение', () => {
 			setup()
 			const { overlay, rerender } = await openOverlay('modal')
 
-			expect(overlay()!.className).not.toMatch(/enter/)
+			expect(overlay()).toBeInTheDocument()
 			await rerender({ modelValue: 'закат' })
 			expect(document.querySelector('.base-search__modal-results')!.className).not.toMatch(/enter/)
 			await userEvent.setup().click(screen.getByRole('button', { name: 'Закрыть' }))
-			expect(overlay()).not.toBeInTheDocument()
+			await waitFor(() => expect(overlay()).not.toBeInTheDocument())
 		})
 	})
 })

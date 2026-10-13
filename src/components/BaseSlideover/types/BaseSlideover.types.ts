@@ -31,6 +31,8 @@ export interface BaseSlideoverProps extends BaseComponentProps<
 	isOpen: boolean
 	/** Заголовок */
 	title?: string
+	/** Имя панели для скринридера, когда видимого заголовка нет: «Поиск», «Фильтры» */
+	ariaLabel?: string
 	/** Сторона появления */
 	side?: SlideoverSide
 	/** Масштаб ширины панели (100 = 100%, 150 = 150%, 75 = 75%) */
