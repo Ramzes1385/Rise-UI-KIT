@@ -1,7 +1,7 @@
 import type meta from '../../BaseChat.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { expect, within, waitFor } from 'storybook/test'
 import { GROUP_CHAT, GROUP_MESSAGES, IVAN } from '../../shared'
+import { expect, screen, within, waitFor } from 'storybook/test'
 
 export const InfoPanel: StoryObj<typeof meta> = {
 	parameters: {
@@ -29,7 +29,7 @@ export const InfoPanel: StoryObj<typeof meta> = {
 		await userEvent.keyboard('{ArrowLeft}')
 
 		await userEvent.click(within(panel).getByRole('button', { name: `Действия с участником ${IVAN.name}` }))
-		await userEvent.click(within(panel).getByRole('menuitem', { name: 'Сделать админом' }))
+		await userEvent.click(await screen.findByRole('menuitem', { name: 'Сделать админом' }))
 		await expect(args['onUpdate-member-role']).toHaveBeenCalledWith({ memberId: 'u2', role: 'admin' })
 
 		await userEvent.keyboard('{Escape}')

@@ -43,6 +43,7 @@
 	}
 
 	&__icon {
+		display: flex;
 		align-self: center;
 		flex-shrink: 0;
 		margin-left: sz(ct(input, padding-x, var(--rise-control-padding-x)));

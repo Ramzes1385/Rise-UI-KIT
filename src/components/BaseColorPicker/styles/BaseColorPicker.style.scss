@@ -256,12 +256,13 @@
 	}
 
 	&__channel .base-input__wrapper {
+		box-sizing: border-box;
 		@include field-box(color-picker);
 	}
 
 	&__channel &__hex,
 	&__channel &__channel-input {
-		height: sz(28px);
+		height: sz(26px);
 		padding: 0 sz(6px);
 		font-family: var(--rise-font-mono);
 		@include text-size(xs);

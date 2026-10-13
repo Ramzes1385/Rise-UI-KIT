@@ -179,6 +179,19 @@ describe('BaseSearch integration', () => {
 			await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
 			expect(trigger).toHaveFocus()
 		})
+
+		it('клик по сфокусированному полю-триггеру открывает окно повторно', async () => {
+			const user = userEvent.setup()
+			render(BaseSearch, { props: { mode: 'modal', placeholder: 'Поиск по проекту' } })
+
+			const trigger = screen.getByRole('textbox', { name: 'Поиск по проекту' })
+			await user.click(trigger)
+			await user.keyboard('{Escape}')
+			await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+			await user.click(trigger)
+
+			expect(await screen.findByRole('dialog', { name: 'Поиск' })).toBeInTheDocument()
+		})
 	})
 
 	describe('режим sidebar', () => {

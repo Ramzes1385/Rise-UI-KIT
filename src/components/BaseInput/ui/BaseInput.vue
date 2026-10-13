@@ -27,12 +27,9 @@
 			:size-scale="sizeScale" />
 
 		<div :class="[ui('wrapper'), classes.wrapper]">
-			<BaseIcon
-				v-if="iconName"
-				:name="iconName"
-				:class="ui('icon')"
-				:custom-class="classes.icon"
-				:size-scale="calcIconScale('sm', sizeScale)" />
+			<span v-if="iconName" :class="[ui('icon'), classes.icon]">
+				<BaseIcon :name="iconName" :size-scale="calcIconScale('sm', sizeScale)" />
+			</span>
 			<slot name="prefix">
 				<BaseText v-if="prefix" tag="span" :class="ui('prefix')" :custom-class="classes.prefix" :size-scale="sizeScale">{{
 					prefix

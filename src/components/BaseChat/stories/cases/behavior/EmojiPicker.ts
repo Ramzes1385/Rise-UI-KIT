@@ -36,7 +36,7 @@ export const EmojiPicker: StoryObj<typeof meta> = {
 		await userEvent.type(field, 'Отличная работа ')
 		const trigger = canvas.getByRole('button', { name: 'Открыть выбор эмодзи' })
 		await userEvent.click(trigger)
-		const dialog = await canvas.findByRole('dialog', { name: 'Эмодзи' })
+		const dialog = await screen.findByRole('dialog', { name: 'Эмодзи' })
 		const search = within(dialog).getByRole('searchbox', { name: 'Поиск эмодзи' })
 		await waitFor(() => expect(search).toHaveFocus())
 		await within(dialog).findByRole('button', { name: 'огонь' })
@@ -47,7 +47,7 @@ export const EmojiPicker: StoryObj<typeof meta> = {
 		await userEvent.click(trigger)
 		await expect(await screen.findByRole('group', { name: 'Недавние' })).toBeInTheDocument()
 		await userEvent.keyboard('{Escape}')
-		await waitFor(() => expect(canvas.queryByRole('dialog', { name: 'Эмодзи' })).not.toBeInTheDocument())
+		await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Эмодзи' })).not.toBeInTheDocument())
 		await expect(trigger).toHaveFocus()
 	},
 }

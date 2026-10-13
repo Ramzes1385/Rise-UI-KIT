@@ -27,8 +27,11 @@
 
 		.base-input__icon {
 			margin-left: sz(16px);
-			width: sz(18px);
-			height: sz(18px);
+		}
+
+		.base-input__icon .base-icon__svg {
+			width: sz(22.5px);
+			height: sz(22.5px);
 		}
 
 		.base-input__field {

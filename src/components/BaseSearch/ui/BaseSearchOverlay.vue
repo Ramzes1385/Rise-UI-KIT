@@ -15,7 +15,8 @@
 			:custom-class="classes.trigger"
 			readonly
 			type="text"
-			@focus="open">
+			@focus="open"
+			@click="open">
 			<template v-if="hasIcon" #prefix>
 				<BaseIcon name="search" :class="ui('icon')" :custom-class="classes.icon" :size-scale="calcIconScale('sm', sizeScale)" />
 			</template>

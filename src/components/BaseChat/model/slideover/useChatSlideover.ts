@@ -36,7 +36,8 @@ function usePanelFocus(props: ChatSlideoverPanelProps, contentRef: Ref<HTMLEleme
 			returnFocusTarget = null
 			nextTick(() => {
 				const active = document.activeElement
-				if (target?.isConnected && (!active || active === document.body)) target.focus()
+				const isLost = !active || active === document.body || Boolean(contentRef.value?.contains(active))
+				if (target?.isConnected && isLost) target.focus()
 			})
 		},
 	)
