@@ -1,8 +1,8 @@
 import { UI_CODE } from '@/locales/messages'
 import { useMarkdownUi } from './useMarkdownUi'
 import { formatMessage } from '@/locales/state'
-import { computed, onBeforeUnmount, ref } from 'vue'
 import { tokenizeCode } from '@utils/data/codeHighlightUtils'
+import { computed, nextTick, onBeforeUnmount, ref } from 'vue'
 import type { MarkdownCodeProps } from '../types/MarkdownParts.types'
 
 const COPIED_DURATION = 2000
@@ -17,13 +17,20 @@ function writeClipboard(text: string): Promise<boolean> {
 
 export function useMarkdownCode(props: MarkdownCodeProps) {
 	const isCopied = ref(false)
+	const status = ref('')
 	let timer: ReturnType<typeof setTimeout> | undefined
 	let isUnmounted = false
 	onBeforeUnmount(() => {
 		isUnmounted = true
 		clearTimeout(timer)
 	})
+	async function announce(text: string): Promise<void> {
+		status.value = ''
+		await nextTick()
+		status.value = text
+	}
 	return {
+		status,
 		ui: useMarkdownUi(),
 		isCopied,
 		tokens: computed(() => tokenizeCode(props.block.value, props.block.lang)),
@@ -33,8 +40,11 @@ export function useMarkdownCode(props: MarkdownCodeProps) {
 			return formatMessage(isCopied.value ? UI_CODE.COPIED_LABEL_NAMED : UI_CODE.COPY_LABEL_NAMED, { name })
 		}),
 		async copy(): Promise<void> {
-			if (!(await writeClipboard(props.block.value)) || isUnmounted) return
+			const isDone = await writeClipboard(props.block.value)
+			if (isUnmounted) return
+			if (!isDone) return announce(UI_CODE.COPY_FAILED)
 			isCopied.value = true
+			void announce(UI_CODE.COPY_DONE)
 			clearTimeout(timer)
 			timer = setTimeout(() => {
 				isCopied.value = false

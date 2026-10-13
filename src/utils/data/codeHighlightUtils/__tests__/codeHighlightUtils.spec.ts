@@ -108,6 +108,28 @@ describe('codeHighlightUtils: JavaScript и TypeScript', () => {
 		expect(typed('/* open', 'js')).toEqual(['comment:/* open'])
 	})
 
+	it('шаблонные строки с вложенностью `${ }`: внутренняя обратная кавычка не закрывает внешнюю', () => {
+		expect(typed('`a ${`b ${c} d`} e` + 1', 'js')).toEqual(['string:`a ${`b ${c} d`} e`', 'number:1'])
+		expect(typed('`a ${ {x: 1}.x } b` 2', 'js')).toEqual(['string:`a ${ {x: 1}.x } b`', 'number:2'])
+		expect(typed('`a ${\'}\' + "`"} b` 3', 'js')).toEqual(['string:`a ${\'}\' + "`"} b`', 'number:3'])
+		expect(typed('`a \\` ${b} c` 4', 'js')).toEqual(['string:`a \\` ${b} c`', 'number:4'])
+		expect(typed('`a ${b', 'js')).toEqual(['string:`a ${b'])
+		expect(typed('`a \\', 'js')).toEqual(['string:`a \\'])
+	})
+
+	it('литерал регулярного выражения: после оператора и слова return, с кавычкой и классом символов', () => {
+		expect(typed("x = /'/g.test(s) 1", 'js')).toEqual(["string:/'/g", 'function:test', 'number:1'])
+		expect(typed("/[/']+/i", 'js')).toEqual(["string:/[/']+/i"])
+		expect(typed('return /a\\/b/ 1', 'js')).toEqual(['keyword:return', 'string:/a\\/b/', 'number:1'])
+		expect(typed("f(/'/, 2)", 'js')).toEqual(['function:f', "string:/'/", 'number:2'])
+	})
+
+	it('деление и незакрытая регулярка — не строка', () => {
+		expect(typed('a / 2 / 3', 'js')).toEqual(['number:2', 'number:3'])
+		expect(typed('f(a) / 2', 'js')).toEqual(['function:f', 'number:2'])
+		expect(typed('x = /abc', 'js')).toEqual([])
+	})
+
 	it('вызов — function, после точки — property или function, декоратор — function', () => {
 		expect(typed('@Component\nfoo(1); obj.value; obj.run ()', 'ts')).toEqual([
 			'function:@Component',

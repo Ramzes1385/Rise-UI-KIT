@@ -139,6 +139,10 @@
 		background-color: ct(markdown, code-block-bg, var(--rise-bg-muted));
 	}
 
+	&__code-status {
+		@include visually-hidden;
+	}
+
 	&__code-header {
 		display: flex;
 		align-items: center;

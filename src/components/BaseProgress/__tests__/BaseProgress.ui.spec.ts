@@ -2,6 +2,7 @@ import '@testing-library/jest-dom/vitest'
 import { createUiKitPlugin } from '@/plugin'
 import BaseProgress from '../ui/BaseProgress.vue'
 import { render, screen } from '@testing-library/vue'
+import styleSource from '../styles/BaseProgress.style.scss?raw'
 
 const LINE_PARTS = ['status', 'status-text', 'track', 'bar', 'fill'] as const
 const CIRCLE_PARTS = ['svg', 'track-circle', 'fill-circle', 'circle-label'] as const
@@ -57,5 +58,15 @@ describe('BaseProgress: проп ui', () => {
 
 		expect(screen.getByRole('progressbar')).toHaveClass('base-progress', 'app-root')
 		expect(container.querySelector('.base-progress__fill')).toHaveAttribute('class', 'base-progress__fill app-fill own-fill')
+	})
+
+	it('RTL: градиент и радуга зеркалятся вместе с заливкой (270deg в :dir(rtl))', () => {
+		const rules = [
+			...styleSource.matchAll(
+				/--fill-(gradient|rainbow) &__fill \{[^]*?&:dir\(rtl\) \{\s*--progress-paint: linear-gradient\(270deg/g,
+			),
+		]
+
+		expect(rules.map(rule => rule[1])).toEqual(['gradient', 'rainbow'])
 	})
 })

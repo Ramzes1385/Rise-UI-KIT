@@ -51,4 +51,23 @@ describe('BaseSideBar: проп ui', () => {
 		expect(screen.getByRole('complementary')).toHaveClass('base-side-bar', 'app-root')
 		expect(part('header')).toHaveAttribute('class', 'base-side-bar__header app-header own-header')
 	})
+
+	it('пункт-ссылка — BaseLink без значка «↗»: доступное имя — только подпись', () => {
+		const items: SideBarItem[] = [
+			{ key: 'home', label: 'Главная', to: '/home' },
+			{ key: 'docs', label: 'Документация', to: 'https://example.com/docs' },
+			{ key: 'off', label: 'Недоступно', to: '/off', isDisabled: true },
+		]
+		render(BaseSideBar, { props: { ...PROPS, items } })
+
+		const home = screen.getByRole('link', { name: 'Главная' })
+		const docs = screen.getByRole('link', { name: 'Документация' })
+		expect(home).toHaveClass('base-link', 'base-link--ghost', 'base-side-bar-nav__link')
+		expect(home).toHaveAttribute('href', '/home')
+		expect(docs).toHaveAttribute('href', 'https://example.com/docs')
+		expect(docs).not.toHaveAttribute('target')
+		expect(document.querySelector('.base-link__external')).toBeNull()
+		expect(document.body).not.toHaveTextContent('↗')
+		expect(screen.getByRole('button', { name: 'Недоступно' })).not.toHaveClass('base-link')
+	})
 })

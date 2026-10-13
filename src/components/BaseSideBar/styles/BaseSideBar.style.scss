@@ -347,6 +347,29 @@
 		}
 	}
 
+	&__link.base-link {
+		display: flex;
+		border-radius: sz(ct(side-bar, item-radius, var(--rise-radius-md)));
+		@include custom-text(color, ct(side-bar, item-text, var(--rise-text-muted)));
+		@include text-size(sm);
+		font-weight: var(--rise-font-weight-medium);
+		text-decoration: none;
+		@include focus-ring(-2px);
+
+		@include hover {
+			color: var(--custom-text-hover, #{ct(side-bar, item-text-hover, var(--rise-text-highlighted))});
+		}
+
+		&.base-side-bar-nav__link--parent-active {
+			color: var(--custom-text-hover, var(--rise-text-highlighted));
+		}
+
+		&.base-side-bar-nav__link--current,
+		&.base-side-bar-nav__link--current:is(:hover) {
+			color: var(--custom-text-hover, #{ct(side-bar, item-text-selected, var(--rise-primary-text))});
+		}
+	}
+
 	&__item--disabled &__link {
 		@include disabled-state;
 	}

@@ -19,10 +19,84 @@ const TS_KEYWORDS = new Set(
 const JS_CONSTANTS = new Set(['true', 'false', 'null', 'undefined', 'NaN', 'Infinity'])
 
 const COMMENT = /\/\/[^\n]*|\/\*[\s\S]*?(?:\*\/|$)/y
-const STRING = /'(?:\\[\s\S]|[^\\'\n])*'?|"(?:\\[\s\S]|[^\\"\n])*"?|`(?:\\[\s\S]|[^\\`])*`?/y
+const QUOTED = /'(?:\\[\s\S]|[^\\'\n])*'?|"(?:\\[\s\S]|[^\\"\n])*"?/y
+const REGEX_LITERAL = /\/(?:\\.|\[(?:\\.|[^\]\\\n])*\]|[^/\\\n[])+\/[a-z]*/y
+const REGEX_AFTER_WORDS = new Set(['return', 'typeof', 'case', 'in', 'of', 'yield', 'await', 'delete', 'void', 'throw', 'else', 'do'])
+const REGEX_AFTER_SYMBOLS = new Set([
+	'',
+	'\n',
+	'(',
+	',',
+	'=',
+	':',
+	'[',
+	'!',
+	'&',
+	'|',
+	'?',
+	'{',
+	'}',
+	';',
+	'+',
+	'-',
+	'*',
+	'%',
+	'<',
+	'>',
+	'~',
+	'^',
+])
+const LAST_WORD = /([A-Za-z_$][\w$]*)[ \t]*$/
 const NUMBER = /(?:0[xX][\da-fA-F_]+|0[bB][01_]+|0[oO][0-7_]+|\d[\d_]*(?:\.[\d_]*)?(?:[eE][+-]?\d+)?|\.\d[\d_]*(?:[eE][+-]?\d+)?)n?/y
 const IDENTIFIER = /[A-Za-z_$][\w$]*/y
 const DECORATOR = /@[A-Za-z_$][\w$]*/y
+
+/** Конец выражения `${ … }`: счётчик вложенных `{ }`, внутри — строки и вложенные шаблонные строки */
+function scanExpression(source: string, start: number): number {
+	let depth = 1
+	let index = start
+	while (index < source.length) {
+		const char = source[index]!
+		if (char === '`') index = scanTemplate(source, index)
+		else if (char === "'" || char === '"') index += matchAt(QUOTED, source, index)!.length
+		else {
+			if (char === '{') depth++
+			if (char === '}') depth--
+			index++
+			if (depth === 0) return index
+		}
+	}
+	return source.length
+}
+
+/** Конец шаблонной строки, открытой обратной кавычкой в `start`; незакрытая идёт до конца текста */
+function scanTemplate(source: string, start: number): number {
+	let index = start + 1
+	while (index < source.length) {
+		const char = source[index]
+		if (char === '\\') index += 2
+		else if (char === '`') return index + 1
+		else if (char === '$' && source[index + 1] === '{') index = scanExpression(source, index + 2)
+		else index++
+	}
+	return source.length
+}
+
+const templateRule: CodeRule = (source, index) =>
+	source[index] === '`' ? { type: 'string', length: scanTemplate(source, index) - index } : null
+
+/** Здесь может начаться литерал регулярного выражения: после оператора, `(`, `,`, начала текста или слова вроде `return` */
+function canStartRegex(source: string, index: number): boolean {
+	if (REGEX_AFTER_SYMBOLS.has(previousSymbol(source, index))) return true
+	const word = LAST_WORD.exec(source.slice(Math.max(0, index - 12), index))
+	return word !== null && REGEX_AFTER_WORDS.has(word[1]!)
+}
+
+const regexLiteralRule: CodeRule = (source, index) => {
+	if (source[index] !== '/' || !canStartRegex(source, index)) return null
+	const text = matchAt(REGEX_LITERAL, source, index)
+	return text === null ? null : { type: 'string', length: text.length }
+}
 
 const numberRule: CodeRule = (source, index) => {
 	if (isWordBefore(source, index)) return null
@@ -51,7 +125,9 @@ function identifierRule(isTypeScript: boolean): CodeRule {
 function scriptRules(isTypeScript: boolean): CodeRule[] {
 	return [
 		regexRule(COMMENT, 'comment'),
-		regexRule(STRING, 'string'),
+		regexLiteralRule,
+		regexRule(QUOTED, 'string'),
+		templateRule,
 		regexRule(DECORATOR, 'function'),
 		numberRule,
 		identifierRule(isTypeScript),

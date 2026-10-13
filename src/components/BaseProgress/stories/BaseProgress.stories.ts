@@ -24,6 +24,7 @@ export const CustomColor = cases.CustomColor
 export const Theming = cases.Theming
 export const Animations = cases.Animations
 export const Fills = cases.Fills
+export const Rtl = cases.Rtl
 export const Indeterminate = cases.Indeterminate
 export const WithLabel = cases.WithLabel
 export const Complete = cases.Complete

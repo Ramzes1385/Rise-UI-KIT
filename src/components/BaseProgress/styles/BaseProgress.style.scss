@@ -116,10 +116,18 @@ $progress-radius: ct(progress, radius, var(--rise-radius-full));
 
 	&--fill-gradient &__fill {
 		--progress-paint: linear-gradient(90deg, #{$progress-light}, var(--progress-color));
+
+		&:dir(rtl) {
+			--progress-paint: linear-gradient(270deg, #{$progress-light}, var(--progress-color));
+		}
 	}
 
 	&--fill-rainbow &__fill {
 		--progress-paint: linear-gradient(90deg, #{$rainbow-colors});
+
+		&:dir(rtl) {
+			--progress-paint: linear-gradient(270deg, #{$rainbow-colors});
+		}
 	}
 
 	&--fill-segments &__track {

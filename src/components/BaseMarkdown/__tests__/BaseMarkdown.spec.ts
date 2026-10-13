@@ -152,6 +152,23 @@ describe('BaseMarkdown', () => {
 		unmount()
 	})
 
+	it('«Копировать» у блока кода объявляет результат в role="status" после монтирования', async () => {
+		const writeText = vi.fn(async (_text: string) => undefined)
+		Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } })
+		render(BaseMarkdown, { props: { source: '```js\nx = 1\n```' } })
+		const status = screen.getByRole('status')
+		const button = screen.getByRole('button', { name: 'Копировать код: js' })
+
+		expect(status).toHaveTextContent('')
+		await fireEvent.click(button)
+		await vi.waitFor(() => expect(status).toHaveTextContent('Код скопирован в буфер обмена'))
+
+		writeText.mockRejectedValueOnce(new Error('denied'))
+		await fireEvent.click(button)
+		await vi.waitFor(() => expect(status).toHaveTextContent('Не удалось скопировать код'))
+		Reflect.deleteProperty(navigator, 'clipboard')
+	})
+
 	it('вариант, масштаб и customClass', () => {
 		const { container } = render(BaseMarkdown, { props: { variant: 'soft', sizeScale: 125, customClass: { root: 'my-root' } } })
 		const root = container.querySelector('.base-markdown') as HTMLElement
