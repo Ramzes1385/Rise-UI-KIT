@@ -22,12 +22,24 @@ describe('BaseColorModeButton unit', () => {
 		const button = screen.getByRole('button', { name: 'Тёмная тема' })
 
 		expect(button).toHaveAttribute('aria-pressed', 'false')
-		expect(button).toHaveAttribute('title', 'Тёмная тема')
+		expect(button).not.toHaveAttribute('title')
 		expect(button.querySelector('use')?.getAttribute('href')).toMatch(/#sun$/)
 
 		colorMode.mode.value = 'dark'
 		await screen.findByRole('button', { pressed: true })
 		expect(button.querySelector('use')?.getAttribute('href')).toMatch(/#moon$/)
+	})
+
+	it('корень — кнопка: class и атрибуты приложения на ней, подсказка вместо title', async () => {
+		const { container } = render(BaseColorModeButton, { props: { colorMode }, attrs: { class: 'app-class', 'data-test': 'x' } })
+		const button = screen.getByRole('button', { name: 'Тёмная тема' })
+
+		expect(container.firstElementChild).toBe(button)
+		expect(button).toHaveClass('app-class', 'base-color-mode-button')
+		expect(button).toHaveAttribute('data-test', 'x')
+		await fireEvent.mouseEnter(button)
+		expect(await screen.findByRole('tooltip')).toHaveTextContent('Тёмная тема')
+		expect(button).not.toHaveAttribute('aria-describedby')
 	})
 
 	it('клик переключает тему и сообщает новую', async () => {

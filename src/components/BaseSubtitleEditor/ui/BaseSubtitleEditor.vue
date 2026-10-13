@@ -32,14 +32,13 @@
 				{{ exportLabel(format) }}
 			</BaseButton>
 		</div>
-		<div :class="[ui('timeline'), classes.timeline]" :title="UI_SUBTITLES.TIMELINE" aria-hidden="true" @click="seekTimeline">
-			<span
-				v-for="(cue, index) in cues"
-				:key="index"
-				:class="[ui('block'), { 'base-subtitle-editor__block--active': index === activeIndex }, classes.cue]"
-				:style="cueStyle(cue)"
-				:title="cueLabel(cue, index)"
-				@click.stop="goTo(index)"></span>
+		<div :class="[ui('timeline'), classes.timeline]" aria-hidden="true" @click="seekTimeline">
+			<BaseTooltip v-for="(cue, index) in cues" :key="index" :text="cueLabel(cue, index)" is-wrapperless>
+				<span
+					:class="[ui('block'), { 'base-subtitle-editor__block--active': index === activeIndex }, classes.cue]"
+					:style="cueStyle(cue)"
+					@click.stop="goTo(index)"></span>
+			</BaseTooltip>
 			<span :class="ui('playhead')" :style="playheadStyle"></span>
 		</div>
 		<BaseEmpty
@@ -64,16 +63,17 @@
 				:aria-current="index === activeIndex ? 'true' : undefined">
 				<span :class="ui('number')" aria-hidden="true">{{ index + 1 }}</span>
 				<span v-for="edge in ['start', 'end'] as const" :key="edge" :class="ui('time')">
-					<input
-						:class="ui('input')"
-						:value="timeValue(index, edge)"
-						:aria-label="label(edge === 'start' ? UI_SUBTITLES.START : UI_SUBTITLES.END, index)"
-						:aria-invalid="fieldError(index, edge) ? 'true' : undefined"
-						:title="fieldError(index, edge) || UI_SUBTITLES.TIME_HINT"
-						:disabled="isDisabled"
-						inputmode="decimal"
-						@input="setDraft(index, edge, ($event.target as HTMLInputElement).value)"
-						@change="commitTime(index, edge)" />
+					<BaseTooltip :text="fieldError(index, edge) || UI_SUBTITLES.TIME_HINT" is-wrapperless>
+						<input
+							:class="ui('input')"
+							:value="timeValue(index, edge)"
+							:aria-label="label(edge === 'start' ? UI_SUBTITLES.START : UI_SUBTITLES.END, index)"
+							:aria-invalid="fieldError(index, edge) ? 'true' : undefined"
+							:disabled="isDisabled"
+							inputmode="decimal"
+							@input="setDraft(index, edge, ($event.target as HTMLInputElement).value)"
+							@change="commitTime(index, edge)" />
+					</BaseTooltip>
 					<span v-if="fieldError(index, edge)" :class="ui('error')" role="alert">{{ fieldError(index, edge) }}</span>
 				</span>
 				<textarea
@@ -108,6 +108,7 @@ import { BaseIcon } from '@components/BaseIcon'
 import { UI_SUBTITLES } from '@/locales/messages'
 import { BaseEmpty } from '@components/BaseEmpty'
 import { BaseButton } from '@components/BaseButton'
+import { BaseTooltip } from '@components/BaseTooltip'
 import { useBaseSubtitleEditor } from '../model/useBaseSubtitleEditor'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseSubtitleEditorEmits, BaseSubtitleEditorProps } from '../types/BaseSubtitleEditor.types'

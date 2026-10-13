@@ -1,9 +1,9 @@
 import type { ComputedRef, Ref } from 'vue'
 import { useUi } from '@composables/base/useUi'
-import { getFixedOrigin } from '@utils/dom/domUtils'
 import type { UiClassFn } from '@composables/base/useUi'
 import type { TooltipLayout } from '@utils/dom/tooltipUtils'
 import { useEscapeKey } from '@composables/overlay/useEscapeKey'
+import { getAccessibleName, getFixedOrigin } from '@utils/dom/domUtils'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseTooltipPart, TooltipProps } from '../types/BaseTooltip.types'
 import { useTriggerAttributes } from '@composables/overlay/useTriggerAttributes'
@@ -156,12 +156,24 @@ function useTooltipVisibility(props: TooltipProps, isVisible: Ref<boolean>, posi
 	return { handleEnter: delays.handleEnter, handleLeave: delays.handleLeave, cancelHide: delays.cancelHide }
 }
 
-function useDescribedTrigger(wrapperRef: Ref<HTMLElement | null>, isShown: ComputedRef<boolean>, tooltipId: string) {
-	const triggerAttributes = computed(() => ({ 'aria-describedby': isShown.value ? tooltipId : undefined }))
-	useTriggerAttributes(
-		() => wrapperRef.value,
+function useDescribedTrigger(
+	props: TooltipProps,
+	wrapperRef: Ref<HTMLElement | null>,
+	shown: { isShown: ComputedRef<boolean>; tooltipId: string },
+) {
+	const { isShown, tooltipId } = shown
+	let findTrigger: () => HTMLElement | null = () => null
+	const triggerAttributes = computed(() => {
+		if (!isShown.value) return { 'aria-describedby': undefined }
+		const trigger = props.isWrapperless ? wrapperRef.value : findTrigger()
+		const text = props.text.trim()
+		return { 'aria-describedby': text && getAccessibleName(trigger) === text ? undefined : tooltipId }
+	})
+	const { getTrigger } = useTriggerAttributes(
+		() => (props.isWrapperless ? null : wrapperRef.value),
 		() => triggerAttributes.value,
 	)
+	findTrigger = getTrigger
 	return triggerAttributes
 }
 
@@ -190,15 +202,19 @@ export function useBaseTooltip(props: TooltipProps) {
 		() => isVisible.value,
 	)
 	const tooltipId = `rise-tooltip-${useId()}`
-	const triggerAttributes = useDescribedTrigger(wrapperRef, isShown, tooltipId)
+	const triggerAttributes = useDescribedTrigger(props, wrapperRef, { isShown, tooltipId })
 	const position = useTooltipPosition(props, wrapperRef, popupRef)
 	useMeasureOnShow(isShown, position.measurePopup)
+	const visibility = useTooltipVisibility(props, isVisible, position)
 
 	return {
 		...standard,
 		teleportTarget,
 		isShown,
 		wrapperRef,
+		setWrapper: (element: HTMLElement | null): void => {
+			wrapperRef.value = element
+		},
 		popupRef,
 		inheritedTheme,
 		tooltipId,
@@ -207,6 +223,14 @@ export function useBaseTooltip(props: TooltipProps) {
 		animationClass: computed(() => `base-tooltip-popup--animation-${props.animation ?? 'fade'}`),
 		placement: position.placement,
 		tooltipStyle: position.tooltipStyle,
-		...useTooltipVisibility(props, isVisible, position),
+		...visibility,
+		handlers: {
+			onMouseenter: visibility.handleEnter,
+			onMouseleave: visibility.handleLeave,
+			onFocusin: visibility.handleEnter,
+			onFocusout: visibility.handleLeave,
+		},
+		describedBy: computed(() => triggerAttributes.value['aria-describedby']),
+		isWrapperless: computed(() => Boolean(props.isWrapperless)),
 	}
 }

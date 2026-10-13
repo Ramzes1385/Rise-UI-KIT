@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
 import { describe, it, expect, vi, afterEach } from 'vitest'
-import { getActiveElement, getFixedOrigin, toHTMLElement, toHTMLInputElement, toHTMLTextAreaElement } from '../domUtils'
+import { getAccessibleName, getActiveElement, getFixedOrigin, toHTMLElement, toHTMLInputElement, toHTMLTextAreaElement } from '../domUtils'
 
 describe('domUtils', () => {
 	afterEach(() => {
@@ -131,6 +131,37 @@ describe('domUtils', () => {
 			Object.defineProperty(document, 'fullscreenElement', { configurable: true, get: () => inner })
 			expect(getFixedOrigin(inner)).toEqual({ x: 0, y: 0 })
 			Reflect.deleteProperty(document, 'fullscreenElement')
+		})
+	})
+
+	describe('getAccessibleName', () => {
+		afterEach(() => {
+			document.body.innerHTML = ''
+		})
+
+		it('без элемента — пустая строка', () => {
+			expect(getAccessibleName(null)).toBe('')
+		})
+
+		it('aria-labelledby важнее aria-label и текста', () => {
+			document.body.innerHTML =
+				'<span id="a">Первое</span><span id="b"> Второе </span><button id="t" aria-labelledby="a b" aria-label="Метка">Текст</button>'
+			expect(getAccessibleName(document.getElementById('t'))).toBe('Первое Второе')
+		})
+
+		it('aria-labelledby на отсутствующий элемент — берётся aria-label', () => {
+			document.body.innerHTML = '<button id="t" aria-labelledby="none" aria-label="  Метка  ">Текст</button>'
+			expect(getAccessibleName(document.getElementById('t'))).toBe('Метка')
+		})
+
+		it('без атрибутов — видимый текст с одиночными пробелами', () => {
+			document.body.innerHTML = '<button id="t">Один   два</button>'
+			expect(getAccessibleName(document.getElementById('t'))).toBe('Один два')
+		})
+
+		it('пустой элемент — пустая строка', () => {
+			document.body.innerHTML = '<button id="t"></button>'
+			expect(getAccessibleName(document.getElementById('t'))).toBe('')
 		})
 	})
 })

@@ -6,5 +6,6 @@ export const args = {
 	position: 'top',
 	variant: 'default',
 	isAlwaysVisible: false,
+	isWrapperless: false,
 	sizeScale: 100,
 } satisfies Meta<typeof BaseTooltip>['args']

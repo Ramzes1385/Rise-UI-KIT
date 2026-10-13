@@ -1775,3 +1775,10 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 
 - **BaseCookieConsent** (`overlay-basecookieconsent--default`, `--settings`, `--positions`, `--sizes`, `--variants`, `--theming`, `--long-content`, `--animations`, `--keyboard`): в ряду кнопок появилась «Отклонить все» того же вида, что «Принять все» (залитая), между «Только выбранные» и «Принять все»; ряд раньше переносится на следующую строку. Эталонов у этих историй нет.
 - **BaseBanner** (`element-basebanner--*` с `storageKey`, `--remembered`): объявление с `storageKey` появляется после монтирования (с анимацией раскрытия), а не в первом кадре; без `storageKey` вид тот же.
+
+## Задача compose-2
+
+Эталонов снимков не создавал и не обновлял; ожидаемые изменения:
+
+- **BaseTooltip** (`overlay-basetooltip--wrapperless`, новая история): подсказка без обёртки у абсолютно позиционированной кнопки. Остальные истории не меняются.
+- **BaseColorModeButton, BaseSubtitleEditor**: вместо нативной подсказки браузера `title` — подсказка кита (инвертированный фон, стрелка) при наведении и фокусе; в покое вид тот же.

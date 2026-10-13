@@ -9,6 +9,7 @@ export const argTypes = {
 	text: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	position: { control: 'inline-radio', options: ['top', 'bottom', 'left', 'right'], table: propGroup(ARG_GROUP.appearance) },
 	isAlwaysVisible: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+	isWrapperless: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	animation: { control: 'inline-radio', options: ENTER_ANIMATIONS, table: propGroup(ARG_GROUP.appearance) },
 	ui: { control: false },
 	default: { control: false },

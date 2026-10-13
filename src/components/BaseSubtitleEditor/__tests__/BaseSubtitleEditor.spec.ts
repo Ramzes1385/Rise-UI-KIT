@@ -3,7 +3,7 @@ import { defineComponent, ref } from 'vue'
 import BaseSubtitleEditor from '../ui/BaseSubtitleEditor.vue'
 import type { SubtitleCue } from '@utils/media/subtitleUtils'
 import { formatCueTime, parseCueTime } from '../model/cueTime'
-import { fireEvent, render, screen } from '@testing-library/vue'
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 
 const CUES: SubtitleCue[] = [
 	{ start: 0, end: 3, text: 'Первая' },
@@ -36,8 +36,22 @@ describe('BaseSubtitleEditor', () => {
 		expect(blocks[1]).toHaveClass('base-subtitle-editor__block--active')
 		expect(blocks[1].style.left).toBe('30%')
 		expect(blocks[1].style.width).toBe('35%')
-		expect(blocks[0].title).toBe('Реплика 1, 0:00–0:03')
+		expect(blocks[0]).not.toHaveAttribute('title')
 		expect((container.querySelector('.base-subtitle-editor__playhead') as HTMLElement).style.left).toBe('40%')
+	})
+
+	it('подсказки вместо title: блок реплики и поле времени', async () => {
+		const { container } = setup()
+		await fireEvent.mouseEnter(container.querySelector('.base-subtitle-editor__block') as HTMLElement)
+		expect(await screen.findByRole('tooltip')).toHaveTextContent('Реплика 1, 0:00–0:03')
+		await fireEvent.mouseLeave(container.querySelector('.base-subtitle-editor__block') as HTMLElement)
+		await waitFor(() => expect(screen.queryByRole('tooltip')).toBeNull())
+
+		const start = screen.getByRole('textbox', { name: 'Начало реплики 1' })
+		expect(start).not.toHaveAttribute('title')
+		await fireEvent.mouseEnter(start)
+		expect(await screen.findByRole('tooltip')).toBeInTheDocument()
+		expect(start).toHaveAttribute('aria-describedby', screen.getByRole('tooltip').id)
 	})
 
 	it('время: применяется по изменению, реплики остаются по порядку начала; неверное время — ошибка', async () => {

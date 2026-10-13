@@ -71,3 +71,22 @@ export function getFixedOrigin(container: Element | null | undefined): FixedOrig
 	}
 	return { x: 0, y: 0 }
 }
+
+function normalizeText(value: string | null | undefined): string {
+	return (value ?? '').replace(/\s+/g, ' ').trim()
+}
+
+/** Доступное имя элемента в упрощённом виде: `aria-labelledby`, затем `aria-label`, затем видимый текст */
+export function getAccessibleName(element: Element | null): string {
+	if (!element) return ''
+	const labelledBy = element.getAttribute('aria-labelledby')
+	if (labelledBy) {
+		const text = labelledBy
+			.split(/\s+/)
+			.map(id => normalizeText(element.ownerDocument.getElementById(id)?.textContent))
+			.filter(Boolean)
+			.join(' ')
+		if (text) return text
+	}
+	return normalizeText(element.getAttribute('aria-label')) || normalizeText(element.textContent)
+}
