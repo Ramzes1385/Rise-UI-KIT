@@ -37,15 +37,23 @@ function pickDataHandlers(data: UseTableDataReturn) {
 
 /** Состояние и действия тулбара без внутреннего getSelectValue */
 function pickToolbarState(toolbar: UseTableToolbarReturn) {
-	const { filterColumn, filterOperator, filterValue, isSettingsOpen, filterColumnOptions, filterOperatorOptions, showToolbar } = toolbar
-	const { setFilterColumn, setFilterOperator, handleAddFilter, handleRemoveFilter } = toolbar
+	const { filterColumn, filterOperator, filterValue, filterValueTo, filterValues, isSettingsOpen, showToolbar } = toolbar
+	const { filterColumnOptions, filterOperatorOptions, filterKind, filterSelectOptions, filterPlaceholder } = toolbar
+	const { isRangeOperator, canAddFilter, setFilterColumn, setFilterOperator, handleAddFilter, handleRemoveFilter } = toolbar
 	return {
 		filterColumn,
 		filterOperator,
 		filterValue,
+		filterValueTo,
+		filterValues,
 		isSettingsOpen,
 		filterColumnOptions,
 		filterOperatorOptions,
+		filterKind,
+		filterSelectOptions,
+		filterPlaceholder,
+		isRangeOperator,
+		canAddFilter,
 		showToolbar,
 		setFilterColumn,
 		setFilterOperator,

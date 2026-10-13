@@ -5,6 +5,13 @@ export const enForms = {
 		CONDITION: 'Condition',
 		VALUE_PLACEHOLDER: 'Value...',
 		CONTAINS: 'Contains',
+		BETWEEN: 'Between',
+		IN: 'Any of',
+		BEFORE: 'Before',
+		AFTER: 'After',
+		ON_OR_BEFORE: 'On or before',
+		ON_OR_AFTER: 'On or after',
+		CHOOSE: 'Choose…',
 	},
 	calendar: {
 		EVENT_TEXT: 'Event',

@@ -1,12 +1,12 @@
 /** Composable: действия данных таблицы, сбрасывающие страницу — фильтры и поиск */
-import type { Ref } from 'vue'
+import type { FilterDraft } from '@composables/table/useTableFilter'
 import type { TableDataActionsState } from './types/createTableDataActions.types'
 
 function createTableDataActions(state: TableDataActionsState) {
 	const { baseAddFilter, baseRemoveFilter, handleSearchInput, resetPage } = state
 
-	function addFilter(filterColumn: Ref<string | number>, filterOperator: Ref<string | number>, filterValue: Ref<string>): void {
-		baseAddFilter(filterColumn, filterOperator, filterValue)
+	function addFilter(draft: FilterDraft): void {
+		baseAddFilter(draft)
 		resetPage()
 	}
 

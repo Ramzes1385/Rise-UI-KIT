@@ -55,8 +55,18 @@ export type SortDirection = 'asc' | 'desc' | null
 
 export type SortType = 'string' | 'number' | 'date'
 
+/**
+ * Оператор фильтра. Тулбар предлагает операторы по типу колонки (`filterConfig.type`, иначе `sortType`): текст — `contains`,
+ * `eq`, `ne`; число — `eq`, `ne`, `gt`, `gte`, `lt`, `lte`, `between`; дата — те же, но даты сравниваются по дням;
+ * `select` — `eq`, `ne`; `multi-select` — `in`
+ */
 export type FilterOperator = 'eq' | 'ne' | 'contains' | 'gt' | 'lt' | 'gte' | 'lte' | 'between' | 'in'
 
+/**
+ * Тип поля фильтра колонки: `text` — строка, `select` — одно значение из `options`, `multi-select` — несколько значений
+ * из `options` (оператор `in`), `date` — дата (выбор в календаре, сравнение по дням), `range` — диапазон «от — до»
+ * (оператор `between` по числам или, при `sortType: 'date'`, по датам)
+ */
 export type ColumnFilterType = 'text' | 'select' | 'range' | 'date' | 'multi-select'
 
 export interface FilterOption {
@@ -127,10 +137,12 @@ export interface ColumnFilter {
 	key: string
 	/** Оператор */
 	operator: FilterOperator
-	/** Значение */
+	/** Значение; для `in` — выбранные значения через запятую (для показа), сами значения в `values` */
 	value: string
-	/** Второе значение (для between) */
+	/** Верхняя граница для `between`: диапазон включает обе границы */
 	valueTo?: string
+	/** Выбранные значения для `in`: строка проходит, если её значение равно одному из них */
+	values?: string[]
 }
 
 export interface NestedTableConfig {

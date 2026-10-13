@@ -16,7 +16,8 @@ function useTableProcessedRows(options: UseTableProcessedRowsOptions) {
 		}
 
 		for (const filter of activeFilters.value) {
-			result = result.filter(row => matchesFilter(row, filter))
+			const column = columns.value.find(item => item.key === filter.key)
+			result = result.filter(row => matchesFilter(row, filter, column))
 		}
 
 		const activeSorts = sortStates.value.filter(sort => sort.direction)

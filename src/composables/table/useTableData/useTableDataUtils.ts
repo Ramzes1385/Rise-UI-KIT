@@ -1,4 +1,5 @@
 /** Утилиты: поиск, фильтрация и множественная сортировка строк таблицы */
+import { matchesFilterByKind } from './useTableFilterMatch'
 import { compareSortKeys, toSortKey } from '@utils/navigation/tableUtils'
 import type { ColumnFilter, SortState, TableColumn, TableRow } from '@components/BaseTable/types/BaseTable.types'
 
@@ -28,31 +29,9 @@ function getSearchTexts(column: TableColumn, row: TableRow): string[] {
 	return texts.map(normalizeSearchText)
 }
 
-/** Проходит ли строка фильтр колонки */
-function matchesFilter(row: TableRow, filter: ColumnFilter): boolean {
-	const val = row.data[filter.key]
-	if (val === undefined) return false
-	const strVal = String(val).toLowerCase()
-	const filterVal = filter.value.toLowerCase()
-
-	switch (filter.operator) {
-		case 'eq':
-			return strVal === filterVal
-		case 'ne':
-			return strVal !== filterVal
-		case 'contains':
-			return strVal.includes(filterVal)
-		case 'gt':
-			return Number(val) > Number(filter.value)
-		case 'lt':
-			return Number(val) < Number(filter.value)
-		case 'gte':
-			return Number(val) >= Number(filter.value)
-		case 'lte':
-			return Number(val) <= Number(filter.value)
-		default:
-			return true
-	}
+/** Проходит ли строка фильтр колонки: операторы работают по типу колонки (см. `matchesFilterByKind`) */
+function matchesFilter(row: TableRow, filter: ColumnFilter, column?: TableColumn): boolean {
+	return matchesFilterByKind(row, filter, column)
 }
 
 /**

@@ -13,6 +13,13 @@
 				:filter-column="filterColumn"
 				:filter-operator="filterOperator"
 				:filter-value="filterValue"
+				:filter-value-to="filterValueTo"
+				:filter-values="filterValues"
+				:filter-kind="filterKind"
+				:filter-select-options="filterSelectOptions"
+				:filter-placeholder="filterPlaceholder"
+				:is-range-operator="isRangeOperator"
+				:can-add-filter="canAddFilter"
 				:filter-column-options="filterColumnOptions"
 				:filter-operator-options="filterOperatorOptions"
 				:active-filters="activeFilters"
@@ -32,6 +39,8 @@
 				@update:filter-column="setFilterColumn"
 				@update:filter-operator="setFilterOperator"
 				@update:filter-value="filterValue = $event"
+				@update:filter-value-to="filterValueTo = $event"
+				@update:filter-values="filterValues = $event"
 				@add-filter="handleAddFilter"
 				@remove-filter="handleRemoveFilter"
 				@update:is-settings-open="isSettingsOpen = $event"
@@ -281,6 +290,13 @@ const {
 	filterColumn,
 	filterOperator,
 	filterValue,
+	filterValueTo,
+	filterValues,
+	filterKind,
+	filterSelectOptions,
+	filterPlaceholder,
+	isRangeOperator,
+	canAddFilter,
 	isSettingsOpen,
 	filterColumnOptions,
 	filterOperatorOptions,

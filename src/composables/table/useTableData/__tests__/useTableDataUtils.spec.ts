@@ -65,8 +65,98 @@ describe('useTableDataUtils', () => {
 		expect(matchesFilter(row, filter(key, operator, value))).toBe(expected)
 	})
 
-	it('matchesFilter отбрасывает строку без значения в колонке', () => {
-		expect(matchesFilter(row, filter('missing', 'ne', 'x'))).toBe(false)
+	it('matchesFilter: пустое значение проходит только ne', () => {
+		expect(matchesFilter(row, filter('missing', 'ne', 'x'))).toBe(true)
+		expect(matchesFilter(row, filter('missing', 'eq', 'x'))).toBe(false)
+		expect(matchesFilter(row, filter('missing', 'contains', 'x'))).toBe(false)
+		expect(matchesFilter({ id: 9, data: { name: null, note: '  ' } }, filter('name', 'ne', 'x'))).toBe(true)
+		expect(matchesFilter({ id: 9, data: { name: null, note: '  ' } }, filter('note', 'eq', ''))).toBe(false)
+	})
+
+	describe('операторы по типу колонки', () => {
+		const amount: TableColumn = { key: 'amount', label: 'Сумма', sortType: 'number' }
+		const date: TableColumn = { key: 'date', label: 'Дата', sortType: 'date' }
+		const status: TableColumn = { key: 'status', label: 'Статус', filterConfig: { type: 'multi-select' } }
+		const amountRow: TableRow = { id: 1, data: { amount: 150, date: '2025-05-14', status: 'new' } }
+		const dateRow = (value: unknown): TableRow => ({ id: 2, data: { date: value } })
+
+		it.each([
+			['eq', '150', undefined, true],
+			['eq', '150.0', undefined, true],
+			['ne', '150', undefined, false],
+			['gt', '100', undefined, true],
+			['gt', '150', undefined, false],
+			['gte', '150', undefined, true],
+			['lt', '200', undefined, true],
+			['lte', '149', undefined, false],
+			['between', '100', '200', true],
+			['between', '150', '150', true],
+			['between', '151', '200', false],
+			['between', '100', undefined, true],
+			['between', '', '149', false],
+			['between', '', '', true],
+			['gt', 'abc', undefined, true],
+		] as const)('число: %s %s %s → %s', (...row) => {
+			const [operator, value, valueTo, expected] = row
+			const parts = valueTo === undefined ? { operator, value } : { operator, value, valueTo }
+			expect(matchesFilter(amountRow, { key: 'amount', ...parts }, amount)).toBe(expected)
+		})
+
+		it('число: нераспознанное значение ячейки проходит только ne', () => {
+			const broken: TableRow = { id: 3, data: { amount: 'много' } }
+			expect(matchesFilter(broken, filter('amount', 'gt', '1'), amount)).toBe(false)
+			expect(matchesFilter(broken, filter('amount', 'ne', '1'), amount)).toBe(true)
+		})
+
+		it.each([
+			['eq', '2025-05-14', undefined, true],
+			['eq', '2025-05-15', undefined, false],
+			['ne', '2025-05-14', undefined, false],
+			['gt', '2025-05-13', undefined, true],
+			['gt', '2025-05-14', undefined, false],
+			['gte', '2025-05-14', undefined, true],
+			['lt', '2025-05-15', undefined, true],
+			['lt', '2025-05-14', undefined, false],
+			['lte', '2025-05-14', undefined, true],
+			['between', '2025-05-14', '2025-05-14', true],
+			['between', '2025-05-01', '2025-05-31', true],
+			['between', '2025-05-15', '2025-05-31', false],
+		] as const)('дата: %s %s %s → %s (сравнение по дням)', (...row) => {
+			const [operator, value, valueTo, expected] = row
+			const parts = valueTo === undefined ? { operator, value } : { operator, value, valueTo }
+			expect(matchesFilter(amountRow, { key: 'date', ...parts }, date)).toBe(expected)
+		})
+
+		it('дата: значение с временем, Date и timestamp сравниваются по дню', () => {
+			const onDay = filter('date', 'eq', '2025-05-14')
+			expect(matchesFilter(dateRow('2025-05-14T18:30:00Z'), onDay, date)).toBe(true)
+			expect(matchesFilter(dateRow(new Date('2025-05-14T12:00:00Z')), onDay, date)).toBe(true)
+			expect(matchesFilter(dateRow(Date.UTC(2025, 4, 14, 23, 59)), onDay, date)).toBe(true)
+			expect(matchesFilter(dateRow('14.05.2025'), filter('date', 'gt', '2025-01-01'), date)).toBe(false)
+		})
+
+		it('дата: нераспознанная граница ничего не отсекает', () => {
+			expect(matchesFilter(amountRow, filter('date', 'gt', 'вчера'), date)).toBe(true)
+		})
+
+		it('in: значение входит в values или в список через запятую, без учёта регистра', () => {
+			expect(matchesFilter(amountRow, { key: 'status', operator: 'in', value: '', values: ['NEW', 'done'] }, status)).toBe(true)
+			expect(matchesFilter(amountRow, { key: 'status', operator: 'in', value: 'done, other' }, status)).toBe(false)
+			expect(matchesFilter(amountRow, { key: 'status', operator: 'in', value: 'done, new' })).toBe(true)
+		})
+
+		it('select: eq и ne сравнивают точное значение, contains — подстроку', () => {
+			const select: TableColumn = { key: 'status', label: 'Статус', filterConfig: { type: 'select' } }
+			expect(matchesFilter(amountRow, filter('status', 'eq', 'NEW'), select)).toBe(true)
+			expect(matchesFilter(amountRow, filter('status', 'ne', 'new'), select)).toBe(false)
+			expect(matchesFilter(amountRow, filter('status', 'contains', 'ne'), select)).toBe(true)
+			expect(matchesFilter(amountRow, filter('status', 'contains', 'xx'), select)).toBe(false)
+		})
+
+		it('неизвестный оператор ничего не отсекает', () => {
+			expect(matchesFilter(amountRow, { key: 'amount', operator: 'xx' as 'eq', value: '1' }, status)).toBe(true)
+			expect(matchesFilter(amountRow, { key: 'amount', operator: 'xx' as 'eq', value: '1' }, amount)).toBe(true)
+		})
 	})
 
 	it('sortRowsByStates сортирует по нескольким ключам с учётом sortType', () => {

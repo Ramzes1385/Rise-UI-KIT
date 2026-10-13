@@ -925,6 +925,18 @@ const table = useTemplateRef('table')
 	<button type="button" @click="table?.exportData('xlsx', { onlySelected: false })">Все заказы в Excel</button>
 </template>
 ```
+
+**table-audit: фильтры и тулбар.** С `features.filters` операторы зависят от типа колонки: тип берётся из `filterConfig.type` (`text`, `select`, `multi-select`, `date`, `range`), без него — из `sortType`. Текст — «Содержит», «=», «≠»; число — «=», «≠», `>`, `≥`, `<`, `≤`, «Между»; дата — «Раньше», «Позже», «Не позже», «Не раньше», «Между» (сравнение по дням); `select` — «=», «≠»; `multi-select` — «Один из». Поле значения подстраивается: число, календарь `BaseDatePicker`, список `BaseSelect` по `filterConfig.options`, два поля для «Между» (`ColumnFilter.valueTo`, обе границы включены). Для `in` выбранные значения лежат в `ColumnFilter.values`. Ячейка без значения проходит только `ne`.
+
+```ts
+const columns: TableColumn[] = [
+	{ key: 'total', label: 'Сумма', sortType: 'number' },
+	{ key: 'date', label: 'Дата', sortType: 'date' },
+	{ key: 'status', label: 'Статус', filterConfig: { type: 'multi-select', options: [{ value: 'new', label: 'Новый' }] } },
+]
+```
+
+Панель инструментов — `role="toolbar"` «Инструменты таблицы»: одна остановка Tab, стрелки, Home и End переходят между полями и кнопками (в текстовом поле — только у края текста), после удаления фильтра фокус остаётся на соседнем. Меню «Колонки» — APG Menu Button, `menuitemcheckbox` на каждую колонку, имя «Видимость колонок».
 ---
 
 ## BasePagination

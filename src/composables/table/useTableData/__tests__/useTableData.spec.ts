@@ -116,7 +116,7 @@ describe('useTableData', () => {
 		it('addFilter с operator=eq фильтрует точное совпадение', () => {
 			const { processedRows, addFilter } = useTableData(createDefaultOptions())
 
-			addFilter(ref('city'), ref('eq'), ref('москва'))
+			addFilter({ column: ref('city'), operator: ref('eq'), value: ref('москва') })
 
 			// Москва: Анна и Глеб
 			expect(processedRows.value).toHaveLength(2)
@@ -126,7 +126,7 @@ describe('useTableData', () => {
 		it('addFilter с operator=ne фильтрует неравенство', () => {
 			const { processedRows, addFilter } = useTableData(createDefaultOptions())
 
-			addFilter(ref('city'), ref('ne'), ref('москва'))
+			addFilter({ column: ref('city'), operator: ref('ne'), value: ref('москва') })
 
 			// Не Москва: Борис (Питер) и Вика (Казань)
 			expect(processedRows.value).toHaveLength(2)
@@ -136,7 +136,7 @@ describe('useTableData', () => {
 		it('addFilter с operator=contains фильтрует вхождение подстроки', () => {
 			const { processedRows, addFilter } = useTableData(createDefaultOptions())
 
-			addFilter(ref('name'), ref('contains'), ref('ан'))
+			addFilter({ column: ref('name'), operator: ref('contains'), value: ref('ан') })
 
 			// 'ан' есть в 'Анна' (анна)
 			expect(processedRows.value).toHaveLength(1)
@@ -146,7 +146,7 @@ describe('useTableData', () => {
 		it('addFilter с операторами gt/lt/gte/lte — числовое сравнение', () => {
 			const { processedRows, addFilter } = useTableData(createDefaultOptions())
 
-			addFilter(ref('age'), ref('gt'), ref('25'))
+			addFilter({ column: ref('age'), operator: ref('gt'), value: ref('25') })
 
 			// age > 25: Борис (30) и Глеб (35)
 			expect(processedRows.value).toHaveLength(2)
@@ -155,17 +155,17 @@ describe('useTableData', () => {
 		it('addFilter с пустым column или value не добавляет фильтр', () => {
 			const { activeFilters, addFilter } = useTableData(createDefaultOptions())
 
-			addFilter(ref(''), ref('eq'), ref('москва'))
+			addFilter({ column: ref(''), operator: ref('eq'), value: ref('москва') })
 			expect(activeFilters.value).toHaveLength(0)
 
-			addFilter(ref('city'), ref('eq'), ref(''))
+			addFilter({ column: ref('city'), operator: ref('eq'), value: ref('') })
 			expect(activeFilters.value).toHaveLength(0)
 		})
 
 		it('removeFilter удаляет фильтр и пересчитывает строки', () => {
 			const { processedRows, activeFilters, addFilter, removeFilter } = useTableData(createDefaultOptions())
 
-			addFilter(ref('city'), ref('eq'), ref('москва'))
+			addFilter({ column: ref('city'), operator: ref('eq'), value: ref('москва') })
 			expect(activeFilters.value).toHaveLength(1)
 			expect(processedRows.value).toHaveLength(2)
 
@@ -177,7 +177,7 @@ describe('useTableData', () => {
 		it('getFilterLabel возвращает формат "Колонка оператор значение"', () => {
 			const { addFilter, activeFilters, getFilterLabel } = useTableData(createDefaultOptions())
 
-			addFilter(ref('city'), ref('eq'), ref('Москва'))
+			addFilter({ column: ref('city'), operator: ref('eq'), value: ref('Москва') })
 
 			const label = getFilterLabel(activeFilters.value[0])
 			expect(label).toBe('Город = Москва')
@@ -194,7 +194,7 @@ describe('useTableData', () => {
 			)
 			currentPage.value = 3
 
-			addFilter(ref('city'), ref('eq'), ref('москва'))
+			addFilter({ column: ref('city'), operator: ref('eq'), value: ref('москва') })
 
 			expect(onFilter).toHaveBeenCalledTimes(1)
 			expect(currentPage.value).toBe(1)
@@ -610,7 +610,7 @@ describe('useTableData', () => {
 			const onFilter = vi.fn()
 			const { addFilter, removeFilter } = useTableData(createDefaultOptions({ onFilter }))
 
-			addFilter(ref('city'), ref('eq'), ref('москва'))
+			addFilter({ column: ref('city'), operator: ref('eq'), value: ref('москва') })
 			expect(onFilter).toHaveBeenCalledTimes(1)
 
 			removeFilter(0)
@@ -657,25 +657,25 @@ describe('useTableData', () => {
 	describe('Фильтры — недостающие операторы', () => {
 		it('addFilter с operator=lt возвращает строки меньше значения', () => {
 			const { processedRows, addFilter } = useTableData(createDefaultOptions())
-			addFilter(ref('age'), ref('lt'), ref('30'))
+			addFilter({ column: ref('age'), operator: ref('lt'), value: ref('30') })
 			expect(processedRows.value).toHaveLength(2) // Анна (25), Вика (20)
 		})
 
 		it('addFilter с operator=lte возвращает строки ≤ значения', () => {
 			const { processedRows, addFilter } = useTableData(createDefaultOptions())
-			addFilter(ref('age'), ref('lte'), ref('25'))
+			addFilter({ column: ref('age'), operator: ref('lte'), value: ref('25') })
 			expect(processedRows.value).toHaveLength(2) // Анна (25), Вика (20)
 		})
 
 		it('addFilter с operator=gte возвращает строки ≥ значения', () => {
 			const { processedRows, addFilter } = useTableData(createDefaultOptions())
-			addFilter(ref('age'), ref('gte'), ref('30'))
+			addFilter({ column: ref('age'), operator: ref('gte'), value: ref('30') })
 			expect(processedRows.value).toHaveLength(2) // Борис (30), Глеб (35)
 		})
 
 		it('addFilter с несуществующим ключом — val undefined', () => {
 			const { processedRows, addFilter } = useTableData(createDefaultOptions())
-			addFilter(ref('nonexistent'), ref('eq'), ref('test'))
+			addFilter({ column: ref('nonexistent'), operator: ref('eq'), value: ref('test') })
 			expect(processedRows.value).toHaveLength(0)
 		})
 

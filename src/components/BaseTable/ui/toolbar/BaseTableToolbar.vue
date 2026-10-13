@@ -1,5 +1,13 @@
 <template>
-	<div v-if="showToolbar" :class="[ui('toolbar'), toolbarClass]">
+	<div
+		v-if="showToolbar"
+		ref="toolbarRef"
+		:class="[ui('toolbar'), toolbarClass]"
+		role="toolbar"
+		aria-orientation="horizontal"
+		:aria-label="TABLE_TEXT.TOOLBAR"
+		@keydown="handleKeydown"
+		@focusin="handleFocusin">
 		<slot name="toolbar-prepend"></slot>
 
 		<div v-if="hasSearch" :class="[ui('search'), searchClass]">
@@ -18,12 +26,13 @@
 			</BaseInput>
 		</div>
 
-		<div v-if="hasFilters" :class="[ui('filters'), filtersClass]">
+		<div v-if="hasFilters" role="group" :aria-label="TABLE_TEXT.FILTER_GROUP" :class="[ui('filters'), filtersClass]">
 			<BaseSelect
 				class="base-table__filter-field"
 				:model-value="filterColumn"
 				:options="filterColumnOptions"
 				:placeholder="UI_FILTER.COLUMN"
+				:aria-label="TABLE_TEXT.FILTER_COLUMN_LABEL"
 				:size-scale="sizeScale"
 				@update:model-value="emit('update:filter-column', $event)" />
 			<BaseSelect
@@ -31,18 +40,79 @@
 				:model-value="filterOperator"
 				:options="filterOperatorOptions"
 				:placeholder="UI_FILTER.CONDITION"
+				:aria-label="TABLE_TEXT.FILTER_OPERATOR_LABEL"
 				:size-scale="sizeScale"
 				@update:model-value="emit('update:filter-operator', $event)" />
-			<BaseInput
+			<BaseSelect
+				v-if="filterKind === 'select'"
 				class="base-table__filter-field base-table__filter-field--value"
 				:model-value="filterValue"
-				:label="TABLE_TEXT.FILTER_VALUE_LABEL"
-				:placeholder="UI_FILTER.VALUE_PLACEHOLDER"
-				:custom-class="hiddenLabel"
+				:options="filterSelectOptions"
+				:placeholder="filterPlaceholder ?? UI_FILTER.CHOOSE"
+				:aria-label="TABLE_TEXT.FILTER_VALUE_LABEL"
 				:size-scale="sizeScale"
-				@update:model-value="emit('update:filter-value', $event)"
-				@keydown.enter="emit('add-filter')" />
-			<BaseButton variant="outline" class="base-table__filter-add-btn" :size-scale="sizeScale" @click="emit('add-filter')">
+				@update:model-value="setSingleValue" />
+			<BaseSelect
+				v-else-if="filterKind === 'multi-select'"
+				class="base-table__filter-field base-table__filter-field--value"
+				is-multiple
+				:model-value="filterValues"
+				:options="filterSelectOptions"
+				:placeholder="filterPlaceholder ?? UI_FILTER.CHOOSE"
+				:aria-label="TABLE_TEXT.FILTER_VALUE_LABEL"
+				:size-scale="sizeScale"
+				@update:model-value="setValues" />
+			<template v-else-if="filterKind === 'date'">
+				<BaseDatePicker
+					class="base-table__filter-field base-table__filter-field--value"
+					:model-value="toDate(filterValue)"
+					:label="isRangeOperator ? TABLE_TEXT.FILTER_VALUE_FROM_LABEL : TABLE_TEXT.FILTER_VALUE_LABEL"
+					:placeholder="filterPlaceholder ?? UI_FILTER.VALUE_PLACEHOLDER"
+					is-clearable
+					:ui="hiddenLabel"
+					:size-scale="sizeScale"
+					@update:model-value="setDateValue" />
+				<BaseDatePicker
+					v-if="isRangeOperator"
+					class="base-table__filter-field base-table__filter-field--value"
+					:model-value="toDate(filterValueTo)"
+					:label="TABLE_TEXT.FILTER_VALUE_TO_LABEL"
+					:placeholder="filterPlaceholder ?? UI_FILTER.VALUE_PLACEHOLDER"
+					is-clearable
+					:ui="hiddenLabel"
+					:size-scale="sizeScale"
+					@update:model-value="setDateValueTo" />
+			</template>
+			<template v-else>
+				<BaseInput
+					class="base-table__filter-field base-table__filter-field--value"
+					:type="filterKind === 'number' ? 'number' : 'text'"
+					:model-value="filterValue"
+					:label="isRangeOperator ? TABLE_TEXT.FILTER_VALUE_FROM_LABEL : TABLE_TEXT.FILTER_VALUE_LABEL"
+					:placeholder="filterPlaceholder ?? UI_FILTER.VALUE_PLACEHOLDER"
+					:custom-class="hiddenLabel"
+					:size-scale="sizeScale"
+					@update:model-value="emit('update:filter-value', $event)"
+					@keydown.enter="emit('add-filter')" />
+				<BaseInput
+					v-if="isRangeOperator"
+					class="base-table__filter-field base-table__filter-field--value"
+					:type="filterKind === 'number' ? 'number' : 'text'"
+					:model-value="filterValueTo"
+					:label="TABLE_TEXT.FILTER_VALUE_TO_LABEL"
+					:placeholder="filterPlaceholder ?? UI_FILTER.VALUE_PLACEHOLDER"
+					:custom-class="hiddenLabel"
+					:size-scale="sizeScale"
+					@update:model-value="emit('update:filter-value-to', $event)"
+					@keydown.enter="emit('add-filter')" />
+			</template>
+			<BaseButton
+				variant="outline"
+				class="base-table__filter-add-btn"
+				is-focusable-when-disabled
+				:is-disabled="!canAddFilter"
+				:size-scale="sizeScale"
+				@click="emit('add-filter')">
 				<template #left><BaseIcon name="plus" :size-scale="calcIconScale('sm', sizeScale)" /></template>
 				{{ TABLE_TEXT.ADD_FILTER }}
 			</BaseButton>
@@ -52,6 +122,7 @@
 			<BaseDropdownMenu
 				:is-open="isSettingsOpen"
 				:items="columnItems"
+				:aria-label="TABLE_TEXT.COLUMNS_MENU"
 				position="bottom-end"
 				:size-scale="sizeScale"
 				:custom-class="{ panel: 'base-table__settings-panel' }"
@@ -82,7 +153,11 @@
 			</BaseDropdownMenu>
 		</div>
 
-		<div v-if="activeFilters.length" :class="[ui('active-filters'), activeFiltersClass]">
+		<div
+			v-if="activeFilters.length"
+			role="group"
+			:aria-label="TABLE_TEXT.ACTIVE_FILTERS"
+			:class="[ui('active-filters'), activeFiltersClass]">
 			<BaseBadge
 				v-for="(filter, index) in activeFilters"
 				:key="index"
@@ -93,7 +168,7 @@
 				is-removable
 				:remove-label="`${TABLE_TEXT.REMOVE_FILTER}: ${getFilterLabel(filter)}`"
 				:size-scale="sizeScale"
-				@remove="emit('remove-filter', index)" />
+				@remove="removeFilter(index)" />
 		</div>
 
 		<slot name="toolbar-append"></slot>
@@ -107,6 +182,7 @@ import { BaseInput } from '@components/BaseInput'
 import { BaseButton } from '@components/BaseButton'
 import { BaseSelect } from '@components/BaseSelect'
 import { calcIconScale } from '@utils/media/iconUtils'
+import { BaseDatePicker } from '@components/BaseDatePicker'
 import { BaseDropdownMenu } from '@components/BaseDropdownMenu'
 import { useBaseTableToolbar } from '../../model/useBaseTableToolbar'
 import { TABLE_EXPORT_TEXT, TABLE_TEXT, UI_FILTER, UI_TEXT } from '@/locales/messages'
@@ -118,5 +194,18 @@ const emit = defineEmits<BaseTableToolbarEmits>()
 
 defineSlots<BaseTableToolbarSlots>()
 
-const { ui, hiddenLabel, columnItems } = useBaseTableToolbar(props, emit)
+const {
+	ui,
+	hiddenLabel,
+	columnItems,
+	toolbarRef,
+	handleKeydown,
+	handleFocusin,
+	removeFilter,
+	toDate,
+	setDateValue,
+	setDateValueTo,
+	setValues,
+	setSingleValue,
+} = useBaseTableToolbar(props, emit)
 </script>

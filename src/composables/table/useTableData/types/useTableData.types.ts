@@ -1,4 +1,5 @@
 import type { ComputedRef, Ref } from 'vue'
+import type { UseTableFilterReturn } from '@composables/table/useTableFilter'
 import type { VisiblePageItem } from '@utils/navigation/paginationUtils/types/paginationUtils.types'
 import type { ColumnFilter, SortState, TableColumn, TableRow } from '@components/BaseTable/types/BaseTable.types'
 
@@ -57,7 +58,7 @@ export interface UseTableDataReturn {
 	/** Обработчик ввода поиска */
 	handleSearchInput: (value: string) => void
 	/** Добавить фильтр */
-	addFilter: (filterColumn: Ref<string | number>, filterOperator: Ref<string | number>, filterValue: Ref<string>) => void
+	addFilter: UseTableFilterReturn['addFilter']
 	/** Удалить фильтр */
 	removeFilter: (index: number) => void
 	/** Получить метку фильтра */

@@ -1,5 +1,6 @@
-import type { ColumnFilter, TableColumn } from '../BaseTable.types'
+import type { FilterKind } from '@composables/table/useTableFilter'
 import type { DropdownMenuItems } from '@components/BaseDropdownMenu'
+import type { ColumnFilter, FilterOption, TableColumn } from '../BaseTable.types'
 
 export interface BaseTableToolbarProps {
 	/** Показывать тулбар */
@@ -18,6 +19,20 @@ export interface BaseTableToolbarProps {
 	filterOperator: string | number
 	/** Значение фильтра */
 	filterValue: string
+	/** Верхняя граница оператора `between` */
+	filterValueTo: string
+	/** Выбранные значения оператора `in` */
+	filterValues: string[]
+	/** Тип поля значения: текст, число, дата, одно значение или несколько из списка */
+	filterKind: FilterKind
+	/** Варианты значения для колонок `select` и `multi-select` */
+	filterSelectOptions: FilterOption[]
+	/** Подсказка поля значения */
+	filterPlaceholder?: string
+	/** Выбран оператор `between`: показать второе поле значения */
+	isRangeOperator: boolean
+	/** Введено достаточно для добавления фильтра: иначе кнопка «Добавить» недоступна */
+	canAddFilter: boolean
 	/** Опции выбора колонки для фильтра */
 	filterColumnOptions: Array<{ value: string | number; label: string }>
 	/** Опции выбора оператора фильтрации */
@@ -55,6 +70,8 @@ export interface BaseTableToolbarEmits {
 	(event: 'update:filter-column', value: string | number | (string | number)[]): void
 	(event: 'update:filter-operator', value: string | number | (string | number)[]): void
 	(event: 'update:filter-value', value: string): void
+	(event: 'update:filter-value-to', value: string): void
+	(event: 'update:filter-values', value: string[]): void
 	(event: 'add-filter'): void
 	(event: 'remove-filter', index: number): void
 	(event: 'update:is-settings-open', value: boolean): void

@@ -1,2 +1,2 @@
 export { useTableFilter } from './useTableFilter'
-export type { UseTableFilterOptions, UseTableFilterReturn } from './types/useTableFilter.types'
+export type { FilterDraft, FilterKind, UseTableFilterOptions, UseTableFilterReturn } from './types/useTableFilter.types'

@@ -23,6 +23,12 @@ const TOOLBAR_PROPS: BaseTableToolbarProps = {
 	filterColumn: 'city',
 	filterOperator: 'eq',
 	filterValue: '',
+	filterValueTo: '',
+	filterValues: [],
+	filterKind: 'text',
+	filterSelectOptions: [],
+	isRangeOperator: false,
+	canAddFilter: true,
 	filterColumnOptions: [{ value: 'city', label: 'Город' }],
 	filterOperatorOptions: [
 		{ value: 'eq', label: 'равно' },
