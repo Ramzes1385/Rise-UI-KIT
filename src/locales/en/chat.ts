@@ -52,7 +52,6 @@ export const enChat = {
 		BAN: 'Ban',
 		PHONE: 'Phone',
 		VIOLATION: 'Code of conduct violation',
-		CLOSE_PANEL: 'Close info panel',
 		PARTICIPANTS_SUFFIX: 'members',
 		PARTICIPANTS_TITLE: 'Group members',
 		MEMBER_ACTIONS: 'Member actions',

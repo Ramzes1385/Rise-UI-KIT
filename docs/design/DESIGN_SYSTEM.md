@@ -163,7 +163,7 @@
 | `density` | `--rise-density` | `compact` 0.75 · `default` 1 · `comfortable` 1.25 · число |
 | `shadows` | `--rise-shadow-strength` | `none` 0 · `soft` 0.6 · `default` 1 · `strong` 1.8 · число |
 | `font` | `--rise-font-sans`, `-heading` (по умолчанию = sans), `-mono` | стеки; `@font-face` подключает приложение |
-| `motion` | `--rise-duration-fast/-/-slow`, `--rise-ease` | `none` 0.01ms · `subtle` 100/150/200ms · `default` как в ките · `expressive` 200/320/450ms с отскоком; тема с `motion` сама обнуляет длительности при `prefers-reduced-motion` |
+| `motion` | `--rise-duration-fast/-/-slow`, `--rise-ease` | `none` 0.01ms · `subtle` 100/150/200ms · `standard` как в ките · `expressive` 200/320/450ms с отскоком; тема с `motion` сама обнуляет длительности при `prefers-reduced-motion` |
 | `tokens` | любые `--rise-*` | сиды и токены компонентов поверх сгенерированного |
 
 Не заданный вход не выводится — значение наследуется от кита или `:root` приложения. Значения очищаются от `{ } < > ;`, имя приводится к `[a-z0-9-]`.

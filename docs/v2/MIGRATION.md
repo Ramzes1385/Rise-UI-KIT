@@ -2317,3 +2317,11 @@ API кита не меняется. В Storybook добавлены пример
 - **2D**: замена `data` с тем же слоем и размером во время плавного масштаба не обрывает переход; рамка окна карты шире 1 px (через `customClass`) больше не принимается за CSS-масштаб; SVG без `viewBox` при неверном размере слоя берёт `viewBox` из `width`/`height` корня.
 - **Словари** (ru, en): новые `imageMap3d.SVG_USE_LIMIT`, `SVG_ELEMENT_NESTED`, `EXPECT_SVG_OBJECT`; `LAYER_ERROR` — без привязки к числу этажей («Не удалось загрузить: {layers}»).
 - **Storybook, dev-посредник озвучки** (`build/storybook/tts.ts`): битый JSON — 400 (было 500), сервис недоступен — 502.
+## Задача fix-tokens
+
+- **`getTooltipTransition` удалена** из `@utils/dom/tooltipUtils` и из публичного `utils` (экспорт `getTooltipTransition` из пакета). Функция только склеивала `tooltip-<сторона>` и китом не использовалась; в приложении замените на шаблонную строку `` `tooltip-${position}` ``.
+- **`createTheme({ motion })`**: значение `default` переименовано в `standard` (`ThemeMotion`, `THEME_MOTIONS`), теперь имена совпадают с пресетами движения `data-rise-motion` / `MotionPreset` (`none`, `subtle`, `standard`, `expressive`). Значения токенов прежние (150 / 200 / 300 мс, `cubic-bezier(0.4, 0, 0.2, 1)`); `THEME_PRESETS.rise.motion` теперь `standard`.
+- **BaseMarkdown**: `defaults.BaseMarkdown` плагина (`source`, `isStreaming`, `hasLineBreaks`, `sizeScale`) теперь действует, раньше работал только `ui`.
+- **Экспорт констант** из `@ramzes1385/rise-ui-kit`: `ALERT_TYPES`, `ALERT_VARIANTS`, `EMPTY_VARIANTS`, `CHAT_VARIANTS`, `PROGRESS_SHAPES`.
+- **Токены компонентов**: `--rise-select-border-focus`, `--rise-cascader-border-focus`, `--rise-tree-select-border-focus` управляют и рамкой раскрытого поля (запасное значение — `--rise-input-border-focus`); новый `--rise-ai-message-avatar-end-bg` (конец градиента аватара BaseAiMessage, по умолчанию `--rise-info`).
+- **Словарь** (ru, en): удалён неиспользуемый `chat.CLOSE_PANEL`.

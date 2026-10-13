@@ -52,7 +52,6 @@ export const ruChat = {
 		BAN: 'Забанить',
 		PHONE: 'Телефон',
 		VIOLATION: 'Нарушение правил общения',
-		CLOSE_PANEL: 'Закрыть панель информации',
 		PARTICIPANTS_SUFFIX: 'участников',
 		PARTICIPANTS_TITLE: 'Участники группы',
 		MEMBER_ACTIONS: 'Действия с участником',
