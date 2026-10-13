@@ -14,6 +14,7 @@ export function useCommentComposer(props: CommentComposerProps, emit: CommentCom
 		if (!text) return
 		emit('submit', text)
 		draft.value = ''
+		if (!props.isReply) textareaRef.value?.focus()
 	}
 	return {
 		ui: (inject(COMMENT_THREAD_KEY) as CommentThreadContext).ui,

@@ -20,7 +20,11 @@ function useChatInputState(options: UseChatInputStateOptions) {
 		return inputComponentRef.value?.inputRef ?? null
 	}
 
-	const { sendMessage, ...attachmentState } = useChatAttachments({ emit, text })
+	const { sendMessage: emitMessage, ...attachmentState } = useChatAttachments({ emit, text })
+	function sendMessage(messageText?: string): void {
+		emitMessage(messageText)
+		getInputElement()?.focus()
+	}
 	const suggestions = useChatSuggestions({ props, text, getInputElement })
 	const { handleSuggestionKey } = useSuggestionKeys(suggestions, sendMessage)
 

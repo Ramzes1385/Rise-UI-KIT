@@ -290,6 +290,7 @@ export function useBaseAutocomplete(props: AutocompleteProps, emit: BaseAutocomp
 			blur: () => inputRef.value?.blur(),
 			validate: () => inputRef.value?.validate() ?? true,
 			reset: () => inputRef.value?.reset(),
+			open: () => ctx.open(),
 		},
 	}
 }

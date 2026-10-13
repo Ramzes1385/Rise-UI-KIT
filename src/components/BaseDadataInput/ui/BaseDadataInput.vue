@@ -1,5 +1,6 @@
 <template>
 	<BaseAutocomplete
+		ref="autocompleteRef"
 		:class="[ui('root'), classes.root]"
 		:model-value="fieldValue"
 		:options="options"
@@ -58,6 +59,7 @@ const {
 	ui,
 	autocompleteUi,
 	classes,
+	autocompleteRef,
 	fieldValue,
 	isLoading,
 	shownError,

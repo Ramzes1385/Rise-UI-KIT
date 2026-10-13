@@ -267,6 +267,29 @@ describe('BaseAutocomplete integration', () => {
 		autocompleteRef.value!.reset()
 	})
 
+	it('open() через ref открывает список; у отключённого поля не открывает', async () => {
+		const autocompleteRef = ref<InstanceType<typeof BaseAutocomplete> | null>(null)
+		const isDisabled = ref(true)
+		render({
+			components: { BaseAutocomplete },
+			setup: () => ({ options: CITIES, autocompleteRef, isDisabled }),
+			template: '<BaseAutocomplete ref="autocompleteRef" :options="options" :is-disabled="isDisabled" aria-label="Город" />',
+		})
+		const field = screen.getByRole('combobox', { name: 'Город' })
+
+		autocompleteRef.value!.open()
+		await nextTick()
+		expect(field).toHaveAttribute('aria-expanded', 'false')
+		expect(screen.queryAllByRole('option')).toHaveLength(0)
+
+		isDisabled.value = false
+		await nextTick()
+		autocompleteRef.value!.open()
+		await nextTick()
+		expect(field).toHaveAttribute('aria-expanded', 'true')
+		expect(screen.getAllByRole('option').length).toBeGreaterThan(0)
+	})
+
 	it('варианты с сервера сузились — активный вариант за пределами списка сбрасывается', async () => {
 		const user = userEvent.setup()
 		const list = ref<AutocompleteOption[]>(CITIES)

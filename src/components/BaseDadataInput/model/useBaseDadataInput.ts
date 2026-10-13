@@ -1,5 +1,5 @@
 import { useUi } from '@composables/base/useUi'
-import { computed, ref, shallowRef, watch } from 'vue'
+import { computed, nextTick, ref, shallowRef, watch } from 'vue'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import { DADATA_INPUT_PARTS } from '../types/BaseDadataInput.types'
 import { UI_DADATA, UI_REQUISITES, UI_TEXT } from '@/locales/messages'
@@ -101,7 +101,15 @@ function useDadataState(props: BaseDadataInputProps, emit: BaseDadataInputEmits)
 		() => valueModel.value.value,
 		() => suggestionModel.suggestion.value,
 	)
-	return { ...remote, ...valueModel, ...suggestionModel, ...validation, digitMessage: shallowRef(''), isEditing: ref(false) }
+	return {
+		...remote,
+		...valueModel,
+		...suggestionModel,
+		...validation,
+		digitMessage: shallowRef(''),
+		isEditing: ref(false),
+		autocompleteRef: ref<{ open: () => void } | null>(null),
+	}
 }
 
 function useHandlers(props: BaseDadataInputProps, emit: BaseDadataInputEmits, state: ReturnType<typeof useDadataState>) {
@@ -119,7 +127,8 @@ function useHandlers(props: BaseDadataInputProps, emit: BaseDadataInputEmits, st
 		if (found && !meetsPrecision(found, precisionOf(props))) {
 			state.setValue(`${text} `)
 			state.setSuggestion(null)
-			return runSearch(state.value.value)
+			runSearch(state.value.value)
+			return void nextTick(() => state.autocompleteRef.value?.open())
 		}
 		state.setValue(text)
 		state.setSuggestion(found ?? null)
@@ -157,6 +166,7 @@ export function useBaseDadataInput(props: BaseDadataInputProps, emit: BaseDadata
 	const state = useDadataState(props, emit)
 	const kind = computed(() => props.kind ?? 'address')
 	return {
+		autocompleteRef: state.autocompleteRef,
 		...useWrapperUi(props),
 		classes: useCustomClass({ getClass: () => props.customClass, elementKeys: ['root', 'field', 'panel', 'option'] }).classes,
 		fieldValue: computed(() => (state.isEditing.value ? null : state.value.value || null)),

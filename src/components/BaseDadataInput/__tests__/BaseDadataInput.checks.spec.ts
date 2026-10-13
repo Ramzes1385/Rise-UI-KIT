@@ -115,6 +115,17 @@ describe('BaseDadataInput: подсказка и проверки', () => {
 		expect(emitted('validate').at(-1)).toEqual([true])
 	})
 
+	it('precision: после выбора неполного адреса список с новыми подсказками открывается сразу, без ввода символа', async () => {
+		const source = sourceOf([STREET, HOUSE])
+		const { field } = setup({ source, precision: 'house' })
+		await type(field, 'тверская')
+		await choose(field, 0)
+
+		await waitFor(() => expect(source).toHaveBeenLastCalledWith('г Москва, ул Тверская ', expect.anything()))
+		await waitFor(() => expect(field).toHaveAttribute('aria-expanded', 'true'))
+		await waitFor(() => expect(screen.getAllByRole('option')).toHaveLength(2))
+	})
+
 	it('precision: квартира, улица (дом без улицы), город (населённый пункт)', async () => {
 		const flat = setup({ source: sourceOf([HOUSE, FLAT]), precision: 'flat' })
 		await type(flat.field, 'тверская')

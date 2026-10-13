@@ -2325,3 +2325,25 @@ API кита не меняется. В Storybook добавлены пример
 - **Экспорт констант** из `@ramzes1385/rise-ui-kit`: `ALERT_TYPES`, `ALERT_VARIANTS`, `EMPTY_VARIANTS`, `CHAT_VARIANTS`, `PROGRESS_SHAPES`.
 - **Токены компонентов**: `--rise-select-border-focus`, `--rise-cascader-border-focus`, `--rise-tree-select-border-focus` управляют и рамкой раскрытого поля (запасное значение — `--rise-input-border-focus`); новый `--rise-ai-message-avatar-end-bg` (конец градиента аватара BaseAiMessage, по умолчанию `--rise-info`).
 - **Словарь** (ru, en): удалён неиспользуемый `chat.CLOSE_PANEL`.
+## Задача fix-a11y-ssr: доступность и серверный рендер
+
+Изменения поведения и разметки; API ломается только переименованием токенов (п. 3).
+
+- **BaseTabs, смена панели**: уходящая панель (`.base-tabs-panel-leave-active`) на время затухания получает `inert` и `aria-hidden="true"` — фокус по Tab в неё не попадает, скринридер её не читает. Селекторы тестов приложения не меняются.
+- **Индикаторы (BaseTabs pills и rounded, BaseAnchor soft, BaseBottomNav, BasePagination)**: до первого замера (серверная разметка, кадр до гидратации) активный пункт рисует подложку сам; после замера её берёт индикатор. Корню добавлен класс готовности: `base-tabs--indicator-ready`, `base-anchor--indicator-ready`, `base-bottom-nav--indicator-ready`, у BasePagination — `base-pagination__pages--ready` на списке страниц. Приложение, которое переопределяет фон активного пункта этих компонентов, учитывайте оба состояния (с классом готовности подложка прозрачная, без него — своя).
+- **Токены с разными запасными значениями разведены** (раньше заданный токен менял оба места разом). Прежние имена остались у умолчания (вертикальный Anchor, pills, круглый индикатор Stepper, обычная рамка BottomNav); для второго места — новые:
+
+| Было (меняло оба места) | Осталось для | Новое имя для |
+|---|---|---|
+| `--rise-anchor-gap` | вертикальный | `--rise-anchor-horizontal-gap` |
+| `--rise-anchor-padding-x`, `--rise-anchor-padding-y` | вертикальный | `--rise-anchor-horizontal-padding-x`, `--rise-anchor-horizontal-padding-y` |
+| `--rise-tabs-list-radius` | pills | `--rise-tabs-rounded-list-radius` |
+| `--rise-tabs-indicator-radius` | pills | `--rise-tabs-rounded-indicator-radius` |
+| `--rise-stepper-indicator-radius` | круглый индикатор | `--rise-stepper-indicator-square-radius` (вариант `square`) |
+| `--rise-bottom-nav-border` | все варианты, кроме `outline` | `--rise-bottom-nav-outline-border` |
+
+  Если приложение задавало прежний токен ради горизонтального Anchor, `rounded` Tabs, `square` Stepper или `outline` BottomNav — задайте новый. Таблица токенов — docs/design/COMPONENT_TOKENS.md.
+- **BaseColorModeButton**: до монтирования кнопка всегда в состоянии «светлая» (иконка «солнце», `aria-pressed="false"`) — на сервере тема неизвестна, и сохранённая тёмная давала расхождение гидратации; после монтирования показывает реальную тему. У пользователя с сохранённой тёмной темой иконка меняется на «луну» сразу после монтирования (через переход иконки).
+- **BaseChat и BaseCommentThread (поле нового комментария)**: после отправки фокус остаётся в поле ввода, а не уходит в `body` вместе с отключаемой кнопкой «Отправить» (как у BasePromptInput). Ответ на комментарий по-прежнему возвращает фокус на «Ответить».
+- **BaseAutocomplete**: `open()` в `defineExpose` — открывает список (у отключённого, только для чтения поля не открывает, как клик).
+- **BaseDadataInput с `precision`**: после выбора неполного адреса список с новыми подсказками открывается сразу (раньше — следующим символом, ↓ или кликом).

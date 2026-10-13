@@ -263,6 +263,19 @@ describe('useChatInputState', () => {
 			expect(context.emit).toHaveBeenCalledWith('send', { text: 'Привет', attachments: undefined })
 		})
 
+		it('после отправки фокус возвращается в поле ввода (кнопка «Отправить» отключается)', async () => {
+			const context = setup()
+			await type(context, 'Привет')
+			const sendButton = document.createElement('button')
+			document.body.append(sendButton)
+			sendButton.focus()
+
+			context.state.handleSend()
+
+			expect(context.emit).toHaveBeenCalledWith('send', { text: 'Привет', attachments: undefined })
+			expect(document.activeElement).toBe(context.input)
+		})
+
 		it('Enter во время IME-композиции не отправляет', async () => {
 			const context = setup()
 			await type(context, 'こんにちは')

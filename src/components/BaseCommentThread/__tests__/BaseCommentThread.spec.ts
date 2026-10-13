@@ -92,6 +92,7 @@ describe('BaseCommentThread unit', () => {
 		await fireEvent.click(send)
 		expect(emitted().reply).toEqual([[{ parentId: null, text: 'Новый' }]])
 		expect(field).toHaveValue('')
+		expect(field).toHaveFocus()
 		await fireEvent.keyDown(field, { key: 'Escape' })
 		expect(field).toBeInTheDocument()
 	})

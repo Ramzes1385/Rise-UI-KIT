@@ -367,6 +367,7 @@ describe('ChatInput unit', () => {
 			expect(sendEvents[0][0].text).toBe('Привет')
 			expect(sendEvents[0][0].attachments).toBeUndefined()
 			expect(getInput().value).toBe('')
+			expect(getInput()).toHaveFocus()
 		})
 
 		it('не должен эмитить send при пустом поле и без вложений', async () => {
