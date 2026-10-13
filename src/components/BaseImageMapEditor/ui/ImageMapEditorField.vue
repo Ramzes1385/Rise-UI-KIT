@@ -1,12 +1,28 @@
 <template>
 	<BaseInput
 		v-if="field.kind === 'text'"
-		:model-value="field.value as string"
+		:model-value="shown"
 		:label="field.label"
 		:placeholder="field.placeholder"
 		:error="field.error || undefined"
 		:is-disabled="isDisabled"
-		@update:model-value="emit('update', String($event ?? ''))" />
+		@update:model-value="input"
+		@blur="blur" />
+	<div v-else-if="field.kind === 'color'" class="base-image-map-editor__color">
+		<BaseSelect
+			:model-value="tokenValue"
+			:label="tokenLabel"
+			:options="field.options ?? []"
+			:is-disabled="isDisabled"
+			@update:model-value="pickToken(String($event ?? ''))" />
+		<BaseInput
+			:model-value="shown"
+			:label="field.label"
+			:placeholder="field.placeholder"
+			:is-disabled="isDisabled"
+			@update:model-value="input"
+			@blur="blur" />
+	</div>
 	<BaseTextarea
 		v-else-if="field.kind === 'textarea'"
 		:model-value="field.value as string"
@@ -54,9 +70,12 @@ import { BaseSwitch } from '@components/BaseSwitch'
 import { BaseTextarea } from '@components/BaseTextarea'
 import { BaseInputTags } from '@components/BaseInputTags'
 import { BaseInputNumber } from '@components/BaseInputNumber'
+import { useImageMapEditorField } from '../model/panel/useImageMapEditorField'
 import type { ImageMapEditorFieldEmits, ImageMapEditorFieldProps } from '../types/ImageMapEditorField.types'
 
-defineProps<ImageMapEditorFieldProps>()
+const props = defineProps<ImageMapEditorFieldProps>()
 
 const emit = defineEmits<ImageMapEditorFieldEmits>()
+
+const { shown, tokenValue, tokenLabel, input, pickToken, blur } = useImageMapEditorField(props, emit)
 </script>

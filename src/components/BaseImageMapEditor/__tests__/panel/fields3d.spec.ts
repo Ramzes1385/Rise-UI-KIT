@@ -73,7 +73,7 @@ describe('fields3d: этаж', () => {
 		applyLayer3d(target, 'elevation', 50)
 		applyLayer3d(target, 'model.scale', 2)
 		expect(target).toEqual(layer({ elevation: 50 }))
-		applyLayer3d(target, 'model.url', ' /f1.glb ')
+		applyLayer3d(target, 'model.url', '/f1.glb')
 		applyLayer3d(target, 'model.scale', 2)
 		applyLayer3d(target, 'model.y', 5)
 		applyLayer3d(target, 'model.rotationY', 45)
@@ -97,13 +97,51 @@ describe('fields3d: этаж', () => {
 	})
 })
 
+describe('fields3d: адрес модели', () => {
+	it('applyLayer3d хранит адрес как введён (пробелы убирает потеря фокуса), пустой — удаляет модель', () => {
+		const target = layer()
+		applyLayer3d(target, 'model.url', ' /a b.glb ')
+		expect(target.model).toEqual({ url: ' /a b.glb ' })
+		applyLayer3d(target, 'model.url', '   ')
+		expect(target).not.toHaveProperty('model')
+	})
+
+	it('поля с обрезкой по blur: адрес модели и узел', () => {
+		expect(layer3dFields(layer(), {})[1]).toMatchObject({ key: 'model.url', isTrimmedOnBlur: true })
+		expect(object3dSection(RECT, {}).fields[1]).toMatchObject({ key: 'meshName', isTrimmedOnBlur: true })
+	})
+})
+
 describe('fields3d: сцена', () => {
-	it('три поля сцены с ошибками', () => {
+	it('поля сцены с ошибками: числа, скос и контур', () => {
 		const fields = scene3dFields({ floorGap: 200 }, { floorThickness: 'x' })
-		expect(keys(fields)).toEqual(['floorGap', 'floorThickness', 'objectHeight'])
-		expect(fields.map(field => field.value)).toEqual([200, null, null])
+		expect(keys(fields)).toEqual(['floorGap', 'floorThickness', 'objectHeight', 'bevel', 'outline'])
+		expect(fields.map(field => field.value)).toEqual([200, null, null, null, true])
 		expect(fields[1]).toMatchObject({ label: t.FIELD_FLOOR_THICKNESS, min: 0.01, error: 'x' })
-		expect(scene3dFields(undefined, {}).map(field => field.value)).toEqual([null, null, null])
+		expect(fields[3]).toMatchObject({ kind: 'number', label: t.FIELD_BEVEL, min: 0 })
+		expect(fields[4]).toMatchObject({ kind: 'switch', label: t.FIELD_OUTLINE })
+		expect(scene3dFields(undefined, {}).map(field => field.value)).toEqual([null, null, null, null, true])
+		expect(scene3dFields({ bevel: 3, outline: false }, { outline: 'e' }).slice(3)).toMatchObject([
+			{ value: 3 },
+			{ value: false, error: 'e' },
+		])
+	})
+
+	it('applyScene3d: контур хранится только выключенным (умолчание — включён)', () => {
+		const data: ImageMap3DData = { layers: [], objects: [] }
+		applyScene3d(data, 'outline', false)
+		expect(data.scene3d).toEqual({ outline: false })
+		applyScene3d(data, 'bevel', 2)
+		expect(data.scene3d).toEqual({ outline: false, bevel: 2 })
+		applyScene3d(data, 'outline', true)
+		expect(data.scene3d).toEqual({ bevel: 2 })
+	})
+
+	it('scene3dIssue: скос меньше нуля — ошибка; нуль и контур — нет', () => {
+		const data: ImageMap3DData = { layers: [], objects: [] }
+		expect(scene3dIssue(data, 'bevel', -1)).toBe('Ожидается число не меньше 0')
+		expect(scene3dIssue(data, 'bevel', 0)).toBeUndefined()
+		expect(scene3dIssue(data, 'outline', false)).toBeUndefined()
 	})
 
 	it('applyScene3d: пустая сцена удаляется', () => {

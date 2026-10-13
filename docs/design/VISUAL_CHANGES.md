@@ -1822,3 +1822,7 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 
 - **BaseImageMap3D** (`media-baseimagemap3d--legend3d`, `--fullscreen3d`, `--pulsing-markers`, `--objects-all-floors`, `--glb-outline`): под областью карты список «Легенда» (образцы цвета и значки групп); в панели камеры справа кнопка «Во весь экран» (после масштаба и поворота) — она видна в каждой истории BaseImageMap3D с панелью камеры; кольцо пульсации вокруг меток `point` (`transform` + `opacity`, при «уменьшить движение» без анимации); контур по рёбрам мешей GLB при `scene3d.outline: true`.
 - **BaseImageMap3D, маршрут `single`** (`media-baseimagemap3d--routes3d` при `layerMode: single`): на этаже виден только его участок линии, переход на другой этаж — жёлтая метка.
+
+### maps-polish: BaseImageMapEditor
+
+Эталоны существующих историй BaseImageMapEditor меняются: в боковой панели появились разделы «Фильтры» и «Стили» (заголовок, подсказка «Фильтров пока нет» / «Именованных стилей пока нет», кнопка «Добавить …»), панель стала выше. В Fields3D в «Сцене» два новых поля и у объекта `svg` рамка «Части объекта». Новые истории: `media-baseimagemapeditor--editor-filters`, `--editor-styles`, `--editor-parts3-d` (эталонов нет). Новых токенов нет.

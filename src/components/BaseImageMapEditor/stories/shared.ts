@@ -46,3 +46,37 @@ export const IMAGE_MAP_3D_FIELDS: ImageMap3DData = {
 	),
 	scene3d: { floorGap: 220 },
 }
+
+export const IMAGE_MAP_FILTERS: ImageMapData = {
+	...IMAGE_MAP_HOTSPOTS,
+	filters: [
+		{
+			id: 'kind',
+			title: 'Тип',
+			type: 'tags',
+			options: [
+				{ value: 'trail', label: 'Трассы' },
+				{ value: 'food', label: 'Еда' },
+			],
+		},
+		{ id: 'categories', title: 'Категории' },
+	],
+	objects: IMAGE_MAP_HOTSPOTS.objects.map(object => (object.id === 'sun' ? { ...object, tags: ['food'] } : object)),
+}
+
+export const IMAGE_MAP_STYLES: ImageMapData = {
+	...IMAGE_MAP_HOTSPOTS,
+	styles: {
+		accent: { base: { fill: 'var(--rise-primary)', fillOpacity: 0.3, stroke: 'var(--rise-primary)', strokeWidth: 2 } },
+		calm: { base: { fill: 'var(--rise-success)', fillOpacity: 0.2 } },
+	},
+	objects: IMAGE_MAP_HOTSPOTS.objects.map(object => (object.id === 'lake' ? { ...object, style: 'accent' } : object)),
+}
+
+export const IMAGE_MAP_3D_PARTS: ImageMap3DData = {
+	...IMAGE_MAP_3D_FIELDS,
+	scene3d: { floorGap: 220, bevel: 2 },
+	objects: IMAGE_MAP_3D_FIELDS.objects.map(object =>
+		object.id === 'f1-shop-1' ? { ...object, parts: [{ elementId: 'f1-shop-1', height3d: 40 }] } : object,
+	),
+}

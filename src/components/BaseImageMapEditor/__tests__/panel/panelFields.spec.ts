@@ -59,11 +59,25 @@ describe('mapFields: слой', () => {
 
 describe('mapFields: группа', () => {
 	it('название, цвет и значок', () => {
-		const fields = groupFields({ id: 'g', title: 'Кафе', color: 'red' })
+		const fields = groupFields({ id: 'g', title: 'Кафе', color: 'red' }, makeData())
 		expect(keys(fields)).toEqual(['title', 'color', 'icon'])
 		expect(field(fields, 'title')?.value).toBe('Кафе')
 		expect(field(fields, 'color')).toMatchObject({ value: 'red', placeholder: 'var(--rise-primary)' })
 		expect(field(fields, 'icon')).toMatchObject({ value: '', placeholder: 'map-pin' })
+	})
+})
+
+describe('mapFields: стиль группы', () => {
+	it('при именованных стилях — выбор стиля из списка', () => {
+		const data = makeData({ styles: { accent: { base: { fill: 'red' } } } })
+		const fields = groupFields({ id: 'g', title: 'Кафе', style: 'accent' }, data)
+		expect(keys(fields)).toEqual(['title', 'color', 'icon', 'style'])
+		expect(field(fields, 'style')).toMatchObject({ kind: 'select', value: 'accent' })
+		expect(field(fields, 'style')?.options).toEqual([
+			{ value: '', label: t.STYLE_NONE },
+			{ value: 'accent', label: 'accent' },
+		])
+		expect(field(groupFields({ id: 'g', title: 'Кафе' }, data), 'style')?.value).toBe('')
 	})
 })
 

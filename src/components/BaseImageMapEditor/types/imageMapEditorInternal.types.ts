@@ -101,7 +101,7 @@ export interface SvgCandidate {
 }
 
 /** Вид поля панели свойств */
-type EditorFieldKind = 'text' | 'textarea' | 'select' | 'number' | 'switch' | 'tags'
+type EditorFieldKind = 'text' | 'textarea' | 'select' | 'number' | 'switch' | 'tags' | 'color'
 
 /** Вариант выпадающего поля */
 export interface EditorFieldOption {
@@ -121,8 +121,10 @@ export interface EditorField {
 	label: string
 	/** Значение */
 	value: string | number | boolean | string[] | null
-	/** Варианты выпадающего поля */
+	/** Варианты выпадающего поля; у `color` — цвета палитры токенов */
 	options?: EditorFieldOption[]
+	/** Пробелы по краям обрезаются, когда поле теряет фокус (а не на каждом вводе) */
+	isTrimmedOnBlur?: boolean
 	/** Наименьшее число */
 	min?: number
 	/** Наибольшее число */
@@ -143,6 +145,32 @@ export interface EditorFieldSection {
 	title: string
 	/** Поля */
 	fields: EditorField[]
+}
+
+/** Адрес вложенной строки списка панели: номер строки и номер вложенной */
+export interface EditorRowPath {
+	/** Номер строки */
+	index: number
+	/** Номер вложенной строки (вариант фильтра) */
+	child: number
+}
+
+/** Строка списка панели: фильтр, именованный стиль, часть объекта 3D, вариант фильтра */
+export interface EditorListRow {
+	/** Подпись строки: легенда набора полей */
+	title: string
+	/** Имя кнопки удаления строки */
+	deleteLabel: string
+	/** Поля строки */
+	fields: EditorField[]
+	/** Вложенные строки (варианты фильтра) */
+	children?: EditorListRow[]
+	/** Название группы вложенных строк */
+	childrenTitle?: string
+	/** Подпись кнопки добавления вложенной строки */
+	addChildLabel?: string
+	/** Пояснение под полями строки */
+	hint?: string
 }
 
 /** Значение поля панели свойств */

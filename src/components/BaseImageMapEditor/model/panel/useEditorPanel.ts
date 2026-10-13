@@ -1,6 +1,9 @@
 import { computed, ref, watch } from 'vue'
 import { objectSections } from './objectFields'
 import { formatMessage } from '@/locales/state'
+import { useEditorStyles } from './useEditorStyles'
+import { useEditorFilters } from './useEditorFilters'
+import { useEditorParts3d } from './useEditorParts3d'
 import { applyField, parsePoints } from './applyField'
 import { groupFields, layerFields } from './mapFields'
 import { useEditor3dFields } from './useEditor3dFields'
@@ -83,7 +86,11 @@ function useMapFields(ctx: EditorContext) {
 			return layer ? layerFields(layer) : []
 		}),
 		groups: computed(() =>
-			(ctx.doc.getData().groups ?? []).map(group => ({ id: group.id, title: group.title, fields: groupFields(group) })),
+			(ctx.doc.getData().groups ?? []).map(group => ({
+				id: group.id,
+				title: group.title,
+				fields: groupFields(group, ctx.doc.getData()),
+			})),
 		),
 		setLayerField(key: string, value: FieldValue): void {
 			const layer = ctx.selection.getLayer()
@@ -149,6 +156,9 @@ export function useEditorPanel(ctx: EditorContext, setLayer: (id: string) => voi
 	return {
 		...useObjectFields(ctx, has3d),
 		...useEditor3dFields(ctx, has3d),
+		...useEditorParts3d(ctx, has3d),
+		...useEditorFilters(ctx),
+		...useEditorStyles(ctx),
 		...useMapFields(ctx),
 		...useLayerActions(ctx, setLayer),
 		...useObjectActions(ctx),

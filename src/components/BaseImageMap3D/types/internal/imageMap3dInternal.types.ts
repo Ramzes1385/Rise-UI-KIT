@@ -540,7 +540,7 @@ export interface ScenePickQuery {
 export type ImageMap3DStage = ReturnType<typeof useImageMap3DStage>
 
 /** Метка маршрута в сцене: начало, конец или переход на другой этаж */
-export interface RouteMarkerSpec {
+interface RouteMarkerSpec {
 	kind: 'start' | 'end' | 'transition'
 	position: Vector3
 }

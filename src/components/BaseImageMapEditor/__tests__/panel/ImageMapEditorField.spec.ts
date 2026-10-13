@@ -1,3 +1,4 @@
+import { nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
 import ImageMapEditorField from '../../ui/ImageMapEditorField.vue'
 import type { EditorField } from '../../types/imageMapEditorInternal.types'
@@ -80,5 +81,70 @@ describe('ImageMapEditorField', () => {
 			props: { field: { key: 'group', kind: 'select', label: 'Группа', value: '' }, isDisabled: false },
 		})
 		expect(select.findComponent({ name: 'BaseSelect' }).props('options')).toEqual([])
+	})
+
+	const COLOR: EditorField = {
+		key: 'fill',
+		kind: 'color',
+		label: 'Заливка',
+		value: 'var(--rise-primary)',
+		options: [
+			{ value: '', label: 'Свой цвет' },
+			{ value: 'var(--rise-primary)', label: 'Основной' },
+		],
+	}
+
+	it('color: выбор токена и ввод своего цвета; токен выбран, только если значение из палитры', async () => {
+		const wrapper = mount(ImageMapEditorField, { props: { field: COLOR, isDisabled: false } })
+		const select = wrapper.findComponent({ name: 'BaseSelect' })
+		const input = wrapper.findComponent({ name: 'BaseInput' })
+		expect(select.props('modelValue')).toBe('var(--rise-primary)')
+		expect(select.props('label')).toBe('Заливка: из палитры')
+		expect(input.props('modelValue')).toBe('var(--rise-primary)')
+		select.vm.$emit('update:modelValue', 'var(--rise-primary)')
+		select.vm.$emit('update:modelValue', '')
+		input.vm.$emit('update:modelValue', '#ff0000')
+		input.vm.$emit('update:modelValue', null)
+		expect(wrapper.emitted('update')).toEqual([['var(--rise-primary)'], [''], ['#ff0000'], ['']])
+		await wrapper.setProps({ field: { ...COLOR, value: '#ff0000' } })
+		expect(select.props('modelValue')).toBe('')
+		select.vm.$emit('update:modelValue', '')
+		select.vm.$emit('update:modelValue', null)
+		expect(wrapper.emitted('update')).toHaveLength(4)
+		await wrapper.setProps({ field: { ...COLOR, value: 5, options: undefined } })
+		expect(select.props('options')).toEqual([])
+	})
+
+	it('trimOnBlur: пробелы по краям убираются, когда поле теряет фокус; без флага и без пробелов — нет', async () => {
+		const field: EditorField = { key: 'name', kind: 'text', label: 'Имя', value: ' a b ', isTrimmedOnBlur: true }
+		const wrapper = mount(ImageMapEditorField, { props: { field, isDisabled: false } })
+		await wrapper.findComponent({ name: 'BaseInput' }).vm.$emit('blur', new FocusEvent('blur'))
+		expect(wrapper.emitted('update')).toEqual([['a b']])
+		await wrapper.setProps({ field: { ...field, value: 'a b' } })
+		await wrapper.findComponent({ name: 'BaseInput' }).vm.$emit('blur', new FocusEvent('blur'))
+		await wrapper.setProps({ field: { ...field, value: ' a ', isTrimmedOnBlur: false } })
+		await wrapper.findComponent({ name: 'BaseInput' }).vm.$emit('blur', new FocusEvent('blur'))
+		expect(wrapper.emitted('update')).toHaveLength(1)
+		const color = mount(ImageMapEditorField, {
+			props: { field: { ...COLOR, value: ' #fff ', isTrimmedOnBlur: true }, isDisabled: false },
+		})
+		await color.findComponent({ name: 'BaseInput' }).vm.$emit('blur', new FocusEvent('blur'))
+		expect(color.emitted('update')).toEqual([['#fff']])
+	})
+
+	it('черновик: введённое значение держится в поле, пока документ не изменился; потеря фокуса возвращает значение документа', async () => {
+		const field: EditorField = { key: 'title', kind: 'text', label: 'Название', value: 'Зал', error: 'Ошибка' }
+		const wrapper = mount(ImageMapEditorField, { props: { field, isDisabled: false } })
+		const input = wrapper.findComponent({ name: 'BaseInput' })
+		input.vm.$emit('update:modelValue', '')
+		await nextTick()
+		expect(input.props('modelValue')).toBe('')
+		input.vm.$emit('blur', new FocusEvent('blur'))
+		await nextTick()
+		expect(input.props('modelValue')).toBe('Зал')
+		expect(wrapper.emitted('update')).toEqual([['']])
+		input.vm.$emit('update:modelValue', 'Холл')
+		await wrapper.setProps({ field: { ...field, value: 'Холл', error: '' } })
+		expect(input.props('modelValue')).toBe('Холл')
 	})
 })

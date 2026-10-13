@@ -23,11 +23,11 @@ const LAYER_PATHS: Record<string, string> = {
 	'model.rotationY': 'model.rotationY',
 }
 
-const SCENE_KEYS = ['floorGap', 'floorThickness', 'objectHeight']
+const SCENE_KEYS = ['floorGap', 'floorThickness', 'objectHeight', 'bevel']
 
 const POSITIVE_MIN = 0.01
 
-const SCENE_MIN: Record<string, number> = { floorGap: 0, floorThickness: POSITIVE_MIN, objectHeight: 0 }
+const SCENE_MIN: Record<string, number> = { floorGap: 0, floorThickness: POSITIVE_MIN, objectHeight: 0, bevel: 0 }
 
 function numberField(key: string, label: string, value: unknown): EditorField {
 	return { key, kind: 'number', label, value: typeof value === 'number' ? value : null, precision: 2 }
@@ -42,7 +42,7 @@ function assign(target: Record<string, unknown>, key: string, value: unknown): v
 	else target[key] = value
 }
 
-function issueText(data: ImageMap3DData, path: string): string | undefined {
+export function issueText(data: ImageMap3DData, path: string): string | undefined {
 	const issue = validate3dData(data).find(item => item.path === path)
 	return issue ? formatMessage(UI_IMAGE_MAP_EDITOR.FIELD_3D_INVALID, { expected: expectedText(issue.rule) }) : undefined
 }
@@ -69,6 +69,7 @@ export function object3dSection(object: ImageMapObject, errors: Record<string, s
 				label: t.FIELD_MESH_NAME,
 				value: fields.meshName ?? '',
 				placeholder: object.id,
+				isTrimmedOnBlur: true,
 				error: errors.meshName,
 			},
 		],
@@ -95,6 +96,7 @@ function modelFields(model: ImageMapLayerModel | undefined): EditorField[] {
 		label: t.FIELD_MODEL_URL,
 		value: model?.url ?? '',
 		placeholder: '/maps/floor-1.glb',
+		isTrimmedOnBlur: true,
 	}
 	if (!model?.url) return [url]
 	const position = model.position ?? []
@@ -117,8 +119,8 @@ export function layer3dFields(layer: ImageMapLayer, errors: Record<string, strin
 
 function applyModel(layer: ImageMap3DLayer, key: string, value: FieldValue): void {
 	if (key === 'model.url') {
-		const url = String(value ?? '').trim()
-		if (url) layer.model = { ...layer.model, url }
+		const url = String(value ?? '')
+		if (url.trim()) layer.model = { ...layer.model, url }
 		else delete layer.model
 		return
 	}
@@ -148,17 +150,30 @@ export function layer3dIssue(layer: ImageMapLayer, key: string, value: FieldValu
 
 export function scene3dFields(scene: ImageMapScene3D | undefined, errors: Record<string, string>): EditorField[] {
 	const t = UI_IMAGE_MAP_EDITOR
-	const labels = [t.FIELD_FLOOR_GAP, t.FIELD_FLOOR_THICKNESS, t.FIELD_OBJECT_HEIGHT]
-	return SCENE_KEYS.map((key, index) => ({
+	const labels = [t.FIELD_FLOOR_GAP, t.FIELD_FLOOR_THICKNESS, t.FIELD_OBJECT_HEIGHT, t.FIELD_BEVEL]
+	const numbers = SCENE_KEYS.map((key, index) => ({
 		...numberField(key, labels[index] as string, scene?.[key as keyof ImageMapScene3D]),
 		min: SCENE_MIN[key],
 		error: errors[key],
 	}))
+	const outline: EditorField = {
+		key: 'outline',
+		kind: 'switch',
+		label: t.FIELD_OUTLINE,
+		value: scene?.outline ?? true,
+		error: errors.outline,
+	}
+	return [...numbers, outline]
+}
+
+function sceneValue(key: string, value: FieldValue): number | boolean | undefined {
+	if (key !== 'outline') return toNumber(value)
+	return value === false ? false : undefined
 }
 
 export function applyScene3d(data: ImageMap3DData, key: string, value: FieldValue): void {
 	const scene: Record<string, unknown> = { ...data.scene3d }
-	assign(scene, key, toNumber(value))
+	assign(scene, key, sceneValue(key, value))
 	if (Object.keys(scene).length) data.scene3d = scene as ImageMapScene3D
 	else delete data.scene3d
 }

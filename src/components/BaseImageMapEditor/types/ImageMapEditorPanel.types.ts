@@ -48,6 +48,8 @@ export interface ImageMapEditorPanel3dProps {
 	panel: ReturnType<typeof useEditorPanel>
 	/** Название показанного этажа — подпись полей 3D этажа */
 	layerTitle?: string
+	/** Выделенный объект: у объекта `svg` показываются части */
+	selected?: ImageMapObject
 	/** Редактор отключён */
 	isDisabled: boolean
 	/** Классы частей редактора (проп `ui`) */

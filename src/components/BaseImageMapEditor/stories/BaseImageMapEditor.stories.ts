@@ -32,4 +32,7 @@ export const CustomToolbar = cases.CustomToolbar
 export const MouseEditing = cases.MouseEditing
 export const Keyboard = cases.Keyboard
 export const Fields3D = cases.Fields3D
+export const EditorFilters = cases.EditorFilters
+export const EditorStyles = cases.EditorStyles
+export const EditorParts3D = cases.EditorParts3D
 export const Animations = cases.Animations

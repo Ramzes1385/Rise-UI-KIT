@@ -1,18 +1,8 @@
-import { computed, ref, watch } from 'vue'
+import { computed, watch } from 'vue'
+import { useFieldErrors } from './useFieldErrors'
 import type { ImageMap3DData } from '@components/BaseImageMap3D/types/imageMap3dData.types'
 import type { EditorContext, EditorFieldValue as FieldValue } from '../../types/imageMapEditorInternal.types'
 import { applyLayer3d, applyScene3d, layer3dFields, layer3dIssue, scene3dFields, scene3dIssue } from './fields3d'
-
-function useFieldErrors() {
-	const errors = ref<Record<string, string>>({})
-	return {
-		errors,
-		check(key: string, error: string | undefined): boolean {
-			errors.value = { ...errors.value, [key]: error ?? '' }
-			return !error
-		},
-	}
-}
 
 export function useEditor3dFields(ctx: EditorContext, isEnabled: () => boolean) {
 	const layerErrors = useFieldErrors()

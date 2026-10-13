@@ -88,8 +88,36 @@
 			v-if="panel.scene3dFields.value.length"
 			:panel="panel"
 			:layer-title="currentLayer?.title"
+			:selected="selected"
 			:is-disabled="isDisabled"
 			:ui="ui" />
+
+		<section :class="ui('section')">
+			<h3 :class="ui('heading')">{{ UI_IMAGE_MAP_EDITOR.FILTERS }}</h3>
+			<ImageMapEditorRows
+				:rows="panel.filterRows.value"
+				:add-label="UI_IMAGE_MAP_EDITOR.ADD_FILTER"
+				:empty-text="UI_IMAGE_MAP_EDITOR.NO_FILTERS"
+				:is-disabled="isDisabled"
+				@update="panel.setFilterField"
+				@add="panel.addFilter"
+				@remove="panel.removeFilter"
+				@update-child="panel.setFilterOption"
+				@add-child="panel.addFilterOption"
+				@remove-child="panel.removeFilterOption" />
+		</section>
+
+		<section :class="ui('section')">
+			<h3 :class="ui('heading')">{{ UI_IMAGE_MAP_EDITOR.STYLES }}</h3>
+			<ImageMapEditorRows
+				:rows="panel.styleRows.value"
+				:add-label="UI_IMAGE_MAP_EDITOR.ADD_STYLE"
+				:empty-text="UI_IMAGE_MAP_EDITOR.NO_STYLES"
+				:is-disabled="isDisabled"
+				@update="panel.setStyleField"
+				@add="panel.addStyle"
+				@remove="panel.removeStyle" />
+		</section>
 
 		<section :class="ui('section')">
 			<h3 :class="ui('heading')">{{ UI_IMAGE_MAP_EDITOR.GROUPS }}</h3>
@@ -121,6 +149,7 @@ import { BaseText } from '@components/BaseText'
 import { BaseButton } from '@components/BaseButton'
 import { UI_IMAGE_MAP_EDITOR } from '@/locales/messages'
 import { typeLabel } from '../model/canvas/useEditorTool'
+import ImageMapEditorRows from './ImageMapEditorRows.vue'
 import ImageMapEditorField from './ImageMapEditorField.vue'
 import ImageMapEditorPanel3d from './ImageMapEditorPanel3d.vue'
 import { useImageMapEditorPanel } from '../model/panel/useImageMapEditorPanel'

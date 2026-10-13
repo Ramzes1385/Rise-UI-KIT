@@ -12,6 +12,17 @@
 				:is-disabled="isDisabled"
 				@update="panel.setLayer3dField(field.key, $event)" />
 		</fieldset>
+		<fieldset v-if="selected?.type === 'svg'" :class="ui('fieldset')">
+			<legend :class="ui('legend')">{{ UI_IMAGE_MAP_EDITOR.PARTS_3D }}</legend>
+			<ImageMapEditorRows
+				:rows="panel.partRows.value"
+				:add-label="UI_IMAGE_MAP_EDITOR.ADD_PART"
+				:empty-text="UI_IMAGE_MAP_EDITOR.NO_PARTS"
+				:is-disabled="isDisabled"
+				@update="panel.setPartField"
+				@add="panel.addPart"
+				@remove="panel.removePart" />
+		</fieldset>
 		<fieldset :class="ui('fieldset')">
 			<legend :class="ui('legend')">{{ UI_IMAGE_MAP_EDITOR.SCENE_3D }}</legend>
 			<ImageMapEditorField
@@ -27,6 +38,7 @@
 <script setup lang="ts">
 import { formatMessage } from '@/locales/state'
 import { UI_IMAGE_MAP_EDITOR } from '@/locales/messages'
+import ImageMapEditorRows from './ImageMapEditorRows.vue'
 import ImageMapEditorField from './ImageMapEditorField.vue'
 import type { ImageMapEditorPanel3dProps } from '../types/ImageMapEditorPanel.types'
 
