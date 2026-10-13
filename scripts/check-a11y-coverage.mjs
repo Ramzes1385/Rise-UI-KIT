@@ -137,7 +137,6 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseHoverCard',
 	'BaseDashboardGrid',
 	'BaseGantt',
-
 	'BaseFileManager',
 	'BaseFormWizard',
 ])
@@ -205,7 +204,6 @@ const INTERACTIVE_WITH_DISABLED = new Set([
 	'BaseHoverCard',
 	'BaseDashboardGrid',
 	'BaseGantt',
-
 	'BaseFileManager',
 	'BaseFormWizard',
 ])
@@ -260,7 +258,6 @@ const LOADING_COMPONENTS = new Set([
 	'BaseCascader',
 	'BaseCryptoProSign',
 	'BaseGantt',
-
 	'BaseFileManager',
 	'BaseFormWizard',
 ])
@@ -297,7 +294,6 @@ const EMPTY_COMPONENTS = new Set([
 	'BaseCryptoProSign',
 	'BaseDashboardGrid',
 	'BaseGantt',
-
 	'BaseFileManager',
 	'BaseFormWizard',
 ])
@@ -347,7 +343,6 @@ const LONG_CONTENT_COMPONENTS = new Set([
 	'BaseCode',
 	'BaseDashboardGrid',
 	'BaseGantt',
-
 	'BaseFileManager',
 	'BaseFormWizard',
 ])

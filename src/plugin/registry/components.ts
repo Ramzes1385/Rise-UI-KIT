@@ -117,9 +117,8 @@ import { BaseColorPicker } from '../../components/BaseColorPicker'
 import { BaseContextMenu } from '../../components/BaseContextMenu'
 import { BaseDadataInput } from '../../components/BaseDadataInput'
 import { BaseEmojiPicker } from '../../components/BaseEmojiPicker'
-import { BaseGrid, BaseGridItem } from '../../components/BaseGrid'
-
 import { BaseFileManager } from '../../components/BaseFileManager'
+import { BaseGrid, BaseGridItem } from '../../components/BaseGrid'
 import { BaseInputNumber } from '../../components/BaseInputNumber'
 import { BasePromptInput } from '../../components/BasePromptInput'
 import { BaseSplitButton } from '../../components/BaseSplitButton'
@@ -205,11 +204,10 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseFooter,
 	BaseForm,
 	BaseFormField,
+	BaseFormWizard,
 	BaseGantt,
 	BaseGrid,
 	BaseGridItem,
-
-	BaseFormWizard,
 	BaseHeader,
 	BaseHeatmap,
 	BaseHoverCard,

@@ -81,7 +81,6 @@ export interface UiKitLocale {
 	cookieConsent: Section<'cookieConsent'>
 	dashboardGrid: Section<'dashboardGrid'>
 	gantt: Section<'gantt'>
-
 	fileManager: Section<'fileManager'>
 	formWizard: Section<'formWizard'>
 	datePicker: Section<'datePicker'>
