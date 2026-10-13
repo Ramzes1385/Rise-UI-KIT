@@ -76,10 +76,23 @@
 						</li>
 					</TransitionGroup>
 					<Transition name="base-autocomplete-state" :css="!isMotionReduced" @leave="leaveAtOnce">
-						<div v-if="isLoading" key="loading" :class="[ui('empty'), classes.empty]">{{ UI_TEXT.LOADING }}</div>
-						<div v-else-if="visibleOptions.length === 0" key="empty" :class="[ui('empty'), classes.empty]">
+						<BaseEmpty
+							v-if="isLoading"
+							key="loading"
+							is-compact
+							variant="ghost"
+							:class="[ui('empty'), classes.empty]"
+							:description="UI_TEXT.LOADING"
+							:size-scale="sizeScale" />
+						<BaseEmpty
+							v-else-if="visibleOptions.length === 0"
+							key="empty"
+							is-compact
+							variant="ghost"
+							:class="[ui('empty'), classes.empty]"
+							:size-scale="sizeScale">
 							<slot name="empty">{{ UI_TEXT.NO_RESULTS }}</slot>
-						</div>
+						</BaseEmpty>
 					</Transition>
 				</div>
 			</template>
@@ -91,6 +104,7 @@
 <script setup lang="ts">
 import '../styles/BaseAutocomplete.style.scss'
 import { UI_TEXT } from '@/locales/messages'
+import { BaseEmpty } from '@components/BaseEmpty'
 import { BaseInput } from '@components/BaseInput'
 import { BaseDropdown } from '@components/BaseDropdown'
 import { kitDefaults } from '@composables/base/useDefaults'

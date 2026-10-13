@@ -42,7 +42,13 @@
 				@click.stop="goTo(index)"></span>
 			<span :class="ui('playhead')" :style="playheadStyle"></span>
 		</div>
-		<p v-if="!cues.length && !leavingCount" :class="ui('empty')">{{ UI_SUBTITLES.EMPTY }}</p>
+		<BaseEmpty
+			v-if="!cues.length && !leavingCount"
+			is-compact
+			variant="ghost"
+			:class="ui('empty')"
+			:description="UI_SUBTITLES.EMPTY"
+			:size-scale="sizeScale" />
 		<TransitionGroup
 			v-if="cues.length || leavingCount"
 			tag="ol"
@@ -100,6 +106,7 @@
 import '../styles/BaseSubtitleEditor.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_SUBTITLES } from '@/locales/messages'
+import { BaseEmpty } from '@components/BaseEmpty'
 import { BaseButton } from '@components/BaseButton'
 import { useBaseSubtitleEditor } from '../model/useBaseSubtitleEditor'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'

@@ -134,7 +134,10 @@
 		text-decoration: none;
 	}
 
-	&__empty,
+	&__empty.base-empty {
+		padding: space(12px 8px);
+	}
+
 	&__status {
 		padding: space(12px 8px);
 		color: var(--rise-text-muted);

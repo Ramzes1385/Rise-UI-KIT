@@ -71,7 +71,7 @@ describe('BaseCommandPalette: проп ui', () => {
 			},
 		})
 
-		expect(part('empty')).toHaveAttribute('class', 'base-command-palette__empty app-empty own-empty')
+		expect(part('empty')).toHaveClass('base-empty', 'base-command-palette__empty', 'app-empty', 'own-empty')
 		expect(dialog().closest('.base-modal')).toHaveClass('base-command-palette', 'app-root')
 	})
 })

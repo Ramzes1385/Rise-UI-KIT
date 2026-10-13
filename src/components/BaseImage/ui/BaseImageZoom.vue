@@ -60,7 +60,7 @@
 						@click="zoom.rotateRight">
 						<template #left><BaseIcon name="rotate-right" :custom-class="classes.rotateRightIcon" /></template>
 					</BaseButton>
-					<span :class="ui('zoom-divider')" aria-hidden="true"></span>
+					<BaseSeparator orientation="vertical" :class="ui('zoom-divider')" />
 					<BaseButton
 						variant="ghost"
 						:class="[ui('zoom-btn'), 'base-image__zoom-btn--close']"
@@ -146,6 +146,7 @@
 import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
+import { BaseSeparator } from '@components/BaseSeparator'
 import { useBaseImageZoom } from '../model/useBaseImageZoom'
 import type { BaseImageZoomEmits, BaseImageZoomProps } from '../types/BaseImageZoom.types'
 

@@ -51,7 +51,12 @@ describe('BaseSubtitleEditor: проп ui', () => {
 			global: { plugins: [createUiKitPlugin({ defaults: { BaseSubtitleEditor: { ui: { empty: 'app', root: 'app-root' } } } })] },
 		})
 		expect(container.querySelector('.base-subtitle-editor')).toHaveClass('app-root')
-		expect(container.querySelector('.base-subtitle-editor__empty')).toHaveAttribute('class', 'base-subtitle-editor__empty app own')
+		expect(container.querySelector('.base-subtitle-editor__empty')).toHaveClass(
+			'base-empty',
+			'base-subtitle-editor__empty',
+			'app',
+			'own',
+		)
 		expect(container.querySelector('.base-subtitle-editor__timeline')).toHaveAttribute('class', 'base-subtitle-editor__timeline')
 	})
 })

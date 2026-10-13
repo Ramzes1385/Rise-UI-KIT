@@ -623,9 +623,8 @@
 		color: var(--rise-color-success-400);
 	}
 
-	&__watch-empty {
+	&__watch-empty .base-empty {
 		color: var(--media-muted);
-		font-size: sz(13px);
 	}
 
 	&__chapters {

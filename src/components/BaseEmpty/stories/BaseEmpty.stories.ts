@@ -19,6 +19,7 @@ export default meta
 
 export const Default = cases.Default
 export const Variants = cases.Variants
+export const Compact = cases.Compact
 export const Sizes = cases.Sizes
 export const CustomColor = cases.CustomColor
 export const Slots = cases.Slots

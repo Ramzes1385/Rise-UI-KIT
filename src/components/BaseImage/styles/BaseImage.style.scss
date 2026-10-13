@@ -67,21 +67,11 @@
 		@include reset-custom-color;
 	}
 
-	&__shimmer {
+	&__shimmer.base-skeleton {
 		position: absolute;
 		inset: 0;
-
-		@include motion-safe {
-			background-image: linear-gradient(
-				90deg,
-				transparent 25%,
-				color-mix(in srgb, var(--rise-bg-accented) 80%, transparent) 50%,
-				transparent 75%
-			);
-			background-size: 200% 100%;
-			animation: base-image-shimmer calc(var(--rise-duration-loop) * 1.5) ease-in-out infinite;
-			@include loop-state;
-		}
+		border-radius: 0;
+		background-color: transparent;
 	}
 
 	&__error {
@@ -119,16 +109,6 @@
 }
 
 @include enter-fade(base-image-zoom);
-
-@keyframes base-image-shimmer {
-	from {
-		background-position: 200% 0;
-	}
-
-	to {
-		background-position: -200% 0;
-	}
-}
 
 .base-image__zoom {
 	position: fixed;
@@ -180,11 +160,12 @@
 		user-select: none;
 	}
 
-	&-divider {
-		width: 1px;
+	&-divider.base-separator {
+		--custom-bg: var(--rise-media-border);
+		align-self: center;
 		height: sz(20px);
+		min-height: 0;
 		margin: 0 sz(4px);
-		background-color: var(--rise-media-border);
 	}
 
 	&-nav.base-button {

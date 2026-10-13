@@ -46,7 +46,9 @@
 					{{ member.statusText }}
 				</span>
 			</li>
-			<li v-if="watchMembers.length === 0" class="base-media-player__watch-empty">{{ UI_PLAYER.WATCH_EMPTY }}</li>
+			<li v-if="watchMembers.length === 0" class="base-media-player__watch-empty">
+				<BaseEmpty is-compact variant="ghost" :description="UI_PLAYER.WATCH_EMPTY" />
+			</li>
 		</ul>
 	</div>
 </template>
@@ -54,6 +56,7 @@
 <script setup lang="ts">
 import { UI_PLAYER } from '../../model/messages'
 import MediaIcon from '../controls/MediaIcon.vue'
+import { BaseEmpty } from '@components/BaseEmpty'
 import { useMediaWatchPanel } from '../../model/sharing/useMediaWatchPanel'
 
 const { panelRef, watchLink, watchMembers, copyWatchLink, email, isInvalid, invite, selectLink } = useMediaWatchPanel()

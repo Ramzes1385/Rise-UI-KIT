@@ -141,10 +141,8 @@
 		gap: sz(8px);
 	}
 
-	&__empty {
-		margin: 0;
+	&__empty.base-empty {
 		color: var(--rise-text-toned);
-		@include text-size(sm);
 	}
 }
 

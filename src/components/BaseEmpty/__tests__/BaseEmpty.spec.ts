@@ -155,3 +155,32 @@ describe('BaseEmpty unit', () => {
 		})
 	})
 })
+
+describe('BaseEmpty: компактный вид (isCompact)', () => {
+	it('рисует одну строку без иконки: описание есть, обёртки иконки нет', () => {
+		const { container } = render(BaseEmpty, { props: { isCompact: true, description: 'Ничего не найдено' } })
+
+		expect(container.querySelector('.base-empty')).toHaveClass('base-empty--compact')
+		expect(screen.getByText('Ничего не найдено')).toBeInTheDocument()
+		expect(container.querySelector('.base-empty__icon-wrapper')).toBeNull()
+	})
+
+	it('иконка появляется только по icon или слоту icon', () => {
+		const { container, unmount } = render(BaseEmpty, { props: { isCompact: true, icon: 'search', description: 'Пусто' } })
+		expect(container.querySelector('.base-empty__icon-wrapper .base-icon')).toBeInTheDocument()
+		unmount()
+
+		const withSlot = render(BaseEmpty, {
+			props: { isCompact: true, description: 'Пусто' },
+			slots: { icon: '<i data-testid="own-icon"></i>' },
+		})
+		expect(withSlot.getByTestId('own-icon')).toBeInTheDocument()
+	})
+
+	it('обычный вид по умолчанию: иконка inbox и без модификатора compact', () => {
+		const { container } = render(BaseEmpty, { props: { title: 'Пусто' } })
+
+		expect(container.querySelector('.base-empty')).not.toHaveClass('base-empty--compact')
+		expect(container.querySelector('.base-empty__icon-wrapper .base-icon')).toBeInTheDocument()
+	})
+})

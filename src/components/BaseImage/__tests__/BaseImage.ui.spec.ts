@@ -27,7 +27,7 @@ describe('BaseImage: проп ui', () => {
 
 		expect(root.className).toMatch(/^base-image /)
 		expect(root.querySelector('.base-image__placeholder')).toHaveAttribute('class', 'base-image__placeholder')
-		expect(root.querySelector('.base-image__shimmer')).toHaveAttribute('class', 'base-image__shimmer')
+		expect(root.querySelector('.base-image__shimmer')).toHaveClass('base-skeleton', 'base-image__shimmer')
 		expect(root.querySelector('.base-image__frame')).toHaveAttribute('class', 'base-image__frame')
 		expect(root.querySelector('.base-image__img')).toHaveAttribute('class', 'base-image__img')
 	})

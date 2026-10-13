@@ -67,8 +67,7 @@
 		font-weight: var(--rise-font-weight-semibold);
 	}
 
-	&__empty {
-		padding: space(8px 12px);
+	&__empty.base-empty {
 		color: ct(autocomplete, empty-text, var(--rise-text-muted));
 	}
 

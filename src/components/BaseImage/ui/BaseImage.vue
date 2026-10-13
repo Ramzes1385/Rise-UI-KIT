@@ -17,7 +17,7 @@
 		<Transition name="base-image-placeholder">
 			<div v-if="hasPlaceholder && !isLoaded && !hasError" :class="[ui('placeholder'), classes.placeholder]">
 				<slot name="placeholder">
-					<div :class="ui('shimmer')"></div>
+					<BaseSkeleton :class="ui('shimmer')" />
 				</slot>
 			</div>
 		</Transition>
@@ -75,6 +75,7 @@ import { UI_TEXT } from '@/locales/messages'
 import BaseImageZoom from './BaseImageZoom.vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { useBaseImage } from '../model/useBaseImage'
+import { BaseSkeleton } from '@components/BaseSkeleton'
 import { kitDefaults } from '@composables/base/useDefaults'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseImageEmits, BaseImageExpose, BaseImageProps, BaseImageSlots } from '../types/BaseImage.types'

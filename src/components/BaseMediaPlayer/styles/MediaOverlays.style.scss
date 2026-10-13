@@ -822,7 +822,7 @@
 		overflow-wrap: anywhere;
 	}
 
-	&__stats-empty {
+	&__stats-empty .base-empty {
 		color: var(--media-muted);
 	}
 }

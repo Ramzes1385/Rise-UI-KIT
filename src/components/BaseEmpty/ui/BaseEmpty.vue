@@ -1,8 +1,10 @@
 <template>
-	<div :class="[ui('root'), variantClass, classes.root]" :style="[sizeScaleStyle, variantStyle, customColorStyle]">
-		<div :class="[ui('icon-wrapper'), classes.iconWrapper]">
+	<div
+		:class="[ui('root'), variantClass, { 'base-empty--compact': isCompact }, classes.root]"
+		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
+		<div v-if="hasIcon" :class="[ui('icon-wrapper'), classes.iconWrapper]">
 			<slot name="icon">
-				<BaseIcon :name="emptyIcon" :size-scale="calcIconScale('lg', sizeScale)" :custom-class="classes.icon" />
+				<BaseIcon :name="emptyIcon" :size-scale="calcIconScale(isCompact ? 'sm' : 'lg', sizeScale)" :custom-class="classes.icon" />
 			</slot>
 		</div>
 
@@ -46,11 +48,12 @@ const props = withDefaults(
 	defineProps<BaseEmptyProps>(),
 	kitDefaults('BaseEmpty', {
 		variant: DEFAULT_VARIANT,
+		isCompact: false,
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )
 
 defineSlots<BaseEmptySlots>()
 
-const { ui, sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, emptyIcon } = useBaseEmpty(props)
+const { ui, sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, emptyIcon, hasIcon } = useBaseEmpty(props)
 </script>

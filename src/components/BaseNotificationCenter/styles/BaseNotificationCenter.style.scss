@@ -151,12 +151,9 @@
 		margin-top: sz(6px);
 	}
 
-	&__empty {
-		margin: 0;
+	&__empty.base-empty {
 		padding: space(24px 12px);
 		color: var(--rise-text-toned);
-		text-align: center;
-		@include text-size(sm);
 	}
 }
 

@@ -126,11 +126,8 @@
 		gap: sz(4px);
 	}
 
-	&__empty {
-		margin: 0;
+	&__empty.base-empty {
 		padding: space(24px 16px);
-		color: var(--rise-text-muted);
-		text-align: center;
 	}
 
 	&__footer {

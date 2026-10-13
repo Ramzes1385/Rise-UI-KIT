@@ -2422,3 +2422,12 @@ API кита не меняется. В Storybook добавлены пример
 - Авторам компонентов: переход пишется по `transform`/`opacity`, длительность — токен `var(--rise-duration…)`. Законное исключение (в ките это авторост `height` у BaseTextarea, px→px) — отключение на строку с причиной: `stylelint-disable-line declaration-property-value-disallowed-list, comment-pattern -- причина`.
 - `npm run test:stories-coverage` завершается с кодом 1, если у компонента нет истории `Animations`. Новый компонент без неё не пройдёт проверку — историю нужно написать вручную по образцу соседних.
 - Истории `Animations` добавлены у BaseGrid, BaseResult, BaseStack и BaseWatermark.
+
+## Задача compose-1
+
+- **BaseLink**: проп `hasExternalIcon` (по умолчанию `true`, прежнее поведение). `false` убирает значок «↗» у внешней ссылки; скрытый текст «откроется в новой вкладке» остаётся в доступном имени. BaseMarkdown, BaseChat и BaseMediaPlayer теперь рисуют ссылки через BaseLink: в DOM у них класс `base-link`, значок «↗» у внешних ссылок отключён, а доступное имя ссылки с `target="_blank"` дополнено «откроется в новой вкладке». Селекторы приложений вида `.base-markdown a` продолжают работать, но стили BaseLink имеют свои цвета и подчёркивание.
+- **BaseCheckbox**: проп `isReadonly` (`aria-readonly`, клик и подпись значение не меняют, флажок не затемняется и остаётся в порядке Tab). BaseChecklist, MediaSharePanel и отметка задачи BaseMarkdown используют BaseCheckbox вместо `input` и самодельной отметки: класс `base-checklist__checkbox` и нативный `input` внутри заменены разметкой BaseCheckbox; отметка задачи в Markdown — `tabindex="-1"`.
+- **BaseEmpty**: проп `isCompact` (по умолчанию `false`) — одна строка без рамки и крупной иконки; иконка только при `icon` или слоте `icon`. Токены `--rise-empty-compact-gap`, `--rise-empty-compact-padding-x`, `--rise-empty-compact-padding-y`, `--rise-empty-compact-icon-size`.
+- **Пусто и загрузка через BaseEmpty** в BaseAutocomplete, BaseCommandPalette, BaseCommentThread, BaseNotificationCenter, BaseSearch, BaseSubtitleEditor, панелях статистики и совместного просмотра BaseMediaPlayer: вместо `<p>`/`<li>` с текстом внутри лежит корень `base-empty base-empty--compact`. Часть `ui.empty` теперь добавляет класс к корню BaseEmpty.
+- **BaseImage**: заглушка загрузки — BaseSkeleton (класс `base-image__shimmer base-skeleton`), анимация `base-image-shimmer` удалена. Разделитель тулбара BaseImageZoom — BaseSeparator (`orientation="vertical"`), класс `base-image__zoom-divider` сохранён.
+- `hr` в BaseMarkdown не менялся.

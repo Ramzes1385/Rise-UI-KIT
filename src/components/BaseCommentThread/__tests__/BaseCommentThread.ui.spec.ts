@@ -76,7 +76,7 @@ describe('BaseCommentThread: проп ui', () => {
 	it('пустая ветка — часть empty', () => {
 		renderThread({ comments: [], ui: { empty: 'u-empty' } })
 
-		expect(screen.getByText('Комментариев пока нет')).toHaveAttribute('class', 'base-comment-thread__empty u-empty')
+		expect(screen.getByText('Комментариев пока нет').closest('.base-empty')).toHaveClass('base-comment-thread__empty', 'u-empty')
 	})
 })
 

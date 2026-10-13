@@ -30,12 +30,15 @@
 				<span class="base-media-player__stats-type">{{ entry.type }}</span>
 				<span v-if="entry.detail" class="base-media-player__stats-detail">{{ entry.detail }}</span>
 			</li>
-			<li v-if="events.length === 0" class="base-media-player__stats-empty">{{ UI_PLAYER.DEBUG_EMPTY }}</li>
+			<li v-if="events.length === 0" class="base-media-player__stats-empty">
+				<BaseEmpty is-compact variant="ghost" :description="UI_PLAYER.DEBUG_EMPTY" />
+			</li>
 		</ol>
 	</section>
 </template>
 
 <script setup lang="ts">
+import { BaseEmpty } from '@components/BaseEmpty'
 import { UI_ARIA, UI_PLAYER } from '../../model/messages'
 import MediaControlButton from '../controls/MediaControlButton.vue'
 import { useMediaStatsPanel } from '../../model/panels/useMediaStatsPanel'

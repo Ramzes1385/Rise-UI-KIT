@@ -61,15 +61,20 @@
 				</BaseButton>
 			</li>
 		</TransitionGroup>
-		<p v-else :class="ui('empty')">
-			{{ filter === 'unread' ? UI_NOTIFICATION_CENTER.EMPTY_UNREAD : UI_NOTIFICATION_CENTER.EMPTY }}
-		</p>
+		<BaseEmpty
+			v-else
+			is-compact
+			variant="ghost"
+			:class="ui('empty')"
+			:description="filter === 'unread' ? UI_NOTIFICATION_CENTER.EMPTY_UNREAD : UI_NOTIFICATION_CENTER.EMPTY"
+			:size-scale="sizeScale" />
 	</section>
 </template>
 
 <script setup lang="ts">
 import '../styles/BaseNotificationCenter.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
+import { BaseEmpty } from '@components/BaseEmpty'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
 import { BaseSegmented } from '@components/BaseSegmented'

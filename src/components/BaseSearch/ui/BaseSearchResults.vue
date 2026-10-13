@@ -68,9 +68,14 @@
 		<template v-else-if="query && !isLoading">
 			<slot name="empty">
 				<Transition name="base-search-state" appear :css="!isMotionReduced">
-					<div :class="[ui('empty'), classes.empty]" v-bind="motionAttrs">
-						<BaseText :custom-class="classes.emptyText" :size-scale="sizeScale">{{ UI_TEXT.NO_RESULTS }}</BaseText>
-					</div>
+					<BaseEmpty
+						is-compact
+						variant="ghost"
+						:class="[ui('empty'), classes.empty]"
+						:custom-class="{ description: classes.emptyText }"
+						:description="UI_TEXT.NO_RESULTS"
+						:size-scale="sizeScale"
+						v-bind="motionAttrs" />
 				</Transition>
 			</slot>
 		</template>
@@ -82,6 +87,7 @@
 import { UI_TEXT } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
+import { BaseEmpty } from '@components/BaseEmpty'
 import { BaseImage } from '@components/BaseImage'
 import { calcIconScale } from '@utils/media/iconUtils'
 import { getSearchOptionId } from '../model/searchOptionId'

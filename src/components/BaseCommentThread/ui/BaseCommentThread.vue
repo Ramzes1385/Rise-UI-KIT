@@ -15,7 +15,7 @@
 			@leave="leaveAtOnce">
 			<CommentNode v-for="comment in comments" :key="comment.id" :comment="comment" :depth="0" />
 		</TransitionGroup>
-		<p v-else :class="ui('empty')">{{ UI_COMMENT_THREAD.EMPTY }}</p>
+		<BaseEmpty v-else is-compact variant="ghost" :class="ui('empty')" :description="UI_COMMENT_THREAD.EMPTY" :size-scale="sizeScale" />
 		<CommentComposer
 			v-if="!isReadonly"
 			:class="classes.composer"
@@ -30,6 +30,7 @@
 <script setup lang="ts">
 import '../styles/BaseCommentThread.style.scss'
 import CommentNode from './CommentNode.vue'
+import { BaseEmpty } from '@components/BaseEmpty'
 import CommentComposer from './CommentComposer.vue'
 import { UI_COMMENT_THREAD } from '@/locales/messages'
 import { kitDefaults } from '@composables/base/useDefaults'

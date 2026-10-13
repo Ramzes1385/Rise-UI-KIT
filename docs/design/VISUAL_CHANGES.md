@@ -1740,3 +1740,14 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 
 - **BaseGrid** (`layout-basegrid--animations`), **BaseStack** (`layout-basestack--animations`), **BaseResult** (`data-baseresult--animations`), **BaseWatermark** (`element-basewatermark--animations`): кнопка «Повторить» и четыре колонки пресетов движения; в каждой компонент появляется через BaseAnimation (`fade`). У BaseWatermark анимируется обёрнутое содержимое вместе с узором.
 - BaseTextarea: вид и движение не изменились, в SCSS добавлено отключение правила на строку с причиной.
+
+## Задача compose-1
+
+Эталонов снимков не создавал и не обновлял; ожидаемые изменения:
+
+- **BaseLink / BaseMarkdown / BaseChat / BaseMediaPlayer**: внешние ссылки в тексте Markdown, сообщениях чата, панели ссылок чата, логотипе, рекламе и ссылках актёров рисует BaseLink без значка «↗» (`hasExternalIcon: false`); цвет и подчёркивание — как у BaseLink (`element-baselink--without-icon` — новая история).
+- **BaseCheckbox** (`element-basecheckbox--readonly`, новая история): флажок только для чтения не затемняется.
+- **BaseChecklist, MediaSharePanel, отметка задачи BaseMarkdown**: вместо нативного `input` и самодельной отметки — BaseCheckbox; рамка, цвет и размер отметки по токенам BaseCheckbox.
+- **BaseEmpty** (`element-baseempty--compact`, новая история): компактный вариант в одну строку без рамки.
+- **BaseAutocomplete, BaseCommandPalette, BaseCommentThread, BaseNotificationCenter, BaseSearch, BaseSubtitleEditor, панели статистики и совместного просмотра плеера**: пустой список и загрузка — компактный BaseEmpty (по центру, цвет `--rise-text-dimmed`, отступы по токенам `--rise-empty-compact-*`) вместо простой строки текста.
+- **BaseImage**: шиммер загрузки — BaseSkeleton (анимация и цвет BaseSkeleton вместо собственного бегущего градиента); разделитель тулбара зума — BaseSeparator той же высоты и цвета.

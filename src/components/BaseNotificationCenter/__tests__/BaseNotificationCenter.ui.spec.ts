@@ -74,7 +74,7 @@ describe('BaseNotificationCenter: проп ui', () => {
 			},
 		})
 
-		expect(part(container, 'empty')).toHaveAttribute('class', 'base-notification-center__empty app-empty own-empty')
+		expect(part(container, 'empty')).toHaveClass('base-empty', 'base-notification-center__empty', 'app-empty', 'own-empty')
 		expect(screen.getByRole('region', { name: 'Входящие' })).toHaveClass('app-root')
 	})
 })

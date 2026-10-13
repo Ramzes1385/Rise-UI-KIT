@@ -29,6 +29,11 @@ export interface BaseEmptyProps extends BaseComponentProps<
 	/** Имя иконки по умолчанию */
 	icon?: string
 	/**
+	 * Компактный вид для пустого списка, меню или панели: одна строка без рамки и крупной иконки.
+	 * Иконка показывается, только если задан `icon` или слот `icon`
+	 */
+	isCompact?: boolean
+	/**
 	 * Классы частей (`root`, `icon-wrapper`, `content`, `title`, `description`, `body`, `actions`) — добавляются к классам кита.
 	 * Глобально — `createUiKitPlugin({ defaults: { BaseEmpty: { ui } } })`, классы плагина и экземпляра склеиваются.
 	 *

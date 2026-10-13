@@ -1,5 +1,6 @@
 export { Default } from './Default'
 export { Variants } from './appearance/Variants'
+export { Compact } from './appearance/Compact'
 export { Sizes } from './appearance/Sizes'
 export { CustomColor } from './appearance/CustomColor'
 export { Slots } from './Slots'

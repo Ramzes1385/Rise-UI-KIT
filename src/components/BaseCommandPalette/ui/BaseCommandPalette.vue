@@ -65,9 +65,9 @@
 				</div>
 			</div>
 		</div>
-		<p v-if="groups.length === 0" :class="ui('empty')">
+		<BaseEmpty v-if="groups.length === 0" is-compact variant="ghost" :class="ui('empty')" :size-scale="sizeScale">
 			<slot name="empty" :query="query">{{ UI_COMMAND_PALETTE.EMPTY }}</slot>
-		</p>
+		</BaseEmpty>
 		<div :class="ui('footer')" aria-hidden="true">
 			<span
 				><BaseKbd value="arrowup" :size-scale="sizeScale" /><BaseKbd value="arrowdown" :size-scale="sizeScale" />{{
@@ -84,6 +84,7 @@
 import '../styles/BaseCommandPalette.style.scss'
 import { BaseKbd } from '@components/BaseKbd'
 import { BaseIcon } from '@components/BaseIcon'
+import { BaseEmpty } from '@components/BaseEmpty'
 import { BaseModal } from '@components/BaseModal'
 import { UI_COMMAND_PALETTE } from '@/locales/messages'
 import { kitDefaults } from '@composables/base/useDefaults'

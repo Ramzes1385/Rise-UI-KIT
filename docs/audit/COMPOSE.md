@@ -135,3 +135,12 @@
 | BaseSubtitleEditor | Media | находки: HTML `title` | BaseButton, BaseIcon | — | C1: 3 `title`; C3: поля времени и текста; C10: пусто |
 | BaseVoiceRecorder | Media | проверен — находок нет | BaseButton, BaseIcon, BaseAudioPlayer | — | — |
 | BaseWaveform | Media | проверен — норма (бары — механика) | — | — | — |
+
+## Задача compose-1 (13.10.2026)
+
+Заменено по отложенным находкам C4, C9, C10, C12 (`docs/design/FOLLOW_UPS.md`, эпик compose-audit):
+
+- C4: BaseChecklist, MediaSharePanel и отметка задачи BaseMarkdown используют BaseCheckbox (новый проп `isReadonly`).
+- C9: BaseMarkdown, BaseChat (текст сообщения и панель ссылок), BaseMediaPlayer (логотип, реклама, актёры, список серий) используют BaseLink (новый проп `hasExternalIcon`). BaseSideBar отложен: стили пункта конфликтуют со стилями BaseLink.
+- C10: BaseAutocomplete, BaseCommandPalette, BaseCommentThread, BaseNotificationCenter, BaseSearch, BaseSubtitleEditor, MediaStatsPanel и MediaWatchPanel показывают пусто и загрузку через BaseEmpty (новый проп `isCompact`).
+- C12: BaseImage использует BaseSkeleton вместо `__shimmer`, тулбар BaseImageZoom — BaseSeparator. `hr` в BaseMarkdown остаётся: приложения стилизуют `.base-markdown hr`.

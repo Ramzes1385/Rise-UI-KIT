@@ -8,6 +8,7 @@ export const argTypes = {
 	title: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	description: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	icon: { control: 'text', table: propGroup(ARG_GROUP.content) },
+	isCompact: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
 	default: { control: false },
 	actions: { control: false },
 } satisfies Meta<typeof BaseEmpty>['argTypes']

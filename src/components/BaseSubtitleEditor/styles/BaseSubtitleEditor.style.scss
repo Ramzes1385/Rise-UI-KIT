@@ -63,9 +63,7 @@
 		pointer-events: none;
 	}
 
-	&__empty {
-		margin: 0;
-		@include text-size(sm);
+	&__empty.base-empty {
 		color: var(--rise-text-toned);
 	}
 
