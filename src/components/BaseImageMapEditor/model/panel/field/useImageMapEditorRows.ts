@@ -1,6 +1,6 @@
 import { nextTick, shallowRef } from 'vue'
-import type { EditorFocusTarget } from '../../types/ImageMapEditorPanel.types'
-import type { ImageMapEditorRowsEmits, ImageMapEditorRowsProps } from '../../types/ImageMapEditorRows.types'
+import type { EditorFocusTarget } from '../../../types/ImageMapEditorPanel.types'
+import type { ImageMapEditorRowsEmits, ImageMapEditorRowsProps } from '../../../types/ImageMapEditorRows.types'
 
 function useTargets() {
 	const targets = new Map<string, EditorFocusTarget>()

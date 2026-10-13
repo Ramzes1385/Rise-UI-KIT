@@ -1,10 +1,10 @@
 import { computed, watch } from 'vue'
 import { formatMessage } from '@/locales/state'
-import { useFieldErrors } from './useFieldErrors'
+import { useFieldErrors } from '../field/useFieldErrors'
 import { UI_IMAGE_MAP_EDITOR } from '@/locales/messages'
 import { filterIssue, filterRows, optionIssue } from './collectionFields'
-import type { EditorContext, EditorRowPath, EditorFieldValue as FieldValue } from '../../types/imageMapEditorInternal.types'
-import { addFilter, addFilterOption, patchFilter, patchFilterOption, removeFilter, removeFilterOption } from '../document/collectionOps'
+import type { EditorContext, EditorRowPath, EditorFieldValue as FieldValue } from '../../../types/imageMapEditorInternal.types'
+import { addFilter, addFilterOption, patchFilter, patchFilterOption, removeFilter, removeFilterOption } from '../../document/collectionOps'
 
 export function useEditorFilters(ctx: EditorContext) {
 	const errors = useFieldErrors()

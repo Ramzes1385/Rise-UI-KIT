@@ -70,7 +70,7 @@ import { BaseSwitch } from '@components/BaseSwitch'
 import { BaseTextarea } from '@components/BaseTextarea'
 import { BaseInputTags } from '@components/BaseInputTags'
 import { BaseInputNumber } from '@components/BaseInputNumber'
-import { useImageMapEditorField } from '../model/panel/useImageMapEditorField'
+import { useImageMapEditorField } from '../model/panel/field/useImageMapEditorField'
 import type { ImageMapEditorFieldEmits, ImageMapEditorFieldProps } from '../types/ImageMapEditorField.types'
 
 const props = defineProps<ImageMapEditorFieldProps>()

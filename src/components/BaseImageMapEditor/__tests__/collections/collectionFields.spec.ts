@@ -1,6 +1,14 @@
 import { UI_IMAGE_MAP_EDITOR } from '../../../../locales/messages'
 import type { ImageMapData } from '../../../BaseImageMap/types/imageMapData.types'
-import { filterIssue, filterRows, isStyleKey, optionIssue, styleIssue, styleName, styleRows } from '../../model/panel/collectionFields'
+import {
+	filterIssue,
+	filterRows,
+	isStyleKey,
+	optionIssue,
+	styleIssue,
+	styleName,
+	styleRows,
+} from '../../model/panel/collections/collectionFields'
 
 const t = UI_IMAGE_MAP_EDITOR
 

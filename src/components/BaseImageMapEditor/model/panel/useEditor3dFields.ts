@@ -1,5 +1,5 @@
 import { computed, watch } from 'vue'
-import { useFieldErrors } from './useFieldErrors'
+import { useFieldErrors } from './field/useFieldErrors'
 import type { ImageMap3DData } from '@components/BaseImageMap3D/types/imageMap3dData.types'
 import type { EditorContext, EditorFieldValue as FieldValue } from '../../types/imageMapEditorInternal.types'
 import { applyLayer3d, applyScene3d, layer3dFields, layer3dIssue, scene3dFields, scene3dIssue } from './fields3d'

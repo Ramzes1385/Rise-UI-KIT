@@ -1,7 +1,7 @@
 import { UI_IMAGE_MAP_EDITOR } from '../../../../locales/messages'
 import type { ImageMapObject } from '../../../BaseImageMap/types/imageMapData.types'
 import type { ImageMap3DObject } from '../../../BaseImageMap3D/types/imageMap3dData.types'
-import { addPart, applyPart, partIssue, partRows, removePart } from '../../model/panel/parts3d'
+import { addPart, applyPart, partIssue, partRows, removePart } from '../../model/panel/collections/parts3d'
 
 const t = UI_IMAGE_MAP_EDITOR
 

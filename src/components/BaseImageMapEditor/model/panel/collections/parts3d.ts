@@ -1,9 +1,9 @@
-import { issueText } from './fields3d'
+import { issueText } from '../fields3d'
 import { formatMessage } from '@/locales/state'
 import { UI_IMAGE_MAP_EDITOR } from '@/locales/messages'
 import type { ImageMapObject } from '@components/BaseImageMap/types/imageMapData.types'
 import type { ImageMap3DObject } from '@components/BaseImageMap3D/types/imageMap3dData.types'
-import type { EditorField, EditorFieldValue as FieldValue, EditorListRow } from '../../types/imageMapEditorInternal.types'
+import type { EditorField, EditorFieldValue as FieldValue, EditorListRow } from '../../../types/imageMapEditorInternal.types'
 
 function numberField(field: { key: string; label: string }, value: number | undefined, error: string | undefined): EditorField {
 	return { ...field, kind: 'number', value: value ?? null, min: 0, precision: 2, error }

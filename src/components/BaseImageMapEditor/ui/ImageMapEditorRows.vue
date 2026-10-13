@@ -50,7 +50,7 @@ import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { BaseButton } from '@components/BaseButton'
 import ImageMapEditorField from './ImageMapEditorField.vue'
-import { useImageMapEditorRows } from '../model/panel/useImageMapEditorRows'
+import { useImageMapEditorRows } from '../model/panel/field/useImageMapEditorRows'
 import type { ImageMapEditorRowsEmits, ImageMapEditorRowsProps } from '../types/ImageMapEditorRows.types'
 
 const props = defineProps<ImageMapEditorRowsProps>()

@@ -8,7 +8,7 @@ import type {
 	EditorFieldValue as FieldValue,
 	EditorListRow,
 	EditorRowPath,
-} from '../../types/imageMapEditorInternal.types'
+} from '../../../types/imageMapEditorInternal.types'
 
 const t = UI_IMAGE_MAP_EDITOR
 

@@ -1,8 +1,8 @@
 import { computed, watch } from 'vue'
-import { useFieldErrors } from './useFieldErrors'
-import { findObject } from '../document/editorOps'
+import { findObject } from '../../document/editorOps'
+import { useFieldErrors } from '../field/useFieldErrors'
 import { addPart, applyPart, partIssue, partRows, removePart } from './parts3d'
-import type { EditorContext, EditorFieldValue as FieldValue } from '../../types/imageMapEditorInternal.types'
+import type { EditorContext, EditorFieldValue as FieldValue } from '../../../types/imageMapEditorInternal.types'
 
 export function useEditorParts3d(ctx: EditorContext, isEnabled: () => boolean) {
 	const errors = useFieldErrors()

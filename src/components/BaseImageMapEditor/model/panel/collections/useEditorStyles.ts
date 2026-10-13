@@ -1,9 +1,9 @@
 import { computed, watch } from 'vue'
-import { createId } from '../document/editorOps'
-import { useFieldErrors } from './useFieldErrors'
+import { createId } from '../../document/editorOps'
+import { useFieldErrors } from '../field/useFieldErrors'
 import { isStyleKey, styleIssue, styleName, styleRows } from './collectionFields'
-import { addStyle, patchStyleBase, removeStyle, renameStyle } from '../document/collectionOps'
-import type { EditorContext, EditorFieldValue as FieldValue } from '../../types/imageMapEditorInternal.types'
+import { addStyle, patchStyleBase, removeStyle, renameStyle } from '../../document/collectionOps'
+import type { EditorContext, EditorFieldValue as FieldValue } from '../../../types/imageMapEditorInternal.types'
 
 export function useEditorStyles(ctx: EditorContext) {
 	const errors = useFieldErrors()

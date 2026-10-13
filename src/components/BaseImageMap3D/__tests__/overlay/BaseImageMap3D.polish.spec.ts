@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom/vitest'
 import type { Group, Mesh, Scene } from 'three'
 import userEvent from '@testing-library/user-event'
-import { useMapEnvironment } from './imageMap3d.test-utils'
+import { useMapEnvironment } from '../imageMap3d.test-utils'
 import { screen, waitFor, within } from '@testing-library/vue'
-import type { ImageMap3DData } from '../types/imageMap3dData.types'
+import type { ImageMap3DData } from '../../types/imageMap3dData.types'
 
 const DATA: ImageMap3DData = {
 	layers: [

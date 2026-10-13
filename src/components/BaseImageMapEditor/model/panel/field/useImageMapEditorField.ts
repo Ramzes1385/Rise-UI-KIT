@@ -1,7 +1,7 @@
 import { computed, ref, watch } from 'vue'
 import { formatMessage } from '@/locales/state'
 import { UI_IMAGE_MAP_EDITOR } from '@/locales/messages'
-import type { ImageMapEditorFieldEmits, ImageMapEditorFieldProps } from '../../types/ImageMapEditorField.types'
+import type { ImageMapEditorFieldEmits, ImageMapEditorFieldProps } from '../../../types/ImageMapEditorField.types'
 
 export function useImageMapEditorField(props: ImageMapEditorFieldProps, emit: ImageMapEditorFieldEmits) {
 	const text = computed(() => (typeof props.field.value === 'string' ? props.field.value : ''))
