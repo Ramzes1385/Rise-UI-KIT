@@ -71,6 +71,26 @@
 		transform: translate(var(--indicator-x), calc(var(--indicator-y) + var(--indicator-h) - 1px));
 	}
 
+	&:not(&--soft, &--horizontal, &--indicator-ready) &__link--active::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: -2px;
+		width: 2px;
+		background-color: var(--anchor-mark);
+	}
+
+	&--horizontal:not(&--soft, &--indicator-ready) &__link--active::before {
+		content: '';
+		position: absolute;
+		right: 0;
+		bottom: -1px;
+		left: 0;
+		height: 2px;
+		background-color: var(--anchor-mark);
+	}
+
 	&--soft &__list {
 		border: none;
 	}
@@ -81,10 +101,10 @@
 		height: var(--indicator-h);
 		border-radius: sz(ct(anchor, radius, var(--rise-radius-sm)));
 		transform: translate(var(--indicator-x), var(--indicator-y));
-		background-color: var(--custom-bg, #{ct(anchor, indicator-bg, var(--rise-primary-soft))});
+		background-color: var(--custom-bg, #{ct(anchor, soft-indicator-bg, var(--rise-primary-soft))});
 	}
 
 	&--soft:not(&--indicator-ready) &__link--active {
-		background-color: var(--custom-bg, #{ct(anchor, indicator-bg, var(--rise-primary-soft))});
+		background-color: var(--custom-bg, #{ct(anchor, soft-indicator-bg, var(--rise-primary-soft))});
 	}
 }

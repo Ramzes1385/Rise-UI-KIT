@@ -146,7 +146,7 @@ export function usePlayerEpisodes(
 		hasEpisodes: computed(() => playlist.playlists.value.reduce((count, list) => count + list.episodes.length, 0) > 1),
 		...useSidePanels(playlist),
 		nextCountdownText: computed(() => formatMessage(UI_PLAYER.NEXT_IN, { n: countdown.nextCountdown.value ?? 0 })),
-		nextCountdownStyle: computed(() => ({ '--media-next-seconds': props.nextCountdown })),
+		nextCountdownStyle: computed(() => ({ '--media-next-duration': `${props.nextCountdown}s` })),
 		skipLabel: computed(() => (chapters.skipChapter.value?.kind ? SKIP_LABELS[chapters.skipChapter.value.kind]() : '')),
 		skipCurrentChapter(): void {
 			const chapter = chapters.skipChapter.value

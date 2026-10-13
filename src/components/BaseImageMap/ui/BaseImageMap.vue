@@ -158,6 +158,7 @@
 				<ImageMapRoutePanel
 					v-if="hasRoutes && data.routes"
 					:custom-class="classes.route"
+					:ui="ui"
 					:options="routeOptions"
 					:value="route"
 					:steps="routeSteps"
@@ -177,6 +178,7 @@
 				:status-text="statusText"
 				:has-clear="hasClear"
 				:classes="{ directory: classes.directory, filters: classes.filters }"
+				:ui="ui"
 				@update:search="setSearch"
 				@set-filter="setFilter"
 				@toggle-filter="toggleFilter"

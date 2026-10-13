@@ -49,11 +49,6 @@
 	&__row-enter-active,
 	&__row-leave-active {
 		overflow: hidden;
-		transition:
-			max-height var(--media-normal) var(--media-ease),
-			margin-top var(--media-normal) var(--media-ease),
-			padding-top var(--media-normal) var(--media-ease),
-			opacity var(--media-normal) var(--media-ease);
 	}
 
 	&__row-enter-active .base-media-player__control {
@@ -66,14 +61,6 @@
 	&__row-enter-from .base-media-player__control {
 		opacity: 0;
 		transform: translateY(#{sz(6px)});
-	}
-
-	&__row-enter-from,
-	&__row-leave-to {
-		max-height: 0;
-		margin-top: sz(-6px);
-		padding-top: 0;
-		opacity: 0;
 	}
 
 	&__group {

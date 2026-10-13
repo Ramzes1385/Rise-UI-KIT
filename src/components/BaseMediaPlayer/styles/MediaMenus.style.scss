@@ -48,9 +48,10 @@
 
 	&__menu {
 		position: relative;
+		display: grid;
 		transition:
-			width var(--media-normal) var(--media-ease),
-			height var(--media-normal) var(--media-ease);
+			grid-template-columns var(--media-normal) var(--media-ease),
+			grid-template-rows var(--media-normal) var(--media-ease);
 	}
 
 	&__menu-view {

@@ -164,6 +164,18 @@
 		);
 	}
 
+	&--underline:not(&--indicator-ready) &__tab--active.base-button::after,
+	&--arc:not(&--indicator-ready) &__tab--active.base-button::after {
+		content: '';
+		position: absolute;
+		right: 1px;
+		bottom: 0;
+		left: 1px;
+		height: ct(tabs, indicator-height, 2px);
+		border-radius: var(--rise-radius-full);
+		background-color: var(--custom-bg-active, ct(tabs, indicator-bg, var(--rise-primary)));
+	}
+
 	&--arc &__list {
 		gap: sz(2px);
 	}
@@ -195,7 +207,7 @@
 	&--pills &__indicator,
 	&--rounded &__indicator {
 		border-radius: sz(ct(tabs, indicator-radius, var(--rise-control-radius)));
-		background-color: var(--custom-bg-active, ct(tabs, indicator-bg, var(--rise-bg)));
+		background-color: var(--custom-bg-active, ct(tabs, pills-indicator-bg, var(--rise-bg)));
 		box-shadow: ct(tabs, indicator-shadow, var(--rise-shadow-xs));
 	}
 
@@ -223,15 +235,15 @@
 
 	&--pills:not(&--indicator-ready) &__tab--active.base-button,
 	&--rounded:not(&--indicator-ready) &__tab--active.base-button {
-		background-color: var(--custom-bg-active, ct(tabs, indicator-bg, var(--rise-bg)));
+		background-color: var(--custom-bg-active, ct(tabs, pills-indicator-bg, var(--rise-bg)));
 		box-shadow: ct(tabs, indicator-shadow, var(--rise-shadow-xs));
 
 		@include hover {
-			background-color: var(--custom-bg-active, ct(tabs, indicator-bg, var(--rise-bg)));
+			background-color: var(--custom-bg-active, ct(tabs, pills-indicator-bg, var(--rise-bg)));
 		}
 
 		@include active {
-			background-color: var(--custom-bg-active, ct(tabs, indicator-bg, var(--rise-bg)));
+			background-color: var(--custom-bg-active, ct(tabs, pills-indicator-bg, var(--rise-bg)));
 		}
 	}
 

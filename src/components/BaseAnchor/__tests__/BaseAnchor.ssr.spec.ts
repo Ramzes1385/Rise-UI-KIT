@@ -26,4 +26,15 @@ describe('BaseAnchor SSR: запасной вид активного пункт�
 		await waitFor(() => expect(container.querySelector('.base-anchor__indicator')).toBeInTheDocument())
 		expect(container.querySelector('.base-anchor')).toHaveClass('base-anchor--indicator-ready')
 	})
+
+	it.each(['vertical', 'horizontal'] as const)(
+		'направление %s: разметка сервера без индикатора и класса готовности — запасной вид рисуют стили',
+		async direction => {
+			const html = await renderToString(createSSRApp({ render: () => h(BaseAnchor, { ...PROPS, variant: 'default', direction }) }))
+
+			expect(html).not.toContain('base-anchor__indicator')
+			expect(html).not.toContain('base-anchor--indicator-ready')
+			expect(html).toContain(`base-anchor--${direction}`)
+		},
+	)
 })

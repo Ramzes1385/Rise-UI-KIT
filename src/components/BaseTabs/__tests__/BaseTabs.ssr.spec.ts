@@ -27,4 +27,15 @@ describe('BaseTabs SSR: запасной вид активного пункта 
 		await waitFor(() => expect(container.querySelector('.base-tabs__indicator')).toBeInTheDocument())
 		expect(container.querySelector('.base-tabs')).toHaveClass('base-tabs--indicator-ready')
 	})
+
+	it.each(['underline', 'arc'] as const)(
+		'вариант %s: разметка сервера без индикатора и класса готовности — запасной вид рисуют стили',
+		async variant => {
+			const html = await renderToString(createSSRApp({ render: () => h(BaseTabs, { ...PROPS, variant }) }))
+
+			expect(html).not.toContain('base-tabs__indicator')
+			expect(html).not.toContain('base-tabs--indicator-ready')
+			expect(html).toContain(`base-tabs--${variant}`)
+		},
+	)
 })

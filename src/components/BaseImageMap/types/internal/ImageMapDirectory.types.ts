@@ -1,6 +1,7 @@
+import type { UiClassFn } from '@composables/base/useUi'
 import type { ImageMapHoursState } from '../ImageMapHours.types'
-import type { ImageMapDirectoryView } from '../BaseImageMap.types'
 import type { ResolvedImageMapObject } from './imageMapModel.types'
+import type { BaseImageMapPart, ImageMapDirectoryView } from '../BaseImageMap.types'
 import type { ImageMapFilter, ImageMapFilterOption, ImageMapFilterType, ImageMapGroup } from '../imageMapData.types'
 
 /** Строка списка объектов */
@@ -67,6 +68,8 @@ export interface ImageMapDirectoryProps {
 	hasClear: boolean
 	/** Классы из customClass: список и фильтры */
 	classes: { directory?: string; filters?: string }
+	/** Классы частей карты из пропа `ui` и `defaults.BaseImageMap.ui`; без него — только классы кита */
+	ui?: UiClassFn<BaseImageMapPart>
 }
 
 /** События списка объектов */

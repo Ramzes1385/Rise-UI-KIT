@@ -136,7 +136,7 @@
 
 	&__resume {
 		position: absolute;
-		bottom: var(--media-overlay-bottom);
+		bottom: 0;
 		left: 50%;
 		z-index: 1;
 		display: flex;
@@ -155,7 +155,8 @@
 		font-size: sz(var(--rise-font-size-sm));
 		backdrop-filter: blur(10px);
 		transform: translateX(-50%);
-		transition: bottom var(--media-slow) var(--media-ease);
+		translate: 0 calc(var(--media-overlay-bottom) * -1);
+		transition: translate var(--media-slow) var(--media-ease);
 	}
 
 	&__resume-enter-active,

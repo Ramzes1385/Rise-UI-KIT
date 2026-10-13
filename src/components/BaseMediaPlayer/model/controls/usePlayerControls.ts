@@ -4,6 +4,7 @@ import { useMediaMenus } from '../menus/useMediaMenus'
 import { UI_PLAYER, formatMessage } from '../messages'
 import { useControlsLayout } from './useControlsLayout'
 import { usePlayerContext } from '../player/usePlayerContext'
+import { useSeekRowTransition } from './useSeekRowTransition'
 import type { MediaIconName } from '../../types/controls/MediaIcon.types'
 
 const SEEK_LONG = 30
@@ -23,6 +24,7 @@ export function usePlayerControls() {
 		toggleSeekRow: (): void => {
 			isSeekRowOpen.value = !isSeekRowOpen.value
 		},
+		...useSeekRowTransition(),
 		...useMediaPip(player.mediaRef),
 		...useMediaMenus({
 			rate: () => player.state.playbackRate,

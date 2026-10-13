@@ -5,6 +5,7 @@ import BaseImageMap from '../ui/BaseImageMap.vue'
 import { IMAGE_MAP_FLOORS } from '../stories/fixtures'
 import { IMAGE_MAP_PARTS } from '../types/BaseImageMap.types'
 import type { ImageMapData } from '../types/imageMapData.types'
+import { IMAGE_MAP_MALL_ROUTES } from '../stories/routesFixtures'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import { mockRects, mockViewport, objectElement, stageTransform } from './imageMap.test-utils'
 
@@ -21,6 +22,8 @@ const DATA: ImageMapData = {
 		{ id: 'b', type: 'point', layer: 'two', title: 'Точка Б', x: 0.75, y: 0.5 },
 	],
 }
+
+const LIST_AND_ROUTE_PARTS = ['directory', 'search', 'filters', 'results', 'list', 'entry', 'route', 'route-steps', 'route-step']
 
 const motionGlobal = { stubs: { transition: false } }
 
@@ -51,11 +54,31 @@ describe('BaseImageMap: проп ui', () => {
 		await nextTick()
 		const root = container.querySelector('.base-image-map')!
 		expect(root).toHaveClass('base-image-map', 'u-root')
-		const absent = ['svg', 'tooltip']
+		const absent = ['svg', 'tooltip', ...LIST_AND_ROUTE_PARTS]
 		for (const part of IMAGE_MAP_PARTS.filter(name => !absent.includes(name)))
 			expect(root.querySelector(`.base-image-map__${part}`)).toHaveClass(`u-${part}`)
 		expect(document.querySelector('.base-image-map__tooltip')).toHaveClass('u-tooltip')
 		expect(root.querySelector('.base-image-map__viewport')).toHaveClass('own-viewport')
+	})
+
+	it('части списка объектов и панели «Как пройти» получают классы ui', () => {
+		const ui = Object.fromEntries(LIST_AND_ROUTE_PARTS.map(part => [part, `u-${part}`]))
+		const { container } = render(BaseImageMap, {
+			props: {
+				data: {
+					...IMAGE_MAP_MALL_ROUTES,
+					filters: [{ id: 'kind', title: 'Вид', type: 'tags', options: [{ value: 'shop', label: 'Магазин' }] }],
+				},
+				hasDirectory: true,
+				hasSearch: true,
+				hasFilters: true,
+				hasRoutes: true,
+				route: { from: 'f1-shop-1', to: 'f3-shop-1' },
+				hasFullscreen: false,
+				ui,
+			},
+		})
+		for (const part of LIST_AND_ROUTE_PARTS) expect(container.querySelector(`.base-image-map__${part}`)).toHaveClass(`u-${part}`)
 	})
 
 	it('SVG-план получает класс ui', async () => {

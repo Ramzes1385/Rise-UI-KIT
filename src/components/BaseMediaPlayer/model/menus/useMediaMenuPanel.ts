@@ -26,7 +26,9 @@ function useMenuFocus(viewRef: Readonly<{ value: HTMLElement | null }>) {
 function useMenuSize(viewRef: Readonly<{ value: HTMLElement | null }>) {
 	const size = ref<{ width: number; height: number } | null>(null)
 	return {
-		frameStyle: computed(() => (size.value ? { width: `${size.value.width}px`, height: `${size.value.height}px` } : {})),
+		frameStyle: computed(() =>
+			size.value ? { gridTemplateColumns: `${size.value.width}px`, gridTemplateRows: `${size.value.height}px` } : {},
+		),
 		measure(): void {
 			const view = viewRef.value
 			if (view) size.value = { width: view.offsetWidth, height: view.offsetHeight }

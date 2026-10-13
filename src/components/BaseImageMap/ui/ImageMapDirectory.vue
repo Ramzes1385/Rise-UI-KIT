@@ -1,20 +1,15 @@
 <template>
-	<aside class="base-image-map__directory" :class="classes.directory" :aria-label="UI_IMAGE_MAP.DIRECTORY">
+	<aside :class="[ui('directory'), classes.directory]" :aria-label="UI_IMAGE_MAP.DIRECTORY">
 		<BaseInput
 			v-if="hasSearch"
-			class="base-image-map__search"
+			:class="ui('search')"
 			:model-value="search"
 			:aria-label="UI_IMAGE_MAP.SEARCH"
 			:placeholder="UI_IMAGE_MAP.SEARCH_PLACEHOLDER"
 			@update:model-value="$emit('update:search', $event)">
 			<template #prefix><BaseIcon name="search" /></template>
 		</BaseInput>
-		<div
-			v-if="controls.length"
-			class="base-image-map__filters"
-			:class="classes.filters"
-			role="group"
-			:aria-label="UI_IMAGE_MAP.FILTERS">
+		<div v-if="controls.length" :class="[ui('filters'), classes.filters]" role="group" :aria-label="UI_IMAGE_MAP.FILTERS">
 			<template v-for="control in controls" :key="control.filter.id">
 				<BaseCheckboxGroup
 					v-if="control.type === 'checkbox'"
@@ -60,25 +55,27 @@
 				</fieldset>
 			</template>
 		</div>
-		<div class="base-image-map__results">
+		<div :class="ui('results')">
 			<span class="base-image-map__status-text" role="status">{{ statusText }}</span>
 			<BaseButton v-if="hasClear" variant="ghost" :size-scale="85" @click="$emit('clear')">{{
 				UI_IMAGE_MAP.CLEAR_FILTERS
 			}}</BaseButton>
 		</div>
-		<div class="base-image-map__list" :class="`base-image-map__list--${view}`">
+		<div :class="[ui('list'), `base-image-map__list--${view}`]">
 			<div v-for="section in sections" :key="section.id" class="base-image-map__section">
 				<p v-if="section.title" class="base-image-map__section-title" aria-hidden="true">{{ section.title }}</p>
 				<ul class="base-image-map__entries" :aria-label="section.title || UI_IMAGE_MAP.DIRECTORY">
 					<li v-for="entry in section.entries" :key="entry.item.object.id" class="base-image-map__entry-row">
 						<component
 							:is="entry.item.href && !entry.item.isDisabled ? 'a' : 'button'"
-							class="base-image-map__entry"
-							:class="{
-								'base-image-map__entry--active': entry.isActive,
-								'base-image-map__entry--hover': entry.isHovered,
-								'base-image-map__entry--disabled': entry.item.isDisabled,
-							}"
+							:class="[
+								ui('entry'),
+								{
+									'base-image-map__entry--active': entry.isActive,
+									'base-image-map__entry--hover': entry.isHovered,
+									'base-image-map__entry--disabled': entry.item.isDisabled,
+								},
+							]"
 							:type="entry.item.href && !entry.item.isDisabled ? undefined : 'button'"
 							:href="entry.item.isDisabled ? undefined : entry.item.href"
 							:target="entry.item.href && entry.item.object.isLinkExternal ? '_blank' : undefined"
@@ -145,7 +142,9 @@ import { UI_IMAGE_MAP, UI_TEXT } from '@/locales/messages'
 import { BaseCheckboxGroup } from '@components/BaseCheckboxGroup'
 import type { ImageMapDirectoryEmits, ImageMapDirectoryProps, ImageMapDirectorySlots } from '../types/internal/ImageMapDirectory.types'
 
-defineProps<ImageMapDirectoryProps>()
+withDefaults(defineProps<ImageMapDirectoryProps>(), {
+	ui: (part: string) => (part === 'root' ? 'base-image-map' : `base-image-map__${part}`),
+})
 
 defineEmits<ImageMapDirectoryEmits>()
 

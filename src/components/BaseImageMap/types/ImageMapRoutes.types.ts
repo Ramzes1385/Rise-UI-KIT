@@ -1,3 +1,5 @@
+import type { UiClassFn } from '@composables/base/useUi'
+import type { BaseImageMapPart } from './BaseImageMap.types'
 import type { ImageMapLayer, ImageMapObject } from './imageMapData.types'
 
 /**
@@ -230,6 +232,8 @@ export interface ImageMapRoutePanelProps {
 	hasStepFree: boolean
 	/** Класс из customClass */
 	customClass?: string
+	/** Классы частей карты из пропа `ui` и `defaults.BaseImageMap.ui`; без него — только классы кита */
+	ui?: UiClassFn<BaseImageMapPart>
 }
 
 /** События панели «Как пройти» */

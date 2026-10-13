@@ -55,7 +55,9 @@ export type ImageMapFilterValues = Record<string, string[]>
  * layers — переключатель этажей, zoom — кнопки масштаба, viewport — окно карты, stage — план (изображение и объекты),
  * image — изображение слоя, svg — SVG-план, shapes — слой фигур, object — фигура или точка, point — точка, marker — значок точки,
  * label — подпись точки, hint — подсказка про колесо мыши, legend — легенда, legend-item — строка легенды, swatch — образец цвета,
- * tooltip — подсказка объекта.
+ * tooltip — подсказка объекта, directory — список объектов, search — поиск в списке, filters — фильтры, results — строка статуса
+ * и «Сбросить фильтры», list — перечень строк, entry — строка объекта, route — панель «Как пройти», route-steps — список шагов,
+ * route-step — шаг маршрута.
  */
 export const IMAGE_MAP_PARTS = [
 	'toolbar',
@@ -75,6 +77,15 @@ export const IMAGE_MAP_PARTS = [
 	'legend-item',
 	'swatch',
 	'tooltip',
+	'directory',
+	'search',
+	'filters',
+	'results',
+	'list',
+	'entry',
+	'route',
+	'route-steps',
+	'route-step',
 ] as const
 
 /** Часть BaseImageMap для пропа `ui` (или `root`) */

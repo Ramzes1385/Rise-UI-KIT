@@ -73,6 +73,7 @@
 | `--rise-anchor-padding-x` | корень | padding-x | — | `8px` |
 | `--rise-anchor-padding-y` | корень | padding-y | — | `4px` |
 | `--rise-anchor-radius` | корень | radius | — | `var(--rise-radius-sm)` |
+| `--rise-anchor-soft-indicator-bg` | soft-indicator | bg | — | `var(--rise-primary-soft)` |
 | `--rise-anchor-text` | корень | text | — | `var(--rise-text-muted)` |
 | `--rise-anchor-text-active` | корень | text | active | `var(--rise-primary-text)` |
 | `--rise-anchor-text-hover` | корень | text | hover | `var(--rise-text)` |
@@ -1691,6 +1692,7 @@
 | `--rise-tabs-list-bg` | list | bg | — | `var(--rise-bg-elevated)` |
 | `--rise-tabs-list-padding` | list | padding | — | `4px` |
 | `--rise-tabs-list-radius` | list | radius | — | `var(--rise-radius-lg)` |
+| `--rise-tabs-pills-indicator-bg` | pills-indicator | bg | — | `var(--rise-bg)` |
 | `--rise-tabs-rounded-indicator-radius` | rounded-indicator | radius | — | `var(--rise-radius-full)` |
 | `--rise-tabs-rounded-list-radius` | rounded-list | radius | — | `var(--rise-radius-full)` |
 | `--rise-tabs-tab-padding-x` | tab | padding-x | — | `12px` |

@@ -12,7 +12,7 @@
 		align-self: stretch;
 		width: sz(ct(input-number, button-width, 32px));
 		border-radius: 0;
-		color: ct(input-number, button-text, var(--rise-text-muted));
+		@include custom-text(color, ct(input-number, button-text, var(--rise-text-muted)));
 		@include custom-bg(background-color, ct(input-number, button-bg, transparent));
 		@include custom-bg-hover(background-color, ct(input-number, button-bg-hover, var(--rise-bg-elevated)));
 		@include custom-bg-active(background-color, ct(input-number, button-bg-active, var(--rise-bg-elevated)));
@@ -22,9 +22,7 @@
 			height: ct(input-number, button-icon-size, sz(20px));
 		}
 
-		@include hover {
-			color: ct(input-number, button-text-hover, var(--rise-text-highlighted));
-		}
+		@include custom-text-hover(color, ct(input-number, button-text-hover, var(--rise-text-highlighted)));
 
 		@include active {
 			.base-icon__svg {

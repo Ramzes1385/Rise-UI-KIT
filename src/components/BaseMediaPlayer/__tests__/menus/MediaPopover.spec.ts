@@ -133,8 +133,8 @@ describe('меню плеера без каскадов', () => {
 		await nextTick()
 		await nextTick()
 
-		expect((container.querySelector('.base-media-player__menu') as HTMLElement).style.width).toBe('180px')
-		expect((container.querySelector('.base-media-player__menu') as HTMLElement).style.height).toBe('150px')
+		expect((container.querySelector('.base-media-player__menu') as HTMLElement).style.gridTemplateColumns).toBe('180px')
+		expect((container.querySelector('.base-media-player__menu') as HTMLElement).style.gridTemplateRows).toBe('150px')
 		width.mockRestore()
 		height.mockRestore()
 	})

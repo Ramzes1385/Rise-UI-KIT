@@ -354,7 +354,7 @@
 		background-color: var(--media-panel);
 		box-shadow: 0 10px 30px color-mix(in srgb, var(--rise-media-shade) 45%, transparent);
 		backdrop-filter: blur(10px);
-		transition: bottom var(--media-slow) var(--media-ease);
+		transition: translate var(--media-slow) var(--media-ease);
 
 		@include motion-safe {
 			animation: base-media-player-banner var(--media-slow) var(--media-ease);
@@ -371,18 +371,21 @@
 		}
 
 		&--bottom-left {
-			bottom: var(--media-overlay-bottom);
+			bottom: 0;
 			left: sz(16px);
+			translate: 0 calc(var(--media-overlay-bottom) * -1);
 		}
 
 		&--bottom-right {
 			right: sz(16px);
-			bottom: var(--media-overlay-bottom);
+			bottom: 0;
+			translate: 0 calc(var(--media-overlay-bottom) * -1);
 		}
 
 		&--bottom {
 			right: sz(16px);
-			bottom: var(--media-overlay-base);
+			bottom: 0;
+			translate: 0 calc(var(--media-overlay-base) * -1);
 			left: sz(16px);
 			align-items: center;
 			height: sz(64px);
@@ -483,7 +486,8 @@
 	&__skip {
 		position: absolute;
 		right: sz(24px);
-		bottom: calc(var(--media-overlay-bottom) + #{sz(8px)});
+		bottom: 0;
+		translate: 0 calc((var(--media-overlay-bottom) + #{sz(8px)}) * -1);
 		z-index: 3;
 		display: inline-flex;
 		flex: none;
@@ -500,7 +504,7 @@
 		font-weight: var(--rise-font-weight-semibold);
 		cursor: pointer;
 		transition:
-			bottom var(--media-slow) var(--media-ease),
+			translate var(--media-slow) var(--media-ease),
 			background-color var(--media-normal) var(--media-ease),
 			transform var(--media-normal) var(--media-spring);
 		@include focus-ring;
@@ -523,6 +527,7 @@
 
 	&__skip--inline {
 		position: static;
+		translate: none;
 	}
 
 	&__ad--clip &__ad-bar {
@@ -533,7 +538,8 @@
 	&__next {
 		position: absolute;
 		right: sz(16px);
-		bottom: var(--media-overlay-bottom);
+		bottom: 0;
+		translate: 0 calc(var(--media-overlay-bottom) * -1);
 		z-index: 4;
 		display: grid;
 		grid-template-columns: auto minmax(0, 1fr);
@@ -547,7 +553,7 @@
 		background-color: var(--media-panel-solid);
 		box-shadow: 0 8px 32px color-mix(in srgb, var(--rise-media-shade) 50%, transparent);
 		backdrop-filter: blur(10px);
-		transition: bottom var(--media-slow) var(--media-ease);
+		transition: translate var(--media-slow) var(--media-ease);
 	}
 
 	&__next-ring {
@@ -578,7 +584,7 @@
 		stroke-linecap: round;
 
 		@include motion-safe {
-			animation: base-media-player-countdown calc(var(--media-next-seconds, 5) * 1s) linear forwards;
+			animation: base-media-player-countdown var(--media-next-duration) linear forwards;
 		}
 	}
 

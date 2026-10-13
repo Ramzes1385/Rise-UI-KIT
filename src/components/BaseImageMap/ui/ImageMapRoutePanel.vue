@@ -1,5 +1,5 @@
 <template>
-	<section class="base-image-map__route" :class="customClass" :aria-label="UI_IMAGE_MAP_ROUTES.TITLE">
+	<section :class="[ui('route'), customClass]" :aria-label="UI_IMAGE_MAP_ROUTES.TITLE">
 		<p class="base-image-map__route-title" aria-hidden="true">{{ UI_IMAGE_MAP_ROUTES.TITLE }}</p>
 		<div class="base-image-map__route-fields">
 			<BaseSelect
@@ -41,12 +41,11 @@
 		<p class="base-image-map__route-summary" :class="{ 'base-image-map__route-summary--error': isUnreachable }" role="status">
 			{{ summary }}
 		</p>
-		<ol v-if="steps.length" class="base-image-map__route-steps" :aria-label="UI_IMAGE_MAP_ROUTES.STEPS">
+		<ol v-if="steps.length" :class="ui('route-steps')" :aria-label="UI_IMAGE_MAP_ROUTES.STEPS">
 			<li v-for="(step, index) in steps" :key="index" class="base-image-map__route-step-row">
 				<button
 					type="button"
-					class="base-image-map__route-step"
-					:class="`base-image-map__route-step--${step.kind}`"
+					:class="[ui('route-step'), `base-image-map__route-step--${step.kind}`]"
 					@click="$emit('show-layer', step.layer)">
 					<span class="base-image-map__route-step-text">{{ step.text }}</span>
 					<span v-if="step.meters" class="base-image-map__route-step-meters">
@@ -70,7 +69,9 @@ import { UI_IMAGE_MAP_ROUTES } from '@/locales/messages'
 import { useRoutePanel } from '../model/routes/useRoutePanel'
 import type { ImageMapRoutePanelEmits, ImageMapRoutePanelProps } from '../types/ImageMapRoutes.types'
 
-const props = defineProps<ImageMapRoutePanelProps>()
+const props = withDefaults(defineProps<ImageMapRoutePanelProps>(), {
+	ui: (part: string) => (part === 'root' ? 'base-image-map' : `base-image-map__${part}`),
+})
 
 const emit = defineEmits<ImageMapRoutePanelEmits>()
 

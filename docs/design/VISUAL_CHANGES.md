@@ -1689,3 +1689,11 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 Цвет родителя вложенному передаётся явно, вид не меняется: заголовки, описания и кнопки закрытия в BaseCard, BaseModal, BaseSlideover, BaseNotification, BaseEmpty и BaseAlert; вкладки BaseTabs; ссылки BaseMenu, BaseMegaMenu и BaseDropdownMenu; кнопки BaseAiMessage, BaseInputNumber и BaseKanban; значение подписи BaseRange; теги BaseSelect; страницы и стрелки BasePagination; чекбоксы BaseCheckboxGroup и «Выбрать все» BaseTransfer; поле BaseInplace, поле BaseSearch, текст BaseAiMessage, поле кода BaseEditor, панель инструментов BaseImageMap.
 
 **Размер иконок при `sizeScale` 125** (родитель масштабирован): иконка пароля BaseInput — 20px вместо 25px, стрелка BaseSelect — на 20% меньше (теперь как задумано: 0,8 × 125% = 100%). Со `sizeScale` по умолчанию (100) иконки не меняются; снимки с `sizeScale` 125, если такие есть, затронуты: иконки `sm` уменьшатся.
+
+## Задача polish-1: хвосты плана 13.10
+
+- **BaseMediaPlayer** (`element-basemediaplayer--*`, итоговые кадры те же): плавное смещение «Продолжить», баннеров внизу, «Следующая серия» и «Пропустить» при изменении высоты панели управления идёт через `translate`, раскрытие второго ряда («Точная перемотка») — через Web Animations, смена размера рамки меню — через сетку; кривые и длительности прежние. Эталоны не меняются.
+- **BaseInputNumber** (`form-baseinputnumber--custom-color`, если есть): с `color` текст кнопок «+»/«−» берёт цвет `--custom-text`; без `color` и в остальных историях вид тот же.
+- **BaseTabs / BaseAnchor**: до первого замера (до гидратации при SSR) активный пункт underline/arc и вертикального/горизонтального якоря рисует полоску сам; после замера — как раньше, снимки не меняются.
+- **BaseImageMap**: только новые части `ui`, вид не меняется.
+

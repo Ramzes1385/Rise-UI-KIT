@@ -30,6 +30,7 @@ export const Theming: StoryObj<typeof meta> = {
 					'список объектов — `entry-radius`, `entry-bg-hover`, `entry-bg-active`, `entry-border-active`; шаги маршрута — `route-step-radius`,',
 					'`route-step-bg-hover` (список — docs/design/COMPONENT_TOKENS.md). Отступы карты и списков умножаются на плотность темы `--rise-density`.',
 					'Проп `ui` добавляет классы к частям (`root`, `toolbar`, `viewport`, `stage`, `point`, `marker`, `legend`, `tooltip`… — `IMAGE_MAP_PARTS`);',
+					'у списка объектов — `directory`, `search`, `filters`, `results`, `list`, `entry`, у панели «Как пройти» — `route`, `route-steps`, `route-step`;',
 					'для всех карт приложения — `defaults.BaseImageMap.ui` плагина.',
 					'Одинаковые экземпляры для сравнения — регионы с одним именем, поэтому правило axe `landmark-unique` у этой истории выключено.',
 				].join('\n'),
