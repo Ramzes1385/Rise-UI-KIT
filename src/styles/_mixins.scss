@@ -27,6 +27,52 @@
 	border: 0;
 }
 
+// Сброс нативной кнопки до «голого» элемента: без рамки, фона, отступов, с наследованием цвета, шрифта и выравнивания.
+// Подключается первым в правиле, остальные свойства (радиус, отступы, выравнивание) переопределяют его.
+@mixin button-reset {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: none;
+	color: inherit;
+	font: inherit;
+	text-align: inherit;
+	cursor: pointer;
+}
+
+// Иконочная кнопка панели инструментов 28x28 без рамки и фона; фон при наведении — `--rise-bg-elevated`.
+@mixin tool-button {
+	position: relative;
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	width: sz(28px);
+	height: sz(28px);
+	padding: 0;
+	border: 1px solid transparent;
+	border-radius: sz(var(--rise-control-radius));
+	background-color: transparent;
+	box-shadow: none;
+	color: var(--rise-text);
+	cursor: pointer;
+	@include transition-colors;
+
+	@include hover {
+		border-color: transparent;
+		background-color: var(--rise-bg-elevated);
+	}
+}
+
+// Счётчик символов под полем (BaseTextarea): мелкий моноширинный по цифрам текст; $color — токен компонента.
+@mixin field-counter($color: var(--rise-text-muted)) {
+	@include text-size(xs);
+	color: $color;
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
 @mixin scrollbar-thin {
 	scrollbar-width: thin;
 	scrollbar-color: var(--rise-border-accented) transparent;

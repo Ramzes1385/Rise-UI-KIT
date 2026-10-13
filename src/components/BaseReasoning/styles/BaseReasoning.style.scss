@@ -16,16 +16,12 @@
 		align-items: center;
 		gap: sz(ct(reasoning, trigger-gap, 6px));
 		max-width: 100%;
+		@include button-reset;
 		padding: sz(4px) sz(6px);
 		margin-left: sz(-6px);
-		border: 0;
 		border-radius: sz(var(--rise-radius-sm));
-		background-color: transparent;
-		color: inherit;
-		font: inherit;
 		font-weight: ct(reasoning, trigger-font-weight, var(--rise-font-weight-medium));
 		text-align: left;
-		cursor: pointer;
 		@include transition-colors;
 		@include focus-ring;
 

@@ -30,17 +30,11 @@
 		align-items: center;
 		gap: var(--breadcrumbs-gap);
 		min-width: 0;
-		margin: 0;
-		padding: 0;
-		border: none;
+		@include button-reset;
 		border-radius: sz(var(--rise-radius-sm));
-		background-color: transparent;
-		color: inherit;
-		font: inherit;
 		font-weight: ct(breadcrumbs, font-weight, var(--rise-font-weight-medium));
 		text-align: left;
 		text-decoration: none;
-		cursor: pointer;
 		@include transition-colors;
 		@include focus-ring;
 		@include custom-text-hover(color, ct(breadcrumbs, text-hover, var(--rise-text)));

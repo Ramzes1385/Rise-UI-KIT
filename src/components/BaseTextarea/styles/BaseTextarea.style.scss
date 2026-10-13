@@ -103,9 +103,6 @@
 	&__counter {
 		grid-column: 2;
 		place-self: baseline end;
-		@include text-size(xs);
-		color: ct(textarea, counter-text, var(--rise-text-muted));
-		font-variant-numeric: tabular-nums;
-		white-space: nowrap;
+		@include field-counter(ct(textarea, counter-text, var(--rise-text-muted)));
 	}
 }

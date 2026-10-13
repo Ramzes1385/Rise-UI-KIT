@@ -1,27 +1,3 @@
-@mixin base-editor-tool-button {
-	position: relative;
-	display: inline-flex;
-	flex: none;
-	align-items: center;
-	justify-content: center;
-	box-sizing: border-box;
-	width: sz(28px);
-	height: sz(28px);
-	padding: 0;
-	border: 1px solid transparent;
-	border-radius: sz(var(--rise-control-radius));
-	background-color: transparent;
-	box-shadow: none;
-	color: var(--rise-text);
-	cursor: pointer;
-	@include transition-colors;
-
-	@include hover {
-		border-color: transparent;
-		background-color: var(--rise-bg-elevated);
-	}
-}
-
 .base-editor {
 	@include custom-color-scope;
 	--editor-min-height: 160px;
@@ -111,7 +87,7 @@
 	}
 
 	& &__color-picker .base-color-picker__swatch {
-		@include base-editor-tool-button;
+		@include tool-button;
 		background-image: none;
 		@include focus-ring;
 

@@ -32,13 +32,9 @@
 		gap: sz(ct(tool-call, trigger-gap, 8px));
 		width: 100%;
 		min-width: 0;
+		@include button-reset;
 		padding: space(ct(tool-call, trigger-padding-y, 8px) ct(tool-call, padding-x, 12px));
-		border: 0;
-		background-color: transparent;
-		color: inherit;
-		font: inherit;
 		text-align: left;
-		cursor: pointer;
 		@include transition-colors;
 		@include focus-ring(-2px);
 
