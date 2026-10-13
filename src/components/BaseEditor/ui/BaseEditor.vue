@@ -83,7 +83,7 @@
 		<BasePopover
 			:is-open="contextMenu.isVisible"
 			:anchor="{ x: contextMenu.x, y: contextMenu.y }"
-			position="bottom-start"
+			position="bottom"
 			variant="ghost"
 			max-height="none"
 			animation="fade"
