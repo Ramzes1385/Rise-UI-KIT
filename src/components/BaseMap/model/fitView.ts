@@ -1,23 +1,8 @@
 import type { MapFitBox } from '../types/providers.types'
 import type { MapCoordinates, MapView } from '../types/BaseMap.types'
-
-const TILE = 256
+import { TILE, fromMercator, mercatorX, mercatorY } from './mercator'
 const MAX_ZOOM = 21
 const FIT_MAX_ZOOM = 17
-
-const mercatorX = (lng: number): number => (lng + 180) / 360
-
-const mercatorY = (lat: number): number => {
-	const sin = Math.sin((Math.max(-85, Math.min(85, lat)) * Math.PI) / 180)
-	return 0.5 - Math.log((1 + sin) / (1 - sin)) / (4 * Math.PI)
-}
-
-const round = (value: number): number => Math.round(value * 1e6) / 1e6
-
-const fromMercator = (x: number, y: number): MapCoordinates => ({
-	lat: round((Math.atan(Math.sinh(Math.PI * (1 - 2 * y))) * 180) / Math.PI),
-	lng: round(x * 360 - 180),
-})
 
 function zoomFor(extent: number, space: number): number {
 	if (extent <= 0) return FIT_MAX_ZOOM

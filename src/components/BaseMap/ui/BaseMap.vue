@@ -5,11 +5,16 @@
 		role="region"
 		:aria-label="label"
 		:aria-busy="status === 'loading' ? 'true' : undefined"
-		@keydown.esc="onEscape">
+		@keydown.esc="onEscape"
+		@wheel="onWheel">
 		<component :is="'script'" v-if="structuredData" type="application/ld+json" v-html="structuredData" />
 		<div v-show="status === 'loading' || status === 'ready'" ref="canvasRef" :class="[ui('canvas'), classes.canvas]" />
+		<Transition name="base-map-preview">
+			<img v-if="isPreview" :src="staticPreview" :class="[ui('preview'), classes.preview]" alt="" loading="lazy" decoding="async" />
+		</Transition>
 		<Teleport v-for="host in hosts" :key="host.marker.id" :to="host.button">
-			<slot name="marker" :marker="host.marker">
+			<span v-if="host.marker.count" class="base-map__marker-count">{{ host.marker.count }}</span>
+			<slot v-else name="marker" :marker="host.marker">
 				<span v-if="host.marker.icon" class="base-map__marker-icon">
 					<BaseIcon :name="host.marker.icon" :size-scale="sizeScale" />
 				</span>
@@ -51,7 +56,7 @@
 				<BaseIcon name="map-pin" :size-scale="calcIconScale('md', sizeScale)" />
 			</BaseButton>
 		</div>
-		<div v-if="hasControls" class="base-map__notice" role="status">
+		<div v-if="hasControls || !isScrollZoom" class="base-map__notice" role="status">
 			<span v-if="notice" class="base-map__notice-text">{{ notice }}</span>
 		</div>
 		<Transition name="base-map-loader">
@@ -101,6 +106,11 @@ const props = withDefaults(
 		hasControls: false,
 		fitMarkers: false,
 		boundsPadding: 40,
+		isClustered: false,
+		layer: 'scheme',
+		isDraggable: true,
+		isScrollZoom: true,
+		staticPreview: undefined,
 	}),
 )
 
@@ -135,5 +145,7 @@ const {
 	canZoomOut,
 	zoomBy,
 	locate,
+	onWheel,
+	isPreview,
 } = useBaseMap(props, emit, slots)
 </script>

@@ -52,9 +52,9 @@ describe('BaseMap: схема', () => {
 		expect(layer.props).toEqual({ theme: 'dark' })
 
 		document.documentElement.setAttribute('data-theme', 'light')
-		await waitFor(() => expect(layer.update).toHaveBeenLastCalledWith({ theme: 'light' }))
+		await waitFor(() => expect(layer.update).toHaveBeenLastCalledWith({ theme: 'light', customization: [] }))
 		await rerender({ scheme: 'dark' })
-		expect(layer.update).toHaveBeenLastCalledWith({ theme: 'dark' })
+		expect(layer.update).toHaveBeenLastCalledWith({ theme: 'dark', customization: [] })
 		expect(maps).toHaveLength(1)
 	})
 
@@ -67,7 +67,7 @@ describe('BaseMap: схема', () => {
 		const layer = maps[0].schemeLayer()
 		expect(layer.props).toEqual({ theme: 'dark' })
 		change(false)
-		await waitFor(() => expect(layer.update).toHaveBeenLastCalledWith({ theme: 'light' }))
+		await waitFor(() => expect(layer.update).toHaveBeenLastCalledWith({ theme: 'light', customization: [] }))
 		unmount()
 	})
 

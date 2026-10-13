@@ -15,6 +15,8 @@ export function fakeGoogle() {
 		getZoom: () => state.zoom,
 		setCenter: vi.fn(),
 		setZoom: vi.fn(),
+		setMapTypeId: vi.fn(),
+		setOptions: vi.fn(),
 	}
 	const GoogleMap = vi.fn(function (
 		this: unknown,
@@ -45,7 +47,9 @@ export function fakeGoogle() {
 		class {
 			kind = kind
 			setMap = vi.fn()
-			constructor(public options: Record<string, unknown>) {
+			options: Record<string, unknown>
+			constructor(options: Record<string, unknown>) {
+				this.options = options
 				shapes.push(this)
 			}
 		}

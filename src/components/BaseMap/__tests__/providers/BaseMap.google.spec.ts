@@ -44,7 +44,7 @@ describe('BaseMap · Google', () => {
 			'https://maps.googleapis.com/maps/api/js?key=G%20K&language=ru&libraries=marker&loading=async&callback=__riseGoogleMapsReady',
 			{ callbackName: '__riseGoogleMapsReady' },
 		)
-		expect(google.api.Map.mock.calls[0][1]).toEqual({
+		expect(google.api.Map.mock.calls[0][1]).toMatchObject({
 			center: { lat: 55.751244, lng: 37.618423 },
 			zoom: 11,
 			mapId: 'style-1',

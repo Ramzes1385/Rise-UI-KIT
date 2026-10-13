@@ -5,7 +5,7 @@ import { MAP_PROVIDER_ENTRIES } from './providers/registry'
 import type { MapAdapter, MapDeps, MapHandlers } from '../types/providers.types'
 import type { BaseMapEmits, BaseMapProps, MapStatus, MapView } from '../types/BaseMap.types'
 
-function viewHandlers(emit: BaseMapEmits, lastView: Ref<MapView>, selection: MapDeps['selection']): MapHandlers {
+function viewHandlers(emit: BaseMapEmits, lastView: Ref<MapView>, { selection, cluster }: MapDeps): MapHandlers {
 	return {
 		onViewChange: view => applyViewChange(emit, lastView, view),
 		onClick: coordinates => {
@@ -13,12 +13,23 @@ function viewHandlers(emit: BaseMapEmits, lastView: Ref<MapView>, selection: Map
 			selection.dismiss()
 		},
 		onMarkerClick: marker => {
+			if (marker.count) return cluster.open(marker)
 			emit('marker-click', marker)
 			selection.onMarkerClick(marker)
 		},
 		onMarkersRendered: hosts => {
 			selection.hosts.value = hosts
 		},
+	}
+}
+
+function adapterOptions(props: BaseMapProps, deps: MapDeps) {
+	return {
+		apiKey: props.apiKey ?? '',
+		mapId: props.mapId,
+		scheme: deps.scheme.value,
+		layer: deps.layer(),
+		gestures: deps.gestures(),
 	}
 }
 
@@ -38,12 +49,10 @@ export function useMapAdapter(props: BaseMapProps, emit: BaseMapEmits, deps: Map
 	}
 
 	const createOptions = () => ({
-		apiKey: props.apiKey ?? '',
+		...adapterOptions(props, deps),
 		language: props.language ?? entry().language(getLocale().intl),
 		view: lastView.value,
-		mapId: props.mapId,
-		scheme: deps.scheme.value,
-		handlers: viewHandlers(emit, lastView, deps.selection),
+		handlers: viewHandlers(emit, lastView, deps),
 	})
 
 	function show(created: MapAdapter): void {

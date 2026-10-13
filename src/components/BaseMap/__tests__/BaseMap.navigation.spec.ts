@@ -130,7 +130,10 @@ describe('BaseMap: линии и многоугольники', () => {
 		const original = window.getComputedStyle
 		vi.spyOn(window, 'getComputedStyle').mockImplementation(element => {
 			const style = original(element)
-			return { ...style, color: element.style.color.includes('var(') ? 'rgb(1, 2, 3)' : style.color } as CSSStyleDeclaration
+			return {
+				...style,
+				color: (element as HTMLElement).style.color.includes('var(') ? 'rgb(1, 2, 3)' : style.color,
+			} as CSSStyleDeclaration
 		})
 		const { maps } = fakeYandex()
 		const { emitted } = render(BaseMap, {

@@ -82,10 +82,10 @@ export interface MapView {
 
 /**
  * Части BaseMap для пропа `ui` (БЭМ-элементы `.base-map__<часть>`, `root` — вся область карты): canvas — слой, в который
- * поставщик рисует карту; placeholder — заглушка без ключа, без Map ID или при ошибке; balloon — балун открытой метки.
+ * поставщик рисует карту; placeholder — заглушка без ключа, без Map ID или при ошибке; balloon — балун открытой метки; preview — статичная картинка до загрузки карты.
  * Метки `.base-map__marker` создаёт поставщик карты — их оформляют токены `--rise-map-marker-*` и `--rise-map-tooltip-*`
  */
-export const MAP_PARTS = ['canvas', 'placeholder', 'balloon'] as const
+export const MAP_PARTS = ['canvas', 'placeholder', 'balloon', 'preview'] as const
 
 /** Часть BaseMap для пропа `ui` */
 export type BaseMapPart = (typeof MAP_PARTS)[number]
@@ -96,7 +96,8 @@ export type MapStatus = 'no-key' | 'no-map-id' | 'loading' | 'ready' | 'error'
 /**
  * Пропсы компонента BaseMap
  */
-export interface BaseMapProps extends SeoComponentProps, BaseComponentProps<MapVariant, 'root' | 'canvas' | 'placeholder' | 'balloon'> {
+export interface BaseMapProps
+	extends SeoComponentProps, BaseComponentProps<MapVariant, 'root' | 'canvas' | 'placeholder' | 'balloon' | 'preview'> {
 	/** Поставщик карты */
 	provider?: MapProvider
 	/**
@@ -121,6 +122,25 @@ export interface BaseMapProps extends SeoComponentProps, BaseComponentProps<MapV
 	hasControls?: boolean
 	/** Вписать все метки в карту при показе и при смене `markers` (одна метка — центрировать на ней, масштаб из `zoom`) */
 	fitMarkers?: boolean
+	/**
+	 * Объединять близкие метки в группы-кружки с числом (по сетке 64px, до масштаба 17): клик по группе приближает карту к её меткам.
+	 * Одинаково у обоих поставщиков, без дополнительных пакетов
+	 */
+	isClustered?: boolean
+	/** Подложка: схема, спутник или спутник с подписями. У Яндекса «hybrid» оставляет поверх снимка подписи схемы */
+	layer?: MapLayer
+	/** Двигать карту перетаскиванием и жестами; `false` — карта стоит на месте, масштаб кнопками и колесом остаётся */
+	isDraggable?: boolean
+	/**
+	 * Менять масштаб колесом мыши; `false` — колесо прокручивает страницу, а масштаб меняется колесом с зажатым Ctrl
+	 * (без Ctrl появляется подсказка из словаря). Так карту не «ловят» при прокрутке лендинга
+	 */
+	isScrollZoom?: boolean
+	/**
+	 * URL статичной картинки (например, Static API поставщика), которую видно, пока интерактивная карта грузится
+	 * (и до монтирования при SSR). Картинка декоративна (`alt=""`): карту описывает `ariaLabel` области. Без ключа и при ошибке — заглушка
+	 */
+	staticPreview?: string
 	/** Отступ от края карты до крайних меток при `fitMarkers`, px; по умолчанию 40 */
 	boundsPadding?: number
 	/**

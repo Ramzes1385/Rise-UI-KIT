@@ -25,6 +25,14 @@
 		inset: 0;
 	}
 
+	&__preview {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
 	&__shapes {
 		@include visually-hidden;
 		margin: 0;
@@ -140,6 +148,17 @@
 			}
 		}
 
+		&--cluster {
+			--base-map-marker-color: #{ct(map, cluster-bg, var(--rise-primary))};
+
+			border-radius: 50%;
+			transform: none;
+
+			&::after {
+				display: none;
+			}
+		}
+
 		&--custom {
 			border: 0;
 			border-radius: 0;
@@ -158,6 +177,11 @@
 				transform: translate(-50%, sz(-4px));
 			}
 		}
+	}
+
+	&__marker-count {
+		font-weight: var(--rise-font-weight-semibold, 600);
+		@include text-size(xs);
 	}
 
 	&__marker-icon {
@@ -194,3 +218,4 @@
 
 @include enter-fade(base-map-loader);
 @include enter-fade(base-map-placeholder);
+@include enter-fade(base-map-preview);

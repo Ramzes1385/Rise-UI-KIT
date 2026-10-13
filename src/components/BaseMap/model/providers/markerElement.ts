@@ -1,9 +1,8 @@
 import { UI_MAP } from '@/locales/messages'
 import { formatMessage } from '@/locales/state'
-import type { MapMarker } from '../../types/BaseMap.types'
-import type { MapMarkerHost } from '../../types/providers.types'
+import type { MapMarkerHost, MapMarkerItem } from '../../types/providers.types'
 
-export function createMarkerElement(marker: MapMarker, onClick: (marker: MapMarker) => void): MapMarkerHost {
+export function createMarkerElement(marker: MapMarkerItem, onClick: (marker: MapMarkerItem) => void): MapMarkerHost {
 	const anchor = document.createElement('div')
 	const button = document.createElement('button')
 	const label = marker.title ?? formatMessage(UI_MAP.MARKER, { id: String(marker.id) })

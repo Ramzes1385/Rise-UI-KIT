@@ -2,28 +2,26 @@ import { UI_MAP } from '@/locales/messages'
 import { useMapScheme } from './useMapScheme'
 import { watchAdapter } from './watchAdapter'
 import { useMapAdapter } from './useMapAdapter'
-import { formatMessage } from '@/locales/state'
 import { useUi } from '@composables/base/useUi'
+import { useMapClusters } from './useMapClusters'
+import { useMapGestures } from './useMapGestures'
 import { useMapSelection } from './useMapSelection'
 import { useMapNavigation } from './useMapNavigation'
+import { useMapPlaceholder } from './useMapPlaceholder'
 import { shapeLabels, useMapShapes } from './useMapShapes'
-import { MAP_PROVIDER_ENTRIES } from './providers/registry'
 import { useStructuredData } from '@composables/seo/useStructuredData'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
-import type { MapResolvedScheme, MapSlotsInfo } from '../types/providers.types'
 import { computed, onBeforeUnmount, onMounted, ref, watch, type Ref } from 'vue'
 import type { StructuredData, StructuredDataObject } from '@utils/seo/structuredDataUtils'
-import type { BaseMapEmits, BaseMapProps, MapCoordinates, MapMarker, MapStatus, MapView } from '../types/BaseMap.types'
-
-const PLACEHOLDER_TEXTS: Partial<
-	Record<MapStatus, readonly ['NO_KEY_TITLE' | 'NO_MAP_ID_TITLE' | 'ERROR_TITLE', 'NO_KEY' | 'NO_MAP_ID' | 'ERROR']>
-> = {
-	'no-key': ['NO_KEY_TITLE', 'NO_KEY'],
-	'no-map-id': ['NO_MAP_ID_TITLE', 'NO_MAP_ID'],
-	error: ['ERROR_TITLE', 'ERROR'],
-}
+import type { MapGestures, MapMarkerItem, MapResolvedScheme, MapSlotsInfo } from '../types/providers.types'
+import type { BaseMapEmits, BaseMapProps, MapCoordinates, MapMarker, MapView } from '../types/BaseMap.types'
 
 const DEFAULT_VIEW: MapView = { center: { lat: 55.751244, lng: 37.618423 }, zoom: 10 }
+
+const gesturesOf = (props: BaseMapProps): MapGestures => ({
+	isDraggable: props.isDraggable !== false,
+	isScrollZoom: props.isScrollZoom !== false,
+})
 
 const sameView = (left: MapView, right: MapView): boolean =>
 	left.zoom === right.zoom && left.center.lat === right.center.lat && left.center.lng === right.center.lng
@@ -44,12 +42,16 @@ function placeSchema(props: BaseMapProps): StructuredData {
 	}
 }
 
-function useMapSync(props: BaseMapProps, map: ReturnType<typeof useMapAdapter>, scheme: Ref<MapResolvedScheme>) {
+function useMapSync(
+	props: BaseMapProps,
+	map: ReturnType<typeof useMapAdapter>,
+	extra: { scheme: Ref<MapResolvedScheme>; items: Ref<MapMarkerItem[]> },
+) {
 	const view = computed<MapView>(() => ({ center: props.center ?? DEFAULT_VIEW.center, zoom: props.zoom ?? DEFAULT_VIEW.zoom }))
 	onMounted(map.attach)
 	onBeforeUnmount(map.detach)
 	watch(() => [props.provider, props.apiKey, props.language, props.mapId], map.attach)
-	watch(scheme, next => {
+	watch(extra.scheme, next => {
 		if (!map.adapter.value) return
 		if (map.isSchemeLive()) map.adapter.value.setScheme(next)
 		else map.attach()
@@ -59,7 +61,9 @@ function useMapSync(props: BaseMapProps, map: ReturnType<typeof useMapAdapter>, 
 		map.lastView.value = next
 		map.adapter.value?.setView(next)
 	})
-	watchAdapter(map.adapter, { source: () => props.markers ?? [], apply: (adapter, markers) => adapter.setMarkers(markers), isDeep: true })
+	watchAdapter(map.adapter, { source: () => extra.items.value, apply: (adapter, items) => adapter.setMarkers(items), isDeep: true })
+	watchAdapter(map.adapter, { source: () => props.layer ?? 'scheme', apply: (adapter, layer) => adapter.setLayer(layer) })
+	watchAdapter(map.adapter, { source: () => gesturesOf(props), apply: (adapter, gestures) => adapter.setGestures(gestures) })
 	return view
 }
 
@@ -68,13 +72,24 @@ export function useBaseMap(props: BaseMapProps, emit: BaseMapEmits, slots: MapSl
 	const scheme = useMapScheme(() => props.scheme, canvasRef)
 	const selection = useMapSelection(props, emit, slots)
 	const initial = { center: props.center ?? DEFAULT_VIEW.center, zoom: props.zoom ?? DEFAULT_VIEW.zoom }
-	const map = useMapAdapter(props, emit, { view: () => initial, scheme, selection, canvasRef })
-	useMapSync(props, map, scheme)
+	const cluster = { open: (_item: MapMarkerItem): void => undefined }
+	const map = useMapAdapter(props, emit, {
+		view: () => initial,
+		scheme,
+		selection,
+		canvasRef,
+		cluster,
+		layer: () => props.layer ?? 'scheme',
+		gestures: () => gesturesOf(props),
+	})
+	const items = useMapClusters(props, map.lastView)
+	useMapSync(props, map, { scheme, items })
 	useMapShapes(props, map.adapter, { area: canvasRef, scheme })
 	const navigation = useMapNavigation(props, emit, map)
-	const providerName = computed(() => MAP_PROVIDER_ENTRIES[props.provider ?? 'yandex'].name())
+	cluster.open = navigation.openCluster
+	const gestures = useMapGestures(props, { zoomBy: navigation.zoomBy, notify: navigation.showNotice })
 	return {
-		...useStandardBaseComponent('base-map', props, ['root', 'canvas', 'placeholder', 'balloon']),
+		...useStandardBaseComponent('base-map', props, ['root', 'canvas', 'placeholder', 'balloon', 'preview']),
 		ui: useUi(props, 'base-map'),
 		...useStructuredData(
 			'BaseMap',
@@ -82,6 +97,8 @@ export function useBaseMap(props: BaseMapProps, emit: BaseMapEmits, slots: MapSl
 			() => placeSchema(props),
 		),
 		...navigation,
+		...gestures,
+		...useMapPlaceholder(props, map.status),
 		canvasRef,
 		status: map.status,
 		hosts: selection.hosts,
@@ -92,10 +109,5 @@ export function useBaseMap(props: BaseMapProps, emit: BaseMapEmits, slots: MapSl
 		shapeLabels: computed(() => shapeLabels(props)),
 		label: computed(() => props.ariaLabel ?? UI_MAP.LABEL),
 		rootStyle: computed(() => ({ height: props.height ?? '400px' })),
-		isPlaceholder: computed(() => PLACEHOLDER_TEXTS[map.status.value] !== undefined),
-		placeholderTitle: computed(() => UI_MAP[PLACEHOLDER_TEXTS[map.status.value]?.[0] ?? 'NO_KEY_TITLE']),
-		placeholderText: computed(() =>
-			formatMessage(UI_MAP[PLACEHOLDER_TEXTS[map.status.value]?.[1] ?? 'NO_KEY'], { provider: providerName.value }),
-		),
 	}
 }

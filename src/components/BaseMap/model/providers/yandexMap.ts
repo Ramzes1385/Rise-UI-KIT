@@ -1,10 +1,12 @@
 import { loadProviderApi } from './apiScript'
 import { loadScript } from '@utils/dom/scriptUtils'
 import { createMarkerElement } from './markerElement'
-import type { MapCoordinates, MapMarker, MapView } from '../../types/BaseMap.types'
+import { createLayers, yandexBehaviors } from './yandexLayers'
+import type { MapCoordinates, MapView } from '../../types/BaseMap.types'
 import type {
 	MapAdapterFactory,
 	MapHandlers,
+	MapMarkerItem,
 	MapShapeLine,
 	MapShapes,
 	MapsWindow,
@@ -35,7 +37,7 @@ async function yandexApi(apiKey: string, language: string): Promise<YandexMapsAp
 
 function markerLayer(api: YandexMapsApi, map: YandexMapInstance, handlers: MapHandlers) {
 	let shown: object[] = []
-	return (markers: readonly MapMarker[]): void => {
+	return (markers: readonly MapMarkerItem[]): void => {
 		for (const child of shown) map.removeChild(child)
 		const hosts = markers.map(marker => createMarkerElement(marker, handlers.onMarkerClick))
 		shown = hosts.map(host => new api.YMapMarker({ coordinates: toYandex(host.marker.coordinates) }, host.anchor))
@@ -67,11 +69,12 @@ function shapeLayer(api: YandexMapsApi, map: YandexMapInstance) {
 	}
 }
 
-export const createYandexMap: MapAdapterFactory = async (element, { apiKey, language, view, scheme, handlers }) => {
+export const createYandexMap: MapAdapterFactory = async (element, { apiKey, language, view, scheme, layer, gestures, handlers }) => {
 	const api = await yandexApi(apiKey, language)
 	const map = new api.YMap(element, { location: location(view) })
-	const schemeLayer = new api.YMapDefaultSchemeLayer({ theme: scheme })
-	map.addChild(schemeLayer)
+	const layers = createLayers(api, map, scheme)
+	layers.setLayer(layer)
+	map.setBehaviors(yandexBehaviors(gestures))
 	map.addChild(new api.YMapDefaultFeaturesLayer({}))
 	map.addChild(
 		new api.YMapListener({
@@ -84,7 +87,9 @@ export const createYandexMap: MapAdapterFactory = async (element, { apiKey, lang
 		setView: next => map.setLocation(location(next)),
 		setMarkers: markerLayer(api, map, handlers),
 		setShapes: shapeLayer(api, map),
-		setScheme: next => schemeLayer.update({ theme: next }),
+		setScheme: layers.setTheme,
+		setLayer: layers.setLayer,
+		setGestures: next => map.setBehaviors(yandexBehaviors(next)),
 		destroy: () => map.destroy(),
 	}
 }

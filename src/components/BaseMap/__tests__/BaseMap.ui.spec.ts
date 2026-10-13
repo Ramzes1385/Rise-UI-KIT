@@ -21,7 +21,7 @@ describe('BaseMap: проп ui', () => {
 		const { container } = render(BaseMap, { props: { ui, customClass: { placeholder: 'own-placeholder' } } })
 		const root = container.querySelector('.base-map')!
 		expect(root).toHaveClass('base-map', 'u-root', 'base-map--no-key')
-		for (const part of MAP_PARTS.filter(name => name !== 'balloon'))
+		for (const part of MAP_PARTS.filter(name => name !== 'balloon' && name !== 'preview'))
 			expect(root.querySelector(`.base-map__${part}`)).toHaveClass(`u-${part}`)
 		expect(root.querySelector('.base-map__placeholder')).toHaveClass('own-placeholder')
 	})

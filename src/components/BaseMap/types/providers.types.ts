@@ -1,12 +1,24 @@
 import type { ComputedRef, Ref, ShallowRef } from 'vue'
-import type { MapCoordinates, MapMarker, MapView } from './BaseMap.types'
+import type { MapCoordinates, MapLayer, MapMarker, MapView } from './BaseMap.types'
+
+/** Метка на карте: обычная или группа (`count` меток, `members` — они сами) */
+export interface MapMarkerItem extends MapMarker {
+	count?: number
+	members?: readonly MapMarker[]
+}
+
+/** Жесты карты: перетаскивание и масштаб колесом */
+export interface MapGestures {
+	isDraggable: boolean
+	isScrollZoom: boolean
+}
 
 /** Цветовая схема, с которой работает поставщик: `auto` уже разрешена в светлую или тёмную */
 export type MapResolvedScheme = 'light' | 'dark'
 
 /** Элементы метки на карте: `anchor` — обёртка (в неё кит кладёт балун), `button` — кнопка метки (в неё — значок или слот) */
 export interface MapMarkerHost {
-	marker: MapMarker
+	marker: MapMarkerItem
 	anchor: HTMLElement
 	button: HTMLButtonElement
 }
@@ -18,7 +30,7 @@ export interface MapHandlers {
 	/** Клик по карте */
 	onClick: (coordinates: MapCoordinates) => void
 	/** Клик по метке или Enter на ней */
-	onMarkerClick: (marker: MapMarker) => void
+	onMarkerClick: (marker: MapMarkerItem) => void
 	/** Метки на карте пересозданы: новые элементы для значков, слота и балуна */
 	onMarkersRendered: (hosts: MapMarkerHost[]) => void
 }
@@ -30,6 +42,8 @@ interface MapCreateOptions {
 	view: MapView
 	mapId?: string
 	scheme: MapResolvedScheme
+	layer: MapLayer
+	gestures: MapGestures
 	handlers: MapHandlers
 }
 
@@ -50,7 +64,9 @@ export interface MapShapes {
 /** Карта поставщика за общим интерфейсом: вид, метки, удаление */
 export interface MapAdapter {
 	setView: (view: MapView) => void
-	setMarkers: (markers: readonly MapMarker[]) => void
+	setMarkers: (markers: readonly MapMarkerItem[]) => void
+	setLayer: (layer: MapLayer) => void
+	setGestures: (gestures: MapGestures) => void
 	setScheme: (scheme: MapResolvedScheme) => void
 	setShapes: (shapes: MapShapes) => void
 	destroy: () => void
@@ -78,6 +94,7 @@ export interface YandexMapsApi {
 	YMapListener: new (props: YandexListenerProps) => object
 	YMapMarker: new (props: { coordinates: [number, number] }, element: HTMLElement) => object
 	YMapFeature: new (props: YandexFeatureProps) => object
+	YMapDefaultSatelliteLayer?: new (props: object) => object
 }
 
 /** Фигура Яндекса: геометрия GeoJSON и стиль (`fillOpacity` — прозрачность заливки) */
@@ -88,7 +105,7 @@ export interface YandexFeatureProps {
 
 /** Слой схемы Яндекса: `update` меняет тему на месте */
 export interface YandexSchemeLayer {
-	update: (props: { theme: MapResolvedScheme }) => void
+	update: (props: { theme: MapResolvedScheme; customization?: object[] }) => void
 }
 
 /** Карта Яндекса */
@@ -96,6 +113,7 @@ export interface YandexMapInstance {
 	addChild: (child: object) => void
 	removeChild: (child: object) => void
 	setLocation: (location: { center: [number, number]; zoom: number }) => void
+	setBehaviors: (behaviors: string[]) => void
 	destroy: () => void
 }
 
@@ -130,6 +148,8 @@ export interface GoogleMapInstance {
 	getZoom: () => number | undefined
 	setCenter: (center: MapCoordinates) => void
 	setZoom: (zoom: number) => void
+	setMapTypeId: (type: string) => void
+	setOptions: (options: { draggable: boolean; scrollwheel: boolean }) => void
 }
 
 /** Линия или многоугольник Google: `setMap(null)` убирает с карты */
@@ -157,7 +177,16 @@ export interface GoogleMarker {
 export interface GoogleMapsApi {
 	Map: new (
 		element: HTMLElement,
-		options: { center: MapCoordinates; zoom: number; mapId: string; colorScheme: 'LIGHT' | 'DARK' },
+		options: {
+			center: MapCoordinates
+			zoom: number
+			mapId: string
+			colorScheme: 'LIGHT' | 'DARK'
+			mapTypeId: string
+			gestureHandling: 'greedy'
+			draggable: boolean
+			scrollwheel: boolean
+		},
 	) => GoogleMapInstance
 	marker: {
 		AdvancedMarkerElement: new (options: {
@@ -209,6 +238,9 @@ export interface MapSlotsInfo {
 export interface MapDeps {
 	canvasRef: Ref<HTMLElement | null>
 	scheme: ComputedRef<MapResolvedScheme>
+	gestures: () => MapGestures
+	layer: () => MapLayer
+	cluster: { open: (item: MapMarkerItem) => void }
 	selection: {
 		hosts: ShallowRef<MapMarkerHost[]>
 		dismiss: () => void
