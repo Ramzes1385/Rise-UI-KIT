@@ -1,13 +1,34 @@
-import { computed, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import { UI_FILE_MANAGER } from '@/locales/messages'
 import { formatMessage, getLocale, pluralize } from '@/locales/state'
 import type { FileManagerCore } from '../../types/FileManagerInternal.types'
 import { canMoveTo, folderToNodeId, folderTree, nodeIdToFolder } from '../lib/fileManagerIndex'
 
+function isUsableOpener(element: HTMLElement | null): element is HTMLElement {
+	if (!element?.isConnected || element.closest('[role="option"]')) return false
+	return !element.hasAttribute('disabled') && element.getAttribute('aria-disabled') !== 'true'
+}
+
+function useOpenerFocus(core: FileManagerCore) {
+	let opener: HTMLElement | null = null
+	return {
+		remember(): void {
+			opener = document.activeElement instanceof HTMLElement ? document.activeElement : null
+		},
+		restore(isRowFocus = false): void {
+			const target = opener
+			opener = null
+			if (!isRowFocus && isUsableOpener(target)) void nextTick(() => target.focus())
+			else core.requestFocus(null)
+		},
+	}
+}
+
 function useDeleteDialog(core: FileManagerCore) {
 	const isOpen = ref(false)
 	const ids = ref<string[]>([])
 	const hasFolder = computed(() => ids.value.some(id => core.index.value.byId.get(id)?.type === 'folder'))
+	const focus = useOpenerFocus(core)
 
 	return {
 		isDeleteOpen: isOpen,
@@ -24,6 +45,7 @@ function useDeleteDialog(core: FileManagerCore) {
 		),
 		requestDelete(targets: string[] = core.selection.actionIds.value): void {
 			if (core.canOperate.value && targets.length) {
+				focus.remember()
 				ids.value = [...targets]
 				isOpen.value = true
 			}
@@ -31,7 +53,7 @@ function useDeleteDialog(core: FileManagerCore) {
 		closeDelete(isConfirmed: boolean): void {
 			isOpen.value = false
 			if (isConfirmed) core.emit('delete', ids.value)
-			core.requestFocus(null)
+			focus.restore(isConfirmed)
 		},
 	}
 }
@@ -40,6 +62,7 @@ function useMoveDialog(core: FileManagerCore) {
 	const isOpen = ref(false)
 	const ids = ref<string[]>([])
 	const target = ref<string | null | undefined>(undefined)
+	const focus = useOpenerFocus(core)
 
 	return {
 		isMoveOpen: isOpen,
@@ -48,6 +71,7 @@ function useMoveDialog(core: FileManagerCore) {
 		canSubmitMove: computed(() => target.value !== undefined && canMoveTo(core.index.value, ids.value, target.value)),
 		requestMove(targets: string[] = core.selection.actionIds.value): void {
 			if (core.canOperate.value && targets.length) {
+				focus.remember()
 				ids.value = [...targets]
 				target.value = undefined
 				isOpen.value = true
@@ -60,7 +84,7 @@ function useMoveDialog(core: FileManagerCore) {
 			isOpen.value = false
 			if (isConfirmed && target.value !== undefined && canMoveTo(core.index.value, ids.value, target.value))
 				core.emit('move', ids.value, target.value)
-			core.requestFocus(null)
+			focus.restore(isConfirmed)
 		},
 	}
 }
@@ -69,12 +93,13 @@ function useUploadDialog(core: FileManagerCore) {
 	const isOpen = ref(false)
 	const files = ref<File[]>([])
 	const sessionKey = ref(0)
+	const focus = useOpenerFocus(core)
 
 	function close(): void {
 		isOpen.value = false
 		files.value = []
 		sessionKey.value++
-		core.requestFocus(null)
+		focus.restore()
 	}
 
 	return {
@@ -83,7 +108,10 @@ function useUploadDialog(core: FileManagerCore) {
 		uploadKey: sessionKey,
 		closeUpload: close,
 		requestUpload(): void {
-			if (core.canOperate.value) isOpen.value = true
+			if (core.canOperate.value) {
+				focus.remember()
+				isOpen.value = true
+			}
 		},
 		setUploadFiles(next: File[]): void {
 			files.value = next

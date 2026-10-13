@@ -48,7 +48,7 @@ function useInputControl(props: InputProps) {
 		inputId: control.id,
 		nativeAttrs: computed(() => ({
 			...props.inputAttrs,
-			...(props.type === 'search' ? { enterkeyhint: 'search' } : {}),
+			...(props.type === 'search' ? { enterkeyhint: 'search' as const } : {}),
 			...(props.ariaLabel ? { 'aria-label': props.ariaLabel } : {}),
 			...Object.fromEntries(Object.entries(control.aria.value).filter(([, value]) => value !== undefined)),
 		})),

@@ -67,7 +67,6 @@ export const Plans: StoryObj<typeof meta> = {
 				...scriptImports(setupSource, {
 					imports: ['BaseAccordion', 'BaseBadge', 'BaseButton', 'BaseCard', 'BaseIcon', 'BaseSegmented'],
 				}),
-				vue: ['computed', 'ref'],
 				script: scriptSource(setupSource),
 			}),
 		},

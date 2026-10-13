@@ -89,7 +89,6 @@ export const Episode: StoryObj<typeof meta> = {
 					imports: ['BaseBadge', 'BaseBreadcrumbs', 'BaseCommentThread', 'BaseRating', 'BaseTabs', 'BaseUser'],
 					importsFrom: { '@ramzes1385/rise-ui-kit/media': ['BaseMediaPlayer'] },
 				}),
-				vue: ['computed', 'ref'],
 				script: scriptSource(setupSource),
 			}),
 		},

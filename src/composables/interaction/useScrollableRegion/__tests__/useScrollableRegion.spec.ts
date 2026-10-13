@@ -105,6 +105,23 @@ describe('useScrollableRegion', () => {
 		expect(observers[0]?.observe).toHaveBeenCalledWith(screen.getByTestId('region'))
 	})
 
+	it('без ResizeObserver (SSR, старые браузеры) не падает; признак считается по MutationObserver', async () => {
+		mockSize(600, 300)
+		vi.stubGlobal('ResizeObserver', undefined)
+		const { rerender } = render(Host)
+
+		await rerender({ isShown: true })
+		await nextTick()
+
+		expect(screen.getByTestId('state')).toHaveTextContent('true')
+		expect(observers).toHaveLength(0)
+		screen.getByTestId('region').append(document.createElement('i'))
+		await nextTick()
+		await Promise.resolve()
+		expect(screen.getByTestId('state')).toHaveTextContent('true')
+		vi.unstubAllGlobals()
+	})
+
 	it('содержимое помещается → isScrollable=false', async () => {
 		mockSize(300, 300)
 		const { rerender } = render(Host)

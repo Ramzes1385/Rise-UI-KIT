@@ -55,7 +55,6 @@ export const NotFound: StoryObj<typeof meta> = {
 			source: staticStorySource({
 				template,
 				...scriptImports(setupSource, { imports: ['BaseButton', 'BaseEmpty', 'BaseIcon', 'BaseLink', 'BaseSearch'] }),
-				vue: ['ref'],
 				script: scriptSource(setupSource),
 			}),
 		},

@@ -66,7 +66,7 @@ describe('narrowestGap: дерево рамок вместо перебора в
 		expect(narrowestGap(ringEdges([strip]), 2)).toBe(2)
 	})
 
-	it('рост вершин в 4 раза не даёт роста времени в 16 (квадратичный разбор), абсолютное время не проверяется', () => {
+	it('рост вершин в 4 раза даёт рост времени меньше чем в 12 раз (квадратичный разбор дал бы около 16), абсолютное время не проверяется', () => {
 		const timeOf = (count: number): number => {
 			const shape = traced(count)
 			shapeNarrowest(shape, 40, 24)

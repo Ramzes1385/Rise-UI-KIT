@@ -22,10 +22,17 @@ function findStoryPath(componentDir, componentName) {
 }
 
 /** История «Анимации» (решение research-motion): обязательна у каждого компонента — пропуск роняет проверку */
-const ANIMATIONS_EXPORT = /export const Animations\b/
+const ANIMATIONS_EXPORT = /^export const Animations\b/m
+const BLOCK_COMMENT = /\/\*[\s\S]*?\*\//g
+const LINE_COMMENT = /^\s*\/\/.*$/gm
+
+/** Закомментированный экспорт (строкой `//` или блоком) не засчитывается */
+function hasAnimationsExport(source) {
+	return ANIMATIONS_EXPORT.test(source.replace(BLOCK_COMMENT, '').replace(LINE_COMMENT, ''))
+}
 
 function reportAnimations(storyPaths) {
-	const missing = storyPaths.filter(([, path]) => !ANIMATIONS_EXPORT.test(readFileSync(path, 'utf8'))).map(([name]) => name)
+	const missing = storyPaths.filter(([, path]) => !hasAnimationsExport(readFileSync(path, 'utf8'))).map(([name]) => name)
 	if (missing.length === 0) {
 		console.log('✅ История Animations есть у всех компонентов.\n')
 		return true

@@ -68,7 +68,6 @@ export const SignUp: StoryObj<typeof meta> = {
 				...scriptImports(setupSource, {
 					imports: ['BaseAlert', 'BaseButton', 'BaseForm', 'BaseFormField', 'BaseInput', 'BaseLink', 'BasePhoneInput'],
 				}),
-				vue: ['reactive', 'ref'],
 				script: scriptSource(setupSource),
 			}),
 		},

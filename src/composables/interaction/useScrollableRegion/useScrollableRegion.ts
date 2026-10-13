@@ -49,7 +49,7 @@ function useScrollableRegion(options: UseScrollableRegionOptions): UseScrollable
 	function handleMutations(records: MutationRecord[]): void {
 		const element = elementRef.value
 		const hasOwnChildren = records.some(record => record.type === 'childList' && record.target === element)
-		if (hasOwnChildren) observeChildren(resizeObserver!, element!)
+		if (hasOwnChildren && resizeObserver) observeChildren(resizeObserver, element!)
 		update()
 	}
 
@@ -61,8 +61,10 @@ function useScrollableRegion(options: UseScrollableRegionOptions): UseScrollable
 	}
 
 	function connect(element: HTMLElement): void {
-		resizeObserver = new ResizeObserver(update)
-		observeChildren(resizeObserver, element)
+		if (typeof ResizeObserver !== 'undefined') {
+			resizeObserver = new ResizeObserver(update)
+			observeChildren(resizeObserver, element)
+		}
 		mutationObserver = new MutationObserver(handleMutations)
 		mutationObserver.observe(element, MUTATION_OPTIONS)
 	}

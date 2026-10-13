@@ -134,7 +134,6 @@ export const Overview: StoryObj<typeof meta> = {
 						'BaseUser',
 					],
 				}),
-				vue: ['ref'],
 				script: scriptSource(setupSource),
 			}),
 		},

@@ -119,7 +119,6 @@ export const Profile: StoryObj<typeof meta> = {
 						'BaseTextarea',
 					],
 				}),
-				vue: ['reactive', 'ref'],
 				script: scriptSource(setupSource),
 			}),
 		},

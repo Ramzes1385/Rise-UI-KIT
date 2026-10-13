@@ -1886,3 +1886,15 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 
 - **BaseChat** (новые истории `element-basechat--attachment-limits`, `--send-failed`, `--select-all`, `--edit-last`, `--pinned-jump`, `--member-profile`): блок ошибок вложений над превью (рамка слева и фон `--rise-error`, текст `--rise-error-text`, иконка и кнопка закрытия), строка «Не отправлено» с кнопками «Повторить» и «Удалить» под своим сообщением, кнопка «Выбрать всё» первой в панели выбора, «2 из 5» в профиле участника.
 - Существующие истории BaseChat без новых пропсов не меняются, кроме панели выбора (появилась кнопка «Выбрать всё»).
+
+## Задача wave4-polish
+
+Расхождения попиксельного сравнения волны 4 с базой `a5110be4`, не описанные раньше (light и dark, часы 15.05.2025 10:30, 800×500). Причина искалась по `git diff a5110be4..3ba6a864`; где компонент в волне не менялся, так и записано.
+
+- **BaseCryptoProSign** (`form-basecryptoprosign--*`, 8 историй): строка выбранного файла выше на 2 px. Исходники CryptoProSign не менялись; причина — BaseFileUpload (compose-2, `680a1228`): расширение и статус файла теперь `BaseBadge` внутри прежних обёрток, у бейджа свои внутренние отступы.
+- **BasePresentationPlayer** (`media-basepresentationplayer--linear`, `--slide-list`, `--strict`): отклонение не больше 15/255 у отдельных пикселей. Код плеера в волне не менялся (только истории и тесты, `stories-infra`), форма и положение элементов те же; причина не установлена, похоже на сглаживание краёв. Правок в стилях нет.
+- **BaseList** (`data-baselist--filtered`): высота 514 px, отклонение до 143/255 в области поля фильтра. Причина — compose-3 (`a744eb2c`): поле фильтра теперь `BaseInput` (рамка, фон и высота по полю кита).
+- **BaseDropdown** (`overlay-basedropdown--tab-from-panel`): сдвиг на 10 px, отклонение до 7/255. Причина — compose-3 (`25b36057`): поля в панели историй — BaseInput и новая привязка панели к якорю.
+- **BaseChart** (`data-basechart--with-gaps`): 2 px. Код BaseChart и история `with-gaps` в волне не менялись (изменена только история `Animations`); причина не установлена, похоже на сдвиг линии в кадре анимации. Перепроверить на следующем прогоне до/после; пока считать шумом.
+- **BaseInput** `type="search"`: справа появляется крестик «Очистить», пока в поле есть текст; нативный крестик WebKit скрыт. У поля с текстом правый отступ 36 px. Затрагивает истории с поиском (BaseCommandPalette, BaseEmojiPicker, ChatHeader, BaseInput — `Search`).
+- **BaseDashboardGrid**, **BaseFormWizard**, **BaseMap**, **BaseGantt**, **BaseSearch**, **BaseTooltip**, **BaseFileManager**: визуальных изменений нет (доступность и поведение).

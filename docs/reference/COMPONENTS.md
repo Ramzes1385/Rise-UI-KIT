@@ -3812,7 +3812,7 @@ const layout = ref<DashboardLayoutItem[]>([
 ```
 
 - Виджет раскладки: `{ id, x, y, w, h, minW?, minH?, maxW?, maxH?, isStatic?, label? }` (клетки с нуля). Некорректную раскладку (выход за сетку, пересечения, повторы `id`) сетка исправляет на экране и сама не отправляет; повтор `id` — предупреждение в консоли.
-- Пропы: `layout` (`v-model:layout`), `layouts` (`v-model:layouts`, `{ sm, md, lg }`), `cols` (число или `{ sm, md, lg }`, 12), `rowHeight` (80 px), `gap` (16 px), `breakpoints` (`{ sm: 0, md: 640, lg: 1024 }` по ширине самой сетки), `compactType` (`vertical` — по умолчанию, `none`), `isEditable`, `isDisabled`, `label`, `variant` (`default`, `soft`, `outline` — вид карточек), `sizeScale`, `color`, `ui` (`root`, `item`, `body`, `handle`, `resize`, `placeholder`, `empty`, `status`, `hint`), `customClass`.
+- Пропы: `layout` (`v-model:layout`), `layouts` (`v-model:layouts`, `{ sm, md, lg }`), `cols` (число или `{ sm, md, lg }`, 12), `rowHeight` (80 px), `gap` (16 px), `breakpoints` (`{ sm: 0, md: 640, lg: 1024 }` по ширине самой сетки), `compactType` (`vertical` — по умолчанию, `none`), `isEditable`, `isDisabled`, `ariaLabel` (имя сетки), `variant` (`default`, `soft`, `outline` — вид карточек), `sizeScale`, `color`, `ui` (`root`, `item`, `body`, `handle`, `resize`, `placeholder`, `empty`, `status`, `hint`), `customClass`.
 - Слоты: `item` (`{ item, isDragging, isGrabbed }`), `handle` (`{ item }` — вместо значка ручки), `empty`. События: `update:layout`, `update:layouts`, `change` (`{ layout, layouts?, breakpoint, id, action }`, `action` — `move` или `resize`); все приходят по окончании переноса, а не на каждом шаге.
 - Адаптивность: с `layouts` сетка выбирает раскладку по своей ширине; для брейкпоинта без раскладки берётся ближайшая шире и подгоняется под его число колонок. Правка меняет только раскладку текущего брейкпоинта (`update:layouts` несёт все). Без `layouts` брейкпоинт всегда `lg`, а `cols` в виде объекта даёт значение `lg`.
 - Перенос: мышью и пером — за карточку (кнопки, ссылки, поля и элементы с `data-no-drag` внутри не начинают перенос), касанием — за ручку в углу карточки (`touch-action: none` только у неё, чтобы страница прокручивалась); размер — за уголок. Pointer events и `setPointerCapture`; на месте виджета остаётся «призрак» клетки. Escape во время переноса и `pointercancel` возвращают раскладку.
@@ -3896,3 +3896,48 @@ const steps = [
 - Завершение: на последнем шаге «Готово» после проверки сообщает `finish(state)`. На время сохранения приложение включает `isLoading`: «Готово» в загрузке (`aria-busy`), «Назад», степпер и поля заблокированы, повторной отправки нет.
 - Доступность: после смены шага фокус на заголовке шага (`tabindex="-1"`), live-регион `role="status"` объявляет «Шаг N из M: название» (текст появляется после первой смены шага); область шага — `role="group"` с именем из заголовка и описанием; ряд кнопок — группа «Навигация по шагам».
 - Токены `--rise-form-wizard-*`, словарь — раздел `formWizard` (`UI_FORM_WIZARD`).
+
+## BaseFileManager
+
+Файловый менеджер (раздел Storybook `Data`): дерево папок слева, «хлебные крошки», поиск по имени, содержимое папки списком или плиткой, сортировка, выбор, создание папки, переименование, удаление, перемещение и загрузка. Менеджер ничего не читает и не пишет: об операциях сообщает событиями, приложение выполняет их и обновляет `items`.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseFileManager, type FileManagerItem } from '@ramzes1385/rise-ui-kit'
+
+const items = ref<FileManagerItem[]>([
+	{ id: 'docs', name: 'Документы', type: 'folder' },
+	{ id: 'report', parentId: 'docs', name: 'Отчёт.pdf', type: 'file', size: 482000, modifiedAt: '2026-10-01' },
+])
+const path = ref<string | null>(null)
+
+function rename(id: string, name: string): void {
+	const item = items.value.find(entry => entry.id === id)
+	if (item) item.name = name
+}
+</script>
+
+<template>
+	<BaseFileManager v-model:path="path" :items="items" @rename="rename" @delete="ids => (items = items.filter(entry => !ids.includes(entry.id)))" />
+</template>
+```
+
+- Запись (`FileManagerItem`): `id` (уникален), `parentId` (`null` или не задан — корень; запись с неизвестным родителем или родителем-файлом не показывается), `name`, `type` (`folder` или `file`), `size` (байты), `modifiedAt` (`Date`, метка времени или строка ISO), `mime` (вместе с расширением выбирает иконку).
+- Пропсы: `items`; `path` (`v-model:path`, `id` текущей папки, `null` — корень), `selected` (`v-model:selected`, массив `id`), `view` (`v-model:view`, `list` или `grid`), `sort` (`v-model:sort`, `{ key: name | size | modifiedAt, direction: asc | desc }`, папки всегда первыми), `query` (`v-model:query`), `isLoading`, `error` (текст ошибки с кнопкой «Повторить»), `isDisabled`, `isReadonly` (навигация, поиск и выбор работают, операций нет), `hasTree` (по умолчанию `true`; на узкой области дерево скрывается само), `rootLabel`, `ariaLabel`, `accept` и `maxSize` (МБ, `0` — без предела) для окна загрузки, `height`, `variant` (`default`, `outline`, `soft`, `ghost`), `sizeScale`, `color`, `ui` (`root`, `sidebar`, `main`, `toolbar`, `path`, `actions`, `search`, `header`, `sort`, `list`, `entry`, `icon`, `name`, `meta`, `editor`, `status`, `state`), `customClass`.
+- События: `update:path`, `update:selected`, `update:view`, `update:sort`, `update:query`; `open (item)`; `create-folder (parentId, name)`; `rename (id, name)` (имя не пустое, без `/` и `\`, не занято соседней записью без учёта регистра); `delete (ids)` (после подтверждения в окне; у папки приложение удаляет и содержимое); `move (ids, targetId)` (перетаскиванием или окном «Переместить в…», не в себя и не в потомка); `upload (files, parentId)`; `retry`.
+- Слоты: `icon` (`{ item }`) — иконка записи вместо стандартной; `empty` (`{ isSearch, query }`) — пустое состояние.
+- Клавиатура (список — `listbox` с несколькими выбранными): стрелки, Home и End (в плитке стрелки влево и вправо тоже), Shift — выбор диапазона, Ctrl или Cmd — перемещение фокуса без выбора, пробел — отметка записи, Enter — открыть, F2 — переименовать, Delete — удалить, Backspace — на уровень вверх, Escape — снять выбор, печать букв — переход к записи по началу имени.
+- Окно удаления — BaseConfirm (`alertdialog`), окна перемещения (дерево папок) и загрузки (поле файлов) — BaseModal. После отмены фокус возвращается на кнопку, открывшую окно, после подтверждения — на запись списка.
+- Доступность: область — `role="group"` с именем, `aria-busy` при загрузке; статус операций и числа записей — `role="status"`; ошибка загрузки — `role="alert"`; кнопки сортировки — `aria-pressed`. Все тексты — раздел словаря `fileManager` (`UI_FILE_MANAGER`), число записей — форма `plural.FILE_MANAGER_ITEMS`.
+- Токены `--rise-file-manager-*` (`bg`, `border`, `radius`, `entry-*`, `sidebar-width`, `tile-min-width`).
+
+### BaseDatePicker: диапазоны
+
+Режим `selectionMode="range"` (две даты: `v-model` — начало, `v-model:modelValueEnd` — конец) получил готовые периоды, пределы длины, несколько месяцев и ввод с клавиатуры.
+
+- `presets`: `true` — встроенные «Сегодня», «Вчера», «7 дней», «30 дней», «Этот месяц», «Прошлый месяц» (`DATE_PICKER_PRESET_IDS`); массив — свой список: строка — встроенный период, объект `{ id, label, range | getRange(today) }` — свой. Клик ставит диапазон и закрывает панель, активный период подсвечен, период, нарушающий ограничения, отключён. Событие `preset-select (id, start, end)` приходит перед `update:modelValue`, `update:modelValueEnd` и `range-select`. Неверный или повторный период пропускается с предупреждением в консоли (один раз при смене `presets`).
+- `minDays`, `maxDays`: наименьшая и наибольшая длина диапазона в днях, оба конца включительно; дни, дающие неподходящий диапазон, после выбора начала отключены; `maxDays` меньше `minDays` приравнивается к `minDays`.
+- `monthsShown`: число месяцев в панели; без значения — по ширине поля (`isMultiMonth`, `maxMonths`).
+- Ввод с клавиатуры: при `isReadonly=false` период вводится в поле («01.10.2026 — 05.10.2026»; разделитель — дефис или тире, один день — одна дата). Порядок «день, месяц, год» — как поле показывает даты на языке `locale` (`dateFormat` его не меняет). Enter и уход из поля применяют ввод, Escape отменяет. Не принятый текст остаётся в поле с ошибкой и событием `input-invalid (issue, text)`, `issue` — `format`, `unavailable`, `min-days`, `max-days`.
+- Части `ui`: `presets` (колонка периодов) и `preset` (кнопка).

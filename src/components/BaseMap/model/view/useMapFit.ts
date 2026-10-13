@@ -1,6 +1,5 @@
-import { fitView } from './fitView'
 import { watchAdapter } from '../watchAdapter'
-import { FIT_PADDING, MAX_ZOOM } from './viewLimits'
+import { FIT_PADDING, MAX_ZOOM, fitView } from './fitView'
 import type { BaseMapProps, MapMarker, MapView } from '../../types/BaseMap.types'
 import type { MapMarkerItem, MapNavigationState } from '../../types/providers.types'
 

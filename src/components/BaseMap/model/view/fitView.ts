@@ -1,8 +1,10 @@
-import { MAX_ZOOM } from './viewLimits'
 import type { MapFitBox } from '../../types/providers.types'
 import type { MapCoordinates, MapView } from '../../types/BaseMap.types'
 import { TILE, fromMercator, mercatorX, mercatorY } from '../markers/mercator'
 
+export const MIN_ZOOM = 0
+export const MAX_ZOOM = 21
+export const FIT_PADDING = 40
 const FIT_MAX_ZOOM = 17
 
 function zoomFor(extent: number, space: number): number {

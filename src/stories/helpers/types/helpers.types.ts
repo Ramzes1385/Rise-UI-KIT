@@ -117,12 +117,16 @@ export interface ScriptImportsExtra {
 	imports?: readonly string[]
 	/** Имена из прочих путей */
 	importsFrom?: Readonly<Record<string, readonly string[]>>
+	/** Имена из `vue`, которых нет в модуле */
+	vue?: readonly string[]
 }
 
 /** Результат `scriptImports`: готовые `imports` и `importsFrom` для `storySource` */
 export interface ScriptImports {
 	/** Имена из пакета кита (`type X` для типов) */
 	imports: string[]
+	/** Имена из `vue` (`ref`, `computed`, …) — значение `vue` у `storySource` */
+	vue: string[]
 	/** Имена из подпутей пакета и соседних файлов */
 	importsFrom: Record<string, string[]>
 }

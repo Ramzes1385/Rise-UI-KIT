@@ -46,7 +46,6 @@ export const ServerError: StoryObj<typeof meta> = {
 			source: staticStorySource({
 				template,
 				...scriptImports(setupSource, { imports: ['BaseAlert', 'BaseButton', 'BaseEmpty', 'BaseIcon'] }),
-				vue: ['ref'],
 				script: scriptSource(setupSource),
 			}),
 		},

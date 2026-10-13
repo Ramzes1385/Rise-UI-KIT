@@ -10,7 +10,7 @@ const SCALE_OPTIONS: Record<GanttScaleUnit, Intl.DateTimeFormatOptions> = {
 	monthYear: { month: 'long', year: 'numeric' },
 }
 
-export const DEFAULT_DATE_FORMAT: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric' }
+const DEFAULT_DATE_FORMAT: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric' }
 
 const dateFormats = new Map<string, Intl.DateTimeFormat>()
 

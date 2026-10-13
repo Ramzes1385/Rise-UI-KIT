@@ -67,7 +67,7 @@ function addNames(target: Record<string, string[]>, from: string, names: readonl
 /**
  * Импорты кита и соседних файлов из текста модуля (`?raw`) для `imports` и `importsFrom` у `storySource`:
  * `@components/…` — пакет кита, `@utils/…`, `@composables/…` и `BaseMediaPlayer` — подпуть пакета, `../x` — `./x`;
- * `vue` — это `vue` у `storySource`, он пропускается. `extra` — то, чего в модуле нет (компоненты из шаблона).
+ * `vue` — имена из `vue` (значение `vue` у `storySource`). `extra` — то, чего в модуле нет (компоненты из шаблона).
  *
  * @example
  * const kit = scriptImports(setupSource, { imports: ['BaseButton'] })
@@ -77,13 +77,17 @@ export function scriptImports(raw: string, extra: ScriptImportsExtra = {}): Scri
 	const target: Record<string, string[]> = {
 		...Object.fromEntries(Object.entries(extra.importsFrom ?? {}).map(([from, names]) => [from, [...names]])),
 	}
+	const vue = [...(extra.vue ?? [])]
 	const own = [...raw.replace(/\r\n/g, '\n').matchAll(IMPORT_STATEMENT)]
 	for (const [, type, list, specifier] of own) {
-		if (specifier === 'vue') continue
 		const names = list
 			.split(',')
 			.map(name => name.trim())
 			.filter(Boolean)
+		if (specifier === 'vue') {
+			vue.push(...names)
+			continue
+		}
 		addNames(
 			target,
 			importTarget(specifier),
@@ -92,5 +96,5 @@ export function scriptImports(raw: string, extra: ScriptImportsExtra = {}): Scri
 	}
 	const imports = [...new Set([...(extra.imports ?? []), ...(target[KIT_PACKAGE] ?? [])])]
 	delete target[KIT_PACKAGE]
-	return { imports, importsFrom: target }
+	return { imports, vue: [...new Set(vue)].sort(), importsFrom: target }
 }

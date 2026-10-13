@@ -184,6 +184,27 @@ describe('BaseFileManager: удаление', () => {
 		expect(emitted('delete')).toBeUndefined()
 	})
 
+	it('отмена возвращает фокус на кнопку, открывшую окно; подтверждение — на запись в списке', async () => {
+		renderManager({ selected: ['logo'] })
+		const opener = button(UI_FILE_MANAGER.DELETE)
+		await userEvent.click(opener)
+		await userEvent.click(screen.getByRole('button', { name: 'Отмена' }))
+		await waitFor(() => expect(opener).toHaveFocus())
+
+		await userEvent.click(opener)
+		await userEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: UI_FILE_MANAGER.DELETE }))
+		await waitFor(() => expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument())
+		expect(opener).not.toHaveFocus()
+	})
+
+	it('окно, открытое клавишей Delete из списка, после отмены возвращает фокус на запись', async () => {
+		renderManager()
+		option('docs').focus()
+		await userEvent.keyboard('{Delete}')
+		await userEvent.click(screen.getByRole('button', { name: 'Отмена' }))
+		await waitFor(() => expect(option('docs')).toHaveFocus())
+	})
+
 	it('несколько записей: число с подписью, у папки — предупреждение о содержимом', async () => {
 		const { emitted } = renderManager({ selected: ['docs', 'logo', 'notes'] })
 		await userEvent.click(button(UI_FILE_MANAGER.DELETE))
@@ -270,6 +291,7 @@ describe('BaseFileManager: загрузка', () => {
 		)
 		await userEvent.click(screen.getByRole('button', { name: 'Отмена' }))
 		await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+		await waitFor(() => expect(button(UI_FILE_MANAGER.UPLOAD)).toHaveFocus())
 		await userEvent.click(button(UI_FILE_MANAGER.UPLOAD))
 		const submit = within(screen.getByRole('dialog')).getByRole('button', { name: UI_FILE_MANAGER.UPLOAD_SUBMIT })
 		expect(submit).toBeDisabled()

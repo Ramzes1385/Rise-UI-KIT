@@ -60,7 +60,6 @@ export const SignIn: StoryObj<typeof meta> = {
 				...scriptImports(setupSource, {
 					imports: ['BaseButton', 'BaseCheckbox', 'BaseForm', 'BaseFormField', 'BaseInput', 'BaseLink', 'BaseSeparator'],
 				}),
-				vue: ['reactive', 'ref'],
 				script: scriptSource(setupSource),
 			}),
 		},

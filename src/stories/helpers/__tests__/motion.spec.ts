@@ -1,4 +1,9 @@
+import '@testing-library/jest-dom/vitest'
+import { BaseButton } from '@components/BaseButton'
 import { motionPresetsStory } from '../render/decorators/motion'
+import { fireEvent, render, screen } from '@testing-library/vue'
+
+vi.mock('storybook/preview-api', () => ({ useArgs: () => [{}, vi.fn()] }))
 
 const item = `
 		<BaseAnimation :key="replay" v-bind="args">
@@ -71,6 +76,30 @@ describe('motionPresetsStory: steps', () => {
 		expect(code).toContain('const steps = ref(["добавить", "удалить"])'.replaceAll('"', "'"))
 		expect(code).toContain('const phases = ref([1, 2, 3])')
 		expect(code).not.toContain('replay')
+	})
+
+	it('цикл шагов: подпись кнопки идёт по steps, после последнего — «Повторить», затем снова с нуля', async () => {
+		const live = motionPresetsStory({
+			item: '<output class="step">{{ step }}</output>',
+			components: { BaseButton },
+			imports: [],
+			steps,
+		})
+		const { container } = render(live.render({}))
+		const shown = (): string[] => [...container.querySelectorAll('.step')].map(node => node.textContent ?? '')
+		const button = (): HTMLElement => screen.getByRole('button')
+
+		expect(button()).toHaveTextContent('Следующий шаг: добавить')
+		expect(shown()).toEqual(['0', '0', '0', '0'])
+		await fireEvent.click(button())
+		expect(button()).toHaveTextContent('Следующий шаг: удалить')
+		expect(shown()).toEqual(['1', '1', '1', '1'])
+		await fireEvent.click(button())
+		expect(button()).toHaveTextContent('Повторить')
+		expect(shown()).toEqual(['2', '2', '2', '2'])
+		await fireEvent.click(button())
+		expect(button()).toHaveTextContent('Следующий шаг: добавить')
+		expect(shown()).toEqual(['0', '0', '0', '0'])
 	})
 
 	it('без steps прежняя кнопка и replay', () => {

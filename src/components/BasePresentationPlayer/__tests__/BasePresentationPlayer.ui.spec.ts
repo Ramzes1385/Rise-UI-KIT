@@ -109,6 +109,11 @@ describe('BasePresentationPlayer: движение', () => {
 		expect(await closedPanelAfter(60)).toBe(false)
 	})
 
+	it('боковая панель: после перехода (страховочный таймер, без transitionend) панель закрывается', async () => {
+		stubReducedMotion(false)
+		expect(await closedPanelAfter(1000)).toBe(true)
+	})
+
 	it.each([
 		['системное «уменьшить движение»', () => stubReducedMotion(true)],
 		['пресет none', () => document.documentElement.setAttribute('data-rise-motion', 'none')],

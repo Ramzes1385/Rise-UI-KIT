@@ -33,6 +33,7 @@ const MODULE = [
 ].join('\n')
 
 const SETUP_MODULES = import.meta.glob<string>('/src/stories/blocks/*/cases/*.setup.ts', { query: '?raw', import: 'default', eager: true })
+const SHOWCASES = import.meta.glob<string>('/src/stories/blocks/*/cases/*.ts', { query: '?raw', import: 'default', eager: true })
 const SETUPS = import.meta.glob<{ setup: () => Record<string, unknown> }>('/src/stories/blocks/*/cases/*.setup.ts', { eager: true })
 
 describe('scriptSource', () => {
@@ -92,9 +93,10 @@ describe('scriptImports', () => {
 		"import { type UseX, useX } from '@composables/base/useX'",
 	].join('\r\n')
 
-	it('типы кита — в imports, подпути пакета и соседние файлы — в importsFrom, vue пропущен', () => {
+	it('типы кита — в imports, подпути пакета и соседние файлы — в importsFrom, имена из vue — в vue', () => {
 		expect(scriptImports(MODULE_WITH_IMPORTS)).toEqual({
 			imports: ['type TabItem', 'type TableRow'],
+			vue: ['ref'],
 			importsFrom: {
 				'./media': ['seriesMedia'],
 				'@ramzes1385/rise-ui-kit/media': ['type MediaEpisode'],
@@ -114,8 +116,35 @@ describe('scriptImports', () => {
 		expect(result.importsFrom['@ramzes1385/rise-ui-kit/media']).toEqual(['BaseMediaPlayer', 'type MediaEpisode'])
 	})
 
+	it('vue: все имена модуля по алфавиту без повторов, extra.vue дополняет, vue не попадает в importsFrom', () => {
+		const result = scriptImports("import { ref, computed } from 'vue'\nimport { reactive, ref as r } from 'vue'", {
+			vue: ['watch', 'ref'],
+		})
+
+		expect(result.vue).toEqual(['computed', 'reactive', 'ref', 'ref as r', 'watch'])
+		expect(result.importsFrom).toEqual({})
+		expect(scriptImports("import { A } from '@components/BaseTabs'").vue).toEqual([])
+	})
+
 	it('неизвестный путь — ошибка, чтобы «Show code» не терял импорт молча', () => {
 		expect(() => scriptImports("import type { A } from 'left-pad'")).toThrow('left-pad')
+	})
+
+	it.each(Object.keys(SETUP_MODULES))('%s: имена из vue модуля попали в «Show code»', file => {
+		const names = [...SETUP_MODULES[file].matchAll(/^import \{([^}]*)\} from 'vue'/gm)].flatMap(([, list]) =>
+			list.split(',').map(name => name.trim()),
+		)
+
+		expect(names.length).toBeGreaterThan(0)
+		expect(names.filter(name => !scriptImports(SETUP_MODULES[file]).vue.includes(name))).toEqual([])
+	})
+
+	it.each(Object.keys(SETUP_MODULES))('%s: витрина вызывает scriptImports и не держит vue вручную', file => {
+		const showcase = SHOWCASES[file.replace('.setup.ts', '.ts')]
+
+		expect(showcase, 'файл витрины рядом с setup').toBeDefined()
+		expect(showcase).toContain('...scriptImports(setupSource')
+		expect(showcase).not.toMatch(/^\s+vue: \[/m)
 	})
 
 	it.each(Object.keys(SETUP_MODULES))('%s: все типовые импорты модуля попали в «Show code»', file => {
