@@ -73,14 +73,14 @@ describe('BaseEditor: модель редактора', () => {
 		expect(document.execCommand).toHaveBeenLastCalledWith('insertHTML', false, '<i>x</i>')
 	})
 
-	it('ссылка запрашивается через prompt и вставляется командой createLink', async () => {
-		vi.spyOn(window, 'prompt').mockReturnValue('https://example.com')
+	it('кнопка «Ссылка» открывает диалог вместо prompt', async () => {
+		vi.spyOn(window, 'prompt')
 		render(BaseEditor, { props: { modelValue: '<p>Текст</p>' }, global })
 
 		await fireEvent.click(screen.getByRole('button', { name: 'Ссылка' }))
 
-		expect(window.prompt).toHaveBeenCalled()
-		expect(document.execCommand).toHaveBeenCalledWith('createLink', false, 'https://example.com')
+		expect(await screen.findByRole('dialog', { name: 'Ссылка' })).toBeInTheDocument()
+		expect(window.prompt).not.toHaveBeenCalled()
 	})
 
 	it('в режиме кода ввод отправляет очищенный HTML из поля кода', async () => {

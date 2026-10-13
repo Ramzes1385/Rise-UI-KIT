@@ -40,3 +40,5 @@ export const EditorValidation = cases.EditorValidation
 export const EditorIme = cases.EditorIme
 export const EditorReadonlyCode = cases.EditorReadonlyCode
 export const EditorRequired = cases.EditorRequired
+export const EditorLinkDialog = cases.EditorLinkDialog
+export const EditorFormatSync = cases.EditorFormatSync

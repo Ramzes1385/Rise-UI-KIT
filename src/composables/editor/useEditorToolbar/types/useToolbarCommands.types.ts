@@ -31,3 +31,9 @@ export interface CaretTextNode {
 	sel: Selection
 	node: Text
 }
+
+/** Значение ссылки: проверенный адрес и признак «открывать в новой вкладке» */
+export interface EditorLinkValue {
+	url: string
+	isNewTab: boolean
+}

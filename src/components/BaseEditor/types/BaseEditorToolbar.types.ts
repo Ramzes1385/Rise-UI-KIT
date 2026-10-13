@@ -15,6 +15,8 @@ interface EditorActiveStates {
 	isOrderedList: boolean
 	isBlockquote: boolean
 	isPre: boolean
+	/** Блок под кареткой: `p`, `h1`–`h6`, `blockquote`, `pre`; пусто — каретка вне блока */
+	formatBlock: string
 }
 
 export interface BaseEditorToolbarProps {
@@ -71,7 +73,7 @@ export interface BaseEditorToolbarSlots {
 export interface ToolbarButton {
 	icon: string
 	label: string
-	activeKey: keyof EditorActiveStates
+	activeKey: Exclude<keyof EditorActiveStates, 'formatBlock'>
 	action: string
 	type: 'format' | 'block'
 }

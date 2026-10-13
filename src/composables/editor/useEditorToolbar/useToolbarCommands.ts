@@ -1,7 +1,8 @@
 /** Composable: выполнение команд редактора (форматирование, блоки, цвет, медиа) */
 import { convertTypedInlineTag } from './commands/inlineHtml'
 import { applyInlineColor, resetInlineColor } from './commands/colorCommands'
-import type { UseToolbarCommandsOptions } from './types/useToolbarCommands.types'
+import type { EditorLinkValue, UseToolbarCommandsOptions } from './types/useToolbarCommands.types'
+import { applyLink, getSelectionPoint, readLinkAtSelection, removeLink, resolveLinkUrl } from './commands/linkCommands'
 import { IMAGE_MARKUP, insertLink, insertSeparator, insertUploadedMedia, VIDEO_MARKUP } from './commands/insertCommands'
 import {
 	applyBlock,
@@ -43,6 +44,11 @@ function useToolbarCommands(options: UseToolbarCommandsOptions) {
 			if (event.target instanceof HTMLInputElement) applyColor(event.target.value)
 		},
 		insertLink: () => insertLink(options),
+		resolveLinkUrl,
+		readLink: () => readLinkAtSelection(options),
+		applyLink: (value: EditorLinkValue) => applyLink(options, value),
+		removeLink: () => removeLink(options),
+		getLinkPoint: () => getSelectionPoint(options),
 		clearAllFormatting,
 		insertSeparator: () => insertSeparator(options),
 		handleKeyDown: (event: KeyboardEvent) => handleKeyDown(options, event),

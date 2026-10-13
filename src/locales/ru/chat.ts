@@ -143,7 +143,13 @@ export const ruChat = {
 		HEIGHT: 'Высота',
 		APPLY: 'Применить',
 		DELETE: 'Удалить',
-		URL_PROMPT: 'Введите URL ссылки:',
+		/** Имя диалога ссылки */
+		LINK_DIALOG_LABEL: 'Ссылка',
+		LINK_URL: 'Адрес ссылки',
+		LINK_NEW_TAB: 'Открыть в новой вкладке',
+		LINK_REMOVE: 'Удалить ссылку',
+		/** Ошибка поля адреса: пусто или схема вне http, https, mailto, tel */
+		LINK_URL_INVALID: 'Введите адрес: http, https, mailto или tel',
 		/** Доступное имя области редактирования (role="textbox") */
 		CONTENT_LABEL: 'Текстовый редактор',
 		/** Доступное имя панели инструментов (role="toolbar") */

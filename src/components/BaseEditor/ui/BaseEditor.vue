@@ -44,7 +44,7 @@
 				@apply-format="applyFormat"
 				@apply-block="applyBlock"
 				@handle-heading-change="handleHeadingChange"
-				@insert-link="insertLink"
+				@insert-link="openLinkDialog"
 				@handle-image-upload="handleImageUpload"
 				@handle-video-upload="handleVideoUpload"
 				@clear-all-formatting="clearAllFormatting"
@@ -152,6 +152,35 @@
 				</div>
 			</div>
 		</BasePopover>
+
+		<BasePopover
+			:is-open="linkDialog.isVisible"
+			:anchor="linkDialogAnchor"
+			position="bottom"
+			variant="ghost"
+			max-height="none"
+			animation="fade"
+			:size-scale="sizeScale"
+			:aria-label="UI_EDITOR.LINK_DIALOG_LABEL"
+			:ui="{ inner: ui('context-menu') }"
+			@close="closeLinkDialog">
+			<div ref="linkDialogRef" class="base-editor__link-dialog" @keydown.enter.prevent="applyLinkDialog">
+				<BaseInput
+					:model-value="linkDialog.url"
+					:label="UI_EDITOR.LINK_URL"
+					:error="linkDialog.error"
+					:input-attrs="{ inputmode: 'url', autocomplete: 'off' }"
+					:size-scale="menuControlScale"
+					@update:model-value="setLinkUrl" />
+				<BaseCheckbox v-model="linkDialog.isNewTab" :label="UI_EDITOR.LINK_NEW_TAB" :size-scale="menuControlScale" />
+				<div class="base-editor__context-menu-actions">
+					<BaseButton v-if="linkDialog.hasLink" variant="ghost" :size-scale="menuControlScale" @click="removeLinkFromDialog">
+						{{ UI_EDITOR.LINK_REMOVE }}
+					</BaseButton>
+					<BaseButton :size-scale="menuControlScale" @click="applyLinkDialog">{{ UI_EDITOR.APPLY }}</BaseButton>
+				</div>
+			</div>
+		</BasePopover>
 	</div>
 </template>
 
@@ -163,6 +192,7 @@ import { BaseButton } from '@components/BaseButton'
 import { BasePopover } from '@components/BasePopover'
 import { useBaseEditor } from '../model/useBaseEditor'
 import BaseEditorToolbar from './BaseEditorToolbar.vue'
+import { BaseCheckbox } from '@components/BaseCheckbox'
 import { BaseTextarea } from '@components/BaseTextarea'
 import { kitDefaults } from '@composables/base/useDefaults'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
@@ -215,13 +245,20 @@ const {
 	contextMenu,
 	contextMenuRef,
 	mediaMenuAnchor,
+	linkDialog,
+	linkDialogRef,
+	linkDialogAnchor,
+	openLinkDialog,
+	closeLinkDialog,
+	applyLinkDialog,
+	removeLinkFromDialog,
+	setLinkUrl,
 	closeContextMenu,
 	isCodeMode,
 	codeContent,
 	applyFormat,
 	applyBlock,
 	handleHeadingChange,
-	insertLink,
 	clearAllFormatting,
 	insertSeparator,
 	toggleCodeMode,

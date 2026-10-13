@@ -1919,3 +1919,4 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 Эталонов снимков не создавал и не обновлял; ожидаемые изменения:
 
 - **BaseEditor** (новые истории `editor-baseeditor--editor-ime`, `--editor-readonly-code`, `--editor-required`): звёздочка у заголовка обязательного поля (`--rise-error`) и сообщение «Обязательное поле». Существующие истории не меняются (новые пропсы по умолчанию выключены).
+- **BaseEditor** (истории `editor-baseeditor--editor-link-dialog`, `--editor-format-sync`): вместо системного окна — поповер ссылки шириной 288px (поле адреса, флажок, кнопки) у выделения; селект «Формат» показывает формат под кареткой.

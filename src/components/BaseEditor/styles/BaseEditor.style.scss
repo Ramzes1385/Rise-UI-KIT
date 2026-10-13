@@ -302,6 +302,11 @@
 		@include text-size(sm);
 	}
 
+	&__context-menu:has(&__link-dialog) {
+		width: sz(288px);
+	}
+
+	&__link-dialog,
 	&__context-menu-body {
 		display: flex;
 		flex-direction: column;

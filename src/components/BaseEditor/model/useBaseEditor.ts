@@ -5,6 +5,7 @@ import { useEditorField } from './useEditorField'
 import { EDITOR_MENU_SCALE_RATIO } from './editorScale'
 import { useEditorComposition } from './editorComposition'
 import { consumeEcho, rememberEmitted } from './editorDraft'
+import { useEditorSelectionSync } from './editorSelectionSync'
 import type { BaseSelectOption } from '@components/BaseSelect'
 import { escapeHtml, sanitizeHtml } from '@utils/dom/htmlUtils'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
@@ -12,6 +13,7 @@ import { useFormDisabled } from '@composables/form/useFormContext'
 import { useEditorState } from '@composables/editor/useEditorState'
 import { useEditorToolbar } from '@composables/editor/useEditorToolbar'
 import type { EditorComposition } from '../types/EditorComposition.types'
+import { isLinkHotkey, useEditorLinkDialog } from './useEditorLinkDialog'
 import type { BaseEditorEmits, EditorProps } from '../types/BaseEditor.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 
@@ -62,7 +64,6 @@ function useEditorEngine(
 	const toolbar = useEditorToolbar({
 		...refs,
 		onInput: () => handleInput(),
-		promptForUrl: () => prompt(UI_EDITOR.URL_PROMPT),
 		isReadonly: () => options.isLocked.value,
 		sanitize: options.sanitize,
 	})
@@ -123,7 +124,11 @@ function useSafeInsert(isLocked: ComputedRef<boolean>, sanitize: (html: string) 
 	}
 }
 
-function useMediaMenu(editorRef: Ref<HTMLDivElement | null>, toolbar: ReturnType<typeof useEditorToolbar>, composition: EditorComposition) {
+function useMediaMenu(
+	editorRef: Ref<HTMLDivElement | null>,
+	toolbar: ReturnType<typeof useEditorToolbar>,
+	options: { composition: EditorComposition; openLinkDialog: () => void },
+) {
 	const { contextMenu, contextMenuRef } = toolbar
 	watch(
 		() => contextMenu.isVisible,
@@ -136,8 +141,14 @@ function useMediaMenu(editorRef: Ref<HTMLDivElement | null>, toolbar: ReturnType
 		},
 	)
 	return {
+		mediaMenuAnchor: computed(() => ({ x: toolbar.contextMenu.x, y: toolbar.contextMenu.y })),
 		handleKeyDown(event: KeyboardEvent): void {
-			if (composition.isActive) return
+			if (options.composition.isActive) return
+			if (isLinkHotkey(event)) {
+				event.preventDefault()
+				options.openLinkDialog()
+				return
+			}
 			if (!isMediaMenuKey(event) || !toolbar.selectedMedia.value) {
 				toolbar.handleKeyDown(event)
 				return
@@ -160,6 +171,7 @@ function useContentSync(
 	},
 ): void {
 	const { toolbar, state } = ctx.engine
+	useEditorSelectionSync({ editorRef, isCodeMode: toolbar.isCodeMode, composition: ctx.composition, refresh: toolbar.updateActiveStates })
 	watch(
 		() => ctx.isLocked.value,
 		isReadonly => {
@@ -216,11 +228,10 @@ export function useBaseEditor(props: EditorProps, emit: BaseEditorEmits) {
 	const sanitize = (html: string): string => (props.sanitize ?? sanitizeHtml)(html)
 	const pending: string[] = []
 	const engine = useEditorEngine(emit, { editorRef, codeTextareaRef }, { isLocked, sanitize, pending })
-	const { composition } = engine
 	const insert = useSafeInsert(isLocked, sanitize)
-	const mediaMenu = useMediaMenu(editorRef, engine.toolbar, composition)
-	const mediaMenuAnchor = computed(() => ({ x: engine.toolbar.contextMenu.x, y: engine.toolbar.contextMenu.y }))
-	useContentSync(props, editorRef, { isLocked, sanitize, engine, pending, composition })
+	const link = useEditorLinkDialog(engine.toolbar, isLocked)
+	const mediaMenu = useMediaMenu(editorRef, engine.toolbar, { composition: engine.composition, openLinkDialog: link.openLinkDialog })
+	useContentSync(props, editorRef, { isLocked, sanitize, engine, pending, composition: engine.composition })
 
 	return {
 		...standard,
@@ -234,9 +245,10 @@ export function useBaseEditor(props: EditorProps, emit: BaseEditorEmits) {
 		menuControlScale: computed(() => props.sizeScale * EDITOR_MENU_SCALE_RATIO),
 		headingOptions: headingOptions(),
 		...engine.toolbar,
-		handleCompositionStart: composition.handleCompositionStart,
-		handleCompositionEnd: composition.handleCompositionEnd,
-		mediaMenuAnchor,
+		...link,
+		handleCompositionStart: engine.composition.handleCompositionStart,
+		handleCompositionEnd: engine.composition.handleCompositionEnd,
+		mediaMenuAnchor: mediaMenu.mediaMenuAnchor,
 		...engine.state,
 		handleInput: engine.handleInput,
 		handleKeyDown: mediaMenu.handleKeyDown,

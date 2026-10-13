@@ -72,6 +72,19 @@ function blockGroups(): { key: string; items: ToolbarButton[] }[] {
 	]
 }
 
+const HEADING_VALUES = new Set(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'])
+
+function useHeadingValue(props: BaseEditorToolbarProps) {
+	const headingValue = ref<string | number>('p')
+	watch(
+		() => props.activeStates.formatBlock,
+		block => {
+			headingValue.value = HEADING_VALUES.has(block || 'p') ? block || 'p' : ''
+		},
+	)
+	return headingValue
+}
+
 export function useBaseEditorToolbar(props: BaseEditorToolbarProps) {
 	const textColorModel = ref(props.textColor)
 	watch(
@@ -83,7 +96,7 @@ export function useBaseEditorToolbar(props: BaseEditorToolbarProps) {
 	return {
 		...useToolbarRoving(),
 		ui: useUi(props, 'base-editor'),
-		headingValue: ref<string | number>('p'),
+		headingValue: useHeadingValue(props),
 		textColorModel,
 		backgroundColorModel: ref(props.backgroundColor),
 		imageInputRef: ref<HTMLInputElement | null>(null),
