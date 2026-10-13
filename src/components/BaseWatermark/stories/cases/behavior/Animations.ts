@@ -2,8 +2,8 @@ import { expect, waitFor } from 'storybook/test'
 import type meta from '../../BaseWatermark.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import BaseWatermark from '../../../ui/BaseWatermark.vue'
 import { motionPresetsStory } from '@/stories/helpers'
+import BaseWatermark from '../../../ui/BaseWatermark.vue'
 import { BaseAnimation } from '@components/BaseAnimation'
 
 const motion = motionPresetsStory({

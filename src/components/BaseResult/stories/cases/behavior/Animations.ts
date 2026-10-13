@@ -1,6 +1,6 @@
 import { MESSAGES } from '../../shared'
-import { expect, waitFor } from 'storybook/test'
 import type meta from '../../BaseResult.stories'
+import { expect, waitFor } from 'storybook/test'
 import BaseResult from '../../../ui/BaseResult.vue'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'

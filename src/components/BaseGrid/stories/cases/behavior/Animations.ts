@@ -1,10 +1,10 @@
-import { expect, waitFor } from 'storybook/test'
 import type meta from '../../BaseGrid.stories'
 import BaseGrid from '../../../ui/BaseGrid.vue'
+import { expect, waitFor } from 'storybook/test'
 import { BaseButton } from '@components/BaseButton'
+import { BaseGridItem } from '@components/BaseGrid'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { motionPresetsStory } from '@/stories/helpers'
-import { BaseGridItem } from '@components/BaseGrid'
 import { BaseAnimation } from '@components/BaseAnimation'
 
 const motion = motionPresetsStory({

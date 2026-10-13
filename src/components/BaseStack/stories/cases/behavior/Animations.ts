@@ -1,5 +1,5 @@
-import { expect, waitFor } from 'storybook/test'
 import type meta from '../../BaseStack.stories'
+import { expect, waitFor } from 'storybook/test'
 import BaseStack from '../../../ui/BaseStack.vue'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
