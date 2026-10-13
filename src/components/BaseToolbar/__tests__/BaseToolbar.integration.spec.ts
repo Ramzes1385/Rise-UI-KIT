@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import BaseToolbar from '../ui/BaseToolbar.vue'
 import userEvent from '@testing-library/user-event'
-import { render, screen } from '@testing-library/vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 const BUTTONS =
 	'<button>A</button><button>B</button><input aria-label="Поле" /><input type="checkbox" aria-label="Флажок" /><button>C</button>'
@@ -36,15 +36,22 @@ describe('BaseToolbar integration', () => {
 		expect(button('B')).toHaveFocus()
 	})
 
-	it('в текстовом поле стрелки не переводят фокус; другие клавиши не перехватываются', async () => {
+	it('в текстовом поле стрелка двигает каретку и уводит фокус только с края текста; Home остаётся за полем', async () => {
 		const user = userEvent.setup()
 		render(BaseToolbar, { slots: { default: BUTTONS } })
 
 		const field = screen.getByRole('textbox', { name: 'Поле' })
-		await user.click(field)
-		await user.keyboard('{ArrowRight}{Home}')
+		await user.type(field, 'ab')
+		await user.keyboard('{ArrowLeft}')
+		expect(field).toHaveFocus()
+		await user.keyboard('{Home}')
 		expect(field).toHaveFocus()
 		expect(field).toHaveAttribute('tabindex', '0')
+		await user.keyboard('{ArrowLeft}')
+		expect(button('B')).toHaveFocus()
+		await user.click(field)
+		await user.keyboard('{End}{ArrowRight}')
+		expect(screen.getByRole('checkbox', { name: 'Флажок' })).toHaveFocus()
 
 		button('A').focus()
 		const event = new KeyboardEvent('keydown', { key: 'x', bubbles: true, cancelable: true })
@@ -73,22 +80,22 @@ describe('BaseToolbar integration', () => {
 		expect(plain).toHaveFocus()
 	})
 
-	it('многострочное поле и редактируемый блок — стрелки остаются в них', async () => {
+	it('многострочное поле и редактируемый блок — стрелки двигают каретку внутри текста', async () => {
 		const user = userEvent.setup()
 		render(BaseToolbar, {
 			slots: {
 				default:
-					'<button>A</button><textarea aria-label="Заметка"></textarea><div contenteditable="true" tabindex="0" aria-label="Текст">x</div>',
+					'<button>A</button><textarea aria-label="Заметка">ab</textarea><div contenteditable="true" tabindex="0" aria-label="Текст">x</div>',
 			},
 		})
 
 		const note = screen.getByRole('textbox', { name: 'Заметка' })
-		note.focus()
-		await user.keyboard('{ArrowRight}')
+		await user.click(note)
+		await user.keyboard('{ArrowLeft}')
 		expect(note).toHaveFocus()
 		const editable = screen.getByLabelText('Текст')
 		editable.focus()
-		await user.keyboard('{ArrowLeft}')
+		await fireEvent.keyDown(editable, { key: 'ArrowLeft' })
 		expect(editable).toHaveFocus()
 	})
 })
