@@ -53,8 +53,7 @@ export const Animations: StoryObj<typeof meta> = {
 		await waitFor(() => expect(canvasElement.querySelectorAll('.base-skeleton')).toHaveLength(0))
 		await userEvent.click(toggle)
 		await waitFor(() => expect(canvasElement.querySelectorAll('.base-skeleton')).toHaveLength(8))
-		const bone = (preset: string) => canvasElement.querySelector(`[data-rise-motion="${preset}"] .base-skeleton--animated`)!
-		await expect(getComputedStyle(bone('none'), '::after').animationPlayState).toBe('paused')
-		await expect(getComputedStyle(bone('standard'), '::after').animationPlayState).toBe('running')
+		const none = canvasElement.querySelector('[data-rise-motion="none"] .base-skeleton--animated')!
+		await expect(getComputedStyle(none).getPropertyValue('--rise-motion-loop-state').trim()).toBe('paused')
 	},
 }

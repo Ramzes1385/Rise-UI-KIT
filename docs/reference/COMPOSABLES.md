@@ -400,7 +400,7 @@ const sortable = useSortable<Item, number>({
 
 - Клавиатура (`grab`, `handleGrabbedKeydown`): пробел берёт, стрелки (`moveKeys`) двигают, пробел или Enter кладут, Escape отменяет, Tab отменяет и уводит фокус; `onAnnounce('PICKED' | 'MOVED')` — объявить шаг. Это клавиатурная альтернатива перетаскиванию (WCAG 2.5.7, 2.1.1).
 - Мышь и перо (`handlePointerDown`): порог 5px, «призрак» (`drag`, `ghostRef`, `ghostStyle`), посадка на место, Escape отменяет; касание не перехватывается. `consumeClick()` — пропустить клик сразу после перетаскивания.
-- `flip` — элементы плавно едут на новое место, контейнеры меняют высоту; при `prefers-reduced-motion` анимации нет.
+- `flip` — элементы плавно едут на новое место, контейнеры меняют высоту. Длительность — `flip.duration` или токен `--rise-duration` области, кривая — `--rise-ease-emphasized` (`useMotion` по `rootRef`); пресет `none`, `prefers-reduced-motion` и `reducedMotion: 'always'` — без анимации.
 
 ---
 

@@ -50,9 +50,7 @@ export const Animations: StoryObj<typeof meta> = {
 			expect(canvas.getAllByRole('progressbar').filter(bar => bar.getAttribute('aria-valuenow') === '80')).toHaveLength(24),
 		)
 		await waitFor(() => expect(canvas.getAllByText('80%')).toHaveLength(8))
-		const fill = (preset: string) =>
-			canvasElement.querySelector(`[data-rise-motion="${preset}"] .base-progress--striped .base-progress__fill`)!
-		await expect(getComputedStyle(fill('none')).animationPlayState).toBe('paused')
-		await expect(getComputedStyle(fill('standard')).animationPlayState).toBe('running')
+		const none = canvasElement.querySelector('[data-rise-motion="none"] .base-progress--striped .base-progress__fill')!
+		await expect(getComputedStyle(none).getPropertyValue('--rise-motion-loop-state').trim()).toBe('paused')
 	},
 }

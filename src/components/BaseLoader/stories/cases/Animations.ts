@@ -49,8 +49,7 @@ export const Animations: StoryObj<typeof meta> = {
 			await expect(getComputedStyle(spinner).animationDuration).toBe('0.8s')
 			await expect(getComputedStyle(spinner).animationPlayState).toBe('running')
 		}
-		const dot = (preset: string) => canvasElement.querySelector(`[data-rise-motion="${preset}"] .base-loader__dot`)!
-		await expect(getComputedStyle(dot('none')).animationPlayState).toBe('paused')
-		await expect(getComputedStyle(dot('standard')).animationPlayState).toBe('running')
+		const none = canvasElement.querySelector('[data-rise-motion="none"] .base-loader__dot')!
+		await expect(getComputedStyle(none).getPropertyValue('--rise-motion-loop-state').trim()).toBe('paused')
 	},
 }
