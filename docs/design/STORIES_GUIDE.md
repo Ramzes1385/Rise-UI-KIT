@@ -196,7 +196,7 @@ Stories, которые нужны только как проверка (кла�
   - состояние шаблона — `state: { isOpen: false }`, одно и то же в `storySource` и `useStorySetup`: в коде `const isOpen = ref(false)`, в превью у каждого показа свой `ref`. Тип для кода — `types: { values: 'Record<string, string>' }` → `ref<Record<string, string>>({})`. Не храните `ref` в константе модуля: состояние переживёт перезапуск истории и не попадёт в код;
   - `useStorySetup(args, { models, state, data, slots, setup })` — `setup` для того же шаблона: `args` для `v-bind` без слотов, тексты слотов, переменные `v-model`, связанные с Controls, состояние, данные и логика шаблона;
   - данные шаблона — константы кита (`X_VARIANTS`) в `imports` или своё значение, выведенное в `script` через `literal(...)` из тех же данных, что в `setup`, — чтобы код не расходился с примером;
-  - логика шаблона (обработчики, таймеры, запросы) — функция `setup` в `useStorySetup`, своя у каждого показа, и тот же код строками `script`. Большую логику (формы со схемой, витрины Blocks) пишите один раз — модулем `<История>.setup.ts` рядом с историей: данные и типы на верхнем уровне, состояние и обработчики — в `export function setup()`, который возвращает всё для шаблона. Превью берёт `setup` (`useStorySetup(args, { setup })`), код — `script: scriptSource(raw)` из `import raw from './X.setup.ts?raw'`: импорты и `export` убираются, тело `setup` встаёт на верхний уровень без `return`. Не `fn.toString()`: в собранном Storybook функции минифицированы и без типов; импорты из vue — в `vue: ['ref', 'onMounted']`, типы — в `imports` как `'type AutocompleteOption'`, из других входов пакета — в `importsFrom` (`{ '@ramzes1385/rise-ui-kit/utils': ['type StandardSchemaV1'] }`);
+  - логика шаблона (обработчики, таймеры, запросы) — функция `setup` в `useStorySetup`, своя у каждого показа, и тот же код строками `script`. Большую логику (формы со схемой, витрины Blocks) пишите один раз — модулем `<История>.setup.ts` рядом с историей: данные и типы на верхнем уровне, состояние и обработчики — в `export function setup()`, который возвращает всё для шаблона. Превью берёт `setup` (`useStorySetup(args, { setup })`), код — `script: scriptSource(raw)` из `import raw from './X.setup.ts?raw'`: импорты и `export` убираются, тело `setup` встаёт на верхний уровень без `return`. Не `fn.toString()`: в собранном Storybook функции минифицированы и без типов; импорты из vue — в `vue: ['ref', 'onMounted']`, типы — в `imports` как `'type AutocompleteOption'`, из других входов пакета — в `importsFrom` (`{ '@ramzes1385/rise-ui-kit/utils': ['type StandardSchemaV1'] }`). Типовые импорты модуля `setup` (`@components/…`, `@utils/…`, `@composables/…`, `../x`) руками не перечисляют: `...scriptImports(raw, { imports: ['BaseButton'] })` из `@/stories/helpers` разворачивает их в `imports`/`importsFrom` по тексту модуля, `extra` — компоненты шаблона;
   - разметку пишите прямо в шаблоне: вставка общей константы с несколькими строками (`${BUTTON}`) ломает отступы в коде;
   - история без Controls — `staticStorySource(...)`. Картинки data URI уходят в константы `<script setup>`, длинные — сокращаются: `const before = 'data:image/svg+xml,…'`;
   - общий `render` у meta (`stories/render.ts`) экспортирует и `source`; `parameters.ts` компонента ставит его в `docs.source` — так код получают все истории без своего `render`;
@@ -286,6 +286,7 @@ export const Animations: StoryObj<typeof meta> = {
 ```
 
   - `item` — разметка одной колонки. Перезапуск — `:key="replay"` (кнопка делает `replay++`) или своё действие: `action: 'isOpen = !isOpen'`, `trigger: 'Открыть'`, `state: { isOpen: false }`. В `item` нет `id`: колонок четыре.
+  - **Многошаговая история** — `steps: ['добавить «Ревью»', 'перенести карточку']` (подписи шагов). Вместо одной кнопки — «Следующий шаг: <подпись>», после последнего шага — «Повторить» (возврат в начало). В `item` — индекс шага `step` (с 0; после последнего шага он равен `steps.length`), `step` и `steps` лежат в `state` и попадают в «Show code». `action`, `trigger` и `replay` при `steps` не используются. В play кнопку ищут по `{ name: /^(Следующий шаг|Повторить)/ }`.
   - `components` — с `BaseButton` (кнопка «Повторить»); в `imports` для «Show code» он добавляется сам.
   - **«Show code» — точный шаблон превью** (раздел 8): обёртки `<div class="story-motion__preset" data-rise-motion="…">`, кнопка и `replay` в коде те же, что на экране.
   - В описании — какие токены управляют движением и как выключить его в приложении (`motion: 'none'`, `reducedMotion: 'always'`).
@@ -315,3 +316,36 @@ export const Animations: StoryObj<typeof meta> = {
 - **Истории не задают бренд сами.** Пример темы части интерфейса — свой элемент с `data-rise-theme` и `data-theme` через `applyTheme(theme, { target })`, как в «Конструкторе темы»: такая область не зависит от переключателей панели.
 - **check-stories в темах бренда:** `--themes=<список>`, тема — `light`, `dark`, `<бренд>-<режим>` (`corporate-dark`) или `<бренд>` (оба режима). Пример: `node scripts/check-stories.mjs --filter='^foundations-' --themes=light,dark,corporate,playful,minimal`. Группы темизации (`theme-*`) прогоняют свой раздел с `--themes=light,dark,corporate,playful,minimal`.
 - **«Foundations/Конструктор темы»** (`foundations-theme-builder--builder`): входы `ThemeInput`, превью в светлой и тёмной рядом, контраст пар `THEME_CONTRAST_PAIRS`, «Скопировать JS» и «Скопировать CSS». Логика — модуль `cases/Builder.setup.ts` (раздел 8: состояние и обработчики — в `setup()`, свои у каждого показа; «Show code» — `scriptSource`). Связь с брендом `custom` (`watchCustomBrand`) — только в превью, в код не попадает. Play применяет скопированный CSS к «чистой» области вне превью и сверяет вычисленные токены с панелями превью.
+
+## Задача stories-infra: ограничения тестовой среды и остановленные часы
+
+### Остановленные часы в скриншот-тестах (FOLLOW_UPS № 56)
+
+`openStory` в `build/tests/visual.ts` вызывает `page.clock.setFixedTime`. Vue пропускает обработчик события на родителе, если время события не больше времени, когда обработчик подключили (`e._vts <= invoker.attached` в runtime-dom), а при остановленных часах время события всегда равно времени подключения. Срабатывает только самый внутренний обработчик, повешенный прямо на цель события.
+
+Следствия для историй из `*.visual.spec.ts`:
+
+- play не кликает по триггерам меню, выпадающих списков и поповеров (BaseDropdownMenu, BaseSelect, BaseContextMenu): такой клик молча не откроет панель, фаза `errored` засчитывается как готовность, и снимок фиксирует не то состояние;
+- нужное состояние задают args или `models`, а не кликом: панель открыта через `isOpen` или `v-model` с начала, значение выбрано в args;
+- клики по кнопкам с обработчиком на самой кнопке работают; историю с кликом по триггеру проверяет `check-stories` — там часы идут.
+
+```ts
+export const Open: StoryObj<typeof meta> = {
+	args: { isOpen: true, items },
+	play: async ({ canvas }) => {
+		await expect(await canvas.findByRole('menu')).toBeInTheDocument()
+	},
+}
+```
+
+История с кликом по триггеру остаётся обычной (для check-stories и Docs), в список `STORIES` скриншот-теста её не добавляют.
+
+### Ограничения тестовой среды Storybook (FOLLOW_UPS № 50, сноска ²)
+
+- `resetAllMocksLoader` после `updateArgs` (значения `models` в `useStorySetup`) стирает вызовы шпионов `fn()`: история, которая проверяет шпионов после ввода, держит значение в `state`.
+- play, который в конце меняет args, сталкивается с afterEach-axe («Axe is already running»): последним действием play должна быть проверка, а не `updateArgs`.
+- Шпион с ключом `'onDelete-messages'` при `@delete-messages` в шаблоне: вызывается только один из обработчиков. События с дефисом проверяйте через `emitted` в unit-тесте или своим счётчиком в `state`.
+- `userEvent.tab()` не учитывает `inert`: фокус может перейти в скрытую область. К нужному элементу переходите через `tabTo(element, userEvent)` из `@/stories/helpers`.
+- Истории с таймерами (`duration`, `setInterval`) идут по реальному времени: ждите результата через `waitFor(…, { timeout: STORY_WAIT_TIMEOUT })`, а не паузой.
+
+Правок `build/storybook/preview.ts` и помощников не сделано: каждое ограничение обходится в самой истории, а общая правка (например, сброс шпионов только до `updateArgs`) меняет поведение всех историй с `fn()`.

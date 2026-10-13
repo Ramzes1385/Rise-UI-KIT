@@ -2487,3 +2487,7 @@ API кита не меняется. В Storybook добавлены пример
 - **BaseFileUpload**: `.base-file-upload__ext` и `.base-file-upload__status` остались обёртками, внутри — `.base-badge` (soft; расширение — neutral, статус — primary, success, error). Цвет статуса задаёт `base-badge--status-*`, а не модификатор обёртки.
 - **BaseKanban (метки)**: `.base-kanban__label` — `BaseBadge` (soft, `status` = цвет метки); классы `base-kanban__label--<цвет>` в разметке остались, но цвет определяют `base-badge--status-*`; стили `.base-kanban__label*` удалены.
 - **BaseKanban (редактор)**: нативный `textarea` заменён на BaseTextarea (`isAutosize`, класс `base-kanban__field` на корне BaseTextarea); стили поля `__field` кроме ширины удалены — рамка и фокус по полю кита.
+
+## Задача stories-infra: BaseTag — колонка значка
+
+- **BaseTag**: значок в `.base-tag__main` лежит в двух обёртках `.base-tag__lead > .base-tag__lead-clip > .base-tag__icon` (было: `.base-tag__icon` прямо в `main`). Отступ между значком и текстом — `padding-inline-end` значка вместо `gap` у `main`. Селекторы `.base-tag__main > .base-tag__icon` в приложении замените на `.base-tag__icon`; `ui`-части и классы частей не менялись.

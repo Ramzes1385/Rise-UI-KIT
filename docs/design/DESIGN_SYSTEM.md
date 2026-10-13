@@ -347,6 +347,11 @@
 - **Скелетон.** Фон `--rise-bg-elevated`, пульсация только в `motion-safe`.
 - **Empty.** Иконка `--rise-text-dimmed`, заголовок 14/20 medium `--rise-text-highlighted`, описание `--rise-text-muted`.
 
+### Сознательные отклонения от общих правил (задача stories-infra, FOLLOW_UPS № 48)
+
+- **Плейсхолдер триггера BaseSelect** — `--rise-text-muted`, а не `--rise-text-dimmed`, как у `::placeholder` полей ввода. Триггер — кнопка, у неё нет `::placeholder`: подсказка лежит в обычном тексте, и контраст `dimmed` на фоне поля ниже 4.5:1 (WCAG 1.4.3).
+- **Фокус образца BaseColorPicker** — `focus-ring` (кольцо вокруг образца), а не `field-focus` (рамка поля): образец — кнопка-превью цвета, а не граница поля ввода, поэтому кольцо вокруг него читается так же, как у остальных кнопок кита.
+
 ## 5. Файлы
 
 - `src/styles/_tokens.scss` — токены.
