@@ -12,11 +12,11 @@ import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseLink } from '@components/BaseLink'
 
-/** Компоненты пакета: `export * from './BaseX'` в src/components/index.ts — реестр плагина должен совпадать с ними (без числа: новые компоненты не правят тест). */
-const EXPORTED_COMPONENTS = [
-	...readFileSync(join(process.cwd(), 'src/components/index.ts'), 'utf8').matchAll(/^export \* from '\.\/(Base\w+)'/gm),
-]
-	.map(([, name]) => name)
+const readSource = (path: string): string => readFileSync(join(process.cwd(), path), 'utf8')
+
+/** Компоненты пакета: папки из `export * from './BaseX'` в src/components/index.ts и все `default as BaseY` в их index.ts (вместе с вторичными, как BaseGridItem) — реестр плагина должен совпадать с ними (без числа: новые компоненты не правят тест). */
+const EXPORTED_COMPONENTS = [...readSource('src/components/index.ts').matchAll(/^export \* from '\.\/(Base\w+)'/gm)]
+	.flatMap(([, folder]) => [...readSource(`src/components/${folder}/index.ts`).matchAll(/default as (Base\w+)/g)].map(([, name]) => name))
 	.sort()
 
 const RouterLinkStub = defineComponent({
