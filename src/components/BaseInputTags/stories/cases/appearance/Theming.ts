@@ -47,8 +47,8 @@ export const Theming: StoryObj<typeof meta> = {
 	}),
 	play: async ({ canvasElement }) => {
 		const [plain, themed, classed] = [...canvasElement.querySelectorAll<HTMLElement>('.base-input-tags__list')]
-		const plainTag = plain.querySelector<HTMLElement>('.base-input-tags__tag')!
-		const themedTag = themed.querySelector<HTMLElement>('.base-input-tags__tag')!
+		const plainTag = plain.querySelector<HTMLElement>('.base-input-tags__tag .base-badge')!
+		const themedTag = themed.querySelector<HTMLElement>('.base-input-tags__tag .base-badge')!
 
 		await expect(getComputedStyle(themedTag).backgroundColor).not.toBe(getComputedStyle(plainTag).backgroundColor)
 		await expect(getComputedStyle(themedTag).color).not.toBe(getComputedStyle(plainTag).color)

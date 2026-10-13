@@ -11,7 +11,7 @@ export const Default: StoryObj<typeof meta> = {
 		},
 	},
 	play: async ({ canvas }) => {
-		const badge = canvas.getByText('5')
+		const badge = canvas.getByText('5').closest('.base-chip__badge') as HTMLElement
 		await expect(badge.getBoundingClientRect().height).toBe(18)
 		await expect(canvas.getAllByRole('button')).toHaveLength(1)
 	},

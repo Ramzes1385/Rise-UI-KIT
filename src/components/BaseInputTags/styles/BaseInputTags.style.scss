@@ -37,37 +37,22 @@
 
 	&__tag {
 		display: inline-flex;
-		align-items: center;
-		gap: sz(2px);
+		min-width: 0;
 		max-width: 100%;
-		height: sz(ct(input-tags, tag-height, 22px));
-		padding: 0 sz(2px) 0 sz(ct(input-tags, tag-padding-x, 8px));
-		border: 1px solid ct(input-tags, tag-border, var(--rise-border));
-		border-radius: sz(ct(input-tags, tag-radius, var(--rise-radius-sm)));
-		background-color: ct(input-tags, tag-bg, var(--rise-bg-elevated));
-		color: ct(input-tags, tag-text, var(--rise-text-highlighted));
-		@include text-size(xs);
-	}
 
-	&__text {
-		@include truncate;
+		.base-badge {
+			height: sz(ct(input-tags, tag-height, 22px));
+			padding-left: sz(ct(input-tags, tag-padding-x, 8px));
+			border-color: ct(input-tags, tag-border, var(--rise-border));
+			border-radius: sz(ct(input-tags, tag-radius, var(--rise-radius-sm)));
+			background-color: ct(input-tags, tag-bg, var(--rise-bg-elevated));
+			color: ct(input-tags, tag-text, var(--rise-text-highlighted));
+			@include text-size(xs);
+		}
 	}
 
 	&__remove {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		flex-shrink: 0;
-		width: sz(16px);
-		height: sz(16px);
-		padding: 0;
-		border: none;
-		border-radius: sz(var(--rise-radius-xs));
-		background-color: transparent;
 		color: var(--rise-text-muted);
-		cursor: pointer;
-		@include transition-colors;
-		@include focus-ring(1px);
 
 		@include hover {
 			background-color: ct(input-tags, remove-bg-hover, var(--rise-bg-accented));

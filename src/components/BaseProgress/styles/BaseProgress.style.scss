@@ -140,6 +140,22 @@ $progress-radius: ct(progress, radius, var(--rise-radius-full));
 		clip-path: none;
 	}
 
+	&--countdown#{&}--paused &__fill {
+		animation-play-state: paused;
+	}
+
+	&--countdown &__fill {
+		border-radius: inherit;
+		clip-path: none;
+		transform-origin: left;
+		transition: none;
+
+		&:dir(rtl) {
+			clip-path: none;
+			transform-origin: right;
+		}
+	}
+
 	&--indeterminate &__fill-circle {
 		stroke-dashoffset: 0;
 		opacity: 0.4;
@@ -177,6 +193,11 @@ $progress-radius: ct(progress, radius, var(--rise-radius-full));
 			width: 40%;
 			opacity: 1;
 			animation: base-progress-indeterminate calc(var(--rise-duration-loop) * 1.5) var(--rise-ease) infinite;
+			@include loop-state;
+		}
+
+		&--countdown &__fill {
+			animation: base-progress-countdown var(--progress-countdown) linear forwards;
 			@include loop-state;
 		}
 
@@ -248,6 +269,16 @@ $progress-radius: ct(progress, radius, var(--rise-radius-full));
 
 	to {
 		transform: translateX(250%);
+	}
+}
+
+@keyframes base-progress-countdown {
+	from {
+		transform: scaleX(1);
+	}
+
+	to {
+		transform: scaleX(0);
 	}
 }
 

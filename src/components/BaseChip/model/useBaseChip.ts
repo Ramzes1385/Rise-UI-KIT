@@ -25,7 +25,7 @@ export function useBaseChip(props: ChipProps, emit: BaseChipEmits) {
 	})
 
 	return {
-		...clickable,
+		isClickable: clickable.isClickable,
 		...useStandardBaseComponent('base-chip', props, ['root', 'badge']),
 		ui: useUi(props, 'base-chip'),
 		isVisible: computed((): boolean => {
@@ -37,6 +37,6 @@ export function useBaseChip(props: ChipProps, emit: BaseChipEmits) {
 		badgeLabel: computed(() =>
 			clickable.isClickable.value ? formatMessage(UI_ARIA.CHIP_BADGE, { value: displayContent.value }) : undefined,
 		),
-		handleBadgeClick: () => emit('click-badge'),
+		badgeListeners: computed(() => (clickable.isClickable.value ? { click: () => emit('click-badge') } : {})),
 	}
 }

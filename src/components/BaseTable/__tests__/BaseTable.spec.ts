@@ -40,10 +40,6 @@ const globalConfig = {
 			template: '<span class="base-tooltip-stub"><slot /></span>',
 			props: ['text', 'position', 'sizeScale'],
 		},
-		BaseBadge: {
-			template: '<span class="base-badge-stub"><slot /></span>',
-			props: ['variant', 'sizeScale'],
-		},
 		BaseSkeleton: {
 			template: '<span class="base-skeleton-stub"></span>',
 			props: ['shape', 'width', 'height', 'sizeScale'],

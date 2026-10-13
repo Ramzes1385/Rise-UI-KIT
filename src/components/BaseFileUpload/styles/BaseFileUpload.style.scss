@@ -193,20 +193,10 @@
 		}
 	}
 
-	&__ext {
-		font-weight: var(--rise-font-weight-medium);
-	}
-
-	&__status--uploading {
-		color: var(--rise-primary);
-	}
-
-	&__status--done {
-		color: var(--rise-success);
-	}
-
-	&__status--error {
-		color: var(--rise-error);
+	&__ext,
+	&__status {
+		display: inline-flex;
+		align-items: center;
 	}
 
 	&__progress {

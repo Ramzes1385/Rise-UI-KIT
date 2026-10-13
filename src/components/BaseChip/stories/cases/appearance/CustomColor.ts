@@ -41,8 +41,8 @@ export const CustomColor: StoryObj<typeof meta> = {
 		template,
 	}),
 	play: async ({ canvas }) => {
-		const primary = canvas.getByText('5')
-		const error = canvas.getByText('12')
+		const primary = canvas.getByText('5').closest('.base-chip__badge') as HTMLElement
+		const error = canvas.getByText('12').closest('.base-chip__badge') as HTMLElement
 		await expect(error.style.getPropertyValue('--custom-bg')).toBe('var(--rise-error)')
 		await expect(getComputedStyle(error).backgroundColor).not.toBe(getComputedStyle(primary).backgroundColor)
 		const [plainButton, coloredButton] = canvas.getAllByRole('button')

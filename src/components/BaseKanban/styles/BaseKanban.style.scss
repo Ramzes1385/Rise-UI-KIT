@@ -310,22 +310,6 @@
 		gap: sz(4px);
 	}
 
-	&__label {
-		padding: 0 sz(6px);
-		border-radius: sz(var(--rise-radius-sm));
-		background-color: var(--rise-bg-elevated);
-		color: var(--rise-text-toned);
-		@include text-size(xs);
-		font-weight: var(--rise-font-weight-medium);
-	}
-
-	@each $role in (primary, success, warning, error, info) {
-		&__label--#{$role} {
-			background-color: var(--rise-#{$role}-soft);
-			color: var(--rise-#{$role}-text);
-		}
-	}
-
 	&__meta {
 		display: flex;
 		align-items: flex-end;

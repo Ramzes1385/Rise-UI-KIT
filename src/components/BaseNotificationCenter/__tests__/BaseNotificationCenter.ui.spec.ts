@@ -48,7 +48,7 @@ describe('BaseNotificationCenter: проп ui', () => {
 		expect(screen.getByRole('region')).toHaveAttribute('class', 'base-notification-center')
 		expect(part(container, 'header')).toHaveAttribute('class', 'base-notification-center__header')
 		expect(part(container, 'list')).toHaveAttribute('class', 'base-notification-center__list')
-		expect(part(container, 'dot')).toHaveAttribute('class', 'base-notification-center__dot')
+		expect(part(container, 'dot')).toHaveAttribute('class', 'base-badge base-badge--dot base-notification-center__dot')
 	})
 
 	it('классы частей добавляются к классам кита, customClass и модификаторы сохраняются', () => {

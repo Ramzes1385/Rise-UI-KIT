@@ -35,7 +35,13 @@
 				<div :class="ui('body')">
 					<div :class="ui('line')">
 						<label :for="row.checkboxId" :class="ui('label')">{{ row.item.title }}</label>
-						<span v-if="row.isNext" :id="row.nextId" :class="ui('next')">{{ UI_CHECKLIST.NEXT }}</span>
+						<BaseBadge
+							v-if="row.isNext"
+							:id="row.nextId"
+							:class="ui('next')"
+							variant="soft"
+							:label="UI_CHECKLIST.NEXT"
+							:size-scale="sizeScale" />
 					</div>
 					<p v-if="row.item.description" :id="row.descriptionId" :class="ui('description')">
 						{{ row.item.description }}
@@ -65,6 +71,7 @@
 import '../styles/BaseChecklist.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHECKLIST } from '@/locales/messages'
+import { BaseBadge } from '@components/BaseBadge'
 import { BaseButton } from '@components/BaseButton'
 import { BaseCheckbox } from '@components/BaseCheckbox'
 import { BaseProgress } from '@components/BaseProgress'

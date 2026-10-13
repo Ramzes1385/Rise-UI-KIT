@@ -31,6 +31,15 @@ describe('BaseChecklist', () => {
 		expect(screen.queryByRole('status')).toBeNull()
 	})
 
+	it('метка «Следующий шаг» — мягкий BaseBadge с прежним классом', () => {
+		const { container } = render(BaseChecklist, { props: { items: ITEMS, completed: ['a'] } })
+		const next = container.querySelector('.base-checklist__next')
+
+		expect(next).toHaveClass('base-badge', 'base-badge--soft')
+		expect(next).toHaveTextContent('Следующий шаг')
+		expect(container.querySelectorAll('.base-checklist__next')).toHaveLength(1)
+	})
+
 	it('флажок отмечает и снимает шаг; кнопка — событие action', async () => {
 		const { emitted } = render(BaseChecklist, { props: { items: ITEMS, title: 'Запуск' } })
 

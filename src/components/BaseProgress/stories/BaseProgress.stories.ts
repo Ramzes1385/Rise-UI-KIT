@@ -27,3 +27,4 @@ export const Fills = cases.Fills
 export const Indeterminate = cases.Indeterminate
 export const WithLabel = cases.WithLabel
 export const Complete = cases.Complete
+export const Countdown = cases.Countdown

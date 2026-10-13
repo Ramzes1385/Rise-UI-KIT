@@ -50,36 +50,4 @@
 		gap: space(6px);
 		width: 100%;
 	}
-
-	&__filter-tag.base-badge {
-		gap: sz(2px);
-		padding-right: sz(2px);
-	}
-
-	&__filter-tag-text {
-		min-width: 0;
-		@include truncate;
-	}
-
-	&__filter-remove {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		flex-shrink: 0;
-		width: sz(16px);
-		height: sz(16px);
-		padding: 0;
-		border: 0;
-		border-radius: sz(var(--rise-radius-xs));
-		background-color: transparent;
-		color: var(--rise-text-muted);
-		cursor: pointer;
-		@include transition-colors;
-		@include focus-ring(1px);
-
-		@include hover {
-			background-color: var(--rise-bg-elevated);
-			color: var(--rise-text-highlighted);
-		}
-	}
 }

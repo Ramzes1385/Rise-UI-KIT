@@ -29,6 +29,8 @@ describe('BaseNotificationCenter unit', () => {
 		expect(screen.getByRole('button', { name: 'Отчёт готов 16 часов назад' })).toBeInTheDocument()
 		expect(container.querySelector('time')).toHaveAttribute('datetime', new Date(ITEMS[0].date).toISOString())
 		expect(container.querySelectorAll('.base-notification-center__item--unread')).toHaveLength(2)
+		expect(container.querySelector('.base-notification-center__dot')).toHaveAttribute('role', 'img')
+		expect(container.querySelector('.base-notification-center__dot')).toHaveAttribute('aria-label', 'не прочитано')
 	})
 
 	it('картинка, своя иконка и колокольчик по умолчанию', () => {

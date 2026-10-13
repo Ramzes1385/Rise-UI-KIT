@@ -20,9 +20,10 @@ export const PauseOnHover: StoryObj<typeof meta> = {
 		await userEvent.hover(item)
 		await new Promise(resolve => setTimeout(resolve, 2500))
 		await expect(item).toBeInTheDocument()
-		await expect(getComputedStyle(item.querySelector('.base-notification-item__progress') as HTMLElement).animationPlayState).toBe(
-			'paused',
-		)
+		await expect(
+			getComputedStyle(item.querySelector('.base-notification-item__progress .base-progress__fill') as HTMLElement)
+				.animationPlayState,
+		).toBe('paused')
 
 		await userEvent.unhover(item)
 		await waitFor(() => expect(canvas.queryByRole('status')).not.toBeInTheDocument(), { timeout: 4000 })

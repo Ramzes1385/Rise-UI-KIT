@@ -52,7 +52,7 @@ export const Theming: StoryObj<typeof meta> = {
 					'`spotlight-ring` (кольцо подсветки), `progress-bar-bg`, `progress-bar-fill-bg` — задайте их на `:root`, в теме или на контейнере',
 					'слоёв (`<BaseApp teleport-to>`): тур телепортируется. Отступ умножается на плотность темы `--rise-density`.',
 					'Список — docs/design/COMPONENT_TOKENS.md. Проп `ui` добавляет классы к частям (`root`, `overlay`, `spotlight`, `card`, `arrow`,',
-					'`panel`, `header`, `title`, `close`, `content`, `footer`, `progress`, `dot`, `progress-bar`, `progress-bar-fill`, `counter`, `actions`);',
+					'`panel`, `header`, `title`, `close`, `content`, `footer`, `progress`, `dot`, `progress-bar`, `counter`, `actions`);',
 					'глобально — `defaults.BaseTour.ui` плагина. Тур из области с `data-rise-theme` или `data-rise-motion` наследует её тему и движение.',
 					'Здесь каждый тур — в своём контейнере слоёв (`contain: layout`), чтобы три тура поместились рядом.',
 				].join('\n'),

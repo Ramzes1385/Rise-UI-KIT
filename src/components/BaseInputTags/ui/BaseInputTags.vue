@@ -24,19 +24,18 @@
 				<ul :class="[ui('list'), classes.list]" :aria-label="UI_ARIA.TAGS" :aria-disabled="isControlDisabled ? 'true' : undefined">
 					<TransitionGroup name="base-input-tags-tag" :css="!isMotionReduced" @before-leave="holdLeavingTag">
 						<li v-for="(tag, index) in modelValue" :key="tagKeys[index]" :class="[ui('tag'), classes.tag]">
-							<span :class="ui('text')">{{ tag }}</span>
-							<button
-								v-if="canEdit"
+							<BaseBadge
+								variant="outline"
+								:label="tag"
+								:ui="{ text: ui('text'), remove: ui('remove') }"
+								:custom-class="{ remove: classes.remove }"
+								:is-removable="canEdit"
+								:is-remove-focusable="false"
+								:remove-label="formatMessage(UI_ARIA.TAG_REMOVE, { name: tag })"
+								:size-scale="sizeScale"
 								:ref="element => setRemoveButton(element, index)"
-								type="button"
-								:class="[ui('remove'), classes.remove]"
-								tabindex="-1"
-								:aria-label="formatMessage(UI_ARIA.TAG_REMOVE, { name: tag })"
-								@mousedown.prevent
-								@click="removeAt(index, true)"
-								@keydown="handleTagKeydown($event, index)">
-								<BaseIcon name="x-mark" :size-scale="calcIconScale('xs', sizeScale)" />
-							</button>
+								@remove="removeAt(index, true)"
+								@keydown="handleTagKeydown($event, index)" />
 						</li>
 					</TransitionGroup>
 				</ul>
@@ -50,9 +49,8 @@
 import '../styles/BaseInputTags.style.scss'
 import { UI_ARIA } from '@/locales/messages'
 import { formatMessage } from '@/locales/state'
-import { BaseIcon } from '@components/BaseIcon'
+import { BaseBadge } from '@components/BaseBadge'
 import { BaseInput } from '@components/BaseInput'
-import { calcIconScale } from '@utils/media/iconUtils'
 import { kitDefaults } from '@composables/base/useDefaults'
 import { useBaseInputTags } from '../model/useBaseInputTags'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'

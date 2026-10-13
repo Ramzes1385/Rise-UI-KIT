@@ -5,9 +5,14 @@
 		:style="coverStyle"
 		aria-hidden="true"></span>
 	<span v-if="meta.labels.length" :class="ui('labels')">
-		<span v-for="label in meta.labels" :key="label.text" class="base-kanban__label" :class="`base-kanban__label--${label.color}`">
-			{{ label.text }}
-		</span>
+		<BaseBadge
+			v-for="label in meta.labels"
+			:key="label.text"
+			class="base-kanban__label"
+			:class="`base-kanban__label--${label.color}`"
+			variant="soft"
+			:status="label.color"
+			:label="label.text" />
 	</span>
 	<span :class="ui('card-title')">{{ card.title }}</span>
 	<span v-if="card.description" :class="ui('card-description')">{{ card.description }}</span>
@@ -46,6 +51,7 @@
 
 <script setup lang="ts">
 import { BaseIcon } from '@components/BaseIcon'
+import { BaseBadge } from '@components/BaseBadge'
 import { BaseTooltip } from '@components/BaseTooltip'
 import { BaseAvatarGroup } from '@components/BaseAvatarGroup'
 import type { KanbanCardContentProps } from '../types/KanbanParts.types'

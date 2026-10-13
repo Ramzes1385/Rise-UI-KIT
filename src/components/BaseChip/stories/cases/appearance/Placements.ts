@@ -40,7 +40,7 @@ export const Placements: StoryObj<typeof meta> = {
 		template,
 	}),
 	play: async ({ canvas }) => {
-		const [topRight, , , bottomLeft] = canvas.getAllByText('7')
+		const [topRight, , , bottomLeft] = canvas.getAllByText('7').map(text => text.closest('.base-chip__badge') as HTMLElement)
 		const [button] = canvas.getAllByRole('button')
 		const buttonRect = button.getBoundingClientRect()
 		const badgeRect = topRight.getBoundingClientRect()

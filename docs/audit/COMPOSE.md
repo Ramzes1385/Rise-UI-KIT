@@ -144,3 +144,12 @@
 - C9: BaseMarkdown, BaseChat (текст сообщения и панель ссылок), BaseMediaPlayer (логотип, реклама, актёры, список серий) используют BaseLink (новый проп `hasExternalIcon`). BaseSideBar отложен: стили пункта конфликтуют со стилями BaseLink.
 - C10: BaseAutocomplete, BaseCommandPalette, BaseCommentThread, BaseNotificationCenter, BaseSearch, BaseSubtitleEditor, MediaStatsPanel и MediaWatchPanel показывают пусто и загрузку через BaseEmpty (новый проп `isCompact`).
 - C12: BaseImage использует BaseSkeleton вместо `__shimmer`, тулбар BaseImageZoom — BaseSeparator. `hr` в BaseMarkdown остаётся: приложения стилизуют `.base-markdown hr`.
+
+## Задача compose-2 (13.10.2026)
+
+Заменено по отложенным находкам C1, C2, C3 (частично), C6, C16 (`docs/design/FOLLOW_UPS.md`, эпик compose-audit):
+
+- C1: BaseTooltip без обёртки (`isWrapperless`); BaseColorModeButton и BaseSubtitleEditor (блоки реплик, поля времени) используют BaseTooltip вместо `title`. BaseMediaPlayer — зона compose-3 и плана плеера.
+- C16: BaseTooltip не ставит `aria-describedby`, если доступное имя триггера совпадает с текстом подсказки.
+- C2: BaseBadge с `isRemovable` — BaseSelect (теги), BaseInputTags, BaseTable (фильтры). C6: BaseBadge (`status`, `isDot`, `isRound`) и BaseProgress (`countdown`) — BaseChip, BaseNotificationCenter, BaseNotification, BaseTour, BaseKanban (метки), BaseFileUpload, BaseChecklist.
+- C3: поле поиска BaseSelect — BaseInput, поля BaseSubtitleEditor — BaseInput и BaseTextarea, редактор BaseKanban — BaseTextarea.

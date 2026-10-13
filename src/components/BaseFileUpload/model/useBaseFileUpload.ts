@@ -59,6 +59,12 @@ function useLeavingItems(files: Ref<UploadedFile[]>) {
 	}
 }
 
+const FILE_STATUS_BADGE = { selected: 'neutral', uploading: 'primary', done: 'success', error: 'error' } as const
+
+function fileBadgeStatus(item: UploadedFile): (typeof FILE_STATUS_BADGE)[UploadedFile['status']] {
+	return FILE_STATUS_BADGE[item.status]
+}
+
 function fileIconName(item: UploadedFile): string {
 	if (item.type.startsWith('image/')) return 'image'
 	if (item.type.startsWith('video/')) return 'video'
@@ -178,6 +184,7 @@ export function useBaseFileUpload(props: FileUploadProps, emit: BaseFileUploadEm
 		formatHint: computed(() => formatAcceptHint(props.accept)),
 		formatSize: (bytes: number): string => formatFileSize(bytes),
 		fileIconName,
+		fileBadgeStatus,
 		...useDropzone(state, isControlDisabled, fileInput),
 		exposed: exposeOf({ rootRef, dropzoneRef }, formField, state),
 	}

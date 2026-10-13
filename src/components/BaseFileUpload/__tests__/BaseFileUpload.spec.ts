@@ -345,9 +345,16 @@ describe('BaseFileUpload unit', () => {
 			progress(40)
 			await waitFor(() => expect(container.querySelector('.base-file-upload__status')).toHaveTextContent('40%'))
 			expect(screen.getByRole('progressbar', { name: 'a.pdf' })).toBeInTheDocument()
+			expect(container.querySelector('.base-file-upload__ext .base-badge')).toHaveClass(
+				'base-badge--soft',
+				'base-badge--status-neutral',
+			)
+			expect(container.querySelector('.base-file-upload__status .base-badge')).toHaveClass('base-badge--soft')
+			expect(container.querySelector('.base-file-upload__status .base-badge')).not.toHaveClass('base-badge--status-neutral')
 
 			finish({ id: 1 })
 			await waitFor(() => expect(container.querySelector('.base-file-upload__status')).toHaveTextContent('Загружено'))
+			expect(container.querySelector('.base-file-upload__status .base-badge')).toHaveClass('base-badge--status-success')
 			expect((emitted()['upload-success'] as unknown[][])[0][1]).toEqual({ id: 1 })
 			expect(screen.getByRole('status')).toHaveTextContent('Файл «a.pdf» загружен')
 		})
@@ -358,6 +365,7 @@ describe('BaseFileUpload unit', () => {
 			await selectFiles(container, [new File(['a'], 'a.pdf', { type: 'application/pdf' })])
 
 			await waitFor(() => expect(container.querySelector('.base-file-upload__file-error')).toHaveTextContent('Сервер недоступен'))
+			expect(container.querySelector('.base-file-upload__status--error .base-badge')).toHaveClass('base-badge--status-error')
 			expect(container.querySelector('.base-file-upload__status--error')).toHaveTextContent('Ошибка')
 			expect((emitted()['upload-error'] as unknown[][])[0][1]).toBe('Сервер недоступен')
 			expect(screen.getByRole('status')).toHaveTextContent('Не удалось загрузить «a.pdf»: Сервер недоступен')

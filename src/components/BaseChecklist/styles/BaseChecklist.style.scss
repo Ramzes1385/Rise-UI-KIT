@@ -106,12 +106,7 @@
 	}
 
 	&__next {
-		padding: 0 sz(6px);
-		border-radius: sz(var(--rise-radius-sm));
-		background-color: var(--rise-bg);
-		color: var(--rise-primary-text);
-		@include text-size(xs);
-		font-weight: var(--rise-font-weight-medium);
+		flex-shrink: 0;
 	}
 
 	&__description {
@@ -147,10 +142,6 @@
 	&--soft {
 		border-color: transparent;
 		@include custom-bg(background-color, ct(checklist, bg, var(--rise-bg-muted)));
-	}
-
-	&--soft &__next {
-		background-color: var(--rise-bg);
 	}
 
 	&--outline {

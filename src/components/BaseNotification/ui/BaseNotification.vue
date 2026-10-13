@@ -66,11 +66,14 @@
 						@click="remove(notification.id)">
 						<BaseIcon name="close" :size-scale="calcIconScale('sm', sizeScale)" />
 					</BaseButton>
-					<div
+					<BaseProgress
 						v-if="!notification.isPersistent"
 						:key="getTimerKey(notification)"
 						:class="[ui('progress'), classes.progress]"
-						:style="{ animationDuration: `${getDuration(notification)}ms` }"></div>
+						:value="100"
+						:countdown="getDuration(notification)"
+						:is-paused="isPaused"
+						aria-hidden="true" />
 				</div>
 			</TransitionGroup>
 		</div>
@@ -85,6 +88,7 @@ import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { BaseButton } from '@components/BaseButton'
 import { calcIconScale } from '@utils/media/iconUtils'
+import { BaseProgress } from '@components/BaseProgress'
 import { kitDefaults } from '@composables/base/useDefaults'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import { DEFAULT_DURATION, useBaseNotification } from '../model/useBaseNotification'

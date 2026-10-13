@@ -1782,3 +1782,15 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 
 - **BaseTooltip** (`overlay-basetooltip--wrapperless`, новая история): подсказка без обёртки у абсолютно позиционированной кнопки. Остальные истории не меняются.
 - **BaseColorModeButton, BaseSubtitleEditor**: вместо нативной подсказки браузера `title` — подсказка кита (инвертированный фон, стрелка) при наведении и фокусе; в покое вид тот же.
+- **BaseBadge** (`element-basebadge--palette`, `--shapes`, `--removable`, новые истории): палитра `status`, точка и круглый счётчик, бейдж с крестиком. Остальные истории не меняются.
+- **BaseProgress** (`element-baseprogress--countdown`, новая история): обратный отсчёт; в истории стоит пауза, кадр неподвижный.
+- **BaseSelect (multiple) / BaseInputTags / BaseTable (фильтры)**: крестик удаления — кнопка BaseBadge: 16px как раньше, цвет наследуется от тега, прозрачность 0.7 (при наведении 1), фон при наведении `color-mix(currentcolor 16%)`, зазор текст-крестик 4px (было 2px у InputTags и Table), правый отступ бейджа 2px. Текст тега InputTags — по шрифту бейджа (medium). Возможен сдвиг на 1–2px.
+- **BaseNotification**: полоса таймера рисуется BaseProgress; вид и анимация те же (scaleX, linear), возможны субпиксельные отличия.
+- **BaseTour** (полоса при большом числе шагов; `opened`, `last-step`, `progress-bar`): заливка на первом шаге уже 1/N, на последнем полная; скругление по BaseProgress.
+- **BaseSelect (поиск)**: поле поиска в списке — поле кита (рамка, высота 32px, иконка слева), а не строка с нижней линией.
+- **BaseSubtitleEditor**: поля времени и текста — поля кита (BaseInput, BaseTextarea), ошибка времени под полем текстом поля кита.
+- **BaseChip** (индикатор), **BaseNotificationCenter** (точка), **BaseChecklist** («Следующий шаг»), **BaseFileUpload** (расширение и статус), **BaseKanban** (метки): метки рисует BaseBadge. Заметно: Checklist — фон метки `--rise-primary-soft` вместо белого; FileUpload — расширение и статус в мягких бейджах, строка метаданных чуть выше; Kanban — нейтральная метка `--rise-bg-accented` с текстом `--rise-text`, отступы 7px × 1px, радиус `--rise-radius-sm`; Chip — у некликабельного индикатора нет курсора pointer, смена числа идёт с «pop» BaseBadge вместе с bump Chip.
+- **BaseKanban (редактор карточки)**: поле — BaseTextarea: рамка нейтральная, фокус — кольцо поля кита (раньше всегда рамка `--rise-primary` и тень).
+- **BaseKanban** (все истории с метками): метка карточки выше на ≈2–3px из-за отступов бейджа (1px сверху и снизу) — карточки и колонки вытягиваются на 24–40px на всю доску.
+- **BaseColorModeButton** (`element-basecolormodebutton--default`): play истории ставит фокус на кнопку, поэтому на снимке теперь видна подсказка «Тёмная тема» (раньше нативный `title` на снимок не попадал).
+- **BaseTooltip** `isWrapperless` и остальное: снимки до/после сняты на свежей сборке Storybook (light и dark, 181 история, `prefers-reduced-motion: reduce`); различия — в историях, названных выше.

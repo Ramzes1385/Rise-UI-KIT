@@ -59,13 +59,12 @@ describe('BaseTour: проп ui', () => {
 
 	it('классы ui на подсветке, стрелке и полосе прогресса', async () => {
 		const steps = Array.from({ length: 10 }, (_, index) => ({ target: '#step-1', title: `Шаг ${index + 1}` }))
-		const ui = { spotlight: 'own-spot', arrow: 'own-arrow', 'progress-bar': 'own-bar', 'progress-bar-fill': 'own-fill' }
+		const ui = { spotlight: 'own-spot', arrow: 'own-arrow', 'progress-bar': 'own-bar' }
 		render(BaseTour, { props: { isOpen: true, steps, ui } })
 		await screen.findByText('Шаг 1')
 
 		expect(part('spotlight')).toHaveClass('own-spot')
 		expect(part('progress-bar')).toHaveClass('own-bar')
-		expect(part('progress-bar-fill')).toHaveClass('own-fill')
 	})
 
 	it('классы из defaults.BaseTour.ui плагина склеиваются с классами экземпляра', async () => {

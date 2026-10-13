@@ -1,5 +1,11 @@
 .base-badge {
 	@include custom-color-scope;
+	--badge-role: var(--rise-primary);
+	--badge-on-role: var(--rise-on-primary);
+	--badge-soft: var(--rise-primary-soft);
+	--badge-role-text: var(--rise-primary-text);
+	--badge-role-border: var(--rise-border-accented);
+
 	display: inline-flex;
 	align-items: center;
 	gap: sz(ct(badge, gap, 4px));
@@ -15,16 +21,34 @@
 	line-height: sz(var(--rise-line-height-xs));
 	font-weight: ct(badge, font-weight, var(--rise-font-weight-medium));
 	white-space: nowrap;
-	@include custom-bg(background-color, ct(badge, bg, var(--rise-primary)));
-	@include custom-text(color, ct(badge, text, var(--rise-on-primary)));
+	@include custom-bg(background-color, ct(badge, bg, var(--badge-role)));
+	@include custom-text(color, ct(badge, text, var(--badge-on-role)));
+
+	@each $role in (info, success, warning, error) {
+		&--status-#{$role} {
+			--badge-role: var(--rise-#{$role});
+			--badge-on-role: var(--rise-on-#{$role});
+			--badge-soft: var(--rise-#{$role}-soft);
+			--badge-role-text: var(--rise-#{$role}-text);
+			--badge-role-border: var(--rise-#{$role}-border);
+		}
+	}
+
+	&--status-neutral {
+		--badge-role: var(--rise-bg-inverted);
+		--badge-on-role: var(--rise-text-inverted);
+		--badge-soft: var(--rise-bg-accented);
+		--badge-role-text: var(--rise-text);
+		--badge-role-border: var(--rise-border-accented);
+	}
 
 	&--soft {
-		@include custom-bg(background-color, var(--rise-primary-soft));
-		@include custom-text(color, var(--rise-primary-text));
+		@include custom-bg(background-color, var(--badge-soft));
+		@include custom-text(color, var(--badge-role-text));
 	}
 
 	&--outline {
-		border-color: ct(badge, border, var(--rise-border-accented));
+		border-color: ct(badge, border, var(--badge-role-border));
 		@include custom-bg(background-color, var(--rise-bg));
 		@include custom-text(color, var(--rise-text));
 	}
@@ -32,6 +56,38 @@
 	&--ghost {
 		@include custom-bg(background-color, transparent);
 		@include custom-text(color, var(--rise-text));
+	}
+
+	&--status-info#{&}--outline,
+	&--status-success#{&}--outline,
+	&--status-warning#{&}--outline,
+	&--status-error#{&}--outline,
+	&--status-info#{&}--ghost,
+	&--status-success#{&}--ghost,
+	&--status-warning#{&}--ghost,
+	&--status-error#{&}--ghost {
+		@include custom-text(color, var(--badge-role-text));
+	}
+
+	&--dot {
+		gap: 0;
+		width: sz(ct(badge, dot-width, 8px));
+		min-width: 0;
+		height: sz(ct(badge, dot-height, 8px));
+		padding: 0;
+		border-radius: var(--rise-radius-full);
+	}
+
+	&--round {
+		justify-content: center;
+		min-width: sz(ct(badge, round-height, 18px));
+		height: sz(ct(badge, round-height, 18px));
+		padding: 0 sz(ct(badge, round-padding-x, 5px));
+		border-radius: var(--rise-radius-full);
+	}
+
+	&--removable {
+		padding-right: sz(ct(badge, remove-padding, 2px));
 	}
 
 	&--shadow {
@@ -53,6 +109,33 @@
 	&__text {
 		min-width: 0;
 		@include truncate;
+	}
+
+	&__remove {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		width: sz(ct(badge, remove-width, 16px));
+		height: sz(ct(badge, remove-height, 16px));
+		padding: 0;
+		border: 0;
+		border-radius: sz(var(--rise-radius-xs));
+		background-color: transparent;
+		color: inherit;
+		cursor: pointer;
+		opacity: 0.7;
+		@include transition(opacity, background-color);
+		@include focus-ring(1px);
+
+		@include hover {
+			background-color: color-mix(in srgb, currentcolor 16%, transparent);
+			opacity: 1;
+		}
+
+		&:disabled {
+			cursor: inherit;
+		}
 	}
 }
 

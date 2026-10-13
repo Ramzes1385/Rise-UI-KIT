@@ -368,6 +368,16 @@ describe('BaseSelect integration', () => {
 			expect(screen.getByRole('combobox', { name: 'Материалы' })).toHaveAttribute('aria-expanded', 'false')
 		})
 
+		it('крестик бейджа вне порядка Tab и сохраняет прежние классы', () => {
+			render(BaseSelect, {
+				props: { modelValue: ['metal'] as (string | number)[], options: OPTIONS, isMultiple: true },
+			})
+			const button = screen.getByRole('button', { name: 'Удалить Металл' })
+
+			expect(button).toHaveAttribute('tabindex', '-1')
+			expect(button).toHaveClass('base-badge__remove', 'base-select__tag-close')
+		})
+
 		it('в отключённом мультивыборе крестиков у бейджей нет', () => {
 			render(BaseSelect, {
 				props: { modelValue: ['metal'] as (string | number)[], options: OPTIONS, isMultiple: true, isDisabled: true },

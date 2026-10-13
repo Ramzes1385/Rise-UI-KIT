@@ -66,20 +66,16 @@
 								:key="item.value"
 								variant="soft"
 								:class="ui('tag')"
-								:custom-class="classes.tag"
+								:custom-class="{ root: classes.tag, remove: classes.tagClose }"
+								:ui="{ remove: ui('tag-close') }"
+								:is-removable="!isControlDisabled"
+								:is-remove-focusable="false"
+								:remove-label="`${UI_TEXT.DELETE} ${item.label}`"
+								@remove="removeValue(item.value)"
 								:size-scale="sizeScale">
 								<BaseText tag="span" :class="ui('tag-text')" :custom-class="classes.tagText" :size-scale="sizeScale">{{
 									item.label
 								}}</BaseText>
-								<button
-									v-if="!isControlDisabled"
-									type="button"
-									:class="[ui('tag-close'), classes.tagClose]"
-									tabindex="-1"
-									:aria-label="`${UI_TEXT.DELETE} ${item.label}`"
-									@click.stop="removeValue(item.value)">
-									<BaseIcon name="x-mark" :size-scale="calcIconScale('xs', sizeScale)" />
-								</button>
 							</BaseBadge>
 						</TransitionGroup>
 						<template v-if="!isMultiple && selectedOption">

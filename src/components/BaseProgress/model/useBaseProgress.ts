@@ -26,8 +26,12 @@ const GRADIENT_STOPS: Record<string, ProgressGradientStop[]> = {
 	rainbow: RAINBOW.map((index, position) => ({ offset: position / (RAINBOW.length - 1), color: `var(--rise-chart-${index})` })),
 }
 
+function hasCountdown(props: ProgressProps): boolean {
+	return props.shape === 'line' && props.countdown !== undefined && props.countdown > 0
+}
+
 function toRatio(props: ProgressProps): number {
-	if (props.isIndeterminate) return 0
+	if (props.isIndeterminate || hasCountdown(props)) return 0
 	if (!Number.isFinite(props.max) || props.max <= 0 || Number.isNaN(props.value)) return 0
 	return Math.min(Math.max(props.value, 0), props.max) / props.max
 }
@@ -61,8 +65,11 @@ function useProgressLabel(props: ProgressProps, percent: ComputedRef<number>, ro
 	return {
 		displayPercent: computed(() => Math.round(tween.value.value)),
 		percentStyle,
-		fillStyle: computed(() => (props.isIndeterminate ? undefined : percentStyle.value)),
-		isLabelVisible: computed(() => props.hasLabel && !props.isIndeterminate),
+		fillStyle: computed(() => {
+			if (hasCountdown(props)) return { '--progress-countdown': `${props.countdown}ms` }
+			return props.isIndeterminate ? undefined : percentStyle.value
+		}),
+		isLabelVisible: computed(() => props.hasLabel && !props.isIndeterminate && !hasCountdown(props)),
 	}
 }
 
@@ -87,9 +94,11 @@ export function useBaseProgress(props: ProgressProps, emit: BaseProgressEmits) {
 		ui: useUi(props, 'base-progress'),
 		rootRef,
 		percent,
-		valueText: computed(() =>
-			props.isIndeterminate ? UI_ARIA.PROGRESS_INDETERMINATE : formatMessage(UI_ARIA.PROGRESS_VALUE, { percent: percent.value }),
-		),
+		valueText: computed(() => {
+			if (props.isIndeterminate || hasCountdown(props)) return UI_ARIA.PROGRESS_INDETERMINATE
+			return formatMessage(UI_ARIA.PROGRESS_VALUE, { percent: percent.value })
+		}),
+		isCountdown: computed(() => hasCountdown(props)),
 		fillClass: computed(() => (props.fill === 'solid' ? '' : `base-progress--fill-${props.fill}`)),
 	}
 }

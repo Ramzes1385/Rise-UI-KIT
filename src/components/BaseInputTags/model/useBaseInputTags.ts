@@ -20,7 +20,8 @@ function useTagFocus(inputRef: Ref<InstanceType<typeof BaseInput> | null>) {
 	const removeButtons: (HTMLElement | undefined)[] = []
 	return {
 		setRemoveButton(element: unknown, index: number): void {
-			if (element instanceof HTMLElement) removeButtons[index] = element
+			const button = (element as { removeButton?: unknown } | null)?.removeButton
+			if (button instanceof HTMLElement) removeButtons[index] = button
 			else if (!removeButtons[index]?.isConnected) removeButtons[index] = undefined
 		},
 		focusInput(): void {

@@ -133,17 +133,10 @@
 		@include text-size(xs);
 	}
 
-	&__dot {
+	&__dot.base-badge {
 		flex-shrink: 0;
-		width: sz(8px);
-		height: sz(8px);
+		@include custom-bg(background-color, ct(notification-center, dot-bg, var(--badge-role)));
 		margin-top: sz(6px);
-		border-radius: 50%;
-		background-color: ct(notification-center-dot, bg, var(--rise-primary));
-	}
-
-	&__hidden {
-		@include visually-hidden;
 	}
 
 	&__toggle {

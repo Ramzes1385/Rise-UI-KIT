@@ -115,27 +115,6 @@
 		@include truncate;
 	}
 
-	&__tag-close {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		flex-shrink: 0;
-		width: sz(16px);
-		height: sz(16px);
-		margin-right: sz(-4px);
-		padding: 0;
-		border: none;
-		border-radius: sz(var(--rise-radius-xs));
-		background-color: transparent;
-		color: inherit;
-		cursor: pointer;
-		@include transition-colors;
-
-		@include hover {
-			background-color: var(--rise-primary-soft-hover);
-		}
-	}
-
 	&--outline &__trigger {
 		@include custom-bg(background-color, transparent);
 	}

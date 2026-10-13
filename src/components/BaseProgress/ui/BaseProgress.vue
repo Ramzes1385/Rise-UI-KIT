@@ -6,13 +6,13 @@
 			`base-progress--${shape}`,
 			animation !== 'none' ? `base-progress--${animation}` : '',
 			fillClass,
-			{ 'base-progress--indeterminate': isIndeterminate },
+			{ 'base-progress--indeterminate': isIndeterminate, 'base-progress--countdown': isCountdown, 'base-progress--paused': isPaused },
 			classes.root,
 		]"
 		:style="[sizeScaleStyle, customColorStyle]"
 		role="progressbar"
 		:aria-label="ariaLabel || UI_ARIA.PROGRESS"
-		:aria-valuenow="isIndeterminate ? undefined : percent"
+		:aria-valuenow="isIndeterminate || isCountdown ? undefined : percent"
 		:aria-valuetext="valueText"
 		aria-valuemin="0"
 		aria-valuemax="100">
@@ -79,6 +79,7 @@ const props = withDefaults(
 		fill: 'solid',
 		hasLabel: false,
 		isIndeterminate: false,
+		isPaused: false,
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )
@@ -99,6 +100,7 @@ const {
 	percentStyle,
 	fillStyle,
 	fillClass,
+	isCountdown,
 	gradientId,
 	gradientStops,
 	circleStrokeStyle,

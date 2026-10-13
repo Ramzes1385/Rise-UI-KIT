@@ -39,7 +39,9 @@ export const Sizes: StoryObj<typeof meta> = {
 		template,
 	}),
 	play: async ({ canvas }) => {
-		const heights = canvas.getAllByText('3').map(badge => badge.getBoundingClientRect().height)
+		const heights = canvas
+			.getAllByText('3')
+			.map(text => (text.closest('.base-chip__badge') as HTMLElement).getBoundingClientRect().height)
 		await expect(heights[2]).toBe(18)
 		await expect(heights[0]).toBeLessThan(heights[4])
 	},

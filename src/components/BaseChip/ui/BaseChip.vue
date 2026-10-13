@@ -2,8 +2,13 @@
 	<div :class="[ui('root'), variantClass, classes.root]" :style="[sizeScaleStyle, variantStyle]">
 		<slot />
 		<Transition name="base-chip__badge">
-			<span
+			<BaseBadge
 				v-if="isVisible"
+				is-round
+				:label="displayContent"
+				:variant="variant"
+				:color="color"
+				:size-scale="sizeScale"
 				:class="[
 					ui('badge'),
 					`base-chip__badge--${placement}`,
@@ -11,19 +16,15 @@
 					{ 'base-chip__badge--clickable': isClickable },
 					classes.badge,
 				]"
-				:style="customColorStyle"
-				v-bind="clickableAttributes"
 				:aria-label="badgeLabel"
-				@click="handleBadgeClick"
-				@keydown="handleKeydown">
-				{{ displayContent }}
-			</span>
+				v-on="badgeListeners" />
 		</Transition>
 	</div>
 </template>
 
 <script setup lang="ts">
 import '../styles/BaseChip.style.scss'
+import { BaseBadge } from '@components/BaseBadge'
 import { useBaseChip } from '../model/useBaseChip'
 import { kitDefaults } from '@composables/base/useDefaults'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
@@ -49,15 +50,12 @@ const {
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,
-	customColorStyle,
 	classes,
 	isVisible,
 	displayContent,
 	bumpClass,
 	isClickable,
-	clickableAttributes,
 	badgeLabel,
-	handleBadgeClick,
-	handleKeydown,
+	badgeListeners,
 } = useBaseChip(props, emit)
 </script>

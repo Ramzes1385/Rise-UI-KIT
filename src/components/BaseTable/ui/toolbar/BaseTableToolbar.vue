@@ -88,16 +88,12 @@
 				:key="index"
 				variant="outline"
 				class="base-table__filter-tag"
-				:size-scale="sizeScale">
-				<span class="base-table__filter-tag-text">{{ getFilterLabel(filter) }}</span>
-				<button
-					type="button"
-					class="base-table__filter-remove"
-					:aria-label="`${TABLE_TEXT.REMOVE_FILTER}: ${getFilterLabel(filter)}`"
-					@click="emit('remove-filter', index)">
-					<BaseIcon name="x-mark" :size-scale="calcIconScale('xs', sizeScale)" />
-				</button>
-			</BaseBadge>
+				:label="getFilterLabel(filter)"
+				:ui="{ remove: 'base-table__filter-remove' }"
+				is-removable
+				:remove-label="`${TABLE_TEXT.REMOVE_FILTER}: ${getFilterLabel(filter)}`"
+				:size-scale="sizeScale"
+				@remove="emit('remove-filter', index)" />
 		</div>
 
 		<slot name="toolbar-append"></slot>

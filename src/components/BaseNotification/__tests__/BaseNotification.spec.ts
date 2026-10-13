@@ -7,6 +7,12 @@ function getNotification() {
 	return document.querySelector('.base-notification-item')
 }
 
+function getCountdown() {
+	return document
+		.querySelector<HTMLElement>('.base-notification-item__progress .base-progress__fill')
+		?.style.getPropertyValue('--progress-countdown')
+}
+
 function getRegion() {
 	return screen.getByRole('region', { name: 'Уведомления' })
 }
@@ -94,7 +100,9 @@ describe('BaseNotification unit', () => {
 
 			const progress = document.querySelector('.base-notification-item__progress') as HTMLElement
 			expect(progress).toBeInTheDocument()
-			expect(progress.style.animationDuration).toBe('3000ms')
+			expect(progress).toHaveAttribute('aria-hidden', 'true')
+			expect(progress).toHaveClass('base-progress', 'base-progress--countdown')
+			expect(getCountdown()).toBe('3000ms')
 		})
 
 		it('должен рендерить прогресс-бар при duration>0', async () => {
@@ -250,8 +258,7 @@ describe('BaseNotification unit', () => {
 			await vi.advanceTimersByTimeAsync(100)
 			expect(getNotification()).toBeInTheDocument()
 			expect(emitted()).not.toHaveProperty('close')
-			const progress = document.querySelector('.base-notification-item__progress') as HTMLElement
-			expect(progress.style.animationDuration).toBe('3000ms')
+			expect(getCountdown()).toBe('3000ms')
 
 			await vi.advanceTimersByTimeAsync(2900)
 			expect(emitted()).toHaveProperty('close')
@@ -268,7 +275,7 @@ describe('BaseNotification unit', () => {
 
 				await vi.advanceTimersByTimeAsync(100)
 				expect(emitted()).not.toHaveProperty('close')
-				expect((document.querySelector('.base-notification-item__progress') as HTMLElement).style.animationDuration).toBe('3000ms')
+				expect(getCountdown()).toBe('3000ms')
 
 				await vi.advanceTimersByTimeAsync(2900)
 				expect(emitted()).toHaveProperty('close')
@@ -282,7 +289,7 @@ describe('BaseNotification unit', () => {
 			wrapper.vm.add({ title: 'Без своей длительности' })
 			await vi.advanceTimersByTimeAsync(0)
 
-			expect((document.querySelector('.base-notification-item__progress') as HTMLElement).style.animationDuration).toBe('5000ms')
+			expect(getCountdown()).toBe('5000ms')
 			await vi.advanceTimersByTimeAsync(4999)
 			expect(getNotification()).toBeInTheDocument()
 			await vi.advanceTimersByTimeAsync(1)
@@ -296,9 +303,7 @@ describe('BaseNotification unit', () => {
 
 			await vi.advanceTimersByTimeAsync(1000)
 			expect(emitted()).not.toHaveProperty('close')
-			expect((document.querySelector('.base-notification-item__progress') as HTMLElement).style.animationDuration).toBe(
-				'2147483647ms',
-			)
+			expect(getCountdown()).toBe('2147483647ms')
 		})
 
 		it('положительная длительность одинаково задаёт таймер и прогресс-бар', async () => {
@@ -306,7 +311,7 @@ describe('BaseNotification unit', () => {
 			const { emitted } = render(BaseNotification, { props: { title: 'Тест', duration: 5000 } })
 
 			await vi.advanceTimersByTimeAsync(100)
-			expect((document.querySelector('.base-notification-item__progress') as HTMLElement).style.animationDuration).toBe('5000ms')
+			expect(getCountdown()).toBe('5000ms')
 			await vi.advanceTimersByTimeAsync(4800)
 			expect(emitted()).not.toHaveProperty('close')
 			await vi.advanceTimersByTimeAsync(100)
@@ -476,6 +481,7 @@ describe('BaseNotification unit', () => {
 			await vi.advanceTimersByTimeAsync(1000)
 			await fireEvent.mouseEnter(getRegion())
 			expect(getRegion()).toHaveClass('base-notification--paused')
+			expect(document.querySelector('.base-notification-item__progress')).toHaveClass('base-progress--paused')
 			await rerender({
 				items: [
 					{ id: 'b', title: 'B', duration: 500 },
@@ -487,6 +493,7 @@ describe('BaseNotification unit', () => {
 
 			await fireEvent.mouseLeave(getRegion())
 			expect(getRegion()).not.toHaveClass('base-notification--paused')
+			expect(document.querySelector('.base-notification-item__progress')).not.toHaveClass('base-progress--paused')
 			await vi.advanceTimersByTimeAsync(500)
 			expect(emitted().remove).toEqual([['b']])
 			await vi.advanceTimersByTimeAsync(1499)

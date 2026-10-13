@@ -83,16 +83,18 @@
 						<span :class="[ui('name'), classes.name]">{{ item.name }}</span>
 					</BaseTooltip>
 					<div :class="[ui('meta'), classes.meta]">
-						<span v-if="item.extension" class="base-file-upload__ext" :class="classes.ext">{{
-							item.extension.toUpperCase()
-						}}</span>
+						<span v-if="item.extension" class="base-file-upload__ext" :class="classes.ext">
+							<BaseBadge variant="soft" status="neutral" :label="item.extension.toUpperCase()" :size-scale="sizeScale" />
+						</span>
 						<span class="base-file-upload__size" :class="classes.size">{{ formatSize(item.size) }}</span>
 						<span
 							v-if="item.status !== 'selected'"
 							:class="[ui('status'), `base-file-upload__status--${item.status}`, classes.status]">
-							<template v-if="item.status === 'done'">{{ UI_TEXT.FILE_STATUS_DONE }}</template>
-							<template v-else-if="item.status === 'uploading'">{{ item.progress }}%</template>
-							<template v-else>{{ UI_TEXT.FILE_STATUS_ERROR }}</template>
+							<BaseBadge variant="soft" :status="fileBadgeStatus(item)" :size-scale="sizeScale">
+								<template v-if="item.status === 'done'">{{ UI_TEXT.FILE_STATUS_DONE }}</template>
+								<template v-else-if="item.status === 'uploading'">{{ item.progress }}%</template>
+								<template v-else>{{ UI_TEXT.FILE_STATUS_ERROR }}</template>
+							</BaseBadge>
 						</span>
 					</div>
 					<span v-if="item.status === 'error' && item.error" :class="[ui('file-error'), classes.fileError]">{{
@@ -155,6 +157,7 @@
 import '../styles/BaseFileUpload.style.scss'
 import { formatMessage } from '@/locales/state'
 import { BaseIcon } from '@components/BaseIcon'
+import { BaseBadge } from '@components/BaseBadge'
 import { BaseImage } from '@components/BaseImage'
 import { BaseButton } from '@components/BaseButton'
 import { BaseTooltip } from '@components/BaseTooltip'
@@ -218,6 +221,7 @@ const {
 	formatHint,
 	formatSize,
 	fileIconName,
+	fileBadgeStatus,
 	triggerUpload,
 	handleZoneDragOver,
 	handleZoneDrop,

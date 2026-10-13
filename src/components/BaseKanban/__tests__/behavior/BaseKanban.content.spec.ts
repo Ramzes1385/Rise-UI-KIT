@@ -43,9 +43,9 @@ describe('BaseKanban: содержимое карточки', () => {
 
 		expect(element.querySelector('.base-kanban__cover')).toHaveStyle({ backgroundColor: 'rgb(1, 2, 3)' })
 		expect([...element.querySelectorAll('.base-kanban__label')].map(label => [label.textContent?.trim(), label.className])).toEqual([
-			['дизайн', 'base-kanban__label base-kanban__label--info'],
-			['без цвета', 'base-kanban__label base-kanban__label--neutral'],
-			['ui', 'base-kanban__label base-kanban__label--neutral'],
+			['дизайн', 'base-badge base-badge--soft base-badge--status-info base-kanban__label base-kanban__label--info'],
+			['без цвета', 'base-badge base-badge--soft base-badge--status-neutral base-kanban__label base-kanban__label--neutral'],
+			['ui', 'base-badge base-badge--soft base-badge--status-neutral base-kanban__label base-kanban__label--neutral'],
 		])
 		expect(element.querySelector('.base-kanban__key')).toHaveTextContent('RISE-7')
 		expect(element.querySelector('.base-kanban__priority--highest')?.closest('.base-tooltip')).not.toBeNull()

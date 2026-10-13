@@ -25,7 +25,7 @@ export const LongContent: StoryObj<typeof meta> = {
 		template,
 	}),
 	play: async ({ canvas }) => {
-		const badge = canvas.getByText('Новое обновление')
+		const badge = canvas.getByText('Новое обновление').closest('.base-chip__badge') as HTMLElement
 		const { width, height } = badge.getBoundingClientRect()
 		await expect(height).toBe(18)
 		await expect(width).toBeGreaterThan(height)

@@ -46,9 +46,12 @@
 					</span>
 					{{ ' ' }}
 					<Transition name="base-notification-center-dot">
-						<span v-if="!item.isRead" :class="ui('dot')">
-							<span class="base-notification-center__hidden">{{ UI_NOTIFICATION_CENTER.UNREAD_ITEM }}</span>
-						</span>
+						<BaseBadge
+							v-if="!item.isRead"
+							is-dot
+							:class="ui('dot')"
+							:label="UI_NOTIFICATION_CENTER.UNREAD_ITEM"
+							:size-scale="sizeScale" />
 					</Transition>
 				</button>
 				<BaseButton
@@ -74,6 +77,7 @@
 <script setup lang="ts">
 import '../styles/BaseNotificationCenter.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
+import { BaseBadge } from '@components/BaseBadge'
 import { BaseEmpty } from '@components/BaseEmpty'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'

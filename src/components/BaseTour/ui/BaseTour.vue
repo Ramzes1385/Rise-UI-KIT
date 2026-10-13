@@ -75,13 +75,12 @@
 											:key="dotIndex"
 											:class="[ui('dot'), { 'base-tour__dot--active': dotIndex === activeIndex }, classes.dot]" />
 									</div>
-									<div
+									<BaseProgress
 										v-else-if="showProgress"
 										:class="[ui('progress-bar'), classes.progress]"
-										:style="progressStyle"
-										aria-hidden="true">
-										<span :class="ui('progress-bar-fill')" />
-									</div>
+										:value="activeIndex + 1"
+										:max="total"
+										aria-hidden="true" />
 									<BaseText tag="span" :class="ui('counter')" :custom-class="classes.counter">
 										{{ activeIndex + 1 }} / {{ total }}
 									</BaseText>
@@ -113,6 +112,7 @@ import { UI_TOUR } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { useBaseTour } from '../model/useBaseTour'
 import { BaseButton } from '@components/BaseButton'
+import { BaseProgress } from '@components/BaseProgress'
 import { kitDefaults } from '@composables/base/useDefaults'
 import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
 import type { BaseTourEmits, BaseTourProps, BaseTourSlots } from '../types/BaseTour.types'
@@ -158,7 +158,6 @@ const {
 	slotContext,
 	hasHeader,
 	useDots,
-	progressStyle,
 	ui,
 	themeAttrs,
 	animationClass,

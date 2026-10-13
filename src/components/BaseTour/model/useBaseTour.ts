@@ -65,14 +65,13 @@ function toSpotlightStyle(props: TourProps, style: Record<string, string> | null
 }
 
 function useTourView(props: TourProps, steps: ReturnType<typeof useTourSteps>) {
-	const { spotlightStyle, progressPercent } = steps.coordination
+	const { spotlightStyle } = steps.coordination
 	return {
 		ui: useUi(props, 'base-tour'),
 		themeAttrs: useOwnThemeAttrs(() => props.isOpen),
 		animationClass: computed((): string => `base-tour--animation-${props.animation ?? 'scale'}`),
 		cardAnimationClass: computed((): string => `base-tour__card--animation-${props.animation ?? 'scale'}`),
 		spotlightStyle: computed(() => toSpotlightStyle(props, spotlightStyle.value)),
-		progressStyle: computed(() => ({ '--tour-progress': String(progressPercent.value) })),
 	}
 }
 

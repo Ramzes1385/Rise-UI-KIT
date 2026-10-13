@@ -8,12 +8,13 @@ import { render, screen } from '@testing-library/vue'
 describe('BaseChip integration', () => {
 	it('должен эмитить click-badge при клике на индикатор', async () => {
 		const user = userEvent.setup()
-		const { emitted } = render(BaseChip, {
-			props: { content: 5 },
+		const onClickBadge = vi.fn()
+		render(BaseChip, {
+			props: { content: 5, 'onClick-badge': onClickBadge },
 		})
 
 		await user.click(screen.getByText('5'))
-		expect(emitted()).toHaveProperty('click-badge')
+		expect(onClickBadge).toHaveBeenCalledTimes(1)
 	})
 
 	describe('клавиатура индикатора (fu-keyboard)', () => {

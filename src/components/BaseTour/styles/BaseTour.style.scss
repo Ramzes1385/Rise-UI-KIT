@@ -208,27 +208,17 @@
 	}
 }
 
-.base-tour__progress-bar {
+.base-tour__progress-bar.base-progress {
+	--progress-color: #{ct(tour-progress-bar-fill, bg, var(--rise-primary))};
+
 	flex: 1 1 auto;
+	width: auto;
 	min-width: sz(40px);
 	max-width: sz(120px);
-	height: sz(4px);
-	overflow: hidden;
-	border-radius: var(--rise-radius-full);
-	background-color: ct(tour-progress-bar, bg, var(--rise-bg-accented));
-}
 
-.base-tour__progress-bar-fill {
-	--tour-progress-clip: calc(100% - var(--tour-progress, 0) * 1%);
-
-	display: block;
-	height: 100%;
-	background-color: ct(tour-progress-bar-fill, bg, var(--rise-primary));
-	clip-path: inset(0 var(--tour-progress-clip) 0 0 round var(--rise-radius-full));
-	@include transition(clip-path);
-
-	&:dir(rtl) {
-		clip-path: inset(0 0 0 var(--tour-progress-clip) round var(--rise-radius-full));
+	.base-progress__track {
+		height: sz(4px);
+		background-color: ct(tour-progress-bar, bg, var(--rise-bg-accented));
 	}
 }
 

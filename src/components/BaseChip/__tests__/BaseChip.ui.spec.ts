@@ -11,7 +11,10 @@ describe('BaseChip: проп ui', () => {
 		const root = container.querySelector('.base-chip')!
 
 		expect(root.className).toMatch(/^base-chip( |$)/)
-		expect(root.querySelector('.base-chip__badge')).toHaveAttribute('class', 'base-chip__badge base-chip__badge--top-right')
+		expect(root.querySelector('.base-chip__badge')).toHaveAttribute(
+			'class',
+			'base-badge base-badge--round base-chip__badge base-chip__badge--top-right',
+		)
 	})
 
 	it('классы частей добавляются к классам кита, модификаторы и customClass сохраняются', () => {
@@ -41,7 +44,7 @@ describe('BaseChip: проп ui', () => {
 		expect(container.querySelector('.base-chip')).toHaveClass('base-chip', 'app-root')
 		expect(container.querySelector('.base-chip__badge')).toHaveAttribute(
 			'class',
-			'base-chip__badge app-badge own-badge base-chip__badge--top-right',
+			'base-badge base-badge--round base-chip__badge app-badge own-badge base-chip__badge--top-right',
 		)
 	})
 })

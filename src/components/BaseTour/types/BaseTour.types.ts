@@ -13,7 +13,7 @@ export type TourPlacement = (typeof TOUR_PLACEMENTS)[number]
  * Части тура для пропа `ui`: root — слой тура, overlay — затемнение без цели, spotlight — подсветка цели, card — карточка,
  * arrow — стрелка карточки, panel — оформление карточки (без своего слота), header — шапка, title — заголовок,
  * close — кнопка «Пропустить», content — текст шага, footer — подвал, progress — точки шагов, dot — точка,
- * progress-bar — полоса прогресса, progress-bar-fill — заполнение полосы, counter — счётчик «1 / 3», actions — кнопки
+ * progress-bar — полоса прогресса (BaseProgress), counter — счётчик «1 / 3», actions — кнопки
  */
 export const TOUR_PARTS = [
 	'root',
@@ -30,7 +30,6 @@ export const TOUR_PARTS = [
 	'progress',
 	'dot',
 	'progress-bar',
-	'progress-bar-fill',
 	'counter',
 	'actions',
 ] as const
@@ -155,7 +154,7 @@ export interface BaseTourProps extends BaseComponentProps<
 	 * Классы частей тура: добавляются к БЭМ-классам кита, глобальные — `defaults.BaseTour.ui`.
 	 *
 	 * @example
-	 * <BaseTour :ui="{ panel: 'rounded-3xl', 'progress-bar-fill': 'bg-emerald-500' }" />
+	 * <BaseTour :ui="{ panel: 'rounded-3xl', 'progress-bar': 'my-bar' }" />
 	 */
 	ui?: UiProp<BaseTourPart>
 }

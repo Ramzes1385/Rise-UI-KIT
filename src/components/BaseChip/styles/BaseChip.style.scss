@@ -3,7 +3,7 @@
 	position: relative;
 	display: inline-flex;
 
-	&__badge {
+	&__badge.base-badge {
 		position: absolute;
 		z-index: 1;
 		display: inline-flex;
@@ -21,65 +21,59 @@
 		font-weight: ct(chip, badge-font-weight, var(--rise-font-weight-medium));
 		font-variant-numeric: tabular-nums;
 		white-space: nowrap;
-		cursor: pointer;
 		@include custom-bg(background-color, ct(chip, badge-bg, var(--rise-primary)));
 		@include custom-text(color, ct(chip, badge-text, var(--rise-on-primary)));
-
-		&--top-right {
-			top: 0;
-			right: 0;
-			transform: translate(50%, -50%);
-		}
-
-		&--top-left {
-			top: 0;
-			left: 0;
-			transform: translate(-50%, -50%);
-		}
-
-		&--bottom-right {
-			bottom: 0;
-			right: 0;
-			transform: translate(50%, 50%);
-		}
-
-		&--bottom-left {
-			bottom: 0;
-			left: 0;
-			transform: translate(-50%, 50%);
-		}
 	}
 
-	&__badge--clickable {
-		cursor: pointer;
-		@include focus-ring;
+	&__badge--top-right.base-badge {
+		top: 0;
+		right: 0;
+		transform: translate(50%, -50%);
 	}
 
-	&__badge--bump-0 {
+	&__badge--top-left.base-badge {
+		top: 0;
+		left: 0;
+		transform: translate(-50%, -50%);
+	}
+
+	&__badge--bottom-right.base-badge {
+		bottom: 0;
+		right: 0;
+		transform: translate(50%, 50%);
+	}
+
+	&__badge--bottom-left.base-badge {
+		bottom: 0;
+		left: 0;
+		transform: translate(-50%, 50%);
+	}
+
+	&__badge--bump-0.base-badge {
 		animation: base-chip-bump-0 var(--rise-duration) var(--rise-ease-spring);
 	}
 
-	&__badge--bump-1 {
+	&__badge--bump-1.base-badge {
 		animation: base-chip-bump-1 var(--rise-duration) var(--rise-ease-spring);
 	}
 
-	&--soft &__badge {
+	&--soft &__badge.base-badge {
 		@include custom-bg(background-color, var(--rise-primary-soft));
 		@include custom-text(color, var(--rise-primary-text));
 	}
 
-	&--outline &__badge {
+	&--outline &__badge.base-badge {
 		border-color: ct(chip, badge-border, var(--rise-border-accented));
 		@include custom-bg(background-color, var(--rise-bg));
 		@include custom-text(color, var(--rise-text));
 	}
 
-	&--ghost &__badge {
+	&--ghost &__badge.base-badge {
 		@include custom-bg(background-color, var(--rise-bg));
 		@include custom-text(color, var(--rise-text));
 	}
 
-	&--shadow &__badge {
+	&--shadow &__badge.base-badge {
 		border-color: ct(chip, badge-border, var(--rise-border));
 		box-shadow: ct(chip, badge-shadow, (0 0 0 2px var(--rise-bg), var(--rise-shadow-sm)));
 		@include custom-bg(background-color, var(--rise-bg));

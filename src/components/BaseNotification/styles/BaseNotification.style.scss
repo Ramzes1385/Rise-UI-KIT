@@ -173,17 +173,22 @@
 		margin-top: sz(12px);
 	}
 
-	&__progress {
+	&__progress.base-progress {
+		--progress-color: var(--notification-color);
+
 		position: absolute;
 		right: 0;
 		bottom: 0;
 		left: 0;
-		height: sz(3px);
-		background-color: var(--notification-color);
-		transform-origin: left;
 
-		@include motion-safe {
-			animation: base-notification-progress linear forwards;
+		.base-progress__track {
+			height: sz(3px);
+			border-radius: 0;
+			background-color: transparent;
+		}
+
+		.base-progress__fill {
+			border-radius: 0;
 		}
 	}
 
@@ -214,16 +219,6 @@
 	}
 }
 
-@keyframes base-notification-progress {
-	from {
-		transform: scaleX(1);
-	}
-
-	to {
-		transform: scaleX(0);
-	}
-}
-
 @include overlay-animation(base-notification, '.base-notification-item');
 
 .base-notification-move {
@@ -233,8 +228,4 @@
 .base-notification-leave-active {
 	position: absolute;
 	width: 100%;
-}
-
-.base-notification--paused .base-notification-item__progress {
-	animation-play-state: paused;
 }

@@ -167,16 +167,23 @@
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
 |---|---|---|---|---|
-| `--rise-badge-bg` | корень | bg | — | `var(--rise-primary)` |
+| `--rise-badge-bg` | корень | bg | — | `var(--badge-role)` |
 | `--rise-badge-border` | корень | border | — | `transparent` |
+| `--rise-badge-dot-height` | dot | height | — | `8px` |
+| `--rise-badge-dot-width` | dot | width | — | `8px` |
 | `--rise-badge-font-size` | корень | font-size | — | `var(--rise-font-size-xs)` |
 | `--rise-badge-font-weight` | корень | font-weight | — | `var(--rise-font-weight-medium)` |
 | `--rise-badge-gap` | корень | gap | — | `4px` |
 | `--rise-badge-padding-x` | корень | padding-x | — | `7px` |
 | `--rise-badge-padding-y` | корень | padding-y | — | `1px` |
 | `--rise-badge-radius` | корень | radius | — | `var(--rise-radius-sm)` |
+| `--rise-badge-remove-height` | remove | height | — | `16px` |
+| `--rise-badge-remove-padding` | remove | padding | — | `2px` |
+| `--rise-badge-remove-width` | remove | width | — | `16px` |
+| `--rise-badge-round-height` | round | height | — | `18px` |
+| `--rise-badge-round-padding-x` | round | padding-x | — | `5px` |
 | `--rise-badge-shadow` | корень | shadow | — | `none` |
-| `--rise-badge-text` | корень | text | — | `var(--rise-on-primary)` |
+| `--rise-badge-text` | корень | text | — | `var(--badge-on-role)` |
 
 ## BaseBankCard
 
@@ -1320,7 +1327,7 @@
 |---|---|---|---|---|
 | `--rise-notification-center-bg` | корень | bg | — | `var(--rise-bg)` |
 | `--rise-notification-center-border` | корень | border | — | `var(--rise-border)` |
-| `--rise-notification-center-dot-bg` | dot | bg | — | `var(--rise-primary)` |
+| `--rise-notification-center-dot-bg` | dot | bg | — | `var(--badge-role)` |
 | `--rise-notification-center-item-bg-hover` | item | bg | hover | `var(--rise-bg-elevated)` |
 | `--rise-notification-center-item-gap` | item | gap | — | `12px` |
 | `--rise-notification-center-item-padding-x` | item | padding-x | — | `8px` |

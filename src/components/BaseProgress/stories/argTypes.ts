@@ -13,6 +13,8 @@ export const argTypes = {
 	fill: { control: 'inline-radio', options: PROGRESS_FILLS, table: propGroup(ARG_GROUP.appearance) },
 	hasLabel: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
 	isIndeterminate: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+	isPaused: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+	countdown: { control: { type: 'number', min: 0, step: 500 }, table: propGroup(ARG_GROUP.behavior) },
 	ariaLabel: { control: 'text', table: propGroup(ARG_GROUP.a11y) },
 	default: { control: false },
 } satisfies Meta<typeof BaseProgress>['argTypes']
