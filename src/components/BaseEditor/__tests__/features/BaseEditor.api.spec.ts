@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom/vitest'
 import { h, nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
-import BaseEditor from '../ui/BaseEditor.vue'
+import BaseEditor from '../../ui/BaseEditor.vue'
 import { fireEvent, render, screen } from '@testing-library/vue'
-import type { BaseEditorExpose, BaseEditorToolbarSlotProps } from '../types/BaseEditor.types'
+import type { BaseEditorExpose, BaseEditorToolbarSlotProps } from '../../types/BaseEditor.types'
 
 const global = { stubs: { BaseTooltip: { template: '<div class="tooltip-stub"><slot /></div>' } } }
 

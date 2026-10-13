@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
 import { h, nextTick } from 'vue'
-import BaseEditor from '../ui/BaseEditor.vue'
+import BaseEditor from '../../ui/BaseEditor.vue'
 import { BaseFormField } from '@components/BaseFormField'
 import { fireEvent, render, screen } from '@testing-library/vue'
 

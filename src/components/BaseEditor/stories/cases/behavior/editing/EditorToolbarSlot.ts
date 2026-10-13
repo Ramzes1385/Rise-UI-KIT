@@ -1,7 +1,7 @@
-import type meta from '../../BaseEditor.stories'
-import BaseEditor from '../../../ui/BaseEditor.vue'
+import type meta from '../../../BaseEditor.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
+import BaseEditor from '../../../../ui/BaseEditor.vue'
 import { expect, waitFor, within } from 'storybook/test'
 import { storySource, useStorySetup } from '@/stories/helpers'
 

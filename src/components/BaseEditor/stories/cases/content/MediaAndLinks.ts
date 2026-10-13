@@ -1,7 +1,7 @@
 import type meta from '../../BaseEditor.stories'
 import BaseEditor from '../../../ui/BaseEditor.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { spyOn, within, expect, screen, waitFor } from 'storybook/test'
+import { within, expect, screen, waitFor } from 'storybook/test'
 import { STORY_IMAGES, storySource, useStorySetup } from '@/stories/helpers'
 
 function storyImageFile(): File {
@@ -20,7 +20,7 @@ export const MediaAndLinks: StoryObj<typeof meta> = {
 		docs: {
 			description: {
 				story: [
-					'Ссылки и медиа. «Ссылка» спрашивает адрес (`window.prompt`) и превращает выделение в ссылку; «Изображение»',
+					'Ссылки и медиа. «Ссылка» открывает диалог с адресом и превращает выделение в ссылку; «Изображение»',
 					'и «Видео» — кнопки, открывающие выбор файла: он вставляется в позицию каретки. Правый клик по изображению (или Shift+F10',
 					'и кнопка «Размер и удаление медиа» для выделенного изображения) открывает меню размера:',
 					'фокус переходит в поле «Ширина», Enter или «Применить» задают размер, «Удалить» убирает медиа, Escape закрывает меню.',
@@ -38,9 +38,10 @@ export const MediaAndLinks: StoryObj<typeof meta> = {
 	play: async ({ canvas, canvasElement, userEvent }) => {
 		const textbox = canvas.getByRole('textbox', { name: 'Текстовый редактор' })
 
-		spyOn(window, 'prompt').mockReturnValue('/docs/design')
 		await userEvent.tripleClick(within(textbox).getByText('Макеты главной страницы'))
 		await userEvent.click(canvas.getByRole('button', { name: 'Ссылка' }))
+		const linkDialog = await screen.findByRole('dialog', { name: 'Ссылка' })
+		await userEvent.type(within(linkDialog).getByLabelText('Адрес ссылки'), '/docs/design{Enter}')
 		await expect(within(textbox).getByRole('link', { name: 'Макеты главной страницы' })).toHaveAttribute('href', '/docs/design')
 
 		await userEvent.click(within(textbox).getByText('Фото стенда:'))

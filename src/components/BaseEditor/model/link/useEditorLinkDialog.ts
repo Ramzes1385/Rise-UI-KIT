@@ -1,7 +1,7 @@
 import type { ComputedRef, Ref } from 'vue'
 import { UI_EDITOR } from '@/locales/messages'
 import { computed, nextTick, reactive, ref, watch } from 'vue'
-import type { EditorLinkDialogState, EditorToolbar } from '../types/EditorLinkDialog.types'
+import type { EditorLinkDialogState, EditorToolbar } from '../../types/EditorLinkDialog.types'
 
 function createLinkDialogState(): EditorLinkDialogState {
 	return { isVisible: false, x: 0, y: 0, url: '', isNewTab: false, hasLink: false, error: '' }

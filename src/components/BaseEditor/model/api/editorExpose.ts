@@ -1,6 +1,6 @@
 import { computed } from 'vue'
-import type { EditorApiContext } from '../types/EditorApi.types'
-import type { BaseEditorExpose, BaseEditorToolbarSlotProps } from '../types/BaseEditor.types'
+import type { EditorApiContext } from '../../types/EditorApi.types'
+import type { BaseEditorExpose, BaseEditorToolbarSlotProps } from '../../types/BaseEditor.types'
 
 function activeField(ctx: EditorApiContext): () => HTMLElement | null {
 	return () => (ctx.toolbar.isCodeMode.value ? ctx.toolbar.getCodeTextarea() : ctx.editorRef.value)

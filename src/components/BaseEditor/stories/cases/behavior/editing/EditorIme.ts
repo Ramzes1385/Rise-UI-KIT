@@ -1,7 +1,7 @@
-import { expect, within } from 'storybook/test'
-import type meta from '../../BaseEditor.stories'
-import BaseEditor from '../../../ui/BaseEditor.vue'
+import type meta from '../../../BaseEditor.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
+import BaseEditor from '../../../../ui/BaseEditor.vue'
+import { expect, waitFor, within } from 'storybook/test'
 import { storySource, useStorySetup } from '@/stories/helpers'
 
 const models = { html: 'modelValue' }
@@ -53,7 +53,7 @@ export const EditorIme: StoryObj<typeof meta> = {
 
 		typeInto(textbox, 'にほん')
 		compose(textbox, 'compositionend')
-		await expect(canvas.getByText('Отправлено значений: 1')).toBeVisible()
+		await waitFor(() => expect(canvas.getByText('Отправлено значений: 1')).toBeVisible())
 		await expect(within(textbox).getByText('にほん')).toBeVisible()
 	},
 }

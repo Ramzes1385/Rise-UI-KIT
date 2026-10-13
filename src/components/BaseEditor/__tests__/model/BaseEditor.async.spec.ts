@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { mount } from '@vue/test-utils'
 import BaseEditor from '../../ui/BaseEditor.vue'
-import { consumeEcho, rememberEmitted } from '../../model/editorDraft'
+import { consumeEcho, rememberEmitted } from '../../model/input/editorDraft'
 
 const global = { stubs: { BaseTooltip: { template: '<div><slot /></div>' } } }
 

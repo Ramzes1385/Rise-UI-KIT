@@ -1,7 +1,7 @@
 import { computed, useId } from 'vue'
 import { formFieldValue } from './editorValue'
-import type { EditorProps } from '../types/BaseEditor.types'
 import { useFormField } from '@composables/form/useFormField'
+import type { EditorProps } from '../../types/BaseEditor.types'
 import { isolateFormField, useFieldControl } from '@composables/form/useFormContext'
 
 export function useEditorField(props: EditorProps) {

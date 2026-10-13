@@ -1,6 +1,6 @@
-import type meta from '../../BaseEditor.stories'
-import BaseEditor from '../../../ui/BaseEditor.vue'
+import type meta from '../../../BaseEditor.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
+import BaseEditor from '../../../../ui/BaseEditor.vue'
 import { expect, waitFor, within } from 'storybook/test'
 import { storySource, useStorySetup } from '@/stories/helpers'
 
@@ -50,7 +50,7 @@ export const EditorLinkDialog: StoryObj<typeof meta> = {
 
 		await userEvent.clear(input)
 		await userEvent.type(input, 'javascript:alert(1){Enter}')
-		await expect(await within(dialog).findByText('Введите адрес: http, https, mailto или tel')).toBeVisible()
+		await waitFor(() => expect(within(dialog).getByText('Введите адрес: http, https, mailto или tel')).toBeVisible())
 
 		await userEvent.clear(input)
 		await userEvent.type(input, 'example.com/new')

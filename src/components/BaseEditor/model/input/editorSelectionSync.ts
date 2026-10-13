@@ -1,5 +1,5 @@
 import { onBeforeUnmount, onMounted } from 'vue'
-import type { SelectionSyncOptions } from '../types/EditorSelectionSync.types'
+import type { SelectionSyncOptions } from '../../types/EditorSelectionSync.types'
 
 export function useEditorSelectionSync(options: SelectionSyncOptions): void {
 	let frame = 0
