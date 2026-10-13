@@ -711,7 +711,7 @@ import type { ... } from './types/xxxUtils.types'
 |---|---|---|
 | Prettier | Форматирование `ts`, `vue`, `js`, `scss`: табы, одинарные кавычки, без `;`, строка до 140 символов. Настройки — `package.json` → `prettier`; документы, JSON и YAML не форматируются (`.prettierignore`) | `npm run format`, проверка — `npm run format:check` |
 | ESLint | Ошибки кода, порядок импортов, правила «чистого кода» | `npm run lint`, исправление — `npm run lint:fix` |
-| Stylelint | SCSS по `stylelint-config-standard-scss`, классы по БЭМ. Настройки — `package.json` → `stylelint` | `npm run lint:styles` |
+| Stylelint | SCSS по `stylelint-config-standard-scss`, классы по БЭМ, переходы только по transform и opacity, запрет `:dir()` (в сборке он превращается в `:is(:lang(…))` и `dir="rtl"` не включается — пишите `[dir='rtl'] &`). Настройки — `package.json` → `stylelint` | `npm run lint:styles` |
 | knip | Неиспользуемые файлы, экспорты, типы и зависимости. Настройки — `package.json` → `knip` | `npm run lint:unused` |
 
 Все четыре проверяет CI. Git-хуки лежат в `build/husky/` (их ставит скрипт `prepare` при `npm ci` и `npm install`):

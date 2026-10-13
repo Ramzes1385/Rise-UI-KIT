@@ -8,7 +8,7 @@
 	transform: scaleX(var(--loading-bar-progress));
 	transform-origin: left center;
 
-	&:dir(rtl) {
+	[dir='rtl'] & {
 		transform-origin: right center;
 	}
 

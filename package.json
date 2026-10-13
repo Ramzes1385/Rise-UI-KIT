@@ -233,6 +233,14 @@
         }
       ],
       "media-feature-range-notation": "prefix",
+      "selector-pseudo-class-disallowed-list": [
+        [
+          "dir"
+        ],
+        {
+          "message": ":dir() ломается в сборке — используйте [dir='rtl'] &"
+        }
+      ],
       "at-rule-empty-line-before": null,
       "declaration-empty-line-before": null,
       "custom-property-empty-line-before": null,

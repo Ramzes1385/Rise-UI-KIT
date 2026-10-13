@@ -4,6 +4,7 @@ import BaseApp from '../ui/BaseApp.vue'
 import { setLocale } from '@/locales/state'
 import { createUiKitPlugin } from '@/plugin'
 import { render, screen } from '@testing-library/vue'
+import styleSource from '../styles/BaseApp.style.scss?raw'
 import type { BaseAppLoadingBarOptions } from '../types/BaseApp.types'
 import { LOADING_BAR_HIDE_MS, LOADING_BAR_START, loadingBarStore, useLoadingBar } from '@composables/app/useLoadingBar/useLoadingBar'
 
@@ -126,5 +127,10 @@ describe('BaseApp: полоса загрузки', () => {
 		await nextTick()
 
 		expect(screen.getByRole('progressbar')).toHaveClass('base-app-loading-bar', 'base-app-loading-bar--error')
+	})
+
+	it("RTL: начало полосы справа через [dir='rtl'] &, а не :dir(rtl), который в сборке не срабатывает", () => {
+		expect(styleSource).toMatch(/\[dir='rtl'\] & \{\s*transform-origin: right center/)
+		expect(styleSource).not.toContain(':dir(')
 	})
 })
