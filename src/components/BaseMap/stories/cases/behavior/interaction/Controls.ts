@@ -1,9 +1,9 @@
-import BaseMap from '../../../ui/BaseMap.vue'
-import type meta from '../../BaseMap.stories'
+import BaseMap from '../../../../ui/BaseMap.vue'
+import type meta from '../../../BaseMap.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { MOSCOW, OFFICES, liveOrDemo } from '../../shared'
+import { MOSCOW, OFFICES, liveOrDemo } from '../../../shared'
 import { expect, spyOn, waitFor, within } from 'storybook/test'
-import type { MapCoordinates } from '../../../types/BaseMap.types'
+import type { MapCoordinates } from '../../../../types/BaseMap.types'
 import { literal, storySource, tabTo, useStorySetup, withYandexMapsKey } from '@/stories/helpers'
 
 const state = { center: MOSCOW, zoom: 11, located: 'нет', failure: 'нет' }

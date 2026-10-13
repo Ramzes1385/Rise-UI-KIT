@@ -1,9 +1,9 @@
-import BaseMap from '../../../ui/BaseMap.vue'
-import type meta from '../../BaseMap.stories'
+import BaseMap from '../../../../ui/BaseMap.vue'
+import type meta from '../../../BaseMap.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { expect, waitFor, within } from 'storybook/test'
-import { MOSCOW, OFFICES, REGION_MARKERS, liveOrDemo } from '../../shared'
+import { MOSCOW, OFFICES, REGION_MARKERS, liveOrDemo } from '../../../shared'
 import { literal, storySource, useStorySetup, withYandexMapsKey } from '@/stories/helpers'
 
 const SETS = { Москва: OFFICES, Область: REGION_MARKERS, 'Одна метка': OFFICES.slice(0, 1) }

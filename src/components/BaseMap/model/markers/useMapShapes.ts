@@ -12,7 +12,7 @@ function lineOf(area: HTMLElement | null, shape: MapPolyline | MapPolygon, width
 	return { id: shape.id, coordinates: shape.coordinates, color: resolveColor(area, shape.color), width: shape.width ?? width }
 }
 
-export function buildShapes(area: HTMLElement | null, props: BaseMapProps): MapShapes {
+function buildShapes(area: HTMLElement | null, props: BaseMapProps): MapShapes {
 	return {
 		polylines: (props.polylines ?? []).map(shape => lineOf(area, shape, LINE_WIDTH)),
 		polygons: (props.polygons ?? []).map(shape => lineOf(area, shape, AREA_WIDTH)),

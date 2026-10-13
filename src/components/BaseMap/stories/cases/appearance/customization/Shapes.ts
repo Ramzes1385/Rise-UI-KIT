@@ -1,8 +1,8 @@
-import BaseMap from '../../../ui/BaseMap.vue'
-import type meta from '../../BaseMap.stories'
+import BaseMap from '../../../../ui/BaseMap.vue'
+import type meta from '../../../BaseMap.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { expect, waitFor, within } from 'storybook/test'
-import { MOSCOW, OFFICES, ROUTE, ZONES, liveOrDemo } from '../../shared'
+import { MOSCOW, OFFICES, ROUTE, ZONES, liveOrDemo } from '../../../shared'
 import { literal, storySource, useStorySetup, withYandexMapsKey } from '@/stories/helpers'
 
 const markers = OFFICES.slice(0, 3)

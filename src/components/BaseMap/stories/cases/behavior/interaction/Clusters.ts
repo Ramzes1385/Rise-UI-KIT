@@ -1,8 +1,8 @@
-import BaseMap from '../../../ui/BaseMap.vue'
-import type meta from '../../BaseMap.stories'
+import BaseMap from '../../../../ui/BaseMap.vue'
+import type meta from '../../../BaseMap.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { CROWD, MOSCOW, liveOrDemo } from '../../shared'
 import { expect, waitFor, within } from 'storybook/test'
+import { CROWD, MOSCOW, liveOrDemo } from '../../../shared'
 import { literal, storySource, tabTo, useStorySetup, withYandexMapsKey } from '@/stories/helpers'
 
 const state = { center: MOSCOW, zoom: 10 }

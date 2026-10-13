@@ -19,55 +19,70 @@ interface FakeYandexMap {
 	markers: () => { props: { coordinates: Point }; element: HTMLElement }[]
 }
 
+class Child {
+	props: Record<string, unknown>
+	element?: HTMLElement
+	constructor(props: Record<string, unknown>, element?: HTMLElement) {
+		this.props = props
+		this.element = element
+	}
+}
+
+class YMapDefaultSchemeLayer extends Child {
+	update = vi.fn()
+}
+
+class YMapDefaultSatelliteLayer extends Child {}
+
+class YMapListener extends Child {}
+
+class YMapMarker extends Child {}
+
+class YMapFeature extends Child {}
+
+function createMap(element: HTMLElement, location: { center: Point; zoom: number }): FakeYandexMap {
+	const map: FakeYandexMap = {
+		element,
+		location,
+		children: [],
+		setLocation: vi.fn(),
+		setBehaviors: vi.fn(),
+		destroy: vi.fn(),
+		listener: () => (map.children.find(child => child instanceof YMapListener) as Child).props as never,
+		layers: () =>
+			map.children
+				.filter(child => child instanceof YMapDefaultSchemeLayer || child instanceof YMapDefaultSatelliteLayer)
+				.map(child => ({ kind: child instanceof YMapDefaultSatelliteLayer ? 'satellite' : 'scheme' })),
+		features: () => map.children.filter(child => child instanceof YMapFeature) as never,
+		schemeLayer: () => map.children.find(child => child instanceof YMapDefaultSchemeLayer) as never,
+		markers: () => map.children.filter(child => child instanceof YMapMarker) as never,
+	}
+	return map
+}
+
+function mapApi(map: FakeYandexMap) {
+	return {
+		addChild: (child: Child) => {
+			map.children.push(child)
+			if (child.element) map.element.append(child.element)
+		},
+		removeChild: (child: Child) => {
+			map.children = map.children.filter(item => item !== child)
+			child.element?.remove()
+		},
+		setLocation: map.setLocation,
+		setBehaviors: map.setBehaviors,
+		destroy: map.destroy,
+	}
+}
+
 export function fakeYandex(ready: Promise<void> = Promise.resolve(), hasSatellite = true) {
 	const maps: FakeYandexMap[] = []
-	class Child {
-		props: Record<string, unknown>
-		element?: HTMLElement
-		constructor(props: Record<string, unknown>, element?: HTMLElement) {
-			this.props = props
-			this.element = element
-		}
-	}
-	class YMapDefaultSchemeLayer extends Child {
-		update = vi.fn()
-	}
-	class YMapDefaultSatelliteLayer extends Child {}
-	class YMapListener extends Child {}
-	class YMapMarker extends Child {}
-	class YMapFeature extends Child {}
 	class YMap {
 		constructor(element: HTMLElement, props: { location: { center: Point; zoom: number } }) {
-			const map: FakeYandexMap = {
-				element,
-				location: props.location,
-				children: [],
-				setLocation: vi.fn(),
-				setBehaviors: vi.fn(),
-				destroy: vi.fn(),
-				listener: () => (map.children.find(child => child instanceof YMapListener) as Child).props as never,
-				layers: () =>
-					map.children
-						.filter(child => child instanceof YMapDefaultSchemeLayer || child instanceof YMapDefaultSatelliteLayer)
-						.map(child => ({ kind: child instanceof YMapDefaultSatelliteLayer ? 'satellite' : 'scheme' })),
-				features: () => map.children.filter(child => child instanceof YMapFeature) as never,
-				schemeLayer: () => map.children.find(child => child instanceof YMapDefaultSchemeLayer) as never,
-				markers: () => map.children.filter(child => child instanceof YMapMarker) as never,
-			}
+			const map = createMap(element, props.location)
 			maps.push(map)
-			return {
-				addChild: (child: Child) => {
-					map.children.push(child)
-					if (child.element) element.append(child.element)
-				},
-				removeChild: (child: Child) => {
-					map.children = map.children.filter(item => item !== child)
-					child.element?.remove()
-				},
-				setLocation: map.setLocation,
-				setBehaviors: map.setBehaviors,
-				destroy: map.destroy,
-			}
+			return mapApi(map)
 		}
 	}
 	const api = {

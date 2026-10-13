@@ -1,10 +1,10 @@
-import BaseMap from '../../../ui/BaseMap.vue'
-import type meta from '../../BaseMap.stories'
-import { OFFICES, liveOrDemo } from '../../shared'
+import BaseMap from '../../../../ui/BaseMap.vue'
+import type meta from '../../../BaseMap.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
+import { OFFICES, liveOrDemo } from '../../../shared'
 import { expect, waitFor, within } from 'storybook/test'
-import { MAP_SCHEMES } from '../../../types/BaseMap.types'
+import { MAP_SCHEMES } from '../../../../types/BaseMap.types'
 import { literal, storySource, useStorySetup, withYandexMapsKey } from '@/stories/helpers'
 
 const state = { current: 'light' }

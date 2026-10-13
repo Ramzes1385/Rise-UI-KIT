@@ -1,9 +1,9 @@
-import BaseMap from '../../../ui/BaseMap.vue'
-import type meta from '../../BaseMap.stories'
+import BaseMap from '../../../../ui/BaseMap.vue'
+import type meta from '../../../BaseMap.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { expect, fireEvent, waitFor, within } from 'storybook/test'
-import { MOSCOW, OFFICES, isLiveMap, liveOrDemo } from '../../shared'
+import { MOSCOW, OFFICES, isLiveMap, liveOrDemo } from '../../../shared'
 import { literal, storySource, useStorySetup, withYandexMapsKey } from '@/stories/helpers'
 
 const MODELS = { selected: 'selected' } as const

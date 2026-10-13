@@ -102,7 +102,7 @@ export interface YandexFeatureProps {
 }
 
 /** Слой схемы Яндекса: `update` меняет тему на месте */
-export interface YandexSchemeLayer {
+interface YandexSchemeLayer {
 	update: (props: { theme: MapResolvedScheme; customization?: object[] }) => void
 }
 
@@ -156,7 +156,7 @@ export interface GoogleShape {
 }
 
 /** Параметры линии и многоугольника Google */
-export interface GoogleShapeOptions {
+interface GoogleShapeOptions {
 	map: GoogleMapInstance
 	strokeColor: string
 	strokeWeight: number

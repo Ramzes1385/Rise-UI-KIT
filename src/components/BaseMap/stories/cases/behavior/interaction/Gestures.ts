@@ -1,8 +1,8 @@
-import BaseMap from '../../../ui/BaseMap.vue'
-import type meta from '../../BaseMap.stories'
+import BaseMap from '../../../../ui/BaseMap.vue'
+import type meta from '../../../BaseMap.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { expect, fireEvent, waitFor, within } from 'storybook/test'
-import { MOSCOW, OFFICES, isLiveMap, liveOrDemo } from '../../shared'
+import { MOSCOW, OFFICES, isLiveMap, liveOrDemo } from '../../../shared'
 import { literal, storySource, useStorySetup, withYandexMapsKey } from '@/stories/helpers'
 
 const state = { freeCenter: MOSCOW, freeZoom: 12, lockedCenter: MOSCOW, lockedZoom: 12 }
