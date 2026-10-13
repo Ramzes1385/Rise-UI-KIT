@@ -165,7 +165,7 @@ function useArrowState(initialSide: Side) {
 function anchorRect(anchor: DropdownAnchor): DOMRect {
 	if ('getBoundingClientRect' in anchor) return anchor.getBoundingClientRect()
 	const { x, y, width = 0, height = 0 } = anchor
-	return { x, y, width, height, left: x, top: y, right: x + width, bottom: y + height, toJSON: () => ({ x, y, width, height }) }
+	return DOMRect.fromRect({ x, y, width, height })
 }
 
 /** Rect якоря-точки, если он задан; иначе триггера (первый дочерний элемент обёртки), без триггера — самой обёртки */

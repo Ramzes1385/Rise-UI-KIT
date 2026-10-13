@@ -256,10 +256,7 @@
 	}
 
 	&__channel .base-input__wrapper {
-		border: 1px solid ct(color-picker, border, var(--rise-border-accented));
-		border-radius: sz(ct(color-picker, radius, var(--rise-control-radius)));
-		background-color: ct(color-picker, bg, var(--rise-bg));
-		@include field-focus(ct(color-picker, border-focus, var(--rise-primary)));
+		@include field-box(color-picker);
 	}
 
 	&__channel &__hex,
