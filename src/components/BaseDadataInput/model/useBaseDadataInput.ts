@@ -120,6 +120,13 @@ function useHandlers(props: BaseDadataInputProps, emit: BaseDadataInputEmits, st
 		state.suggestions.value = []
 		state.isLoading.value = false
 	}
+	const isOpenPending = ref(false)
+	const openList = (): void => void nextTick(() => state.autocompleteRef.value?.open())
+	watch(state.isLoading, isLoading => {
+		if (isLoading || !isOpenPending.value) return
+		isOpenPending.value = false
+		openList()
+	})
 	const handleChange = (next: string | number | null): void => {
 		const text = String(next ?? '')
 		const found = state.suggestions.value.find(item => item.value === text)
@@ -128,7 +135,8 @@ function useHandlers(props: BaseDadataInputProps, emit: BaseDadataInputEmits, st
 			state.setValue(`${text} `)
 			state.setSuggestion(null)
 			runSearch(state.value.value)
-			return void nextTick(() => state.autocompleteRef.value?.open())
+			isOpenPending.value = state.isLoading.value
+			return state.isLoading.value ? undefined : openList()
 		}
 		state.setValue(text)
 		state.setSuggestion(found ?? null)
@@ -141,10 +149,12 @@ function useHandlers(props: BaseDadataInputProps, emit: BaseDadataInputEmits, st
 		handleSearch(query: string): void {
 			state.isEditing.value = true
 			state.isTouched.value = false
+			isOpenPending.value = false
 			if (state.suggestion.value && query !== state.suggestion.value.value) state.setSuggestion(null)
 			runSearch(query)
 		},
 		handleBlur(): void {
+			isOpenPending.value = false
 			if (state.isEditing.value) handleChange('')
 			state.isTouched.value = true
 			emit('validate', state.validity.value)

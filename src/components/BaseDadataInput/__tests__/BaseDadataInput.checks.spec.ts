@@ -126,6 +126,39 @@ describe('BaseDadataInput: подсказка и проверки', () => {
 		await waitFor(() => expect(screen.getAllByRole('option')).toHaveLength(2))
 	})
 
+	it('precision: список открывается после ответа поиска, а не пока подсказки грузятся', async () => {
+		const answers: Array<(items: DadataSuggestion[]) => void> = []
+		const source = vi.fn<DadataSource>(query =>
+			query.endsWith(' ') ? new Promise<DadataSuggestion[]>(resolve => answers.push(resolve)) : Promise.resolve([STREET, HOUSE]),
+		)
+		const { field } = setup({ source, precision: 'house' })
+		await type(field, 'тверская')
+		await choose(field, 0)
+		await waitFor(() => expect(answers).toHaveLength(1))
+		await tick()
+		expect(field).toHaveAttribute('aria-expanded', 'false')
+
+		answers[0]([STREET, HOUSE])
+		await waitFor(() => expect(field).toHaveAttribute('aria-expanded', 'true'))
+		expect(screen.getAllByRole('option')).toHaveLength(2)
+	})
+
+	it('precision: ответ поиска после ухода из поля список не открывает', async () => {
+		const answers: Array<(items: DadataSuggestion[]) => void> = []
+		const source = vi.fn<DadataSource>(query =>
+			query.endsWith(' ') ? new Promise<DadataSuggestion[]>(resolve => answers.push(resolve)) : Promise.resolve([STREET]),
+		)
+		const { field } = setup({ source, precision: 'house' })
+		await type(field, 'тверская')
+		await choose(field, 0)
+		await waitFor(() => expect(answers).toHaveLength(1))
+		await fireEvent.blur(field)
+		answers[0]([STREET])
+		await tick()
+		await tick()
+		expect(field).toHaveAttribute('aria-expanded', 'false')
+	})
+
 	it('precision: квартира, улица (дом без улицы), город (населённый пункт)', async () => {
 		const flat = setup({ source: sourceOf([HOUSE, FLAT]), precision: 'flat' })
 		await type(flat.field, 'тверская')

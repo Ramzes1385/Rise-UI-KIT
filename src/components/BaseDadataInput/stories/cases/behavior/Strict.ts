@@ -46,7 +46,7 @@ export const Strict: StoryObj<typeof meta> = {
 		await userEvent.type(field, 'мой адрес')
 		await userEvent.tab()
 		await expect(field).toHaveValue('мой адрес')
-		await expect(canvas.getByText('Выберите вариант из списка')).toBeVisible()
+		await waitFor(() => expect(canvas.getByText('Выберите вариант из списка')).toBeVisible())
 		await expect(field).toHaveAttribute('aria-invalid', 'true')
 
 		await userEvent.clear(field)

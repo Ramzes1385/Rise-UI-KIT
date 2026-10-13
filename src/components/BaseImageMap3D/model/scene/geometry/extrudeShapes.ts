@@ -1,4 +1,5 @@
 import type { Shape, Vector2 } from 'three'
+import { narrowestGap, ringEdges } from './narrowestGap'
 import { BufferAttribute, BufferGeometry, ExtrudeGeometry } from 'three'
 import type { SceneBody } from '../../../types/internal/imageMap3dInternal.types'
 
@@ -7,8 +8,6 @@ const CURVE_SEGMENTS = 24
 const BEVEL_SEGMENTS = 2
 const BEVEL_HEIGHT_SHARE = 0.25
 const BEVEL_WIDTH_SHARE = 0.5
-const MIN_EDGE = 1e-6
-const PROJECTION_SLACK = 1e-9
 const ATTRIBUTES = ['position', 'normal', 'uv'] as const
 
 function ringArea(points: Vector2[]): number {
@@ -28,21 +27,6 @@ function shapeRings(shape: Shape, segments: number): Vector2[][] {
 	return [outline, ...holes]
 }
 
-function segmentDistance(point: Vector2, [start, end]: [Vector2, Vector2]): number {
-	const dx = end.x - start.x
-	const dy = end.y - start.y
-	const t = ((point.x - start.x) * dx + (point.y - start.y) * dy) / (dx * dx + dy * dy)
-	return t < -PROJECTION_SLACK || t > 1 + PROJECTION_SLACK ? Infinity : Math.hypot(point.x - start.x - t * dx, point.y - start.y - t * dy)
-}
-
-function ringEdges(rings: Vector2[][]): Array<[Vector2, Vector2]> {
-	return rings.flatMap(ring =>
-		ring
-			.map((point, index): [Vector2, Vector2] => [point, ring[(index + 1) % ring.length]])
-			.filter(([start, end]) => start.distanceTo(end) > MIN_EDGE),
-	)
-}
-
 export function shapeHalfWidth(shape: Shape, segments = CURVE_SEGMENTS): number {
 	const rings = shapeRings(shape, segments)
 	const area = ringArea(rings[0]) - rings.slice(1).reduce((sum, ring) => sum + ringArea(ring), 0)
@@ -50,18 +34,8 @@ export function shapeHalfWidth(shape: Shape, segments = CURVE_SEGMENTS): number 
 	return length > 0 && area > 0 ? area / length : 0
 }
 
-function isNear(point: Vector2, [start, end]: [Vector2, Vector2], cap: number): boolean {
-	const isOutsideX = point.x < Math.min(start.x, end.x) - cap || point.x > Math.max(start.x, end.x) + cap
-	return !isOutsideX && point.y >= Math.min(start.y, end.y) - cap && point.y <= Math.max(start.y, end.y) + cap
-}
-
 export function shapeNarrowest(shape: Shape, cap: number, segments = CURVE_SEGMENTS): number {
-	const edges = ringEdges(shapeRings(shape, segments))
-	const points = edges.map(([start]) => start)
-	return edges.reduce((narrowest, edge) => {
-		const near = points.filter(point => isNear(point, edge, narrowest) && edge.every(end => end.distanceTo(point) > MIN_EDGE))
-		return Math.min(narrowest, ...near.map(point => segmentDistance(point, edge)))
-	}, cap)
+	return narrowestGap(ringEdges(shapeRings(shape, segments)), cap)
 }
 
 export function bevelSizes(

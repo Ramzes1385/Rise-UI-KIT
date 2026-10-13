@@ -572,3 +572,17 @@ export interface ObjectListEntry {
 	/** Атрибуты: адрес, `target` и `rel` внешней ссылки, `aria-current`, `aria-disabled`, `aria-haspopup` */
 	attributes: Record<string, string | undefined>
 }
+
+/** Дерево габаритных рамок вершин контура: ускоряет поиск вершин в полосе вдоль ребра */
+export interface PointTree {
+	/** Вершины подряд: `x, y` на каждую */
+	coords: Float64Array
+	/** Номера вершин в порядке обхода листьев */
+	order: Uint32Array
+	/** Рамка узла: `minX, minY, maxX, maxY` на каждый узел */
+	box: number[]
+	/** Дети узла: номера левого и правого; `-1, -1` у листа */
+	kids: number[]
+	/** Диапазон листа в `order`: начало и конец (не включая) на каждый узел */
+	span: number[]
+}

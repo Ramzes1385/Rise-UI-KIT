@@ -67,6 +67,19 @@ describe('BaseCommentThread unit', () => {
 		expect(reply).toHaveFocus()
 	})
 
+	it('отправка ответа не забирает фокус в поле ответа: его возвращает «Ответить»', async () => {
+		renderThread()
+		const reply = screen.getAllByRole('button', { name: 'Ответить' })[3]
+		await fireEvent.click(reply)
+		const field = screen.getByRole('textbox', { name: 'Ответ пользователю Иван Петров' })
+		const focus = vi.spyOn(field, 'focus')
+		await fireEvent.update(field, 'Спасибо')
+		await fireEvent.keyDown(field, { key: 'Enter', ctrlKey: true })
+		expect(focus).not.toHaveBeenCalled()
+		await Promise.resolve()
+		expect(reply).toHaveFocus()
+	})
+
 	it('Escape и «Отмена» закрывают ответ без события; пустой ответ не отправляется', async () => {
 		const { emitted } = renderThread()
 		const reply = screen.getAllByRole('button', { name: 'Ответить' })[0]

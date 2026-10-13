@@ -55,7 +55,6 @@ export interface SortableFlipTarget {
 	key: string
 }
 
-/** Анимация перестановки (FLIP): элементы плавно едут на новое место, контейнеры — меняют высоту. При `prefers-reduced-motion` — без анимации */
 /** Движение для FLIP: признак «выключено», длительность и кривая из токенов (`useMotion`) */
 export type SortableFlipMotion = Pick<UseMotionReturn, 'isReduced' | 'duration' | 'easing'>
 
@@ -65,6 +64,7 @@ export interface SortableFlipTiming {
 	easing: string
 }
 
+/** Анимация перестановки (FLIP): элементы плавно едут на новое место, контейнеры — меняют высоту. При `prefers-reduced-motion` — без анимации */
 export interface SortableFlipOptions {
 	/** Источник порядка: при его смене элементы до и после сравниваются по положению */
 	source: () => unknown
