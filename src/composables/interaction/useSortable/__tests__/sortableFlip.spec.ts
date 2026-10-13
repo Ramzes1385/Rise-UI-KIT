@@ -1,10 +1,18 @@
 import { mount } from '@vue/test-utils'
 import { rect } from './sortableHarness'
 import { useSortableFlip } from '../sortableFlip'
-import { defineComponent, h, nextTick, ref, type Ref } from 'vue'
 import type { SortableFlipOptions } from '../types/useSortable.types'
+import { computed, defineComponent, h, nextTick, ref, type Ref } from 'vue'
 
 type Board = Record<string, string[]>
+
+const EASING = 'cubic-bezier(0.2, 0, 0, 1)'
+
+const fakeMotion = (isReduced: boolean) => ({
+	isReduced: computed(() => isReduced),
+	duration: vi.fn(() => 200),
+	easing: vi.fn(() => EASING),
+})
 
 const ITEMS = { selector: '[data-item]', key: 'item' }
 
@@ -25,7 +33,7 @@ function mountBoard(initial: Board, options: Partial<SortableFlipOptions> = {}, 
 	const wrapper = mount(
 		defineComponent({
 			setup() {
-				useSortableFlip(rootRef, { source: () => board.value, items: ITEMS, ...options }, ref(isReducedMotion))
+				useSortableFlip(rootRef, { source: () => board.value, items: ITEMS, ...options }, fakeMotion(isReducedMotion))
 				return () =>
 					h(
 						'div',
@@ -70,20 +78,8 @@ describe('useSortable: анимация перестановки (FLIP)', () => 
 		expect(animate).toHaveBeenCalledTimes(2)
 		const calls = animate.mock.contexts.map((context, index) => [(context as HTMLElement).dataset.item, animate.mock.calls[index]])
 		expect(calls).toEqual([
-			[
-				'b',
-				[
-					[{ transform: 'translate(0px, 50px)' }, { transform: 'none' }],
-					{ duration: 220, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)' },
-				],
-			],
-			[
-				'a',
-				[
-					[{ transform: 'translate(0px, -50px)' }, { transform: 'none' }],
-					{ duration: 220, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)' },
-				],
-			],
+			['b', [[{ transform: 'translate(0px, 50px)' }, { transform: 'none' }], { duration: 200, easing: EASING }]],
+			['a', [[{ transform: 'translate(0px, -50px)' }, { transform: 'none' }], { duration: 200, easing: EASING }]],
 		])
 	})
 
@@ -98,7 +94,7 @@ describe('useSortable: анимация перестановки (FLIP)', () => 
 				{ opacity: 0, transform: 'scale(0.96)' },
 				{ opacity: 1, transform: 'none' },
 			],
-			{ duration: 100, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)' },
+			{ duration: 100, easing: EASING },
 		)
 	})
 
@@ -111,6 +107,31 @@ describe('useSortable: анимация перестановки (FLIP)', () => 
 			[[{ height: '100px' }, { height: '50px' }], expect.any(Object)],
 			[[{ height: '50px' }, { height: '100px' }], expect.any(Object)],
 		])
+	})
+
+	it('длительность и кривая — токены движения base и emphasized', async () => {
+		const motion = fakeMotion(false)
+		const rootRef = ref<HTMLElement | null>(null)
+		const board = ref<Board>({ todo: ['a', 'b'] })
+		mount(
+			defineComponent({
+				setup() {
+					useSortableFlip(rootRef, { source: () => board.value, items: ITEMS }, motion)
+					return () =>
+						h(
+							'div',
+							{ ref: rootRef },
+							board.value.todo.map(id => h('div', { key: id, 'data-item': id })),
+						)
+				},
+			}),
+			{ attachTo: document.body },
+		)
+		board.value = { todo: ['b', 'a'] }
+		await nextTick()
+		expect(motion.duration).toHaveBeenCalledWith('base')
+		expect(motion.easing).toHaveBeenCalledWith('emphasized')
+		expect(animate.mock.calls[0][1]).toEqual({ duration: 200, easing: EASING })
 	})
 
 	it('при уменьшенном движении ничего не анимирует', async () => {

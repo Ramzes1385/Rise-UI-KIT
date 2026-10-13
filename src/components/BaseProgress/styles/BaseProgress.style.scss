@@ -147,21 +147,25 @@ $progress-radius: ct(progress, radius, var(--rise-radius-full));
 	@include motion-safe {
 		&--striped &__fill {
 			animation: base-progress-stripes var(--rise-duration-loop) linear infinite;
+			@include loop-state;
 		}
 
 		&--pulse &__fill,
 		&--pulse &__fill-circle {
 			animation: base-progress-pulse calc(var(--rise-duration-loop) * 2) var(--rise-ease) infinite;
+			@include loop-state;
 		}
 
 		&--glow &__bar {
 			animation: base-progress-glow calc(var(--rise-duration-loop) * 2) var(--rise-ease) infinite;
+			@include loop-state;
 		}
 
 		&--flow &__fill {
 			--progress-paint: linear-gradient(90deg, var(--progress-color), #{$progress-light}, var(--progress-color));
 
 			animation: base-progress-flow calc(var(--rise-duration-loop) * 2.5) linear infinite;
+			@include loop-state;
 		}
 
 		&--flow#{&}--fill-rainbow &__fill {
@@ -172,6 +176,7 @@ $progress-radius: ct(progress, radius, var(--rise-radius-full));
 			width: 40%;
 			opacity: 1;
 			animation: base-progress-indeterminate calc(var(--rise-duration-loop) * 1.5) var(--rise-ease) infinite;
+			@include loop-state;
 		}
 
 		&--indeterminate &__fill-circle {

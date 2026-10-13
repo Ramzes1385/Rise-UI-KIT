@@ -23,6 +23,10 @@ const PANEL_ELEMENTS = [
 	'calendar',
 ]
 
+function resolveAreaAttrs(props: DatePickerPanelProps) {
+	return { theme: props.theme ?? null, riseTheme: props.riseTheme ?? null, motionPreset: props.motionPreset ?? null }
+}
+
 function resolvePanelProps(props: DatePickerPanelProps) {
 	return {
 		isOpen: props.isOpen ?? false,
@@ -32,8 +36,7 @@ function resolvePanelProps(props: DatePickerPanelProps) {
 		selectedDates: props.selectedDates ?? [],
 		monthsCount: props.monthsCount ?? 1,
 		panelStyle: props.panelStyle ?? {},
-		theme: props.theme ?? null,
-		riseTheme: props.riseTheme ?? null,
+		...resolveAreaAttrs(props),
 	}
 }
 

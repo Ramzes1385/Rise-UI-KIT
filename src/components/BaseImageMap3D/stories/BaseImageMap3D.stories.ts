@@ -25,3 +25,4 @@ export const CameraKeyboard = cases.CameraKeyboard
 export const Keyboard = cases.Keyboard
 export const Directory3D = cases.Directory3D
 export const Routes3D = cases.Routes3D
+export const Animations = cases.Animations

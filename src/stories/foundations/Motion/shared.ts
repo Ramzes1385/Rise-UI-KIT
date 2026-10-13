@@ -10,6 +10,7 @@ export const MOTION_TOKENS = [
 	'--rise-motion-distance',
 	'--rise-motion-scale-from',
 	'--rise-motion-stagger',
+	'--rise-motion-loop-state',
 ]
 
 const VALUE_TEMPLATE = `<code ref="el" class="fnd-motion-value">{{ value }}</code>`

@@ -1,4 +1,6 @@
-import { nextTick, ref } from 'vue'
+import { mount } from '@vue/test-utils'
+import { useSortable } from '../useSortable'
+import { defineComponent, h, nextTick, ref, type Ref } from 'vue'
 import { ITEMS, key, mountSortable, pointer, rect, sortableOptions } from './sortableHarness'
 
 describe('useSortable', () => {
@@ -40,5 +42,63 @@ describe('useSortable', () => {
 		await nextTick()
 		expect(source.mock.calls.length).toBeGreaterThan(calls)
 		expect(matchMedia).toHaveBeenCalledWith('(prefers-reduced-motion: reduce)')
+	})
+
+	describe('FLIP берёт движение области корня', () => {
+		const animate = vi.fn()
+
+		function mountFlip(preset: string) {
+			const order = ref(['a', 'b'])
+			const rootRef = ref<HTMLElement | null>(null)
+			mount(
+				defineComponent({
+					setup() {
+						mountSortableOptions(rootRef, order)
+						return () =>
+							h('div', { 'data-rise-motion': preset }, [
+								h(
+									'div',
+									{ ref: rootRef },
+									order.value.map(id => h('i', { key: id, 'data-id': id })),
+								),
+							])
+					},
+				}),
+				{ attachTo: document.body },
+			)
+			return order
+		}
+
+		function mountSortableOptions(rootRef: Ref<HTMLElement | null>, order: Ref<string[]>) {
+			useSortable(sortableOptions({ rootRef, flip: { source: () => order.value, items: { selector: '[data-id]', key: 'id' } } }))
+		}
+
+		beforeEach(() => {
+			vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+				return rect([0, [...this.parentElement!.children].indexOf(this) * 50, 100, 40])
+			})
+			HTMLElement.prototype.animate = animate as unknown as HTMLElement['animate']
+		})
+
+		afterEach(() => {
+			vi.restoreAllMocks()
+			animate.mockClear()
+			delete (HTMLElement.prototype as Partial<HTMLElement>).animate
+			document.body.innerHTML = ''
+		})
+
+		it('пресет standard — элементы едут', async () => {
+			const order = mountFlip('standard')
+			order.value = ['b', 'a']
+			await nextTick()
+			expect(animate).toHaveBeenCalled()
+		})
+
+		it('пресет none — без анимации', async () => {
+			const order = mountFlip('none')
+			order.value = ['b', 'a']
+			await nextTick()
+			expect(animate).not.toHaveBeenCalled()
+		})
 	})
 })

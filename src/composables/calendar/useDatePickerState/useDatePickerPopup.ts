@@ -50,6 +50,7 @@ function useDatePickerPopup(options: UseDatePickerPopupOptions) {
 	const isOpen = ref(false)
 	const currentTheme = ref<string | null>(null)
 	const currentRiseTheme = ref<string | null>(null)
+	const currentMotion = ref<string | null>(null)
 	const panelEl = computed(() => panelRef.value?.panelRef ?? null)
 
 	const { panelStyle } = useDropdownPosition({
@@ -73,6 +74,7 @@ function useDatePickerPopup(options: UseDatePickerPopupOptions) {
 			const themeAttrs = readThemeAttrs(wrapperRef.value)
 			currentTheme.value = themeAttrs['data-theme'] ?? null
 			currentRiseTheme.value = themeAttrs['data-rise-theme'] ?? null
+			currentMotion.value = themeAttrs['data-rise-motion'] ?? null
 		}
 
 		isOpen.value = true
@@ -100,7 +102,7 @@ function useDatePickerPopup(options: UseDatePickerPopupOptions) {
 
 	useDatePickerDismiss({ wrapperRef, panelEl, isOpen, resolvedProps, close })
 
-	return { isOpen, currentTheme, currentRiseTheme, panelStyle, close, handleFieldClick: open, handleKeyboardOpen }
+	return { isOpen, currentTheme, currentRiseTheme, currentMotion, panelStyle, close, handleFieldClick: open, handleKeyboardOpen }
 }
 
 export { useDatePickerPopup }

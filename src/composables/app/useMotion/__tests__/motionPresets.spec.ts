@@ -16,6 +16,7 @@ const TOKENS = [
 	'--rise-motion-distance',
 	'--rise-motion-scale-from',
 	'--rise-motion-stagger',
+	'--rise-motion-loop-state',
 ]
 
 function block(selector: string): Record<string, string> {

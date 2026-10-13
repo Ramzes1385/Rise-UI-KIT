@@ -276,6 +276,7 @@
 
 		@include motion-safe {
 			animation: base-markdown-caret var(--rise-duration-loop) steps(1) infinite;
+			@include loop-state;
 		}
 	}
 }

@@ -116,6 +116,7 @@ describe('useDatePickerState', () => {
 			state.handleFieldClick()
 			expect(state.currentTheme.value).toBeNull()
 			expect(state.currentRiseTheme.value).toBeNull()
+			expect(state.currentMotion.value).toBeNull()
 		})
 
 		it('запоминает тему бренда области поля (data-rise-theme)', () => {
@@ -123,6 +124,14 @@ describe('useDatePickerState', () => {
 			wrapper.element.setAttribute('data-rise-theme', 'playful')
 			state.handleFieldClick()
 			expect(state.currentRiseTheme.value).toBe('playful')
+			expect(state.currentTheme.value).toBe('dark')
+		})
+
+		it('запоминает пресет движения области поля (data-rise-motion)', () => {
+			const { state, wrapper } = setup()
+			wrapper.element.setAttribute('data-rise-motion', 'none')
+			state.handleFieldClick()
+			expect(state.currentMotion.value).toBe('none')
 			expect(state.currentTheme.value).toBe('dark')
 		})
 

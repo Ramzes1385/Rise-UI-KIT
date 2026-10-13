@@ -124,6 +124,17 @@ describe('DatePickerPanel', () => {
 			})
 		})
 
+		it('применяет data-rise-motion области поля; без пресета атрибута нет', async () => {
+			const { container, rerender } = render(DatePickerPanel, {
+				props: { ...DEFAULT_PROPS, motionPreset: 'none' },
+				global: { stubs: STUBS },
+			})
+
+			expect(container.querySelector('.date-picker-panel')).toHaveAttribute('data-rise-motion', 'none')
+			await rerender({ ...DEFAULT_PROPS, motionPreset: null })
+			expect(container.querySelector('.date-picker-panel')).not.toHaveAttribute('data-rise-motion')
+		})
+
 		it('рендерит 4 кнопки навигации', () => {
 			const { container } = render(DatePickerPanel, {
 				props: DEFAULT_PROPS,

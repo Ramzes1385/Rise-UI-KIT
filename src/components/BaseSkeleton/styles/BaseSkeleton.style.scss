@@ -20,6 +20,7 @@
 	@include motion-safe {
 		&--pulse {
 			animation: base-skeleton-pulse calc(var(--rise-duration-loop) * 2) var(--rise-ease) infinite;
+			@include loop-state;
 		}
 
 		&--animated::after {
@@ -34,6 +35,7 @@
 			);
 			transform: translateX(-100%);
 			animation: base-skeleton-shimmer calc(var(--rise-duration-loop) * 1.5) var(--rise-ease) infinite;
+			@include loop-state;
 		}
 	}
 }

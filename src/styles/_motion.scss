@@ -37,6 +37,7 @@ $motion-presets: (
 		'motion-distance': 0px,
 		'motion-scale-from': 1,
 		'motion-stagger': 0ms,
+		'motion-loop-state': paused,
 	),
 	'subtle': (
 		'duration-fast': 100ms,
@@ -48,6 +49,7 @@ $motion-presets: (
 		'motion-distance': 4px,
 		'motion-scale-from': 0.98,
 		'motion-stagger': 0ms,
+		'motion-loop-state': running,
 	),
 	'standard': (
 		'duration-fast': 150ms,
@@ -59,6 +61,7 @@ $motion-presets: (
 		'motion-distance': 8px,
 		'motion-scale-from': 0.95,
 		'motion-stagger': 30ms,
+		'motion-loop-state': running,
 	),
 	'expressive': (
 		'duration-fast': 180ms,
@@ -70,6 +73,7 @@ $motion-presets: (
 		'motion-distance': 16px,
 		'motion-scale-from': 0.9,
 		'motion-stagger': 50ms,
+		'motion-loop-state': running,
 	),
 );
 

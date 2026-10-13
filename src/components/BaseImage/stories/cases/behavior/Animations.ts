@@ -28,7 +28,7 @@ export const Animations: StoryObj<typeof meta> = {
 					'`<Transition>` (`--rise-duration`, уход — `--rise-duration-fast`); поворот и масштаб внутри — `--rise-duration-slow`',
 					"и `--rise-ease-emphasized`. Выключить движение — `createUiKitPlugin({ motion: 'none' })` или `reducedMotion: 'always'`;",
 					'системная настройка «уменьшить движение» действует всегда. Мерцание плейсхолдера — декоративная петля',
-					'(`--rise-duration-loop`), при «уменьшить движение» его нет.',
+					"(`--rise-duration-loop`), при «уменьшить движение», в пресете `none` и при `reducedMotion: 'always'` его нет.",
 				].join('\n'),
 			},
 			source: motion.source,

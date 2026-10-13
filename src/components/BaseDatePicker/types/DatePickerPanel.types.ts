@@ -27,6 +27,8 @@ export interface DatePickerPanelProps extends BaseDatePickerCalendarProps {
 	theme?: string | null
 	/** Тема бренда области поля (`data-rise-theme`) */
 	riseTheme?: string | null
+	/** Пресет движения области поля (`data-rise-motion`): панель двигается как поле, а не как `<html>` */
+	motionPreset?: string | null
 	/** Кастомные классы */
 	customClass?: CustomClassProp
 	/** Общая конфигурация календаря */

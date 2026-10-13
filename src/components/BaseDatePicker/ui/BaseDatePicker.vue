@@ -40,6 +40,7 @@
 			:panel-style="panelStyle"
 			:theme="currentTheme"
 			:rise-theme="currentRiseTheme"
+			:motion-preset="currentMotion"
 			:custom-class="classes.panel"
 			:part-class="ui"
 			@model-update="handleModelUpdate"
@@ -72,6 +73,7 @@ const {
 	isOpen,
 	currentTheme,
 	currentRiseTheme,
+	currentMotion,
 	wrapperRef,
 	panelRef,
 	computedMonthsCount,

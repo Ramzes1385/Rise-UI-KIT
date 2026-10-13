@@ -36,7 +36,7 @@ export const Animations: StoryObj<typeof meta> = {
 				story: [
 					'Шиммер (`isAnimated`, по умолчанию) и мерцание (`isPulse`) в четырёх пресетах движения. Период петель — кратное токена',
 					'`--rise-duration-loop` (1s; пресеты его не обнуляют): шиммер — 1.5, мерцание — 2. Петли декоративные: при системной',
-					'настройке «уменьшить движение» скелетон стоит без движения. Смену скелетона на содержимое показывает приложение',
+					"настройке «уменьшить движение», в пресете `none` и при `reducedMotion: 'always'` скелетон стоит без движения. Смену скелетона на содержимое показывает приложение",
 					'(`v-if`/`v-else`); плавная смена — обёртка `<Transition name="base-skeleton" mode="out-in">`: скелетон гаснет',
 					'(`--rise-duration-fast`), содержимое проявляется (`--rise-duration`). Выключить переходы —',
 					"`createUiKitPlugin({ motion: 'none' })` или `reducedMotion: 'always'`: содержимое встаёт сразу.",
@@ -53,5 +53,8 @@ export const Animations: StoryObj<typeof meta> = {
 		await waitFor(() => expect(canvasElement.querySelectorAll('.base-skeleton')).toHaveLength(0))
 		await userEvent.click(toggle)
 		await waitFor(() => expect(canvasElement.querySelectorAll('.base-skeleton')).toHaveLength(8))
+		const bone = (preset: string) => canvasElement.querySelector(`[data-rise-motion="${preset}"] .base-skeleton--animated`)!
+		await expect(getComputedStyle(bone('none'), '::after').animationPlayState).toBe('paused')
+		await expect(getComputedStyle(bone('standard'), '::after').animationPlayState).toBe('running')
 	},
 }

@@ -1,4 +1,5 @@
 import { useUi } from '@composables/base/useUi'
+import { useResultsMotion } from './useResultsMotion'
 import { UI_COMMAND_PALETTE } from '@/locales/messages'
 import { useHotkeys } from '@composables/interaction/useHotkeys'
 import { useCustomClass } from '@composables/base/useCustomClass'
@@ -64,7 +65,8 @@ function useCommandList(props: BaseCommandPaletteProps, isOpen: { value: boolean
 		},
 		{ immediate: true },
 	)
-	return { prefix, query, activeIndex, groups, options, activeId, moveTo, reset }
+	const { anchorRef: searchRef } = useResultsMotion(groups)
+	return { prefix, query, activeIndex, groups, options, activeId, moveTo, reset, searchRef }
 }
 
 export function useBaseCommandPalette(props: BaseCommandPaletteProps, emit: BaseCommandPaletteEmits) {
@@ -87,6 +89,7 @@ export function useBaseCommandPalette(props: BaseCommandPaletteProps, emit: Base
 	const ui = useUi(props, 'base-command-palette')
 	return {
 		ui,
+		searchRef: list.searchRef,
 		classes,
 		modalClass: computed(() => ({
 			root: [ui('root'), classes.value.root].filter(Boolean).join(' '),

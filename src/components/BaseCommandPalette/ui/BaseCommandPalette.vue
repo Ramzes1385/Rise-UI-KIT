@@ -9,7 +9,7 @@
 		:is-contained="isContained"
 		:custom-class="modalClass"
 		@update:is-open="setOpen">
-		<div :class="ui('search')">
+		<div ref="searchRef" :class="ui('search')">
 			<BaseIcon name="search" />
 			<input
 				:class="[ui('input'), classes.input]"
@@ -112,6 +112,7 @@ defineSlots<BaseCommandPaletteSlots>()
 
 const {
 	ui,
+	searchRef,
 	classes,
 	modalClass,
 	isOpen,

@@ -1,4 +1,5 @@
 import type { ComputedRef, Ref, ShallowRef } from 'vue'
+import type { UseMotionReturn } from '@composables/app/useMotion'
 
 /** Точка на экране в координатах окна */
 export interface SortablePoint {
@@ -55,6 +56,15 @@ export interface SortableFlipTarget {
 }
 
 /** Анимация перестановки (FLIP): элементы плавно едут на новое место, контейнеры — меняют высоту. При `prefers-reduced-motion` — без анимации */
+/** Движение для FLIP: признак «выключено», длительность и кривая из токенов (`useMotion`) */
+export type SortableFlipMotion = Pick<UseMotionReturn, 'isReduced' | 'duration' | 'easing'>
+
+/** Параметры одного проигрыша FLIP */
+export interface SortableFlipTiming {
+	duration: number
+	easing: string
+}
+
 export interface SortableFlipOptions {
 	/** Источник порядка: при его смене элементы до и после сравниваются по положению */
 	source: () => unknown
@@ -62,7 +72,7 @@ export interface SortableFlipOptions {
 	items: SortableFlipTarget
 	/** Контейнеры, у которых плавно меняется высота (колонки канбана) */
 	containers?: SortableFlipTarget
-	/** Длительность в мс (по умолчанию 220) */
+	/** Длительность в мс; по умолчанию — токен `--rise-duration` области (при выключенном движении анимации нет) */
 	duration?: number
 }
 

@@ -83,6 +83,7 @@
 	@include motion-safe {
 		&__dot {
 			animation: base-loader-dot calc(var(--rise-duration-loop) * 1.2) var(--rise-ease) infinite both;
+			@include loop-state;
 
 			&:nth-child(1) {
 				animation-delay: calc(var(--rise-duration-loop) * -0.32);
@@ -95,10 +96,12 @@
 
 		&__pulse::before {
 			animation: base-loader-ping calc(var(--rise-duration-loop) * 1.2) var(--rise-ease-out) infinite;
+			@include loop-state;
 		}
 
 		&__bar {
 			animation: base-loader-bar calc(var(--rise-duration-loop) * 1.2) var(--rise-ease) infinite both;
+			@include loop-state;
 
 			&:nth-child(1) {
 				animation-delay: calc(var(--rise-duration-loop) * -0.36);

@@ -79,6 +79,7 @@
 			);
 			background-size: 200% 100%;
 			animation: base-image-shimmer calc(var(--rise-duration-loop) * 1.5) ease-in-out infinite;
+			@include loop-state;
 		}
 	}
 

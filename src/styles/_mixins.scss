@@ -74,6 +74,10 @@
 	}
 }
 
+@mixin loop-state {
+	animation-play-state: var(--rise-motion-loop-state, running);
+}
+
 @mixin hover {
 	@media (hover: hover) {
 		&:not(:disabled, [disabled], [aria-disabled='true'], .is-disabled, [class*='--disabled']):hover {

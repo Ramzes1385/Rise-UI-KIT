@@ -2,8 +2,8 @@
 
 import { useSortableFlip } from './sortableFlip'
 import { useSortablePointer } from './sortablePointer'
+import { useMotion } from '@composables/app/useMotion'
 import { useSortableKeyboard } from './sortableKeyboard'
-import { useReducedMotion } from '@composables/app/useReducedMotion'
 import type { UseSortableOptions, UseSortableReturn } from './types/useSortable.types'
 
 /**
@@ -37,8 +37,8 @@ import type { UseSortableOptions, UseSortableReturn } from './types/useSortable.
  */
 export function useSortable<TItem, TPlace>(options: UseSortableOptions<TItem, TPlace>): UseSortableReturn<TItem> {
 	const keyboard = useSortableKeyboard(options)
-	const isReducedMotion = useReducedMotion()
-	const pointer = useSortablePointer(options, isReducedMotion)
-	if (options.flip) useSortableFlip(options.rootRef, options.flip, isReducedMotion)
+	const motion = useMotion(options.rootRef)
+	const pointer = useSortablePointer(options, motion.isReduced)
+	if (options.flip) useSortableFlip(options.rootRef, options.flip, motion)
 	return { ...keyboard, ...pointer }
 }
