@@ -61,14 +61,19 @@ describe('BaseMarkdown', () => {
 		const { container } = render(BaseMarkdown, { props: { source: SOURCE } })
 
 		expect(screen.getByRole('heading', { level: 2, name: 'Итоги' })).toBeInTheDocument()
-		expect(screen.getByRole('link', { name: 'ссылкой' })).toHaveAttribute('target', '_blank')
-		expect(screen.getByRole('link', { name: 'ссылкой' })).toHaveAttribute('rel', 'noopener noreferrer')
+		expect(screen.getByRole('link', { name: /^ссылкой\s*\(откроется в новой вкладке\)$/ })).toHaveAttribute('target', '_blank')
+		expect(screen.getByRole('link', { name: /^ссылкой\s*\(откроется в новой вкладке\)$/ })).toHaveAttribute(
+			'rel',
+			'noopener noreferrer',
+		)
 		expect(screen.getByRole('link', { name: 'внутренней' })).not.toHaveAttribute('target')
 		expect(container.querySelector('code.base-markdown__code')).toHaveTextContent('кодом')
 		expect(container.querySelector('del')).toHaveTextContent('старым')
 		expect(container.querySelector('ol strong')).toHaveTextContent('Второй')
-		expect(screen.getByRole('img', { name: 'Выполнено' })).toContainElement(container.querySelector('.base-icon'))
-		expect(screen.getByRole('img', { name: 'Не выполнено' })).toBeEmptyDOMElement()
+		expect(screen.getByRole('checkbox', { name: 'Выполнено' })).toBeChecked()
+		expect(screen.getByRole('checkbox', { name: 'Выполнено' })).toHaveAttribute('aria-readonly', 'true')
+		expect(screen.getByRole('checkbox', { name: 'Выполнено' })).toHaveAttribute('tabindex', '-1')
+		expect(screen.getByRole('checkbox', { name: 'Не выполнено' })).not.toBeChecked()
 		expect(container.querySelector('blockquote')).toHaveTextContent('Цитата')
 		expect(container.querySelector('pre')).toHaveTextContent('const a = 1')
 		expect(container.querySelector('.base-markdown__code-lang')).toHaveTextContent('ts')

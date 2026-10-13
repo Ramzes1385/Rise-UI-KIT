@@ -6,10 +6,11 @@
 		v-bind="link.attrs"
 		@click="handleClick">
 		<slot>{{ label }}</slot>
-		<span v-if="isNewTab" :class="[ui('external'), classes.external]">
+		<span v-if="isNewTab && hasExternalIcon" :class="[ui('external'), classes.external]">
 			<span aria-hidden="true">↗</span>
 			<span :class="ui('hint')"> {{ UI_ARIA.OPENS_IN_NEW_TAB }}</span>
 		</span>
+		<span v-else-if="isNewTab" :class="ui('hint')">{{ ` ${UI_ARIA.OPENS_IN_NEW_TAB}` }}</span>
 	</component>
 </template>
 
@@ -27,6 +28,7 @@ const props = withDefaults(
 		variant: DEFAULT_VARIANT,
 		sizeScale: SIZE_SCALE_DEFAULT,
 		isDisabled: false,
+		hasExternalIcon: true,
 	}),
 )
 

@@ -50,6 +50,20 @@ describe('BaseLink', () => {
 		expect(link.querySelector('.base-link__external [aria-hidden="true"]')).toHaveTextContent('↗')
 	})
 
+	it('hasExternalIcon=false: без значка, подсказка для скринридера остаётся', () => {
+		const { container } = render(BaseLink, {
+			props: { href: 'https://example.com', target: '_blank', label: 'Руководство', hasExternalIcon: false },
+		})
+
+		expect(screen.getByRole('link', { name: /^Руководство\s*\(откроется в новой вкладке\)$/ })).toHaveAttribute(
+			'rel',
+			'noopener noreferrer',
+		)
+		expect(container.querySelector('.base-link__external')).toBeNull()
+		expect(container.querySelector('.base-link__hint')).toHaveTextContent('откроется в новой вкладке')
+		expect(container).not.toHaveTextContent('↗')
+	})
+
 	it('клик эмитит click; у отключённой ссылки — нет адреса, клик гасится', async () => {
 		const { emitted, rerender } = render(BaseLink, { props: { href: '#details', label: 'Подробнее' } })
 		await fireEvent.click(screen.getByRole('link', { name: 'Подробнее' }))

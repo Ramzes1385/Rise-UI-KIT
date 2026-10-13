@@ -71,17 +71,9 @@
 		@include custom-text(color, var(--rise-text-muted));
 	}
 
-	&__link {
-		@include custom-text(color, ct(markdown, link-text, var(--rise-primary)));
-		text-decoration: underline;
-		text-decoration-thickness: 1px;
-		text-underline-offset: sz(3px);
-		border-radius: sz(2px);
-		@include focus-ring;
-
-		@include hover {
-			text-decoration-thickness: 2px;
-		}
+	&__link.base-link {
+		--custom-text: #{ct(markdown, link-text, var(--rise-primary-text))};
+		font-size: inherit;
 	}
 
 	&__code {
@@ -117,28 +109,10 @@
 		margin-left: sz(-20px);
 	}
 
-	&__check {
+	&__check.base-checkbox {
 		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		box-sizing: border-box;
-		width: sz(16px);
-		height: sz(16px);
 		margin-right: sz(8px);
 		vertical-align: sz(-3px);
-		border: 1px solid var(--rise-border-accented);
-		border-radius: sz(var(--rise-radius-sm));
-		color: var(--rise-on-primary);
-
-		.base-icon {
-			width: sz(12px);
-			height: sz(12px);
-		}
-	}
-
-	&__check--done {
-		border-color: var(--rise-primary);
-		background-color: var(--rise-primary);
 	}
 
 	&__quote {

@@ -9,6 +9,7 @@ export const args = {
 	sizeScale: 100,
 	error: '',
 	isDisabled: false,
+	isReadonly: false,
 	'onUpdate:modelValue': fn(),
 	onChange: fn(),
 } satisfies Meta<typeof BaseCheckbox>['args']

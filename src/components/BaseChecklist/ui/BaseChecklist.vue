@@ -25,13 +25,12 @@
 				v-for="row in rows"
 				:key="row.item.id"
 				:class="[ui('item'), classes.item, { 'base-checklist__item--done': row.isDone, 'base-checklist__item--next': row.isNext }]">
-				<input
-					:id="row.checkboxId"
-					type="checkbox"
+				<BaseCheckbox
 					:class="ui('checkbox')"
-					:checked="row.isDone"
-					:disabled="isDisabled"
-					:aria-describedby="row.describedBy"
+					:model-value="row.isDone"
+					:is-disabled="isDisabled"
+					:input-attrs="{ id: row.checkboxId, 'aria-describedby': row.describedBy }"
+					:size-scale="sizeScale"
 					@change="toggle(row.item.id)" />
 				<div :class="ui('body')">
 					<div :class="ui('line')">
@@ -67,6 +66,7 @@ import '../styles/BaseChecklist.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHECKLIST } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
+import { BaseCheckbox } from '@components/BaseCheckbox'
 import { BaseProgress } from '@components/BaseProgress'
 import { useBaseChecklist } from '../model/useBaseChecklist'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'

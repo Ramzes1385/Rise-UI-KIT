@@ -260,7 +260,7 @@
 		max-width: 50%;
 	}
 
-	&__actor-link {
+	&__actor-link.base-link {
 		display: grid;
 		place-items: center;
 		width: sz(30px);
@@ -279,6 +279,7 @@
 		}
 
 		@include hover {
+			color: var(--media-text);
 			box-shadow: 0 6px 16px color-mix(in srgb, var(--media-share-color) 45%, transparent);
 			transform: translateY(-2px) scale(1.06);
 		}

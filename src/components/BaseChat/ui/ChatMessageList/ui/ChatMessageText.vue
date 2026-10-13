@@ -1,14 +1,14 @@
 <template>
 	<p v-if="text" class="base-chat-message-list__text">
 		<template v-for="(token, index) in highlightedTokens" :key="index"
-			><a
+			><BaseLink
 				v-if="token.type === 'link'"
 				:href="token.value"
 				target="_blank"
-				rel="noopener noreferrer"
+				:has-external-icon="false"
 				class="base-chat-message-list__link"
 				@click.stop
-				>{{ token.value }}</a
+				>{{ token.value }}</BaseLink
 			><button
 				v-else-if="token.type === 'mention'"
 				type="button"
@@ -32,6 +32,7 @@
 </template>
 
 <script setup lang="ts">
+import { BaseLink } from '@components/BaseLink'
 import { useChatMessageText } from '../model/useChatMessageText'
 import type { ChatMessageTextEmits, ChatMessageTextProps } from '../types/ChatMessageText.types'
 

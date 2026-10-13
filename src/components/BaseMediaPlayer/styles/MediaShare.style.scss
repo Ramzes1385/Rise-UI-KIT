@@ -233,21 +233,11 @@
 		}
 	}
 
-	&__share-time {
-		display: inline-flex;
-		align-items: center;
+	&__share-time.base-checkbox {
+		--checkbox-checked-border: var(--media-primary-strong);
+		--checkbox-checked-bg: var(--media-primary-strong);
+		--checkbox-checked-bg-hover: var(--media-primary-strong);
 		align-self: flex-start;
-		gap: sz(8px);
-		font-size: sz(13px);
-		cursor: pointer;
-	}
-
-	&__share-check {
-		width: sz(16px);
-		height: sz(16px);
-		margin: 0;
-		accent-color: var(--media-primary-strong);
-		cursor: pointer;
 	}
 }
 

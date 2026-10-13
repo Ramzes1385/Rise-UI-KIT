@@ -26,6 +26,11 @@ export interface BaseCheckboxProps extends BaseComponentProps<
 	error?: string
 	/** Отключенное состояние */
 	isDisabled?: boolean
+	/**
+	 * Только чтение: значение видно, но клик, пробел и клик по подписи его не меняют; флажок остаётся в порядке Tab
+	 * и не затемняется (`aria-readonly`). Для отметок в готовом списке, где менять значение нельзя
+	 */
+	isReadonly?: boolean
 	/** Имя флажка без видимой подписи (`aria-label`) */
 	ariaLabel?: string
 	/** Атрибуты нативного `<input>`: `name`, `value`, `aria-*`, `data-*`; `id` — свой id флажка */
@@ -55,4 +60,4 @@ export interface BaseCheckboxSlots {
 	error?: () => unknown
 }
 
-export type CheckboxProps = PropsWithDefaults<BaseCheckboxProps, 'isIndeterminate'>
+export type CheckboxProps = PropsWithDefaults<BaseCheckboxProps, 'isIndeterminate' | 'isReadonly'>

@@ -26,6 +26,7 @@ function useCheckboxControl(props: CheckboxProps) {
 		nativeAttrs: computed(() => ({
 			...props.inputAttrs,
 			...(props.ariaLabel ? { 'aria-label': props.ariaLabel } : {}),
+			...(props.isReadonly ? { 'aria-readonly': true } : {}),
 			...control.aria.value,
 			id: control.id.value,
 		})),
@@ -41,6 +42,9 @@ export function useBaseCheckbox(props: CheckboxProps, emit: BaseCheckboxEmits) {
 		...field,
 		ui: useUi(props, 'base-checkbox'),
 		rootRef,
+		handleClick(event: MouseEvent): void {
+			if (props.isReadonly) event.preventDefault()
+		},
 		handleChange(event: Event): void {
 			const target = toHTMLInputElement(event.target)
 			if (!target) return

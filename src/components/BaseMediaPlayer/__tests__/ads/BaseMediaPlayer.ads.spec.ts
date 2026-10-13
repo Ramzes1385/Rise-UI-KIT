@@ -44,7 +44,7 @@ describe('BaseMediaPlayer: реклама', () => {
 		expect(link.attributes()).toMatchObject({
 			href: 'https://example.com/promo',
 			target: '_blank',
-			rel: 'noopener noreferrer sponsored',
+			rel: 'sponsored noopener noreferrer',
 		})
 		const surface = wrapper.get('.base-media-player__ad-surface')
 		expect(surface.attributes()).toMatchObject({

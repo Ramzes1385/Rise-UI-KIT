@@ -16,7 +16,7 @@ describe('ChatMessageText', () => {
 		render(ChatMessageText, {
 			props: { text: 'Смотри https://example.com', sizeScale: 100 },
 		})
-		const link = screen.getByRole('link', { name: 'https://example.com' })
+		const link = screen.getByRole('link', { name: /^https:\/\/example\.com\s*\(откроется в новой вкладке\)$/ })
 		expect(link).toHaveAttribute('href', 'https://example.com')
 		expect(link).toHaveAttribute('target', '_blank')
 	})

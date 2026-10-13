@@ -122,15 +122,16 @@
 						{{ title }}
 						<span v-if="episodeTitle" class="base-media-player__episode">· {{ episodeTitle }}</span>
 					</span>
-					<a
+					<BaseLink
 						v-if="logoSrc && logoLink"
+						variant="ghost"
 						:class="[ui('logo'), classes.logo]"
 						:href="logoLink"
 						target="_blank"
-						rel="noopener noreferrer"
+						:has-external-icon="false"
 						:aria-label="logoAlt">
 						<img class="base-media-player__logo-image" :src="logoSrc" alt="" />
-					</a>
+					</BaseLink>
 					<img v-else-if="logoSrc" :class="[ui('logo'), classes.logo]" :src="logoSrc" :alt="logoAlt ?? ''" />
 				</div>
 				<Transition name="base-media-player__loader">
@@ -203,6 +204,7 @@ import '../styles/BaseMediaPlayer.style.scss'
 import '../styles/MediaOverlays.style.scss'
 import '../styles/MediaPanels.style.scss'
 import { UI_PLAYER } from '../model/messages'
+import { BaseLink } from '@components/BaseLink'
 import MediaIcon from './controls/MediaIcon.vue'
 import { BaseButton } from '@components/BaseButton'
 import MediaNotices from './overlays/MediaNotices.vue'

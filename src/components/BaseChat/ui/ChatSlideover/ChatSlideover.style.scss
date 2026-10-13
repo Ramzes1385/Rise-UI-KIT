@@ -362,8 +362,9 @@
 		@include chat-icon-button(3px);
 	}
 
-	&__link-item {
+	&__link-item.base-link {
 		display: flex;
+		font-size: inherit;
 		align-items: center;
 		gap: sz(10px);
 		padding: sz(6px);

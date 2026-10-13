@@ -8,7 +8,7 @@
 		class="base-chat-slideover__empty" />
 	<ul v-else class="base-chat-slideover__links-list">
 		<li v-for="link in links" :key="link.url">
-			<a :href="link.url" target="_blank" rel="noopener noreferrer" class="base-chat-slideover__link-item">
+			<BaseLink :href="link.url" target="_blank" variant="ghost" :has-external-icon="false" class="base-chat-slideover__link-item">
 				<span class="base-chat-slideover__link-icon" aria-hidden="true">
 					<BaseIcon name="link" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
 				</span>
@@ -16,13 +16,14 @@
 					<span class="base-chat-slideover__link-url">{{ link.url }}</span>
 					<span class="base-chat-slideover__link-date">{{ link.publishedAt }}</span>
 				</span>
-			</a>
+			</BaseLink>
 		</li>
 	</ul>
 </template>
 
 <script setup lang="ts">
 import { BaseIcon } from '@components/BaseIcon'
+import { BaseLink } from '@components/BaseLink'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseEmpty } from '@components/BaseEmpty'
 import { CHAT_SCALE } from '../../model/chatScale'

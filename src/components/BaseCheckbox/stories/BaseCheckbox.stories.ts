@@ -25,6 +25,7 @@ export const Theming = cases.Theming
 export const Disabled = cases.Disabled
 export const WithError = cases.WithError
 export const Indeterminate = cases.Indeterminate
+export const Readonly = cases.Readonly
 export const LongContent = cases.LongContent
 export const ErrorSlot = cases.ErrorSlot
 export const ConsentBeforeSubmit = cases.ConsentBeforeSubmit

@@ -36,7 +36,8 @@ describe('BaseMarkdown: проп ui', () => {
 
 		expect(root).toHaveAttribute('class', 'base-markdown')
 		for (const part of ['heading', 'paragraph', 'quote', 'rule', 'table-wrap', 'table', 'image', 'link', 'code', 'code-lang', 'pre']) {
-			expect(root.querySelector(`.base-markdown__${part}`)).toHaveAttribute('class', `base-markdown__${part}`)
+			const expected = part === 'link' ? 'base-link base-markdown__link' : `base-markdown__${part}`
+			expect(root.querySelector(`.base-markdown__${part}`)).toHaveAttribute('class', expected)
 		}
 		expect(root.querySelector('.base-markdown__token')!.className).toMatch(/^base-markdown__token base-markdown__token--/)
 	})
@@ -68,6 +69,6 @@ describe('BaseMarkdown: проп ui', () => {
 		const root = renderMarkdown({ ui: { link: 'own-link' } }, [plugin])
 
 		expect(root).toHaveClass('app-root')
-		expect(root.querySelector('.base-markdown__link')).toHaveAttribute('class', 'base-markdown__link app-link own-link')
+		expect(root.querySelector('.base-markdown__link')).toHaveAttribute('class', 'base-link base-markdown__link app-link own-link')
 	})
 })

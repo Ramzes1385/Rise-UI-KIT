@@ -9,4 +9,5 @@ export const argTypes = {
 	label: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	error: { control: 'text', table: propGroup(ARG_GROUP.state) },
 	isDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+	isReadonly: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 } satisfies Meta<typeof BaseCheckbox>['argTypes']

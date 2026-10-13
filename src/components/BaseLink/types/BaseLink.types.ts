@@ -27,6 +27,11 @@ export interface BaseLinkProps extends BaseComponentProps<(typeof LINK_VARIANTS)
 	rel?: string
 	/** Текст ссылки (заменяется слотом default) */
 	label?: string
+	/**
+	 * Значок «↗» у ссылки в новой вкладке. `false` — без значка (ссылки внутри текста, подписей, панелей):
+	 * скрытая подсказка «откроется в новой вкладке» для скринридера остаётся
+	 */
+	hasExternalIcon?: boolean
 	/** Отключённая ссылка: без адреса, не получает фокус, `aria-disabled` */
 	isDisabled?: boolean
 	/** Компонент ссылок на маршруты. По умолчанию — из плагина, RouterLink (если подключён vue-router) или `a` */

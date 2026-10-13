@@ -46,18 +46,19 @@
 								<span v-if="actor.role" class="base-media-player__actor-role">{{ actor.role }}</span>
 							</span>
 							<span v-if="actor.links.length" class="base-media-player__actor-links">
-								<a
+								<BaseLink
 									v-for="link in actor.links"
 									:key="link.url"
+									variant="ghost"
 									class="base-media-player__actor-link"
 									:href="link.url"
 									target="_blank"
-									rel="noopener noreferrer"
+									:has-external-icon="false"
 									:aria-label="link.ariaLabel"
 									:title="link.label"
 									:style="{ '--media-share-color': link.color }">
 									<MediaIcon :name="link.icon" />
-								</a>
+								</BaseLink>
 							</span>
 						</li>
 					</ul>
@@ -99,6 +100,7 @@
 </template>
 
 <script setup lang="ts">
+import { BaseLink } from '@components/BaseLink'
 import MediaIcon from '../controls/MediaIcon.vue'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { UI_ARIA, UI_PLAYER } from '../../model/messages'

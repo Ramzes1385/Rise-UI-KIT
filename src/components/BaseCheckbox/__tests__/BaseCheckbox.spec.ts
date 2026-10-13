@@ -220,3 +220,30 @@ describe('BaseCheckbox: частичный выбор (isIndeterminate)', () => 
 		expect(checkbox.indeterminate).toBe(true)
 	})
 })
+
+describe('BaseCheckbox: только чтение (isReadonly)', () => {
+	it('ставит aria-readonly, не отключает поле и не меняет значение по клику', async () => {
+		const { emitted, container } = render(BaseCheckbox, { props: { label: 'Готово', modelValue: true, isReadonly: true } })
+		const checkbox = screen.getByRole('checkbox', { name: 'Готово' }) as HTMLInputElement
+
+		await fireEvent.click(checkbox)
+		await fireEvent.click(screen.getByText('Готово'))
+
+		expect(checkbox).toHaveAttribute('aria-readonly', 'true')
+		expect(checkbox).toBeEnabled()
+		expect(checkbox.checked).toBe(true)
+		expect(emitted()['update:modelValue']).toBeUndefined()
+		expect(emitted().change).toBeUndefined()
+		expect(container.querySelector('.base-checkbox')).toHaveClass('base-checkbox--readonly')
+	})
+
+	it('без isReadonly нет aria-readonly, а клик меняет значение', async () => {
+		const { emitted } = render(BaseCheckbox, { props: { label: 'Готово' } })
+		const checkbox = screen.getByRole('checkbox', { name: 'Готово' })
+
+		await fireEvent.click(checkbox)
+
+		expect(checkbox).not.toHaveAttribute('aria-readonly')
+		expect(emitted()['update:modelValue']).toEqual([[true]])
+	})
+})

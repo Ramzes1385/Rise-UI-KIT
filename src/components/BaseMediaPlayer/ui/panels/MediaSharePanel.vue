@@ -71,10 +71,7 @@
 					{{ isCopied ? UI_PLAYER.SHARE_COPIED : UI_PLAYER.SHARE_COPY }}
 				</button>
 			</div>
-			<label class="base-media-player__share-time">
-				<input v-model="isAtTime" class="base-media-player__share-check" type="checkbox" />
-				{{ atTimeLabel }}
-			</label>
+			<BaseCheckbox v-model="isAtTime" class="base-media-player__share-time" :label="atTimeLabel" />
 		</div>
 	</BaseModal>
 </template>
@@ -84,6 +81,7 @@ import '../../styles/MediaShare.style.scss'
 import { UI_PLAYER } from '../../model/messages'
 import MediaIcon from '../controls/MediaIcon.vue'
 import { BaseModal } from '@components/BaseModal'
+import { BaseCheckbox } from '@components/BaseCheckbox'
 import { useMediaSharePanel } from '../../model/sharing/useMediaSharePanel'
 
 const {

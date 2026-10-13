@@ -9,12 +9,8 @@
 		overflow-wrap: anywhere;
 	}
 
-	&__link {
-		color: var(--rise-primary-text);
-		text-decoration: underline;
-		text-underline-offset: sz(2px);
-		border-radius: sz(var(--rise-radius-xs));
-		@include focus-ring(1px);
+	&__link.base-link {
+		font-size: inherit;
 	}
 
 	&__mention,

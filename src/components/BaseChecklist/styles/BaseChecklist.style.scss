@@ -71,18 +71,9 @@
 		pointer-events: none;
 	}
 
-	&__checkbox {
+	&__checkbox.base-checkbox {
 		flex: none;
-		width: sz(18px);
-		height: sz(18px);
 		margin: sz(1px) 0 0;
-		accent-color: var(--rise-primary);
-		cursor: pointer;
-		@include focus-ring;
-
-		&:disabled {
-			cursor: not-allowed;
-		}
 	}
 
 	&__body {

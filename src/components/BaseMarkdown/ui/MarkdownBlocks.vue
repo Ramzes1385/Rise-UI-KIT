@@ -16,13 +16,14 @@
 				v-for="(item, itemIndex) in block.items"
 				:key="itemIndex"
 				:class="[ui('item'), { 'base-markdown__item--task': item.checked !== null }]">
-				<span
+				<BaseCheckbox
 					v-if="item.checked !== null"
 					:class="[ui('check'), { 'base-markdown__check--done': item.checked }]"
-					role="img"
-					:aria-label="item.checked ? UI_MARKDOWN.TASK_DONE : UI_MARKDOWN.TASK_TODO">
-					<BaseIcon v-if="item.checked" name="check" />
-				</span>
+					:model-value="item.checked"
+					is-readonly
+					:aria-label="item.checked ? UI_MARKDOWN.TASK_DONE : UI_MARKDOWN.TASK_TODO"
+					:input-attrs="{ tabindex: -1 }"
+					:size-scale="getSizeScale()" />
 				<MarkdownInline v-if="item.inline" :nodes="item.inline" />
 				<MarkdownBlocks v-else :blocks="item.children" />
 			</li>
@@ -55,13 +56,14 @@
 
 <script setup lang="ts">
 import MarkdownCode from './MarkdownCode.vue'
-import { BaseIcon } from '@components/BaseIcon'
 import { UI_MARKDOWN } from '@/locales/messages'
 import MarkdownInline from './MarkdownInline.vue'
-import { useMarkdownUi } from '../model/useMarkdownUi'
+import { BaseCheckbox } from '@components/BaseCheckbox'
 import type { MarkdownBlocksProps } from '../types/MarkdownParts.types'
+import { useMarkdownSizeScale, useMarkdownUi } from '../model/useMarkdownUi'
 
 defineProps<MarkdownBlocksProps>()
 
 const ui = useMarkdownUi()
+const getSizeScale = useMarkdownSizeScale()
 </script>

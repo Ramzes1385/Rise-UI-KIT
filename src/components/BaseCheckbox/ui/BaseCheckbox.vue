@@ -6,6 +6,7 @@
 			variantClass,
 			{
 				'base-checkbox--disabled': isDisabled,
+				'base-checkbox--readonly': isReadonly,
 				'base-checkbox--error': control.hasError.value,
 			},
 			classes.root,
@@ -20,6 +21,7 @@
 					:checked="modelValue"
 					:indeterminate="isIndeterminate"
 					:disabled="isDisabled"
+					@click="handleClick"
 					@change="handleChange" />
 				<span :class="[ui('box'), classes.box]" aria-hidden="true">
 					<Transition name="base-checkbox-mark">
@@ -69,6 +71,7 @@ const props = withDefaults(
 		modelValue: false,
 		isDisabled: false,
 		isIndeterminate: false,
+		isReadonly: false,
 		error: '',
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
@@ -89,6 +92,7 @@ const {
 	control,
 	nativeAttrs,
 	rootRef,
+	handleClick,
 	handleChange,
 	exposed,
 } = useBaseCheckbox(props, emit)

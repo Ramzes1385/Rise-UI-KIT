@@ -28,15 +28,17 @@
 			<BaseButton variant="ghost" class="base-media-player__button" :aria-label="adPauseLabel" @click="toggleAdPause">
 				<template #left><BaseIcon :name="isAdPaused ? 'play' : 'pause'" /></template>
 			</BaseButton>
-			<a
+			<BaseLink
 				v-if="adLink"
+				variant="ghost"
 				class="base-media-player__ad-link"
 				:href="adLink"
 				target="_blank"
-				rel="noopener noreferrer sponsored"
+				rel="sponsored"
+				:has-external-icon="false"
 				@click="clickAd">
 				{{ UI_PLAYER.AD_VISIT }}
-			</a>
+			</BaseLink>
 			<BaseButton v-if="canSkipAd" variant="soft" class="base-media-player__ad-skip" @click="skipAd">{{
 				UI_PLAYER.AD_SKIP
 			}}</BaseButton>
@@ -57,6 +59,7 @@
 
 <script setup lang="ts">
 import { BaseIcon } from '@components/BaseIcon'
+import { BaseLink } from '@components/BaseLink'
 import { UI_PLAYER } from '../../model/messages'
 import { BaseButton } from '@components/BaseButton'
 import { BaseLoader } from '@components/BaseLoader'

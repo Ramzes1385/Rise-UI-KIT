@@ -104,6 +104,10 @@
 		@include focus-ring;
 	}
 
+	&__logo.base-link {
+		display: block;
+	}
+
 	&__top--logo-top-left &__logo {
 		order: -1;
 		margin-left: 0;
@@ -417,10 +421,14 @@
 		font-weight: var(--rise-font-weight-semibold);
 	}
 
-	&__ad-link {
+	&__ad-link.base-link {
 		color: var(--media-text);
 		@include text-size(sm);
 		@include focus-ring;
+
+		@include hover {
+			color: var(--media-text);
+		}
 	}
 
 	&__ad-wait {

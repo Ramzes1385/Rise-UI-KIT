@@ -11,6 +11,7 @@ export const argTypes = {
 	href: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	target: { control: 'inline-radio', options: ['_self', '_blank'], table: propGroup(ARG_GROUP.behavior) },
 	rel: { control: 'text', table: propGroup(ARG_GROUP.behavior) },
+	hasExternalIcon: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
 	isDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 	default: slotArgType('Содержимое (заменяет label)'),
 } satisfies Meta<typeof BaseLink>['argTypes']

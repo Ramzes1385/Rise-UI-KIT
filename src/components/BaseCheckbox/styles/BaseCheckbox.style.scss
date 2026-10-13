@@ -126,6 +126,10 @@
 		--checkbox-border: var(--rise-error);
 	}
 
+	&--readonly &__label-wrapper {
+		cursor: default;
+	}
+
 	&--disabled &__label-wrapper {
 		@include disabled-state;
 	}

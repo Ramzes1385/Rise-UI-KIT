@@ -9,6 +9,7 @@ export const args = {
 	variant: 'default',
 	sizeScale: 100,
 	isDisabled: false,
+	hasExternalIcon: true,
 	linkComponent: StoryRouterLink,
 	onClick: fn(),
 } satisfies Meta<typeof BaseLink>['args']
