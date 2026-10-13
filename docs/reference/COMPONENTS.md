@@ -115,6 +115,8 @@ const value = ref('')
 <BaseInput v-model="email" type="email" aria-label="E-mail" :input-attrs="{ name: 'email', autocomplete: 'email', 'data-testid': 'email' }" />
 ```
 
+Поле поиска — `type="search"` (нативный `searchbox`, слева иконка лупы; `icon=""` убирает её, `icon="имя"` ставит свою у любого типа): `<BaseInput v-model="query" type="search" aria-label="Поиск" />`.
+
 ---
 
 ## BaseTextarea
@@ -823,6 +825,8 @@ import { BasePopover, BaseButton } from '@ramzes1385/rise-ui-kit'
 ```
 
 Если кнопка вложена глубже (в своём компоненте), привяжите атрибуты из слота: `<template #trigger="{ triggerProps }"><MyButton v-bind="triggerProps" /></template>`.
+
+Панель у точки, а не у кнопки (окно у клика, у каретки): проп `anchor` — `{ x, y }`, `{ x, y, width, height }` в координатах окна или виртуальный элемент `{ getBoundingClientRect }`; слот `trigger` не нужен, имя диалога — `aria-label` через проп `ariaLabel`. Тот же проп есть у `BaseDropdown`.
 
 ---
 

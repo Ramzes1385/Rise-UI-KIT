@@ -6,16 +6,16 @@
 			<MediaControlButton icon="close" :label="UI_ARIA.CLOSE" @click="emit('close')" />
 		</div>
 		<div class="base-media-player__stats-tabs">
-			<button
+			<BaseButton
 				v-for="item in tabs"
 				:key="item.id"
-				type="button"
+				variant="ghost"
 				class="base-media-player__stats-tab"
 				:aria-pressed="tab === item.id"
 				@click="selectTab(item.id)">
 				{{ item.label }}
-				<span v-if="item.id === 'events'" class="base-media-player__stats-count">{{ events.length }}</span>
-			</button>
+				<BaseBadge v-if="item.id === 'events'" class="base-media-player__stats-count" :label="String(events.length)" />
+			</BaseButton>
 		</div>
 		<dl v-if="tab === 'metrics'" class="base-media-player__stats-list">
 			<div v-for="row in rows" :key="row.label" class="base-media-player__stats-row">
@@ -38,7 +38,9 @@
 </template>
 
 <script setup lang="ts">
+import { BaseBadge } from '@components/BaseBadge'
 import { BaseEmpty } from '@components/BaseEmpty'
+import { BaseButton } from '@components/BaseButton'
 import { UI_ARIA, UI_PLAYER } from '../../model/messages'
 import MediaControlButton from '../controls/MediaControlButton.vue'
 import { useMediaStatsPanel } from '../../model/panels/useMediaStatsPanel'

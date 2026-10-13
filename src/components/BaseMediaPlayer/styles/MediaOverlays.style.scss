@@ -626,31 +626,24 @@
 		gap: sz(8px);
 	}
 
-	&__next-button {
-		display: inline-flex;
+	&__next-button.base-button {
+		--custom-bg: color-mix(in srgb, var(--rise-media-highlight) 12%, transparent);
+		--custom-bg-hover: color-mix(in srgb, var(--rise-media-highlight) 20%, transparent);
+		--custom-text: var(--media-text);
+		--btn-pad-top: 8px;
+		--btn-pad-bottom: 8px;
+		--btn-pad-left: 14px;
+		--btn-pad-right: 14px;
+
 		flex: 1;
-		align-items: center;
-		justify-content: center;
 		gap: sz(6px);
-		padding: sz(8px) sz(14px);
-		border: 0;
 		border-radius: sz(8px);
-		background-color: color-mix(in srgb, var(--rise-media-highlight) 12%, transparent);
-		color: var(--media-text);
-		font: inherit;
 		font-size: sz(var(--rise-font-size-sm));
 		font-weight: var(--rise-font-weight-semibold);
-		cursor: pointer;
-		@include transition(background-color, transform);
-		@include focus-ring;
 
 		.base-media-player__icon {
 			width: sz(18px);
 			height: sz(18px);
-		}
-
-		@include hover {
-			background-color: color-mix(in srgb, var(--rise-media-highlight) 20%, transparent);
 		}
 
 		&:active {
@@ -658,13 +651,9 @@
 		}
 	}
 
-	&__next-button--primary {
-		background-color: var(--media-primary-strong);
-		color: var(--media-text);
-
-		@include hover {
-			background-color: color-mix(in oklab, var(--media-primary-strong) 88%, var(--rise-media-highlight));
-		}
+	&__next-button--primary.base-button {
+		--custom-bg: var(--media-primary-strong);
+		--custom-bg-hover: color-mix(in oklab, var(--media-primary-strong) 88%, var(--rise-media-highlight));
 	}
 
 	&__stats {
@@ -723,41 +712,46 @@
 		background-color: color-mix(in srgb, var(--rise-media-highlight) 6%, transparent);
 	}
 
-	&__stats-tab {
-		display: inline-flex;
-		align-items: center;
-		gap: sz(6px);
-		padding: sz(4px) sz(12px);
-		border: 0;
+	&__stats-tab.base-button {
+		--custom-bg: transparent;
+		--custom-bg-hover: transparent;
+		--custom-text: var(--media-muted);
+		--btn-pad-top: 4px;
+		--btn-pad-bottom: 4px;
+		--btn-pad-left: 12px;
+		--btn-pad-right: 12px;
+
 		border-radius: sz(6px);
-		background-color: transparent;
-		color: var(--media-muted);
-		font: inherit;
+		font-size: inherit;
 		font-weight: var(--rise-font-weight-semibold);
-		cursor: pointer;
-		@include transition(background-color, color);
-		@include focus-ring;
+
+		.base-button__label {
+			display: inline-flex;
+			align-items: center;
+			gap: sz(6px);
+		}
 
 		@include hover {
 			color: var(--media-text);
 		}
 
 		&[aria-pressed='true'] {
-			background-color: color-mix(in srgb, var(--rise-media-highlight) 12%, transparent);
-			color: var(--media-text);
+			--custom-bg: color-mix(in srgb, var(--rise-media-highlight) 12%, transparent);
+			--custom-bg-hover: color-mix(in srgb, var(--rise-media-highlight) 12%, transparent);
+			--custom-text: var(--media-text);
 		}
 	}
 
-	&__stats-count {
+	&__stats-count.base-badge {
+		--custom-bg: var(--media-primary-strong);
+		--custom-text: var(--media-text);
+
 		min-width: sz(18px);
 		padding: 0 sz(5px);
 		border-radius: sz(5px);
-		background-color: var(--media-primary-strong);
-		color: var(--media-text);
 		font-size: sz(var(--rise-font-size-2xs));
 		font-variant-numeric: tabular-nums;
 		line-height: sz(16px);
-		text-align: center;
 	}
 
 	&__stats-list,

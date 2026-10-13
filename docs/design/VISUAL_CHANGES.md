@@ -1801,3 +1801,17 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 - **BaseStat «Анимации»** (`data-basestat--animations`): вместо кнопки «Новое значение» и переключателя «Загружено» — одна кнопка «Следующий шаг: новое значение / загрузка / загружено с новым значением», затем «Повторить»; подписи колонок — как у остальных «Анимаций» («none — без движения»…), а не просто имя пресета.
 - **BasePresentationPlayer** (`media-basepresentationplayer--completed`, `--skipped`, `--video-slide`): новые истории — экран «Пройдено» с числом слайдов, экран «Показ окончен» и слайды с видео. Эталонов у них нет — их создаёт владелец.
 - **BaseTag** (`element-basetag--with-icon`, `--animations`, все истории с галочкой или значком): в покое метка той же ширины. Меняется только появление значка или галочки: ширина растёт плавно (колонка значка `0fr → 1fr`), текст не прыгает. Отступ между значком и текстом теперь внутри значка (`padding-inline-end`); возможен сдвиг на 1 px на дробных `sizeScale` из-за округления.
+
+## Задача compose-3
+
+Эталонов снимков не создавал и не обновлял; ожидаемые изменения:
+
+- **BaseInput** (`element-baseinput--search`, новая история): поле поиска с иконкой лупы.
+- **BaseCommandPalette, BaseEmojiPicker, BaseColorPicker, BaseFilterBuilder, ChatHeader**: поле поиска или значения — BaseInput; высота, отступы и рамка по токенам BaseInput (палитра сохраняет безрамочный вид и токены `--rise-command-palette-input-*`; цветовой пикер и конструктор фильтров — свои токены `--rise-color-picker-*`, `--rise-filter-builder-field-*`).
+- **BasePopover** (`overlay-basepopover--anchor`, новая история): окно у точки.
+- **BaseEditor** (окно размера медиа), **BaseChat** (эмодзи, меню участника): панели рисует BaseDropdown/BasePopover — переворот и сдвиг у края окна, поверхность прежняя.
+- **BaseMegaMenu**: гамбургер — ghost BaseButton; промо-картинка — BaseImage (скелет загрузки).
+- **BaseSearch**: диалог на BaseModal/BaseSlideover, вид прежний; после закрытия фокус остаётся на поле-триггере (виден focus-ring).
+- **BaseImage**: зум на BaseModal; миниатюры галереи — BaseButton (рамка и кольцо выбранной прежние).
+- **BaseMention, BaseAiMessage, BaseAvatarGroup**: аватары — BaseAvatar (инициалы по двум первым словам, запасной вид при ошибке картинки).
+- **BaseMediaPlayer** (панели «Совместный просмотр», «Поделиться», «Статистика», «Следующая серия», «Скорость»): кнопки — BaseButton, аватар участника — BaseAvatar, статус и счётчик — BaseBadge; цвета, радиусы и размеры повторены, возможны мелкие сдвиги высоты и межстрочного интервала (от `--rise-control-line-height`). Подсказки `__caption-box` и ссылок актёров — `data-tooltip` вместо `title` (без задержки браузера, transform и opacity на токенах). Эталоны историй плеера с этими панелями изменятся.

@@ -261,6 +261,7 @@
 	}
 
 	&__actor-link.base-link {
+		position: relative;
 		display: grid;
 		place-items: center;
 		width: sz(30px);
@@ -276,6 +277,38 @@
 		.base-media-player__icon {
 			width: sz(17px);
 			height: sz(17px);
+		}
+
+		&::after {
+			position: absolute;
+			bottom: calc(100% + #{sz(8px)});
+			right: 0;
+			z-index: 1;
+			padding: sz(4px) sz(8px);
+			border-radius: sz(6px);
+			background-color: var(--media-overlay);
+			color: var(--media-text);
+			font-size: sz(13px);
+			font-weight: var(--rise-font-weight-medium);
+			line-height: 1.3;
+			white-space: nowrap;
+			pointer-events: none;
+			content: attr(data-tooltip);
+			opacity: 0;
+			transform: translate(0, #{sz(6px)}) scale(0.96);
+			@include transition(opacity, transform);
+		}
+
+		@include hover {
+			&::after {
+				opacity: 1;
+				transform: translate(0, 0) scale(1);
+			}
+		}
+
+		&:focus-visible::after {
+			opacity: 1;
+			transform: translate(0, 0) scale(1);
 		}
 
 		@include hover {
@@ -503,41 +536,31 @@
 		}
 	}
 
-	&__watch-button {
-		display: inline-flex;
+	&__watch-button.base-button {
+		--custom-bg: color-mix(in srgb, var(--rise-media-highlight) 10%, transparent);
+		--custom-bg-hover: color-mix(in srgb, var(--rise-media-highlight) 18%, transparent);
+		--custom-text: var(--media-text);
+		--btn-pad-top: 0px;
+		--btn-pad-bottom: 0px;
+		--btn-pad-left: 12px;
+		--btn-pad-right: 12px;
+
 		flex: none;
-		align-items: center;
 		gap: sz(6px);
 		height: sz(36px);
-		padding: 0 sz(12px);
-		border: 0;
 		border-radius: sz(8px);
-		background-color: color-mix(in srgb, var(--rise-media-highlight) 10%, transparent);
-		color: var(--media-text);
-		font: inherit;
 		font-size: sz(13px);
 		font-weight: var(--rise-font-weight-semibold);
-		cursor: pointer;
-		@include transition(background-color);
-		@include focus-ring;
 
 		.base-media-player__icon {
 			width: sz(16px);
 			height: sz(16px);
 		}
-
-		@include hover {
-			background-color: color-mix(in srgb, var(--rise-media-highlight) 18%, transparent);
-		}
 	}
 
-	&__watch-button--primary {
-		background-color: var(--media-primary-strong);
-		color: var(--media-text);
-
-		@include hover {
-			background-color: color-mix(in oklab, var(--media-primary-strong) 88%, var(--rise-media-highlight));
-		}
+	&__watch-button--primary.base-button {
+		--custom-bg: var(--media-primary-strong);
+		--custom-bg-hover: color-mix(in oklab, var(--media-primary-strong) 88%, var(--rise-media-highlight));
 	}
 
 	&__watch-error {
@@ -572,25 +595,17 @@
 		gap: sz(10px);
 	}
 
-	&__watch-avatar {
-		display: flex;
-		flex: none;
-		align-items: center;
-		justify-content: center;
+	&__watch-avatar.base-avatar {
 		width: sz(32px);
 		height: sz(32px);
-		overflow: hidden;
 		border-radius: sz(10px);
-		background-image: linear-gradient(135deg, var(--rise-media-accent-light), var(--media-primary-strong));
-		color: var(--media-text);
-		font-size: sz(var(--rise-font-size-xs));
-		font-weight: var(--rise-font-weight-bold);
-	}
 
-	&__watch-image {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
+		.base-avatar__content {
+			background-image: linear-gradient(135deg, var(--rise-media-accent-light), var(--media-primary-strong));
+			color: var(--media-text);
+			font-size: sz(var(--rise-font-size-xs));
+			font-weight: var(--rise-font-weight-bold);
+		}
 	}
 
 	&__watch-person {
@@ -611,19 +626,20 @@
 		@include truncate;
 	}
 
-	&__watch-status {
+	&__watch-status.base-badge {
+		--custom-bg: color-mix(in srgb, var(--rise-media-highlight) 10%, transparent);
+		--custom-text: color-mix(in srgb, var(--media-text) 82%, transparent);
+
 		flex: none;
 		padding: sz(2px) sz(8px);
 		border-radius: sz(6px);
-		background-color: color-mix(in srgb, var(--rise-media-highlight) 10%, transparent);
-		color: color-mix(in srgb, var(--media-text) 82%, transparent);
 		font-size: sz(11px);
 		font-weight: var(--rise-font-weight-semibold);
 	}
 
-	&__watch-status--joined {
-		background-color: color-mix(in srgb, var(--rise-color-success-500) 18%, transparent);
-		color: var(--rise-color-success-400);
+	&__watch-status--joined.base-badge {
+		--custom-bg: color-mix(in srgb, var(--rise-color-success-500) 18%, transparent);
+		--custom-text: var(--rise-color-success-400);
 	}
 
 	&__watch-empty .base-empty {

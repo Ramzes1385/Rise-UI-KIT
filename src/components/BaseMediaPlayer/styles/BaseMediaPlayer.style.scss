@@ -206,6 +206,33 @@
 		transform: translate(-50%, -50%);
 		@include transition(translate);
 
+		&::after {
+			position: absolute;
+			bottom: calc(100% + #{sz(8px)});
+			left: 50%;
+			z-index: 1;
+			padding: sz(4px) sz(8px);
+			border-radius: sz(6px);
+			background-color: var(--media-overlay);
+			color: var(--media-text);
+			font-size: sz(13px);
+			font-weight: var(--rise-font-weight-medium);
+			line-height: 1.3;
+			white-space: nowrap;
+			pointer-events: none;
+			content: attr(data-tooltip);
+			opacity: 0;
+			transform: translate(-50%, #{sz(6px)}) scale(0.96);
+			@include transition(opacity, transform);
+		}
+
+		@include hover {
+			&::after {
+				opacity: 1;
+				transform: translate(-50%, 0) scale(1);
+			}
+		}
+
 		&--color-white {
 			color: var(--rise-media-highlight);
 		}
@@ -225,6 +252,10 @@
 		&--dragging {
 			cursor: grabbing;
 			transition: none;
+
+			&::after {
+				display: none;
+			}
 		}
 	}
 

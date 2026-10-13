@@ -18,11 +18,11 @@
 				</p>
 			</div>
 			<div class="base-media-player__next-actions">
-				<button type="button" class="base-media-player__next-button base-media-player__next-button--primary" @click="playNextNow">
-					<MediaIcon name="play" />
+				<BaseButton class="base-media-player__next-button base-media-player__next-button--primary" @click="playNextNow">
+					<template #left><MediaIcon name="play" /></template>
 					{{ UI_PLAYER.NEXT_NOW }}
-				</button>
-				<button type="button" class="base-media-player__next-button" @click="cancelNext">{{ UI_TEXT.CANCEL }}</button>
+				</BaseButton>
+				<BaseButton class="base-media-player__next-button" variant="soft" @click="cancelNext">{{ UI_TEXT.CANCEL }}</BaseButton>
 			</div>
 		</div>
 	</Transition>
@@ -30,6 +30,7 @@
 
 <script setup lang="ts">
 import MediaIcon from '../controls/MediaIcon.vue'
+import { BaseButton } from '@components/BaseButton'
 import { UI_PLAYER, UI_TEXT } from '../../model/messages'
 import { usePlayerContext } from '../../model/player/usePlayerContext'
 

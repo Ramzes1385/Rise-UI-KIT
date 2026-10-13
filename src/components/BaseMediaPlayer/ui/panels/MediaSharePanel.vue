@@ -12,14 +12,14 @@
 					'base-media-player__share-networks--back': canScrollBack,
 					'base-media-player__share-networks--forward': canScrollForward,
 				}">
-				<button
+				<BaseButton
 					v-if="canScrollBack"
-					type="button"
+					variant="outline"
 					class="base-media-player__share-scroll base-media-player__share-scroll--back"
 					:aria-label="UI_PLAYER.SHARE_PREVIOUS"
 					@click="scrollNetworks(-1)">
 					<MediaIcon name="chevron-left" />
-				</button>
+				</BaseButton>
 				<ul ref="listRef" class="base-media-player__share-list" :aria-label="UI_PLAYER.SHARE_NETWORKS" @scroll="updateScroll">
 					<li
 						v-for="(item, index) in shareItems"
@@ -45,14 +45,14 @@
 						</button>
 					</li>
 				</ul>
-				<button
+				<BaseButton
 					v-if="canScrollForward"
-					type="button"
+					variant="outline"
 					class="base-media-player__share-scroll base-media-player__share-scroll--forward"
 					:aria-label="UI_PLAYER.SHARE_NEXT"
 					@click="scrollNetworks(1)">
 					<MediaIcon name="chevron-right" />
-				</button>
+				</BaseButton>
 			</div>
 			<div class="base-media-player__share-row">
 				<BaseInput
@@ -62,14 +62,13 @@
 					is-readonly
 					:aria-label="UI_PLAYER.SHARE_LINK"
 					@focus="selectLink" />
-				<button
-					type="button"
+				<BaseButton
 					class="base-media-player__share-copy"
 					:class="{ 'base-media-player__share-copy--done': isCopied }"
 					@click="copyShareLink">
-					<MediaIcon :name="isCopied ? 'check' : 'link'" />
+					<template #left><MediaIcon :name="isCopied ? 'check' : 'link'" /></template>
 					{{ isCopied ? UI_PLAYER.SHARE_COPIED : UI_PLAYER.SHARE_COPY }}
-				</button>
+				</BaseButton>
 			</div>
 			<BaseCheckbox v-model="isAtTime" class="base-media-player__share-time" :label="atTimeLabel" />
 		</div>
@@ -82,6 +81,7 @@ import { UI_PLAYER } from '../../model/messages'
 import MediaIcon from '../controls/MediaIcon.vue'
 import { BaseInput } from '@components/BaseInput'
 import { BaseModal } from '@components/BaseModal'
+import { BaseButton } from '@components/BaseButton'
 import { BaseCheckbox } from '@components/BaseCheckbox'
 import { useMediaSharePanel } from '../../model/sharing/useMediaSharePanel'
 

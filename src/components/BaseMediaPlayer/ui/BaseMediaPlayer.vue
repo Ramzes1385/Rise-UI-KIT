@@ -87,7 +87,7 @@
 						class="base-media-player__caption-box"
 						:class="captionBoxClass"
 						:style="captionBoxStyle"
-						:title="UI_PLAYER.CAPTIONS_DRAG"
+						:data-tooltip="UI_PLAYER.CAPTIONS_DRAG"
 						@pointerdown="onCaptionPointerDown"
 						@pointermove="onCaptionPointerMove"
 						@pointerup="onCaptionPointerUp"

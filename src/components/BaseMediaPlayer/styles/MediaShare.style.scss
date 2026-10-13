@@ -134,23 +134,24 @@
 		color: var(--media-text);
 	}
 
-	&__share-scroll {
+	&__share-scroll.base-button {
+		--custom-bg: var(--media-panel-solid);
+		--custom-bg-hover: var(--media-panel-solid);
+		--custom-text: var(--media-text);
+		--btn-pad-top: 0px;
+		--btn-pad-right: 0px;
+		--btn-pad-bottom: 0px;
+		--btn-pad-left: 0px;
+
 		position: absolute;
 		top: sz(24px);
 		z-index: 1;
-		display: grid;
-		place-items: center;
 		width: sz(32px);
 		height: sz(32px);
-		padding: 0;
 		border: 1px solid var(--media-border);
 		border-radius: sz(10px);
-		background-color: var(--media-panel-solid);
 		box-shadow: 0 4px 14px color-mix(in srgb, var(--rise-media-shade) 45%, transparent);
-		color: var(--media-text);
-		cursor: pointer;
 		transition: transform var(--media-normal) var(--media-spring);
-		@include focus-ring;
 
 		.base-media-player__icon {
 			width: sz(18px);
@@ -162,11 +163,11 @@
 		}
 	}
 
-	&__share-scroll--back {
+	&__share-scroll--back.base-button {
 		left: 0;
 	}
 
-	&__share-scroll--forward {
+	&__share-scroll--forward.base-button {
 		right: 0;
 	}
 
@@ -198,33 +199,28 @@
 		}
 	}
 
-	&__share-copy {
-		display: inline-flex;
+	&__share-copy.base-button {
+		--custom-bg: var(--media-primary-strong);
+		--custom-bg-hover: color-mix(in oklab, var(--media-primary-strong) 88%, var(--rise-media-highlight));
+		--custom-text: var(--media-text);
+		--btn-pad-top: 0px;
+		--btn-pad-bottom: 0px;
+		--btn-pad-left: 14px;
+		--btn-pad-right: 14px;
+
 		flex: none;
-		align-items: center;
 		gap: sz(6px);
 		height: sz(38px);
-		padding: 0 sz(14px);
-		border: 0;
 		border-radius: sz(10px);
-		background-color: var(--media-primary-strong);
-		color: var(--media-text);
-		font: inherit;
 		font-size: sz(13px);
 		font-weight: var(--rise-font-weight-semibold);
-		cursor: pointer;
 		transition:
 			background-color var(--media-normal) var(--media-ease),
 			transform var(--media-normal) var(--media-spring);
-		@include focus-ring;
 
 		.base-media-player__icon {
 			width: sz(16px);
 			height: sz(16px);
-		}
-
-		@include hover {
-			background-color: color-mix(in oklab, var(--media-primary-strong) 88%, var(--rise-media-highlight));
 		}
 
 		&:active {
@@ -232,12 +228,9 @@
 		}
 	}
 
-	&__share-copy--done {
-		background-color: var(--rise-color-success-700);
-
-		@include hover {
-			background-color: var(--rise-color-success-700);
-		}
+	&__share-copy--done.base-button {
+		--custom-bg: var(--rise-color-success-700);
+		--custom-bg-hover: var(--rise-color-success-700);
 	}
 
 	&__share-time.base-checkbox {
@@ -273,7 +266,7 @@
 		}
 	}
 
-	.base-media-player__share-scroll {
+	.base-media-player__share-scroll.base-button {
 		top: sz(16px);
 	}
 }

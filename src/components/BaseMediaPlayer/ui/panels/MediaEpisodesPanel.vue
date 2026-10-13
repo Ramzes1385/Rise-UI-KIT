@@ -55,7 +55,7 @@
 									target="_blank"
 									:has-external-icon="false"
 									:aria-label="link.ariaLabel"
-									:title="link.label"
+									:data-tooltip="link.label"
 									:style="{ '--media-share-color': link.color }">
 									<MediaIcon :name="link.icon" />
 								</BaseLink>

@@ -188,7 +188,7 @@ describe('BaseMediaPlayer: субтитры', () => {
 		area.getBoundingClientRect = () => ({ width: 1000, height: 500 }) as DOMRect
 		box.getBoundingClientRect = () => ({ width: 200, height: 50 }) as DOMRect
 
-		expect(box).toHaveAttribute('title', 'Перетащите, чтобы переместить субтитры')
+		expect(box).toHaveAttribute('data-tooltip', 'Перетащите, чтобы переместить субтитры')
 		await fireEvent.pointerDown(box, { button: 0, clientX: 500, clientY: 430 })
 		await fireEvent.pointerMove(box, { clientX: 400, clientY: 230 })
 		expect(box.style.left).toBe('40%')

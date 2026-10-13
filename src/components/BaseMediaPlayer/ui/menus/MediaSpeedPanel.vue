@@ -3,14 +3,15 @@
 		<div class="base-media-player__speed-title">{{ UI_PLAYER.SPEED_MENU }}</div>
 		<div class="base-media-player__speed-value" aria-hidden="true">{{ rateText }}</div>
 		<div class="base-media-player__speed-row">
-			<button
-				type="button"
+			<BaseButton
+				variant="ghost"
 				class="base-media-player__speed-step"
+				is-focusable-when-disabled
+				:is-disabled="rate <= min"
 				:aria-label="UI_PLAYER.SPEED_DOWN"
-				:aria-disabled="rate <= min || undefined"
 				@click="decrease">
 				<MediaIcon name="minus" />
-			</button>
+			</BaseButton>
 			<input
 				ref="inputRef"
 				class="base-media-player__speed-range"
@@ -23,14 +24,15 @@
 				:aria-valuetext="rateText"
 				:style="{ '--speed-fill': fill }"
 				@input="onInput" />
-			<button
-				type="button"
+			<BaseButton
+				variant="ghost"
 				class="base-media-player__speed-step"
+				is-focusable-when-disabled
+				:is-disabled="rate >= max"
 				:aria-label="UI_PLAYER.SPEED_UP"
-				:aria-disabled="rate >= max || undefined"
 				@click="increase">
 				<MediaIcon name="plus" />
-			</button>
+			</BaseButton>
 		</div>
 		<div class="base-media-player__speed-presets">
 			<button
@@ -49,6 +51,7 @@
 
 <script setup lang="ts">
 import MediaIcon from '../controls/MediaIcon.vue'
+import { BaseButton } from '@components/BaseButton'
 import { useMediaSpeedPanel } from '../../model/menus/useMediaSpeedPanel'
 
 const { inputRef, UI_PLAYER, min, max, step, rate, rateText, fill, presets, select, decrease, increase, onInput } = useMediaSpeedPanel()

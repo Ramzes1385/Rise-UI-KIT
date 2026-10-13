@@ -153,3 +153,10 @@
 - C16: BaseTooltip не ставит `aria-describedby`, если доступное имя триггера совпадает с текстом подсказки.
 - C2: BaseBadge с `isRemovable` — BaseSelect (теги), BaseInputTags, BaseTable (фильтры). C6: BaseBadge (`status`, `isDot`, `isRound`) и BaseProgress (`countdown`) — BaseChip, BaseNotificationCenter, BaseNotification, BaseTour, BaseKanban (метки), BaseFileUpload, BaseChecklist.
 - C3: поле поиска BaseSelect — BaseInput, поля BaseSubtitleEditor — BaseInput и BaseTextarea, редактор BaseKanban — BaseTextarea.
+
+## Задача compose-3 (13.10.2026)
+
+- C3: BaseInput получил `type="search"`, `type="date"` и `icon`; BaseCommandPalette, BaseEmojiPicker, ChatHeader (поиск), BaseColorPicker (HEX, каналы), BaseFilterBuilder (значения), MediaWatchPanel и MediaSharePanel (ссылка, e-mail) используют BaseInput. `select` BaseFilterBuilder и `textarea` BaseMention, BasePromptInput, BaseChat оставлены (причины — FOLLOW_UPS, «Задача compose-3»).
+- C5: BasePopover и BaseDropdown получили `anchor`; BaseEditor (окно размера медиа), BaseChat (эмодзи) — BasePopover, меню участника ChatSlideover — BaseDropdown; модальная панель BaseSearch — BaseModal/BaseSlideover, зум BaseImage — BaseModal. Подсказки BaseMention/BaseChat, контекстное меню чата, окно дня BaseCalendar, MediaPopover оставлены.
+- C7: гамбургер BaseMegaMenu, миниатюры зума BaseImage — BaseButton; остальные кнопки списка оставлены.
+- C8: BaseMention, BaseAiMessage, «+N» BaseAvatarGroup — BaseAvatar; промо BaseMegaMenu — BaseImage; BaseMarkdown и BaseImageCompare оставлены.
