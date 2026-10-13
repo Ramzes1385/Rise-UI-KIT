@@ -16,6 +16,7 @@ export interface UseChatStateEmit {
 	(event: 'info-click'): void
 	(event: 'pin-message', messageId: string): void
 	(event: 'unpin-message', messageId: string): void
+	(event: 'jump-to-message', messageId: string): void
 }
 
 export interface UseChatStateOptions {

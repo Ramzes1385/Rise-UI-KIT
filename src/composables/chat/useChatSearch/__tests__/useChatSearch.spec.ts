@@ -55,4 +55,20 @@ describe('useChatSearch unit', () => {
 		expect(search.searchQuery.value).toBe('')
 		expect(search.filteredMessages.value).toHaveLength(2)
 	})
+
+	it('пробелы вокруг запроса игнорируются', () => {
+		const search = setup([message('1', { text: 'Привет мир' }), message('2', { text: 'Другое' })])
+
+		search.searchQuery.value = '  мир  '
+
+		expect(search.filteredMessages.value.map(item => item.id)).toEqual(['1'])
+	})
+
+	it('запрос из одних пробелов равен пустому: лента полная', () => {
+		const search = setup([message('1'), message('2')])
+
+		search.searchQuery.value = '   '
+
+		expect(search.filteredMessages.value).toHaveLength(2)
+	})
 })

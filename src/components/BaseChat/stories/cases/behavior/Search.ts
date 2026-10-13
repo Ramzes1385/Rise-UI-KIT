@@ -8,7 +8,8 @@ export const Search: StoryObj<typeof meta> = {
 			description: {
 				story: [
 					'Поиск: кнопка с лупой открывает поле (фокус сразу в нём), лента фильтруется, совпадения подсвечены. Escape закрывает',
-					'поиск: запрос сбрасывается, лента снова полная, фокус возвращается на кнопку поиска.',
+					'поиск: запрос сбрасывается, лента снова полная, фокус возвращается на кнопку поиска. Запрос из одних пробелов ленту не',
+					'фильтрует: пробелы по краям запроса отбрасываются.',
 				].join('\n'),
 			},
 		},
@@ -20,6 +21,11 @@ export const Search: StoryObj<typeof meta> = {
 		await userEvent.click(canvas.getByRole('button', { name: 'Поиск по сообщениям' }))
 		const search = canvas.getByRole('searchbox', { name: 'Поиск по сообщениям' })
 		await waitFor(() => expect(search).toHaveFocus())
+		await userEvent.keyboard('   ')
+		await expect(search).toHaveValue('   ')
+		await expect(log.querySelectorAll('.base-chat-message-list__item')).toHaveLength(total)
+		await expect(log.querySelectorAll('mark')).toHaveLength(0)
+		await userEvent.clear(search)
 		await userEvent.keyboard('отступ')
 		await waitFor(() => expect(log.querySelectorAll('.base-chat-message-list__item')).toHaveLength(2))
 		await expect(log.querySelectorAll('mark')).toHaveLength(2)

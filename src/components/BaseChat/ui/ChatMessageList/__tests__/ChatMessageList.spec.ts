@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom/vitest'
 import { mount } from '@vue/test-utils'
+import { UI_CHAT_TEXT } from '@/locales/messages'
 import { describe, expect, it, vi } from 'vitest'
 import userEvent from '@testing-library/user-event'
 import ChatMessageList from '../ui/ChatMessageList.vue'
@@ -782,6 +783,28 @@ describe('ChatMessageList unit', () => {
 			expect(more).toHaveFocus()
 
 			wrapper.unmount()
+		})
+	})
+
+	describe('неотправленные сообщения', () => {
+		const failed: ChatMessage = { id: 'f1', text: 'Не дошло', sender: 'me', time: '10:05', status: 'failed' }
+
+		it('«Повторить» эмитит retry-message с id сообщения', async () => {
+			const { emitted } = render(ChatMessageList, { props: { messages: [...BASE_MESSAGES, failed] } })
+
+			await fireEvent.click(screen.getByRole('button', { name: UI_CHAT_TEXT.RETRY_ARIA }))
+
+			expect(emitted()['retry-message']).toEqual([['f1']])
+			expect(emitted()['discard-message']).toBeUndefined()
+		})
+
+		it('«Удалить» эмитит discard-message с id сообщения', async () => {
+			const { emitted } = render(ChatMessageList, { props: { messages: [...BASE_MESSAGES, failed] } })
+
+			await fireEvent.click(screen.getByRole('button', { name: UI_CHAT_TEXT.DISCARD_ARIA }))
+
+			expect(emitted()['discard-message']).toEqual([['f1']])
+			expect(emitted()['retry-message']).toBeUndefined()
 		})
 	})
 })

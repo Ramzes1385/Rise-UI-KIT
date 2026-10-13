@@ -344,4 +344,129 @@ describe('useChatState unit', () => {
 			scope.stop()
 		})
 	})
+
+	describe('выбор всех сообщений', () => {
+		it('выбирает видимые сообщения поиска и сообщает о каждом', () => {
+			const { state, emit } = setup([
+				message('1', { text: 'яблоко' }),
+				message('2', { text: 'груша' }),
+				message('3', { text: 'яблоня' }),
+			])
+			state.searchQuery.value = 'ябло'
+
+			state.handleSelectAll()
+
+			expect(state.selectedMessageIds.value).toEqual(['1', '3'])
+			expect(emit).toHaveBeenCalledWith('message-select', '1')
+			expect(emit).toHaveBeenCalledWith('message-select', '3')
+			expect(emit).not.toHaveBeenCalledWith('message-select', '2')
+		})
+	})
+
+	describe('правка последнего сообщения', () => {
+		it('правит последнее своё отправленное сообщение с текстом', () => {
+			const { state } = setup([
+				message('1', { sender: 'me', text: 'раньше' }),
+				message('2', { sender: 'me', text: 'позже' }),
+				message('3', { sender: 'other', text: 'чужое' }),
+			])
+
+			state.handleEditLast()
+
+			expect(state.editingMessage.value?.id).toBe('2')
+		})
+
+		it('пропускает неотправленные, чужие и без текста', () => {
+			const { state } = setup([
+				message('1', { sender: 'me', text: 'годится' }),
+				message('2', { sender: 'me', text: 'идёт', status: 'sending' }),
+				message('3', { sender: 'me', text: 'не ушло', status: 'failed' }),
+				message('4', { sender: 'me', text: undefined }),
+				message('5', { sender: 'other', text: 'чужое' }),
+			])
+
+			state.handleEditLast()
+
+			expect(state.editingMessage.value?.id).toBe('1')
+		})
+
+		it('без подходящих сообщений ничего не правит', () => {
+			const { state } = setup([message('1', { sender: 'other' })])
+
+			state.handleEditLast()
+
+			expect(state.editingMessage.value).toBeNull()
+		})
+	})
+
+	describe('переход к закрепу вне загруженной истории', () => {
+		function setupReactive(messages: ChatMessage[], pinnedMessages: ChatMessage[]) {
+			const props = reactive({ chatId: 'a', messages, pinnedMessages })
+			const emit = vi.fn()
+			const scrollToMessage = vi.fn()
+			const scope = effectScope()
+			const state = scope.run(() => useChatState(props, emit as unknown as Emit, { scrollToMessage })) as ReturnType<
+				typeof useChatState
+			>
+			return { props, emit, scrollToMessage, state, scope }
+		}
+
+		const far = message('far', { isPinned: true })
+
+		it('эмитит jump-to-message, не прокручивает, а после появления сообщения прокручивает один раз', async () => {
+			const { props, emit, scrollToMessage, state, scope } = setupReactive([message('1')], [far])
+
+			state.handleScrollToPinned('far')
+
+			expect(emit).toHaveBeenCalledWith('jump-to-message', 'far')
+			expect(scrollToMessage).not.toHaveBeenCalled()
+
+			props.messages = [far, message('1')]
+			await nextTick()
+			await nextTick()
+			expect(scrollToMessage).toHaveBeenCalledExactlyOnceWith('far')
+
+			props.messages = [far, message('1'), message('2')]
+			await nextTick()
+			await nextTick()
+			expect(scrollToMessage).toHaveBeenCalledOnce()
+			scope.stop()
+		})
+
+		it('загруженный закреп прокручивается сразу, без события', () => {
+			const { emit, scrollToMessage, state, scope } = setupReactive([far], [far])
+
+			state.handleScrollToPinned('far')
+
+			expect(scrollToMessage).toHaveBeenCalledWith('far')
+			expect(emit).not.toHaveBeenCalledWith('jump-to-message', expect.anything())
+			scope.stop()
+		})
+
+		it('смена чата отменяет ожидание', async () => {
+			const { props, scrollToMessage, state, scope } = setupReactive([message('1')], [far])
+			state.handleScrollToPinned('far')
+
+			props.chatId = 'b'
+			await nextTick()
+			props.messages = [far]
+			await nextTick()
+			await nextTick()
+
+			expect(scrollToMessage).not.toHaveBeenCalled()
+			scope.stop()
+		})
+
+		it('без callback прокрутки появление сообщения не падает', async () => {
+			const props = reactive({ messages: [message('1')], pinnedMessages: [far] })
+			const scope = effectScope()
+			const state = scope.run(() => useChatState(props, vi.fn() as unknown as Emit)) as ReturnType<typeof useChatState>
+			state.handleScrollToPinned('far')
+
+			props.messages = [far]
+
+			await expect(nextTick().then(() => nextTick())).resolves.toBeUndefined()
+			scope.stop()
+		})
+	})
 })

@@ -45,6 +45,21 @@
 			</BaseButton>
 		</div>
 
+		<div v-if="attachmentErrors.length > 0" class="base-chat-input__errors" role="alert">
+			<BaseIcon name="alert-triangle" :size-scale="sizeScale * CHAT_SCALE.SMALL" class="base-chat-input__errors-icon" />
+			<ul class="base-chat-input__errors-list">
+				<li v-for="message in attachmentErrors" :key="message">{{ message }}</li>
+			</ul>
+			<BaseButton
+				variant="ghost"
+				:size-scale="sizeScale"
+				class="base-chat-input__errors-close"
+				:aria-label="UI_CHAT_TEXT.ATTACH_ERROR_CLOSE"
+				@click="dismissAttachmentErrors">
+				<BaseIcon name="close" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
+			</BaseButton>
+		</div>
+
 		<ChatFilePreview v-if="attachments.length > 0" :attachments="attachments" :size-scale="sizeScale" @remove="removeAttachment" />
 
 		<div v-if="isVoiceMode" class="base-chat-input__controls base-chat-input__controls--voice">
@@ -80,6 +95,7 @@
 				ref="fileInputRef"
 				type="file"
 				multiple
+				:accept="accept"
 				class="base-chat-input__file-input"
 				tabindex="-1"
 				:aria-label="UI_CHAT_TEXT.FILE_SELECT_ARIA"
@@ -218,6 +234,8 @@ const {
 	text,
 	fileInputRef,
 	attachments,
+	attachmentErrors,
+	dismissAttachmentErrors,
 	showMentions,
 	showCommands,
 	activeSuggestionIndex,

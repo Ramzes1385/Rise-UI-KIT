@@ -540,4 +540,63 @@ describe('useChatInputState', () => {
 			expect(state.text.value).toBe('Ок👍')
 		})
 	})
+
+	describe('стрелка вверх в пустом поле', () => {
+		it('эмитит edit-last и гасит событие', () => {
+			const context = setup()
+
+			const event = key('ArrowUp')
+			context.state.handleKeyDown(event)
+
+			expect(event.defaultPrevented).toBe(true)
+			expect(context.emit).toHaveBeenCalledWith('edit-last')
+		})
+
+		it('в непустом поле ничего не делает', async () => {
+			const context = setup()
+			await type(context, 'текст')
+
+			const event = key('ArrowUp')
+			context.state.handleKeyDown(event)
+
+			expect(event.defaultPrevented).toBe(false)
+			expect(context.emit).not.toHaveBeenCalled()
+		})
+
+		it('с модификатором ничего не делает', () => {
+			const context = setup()
+
+			for (const modifier of ['shiftKey', 'altKey', 'ctrlKey', 'metaKey']) {
+				context.state.handleKeyDown(key('ArrowUp', { [modifier]: true }))
+			}
+
+			expect(context.emit).not.toHaveBeenCalled()
+		})
+
+		it('в режиме правки ничего не делает', () => {
+			const editing = { id: 'm1', text: 'Старый', sender: 'me' as const, time: '10:00' }
+			const context = setup({ members, commands, editingMessage: editing })
+
+			context.state.handleKeyDown(key('ArrowUp'))
+
+			expect(context.emit).not.toHaveBeenCalledWith('edit-last')
+		})
+
+		it('другая клавиша не вызывает правку', () => {
+			const context = setup()
+
+			context.state.handleKeyDown(key('ArrowDown'))
+
+			expect(context.emit).not.toHaveBeenCalled()
+		})
+
+		it('открытый список подсказок забирает стрелку себе', async () => {
+			const context = setup()
+			await type(context, '@')
+
+			context.state.handleKeyDown(key('ArrowUp'))
+
+			expect(context.emit).not.toHaveBeenCalledWith('edit-last')
+		})
+	})
 })

@@ -18,6 +18,8 @@ export interface ChatSlideoverProps {
 	currentUserId?: string
 	/** Статус собеседника в личном чате; без него определяется по тексту `subtitle` */
 	companionStatus?: 'online' | 'offline'
+	/** Сколько предупреждений ведёт к блокировке (в профиле «2 из 3»); `member.maxWarnings` главнее */
+	maxWarnings?: number
 	/** Сколько значков видно рядом с именем в списке участников; полный список — в профиле */
 	maxBadges?: number
 	sizeScale?: number
@@ -41,4 +43,4 @@ export interface SharedAttachment extends ChatMessageAttachment {
 	publishedAt: string
 }
 
-export type ChatSlideoverPanelProps = PropsWithDefaults<ChatSlideoverProps, 'subtitle' | 'avatar' | 'isGroup' | 'members'>
+export type ChatSlideoverPanelProps = PropsWithDefaults<ChatSlideoverProps, 'subtitle' | 'avatar' | 'isGroup' | 'members' | 'maxWarnings'>

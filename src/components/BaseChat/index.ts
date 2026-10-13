@@ -4,6 +4,8 @@ export type {
 	BaseChatPart,
 	BaseChatProps,
 	BaseChatSlots,
+	ChatAttachmentRejectReason,
+	ChatAttachmentRejection,
 	ChatBadge,
 	ChatCommand,
 	ChatInfoTab,

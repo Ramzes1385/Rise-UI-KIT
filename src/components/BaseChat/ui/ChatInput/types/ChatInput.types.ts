@@ -1,5 +1,5 @@
 import type { VoiceRecording } from '@components/BaseVoiceRecorder'
-import type { ChatCommand, ChatMember, ChatMessage, ChatMessageAttachment } from '../../../types/BaseChat.types'
+import type { ChatAttachmentRejection, ChatCommand, ChatMember, ChatMessage, ChatMessageAttachment } from '../../../types/BaseChat.types'
 
 export interface ChatInputProps {
 	/** Масштаб размера */
@@ -8,6 +8,12 @@ export interface ChatInputProps {
 	replyingTo?: ChatMessage | null
 	/** Сообщение, которое правят: поле заполняется его текстом, над полем — панель «Изменение сообщения» */
 	editingMessage?: ChatMessage | null
+	/** Допустимые типы вложений (как `accept` у `<input type="file">`) */
+	accept?: string
+	/** Наибольший размер вложения, МБ */
+	maxFileSize?: number
+	/** Наибольшее число вложений в сообщении */
+	maxFiles?: number
 	/** Панель быстрых ответов */
 	quickReplies?: string[]
 	/** Список участников для упоминаний */
@@ -25,9 +31,12 @@ export interface ChatInputProps {
 export interface ChatInputEmits {
 	(event: 'send', payload: { text: string; attachments?: ChatMessageAttachment[] }): void
 	(event: 'attach', files: FileList): void
+	(event: 'attach-error', rejections: ChatAttachmentRejection[]): void
 	(event: 'send-voice', recording: VoiceRecording): void
 	(event: 'edit', payload: { text: string }): void
 	(event: 'cancel-edit'): void
+	/** Стрелка вверх в пустом поле: править последнее своё сообщение */
+	(event: 'edit-last'): void
 	(event: 'cancel-reply'): void
 	(event: 'quick-reply', text: string): void
 }

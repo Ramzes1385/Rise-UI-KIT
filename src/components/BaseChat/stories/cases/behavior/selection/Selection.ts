@@ -1,6 +1,6 @@
-import { getMessage } from '../../shared'
-import type meta from '../../BaseChat.stories'
+import { getMessage } from '../../../shared'
 import { within, expect } from 'storybook/test'
+import type meta from '../../../BaseChat.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 
 export const Selection: StoryObj<typeof meta> = {

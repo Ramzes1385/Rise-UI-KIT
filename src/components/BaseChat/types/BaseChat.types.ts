@@ -3,7 +3,23 @@ import type { VoiceRecording } from '@components/BaseVoiceRecorder'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 export type ChatMessageSender = 'me' | 'other'
-export type ChatMessageStatus = 'sending' | 'sent' | 'delivered' | 'read'
+/**
+ * Статус своего сообщения. `failed` — отправка не удалась: под сообщением появляются «Не отправлено», «Повторить» и «Удалить»
+ * (события `retry-message` и `discard-message`)
+ */
+export type ChatMessageStatus = 'sending' | 'sent' | 'delivered' | 'read' | 'failed'
+/** Почему файл не прикреплён: тип не подходит под `accept`, размер больше `maxFileSize`, превышено `maxFiles` */
+export type ChatAttachmentRejectReason = 'type' | 'size' | 'count'
+
+/** Файл, который поле ввода не приняло: приходит в `detail` события `error` с типом `attachment` */
+export interface ChatAttachmentRejection {
+	/** Имя файла */
+	name: string
+	/** Причина отказа */
+	reason: ChatAttachmentRejectReason
+	/** Текст, который увидел пользователь (на языке кита) */
+	message: string
+}
 export type ChatInfoTab = 'info' | 'media' | 'files' | 'links' | 'profile'
 
 export interface ChatMessageAttachment {
@@ -94,6 +110,8 @@ export interface ChatMember {
 	status?: 'online' | 'offline'
 	role?: string
 	warningsCount?: number
+	/** Сколько предупреждений ведёт к блокировке именно для этого участника; без него — проп `maxWarnings` чата */
+	maxWarnings?: number
 	isBanned?: boolean
 	/**
 	 * Значки участника. В групповом чате видны рядом с именем в сообщениях (по `senderId`) и в списке участников:
@@ -147,6 +165,16 @@ export interface BaseChatProps extends BaseComponentProps<(typeof CHAT_VARIANTS)
 	 * редактирование, выделение, поиск, открытая панель «Информация» и черновик в поле ввода
 	 */
 	chatId?: string | number
+	/**
+	 * Какие файлы можно прикрепить: как атрибут `accept` у `<input type="file">` — расширения (`.pdf`), типы (`image/png`)
+	 * и маски (`image/*`) через запятую. Файлы не из списка не прикрепляются: под полем ввода появляется сообщение, а в событии
+	 * `error` с типом `attachment` — список отказов
+	 */
+	accept?: string
+	/** Наибольший размер одного вложения, МБ (как `maxSize` у BaseFileUpload). Файл больше не прикрепляется (сообщение под полем и событие `error`) */
+	maxFileSize?: number
+	/** Наибольшее число вложений в одном сообщении. Лишние файлы не прикрепляются (сообщение под полем и событие `error`) */
+	maxFiles?: number
 	/** Идентификатор текущего пользователя: админ не видит действия над собой в списке участников. По умолчанию — участник `me` */
 	currentUserId?: string
 	/** Статус собеседника в личном чате (в групповом берётся из `members[].status`). Без него — по тексту `subtitle` */
@@ -169,6 +197,8 @@ export interface BaseChatProps extends BaseComponentProps<(typeof CHAT_VARIANTS)
 	currentUserRole?: 'admin' | 'member'
 	/** Описание чата или собеседника для панели «Информация»; без него блок описания не выводится */
 	description?: string
+	/** Сколько предупреждений ведёт к блокировке: в профиле участника «2 из 3». Перекрывается `maxWarnings` участника */
+	maxWarnings?: number
 	/** Сколько значков участника видно рядом с именем; остальные — счётчиком «+N» с подсказкой */
 	maxBadges?: number
 	/** Голосовые сообщения: кнопка микрофона вместо «Отправить», пока поле пустое; запись приходит событием `send-voice` */
@@ -188,10 +218,15 @@ export interface BaseChatProps extends BaseComponentProps<(typeof CHAT_VARIANTS)
 
 export interface BaseChatEmits {
 	(event: 'send', payload: { text: string; attachments?: ChatMessageAttachment[]; replyToId?: string }): void
+	/** Выбраны файлы, прошедшие проверку `accept`, `maxFileSize` и `maxFiles`: приложение загружает их и подставляет вложения в сообщение */
 	(event: 'attach', files: FileList): void
 	/** Записано голосовое сообщение: приложение загружает `recording.blob` и добавляет сообщение с вложением `type: 'audio'` */
 	(event: 'send-voice', payload: { recording: VoiceRecording; replyToId?: string }): void
-	(event: 'avatar-click', senderId: string): void
+	/**
+	 * `avatar-click` — клик по аватару или имени отправителя; `write-message` — «Написать сообщение» в профиле участника
+	 * (приложение открывает личный чат). Для «Написать сообщение» `avatar-click` ещё приходит в переходный период (с предупреждением в консоли)
+	 */
+	(event: 'avatar-click' | 'write-message', senderId: string): void
 	/** Изменился запрос поиска по сообщениям (в том числе очищен при закрытии поиска) */
 	(event: 'search', query: string): void
 	(event: 'message-select', messageId: string): void
@@ -209,6 +244,11 @@ export interface BaseChatEmits {
 	(event: 'edit', payload: { messageId: string; text: string }): void
 	/** Лента прокручена к началу, пока `hasMoreMessages` и не `isLoadingMore`: приложение подгружает более старые сообщения */
 	(event: 'load-more'): void
+	/**
+	 * `retry-message` — «Повторить» под сообщением со статусом `failed`; `discard-message` — «Удалить» там же (без подтверждения);
+	 * `jump-to-message` — закреплённого сообщения нет в загруженной части истории: приложение подгружает его и прокручивает ленту
+	 */
+	(event: 'retry-message' | 'discard-message' | 'jump-to-message', messageId: string): void
 	(event: 'kick-member', memberId: string): void
 	(event: 'ban-member', payload: { memberId: string; reason?: string; warningsCount?: number }): void
 	(event: 'update-member-role', payload: { memberId: string; role: string }): void

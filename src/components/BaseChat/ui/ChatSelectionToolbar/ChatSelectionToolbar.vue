@@ -3,6 +3,17 @@
 		<div class="base-chat-selection-toolbar__surface" role="group" :aria-label="UI_CHAT_TEXT.SELECTION_TOOLBAR">
 			<span class="base-chat-selection-toolbar__info" aria-live="polite">{{ UI_CHAT_TEXT.SELECTED_PREFIX }} {{ selectedCount }}</span>
 			<div class="base-chat-selection-toolbar__actions">
+				<BaseButton
+					variant="ghost"
+					:size-scale="sizeScale"
+					is-focusable-when-disabled
+					:is-disabled="selectedCount >= totalCount"
+					@click="emit('select-all')">
+					<template #left>
+						<BaseIcon name="check" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
+					</template>
+					{{ UI_CHAT_TEXT.SELECT_ALL }}
+				</BaseButton>
 				<BaseButton variant="ghost" :size-scale="sizeScale" @click="emit('forward')">
 					<template #left>
 						<BaseIcon name="reply" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
@@ -41,6 +52,7 @@ import type { ChatSelectionToolbarEmits, ChatSelectionToolbarProps } from '../..
 
 withDefaults(defineProps<ChatSelectionToolbarProps>(), {
 	sizeScale: SIZE_SCALE_DEFAULT,
+	totalCount: Infinity,
 })
 
 const emit = defineEmits<ChatSelectionToolbarEmits>()

@@ -42,7 +42,7 @@
 
 			<div class="base-chat-message-list__bubble" :class="bubbleClass">
 				<div
-					v-if="!isSelectionMode"
+					v-if="!isSelectionMode && !isFailed"
 					class="base-chat-message-list__actions"
 					role="group"
 					:aria-label="UI_CHAT_TEXT.MESSAGE_ACTIONS">
@@ -107,7 +107,7 @@
 						class="base-chat-message-list__pin-icon" />
 					<span v-if="message.isEdited" class="base-chat-message-list__edited">{{ UI_CHAT_TEXT.EDITED }}</span>
 					<span class="base-chat-message-list__time">{{ message.time }}</span>
-					<template v-if="message.sender === 'me' && message.status">
+					<template v-if="message.sender === 'me' && message.status && message.status !== 'failed'">
 						<BaseLoader
 							v-if="message.status === 'sending'"
 							variant="spinner"
@@ -132,6 +132,31 @@
 						</span>
 					</template>
 				</div>
+			</div>
+
+			<div v-if="isFailed" class="base-chat-message-list__failed" role="group" :aria-label="UI_CHAT_TEXT.STATUS_FAILED">
+				<span class="base-chat-message-list__failed-text" role="alert">
+					<BaseIcon name="alert-triangle" :size-scale="sizeScale * CHAT_SCALE.STATUS" />
+					{{ UI_CHAT_TEXT.STATUS_FAILED }}
+				</span>
+				<BaseButton
+					variant="ghost"
+					:size-scale="sizeScale"
+					:padding="2"
+					class="base-chat-message-list__failed-btn"
+					:aria-label="UI_CHAT_TEXT.RETRY_ARIA"
+					@click.stop="handleRetry">
+					{{ UI_CHAT_TEXT.RETRY }}
+				</BaseButton>
+				<BaseButton
+					variant="ghost"
+					:size-scale="sizeScale"
+					:padding="2"
+					class="base-chat-message-list__failed-btn base-chat-message-list__failed-btn--danger"
+					:aria-label="UI_CHAT_TEXT.DISCARD_ARIA"
+					@click.stop="handleDiscard">
+					{{ UI_CHAT_TEXT.DELETE }}
+				</BaseButton>
 			</div>
 		</div>
 	</div>
@@ -172,6 +197,7 @@ const {
 	senderName,
 	avatarLabel,
 	statusLabel,
+	isFailed,
 	gallery,
 	handleSelect,
 	handleAvatarClick,
@@ -184,5 +210,7 @@ const {
 	handleMentionClick,
 	handleCommandClick,
 	handleReactionToggle,
+	handleRetry,
+	handleDiscard,
 } = useChatMessage(props, emit)
 </script>

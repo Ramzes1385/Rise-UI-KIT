@@ -1,5 +1,11 @@
 import type { ComputedRef, Ref } from 'vue'
-import type { ChatCommand, ChatMember, ChatMessage, ChatMessageAttachment } from '@components/BaseChat/types/BaseChat.types'
+import type {
+	ChatAttachmentRejection,
+	ChatCommand,
+	ChatMember,
+	ChatMessage,
+	ChatMessageAttachment,
+} from '@components/BaseChat/types/BaseChat.types'
 
 export interface UseChatInputStateOptions {
 	props: {
@@ -7,12 +13,20 @@ export interface UseChatInputStateOptions {
 		commands?: ChatCommand[]
 		/** Сообщение, которое правят: поле заполняется его текстом, Enter отправляет `edit`, Escape отменяет */
 		editingMessage?: ChatMessage | null
+		/** Допустимые типы вложений (как `accept` у `<input type="file">`) */
+		accept?: string
+		/** Наибольший размер вложения, МБ */
+		maxFileSize?: number
+		/** Наибольшее число вложений в сообщении */
+		maxFiles?: number
 	}
 	emit: {
 		(event: 'send', payload: { text: string; attachments?: ChatMessageAttachment[] }): void
 		(event: 'attach', files: FileList): void
+		(event: 'attach-error', rejections: ChatAttachmentRejection[]): void
 		(event: 'edit', payload: { text: string }): void
 		(event: 'cancel-edit'): void
+		(event: 'edit-last'): void
 	}
 }
 
@@ -64,6 +78,7 @@ export interface ChatSuggestionKeysSource {
 }
 
 export interface UseChatAttachmentsOptions {
+	props: ChatAttachmentLimits
 	emit: UseChatInputStateOptions['emit']
 	text: Ref<string>
 }
@@ -74,4 +89,19 @@ export interface UseChatEditFieldOptions {
 	emit: UseChatInputStateOptions['emit']
 	text: Ref<string>
 	getInputElement: () => ChatInputElement | null
+}
+
+/** Ограничения вложений: типы, размер (МБ) и число */
+export interface ChatAttachmentLimits {
+	accept?: string
+	maxFileSize?: number
+	maxFiles?: number
+}
+
+/** Итог проверки выбранных файлов */
+export interface ChatAttachmentCheck {
+	/** Файлы, которые можно прикрепить */
+	accepted: File[]
+	/** Отказы с причиной и текстом */
+	rejections: ChatAttachmentRejection[]
 }

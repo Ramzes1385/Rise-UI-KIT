@@ -1,7 +1,7 @@
 import type { Ref } from 'vue'
 import { UI_CHAT_TEXT } from '@/locales/messages'
-import { getLocale, pluralize } from '@/locales/state'
 import { computed, nextTick, ref, useId, watch } from 'vue'
+import { formatMessage, getLocale, pluralize } from '@/locales/state'
 import type { ChatInfoTab, ChatMember } from '../../types/BaseChat.types'
 import type { ChatSlideoverEmits, ChatSlideoverPanelProps } from '../../types/ChatSlideover.types'
 
@@ -113,22 +113,29 @@ function usePanelTabs(props: ChatSlideoverPanelProps, emit: ChatSlideoverEmits, 
 }
 
 function usePanelMember(props: ChatSlideoverPanelProps) {
+	const selectedMember = computed((): ChatMember | null => {
+		if (!props.isGroup) {
+			return {
+				id: props.selectedMemberId || 'companion',
+				name: props.title,
+				avatar: props.avatar,
+				role: 'member',
+				status: props.companionStatus ?? detectOnlineStatus(props.subtitle),
+			}
+		}
+		if (!props.selectedMemberId) return null
+		return props.members.find(member => member.id === props.selectedMemberId) || null
+	})
 	return {
+		selectedMember,
+		warningsLabel: computed((): string =>
+			formatMessage(UI_CHAT_TEXT.WARNINGS_LIMIT, {
+				count: selectedMember.value?.warningsCount ?? 0,
+				max: selectedMember.value?.maxWarnings ?? props.maxWarnings,
+			}),
+		),
 		titleText: computed((): string => (props.activeTab === 'profile' ? UI_CHAT_TEXT.PROFILE : UI_CHAT_TEXT.INFORMATION)),
 		membersCountLabel: computed(() => pluralize(getLocale().plural.PARTICIPANTS, props.members.length)),
-		selectedMember: computed((): ChatMember | null => {
-			if (!props.isGroup) {
-				return {
-					id: props.selectedMemberId || 'companion',
-					name: props.title,
-					avatar: props.avatar,
-					role: 'member',
-					status: props.companionStatus ?? detectOnlineStatus(props.subtitle),
-				}
-			}
-			if (!props.selectedMemberId) return null
-			return props.members.find(member => member.id === props.selectedMemberId) || null
-		}),
 	}
 }
 

@@ -1,8 +1,8 @@
-import type meta from '../../BaseChat.stories'
 import { STORY_IMAGES } from '@/stories/helpers'
+import type meta from '../../../BaseChat.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { expect, within, waitFor } from 'storybook/test'
-import { PRIVATE_MESSAGES, storyImage, sentAt, ANNA, storyFile, getMessage } from '../../shared'
+import { PRIVATE_MESSAGES, storyImage, sentAt, ANNA, storyFile, getMessage } from '../../../shared'
 
 export const Attachments: StoryObj<typeof meta> = {
 	parameters: {

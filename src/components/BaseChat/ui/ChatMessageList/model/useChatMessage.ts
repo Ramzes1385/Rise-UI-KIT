@@ -9,6 +9,7 @@ function getMessageImageUrls(message: ChatMessage): string[] {
 
 function useSender(props: MessageItemProps) {
 	const statusLabels: Record<Exclude<ChatMessageStatus, 'sending'>, string> = {
+		failed: UI_CHAT_TEXT.STATUS_FAILED,
 		sent: UI_CHAT_TEXT.STATUS_SENT,
 		delivered: UI_CHAT_TEXT.STATUS_DELIVERED,
 		read: UI_CHAT_TEXT.STATUS_READ,
@@ -23,6 +24,7 @@ function useSender(props: MessageItemProps) {
 		statusLabel: computed(() =>
 			props.message.status && props.message.status !== 'sending' ? statusLabels[props.message.status] : undefined,
 		),
+		isFailed: computed(() => props.message.sender === 'me' && props.message.status === 'failed'),
 		gallery: computed(() => (props.allImagesUrls.length > 0 ? props.allImagesUrls : getMessageImageUrls(props.message))),
 	}
 }
@@ -33,6 +35,8 @@ function createRelays(emit: ChatMessageItemEmits) {
 		handleAvatarClick: (): void => emit('avatar-click'),
 		handleReplyAction: (): void => emit('reply-action'),
 		handleContextMenu: (payload: MouseEvent): void => emit('context-menu', payload),
+		handleRetry: (): void => emit('retry'),
+		handleDiscard: (): void => emit('discard'),
 		handleMoreClick(event: MouseEvent): void {
 			const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
 			emit('context-menu', new MouseEvent('contextmenu', { clientX: rect.left, clientY: rect.bottom + 4 }))
@@ -49,5 +53,13 @@ function createRelays(emit: ChatMessageItemEmits) {
 }
 
 export function useChatMessage(props: MessageItemProps, emit: ChatMessageItemEmits) {
-	return { ...useSender(props), ...createRelays(emit) }
+	const sender = useSender(props)
+	const relays = createRelays(emit)
+	return {
+		...sender,
+		...relays,
+		handleContextMenu(payload: MouseEvent): void {
+			if (!sender.isFailed.value) relays.handleContextMenu(payload)
+		},
+	}
 }

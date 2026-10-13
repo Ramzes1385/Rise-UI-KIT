@@ -1,7 +1,8 @@
 import '@testing-library/jest-dom/vitest'
+import { UI_CHAT_TEXT } from '@/locales/messages'
 import userEvent from '@testing-library/user-event'
 import ChatHeader from '../../ui/ChatHeader/ChatHeader.vue'
-import { fireEvent, render, screen } from '@testing-library/vue'
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 
 describe('ChatHeader unit', () => {
 	it('показывает заголовок и подзаголовок', () => {
@@ -59,5 +60,67 @@ describe('ChatHeader unit', () => {
 		expect(input).toBeInTheDocument()
 		await userEvent.type(input, 'q')
 		expect(emitted()['update:searchQuery']?.at(-1)).toEqual(['q'])
+	})
+
+	describe('Escape в режиме поиска', () => {
+		it('с фокусом на кнопке поиска закрывает поиск и оставляет фокус на кнопке', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(ChatHeader, { props: { title: 'Чат', isSearching: true } })
+			const toggle = screen.getByRole('button', { name: UI_CHAT_TEXT.SEARCH_CLOSE })
+			toggle.focus()
+
+			await user.keyboard('{Escape}')
+
+			expect(emitted()['toggle-search']).toHaveLength(1)
+			await waitFor(() => expect(toggle).toHaveFocus())
+		})
+
+		it('из поля поиска возвращает фокус на кнопку поиска', async () => {
+			const user = userEvent.setup()
+			const { emitted, rerender } = render(ChatHeader, { props: { title: 'Чат', isSearching: true } })
+			const search = screen.getByRole('searchbox', { name: 'Поиск по сообщениям' })
+			search.focus()
+
+			await user.keyboard('{Escape}')
+			await rerender({ isSearching: false })
+
+			expect(emitted()['toggle-search']).toHaveLength(1)
+			await waitFor(() => expect(screen.getByRole('button', { name: 'Поиск по сообщениям' })).toHaveFocus())
+		})
+
+		it('отменяет действие по умолчанию', () => {
+			render(ChatHeader, { props: { title: 'Чат', isSearching: true } })
+			const event = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })
+
+			screen.getByRole('button', { name: UI_CHAT_TEXT.SEARCH_CLOSE }).dispatchEvent(event)
+
+			expect(event.defaultPrevented).toBe(true)
+		})
+
+		it('вне поиска ничего не делает', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(ChatHeader, { props: { title: 'Чат' } })
+			screen.getByRole('button', { name: 'Поиск по сообщениям' }).focus()
+
+			await user.keyboard('{Escape}')
+
+			expect(emitted()['toggle-search']).toBeUndefined()
+		})
+	})
+
+	it('при открытии поиска фокус переходит в поле', async () => {
+		const { rerender } = render(ChatHeader, { props: { title: 'Чат' } })
+
+		await rerender({ isSearching: true })
+
+		await waitFor(() => expect(screen.getByRole('searchbox', { name: 'Поиск по сообщениям' })).toHaveFocus())
+	})
+
+	it('при закрытии поиска фокус в поле не ставится', async () => {
+		const { rerender } = render(ChatHeader, { props: { title: 'Чат', isSearching: true } })
+
+		await rerender({ isSearching: false })
+
+		expect(screen.queryByRole('searchbox')).toBeNull()
 	})
 })

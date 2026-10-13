@@ -3,7 +3,7 @@ import { useMessageParser } from '@composables/chat/useMessageParser'
 import type { ChatMessageTextEmits, ChatMessageTextProps, HighlightedToken } from '../types/ChatMessageText.types'
 
 export function useChatMessageText(props: ChatMessageTextProps, emit: ChatMessageTextEmits) {
-	const { getHighlightedParts, parseMessageText } = useMessageParser({ searchQuery: () => props.searchQuery ?? '' })
+	const { getHighlightedParts, parseMessageText } = useMessageParser({ searchQuery: () => props.searchQuery?.trim() ?? '' })
 	return {
 		highlightedTokens: computed<HighlightedToken[]>(() =>
 			parseMessageText(props.text).map(token => ({

@@ -4,7 +4,7 @@
 		:style="[sizeScaleStyle, variantStyle, customColorStyle, { height: height }]"
 		:size-scale="sizeScale"
 		:padding="0">
-		<div :class="ui('body')">
+		<div :class="ui('body')" @keydown.esc="handleSelectionEscape">
 			<ChatHeader
 				v-if="title"
 				:class="ui('header')"
@@ -64,7 +64,9 @@
 				@unpin-message="handleUnpin"
 				@delete-message="handleDeleteSingle"
 				@mention-click="handleMentionClick"
-				@command-click="handleCommandClick" />
+				@command-click="handleCommandClick"
+				@retry-message="emit('retry-message', $event)"
+				@discard-message="emit('discard-message', $event)" />
 
 			<ChatInput
 				:key="chatId"
@@ -77,13 +79,18 @@
 				:members="members"
 				:commands="commands"
 				:is-group="isGroup"
+				:accept="accept"
+				:max-file-size="maxFileSize"
+				:max-files="maxFiles"
 				:has-voice="hasVoiceMessages"
 				:request-voice-stream="requestVoiceStream"
 				@send="handleSend"
 				@send-voice="handleSendVoice"
 				@attach="handleAttach"
+				@attach-error="handleAttachError"
 				@edit="handleEdit"
 				@cancel-edit="handleCancelEdit"
+				@edit-last="handleEditLast"
 				@cancel-reply="handleCancelReply"
 				@quick-reply="handleQuickReply" />
 
@@ -91,7 +98,9 @@
 				v-if="selectedMessageIds.length > 0"
 				:class="ui('toolbar')"
 				:selected-count="selectedMessageIds.length"
+				:total-count="filteredMessages.length"
 				:size-scale="sizeScale"
+				@select-all="handleSelectAll"
 				@forward="handleForwardSelected"
 				@delete="handleDeleteSelected"
 				@cancel="handleCancelSelection" />
@@ -144,6 +153,7 @@
 				:current-user-role="currentUserRole"
 				:max-badges="maxBadges"
 				:current-user-id="currentUserId"
+				:max-warnings="maxWarnings"
 				:companion-status="companionStatus"
 				:size-scale="sizeScale"
 				@add-member="handleAddMember"
@@ -169,6 +179,7 @@ import { useBaseChat } from '../model/useBaseChat'
 import { ChatMessageList } from './ChatMessageList'
 import { ChatPinnedPanel } from './ChatPinnedPanel'
 import { BaseButton } from '@components/BaseButton'
+import { CHAT_MAX_WARNINGS } from '../model/chatLimits'
 import { UI_CHAT_TEXT, UI_TEXT } from '@/locales/messages'
 import { kitDefaults } from '@composables/base/useDefaults'
 import { ChatSelectionToolbar } from './ChatSelectionToolbar'
@@ -189,6 +200,7 @@ const props = withDefaults(
 		commands: () => [],
 		currentUserRole: 'member',
 		maxBadges: CHAT_MAX_BADGES,
+		maxWarnings: CHAT_MAX_WARNINGS,
 		isLoading: false,
 		hasMoreMessages: false,
 		isLoadingMore: false,
@@ -219,6 +231,9 @@ const {
 	filteredMessages,
 	allImagesUrls,
 	handleMessageSelect,
+	handleSelectAll,
+	handleSelectionEscape,
+	handleEditLast,
 	handleMessageReply,
 	handleCancelReply,
 	editingMessage,
@@ -247,6 +262,7 @@ const {
 	handleSend,
 	handleSendVoice,
 	handleAttach,
+	handleAttachError,
 	handleMessageReaction,
 	handleQuickReply,
 	handleDownloadFile,

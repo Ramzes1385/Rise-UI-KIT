@@ -247,6 +247,8 @@ export const ruBase = {
 		LINK_WITHOUT_COMPONENT: 'Объект `to` без компонента ссылок: передайте RouterLink в linkComponent',
 		SIDEBAR_UNSAFE_URL: 'BaseSideBar: пункт «{label}» с небезопасным адресом показан кнопкой: {url}',
 		DOWNLOAD_UNSAFE_URL: 'Скачивание по небезопасному URL заблокировано: {url}',
+		CHAT_WRITE_MESSAGE_AVATAR_CLICK:
+			'BaseChat: «Написать сообщение» вызывает событие write-message; avatar-click для этого действия устарел и будет убран — перейдите на write-message',
 		NAVIGATION_UNSAFE_URL: 'Переход по небезопасному URL заблокирован: {url}',
 		SEO_MISSING_FIELDS: '{component}: в SEO-разметке {type} нет обязательных полей: {fields}. Передайте их в seo.data',
 		TREE_REPEATED_ID: 'BaseTree: id узлов встречаются в дереве повторно (цикл в children или дубль): {ids}. Повторы не показаны',

@@ -72,6 +72,8 @@ describe('useChatMessageActions', () => {
 
 		it.each([
 			['handleSelect', 'message-select', 'm1'],
+			['handleRetry', 'retry-message', 'm1'],
+			['handleDiscard', 'discard-message', 'm1'],
 			['handleReplyAction', 'message-reply', message],
 			['handleDownload', 'download-file', file],
 			['handleFileClick', 'file-click', file],

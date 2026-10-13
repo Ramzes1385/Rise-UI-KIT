@@ -1,5 +1,5 @@
 <template>
-	<div class="base-chat-header">
+	<div class="base-chat-header" @keydown.esc="handleSearchEscape">
 		<div v-if="!isSearching" class="base-chat-header__info">
 			<button
 				v-if="avatar"
@@ -28,8 +28,7 @@
 				:model-value="searchQuery"
 				:placeholder="UI_CHAT_TEXT.SEARCH_PLACEHOLDER"
 				:aria-label="UI_CHAT_TEXT.SEARCH_ARIA"
-				@update:model-value="handleSearchInput"
-				@keydown.esc.prevent="handleSearchEscape" />
+				@update:model-value="handleSearchInput" />
 		</div>
 
 		<div class="base-chat-header__actions">

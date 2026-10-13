@@ -1,7 +1,7 @@
-import type meta from '../../BaseChat.stories'
+import type meta from '../../../BaseChat.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { expect, screen, within, waitFor } from 'storybook/test'
-import { GROUP_CHAT, GROUP_MESSAGES, IVAN, MARIA } from '../../shared'
+import { GROUP_CHAT, GROUP_MESSAGES, IVAN, MARIA } from '../../../shared'
 
 export const InfoPanel: StoryObj<typeof meta> = {
 	parameters: {

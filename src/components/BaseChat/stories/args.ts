@@ -40,4 +40,8 @@ export const args = {
 	onSearch: fn(),
 	'onAdd-member': fn(),
 	onError: fn(),
+	'onRetry-message': fn(),
+	'onDiscard-message': fn(),
+	'onJump-to-message': fn(),
+	'onWrite-message': fn(),
 } satisfies Meta<typeof BaseChat>['args']

@@ -24,6 +24,27 @@
 		}
 	}
 
+	&__failed {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: sz(4px) sz(8px);
+		@include text-size(xs);
+	}
+
+	&__failed-text {
+		display: inline-flex;
+		align-items: center;
+		gap: sz(4px);
+		color: var(--rise-error-text);
+	}
+
+	&__failed-btn--danger.base-button {
+		--custom-text: var(--rise-error);
+		--custom-bg-hover: var(--rise-error-soft);
+		--custom-bg-active: var(--rise-error-soft-hover);
+	}
+
 	&__status-icon--second {
 		margin-left: sz(-14px);
 	}

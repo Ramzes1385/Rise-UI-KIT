@@ -3,7 +3,7 @@ import { UI_CHAT_TEXT } from '@/locales/messages'
 import userEvent from '@testing-library/user-event'
 import ChatInput from '../../ui/ChatInput/ChatInput.vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
 import type { ChatCommand, ChatMember, ChatMessage } from '../../types/BaseChat.types'
 
 const MEMBERS: ChatMember[] = [
@@ -675,6 +675,92 @@ describe('ChatInput unit', () => {
 			await rerender({ editingMessage: null })
 
 			await waitFor(() => expect(getInput().value).toBe('Черновик'))
+		})
+	})
+
+	describe('ограничения вложений', () => {
+		function pickFiles(container: Element, files: File[]): Promise<unknown> {
+			const fileInput = container.querySelector('.base-chat-input__file-input') as HTMLInputElement
+			Object.defineProperty(fileInput, 'files', { value: files, configurable: true })
+			return fireEvent.change(fileInput)
+		}
+
+		beforeEach(() => {
+			vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:test')
+			vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined)
+		})
+
+		afterEach(() => {
+			vi.restoreAllMocks()
+		})
+
+		it('accept попадает в поле выбора файла', () => {
+			const { container } = render(ChatInput, { props: { accept: 'image/*' } })
+
+			expect(container.querySelector('.base-chat-input__file-input')).toHaveAttribute('accept', 'image/*')
+		})
+
+		it('без accept атрибута нет', () => {
+			const { container } = render(ChatInput, { props: {} })
+
+			expect(container.querySelector('.base-chat-input__file-input')).not.toHaveAttribute('accept')
+		})
+
+		it('отказ показывает оповещение со списком, эмитит attach-error и не эмитит attach', async () => {
+			const { container, emitted } = render(ChatInput, { props: { accept: 'image/*' } })
+
+			await pickFiles(container, [new File(['x'], 'doc.pdf', { type: 'application/pdf' })])
+
+			const alert = await screen.findByRole('alert')
+			expect(alert).toHaveTextContent('doc.pdf')
+			expect(within(alert).getAllByRole('listitem')).toHaveLength(1)
+			expect(emitted()['attach-error']).toHaveLength(1)
+			expect(emitted().attach).toBeUndefined()
+		})
+
+		it('кнопка закрытия убирает оповещение', async () => {
+			const user = userEvent.setup()
+			const { container } = render(ChatInput, { props: { accept: 'image/*' } })
+			await pickFiles(container, [new File(['x'], 'doc.pdf', { type: 'application/pdf' })])
+
+			await user.click(await screen.findByRole('button', { name: UI_CHAT_TEXT.ATTACH_ERROR_CLOSE }))
+
+			expect(screen.queryByRole('alert')).toBeNull()
+		})
+
+		it('без отказов оповещения нет', async () => {
+			const { container, emitted } = render(ChatInput, { props: { accept: 'text/*' } })
+
+			await pickFiles(container, [new File(['x'], 'a.txt', { type: 'text/plain' })])
+
+			expect(screen.queryByRole('alert')).toBeNull()
+			expect(emitted().attach).toHaveLength(1)
+		})
+	})
+
+	describe('нажатие на пункт подсказки', () => {
+		it('mousedown на упоминании не уводит фокус из поля', async () => {
+			const user = userEvent.setup()
+			render(ChatInput, { props: { isGroup: true, members: MEMBERS } })
+			await user.type(getInput(), '@')
+			const item = (await screen.findAllByText('Анна'))[0].closest('.base-chat-input__autocomplete-item')!
+
+			const event = new MouseEvent('mousedown', { bubbles: true, cancelable: true })
+			item.dispatchEvent(event)
+
+			expect(event.defaultPrevented).toBe(true)
+		})
+
+		it('mousedown на команде не уводит фокус из поля', async () => {
+			const user = userEvent.setup()
+			render(ChatInput, { props: { commands: COMMANDS } })
+			await user.type(getInput(), '/')
+			const item = (await screen.findByText('/help')).closest('.base-chat-input__autocomplete-item')!
+
+			const event = new MouseEvent('mousedown', { bubbles: true, cancelable: true })
+			item.dispatchEvent(event)
+
+			expect(event.defaultPrevented).toBe(true)
 		})
 	})
 })

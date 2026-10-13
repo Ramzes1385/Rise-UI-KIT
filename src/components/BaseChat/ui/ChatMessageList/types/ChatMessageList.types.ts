@@ -56,6 +56,8 @@ export interface ChatMessageListEmits {
 	(event: 'pin-message', messageId: string): void
 	(event: 'unpin-message', messageId: string): void
 	(event: 'delete-message', messageId: string): void
+	/** `retry-message` — «Повторить», `discard-message` — «Удалить» под сообщением со статусом `failed` */
+	(event: 'retry-message' | 'discard-message', messageId: string): void
 	(event: 'mention-click', mention: string): void
 	(event: 'command-click', command: string): void
 }

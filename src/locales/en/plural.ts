@@ -11,6 +11,7 @@ export const enPlural = {
 	SIGNATURE_STROKES: { one: '{n} stroke', other: '{n} strokes' },
 	NOTIFICATIONS_UNREAD: { one: '{n} new', other: '{n} new' },
 	CHAT_UNREAD: { one: '{n} unread message', other: '{n} unread messages' },
+	CHAT_MAX_FILES: { one: 'You can attach no more than {n} file', other: 'You can attach no more than {n} files' },
 	REPLIES: { one: '{n} reply', other: '{n} replies' },
 	BADGES_MORE: { one: '{n} more badge', other: '{n} more badges' },
 	BREADCRUMBS_HIDDEN: { one: 'Show {n} more section', other: 'Show {n} more sections' },

@@ -39,6 +39,8 @@
 					:max-badges="maxBadges"
 					@avatar-click="handleAvatarClick(item.message)"
 					@select="handleSelect(item.message.id)"
+					@retry="handleRetry(item.message.id)"
+					@discard="handleDiscard(item.message.id)"
 					@reply-action="handleReplyAction(item.message)"
 					@context-menu="handleContextMenu($event, item.message)"
 					@reply-click="handleReplyClick"
@@ -158,6 +160,8 @@ const {
 	contextMenu,
 	handleAvatarClick,
 	handleSelect,
+	handleRetry,
+	handleDiscard,
 	handleReplyClick,
 	handleReplyAction,
 	handleDownload,

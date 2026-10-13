@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom/vitest'
 import { describe, expect, it } from 'vitest'
+import { formatMessage } from '@/locales/state'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import ChatSlideover from '../../ui/ChatSlideover/ChatSlideover.vue'
 import type { ChatMember, ChatMessage } from '../../types/BaseChat.types'
@@ -154,6 +155,31 @@ describe('ChatSlideover unit', () => {
 			await fireEvent.keyDown(screen.getByRole('menuitem', { name: 'Разжаловать' }), { key: 'Escape' })
 
 			expect(document.querySelector('.base-chat-slideover__admin-dropdown')).toBeNull()
+			expect(emitted()['update:isOpen']).toBeUndefined()
+		})
+
+		it('Escape на кнопке при закрытом меню закрывает панель', async () => {
+			const { emitted } = render(ChatSlideover, {
+				props: baseProps({ isGroup: true, members: MEMBERS, currentUserRole: 'admin' }),
+			})
+
+			await fireEvent.keyDown(screen.getByRole('button', { name: 'Действия с участником Анна' }), { key: 'Escape' })
+
+			expect(emitted()['update:isOpen']).toEqual([[false]])
+		})
+
+		it('Escape на кнопке открытого меню участника закрывает меню и оставляет фокус на кнопке', async () => {
+			const { emitted } = render(ChatSlideover, {
+				props: baseProps({ isGroup: true, members: MEMBERS, currentUserRole: 'admin' }),
+			})
+			const trigger = screen.getByRole('button', { name: 'Действия с участником Анна' })
+
+			await fireEvent.click(trigger)
+			trigger.blur()
+			await fireEvent.keyDown(trigger, { key: 'Escape' })
+
+			await waitFor(() => expect(document.querySelector('.base-chat-slideover__admin-dropdown')).toBeNull())
+			expect(trigger).toHaveFocus()
 			expect(emitted()['update:isOpen']).toBeUndefined()
 		})
 
@@ -370,7 +396,24 @@ describe('ChatSlideover unit', () => {
 			})
 
 			expect(screen.getByText('Борис')).toBeInTheDocument()
-			expect(screen.getByText('1 / 3')).toBeInTheDocument()
+			expect(screen.getByText(formatMessage(UI_CHAT_TEXT.WARNINGS_LIMIT, { count: 1, max: 3 }))).toBeInTheDocument()
+		})
+
+		it('предел предупреждений берётся из пропса maxWarnings', () => {
+			render(ChatSlideover, {
+				props: baseProps({ activeTab: 'profile', isGroup: true, selectedMemberId: 'm1', members: MEMBERS, maxWarnings: 5 }),
+			})
+
+			expect(screen.getByText(formatMessage(UI_CHAT_TEXT.WARNINGS_LIMIT, { count: 1, max: 5 }))).toBeInTheDocument()
+		})
+
+		it('maxWarnings участника главнее пропса', () => {
+			const members = MEMBERS.map(member => (member.id === 'm1' ? { ...member, maxWarnings: 7 } : member))
+			render(ChatSlideover, {
+				props: baseProps({ activeTab: 'profile', isGroup: true, selectedMemberId: 'm1', members, maxWarnings: 5 }),
+			})
+
+			expect(screen.getByText(formatMessage(UI_CHAT_TEXT.WARNINGS_LIMIT, { count: 1, max: 7 }))).toBeInTheDocument()
 		})
 
 		it('должен показывать роль "Администратор" в профиле участника-админа', () => {
@@ -433,6 +476,14 @@ describe('ChatSlideover unit', () => {
 
 			const events = emitted()['update:activeTab'] as Array<[string]>
 			expect(events.map(([tab]) => tab)).toEqual(['info', 'info'])
+		})
+
+		it('другие клавиши на вкладках не переключают вкладку', async () => {
+			const { emitted } = render(ChatSlideover, { props: baseProps({ activeTab: 'links' }) })
+
+			await fireEvent.keyDown(screen.getByRole('tablist', { name: 'Разделы информации' }), { key: 'a' })
+
+			expect(emitted()['update:activeTab']).toBeUndefined()
 		})
 
 		it('должен называть первую вкладку "Участники" в групповом чате', () => {

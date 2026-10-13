@@ -214,7 +214,7 @@
 									class="base-chat-slideover__info-icon" />
 								{{ UI_CHAT_TEXT.WARNINGS }}
 							</dt>
-							<dd class="base-chat-slideover__info-value">{{ selectedMember.warningsCount }} / 3</dd>
+							<dd class="base-chat-slideover__info-value">{{ warningsLabel }}</dd>
 						</div>
 					</dl>
 
@@ -255,6 +255,7 @@ import ChatSlideoverFiles from './ChatSlideoverFiles.vue'
 import ChatSlideoverLinks from './ChatSlideoverLinks.vue'
 import ChatSlideoverMedia from './ChatSlideoverMedia.vue'
 import { BaseSlideover } from '@components/BaseSlideover'
+import { CHAT_MAX_WARNINGS } from '../../model/chatLimits'
 import { ChatBadges, CHAT_MAX_BADGES } from '../ChatBadges'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import { useChatSlideover } from '../../model/slideover/useChatSlideover'
@@ -268,6 +269,7 @@ const props = withDefaults(defineProps<ChatSlideoverProps>(), {
 	members: () => [],
 	currentUserRole: 'member',
 	maxBadges: CHAT_MAX_BADGES,
+	maxWarnings: CHAT_MAX_WARNINGS,
 	sizeScale: SIZE_SCALE_DEFAULT,
 })
 
@@ -279,6 +281,7 @@ const {
 	contentRef,
 	titleText,
 	membersCountLabel,
+	warningsLabel,
 	selectedMember,
 	availableTabs,
 	handleTabsKeydown,

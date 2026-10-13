@@ -22,7 +22,9 @@ export function useChatHeader(props: ChatHeaderProps, emit: ChatHeaderEmits) {
 		handleAvatarClick: (): void => emit('avatar-click'),
 		handleToggleSearch: (): void => emit('toggle-search'),
 		handleSearchInput: (value: string): void => emit('update:searchQuery', value),
-		handleSearchEscape(): void {
+		handleSearchEscape(event: KeyboardEvent): void {
+			if (!props.isSearching) return
+			event.preventDefault()
 			emit('toggle-search')
 			nextTick(() => searchToggleRef.value?.focus())
 		},

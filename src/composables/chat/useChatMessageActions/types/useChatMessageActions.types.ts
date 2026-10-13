@@ -14,6 +14,7 @@ export interface UseChatMessageActionsOptions {
 		(event: 'unpin-message', messageId: string): void
 		(event: 'message-edit', message: ChatMessage): void
 		(event: 'delete-message', messageId: string): void
+		(event: 'retry-message' | 'discard-message', messageId: string): void
 		(event: 'mention-click', mention: string): void
 		(event: 'command-click', command: string): void
 	}

@@ -34,6 +34,13 @@ function useChatEditField(options: UseChatEditFieldOptions) {
 			else if (trimmed) emit('edit', { text: trimmed })
 			return true
 		},
+		editLastOnArrowUp(event: KeyboardEvent): boolean {
+			if (event.key !== 'ArrowUp' || event.shiftKey || event.altKey || event.ctrlKey || event.metaKey) return false
+			if (props.editingMessage || text.value !== '') return false
+			event.preventDefault()
+			emit('edit-last')
+			return true
+		},
 		cancelOnEscape(event: KeyboardEvent): boolean {
 			if (event.key !== 'Escape' || !props.editingMessage) return false
 			event.preventDefault()

@@ -359,3 +359,52 @@ describe('BaseChat: autoDownload', () => {
 		expect(emitted()['download-file']).toHaveLength(1)
 	})
 })
+
+describe('BaseChat: ограничения вложений', () => {
+	function pickFiles(container: Element, files: File[]): Promise<unknown> {
+		const fileInput = container.querySelector('.base-chat-input__file-input') as HTMLInputElement
+		Object.defineProperty(fileInput, 'files', { value: files, configurable: true })
+		return fireEvent.change(fileInput)
+	}
+
+	it('слишком большой файл: сообщение на экране, событие error, attach не вызван', async () => {
+		const { container, emitted } = renderChat({ maxFileSize: 1 })
+
+		await pickFiles(container, [new File([new Uint8Array(2 * 1024 * 1024)], 'big.bin', { type: 'application/octet-stream' })])
+
+		const alert = await screen.findByRole('alert')
+		expect(alert).toHaveTextContent(formatMessage(UI_TEXT.FILE_TOO_LARGE, { name: 'big.bin', size: '1' }))
+		expect(emitted().error).toHaveLength(1)
+		expect((emitted().error as unknown[][])[0][0]).toMatchObject({
+			type: 'attachment',
+			detail: [expect.objectContaining({ name: 'big.bin', reason: 'size' })],
+		})
+		expect(emitted().attach).toBeUndefined()
+	})
+
+	it('accept передаётся в поле выбора файла', () => {
+		const { container } = renderChat({ accept: '.pdf' })
+
+		expect(container.querySelector('.base-chat-input__file-input')).toHaveAttribute('accept', '.pdf')
+	})
+})
+
+describe('BaseChat: неотправленное сообщение', () => {
+	const failed: ChatMessage = { id: 'f1', text: 'Не дошло', sender: 'me', time: '10:05', status: 'failed' }
+
+	it('«Повторить» эмитит retry-message с id', async () => {
+		const { emitted } = renderChat({ messages: [failed] })
+
+		await fireEvent.click(screen.getByRole('button', { name: UI_CHAT_TEXT.RETRY_ARIA }))
+
+		expect(emitted()['retry-message']).toEqual([['f1']])
+	})
+
+	it('«Удалить» эмитит discard-message с id', async () => {
+		const { emitted } = renderChat({ messages: [failed] })
+
+		await fireEvent.click(screen.getByRole('button', { name: UI_CHAT_TEXT.DISCARD_ARIA }))
+
+		expect(emitted()['discard-message']).toEqual([['f1']])
+	})
+})

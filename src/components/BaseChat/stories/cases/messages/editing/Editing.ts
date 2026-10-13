@@ -1,7 +1,7 @@
-import { getMessage } from '../../shared'
 import { tabTo } from '@/stories/helpers'
-import type meta from '../../BaseChat.stories'
-import { EDIT_MESSAGES } from '../../timeline'
+import { getMessage } from '../../../shared'
+import type meta from '../../../BaseChat.stories'
+import { EDIT_MESSAGES } from '../../../timeline'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { within, screen, waitFor, expect } from 'storybook/test'
 

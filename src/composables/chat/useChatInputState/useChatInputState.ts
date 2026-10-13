@@ -3,8 +3,8 @@ import { nextTick, ref, watch } from 'vue'
 import { focusCaretLater } from './chatInputText'
 import { useChatEditField } from './useChatEditField'
 import { useSuggestionKeys } from './useSuggestionKeys'
-import { useChatAttachments } from './useChatAttachments'
 import { useChatSuggestions } from './useChatSuggestions'
+import { useChatAttachments } from './attachments/useChatAttachments'
 import type { BaseInputExposed, UseChatInputStateOptions } from './types/useChatInputState.types'
 
 /** keyCode, который браузер ставит клавишам во время набора через IME */
@@ -21,7 +21,7 @@ function useChatInputState(options: UseChatInputStateOptions) {
 		return inputComponentRef.value?.inputRef ?? null
 	}
 
-	const { sendMessage: emitMessage, ...attachmentState } = useChatAttachments({ emit, text })
+	const { sendMessage: emitMessage, ...attachmentState } = useChatAttachments({ emit, text, props })
 	const edit = useChatEditField({ props, emit, text, getInputElement })
 	function sendMessage(): void {
 		if (edit.submit()) return
@@ -41,7 +41,7 @@ function useChatInputState(options: UseChatInputStateOptions) {
 		// Enter во время IME-композиции (японский, китайский, корейский) подтверждает ввод, а не отправляет сообщение
 		if (event.isComposing || event.keyCode === IME_KEY_CODE) return
 		if (handleSuggestionKey(event)) return
-		if (edit.cancelOnEscape(event)) return
+		if (edit.cancelOnEscape(event) || edit.editLastOnArrowUp(event)) return
 		if (event.key === 'Enter' && !event.shiftKey) {
 			event.preventDefault()
 			sendMessage()

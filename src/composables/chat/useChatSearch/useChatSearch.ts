@@ -9,8 +9,8 @@ function useChatSearch(options: UseChatSearchOptions) {
 	const isSearching = ref(false)
 
 	const filteredMessages = computed((): ChatMessage[] => {
-		if (!searchQuery.value) return options.getMessages()
-		const query = searchQuery.value.toLowerCase()
+		const query = searchQuery.value.trim().toLowerCase()
+		if (!query) return options.getMessages()
 		return options.getMessages().filter(message => message.text?.toLowerCase().includes(query))
 	})
 

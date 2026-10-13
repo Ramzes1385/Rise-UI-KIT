@@ -20,6 +20,8 @@ function useChatMessageEvents(emit: UseChatMessageActionsOptions['emit']) {
 			/* istanbul ignore else — defensive */
 			if (replyToId) emit('reply-click', replyToId)
 		},
+		handleRetry: (messageId: string): void => emit('retry-message', messageId),
+		handleDiscard: (messageId: string): void => emit('discard-message', messageId),
 		handleReplyAction: (message: ChatMessage): void => emit('message-reply', message),
 		handleDownload: (file: ChatMessageAttachment): void => emit('download-file', file),
 		handleFileClick: (file: ChatMessageAttachment): void => emit('file-click', file),
