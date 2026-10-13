@@ -292,7 +292,7 @@
 ## Задача misc-a
 
 - Сборка пакета (№ 58): чтобы чанки `lazy-*` не тянули общий код, включены `output.strictExecutionOrder` и `preserveEntrySignatures: 'allow-extension'`; цена — служебные сокращённые имена в экспорте `dist/components.js` (≈370, в `.d.ts` их нет; именованные экспорты не потеряны) и размер входов в gzip +7…8 % (components.js 555 → 600 КБ), бюджеты `build/ratchets.json` подняты (DECISIONS). Выигрыш: в приложении с `createUiKitPlugin` пять ленивых компонентов (≈330 КБ до сжатия) уходят в отдельные чанки; приложение с именованными импортами не меняется (410 КБ в обеих сборках). Нужен отдельный вход `plugin` (`src/plugin/index.ts`) в `build.lib.ts`: без него разбивка не срабатывает. Вернуть меньший размер можно, когда rolldown разрешит такие группы без `strictExecutionOrder`.
-- `:dir(rtl)` в SCSS lightningcss при цели сборки (`es2020`) превращает в `:is(:lang(ar), …)`, и `dir="rtl"` его не включает: так были написаны BaseApp (`BaseApp.style.scss`) и RTL-правила BaseProgress (в misc-a переведены на `[dir='rtl'] &`). BaseApp не трогали — проверить и перевести тем же способом или задать `lightningcss.targets` с поддержкой `:dir()`.
+- ~~`:dir(rtl)` в SCSS lightningcss при цели сборки (`es2020`) превращает в `:is(:lang(ar), …)`, и `dir="rtl"` его не включает: так были написаны BaseApp (`BaseApp.style.scss`) и RTL-правила BaseProgress (в misc-a переведены на `[dir='rtl'] &`). BaseApp не трогали — проверить и перевести тем же способом или задать `lightningcss.targets` с поддержкой `:dir()`.~~ — a11y-fixes: BaseApp переведён на `[dir='rtl'] &`, `:dir(` запрещён в stylelint.
 - BaseCryptoProSign (№ 62): порядок `VerifyCades` → `CoSignCades` и `VerifyHash` → `CoSignHash` собран по документации КриптоПро и образцам, на настоящем плагине не запускался (owner-queue).
 - BaseSideBar: пункты-ссылки держат вид блоком `&__link.base-link` (повышенная специфичность); если стили BaseLink перестанут конфликтовать с пунктом, блок можно сократить.
 
@@ -335,7 +335,7 @@
 
 Остаётся:
 
-- BaseToolbar (`role="toolbar"`) держит собственную копию логики стрелок и `tabindex` — перевести на `useToolbarKeyboard` (файлы BaseToolbar не трогали: зона других пачек).
+- ~~BaseToolbar (`role="toolbar"`) держит собственную копию логики стрелок и `tabindex` — перевести на `useToolbarKeyboard` (файлы BaseToolbar не трогали: зона других пачек).~~ — a11y-fixes: BaseToolbar на `useToolbarKeyboard`.
 - Чипы фильтров: Delete и Backspace на чипе не удаляют его (удаляет кнопка внутри бейджа).
 - Фильтр по дате сравнивает сутки в UTC; значение `Date` в ячейке с локальным временем около полуночи может попасть в соседние сутки — если понадобится, добавить `filterConfig.timeZone`.
 - `useTableFilter().addFilter` принимает объект-черновик (`FilterDraft`) вместо трёх `Ref`: внешние вызывающие (он остаётся в namespace) адаптируют вызов.
@@ -346,8 +346,8 @@
 ## Задача hygiene
 
 - Миксины `button-reset`, `tool-button` (бывший `base-editor-tool-button`) и `field-counter` лежат в `src/styles/_mixins.scss`, описаны в `DESIGN_SYSTEM.md`. Вид не менялся (снимки до/после, light и dark).
-- `button-reset` подключён в BaseBreadcrumbs, BaseReasoning, BaseToolCall. В BaseChat остаётся `chat-button-reset` (`src/components/BaseChat/styles/_chat.scss`, 14 подключений): его параллельно правила пачка chat-2, следующая пачка переводит BaseChat на `button-reset` и удаляет `chat-button-reset`.
-- `tool-button` может пригодиться BaseChat (проверит пачка chat-2 или следующая), а в тулбаре BaseTable иконочных кнопок нет (там BaseButton и BaseInput), поэтому Table не менялся.
+- `button-reset` подключён в BaseBreadcrumbs, BaseReasoning, BaseToolCall. ~~В BaseChat остаётся `chat-button-reset` (14 подключений)~~ — a11y-fixes: BaseChat переведён на `button-reset`, `chat-button-reset` удалён.
+- `tool-button` BaseChat не подходит (кнопки чата — BaseButton и текстовые, не квадраты 28x28; a11y-fixes), а в тулбаре BaseTable иконочных кнопок нет (там BaseButton и BaseInput), поэтому Table не менялся.
 - Ещё ~45 мест вручную сбрасывают нативную кнопку (`border: 0; background: none; font: inherit`…) в компонентах, где курсор, выравнивание или фон отличаются от `button-reset`: переводить по одному вместе с правкой компонента.
 - Файлы wave4-polish не трогались: `__sr-only` в BaseGantt (`BaseGantt.style.scss`) и BaseDashboardGrid уже собираются миксином `visually-hidden`, замены не требуется; кнопки BaseTag, BaseSelect, BaseSearch, BaseInput со своим сбросом оставлены следующей пачке.
 - Счётчик `field-counter` есть только у BaseTextarea; «счётчики» BaseImage, BaseTour и ImageMapRoutes — не поля, миксин им не подходит.
@@ -359,8 +359,8 @@
 Отложено и ограничения:
 
 - CHAT-17 (`FileList` после `target.value = ''`): нужна проверка в Chrome, Firefox, Safari; для частичного приёма файлов `attach` отдаёт новый `FileList` из `DataTransfer`, для полного — исходный.
-- После «Повторить» и «Удалить» у сообщения со статусом `failed` кнопка пропадает из DOM, фокус уходит в `body` (приложение обычно меняет статус или убирает сообщение): возвращать фокус в поле ввода можно отдельной правкой.
-- `useChatState` и `useChatAttachments` на границе предупреждения `max-lines-per-function` (51 и 50+ строк): при следующем росте разнести.
+- ~~После «Повторить» и «Удалить» у сообщения со статусом `failed` кнопка пропадает из DOM, фокус уходит в `body` (приложение обычно меняет статус или убирает сообщение): возвращать фокус в поле ввода можно отдельной правкой.~~ — a11y-fixes: фокус уходит в поле ввода.
+- ~~`useChatState` и `useChatAttachments` на границе предупреждения `max-lines-per-function` (51 и 50+ строк): при следующем росте разнести.~~ — a11y-fixes: предупреждений `max-lines-per-function` нет (eslint по обоим файлам чист), разносить нечего.
 - ArrowUp только запускает правку: событие `edit` по-прежнему обрабатывает приложение.
 
 ## Задача wave4-polish
@@ -374,3 +374,10 @@
 - **BaseChip / BaseImage: дублирование стилей и обход через `--custom-bg`.** Chip правит пачка editor-pickers (bump), Image использует тот же приём, что кнопки медиа-плеера (`--custom-bg` на `.base-button` — штатный способ перекрасить кнопку кита); общая переделка — после слияния волны 5.
 - **Доступное имя `BaseGantt`, `BaseFileManager`:** уже `ariaLabel`; у `BaseDashboardGrid` `label` переименован в `ariaLabel` (компонент новый, API не выходило).
 - **BaseChart `with-gaps` и BasePresentationPlayer (≤15/255):** причина расхождения пикселей не найдена (код не менялся) — перепроверить на следующем прогоне до/после (VISUAL_CHANGES, «Задача wave4-polish»).
+
+## Задача a11y-fixes
+
+- Сделано: BaseApp `[dir='rtl'] &` и запрет `:dir(` в stylelint; BaseChat — фокус в поле ввода после «Повторить» и «Удалить», `button-reset` вместо `chat-button-reset`; BaseToolbar на `useToolbarKeyboard`.
+- «Удалить» у сообщения `failed` возвращает фокус в поле ввода, а не на соседнее сообщение: сообщения чата не фокусируются (`tabindex` у них нет), и вводить фокусируемую цель ради одной кнопки значит менять порядок Tab в ленте.
+- `tool-button` в BaseChat не применён: кнопки чата — BaseButton и текстовые элементы, а не иконки 28x28.
+- Ещё ~45 мест со ручным сбросом кнопки (список — «Задача hygiene») остаются на следующие правки их компонентов.
