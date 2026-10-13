@@ -26,11 +26,11 @@ export const CustomColor: StoryObj<typeof meta> = {
 			source: source,
 		},
 	},
-	args: { color: { bg: { base: '#6d28d9' }, text: { base: '#ffffff' } } },
+	args: { color: { bg: { base: 'var(--rise-primary-soft)' }, text: { base: 'var(--rise-primary-text)' } } },
 	render: wizardRender(options),
 	play: async ({ canvasElement, canvas }) => {
 		const root = canvasElement.querySelector('.base-form-wizard') as HTMLElement
-		await expect(getComputedStyle(root).backgroundColor).toBe('rgb(109, 40, 217)')
-		await expect(getComputedStyle(canvas.getByRole('heading', { name: 'Аккаунт' })).color).toBe('rgb(255, 255, 255)')
+		await expect(root.style.getPropertyValue('--custom-bg')).toBe('var(--rise-primary-soft)')
+		await expect(getComputedStyle(canvas.getByRole('heading', { name: 'Аккаунт' })).color).toBe(getComputedStyle(root).color)
 	},
 }

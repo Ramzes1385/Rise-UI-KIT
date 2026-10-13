@@ -1,9 +1,9 @@
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../../BaseDatePicker.stories'
 import BaseDatePicker from '../../../../ui/BaseDatePicker.vue'
-import { docsFrame, findPanel, dayName } from '../../../shared'
 import { within, expect, screen, waitFor } from 'storybook/test'
 import { storySource, tabTo, useStorySetup } from '@/stories/helpers'
+import { docsFrame, findPanel, todayName, todayRange } from '../../../shared'
 
 const state = { start: null, end: null }
 
@@ -60,12 +60,12 @@ export const RangePresets: StoryObj<typeof meta> = {
 
 		await userEvent.click(group.getByRole('button', { name: '7 дней' }))
 		await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
-		await expect(field).toHaveValue('09.05.2025 — 15.05.2025')
+		await expect(field).toHaveValue(todayRange(-6, 0))
 
 		await tabTo(field, userEvent)
 		await userEvent.keyboard('{ArrowDown}')
 		const reopened = within(await findPanel())
-		await waitFor(() => expect(reopened.getByRole('button', { name: dayName(-6) })).toHaveFocus())
+		await waitFor(() => expect(reopened.getByRole('button', { name: todayName(-6) })).toHaveFocus())
 		const presets = within(reopened.getByRole('group', { name: 'Готовые периоды' }))
 		await expect(presets.getByRole('button', { name: '7 дней' })).toHaveAttribute('aria-pressed', 'true')
 		await expect(presets.getByRole('button', { name: 'Вчера' })).toHaveAttribute('aria-pressed', 'false')
@@ -73,7 +73,7 @@ export const RangePresets: StoryObj<typeof meta> = {
 		presets.getByRole('button', { name: 'Вчера' }).focus()
 		await userEvent.keyboard('{Enter}')
 		await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
-		await expect(field).toHaveValue('14.05.2025 — 14.05.2025')
+		await expect(field).toHaveValue(todayRange(-1, -1))
 		await expect(field).toHaveFocus()
 	},
 }

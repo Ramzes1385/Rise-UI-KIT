@@ -65,6 +65,7 @@ export function useFileManagerToolbar(core: FileManagerCore, navigateToCrumb: (p
 		...useToolbarSort(core),
 		...useToolbarTexts(core),
 		breadcrumbs,
+		pathLabel: computed(() => formatMessage(UI_FILE_MANAGER.PATH_LABEL, { name: core.props.ariaLabel || UI_FILE_MANAGER.LABEL })),
 		queryValue: computed(() => core.query.get()),
 		viewValue: computed(() => core.view.get()),
 		canGoUp: computed(() => core.canNavigate.value && core.folderId.value !== null),

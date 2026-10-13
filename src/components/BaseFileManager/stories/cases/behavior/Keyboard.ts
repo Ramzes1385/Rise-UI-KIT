@@ -58,7 +58,8 @@ export const Keyboard: StoryObj<typeof meta> = {
 		await waitFor(() => expect(option(/^Фото/)).toHaveFocus())
 
 		await userEvent.keyboard('{Delete}')
-		await expect(await screen.findByRole('alertdialog', { name: 'Удалить «Фото»?' })).toBeVisible()
+		const dialog = await screen.findByRole('alertdialog', { name: 'Удалить «Фото»?' })
+		await waitFor(() => expect(dialog).toBeVisible())
 		await userEvent.keyboard('{Escape}')
 		await waitFor(() => expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument())
 		await expect(option(/^Фото/)).toBeVisible()

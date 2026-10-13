@@ -6,6 +6,8 @@ export const enFileManager = {
 		/** Root name in the tree and breadcrumbs */
 		ROOT: 'Files',
 		TREE_LABEL: 'Folders',
+		/** Path navigation name: `{name}` is the area name (`aria-label`) */
+		PATH_LABEL: 'Path: {name}',
 		/** List name: `{name}` is the open folder */
 		LIST_LABEL: 'Contents of folder "{name}"',
 		UP: 'Up',

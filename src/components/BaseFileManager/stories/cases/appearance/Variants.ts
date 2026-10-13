@@ -10,7 +10,7 @@ const options: ManagerCaseOptions = {
 <div class="story-stack">
 	<div v-for="variant in FILE_MANAGER_VARIANTS" :key="variant">
 		<span class="story-label">{{ variant }}</span>
-${managerTag({ tabs: 2, attrs: [':variant="variant"', ':height="260"'] })}
+${managerTag({ tabs: 2, attrs: [':aria-label="variant"', ':variant="variant"', ':height="260"'] })}
 	</div>
 </div>
 `,

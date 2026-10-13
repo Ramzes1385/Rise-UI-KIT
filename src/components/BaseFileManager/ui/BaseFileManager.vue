@@ -4,7 +4,8 @@
 		:style="[sizeScaleStyle, variantStyle, customColorStyle, rootStyle]"
 		role="group"
 		:aria-label="ariaLabel || UI_FILE_MANAGER.LABEL"
-		:aria-busy="isLoading || undefined">
+		:aria-busy="isLoading || undefined"
+		:aria-disabled="isDisabled || undefined">
 		<div v-if="hasTree" :class="[ui('sidebar'), classes.sidebar]" @dragover="treeDragOver" @dragleave="treeDragLeave" @drop="treeDrop">
 			<BaseTree
 				:items="treeNodes"

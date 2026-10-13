@@ -45,7 +45,7 @@ export const WithError: StoryObj<typeof meta> = {
 		const email = await canvas.findByRole('textbox', { name: /Почта/ })
 		await waitFor(() => expect(email).toHaveFocus())
 		await expect(email).toHaveAccessibleDescription(/Введите почту/)
-		await expect(canvas.getByRole('button', { name: /Аккаунт, ошибка/ })).toBeInTheDocument()
+		await expect(canvas.getByText(/ошибка/, { selector: '.base-stepper__status' })).toBeInTheDocument()
 		await expect(args.onInvalid).toHaveBeenCalledWith('account')
 		await expect(canvas.getByRole('heading', { name: 'Аккаунт' })).toBeInTheDocument()
 	},

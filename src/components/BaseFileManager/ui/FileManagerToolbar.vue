@@ -12,6 +12,7 @@
 			</BaseButton>
 			<BaseBreadcrumbs
 				:items="breadcrumbs"
+				:aria-label="pathLabel"
 				:max-items="4"
 				variant="ghost"
 				:size-scale="sizeScale"
@@ -86,6 +87,18 @@ const {
 	sizeScale,
 	core: { canOperate, canNavigate },
 	commands: { open, rename, remove, move, goUp, createFolder, upload },
-	toolbar: { breadcrumbs, queryValue, viewValue, viewOptions, canGoUp, hasSelection, isSingleSelected, selectCrumb, setQuery, setView },
+	toolbar: {
+		breadcrumbs,
+		pathLabel,
+		queryValue,
+		viewValue,
+		viewOptions,
+		canGoUp,
+		hasSelection,
+		isSingleSelected,
+		selectCrumb,
+		setQuery,
+		setView,
+	},
 } = useFileManagerContext()
 </script>

@@ -11,7 +11,7 @@ const options: ManagerCaseOptions = {
 <div class="story-stack">
 	<div v-for="preset in presets" :key="preset.name">
 		<span class="story-label">{{ preset.label }}</span>
-${managerTag({ tabs: 2, attrs: [':size-scale="preset.sizeScale"', ':height="300"'] })}
+${managerTag({ tabs: 2, attrs: [':aria-label="preset.label"', ':size-scale="preset.sizeScale"', ':height="300"'] })}
 	</div>
 </div>
 `,

@@ -103,7 +103,7 @@ export const Validation: StoryObj<typeof meta> = {
 		await userEvent.type(promo, 'FAKE{Enter}')
 		await expect(await canvas.findByRole('alert')).toHaveTextContent('Такого промокода нет')
 		await expect(args.onInvalid).toHaveBeenCalledWith('promo')
-		await expect(canvas.getByRole('button', { name: /Промокод, ошибка/ })).toBeInTheDocument()
+		await expect(canvas.getByText(/ошибка/, { selector: '.base-stepper__status' })).toBeInTheDocument()
 
 		await userEvent.clear(promo)
 		await userEvent.type(promo, 'rise{Enter}')

@@ -1,5 +1,5 @@
-import { expect, fn } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
+import { expect, fn, waitFor } from 'storybook/test'
 import type meta from '../../../BaseDatePicker.stories'
 import BaseDatePicker from '../../../../ui/BaseDatePicker.vue'
 import { storySource, tabTo, useStorySetup } from '@/stories/helpers'
@@ -53,13 +53,15 @@ export const RangeKeyboardInput: StoryObj<typeof meta> = {
 
 		await userEvent.clear(field)
 		await userEvent.keyboard('99.99.2025{Enter}')
-		await expect(await canvas.findByText('Не удалось разобрать период. Пример: 25.11.2000 — 03.12.2000')).toBeVisible()
+		const error = await canvas.findByText('Не удалось разобрать период. Пример: 25.11.2000 — 03.12.2000')
+		await waitFor(() => expect(error).toBeVisible())
 		await expect(field).toHaveAttribute('aria-invalid', 'true')
 		await expect(args['onInput-invalid']).toHaveBeenLastCalledWith('format', '99.99.2025')
 
 		await userEvent.clear(field)
 		await userEvent.keyboard('01.05.2025 — 30.05.2025{Enter}')
-		await expect(await canvas.findByText('Период длиннее допустимого: максимум 14 дней')).toBeVisible()
+		const lengthError = await canvas.findByText('Период длиннее допустимого: максимум 14 дней')
+		await waitFor(() => expect(lengthError).toBeVisible())
 		await expect(args['onInput-invalid']).toHaveBeenLastCalledWith('max-days', '01.05.2025 — 30.05.2025')
 
 		await userEvent.keyboard('{Escape}')

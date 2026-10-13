@@ -9,11 +9,11 @@ const ui = { root: 'story-themed-manager', entry: 'story-themed-entry' }
 const options: ManagerCaseOptions = {
 	template: `
 <div class="story-stack">
-${managerTag({ tabs: 1, attrs: [':height="260"'] })}
+${managerTag({ tabs: 1, attrs: ['aria-label="Базовый"', ':height="260"'] })}
 	<div style="--rise-file-manager-bg: var(--rise-primary-soft); --rise-file-manager-border: var(--rise-primary); --rise-file-manager-radius: var(--rise-radius-2xl); --rise-file-manager-entry-bg-selected: var(--rise-primary-soft-hover); --rise-file-manager-entry-text-selected: var(--rise-primary-text); --rise-file-manager-sidebar-width: 160px;">
-${managerTag({ tabs: 2, attrs: [':height="260"'] })}
+${managerTag({ tabs: 2, attrs: ['aria-label="Токены"', ':height="260"'] })}
 	</div>
-${managerTag({ tabs: 1, attrs: [':height="260"', ':ui="ui"'] })}
+${managerTag({ tabs: 1, attrs: ['aria-label="Класс ui"', ':height="260"', ':ui="ui"'] })}
 </div>
 `,
 	data: { ui },

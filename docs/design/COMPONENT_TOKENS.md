@@ -873,7 +873,7 @@
 | `--rise-form-wizard-padding-x` | корень | padding-x | — | `24px` |
 | `--rise-form-wizard-padding-y` | корень | padding-y | — | `20px` |
 | `--rise-form-wizard-radius` | корень | radius | — | `var(--rise-radius-lg)` |
-| `--rise-form-wizard-text` | корень | text | — | `var(--rise-text-muted)` |
+| `--rise-form-wizard-text` | корень | text | — | `var(--rise-text)` |
 | `--rise-form-wizard-title-font-size` | title | font-size | — | `var(--rise-font-size-lg)` |
 | `--rise-form-wizard-title-text` | title | text | — | `var(--rise-text-highlighted)` |
 

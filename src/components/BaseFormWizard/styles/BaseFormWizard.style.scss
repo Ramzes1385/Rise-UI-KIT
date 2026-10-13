@@ -7,7 +7,7 @@
 	min-width: 0;
 	max-width: 100%;
 	@include custom-bg(background-color, ct(form-wizard, bg, transparent));
-	@include custom-text(color, ct(form-wizard, text, var(--rise-text-muted)));
+	@include custom-text(color, ct(form-wizard, text, var(--rise-text)));
 
 	&--disabled {
 		opacity: var(--rise-disabled-opacity);
@@ -27,6 +27,10 @@
 
 	&__header {
 		min-width: 0;
+
+		.base-stepper--horizontal .base-stepper__items {
+			margin-inline: 0;
+		}
 	}
 
 	&__content {
@@ -34,6 +38,7 @@
 		flex-direction: column;
 		gap: sz(8px);
 		min-width: 0;
+		overflow-wrap: anywhere;
 	}
 
 	& &__title {

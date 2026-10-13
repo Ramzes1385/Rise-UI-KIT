@@ -32,6 +32,7 @@ describe('BaseFileManager: содержимое', () => {
 
 	it('свой aria-label и имя корня', () => {
 		renderManager({ ariaLabel: 'Проект', rootLabel: 'Проект' })
+		expect(screen.getByRole('navigation', { name: 'Путь: Проект' })).toBeInTheDocument()
 		expect(screen.getByRole('group', { name: 'Проект' })).toBeInTheDocument()
 		expect(screen.getAllByText('Проект').length).toBeGreaterThan(0)
 	})
@@ -127,6 +128,9 @@ describe('BaseFileManager: навигация', () => {
 		await fireEvent.dblClick(option('docs'))
 		expect(emitted('open')).toBeUndefined()
 		expect(screen.getByRole('textbox', { name: UI_FILE_MANAGER.SEARCH_LABEL })).toBeDisabled()
+		expect(screen.getByRole('group', { name: UI_FILE_MANAGER.LABEL })).toHaveAttribute('aria-disabled', 'true')
+		expect(screen.getByRole('listbox')).toHaveAttribute('aria-disabled', 'true')
+		expect(option('docs')).toHaveAttribute('aria-disabled', 'true')
 	})
 
 	it('при смене папки поиск сбрасывается', async () => {

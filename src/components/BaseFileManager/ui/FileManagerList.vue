@@ -54,6 +54,7 @@
 				ref="listRef"
 				:role="rows.length ? 'listbox' : undefined"
 				:aria-multiselectable="rows.length ? true : undefined"
+				:aria-disabled="canNavigate ? undefined : true"
 				:aria-label="rows.length ? listLabel : undefined"
 				:class="[ui('list'), `base-file-manager__list--${view}`, classes.list]"
 				@keydown="handleListKeydown">
@@ -65,6 +66,7 @@
 						role="option"
 						:data-entry-id="row.item.id"
 						:aria-selected="row.isSelected"
+						:aria-disabled="canNavigate ? undefined : true"
 						:tabindex="row.tabIndex"
 						:draggable="canOperate"
 						:class="[

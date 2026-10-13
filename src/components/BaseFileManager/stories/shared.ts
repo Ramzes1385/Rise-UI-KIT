@@ -5,7 +5,7 @@ import BaseFileManager from '../ui/BaseFileManager.vue'
 import { scriptSource, useStorySetup } from '@/stories/helpers'
 import type { StorySourceOptions } from '@/stories/helpers/types/helpers.types'
 
-export const MODELS = { path: 'path', selected: 'selected', query: 'query', view: 'view', sort: 'sort' } as const
+const MODELS = { path: 'path', selected: 'selected', query: 'query', view: 'view', sort: 'sort' } as const
 
 const MODEL_TYPES = {
 	path: 'string | null',

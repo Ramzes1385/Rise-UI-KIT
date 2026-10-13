@@ -22,7 +22,7 @@ const items: FileManagerItem[] = [
 
 const motion = motionPresetsStory({
 	item: `
-		<BaseFileManager v-bind="args" v-model:selected="selected" :items="items" :has-tree="false" :height="240" />
+		<BaseFileManager v-bind="args" aria-label="Файлы %preset%" v-model:selected="selected" :items="items" :has-tree="false" :height="240" />
 	`,
 	components: { BaseButton, BaseFileManager },
 	imports: ['BaseFileManager'],

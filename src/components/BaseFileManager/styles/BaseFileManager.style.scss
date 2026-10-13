@@ -132,7 +132,7 @@
 
 	& &__sort {
 		justify-self: start;
-		color: var(--rise-text-muted);
+		color: var(--rise-text-toned);
 
 		&[aria-pressed='true'] {
 			color: var(--rise-text-highlighted);
@@ -203,7 +203,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: var(--rise-text-muted);
+		color: var(--rise-text-toned);
 	}
 
 	&__entry--folder &__icon {
@@ -223,7 +223,7 @@
 
 	&__meta {
 		min-width: 0;
-		color: var(--rise-text-muted);
+		color: var(--rise-text-toned);
 		font-variant-numeric: tabular-nums;
 		@include text-size(xs);
 		@include truncate;
@@ -327,13 +327,13 @@
 		margin: 0;
 		padding: space(6px 12px);
 		border-top: 1px solid var(--rise-border);
-		color: var(--rise-text-muted);
+		color: var(--rise-text-toned);
 		@include text-size(xs);
 	}
 
 	&__hint {
 		margin: 0 0 space(12px);
-		color: var(--rise-text-muted);
+		color: var(--rise-text-toned);
 	}
 
 	&__sr {
