@@ -5,7 +5,7 @@ import type { UseTableProcessedRowsOptions } from './types/useTableProcessedRows
 import { filterRowsBySearch, matchesFilter, sortRowsByStates } from './useTableDataUtils'
 
 function useTableProcessedRows(options: UseTableProcessedRowsOptions) {
-	const { rows, columns, searchQuery, activeFilters, sortStates, locale } = options
+	const { rows, columns, searchQuery, activeFilters, sortStates, locale, timeZone } = options
 
 	/** Обработанные строки (поиск + фильтры + сортировка) */
 	return computed((): TableRow[] => {
@@ -17,7 +17,7 @@ function useTableProcessedRows(options: UseTableProcessedRowsOptions) {
 
 		for (const filter of activeFilters.value) {
 			const column = columns.value.find(item => item.key === filter.key)
-			result = result.filter(row => matchesFilter(row, filter, column))
+			result = result.filter(row => matchesFilter(row, filter, { column, timeZone: timeZone?.() }))
 		}
 
 		const activeSorts = sortStates.value.filter(sort => sort.direction)

@@ -83,6 +83,11 @@ export interface ColumnFilterConfig {
 	options?: FilterOption[]
 	/** Плейсхолдер */
 	placeholder?: string
+	/**
+	 * Пояс (IANA, `'Europe/Moscow'`, `'UTC'`), в котором фильтр по датам считает сутки момента времени (`Date`, timestamp,
+	 * ISO-строка с зоной) этой колонки; важнее пропса `timeZone` таблицы. Дата без пояса (`'2025-05-14'`) — сутки как написано
+	 */
+	timeZone?: string
 }
 
 export interface TableColumn {
@@ -105,6 +110,13 @@ export interface TableColumn {
 	 * с датами «ДД.ММ.ГГГГ», число из объекта или вложенное поле. Поиск и фильтры читают `row.data[key]`
 	 */
 	sortAccessor?: (row: TableRow) => unknown
+	/**
+	 * Своя функция сравнения для сортировки по возрастанию (как `comparator` в AG Grid): получает значения ячеек
+	 * `row.data[key]` двух строк и сами строки (`rows.a`, `rows.b`), возвращает отрицательное число, если `a` раньше `b`, положительное — если
+	 * позже, и `0` при равенстве. Направление применяет таблица. Важнее `sortAccessor` и `sortType`: пустые значения
+	 * в функцию тоже попадают, порядок для них задаёт она. Колонка по-прежнему должна быть `isSortable`
+	 */
+	sortCompare?: (a: unknown, b: unknown, rows: { a: TableRow; b: TableRow }) => number
 	/** Сортируемая */
 	isSortable?: boolean
 	/** Фильтруемая */
@@ -297,6 +309,12 @@ export interface BaseTableProps extends BaseComponentProps<
 	 * Числа внутри строк сравниваются как числа («Item 2» перед «Item 10»), пустые значения всегда в конце
 	 */
 	sortLocale?: string
+	/**
+	 * Пояс (IANA, `'Europe/Moscow'`, `'UTC'`), в котором фильтр по датам считает сутки момента времени (`Date`, timestamp,
+	 * ISO-строка с зоной). Без него — пояс пользователя (раньше сутки считались в UTC). Дата без пояса (`'2025-05-14'`,
+	 * `'2025-05-14 23:30'`) — сутки как написано, пояс на неё не влияет. Колонка может задать свой: `filterConfig.timeZone`
+	 */
+	timeZone?: string
 	/** Конфиг вложенной таблицы */
 	nestedConfig?: NestedTableConfig
 	/**

@@ -254,6 +254,27 @@ describe('BaseTable: фильтры через тулбар', () => {
 		wrapper.unmount()
 	})
 
+	it('Delete и Backspace на чипе удаляют его, фокус уходит на соседний чип', async () => {
+		const wrapper = mountTable()
+		await addFilter(wrapper, { column: 'name', operator: 'contains', value: 'и' })
+		await addFilter(wrapper, { column: 'age', operator: 'gt', value: '1' })
+		const remove = (): HTMLElement[] => [
+			...(wrapper.element as HTMLElement).querySelectorAll<HTMLElement>('.base-table__filter-remove'),
+		]
+		remove()[0].focus()
+		await wrapper.findAll('.base-table__filter-tag')[0].trigger('keydown', { key: 'Delete' })
+		await nextTick()
+		await nextTick()
+		expect(remove()).toHaveLength(1)
+		expect(document.activeElement).toBe(remove()[0])
+		await wrapper.get('.base-table__filter-tag').trigger('keydown', { key: 'Backspace' })
+		await nextTick()
+		await nextTick()
+		expect(remove()).toHaveLength(0)
+		expect(wrapper.emitted('filter')?.at(-1)).toEqual([[]])
+		wrapper.unmount()
+	})
+
 	it('смена колонки подставляет операторы типа, пустой фильтр не добавляется', async () => {
 		const wrapper = mountTable()
 		const toolbar = wrapper.findComponent(BaseTableToolbar)

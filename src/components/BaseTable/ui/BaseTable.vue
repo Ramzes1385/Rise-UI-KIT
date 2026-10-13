@@ -219,6 +219,7 @@ const props = withDefaults(
 		loadMode: 'pagination',
 		searchDebounce: 300,
 		sortLocale: undefined,
+		timeZone: undefined,
 		expandedIds: undefined,
 		page: undefined,
 		totalRows: undefined,

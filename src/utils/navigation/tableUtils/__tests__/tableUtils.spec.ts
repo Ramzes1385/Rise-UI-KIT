@@ -9,6 +9,7 @@ import {
 	compareSortKeys,
 	createSortComparator,
 	getColumnStyle,
+	toCalendarDay,
 	toSortKey,
 } from '../tableUtils'
 
@@ -264,6 +265,38 @@ describe('tableUtils', () => {
 			const sorted = [...cells].sort((a, b) => compareSortKeys(toSortKey(a.value, 'number'), toSortKey(b.value, 'number'), 'asc'))
 
 			expect(sorted.map(cell => cell.value)).toEqual([5, 10, 20, 30, '—', 'abc', undefined, null])
+		})
+	})
+
+	describe('toCalendarDay', () => {
+		const day = (year: number, month: number, date: number): number => Math.floor(Date.UTC(year, month - 1, date) / 86_400_000)
+
+		it('дата без пояса — сутки как написано', () => {
+			expect(toCalendarDay('2025-05-14', 'Pacific/Auckland')).toBe(day(2025, 5, 14))
+			expect(toCalendarDay(' 2025-05-14T23:30:00 ', 'America/Los_Angeles')).toBe(day(2025, 5, 14))
+		})
+
+		it('момент времени — сутки в выбранном поясе', () => {
+			const instant = Date.UTC(2025, 4, 14, 22, 30)
+			expect(toCalendarDay(instant, 'UTC')).toBe(day(2025, 5, 14))
+			expect(toCalendarDay(new Date(instant), 'Europe/Moscow')).toBe(day(2025, 5, 15))
+			expect(toCalendarDay('2025-05-14T22:30:00Z', 'Asia/Tokyo')).toBe(day(2025, 5, 15))
+		})
+
+		it('без пояса — в поясе пользователя; неизвестный пояс предупреждает и считает так же', () => {
+			const local = new Date(2025, 4, 14, 1, 0)
+			expect(toCalendarDay(local)).toBe(day(2025, 5, 14))
+			const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+			expect(toCalendarDay(local, 'Nowhere/Land')).toBe(day(2025, 5, 14))
+			expect(warn).toHaveBeenCalledOnce()
+			warn.mockRestore()
+		})
+
+		it('нераспознанное значение — null', () => {
+			expect(toCalendarDay('14.05.2025')).toBeNull()
+			expect(toCalendarDay('2025-02-30')).toBeNull()
+			expect(toCalendarDay({})).toBeNull()
+			expect(toCalendarDay(Number.NaN)).toBeNull()
 		})
 	})
 })

@@ -22,6 +22,7 @@ export const argTypes = {
 	loadMode: { control: 'inline-radio', options: ['pagination', 'button', 'infinite'], table: propGroup(ARG_GROUP.behavior) },
 	searchDebounce: { control: { type: 'number', min: 0 }, table: propGroup(ARG_GROUP.behavior) },
 	sortLocale: { control: 'text', table: propGroup(ARG_GROUP.behavior) },
+	timeZone: { control: 'text', table: propGroup(ARG_GROUP.behavior) },
 	expandedIds: { control: 'object', table: propGroup(ARG_GROUP.behavior) },
 	selectedIds: { control: 'object', table: propGroup(ARG_GROUP.behavior) },
 	page: { control: 'number', table: propGroup(ARG_GROUP.behavior) },

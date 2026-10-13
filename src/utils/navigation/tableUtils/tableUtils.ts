@@ -1,6 +1,8 @@
 /** Утилиты: нумерация строк, стилизация колонок и сортировка значений таблицы */
 
+import { warn } from '@/locales/warn'
 import { getLocale } from '@/locales/state'
+import { UI_WARNINGS } from '@/locales/messages'
 import type { SortDirection, SortType } from '@components/BaseTable/types/BaseTable.types'
 import type { ColumnStyleOptions, RowNumberOptions, TableServiceColumns, TableSortKey } from './types/tableUtils.types'
 
@@ -24,6 +26,11 @@ function sortCollator(locale?: string): Intl.Collator {
 const ISO_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,3}))?)?(Z|[+-]\d{2}:?\d{2})?)?$/
 
 const MS_IN_MINUTE = 60_000
+
+const MS_IN_DAY = 86_400_000
+
+/** Форматтеры суток по поясам; `null` — название пояса неизвестно (предупреждение уже показано) */
+const dayFormatters = new Map<string, Intl.DateTimeFormat | null>()
 
 /** Ключ пустого значения: всегда после остальных при любом направлении */
 const EMPTY_SORT_KEY: TableSortKey = { rank: 2, value: '' }
@@ -126,6 +133,47 @@ function toSortTimestamp(value: unknown): number | null {
 	return null
 }
 
+function dayFormatter(timeZone: string): Intl.DateTimeFormat | null {
+	if (dayFormatters.has(timeZone)) return dayFormatters.get(timeZone) ?? null
+	let formatter: Intl.DateTimeFormat | null = null
+	try {
+		formatter = new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: 'numeric', day: 'numeric' })
+	} catch {
+		warn(UI_WARNINGS.TABLE_INVALID_TIME_ZONE, { timeZone })
+	}
+	dayFormatters.set(timeZone, formatter)
+	return formatter
+}
+
+/** Номер суток (дней от 1970-01-01) момента времени в поясе `timeZone` (IANA); без пояса или с неизвестным — в поясе пользователя */
+function dayOfInstant(timestamp: number, timeZone?: string): number {
+	const formatter = timeZone ? dayFormatter(timeZone) : null
+	if (!formatter) {
+		const date = new Date(timestamp)
+		return Math.floor(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / MS_IN_DAY)
+	}
+	const parts = Object.fromEntries(formatter.formatToParts(timestamp).map(part => [part.type, Number(part.value)]))
+	return Math.floor(Date.UTC(parts.year, parts.month - 1, parts.day) / MS_IN_DAY)
+}
+
+/**
+ * Календарные сутки значения для фильтра по датам (дни от 1970-01-01). Дата без пояса — «2025-05-14» и «2025-05-14 23:30» —
+ * это сутки, как написано: пояс на них не влияет. `Date`, timestamp и ISO-строка с зоной — момент времени: его сутки берутся в
+ * поясе `timeZone` (IANA, например `'Europe/Moscow'`), а без него — в поясе пользователя. Нераспознанное значение — `null`
+ */
+function toCalendarDay(value: unknown, timeZone?: string): number | null {
+	if (typeof value === 'string') {
+		const text = value.trim()
+		const match = ISO_DATE_PATTERN.exec(text)
+		if (match && !match[8]) {
+			const timestamp = parseIsoDate(text)
+			return timestamp === null ? null : Math.floor(timestamp / MS_IN_DAY)
+		}
+	}
+	const timestamp = toSortTimestamp(value)
+	return timestamp === null ? null : dayOfInstant(timestamp, timeZone)
+}
+
 /**
  * Преобразовать значение ячейки в ключ сортировки.
  * Пустые значения (null, undefined, строка из пробелов) получают ранг 2, значения,
@@ -167,4 +215,13 @@ function compareSortKeys(a: TableSortKey, b: TableSortKey, direction: SortDirect
 	return createSortComparator()(a, b, direction)
 }
 
-export { calcColumnWidths, calcRowNumber, calcTotalColumns, compareSortKeys, createSortComparator, getColumnStyle, toSortKey }
+export {
+	calcColumnWidths,
+	calcRowNumber,
+	calcTotalColumns,
+	compareSortKeys,
+	createSortComparator,
+	getColumnStyle,
+	toCalendarDay,
+	toSortKey,
+}

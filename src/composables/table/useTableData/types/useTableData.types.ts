@@ -20,6 +20,8 @@ export interface UseTableDataOptions {
 	searchDebounce: () => number
 	/** Язык сравнения строк при сортировке (BCP 47); без него — язык кита */
 	sortLocale?: () => string | undefined
+	/** Пояс (IANA), в котором фильтр по датам считает сутки; без него — пояс пользователя */
+	timeZone?: () => string | undefined
 	/** Callback при поиске */
 	onSearch?: (query: string) => void
 	/** Callback при сортировке */

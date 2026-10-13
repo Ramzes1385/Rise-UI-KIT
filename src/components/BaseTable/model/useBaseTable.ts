@@ -83,6 +83,7 @@ function useComposition(props: TableProps, emit: BaseTableEmits, features: Retur
 		isMultiSort: features.isMultiSort,
 		searchDebounce: computed(() => props.searchDebounce),
 		sortLocale: computed(() => props.sortLocale),
+		timeZone: computed(() => props.timeZone),
 		expandedIds: computed(() => props.expandedIds),
 		isResizable: features.isResizable,
 		hasRowNumber: features.hasRowNumber,

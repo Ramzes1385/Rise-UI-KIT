@@ -168,6 +168,7 @@
 				is-removable
 				:remove-label="`${TABLE_TEXT.REMOVE_FILTER}: ${getFilterLabel(filter)}`"
 				:size-scale="sizeScale"
+				@keydown.delete.prevent="removeFilter(index)"
 				@remove="removeFilter(index)" />
 		</div>
 

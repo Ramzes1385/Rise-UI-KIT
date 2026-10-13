@@ -238,6 +238,8 @@ export const ruBase = {
 		CRYPTOPRO_NO_TSA: 'BaseCryptoProSign: для уровня подписи «{level}» нужен адрес службы штампов времени tsaAddress',
 		TABLE_DUPLICATE_ROW_ID:
 			'BaseTable: id строки «{id}» встречается в rows повторно — раскрытие и выбор будут действовать на все такие строки',
+		TABLE_INVALID_TIME_ZONE:
+			'BaseTable: неизвестный часовой пояс «{timeZone}» в фильтре по датам — сутки считаются в поясе пользователя',
 		DASHBOARD_GRID_DUPLICATE_ID: 'BaseDashboardGrid: id «{id}» встречается в раскладке повторно — повторы не показаны',
 		TOOLTIP_WRAPPERLESS_ROOT:
 			'BaseTooltip: при isWrapperless корень слота trigger должен быть элементом, а не текстом или фрагментом — подсказка не привязана',

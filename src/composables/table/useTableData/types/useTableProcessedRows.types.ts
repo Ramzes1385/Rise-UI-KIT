@@ -14,4 +14,6 @@ export interface UseTableProcessedRowsOptions {
 	sortStates: Ref<SortState[]>
 	/** Язык сравнения строк при сортировке (BCP 47); без него — язык кита */
 	locale?: () => string | undefined
+	/** Пояс (IANA), в котором фильтр по датам считает сутки; без него — пояс пользователя */
+	timeZone?: () => string | undefined
 }

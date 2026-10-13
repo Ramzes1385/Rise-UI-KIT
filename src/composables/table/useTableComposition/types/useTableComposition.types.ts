@@ -14,6 +14,7 @@ export interface UseTableCompositionOptions {
 	searchDebounce: ComputedRef<number>
 	expandedIds?: ComputedRef<Array<string | number> | undefined>
 	sortLocale?: ComputedRef<string | undefined>
+	timeZone?: ComputedRef<string | undefined>
 	isResizable: ComputedRef<boolean>
 	hasRowNumber: ComputedRef<boolean>
 	isSelectable: ComputedRef<boolean>

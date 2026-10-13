@@ -8,7 +8,7 @@ import type { UseTableCompositionOptions } from './types/useTableComposition.typ
 
 function useTableCompositionModel(options: UseTableCompositionOptions) {
 	const { rows, columns, loadMode, pageSize, hasMore, isMultiSort, searchDebounce, sortLocale, emit } = options
-	const { page, totalRows, selectedIds } = options
+	const { page, totalRows, selectedIds, timeZone } = options
 	const { isResizable, hasRowNumber, isSelectable, hasSearch, hasFilters, hasColumnSettings } = options
 
 	const tableColumns = useTableColumns({
@@ -31,6 +31,7 @@ function useTableCompositionModel(options: UseTableCompositionOptions) {
 		isMultiSort: () => isMultiSort.value,
 		searchDebounce: () => searchDebounce.value,
 		sortLocale: () => sortLocale?.value,
+		timeZone: () => timeZone?.value,
 		onSearch: (q: string) => emit('search', q),
 		onSort: states => emit('sort', states),
 		onFilter: filters => emit('filter', filters),

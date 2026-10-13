@@ -213,6 +213,7 @@ export const enBase = {
 		CRYPTOPRO_NO_TSA: 'BaseCryptoProSign: the "{level}" signature level needs a timestamp service address, tsaAddress',
 		TABLE_DUPLICATE_ROW_ID:
 			'BaseTable: row id "{id}" appears in rows more than once — expanding and selecting will affect all such rows',
+		TABLE_INVALID_TIME_ZONE: 'BaseTable: unknown time zone "{timeZone}" in the date filter — days are counted in the user time zone',
 		DASHBOARD_GRID_DUPLICATE_ID: 'BaseDashboardGrid: id "{id}" appears in the layout more than once — duplicates are not shown',
 		TOOLTIP_WRAPPERLESS_ROOT:
 			'BaseTooltip: with isWrapperless the root of the trigger slot must be an element, not text or a fragment — the tooltip is not attached',
