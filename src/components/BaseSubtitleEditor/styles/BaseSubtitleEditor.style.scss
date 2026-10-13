@@ -105,6 +105,14 @@
 		min-width: 0;
 	}
 
+	&__time .base-tooltip {
+		display: block;
+	}
+
+	&__input.base-input--disabled {
+		pointer-events: none;
+	}
+
 	&__input,
 	&__text {
 		width: 100%;

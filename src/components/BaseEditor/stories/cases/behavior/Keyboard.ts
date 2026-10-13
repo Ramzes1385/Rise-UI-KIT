@@ -36,7 +36,7 @@ export const Keyboard: StoryObj<typeof meta> = {
 
 		const textbox = canvas.getByRole('textbox', { name: 'Текстовый редактор' })
 		await tabTo(textbox, userEvent, 30)
-		await expect(getComputedStyle(textbox.closest('.base-editor') as HTMLElement).boxShadow).not.toBe('none')
+		await expect(getComputedStyle(textbox.closest('.base-editor__frame') as HTMLElement).boxShadow).not.toBe('none')
 
 		await userEvent.tripleClick(within(textbox).getByText('Проверка клавиатуры'))
 		await userEvent.keyboard('{Control>}b{/Control}')

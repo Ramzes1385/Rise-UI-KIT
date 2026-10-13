@@ -52,7 +52,7 @@ export interface BaseEditorProps extends BaseComponentProps<
 	/** Автофокус */
 	isAutofocus?: boolean
 	/**
-	 * Классы частей редактора (`root`, `toolbar`, `group`, `btn`, `content`, `code`, `context-menu`) — добавляются к классам кита.
+	 * Классы частей редактора (`root`, `frame`, `toolbar`, `group`, `btn`, `content`, `code`, `context-menu`, `label`, `error-text`) — добавляются к классам кита.
 	 * Глобально — `createUiKitPlugin({ defaults: { BaseEditor: { ui } } })`, классы плагина и экземпляра склеиваются.
 	 *
 	 * @example

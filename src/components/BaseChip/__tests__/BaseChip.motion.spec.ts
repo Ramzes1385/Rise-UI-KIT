@@ -14,19 +14,15 @@ describe('BaseChip: анимации индикатора', () => {
 		expect(container.querySelector('.base-chip__badge')).toHaveClass('base-chip__badge-enter-from', 'base-chip__badge-enter-active')
 	})
 
-	it('новое значение «выпрыгивает» на том же узле: класс bump чередуется, первый показ без него', async () => {
+	it('новое значение меняет текст на том же узле без своей анимации: движение даёт только BaseBadge', async () => {
 		const { container, rerender } = render(BaseChip, { props: { content: 1 }, ...REAL_TRANSITION })
 		const badge = container.querySelector('.base-chip__badge')
-		expect(badge?.className).not.toMatch(/bump/)
 
 		await rerender({ content: 2 })
-		expect(container.querySelector('.base-chip__badge')).toBe(badge)
-		expect(badge).toHaveClass('base-chip__badge--bump-0')
-		expect(badge).toHaveTextContent('2')
 
-		await rerender({ content: 3 })
-		expect(badge).toHaveClass('base-chip__badge--bump-1')
-		expect(badge).not.toHaveClass('base-chip__badge--bump-0')
+		expect(container.querySelector('.base-chip__badge')).toBe(badge)
+		expect(badge).toHaveTextContent('2')
+		expect(badge?.className).not.toMatch(/bump/)
 	})
 
 	it('без длительности перехода (reduce, пресет none) индикатор уходит сразу', async () => {

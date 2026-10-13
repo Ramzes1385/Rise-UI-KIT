@@ -37,7 +37,7 @@ export const Theming: StoryObj<typeof meta> = {
 					'`toolbar-bg`, `toolbar-border`, `toolbar-padding-x`, `toolbar-padding-y` — панель инструментов;',
 					'`content-padding-x`, `content-padding-y` — отступы области текста и поля HTML-кода.',
 					'Задайте их на `:root`, в теме или на контейнере, как здесь. Список — docs/design/COMPONENT_TOKENS.md.',
-					'Проп `ui` добавляет классы к частям (`root`, `toolbar`, `group`, `btn`, `content`, `code`, `context-menu`);',
+					'Проп `ui` добавляет классы к частям (`root`, `frame`, `toolbar`, `group`, `btn`, `content`, `code`, `context-menu`, `label`, `error-text`);',
 					'глобально — `defaults.BaseEditor.ui` плагина.',
 				].join('\n'),
 			},
@@ -53,9 +53,10 @@ export const Theming: StoryObj<typeof meta> = {
 		const [plain, themed, classed] = [...canvasElement.querySelectorAll<HTMLElement>('.base-editor')]
 		const toolbar = (root: HTMLElement) => root.querySelector('.base-editor__toolbar') as HTMLElement
 		const content = (root: HTMLElement) => root.querySelector('.base-editor__content') as HTMLElement
+		const frame = (root: HTMLElement) => root.querySelector('.base-editor__frame') as HTMLElement
 
-		await expect(getComputedStyle(themed).backgroundColor).not.toBe(getComputedStyle(plain).backgroundColor)
-		await expect(getComputedStyle(themed).borderTopColor).not.toBe(getComputedStyle(plain).borderTopColor)
+		await expect(getComputedStyle(frame(themed)).backgroundColor).not.toBe(getComputedStyle(frame(plain)).backgroundColor)
+		await expect(getComputedStyle(frame(themed)).borderTopColor).not.toBe(getComputedStyle(frame(plain)).borderTopColor)
 		await expect(getComputedStyle(toolbar(themed)).backgroundColor).not.toBe(getComputedStyle(toolbar(plain)).backgroundColor)
 		if (!isStoryBranded()) {
 			await expect(getComputedStyle(content(themed)).paddingLeft).toBe('24px')

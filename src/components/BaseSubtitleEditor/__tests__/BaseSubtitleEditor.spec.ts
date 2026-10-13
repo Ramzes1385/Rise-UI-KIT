@@ -54,6 +54,19 @@ describe('BaseSubtitleEditor', () => {
 		expect(start).toHaveAttribute('aria-describedby', screen.getByRole('tooltip').id)
 	})
 
+	it('отключённое поле времени показывает подсказку через обёртку', async () => {
+		const { container } = setup({ isDisabled: true })
+		const start = screen.getByRole('textbox', { name: 'Начало реплики 1' })
+		const wrapper = start.closest('.base-tooltip') as HTMLElement
+
+		expect(start).toBeDisabled()
+		expect(wrapper).not.toBeNull()
+		expect(container.querySelector('.base-subtitle-editor__time .base-input--disabled')).not.toBeNull()
+		await fireEvent.mouseEnter(wrapper)
+
+		expect(await screen.findByRole('tooltip')).toBeInTheDocument()
+	})
+
 	it('время: применяется по изменению, реплики остаются по порядку начала; неверное время — ошибка', async () => {
 		const { lastCues, rerender } = setup()
 		const firstEnd = screen.getByRole('textbox', { name: 'Конец реплики 1' })

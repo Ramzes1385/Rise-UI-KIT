@@ -63,7 +63,10 @@
 				:aria-current="index === activeIndex ? 'true' : undefined">
 				<span :class="ui('number')" aria-hidden="true">{{ index + 1 }}</span>
 				<span v-for="edge in ['start', 'end'] as const" :key="edge" :class="ui('time')">
-					<BaseTooltip v-slot="{ triggerProps }" :text="fieldError(index, edge) || UI_SUBTITLES.TIME_HINT" is-wrapperless>
+					<BaseTooltip
+						v-slot="{ triggerProps }"
+						:text="fieldError(index, edge) || UI_SUBTITLES.TIME_HINT"
+						:is-wrapperless="!isDisabled">
 						<BaseInput
 							:class="ui('input')"
 							:model-value="timeValue(index, edge)"

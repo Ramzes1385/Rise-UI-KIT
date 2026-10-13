@@ -21,7 +21,8 @@ export const MediaAndLinks: StoryObj<typeof meta> = {
 			description: {
 				story: [
 					'Ссылки и медиа. «Ссылка» спрашивает адрес (`window.prompt`) и превращает выделение в ссылку; «Изображение»',
-					'и «Видео» вставляют выбранный файл в позицию каретки. Правый клик по изображению открывает меню размера:',
+					'и «Видео» — кнопки, открывающие выбор файла: он вставляется в позицию каретки. Правый клик по изображению (или Shift+F10',
+					'и кнопка «Размер и удаление медиа» для выделенного изображения) открывает меню размера:',
 					'фокус переходит в поле «Ширина», Enter или «Применить» задают размер, «Удалить» убирает медиа, Escape закрывает меню.',
 				].join('\n'),
 			},
@@ -34,7 +35,7 @@ export const MediaAndLinks: StoryObj<typeof meta> = {
 		template,
 	}),
 	args: { modelValue: state.html },
-	play: async ({ canvas, userEvent }) => {
+	play: async ({ canvas, canvasElement, userEvent }) => {
 		const textbox = canvas.getByRole('textbox', { name: 'Текстовый редактор' })
 
 		spyOn(window, 'prompt').mockReturnValue('/docs/design')
@@ -43,7 +44,7 @@ export const MediaAndLinks: StoryObj<typeof meta> = {
 		await expect(within(textbox).getByRole('link', { name: 'Макеты главной страницы' })).toHaveAttribute('href', '/docs/design')
 
 		await userEvent.click(within(textbox).getByText('Фото стенда:'))
-		await userEvent.upload(canvas.getByLabelText('Изображение'), storyImageFile())
+		await userEvent.upload(canvasElement.querySelector('input[accept="image/*"]') as HTMLInputElement, storyImageFile())
 		const image = textbox.querySelector('img') as HTMLImageElement
 		await expect(image).toHaveAttribute('alt', '')
 

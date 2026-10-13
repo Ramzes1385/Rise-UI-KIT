@@ -96,11 +96,7 @@ function createTourStepView(options: UseTourCoordinationOptions, actions: Pick<B
 
 	const useDots = computed((): boolean => total.value <= MAX_DOTS)
 
-	const progressPercent = computed((): number => {
-		return Math.round((activeIndex.value / (total.value - 1)) * 100)
-	})
-
-	return { slotContext, hasHeader, useDots, progressPercent }
+	return { slotContext, hasHeader, useDots }
 }
 
 export { createTourLabels, createTourStyles, createTourStepView }

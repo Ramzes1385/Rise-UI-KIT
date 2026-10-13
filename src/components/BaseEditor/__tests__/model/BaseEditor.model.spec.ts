@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
-import BaseEditor from '../ui/BaseEditor.vue'
+import BaseEditor from '../../ui/BaseEditor.vue'
 import { fireEvent, render, screen } from '@testing-library/vue'
 
 const global = { stubs: { BaseTooltip: { template: '<div><slot /></div>' } } }

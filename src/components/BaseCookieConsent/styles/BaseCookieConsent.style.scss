@@ -88,7 +88,7 @@
 	& &__category-description {
 		@include inherit-custom-color;
 		margin: 0;
-		padding-left: calc(#{sz(36px)} + #{sz(8px)});
+		padding-left: calc(#{sz($switch-track-width)} + #{sz($switch-row-gap)});
 		color: var(--rise-text-muted);
 		font-size: sz(var(--rise-font-size-xs));
 		line-height: sz(var(--rise-line-height-xs));

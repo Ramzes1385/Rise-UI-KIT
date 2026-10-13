@@ -58,7 +58,9 @@ export const EditorToolbarKeyboard: StoryObj<typeof meta> = {
 		await expect(within(toolbar).getByRole('button', { name: 'Размер и удаление медиа' })).toHaveAttribute('aria-disabled', 'true')
 
 		await tabTo(textbox, userEvent, 3)
-		await userEvent.keyboard('{Control>}{End}{/Control}{Enter}Второй абзац{Shift>}{Enter}{/Shift}после переноса')
+		window.getSelection()?.selectAllChildren(textbox)
+		window.getSelection()?.collapseToEnd()
+		await userEvent.keyboard('{Enter}Второй абзац{Shift>}{Enter}{/Shift}после переноса')
 		await waitFor(() => expect(textbox.querySelectorAll('p')).toHaveLength(2))
 		await expect(textbox.querySelectorAll('p')[1]!.querySelector('br')).not.toBeNull()
 	},

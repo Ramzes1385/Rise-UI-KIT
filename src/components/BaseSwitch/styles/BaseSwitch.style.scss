@@ -42,7 +42,7 @@
 	&__slider {
 		position: relative;
 		display: block;
-		width: sz(36px);
+		width: sz($switch-track-width);
 		height: sz(20px);
 		border-radius: var(--rise-radius-full);
 		background-color: var(--switch-track);
@@ -104,7 +104,7 @@
 
 	& &__error-text {
 		display: block;
-		padding-left: sz(44px);
+		padding-left: calc(#{sz($switch-track-width)} + #{sz($switch-row-gap)});
 		@include field-error;
 	}
 

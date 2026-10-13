@@ -68,7 +68,9 @@ export const EditorAsyncModel: StoryObj<typeof meta> = {
 	play: async ({ canvas, userEvent }) => {
 		const textbox = canvas.getByRole('textbox', { name: 'Текстовый редактор' })
 		await userEvent.click(within(textbox).getByText('Родитель отвечает с задержкой'))
-		await userEvent.keyboard('{End} раз два три')
+		window.getSelection()?.selectAllChildren(textbox)
+		window.getSelection()?.collapseToEnd()
+		await userEvent.keyboard(' раз два три')
 		await waitFor(() => expect(canvas.getByText(/Ответов сервера: [1-9]/)).toBeVisible(), { timeout: STORY_WAIT_TIMEOUT })
 		await userEvent.keyboard(' четыре')
 		await new Promise(resolve => setTimeout(resolve, SAVE_DELAY * 2))

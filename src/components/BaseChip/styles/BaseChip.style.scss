@@ -49,14 +49,6 @@
 		transform: translate(-50%, 50%);
 	}
 
-	&__badge--bump-0.base-badge {
-		animation: base-chip-bump-0 var(--rise-duration) var(--rise-ease-spring);
-	}
-
-	&__badge--bump-1.base-badge {
-		animation: base-chip-bump-1 var(--rise-duration) var(--rise-ease-spring);
-	}
-
 	&--soft &__badge.base-badge {
 		@include custom-bg(background-color, var(--rise-primary-soft));
 		@include custom-text(color, var(--rise-primary-text));
@@ -97,16 +89,4 @@
 .base-chip__badge-leave-to {
 	opacity: 0;
 	scale: calc(1 - (1 - var(--rise-motion-scale-from)) * 10);
-}
-
-@keyframes base-chip-bump-0 {
-	from {
-		scale: calc(1 - (1 - var(--rise-motion-scale-from)) * 4);
-	}
-}
-
-@keyframes base-chip-bump-1 {
-	from {
-		scale: calc(1 - (1 - var(--rise-motion-scale-from)) * 4);
-	}
 }

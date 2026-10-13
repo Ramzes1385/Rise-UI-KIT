@@ -59,6 +59,19 @@ describe('BaseColorModeButton unit', () => {
 		expect(screen.getByRole('button', { name: 'Dark mode' })).toBeDisabled()
 	})
 
+	it('отключённая кнопка показывает подсказку через обёртку, включённая — без обёртки', async () => {
+		const { container, rerender } = render(BaseColorModeButton, { props: { colorMode, isDisabled: true } })
+		const button = screen.getByRole('button', { name: 'Тёмная тема' })
+		const wrapper = button.closest('.base-tooltip') as HTMLElement
+
+		expect(wrapper).not.toBeNull()
+		await fireEvent.mouseEnter(wrapper)
+		expect(await screen.findByRole('tooltip')).toHaveTextContent('Тёмная тема')
+
+		await rerender({ isDisabled: false })
+		expect(container.querySelector('.base-tooltip')).toBeNull()
+	})
+
 	it('вариант ghost по умолчанию, variant, масштаб, цвет и customClass передаются кнопке', async () => {
 		const { container, rerender } = render(BaseColorModeButton, { props: { colorMode } })
 		const button = container.querySelector('.base-color-mode-button') as HTMLElement

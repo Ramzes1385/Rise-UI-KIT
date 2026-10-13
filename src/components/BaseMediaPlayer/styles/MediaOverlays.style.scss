@@ -584,7 +584,7 @@
 		stroke-linecap: round;
 
 		@include motion-safe {
-			animation: base-media-player-countdown var(--media-next-duration) linear forwards;
+			animation: base-media-player-countdown var(--media-next-duration, 5s) linear forwards; // stylelint-disable-line declaration-property-value-disallowed-list, comment-pattern -- запасная длительность отсчёта (5 с, умолчание nextCountdown) на случай, если переменной нет
 		}
 	}
 

@@ -160,11 +160,7 @@ describe('useTourCoordination', () => {
 
 		it('до 8 шагов — точки, больше — полоса прогресса', () => {
 			expect(setup({}, 8).tour.useDots.value).toBe(true)
-
-			const { tour, internalIndex } = setup({}, 9)
-			expect(tour.useDots.value).toBe(false)
-			internalIndex.value = 4
-			expect(tour.progressPercent.value).toBe(50)
+			expect(setup({}, 9).tour.useDots.value).toBe(false)
 		})
 	})
 

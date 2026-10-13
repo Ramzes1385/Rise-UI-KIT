@@ -11,7 +11,7 @@ function useTourCoordination(options: UseTourCoordinationOptions) {
 	const { spotlightStyle, cardStyle, cardPlacement } = createTourStyles(options, focusFromViewport)
 	const navigation = createTourNavigation(options, labels.resolvedCloseOnOverlayClick)
 	const { goNext, goPrev, handleSkip, handleFinish } = navigation
-	const { slotContext, hasHeader, useDots, progressPercent } = createTourStepView(options, {
+	const { slotContext, hasHeader, useDots } = createTourStepView(options, {
 		next: goNext,
 		prev: goPrev,
 		skip: handleSkip,
@@ -27,7 +27,6 @@ function useTourCoordination(options: UseTourCoordinationOptions) {
 		slotContext,
 		hasHeader,
 		useDots,
-		progressPercent,
 		resolvedNextLabel: labels.resolvedNextLabel,
 		resolvedPrevLabel: labels.resolvedPrevLabel,
 		resolvedFinishLabel: labels.resolvedFinishLabel,

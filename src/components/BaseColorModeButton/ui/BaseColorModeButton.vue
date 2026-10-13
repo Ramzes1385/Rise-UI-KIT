@@ -1,5 +1,5 @@
 <template>
-	<BaseTooltip :text="resolvedLabel" is-wrapperless>
+	<BaseTooltip :text="resolvedLabel" :is-wrapperless="!isDisabled">
 		<BaseButton
 			:class="ui('root')"
 			:variant="variant"

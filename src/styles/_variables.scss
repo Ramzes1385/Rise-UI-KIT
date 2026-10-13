@@ -29,3 +29,7 @@ $rainbow-colors-loop: (
 	var(--rise-chart-5),
 	var(--rise-chart-8)
 );
+
+// Геометрия BaseSwitch: ширина дорожки и зазор до подписи (запасное значение `--rise-switch-row-gap`). Описание и ошибка под переключателем (BaseSwitch, BaseCookieConsent) сдвигаются на их сумму
+$switch-track-width: 36px;
+$switch-row-gap: 8px;

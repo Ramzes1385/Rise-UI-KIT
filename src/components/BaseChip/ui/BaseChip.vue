@@ -9,13 +9,7 @@
 				:variant="variant"
 				:color="color"
 				:size-scale="sizeScale"
-				:class="[
-					ui('badge'),
-					`base-chip__badge--${placement}`,
-					bumpClass,
-					{ 'base-chip__badge--clickable': isClickable },
-					classes.badge,
-				]"
+				:class="[ui('badge'), `base-chip__badge--${placement}`, { 'base-chip__badge--clickable': isClickable }, classes.badge]"
 				:aria-label="badgeLabel"
 				v-on="badgeListeners" />
 		</Transition>
@@ -45,17 +39,6 @@ const props = withDefaults(
 const emit = defineEmits<BaseChipEmits>()
 defineSlots<BaseChipSlots>()
 
-const {
-	ui,
-	sizeScaleStyle,
-	variantClass,
-	variantStyle,
-	classes,
-	isVisible,
-	displayContent,
-	bumpClass,
-	isClickable,
-	badgeLabel,
-	badgeListeners,
-} = useBaseChip(props, emit)
+const { ui, sizeScaleStyle, variantClass, variantStyle, classes, isVisible, displayContent, isClickable, badgeLabel, badgeListeners } =
+	useBaseChip(props, emit)
 </script>
