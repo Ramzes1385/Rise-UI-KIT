@@ -16,6 +16,7 @@ export function createLibBuildConfig(): BuildOptions {
 		lib: {
 			entry: {
 				index: resolve(process.cwd(), 'src/index.ts'),
+				plugin: resolve(process.cwd(), 'src/plugin/index.ts'),
 				components: resolve(process.cwd(), 'src/components/index.ts'),
 				composables: resolve(process.cwd(), 'src/composables/index.ts'),
 				utils: resolve(process.cwd(), 'src/utils/index.ts'),
