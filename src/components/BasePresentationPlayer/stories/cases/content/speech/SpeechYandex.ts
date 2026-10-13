@@ -1,9 +1,9 @@
-import { spokenSlides } from '../../shared'
+import { spokenSlides } from '../../../shared'
 import type { StoryObj } from '@storybook/vue3-vite'
-import type meta from '../../BasePresentationPlayer.stories'
 import { storySource, useStorySetup } from '@/stories/helpers'
-import BasePresentationPlayer from '../../../ui/BasePresentationPlayer.vue'
-import { SPEECHKIT_VOICES, speechYandexSetup, STORYBOOK_TTS_URL } from '../../demo/speechProviderStub'
+import type meta from '../../../BasePresentationPlayer.stories'
+import BasePresentationPlayer from '../../../../ui/BasePresentationPlayer.vue'
+import { SPEECHKIT_VOICES, speechYandexSetup, STORYBOOK_TTS_URL } from '../../../demo/speechProviderStub'
 
 const models = { current: 'slide' }
 

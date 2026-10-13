@@ -7,6 +7,7 @@ import slideCaptions2 from './media/slide-captions-2.vtt'
 import slideCaptions3 from './media/slide-captions-3.vtt'
 import presentationVoice from './media/presentation-voice.webm'
 import type { PresentationSlide } from '../types/BasePresentationPlayer.types'
+import demoVideo from '@components/BaseMediaPlayer/stories/media/video/demo-144.webm'
 
 export const PRESENTATION_VOICE = presentationVoice
 
@@ -56,4 +57,16 @@ export function notedSlides(extra: Partial<PresentationSlide> = {}): Presentatio
 
 export function spokenSlides(duration?: number): PresentationSlide[] {
 	return SLIDES.map(({ hue, ...slide }, index) => ({ ...slide, image: slideImage(hue), speech: SLIDE_SPEECH[index], duration }))
+}
+
+export function timedSlides(duration: number): PresentationSlide[] {
+	return SLIDES.map(({ hue, ...slide }) => ({ ...slide, image: slideImage(hue), duration }))
+}
+
+export function videoSlides(): PresentationSlide[] {
+	return [
+		{ id: 'silent', title: 'Видео без озвучки', video: demoVideo, alt: 'Демонстрационный ролик без озвучки' },
+		{ id: 'voiced', title: 'Видео с озвучкой', video: demoVideo, audio: SLIDE_VOICES[0], alt: 'Демонстрационный ролик с озвучкой' },
+		{ id: 'picture', title: 'Картинка', image: slideImage(24), alt: 'Горы на рассвете' },
+	]
 }

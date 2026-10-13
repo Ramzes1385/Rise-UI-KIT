@@ -65,7 +65,6 @@
 		position: relative;
 		display: inline-flex;
 		align-items: center;
-		gap: sz(ct(tag, gap, 4px));
 		min-width: 0;
 		margin: 0;
 		padding: sz(ct(tag, padding-y, 2px)) sz(ct(tag, padding-x, 10px));
@@ -92,9 +91,31 @@
 		padding-inline-end: sz(4px);
 	}
 
+	&__lead {
+		display: grid;
+		grid-template-columns: 0fr;
+		transition: grid-template-columns var(--rise-duration) var(--rise-ease-emphasized);
+
+		&--open {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	&__lead-clip {
+		display: flex;
+		min-width: 0;
+		overflow: hidden;
+	}
+
 	&__icon {
 		display: inline-flex;
 		flex-shrink: 0;
+		box-sizing: content-box;
+		padding-inline-end: sz(ct(tag, gap, 4px));
+	}
+
+	&__lead:not(&__lead--open) &__icon-leave-active {
+		transition-duration: var(--rise-duration);
 	}
 
 	&__text {
@@ -135,7 +156,7 @@
 	@include enter-pop(base-tag__icon, calc(var(--rise-motion-scale-from) * 0.5));
 	@include enter-pop(base-tag__remove, calc(var(--rise-motion-scale-from) * 0.5));
 
-	&__main:has(> .base-tag__icon-enter-active) > .base-tag__icon-leave-active {
+	&__lead-clip:has(> .base-tag__icon-enter-active) > .base-tag__icon-leave-active {
 		position: absolute;
 	}
 }

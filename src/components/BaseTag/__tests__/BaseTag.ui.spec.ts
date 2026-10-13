@@ -92,3 +92,33 @@ describe('BaseTag: движение', () => {
 		await waitFor(() => expect(remove).not.toBeInTheDocument())
 	})
 })
+
+describe('BaseTag: место под значок', () => {
+	const lead = (container: Element) => container.querySelector('.base-tag__lead')!
+
+	it('колонка значка закрыта без значка, открыта с icon, слотом icon и галочкой', async () => {
+		const plain = render(BaseTag, { props: { label: 'Vue' } })
+		expect(lead(plain.container)).not.toHaveClass('base-tag__lead--open')
+
+		const withIcon = render(BaseTag, { props: { label: 'Vue', icon: 'star' } })
+		expect(lead(withIcon.container)).toHaveClass('base-tag__lead--open')
+
+		const slotted = render(BaseTag, { props: { label: 'Vue' }, slots: { icon: '<i>*</i>' } })
+		expect(lead(slotted.container)).toHaveClass('base-tag__lead--open')
+
+		const { container, rerender } = render(BaseTag, { props: { label: 'Vue', isSelectable: true }, global: NO_STUBS })
+		expect(lead(container)).not.toHaveClass('base-tag__lead--open')
+		await rerender({ label: 'Vue', isSelectable: true, isSelected: true })
+		expect(lead(container)).toHaveClass('base-tag__lead--open')
+	})
+
+	it('значок лежит внутри колонки и при открытии, и при закрытии, пока уходит', async () => {
+		const { container, rerender } = render(BaseTag, { props: { label: 'Vue', isSelectable: true }, global: NO_STUBS })
+
+		await rerender({ label: 'Vue', isSelectable: true, isSelected: true })
+		expect(container.querySelector('.base-tag__lead-clip > .base-tag__icon')).toBeInTheDocument()
+		await rerender({ label: 'Vue', isSelectable: true, isSelected: false })
+		expect(lead(container)).not.toHaveClass('base-tag__lead--open')
+		expect(container.querySelector('.base-tag__lead-clip > .base-tag__icon-leave-active')).toBeInTheDocument()
+	})
+})

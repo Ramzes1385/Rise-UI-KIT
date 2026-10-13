@@ -13,6 +13,7 @@ export function useBaseTag(props: TagProps, emit: BaseTagEmits) {
 	const clickable = useClickable({ event: 'click', isDisabled: () => props.isDisabled })
 	const isMainFocusable = computed(() => props.isSelectable || clickable.isClickable.value)
 
+	const isSelected = computed(() => props.isSelectable && props.isSelected)
 	const mainAttributes = computed(() => ({
 		...(props.isSelectable
 			? { type: 'button', disabled: props.isDisabled, 'aria-pressed': String(props.isSelected) }
@@ -39,7 +40,8 @@ export function useBaseTag(props: TagProps, emit: BaseTagEmits) {
 		isMainFocusable,
 		mainTag: computed(() => (props.isSelectable ? 'button' : 'span')),
 		mainAttributes,
-		isSelected: computed(() => props.isSelectable && props.isSelected),
+		isSelected,
+		hasLead: computed(() => isSelected.value || Boolean(props.icon)),
 		removeTabindex: computed(() => (isMainFocusable.value ? '-1' : undefined)),
 		removeButtonLabel: computed(
 			() => props.removeLabel ?? (props.label ? formatMessage(UI_TAG.REMOVE, { label: props.label }) : UI_TAG.REMOVE_UNNAMED),

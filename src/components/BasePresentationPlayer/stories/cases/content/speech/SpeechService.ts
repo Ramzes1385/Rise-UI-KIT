@@ -1,16 +1,16 @@
 import { expect, waitFor } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
-import type meta from '../../BasePresentationPlayer.stories'
-import { SLIDE_SPEECH, SLIDE_VOICES, spokenSlides } from '../../shared'
-import { installSpeechStub, speechStubLog } from '../../demo/speechStub'
-import BasePresentationPlayer from '../../../ui/BasePresentationPlayer.vue'
+import type meta from '../../../BasePresentationPlayer.stories'
+import { SLIDE_SPEECH, SLIDE_VOICES, spokenSlides } from '../../../shared'
+import { installSpeechStub, speechStubLog } from '../../../demo/speechStub'
+import BasePresentationPlayer from '../../../../ui/BasePresentationPlayer.vue'
 import { literal, storySource, tabTo, useStorySetup } from '@/stories/helpers'
 import {
 	SPEECH_SERVICE_DELAY_MS,
 	SPEECH_SERVICE_FAILING_SLIDE,
 	speechProviderStubLog,
 	speechServiceSetup,
-} from '../../demo/speechProviderStub'
+} from '../../../demo/speechProviderStub'
 
 const models = { current: 'slide' }
 

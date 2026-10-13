@@ -15,11 +15,15 @@
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		@keydown="handleRootKeydown">
 		<component :is="mainTag" :class="[ui('main'), classes.main]" v-bind="mainAttributes" @click="handleClick" @keydown="handleKeydown">
-			<Transition name="base-tag__icon">
-				<BaseIcon v-if="isSelected" name="check" :class="ui('icon')" :custom-class="classes.icon" :size-scale="iconScale" />
-				<span v-else-if="$slots.icon" :class="[ui('icon'), classes.icon]"><slot name="icon" /></span>
-				<BaseIcon v-else-if="icon" :name="icon" :class="ui('icon')" :custom-class="classes.icon" :size-scale="iconScale" />
-			</Transition>
+			<span class="base-tag__lead" :class="{ 'base-tag__lead--open': hasLead || $slots.icon }">
+				<span class="base-tag__lead-clip">
+					<Transition name="base-tag__icon">
+						<BaseIcon v-if="isSelected" name="check" :class="ui('icon')" :custom-class="classes.icon" :size-scale="iconScale" />
+						<span v-else-if="$slots.icon" :class="[ui('icon'), classes.icon]"><slot name="icon" /></span>
+						<BaseIcon v-else-if="icon" :name="icon" :class="ui('icon')" :custom-class="classes.icon" :size-scale="iconScale" />
+					</Transition>
+				</span>
+			</span>
 			<span :class="[ui('text'), classes.text]">
 				<slot>{{ label }}</slot>
 			</span>
@@ -72,6 +76,7 @@ const {
 	classes,
 	iconScale,
 	isMainFocusable,
+	hasLead,
 	mainTag,
 	mainAttributes,
 	isSelected,

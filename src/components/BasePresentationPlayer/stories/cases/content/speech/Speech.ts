@@ -1,9 +1,9 @@
 import { tabTo } from '@/stories/helpers'
 import { expect, waitFor } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { SLIDE_SPEECH, spokenSlides } from '../../shared'
-import type meta from '../../BasePresentationPlayer.stories'
-import { installSpeechStub, SPEECH_STUB_MS, speechStubLog } from '../../demo/speechStub'
+import { SLIDE_SPEECH, spokenSlides } from '../../../shared'
+import type meta from '../../../BasePresentationPlayer.stories'
+import { installSpeechStub, SPEECH_STUB_MS, speechStubLog } from '../../../demo/speechStub'
 
 export const Speech: StoryObj<typeof meta> = {
 	parameters: {
