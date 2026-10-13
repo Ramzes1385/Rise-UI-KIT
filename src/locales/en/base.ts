@@ -3,6 +3,7 @@ export const enBase = {
 	text: {
 		/** Ссылка промо-блока BaseMegaMenu */
 		MEGA_MENU_PROMO_LINK: 'Learn more',
+		MEGA_MENU_BACK: 'Back',
 		EMPTY: 'No data',
 		NO_RESULTS: 'Nothing found',
 		SEARCH_PLACEHOLDER: 'Search...',
@@ -48,6 +49,8 @@ export const enBase = {
 		BOTTOM_NAV: 'Bottom navigation',
 		/** Ориентир навигации BaseMegaMenu */
 		MEGA_MENU: 'Main menu',
+		MEGA_MENU_BACK_TO: 'Back to "{title}"',
+		MEGA_MENU_LEVEL: 'Level "{title}": {count}',
 		/** Ориентир навигации BaseSideBar без title */
 		SIDEBAR_NAVIGATION: 'Main navigation',
 		BREADCRUMBS: 'Navigation',

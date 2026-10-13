@@ -4,6 +4,7 @@ export type {
 	BaseMegaMenuPart,
 	BaseMegaMenuProps,
 	BaseMegaMenuSlots,
+	MegaMenuDrilldown,
 	MegaMenuGroup,
 	MegaMenuItem,
 	MegaMenuLink,
@@ -13,5 +14,5 @@ export type {
 	MegaMenuTrigger,
 	MegaMenuVariant,
 } from './types/BaseMegaMenu.types'
-export { MEGA_MENU_PARTS, MEGA_MENU_VARIANTS } from './types/BaseMegaMenu.types'
+export { MEGA_MENU_DRILLDOWNS, MEGA_MENU_PARTS, MEGA_MENU_VARIANTS } from './types/BaseMegaMenu.types'
 export { default as BaseMegaMenu } from './ui/BaseMegaMenu.vue'

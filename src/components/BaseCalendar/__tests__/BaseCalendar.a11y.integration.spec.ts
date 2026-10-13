@@ -26,6 +26,16 @@ describe('BaseCalendar: доступность сетки дней', () => {
 		expect(screen.getByRole('button', { current: 'date' })).toHaveAccessibleName(dayName(new Date(2025, 4, 15)))
 	})
 
+	it('проп today задаёт «сегодня» независимо от часов: aria-current и кнопка «Сегодня»', async () => {
+		const { emitted } = render(BaseCalendar, { props: { today: new Date(2020, 1, 10, 9, 0) } })
+
+		expect(screen.getByRole('button', { current: 'date' })).toHaveAccessibleName(dayName(new Date(2020, 1, 10)))
+
+		await fireEvent.click(screen.getByRole('button', { name: 'Сегодня' }))
+
+		expect(emitted()['update:modelValue']).toEqual([[new Date(2020, 1, 10, 9, 0)]])
+	})
+
 	it('в имя дня с событием добавляется подпись события', () => {
 		render(BaseCalendar, {
 			props: {

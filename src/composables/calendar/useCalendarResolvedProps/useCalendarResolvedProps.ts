@@ -66,6 +66,7 @@ function resolveAppearance(props: BaseCalendarProps) {
 		isDisabled: props.isDisabled ?? false,
 		initialMonth: props.initialMonth,
 		initialYear: props.initialYear,
+		today: props.today,
 		customClass: props.customClass,
 	}
 }

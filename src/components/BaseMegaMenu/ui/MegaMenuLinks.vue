@@ -15,8 +15,8 @@
 				linkClass,
 			]"
 			:disabled="entry.link.isDisabled"
-			aria-haspopup="true"
-			:aria-expanded="isExpanded(entry)"
+			:aria-haspopup="isDrilldown ? undefined : 'true'"
+			:aria-expanded="isDrilldown ? undefined : isExpanded(entry)"
 			:aria-controls="isExpanded(entry) ? entry.subId : undefined"
 			@click="toggle(entry)"
 			@keydown="handleKeydown(entry, $event)">
@@ -84,6 +84,7 @@ const {
 	leafListeners,
 	isExpanded,
 	isBelow,
+	isDrilldown,
 	isMotionReduced,
 	toggle,
 	select,

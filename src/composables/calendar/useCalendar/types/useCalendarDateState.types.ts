@@ -16,4 +16,5 @@ export interface UseCalendarDateStateOptions {
 	disableTo: () => Date | null
 	highlights: () => CalendarHighlight[]
 	weekends: () => CalendarWeekends | null
+	today?: () => Date | undefined
 }

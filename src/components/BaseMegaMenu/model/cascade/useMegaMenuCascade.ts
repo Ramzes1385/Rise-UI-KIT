@@ -48,6 +48,7 @@ export function useMegaMenuCascade(props: MegaMenuPanelProps, select: MegaMenuCa
 	const context: MegaMenuCascadeContext = {
 		isExpanded,
 		isBelow: cascade.isBelow,
+		isDrilldown: false,
 		select,
 		handleEnter,
 		toggle: (entry: MegaMenuLinkEntry): void => (isExpanded(entry) ? closeFrom(entry.depth) : open(entry)),

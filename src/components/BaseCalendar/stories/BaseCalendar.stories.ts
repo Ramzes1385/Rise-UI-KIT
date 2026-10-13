@@ -35,3 +35,4 @@ export const CustomDay = cases.CustomDay
 export const SwitchView = cases.SwitchView
 export const Keyboard = cases.Keyboard
 export const Animations = cases.Animations
+export const CalendarToday = cases.CalendarToday

@@ -275,6 +275,50 @@
 		@include transition(transform);
 	}
 
+	&__drill {
+		position: relative;
+		min-width: 0;
+	}
+
+	&__drill-level {
+		display: flex;
+		flex-direction: column;
+		gap: sz(6px);
+		min-width: 0;
+	}
+
+	&__drill-status {
+		@include visually-hidden;
+	}
+
+	&__back {
+		display: flex;
+		align-items: center;
+		gap: sz(6px);
+		width: 100%;
+		margin: 0;
+		padding: sz(6px 8px);
+		border: none;
+		border-radius: sz(var(--rise-radius-md));
+		background-color: transparent;
+		color: var(--rise-text-muted);
+		font-family: inherit;
+		@include text-size(sm);
+		text-align: left;
+		cursor: pointer;
+		@include transition-colors;
+		@include focus-ring;
+
+		@include hover {
+			background-color: ct(mega-menu, link-bg-hover, var(--rise-bg-muted));
+			color: var(--rise-text-highlighted);
+		}
+	}
+
+	&__back-icon {
+		flex-shrink: 0;
+	}
+
 	&__sub {
 		position: absolute;
 		top: sz(-8px);
@@ -510,4 +554,15 @@
 .base-mega-menu--mobile .base-mega-menu-sub-leave-to,
 .base-mega-menu__sub--below.base-mega-menu-sub-leave-to {
 	transform: translateY(var(--rise-motion-distance));
+}
+
+@include enter-slide('base-mega-menu-drill', right);
+
+@include enter-slide('base-mega-menu-drill-back', left);
+
+.base-mega-menu-drill-leave-active,
+.base-mega-menu-drill-back-leave-active {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
 }

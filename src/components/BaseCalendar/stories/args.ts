@@ -9,6 +9,7 @@ export const args = {
 	sizeScale: 100,
 	initialMonth: STORY_TODAY.getMonth(),
 	initialYear: STORY_TODAY.getFullYear(),
+	today: STORY_TODAY,
 	showDatePopover: false,
 	isDisabled: false,
 	'onUpdate:modelValue': fn(),

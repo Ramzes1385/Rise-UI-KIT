@@ -1,4 +1,5 @@
 /** Composable: управление состоянием календаря — навигация, переключение вида, выбор дат */
+import { resolveToday } from './calendarUtils'
 import { useCalendarGrid } from './useCalendarGrid'
 import { useCalendarState } from './useCalendarState'
 import { useCalendarDateState } from './useCalendarDateState'
@@ -55,6 +56,7 @@ function useCalendar(options: UseCalendarOptions) {
 		...dateState,
 		...navigation,
 		...createSelectionActions(state),
+		getToday: (): Date => resolveToday(options),
 		getWeekNumber,
 		isSameDay,
 	}

@@ -12,6 +12,7 @@ export const argTypes = {
 	weekends: { control: 'object', table: propGroup(ARG_GROUP.content) },
 	initialMonth: { control: { type: 'number', min: 0, max: 11 }, table: propGroup(ARG_GROUP.content) },
 	initialYear: { control: 'number', table: propGroup(ARG_GROUP.content) },
+	today: { control: false, table: propGroup(ARG_GROUP.content) },
 	displayConfig: { control: 'object', table: propGroup(ARG_GROUP.appearance) },
 	constraints: { control: 'object', table: propGroup(ARG_GROUP.state) },
 	isDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },

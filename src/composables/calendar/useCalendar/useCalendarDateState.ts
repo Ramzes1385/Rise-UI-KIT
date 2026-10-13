@@ -1,13 +1,13 @@
-/** Composable: управление выбором дат календаря — диапазон, отключённые даты, подсветки */
-import { createDayMarkers } from './calendarUtils'
 import { isSameDay, toDateOnly } from '@utils/data/dateUtils'
+/** Composable: управление выбором дат календаря — диапазон, отключённые даты, подсветки */
+import { createDayMarkers, resolveToday } from './calendarUtils'
 import type { UseCalendarDateStateOptions } from './types/useCalendarDateState.types'
 
 function useCalendarDateState(options: UseCalendarDateStateOptions) {
 	const { internalValue, internalValueEnd, internalSelectedDates, currentMonth, currentYear, selectionMode } = options
 
 	function isToday(date: Date): boolean {
-		return isSameDay(date, new Date())
+		return isSameDay(date, resolveToday(options))
 	}
 
 	function isSelected(date: Date): boolean {

@@ -1,4 +1,4 @@
-import type { MegaMenuItem, MegaMenuLink } from '../types/BaseMegaMenu.types'
+import type { MegaMenuDrilldown, MegaMenuItem, MegaMenuLink } from '../types/BaseMegaMenu.types'
 
 export function getItemKey(item: MegaMenuItem | MegaMenuLink): string {
 	return item.key ?? item.label
@@ -10,6 +10,18 @@ export function hasPanel(item: MegaMenuItem): boolean {
 
 export function hasChildren(link: MegaMenuLink): boolean {
 	return Boolean(link.children?.length)
+}
+
+function getLinksDepth(links: MegaMenuLink[]): number {
+	return links.length ? 1 + Math.max(...links.map(link => getLinksDepth(link.children ?? []))) : 0
+}
+
+export function getCatalogDepth(item: MegaMenuItem): number {
+	return Math.max(0, ...(item.groups ?? []).map(group => getLinksDepth(group.items)))
+}
+
+export function isDrilldownItem(item: MegaMenuItem, mode: MegaMenuDrilldown, from: number): boolean {
+	return mode === 'always' || (mode === 'auto' && getCatalogDepth(item) >= from)
 }
 
 export function getFocusable(container: Element | null | undefined, selector: string): HTMLElement[] {

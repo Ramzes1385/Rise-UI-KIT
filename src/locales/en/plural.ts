@@ -6,6 +6,7 @@ export const enPlural = {
 	COMMENTS: { one: '{n} comment', other: '{n} comments' },
 	ATTACHMENTS: { one: '{n} attachment', other: '{n} attachments' },
 	JSON_KEYS: { one: '{n} key', other: '{n} keys' },
+	MEGA_MENU_ITEMS: { one: '{n} item', other: '{n} items' },
 	JSON_ITEMS: { one: '{n} item', other: '{n} items' },
 	SIGNATURE_STROKES: { one: '{n} stroke', other: '{n} strokes' },
 	NOTIFICATIONS_UNREAD: { one: '{n} new', other: '{n} new' },

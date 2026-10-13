@@ -80,7 +80,7 @@ function useCalendarInteraction(options: UseCalendarInteractionOptions) {
 
 	function handleTodayClick(): void {
 		goToToday()
-		const now = new Date()
+		const now = new Date(calendar.getToday())
 		setSingleValue(now)
 		emit('update:modelValue', now)
 		emit('date-click', now)

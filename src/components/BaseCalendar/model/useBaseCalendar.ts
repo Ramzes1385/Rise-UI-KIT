@@ -32,6 +32,7 @@ function useCalendarState(resolvedProps: ReturnType<typeof useCalendarResolvedPr
 		initialMonth: () => resolvedProps.value.initialMonth,
 		initialYear: () => resolvedProps.value.initialYear,
 		showYear: () => resolvedProps.value.showYear,
+		today: () => resolvedProps.value.today,
 	})
 }
 

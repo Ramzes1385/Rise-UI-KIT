@@ -299,3 +299,47 @@ describe('BaseColorPicker — unit', () => {
 		})
 	})
 })
+
+describe('BaseColorPicker — черновик поля HEX', () => {
+	async function openHex(props: Record<string, unknown> = {}) {
+		const utils = render(BaseColorPicker, { props: { modelValue: '#ff0000', ...props } })
+		await openPanel(utils.container)
+		const hex = screen.getByRole<HTMLInputElement>('textbox', { name: UI_COLOR_PICKER.HEX_VALUE })
+		return { ...utils, hex }
+	}
+
+	it('набранное не теряется при перерисовке панели', async () => {
+		const { hex, rerender } = await openHex()
+
+		await fireEvent.update(hex, '#12')
+		await rerender({ modelValue: '#ff0000', sizeScale: 110 })
+		await nextTick()
+
+		expect(hex).toHaveValue('#12')
+	})
+
+	it('при смене цвета снаружи черновик сбрасывается и поле показывает новый цвет', async () => {
+		const { hex, rerender } = await openHex()
+
+		await fireEvent.update(hex, '#12')
+		await rerender({ modelValue: '#00ff00' })
+		await nextTick()
+
+		expect(hex).toHaveValue('#00ff00')
+	})
+
+	it('применённый HEX очищает черновик, неверный — возвращает прежний цвет', async () => {
+		const { hex, emitted } = await openHex()
+
+		await fireEvent.update(hex, '#123456')
+		await fireEvent.change(hex)
+		await nextTick()
+		expect(emitted()['update:modelValue']).toEqual([['#123456']])
+		expect(hex).toHaveValue('#123456')
+
+		await fireEvent.update(hex, 'не цвет')
+		await fireEvent.change(hex)
+		await nextTick()
+		expect(hex).toHaveValue('#123456')
+	})
+})

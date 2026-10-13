@@ -105,8 +105,9 @@
 							:custom-class="{ field: ui('hex') }"
 							:size-scale="sizeScale"
 							:aria-label="UI_COLOR_PICKER.HEX_VALUE"
-							:model-value="hexText"
+							:model-value="hexInputValue"
 							:input-attrs="{ spellcheck: 'false', autocomplete: 'off' }"
+							@update:model-value="handleHexInput"
 							@change="handleHexChange" />
 						<span :class="ui('channel-caption')" aria-hidden="true">{{ UI_COLOR_PICKER.FORMAT_HEX }}</span>
 					</div>
@@ -222,7 +223,8 @@ const {
 	handleSliderPointerDown,
 	inputFormat,
 	channels,
-	hexText,
+	hexInputValue,
+	handleHexInput,
 	alphaPercent,
 	swatchColor,
 	formatLabel,

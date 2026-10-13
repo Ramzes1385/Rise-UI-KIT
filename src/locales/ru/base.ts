@@ -3,6 +3,8 @@ export const ruBase = {
 	text: {
 		/** Ссылка промо-блока BaseMegaMenu */
 		MEGA_MENU_PROMO_LINK: 'Подробнее',
+		/** Кнопка возврата на уровень выше в режиме drill-down BaseMegaMenu */
+		MEGA_MENU_BACK: 'Назад',
 		EMPTY: 'Нет данных',
 		NO_RESULTS: 'Ничего не найдено',
 		SEARCH_PLACEHOLDER: 'Поиск...',
@@ -52,6 +54,10 @@ export const ruBase = {
 		BOTTOM_NAV: 'Нижняя навигация',
 		/** Ориентир навигации BaseMegaMenu */
 		MEGA_MENU: 'Главное меню',
+		/** Имя кнопки «Назад» drill-down BaseMegaMenu: к какому уровню она ведёт */
+		MEGA_MENU_BACK_TO: 'Назад к «{title}»',
+		/** Объявление нового уровня drill-down BaseMegaMenu: название и число пунктов */
+		MEGA_MENU_LEVEL: 'Уровень «{title}»: {count}',
 		/** Ориентир навигации BaseSideBar без title */
 		SIDEBAR_NAVIGATION: 'Основная навигация',
 		BREADCRUMBS: 'Навигация',

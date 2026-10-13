@@ -21,6 +21,11 @@ function shiftMonth(position: CalendarMonthPosition, direction: CalendarStepDire
 	return { year: position.year + direction, month: direction === 1 ? 0 : 11 }
 }
 
+/** «Сегодня» календаря: заданная дата или текущая по часам */
+function resolveToday(options: { today?: () => Date | undefined }): Date {
+	return options.today?.() ?? new Date()
+}
+
 function getMonthNames(locale: string): string[] {
 	const formatter = new Intl.DateTimeFormat(locale, { month: 'long' })
 	return Array.from({ length: 12 }, (_, index) => formatter.format(new Date(2000, index, 1)))
@@ -156,5 +161,6 @@ export {
 	hasNextMonth,
 	hasPrevMonth,
 	orderWeekdays,
+	resolveToday,
 	shiftCalendarView,
 }

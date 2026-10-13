@@ -1,4 +1,4 @@
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { UI_COLOR_PICKER } from '@/locales/messages'
 import { toHTMLInputElement } from '@utils/dom/domUtils'
 import type { ColorFormat } from '@utils/data/colorUtils'
@@ -48,6 +48,26 @@ const FORMAT_LABELS: Record<ColorFormat, () => string> = {
 	hsl: () => UI_COLOR_PICKER.FORMAT_HSL,
 }
 
+function useHexField(props: ColorPickerProps, picker: UseColorPickerReturn) {
+	const hexText = computed((): string => formatColor({ ...picker.rgb.value, a: props.hasAlpha ? picker.alpha.value : 1 }, 'hex'))
+	const hexDraft = ref<string | null>(null)
+	watch(hexText, () => {
+		hexDraft.value = null
+	})
+
+	return {
+		hexInputValue: computed((): string => hexDraft.value ?? hexText.value),
+		handleHexInput(value: string | number): void {
+			hexDraft.value = String(value)
+		},
+		handleHexChange(event: Event): void {
+			const target = toHTMLInputElement(event.target)
+			hexDraft.value = null
+			if (target) picker.setHex(target.value)
+		},
+	}
+}
+
 export function useColorPickerFields(props: ColorPickerProps, picker: UseColorPickerReturn) {
 	const inputFormat = ref<ColorFormat>(props.formats.includes(props.format) ? props.format : (props.formats[0] ?? 'hex'))
 	const channels = computed((): ColorChannelField[] => {
@@ -56,11 +76,11 @@ export function useColorPickerFields(props: ColorPickerProps, picker: UseColorPi
 	})
 
 	return {
+		...useHexField(props, picker),
 		inputFormat,
 		channels,
 		alphaPercent: computed((): number => Math.round(picker.alpha.value * PERCENT)),
 		swatchColor: computed((): string => formatColor({ ...picker.rgb.value, a: picker.alpha.value }, 'rgb')),
-		hexText: computed((): string => formatColor({ ...picker.rgb.value, a: props.hasAlpha ? picker.alpha.value : 1 }, 'hex')),
 		formatLabel: (format: ColorFormat): string => FORMAT_LABELS[format](),
 		setInputFormat(format: ColorFormat): void {
 			inputFormat.value = format
@@ -76,10 +96,6 @@ export function useColorPickerFields(props: ColorPickerProps, picker: UseColorPi
 			const next = clamp(Math.round(value), 0, channel.max)
 			applyChannel(picker, channel.key, next)
 			target.value = String(next)
-		},
-		handleHexChange(event: Event): void {
-			const target = toHTMLInputElement(event.target)
-			if (target) picker.setHex(target.value)
 		},
 		handleHueInput(event: Event): void {
 			const target = toHTMLInputElement(event.target)

@@ -1,5 +1,6 @@
 /** Composable: состояние календаря — видимый месяц, время и выбранные значения, синхронизированные с опциями */
 import { ref, watch } from 'vue'
+import { resolveToday } from './calendarUtils'
 import type { CalendarState } from './types/useCalendarState.types'
 import type { CalendarView, UseCalendarOptions } from './types/useCalendar.types'
 
@@ -60,8 +61,8 @@ function watchRangeAndDates(options: UseCalendarOptions, state: CalendarState): 
 
 function useCalendarState(options: UseCalendarOptions): CalendarState {
 	const state: CalendarState = {
-		currentMonth: ref(options.initialMonth?.() ?? new Date().getMonth()),
-		currentYear: ref(options.initialYear?.() ?? new Date().getFullYear()),
+		currentMonth: ref(options.initialMonth?.() ?? resolveToday(options).getMonth()),
+		currentYear: ref(options.initialYear?.() ?? resolveToday(options).getFullYear()),
 		currentView: ref<CalendarView>('days'),
 		hours: ref(0),
 		minutes: ref(0),

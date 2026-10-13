@@ -30,5 +30,6 @@ export interface ResolvedCalendarProps {
 	showYear: boolean
 	initialMonth: BaseCalendarProps['initialMonth']
 	initialYear: BaseCalendarProps['initialYear']
+	today: BaseCalendarProps['today']
 	customClass: BaseCalendarProps['customClass']
 }

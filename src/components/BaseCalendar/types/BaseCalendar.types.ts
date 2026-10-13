@@ -168,6 +168,11 @@ export interface BaseCalendarProps extends BaseComponentProps<
 	/** Начальный год. Если не задан — текущий */
 	initialYear?: number
 	/**
+	 * Дата «сегодня»: на ней кольцо дня (`--rise-calendar-day-ring`), к ней ведёт кнопка «Сегодня», по ней выбирается начальный месяц.
+	 * Без пропа календарь берёт текущую дату по часам; проп нужен историям, снимкам и тестам, где «сегодня» должно быть одним и тем же.
+	 */
+	today?: Date
+	/**
 	 * Классы частей календаря (`root`, `header`, `title`, `grid`, `day`, `months`, `footer`…) — добавляются к классам кита.
 	 * Глобально — `createUiKitPlugin({ defaults: { BaseCalendar: { ui } } })`, классы плагина и экземпляра склеиваются.
 	 *

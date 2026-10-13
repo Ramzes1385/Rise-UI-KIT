@@ -17,6 +17,7 @@ export function useMegaMenuPanel(props: MegaMenuPanelProps, emit: MegaMenuPanelE
 		hasPromoLink: (promo: MegaMenuPromo): boolean => Boolean(promo.to || promo.href),
 		groupCount: (): number => Math.max(props.item.groups?.length ?? 0, 1),
 		groupLinksId: (index: number): string => `${baseId}-group-${index}-link`,
+		handleSelect,
 		handlePromoSelect(promo: MegaMenuPromo, event: MouseEvent): void {
 			emit('select', { label: promo.linkLabel || promo.title, to: promo.to, href: promo.href }, event)
 		},

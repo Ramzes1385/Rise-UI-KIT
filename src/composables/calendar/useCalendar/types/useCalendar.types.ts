@@ -51,4 +51,6 @@ export interface UseCalendarOptions {
 	initialMonth?: () => number | undefined
 	initialYear?: () => number | undefined
 	showYear?: () => boolean | undefined
+	/** Дата «сегодня»: кольцо дня, кнопка «Сегодня» и начальный месяц; без неё берётся текущая дата по часам */
+	today?: () => Date | undefined
 }

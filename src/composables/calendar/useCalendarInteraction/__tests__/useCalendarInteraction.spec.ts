@@ -13,6 +13,7 @@ interface SetupOptions {
 	showDatePopover?: boolean
 	disabledDates?: Date[]
 	highlights?: CalendarHighlight[]
+	today?: Date
 }
 
 function setup(config: SetupOptions = {}) {
@@ -42,6 +43,7 @@ function setup(config: SetupOptions = {}) {
 					locale: () => 'ru-RU',
 					initialMonth: () => 4,
 					initialYear: () => 2026,
+					today: () => config.today,
 				})
 				popover = useCalendarPopover(calendar)
 				interaction = useCalendarInteraction({
@@ -211,6 +213,15 @@ describe('useCalendarInteraction', () => {
 		} finally {
 			vi.useRealTimers()
 		}
+	})
+
+	it('кнопка «Сегодня» выбирает заданную дату today, а не часы', () => {
+		const { calendar, interaction, emit } = setup({ today: new Date(2025, 4, 15, 10, 30) })
+		interaction.handleTodayClick()
+		expect(calendar.currentMonth.value).toBe(4)
+		expect(calendar.currentYear.value).toBe(2025)
+		expect(emit).toHaveBeenCalledWith('update:modelValue', new Date(2025, 4, 15, 10, 30))
+		expect(emit).toHaveBeenCalledWith('date-click', new Date(2025, 4, 15, 10, 30))
 	})
 
 	it('сообщает о смене месяца, года и вида', async () => {

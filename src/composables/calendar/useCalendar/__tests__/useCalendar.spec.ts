@@ -1212,4 +1212,37 @@ describe('useCalendar', () => {
 			expect(cal.isDayDisabled(new Date(2025, 5, 10))).toBe(true)
 		})
 	})
+
+	describe('Дата «сегодня» (today)', () => {
+		const today = new Date(2025, 4, 15, 10, 30)
+
+		it('isToday сверяет с заданной датой, а не с часами', () => {
+			const cal = useCalendar(createOptions({ today: () => today }))
+
+			expect(cal.isToday(new Date(2025, 4, 15))).toBe(true)
+			expect(cal.isToday(new Date())).toBe(false)
+		})
+
+		it('начальный месяц и год берутся из today, goToToday возвращает к ней', () => {
+			const cal = useCalendar(createOptions({ today: () => today }))
+			expect(cal.currentMonth.value).toBe(4)
+			expect(cal.currentYear.value).toBe(2025)
+
+			cal.currentMonth.value = 0
+			cal.currentYear.value = 2020
+			cal.goToToday()
+
+			expect(cal.currentMonth.value).toBe(4)
+			expect(cal.currentYear.value).toBe(2025)
+		})
+
+		it('getToday возвращает today, без неё — текущую дату', () => {
+			expect(useCalendar(createOptions({ today: () => today })).getToday()).toBe(today)
+			expect(
+				useCalendar(createOptions({ today: () => undefined }))
+					.getToday()
+					.getFullYear(),
+			).toBe(new Date().getFullYear())
+		})
+	})
 })

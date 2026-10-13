@@ -109,6 +109,7 @@
 						:classes="classes"
 						:ui="ui"
 						:is-motion-reduced="isMotionReduced"
+						:is-drilldown="isDrilldownItem(openItem)"
 						:hover-delays="hoverDelays"
 						@select="select">
 						<template v-if="$slots.link" #link="slotProps">
@@ -149,6 +150,8 @@ const props = withDefaults(
 		openDelay: 150,
 		closeDelay: 300,
 		mobileBreakpoint: 'md',
+		drilldown: 'never',
+		drilldownFrom: 3,
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )
@@ -175,6 +178,7 @@ const {
 	toggleMobile,
 	getItemKey,
 	hasPanel,
+	isDrilldownItem,
 	hoverDelays,
 	isOpen,
 	triggerId,

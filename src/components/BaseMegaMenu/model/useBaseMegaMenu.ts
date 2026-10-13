@@ -3,12 +3,12 @@ import { UI_ARIA } from '@/locales/messages'
 import { useUi } from '@composables/base/useUi'
 import { useMegaMenuHover } from './useMegaMenuHover'
 import { useMegaMenuState } from './useMegaMenuState'
-import { getItemKey, hasPanel } from './megaMenuItems'
 import { useMotion } from '@composables/app/useMotion'
 import { calcIconScale } from '@utils/media/iconUtils'
 import { useLayer } from '@composables/app/useLayerStack'
 import { useMegaMenuKeyboard } from './useMegaMenuKeyboard'
 import { useBreakpoint } from '@composables/app/useBreakpoint'
+import { getItemKey, hasPanel, isDrilldownItem } from './megaMenuItems'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseMegaMenuEmits, MegaMenuItem, MegaMenuLink, MegaMenuProps } from '../types/BaseMegaMenu.types'
 
@@ -74,6 +74,7 @@ export function useBaseMegaMenu(props: MegaMenuProps, emit: BaseMegaMenuEmits) {
 		getItemKey,
 		iconScale: computed(() => calcIconScale('sm', props.sizeScale)),
 		hasPanel,
+		isDrilldownItem: (item: MegaMenuItem): boolean => isDrilldownItem(item, props.drilldown, props.drilldownFrom),
 		hoverDelays: computed(() => (isHoverEnabled() ? { open: props.openDelay, close: props.closeDelay } : undefined)),
 		select,
 		handleTriggerClick(item: MegaMenuItem): void {

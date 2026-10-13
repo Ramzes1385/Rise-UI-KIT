@@ -7,6 +7,8 @@ export const ruPlural = {
 	COMMENTS: { one: '{n} комментарий', few: '{n} комментария', many: '{n} комментариев', other: '{n} комментария' },
 	ATTACHMENTS: { one: '{n} вложение', few: '{n} вложения', many: '{n} вложений', other: '{n} вложения' },
 	JSON_KEYS: { one: '{n} ключ', few: '{n} ключа', many: '{n} ключей', other: '{n} ключа' },
+	/** Число пунктов уровня BaseMegaMenu в объявлении для скринридера */
+	MEGA_MENU_ITEMS: { one: '{n} пункт', few: '{n} пункта', many: '{n} пунктов', other: '{n} пункта' },
 	JSON_ITEMS: { one: '{n} элемент', few: '{n} элемента', many: '{n} элементов', other: '{n} элемента' },
 	SIGNATURE_STROKES: { one: '{n} штрих', few: '{n} штриха', many: '{n} штрихов', other: '{n} штриха' },
 	NOTIFICATIONS_UNREAD: { one: '{n} новое', few: '{n} новых', many: '{n} новых', other: '{n} новых' },

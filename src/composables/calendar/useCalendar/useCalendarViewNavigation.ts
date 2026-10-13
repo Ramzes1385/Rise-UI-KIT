@@ -1,6 +1,6 @@
 /** Composable: навигация по календарю — переключение месяцев, лет и видов отображения */
 import { computed } from 'vue'
-import { hasNextMonth, hasPrevMonth, shiftCalendarView } from './calendarUtils'
+import { hasNextMonth, hasPrevMonth, resolveToday, shiftCalendarView } from './calendarUtils'
 import type { UseCalendarViewNavigationOptions } from './types/useCalendarViewNavigation.types'
 
 function useCalendarViewNavigation(options: UseCalendarViewNavigationOptions) {
@@ -21,7 +21,7 @@ function useCalendarViewNavigation(options: UseCalendarViewNavigationOptions) {
 	}
 
 	function goToToday(): void {
-		const now = new Date()
+		const now = resolveToday(options)
 		currentMonth.value = now.getMonth()
 		currentYear.value = now.getFullYear()
 		currentView.value = 'days'

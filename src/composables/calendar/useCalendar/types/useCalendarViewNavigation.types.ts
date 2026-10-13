@@ -9,4 +9,5 @@ export interface UseCalendarViewNavigationOptions {
 	maxDate: () => Date | null
 	disableFrom: () => Date | null
 	disableTo: () => Date | null
+	today?: () => Date | undefined
 }
