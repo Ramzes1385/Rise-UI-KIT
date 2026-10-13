@@ -13,36 +13,34 @@
 	}
 
 	&__search {
-		display: flex;
-		align-items: center;
-		gap: sz(10px);
-		padding: space(0 16px);
 		border-bottom: 1px solid var(--rise-border);
-		color: var(--rise-text-muted);
+	}
 
-		.base-icon {
-			flex: none;
+	&__input.base-input {
+		.base-input__wrapper,
+		.base-input__wrapper:focus-within {
+			border: 0;
+			border-radius: 0;
+			background-color: transparent;
+			box-shadow: none;
+		}
+
+		.base-input__icon {
+			margin-left: sz(16px);
 			width: sz(18px);
 			height: sz(18px);
 		}
-	}
 
-	&__input {
-		flex: 1 1 auto;
-		min-width: 0;
-		height: sz(ct(command-palette-input, height, 52px));
-		margin: 0;
-		padding: 0;
-		border: 0;
-		outline: none;
-		background: transparent;
-		color: var(--rise-text-highlighted);
-		font: inherit;
-		font-size: sz(ct(command-palette-input, font-size, var(--rise-font-size-md)));
-		line-height: sz(var(--rise-line-height-md));
+		.base-input__field {
+			height: sz(ct(command-palette-input, height, 52px));
+			padding: space(0 16px 0 10px);
+			color: var(--rise-text-highlighted);
+			font-size: sz(ct(command-palette-input, font-size, var(--rise-font-size-md)));
+			line-height: sz(var(--rise-line-height-md));
 
-		&::placeholder {
-			color: var(--rise-text-muted);
+			&::placeholder {
+				color: var(--rise-text-muted);
+			}
 		}
 	}
 

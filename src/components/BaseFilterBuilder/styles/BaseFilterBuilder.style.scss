@@ -60,15 +60,13 @@
 		text-align: right;
 	}
 
-	&__select,
-	&__input {
+	&__select {
 		position: relative;
 		display: inline-flex;
 		min-width: 0;
 	}
 
-	&__select select,
-	&__input {
+	&__select select {
 		box-sizing: border-box;
 		height: sz(32px);
 		margin: 0;
@@ -102,9 +100,25 @@
 		height: sz(28px);
 	}
 
-	&__input,
 	&__value {
 		width: sz(160px);
+	}
+
+	&__input.base-input {
+		flex: none;
+		width: sz(160px);
+	}
+
+	&__input .base-input__wrapper {
+		border: 1px solid ct(filter-builder-field, border, var(--rise-border-accented));
+		border-radius: sz(ct(filter-builder-field, radius, var(--rise-control-radius)));
+		background-color: ct(filter-builder-field, bg, var(--rise-bg));
+		@include field-focus(ct(filter-builder-field, border-focus, var(--rise-primary)));
+	}
+
+	&__input .base-input__field {
+		height: sz(30px);
+		padding: 0 sz(10px);
 	}
 
 	&__value select {
@@ -151,8 +165,7 @@
 		color: var(--rise-primary);
 	}
 
-	&--disabled &__select select,
-	&--disabled &__input {
+	&--disabled &__select select {
 		@include disabled-state;
 	}
 

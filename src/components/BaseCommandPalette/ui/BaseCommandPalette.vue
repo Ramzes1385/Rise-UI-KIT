@@ -10,21 +10,24 @@
 		:custom-class="modalClass"
 		@update:is-open="setOpen">
 		<div ref="searchRef" :class="ui('search')">
-			<BaseIcon name="search" />
-			<input
-				:class="[ui('input'), classes.input]"
-				type="text"
-				role="combobox"
-				aria-autocomplete="list"
-				aria-expanded="true"
-				:aria-controls="listId"
-				:aria-activedescendant="activeId"
+			<BaseInput
+				:class="ui('input')"
+				:custom-class="{ field: classes.input }"
+				type="search"
+				:size-scale="sizeScale"
+				:model-value="query"
 				:aria-label="UI_COMMAND_PALETTE.SEARCH"
 				:placeholder="placeholder ?? UI_COMMAND_PALETTE.PLACEHOLDER"
-				:value="query"
-				autocomplete="off"
-				spellcheck="false"
-				@input="handleInput"
+				:input-attrs="{
+					role: 'combobox',
+					'aria-autocomplete': 'list',
+					'aria-expanded': 'true',
+					'aria-controls': listId,
+					'aria-activedescendant': activeId,
+					autocomplete: 'off',
+					spellcheck: 'false',
+				}"
+				@update:model-value="handleInput"
 				@keydown="handleKeydown" />
 		</div>
 		<div :id="listId" :class="ui('list')" role="listbox" :aria-label="UI_COMMAND_PALETTE.COMMANDS">
@@ -85,6 +88,7 @@ import '../styles/BaseCommandPalette.style.scss'
 import { BaseKbd } from '@components/BaseKbd'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseEmpty } from '@components/BaseEmpty'
+import { BaseInput } from '@components/BaseInput'
 import { BaseModal } from '@components/BaseModal'
 import { UI_COMMAND_PALETTE } from '@/locales/messages'
 import { kitDefaults } from '@composables/base/useDefaults'

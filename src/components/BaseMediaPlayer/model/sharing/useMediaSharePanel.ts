@@ -65,7 +65,7 @@ function absoluteUrl(path: string | undefined): string | undefined {
 
 function useShareActions(player: MediaPlayerContext, share: { link: ComputedRef<string>; time: ComputedRef<number | undefined> }) {
 	const copied = useCopiedState()
-	const linkRef = ref<HTMLInputElement | null>(null)
+	const linkRef = ref<{ inputRef: HTMLInputElement | null } | null>(null)
 	const send = (target: MediaShareEvent['target']): void => {
 		const { link, time } = share
 		player.emitShare(time.value === undefined ? { target, url: link.value } : { target, url: link.value, time: time.value })
@@ -77,7 +77,7 @@ function useShareActions(player: MediaPlayerContext, share: { link: ComputedRef<
 		canShareSystem: typeof navigator !== 'undefined' && typeof navigator.share === 'function',
 		async copyShareLink(): Promise<void> {
 			if (!(await writeClipboard(share.link.value))) {
-				linkRef.value?.select()
+				linkRef.value?.inputRef?.select()
 				return
 			}
 			copied.markCopied()

@@ -13,6 +13,7 @@ const INPUT_ELEMENTS = [
 	'label',
 	'required',
 	'wrapper',
+	'icon',
 	'prefix',
 	'field',
 	'passwordToggle',
@@ -47,7 +48,7 @@ function useInputControl(props: InputProps) {
 		nativeAttrs: computed(() => ({
 			...props.inputAttrs,
 			...(props.ariaLabel ? { 'aria-label': props.ariaLabel } : {}),
-			...control.aria.value,
+			...Object.fromEntries(Object.entries(control.aria.value).filter(([, value]) => value !== undefined)),
 		})),
 	}
 }
@@ -86,6 +87,7 @@ export function useBaseInput(props: InputProps, emit: BaseInputEmits) {
 		ui: useUi(props, 'base-input'),
 		...useMaskedValue(props, emit, inputRef),
 		...usePasswordVisibility({ type: toRef(props, 'type') }),
+		iconName: computed(() => props.icon ?? (props.type === 'search' ? 'search' : '')),
 		passwordRuleResults: computed<PasswordRuleResult[]>(() => {
 			if (!props.passwordRules) return []
 			const value = toText(props.modelValue)

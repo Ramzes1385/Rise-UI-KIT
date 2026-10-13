@@ -55,11 +55,11 @@
 				</button>
 			</div>
 			<div class="base-media-player__share-row">
-				<input
+				<BaseInput
 					ref="linkRef"
 					class="base-media-player__share-input"
-					:value="shareLink"
-					readonly
+					:model-value="shareLink"
+					is-readonly
 					:aria-label="UI_PLAYER.SHARE_LINK"
 					@focus="selectLink" />
 				<button
@@ -80,6 +80,7 @@
 import '../../styles/MediaShare.style.scss'
 import { UI_PLAYER } from '../../model/messages'
 import MediaIcon from '../controls/MediaIcon.vue'
+import { BaseInput } from '@components/BaseInput'
 import { BaseModal } from '@components/BaseModal'
 import { BaseCheckbox } from '@components/BaseCheckbox'
 import { useMediaSharePanel } from '../../model/sharing/useMediaSharePanel'

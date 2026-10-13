@@ -42,6 +42,21 @@
 		}
 	}
 
+	&__icon {
+		align-self: center;
+		flex-shrink: 0;
+		margin-left: sz(ct(input, padding-x, var(--rise-control-padding-x)));
+		color: var(--rise-text-muted);
+	}
+
+	&__field::-webkit-search-cancel-button {
+		cursor: pointer;
+	}
+
+	&--has-icon &__field {
+		padding-left: sz(8px);
+	}
+
 	&__prefix,
 	&__postfix {
 		display: flex;
@@ -63,6 +78,10 @@
 
 	&--has-prefix &__field {
 		padding-left: sz(4px);
+	}
+
+	&--has-icon.base-input--has-prefix &__prefix {
+		padding-left: sz(6px);
 	}
 
 	&--has-postfix &__field {
@@ -116,6 +135,10 @@
 
 	&--underline &__prefix {
 		padding-left: 0;
+	}
+
+	&--underline &__icon {
+		margin-left: 0;
 	}
 
 	&--underline &__postfix {

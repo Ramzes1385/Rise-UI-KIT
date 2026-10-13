@@ -63,37 +63,8 @@
 		min-width: 0;
 	}
 
-	&__search-input {
-		display: flex;
-		align-items: center;
-		gap: sz(6px);
-		padding: 0 sz(var(--rise-control-padding-x));
-		@include field-box;
-	}
-
-	&__search-icon {
-		color: var(--rise-text-muted);
-	}
-
-	&__search-field {
-		flex: 1;
-		min-width: 0;
-		padding: sz(var(--rise-control-padding-y)) 0;
-		border: none;
-		outline: none;
-		background: transparent;
-		color: var(--rise-text-highlighted);
-		font: inherit;
-		@include control-text;
-
-		&::placeholder {
-			color: var(--rise-text-dimmed);
-			opacity: 1;
-		}
-
-		&::-webkit-search-cancel-button {
-			appearance: none;
-		}
+	&__search-field::-webkit-search-cancel-button {
+		appearance: none;
 	}
 
 	&__actions {

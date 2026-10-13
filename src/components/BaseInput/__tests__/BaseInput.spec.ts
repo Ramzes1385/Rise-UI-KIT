@@ -730,4 +730,41 @@ describe('BaseInput: имя и атрибуты поля', () => {
 		expect(input).toHaveAttribute('data-testid', 'email-field')
 		expect(input.getAttribute('aria-describedby')).toMatch(/^v-\S+-error email-hint$/)
 	})
+
+	describe('type="search" и иконка', () => {
+		it('type="search" даёт поле поиска с иконкой лупы слева', () => {
+			const { container } = render(BaseInput, { props: { modelValue: '', type: 'search', ariaLabel: 'Поиск' } })
+
+			expect(screen.getByRole('searchbox', { name: 'Поиск' })).toHaveAttribute('type', 'search')
+			expect(container.querySelector('.base-input__icon')).toBeInTheDocument()
+			expect(container.querySelector('.base-input')).toHaveClass('base-input--has-icon')
+		})
+
+		it('icon="" у поиска убирает иконку', () => {
+			const { container } = render(BaseInput, { props: { modelValue: '', type: 'search', icon: '' } })
+
+			expect(container.querySelector('.base-input__icon')).not.toBeInTheDocument()
+		})
+
+		it('icon добавляет иконку слева у текстового поля, обычное поле без иконки', () => {
+			const { container, rerender } = render(BaseInput, { props: { modelValue: '' } })
+			expect(container.querySelector('.base-input__icon')).not.toBeInTheDocument()
+
+			return rerender({ modelValue: '', icon: 'mail' }).then(() => {
+				expect(container.querySelector('.base-input__icon')).toBeInTheDocument()
+			})
+		})
+
+		it('type="date" рендерит нативное поле даты', () => {
+			const { container } = render(BaseInput, { props: { modelValue: '2026-10-13', type: 'date' } })
+
+			expect(container.querySelector('input')).toHaveAttribute('type', 'date')
+		})
+
+		it('aria из inputAttrs не затирается пустыми значениями формы (aria-invalid остаётся)', () => {
+			render(BaseInput, { props: { modelValue: '', ariaLabel: 'Поле', inputAttrs: { 'aria-invalid': 'true' } } })
+
+			expect(screen.getByRole('textbox', { name: 'Поле' })).toHaveAttribute('aria-invalid', 'true')
+		})
+	})
 })

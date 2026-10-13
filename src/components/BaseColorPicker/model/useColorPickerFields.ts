@@ -73,7 +73,9 @@ export function useColorPickerFields(props: ColorPickerProps, picker: UseColorPi
 				target.value = String(channel.value)
 				return
 			}
-			applyChannel(picker, channel.key, clamp(Math.round(value), 0, channel.max))
+			const next = clamp(Math.round(value), 0, channel.max)
+			applyChannel(picker, channel.key, next)
+			target.value = String(next)
 		},
 		handleHexChange(event: Event): void {
 			const target = toHTMLInputElement(event.target)

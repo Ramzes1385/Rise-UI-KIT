@@ -3,7 +3,7 @@ import { computed, nextTick, ref, watch } from 'vue'
 import type { ChatHeaderEmits, ChatHeaderProps } from '../types/ChatHeader.types'
 
 export function useChatHeader(props: ChatHeaderProps, emit: ChatHeaderEmits) {
-	const searchInputRef = ref<HTMLInputElement | null>(null)
+	const searchInputRef = ref<{ focus: () => void } | null>(null)
 	const searchToggleRef = ref<{ focus: () => void } | null>(null)
 
 	watch(
@@ -21,7 +21,7 @@ export function useChatHeader(props: ChatHeaderProps, emit: ChatHeaderEmits) {
 		),
 		handleAvatarClick: (): void => emit('avatar-click'),
 		handleToggleSearch: (): void => emit('toggle-search'),
-		handleSearchInput: (event: Event): void => emit('update:searchQuery', (event.target as HTMLInputElement).value),
+		handleSearchInput: (value: string): void => emit('update:searchQuery', value),
 		handleSearchEscape(): void {
 			emit('toggle-search')
 			nextTick(() => searchToggleRef.value?.focus())

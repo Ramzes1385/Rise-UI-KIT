@@ -3,10 +3,10 @@
 		<p class="base-media-player__watch-title">{{ UI_PLAYER.WATCH }}</p>
 		<p class="base-media-player__watch-hint">{{ UI_PLAYER.WATCH_HINT }}</p>
 		<div class="base-media-player__watch-row">
-			<input
+			<BaseInput
 				class="base-media-player__watch-input"
-				:value="watchLink"
-				readonly
+				:model-value="watchLink"
+				is-readonly
 				:aria-label="UI_PLAYER.WATCH_LINK"
 				@focus="selectLink" />
 			<button type="button" class="base-media-player__watch-button" @click="copyWatchLink">
@@ -15,14 +15,13 @@
 			</button>
 		</div>
 		<form class="base-media-player__watch-row" novalidate @submit.prevent="invite">
-			<input
+			<BaseInput
 				v-model="email"
 				type="email"
 				class="base-media-player__watch-input"
-				autocomplete="email"
+				:input-attrs="{ autocomplete: 'email', 'aria-invalid': isInvalid }"
 				:placeholder="UI_PLAYER.WATCH_EMAIL"
-				:aria-label="UI_PLAYER.WATCH_EMAIL"
-				:aria-invalid="isInvalid" />
+				:aria-label="UI_PLAYER.WATCH_EMAIL" />
 			<button type="submit" class="base-media-player__watch-button base-media-player__watch-button--primary">
 				{{ UI_PLAYER.WATCH_INVITE }}
 			</button>
@@ -57,6 +56,7 @@
 import { UI_PLAYER } from '../../model/messages'
 import MediaIcon from '../controls/MediaIcon.vue'
 import { BaseEmpty } from '@components/BaseEmpty'
+import { BaseInput } from '@components/BaseInput'
 import { useMediaWatchPanel } from '../../model/sharing/useMediaWatchPanel'
 
 const { panelRef, watchLink, watchMembers, copyWatchLink, email, isInvalid, invite, selectLink } = useMediaWatchPanel()

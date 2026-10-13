@@ -175,20 +175,27 @@
 		gap: sz(8px);
 	}
 
-	&__share-input {
+	&__share-input.base-input {
 		flex: 1 1 0;
-		box-sizing: border-box;
 		width: 0;
 		min-width: 0;
-		height: sz(38px);
-		padding: 0 sz(12px);
-		border: 1px solid var(--media-border);
-		border-radius: sz(10px);
-		background-color: color-mix(in srgb, var(--rise-media-highlight) 6%, transparent);
 		color: var(--media-text);
-		font: inherit;
-		font-size: sz(13px);
-		@include focus-ring(0);
+
+		.base-input__wrapper {
+			border: 1px solid var(--media-border);
+			border-radius: sz(10px);
+			background-color: color-mix(in srgb, var(--rise-media-highlight) 6%, transparent);
+		}
+
+		.base-input__field {
+			height: sz(38px);
+			padding: 0 sz(12px);
+			font-size: sz(13px);
+
+			&::placeholder {
+				color: var(--media-muted);
+			}
+		}
 	}
 
 	&__share-copy {

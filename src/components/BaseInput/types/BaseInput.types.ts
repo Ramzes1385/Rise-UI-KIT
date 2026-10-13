@@ -26,13 +26,14 @@ export interface PasswordRuleResult {
 
 /**
  * Части поля для пропа `ui` (БЭМ-элементы `.base-input__<часть>`, `root` — обёртка компонента): label, required — звёздочка,
- * wrapper — рамка поля, prefix, field — `<input>`, password-toggle, postfix, password-rules, password-rule,
+ * wrapper — рамка поля, icon — иконка слева, prefix, field — `<input>`, password-toggle, postfix, password-rules, password-rule,
  * password-rule-icon, password-rule-label, error-text.
  */
 export const INPUT_PARTS = [
 	'label',
 	'required',
 	'wrapper',
+	'icon',
 	'prefix',
 	'field',
 	'password-toggle',
@@ -52,6 +53,7 @@ export interface BaseInputProps extends BaseComponentProps<
 	| 'label'
 	| 'required'
 	| 'wrapper'
+	| 'icon'
 	| 'prefix'
 	| 'field'
 	| 'passwordToggle'
@@ -64,8 +66,8 @@ export interface BaseInputProps extends BaseComponentProps<
 > {
 	/** Значение поля (null трактуется как пустая строка) */
 	modelValue: string | number | null
-	/** Тип инпута */
-	type?: 'text' | 'email' | 'tel' | 'number' | 'password'
+	/** Тип инпута; `search` — поле поиска (нативный `type="search"`, по умолчанию с иконкой лупы слева) */
+	type?: 'text' | 'email' | 'tel' | 'number' | 'password' | 'search' | 'date'
 	/** Плейсхолдер */
 	placeholder?: string
 	/** Заголовок поля */
@@ -82,6 +84,8 @@ export interface BaseInputProps extends BaseComponentProps<
 	ariaLabel?: string
 	/** Атрибуты нативного `<input>`: `name`, `autocomplete`, `inputmode`, `aria-*`, `data-*`; `id` — свой id поля */
 	inputAttrs?: FieldInputAttrs
+	/** Иконка слева (имя `BaseIcon`); у `type="search"` по умолчанию `search`, `icon=""` — без иконки */
+	icon?: string
 	/** Префикс (например, код страны) */
 	prefix?: string
 	/** Постфикс (например, единица измерения) */

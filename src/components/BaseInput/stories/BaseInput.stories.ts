@@ -28,6 +28,7 @@ export const Disabled = cases.Disabled
 export const Readonly = cases.Readonly
 export const LongContent = cases.LongContent
 export const PrefixPostfix = cases.PrefixPostfix
+export const Search = cases.Search
 export const WithSlots = cases.WithSlots
 export const Password = cases.Password
 export const PasswordRules = cases.PasswordRules

@@ -7,6 +7,7 @@
 				'base-input--error': control.hasError.value,
 				'base-input--disabled': isDisabled,
 				'base-input--readonly': isReadonly,
+				'base-input--has-icon': iconName,
 				'base-input--has-prefix': prefix || $slots.prefix,
 				'base-input--has-postfix': postfix || $slots.postfix,
 				'base-input--password': type === 'password',
@@ -26,6 +27,12 @@
 			:size-scale="sizeScale" />
 
 		<div :class="[ui('wrapper'), classes.wrapper]">
+			<BaseIcon
+				v-if="iconName"
+				:name="iconName"
+				:class="ui('icon')"
+				:custom-class="classes.icon"
+				:size-scale="calcIconScale('sm', sizeScale)" />
 			<slot name="prefix">
 				<BaseText v-if="prefix" tag="span" :class="ui('prefix')" :custom-class="classes.prefix" :size-scale="sizeScale">{{
 					prefix
@@ -135,6 +142,7 @@ const {
 	customColorStyle,
 	classes,
 	inputRef,
+	iconName,
 	errorId,
 	formField,
 	control,

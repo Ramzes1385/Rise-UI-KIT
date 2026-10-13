@@ -100,28 +100,27 @@
 					</button>
 				</div>
 				<div :class="ui('inputs')">
-					<label v-if="inputFormat === 'hex'" :class="[ui('channel'), 'base-color-picker__channel--hex']">
-						<input
-							:class="ui('hex')"
-							type="text"
-							spellcheck="false"
-							autocomplete="off"
+					<div v-if="inputFormat === 'hex'" :class="[ui('channel'), 'base-color-picker__channel--hex']">
+						<BaseInput
+							:custom-class="{ field: ui('hex') }"
+							:size-scale="sizeScale"
 							:aria-label="UI_COLOR_PICKER.HEX_VALUE"
-							:value="hexText"
+							:model-value="hexText"
+							:input-attrs="{ spellcheck: 'false', autocomplete: 'off' }"
 							@change="handleHexChange" />
 						<span :class="ui('channel-caption')" aria-hidden="true">{{ UI_COLOR_PICKER.FORMAT_HEX }}</span>
-					</label>
-					<label v-for="channel in channels" :key="channel.key" :class="ui('channel')">
-						<input
-							:class="ui('channel-input')"
+					</div>
+					<div v-for="channel in channels" :key="channel.key" :class="ui('channel')">
+						<BaseInput
+							:custom-class="{ field: ui('channel-input') }"
+							:size-scale="sizeScale"
 							type="number"
-							min="0"
-							:max="channel.max"
 							:aria-label="channel.label"
-							:value="channel.value"
+							:model-value="channel.value"
+							:input-attrs="{ min: 0, max: channel.max }"
 							@change="handleChannelChange(channel, $event)" />
 						<span :class="ui('channel-caption')" aria-hidden="true">{{ channel.short }}</span>
-					</label>
+					</div>
 				</div>
 			</div>
 
@@ -169,6 +168,7 @@
 <script setup lang="ts">
 import '../styles/BaseColorPicker.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
+import { BaseInput } from '@components/BaseInput'
 import { BaseButton } from '@components/BaseButton'
 import { BasePopover } from '@components/BasePopover'
 import { BaseTooltip } from '@components/BaseTooltip'

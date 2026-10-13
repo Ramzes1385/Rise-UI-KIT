@@ -18,7 +18,11 @@ describe('BaseEmojiPicker: проп ui', () => {
 		const { container } = render(BaseEmojiPicker, { props: { emojis: EMOJIS } })
 
 		expect(container.querySelector('.base-emoji-picker')).toHaveAttribute('class', 'base-emoji-picker')
-		for (const name of PARTS) expect(part(container, name)).toHaveAttribute('class', `base-emoji-picker__${name}`)
+		for (const name of PARTS.filter(item => item !== 'search' && item !== 'input')) {
+			expect(part(container, name)).toHaveAttribute('class', `base-emoji-picker__${name}`)
+		}
+		expect(part(container, 'search')).toHaveClass('base-emoji-picker__search', 'base-input')
+		expect(part(container, 'input')).toHaveAttribute('class', 'base-input__field base-emoji-picker__input')
 	})
 
 	it('классы частей добавляются к классам кита, модификаторы и customClass сохраняются', () => {

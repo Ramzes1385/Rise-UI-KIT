@@ -56,24 +56,24 @@
 							</select>
 							<BaseIcon name="chevron-down" />
 						</span>
-						<input
+						<BaseInput
 							v-else
 							:class="[ui('input'), ui('value')]"
-							:type="row.inputType"
-							:inputmode="row.inputType === 'number' ? 'decimal' : undefined"
+							:size-scale="sizeScale"
+							v-bind="valueFieldProps(row)"
 							:aria-label="row.valueKind === 'range' ? UI_FILTER_BUILDER.VALUE_FROM : UI_FILTER_BUILDER.VALUE"
-							:value="row.condition.value"
-							:disabled="isDisabled"
-							@input="setValue(row.condition.id, { value: ($event.target as HTMLInputElement).value })" />
-						<input
+							:model-value="row.condition.value"
+							:is-disabled="isDisabled"
+							@update:model-value="setValue(row.condition.id, { value: $event })" />
+						<BaseInput
 							v-if="row.valueKind === 'range'"
 							:class="[ui('input'), ui('value')]"
-							:type="row.inputType"
-							:inputmode="row.inputType === 'number' ? 'decimal' : undefined"
+							:size-scale="sizeScale"
+							v-bind="valueFieldProps(row)"
 							:aria-label="UI_FILTER_BUILDER.VALUE_TO"
-							:value="row.condition.valueTo ?? ''"
-							:disabled="isDisabled"
-							@input="setValue(row.condition.id, { valueTo: ($event.target as HTMLInputElement).value })" />
+							:model-value="row.condition.valueTo ?? ''"
+							:is-disabled="isDisabled"
+							@update:model-value="setValue(row.condition.id, { valueTo: $event })" />
 					</template>
 					<BaseButton
 						variant="ghost"
@@ -113,6 +113,7 @@
 <script setup lang="ts">
 import '../styles/BaseFilterBuilder.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
+import { BaseInput } from '@components/BaseInput'
 import { BaseButton } from '@components/BaseButton'
 import { UI_FILTER_BUILDER } from '@/locales/messages'
 import { useBaseFilterBuilder } from '../model/useBaseFilterBuilder'
@@ -130,6 +131,7 @@ const emit = defineEmits<BaseFilterBuilderEmits>()
 const {
 	ui,
 	holdLeavingPlace,
+	valueFieldProps,
 	sizeScaleStyle,
 	variantClass,
 	variantStyle,

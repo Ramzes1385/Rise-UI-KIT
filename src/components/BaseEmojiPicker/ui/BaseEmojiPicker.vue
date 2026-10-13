@@ -5,19 +5,18 @@
 		role="group"
 		:aria-label="UI_EMOJI.LABEL"
 		:aria-busy="isLoading ? 'true' : undefined">
-		<label v-if="hasSearch" :class="[ui('search'), classes.search]">
-			<BaseIcon name="search" />
-			<input
-				v-model="query"
-				type="search"
-				:class="ui('input')"
-				:placeholder="UI_EMOJI.SEARCH"
-				:aria-label="UI_EMOJI.SEARCH"
-				:aria-controls="gridId"
-				:disabled="isDisabled"
-				autocomplete="off"
-				@keydown="handleSearchKeydown" />
-		</label>
+		<BaseInput
+			v-if="hasSearch"
+			v-model="query"
+			type="search"
+			:class="[ui('search'), classes.search]"
+			:custom-class="{ field: ui('input') }"
+			:size-scale="sizeScale"
+			:placeholder="UI_EMOJI.SEARCH"
+			:aria-label="UI_EMOJI.SEARCH"
+			:input-attrs="{ 'aria-controls': gridId, autocomplete: 'off' }"
+			:is-disabled="isDisabled"
+			@keydown="handleSearchKeydown" />
 		<div v-if="!query" :class="[ui('nav'), classes.nav]" role="group" :aria-label="UI_EMOJI.CATEGORIES">
 			<button
 				v-for="section in sections"
@@ -75,7 +74,7 @@
 <script setup lang="ts">
 import '../styles/BaseEmojiPicker.style.scss'
 import { UI_EMOJI } from '@/locales/messages'
-import { BaseIcon } from '@components/BaseIcon'
+import { BaseInput } from '@components/BaseInput'
 import { useBaseEmojiPicker } from '../model/useBaseEmojiPicker'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseEmojiPickerEmits, BaseEmojiPickerProps } from '../types/BaseEmojiPicker.types'

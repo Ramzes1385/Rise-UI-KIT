@@ -51,6 +51,11 @@ function useFilterFocus(rootRef: { value: HTMLElement | null }) {
 	}
 }
 
+function valueFieldProps(row: FilterBuilderRow) {
+	if (row.inputType === 'number') return { type: 'number' as const, inputAttrs: { inputmode: 'decimal' } }
+	return { type: row.inputType === 'date' ? ('date' as const) : ('text' as const), inputAttrs: undefined }
+}
+
 function holdLeavingPlace(element: Element): void {
 	const item = element as HTMLElement
 	item.style.left = `${item.offsetLeft}px`
@@ -70,8 +75,7 @@ export function useBaseFilterBuilder(props: BaseFilterBuilderProps, emit: BaseFi
 	return {
 		...useStandardBaseComponent('base-filter-builder', props, ['root', 'row', 'actions']),
 		ui: useUi(props, 'base-filter-builder'),
-		holdLeavingPlace,
-		rootRef,
+		...{ holdLeavingPlace, valueFieldProps, rootRef },
 		matchId: `${idPrefix}-match`,
 		match: computed(() => group.value.match),
 		rows: computed(() => conditions.value.map(condition => conditionView(condition, props.fields))),

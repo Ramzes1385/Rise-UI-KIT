@@ -44,7 +44,7 @@ describe('BaseFilterBuilder: проп ui', () => {
 			expect(container.querySelector(`.base-filter-builder__${part}`)).toHaveAttribute('class', `base-filter-builder__${part}`)
 		expect(container.querySelector('.base-filter-builder__input')).toHaveAttribute(
 			'class',
-			'base-filter-builder__input base-filter-builder__value',
+			'base-input base-filter-builder__input base-filter-builder__value',
 		)
 	})
 

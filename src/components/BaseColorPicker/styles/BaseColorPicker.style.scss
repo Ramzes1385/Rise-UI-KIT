@@ -255,25 +255,26 @@
 		@include text-size(2xs);
 	}
 
-	&__hex,
-	&__channel-input {
-		box-sizing: border-box;
-		width: 100%;
-		min-width: 0;
-		height: sz(28px);
-		padding: 0 sz(6px);
-		outline: none;
-		color: var(--rise-text-highlighted);
-		font-family: var(--rise-font-mono);
-		@include text-size(xs);
-		@include field-box(color-picker);
+	&__channel .base-input__wrapper {
+		border: 1px solid ct(color-picker, border, var(--rise-border-accented));
+		border-radius: sz(ct(color-picker, radius, var(--rise-control-radius)));
+		background-color: ct(color-picker, bg, var(--rise-bg));
+		@include field-focus(ct(color-picker, border-focus, var(--rise-primary)));
 	}
 
-	&__hex {
+	&__channel &__hex,
+	&__channel &__channel-input {
+		height: sz(28px);
+		padding: 0 sz(6px);
+		font-family: var(--rise-font-mono);
+		@include text-size(xs);
+	}
+
+	&__channel &__hex {
 		text-transform: uppercase;
 	}
 
-	&__channel-input {
+	&__channel &__channel-input {
 		padding: 0 sz(2px);
 		text-align: center;
 		appearance: textfield;

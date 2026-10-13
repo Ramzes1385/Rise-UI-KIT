@@ -104,8 +104,8 @@ export function useBaseCommandPalette(props: BaseCommandPaletteProps, emit: Base
 		activeId: list.activeId,
 		listId: `${list.prefix}-list`,
 		dialogLabel: computed(() => props.ariaLabel ?? UI_COMMAND_PALETTE.LABEL),
-		handleInput(event: Event): void {
-			list.query.value = (event.target as HTMLInputElement).value
+		handleInput(value: string): void {
+			list.query.value = value
 			list.reset()
 		},
 		handleKeydown(event: KeyboardEvent): void {

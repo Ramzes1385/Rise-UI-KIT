@@ -19,18 +19,17 @@
 		</div>
 
 		<div v-else class="base-chat-header__search-container">
-			<div class="base-chat-header__search-input">
-				<BaseIcon name="search" :size-scale="sizeScale * CHAT_SCALE.SMALL" class="base-chat-header__search-icon" />
-				<input
-					ref="searchInputRef"
-					type="search"
-					class="base-chat-header__search-field"
-					:value="searchQuery"
-					:placeholder="UI_CHAT_TEXT.SEARCH_PLACEHOLDER"
-					:aria-label="UI_CHAT_TEXT.SEARCH_ARIA"
-					@input="handleSearchInput"
-					@keydown.esc.prevent="handleSearchEscape" />
-			</div>
+			<BaseInput
+				ref="searchInputRef"
+				type="search"
+				class="base-chat-header__search-input"
+				:custom-class="{ field: 'base-chat-header__search-field' }"
+				:size-scale="sizeScale"
+				:model-value="searchQuery"
+				:placeholder="UI_CHAT_TEXT.SEARCH_PLACEHOLDER"
+				:aria-label="UI_CHAT_TEXT.SEARCH_ARIA"
+				@update:model-value="handleSearchInput"
+				@keydown.esc.prevent="handleSearchEscape" />
 		</div>
 
 		<div class="base-chat-header__actions">
@@ -60,7 +59,7 @@
 import './ChatHeader.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
-import { CHAT_SCALE } from '../../model/chatScale'
+import { BaseInput } from '@components/BaseInput'
 import { BaseAvatar } from '@components/BaseAvatar'
 import { BaseButton } from '@components/BaseButton'
 import { useChatHeader } from './model/useChatHeader'
