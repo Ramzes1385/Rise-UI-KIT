@@ -1,18 +1,21 @@
+import { warn } from '@/locales/warn'
 import type { ComputedRef, Ref } from 'vue'
 import { useUi } from '@composables/base/useUi'
-import { TABLE_TEXT, UI_TEXT } from '@/locales/messages'
+import { provideTableSlots } from './useTableSlots'
 import { useBaseTableExport } from './useBaseTableExport'
 import { usePadding } from '@composables/base/usePadding'
 import { useTableStickyOffsets } from './useTableStickyOffsets'
 import { isolateFormField } from '@composables/form/useFormContext'
+import { TABLE_TEXT, UI_TEXT, UI_WARNINGS } from '@/locales/messages'
+import { useTableInfinite } from '@composables/table/useTableInfinite'
 import { useVirtualList } from '@composables/interaction/useVirtualList'
 import { useTableComposition } from '@composables/table/useTableComposition'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { useExpandTransition } from '@composables/interaction/useExpandTransition'
 import { useScrollableRegion } from '@composables/interaction/useScrollableRegion'
 import { TABLE_EXPAND_TRANSITION_KEY, TABLE_UI_KEY } from '../types/BaseTable.types'
-import type { BaseTableEmits, TableColumn, TableProps } from '../types/BaseTable.types'
-import { computed, getCurrentInstance, onBeforeUnmount, provide, ref, useSlots, watch } from 'vue'
+import { computed, getCurrentInstance, onBeforeUnmount, provide, ref, watch } from 'vue'
+import type { BaseTableEmits, TableColumn, TableProps, TableRow } from '../types/BaseTable.types'
 
 const PAGINATION_MAX_VISIBLE = 4
 const INFINITE_SCROLL_THRESHOLD = 50
@@ -76,6 +79,8 @@ function useComposition(props: TableProps, emit: BaseTableEmits, features: Retur
 		hasMore: computed(() => props.hasMore),
 		isMultiSort: features.isMultiSort,
 		searchDebounce: computed(() => props.searchDebounce),
+		sortLocale: computed(() => props.sortLocale),
+		expandedIds: computed(() => props.expandedIds),
 		isResizable: features.isResizable,
 		hasRowNumber: features.hasRowNumber,
 		isSelectable: features.isSelectable,
@@ -86,7 +91,6 @@ function useComposition(props: TableProps, emit: BaseTableEmits, features: Retur
 		pageSizeOptions: computed(() => props.pageSizeOptions),
 		infiniteScrollThreshold: INFINITE_SCROLL_THRESHOLD,
 		emit,
-		slots: useSlots(),
 	})
 }
 
@@ -171,22 +175,61 @@ function useEmptyState(props: TableProps, table: ReturnType<typeof useTableCompo
 	}
 }
 
-function hasRowClickListener(): boolean {
-	const vnodeProps = getCurrentInstance()?.vnode.props ?? {}
-	return Boolean(vnodeProps.onRowClick || vnodeProps['onRow-click'])
+function useInfiniteLoad(props: TableProps, table: ReturnType<typeof useTableComposition>, wrapperRef: Ref<HTMLElement | null>) {
+	const sentinelRef = ref<HTMLElement | null>(null)
+	const { isObserving } = useTableInfinite({
+		sentinelRef,
+		rootRef: wrapperRef,
+		isActive: () => props.loadMode === 'infinite',
+		hasOwnScroll: () => Boolean(props.height),
+		distance: INFINITE_SCROLL_THRESHOLD,
+		onReach: table.handleReach,
+		rearm: () => table.displayedRows.value.length,
+	})
+	return { sentinelRef, isObserving }
+}
+
+function useDuplicateIdWarning(props: TableProps): void {
+	watch(
+		() => props.rows,
+		rows => {
+			const seen = new Set<TableRow['id']>()
+			const reported = new Set<TableRow['id']>()
+			for (const row of rows) {
+				if (seen.has(row.id) && !reported.has(row.id)) {
+					reported.add(row.id)
+					warn(UI_WARNINGS.TABLE_DUPLICATE_ROW_ID, { id: row.id })
+				}
+				seen.add(row.id)
+			}
+		},
+		{ immediate: true },
+	)
+}
+
+function useRowInteractive(props: TableProps) {
+	const instance = getCurrentInstance()
+	return (): boolean => {
+		if (props.isRowInteractive !== undefined) return props.isRowInteractive
+		const vnodeProps = instance?.vnode.props ?? {}
+		return Boolean(vnodeProps.onRowClick || vnodeProps['onRow-click'])
+	}
 }
 
 export function useBaseTable(props: TableProps, emit: BaseTableEmits) {
 	isolateFormField()
+	useDuplicateIdWarning(props)
 	const standard = useStandardBaseComponent('base-table', props, TABLE_ELEMENTS)
 	const ui = useUi(props, 'base-table')
 	provide(TABLE_UI_KEY, ui)
+	const { slotsVersion } = provideTableSlots()
 	const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--tbl-pad' })
 	const expand = useRowExpand()
 	const features = useTableFeatures(props)
 	const table = useComposition(props, emit, features)
 	const tableWrapperRef = ref<HTMLElement | null>(null)
 	const { isScrollable } = useScrollableRegion({ elementRef: tableWrapperRef, orientation: 'both' })
+	const infinite = useInfiniteLoad(props, table, tableWrapperRef)
 	const exporter = useBaseTableExport(props, emit, table)
 
 	return {
@@ -198,6 +241,11 @@ export function useBaseTable(props: TableProps, emit: BaseTableEmits) {
 		...features,
 		...table,
 		...exporter,
+		sentinelRef: infinite.sentinelRef,
+		slotsVersion,
+		handleScroll: (event: Event): void => {
+			if (!infinite.isObserving.value) table.handleScroll(event)
+		},
 		showToolbar: computed(() => table.showToolbar.value || exporter.hasExport.value),
 		hasPageSizeControl: computed(() => features.hasPageSizeSelector.value && props.pageSizeOptions.length > 0),
 		hasPagination: computed(() => props.loadMode === 'pagination' && table.localPageSize.value > 0 && table.totalPages.value > 1),
@@ -206,6 +254,6 @@ export function useBaseTable(props: TableProps, emit: BaseTableEmits) {
 		...useTableVirtual(props, table.displayedRows, tableWrapperRef),
 		...useTableSticky(tableWrapperRef, table, features),
 		...useEmptyState(props, table),
-		isRowInteractive: hasRowClickListener(),
+		getIsRowInteractive: useRowInteractive(props),
 	}
 }

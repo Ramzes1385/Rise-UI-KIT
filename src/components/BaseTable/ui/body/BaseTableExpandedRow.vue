@@ -1,16 +1,17 @@
 <template>
-	<tr v-if="row.isExpandable" :class="[ui('tr'), 'base-table__tr--expanded-content', trClass]">
+	<tr v-if="row.isExpandable && isShown" :class="[ui('tr'), 'base-table__tr--expanded-content', trClass]">
 		<td :colspan="totalColumns" :class="[ui('td'), 'base-table__td--expanded', tdClass]">
 			<Transition
 				:css="false"
+				:appear="shouldAppear"
 				@before-enter="transitionCallbacks.onExpandBeforeEnter"
 				@enter="transitionCallbacks.onExpandEnter"
 				@after-enter="transitionCallbacks.onExpandAfterEnter"
 				@before-leave="transitionCallbacks.onCollapseBeforeLeave"
 				@leave="transitionCallbacks.onCollapseLeave"
-				@after-leave="transitionCallbacks.onCollapseAfterLeave">
-				<div v-if="isExpanded(row)" :class="ui('expanded-wrapper')">
-					<slot name="expanded-content" :row="row"></slot>
+				@after-leave="onAfterLeave">
+				<div v-if="isOpen()" :class="ui('expanded-wrapper')">
+					<TableSlot :render="getSlot('expanded-content')" :args="{ row }" />
 				</div>
 			</Transition>
 		</td>
@@ -18,12 +19,11 @@
 </template>
 
 <script setup lang="ts">
-import { useTableExpandTransition } from '../../model/body/useTableExpandTransition'
-import type { BaseTableExpandedRowProps, BaseTableExpandedRowSlots } from '../../types/body/BaseTableExpandedRow.types'
+import { TableSlot } from '../../model/TableSlot'
+import { useBaseTableExpandedRow } from '../../model/body/useBaseTableExpandedRow'
+import type { BaseTableExpandedRowProps } from '../../types/body/BaseTableExpandedRow.types'
 
-defineProps<BaseTableExpandedRowProps>()
+const props = defineProps<BaseTableExpandedRowProps>()
 
-defineSlots<BaseTableExpandedRowSlots>()
-
-const { ui, transitionCallbacks } = useTableExpandTransition()
+const { ui, getSlot, isShown, shouldAppear, isOpen, transitionCallbacks, onAfterLeave } = useBaseTableExpandedRow(props)
 </script>

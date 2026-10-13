@@ -211,6 +211,8 @@ export const enBase = {
 		POPOVER_ANCHOR_WITHOUT_LABEL:
 			'BasePopover: a window with anchor and no trigger slot has no name — set ariaLabel so screen readers announce it',
 		CRYPTOPRO_NO_TSA: 'BaseCryptoProSign: the "{level}" signature level needs a timestamp service address, tsaAddress',
+		TABLE_DUPLICATE_ROW_ID:
+			'BaseTable: row id "{id}" appears in rows more than once — expanding and selecting will affect all such rows',
 		DASHBOARD_GRID_DUPLICATE_ID: 'BaseDashboardGrid: id "{id}" appears in the layout more than once — duplicates are not shown',
 		UNKNOWN_LOCALE: 'Unknown locale "{locale}". Built-in: {locales}; for your own use defineLocale()',
 		TOAST_WITHOUT_APP: 'useToast: <BaseApp> not found — the notification was not shown. Wrap the app in <BaseApp>.',

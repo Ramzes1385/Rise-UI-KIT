@@ -7,8 +7,8 @@ import type { ColumnStyleOptions, RowNumberOptions, TableServiceColumns, TableSo
 /** Сравнение строк по правилам языка кита; numeric: «Item 2» < «Item 10», числа в строковой колонке — как числа */
 const collators = new Map<string, Intl.Collator>()
 
-function sortCollator(): Intl.Collator {
-	const { intl } = getLocale()
+function sortCollator(locale?: string): Intl.Collator {
+	const intl = locale ?? getLocale().intl
 	const cached = collators.get(intl)
 	if (cached) return cached
 	const collator = new Intl.Collator(intl, { numeric: true })
@@ -145,18 +145,26 @@ function toSortKey(value: unknown, sortType: SortType = 'string'): TableSortKey 
 }
 
 /**
- * Сравнить ключи сортировки. Ранг сравнивается без учёта направления: распознанные значения,
- * затем нераспознанные, пустые — всегда в конце. Направление влияет только на порядок внутри ранга.
+ * Сравнение ключей сортировки для языка `locale` (BCP 47, например `'de'`); без него — язык кита. Ранг сравнивается без учёта
+ * направления: распознанные значения, затем нераспознанные, пустые — всегда в конце. Направление влияет только на порядок
+ * внутри ранга.
  */
-function compareSortKeys(a: TableSortKey, b: TableSortKey, direction: SortDirection): number {
-	if (a.rank !== b.rank) return a.rank - b.rank
-	if (a.rank === 2) return 0
+function createSortComparator(locale?: string): (a: TableSortKey, b: TableSortKey, direction: SortDirection) => number {
+	return (a, b, direction) => {
+		if (a.rank !== b.rank) return a.rank - b.rank
+		if (a.rank === 2) return 0
 
-	const sign = direction === 'desc' ? -1 : 1
-	if (typeof a.value === 'number' && typeof b.value === 'number') {
-		return (a.value - b.value) * sign
+		const sign = direction === 'desc' ? -1 : 1
+		if (typeof a.value === 'number' && typeof b.value === 'number') {
+			return (a.value - b.value) * sign
+		}
+		return sortCollator(locale).compare(String(a.value), String(b.value)) * sign
 	}
-	return sortCollator().compare(String(a.value), String(b.value)) * sign
 }
 
-export { calcColumnWidths, calcRowNumber, calcTotalColumns, compareSortKeys, getColumnStyle, toSortKey }
+/** Сравнить ключи сортировки по языку кита; см. `createSortComparator` */
+function compareSortKeys(a: TableSortKey, b: TableSortKey, direction: SortDirection): number {
+	return createSortComparator()(a, b, direction)
+}
+
+export { calcColumnWidths, calcRowNumber, calcTotalColumns, compareSortKeys, createSortComparator, getColumnStyle, toSortKey }

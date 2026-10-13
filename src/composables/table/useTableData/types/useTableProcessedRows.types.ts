@@ -12,4 +12,6 @@ export interface UseTableProcessedRowsOptions {
 	activeFilters: Ref<ColumnFilter[]>
 	/** Состояния сортировки */
 	sortStates: Ref<SortState[]>
+	/** Язык сравнения строк при сортировке (BCP 47); без него — язык кита */
+	locale?: () => string | undefined
 }

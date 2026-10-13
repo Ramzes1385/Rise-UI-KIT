@@ -1,6 +1,7 @@
 /** Утилиты: поиск, фильтрация и множественная сортировка строк таблицы */
 import { matchesFilterByKind } from './useTableFilterMatch'
-import { compareSortKeys, toSortKey } from '@utils/navigation/tableUtils'
+import type { SortContext } from './types/useTableDataUtils.types'
+import { createSortComparator, toSortKey } from '@utils/navigation/tableUtils'
 import type { ColumnFilter, SortState, TableColumn, TableRow } from '@components/BaseTable/types/BaseTable.types'
 
 /** «ё» и «е» в поиске не различаются: кодами, а не буквами — это не текст интерфейса */
@@ -36,18 +37,23 @@ function matchesFilter(row: TableRow, filter: ColumnFilter, column?: TableColumn
 
 /**
  * Множественная сортировка. Ключи нормализуются один раз на строку (а не в каждом сравнении):
- * пустые и нераспознанные значения получают ранг и уходят в конец, поэтому NaN не ломает компаратор
+ * пустые и нераспознанные значения получают ранг и уходят в конец, поэтому NaN не ломает компаратор.
+ * Значение для сортировки колонки — `sortAccessor(row)`, а без него `row.data[key]`; строки сравниваются по языку `locale`
  */
-function sortRowsByStates(rows: TableRow[], activeSorts: SortState[], columns: TableColumn[]): TableRow[] {
-	const sortTypes = new Map(columns.map((column: TableColumn) => [column.key, column.sortType]))
+function sortRowsByStates(rows: TableRow[], activeSorts: SortState[], context: SortContext): TableRow[] {
+	const columns = new Map(context.columns.map((column: TableColumn) => [column.key, column]))
+	const compare = createSortComparator(context.locale)
 	const keyedRows = rows.map(row => ({
 		row,
-		keys: activeSorts.map(sort => toSortKey(row.data[sort.key], sortTypes.get(sort.key))),
+		keys: activeSorts.map(sort => {
+			const column = columns.get(sort.key)
+			return toSortKey(column?.sortAccessor ? column.sortAccessor(row) : row.data[sort.key], column?.sortType)
+		}),
 	}))
 
 	keyedRows.sort((a, b) => {
 		for (let index = 0; index < activeSorts.length; index++) {
-			const cmp = compareSortKeys(a.keys[index], b.keys[index], activeSorts[index].direction)
+			const cmp = compare(a.keys[index], b.keys[index], activeSorts[index].direction)
 			if (cmp !== 0) return cmp
 		}
 		return 0

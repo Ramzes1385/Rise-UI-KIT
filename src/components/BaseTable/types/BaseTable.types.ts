@@ -1,4 +1,4 @@
-import type { InjectionKey, Ref } from 'vue'
+import type { InjectionKey, Ref, Slots } from 'vue'
 import type { PaddingProp } from '@composables/base/usePadding'
 import type { UiClassFn, UiProp } from '@composables/base/useUi'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
@@ -100,11 +100,16 @@ export interface TableColumn {
 	flex?: number
 	/** Тип сортировки */
 	sortType?: SortType
+	/**
+	 * Значение для сортировки вместо `row.data[key]`, к которому применяется `sortType`: например, ISO-дата для колонки
+	 * с датами «ДД.ММ.ГГГГ», число из объекта или вложенное поле. Поиск и фильтры читают `row.data[key]`
+	 */
+	sortAccessor?: (row: TableRow) => unknown
 	/** Сортируемая */
 	isSortable?: boolean
 	/** Фильтруемая */
 	isFilterable?: boolean
-	/** Настройки фильтра */
+	/** Настройки фильтра в тулбаре: тип поля, варианты выбора, подсказка. Без них тип выводится из `sortType` */
 	filterConfig?: ColumnFilterConfig
 	/** Выравнивание */
 	align?: 'left' | 'center' | 'right'
@@ -264,8 +269,25 @@ export interface BaseTableProps extends BaseComponentProps<
 	hasMore?: boolean
 	/** Дебаунс поиска (мс) */
 	searchDebounce?: number
+	/**
+	 * Язык сравнения строк при сортировке (BCP 47: `'ru'`, `'de'`, `'sv'`). Без него — язык кита (`defineLocale`).
+	 * Числа внутри строк сравниваются как числа («Item 2» перед «Item 10»), пустые значения всегда в конце
+	 */
+	sortLocale?: string
 	/** Конфиг вложенной таблицы */
 	nestedConfig?: NestedTableConfig
+	/**
+	 * Раскрытые строки (`v-model:expandedIds`): массив `id` строк. Заданный проп переходит на управление снаружи — `isExpanded`
+	 * строк не учитывается, а клик по строке или кнопке только сообщает новый набор в `update:expandedIds`. Без пропса
+	 * набор внутренний: строка с `isExpanded: true` раскрывается, с `false` сворачивается (учитывается изменение флага)
+	 */
+	expandedIds?: Array<string | number>
+	/**
+	 * Строки активируются с клавиатуры: одна точка Tab, ↑/↓, Home и End между строками, Enter и пробел дают `row-click`.
+	 * Без пропса режим включается, пока на таблице есть слушатель `@row-click` (добавленный или снятый позже слушатель
+	 * учитывается при следующей отрисовке); `false` — строки не фокусируются, даже если слушатель есть
+	 */
+	isRowInteractive?: boolean
 
 	/** Конфигурация функций таблицы (заменяет boolean-пропсы) */
 	features?: TableFeaturesConfig
@@ -350,6 +372,7 @@ export interface BaseTableEmits {
 	(event: 'search', query: string): void
 	(event: 'select', rows: TableRow[]): void
 	(event: 'expand', row: TableRow): void
+	(event: 'update:expandedIds', ids: Array<string | number>): void
 	(event: 'page-change', page: number): void
 	(event: 'page-size-change', size: number): void
 	(event: 'load-more'): void
@@ -372,6 +395,9 @@ export interface TableExpandTransitionCallbacks {
 }
 
 export const TABLE_EXPAND_TRANSITION_KEY = Symbol('TABLE_EXPAND_TRANSITION') as InjectionKey<TableExpandTransitionCallbacks>
+
+/** Слоты `cell-*` и `header-*` приложения для строк и заголовка таблицы (provide/inject) */
+export const TABLE_SLOTS_KEY = Symbol('TABLE_SLOTS') as InjectionKey<Slots>
 
 /** Классы частей из пропа `ui` и `defaults.BaseTable.ui` плагина — для частей таблицы (provide/inject) */
 export const TABLE_UI_KEY = Symbol('TABLE_UI') as InjectionKey<UiClassFn<BaseTablePart>>

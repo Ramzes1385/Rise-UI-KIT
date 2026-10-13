@@ -21,4 +21,7 @@ export const argTypes = {
 	pageSizeOptions: { control: 'object', table: propGroup(ARG_GROUP.behavior) },
 	loadMode: { control: 'inline-radio', options: ['pagination', 'button', 'infinite'], table: propGroup(ARG_GROUP.behavior) },
 	searchDebounce: { control: { type: 'number', min: 0 }, table: propGroup(ARG_GROUP.behavior) },
+	sortLocale: { control: 'text', table: propGroup(ARG_GROUP.behavior) },
+	expandedIds: { control: 'object', table: propGroup(ARG_GROUP.behavior) },
+	isRowInteractive: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 } satisfies Meta<typeof BaseTable>['argTypes']

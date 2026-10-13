@@ -26,9 +26,9 @@
 
 		<tr v-else-if="!isLoading && rows.length === 0" :class="trClass">
 			<td :colspan="totalColumns" :class="[ui('td'), 'base-table__td--empty', tdClass]">
-				<slot name="empty" :is-filtered="isFiltered">
+				<TableSlot :render="getSlot('empty')" :args="{ isFiltered }">
 					<BaseEmpty variant="ghost" :title="emptyText" :custom-class="emptyClasses" :size-scale="sizeScale" />
-				</slot>
+				</TableSlot>
 			</td>
 		</tr>
 
@@ -40,6 +40,7 @@
 				<BaseTableRow
 					:row="row"
 					:columns="columns"
+					:slots-version="slotsVersion"
 					:row-index="indexOffset + index"
 					:row-number="getRowNumber(indexOffset + index)"
 					:data-virtual-index="isVirtual ? indexOffset + index : undefined"
@@ -59,15 +60,12 @@
 					@row-click="emit('row-click', $event)"
 					@row-focus="setActiveRow"
 					@toggle-row="emit('toggle-row', $event)"
-					@toggle-expand="emit('toggle-expand', $event)">
-					<template v-for="column in columns" #[`cell-${column.key}`]="slotProps" :key="column.key">
-						<slot v-if="$slots[`cell-${column.key}`]" :name="`cell-${column.key}`" v-bind="slotProps"></slot>
-					</template>
-				</BaseTableRow>
+					@toggle-expand="emit('toggle-expand', $event)" />
 
 				<BaseTableNestedRow
 					:row="row"
 					:columns="columns"
+					:slots-version="slotsVersion"
 					:nested-config="nestedConfig"
 					:total-columns="totalColumns"
 					:size-scale="sizeScale"
@@ -77,23 +75,16 @@
 					:td-class="tdClass"
 					:is-expanded="isExpanded"
 					:get-column-style="getColumnStyle"
-					:format-cell-value="formatCellValue">
-					<template v-for="column in columns" #[`cell-${column.key}`]="slotProps" :key="column.key">
-						<slot v-if="$slots[`cell-${column.key}`]" :name="`cell-${column.key}`" v-bind="slotProps"></slot>
-					</template>
-				</BaseTableNestedRow>
+					:format-cell-value="formatCellValue" />
 
 				<BaseTableExpandedRow
 					v-if="!row.children?.length"
 					:row="row"
+					:slots-version="slotsVersion"
 					:total-columns="totalColumns"
 					:tr-class="trClass"
 					:td-class="tdClass"
-					:is-expanded="isExpanded">
-					<template #expanded-content="slotProps">
-						<slot name="expanded-content" v-bind="slotProps"></slot>
-					</template>
-				</BaseTableExpandedRow>
+					:is-expanded="isExpanded" />
 			</template>
 			<tr v-if="isVirtual" class="base-table__spacer base-table__spacer--end" aria-hidden="true">
 				<td :colspan="totalColumns" class="base-table__spacer-cell" :style="{ height: `${paddingEnd}px` }"></td>
@@ -110,13 +101,14 @@
 
 <script setup lang="ts">
 import BaseTableRow from './BaseTableRow.vue'
+import { TableSlot } from '../../model/TableSlot'
 import { BaseEmpty } from '@components/BaseEmpty'
 import { BaseLoader } from '@components/BaseLoader'
 import { BaseSkeleton } from '@components/BaseSkeleton'
 import BaseTableNestedRow from './BaseTableNestedRow.vue'
 import BaseTableExpandedRow from './BaseTableExpandedRow.vue'
 import { useBaseTableBody } from '../../model/body/useBaseTableBody'
-import type { BaseTableBodyEmits, BaseTableBodyProps, BaseTableBodySlots } from '../../types/body/BaseTableBody.types'
+import type { BaseTableBodyEmits, BaseTableBodyProps } from '../../types/body/BaseTableBody.types'
 
 const props = withDefaults(defineProps<BaseTableBodyProps>(), {
 	isVirtual: false,
@@ -129,8 +121,6 @@ const props = withDefaults(defineProps<BaseTableBodyProps>(), {
 
 const emit = defineEmits<BaseTableBodyEmits>()
 
-defineSlots<BaseTableBodySlots>()
-
-const { ui, tbodyRef, isRevealing, emptyClasses, loadingMoreClasses, getSkeletonWidth, getRowTabIndex, setActiveRow } =
+const { ui, tbodyRef, getSlot, isRevealing, emptyClasses, loadingMoreClasses, getSkeletonWidth, getRowTabIndex, setActiveRow } =
 	useBaseTableBody(props)
 </script>

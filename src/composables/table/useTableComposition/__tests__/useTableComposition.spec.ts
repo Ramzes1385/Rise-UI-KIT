@@ -1,4 +1,3 @@
-import type { Slots } from 'vue'
 import { mount } from '@vue/test-utils'
 import { useTableComposition } from '../useTableComposition'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -10,7 +9,6 @@ type Options = {
 	pageSize?: number
 	isLoading?: boolean
 	hasSearch?: boolean
-	slots?: Slots
 }
 
 const COLUMNS: TableColumn[] = [
@@ -47,7 +45,6 @@ function setup(opts: Options = {}) {
 					pageSizeOptions: computed(() => [10, 25]),
 					infiniteScrollThreshold: 50,
 					emit: emit as unknown as BaseTableEmits,
-					slots: opts.slots ?? {},
 				})
 				return () => null
 			},

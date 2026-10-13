@@ -17,4 +17,11 @@
 			pointer-events: none;
 		}
 	}
+
+	&__sentinel {
+		height: 1px;
+		margin-top: -1px;
+		visibility: hidden;
+		pointer-events: none;
+	}
 }

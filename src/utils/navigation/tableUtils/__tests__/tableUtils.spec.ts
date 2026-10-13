@@ -2,7 +2,15 @@ import '@testing-library/jest-dom/vitest'
 import { en } from '@/locales/en'
 import { defineLocale, setLocale } from '@/locales/state'
 import type { SortType } from '@components/BaseTable/types/BaseTable.types'
-import { calcColumnWidths, calcRowNumber, calcTotalColumns, compareSortKeys, getColumnStyle, toSortKey } from '../tableUtils'
+import {
+	calcColumnWidths,
+	calcRowNumber,
+	calcTotalColumns,
+	compareSortKeys,
+	createSortComparator,
+	getColumnStyle,
+	toSortKey,
+} from '../tableUtils'
 
 describe('tableUtils', () => {
 	describe('calcRowNumber', () => {
@@ -191,6 +199,24 @@ describe('tableUtils', () => {
 		})
 	})
 
+	describe('toSortKey: значения, которые нельзя сравнить как дату', () => {
+		it('булево и объект в колонке дат нераспознаны и идут после распознанных', () => {
+			expect(toSortKey(true, 'date')).toEqual({ rank: 1, value: 'true' })
+			expect(toSortKey({}, 'date').rank).toBe(1)
+			expect(toSortKey(new Date('не дата'), 'date').rank).toBe(1)
+			expect(toSortKey(new Date('не дата'), 'number').rank).toBe(1)
+			expect(toSortKey(Infinity, 'date').rank).toBe(1)
+		})
+
+		it('Date в колонке дат сортируется по моменту времени', () => {
+			expect(toSortKey(new Date(Date.UTC(2024, 0, 1)), 'date')).toEqual({ rank: 0, value: Date.UTC(2024, 0, 1) })
+		})
+
+		it('смещение зоны со знаком минус переводит время в UTC', () => {
+			expect(toSortKey('2024-05-01T10:00:00-03:00', 'date')).toEqual({ rank: 0, value: Date.UTC(2024, 4, 1, 13) })
+		})
+	})
+
 	describe('compareSortKeys', () => {
 		it('ранг важнее направления: пустые и нераспознанные значения в конце и при desc', () => {
 			const valid = toSortKey(1, 'number')
@@ -223,6 +249,13 @@ describe('tableUtils', () => {
 			expect(collator.mock.calls).toEqual([['de-DE', { numeric: true }]])
 			setLocale('ru')
 			collator.mockRestore()
+		})
+
+		it('createSortComparator: язык задан явно — по его правилам, без языка — по языку кита', () => {
+			const [a, z] = [toSortKey('ä'), toSortKey('z')]
+			expect(createSortComparator('sv')(a, z, 'asc')).toBeGreaterThan(0)
+			expect(createSortComparator('de')(a, z, 'asc')).toBeLessThan(0)
+			expect(createSortComparator()(toSortKey('a'), toSortKey('b'), 'desc')).toBeGreaterThan(0)
 		})
 
 		it('даёт транзитивный порядок для смеси значений (Array.sort получает корректный компаратор)', () => {

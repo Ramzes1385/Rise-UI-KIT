@@ -1,6 +1,8 @@
 import type { TableColumn, TableRow } from '../BaseTable.types'
 
 export interface BaseTableRowProps {
+	/** Версия слотов `cell-*` приложения: растёт, когда они заменены, и строка перерисовывается */
+	slotsVersion?: number
 	/** Данные строки */
 	row: TableRow
 	/** Определения колонок таблицы */
@@ -40,9 +42,4 @@ export interface BaseTableRowEmits {
 	(event: 'toggle-row', row: TableRow): void
 	(event: 'toggle-expand', row: TableRow): void
 	(event: 'row-focus', row: TableRow): void
-}
-
-export interface BaseTableRowSlots {
-	/** Кастомный рендер ячейки по ключу колонки (`cell-<columnKey>`) */
-	[name: `cell-${string}`]: (props: { row: TableRow; value: unknown; column: TableColumn; index: number }) => unknown
 }

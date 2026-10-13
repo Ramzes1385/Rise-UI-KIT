@@ -170,13 +170,33 @@ describe('useTableDataUtils', () => {
 				{ key: 'age', direction: 'desc' },
 				{ key: 'name', direction: 'asc' },
 			],
-			columns,
+			{ columns },
 		)
 		expect(sorted.map(r => r.id)).toEqual([1, 3, 2])
 	})
 
+	it('sortRowsByStates: sortAccessor подменяет значение для сортировки, sortType применяется к нему', () => {
+		const dates: TableRow[] = [
+			{ id: 1, data: { date: '15.03.2024' } },
+			{ id: 2, data: { date: '01.02.2024' } },
+			{ id: 3, data: { date: '20.12.2023' } },
+		]
+		const toIso = (row: TableRow): string => String(row.data.date).split('.').reverse().join('-')
+		const columns: TableColumn[] = [{ key: 'date', label: 'Дата', sortType: 'date', sortAccessor: toIso }]
+		expect(sortRowsByStates(dates, [{ key: 'date', direction: 'asc' }], { columns }).map(r => r.id)).toEqual([3, 2, 1])
+		expect(sortRowsByStates(dates, [{ key: 'date', direction: 'desc' }], { columns }).map(r => r.id)).toEqual([1, 2, 3])
+	})
+
+	it('sortRowsByStates: locale задаёт правила сравнения строк', () => {
+		const letters: TableRow[] = ['z', 'ä', 'a'].map((name, index) => ({ id: index + 1, data: { name } }))
+		const sort = (locale: string): Array<string | number> =>
+			sortRowsByStates(letters, [{ key: 'name', direction: 'asc' }], { columns: [], locale }).map(r => r.id)
+		expect(sort('sv')).toEqual([3, 1, 2])
+		expect(sort('de')).toEqual([3, 2, 1])
+	})
+
 	it('sortRowsByStates сохраняет порядок равных строк', () => {
-		const sorted = sortRowsByStates(rows, [{ key: 'age', direction: 'asc' }], [])
+		const sorted = sortRowsByStates(rows, [{ key: 'age', direction: 'asc' }], { columns: [] })
 		expect(sorted.map(r => r.id)).toEqual([2, 1, 3])
 	})
 })

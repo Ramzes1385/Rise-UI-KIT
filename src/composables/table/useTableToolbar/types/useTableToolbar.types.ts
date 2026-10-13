@@ -1,4 +1,4 @@
-import type { ComputedRef, Ref, useSlots } from 'vue'
+import type { ComputedRef, Ref } from 'vue'
 import type { FilterOption, TableColumn } from '@components/BaseTable/types/BaseTable.types'
 import type { FilterDraft, FilterKind } from '@composables/table/useTableFilter/types/useTableFilter.types'
 
@@ -7,7 +7,6 @@ export interface UseTableToolbarOptions {
 	hasSearch: () => boolean
 	hasFilters: () => boolean
 	hasColumnSettings: () => boolean
-	slots: ReturnType<typeof useSlots>
 	addFilter: (draft: FilterDraft) => void
 	removeFilter: (index: number) => void
 }

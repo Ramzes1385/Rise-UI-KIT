@@ -5,7 +5,7 @@
 				<slot name="header"></slot>
 			</div>
 			<BaseTableToolbar
-				:show-toolbar="showToolbar"
+				:show-toolbar="showToolbar || Boolean($slots['toolbar-prepend'] || $slots['toolbar-append'])"
 				:has-search="hasSearch"
 				:has-filters="hasFilters"
 				:has-column-settings="hasColumnSettings"
@@ -77,6 +77,7 @@
 							<col v-for="(column, i) in visibleColumns" :key="column.key" :style="{ width: columnWidths[i] }" />
 						</colgroup>
 						<BaseTableHeader
+							:slots-version="slotsVersion"
 							:is-virtual="isVirtualMode"
 							:columns="visibleColumns"
 							:is-selectable="isSelectable"
@@ -97,13 +98,10 @@
 							@toggle-all="toggleAll"
 							@sort="handleSort"
 							@resize-start="startResize"
-							@resize-by="resizeColumnBy">
-							<template v-for="column in visibleColumns" #[`header-${column.key}`]="slotProps" :key="column.key">
-								<slot v-if="$slots[`header-${column.key}`]" :name="`header-${column.key}`" v-bind="slotProps"></slot>
-							</template>
-						</BaseTableHeader>
+							@resize-by="resizeColumnBy" />
 
 						<BaseTableBody
+							:slots-version="slotsVersion"
 							:rows="bodyRows"
 							:is-virtual="isVirtualMode"
 							:index-offset="isVirtualMode ? virtual.range.value.start : 0"
@@ -112,7 +110,7 @@
 							:columns="visibleColumns"
 							:empty-text="bodyEmptyText"
 							:is-filtered="isFiltered"
-							:is-row-interactive="isRowInteractive"
+							:is-row-interactive="getIsRowInteractive()"
 							:is-loading="isLoading"
 							:skeleton-rows="skeletonRows"
 							:is-selectable="isSelectable"
@@ -132,18 +130,9 @@
 							:format-cell-value="formatCellValue"
 							@row-click="handleRowClick"
 							@toggle-row="toggleRow"
-							@toggle-expand="toggleExpand">
-							<template v-for="column in visibleColumns" #[`cell-${column.key}`]="slotProps" :key="column.key">
-								<slot v-if="$slots[`cell-${column.key}`]" :name="`cell-${column.key}`" v-bind="slotProps"></slot>
-							</template>
-							<template #empty="slotProps">
-								<slot name="empty" v-bind="slotProps"></slot>
-							</template>
-							<template #expanded-content="slotProps">
-								<slot name="expanded-content" v-bind="slotProps"></slot>
-							</template>
-						</BaseTableBody>
+							@toggle-expand="toggleExpand" />
 					</table>
+					<div v-if="loadMode === 'infinite'" ref="sentinelRef" class="base-table__sentinel" aria-hidden="true"></div>
 				</div>
 
 				<BaseLoader
@@ -229,6 +218,9 @@ const props = withDefaults(
 		pageSizeOptions: () => [],
 		loadMode: 'pagination',
 		searchDebounce: 300,
+		sortLocale: undefined,
+		expandedIds: undefined,
+		isRowInteractive: undefined,
 		sizeScale: SIZE_SCALE_DEFAULT,
 		padding: undefined,
 		isVirtual: false,
@@ -317,6 +309,8 @@ const {
 	hasPageSizeControl,
 	hasPagination,
 	tableWrapperRef,
+	sentinelRef,
+	slotsVersion,
 	isScrollable,
 	isVirtualMode,
 	virtual,
@@ -325,7 +319,7 @@ const {
 	stickyServiceStyle,
 	isFiltered,
 	bodyEmptyText,
-	isRowInteractive,
+	getIsRowInteractive,
 	exportItems,
 	isExportOpen,
 	exportData,

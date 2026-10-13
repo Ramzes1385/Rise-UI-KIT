@@ -1,6 +1,8 @@
 import type { LoadMode, NestedTableConfig, TableColumn, TableRow } from '../BaseTable.types'
 
 export interface BaseTableBodyProps {
+	/** Версия слотов `cell-*`, `empty` и `expanded-content` приложения: растёт, когда они заменены, и строки перерисовываются */
+	slotsVersion?: number
 	/** Данные строк таблицы */
 	rows: TableRow[]
 	/** Определения колонок таблицы */
@@ -58,13 +60,4 @@ export interface BaseTableBodyEmits {
 	(event: 'row-click', row: TableRow): void
 	(event: 'toggle-row', row: TableRow): void
 	(event: 'toggle-expand', row: TableRow): void
-}
-
-export interface BaseTableBodySlots {
-	/** Контент при пустой таблице */
-	empty?: (props: { isFiltered: boolean }) => unknown
-	/** Контент раскрытой строки */
-	'expanded-content'?: (props: { row: TableRow }) => unknown
-	/** Кастомный рендер ячейки по ключу колонки (`cell-<columnKey>`) */
-	[name: `cell-${string}`]: (props: { row: TableRow; value: unknown; column: TableColumn; index?: number }) => unknown
 }

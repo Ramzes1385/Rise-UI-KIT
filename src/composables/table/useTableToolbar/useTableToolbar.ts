@@ -73,15 +73,13 @@ function useFilterDraft(filterableColumns: () => TableColumn[]) {
 
 /** Также управляет видимостью тулбара */
 function useTableToolbar(options: UseTableToolbarOptions): UseTableToolbarReturn {
-	const { filterableColumns, hasSearch, hasFilters, hasColumnSettings, slots, addFilter, removeFilter } = options
+	const { filterableColumns, hasSearch, hasFilters, hasColumnSettings, addFilter, removeFilter } = options
 	const draft = useFilterDraft(filterableColumns)
 	const { filterColumn, filterOperator, filterValue, filterValueTo, filterValues } = draft
 
 	const filterColumnOptions = computed(() => filterableColumns().map(column => ({ value: column.key, label: column.label })))
 
-	const showToolbar = computed((): boolean => {
-		return hasSearch() || hasFilters() || hasColumnSettings() || !!slots['toolbar-prepend'] || !!slots['toolbar-append']
-	})
+	const showToolbar = computed((): boolean => hasSearch() || hasFilters() || hasColumnSettings())
 
 	return {
 		...draft,

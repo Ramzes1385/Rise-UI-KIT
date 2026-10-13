@@ -1,6 +1,8 @@
 import type { SortDirection, TableColumn } from '../BaseTable.types'
 
 export interface BaseTableHeaderProps {
+	/** Версия слотов `header-*` приложения: растёт, когда они заменены, и заголовок перерисовывается */
+	slotsVersion?: number
 	/** Виртуальная прокрутка: строка заголовка получает aria-rowindex="1" */
 	isVirtual?: boolean
 	/** Определения колонок таблицы */
@@ -42,9 +44,4 @@ export interface BaseTableHeaderEmits {
 	(event: 'sort', column: TableColumn): void
 	(event: 'resize-start', value: MouseEvent, column: TableColumn): void
 	(event: 'resize-by', handle: HTMLElement, column: TableColumn, delta: number): void
-}
-
-export interface BaseTableHeaderSlots {
-	/** Кастомный рендер заголовка колонки (`header-<columnKey>`) */
-	[name: `header-${string}`]: (props: { column: TableColumn; sortDirection: SortDirection }) => unknown
 }

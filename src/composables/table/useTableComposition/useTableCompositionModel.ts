@@ -7,7 +7,7 @@ import { useTableSelection } from '@composables/table/useTableSelection'
 import type { UseTableCompositionOptions } from './types/useTableComposition.types'
 
 function useTableCompositionModel(options: UseTableCompositionOptions) {
-	const { rows, columns, loadMode, pageSize, hasMore, isMultiSort, searchDebounce, emit, slots } = options
+	const { rows, columns, loadMode, pageSize, hasMore, isMultiSort, searchDebounce, sortLocale, emit } = options
 	const { isResizable, hasRowNumber, isSelectable, hasSearch, hasFilters, hasColumnSettings } = options
 
 	const tableColumns = useTableColumns({
@@ -29,6 +29,7 @@ function useTableCompositionModel(options: UseTableCompositionOptions) {
 		hasMore: () => hasMore?.value ?? false,
 		isMultiSort: () => isMultiSort.value,
 		searchDebounce: () => searchDebounce.value,
+		sortLocale: () => sortLocale?.value,
 		onSearch: (q: string) => emit('search', q),
 		onSort: states => emit('sort', states),
 		onFilter: filters => emit('filter', filters),
@@ -39,14 +40,13 @@ function useTableCompositionModel(options: UseTableCompositionOptions) {
 	// «Выбрать все» действует на строки, прошедшие поиск и фильтры, а не на все переданные rows
 	const selection = useTableSelection({ rows, filteredRows: processedRows, onSelect: selectedRows => emit('select', selectedRows) })
 
-	const expand = useTableExpand({ rows: () => rows.value, emit })
+	const expand = useTableExpand({ rows: () => rows.value, expandedIds: () => options.expandedIds?.value, emit })
 
 	const toolbar = useTableToolbar({
 		filterableColumns: () => filterableColumns.value,
 		hasSearch: () => hasSearch.value,
 		hasFilters: () => hasFilters.value,
 		hasColumnSettings: () => hasColumnSettings.value,
-		slots,
 		addFilter,
 		removeFilter,
 	})

@@ -1,4 +1,4 @@
-import type { ComputedRef, Slots } from 'vue'
+import type { ComputedRef } from 'vue'
 import type { BaseTableEmits, TableColumn, TableRow } from '@components/BaseTable/types/BaseTable.types'
 
 export interface UseTableCompositionOptions {
@@ -9,6 +9,8 @@ export interface UseTableCompositionOptions {
 	hasMore?: ComputedRef<boolean>
 	isMultiSort: ComputedRef<boolean>
 	searchDebounce: ComputedRef<number>
+	expandedIds?: ComputedRef<Array<string | number> | undefined>
+	sortLocale?: ComputedRef<string | undefined>
 	isResizable: ComputedRef<boolean>
 	hasRowNumber: ComputedRef<boolean>
 	isSelectable: ComputedRef<boolean>
@@ -19,5 +21,4 @@ export interface UseTableCompositionOptions {
 	pageSizeOptions: ComputedRef<number[]>
 	infiniteScrollThreshold: number
 	emit: BaseTableEmits
-	slots: Slots
 }

@@ -1,5 +1,6 @@
 import { useId } from 'vue'
 import { useTableUi } from '../useTableUi'
+import { useTableSlot } from '../useTableSlots'
 import type { TableColumn } from '../../types/BaseTable.types'
 import type { BaseTableHeaderProps } from '../../types/header/BaseTableHeader.types'
 
@@ -7,6 +8,7 @@ export function useBaseTableHeader(props: BaseTableHeaderProps) {
 	return {
 		ui: useTableUi(),
 		idPrefix: useId(),
+		getSlot: useTableSlot(),
 		getAriaSort(column: TableColumn): 'ascending' | 'descending' | 'none' | undefined {
 			if (!column.isSortable) return undefined
 			const direction = props.getSortDirection(column.key)

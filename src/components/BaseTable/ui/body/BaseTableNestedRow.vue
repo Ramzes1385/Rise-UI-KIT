@@ -33,9 +33,9 @@
 					tdClass,
 				]"
 				:style="getColumnStyle(column)">
-				<slot :name="`cell-${column.key}`" :row="child" :value="child.data[column.key]" :column="column">
+				<TableSlot :render="getSlot(`cell-${column.key}`)" :args="{ row: child, value: child.data[column.key], column }">
 					{{ formatCellValue(column, child) }}
-				</slot>
+				</TableSlot>
 			</td>
 		</tr>
 	</template>
@@ -43,12 +43,11 @@
 
 <script setup lang="ts">
 import BaseTable from '../BaseTable.vue'
+import { TableSlot } from '../../model/TableSlot'
 import { useTableExpandTransition } from '../../model/body/useTableExpandTransition'
-import type { BaseTableNestedRowProps, BaseTableNestedRowSlots } from '../../types/body/BaseTableNestedRow.types'
+import type { BaseTableNestedRowProps } from '../../types/body/BaseTableNestedRow.types'
 
 defineProps<BaseTableNestedRowProps>()
 
-defineSlots<BaseTableNestedRowSlots>()
-
-const { ui, transitionCallbacks } = useTableExpandTransition()
+const { ui, getSlot, transitionCallbacks } = useTableExpandTransition()
 </script>

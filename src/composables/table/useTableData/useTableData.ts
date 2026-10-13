@@ -32,8 +32,8 @@ import type { UseTableDataOptions, UseTableDataReturn } from './types/useTableDa
  * ```
  */
 function useTableData(options: UseTableDataOptions): UseTableDataReturn {
-	const { rows, columns, loadMode, pageSize, hasMore, isMultiSort, searchDebounce, onSearch, onSort, onFilter, onPageSizeChange } =
-		options
+	const { rows, columns, loadMode, pageSize, hasMore, isMultiSort, searchDebounce, sortLocale, onSearch, onSort, onFilter } = options
+	const { onPageSizeChange } = options
 
 	const { searchQuery, handleSearchInput } = useTableSearch({ searchDebounce, onSearch })
 
@@ -47,7 +47,7 @@ function useTableData(options: UseTableDataOptions): UseTableDataReturn {
 	const { sortStates, getSortDirection, getSortIndex, handleSort } = useTableSort({ isMultiSort, onSort })
 
 	/** Обработанные строки (поиск + фильтры + сортировка) */
-	const processedRows = useTableProcessedRows({ rows, columns, searchQuery, activeFilters, sortStates })
+	const processedRows = useTableProcessedRows({ rows, columns, searchQuery, activeFilters, sortStates, locale: sortLocale })
 
 	const { currentPage, localPageSize, displayedRows, totalPages, visiblePages, hasMoreRows, loadMore, resetPage, handlePageSizeChange } =
 		useTablePagination({ processedRows, loadMode, pageSize, hasMore, onPageSizeChange })

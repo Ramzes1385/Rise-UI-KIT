@@ -18,6 +18,8 @@ export interface UseTableDataOptions {
 	isMultiSort: () => boolean
 	/** Дебаунс поиска (мс) */
 	searchDebounce: () => number
+	/** Язык сравнения строк при сортировке (BCP 47); без него — язык кита */
+	sortLocale?: () => string | undefined
 	/** Callback при поиске */
 	onSearch?: (query: string) => void
 	/** Callback при сортировке */

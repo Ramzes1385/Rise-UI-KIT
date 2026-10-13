@@ -27,8 +27,16 @@ function useTableCompositionActions(options: UseTableCompositionOptions, parts: 
 		emit('load-more')
 	}
 
+	function canLoadMore(): boolean {
+		return loadMode.value === 'infinite' && hasMoreRows.value && !isLoading.value
+	}
+
+	function handleReach(): void {
+		if (canLoadMore()) handleLoadMore()
+	}
+
 	function handleScroll(e: Event): void {
-		if (loadMode.value !== 'infinite' || !hasMoreRows.value || isLoading.value) return
+		if (!canLoadMore()) return
 
 		const target = toHTMLElement(e.target)
 		if (!target) return
@@ -56,7 +64,7 @@ function useTableCompositionActions(options: UseTableCompositionOptions, parts: 
 		resizeBy(handle.closest('th') as HTMLElement, column.key, delta)
 	}
 
-	return { toggleRow, toggleAll, handleLoadMore, handleScroll, startResize, resizeColumnBy }
+	return { toggleRow, toggleAll, handleLoadMore, handleReach, handleScroll, startResize, resizeColumnBy }
 }
 
 export { useTableCompositionActions }

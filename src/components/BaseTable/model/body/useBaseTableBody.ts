@@ -1,6 +1,7 @@
 import { useRowFlip } from './useRowFlip'
 import { useTableUi } from '../useTableUi'
 import { computed, ref, watch } from 'vue'
+import { useTableSlot } from '../useTableSlots'
 import type { TableRow } from '../../types/BaseTable.types'
 import type { BaseTableBodyProps } from '../../types/body/BaseTableBody.types'
 
@@ -27,6 +28,7 @@ export function useBaseTableBody(props: Pick<BaseTableBodyProps, 'rows' | 'isLoa
 	})
 	return {
 		ui: useTableUi(),
+		getSlot: useTableSlot(),
 		tbodyRef,
 		isRevealing: useReveal(props),
 		emptyClasses: EMPTY_CLASSES,

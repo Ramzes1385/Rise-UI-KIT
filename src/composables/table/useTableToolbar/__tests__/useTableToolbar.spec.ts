@@ -1,10 +1,9 @@
-import type { Slots } from 'vue'
 import { UI_FILTER } from '@/locales/messages'
 import { describe, expect, it, vi } from 'vitest'
 import { useTableToolbar } from '../useTableToolbar'
 import type { TableColumn } from '@components/BaseTable/types/BaseTable.types'
 
-type Flags = { search?: boolean; filters?: boolean; settings?: boolean; slots?: Slots }
+type Flags = { search?: boolean; filters?: boolean; settings?: boolean }
 
 function setup(flags: Flags = {}, columns: TableColumn[] = []) {
 	const addFilter = vi.fn()
@@ -14,7 +13,6 @@ function setup(flags: Flags = {}, columns: TableColumn[] = []) {
 		hasSearch: () => !!flags.search,
 		hasFilters: () => !!flags.filters,
 		hasColumnSettings: () => !!flags.settings,
-		slots: flags.slots ?? {},
 		addFilter,
 		removeFilter,
 	})
@@ -30,8 +28,6 @@ describe('useTableToolbar', () => {
 		['поиск', { search: true }],
 		['фильтры', { filters: true }],
 		['настройки колонок', { settings: true }],
-		['слот toolbar-prepend', { slots: { 'toolbar-prepend': () => [] } }],
-		['слот toolbar-append', { slots: { 'toolbar-append': () => [] } }],
 	])('тулбар показан, когда есть %s', (_, flags) => {
 		expect(setup(flags).showToolbar.value).toBe(true)
 	})

@@ -37,9 +37,11 @@
 						type="button"
 						:class="ui('sort-btn')"
 						:aria-describedby="getSortPriority(column) ? `${idPrefix}-${column.key}-priority` : undefined">
-						<slot :name="`header-${column.key}`" :column="column" :sort-direction="getSortDirection(column.key)">
+						<TableSlot
+							:render="getSlot(`header-${column.key}`)"
+							:args="{ column, sortDirection: getSortDirection(column.key) }">
 							<span class="base-table__th-label">{{ column.label }}</span>
-						</slot>
+						</TableSlot>
 						<span class="base-table__sort-icon" aria-hidden="true">
 							<BaseIcon :name="getSortIcon(column)" :size-scale="calcIconScale('sm', sizeScale)" />
 							<span v-if="getSortPriority(column)" class="base-table__sort-index">{{ getSortPriority(column) }}</span>
@@ -49,9 +51,9 @@
 						{{ TABLE_TEXT.SORT_PRIORITY }}: {{ getSortPriority(column) }}
 					</span>
 				</template>
-				<slot v-else :name="`header-${column.key}`" :column="column" :sort-direction="null">
+				<TableSlot v-else :render="getSlot(`header-${column.key}`)" :args="{ column, sortDirection: null }">
 					<span class="base-table__th-label">{{ column.label }}</span>
-				</slot>
+				</TableSlot>
 				<BaseTableResizeHandle
 					v-if="isColumnResizable(column)"
 					:column="column"
@@ -64,18 +66,17 @@
 
 <script setup lang="ts">
 import { BaseIcon } from '@components/BaseIcon'
+import { TableSlot } from '../../model/TableSlot'
 import { calcIconScale } from '@utils/media/iconUtils'
 import { BaseCheckbox } from '@components/BaseCheckbox'
 import { TABLE_TEXT, UI_TEXT } from '@/locales/messages'
 import BaseTableResizeHandle from './BaseTableResizeHandle.vue'
 import { useBaseTableHeader } from '../../model/header/useBaseTableHeader'
-import type { BaseTableHeaderEmits, BaseTableHeaderProps, BaseTableHeaderSlots } from '../../types/header/BaseTableHeader.types'
+import type { BaseTableHeaderEmits, BaseTableHeaderProps } from '../../types/header/BaseTableHeader.types'
 
 const props = defineProps<BaseTableHeaderProps>()
 
 const emit = defineEmits<BaseTableHeaderEmits>()
 
-defineSlots<BaseTableHeaderSlots>()
-
-const { ui, idPrefix, getAriaSort, getSortIcon, getSortPriority } = useBaseTableHeader(props)
+const { ui, idPrefix, getSlot, getAriaSort, getSortIcon, getSortPriority } = useBaseTableHeader(props)
 </script>

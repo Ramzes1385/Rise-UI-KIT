@@ -32,6 +32,7 @@
 			<BaseButton
 				v-if="isExpandable"
 				variant="ghost"
+				:is-disabled="Boolean(row.isDisabled)"
 				:padding="expandButtonPadding"
 				:class="ui('expand-btn')"
 				:aria-label="isExpanded ? TABLE_TEXT.COLLAPSE_ROW : TABLE_TEXT.EXPAND_ROW"
@@ -52,9 +53,9 @@
 				tdClass,
 			]"
 			:style="getColumnStyle(column)">
-			<slot :name="`cell-${column.key}`" :row="row" :value="row.data[column.key]" :column="column" :index="rowIndex">
+			<TableSlot :render="getSlot(`cell-${column.key}`)" :args="{ row, value: row.data[column.key], column, index: rowIndex }">
 				{{ formatCellValue(column, row) }}
-			</slot>
+			</TableSlot>
 		</td>
 	</tr>
 </template>
@@ -62,17 +63,16 @@
 <script setup lang="ts">
 import { TABLE_TEXT } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
+import { TableSlot } from '../../model/TableSlot'
 import { BaseButton } from '@components/BaseButton'
 import { calcIconScale } from '@utils/media/iconUtils'
 import { BaseCheckbox } from '@components/BaseCheckbox'
 import { useBaseTableRow } from '../../model/body/useBaseTableRow'
-import type { BaseTableRowEmits, BaseTableRowProps, BaseTableRowSlots } from '../../types/body/BaseTableRow.types'
+import type { BaseTableRowEmits, BaseTableRowProps } from '../../types/body/BaseTableRow.types'
 
 const props = defineProps<BaseTableRowProps>()
 
 const emit = defineEmits<BaseTableRowEmits>()
 
-defineSlots<BaseTableRowSlots>()
-
-const { ui, expandButtonPadding, isExpandable, onClick, onKeydown } = useBaseTableRow(props, emit)
+const { ui, getSlot, expandButtonPadding, isExpandable, onClick, onKeydown } = useBaseTableRow(props, emit)
 </script>

@@ -236,6 +236,8 @@ export const ruBase = {
 		POPOVER_ANCHOR_WITHOUT_LABEL:
 			'BasePopover: окно с anchor и без слота trigger не имеет имени — задайте ariaLabel, чтобы его озвучили читалки экрана',
 		CRYPTOPRO_NO_TSA: 'BaseCryptoProSign: для уровня подписи «{level}» нужен адрес службы штампов времени tsaAddress',
+		TABLE_DUPLICATE_ROW_ID:
+			'BaseTable: id строки «{id}» встречается в rows повторно — раскрытие и выбор будут действовать на все такие строки',
 		DASHBOARD_GRID_DUPLICATE_ID: 'BaseDashboardGrid: id «{id}» встречается в раскладке повторно — повторы не показаны',
 		UNKNOWN_LOCALE: 'Неизвестный язык «{locale}». Встроенные: {locales}; свой — defineLocale()',
 		TOAST_WITHOUT_APP: 'useToast: не найден <BaseApp> — уведомление не показано. Оберните приложение в <BaseApp>.',

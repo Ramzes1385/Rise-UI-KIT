@@ -11,8 +11,8 @@ const template = `
 	<div class="story-stack">
 		<span class="story-label">loadMode: button</span>
 		<BaseTable v-bind="args" :columns="columns" load-mode="button" />
-		<span class="story-label">loadMode: infinite, height: 180px</span>
-		<BaseTable v-bind="args" :columns="columns" load-mode="infinite" height="180px" />
+		<span class="story-label">loadMode: infinite, height: 140px</span>
+		<BaseTable v-bind="args" :columns="columns" load-mode="infinite" height="140px" />
 	</div>
 `
 
