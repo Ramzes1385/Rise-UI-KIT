@@ -1,5 +1,7 @@
+import { warn } from '@/locales/warn'
 import { useUi } from '@composables/base/useUi'
-import { computed, ref, useId, watch } from 'vue'
+import { UI_WARNINGS } from '@/locales/messages'
+import { computed, ref, useId, useSlots, watch } from 'vue'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import type { BasePopoverEmits, PopoverProps } from '../types/BasePopover.types'
 import { useTriggerAttributes } from '@composables/overlay/useTriggerAttributes'
@@ -30,7 +32,19 @@ function usePopoverOpen(props: PopoverProps, emit: BasePopoverEmits) {
 	}
 }
 
+function useAnchorLabelWarning(props: PopoverProps): void {
+	const slots = useSlots()
+	watch(
+		() => [props.anchor, props.ariaLabel],
+		() => {
+			if (props.anchor && !props.ariaLabel && !slots.trigger) warn(UI_WARNINGS.POPOVER_ANCHOR_WITHOUT_LABEL)
+		},
+		{ immediate: true },
+	)
+}
+
 export function useBasePopover(props: PopoverProps, emit: BasePopoverEmits) {
+	useAnchorLabelWarning(props)
 	const { classes } = useCustomClass({ getClass: () => props.customClass, elementKeys: ['root', 'trigger', 'arrow', 'inner', 'panel'] })
 	const open = usePopoverOpen(props, emit)
 	const ui = useUi(props, 'base-popover')

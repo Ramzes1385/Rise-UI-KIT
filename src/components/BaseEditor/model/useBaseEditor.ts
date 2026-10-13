@@ -146,6 +146,7 @@ export function useBaseEditor(props: EditorProps, emit: BaseEditorEmits) {
 	const engine = useEditorEngine(emit, { editorRef, codeTextareaRef }, { isLocked, sanitize })
 	const insert = useSafeInsert(isLocked, sanitize)
 	useMediaMenu(editorRef, engine.toolbar)
+	const mediaMenuAnchor = computed(() => ({ x: engine.toolbar.contextMenu.x, y: engine.toolbar.contextMenu.y }))
 	useContentSync(props, editorRef, { isLocked, sanitize, engine })
 
 	return {
@@ -157,6 +158,7 @@ export function useBaseEditor(props: EditorProps, emit: BaseEditorEmits) {
 		menuControlScale: computed(() => props.sizeScale * EDITOR_MENU_SCALE_RATIO),
 		headingOptions: headingOptions(),
 		...engine.toolbar,
+		mediaMenuAnchor,
 		...engine.state,
 		handleInput: engine.handleInput,
 		...insert,

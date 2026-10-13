@@ -200,7 +200,10 @@ describe('слои оверлеев', () => {
 		)
 
 		await fireEvent.contextMenu(document.querySelector('.base-editor__content img') as HTMLImageElement)
-		expect(await screen.findByRole('dialog', { name: 'Размер медиа' })).toHaveAttribute('data-theme', 'dark')
+		expect((await screen.findByRole('dialog', { name: 'Размер медиа' })).closest('.base-dropdown__panel')).toHaveAttribute(
+			'data-theme',
+			'dark',
+		)
 
 		isMenuOpen.value = true
 		await nextTick()

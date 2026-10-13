@@ -198,7 +198,6 @@ $progress-radius: ct(progress, radius, var(--rise-radius-full));
 
 		&--countdown &__fill {
 			animation: base-progress-countdown var(--progress-countdown) linear forwards;
-			@include loop-state;
 		}
 
 		&--indeterminate &__fill-circle {

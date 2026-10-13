@@ -227,6 +227,8 @@ export const ruBase = {
 	warnings: {
 		BOTTOM_NAV_ITEM_COUNT:
 			'BaseBottomNav: пунктов {count} — нижняя навигация рассчитана на {min}–{max}; остальное вынесите в пункт «Ещё»',
+		POPOVER_ANCHOR_WITHOUT_LABEL:
+			'BasePopover: окно с anchor и без слота trigger не имеет имени — задайте ariaLabel, чтобы его озвучили читалки экрана',
 		CRYPTOPRO_NO_TSA: 'BaseCryptoProSign: для уровня подписи «{level}» нужен адрес службы штампов времени tsaAddress',
 		DASHBOARD_GRID_DUPLICATE_ID: 'BaseDashboardGrid: id «{id}» встречается в раскладке повторно — повторы не показаны',
 		UNKNOWN_LOCALE: 'Неизвестный язык «{locale}». Встроенные: {locales}; свой — defineLocale()',

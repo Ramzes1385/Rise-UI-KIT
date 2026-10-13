@@ -384,3 +384,19 @@ describe('BasePopover: кнопка и диалог', () => {
 		})
 	})
 })
+
+describe('BasePopover предупреждение об имени окна', () => {
+	it('anchor без trigger и без ariaLabel предупреждает; с ariaLabel или trigger молчит', () => {
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+
+		render(BasePopover, { props: { isOpen: false, anchor: { x: 1, y: 2 } }, slots: { default: '<p>Контент</p>' } })
+		expect(warnSpy).toHaveBeenCalledTimes(1)
+		expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('ariaLabel'))
+
+		render(BasePopover, { props: { isOpen: false, anchor: { x: 1, y: 2 }, ariaLabel: 'Окно' }, slots: { default: '<p>Контент</p>' } })
+		render(BasePopover, { props: { isOpen: false, anchor: { x: 1, y: 2 } }, slots: SLOTS })
+		expect(warnSpy).toHaveBeenCalledTimes(1)
+
+		warnSpy.mockRestore()
+	})
+})

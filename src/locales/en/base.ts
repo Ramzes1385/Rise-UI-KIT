@@ -205,6 +205,8 @@ export const enBase = {
 	warnings: {
 		BOTTOM_NAV_ITEM_COUNT:
 			'BaseBottomNav: {count} items — bottom navigation is designed for {min}–{max}; move the rest to a “More” item',
+		POPOVER_ANCHOR_WITHOUT_LABEL:
+			'BasePopover: a window with anchor and no trigger slot has no name — set ariaLabel so screen readers announce it',
 		CRYPTOPRO_NO_TSA: 'BaseCryptoProSign: the "{level}" signature level needs a timestamp service address, tsaAddress',
 		DASHBOARD_GRID_DUPLICATE_ID: 'BaseDashboardGrid: id "{id}" appears in the layout more than once — duplicates are not shown',
 		UNKNOWN_LOCALE: 'Unknown locale "{locale}". Built-in: {locales}; for your own use defineLocale()',

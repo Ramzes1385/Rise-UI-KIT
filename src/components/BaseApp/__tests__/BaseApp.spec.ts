@@ -105,7 +105,11 @@ describe('BaseApp', () => {
 			const items = document.querySelectorAll<HTMLElement>('.base-notification-item')
 			expect(Array.from(items, item => item.textContent?.trim().charAt(0))).toEqual(['3', '2'])
 			expect(items[0]).toHaveClass('base-notification-item--soft')
-			expect((items[0].querySelector('.base-notification-item__progress') as HTMLElement).style.animationDuration).toBe('5000ms')
+			expect(
+				(items[0].querySelector('.base-notification-item__progress .base-progress__fill') as HTMLElement).style.getPropertyValue(
+					'--progress-countdown',
+				),
+			).toBe('5000ms')
 			expect(region.style.getPropertyValue('--size-scale')).toBe('1.2')
 		})
 

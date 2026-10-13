@@ -82,7 +82,7 @@
 
 		<BasePopover
 			:is-open="contextMenu.isVisible"
-			:anchor="{ x: contextMenu.x, y: contextMenu.y }"
+			:anchor="mediaMenuAnchor"
 			position="bottom"
 			variant="ghost"
 			max-height="none"
@@ -160,6 +160,7 @@ const {
 	activeStates,
 	contextMenu,
 	contextMenuRef,
+	mediaMenuAnchor,
 	closeContextMenu,
 	isCodeMode,
 	codeContent,

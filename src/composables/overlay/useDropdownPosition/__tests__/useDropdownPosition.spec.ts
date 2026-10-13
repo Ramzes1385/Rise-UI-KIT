@@ -147,6 +147,15 @@ describe('useDropdownPosition', () => {
 		expect(api.coords.value).toEqual({ top: 744, left: 50 })
 	})
 
+	it('панель есть, но не отрисована (offset = 0) — размер нулевой: без переворота и сдвига', () => {
+		const panel = createPanel(0, 0)
+		panel.getBoundingClientRect = () => rect(0, 0, { width: 100, height: 50 })
+		const { api } = setup({ position: 'bottom-end', trigger: rect(700, 10, { width: 40 }), panel })
+
+		expect(api.placement.value).toBe('bottom-end')
+		expect(api.coords.value).toEqual({ top: 744, left: 50 })
+	})
+
 	it('matchWidth — ширина триггера', () => {
 		const { api } = setup({ matchWidth: true })
 
