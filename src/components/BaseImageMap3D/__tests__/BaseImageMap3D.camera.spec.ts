@@ -374,7 +374,7 @@ describe('BaseImageMap3D: камера', () => {
 	)
 
 	it('без кнопок масштаба (hasZoomControls: false) и с одним этажом — без панели', async () => {
-		await renderCamera({ hasZoomControls: false, data: { ...DATA, layers: [DATA.layers[0]] } })
+		await renderCamera({ hasZoomControls: false, hasFullscreen: false, data: { ...DATA, layers: [DATA.layers[0]] } })
 		expect(screen.queryByRole('group', { name: 'Камера' })).toBeNull()
 		expect(document.querySelector('.base-image-map-3d__toolbar')).toBeNull()
 	})

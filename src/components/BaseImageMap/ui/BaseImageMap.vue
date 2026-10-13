@@ -1,7 +1,12 @@
 <template>
 	<section
 		ref="rootRef"
-		:class="[ui('root'), variantClass, classes.root, { 'base-image-map--fullscreen': isFullscreen }]"
+		:class="[
+			ui('root'),
+			variantClass,
+			classes.root,
+			{ 'base-image-map--fullscreen': isFullscreen, 'base-image-map--fullscreen-fallback': isFullscreenFallback },
+		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		:aria-label="mapLabel">
 		<div
@@ -52,6 +57,7 @@
 						<BaseButton
 							v-if="hasFullscreen && isFullscreenSupported"
 							variant="ghost"
+							data-map-fullscreen
 							:aria-label="UI_IMAGE_MAP.FULLSCREEN"
 							:aria-pressed="isFullscreen"
 							@click="toggleFullscreen">
@@ -147,14 +153,7 @@
 					</template>
 					<div v-if="gestures.isWheelHintVisible.value" :class="ui('hint')" aria-hidden="true">{{ wheelHint }}</div>
 				</div>
-				<ul v-if="legend.length" :class="[ui('legend'), classes.legend]" :aria-label="UI_IMAGE_MAP.LEGEND">
-					<li v-for="group in legend" :key="group.id" :class="ui('legend-item')">
-						<span :class="ui('swatch')" :style="group.color ? { '--im-swatch': group.color } : undefined" aria-hidden="true">
-							<BaseIcon v-if="group.icon" :name="group.icon" />
-						</span>
-						{{ group.title }}
-					</li>
-				</ul>
+				<ImageMapLegend v-if="legend.length" :groups="legend" :custom-class="classes.legend" :ui="ui" />
 				<ImageMapRoutePanel
 					v-if="hasRoutes && data.routes"
 					:custom-class="classes.route"
@@ -252,6 +251,7 @@
 import '../styles/BaseImageMap.style.scss'
 import ImageMapCard from './ImageMapCard.vue'
 import { BaseIcon } from '@components/BaseIcon'
+import ImageMapLegend from './ImageMapLegend.vue'
 import { BaseModal } from '@components/BaseModal'
 import { BaseButton } from '@components/BaseButton'
 import { BaseDrawer } from '@components/BaseDrawer'
@@ -313,6 +313,7 @@ const {
 	zoomInRef,
 	isFullscreen,
 	isFullscreenSupported,
+	isFullscreenFallback,
 	toggleFullscreen,
 	points,
 	shapes,

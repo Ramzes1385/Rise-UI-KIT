@@ -1,7 +1,7 @@
 import type { ImageMapLayer } from '../../types/imageMapData.types'
 import type { ImageMapRouteLine, ImageMapRouteMarker, ImageMapRouteNode, RouteGraph, RoutePath } from '../../types/ImageMapRoutes.types'
 
-function nodeRuns(graph: RouteGraph, path: RoutePath, layer: string): ImageMapRouteNode[][] {
+export function nodeRuns(graph: RouteGraph, path: RoutePath, layer: string): ImageMapRouteNode[][] {
 	return path.nodes.reduce<ImageMapRouteNode[][]>((runs, node, index) => {
 		if (graph.layerOf(node) !== layer) return runs
 		const previous = path.nodes[index - 1]
@@ -21,7 +21,7 @@ export function routeLines(graph: RouteGraph, path: RoutePath, layer: ImageMapLa
 		}))
 }
 
-function markerKind(path: RoutePath, index: number): ImageMapRouteMarker['kind'] | undefined {
+export function markerKind(path: RoutePath, index: number): ImageMapRouteMarker['kind'] | undefined {
 	if (index === 0) return 'start'
 	if (index === path.nodes.length - 1) return 'end'
 	if (path.links[index - 1]?.transition || path.links[index]?.transition) return 'transition'

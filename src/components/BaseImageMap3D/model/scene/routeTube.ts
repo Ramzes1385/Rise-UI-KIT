@@ -1,7 +1,8 @@
 import { layerElevation, sceneSettings } from './sceneLayout'
 import type { ImageMap3DData } from '../../types/imageMap3dData.types'
-import type { RouteTube } from '../../types/internal/imageMap3dInternal.types'
+import { markerKind, nodeRuns } from '@components/BaseImageMap/model/routes/routeView'
 import type { RouteGraph, RoutePath } from '@components/BaseImageMap/types/ImageMapRoutes.types'
+import type { Route3DPath, RouteSegments, RouteTube } from '../../types/internal/imageMap3dInternal.types'
 import { CurvePath, Group, LineCurve3, Mesh, MeshBasicMaterial, SphereGeometry, TubeGeometry, Vector3 } from 'three'
 
 const RADIUS_RATIO = 0.005
@@ -29,6 +30,29 @@ export function routePoints(graph: RouteGraph, path: RoutePath, data: ImageMap3D
 	})
 }
 
+export function routeSegments(route: Route3DPath, data: ImageMap3DData, layerId?: string): RouteSegments {
+	const { graph, path } = route
+	if (!layerId) {
+		const points = routePoints(graph, path, data)
+		return {
+			runs: [points],
+			markers: [
+				{ kind: 'start', position: points[0] },
+				{ kind: 'end', position: points[points.length - 1] },
+			],
+		}
+	}
+	return {
+		runs: nodeRuns(graph, path, layerId)
+			.filter(run => run.length > 1)
+			.map(run => run.map(node => nodePoint(graph, data, node))),
+		markers: path.nodes.flatMap((node, index) => {
+			const kind = markerKind(path, index)
+			return kind && graph.layerOf(node) === layerId ? [{ kind, position: nodePoint(graph, data, node) }] : []
+		}),
+	}
+}
+
 function routeCurve(points: Vector3[]): CurvePath<Vector3> {
 	const curve = new CurvePath<Vector3>()
 	points.slice(1).forEach((point, index) => {
@@ -44,27 +68,42 @@ function createMarker(position: Vector3, radius: number, material: MeshBasicMate
 	return marker
 }
 
-export function createRouteTube(points: Vector3[], data: ImageMap3DData): RouteTube | null {
+function createTubeGeometry(points: Vector3[], radius: number): TubeGeometry | null {
 	const curve = routeCurve(points)
-	if (!curve.curves.length) return null
+	return curve.curves.length ? new TubeGeometry(curve, curve.curves.length * SEGMENTS_PER_LINK, radius, RADIAL_SEGMENTS, false) : null
+}
+
+export function createRouteTube(segments: RouteSegments, data: ImageMap3DData): RouteTube | null {
 	const radius = sceneSettings(data).extent * RADIUS_RATIO
-	const line = new MeshBasicMaterial({ depthTest: false, transparent: true })
-	const start = new MeshBasicMaterial({ depthTest: false, transparent: true })
-	const end = new MeshBasicMaterial({ depthTest: false, transparent: true })
-	const geometry = new TubeGeometry(curve, curve.curves.length * SEGMENTS_PER_LINK, radius, RADIAL_SEGMENTS, false)
-	const tube = new Mesh(geometry, line)
-	tube.renderOrder = ROUTE_RENDER_ORDER
+	const materials = {
+		line: new MeshBasicMaterial({ depthTest: false, transparent: true }),
+		start: new MeshBasicMaterial({ depthTest: false, transparent: true }),
+		end: new MeshBasicMaterial({ depthTest: false, transparent: true }),
+		transition: new MeshBasicMaterial({ depthTest: false, transparent: true }),
+	}
+	const geometries = segments.runs.flatMap(points => createTubeGeometry(points, radius) ?? [])
+	if (!geometries.length) return null
 	const group = new Group()
 	group.name = 'rise-route'
-	group.add(tube, createMarker(points[0], radius, start), createMarker(points[points.length - 1], radius, end))
-	return { group, geometry, materials: { line, start, end } }
+	geometries.forEach(geometry => {
+		const tube = new Mesh(geometry, materials.line)
+		tube.renderOrder = ROUTE_RENDER_ORDER
+		group.add(tube)
+	})
+	const markers = segments.markers.map(marker => createMarker(marker.position, radius, materials[marker.kind]))
+	group.add(...markers)
+	const end = markers.find((_, index) => segments.markers[index].kind === 'end') ?? null
+	return { group, geometries, end, materials }
 }
 
 export function growRoute(tube: RouteTube, progress: number): void {
 	const step = RADIAL_SEGMENTS * 6
-	const total = tube.geometry.index?.count ?? 0
-	const count = progress >= 1 ? total : Math.floor((total * Math.max(progress, 0)) / step) * step
-	tube.geometry.setDrawRange(0, count)
-	const [, , end] = tube.group.children
-	end.visible = progress >= 1
+	const total = tube.geometries.reduce((sum, geometry) => sum + (geometry.index?.count ?? 0), 0)
+	let remaining = progress >= 1 ? total : Math.floor((total * Math.max(progress, 0)) / step) * step
+	tube.geometries.forEach(geometry => {
+		const count = Math.min(geometry.index?.count ?? 0, remaining)
+		geometry.setDrawRange(0, count)
+		remaining -= count
+	})
+	if (tube.end) tube.end.visible = progress >= 1
 }

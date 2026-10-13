@@ -44,7 +44,7 @@ function adoptObjects(content: SceneContent, item: SceneModelItem, resolve: Scen
 		const colors = objectColors(object, data, resolve)
 		const node = findModelNode(root, objectMeshName(object))
 		if (node && hasTakenMesh(node)) result.shared.push(object.id)
-		const entry = node ? adoptModelNode({ id: object.id, layerId }, node, colors) : null
+		const entry = node ? adoptModelNode({ id: object.id, layerId, hasOutline: content.settings.modelOutline }, node, colors) : null
 		if (!entry?.meshes.length) {
 			entry?.material.dispose()
 			if (!node) result.missing.push(object.id)

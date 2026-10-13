@@ -28,12 +28,28 @@ describe('sceneLayout', () => {
 			objectHeight: 30,
 			bevel: 2,
 			outline: true,
+			modelOutline: false,
 		})
+	})
+
+	it('контур мешей модели этажа включается только явным scene3d.outline: true', () => {
+		const outline = (value: unknown) => sceneSettings({ layers: [LAYER], objects: [], scene3d: { outline: value as boolean } })
+		expect(outline(true)).toMatchObject({ outline: true, modelOutline: true })
+		expect(outline(false)).toMatchObject({ outline: false, modelOutline: false })
+		expect(outline('yes')).toMatchObject({ outline: true, modelOutline: false })
 	})
 
 	it('свои значения scene3d; неверные заменяются умолчаниями', () => {
 		const data = { layers: [LAYER], objects: [], scene3d: { floorGap: 100, floorThickness: 8, objectHeight: 0 } }
-		expect(sceneSettings(data)).toEqual({ extent: 1000, floorGap: 100, floorThickness: 8, objectHeight: 0, bevel: 2, outline: true })
+		expect(sceneSettings(data)).toEqual({
+			extent: 1000,
+			floorGap: 100,
+			floorThickness: 8,
+			objectHeight: 0,
+			bevel: 2,
+			outline: true,
+			modelOutline: false,
+		})
 		const wrong = { layers: [LAYER], objects: [], scene3d: { floorGap: -1, floorThickness: 0, objectHeight: Number.NaN } }
 		expect(sceneSettings(wrong)).toMatchObject({ floorGap: 250, floorThickness: 4, objectHeight: 30 })
 		expect(sceneSettings({ layers: [LAYER], objects: [], scene3d: null as never }).floorGap).toBe(250)

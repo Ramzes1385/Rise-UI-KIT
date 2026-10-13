@@ -64,12 +64,36 @@ const namesOf = (name: string) =>
 		.map(button => button.textContent?.trim())
 
 describe('BaseImageMap3D: список объектов для скринридера', () => {
-	it('кнопки объектов текущего этажа по порядку данных; имя списка — этаж; другой этаж — свой список', async () => {
+	it('кнопки объектов всех этажей группами; имя списка — этаж; текущий этаж первым', async () => {
 		const { exposed } = await env.renderMap({ data: DATA })
 		expect(namesOf('Список объектов, Этаж 1')).toEqual(['Зал', 'Киоск', 'Закрыто'])
+		expect(namesOf('Список объектов, Этаж 2')).toEqual(['Крыша'])
+		const order = () => screen.getAllByRole('list').map(list => list.getAttribute('aria-label'))
+		expect(order()).toEqual(['Список объектов, Этаж 1', 'Список объектов, Этаж 2'])
 		exposed.value?.setLayer('f2')
-		await waitFor(() => expect(namesOf('Список объектов, Этаж 2')).toEqual(['Крыша']))
-		expect(screen.queryByRole('list', { name: 'Список объектов, Этаж 1' })).toBeNull()
+		await waitFor(() => expect(order()).toEqual(['Список объектов, Этаж 2', 'Список объектов, Этаж 1']))
+		expect(namesOf('Список объектов, Этаж 1')).toEqual(['Зал', 'Киоск', 'Закрыто'])
+	})
+
+	it('кнопка объекта другого этажа переключает этаж и выбирает объект; aria-live объявляет этаж', async () => {
+		const onUpdateLayer = vi.fn()
+		const onUpdateActive = vi.fn()
+		const { container } = await env.renderMap({ data: DATA, 'onUpdate:layer': onUpdateLayer, 'onUpdate:active': onUpdateActive })
+		const live = () => container.querySelector('[aria-live="polite"]') as HTMLElement
+		expect(live()).toHaveTextContent('')
+		await fireEvent.click(listOf('Список объектов, Этаж 2').getByRole('button', { name: 'Крыша' }))
+		expect(onUpdateLayer).toHaveBeenCalledWith('f2')
+		expect(onUpdateActive).toHaveBeenCalledWith('roof')
+		await waitFor(() => expect(live()).toHaveTextContent('Показан этаж: Этаж 2'))
+	})
+
+	it('фокус на кнопке объекта другого этажа не подсвечивает объект и не открывает карточку', async () => {
+		const onHover = vi.fn()
+		const { container } = await env.renderMap({ data: DATA, onHover })
+		listOf('Список объектов, Этаж 2').getByRole('button', { name: 'Крыша' }).focus()
+		await nextTick()
+		expect(onHover).not.toHaveBeenCalledWith(expect.objectContaining({ id: 'roof' }))
+		expect(container.querySelector('[role="tooltip"]')).toBeNull()
 	})
 
 	it('фильтр убирает объекты из списка, как и из сцены', async () => {
@@ -143,9 +167,9 @@ describe('BaseImageMap3D: список объектов для скринрид�
 		expect((scene().getObjectByName('hall') as Mesh<never, MeshStandardMaterial>).material.opacity).toBeGreaterThan(base)
 		const kiosk = list.getByRole('button', { name: 'Киоск' })
 		kiosk.focus()
-		await fireEvent.focusOut(screen.getByRole('list'), { relatedTarget: kiosk })
+		await fireEvent.focusOut(list.getByRole('button', { name: 'Зал' }), { relatedTarget: kiosk })
 		expect(onHover).toHaveBeenLastCalledWith(expect.objectContaining({ id: 'kiosk' }))
-		await fireEvent.focusOut(screen.getByRole('list'), { relatedTarget: document.body })
+		await fireEvent.focusOut(kiosk, { relatedTarget: document.body })
 		expect(onHover).toHaveBeenLastCalledWith(null)
 		await nextTick()
 		expect(container.querySelector('[role="tooltip"]')).toBeNull()
@@ -193,7 +217,7 @@ describe('BaseImageMap3D: список объектов для скринрид�
 		expect(open).not.toHaveBeenCalled()
 	})
 
-	it('перерисовка списка не теряет фокус: объект с action layer, смена этажа и фильтр переводят его на область карты', async () => {
+	it('перерисовка списка не теряет фокус: при смене этажа кнопка остаётся в фокусе, а исчезнувшая по фильтру кнопка переводит его на область карты', async () => {
 		const data: ImageMap3DData = {
 			...DATA,
 			objects: [
@@ -215,11 +239,14 @@ describe('BaseImageMap3D: список объектов для скринрид�
 		const { region, exposed, rerender } = await env.renderMap({ data })
 		listOf('Список объектов, Этаж 1').getByRole('button', { name: 'Лестница' }).focus()
 		await fireEvent.click(listOf('Список объектов, Этаж 1').getByRole('button', { name: 'Лестница' }))
-		await waitFor(() => expect(namesOf('Список объектов, Этаж 2')).toEqual(['Крыша']))
-		await waitFor(() => expect(document.activeElement).toBe(region()))
+		await waitFor(() => expect(screen.getAllByRole('list')[0]).toHaveAccessibleName('Список объектов, Этаж 2'))
+		await waitFor(() =>
+			expect(document.activeElement).toBe(listOf('Список объектов, Этаж 1').getByRole('button', { name: 'Лестница' })),
+		)
 		listOf('Список объектов, Этаж 2').getByRole('button', { name: 'Крыша' }).focus()
 		exposed.value?.setLayer('f1')
-		await waitFor(() => expect(document.activeElement).toBe(region()))
+		await waitFor(() => expect(screen.getAllByRole('list')[0]).toHaveAccessibleName('Список объектов, Этаж 1'))
+		expect(document.activeElement).toBe(listOf('Список объектов, Этаж 2').getByRole('button', { name: 'Крыша' }))
 		listOf('Список объектов, Этаж 1').getByRole('button', { name: 'Закрыто' }).focus()
 		await rerender({ data, filters: { kind: ['food'] } })
 		await waitFor(() => expect(namesOf('Список объектов, Этаж 1')).toEqual(['Зал', 'Киоск']))
@@ -232,11 +259,11 @@ describe('BaseImageMap3D: список объектов для скринрид�
 		document.body.append(outside)
 		outside.focus()
 		exposed.value?.setLayer('f2')
-		await waitFor(() => expect(namesOf('Список объектов, Этаж 2')).toEqual(['Крыша']))
+		await waitFor(() => expect(screen.getAllByRole('list')[0]).toHaveAccessibleName('Список объектов, Этаж 2'))
 		expect(document.activeElement).toBe(outside)
 		outside.remove()
 		exposed.value?.setLayer('f1')
-		await waitFor(() => expect(namesOf('Список объектов, Этаж 1')).toHaveLength(3))
+		await waitFor(() => expect(screen.getAllByRole('list')[0]).toHaveAccessibleName('Список объектов, Этаж 1'))
 		const hall = listOf('Список объектов, Этаж 1').getByRole('button', { name: 'Зал' })
 		hall.focus()
 		await rerender({ data: DATA, filters: { kind: ['food'] } })

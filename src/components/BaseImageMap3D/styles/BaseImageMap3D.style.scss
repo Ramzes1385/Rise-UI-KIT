@@ -6,6 +6,29 @@
 	min-width: 0;
 	container: base-image-map-3d / inline-size;
 
+	&--fullscreen {
+		padding: space(12px);
+		background-color: var(--rise-bg);
+
+		.base-image-map-3d__layout,
+		.base-image-map-3d__main {
+			flex: 1;
+		}
+
+		.base-image-map-3d__viewport {
+			flex: 1;
+			height: auto;
+			min-height: sz(160px);
+		}
+	}
+
+	&--fullscreen-fallback {
+		position: fixed;
+		z-index: var(--rise-z-overlay);
+		inset: 0;
+		overflow: auto;
+	}
+
 	&__views {
 		align-self: flex-start;
 	}
@@ -126,6 +149,7 @@
 	}
 
 	&__marker {
+		position: relative;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
@@ -150,6 +174,21 @@
 			box-shadow:
 				0 0 0 3px var(--rise-bg),
 				0 0 0 5px var(--im-fill-active, var(--im-fill, var(--rise-primary)));
+		}
+
+		.base-image-map-3d__point--pulsing &::after {
+			position: absolute;
+			inset: -2px;
+			border: 2px solid var(--im-fill, var(--rise-primary));
+			border-radius: inherit;
+			content: '';
+			opacity: 0;
+			pointer-events: none;
+
+			@include motion-safe {
+				animation: base-image-map-3d-pulse calc(var(--rise-duration-loop) * 1.8) var(--rise-ease) infinite;
+				@include loop-state;
+			}
 		}
 	}
 
@@ -240,5 +279,17 @@
 
 	to {
 		opacity: 1;
+	}
+}
+
+@keyframes base-image-map-3d-pulse {
+	0% {
+		opacity: 0.6;
+		transform: scale(1);
+	}
+
+	100% {
+		opacity: 0;
+		transform: scale(1.9);
 	}
 }

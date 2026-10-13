@@ -29,6 +29,7 @@ export function sceneSettings(data: ImageMap3DData): SceneSettings {
 		objectHeight: pickNumber(scene3d.objectHeight, value => value >= 0, extent * OBJECT_HEIGHT_RATIO),
 		bevel: pickNumber(scene3d.bevel, value => value >= 0, extent * BEVEL_RATIO),
 		outline: typeof scene3d.outline === 'boolean' ? scene3d.outline : true,
+		modelOutline: scene3d.outline === true,
 	}
 }
 

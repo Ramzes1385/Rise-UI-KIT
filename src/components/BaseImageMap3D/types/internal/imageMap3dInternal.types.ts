@@ -1,3 +1,4 @@
+import type { Vector3 } from 'three'
 import type { ComputedRef, Ref, ShallowRef } from 'vue'
 import type { useImageMap3DMap } from '../../model/useImageMap3DMap'
 import type { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
@@ -88,6 +89,8 @@ export interface SceneSettings {
 	bevel: number
 	/** Контур по рёбрам тел объектов */
 	outline: boolean
+	/** Контур по рёбрам мешей модели этажа: включается только явным `scene3d.outline: true` */
+	modelOutline: boolean
 }
 
 /** Рамка сцены для камеры: границы стопки этажей и размеры, по которым подбирается кадр */
@@ -141,7 +144,7 @@ export interface SceneObjectEntry {
 	material: MeshStandardMaterial
 	/** Меши объекта: выдавленные фигуры (по одной на часть) или узлы модели этажа */
 	meshes: Mesh[]
-	/** Контуры по рёбрам тел: по одному на меш фигуры; у объектов из модели этажа их нет */
+	/** Контуры по рёбрам: по одному на меш фигуры; у мешей модели этажа — только при `scene3d.outline: true` (дети меша) */
 	lines: LineSegments[]
 	/** Общий материал контуров; меняется по состоянию объекта */
 	outline: LineBasicMaterial | null
@@ -447,6 +450,8 @@ export interface ScenePointView {
 	isActive: boolean
 	/** Под указателем или в фокусе клавиатуры */
 	isHovered: boolean
+	/** Метка пульсирует: `isPulsing` карты или точки */
+	isPulsing: boolean
 }
 
 /** Последнее положение указателя: наведение по нему считается раз в кадр */
@@ -509,6 +514,8 @@ export interface SceneOverlayOptions {
 	getActive: () => string | null
 	/** Объект под указателем или в фокусе */
 	getHover: () => string | null
+	/** Пульсация всех меток (`isPulsing` карты) */
+	getIsPulsing: () => boolean
 }
 
 /** Ядро 2D-карты (данные, фильтры, часы, действия, каталог, маршруты) для 3D */
@@ -532,15 +539,28 @@ export interface ScenePickQuery {
 /** 3D-сцена компонента: область, содержимое, камера, оверлей и состояние */
 export type ImageMap3DStage = ReturnType<typeof useImageMap3DStage>
 
-/** Трубка маршрута в сцене: группа (трубка и метки начала и конца), геометрия для роста и материалы */
+/** Метка маршрута в сцене: начало, конец или переход на другой этаж */
+export interface RouteMarkerSpec {
+	kind: 'start' | 'end' | 'transition'
+	position: Vector3
+}
+
+/** Участки маршрута для трубок: ломаные без разрывов и метки */
+export interface RouteSegments {
+	runs: Vector3[][]
+	markers: RouteMarkerSpec[]
+}
+
+/** Трубка маршрута в сцене: группа (трубки участков и метки), геометрии для роста, метка конца и материалы */
 export interface RouteTube {
 	group: Group
-	geometry: TubeGeometry
-	materials: Record<'line' | 'start' | 'end', MeshBasicMaterial>
+	geometries: TubeGeometry[]
+	end: Mesh | null
+	materials: Record<'line' | 'start' | 'end' | 'transition', MeshBasicMaterial>
 }
 
 /** Найденный путь маршрута: граф и узлы */
-interface Route3DPath {
+export interface Route3DPath {
 	graph: RouteGraph
 	path: RoutePath
 }
@@ -557,6 +577,10 @@ export interface RouteTubeOptions {
 	getData: () => ImageMap3DData
 	/** Найденный путь или `null` */
 	getRoute: () => Route3DPath | null
+	/** Id активного этажа: в режиме `single` рисуется только его участок */
+	getLayerId: () => string | undefined
+	/** Режим этажей: в `single` маршрут через этажи обрезается по активному этажу */
+	getLayerMode: () => ImageMap3DLayerMode
 	/** Запросить кадр */
 	invalidate: () => void
 }
@@ -571,6 +595,16 @@ export interface ObjectListEntry {
 	label: string
 	/** Атрибуты: адрес, `target` и `rel` внешней ссылки, `aria-current`, `aria-disabled`, `aria-haspopup` */
 	attributes: Record<string, string | undefined>
+}
+
+/** Список объектов одного этажа для скринридера: этажи идут группами, текущий первым */
+export interface ObjectListGroup {
+	/** Id этажа */
+	id: string
+	/** Имя списка: «Список объектов, <этаж>» */
+	label: string
+	/** Записи этажа */
+	entries: ObjectListEntry[]
 }
 
 /** Дерево габаритных рамок вершин контура: ускоряет поиск вершин в полосе вдоль ребра */

@@ -96,6 +96,17 @@ describe('модель этажа', () => {
 		expect([plain.opacity, plain.depthWrite]).toEqual([1, true])
 	})
 
+	it('attachModel: контур мешей модели — только при явном scene3d.outline: true', () => {
+		const linesOf = (data: ImageMap3DData) => {
+			const content = buildSceneContent(data, resolve)
+			attachModel(content, { data, layerId: 'mall', root: modelRoot().root }, resolve)
+			return content.objects.get('shop-1')?.lines.length
+		}
+		expect(linesOf(DATA)).toBe(0)
+		expect(linesOf({ ...DATA, scene3d: { outline: false } })).toBe(0)
+		expect(linesOf({ ...DATA, scene3d: { outline: true } })).toBe(2)
+	})
+
 	it('attachModel: неизвестный этаж или этаж без слоя в данных — ничего', () => {
 		const content = buildSceneContent(DATA, resolve)
 		expect(attachModel(content, { data: DATA, layerId: 'nope', root: new Group() }, resolve)).toEqual({ missing: [], shared: [] })

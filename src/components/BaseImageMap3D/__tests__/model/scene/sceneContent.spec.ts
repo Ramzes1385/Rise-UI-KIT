@@ -86,6 +86,25 @@ describe('цвета сцены', () => {
 		host.remove()
 	})
 
+	it('createColorResolver: переменная без значения — запасной цвет по явному правилу, а не цвет текста', () => {
+		const host = document.createElement('div')
+		document.body.append(host)
+		vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null)
+		vi.spyOn(window, 'getComputedStyle').mockImplementation(
+			element =>
+				({
+					color: (element as HTMLElement).style.color || 'rgb(1, 2, 3)',
+					getPropertyValue: () => '  ',
+				}) as unknown as CSSStyleDeclaration,
+		)
+		const resolve = createColorResolver(host)
+		expect(resolve('var(--rise-missing)').getHexString()).toBe('808080')
+		expect(resolve('var( --rise-missing )').getHexString()).toBe('808080')
+		expect(resolve('var(--rise-missing, #00ff00)').getHexString()).toBe('00ff00')
+		expect(resolve('var(--rise-missing, var(--rise-also-missing))').getHexString()).toBe('808080')
+		host.remove()
+	})
+
 	it('createColorResolver берёт исходную строку, если вычисленного цвета нет', () => {
 		vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null)
 		vi.spyOn(window, 'getComputedStyle').mockReturnValue({ color: '' } as CSSStyleDeclaration)
@@ -127,6 +146,25 @@ describe('объекты сцены', () => {
 		expect(entry.source).toBe('model')
 		expect(entry.meshes).toHaveLength(2)
 		expect(entry.meshes.every(mesh => mesh.material === entry.material && mesh.userData.objectId === 'shop')).toBe(true)
+	})
+
+	it('adoptModelNode с контуром: линии по рёбрам — дети мешей, общий материал, цвет по состоянию; без флага контура нет', () => {
+		const first = new Mesh(new BoxGeometry(), new MeshBasicMaterial())
+		const second = new Mesh(new BoxGeometry(), new MeshBasicMaterial())
+		const node = new Group()
+		node.add(first, second)
+		const entry = adoptModelNode({ id: 'shop', layerId: 'f1', hasOutline: true }, node, COLORS)
+		expect(entry.lines).toHaveLength(2)
+		expect(entry.lines.map(line => line.parent)).toEqual([first, second])
+		expect(entry.outline).not.toBeNull()
+		expect(entry.lines.every(line => line.material === entry.outline)).toBe(true)
+		expect(entry.lines[0].raycast(null as never, [])).toBeUndefined()
+		paintObject(entry, 1)
+		expect(entry.outline?.opacity).toBeCloseTo(0.5)
+		const plain = adoptModelNode({ id: 'shop', layerId: 'f1' }, new Group().add(new Mesh()), COLORS)
+		expect([plain.lines, plain.outline]).toEqual([[], null])
+		const empty = adoptModelNode({ id: 'none', layerId: 'f1', hasOutline: true }, new Group(), COLORS)
+		expect([empty.lines, empty.outline]).toEqual([[], null])
 	})
 
 	it('paintObject и setObjectState: цвет и непрозрачность состояния с учётом этажа', () => {

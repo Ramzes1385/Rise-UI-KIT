@@ -38,6 +38,13 @@
 		}
 	}
 
+	&--fullscreen-fallback {
+		position: fixed;
+		z-index: var(--rise-z-overlay);
+		inset: 0;
+		overflow: auto;
+	}
+
 	&__toolbar {
 		display: flex;
 		flex-wrap: wrap;

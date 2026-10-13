@@ -1815,3 +1815,10 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 - **BaseImage**: зум на BaseModal; миниатюры галереи — BaseButton (рамка и кольцо выбранной прежние).
 - **BaseMention, BaseAiMessage, BaseAvatarGroup**: аватары — BaseAvatar (инициалы по двум первым словам, запасной вид при ошибке картинки).
 - **BaseMediaPlayer** (панели «Совместный просмотр», «Поделиться», «Статистика», «Следующая серия», «Скорость»): кнопки — BaseButton, аватар участника — BaseAvatar, статус и счётчик — BaseBadge; цвета, радиусы и размеры повторены, возможны мелкие сдвиги высоты и межстрочного интервала (от `--rise-control-line-height`). Подсказки `__caption-box` и ссылок актёров — `data-tooltip` вместо `title` (без задержки браузера, transform и opacity на токенах). Эталоны историй плеера с этими панелями изменятся.
+
+## Задача maps-polish: карты
+
+Эталонов скриншотов 3D-видов нет (GPU), новые истории — без эталонов; снимки 2D не меняются (легенда вынесена в отдельный компонент с той же разметкой).
+
+- **BaseImageMap3D** (`media-baseimagemap3d--legend3d`, `--fullscreen3d`, `--pulsing-markers`, `--objects-all-floors`, `--glb-outline`): под областью карты список «Легенда» (образцы цвета и значки групп); в панели камеры справа кнопка «Во весь экран» (после масштаба и поворота) — она видна в каждой истории BaseImageMap3D с панелью камеры; кольцо пульсации вокруг меток `point` (`transform` + `opacity`, при «уменьшить движение» без анимации); контур по рёбрам мешей GLB при `scene3d.outline: true`.
+- **BaseImageMap3D, маршрут `single`** (`media-baseimagemap3d--routes3d` при `layerMode: single`): на этаже виден только его участок линии, переход на другой этаж — жёлтая метка.

@@ -8,6 +8,7 @@ import { UI_IMAGE_MAP, UI_IMAGE_MAP_3D } from '@/locales/messages'
 import { useImageMap3DStage, useStageInput } from './useImageMap3DStage'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { computed, onMounted, ref, shallowRef, useId, useTemplateRef, watch } from 'vue'
+import { useImageMapFullscreen } from '@components/BaseImageMap/model/zoom/useImageMapFullscreen'
 import type { ImageMap2DBindings, ImageMap3DLoadState, ImageMap3DStage, Map3DParts } from '../types/internal/imageMap3dInternal.types'
 import type {
 	BaseImageMap3DEmits,
@@ -32,6 +33,7 @@ const CLASS_KEYS = [
 	'popup',
 	'directory',
 	'filters',
+	'legend',
 	'route',
 	'status',
 ]
@@ -191,6 +193,16 @@ function usePresentation(
 	}
 }
 
+function useFullscreenPart(props: ImageMap3DProps, rootRef: Readonly<Ref<HTMLElement | null>>) {
+	const fullscreen = useImageMapFullscreen(rootRef)
+	return {
+		isFullscreen: fullscreen.isFullscreen,
+		isFullscreenFallback: fullscreen.isFullscreenFallback,
+		toggleFullscreen: fullscreen.toggleFullscreen,
+		hasFullscreenButton: computed(() => props.hasFullscreen && fullscreen.isFullscreenSupported.value),
+	}
+}
+
 function createExpose(map: Map3DParts, stage: ImageMap3DStage, setView: (view: ImageMap3DView) => void): BaseImageMap3DExpose {
 	return {
 		invalidate: stage.viewport.invalidate,
@@ -236,6 +248,7 @@ export function useBaseImageMap3D(props: ImageMap3DProps, emit: BaseImageMap3DEm
 		...usePresentation(props, map, base.classes),
 		...input,
 		...useObjectList(props, map, viewportRef),
+		...useFullscreenPart(props, rootRef),
 		map,
 		shownView,
 		setView,

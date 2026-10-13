@@ -1,6 +1,6 @@
 import { Vector3 } from 'three'
 import type { ImageMap3DData } from '../../../types/imageMap3dData.types'
-import { createRouteTube, growRoute, routePoints } from '../../../model/scene/routeTube'
+import { createRouteTube, growRoute, routePoints, routeSegments } from '../../../model/scene/routeTube'
 import { buildRouteGraph, findRoutePath, objectNodes } from '@components/BaseImageMap/model/routes/routeGraph'
 
 const DATA: ImageMap3DData = {
@@ -46,23 +46,66 @@ describe('BaseImageMap3D: трубка маршрута', () => {
 
 	it('трубка, метки начала и конца; рост — через drawRange, конец виден в конце', () => {
 		const { graph, path: found } = path()
-		const tube = createRouteTube(routePoints(graph, found, DATA), DATA)
+		const tube = createRouteTube(routeSegments({ graph, path: found }, DATA), DATA)
 		expect(tube?.group.name).toBe('rise-route')
-		const total = tube?.geometry.index?.count as number
+		const total = tube?.geometries[0].index?.count as number
 		growRoute(tube as NonNullable<typeof tube>, 0)
-		expect(tube?.geometry.drawRange.count).toBe(0)
+		expect(tube?.geometries[0].drawRange.count).toBe(0)
 		expect(tube?.group.children[2].visible).toBe(false)
 		growRoute(tube as NonNullable<typeof tube>, 0.5)
-		const half = tube?.geometry.drawRange.count as number
+		const half = tube?.geometries[0].drawRange.count as number
 		expect(half).toBeGreaterThan(0)
 		expect(half).toBeLessThan(total)
 		expect(half % 48).toBe(0)
 		growRoute(tube as NonNullable<typeof tube>, 1)
-		expect(tube?.geometry.drawRange.count).toBe(total)
+		expect(tube?.geometries[0].drawRange.count).toBe(total)
 		expect(tube?.group.children[2].visible).toBe(true)
 	})
 
 	it('путь из совпадающих точек — без трубки', () => {
-		expect(createRouteTube([new Vector3(1, 2, 3), new Vector3(1, 2, 3)], DATA)).toBeNull()
+		expect(createRouteTube({ runs: [[new Vector3(1, 2, 3), new Vector3(1, 2, 3)]], markers: [] }, DATA)).toBeNull()
+	})
+
+	it('режим single: участок текущего этажа и метка перехода, как в 2D', () => {
+		const { graph, path: found } = path()
+		const lift = 800 * 0.005 * 2
+		const first = routeSegments({ graph, path: found }, DATA, 'f1')
+		expect(first.runs.map(run => run.map(point => point.toArray()))).toEqual([
+			[
+				[80, lift, 200],
+				[400, lift, 200],
+			],
+		])
+		expect(first.markers.map(marker => marker.kind)).toEqual(['start', 'transition'])
+		const second = routeSegments({ graph, path: found }, DATA, 'f2')
+		expect(second.runs.map(run => run.length)).toEqual([2])
+		expect(second.markers.map(marker => marker.kind)).toEqual(['transition', 'end'])
+		expect(second.markers[0].position.toArray()).toEqual([480, 300 + lift, 200])
+	})
+
+	it('маршрут, не заходящий на этаж, — пустой участок и нет трубки', () => {
+		const { graph, path: found } = path()
+		const segments = routeSegments({ graph, path: found }, DATA, 'nope')
+		expect(segments).toEqual({ runs: [], markers: [] })
+		expect(createRouteTube(segments, DATA)).toBeNull()
+	})
+
+	it('несколько участков растут по очереди; метка конца видна только в конце', () => {
+		const a = [new Vector3(0, 0, 0), new Vector3(100, 0, 0)]
+		const b = [new Vector3(0, 100, 0), new Vector3(100, 100, 0)]
+		const tube = createRouteTube({ runs: [a, b], markers: [{ kind: 'end', position: b[1] }] }, DATA) as NonNullable<
+			ReturnType<typeof createRouteTube>
+		>
+		const [first, second] = tube.geometries
+		growRoute(tube, 0.5)
+		expect(first.drawRange.count).toBe(first.index?.count)
+		expect(second.drawRange.count).toBe(0)
+		growRoute(tube, 0.75)
+		expect(second.drawRange.count).toBeGreaterThan(0)
+		expect(second.drawRange.count).toBeLessThan(second.index?.count as number)
+		expect(tube.end?.visible).toBe(false)
+		growRoute(tube, 1)
+		expect(second.drawRange.count).toBe(second.index?.count)
+		expect(tube.end?.visible).toBe(true)
 	})
 })

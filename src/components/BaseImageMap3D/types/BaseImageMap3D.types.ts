@@ -70,6 +70,7 @@ type ImageMap3DClassKey =
 	| 'popup'
 	| 'directory'
 	| 'filters'
+	| 'legend'
 	| 'route'
 	| 'status'
 

@@ -33,6 +33,12 @@ function createOutline(geometry: BufferGeometry, material: LineBasicMaterial): L
 	return lines
 }
 
+function attachOutline(mesh: Mesh, material: LineBasicMaterial): LineSegments {
+	const lines = createOutline(mesh.geometry, material)
+	mesh.add(lines)
+	return lines
+}
+
 export function createShapeEntry(
 	ids: { id: string; layerId: string },
 	body: SceneBodySet,
@@ -52,7 +58,7 @@ export function createShapeEntry(
 }
 
 export function adoptModelNode(
-	ids: { id: string; layerId: string },
+	ids: { id: string; layerId: string; hasOutline?: boolean },
 	node: Object3D,
 	colors: Record<SceneObjectState, SceneStateColor>,
 ): SceneObjectEntry {
@@ -65,7 +71,9 @@ export function adoptModelNode(
 		child.userData.objectId = ids.id
 		meshes.push(child)
 	})
-	return { ...ids, material, meshes, lines: [], outline: null, source: 'model', colors, state: 'base' }
+	const outline = ids.hasOutline && meshes.length ? new LineBasicMaterial({ transparent: true, depthWrite: false }) : null
+	const lines = outline ? meshes.map(mesh => attachOutline(mesh, outline)) : []
+	return { id: ids.id, layerId: ids.layerId, material, meshes, lines, outline, source: 'model', colors, state: 'base' }
 }
 
 export function hasTakenMesh(node: Object3D): boolean {

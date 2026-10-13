@@ -2,7 +2,11 @@
 	<div
 		ref="rootRef"
 		class="base-image-map-3d"
-		:class="[variantClass, classes.root]"
+		:class="[
+			variantClass,
+			classes.root,
+			{ 'base-image-map-3d--fullscreen': isFullscreen, 'base-image-map-3d--fullscreen-fallback': isFullscreenFallback },
+		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<BaseSegmented
 			v-if="hasViewSwitch"
@@ -29,7 +33,10 @@
 				'base-image-map-3d__layout--end': directoryPosition === 'end',
 			}">
 			<div class="base-image-map-3d__main">
-				<div v-if="layerOptions.length > 1 || hasZoomControls" class="base-image-map-3d__toolbar" :class="classes.toolbar">
+				<div
+					v-if="layerOptions.length > 1 || hasZoomControls || hasFullscreenButton"
+					class="base-image-map-3d__toolbar"
+					:class="classes.toolbar">
 					<BaseSegmented
 						v-if="layerOptions.length > 1"
 						:custom-class="classes.layers"
@@ -38,35 +45,46 @@
 						:aria-label="UI_IMAGE_MAP.LAYERS"
 						@update:model-value="map.actions.setLayer(String($event))" />
 					<div
-						v-if="hasZoomControls"
+						v-if="hasZoomControls || hasFullscreenButton"
 						class="base-image-map-3d__camera"
 						:class="classes.camera"
 						role="group"
 						:aria-label="UI_IMAGE_MAP_3D.CAMERA">
+						<template v-if="hasZoomControls">
+							<BaseButton
+								variant="ghost"
+								:aria-label="UI_ARIA.ZOOM_IN"
+								:is-disabled="camera.isMaxZoom.value"
+								is-focusable-when-disabled
+								@click="camera.zoomIn">
+								<template #left><BaseIcon name="plus" /></template>
+							</BaseButton>
+							<BaseButton
+								variant="ghost"
+								:aria-label="UI_ARIA.ZOOM_OUT"
+								:is-disabled="camera.isMinZoom.value"
+								is-focusable-when-disabled
+								@click="camera.zoomOut">
+								<template #left><BaseIcon name="minus" /></template>
+							</BaseButton>
+							<BaseButton variant="ghost" :aria-label="UI_IMAGE_MAP_3D.ROTATE_LEFT" @click="camera.rotateLeft">
+								<template #left><BaseIcon name="rotate-left" /></template>
+							</BaseButton>
+							<BaseButton variant="ghost" :aria-label="UI_IMAGE_MAP_3D.ROTATE_RIGHT" @click="camera.rotateRight">
+								<template #left><BaseIcon name="rotate-right" /></template>
+							</BaseButton>
+							<BaseButton variant="ghost" :aria-label="UI_IMAGE_MAP_3D.RESET_CAMERA" @click="camera.resetCamera()">
+								<template #left><BaseIcon name="rotate-ccw" /></template>
+							</BaseButton>
+						</template>
 						<BaseButton
+							v-if="hasFullscreenButton"
 							variant="ghost"
-							:aria-label="UI_ARIA.ZOOM_IN"
-							:is-disabled="camera.isMaxZoom.value"
-							is-focusable-when-disabled
-							@click="camera.zoomIn">
-							<template #left><BaseIcon name="plus" /></template>
-						</BaseButton>
-						<BaseButton
-							variant="ghost"
-							:aria-label="UI_ARIA.ZOOM_OUT"
-							:is-disabled="camera.isMinZoom.value"
-							is-focusable-when-disabled
-							@click="camera.zoomOut">
-							<template #left><BaseIcon name="minus" /></template>
-						</BaseButton>
-						<BaseButton variant="ghost" :aria-label="UI_IMAGE_MAP_3D.ROTATE_LEFT" @click="camera.rotateLeft">
-							<template #left><BaseIcon name="rotate-left" /></template>
-						</BaseButton>
-						<BaseButton variant="ghost" :aria-label="UI_IMAGE_MAP_3D.ROTATE_RIGHT" @click="camera.rotateRight">
-							<template #left><BaseIcon name="rotate-right" /></template>
-						</BaseButton>
-						<BaseButton variant="ghost" :aria-label="UI_IMAGE_MAP_3D.RESET_CAMERA" @click="camera.resetCamera()">
-							<template #left><BaseIcon name="rotate-ccw" /></template>
+							data-map-fullscreen
+							:aria-label="UI_IMAGE_MAP.FULLSCREEN"
+							:aria-pressed="isFullscreen"
+							@click="toggleFullscreen">
+							<template #left><BaseIcon :name="isFullscreen ? 'fullscreen-exit' : 'fullscreen'" /></template>
 						</BaseButton>
 					</div>
 				</div>
@@ -74,7 +92,7 @@
 					ref="viewportRef"
 					class="base-image-map-3d__viewport"
 					:class="[classes.viewport, { 'base-image-map-3d__viewport--empty': !map.data.currentLayer.value }]"
-					:style="viewportStyle"
+					:style="isFullscreen ? undefined : viewportStyle"
 					tabindex="0"
 					role="group"
 					:aria-busy="loadState?.kind === 'loading'"
@@ -111,6 +129,7 @@
 									'base-image-map-3d__point--active': point.isActive,
 									'base-image-map-3d__point--hover': point.isHovered,
 									'base-image-map-3d__point--disabled': point.item.isDisabled,
+									'base-image-map-3d__point--pulsing': point.isPulsing,
 								},
 							]"
 							:style="point.style">
@@ -146,24 +165,25 @@
 					<p :id="hintId" class="base-image-map-3d__hint">{{ UI_IMAGE_MAP_3D.KEYBOARD_HINT }}</p>
 					<p class="base-image-map-3d__hint" aria-live="polite">{{ liveText }}</p>
 				</div>
-				<ul
-					v-if="objectEntries.length"
-					ref="objectsRef"
-					class="base-image-map-3d__objects"
-					:aria-label="objectsLabel"
-					@focusout="onFocusOut">
-					<li v-for="entry in objectEntries" :key="entry.item.object.id">
-						<component
-							:is="entry.tag"
-							v-bind="entry.attributes"
-							class="base-image-map-3d__object"
-							tabindex="-1"
-							@focus="onObjectFocus(entry.item)"
-							@click="onObjectClick(entry.item, $event)">
-							{{ entry.label }}
-						</component>
-					</li>
-				</ul>
+				<div v-if="objectGroups.length" ref="objectsRef" @focusout="onFocusOut">
+					<ul v-for="group in objectGroups" :key="group.id" class="base-image-map-3d__objects" :aria-label="group.label">
+						<li v-for="entry in group.entries" :key="entry.item.object.id">
+							<component
+								:is="entry.tag"
+								v-bind="entry.attributes"
+								class="base-image-map-3d__object"
+								tabindex="-1"
+								@focus="onObjectFocus(entry.item)"
+								@click="onObjectClick(entry.item, $event)">
+								{{ entry.label }}
+							</component>
+						</li>
+					</ul>
+				</div>
+				<ImageMapLegend
+					v-if="map.directory.legend.value.length"
+					:groups="map.directory.legend.value"
+					:custom-class="classes.legend" />
 				<ImageMapRoutePanel
 					v-if="hasRoutes && data.routes"
 					:custom-class="classes.route"
@@ -242,6 +262,7 @@ import { kitDefaults } from '@composables/base/useDefaults'
 import { useBaseImageMap3D } from '../model/useBaseImageMap3D'
 import ImageMapCard from '@components/BaseImageMap/ui/ImageMapCard.vue'
 import { UI_ARIA, UI_IMAGE_MAP, UI_IMAGE_MAP_3D } from '@/locales/messages'
+import ImageMapLegend from '@components/BaseImageMap/ui/ImageMapLegend.vue'
 import ImageMapDirectory from '@components/BaseImageMap/ui/ImageMapDirectory.vue'
 import ImageMapRoutePanel from '@components/BaseImageMap/ui/ImageMapRoutePanel.vue'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
@@ -318,10 +339,13 @@ const {
 	onPointerLeave,
 	onClick,
 	hintId,
-	objectEntries,
-	objectsLabel,
+	objectGroups,
 	onObjectClick,
 	onObjectFocus,
+	isFullscreen,
+	isFullscreenFallback,
+	hasFullscreenButton,
+	toggleFullscreen,
 	exposed,
 } = useBaseImageMap3D(props, emit)
 

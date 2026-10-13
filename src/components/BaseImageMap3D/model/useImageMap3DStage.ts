@@ -46,6 +46,39 @@ function useStageFraming(props: StageOptions['props']) {
 	return { modelBounds, getFraming: () => framing.value }
 }
 
+function useStageOverlay(
+	options: StageOptions,
+	parts: {
+		state: ReturnType<typeof useStageState>
+		viewport: ReturnType<typeof useImageMap3DViewport>
+		scene: ReturnType<typeof useImageMap3DScene>
+	},
+) {
+	const { props, map } = options
+	const { state, viewport, scene } = parts
+	useRouteTube({
+		...viewport,
+		hostRef: options.hostRef,
+		getData: () => props.data,
+		getRoute: () => map.routes.routePath.value,
+		getLayerId: () => state.layerId.value,
+		getLayerMode: () => props.layerMode,
+	})
+	return useSceneOverlay({
+		...viewport,
+		hostRef: options.hostRef,
+		cardRef: options.cardRef,
+		getCamera: () => viewport.camera.value,
+		objectBox: scene.objectBox,
+		getData: () => props.data,
+		getCardItem: () => state.cardItem.value,
+		getPoints: () => state.points.value,
+		getActive: () => map.actions.localActive.value,
+		getHover: () => map.overlay.hoverId.value,
+		getIsPulsing: () => props.isPulsing,
+	})
+}
+
 export function useImageMap3DStage(options: StageOptions) {
 	const { props, map } = options
 	const state = useStageState(options)
@@ -81,19 +114,7 @@ export function useImageMap3DStage(options: StageOptions) {
 		getHasOrbit: () => props.hasOrbit,
 		getObjectBox: scene.objectBox,
 	})
-	const overlay = useSceneOverlay({
-		...viewport,
-		hostRef: options.hostRef,
-		cardRef: options.cardRef,
-		getCamera: () => viewport.camera.value,
-		objectBox: scene.objectBox,
-		getData: () => props.data,
-		getCardItem: () => state.cardItem.value,
-		getPoints: () => state.points.value,
-		getActive: () => map.actions.localActive.value,
-		getHover: () => map.overlay.hoverId.value,
-	})
-	useRouteTube({ ...viewport, hostRef: options.hostRef, getData: () => props.data, getRoute: () => map.routes.routePath.value })
+	const overlay = useStageOverlay(options, { state, viewport, scene })
 	return { viewport, scene, camera, overlay, state }
 }
 

@@ -39,6 +39,7 @@ function pointView(options: SceneOverlayOptions, item: ResolvedImageMapObject, s
 		isVisible: spot.isVisible,
 		isActive: options.getActive() === id,
 		isHovered: options.getHover() === id,
+		isPulsing: options.getIsPulsing() || Boolean(item.object.type === 'point' && item.object.isPulsing),
 	}
 }
 
@@ -70,7 +71,9 @@ export function useSceneOverlay(options: SceneOverlayOptions) {
 
 	options.onFrame(update)
 
-	watch([options.getCardItem, options.getPoints, options.getActive, options.getHover], options.invalidate, { flush: 'post' })
+	watch([options.getCardItem, options.getPoints, options.getActive, options.getHover, options.getIsPulsing], options.invalidate, {
+		flush: 'post',
+	})
 
 	return { card, points, project, anchorOf: (item: ResolvedImageMapObject) => objectAnchor(options, item) }
 }

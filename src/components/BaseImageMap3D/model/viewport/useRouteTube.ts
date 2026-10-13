@@ -3,10 +3,15 @@ import { useSceneTheme } from './useSceneTheme'
 import { disposeObject } from '../scene/disposeObject'
 import { useTween } from '@composables/interaction/useTween'
 import { createColorResolver } from '../scene/materials/sceneColors'
-import { createRouteTube, growRoute, routePoints } from '../scene/routeTube'
+import { createRouteTube, growRoute, routeSegments } from '../scene/routeTube'
 import type { RouteTube, RouteTubeOptions } from '../../types/internal/imageMap3dInternal.types'
 
-const ROUTE_COLORS = { line: 'var(--rise-primary)', start: 'var(--rise-success)', end: 'var(--rise-primary)' } as const
+const ROUTE_COLORS = {
+	line: 'var(--rise-primary)',
+	start: 'var(--rise-success)',
+	end: 'var(--rise-primary)',
+	transition: 'var(--rise-warning)',
+} as const
 
 function paintRoute(tube: RouteTube | null, host: HTMLElement | null): void {
 	if (!tube || !host) return
@@ -14,6 +19,7 @@ function paintRoute(tube: RouteTube | null, host: HTMLElement | null): void {
 	tube.materials.line.color.copy(resolve(ROUTE_COLORS.line))
 	tube.materials.start.color.copy(resolve(ROUTE_COLORS.start))
 	tube.materials.end.color.copy(resolve(ROUTE_COLORS.end))
+	tube.materials.transition.color.copy(resolve(ROUTE_COLORS.transition))
 }
 
 export function useRouteTube(options: RouteTubeOptions) {
@@ -38,12 +44,13 @@ export function useRouteTube(options: RouteTubeOptions) {
 		clear()
 		const route = options.getRoute()
 		const data = options.getData()
-		tube = options.renderer.value && route ? createRouteTube(routePoints(route.graph, route.path, data), data) : null
+		const layerId = options.getLayerMode() === 'single' ? options.getLayerId() : undefined
+		tube = options.renderer.value && route ? createRouteTube(routeSegments(route, data, layerId), data) : null
 		if (tube) show(tube)
 		options.invalidate()
 	}
 
-	watch([options.renderer, options.getRoute, options.getData], build, { flush: 'post' })
+	watch([options.renderer, options.getRoute, options.getData, options.getLayerId, options.getLayerMode], build, { flush: 'post' })
 
 	watch(progress.value, value => {
 		if (tube) growRoute(tube, value)
