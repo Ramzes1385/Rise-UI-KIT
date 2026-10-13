@@ -25,13 +25,12 @@ const phases: KanbanCard[][] = [
 
 const motion = motionPresetsStory({
 	item: `
-		<BaseKanban v-bind="args" :columns="columns" :cards="phases[phase]" />
+		<BaseKanban v-bind="args" :columns="columns" :cards="phases[step]" />
 	`,
 	components: { BaseKanban, BaseButton },
 	imports: ['BaseKanban'],
-	state: { phase: 0, phases, columns },
-	action: 'phase = (phase + 1) % phases.length',
-	trigger: 'Добавить, перенести, удалить',
+	steps: ['добавить «Ревью»', 'перенести «Макет экрана»', 'удалить «Тексты кнопок»'],
+	state: { phases, columns },
 	omit: ['columns', 'cards'],
 })
 
@@ -42,8 +41,8 @@ export const Animations: StoryObj<typeof meta> = {
 		docs: {
 			description: {
 				story: [
-					'Доска в колонках четырёх пресетов движения; кнопка по кругу добавляет карточку «Ревью», переносит «Макет экрана»',
-					'в «Готово» и удаляет «Тексты кнопок». Новая карточка проявляется с масштаба `--rise-motion-scale-from` за `--rise-duration`,',
+					'Доска в колонках четырёх пресетов движения; кнопка по шагам добавляет карточку «Ревью», переносит «Макет экрана»',
+					'в «Готово» и удаляет «Тексты кнопок», после последнего шага «Повторить» возвращает доску к началу. Новая карточка проявляется с масштаба `--rise-motion-scale-from` за `--rise-duration`,',
 					'удалённая гаснет на своём месте за `--rise-duration-fast` (вне потока, скрыта от скринридера), соседи и перенесённая',
 					'карточка едут на новое место через `transform` (FLIP на Web Animations API: длительность `--rise-duration`, кривая',
 					'`--rise-ease-emphasized`). Высота колонок не анимируется — меняется сразу, без перерасчёта раскладки на каждом кадре.',
@@ -56,7 +55,7 @@ export const Animations: StoryObj<typeof meta> = {
 	},
 	render: motion.render,
 	play: async ({ canvas, userEvent }) => {
-		const next = canvas.getByRole('button', { name: 'Добавить, перенести, удалить' })
+		const next = canvas.getByRole('button', { name: /^(Следующий шаг|Повторить)/ })
 		const shown = (name: string) => canvas.queryAllByRole('button', { name })
 		await userEvent.click(next)
 		await waitFor(() => expect(shown('Ревью')).toHaveLength(4))
@@ -66,8 +65,10 @@ export const Animations: StoryObj<typeof meta> = {
 		})
 		await userEvent.click(next)
 		await waitFor(() => expect(shown('Тексты кнопок')).toHaveLength(0))
+		await expect(next).toHaveAccessibleName('Повторить')
 		await userEvent.click(next)
 		await waitFor(() => expect(shown('Ревью')).toHaveLength(0))
 		await expect(shown('Макет экрана')).toHaveLength(4)
+		await expect(next).toHaveAccessibleName('Следующий шаг: добавить «Ревью»')
 	},
 }

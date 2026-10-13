@@ -51,3 +51,32 @@ describe('motionPresetsStory', () => {
 		expect(code).toContain('data-rise-motion="expressive"')
 	})
 })
+
+describe('motionPresetsStory: steps', () => {
+	const steps = ['добавить', 'удалить']
+	const stepItem = '<BaseAnimation :key="step" v-bind="args" />'
+	const story = motionPresetsStory({ item: stepItem, components: {}, imports: ['BaseAnimation'], steps, state: { phases: [1, 2, 3] } })
+
+	it('кнопка — «Следующий шаг: <подпись>», после последнего шага — «Повторить» и возврат в начало', () => {
+		expect(story.template).toContain(
+			`@click="step = step < steps.length ? step + 1 : 0">{{ step < steps.length ? 'Следующий шаг: ' + steps[step] : 'Повторить' }}</BaseButton>`,
+		)
+		expect(story.template).not.toContain('replay')
+	})
+
+	it('«Show code» — step, steps и своё состояние вместо replay', () => {
+		const code = story.source.transform('', { args: {} })
+
+		expect(code).toContain('const step = ref(0)')
+		expect(code).toContain('const steps = ref(["добавить", "удалить"])'.replaceAll('"', "'"))
+		expect(code).toContain('const phases = ref([1, 2, 3])')
+		expect(code).not.toContain('replay')
+	})
+
+	it('без steps прежняя кнопка и replay', () => {
+		const plain = motionPresetsStory({ item, components: {}, imports: [] })
+
+		expect(plain.template).toContain('@click="replay++">Повторить</BaseButton>')
+		expect(plain.template).not.toContain('step <')
+	})
+})

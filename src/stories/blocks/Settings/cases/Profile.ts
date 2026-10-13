@@ -13,7 +13,7 @@ import { BaseTextarea } from '@components/BaseTextarea'
 import { BaseFormField } from '@components/BaseFormField'
 import { BaseSegmented } from '@components/BaseSegmented'
 import { BasePopconfirm } from '@components/BasePopconfirm'
-import { scriptSource, staticStorySource, useStorySetup } from '@/stories/helpers'
+import { scriptImports, scriptSource, staticStorySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
 	<div class="blk-page blk-settings">
@@ -105,19 +105,20 @@ export const Profile: StoryObj<typeof meta> = {
 			},
 			source: staticStorySource({
 				template,
-				imports: [
-					'BaseAvatar',
-					'BaseButton',
-					'BaseForm',
-					'BaseFormField',
-					'BaseInput',
-					'BasePopconfirm',
-					'BaseSegmented',
-					'BaseSelect',
-					'BaseSwitch',
-					'BaseTextarea',
-				],
-				importsFrom: { '@ramzes1385/rise-ui-kit/utils': ['type StandardSchemaIssue', 'type StandardSchemaV1'] },
+				...scriptImports(setupSource, {
+					imports: [
+						'BaseAvatar',
+						'BaseButton',
+						'BaseForm',
+						'BaseFormField',
+						'BaseInput',
+						'BasePopconfirm',
+						'BaseSegmented',
+						'BaseSelect',
+						'BaseSwitch',
+						'BaseTextarea',
+					],
+				}),
 				vue: ['reactive', 'ref'],
 				script: scriptSource(setupSource),
 			}),

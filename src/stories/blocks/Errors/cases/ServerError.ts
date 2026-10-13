@@ -7,7 +7,7 @@ import { BaseEmpty } from '@components/BaseEmpty'
 import { BaseButton } from '@components/BaseButton'
 import setupSource from './ServerError.setup.ts?raw'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { scriptSource, staticStorySource, useStorySetup } from '@/stories/helpers'
+import { scriptImports, scriptSource, staticStorySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
 	<main class="blk-page blk-error">
@@ -45,7 +45,7 @@ export const ServerError: StoryObj<typeof meta> = {
 			},
 			source: staticStorySource({
 				template,
-				imports: ['BaseAlert', 'BaseButton', 'BaseEmpty', 'BaseIcon'],
+				...scriptImports(setupSource, { imports: ['BaseAlert', 'BaseButton', 'BaseEmpty', 'BaseIcon'] }),
 				vue: ['ref'],
 				script: scriptSource(setupSource),
 			}),

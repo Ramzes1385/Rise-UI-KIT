@@ -10,7 +10,7 @@ import type { StoryObj } from '@storybook/vue3-vite'
 import { BaseCheckbox } from '@components/BaseCheckbox'
 import { BaseFormField } from '@components/BaseFormField'
 import { BaseSeparator } from '@components/BaseSeparator'
-import { scriptSource, staticStorySource, useStorySetup } from '@/stories/helpers'
+import { scriptImports, scriptSource, staticStorySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
 	<div class="blk-page blk-auth">
@@ -57,8 +57,9 @@ export const SignIn: StoryObj<typeof meta> = {
 			},
 			source: staticStorySource({
 				template,
-				imports: ['BaseButton', 'BaseCheckbox', 'BaseForm', 'BaseFormField', 'BaseInput', 'BaseLink', 'BaseSeparator'],
-				importsFrom: { '@ramzes1385/rise-ui-kit/utils': ['type StandardSchemaIssue', 'type StandardSchemaV1'] },
+				...scriptImports(setupSource, {
+					imports: ['BaseButton', 'BaseCheckbox', 'BaseForm', 'BaseFormField', 'BaseInput', 'BaseLink', 'BaseSeparator'],
+				}),
 				vue: ['reactive', 'ref'],
 				script: scriptSource(setupSource),
 			}),

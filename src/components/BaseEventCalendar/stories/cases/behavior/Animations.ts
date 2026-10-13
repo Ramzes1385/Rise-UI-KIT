@@ -15,17 +15,18 @@ const events: CalendarEvent[] = [
 	{ id: 'party', title: 'Праздник', start: '2026-12-25', allDay: true, color: 'var(--rise-warning)' },
 ]
 
-const steps = [
+const periods = [
 	{ view: 'month', date: '2026-10-02' },
 	{ view: 'month', date: '2026-11-02' },
 	{ view: 'month', date: '2026-12-02' },
 	{ view: 'month', date: '2026-11-02' },
 	{ view: 'list', date: '2026-11-02' },
+	{ view: 'month', date: '2026-10-02' },
 ]
 
 const motion = motionPresetsStory({
 	item: `
-		<BaseEventCalendar v-bind="args" :events="events" :view="steps[step].view" :date="steps[step].date" style="width: 100%">
+		<BaseEventCalendar v-bind="args" :events="events" :view="periods[step].view" :date="periods[step].date" style="width: 100%">
 			<template #toolbar="{ title }">
 				<strong>{{ title }}</strong>
 			</template>
@@ -33,9 +34,8 @@ const motion = motionPresetsStory({
 	`,
 	components: { BaseEventCalendar, BaseButton },
 	imports: ['BaseEventCalendar'],
-	state: { step: 0, steps, events },
-	action: 'step = (step + 1) % steps.length',
-	trigger: 'Следующий шаг',
+	steps: ['вперёд на месяц', 'вперёд на месяц', 'назад на месяц', 'вид «Список»', 'вид «Месяц»'],
+	state: { periods, events },
 	omit: ['events', 'view', 'date'],
 })
 
@@ -47,8 +47,8 @@ export const Animations: StoryObj<typeof meta> = {
 		docs: {
 			description: {
 				story: [
-					'Календарь в колонках четырёх пресетов движения; кнопка по кругу листает период вперёд, вперёд, назад, переключает',
-					'вид на «Список» и возвращается к месяцу. Новая сетка периода въезжает по направлению на `--rise-motion-distance`',
+					'Календарь в колонках четырёх пресетов движения; кнопка по шагам листает период вперёд, вперёд, назад, переключает',
+					'вид на «Список» и возвращается к месяцу; «Повторить» начинает сначала. Новая сетка периода въезжает по направлению на `--rise-motion-distance`',
 					'и проявляется за `--rise-duration`, прежняя уходит в обратную сторону и гаснет за `--rise-duration-fast` (вне потока,',
 					'скрыта от скринридера и недоступна для фокуса, без `data-*` — перетаскивание и выделение её не видят). Смена вида —',
 					'затухание с масштабом от `--rise-motion-scale-from`. События внутри сетки не анимируются: их положение и высота',
@@ -66,7 +66,7 @@ export const Animations: StoryObj<typeof meta> = {
 	args: { sizeScale: 70, maxEventsPerDay: 1 },
 	render: motion.render,
 	play: async ({ canvas, userEvent }) => {
-		const next = canvas.getByRole('button', { name: 'Следующий шаг' })
+		const next = canvas.getByRole('button', { name: /^(Следующий шаг|Повторить)/ })
 		const shown = async (name: string) => waitFor(() => expect(canvas.getAllByRole('grid', { name })).toHaveLength(4))
 		await userEvent.click(next)
 		await shown('Ноябрь 2026 г.')

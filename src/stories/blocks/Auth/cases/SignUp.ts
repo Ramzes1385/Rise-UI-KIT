@@ -10,7 +10,7 @@ import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { BaseFormField } from '@components/BaseFormField'
 import { BasePhoneInput } from '@components/BasePhoneInput'
-import { scriptSource, staticStorySource, useStorySetup } from '@/stories/helpers'
+import { scriptImports, scriptSource, staticStorySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
 	<div class="blk-page blk-auth">
@@ -65,17 +65,9 @@ export const SignUp: StoryObj<typeof meta> = {
 			},
 			source: staticStorySource({
 				template,
-				imports: [
-					'BaseAlert',
-					'BaseButton',
-					'BaseForm',
-					'BaseFormField',
-					'BaseInput',
-					'BaseLink',
-					'BasePhoneInput',
-					'type PasswordRule',
-				],
-				importsFrom: { '@ramzes1385/rise-ui-kit/utils': ['type StandardSchemaIssue', 'type StandardSchemaV1'] },
+				...scriptImports(setupSource, {
+					imports: ['BaseAlert', 'BaseButton', 'BaseForm', 'BaseFormField', 'BaseInput', 'BaseLink', 'BasePhoneInput'],
+				}),
 				vue: ['reactive', 'ref'],
 				script: scriptSource(setupSource),
 			}),

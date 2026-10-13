@@ -32,15 +32,27 @@ function presetColumn(preset: MotionPreset, item: string): string {
 	].join('\n')
 }
 
+const STEP_PREFIX = 'Следующий шаг: '
+const REPEAT_LABEL = 'Повторить'
+
+/** Кнопка истории: «Следующий шаг: <подпись>» по шагам и «Повторить» после последнего, либо одно действие */
+function triggerMarkup(options: Pick<MotionPresetsStoryOptions, 'steps' | 'action' | 'trigger'>): string {
+	if (options.steps) {
+		const label = `step < steps.length ? '${STEP_PREFIX}' + steps[step] : '${REPEAT_LABEL}'`
+		return `\t<BaseButton variant="outline" @click="step = step < steps.length ? step + 1 : 0">{{ ${label} }}</BaseButton>`
+	}
+	const { action = 'replay++', trigger = REPEAT_LABEL } = options
+	return `\t<BaseButton variant="outline" @click="${action}">${trigger}</BaseButton>`
+}
+
 /** Шаблон истории: кнопка и колонки пресетов `none`, `subtle`, `standard`, `expressive` */
-function motionPresetsTemplate(options: Pick<MotionPresetsStoryOptions, 'item' | 'action' | 'trigger'>): string {
-	const { item, action = 'replay++', trigger = 'Повторить' } = options
+function motionPresetsTemplate(options: Pick<MotionPresetsStoryOptions, 'item' | 'steps' | 'action' | 'trigger'>): string {
 	return [
 		'',
 		'<div class="story-motion">',
-		`\t<BaseButton variant="outline" @click="${action}">${trigger}</BaseButton>`,
+		triggerMarkup(options),
 		'\t<div class="story-motion__presets">',
-		...MOTION_PRESETS.map(preset => presetColumn(preset, item)),
+		...MOTION_PRESETS.map(preset => presetColumn(preset, options.item)),
 		'\t</div>',
 		'</div>',
 		'',
@@ -60,7 +72,7 @@ function motionPresetsTemplate(options: Pick<MotionPresetsStoryOptions, 'item' |
  */
 export function motionPresetsStory(options: MotionPresetsStoryOptions) {
 	const template = motionPresetsTemplate(options)
-	const state = { replay: 0, ...options.state }
+	const state = options.steps ? { step: 0, steps: options.steps, ...options.state } : { replay: 0, ...options.state }
 	return {
 		template,
 		render: <TArgs extends object>(args: TArgs) => ({

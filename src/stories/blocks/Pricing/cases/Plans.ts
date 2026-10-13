@@ -9,7 +9,7 @@ import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { BaseAccordion } from '@components/BaseAccordion'
 import { BaseSegmented } from '@components/BaseSegmented'
-import { scriptSource, staticStorySource, useStorySetup } from '@/stories/helpers'
+import { scriptImports, scriptSource, staticStorySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
 	<main class="blk-page blk-pricing">
@@ -64,16 +64,9 @@ export const Plans: StoryObj<typeof meta> = {
 			},
 			source: staticStorySource({
 				template,
-				imports: [
-					'BaseAccordion',
-					'BaseBadge',
-					'BaseButton',
-					'BaseCard',
-					'BaseIcon',
-					'BaseSegmented',
-					'type BaseAccordionItem',
-					'type SegmentedOption',
-				],
+				...scriptImports(setupSource, {
+					imports: ['BaseAccordion', 'BaseBadge', 'BaseButton', 'BaseCard', 'BaseIcon', 'BaseSegmented'],
+				}),
 				vue: ['computed', 'ref'],
 				script: scriptSource(setupSource),
 			}),

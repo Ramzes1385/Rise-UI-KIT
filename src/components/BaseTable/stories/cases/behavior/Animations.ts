@@ -21,7 +21,7 @@ const sorted = [...rows].sort((a, b) => a.data.total - b.data.total)
 
 const motion = motionPresetsStory({
 	item: `
-		<BaseTable v-bind="args" :columns="columns" :rows="[rows, sorted, []][step]" :is-loading="step === 2">
+		<BaseTable v-bind="args" :columns="columns" :rows="[rows, sorted, [], rows][step]" :is-loading="step === 2">
 			<template #expanded-content="{ row }">
 				<p style="margin: 0;">{{ row.data.customer }}: доставка курьером</p>
 			</template>
@@ -29,9 +29,8 @@ const motion = motionPresetsStory({
 	`,
 	components: { BaseTable, BaseButton },
 	imports: ['BaseTable'],
-	state: { step: 0, columns, rows, sorted },
-	action: 'step = (step + 1) % 3',
-	trigger: 'Следующий шаг',
+	steps: ['сортировка по сумме', 'загрузка', 'загружено'],
+	state: { columns, rows, sorted },
 	omit: ['columns', 'rows', 'isLoading'],
 	slots: ['default', 'columns', 'rows', 'isLoading'],
 })
@@ -49,7 +48,7 @@ export const Animations: StoryObj<typeof meta> = {
 		docs: {
 			description: {
 				story: [
-					'Сортировка, загрузка и раскрытие строки в колонках четырёх пресетов движения. «Следующий шаг» по кругу: строки',
+					'Сортировка, загрузка и раскрытие строки в колонках четырёх пресетов движения. «Следующий шаг» по шагам: строки',
 					'по сумме — каждая едет со старого места на новое (FLIP через `transform`) за `--rise-duration-slow` с кривой',
 					'`--rise-ease-emphasized`; загрузка — строки-скелетоны; «загружено» — строки проявляются (`opacity`) за',
 					'`--rise-duration-slow` с `--rise-ease-out`, без смены раскладки. Шеврон у «Анны» раскрывает строку: высота от 0',
@@ -63,7 +62,7 @@ export const Animations: StoryObj<typeof meta> = {
 	},
 	render: motion.render,
 	play: async ({ canvas, canvasElement, userEvent }) => {
-		const step = canvas.getByRole('button', { name: 'Следующий шаг' })
+		const step = canvas.getByRole('button', { name: /^(Следующий шаг|Повторить)/ })
 		const tables = () => [...canvasElement.querySelectorAll<HTMLElement>('.base-table')]
 		await userEvent.click(step)
 		for (const table of tables()) await waitFor(() => expect(customers(table)).toEqual(['Олег', 'Иван', 'Анна', 'Мария']))

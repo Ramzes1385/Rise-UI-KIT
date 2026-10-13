@@ -17,13 +17,12 @@ const frames = [
 
 const motion = motionPresetsStory({
 	item: `
-		<BaseList v-bind="args" :items="frames[step % frames.length]" />
+		<BaseList v-bind="args" :items="frames[step]" />
 	`,
 	components: { BaseList, BaseButton },
 	imports: ['BaseList'],
-	state: { frames, step: 0 },
-	action: 'step++',
-	trigger: 'Добавить, удалить, перемешать',
+	steps: ['добавить «Выпуск 2.0»', 'удалить «Метод выгрузки»', 'перемешать'],
+	state: { frames },
 	omit: ['items'],
 })
 
@@ -35,8 +34,8 @@ export const Animations: StoryObj<typeof meta> = {
 		docs: {
 			description: {
 				story: [
-					'Строки в колонках четырёх пресетов движения. Кнопка по кругу добавляет строку «Выпуск 2.0», удаляет «Метод выгрузки»',
-					'и перемешивает строки. Новая строка проявляется с масштабом `--rise-motion-scale-from` за `--rise-duration`,',
+					'Строки в колонках четырёх пресетов движения. Кнопка по шагам добавляет строку «Выпуск 2.0», удаляет «Метод выгрузки»',
+					'и перемешивает строки, «Повторить» возвращает список к началу. Новая строка проявляется с масштабом `--rise-motion-scale-from` за `--rise-duration`,',
 					'удалённая гаснет на своём месте за `--rise-duration-fast` (уходит из потока — `position: absolute`), соседи',
 					'сдвигаются через `transform` за `--rise-duration` с кривой `--rise-ease-emphasized` — так же едут строки при',
 					'перестановке мышью и клавиатурой. В пресете `none` и при «уменьшить движение» — сразу конечное состояние.',
@@ -49,7 +48,7 @@ export const Animations: StoryObj<typeof meta> = {
 	},
 	render: motion.render,
 	play: async ({ canvas, canvasElement, userEvent }) => {
-		const next = canvas.getByRole('button', { name: 'Добавить, удалить, перемешать' })
+		const next = canvas.getByRole('button', { name: /^(Следующий шаг|Повторить)/ })
 		await expect(canvas.getAllByRole('listitem')).toHaveLength(12)
 
 		await userEvent.click(next)

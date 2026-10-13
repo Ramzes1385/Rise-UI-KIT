@@ -10,7 +10,7 @@ import { within, waitFor, expect } from 'storybook/test'
 import { BaseBreadcrumbs } from '@components/BaseBreadcrumbs'
 import { BaseMediaPlayer } from '@components/BaseMediaPlayer'
 import { BaseCommentThread } from '@components/BaseCommentThread'
-import { scriptSource, staticStorySource, useStorySetup } from '@/stories/helpers'
+import { scriptImports, scriptSource, staticStorySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
 	<main class="blk-page blk-series">
@@ -85,22 +85,10 @@ export const Episode: StoryObj<typeof meta> = {
 			},
 			source: staticStorySource({
 				template,
-				imports: [
-					'BaseBadge',
-					'BaseBreadcrumbs',
-					'BaseCommentThread',
-					'BaseRating',
-					'BaseTabs',
-					'BaseUser',
-					'type BreadcrumbItem',
-					'type CommentItem',
-					'type CommentReply',
-					'type TabItem',
-				],
-				importsFrom: {
-					'@ramzes1385/rise-ui-kit/media': ['BaseMediaPlayer', 'type MediaEpisode', 'type MediaPlaylist'],
-					'./media': ['seriesMedia'],
-				},
+				...scriptImports(setupSource, {
+					imports: ['BaseBadge', 'BaseBreadcrumbs', 'BaseCommentThread', 'BaseRating', 'BaseTabs', 'BaseUser'],
+					importsFrom: { '@ramzes1385/rise-ui-kit/media': ['BaseMediaPlayer'] },
+				}),
 				vue: ['computed', 'ref'],
 				script: scriptSource(setupSource),
 			}),

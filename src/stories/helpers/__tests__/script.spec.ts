@@ -1,4 +1,4 @@
-import { scriptSource } from '../render/code/script'
+import { scriptImports, scriptSource } from '../render/code/script'
 
 const MODULE = [
 	"import { ref } from 'vue'",
@@ -77,5 +77,54 @@ describe('модули setup витрин Blocks', () => {
 		expect(code).not.toMatch(/^(?:import|export|return)\b/m)
 		const declared = new Set([...code.matchAll(/^(?:const|(?:async\s+)?function)\s+([\w$]+)/gm)].map(match => match[1]))
 		expect(Object.keys(SETUPS[file].setup()).filter(name => !declared.has(name))).toEqual([])
+	})
+})
+
+describe('scriptImports', () => {
+	const MODULE_WITH_IMPORTS = [
+		"import { ref } from 'vue'",
+		"import { seriesMedia } from '../media'",
+		"import type { TabItem, TableRow } from '@components/BaseTabs'",
+		"import type { MediaEpisode } from '@components/BaseMediaPlayer'",
+		'import type {',
+		'\tStandardSchemaV1,',
+		"} from '@utils/form/formUtils'",
+		"import { type UseX, useX } from '@composables/base/useX'",
+	].join('\r\n')
+
+	it('типы кита — в imports, подпути пакета и соседние файлы — в importsFrom, vue пропущен', () => {
+		expect(scriptImports(MODULE_WITH_IMPORTS)).toEqual({
+			imports: ['type TabItem', 'type TableRow'],
+			importsFrom: {
+				'./media': ['seriesMedia'],
+				'@ramzes1385/rise-ui-kit/media': ['type MediaEpisode'],
+				'@ramzes1385/rise-ui-kit/utils': ['type StandardSchemaV1'],
+				'@ramzes1385/rise-ui-kit/composables': ['type UseX', 'useX'],
+			},
+		})
+	})
+
+	it('extra дополняет, а не заменяет: компоненты шаблона и имена из того же подпути без повторов', () => {
+		const result = scriptImports(MODULE_WITH_IMPORTS, {
+			imports: ['BaseTabs'],
+			importsFrom: { '@ramzes1385/rise-ui-kit/media': ['BaseMediaPlayer'] },
+		})
+
+		expect(result.imports).toEqual(['BaseTabs', 'type TabItem', 'type TableRow'])
+		expect(result.importsFrom['@ramzes1385/rise-ui-kit/media']).toEqual(['BaseMediaPlayer', 'type MediaEpisode'])
+	})
+
+	it('неизвестный путь — ошибка, чтобы «Show code» не терял импорт молча', () => {
+		expect(() => scriptImports("import type { A } from 'left-pad'")).toThrow('left-pad')
+	})
+
+	it.each(Object.keys(SETUP_MODULES))('%s: все типовые импорты модуля попали в «Show code»', file => {
+		const { imports, importsFrom } = scriptImports(SETUP_MODULES[file])
+		const shown = new Set([...imports, ...Object.values(importsFrom).flat()])
+		const declared = [...SETUP_MODULES[file].matchAll(/^import (type )?\{([^}]*)\} from '(?!vue')/gm)].flatMap(([, type, list]) =>
+			list.split(',').map(name => `${type ?? ''}${name.trim()}`),
+		)
+
+		expect(declared.filter(name => !shown.has(name))).toEqual([])
 	})
 })

@@ -8,7 +8,7 @@ import { BaseEmpty } from '@components/BaseEmpty'
 import { BaseButton } from '@components/BaseButton'
 import { BaseSearch } from '@components/BaseSearch'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { scriptSource, staticStorySource, tabTo, useStorySetup } from '@/stories/helpers'
+import { scriptImports, scriptSource, staticStorySource, tabTo, useStorySetup } from '@/stories/helpers'
 
 const template = `
 	<main class="blk-page blk-error">
@@ -54,7 +54,7 @@ export const NotFound: StoryObj<typeof meta> = {
 			},
 			source: staticStorySource({
 				template,
-				imports: ['BaseButton', 'BaseEmpty', 'BaseIcon', 'BaseLink', 'BaseSearch', 'type SearchResult'],
+				...scriptImports(setupSource, { imports: ['BaseButton', 'BaseEmpty', 'BaseIcon', 'BaseLink', 'BaseSearch'] }),
 				vue: ['ref'],
 				script: scriptSource(setupSource),
 			}),

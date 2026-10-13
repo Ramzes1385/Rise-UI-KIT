@@ -90,11 +90,17 @@ export interface MotionPresetsStoryOptions {
 	components: Readonly<Record<string, Component>>
 	/** Что импортировать из пакета кита для «Show code» (`BaseButton` добавляется сам) */
 	imports: readonly string[]
-	/** Состояние шаблона сверх `replay` (`{ isOpen: false }`) */
+	/**
+	 * Подписи шагов многошаговой истории: кнопка «Следующий шаг: <подпись>» переводит `step` (в `item` — индекс шага, с 0)
+	 * на следующий, после последнего шага она «Повторить» и возвращает `step` в 0. `steps` лежит в состоянии шаблона.
+	 * Без параметра — одна кнопка (`action`, `trigger`, по умолчанию `replay++`)
+	 */
+	steps?: readonly string[]
+	/** Состояние шаблона сверх `replay` (`step` и `steps` при `steps`), например `{ isOpen: false }` */
 	state?: Readonly<Record<string, unknown>>
-	/** Выражение кнопки, по умолчанию `replay++` */
+	/** Выражение кнопки одношаговой истории, по умолчанию `replay++`; при `steps` не используется */
 	action?: string
-	/** Подпись кнопки, по умолчанию «Повторить» */
+	/** Подпись кнопки одношаговой истории, по умолчанию «Повторить»; при `steps` не используется */
 	trigger?: string
 	/** Аргументы, которые шаблон задаёт сам, — как `omit` у `storySource` */
 	omit?: readonly string[]
@@ -104,3 +110,19 @@ export interface MotionPresetsStoryOptions {
 
 /** Бренд историй — глобал Storybook `brand`: пресет `THEME_PRESETS` или `custom` — тема из «Foundations/Конструктор темы» */
 export type StoryBrand = ThemePresetName | 'custom'
+
+/** Что `scriptImports` добавляет к импортам модуля: компоненты шаблона и пути, которых в модуле нет */
+export interface ScriptImportsExtra {
+	/** Имена из пакета кита */
+	imports?: readonly string[]
+	/** Имена из прочих путей */
+	importsFrom?: Readonly<Record<string, readonly string[]>>
+}
+
+/** Результат `scriptImports`: готовые `imports` и `importsFrom` для `storySource` */
+export interface ScriptImports {
+	/** Имена из пакета кита (`type X` для типов) */
+	imports: string[]
+	/** Имена из подпутей пакета и соседних файлов */
+	importsFrom: Record<string, string[]>
+}

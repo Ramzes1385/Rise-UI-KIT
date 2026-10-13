@@ -37,9 +37,8 @@ const motion = motionPresetsStory({
 	`,
 	components: { BaseButton, BaseChart },
 	imports: ['BaseChart'],
-	state: { step: 0, labels: MONTHS.slice(0, 6), phases },
-	action: 'step++',
-	trigger: 'Следующий шаг',
+	steps: ['новые данные', 'скрыть «Расходы»', 'монтирование заново'],
+	state: { labels: MONTHS.slice(0, 6), phases },
 	omit: ['animation', 'label', 'labels', 'series', 'hiddenSeries'],
 })
 
@@ -51,7 +50,7 @@ export const Animations: StoryObj<typeof meta> = {
 			description: {
 				story: [
 					'Появление `animation` (строки в каждой колонке: `grow`, `draw`, `fade`, `none`) в четырёх пресетах движения `data-rise-motion` (колонки).',
-					'«Следующий шаг» по кругу: новые данные — значения и шкала Y плавно переходят к новым (`updateAnimation`) →',
+					'«Следующий шаг» по шагам: новые данные — значения и шкала Y плавно переходят к новым (`updateAnimation`) →',
 					'ряд «Расходы» скрыт — гаснет, стопка и шкала пересчитываются плавно → графики монтируются заново и снова показывают появление.',
 					'Вид — `variant` и `isStacked` в Controls.',
 					'',
@@ -68,7 +67,7 @@ export const Animations: StoryObj<typeof meta> = {
 	render: motion.render,
 	play: async ({ canvas, canvasElement, userEvent }) => {
 		const count = CHART_ANIMATIONS.length * 4
-		const step = canvas.getByRole('button', { name: 'Следующий шаг' })
+		const step = canvas.getByRole('button', { name: /^(Следующий шаг|Повторить)/ })
 		const settled = () => expect(canvasElement.querySelectorAll('.base-chart__y-tick--outside')).toHaveLength(0)
 		await expect(canvas.getAllByRole('img')).toHaveLength(count)
 		await expect(canvasElement.querySelector('[data-rise-motion="standard"] .base-chart__shapes--grow')).not.toBeNull()

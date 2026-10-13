@@ -1,4 +1,6 @@
-/** Код для «Show code»: строки `script` из текста модуля, функция `setup` которого рисует превью. */
+/** Код для «Show code»: строки `script` и импорты из текста модуля, функция `setup` которого рисует превью. */
+
+import type { ScriptImports, ScriptImportsExtra } from '../../types/helpers.types'
 
 const SETUP_START = /^(?:export\s+)?function setup\(\)[^{]*\{\s*$/
 const IMPORT_END = /(?:from\s+)?'[^']+'\s*$/
@@ -43,4 +45,52 @@ export function scriptSource(raw: string): string {
 		.join('\n')
 		.replace(/\n{3,}/g, '\n\n')
 		.trim()
+}
+
+const KIT_PACKAGE = '@ramzes1385/rise-ui-kit'
+const IMPORT_STATEMENT = /^import\s+(type\s+)?\{([^}]*)\}\s+from\s+'([^']+)'/gm
+
+/** Откуда в «Show code» берётся модуль: пакет кита (`imports`), его подпуть, относительный файл */
+function importTarget(specifier: string): string {
+	if (specifier.startsWith('@utils/')) return `${KIT_PACKAGE}/utils`
+	if (specifier.startsWith('@composables/')) return `${KIT_PACKAGE}/composables`
+	if (specifier === '@components/BaseMediaPlayer') return `${KIT_PACKAGE}/media`
+	if (specifier.startsWith('@components/')) return KIT_PACKAGE
+	if (specifier.startsWith('../')) return specifier.slice(1)
+	throw new Error(`scriptImports: неизвестный путь импорта '${specifier}'`)
+}
+
+function addNames(target: Record<string, string[]>, from: string, names: readonly string[]): void {
+	target[from] = [...new Set([...(target[from] ?? []), ...names])]
+}
+
+/**
+ * Импорты кита и соседних файлов из текста модуля (`?raw`) для `imports` и `importsFrom` у `storySource`:
+ * `@components/…` — пакет кита, `@utils/…`, `@composables/…` и `BaseMediaPlayer` — подпуть пакета, `../x` — `./x`;
+ * `vue` — это `vue` у `storySource`, он пропускается. `extra` — то, чего в модуле нет (компоненты из шаблона).
+ *
+ * @example
+ * const kit = scriptImports(setupSource, { imports: ['BaseButton'] })
+ * source: staticStorySource({ template, imports: kit.imports, importsFrom: kit.importsFrom, script: scriptSource(setupSource) })
+ */
+export function scriptImports(raw: string, extra: ScriptImportsExtra = {}): ScriptImports {
+	const target: Record<string, string[]> = {
+		...Object.fromEntries(Object.entries(extra.importsFrom ?? {}).map(([from, names]) => [from, [...names]])),
+	}
+	const own = [...raw.replace(/\r\n/g, '\n').matchAll(IMPORT_STATEMENT)]
+	for (const [, type, list, specifier] of own) {
+		if (specifier === 'vue') continue
+		const names = list
+			.split(',')
+			.map(name => name.trim())
+			.filter(Boolean)
+		addNames(
+			target,
+			importTarget(specifier),
+			names.map(name => (type && !name.startsWith('type ') ? `type ${name}` : name)),
+		)
+	}
+	const imports = [...new Set([...(extra.imports ?? []), ...(target[KIT_PACKAGE] ?? [])])]
+	delete target[KIT_PACKAGE]
+	return { imports, importsFrom: target }
 }

@@ -17,9 +17,8 @@ const motion = motionPresetsStory({
 	`,
 	components: { BaseButton, BasePieChart },
 	imports: ['BasePieChart'],
-	state: { step: 0, phases },
-	action: 'step++',
-	trigger: 'Следующий шаг',
+	steps: ['новые данные', 'часть «Отменено»', 'монтирование заново'],
+	state: { phases },
 	omit: ['animation', 'segments'],
 })
 
@@ -31,7 +30,7 @@ export const Animations: StoryObj<typeof meta> = {
 				story: [
 					'Появление `animation` (строки в каждой колонке) в четырёх пресетах движения `data-rise-motion` (колонки):',
 					'`sweep` — части по очереди набегают по кругу, `grow` — круг вырастает из центра, `fade` — проявляется, `none` — сразу.',
-					'«Следующий шаг» по кругу: новые данные (длина и начало дуг перетекают, «На проверке» сжимается и удаляется) →',
+					'«Следующий шаг» по шагам: новые данные (длина и начало дуг перетекают, «На проверке» сжимается и удаляется) →',
 					'новая часть «Отменено» растёт из нуля → диаграммы монтируются заново и снова показывают появление. Вид — `variant` в Controls.',
 					'',
 					'Длительности — токены: появление `--rise-duration-xslow`, обновление `--rise-duration-slow`, подсветка части при',
@@ -49,7 +48,7 @@ export const Animations: StoryObj<typeof meta> = {
 	play: async ({ canvas, canvasElement }) => {
 		const charts = () => [...canvasElement.querySelectorAll('.base-pie-chart')]
 		const segmentsOf = (chart: Element) => chart.querySelectorAll('.base-pie-chart__segment')
-		const next = canvas.getByRole('button', { name: 'Следующий шаг' })
+		const next = canvas.getByRole('button', { name: /^(Следующий шаг|Повторить)/ })
 		await expect(charts()).toHaveLength(16)
 
 		await userEvent.click(next)

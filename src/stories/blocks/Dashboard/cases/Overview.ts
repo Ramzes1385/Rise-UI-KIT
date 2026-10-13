@@ -18,7 +18,7 @@ import { BaseTimeline } from '@components/BaseTimeline'
 import { BaseSparkline } from '@components/BaseSparkline'
 import { screen, waitFor, within, expect } from 'storybook/test'
 import { BaseCommandPalette } from '@components/BaseCommandPalette'
-import { scriptSource, staticStorySource, useStorySetup } from '@/stories/helpers'
+import { scriptImports, scriptSource, staticStorySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
 	<BaseLayout is-header-sticky>
@@ -115,27 +115,25 @@ export const Overview: StoryObj<typeof meta> = {
 			},
 			source: staticStorySource({
 				template,
-				imports: [
-					'BaseButton',
-					'BaseCard',
-					'BaseCommandPalette',
-					'BaseHeader',
-					'BaseHeatmap',
-					'BaseKbd',
-					'BaseLayout',
-					'BaseLink',
-					'BasePieChart',
-					'BaseSideBar',
-					'BaseSparkline',
-					'BaseStat',
-					'BaseTable',
-					'BaseTimeline',
-					'BaseUser',
-					'type CommandItem',
-					'type TableColumn',
-					'type TableRow',
-					'type TimelineItem',
-				],
+				...scriptImports(setupSource, {
+					imports: [
+						'BaseButton',
+						'BaseCard',
+						'BaseCommandPalette',
+						'BaseHeader',
+						'BaseHeatmap',
+						'BaseKbd',
+						'BaseLayout',
+						'BaseLink',
+						'BasePieChart',
+						'BaseSideBar',
+						'BaseSparkline',
+						'BaseStat',
+						'BaseTable',
+						'BaseTimeline',
+						'BaseUser',
+					],
+				}),
 				vue: ['ref'],
 				script: scriptSource(setupSource),
 			}),
@@ -167,7 +165,7 @@ export const Overview: StoryObj<typeof meta> = {
 		const sidebar = canvasElement.querySelector('.base-layout__sidebar') as HTMLElement
 		if (window.innerWidth >= 768) await expect(sidebar.getBoundingClientRect().width).toBeGreaterThan(200)
 		await expect(
-			canvas.getByText('4,82 млн ₽', { selector: '.base-stat__value', normalizer: text => text.replace(/\s+/g, ' ').trim() }),
+			canvas.getByText('4,82 млн ₽', { selector: '.base-stat__content', normalizer: text => text.replace(/\s+/g, ' ').trim() }),
 		).toBeVisible()
 
 		await userEvent.click(canvas.getByRole('button', { name: 'Поиск' }))
