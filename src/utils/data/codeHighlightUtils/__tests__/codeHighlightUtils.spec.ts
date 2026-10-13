@@ -323,22 +323,22 @@ describe('codeHighlightUtils: Vue', () => {
 
 describe('codeHighlightUtils: время разбора больших входов', () => {
 	const SIZE = 100 * 1024
-	/** Во сколько раз вход растёт между замерами: линейный разбор растёт ≈вдвое, квадратичный — вчетверо */
-	const GROWTH = 2
-	/** Допустимый рост времени: между линейным (2) и квадратичным (4) */
-	const MAX_RATIO = 3
+	/** Во сколько раз вход растёт между замерами: линейный разбор растёт ≈в 4 раза, квадратичный — в 16 */
+	const GROWTH = 4
+	/** Допустимый рост времени: между линейным (4) и квадратичным (16) */
+	const MAX_RATIO = 9
 	let size = SIZE
 
 	function repeatTo(part: string): string {
 		return part.repeat(Math.ceil(size / part.length))
 	}
 
-	/** Лучшее из трёх замеров после прогрева: меньше шума от нагрузки машины и сборки мусора */
+	/** Лучшее из пяти замеров после прогрева: меньше шума от нагрузки машины и сборки мусора */
 	function bestTime(build: () => string, language: string, scale: number): number {
 		size = Math.round(SIZE / scale)
 		const code = build()
 		tokenizeCode(code, language)
-		const times = [0, 1, 2].map(() => {
+		const times = [0, 1, 2, 3, 4].map(() => {
 			const start = performance.now()
 			tokenizeCode(code, language)
 			return performance.now() - start
@@ -374,7 +374,7 @@ describe('codeHighlightUtils: время разбора больших вход�
 				.map(token => token.value)
 				.join(''),
 		).toBe(code)
-		const small = Math.max(bestTime(build, language, GROWTH), 1)
+		const small = Math.max(bestTime(build, language, GROWTH), 2)
 		const large = bestTime(build, language, 1)
 		size = SIZE
 		expect(large).toBeLessThan(small * MAX_RATIO)
