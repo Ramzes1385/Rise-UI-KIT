@@ -348,6 +348,7 @@
 	}
 
 	&__link.base-link {
+		@include inherit-custom-color;
 		display: flex;
 		border-radius: sz(ct(side-bar, item-radius, var(--rise-radius-md)));
 		@include custom-text(color, ct(side-bar, item-text, var(--rise-text-muted)));

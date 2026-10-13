@@ -60,10 +60,10 @@ describe('BaseProgress: проп ui', () => {
 		expect(container.querySelector('.base-progress__fill')).toHaveAttribute('class', 'base-progress__fill app-fill own-fill')
 	})
 
-	it('RTL: градиент и радуга зеркалятся вместе с заливкой (270deg в :dir(rtl))', () => {
+	it('RTL: градиент и радуга зеркалятся вместе с заливкой (270deg при dir="rtl")', () => {
 		const rules = [
 			...styleSource.matchAll(
-				/--fill-(gradient|rainbow) &__fill \{[^]*?&:dir\(rtl\) \{\s*--progress-paint: linear-gradient\(270deg/g,
+				/--fill-(gradient|rainbow) &__fill \{[^]*?\[dir='rtl'\] & \{\s*--progress-paint: linear-gradient\(270deg/g,
 			),
 		]
 

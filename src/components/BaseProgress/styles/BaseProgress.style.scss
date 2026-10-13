@@ -31,7 +31,7 @@ $progress-radius: ct(progress, radius, var(--rise-radius-full));
 		transform: translateX(var(--progress-label-shift));
 		@include transition(transform);
 
-		&:dir(rtl) {
+		[dir='rtl'] & {
 			transform: translateX(calc(var(--progress-label-shift) * -1));
 		}
 	}
@@ -65,7 +65,7 @@ $progress-radius: ct(progress, radius, var(--rise-radius-full));
 		clip-path: inset(0 var(--progress-clip) 0 0 round 0 #{$progress-radius} #{$progress-radius} 0);
 		@include transition(clip-path);
 
-		&:dir(rtl) {
+		[dir='rtl'] & {
 			clip-path: inset(0 0 0 var(--progress-clip) round #{$progress-radius} 0 0 #{$progress-radius});
 		}
 	}
@@ -117,7 +117,7 @@ $progress-radius: ct(progress, radius, var(--rise-radius-full));
 	&--fill-gradient &__fill {
 		--progress-paint: linear-gradient(90deg, #{$progress-light}, var(--progress-color));
 
-		&:dir(rtl) {
+		[dir='rtl'] & {
 			--progress-paint: linear-gradient(270deg, #{$progress-light}, var(--progress-color));
 		}
 	}
@@ -125,7 +125,7 @@ $progress-radius: ct(progress, radius, var(--rise-radius-full));
 	&--fill-rainbow &__fill {
 		--progress-paint: linear-gradient(90deg, #{$rainbow-colors});
 
-		&:dir(rtl) {
+		[dir='rtl'] & {
 			--progress-paint: linear-gradient(270deg, #{$rainbow-colors});
 		}
 	}
@@ -158,7 +158,7 @@ $progress-radius: ct(progress, radius, var(--rise-radius-full));
 		transform-origin: left;
 		transition: none;
 
-		&:dir(rtl) {
+		[dir='rtl'] & {
 			clip-path: none;
 			transform-origin: right;
 		}
