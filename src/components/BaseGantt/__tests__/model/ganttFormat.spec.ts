@@ -1,6 +1,6 @@
 import { setLocale } from '@/locales/state'
 import { normalizeTasks } from '../../model/tasks/ganttTasks'
-import { createScaleFormat, editMessage, taskLabel } from '../../model/calendar/ganttFormat'
+import { createScaleFormat, editMessage, getDateFormat, taskLabel } from '../../model/calendar/ganttFormat'
 
 const at = (day: number): Date => new Date(2026, 9, day)
 const [task, point] = normalizeTasks([
@@ -12,6 +12,15 @@ const edit = (kind: 'move' | 'resize-end', end: number) => ({ kind, span: { star
 
 describe('ganttFormat', () => {
 	afterEach(() => setLocale('ru'))
+
+	it('getDateFormat: один и тот же формат для одинаковых языка и параметров, по умолчанию — день, месяц, год', () => {
+		expect(getDateFormat('ru-RU')).toBe(getDateFormat('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' }))
+		expect(getDateFormat('ru-RU')).not.toBe(getDateFormat('en-US'))
+		expect(getDateFormat('ru-RU', { month: 'long' })).not.toBe(getDateFormat('ru-RU'))
+		expect(getDateFormat('ru-RU').format(at(5))).toBe(
+			new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' }).format(at(5)),
+		)
+	})
 
 	it('createScaleFormat: подписи с заглавной буквы по языку', () => {
 		const format = createScaleFormat('ru-RU')

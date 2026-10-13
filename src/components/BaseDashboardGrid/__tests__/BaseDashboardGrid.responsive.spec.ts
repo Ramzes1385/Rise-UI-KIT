@@ -65,6 +65,13 @@ describe('BaseDashboardGrid адаптивные раскладки', () => {
 		expect(itemOf(container, 's').style.width).toBe('700px')
 	})
 
+	it('без ResizeObserver измеряет ширину один раз и не падает', async () => {
+		vi.stubGlobal('ResizeObserver', undefined)
+		const { container } = await mount(1200)
+		expect(ids(container)).toEqual(['a', 'b'])
+		vi.unstubAllGlobals()
+	})
+
 	it('при изменении ширины переключает раскладку', async () => {
 		const callbacks: Array<() => void> = []
 		globalThis.ResizeObserver = class {

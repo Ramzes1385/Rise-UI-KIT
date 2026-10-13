@@ -188,6 +188,22 @@ describe('BaseMap: подложка и жесты', () => {
 	})
 })
 
+describe('BaseMap: подсказка колеса по платформе', () => {
+	afterEach(() => {
+		cleanWindow()
+		vi.restoreAllMocks()
+	})
+
+	it('на macOS подсказка называет ⌘, на остальных — Ctrl', async () => {
+		fakeYandex()
+		vi.spyOn(navigator, 'platform', 'get').mockReturnValue('MacIntel')
+		const { emitted, container } = render(BaseMap, { props: { apiKey: 'KEY', zoom: 10, isScrollZoom: false } })
+		await ready(emitted)
+		await fireEvent.wheel(container.querySelector('.base-map') as HTMLElement, { deltaY: 100 })
+		expect(screen.getByRole('status')).toHaveTextContent('Чтобы изменить масштаб, прокручивайте колесо мыши с зажатой клавишей ⌘')
+	})
+})
+
 describe('BaseMap: колесо без карты', () => {
 	it('Ctrl + колесо до загрузки карты ничего не меняет', async () => {
 		const { container, emitted } = render(BaseMap, { props: { isScrollZoom: false } })

@@ -1,9 +1,11 @@
 import { UI_ARIA } from '@/locales/messages'
-import { computed, nextTick, ref } from 'vue'
 import { useSearchMotion } from './useSearchMotion'
 import type BaseSearchInput from '../ui/BaseSearchInput.vue'
+import { computed, nextTick, onBeforeUnmount, ref } from 'vue'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseSearchOverlayExpose, BaseSearchOverlayProps } from '../types/BaseSearchOverlay.types'
+
+const FOCUS_RETURN_MS = 600
 
 function joinClasses(...classes: (string | undefined)[]): string {
 	return classes.filter(Boolean).join(' ')
@@ -35,21 +37,30 @@ export function useBaseSearchOverlay(props: BaseSearchOverlayProps, emit: (event
 	const rootRef = ref<HTMLElement | null>(null)
 	const inputRef = ref<InstanceType<typeof BaseSearchInput> | null>(null)
 	let isFocusReturning = false
+	let returnTimer: ReturnType<typeof setTimeout> | undefined
+	const endFocusReturn = (): void => {
+		isFocusReturning = false
+		clearTimeout(returnTimer)
+	}
 	const close = (): void => {
 		isOpen.value = false
 		isFocusReturning = true
-		nextTick(() => {
-			isFocusReturning = false
-		})
+		clearTimeout(returnTimer)
+		returnTimer = setTimeout(endFocusReturn, FOCUS_RETURN_MS)
 		emit('close')
 	}
 	const open = (): void => {
-		if (props.isDisabled || isFocusReturning) return
+		if (props.isDisabled) return
 		isOpen.value = true
 		nextTick(() => {
 			inputRef.value?.focus()
 		})
 	}
+	const onTriggerFocus = (): void => {
+		if (!isFocusReturning) return open()
+		endFocusReturn()
+	}
+	onBeforeUnmount(endFocusReturn)
 
 	return {
 		sizeScaleStyle,
@@ -63,6 +74,7 @@ export function useBaseSearchOverlay(props: BaseSearchOverlayProps, emit: (event
 		...useLayerClasses(props),
 		open,
 		close,
+		onTriggerFocus,
 		onDialogToggle: (value: boolean): void => {
 			if (!value) close()
 		},

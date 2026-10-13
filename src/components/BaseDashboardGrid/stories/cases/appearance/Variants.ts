@@ -10,7 +10,7 @@ const template = `
 	<div class="story-stack">
 		<div v-for="variant in DASHBOARD_GRID_VARIANTS" :key="variant">
 			<p class="story-label">{{ variant }}</p>
-			<BaseDashboardGrid v-bind="args" :variant="variant" :layout="layout" :cols="4" :row-height="48" :label="'Вариант ' + variant">
+			<BaseDashboardGrid v-bind="args" :variant="variant" :layout="layout" :cols="4" :row-height="48" :aria-label="'Вариант ' + variant">
 				<template #item="{ item }">
 					<strong>{{ item.label }}</strong>
 				</template>

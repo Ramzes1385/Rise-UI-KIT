@@ -3,7 +3,7 @@ import { getLocale } from '@/locales/state'
 import { useGanttPointer } from './useGanttPointer'
 import { editedTask, isChanged, keyboardEdit } from './ganttEdit'
 import type { GanttChangeSource } from '../../types/BaseGantt.types'
-import { DEFAULT_DATE_FORMAT, editMessage } from '../calendar/ganttFormat'
+import { editMessage, getDateFormat } from '../calendar/ganttFormat'
 import type { GanttContext, GanttEdit, GanttItem } from '../../types/BaseGanttModel.types'
 
 export function useGanttEditing(context: GanttContext) {
@@ -14,7 +14,7 @@ export function useGanttEditing(context: GanttContext) {
 		const task = editedTask(item, edit)
 		context.emit('update:task', task)
 		context.emit('task-change', { task, previous: item.task, kind: edit.kind, source })
-		status.value = editMessage(item, edit, new Intl.DateTimeFormat(getLocale().intl, context.props.dateFormat ?? DEFAULT_DATE_FORMAT))
+		status.value = editMessage(item, edit, getDateFormat(getLocale().intl, context.props.dateFormat))
 	}
 
 	return {

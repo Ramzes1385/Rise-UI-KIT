@@ -14,7 +14,7 @@ export const argTypes = {
 	compactType: { control: 'inline-radio', options: DASHBOARD_COMPACT_TYPES, table: propGroup(ARG_GROUP.behavior) },
 	isEditable: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	isDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
-	label: { control: 'text', table: propGroup(ARG_GROUP.a11y) },
+	ariaLabel: { control: 'text', table: propGroup(ARG_GROUP.a11y) },
 	item: { control: false },
 	handle: { control: false },
 	empty: { control: false },

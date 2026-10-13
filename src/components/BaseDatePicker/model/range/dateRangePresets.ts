@@ -1,4 +1,3 @@
-import { warn } from '@/locales/warn'
 import { UI_DATE_PICKER } from '@/locales/messages'
 import { DATE_PICKER_PRESET_IDS } from '../../types/DatePickerRange.types'
 import type {
@@ -59,7 +58,7 @@ function resolveItem(item: DatePickerPresetId | BaseDatePickerPreset, today: Dat
 }
 
 export function resolveDatePickerPresets(source: DatePickerPresetsSource): DatePickerResolvedPreset[] {
-	const { presets, today } = source
+	const { presets, today, onInvalid } = source
 	if (!presets) return []
 	const items = presets === true ? DATE_PICKER_PRESET_IDS : presets
 	const resolved: DatePickerResolvedPreset[] = []
@@ -69,7 +68,7 @@ export function resolveDatePickerPresets(source: DatePickerPresetsSource): DateP
 		if (preset && !resolved.some(existing => existing.id === preset.id)) {
 			resolved.push(preset)
 		} else {
-			warn(UI_DATE_PICKER.PRESET_INVALID, { id: typeof item === 'string' ? item : item.id })
+			onInvalid?.(typeof item === 'string' ? item : item.id)
 		}
 	}
 	return resolved

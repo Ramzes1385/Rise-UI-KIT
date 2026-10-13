@@ -8,7 +8,7 @@ export function decorateHosts(hosts: readonly MapMarkerHost[], decoration: Marke
 		button.classList.toggle('base-map__marker--custom', decoration.hasSlot && !isGroup)
 		button.classList.toggle('base-map__marker--icon', !decoration.hasSlot && !isGroup && Boolean(marker.icon))
 		button.classList.toggle('base-map__marker--selected', isSelected)
-		if (!decoration.hasBalloon) continue
+		if (!decoration.hasBalloon || isGroup) continue
 		button.setAttribute('aria-haspopup', 'dialog')
 		button.setAttribute('aria-expanded', String(isSelected))
 		if (isSelected) button.setAttribute('aria-controls', decoration.balloonId)

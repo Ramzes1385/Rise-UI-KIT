@@ -1,10 +1,9 @@
 import { fitView } from './fitView'
 import { watchAdapter } from '../watchAdapter'
+import { FIT_PADDING, MAX_ZOOM } from './viewLimits'
 import type { BaseMapProps, MapMarker, MapView } from '../../types/BaseMap.types'
 import type { MapMarkerItem, MapNavigationState } from '../../types/providers.types'
 
-const MAX_ZOOM = 21
-const FIT_PADDING = 40
 const FALLBACK_SIZE = 400
 
 export function useMapFit(props: BaseMapProps, map: MapNavigationState, goTo: (view: MapView) => void) {

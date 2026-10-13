@@ -2,7 +2,7 @@ import { computed } from 'vue'
 import { getLocale } from '@/locales/state'
 import { boxOf, spanOf } from './ganttBoxes'
 import { dependencyArrow } from './ganttLayout'
-import { DEFAULT_DATE_FORMAT, taskLabel } from '../calendar/ganttFormat'
+import { getDateFormat, taskLabel } from '../calendar/ganttFormat'
 import type { GanttContext, GanttRowsState, GanttRowView, GanttRowWindow } from '../../types/BaseGanttModel.types'
 
 function px(value: number): string {
@@ -20,7 +20,7 @@ export function useGanttRows(context: GanttContext, state: GanttRowsState) {
 	const rowViews = computed((): GanttRowView[] => {
 		const { rows, range, metrics } = context
 		const draft = context.draft.value
-		const format = new Intl.DateTimeFormat(getLocale().intl, context.props.dateFormat ?? DEFAULT_DATE_FORMAT)
+		const format = getDateFormat(getLocale().intl, context.props.dateFormat)
 		return renderedIndexes(state.window.value, state.activeIndex.value, rows.value.length).map(index => {
 			const item = rows.value[index]
 			const span = spanOf(item, draft)

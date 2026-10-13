@@ -116,8 +116,8 @@ export interface BaseDashboardGridProps extends BaseComponentProps<
 	isEditable?: boolean
 	/** Отключает сетку целиком: перетаскивание и клавиатурный режим выключены, виджеты не получают фокус */
 	isDisabled?: boolean
-	/** Доступное имя сетки (`aria-label`); по умолчанию — «Сетка виджетов» из словаря */
-	label?: string
+	/** Доступное имя сетки (`aria-label`, как `ariaLabel` у остальных компонентов кита); по умолчанию — «Сетка виджетов» из словаря */
+	ariaLabel?: string
 	/**
 	 * Классы частей сетки (`root`, `item`, `body`, `handle`, `resize`, `placeholder`, `empty`, `status`, `hint`) — добавляются к классам кита.
 	 * Глобально — `createUiKitPlugin({ defaults: { BaseDashboardGrid: { ui } } })`, классы плагина и экземпляра склеиваются.

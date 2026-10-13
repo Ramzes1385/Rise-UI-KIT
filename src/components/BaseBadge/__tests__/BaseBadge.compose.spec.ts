@@ -22,6 +22,19 @@ describe('BaseBadge: палитра, точка, счётчик', () => {
 		expect(dot).not.toHaveAttribute('aria-hidden')
 	})
 
+	it('кликабельная точка с label — кнопка с именем label (без role="img"), без label — кнопка без aria-label', async () => {
+		const onClick = vi.fn()
+		const { container, rerender } = render(BaseBadge, { props: { isDot: true, label: 'Есть новые' }, attrs: { onClick } })
+		const dot = screen.getByRole('button', { name: 'Есть новые' })
+		expect(dot).toBe(container.firstElementChild)
+		expect(dot).toHaveAttribute('tabindex', '0')
+		await fireEvent.click(dot)
+		expect(onClick).toHaveBeenCalledTimes(1)
+
+		await rerender({ label: undefined })
+		expect(container.firstElementChild).not.toHaveAttribute('aria-label')
+	})
+
 	it('круглый счётчик получает модификатор --round', () => {
 		const { container } = render(BaseBadge, { props: { isRound: true, label: '12' } })
 		expect(container.firstElementChild).toHaveClass('base-badge--round')
@@ -42,6 +55,18 @@ describe('BaseBadge: удаление', () => {
 		await fireEvent.click(button)
 		expect(emitted('remove')).toHaveLength(1)
 		expect(onClick).not.toHaveBeenCalled()
+	})
+
+	it('с @click и кнопкой удаления корень не кнопка и не в Tab (нет вложенной кнопки в кнопке), click мышью приходит', async () => {
+		const onClick = vi.fn()
+		const { container } = render(BaseBadge, { props: { label: 'Тег', isRemovable: true }, attrs: { onClick } })
+		const root = container.firstElementChild as HTMLElement
+		expect(root).not.toHaveAttribute('role')
+		expect(root).not.toHaveAttribute('tabindex')
+		expect(screen.getAllByRole('button')).toHaveLength(1)
+
+		await fireEvent.click(root)
+		expect(onClick).toHaveBeenCalledTimes(1)
 	})
 
 	it('removeLabel задаёт имя; без label и removeLabel — «Удалить»', async () => {

@@ -58,7 +58,10 @@ export interface BaseDatePickerProps extends BaseComponentProps<string, 'root' |
 	selectionMode?: CalendarSelectionMode
 	/** Плейсхолдер инпута */
 	placeholder?: string
-	/** Формат даты в инпуте */
+	/**
+	 * Формат даты в инпуте. Поле показывает даты в формате локали (`locale`), а текст диапазона разбирается в том же порядке
+	 * «день, месяц, год», что и показывается; нестандартный порядок задаётся локалью, а не этим пропом
+	 */
 	dateFormat?: DateFormat
 	/** Вариант отображения поля — варианты BaseInput. По умолчанию `default`: рамка и фон страницы */
 	inputVariant?: InputVariant

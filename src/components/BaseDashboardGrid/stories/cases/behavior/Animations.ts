@@ -19,7 +19,7 @@ const layoutB = [
 
 const motion = motionPresetsStory({
 	item: `
-		<BaseDashboardGrid v-bind="args" :layout="swapped ? layoutB : layoutA" :cols="4" :row-height="40" :gap="8" label="Сетка %preset%" />
+		<BaseDashboardGrid v-bind="args" :layout="swapped ? layoutB : layoutA" :cols="4" :row-height="40" :gap="8" aria-label="Сетка %preset%" />
 	`,
 	state: { swapped: false, layoutA, layoutB },
 	action: 'swapped = !swapped',

@@ -36,6 +36,10 @@ export function useMapSelection(props: BaseMapProps, emit: BaseMapEmits, slots: 
 			current.value = value ?? null
 		},
 	)
+	watch(hosts, list => {
+		const isMissing = current.value !== null && !list.some(host => host.marker.id === current.value)
+		if (list.length && isMissing) select(null)
+	})
 	watch([hosts, current], decorate, { flush: 'post' })
 
 	return {
@@ -45,8 +49,10 @@ export function useMapSelection(props: BaseMapProps, emit: BaseMapEmits, slots: 
 		close,
 		onMarkerClick: (marker: MapMarker): void => select(current.value === marker.id ? null : marker.id),
 		dismiss: (): void => select(null),
-		onEscape: (): void => {
-			if (selectedHost.value) close()
+		onEscape: (event: KeyboardEvent): void => {
+			if (!selectedHost.value) return
+			event.stopPropagation()
+			close()
 		},
 	}
 }

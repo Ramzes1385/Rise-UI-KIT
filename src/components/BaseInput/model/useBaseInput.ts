@@ -17,6 +17,7 @@ const INPUT_ELEMENTS = [
 	'prefix',
 	'field',
 	'passwordToggle',
+	'clear',
 	'passwordIcon',
 	'postfix',
 	'passwordRules',
@@ -47,6 +48,7 @@ function useInputControl(props: InputProps) {
 		inputId: control.id,
 		nativeAttrs: computed(() => ({
 			...props.inputAttrs,
+			...(props.type === 'search' ? { enterkeyhint: 'search' } : {}),
 			...(props.ariaLabel ? { 'aria-label': props.ariaLabel } : {}),
 			...Object.fromEntries(Object.entries(control.aria.value).filter(([, value]) => value !== undefined)),
 		})),
@@ -87,6 +89,13 @@ export function useBaseInput(props: InputProps, emit: BaseInputEmits) {
 		ui: useUi(props, 'base-input'),
 		...useMaskedValue(props, emit, inputRef),
 		...usePasswordVisibility({ type: toRef(props, 'type') }),
+		isClearVisible: computed(
+			() => props.type === 'search' && !props.isDisabled && !props.isReadonly && toText(props.modelValue) !== '',
+		),
+		clearSearch(): void {
+			emit('update:modelValue', '')
+			inputRef.value?.focus()
+		},
 		iconName: computed(() => props.icon ?? (props.type === 'search' ? 'search' : '')),
 		passwordRuleResults: computed<PasswordRuleResult[]>(() => {
 			if (!props.passwordRules) return []

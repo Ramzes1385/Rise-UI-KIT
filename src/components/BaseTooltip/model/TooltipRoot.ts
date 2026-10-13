@@ -1,4 +1,6 @@
+import { warn } from '@/locales/warn'
 import type { PropType, VNode } from 'vue'
+import { UI_WARNINGS } from '@/locales/messages'
 import { cloneVNode, Comment, defineComponent, Fragment, h, mergeProps, Text } from 'vue'
 
 function flatten(nodes: VNode[]): VNode[] {
@@ -30,7 +32,15 @@ export const TooltipRoot = defineComponent({
 		setElement: { type: Function as PropType<(element: HTMLElement | null) => void>, required: true },
 	},
 	setup(props, { slots, attrs }) {
-		const setRef = (target: unknown): void => props.setElement(toElement(target))
+		let isWarned = false
+		const setRef = (target: unknown): void => {
+			const element = toElement(target)
+			if (props.isWrapperless && target && !element && !isWarned) {
+				isWarned = true
+				warn(UI_WARNINGS.TOOLTIP_WRAPPERLESS_ROOT)
+			}
+			props.setElement(element)
+		}
 
 		return () => {
 			const popup = slots.popup?.() ?? []

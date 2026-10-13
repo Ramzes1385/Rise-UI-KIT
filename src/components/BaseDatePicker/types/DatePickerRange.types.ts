@@ -89,6 +89,8 @@ export interface DatePickerParsedText {
 export interface DatePickerPresetsSource {
 	presets: BaseDatePickerPresets
 	today: Date
+	/** Вызывается для каждого неверного или повторного периода (нет `id`/`label`/диапазона, неизвестный встроенный `id`) */
+	onInvalid?: (id: string) => void
 }
 
 /** Период после разбора списка: подпись и даты */

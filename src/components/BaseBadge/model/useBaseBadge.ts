@@ -13,10 +13,13 @@ export function useBaseBadge(props: BaseBadgeProps, emit: BaseBadgeEmits) {
 	return {
 		...useStandardBaseComponent('base-badge', props, ['root', 'text', 'remove']),
 		ui: useUi(props, 'base-badge'),
-		...clickable,
+		isClickable: clickable.isClickable,
+		handleKeydown: clickable.handleKeydown,
+		clickableAttributes: computed(() => (props.isRemovable ? {} : clickable.clickableAttributes.value)),
 		statusClass: computed(() => (props.status && props.status !== 'primary' ? `base-badge--status-${props.status}` : '')),
 		dotAttributes: computed(() => {
-			if (!props.isDot || clickable.isClickable.value) return {}
+			if (!props.isDot) return {}
+			if (clickable.isClickable.value) return props.label ? { 'aria-label': props.label } : {}
 			return props.label ? { role: 'img', 'aria-label': props.label } : { 'aria-hidden': 'true' as const }
 		}),
 		resolvedRemoveLabel: computed(

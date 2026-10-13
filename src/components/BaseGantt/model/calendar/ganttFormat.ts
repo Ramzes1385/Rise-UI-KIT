@@ -12,6 +12,18 @@ const SCALE_OPTIONS: Record<GanttScaleUnit, Intl.DateTimeFormatOptions> = {
 
 export const DEFAULT_DATE_FORMAT: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric' }
 
+const dateFormats = new Map<string, Intl.DateTimeFormat>()
+
+export function getDateFormat(intl: string, options: Intl.DateTimeFormatOptions = DEFAULT_DATE_FORMAT): Intl.DateTimeFormat {
+	const key = `${intl}|${JSON.stringify(options)}`
+	let format = dateFormats.get(key)
+	if (!format) {
+		format = new Intl.DateTimeFormat(intl, options)
+		dateFormats.set(key, format)
+	}
+	return format
+}
+
 export function createScaleFormat(intl: string): GanttScaleFormat {
 	const formats = Object.fromEntries(
 		Object.entries(SCALE_OPTIONS).map(([unit, options]) => [unit, new Intl.DateTimeFormat(intl, options)]),

@@ -3,11 +3,10 @@ import { useMapFit } from './useMapFit'
 import { useMapLocate } from './useMapLocate'
 import { useMapNotice } from './useMapNotice'
 import { applyViewChange } from './viewChange'
+import { MAX_ZOOM, MIN_ZOOM } from './viewLimits'
 import type { MapNavigationState } from '../../types/providers.types'
 import type { BaseMapEmits, BaseMapProps, MapView } from '../../types/BaseMap.types'
 
-const MIN_ZOOM = 0
-const MAX_ZOOM = 21
 const LOCATE_ZOOM = 14
 
 export function useMapNavigation(props: BaseMapProps, emit: BaseMapEmits, map: MapNavigationState) {

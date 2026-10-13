@@ -29,7 +29,7 @@ const template = `
 					:breakpoints="breakpoints"
 					:row-height="48"
 					:gap="8"
-					:label="'Сетка ' + view.name">
+					:aria-label="'Сетка ' + view.name">
 					<template #item="{ item }">
 						<strong>{{ item.label }}</strong>
 					</template>

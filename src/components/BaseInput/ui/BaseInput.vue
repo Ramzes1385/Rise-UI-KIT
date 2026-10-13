@@ -11,6 +11,7 @@
 				'base-input--has-prefix': prefix || $slots.prefix,
 				'base-input--has-postfix': postfix || $slots.postfix,
 				'base-input--password': type === 'password',
+				'base-input--clearable': isClearVisible,
 			},
 			classes.root,
 		]"
@@ -49,6 +50,17 @@
 				@keydown="masked.handleKeydown"
 				@blur="handleBlur"
 				@focus="handleFocus" />
+			<BaseButton
+				v-if="isClearVisible"
+				variant="ghost"
+				:class="ui('clear')"
+				:custom-class="classes.clear"
+				tabindex="-1"
+				:aria-label="UI_ARIA.CLEAR_VALUE"
+				:size-scale="sizeScale"
+				@click="clearSearch">
+				<BaseIcon name="x-mark" :size-scale="calcIconScale('sm', sizeScale)" />
+			</BaseButton>
 			<BaseButton
 				v-if="type === 'password'"
 				variant="ghost"
@@ -150,6 +162,8 @@ const {
 	isPasswordVisible,
 	inputType,
 	togglePasswordVisibility,
+	isClearVisible,
+	clearSearch,
 	passwordRuleResults,
 	handleBlur,
 	handleFocus,

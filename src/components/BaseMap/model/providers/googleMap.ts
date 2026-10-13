@@ -50,7 +50,7 @@ function markerLayer(api: GoogleMapsApi, map: GoogleMapInstance, handlers: MapHa
 		shown = hosts.map(host => {
 			host.anchor.classList.add('base-map__anchor--anchored')
 			const { marker, anchor: content } = host
-			return new api.marker.AdvancedMarkerElement({ map, position: marker.coordinates, title: marker.title, content })
+			return new api.marker.AdvancedMarkerElement({ map, position: marker.coordinates, content })
 		})
 		handlers.onMarkersRendered(hosts)
 	}

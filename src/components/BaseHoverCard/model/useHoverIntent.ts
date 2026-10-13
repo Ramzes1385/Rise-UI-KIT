@@ -40,6 +40,7 @@ export function useHoverIntent(options: HoverIntentOptions): HoverIntent & { can
 			if (pointerType !== 'touch') schedule(true, 0)
 		},
 		handleFocusout(event) {
+			pointerType = 'mouse'
 			if (!options.isWithinCard(event.relatedTarget)) schedule(false, options.closeDelay())
 		},
 		hold: cancel,

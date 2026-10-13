@@ -214,6 +214,8 @@ export const enBase = {
 		TABLE_DUPLICATE_ROW_ID:
 			'BaseTable: row id "{id}" appears in rows more than once — expanding and selecting will affect all such rows',
 		DASHBOARD_GRID_DUPLICATE_ID: 'BaseDashboardGrid: id "{id}" appears in the layout more than once — duplicates are not shown',
+		TOOLTIP_WRAPPERLESS_ROOT:
+			'BaseTooltip: with isWrapperless the root of the trigger slot must be an element, not text or a fragment — the tooltip is not attached',
 		UNKNOWN_LOCALE: 'Unknown locale "{locale}". Built-in: {locales}; for your own use defineLocale()',
 		TOAST_WITHOUT_APP: 'useToast: <BaseApp> not found — the notification was not shown. Wrap the app in <BaseApp>.',
 		OVERLAY_WITHOUT_APP: 'useOverlay: <BaseApp> not found — the overlay was not shown. Wrap the app in <BaseApp>.',

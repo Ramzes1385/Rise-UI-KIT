@@ -9,19 +9,19 @@ const ui = { root: 'story-themed-grid', item: 'story-themed-item' }
 
 const template = `
 	<div class="story-stack">
-		<BaseDashboardGrid v-bind="args" :layout="layout" :cols="4" :row-height="48" label="По умолчанию">
+		<BaseDashboardGrid v-bind="args" :layout="layout" :cols="4" :row-height="48" aria-label="По умолчанию">
 			<template #item="{ item }">
 				<strong>{{ item.label }}</strong>
 			</template>
 		</BaseDashboardGrid>
 		<div style="--rise-dashboard-grid-bg: var(--rise-success-soft); --rise-dashboard-grid-text: var(--rise-success-text); --rise-dashboard-grid-border: var(--rise-success-border); --rise-dashboard-grid-radius: var(--rise-radius-xl); --rise-dashboard-grid-shadow: var(--rise-shadow-md); --rise-dashboard-grid-padding-x: 24px; --rise-dashboard-grid-padding-y: 20px;">
-			<BaseDashboardGrid v-bind="args" :layout="layout" :cols="4" :row-height="64" label="Токены на контейнере">
+			<BaseDashboardGrid v-bind="args" :layout="layout" :cols="4" :row-height="64" aria-label="Токены на контейнере">
 				<template #item="{ item }">
 					<strong>{{ item.label }}</strong>
 				</template>
 			</BaseDashboardGrid>
 		</div>
-		<BaseDashboardGrid v-bind="args" :layout="layout" :cols="4" :row-height="48" label="Классы через ui" :ui="ui">
+		<BaseDashboardGrid v-bind="args" :layout="layout" :cols="4" :row-height="48" aria-label="Классы через ui" :ui="ui">
 			<template #item="{ item }">
 				<strong>{{ item.label }}</strong>
 			</template>

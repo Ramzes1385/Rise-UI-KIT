@@ -1,3 +1,4 @@
+import { warn } from '@/locales/warn'
 import { computed, ref, watch } from 'vue'
 import { UI_DATE_PICKER } from '@/locales/messages'
 import { resolveDatePickerPresets } from './dateRangePresets'
@@ -41,6 +42,19 @@ function useRangeRules(options: UseDatePickerRangeOptions) {
 
 function usePresetItems(options: UseDatePickerRangeOptions, rules: ReturnType<typeof useRangeRules>) {
 	const { resolvedProps, isOpen, activeValue, activeValueEnd, actions, emit } = options
+
+	watch(
+		() => resolvedProps.value.presets,
+		presets => {
+			if (presets)
+				resolveDatePickerPresets({
+					presets,
+					today: toDateOnly(new Date()),
+					onInvalid: id => warn(UI_DATE_PICKER.PRESET_INVALID, { id }),
+				})
+		},
+		{ immediate: true },
+	)
 
 	const presetItems = computed((): DatePickerPresetItem[] => {
 		if (!isOpen.value || resolvedProps.value.selectionMode !== 'range') return []

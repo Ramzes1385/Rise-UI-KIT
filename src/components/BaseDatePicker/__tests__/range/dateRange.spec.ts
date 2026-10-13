@@ -240,8 +240,8 @@ describe('resolveDatePickerPresets', () => {
 		expect(getRange).toHaveBeenCalledWith(today)
 	})
 
-	it('пропускает неверные периоды и предупреждает', () => {
-		const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+	it('пропускает неверные периоды и сообщает о каждом в onInvalid', () => {
+		const onInvalid = vi.fn()
 		const result = resolveDatePickerPresets({
 			presets: [
 				'today',
@@ -252,9 +252,9 @@ describe('resolveDatePickerPresets', () => {
 				'nope' as 'today',
 			],
 			today,
+			onInvalid,
 		})
 		expect(result.map(item => item.id)).toEqual(['today'])
-		expect(warn).toHaveBeenCalledTimes(5)
-		warn.mockRestore()
+		expect(onInvalid.mock.calls.map(([id]) => id)).toEqual(['today', 'x', '', 'y', 'nope'])
 	})
 })

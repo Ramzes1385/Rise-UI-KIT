@@ -158,6 +158,7 @@ export const enData = {
 		LOCATE_UNAVAILABLE: 'Could not determine your location',
 		LOCATE_UNSUPPORTED: 'This browser cannot determine your location',
 		SCROLL_HINT: 'Hold Ctrl and scroll to zoom the map',
+		SCROLL_HINT_MAC: 'Hold ⌘ and scroll to zoom the map',
 		CLUSTER: 'Marker group, {count} in total',
 	},
 	/** Отсчёт до даты: имя таймера и текст для скринридера (обновляется раз в минуту) */

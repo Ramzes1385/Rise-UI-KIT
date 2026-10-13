@@ -39,6 +39,12 @@ describe('BaseInput: проп ui', () => {
 		for (const part of PARTS) expect(root.querySelector(`.base-input__${part}`), part).toHaveClass(`u-${part}`)
 	})
 
+	it('ui.clear добавляется к кнопке очистки поиска', () => {
+		const { container } = render(BaseInput, { props: { modelValue: 'a', type: 'search', ui: { clear: 'u-clear' } } })
+
+		expect(container.querySelector('.base-input__clear')).toHaveClass('u-clear')
+	})
+
 	it('без ui — только класс кита; классы плагина и экземпляра склеиваются', () => {
 		const { container } = render(BaseInput, {
 			props: { modelValue: '', label: 'Имя', ui: { field: 'own' } },

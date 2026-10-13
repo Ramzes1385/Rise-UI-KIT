@@ -81,7 +81,7 @@ describe('BaseDashboardGrid unit', () => {
 			const { rerender } = render(BaseDashboardGrid, { props: { layout: [] } })
 			expect(screen.getByRole('group', { name: 'Widget grid' })).toBeInTheDocument()
 
-			await rerender({ layout: [], label: 'Показатели' })
+			await rerender({ layout: [], ariaLabel: 'Показатели' })
 			expect(screen.getByRole('group', { name: 'Показатели' })).toBeInTheDocument()
 		})
 	})

@@ -1,8 +1,10 @@
 import '@testing-library/jest-dom/vitest'
+import { nextTick } from 'vue'
+import { mount } from '@vue/test-utils'
 import { UI_TEXT } from '@/locales/messages'
 import BaseSearch from '../ui/BaseSearch.vue'
 import userEvent from '@testing-library/user-event'
-import { render, screen, waitFor } from '@testing-library/vue'
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 
 vi.mock('@composables/overlay/useClickOutside', () => ({ useClickOutside: vi.fn() }))
 vi.mock('@composables/overlay/useEscapeKey', () => ({ useEscapeKey: vi.fn() }))
@@ -178,6 +180,39 @@ describe('BaseSearch integration', () => {
 
 			await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
 			expect(trigger).toHaveFocus()
+		})
+
+		it('защита от повторного открытия снимается после возврата фокуса: следующий фокус открывает окно', async () => {
+			const user = userEvent.setup()
+			render(BaseSearch, { props: { mode: 'modal', placeholder: 'Поиск по проекту' } })
+			const trigger = screen.getByRole('textbox', { name: 'Поиск по проекту' })
+			await user.click(trigger)
+			await user.click(screen.getByRole('button', { name: 'Закрыть' }))
+			await waitFor(() => expect(trigger).toHaveFocus())
+			expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+
+			await fireEvent.blur(trigger)
+			await fireEvent.focus(trigger)
+			expect(await screen.findByRole('dialog')).toBeInTheDocument()
+		})
+
+		it('если фокус не вернулся, защита держится дольше одного тика и снимается по таймеру', async () => {
+			vi.useFakeTimers()
+			const wrapper = mount(BaseSearch, { props: { mode: 'modal', placeholder: 'Поиск по проекту' }, attachTo: document.body })
+			const overlay = wrapper.findComponent({ name: 'BaseSearchOverlay' })
+			const trigger = wrapper.find('input')
+			;(overlay.vm as unknown as { close: () => void }).close()
+			await nextTick()
+			await nextTick()
+			await trigger.trigger('focus')
+			expect(document.querySelector('[role="dialog"]')).toBeNull()
+
+			await vi.advanceTimersByTimeAsync(700)
+			await trigger.trigger('focus')
+			await vi.advanceTimersByTimeAsync(50)
+			expect(document.querySelector('[role="dialog"]')).not.toBeNull()
+			wrapper.unmount()
+			vi.useRealTimers()
 		})
 
 		it('клик по сфокусированному полю-триггеру открывает окно повторно', async () => {

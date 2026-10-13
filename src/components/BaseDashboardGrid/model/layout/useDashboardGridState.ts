@@ -31,6 +31,7 @@ function useDashboardGridSize(props: DashboardGridProps) {
 
 	onMounted(() => {
 		measure()
+		if (typeof ResizeObserver === 'undefined') return
 		observers.push(new ResizeObserver(measure))
 		observers[0].observe(rootRef.value as HTMLElement)
 	})

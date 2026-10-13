@@ -219,3 +219,63 @@ describe('BaseMap: метки и балун', () => {
 		expect(await screen.findByRole('dialog')).toHaveClass('base-map__balloon', 'u-balloon')
 	})
 })
+
+describe('BaseMap: доступность балуна и групп', () => {
+	afterEach(cleanWindow)
+
+	const BALLOON = { balloon: ({ marker }: { marker: MapMarker }) => h('p', `Балун ${marker.title}`) }
+	const CLUSTERED: MapMarker[] = [
+		{ id: 'a', coordinates: { lat: 55.75, lng: 37.61 }, title: 'А' },
+		{ id: 'b', coordinates: { lat: 55.7501, lng: 37.6101 }, title: 'Б' },
+		{ id: 'far', coordinates: { lat: 59.93, lng: 30.33 }, title: 'Питер' },
+	]
+
+	it('кнопка группы без балуна: без aria-haspopup и aria-expanded, у обычной метки они есть', async () => {
+		fakeYandex()
+		const { emitted } = render(BaseMap, {
+			props: { apiKey: 'KEY', markers: CLUSTERED, isClustered: true, zoom: 10 },
+			slots: BALLOON,
+		})
+		await ready(emitted)
+		const group = screen.getByRole('button', { name: 'Группа меток, всего 2' })
+		expect(group).not.toHaveAttribute('aria-haspopup')
+		expect(group).not.toHaveAttribute('aria-expanded')
+		expect(screen.getByRole('button', { name: 'Питер' })).toHaveAttribute('aria-haspopup', 'dialog')
+	})
+
+	it('Esc внутри балуна закрывает только его: событие не всплывает дальше (окно-родитель остаётся)', async () => {
+		fakeYandex()
+		const outer = vi.fn()
+		document.addEventListener('keydown', outer)
+		const { emitted } = render(BaseMap, { props: { apiKey: 'KEY', markers: MARKERS, selected: 2 }, slots: BALLOON })
+		await ready(emitted)
+		await screen.findByRole('dialog', { name: 'Склад' })
+
+		await fireEvent.keyDown(screen.getByRole('button', { name: 'Склад' }), { key: 'Escape' })
+		expect(emitted('update:selected')).toEqual([[null]])
+		expect(outer).not.toHaveBeenCalled()
+
+		await fireEvent.keyDown(screen.getByRole('button', { name: 'Склад' }), { key: 'Escape' })
+		expect(outer).toHaveBeenCalledTimes(1)
+		document.removeEventListener('keydown', outer)
+	})
+
+	it('выбранная метка, исчезнувшая из набора (кластеризация, смена markers), сбрасывает выбор', async () => {
+		fakeYandex()
+		const { emitted, rerender } = render(BaseMap, { props: { apiKey: 'KEY', markers: MARKERS, selected: 1 }, slots: BALLOON })
+		await ready(emitted)
+		await screen.findByRole('dialog', { name: 'Офис' })
+
+		await rerender({ markers: [MARKERS[1]] })
+		await waitFor(() => expect(emitted('update:selected')).toEqual([[null]]))
+	})
+
+	it('Google: метка не получает title — имя даёт только кнопка внутри (без двойной озвучки)', async () => {
+		const google = fakeGoogle()
+		google.install()
+		const { emitted } = render(BaseMap, { props: { provider: 'google', apiKey: 'KEY', mapId: 'id', markers: MARKERS } })
+		await ready(emitted)
+		expect(google.markers).toHaveLength(2)
+		expect(google.markers.every(marker => marker.title === undefined)).toBe(true)
+	})
+})

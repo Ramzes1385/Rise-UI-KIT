@@ -70,7 +70,7 @@
 								:ui="{ remove: ui('tag-close') }"
 								:is-removable="!isControlDisabled"
 								:is-remove-focusable="false"
-								:remove-label="`${UI_TEXT.DELETE} ${item.label}`"
+								:remove-label="formatMessage(UI_ARIA.TAG_REMOVE, { name: item.label })"
 								@remove="removeValue(item.value)"
 								:size-scale="sizeScale">
 								<BaseText tag="span" :class="ui('tag-text')" :custom-class="classes.tagText" :size-scale="sizeScale">{{
@@ -158,7 +158,8 @@
 <script setup lang="ts">
 import '@components/BaseText/styles/BaseText.style.scss'
 import '../styles/BaseSelect.style.scss'
-import { UI_TEXT } from '@/locales/messages'
+import { formatMessage } from '@/locales'
+import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { BaseBadge } from '@components/BaseBadge'

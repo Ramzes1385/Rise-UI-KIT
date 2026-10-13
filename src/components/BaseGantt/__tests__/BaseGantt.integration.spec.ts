@@ -395,6 +395,26 @@ describe('BaseGantt — перетаскивание мышью', () => {
 		expect(emitted()['update:task']).toBeUndefined()
 	})
 
+	it('Escape во время перетаскивания подавляет следующий click по полосе, а Escape без сдвига — нет', async () => {
+		const user = userEvent.setup()
+		const { emitted } = renderGantt({ isEditable: true })
+		const bar = barOf(/^Анализ/)
+		await press(bar, 100)
+		await fireEvent.pointerMove(bar, { clientX: 172 })
+		bar.focus()
+		await user.keyboard('{Escape}')
+		await fireEvent.pointerUp(bar)
+		await fireEvent.click(bar)
+		expect(emitted()['task-click']).toBeUndefined()
+		await fireEvent.click(bar)
+		expect(emitted()['task-click']).toHaveLength(1)
+
+		await press(bar, 100)
+		await user.keyboard('{Escape}')
+		await fireEvent.click(bar)
+		expect(emitted()['task-click']).toHaveLength(2)
+	})
+
 	it('движение и отпускание без нажатия ничего не делают', async () => {
 		const { emitted } = renderGantt({ isEditable: true })
 		const bar = barOf(/^Анализ/)

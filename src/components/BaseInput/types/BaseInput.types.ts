@@ -26,7 +26,7 @@ export interface PasswordRuleResult {
 
 /**
  * Части поля для пропа `ui` (БЭМ-элементы `.base-input__<часть>`, `root` — обёртка компонента): label, required — звёздочка,
- * wrapper — рамка поля, icon — иконка слева, prefix, field — `<input>`, password-toggle, postfix, password-rules, password-rule,
+ * wrapper — рамка поля, icon — иконка слева, prefix, field — `<input>`, password-toggle, clear — кнопка очистки у `type="search"`, postfix, password-rules, password-rule,
  * password-rule-icon, password-rule-label, error-text.
  */
 export const INPUT_PARTS = [
@@ -37,6 +37,7 @@ export const INPUT_PARTS = [
 	'prefix',
 	'field',
 	'password-toggle',
+	'clear',
 	'postfix',
 	'password-rules',
 	'password-rule',
@@ -57,6 +58,7 @@ export interface BaseInputProps extends BaseComponentProps<
 	| 'prefix'
 	| 'field'
 	| 'passwordToggle'
+	| 'clear'
 	| 'passwordIcon'
 	| 'postfix'
 	| 'passwordRules'
@@ -66,7 +68,10 @@ export interface BaseInputProps extends BaseComponentProps<
 > {
 	/** Значение поля (null трактуется как пустая строка) */
 	modelValue: string | number | null
-	/** Тип инпута; `search` — поле поиска (нативный `type="search"`, по умолчанию с иконкой лупы слева) */
+	/**
+	 * Тип инпута; `search` — поле поиска (нативный `type="search"`, по умолчанию с иконкой лупы слева, `enterkeyhint="search"`
+	 * и своя кнопка «Очистить» справа, пока есть текст: нативная кнопка скрыта, потому что в Firefox её нет)
+	 */
 	type?: 'text' | 'email' | 'tel' | 'number' | 'password' | 'search' | 'date'
 	/** Плейсхолдер */
 	placeholder?: string

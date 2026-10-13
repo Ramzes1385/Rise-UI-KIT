@@ -740,6 +740,35 @@ describe('BaseInput: имя и атрибуты поля', () => {
 			expect(container.querySelector('.base-input')).toHaveClass('base-input--has-icon')
 		})
 
+		it('у поиска enterkeyhint="search", у текстового поля его нет', () => {
+			const search = render(BaseInput, { props: { modelValue: '', type: 'search', ariaLabel: 'Поиск' } })
+			expect(screen.getByRole('searchbox')).toHaveAttribute('enterkeyhint', 'search')
+			search.unmount()
+			render(BaseInput, { props: { modelValue: '' } })
+			expect(screen.getByRole('textbox')).not.toHaveAttribute('enterkeyhint')
+		})
+
+		it('кнопка очистки есть только у поиска с текстом: сбрасывает значение и возвращает фокус в поле', async () => {
+			const { emitted, rerender } = render(BaseInput, { props: { modelValue: '', type: 'search', ariaLabel: 'Поиск' } })
+			expect(screen.queryByRole('button', { name: 'Очистить' })).not.toBeInTheDocument()
+
+			await rerender({ modelValue: 'кот' })
+			await fireEvent.click(screen.getByRole('button', { name: 'Очистить' }))
+
+			expect(emitted()['update:modelValue']).toEqual([['']])
+			expect(screen.getByRole('searchbox')).toHaveFocus()
+		})
+
+		it('кнопки очистки нет у выключенного, только читаемого и обычного поля', () => {
+			render(BaseInput, { props: { modelValue: 'a', type: 'search', isDisabled: true } })
+			expect(screen.queryByRole('button', { name: 'Очистить' })).not.toBeInTheDocument()
+		})
+
+		it('кнопки очистки нет у текстового поля с текстом', () => {
+			render(BaseInput, { props: { modelValue: 'a' } })
+			expect(screen.queryByRole('button', { name: 'Очистить' })).not.toBeInTheDocument()
+		})
+
 		it('icon="" у поиска убирает иконку', () => {
 			const { container } = render(BaseInput, { props: { modelValue: '', type: 'search', icon: '' } })
 

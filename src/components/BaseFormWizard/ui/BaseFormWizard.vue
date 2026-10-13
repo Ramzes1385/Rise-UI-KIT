@@ -1,8 +1,7 @@
 <template>
 	<div
 		:class="[ui('root'), variantClass, { 'base-form-wizard--disabled': isDisabled }, classes.root]"
-		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
-		:aria-disabled="isDisabled ? true : undefined">
+		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<template v-if="currentStep">
 			<div :class="[ui('header'), classes.header]">
 				<BaseStepper
@@ -16,6 +15,7 @@
 
 			<div
 				role="group"
+				:aria-disabled="isDisabled ? true : undefined"
 				:aria-labelledby="titleId"
 				:aria-describedby="currentStep.description ? descriptionId : undefined"
 				:class="[ui('content'), classes.content]">

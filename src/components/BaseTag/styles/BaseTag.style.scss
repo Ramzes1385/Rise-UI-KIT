@@ -94,7 +94,10 @@
 	&__lead {
 		display: grid;
 		grid-template-columns: 0fr;
-		transition: grid-template-columns var(--rise-duration) var(--rise-ease-emphasized);
+
+		@include motion-safe {
+			transition: grid-template-columns var(--rise-duration) var(--rise-ease-emphasized);
+		}
 
 		&--open {
 			grid-template-columns: 1fr;

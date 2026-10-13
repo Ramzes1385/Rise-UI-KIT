@@ -242,6 +242,17 @@ describe('BaseHoverCard unit', () => {
 	})
 
 	describe('клавиатура и фокус', () => {
+		it('касание, уход фокуса (focusout), затем фокус с другого элемента открывает карточку', async () => {
+			const rendered = render(BaseHoverCard, { slots: SLOTS })
+			const link = screen.getByRole('link', { name: 'Профиль' })
+			await fireEvent.pointerDown(trigger(rendered.container), { pointerType: 'touch' })
+			await fireEvent.focusIn(link)
+			await fireEvent.focusOut(link, { relatedTarget: document.body })
+			await fireEvent.focusIn(link)
+			await nextTick()
+			expect(screen.getByText('Карточка')).toBeInTheDocument()
+		})
+
 		it('focusin на триггер открывает сразу', async () => {
 			const rendered = render(BaseHoverCard, { slots: SLOTS })
 			await fireEvent.focusIn(screen.getByRole('link', { name: 'Профиль' }))

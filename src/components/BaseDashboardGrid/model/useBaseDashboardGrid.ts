@@ -43,7 +43,7 @@ export function useBaseDashboardGrid(props: DashboardGridProps, emit: BaseDashbo
 		grabbedId: keyboard.grabbedId,
 		isInteractive: state.isInteractive,
 		isEmpty: computed(() => items.value.length === 0),
-		gridLabel: computed(() => props.label || UI_DASHBOARD_GRID.LABEL),
+		gridLabel: computed(() => props.ariaLabel || UI_DASHBOARD_GRID.LABEL),
 		hintText: computed(() => UI_DASHBOARD_GRID.HINT),
 		emptyText: computed(() => UI_DASHBOARD_GRID.EMPTY),
 		...useDashboardGridStyles(state, items, pointer.dragRect),

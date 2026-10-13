@@ -18,7 +18,7 @@ const template = `
 				:cols="4"
 				:row-height="40"
 				:gap="8"
-				:label="'Размер ' + preset.name">
+				:aria-label="'Размер ' + preset.name">
 				<template #item="{ item }">
 					<strong>{{ item.label }}</strong>
 				</template>

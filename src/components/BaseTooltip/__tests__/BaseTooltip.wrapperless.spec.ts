@@ -70,6 +70,18 @@ describe('BaseTooltip без обёртки', () => {
 		expect(screen.getByText('Первый')).toHaveAttribute('aria-describedby', screen.getByRole('tooltip').id)
 	})
 
+	it('корень слота не элемент (текст) — предупреждение один раз, без падения', async () => {
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+		const TextRoot = defineComponent({ setup: () => () => 'просто текст' })
+		const { rerender } = render(BaseTooltip, {
+			props: { text: 'Подсказка', isWrapperless: true },
+			slots: { default: () => h(TextRoot) },
+		})
+		await rerender({ text: 'Другая' })
+		expect(warn.mock.calls.map(call => String(call[0])).filter(text => text.includes('isWrapperless'))).toHaveLength(1)
+		warn.mockRestore()
+	})
+
 	it('пустой слот: подсказки нет, ошибки нет', () => {
 		const { container } = render(BaseTooltip, { props: { text: 'Подсказка', isWrapperless: true }, slots: { default: () => [] } })
 		expect(container.querySelector('.base-tooltip')).toBeNull()

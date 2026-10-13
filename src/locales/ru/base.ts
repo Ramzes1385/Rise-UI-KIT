@@ -239,6 +239,8 @@ export const ruBase = {
 		TABLE_DUPLICATE_ROW_ID:
 			'BaseTable: id строки «{id}» встречается в rows повторно — раскрытие и выбор будут действовать на все такие строки',
 		DASHBOARD_GRID_DUPLICATE_ID: 'BaseDashboardGrid: id «{id}» встречается в раскладке повторно — повторы не показаны',
+		TOOLTIP_WRAPPERLESS_ROOT:
+			'BaseTooltip: при isWrapperless корень слота trigger должен быть элементом, а не текстом или фрагментом — подсказка не привязана',
 		UNKNOWN_LOCALE: 'Неизвестный язык «{locale}». Встроенные: {locales}; свой — defineLocale()',
 		TOAST_WITHOUT_APP: 'useToast: не найден <BaseApp> — уведомление не показано. Оберните приложение в <BaseApp>.',
 		OVERLAY_WITHOUT_APP: 'useOverlay: не найден <BaseApp> — оверлей не показан. Оберните приложение в <BaseApp>.',

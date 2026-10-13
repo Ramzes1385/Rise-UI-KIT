@@ -30,6 +30,7 @@ export function useGanttPointer(context: GanttContext, commit: (item: GanttItem,
 	}
 
 	function stop(): void {
+		isClickSuppressed = Boolean(press?.isMoved)
 		window.removeEventListener('pointermove', onPointerMove)
 		window.removeEventListener('pointerup', onPointerUp)
 		window.removeEventListener('pointercancel', stop)
@@ -41,7 +42,6 @@ export function useGanttPointer(context: GanttContext, commit: (item: GanttItem,
 	function onPointerUp(): void {
 		const current = press as GanttPress
 		const edit = context.draft.value?.edit
-		isClickSuppressed = current.isMoved
 		stop()
 		if (edit) commit(current.item, edit)
 	}
