@@ -687,6 +687,10 @@
 |---|---|---|---|---|
 | `--rise-empty-bg` | корень | bg | — | `transparent` |
 | `--rise-empty-border` | корень | border | — | `var(--rise-border-accented)` |
+| `--rise-empty-compact-gap` | compact | gap | — | `8px` |
+| `--rise-empty-compact-icon-size` | compact | icon-size | — | `sz(16px)` |
+| `--rise-empty-compact-padding-x` | compact | padding-x | — | `12px` |
+| `--rise-empty-compact-padding-y` | compact | padding-y | — | `8px` |
 | `--rise-empty-description-font-size` | description | font-size | — | `var(--rise-font-size-sm)` |
 | `--rise-empty-gap` | корень | gap | — | `16px` |
 | `--rise-empty-icon-size` | корень | icon-size | — | `sz(20px)` |
@@ -1122,7 +1126,7 @@
 | `--rise-markdown-code-block-bg` | code-block | bg | — | `var(--rise-bg-muted)` |
 | `--rise-markdown-font-size` | корень | font-size | — | `var(--rise-font-size-sm)` |
 | `--rise-markdown-heading-text` | heading | text | — | `var(--rise-text-highlighted)` |
-| `--rise-markdown-link-text` | link | text | — | `var(--rise-primary)` |
+| `--rise-markdown-link-text` | link | text | — | `var(--rise-primary-text)` |
 | `--rise-markdown-padding-x` | корень | padding-x | — | `16px` |
 | `--rise-markdown-padding-y` | корень | padding-y | — | `12px` |
 | `--rise-markdown-quote-border` | quote | border | — | `var(--rise-primary)` |
