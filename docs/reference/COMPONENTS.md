@@ -338,6 +338,18 @@ const markers: MapMarker[] = [{ id: 'office', coordinates: { lat: 55.7494, lng: 
 
 Скрипт поставщика загружается по требованию и один раз на страницу — только когда есть `apiKey`; ключ можно задать для всех карт настройкой плагина `defaults: { BaseMap: { apiKey } }`. Без ключа или при ошибке — заглушка (слот `placeholder` со `status`). Если API уже загружено приложением (`window.ymaps3`, `window.google.maps`), скрипт не загружается повторно. Для Google обязателен Map ID стиля карты (`map-id` или `defaults.BaseMap.mapId`): метки — `AdvancedMarkerElement`, без Map ID они не работают, поэтому карта без него не загружается и показывает заглушку «Нужен Map ID». Язык подписей — по языку кита или `language`. Метки — кнопки с подписью (Tab, Enter), область карты — `role="region"` с именем «Карта» (`ariaLabel`).
 
+**Кастомизация (задача map-customization).** Все пункты работают у обоих поставщиков:
+
+- `scheme` (`light` / `dark` / `auto`, по умолчанию `auto`): `auto` следует теме кита (`data-theme` ближайшего предка или `<html>`, `system` — по `prefers-color-scheme`) и подхватывает смену на лету. Яндекс переключает слой на месте, Google пересоздаёт карту (`colorScheme` задаётся при создании).
+- Метка: `icon` (имя иконки кита внутри пина), `size` (px, умножается на `sizeScale`), слот `marker` (`{ marker }`) заменяет пин своей разметкой внутри кнопки.
+- Балун: слот `balloon` (`{ marker, close }`) показывается у выбранной метки (`v-model:selected`, `update:selected`); клик по метке открывает, повторный клик, Esc, клик по карте и `close` закрывают, Esc и `close` возвращают фокус на метку. Метка получает `aria-haspopup="dialog"`, `aria-expanded`, `aria-controls` (только пока балун открыт).
+- `polylines` / `polygons` (`MapPolyline`, `MapPolygon`): цвет — CSS-цвет или токен `var(--rise-…)` (по умолчанию основной), `width`, `title` попадает в скрытый список `role="list"` «Линии и области на карте».
+- `hasControls`: «Приблизить», «Отдалить» и «Моё местоположение» на BaseButton; события `locate` (координаты) и `locate-error` (`denied` / `unavailable` / `timeout` / `unsupported`), сообщение показывается в `role="status"`.
+- `fitMarkers` + `boundsPadding` (по умолчанию 40): вписать метки при показе и смене `markers` (одна метка — центр на ней, масштаб из `zoom`).
+- `isClustered`: близкие метки (сетка 64 px, до масштаба 17) становятся кнопкой «Группа меток, всего N»; клик приближает карту к её меткам. Кластеризатор свой, один для обоих поставщиков.
+- `layer` (`scheme` / `satellite` / `hybrid`); `isDraggable`; `isScrollZoom` (при `false` масштаб — колесо с Ctrl, без Ctrl подсказка в `role="status"`); `staticPreview` — декоративная картинка (`alt=""`, часть `ui.preview`), пока карта грузится.
+- Часть `ui.balloon`; слоты `marker`, `balloon`; метка теперь лежит в обёртке `.base-map__anchor`.
+
 ---
 
 ## BaseInputTags

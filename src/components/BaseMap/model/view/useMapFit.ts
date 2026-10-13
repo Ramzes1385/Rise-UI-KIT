@@ -1,7 +1,7 @@
 import { fitView } from './fitView'
-import { watchAdapter } from './watchAdapter'
-import type { BaseMapProps, MapView } from '../types/BaseMap.types'
-import type { MapMarkerItem, MapNavigationState } from '../types/providers.types'
+import { watchAdapter } from '../watchAdapter'
+import type { BaseMapProps, MapMarker, MapView } from '../../types/BaseMap.types'
+import type { MapMarkerItem, MapNavigationState } from '../../types/providers.types'
 
 const MAX_ZOOM = 21
 const FIT_PADDING = 40
@@ -20,9 +20,8 @@ export function useMapFit(props: BaseMapProps, map: MapNavigationState, goTo: (v
 	}
 
 	function openCluster(item: MapMarkerItem): void {
-		const points = (item.members ?? []).map(member => member.coordinates)
-		const next = fitView(points, boxOf(), map.lastView.value.zoom)
-		if (!next) return
+		const points = (item.members as MapMarker[]).map(member => member.coordinates)
+		const next = fitView(points, boxOf(), map.lastView.value.zoom) as MapView
 		const minimum = Math.floor(map.lastView.value.zoom) + 1
 		goTo({ ...next, zoom: Math.min(MAX_ZOOM, Math.max(next.zoom, minimum)) })
 	}

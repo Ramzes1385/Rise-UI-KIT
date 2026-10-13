@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
 import BaseMap from '../ui/BaseMap.vue'
-import { fitView } from '../model/fitView'
+import { fitView } from '../model/view/fitView'
 import { fakeGoogle } from './providers/fakeGoogle'
 import { fakeYandex } from './providers/fakeYandex'
 import { loadScript } from '@utils/dom/scriptUtils'
@@ -49,6 +49,29 @@ describe('fitView', () => {
 		expect(widthPx).toBeLessThanOrEqual(600 - 80)
 		const bigger = fitView(ROUTE, { ...box, padding: 150 }, 10)!
 		expect(bigger.zoom).toBeLessThan(view.zoom)
+	})
+
+	it('точки на одной широте или долготе: масштаб по другой оси', () => {
+		expect(
+			fitView(
+				[
+					{ lat: 55, lng: 37 },
+					{ lat: 55, lng: 38 },
+				],
+				box,
+				10,
+			)!.zoom,
+		).toBeGreaterThan(5)
+		expect(
+			fitView(
+				[
+					{ lat: 55, lng: 37 },
+					{ lat: 56, lng: 37 },
+				],
+				box,
+				10,
+			)!.zoom,
+		).toBeGreaterThan(5)
 	})
 
 	it('очень близкие точки не уходят за предел 17; очень далёкие — не ниже 0', () => {

@@ -61,13 +61,13 @@ export interface MapShapes {
 	polygons: MapShapeLine[]
 }
 
-/** Карта поставщика за общим интерфейсом: вид, метки, удаление */
+/** Карта поставщика за общим интерфейсом: вид, метки, удаление; без `setScheme` схему меняет только пересоздание карты (Google) */
 export interface MapAdapter {
 	setView: (view: MapView) => void
 	setMarkers: (markers: readonly MapMarkerItem[]) => void
 	setLayer: (layer: MapLayer) => void
 	setGestures: (gestures: MapGestures) => void
-	setScheme: (scheme: MapResolvedScheme) => void
+	setScheme?: (scheme: MapResolvedScheme) => void
 	setShapes: (shapes: MapShapes) => void
 	destroy: () => void
 }
@@ -79,8 +79,6 @@ export type MapAdapterFactory = (element: HTMLElement, options: MapCreateOptions
 export interface MapProviderEntry {
 	create: MapAdapterFactory
 	isMapIdRequired?: boolean
-	/** Схема меняется на готовой карте; иначе (Google `colorScheme` задаётся при создании) карта пересоздаётся */
-	isSchemeLive: boolean
 	language: (intl: string) => string
 	name: () => string
 }

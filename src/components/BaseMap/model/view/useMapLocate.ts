@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { UI_MAP } from '@/locales/messages'
-import type { BaseMapEmits, MapCoordinates, MapLocateError } from '../types/BaseMap.types'
+import type { BaseMapEmits, MapCoordinates, MapLocateError } from '../../types/BaseMap.types'
 
 const GEOLOCATION_DENIED = 1
 const GEOLOCATION_TIMEOUT = 3

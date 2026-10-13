@@ -4,7 +4,7 @@ import { fakeGoogle } from './providers/fakeGoogle'
 import { fakeYandex } from './providers/fakeYandex'
 import { loadScript } from '@utils/dom/scriptUtils'
 import type { MapMarker } from '../types/BaseMap.types'
-import { clusterMarkers } from '../model/clusterMarkers'
+import { clusterMarkers } from '../model/markers/clusterMarkers'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 
 vi.mock('@utils/dom/scriptUtils', () => ({ loadScript: vi.fn() }))
@@ -177,10 +177,23 @@ describe('BaseMap: подложка и жесты', () => {
 		expect(wheel.defaultPrevented).toBe(true)
 		await waitFor(() => expect(emitted('update:zoom')).toEqual([[11]]))
 		expect(maps[0].setLocation).toHaveBeenCalled()
+		const again = new WheelEvent('wheel', { deltaY: -100, ctrlKey: true, cancelable: true, bubbles: true })
+		root.dispatchEvent(again)
+		expect(again.defaultPrevented).toBe(true)
+		expect(emitted('update:zoom')).toEqual([[11]])
 
 		await rerender({ isScrollZoom: true, hasControls: false })
 		await fireEvent.wheel(root, { deltaY: 100 })
 		expect(screen.queryByRole('status')).toBeNull()
+	})
+})
+
+describe('BaseMap: колесо без карты', () => {
+	it('Ctrl + колесо до загрузки карты ничего не меняет', async () => {
+		const { container, emitted } = render(BaseMap, { props: { isScrollZoom: false } })
+		const wheel = new WheelEvent('wheel', { deltaY: -100, ctrlKey: true, cancelable: true, bubbles: true })
+		container.querySelector('.base-map')!.dispatchEvent(wheel)
+		expect(emitted('update:zoom')).toBeUndefined()
 	})
 })
 

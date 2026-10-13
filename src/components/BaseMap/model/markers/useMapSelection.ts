@@ -1,7 +1,7 @@
 import { decorateHosts } from './markerHosts'
 import { computed, ref, shallowRef, useId, watch } from 'vue'
-import type { MapMarkerHost, MapSlotsInfo } from '../types/providers.types'
-import type { BaseMapEmits, BaseMapProps, MapMarker } from '../types/BaseMap.types'
+import type { MapMarkerHost, MapSlotsInfo } from '../../types/providers.types'
+import type { BaseMapEmits, BaseMapProps, MapMarker } from '../../types/BaseMap.types'
 
 export function useMapSelection(props: BaseMapProps, emit: BaseMapEmits, slots: MapSlotsInfo) {
 	const hosts = shallowRef<MapMarkerHost[]>([])

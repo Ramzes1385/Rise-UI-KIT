@@ -1,4 +1,4 @@
-import type { MapCoordinates } from '../types/BaseMap.types'
+import type { MapCoordinates } from '../../types/BaseMap.types'
 
 export const TILE = 256
 

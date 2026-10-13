@@ -2400,3 +2400,16 @@ API кита не меняется. В Storybook добавлены пример
 - `BaseAffix` (Layout) — прилипающий блок: `offset-top`, `offset-bottom`, `target`, `has-shadow`, событие `change`, слот с `isFixed`. Экспорт: `BaseAffix`, `AFFIX_VARIANTS`, `AFFIX_PARTS`, типы `BaseAffixProps`, `BaseAffixEmits`, `BaseAffixSlots`, `AffixTarget`.
 - Плагин регистрирует `BaseHoverCard`, `BaseStack`, `BaseGrid`, `BaseGridItem`, `BaseAffix` глобально; настройки по умолчанию — `defaults.BaseHoverCard` и т. д. Токены: `--rise-stack-gap`, `--rise-grid-gap`, `--rise-affix-shadow`, `--rise-hover-card-*` (таблица — `docs/design/COMPONENT_TOKENS.md`).
 - Новых строк словаря нет: у компонентов нет собственных текстов.
+
+## Задача map-customization: кастомизация BaseMap (№ 71)
+
+Новые необязательные пропсы, события и слоты; существующее API не ломается. Меняется только разметка метки (пункт 1).
+
+1. **Разметка метки.** Кнопка `.base-map__marker` теперь лежит в обёртке `div.base-map__anchor` (позиционирование и размер — на обёртке, поворот пина — на кнопке). Приложение, которое стилизовало `.base-map__marker` как корень элемента поставщика или искало ее родителя, должно учесть обёртку. `--anchored` (Google) перешёл с кнопки на обёртку: `.base-map__anchor--anchored`. Адаптер поставщика получил `setScheme`/`setLayer`/`setGestures`/`setShapes` — для собственных адаптеров, если они есть.
+2. **Пропсы:** `scheme` (`light`/`dark`/`auto`, по умолчанию `auto` — карта следует теме кита, раньше всегда светлая), `selected`, `polylines`, `polygons`, `hasControls`, `fitMarkers`, `boundsPadding`, `isClustered`, `layer`, `isDraggable`, `isScrollZoom`, `staticPreview`. Все значения по умолчанию переопределяются `defaults.BaseMap`.
+3. **Метка** `MapMarker`: `icon`, `size`. **Новые типы:** `MapScheme`, `MapLayer`, `MapPolyline`, `MapPolygon`, `MapLocateError`; константы `MAP_SCHEMES`, `MAP_LAYERS`.
+4. **События:** `update:selected`, `locate`, `locate-error`. **Слоты:** `marker({ marker })`, `balloon({ marker, close })`. **Часть `ui`:** `balloon`, `preview` (`MAP_PARTS`).
+5. **Тёмная тема.** При `scheme="auto"` карта в тёмной теме кита теперь тёмная (Яндекс — слой, Google — `colorScheme`); вернуть прежнее — `scheme="light"` или `defaults.BaseMap.scheme`.
+6. **Не сделано:** смена `language` на показанной карте по-прежнему не перезагружает API (см. FOLLOW_UPS, «Задача map-customization»).
+7. **Токены** `--rise-map-balloon-*`, `--rise-map-marker-width`, `--rise-map-marker-text`, `--rise-map-marker-selected-border`, `--rise-map-cluster-bg`, `--rise-map-controls-gap` (docs/design/COMPONENT_TOKENS.md).
+8. **Словари:** ключи `SHAPES`, `POLYLINE`, `POLYGON`, `CONTROLS`, `ZOOM_IN`, `ZOOM_OUT`, `LOCATE`, `LOCATE_*`, `SCROLL_HINT`, `CLUSTER` в разделе `map` (ru и en).

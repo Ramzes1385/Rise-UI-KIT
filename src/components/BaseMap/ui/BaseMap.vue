@@ -16,7 +16,7 @@
 			<span v-if="host.marker.count" class="base-map__marker-count">{{ host.marker.count }}</span>
 			<slot v-else name="marker" :marker="host.marker">
 				<span v-if="host.marker.icon" class="base-map__marker-icon">
-					<BaseIcon :name="host.marker.icon" :size-scale="sizeScale" />
+					<BaseIcon :name="host.marker.icon" />
 				</span>
 			</slot>
 		</Teleport>

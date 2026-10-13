@@ -103,7 +103,6 @@ export const createGoogleMap: MapAdapterFactory = async (element, { apiKey, lang
 			map.setZoom(next.zoom)
 		},
 		setMarkers: markers.set,
-		setScheme: () => undefined,
 		setLayer: next => map.setMapTypeId(GOOGLE_TYPES[next]),
 		setGestures: next => map.setOptions(googleGestures(next)),
 		setShapes: shapes.set,

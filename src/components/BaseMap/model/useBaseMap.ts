@@ -3,18 +3,18 @@ import { useMapScheme } from './useMapScheme'
 import { watchAdapter } from './watchAdapter'
 import { useMapAdapter } from './useMapAdapter'
 import { useUi } from '@composables/base/useUi'
-import { useMapClusters } from './useMapClusters'
-import { useMapGestures } from './useMapGestures'
-import { useMapSelection } from './useMapSelection'
-import { useMapNavigation } from './useMapNavigation'
+import { useMapGestures } from './view/useMapGestures'
 import { useMapPlaceholder } from './useMapPlaceholder'
-import { shapeLabels, useMapShapes } from './useMapShapes'
+import { useMapClusters } from './markers/useMapClusters'
+import { useMapNavigation } from './view/useMapNavigation'
+import { useMapSelection } from './markers/useMapSelection'
+import { shapeLabels, useMapShapes } from './markers/useMapShapes'
 import { useStructuredData } from '@composables/seo/useStructuredData'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { computed, onBeforeUnmount, onMounted, ref, watch, type Ref } from 'vue'
 import type { StructuredData, StructuredDataObject } from '@utils/seo/structuredDataUtils'
-import type { MapGestures, MapMarkerItem, MapResolvedScheme, MapSlotsInfo } from '../types/providers.types'
 import type { BaseMapEmits, BaseMapProps, MapCoordinates, MapMarker, MapView } from '../types/BaseMap.types'
+import type { MapDeps, MapGestures, MapMarkerItem, MapResolvedScheme, MapSlotsInfo } from '../types/providers.types'
 
 const DEFAULT_VIEW: MapView = { center: { lat: 55.751244, lng: 37.618423 }, zoom: 10 }
 
@@ -53,7 +53,7 @@ function useMapSync(
 	watch(() => [props.provider, props.apiKey, props.language, props.mapId], map.attach)
 	watch(extra.scheme, next => {
 		if (!map.adapter.value) return
-		if (map.isSchemeLive()) map.adapter.value.setScheme(next)
+		if (map.adapter.value.setScheme) map.adapter.value.setScheme(next)
 		else map.attach()
 	})
 	watch(view, next => {
@@ -72,7 +72,7 @@ export function useBaseMap(props: BaseMapProps, emit: BaseMapEmits, slots: MapSl
 	const scheme = useMapScheme(() => props.scheme, canvasRef)
 	const selection = useMapSelection(props, emit, slots)
 	const initial = { center: props.center ?? DEFAULT_VIEW.center, zoom: props.zoom ?? DEFAULT_VIEW.zoom }
-	const cluster = { open: (_item: MapMarkerItem): void => undefined }
+	const cluster = {} as MapDeps['cluster']
 	const map = useMapAdapter(props, emit, {
 		view: () => initial,
 		scheme,

@@ -1,9 +1,9 @@
 import { watch } from 'vue'
 import { UI_MAP } from '@/locales/messages'
 import { formatMessage } from '@/locales/state'
-import { resolveColor } from './providers/shapeColor'
-import type { BaseMapProps, MapPolygon, MapPolyline } from '../types/BaseMap.types'
-import type { MapAdapter, MapResolvedScheme, MapShapeLine, MapShapes } from '../types/providers.types'
+import { resolveColor } from '../providers/shapeColor'
+import type { BaseMapProps, MapPolygon, MapPolyline } from '../../types/BaseMap.types'
+import type { MapAdapter, MapResolvedScheme, MapShapeLine, MapShapes } from '../../types/providers.types'
 
 const LINE_WIDTH = 4
 const AREA_WIDTH = 2

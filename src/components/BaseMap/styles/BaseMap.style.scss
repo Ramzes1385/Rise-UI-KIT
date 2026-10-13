@@ -41,8 +41,8 @@
 
 	&__controls {
 		position: absolute;
-		top: sz(ct(map, controls-offset, 8px));
-		right: sz(ct(map, controls-offset, 8px));
+		top: sz(ct(map, controls-gap, 8px));
+		right: sz(ct(map, controls-gap, 8px));
 		display: flex;
 		flex-direction: column;
 		gap: sz(4px);
@@ -50,8 +50,8 @@
 
 	&__notice {
 		position: absolute;
-		bottom: sz(ct(map, controls-offset, 8px));
-		left: sz(ct(map, controls-offset, 8px));
+		bottom: sz(ct(map, controls-gap, 8px));
+		left: sz(ct(map, controls-gap, 8px));
 		z-index: 1;
 		max-width: calc(100% - #{sz(16px)});
 		pointer-events: none;
@@ -76,7 +76,7 @@
 	}
 
 	&__anchor {
-		--base-map-marker-size: #{ct(map, marker-size, 24px)};
+		--base-map-marker-size: #{ct(map, marker-width, 24px)};
 
 		position: relative;
 		width: sz(var(--base-map-marker-size));
@@ -185,10 +185,13 @@
 	}
 
 	&__marker-icon {
-		--rise-icon-icon-size: calc(var(--base-map-marker-size, 24px) * 0.55);
-
 		display: flex;
 		transform: rotate(45deg);
+
+		.base-icon__svg {
+			width: sz(calc(var(--base-map-marker-size, 24px) * 0.55));
+			height: sz(calc(var(--base-map-marker-size, 24px) * 0.55));
+		}
 
 		.base-map__marker--custom & {
 			transform: none;
@@ -202,7 +205,7 @@
 		z-index: 2;
 		box-sizing: border-box;
 		width: max-content;
-		max-width: sz(ct(map, balloon-max-width, 280px));
+		max-width: sz(ct(map, balloon-width, 280px));
 		padding: space(ct(map, balloon-padding, 12px));
 		border: 1px solid ct(map, balloon-border, var(--rise-border));
 		border-radius: sz(ct(map, balloon-radius, var(--rise-radius-md)));

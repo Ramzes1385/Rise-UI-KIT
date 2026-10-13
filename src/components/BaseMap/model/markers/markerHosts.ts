@@ -1,4 +1,4 @@
-import type { MapMarkerHost, MarkerDecoration } from '../types/providers.types'
+import type { MapMarkerHost, MarkerDecoration } from '../../types/providers.types'
 
 export function decorateHosts(hosts: readonly MapMarkerHost[], decoration: MarkerDecoration): void {
 	for (const { marker, button } of hosts) {

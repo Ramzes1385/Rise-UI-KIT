@@ -1,5 +1,5 @@
 import { UI_MAP } from '@/locales/messages'
-import type { BaseMapProps } from '../types/BaseMap.types'
+import type { BaseMapProps } from '../../types/BaseMap.types'
 
 const WHEEL_STEP_MS = 150
 

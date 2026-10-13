@@ -1,5 +1,5 @@
 import { getLocale } from '@/locales/state'
-import { applyViewChange } from './viewChange'
+import { applyViewChange } from './view/viewChange'
 import { markRaw, ref, shallowRef, type Ref } from 'vue'
 import { MAP_PROVIDER_ENTRIES } from './providers/registry'
 import type { MapAdapter, MapDeps, MapHandlers } from '../types/providers.types'
@@ -86,5 +86,5 @@ export function useMapAdapter(props: BaseMapProps, emit: BaseMapEmits, deps: Map
 		}
 	}
 
-	return { canvasRef, status, lastView, adapter, attach, detach, isSchemeLive: () => entry().isSchemeLive }
+	return { canvasRef, status, lastView, adapter, attach, detach }
 }

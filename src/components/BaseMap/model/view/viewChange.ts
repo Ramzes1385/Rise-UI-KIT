@@ -1,5 +1,5 @@
 import type { Ref } from 'vue'
-import type { BaseMapEmits, MapView } from '../types/BaseMap.types'
+import type { BaseMapEmits, MapView } from '../../types/BaseMap.types'
 
 export function applyViewChange(emit: BaseMapEmits, lastView: Ref<MapView>, view: MapView): void {
 	const previous = lastView.value

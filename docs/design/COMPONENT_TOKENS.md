@@ -1090,11 +1090,23 @@
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
 |---|---|---|---|---|
+| `--rise-map-balloon-bg` | balloon | bg | — | `var(--rise-bg)` |
+| `--rise-map-balloon-border` | balloon | border | — | `var(--rise-border)` |
+| `--rise-map-balloon-padding` | balloon | padding | — | `12px` |
+| `--rise-map-balloon-radius` | balloon | radius | — | `var(--rise-radius-md)` |
+| `--rise-map-balloon-shadow` | balloon | shadow | — | `var(--rise-shadow-md)` |
+| `--rise-map-balloon-text` | balloon | text | — | `var(--rise-text)` |
+| `--rise-map-balloon-width` | balloon | width | — | `280px` |
 | `--rise-map-bg` | корень | bg | — | `var(--rise-bg-muted)` |
 | `--rise-map-border` | корень | border | — | `var(--rise-border)` |
+| `--rise-map-cluster-bg` | cluster | bg | — | `var(--rise-primary)` |
+| `--rise-map-controls-gap` | controls | gap | — | `8px` |
 | `--rise-map-marker-bg` | marker | bg | — | `var(--rise-primary)` |
 | `--rise-map-marker-border` | marker | border | — | `var(--rise-bg)` |
+| `--rise-map-marker-selected-border` | marker-selected | border | — | `var(--rise-border-accented)` |
 | `--rise-map-marker-shadow` | marker | shadow | — | `var(--rise-shadow-sm)` |
+| `--rise-map-marker-text` | marker | text | — | `var(--rise-text-inverted)` |
+| `--rise-map-marker-width` | marker | width | — | `24px` |
 | `--rise-map-placeholder-padding` | placeholder | padding | — | `16px` |
 | `--rise-map-radius` | корень | radius | — | `var(--rise-radius-lg)` |
 | `--rise-map-text` | корень | text | — | `var(--rise-text)` |

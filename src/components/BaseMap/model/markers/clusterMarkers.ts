@@ -1,8 +1,8 @@
 import { UI_MAP } from '@/locales/messages'
 import { formatMessage } from '@/locales/state'
-import type { MapMarker } from '../types/BaseMap.types'
 import { TILE, mercatorX, mercatorY } from './mercator'
-import type { MapMarkerItem } from '../types/providers.types'
+import type { MapMarker } from '../../types/BaseMap.types'
+import type { MapMarkerItem } from '../../types/providers.types'
 
 const CELL = 64
 const MAX_CLUSTER_ZOOM = 17

@@ -1,6 +1,6 @@
-import type { MapFitBox } from '../types/providers.types'
-import type { MapCoordinates, MapView } from '../types/BaseMap.types'
-import { TILE, fromMercator, mercatorX, mercatorY } from './mercator'
+import type { MapFitBox } from '../../types/providers.types'
+import type { MapCoordinates, MapView } from '../../types/BaseMap.types'
+import { TILE, fromMercator, mercatorX, mercatorY } from '../markers/mercator'
 const MAX_ZOOM = 21
 const FIT_MAX_ZOOM = 17
 
