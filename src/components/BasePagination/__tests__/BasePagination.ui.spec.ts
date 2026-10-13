@@ -12,7 +12,10 @@ describe('BasePagination: проп ui', () => {
 		await nextTick()
 
 		expect(container.querySelector('nav')).toHaveAttribute('class', 'base-pagination')
-		expect(container.querySelector('.base-pagination__pages')).toHaveAttribute('class', 'base-pagination__pages')
+		expect(container.querySelector('.base-pagination__pages')).toHaveAttribute(
+			'class',
+			'base-pagination__pages base-pagination__pages--ready',
+		)
 		expect(container.querySelector('.base-pagination__ellipsis')).toHaveAttribute('class', 'base-pagination__ellipsis')
 		expect(container.querySelector('.base-pagination__indicator')).toHaveAttribute(
 			'class',
@@ -55,6 +58,9 @@ describe('BasePagination: проп ui', () => {
 		await nextTick()
 
 		expect(container.querySelector('nav')).toHaveClass('app-root')
-		expect(container.querySelector('.base-pagination__pages')).toHaveAttribute('class', 'base-pagination__pages app-pages own-pages')
+		expect(container.querySelector('.base-pagination__pages')).toHaveAttribute(
+			'class',
+			'base-pagination__pages app-pages own-pages base-pagination__pages--ready',
+		)
 	})
 })

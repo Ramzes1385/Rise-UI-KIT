@@ -1,6 +1,15 @@
 <template>
 	<div
-		:class="[ui('root'), classes.root, variantClass, { 'base-tabs--full-width': isFullWidth, 'base-tabs--scrollable': isScrollable }]"
+		:class="[
+			ui('root'),
+			classes.root,
+			variantClass,
+			{
+				'base-tabs--full-width': isFullWidth,
+				'base-tabs--scrollable': isScrollable,
+				'base-tabs--indicator-ready': isIndicatorVisible,
+			},
+		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<div :class="[ui('nav'), classes.nav]">
 			<Transition name="base-tabs-scroll">
@@ -76,7 +85,7 @@
 			:role="hasPanel() ? 'tabpanel' : undefined"
 			:aria-labelledby="hasPanel() && selectedIndex !== -1 ? getTabId(selectedIndex) : undefined"
 			:tabindex="hasPanel() ? 0 : undefined">
-			<Transition name="base-tabs-panel">
+			<Transition name="base-tabs-panel" @before-leave="handlePanelBeforeLeave">
 				<div v-if="hasCurrentPanel()" :key="modelValue" :class="ui('panel')">
 					<slot :name="panelSlot()"></slot>
 				</div>
@@ -120,6 +129,7 @@ const {
 	selectedIndex,
 	rovingIndex,
 	handleTabClick,
+	handlePanelBeforeLeave,
 	handleListKeydown,
 	isDragging,
 	handlePointerDown,

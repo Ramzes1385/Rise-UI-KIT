@@ -219,13 +219,27 @@
 		}
 	}
 
+	&--pills:not(&--indicator-ready) &__tab--active.base-button,
+	&--rounded:not(&--indicator-ready) &__tab--active.base-button {
+		background-color: var(--custom-bg-active, ct(tabs, indicator-bg, var(--rise-bg)));
+		box-shadow: ct(tabs, indicator-shadow, var(--rise-shadow-xs));
+
+		@include hover {
+			background-color: var(--custom-bg-active, ct(tabs, indicator-bg, var(--rise-bg)));
+		}
+
+		@include active {
+			background-color: var(--custom-bg-active, ct(tabs, indicator-bg, var(--rise-bg)));
+		}
+	}
+
 	&--rounded &__list {
-		border-radius: ct(tabs, list-radius, var(--rise-radius-full));
+		border-radius: ct(tabs, rounded-list-radius, var(--rise-radius-full));
 	}
 
 	&--rounded &__indicator,
 	&--rounded &__tab.base-button {
-		border-radius: ct(tabs, indicator-radius, var(--rise-radius-full));
+		border-radius: ct(tabs, rounded-indicator-radius, var(--rise-radius-full));
 	}
 
 	&--full-width &__list {

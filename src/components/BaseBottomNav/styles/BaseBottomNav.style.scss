@@ -33,7 +33,7 @@
 	}
 
 	&--outline {
-		border-top-color: ct(bottom-nav, border, var(--rise-border-accented));
+		border-top-color: ct(bottom-nav, outline-border, var(--rise-border-accented));
 	}
 
 	&--ghost {
@@ -192,6 +192,16 @@
 	&--floating &__link--active &__icon-wrap,
 	&--glass &__link--active &__icon-wrap {
 		background-color: transparent;
+	}
+
+	&:not(&--indicator-ready, &--floating, &--glass) &__link--active:not(&__link--primary) &__icon-wrap {
+		background-color: ct(bottom-nav, indicator-bg, var(--bottom-nav-indicator));
+	}
+
+	&--floating:not(&--indicator-ready) &__link--active,
+	&--glass:not(&--indicator-ready) &__link--active {
+		border-radius: var(--rise-radius-xl);
+		background-color: ct(bottom-nav, indicator-bg, var(--bottom-nav-indicator));
 	}
 
 	&__link--primary {

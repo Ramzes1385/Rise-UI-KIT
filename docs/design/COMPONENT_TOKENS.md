@@ -66,6 +66,9 @@
 | `--rise-anchor-font-size` | корень | font-size | — | `var(--rise-font-size-sm)` |
 | `--rise-anchor-font-weight-active` | корень | font-weight | active | `var(--rise-font-weight-medium)` |
 | `--rise-anchor-gap` | корень | gap | — | `2px` |
+| `--rise-anchor-horizontal-gap` | horizontal | gap | — | `4px` |
+| `--rise-anchor-horizontal-padding-x` | horizontal | padding-x | — | `10px` |
+| `--rise-anchor-horizontal-padding-y` | horizontal | padding-y | — | `6px` |
 | `--rise-anchor-indicator-bg` | indicator | bg | — | `var(--rise-primary)` |
 | `--rise-anchor-padding-x` | корень | padding-x | — | `8px` |
 | `--rise-anchor-padding-y` | корень | padding-y | — | `4px` |
@@ -196,6 +199,7 @@
 | `--rise-bottom-nav-gap` | корень | gap | — | `4px` |
 | `--rise-bottom-nav-height` | корень | height | — | `56px` |
 | `--rise-bottom-nav-indicator-bg` | indicator | bg | — | `var(--bottom-nav-indicator)` |
+| `--rise-bottom-nav-outline-border` | outline | border | — | `var(--rise-border-accented)` |
 | `--rise-bottom-nav-text` | корень | text | — | `var(--rise-text-toned)` |
 | `--rise-bottom-nav-text-active` | корень | text | active | `var(--rise-text-highlighted)` |
 | `--rise-bottom-nav-text-hover` | корень | text | hover | `var(--rise-text)` |
@@ -1615,6 +1619,7 @@
 | `--rise-stepper-description-text` | description | text | — | `var(--rise-text-muted)` |
 | `--rise-stepper-indicator-bg` | indicator | bg | — | `var(--rise-bg-elevated)` |
 | `--rise-stepper-indicator-radius` | indicator | radius | — | `var(--rise-radius-full)` |
+| `--rise-stepper-indicator-square-radius` | indicator-square | radius | — | `var(--rise-radius-md)` |
 | `--rise-stepper-indicator-text` | indicator | text | — | `var(--rise-text-toned)` |
 | `--rise-stepper-indicator-width` | indicator | width | — | `28px` |
 | `--rise-stepper-label-font-size` | label | font-size | — | `var(--rise-font-size-sm)` |
@@ -1686,6 +1691,8 @@
 | `--rise-tabs-list-bg` | list | bg | — | `var(--rise-bg-elevated)` |
 | `--rise-tabs-list-padding` | list | padding | — | `4px` |
 | `--rise-tabs-list-radius` | list | radius | — | `var(--rise-radius-lg)` |
+| `--rise-tabs-rounded-indicator-radius` | rounded-indicator | radius | — | `var(--rise-radius-full)` |
+| `--rise-tabs-rounded-list-radius` | rounded-list | radius | — | `var(--rise-radius-full)` |
 | `--rise-tabs-tab-padding-x` | tab | padding-x | — | `12px` |
 | `--rise-tabs-tab-text` | tab | text | — | `var(--rise-text-muted)` |
 | `--rise-tabs-tab-text-selected` | tab | text | selected | `var(--rise-text-highlighted)` |

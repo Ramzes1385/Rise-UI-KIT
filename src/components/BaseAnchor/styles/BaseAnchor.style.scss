@@ -54,13 +54,13 @@
 
 	&--horizontal &__list {
 		flex-flow: row wrap;
-		gap: sz(ct(anchor, gap, 4px));
+		gap: sz(ct(anchor, horizontal-gap, 4px));
 		border-bottom: 1px solid ct(anchor, border, var(--rise-border));
 		border-left: none;
 	}
 
 	&--horizontal &__link {
-		padding: sz(ct(anchor, padding-y, 6px) ct(anchor, padding-x, 10px));
+		padding: sz(ct(anchor, horizontal-padding-y, 6px) ct(anchor, horizontal-padding-x, 10px));
 	}
 
 	&--horizontal &__indicator {
@@ -80,6 +80,10 @@
 		height: var(--indicator-h);
 		border-radius: sz(ct(anchor, radius, var(--rise-radius-sm)));
 		transform: translate(var(--indicator-x), var(--indicator-y));
+		background-color: var(--custom-bg, #{ct(anchor, indicator-bg, var(--rise-primary-soft))});
+	}
+
+	&--soft:not(&--indicator-ready) &__link--active {
 		background-color: var(--custom-bg, #{ct(anchor, indicator-bg, var(--rise-primary-soft))});
 	}
 }

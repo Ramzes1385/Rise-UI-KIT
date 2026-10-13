@@ -2,7 +2,13 @@
 	<nav
 		v-if="links.length"
 		ref="rootRef"
-		:class="[ui('root'), variantClass, `base-anchor--${direction}`, classes.root]"
+		:class="[
+			ui('root'),
+			variantClass,
+			`base-anchor--${direction}`,
+			{ 'base-anchor--indicator-ready': isIndicatorVisible },
+			classes.root,
+		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle, indicatorStyle]"
 		:aria-label="label ?? UI_ARIA.ANCHOR_NAV">
 		<span

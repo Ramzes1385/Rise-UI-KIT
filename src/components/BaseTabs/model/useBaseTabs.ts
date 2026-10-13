@@ -181,6 +181,10 @@ export function useBaseTabs(props: BaseTabsProps, emit: BaseTabsEmits) {
 			if (selected && !selected.isDisabled) return selectedIndex.value
 			return props.items.findIndex(item => !item.isDisabled)
 		}),
+		handlePanelBeforeLeave(element: Element): void {
+			element.setAttribute('inert', '')
+			element.setAttribute('aria-hidden', 'true')
+		},
 		handleTabClick(id: string): void {
 			if (drag.consumeDragMove()) return
 			const tab = props.items.find(item => item.id === id)

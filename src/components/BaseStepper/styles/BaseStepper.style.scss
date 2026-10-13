@@ -333,7 +333,7 @@
 	}
 
 	&--square &__indicator {
-		border-radius: sz(ct(stepper-indicator, radius, var(--rise-radius-md)));
+		border-radius: sz(ct(stepper-indicator, square-radius, var(--rise-radius-md)));
 	}
 
 	&--diamond &__indicator {

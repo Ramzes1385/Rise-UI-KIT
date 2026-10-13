@@ -132,6 +132,27 @@ describe('BaseTabs: смена панели', () => {
 		expect(panel).toHaveTextContent('Вес и размеры')
 	})
 
+	it('уходящая панель на время затухания недоступна: inert и aria-hidden, фокус по Tab в неё не попадает', async () => {
+		const { container, rerender } = render(BaseTabs, {
+			props: { modelValue: 'info', items: TABS },
+			slots: { 'panel-info': '<button>Купить</button>', 'panel-specs': '<p>Вес и размеры</p>' },
+			...REAL_TRANSITION,
+		})
+		const [current] = container.querySelectorAll('.base-tabs__panel')
+		expect(current).not.toHaveAttribute('inert')
+		expect(current).not.toHaveAttribute('aria-hidden')
+
+		await rerender({ modelValue: 'specs' })
+
+		const [leaving, entering] = container.querySelectorAll('.base-tabs__panel')
+		expect(leaving).toHaveClass('base-tabs-panel-leave-active')
+		expect(leaving).toHaveAttribute('inert')
+		expect(leaving).toHaveAttribute('aria-hidden', 'true')
+		expect(entering).not.toHaveAttribute('inert')
+		expect(entering).not.toHaveAttribute('aria-hidden')
+		await waitFor(() => expect(container.querySelectorAll('.base-tabs__panel')).toHaveLength(1))
+	})
+
 	it('вкладка без своего слота и без default — панель пустая, без обёртки', async () => {
 		const { container, rerender } = render(BaseTabs, {
 			props: { modelValue: 'info', items: TABS },

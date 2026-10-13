@@ -1,6 +1,15 @@
 <template>
 	<nav
-		:class="[ui('root'), variantClass, { 'base-bottom-nav--fixed': isFixed, 'base-bottom-nav--hidden': isHidden }, classes.root]"
+		:class="[
+			ui('root'),
+			variantClass,
+			{
+				'base-bottom-nav--fixed': isFixed,
+				'base-bottom-nav--hidden': isHidden,
+				'base-bottom-nav--indicator-ready': isIndicatorVisible,
+			},
+			classes.root,
+		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		:aria-label="navLabel"
 		@focusin="handleFocusIn"

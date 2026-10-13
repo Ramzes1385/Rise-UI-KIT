@@ -12,7 +12,10 @@
 			<BaseIcon name="chevron-left" :size-scale="calcIconScale('md', sizeScale)" />
 		</BaseButton>
 
-		<div ref="pagesRef" :class="[ui('pages'), classes.pages]" :style="indicatorStyle">
+		<div
+			ref="pagesRef"
+			:class="[ui('pages'), classes.pages, { 'base-pagination__pages--ready': isIndicatorVisible }]"
+			:style="indicatorStyle">
 			<span
 				v-if="isIndicatorVisible"
 				:class="[ui('indicator'), { 'base-pagination__indicator--instant': isIndicatorInstant }]"

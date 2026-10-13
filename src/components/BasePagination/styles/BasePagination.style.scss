@@ -36,10 +36,18 @@
 	}
 
 	&__page--current.base-button {
+		--custom-text: var(--custom-text-active, #{ct(pagination, page-text-selected, var(--rise-on-primary))});
+	}
+
+	&__pages:not(&__pages--ready) &__page--current.base-button {
+		--custom-bg: var(--custom-bg-active, #{ct(pagination, indicator-bg, var(--rise-primary))});
+		--custom-bg-hover: var(--custom-bg-active, #{ct(pagination, indicator-bg-hover, var(--rise-primary-hover))});
+	}
+
+	&__pages--ready &__page--current.base-button {
 		--custom-bg: transparent;
 		--custom-bg-hover: transparent;
 		--custom-bg-active: transparent;
-		--custom-text: var(--custom-text-active, #{ct(pagination, page-text-selected, var(--rise-on-primary))});
 	}
 
 	&__arrow.base-button {
