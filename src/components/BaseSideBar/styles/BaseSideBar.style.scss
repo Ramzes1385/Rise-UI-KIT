@@ -58,11 +58,9 @@
 		--btn-pad-left: var(--rise-control-padding-y);
 		--btn-pad-right: var(--rise-control-padding-y);
 
+		@include inherit-custom-color;
 		@include custom-text(color, var(--rise-text-muted));
-
-		@include hover {
-			color: var(--rise-text-highlighted);
-		}
+		@include custom-text-hover(color, var(--rise-text-highlighted));
 	}
 
 	&__navigation {
