@@ -1,5 +1,5 @@
 import type { ComputedRef } from 'vue'
-import type { BaseTableEmits, TableColumn, TableRow } from '@components/BaseTable/types/BaseTable.types'
+import type { BaseTableEmits, TableColumn, TableRow, TableSelectAllScope } from '@components/BaseTable/types/BaseTable.types'
 
 export interface UseTableCompositionOptions {
 	rows: ComputedRef<TableRow[]>
@@ -15,6 +15,7 @@ export interface UseTableCompositionOptions {
 	expandedIds?: ComputedRef<Array<string | number> | undefined>
 	sortLocale?: ComputedRef<string | undefined>
 	timeZone?: ComputedRef<string | undefined>
+	selectAllScope?: ComputedRef<TableSelectAllScope | undefined>
 	isResizable: ComputedRef<boolean>
 	hasRowNumber: ComputedRef<boolean>
 	isSelectable: ComputedRef<boolean>

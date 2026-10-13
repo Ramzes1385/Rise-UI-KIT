@@ -224,6 +224,7 @@ const props = withDefaults(
 		page: undefined,
 		totalRows: undefined,
 		selectedIds: undefined,
+		selectAllScope: undefined,
 		isRowInteractive: undefined,
 		sizeScale: SIZE_SCALE_DEFAULT,
 		padding: undefined,

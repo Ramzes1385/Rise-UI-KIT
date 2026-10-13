@@ -80,6 +80,7 @@ function useComposition(props: TableProps, emit: BaseTableEmits, features: Retur
 		page: computed(() => props.page),
 		totalRows: computed(() => props.totalRows),
 		selectedIds: computed(() => props.selectedIds),
+		selectAllScope: computed(() => props.selectAllScope),
 		isMultiSort: features.isMultiSort,
 		searchDebounce: computed(() => props.searchDebounce),
 		sortLocale: computed(() => props.sortLocale),

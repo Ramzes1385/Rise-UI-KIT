@@ -163,3 +163,36 @@ describe('BaseTable: v-model:selectedIds', () => {
 		wrapper.unmount()
 	})
 })
+
+describe('BaseTable: selectAllScope', () => {
+	const selectedCount = (wrapper: ReturnType<typeof mount>): number => (wrapper.emitted('select')?.at(-1)?.[0] as TableRow[]).length
+
+	async function selectAll(scope: string | undefined, props: Record<string, unknown> = {}) {
+		const wrapper = mountTable({ behavior: { selectable: true }, selectAllScope: scope, ...props })
+		await wrapper.find('thead input[type="checkbox"]').setValue(true)
+		return wrapper
+	}
+
+	it('по умолчанию «Выбрать все» берёт строки после поиска и фильтров на всех страницах', async () => {
+		const wrapper = await selectAll(undefined)
+		expect(selectedCount(wrapper)).toBe(10)
+		wrapper.unmount()
+	})
+
+	it('page — только показанные сейчас строки', async () => {
+		const wrapper = await selectAll('page')
+		expect(selectedCount(wrapper)).toBe(3)
+		wrapper.unmount()
+	})
+
+	it('all — все переданные rows, даже скрытые поиском', async () => {
+		vi.useFakeTimers()
+		const wrapper = mountTable({ behavior: { selectable: true }, features: { search: true }, searchDebounce: 0, selectAllScope: 'all' })
+		await wrapper.find('input[type="text"], input:not([type])').setValue('Строка 1')
+		await vi.runAllTimersAsync()
+		vi.useRealTimers()
+		await wrapper.find('thead input[type="checkbox"]').setValue(true)
+		expect(selectedCount(wrapper)).toBe(10)
+		wrapper.unmount()
+	})
+})

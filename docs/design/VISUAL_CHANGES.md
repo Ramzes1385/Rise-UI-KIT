@@ -1911,3 +1911,5 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 
 - Новые истории `data-basetable--sort-compare` (сортировка размеров XS…XL), `data-basetable--date-filter-timezone` (две таблицы с разным поясом), `data-basetable--chip-keyboard-remove`, `data-basetable--sticky-columns-resize`: таблицы и метки выглядят как в остальных историях BaseTable, новых элементов в виде нет.
 - Существующие истории не меняются: `timeZone` и `sortCompare` не заданы, Delete и Backspace вида не меняют.
+
+Порция 3: вида не меняет (`selectAllScope` по умолчанию прежний).

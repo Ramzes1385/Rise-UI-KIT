@@ -196,6 +196,14 @@ export type TableVariant = (typeof TABLE_VARIANTS)[number]
 
 export type LoadMode = 'pagination' | 'infinite' | 'button'
 
+export const TABLE_SELECT_ALL_SCOPES = ['filtered', 'page', 'all'] as const
+
+/**
+ * Область действия «Выбрать все»: `filtered` — строки после поиска и фильтров на всех страницах, `page` — показанные сейчас
+ * (текущая страница или подгруженные строки), `all` — все переданные `rows`, даже скрытые поиском или фильтрами
+ */
+export type TableSelectAllScope = (typeof TABLE_SELECT_ALL_SCOPES)[number]
+
 /**
  * Конфигурация функций таблицы (замена boolean-пропсов при мажорном релизе)
  */
@@ -285,6 +293,12 @@ export interface BaseTableProps extends BaseComponentProps<
 	 * по-прежнему применяются к переданным строкам: для серверных передайте на сервер события `search`, `filter`, `sort`
 	 */
 	totalRows?: number
+	/**
+	 * Область действия «Выбрать все» в шапке (`filtered`, `page`, `all`): по умолчанию строки, прошедшие поиск и фильтры, на всех
+	 * страницах. С `page` — только показанные сейчас; с `all` — все переданные `rows`. Состояние флажка («все», «часть») считается
+	 * по той же области; строки вне области при действии шапки теряют выбор, отключённые не меняются
+	 */
+	selectAllScope?: TableSelectAllScope
 	/**
 	 * Выбранные строки (`v-model:selectedIds`): массив `id`. Заданный проп переходит на управление снаружи — `isSelected`
 	 * строк не учитывается, клик по чекбоксам и «Выбрать все» только сообщают новый набор в `update:selectedIds` (и

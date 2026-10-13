@@ -24,6 +24,7 @@ export const argTypes = {
 	sortLocale: { control: 'text', table: propGroup(ARG_GROUP.behavior) },
 	timeZone: { control: 'text', table: propGroup(ARG_GROUP.behavior) },
 	expandedIds: { control: 'object', table: propGroup(ARG_GROUP.behavior) },
+	selectAllScope: { control: 'inline-radio', options: ['filtered', 'page', 'all'], table: propGroup(ARG_GROUP.behavior) },
 	selectedIds: { control: 'object', table: propGroup(ARG_GROUP.behavior) },
 	page: { control: 'number', table: propGroup(ARG_GROUP.behavior) },
 	totalRows: { control: 'number', table: propGroup(ARG_GROUP.behavior) },

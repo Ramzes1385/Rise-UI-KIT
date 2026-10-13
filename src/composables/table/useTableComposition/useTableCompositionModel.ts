@@ -1,4 +1,5 @@
 /** Composable: подключение составных частей таблицы — колонки, данные, выбор строк, раскрытие и тулбар */
+import { computed } from 'vue'
 import { useTableData } from '@composables/table/useTableData'
 import { useTableExpand } from '@composables/table/useTableExpand'
 import { useTableColumns } from '@composables/table/useTableColumns'
@@ -8,7 +9,7 @@ import type { UseTableCompositionOptions } from './types/useTableComposition.typ
 
 function useTableCompositionModel(options: UseTableCompositionOptions) {
 	const { rows, columns, loadMode, pageSize, hasMore, isMultiSort, searchDebounce, sortLocale, emit } = options
-	const { page, totalRows, selectedIds, timeZone } = options
+	const { page, totalRows, selectedIds, timeZone, selectAllScope } = options
 	const { isResizable, hasRowNumber, isSelectable, hasSearch, hasFilters, hasColumnSettings } = options
 
 	const tableColumns = useTableColumns({
@@ -46,12 +47,16 @@ function useTableCompositionModel(options: UseTableCompositionOptions) {
 		},
 		totalRows: () => totalRows?.value,
 	})
-	const { processedRows, addFilter, removeFilter } = data
+	const { processedRows, displayedRows, addFilter, removeFilter } = data
+	const selectScopeRows = computed(() => {
+		if (selectAllScope?.value === 'page') return displayedRows.value
+		return selectAllScope?.value === 'all' ? rows.value : processedRows.value
+	})
 
-	// «Выбрать все» действует на строки, прошедшие поиск и фильтры, а не на все переданные rows
+	// «Выбрать все» действует на область selectAllScope: по умолчанию строки, прошедшие поиск и фильтры, а не все rows
 	const selection = useTableSelection({
 		rows,
-		filteredRows: processedRows,
+		filteredRows: selectScopeRows,
 		onSelect: selectedRows => emit('select', selectedRows),
 		selectedIds: () => selectedIds?.value,
 		onSelectedIdsChange: ids => emit('update:selectedIds', ids),
