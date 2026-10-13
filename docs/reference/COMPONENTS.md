@@ -3390,6 +3390,7 @@ BaseAvatarGroup
 BaseBackTop
 BaseBadge
 BaseBankCard
+BaseBanner
 BaseBreadcrumbs
 BaseButton
 BaseButtonGroup
@@ -3412,6 +3413,7 @@ BaseCommentThread
 BaseConfirm
 BaseContainer
 BaseContextMenu
+BaseCookieConsent
 BaseCryptoProSign
 BaseDadataInput
 BaseDatePicker
@@ -3473,6 +3475,7 @@ BaseRange
 BaseRating
 BaseReasoning
 BaseRequisiteInput
+BaseResult
 BaseScrollArea
 BaseSearch
 BaseSegmented
@@ -3508,6 +3511,7 @@ BaseTreeSelect
 BaseUser
 BaseVirtualList
 BaseVoiceRecorder
+BaseWatermark
 BaseWaveform
 ```
 
@@ -3592,3 +3596,73 @@ const data: ImageMap3DData = { layers: [{ id: 'f1', title: 'Этаж 1', image: 
 **Экспорт входа `/map3d`**: `BaseImageMap3D`; константы `IMAGE_MAP_3D_VIEWS`, `IMAGE_MAP_3D_CAMERAS`, `IMAGE_MAP_3D_LAYER_MODES`, `IMAGE_MAP_3D_FALLBACK_REASONS`; типы `BaseImageMap3DProps`, `BaseImageMap3DEmits`, `BaseImageMap3DSlots`, `BaseImageMap3DExpose`, `ImageMap3DView`, `ImageMap3DCamera`, `ImageMap3DLayerMode`, `ImageMap3DFallbackReason`, `ImageMap3DRenderer`, `ImageMap3DRendererFactory`, `ImageMap3DData`, `ImageMap3DLayer`, `ImageMap3DObject`, `ImageMap3DObjectFields`, `ImageMap3DObjectPart`, `ImageMapLayerModel`, `ImageMapScene3D`.
 
 **Доступность.** Область карты — одна точка Tab: стрелки — к соседнему объекту по экрану, Home/End, Enter/Space — открыть, Escape, PageUp/PageDown — этажи, Shift + стрелки — поворот и наклон, `+`/`-`/`0` — масштаб и исходный вид; объект и этаж объявляет `aria-live`. Объекты по отдельности не фокусируются; без мыши объект выбирают стрелками в области, скрытым списком объектов текущего этажа (есть без каталога, `aria-current`, `aria-disabled`, ссылки `<a>`), каталогом (`hasDirectory`) или 2D-видом (`has2dToggle`).
+
+---
+
+## Новые компоненты (задача components-1a)
+
+### BaseResult
+
+Экран итога: иконка статуса (или крупный код 403/404/500), заголовок, описание, подробности и кнопки.
+
+```vue
+<script setup lang="ts">
+import { BaseButton, BaseResult } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BaseResult status="404">
+		<template #extra><BaseButton>На главную</BaseButton></template>
+	</BaseResult>
+</template>
+```
+
+- Пропы: `status` (`success`, `info`, `warning`, `error`, `403`, `404`, `500`; по умолчанию `info`), `title`, `description` (без них — тексты по статусу из словаря), `icon`, `titleTag` (`h2` по умолчанию; для страницы ошибки — `h1`), `isLive` (`role="status"` для success/info и `role="alert"` для остальных), `variant` (`default`, `outline`, `soft`), `sizeScale`, `color`, `ui`.
+- Слоты: `icon`, `title`, `description`, `default` (подробности: код ошибки, список причин), `extra` (кнопки).
+- Токены `--rise-result-*`, словарь — раздел `result`.
+
+### BaseWatermark
+
+Водяной знак поверх содержимого: текст (в том числе несколько строк) или картинка узором со смещением рядов.
+
+```vue
+<template>
+	<BaseWatermark :content="['Конфиденциально', '13.10.2026']" :rotate="-22" is-protected>
+		<main>...</main>
+	</BaseWatermark>
+</template>
+```
+
+- Пропы: `content` (строка или массив строк), `image` (+ `width`, `height`), `rotate` (-22), `gap` (число или `[x, y]`, 64), `opacity` (0.15), `zIndex` (9), `fontSize` (16), `textColor` (`#808080`), `isProtected`, `ui` (`root`, `layer`), `customClass`.
+- Слой знака: `aria-hidden`, `pointer-events: none`. Текст рисуется SVG, картинка — canvas (для адреса без CORS — повтор без поворота). Узор строится после монтирования, SSR не падает.
+- `isProtected` возвращает удалённый слой и прежние `style`, `class`, `hidden`, `aria-hidden`. Это защита от случайной правки в DevTools, а не от намеренного обхода (правила в таблице стилей она не видит): документы, где это важно, маркируют на сервере.
+
+### BaseBanner
+
+Полоса объявления на всю ширину.
+
+```vue
+<template>
+	<BaseBanner v-model:is-open="isOpen" type="info" text="Весенняя распродажа" is-closable storage-key="spring-sale">
+		<template #action><BaseLink href="/sale">Подробнее</BaseLink></template>
+	</BaseBanner>
+</template>
+```
+
+- Пропы: `type` (`primary`, `info`, `success`, `warning`, `error`), `text`, `icon`, `hasIcon`, `isClosable`, `isOpen` (`v-model:is-open`), `storageKey`, `position` (`static`, `sticky`), `label`, `variant` (`default`, `outline`, `soft`), `sizeScale`, `color`, `ui`.
+- Слоты `default`, `icon`, `action`; события `update:isOpen`, `close`.
+- `role="region"` с `aria-label` (по умолчанию «Объявление»). `storageKey` хранит закрытие в `localStorage` (`rise-banner:<ключ>`); читается после монтирования, недоступное хранилище не ломает показ.
+
+### BaseCookieConsent
+
+Немодальное окно согласия на cookies (`role="dialog"`, `aria-modal="false"`): фокус не перехватывается, Escape не закрывает.
+
+```vue
+<template>
+	<BaseCookieConsent v-model="selected" :categories="categories" storage-key="consent" @accept="loadScripts" />
+</template>
+```
+
+- Пропы: `categories` (`id`, `label`, `description`, `isRequired`), `modelValue` (`v-model`, `id` выбранных; обязательные всегда в выборе), `isOpen`, `isSettingsOpen`, `title`, `description`, `storageKey`, `position` (`bottom`, `bottom-left`, `bottom-right`), `isContained`, `variant` (`default`, `outline`, `soft`), `sizeScale`, `color`, `ui`.
+- Кнопки: «Настроить» (раскрывает переключатели BaseSwitch), «Только выбранные», «Принять все». События: `update:modelValue`, `update:isOpen`, `update:isSettingsOpen`, `change` (выбор изменён) и `accept` (решение принято, `id` разрешённых категорий).
+- `storageKey` запоминает решение (`rise-cookie-consent:<ключ>`): после монтирования выбор восстанавливается через `update:modelValue` и `change`, окно скрывается, `accept` не приходит.

@@ -1,0 +1,114 @@
+.base-banner {
+	@include custom-color-scope;
+	--banner-role: var(--rise-primary);
+	--banner-on-role: var(--rise-on-primary);
+	--banner-soft: var(--rise-primary-soft);
+	--banner-role-text: var(--rise-primary-text);
+	--banner-role-border: var(--rise-primary-border);
+	--banner-icon: currentcolor;
+	--banner-ring: currentcolor;
+
+	box-sizing: border-box;
+	width: 100%;
+	border-bottom: 1px solid ct(banner, border, transparent);
+	box-shadow: ct(banner, shadow, none);
+	font-size: sz(ct(banner, font-size, var(--rise-font-size-sm)));
+	line-height: sz(var(--rise-line-height-sm));
+	@include custom-bg(background-color, ct(banner, bg, var(--banner-role)));
+	@include custom-text(color, ct(banner, text, var(--banner-on-role)));
+
+	@each $role in (info, success, warning, error) {
+		&--#{$role} {
+			--banner-role: var(--rise-#{$role});
+			--banner-on-role: var(--rise-on-#{$role});
+			--banner-soft: var(--rise-#{$role}-soft);
+			--banner-role-text: var(--rise-#{$role}-text);
+			--banner-role-border: var(--rise-#{$role}-border);
+		}
+	}
+
+	&--soft,
+	&--outline {
+		--banner-icon: var(--banner-role);
+		--banner-ring: var(--rise-focus-ring);
+	}
+
+	&--soft {
+		@include custom-bg(background-color, var(--banner-soft));
+		@include custom-text(color, var(--banner-role-text));
+	}
+
+	&--outline {
+		border-bottom-color: ct(banner, border, var(--banner-role-border));
+		@include custom-bg(background-color, var(--rise-bg));
+		@include custom-text(color, var(--banner-role-text));
+	}
+
+	&--sticky {
+		position: sticky;
+		top: 0;
+		z-index: calc(var(--rise-z-overlay) - 3);
+	}
+
+	&__body {
+		display: flex;
+		align-items: center;
+		gap: space(ct(banner, gap, 12px));
+		padding: space(ct(banner, padding-y, 10px) ct(banner, padding-x, 16px));
+	}
+
+	&__icon-wrapper {
+		display: flex;
+		flex-shrink: 0;
+		@include custom-text(color, var(--banner-icon));
+	}
+
+	&__content {
+		display: flex;
+		flex: 1;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: center;
+		gap: sz(4px) sz(12px);
+		min-width: 0;
+		overflow-wrap: break-word;
+		text-align: center;
+	}
+
+	& &__text {
+		@include inherit-custom-color;
+		margin: 0;
+		color: inherit;
+	}
+
+	&__action {
+		display: flex;
+		align-items: center;
+		gap: sz(8px);
+		font-weight: var(--rise-font-weight-medium);
+	}
+
+	&__action a {
+		color: inherit;
+	}
+
+	& &__action :focus-visible,
+	& &__close:focus-visible {
+		outline-color: var(--banner-ring);
+	}
+
+	& &__close {
+		--custom-text: currentcolor;
+		--custom-bg: transparent;
+		--custom-bg-hover: color-mix(in srgb, currentcolor 12%, transparent);
+		--custom-bg-active: color-mix(in srgb, currentcolor 18%, transparent);
+
+		flex-shrink: 0;
+		max-width: none;
+	}
+
+	&__close .base-icon__svg {
+		width: sz(16px);
+		height: sz(16px);
+	}
+}

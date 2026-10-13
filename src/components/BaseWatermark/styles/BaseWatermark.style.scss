@@ -1,0 +1,12 @@
+.base-watermark {
+	position: relative;
+
+	&__layer {
+		position: absolute;
+		inset: 0;
+		background-repeat: repeat;
+		overflow: hidden;
+		pointer-events: none;
+		user-select: none;
+	}
+}

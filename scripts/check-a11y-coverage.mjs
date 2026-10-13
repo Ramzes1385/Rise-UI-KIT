@@ -36,6 +36,8 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseMarquee',
 	'BaseCommandPalette',
 	'BaseButton',
+	'BaseBanner',
+	'BaseCookieConsent',
 	'BaseInput',
 	'BaseTextarea',
 	'BaseSelect',
@@ -280,6 +282,9 @@ const EMPTY_COMPONENTS = new Set([
 
 const LONG_CONTENT_COMPONENTS = new Set([
 	'BaseInput',
+	'BaseBanner',
+	'BaseCookieConsent',
+	'BaseResult',
 	'BaseTextarea',
 	'BaseSelect',
 	'BaseCheckbox',

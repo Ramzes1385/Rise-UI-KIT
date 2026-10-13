@@ -5,6 +5,7 @@ import { ruForms } from './forms'
 import { ruMedia } from './media'
 import { ruPlural } from './plural'
 import { ruCard } from './components/card'
+import { ruNotices } from './components/notices'
 import { ruMapEditor } from './components/mapEditor'
 import { ruImageMap3d } from './components/imageMap3d'
 import { ruTranscript } from './components/transcript'
@@ -28,5 +29,6 @@ export const ru = {
 	...ruData,
 	...ruEventCalendar,
 	...ruTranscript,
+	...ruNotices,
 	plural: ruPlural,
 }

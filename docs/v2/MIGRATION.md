@@ -2372,3 +2372,11 @@ API кита не меняется. В Storybook добавлены пример
 - **BaseImageMap**: в `IMAGE_MAP_PARTS` и проп `ui` добавлены части `directory`, `search`, `filters`, `results`, `list`, `entry` (список объектов) и `route`, `route-steps`, `route-step` (панель «Как пройти»); классы склеиваются с `defaults.BaseImageMap.ui`.
 - **BaseMediaPlayer**: DOM и поведение не менялись. Внутренне: рамка меню настроек задаёт размер через `grid-template-columns/rows` (раньше `width`/`height` в `style`); CSS-переменная обратного отсчёта «Следующая серия» — `--media-next-duration` вместо `--media-next-seconds`. Приложения, которые читали их из стилей, поправят селекторы.
 
+## Новые компоненты: components-1a (BaseResult, BaseWatermark, BaseBanner, BaseCookieConsent)
+
+Новые компоненты, изменений в существующих нет. API — в `docs/reference/COMPONENTS.md`, раздел «Новые компоненты (задача components-1a)».
+
+- **BaseResult** (`Data`), **BaseWatermark**, **BaseBanner** (`Element`), **BaseCookieConsent** (`Overlay`); регистрируются плагином и экспортируются из кита.
+- Новые разделы словаря `result`, `banner`, `cookieConsent` (`UI_RESULT`, `UI_BANNER`, `UI_COOKIE_CONSENT`): приложение с собственным языком через `defineLocale()` добавляет переводы этих разделов.
+- Токены `--rise-result-*`, `--rise-banner-*`, `--rise-cookie-consent-*` (список — `docs/design/COMPONENT_TOKENS.md`). У BaseWatermark токенов нет: настройка — пропами.
+- Запоминание закрытия (`storageKey` у BaseBanner и BaseCookieConsent) пишет в `localStorage` ключи `rise-banner:<ключ>` и `rise-cookie-consent:<ключ>`.

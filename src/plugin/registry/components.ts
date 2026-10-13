@@ -36,6 +36,7 @@ import { BaseRadio } from '../../components/BaseRadio'
 import { BaseRange } from '../../components/BaseRange'
 import { BaseAnchor } from '../../components/BaseAnchor'
 import { BaseAvatar } from '../../components/BaseAvatar'
+import { BaseBanner } from '../../components/BaseBanner'
 import { BaseButton } from '../../components/BaseButton'
 import { BaseDrawer } from '../../components/BaseDrawer'
 import { BaseFooter } from '../../components/BaseFooter'
@@ -45,6 +46,7 @@ import { BaseLayout } from '../../components/BaseLayout'
 import { BaseLoader } from '../../components/BaseLoader'
 import { BaseQrCode } from '../../components/BaseQrCode'
 import { BaseRating } from '../../components/BaseRating'
+import { BaseResult } from '../../components/BaseResult'
 import { BaseSearch } from '../../components/BaseSearch'
 import { BaseSelect } from '../../components/BaseSelect'
 import { BaseSlider } from '../../components/BaseSlider'
@@ -93,6 +95,7 @@ import { BaseSegmented } from '../../components/BaseSegmented'
 import { BaseSeparator } from '../../components/BaseSeparator'
 import { BaseSlideover } from '../../components/BaseSlideover'
 import { BaseSparkline } from '../../components/BaseSparkline'
+import { BaseWatermark } from '../../components/BaseWatermark'
 import { BaseJsonViewer } from '../../components/BaseJsonViewer'
 import { BaseMoneyInput } from '../../components/BaseMoneyInput'
 import { BasePagination } from '../../components/BasePagination'
@@ -123,6 +126,7 @@ import { BaseSignaturePad } from '../../components/BaseSignaturePad'
 import { BaseAvatarCropper } from '../../components/BaseAvatarCropper'
 import { BaseCheckboxGroup } from '../../components/BaseCheckboxGroup'
 import { BaseCommentThread } from '../../components/BaseCommentThread'
+import { BaseCookieConsent } from '../../components/BaseCookieConsent'
 import { BaseCryptoProSign } from '../../components/BaseCryptoProSign'
 import { BaseEventCalendar } from '../../components/BaseEventCalendar'
 import { BaseFilterBuilder } from '../../components/BaseFilterBuilder'
@@ -153,6 +157,7 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseBadge,
 	BaseBottomNav,
 	BaseBankCard,
+	BaseBanner,
 	BaseBreadcrumbs,
 	BaseButton,
 	BaseButtonGroup,
@@ -172,6 +177,7 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseConfirm,
 	BaseContainer,
 	BaseContextMenu,
+	BaseCookieConsent,
 	BaseCountdown,
 	BaseCryptoProSign,
 	BaseDadataInput,
@@ -230,6 +236,7 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseRating,
 	BaseReasoning,
 	BaseRequisiteInput,
+	BaseResult,
 	BaseScrollArea,
 	BaseSearch,
 	BaseSegmented,
@@ -265,5 +272,6 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseUser,
 	BaseVirtualList,
 	BaseVoiceRecorder,
+	BaseWatermark,
 	BaseWaveform,
 }

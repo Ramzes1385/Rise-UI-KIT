@@ -76,6 +76,9 @@ export interface UiKitLocale {
 	countdown: Section<'countdown'>
 	eventCalendar: Section<'eventCalendar'>
 	card: Section<'card'>
+	result: Section<'result'>
+	banner: Section<'banner'>
+	cookieConsent: Section<'cookieConsent'>
 	warnings: Section<'warnings'>
 	plural: { readonly [P in keyof Base['plural']]: PluralForms }
 }

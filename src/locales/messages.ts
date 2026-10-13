@@ -145,5 +145,14 @@ export const UI_EVENT_CALENDAR = localized('eventCalendar')
 /** Банковская карта: поля и ошибки BaseCardInput */
 export const UI_CARD = localized('card')
 
+/** Экран итога BaseResult */
+export const UI_RESULT = localized('result')
+
+/** Объявление BaseBanner */
+export const UI_BANNER = localized('banner')
+
+/** Согласие на cookies BaseCookieConsent */
+export const UI_COOKIE_CONSENT = localized('cookieConsent')
+
 /** Предупреждения в консоли */
 export const UI_WARNINGS = localized('warnings')

@@ -1697,3 +1697,11 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 - **BaseTabs / BaseAnchor**: до первого замера (до гидратации при SSR) активный пункт underline/arc и вертикального/горизонтального якоря рисует полоску сам; после замера — как раньше, снимки не меняются.
 - **BaseImageMap**: только новые части `ui`, вид не меняется.
 
+## Задача components-1a: BaseResult, BaseWatermark, BaseBanner, BaseCookieConsent
+
+Новые компоненты, существующие истории не меняются. Эталонов снимков у новых историй нет — их создаёт владелец (спецификации `*.visual.spec.ts` лежат рядом).
+
+- **BaseResult** (`data-baseresult--statuses`, `--variants`, `--sizes`, `--with-details`, `--actions`, `--long-content`): круг с иконкой роли или крупным кодом 403/404/500, заголовок, описание, подробности и кнопки по центру.
+- **BaseWatermark** (`element-basewatermark--text`, `--multi-line`, `--image`, `--protected`): диагональный узор знака с прозрачностью 0.15 поверх карточки; ряды смещены по диагонали.
+- **BaseBanner** (`element-basebanner--types`, `--variants`, `--sizes`, `--with-action`, `--long-content`, `--sticky`): полоса на всю ширину с иконкой, текстом по центру, действием и кнопкой закрытия.
+- **BaseCookieConsent** (`overlay-basecookieconsent--default`, `--settings`, `--positions`, `--long-content`): карточка с тенью внизу области; в настройках — переключатели категорий, обязательная включена и отключена.

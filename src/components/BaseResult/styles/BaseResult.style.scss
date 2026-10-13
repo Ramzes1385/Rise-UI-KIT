@@ -1,0 +1,107 @@
+.base-result {
+	@include custom-color-scope;
+	--result-role: var(--rise-info);
+	--result-soft: var(--rise-info-soft);
+	--result-role-text: var(--rise-info-text);
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: space(ct(result, gap, 16px));
+	box-sizing: border-box;
+	width: 100%;
+	padding: space(ct(result, padding-y, 32px) ct(result, padding-x, 24px));
+	border: 1px solid ct(result, border, transparent);
+	border-radius: sz(ct(result, radius, var(--rise-radius-lg)));
+	text-align: center;
+	@include text-size(sm);
+	@include custom-bg(background-color, ct(result, bg, transparent));
+	@include custom-text(color, ct(result, text, var(--rise-text-muted)));
+
+	@each $role in (success, warning, error) {
+		&--#{$role} {
+			--result-role: var(--rise-#{$role});
+			--result-soft: var(--rise-#{$role}-soft);
+			--result-role-text: var(--rise-#{$role}-text);
+		}
+	}
+
+	&--soft {
+		@include custom-bg(background-color, ct(result, bg, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg))));
+	}
+
+	&--outline {
+		border-color: ct(result, border, var(--rise-border));
+	}
+
+	&__icon-wrapper {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		min-width: sz(ct(result, icon-wrapper-height, 64px));
+		height: sz(ct(result, icon-wrapper-height, 64px));
+		padding: 0 sz(12px);
+		box-sizing: border-box;
+		border-radius: var(--rise-radius-full);
+		@include custom-bg(background-color, var(--result-soft));
+		@include custom-text(color, var(--result-role-text));
+	}
+
+	&__icon-wrapper .base-icon__svg {
+		width: ct(result, icon-size, sz(32px));
+		height: ct(result, icon-size, sz(32px));
+	}
+
+	& &__code {
+		@include inherit-custom-color;
+		color: inherit;
+		font-size: sz(var(--rise-font-size-2xl));
+		font-weight: var(--rise-font-weight-bold);
+		line-height: 1;
+		font-variant-numeric: tabular-nums;
+	}
+
+	&__content {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: sz(6px);
+		max-width: sz(480px);
+		overflow-wrap: break-word;
+	}
+
+	& &__title {
+		@include inherit-custom-color;
+		margin: 0;
+		font-size: sz(ct(result, title-font-size, var(--rise-font-size-xl)));
+		line-height: sz(var(--rise-line-height-xl));
+		@include custom-text(color, ct(result, title-text, var(--rise-text-highlighted)));
+	}
+
+	& &__description {
+		@include inherit-custom-color;
+		margin: 0;
+		color: inherit;
+	}
+
+	&__body {
+		box-sizing: border-box;
+		max-width: 100%;
+		min-width: 0;
+		overflow-wrap: anywhere;
+	}
+
+	&__extra .base-button {
+		max-width: 100%;
+	}
+
+	&__extra {
+		display: flex;
+		max-width: 100%;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: space(8px);
+	}
+}
