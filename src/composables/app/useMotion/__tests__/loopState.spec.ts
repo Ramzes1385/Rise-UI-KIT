@@ -9,7 +9,6 @@ const PRELUDE = '@use "variables" as *; @use "mixins" as *; @use "functions" as 
 const LOOP_STATE = 'animation-play-state: var(--rise-motion-loop-state, running)'
 const LOOP_FILES = [
 	'BaseLoader/styles/BaseLoader.style.scss',
-	'BaseImage/styles/BaseImage.style.scss',
 	'BaseSkeleton/styles/BaseSkeleton.style.scss',
 	'BaseMarkdown/styles/BaseMarkdown.style.scss',
 	'BaseProgress/styles/BaseProgress.style.scss',
