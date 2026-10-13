@@ -31,12 +31,13 @@ function usePanelFocus(props: ChatSlideoverPanelProps, contentRef: Ref<HTMLEleme
 				)
 				return
 			}
+			const wasInside = Boolean(contentRef.value?.contains(document.activeElement))
 			onClose()
 			const target = returnFocusTarget
 			returnFocusTarget = null
 			nextTick(() => {
 				const active = document.activeElement
-				const isLost = !active || active === document.body || Boolean(contentRef.value?.contains(active))
+				const isLost = wasInside || !active || active === document.body
 				if (target?.isConnected && isLost) target.focus()
 			})
 		},
