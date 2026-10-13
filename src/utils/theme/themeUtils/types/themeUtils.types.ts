@@ -34,8 +34,8 @@ export const THEME_SHADOWS = ['none', 'soft', 'default', 'strong'] as const
 /** Именованная сила теней */
 export type ThemeShadows = (typeof THEME_SHADOWS)[number]
 
-/** Движение → `--rise-duration-fast/-/-slow` и `--rise-ease`: `none` — без анимаций, `subtle` — короче, `default` — как в ките, `expressive` — дольше и с отскоком */
-export const THEME_MOTIONS = ['none', 'subtle', 'default', 'expressive'] as const
+/** Движение → `--rise-duration-fast/-/-slow` и `--rise-ease`: `none` — без анимаций, `subtle` — короче, `standard` — как в ките, `expressive` — дольше и с отскоком */
+export const THEME_MOTIONS = ['none', 'subtle', 'standard', 'expressive'] as const
 
 /** Именованное движение */
 export type ThemeMotion = (typeof THEME_MOTIONS)[number]

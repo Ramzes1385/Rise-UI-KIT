@@ -1,4 +1,4 @@
-export { PROGRESS_PARTS } from './types/BaseProgress.types'
+export { PROGRESS_PARTS, PROGRESS_SHAPES } from './types/BaseProgress.types'
 export type {
 	BaseProgressEmits,
 	BaseProgressPart,

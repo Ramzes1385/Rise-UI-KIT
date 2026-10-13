@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
+import { createUiKitPlugin } from '@/plugin'
 import BaseMarkdown from '../ui/BaseMarkdown.vue'
 import { fireEvent, render, screen } from '@testing-library/vue'
 
@@ -32,6 +33,25 @@ const SOURCE = [
 ].join('\n')
 
 describe('BaseMarkdown', () => {
+	it('значения по умолчанию из плагина (defaults.BaseMarkdown) действуют', () => {
+		const { container } = render(BaseMarkdown, {
+			global: { plugins: [createUiKitPlugin({ defaults: { BaseMarkdown: { source: 'Из плагина', isStreaming: true } } })] },
+		})
+
+		expect(screen.getByText('Из плагина')).toBeInTheDocument()
+		expect(container.firstElementChild).toHaveAttribute('aria-busy', 'true')
+	})
+
+	it('props перекрывают defaults плагина', () => {
+		render(BaseMarkdown, {
+			props: { source: 'Свой' },
+			global: { plugins: [createUiKitPlugin({ defaults: { BaseMarkdown: { source: 'Из плагина' } } })] },
+		})
+
+		expect(screen.getByText('Свой')).toBeInTheDocument()
+		expect(screen.queryByText('Из плагина')).not.toBeInTheDocument()
+	})
+
 	afterEach(() => {
 		Reflect.deleteProperty(navigator, 'clipboard')
 		vi.useRealTimers()

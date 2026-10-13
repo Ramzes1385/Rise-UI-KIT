@@ -105,7 +105,7 @@ export const THEME_PRESETS: Record<ThemePresetName, ThemeInput> = {
 		density: 'default',
 		font: { sans: KIT_FONT_SANS, heading: KIT_FONT_SANS, mono: KIT_FONT_MONO },
 		shadows: 'default',
-		motion: 'default',
+		motion: 'standard',
 	},
 	corporate: {
 		name: 'corporate',

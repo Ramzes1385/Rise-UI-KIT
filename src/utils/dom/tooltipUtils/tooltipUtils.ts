@@ -93,8 +93,4 @@ function calcTooltipShift(placement: TooltipPosition, layout: TooltipLayout): nu
 	return clamped - center
 }
 
-function getTooltipTransition(position: string): string {
-	return `tooltip-${position}`
-}
-
-export { calcTooltipPosition, calcTooltipShift, getTooltipTransition, resolveTooltipPlacement, TOOLTIP_VIEWPORT_MARGIN }
+export { calcTooltipPosition, calcTooltipShift, resolveTooltipPlacement, TOOLTIP_VIEWPORT_MARGIN }

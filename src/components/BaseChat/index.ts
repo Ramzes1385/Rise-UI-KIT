@@ -1,4 +1,4 @@
-export { CHAT_PARTS } from './types/BaseChat.types'
+export { CHAT_PARTS, CHAT_VARIANTS } from './types/BaseChat.types'
 export type {
 	BaseChatEmits,
 	BaseChatPart,

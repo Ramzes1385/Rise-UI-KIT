@@ -3,7 +3,8 @@ import { describe, expect, it } from 'vitest'
 import { scssPalettes, scssValue } from './kitTokens'
 import { contrastRatio } from '@utils/theme/oklchUtils'
 import { KIT_PALETTES, THEME_PRESETS } from '../presets'
-import { THEME_PRESET_NAMES } from '../types/themeUtils.types'
+import { THEME_MOTIONS, THEME_PRESET_NAMES } from '../types/themeUtils.types'
+import { MOTION_PRESETS } from '@composables/app/useMotion/types/useMotion.types'
 
 const failures = (input: Parameters<typeof createTheme>[0]): string[] =>
 	createTheme(input)
@@ -57,6 +58,14 @@ describe('createTheme', () => {
 		expect(theme.css).toContain(
 			"@media (prefers-reduced-motion: reduce) {\n\t[data-rise-theme='x'][data-rise-theme] {\n\t\t--rise-duration-fast: 0.01ms;\n\t\t--rise-duration: 0.01ms;\n\t\t--rise-duration-slow: 0.01ms;\n\t}\n}",
 		)
+	})
+
+	it('имена движения темы совпадают с пресетами useMotion, а standard — прежние значения кита', () => {
+		expect(THEME_MOTIONS).toEqual([...MOTION_PRESETS])
+		const theme = createTheme({ name: 'x', primary: '#0f766e', motion: 'standard' })
+		expect(theme.vars['--rise-duration']).toBe('200ms')
+		expect(theme.vars['--rise-ease']).toBe('cubic-bezier(0.4, 0, 0.2, 1)')
+		expect(THEME_PRESETS.rise.motion).toBe('standard')
 	})
 
 	it('primaryDark даёт оттенки 400 и 300 только тёмному режиму, включая system', () => {

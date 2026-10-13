@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom/vitest'
-import { calcTooltipPosition, calcTooltipShift, getTooltipTransition, resolveTooltipPlacement } from '../tooltipUtils'
+import { calcTooltipPosition, calcTooltipShift, resolveTooltipPlacement } from '../tooltipUtils'
 
 describe('tooltipUtils', () => {
 	const coords = { top: 100, left: 200, width: 50, height: 30 }
@@ -45,13 +45,6 @@ describe('tooltipUtils', () => {
 		it('возвращает пустой объект для неизвестной позиции', () => {
 			const result = calcTooltipPosition({ position: 'unknown' as 'top', coords })
 			expect(result).toEqual({})
-		})
-	})
-
-	describe('getTooltipTransition', () => {
-		it('возвращает имя перехода по позиции', () => {
-			expect(getTooltipTransition('top')).toBe('tooltip-top')
-			expect(getTooltipTransition('bottom')).toBe('tooltip-bottom')
 		})
 	})
 

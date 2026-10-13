@@ -24,7 +24,7 @@ const SHADOWS: Record<ThemeShadows, number> = { none: 0, soft: 0.6, default: 1, 
 const MOTION: Record<ThemeMotion, [string, string, string, string]> = {
 	none: ['0.01ms', '0.01ms', '0.01ms', 'linear'],
 	subtle: ['100ms', '150ms', '200ms', 'cubic-bezier(0.2, 0, 0, 1)'],
-	default: ['150ms', '200ms', '300ms', 'cubic-bezier(0.4, 0, 0.2, 1)'],
+	standard: ['150ms', '200ms', '300ms', 'cubic-bezier(0.4, 0, 0.2, 1)'],
 	expressive: ['200ms', '320ms', '450ms', 'cubic-bezier(0.34, 1.56, 0.64, 1)'],
 }
 const DURATIONS = ['--rise-duration-fast', '--rise-duration', '--rise-duration-slow'] as const
