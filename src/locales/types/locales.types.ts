@@ -80,6 +80,7 @@ export interface UiKitLocale {
 	banner: Section<'banner'>
 	cookieConsent: Section<'cookieConsent'>
 	dashboardGrid: Section<'dashboardGrid'>
+	gantt: Section<'gantt'>
 	warnings: Section<'warnings'>
 	plural: { readonly [P in keyof Base['plural']]: PluralForms }
 }

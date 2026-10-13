@@ -11,6 +11,7 @@ export const enPlural = {
 	REPLIES: { one: '{n} reply', other: '{n} replies' },
 	BADGES_MORE: { one: '{n} more badge', other: '{n} more badges' },
 	BREADCRUMBS_HIDDEN: { one: 'Show {n} more section', other: 'Show {n} more sections' },
+	GANTT_DAYS: { one: '{n} day', other: '{n} days' },
 	CRYPTOPRO_EXPIRES: { one: 'expires in {n} day', other: 'expires in {n} days' },
 	SEARCH_RESULTS: { one: '{n} result found', other: '{n} results found' },
 }

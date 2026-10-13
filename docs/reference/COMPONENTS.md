@@ -3764,3 +3764,36 @@ const layout = ref<DashboardLayoutItem[]>([
 - Клавиатура (в режиме редактирования виджеты в порядке Tab): Enter или пробел берёт, стрелки двигают, Shift со стрелками меняют размер, Enter кладёт, Escape или уход фокуса отменяет. Каждый шаг объявляется в скрытом `role="status"` (тексты — раздел `dashboardGrid` словаря); у виджета `aria-describedby` указывает на скрытую подсказку.
 - Закреплённый виджет (`isStatic`) нельзя ни двигать, ни растягивать, он не получает фокус; остальные его обходят. Столкновения: задетые виджеты сдвигаются вниз; при перетаскивании вниз на соседа они меняются местами.
 - Движение виджетов — `transform`, `width`, `height` за `--rise-duration`; при «уменьшить движение» и пресете `none` — сразу. Токены `--rise-dashboard-grid-*` (`bg`, `text`, `border`, `radius`, `shadow`, `shadow-active`, `padding-x`, `padding-y`), словарь — раздел `dashboardGrid`.
+
+### BaseGantt
+
+Диаграмма Ганта: слева дерево задач (APG treegrid), справа шкала времени с полосами прогресса, вехами, стрелками зависимостей и линией «сегодня».
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseGantt, type GanttTask } from '@ramzes1385/rise-ui-kit'
+
+const tasks = ref<GanttTask[]>([
+	{ id: 'plan', name: 'Планирование', start: '2026-10-05', end: '2026-10-09', progress: 100 },
+	{ id: 'build', name: 'Разработка', start: '2026-10-12', end: '2026-10-23', progress: 40, dependencies: ['plan'] },
+	{ id: 'release', name: 'Релиз', start: '2026-10-26', isMilestone: true, dependencies: ['build'] },
+])
+
+function onUpdate(task: GanttTask) {
+	tasks.value = tasks.value.map(item => (item.id === task.id ? task : item))
+}
+</script>
+
+<template>
+	<BaseGantt :tasks="tasks" scale="week" is-editable @update:task="onUpdate" />
+</template>
+```
+
+- Задача: `{ id, name, start, end?, progress?, parentId?, dependencies?, isMilestone? }`; даты — `Date` или строка `ГГГГ-ММ-ДД`, окончание включительно. Некорректные задачи (повтор `id`, нет даты, неизвестный или замкнутый родитель и зависимость) пропускаются или исправляются с предупреждением в консоли.
+- Пропы: `tasks`, `scale` (`day`, `week`, `month`), `columnWidth`, `rowHeight`, `listWidth`, `height`, `today`, `isTodayVisible`, `isEditable`, `isDisabled`, `isLoading`, `collapsedIds` (`v-model:collapsed-ids`), `dateFormat` (`Intl.DateTimeFormatOptions`), `variant` (`default`, `soft`, `outline`), `sizeScale`, `color`, `ui`, `ariaLabel`, `customClass`.
+- Слоты: `name` (`{ task, level, isCollapsed }`), `empty`. События: `update:task`, `task-change` (`{ task, previous, kind, source }`: `move`, `resize-start`, `resize-end`; `pointer` или `keyboard`), `task-click`, `update:collapsedIds`.
+- Клавиатура: в строке стрелки вверх/вниз, Home/End; вправо раскрывает группу или переходит к полосе, влево сворачивает или идёт к родителю; Enter и пробел сворачивают группу, у листа — `task-click`. На полосе при `isEditable` стрелки влево/вправо сдвигают задачу на шаг шкалы, Shift со стрелками меняет длительность, Escape возвращает к строке. Каждое изменение озвучивается в `role="status"`; доступное имя полосы — «<имя>: <начало> — <конец>, <прогресс> %».
+- Мышь: перетаскивание полосы сдвигает даты, края меняют длительность (pointer events, `setPointerCapture`). Вехи только сдвигаются. Даты привязаны к столбцам шкалы.
+- Производительность: строки за пределами `height` не отрисовываются (виртуализация по окну прокрутки с запасом 4 строки); полосы и стрелки рассчитываются по датам.
+- Движение — `transform` полос за `--rise-duration`, при «уменьшить движение» сразу. Токены `--rise-gantt-*`, словарь — раздел `gantt`.

@@ -827,6 +827,27 @@
 |---|---|---|---|---|
 | `--rise-grid-gap` | корень | gap | — | `$size` |
 
+## BaseGantt
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-gantt-bar-bg` | bar | bg | — | `var(--rise-primary)` |
+| `--rise-gantt-bar-height` | bar | height | — | `22px` |
+| `--rise-gantt-bar-radius` | bar | radius | — | `var(--rise-radius-sm)` |
+| `--rise-gantt-bg` | корень | bg | — | `var(--rise-bg)` |
+| `--rise-gantt-border` | корень | border | — | `var(--rise-border)` |
+| `--rise-gantt-dependencies-border` | dependencies | border | — | `var(--rise-text-dimmed)` |
+| `--rise-gantt-grid-border` | grid | border | — | `var(--rise-border-muted)` |
+| `--rise-gantt-header-bg` | header | bg | — | `var(--rise-bg-elevated)` |
+| `--rise-gantt-header-text` | header | text | — | `var(--rise-text-muted)` |
+| `--rise-gantt-name-bg` | name | bg | — | `var(--rise-bg)` |
+| `--rise-gantt-name-bg-hover` | name | bg | hover | `var(--rise-bg-elevated)` |
+| `--rise-gantt-radius` | корень | radius | — | `var(--rise-radius-lg)` |
+| `--rise-gantt-row-bg-hover` | row | bg | hover | `color-mix(in srgb, var(--rise-text) 4%, transparent)` |
+| `--rise-gantt-row-border` | row | border | — | `var(--rise-border-muted)` |
+| `--rise-gantt-text` | корень | text | — | `var(--rise-text)` |
+| `--rise-gantt-today-bg` | today | bg | — | `var(--rise-error)` |
+
 ## BaseHeader
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |

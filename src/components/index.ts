@@ -58,6 +58,8 @@ export * from './BaseFooter'
 export * from './BaseForm'
 export * from './BaseFormField'
 export * from './BaseGrid'
+
+export * from './BaseGantt'
 export * from './BaseHeader'
 export * from './BaseHeatmap'
 export * from './BaseHoverCard'

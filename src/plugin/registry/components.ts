@@ -30,6 +30,7 @@ import { BaseAlert } from '../../components/BaseAlert'
 import { BaseBadge } from '../../components/BaseBadge'
 import { BaseChart } from '../../components/BaseChart'
 import { BaseEmpty } from '../../components/BaseEmpty'
+import { BaseGantt } from '../../components/BaseGantt'
 import { BaseImage } from '../../components/BaseImage'
 import { BaseInput } from '../../components/BaseInput'
 import { BaseModal } from '../../components/BaseModal'
@@ -202,6 +203,8 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseFormField,
 	BaseGrid,
 	BaseGridItem,
+
+	BaseGantt,
 	BaseHeader,
 	BaseHeatmap,
 	BaseHoverCard,

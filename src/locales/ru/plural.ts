@@ -18,6 +18,7 @@ export const ruPlural = {
 		many: 'Показать ещё {n} разделов',
 		other: 'Показать ещё {n} раздела',
 	},
+	GANTT_DAYS: { one: '{n} день', few: '{n} дня', many: '{n} дней', other: '{n} дня' },
 	CRYPTOPRO_EXPIRES: {
 		one: 'истекает через {n} день',
 		few: 'истекает через {n} дня',

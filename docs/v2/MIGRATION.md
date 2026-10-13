@@ -2440,3 +2440,12 @@ API кита не меняется. В Storybook добавлены пример
 - Новый раздел словаря `dashboardGrid` (`UI_DASHBOARD_GRID`) и ключ `warnings.DASHBOARD_GRID_DUPLICATE_ID`: приложение с собственным языком через `defineLocale()` добавляет переводы.
 - Токены `--rise-dashboard-grid-*` (список — `docs/design/COMPONENT_TOKENS.md`).
 - Сетка не хранит раскладку сама, если родитель её не принимает: без `v-model:layout` результат переноса остаётся внутри компонента до следующей смены `layout`. Раскладка, пришедшая из пропа, исправляется на экране (границы, пересечения, пределы `min*`/`max*`), но обратно не отправляется до первого действия пользователя.
+
+## components-2b: BaseGantt
+
+Новый компонент `Data/BaseGantt` (диаграмма Ганта); существующий код не меняется. API — в `docs/reference/COMPONENTS.md`, раздел «BaseGantt».
+
+- Регистрируется плагином и экспортируется из кита вместе с типами `GanttTask`, `GanttTaskId`, `GanttDate`, `GanttTaskChange`, `GanttScale`, `GanttVariant` и константами `GANTT_SCALES`, `GANTT_VARIANTS`, `GANTT_PARTS`.
+- Новый раздел словаря `gantt` (`UI_GANTT`) и форма числа `plural.GANTT_DAYS`: приложение с собственным языком через `defineLocale()` добавляет переводы. Словарь лежит в `src/locales/<язык>/components/data/gantt.ts`.
+- Токены `--rise-gantt-*` (список — `docs/design/COMPONENT_TOKENS.md`).
+- Диаграмма не хранит даты сама: `update:task` и `task-change` приходят по окончании жеста, подставьте задачу в свой массив `tasks`.

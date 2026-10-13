@@ -1,0 +1,23 @@
+/** English strings of the Gantt chart (BaseGantt) */
+export const enGantt = {
+	gantt: {
+		LABEL: 'Gantt chart',
+		TASK_COLUMN: 'Task',
+		TIMELINE: 'Timeline',
+		LOADING: 'Loading tasks',
+		EMPTY: 'No tasks',
+		TASK_LABEL: '{name}: {start} — {end}, {progress}%',
+		MILESTONE_LABEL: '{name}: {date}, milestone',
+		EDIT_HINT: 'Arrow keys move the task, Shift with arrows changes its duration, Escape returns to the row',
+		MOVED: 'Task “{name}” moved: {start} — {end}',
+		RESIZED: 'Duration of task “{name}”: {duration}, {start} — {end}',
+		MILESTONE_MOVED: 'Milestone “{name}” moved: {date}',
+		WARN_DUPLICATE_ID: 'BaseGantt: duplicate id “{id}” — the second task is skipped',
+		WARN_BAD_DATE: 'BaseGantt: task “{id}” has no valid start or end date — the task is skipped',
+		WARN_BAD_RANGE: 'BaseGantt: task “{id}” ends before it starts — the end is set to the start',
+		WARN_BAD_PARENT: 'BaseGantt: task “{id}” has no parent “{parentId}” — shown at the top level',
+		WARN_PARENT_CYCLE: 'BaseGantt: parentId of task “{id}” closes a cycle — shown at the top level',
+		WARN_BAD_DEPENDENCY: 'BaseGantt: dependency of task “{id}” on “{dependencyId}” is ignored — there is no such task',
+		WARN_DEPENDENCY_CYCLE: 'BaseGantt: dependency of task “{id}” on “{dependencyId}” is ignored — it closes a cycle',
+	},
+}

@@ -1757,3 +1757,9 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 Новый компонент, существующие истории не меняются. Эталонов снимков у новых историй нет — их создаёт владелец (спецификация `BaseDashboardGrid.visual.spec.ts` лежит рядом).
 
 - **BaseDashboardGrid** (`layout-basedashboardgrid--default`, `--static-items`, `--responsive`, `--variants`, `--sizes`, `--disabled`, `--empty`, `--long-content`): карточки виджетов на сетке 12 колонок (рамка 1px, радиус `--rise-radius-lg`, фон `--rise-bg`); в режиме редактирования в правом верхнем углу карточки значок-ручка, в правом нижнем — уголок изменения размера; закреплённый виджет — с пунктирной рамкой. Во время переноса карточка идёт за курсором с тенью `--rise-shadow-lg`, на месте остаётся «призрак» клетки (пунктирная рамка `--rise-primary`, заливка 12%). `Responsive` снимает три контейнера (640, 440 и 300 px) с разными раскладками.
+
+## Задача components-2b: BaseGantt
+
+Новый компонент, существующие истории не меняются. Эталонов снимков у новых историй нет — их создаёт владелец (спецификация `BaseGantt.visual.spec.ts` лежит рядом).
+
+- **BaseGantt** (`data-basegantt--default`, `--scales`, `--dependencies`, `--milestones`, `--editable`, `--variants`, `--sizes`, `--disabled`, `--loading`, `--empty`, `--long-content`): слева список задач с деревом, справа шкала времени с полосами (радиус `--rise-gantt-bar-radius`, высота 22px), заливка прогресса внутри полосы, веха — ромб, зависимости — стрелки поверх сетки, линия «сегодня» цвета `--rise-error`; рамка и скругление корня — `--rise-gantt-border`, `--rise-gantt-radius`. Загрузка — скелетон на месте строк, пустое состояние — `BaseEmpty`.

@@ -1,0 +1,320 @@
+$gantt-row-border: ct(gantt-row, border, var(--rise-border-muted));
+$gantt-bar-height: ct(gantt-bar, height, 22px);
+$gantt-bar-radius: ct(gantt-bar, radius, var(--rise-radius-sm));
+$gantt-handle: sz(8px);
+
+.base-gantt {
+	@include custom-color-scope;
+	@include custom-bg('--gantt-color', ct(gantt-bar, bg, var(--rise-primary)));
+
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+	min-width: 0;
+	overflow: hidden;
+	border: 1px solid ct(gantt, border, var(--rise-border));
+	border-radius: sz(ct(gantt, radius, var(--rise-radius-lg)));
+	background-color: ct(gantt, bg, var(--rise-bg));
+	color: ct(gantt, text, var(--rise-text));
+	font-variant-numeric: tabular-nums;
+	@include text-size(sm);
+
+	&--disabled {
+		@include disabled-state;
+	}
+
+	&__viewport {
+		position: relative;
+		flex: 1 1 auto;
+		min-height: 0;
+		overflow: auto;
+		overscroll-behavior: contain;
+		scroll-padding: var(--gantt-header-height) 0 0 var(--gantt-list-width);
+		@include scrollbar-thin;
+	}
+
+	&__canvas {
+		position: relative;
+	}
+
+	&__layer {
+		position: absolute;
+		z-index: 0;
+		overflow: hidden;
+		pointer-events: none;
+	}
+
+	&__dependencies {
+		display: block;
+	}
+
+	&__grid-lines {
+		fill: none;
+		stroke: ct(gantt-grid, border, var(--rise-border-muted));
+		stroke-width: 1;
+	}
+
+	&__arrow-lines {
+		fill: none;
+		stroke: ct(gantt-dependencies, border, var(--rise-text-dimmed));
+		stroke-width: 1.5;
+		stroke-linejoin: round;
+	}
+
+	&__arrow-heads {
+		fill: ct(gantt-dependencies, border, var(--rise-text-dimmed));
+	}
+
+	&__today {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		width: 2px;
+		transform: translateX(-50%);
+		background-color: ct(gantt-today, bg, var(--rise-error));
+	}
+
+	&__grid {
+		position: relative;
+		z-index: 1;
+		width: 100%;
+		height: 100%;
+	}
+
+	&__header {
+		position: sticky;
+		z-index: 4;
+		top: 0;
+		display: flex;
+		height: var(--gantt-header-height);
+		border-bottom: 1px solid $gantt-row-border;
+		background-color: ct(gantt-header, bg, var(--rise-bg-elevated));
+		color: ct(gantt-header, text, var(--rise-text-muted));
+		font-size: sz(var(--rise-font-size-xs));
+		font-weight: var(--rise-font-weight-medium);
+	}
+
+	&__header-name {
+		position: sticky;
+		z-index: 2;
+		left: 0;
+		display: flex;
+		flex: 0 0 var(--gantt-list-width);
+		align-items: flex-end;
+		box-sizing: border-box;
+		padding: sz(6px) sz(12px);
+		border-right: 1px solid $gantt-row-border;
+		background-color: ct(gantt-header, bg, var(--rise-bg-elevated));
+	}
+
+	&__header-timeline {
+		position: relative;
+		flex: 0 0 auto;
+	}
+
+	&__scale-cell {
+		position: absolute;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-sizing: border-box;
+		height: 50%;
+		overflow: hidden;
+		border-left: 1px solid $gantt-row-border;
+		white-space: nowrap;
+
+		&--top {
+			top: 0;
+			justify-content: flex-start;
+			padding-inline: sz(8px);
+			border-bottom: 1px solid $gantt-row-border;
+		}
+
+		&--bottom {
+			bottom: 0;
+		}
+	}
+
+	&__row {
+		position: absolute;
+		right: 0;
+		left: 0;
+		display: flex;
+		box-sizing: border-box;
+		height: var(--gantt-row-height);
+		border-bottom: 1px solid $gantt-row-border;
+		outline: none;
+
+		@include hover {
+			background-color: ct(gantt-row, bg-hover, color-mix(in srgb, var(--rise-text) 4%, transparent));
+		}
+
+		&:focus-visible > .base-gantt__name {
+			outline: 2px solid var(--rise-focus-ring);
+			outline-offset: -2px;
+		}
+	}
+
+	&__name {
+		position: sticky;
+		z-index: 2;
+		left: 0;
+		display: flex;
+		flex: 0 0 var(--gantt-list-width);
+		align-items: center;
+		gap: sz(4px);
+		box-sizing: border-box;
+		padding-inline: sz(12px);
+		padding-inline-start: calc(#{sz(12px)} + var(--gantt-level, 0) * #{sz(18px)});
+		overflow: hidden;
+		border-right: 1px solid $gantt-row-border;
+		background-color: ct(gantt-name, bg, var(--rise-bg));
+		cursor: pointer;
+	}
+
+	&__row--summary > &__name {
+		font-weight: var(--rise-font-weight-semibold);
+	}
+
+	&__row:hover > &__name {
+		background-color: ct(gantt-name, bg-hover, var(--rise-bg-elevated));
+	}
+
+	&__toggle {
+		display: flex;
+		flex-shrink: 0;
+		align-items: center;
+		justify-content: center;
+		width: sz(16px);
+		height: sz(16px);
+		color: var(--rise-text-muted);
+
+		@include motion-safe {
+			@include transition(transform);
+		}
+
+		&--expanded {
+			transform: rotate(90deg);
+		}
+
+		&--leaf {
+			visibility: hidden;
+		}
+	}
+
+	&__name-text {
+		@include truncate;
+		min-width: 0;
+	}
+
+	&__timeline {
+		position: relative;
+		flex: 0 0 auto;
+	}
+
+	&__bar,
+	&__milestone {
+		position: absolute;
+		top: 50%;
+		box-sizing: border-box;
+		transform: translateY(-50%);
+		touch-action: none;
+		cursor: pointer;
+		@include focus-ring;
+	}
+
+	&__bar {
+		height: sz($gantt-bar-height);
+		overflow: hidden;
+		border: 1px solid transparent;
+		border-radius: sz($gantt-bar-radius);
+		background-color: color-mix(in srgb, var(--gantt-color) 35%, var(--rise-bg));
+
+		&--summary {
+			height: sz(10px);
+		}
+
+		&--editable {
+			cursor: grab;
+		}
+
+		&--dragging {
+			cursor: grabbing;
+			box-shadow: var(--rise-shadow-md);
+		}
+	}
+
+	&__progress {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		background-color: var(--gantt-color);
+		pointer-events: none;
+	}
+
+	&__milestone {
+		aspect-ratio: 1;
+		height: auto;
+		transform: translateY(-50%) rotate(45deg);
+		border-radius: sz(2px);
+		background-color: var(--gantt-color);
+	}
+
+	&__handle {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		width: $gantt-handle;
+		cursor: ew-resize;
+
+		&--start {
+			left: 0;
+		}
+
+		&--end {
+			right: 0;
+		}
+	}
+
+	&--soft &__bar {
+		background-color: color-mix(in srgb, var(--gantt-color) 16%, var(--rise-bg));
+	}
+
+	&--soft &__progress {
+		background-color: color-mix(in srgb, var(--gantt-color) 55%, var(--rise-bg));
+	}
+
+	&--outline &__bar {
+		border-color: var(--gantt-color);
+		background-color: transparent;
+	}
+
+	&--outline &__progress {
+		background-color: color-mix(in srgb, var(--gantt-color) 40%, transparent);
+	}
+
+	&__hint,
+	&__status {
+		@include visually-hidden;
+	}
+
+	&__loading {
+		display: flex;
+		flex-direction: column;
+		gap: sz(14px);
+		padding: sz(16px);
+	}
+
+	&__loading-row {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+		align-items: center;
+		gap: sz(16px);
+	}
+
+	&__empty {
+		margin: auto;
+	}
+}

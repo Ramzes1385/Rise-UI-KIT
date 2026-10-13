@@ -157,5 +157,8 @@ export const UI_COOKIE_CONSENT = localized('cookieConsent')
 /** Сетка виджетов BaseDashboardGrid */
 export const UI_DASHBOARD_GRID = localized('dashboardGrid')
 
+/** Диаграмма Ганта BaseGantt */
+export const UI_GANTT = localized('gantt')
+
 /** Предупреждения в консоли */
 export const UI_WARNINGS = localized('warnings')
