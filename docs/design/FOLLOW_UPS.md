@@ -212,3 +212,7 @@
 
 - ~~`calcDerivedScale` (`@utils/media/iconUtils`, задача wave2-fix) у долей 0.875 и 0.75 в BaseSignaturePad (кнопки «Отменить» и «Очистить», `sizeScale * 0.875`): помощника в базе fa23fc58 нет, он придёт со слиянием wave2-fix — после него заменить умножение в `BaseSignaturePad.vue` (при `sizeScale` ≈114 результат ровно 100 читается как «наследовать»).~~ — сделано при сведении волны 3 (оркестратор), тест в `BaseSignaturePad.compose.spec.ts`. Осталось у BaseCommentThread и BaseNotificationCenter (зона compose-1).
 - `ImageMapDirectory` и `ImageMapRoutePanel` используются и в BaseImageMap3D: там проп `ui` не передан, части получают только классы кита. Если у BaseImageMap3D появится `ui`, передать его так же.
+
+## Задача stories-splitter
+
+- Перетаскивание разделителя в play историй BaseSplitter имитируется событиями `PointerEvent` на разделителе: у синтетического события нет активного указателя, и `setPointerCapture(pointerId)` в Chromium бросает `NotFoundError`. Play подменяет `setPointerCapture` на элементе пустой функцией (`stories/play.ts`); код компонента не менялся. Настоящий захват указателя проверяет только прогон с реальной мышью (Playwright).

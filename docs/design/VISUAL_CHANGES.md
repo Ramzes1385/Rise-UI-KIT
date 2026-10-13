@@ -1719,3 +1719,9 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 - **BaseStack** (`layout-basestack--…`): раскладка flex. `directions` (четыре направления), `gaps` (шесть промежутков 0–32px), `align`, `justify`, `wrap` (перенос в блоке 360px), `sizes` (промежутки при `sizeScale` 75–125).
 - **BaseGrid** (`layout-basegrid--…`): сетка CSS Grid. `default` (12 колонок, ячейки по `span` 4), `basic` (4 колонки), `responsive` (на ширине снимка 800px действует шаг `md`: 3 колонки, ячейки по 6 колонок), `spans` (`span`, `offset`, `full`, `order`), `gaps` (шесть промежутков и `rowGap`).
 - **BaseAffix** (`layout-baseaffix--…`): закреплённый блок в прокручиваемой области. `default`, `top`, `bottom`, `in-container` показывают блок на месте до прокрутки; `with-shadow` и `theming` после play остаются прокрученными: блок закреплён и под ним видна тень (в `theming` у средней области сплошная тень цвета `--rise-primary` через токен `--rise-affix-shadow`).
+
+## Задача stories-splitter
+
+Эталоны скриншотов не создавались и не обновлялись. Существующие истории и снимки не меняются; добавлены новые истории BaseSplitter, эталонов у них нет (в `*.visual.spec.ts` не включены).
+
+- **Новые истории** `layout-basesplitter--image-and-text`, `--svg`, `--components`, `--file-tree`, `--nested`, `--media`: разделитель с реальным содержимым в панелях — картинка и длинный текст с прокруткой, SVG-график, таблица с карточкой и формой, дерево файлов с кодом, вложенные разделители, изображение с аудиоплеером. Каждая — с точным «Show code», описанием в Docs и play (клавиатура ←/→/Home/End, перетаскивание мышью, границы `min` и `max`).
