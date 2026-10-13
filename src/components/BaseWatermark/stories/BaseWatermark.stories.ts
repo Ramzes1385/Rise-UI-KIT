@@ -23,3 +23,4 @@ export const Rotate = cases.Rotate
 export const Protected = cases.Protected
 export const Theming = cases.Theming
 export const Keyboard = cases.Keyboard
+export const Animations = cases.Animations

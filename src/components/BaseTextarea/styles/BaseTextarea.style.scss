@@ -45,7 +45,7 @@
 		resize: none;
 		overflow: hidden;
 		transition-property:
-			color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, box-shadow, opacity, height;
+			color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, box-shadow, opacity, height; // stylelint-disable-line declaration-property-value-disallowed-list, comment-pattern -- авторост меняет height от px к px: transform не раздвинет содержимое под полем
 	}
 
 	&--outline &__field {

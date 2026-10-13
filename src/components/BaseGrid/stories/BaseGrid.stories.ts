@@ -23,3 +23,4 @@ export const Responsive = cases.Responsive
 export const Spans = cases.Spans
 export const Gaps = cases.Gaps
 export const Theming = cases.Theming
+export const Animations = cases.Animations

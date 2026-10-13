@@ -25,3 +25,4 @@ export const Justify = cases.Justify
 export const Wrap = cases.Wrap
 export const Sizes = cases.Sizes
 export const Theming = cases.Theming
+export const Animations = cases.Animations
