@@ -1,13 +1,17 @@
 export { default as BaseMap } from './ui/BaseMap.vue'
-export { MAP_PARTS, MAP_PROVIDERS, MAP_VARIANTS } from './types/BaseMap.types'
+export { MAP_LAYERS, MAP_PARTS, MAP_PROVIDERS, MAP_SCHEMES, MAP_VARIANTS } from './types/BaseMap.types'
 export type {
 	BaseMapPart,
 	BaseMapEmits,
 	BaseMapProps,
 	BaseMapSlots,
 	MapCoordinates,
+	MapLayer,
 	MapMarker,
+	MapPolygon,
+	MapPolyline,
 	MapProvider,
+	MapScheme,
 	MapStatus,
 	MapVariant,
 	MapView,

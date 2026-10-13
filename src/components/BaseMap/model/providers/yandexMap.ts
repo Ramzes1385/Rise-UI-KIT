@@ -2,7 +2,7 @@ import { loadProviderApi } from './apiScript'
 import { loadScript } from '@utils/dom/scriptUtils'
 import { createMarkerElement } from './markerElement'
 import type { MapCoordinates, MapMarker, MapView } from '../../types/BaseMap.types'
-import type { MapAdapterFactory, MapsWindow, YandexMapInstance, YandexMapsApi } from '../../types/providers.types'
+import type { MapAdapterFactory, MapHandlers, MapsWindow, YandexMapInstance, YandexMapsApi } from '../../types/providers.types'
 
 const toYandex = (point: MapCoordinates): [number, number] => [point.lng, point.lat]
 
@@ -24,21 +24,22 @@ async function yandexApi(apiKey: string, language: string): Promise<YandexMapsAp
 	return api
 }
 
-function markerLayer(api: YandexMapsApi, map: YandexMapInstance, onClick: (marker: MapMarker) => void) {
+function markerLayer(api: YandexMapsApi, map: YandexMapInstance, handlers: MapHandlers) {
 	let shown: object[] = []
 	return (markers: readonly MapMarker[]): void => {
 		for (const child of shown) map.removeChild(child)
-		shown = markers.map(
-			marker => new api.YMapMarker({ coordinates: toYandex(marker.coordinates) }, createMarkerElement(marker, onClick)),
-		)
+		const hosts = markers.map(marker => createMarkerElement(marker, handlers.onMarkerClick))
+		shown = hosts.map(host => new api.YMapMarker({ coordinates: toYandex(host.marker.coordinates) }, host.anchor))
 		for (const child of shown) map.addChild(child)
+		handlers.onMarkersRendered(hosts)
 	}
 }
 
-export const createYandexMap: MapAdapterFactory = async (element, { apiKey, language, view, handlers }) => {
+export const createYandexMap: MapAdapterFactory = async (element, { apiKey, language, view, scheme, handlers }) => {
 	const api = await yandexApi(apiKey, language)
 	const map = new api.YMap(element, { location: location(view) })
-	map.addChild(new api.YMapDefaultSchemeLayer({}))
+	const schemeLayer = new api.YMapDefaultSchemeLayer({ theme: scheme })
+	map.addChild(schemeLayer)
 	map.addChild(new api.YMapDefaultFeaturesLayer({}))
 	map.addChild(
 		new api.YMapListener({
@@ -49,7 +50,8 @@ export const createYandexMap: MapAdapterFactory = async (element, { apiKey, lang
 	)
 	return {
 		setView: next => map.setLocation(location(next)),
-		setMarkers: markerLayer(api, map, handlers.onMarkerClick),
+		setMarkers: markerLayer(api, map, handlers),
+		setScheme: next => schemeLayer.update({ theme: next }),
 		destroy: () => map.destroy(),
 	}
 }

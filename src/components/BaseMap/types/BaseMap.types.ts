@@ -20,12 +20,55 @@ export interface MapCoordinates {
 	lng: number
 }
 
-/** Метка: `id` — ключ для событий, `title` — подпись для экранного диктора и подсказки, `color` — цвет значка */
+/** Цветовая схема карты: `auto` — по теме кита (`data-theme`, `prefers-color-scheme`), следует за сменой темы на лету */
+export const MAP_SCHEMES = ['light', 'dark', 'auto'] as const
+
+/** Цветовая схема карты */
+export type MapScheme = (typeof MAP_SCHEMES)[number]
+
+/** Подложка: `scheme` — схема, `satellite` — спутник, `hybrid` — спутник с подписями */
+export const MAP_LAYERS = ['scheme', 'satellite', 'hybrid'] as const
+
+/** Подложка карты */
+export type MapLayer = (typeof MAP_LAYERS)[number]
+
+/**
+ * Метка: `id` — ключ для событий, `title` — подпись для экранного диктора и подсказки, `color` — цвет значка,
+ * `icon` — имя иконки кита внутри значка, `size` — размер значка в px (по умолчанию 24, умножается на `sizeScale`)
+ */
 export interface MapMarker {
 	id: string | number
 	coordinates: MapCoordinates
 	title?: string
 	color?: string
+	icon?: string
+	size?: number
+}
+
+/**
+ * Линия на карте (маршрут): `id` — ключ, `coordinates` — точки по порядку (от двух), `color` — CSS-цвет или токен
+ * (`var(--rise-primary)`; по умолчанию основной цвет), `width` — толщина в px (по умолчанию 4),
+ * `title` — подпись в списке для экранного диктора
+ */
+export interface MapPolyline {
+	id: string | number
+	coordinates: MapCoordinates[]
+	color?: string
+	width?: number
+	title?: string
+}
+
+/**
+ * Многоугольник на карте (зона доставки): `id` — ключ, `coordinates` — вершины (от трёх, замыкать не нужно),
+ * `color` — цвет контура и полупрозрачной заливки (CSS-цвет или токен), `width` — толщина контура в px (по умолчанию 2),
+ * `title` — подпись в списке для экранного диктора
+ */
+export interface MapPolygon {
+	id: string | number
+	coordinates: MapCoordinates[]
+	color?: string
+	width?: number
+	title?: string
 }
 
 /** Что показывает карта: центр и масштаб */
@@ -36,10 +79,10 @@ export interface MapView {
 
 /**
  * Части BaseMap для пропа `ui` (БЭМ-элементы `.base-map__<часть>`, `root` — вся область карты): canvas — слой, в который
- * поставщик рисует карту; placeholder — заглушка без ключа, без Map ID или при ошибке.
+ * поставщик рисует карту; placeholder — заглушка без ключа, без Map ID или при ошибке; balloon — балун открытой метки.
  * Метки `.base-map__marker` создаёт поставщик карты — их оформляют токены `--rise-map-marker-*` и `--rise-map-tooltip-*`
  */
-export const MAP_PARTS = ['canvas', 'placeholder'] as const
+export const MAP_PARTS = ['canvas', 'placeholder', 'balloon'] as const
 
 /** Часть BaseMap для пропа `ui` */
 export type BaseMapPart = (typeof MAP_PARTS)[number]
@@ -50,7 +93,7 @@ export type MapStatus = 'no-key' | 'no-map-id' | 'loading' | 'ready' | 'error'
 /**
  * Пропсы компонента BaseMap
  */
-export interface BaseMapProps extends SeoComponentProps, BaseComponentProps<MapVariant, 'root' | 'canvas' | 'placeholder'> {
+export interface BaseMapProps extends SeoComponentProps, BaseComponentProps<MapVariant, 'root' | 'canvas' | 'placeholder' | 'balloon'> {
 	/** Поставщик карты */
 	provider?: MapProvider
 	/**
@@ -64,6 +107,13 @@ export interface BaseMapProps extends SeoComponentProps, BaseComponentProps<MapV
 	zoom?: number
 	/** Метки на карте */
 	markers?: MapMarker[]
+	/**
+	 * Цветовая схема карты. `auto` (по умолчанию) — по теме кита: `data-theme` ближайшего предка или `<html>`
+	 * (`system` — по `prefers-color-scheme`), смена темы подхватывается сразу. Яндекс переключает слой, Google пересоздаёт карту
+	 */
+	scheme?: MapScheme
+	/** Выбранная метка — её `id` (`v-model:selected`); у выбранной метки открыт балун из слота `balloon`, `null` — ничего не выбрано */
+	selected?: string | number | null
 	/** Язык подписей карты: `ru_RU`, `en_US` у Яндекса, `ru`, `en` у Google; по умолчанию — язык кита */
 	language?: string
 	/** Высота карты: CSS-значение; по умолчанию 400px */
@@ -93,6 +143,8 @@ export interface BaseMapEmits {
 	(event: 'update:center', center: MapCoordinates): void
 	/** Новый масштаб после приближения или отдаления */
 	(event: 'update:zoom', zoom: number): void
+	/** Выбрана другая метка (клик, Enter) или выбор снят (Esc, клик по карте, повторный клик, `close` балуна): `id` или `null` */
+	(event: 'update:selected', selected: string | number | null): void
 	/** Клик по карте: координаты точки */
 	(event: 'click', coordinates: MapCoordinates): void
 	/** Клик по метке или Enter на ней */
@@ -107,6 +159,16 @@ export interface BaseMapEmits {
  * Слоты компонента BaseMap
  */
 export interface BaseMapSlots {
+	/**
+	 * Своя разметка метки вместо пина: внутри кнопки метки, только текст и иконки (кнопка не вкладывает интерактивное).
+	 * Без слота метка с `icon` рисует иконку внутри пина
+	 */
+	marker?: (props: { marker: MapMarker }) => unknown
+	/**
+	 * Балун открытой метки (`selected`): окно над меткой, Esc и клик по карте закрывают, фокус возвращается на метку.
+	 * Без слота выбор лишь отмечает метку. `close` закрывает балун и возвращает фокус на метку
+	 */
+	balloon?: (props: { marker: MapMarker; close: () => void }) => unknown
 	/** Своя заглушка вместо карты: без ключа, без Map ID или при ошибке; `status` — `no-key`, `no-map-id` или `error` */
 	placeholder?: (props: { status: MapStatus }) => unknown
 }

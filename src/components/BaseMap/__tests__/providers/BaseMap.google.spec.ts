@@ -44,9 +44,14 @@ describe('BaseMap · Google', () => {
 			'https://maps.googleapis.com/maps/api/js?key=G%20K&language=ru&libraries=marker&loading=async&callback=__riseGoogleMapsReady',
 			{ callbackName: '__riseGoogleMapsReady' },
 		)
-		expect(google.api.Map.mock.calls[0][1]).toEqual({ center: { lat: 55.751244, lng: 37.618423 }, zoom: 11, mapId: 'style-1' })
+		expect(google.api.Map.mock.calls[0][1]).toEqual({
+			center: { lat: 55.751244, lng: 37.618423 },
+			zoom: 11,
+			mapId: 'style-1',
+			colorScheme: 'LIGHT',
+		})
 		const office = screen.getByRole('button', { name: 'Офис' })
-		expect(office).toHaveClass('base-map__marker--anchored')
+		expect(office.parentElement).toHaveClass('base-map__anchor', 'base-map__anchor--anchored')
 		await fireEvent.click(office)
 		expect(emitted('marker-click')).toEqual([[MARKERS[0]]])
 

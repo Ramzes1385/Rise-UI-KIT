@@ -1,12 +1,15 @@
+import type { Ref } from 'vue'
 import { UI_MAP } from '@/locales/messages'
+import { useMapScheme } from './useMapScheme'
 import { useUi } from '@composables/base/useUi'
+import { useMapSelection } from './useMapSelection'
 import { formatMessage, getLocale } from '@/locales/state'
 import { MAP_PROVIDER_ENTRIES } from './providers/registry'
 import { useStructuredData } from '@composables/seo/useStructuredData'
-import type { MapAdapter, MapHandlers } from '../types/providers.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
-import { computed, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
 import type { StructuredData, StructuredDataObject } from '@utils/seo/structuredDataUtils'
+import { computed, markRaw, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
+import type { MapAdapter, MapDeps, MapHandlers, MapSlotsInfo } from '../types/providers.types'
 import type { BaseMapEmits, BaseMapProps, MapCoordinates, MapMarker, MapStatus, MapView } from '../types/BaseMap.types'
 
 const PLACEHOLDER_TEXTS: Partial<
@@ -38,7 +41,7 @@ function placeSchema(props: BaseMapProps): StructuredData {
 	}
 }
 
-function viewHandlers(emit: BaseMapEmits, lastView: { value: MapView }): MapHandlers {
+function viewHandlers(emit: BaseMapEmits, lastView: { value: MapView }, selection: MapDeps['selection']): MapHandlers {
 	return {
 		onViewChange(view) {
 			const previous = lastView.value
@@ -46,36 +49,46 @@ function viewHandlers(emit: BaseMapEmits, lastView: { value: MapView }): MapHand
 			if (view.center.lat !== previous.center.lat || view.center.lng !== previous.center.lng) emit('update:center', view.center)
 			if (view.zoom !== previous.zoom) emit('update:zoom', view.zoom)
 		},
-		onClick: coordinates => emit('click', coordinates),
-		onMarkerClick: marker => emit('marker-click', marker),
+		onClick: coordinates => {
+			emit('click', coordinates)
+			selection.dismiss()
+		},
+		onMarkerClick: marker => {
+			emit('marker-click', marker)
+			selection.onMarkerClick(marker)
+		},
+		onMarkersRendered: hosts => {
+			selection.hosts.value = hosts
+		},
 	}
 }
 
-function useMapAdapter(props: BaseMapProps, emit: BaseMapEmits, view: () => MapView) {
-	const canvasRef = ref<HTMLElement | null>(null)
+function useMapAdapter(props: BaseMapProps, emit: BaseMapEmits, deps: MapDeps & { view: () => MapView }) {
+	const { canvasRef } = deps
 	const status = ref<MapStatus>('no-key')
-	const lastView = shallowRef(view())
+	const lastView = shallowRef(deps.view())
+	const adapter = shallowRef<MapAdapter | null>(null)
 	const entry = () => MAP_PROVIDER_ENTRIES[props.provider ?? 'yandex']
-	let adapter: MapAdapter | null = null
 	let generation = 0
 
 	function detach(): void {
 		generation++
-		adapter?.destroy()
-		adapter = null
+		adapter.value?.destroy()
+		adapter.value = null
+		deps.selection.hosts.value = []
 	}
 
 	const createOptions = () => ({
 		apiKey: props.apiKey ?? '',
 		language: props.language ?? entry().language(getLocale().intl),
-		view: view(),
+		view: lastView.value,
 		mapId: props.mapId,
-		handlers: viewHandlers(emit, lastView),
+		scheme: deps.scheme.value,
+		handlers: viewHandlers(emit, lastView, deps.selection),
 	})
 
 	function show(created: MapAdapter): void {
-		adapter = created
-		adapter.setMarkers(props.markers ?? [])
+		adapter.value = markRaw(created)
 		status.value = 'ready'
 		emit('ready')
 	}
@@ -105,36 +118,56 @@ function useMapAdapter(props: BaseMapProps, emit: BaseMapEmits, view: () => MapV
 		}
 	}
 
-	return { canvasRef, status, lastView, attach, detach, getAdapter: () => adapter }
+	return { canvasRef, status, lastView, adapter, attach, detach, isSchemeLive: () => entry().isSchemeLive }
 }
 
-export function useBaseMap(props: BaseMapProps, emit: BaseMapEmits) {
+function watchAdapter<T>(
+	adapter: Ref<MapAdapter | null>,
+	{ source, apply, isDeep }: { source: () => T; apply: (adapter: MapAdapter, value: T) => void; isDeep?: boolean },
+): void {
+	const run = (): void => {
+		if (adapter.value) apply(adapter.value, source())
+	}
+	watch(adapter, run, { flush: 'sync' })
+	watch(source, run, { deep: isDeep })
+}
+
+export function useBaseMap(props: BaseMapProps, emit: BaseMapEmits, slots: MapSlotsInfo) {
 	const view = computed<MapView>(() => ({ center: props.center ?? DEFAULT_VIEW.center, zoom: props.zoom ?? DEFAULT_VIEW.zoom }))
-	const map = useMapAdapter(props, emit, () => view.value)
+	const canvasRef = ref<HTMLElement | null>(null)
+	const scheme = useMapScheme(() => props.scheme, canvasRef)
+	const selection = useMapSelection(props, emit, slots)
+	const map = useMapAdapter(props, emit, { view: () => view.value, scheme, selection, canvasRef })
 	onMounted(map.attach)
 	onBeforeUnmount(map.detach)
 	watch(() => [props.provider, props.apiKey, props.language, props.mapId], map.attach)
+	watch(scheme, next => {
+		if (!map.adapter.value) return
+		if (map.isSchemeLive()) map.adapter.value.setScheme(next)
+		else map.attach()
+	})
 	watch(view, next => {
 		if (sameView(next, map.lastView.value)) return
 		map.lastView.value = next
-		map.getAdapter()?.setView(next)
+		map.adapter.value?.setView(next)
 	})
-	watch(
-		() => props.markers,
-		markers => map.getAdapter()?.setMarkers(markers ?? []),
-		{ deep: true },
-	)
+	watchAdapter(map.adapter, { source: () => props.markers ?? [], apply: (adapter, markers) => adapter.setMarkers(markers), isDeep: true })
 	const providerName = computed(() => MAP_PROVIDER_ENTRIES[props.provider ?? 'yandex'].name())
 	return {
-		...useStandardBaseComponent('base-map', props, ['root', 'canvas', 'placeholder']),
+		...useStandardBaseComponent('base-map', props, ['root', 'canvas', 'placeholder', 'balloon']),
 		ui: useUi(props, 'base-map'),
 		...useStructuredData(
 			'BaseMap',
 			() => props.seo,
 			() => placeSchema(props),
 		),
-		canvasRef: map.canvasRef,
+		canvasRef,
 		status: map.status,
+		hosts: selection.hosts,
+		selectedHost: selection.selectedHost,
+		balloonId: selection.balloonId,
+		closeBalloon: selection.close,
+		onEscape: selection.onEscape,
 		label: computed(() => props.ariaLabel ?? UI_MAP.LABEL),
 		rootStyle: computed(() => ({ height: props.height ?? '400px' })),
 		isPlaceholder: computed(() => PLACEHOLDER_TEXTS[map.status.value] !== undefined),

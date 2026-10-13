@@ -34,20 +34,41 @@
 		padding: space(ct(map, placeholder-padding, 16px));
 	}
 
+	&__anchor {
+		--base-map-marker-size: #{ct(map, marker-size, 24px)};
+
+		position: relative;
+		width: sz(var(--base-map-marker-size));
+		height: sz(var(--base-map-marker-size));
+		transform: translate(-50%, -100%);
+
+		&--anchored {
+			transform: none;
+		}
+
+		&:has(> .base-map__marker--selected) {
+			z-index: 1;
+		}
+	}
+
 	&__marker {
 		--base-map-marker-color: #{ct(map, marker-bg, var(--rise-primary))};
 
 		position: relative;
-		display: block;
-		width: sz(24px);
-		height: sz(24px);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-sizing: border-box;
+		width: 100%;
+		height: 100%;
 		padding: 0;
 		border: 2px solid ct(map, marker-border, var(--rise-bg));
 		border-radius: 50% 50% 50% 0;
 		background: var(--base-map-marker-color);
+		color: ct(map, marker-text, var(--rise-text-inverted));
 		box-shadow: ct(map, marker-shadow, var(--rise-shadow-sm));
 		cursor: pointer;
-		transform: translate(-50%, -100%) rotate(-45deg);
+		transform: rotate(-45deg);
 		@include focus-ring;
 
 		&::after {
@@ -72,15 +93,69 @@
 			}
 		}
 
-		&--anchored {
-			transform: rotate(-45deg);
-		}
-
 		&:hover::after,
 		&:focus-visible::after {
 			opacity: 1;
 			transform: rotate(45deg) translate(-50%, sz(-4px));
 		}
+
+		&--selected {
+			border-color: ct(map, marker-selected-border, var(--rise-border-accented));
+
+			&::after {
+				display: none;
+			}
+		}
+
+		&--custom {
+			border: 0;
+			border-radius: 0;
+			background: transparent;
+			box-shadow: none;
+			color: inherit;
+			transform: none;
+
+			&::after {
+				transform: translate(-50%, 0);
+				transform-origin: center bottom;
+			}
+
+			&:hover::after,
+			&:focus-visible::after {
+				transform: translate(-50%, sz(-4px));
+			}
+		}
+	}
+
+	&__marker-icon {
+		--rise-icon-icon-size: calc(var(--base-map-marker-size, 24px) * 0.55);
+
+		display: flex;
+		transform: rotate(45deg);
+
+		.base-map__marker--custom & {
+			transform: none;
+		}
+	}
+
+	&__balloon {
+		position: absolute;
+		bottom: calc(100% + #{sz(8px)});
+		left: 50%;
+		z-index: 2;
+		box-sizing: border-box;
+		width: max-content;
+		max-width: sz(ct(map, balloon-max-width, 280px));
+		padding: space(ct(map, balloon-padding, 12px));
+		border: 1px solid ct(map, balloon-border, var(--rise-border));
+		border-radius: sz(ct(map, balloon-radius, var(--rise-radius-md)));
+		background: ct(map, balloon-bg, var(--rise-bg));
+		color: ct(map, balloon-text, var(--rise-text));
+		box-shadow: ct(map, balloon-shadow, var(--rise-shadow-md));
+		cursor: auto;
+		transform: translateX(-50%);
+		@include text-size(sm);
+		@include focus-ring;
 	}
 }
 

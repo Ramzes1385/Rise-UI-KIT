@@ -1,4 +1,15 @@
+import type { ComputedRef, Ref, ShallowRef } from 'vue'
 import type { MapCoordinates, MapMarker, MapView } from './BaseMap.types'
+
+/** Цветовая схема, с которой работает поставщик: `auto` уже разрешена в светлую или тёмную */
+export type MapResolvedScheme = 'light' | 'dark'
+
+/** Элементы метки на карте: `anchor` — обёртка (в неё кит кладёт балун), `button` — кнопка метки (в неё — значок или слот) */
+export interface MapMarkerHost {
+	marker: MapMarker
+	anchor: HTMLElement
+	button: HTMLButtonElement
+}
 
 /** Обработчики событий карты, которые адаптер поставщика вызывает сам */
 export interface MapHandlers {
@@ -8,6 +19,8 @@ export interface MapHandlers {
 	onClick: (coordinates: MapCoordinates) => void
 	/** Клик по метке или Enter на ней */
 	onMarkerClick: (marker: MapMarker) => void
+	/** Метки на карте пересозданы: новые элементы для значков, слота и балуна */
+	onMarkersRendered: (hosts: MapMarkerHost[]) => void
 }
 
 /** Настройки создания карты у поставщика */
@@ -16,6 +29,7 @@ interface MapCreateOptions {
 	language: string
 	view: MapView
 	mapId?: string
+	scheme: MapResolvedScheme
 	handlers: MapHandlers
 }
 
@@ -23,6 +37,7 @@ interface MapCreateOptions {
 export interface MapAdapter {
 	setView: (view: MapView) => void
 	setMarkers: (markers: readonly MapMarker[]) => void
+	setScheme: (scheme: MapResolvedScheme) => void
 	destroy: () => void
 }
 
@@ -33,6 +48,8 @@ export type MapAdapterFactory = (element: HTMLElement, options: MapCreateOptions
 export interface MapProviderEntry {
 	create: MapAdapterFactory
 	isMapIdRequired?: boolean
+	/** Схема меняется на готовой карте; иначе (Google `colorScheme` задаётся при создании) карта пересоздаётся */
+	isSchemeLive: boolean
 	language: (intl: string) => string
 	name: () => string
 }
@@ -41,10 +58,15 @@ export interface MapProviderEntry {
 export interface YandexMapsApi {
 	ready: Promise<void>
 	YMap: new (element: HTMLElement, props: { location: { center: [number, number]; zoom: number } }) => YandexMapInstance
-	YMapDefaultSchemeLayer: new (props: object) => object
+	YMapDefaultSchemeLayer: new (props: { theme: MapResolvedScheme }) => YandexSchemeLayer
 	YMapDefaultFeaturesLayer: new (props: object) => object
 	YMapListener: new (props: YandexListenerProps) => object
 	YMapMarker: new (props: { coordinates: [number, number] }, element: HTMLElement) => object
+}
+
+/** Слой схемы Яндекса: `update` меняет тему на месте */
+export interface YandexSchemeLayer {
+	update: (props: { theme: MapResolvedScheme }) => void
 }
 
 /** Карта Яндекса */
@@ -95,7 +117,10 @@ export interface GoogleMarker {
 
 /** Нужная киту часть Google Maps JavaScript API: `google.maps` с библиотекой `marker` */
 export interface GoogleMapsApi {
-	Map: new (element: HTMLElement, options: { center: MapCoordinates; zoom: number; mapId: string }) => GoogleMapInstance
+	Map: new (
+		element: HTMLElement,
+		options: { center: MapCoordinates; zoom: number; mapId: string; colorScheme: 'LIGHT' | 'DARK' },
+	) => GoogleMapInstance
 	marker: {
 		AdvancedMarkerElement: new (options: {
 			map: GoogleMapInstance
@@ -124,4 +149,29 @@ export interface ProviderApiRequest {
 	language: string
 	isLoaded: () => boolean
 	load: (language: string) => Promise<void>
+}
+
+/** Оформление меток после создания: выбранная метка, слоты и id балуна для `aria-controls` */
+export interface MarkerDecoration {
+	selectedId: string | number | null
+	hasBalloon: boolean
+	hasSlot: boolean
+	balloonId: string
+}
+
+/** Какие слоты передал родитель (нужно только знать, есть ли они) */
+export interface MapSlotsInfo {
+	marker?: unknown
+	balloon?: unknown
+}
+
+/** Зависимости адаптера карты: область карты, вид, разрешённая схема и выбор меток */
+export interface MapDeps {
+	canvasRef: Ref<HTMLElement | null>
+	scheme: ComputedRef<MapResolvedScheme>
+	selection: {
+		hosts: ShallowRef<MapMarkerHost[]>
+		dismiss: () => void
+		onMarkerClick: (marker: MapMarker) => void
+	}
 }

@@ -1,18 +1,21 @@
 import { UI_MAP } from '@/locales/messages'
 import { formatMessage } from '@/locales/state'
 import type { MapMarker } from '../../types/BaseMap.types'
+import type { MapMarkerHost } from '../../types/providers.types'
 
-export function createMarkerElement(marker: MapMarker, onClick: (marker: MapMarker) => void): HTMLButtonElement {
-	const element = document.createElement('button')
+export function createMarkerElement(marker: MapMarker, onClick: (marker: MapMarker) => void): MapMarkerHost {
+	const anchor = document.createElement('div')
+	const button = document.createElement('button')
 	const label = marker.title ?? formatMessage(UI_MAP.MARKER, { id: String(marker.id) })
-	element.type = 'button'
-	element.className = 'base-map__marker'
-	element.setAttribute('aria-label', label)
-	element.dataset.label = label
-	if (marker.color) element.style.setProperty('--base-map-marker-color', marker.color)
-	element.addEventListener('click', event => {
-		event.stopPropagation()
-		onClick(marker)
-	})
-	return element
+	anchor.className = 'base-map__anchor'
+	button.type = 'button'
+	button.className = 'base-map__marker'
+	button.setAttribute('aria-label', label)
+	button.dataset.label = label
+	if (marker.color) button.style.setProperty('--base-map-marker-color', marker.color)
+	if (marker.size) anchor.style.setProperty('--base-map-marker-size', `${marker.size}px`)
+	button.addEventListener('click', () => onClick(marker))
+	anchor.addEventListener('click', event => event.stopPropagation())
+	anchor.append(button)
+	return { marker, anchor, button }
 }

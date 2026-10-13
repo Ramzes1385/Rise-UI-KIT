@@ -12,6 +12,7 @@ interface FakeYandexMap {
 		onActionEnd: (event: { location: { center: Point; zoom: number } }) => void
 		onClick: (object: unknown, event: { coordinates: Point }) => void
 	}
+	schemeLayer: () => { props: { theme?: string }; update: ReturnType<typeof vi.fn> }
 	markers: () => { props: { coordinates: Point }; element: HTMLElement }[]
 }
 
@@ -25,6 +26,9 @@ export function fakeYandex(ready: Promise<void> = Promise.resolve()) {
 			this.element = element
 		}
 	}
+	class YMapDefaultSchemeLayer extends Child {
+		update = vi.fn()
+	}
 	class YMapListener extends Child {}
 	class YMapMarker extends Child {}
 	class YMap {
@@ -36,6 +40,7 @@ export function fakeYandex(ready: Promise<void> = Promise.resolve()) {
 				setLocation: vi.fn(),
 				destroy: vi.fn(),
 				listener: () => (map.children.find(child => child instanceof YMapListener) as Child).props as never,
+				schemeLayer: () => map.children.find(child => child instanceof YMapDefaultSchemeLayer) as never,
 				markers: () => map.children.filter(child => child instanceof YMapMarker) as never,
 			}
 			maps.push(map)
@@ -53,7 +58,7 @@ export function fakeYandex(ready: Promise<void> = Promise.resolve()) {
 			}
 		}
 	}
-	const api = { ready, YMap, YMapDefaultSchemeLayer: Child, YMapDefaultFeaturesLayer: Child, YMapListener, YMapMarker }
+	const api = { ready, YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer: Child, YMapListener, YMapMarker }
 	;(window as unknown as { ymaps3?: unknown }).ymaps3 = api
 	return { maps, remove: () => delete (window as unknown as { ymaps3?: unknown }).ymaps3 }
 }
