@@ -758,7 +758,7 @@ JSDoc в `types/*.types.ts`: описания props, событий, слото�
 
 Новый код пишется сразу в пороги: в `model/` компонентов они — ошибки, а новые файлы `src/` pre-commit проверяет без единого предупреждения (`npm run lint:new`). В старом коде это пока предупреждения, он доводится до порогов по компонентам. В тестах и stories метрики размера не проверяются.
 
-**Stylelint.** Классы — по БЭМ в kebab-case: `base-button__icon--active`. Ключевые слова — строчными (`currentcolor`), медиа-запросы — через `min-width` и `max-width`. Отключить правило можно только для строки и с причиной:
+**Stylelint.** Классы — по БЭМ в kebab-case: `base-button__icon--active`. Ключевые слова — строчными (`currentcolor`), медиа-запросы — через `min-width` и `max-width`. Правило «Движение» (`declaration-property-value-disallowed-list`: переходы только по `transform` и `opacity`, длительности — токены `--rise-duration…`) — ошибка. Отключить правило можно только для строки и с причиной:
 
 ```scss
 /* stylelint-disable-next-line property-no-vendor-prefix -- псевдоэлемент только WebKit */

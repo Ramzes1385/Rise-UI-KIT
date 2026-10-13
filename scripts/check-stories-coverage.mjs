@@ -21,17 +21,18 @@ function findStoryPath(componentDir, componentName) {
 	return null
 }
 
-/** История «Анимации» (решение research-motion): пока группы движения не прошли — только предупреждение */
+/** История «Анимации» (решение research-motion): обязательна у каждого компонента — пропуск роняет проверку */
 const ANIMATIONS_EXPORT = /export const Animations\b/
 
 function reportAnimations(storyPaths) {
 	const missing = storyPaths.filter(([, path]) => !ANIMATIONS_EXPORT.test(readFileSync(path, 'utf8'))).map(([name]) => name)
 	if (missing.length === 0) {
 		console.log('✅ История Animations есть у всех компонентов.\n')
-		return
+		return true
 	}
-	console.log(`⚠️  Нет истории Animations («Анимации») у ${missing.length} из ${storyPaths.length} компонентов (пока предупреждение):`)
+	console.log(`❌ Нет истории Animations («Анимации») у ${missing.length} из ${storyPaths.length} компонентов:`)
 	console.log(`   ${missing.join(', ')}\n`)
+	return false
 }
 
 function checkCoverage() {
@@ -74,12 +75,17 @@ function checkCoverage() {
 	console.log(`Всего обнаружено компонентов Base*: ${baseComponents.length}`)
 	console.log(`Покрыто stories: ${coveredStories.length}`)
 	console.log(`Отсутствуют stories: ${missingStories.length}\n`)
-	reportAnimations(storyPaths)
+	const hasAllAnimations = reportAnimations(storyPaths)
 
 	if (missingStories.length > 0) {
 		console.log('❌ Следующие компоненты не имеют .stories.ts файлов:')
 		missingStories.forEach(name => console.log(` - ${name}`))
 		console.log('\nПроверка завершилась с ошибкой.')
+		process.exit(1)
+	}
+
+	if (!hasAllAnimations) {
+		console.log('Проверка завершилась с ошибкой.')
 		process.exit(1)
 	}
 

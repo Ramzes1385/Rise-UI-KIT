@@ -2413,3 +2413,12 @@ API кита не меняется. В Storybook добавлены пример
 6. **Не сделано:** смена `language` на показанной карте по-прежнему не перезагружает API (см. FOLLOW_UPS, «Задача map-customization»).
 7. **Токены** `--rise-map-balloon-*`, `--rise-map-marker-width`, `--rise-map-marker-text`, `--rise-map-marker-selected-border`, `--rise-map-cluster-bg`, `--rise-map-controls-gap` (docs/design/COMPONENT_TOKENS.md).
 8. **Словари:** ключи `SHAPES`, `POLYLINE`, `POLYGON`, `CONTROLS`, `ZOOM_IN`, `ZOOM_OUT`, `LOCATE`, `LOCATE_*`, `SCROLL_HINT`, `CLUSTER` в разделе `map` (ru и en).
+
+## Задача motion-final
+
+Правила системы движения теперь ошибки, а не предупреждения. Изменений API, DOM и вида для приложений нет.
+
+- stylelint `declaration-property-value-disallowed-list` («Движение»): переходы по `width`, `height`, `top`, `left`, `right`, `bottom`, `inset`, `margin`, `padding` и длительности числом в `transition`, `animation`, `*-duration`, `*-delay` ломают `npm run lint:styles`. Приложениям это важно, если они подключают правила кита через `package.json` → `stylelint`: свои стили проверьте тем же правилом или отключите его для своих файлов. Кит не меняет поведения.
+- Авторам компонентов: переход пишется по `transform`/`opacity`, длительность — токен `var(--rise-duration…)`. Законное исключение (в ките это авторост `height` у BaseTextarea, px→px) — отключение на строку с причиной: `stylelint-disable-line declaration-property-value-disallowed-list, comment-pattern -- причина`.
+- `npm run test:stories-coverage` завершается с кодом 1, если у компонента нет истории `Animations`. Новый компонент без неё не пройдёт проверку — историю нужно написать вручную по образцу соседних.
+- Истории `Animations` добавлены у BaseGrid, BaseResult, BaseStack и BaseWatermark.

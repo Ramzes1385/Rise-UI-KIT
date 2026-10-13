@@ -249,7 +249,7 @@
           ]
         },
         {
-          "severity": "warning",
+          "severity": "error",
           "message": "Движение: переходы только по transform и opacity, длительности — токены var(--rise-duration…) (DESIGN_SYSTEM, «Движение»); исключение — отключение на строку с причиной"
         }
       ]
