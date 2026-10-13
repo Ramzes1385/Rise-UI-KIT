@@ -15,7 +15,7 @@
 
 	&__mention,
 	&__command {
-		@include chat-button-reset;
+		@include button-reset;
 		display: inline;
 		border-radius: sz(var(--rise-radius-xs));
 		font-weight: var(--rise-font-weight-medium);

@@ -4,7 +4,7 @@
 
 .base-chat-message-list {
 	&__reply-quote {
-		@include chat-button-reset;
+		@include button-reset;
 		display: flex;
 		flex-direction: column;
 		align-self: stretch;

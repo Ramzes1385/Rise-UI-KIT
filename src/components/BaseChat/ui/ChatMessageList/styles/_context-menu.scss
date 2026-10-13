@@ -21,7 +21,7 @@
 	}
 
 	&__reaction-btn {
-		@include chat-button-reset;
+		@include button-reset;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -44,7 +44,7 @@
 	}
 
 	&__item {
-		@include chat-button-reset;
+		@include button-reset;
 		@include menu-item;
 		width: 100%;
 		@include focus-ring(-2px);

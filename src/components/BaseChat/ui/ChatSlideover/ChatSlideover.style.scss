@@ -1,3 +1,4 @@
+@use '@styles/mixins' as *;
 @use '../../styles/chat' as *;
 
 .base-chat-slideover {
@@ -17,7 +18,7 @@
 	}
 
 	&__tab-btn {
-		@include chat-button-reset;
+		@include button-reset;
 		flex: 1 1 auto;
 		min-width: 0;
 		padding: sz(4px) sz(8px);
@@ -128,7 +129,7 @@
 	}
 
 	&__member-main {
-		@include chat-button-reset;
+		@include button-reset;
 		@include menu-item;
 		flex: 1;
 		gap: sz(10px);
@@ -179,7 +180,7 @@
 	}
 
 	&__dropdown-item {
-		@include chat-button-reset;
+		@include button-reset;
 		@include menu-item;
 		width: 100%;
 		white-space: nowrap;
@@ -305,7 +306,7 @@
 	}
 
 	&__file-main {
-		@include chat-button-reset;
+		@include button-reset;
 		display: flex;
 		flex: 1;
 		align-items: center;

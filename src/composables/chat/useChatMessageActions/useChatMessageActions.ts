@@ -1,12 +1,27 @@
+import type { Ref } from 'vue'
 /** Composable: действия над сообщениями чата */
-import { ref } from 'vue'
+import { nextTick, ref } from 'vue'
 import { useScrollToMessage } from './useScrollToMessage'
 import { useChatContextMenu, useChatContextMenuItems } from './useChatContextMenu'
 import type { UseChatMessageActionsOptions } from './types/useChatMessageActions.types'
 import type { ChatMessage, ChatMessageAttachment } from '@components/BaseChat/types/BaseChat.types'
 
+/** Поле ввода чата: туда уходит фокус, когда кнопки «Повторить» и «Удалить» пропали из ленты */
+const CHAT_INPUT_FIELD = '.base-chat-input__field'
+
+/** Кнопка пропала вместе с состоянием `failed` и фокус упал в body: возвращает его в поле ввода чата */
+function restoreFocusAfterFailedAction(listRef: Ref<HTMLElement | null>): void {
+	const list = listRef.value
+	if (!list || !list.contains(list.ownerDocument.activeElement)) return
+	nextTick(() => {
+		const { activeElement, body } = list.ownerDocument
+		if (activeElement && activeElement !== body) return
+		list.closest('.base-chat')?.querySelector<HTMLElement>(CHAT_INPUT_FIELD)?.focus()
+	})
+}
+
 /** События самого сообщения: аватар, выбор, цитата, ответ, файлы, реакции, упоминания и команды */
-function useChatMessageEvents(emit: UseChatMessageActionsOptions['emit']) {
+function useChatMessageEvents(emit: UseChatMessageActionsOptions['emit'], listRef: Ref<HTMLElement | null>) {
 	return {
 		handleAvatarClick(message: ChatMessage): void {
 			/* istanbul ignore else — defensive */
@@ -20,8 +35,14 @@ function useChatMessageEvents(emit: UseChatMessageActionsOptions['emit']) {
 			/* istanbul ignore else — defensive */
 			if (replyToId) emit('reply-click', replyToId)
 		},
-		handleRetry: (messageId: string): void => emit('retry-message', messageId),
-		handleDiscard: (messageId: string): void => emit('discard-message', messageId),
+		handleRetry(messageId: string): void {
+			emit('retry-message', messageId)
+			restoreFocusAfterFailedAction(listRef)
+		},
+		handleDiscard(messageId: string): void {
+			emit('discard-message', messageId)
+			restoreFocusAfterFailedAction(listRef)
+		},
 		handleReplyAction: (message: ChatMessage): void => emit('message-reply', message),
 		handleDownload: (file: ChatMessageAttachment): void => emit('download-file', file),
 		handleFileClick: (file: ChatMessageAttachment): void => emit('file-click', file),
@@ -41,7 +62,7 @@ function useChatMessageActions(options: UseChatMessageActionsOptions) {
 		listRef,
 		...menu,
 		...useChatContextMenuItems(menu, emit),
-		...useChatMessageEvents(emit),
+		...useChatMessageEvents(emit, listRef),
 		scrollToMessage: useScrollToMessage(listRef),
 	}
 }

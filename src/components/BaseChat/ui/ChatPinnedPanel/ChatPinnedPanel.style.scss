@@ -1,3 +1,4 @@
+@use '@styles/mixins' as *;
 @use '../../styles/chat' as *;
 
 .base-chat-pinned-panel {
@@ -10,7 +11,7 @@
 	@include chat-section-border(bottom);
 
 	&__content {
-		@include chat-button-reset;
+		@include button-reset;
 		display: flex;
 		flex: 1;
 		align-items: center;

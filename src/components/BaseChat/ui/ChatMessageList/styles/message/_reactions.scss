@@ -14,7 +14,7 @@
 	}
 
 	&__reaction-badge {
-		@include chat-button-reset;
+		@include button-reset;
 		display: inline-flex;
 		align-items: center;
 		gap: sz(4px);

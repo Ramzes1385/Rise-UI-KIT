@@ -1,3 +1,4 @@
+@use '@styles/mixins' as *;
 @use '../../styles/chat' as *;
 
 .base-chat-header {
@@ -18,7 +19,7 @@
 	}
 
 	&__avatar-button {
-		@include chat-button-reset;
+		@include button-reset;
 		flex: none;
 		border-radius: var(--rise-radius-full);
 		@include focus-ring;

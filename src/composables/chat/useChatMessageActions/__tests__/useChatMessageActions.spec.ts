@@ -87,6 +87,65 @@ describe('useChatMessageActions', () => {
 			expect(emit).toHaveBeenCalledWith(event, payload)
 		})
 
+		describe('фокус после «Повторить» и «Удалить»', () => {
+			function setupFailed() {
+				const context = setup()
+				const chat = document.createElement('div')
+				chat.className = 'base-chat'
+				const input = document.createElement('textarea')
+				input.className = 'base-chat-input__field'
+				const button = document.createElement('button')
+				chat.append(context.list, input)
+				context.list.append(button)
+				document.body.append(chat)
+				return { ...context, button, input }
+			}
+
+			it.each(['handleRetry', 'handleDiscard'] as const)(
+				'%s: кнопка пропала вместе с фокусом, он уходит в поле ввода',
+				async handler => {
+					const { actions, button, input } = setupFailed()
+					button.focus()
+
+					actions[handler]('m1')
+					button.remove()
+					await nextTick()
+
+					expect(input).toHaveFocus()
+				},
+			)
+
+			it('фокус, который успел встать на другой элемент, не переносится', async () => {
+				const { actions, button, input } = setupFailed()
+				const other = document.createElement('button')
+				document.body.append(other)
+				button.focus()
+
+				actions.handleRetry('m1')
+				other.focus()
+				await nextTick()
+
+				expect(other).toHaveFocus()
+				expect(input).not.toHaveFocus()
+			})
+
+			it('фокус вне ленты (клавиатуру не трогали) остаётся на месте', async () => {
+				const { actions, input } = setupFailed()
+
+				actions.handleDiscard('m1')
+				await nextTick()
+
+				expect(input).not.toHaveFocus()
+			})
+
+			it('без ленты в DOM ничего не делает', () => {
+				const { actions } = setup()
+				actions.listRef.value = null
+
+				expect(() => actions.handleRetry('m1')).not.toThrow()
+			})
+		})
+
 		it('реакция на сообщении переключается', () => {
 			const { actions, emit } = setup()
 
