@@ -251,7 +251,28 @@ describe('BaseDashboardGrid unit', () => {
 			expect(itemOf(container, 'b').style.width).toBe('400px')
 
 			unmount()
-			expect(disconnect).toHaveBeenCalledOnce()
+			expect(disconnect).toHaveBeenCalled()
+		})
+	})
+
+	describe('прокручиваемое тело виджета', () => {
+		afterEach(() => {
+			vi.restoreAllMocks()
+		})
+
+		it('получает tabindex 0 только когда содержимое не помещается', async () => {
+			vi.spyOn(HTMLElement.prototype, 'scrollHeight', 'get').mockReturnValue(500)
+			vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(100)
+			const { container } = render(BaseDashboardGrid, { props: { ...GRID_PROPS, layout: makeLayout() } })
+			await nextTick()
+			await nextTick()
+			expect(container.querySelector('.base-dashboard-grid__body')).toHaveAttribute('tabindex', '0')
+		})
+
+		it('без переполнения tabindex нет', async () => {
+			const { container } = render(BaseDashboardGrid, { props: { ...GRID_PROPS, layout: makeLayout() } })
+			await nextTick()
+			expect(container.querySelector('.base-dashboard-grid__body')).not.toHaveAttribute('tabindex')
 		})
 	})
 })

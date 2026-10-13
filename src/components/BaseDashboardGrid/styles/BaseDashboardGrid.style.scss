@@ -46,6 +46,10 @@
 		overflow-wrap: break-word;
 	}
 
+	&__body:focus-visible {
+		@include focus-ring;
+	}
+
 	&__body > :first-child {
 		margin-top: 0;
 	}

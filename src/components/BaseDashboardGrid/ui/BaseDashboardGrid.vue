@@ -45,11 +45,11 @@
 				]"
 				:style="itemStyle(item)"
 				@pointerdown="handlePointerDown($event, item, 'move')">
-				<div :class="[ui('body'), classes.body]">
+				<DashboardGridBody :class="[ui('body'), classes.body]">
 					<slot name="item" :item="item" :is-dragging="dragId === item.id" :is-grabbed="grabbedId === item.id">
 						{{ item.label ?? item.id }}
 					</slot>
-				</div>
+				</DashboardGridBody>
 
 				<template v-if="isFocusable(item)">
 					<span data-handle aria-hidden="true" :class="[ui('handle'), classes.handle]">
@@ -81,6 +81,7 @@
 import '../styles/BaseDashboardGrid.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseEmpty } from '@components/BaseEmpty'
+import DashboardGridBody from './DashboardGridBody.vue'
 import { kitDefaults } from '@composables/base/useDefaults'
 import { useBaseDashboardGrid } from '../model/useBaseDashboardGrid'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
