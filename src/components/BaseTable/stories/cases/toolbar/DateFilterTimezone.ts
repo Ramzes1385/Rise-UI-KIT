@@ -1,11 +1,11 @@
 import { bodyRows } from '../../shared'
 import { within } from 'storybook/test'
 import type meta from '../../BaseTable.stories'
-import { expect, waitFor } from 'storybook/test'
 import BaseTable from '../../../ui/BaseTable.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { storySource, useStorySetup } from '@/stories/helpers'
+import { expect, screen, waitFor } from 'storybook/test'
 import type { TableColumn, TableRow } from '../../../types/BaseTable.types'
+import { STORY_WAIT_TIMEOUT, storySource, useStorySetup } from '@/stories/helpers'
 
 const rows: TableRow[] = [
 	{ id: 1, data: { event: 'Поздний вечер по UTC', at: Date.UTC(2025, 4, 14, 22, 30) } },
@@ -86,9 +86,14 @@ export const DateFilterTimezone: StoryObj<typeof meta> = {
 		const toolbars = canvas.getAllByRole('toolbar')
 		for (const toolbar of toolbars) {
 			const scope = within(toolbar)
-			const field = await scope.findByRole('combobox', { name: 'Значение фильтра' })
-			await userEvent.type(field, '14.05.2025')
-			await userEvent.keyboard('{Enter}')
+			await userEvent.click(scope.getByRole('combobox', { name: 'Колонка фильтра' }))
+			await userEvent.click(await screen.findByRole('option', { name: 'Момент' }, { timeout: STORY_WAIT_TIMEOUT }))
+			await userEvent.click(await scope.findByLabelText('Значение фильтра'))
+			await screen.findByRole('button', { name: 'Предыдущий месяц' }, { timeout: STORY_WAIT_TIMEOUT })
+			for (let step = 0; step < 120 && !screen.queryByRole('button', { name: /14 мая 2025/ }); step++) {
+				await userEvent.click(screen.getByRole('button', { name: 'Предыдущий месяц' }))
+			}
+			await userEvent.click(await screen.findByRole('button', { name: /14 мая 2025/ }, { timeout: STORY_WAIT_TIMEOUT }))
 			await userEvent.click(scope.getByRole('button', { name: 'Добавить' }))
 		}
 		await waitFor(() => expect(bodyRows(tables[0])).toHaveLength(2))

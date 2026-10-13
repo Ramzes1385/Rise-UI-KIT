@@ -1,9 +1,9 @@
 import type meta from '../../BaseTable.stories'
-import { expect, waitFor } from 'storybook/test'
 import BaseTable from '../../../ui/BaseTable.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { storySource, useStorySetup } from '@/stories/helpers'
+import { expect, screen, waitFor } from 'storybook/test'
 import { ALL_ROWS, COLUMNS, bodyRows, tableScript } from '../../shared'
+import { STORY_WAIT_TIMEOUT, storySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
 	<BaseTable v-bind="args" :columns="columns" />
@@ -35,11 +35,13 @@ export const ChipKeyboardRemove: StoryObj<typeof meta> = {
 		template,
 	}),
 	play: async ({ canvas, userEvent }) => {
+		await userEvent.click(canvas.getByRole('combobox', { name: 'Колонка фильтра' }))
+		await userEvent.click(await screen.findByRole('option', { name: 'Заказ' }, { timeout: STORY_WAIT_TIMEOUT }))
 		const value = canvas.getByRole('textbox', { name: 'Значение фильтра' })
-		await userEvent.type(value, 'З-10{Enter}')
-		await userEvent.type(value, '4{Enter}')
+		await userEvent.type(value, 'З-104{Enter}')
+		await userEvent.type(value, '9{Enter}')
 		const table = canvas.getByRole('table')
-		await waitFor(() => expect(bodyRows(table)).toHaveLength(2))
+		await waitFor(() => expect(bodyRows(table)).toHaveLength(1))
 		const chips = (): HTMLElement[] => canvas.queryAllByRole('button', { name: /^Удалить фильтр/ })
 		await expect(chips()).toHaveLength(2)
 

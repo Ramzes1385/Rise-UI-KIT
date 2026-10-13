@@ -1,12 +1,12 @@
 import { ref } from 'vue'
-import type meta from '../../BaseTable.stories'
 import { expect, waitFor } from 'storybook/test'
-import BaseTable from '../../../ui/BaseTable.vue'
+import type meta from '../../../BaseTable.stories'
 import { BaseButton } from '@components/BaseButton'
+import BaseTable from '../../../../ui/BaseTable.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { staticStorySource } from '@/stories/helpers'
-import type { BaseTableExpose } from '../../../types/BaseTable.types'
-import { ALL_ROWS, COMPACT_COLUMNS, ORDERS, tableScript } from '../../shared'
+import type { BaseTableExpose } from '../../../../types/BaseTable.types'
+import { ALL_ROWS, COMPACT_COLUMNS, ORDERS, tableScript } from '../../../shared'
 
 const template = `
 	<div class="story-stack">

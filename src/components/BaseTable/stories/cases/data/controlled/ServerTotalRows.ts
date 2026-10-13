@@ -1,10 +1,10 @@
 import { ref } from 'vue'
-import type meta from '../../BaseTable.stories'
 import { expect, waitFor } from 'storybook/test'
-import BaseTable from '../../../ui/BaseTable.vue'
+import type meta from '../../../BaseTable.stories'
+import BaseTable from '../../../../ui/BaseTable.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { staticStorySource } from '@/stories/helpers'
-import { ALL_ROWS, COMPACT_COLUMNS, ORDERS, bodyRows, tableScript } from '../../shared'
+import { ALL_ROWS, COMPACT_COLUMNS, ORDERS, bodyRows, tableScript } from '../../../shared'
 
 const template = `
 	<div class="story-stack">

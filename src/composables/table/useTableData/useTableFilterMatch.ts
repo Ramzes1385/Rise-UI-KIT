@@ -71,7 +71,7 @@ function matchesByKind(target: { cell: unknown; text: string; filter: ColumnFilt
  * проходит только `ne`; фильтр с нераспознанной границей ничего не отсекает; `gt`, `gte`, `lt`, `lte`, `between` у текстовой
  * колонки сравнивают значения как числа
  */
-function matchesFilterByKind(row: TableRow, filter: ColumnFilter, scope: FilterScope = {}): boolean {
+function matchesFilterByKind(row: TableRow, filter: ColumnFilter, scope: FilterScope): boolean {
 	const cell = row.data[filter.key]
 	if (isEmpty(cell)) return filter.operator === 'ne'
 	const text = String(cell).toLowerCase()

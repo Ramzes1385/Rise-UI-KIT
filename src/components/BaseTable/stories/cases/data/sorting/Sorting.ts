@@ -1,7 +1,7 @@
 import { expect } from 'storybook/test'
-import type meta from '../../BaseTable.stories'
+import type meta from '../../../BaseTable.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { toRows, ORDERS, bodyRows } from '../../shared'
+import { toRows, ORDERS, bodyRows } from '../../../shared'
 
 export const Sorting: StoryObj<typeof meta> = {
 	parameters: {

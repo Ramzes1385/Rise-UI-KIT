@@ -263,7 +263,7 @@ describe('useTableDataUtils', () => {
 		})
 
 		it('важнее sortAccessor и sortType, получает значения ячеек и строки', () => {
-			const compare = vi.fn(bySize)
+			const compare = vi.fn((a: unknown, b: unknown, _rows: { a: TableRow; b: TableRow }) => bySize(a, b))
 			const columns: TableColumn[] = [{ ...column, sortType: 'number', sortAccessor: () => 0, sortCompare: compare }]
 			expect(sortRowsByStates(items, [{ key: 'size', direction: 'asc' }], { columns }).map(r => r.id)).toEqual([4, 2, 3, 1])
 			const [a, b, { a: rowA, b: rowB }] = compare.mock.calls[0]

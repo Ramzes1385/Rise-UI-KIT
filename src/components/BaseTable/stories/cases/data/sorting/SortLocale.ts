@@ -1,9 +1,9 @@
-import type meta from '../../BaseTable.stories'
 import { expect, waitFor } from 'storybook/test'
-import BaseTable from '../../../ui/BaseTable.vue'
+import type meta from '../../../BaseTable.stories'
+import BaseTable from '../../../../ui/BaseTable.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { literal, storySource, useStorySetup } from '@/stories/helpers'
-import type { TableColumn, TableRow } from '../../../types/BaseTable.types'
+import type { TableColumn, TableRow } from '../../../../types/BaseTable.types'
 
 const WORDS = [
 	{ id: 1, word: 'Zebra', date: '15.03.2024' },
