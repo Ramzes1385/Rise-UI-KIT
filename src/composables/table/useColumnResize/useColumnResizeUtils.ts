@@ -39,30 +39,36 @@ function measureSiblingWidth(th: Element, visibleColumns: ResizeColumn[], column
 	return siblingTh instanceof HTMLElement ? siblingTh.offsetWidth : 0
 }
 
-/** Записать новые ширины колонки и её соседа по текущей позиции указателя */
-function applyResizeWidths({ columns, state, minWidth, pageX }: ApplyResizeWidthsParams): void {
-	const diff = pageX - state.startX
-	const newWidth = Math.max(minWidth, state.startWidth + diff)
-
-	const hasSibling = state.nextColumnKey && state.nextStartWidth > 0
-	const maxWidth = hasSibling ? state.startWidth + state.nextStartWidth - minWidth : Infinity
-	const clampedWidth = Math.min(newWidth, maxWidth)
-
-	const columnIndex = columns.findIndex(column => column.key === state.columnKey)
-	/* istanbul ignore else -- Колонка может исчезнуть только при внешнем обновлении во время resize. */
-	if (columnIndex !== -1) {
-		columns[columnIndex].width = `${clampedWidth}px`
-	}
-
-	if (hasSibling) {
-		const actualDiff = clampedWidth - state.startWidth
-		const siblingWidth = Math.max(minWidth, state.nextStartWidth - actualDiff)
-		const siblingIndex = columns.findIndex(column => column.key === state.nextColumnKey)
-		/* istanbul ignore else -- Соседняя колонка синхронизируется с видимыми колонками. */
-		if (siblingIndex !== -1) {
-			columns[siblingIndex].width = `${siblingWidth}px`
-		}
-	}
+/** Пикселы из строки `'120px'`; `rem`, проценты и пустое значение — `null` (границу не накладываем) */
+function toPixels(value: string | undefined): number | null {
+	const match = /^\s*(\d+(?:\.\d+)?)px\s*$/.exec(value ?? '')
+	return match ? Number(match[1]) : null
 }
 
-export { applyResizeWidths, createIdleResizeState, findSiblingKey, measureSiblingWidth }
+/** Допустимая ширина колонки: не меньше общего предела `minWidth` и в границах `column.minWidth`/`column.maxWidth` */
+function getWidthBounds(column: ResizeColumn | undefined, minWidth: number): { min: number; max: number } {
+	return { min: Math.max(minWidth, toPixels(column?.minWidth) ?? 0), max: toPixels(column?.maxWidth) ?? Infinity }
+}
+
+/**
+ * Записать новые ширины колонки и её соседа по текущей позиции указателя: ширина каждой не выходит за `minWidth` и
+ * `maxWidth` колонки, а вместе они занимают столько же места, сколько до сдвига
+ */
+function applyResizeWidths({ columns, state, minWidth, pageX }: ApplyResizeWidthsParams): void {
+	const column = columns.find(item => item.key === state.columnKey)
+	/* istanbul ignore next -- Колонка может исчезнуть только при внешнем обновлении во время resize. */
+	if (!column) return
+	const sibling = state.nextColumnKey && state.nextStartWidth > 0 ? columns.find(item => item.key === state.nextColumnKey) : undefined
+	const own = getWidthBounds(column, minWidth)
+	const total = state.startWidth + state.nextStartWidth
+	const other = getWidthBounds(sibling, minWidth)
+	const from = sibling ? Math.max(own.min, total - other.max) : own.min
+	const to = sibling ? Math.min(own.max, total - other.min) : own.max
+	const desired = state.startWidth + pageX - state.startX
+	const width = from > to ? state.startWidth : Math.min(Math.max(desired, from), to)
+
+	column.width = `${width}px`
+	if (sibling) sibling.width = `${total - width}px`
+}
+
+export { applyResizeWidths, createIdleResizeState, findSiblingKey, getWidthBounds, measureSiblingWidth }

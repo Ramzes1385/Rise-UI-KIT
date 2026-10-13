@@ -10,7 +10,7 @@
 		:aria-valuemin="minWidth"
 		:aria-valuemax="maxWidth"
 		:aria-valuetext="`${width}px`"
-		@mousedown.stop="emit('resize-start', $event)"
+		@pointerdown.stop="onPointerdown"
 		@click.stop
 		@keydown="onKeydown"></div>
 </template>
@@ -24,5 +24,5 @@ const props = defineProps<BaseTableResizeHandleProps>()
 
 const emit = defineEmits<BaseTableResizeHandleEmits>()
 
-const { ui, handleRef, width, minWidth, maxWidth, onKeydown } = useBaseTableResizeHandle(props, emit)
+const { ui, handleRef, width, minWidth, maxWidth, onKeydown, onPointerdown } = useBaseTableResizeHandle(props, emit)
 </script>

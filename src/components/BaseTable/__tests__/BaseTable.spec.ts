@@ -56,6 +56,12 @@ const globalConfig = {
 	},
 }
 
+function pointer(target: EventTarget, type: string, pageX: number): void {
+	target.dispatchEvent(
+		Object.assign(new Event(type, { bubbles: true, cancelable: true }), { pageX, pointerId: 1, button: 0, isPrimary: true }),
+	)
+}
+
 const COLUMNS: TableColumn[] = [
 	{ key: 'name', label: 'Имя' },
 	{ key: 'age', label: 'Возраст' },
@@ -480,9 +486,9 @@ describe('BaseTable unit', () => {
 			})
 
 			const resizer = container.querySelector('.base-table__resizer')!
-			await fireEvent.mouseDown(resizer, { pageX: 100 })
-			await fireEvent.mouseMove(document, { pageX: 150 })
-			await fireEvent.mouseUp(document)
+			pointer(resizer, 'pointerdown', 100)
+			pointer(document, 'pointermove', 150)
+			pointer(document, 'pointerup', 150)
 
 			expect(emitted()).toHaveProperty('column-resize')
 			expect((emitted() as Record<string, unknown[][]>)['column-resize'][0][0]).toBe('name')
@@ -892,9 +898,10 @@ describe('BaseTable unit', () => {
 				global: globalConfig,
 			})
 
-			await fireEvent.mouseDown(container.querySelector('.base-table__resizer')!, { pageX: 100 })
-			await fireEvent.mouseMove(document, { pageX: 180 })
-			await fireEvent.mouseUp(document)
+			pointer(container.querySelector('.base-table__resizer')!, 'pointerdown', 100)
+			pointer(document, 'pointermove', 180)
+			pointer(document, 'pointerup', 180)
+			await nextTick()
 
 			expect(emitted()['column-resize']).toBeTruthy()
 			expect(container.querySelector<HTMLElement>('colgroup col')?.style.width).toMatch(/px$/)
@@ -992,7 +999,7 @@ describe('BaseTable unit', () => {
 				global: globalConfig,
 			})
 
-			await fireEvent.mouseDown(container.querySelector('.base-table__resizer')!, { pageX: 100 })
+			pointer(container.querySelector('.base-table__resizer')!, 'pointerdown', 100)
 			expect(document.body.style.userSelect).toBe('none')
 
 			unmount()

@@ -1,8 +1,8 @@
-/** Composable: изменение ширины колонок таблицы через перетаскивание */
-import { onBeforeUnmount, ref } from 'vue'
 import { useResizeDrag } from './useResizeDrag'
 import { toHTMLElement } from '@utils/dom/domUtils'
 import { createKeyboardResize } from './createKeyboardResize'
+/** Composable: изменение ширины колонок таблицы указателем (мышь, касание, перо) */
+import { getCurrentInstance, onBeforeUnmount, ref } from 'vue'
 import type { ResizeColumn, ResizeState, UseColumnResizeParams } from './types/useColumnResize.types'
 import { applyResizeWidths, createIdleResizeState, findSiblingKey, measureSiblingWidth } from './useColumnResizeUtils'
 
@@ -16,9 +16,9 @@ function useColumnResize<TColumn extends ResizeColumn>({
 	const resizeState = ref<ResizeState>(createIdleResizeState())
 	const resizeBy = createKeyboardResize({ columns, visibleColumns, minWidth, onColumnResize, onColumnsChange })
 
-	const drag = useResizeDrag({ onMove: handleMouseMove, onEnd: stopResize })
+	const drag = useResizeDrag({ onMove: handleMove, onEnd: stopResize })
 
-	function handleMouseMove(event: MouseEvent): void {
+	function handleMove(event: PointerEvent): void {
 		/* istanbul ignore next -- Защитный выход без активного resize. */
 		if (!resizeState.value.isResizing) return
 
@@ -29,8 +29,7 @@ function useColumnResize<TColumn extends ResizeColumn>({
 		/* istanbul ignore next -- Защитный выход при повторном завершении resize. */
 		if (!resizeState.value.isResizing) return
 
-		resizeState.value.isResizing = false
-		drag.release()
+		cancelResize()
 
 		const column = columns.value.find(item => item.key === resizeState.value.columnKey)
 		/* istanbul ignore else -- Колонка существует для пользовательского resize. */
@@ -40,8 +39,13 @@ function useColumnResize<TColumn extends ResizeColumn>({
 		}
 	}
 
-	function startResize(event: MouseEvent, columnKey: string): void {
-		if (event.button > 0) return
+	function cancelResize(): void {
+		resizeState.value.isResizing = false
+		drag.release()
+	}
+
+	function startResize(event: PointerEvent, columnKey: string): void {
+		if (event.button > 0 || event.isPrimary === false) return
 		const target = toHTMLElement(event.target)
 		const th = target?.closest('th') ?? null
 		/* istanbul ignore next -- defensive: resize-handle всегда внутри th */
@@ -63,15 +67,12 @@ function useColumnResize<TColumn extends ResizeColumn>({
 			nextStartWidth: siblingWidth,
 		}
 
-		drag.attach()
+		drag.attach(event)
 	}
 
-	// Размонтирование посреди перетаскивания: mouseup уже не дойдёт до stopResize, поэтому
+	// Размонтирование посреди перетаскивания: pointerup уже не дойдёт до stopResize, поэтому
 	// освобождаем здесь — иначе выделение текста и курсор останутся сломанными во всём приложении
-	onBeforeUnmount(() => {
-		resizeState.value.isResizing = false
-		drag.release()
-	})
+	if (getCurrentInstance()) onBeforeUnmount(cancelResize)
 
 	return { startResize, resizeBy }
 }

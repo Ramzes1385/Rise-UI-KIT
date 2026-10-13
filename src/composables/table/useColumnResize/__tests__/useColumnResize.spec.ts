@@ -17,6 +17,25 @@ function withSetup(fn: () => ReturnType<typeof useColumnResize>) {
 	return { result: result!, wrapper }
 }
 
+const frames: FrameRequestCallback[] = []
+
+function flushFrames(): void {
+	const pending = frames.splice(0)
+	for (const callback of pending) callback(0)
+}
+
+beforeEach(() => {
+	frames.length = 0
+	vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => frames.push(callback))
+	vi.stubGlobal('cancelAnimationFrame', (id: number) => {
+		frames[id - 1] = () => {}
+	})
+})
+
+afterEach(() => {
+	vi.unstubAllGlobals()
+})
+
 describe('useColumnResize', () => {
 	const mockOnColumnResize = vi.fn()
 	const mockOnColumnsChange = vi.fn()
@@ -64,7 +83,7 @@ describe('useColumnResize', () => {
 		const mockEvent = {
 			target: mockTarget,
 			pageX: 500,
-		} as unknown as MouseEvent
+		} as unknown as PointerEvent
 
 		result.startResize(mockEvent, 'non_existent_key')
 
@@ -93,11 +112,11 @@ describe('useColumnResize', () => {
 		const mockEvent = {
 			target: mockTarget,
 			pageX: 500,
-		} as unknown as MouseEvent
+		} as unknown as PointerEvent
 
 		result.startResize(mockEvent, 'col1')
 
-		document.dispatchEvent(new MouseEvent('mouseup'))
+		document.dispatchEvent(new Event('pointerup'))
 
 		expect(document.body.style.cursor).toBe('')
 		expect(document.body.style.userSelect).toBe('')
@@ -123,7 +142,7 @@ describe('useColumnResize', () => {
 		const mockTarget = document.createElement('div')
 		vi.spyOn(mockTarget, 'closest').mockReturnValue(mockTh)
 
-		result.startResize({ target: mockTarget, pageX: 500 } as unknown as MouseEvent, 'col1')
+		result.startResize({ target: mockTarget, pageX: 500 } as unknown as PointerEvent, 'col1')
 		expect(document.body.style.userSelect).toBe('none')
 
 		wrapper.unmount()
@@ -132,8 +151,8 @@ describe('useColumnResize', () => {
 		expect(document.body.style.cursor).toBe('')
 
 		// Слушатели сняты: поздние события не меняют ширину и не эмитят результат
-		document.dispatchEvent(new MouseEvent('mousemove'))
-		document.dispatchEvent(new MouseEvent('mouseup'))
+		document.dispatchEvent(new Event('pointermove'))
+		document.dispatchEvent(new Event('pointerup'))
 		expect(columns.value[0].width).toBe('100px')
 		expect(mockOnColumnResize).not.toHaveBeenCalled()
 	})
@@ -156,15 +175,15 @@ describe('useColumnResize', () => {
 		const mockTarget = document.createElement('div')
 		vi.spyOn(mockTarget, 'closest').mockReturnValue(mockTh)
 
-		result.startResize({ target: mockTarget, pageX: 500 } as unknown as MouseEvent, 'col1')
-		document.dispatchEvent(new MouseEvent('mouseup'))
+		result.startResize({ target: mockTarget, pageX: 500 } as unknown as PointerEvent, 'col1')
+		document.dispatchEvent(new Event('pointerup'))
 
 		expect(document.body.style.cursor).toBe('progress')
 		expect(document.body.style.userSelect).toBe('text')
 		wrapper.unmount()
 	})
 
-	it('должен игнорировать mouseup, если ресайз не активен', () => {
+	it('должен игнорировать pointerup, если ресайз не активен', () => {
 		const { wrapper } = withSetup(() =>
 			useColumnResize({
 				columns,
@@ -175,13 +194,13 @@ describe('useColumnResize', () => {
 			}),
 		)
 
-		document.dispatchEvent(new MouseEvent('mouseup'))
+		document.dispatchEvent(new Event('pointerup'))
 		wrapper.unmount()
 	})
 })
 
 describe('useColumnResize — перетаскивание по реальной строке заголовков', () => {
-	type Column = { key: string; width?: string }
+	type Column = { key: string; width?: string; minWidth?: string; maxWidth?: string }
 
 	function buildHeader(widths: number[]) {
 		const table = document.createElement('table')
@@ -210,14 +229,16 @@ describe('useColumnResize — перетаскивание по реальной
 		return { columns, result, wrapper, onColumnResize, onColumnsChange }
 	}
 
-	function press(target: EventTarget, pageX: number): MouseEvent {
-		return { target, pageX } as unknown as MouseEvent
+	function press(target: EventTarget, pageX: number): PointerEvent {
+		return { target, pageX } as unknown as PointerEvent
 	}
 
-	function move(pageX: number): void {
-		const event = new MouseEvent('mousemove')
+	function move(pageX: number, pointerId?: number): void {
+		const event = new Event('pointermove')
 		Object.defineProperty(event, 'pageX', { value: pageX })
+		if (pointerId !== undefined) Object.defineProperty(event, 'pointerId', { value: pointerId })
 		document.dispatchEvent(event)
+		flushFrames()
 	}
 
 	let cleanup: (() => void) | null = null
@@ -248,7 +269,7 @@ describe('useColumnResize — перетаскивание по реальной
 		expect(ctx.columns.value[1].width).toBe('120px')
 		expect(ctx.columns.value[2].width).toBe('200px')
 
-		document.dispatchEvent(new MouseEvent('mouseup'))
+		document.dispatchEvent(new Event('pointerup'))
 		expect(ctx.onColumnResize).toHaveBeenCalledWith('a', 130)
 		expect(ctx.onColumnsChange).toHaveBeenCalledWith(ctx.columns.value)
 	})
@@ -313,7 +334,7 @@ describe('useColumnResize — перетаскивание по реальной
 		expect(ctx.columns.value[0].width).toBe('5100px')
 	})
 
-	it('колонка без ширины без движения мыши сообщает ширину 0', () => {
+	it('колонка без ширины без движения указателя сообщает ширину 0', () => {
 		const { table, ths } = buildHeader([100])
 		const ctx = setup([{ key: 'a' }])
 		cleanup = () => {
@@ -322,12 +343,12 @@ describe('useColumnResize — перетаскивание по реальной
 		}
 
 		ctx.result.startResize(press(ths[0].handle, 0), 'a')
-		document.dispatchEvent(new MouseEvent('mouseup'))
+		document.dispatchEvent(new Event('pointerup'))
 
 		expect(ctx.onColumnResize).toHaveBeenCalledWith('a', 0)
 	})
 
-	it('повторный старт без mouseup сохраняет исходные стили body', () => {
+	it('повторный старт без pointerup сохраняет исходные стили body', () => {
 		document.body.style.cursor = 'wait'
 		document.body.style.userSelect = 'auto'
 		const { table, ths } = buildHeader([100, 150])
@@ -344,7 +365,7 @@ describe('useColumnResize — перетаскивание по реальной
 		ctx.result.startResize(press(ths[0].handle, 0), 'a')
 		expect(document.body.style.cursor).toBe('col-resize')
 
-		document.dispatchEvent(new MouseEvent('mouseup'))
+		document.dispatchEvent(new Event('pointerup'))
 		expect(document.body.style.cursor).toBe('wait')
 		expect(document.body.style.userSelect).toBe('auto')
 	})
@@ -364,7 +385,7 @@ describe('useColumnResize — перетаскивание по реальной
 		ctx.result.startResize(press(document.createElement('span'), 0), 'a')
 
 		expect(document.body.style.cursor).toBe('')
-		document.dispatchEvent(new MouseEvent('mouseup'))
+		document.dispatchEvent(new Event('pointerup'))
 		expect(ctx.onColumnResize).not.toHaveBeenCalled()
 	})
 
@@ -378,8 +399,174 @@ describe('useColumnResize — перетаскивание по реальной
 			ctx.wrapper.unmount()
 			table.remove()
 		}
-		ctx.result.startResize({ target: ths[0].handle, pageX: 0, button: 2 } as unknown as MouseEvent, 'a')
+		ctx.result.startResize({ target: ths[0].handle, pageX: 0, button: 2 } as unknown as PointerEvent, 'a')
 		expect(document.body.style.cursor).toBe('')
+	})
+
+	it('движения за один кадр сливаются: ширина считается раз за кадр по последнему положению', () => {
+		const { table, ths } = buildHeader([100, 150])
+		const ctx = setup([
+			{ key: 'a', width: '100px' },
+			{ key: 'b', width: '150px' },
+		])
+		cleanup = () => {
+			ctx.wrapper.unmount()
+			table.remove()
+		}
+		ctx.result.startResize(press(ths[0].handle, 0), 'a')
+		for (const pageX of [10, 20, 30]) {
+			const event = new Event('pointermove')
+			Object.defineProperty(event, 'pageX', { value: pageX })
+			document.dispatchEvent(event)
+		}
+		expect(frames).toHaveLength(1)
+		expect(ctx.columns.value[0].width).toBe('100px')
+		flushFrames()
+		expect(ctx.columns.value[0].width).toBe('130px')
+	})
+
+	it('отпускание указателя применяет ещё не отрисованное движение', () => {
+		const { table, ths } = buildHeader([100, 150])
+		const ctx = setup([
+			{ key: 'a', width: '100px' },
+			{ key: 'b', width: '150px' },
+		])
+		cleanup = () => {
+			ctx.wrapper.unmount()
+			table.remove()
+		}
+		ctx.result.startResize(press(ths[0].handle, 0), 'a')
+		const event = new Event('pointermove')
+		Object.defineProperty(event, 'pageX', { value: 25 })
+		document.dispatchEvent(event)
+		document.dispatchEvent(new Event('pointerup'))
+		expect(ctx.onColumnResize).toHaveBeenCalledWith('a', 125)
+		flushFrames()
+		expect(ctx.columns.value[0].width).toBe('125px')
+	})
+
+	it('pointercancel завершает жест так же, как отпускание', () => {
+		const { table, ths } = buildHeader([100, 150])
+		const ctx = setup([
+			{ key: 'a', width: '100px' },
+			{ key: 'b', width: '150px' },
+		])
+		cleanup = () => {
+			ctx.wrapper.unmount()
+			table.remove()
+		}
+		ctx.result.startResize(press(ths[0].handle, 0), 'a')
+		move(15)
+		document.dispatchEvent(new Event('pointercancel'))
+		expect(ctx.onColumnResize).toHaveBeenCalledWith('a', 115)
+		expect(document.body.style.userSelect).toBe('')
+	})
+
+	it('касание: чужой указатель (второй палец) жест не двигает и не завершает', () => {
+		const { table, ths } = buildHeader([100, 150])
+		const ctx = setup([
+			{ key: 'a', width: '100px' },
+			{ key: 'b', width: '150px' },
+		])
+		cleanup = () => {
+			ctx.wrapper.unmount()
+			table.remove()
+		}
+		ctx.result.startResize(
+			{ target: ths[0].handle, pageX: 0, pointerId: 7, pointerType: 'touch', isPrimary: true, button: 0 } as unknown as PointerEvent,
+			'a',
+		)
+		move(40, 8)
+		expect(ctx.columns.value[0].width).toBe('100px')
+		const foreignEnd = new Event('pointerup')
+		Object.defineProperty(foreignEnd, 'pointerId', { value: 8 })
+		document.dispatchEvent(foreignEnd)
+		expect(ctx.onColumnResize).not.toHaveBeenCalled()
+		move(40, 7)
+		expect(ctx.columns.value[0].width).toBe('140px')
+		const end = new Event('pointerup')
+		Object.defineProperty(end, 'pointerId', { value: 7 })
+		document.dispatchEvent(end)
+		expect(ctx.onColumnResize).toHaveBeenCalledWith('a', 140)
+	})
+
+	it('не основной указатель (второй палец) ресайз не начинает', () => {
+		const { table, ths } = buildHeader([100, 150])
+		const ctx = setup([
+			{ key: 'a', width: '100px' },
+			{ key: 'b', width: '150px' },
+		])
+		cleanup = () => {
+			ctx.wrapper.unmount()
+			table.remove()
+		}
+		ctx.result.startResize({ target: ths[0].handle, pageX: 0, button: 0, isPrimary: false } as unknown as PointerEvent, 'a')
+		expect(document.body.style.cursor).toBe('')
+	})
+
+	it('размонтирование отменяет отложенный кадр: движение после него ничего не меняет', () => {
+		const { table, ths } = buildHeader([100, 150])
+		const ctx = setup([
+			{ key: 'a', width: '100px' },
+			{ key: 'b', width: '150px' },
+		])
+		ctx.result.startResize(press(ths[0].handle, 0), 'a')
+		const event = new Event('pointermove')
+		Object.defineProperty(event, 'pageX', { value: 30 })
+		document.dispatchEvent(event)
+		ctx.wrapper.unmount()
+		flushFrames()
+		expect(ctx.columns.value[0].width).toBe('100px')
+		table.remove()
+	})
+
+	it('minWidth и maxWidth колонки ограничивают её ширину, сосед занимает остаток', () => {
+		const { table, ths } = buildHeader([100, 150])
+		const ctx = setup([
+			{ key: 'a', width: '100px', minWidth: '80px', maxWidth: '130px' },
+			{ key: 'b', width: '150px' },
+		])
+		cleanup = () => {
+			ctx.wrapper.unmount()
+			table.remove()
+		}
+		ctx.result.startResize(press(ths[0].handle, 0), 'a')
+		move(500)
+		expect(ctx.columns.value.map(column => column.width)).toEqual(['130px', '120px'])
+		move(-500)
+		expect(ctx.columns.value.map(column => column.width)).toEqual(['80px', '170px'])
+	})
+
+	it('minWidth и maxWidth соседа тоже соблюдаются, единицы кроме px игнорируются', () => {
+		const { table, ths } = buildHeader([100, 150])
+		const ctx = setup([
+			{ key: 'a', width: '100px', minWidth: '5rem' },
+			{ key: 'b', width: '150px', minWidth: '120px', maxWidth: '200px' },
+		])
+		cleanup = () => {
+			ctx.wrapper.unmount()
+			table.remove()
+		}
+		ctx.result.startResize(press(ths[0].handle, 0), 'a')
+		move(500)
+		expect(ctx.columns.value.map(column => column.width)).toEqual(['130px', '120px'])
+		move(-500)
+		expect(ctx.columns.value.map(column => column.width)).toEqual(['50px', '200px'])
+	})
+
+	it('несовместимые границы оставляют ширину как была', () => {
+		const { table, ths } = buildHeader([100, 150])
+		const ctx = setup([
+			{ key: 'a', width: '100px', minWidth: '300px' },
+			{ key: 'b', width: '150px' },
+		])
+		cleanup = () => {
+			ctx.wrapper.unmount()
+			table.remove()
+		}
+		ctx.result.startResize(press(ths[0].handle, 0), 'a')
+		move(20)
+		expect(ctx.columns.value.map(column => column.width)).toEqual(['100px', '150px'])
 	})
 
 	it('resizeBy меняет ширину колонки и соседа на шаг клавиатуры и сообщает итог', () => {
@@ -427,5 +614,17 @@ describe('useColumnResize — перетаскивание по реальной
 		ctx.result.resizeBy(ths[0].th, 'a', -100)
 		expect(ctx.columns.value[0].width).toBe('50px')
 		expect(ctx.onColumnResize).toHaveBeenCalledWith('a', 50)
+	})
+
+	it('вне компонента composable работает без хука размонтирования', () => {
+		const columns = ref<Column[]>([{ key: 'a', width: '100px' }])
+		const api = useColumnResize({
+			columns,
+			visibleColumns: columns,
+			minWidth: 50,
+			onColumnResize: vi.fn(),
+			onColumnsChange: vi.fn(),
+		})
+		expect(typeof api.startResize).toBe('function')
 	})
 })

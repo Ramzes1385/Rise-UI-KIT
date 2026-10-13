@@ -9,7 +9,7 @@ export interface BaseTableResizeHandleProps {
  * События BaseTableResizeHandle.
  */
 export interface BaseTableResizeHandleEmits {
-	(event: 'resize-start', value: MouseEvent): void
+	(event: 'resize-start', value: PointerEvent): void
 	/** Стрелка на ручке: изменить ширину на delta px */
 	(event: 'resize-by', handle: HTMLElement, delta: number): void
 }

@@ -166,11 +166,11 @@ describe('useTableComposition', () => {
 		})
 		document.body.appendChild(tr)
 
-		api.startResize({ target: ths[0], pageX: 0 } as unknown as MouseEvent, COLUMNS[0])
-		const move = new MouseEvent('mousemove')
+		api.startResize({ target: ths[0], pageX: 0 } as unknown as PointerEvent, COLUMNS[0])
+		const move = new Event('pointermove')
 		Object.defineProperty(move, 'pageX', { value: 30 })
 		document.dispatchEvent(move)
-		document.dispatchEvent(new MouseEvent('mouseup'))
+		document.dispatchEvent(new Event('pointerup'))
 
 		expect(emit).toHaveBeenCalledWith('column-resize', 'name', 150)
 		const changed = emit.mock.calls.find(call => call[0] === 'columns-change')?.[1] as TableColumn[]

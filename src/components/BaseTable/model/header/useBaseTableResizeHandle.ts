@@ -1,5 +1,6 @@
 import { useTableUi } from '../useTableUi'
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
+import { getWidthBounds } from '@composables/table/useColumnResize/useColumnResizeUtils'
 import type { BaseTableResizeHandleEmits, BaseTableResizeHandleProps } from '../../types/header/BaseTableResizeHandle.types'
 
 const MIN_WIDTH = 50
@@ -14,6 +15,15 @@ function measureRange(th: HTMLElement | null, declared: number): { width: number
 	return { width, max: Math.max(MIN_WIDTH, width + Math.max(room, 0)) }
 }
 
+function capturePointer(handle: HTMLElement | null, event: PointerEvent): void {
+	if (event.button !== 0 || event.isPrimary === false) return
+	try {
+		handle?.setPointerCapture?.(event.pointerId)
+	} catch {
+		return
+	}
+}
+
 export function useBaseTableResizeHandle(props: BaseTableResizeHandleProps, emit: BaseTableResizeHandleEmits) {
 	const handleRef = ref<HTMLElement | null>(null)
 	const declaredWidth = (): number => parseInt(props.column.width ?? '') || 0
@@ -25,14 +35,19 @@ export function useBaseTableResizeHandle(props: BaseTableResizeHandleProps, emit
 		width.value = range.width
 		maxWidth.value = range.max
 	}
+	const bounds = computed(() => getWidthBounds(props.column, MIN_WIDTH))
 	onMounted(measure)
 	watch(() => props.column.width, measure, { flush: 'post' })
 	return {
 		ui: useTableUi(),
 		handleRef,
 		width,
-		maxWidth,
-		minWidth: MIN_WIDTH,
+		maxWidth: computed(() => Math.min(maxWidth.value, bounds.value.max)),
+		minWidth: computed(() => bounds.value.min),
+		onPointerdown(event: PointerEvent): void {
+			capturePointer(handleRef.value, event)
+			emit('resize-start', event)
+		},
 		onKeydown(event: KeyboardEvent): void {
 			const direction = KEY_DIRECTION[event.key]
 			if (!direction) return

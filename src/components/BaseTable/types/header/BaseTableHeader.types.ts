@@ -42,6 +42,6 @@ export interface BaseTableHeaderProps {
 export interface BaseTableHeaderEmits {
 	(event: 'toggle-all'): void
 	(event: 'sort', column: TableColumn): void
-	(event: 'resize-start', value: MouseEvent, column: TableColumn): void
+	(event: 'resize-start', value: PointerEvent, column: TableColumn): void
 	(event: 'resize-by', handle: HTMLElement, column: TableColumn, delta: number): void
 }

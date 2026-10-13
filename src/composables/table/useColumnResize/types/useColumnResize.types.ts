@@ -1,6 +1,10 @@
 export interface ResizeColumn {
 	key: string
 	width?: string
+	/** Наименьшая ширина колонки в px (`'120px'`); другие единицы не учитываются */
+	minWidth?: string
+	/** Наибольшая ширина колонки в px (`'400px'`); другие единицы не учитываются */
+	maxWidth?: string
 }
 
 export interface ResizeState {

@@ -1873,3 +1873,9 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 - **BaseTable, раскрываемые строки** (`data-basetable--expandable-rows`, `--expanded-ids`, `--keyboard`, `--nested-table`, `--selection`): у свёрнутой раскрываемой строки нет пустого ряда с рамкой — граница между такими строками может сместиться на 1px; раскрытие по высоте и вид содержимого те же. Кнопка раскрытия у отключённой строки приглушена (недоступна).
 - **BaseTable, подгрузка прокруткой** (`data-basetable--infinite-without-height`, `--load-more`): под таблицей невидимая метка (1px, с отрицательным отступом, место не занимает) — на вид не влияет.
 - Новые истории `data-basetable--infinite-without-height`, `--sort-locale`, `data-basetable--expanded-ids`: одна и та же таблица, два набора правил сортировки, управляемое раскрытие.
+
+Порция 3 (производительность и ввод):
+
+- **BaseTable, ручка ширины колонки** (`data-basetable--resizable-columns`, `--column-resize-touch`): на устройствах с грубым указателем (касание) область нажатия 24px вместо 8px; линия ручки та же (2px у правого края). На мыши вид прежний.
+- **BaseTable, слоты через provide** (все истории с `cell-*`, `header-*`, `empty`, `expanded-content`): разметка и вид прежние, различий в снимках быть не должно; в историях Animations (сортировка и раскрытие) движение то же.
+- Новая история `data-basetable--column-resize-touch`: ширина колонки касанием в границах `minWidth` и `maxWidth`.

@@ -56,7 +56,7 @@ function useTableCompositionActions(options: UseTableCompositionOptions, parts: 
 		onColumnsChange: () => emit('columns-change', snapshotColumns()),
 	})
 
-	function startResize(event: MouseEvent, column: TableColumn): void {
+	function startResize(event: PointerEvent, column: TableColumn): void {
 		startColumnResize(event, column.key)
 	}
 

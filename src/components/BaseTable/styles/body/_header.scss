@@ -105,6 +105,10 @@
 		touch-action: none;
 		user-select: none;
 
+		@media (pointer: coarse) {
+			width: sz(24px);
+		}
+
 		&::after {
 			content: '';
 			position: absolute;
