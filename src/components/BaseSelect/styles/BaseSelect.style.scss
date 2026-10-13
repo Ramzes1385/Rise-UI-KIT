@@ -190,34 +190,12 @@
 	}
 
 	&__search {
-		display: flex;
-		align-items: center;
-		gap: sz(6px);
-		padding: 0 space(10px);
+		padding: space(8px);
 		border-bottom: 1px solid var(--rise-border);
-		color: var(--rise-text-muted);
-		@include transition-colors;
-
-		&:focus-within {
-			border-bottom-color: var(--rise-primary);
-		}
 	}
 
 	&__search-input {
-		flex: 1;
-		min-width: 0;
-		padding: sz(var(--rise-control-padding-y)) 0;
-		border: none;
-		outline: none;
-		background-color: transparent;
-		color: var(--rise-text-highlighted);
-		font: inherit;
-		@include control-text;
-
-		&::placeholder {
-			color: var(--rise-text-dimmed);
-			opacity: 1;
-		}
+		width: 100%;
 	}
 
 	&__header,

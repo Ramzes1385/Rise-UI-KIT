@@ -49,7 +49,7 @@ describe('BaseSubtitleEditor', () => {
 
 		const start = screen.getByRole('textbox', { name: 'Начало реплики 1' })
 		expect(start).not.toHaveAttribute('title')
-		await fireEvent.mouseEnter(start)
+		start.focus()
 		expect(await screen.findByRole('tooltip')).toBeInTheDocument()
 		expect(start).toHaveAttribute('aria-describedby', screen.getByRole('tooltip').id)
 	})
@@ -67,11 +67,12 @@ describe('BaseSubtitleEditor', () => {
 		expect(lastCues()).toEqual([CUES[1], { start: 5, end: 10, text: 'Первая' }])
 		await fireEvent.update(firstStart, 'x')
 		await fireEvent.change(firstStart)
-		expect(screen.getByRole('alert')).toHaveTextContent('Неверное время')
+		expect(screen.getByText('Неверное время')).toBeInTheDocument()
 		expect(firstStart).toHaveAttribute('aria-invalid', 'true')
+		expect(firstStart).toHaveAccessibleDescription(/Неверное время/)
 		await fireEvent.update(firstStart, '0:07')
 		await fireEvent.change(firstStart)
-		expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+		await waitFor(() => expect(screen.queryByText('Неверное время')).not.toBeInTheDocument())
 	})
 
 	it('конец раньше начала не применяется; изменение без ввода оставляет время', async () => {
@@ -79,7 +80,7 @@ describe('BaseSubtitleEditor', () => {
 		const end = screen.getByRole('textbox', { name: 'Конец реплики 2' })
 		await fireEvent.update(end, '0:01')
 		await fireEvent.change(end)
-		expect(screen.getByRole('alert')).toHaveTextContent('Конец раньше начала')
+		expect(screen.getByText('Конец раньше начала')).toBeInTheDocument()
 		expect(emitted('update:cues')).toBeUndefined()
 		await fireEvent.change(screen.getByRole('textbox', { name: 'Начало реплики 1' }))
 		expect(emitted('update:cues')).toHaveLength(1)

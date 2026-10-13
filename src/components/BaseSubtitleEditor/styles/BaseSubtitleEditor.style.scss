@@ -107,37 +107,7 @@
 
 	&__input,
 	&__text {
-		box-sizing: border-box;
 		width: 100%;
-		padding: sz(5px) sz(8px);
-		border: 1px solid var(--rise-border-accented);
-		border-radius: sz(var(--rise-radius-md));
-		background-color: var(--rise-bg);
-		color: var(--rise-text-highlighted);
-		font: inherit;
-		@include text-size(sm);
-		@include field-focus;
-
-		&:disabled {
-			@include disabled-state;
-		}
-
-		&[aria-invalid='true'] {
-			border-color: var(--rise-error);
-		}
-	}
-
-	&__input {
-		font-variant-numeric: tabular-nums;
-	}
-
-	&__text {
-		resize: vertical;
-	}
-
-	&__error {
-		@include text-size(xs);
-		color: var(--rise-error);
 	}
 
 	&__actions {

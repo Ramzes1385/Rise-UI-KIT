@@ -35,7 +35,7 @@ describe('BaseSubtitleEditor: проп ui', () => {
 		await fireEvent.change(start)
 		const root = container.querySelector('.base-subtitle-editor')!
 		expect(root).toHaveClass('base-subtitle-editor', 'u-root')
-		for (const part of SUBTITLE_EDITOR_PARTS.filter(name => name !== 'empty')) {
+		for (const part of SUBTITLE_EDITOR_PARTS.filter(name => name !== 'empty' && name !== 'error')) {
 			const elements = root.querySelectorAll(`.base-subtitle-editor__${part}`)
 			expect(elements.length).toBeGreaterThan(0)
 			for (const element of elements) expect(element).toHaveClass(`u-${part}`)

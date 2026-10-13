@@ -1,19 +1,24 @@
 <template>
 	<div :class="[partClass('dropdown-content'), classes.dropdownContent]" :style="sizeScaleStyle">
 		<div v-if="isSearchable" :class="[partClass('search'), classes.search]">
-			<BaseIcon name="search" :class="partClass('search-icon')" :size-scale="calcIconScale('sm', sizeScale)" />
-			<input
+			<BaseInput
 				ref="searchRef"
 				v-model="searchQuery"
-				type="text"
+				:class="[partClass('search-input'), classes.searchInput]"
 				:placeholder="UI_TEXT.SEARCH_PLACEHOLDER"
 				:aria-label="UI_ARIA.SEARCH"
-				:aria-controls="listboxId"
-				:aria-activedescendant="activeIndex >= 0 ? getOptionId(activeIndex) : undefined"
-				autocomplete="off"
-				:class="[partClass('search-input'), classes.searchInput]"
+				:input-attrs="{
+					autocomplete: 'off',
+					'aria-controls': listboxId,
+					'aria-activedescendant': activeIndex >= 0 ? getOptionId(activeIndex) : undefined,
+				}"
+				:size-scale="sizeScale"
 				@click.stop
-				@keydown="$emit('search-keydown', $event)" />
+				@keydown="$emit('search-keydown', $event)">
+				<template #prefix>
+					<BaseIcon name="search" :class="partClass('search-icon')" :size-scale="calcIconScale('sm', sizeScale)" />
+				</template>
+			</BaseInput>
 		</div>
 
 		<div v-if="$slots.header" :class="partClass('header')">
@@ -104,6 +109,7 @@
 <script setup lang="ts">
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
+import { BaseInput } from '@components/BaseInput'
 import { UI_ARIA, UI_TEXT } from '@/locales/messages'
 import { calcIconScale } from '@utils/media/iconUtils'
 import { useBaseSelectDropdown } from '../model/useBaseSelectDropdown'

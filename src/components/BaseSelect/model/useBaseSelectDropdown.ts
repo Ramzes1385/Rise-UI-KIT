@@ -3,10 +3,10 @@ import type { BaseSelectDropdownProps } from '../types/BaseSelectDropdown.types'
 
 export function useBaseSelectDropdown(props: BaseSelectDropdownProps) {
 	const listRef = ref<HTMLElement | null>(null)
-	const searchRef = ref<HTMLInputElement | null>(null)
+	const searchRef = ref<{ inputRef: HTMLInputElement | null } | null>(null)
 
 	onMounted(() => {
-		searchRef.value?.focus({ preventScroll: true })
+		searchRef.value?.inputRef?.focus({ preventScroll: true })
 	})
 
 	watch(

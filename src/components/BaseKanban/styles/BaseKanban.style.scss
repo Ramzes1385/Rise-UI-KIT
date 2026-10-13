@@ -117,23 +117,7 @@
 	}
 
 	&__field {
-		box-sizing: border-box;
 		width: 100%;
-		min-height: sz(56px);
-		margin: 0;
-		padding: sz(8px) sz(12px);
-		border: 1px solid var(--rise-primary);
-		border-radius: sz(var(--rise-radius-md));
-		outline: none;
-		background-color: var(--rise-bg);
-		color: var(--rise-text-highlighted);
-		box-shadow:
-			0 0 0 1px var(--rise-primary),
-			var(--rise-shadow-xs);
-		font: inherit;
-		font-weight: var(--rise-font-weight-medium);
-		resize: none;
-		field-sizing: content;
 	}
 
 	&__editor-actions {

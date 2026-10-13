@@ -63,27 +63,29 @@
 				:aria-current="index === activeIndex ? 'true' : undefined">
 				<span :class="ui('number')" aria-hidden="true">{{ index + 1 }}</span>
 				<span v-for="edge in ['start', 'end'] as const" :key="edge" :class="ui('time')">
-					<BaseTooltip :text="fieldError(index, edge) || UI_SUBTITLES.TIME_HINT" is-wrapperless>
-						<input
+					<BaseTooltip v-slot="{ triggerProps }" :text="fieldError(index, edge) || UI_SUBTITLES.TIME_HINT" is-wrapperless>
+						<BaseInput
 							:class="ui('input')"
-							:value="timeValue(index, edge)"
+							:model-value="timeValue(index, edge)"
 							:aria-label="label(edge === 'start' ? UI_SUBTITLES.START : UI_SUBTITLES.END, index)"
-							:aria-invalid="fieldError(index, edge) ? 'true' : undefined"
-							:disabled="isDisabled"
-							inputmode="decimal"
-							@input="setDraft(index, edge, ($event.target as HTMLInputElement).value)"
+							:error="fieldError(index, edge)"
+							:ui="{ 'error-text': ui('error') }"
+							:input-attrs="{ ...triggerProps, inputmode: 'decimal' }"
+							:is-disabled="isDisabled"
+							:size-scale="sizeScale"
+							@update:model-value="setDraft(index, edge, $event)"
 							@change="commitTime(index, edge)" />
 					</BaseTooltip>
-					<span v-if="fieldError(index, edge)" :class="ui('error')" role="alert">{{ fieldError(index, edge) }}</span>
 				</span>
-				<textarea
-					:id="`${idPrefix}-text-${index}`"
+				<BaseTextarea
 					:class="ui('text')"
-					:value="cue.text"
-					rows="2"
+					:model-value="cue.text"
+					:rows="2"
 					:aria-label="label(UI_SUBTITLES.TEXT, index)"
-					:disabled="isDisabled"
-					@input="updateText(index, ($event.target as HTMLTextAreaElement).value)"></textarea>
+					:input-attrs="{ id: `${idPrefix}-text-${index}` }"
+					:is-disabled="isDisabled"
+					:size-scale="sizeScale"
+					@update:model-value="updateText(index, $event)" />
 				<span :class="ui('actions')">
 					<BaseButton variant="ghost" :size-scale="sizeScale" :aria-label="label(UI_SUBTITLES.GO_TO, index)" @click="goTo(index)">
 						<template #left><BaseIcon name="play" /></template>
@@ -107,8 +109,10 @@ import '../styles/BaseSubtitleEditor.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_SUBTITLES } from '@/locales/messages'
 import { BaseEmpty } from '@components/BaseEmpty'
+import { BaseInput } from '@components/BaseInput'
 import { BaseButton } from '@components/BaseButton'
 import { BaseTooltip } from '@components/BaseTooltip'
+import { BaseTextarea } from '@components/BaseTextarea'
 import { useBaseSubtitleEditor } from '../model/useBaseSubtitleEditor'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseSubtitleEditorEmits, BaseSubtitleEditorProps } from '../types/BaseSubtitleEditor.types'

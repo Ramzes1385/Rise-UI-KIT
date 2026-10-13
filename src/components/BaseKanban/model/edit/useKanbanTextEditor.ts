@@ -3,19 +3,19 @@ import type { KanbanTextEditorEmits, KanbanTextEditorProps } from '../../types/K
 
 export function useKanbanTextEditor(props: KanbanTextEditorProps, emit: KanbanTextEditorEmits) {
 	const rootRef = ref<HTMLElement | null>(null)
-	const fieldRef = ref<HTMLTextAreaElement | null>(null)
+	const fieldRef = ref<{ textareaRef: HTMLTextAreaElement | null } | null>(null)
 	const text = ref(props.value)
 	let isClosed = false
 	onMounted(() => {
-		fieldRef.value?.focus()
-		fieldRef.value?.select()
+		fieldRef.value?.textareaRef?.focus()
+		fieldRef.value?.textareaRef?.select()
 	})
 	const submit = (): void => {
 		const value = text.value
 		isClosed = !props.isRepeating
 		text.value = props.isRepeating ? '' : value
 		emit('submit', value)
-		if (props.isRepeating) fieldRef.value?.focus()
+		if (props.isRepeating) fieldRef.value?.textareaRef?.focus()
 	}
 	const cancel = (): void => {
 		isClosed = true
@@ -27,15 +27,15 @@ export function useKanbanTextEditor(props: KanbanTextEditorProps, emit: KanbanTe
 		text,
 		submit,
 		cancel,
-		handleInput(event: Event): void {
-			text.value = (event.target as HTMLTextAreaElement).value
+		handleInput(value: string): void {
+			text.value = value
 		},
 		handleKeydown(event: KeyboardEvent): void {
 			if (event.isComposing) return
 			if (event.key === 'Escape') {
 				event.stopPropagation()
 				cancel()
-			} else if (event.key === 'Enter' && event.target === fieldRef.value) {
+			} else if (event.key === 'Enter' && event.target === fieldRef.value?.textareaRef) {
 				event.preventDefault()
 				submit()
 			}
