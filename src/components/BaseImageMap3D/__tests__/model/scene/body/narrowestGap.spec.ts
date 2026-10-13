@@ -66,11 +66,21 @@ describe('narrowestGap: дерево рамок вместо перебора в
 		expect(narrowestGap(ringEdges([strip]), 2)).toBe(2)
 	})
 
-	it('фигура из 8000 вершин считается быстрее 100 мс', () => {
-		const shape = traced(8000)
-		const started = performance.now()
-		const gap = shapeNarrowest(shape, 40, 24)
-		expect(performance.now() - started).toBeLessThan(100)
-		expect(gap).toBeGreaterThan(0)
+	it('фигура из 8000 вершин считается быстрее 100 мс, а рост вершин в 4 раза не даёт роста времени в 16', () => {
+		const timeOf = (count: number): number => {
+			const shape = traced(count)
+			shapeNarrowest(shape, 40, 24)
+			return Math.min(
+				...Array.from({ length: 5 }, () => {
+					const started = performance.now()
+					shapeNarrowest(shape, 40, 24)
+					return performance.now() - started
+				}),
+			)
+		}
+		const small = timeOf(2000)
+		const large = timeOf(8000)
+		expect(large).toBeLessThan(100)
+		expect(large).toBeLessThan(small * 12)
 	})
 })
