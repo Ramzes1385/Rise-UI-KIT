@@ -436,8 +436,8 @@ describe('BaseFormWizard unit', () => {
 			expect(next()).toBeDisabled()
 			expect(screen.getByRole('button', { name: UI_FORM_WIZARD.BACK })).toBeDisabled()
 			expect(container.querySelector('.base-form-wizard')).toHaveClass('base-form-wizard--disabled')
-			expect(container.querySelector('.base-form-wizard')).not.toHaveAttribute('aria-disabled')
-			expect(screen.getByRole('group', { name: STEPS[0].title })).toHaveAttribute('aria-disabled', 'true')
+			expect(screen.getByRole('group', { name: UI_FORM_WIZARD.LABEL })).toHaveAttribute('aria-disabled', 'true')
+			expect(screen.getByRole('group', { name: STEPS[0].title })).not.toHaveAttribute('aria-disabled')
 			await user.click(next())
 
 			expect(emitted()['step-change']).toBeUndefined()

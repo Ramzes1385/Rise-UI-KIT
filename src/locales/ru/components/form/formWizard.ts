@@ -1,6 +1,8 @@
 /** Многошаговая форма BaseFormWizard */
 export const ruFormWizard = {
 	formWizard: {
+		/** Имя области мастера (`role="group"`) */
+		LABEL: 'Пошаговая форма',
 		/** Кнопки перехода между шагами */
 		BACK: 'Назад',
 		NEXT: 'Далее',

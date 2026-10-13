@@ -1,6 +1,8 @@
 /** BaseFormWizard multi-step form */
 export const enFormWizard = {
 	formWizard: {
+		/** Wizard area name (`role="group"`) */
+		LABEL: 'Step-by-step form',
 		/** Buttons for moving between steps */
 		BACK: 'Back',
 		NEXT: 'Next',
