@@ -843,13 +843,19 @@
 | `--rise-form-field-radius` | корень | radius | — | `var(--rise-radius-lg)` |
 | `--rise-form-field-shadow` | корень | shadow | — | `var(--rise-shadow-sm)` |
 
-## BaseGrid
-
-Один токен `gap` перекрывает все именованные размеры `gap` (`xs`…`xl`): после его задания пропы `gap="xs"` и `gap="xl"` дают один и тот же промежуток; `gap="none"` токен не меняет.
+## BaseFormWizard
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
 |---|---|---|---|---|
-| `--rise-grid-gap` | корень | gap | — | `$size` |
+| `--rise-form-wizard-bg` | корень | bg | — | `transparent` |
+| `--rise-form-wizard-border` | корень | border | — | `var(--rise-border)` |
+| `--rise-form-wizard-gap` | корень | gap | — | `20px` |
+| `--rise-form-wizard-padding-x` | корень | padding-x | — | `24px` |
+| `--rise-form-wizard-padding-y` | корень | padding-y | — | `20px` |
+| `--rise-form-wizard-radius` | корень | radius | — | `var(--rise-radius-lg)` |
+| `--rise-form-wizard-text` | корень | text | — | `var(--rise-text)` |
+| `--rise-form-wizard-title-font-size` | title | font-size | — | `var(--rise-font-size-lg)` |
+| `--rise-form-wizard-title-text` | title | text | — | `var(--rise-text-highlighted)` |
 
 ## BaseGantt
 
@@ -872,19 +878,13 @@
 | `--rise-gantt-text` | корень | text | — | `var(--rise-text)` |
 | `--rise-gantt-today-bg` | today | bg | — | `var(--rise-error)` |
 
-## BaseFormWizard
+## BaseGrid
+
+Один токен `gap` перекрывает все именованные размеры `gap` (`xs`…`xl`): после его задания пропы `gap="xs"` и `gap="xl"` дают один и тот же промежуток; `gap="none"` токен не меняет.
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
 |---|---|---|---|---|
-| `--rise-form-wizard-bg` | корень | bg | — | `transparent` |
-| `--rise-form-wizard-border` | корень | border | — | `var(--rise-border)` |
-| `--rise-form-wizard-gap` | корень | gap | — | `20px` |
-| `--rise-form-wizard-padding-x` | корень | padding-x | — | `24px` |
-| `--rise-form-wizard-padding-y` | корень | padding-y | — | `20px` |
-| `--rise-form-wizard-radius` | корень | radius | — | `var(--rise-radius-lg)` |
-| `--rise-form-wizard-text` | корень | text | — | `var(--rise-text)` |
-| `--rise-form-wizard-title-font-size` | title | font-size | — | `var(--rise-font-size-lg)` |
-| `--rise-form-wizard-title-text` | title | text | — | `var(--rise-text-highlighted)` |
+| `--rise-grid-gap` | корень | gap | — | `$size` |
 
 ## BaseHeader
 
