@@ -12,7 +12,7 @@
 	&--mini &__dock {
 		position: fixed;
 		inset: auto sz(16px) sz(16px) auto;
-		z-index: 1000;
+		z-index: calc(var(--rise-z-overlay) - 1);
 		width: min(#{sz(360px)}, calc(100vw - #{sz(32px)}));
 		aspect-ratio: var(--media-aspect, 16 / 9);
 		overflow: clip;

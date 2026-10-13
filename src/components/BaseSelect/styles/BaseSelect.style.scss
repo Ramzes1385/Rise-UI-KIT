@@ -47,8 +47,7 @@
 	}
 
 	&--open &__trigger {
-		border-color: var(--rise-primary);
-		box-shadow: 0 0 0 1px var(--rise-primary);
+		@include field-open(select);
 	}
 
 	&__values {
@@ -176,12 +175,12 @@
 		@include custom-bg(background-color, transparent);
 
 		&:focus-within {
-			box-shadow: 0 1px 0 0 var(--rise-primary);
+			@include field-open(select, true);
 		}
 	}
 
 	&--underline.base-select--open &__trigger {
-		box-shadow: 0 1px 0 0 var(--rise-primary);
+		@include field-open(select, true);
 	}
 
 	&--error &__trigger {

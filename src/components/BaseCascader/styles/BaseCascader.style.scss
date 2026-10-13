@@ -36,8 +36,7 @@
 	}
 
 	&--open &__trigger {
-		border-color: ct(cascader, border-focus, var(--rise-primary));
-		box-shadow: 0 0 0 1px ct(cascader, border-focus, var(--rise-primary));
+		@include field-open(cascader);
 	}
 
 	&__values {
@@ -150,12 +149,12 @@
 		@include custom-bg(background-color, transparent);
 
 		&:focus-within {
-			box-shadow: 0 1px 0 0 var(--rise-primary);
+			@include field-open(cascader, true);
 		}
 	}
 
 	&--underline.base-cascader--open &__trigger {
-		box-shadow: 0 1px 0 0 var(--rise-primary);
+		@include field-open(cascader, true);
 	}
 
 	&--error &__trigger {

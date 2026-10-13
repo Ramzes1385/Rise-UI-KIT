@@ -151,6 +151,10 @@
 		}
 	}
 
+	&--soft &__quote {
+		@include custom-text(color, ct(markdown, quote-text, var(--rise-text-toned)));
+	}
+
 	&__code-block {
 		margin: sz(12px) 0;
 		overflow: hidden;

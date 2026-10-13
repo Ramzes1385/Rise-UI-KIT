@@ -209,6 +209,19 @@
 	}
 }
 
+// Раскрытое поле (`--open` у BaseSelect, BaseCascader, BaseTreeSelect): рамка и тень — тот же токен `--rise-<поле>-border-focus`,
+// что и у фокуса в `field-box`, с тем же запасным значением. `$underline` — поле с одной нижней чертой.
+@mixin field-open($component, $underline: false) {
+	$color: ct($component, border-focus, var(--rise-input-border-focus, var(--rise-primary)));
+
+	@if $underline {
+		box-shadow: 0 1px 0 0 #{$color};
+	} @else {
+		border-color: #{$color};
+		box-shadow: 0 0 0 1px #{$color};
+	}
+}
+
 @mixin floating-surface {
 	background-color: var(--rise-bg);
 	color: var(--rise-text);

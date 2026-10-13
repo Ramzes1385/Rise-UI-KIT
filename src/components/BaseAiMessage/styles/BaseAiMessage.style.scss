@@ -21,7 +21,11 @@
 		background-image: ct(
 			ai-message,
 			avatar-bg,
-			linear-gradient(135deg, var(--rise-primary), color-mix(in oklab, var(--rise-primary) 60%, #7c3aed))
+			linear-gradient(
+				135deg,
+				var(--rise-primary),
+				color-mix(in oklab, var(--rise-primary) 60%, var(--rise-ai-message-avatar-end-bg, var(--rise-info)))
+			)
 		);
 		color: var(--rise-on-primary);
 

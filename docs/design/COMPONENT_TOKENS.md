@@ -26,7 +26,12 @@
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
 |---|---|---|---|---|
-| `--rise-ai-message-avatar-bg` | avatar | bg | — | `linear-gradient(135deg, var(--rise-primary), color-mix(in oklab, var(--rise-primary) 60%, #7c3aed))` |
+| `--rise-ai-message-avatar-bg` | avatar | bg | — | `linear-gradient(
+				135deg,
+				var(--rise-primary),
+				color-mix(in oklab, var(--rise-primary) 60%, var(--rise-ai-message-avatar-end-bg, var(--rise-info)))
+			)` |
+| `--rise-ai-message-avatar-end-bg` | avatar-end | bg | — | `var(--rise-info)` |
 | `--rise-ai-message-avatar-radius` | avatar | radius | — | `10px` |
 | `--rise-ai-message-body-bg` | body | bg | — | `var(--rise-bg-elevated)` |
 | `--rise-ai-message-body-border` | body | border | — | `var(--rise-border-accented)` |
