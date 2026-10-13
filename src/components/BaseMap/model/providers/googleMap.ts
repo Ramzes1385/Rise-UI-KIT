@@ -6,8 +6,11 @@ import type {
 	GoogleMapInstance,
 	GoogleMapsApi,
 	GoogleMarker,
+	GoogleShape,
 	MapAdapterFactory,
 	MapHandlers,
+	MapShapeLine,
+	MapShapes,
 	MapsWindow,
 } from '../../types/providers.types'
 
@@ -49,6 +52,26 @@ function markerLayer(api: GoogleMapsApi, map: GoogleMapInstance, handlers: MapHa
 	return { set, clear }
 }
 
+const FILL_OPACITY = 0.2
+
+function shapeLayer(api: GoogleMapsApi, map: GoogleMapInstance) {
+	let shown: GoogleShape[] = []
+	const clear = (): void => {
+		for (const shape of shown) shape.setMap(null)
+		shown = []
+	}
+	const set = ({ polylines, polygons }: MapShapes): void => {
+		clear()
+		const base = (line: MapShapeLine) => ({ map, strokeColor: line.color, strokeWeight: line.width })
+		const lines = polylines.map(line => new api.Polyline({ ...base(line), path: line.coordinates }))
+		const areas = polygons.map(
+			line => new api.Polygon({ ...base(line), paths: line.coordinates, fillColor: line.color, fillOpacity: FILL_OPACITY }),
+		)
+		shown = [...lines, ...areas]
+	}
+	return { set, clear }
+}
+
 export const createGoogleMap: MapAdapterFactory = async (element, { apiKey, language, view, mapId, scheme, handlers }) => {
 	const api = await googleApi(apiKey, language)
 	const map = new api.Map(element, { center: view.center, zoom: view.zoom, mapId: mapId as string, colorScheme: GOOGLE_SCHEMES[scheme] })
@@ -60,6 +83,7 @@ export const createGoogleMap: MapAdapterFactory = async (element, { apiKey, lang
 		if (event.latLng) handlers.onClick({ lat: event.latLng.lat(), lng: event.latLng.lng() })
 	})
 	const markers = markerLayer(api, map, handlers)
+	const shapes = shapeLayer(api, map)
 	return {
 		setView: next => {
 			map.setCenter(next.center)
@@ -67,8 +91,10 @@ export const createGoogleMap: MapAdapterFactory = async (element, { apiKey, lang
 		},
 		setMarkers: markers.set,
 		setScheme: () => undefined,
+		setShapes: shapes.set,
 		destroy: () => {
 			markers.clear()
+			shapes.clear()
 			api.event.clearInstanceListeners(map)
 			element.replaceChildren()
 		},

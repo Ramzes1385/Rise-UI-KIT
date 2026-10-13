@@ -25,6 +25,39 @@
 		inset: 0;
 	}
 
+	&__shapes {
+		@include visually-hidden;
+		margin: 0;
+		list-style: none;
+	}
+
+	&__controls {
+		position: absolute;
+		top: sz(ct(map, controls-offset, 8px));
+		right: sz(ct(map, controls-offset, 8px));
+		display: flex;
+		flex-direction: column;
+		gap: sz(4px);
+	}
+
+	&__notice {
+		position: absolute;
+		bottom: sz(ct(map, controls-offset, 8px));
+		left: sz(ct(map, controls-offset, 8px));
+		z-index: 1;
+		max-width: calc(100% - #{sz(16px)});
+		pointer-events: none;
+	}
+
+	&__notice-text {
+		display: inline-block;
+		padding: sz(4px) sz(10px);
+		border-radius: sz(ct(map, tooltip-radius, var(--rise-radius-sm)));
+		background: ct(map, tooltip-bg, var(--rise-bg-inverted));
+		color: ct(map, tooltip-text, var(--rise-text-inverted));
+		@include text-size(sm);
+	}
+
 	&__placeholder {
 		display: flex;
 		align-items: center;

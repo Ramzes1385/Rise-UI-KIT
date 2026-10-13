@@ -25,6 +25,35 @@
 				<slot name="balloon" :marker="selectedHost.marker" :close="closeBalloon" />
 			</div>
 		</Teleport>
+		<ul v-if="shapeLabels.length" class="base-map__shapes" :aria-label="UI_MAP.SHAPES">
+			<li v-for="(shape, index) in shapeLabels" :key="index">{{ shape }}</li>
+		</ul>
+		<div v-if="hasControls && status === 'ready'" class="base-map__controls" role="group" :aria-label="UI_MAP.CONTROLS">
+			<BaseButton
+				variant="outline"
+				:size-scale="sizeScale"
+				:aria-label="UI_MAP.ZOOM_IN"
+				:is-disabled="!canZoomIn"
+				is-focusable-when-disabled
+				@click="zoomBy(1)">
+				<BaseIcon name="plus" :size-scale="calcIconScale('md', sizeScale)" />
+			</BaseButton>
+			<BaseButton
+				variant="outline"
+				:size-scale="sizeScale"
+				:aria-label="UI_MAP.ZOOM_OUT"
+				:is-disabled="!canZoomOut"
+				is-focusable-when-disabled
+				@click="zoomBy(-1)">
+				<BaseIcon name="minus" :size-scale="calcIconScale('md', sizeScale)" />
+			</BaseButton>
+			<BaseButton variant="outline" :size-scale="sizeScale" :aria-label="UI_MAP.LOCATE" :is-loading="isLocating" @click="locate">
+				<BaseIcon name="map-pin" :size-scale="calcIconScale('md', sizeScale)" />
+			</BaseButton>
+		</div>
+		<div v-if="hasControls" class="base-map__notice" role="status">
+			<span v-if="notice" class="base-map__notice-text">{{ notice }}</span>
+		</div>
 		<Transition name="base-map-loader">
 			<BaseLoader v-if="status === 'loading'" is-overlay has-label :label="UI_MAP.LOADING" />
 		</Transition>
@@ -49,7 +78,9 @@ import { UI_MAP } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { useBaseMap } from '../model/useBaseMap'
 import { BaseEmpty } from '@components/BaseEmpty'
+import { BaseButton } from '@components/BaseButton'
 import { BaseLoader } from '@components/BaseLoader'
+import { calcIconScale } from '@utils/media/iconUtils'
 import { kitDefaults } from '@composables/base/useDefaults'
 import type { BaseMapEmits, BaseMapProps, BaseMapSlots } from '../types/BaseMap.types'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
@@ -67,6 +98,9 @@ const props = withDefaults(
 		sizeScale: SIZE_SCALE_DEFAULT,
 		scheme: 'auto',
 		selected: null,
+		hasControls: false,
+		fitMarkers: false,
+		boundsPadding: 40,
 	}),
 )
 
@@ -94,5 +128,12 @@ const {
 	balloonId,
 	closeBalloon,
 	onEscape,
+	shapeLabels,
+	notice,
+	isLocating,
+	canZoomIn,
+	canZoomOut,
+	zoomBy,
+	locate,
 } = useBaseMap(props, emit, slots)
 </script>

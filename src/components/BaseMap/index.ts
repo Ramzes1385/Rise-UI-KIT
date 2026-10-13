@@ -7,6 +7,7 @@ export type {
 	BaseMapSlots,
 	MapCoordinates,
 	MapLayer,
+	MapLocateError,
 	MapMarker,
 	MapPolygon,
 	MapPolyline,

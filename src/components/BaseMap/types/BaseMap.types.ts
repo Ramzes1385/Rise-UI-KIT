@@ -71,6 +71,9 @@ export interface MapPolygon {
 	title?: string
 }
 
+/** Почему не удалось определить местоположение: запрет, нет данных, таймаут или браузер не умеет */
+export type MapLocateError = 'denied' | 'unavailable' | 'timeout' | 'unsupported'
+
 /** Что показывает карта: центр и масштаб */
 export interface MapView {
 	center: MapCoordinates
@@ -107,6 +110,19 @@ export interface BaseMapProps extends SeoComponentProps, BaseComponentProps<MapV
 	zoom?: number
 	/** Метки на карте */
 	markers?: MapMarker[]
+	/** Линии на карте — маршруты; `title` попадает в список для экранного диктора */
+	polylines?: MapPolyline[]
+	/** Многоугольники на карте — зоны доставки; `title` попадает в список для экранного диктора */
+	polygons?: MapPolygon[]
+	/**
+	 * Кнопки управления поверх карты: масштаб «+» и «−» и «моё местоположение» (`navigator.geolocation`, событие `locate`;
+	 * отказ — `locate-error` и сообщение под кнопками)
+	 */
+	hasControls?: boolean
+	/** Вписать все метки в карту при показе и при смене `markers` (одна метка — центрировать на ней, масштаб из `zoom`) */
+	fitMarkers?: boolean
+	/** Отступ от края карты до крайних меток при `fitMarkers`, px; по умолчанию 40 */
+	boundsPadding?: number
 	/**
 	 * Цветовая схема карты. `auto` (по умолчанию) — по теме кита: `data-theme` ближайшего предка или `<html>`
 	 * (`system` — по `prefers-color-scheme`), смена темы подхватывается сразу. Яндекс переключает слой, Google пересоздаёт карту
@@ -149,6 +165,10 @@ export interface BaseMapEmits {
 	(event: 'click', coordinates: MapCoordinates): void
 	/** Клик по метке или Enter на ней */
 	(event: 'marker-click', marker: MapMarker): void
+	/** Местоположение определено кнопкой «моё местоположение»: карта уже перемещена на него */
+	(event: 'locate', coordinates: MapCoordinates): void
+	/** Определить местоположение не удалось: причина */
+	(event: 'locate-error', reason: MapLocateError): void
 	/** Карта загружена и показана */
 	(event: 'ready'): void
 	/** Скрипт поставщика не загрузился или ключ отклонён */

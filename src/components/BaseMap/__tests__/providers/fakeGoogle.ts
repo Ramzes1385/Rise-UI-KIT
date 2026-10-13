@@ -40,13 +40,29 @@ export function fakeGoogle() {
 			markers.push(this)
 		}
 	}
+	const shapes: { kind: string; options: Record<string, unknown>; setMap: ReturnType<typeof vi.fn> }[] = []
+	const shapeClass = (kind: string) =>
+		class {
+			kind = kind
+			setMap = vi.fn()
+			constructor(public options: Record<string, unknown>) {
+				shapes.push(this)
+			}
+		}
 	const clearInstanceListeners = vi.fn()
-	const api = { Map: GoogleMap, marker: { AdvancedMarkerElement }, event: { clearInstanceListeners } }
+	const api = {
+		Map: GoogleMap,
+		Polyline: shapeClass('polyline'),
+		Polygon: shapeClass('polygon'),
+		marker: { AdvancedMarkerElement },
+		event: { clearInstanceListeners },
+	}
 	return {
 		api,
 		map,
 		state,
 		markers,
+		shapes,
 		clearInstanceListeners,
 		emit: (name: string, event: Parameters<Handler>[0] = {}) => listeners.get(name)?.(event),
 		install: () => ((window as unknown as { google?: unknown }).google = { maps: api }),

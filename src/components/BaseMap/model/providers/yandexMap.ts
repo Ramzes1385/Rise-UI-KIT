@@ -2,7 +2,16 @@ import { loadProviderApi } from './apiScript'
 import { loadScript } from '@utils/dom/scriptUtils'
 import { createMarkerElement } from './markerElement'
 import type { MapCoordinates, MapMarker, MapView } from '../../types/BaseMap.types'
-import type { MapAdapterFactory, MapHandlers, MapsWindow, YandexMapInstance, YandexMapsApi } from '../../types/providers.types'
+import type {
+	MapAdapterFactory,
+	MapHandlers,
+	MapShapeLine,
+	MapShapes,
+	MapsWindow,
+	YandexFeatureProps,
+	YandexMapInstance,
+	YandexMapsApi,
+} from '../../types/providers.types'
 
 const toYandex = (point: MapCoordinates): [number, number] => [point.lng, point.lat]
 
@@ -35,6 +44,29 @@ function markerLayer(api: YandexMapsApi, map: YandexMapInstance, handlers: MapHa
 	}
 }
 
+const FILL_OPACITY = 0.2
+
+function featureOf(line: MapShapeLine, isPolygon: boolean): YandexFeatureProps {
+	const points = line.coordinates.map(toYandex)
+	const stroke = [{ color: line.color, width: line.width }]
+	if (isPolygon)
+		return {
+			geometry: { type: 'Polygon', coordinates: [[...points, points[0]!]] },
+			style: { stroke, fill: line.color, fillOpacity: FILL_OPACITY },
+		}
+	return { geometry: { type: 'LineString', coordinates: points }, style: { stroke } }
+}
+
+function shapeLayer(api: YandexMapsApi, map: YandexMapInstance) {
+	let shown: object[] = []
+	return ({ polylines, polygons }: MapShapes): void => {
+		for (const child of shown) map.removeChild(child)
+		const features = [...polylines.map(line => featureOf(line, false)), ...polygons.map(line => featureOf(line, true))]
+		shown = features.map(feature => new api.YMapFeature(feature))
+		for (const child of shown) map.addChild(child)
+	}
+}
+
 export const createYandexMap: MapAdapterFactory = async (element, { apiKey, language, view, scheme, handlers }) => {
 	const api = await yandexApi(apiKey, language)
 	const map = new api.YMap(element, { location: location(view) })
@@ -51,6 +83,7 @@ export const createYandexMap: MapAdapterFactory = async (element, { apiKey, lang
 	return {
 		setView: next => map.setLocation(location(next)),
 		setMarkers: markerLayer(api, map, handlers),
+		setShapes: shapeLayer(api, map),
 		setScheme: next => schemeLayer.update({ theme: next }),
 		destroy: () => map.destroy(),
 	}

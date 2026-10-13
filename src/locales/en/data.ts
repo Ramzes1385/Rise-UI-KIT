@@ -139,6 +139,18 @@ export const enData = {
 		ERROR: 'Check the API key and access to {provider}',
 		YANDEX: 'Yandex Maps',
 		GOOGLE: 'Google Maps',
+		SHAPES: 'Lines and areas on the map',
+		POLYLINE: 'Line {id}',
+		POLYGON: 'Area {id}',
+		CONTROLS: 'Map controls',
+		ZOOM_IN: 'Zoom in',
+		ZOOM_OUT: 'Zoom out',
+		LOCATE: 'My location',
+		LOCATE_DENIED: 'Access to your location was denied',
+		LOCATE_UNAVAILABLE: 'Could not determine your location',
+		LOCATE_UNSUPPORTED: 'This browser cannot determine your location',
+		SCROLL_HINT: 'Hold Ctrl and scroll to zoom the map',
+		CLUSTER: 'Marker group, {count} in total',
 	},
 	/** Отсчёт до даты: имя таймера и текст для скринридера (обновляется раз в минуту) */
 	countdown: {

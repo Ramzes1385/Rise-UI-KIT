@@ -33,11 +33,26 @@ interface MapCreateOptions {
 	handlers: MapHandlers
 }
 
+/** Линия или контур с готовым цветом (без `var()`): `color` — CSS-цвет, `width` — толщина в px */
+export interface MapShapeLine {
+	id: string | number
+	coordinates: MapCoordinates[]
+	color: string
+	width: number
+}
+
+/** Линии и многоугольники для карты */
+export interface MapShapes {
+	polylines: MapShapeLine[]
+	polygons: MapShapeLine[]
+}
+
 /** Карта поставщика за общим интерфейсом: вид, метки, удаление */
 export interface MapAdapter {
 	setView: (view: MapView) => void
 	setMarkers: (markers: readonly MapMarker[]) => void
 	setScheme: (scheme: MapResolvedScheme) => void
+	setShapes: (shapes: MapShapes) => void
 	destroy: () => void
 }
 
@@ -62,6 +77,13 @@ export interface YandexMapsApi {
 	YMapDefaultFeaturesLayer: new (props: object) => object
 	YMapListener: new (props: YandexListenerProps) => object
 	YMapMarker: new (props: { coordinates: [number, number] }, element: HTMLElement) => object
+	YMapFeature: new (props: YandexFeatureProps) => object
+}
+
+/** Фигура Яндекса: геометрия GeoJSON и стиль (`fillOpacity` — прозрачность заливки) */
+export interface YandexFeatureProps {
+	geometry: { type: 'LineString'; coordinates: [number, number][] } | { type: 'Polygon'; coordinates: [number, number][][] }
+	style: { stroke: { color: string; width: number }[]; fill?: string; fillOpacity?: number }
 }
 
 /** Слой схемы Яндекса: `update` меняет тему на месте */
@@ -110,6 +132,22 @@ export interface GoogleMapInstance {
 	setZoom: (zoom: number) => void
 }
 
+/** Линия или многоугольник Google: `setMap(null)` убирает с карты */
+export interface GoogleShape {
+	setMap: (map: GoogleMapInstance | null) => void
+}
+
+/** Параметры линии и многоугольника Google */
+export interface GoogleShapeOptions {
+	map: GoogleMapInstance
+	strokeColor: string
+	strokeWeight: number
+	fillColor?: string
+	fillOpacity?: number
+	path?: MapCoordinates[]
+	paths?: MapCoordinates[]
+}
+
 /** Метка Google: `map = null` убирает её с карты */
 export interface GoogleMarker {
 	map: GoogleMapInstance | null
@@ -129,6 +167,8 @@ export interface GoogleMapsApi {
 			content: HTMLElement
 		}) => GoogleMarker
 	}
+	Polyline: new (options: GoogleShapeOptions) => GoogleShape
+	Polygon: new (options: GoogleShapeOptions) => GoogleShape
 	event: { clearInstanceListeners: (instance: object) => void }
 }
 
@@ -174,4 +214,18 @@ export interface MapDeps {
 		dismiss: () => void
 		onMarkerClick: (marker: MapMarker) => void
 	}
+}
+
+/** Размер области карты и отступ для вписывания точек, px */
+export interface MapFitBox {
+	width: number
+	height: number
+	padding: number
+}
+
+/** Что нужно навигации от карты: адаптер, последний вид и область */
+export interface MapNavigationState {
+	adapter: Ref<MapAdapter | null>
+	lastView: Ref<MapView>
+	canvasRef: Ref<HTMLElement | null>
 }
