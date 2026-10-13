@@ -1913,3 +1913,9 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 - Существующие истории не меняются: `timeZone` и `sortCompare` не заданы, Delete и Backspace вида не меняют.
 
 Порция 3: вида не меняет (`selectAllScope` по умолчанию прежний).
+
+## Задача editor-2
+
+Эталонов снимков не создавал и не обновлял; ожидаемые изменения:
+
+- **BaseEditor** (новые истории `editor-baseeditor--editor-ime`, `--editor-readonly-code`, `--editor-required`): звёздочка у заголовка обязательного поля (`--rise-error`) и сообщение «Обязательное поле». Существующие истории не меняются (новые пропсы по умолчанию выключены).

@@ -13,6 +13,10 @@
 		cursor: default;
 	}
 
+	&__required {
+		@include field-required;
+	}
+
 	&__error-text {
 		@include field-error;
 	}

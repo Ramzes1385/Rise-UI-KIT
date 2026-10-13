@@ -8,9 +8,20 @@ export const EDITOR_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft']
  * Части редактора для пропа `ui` (БЭМ-элементы `.base-editor__<часть>`, `root` — сам редактор): toolbar — панель инструментов,
  * group — группа кнопок панели, btn — кнопка панели (форматирование, ссылка, медиа, режим кода), content — область текста,
  * code — поле HTML-кода в режиме кода (BaseTextarea), context-menu — меню размера медиа,
- * frame — рамка с панелью и областью текста, label — заголовок поля, error-text — текст ошибки
+ * frame — рамка с панелью и областью текста, label — заголовок поля, required — звёздочка обязательного поля, error-text — текст ошибки
  */
-export const EDITOR_PARTS = ['toolbar', 'group', 'btn', 'content', 'code', 'context-menu', 'frame', 'label', 'error-text'] as const
+export const EDITOR_PARTS = [
+	'toolbar',
+	'group',
+	'btn',
+	'content',
+	'code',
+	'context-menu',
+	'frame',
+	'label',
+	'required',
+	'error-text',
+] as const
 
 export type BaseEditorPart = (typeof EDITOR_PARTS)[number]
 
@@ -22,7 +33,18 @@ export type EditorHeading = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p'
 
 export interface BaseEditorProps extends BaseComponentProps<
 	(typeof EDITOR_VARIANTS)[number],
-	'root' | 'toolbar' | 'btn' | 'group' | 'colorPicker' | 'headingSelect' | 'fileInput' | 'content' | 'code' | 'label' | 'errorText'
+	| 'root'
+	| 'toolbar'
+	| 'btn'
+	| 'group'
+	| 'colorPicker'
+	| 'headingSelect'
+	| 'fileInput'
+	| 'content'
+	| 'code'
+	| 'label'
+	| 'required'
+	| 'errorText'
 > {
 	/**
 	 * HTML-содержимое. Перед показом в редакторе и перед `update:modelValue` очищается функцией `sanitize`:
@@ -47,12 +69,22 @@ export interface BaseEditorProps extends BaseComponentProps<
 	label?: string
 	/** Текст ошибки под редактором: рамка становится красной, область текста получает `aria-invalid` и `aria-describedby` */
 	error?: string
+	/**
+	 * Поле обязательное: у области текста `aria-required`, у заголовка звёздочка. Пустой редактор (без текста и медиа)
+	 * после ухода фокуса показывает ошибку «Обязательное поле»; `validate()` из `defineExpose` проверяет его вручную
+	 */
+	isRequired?: boolean
+	/**
+	 * Имя поля нативной формы: редактор добавляет скрытый `<input type="hidden">` с очищенным HTML (пустой редактор даёт пустую строку),
+	 * поэтому значение попадает в `FormData` и отправку `<form>`. У отключённого редактора поле не отправляется
+	 */
+	name?: string
 	/** Показывать панель инструментов */
 	hasToolbar?: boolean
 	/** Автофокус */
 	isAutofocus?: boolean
 	/**
-	 * Классы частей редактора (`root`, `frame`, `toolbar`, `group`, `btn`, `content`, `code`, `context-menu`, `label`, `error-text`) — добавляются к классам кита.
+	 * Классы частей редактора (`root`, `frame`, `toolbar`, `group`, `btn`, `content`, `code`, `context-menu`, `label`, `required`, `error-text`) — добавляются к классам кита.
 	 * Глобально — `createUiKitPlugin({ defaults: { BaseEditor: { ui } } })`, классы плагина и экземпляра склеиваются.
 	 *
 	 * @example
@@ -72,4 +104,7 @@ export interface BaseEditorSlots {
 	toolbar?: () => unknown
 }
 
-export type EditorProps = PropsWithDefaults<BaseEditorProps, 'modelValue' | 'isReadonly' | 'isDisabled' | 'isAutofocus' | 'sizeScale'>
+export type EditorProps = PropsWithDefaults<
+	BaseEditorProps,
+	'modelValue' | 'isReadonly' | 'isDisabled' | 'isRequired' | 'isAutofocus' | 'sizeScale'
+>

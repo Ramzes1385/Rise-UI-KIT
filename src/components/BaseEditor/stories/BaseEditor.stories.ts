@@ -37,3 +37,6 @@ export const Animations = cases.Animations
 export const EditorAsyncModel = cases.EditorAsyncModel
 export const EditorToolbarKeyboard = cases.EditorToolbarKeyboard
 export const EditorValidation = cases.EditorValidation
+export const EditorIme = cases.EditorIme
+export const EditorReadonlyCode = cases.EditorReadonlyCode
+export const EditorRequired = cases.EditorRequired

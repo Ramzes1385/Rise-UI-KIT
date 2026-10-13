@@ -18,8 +18,11 @@
 			:id="labelId"
 			tag="span"
 			:label="label"
+			:is-required="isRequired"
 			:class-name="ui('label')"
 			:custom-class="classes.label"
+			:required-class-name="ui('required')"
+			:required-custom-class="classes.required"
 			:size-scale="sizeScale"
 			@click="focusContent" />
 
@@ -75,6 +78,8 @@
 				:aria-placeholder="placeholder || undefined"
 				:data-placeholder="placeholder"
 				@input="handleInput"
+				@compositionstart="handleCompositionStart"
+				@compositionend="handleCompositionEnd"
 				@paste="handlePaste"
 				@dragstart="isInternalDrag = true"
 				@dragend="isInternalDrag = false"
@@ -95,15 +100,20 @@
 				is-autosize
 				:model-value="codeContent"
 				:placeholder="placeholder"
+				:is-readonly="isLocked"
 				:size-scale="sizeScale"
+				@compositionstart="handleCompositionStart"
+				@compositionend="handleCompositionEnd"
 				@update:model-value="handleCodeInput"
 				@focus="handleFocus"
 				@blur="handleBlur" />
 		</div>
 
+		<input v-if="name" type="hidden" :name="name" :value="formValue" :disabled="isDisabled" />
+
 		<FormFieldError
 			:id="errorId"
-			:error="error ?? ''"
+			:error="formField.error"
 			:class-name="ui('error-text')"
 			:custom-class="classes.errorText"
 			:size-scale="sizeScale" />
@@ -166,6 +176,7 @@ const props = withDefaults(
 		placeholder: '',
 		isReadonly: false,
 		isDisabled: false,
+		isRequired: false,
 		variant: DEFAULT_VARIANT,
 		hasToolbar: true,
 		isAutofocus: false,
@@ -189,6 +200,10 @@ const {
 	labelId,
 	errorId,
 	control,
+	formField,
+	formValue,
+	handleCompositionStart,
+	handleCompositionEnd,
 	contentId,
 	labelledBy,
 	focusContent,
