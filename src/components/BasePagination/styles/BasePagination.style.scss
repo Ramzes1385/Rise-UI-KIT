@@ -29,6 +29,7 @@
 	}
 
 	&__page.base-button {
+		@include inherit-custom-color;
 		--btn-pad-left: #{ct(pagination, page-padding-x, 6px)};
 		--btn-pad-right: #{ct(pagination, page-padding-x, 6px)};
 
@@ -53,6 +54,7 @@
 	}
 
 	&__arrow.base-button {
+		@include inherit-custom-color;
 		--btn-pad-left: #{ct(pagination, arrow-padding-x, var(--rise-control-padding-y))};
 		--btn-pad-right: #{ct(pagination, arrow-padding-x, var(--rise-control-padding-y))};
 	}

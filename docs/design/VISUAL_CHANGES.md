@@ -1674,12 +1674,11 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 - **История `form-basedadatainput--strict`**: play ждёт появления ошибки поля (переход enter-fade); вид не меняется.
 ## Задача core1: цвет компонента не протекает во вложенные, размер иконок
 
-Эталоны скриншотов не создавались и не обновлялись. Скриншот-тесты и истории без пропа `color` не меняются: переменные `--custom-*` в них не заданы (бренд-темы кита `color` не используют). Вид меняется только когда у компонента есть `color`. Сравнение «было / стало» сняли попиксельно по всем историям `*--custom-color` (87 компонентов, светлая и тёмная темы, дважды для отсева недетерминированных): 38 историй изменились, остальные побайтово те же.
+Эталоны скриншотов не создавались и не обновлялись. Скриншот-тесты и истории без пропа `color` не меняются: переменные `--custom-*` в них не заданы (бренд-темы кита `color` не используют). Вид меняется только когда у компонента есть `color`. Сравнение «было / стало» сняли попиксельно по всем историям `*--custom-color` (87 компонентов, светлая и тёмная темы, дважды для отсева недетерминированных): 37 историй изменились, остальные побайтово те же.
 
 Что меняется (вложенный компонент кита перестал перекрашиваться цветом родителя):
 - **Новая история** `foundations-theming--nested-color`: BaseLoader, BaseAvatar, BaseProgress и BaseSeparator внутри BaseCard и BaseAlert с `color` выглядят как обычно.
 - **BaseChecklist** (`data-basechecklist--custom-color`): заливка BaseProgress снова видна (раньше сливалась с дорожкой — её красил цвет текста родителя), кнопки шагов обычные, а не тонированные.
-- **BasePagination** (`navigation-basepagination--custom-color`): цвет `color` красит текущую страницу и индикатор; остальные страницы и стрелки обычные (раньше все были тонированы цветом родителя).
 - **BaseTabs**: кнопки прокрутки (`__scroll-btn`) не берут цвет вкладок. **BaseSideBar** (`navigation-basesidebar--custom-color`): кнопка сворачивания в шапке (`__toggle`) приглушённая (`--rise-text-muted`), а не цвета текста панели; разделитель группы тот же.
 - **BaseEventCalendar** (`data-baseeventcalendar--custom-color`): кнопки «Сегодня», стрелки и переключатель вида — обычные, а не тонированные.
 - **BaseCode, BaseDescriptions, BaseJsonViewer** (`data-basecode--custom-color`, `data-basedescriptions--custom-color`, `data-basejsonviewer--custom-color`): кнопки «Копировать», «Развернуть всё» и им подобные — обычный приглушённый цвет вместо цвета текста родителя.
@@ -1687,6 +1686,6 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 - **BaseCryptoProSign** (`form-basecryptoprosign--custom-color`, тёмная тема): поле выбора и сегментированный переключатель — стандартные цвета, кнопка «Подписать» — основная заливка (раньше сливалась с фоном родителя).
 - **BaseTransfer** (`form-basetransfer--custom-color`): кнопки переноса — обычные outline-кнопки вместо тонированных.
 
-Цвет родителя вложенному передаётся явно, вид не меняется: заголовки, описания и кнопки закрытия в BaseCard, BaseModal, BaseSlideover, BaseNotification, BaseEmpty и BaseAlert; вкладки BaseTabs; ссылки BaseMenu, BaseMegaMenu и BaseDropdownMenu; кнопки BaseAiMessage, BaseInputNumber и BaseKanban; значение подписи BaseRange; теги BaseSelect; текущая страница BasePagination; чекбоксы BaseCheckboxGroup и «Выбрать все» BaseTransfer; поле BaseInplace, поле BaseSearch, текст BaseAiMessage, поле кода BaseEditor, панель инструментов BaseImageMap.
+Цвет родителя вложенному передаётся явно, вид не меняется: заголовки, описания и кнопки закрытия в BaseCard, BaseModal, BaseSlideover, BaseNotification, BaseEmpty и BaseAlert; вкладки BaseTabs; ссылки BaseMenu, BaseMegaMenu и BaseDropdownMenu; кнопки BaseAiMessage, BaseInputNumber и BaseKanban; значение подписи BaseRange; теги BaseSelect; страницы и стрелки BasePagination; чекбоксы BaseCheckboxGroup и «Выбрать все» BaseTransfer; поле BaseInplace, поле BaseSearch, текст BaseAiMessage, поле кода BaseEditor, панель инструментов BaseImageMap.
 
 **Размер иконок при `sizeScale` 125** (родитель масштабирован): иконка пароля BaseInput — 20px вместо 25px, стрелка BaseSelect — на 20% меньше (теперь как задумано: 0,8 × 125% = 100%). Со `sizeScale` по умолчанию (100) иконки не меняются; снимки с `sizeScale` 125, если такие есть, затронуты: иконки `sm` уменьшатся.
