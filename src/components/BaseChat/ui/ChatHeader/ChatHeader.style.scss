@@ -54,6 +54,7 @@
 	&__dots {
 		@include motion-safe {
 			animation: base-chat-header-typing calc(var(--rise-duration-loop) * 1.4) var(--rise-ease) infinite;
+			@include loop-state;
 		}
 	}
 

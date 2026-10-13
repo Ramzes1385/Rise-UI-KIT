@@ -227,6 +227,7 @@
 
 			@include motion-safe {
 				animation: base-image-map-pulse calc(var(--rise-duration-loop) * 1.8) var(--rise-ease) infinite;
+				@include loop-state;
 			}
 		}
 	}

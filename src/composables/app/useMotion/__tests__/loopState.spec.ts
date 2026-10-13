@@ -1,6 +1,7 @@
 import { resolve } from 'node:path'
 import { compileString } from 'sass'
 import { readFileSync } from 'node:fs'
+import { pathToFileURL } from 'node:url'
 
 const SRC = resolve(__dirname, '../../../..')
 const STYLES = resolve(SRC, 'styles')
@@ -12,11 +13,27 @@ const LOOP_FILES = [
 	'BaseSkeleton/styles/BaseSkeleton.style.scss',
 	'BaseMarkdown/styles/BaseMarkdown.style.scss',
 	'BaseProgress/styles/BaseProgress.style.scss',
+	'BaseAvatar/styles/BaseAvatar.style.scss',
+	'BaseReasoning/styles/BaseReasoning.style.scss',
+	'BaseVoiceRecorder/styles/BaseVoiceRecorder.style.scss',
+	'BaseMarquee/styles/BaseMarquee.style.scss',
+	'BaseChat/ui/ChatHeader/ChatHeader.style.scss',
+	'BaseImageMap/styles/BaseImageMap.style.scss',
+	'BaseImageMap/styles/ImageMapRoutes.style.scss',
+	'BaseMediaPlayer/styles/BaseMediaPlayer.style.scss',
+	'BaseMediaPlayer/styles/MediaError.style.scss',
 ]
+const SPINNER = /animation:\s*base-(loader|media-player|progress)-spin\b/
+const STYLES_URL = pathToFileURL(`${STYLES}/`)
+const importers = [
+	{ findFileUrl: (url: string) => (url.startsWith('@styles/') ? new URL(url.slice('@styles/'.length), STYLES_URL) : null) },
+]
+const LOOP_STATE_LIST = 'animation-play-state: running, var(--rise-motion-loop-state, running)'
 const motionCss = compileString('@use "motion";', { loadPaths: [STYLES] }).css
 
 function compileComponent(file: string): string {
-	return compileString(PRELUDE + readFileSync(resolve(SRC, 'components', file), 'utf8'), { loadPaths: [STYLES] }).css
+	const path = resolve(SRC, 'components', file)
+	return compileString(PRELUDE + readFileSync(path, 'utf8'), { loadPaths: [STYLES], importers, url: pathToFileURL(path) }).css
 }
 
 function rulesWithInfiniteLoop(css: string): string[] {
@@ -71,9 +88,9 @@ describe('--rise-motion-loop-state: пауза декоративных пете
 	})
 
 	it.each(LOOP_FILES)('%s: каждая бесконечная петля, кроме спиннера, читает токен', file => {
-		const loops = rulesWithInfiniteLoop(compileComponent(file)).filter(rule => !/-spin\b/.test(rule))
+		const loops = rulesWithInfiniteLoop(compileComponent(file)).filter(rule => !SPINNER.test(rule))
 
 		expect(loops.length).toBeGreaterThan(0)
-		for (const rule of loops) expect(rule).toContain(LOOP_STATE)
+		for (const rule of loops) expect(rule.includes(LOOP_STATE) || rule.includes(LOOP_STATE_LIST)).toBe(true)
 	})
 })

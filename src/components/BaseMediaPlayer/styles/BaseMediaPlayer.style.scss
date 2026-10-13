@@ -329,6 +329,7 @@
 		);
 		background-size: 200% 100%;
 		animation: base-media-player-shimmer calc(var(--rise-duration-loop) * 1.2) linear infinite;
+		@include loop-state;
 	}
 
 	&__preview-sprite {

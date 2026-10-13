@@ -190,5 +190,9 @@
 
 ## Задача fix-motion
 
-- Петли без `loop-state` (пресет `none` и `reducedMotion: 'always'` их не останавливают, как и раньше; системное «уменьшить движение» убирает их через `motion-safe`): BaseAvatar (кольцо, маскот), BaseReasoning, BaseVoiceRecorder, BaseMarquee, BaseChat (`ChatHeader` — «печатает»), BaseImageMap (пульс, маршрут), BaseMediaPlayer (шиммер, оверлеи, страница ошибки), BaseButton и BaseCryptoProSign — их спиннеры крутятся всегда по правилу кита. Правка — миксин `loop-state` после `animation`; тип patch, объём S.
+- ~~Петли без `loop-state` (пресет `none` и `reducedMotion: 'always'` их не останавливают, как и раньше; системное «уменьшить движение» убирает их через `motion-safe`): BaseAvatar (кольцо, маскот), BaseReasoning, BaseVoiceRecorder, BaseMarquee, BaseChat (`ChatHeader` — «печатает»), BaseImageMap (пульс, маршрут), BaseMediaPlayer (шиммер, оверлеи, страница ошибки), BaseButton и BaseCryptoProSign — их спиннеры крутятся всегда по правилу кита. Правка — миксин `loop-state` после `animation`; тип patch, объём S.~~ — wave1-fix: миксин `loop-state` подключён у петель BaseAvatar (кольцо, маскот), BaseReasoning, BaseVoiceRecorder, BaseMarquee, ChatHeader, BaseImageMap (пульс, маршрут), BaseMediaPlayer (шиммер, страница ошибки); спиннеры BaseButton, BaseCryptoProSign и загрузки BaseMediaPlayer остались как есть по правилу кита
 - BaseCommandPalette: высота окна при наборе анимирует `useResultsMotion` через родителя строки поиска (`searchRef.parentElement` — тело BaseModal). Если BaseModal сменит разметку тела — завести часть `results` в `ui`.
+
+## Задача wave1-fix
+
+- `shapeNarrowest` (BaseImageMap3D): гладкий контур из тысяч вершин с большим пределом скоса считается ≈30–50 мс на 8000 вершин (дерево рамок вершин и полоса вдоль ребра); если появятся планы с контуром в десятки тысяч вершин — упрощать контур (Дуглас — Пёкер) до расчёта скоса.

@@ -109,6 +109,7 @@
 	@include motion-safe {
 		&--running &__group {
 			animation: base-marquee-x var(--marquee-duration) linear infinite;
+			@include loop-state;
 		}
 
 		&--running.base-marquee--vertical .base-marquee__group {

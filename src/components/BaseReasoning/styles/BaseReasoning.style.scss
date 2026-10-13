@@ -52,6 +52,7 @@
 			background-clip: text;
 			color: transparent;
 			animation: base-reasoning-shimmer calc(var(--rise-duration-loop) * 2) linear infinite;
+			@include loop-state;
 		}
 	}
 

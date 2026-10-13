@@ -78,6 +78,7 @@ $media-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
 			animation:
 				base-media-player-rise var(--media-slow) var(--media-spring) both,
 				base-media-player-glow calc(var(--rise-duration-loop) * 2.4) ease-in-out var(--media-slow) infinite alternate;
+			animation-play-state: running, var(--rise-motion-loop-state, running);
 		}
 	}
 
@@ -184,6 +185,7 @@ $media-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
 
 		@include motion-safe {
 			animation: base-media-player-twinkle calc(var(--rise-duration-loop) * 3.2) ease-in-out infinite alternate;
+			@include loop-state;
 		}
 	}
 
@@ -216,6 +218,7 @@ $media-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
 
 		@include motion-safe {
 			animation: base-media-player-sun calc(var(--rise-duration-loop) * 7) ease-in-out infinite alternate;
+			@include loop-state;
 		}
 	}
 
@@ -237,6 +240,7 @@ $media-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
 
 			@include motion-safe {
 				animation: base-media-player-grid calc(var(--rise-duration-loop) * 1.4) linear infinite;
+				@include loop-state;
 			}
 		}
 	}
@@ -276,6 +280,7 @@ $media-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
 
 		@include motion-safe {
 			animation: base-media-player-drift calc(var(--rise-duration-loop) * 14) ease-in-out infinite alternate;
+			@include loop-state;
 
 			&:nth-child(2) {
 				animation-duration: calc(var(--rise-duration-loop) * 18);
@@ -311,6 +316,7 @@ $media-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
 
 		@include motion-safe {
 			animation: base-media-player-static calc(var(--rise-duration-loop) * 0.5) steps(1) infinite;
+			@include loop-state;
 		}
 	}
 
@@ -336,6 +342,7 @@ $media-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
 
 		@include motion-safe {
 			animation: base-media-player-roll calc(var(--rise-duration-loop) * 4.5) linear infinite;
+			@include loop-state;
 		}
 	}
 
@@ -387,6 +394,7 @@ $media-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
 
 		@include motion-safe {
 			animation: base-media-player-glitch calc(var(--rise-duration-loop) * 2.6) steps(1) infinite;
+			@include loop-state;
 
 			&:nth-child(2) {
 				animation-duration: calc(var(--rise-duration-loop) * 1.9);
@@ -405,6 +413,7 @@ $media-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
 			animation:
 				base-media-player-rise var(--media-slow) var(--media-ease) both,
 				base-media-player-glitch-text calc(var(--rise-duration-loop) * 2.6) steps(1) var(--media-slow) infinite;
+			animation-play-state: running, var(--rise-motion-loop-state, running);
 		}
 	}
 

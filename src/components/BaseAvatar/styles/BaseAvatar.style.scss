@@ -132,6 +132,7 @@
 	&--ring-shimmer::before {
 		@include motion-safe {
 			animation: base-avatar-ring-spin calc(var(--rise-duration-loop) * 3) linear infinite;
+			@include loop-state;
 		}
 	}
 
@@ -148,6 +149,7 @@
 
 		@include motion-safe {
 			animation: base-avatar-mascot-breathe calc(var(--rise-duration-slow) * 12) var(--rise-ease) infinite alternate;
+			@include loop-state;
 		}
 
 		:where([data-rise-motion='none']) & {

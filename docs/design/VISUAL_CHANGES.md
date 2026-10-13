@@ -1667,3 +1667,8 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 - **BaseCommandPalette**: высота окна при наборе меняется плавно (`overlay-basecommandpalette--default`, ввод в поиск; на снимки не влияет).
 - **BaseDatePicker**: панель двигается по пресету поля; в стандартном виде ничего не меняется.
 - **Новая история** `media-baseimagemap3d--animations` (Animations, «Анимации»): 3D-карта и кнопка «Сменить этаж»; в скриншот-тесты не входит (WebGL).
+
+## Задача wave1-fix
+
+- **Пресет `none` и `reducedMotion: 'always'`**: петли BaseAvatar (кольцо `ring-shimmer`, дыхание маскота), BaseReasoning (шиммер), BaseVoiceRecorder (пульс), BaseMarquee (бегущая строка), ChatHeader («печатает»), BaseImageMap (пульс метки, маршрут), BaseMediaPlayer (шиммер превью, страница ошибки) встают на паузу, как петли BaseLoader и BaseSkeleton; в стандартном виде и при системном «уменьшить движение» ничего не меняется, на снимки не влияет.
+- **История `form-basedadatainput--strict`**: play ждёт появления ошибки поля (переход enter-fade); вид не меняется.

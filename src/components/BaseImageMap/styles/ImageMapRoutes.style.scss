@@ -28,6 +28,7 @@
 
 		@include motion-safe {
 			animation: base-image-map-route calc(var(--rise-duration-loop) * 0.9) linear infinite;
+			@include loop-state;
 		}
 	}
 
