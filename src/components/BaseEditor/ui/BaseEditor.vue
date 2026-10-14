@@ -79,7 +79,7 @@
 				:data-placeholder="placeholder"
 				@input="handleInput"
 				@copy="handleCopy"
-				@cut="handleCopy"
+				@cut="handleCut"
 				@compositionstart="handleCompositionStart"
 				@compositionend="handleCompositionEnd"
 				@beforeinput="handleBeforeInput"
@@ -274,6 +274,7 @@ const {
 	saveSelection,
 	handleKeyDown,
 	handleCopy,
+	handleCut,
 	handleImageUpload,
 	handleVideoUpload,
 	isFocused,

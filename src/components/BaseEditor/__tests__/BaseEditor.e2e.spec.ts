@@ -133,10 +133,32 @@ test('после «Маркированный список» каретка ос
 	await expect.poll(() => textbox.innerHTML()).toBe('<ul><li>oneX</li></ul><p>two</p>')
 })
 
-test('включённое на каретке начертание не оставляет невидимый символ, когда каретка ушла', async ({ page }) => {
+test('Ctrl+B на каретке, уход каретки и ввод: один Ctrl+Z отменяет ввод, невидимых шагов нет', async ({ page }) => {
 	await openEditor(page)
 	const textbox = await setContent(page, '<p>one two</p>', { selector: 'p', offset: 3 })
 	await page.keyboard.press('Control+b')
-	await page.keyboard.press('ArrowLeft')
-	await expect.poll(() => textbox.evaluate(element => element.innerHTML.includes('​'))).toBe(false)
+	await page.keyboard.press('Home')
+	await expect(textbox).toContainText('one two')
+	expect(await textbox.innerHTML()).toContain('data-rise-pending')
+
+	await page.keyboard.type('Z')
+	await expect(textbox).toContainText('Zone two')
+	expect(await textbox.innerHTML()).not.toContain('data-rise-pending')
+	expect(await textbox.innerHTML()).not.toContain(String.fromCharCode(0x200b))
+
+	await page.keyboard.press('Control+z')
+	await expect.poll(() => textbox.evaluate(element => element.textContent!.replaceAll(String.fromCharCode(0x200b), ''))).toBe('one two')
+})
+
+test('копирование с заполнителем кладёт в буфер текст без невидимого символа и не меняет DOM', async ({ page, context }) => {
+	await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+	await openEditor(page)
+	const textbox = await setContent(page, '<p>one two</p>', { selector: 'p', offset: 3 })
+	await page.keyboard.press('Control+b')
+	await page.keyboard.press('Home')
+	await page.keyboard.press('Shift+End')
+	await page.keyboard.press('Control+c')
+	const copied = await page.evaluate(() => navigator.clipboard.readText())
+	expect(copied).toBe('one two')
+	expect(await textbox.innerHTML()).toContain('data-rise-pending')
 })

@@ -1,9 +1,16 @@
 /** Утилиты: правка содержимого редактора на месте выделения — общая точка применения изменений DOM */
 import { nextTick } from 'vue'
 import type { EditorHistoryKind } from '../../useEditorHistory'
+import { releasePlaceholders } from '@utils/dom/editorFormatUtils'
 import { insertParagraphAtSelection } from '@utils/dom/editorBlockUtils'
 import type { EditorEditContext, UseToolbarCommandsOptions } from '../types/useToolbarCommands.types'
-import { collapseToEnd, getSelectionRange, insertHtmlAtSelection, insertLineBreakAtSelection } from '@utils/dom/editorInsertUtils'
+import {
+	collapseToEnd,
+	deleteSelection,
+	getSelectionRange,
+	insertHtmlAtSelection,
+	insertLineBreakAtSelection,
+} from '@utils/dom/editorInsertUtils'
 
 /** Завершение команды визуального режима: сохранить выделение, обновить активные форматы, сообщить о вводе */
 function commitVisualChange(ctx: EditorEditContext, kind?: EditorHistoryKind): void {
@@ -26,9 +33,11 @@ function applyEdit(ctx: EditorEditContext, change: (root: HTMLElement) => boolea
 		collapseToEnd(root)
 	}
 	ctx.onBeforeChange?.()
-	if (!change(root)) return false
+	const isReleased = releasePlaceholders(root, window.getSelection()?.anchorNode ?? null)
+	const isChanged = change(root)
+	if (!isChanged && !isReleased) return false
 	commitVisualChange(ctx, kind)
-	return true
+	return isChanged
 }
 
 /** Вставляет очищенный HTML на место выделения (визуальный режим) */
@@ -46,4 +55,18 @@ function insertParagraphCommand(ctx: UseToolbarCommandsOptions): boolean {
 	return applyEdit(ctx, insertParagraphAtSelection, 'typing')
 }
 
-export { applyEdit, commitVisualChange, insertHtmlCommand, insertLineBreakCommand, insertParagraphCommand }
+/** Вырезание: удаляет выделение одним шагом истории (в буфер текст кладёт обработчик `cut`) */
+function deleteSelectionCommand(ctx: UseToolbarCommandsOptions): boolean {
+	return applyEdit(
+		ctx,
+		root => {
+			const range = getSelectionRange(root)
+			if (!range || range.collapsed) return false
+			deleteSelection(root, range)
+			return true
+		},
+		'command',
+	)
+}
+
+export { applyEdit, deleteSelectionCommand, commitVisualChange, insertHtmlCommand, insertLineBreakCommand, insertParagraphCommand }

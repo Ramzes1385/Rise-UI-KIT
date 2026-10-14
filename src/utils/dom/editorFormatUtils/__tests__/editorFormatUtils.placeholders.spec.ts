@@ -2,6 +2,7 @@ import { selectTextRange } from '../helpers/textRange'
 import { PENDING_ATTR, PLACEHOLDER } from '../helpers/inlineTree'
 import {
 	applyInlineStyle,
+	getClipboardData,
 	releasePlaceholders,
 	stripPlaceholders,
 	toggleInlineFormat,
@@ -204,6 +205,43 @@ describe('editorFormatUtils: заполнители и пробелы между
 			releasePlaceholders(root)
 
 			expect(root.innerHTML).toBe('<p>text<b>new</b></p>')
+		})
+	})
+
+	describe('getClipboardData', () => {
+		function rangeOf(root: HTMLElement, start: [Node, number], end: [Node, number]): Range {
+			const range = document.createRange()
+			range.setStart(start[0], start[1])
+			range.setEnd(end[0], end[1])
+			expect(root.contains(range.commonAncestorContainer)).toBe(true)
+			return range
+		}
+
+		it('убирает заполнители и метки, DOM не меняет', () => {
+			const root = createRoot(`<p>ab<b ${PENDING_ATTR}="">${PLACEHOLDER}</b>cd<i ${PENDING_ATTR}="">${PLACEHOLDER}x</i></p>`)
+			const p = root.firstElementChild!
+			const before = root.innerHTML
+
+			const data = getClipboardData(rangeOf(root, [p, 0], [p, p.childNodes.length]))
+
+			expect(data).toEqual({ html: 'abcd<i>x</i>', text: 'abcdx' })
+			expect(root.innerHTML).toBe(before)
+		})
+
+		it('простой текст: блоки и <br> дают переводы строк, последний перевод отбрасывается', () => {
+			const root = createRoot('<p>one</p><h2>two</h2><p>a<br>b</p><ul><li>x</li></ul>')
+
+			const data = getClipboardData(rangeOf(root, [root, 0], [root, 4]))
+
+			expect(data.text).toBe('one\ntwo\na\nb\nx')
+			expect(data.html).toContain('<h2>two</h2>')
+		})
+
+		it('невидимый символ пользователя в тексте остаётся', () => {
+			const root = createRoot(`<p>a${PLACEHOLDER}b</p>`)
+			const p = root.firstElementChild!
+
+			expect(getClipboardData(rangeOf(root, [p, 0], [p, 1])).text).toBe(`a${PLACEHOLDER}b`)
 		})
 	})
 })

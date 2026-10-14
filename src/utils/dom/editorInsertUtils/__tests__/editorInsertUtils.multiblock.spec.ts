@@ -1,4 +1,4 @@
-import { insertHtmlAtSelection } from '../editorInsertUtils'
+import { deleteSelection, insertHtmlAtSelection } from '../editorInsertUtils'
 
 function createRoot(html: string): HTMLDivElement {
 	const root = document.createElement('div')
@@ -194,6 +194,44 @@ describe('insertHtmlAtSelection: выделение через блоки и с�
 			insertHtmlAtSelection(root, 'abc<p>def</p>')
 
 			expect(root.innerHTML).toBe('<ul><li>abc<br>def</li></ul>')
+		})
+	})
+
+	describe('deleteSelection', () => {
+		it('без выделения возвращает тот же диапазон', () => {
+			const root = createRoot('<p>abc</p>')
+			select([root.firstElementChild!.firstChild!, 1])
+			const range = window.getSelection()!.getRangeAt(0)
+
+			expect(deleteSelection(root, range)).toBe(range)
+			expect(root.innerHTML).toBe('<p>abc</p>')
+		})
+
+		it('опустевший абзац получает заглушку <br>', () => {
+			const root = createRoot('<p>abc</p><p>def</p>')
+			select([root.firstElementChild!.firstChild!, 0], [root.firstElementChild!.firstChild!, 3])
+
+			deleteSelection(root, window.getSelection()!.getRangeAt(0))
+
+			expect(root.innerHTML).toBe('<p><br></p><p>def</p>')
+		})
+
+		it('абзац с оставшимся текстом заглушку не получает', () => {
+			const root = createRoot('<p>abc</p>')
+			select([root.firstElementChild!.firstChild!, 1], [root.firstElementChild!.firstChild!, 2])
+
+			deleteSelection(root, window.getSelection()!.getRangeAt(0))
+
+			expect(root.innerHTML).toBe('<p>ac</p>')
+		})
+
+		it('строчный текст прямо в области: заглушка не добавляется в корень', () => {
+			const root = createRoot('abc<p>x</p>')
+			select([root.firstChild!, 0], [root.firstChild!, 3])
+
+			deleteSelection(root, window.getSelection()!.getRangeAt(0))
+
+			expect(root.querySelector('br')).toBeNull()
 		})
 	})
 })

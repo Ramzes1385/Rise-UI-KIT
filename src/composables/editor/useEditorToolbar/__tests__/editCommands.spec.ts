@@ -3,7 +3,7 @@ import { nextTick, ref } from 'vue'
 import { mount } from '@vue/test-utils'
 import { useEditorToolbar } from '../useEditorToolbar'
 import type { EditorEditContext, UseToolbarCommandsOptions } from '../types/useToolbarCommands.types'
-import { applyEdit, commitVisualChange, insertHtmlCommand, insertLineBreakCommand } from '../commands/editCommands'
+import { applyEdit, commitVisualChange, deleteSelectionCommand, insertHtmlCommand, insertLineBreakCommand } from '../commands/editCommands'
 
 function createContext(html: string) {
 	const editor = document.createElement('div')
@@ -224,5 +224,62 @@ describe('editCommands', () => {
 		plain.toggleCodeMode()
 		await nextTick()
 		expect(editor.innerHTML).toBe('<p>raw</p>')
+	})
+
+	describe('заполнители и вырезание', () => {
+		const PENDING = '<p>text<b data-rise-pending="">​</b></p>'
+
+		it('applyEdit снимает чужой заполнитель в составе правки: после запоминания выделения и до изменения DOM', () => {
+			const { editor, ctx } = createContext(PENDING)
+			const order: string[] = []
+			const withHooks = { ...ctx, onBeforeChange: () => order.push(`before:${editor.innerHTML.includes('pending')}`) }
+			caretAt(editor.querySelector('p')!.firstChild!, 1)
+
+			const result = applyEdit(withHooks as unknown as EditorEditContext, () => {
+				order.push(`change:${editor.innerHTML.includes('pending')}`)
+				return true
+			})
+
+			expect(result).toBe(true)
+			expect(order).toEqual(['before:true', 'change:false'])
+		})
+
+		it('applyEdit не снимает заполнитель, в котором стоит каретка', () => {
+			const { editor, ctx } = createContext(PENDING)
+			caretAt(editor.querySelector('b')!.firstChild!, 1)
+
+			applyEdit(ctx as unknown as EditorEditContext, () => true)
+
+			expect(editor.innerHTML).toBe(PENDING)
+		})
+
+		it('если правка ничего не изменила, но заполнитель снят, изменение всё равно фиксируется', () => {
+			const { editor, ctx } = createContext(PENDING)
+			caretAt(editor.querySelector('p')!.firstChild!, 1)
+
+			const result = applyEdit(ctx as unknown as EditorEditContext, () => false)
+
+			expect(result).toBe(false)
+			expect(ctx.onInput).toHaveBeenCalledTimes(1)
+			expect(editor.innerHTML).toBe('<p>text</p>')
+		})
+
+		it('deleteSelectionCommand удаляет выделение и сообщает о вводе', () => {
+			const { editor, ctx } = createContext('<p>hello</p><p>world</p>')
+			window.getSelection()?.setBaseAndExtent(editor.firstElementChild!.firstChild!, 3, editor.lastElementChild!.firstChild!, 2)
+
+			expect(deleteSelectionCommand(ctx as unknown as UseToolbarCommandsOptions)).toBe(true)
+
+			expect(editor.innerHTML).toBe('<p>helrld</p>')
+			expect(ctx.onInput).toHaveBeenCalledWith('command')
+		})
+
+		it('deleteSelectionCommand без выделения ничего не делает', () => {
+			const { editor, ctx } = createContext('<p>hello</p>')
+			caretAt(editor.querySelector('p')!.firstChild!, 2)
+
+			expect(deleteSelectionCommand(ctx as unknown as UseToolbarCommandsOptions)).toBe(false)
+			expect(ctx.onInput).not.toHaveBeenCalled()
+		})
 	})
 })

@@ -1,5 +1,6 @@
 export {
 	applyInlineStyle,
+	getClipboardData,
 	releasePlaceholders,
 	removeInlineFormatting,
 	stripPlaceholders,

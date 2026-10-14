@@ -84,6 +84,13 @@ function mergeBlocks(start: HTMLElement, end: HTMLElement, root: HTMLElement): R
 	return range
 }
 
+/** Блок, опустевший после удаления выделения, получает заглушку `<br>`, чтобы не схлопнуться */
+function fillEmptyBlock(root: HTMLElement, block: HTMLElement, range: Range): Range {
+	const isEmpty = block !== root && block.textContent === '' && block.querySelector(`${CONTENT_ELEMENTS}, br`) === null
+	if (isEmpty) block.appendChild(document.createElement('br'))
+	return range
+}
+
 /**
  * Удаляет выделение и возвращает диапазон каретки. Выделение через блоки склеивает крайние блоки в один, как в браузерах
  * и ProseMirror; если удалена вся область, в ней остаётся пустой абзац.
@@ -99,7 +106,7 @@ function deleteSelection(root: HTMLElement, range: Range): Range {
 		selectRange(merged)
 		return merged
 	}
-	if (root.hasChildNodes()) return range
+	if (root.hasChildNodes()) return fillEmptyBlock(root, start, range)
 	const paragraph = document.createElement('p')
 	paragraph.appendChild(document.createElement('br'))
 	root.appendChild(paragraph)

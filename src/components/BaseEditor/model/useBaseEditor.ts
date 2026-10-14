@@ -22,7 +22,7 @@ import { rangeFromStatic, selectRange } from '@utils/dom/editorInsertUtils'
 import type { BaseEditorEmits, EditorProps } from '../types/BaseEditor.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { isLinkHotkey, useEditorLinkDialog } from './link/useEditorLinkDialog'
-import { releaseIdlePlaceholders, releasePlaceholdersForClipboard } from './input/editorPlaceholders'
+import { createClipboardHandlers, releaseBeforeInput } from './input/editorPlaceholders'
 
 const EDITOR_ELEMENTS = [
 	'root',
@@ -110,7 +110,7 @@ function selectDropTarget(event: InputEvent, point: DropPoint | null): void {
 
 function useSafeInsert(
 	isLocked: ComputedRef<boolean>,
-	options: { sanitize: (html: string) => string; engine: ReturnType<typeof useEditorEngine> },
+	options: { sanitize: (html: string) => string; engine: ReturnType<typeof useEditorEngine>; editorRef: Ref<HTMLElement | null> },
 ) {
 	const { toolbar, composition } = options.engine
 	const isInternalDrag = ref(false)
@@ -137,6 +137,7 @@ function useSafeInsert(
 		},
 		handleBeforeInput(event: InputEvent): void {
 			if (toolbar.history.handleBeforeInput(event, composition.isActive) || isLocked.value) return
+			if (!composition.isActive) releaseBeforeInput(options.editorRef.value)
 			if (event.inputType === 'insertFromPaste') insertFromPaste(event)
 			else if (event.inputType === 'insertFromDrop') insertFromDrop(event)
 			else if (event.inputType === 'insertParagraph' && !composition.isActive) {
@@ -194,13 +195,7 @@ function useContentSync(
 	},
 ): void {
 	const { toolbar, state } = ctx.engine
-	useEditorSelectionSync({
-		editorRef,
-		isCodeMode: toolbar.isCodeMode,
-		composition: ctx.composition,
-		refresh: toolbar.updateActiveStates,
-		release: () => releaseIdlePlaceholders(editorRef.value),
-	})
+	useEditorSelectionSync({ editorRef, isCodeMode: toolbar.isCodeMode, composition: ctx.composition, refresh: toolbar.updateActiveStates })
 	watch(
 		() => ctx.isLocked.value,
 		isReadonly => {
@@ -265,7 +260,7 @@ export function useBaseEditor(props: EditorProps, emit: BaseEditorEmits) {
 	const sanitize = (html: string): string => (props.sanitize ?? sanitizeHtml)(stripPlaceholders(html))
 	const pending: string[] = []
 	const engine = useEditorEngine(emit, { editorRef, codeTextareaRef }, { isLocked, sanitize, pending })
-	const insert = useSafeInsert(isLocked, { sanitize, engine })
+	const insert = useSafeInsert(isLocked, { sanitize, engine, editorRef })
 	const link = useEditorLinkDialog(engine.toolbar, isLocked)
 	const mediaMenu = useMediaMenu(editorRef, engine.toolbar, { composition: engine.composition, openLinkDialog: link.openLinkDialog })
 	useContentSync(props, editorRef, { isLocked, sanitize, engine, pending, composition: engine.composition })
@@ -297,7 +292,7 @@ export function useBaseEditor(props: EditorProps, emit: BaseEditorEmits) {
 		mediaMenuAnchor: mediaMenu.mediaMenuAnchor,
 		...engine.state,
 		handleInput: engine.handleInput,
-		handleCopy: (): void => releasePlaceholdersForClipboard(editorRef.value),
+		...createClipboardHandlers(editorRef, () => !isLocked.value && engine.toolbar.deleteSelection()),
 		handleKeyDown: mediaMenu.handleKeyDown,
 		...insert,
 		exposed: api.exposed,

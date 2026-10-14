@@ -7,6 +7,8 @@ import { closestTag, isEmptyFragment, normalizeInline, PENDING_ATTR, PLACEHOLDER
 
 /** Теги, которые «Очистить форматирование» снимает с текста; ссылки остаются */
 const CLEARABLE_TAGS = ['B', 'STRONG', 'I', 'EM', 'U', 'S', 'STRIKE', 'DEL', 'FONT', 'SPAN', 'SUB', 'SUP', 'MARK', 'CODE']
+/** Блоки, после которых в простом тексте буфера идёт перевод строки */
+const TEXT_BREAK_SELECTOR = 'p, h1, h2, h3, h4, h5, h6, li, blockquote, pre, div'
 const PENDING_SELECTOR = `[${PENDING_ATTR}]`
 /** Блоки, которым после уборки пустой обёртки возвращается заглушка `<br>` */
 const BLOCK_TAGS = new Set(['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'LI', 'DIV', 'BLOCKQUOTE', 'PRE'])
@@ -191,8 +193,21 @@ function releasePlaceholders(root: HTMLElement, caret: Node | null = null): bool
 	return releasePendingIn(root, caret)
 }
 
+/** Тексты для буфера обмена из выделения: HTML и простой текст без заполнителей и меток; DOM области не меняется */
+function getClipboardData(range: Range): { html: string; text: string } {
+	const box = document.createElement('div')
+	box.append(range.cloneContents())
+	const html = stripPlaceholders(box.innerHTML)
+	const template = document.createElement('template')
+	template.innerHTML = html
+	template.content.querySelectorAll('br').forEach(lineBreak => lineBreak.replaceWith('\n'))
+	template.content.querySelectorAll(TEXT_BREAK_SELECTOR).forEach(block => block.append('\n'))
+	return { html, text: `${template.content.textContent}`.replace(/\n$/, '') }
+}
+
 export {
 	applyInlineStyle,
+	getClipboardData,
 	releasePlaceholders,
 	removeInlineFormatting,
 	stripPlaceholders,
