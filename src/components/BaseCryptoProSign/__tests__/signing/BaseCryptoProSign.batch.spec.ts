@@ -103,7 +103,8 @@ describe('BaseCryptoProSign — несколько файлов (isMultiple)', (
 	})
 
 	it('отмена: текущий файл дописывается, остальные отменены', async () => {
-		const { emitted } = await renderReady({ props: PROPS }, { delay: 600 })
+		vi.useFakeTimers({ toFake: ['setTimeout', 'Date'], now: NOW, shouldAdvanceTime: true })
+		const { emitted } = await renderReady({ props: PROPS }, { delay: 60_000 })
 		await upload([file('a.txt'), file('b.txt'), file('c.txt')])
 		await start()
 		const cancel = await screen.findByRole('button', { name: 'Отменить' })
@@ -112,6 +113,7 @@ describe('BaseCryptoProSign — несколько файлов (isMultiple)', (
 		await userEvent.click(cancel)
 		expect(cancel).toHaveAttribute('aria-disabled', 'true')
 		expect(cancel).toHaveFocus()
+		await vi.advanceTimersByTimeAsync(200_000)
 		await waitFor(() => expect(emitted()['signed-all']).toBeTruthy())
 		const total = lastEmitted<CryptoProBatchResult>(emitted(), 'signed-all')
 		expect(total.items.map(item => item.status)).toEqual(['signed', 'cancelled', 'cancelled'])
