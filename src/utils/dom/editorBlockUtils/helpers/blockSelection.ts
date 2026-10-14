@@ -92,4 +92,4 @@ function selectedBlocks(root: HTMLElement): HTMLElement[] {
 	)
 }
 
-export { BLOCK_TAGS, emptyParagraph, isBlankText, selectedBlocks, wrapLooseInline }
+export { emptyParagraph, selectedBlocks }

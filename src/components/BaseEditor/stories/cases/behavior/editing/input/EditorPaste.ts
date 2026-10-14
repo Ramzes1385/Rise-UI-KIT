@@ -19,9 +19,8 @@ function paste(target: HTMLElement, data: Record<string, string>): InputEvent {
 }
 
 function caretAtEnd(textbox: HTMLElement): void {
-	const selection = window.getSelection()
-	selection?.selectAllChildren(textbox)
-	selection?.collapseToEnd()
+	const text = textbox.querySelector('p')?.lastChild as Text
+	window.getSelection()?.setBaseAndExtent(text, text.data.length, text, text.data.length)
 }
 
 export const EditorPaste: StoryObj<typeof meta> = {

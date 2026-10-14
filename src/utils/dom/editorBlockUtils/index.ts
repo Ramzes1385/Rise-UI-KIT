@@ -1,2 +1,2 @@
 export { clearBlockFormatting, insertParagraphAtSelection, setAlign, setBlockTag, toggleList } from './editorBlockUtils'
-export type { EditorAlign, EditorBlockTag, EditorListTag } from './types/editorBlockUtils.types'
+export type { EditorAlign, EditorBlockTag } from './types/editorBlockUtils.types'

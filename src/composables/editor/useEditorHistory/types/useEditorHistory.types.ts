@@ -1,14 +1,11 @@
 import type { ComputedRef, Ref } from 'vue'
 
-/** Виды правки: от них зависит, склеиваются ли соседние правки в один шаг отмены */
-export const EDITOR_HISTORY_KINDS = ['typing', 'deleting', 'drag', 'command'] as const
-
 /**
  * Вид правки для истории отмены.
  * `typing` и `deleting` склеиваются при быстром наборе или удалении, `drag` — части одного перетаскивания,
  * `command` (команда тулбара, вставка, режим кода) — всегда отдельный шаг.
  */
-export type EditorHistoryKind = (typeof EDITOR_HISTORY_KINDS)[number]
+export type EditorHistoryKind = 'command' | 'deleting' | 'drag' | 'typing'
 
 /** Точка выделения: путь из индексов детей от корня области и смещение в текстовом узле или номер ребёнка */
 export interface EditorSelectionPoint {
@@ -47,7 +44,7 @@ export interface EditorHistoryEntry {
 }
 
 /** Текущее состояние, от которого считаются патчи */
-export interface EditorHistoryPresent {
+interface EditorHistoryPresent {
 	html: string
 	selection: EditorSelectionPath | null
 }

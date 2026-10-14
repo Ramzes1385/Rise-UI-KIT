@@ -1,10 +1,10 @@
 import { expect, type Page, test } from '@playwright/test'
 
-const STORY = '/iframe.html?id=editor-baseeditor--editor-undo'
+const STORY = '/iframe.html?id=editor-baseeditor--empty'
 
 async function openEditor(page: Page) {
 	await page.goto(STORY)
-	const textbox = page.getByRole('textbox', { name: 'Заметка' })
+	const textbox = page.getByRole('textbox', { name: 'Текстовый редактор' })
 	await textbox.waitFor({ timeout: 25000 })
 	await page.waitForTimeout(500)
 	await textbox.evaluate(element => {
@@ -13,6 +13,7 @@ async function openEditor(page: Page) {
 		window.getSelection()!.setBaseAndExtent(text, text.data.length, text, text.data.length)
 		element.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText' }))
 	})
+	await page.waitForTimeout(600)
 	return textbox
 }
 
@@ -32,13 +33,18 @@ test('набор и команда отменяются по шагам наст
 	await expect(textbox).toContainText('one bold')
 	await expect(textbox).not.toContainText('two')
 	await page.keyboard.press('Control+z')
+	await expect(textbox).toContainText('one')
+	await expect(textbox).not.toContainText('bold')
+	await page.keyboard.press('Control+z')
+	await page.keyboard.press('Control+z')
 	await expect(textbox).toHaveText('alpha beta gamma')
 
 	await page.keyboard.press('Control+y')
-	await expect(textbox).toContainText('one bold')
-	await expect(textbox).not.toContainText('two')
+	await expect(textbox).toContainText('one')
 	await page.keyboard.press('Control+Shift+z')
-	await expect(textbox).toContainText('two')
+	await page.keyboard.press('Control+Shift+z')
+	await expect(textbox).toContainText('bold')
+	await expect(textbox).not.toContainText('two')
 })
 
 test('перетаскивание выделенного слова — один шаг: Ctrl+Z возвращает слово на место', async ({ page }) => {
