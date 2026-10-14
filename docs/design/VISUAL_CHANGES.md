@@ -1972,3 +1972,6 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 - **BaseEditor** (новые истории `editor-baseeditor--editor-paste`, `--editor-undo`): вид тот же, что у остальных историй BaseEditor (панель, область текста; во второй — подпись «Отправлено значений»). Скриншот-тестов у них нет.
 
 - **BaseEditor** (новая история `editor-baseeditor--editor-blocks`): вид как у остальных историй BaseEditor; в области после команд — маркированный и нумерованный списки, выравнивание по центру. Скриншот-тестов у неё нет.
+- **BaseEditor** (`editor-baseeditor--media-and-links`, EDT-13): изображение после «Фото стенда: » сдвинулось на 4 px вправо — вставка через Range сохраняет пробел перед кареткой, а `execCommand('insertHTML')` его съедал; лишний `background-color: rgba(0, 0, 0, 0)` у вставки исчез (2974 px, обе темы).
+- **BaseEditor** (`editor-baseeditor--editor-toolbar-slot`, EDT-13): подпись «С уважением, команда Rise», вставленная `insertHtml('<p>…</p>')`, теперь отдельный абзац над исходным текстом, а не слитая с ним строка (4953 и 5093 px).
+- Остальные истории BaseEditor (27 из 30 существующих, светлая и тёмная темы) совпадают с базой попиксельно; расхождение до 22 px с отклонением не больше 1/255 (`custom-color`, свет) и 11 px (`default`, `editor-async-model`) — шум самой базы при повторном снимке.
