@@ -1,7 +1,7 @@
 /** Composable: вычисление CSS-классов компонента */
 import { computed } from 'vue'
 import { hasElementKeys, isObject } from '@utils/data/typeUtils'
-import type { ClassResultInternal, UseCustomClassOptions } from './types/useCustomClass.types'
+import type { ClassResultInternal, CustomClassProp, UseCustomClassOptions } from './types/useCustomClass.types'
 
 /**
  * Composable для вычисления CSS-классов компонента.
@@ -12,45 +12,46 @@ import type { ClassResultInternal, UseCustomClassOptions } from './types/useCust
  * Массивы не поддерживаются и игнорируются: тип CustomClassProp их не допускает, а смешанный
  * массив нельзя однозначно разложить по элементам (поведение закреплено тестом).
  */
+function resolveCustomClass(customClass: CustomClassProp | undefined, keys: string[]): Record<string, string | undefined> {
+	const result: Record<string, ClassResultInternal> = {}
+
+	keys.forEach(function (key) {
+		result[key] = undefined
+	})
+
+	if (!customClass) {
+		return result as Record<string, string | undefined>
+	}
+
+	if (typeof customClass === 'string') {
+		result.root = customClass
+		return result as Record<string, string | undefined>
+	}
+
+	if (isObject(customClass)) {
+		if (hasElementKeys(customClass, keys)) {
+			keys.forEach(function (key) {
+				const val = Reflect.get(customClass, key)
+				if (typeof val === 'string') {
+					result[key] = val
+				}
+			})
+		} else {
+			result.root = customClass as Record<string, string | boolean | undefined>
+		}
+	}
+
+	return result as Record<string, string | undefined>
+}
+
 function useCustomClass(options: UseCustomClassOptions) {
 	const keys = options.elementKeys || ['root']
 
-	const classes = computed<Record<string, string | undefined>>(function () {
-		const customClass = options.getClass()
-		const result: Record<string, ClassResultInternal> = {}
-
-		keys.forEach(function (key) {
-			result[key] = undefined
-		})
-
-		if (!customClass) {
-			return result as Record<string, string | undefined>
-		}
-
-		if (typeof customClass === 'string') {
-			result.root = customClass
-			return result as Record<string, string | undefined>
-		}
-
-		if (isObject(customClass)) {
-			if (hasElementKeys(customClass, keys)) {
-				keys.forEach(function (key) {
-					const val = Reflect.get(customClass, key)
-					if (typeof val === 'string') {
-						result[key] = val
-					}
-				})
-			} else {
-				result.root = customClass as Record<string, string | boolean | undefined>
-			}
-		}
-
-		return result as Record<string, string | undefined>
-	})
+	const classes = computed<Record<string, string | undefined>>(() => resolveCustomClass(options.getClass(), keys))
 
 	return {
 		classes,
 	}
 }
 
-export { useCustomClass }
+export { resolveCustomClass, useCustomClass }

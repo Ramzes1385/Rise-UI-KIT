@@ -1,10 +1,10 @@
 <template>
-	<Teleport defer :to="teleportTarget" :disabled="isContained">
+	<Teleport v-for="group in groups" :key="group.position" defer :to="teleportTarget" :disabled="isContained">
 		<div
 			ref="containerRef"
 			:class="[
 				ui('root'),
-				`base-notification--${position}`,
+				`base-notification--${group.position}`,
 				{ 'base-notification--contained': isContained, 'base-notification--paused': isPaused },
 				classes.root,
 			]"
@@ -18,40 +18,44 @@
 			@focusout="handleFocusOut">
 			<TransitionGroup name="base-notification" tag="div" :class="ui('list')">
 				<div
-					v-for="notification in list"
+					v-for="notification in group.items"
 					:key="notification.id"
 					:class="[
 						ui('item'),
 						`base-notification-item--${notification.type || 'info'}`,
 						animationClass,
 						getVariantClass(notification),
-						classes.notification,
+						getItemClass(notification),
 					]"
-					:style="[variantStyle, customColorStyle]"
+					:style="[variantStyle, getItemStyle(notification)]"
 					:role="notification.type === 'error' ? 'alert' : 'status'">
 					<BaseIcon
 						:name="typeIconMap[notification.type || 'info']"
-						:size-scale="calcIconScale('md', sizeScale)"
+						:size-scale="calcIconScale('md', getScale(notification))"
 						:class="ui('icon')"
-						:custom-class="classes.icon" />
-					<div :class="[ui('content'), classes.content]">
-						<BaseText tag="h4" :size-scale="sizeScale" :class="ui('title')" :custom-class="classes.title">
+						:custom-class="getItemClasses(notification).icon" />
+					<div :class="[ui('content'), getItemClasses(notification).content]">
+						<BaseText
+							tag="h4"
+							:size-scale="getScale(notification)"
+							:class="ui('title')"
+							:custom-class="getItemClasses(notification).title">
 							{{ notification.title }}
 						</BaseText>
 						<BaseText
 							v-if="notification.description"
 							tag="p"
-							:size-scale="sizeScale"
+							:size-scale="getScale(notification)"
 							:class="ui('description')"
-							:custom-class="classes.description">
+							:custom-class="getItemClasses(notification).description">
 							{{ notification.description }}
 						</BaseText>
-						<div v-if="notification.actions?.length" :class="[ui('actions'), classes.actions]">
+						<div v-if="notification.actions?.length" :class="[ui('actions'), getItemClasses(notification).actions]">
 							<BaseButton
 								v-for="action in notification.actions"
 								:key="action.label"
 								variant="outline"
-								:size-scale="sizeScale * actionScaleRatio"
+								:size-scale="getActionScale(notification)"
 								@click="runAction(notification.id, action)">
 								{{ action.label }}
 							</BaseButton>
@@ -60,16 +64,16 @@
 					<BaseButton
 						variant="ghost"
 						:class="ui('close')"
-						:size-scale="sizeScale"
-						:custom-class="classes.close"
+						:size-scale="getScale(notification)"
+						:custom-class="getItemClasses(notification).close"
 						:aria-label="UI_ARIA.CLOSE"
 						@click="remove(notification.id)">
-						<BaseIcon name="close" :size-scale="calcIconScale('sm', sizeScale)" />
+						<BaseIcon name="close" :size-scale="calcIconScale('sm', getScale(notification))" />
 					</BaseButton>
 					<BaseProgress
 						v-if="!notification.isPersistent"
 						:key="getTimerKey(notification)"
-						:class="[ui('progress'), classes.progress]"
+						:class="[ui('progress'), getItemClasses(notification).progress]"
 						:value="100"
 						:countdown="getDuration(notification)"
 						:is-paused="isPaused"
@@ -104,6 +108,7 @@ const props = withDefaults(
 		sizeScale: SIZE_SCALE_DEFAULT,
 		isContained: false,
 		isPersistent: false,
+		maxVisible: 0,
 		animation: 'scale',
 	}),
 )
@@ -113,13 +118,16 @@ defineSlots<BaseNotificationSlots>()
 const {
 	sizeScaleStyle,
 	variantStyle,
-	customColorStyle,
 	classes,
 	teleportTarget,
 	containerRef,
-	list,
-	actionScaleRatio,
+	groups,
 	typeIconMap,
+	getScale,
+	getActionScale,
+	getItemStyle,
+	getItemClasses,
+	getItemClass,
 	getDuration,
 	getTimerKey,
 	getVariantClass,

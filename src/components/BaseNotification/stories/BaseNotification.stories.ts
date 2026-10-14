@@ -24,6 +24,7 @@ export const CustomColor = cases.CustomColor
 export const LongContent = cases.LongContent
 export const Positions = cases.Positions
 export const ShowFromCode = cases.ShowFromCode
+export const Queue = cases.Queue
 export const AutoClose = cases.AutoClose
 export const Actions = cases.Actions
 export const Persistent = cases.Persistent

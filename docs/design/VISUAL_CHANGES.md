@@ -2027,3 +2027,7 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 ## Задача image-touch
 
 - **BaseImage** (`element-baseimage--*` с лайтбоксом): курсор над увеличенным изображением в просмотре — «рука» (`grab`, во время перетаскивания `grabbing`); в снимках курсор не виден. Расстановка элементов и цвета не менялись. Ожидаемых расхождений снимков нет.
+
+## Задача notify-sidebar
+
+- **BaseNotification** (`overlay-basenotification--*`): ожидаемых расхождений снимков нет — DOM и стили при одной позиции прежние. Новая история `overlay-basenotification--queue` (скриншот-теста нет).

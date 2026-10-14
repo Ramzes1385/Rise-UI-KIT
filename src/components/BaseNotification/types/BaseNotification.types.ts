@@ -54,7 +54,10 @@ export interface BaseNotificationProps extends BaseComponentProps<
 	description?: string
 	/** Тип */
 	type?: (typeof NOTIFICATION_TYPES)[number]
-	/** Позиция контейнера на экране */
+	/**
+	 * Позиция области на экране. Уведомлению из `add()` позиция задаётся в аргументе: уведомления с разными позициями
+	 * компонент раскладывает по отдельным областям; без своей позиции уведомление берёт позицию компонента
+	 */
 	position?: NotificationPosition
 	/**
 	 * Длительность показа уведомления из props, мс (по умолчанию 3000). Ноль, отрицательное или бесконечное значение
@@ -72,8 +75,18 @@ export interface BaseNotificationProps extends BaseComponentProps<
 	 * закрытие по таймеру, кнопке или действию приходит событием `remove` с id уведомления
 	 */
 	items?: NotificationItem[]
-	/** Ключ для принудительного добавления уведомления при изменении */
+	/**
+	 * Ключ уведомления. Повторный `add()` с тем же ключом обновляет показанное уведомление на месте (новые поля, таймер
+	 * начинается заново) и возвращает его id, а не добавляет дубль. У декларативного уведомления (`title` в props) смена ключа
+	 * показывает новое уведомление; смена `title`, `description` или `type` при том же ключе обновляет текущее
+	 */
 	notificationKey?: string | number
+	/**
+	 * Сколько уведомлений видно одновременно на одной позиции. Остальные ждут в очереди (первым показывается то, что пришло
+	 * раньше) и появляются, когда видимое закрывается; таймер ожидающего стартует с появления. Ноль, пустое значение или
+	 * бесконечность — без предела (по умолчанию)
+	 */
+	maxVisible?: number
 	/** Имя области для скринридера; по умолчанию «Уведомления». Нужно, когда на странице несколько областей уведомлений */
 	ariaLabel?: string
 	/**
@@ -96,6 +109,12 @@ export interface NotificationItem extends Omit<BaseNotificationProps, 'items'> {
 	id: NotificationId
 }
 
+/** Область уведомлений одной позиции: компонент рисует по области на каждую используемую позицию */
+export interface NotificationGroup {
+	position: NotificationPosition
+	items: NotificationItem[]
+}
+
 export interface BaseNotificationEmits {
 	/** Список опустел (только без `items`: управляемым списком распоряжается владелец) */
 	(event: 'close'): void
@@ -107,7 +126,11 @@ export interface BaseNotificationEmits {
 export type BaseNotificationSlots = Record<never, never>
 
 export interface BaseNotificationExpose {
-	/** Добавить уведомление программно и получить его id. `variant` из аргумента задаёт оформление этого уведомления, иначе — проп компонента */
+	/**
+	 * Добавить уведомление программно и получить его id. `variant`, `color`, `sizeScale`, `position` и `customClass` из аргумента
+	 * оформляют только это уведомление, иначе действуют props компонента. С `notificationKey` уже показанного уведомления
+	 * обновляет его вместо добавления дубля
+	 */
 	add: (notification: BaseNotificationProps) => NotificationId
 	/** Удалить уведомление по id */
 	remove: (id: NotificationId) => void
@@ -119,4 +142,9 @@ export interface AutoCloseTimer {
 	remaining: number
 	startedAt: number
 	timeout: ReturnType<typeof setTimeout> | null
+}
+
+export interface NotificationTimerView {
+	getDuration: (notification: NotificationItem) => number
+	getTimerKey: (notification: NotificationItem) => string
 }

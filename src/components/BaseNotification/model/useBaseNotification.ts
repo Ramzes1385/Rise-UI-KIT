@@ -1,11 +1,16 @@
-import type { ComputedRef } from 'vue'
+import type { ComputedRef, Ref } from 'vue'
 import { useUi } from '@composables/base/useUi'
+import { useAutoClose } from './useNotificationTimers'
 import type { UiClassFn } from '@composables/base/useUi'
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { calcDerivedScale } from '@utils/media/iconUtils'
+import { useNotificationList } from './useNotificationList'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useSizeScale'
+import { resolveCustomClass } from '@composables/base/useCustomClass'
+import { buildCustomColorStyle } from '@composables/base/useCustomColor'
 import { useOwnThemeAttrs, useTeleportTarget } from '@composables/app/useTeleportTarget'
 import { DEFAULT_VARIANT, useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type {
-	AutoCloseTimer,
 	BaseNotificationPart,
 	BaseNotificationEmits,
 	BaseNotificationProps,
@@ -49,12 +54,12 @@ function resolveDuration(duration: number | undefined): number {
 	return DEFAULT_DURATION
 }
 
-function useNotificationView(props: BaseNotificationProps) {
+function useNotificationView(props: BaseNotificationProps, getRevision: (id: NotificationId) => number) {
 	const getDuration = (notification: NotificationItem): number => resolveDuration(notification.duration ?? props.duration)
 	return {
 		getDuration,
 		getTimerKey: (notification: NotificationItem): string =>
-			`${notification.id}:${notification.isPersistent ? 'persistent' : getDuration(notification)}`,
+			`${notification.id}:${getRevision(notification.id)}:${notification.isPersistent ? 'persistent' : getDuration(notification)}`,
 		getVariantClass(notification: NotificationItem): string | undefined {
 			const variant = notification.variant ?? props.variant
 			if (!variant || variant === DEFAULT_VARIANT) return undefined
@@ -63,133 +68,117 @@ function useNotificationView(props: BaseNotificationProps) {
 	}
 }
 
-function createTimers(onExpire: (id: NotificationId) => void) {
-	const timers = new Map<NotificationId, AutoCloseTimer>()
-	const schedule = (id: NotificationId, timer: AutoCloseTimer): void => {
-		timer.startedAt = Date.now()
-		timer.timeout = setTimeout(() => onExpire(id), timer.remaining)
-	}
-	const clearTimer = (id: NotificationId): void => {
-		const timer = timers.get(id)
-		if (timer?.timeout) clearTimeout(timer.timeout)
-		timers.delete(id)
-	}
-
-	return {
-		timers,
-		schedule,
-		clearTimer,
-		clearAll(): void {
-			for (const id of [...timers.keys()]) clearTimer(id)
-		},
-		setPaused(paused: boolean): void {
-			const now = Date.now()
-			for (const [id, timer] of timers) {
-				if (paused && timer.timeout) {
-					clearTimeout(timer.timeout)
-					timer.timeout = null
-					timer.remaining = Math.max(0, timer.remaining - (now - timer.startedAt))
-				} else if (!paused && !timer.timeout) {
-					schedule(id, timer)
-				}
-			}
-		},
-	}
-}
-
-function useAutoClose(
-	list: ComputedRef<NotificationItem[]>,
-	view: ReturnType<typeof useNotificationView>,
-	onExpire: (id: NotificationId) => void,
+function useNotificationItemView(
+	props: BaseNotificationProps,
+	shared: { classes: ComputedRef<Record<string, string | undefined>>; customColorStyle: ComputedRef<Record<string, string> | undefined> },
 ) {
-	const clock = createTimers(onExpire)
-	const isHovered = ref(false)
-	const isFocusWithin = ref(false)
-	const isPaused = computed(() => isHovered.value || isFocusWithin.value)
-
-	const startTimer = (notification: NotificationItem, key: string): void => {
-		const timer: AutoCloseTimer = { key, remaining: view.getDuration(notification), startedAt: 0, timeout: null }
-		clock.timers.set(notification.id, timer)
-		if (!isPaused.value) clock.schedule(notification.id, timer)
-	}
-	const syncTimers = (): void => {
-		const visible = new Set(list.value.map(notification => notification.id))
-		for (const notification of list.value) {
-			const key = view.getTimerKey(notification)
-			if (clock.timers.get(notification.id)?.key === key) continue
-			clock.clearTimer(notification.id)
-			if (!notification.isPersistent) startTimer(notification, key)
-		}
-		for (const id of [...clock.timers.keys()]) {
-			if (!visible.has(id)) clock.clearTimer(id)
-		}
-		if (list.value.length === 0) {
-			isHovered.value = false
-			isFocusWithin.value = false
-		}
-	}
-
-	watch(() => list.value.map(view.getTimerKey).join('|'), syncTimers, { immediate: true })
-	watch(isPaused, clock.setPaused)
-	onBeforeUnmount(clock.clearAll)
-
-	return { isHovered, isFocusWithin, isPaused, syncTimers, clearTimer: clock.clearTimer }
-}
-
-function useNotificationList(props: BaseNotificationProps, emit: BaseNotificationEmits) {
-	const internalItems = ref<NotificationItem[]>([])
-	let nextId = 0
+	const getScale = (notification: NotificationItem): number => notification.sizeScale ?? props.sizeScale ?? SIZE_SCALE_DEFAULT
 	return {
-		list: computed(() => props.items ?? internalItems.value),
-		push(notification: BaseNotificationProps): NotificationId {
-			const id = nextId++
-			internalItems.value.unshift({ ...notification, items: undefined, id } as NotificationItem)
-			return id
+		getScale,
+		getActionScale: (notification: NotificationItem): number => calcDerivedScale(getScale(notification), ACTION_SCALE_RATIO),
+		getItemStyle(notification: NotificationItem): Record<string, string> | undefined {
+			const color = notification.color ? buildCustomColorStyle(notification.color) : shared.customColorStyle.value
+			if (notification.sizeScale === undefined) return color
+			return { ...color, '--size-scale': String(notification.sizeScale / SIZE_SCALE_DEFAULT) }
 		},
-		drop(id: NotificationId): void {
-			if (props.items) return
-			internalItems.value = internalItems.value.filter(notification => notification.id !== id)
-			if (internalItems.value.length === 0) emit('close')
+		getItemClasses(notification: NotificationItem): Record<string, string | undefined> {
+			const own = resolveCustomClass(notification.customClass, NOTIFICATION_ELEMENTS)
+			const result: Record<string, string | undefined> = {}
+			for (const key of NOTIFICATION_ELEMENTS)
+				result[key] = [shared.classes.value[key], own[key]].filter(Boolean).join(' ') || undefined
+			return result
+		},
+		getItemClass(notification: NotificationItem): unknown[] {
+			const own = resolveCustomClass(notification.customClass, NOTIFICATION_ELEMENTS)
+			return [shared.classes.value.notification, own.notification, own.root]
 		},
 	}
 }
 
-export function useBaseNotification(props: BaseNotificationProps, emit: BaseNotificationEmits) {
-	const teleportTarget = useTeleportTarget()
-	const standard = useStandardBaseComponent('base-notification-item', props, NOTIFICATION_ELEMENTS)
-	const { list, push, drop } = useNotificationList(props, emit)
-	const view = useNotificationView(props)
-	const containerRef = ref<HTMLElement | null>(null)
-	const autoClose = useAutoClose(list, view, id => remove(id))
+function useDeclaredNotification(
+	props: BaseNotificationProps,
+	add: (notification: BaseNotificationProps) => NotificationId,
+	update: (id: NotificationId, notification: BaseNotificationProps) => boolean,
+) {
+	let declaredId: NotificationId | null = null
+	const toNotification = (): BaseNotificationProps => ({
+		title: props.title,
+		description: props.description,
+		type: props.type,
+		duration: props.duration,
+		isPersistent: props.isPersistent,
+		actions: props.actions,
+		notificationKey: props.notificationKey,
+	})
+	const show = (): void => {
+		declaredId = add(toNotification())
+	}
+
+	onMounted(() => {
+		if (props.title && !props.items) show()
+	})
+	watch(
+		() => [props.notificationKey, props.title, props.description, props.type],
+		([key], [previousKey]) => {
+			if (!props.title || props.items) return
+			if (key !== previousKey || declaredId === null || !update(declaredId, toNotification())) show()
+		},
+	)
+}
+
+function useNotificationActions(
+	emit: BaseNotificationEmits,
+	store: ReturnType<typeof useNotificationList>,
+	view: ReturnType<typeof useNotificationView>,
+) {
+	const containerRef: Ref<HTMLElement[]> = ref([])
+	const autoClose = useAutoClose(store.visible, view, id => remove(id))
 	const { isFocusWithin } = autoClose
 
 	const remove = (id: NotificationId): void => {
 		autoClose.clearTimer(id)
 		emit('remove', id)
-		drop(id)
+		store.drop(id)
 		nextTick(() => {
-			if (isFocusWithin.value && !containerRef.value?.contains(document.activeElement)) isFocusWithin.value = false
+			const active = document.activeElement
+			if (isFocusWithin.value && !containerRef.value.some(container => container.contains(active))) isFocusWithin.value = false
 		})
 	}
-	const add = (notification: BaseNotificationProps): NotificationId => {
-		const id = push(notification)
+	const restartTimer = (id: NotificationId): void => {
+		autoClose.clearTimer(id)
 		autoClose.syncTimers()
+	}
+	const add = (notification: BaseNotificationProps): NotificationId => {
+		const id = store.push(notification)
+		restartTimer(id)
 		return id
 	}
+	const update = (id: NotificationId, notification: BaseNotificationProps): boolean => {
+		const isUpdated = store.update(id, notification)
+		restartTimer(id)
+		return isUpdated
+	}
 
-	onMounted(() => {
-		if (props.title && !props.items)
-			add({ ...props, variant: undefined, title: props.title, type: props.type, position: props.position, duration: props.duration })
-	})
+	return { autoClose, containerRef, remove, add, update }
+}
+
+export function useBaseNotification(props: BaseNotificationProps, emit: BaseNotificationEmits) {
+	const standard = useStandardBaseComponent('base-notification-item', props, NOTIFICATION_ELEMENTS)
+	const store = useNotificationList(props, emit)
+	const view = useNotificationView(props, store.getRevision)
+	const { autoClose, containerRef, remove, add, update } = useNotificationActions(emit, store, view)
+	const { isFocusWithin } = autoClose
+
+	useDeclaredNotification(props, add, update)
 
 	return {
 		...standard,
-		teleportTarget,
+		teleportTarget: useTeleportTarget(),
 		containerRef,
-		list,
-		actionScaleRatio: ACTION_SCALE_RATIO,
+		groups: store.groups,
 		typeIconMap: TYPE_ICONS,
 		...view,
+		...useNotificationItemView(props, standard),
 		isHovered: autoClose.isHovered,
 		isFocusWithin,
 		isPaused: autoClose.isPaused,
@@ -203,6 +192,6 @@ export function useBaseNotification(props: BaseNotificationProps, emit: BaseNoti
 			remove(id)
 		},
 		exposed: { add, remove },
-		...useNotificationLook(props, list),
+		...useNotificationLook(props, store.list),
 	}
 }

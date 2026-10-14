@@ -1,6 +1,6 @@
 /** Composable: назначение кастомного цвета компоненту через CSS-переменные */
 import { computed } from 'vue'
-import type { ColorStates, UseCustomColorOptions } from './types/useCustomColor.types'
+import type { ColorStates, CustomColor, UseCustomColorOptions } from './types/useCustomColor.types'
 
 const PREFIX_BG = '--custom-bg'
 const PREFIX_TEXT = '--custom-text'
@@ -10,6 +10,19 @@ function mapStates(styles: Record<string, string>, prefix: string, states: Color
 	if (states.hover) styles[`${prefix}-hover`] = states.hover
 	if (states.active) styles[`${prefix}-active`] = states.active
 	if (states.focus) styles[`${prefix}-focus`] = states.focus
+}
+
+function buildCustomColorStyle(color: CustomColor | undefined): Record<string, string> | undefined {
+	if (!color) return undefined
+
+	const styles: Record<string, string> = {}
+
+	if (color.bg) mapStates(styles, PREFIX_BG, color.bg)
+	if (color.text) mapStates(styles, PREFIX_TEXT, color.text)
+
+	if (Object.keys(styles).length === 0) return undefined
+
+	return styles
 }
 
 /**
@@ -30,21 +43,9 @@ function mapStates(styles: Record<string, string>, prefix: string, states: Color
  * ```
  */
 function useCustomColor(options: UseCustomColorOptions) {
-	const customColorStyle = computed(() => {
-		const color = options.getColor()
-		if (!color) return undefined
-
-		const styles: Record<string, string> = {}
-
-		if (color.bg) mapStates(styles, PREFIX_BG, color.bg)
-		if (color.text) mapStates(styles, PREFIX_TEXT, color.text)
-
-		if (Object.keys(styles).length === 0) return undefined
-
-		return styles
-	})
+	const customColorStyle = computed(() => buildCustomColorStyle(options.getColor()))
 
 	return { customColorStyle }
 }
 
-export { useCustomColor }
+export { buildCustomColorStyle, useCustomColor }

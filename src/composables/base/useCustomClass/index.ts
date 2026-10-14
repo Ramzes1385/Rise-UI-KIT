@@ -1,2 +1,2 @@
-export { useCustomClass } from './useCustomClass'
+export { resolveCustomClass, useCustomClass } from './useCustomClass'
 export type { CustomClassProp, UseCustomClassOptions } from './types/useCustomClass.types'
