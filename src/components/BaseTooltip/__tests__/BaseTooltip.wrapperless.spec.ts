@@ -43,6 +43,21 @@ describe('BaseTooltip без обёртки', () => {
 		expect(button).toHaveAttribute('aria-describedby', 'own-hint')
 	})
 
+	it('сохраняет aria-describedby, переданный самому BaseTooltip', async () => {
+		vi.useFakeTimers()
+		render(BaseTooltip, {
+			props: { text: 'Сохранить черновик', isWrapperless: true },
+			attrs: { 'aria-describedby': 'outer-hint' },
+			slots: { default: '<button type="button">Сохранить</button>' },
+		})
+		const button = screen.getByRole('button')
+		expect(button).toHaveAttribute('aria-describedby', 'outer-hint')
+
+		button.focus()
+		await vi.advanceTimersByTimeAsync(200)
+		expect(button.getAttribute('aria-describedby')).toBe(`outer-hint ${screen.getByRole('tooltip').id}`)
+	})
+
 	it('работает с компонентом в слоте: события и aria на его корневом элементе', async () => {
 		vi.useFakeTimers()
 		render(BaseTooltip, {

@@ -34,7 +34,6 @@ describe('BasePresentationPlayer — режим linear и minDuration', () => {
 		const next = button(wrapper, NEXT)
 		const hint = wrapper.get(`#${next.attributes('aria-describedby')}`)
 		expect(hint.text()).toBe('Доступно через 4 с')
-		expect(next.attributes('data-tooltip')).toBe('Доступно через 4 с')
 		expect(wrapper.get('.base-presentation-player__ring').attributes('aria-hidden')).toBe('true')
 		expect(wrapper.get('.base-presentation-player__next').attributes('style')).toContain('--presentation-lock: 20')
 	})

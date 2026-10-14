@@ -49,8 +49,8 @@ const rows = computed(() =>
 	found.value.slice((page.value - 1) * PAGE_SIZE, page.value * PAGE_SIZE).map(order => ({ id: order.id, data: { ...order } })),
 )
 const request = computed(() => {
-	const [state] = sort.value
-	const order = state?.direction ? state.key + ' ' + state.direction : 'нет'
+	const [first] = sort.value
+	const order = first?.direction ? first.key + ' ' + first.direction : 'нет'
 	return 'поиск «' + query.value + '», сортировка ' + order + ', страница ' + page.value
 })
 `
@@ -100,8 +100,8 @@ export const ServerSide: StoryObj<typeof meta> = {
 					.map(order => ({ id: order.id, data: { ...order } })),
 			)
 			const request = computed(() => {
-				const [state] = sort.value
-				const order = state?.direction ? state.key + ' ' + state.direction : 'нет'
+				const [first] = sort.value
+				const order = first?.direction ? first.key + ' ' + first.direction : 'нет'
 				return 'поиск «' + query.value + '», сортировка ' + order + ', страница ' + page.value
 			})
 			return { columns: COMPACT_COLUMNS, query, sort, page, total, rows, request }

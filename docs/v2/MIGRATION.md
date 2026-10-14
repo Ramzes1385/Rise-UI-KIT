@@ -2955,3 +2955,7 @@ BaseEditor, замечания проверки по диалогу ссылки
 
 - **BaseEditor, DOM (мелкое)**: у кнопок «Цвет текста» и «Цвет фона» на панели пропали классы `base-editor__color-picker` и `base-editor__color-picker--active` и переменная `--editor-swatch-color`; полоску активного цвета и плоскую кнопку-иконку даёт сам BaseColorPicker (`triggerVariant="icon"`, `hasIndicator`: класс `base-color-picker__swatch--indicated`, переменная `--picker-swatch-color`). Приложениям, которые целились в прежние классы, нужно перейти на классы BaseColorPicker или на `ui`/`customClass` редактора. Вид кнопок не менялся.
 - **BaseDashboardGrid, ручка при `gap` меньше 8 px (поведение, мелкое)**: ручка в режиме правки на недостающую часть выше (высота не меньше `24px − gap`), псевдоэлемент `::after` убран. Область нажатия по-прежнему не меньше 24 px, но больше не заходит на верх содержимого карточки; при `gap` ≥ 8 px ничего не меняется.
+
+## Задача wave8-fix
+
+- **BaseTooltip (`isWrapperless`), `aria-describedby`**: значение, переданное самому BaseTooltip как атрибут (или через компонент, чей корень — wrapperless-подсказка, как `MediaControlButton`), больше не затирается и объединяется с `aria-describedby` триггера и id подсказки. Раньше терялось: закрытая кнопка «Вперёд» линейного режима BasePresentationPlayer не получала описание «Доступно через N с». Приложениям ничего менять не нужно.

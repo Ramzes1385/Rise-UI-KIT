@@ -11,8 +11,8 @@ function findTrigger(nodes: VNode[]): VNode | undefined {
 	return flatten(nodes).find(node => node.type !== Comment && node.type !== Text)
 }
 
-function joinTokens(first: unknown, second: unknown): string | undefined {
-	const tokens = [first, second].flatMap(value => (typeof value === 'string' ? value.split(/\s+/) : [])).filter(Boolean)
+function joinTokens(...values: unknown[]): string | undefined {
+	const tokens = values.flatMap(value => (typeof value === 'string' ? value.split(/\s+/) : [])).filter(Boolean)
 	return tokens.length ? [...new Set(tokens)].join(' ') : undefined
 }
 
@@ -50,7 +50,7 @@ export const TooltipRoot = defineComponent({
 			}
 			const trigger = findTrigger(slots.trigger?.() ?? [])
 			if (!trigger) return popup
-			const describedby = joinTokens(trigger.props?.['aria-describedby'], props.describedBy)
+			const describedby = joinTokens(trigger.props?.['aria-describedby'], attrs['aria-describedby'], props.describedBy)
 			const extra = mergeProps(attrs, props.handlers, { 'aria-describedby': describedby, ref: setRef })
 			return [cloneVNode(trigger, extra, true), ...popup]
 		}
