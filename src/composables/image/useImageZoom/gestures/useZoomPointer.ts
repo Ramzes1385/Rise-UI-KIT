@@ -1,6 +1,13 @@
 /** Composable: касания и перетаскивание в зуме — сдвиг пальцем или мышью, масштаб щипком двумя пальцами */
 import { ref } from 'vue'
-import type { DragContext, GestureState, PointerMove, UseZoomPointerOptions, ZoomPoint, ZoomPointerAreas } from '../types/useImageZoom.types'
+import type {
+	DragContext,
+	GestureState,
+	PointerMove,
+	UseZoomPointerOptions,
+	ZoomPoint,
+	ZoomPointerAreas,
+} from '../types/useImageZoom.types'
 
 /** Сдвиг указателя, после которого жест считается перетаскиванием, а не кликом, px */
 const DRAG_THRESHOLD_PX = 5
