@@ -56,6 +56,33 @@ function isDisclosureItem(item: SideBarItem): boolean {
 	return hasChildren(item) && !item.to
 }
 
+/** Путь без хеша и без завершающего «/» (кроме корня) и отдельно query: `/users/?page=2#top` → `/users`, `?page=2` */
+function splitPath(value: string): { path: string; query: string } {
+	const withoutHash = value.split('#')[0]
+	const queryStart = withoutHash.indexOf('?')
+	const rawPath = queryStart === -1 ? withoutHash : withoutHash.slice(0, queryStart)
+	const query = queryStart === -1 ? '' : withoutHash.slice(queryStart)
+	const trimmed = rawPath.replace(/\/+$/, '')
+	const path = rawPath.startsWith('/') && trimmed === '' ? '/' : trimmed
+
+	return { path, query: query === '?' ? '' : query }
+}
+
+function isPathActive(item: SideBarItem, props: BaseSideBarNavigationProps): boolean {
+	if (!props.activePath || !item.to || typeof item.to !== 'string') {
+		return false
+	}
+
+	const active = splitPath(props.activePath)
+	const target = splitPath(item.to)
+
+	if (active.path === target.path && (target.query === '' || target.query === active.query)) {
+		return true
+	}
+
+	return props.activeMatch === 'startsWith' && !hasChildren(item) && active.path.startsWith(`${target.path}/`)
+}
+
 function isCurrentItemActiveByProps(item: SideBarItem, props: BaseSideBarNavigationProps): boolean {
 	if (item.isActive) {
 		return true
@@ -65,19 +92,7 @@ function isCurrentItemActiveByProps(item: SideBarItem, props: BaseSideBarNavigat
 		return item.key === props.activeKey
 	}
 
-	if (!props.activePath || !item.to || typeof item.to !== 'string') {
-		return false
-	}
-
-	if (props.activePath === item.to) {
-		return true
-	}
-
-	if (props.activeMatch === 'startsWith' && !hasChildren(item)) {
-		return props.activePath.startsWith(`${item.to}/`)
-	}
-
-	return false
+	return isPathActive(item, props)
 }
 
 function isItemActiveByProps(item: SideBarItem, props: BaseSideBarNavigationProps): boolean {

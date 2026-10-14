@@ -8,7 +8,6 @@ import { useBreakpoint } from '@composables/app/useBreakpoint'
 import { useLinkComponent } from '@composables/interaction/useLink'
 import { useSideBarCollapseMotion } from './useSideBarCollapseMotion'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
-import { useExplicitPropDetection } from '@composables/base/useExplicitPropDetection'
 import type { BaseSideBarEmits, SideBarItem, SideBarProps } from '../types/BaseSideBar.types'
 
 const SIDEBAR_ELEMENTS = ['root', 'header', 'title', 'toggle', 'navigation', 'loading', 'body', 'footer', 'collapsed']
@@ -43,9 +42,8 @@ function useSideBarMobile(props: SideBarProps, emit: BaseSideBarEmits) {
 }
 
 function useCollapsedState(props: SideBarProps, emit: BaseSideBarEmits) {
-	const { wasPropPassed } = useExplicitPropDetection()
 	const internalCollapsed = ref(false)
-	const isCollapsedControlled = computed(() => wasPropPassed('isCollapsed'))
+	const isCollapsedControlled = computed(() => props.isCollapsed !== undefined)
 	const isCollapsedState = computed(() => (isCollapsedControlled.value ? props.isCollapsed === true : internalCollapsed.value))
 
 	watch(

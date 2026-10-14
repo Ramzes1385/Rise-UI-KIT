@@ -226,6 +226,8 @@ export const enBase = {
 		LINK_UNSAFE_URL: 'A link with an unsafe URL is shown without the URL: {url}',
 		LINK_WITHOUT_COMPONENT: 'An object `to` needs a link component: pass RouterLink as linkComponent',
 		SIDEBAR_UNSAFE_URL: 'BaseSideBar: the item "{label}" with an unsafe URL is shown as a button: {url}',
+		SIDEBAR_DUPLICATE_KEY:
+			'BaseSideBar: several items share the key "{key}" — give each a unique `key`: until then the expanded state follows the item order',
 		DOWNLOAD_UNSAFE_URL: 'Download from an unsafe URL was blocked: {url}',
 		CHAT_WRITE_MESSAGE_AVATAR_CLICK:
 			'BaseChat: “Send a message” emits write-message; avatar-click for this action is deprecated and will be removed — switch to write-message',

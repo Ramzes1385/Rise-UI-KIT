@@ -253,6 +253,8 @@ export const ruBase = {
 		LINK_UNSAFE_URL: 'Ссылка с небезопасным адресом показана без адреса: {url}',
 		LINK_WITHOUT_COMPONENT: 'Объект `to` без компонента ссылок: передайте RouterLink в linkComponent',
 		SIDEBAR_UNSAFE_URL: 'BaseSideBar: пункт «{label}» с небезопасным адресом показан кнопкой: {url}',
+		SIDEBAR_DUPLICATE_KEY:
+			'BaseSideBar: у нескольких пунктов одинаковый ключ «{key}» — задайте каждому уникальный `key`: пока его нет, состояние раскрытия привязано к порядку пунктов',
 		DOWNLOAD_UNSAFE_URL: 'Скачивание по небезопасному URL заблокировано: {url}',
 		CHAT_WRITE_MESSAGE_AVATAR_CLICK:
 			'BaseChat: «Написать сообщение» вызывает событие write-message; avatar-click для этого действия устарел и будет убран — перейдите на write-message',

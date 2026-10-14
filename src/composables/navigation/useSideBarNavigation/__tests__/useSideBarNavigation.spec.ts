@@ -1,4 +1,4 @@
-import { defineComponent } from 'vue'
+import { defineComponent, nextTick, reactive } from 'vue'
 import { useSideBarNavigation } from '../useSideBarNavigation'
 import type { UseSideBarNavigationOptions } from '../types/useSideBarNavigation.types'
 import type { BaseSideBarNavigationProps, SideBarItem } from '@components/BaseSideBar/types/BaseSideBar.types'
@@ -228,6 +228,123 @@ describe('useSideBarNavigation', () => {
 			const { navigation } = setup({ level: 2, isCollapsed: true })
 
 			expect(navigation.getSlotProps(group)).toMatchObject({ level: 2, isCollapsed: true, hasChildren: true })
+		})
+	})
+
+	describe('активный путь: слэш, query и хеш (SB-11)', () => {
+		const item: SideBarItem = { label: 'Пользователи', to: '/users' }
+
+		it.each(['/users/', '/users?page=2', '/users#top', '/users/?page=2#top', '/users?'])(
+			'«%s» активирует пункт «/users»',
+			activePath => {
+				expect(setup({ activePath }).navigation.isCurrentItemActive(item)).toBe(true)
+			},
+		)
+
+		it('завершающий слэш и хеш в to не мешают; корень остаётся корнем', () => {
+			expect(setup({ activePath: '/users' }).navigation.isCurrentItemActive({ label: 'П', to: '/users/#list' })).toBe(true)
+			expect(setup({ activePath: '//' }).navigation.isCurrentItemActive({ label: 'Главная', to: '/' })).toBe(true)
+			expect(setup({ activePath: '/users' }).navigation.isCurrentItemActive({ label: 'Главная', to: '/' })).toBe(false)
+		})
+
+		it('to с query требует совпадения query; to без query её игнорирует', () => {
+			const { navigation } = setup({ activePath: '/users?tab=a' })
+
+			expect(navigation.isCurrentItemActive({ label: 'A', to: '/users?tab=a' })).toBe(true)
+			expect(navigation.isCurrentItemActive({ label: 'B', to: '/users?tab=b' })).toBe(false)
+			expect(navigation.isCurrentItemActive({ label: 'Все', to: '/users' })).toBe(true)
+		})
+
+		it('якорь без пути не считается корнем; похожий префикс не совпадает', () => {
+			expect(setup({ activePath: '/' }).navigation.isCurrentItemActive({ label: 'Якорь', to: '#top' })).toBe(false)
+			expect(setup({ activePath: '/users-old', activeMatch: 'startsWith' }).navigation.isCurrentItemActive(item)).toBe(false)
+			expect(setup({ activePath: '/users/42/?x=1', activeMatch: 'startsWith' }).navigation.isCurrentItemActive(item)).toBe(true)
+		})
+	})
+
+	describe('свернуть активную группу (SB-3)', () => {
+		it('клик по группе с активным пунктом сворачивает её, второй клик раскрывает', () => {
+			const { navigation } = setup({ activePath: '/settings/security' })
+
+			expect(navigation.isItemExpanded(group)).toBe(true)
+			navigation.handleClick(group, click())
+			expect(navigation.isItemExpanded(group)).toBe(false)
+			expect(navigation.getItemAriaExpanded(group)).toBe(false)
+			navigation.handleClick(group, click())
+			expect(navigation.isItemExpanded(group)).toBe(true)
+		})
+
+		it('выбор пользователя сбрасывается, когда активный пункт приходит в группу или уходит из неё', async () => {
+			const props = reactive<BaseSideBarNavigationProps>({ items: [group], activePath: '/settings/security' })
+			const { navigation } = setup(props)
+
+			navigation.handleClick(group, click())
+			expect(navigation.isItemExpanded(group)).toBe(false)
+
+			props.activePath = '/settings/profile'
+			await nextTick()
+			expect(navigation.isItemExpanded(group)).toBe(false)
+
+			props.activePath = '/home'
+			await nextTick()
+			expect(navigation.isItemExpanded(group)).toBe(false)
+
+			props.activePath = '/settings/profile'
+			await nextTick()
+			expect(navigation.isItemExpanded(group)).toBe(true)
+		})
+
+		it('раскрытая вручную неактивная группа остаётся раскрытой при смене маршрута вне группы', async () => {
+			const props = reactive<BaseSideBarNavigationProps>({ items: [group], activePath: '/home' })
+			const { navigation } = setup(props)
+
+			navigation.handleClick(group, click())
+			props.activePath = '/about'
+			await nextTick()
+
+			expect(navigation.isItemExpanded(group)).toBe(true)
+		})
+	})
+
+	describe('одинаковые ключи (SB-12)', () => {
+		const first: SideBarItem = { label: 'Раздел', children: [{ label: 'А', to: '/a' }] }
+		const second: SideBarItem = { label: 'Раздел', children: [{ label: 'Б', to: '/b' }] }
+
+		afterEach(() => {
+			vi.restoreAllMocks()
+		})
+
+		it('второй и следующие пункты получают уникальный ключ, состояние раскрытия у них своё', () => {
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+			const { navigation } = setup({ items: [first, second, { label: 'Раздел' }] })
+
+			expect(navigation.getItemKey(first)).toBe('Раздел')
+			expect(navigation.getItemKey(second)).toBe('Раздел#1')
+			navigation.handleClick(second, click())
+			expect(navigation.isItemExpanded(second)).toBe(true)
+			expect(navigation.isItemExpanded(first)).toBe(false)
+			expect(warnSpy).toHaveBeenCalledTimes(1)
+			expect(warnSpy.mock.calls[0][0]).toContain('«Раздел»')
+		})
+
+		it('предупреждает один раз на ключ, даже если список пересчитывается', async () => {
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+			const props = reactive<BaseSideBarNavigationProps>({ items: [first, second] })
+			setup(props)
+
+			props.items = [first, second, { label: 'Другой' }]
+			await nextTick()
+			props.items = [first, second]
+			await nextTick()
+
+			expect(warnSpy).toHaveBeenCalledTimes(1)
+		})
+
+		it('без дублей предупреждений нет', () => {
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+			setup({ items: [first, { label: 'Другой' }] })
+
+			expect(warnSpy).not.toHaveBeenCalled()
 		})
 	})
 })

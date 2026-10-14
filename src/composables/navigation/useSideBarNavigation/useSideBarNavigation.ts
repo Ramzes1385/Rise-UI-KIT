@@ -1,16 +1,18 @@
 /** Composable: навигация сайдбара (раскрытие групп, активный пункт, обработка кликов) */
+import { createSideBarKeys } from './useSideBarNavigationKeys'
 import { createSideBarLinks } from './useSideBarNavigationLinks'
 import type { UseSideBarNavigationOptions } from './types/useSideBarNavigation.types'
 import { createSideBarClicks, createSideBarExpansion } from './useSideBarNavigationExpansion'
 import type { BaseSideBarItemSlotProps, SideBarItem } from '@components/BaseSideBar/types/BaseSideBar.types'
-import { getItemKey, hasChildren, isDisclosureItem, isCurrentItemActiveByProps, isItemActiveByProps } from './useSideBarNavigationUtils'
+import { hasChildren, isDisclosureItem, isCurrentItemActiveByProps, isItemActiveByProps } from './useSideBarNavigationUtils'
 
 /** Описание: обеспечивает навигацию сайдбара — раскрытие/сворачивание групп, определение активного пункта, генерация пропсов и обработка кликов */
 function useSideBarNavigation(options: UseSideBarNavigationOptions) {
 	const { props } = options
 
+	const { getKey: getItemKey } = createSideBarKeys(props)
 	const { getItemComponent, getItemProps } = createSideBarLinks(props)
-	const { isItemExpanded, shouldRenderChildren, getItemAriaExpanded, toggleItemExpanded } = createSideBarExpansion(props)
+	const { isItemExpanded, shouldRenderChildren, getItemAriaExpanded, toggleItemExpanded } = createSideBarExpansion(props, getItemKey)
 	const { handleClick, handleChildItemClick } = createSideBarClicks(options, toggleItemExpanded)
 
 	function isItemActive(item: SideBarItem): boolean {

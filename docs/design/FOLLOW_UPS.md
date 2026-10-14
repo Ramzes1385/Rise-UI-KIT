@@ -561,3 +561,4 @@
 ## Задача notify-sidebar
 
 - № 21 (BaseNotification): сделано NTF-4 (`notificationKey`), NTF-6 (`color`/`sizeScale`/`position`/`customClass` в `add()`), NTF-8 (проп `maxVisible`, очередь по позициям). Не делалось: `useToast()` не принимает `position`/`color`/`sizeScale`/`customClass`/`maxVisible` (у хранилища свой `toaster.max`); по умолчанию предела нет (`maxVisible: 0`) — менять умолчание на конечное — решение владельца. Пауза по наведению общая для всех областей одного компонента.
+- № 29 (BaseSideBar): сделаны SB-3, SB-9, SB-11, SB-12. SB-9 исправлен локально (`isCollapsed: undefined` в умолчаниях + проверка значения); общий `useExplicitPropDetection` по-прежнему читает `vnode.props` один раз при setup — им пользуются BaseDropdown, BaseMegaMenu (`openKey`), BaseDatePicker, `useClickable` (чужие области; для слушателей снимок уместен). Дубли ключей на одном уровне различаются порядковым номером, а не отвергаются.

@@ -1,16 +1,32 @@
 /** Composable: раскрытие групп сайдбара и обработка кликов по пунктам */
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import type { UseSideBarNavigationOptions } from './types/useSideBarNavigation.types'
-import { getItemKey, isDisclosureItem, hasChildren, isItemActiveByProps } from './useSideBarNavigationUtils'
+import { isDisclosureItem, hasChildren, isItemActiveByProps } from './useSideBarNavigationUtils'
 import type { BaseSideBarNavigationProps, SideBarItem, SideBarItemKey } from '@components/BaseSideBar/types/BaseSideBar.types'
 
-/** Описание: группа раскрыта, если в ней активный пункт или её раскрыли кликом */
-function createSideBarExpansion(props: BaseSideBarNavigationProps) {
-	const expandedItemKeys = ref(new Set<SideBarItemKey>())
+/**
+ * Описание: группа раскрыта, если её раскрыли кликом, а без выбора пользователя — если в ней активный пункт.
+ * Выбор пользователя (свернул активную группу, раскрыл неактивную) действует, пока не изменится активность группы:
+ * когда активный пункт появляется в группе или уходит из неё, выбор сбрасывается — группа с новым активным пунктом раскрыта
+ */
+function createSideBarExpansion(props: BaseSideBarNavigationProps, getKey: (item: SideBarItem) => SideBarItemKey) {
+	const overrides = ref(new Map<SideBarItemKey, boolean>())
 
 	function hasActiveChild(item: SideBarItem): boolean {
 		return item.children!.some(child => isItemActiveByProps(child, props))
 	}
+
+	function getActiveGroupKeys(): SideBarItemKey[] {
+		return (props.items ?? []).filter(item => isDisclosureItem(item) && hasActiveChild(item)).map(getKey)
+	}
+
+	watch(getActiveGroupKeys, (next, previous) => {
+		const changed = [...next.filter(key => !previous.includes(key)), ...previous.filter(key => !next.includes(key))]
+		if (!changed.some(key => overrides.value.has(key))) return
+		const rest = new Map(overrides.value)
+		changed.forEach(key => rest.delete(key))
+		overrides.value = rest
+	})
 
 	function isItemExpanded(item: SideBarItem): boolean {
 		if (item.isDisabled) {
@@ -21,7 +37,7 @@ function createSideBarExpansion(props: BaseSideBarNavigationProps) {
 			return true
 		}
 
-		return hasActiveChild(item) || expandedItemKeys.value.has(getItemKey(item))
+		return overrides.value.get(getKey(item)) ?? hasActiveChild(item)
 	}
 
 	function shouldRenderChildren(item: SideBarItem): boolean {
@@ -37,16 +53,10 @@ function createSideBarExpansion(props: BaseSideBarNavigationProps) {
 	}
 
 	function toggleItemExpanded(item: SideBarItem): void {
-		const itemKey = getItemKey(item)
-		const nextExpandedItemKeys = new Set(expandedItemKeys.value)
+		const nextOverrides = new Map(overrides.value)
 
-		if (nextExpandedItemKeys.has(itemKey)) {
-			nextExpandedItemKeys.delete(itemKey)
-		} else {
-			nextExpandedItemKeys.add(itemKey)
-		}
-
-		expandedItemKeys.value = nextExpandedItemKeys
+		nextOverrides.set(getKey(item), !isItemExpanded(item))
+		overrides.value = nextOverrides
 	}
 
 	return { isItemExpanded, shouldRenderChildren, getItemAriaExpanded, toggleItemExpanded }

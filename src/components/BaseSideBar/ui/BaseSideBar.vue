@@ -111,6 +111,7 @@ const props = withDefaults(
 		width: 280,
 		collapsedWidth: 68,
 		padding: undefined,
+		isCollapsed: undefined,
 		gap: 4,
 		activeMatch: 'exact',
 		isCollapsible: true,

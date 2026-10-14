@@ -2031,3 +2031,4 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 ## Задача notify-sidebar
 
 - **BaseNotification** (`overlay-basenotification--*`): ожидаемых расхождений снимков нет — DOM и стили при одной позиции прежние. Новая история `overlay-basenotification--queue` (скриншот-теста нет).
+- **BaseSideBar** (`navigation-basesidebar--*`): ожидаемых расхождений снимков нет — меняется только поведение (сворачивание активной группы, сравнение `activePath`, ключи).
