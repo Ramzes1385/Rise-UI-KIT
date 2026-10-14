@@ -2023,3 +2023,7 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 - **BaseLoader** (`element-baseloader--overlay`, новая `element-baseloader--overlayunderwindow`): подложка `isOverlay` визуально та же; её слой ниже окон кита. Новая история показывает окно, которое перекрывает контейнер с подложкой: окно остаётся сверху. Эталона у новой истории нет.
 - **BaseSlider** (`data-baseslider--slidespergroup`/`slidesperview` и другие с `slidesPerGroup > 1`, не кратным числу слайдов): на одну точку навигации больше. Новая история `data-baseslider--controlledindex` (кнопка и подпись «Текущий слайд: N» над слайдером).
 - **BasePagination, BaseStepper, BaseAccordion, BaseAnchor, BaseSubtitleEditor**: вид историй не меняется. У шкалы BaseSubtitleEditor появился невидимый слой-подложка под блоками (подсказка), на снимках не виден; живая область скрыта с экрана.
+
+## Задача image-touch
+
+- **BaseImage** (`element-baseimage--*` с лайтбоксом): курсор над увеличенным изображением в просмотре — «рука» (`grab`, во время перетаскивания `grabbing`); в снимках курсор не виден. Расстановка элементов и цвета не менялись. Ожидаемых расхождений снимков нет.

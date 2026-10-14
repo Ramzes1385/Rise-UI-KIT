@@ -91,7 +91,13 @@
 				<template #left><BaseIcon name="chevron-right" :custom-class="classes.galleryNextIcon" /></template>
 			</BaseButton>
 
-			<div :class="ui('zoom-container')" @click.self="zoom.handleOverlayClick">
+			<div
+				:class="containerClass"
+				@click.self="zoom.handleOverlayClick"
+				@pointerdown="zoom.handlePointerDown"
+				@pointermove="zoom.handlePointerMove"
+				@pointerup="zoom.handlePointerEnd"
+				@pointercancel="zoom.handlePointerEnd">
 				<img
 					ref="zoomImgRef"
 					:key="gallery.currentZoomSrc.value"
@@ -153,7 +159,8 @@ import type { BaseImageZoomEmits, BaseImageZoomProps } from '../types/BaseImageZ
 const props = defineProps<BaseImageZoomProps>()
 const emit = defineEmits<BaseImageZoomEmits>()
 
-const { imageAlt, dialogLabel, modalUi, thumbLabel, zoomImgRef, minimapImgRef, handleImageLoad, exposed } = useBaseImageZoom(props)
+const { imageAlt, dialogLabel, modalUi, containerClass, thumbLabel, zoomImgRef, minimapImgRef, handleImageLoad, exposed } =
+	useBaseImageZoom(props)
 
 defineExpose(exposed)
 </script>

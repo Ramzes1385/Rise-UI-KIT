@@ -3,7 +3,7 @@ import type { Ref } from 'vue'
 import { computed, ref } from 'vue'
 import { useZoomRotation } from './useZoomRotation'
 import { clampTranslate, rotatedFit, rotatedSize } from './zoomGeometry'
-import type { UseImageZoomOptions, ZoomLayout } from './types/useImageZoom.types'
+import type { GestureTransform, UseImageZoomOptions, ZoomLayout } from './types/useImageZoom.types'
 
 /** Описание: множитель вписывания повёрнутого изображения в место под него (на 90° и 270° — меньше 1 у вытянутых изображений) */
 function useRotatedFit(layout: ZoomLayout, rotation: Readonly<Ref<number>>) {
@@ -38,6 +38,33 @@ function useZoomPosition(layout: ZoomLayout, currentScale: Readonly<Ref<number>>
 	}
 
 	return { translateX, translateY, fit, resetPosition, clampPosition }
+}
+
+/** Описание: действия жестов — сдвиг на смещение и масштаб вокруг точки; результат всегда в границах масштаба и окна */
+function useZoomGestureActions(options: UseImageZoomOptions, state: GestureTransform) {
+	const { currentScale, translateX, translateY, clampPosition, changeScale } = state
+
+	/** Сдвиг на смещение в px; увеличенное изображение не выходит за край окна. `false` — сдвигать некуда (масштаб 1 и меньше или край) */
+	function panBy(dx: number, dy: number): boolean {
+		if (currentScale.value <= 1) return false
+		const before = { x: translateX.value, y: translateY.value }
+		translateX.value += dx
+		translateY.value += dy
+		clampPosition()
+		return translateX.value !== before.x || translateY.value !== before.y
+	}
+
+	/** Масштаб в границах настроек; точка со смещением `anchor` от центра изображения остаётся на месте (щипок пальцами) */
+	function zoomAround(scale: number, anchor: { x: number; y: number }): void {
+		const next = Math.min(Math.max(scale, options.minScale()), options.maxScale())
+		if (next === currentScale.value) return
+		const ratio = next / currentScale.value
+		translateX.value += anchor.x * (1 - ratio)
+		translateY.value += anchor.y * (1 - ratio)
+		changeScale(next)
+	}
+
+	return { panBy, zoomAround }
 }
 
 /** Описание: масштаб, сдвиг и поворот; сдвиг не выпускает увеличенное изображение за край окна, поворот на 90° и 270° вписывает изображение */
@@ -76,6 +103,7 @@ function useZoomTransform(options: UseImageZoomOptions, layout: ZoomLayout) {
 			transform: `translate(${translateX.value}px, ${translateY.value}px) scale(${currentScale.value * fit.value}) rotate(${rotation.value}deg)`,
 		})),
 		clampPosition,
+		...useZoomGestureActions(options, { currentScale, translateX, translateY, clampPosition, changeScale }),
 		zoomIn: (): void => {
 			if (!isMaxScale.value) changeScale(Math.min(currentScale.value + options.zoomStep(), options.maxScale()))
 		},

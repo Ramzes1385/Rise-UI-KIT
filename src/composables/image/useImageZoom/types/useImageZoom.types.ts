@@ -82,3 +82,44 @@ export interface ZoomLayout {
 	spaceWidth: Ref<number>
 	spaceHeight: Ref<number>
 }
+
+/** Точка на экране, px */
+export interface ZoomPoint {
+	x: number
+	y: number
+}
+
+/** Параметры composable useZoomPointer: действия над масштабом и сдвигом и центр изображения на экране */
+export interface UseZoomPointerOptions {
+	/** Текущий масштаб */
+	currentScale: Readonly<Ref<number>>
+	/** Сдвинуть изображение на смещение в px; `false` — сдвигать некуда */
+	panBy: (dx: number, dy: number) => boolean
+	/** Изменить масштаб так, чтобы точка с заданным смещением от центра изображения осталась на месте */
+	zoomAround: (scale: number, anchor: ZoomPoint) => void
+	/** Центр изображения на экране; `null` — изображение ещё не отрисовано */
+	getImageCenter: () => ZoomPoint | null
+}
+
+/** Масштаб и сдвиг, над которыми работают жесты */
+export interface GestureTransform {
+	currentScale: Ref<number>
+	translateX: Ref<number>
+	translateY: Ref<number>
+	/** Вернуть сдвиг в границы окна */
+	clampPosition: () => void
+	/** Задать масштаб и сообщить о нём */
+	changeScale: (scale: number) => void
+}
+
+/** Состояние жеста: пройденный первым пальцем путь и признак, что это перетаскивание или щипок, а не клик */
+export interface GestureState {
+	travel: number
+	isDragged: boolean
+}
+
+/** Движение указателя: его номер и новая точка */
+export interface PointerMove {
+	pointerId: number
+	next: ZoomPoint
+}

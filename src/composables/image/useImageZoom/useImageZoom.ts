@@ -4,6 +4,7 @@ import { useZoomLayout } from './useZoomLayout'
 import { useZoomMinimap } from './useZoomMinimap'
 import { normalizeZoomScales } from './zoomGeometry'
 import { useZoomTransform } from './useZoomTransform'
+import { useZoomPointer } from './gestures/useZoomPointer'
 import { useEscapeKey } from '@composables/overlay/useEscapeKey'
 import { computed, nextTick, onUnmounted, ref, watch } from 'vue'
 import { useScrollLock } from '@composables/overlay/useScrollLock'
@@ -15,6 +16,24 @@ const WHEEL_STEP_PX = 50
 /** Пикселей в строке и в странице — для событий колеса в строках (`deltaMode` 1) и страницах (2) */
 const WHEEL_LINE_PX = 16
 const WHEEL_PAGE_PX = 800
+
+/** Шаг сдвига увеличенного изображения стрелкой, px */
+const PAN_KEY_STEP_PX = 80
+/** Сдвиг изображения клавишами-стрелками: стрелка открывает край в своей стороне, изображение смещается обратно */
+const PAN_KEY_SHIFTS: Readonly<Record<string, readonly [number, number]>> = {
+	ArrowLeft: [PAN_KEY_STEP_PX, 0],
+	ArrowRight: [-PAN_KEY_STEP_PX, 0],
+	ArrowUp: [0, PAN_KEY_STEP_PX],
+	ArrowDown: [0, -PAN_KEY_STEP_PX],
+}
+
+/** Описание: стрелка двигает увеличенное изображение; у края (или без увеличения) сдвига нет — стрелка уходит в галерею */
+function panByKey(event: KeyboardEvent, transform: ReturnType<typeof useZoomTransform>): boolean {
+	const shift = PAN_KEY_SHIFTS[event.key]
+	if (!shift || !transform.panBy(shift[0], shift[1])) return false
+	event.preventDefault()
+	return true
+}
 
 /** Описание: действие клавиши открытого зума — «+»/«=» и «-» масштаб, «0» сброс, стрелки — соседние изображения галереи */
 function zoomKeyAction(
@@ -33,10 +52,22 @@ function zoomKeyAction(
 	return actions[key]
 }
 
-/** Описание: клавиши открытого зума; с Ctrl, Alt и Meta — клавиши браузера */
+/** Описание: клавиши открытого зума; с Ctrl, Alt и Meta — клавиши браузера; стрелки при увеличении двигают изображение */
 function handleZoomKey(event: KeyboardEvent, options: UseImageZoomOptions, transform: ReturnType<typeof useZoomTransform>): void {
-	if (event.ctrlKey || event.altKey || event.metaKey) return
+	if (event.ctrlKey || event.altKey || event.metaKey || panByKey(event, transform)) return
 	zoomKeyAction(event.key, options, transform)?.()
+}
+
+/** Описание: центр изображения зума на экране с учётом сдвига, масштаба и поворота; изображения нет — `null` */
+function imageCenter(image: HTMLElement | null | undefined): { x: number; y: number } | null {
+	if (!image) return null
+	const rect = image.getBoundingClientRect()
+	return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
+}
+
+/** Описание: жесты, которые нужны области изображения (без служебных `consumeDrag` и `resetPointers`) */
+function pointerHandlers({ isPanning, handlePointerDown, handlePointerMove, handlePointerEnd }: ReturnType<typeof useZoomPointer>) {
+	return { isPanning, handlePointerDown, handlePointerMove, handlePointerEnd }
 }
 
 /** Описание: прокрутка колеса в пикселях с учётом единиц события */
@@ -97,6 +128,7 @@ function useNormalizedOptions(options: UseImageZoomOptions): UseImageZoomOptions
 
 /**
  * Описание: зум изображения — открытие и закрытие, масштаб, сдвиг, поворот, клавиатура и миникарта.
+ * Жесты — `handlePointerDown`, `handlePointerMove`, `handlePointerEnd` на области изображения: сдвиг пальцем и мышью, щипок двумя пальцами.
  * Клавиши — `handleKeydown` на окне просмотра (`@keydown`), не на `document`: при фокусе вне зума «+», «-» и «0» не перехватываются.
  */
 function useImageZoom(rawOptions: UseImageZoomOptions) {
@@ -106,6 +138,7 @@ function useImageZoom(rawOptions: UseImageZoomOptions) {
 	const transform = useZoomTransform(options, layout)
 	const { clampPosition, resetView, zoomFit: _zoomFit, ...transformState } = transform
 	const isReducedMotion = useReducedMotion()
+	const pointer = useZoomPointer({ ...transform, getImageCenter: () => imageCenter(options.getZoomImgEl?.()) })
 
 	function syncSizes(): void {
 		measure()
@@ -122,6 +155,7 @@ function useImageZoom(rawOptions: UseImageZoomOptions) {
 		isZoomOpen.value = false
 		resetView()
 		minimap.cleanupDragListeners()
+		pointer.resetPointers()
 	}
 
 	// Escape — через стек слоёв: зум, открытый из окна, закрывается первым, окно — следующим нажатием
@@ -139,8 +173,8 @@ function useImageZoom(rawOptions: UseImageZoomOptions) {
 		isZoomOpen,
 		...transformState,
 		resetView,
-		/** Плавные переходы поворота, масштаба и сдвига: выключены при «уменьшить движение» и при перетаскивании рамки миникарты */
-		isZoomAnimated: computed((): boolean => !isReducedMotion.value && !minimap.isMinimapDragging.value),
+		/** Плавные переходы поворота, масштаба и сдвига: выключены при «уменьшить движение», при перетаскивании рамки миникарты и при жесте пальцами или мышью */
+		isZoomAnimated: computed((): boolean => !isReducedMotion.value && !minimap.isMinimapDragging.value && !pointer.isPanning.value),
 		syncSizes,
 		openZoom,
 		closeZoom,
@@ -149,8 +183,10 @@ function useImageZoom(rawOptions: UseImageZoomOptions) {
 		},
 		handleWheel: useZoomWheel(transform),
 		handleOverlayClick: (): void => {
+			if (pointer.consumeDrag()) return
 			if (options.closeOnOverlay()) closeZoom()
 		},
+		...pointerHandlers(pointer),
 		...minimap,
 	}
 }

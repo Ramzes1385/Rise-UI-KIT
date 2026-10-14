@@ -29,6 +29,15 @@ export function useBaseImageZoom(props: BaseImageZoomProps) {
 			content: 'base-image__zoom-dialog',
 			body: 'base-image__zoom-body',
 		})),
+		containerClass: computed((): string =>
+			[
+				props.ui('zoom-container'),
+				props.currentScale > 1 && 'base-image__zoom-container--pannable',
+				props.zoom.isPanning.value && 'base-image__zoom-container--panning',
+			]
+				.filter(Boolean)
+				.join(' '),
+		),
 		thumbLabel: (index: number): string =>
 			formatMessage(UI_ARIA.GALLERY_ITEM, { current: index + 1, total: props.gallery.galleryList.value.length }),
 		zoomImgRef,
