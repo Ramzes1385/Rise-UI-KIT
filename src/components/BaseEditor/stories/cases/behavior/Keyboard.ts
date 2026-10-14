@@ -31,8 +31,9 @@ export const Keyboard: StoryObj<typeof meta> = {
 	args: { modelValue: state.html },
 	play: async ({ canvas, userEvent }) => {
 		const bold = canvas.getByRole('button', { name: 'Жирный' })
+		const undo = canvas.getByRole('button', { name: 'Отменить' })
 		await userEvent.tab()
-		await expect(bold).toHaveFocus()
+		await expect(undo).toHaveFocus()
 
 		const textbox = canvas.getByRole('textbox', { name: 'Текстовый редактор' })
 		await tabTo(textbox, userEvent, 30)
@@ -45,6 +46,6 @@ export const Keyboard: StoryObj<typeof meta> = {
 		await waitFor(() => expect(canvas.getByRole('button', { name: 'Курсив' })).toHaveAttribute('aria-pressed', 'true'))
 
 		await userEvent.tab({ shift: true })
-		await expect(bold).toHaveFocus()
+		await expect(undo).toHaveFocus()
 	},
 }

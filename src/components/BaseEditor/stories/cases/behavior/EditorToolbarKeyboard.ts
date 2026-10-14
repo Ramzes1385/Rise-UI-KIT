@@ -39,6 +39,11 @@ export const EditorToolbarKeyboard: StoryObj<typeof meta> = {
 		await expect(stops).toHaveLength(1)
 
 		await userEvent.tab()
+		const undo = within(toolbar).getByRole('button', { name: 'Отменить' })
+		await expect(undo).toHaveFocus()
+		await userEvent.keyboard('{ArrowRight}')
+		await expect(within(toolbar).getByRole('button', { name: 'Повторить' })).toHaveFocus()
+		await userEvent.keyboard('{ArrowRight}')
 		const bold = within(toolbar).getByRole('button', { name: 'Жирный' })
 		await expect(bold).toHaveFocus()
 		await userEvent.keyboard('{ArrowRight}')
@@ -46,8 +51,8 @@ export const EditorToolbarKeyboard: StoryObj<typeof meta> = {
 		await userEvent.keyboard('{End}')
 		await expect(within(toolbar).getByRole('button', { name: 'Режим кода' })).toHaveFocus()
 		await userEvent.keyboard('{Home}')
-		await expect(bold).toHaveFocus()
-		await userEvent.keyboard('{ArrowRight}')
+		await expect(undo).toHaveFocus()
+		await userEvent.keyboard('{ArrowRight}{ArrowRight}{ArrowRight}')
 
 		const textbox = canvas.getByRole('textbox', { name: 'Текстовый редактор' })
 		await userEvent.tab()
