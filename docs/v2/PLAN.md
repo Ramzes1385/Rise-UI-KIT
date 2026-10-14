@@ -144,9 +144,9 @@
 1. Куда открыть pull request: `develop` отстаёт от `main` и содержит свой коммит `dd75096` (раздел «Решения»).
 2. Эталоны скриншотов: в репозитории их нет, поэтому шаг `npm run test:visual` в CI упадёт, пока они не созданы. Создаются по метке `visual:update-baselines` у PR после просмотра [VISUAL_CHANGES](../design/VISUAL_CHANGES.md).
 3. Переменные 1.x (`--color-accent`…): документы обещали удалить их в 2.0, порции для этого в плане нет — оставлены, в документах теперь «в следующей мажорной версии». Удалить сейчас — ломающее изменение для CSS приложений.
-4. `getTooltipTransition` в публичных `utils` ([FOLLOW_UPS](../design/FOLLOW_UPS.md), п. 46): пометить устаревшей или удалить.
-5. `vue` записан и в `dependencies`, и в `peerDependencies`: при другой версии Vue в приложении npm может поставить вторую копию. Обычно Vue оставляют только в `peerDependencies`.
-6. Файла LICENSE нет, хотя в `package.json` — MIT; текст лицензии с именем правообладателя обычно кладут в пакет.
+4. ~~`getTooltipTransition` в публичных `utils` ([FOLLOW_UPS](../design/FOLLOW_UPS.md), п. 46): пометить устаревшей или удалить.~~ Сделано: функция удалена (MIGRATION, fix-tokens).
+5. ~~`vue` записан и в `dependencies`, и в `peerDependencies`~~ Сделано (release-prep, 15.10): `vue` — в `peerDependencies` (`^3.5.0`) и `devDependencies`, из `dependencies` убран.
+6. ~~Файла LICENSE нет~~ Сделано (release-prep, 15.10): `LICENSE` (MIT) в корне, `npm pack` его включает.
 7. Версия: semantic-release выпустит 2.0.0 — в истории ветки есть коммиты с `BREAKING CHANGE`. Релиз выполняется, только если в настройках репозитория включена переменная `ENABLE_RELEASE`.
 
 ### Необязательное (~4 ч 45 мин)

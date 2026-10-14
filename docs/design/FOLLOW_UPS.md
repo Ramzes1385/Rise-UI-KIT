@@ -17,7 +17,7 @@
 
 | # | Суть | Где | Почему не сейчас | Тип | Объём |
 |---|---|---|---|---|---|
-| 1 | Доступное имя полей без видимой подписи: ~~`ariaLabel` и `inputAttrs` у BaseInput и BaseTextarea~~ — порция 1.8. ~~BaseSelect, BaseCheckbox (имя через скрытый `label` в `customClass`), триггер BaseColorPicker~~ — fu-forms: `ariaLabel` у них, BaseSwitch и BaseRadio, `inputAttrs` у BaseCheckbox и BaseSwitch, `triggerAttrs` у BaseSelect и BaseColorPicker. Осталось: атрибуты с корня на нативный контрол (`inheritAttrs: false`, FRM-1 шаг 3) — несовместимо, `inputAttrs` закрывает нужду без поломки | BaseSelect, BaseCheckbox, BaseColorPicker | `inheritAttrs: false` несовместим | minor; major для `inheritAttrs` | M |
+| 1 | Доступное имя полей без видимой подписи: ~~`ariaLabel` и `inputAttrs` у BaseInput и BaseTextarea~~ — порция 1.8. ~~BaseSelect, BaseCheckbox (имя через скрытый `label` в `customClass`), триггер BaseColorPicker~~ — fu-forms: `ariaLabel` у них, BaseSwitch и BaseRadio, `inputAttrs` у BaseCheckbox и BaseSwitch, `triggerAttrs` у BaseSelect и BaseColorPicker. Осталось: ~~атрибуты с корня на нативный контрол (`inheritAttrs: false`, FRM-1 шаг 3) — несовместимо, `inputAttrs` закрывает нужду без поломки~~ **Не делаем: решение владельца 15.10 — нужду закрывает `inputAttrs`.** | BaseSelect, BaseCheckbox, BaseColorPicker | `inheritAttrs: false` несовместим | minor; major для `inheritAttrs` | M |
 | 2 | ~~Контекст BaseFormField для полей кита через provide/inject: id подписи, `aria-describedby`, ошибка (FFD-2)~~ — порция 1.8: BaseInput, BaseTextarea, BaseSelect, BaseCheckboxGroup, поле BaseDatePicker. ~~BaseCheckbox, BaseSwitch, BaseRadio~~ — fu-forms: со своей подписью флажок и переключатель не занимают подпись обёртки (`hasOwnLabel`, обёртка — группа), без неё — называются ею | BaseFormField → BaseCheckbox, BaseSwitch, BaseRadio | Одиночному флажку и группе радиокнопок нужна своя схема имени | minor | S |
 | 3 | ~~CORE-1: переменные `--custom-*` наследуются во вложенные компоненты~~ — core1: корень каждого компонента-потребителя сбрасывает `--custom-*` (`@include custom-color-scope`, `:where`, специфичность 0), передача цвета вложенному — явно (`@include inherit-custom-color`); `@property` не берём: Firefox 113–127 его не знает | Слоты уже сбрасываются через `reset-custom-color`, но цвет родителя красит Loader, Progress, Avatar, Separator, кнопки прокрутки Tabs и кнопку сворачивания SideBar (`color.bg.base`). В Tabs, Pagination, MegaMenu и SideBar это перекрыто двойным классом | Нужна сквозная правка SCSS (`--custom-*: initial` на корне или `@property { inherits: false }`): меняет вид вложенных компонентов и baseline | minor¹ | M |
 | 4 | ~~Значение 100 в `useSizeScale` означает «наследовать».~~ core1: `calcIconScale` при масштабированном родителе отдаёт 100.01 вместо ровно 100 (размер фиксируется, отличие меньше 0,01 px); родитель 100 даёт 100, как раньше. Исходная запись: Поэтому `calcIconScale`, давший ровно 100 (`'sm'` при 125, `'xs'` при ≈166), не фиксирует размер иконки | Иконка пароля BaseInput при `sizeScale` 125: 25px вместо 20px. Вероятно, также BaseSelect и др. (CORE-2). В BaseAlert обойдено CSS-размером | Меняет размеры иконок в масштабированных родителях | minor | S |
@@ -390,7 +390,7 @@
 ## Задача fix-ui
 
 - Истории с неустойчивым кадром (play делает разное число шагов к моменту снимка): `blocks-auth--sign-in` (светлая тема), `data-basefilemanager--selection` и `--with-error`, `element-basetag--clickable`. Скриншот-тесты на них опираться не должны, пока play не дожидается конечного состояния (`waitFor` на видимом результате); эталонов у них нет. Сверено попиксельно 14.10, подробности — VISUAL_CHANGES, «Задача fix-ui».
-- BaseInput: кнопка показа пароля (`password-toggle`) осталась с `tabindex="-1"` — как и кнопка очистки до fix-ui, недоступна с клавиатуры (WCAG 2.1.1). Перевод на порядок Tab затронет все поля пароля приложений (лишняя остановка Tab в формах входа), решение отложено до отдельного обсуждения; варианты — `tabindex` по умолчанию и проп для скрытия из обхода.
+- ~~BaseInput: кнопка показа пароля (`password-toggle`) осталась с `tabindex="-1"` — как и кнопка очистки до fix-ui, недоступна с клавиатуры (WCAG 2.1.1). Перевод на порядок Tab затронет все поля пароля приложений (лишняя остановка Tab в формах входа), решение отложено до отдельного обсуждения; варианты — `tabindex` по умолчанию и проп для скрытия из обхода.~~ Сделано в release-prep (15.10): решение владельца — кнопка в порядке Tab, без `tabindex="-1"` (как GOV.UK Design System, WCAG 2.1.1); имя меняется «Показать пароль» / «Скрыть пароль», `aria-pressed` не добавлен.
 - BaseBanner: постоянная live-область при `isOpen=false` не сделана (DECISIONS 14.10): для `role="status"` озвучка появления остаётся ненадёжной, совет в JSDoc заменён.
 
 ## Задача hygiene-2
@@ -441,7 +441,7 @@
 
 | Что | Откуда | Объём |
 |---|---|---|
-| Меню «Другие действия» чата: поправка на предка с `transform`, высота панели при нехватке места с обеих сторон | № 5 | S |
+| ~~Меню «Другие действия» чата: поправка на предка с `transform`, высота панели при нехватке места с обеих сторон~~ — notify-sidebar | № 5 | S |
 | ~~Подложка `BaseLoader` `isOverlay` над окном без контекста наложения: проверить в браузере и поправить `z-index`~~ — nav-media | № 9 | S |
 | ~~`BaseNotification`: `notificationKey` (NTF-4), поля `color`/`sizeScale`/`position`/`customClass` в `add()` (NTF-6), очередь на одной позиции (NTF-8)~~ — notify-sidebar | № 21 | M |
 | ~~`BasePagination`: чётный и малый `maxVisible` (PG-5)~~ — nav-media | № 27 | S |
@@ -459,11 +459,11 @@
 
 | Что | Откуда | Объём |
 |---|---|---|
-| `inheritAttrs: false` у полей: атрибуты с корня на нативный контрол (major) | № 1 | M |
+| ~~`inheritAttrs: false` у полей: атрибуты с корня на нативный контрол (major)~~ — не делаем (решение владельца 15.10) | № 1 | M |
 | Префикс глобальных классов `.fade-*`, `.list-*` у BaseAnimation (major) | № 25 | M |
 | `weight` BaseText по умолчанию `undefined` вместо inline 400 (major) | № 43 | S |
 | Кнопки «Отменить» и «Повторить» на панели BaseEditor (новый вид, нужен `isFocusableWhenDisabled`) | Задача editor-3 | S |
-| Кнопки показа пароля и очистки BaseInput в порядке Tab (лишняя остановка во всех формах входа) | Задача fix-ui | S |
+| ~~Кнопки показа пароля и очистки BaseInput в порядке Tab (лишняя остановка во всех формах входа)~~ — release-prep | Задача fix-ui | S |
 | Кнопка «Предпросмотр 3D» в BaseImageMapEditor, если приложения попросят: отдельный компонент во входе `/map3d` | № 92 | M |
 
 **Только владелец:**
