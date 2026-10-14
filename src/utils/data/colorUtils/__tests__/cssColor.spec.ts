@@ -43,6 +43,17 @@ describe('cssColor', () => {
 		expect(normalizeCssColor('color(srgb 0.04 0.08 0.12 / 0.5)')).toBe('rgba(10, 20, 30, 0.5)')
 	})
 
+	it('normalizeCssColor: почти прозрачный цвет не теряет прозрачность и не округляется в 0', () => {
+		mockCanvas([200, 0, 0, 1])
+		expect(normalizeCssColor('color(srgb 0.78 0 0 / 0.004)')).toBe('rgba(200, 0, 0, 0.004)')
+
+		mockCanvas([200, 0, 0, 13])
+		expect(normalizeCssColor('color(srgb 0.78 0 0 / 0.05)')).toBe('rgba(200, 0, 0, 0.05)')
+
+		mockCanvas([200, 0, 0, 26])
+		expect(normalizeCssColor('color(srgb 0.78 0 0 / 0.1)')).toBe('rgba(200, 0, 0, 0.1)')
+	})
+
 	it('normalizeCssColor: неразобранный цвет — null, чёрный и белый разобраны', () => {
 		let style = '#000000'
 		const context = {

@@ -17,11 +17,12 @@ function renderedIndexes(window: GanttRowWindow, pinned: number, count: number):
 }
 
 export function useGanttRows(context: GanttContext, state: GanttRowsState) {
+	const namesById = computed(() => new Map(context.items.value.map(other => [other.id, other.name])))
+
 	const rowViews = computed((): GanttRowView[] => {
 		const { rows, range, metrics } = context
 		const draft = context.draft.value
 		const format = getDateFormat(getLocale().intl, context.props.dateFormat)
-		const namesById = new Map(context.items.value.map(other => [other.id, other.name]))
 		return renderedIndexes(state.window.value, state.activeIndex.value, rows.value.length).map(index => {
 			const item = rows.value[index]
 			const span = spanOf(item, draft)
@@ -36,7 +37,7 @@ export function useGanttRows(context: GanttContext, state: GanttRowsState) {
 				barStyle: { left: px(box.x), width: px(box.width) },
 				progressStyle: { width: `${item.progress}%` },
 				label: taskLabel(item, span, format),
-				dependencyText: dependencyLabel(item, namesById),
+				dependencyText: dependencyLabel(item, namesById.value),
 			}
 		})
 	})

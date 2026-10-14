@@ -38,6 +38,7 @@
 					classes.item,
 					{
 						'base-dashboard-grid__item--editable': isFocusable(item),
+						'base-dashboard-grid__item--first-row': item.y === 0,
 						'base-dashboard-grid__item--static': item.isStatic,
 						'base-dashboard-grid__item--dragging': dragId === item.id,
 						'base-dashboard-grid__item--grabbed': grabbedId === item.id,

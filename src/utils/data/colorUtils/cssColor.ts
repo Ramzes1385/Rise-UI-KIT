@@ -22,6 +22,12 @@ function isParsedByCanvas(ctx: CanvasRenderingContext2D, color: string): boolean
 	return onBlack === ctx.fillStyle
 }
 
+function roundAlpha(alpha: number): number {
+	const fraction = alpha / MAX_CHANNEL
+	const short = Math.round(fraction * 100) / 100
+	return Math.round(short * MAX_CHANNEL) === alpha ? short : Math.round(fraction * 1000) / 1000
+}
+
 /** Нужно ли приводить цвет: современные записи, которые не понимает часть сторонних библиотек (Google Maps, canvas-графики) */
 export function isModernCssColor(color: string): boolean {
 	return MODERN_COLOR.test(color)
@@ -29,6 +35,9 @@ export function isModernCssColor(color: string): boolean {
 
 /**
  * Привести CSS-цвет к `#rrggbb` (непрозрачный) или `rgba(r, g, b, a)`. Цвет за пределами sRGB обрезается по гамме.
+ * Прозрачность — до сотых, а у почти прозрачных цветов (меньше ≈ 0.05) до тысячных, чтобы они не превращались в `0`.
+ * Canvas хранит каналы по 8 бит с premultiplied alpha, поэтому у цвета с прозрачностью ниже ≈ 0.1 каналы r, g, b
+ * приблизительны (±(1 / альфа) единиц), сама прозрачность остаётся точной.
  * Нужен `document` с поддержкой canvas; без него или для неразобранной строки — `null`.
  */
 export function normalizeCssColor(color: string): string | null {
@@ -40,7 +49,7 @@ export function normalizeCssColor(color: string): string | null {
 	ctx.fillRect(0, 0, 1, 1)
 	const [r, g, b, a] = ctx.getImageData(0, 0, 1, 1).data
 	if (a === MAX_CHANNEL) return rgbToHex({ r, g, b })
-	return `rgba(${r}, ${g}, ${b}, ${Math.round((a / MAX_CHANNEL) * 100) / 100})`
+	return `rgba(${r}, ${g}, ${b}, ${roundAlpha(a)})`
 }
 
 /** Это токен или другое выражение `var(--имя)`: цвет надо вычислять в браузере, его значение зависит от темы */

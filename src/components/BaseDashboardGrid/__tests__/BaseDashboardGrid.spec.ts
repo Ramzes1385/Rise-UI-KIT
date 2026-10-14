@@ -27,6 +27,16 @@ describe('BaseDashboardGrid unit', () => {
 			expect(screen.getByRole('group', { name: 'Сетка виджетов' })).toHaveStyle({ height: '200px' })
 		})
 
+		it('помечает виджеты первой строки: над сеткой зона ручки не нужна', async () => {
+			const layout: DashboardLayoutItem[] = [...makeLayout(), { id: 'c', x: 0, y: 2, w: 1, h: 1 }]
+			const { container } = render(BaseDashboardGrid, { props: { ...GRID_PROPS, layout } })
+			await nextTick()
+
+			expect(itemOf(container, 'a')).toHaveClass('base-dashboard-grid__item--first-row')
+			expect(itemOf(container, 'b')).toHaveClass('base-dashboard-grid__item--first-row')
+			expect(itemOf(container, 'c')).not.toHaveClass('base-dashboard-grid__item--first-row')
+		})
+
 		it('учитывает промежуток и sizeScale', async () => {
 			const { container } = render(BaseDashboardGrid, {
 				props: {

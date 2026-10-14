@@ -422,6 +422,25 @@ const sortable = useSortable<Item, number>({
 
 ---
 
+## usePageTheme и usePageThemeStamp
+
+Задача ui-polish-8. Наблюдение за темой страницы: смена атрибута `data-theme` или `data-rise-theme` у любого элемента документа и переключение `prefers-color-scheme`. Общая подписка BaseMap и BaseColorPicker; нужна всему, что читает вычисленные цвета (canvas, карты, токены из CSS).
+
+```ts
+import { usePageTheme, usePageThemeStamp } from '@ramzes1385/rise-ui-kit/composables'
+
+usePageTheme(() => repaint())
+
+const themeStamp = usePageThemeStamp()
+watch(themeStamp, () => recalcColors())
+```
+
+- `usePageTheme(onChange, attributes?)` вызывает `onChange` при смене темы; `attributes` — список следимых атрибутов (по умолчанию `['data-theme', 'data-rise-theme']`). Подписка ставится при монтировании, снимается при размонтировании; без `matchMedia` следит только за атрибутами.
+- `usePageThemeStamp()` возвращает `Readonly<Ref<number>>`, который растёт на 1 при каждой смене темы.
+- Вызывается в `setup` компонента.
+
+---
+
 ## useReducedMotion
 
 Задача small-fixes-7c. Реактивный признак системной настройки «уменьшить движение» (`prefers-reduced-motion: reduce`) — для анимаций в JS, плавной прокрутки и эффектов за указателем. CSS-анимации кита гасит сам (`motion-safe`, токены `--rise-duration*`).

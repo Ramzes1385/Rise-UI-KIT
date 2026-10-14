@@ -14,6 +14,7 @@
 		top: 0;
 		left: 0;
 		display: flex;
+		flex-direction: column;
 		box-sizing: border-box;
 		min-width: 0;
 		border: 1px solid ct(dashboard-grid, border, var(--rise-border));
@@ -62,16 +63,19 @@
 		cursor: grab;
 	}
 
+	&__item--editable &__body {
+		padding-top: 0;
+	}
+
 	&__item--static {
 		border-style: dashed;
 	}
 
 	&__handle {
-		position: absolute;
-		top: 0;
-		right: 0;
-		left: 0;
+		position: relative;
+		order: -1;
 		display: flex;
+		flex: none;
 		align-items: center;
 		justify-content: flex-end;
 		box-sizing: border-box;
@@ -94,6 +98,10 @@
 	&__handle::before {
 		bottom: 100%;
 		height: min(max(0px, calc(24px - 100%)), var(--dashboard-grid-gap, 0px));
+	}
+
+	&__item--first-row &__handle::before {
+		display: none;
 	}
 
 	&__handle::after {

@@ -3,6 +3,11 @@ import type { GanttArrow, GanttBox, GanttRowsSize, GanttRowWindow, GanttScrollVi
 
 const ARROW_GAP = 10
 const ARROW_HEAD = 5
+const ARROW_INSET = 1
+
+function inside(x: number): number {
+	return Math.max(x, ARROW_INSET)
+}
 
 export function rowWindow(view: GanttScrollView, rows: GanttRowsSize, overscan: number): GanttRowWindow {
 	const { top, viewport } = view
@@ -36,7 +41,7 @@ export function dependencyArrow(from: GanttBox, to: GanttBox, link: { rowHeight:
 	const head = arrowHead({ x: x2, y: y2 }, -side)
 	if (y1 === y2) return { line: `M${x1} ${y1}H${x2}`, head }
 	const x = verticalLane(x1, x2, { exit, side })
-	if (x !== null) return { line: `M${x1} ${y1}H${x}V${y2}H${x2}`, head }
+	if (x !== null) return { line: `M${x1} ${y1}H${inside(x)}V${y2}H${x2}`, head }
 	const lane = y1 + (y2 > y1 ? rowHeight / 2 : -rowHeight / 2)
-	return { line: `M${x1} ${y1}H${x1 + exit * ARROW_GAP}V${lane}H${x2 + side * ARROW_GAP}V${y2}H${x2}`, head }
+	return { line: `M${x1} ${y1}H${inside(x1 + exit * ARROW_GAP)}V${lane}H${inside(x2 + side * ARROW_GAP)}V${y2}H${x2}`, head }
 }

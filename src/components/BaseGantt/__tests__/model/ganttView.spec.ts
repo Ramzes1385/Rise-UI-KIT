@@ -46,7 +46,7 @@ describe('dependencyArrow', () => {
 
 	it('«начало — начало»: линия уходит влево от начала предшественника, наконечник смотрит вправо', () => {
 		const arrow = dependencyArrow(from, { x: 150, width: 50, row: 2 }, { rowHeight: 40, type: 'SS' })
-		expect(arrow.line).toBe('M0 20H-10V100H150')
+		expect(arrow.line).toBe('M0 20H1V100H150')
 		expect(arrow.head).toBe('M150 100l-5 -3.5v7z')
 	})
 
@@ -60,8 +60,19 @@ describe('dependencyArrow', () => {
 		const far = { x: 400, width: 100, row: 0 }
 		expect(dependencyArrow(far, { x: 100, width: 50, row: 2 }, { rowHeight: 40, type: 'SF' }).line).toBe('M400 20H160V100H150')
 		const arrow = dependencyArrow(from, { x: 150, width: 50, row: 2 }, { rowHeight: 40, type: 'SF' })
-		expect(arrow.line).toBe('M0 20H-10V40H210V100H200')
+		expect(arrow.line).toBe('M0 20H1V40H210V100H200')
 		expect(arrow.head).toBe('M200 100l5 -3.5v7z')
+	})
+})
+
+describe('dependencyArrow у левого края', () => {
+	it('вертикаль и обход не уходят левее x=0: слой обрезает всё, что за краем', () => {
+		const edge = { x: 0, width: 50, row: 0 }
+		const lane = dependencyArrow(edge, { x: 0, width: 50, row: 2 }, { rowHeight: 40, type: 'SS' })
+		expect(lane.line).toBe('M0 20H1V100H0')
+
+		const detour = dependencyArrow({ x: 0, width: 5, row: 0 }, { x: 0, width: 50, row: 1 }, { rowHeight: 40, type: 'SF' })
+		expect(detour.line).not.toMatch(/-\d/)
 	})
 })
 
