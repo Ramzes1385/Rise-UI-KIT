@@ -54,7 +54,7 @@
 				<template v-if="isFocusable(item)">
 					<span data-handle aria-hidden="true" :class="[ui('handle'), classes.handle]">
 						<slot name="handle" :item="item">
-							<BaseIcon name="grip-vertical" />
+							<BaseIcon name="grip-vertical" :size-scale="calcIconScale('xs', sizeScale)" />
 						</slot>
 					</span>
 					<span
@@ -81,6 +81,7 @@
 import '../styles/BaseDashboardGrid.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseEmpty } from '@components/BaseEmpty'
+import { calcIconScale } from '@utils/media/iconUtils'
 import DashboardGridBody from './DashboardGridBody.vue'
 import { kitDefaults } from '@composables/base/useDefaults'
 import { useBaseDashboardGrid } from '../model/useBaseDashboardGrid'

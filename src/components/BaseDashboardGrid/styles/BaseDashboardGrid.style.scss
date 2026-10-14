@@ -59,12 +59,7 @@
 	}
 
 	&__item--editable {
-		flex-direction: column;
 		cursor: grab;
-	}
-
-	&__item--editable &__body {
-		padding-top: 0;
 	}
 
 	&__item--static {
@@ -72,13 +67,15 @@
 	}
 
 	&__handle {
-		order: -1;
+		position: absolute;
+		top: 0;
+		right: 0;
+		left: 0;
 		display: flex;
-		flex: none;
 		align-items: center;
 		justify-content: flex-end;
 		box-sizing: border-box;
-		height: sz(24px);
+		height: sz(ct(dashboard-grid, padding-y, 16px));
 		padding-inline: sz(6px);
 		color: var(--rise-text-muted);
 		border-radius: sz(var(--rise-radius-sm));
