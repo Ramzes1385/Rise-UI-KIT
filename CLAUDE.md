@@ -129,6 +129,8 @@ docs/            CONTRIBUTING, reference/, design/, v2/, audit/
 - Live-регион (`aria-live`, `role="status"`) озвучивает изменение, а не начальный текст: текст ставится после монтирования.
 - Переход, который ждёт `transitionend`: при `prefers-reduced-motion` или нулевой длительности события не будет — сразу конечное состояние, без ожидания; при обычной анимации — страховочный таймер на случай, если событие не придёт. Всплывший `transitionend` потомка переход не завершает.
 - `withDefaults` без `kitDefaults` молча отключает `defaults` из плагина: нужен тест с `createUiKitPlugin({ defaults })`.
+- `:dir(rtl)` и логические свойства (`inset-inline-end`, `border-start-end-radius`…) lightningcss при цели сборки es2020 превращает в `:lang(...)`, и `dir="rtl"` их не включает: в собранном пакете такие RTL-правила мертвы, хотя в dev и тестах работают. Только `[dir='rtl'] &` и физические свойства; `:dir(` запрещён stylelint, проверка — нет `:lang(` в `dist/styles.css` после `npm run build`.
+- Больше 22 перегрузок в `defineEmits` — vue-tsc теряет типы событий (`on${Capitalize<any>}` в `$props`, ломается `Partial<$props>` в тестах). Новые события — в существующие сигнатуры с union (`'pin-message' | 'unpin-message'`), как в BaseChat.
 
 ## Окружение: подводные камни
 
@@ -138,6 +140,7 @@ docs/            CONTRIBUTING, reference/, design/, v2/, audit/
 - Node `>=22.19.0` (`.nvmrc` — 22), npm `>=10.9.2`. Скрипты установки пакетов разрешаются в `package.json` → `allowScripts` (CONTRIBUTING, раздел 12).
 - E2E и скриншот-тесты сами поднимают dev-сервер Storybook (`npm run storybook -- --ci`); с `PLAYWRIGHT_REUSE_SERVER=true` используют уже запущенный (`build/tests/playwright.config.ts`).
 - Скрипты покрытия задают `NODE_OPTIONS=--max-old-space-size=16384`: на машине с меньшей памятью запускай тесты по путям.
+- `git stash` общий для всех worktree репозитория: `stash pop` в одной папке забирает запись другой. В worktree stash не используется; сравнение с базой — временная папка `git worktree add --detach <путь> <хеш>` или `git diff > <файл>` и `git apply`.
 
 ## Агенты Claude Code
 
