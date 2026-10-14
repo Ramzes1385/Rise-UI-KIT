@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/vitest'
+import { createUiKitPlugin } from '@/plugin'
 import BaseSideBar from '../ui/BaseSideBar.vue'
 import { describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
@@ -22,6 +23,18 @@ describe('BaseSideBar integration', () => {
 		expect(emitted()).toHaveProperty('collapse')
 		expect(emitted()).toHaveProperty('update:isCollapsed')
 		expect(emitted()['update:isCollapsed']).toEqual([[true]])
+	})
+
+	it('isCollapsed из defaults плагина — только начальное состояние: панель остаётся неуправляемой', async () => {
+		const { emitted } = render(BaseSideBar, {
+			props: { title: 'Навигация' },
+			global: { stubs: BASE_SIDEBAR_STUBS, plugins: [createUiKitPlugin({ defaults: { BaseSideBar: { isCollapsed: true } } })] },
+		})
+
+		await fireEvent.click(screen.getByRole('button', { name: 'Развернуть' }))
+
+		expect(emitted()['update:isCollapsed']).toEqual([[false]])
+		expect(screen.getByRole('button', { name: 'Свернуть' })).toBeInTheDocument()
 	})
 
 	it('эмитит expand при клике на кнопку разворачивания', async () => {

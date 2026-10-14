@@ -340,6 +340,15 @@ describe('useSideBarNavigation', () => {
 			expect(warnSpy).toHaveBeenCalledTimes(1)
 		})
 
+		it('один и тот же объект дважды в списке сохраняет первый ключ', () => {
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+			const { navigation } = setup({ items: [first, second, first] })
+
+			expect(navigation.getItemKey(first)).toBe('Раздел')
+			expect(navigation.getItemKey(second)).toBe('Раздел#1')
+			expect(warnSpy).toHaveBeenCalledTimes(1)
+		})
+
 		it('без дублей предупреждений нет', () => {
 			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
 			setup({ items: [first, { label: 'Другой' }] })

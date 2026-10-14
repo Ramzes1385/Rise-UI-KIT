@@ -48,8 +48,7 @@ function useSliderAutoplay(settings: ResolvedSliderOptions, controls: SliderAuto
 	const isReducedMotion = useReducedMotion()
 
 	function startAutoplay(): void {
-		if (!settings.isAutoplay() || isStopped.value || isReducedMotion.value || paused.hover || paused.focus || !controls.canRotate())
-			return
+		if (!settings.isAutoplay() || isStopped.value || paused.hover || paused.focus || !controls.canRotate()) return
 		autoplayTimer = setInterval(controls.goNext, settings.autoplayInterval())
 		isRotating.value = true
 	}
@@ -78,7 +77,10 @@ function useSliderAutoplay(settings: ResolvedSliderOptions, controls: SliderAuto
 
 	watch(isReducedMotion, setStopped)
 	watch([settings.isAutoplay, settings.autoplayInterval, controls.canRotate], resumeAutoplay)
-	onMounted(startAutoplay)
+	onMounted(() => {
+		isStopped.value = isStopped.value || isReducedMotion.value
+		startAutoplay()
+	})
 	onBeforeUnmount(pauseAutoplay)
 
 	return {

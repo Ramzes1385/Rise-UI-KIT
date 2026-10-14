@@ -427,6 +427,19 @@ describe('BaseSlider unit', () => {
 			expect(emitted()['update:index']).toEqual([[2]])
 		})
 
+		it('index за краем при монтировании сжимается до края и возвращается в update:index', () => {
+			const { container, emitted } = render(BaseSlider, { props: { items: THREE, index: 9 } })
+
+			expect(activeIndex(container)).toBe(2)
+			expect(emitted()['update:index']).toEqual([[2]])
+		})
+
+		it('допустимый index при монтировании update:index не эмитит', () => {
+			const { emitted } = render(BaseSlider, { props: { items: THREE, index: 1 } })
+
+			expect(emitted()['update:index']).toBeUndefined()
+		})
+
 		it('v-model:index связывает родителя и слайдер в обе стороны', async () => {
 			const current = ref(1)
 			const Host = defineComponent({

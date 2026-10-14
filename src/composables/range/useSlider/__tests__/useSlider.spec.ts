@@ -447,6 +447,20 @@ describe('useSlider', () => {
 			expect(slider.currentIndex.value).toBe(1)
 		})
 
+		it('должен запускать autoplay явным playAutoplay при prefers-reduced-motion', async () => {
+			vi.useFakeTimers()
+			stubReducedMotion(true)
+			const slider = withSetup(() => useSlider(createOptions(AUTOPLAY)))
+			await nextTick()
+
+			expect(slider.isRotating.value).toBe(false)
+			slider.playAutoplay()
+			expect(slider.isAutoplayStopped.value).toBe(false)
+			expect(slider.isRotating.value).toBe(true)
+			vi.advanceTimersByTime(1000)
+			expect(slider.currentIndex.value).toBe(1)
+		})
+
 		it('должен отписываться от изменения prefers-reduced-motion при размонтировании', () => {
 			const reducedMotion = stubReducedMotion(false)
 			const { wrapper } = withSetupFull(() => useSlider(createOptions()))

@@ -2,11 +2,11 @@ import type { Ref } from 'vue'
 import { formatMessage } from '@/locales'
 import { useUi } from '@composables/base/useUi'
 import { useSliderThumbs } from './useSliderThumbs'
-import { computed, onBeforeUnmount, watch } from 'vue'
 import { useSlider } from '@composables/range/useSlider'
 import { UI_ARIA, UI_CAROUSEL } from '@/locales/messages'
 import { useSizeScale } from '@composables/base/useSizeScale'
 import { useCustomClass } from '@composables/base/useCustomClass'
+import { computed, onBeforeUnmount, onMounted, watch } from 'vue'
 import type { BaseSliderEmits, SliderProps } from '../types/BaseSlider.types'
 import { SLIDER_EFFECT_RANGE, SLIDER_SPATIAL_ANIMATIONS } from '../types/BaseSlider.types'
 
@@ -146,6 +146,9 @@ export function useBaseSlider(props: SliderProps, emit: BaseSliderEmits) {
 	watch(slider.currentIndex, videos.pauseHiddenVideos, { flush: 'post' })
 	watch(slider.currentIndex, value => {
 		if (value !== props.index) emit('update:index', value)
+	})
+	onMounted(() => {
+		if (props.index !== undefined && props.index !== slider.currentIndex.value) emit('update:index', slider.currentIndex.value)
 	})
 
 	return {
