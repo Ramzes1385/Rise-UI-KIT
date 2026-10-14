@@ -121,7 +121,7 @@
 	&--overlay {
 		position: absolute;
 		inset: 0;
-		z-index: var(--rise-z-max);
+		z-index: calc(var(--rise-z-overlay) - 1);
 		justify-content: center;
 		background-color: ct(loader, bg, color-mix(in srgb, var(--rise-bg) 80%, transparent));
 	}

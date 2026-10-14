@@ -96,7 +96,10 @@ export interface BaseStepperProps extends BaseComponentProps<
 	| 'description'
 	| 'footer'
 > {
-	/** Текущий шаг (1-based) */
+	/**
+	 * Текущий шаг (1-based). Вне диапазона 1…число шагов показывается ближайший шаг, а в консоль идёт предупреждение;
+	 * `v-model` значение не меняет
+	 */
 	modelValue: number
 	/** Список шагов */
 	items: BaseStepperStep[]

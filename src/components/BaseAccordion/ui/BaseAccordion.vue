@@ -78,6 +78,7 @@ import type { BaseAccordionEmits, BaseAccordionProps, BaseAccordionSlots } from 
 const props = withDefaults(
 	defineProps<BaseAccordionProps>(),
 	kitDefaults('BaseAccordion', {
+		items: () => [],
 		variant: DEFAULT_VARIANT,
 		isMultiple: false,
 		headingLevel: 3,

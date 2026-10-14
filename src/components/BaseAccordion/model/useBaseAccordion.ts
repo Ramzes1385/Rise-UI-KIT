@@ -4,7 +4,7 @@ import { toHTMLElement } from '@utils/dom/domUtils'
 import type { StructuredData } from '@utils/seo/structuredDataUtils'
 import { useStructuredData } from '@composables/seo/useStructuredData'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
-import type { BaseAccordionEmits, BaseAccordionItem, BaseAccordionProps } from '../types/BaseAccordion.types'
+import type { BaseAccordionEmits, AccordionProps, BaseAccordionItem } from '../types/BaseAccordion.types'
 
 const ACCORDION_ELEMENTS = [
 	'root',
@@ -54,7 +54,7 @@ function faqSchema(items: BaseAccordionItem[]): StructuredData | null {
 	}
 }
 
-function useAccordionAppearance(props: BaseAccordionProps) {
+function useAccordionAppearance(props: AccordionProps) {
 	return {
 		appearanceClass: computed((): string[] =>
 			[
@@ -85,7 +85,7 @@ function defaultOpenKeys(items: BaseAccordionItem[], keys: string[]): string[] {
 	return keys.filter((_, index) => items[index]?.defaultOpen)
 }
 
-function useOpenState(props: BaseAccordionProps, emit: BaseAccordionEmits) {
+function useOpenState(props: AccordionProps, emit: BaseAccordionEmits) {
 	const keys = computed(() => accordionKeys(props.items))
 	const normalize = (list: readonly string[]): string[] => (props.isMultiple ? [...list] : list.slice(0, 1))
 	const openKeys = ref<string[]>(normalize(props.open ?? defaultOpenKeys(props.items, keys.value)))
@@ -112,7 +112,7 @@ function useOpenState(props: BaseAccordionProps, emit: BaseAccordionEmits) {
 	return { keys, openKeys, setOpen }
 }
 
-function useOpenItems(props: BaseAccordionProps, emit: BaseAccordionEmits) {
+function useOpenItems(props: AccordionProps, emit: BaseAccordionEmits) {
 	const { keys, openKeys, setOpen } = useOpenState(props, emit)
 	const isOpen = (index: number): boolean => openKeys.value.includes(keys.value[index]!)
 
@@ -138,7 +138,7 @@ function useOpenItems(props: BaseAccordionProps, emit: BaseAccordionEmits) {
 	}
 }
 
-export function useBaseAccordion(props: BaseAccordionProps, emit: BaseAccordionEmits) {
+export function useBaseAccordion(props: AccordionProps, emit: BaseAccordionEmits) {
 	const baseId = useId()
 
 	return {

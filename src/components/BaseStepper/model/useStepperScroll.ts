@@ -1,3 +1,4 @@
+import { activeStep } from './stepperStep'
 import { computed, ref, watch } from 'vue'
 import type { BaseStepperProps } from '../types/BaseStepper.types'
 import { useReducedMotion } from '@composables/app/useReducedMotion'
@@ -19,14 +20,14 @@ export function useStepperScroll(props: BaseStepperProps) {
 
 	function revealActive(behavior: 'auto' | 'smooth'): void {
 		const container = itemsRef.value
-		const step = container?.children[props.modelValue - 1]
+		const step = container?.children[activeStep(props) - 1]
 		if (!container || !isScrollable.value || !(step instanceof HTMLElement)) return
 		const left = scrollTarget(container, step)
 		if (left !== null) container.scrollTo({ left, behavior })
 	}
 
 	watch(
-		() => props.modelValue,
+		() => activeStep(props),
 		() => revealActive(isReducedMotion.value ? 'auto' : 'smooth'),
 		{ flush: 'post' },
 	)

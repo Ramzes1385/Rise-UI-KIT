@@ -1,4 +1,5 @@
 import type { UiProp } from '@composables/base/useUi'
+import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { SeoComponentProps } from '@composables/seo/useStructuredData'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
@@ -89,8 +90,8 @@ export interface BaseAccordionProps
 			| 'content'
 			| 'contentText'
 		> {
-	/** Список элементов */
-	items: BaseAccordionItem[]
+	/** Список элементов; по умолчанию пустой — аккордеон ничего не рисует и не падает */
+	items?: BaseAccordionItem[]
 	/** Возможность открывать несколько элементов */
 	isMultiple?: boolean
 	/** Открытые пункты — ключи (`id`, иначе `label`), `v-model:open`. Без него открытием управляет сам аккордеон, начиная с `defaultOpen` */
@@ -134,3 +135,6 @@ export interface BaseAccordionSlots {
 	/** Динамические слоты для контента элементов (определяются через item.slot) */
 	[key: string]: ((props: { item: BaseAccordionItem }) => unknown) | undefined
 }
+
+/** Пропсы аккордеона после значений по умолчанию: `items` всегда массив */
+export type AccordionProps = PropsWithDefaults<BaseAccordionProps, 'items'>

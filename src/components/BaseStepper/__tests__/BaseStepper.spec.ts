@@ -405,4 +405,53 @@ describe('BaseStepper unit', () => {
 			expect(slotProps[1]).toMatchObject({ isError: false, isDisabled: false })
 		})
 	})
+	describe('modelValue вне диапазона (ST-4)', () => {
+		let warnSpy: ReturnType<typeof vi.spyOn>
+
+		beforeEach(() => {
+			warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+		})
+
+		afterEach(() => {
+			warnSpy.mockRestore()
+		})
+
+		const activeSteps = (container: Element): number[] =>
+			Array.from(container.querySelectorAll('.base-stepper__step')).flatMap((step, index) =>
+				step.classList.contains('base-stepper__step--active') ? [index + 1] : [],
+			)
+
+		it('больше числа шагов — активен последний, предупреждение в консоль', () => {
+			const { container } = render(BaseStepper, { props: { modelValue: 9, items: ITEMS } })
+
+			expect(activeSteps(container)).toEqual([3])
+			expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('modelValue 9 вне диапазона 1…3'))
+		})
+
+		it('0, отрицательный и дробный — активен ближайший шаг', () => {
+			expect(activeSteps(render(BaseStepper, { props: { modelValue: 0, items: ITEMS } }).container)).toEqual([1])
+			expect(activeSteps(render(BaseStepper, { props: { modelValue: -3, items: ITEMS } }).container)).toEqual([1])
+			expect(activeSteps(render(BaseStepper, { props: { modelValue: 2.7, items: ITEMS } }).container)).toEqual([2])
+		})
+
+		it('NaN и бесконечность — первый шаг', () => {
+			expect(activeSteps(render(BaseStepper, { props: { modelValue: Number.NaN, items: ITEMS } }).container)).toEqual([1])
+			expect(activeSteps(render(BaseStepper, { props: { modelValue: Infinity, items: ITEMS } }).container)).toEqual([1])
+		})
+
+		it('значение в диапазоне и пустой список шагов — без предупреждения', () => {
+			render(BaseStepper, { props: { modelValue: 2, items: ITEMS } })
+			render(BaseStepper, { props: { modelValue: 5, items: [] } })
+
+			expect(warnSpy).not.toHaveBeenCalled()
+		})
+
+		it('клик по шагу при значении вне диапазона отправляет номер шага', async () => {
+			const { container, emitted } = render(BaseStepper, { props: { modelValue: 9, items: ITEMS } })
+
+			await fireEvent.click(container.querySelectorAll('.base-stepper__trigger')[1])
+
+			expect(emitted()['update:modelValue']).toEqual([[2]])
+		})
+	})
 })

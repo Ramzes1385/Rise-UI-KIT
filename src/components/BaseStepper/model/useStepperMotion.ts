@@ -1,4 +1,5 @@
 import type { Ref } from 'vue'
+import { activeStep } from './stepperStep'
 import { computed, ref, watch } from 'vue'
 import { useMotion } from '@composables/app/useMotion'
 import type { BaseStepperProps } from '../types/BaseStepper.types'
@@ -8,7 +9,7 @@ export function useStepperMotion(props: BaseStepperProps, itemsRef: Ref<HTMLElem
 	const hasStepChanged = ref(false)
 
 	watch(
-		() => props.modelValue,
+		() => activeStep(props),
 		() => {
 			hasStepChanged.value = true
 		},

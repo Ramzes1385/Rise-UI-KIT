@@ -96,11 +96,11 @@ describe('BaseStepper: прокрутка ленты', () => {
 		expect(scrollTo).toHaveBeenCalledWith({ left: 180, behavior: 'auto' })
 	})
 
-	it('номер шага вне списка — ничего не прокручивает', async () => {
+	it('номер шага вне списка — прокручивает к ближайшему (последнему) шагу (ST-4)', async () => {
 		mockLayout(480, 300)
 		const { rerender } = await renderStepper({ modelValue: 1 })
 		await rerender({ modelValue: 9 })
-		expect(scrollTo).not.toHaveBeenCalled()
+		expect(scrollTo).toHaveBeenCalledWith({ left: 180, behavior: 'smooth' })
 	})
 
 	it('без прокрутки смена шага не трогает ленту', async () => {

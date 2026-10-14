@@ -278,6 +278,7 @@ export const ruBase = {
 		PAYMENT_QR_REQUIRED: 'gostPaymentText: реквизит {key} не задан',
 		PAYMENT_QR_INVALID: 'gostPaymentText: неверное значение реквизита {key}: «{value}»',
 		PAYMENT_QR_SEPARATOR: 'gostPaymentText: символ «|» в реквизите {key} — он разделяет реквизиты строки; уберите его из данных',
+		STEPPER_STEP_OUT_OF_RANGE: 'BaseStepper: modelValue {value} вне диапазона 1…{count} — показан ближайший шаг. Шаги нумеруются с 1',
 		PAYMENT_QR_KEY: 'gostPaymentText: имя реквизита «{key}» в extra недопустимо — нужны латинские буквы и цифры, без основных полей',
 	},
 }

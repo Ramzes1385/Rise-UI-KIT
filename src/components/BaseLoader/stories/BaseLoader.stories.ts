@@ -21,5 +21,6 @@ export const Sizes = cases.Sizes
 export const CustomColor = cases.CustomColor
 export const WithLabel = cases.WithLabel
 export const Overlay = cases.Overlay
+export const OverlayUnderWindow = cases.OverlayUnderWindow
 export const Theming = cases.Theming
 export const Animations = cases.Animations

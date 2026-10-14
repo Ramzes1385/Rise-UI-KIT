@@ -126,6 +126,43 @@ describe('paginationUtils', () => {
 			const result = calcVisiblePages({ current: 10, total: 20, maxVisible: 6 })
 			expect(result.filter(page => page !== '...')).toHaveLength(6)
 		})
+
+		it('чётный maxVisible: лишний номер окна слева от текущей, лишнего номера нет, дублей нет (PG-5)', () => {
+			expect(calcVisiblePages({ current: 10, total: 20, maxVisible: 6 })).toEqual([1, '...', 8, 9, 10, 11, '...', 20])
+		})
+
+		it('малый maxVisible не прячет текущую страницу (PG-5)', () => {
+			expect(calcVisiblePages({ current: 10, total: 20, maxVisible: 2 })).toEqual([1, '...', 10, '...', 20])
+			expect(calcVisiblePages({ current: 10, total: 20, maxVisible: 0 })).toEqual([1, '...', 10, '...', 20])
+			expect(calcVisiblePages({ current: 10, total: 20, maxVisible: 1, showLastPage: false })).toEqual([1, '...', 10, '...'])
+		})
+
+		it('крайние страницы при малом maxVisible', () => {
+			expect(calcVisiblePages({ current: 1, total: 20, maxVisible: 3 })).toEqual([1, 2, '...', 20])
+			expect(calcVisiblePages({ current: 20, total: 20, maxVisible: 3 })).toEqual([1, '...', 19, 20])
+		})
+
+		it('дробный и нечисловой maxVisible приводятся к целому', () => {
+			expect(calcVisiblePages({ current: 10, total: 20, maxVisible: 5.9 })).toEqual(
+				calcVisiblePages({ current: 10, total: 20, maxVisible: 5 }),
+			)
+			expect(calcVisiblePages({ current: 10, total: 20, maxVisible: Number.NaN })).toEqual([1, '...', 10, '...', 20])
+		})
+
+		it('номера не повторяются при любом maxVisible и текущей', () => {
+			for (let maxVisible = 0; maxVisible <= 9; maxVisible++) {
+				for (let current = 1; current <= 12; current++) {
+					const numbers = calcVisiblePages({ current, total: 12, maxVisible }).filter(page => page !== '...')
+					expect(new Set(numbers).size).toBe(numbers.length)
+					expect(numbers).toContain(current)
+				}
+			}
+		})
+
+		it('текущая вне диапазона сжимается до края', () => {
+			expect(calcVisiblePages({ current: 99, total: 20 })).toEqual(calcVisiblePages({ current: 20, total: 20 }))
+			expect(calcVisiblePages({ current: 0, total: 20 })).toEqual(calcVisiblePages({ current: 1, total: 20 }))
+		})
 	})
 
 	describe('calcPageInfo', () => {

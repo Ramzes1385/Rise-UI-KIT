@@ -3,6 +3,7 @@ import { UI_STEPPER } from '@/locales/messages'
 import { useUi } from '@composables/base/useUi'
 import { useStepperMotion } from './useStepperMotion'
 import { useStepperScroll } from './useStepperScroll'
+import { activeStep, useStepRangeWarning } from './stepperStep'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseStepperEmits, BaseStepperProps } from '../types/BaseStepper.types'
 
@@ -23,14 +24,14 @@ const STEPPER_ELEMENTS = [
 
 function isStepLocked(props: BaseStepperProps, index: number): boolean {
 	if (props.items[index]?.isDisabled) return true
-	return Boolean(props.isLinear) && index + 1 > props.modelValue + 1
+	return Boolean(props.isLinear) && index + 1 > activeStep(props) + 1
 }
 
 function stepState(props: BaseStepperProps, index: number) {
 	const step = index + 1
 	return {
-		isActive: props.modelValue === step,
-		isCompleted: props.modelValue > step && !props.items[index]?.isError,
+		isActive: activeStep(props) === step,
+		isCompleted: activeStep(props) > step && !props.items[index]?.isError,
 		isError: Boolean(props.items[index]?.isError),
 		isDisabled: isStepLocked(props, index),
 	}
@@ -39,7 +40,7 @@ function stepState(props: BaseStepperProps, index: number) {
 function isStepClickable(props: BaseStepperProps, index: number): boolean {
 	const step = index + 1
 	if (props.clickable === 'none') return false
-	return props.clickable !== 'completed' || step <= props.modelValue
+	return props.clickable !== 'completed' || step <= activeStep(props)
 }
 
 function statusText(state: ReturnType<typeof stepState>): string {
@@ -48,6 +49,7 @@ function statusText(state: ReturnType<typeof stepState>): string {
 }
 
 export function useBaseStepper(props: BaseStepperProps, emit: BaseStepperEmits) {
+	useStepRangeWarning(props)
 	const scroll = useStepperScroll(props)
 	return {
 		...useStandardBaseComponent('base-stepper', props, [...STEPPER_ELEMENTS]),
@@ -56,7 +58,7 @@ export function useBaseStepper(props: BaseStepperProps, emit: BaseStepperEmits) 
 		...useStepperMotion(props, scroll.itemsRef),
 		optionalLabel: computed(() => UI_STEPPER.OPTIONAL),
 		stepState: (index: number) => stepState(props, index),
-		isStepPassed: (index: number): boolean => index + 1 < props.modelValue,
+		isStepPassed: (index: number): boolean => index + 1 < activeStep(props),
 		statusText: (index: number): string => statusText(stepState(props, index)),
 		isStepClickable: (index: number): boolean => isStepClickable(props, index),
 		handleStepClick(step: number): void {

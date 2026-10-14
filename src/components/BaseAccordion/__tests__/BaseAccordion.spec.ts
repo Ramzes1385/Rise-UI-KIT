@@ -10,6 +10,13 @@ const ITEMS: BaseAccordionItem[] = [
 ]
 
 describe('BaseAccordion unit', () => {
+	it('без items рисует пустой аккордеон и не падает (ACC-5)', () => {
+		const { container } = render(BaseAccordion)
+
+		expect(container.querySelector('.base-accordion')).toBeInTheDocument()
+		expect(container.querySelectorAll('button')).toHaveLength(0)
+	})
+
 	describe('рендер', () => {
 		it('должен рендерить все заголовки элементов', () => {
 			const { container } = render(BaseAccordion, { props: { items: ITEMS } })
