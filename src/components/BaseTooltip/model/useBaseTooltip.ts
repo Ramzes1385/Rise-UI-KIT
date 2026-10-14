@@ -183,6 +183,18 @@ function nameCoversText(name: string, text: string): boolean {
 	return new RegExp(`(^|${edge})${escaped}($|${edge})`, 'iu').test(name)
 }
 
+function getLinkedDescriptions(trigger: HTMLElement | null, ownId: string): string[] {
+	if (!trigger) return []
+	const ids = (trigger.getAttribute('aria-describedby') ?? '').split(/\s+/).filter(id => id && id !== ownId)
+	return ids.map(id => trigger.ownerDocument.getElementById(id)?.textContent?.trim() ?? '').filter(Boolean)
+}
+
+function isTextAlreadyAnnounced(trigger: HTMLElement | null, text: string, ownId: string): boolean {
+	if (!text) return false
+	if (nameCoversText(getAccessibleName(trigger), text)) return true
+	return getLinkedDescriptions(trigger, ownId).some(description => nameCoversText(description, text))
+}
+
 function useDescribedTrigger(
 	props: TooltipProps,
 	wrapperRef: Ref<HTMLElement | null>,
@@ -194,7 +206,7 @@ function useDescribedTrigger(
 		if (!isShown.value) return { 'aria-describedby': undefined }
 		const trigger = props.isWrapperless ? wrapperRef.value : findTrigger()
 		const text = props.text.trim()
-		return { 'aria-describedby': text && nameCoversText(getAccessibleName(trigger), text) ? undefined : tooltipId }
+		return { 'aria-describedby': isTextAlreadyAnnounced(trigger, text, tooltipId) ? undefined : tooltipId }
 	})
 	const { getTrigger } = useTriggerAttributes(
 		() => (props.isWrapperless ? null : wrapperRef.value),

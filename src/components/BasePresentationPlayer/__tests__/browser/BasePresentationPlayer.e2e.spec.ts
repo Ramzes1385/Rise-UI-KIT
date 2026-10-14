@@ -37,8 +37,15 @@ test('linear: «Следующий слайд» недоступна до minDur
 	await player.getByRole('button', { name: 'Воспроизвести' }).click()
 
 	await expect(next).toHaveAttribute('aria-disabled', 'true')
-	const hintId = await next.getAttribute('aria-describedby')
-	await expect(page.locator(`#${hintId}`)).toHaveText(/^Доступно через [1-4] с$/)
+	const describedBy = ((await next.getAttribute('aria-describedby')) ?? '').split(/\s+/).filter(Boolean)
+	expect(describedBy.length).toBeGreaterThan(0)
+	expect(new Set(describedBy).size).toBe(describedBy.length)
+	const texts: string[] = []
+	for (const id of describedBy) {
+		await expect(page.locator(`[id="${id}"]`)).toHaveCount(1)
+		texts.push((await page.locator(`[id="${id}"]`).innerText()).trim())
+	}
+	expect(texts.filter(text => /^Доступно через [1-4] с$/.test(text))).toHaveLength(1)
 	await expect(player.locator('.base-presentation-player__ring')).toBeVisible()
 
 	await next.click({ force: true })

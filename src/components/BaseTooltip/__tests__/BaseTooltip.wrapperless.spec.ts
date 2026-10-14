@@ -154,3 +154,53 @@ describe('BaseTooltip: доступное имя совпадает с текс�
 		expect(link).toHaveAttribute('aria-describedby', screen.getByRole('tooltip').id)
 	})
 })
+
+describe('BaseTooltip: уже связанное описание', () => {
+	it('текст подсказки совпадает с описанием из aria-describedby — id подсказки не добавляется, нет дублей id', async () => {
+		vi.useFakeTimers()
+		document.body.insertAdjacentHTML('beforeend', '<span id="hint-a">Доступно через 3 с</span>')
+		render(BaseTooltip, {
+			props: { text: 'Доступно через 3 с', isWrapperless: true },
+			slots: { default: '<button type="button" aria-describedby="hint-a">Далее</button>' },
+		})
+		const button = screen.getByRole('button')
+		button.focus()
+		await vi.advanceTimersByTimeAsync(200)
+		expect(screen.getByRole('tooltip')).toBeInTheDocument()
+		expect(button).toHaveAttribute('aria-describedby', 'hint-a')
+		document.getElementById('hint-a')?.remove()
+	})
+
+	it('описание из attrs отличается от текста подсказки — оба id, без повторов; после скрытия остаётся только своё', async () => {
+		vi.useFakeTimers()
+		render(BaseTooltip, {
+			props: { text: 'Подсказка', isWrapperless: true },
+			attrs: { 'aria-describedby': 'hint-b' },
+			slots: { default: '<button type="button">Далее</button>' },
+		})
+		const button = screen.getByRole('button')
+		document.body.insertAdjacentHTML('beforeend', '<span id="hint-b">Другой текст</span>')
+		button.focus()
+		await vi.advanceTimersByTimeAsync(200)
+		const ids = button.getAttribute('aria-describedby')!.split(' ')
+		expect(ids).toEqual(['hint-b', screen.getByRole('tooltip').id])
+		expect(new Set(ids).size).toBe(ids.length)
+
+		button.blur()
+		await vi.advanceTimersByTimeAsync(300)
+		expect(button).toHaveAttribute('aria-describedby', 'hint-b')
+		document.getElementById('hint-b')?.remove()
+	})
+
+	it('ссылка на отсутствующий элемент не мешает показать подсказку', async () => {
+		vi.useFakeTimers()
+		render(BaseTooltip, {
+			props: { text: 'Подсказка', isWrapperless: true },
+			slots: { default: '<button type="button" aria-describedby="missing">Далее</button>' },
+		})
+		const button = screen.getByRole('button')
+		button.focus()
+		await vi.advanceTimersByTimeAsync(200)
+		expect(button.getAttribute('aria-describedby')).toBe(`missing ${screen.getByRole('tooltip').id}`)
+	})
+})
