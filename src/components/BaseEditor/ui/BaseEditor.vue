@@ -78,6 +78,8 @@
 				:aria-placeholder="placeholder || undefined"
 				:data-placeholder="placeholder"
 				@input="handleInput"
+				@copy="handleCopy"
+				@cut="handleCopy"
 				@compositionstart="handleCompositionStart"
 				@compositionend="handleCompositionEnd"
 				@beforeinput="handleBeforeInput"
@@ -271,6 +273,7 @@ const {
 	removeMedia,
 	saveSelection,
 	handleKeyDown,
+	handleCopy,
 	handleImageUpload,
 	handleVideoUpload,
 	isFocused,

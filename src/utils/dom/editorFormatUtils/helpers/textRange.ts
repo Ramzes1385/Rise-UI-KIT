@@ -44,6 +44,16 @@ function splitTextAt(root: HTMLElement, offset: number): void {
 	}
 }
 
+/** Контейнеры, в которых пробельный текст - лишь отступы разметки между блоками, а не содержимое */
+const LAYOUT_CONTAINERS = new Set(['UL', 'OL', 'TABLE', 'THEAD', 'TBODY', 'TFOOT', 'TR'])
+
+/** Пробелы между блоками (`<ul>
+<li>`): оборачивать их в `<b>` или `<a>` нельзя - это испортит разметку списка */
+function isLayoutWhitespace(node: Text, root: HTMLElement): boolean {
+	const parent = node.parentElement
+	return node.data.trim() === '' && parent !== null && (parent === root || LAYOUT_CONTAINERS.has(parent.tagName))
+}
+
 /** Текстовые узлы, целиком лежащие в отрезке; границы отрезка предварительно разрезают узлы */
 function nodesInTextRange(root: HTMLElement, range: TextRange): Text[] {
 	splitTextAt(root, range.end)
@@ -52,7 +62,7 @@ function nodesInTextRange(root: HTMLElement, range: TextRange): Text[] {
 	const result: Text[] = []
 	for (const node of textNodes(root)) {
 		const next = passed + node.data.length
-		if (passed >= range.start && next <= range.end) result.push(node)
+		if (passed >= range.start && next <= range.end && !isLayoutWhitespace(node, root)) result.push(node)
 		passed = next
 	}
 	return result

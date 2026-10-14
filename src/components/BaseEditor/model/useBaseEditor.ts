@@ -22,6 +22,7 @@ import { rangeFromStatic, selectRange } from '@utils/dom/editorInsertUtils'
 import type { BaseEditorEmits, EditorProps } from '../types/BaseEditor.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { isLinkHotkey, useEditorLinkDialog } from './link/useEditorLinkDialog'
+import { releaseIdlePlaceholders, releasePlaceholdersForClipboard } from './input/editorPlaceholders'
 
 const EDITOR_ELEMENTS = [
 	'root',
@@ -193,7 +194,13 @@ function useContentSync(
 	},
 ): void {
 	const { toolbar, state } = ctx.engine
-	useEditorSelectionSync({ editorRef, isCodeMode: toolbar.isCodeMode, composition: ctx.composition, refresh: toolbar.updateActiveStates })
+	useEditorSelectionSync({
+		editorRef,
+		isCodeMode: toolbar.isCodeMode,
+		composition: ctx.composition,
+		refresh: toolbar.updateActiveStates,
+		release: () => releaseIdlePlaceholders(editorRef.value),
+	})
 	watch(
 		() => ctx.isLocked.value,
 		isReadonly => {
@@ -290,6 +297,7 @@ export function useBaseEditor(props: EditorProps, emit: BaseEditorEmits) {
 		mediaMenuAnchor: mediaMenu.mediaMenuAnchor,
 		...engine.state,
 		handleInput: engine.handleInput,
+		handleCopy: (): void => releasePlaceholdersForClipboard(editorRef.value),
 		handleKeyDown: mediaMenu.handleKeyDown,
 		...insert,
 		exposed: api.exposed,

@@ -1,5 +1,6 @@
 /** Composable: переключение режима кода/HTML в редакторе и синхронизация содержимого */
 import { nextTick, ref } from 'vue'
+import { stripPlaceholders } from '@utils/dom/editorFormatUtils'
 import { replaceCodeSelection, resolveCodeTextarea } from './helpers/codeText'
 import type { UseToolbarCodeModeOptions } from './types/useToolbarCodeMode.types'
 
@@ -25,7 +26,7 @@ function useToolbarCodeMode(options: UseToolbarCodeModeOptions) {
 	function toggleCodeMode(): void {
 		if (!isCodeMode.value) {
 			if (!editorRef.value) return
-			entryHtml = editorRef.value.innerHTML
+			entryHtml = stripPlaceholders(editorRef.value.innerHTML)
 			codeContent.value = entryHtml
 			isCodeMode.value = true
 			return

@@ -10,7 +10,9 @@ export function useEditorSelectionSync(options: SelectionSyncOptions): void {
 	}
 
 	function handleSelectionChange(): void {
-		if (frame || options.isCodeMode.value || options.composition.isActive || !isCaretInEditor()) return
+		if (options.isCodeMode.value || options.composition.isActive || !isCaretInEditor()) return
+		options.release()
+		if (frame) return
 		frame = requestAnimationFrame(() => {
 			frame = 0
 			options.refresh()

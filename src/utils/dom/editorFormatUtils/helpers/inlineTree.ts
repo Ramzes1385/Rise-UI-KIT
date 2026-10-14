@@ -3,6 +3,8 @@ import { findAncestorByTags } from '../../editorDomUtils'
 
 /** Невидимый символ: держит каретку внутри пустой обёртки, пока в неё не набрали текст; при отправке значения убирается */
 const PLACEHOLDER = '\u200b'
+/** Атрибут, которым редактор помечает свои обёртки-заполнители: по нему они отличаются от разметки пользователя */
+const PENDING_ATTR = 'data-rise-pending'
 /** Теги оформления, соседи которых с одинаковыми атрибутами сливаются в один */
 const MERGE_TAGS = 'b, strong, i, em, u, s, strike, del, span, font, a, code, mark, sub, sup'
 /** Элементы, которые считаются содержимым, даже если в них нет текста */
@@ -72,4 +74,4 @@ function wrapNode<T extends HTMLElement>(node: Node, wrapper: T): T {
 	return wrapper
 }
 
-export { closestTag, isEmptyFragment, normalizeInline, PLACEHOLDER, splitAround, unwrapFrom, wrapNode }
+export { closestTag, isEmptyFragment, normalizeInline, PENDING_ATTR, PLACEHOLDER, splitAround, unwrapFrom, wrapNode }

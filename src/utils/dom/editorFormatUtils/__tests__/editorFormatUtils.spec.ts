@@ -401,7 +401,8 @@ describe('editorFormatUtils', () => {
 		})
 
 		it('убирает заглушки и обёртки, в которые ничего не набрали, оставляя набранное', () => {
-			const html = `<p>a<b>${PLACEHOLDER}</b><span style="color: red"><i>${PLACEHOLDER}</i></span>b<u>${PLACEHOLDER}text</u></p>`
+			const mark = 'data-rise-pending=""'
+			const html = `<p>a<b ${mark}>${PLACEHOLDER}</b><span ${mark} style="color: red"><i ${mark}>${PLACEHOLDER}</i></span>b<u ${mark}>${PLACEHOLDER}text</u></p>`
 
 			expect(stripPlaceholders(html)).toBe('<p>ab<u>text</u></p>')
 		})

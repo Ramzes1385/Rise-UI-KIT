@@ -3,12 +3,13 @@ import { findAncestorByTags } from '../editorDomUtils'
 import { getSelectionRange, selectRange } from '../editorInsertUtils'
 import { getTextRange, nodesInTextRange, selectTextRange } from './helpers/textRange'
 import type { InlineFormatSpec, LinkAttributes } from './types/editorFormatUtils.types'
-import { closestTag, isEmptyFragment, normalizeInline, PLACEHOLDER, unwrapFrom, wrapNode } from './helpers/inlineTree'
+import { closestTag, isEmptyFragment, normalizeInline, PENDING_ATTR, PLACEHOLDER, unwrapFrom, wrapNode } from './helpers/inlineTree'
 
 /** Теги, которые «Очистить форматирование» снимает с текста; ссылки остаются */
 const CLEARABLE_TAGS = ['B', 'STRONG', 'I', 'EM', 'U', 'S', 'STRIKE', 'DEL', 'FONT', 'SPAN', 'SUB', 'SUP', 'MARK', 'CODE']
-/** Пустая обёртка из одного невидимого символа */
-const EMPTY_PLACEHOLDER_RE = /<(b|strong|i|em|u|s|strike|del|span|font)(\s[^>]*)?>\u200b*<\/\1>/gi
+const PENDING_SELECTOR = `[${PENDING_ATTR}]`
+/** Блоки, которым после уборки пустой обёртки возвращается заглушка `<br>` */
+const BLOCK_TAGS = new Set(['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'LI', 'DIV', 'BLOCKQUOTE', 'PRE'])
 
 function placeCaretAtEnd(text: Text): void {
 	const range = document.createRange()
@@ -20,6 +21,7 @@ function placeCaretAtEnd(text: Text): void {
 /** Каретка без выделения: вставляет пустую обёртку с невидимым символом, набранный дальше текст попадёт в неё */
 function startPendingFormat(range: Range, wrapper: HTMLElement): boolean {
 	const marker = document.createTextNode(PLACEHOLDER)
+	wrapper.setAttribute(PENDING_ATTR, '')
 	wrapper.appendChild(marker)
 	range.insertNode(wrapper)
 	placeCaretAtEnd(marker)
@@ -41,7 +43,10 @@ function extractTail(range: Range, ancestor: HTMLElement): HTMLElement[] {
 /** Каретка внутри оформленного текста: оформление обрывается, дальше набирается обычный текст */
 function leaveFormat(range: Range, ancestor: HTMLElement): void {
 	const marker = document.createTextNode(PLACEHOLDER)
-	ancestor.after(marker, ...extractTail(range, ancestor))
+	const holder = document.createElement('span')
+	holder.setAttribute(PENDING_ATTR, '')
+	holder.appendChild(marker)
+	ancestor.after(holder, ...extractTail(range, ancestor))
 	if (isEmptyFragment(ancestor)) ancestor.remove()
 	placeCaretAtEnd(marker)
 }
@@ -134,15 +139,64 @@ function unlinkSelection(root: HTMLElement): boolean {
 	return nodes.length > 0
 }
 
-/** Убирает из HTML невидимые символы-заглушки и обёртки, в которые так ничего и не набрали */
-function stripPlaceholders(html: string): string {
-	if (!html.includes(PLACEHOLDER)) return html
-	let result = html
-	for (let previous = ''; previous !== result;) {
-		previous = result
-		result = result.replace(EMPTY_PLACEHOLDER_RE, '')
+/** Первый невидимый символ внутри заполнителя - тот, что поставил редактор; остальные принадлежат тексту пользователя */
+function removeFirstPlaceholder(element: Element): void {
+	const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT)
+	while (walker.nextNode()) {
+		const node = walker.currentNode as Text
+		if (node.data.includes(PLACEHOLDER)) {
+			node.data = node.data.replace(PLACEHOLDER, '')
+			return
+		}
 	}
-	return result.replaceAll(PLACEHOLDER, '')
 }
 
-export { applyInlineStyle, removeInlineFormatting, stripPlaceholders, toggleInlineFormat, unlinkSelection, wrapSelectionInLink }
+/** Снимает метку с заполнителя: пустой - убирается, с текстом - остаётся обычной разметкой (голый `span` разворачивается) */
+function releasePending(element: Element): void {
+	removeFirstPlaceholder(element)
+	if (isEmptyFragment(element)) {
+		const parent = element.parentElement
+		element.remove()
+		if (parent && BLOCK_TAGS.has(parent.tagName) && !parent.hasChildNodes()) parent.appendChild(document.createElement('br'))
+		return
+	}
+	element.removeAttribute(PENDING_ATTR)
+	if (element.tagName === 'SPAN' && element.attributes.length === 0) element.replaceWith(...Array.from(element.childNodes))
+}
+
+/** Снимает заполнители внутри `scope`, кроме тех, что содержат `keep`; true - что-то изменено. Внутренние - раньше внешних */
+function releasePendingIn(scope: Element | DocumentFragment, keep: Node | null): boolean {
+	const pending = Array.from(scope.querySelectorAll(PENDING_SELECTOR)).filter(element => !keep || !element.contains(keep))
+	pending.reverse().forEach(releasePending)
+	return pending.length > 0
+}
+
+/**
+ * Убирает из HTML заполнители редактора: невидимый символ в помеченных обёртках и сами пустые обёртки.
+ * Невидимые символы текста пользователя и чужие пустые элементы (иконочные шрифты) остаются.
+ */
+function stripPlaceholders(html: string): string {
+	if (!html.includes(PENDING_ATTR)) return html
+	const template = document.createElement('template')
+	template.innerHTML = html
+	releasePendingIn(template.content, null)
+	return template.innerHTML
+}
+
+/**
+ * Снимает заполнители в живом DOM области, кроме того, в котором стоит каретка `caret`: невидимый символ не остаётся
+ * в тексте, когда каретка ушла дальше. true - DOM изменён.
+ */
+function releasePlaceholders(root: HTMLElement, caret: Node | null = null): boolean {
+	return releasePendingIn(root, caret)
+}
+
+export {
+	applyInlineStyle,
+	releasePlaceholders,
+	removeInlineFormatting,
+	stripPlaceholders,
+	toggleInlineFormat,
+	unlinkSelection,
+	wrapSelectionInLink,
+}

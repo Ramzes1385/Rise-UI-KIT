@@ -1,5 +1,6 @@
 export {
 	applyInlineStyle,
+	releasePlaceholders,
 	removeInlineFormatting,
 	stripPlaceholders,
 	toggleInlineFormat,

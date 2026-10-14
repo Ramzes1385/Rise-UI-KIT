@@ -6,4 +6,5 @@ export interface SelectionSyncOptions {
 	isCodeMode: Ref<boolean>
 	composition: EditorComposition
 	refresh: () => void
+	release: () => void
 }

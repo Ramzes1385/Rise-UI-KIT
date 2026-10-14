@@ -436,3 +436,11 @@
 - `cssColor.ts`: почти прозрачные цвета теряют точность (canvas хранит premultiplied); `useMapThemeStamp.ts` (BaseMap) и `useMapScheme.ts` и новый `useColorPickerTheme.ts` (BaseColorPicker) повторяют один и тот же наблюдатель за темой. Если появится четвёртый, вынести в `src/composables/app/` один общий.
 - BaseColorPicker: `isSwatchSelected` сравнивает токены без `trim()`; формулировка «до показа панели» про MegaMenu неточна при `openKey` (в BaseMegaMenu, не правилось).
 - BaseImageMapEditor: `deleteSelected()` из expose удаляет без подтверждения; JSDoc `BaseImageMapEditorExpose.deleteSelected` не говорит «без подтверждения, обратимо через `undo()`» (не правилось: файл типов у layout-maps/editor-3).
+
+## Задача editor-fix
+
+- Два одноимённых `useEditorHistory`: `src/composables/editor/useEditorHistory` (BaseEditor) и история BaseImageMapEditor мешают поиску по имени. Переименование (например, `useImageMapHistory`) — отдельной задачей: BaseImageMapEditor правит layout-fix, в этой пачке файлы не менялись.
+- Нативный `insertFromDrop` без предшествующего `deleteByDrag` не вызывает `capture()`: после отмены каретка уходит на место последней правки, а не на место сброса. `root.innerHTML` читается в `recordHistoryChange` дважды; склейка при откате системных часов (`change.now - open.time < 0`) вливает правку в старый шаг. Мелочи, на данные не влияют.
+- Снятие заполнителей из живого DOM (`releasePlaceholders`) идёт мимо истории: следующий Ctrl+Z сначала отменяет эту невидимую правку. Чтобы не плодить шаг, нужен `history.rebase()`, но патчи старых шагов считаются по позициям строки, и сдвиг строки ломает их; пока оставлено как есть.
+- Не проверено в реальных браузерах (Chrome, Firefox, Safari): выделение через блоки, Enter в `li > p`, смешанная вставка, копирование и вырезание с заполнителем проверены функциями утилит и компонентом в jsdom; в e2e-спеке BaseEditor этих сценариев нет.
+- Склейка блоков при выделении не срабатывает, если его начало или конец лежит прямо в корне области (`(root, 0)`) при другом конце внутри абзаца: вставка тогда идёт на границе без склейки. Браузеры дают такое выделение редко: при «Выделить всё» границы лежат в текстовых узлах.
