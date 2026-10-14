@@ -11,11 +11,8 @@ import type { SearchNavigation, SearchStateContext } from './types/useSearchStat
 function useSearchNavigation(ctx: SearchStateContext, visibleResults: ComputedRef<SearchResult[]>): SearchNavigation {
 	const nav = useListNavigation({
 		itemCount: () => visibleResults.value.length,
-		onSelect: index => {
-			// Защита на случай, если список изменился между пересчётом и нажатием Enter
-			const item = visibleResults.value[index]
-			if (item) selectResult(ctx, item)
-		},
+		// Индекс за концом списка (список сократился между пересчётом и нажатием Enter) useListNavigation не выбирает
+		onSelect: index => selectResult(ctx, visibleResults.value[index]),
 		onEscape: () => closeOverlayIfNeeded(ctx.options),
 	})
 
