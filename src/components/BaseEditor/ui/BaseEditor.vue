@@ -36,11 +36,16 @@
 				:is-readonly="isLocked"
 				:is-media-selected="Boolean(selectedMedia)"
 				:has-toolbar="hasToolbar"
+				:has-history-buttons="hasHistoryButtons"
+				:can-undo="history.canUndo.value"
+				:can-redo="history.canRedo.value"
 				:heading-options="headingOptions"
 				:text-color="textColor"
 				:background-color="backgroundColor"
 				:is-text-color-active="isTextColorActive"
 				:is-background-color-active="isBackgroundColorActive"
+				@undo="history.undo"
+				@redo="history.redo"
 				@apply-format="applyFormat"
 				@apply-block="applyBlock"
 				@handle-heading-change="handleHeadingChange"
@@ -211,6 +216,7 @@ const props = withDefaults(
 		isRequired: false,
 		variant: DEFAULT_VARIANT,
 		hasToolbar: true,
+		hasHistoryButtons: true,
 		isAutofocus: false,
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
@@ -246,6 +252,7 @@ const {
 	menuControlScale,
 	headingOptions,
 	activeStates,
+	history,
 	contextMenu,
 	contextMenuRef,
 	mediaMenuAnchor,

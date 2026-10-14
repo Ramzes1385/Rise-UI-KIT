@@ -82,6 +82,12 @@ export interface BaseEditorProps extends BaseComponentProps<
 	name?: string
 	/** Показывать панель инструментов */
 	hasToolbar?: boolean
+	/**
+	 * Кнопки «Отменить» и «Повторить» в начале стандартной панели (подсказка с Ctrl/⌘+Z и Ctrl/⌘+Shift+Z): на сенсорном экране
+	 * без клавиатуры отменить команду иначе нечем. Кнопка недоступна, пока нечего отменять или повторять, и в режиме кода (там своя история
+	 * поля). `false` скрывает группу; свою панель (слот `toolbar`) это не затрагивает
+	 */
+	hasHistoryButtons?: boolean
 	/** Автофокус */
 	isAutofocus?: boolean
 	/**

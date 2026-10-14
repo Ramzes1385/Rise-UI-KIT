@@ -38,7 +38,9 @@ export const EditorUndo: StoryObj<typeof meta> = {
 					'одинаково в Chrome, Firefox и Safari. Каждая команда панели, вставка и перетаскивание — отдельный шаг; набор склеивается',
 					'в шаг, пока пауза между правками меньше 500 мс (не больше 20 правок подряд). После отмены выделение возвращается,',
 					'и следующая команда применяется к нему же. Внешнее изменение `v-model` очищает историю, режим кода целиком — один шаг.',
-					'Через `ref` и слот `toolbar` доступны `undo`, `redo`, `canUndo`, `canRedo`.',
+					'Кнопки «Отменить» и «Повторить» в начале панели делают то же без клавиатуры (на телефоне и планшете): на краю',
+					'истории кнопка получает `aria-disabled`, но сохраняет фокус; в режиме кода кнопки недоступны (у поля своя история).',
+					'Скрыть группу можно пропом `hasHistoryButtons`. Через `ref` и слот `toolbar` доступны `undo`, `redo`, `canUndo`, `canRedo`.',
 				].join('\n'),
 			},
 			source: storySource({ template, imports: ['BaseEditor'], models, state, omit: ['toolbar'] }),
@@ -74,5 +76,26 @@ export const EditorUndo: StoryObj<typeof meta> = {
 		await userEvent.keyboard('{Control>}z{/Control}')
 		await userEvent.keyboard('{Control>}z{/Control}')
 		await waitFor(() => expect(textbox).toHaveTextContent(/^$/))
+
+		const undoButton = canvas.getByRole('button', { name: 'Отменить' })
+		const redoButton = canvas.getByRole('button', { name: 'Повторить' })
+		await expect(undoButton).toHaveAttribute('aria-disabled', 'true')
+		await expect(redoButton).not.toHaveAttribute('aria-disabled')
+
+		redoButton.focus()
+		await userEvent.keyboard('{Enter}')
+		await userEvent.keyboard('{Enter}')
+		await waitFor(() => expect(textbox.querySelector('strong')).not.toBeNull())
+		await expect(redoButton).toHaveAttribute('aria-disabled', 'true')
+		await expect(redoButton).toHaveFocus()
+
+		await userEvent.click(undoButton)
+		await waitFor(() => expect(textbox.querySelector('strong')).toBeNull())
+		await expect(textbox).toHaveTextContent('Привет мир')
+		await expect(redoButton).not.toHaveAttribute('aria-disabled')
+
+		await userEvent.click(redoButton)
+		await waitFor(() => expect(textbox.querySelector('strong')).not.toBeNull())
+		await expect(redoButton).toHaveAttribute('aria-disabled', 'true')
 	},
 }

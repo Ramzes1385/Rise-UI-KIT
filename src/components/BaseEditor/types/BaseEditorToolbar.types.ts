@@ -44,11 +44,19 @@ export interface BaseEditorToolbarProps {
 	isBackgroundColorActive: boolean
 	/** Изображение или видео выделено целиком: кнопка размера и удаления медиа доступна */
 	isMediaSelected: boolean
+	/** Показывать группу кнопок «Отменить» и «Повторить» */
+	hasHistoryButtons: boolean
+	/** Есть что отменить: кнопка «Отменить» доступна */
+	canUndo: boolean
+	/** Есть что повторить: кнопка «Повторить» доступна */
+	canRedo: boolean
 	/** Классы частей из пропа `ui` редактора (`toolbar`, `group`, `btn`) */
 	ui?: UiProp<BaseEditorPart>
 }
 
 export interface BaseEditorToolbarEmits {
+	(event: 'undo'): void
+	(event: 'redo'): void
 	(event: 'applyFormat', command: string): void
 	(event: 'applyBlock', tag: string): void
 	(event: 'handleHeadingChange', value: string | number): void
@@ -68,6 +76,17 @@ export interface BaseEditorToolbarEmits {
 
 export interface BaseEditorToolbarSlots {
 	toolbar?: () => unknown
+}
+
+export interface HistoryButton {
+	action: 'undo' | 'redo'
+	icon: string
+	label: string
+	/** Подсказка: имя и сочетание клавиш */
+	tip: string
+	/** Сочетание для `aria-keyshortcuts` */
+	shortcut: string
+	isEnabled: boolean
 }
 
 export interface ToolbarButton {

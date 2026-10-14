@@ -9,6 +9,7 @@ export const args = {
 	variant: 'default',
 	sizeScale: 100,
 	hasToolbar: true,
+	hasHistoryButtons: true,
 	isReadonly: false,
 	isDisabled: false,
 	label: '',

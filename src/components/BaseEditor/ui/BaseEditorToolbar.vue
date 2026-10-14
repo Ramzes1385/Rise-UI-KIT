@@ -9,6 +9,22 @@
 		@focusin="handleFocusIn"
 		@keydown="handleKeyDown">
 		<slot name="toolbar">
+			<div v-if="hasHistoryButtons" :class="[ui('group'), classes.group]">
+				<BaseTooltip v-for="btn in historyButtons" :key="btn.action" :text="btn.tip" position="top" :size-scale="sizeScale">
+					<BaseButton
+						variant="ghost"
+						:class="[ui('btn'), classes.btn]"
+						:size-scale="sizeScale"
+						is-focusable-when-disabled
+						:is-disabled="!btn.isEnabled"
+						:aria-label="btn.label"
+						:aria-keyshortcuts="btn.shortcut"
+						@click="btn.action === 'undo' ? emit('undo') : emit('redo')">
+						<BaseIcon :name="btn.icon" :size-scale="iconScale" />
+					</BaseButton>
+				</BaseTooltip>
+			</div>
+
 			<div v-for="group in buttonGroups" :key="group.key" :class="[ui('group'), classes.group]">
 				<BaseTooltip v-for="btn in group.items" :key="btn.icon" :text="btn.label" position="top" :size-scale="sizeScale">
 					<BaseButton
@@ -205,5 +221,6 @@ const {
 	controlScale,
 	colorPickerClasses,
 	buttonGroups,
+	historyButtons,
 } = useBaseEditorToolbar(props)
 </script>

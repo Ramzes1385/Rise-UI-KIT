@@ -8,6 +8,7 @@ export const argTypes = {
 	modelValue: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	placeholder: { control: 'text', table: propGroup(ARG_GROUP.content) },
 	hasToolbar: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
+	hasHistoryButtons: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
 	isReadonly: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 	isDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 	label: { control: 'text', table: propGroup(ARG_GROUP.content) },
