@@ -54,6 +54,20 @@ describe('cssColor', () => {
 		expect(normalizeCssColor('color(srgb 0.78 0 0 / 0.1)')).toBe('rgba(200, 0, 0, 0.1)')
 	})
 
+	it('normalizeCssColor: до тысячных только там, где до сотых был бы 0; остальное — до сотых', () => {
+		const cases: Array<[number, string]> = [
+			[1, '0.004'],
+			[2, '0.01'],
+			[127, '0.5'],
+			[128, '0.5'],
+			[254, '1'],
+		]
+		for (const [alpha, expected] of cases) {
+			mockCanvas([1, 2, 3, alpha])
+			expect(normalizeCssColor('color(srgb 0 0 0 / 0.5)')).toBe(`rgba(1, 2, 3, ${expected})`)
+		}
+	})
+
 	it('normalizeCssColor: неразобранный цвет — null, чёрный и белый разобраны', () => {
 		let style = '#000000'
 		const context = {

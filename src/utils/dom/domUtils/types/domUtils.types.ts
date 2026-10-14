@@ -9,9 +9,3 @@ export interface FixedBounds extends FixedOrigin {
 	width: number
 	height: number
 }
-
-/** Прямоугольник в координатах окна: левый верхний угол и размер */
-export interface FixedBounds extends FixedOrigin {
-	width: number
-	height: number
-}

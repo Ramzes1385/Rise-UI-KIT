@@ -1,11 +1,14 @@
 import { STORY_TODAY } from '../../render/data/fixtures'
 import { freezeStoryClock } from '../../render/data/clock'
 
+const RealDate = Date
+
 describe('freezeStoryClock', () => {
-	it('new Date() и Date.now() дают STORY_TODAY, Date с аргументами работает как обычно', () => {
+	it('new Date() даёт STORY_TODAY, Date.now() и Date с аргументами работают как обычно', () => {
 		const restore = freezeStoryClock()
 		expect(new Date().getTime()).toBe(STORY_TODAY.getTime())
-		expect(Date.now()).toBe(STORY_TODAY.getTime())
+		expect(Date.now()).not.toBe(STORY_TODAY.getTime())
+		expect(Math.abs(Date.now() - RealDate.now())).toBeLessThan(1000)
 		expect(new Date(2020, 0, 2).getFullYear()).toBe(2020)
 		expect(new Date(5).getTime()).toBe(5)
 		restore()

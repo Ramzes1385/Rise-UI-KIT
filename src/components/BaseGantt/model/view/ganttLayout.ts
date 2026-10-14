@@ -36,7 +36,7 @@ export function dependencyArrow(from: GanttBox, to: GanttBox, link: { rowHeight:
 	const side = type === 'FS' || type === 'SS' ? -1 : 1
 	const x1 = exit > 0 ? from.x + from.width : from.x
 	const y1 = from.row * rowHeight + rowHeight / 2
-	const x2 = side < 0 ? to.x : to.x + to.width
+	const x2 = side < 0 ? Math.max(to.x, ARROW_HEAD) : to.x + to.width
 	const y2 = to.row * rowHeight + rowHeight / 2
 	const head = arrowHead({ x: x2, y: y2 }, -side)
 	if (y1 === y2) return { line: `M${x1} ${y1}H${x2}`, head }

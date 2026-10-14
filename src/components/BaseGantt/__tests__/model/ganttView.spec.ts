@@ -66,10 +66,19 @@ describe('dependencyArrow', () => {
 })
 
 describe('dependencyArrow у левого края', () => {
+	it('наконечник, входящий в начало полосы у x=0, целиком внутри слоя: остриё сдвинуто на длину наконечника', () => {
+		const arrow = dependencyArrow({ x: 20, width: 50, row: 0 }, { x: 0, width: 50, row: 1 }, { rowHeight: 40, type: 'FS' })
+		expect(arrow.head).toBe('M5 60l-5 -3.5v7z')
+		expect(arrow.line.endsWith('H5')).toBe(true)
+		const right = dependencyArrow({ x: 20, width: 50, row: 0 }, { x: 0, width: 50, row: 1 }, { rowHeight: 40, type: 'FF' })
+		expect(right.head).toBe('M50 60l5 -3.5v7z')
+	})
+
 	it('вертикаль и обход не уходят левее x=0: слой обрезает всё, что за краем', () => {
 		const edge = { x: 0, width: 50, row: 0 }
 		const lane = dependencyArrow(edge, { x: 0, width: 50, row: 2 }, { rowHeight: 40, type: 'SS' })
-		expect(lane.line).toBe('M0 20H1V100H0')
+		expect(lane.line).toBe('M0 20H1V100H5')
+		expect(lane.head).toBe('M5 100l-5 -3.5v7z')
 
 		const detour = dependencyArrow({ x: 0, width: 5, row: 0 }, { x: 0, width: 50, row: 1 }, { rowHeight: 40, type: 'SF' })
 		expect(detour.line).not.toMatch(/-\d/)

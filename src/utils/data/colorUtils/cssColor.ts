@@ -24,8 +24,7 @@ function isParsedByCanvas(ctx: CanvasRenderingContext2D, color: string): boolean
 
 function roundAlpha(alpha: number): number {
 	const fraction = alpha / MAX_CHANNEL
-	const short = Math.round(fraction * 100) / 100
-	return Math.round(short * MAX_CHANNEL) === alpha ? short : Math.round(fraction * 1000) / 1000
+	return Math.round(fraction * 100) / 100 || Math.round(fraction * 1000) / 1000
 }
 
 /** Нужно ли приводить цвет: современные записи, которые не понимает часть сторонних библиотек (Google Maps, canvas-графики) */
@@ -35,7 +34,7 @@ export function isModernCssColor(color: string): boolean {
 
 /**
  * Привести CSS-цвет к `#rrggbb` (непрозрачный) или `rgba(r, g, b, a)`. Цвет за пределами sRGB обрезается по гамме.
- * Прозрачность — до сотых, а у почти прозрачных цветов (меньше ≈ 0.05) до тысячных, чтобы они не превращались в `0`.
+ * Прозрачность — до сотых; только если до сотых получился бы `0` (прозрачность меньше 0.005, один шаг канала alpha), — до тысячных.
  * Canvas хранит каналы по 8 бит с premultiplied alpha, поэтому у цвета с прозрачностью ниже ≈ 0.1 каналы r, g, b
  * приблизительны (±(1 / альфа) единиц), сама прозрачность остаётся точной.
  * Нужен `document` с поддержкой canvas; без него или для неразобранной строки — `null`.

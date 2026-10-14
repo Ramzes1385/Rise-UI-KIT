@@ -79,7 +79,7 @@
 		align-items: center;
 		justify-content: flex-end;
 		box-sizing: border-box;
-		height: max(#{sz(ct(dashboard-grid, padding-y, 16px))}, #{sz(12px)}, calc(24px - var(--dashboard-grid-gap, 0px)));
+		height: max(#{space(ct(dashboard-grid, padding-y, 16px))}, #{space(12px)}, calc(24px - var(--dashboard-grid-gap, 0px)));
 		padding-inline: sz(6px);
 		color: var(--rise-text-muted);
 		border-radius: sz(var(--rise-radius-sm));
