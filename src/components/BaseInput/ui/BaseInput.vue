@@ -65,7 +65,6 @@
 				variant="ghost"
 				:class="ui('password-toggle')"
 				:custom-class="classes.passwordToggle"
-				tabindex="-1"
 				:aria-label="isPasswordVisible ? UI_ARIA.PASSWORD_HIDE : UI_ARIA.PASSWORD_SHOW"
 				:size-scale="sizeScale"
 				@click="togglePasswordVisibility">

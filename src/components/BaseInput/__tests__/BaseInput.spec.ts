@@ -392,6 +392,17 @@ describe('BaseInput unit', () => {
 
 			expect(toggle.getAttribute('aria-label')).toBe('Скрыть пароль')
 		})
+
+		it('кнопка показа пароля доступна с клавиатуры: в порядке Tab, без tabindex=-1', async () => {
+			render(BaseInput, { props: { modelValue: 'secret', type: 'password', ariaLabel: 'Пароль' } })
+			const toggle = screen.getByRole('button', { name: 'Показать пароль' })
+			expect(toggle).not.toHaveAttribute('tabindex')
+			screen.getByLabelText('Пароль').focus()
+			await userEvent.tab()
+			expect(toggle).toHaveFocus()
+			await userEvent.keyboard('{Enter}')
+			expect(screen.getByRole('button', { name: 'Скрыть пароль' })).toHaveFocus()
+		})
 	})
 
 	describe('modelValue null/undefined', () => {
