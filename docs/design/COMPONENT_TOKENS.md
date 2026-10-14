@@ -1888,7 +1888,6 @@
 | Токен | Часть | Свойство | Состояние | По умолчанию |
 |---|---|---|---|---|
 | `--rise-text-font-size` | корень | font-size | — | `var(--rise-font-size-sm)` |
-| `--rise-text-font-weight` | корень | font-weight | — | `var(--rise-font-weight-normal)` |
 | `--rise-text-text` | корень | text | — | `var(--rise-text)` |
 
 ## BaseTextDiff

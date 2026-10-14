@@ -73,10 +73,10 @@ describe('BaseNotification: проп animation, имя области и тем�
 		expect(card()).toHaveClass('base-notification-item--animation-none')
 	})
 
-	it('заголовок карточки — без жирного начертания BaseText: вес задаёт токен', () => {
+	it('заголовок карточки — без inline-веса BaseText: вес задаёт стиль карточки и токен', () => {
 		render(BaseNotification, { props: { items: [ITEM], isContained: true } })
 
-		expect(region().querySelector('.base-notification-item__title')).toHaveStyle({ fontWeight: 'var(--text-weight)' })
+		expect(region().querySelector('.base-notification-item__title')?.getAttribute('style') ?? '').not.toContain('font-weight')
 	})
 
 	it('телепортированная область наследует тему и пресет движения места компонента, когда есть уведомления', async () => {

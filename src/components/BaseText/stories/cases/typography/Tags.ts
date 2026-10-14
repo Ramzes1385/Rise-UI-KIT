@@ -23,7 +23,7 @@ export const Tags: StoryObj<typeof meta> = {
 			description: {
 				story: [
 					'`tag` меняет только семантику: `h2` озвучивается как заголовок второго уровня, но выглядит как обычный текст.',
-					'Размер и начертание заголовка задаются `sizeScale` и `weight` — даже `strong` без `weight` остаётся 400.',
+					'Без `weight` начертание берётся из тега: `h1`–`h6` и `strong` жирные, остальные обычные; размер заголовка задаёт `sizeScale`, а явный `weight` перебивает тег.',
 				].join('\n'),
 			},
 			source: storySource({ template, imports: ['BaseText'], script: `const tags = ${literal(tags)}`, omit: ['default', 'tag'] }),

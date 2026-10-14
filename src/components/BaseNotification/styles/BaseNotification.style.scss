@@ -138,9 +138,8 @@
 
 	&__title.base-text {
 		@include inherit-custom-color;
-		--text-weight: #{ct(notification-title, font-weight, var(--rise-font-weight-semibold))};
-
 		margin: 0;
+		font-weight: ct(notification-title, font-weight, var(--rise-font-weight-semibold));
 		font-size: sz(ct(notification-title, font-size, var(--rise-font-size-sm)));
 		line-height: sz(var(--rise-line-height-sm));
 		@include custom-text(color, var(--rise-text-highlighted));

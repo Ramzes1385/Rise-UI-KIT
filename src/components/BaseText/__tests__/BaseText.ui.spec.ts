@@ -27,12 +27,31 @@ describe('BaseText: проп ui', () => {
 	})
 })
 
-describe('BaseText: начертание и токен', () => {
-	it('явное начертание сильнее токена: инлайн-число вместо var(--text-weight)', () => {
+describe('BaseText: начертание', () => {
+	it('явное начертание пишется inline числом', () => {
 		render(BaseText, { props: { weight: 600 }, slots: { default: 'Текст' } })
 
-		const style = screen.getByText('Текст').getAttribute('style') ?? ''
-		expect(style).toContain('font-weight: 600')
-		expect(style).not.toContain('--text-weight')
+		expect(screen.getByText('Текст').getAttribute('style') ?? '').toContain('font-weight: 600')
+	})
+
+	it('weight 400 тоже явный: пишется inline', () => {
+		render(BaseText, { props: { weight: 400 }, slots: { default: 'Текст' } })
+
+		expect(screen.getByText('Текст').getAttribute('style') ?? '').toContain('font-weight: 400')
+	})
+
+	it('без weight inline-веса нет, у strong и заголовка вес остаётся от тега', () => {
+		render(BaseText, { props: { tag: 'strong' }, slots: { default: 'Жирный' } })
+
+		expect(screen.getByText('Жирный').getAttribute('style') ?? '').not.toContain('font-weight')
+	})
+
+	it('defaults.BaseText.weight из плагина возвращает прежние 400', () => {
+		render(BaseText, {
+			slots: { default: 'Текст' },
+			global: { plugins: [createUiKitPlugin({ defaults: { BaseText: { weight: 400 } } })] },
+		})
+
+		expect(screen.getByText('Текст').getAttribute('style') ?? '').toContain('font-weight: 400')
 	})
 })

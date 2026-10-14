@@ -49,7 +49,7 @@ describe('BaseText unit', () => {
 				slots: { default: 'Текст' },
 			})
 
-			expect(container.querySelector('.base-text')?.getAttribute('style')).not.toContain('--size-scale')
+			expect(container.querySelector('.base-text')?.getAttribute('style') ?? '').not.toContain('--size-scale')
 		})
 
 		it('должен устанавливать --size-scale когда sizeScale=150', () => {
@@ -63,12 +63,12 @@ describe('BaseText unit', () => {
 	})
 
 	describe('пропс weight', () => {
-		it('по умолчанию (400) берёт начертание из токена --rise-text-font-weight', () => {
+		it('по умолчанию не пишет font-weight inline: вес берётся из тега и CSS', () => {
 			const { container } = render(BaseText, {
 				slots: { default: 'Текст' },
 			})
 
-			expect(container.querySelector('.base-text')?.getAttribute('style')).toContain('font-weight: var(--text-weight)')
+			expect(container.querySelector('.base-text')?.getAttribute('style') ?? '').not.toContain('font-weight')
 		})
 
 		it('должен устанавливать font-weight: 700 когда weight=700', () => {
@@ -136,7 +136,7 @@ describe('BaseText unit', () => {
 				slots: { default: 'Текст' },
 			})
 
-			const style = container.querySelector('.base-text')?.getAttribute('style')
+			const style = container.querySelector('.base-text')?.getAttribute('style') ?? ''
 			expect(style).not.toContain('-webkit-line-clamp')
 		})
 	})

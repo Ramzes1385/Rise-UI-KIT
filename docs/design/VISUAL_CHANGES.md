@@ -2059,3 +2059,12 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 
 - BaseEditor, стандартная панель: в начале новая группа из двух кнопок-иконок «Отменить» и «Повторить» (того же размера, что остальные кнопки панели). Все истории и снимки BaseEditor с панелью сдвигаются: кнопки занимают место слева, остальные группы смещаются вправо на ширину группы. Недоступная кнопка рисуется как остальные отключённые кнопки кита (приглушена). Истории с `hasToolbar: false`, `isReadonly` и `isDisabled` не меняются.
 - BaseEditor, новая история `EditorUpload` («Editor/BaseEditor/EditorUpload»): заглушка загрузки — пунктирный блок 160×96 px (`--rise-bg-muted`, пунктир `--rise-border-accented`, пульсация прозрачности только без `prefers-reduced-motion`), под редактором сообщение об ошибке стилем ошибок полей. Остальные снимки не меняются. История `EditorUndo` (Controls и play) дополнена кнопками «Отменить» и «Повторить»; снимка у неё нет.
+
+## Задача text-anim
+
+- **BaseText, вес по умолчанию (№ 43)**: inline `font-weight: 400` убран. Сверка computed-стилей `.base-text` во всех 1893 историях до/после (light; вес от темы не зависит): изменились 17 историй, остальные без расхождений. Ожидаемые изменения:
+  - `element-basetext--tags`: `h1`–`h6` и `strong` без `weight` стали жирными (700), как задаёт тег; `element-basetext--theming`: `--rise-text-font-weight` удалён, вес 400 вместо 500.
+  - Стили кита, которые inline-вес раньше перебивал (мёртвый CSS), теперь действуют: теги в BaseSelect, BaseTreeSelect, BaseCascader (`__tag-text`, `__option-label`) — 500; `base-result__code` — 700; `base-cookie-consent__hint` — 500; заголовок карточки BaseImageMap (`__title`) — 600; текст BaseTooltip внутри плеера — 500.
+  - Истории BaseApp с `<BaseText tag="h3">` без веса (`overlay-from-code`, `router-loading-bar`): заголовок жирный.
+  - Заголовок BaseNotification не изменился (вес перенесён в стиль карточки; снимок идентичен).
+  - Снимки «было / стало» (light и dark) 9 историй лежат на компьютере владельца в папке ta-shots рядом с рабочими папками (base-shots и new-shots).

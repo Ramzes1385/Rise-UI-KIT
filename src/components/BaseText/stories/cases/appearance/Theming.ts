@@ -9,7 +9,7 @@ const ui = { root: 'story-themed-text' }
 const template = `
 	<div class="story-stack">
 		<BaseText v-bind="args">По умолчанию</BaseText>
-		<div style="--rise-text-text: var(--rise-text-muted); --rise-text-font-size: var(--rise-font-size-base); --rise-text-font-weight: var(--rise-font-weight-medium);">
+		<div style="--rise-text-text: var(--rise-text-muted); --rise-text-font-size: var(--rise-font-size-base);">
 			<BaseText v-bind="args">Токены на контейнере</BaseText>
 		</div>
 		<BaseText v-bind="args" :ui="ui">Классы через ui</BaseText>
@@ -24,8 +24,7 @@ export const Theming: StoryObj<typeof meta> = {
 		docs: {
 			description: {
 				story: [
-					'Перекраска без пропов. Токены компонента `--rise-text-text` (цвет), `--rise-text-font-size` (кегль) и',
-					'`--rise-text-font-weight` (начертание при `weight` по умолчанию; явный `weight` сильнее токена) кит только читает:',
+					'Перекраска без пропов. Токены компонента `--rise-text-text` (цвет) и `--rise-text-font-size` (кегль) кит только читают:',
 					'задайте их на `:root`, в теме или на контейнере — как здесь. Они действуют и на BaseText внутри других компонентов.',
 					'Список — docs/design/COMPONENT_TOKENS.md. Проп `ui` добавляет классы к `root`; глобально — `defaults.BaseText.ui` плагина.',
 				].join('\n'),
@@ -46,7 +45,7 @@ export const Theming: StoryObj<typeof meta> = {
 		await expect(getComputedStyle(themed).color).not.toBe(getComputedStyle(plain).color)
 		await expect(getComputedStyle(themed).fontSize).toBe('16px')
 		await expect(getComputedStyle(plain).fontSize).toBe('14px')
-		await expect(getComputedStyle(themed).fontWeight).toBe('500')
+		await expect(getComputedStyle(themed).fontWeight).toBe('400')
 		await expect(getComputedStyle(plain).fontWeight).toBe('400')
 		await expect(classed).toHaveClass('base-text', 'story-themed-text')
 	},

@@ -2953,6 +2953,8 @@ import { BaseText } from '@ramzes1385/rise-ui-kit'
 </template>
 ```
 
+`weight` по умолчанию не задан: вес берётся из тега (`h1`–`h6`, `strong` жирные), родителя или CSS приложения; явное число пишется inline. Вернуть 400 везде — `createUiKitPlugin({ defaults: { BaseText: { weight: 400 } } })`.
+
 ---
 
 ## BaseSeparator

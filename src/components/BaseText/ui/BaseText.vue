@@ -9,7 +9,6 @@
 
 <script setup lang="ts">
 import '../styles/BaseText.style.scss'
-import { TEXT_WEIGHT } from '../model/textWeight'
 import { useBaseText } from '../model/useBaseText'
 import { kitDefaults } from '@composables/base/useDefaults'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
@@ -19,7 +18,7 @@ const props = withDefaults(
 	defineProps<BaseTextProps>(),
 	kitDefaults('BaseText', {
 		tag: 'p',
-		weight: TEXT_WEIGHT.REGULAR,
+		weight: undefined,
 		nowrap: false,
 		truncate: false,
 		maxLines: 1,

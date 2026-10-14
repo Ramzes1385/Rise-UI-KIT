@@ -13,8 +13,9 @@ export interface BaseTextProps extends BaseComponentProps<string, 'root'> {
 	/** Семантический HTML-тег */
 	tag?: (typeof TEXT_TAGS)[number]
 	/**
-	 * Начертание (100–900). По умолчанию 400 — его можно сменить токеном `--rise-text-font-weight`;
-	 * явное значение пропа сильнее токена
+	 * Начертание (100–900). По умолчанию не задано: вес не пишется в `style` и берётся из тега (`h1–h6`, `strong` — жирные),
+	 * наследуется или задаётся CSS приложения. Явное значение пропа пишется inline и сильнее любого CSS.
+	 * Вернуть прежние 400 везде — `createUiKitPlugin({ defaults: { BaseText: { weight: 400 } } })`
 	 */
 	weight?: number
 	/** Текст с переносом или без */
