@@ -1,7 +1,7 @@
 import { formatMessage } from '@/locales/state'
 import { UI_CRYPTOPRO } from '@/locales/messages'
-import { computed, shallowRef, watch } from 'vue'
 import { guarded } from '../useCryptoProSignActions'
+import { computed, getCurrentScope, onScopeDispose, shallowRef, watch } from 'vue'
 import { downloadSignature, ensureReady, pluginError, signWith } from './cryptoProSignJob'
 import type {
 	CryptoProBatchItem,
@@ -111,6 +111,7 @@ export function useCryptoProSignBatch(
 	const { context, batch, state } = setup
 	const list = useBatchItems()
 	const queue = useBatchQueue({ props, emit, context, list })
+	if (getCurrentScope()) onScopeDispose(queue.requestCancel)
 
 	const signAll = (): Promise<CryptoProBatchResult | null> =>
 		guarded(state, async () => {

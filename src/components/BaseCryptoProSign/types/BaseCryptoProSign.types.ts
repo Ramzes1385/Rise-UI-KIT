@@ -61,8 +61,8 @@ export interface CryptoProSignResult {
 	certificate: CryptoProCertificate
 	/** Имя подписанного файла или `fileName`; файл подписи — `<fileName>.sig` */
 	fileName: string
-	/** Это вторая подпись (`mode="cosign"`): `signature` содержит и прежние подписи, и новую */
-	isCoSign: boolean
+	/** Это вторая подпись (`mode="cosign"`): `signature` содержит и прежние подписи, и новую. Без поля (результат, сохранённый до `cosign`) — обычная подпись */
+	isCoSign?: boolean
 }
 
 /** Состояние файла в очереди подписи нескольких файлов (`isMultiple`) */

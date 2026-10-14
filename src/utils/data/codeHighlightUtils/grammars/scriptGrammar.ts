@@ -22,30 +22,9 @@ const COMMENT = /\/\/[^\n]*|\/\*[\s\S]*?(?:\*\/|$)/y
 const QUOTED = /'(?:\\[\s\S]|[^\\'\n])*'?|"(?:\\[\s\S]|[^\\"\n])*"?/y
 const REGEX_LITERAL = /\/(?:\\.|\[(?:\\.|[^\]\\\n])*\]|[^/\\\n[])+\/[a-z]*/y
 const REGEX_AFTER_WORDS = new Set(['return', 'typeof', 'case', 'in', 'of', 'yield', 'await', 'delete', 'void', 'throw', 'else', 'do'])
-const REGEX_AFTER_SYMBOLS = new Set([
-	'',
-	'\n',
-	'(',
-	',',
-	'=',
-	':',
-	'[',
-	'!',
-	'&',
-	'|',
-	'?',
-	'{',
-	'}',
-	';',
-	'+',
-	'-',
-	'*',
-	'%',
-	'<',
-	'>',
-	'~',
-	'^',
-])
+const REGEX_AFTER_SYMBOLS = new Set(['', '\n', '(', ',', '=', ':', '[', '!', '&', '|', '?', '{', '}', ';', '+', '-', '*', '%', '~', '^'])
+/** Стрелка `=>` перед позицией: после неё может идти литерал регулярного выражения (`s => /x/.test(s)`) */
+const ARROW_BEFORE = /=>[ \t]*$/
 const LAST_WORD = /([A-Za-z_$][\w$]*)[ \t]*$/
 const NUMBER = /(?:0[xX][\da-fA-F_]+|0[bB][01_]+|0[oO][0-7_]+|\d[\d_]*(?:\.[\d_]*)?(?:[eE][+-]?\d+)?|\.\d[\d_]*(?:[eE][+-]?\d+)?)n?/y
 const IDENTIFIER = /[A-Za-z_$][\w$]*/y
@@ -85,9 +64,15 @@ function scanTemplate(source: string, start: number): number {
 const templateRule: CodeRule = (source, index) =>
 	source[index] === '`' ? { type: 'string', length: scanTemplate(source, index) - index } : null
 
-/** Здесь может начаться литерал регулярного выражения: после оператора, `(`, `,`, начала текста или слова вроде `return` */
+/**
+ * Здесь может начаться литерал регулярного выражения: после оператора, `(`, `,`, начала текста или слова вроде `return`.
+ * `<` и `>` в список не входят (кроме `=>`): в JSX `</p> <p>b</p>` и текст `<a>/home</a>` иначе принимались бы за регулярку.
+ * Известное ограничение: регулярка сразу после сравнения (`a < /b/.test(c)`) не распознаётся и подсвечивается как деление.
+ */
 function canStartRegex(source: string, index: number): boolean {
-	if (REGEX_AFTER_SYMBOLS.has(previousSymbol(source, index))) return true
+	const symbol = previousSymbol(source, index)
+	if (symbol === '>') return ARROW_BEFORE.test(source.slice(Math.max(0, index - 12), index))
+	if (REGEX_AFTER_SYMBOLS.has(symbol)) return true
 	const word = LAST_WORD.exec(source.slice(Math.max(0, index - 12), index))
 	return word !== null && REGEX_AFTER_WORDS.has(word[1]!)
 }

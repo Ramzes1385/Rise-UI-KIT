@@ -124,6 +124,22 @@ describe('codeHighlightUtils: JavaScript и TypeScript', () => {
 		expect(typed("f(/'/, 2)", 'js')).toEqual(['function:f', "string:/'/", 'number:2'])
 	})
 
+	it.each(['jsx', 'tsx'])('%s: несколько тегов в строке не дают литерал регулярного выражения', language => {
+		const code = 'const a = <p>a</p>; const b = <p>b</p> <p>c</p>'
+		expect(typed(code, language)).toEqual(['keyword:const', 'keyword:const'])
+		expect(joined(code, language)).toBe(code)
+		expect(typed('<a>/home</a> 1', language)).toEqual(['number:1'])
+		expect(typed('<br /> 2 <img src="x" />', language)).toEqual(['number:2', 'string:"x"'])
+	})
+
+	it('регулярка после стрелки и оператора по-прежнему литерал, после `>` и `<` как сравнения — нет', () => {
+		expect(typed("s => /'/.test(s)", 'js')).toEqual(["string:/'/", 'function:test'])
+		expect(typed("s =>   /'/.test(s)", 'js')).toEqual(["string:/'/", 'function:test'])
+		expect(typed('a >= /b/.test(c)', 'js')).toEqual(['string:/b/', 'function:test'])
+		expect(typed('a < /b/.test(c)', 'js')).toEqual(['function:test'])
+		expect(typed('a > /b/.test(c)', 'js')).toEqual(['function:test'])
+	})
+
 	it('деление и незакрытая регулярка — не строка', () => {
 		expect(typed('a / 2 / 3', 'js')).toEqual(['number:2', 'number:3'])
 		expect(typed('f(a) / 2', 'js')).toEqual(['function:f', 'number:2'])

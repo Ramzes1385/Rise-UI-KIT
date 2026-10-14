@@ -108,14 +108,28 @@ describe('BaseCryptoProSign — несколько файлов (isMultiple)', (
 		await start()
 		const cancel = await screen.findByRole('button', { name: 'Отменить' })
 		expect(screen.getByRole('progressbar', { name: 'Подписываем файлы' })).toBeInTheDocument()
+		cancel.focus()
 		await userEvent.click(cancel)
-		expect(cancel).toBeDisabled()
+		expect(cancel).toHaveAttribute('aria-disabled', 'true')
+		expect(cancel).toHaveFocus()
 		await waitFor(() => expect(emitted()['signed-all']).toBeTruthy())
 		const total = lastEmitted<CryptoProBatchResult>(emitted(), 'signed-all')
 		expect(total.items.map(item => item.status)).toEqual(['signed', 'cancelled', 'cancelled'])
 		expect(total).toMatchObject({ signedCount: 1, cancelledCount: 2 })
 		expect(items()[2]).toHaveTextContent('отменён')
 		expect(screen.queryByRole('button', { name: 'Отменить' })).not.toBeInTheDocument()
+	})
+
+	it('размонтирование прекращает очередь: после текущего файла остальные не подписываются', async () => {
+		const { emulation, unmount } = await renderReady({ props: PROPS }, { delay: 300 })
+		await upload([file('a.txt'), file('b.txt'), file('c.txt')])
+		await start()
+		await screen.findByRole('button', { name: 'Отменить' })
+
+		unmount()
+		await new Promise(resolve => setTimeout(resolve, 1500))
+
+		expect(callsOf(emulation, 'CadesSignedData.SignCades').length).toBeLessThanOrEqual(1)
 	})
 
 	it('отмена во время расчёта хэша прерывает файл', async () => {
