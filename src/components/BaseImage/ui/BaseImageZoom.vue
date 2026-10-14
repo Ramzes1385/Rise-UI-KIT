@@ -12,6 +12,7 @@
 		<div
 			class="base-image__zoom-stage"
 			@keydown="zoom.handleKeydown"
+			@pointerdown.capture="zoom.prepareGesture"
 			@wheel.prevent="zoom.handleWheel"
 			@click.self="zoom.handleOverlayClick">
 			<div :class="ui('zoom-toolbar')">
@@ -97,7 +98,8 @@
 				@pointerdown="zoom.handlePointerDown"
 				@pointermove="zoom.handlePointerMove"
 				@pointerup="zoom.handlePointerEnd"
-				@pointercancel="zoom.handlePointerEnd">
+				@pointercancel="zoom.handlePointerEnd"
+				@lostpointercapture="zoom.handlePointerEnd">
 				<img
 					ref="zoomImgRef"
 					:key="gallery.currentZoomSrc.value"

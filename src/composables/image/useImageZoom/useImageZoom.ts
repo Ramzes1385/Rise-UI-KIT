@@ -66,8 +66,9 @@ function imageCenter(image: HTMLElement | null | undefined): { x: number; y: num
 }
 
 /** Описание: жесты, которые нужны области изображения (без служебных `consumeDrag` и `resetPointers`) */
-function pointerHandlers({ isPanning, handlePointerDown, handlePointerMove, handlePointerEnd }: ReturnType<typeof useZoomPointer>) {
-	return { isPanning, handlePointerDown, handlePointerMove, handlePointerEnd }
+function pointerHandlers(pointer: ReturnType<typeof useZoomPointer>) {
+	const { isPanning, handlePointerDown, handlePointerMove, handlePointerEnd, prepareGesture } = pointer
+	return { isPanning, handlePointerDown, handlePointerMove, handlePointerEnd, prepareGesture }
 }
 
 /** Описание: прокрутка колеса в пикселях с учётом единиц события */

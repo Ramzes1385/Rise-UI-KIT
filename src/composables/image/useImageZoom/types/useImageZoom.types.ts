@@ -118,6 +118,22 @@ export interface GestureState {
 	isDragged: boolean
 }
 
+/** Области, на которых нажаты указатели; захват включается после порога сдвига или при щипке */
+export interface ZoomPointerAreas {
+	remember: (pointerId: number, area: Element) => void
+	forget: (pointerId: number) => void
+	clear: () => void
+	captureAll: () => void
+}
+
+/** Всё, что нужно шагу перетаскивания: настройки, нажатые указатели, их области и состояние жеста */
+export interface DragContext {
+	options: UseZoomPointerOptions
+	pointers: Map<number, ZoomPoint>
+	areas: ZoomPointerAreas
+	gesture: GestureState
+}
+
 /** Движение указателя: его номер и новая точка */
 export interface PointerMove {
 	pointerId: number

@@ -12,6 +12,7 @@ function setup(overrides: { scale?: number; center?: { x: number; y: number } | 
 	area.addEventListener('pointermove', pointer.handlePointerMove)
 	area.addEventListener('pointerup', pointer.handlePointerEnd)
 	area.addEventListener('pointercancel', pointer.handlePointerEnd)
+	area.addEventListener('lostpointercapture', pointer.handlePointerEnd)
 	return { pointer, currentScale, panBy, zoomAround, area }
 }
 
@@ -54,7 +55,7 @@ describe('useZoomPointer', () => {
 		expect(pointer.isPanning.value).toBe(false)
 
 		fire(area, 'pointerdown', { pointerId: 2, pointerType: 'mouse', button: 0, clientX: 0, clientY: 0 })
-		fire(area, 'pointermove', { pointerId: 2, pointerType: 'mouse', clientX: 30, clientY: 0 })
+		fire(area, 'pointermove', { pointerId: 2, pointerType: 'mouse', buttons: 1, clientX: 30, clientY: 0 })
 		expect(panBy).toHaveBeenCalledWith(30, 0)
 	})
 
@@ -143,13 +144,27 @@ describe('useZoomPointer', () => {
 		expect(panBy).not.toHaveBeenCalled()
 	})
 
-	it('захватывает указатель за область; синтетический указатель без захвата не ломает жест', () => {
+	it('указатель не захватывается при нажатии: обычный клик по изображению остаётся кликом по нему', () => {
+		const { area } = setup()
+		const capture = vi.fn<(id: number) => void>()
+		area.setPointerCapture = capture
+		fire(area, 'pointerdown', { pointerId: 7, clientX: 0, clientY: 0 })
+		fire(area, 'pointermove', { pointerId: 7, clientX: 3, clientY: 0 })
+		fire(area, 'pointerup', { pointerId: 7, clientX: 3, clientY: 0 })
+
+		expect(capture).not.toHaveBeenCalled()
+	})
+
+	it('захват указателя — после порога сдвига, один раз на жест; синтетический указатель без захвата не ломает жест', () => {
 		const { area, panBy } = setup()
 		const capture = vi.fn<(id: number) => void>()
 		area.setPointerCapture = capture
 		fire(area, 'pointerdown', { pointerId: 7, clientX: 0, clientY: 0 })
+		fire(area, 'pointermove', { pointerId: 7, clientX: 20, clientY: 0 })
+		fire(area, 'pointermove', { pointerId: 7, clientX: 40, clientY: 0 })
+		expect(capture).toHaveBeenCalledTimes(1)
 		expect(capture).toHaveBeenCalledWith(7)
-		fire(area, 'pointerup', { pointerId: 7, clientX: 0, clientY: 0 })
+		fire(area, 'pointerup', { pointerId: 7, clientX: 40, clientY: 0 })
 
 		area.setPointerCapture = () => {
 			throw new Error('NotFoundError')
@@ -157,6 +172,61 @@ describe('useZoomPointer', () => {
 		fire(area, 'pointerdown', { pointerId: 8, clientX: 0, clientY: 0 })
 		fire(area, 'pointermove', { pointerId: 8, clientX: 10, clientY: 0 })
 		expect(panBy).toHaveBeenCalledWith(10, 0)
+	})
+
+	it('щипок захватывает оба указателя', () => {
+		const { area } = setup()
+		const capture = vi.fn<(id: number) => void>()
+		area.setPointerCapture = capture
+		fire(area, 'pointerdown', { pointerId: 1, clientX: 80, clientY: 100 })
+		fire(area, 'pointerdown', { pointerId: 2, clientX: 120, clientY: 100 })
+		expect(capture).not.toHaveBeenCalled()
+
+		fire(area, 'pointermove', { pointerId: 2, clientX: 160, clientY: 100 })
+
+		expect(capture.mock.calls.map(call => call[0]).sort()).toEqual([1, 2])
+	})
+
+	it('prepareGesture сбрасывает признак перетаскивания прошлого жеста, пока нет нажатых указателей', () => {
+		const { pointer, area } = setup()
+		fire(area, 'pointerdown', { pointerId: 1, pointerType: 'mouse', clientX: 0, clientY: 0 })
+		fire(area, 'pointermove', { pointerId: 1, pointerType: 'mouse', buttons: 1, clientX: 40, clientY: 0 })
+		fire(area, 'pointerup', { pointerId: 1, pointerType: 'mouse', clientX: 40, clientY: 0 })
+
+		pointer.prepareGesture()
+
+		expect(pointer.consumeDrag()).toBe(false)
+	})
+
+	it('prepareGesture не сбрасывает признак, пока жест идёт', () => {
+		const { pointer, area } = setup()
+		fire(area, 'pointerdown', { pointerId: 1, clientX: 0, clientY: 0 })
+		fire(area, 'pointermove', { pointerId: 1, clientX: 40, clientY: 0 })
+
+		pointer.prepareGesture()
+
+		expect(pointer.consumeDrag()).toBe(true)
+	})
+
+	it('мышь без нажатой кнопки (отпущена вне области) жест заканчивает, а не двигает изображение', () => {
+		const { pointer, panBy, area } = setup()
+		fire(area, 'pointerdown', { pointerId: 1, pointerType: 'mouse', clientX: 0, clientY: 0 })
+		fire(area, 'pointermove', { pointerId: 1, pointerType: 'mouse', buttons: 0, clientX: 40, clientY: 0 })
+
+		expect(panBy).not.toHaveBeenCalled()
+		expect(pointer.isPanning.value).toBe(false)
+		fire(area, 'pointermove', { pointerId: 1, pointerType: 'mouse', buttons: 1, clientX: 80, clientY: 0 })
+		expect(panBy).not.toHaveBeenCalled()
+	})
+
+	it('lostpointercapture завершает жест, повторное завершение безвредно', () => {
+		const { pointer, area } = setup()
+		fire(area, 'pointerdown', { pointerId: 1, clientX: 0, clientY: 0 })
+		expect(pointer.isPanning.value).toBe(true)
+		fire(area, 'lostpointercapture', { pointerId: 1 })
+		expect(pointer.isPanning.value).toBe(false)
+		fire(area, 'pointerup', { pointerId: 1, clientX: 0, clientY: 0 })
+		expect(pointer.isPanning.value).toBe(false)
 	})
 
 	it('pointercancel завершает жест, resetPointers очищает всё', () => {
