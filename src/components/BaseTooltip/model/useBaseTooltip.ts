@@ -176,6 +176,13 @@ function useTooltipVisibility(props: TooltipProps, isVisible: Ref<boolean>, posi
 	return { handleEnter: delays.handleEnter, handleLeave: delays.handleLeave, cancelHide: delays.cancelHide }
 }
 
+function nameCoversText(name: string, text: string): boolean {
+	if (name === text) return true
+	const escaped = text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+	const edge = String.raw`[^\p{L}\p{N}]`
+	return new RegExp(`(^|${edge})${escaped}($|${edge})`, 'iu').test(name)
+}
+
 function useDescribedTrigger(
 	props: TooltipProps,
 	wrapperRef: Ref<HTMLElement | null>,
@@ -187,7 +194,7 @@ function useDescribedTrigger(
 		if (!isShown.value) return { 'aria-describedby': undefined }
 		const trigger = props.isWrapperless ? wrapperRef.value : findTrigger()
 		const text = props.text.trim()
-		return { 'aria-describedby': text && getAccessibleName(trigger) === text ? undefined : tooltipId }
+		return { 'aria-describedby': text && nameCoversText(getAccessibleName(trigger), text) ? undefined : tooltipId }
 	})
 	const { getTrigger } = useTriggerAttributes(
 		() => (props.isWrapperless ? null : wrapperRef.value),

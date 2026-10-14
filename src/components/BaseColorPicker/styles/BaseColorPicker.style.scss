@@ -34,7 +34,6 @@
 
 		&--icon {
 			@include tool-button;
-			@include focus-ring;
 			background-image: none;
 		}
 

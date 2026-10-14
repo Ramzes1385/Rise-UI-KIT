@@ -233,9 +233,11 @@
 	}
 
 	&__speed-step.base-button {
-		--custom-bg: var(--media-hover);
-		--custom-bg-hover: color-mix(in srgb, var(--rise-media-highlight) 20%, transparent);
-		--custom-text: var(--media-text);
+		@include custom-button-colors(
+			var(--media-hover),
+			color-mix(in srgb, var(--rise-media-highlight) 20%, transparent),
+			$text: var(--media-text)
+		);
 		--btn-pad-top: 0px;
 		--btn-pad-right: 0px;
 		--btn-pad-bottom: 0px;
@@ -327,9 +329,11 @@
 	}
 
 	&__speed-preset.base-button {
-		--custom-bg: var(--media-hover);
-		--custom-bg-hover: color-mix(in srgb, var(--rise-media-highlight) 20%, transparent);
-		--custom-text: var(--media-text);
+		@include custom-button-colors(
+			var(--media-hover),
+			color-mix(in srgb, var(--rise-media-highlight) 20%, transparent),
+			$text: var(--media-text)
+		);
 		--btn-pad-top: 4px;
 		--btn-pad-bottom: 4px;
 		--btn-pad-left: 10px;
@@ -345,7 +349,6 @@
 	}
 
 	&__speed-preset--active.base-button {
-		--custom-bg: var(--media-primary-strong);
-		--custom-bg-hover: var(--media-primary-strong);
+		@include custom-button-colors(var(--media-primary-strong));
 	}
 }

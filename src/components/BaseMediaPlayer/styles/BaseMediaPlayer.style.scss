@@ -138,7 +138,7 @@
 			--tooltip-offset: #{sz(4px)};
 
 			padding: sz(4px) sz(8px);
-			border-radius: sz(6px);
+			border-radius: sz(var(--rise-radius-md));
 			color: var(--media-text);
 			font-size: sz(13px);
 			font-weight: var(--rise-font-weight-medium);

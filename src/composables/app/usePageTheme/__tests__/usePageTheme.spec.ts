@@ -14,7 +14,11 @@ function stubMatchMedia() {
 		'matchMedia',
 		vi.fn(() => query),
 	)
-	return { query, listeners, change: (): void => listeners.forEach(listener => listener()) }
+	return {
+		query,
+		listeners,
+		change: (): void => listeners.forEach(listener => (listener as (event?: unknown) => void)({ type: 'change' })),
+	}
 }
 
 describe('usePageTheme', () => {
@@ -34,6 +38,7 @@ describe('usePageTheme', () => {
 		await nextTick()
 		await Promise.resolve()
 		expect(onChange).toHaveBeenCalledTimes(1)
+		expect(onChange).toHaveBeenCalledWith()
 
 		document.documentElement.setAttribute('data-rise-theme', 'corporate')
 		await Promise.resolve()
@@ -63,11 +68,14 @@ describe('usePageTheme', () => {
 		const onChange = vi.fn()
 		const { unmount } = render(defineComponent({ setup: () => (usePageTheme(onChange), () => h('div')) }))
 
+		const subscribed = query.addEventListener.mock.calls[0][1]
+		expect(subscribed).not.toBe(onChange)
 		change()
 		expect(onChange).toHaveBeenCalledTimes(1)
+		expect(onChange).toHaveBeenCalledWith()
 
 		unmount()
-		expect(query.removeEventListener).toHaveBeenCalledWith('change', onChange)
+		expect(query.removeEventListener).toHaveBeenCalledWith('change', subscribed)
 		expect(listeners.size).toBe(0)
 
 		document.documentElement.setAttribute('data-theme', 'dark')

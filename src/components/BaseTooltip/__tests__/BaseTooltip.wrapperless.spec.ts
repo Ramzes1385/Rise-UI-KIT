@@ -135,4 +135,22 @@ describe('BaseTooltip: доступное имя совпадает с текс�
 		await rerender({ text: 'Сохранить черновик' })
 		expect(button).toHaveAttribute('aria-describedby', screen.getByRole('tooltip').id)
 	})
+
+	it('имя содержит текст подсказки целым словом — описание не повторяет его; частичное совпадение и спецсимволы не считаются', async () => {
+		vi.useFakeTimers()
+		const { rerender } = render(BaseTooltip, {
+			props: { text: 'Instagram', isWrapperless: true },
+			slots: { default: '<a href="#" aria-label="Instagram: Анна">i</a>' },
+		})
+		const link = screen.getByRole('link')
+		link.focus()
+		await vi.advanceTimersByTimeAsync(200)
+		expect(link).not.toHaveAttribute('aria-describedby')
+
+		await rerender({ text: 'Insta' })
+		expect(link).toHaveAttribute('aria-describedby', screen.getByRole('tooltip').id)
+
+		await rerender({ text: 'C++ (Анна)' })
+		expect(link).toHaveAttribute('aria-describedby', screen.getByRole('tooltip').id)
+	})
 })

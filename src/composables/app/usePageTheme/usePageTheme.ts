@@ -19,17 +19,18 @@ const DARK_QUERY = '(prefers-color-scheme: dark)'
 export function usePageTheme(onChange: () => void, attributes: string[] = PAGE_THEME_ATTRIBUTES): void {
 	let observer: MutationObserver | null = null
 	let media: MediaQueryList | null = null
+	const notify = (): void => onChange()
 
 	onMounted(() => {
-		observer = new MutationObserver(onChange)
+		observer = new MutationObserver(notify)
 		observer.observe(document.documentElement, { attributes: true, subtree: true, attributeFilter: attributes })
 		media = typeof window.matchMedia === 'function' ? window.matchMedia(DARK_QUERY) : null
-		media?.addEventListener('change', onChange)
+		media?.addEventListener('change', notify)
 	})
 
 	onBeforeUnmount(() => {
 		observer?.disconnect()
-		media?.removeEventListener('change', onChange)
+		media?.removeEventListener('change', notify)
 		observer = null
 		media = null
 	})

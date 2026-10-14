@@ -10,7 +10,7 @@ const models = { textColor: 'modelValue' }
 
 const template = `
 	<div style="${CENTERED}">
-		<BaseColorPicker v-bind="args" v-model="textColor" trigger-variant="icon" has-indicator>
+		<BaseColorPicker v-bind="args" v-model="textColor">
 			<template #trigger>
 				<BaseIcon name="color-picker" :size-scale="80" />
 			</template>
@@ -19,7 +19,7 @@ const template = `
 `
 
 export const IconTrigger: StoryObj<typeof meta> = {
-	args: { modelValue: '#be123c' },
+	args: { modelValue: '#be123c', triggerVariant: 'icon', hasIndicator: true },
 	parameters: {
 		docs: {
 			description: {
