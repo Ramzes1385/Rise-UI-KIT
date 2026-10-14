@@ -71,6 +71,42 @@ describe('useRemoteSuggestions', () => {
 
 		expect(state.suggestions.value).toEqual([])
 		expect(state.isLoading.value).toBe(false)
+		expect(state.hasError.value).toBe(true)
+	})
+
+	it('новый запрос сбрасывает признак ошибки', async () => {
+		let attempt = 0
+		const { state } = setup(async () => {
+			if (attempt++ === 0) throw new Error('сеть')
+			return ['ок']
+		})
+		state.search('мос')
+		await vi.advanceTimersByTimeAsync(100)
+		expect(state.hasError.value).toBe(true)
+
+		state.search('моск')
+		expect(state.hasError.value).toBe(false)
+		await vi.advanceTimersByTimeAsync(100)
+		expect(state.suggestions.value).toEqual(['ок'])
+		expect(state.hasError.value).toBe(false)
+	})
+
+	it('reset отменяет идущий запрос и очищает список, загрузку и ошибку', async () => {
+		const signals: AbortSignal[] = []
+		const { state } = setup((_query, { signal }) => {
+			signals.push(signal)
+			return new Promise(() => undefined)
+		})
+		state.search('мос')
+		await vi.advanceTimersByTimeAsync(100)
+		expect(state.isLoading.value).toBe(true)
+
+		state.reset()
+
+		expect(signals[0].aborted).toBe(true)
+		expect(state.isLoading.value).toBe(false)
+		expect(state.suggestions.value).toEqual([])
+		expect(state.hasError.value).toBe(false)
 	})
 
 	it('отменённый запрос с ошибкой не трогает состояние', async () => {

@@ -13,6 +13,7 @@
 			:has-icon="hasIcon"
 			:has-clear="hasClear"
 			:is-loading="isBusy"
+			:empty-text="emptyText"
 			:visible-results="visibleResults"
 			:highlighted-index="highlightedIndex"
 			:should-show-results="shouldShowResults"
@@ -89,6 +90,7 @@
 					:visible-results="visibleResults"
 					:query="query"
 					:is-loading="isBusy"
+					:empty-text="emptyText"
 					:size-scale="sizeScale"
 					:highlighted-index="highlightedIndex"
 					:classes="classes"
@@ -189,6 +191,7 @@ const {
 	comboboxAttributes,
 	resultsStatus,
 	isBusy,
+	emptyText,
 	exposed,
 } = useBaseSearch(props, emit)
 

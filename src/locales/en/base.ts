@@ -6,6 +6,7 @@ export const enBase = {
 		MEGA_MENU_BACK: 'Back',
 		EMPTY: 'No data',
 		NO_RESULTS: 'Nothing found',
+		SEARCH_FAILED: 'Search failed. Try again',
 		SEARCH_PLACEHOLDER: 'Search...',
 		TODAY: 'Today',
 		LOADING: 'Loading...',

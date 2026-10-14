@@ -84,8 +84,12 @@ function useSearchSource(props: SearchProps) {
 	return {
 		results: computed((): SearchResult[] => (props.source ? remote.suggestions.value : props.results)),
 		isBusy: computed((): boolean => props.isLoading || (Boolean(props.source) && remote.isLoading.value)),
+		hasError: computed((): boolean => Boolean(props.source) && remote.hasError.value),
 		run: (query: string): void => {
 			if (props.source) remote.search(query)
+		},
+		reset: (): void => {
+			if (props.source) remote.reset()
 		},
 	}
 }
@@ -116,8 +120,10 @@ function useSearch(props: SearchProps, emit: BaseSearchEmits, inputs: ReturnType
 			},
 			focusActiveInput: inputs.focusActiveInput,
 			closeOverlay: inputs.closeOverlay,
+			onExternalChange: source.reset,
 		}),
 		isBusy: source.isBusy,
+		emptyText: computed((): string => (source.hasError.value ? UI_TEXT.SEARCH_FAILED : UI_TEXT.NO_RESULTS)),
 	}
 }
 
@@ -143,7 +149,7 @@ function useSearchA11y(props: SearchProps, search: ReturnType<typeof useSearch>)
 		resultsStatus: computed((): string => {
 			if (!search.query.value || search.isBusy.value) return ''
 			const count = search.visibleResults.value.length
-			return count ? pluralize(getLocale().plural.SEARCH_RESULTS, count) : UI_TEXT.NO_RESULTS
+			return count ? pluralize(getLocale().plural.SEARCH_RESULTS, count) : search.emptyText.value
 		}),
 	}
 }

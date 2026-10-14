@@ -20,11 +20,14 @@ function selectResult(ctx: SearchStateContext, item: SearchResult): void {
 /** Клавиши, которые двигают подсветку и выбирают пункт: при закрытом списке они ничего не выбирают */
 const LIST_KEYS = new Set(['ArrowDown', 'ArrowUp', 'Enter'])
 
-/** Описание: стрелка при закрытом списке открывает его снова (APG combobox), Enter без списка не перехватывается — форма отправится */
+/**
+ * Описание: стрелка при закрытом списке открывает его снова (APG combobox), Enter без списка не перехватывается — форма отправится.
+ * Если открывать нечего (поиск по Enter ещё не запускали), стрелка не гасится: курсор в поле движется как обычно.
+ */
 function reopenList(ctx: SearchStateContext, e: KeyboardEvent): void {
 	if (e.key === 'Enter' || ctx.query.value.length === 0) return
-	e.preventDefault()
 	ctx.isFocused.value = true
+	if (ctx.options.isInstant() || ctx.isSearchTriggered.value) e.preventDefault()
 }
 
 /** Описание: обработчики ввода, клавиатуры, очистки и закрытия списка */

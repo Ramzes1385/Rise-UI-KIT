@@ -73,7 +73,7 @@
 						variant="ghost"
 						:class="[ui('empty'), classes.empty]"
 						:custom-class="{ description: classes.emptyText }"
-						:description="UI_TEXT.NO_RESULTS"
+						:description="emptyText ?? UI_TEXT.NO_RESULTS"
 						:size-scale="sizeScale"
 						v-bind="motionAttrs" />
 				</Transition>

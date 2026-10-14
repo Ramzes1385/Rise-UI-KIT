@@ -43,6 +43,7 @@ function useSearchState(options: UseSearchStateOptions) {
 		ctx.debounce.cancel()
 		query.value = newValue
 		nav.reset()
+		options.onExternalChange?.()
 	})
 
 	return {

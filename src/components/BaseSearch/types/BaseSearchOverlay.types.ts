@@ -14,6 +14,8 @@ export interface BaseSearchOverlayProps extends BaseComponentProps<SearchVariant
 	hasIcon: boolean
 	hasClear: boolean
 	isLoading: boolean
+	/** Текст пустого состояния (ошибка источника или «Ничего не найдено») */
+	emptyText?: string
 	visibleResults: SearchResult[]
 	highlightedIndex: number
 	shouldShowResults: boolean

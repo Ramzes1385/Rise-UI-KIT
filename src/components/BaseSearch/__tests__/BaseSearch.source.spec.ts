@@ -132,7 +132,45 @@ describe('BaseSearch: source и защита от гонок ответов (SRC
 		requests[0].reject(new Error('network'))
 		await settle()
 		expect(optionTitles()).toEqual([])
+		expect(screen.queryByText('Ничего не найдено')).toBeNull()
+		expect(screen.getAllByText('Не удалось выполнить поиск. Попробуйте ещё раз').length).toBeGreaterThan(0)
+		expect(document.querySelector('.base-search__live')).toHaveTextContent('Не удалось выполнить поиск')
+	})
+
+	it('после ошибки следующий запрос снова показывает «Ничего не найдено» для пустого ответа', async () => {
+		const { source, requests } = createSource()
+		render(BaseSearch, { props: { source, debounceMs: 0 } })
+		await type('ка')
+		await vi.advanceTimersByTimeAsync(1)
+		requests[0].reject(new Error('network'))
+		await settle()
+		await type('кар')
+		await vi.advanceTimersByTimeAsync(1)
+		requests[1].resolve([])
+		await settle()
+		expect(screen.queryByText('Не удалось выполнить поиск. Попробуйте ещё раз')).toBeNull()
 		expect(screen.getAllByText('Ничего не найдено').length).toBeGreaterThan(0)
+	})
+
+	it('внешняя смена modelValue отменяет идущий запрос и сбрасывает загрузку', async () => {
+		const { source, requests } = createSource()
+		const { container, rerender } = render(BaseSearch, { props: { source, debounceMs: 0, modelValue: '' } })
+		await type('ка')
+		await vi.advanceTimersByTimeAsync(1)
+		expect(requests[0].signal.aborted).toBe(false)
+
+		await rerender({ source, debounceMs: 0, modelValue: 'другое' })
+		expect(requests[0].signal.aborted).toBe(true)
+		requests[0].resolve([item(1, 'Каток')])
+		await settle()
+		expect(optionTitles()).toEqual([])
+		expect(container.querySelector('.base-search--loading')).toBeNull()
+	})
+
+	it('внешняя смена modelValue без source ничего не отменяет и не падает', async () => {
+		const { rerender } = render(BaseSearch, { props: { results: [item(1, 'Каток')], modelValue: '' } })
+		await rerender({ results: [item(1, 'Каток')], modelValue: 'ка' })
+		expect(field()).toHaveValue('ка')
 	})
 
 	it('без instant источник вызывается по Enter', async () => {
@@ -185,6 +223,27 @@ describe('BaseSearch: клавиатура и закрытый список (SRC
 		expect(field()).toHaveAttribute('aria-expanded', 'true')
 		expect(field()).not.toHaveAttribute('aria-activedescendant')
 		expect(emitted().select).toBeUndefined()
+	})
+
+	it('без мгновенного поиска ↓ не гасится, пока Enter не запускал поиск: открывать нечего', async () => {
+		render(BaseSearch, { props: { modelValue: 'за', results: RESULTS, isInstant: false } })
+		await fireEvent.focus(field())
+		await fireEvent.blur(field())
+		const down = new KeyboardEvent('keydown', { key: 'ArrowDown', cancelable: true, bubbles: true })
+		field().dispatchEvent(down)
+		expect(down.defaultPrevented).toBe(false)
+	})
+
+	it('после запуска поиска по Enter ↓ при закрытом списке открывает его и гасится', async () => {
+		render(BaseSearch, { props: { modelValue: 'за', results: RESULTS, isInstant: false } })
+		await fireEvent.focus(field())
+		await fireEvent.keyDown(field(), { key: 'Enter' })
+		await fireEvent.blur(field())
+		const down = new KeyboardEvent('keydown', { key: 'ArrowDown', cancelable: true, bubbles: true })
+		field().dispatchEvent(down)
+		expect(down.defaultPrevented).toBe(true)
+		await nextTick()
+		expect(field()).toHaveAttribute('aria-expanded', 'true')
 	})
 
 	it('при закрытом списке Enter не выбирает скрытый пункт', async () => {

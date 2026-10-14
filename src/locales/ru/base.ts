@@ -7,6 +7,8 @@ export const ruBase = {
 		MEGA_MENU_BACK: 'Назад',
 		EMPTY: 'Нет данных',
 		NO_RESULTS: 'Ничего не найдено',
+		/** Источник поиска BaseSearch ответил ошибкой: это не «ничего не найдено» */
+		SEARCH_FAILED: 'Не удалось выполнить поиск. Попробуйте ещё раз',
 		SEARCH_PLACEHOLDER: 'Поиск...',
 		TODAY: 'Сегодня',
 		LOADING: 'Загрузка...',

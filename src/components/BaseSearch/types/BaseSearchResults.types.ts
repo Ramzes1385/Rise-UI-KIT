@@ -5,6 +5,8 @@ export interface BaseSearchResultsProps {
 	visibleResults: SearchResult[]
 	query: string
 	isLoading: boolean
+	/** Текст пустого состояния: «Ничего не найдено» или сообщение об ошибке источника */
+	emptyText?: string
 	sizeScale: number
 	highlightedIndex: number
 	classes: Record<string, string | undefined>

@@ -19,6 +19,8 @@ export interface UseSearchStateOptions {
 	}
 	focusActiveInput: () => void
 	closeOverlay: () => void
+	/** Внешняя смена `modelValue` (не ввод пользователя): идущий запрос источника отменяется */
+	onExternalChange?: () => void
 }
 
 /** Отложенный запуск поиска при мгновенном режиме */

@@ -59,6 +59,7 @@
 					:visible-results="visibleResults"
 					:query="modelValue"
 					:is-loading="isLoading"
+					:empty-text="emptyText"
 					:size-scale="sizeScale"
 					:highlighted-index="highlightedIndex"
 					:classes="classes"
