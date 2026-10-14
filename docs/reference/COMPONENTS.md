@@ -3012,6 +3012,8 @@ import { BaseAnimation } from '@ramzes1385/rise-ui-kit'
 </template>
 ```
 
+`name` — пресет (`fade`, `slide-up`, `scale`, `collapse`, `list`…); Vue-классы перехода получают префикс: `name="fade"` → `.rise-fade-enter-active`, `.rise-fade-leave-to` и т. д.
+
 ---
 
 ## BaseAnchor

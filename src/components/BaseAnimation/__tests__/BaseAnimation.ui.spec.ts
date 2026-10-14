@@ -44,3 +44,20 @@ describe('BaseAnimation: проп ui', () => {
 		expect(container.querySelector('.base-animation__inner')).toHaveAttribute('class', 'base-animation__inner app-inner own-inner')
 	})
 })
+
+describe('BaseAnimation: префикс классов переходов', () => {
+	it.each(['fade', 'slide-up', 'collapse', 'list'] as const)('Transition получает имя rise-%s', name => {
+		const { container } = render(BaseAnimation, { props: { name }, slots: SLOT })
+
+		expect(container.querySelector('transition-stub')).toHaveAttribute('name', `rise-${name}`)
+	})
+
+	it('в режиме isGroup TransitionGroup тоже получает имя с префиксом', () => {
+		const { container } = render(BaseAnimation, {
+			props: { isGroup: true, name: 'list', tag: 'ul' },
+			slots: { default: '<li key="1">Первый</li>' },
+		})
+
+		expect(container.querySelector('transition-group-stub')).toHaveAttribute('name', 'rise-list')
+	})
+})

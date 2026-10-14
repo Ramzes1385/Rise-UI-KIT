@@ -423,3 +423,5 @@
 ## Задача text-anim
 
 - BaseText: `weight` по умолчанию не задан, `font-weight` не пишется inline — вес идёт от тега, родителя и CSS приложения (`h1`–`h6`, `strong` жирные). Токен `--rise-text-font-weight` удалён. Вернуть прежнее: `defaults.BaseText.weight: 400` (подробности — MIGRATION, «Задача text-anim»).
+
+- BaseAnimation: Vue-классы переходов получили префикс — `.fade-enter-active` → `.rise-fade-enter-active`, `.list-move` → `.rise-list-move` и так далее (таблица — MIGRATION, «Задача text-anim»). Проп `name` прежний. Если приложение стилизовало эти глобальные классы, добавьте `rise-`.

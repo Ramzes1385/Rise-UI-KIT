@@ -445,8 +445,8 @@
 ### 6.4. Рецепты
 
 ```scss
-// Появление на токенах: классы fade-enter-active… для <Transition name="fade">
-@include enter-fade('fade');
+// Появление на токенах: классы my-fade-enter-active… для <Transition name="my-fade">; имя — с префиксом компонента (`base-x-…`, у BaseAnimation — `rise-`), без голых `fade`/`list`
+@include enter-fade('my-fade');
 @include enter-slide('panel', up);
 @include enter-pop('badge');
 

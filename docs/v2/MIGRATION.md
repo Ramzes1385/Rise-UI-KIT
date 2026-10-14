@@ -3021,3 +3021,20 @@ BaseEditor, замечания проверки по диалогу ссылки
 - **Что заметит приложение:** BaseText с тегом `h1`–`h6` или `strong` без `weight` стал жирным (браузерный вес тега); BaseText внутри жирного родителя наследует его вес; CSS приложения по `.base-text` или своему классу больше не перебивается inline.
 - **Внутри кита:** заголовок BaseNotification раньше брал вес через локальную переменную `--text-weight`; теперь это обычное `font-weight` в стиле карточки, токен `--rise-notification-title-font-weight` работает как прежде. Остальные компоненты, где вес нужен (BaseAlert, BaseCard, BaseModal…), передают `weight` явно.
 - **DOM:** в `style` корня BaseText больше нет `font-weight: var(--text-weight)`; тесты, искавшие эту строку, замените на проверку отсутствия `font-weight` или явного числа.
+
+### BaseAnimation: классы переходов с префиксом `rise-` (ломающее, FOLLOW_UPS № 25)
+
+- **Проп `name` не менялся:** `fade`, `slide-up`, `slide-down`, `slide-left`, `slide-right`, `scale`, `bounce`, `rotate`, `flip`, `zoom`, `collapse`, `list` — шаблоны приложений править не нужно. Меняются только имена CSS-классов, которые Vue ставит на элемент (имя `Transition` теперь `rise-<name>`).
+- **Было → стало** (то же для `-enter-from`, `-enter-to`, `-leave-active`, `-leave-from`, `-leave-to`; у `list` ещё `-move`):
+
+| Было | Стало |
+|---|---|
+| `.fade-enter-active` … | `.rise-fade-enter-active` … |
+| `.slide-up-*`, `.slide-down-*`, `.slide-left-*`, `.slide-right-*` | `.rise-slide-up-*`, `.rise-slide-down-*`, `.rise-slide-left-*`, `.rise-slide-right-*` |
+| `.scale-*`, `.bounce-*`, `.rotate-*`, `.flip-*`, `.zoom-*` | `.rise-scale-*`, `.rise-bounce-*`, `.rise-rotate-*`, `.rise-flip-*`, `.rise-zoom-*` |
+| `.collapse-*` | `.rise-collapse-*` |
+| `.list-enter-active`, `.list-leave-active`, `.list-move` … | `.rise-list-enter-active`, `.rise-list-leave-active`, `.rise-list-move` … |
+
+- **Что сделать:** если CSS приложения переопределял или использовал эти глобальные классы (например, `.fade-enter-active { transition-duration: 1s }`) — добавьте префикс. Собственные `<Transition name="fade">` приложения кит больше не стилизует: классов `.fade-*` у него нет, нужен свой CSS или `name="rise-fade"`.
+- **Внутри кита:** других мест с голыми глобальными классами нет — остальные переходы используют классы с префиксом компонента (`base-…-enter-active`). Миксины `enter-fade`/`enter-slide`/`enter-scale` принимают имя как раньше.
+- **`collapse`:** высота раскрывается строкой сетки `0fr ↔ 1fr` без `interpolate-size`, поэтому Firefox и Safari не прыгают (исправлено ранее, раздел про `.base-animation__inner`).
