@@ -159,6 +159,10 @@ describe('paginationUtils', () => {
 			}
 		})
 
+		it('нечисловая текущая считается первой страницей', () => {
+			expect(calcVisiblePages({ current: Number.NaN, total: 20 })).toEqual(calcVisiblePages({ current: 1, total: 20 }))
+		})
+
 		it('текущая вне диапазона сжимается до края', () => {
 			expect(calcVisiblePages({ current: 99, total: 20 })).toEqual(calcVisiblePages({ current: 20, total: 20 }))
 			expect(calcVisiblePages({ current: 0, total: 20 })).toEqual(calcVisiblePages({ current: 1, total: 20 }))

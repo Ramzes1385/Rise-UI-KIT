@@ -11,12 +11,12 @@ import { useSlidingIndicator } from '@composables/interaction/useSlidingIndicato
 import { calcTotalPages, calcVisiblePages } from '@utils/navigation/paginationUtils'
 import type { BasePaginationEmits, PaginationProps } from '../types/BasePagination.types'
 
-function usePagesIndicator(props: PaginationProps, getPages: () => (number | '...')[]) {
+function usePagesIndicator(getCurrent: () => number, getPages: () => (number | '...')[]) {
 	const pagesRef = shallowRef<HTMLElement | null>(null)
 	const indicator = useSlidingIndicator(pagesRef, () =>
 		getPages()
 			.filter(page => page !== '...')
-			.indexOf(props.modelValue),
+			.indexOf(getCurrent()),
 	)
 	const motion = useMotion(pagesRef)
 
@@ -32,9 +32,13 @@ function usePagesIndicator(props: PaginationProps, getPages: () => (number | '..
 
 export function useBasePagination(props: PaginationProps, emit: BasePaginationEmits) {
 	const totalPages = computed(() => calcTotalPages(props.total, props.pageSize))
+	const currentPage = computed(() => {
+		const page = Number.isNaN(props.modelValue) ? 1 : props.modelValue
+		return Math.min(Math.max(Math.trunc(page), 1), Math.max(totalPages.value, 1))
+	})
 	const pages = computed(() =>
 		calcVisiblePages({
-			current: props.modelValue,
+			current: currentPage.value,
 			total: totalPages.value,
 			maxVisible: props.maxVisible,
 			showLastPage: props.showLastPage,
@@ -50,15 +54,20 @@ export function useBasePagination(props: PaginationProps, emit: BasePaginationEm
 		...useSizeScale({ getScale: () => props.sizeScale }),
 		...useCustomColor({ getColor: () => props.color }),
 		...useCustomClass({ getClass: () => props.customClass, elementKeys: ['root', 'prev', 'next', 'pages', 'button', 'ellipsis'] }),
-		...usePagesIndicator(props, () => pages.value),
+		...usePagesIndicator(
+			() => currentPage.value,
+			() => pages.value,
+		),
 		ui: useUi(props, 'base-pagination'),
 		pages,
+		currentPage,
 		inactivePageVariant: computed(() => (props.variant === DEFAULT_VARIANT ? 'ghost' : props.variant)),
-		isPrevDisabled: computed(() => props.modelValue <= 1 || totalPages.value < 1),
-		isNextDisabled: computed(() => props.modelValue >= totalPages.value),
+		isPrevDisabled: computed(() => currentPage.value <= 1 || totalPages.value < 1),
+		isNextDisabled: computed(() => currentPage.value >= totalPages.value),
 		navLabel: computed(() => props.ariaLabel ?? UI_ARIA.PAGINATION),
 		pageLabel: (page: number): string => formatMessage(UI_ARIA.PAGINATION_PAGE, { page }),
 		changePage,
-		goToPrevPage: () => changePage(Math.min(props.modelValue - 1, totalPages.value)),
+		goToPrevPage: () => changePage(currentPage.value - 1),
+		goToNextPage: () => changePage(currentPage.value + 1),
 	}
 }

@@ -848,6 +848,19 @@ describe('useSwipe', () => {
 			expect(onDragEnd).not.toHaveBeenCalled()
 		})
 
+		it('начатый вдоль оси свайп не обрывается, когда поперечный сдвиг стал больше продольного', () => {
+			const onDragEnd = vi.fn()
+			const swipe = withSetup(() => useSwipe({ isVertical: () => false, onDragEnd }))
+
+			swipe.onTouchStart(createTouchEvent('touchstart', [{ clientX: 200, clientY: 100 }]))
+			swipe.onTouchMove(createTouchEvent('touchmove', [{ clientX: 160, clientY: 105 }]))
+			swipe.onTouchMove(createTouchEvent('touchmove', [{ clientX: 120, clientY: 200 }]))
+
+			expect(swipe.isDragging.value).toBe(true)
+			swipe.onTouchEnd(createTouchEvent('touchend', [{ clientX: 120, clientY: 200 }]))
+			expect(onDragEnd).toHaveBeenCalledTimes(1)
+		})
+
 		it('небольшое поперечное смещение (до 10px) жест не прерывает', () => {
 			const swipe = withSetup(() => useSwipe({ isVertical: () => false }))
 

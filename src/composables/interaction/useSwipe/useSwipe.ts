@@ -154,22 +154,22 @@ function createDragSession(options: UseSwipeOptions): SwipeDragSession {
 
 /**
  * Обработчики касаний: начало, движение (смещение не чаще кадра), отпускание и прерывание системой (touchcancel — без свайпа).
- * Когда касание ушло дальше `AXIS_LOCK_SLOP`, а поперёк оси свайпа — дальше, чем вдоль, жест прерывается: дальше прокручивается страница
+ * Ось фиксируется, когда касание ушло дальше `AXIS_LOCK_SLOP`: вдоль оси свайпа — жест продолжается до конца, как бы ни
+ * сместились пальцы поперёк; поперёк — жест прерывается, дальше прокручивается страница
  */
 function createTouchHandlers(session: SwipeDragSession) {
-	let isCrossAxis = false
+	let axis: 'main' | 'cross' | null = null
 	return {
 		onTouchStart: (event: TouchEvent): void => {
-			isCrossAxis = false
+			axis = null
 			session.begin(toPoint(event.touches[0]))
 		},
 		onTouchMove: (event: TouchEvent): void => {
-			if (!session.isDragging.value || isCrossAxis) return
+			if (!session.isDragging.value || axis === 'cross') return
 			const delta = session.deltaAt(toPoint(event.touches[0]))
-			if (Math.abs(delta.cross) > Math.abs(delta.main) && Math.abs(delta.cross) > AXIS_LOCK_SLOP) {
-				isCrossAxis = true
-				session.abort()
-				return
+			if (axis === null && Math.max(Math.abs(delta.main), Math.abs(delta.cross)) > AXIS_LOCK_SLOP) {
+				axis = Math.abs(delta.cross) > Math.abs(delta.main) ? 'cross' : 'main'
+				if (axis === 'cross') return session.abort()
 			}
 			session.scheduleOffset(() => delta.main)
 		},

@@ -86,11 +86,11 @@ describe('BasePagination: индикатор текущей страницы', (
 		expect(pages(container).style.getPropertyValue('--indicator-x')).toBe('40px')
 	})
 
-	it('страница вне диапазона — индикатора нет', async () => {
+	it('страница вне диапазона — индикатор стоит на прижатой текущей', async () => {
 		const { container } = render(BasePagination, { props: { modelValue: 99, total: 50 } })
 		await nextTick()
 
-		expect(indicator(container)).toBeNull()
+		expect(indicator(container)).not.toBeNull()
 	})
 
 	it('пресет data-rise-motion="none" — индикатор сразу на месте', async () => {

@@ -1,4 +1,6 @@
+import { formatMessage } from '@/locales'
 import type { ComputedRef, Ref } from 'vue'
+import { UI_ARIA } from '@/locales/messages'
 import { useUi } from '@composables/base/useUi'
 import { useAutoClose } from './useNotificationTimers'
 import type { UiClassFn } from '@composables/base/useUi'
@@ -17,6 +19,7 @@ import type {
 	NotificationAction,
 	NotificationId,
 	NotificationItem,
+	NotificationPosition,
 } from '../types/BaseNotification.types'
 
 export const DEFAULT_DURATION = 3000
@@ -47,6 +50,21 @@ function useNotificationLook(props: BaseNotificationProps, list: ComputedRef<Not
 		animationClass: computed(() => `base-notification-item--animation-${props.animation ?? 'scale'}`),
 		themeAttrs: useOwnThemeAttrs(() => list.value.length > 0),
 	}
+}
+
+const AREA_POSITION_NAMES = {
+	'top-left': () => UI_ARIA.NOTIFICATIONS_TOP_LEFT,
+	'top-right': () => UI_ARIA.NOTIFICATIONS_TOP_RIGHT,
+	'top-center': () => UI_ARIA.NOTIFICATIONS_TOP_CENTER,
+	'bottom-left': () => UI_ARIA.NOTIFICATIONS_BOTTOM_LEFT,
+	'bottom-right': () => UI_ARIA.NOTIFICATIONS_BOTTOM_RIGHT,
+	'bottom-center': () => UI_ARIA.NOTIFICATIONS_BOTTOM_CENTER,
+} satisfies Record<NotificationPosition, () => string>
+
+function resolveAreaLabel(props: BaseNotificationProps, areaCount: number, position: NotificationPosition): string {
+	const label = props.ariaLabel ?? UI_ARIA.NOTIFICATIONS
+	if (areaCount < 2) return label
+	return formatMessage(UI_ARIA.NOTIFICATIONS_AREA, { label, position: AREA_POSITION_NAMES[position]() })
 }
 
 function resolveDuration(duration: number | undefined): number {
@@ -170,6 +188,7 @@ export function useBaseNotification(props: BaseNotificationProps, emit: BaseNoti
 	const { isFocusWithin } = autoClose
 
 	useDeclaredNotification(props, add, update)
+	watch(store.groups, groups => autoClose.retainAreas(new Set(groups.map(group => group.position))))
 
 	return {
 		...standard,
@@ -180,6 +199,8 @@ export function useBaseNotification(props: BaseNotificationProps, emit: BaseNoti
 		...view,
 		...useNotificationItemView(props, standard),
 		isHovered: autoClose.isHovered,
+		setHovered: autoClose.setHovered,
+		getAreaLabel: (position: NotificationPosition): string => resolveAreaLabel(props, store.groups.value.length, position),
 		isFocusWithin,
 		isPaused: autoClose.isPaused,
 		handleFocusOut(event: FocusEvent): void {

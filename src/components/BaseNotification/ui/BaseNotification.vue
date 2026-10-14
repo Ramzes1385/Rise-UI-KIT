@@ -11,9 +11,9 @@
 			:style="sizeScaleStyle"
 			v-bind="themeAttrs"
 			role="region"
-			:aria-label="ariaLabel ?? UI_ARIA.NOTIFICATIONS"
-			@mouseenter="isHovered = true"
-			@mouseleave="isHovered = false"
+			:aria-label="getAreaLabel(group.position)"
+			@mouseenter="setHovered(group.position, true)"
+			@mouseleave="setHovered(group.position, false)"
 			@focusin="isFocusWithin = true"
 			@focusout="handleFocusOut">
 			<TransitionGroup name="base-notification" tag="div" :class="ui('list')">
@@ -131,7 +131,8 @@ const {
 	getDuration,
 	getTimerKey,
 	getVariantClass,
-	isHovered,
+	setHovered,
+	getAreaLabel,
 	isFocusWithin,
 	isPaused,
 	handleFocusOut,

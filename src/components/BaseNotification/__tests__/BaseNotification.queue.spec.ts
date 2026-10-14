@@ -175,6 +175,49 @@ describe('BaseNotification: поля add() (NTF-6)', () => {
 		expect(items()).toHaveLength(0)
 		wrapper.unmount()
 	})
+
+	it('наведение держит паузу своей области; закрытие под указателем последнего уведомления её снимает', async () => {
+		vi.useFakeTimers()
+		const wrapper = open({ position: 'top-left' })
+		wrapper.vm.add({ title: 'Слева', duration: 3000 })
+		const id = wrapper.vm.add({ title: 'Внизу', position: 'bottom-left', duration: 60000 })
+		await nextTick()
+		document.querySelector('.base-notification--bottom-left')!.dispatchEvent(new MouseEvent('mouseenter'))
+		await nextTick()
+		await vi.advanceTimersByTimeAsync(5000)
+		expect(titles()).toEqual(expect.arrayContaining(['Слева', 'Внизу']))
+		expect(items()).toHaveLength(2)
+
+		wrapper.vm.remove(id)
+		await vi.advanceTimersByTimeAsync(10)
+		await vi.advanceTimersByTimeAsync(3100)
+		expect(items()).toHaveLength(0)
+		wrapper.unmount()
+	})
+
+	it('несколько областей получают разные имена с положением, одна область — прежнее имя', async () => {
+		const wrapper = open({ position: 'top-left' })
+		wrapper.vm.add({ title: 'Слева', duration: 60000 })
+		await nextTick()
+		expect(document.querySelector('.base-notification')).toHaveAttribute('aria-label', 'Уведомления')
+
+		wrapper.vm.add({ title: 'Внизу', position: 'bottom-center', duration: 60000 })
+		await nextTick()
+		const labels = Array.from(document.querySelectorAll('.base-notification')).map(region => region.getAttribute('aria-label'))
+		expect(labels.sort()).toEqual(['Уведомления: вверху слева', 'Уведомления: внизу по центру'])
+		wrapper.unmount()
+	})
+
+	it('все шесть положений и свой ariaLabel дают уникальные имена', async () => {
+		const wrapper = open({ position: 'top-right', ariaLabel: 'Почта' })
+		for (const position of ['top-right', 'top-center', 'top-left', 'bottom-left', 'bottom-right', 'bottom-center'] as const)
+			wrapper.vm.add({ title: position, position, duration: 60000 })
+		await nextTick()
+		const labels = Array.from(document.querySelectorAll('.base-notification')).map(region => region.getAttribute('aria-label'))
+		expect(new Set(labels).size).toBe(6)
+		expect(labels).toContain('Почта: внизу слева')
+		wrapper.unmount()
+	})
 })
 
 describe('BaseNotification: очередь (NTF-8)', () => {

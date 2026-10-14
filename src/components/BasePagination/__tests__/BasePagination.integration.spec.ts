@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/vitest'
+import { UI_ARIA } from '@/locales/messages'
 import userEvent from '@testing-library/user-event'
 import BasePagination from '../ui/BasePagination.vue'
 import { render, screen } from '@testing-library/vue'
@@ -95,7 +96,7 @@ describe('BasePagination integration', () => {
 	})
 
 	describe('страница за пределами диапазона', () => {
-		it('«назад» ведёт на последнюю существующую страницу, если modelValue больше totalPages', async () => {
+		it('«назад» отсчитывает от прижатой текущей страницы, если modelValue больше totalPages', async () => {
 			const user = userEvent.setup()
 			const { container, emitted } = render(BasePagination, {
 				props: { modelValue: 5, total: 30, pageSize: 10 },
@@ -104,7 +105,7 @@ describe('BasePagination integration', () => {
 			const [prevButton] = container.querySelectorAll<HTMLButtonElement>('.base-pagination > button')
 			await user.click(prevButton)
 
-			expect(emitted()['update:modelValue']).toEqual([[3]])
+			expect(emitted()['update:modelValue']).toEqual([[2]])
 		})
 
 		it('«вперёд» заблокирована, если modelValue больше totalPages', () => {
@@ -221,6 +222,33 @@ describe('BasePagination integration', () => {
 			await user.keyboard('{Enter}')
 
 			expect(emitted('change')).toEqual([[1]])
+		})
+
+		it('modelValue за краем: текущая — прижатая страница, «назад» ведёт на предыдущую от неё, «вперёд» выключена', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BasePagination, { props: { modelValue: 99, total: 200, pageSize: 10 } })
+
+			expect(screen.getByRole('button', { name: 'Страница 20' })).toHaveAttribute('aria-current', 'page')
+			expect(screen.getByRole('button', { name: UI_ARIA.PAGINATION_NEXT })).toHaveAttribute('aria-disabled', 'true')
+			await user.click(screen.getByRole('button', { name: UI_ARIA.PAGINATION_PREV }))
+
+			expect(emitted('change')).toEqual([[19]])
+		})
+
+		it('клик по прижатой текущей странице возвращает родителю допустимое значение', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BasePagination, { props: { modelValue: 99, total: 200, pageSize: 10 } })
+
+			await user.click(screen.getByRole('button', { name: 'Страница 20' }))
+
+			expect(emitted('update:modelValue')).toEqual([[20]])
+		})
+
+		it('modelValue=0 и NaN: текущая — первая, «назад» выключена', () => {
+			render(BasePagination, { props: { modelValue: Number.NaN, total: 50, pageSize: 10 } })
+
+			expect(screen.getByRole('button', { name: 'Страница 1' })).toHaveAttribute('aria-current', 'page')
+			expect(screen.getByRole('button', { name: UI_ARIA.PAGINATION_PREV })).toHaveAttribute('aria-disabled', 'true')
 		})
 
 		it('без showLastPage на последней странице окно доходит до неё (PG-4)', () => {

@@ -23,10 +23,10 @@
 			<template v-for="(page, index) in pages" :key="page === '...' ? `ellipsis-${index}` : page">
 				<BaseButton
 					v-if="page !== '...'"
-					:variant="modelValue === page ? DEFAULT_VARIANT : inactivePageVariant"
-					:class="[ui('page'), { 'base-pagination__page--current': modelValue === page }]"
+					:variant="currentPage === page ? DEFAULT_VARIANT : inactivePageVariant"
+					:class="[ui('page'), { 'base-pagination__page--current': currentPage === page }]"
 					data-indicator-item
-					:aria-current="modelValue === page ? 'page' : undefined"
+					:aria-current="currentPage === page ? 'page' : undefined"
 					:aria-label="pageLabel(page)"
 					:size-scale="sizeScale"
 					:custom-class="classes.button"
@@ -45,7 +45,7 @@
 			:size-scale="sizeScale"
 			:custom-class="classes.next"
 			:aria-label="UI_ARIA.PAGINATION_NEXT"
-			@click="changePage(modelValue + 1)">
+			@click="goToNextPage">
 			<BaseIcon name="chevron-right" :size-scale="calcIconScale('md', sizeScale)" />
 		</BaseButton>
 	</nav>
@@ -87,6 +87,7 @@ const {
 	customColorStyle,
 	classes,
 	pages,
+	currentPage,
 	inactivePageVariant,
 	isPrevDisabled,
 	isNextDisabled,
@@ -94,5 +95,6 @@ const {
 	pageLabel,
 	changePage,
 	goToPrevPage,
+	goToNextPage,
 } = useBasePagination(props, emit)
 </script>

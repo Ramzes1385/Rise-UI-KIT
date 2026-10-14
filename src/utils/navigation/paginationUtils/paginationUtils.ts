@@ -65,13 +65,13 @@ function minVisible(showLastPage: boolean): number {
  * Между разрывами вставляет '...'.
  * `maxVisible` — сколько номеров показать (многоточия не считаются): меньше трёх (без последней страницы — двух) и дробное
  * значение приводятся к наименьшему, при котором видна текущая страница; при чётном числе лишний номер окна — слева от текущей.
- * Текущая страница вне диапазона 1…total сжимается до края.
+ * Текущая страница вне диапазона 1…total сжимается до края, нечисловая (`NaN`) считается первой.
  */
 function calcVisiblePages(options: VisiblePagesOptions): VisiblePageItem[] {
 	const { total } = options
 	const showLastPage = options.showLastPage ?? true
 	const maxVisible = Math.max(Math.floor(options.maxVisible ?? 7) || 0, minVisible(showLastPage))
-	const current = Math.min(Math.max(options.current, 1), total)
+	const current = Math.min(Math.max(Number.isNaN(options.current) ? 1 : options.current, 1), total)
 
 	if (total <= 0) return []
 

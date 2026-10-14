@@ -1,6 +1,12 @@
 import type { ComputedRef } from 'vue'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
-import type { AutoCloseTimer, NotificationId, NotificationItem, NotificationTimerView } from '../types/BaseNotification.types'
+import type {
+	AutoCloseTimer,
+	NotificationId,
+	NotificationItem,
+	NotificationPosition,
+	NotificationTimerView,
+} from '../types/BaseNotification.types'
 
 function createTimers(onExpire: (id: NotificationId) => void) {
 	const timers = new Map<NotificationId, AutoCloseTimer>()
@@ -42,9 +48,21 @@ export function useAutoClose(
 	onExpire: (id: NotificationId) => void,
 ) {
 	const clock = createTimers(onExpire)
-	const isHovered = ref(false)
+	const hoveredAreas = ref<ReadonlySet<NotificationPosition>>(new Set())
+	const isHovered = computed(() => hoveredAreas.value.size > 0)
 	const isFocusWithin = ref(false)
 	const isPaused = computed(() => isHovered.value || isFocusWithin.value)
+
+	const setHovered = (position: NotificationPosition, isHoveredNow: boolean): void => {
+		const next = new Set(hoveredAreas.value)
+		if (isHoveredNow) next.add(position)
+		else next.delete(position)
+		hoveredAreas.value = next
+	}
+	const retainAreas = (positions: ReadonlySet<NotificationPosition>): void => {
+		const next = new Set([...hoveredAreas.value].filter(position => positions.has(position)))
+		if (next.size !== hoveredAreas.value.size) hoveredAreas.value = next
+	}
 
 	const startTimer = (notification: NotificationItem, key: string): void => {
 		const timer: AutoCloseTimer = { key, remaining: view.getDuration(notification), startedAt: 0, timeout: null }
@@ -63,7 +81,7 @@ export function useAutoClose(
 			if (!shown.has(id)) clock.clearTimer(id)
 		}
 		if (visible.value.length === 0) {
-			isHovered.value = false
+			hoveredAreas.value = new Set()
 			isFocusWithin.value = false
 		}
 	}
@@ -72,5 +90,5 @@ export function useAutoClose(
 	watch(isPaused, clock.setPaused)
 	onBeforeUnmount(clock.clearAll)
 
-	return { isHovered, isFocusWithin, isPaused, syncTimers, clearTimer: clock.clearTimer }
+	return { isHovered, setHovered, retainAreas, isFocusWithin, isPaused, syncTimers, clearTimer: clock.clearTimer }
 }
