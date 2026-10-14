@@ -13,9 +13,20 @@ interface EditorVm {
 }
 
 function dataEvent(type: 'paste' | 'drop', data: Record<string, string>): Event {
-	const event = new Event(type, { bubbles: true, cancelable: true })
-	const store = { getData: (format: string) => data[format] ?? '' }
-	Object.defineProperty(event, type === 'paste' ? 'clipboardData' : 'dataTransfer', { value: store })
+	const event = new InputEvent('beforeinput', {
+		bubbles: true,
+		cancelable: true,
+		inputType: type === 'paste' ? 'insertFromPaste' : 'insertFromDrop',
+	})
+	Object.defineProperty(event, 'dataTransfer', { value: { getData: (format: string) => data[format] ?? '' } })
+	return event
+}
+
+function dropAt(content: HTMLElement, html: string, targets: StaticRange[] = []): Event {
+	content.dispatchEvent(new MouseEvent('drop', { bubbles: true, clientX: 12, clientY: 34 }))
+	const event = dataEvent('drop', { 'text/html': html })
+	Object.defineProperty(event, 'getTargetRanges', { value: () => targets })
+	content.dispatchEvent(event)
 	return event
 }
 
@@ -30,22 +41,43 @@ describe('BaseEditor: модель редактора', () => {
 	it('вставка в режиме чтения и без данных буфера не меняет текст', () => {
 		render(BaseEditor, { props: { isReadonly: true }, global })
 		const content = screen.getByRole('textbox')
-		vi.mocked(document.execCommand).mockClear()
 
 		const locked = dataEvent('paste', { 'text/plain': 'текст' })
 		content.dispatchEvent(locked)
-		const withoutData = new Event('paste', { bubbles: true, cancelable: true })
+		const withoutData = new InputEvent('beforeinput', { bubbles: true, cancelable: true, inputType: 'insertFromPaste' })
 		content.dispatchEvent(withoutData)
 
 		expect(locked.defaultPrevented).toBe(false)
 		expect(withoutData.defaultPrevented).toBe(false)
-		expect(document.execCommand).not.toHaveBeenCalled()
+		expect(content.textContent).toBe('')
+	})
+
+	it('другие виды ввода (набор, удаление) обработчик вставки не трогает', () => {
+		render(BaseEditor, { props: { modelValue: '<p>Текст</p>' }, global })
+		const content = screen.getByRole('textbox')
+		const typing = new InputEvent('beforeinput', { bubbles: true, cancelable: true, inputType: 'insertText', data: 'a' })
+
+		content.dispatchEvent(typing)
+
+		expect(typing.defaultPrevented).toBe(false)
+	})
+
+	it('перетаскивание HTML вставляется в место из targetRanges события beforeinput', () => {
+		render(BaseEditor, { props: { modelValue: '<p>Текст</p>' }, global })
+		const content = screen.getByRole('textbox')
+		const text = content.querySelector('p')?.firstChild as Text
+		const target = new StaticRange({ startContainer: text, startOffset: 2, endContainer: text, endOffset: 2 })
+
+		const event = dropAt(content, '<b>вставка</b>', [target])
+
+		expect(event.defaultPrevented).toBe(true)
+		expect(content.innerHTML).toBe('<p>Те<b>вставка</b>кст</p>')
 	})
 
 	it.each([
 		['caretRangeFromPoint', 'caretRangeFromPoint'],
 		['caretPositionFromPoint', 'caretPositionFromPoint'],
-	])('перетаскивание HTML ставит каретку в точку сброса (%s)', (_name, api) => {
+	])('без targetRanges место сброса берётся по координатам drop (%s)', (_name, api) => {
 		render(BaseEditor, { props: { modelValue: '<p>Текст</p>' }, global })
 		const content = screen.getByRole('textbox')
 		const text = content.querySelector('p')?.firstChild as Text
@@ -57,20 +89,41 @@ describe('BaseEditor: модель редактора', () => {
 			Object.defineProperty(document, api, { configurable: true, value: vi.fn(() => ({ offsetNode: text, offset: 2 })) })
 		}
 
-		content.dispatchEvent(dataEvent('drop', { 'text/html': '<b>вставка</b>' }))
+		dropAt(content, '<b>вставка</b>')
 
-		expect(window.getSelection()?.anchorOffset).toBe(2)
-		expect(document.execCommand).toHaveBeenLastCalledWith('insertHTML', false, '<b>вставка</b>')
+		expect(document[api as 'caretRangeFromPoint']).toHaveBeenCalledWith(12, 34)
+		expect(content.innerHTML).toBe('<p>Те<b>вставка</b>кст</p>')
 	})
 
 	it('перетаскивание без позиции в документе вставляет HTML в текущее выделение', () => {
-		render(BaseEditor, { global })
+		render(BaseEditor, { props: { modelValue: '<p>Текст</p>' }, global })
 		const content = screen.getByRole('textbox')
+		const text = content.querySelector('p')?.firstChild as Text
+		const current = document.createRange()
+		current.setStart(text, 0)
+		current.collapse(true)
+		window.getSelection()?.removeAllRanges()
+		window.getSelection()?.addRange(current)
 		Object.defineProperty(document, 'caretPositionFromPoint', { configurable: true, value: vi.fn(() => null) })
 
-		content.dispatchEvent(dataEvent('drop', { 'text/html': '<i>x</i>' }))
+		dropAt(content, '<i>x</i>')
 
-		expect(document.execCommand).toHaveBeenLastCalledWith('insertHTML', false, '<i>x</i>')
+		expect(content.innerHTML).toBe('<p><i>x</i>Текст</p>')
+	})
+
+	it('перетаскивание без позиции и без доступных API ставит HTML в текущее выделение', () => {
+		render(BaseEditor, { props: { modelValue: '<p>Текст</p>' }, global })
+		const content = screen.getByRole('textbox')
+		const text = content.querySelector('p')?.firstChild as Text
+		const current = document.createRange()
+		current.setStart(text, 5)
+		current.collapse(true)
+		window.getSelection()?.removeAllRanges()
+		window.getSelection()?.addRange(current)
+
+		dropAt(content, '<i>x</i>')
+
+		expect(content.innerHTML).toBe('<p>Текст<i>x</i></p>')
 	})
 
 	it('кнопка «Ссылка» открывает диалог вместо prompt', async () => {

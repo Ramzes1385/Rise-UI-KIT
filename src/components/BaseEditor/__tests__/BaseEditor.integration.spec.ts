@@ -105,23 +105,14 @@ describe('BaseEditor integration', () => {
 	})
 
 	describe('очистка HTML', () => {
-		function createPasteEvent(data: Record<string, string>): Event {
-			const event = new Event('paste', { bubbles: true, cancelable: true })
-			Object.defineProperty(event, 'clipboardData', { value: { getData: (type: string) => data[type] ?? '' } })
+		function createInputEvent(inputType: string, data: Record<string, string>): InputEvent {
+			const event = new InputEvent('beforeinput', { bubbles: true, cancelable: true, inputType })
+			Object.defineProperty(event, 'dataTransfer', { value: { getData: (type: string) => data[type] ?? '' } })
 			return event
 		}
 
-		function createDropEvent(html: string): Event {
-			const event = new Event('drop', { bubbles: true, cancelable: true })
-			Object.defineProperty(event, 'dataTransfer', { value: { getData: (type: string) => (type === 'text/html' ? html : '') } })
-			return event
-		}
-
-		function mockExecCommand() {
-			const execCommand = vi.fn(() => true)
-			Object.defineProperty(document, 'execCommand', { configurable: true, value: execCommand })
-			return execCommand
-		}
+		const createPasteEvent = (data: Record<string, string>): InputEvent => createInputEvent('insertFromPaste', data)
+		const createDropEvent = (html: string): InputEvent => createInputEvent('insertFromDrop', { 'text/html': html })
 
 		it('показывает modelValue без скриптов и обработчиков событий', () => {
 			const { container } = render(BaseEditor, {
@@ -153,8 +144,7 @@ describe('BaseEditor integration', () => {
 		})
 
 		it('вставляет HTML из буфера обмена очищенным', () => {
-			const execCommand = mockExecCommand()
-			const { container } = render(BaseEditor, { props: { modelValue: '' } })
+			const { container, emitted } = render(BaseEditor, { props: { modelValue: '' } })
 			const event = createPasteEvent({
 				'text/html': '<!--StartFragment--><b onmouseover="alert(1)">жирный</b><style>p{}</style>',
 				'text/plain': 'жирный',
@@ -163,42 +153,39 @@ describe('BaseEditor integration', () => {
 			getContent(container).dispatchEvent(event)
 
 			expect(event.defaultPrevented).toBe(true)
-			expect(execCommand).toHaveBeenCalledWith('insertHTML', false, '<b>жирный</b>')
+			expect(getContent(container).innerHTML).toBe('<b>жирный</b>')
+			expect(emitted()['update:modelValue'].at(-1)).toEqual(['<b>жирный</b>'])
 		})
 
 		it('вставляет простой текст как текст с переносами строк', () => {
-			const execCommand = mockExecCommand()
 			const { container } = render(BaseEditor, { props: { modelValue: '' } })
 
 			getContent(container).dispatchEvent(createPasteEvent({ 'text/plain': 'Строка <b>1</b>\nСтрока 2' }))
 
-			expect(execCommand).toHaveBeenCalledWith('insertHTML', false, 'Строка &lt;b&gt;1&lt;/b&gt;<br>Строка 2')
+			expect(getContent(container).innerHTML).toBe('Строка &lt;b&gt;1&lt;/b&gt;<br>Строка 2')
 		})
 
 		it('не перехватывает вставку без текста и HTML (например, файлы)', () => {
-			const execCommand = mockExecCommand()
 			const { container } = render(BaseEditor, { props: { modelValue: '' } })
 			const event = createPasteEvent({})
 
 			getContent(container).dispatchEvent(event)
 
 			expect(event.defaultPrevented).toBe(false)
-			expect(execCommand).not.toHaveBeenCalled()
+			expect(getContent(container).innerHTML).toBe('')
 		})
 
 		it('вставляет перетащенный HTML очищенным', () => {
-			const execCommand = mockExecCommand()
 			const { container } = render(BaseEditor, { props: { modelValue: '' } })
 			const event = createDropEvent('<img src="x" onerror="alert(1)">')
 
 			getContent(container).dispatchEvent(event)
 
 			expect(event.defaultPrevented).toBe(true)
-			expect(execCommand).toHaveBeenCalledWith('insertHTML', false, '<img src="x">')
+			expect(getContent(container).innerHTML).toBe('<img src="x">')
 		})
 
 		it('не перехватывает перетаскивание внутри редактора', async () => {
-			const execCommand = mockExecCommand()
 			const { container } = render(BaseEditor, { props: { modelValue: '<p>Текст</p>' } })
 			const content = getContent(container)
 			await fireEvent.dragStart(content)
@@ -207,7 +194,7 @@ describe('BaseEditor integration', () => {
 			content.dispatchEvent(event)
 
 			expect(event.defaultPrevented).toBe(false)
-			expect(execCommand).not.toHaveBeenCalled()
+			expect(content.innerHTML).toBe('<p>Текст</p>')
 		})
 
 		it('использует свою функцию sanitize', async () => {

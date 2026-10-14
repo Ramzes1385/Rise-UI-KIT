@@ -2,6 +2,7 @@
 import { warn } from '@/locales/warn'
 import { UI_WARNINGS } from '@/locales/messages'
 import { escapeHtml } from '@utils/dom/htmlUtils'
+import { insertHtmlCommand } from './editCommands'
 import { isSafeUrl, normalizeLinkUrl } from '@utils/data/urlUtils'
 import type { MediaMarkup, UseToolbarCommandsOptions } from '../types/useToolbarCommands.types'
 
@@ -41,10 +42,7 @@ function insertSeparator(ctx: UseToolbarCommandsOptions): void {
 		ctx.insertCodeAtCursor('<hr>')
 		return
 	}
-	ctx.ensureSelection()
-	document.execCommand('insertHTML', false, '<hr>')
-	ctx.saveSelection()
-	ctx.onInput()
+	insertHtmlCommand(ctx, '<hr>')
 }
 
 /** Вставляет выбранный в поле файла медиафайл по адресу blob: и очищает поле */
@@ -58,10 +56,8 @@ function insertUploadedMedia(ctx: UseToolbarCommandsOptions, event: Event, marku
 		return
 	}
 	ctx.restoreSelection()
-	document.execCommand('insertHTML', false, markup.visual(url))
-	ctx.saveSelection()
+	insertHtmlCommand(ctx, markup.visual(url))
 	event.target.value = ''
-	ctx.onInput()
 }
 
 export { IMAGE_MARKUP, insertLink, insertSeparator, insertUploadedMedia, VIDEO_MARKUP }

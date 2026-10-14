@@ -205,11 +205,8 @@ describe('linkCommands', () => {
 
 			const range = window.getSelection()!.getRangeAt(0)
 			expect(range.collapsed).toBe(true)
-			expect(range.startContainer).toBe(editor)
-			expect(document.execCommand).toHaveBeenCalledWith(
-				'insertHTML',
-				false,
-				'<a href="https://a.test" target="_blank" rel="noopener noreferrer">https://a.test</a>',
+			expect(editor.innerHTML).toBe(
+				'<p>текст</p><a href="https://a.test" target="_blank" rel="noopener noreferrer">https://a.test</a>',
 			)
 			expect(ctx.onInput).toHaveBeenCalledTimes(1)
 		})
@@ -246,11 +243,10 @@ describe('linkCommands', () => {
 
 			applyLink(ctx, { url: 'https://a.test/?a=1&b=2', isNewTab: true })
 
-			expect(document.execCommand).toHaveBeenCalledWith(
-				'insertHTML',
-				false,
-				'<a href="https://a.test/?a=1&amp;b=2" target="_blank" rel="noopener noreferrer">https://a.test/?a=1&amp;b=2</a>',
+			expect(editor.innerHTML).toBe(
+				'<p>те<a href="https://a.test/?a=1&amp;b=2" target="_blank" rel="noopener noreferrer">https://a.test/?a=1&amp;b=2</a>кст</p>',
 			)
+			expect(document.execCommand).not.toHaveBeenCalled()
 			expect(ctx.onInput).toHaveBeenCalled()
 		})
 

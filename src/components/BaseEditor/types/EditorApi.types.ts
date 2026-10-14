@@ -7,7 +7,12 @@ export interface EditorApiContext {
 	isLocked: ComputedRef<boolean>
 	isEmpty: Ref<boolean>
 	sanitize: (html: string) => string
-	handleInput: () => void
 	formField: { validate: () => boolean; reset: () => void }
 	openLinkDialog: () => void
+}
+
+/** Точка окна, где отпущено перетаскиваемое: запасной способ найти место вставки, если событие `beforeinput` его не назвало */
+export interface DropPoint {
+	x: number
+	y: number
 }

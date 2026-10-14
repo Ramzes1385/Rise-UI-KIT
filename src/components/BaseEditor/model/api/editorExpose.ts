@@ -7,11 +7,10 @@ function activeField(ctx: EditorApiContext): () => HTMLElement | null {
 }
 
 function insertVisualHtml(ctx: EditorApiContext, html: string): void {
-	ctx.editorRef.value?.focus()
-	ctx.toolbar.ensureSelection()
-	document.execCommand('insertHTML', false, html)
 	ctx.toolbar.saveSelection()
-	ctx.handleInput()
+	ctx.editorRef.value?.focus()
+	ctx.toolbar.restoreSelection()
+	ctx.toolbar.insertHtml(html)
 }
 
 function whenUnlocked<Args extends unknown[]>(ctx: EditorApiContext, action: (...args: Args) => void): (...args: Args) => void {

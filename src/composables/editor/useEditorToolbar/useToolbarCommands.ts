@@ -1,4 +1,5 @@
 /** Composable: выполнение команд редактора (форматирование, блоки, цвет, медиа) */
+import { insertHtmlCommand } from './commands/editCommands'
 import { convertTypedInlineTag } from './commands/inlineHtml'
 import { applyInlineColor, resetInlineColor } from './commands/colorCommands'
 import type { EditorLinkValue, UseToolbarCommandsOptions } from './types/useToolbarCommands.types'
@@ -35,6 +36,7 @@ function useToolbarCommands(options: UseToolbarCommandsOptions) {
 	return {
 		applyFormat: (command: string) => applyFormat(options, command),
 		applyBlock: (tag: string) => applyBlock(options, tag),
+		insertHtml: (html: string) => insertHtmlCommand(options, html),
 		handleHeadingChange: (value: string | number | (string | number)[]) => handleHeadingChange(options, value),
 		applyColor,
 		applyBackgroundColor: (color: string) => applyInlineColor(options, 'backgroundColor', color),

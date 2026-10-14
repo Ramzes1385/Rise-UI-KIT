@@ -74,8 +74,9 @@ describe('BaseEditor: defineExpose и слот toolbar', () => {
 
 		api.insertHtml('<b onclick="x()">жирное</b>')
 
-		expect(document.execCommand).toHaveBeenCalledWith('insertHTML', false, '<b>жирное</b>')
-		expect(wrapper.emitted('update:modelValue')).toBeTruthy()
+		expect(screen.getByRole('textbox').innerHTML).toBe('<p>Те<b>жирное</b>кст</p>')
+		expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual(['<p>Те<b>жирное</b>кст</p>'])
+		expect(document.execCommand).not.toHaveBeenCalledWith('insertHTML', false, expect.anything())
 	})
 
 	it('insertHtml в режиме кода вставляет в поле кода, пустой или заблокированный ввод игнорируется', async () => {
@@ -128,7 +129,7 @@ describe('BaseEditor: defineExpose и слот toolbar', () => {
 		expect(props.activeStates).toHaveProperty('isBold', false)
 
 		await fireEvent.click(screen.getByRole('button', { name: 'Своя кнопка' }))
-		expect(document.execCommand).toHaveBeenCalledWith('insertHTML', false, '<b>vstavka</b>')
+		expect(screen.getByRole('textbox').querySelector('b')?.textContent).toBe('vstavka')
 
 		props.applyFormat('bold')
 		expect(document.execCommand).toHaveBeenCalledWith('bold', false)

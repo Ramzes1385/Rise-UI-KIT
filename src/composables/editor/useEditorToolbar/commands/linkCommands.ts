@@ -2,6 +2,7 @@
 import { escapeHtml } from '@utils/dom/htmlUtils'
 import { findAncestorByTags } from '@utils/dom/editorDomUtils'
 import { isSafeUrl, normalizeLinkUrl } from '@utils/data/urlUtils'
+import { collapseToEnd, insertHtmlAtSelection } from '@utils/dom/editorInsertUtils'
 import type { EditorLinkValue, UseToolbarCommandsOptions } from '../types/useToolbarCommands.types'
 
 const NEW_TAB_REL = 'noopener noreferrer'
@@ -79,7 +80,7 @@ function applyVisualLink(ctx: UseToolbarCommandsOptions, value: EditorLinkValue,
 	}
 	if (window.getSelection()?.isCollapsed) {
 		const markup = `<a href="${escapeHtml(value.url)}"${newTabAttributes(value.isNewTab)}>${escapeHtml(value.url)}</a>`
-		document.execCommand('insertHTML', false, markup)
+		insertHtmlAtSelection(root, markup)
 		return
 	}
 	document.execCommand('createLink', false, value.url)
@@ -89,12 +90,7 @@ function applyVisualLink(ctx: UseToolbarCommandsOptions, value: EditorLinkValue,
 /** Каретка в конец содержимого: ссылка, поставленная без сохранённого выделения, оказывается в конце текста, а не пропадает */
 function placeCaretAtEnd(root: HTMLElement): void {
 	root.focus()
-	const range = document.createRange()
-	range.selectNodeContents(root)
-	range.collapse(false)
-	const selection = window.getSelection()
-	selection?.removeAllRanges()
-	selection?.addRange(range)
+	collapseToEnd(root)
 }
 
 /** Ставит ссылку на выделение (визуальный режим и режим кода), значение `url` уже проверено `resolveLinkUrl` */

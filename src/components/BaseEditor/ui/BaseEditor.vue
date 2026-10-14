@@ -80,10 +80,10 @@
 				@input="handleInput"
 				@compositionstart="handleCompositionStart"
 				@compositionend="handleCompositionEnd"
-				@paste="handlePaste"
+				@beforeinput="handleBeforeInput"
+				@drop="handleDrop"
 				@dragstart="isInternalDrag = true"
 				@dragend="isInternalDrag = false"
-				@drop="handleDrop"
 				@focus="handleFocus"
 				@blur="handleBlur"
 				@mouseup="saveSelection"
@@ -285,7 +285,7 @@ const {
 	resetBackgroundColor,
 	handleInput,
 	isInternalDrag,
-	handlePaste,
+	handleBeforeInput,
 	handleDrop,
 	handleFocus,
 	handleBlur,

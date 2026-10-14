@@ -17,6 +17,12 @@ export interface UseToolbarCommandsOptions {
 	promptForUrl?: () => string | null
 }
 
+/** Часть опций команд, которая нужна правке DOM: область, выделение и сообщение о вводе */
+export type EditorEditContext = Pick<
+	UseToolbarCommandsOptions,
+	'editorRef' | 'ensureSelection' | 'onInput' | 'saveSelection' | 'updateActiveStates'
+>
+
 /** Свойство встроенного стиля, которое меняют цветовые команды */
 export type InlineStyleProperty = 'backgroundColor' | 'color'
 

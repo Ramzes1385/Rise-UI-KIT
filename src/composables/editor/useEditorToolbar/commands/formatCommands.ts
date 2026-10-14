@@ -1,8 +1,8 @@
 /** Утилиты: команды форматирования тулбара редактора (начертание, блоки, очистка, горячие клавиши) */
-import { nextTick } from 'vue'
 import { stripInlineStyle } from './colorCommands'
 import { replaceCodeSelection } from '../helpers/codeText'
 import { FORMAT_CONFIG, isInsideList } from '@utils/dom/editorDomUtils'
+import { commitVisualChange, insertLineBreakCommand } from './editCommands'
 import type { UseToolbarCommandsOptions } from '../types/useToolbarCommands.types'
 
 /**
@@ -28,13 +28,6 @@ const IME_KEY_CODE = 229
 function getHotkeyCommand(event: KeyboardEvent): string | undefined {
 	if (!(event.ctrlKey || event.metaKey) || event.shiftKey || event.altKey) return undefined
 	return FORMAT_HOTKEYS[event.code]
-}
-
-/** Завершение команды визуального режима: сохранить выделение, обновить активные форматы, сообщить о вводе */
-function commitVisualChange(ctx: UseToolbarCommandsOptions): void {
-	ctx.saveSelection()
-	nextTick(ctx.updateActiveStates)
-	ctx.onInput()
 }
 
 /** Узел, в котором стоит каретка */
@@ -122,9 +115,7 @@ function handleKeyDown(ctx: UseToolbarCommandsOptions, event: KeyboardEvent): vo
 	// Enter без Shift — абзац или пункт списка по умолчанию браузера (разделитель абзацев задаёт defaultParagraphSeparator)
 	if (event.key !== 'Enter' || !event.shiftKey || event.ctrlKey || event.metaKey || event.altKey) return
 	event.preventDefault()
-	document.execCommand('insertLineBreak', false)
-	nextTick(ctx.updateActiveStates)
-	ctx.onInput()
+	insertLineBreakCommand(ctx)
 }
 
 export { applyBlock, applyFormat, clearCodeFormatting, clearVisualFormatting, handleHeadingChange, handleKeyDown }

@@ -42,6 +42,18 @@ function mockGetSelection(overrides: Record<string, unknown> = {}) {
 	return selection
 }
 
+function placeCaret(editor: HTMLElement, html: string, offset: number): void {
+	vi.mocked(window.getSelection).mockRestore()
+	editor.innerHTML = html
+	document.body.appendChild(editor)
+	const text = editor.querySelector('p')!.firstChild as Text
+	const range = document.createRange()
+	range.setStart(text, offset)
+	range.collapse(true)
+	window.getSelection()!.removeAllRanges()
+	window.getSelection()!.addRange(range)
+}
+
 function mockRange(overrides: Record<string, unknown> = {}) {
 	return {
 		cloneRange: vi.fn().mockReturnThis(),
@@ -455,11 +467,17 @@ describe('useEditorToolbar', () => {
 	})
 
 	describe('insertSeparator', () => {
-		it('визуальный режим: вызывает insertHTML', () => {
+		it('визуальный режим: режет абзац разделителем, каретка уходит в следующий абзац', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
 			const { insertSeparator } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			placeCaret(editorRef.value!, '<p>ab</p>', 1)
+
 			insertSeparator()
-			expect(document.execCommand).toHaveBeenCalledWith('insertHTML', false, '<hr>')
+
+			expect(editorRef.value!.innerHTML).toBe('<p>a</p><hr><p>b</p>')
+			expect(window.getSelection()!.anchorNode).toBe(editorRef.value!.lastElementChild)
+			expect(onInput).toHaveBeenCalledTimes(1)
+			expect(document.execCommand).not.toHaveBeenCalled()
 		})
 
 		it('режим кода: вставляет hr', () => {
@@ -617,7 +635,11 @@ describe('useEditorToolbar', () => {
 
 		it('handleImageUpload / handleVideoUpload', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
-			const { handleImageUpload, handleVideoUpload } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			const { handleImageUpload, handleVideoUpload, saveSelection } = withSetup(() =>
+				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
+			)
+			placeCaret(editorRef.value!, '<p>ab</p>', 1)
+			saveSelection()
 
 			const file = new File([''], 'test.png')
 			const input = document.createElement('input')
@@ -626,11 +648,12 @@ describe('useEditorToolbar', () => {
 
 			handleImageUpload(event)
 			// Изображение без описания вставляется как оформление (alt=""): иначе скринридер прочитает адрес blob:…
-			expect(document.execCommand).toHaveBeenCalledWith('insertHTML', false, '<img src="blob:test" alt="">')
-			expect(document.execCommand).not.toHaveBeenCalledWith('insertImage', false, 'blob:test')
+			expect(editorRef.value!.innerHTML).toBe('<p>a<img src="blob:test" alt="">b</p>')
+			expect(document.execCommand).not.toHaveBeenCalled()
 
 			handleVideoUpload(event)
-			expect(document.execCommand).toHaveBeenCalledWith('insertHTML', false, expect.stringContaining('<video'))
+			expect(editorRef.value!.querySelector('video')).not.toBeNull()
+			expect(input.value).toBe('')
 		})
 
 		it('handleImageUpload / handleVideoUpload в режиме кода', () => {
@@ -684,6 +707,7 @@ describe('useEditorToolbar', () => {
 		it('handleKeyDown Shift+Enter вставляет перенос строки <br>', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
 			const { handleKeyDown } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			placeCaret(editorRef.value!, '<p>ab</p>', 1)
 			const event = {
 				key: 'Enter',
 				shiftKey: true,
@@ -692,7 +716,7 @@ describe('useEditorToolbar', () => {
 
 			handleKeyDown(event)
 			expect(event.preventDefault).toHaveBeenCalled()
-			expect(document.execCommand).toHaveBeenCalledWith('insertLineBreak', false)
+			expect(editorRef.value!.innerHTML).toBe('<p>a<br>b</p>')
 			expect(onInput).toHaveBeenCalled()
 		})
 

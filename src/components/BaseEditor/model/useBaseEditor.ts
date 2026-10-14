@@ -4,6 +4,7 @@ import { useUi } from '@composables/base/useUi'
 import { createEditorApi } from './api/editorExpose'
 import { EDITOR_MENU_SCALE_RATIO } from './editorScale'
 import { useEditorField } from './field/useEditorField'
+import type { DropPoint } from '../types/EditorApi.types'
 import type { BaseSelectOption } from '@components/BaseSelect'
 import { escapeHtml, sanitizeHtml } from '@utils/dom/htmlUtils'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
@@ -14,6 +15,7 @@ import { useEditorState } from '@composables/editor/useEditorState'
 import { useEditorSelectionSync } from './input/editorSelectionSync'
 import { useEditorToolbar } from '@composables/editor/useEditorToolbar'
 import type { EditorComposition } from '../types/EditorComposition.types'
+import { rangeFromStatic, selectRange } from '@utils/dom/editorInsertUtils'
 import type { BaseEditorEmits, EditorProps } from '../types/BaseEditor.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { isLinkHotkey, useEditorLinkDialog } from './link/useEditorLinkDialog'
@@ -43,17 +45,6 @@ function headingOptions(): BaseSelectOption[] {
 		{ value: 'p', label: UI_EDITOR.PARAGRAPH },
 		...[1, 2, 3, 4, 5, 6].map(level => ({ value: `h${level}`, label: `${UI_EDITOR.HEADING_PREFIX} ${level}` })),
 	]
-}
-
-function getRangeFromPoint(x: number, y: number): Range | null {
-	if (typeof document.caretPositionFromPoint === 'function') {
-		const position = document.caretPositionFromPoint(x, y)
-		if (!position) return null
-		const range = document.createRange()
-		range.setStart(position.offsetNode, position.offset)
-		return range
-	}
-	return typeof document.caretRangeFromPoint === 'function' ? document.caretRangeFromPoint(x, y) : null
 }
 
 function useEditorEngine(
@@ -97,30 +88,57 @@ function useEditorEngine(
 	return { toolbar, state, handleInput, composition }
 }
 
-function useSafeInsert(isLocked: ComputedRef<boolean>, sanitize: (html: string) => string) {
+function plainTextToHtml(text: string): string {
+	return escapeHtml(text).replace(/\r?\n/g, '<br>')
+}
+
+function getRangeFromPoint(point: DropPoint): Range | null {
+	if (typeof document.caretPositionFromPoint === 'function') {
+		const position = document.caretPositionFromPoint(point.x, point.y)
+		if (!position) return null
+		const range = document.createRange()
+		range.setStart(position.offsetNode, position.offset)
+		return range
+	}
+	return typeof document.caretRangeFromPoint === 'function' ? document.caretRangeFromPoint(point.x, point.y) : null
+}
+
+function selectDropTarget(event: InputEvent, point: DropPoint | null): void {
+	const target = event.getTargetRanges?.()[0]
+	const range = target ? rangeFromStatic(target) : point && getRangeFromPoint(point)
+	if (range) selectRange(range)
+}
+
+function useSafeInsert(
+	isLocked: ComputedRef<boolean>,
+	options: { sanitize: (html: string) => string; insertHtml: (html: string) => void },
+) {
 	const isInternalDrag = ref(false)
+	const state: { dropPoint: DropPoint | null } = { dropPoint: null }
+	function insertFromPaste(event: InputEvent): void {
+		const data = event.dataTransfer
+		const html = data?.getData('text/html')
+		const text = data?.getData('text/plain')
+		if (!html && !text) return
+		event.preventDefault()
+		options.insertHtml(html ? options.sanitize(html) : plainTextToHtml(text ?? ''))
+	}
+	function insertFromDrop(event: InputEvent): void {
+		const html = event.dataTransfer?.getData('text/html')
+		if (isInternalDrag.value || !html) return
+		event.preventDefault()
+		selectDropTarget(event, state.dropPoint)
+		options.insertHtml(options.sanitize(html))
+	}
 	return {
 		isInternalDrag,
-		handlePaste(event: ClipboardEvent): void {
-			const data = event.clipboardData
-			if (isLocked.value || !data) return
-			const html = data.getData('text/html')
-			const text = data.getData('text/plain')
-			if (!html && !text) return
-			event.preventDefault()
-			document.execCommand('insertHTML', false, html ? sanitize(html) : escapeHtml(text).replace(/\r?\n/g, '<br>'))
-		},
 		handleDrop(event: DragEvent): void {
-			const html = event.dataTransfer?.getData('text/html')
-			if (isLocked.value || isInternalDrag.value || !html) return
-			event.preventDefault()
-			const range = getRangeFromPoint(event.clientX, event.clientY)
-			if (range) {
-				const selection = window.getSelection()
-				selection?.removeAllRanges()
-				selection?.addRange(range)
-			}
-			document.execCommand('insertHTML', false, sanitize(html))
+			state.dropPoint = { x: event.clientX, y: event.clientY }
+		},
+		handleBeforeInput(event: InputEvent): void {
+			if (isLocked.value) return
+			if (event.inputType === 'insertFromPaste') insertFromPaste(event)
+			else if (event.inputType === 'insertFromDrop') insertFromDrop(event)
 		},
 	}
 }
@@ -235,7 +253,7 @@ export function useBaseEditor(props: EditorProps, emit: BaseEditorEmits) {
 	const sanitize = (html: string): string => (props.sanitize ?? sanitizeHtml)(html)
 	const pending: string[] = []
 	const engine = useEditorEngine(emit, { editorRef, codeTextareaRef }, { isLocked, sanitize, pending })
-	const insert = useSafeInsert(isLocked, sanitize)
+	const insert = useSafeInsert(isLocked, { sanitize, insertHtml: engine.toolbar.insertHtml })
 	const link = useEditorLinkDialog(engine.toolbar, isLocked)
 	const mediaMenu = useMediaMenu(editorRef, engine.toolbar, { composition: engine.composition, openLinkDialog: link.openLinkDialog })
 	useContentSync(props, editorRef, { isLocked, sanitize, engine, pending, composition: engine.composition })
@@ -245,7 +263,6 @@ export function useBaseEditor(props: EditorProps, emit: BaseEditorEmits) {
 		isLocked,
 		isEmpty: engine.state.isEmpty,
 		sanitize,
-		handleInput: engine.handleInput,
 		formField: field.formField,
 		openLinkDialog: link.openLinkDialog,
 	})
