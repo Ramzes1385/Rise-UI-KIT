@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { BaseButton } from '@components/BaseButton'
-import { motionPresetsStory } from '../render/decorators/motion'
 import { fireEvent, render, screen } from '@testing-library/vue'
+import { motionPresetsStory } from '../../render/decorators/motion'
 
 vi.mock('storybook/preview-api', () => ({ useArgs: () => [{}, vi.fn()] }))
 

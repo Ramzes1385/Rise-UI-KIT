@@ -1,5 +1,5 @@
-import { STORY_TODAY } from '../render/data/fixtures'
-import { freezeStoryClock } from '../render/data/clock'
+import { STORY_TODAY } from '../../render/data/fixtures'
+import { freezeStoryClock } from '../../render/data/clock'
 
 describe('freezeStoryClock', () => {
 	it('new Date() и Date.now() дают STORY_TODAY, Date с аргументами работает как обычно', () => {

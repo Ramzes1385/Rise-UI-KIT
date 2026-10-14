@@ -1,5 +1,5 @@
-import { resolveColor } from '../play'
-import { docsFrame } from '../render/decorators/docsFrame'
+import { resolveColor } from '../../play'
+import { docsFrame } from '../../render/decorators/docsFrame'
 
 describe('docsFrame', () => {
 	it('рамка Docs: не inline, высота в пикселях', () => {
