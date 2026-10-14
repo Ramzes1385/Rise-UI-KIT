@@ -50,19 +50,19 @@
 				</BaseButton>
 			</div>
 
-			<div
-				ref="listRef"
-				:role="rows.length ? 'listbox' : undefined"
-				:aria-multiselectable="rows.length ? true : undefined"
-				:aria-disabled="canNavigate ? undefined : true"
-				:aria-label="rows.length ? listLabel : undefined"
-				:class="[ui('list'), `base-file-manager__list--${view}`, classes.list]"
-				@keydown="handleListKeydown">
-				<FileManagerEditor v-if="isCreating" icon="folder" />
-				<template v-for="row in rows" :key="row.item.id">
-					<FileManagerEditor v-if="row.isEditing" :icon="row.icon" />
+			<div class="base-file-manager__list-wrap">
+				<FileManagerEditor v-if="isCreating" icon="folder" is-inline />
+				<div
+					ref="listRef"
+					:role="rows.length ? 'listbox' : undefined"
+					:aria-multiselectable="rows.length ? true : undefined"
+					:aria-disabled="canNavigate ? undefined : true"
+					:aria-label="rows.length ? listLabel : undefined"
+					:class="[ui('list'), `base-file-manager__list--${view}`, classes.list]"
+					@keydown="handleListKeydown">
 					<div
-						v-else
+						v-for="row in rows"
+						:key="row.item.id"
 						role="option"
 						:data-entry-id="row.item.id"
 						:aria-selected="row.isSelected"
@@ -76,6 +76,7 @@
 								'base-file-manager__entry--folder': row.isFolder,
 								'base-file-manager__entry--dragging': row.isDragging,
 								'base-file-manager__entry--drop': row.isDropTarget,
+								'base-file-manager__entry--hidden': row.isEditing,
 							},
 							classes.entry,
 						]"
@@ -99,6 +100,9 @@
 						<span :class="[ui('meta'), 'base-file-manager__size', classes.meta]">{{ row.size }}</span>
 						<span :class="[ui('meta'), 'base-file-manager__modified', classes.meta]">{{ row.modified }}</span>
 					</div>
+				</div>
+				<template v-for="row in rows" :key="row.item.id">
+					<FileManagerEditor v-if="row.isEditing" :icon="row.icon" :style="editorBox" />
 				</template>
 			</div>
 		</template>
@@ -130,6 +134,6 @@ const {
 	editor: { isCreating },
 	toolbar: { listLabel, viewValue: view, sortButtons, toggleSort, queryValue: query, isSearch, emptyText, retry },
 	menu: { handleContextMenu },
-	list: { listRef, handleListKeydown, handleEntryClick, handleEntryFocus, handleBackgroundClick },
+	list: { listRef, editorBox, handleListKeydown, handleEntryClick, handleEntryFocus, handleBackgroundClick },
 } = useFileManagerContext()
 </script>

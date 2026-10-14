@@ -131,4 +131,6 @@ export interface FileManagerKeyContext {
 export interface FileManagerEditorProps {
 	/** Иконка записи, которую редактируют */
 	icon: string
+	/** Поле создания папки: идёт в потоке над списком, а не поверх строки */
+	isInline?: boolean
 }

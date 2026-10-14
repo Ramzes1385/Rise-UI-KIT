@@ -40,6 +40,7 @@
 					</template>
 				</FileManagerList>
 			</BaseContextMenu>
+			<span class="base-file-manager__sr" aria-live="polite">{{ announcement }}</span>
 			<p :class="[ui('status'), classes.status]" role="status">{{ isLoading ? '' : statusText }}</p>
 		</div>
 
@@ -86,6 +87,7 @@ const {
 	classes,
 	rootStyle,
 	list: { mainRef },
+	editor: { announcement },
 	menu: { menuItems, isMenuDisabled },
 	tree: { treeNodes, treeSelectedIds, expandedIds, selectTreeNode },
 	dnd: { treeDragOver, treeDragLeave, treeDrop, isTreeDropTarget },

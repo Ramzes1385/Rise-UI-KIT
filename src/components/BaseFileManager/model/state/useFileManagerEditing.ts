@@ -10,6 +10,7 @@ function useEditingState(core: FileManagerCore) {
 	const editing = ref<FileManagerEditing | null>(null)
 	const draft = ref('')
 	const errorCode = ref<FileManagerNameError | null>(null)
+	const announcement = ref('')
 
 	watch(core.entries, entries => {
 		const current = editing.value
@@ -20,6 +21,7 @@ function useEditingState(core: FileManagerCore) {
 		editing,
 		draft,
 		errorCode,
+		announcement,
 		isCreating: computed(() => editing.value?.mode === 'create'),
 		editorError: computed(() => (errorCode.value ? UI_FILE_MANAGER[ERROR_KEYS[errorCode.value]] : undefined)),
 		editorLabel: computed(() => {
@@ -30,6 +32,7 @@ function useEditingState(core: FileManagerCore) {
 		begin(next: FileManagerEditing, name: string): void {
 			editing.value = next
 			draft.value = name
+			announcement.value = ''
 			errorCode.value = null
 		},
 		validate(): FileManagerNameError | null {
@@ -46,8 +49,18 @@ function useEditingState(core: FileManagerCore) {
 	}
 }
 
+function emitCommit(core: FileManagerCore, current: FileManagerEditing, name: string): string {
+	if (current.mode === 'create') {
+		core.emit('create-folder', core.folderId.value, name)
+		return formatMessage(UI_FILE_MANAGER.FOLDER_CREATED, { name })
+	}
+	if (name === core.index.value.byId.get(current.id)?.name) return ''
+	core.emit('rename', current.id, name)
+	return formatMessage(UI_FILE_MANAGER.RENAMED, { name })
+}
+
 export function useFileManagerEditing(core: FileManagerCore) {
-	const { editing, draft, errorCode, begin, validate, close, ...labels } = useEditingState(core)
+	const { editing, draft, errorCode, announcement, begin, validate, close, ...labels } = useEditingState(core)
 
 	function commit(current: FileManagerEditing, isRefocus: boolean): void {
 		const problem = validate()
@@ -56,14 +69,14 @@ export function useFileManagerEditing(core: FileManagerCore) {
 			return
 		}
 		const name = draft.value.trim()
-		if (current.mode === 'create') core.emit('create-folder', core.folderId.value, name)
-		else if (name !== core.index.value.byId.get(current.id)?.name) core.emit('rename', current.id, name)
+		announcement.value = emitCommit(core, current, name)
 		close(isRefocus)
 	}
 
 	return {
 		editing,
 		draft,
+		announcement,
 		...labels,
 		handleEditorKeydown(event: KeyboardEvent): void {
 			if (event.isComposing) return

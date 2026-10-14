@@ -45,6 +45,10 @@ export const enFileManager = {
 		RETRY: 'Try again',
 		/** Field accessible name when creating a folder */
 		CREATE_LABEL: 'New folder name',
+		/** Announcement after renaming: `{name}` is the new name */
+		RENAMED: 'Renamed to "{name}"',
+		/** Announcement after creating a folder: `{name}` is the folder name */
+		FOLDER_CREATED: 'Folder "{name}" created',
 		/** Field accessible name when renaming: `{name}` is the previous name */
 		RENAME_LABEL: 'New name for "{name}"',
 		NAME_EMPTY: 'Enter a name',

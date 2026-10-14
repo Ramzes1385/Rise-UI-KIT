@@ -522,3 +522,7 @@
 
 - BaseSearch: SRCH-2 (`source` с отменой и отбрасыванием устаревших ответов), SRCH-3, SRCH-10 а, б, в, д (индекс) сделаны — `docs/v2/MIGRATION.md`, «Задача table-search». Остаются: SRCH-10 г (закрытие BaseModal по `click.self` после выделения текста — в BaseModal), Home/End/PageUp/PageDown по списку не добавлены (APG combobox отдаёт Home и End полю), SRCH-7 (`blur()` в режиме default не снимает фокус с поля), SRCH-8 (атрибут `readonly` вместо `isReadonly` у поля-триггера модалки) и SRCH-9 (`inheritAttrs` у BaseSearchOverlay) не правились.
 - Функции в `kitDefaults`: значение-функция остаётся как есть, а Vue для props типа `Function` считает её значением по умолчанию — `source: undefined` в `kitDefaults('BaseSearch', …)` сделал бы `props.source` непустой функцией (поймали тестами). Проп-функцию без умолчания в `kitDefaults` не перечисляют.
+
+## Задача files-dates
+
+- ~~**BaseFileManager, редактор имени внутри `role="listbox"`.**~~ — files-dates: поле вынесено из списка, строка остаётся скрытой `option`; положение считается по `offsetTop/Left/Width/Height` строки в момент начала правки, при изменении размеров во время правки (resize окна, смена вида) поле не перемещается до следующей правки.

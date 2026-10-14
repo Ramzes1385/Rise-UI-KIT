@@ -1,5 +1,13 @@
 <template>
-	<div role="group" :aria-label="editorLabel" :class="[ui('entry'), 'base-file-manager__entry--editing', classes.entry]">
+	<div
+		role="group"
+		:aria-label="editorLabel"
+		:class="[
+			ui('entry'),
+			'base-file-manager__entry--editing',
+			isInline ? 'base-file-manager__entry--inline' : 'base-file-manager__entry--overlay',
+			classes.entry,
+		]">
 		<span :class="[ui('icon'), classes.icon]">
 			<BaseIcon :name="icon" :size-scale="sizeScale" />
 		</span>

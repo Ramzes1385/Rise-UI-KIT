@@ -151,6 +151,11 @@
 		grid-column: 4;
 	}
 
+	&__list-wrap {
+		position: relative;
+		flex: none;
+	}
+
 	&__list {
 		display: flex;
 		flex-direction: column;
@@ -196,6 +201,20 @@
 
 		&--editing {
 			cursor: default;
+		}
+
+		&--hidden {
+			visibility: hidden;
+		}
+
+		&--overlay {
+			position: absolute;
+			z-index: 1;
+			@include custom-bg(background-color, ct(file-manager, bg, var(--rise-bg)));
+		}
+
+		&--inline {
+			margin: space(4px 4px 0);
 		}
 	}
 
@@ -280,6 +299,18 @@
 		-webkit-box-orient: vertical;
 		-webkit-line-clamp: 2;
 		line-clamp: 2;
+	}
+
+	&--grid &__entry--inline {
+		grid-template-columns: var(--file-manager-columns);
+		justify-items: stretch;
+		margin: space(12px 12px 0);
+		padding: space(4px 8px);
+		text-align: start;
+	}
+
+	&--grid &__entry--inline &__editor {
+		grid-column: 2 / -1;
 	}
 
 	&--grid &__editor {

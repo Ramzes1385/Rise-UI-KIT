@@ -313,3 +313,37 @@ describe('BaseFileManager: загрузка', () => {
 		expect(screen.queryByRole('button', { name: UI_FILE_MANAGER.UPLOAD })).not.toBeInTheDocument()
 	})
 })
+
+describe('BaseFileManager: поле имени вне listbox', () => {
+	it('поле переименования и создания не лежит внутри listbox; строка остаётся в списке скрытой', async () => {
+		renderManager({ selected: ['logo'] })
+		await userEvent.click(button(UI_FILE_MANAGER.RENAME))
+		const group = screen.getByRole('group', { name: 'Новое имя для «logo.png»' })
+		expect(group.closest('[role="listbox"]')).toBeNull()
+		expect(document.querySelector('[data-entry-id="logo"]')).toHaveClass('base-file-manager__entry--hidden')
+		await userEvent.keyboard('{Escape}')
+		expect(document.querySelector('[data-entry-id="logo"]')).not.toHaveClass('base-file-manager__entry--hidden')
+		await userEvent.click(button(UI_FILE_MANAGER.NEW_FOLDER))
+		expect(screen.getByRole('group', { name: UI_FILE_MANAGER.CREATE_LABEL }).closest('[role="listbox"]')).toBeNull()
+	})
+
+	it('Escape отменяет правку и возвращает фокус на пункт', async () => {
+		const { emitted } = renderManager({ selected: ['logo'] })
+		await userEvent.click(button(UI_FILE_MANAGER.RENAME))
+		await userEvent.keyboard('x{Escape}')
+		expect(emitted('rename')).toBeUndefined()
+		await waitFor(() => expect(option('logo')).toHaveFocus())
+	})
+
+	it('после переименования и создания папки озвучивается результат', async () => {
+		renderManager({ selected: ['logo'] })
+		const live = (): string => document.querySelector('[aria-live="polite"]')?.textContent ?? ''
+		await userEvent.click(button(UI_FILE_MANAGER.RENAME))
+		await userEvent.keyboard('brand{Enter}')
+		expect(live()).toBe('Переименовано: «brand.png»')
+		await userEvent.click(button(UI_FILE_MANAGER.NEW_FOLDER))
+		expect(live()).toBe('')
+		await userEvent.keyboard('Архив{Enter}')
+		expect(live()).toBe('Создана папка «Архив»')
+	})
+})
