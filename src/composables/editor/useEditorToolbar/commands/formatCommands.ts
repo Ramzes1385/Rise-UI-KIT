@@ -1,10 +1,12 @@
 /** Утилиты: команды форматирования тулбара редактора (начертание, блоки, очистка, горячие клавиши) */
 import { stripInlineStyle } from './colorCommands'
 import { replaceCodeSelection } from '../helpers/codeText'
-import { FORMAT_CONFIG, isInsideList } from '@utils/dom/editorDomUtils'
+import { applyEdit, insertLineBreakCommand } from './editCommands'
+import { ALIGN_MAP, FORMAT_CONFIG } from '@utils/dom/editorDomUtils'
+import type { EditorAlign, EditorBlockTag } from '@utils/dom/editorBlockUtils'
 import type { UseToolbarCommandsOptions } from '../types/useToolbarCommands.types'
-import { applyEdit, commitVisualChange, insertLineBreakCommand } from './editCommands'
 import { removeInlineFormatting, toggleInlineFormat } from '@utils/dom/editorFormatUtils'
+import { clearBlockFormatting, setAlign, setBlockTag, toggleList } from '@utils/dom/editorBlockUtils'
 
 /**
  * Горячие клавиши форматирования: Ctrl (⌘ на macOS) + клавиша. Ключ — физическая клавиша (`event.code`),
@@ -15,6 +17,15 @@ const FORMAT_HOTKEYS: Readonly<Record<string, string | undefined>> = {
 	KeyI: 'italic',
 	KeyU: 'underline',
 }
+
+/** Команды списков визуального режима: вид списка */
+const LIST_COMMANDS: ReadonlyMap<string, 'ol' | 'ul'> = new Map([
+	['insertUnorderedList', 'ul'],
+	['insertOrderedList', 'ol'],
+])
+
+/** Теги, в которые «Формат» превращает блоки */
+const BLOCK_TAGS: ReadonlySet<string> = new Set(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'pre'])
 
 /** Обёртки списков в режиме кода: открывающая и закрывающая части */
 const LIST_CODE_WRAPS: ReadonlyMap<string, readonly [string, string]> = new Map([
@@ -31,11 +42,6 @@ function getHotkeyCommand(event: KeyboardEvent): string | undefined {
 	return FORMAT_HOTKEYS[event.code]
 }
 
-/** Узел, в котором стоит каретка */
-function getCaretNode(): Node | null {
-	return window.getSelection()?.anchorNode ?? null
-}
-
 /** Начертание или список в режиме кода: оборачивает выделение тегами */
 function wrapFormatInCode(ctx: UseToolbarCommandsOptions, command: string): void {
 	const config = FORMAT_CONFIG[command]
@@ -47,20 +53,27 @@ function wrapFormatInCode(ctx: UseToolbarCommandsOptions, command: string): void
 	if (listWrap) ctx.wrapCodeSelection(listWrap[0], listWrap[1])
 }
 
+/** Вид выделенных блоков по команде тулбара: выравнивание и списки; `null`, если команда не про блоки */
+function blockCommand(command: string): ((root: HTMLElement) => boolean) | null {
+	const align = ALIGN_MAP[command]
+	if (align) return root => setAlign(root, align as EditorAlign)
+	const list = LIST_COMMANDS.get(command)
+	return list ? root => toggleList(root, list) : null
+}
+
 function applyFormat(ctx: UseToolbarCommandsOptions, command: string): void {
 	if (ctx.isCodeMode.value) {
 		wrapFormatInCode(ctx, command)
 		return
 	}
 	const config = FORMAT_CONFIG[command]
-	if (config) {
-		applyEdit(ctx, root => toggleInlineFormat(root, { tag: config.primary, tags: config.match }))
-		return
-	}
-	ctx.ensureSelection()
-	ctx.onBeforeChange?.()
-	document.execCommand(command, false)
-	commitVisualChange(ctx)
+	const block = blockCommand(command)
+	if (config) applyEdit(ctx, root => toggleInlineFormat(root, { tag: config.primary, tags: config.match }))
+	else if (block) applyEdit(ctx, block)
+}
+
+function applyBlockTag(ctx: UseToolbarCommandsOptions, tag: string, isToggle: boolean): void {
+	if (BLOCK_TAGS.has(tag)) applyEdit(ctx, root => setBlockTag(root, tag as EditorBlockTag, isToggle))
 }
 
 function applyBlock(ctx: UseToolbarCommandsOptions, tag: string): void {
@@ -68,26 +81,14 @@ function applyBlock(ctx: UseToolbarCommandsOptions, tag: string): void {
 		ctx.wrapCodeSelection(`<${tag}>`, `</${tag}>`)
 		return
 	}
-	ctx.ensureSelection()
-	ctx.onBeforeChange?.()
-	document.execCommand('formatBlock', false, tag)
-	commitVisualChange(ctx)
+	applyBlockTag(ctx, tag, true)
 }
 
 function handleHeadingChange(ctx: UseToolbarCommandsOptions, value: string | number | (string | number)[]): void {
-	if (ctx.isCodeMode.value) {
-		const tag = String(value)
-		if (tag === 'p') {
-			ctx.wrapCodeSelection('', '')
-		} else {
-			ctx.wrapCodeSelection(`<${tag}>`, `</${tag}>`)
-		}
-		return
-	}
-	ctx.ensureSelection()
-	ctx.onBeforeChange?.()
-	document.execCommand('formatBlock', false, String(value))
-	commitVisualChange(ctx)
+	const tag = String(value)
+	if (!ctx.isCodeMode.value) applyBlockTag(ctx, tag, false)
+	else if (tag === 'p') ctx.wrapCodeSelection('', '')
+	else ctx.wrapCodeSelection(`<${tag}>`, `</${tag}>`)
 }
 
 /** Режим кода: убирает теги из выделенного фрагмента */
@@ -100,16 +101,13 @@ function clearCodeFormatting(ctx: UseToolbarCommandsOptions): void {
 
 /** Визуальный режим: снимает начертание, цвета, блок и список */
 function clearVisualFormatting(ctx: UseToolbarCommandsOptions): void {
-	ctx.ensureSelection()
-	ctx.onBeforeChange?.()
-	removeInlineFormatting(ctx.editorRef.value!)
-	stripInlineStyle(ctx, 'color')
-	stripInlineStyle(ctx, 'backgroundColor')
-	document.execCommand('formatBlock', false, 'p')
-	const node = getCaretNode()
-	if (isInsideList(node, ctx.editorRef.value!, 'UL')) document.execCommand('insertUnorderedList', false)
-	if (isInsideList(node, ctx.editorRef.value!, 'OL')) document.execCommand('insertOrderedList', false)
-	commitVisualChange(ctx)
+	applyEdit(ctx, root => {
+		removeInlineFormatting(root)
+		stripInlineStyle(ctx, 'color')
+		stripInlineStyle(ctx, 'backgroundColor')
+		clearBlockFormatting(root)
+		return true
+	})
 }
 
 function handleKeyDown(ctx: UseToolbarCommandsOptions, event: KeyboardEvent): void {

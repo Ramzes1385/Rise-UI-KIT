@@ -1,8 +1,8 @@
-import type meta from '../../../BaseEditor.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import BaseEditor from '../../../../ui/BaseEditor.vue'
+import type meta from '../../../../BaseEditor.stories'
 import { expect, waitFor, within } from 'storybook/test'
+import BaseEditor from '../../../../../ui/BaseEditor.vue'
 import { storySource, useStorySetup } from '@/stories/helpers'
 
 const state = { html: '<p>Выделите слово и нажмите «Жирный» или вставьте подпись.</p>' }

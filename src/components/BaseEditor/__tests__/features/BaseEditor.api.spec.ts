@@ -135,7 +135,7 @@ describe('BaseEditor: defineExpose и слот toolbar', () => {
 		props.applyFormat('bold')
 		expect(screen.getByRole('textbox').querySelector('b')).not.toBeNull()
 		props.applyBlock('h2')
-		expect(document.execCommand).toHaveBeenCalledWith('formatBlock', false, 'h2')
+		expect(screen.getByRole('textbox').querySelector('h2')).not.toBeNull()
 		props.toggleCodeMode()
 		await nextTick()
 		expect((received as unknown as BaseEditorToolbarSlotProps).isCodeMode).toBe(true)

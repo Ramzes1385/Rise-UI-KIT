@@ -45,3 +45,4 @@ export const EditorFormatSync = cases.EditorFormatSync
 export const EditorToolbarSlot = cases.EditorToolbarSlot
 export const EditorPaste = cases.EditorPaste
 export const EditorUndo = cases.EditorUndo
+export const EditorBlocks = cases.EditorBlocks

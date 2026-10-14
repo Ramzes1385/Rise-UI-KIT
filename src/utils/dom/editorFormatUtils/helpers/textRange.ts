@@ -82,4 +82,4 @@ function selectTextRange(root: HTMLElement, textRange: TextRange): void {
 	selectRange(range)
 }
 
-export { getTextRange, nodesInTextRange, selectTextRange, textNodes }
+export { getTextRange, nodesInTextRange, selectTextRange, textNodes, textOffset }

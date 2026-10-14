@@ -1,6 +1,7 @@
 /** Утилиты: правка содержимого редактора на месте выделения — общая точка применения изменений DOM */
 import { nextTick } from 'vue'
 import type { EditorHistoryKind } from '../../useEditorHistory'
+import { insertParagraphAtSelection } from '@utils/dom/editorBlockUtils'
 import type { EditorEditContext, UseToolbarCommandsOptions } from '../types/useToolbarCommands.types'
 import { collapseToEnd, getSelectionRange, insertHtmlAtSelection, insertLineBreakAtSelection } from '@utils/dom/editorInsertUtils'
 
@@ -40,4 +41,9 @@ function insertLineBreakCommand(ctx: UseToolbarCommandsOptions): boolean {
 	return applyEdit(ctx, insertLineBreakAtSelection, 'typing')
 }
 
-export { applyEdit, commitVisualChange, insertHtmlCommand, insertLineBreakCommand }
+/** Enter: новый абзац или пункт списка на месте выделения; для истории это набор */
+function insertParagraphCommand(ctx: UseToolbarCommandsOptions): boolean {
+	return applyEdit(ctx, insertParagraphAtSelection, 'typing')
+}
+
+export { applyEdit, commitVisualChange, insertHtmlCommand, insertLineBreakCommand, insertParagraphCommand }

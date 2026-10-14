@@ -138,6 +138,10 @@ function useSafeInsert(
 			if (toolbar.history.handleBeforeInput(event, composition.isActive) || isLocked.value) return
 			if (event.inputType === 'insertFromPaste') insertFromPaste(event)
 			else if (event.inputType === 'insertFromDrop') insertFromDrop(event)
+			else if (event.inputType === 'insertParagraph' && !composition.isActive) {
+				event.preventDefault()
+				toolbar.insertParagraph()
+			}
 		},
 	}
 }
@@ -231,7 +235,6 @@ function useEditorFocus(
 		target instanceof Node && field.overlays.some(overlay => overlay.value?.contains(target))
 	return {
 		handleFocus(): void {
-			if (typeof document.execCommand === 'function') document.execCommand('defaultParagraphSeparator', false, 'p')
 			engine.state.refreshTextColor()
 			engine.state.isFocused.value = true
 			emit('focus')

@@ -1,7 +1,7 @@
-import type meta from '../../../BaseEditor.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import BaseEditor from '../../../../ui/BaseEditor.vue'
+import type meta from '../../../../BaseEditor.stories'
 import { expect, waitFor, within } from 'storybook/test'
+import BaseEditor from '../../../../../ui/BaseEditor.vue'
 import { storySource, useStorySetup } from '@/stories/helpers'
 
 const state = { html: '<h2>Заголовок раздела</h2><p>Обычный абзац под заголовком.</p><blockquote>Цитата из источника.</blockquote>' }

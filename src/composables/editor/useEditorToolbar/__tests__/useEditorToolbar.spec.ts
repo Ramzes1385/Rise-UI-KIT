@@ -171,11 +171,31 @@ describe('useEditorToolbar', () => {
 			expect(document.execCommand).not.toHaveBeenCalled()
 		})
 
-		it('визуальный режим: команды вне начертания (выравнивание) идут через execCommand', () => {
+		it('визуальный режим: выравнивание и списки — свойства и теги блока без execCommand', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
 			const { applyFormat } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			selectText(editorRef.value!, '<p>hello</p>', [0, 5])
+
 			applyFormat('justifyCenter')
-			expect(document.execCommand).toHaveBeenCalledWith('justifyCenter', false)
+			expect(editorRef.value!.innerHTML).toBe('<p style="text-align: center;">hello</p>')
+			applyFormat('justifyLeft')
+			expect(editorRef.value!.innerHTML).toBe('<p>hello</p>')
+			applyFormat('insertOrderedList')
+			expect(editorRef.value!.innerHTML).toBe('<ol><li>hello</li></ol>')
+			applyFormat('insertOrderedList')
+			expect(editorRef.value!.innerHTML).toBe('<p>hello</p>')
+			expect(document.execCommand).not.toHaveBeenCalled()
+		})
+
+		it('визуальный режим: неизвестная команда ничего не меняет', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { applyFormat } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			selectText(editorRef.value!, '<p>hello</p>', [0, 5])
+
+			applyFormat('insertImage')
+
+			expect(editorRef.value!.innerHTML).toBe('<p>hello</p>')
+			expect(onInput).not.toHaveBeenCalled()
 		})
 
 		it('режим кода: оборачивает тегами', () => {
@@ -228,13 +248,44 @@ describe('useEditorToolbar', () => {
 	})
 
 	describe('applyBlock / handleHeadingChange', () => {
-		it('визуальный режим: вызывает formatBlock', () => {
+		it('визуальный режим: цитата включается и выключается, заголовок меняет тег блока', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
 			const { applyBlock, handleHeadingChange } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			selectText(editorRef.value!, '<p>hello</p>', [1, 3])
+
 			applyBlock('blockquote')
-			expect(document.execCommand).toHaveBeenCalledWith('formatBlock', false, 'blockquote')
+			expect(editorRef.value!.innerHTML).toBe('<blockquote>hello</blockquote>')
+			applyBlock('blockquote')
+			expect(editorRef.value!.innerHTML).toBe('<p>hello</p>')
 			handleHeadingChange('h1')
-			expect(document.execCommand).toHaveBeenCalledWith('formatBlock', false, 'h1')
+			expect(editorRef.value!.innerHTML).toBe('<h1>hello</h1>')
+			handleHeadingChange('p')
+			expect(editorRef.value!.innerHTML).toBe('<p>hello</p>')
+			expect(window.getSelection()!.toString()).toBe('el')
+			expect(document.execCommand).not.toHaveBeenCalled()
+		})
+
+		it('визуальный режим: неизвестный тег блока игнорируется', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { applyBlock, handleHeadingChange } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			selectText(editorRef.value!, '<p>hello</p>', [1, 3])
+
+			applyBlock('section')
+			handleHeadingChange('')
+
+			expect(editorRef.value!.innerHTML).toBe('<p>hello</p>')
+			expect(onInput).not.toHaveBeenCalled()
+		})
+
+		it('insertParagraph делит абзац и сообщает о вводе', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { insertParagraph } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			selectText(editorRef.value!, '<p>hello</p>', [2, 2])
+
+			insertParagraph()
+
+			expect(editorRef.value!.innerHTML).toBe('<p>he</p><p>llo</p>')
+			expect(onInput).toHaveBeenCalledWith('typing')
 		})
 
 		it('режим кода: оборачивает тегами', () => {
@@ -464,9 +515,8 @@ describe('useEditorToolbar', () => {
 
 			clearAllFormatting()
 
-			expect(editorRef.value!.querySelector('b')).toBeNull()
-			expect(document.execCommand).toHaveBeenCalledWith('insertUnorderedList', false)
-			expect(document.execCommand).not.toHaveBeenCalledWith('removeFormat', false)
+			expect(editorRef.value!.innerHTML).toBe('<p>item</p>')
+			expect(document.execCommand).not.toHaveBeenCalled()
 		})
 
 		it('визуальный режим: сбрасывает нумерованные списки', () => {
@@ -476,7 +526,7 @@ describe('useEditorToolbar', () => {
 
 			clearAllFormatting()
 
-			expect(document.execCommand).toHaveBeenCalledWith('insertOrderedList', false)
+			expect(editorRef.value!.innerHTML).toBe('<p>item</p>')
 		})
 
 		it('визуальный режим: не падает если editorRef.value null', () => {

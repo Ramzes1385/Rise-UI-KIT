@@ -1,8 +1,8 @@
-/** Composable: выполнение команд редактора (форматирование, блоки, цвет, медиа) */
-import { insertHtmlCommand } from './commands/editCommands'
 import type { EditorHistoryKind } from '../useEditorHistory'
 import { convertTypedInlineTag } from './commands/inlineHtml'
 import { applyInlineColor, resetInlineColor } from './commands/colorCommands'
+/** Composable: выполнение команд редактора (форматирование, блоки, цвет, медиа) */
+import { insertHtmlCommand, insertParagraphCommand } from './commands/editCommands'
 import type { EditorLinkValue, UseToolbarCommandsOptions } from './types/useToolbarCommands.types'
 import { applyLink, getSelectionPoint, readLinkAtSelection, removeLink, resolveLinkUrl } from './commands/linkCommands'
 import { IMAGE_MARKUP, insertLink, insertSeparator, insertUploadedMedia, VIDEO_MARKUP } from './commands/insertCommands'
@@ -38,6 +38,7 @@ function useToolbarCommands(options: UseToolbarCommandsOptions) {
 		applyFormat: (command: string) => applyFormat(options, command),
 		applyBlock: (tag: string) => applyBlock(options, tag),
 		insertHtml: (html: string, kind?: EditorHistoryKind) => insertHtmlCommand(options, html, kind),
+		insertParagraph: () => insertParagraphCommand(options),
 		handleHeadingChange: (value: string | number | (string | number)[]) => handleHeadingChange(options, value),
 		applyColor,
 		applyBackgroundColor: (color: string) => applyInlineColor(options, 'backgroundColor', color),

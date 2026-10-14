@@ -72,4 +72,4 @@ function wrapNode<T extends HTMLElement>(node: Node, wrapper: T): T {
 	return wrapper
 }
 
-export { closestTag, isEmptyFragment, normalizeInline, PLACEHOLDER, unwrapFrom, wrapNode }
+export { closestTag, isEmptyFragment, normalizeInline, PLACEHOLDER, splitAround, unwrapFrom, wrapNode }
