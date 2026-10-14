@@ -45,8 +45,10 @@ function useResizeDrag({ onMove, onEnd }: UseResizeDragOptions) {
 
 	function handleEnd(event: PointerEvent): void {
 		if (!isOwn(event)) return
-		throttle.flush()
-		onEnd()
+		const isCancelled = event.type === 'pointercancel'
+		if (isCancelled) throttle.cancel()
+		else throttle.flush()
+		onEnd(isCancelled)
 	}
 
 	/** Повесить слушатели перетаскивания и выставить курсор/запрет выделения на body */

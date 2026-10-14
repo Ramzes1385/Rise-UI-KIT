@@ -1,23 +1,24 @@
 /** Composable: клавиатура панели инструментов по APG Toolbar — одна точка Tab, стрелки, Home и End */
-import { onBeforeUnmount, onMounted } from 'vue'
+import { onBeforeUnmount, onMounted, watch } from 'vue'
 import type { UseToolbarKeyboardOptions, UseToolbarKeyboardReturn } from './types/useToolbarKeyboard.types'
 
 const ITEM_SELECTOR =
 	'button, a[href], input:not([type="hidden"]), select, textarea, [role="combobox"], [tabindex]:not([tabindex="-1"]), [data-toolbar-item]'
 const SKIPPED = '[inert], [aria-hidden="true"], [hidden], [data-toolbar-skip]'
 const NON_TEXT_INPUT_TYPES = ['button', 'checkbox', 'radio', 'submit', 'reset', 'image']
-const OBSERVED_ATTRIBUTES = ['disabled', 'aria-disabled', 'hidden']
+const OBSERVED_ATTRIBUTES = ['disabled', 'aria-disabled', 'hidden', 'inert', 'aria-hidden', 'data-toolbar-skip']
 
 function isTextEntry(element: HTMLElement): boolean {
 	if (element.matches('textarea, [contenteditable]:not([contenteditable="false"])')) return true
 	return element instanceof HTMLInputElement && !NON_TEXT_INPUT_TYPES.includes(element.type)
 }
 
-/** В поле ввода стрелка уводит фокус, только если каретка уже у края текста в сторону движения: иначе она двигает каретку */
+/** В поле ввода стрелка уводит фокус, только если каретка уже у края текста в сторону движения: иначе она двигает каретку;
+ * поле без каретки (`type="number"`, `email`) стрелки оставляет себе */
 function isCaretAtEdge(element: HTMLElement, direction: 1 | -1): boolean {
 	if (!(element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement)) return false
 	const { selectionStart, selectionEnd, value } = element
-	if (selectionStart === null || selectionEnd === null) return true
+	if (selectionStart === null || selectionEnd === null) return false
 	return selectionStart === selectionEnd && selectionStart === (direction === 1 ? value.length : 0)
 }
 
@@ -66,12 +67,17 @@ function useRovingItems(rootRef: UseToolbarKeyboardOptions['rootRef']) {
 		sync()
 	}
 
-	onMounted(() => {
+	function attach(root: HTMLElement | null): void {
+		observer?.disconnect()
+		observer = null
+		if (!root) return
 		sync()
-		if (!rootRef.value) return
 		observer = new MutationObserver(sync)
-		observer.observe(rootRef.value, { childList: true, subtree: true, attributes: true, attributeFilter: OBSERVED_ATTRIBUTES })
-	})
+		observer.observe(root, { childList: true, subtree: true, attributes: true, attributeFilter: OBSERVED_ATTRIBUTES })
+	}
+
+	onMounted(() => attach(rootRef.value))
+	watch(rootRef, attach, { flush: 'post' })
 	onBeforeUnmount(() => observer?.disconnect())
 
 	return { getItems, sync, setActive, isActive: (element: HTMLElement): boolean => element === active }

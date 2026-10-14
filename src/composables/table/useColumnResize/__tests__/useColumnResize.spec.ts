@@ -445,20 +445,21 @@ describe('useColumnResize — перетаскивание по реальной
 		expect(ctx.columns.value[0].width).toBe('125px')
 	})
 
-	it('pointercancel завершает жест так же, как отпускание', () => {
+	it('pointercancel откатывает колонки к ширине до жеста и ничего не сообщает', () => {
 		const { table, ths } = buildHeader([100, 150])
-		const ctx = setup([
-			{ key: 'a', width: '100px' },
-			{ key: 'b', width: '150px' },
-		])
+		const ctx = setup([{ key: 'a', width: '100px' }, { key: 'b' }])
 		cleanup = () => {
 			ctx.wrapper.unmount()
 			table.remove()
 		}
 		ctx.result.startResize(press(ths[0].handle, 0), 'a')
 		move(15)
+		expect(ctx.columns.value[0].width).toBe('115px')
 		document.dispatchEvent(new Event('pointercancel'))
-		expect(ctx.onColumnResize).toHaveBeenCalledWith('a', 115)
+		expect(ctx.columns.value[0].width).toBe('100px')
+		expect(ctx.columns.value[1].width).toBeUndefined()
+		expect(ctx.onColumnResize).not.toHaveBeenCalled()
+		expect(ctx.onColumnsChange).not.toHaveBeenCalled()
 		expect(document.body.style.userSelect).toBe('')
 	})
 

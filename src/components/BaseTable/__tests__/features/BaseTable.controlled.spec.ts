@@ -185,6 +185,18 @@ describe('BaseTable: selectAllScope', () => {
 		wrapper.unmount()
 	})
 
+	it('page: на странице 2 «Выбрать все» не сбрасывает выбор страницы 1, повторное нажатие снимает только страницу 2', async () => {
+		const wrapper = mountTable({ behavior: { selectable: true }, selectAllScope: 'page' })
+		await wrapper.find('tbody tr input[type="checkbox"]').setValue(true)
+		await pageButton(wrapper, '2')?.trigger('click')
+		await nextTick()
+		await wrapper.find('thead input[type="checkbox"]').setValue(true)
+		expect(selectedCount(wrapper)).toBe(4)
+		await wrapper.find('thead input[type="checkbox"]').setValue(false)
+		expect(selectedCount(wrapper)).toBe(1)
+		wrapper.unmount()
+	})
+
 	it('all — все переданные rows, даже скрытые поиском', async () => {
 		vi.useFakeTimers()
 		const wrapper = mountTable({ behavior: { selectable: true }, features: { search: true }, searchDebounce: 0, selectAllScope: 'all' })

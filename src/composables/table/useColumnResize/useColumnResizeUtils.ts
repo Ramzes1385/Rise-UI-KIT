@@ -71,4 +71,12 @@ function applyResizeWidths({ columns, state, minWidth, pageX }: ApplyResizeWidth
 	if (sibling) sibling.width = `${total - width}px`
 }
 
-export { applyResizeWidths, createIdleResizeState, findSiblingKey, getWidthBounds, measureSiblingWidth }
+/** Запомнить ширины колонок с указанными ключами; возвращённая функция возвращает их (откат жеста по `pointercancel`) */
+function snapshotWidths(columns: ResizeColumn[], keys: string[]): () => void {
+	const saved = columns.filter(column => keys.includes(column.key)).map(column => ({ column, width: column.width }))
+	return () => {
+		for (const { column, width } of saved) column.width = width
+	}
+}
+
+export { applyResizeWidths, createIdleResizeState, findSiblingKey, getWidthBounds, measureSiblingWidth, snapshotWidths }

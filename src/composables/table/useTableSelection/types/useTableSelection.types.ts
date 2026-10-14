@@ -9,6 +9,11 @@ export interface UseTableSelectionOptions {
 	 * По умолчанию совпадает с rows.
 	 */
 	filteredRows?: Ref<TableRow[]>
+	/**
+	 * Сохранять ли выбор строк вне `filteredRows` при «Выбрать все» и снятии выбора (область «страница»).
+	 * По умолчанию `false`: строки вне области теряют выбор
+	 */
+	isKeepingOutOfScope?: () => boolean
 	/** Callback при изменении выбора */
 	onSelect?: (rows: TableRow[]) => void
 	/**

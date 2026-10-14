@@ -39,6 +39,12 @@
 		}
 	}
 
+	@media (pointer: coarse) {
+		&__th--resizable {
+			padding-right: calc(var(--tbl-pad-right) + #{sz(16px)});
+		}
+	}
+
 	&__th-label {
 		min-width: 0;
 		@include truncate;

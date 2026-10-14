@@ -40,7 +40,7 @@ function useTablePagination(options: UseTablePaginationOptions): UseTablePaginat
 
 	watch(pageSize, newSize => {
 		localPageSize.value = newSize
-		currentPage.value = 1
+		if (page?.() === undefined) currentPage.value = 1
 		loadedCount.value = effectivePageSize.value
 	})
 

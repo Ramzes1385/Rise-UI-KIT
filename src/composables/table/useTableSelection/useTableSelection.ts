@@ -28,7 +28,7 @@ function syncSelectionWithRows(state: SelectionSyncState): void {
 }
 
 function useTableSelection(options: UseTableSelectionOptions): UseTableSelectionReturn {
-	const { rows, filteredRows = rows, onSelect, onSelectedIdsChange } = options
+	const { rows, filteredRows = rows, onSelect, onSelectedIdsChange, isKeepingOutOfScope = () => false } = options
 	const { isControlled, internalIds, selectedIds, selectedRows } = useTableSelectedIds(options)
 
 	function applySelection(next: Set<string | number>): void {
@@ -59,15 +59,18 @@ function useTableSelection(options: UseTableSelectionOptions): UseTableSelection
 	 * Результат в обе стороны — подмножество отфильтрованных строк: ранее выбранные, но скрытые поиском
 	 * строки снимаются, иначе массовое действие по payload `select` затронуло бы невидимые данные.
 	 * Выбор disabled-строк не меняется: пользователь не может изменить его и чекбоксом строки.
+	 * Если `isKeepingOutOfScope` вернул `true` (область «страница»), выбор строк вне области сохраняется: на странице 2
+	 * действие шапки не трогает выбор страницы 1.
 	 */
 	function toggleAll(): void {
 		const selectable = selectableFilteredRows.value
 		if (!selectable.length) return
 
 		const shouldSelect = !isAllSelected.value
-		const next = collectDisabledSelectedIds(rows.value, selectedIds.value)
-		if (shouldSelect) {
-			for (const row of selectable) next.add(row.id)
+		const next = isKeepingOutOfScope() ? new Set(selectedIds.value) : collectDisabledSelectedIds(rows.value, selectedIds.value)
+		for (const row of selectable) {
+			if (shouldSelect) next.add(row.id)
+			else next.delete(row.id)
 		}
 		applySelection(next)
 	}

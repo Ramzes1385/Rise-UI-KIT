@@ -124,13 +124,14 @@ describe('useToolbarKeyboard', () => {
 		wrapper.unmount()
 	})
 
-	it('поле без каретки (number) и флажок не блокируют стрелки', () => {
-		const { root, wrapper } = mountToolbar('<input type="number" /><input type="checkbox" /><button>B</button>')
-		const number = root.querySelector('input[type="number"]') as HTMLInputElement
-		const checkbox = root.querySelector('input[type="checkbox"]') as HTMLInputElement
+	it('поле без каретки (number, email) оставляет стрелки себе, флажок не блокирует', () => {
+		const { root, wrapper } = mountToolbar('<input type="number" /><input type="email" /><input type="checkbox" /><button>B</button>')
+		const [number, email, checkbox] = [...root.querySelectorAll<HTMLInputElement>('input')]
 		number.focus()
-		press(number, 'ArrowRight')
-		expect(document.activeElement).toBe(checkbox)
+		expect(press(number, 'ArrowRight').defaultPrevented).toBe(false)
+		expect(press(number, 'ArrowLeft').defaultPrevented).toBe(false)
+		expect(document.activeElement).toBe(number)
+		expect(press(email, 'ArrowRight').defaultPrevented).toBe(false)
 		press(checkbox, 'ArrowRight')
 		expect(document.activeElement).toBe(buttons(root)[0])
 		wrapper.unmount()
@@ -215,6 +216,42 @@ describe('useToolbarKeyboard', () => {
 		})
 		const wrapper = mount(Host)
 		expect(api.getItems()).toEqual([])
+		wrapper.unmount()
+	})
+
+	it('панель, появившаяся по v-if после монтирования, получает roving tabindex', async () => {
+		const isShown = ref(false)
+		const Host = defineComponent({
+			setup() {
+				const rootRef = ref<HTMLElement | null>(null)
+				const api = useToolbarKeyboard({ rootRef })
+				return () =>
+					isShown.value
+						? h('div', { ref: rootRef, role: 'toolbar', onFocusin: api.handleFocusin }, [h('button', 'A'), h('button', 'B')])
+						: h('p')
+			},
+		})
+		const wrapper = mount(Host, { attachTo: document.body })
+		isShown.value = true
+		await nextTick()
+		await nextTick()
+		expect(buttons(wrapper.element as HTMLElement).map(item => item.tabIndex)).toEqual([0, -1])
+		isShown.value = false
+		await nextTick()
+		wrapper.unmount()
+	})
+
+	it('inert, aria-hidden и data-toolbar-skip на существующем элементе исключают его из обхода', async () => {
+		const { root, wrapper, api } = mountToolbar('<button>A</button><button>B</button><button>C</button>')
+		const [, second, third] = buttons(root)
+		second.setAttribute('inert', '')
+		third.setAttribute('aria-hidden', 'true')
+		await new Promise(resolve => setTimeout(resolve))
+		expect(api.getItems().map(item => item.textContent)).toEqual(['A'])
+		third.removeAttribute('aria-hidden')
+		third.setAttribute('data-toolbar-skip', '')
+		await new Promise(resolve => setTimeout(resolve))
+		expect(api.getItems().map(item => item.textContent)).toEqual(['A'])
 		wrapper.unmount()
 	})
 })

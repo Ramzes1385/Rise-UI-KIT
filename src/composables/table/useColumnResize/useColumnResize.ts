@@ -4,7 +4,7 @@ import { toHTMLElement } from '@utils/dom/domUtils'
 import { createKeyboardResize } from './createKeyboardResize'
 import { getCurrentInstance, onBeforeUnmount, ref } from 'vue'
 import type { ResizeColumn, ResizeState, UseColumnResizeParams } from './types/useColumnResize.types'
-import { applyResizeWidths, createIdleResizeState, findSiblingKey, measureSiblingWidth } from './useColumnResizeUtils'
+import { applyResizeWidths, createIdleResizeState, findSiblingKey, measureSiblingWidth, snapshotWidths } from './useColumnResizeUtils'
 
 function useColumnResize<TColumn extends ResizeColumn>({
 	columns,
@@ -14,6 +14,7 @@ function useColumnResize<TColumn extends ResizeColumn>({
 	onColumnsChange,
 }: UseColumnResizeParams<TColumn>) {
 	const resizeState = ref<ResizeState>(createIdleResizeState())
+	let restoreWidths: () => void = () => undefined
 	const resizeBy = createKeyboardResize({ columns, visibleColumns, minWidth, onColumnResize, onColumnsChange })
 
 	const drag = useResizeDrag({ onMove: handleMove, onEnd: stopResize })
@@ -21,16 +22,15 @@ function useColumnResize<TColumn extends ResizeColumn>({
 	function handleMove(event: PointerEvent): void {
 		/* istanbul ignore next -- Защитный выход без активного resize. */
 		if (!resizeState.value.isResizing) return
-
 		applyResizeWidths({ columns: columns.value, state: resizeState.value, minWidth, pageX: event.pageX })
 	}
 
-	function stopResize(): void {
+	function stopResize(isCancelled: boolean): void {
 		/* istanbul ignore next -- Защитный выход при повторном завершении resize. */
 		if (!resizeState.value.isResizing) return
 
 		cancelResize()
-
+		if (isCancelled) return restoreWidths()
 		const column = columns.value.find(item => item.key === resizeState.value.columnKey)
 		/* istanbul ignore else -- Колонка существует для пользовательского resize. */
 		if (column) {
@@ -52,12 +52,8 @@ function useColumnResize<TColumn extends ResizeColumn>({
 		if (!th) return
 
 		const siblingKey = findSiblingKey(visibleColumns.value, columnKey)
-		let siblingWidth = 0
-
-		if (siblingKey) {
-			siblingWidth = measureSiblingWidth(th, visibleColumns.value, columnKey)
-		}
-
+		const siblingWidth = siblingKey ? measureSiblingWidth(th, visibleColumns.value, columnKey) : 0
+		restoreWidths = snapshotWidths(columns.value, [columnKey, siblingKey])
 		resizeState.value = {
 			isResizing: true,
 			columnKey,

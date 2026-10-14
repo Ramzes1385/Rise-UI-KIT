@@ -335,13 +335,9 @@
 
 Остаётся:
 
-- ~~BaseToolbar (`role="toolbar"`) держит собственную копию логики стрелок и `tabindex` — перевести на `useToolbarKeyboard` (файлы BaseToolbar не трогали: зона других пачек).~~ — a11y-fixes: BaseToolbar на `useToolbarKeyboard`.
-- Чипы фильтров: Delete и Backspace на чипе не удаляют его (удаляет кнопка внутри бейджа).
-- Фильтр по дате сравнивает сутки в UTC; значение `Date` в ячейке с локальным временем около полуночи может попасть в соседние сутки — если понадобится, добавить `filterConfig.timeZone`.
-
-- BaseToolbar (`role="toolbar"`) держит собственную копию логики стрелок и `tabindex` — перевести на `useToolbarKeyboard` (файлы BaseToolbar не трогали: зона других пачек).
-- ~~Чипы фильтров: Delete и Backspace на чипе не удаляют его (удаляет кнопка внутри бейджа).~~ Сделано в table-2.
-- ~~Фильтр по дате сравнивает сутки в UTC;~~ сделано в table-2 (пояс пользователя, `timeZone`, `filterConfig.timeZone`); прежнее замечание: значение `Date` в ячейке с локальным временем около полуночи может попасть в соседние сутки — если понадобится, добавить `filterConfig.timeZone`.
+- ~~BaseToolbar (`role="toolbar"`) держит собственную копию логики стрелок и `tabindex`~~ — a11y-fixes: BaseToolbar на `useToolbarKeyboard`.
+- ~~Чипы фильтров: Delete и Backspace на чипе не удаляют его~~ — сделано в table-2.
+- ~~Фильтр по дате сравнивает сутки в UTC~~ — сделано в table-2 (пояс пользователя, `timeZone`, `filterConfig.timeZone`).
 - `useTableFilter().addFilter` принимает объект-черновик (`FilterDraft`) вместо трёх `Ref`: внешние вызывающие (он остаётся в namespace) адаптируют вызов.
 - Остаток № 102 вне этой задачи: ~~управляемая страница (`v-model:page`), `v-model:selectedIds`, `clearSelection` и `totalRows` для серверной пагинации (TBL-3)~~ — сделано в table-2 (`docs/v2/MIGRATION.md`, «Задача table-2»), ~~TBL-19 (смещения sticky-колонок)~~ — уже работали по фактическим ширинам, проверено в table-2.
 

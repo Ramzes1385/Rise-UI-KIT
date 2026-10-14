@@ -216,6 +216,22 @@ describe('BaseTable: фильтры через тулбар', () => {
 		wrapper.unmount()
 	})
 
+	it('проп timeZone доходит до фильтра дат: сутки метки считаются в заданном поясе', async () => {
+		const rows: TableRow[] = [{ id: 1, data: { name: 'Поздний', born: Date.UTC(2025, 4, 14, 22, 0) } }]
+		const filtered = async (timeZone: string): Promise<string[]> => {
+			const wrapper = mount(BaseTable, {
+				props: { columns: COLUMNS, rows, timeZone, features: { filters: true } },
+				attachTo: document.body,
+			})
+			await addFilter(wrapper, { column: 'born', operator: 'eq', value: '2025-05-14' })
+			const result = names(wrapper)
+			wrapper.unmount()
+			return result
+		}
+		expect(await filtered('UTC')).toEqual(['Поздний'])
+		expect(await filtered('Europe/Moscow')).toEqual(['Ничего не найдено'])
+	})
+
 	it('multi-select in и select ne', async () => {
 		const wrapper = mountTable()
 		const toolbar = wrapper.findComponent(BaseTableToolbar)

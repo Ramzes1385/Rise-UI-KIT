@@ -110,6 +110,38 @@ describe('useTablePagination', () => {
 		expect(currentPage.value).toBe(1)
 	})
 
+	it('смена pageSize не сбрасывает управляемый page, пока он в пределах', async () => {
+		const pageSize = ref(1)
+		const page = ref(2)
+		const { currentPage } = useTablePagination({
+			processedRows: testRows,
+			loadMode: () => 'pagination',
+			pageSize,
+			page: () => page.value,
+		})
+		expect(currentPage.value).toBe(2)
+		pageSize.value = 2
+		await nextTick()
+		expect(currentPage.value).toBe(2)
+	})
+
+	it('смена pageSize ужимает управляемый page, если он вышел за последнюю страницу', async () => {
+		const pageSize = ref(1)
+		const page = ref(3)
+		const { currentPage } = useTablePagination({
+			processedRows: testRows,
+			loadMode: () => 'pagination',
+			pageSize,
+			page: () => page.value,
+			onPageChange: value => (page.value = value),
+		})
+		pageSize.value = 10
+		await nextTick()
+		await nextTick()
+		expect(page.value).toBe(1)
+		expect(currentPage.value).toBe(1)
+	})
+
 	it('TBL-8: в режиме button смена pageSize сбрасывает число показанных строк', async () => {
 		const pageSize = ref(1)
 		const { displayedRows, loadMore } = useTablePagination({ processedRows: testRows, loadMode: () => 'button', pageSize })

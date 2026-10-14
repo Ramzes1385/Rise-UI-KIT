@@ -86,6 +86,18 @@ describe('useTableSelection', () => {
 			expect(onSelect.mock.calls[0][0].map((row: TableRow) => row.id)).toEqual(['a', 'c'])
 		})
 
+		it('с isKeepingOutOfScope выбор вне области (страница 1) сохраняется при выборе и снятии на странице 2', () => {
+			const rows = ref<TableRow[]>(allRows())
+			const filteredRows = computed(() => rows.value.filter(row => row.id === 'c'))
+			const { selectedIds, toggleRow, toggleAll } = useTableSelection({ rows, filteredRows, isKeepingOutOfScope: () => true })
+
+			toggleRow(rows.value[0])
+			toggleAll()
+			expect([...selectedIds.value].sort()).toEqual(['a', 'c'])
+			toggleAll()
+			expect([...selectedIds.value]).toEqual(['a'])
+		})
+
 		it('isAllSelected учитывает только отфильтрованные строки', () => {
 			const rows = ref<TableRow[]>(allRows())
 			const filteredRows = computed(() => rows.value.filter(row => row.id === 'a'))

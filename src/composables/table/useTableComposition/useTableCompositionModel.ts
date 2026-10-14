@@ -33,6 +33,7 @@ function useTableCompositionModel(options: UseTableCompositionOptions) {
 	const selection = useTableSelection({
 		rows,
 		filteredRows: selectScopeRows,
+		isKeepingOutOfScope: () => selectAllScope?.value === 'page',
 		onSelect: selectedRows => emit('select', selectedRows),
 		selectedIds: () => selectedIds?.value,
 		onSelectedIdsChange: ids => emit('update:selectedIds', ids),
