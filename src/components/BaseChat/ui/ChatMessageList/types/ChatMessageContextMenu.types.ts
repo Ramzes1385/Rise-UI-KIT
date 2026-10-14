@@ -26,3 +26,21 @@ export interface ChatMessageContextMenuExpose {
 	/** Ref на DOM-элемент меню */
 	menuRef: HTMLElement | null
 }
+
+/** Точка вызова меню в координатах окна, px */
+export interface ChatMenuPoint {
+	x: number
+	y: number
+}
+
+export interface ChatMenuSize {
+	width: number
+	height: number
+}
+
+/** Положение меню в системе отсчёта его `position: fixed`, px; `maxHeight` задан, если по высоте не хватает места с обеих сторон */
+export interface ChatMenuPlacement {
+	top: number
+	left: number
+	maxHeight: number | undefined
+}

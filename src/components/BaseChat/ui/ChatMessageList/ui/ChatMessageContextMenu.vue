@@ -76,7 +76,7 @@
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { CHAT_SCALE } from '../../../model/chatScale'
-import { useChatMessageContextMenu } from '../model/useChatMessageContextMenu'
+import { useChatMessageContextMenu } from '../model/contextMenu/useChatMessageContextMenu'
 import type { ChatMessageContextMenuEmits, ChatMessageContextMenuProps } from '../types/ChatMessageContextMenu.types'
 
 const props = withDefaults(defineProps<ChatMessageContextMenuProps>(), {

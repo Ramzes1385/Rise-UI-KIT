@@ -1,14 +1,10 @@
 /** Composable: переход к сообщению чата — прокрутка ленты и подсветка */
 import { onBeforeUnmount } from 'vue'
+import { useReducedMotion } from '@composables/app/useReducedMotion'
 
 /** Подсветка сообщения после перехода к нему, мс */
 const HIGHLIGHT_DURATION_MS = 1500
 const HIGHLIGHT_CLASS = 'base-chat-message-list__item--highlighted'
-
-/** Прокрутка к сообщению: плавная, без анимации при системной настройке «уменьшить движение» */
-function scrollBehavior(): 'auto' | 'smooth' {
-	return typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
-}
 
 /**
  * Сдвиг ленты, при котором сообщение встаёт по центру видимой области (длинное — верхним краем к верху ленты).
@@ -60,6 +56,7 @@ function findMessageElement(container: HTMLElement, messageId: string): HTMLElem
 /** Описание: возвращает переход к сообщению по id — лента прокручивается так, чтобы сообщение встало по центру, и оно подсвечивается */
 function useScrollToMessage(listRef: { value: HTMLElement | null }): (messageId: string) => void {
 	const highlight = useMessageHighlight()
+	const isReducedMotion = useReducedMotion()
 	return messageId => {
 		const container = listRef.value
 		/* istanbul ignore next — defensive */
@@ -67,7 +64,7 @@ function useScrollToMessage(listRef: { value: HTMLElement | null }): (messageId:
 		const element = findMessageElement(container, messageId)
 		if (!element) return
 
-		container.scrollBy({ top: centerOffset(container, element), behavior: scrollBehavior() })
+		container.scrollBy({ top: centerOffset(container, element), behavior: isReducedMotion.value ? 'auto' : 'smooth' })
 		highlight(element)
 	}
 }

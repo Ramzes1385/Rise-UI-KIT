@@ -14,10 +14,10 @@
 				:size-scale="sizeScale"
 				@keydown="handleKeydown" />
 			<div class="base-comment-thread__composer-actions">
-				<BaseButton v-if="isReply" variant="ghost" :size-scale="sizeScale * 0.875" @click="cancel">
+				<BaseButton v-if="isReply" variant="ghost" :size-scale="buttonScale" @click="cancel">
 					{{ UI_COMMENT_THREAD.CANCEL }}
 				</BaseButton>
-				<BaseButton type="submit" :size-scale="sizeScale * 0.875" :is-disabled="!canSend">{{ UI_COMMENT_THREAD.SEND }}</BaseButton>
+				<BaseButton type="submit" :size-scale="buttonScale" :is-disabled="!canSend">{{ UI_COMMENT_THREAD.SEND }}</BaseButton>
 			</div>
 		</div>
 	</form>
@@ -35,5 +35,5 @@ const props = defineProps<CommentComposerProps>()
 
 const emit = defineEmits<CommentComposerEmits>()
 
-const { ui, draft, textareaRef, canSend, submit, cancel, handleKeydown } = useCommentComposer(props, emit)
+const { ui, draft, buttonScale, textareaRef, canSend, submit, cancel, handleKeydown } = useCommentComposer(props, emit)
 </script>

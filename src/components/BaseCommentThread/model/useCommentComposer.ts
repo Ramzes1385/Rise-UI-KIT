@@ -1,7 +1,10 @@
 import { computed, inject, onMounted, ref } from 'vue'
 import { COMMENT_THREAD_KEY } from './thread/commentTree'
+import { calcDerivedScale } from '@utils/media/iconUtils'
 import type { CommentThreadContext } from '../types/BaseCommentThread.types'
 import type { CommentComposerEmits, CommentComposerProps } from '../types/CommentComposer.types'
+
+const BUTTON_SCALE_RATIO = 0.875
 
 export function useCommentComposer(props: CommentComposerProps, emit: CommentComposerEmits) {
 	const draft = ref('')
@@ -19,6 +22,7 @@ export function useCommentComposer(props: CommentComposerProps, emit: CommentCom
 	return {
 		ui: (inject(COMMENT_THREAD_KEY) as CommentThreadContext).ui,
 		draft,
+		buttonScale: computed(() => calcDerivedScale(props.sizeScale, BUTTON_SCALE_RATIO)),
 		textareaRef,
 		canSend: computed(() => draft.value.trim().length > 0),
 		submit,

@@ -5,10 +5,7 @@ import { useClickOutside } from '@composables/overlay/useClickOutside'
 import type { ChatMessageContextMenuExpose } from '@components/BaseChat/ui/ChatMessageList/types/ChatMessageContextMenu.types'
 import type { ChatContextMenuState, UseChatContextMenuOptions, UseChatMessageActionsOptions } from './types/useChatMessageActions.types'
 
-/** Размер контекстного меню сообщения, px: меню не выходит за край окна */
-const CONTEXT_MENU_WIDTH = 200
-const CONTEXT_MENU_HEIGHT = 280
-/** Отступ меню от края окна, px */
+/** Отступ точки вызова от левого и верхнего края окна, px; у правого и нижнего меню переворачивается по своему размеру */
 const CONTEXT_MENU_GAP = 16
 
 /**
@@ -27,13 +24,6 @@ const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml'
 function getFocusedHtmlElement(ownerDocument: Document): HTMLElement | null {
 	const active = ownerDocument.activeElement
 	return active?.namespaceURI === HTML_NAMESPACE ? (active as HTMLElement) : null
-}
-
-/** Координата меню по одной оси: у курсора, но не дальше края окна */
-function clampToWindow(position: number, size: number, windowSize: number): number {
-	/* istanbul ignore next — boundary */
-	const fitted = position + size > windowSize ? windowSize - size - CONTEXT_MENU_GAP : position
-	return Math.max(CONTEXT_MENU_GAP, fitted)
 }
 
 /** Описание: состояние контекстного меню сообщения — открытие у курсора, закрытие кликом снаружи, прокруткой ленты и с возвратом фокуса */
@@ -60,8 +50,8 @@ function useChatContextMenu(options: UseChatContextMenuOptions) {
 		scrollTopAtOpen = listRef.value?.scrollTop ?? 0
 		contextMenu.value = {
 			isOpen: true,
-			x: clampToWindow(event.clientX, CONTEXT_MENU_WIDTH, window.innerWidth),
-			y: clampToWindow(event.clientY, CONTEXT_MENU_HEIGHT, window.innerHeight),
+			x: Math.max(CONTEXT_MENU_GAP, event.clientX),
+			y: Math.max(CONTEXT_MENU_GAP, event.clientY),
 			message,
 		}
 	}

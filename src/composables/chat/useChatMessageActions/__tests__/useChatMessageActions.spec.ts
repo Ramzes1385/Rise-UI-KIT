@@ -526,7 +526,11 @@ describe('useChatMessageActions', () => {
 		})
 
 		it('при «уменьшить движение» прокручивает без анимации', () => {
-			vi.stubGlobal('matchMedia', (query: string) => ({ matches: query.includes('reduce') }))
+			vi.stubGlobal('matchMedia', (query: string) => ({
+				matches: query.includes('reduce'),
+				addEventListener: vi.fn(),
+				removeEventListener: vi.fn(),
+			}))
 			const { actions, list } = setup()
 			const scrollBy = vi.fn()
 			list.scrollBy = scrollBy

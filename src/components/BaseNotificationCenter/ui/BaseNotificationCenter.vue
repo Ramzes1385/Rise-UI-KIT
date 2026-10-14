@@ -9,7 +9,7 @@
 			<BaseButton
 				:class="ui('read-all')"
 				variant="ghost"
-				:size-scale="sizeScale * 0.875"
+				:size-scale="compactScale"
 				:is-disabled="!unread"
 				is-focusable-when-disabled
 				@click="readAll">
@@ -22,7 +22,7 @@
 			:options="filterOptions"
 			:aria-label="UI_NOTIFICATION_CENTER.FILTER"
 			is-block
-			:size-scale="sizeScale * 0.875"
+			:size-scale="compactScale"
 			@update:model-value="setFilter" />
 		<TransitionGroup
 			v-if="visible.length"
@@ -57,7 +57,7 @@
 				<BaseButton
 					:class="ui('toggle')"
 					variant="ghost"
-					:size-scale="sizeScale * 0.875"
+					:size-scale="compactScale"
 					:aria-label="item.isRead ? UI_NOTIFICATION_CENTER.MARK_UNREAD : UI_NOTIFICATION_CENTER.MARK_READ"
 					@click="toggle(item)">
 					<template #left><BaseIcon :name="item.isRead ? 'rotate-ccw' : 'check'" /></template>
@@ -115,6 +115,7 @@ const {
 	variantStyle,
 	customColorStyle,
 	classes,
+	compactScale,
 	titleId,
 	filter,
 	setFilter,

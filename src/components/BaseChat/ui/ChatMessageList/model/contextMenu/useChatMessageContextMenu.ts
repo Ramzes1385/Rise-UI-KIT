@@ -1,9 +1,10 @@
 import type { Ref } from 'vue'
+import { placeContextMenu } from './contextMenuPlacement'
 import { useLayerIndex } from '@composables/app/useLayerStack'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import { computed, getCurrentInstance, nextTick, ref, watch } from 'vue'
 import { useInheritedThemeAttrs, useTeleportTarget } from '@composables/app/useTeleportTarget'
-import type { ChatMessageContextMenuEmits, ChatMessageContextMenuProps } from '../types/ChatMessageContextMenu.types'
+import type { ChatMenuPlacement, ChatMessageContextMenuEmits, ChatMessageContextMenuProps } from '../../types/ChatMessageContextMenu.types'
 
 function getItems(menu: HTMLElement | null): HTMLElement[] {
 	return Array.from(menu?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? [])
@@ -42,10 +43,16 @@ export function useChatMessageContextMenu(props: ChatMessageContextMenuProps, em
 		() => props.isOpen,
 	)
 	const layerStyle = useLayerIndex(() => props.isOpen)
+	const placement = ref<ChatMenuPlacement | null>(null)
 	watch(
-		() => props.isOpen,
-		isOpen => {
-			if (isOpen) nextTick(() => getItems(menuRef.value)[0]?.focus())
+		() => [props.isOpen, props.x, props.y],
+		() => {
+			placement.value = null
+			if (!props.isOpen) return
+			nextTick(() => {
+				if (menuRef.value) placement.value = placeContextMenu({ x: props.x, y: props.y }, menuRef.value)
+				getItems(menuRef.value)[0]?.focus()
+			})
 		},
 		{ immediate: true },
 	)
@@ -55,9 +62,10 @@ export function useChatMessageContextMenu(props: ChatMessageContextMenuProps, em
 		menuRef,
 		inheritedTheme,
 		layerStyle,
-		menuStyle: computed(() => ({
-			top: `${props.y}px`,
-			left: `${props.x}px`,
+		menuStyle: computed<Record<string, string>>(() => ({
+			top: `${placement.value?.top ?? props.y}px`,
+			left: `${placement.value?.left ?? props.x}px`,
+			...(placement.value?.maxHeight === undefined ? {} : { maxHeight: `${placement.value.maxHeight}px`, overflowY: 'auto' }),
 			'--size-scale': String(props.sizeScale / SIZE_SCALE_DEFAULT),
 		})),
 		handleKeydown: createMenuKeydown(menuRef, emit),

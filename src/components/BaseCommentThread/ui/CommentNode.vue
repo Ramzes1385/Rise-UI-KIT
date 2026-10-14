@@ -8,7 +8,7 @@
 				<div :class="ui('meta')">
 					<span :id="authorId" :class="ui('author')">{{ comment.author.name }}</span>
 					<span v-if="parentAuthor" class="base-comment-thread__reply-to">
-						<BaseIcon name="reply" :size-scale="sizeScale * 0.75" aria-hidden="true" />
+						<BaseIcon name="reply" :size-scale="compactScale" aria-hidden="true" />
 						<span class="base-comment-thread__sr-only">{{ UI_COMMENT_THREAD.IN_REPLY_TO }}</span>
 						{{ parentAuthor }}
 					</span>
@@ -19,7 +19,7 @@
 					<BaseButton
 						class="base-comment-thread__like"
 						variant="ghost"
-						:size-scale="sizeScale * 0.75"
+						:size-scale="compactScale"
 						:aria-pressed="Boolean(comment.isLiked)"
 						@click="toggleLike">
 						{{ likeText }}
@@ -28,7 +28,7 @@
 						v-if="!isReadonly"
 						ref="replyButtonRef"
 						variant="ghost"
-						:size-scale="sizeScale * 0.75"
+						:size-scale="compactScale"
 						:aria-expanded="isReplying"
 						@click="openReply">
 						{{ UI_COMMENT_THREAD.REPLY }}
@@ -36,7 +36,7 @@
 					<BaseButton
 						v-if="replies.length"
 						variant="ghost"
-						:size-scale="sizeScale * 0.75"
+						:size-scale="compactScale"
 						:aria-expanded="!isCollapsed"
 						:aria-controls="repliesId"
 						@click="toggleReplies">
@@ -100,6 +100,7 @@ const {
 	isReadonly,
 	isFlat,
 	sizeScale,
+	compactScale,
 	time,
 	iso,
 	likeText,

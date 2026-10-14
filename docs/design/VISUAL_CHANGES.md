@@ -2032,3 +2032,4 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 
 - **BaseNotification** (`overlay-basenotification--*`): ожидаемых расхождений снимков нет — DOM и стили при одной позиции прежние. Новая история `overlay-basenotification--queue` (скриншот-теста нет).
 - **BaseSideBar** (`navigation-basesidebar--*`): ожидаемых расхождений снимков нет — меняется только поведение (сворачивание активной группы, сравнение `activePath`, ключи).
+- **BaseChat** (`chat-basechat--*`, меню сообщения): у края окна и в предке с `transform` меню встаёт на новое место (раньше выходило за край или уезжало на смещение предка); в историях меню открывается у курсора, расхождений снимков не ожидается — скриншот-тестов с открытым меню у краёв нет. **BaseCommentThread**, **BaseNotificationCenter**: вид прежний (проверить снимками до/после).

@@ -1,5 +1,6 @@
 import type { ComponentPublicInstance } from 'vue'
 import { UI_COMMENT_THREAD } from '@/locales/messages'
+import { calcDerivedScale } from '@utils/media/iconUtils'
 import { formatRelativeTime } from '@utils/data/dateUtils'
 import { computed, inject, nextTick, ref, useId } from 'vue'
 import type { CommentNodeProps } from '../types/CommentNode.types'
@@ -21,6 +22,8 @@ function useNodeTexts(props: CommentNodeProps, isCollapsed: () => boolean) {
 	}
 }
 
+const COMPACT_SCALE_RATIO = 0.75
+
 export function useCommentNode(props: CommentNodeProps) {
 	const context = inject(COMMENT_THREAD_KEY) as CommentThreadContext
 	const ownId = useId()
@@ -41,6 +44,7 @@ export function useCommentNode(props: CommentNodeProps) {
 		isReadonly: computed(() => context.isReadonly()),
 		isFlat: computed(() => props.depth + 1 >= context.maxDepth()),
 		sizeScale: computed(() => context.sizeScale()),
+		compactScale: computed(() => calcDerivedScale(context.sizeScale(), COMPACT_SCALE_RATIO)),
 		time: computed(() => formatRelativeTime(props.comment.date, { now: context.now() })),
 		iso: computed(() => new Date(props.comment.date).toISOString()),
 		openReply: (): void => context.openReply(props.comment.id),

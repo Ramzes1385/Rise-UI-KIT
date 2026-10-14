@@ -1,0 +1,154 @@
+import '@testing-library/jest-dom/vitest'
+import { nextTick } from 'vue'
+import { mount } from '@vue/test-utils'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import ChatMessageContextMenu from '../ui/ChatMessageContextMenu.vue'
+import { placeContextMenu } from '../model/contextMenu/contextMenuPlacement'
+
+const VIEWPORT = { width: 1000, height: 800 }
+
+function menuElement(size: { width: number; height: number }, parent: HTMLElement = document.body): HTMLElement {
+	const menu = document.createElement('div')
+	Object.defineProperty(menu, 'offsetWidth', { value: size.width })
+	Object.defineProperty(menu, 'offsetHeight', { value: size.height })
+	parent.append(menu)
+	return menu
+}
+
+function stubViewport(): void {
+	vi.spyOn(document.documentElement, 'clientWidth', 'get').mockReturnValue(VIEWPORT.width)
+	vi.spyOn(document.documentElement, 'clientHeight', 'get').mockReturnValue(VIEWPORT.height)
+}
+
+afterEach(() => {
+	document.body.innerHTML = ''
+	vi.restoreAllMocks()
+})
+
+describe('placeContextMenu', () => {
+	it('у курсора, если места хватает', () => {
+		stubViewport()
+
+		expect(placeContextMenu({ x: 100, y: 120 }, menuElement({ width: 200, height: 280 }))).toEqual({
+			top: 120,
+			left: 100,
+			maxHeight: undefined,
+		})
+	})
+
+	it('у правого края переворачивается влево от курсора', () => {
+		stubViewport()
+
+		expect(placeContextMenu({ x: 950, y: 100 }, menuElement({ width: 200, height: 100 })).left).toBe(750)
+	})
+
+	it('если не помещается ни справа, ни слева — прижимается к краю окна с отступом', () => {
+		stubViewport()
+
+		expect(placeContextMenu({ x: 100, y: 100 }, menuElement({ width: 1100, height: 100 })).left).toBe(8)
+		expect(placeContextMenu({ x: 5, y: 100 }, menuElement({ width: 100, height: 100 })).left).toBe(8)
+	})
+
+	it('у нижнего края открывается вверх от курсора, а не выходит за окно', () => {
+		stubViewport()
+
+		expect(placeContextMenu({ x: 100, y: 700 }, menuElement({ width: 200, height: 280 })).top).toBe(420)
+	})
+
+	it('меню выше свободного места с обеих сторон: берётся большая сторона, высота ограничивается', () => {
+		stubViewport()
+
+		expect(placeContextMenu({ x: 100, y: 300 }, menuElement({ width: 200, height: 900 }))).toEqual({
+			top: 300,
+			left: 100,
+			maxHeight: 492,
+		})
+		expect(placeContextMenu({ x: 100, y: 600 }, menuElement({ width: 200, height: 900 }))).toEqual({
+			top: 8,
+			left: 100,
+			maxHeight: 592,
+		})
+	})
+
+	it('без раскладки (размер 0) остаётся у курсора', () => {
+		expect(placeContextMenu({ x: 30, y: 40 }, menuElement({ width: 0, height: 0 }))).toEqual({
+			top: 40,
+			left: 30,
+			maxHeight: undefined,
+		})
+	})
+
+	it('без clientWidth берётся размер окна', () => {
+		vi.spyOn(document.documentElement, 'clientWidth', 'get').mockReturnValue(0)
+		vi.spyOn(document.documentElement, 'clientHeight', 'get').mockReturnValue(0)
+		vi.stubGlobal('innerWidth', 400)
+		vi.stubGlobal('innerHeight', 300)
+
+		expect(placeContextMenu({ x: 390, y: 290 }, menuElement({ width: 100, height: 100 }))).toEqual({
+			top: 190,
+			left: 290,
+			maxHeight: undefined,
+		})
+		vi.unstubAllGlobals()
+	})
+
+	it('внутри предка с transform координаты отсчитываются от него', () => {
+		stubViewport()
+		const frame = document.createElement('div')
+		frame.style.transform = 'translate(0, 0)'
+		frame.getBoundingClientRect = () => ({ left: 50, top: 70, right: 0, bottom: 0, width: 0, height: 0, x: 50, y: 70 }) as DOMRect
+		document.body.append(frame)
+		const menu = menuElement({ width: 100, height: 100 }, frame)
+
+		expect(placeContextMenu({ x: 200, y: 300 }, menu)).toEqual({ top: 230, left: 150, maxHeight: undefined })
+	})
+})
+
+describe('ChatMessageContextMenu: положение', () => {
+	const props = {
+		isOpen: false,
+		x: 960,
+		y: 790,
+		message: { id: 'm1', text: 'Привет', sender: 'me', senderId: 'u1', time: '10:00' },
+		currentUserRole: 'member',
+		sizeScale: 100,
+	} as const
+
+	it('после открытия меню пересчитывается по реальному размеру, закрытое возвращается к точке вызова', async () => {
+		stubViewport()
+		vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(200)
+		vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(300)
+		const wrapper = mount(ChatMessageContextMenu, { props, attachTo: document.body })
+
+		await wrapper.setProps({ isOpen: true })
+		await nextTick()
+		await nextTick()
+		const menu = document.querySelector<HTMLElement>('.base-chat-context-menu')
+		expect(menu?.style.left).toBe('760px')
+		expect(menu?.style.top).toBe('490px')
+		expect(menu?.style.maxHeight).toBe('')
+
+		await wrapper.setProps({ x: 100, y: 100 })
+		await nextTick()
+		await nextTick()
+		expect(document.querySelector<HTMLElement>('.base-chat-context-menu')?.style.left).toBe('100px')
+
+		await wrapper.setProps({ isOpen: false })
+		expect(document.querySelector('.base-chat-context-menu')).toBeNull()
+		wrapper.unmount()
+	})
+
+	it('высота ограничивается, когда меню не помещается ни выше, ни ниже курсора', async () => {
+		stubViewport()
+		vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(200)
+		vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(900)
+		const wrapper = mount(ChatMessageContextMenu, { props: { ...props, isOpen: true, x: 100, y: 300 }, attachTo: document.body })
+		await nextTick()
+		await nextTick()
+
+		const menu = document.querySelector<HTMLElement>('.base-chat-context-menu')
+		expect(menu?.style.maxHeight).toBe('492px')
+		expect(menu?.style.overflowY).toBe('auto')
+		wrapper.unmount()
+	})
+})

@@ -1,16 +1,19 @@
 import { useUi } from '@composables/base/useUi'
 import { computed, ref, useId, watch } from 'vue'
 import { getLocale, pluralize } from '@/locales/state'
+import { calcDerivedScale } from '@utils/media/iconUtils'
 import { formatRelativeTime } from '@utils/data/dateUtils'
 import { UI_NOTIFICATION_CENTER } from '@/locales/messages'
-import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { changedIds, unreadCount, visibleItems, withRead } from './list/notificationList'
+import { SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type {
 	NotificationCenterItem,
 	NotificationFilter,
 	NotificationCenterProps,
 	BaseNotificationCenterEmits,
 } from '../types/BaseNotificationCenter.types'
+
+const COMPACT_SCALE_RATIO = 0.875
 
 function useNotificationFilter(props: NotificationCenterProps, emit: BaseNotificationCenterEmits) {
 	const filter = ref<NotificationFilter>(props.filter ?? 'all')
@@ -42,6 +45,7 @@ export function useBaseNotificationCenter(props: NotificationCenterProps, emit: 
 	return {
 		...useStandardBaseComponent('base-notification-center', props, ['root', 'header', 'list', 'item']),
 		ui: useUi(props, 'base-notification-center'),
+		compactScale: computed(() => calcDerivedScale(props.sizeScale ?? SIZE_SCALE_DEFAULT, COMPACT_SCALE_RATIO)),
 		titleId: `${useId()}-title`,
 		filter,
 		setFilter,
