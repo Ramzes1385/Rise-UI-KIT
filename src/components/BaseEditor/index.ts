@@ -9,5 +9,7 @@ export type {
 	EditorAlign,
 	EditorFormat,
 	EditorHeading,
+	EditorUploadMedia,
+	EditorUploadResult,
 } from './types/BaseEditor.types'
 export { default as BaseEditor } from './ui/BaseEditor.vue'

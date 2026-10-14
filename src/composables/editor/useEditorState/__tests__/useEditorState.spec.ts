@@ -27,14 +27,17 @@ describe('useEditorState', () => {
 		expect(state.isEmpty.value).toBe(true)
 	})
 
-	it.each(['<p><img src="a.png" alt=""></p>', '<video src="a.mp4"></video>', '<hr>'])('медиа %s делает содержимое непустым', html => {
-		const { editorRef, state } = createState()
-		editorRef.value!.innerHTML = html
+	it.each(['<p><img src="a.png" alt=""></p>', '<video src="a.mp4"></video>', '<hr>', '<p><span data-editor-upload="1"></span></p>'])(
+		'медиа %s делает содержимое непустым',
+		html => {
+			const { editorRef, state } = createState()
+			editorRef.value!.innerHTML = html
 
-		state.checkEmpty()
+			state.checkEmpty()
 
-		expect(state.isEmpty.value).toBe(false)
-	})
+			expect(state.isEmpty.value).toBe(false)
+		},
+	)
 
 	it('текст непустой', () => {
 		const { editorRef, state } = createState()

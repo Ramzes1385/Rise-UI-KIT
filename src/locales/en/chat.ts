@@ -159,7 +159,7 @@ export const enChat = {
 		REDO_KEYS: 'Ctrl+Shift+Z',
 		REDO_KEYS_MAC: '⌘⇧Z',
 		UPLOADING: 'Uploading file',
-		UPLOAD_ERROR: 'Could not upload the file',
+		UPLOAD_ERROR: 'Could not upload "{name}"',
 	},
 	markdown: {
 		COPY_CODE: 'Copy',

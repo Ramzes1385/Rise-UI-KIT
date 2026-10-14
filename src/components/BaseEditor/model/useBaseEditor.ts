@@ -6,6 +6,8 @@ import { EDITOR_MENU_SCALE_RATIO } from './editorScale'
 import { useEditorField } from './field/useEditorField'
 import { createEditorInput } from './input/editorInput'
 import type { DropPoint } from '../types/EditorApi.types'
+import { useEditorUpload } from './media/useEditorUpload'
+import { stripUploadPlaceholders } from './media/editorUpload'
 import type { BaseSelectOption } from '@components/BaseSelect'
 import { escapeHtml, sanitizeHtml } from '@utils/dom/htmlUtils'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
@@ -54,7 +56,12 @@ function headingOptions(): BaseSelectOption[] {
 function useEditorEngine(
 	emit: BaseEditorEmits,
 	refs: { editorRef: Ref<HTMLDivElement | null>; codeTextareaRef: Ref<{ textareaRef: HTMLTextAreaElement | null } | null> },
-	options: { isLocked: ComputedRef<boolean>; sanitize: (html: string) => string; pending: string[] },
+	options: {
+		isLocked: ComputedRef<boolean>
+		sanitize: (html: string) => string
+		pending: string[]
+		props: EditorProps
+	},
 ) {
 	const handlers = {} as EditorInputHandlers
 	const composition = useEditorComposition(() => handlers.handleInput('typing'))
@@ -84,7 +91,16 @@ function useEditorEngine(
 		composition.handleCompositionStart()
 		toolbar.history.capture()
 	}
-	return { toolbar, state, handleInput: handlers.handleInput, composition, handleCompositionStart }
+	const upload = useEditorUpload({
+		editorRef: refs.editorRef,
+		toolbar,
+		sanitize: options.sanitize,
+		getUpload: () => options.props.uploadMedia,
+		isLocked: () => options.isLocked.value,
+		commit: () => handlers.handleInput('command'),
+		onError: (file, error) => emit('upload-error', { file, error }),
+	})
+	return { toolbar, state, handleInput: handlers.handleInput, composition, handleCompositionStart, upload }
 }
 
 function plainTextToHtml(text: string): string {
@@ -112,11 +128,20 @@ function useSafeInsert(
 	isLocked: ComputedRef<boolean>,
 	options: { sanitize: (html: string) => string; engine: ReturnType<typeof useEditorEngine>; editorRef: Ref<HTMLElement | null> },
 ) {
-	const { toolbar, composition } = options.engine
+	const { toolbar, composition, upload } = options.engine
 	const isInternalDrag = ref(false)
 	const state: { dropPoint: DropPoint | null } = { dropPoint: null }
+	function startUpload(event: InputEvent, data: DataTransfer | null, beforeStart?: () => void): boolean {
+		const files = upload.takeFiles(data)
+		if (!files.length) return false
+		event.preventDefault()
+		beforeStart?.()
+		upload.startAll(files)
+		return true
+	}
 	function insertFromPaste(event: InputEvent): void {
 		const data = event.dataTransfer
+		if (startUpload(event, data)) return
 		const html = data?.getData('text/html')
 		const text = data?.getData('text/plain')
 		if (!html && !text) return
@@ -125,7 +150,9 @@ function useSafeInsert(
 	}
 	function insertFromDrop(event: InputEvent): void {
 		const html = event.dataTransfer?.getData('text/html')
-		if (isInternalDrag.value || !html) return
+		if (isInternalDrag.value) return
+		if (startUpload(event, event.dataTransfer, () => selectDropTarget(event, state.dropPoint))) return
+		if (!html) return
 		event.preventDefault()
 		selectDropTarget(event, state.dropPoint)
 		toolbar.insertHtml(options.sanitize(html), 'drag')
@@ -250,6 +277,15 @@ function useEditorFocus(
 	}
 }
 
+function uploadState(upload: ReturnType<typeof useEditorUpload>) {
+	return {
+		handleImageUpload: upload.handleImageUpload,
+		handleVideoUpload: upload.handleVideoUpload,
+		uploadError: upload.error,
+		isUploading: computed(() => upload.count.value > 0),
+	}
+}
+
 export function useBaseEditor(props: EditorProps, emit: BaseEditorEmits) {
 	const isDisabled = useFormDisabled(() => props.isDisabled)
 	const isLocked = computed(() => props.isReadonly || isDisabled.value)
@@ -257,9 +293,9 @@ export function useBaseEditor(props: EditorProps, emit: BaseEditorEmits) {
 	const standard = useStandardBaseComponent('base-editor', props, EDITOR_ELEMENTS)
 	const editorRef = ref<HTMLDivElement | null>(null)
 	const codeTextareaRef = ref<{ textareaRef: HTMLTextAreaElement | null } | null>(null)
-	const sanitize = (html: string): string => (props.sanitize ?? sanitizeHtml)(stripPlaceholders(html))
+	const sanitize = (html: string): string => (props.sanitize ?? sanitizeHtml)(stripUploadPlaceholders(stripPlaceholders(html)))
 	const pending: string[] = []
-	const engine = useEditorEngine(emit, { editorRef, codeTextareaRef }, { isLocked, sanitize, pending })
+	const engine = useEditorEngine(emit, { editorRef, codeTextareaRef }, { isLocked, sanitize, pending, props })
 	const insert = useSafeInsert(isLocked, { sanitize, engine, editorRef })
 	const link = useEditorLinkDialog(engine.toolbar, isLocked)
 	const mediaMenu = useMediaMenu(editorRef, engine.toolbar, { composition: engine.composition, openLinkDialog: link.openLinkDialog })
@@ -286,6 +322,7 @@ export function useBaseEditor(props: EditorProps, emit: BaseEditorEmits) {
 		menuControlScale: computed(() => props.sizeScale * EDITOR_MENU_SCALE_RATIO),
 		headingOptions: headingOptions(),
 		...engine.toolbar,
+		...uploadState(engine.upload),
 		...link,
 		handleCompositionStart: engine.handleCompositionStart,
 		handleCompositionEnd: engine.composition.handleCompositionEnd,

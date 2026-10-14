@@ -17,7 +17,8 @@
 		@include field-required;
 	}
 
-	&__error-text {
+	&__error-text,
+	&__upload-error {
 		@include field-error;
 	}
 
@@ -230,6 +231,23 @@
 		}
 	}
 
+	&__content &__upload {
+		display: inline-block;
+		min-width: sz(160px);
+		max-width: 100%;
+		min-height: sz(96px);
+		border: 1px dashed var(--rise-border-accented);
+		border-radius: sz(var(--rise-radius-md));
+		background-color: var(--rise-bg-muted);
+		vertical-align: middle;
+		user-select: none;
+
+		@include motion-safe {
+			animation: base-editor-upload-pulse calc(var(--rise-duration-loop) * 2) var(--rise-ease) infinite;
+			@include loop-state;
+		}
+	}
+
 	&:not(&--readonly, &--disabled) &__content :where(img, video) {
 		cursor: context-menu;
 		@include transition(outline-color);
@@ -336,5 +354,11 @@
 
 	&--error &__frame:focus-within {
 		box-shadow: 0 0 0 1px var(--rise-error);
+	}
+}
+
+@keyframes base-editor-upload-pulse {
+	50% {
+		opacity: 0.5;
 	}
 }

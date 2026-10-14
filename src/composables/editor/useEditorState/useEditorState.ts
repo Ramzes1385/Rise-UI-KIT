@@ -7,8 +7,8 @@ import type { UseEditorStateOptions } from './types/useEditorState.types'
 const FALLBACK_TEXT_COLOR = '#000000'
 /** Цвет фона (маркер), выбранный в палитре до первого выбора */
 const DEFAULT_BG_COLOR = '#ffff00'
-/** Содержимое без текста, которое всё равно считается непустым: изображение, видео, разделитель */
-const MEDIA_SELECTOR = 'img, video, hr'
+/** Содержимое без текста, которое всё равно считается непустым: изображение, видео, разделитель, заглушка загружаемого файла */
+const MEDIA_SELECTOR = 'img, video, hr, [data-editor-upload]'
 
 /** В области (или самой области) нет ни текста, ни медиа (изображение, видео, разделитель) */
 function isContentEmpty(root: HTMLElement | null): boolean {

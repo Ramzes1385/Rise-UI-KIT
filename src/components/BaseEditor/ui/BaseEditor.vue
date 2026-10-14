@@ -26,7 +26,7 @@
 			:size-scale="sizeScale"
 			@click="focusContent" />
 
-		<div :class="ui('frame')">
+		<div :class="ui('frame')" :aria-busy="isUploading ? 'true' : undefined">
 			<BaseEditorToolbar
 				:active-states="activeStates"
 				:size-scale="sizeScale"
@@ -115,6 +115,8 @@
 				@focus="handleFocus"
 				@blur="handleBlur" />
 		</div>
+
+		<span v-if="uploadError" role="alert" class="base-editor__upload-error">{{ uploadError }}</span>
 
 		<input v-if="name" type="hidden" :name="name" :value="formValue" :disabled="isDisabled" />
 
@@ -240,6 +242,8 @@ const {
 	control,
 	formField,
 	exposed,
+	uploadError,
+	isUploading,
 	toolbarSlotProps,
 	formValue,
 	handleCompositionStart,

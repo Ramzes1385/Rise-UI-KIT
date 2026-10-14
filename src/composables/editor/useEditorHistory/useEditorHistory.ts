@@ -4,7 +4,13 @@ import { getHistoryAction } from './helpers/historyInput'
 import { readSelectionPath } from './helpers/selectionPath'
 import { isMacPlatform } from '@composables/interaction/useHotkeys'
 import { createHistoryState, recordHistoryChange, resetHistoryState, restoreHistoryStep } from './helpers/historyState'
-import type { EditorHistory, EditorHistoryDirection, EditorHistoryKind, UseEditorHistoryOptions } from './types/useEditorHistory.types'
+import type {
+	EditorHistory,
+	EditorHistoryDirection,
+	EditorHistoryKind,
+	EditorHistoryState,
+	UseEditorHistoryOptions,
+} from './types/useEditorHistory.types'
 
 /** Обработчики событий: клавиши и `beforeinput` запускают отмену, прочий ввод запоминает выделение */
 function createHistoryHandlers(
@@ -33,6 +39,17 @@ function createHistoryHandlers(
 			return false
 		},
 	}
+}
+
+/** Отменяет последний шаг и забывает его, если область после него не менялась мимо истории */
+function rollbackStep(state: EditorHistoryState, options: UseEditorHistoryOptions, touch: () => void): boolean {
+	const root = options.root.value
+	if (!root || !options.isEnabled() || state.undo.length === 0 || root.innerHTML !== state.lastDom) return false
+	restoreHistoryStep(state, root, 'undo')
+	state.redo = []
+	touch()
+	options.onRestore()
+	return true
 }
 
 /**
@@ -89,6 +106,7 @@ function useEditorHistory(options: UseEditorHistoryOptions): EditorHistory {
 		record,
 		undo: () => step('undo'),
 		redo: () => step('redo'),
+		rollback: () => rollbackStep(state, options, touch),
 		reset(): void {
 			resetHistoryState(state, options.root.value)
 			touch()

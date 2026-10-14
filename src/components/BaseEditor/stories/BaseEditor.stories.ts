@@ -46,3 +46,4 @@ export const EditorToolbarSlot = cases.EditorToolbarSlot
 export const EditorPaste = cases.EditorPaste
 export const EditorUndo = cases.EditorUndo
 export const EditorBlocks = cases.EditorBlocks
+export const EditorUpload = cases.EditorUpload

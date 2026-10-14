@@ -26,6 +26,20 @@ export const EDITOR_PARTS = [
 
 export type BaseEditorPart = (typeof EDITOR_PARTS)[number]
 
+/** Ответ загрузки медиа: адрес файла и описание изображения для `alt` */
+export interface EditorUploadResult {
+	/** Адрес загруженного файла: подставляется в `src` и проходит очистку `sanitize` */
+	src: string
+	/** Описание изображения (`alt`); без него изображение помечается как оформление (`alt=""`) */
+	alt?: string
+}
+
+/**
+ * Загрузка файла изображения или видео на сервер приложения (`uploadMedia`): получает файл и сигнал отмены, возвращает адрес
+ * или `{ src, alt }`. `signal` отменяется при размонтировании редактора; отклонённое обещание считается ошибкой загрузки
+ */
+export type EditorUploadMedia = (file: File, context: { signal: AbortSignal }) => Promise<string | EditorUploadResult>
+
 export type EditorFormat = 'bold' | 'italic' | 'underline' | 'strike'
 
 export type EditorAlign = 'left' | 'center' | 'right' | 'justify'
@@ -83,6 +97,18 @@ export interface BaseEditorProps extends BaseComponentProps<
 	/** Показывать панель инструментов */
 	hasToolbar?: boolean
 	/**
+	 * Загрузка медиа на сервер: если задана, файлы с кнопок «Изображение» и «Видео», из буфера обмена и перетаскивания
+	 * сначала показываются заглушкой (`aria-busy`), а после ответа заменяются адресом приложения. Ошибка убирает заглушку,
+	 * показывает сообщение под редактором (`role="alert"`) и вызывает событие `upload-error`; откат заглушки не оставляет шага в истории
+	 * отмены, если после неё ничего не менялось. Незавершённая загрузка не попадает в `update:modelValue` и `getHtml()`.
+	 * Без неё файлы с кнопок вставляются адресом `blob:` (он живёт, пока открыта страница, и в сохранённом HTML бесполезен),
+	 * а вставка и перетаскивание файлов не обрабатываются.
+	 *
+	 * @example
+	 * <BaseEditor v-model="html" :upload-media="(file, { signal }) => api.upload(file, signal)" />
+	 */
+	uploadMedia?: EditorUploadMedia
+	/**
 	 * Кнопки «Отменить» и «Повторить» в начале стандартной панели (подсказка с Ctrl/⌘+Z и Ctrl/⌘+Shift+Z): на сенсорном экране
 	 * без клавиатуры отменить команду иначе нечем. Кнопка недоступна, пока нечего отменять или повторять, и в режиме кода (там своя история
 	 * поля). `false` скрывает группу; свою панель (слот `toolbar`) это не затрагивает
@@ -104,6 +130,8 @@ export interface BaseEditorEmits {
 	(event: 'update:modelValue', value: string): void
 	(event: 'focus'): void
 	(event: 'blur'): void
+	/** Загрузка файла через `uploadMedia` не удалась (ошибка обещания или небезопасный адрес в ответе) */
+	(event: 'upload-error', payload: { file: File; error: unknown }): void
 }
 
 export interface BaseEditorSlots {

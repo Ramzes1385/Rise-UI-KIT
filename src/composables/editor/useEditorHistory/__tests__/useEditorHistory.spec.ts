@@ -422,3 +422,43 @@ describe('useEditorHistory', () => {
 		})
 	})
 })
+
+describe('useEditorHistory: rollback', () => {
+	afterEach(() => {
+		window.getSelection()?.removeAllRanges()
+		document.body.innerHTML = ''
+	})
+
+	it('отменяет последний шаг и не оставляет его в «повторить»', () => {
+		const ctx = setup()
+		caretAtEnd(ctx.root)
+		append(ctx, 'command', 'x')
+		append(ctx, 'command', 'y')
+		ctx.history.undo()
+		append(ctx, 'command', 'z')
+
+		expect(ctx.history.rollback()).toBe(true)
+
+		expect(ctx.root.innerHTML).toBe('<p>ax</p>')
+		expect(ctx.onRestore).toHaveBeenCalledTimes(2)
+		expect(ctx.history.canRedo.value).toBe(false)
+		expect(ctx.history.canUndo.value).toBe(true)
+	})
+
+	it('false, если шагов нет, область менялась мимо истории, история выключена или области нет', () => {
+		const ctx = setup()
+		expect(ctx.history.rollback()).toBe(false)
+
+		caretAtEnd(ctx.root)
+		append(ctx, 'command', 'x')
+		ctx.root.innerHTML = '<p>ax!</p>'
+		expect(ctx.history.rollback()).toBe(false)
+
+		ctx.root.innerHTML = '<p>ax</p>'
+		ctx.state.isEnabled = false
+		expect(ctx.history.rollback()).toBe(false)
+
+		ctx.rootRef.value = null
+		expect(ctx.history.rollback()).toBe(false)
+	})
+})
