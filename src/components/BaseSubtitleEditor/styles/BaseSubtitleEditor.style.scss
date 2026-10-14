@@ -40,6 +40,16 @@
 		cursor: pointer;
 	}
 
+	&__track {
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+	}
+
+	&__announce {
+		@include visually-hidden;
+	}
+
 	&__block {
 		position: absolute;
 		top: sz(4px);

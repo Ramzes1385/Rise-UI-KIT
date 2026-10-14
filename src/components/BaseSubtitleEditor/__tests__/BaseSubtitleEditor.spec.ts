@@ -99,6 +99,38 @@ describe('BaseSubtitleEditor', () => {
 		expect(emitted('update:cues')).toHaveLength(1)
 	})
 
+	it('шкала: подсказка «Клик по шкале — перемотать» на пустом месте, у блока — своя подсказка', async () => {
+		const { container } = setup()
+		await fireEvent.mouseEnter(container.querySelector('.base-subtitle-editor__track') as HTMLElement)
+		expect(await screen.findByRole('tooltip')).toHaveTextContent('Клик по шкале — перемотать')
+	})
+
+	it('ошибка времени озвучивается живой областью после монтирования; исправление её очищает', async () => {
+		const { container } = setup()
+		const live = container.querySelector('.base-subtitle-editor__announce') as HTMLElement
+		expect(live).toHaveAttribute('aria-live', 'polite')
+		expect(live).toHaveTextContent('')
+		const end = screen.getByRole('textbox', { name: 'Конец реплики 2' })
+		await fireEvent.update(end, '0:01')
+		await fireEvent.change(end)
+		await waitFor(() => expect(live).toHaveTextContent('Конец реплики 2: Конец раньше начала'))
+		await fireEvent.update(end, '0:09')
+		await fireEvent.change(end)
+		await waitFor(() => expect(live).toHaveTextContent(''))
+	})
+
+	it('повторная та же ошибка озвучивается снова', async () => {
+		const { container } = setup()
+		const live = container.querySelector('.base-subtitle-editor__announce') as HTMLElement
+		const start = screen.getByRole('textbox', { name: 'Начало реплики 1' })
+		await fireEvent.update(start, 'x')
+		await fireEvent.change(start)
+		await waitFor(() => expect(live).toHaveTextContent('Начало реплики 1: Неверное время'))
+		await fireEvent.change(start)
+		expect(live).toHaveTextContent('')
+		await waitFor(() => expect(live).toHaveTextContent('Начало реплики 1: Неверное время'))
+	})
+
 	it('текст, удаление, переход и щелчок по шкале', async () => {
 		const { lastCues, emitted, container } = setup({ duration: 10 })
 		await fireEvent.update(screen.getByRole('textbox', { name: 'Текст реплики 2' }), 'Правка')

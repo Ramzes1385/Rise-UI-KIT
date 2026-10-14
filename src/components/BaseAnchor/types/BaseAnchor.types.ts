@@ -107,6 +107,14 @@ export type AnchorProps = PropsWithDefaults<BaseAnchorProps, 'headings' | 'offse
 /** Прокручиваемый контейнер оглавления: элемент или окно */
 export type AnchorScrollTarget = HTMLElement | Window
 
+/** Параметры прокрутки к разделу (внутреннее) */
+export interface AnchorScrollOptions {
+	/** Отступ сверху, px */
+	offset: number
+	/** Системная настройка «уменьшить движение»: прокрутка без анимации */
+	isReducedMotion: boolean
+}
+
 /** Настройки наблюдения за разделами (внутреннее) */
 export interface AnchorSpyOptions {
 	getLinks: () => AnchorLink[]

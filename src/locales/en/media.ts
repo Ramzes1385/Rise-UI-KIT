@@ -198,6 +198,7 @@ export const enMedia = {
 		IMPORT: 'Load .vtt or .srt',
 		EXPORT: 'Download .{format}',
 		TIMELINE: 'Cues on the timeline',
+		TIMELINE_HINT: 'Click the timeline to seek',
 		CUE: 'Cue {n}, {start}–{end}',
 		START: 'Cue {n} start',
 		END: 'Cue {n} end',

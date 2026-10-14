@@ -1,4 +1,9 @@
-import type { AnchorItem, AnchorLink, AnchorScrollTarget as ScrollTarget } from '../types/BaseAnchor.types'
+import type {
+	AnchorItem,
+	AnchorLink,
+	AnchorScrollOptions as ScrollOptions,
+	AnchorScrollTarget as ScrollTarget,
+} from '../types/BaseAnchor.types'
 
 export function resolveElement(value: string | HTMLElement | undefined): HTMLElement | null {
 	if (!value) return null
@@ -28,10 +33,6 @@ export function isPlainClick(event: MouseEvent): boolean {
 	return event.button === 0 && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey
 }
 
-function prefersReducedMotion(): boolean {
-	return typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-}
-
 function rootTop(target: ScrollTarget): number {
 	return target === window ? 0 : (target as HTMLElement).getBoundingClientRect().top
 }
@@ -55,10 +56,10 @@ export function findCurrent(links: AnchorLink[], target: ScrollTarget, offset: n
 	return current
 }
 
-export function scrollToSection(target: ScrollTarget, element: HTMLElement, offset: number): void {
+export function scrollToSection(target: ScrollTarget, element: HTMLElement, { offset, isReducedMotion }: ScrollOptions): void {
 	const scrollTop = target === window ? window.scrollY : (target as HTMLElement).scrollTop
 	const top = element.getBoundingClientRect().top - rootTop(target) + scrollTop - offset
-	target.scrollTo({ top, behavior: prefersReducedMotion() ? 'auto' : 'smooth' })
+	target.scrollTo({ top, behavior: isReducedMotion ? 'auto' : 'smooth' })
 }
 
 export function focusSection(element: HTMLElement): void {

@@ -33,6 +33,9 @@
 			</BaseButton>
 		</div>
 		<div :class="[ui('timeline'), classes.timeline]" aria-hidden="true" @click="seekTimeline">
+			<BaseTooltip :text="UI_SUBTITLES.TIMELINE_HINT" is-wrapperless>
+				<span class="base-subtitle-editor__track"></span>
+			</BaseTooltip>
 			<BaseTooltip v-for="(cue, index) in cues" :key="index" :text="cueLabel(cue, index)" is-wrapperless>
 				<span
 					:class="[ui('block'), { 'base-subtitle-editor__block--active': index === activeIndex }, classes.cue]"
@@ -104,6 +107,7 @@
 				</span>
 			</li>
 		</TransitionGroup>
+		<span class="base-subtitle-editor__announce" aria-live="polite" aria-atomic="true">{{ announcement }}</span>
 	</section>
 </template>
 
@@ -142,6 +146,7 @@ const {
 	classes,
 	fieldError,
 	timeValue,
+	announcement,
 	setDraft,
 	commitTime,
 	updateText,

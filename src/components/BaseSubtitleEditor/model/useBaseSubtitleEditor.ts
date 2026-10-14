@@ -17,7 +17,26 @@ function sorted(entries: CueEntry[]): CueEntry[] {
 	return [...entries].sort((a, b) => a.cue.start - b.cue.start)
 }
 
+function timeError(time: number | null, next: SubtitleCue): string | undefined {
+	if (time === null) return UI_SUBTITLES.INVALID_TIME
+	return next.end < next.start ? UI_SUBTITLES.ORDER_ERROR : undefined
+}
+
+function useAnnouncement() {
+	const announcement = ref('')
+	return {
+		announcement,
+		announce(text: string): void {
+			announcement.value = ''
+			void nextTick(() => {
+				announcement.value = text
+			})
+		},
+	}
+}
+
 function useCueEditing(props: BaseSubtitleEditorProps, emit: BaseSubtitleEditorEmits, cueKeys: ReturnType<typeof useCueKeys>) {
+	const { announcement, announce } = useAnnouncement()
 	const drafts = reactive<Record<string, string>>({})
 	const errors = reactive<Record<string, string>>({})
 	const fieldKey = (index: number, edge: 'start' | 'end'): string => `${cueKeys.keys.value[index]}:${edge}`
@@ -33,6 +52,7 @@ function useCueEditing(props: BaseSubtitleEditorProps, emit: BaseSubtitleEditorE
 			),
 		)
 	return {
+		announcement,
 		drafts,
 		errors,
 		fieldError: (index: number, edge: 'start' | 'end'): string | undefined => errors[fieldKey(index, edge)],
@@ -45,10 +65,14 @@ function useCueEditing(props: BaseSubtitleEditorProps, emit: BaseSubtitleEditorE
 			const key = fieldKey(index, edge)
 			const time = drafts[key] === undefined ? props.cues[index][edge] : parseCueTime(drafts[key])
 			const next = { ...props.cues[index], ...(time === null ? {} : { [edge]: time }) }
+			const error = timeError(time, next)
 			delete errors[key]
-			if (time === null) errors[key] = UI_SUBTITLES.INVALID_TIME
-			else if (next.end < next.start) errors[key] = UI_SUBTITLES.ORDER_ERROR
-			if (errors[key]) return
+			if (error) {
+				errors[key] = error
+				announce(`${formatMessage(edge === 'start' ? UI_SUBTITLES.START : UI_SUBTITLES.END, { n: index + 1 })}: ${error}`)
+				return
+			}
+			announce('')
 			delete drafts[key]
 			replace(index, next)
 		},

@@ -1,6 +1,7 @@
 import { useAnchorSpy } from './useAnchorSpy'
 import { useUi } from '@composables/base/useUi'
 import { useMotion } from '@composables/app/useMotion'
+import { useReducedMotion } from '@composables/app/useReducedMotion'
 import { computed, onMounted, ref, shallowRef, useId, watch } from 'vue'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { useSlidingIndicator } from '@composables/interaction/useSlidingIndicator'
@@ -27,6 +28,7 @@ export function useBaseAnchor(props: AnchorProps, emit: BaseAnchorEmits) {
 	const idPrefix = `rise-anchor${useId()}`
 	const links = shallowRef<AnchorLink[]>(props.items ? flattenItems(props.items) : [])
 	const activeId = ref(props.active)
+	const isReducedMotion = useReducedMotion()
 
 	const setActive = (id: string): void => {
 		if (id === activeId.value) return
@@ -46,7 +48,7 @@ export function useBaseAnchor(props: AnchorProps, emit: BaseAnchorEmits) {
 		if (!element) return
 		spy.lockUntilScrollEnd()
 		setActive(id)
-		scrollToSection(spy.getTarget(), element, props.offset)
+		scrollToSection(spy.getTarget(), element, { offset: props.offset, isReducedMotion: isReducedMotion.value })
 		focusSection(element)
 		if (props.isHashSynced) history.replaceState(history.state, '', `#${id}`)
 	}
