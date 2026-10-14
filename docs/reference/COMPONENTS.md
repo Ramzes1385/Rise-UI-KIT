@@ -1909,6 +1909,12 @@ async function handleSearch(value: string): Promise<void> {
 </template>
 ```
 
+Асинхронный источник вместо `results` — проп `source`: `(query, { signal }) => Promise<SearchResult[]>`. Новый запрос отменяет прежний (`signal` для `fetch`), ответ на устаревший запрос не показывается, пока запрос идёт, поиск в состоянии загрузки, ошибка очищает список.
+
+```vue
+<BaseSearch v-model="query" :source="(text, { signal }) => api.search(text, signal)" placeholder="Поиск" />
+```
+
 Поле поиска — `role="combobox"`, результаты — `role="listbox"`: ↓/↑ подсвечивают результат (`aria-activedescendant`), Enter открывает его. Сколько найдено, скринридер слышит из скрытой области `role="status"`.
 
 ---

@@ -31,6 +31,7 @@ export const LongContent = cases.LongContent
 export const WithImages = cases.WithImages
 export const Slots = cases.Slots
 export const RemoteResults = cases.RemoteResults
+export const AsyncSource = cases.AsyncSource
 export const SearchOnEnter = cases.SearchOnEnter
 export const ModalMode = cases.ModalMode
 export const SidebarMode = cases.SidebarMode

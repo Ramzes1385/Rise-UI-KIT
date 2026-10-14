@@ -12,10 +12,14 @@ function useSearchState(options: UseSearchStateOptions) {
 	const query = ref(options.modelValue())
 	const isFocused = ref(false)
 	const isSearchTriggered = ref(false)
-	const ctx: SearchStateContext = { options, query, isFocused, isSearchTriggered, debounce: createSearchDebounce(options) }
+	const shouldShowResults = computed((): boolean => options.isInstant() || isSearchTriggered.value)
+	const isListShown = computed((): boolean => {
+		const isInField = options.mode() !== 'default' || isFocused.value
+		return isInField && query.value.length > 0 && shouldShowResults.value
+	})
+	const ctx: SearchStateContext = { options, query, isFocused, isSearchTriggered, isListShown, debounce: createSearchDebounce(options) }
 
 	const visibleResults = computed((): SearchResult[] => filterSearchResults(options, query.value))
-	const shouldShowResults = computed((): boolean => options.isInstant() || isSearchTriggered.value)
 	const nav = useSearchNavigation(ctx, visibleResults)
 	const { handleInput, handleKeydown, handleClear, handleClose } = createSearchHandlers(ctx, nav)
 
@@ -35,7 +39,10 @@ function useSearchState(options: UseSearchStateOptions) {
 	onBeforeUnmount(ctx.debounce.cancel)
 
 	watch(options.modelValue, newValue => {
-		if (newValue !== query.value) query.value = newValue
+		if (newValue === query.value) return
+		ctx.debounce.cancel()
+		query.value = newValue
+		nav.reset()
 	})
 
 	return {

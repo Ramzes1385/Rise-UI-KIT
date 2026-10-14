@@ -9,8 +9,9 @@ import type BaseSearchInput from '../ui/BaseSearchInput.vue'
 import { useFormField } from '@composables/form/useFormField'
 import type BaseSearchOverlay from '../ui/BaseSearchOverlay.vue'
 import { useSearchState } from '@composables/form/useSearchState'
-import type { BaseSearchEmits, SearchProps } from '../types/BaseSearch.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import { useRemoteSuggestions } from '@composables/form/useRemoteSuggestions'
+import type { BaseSearchEmits, SearchProps, SearchResult } from '../types/BaseSearch.types'
 
 const SEARCH_ELEMENTS = [
 	'root',
@@ -74,28 +75,53 @@ function useSearchInputs(props: SearchProps) {
 	}
 }
 
-function useSearch(props: SearchProps, emit: BaseSearchEmits, inputs: ReturnType<typeof useSearchInputs>) {
-	return useSearchState({
-		modelValue: () => props.modelValue,
-		mode: () => props.mode,
-		results: () => props.results,
-		isRemote: () => props.isRemote,
-		isInstant: () => props.isInstant,
-		debounceMs: () => props.debounceMs,
-		maxResults: () => props.maxResults,
-		isAutofocus: () => props.isAutofocus,
-		emit: {
-			search: value => emit('search', value),
-			select: item => emit('select', item),
-			updateModelValue: value => emit('update:modelValue', value),
-			clear: () => emit('clear'),
-		},
-		focusActiveInput: inputs.focusActiveInput,
-		closeOverlay: inputs.closeOverlay,
+function useSearchSource(props: SearchProps) {
+	const remote = useRemoteSuggestions<SearchResult>({
+		source: () => props.source as NonNullable<SearchProps['source']>,
+		minChars: () => 1,
+		debounce: () => 0,
 	})
+	return {
+		results: computed((): SearchResult[] => (props.source ? remote.suggestions.value : props.results)),
+		isBusy: computed((): boolean => props.isLoading || (Boolean(props.source) && remote.isLoading.value)),
+		run: (query: string): void => {
+			if (props.source) remote.search(query)
+		},
+	}
 }
 
-function useSearchA11y(props: SearchProps, search: ReturnType<typeof useSearchState>) {
+function useSearch(props: SearchProps, emit: BaseSearchEmits, inputs: ReturnType<typeof useSearchInputs>) {
+	const source = useSearchSource(props)
+	return {
+		...useSearchState({
+			modelValue: () => props.modelValue,
+			mode: () => props.mode,
+			results: () => source.results.value,
+			isRemote: () => props.isRemote || Boolean(props.source),
+			isInstant: () => props.isInstant,
+			debounceMs: () => props.debounceMs,
+			maxResults: () => props.maxResults,
+			isAutofocus: () => props.isAutofocus,
+			emit: {
+				search: value => {
+					emit('search', value)
+					source.run(value)
+				},
+				select: item => emit('select', item),
+				updateModelValue: value => {
+					emit('update:modelValue', value)
+					if (!value.trim()) source.run('')
+				},
+				clear: () => emit('clear'),
+			},
+			focusActiveInput: inputs.focusActiveInput,
+			closeOverlay: inputs.closeOverlay,
+		}),
+		isBusy: source.isBusy,
+	}
+}
+
+function useSearchA11y(props: SearchProps, search: ReturnType<typeof useSearch>) {
 	const listboxId = `rise-search-${useId()}-listbox`
 	const hasListbox = computed((): boolean => {
 		const isShown = isOverlayMode(props) ? search.shouldShowResults.value && Boolean(search.query.value) : search.isOpen.value
@@ -115,7 +141,7 @@ function useSearchA11y(props: SearchProps, search: ReturnType<typeof useSearchSt
 					: undefined,
 		})),
 		resultsStatus: computed((): string => {
-			if (!search.query.value || props.isLoading) return ''
+			if (!search.query.value || search.isBusy.value) return ''
 			const count = search.visibleResults.value.length
 			return count ? pluralize(getLocale().plural.SEARCH_RESULTS, count) : UI_TEXT.NO_RESULTS
 		}),

@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/vitest'
+import { ref } from 'vue'
 import { useListNavigation } from '../useListNavigation'
 
 describe('useListNavigation', () => {
@@ -148,5 +149,18 @@ describe('useListNavigation', () => {
 		const { handleKeydown, highlightedIndex } = useListNavigation(opts)
 		handleKeydown(new KeyboardEvent('keydown', { key: 'Tab' }))
 		expect(highlightedIndex.value).toBe(-1)
+	})
+})
+
+describe('useListNavigation: индекс за пределами списка', () => {
+	it('Enter не вызывает onSelect, если подсветка указывает за конец списка (список сократился)', () => {
+		const count = ref(5)
+		const onSelect = vi.fn()
+		const { handleKeydown, highlightedIndex } = useListNavigation({ itemCount: () => count.value, onSelect })
+		for (let step = 0; step < 4; step++) handleKeydown(new KeyboardEvent('keydown', { key: 'ArrowDown' }))
+		expect(highlightedIndex.value).toBe(3)
+		count.value = 2
+		handleKeydown(new KeyboardEvent('keydown', { key: 'Enter' }))
+		expect(onSelect).not.toHaveBeenCalled()
 	})
 })

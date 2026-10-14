@@ -6,6 +6,7 @@ export type {
 	BaseSearchSlots,
 	SearchMode,
 	SearchResult,
+	SearchSource,
 	SearchVariant,
 } from './types/BaseSearch.types'
 export { default as BaseSearch } from './ui/BaseSearch.vue'

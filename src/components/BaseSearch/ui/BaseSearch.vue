@@ -12,7 +12,7 @@
 			:error="error"
 			:has-icon="hasIcon"
 			:has-clear="hasClear"
-			:is-loading="isLoading"
+			:is-loading="isBusy"
 			:visible-results="visibleResults"
 			:highlighted-index="highlightedIndex"
 			:should-show-results="shouldShowResults"
@@ -53,7 +53,7 @@
 	<div
 		v-else
 		ref="rootRef"
-		:class="[ui('root'), variantClass, { 'base-search--disabled': isDisabled, 'base-search--loading': isLoading }, classes.root]"
+		:class="[ui('root'), variantClass, { 'base-search--disabled': isDisabled, 'base-search--loading': isBusy }, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<BaseDropdown
 			v-model:is-open="isOpen"
@@ -73,7 +73,7 @@
 				:error="error"
 				:has-icon="hasIcon"
 				:has-clear="hasClear"
-				:is-loading="isLoading"
+				:is-loading="isBusy"
 				:classes="classes"
 				:combobox-attributes="comboboxAttributes"
 				:ui="ui"
@@ -88,7 +88,7 @@
 				<BaseSearchResults
 					:visible-results="visibleResults"
 					:query="query"
-					:is-loading="isLoading"
+					:is-loading="isBusy"
 					:size-scale="sizeScale"
 					:highlighted-index="highlightedIndex"
 					:classes="classes"
@@ -188,6 +188,7 @@ const {
 	listboxId,
 	comboboxAttributes,
 	resultsStatus,
+	isBusy,
 	exposed,
 } = useBaseSearch(props, emit)
 

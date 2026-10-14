@@ -43,7 +43,7 @@ function useListNavigation(options: UseListNavigationOptions): {
 	}
 
 	function selectHighlighted(): void {
-		if (highlightedIndex.value >= 0) {
+		if (highlightedIndex.value >= 0 && highlightedIndex.value < itemCount()) {
 			onSelect(highlightedIndex.value)
 		}
 	}

@@ -67,6 +67,12 @@ export interface SearchResult {
 	category?: string
 }
 
+/**
+ * Асинхронный источник результатов (`source`): получает запрос и сигнал отмены, возвращает найденное.
+ * Ответ на устаревший запрос отбрасывается, `signal` отменяется, когда запрос заменён новым или поле очищено
+ */
+export type SearchSource = (query: string, context: { signal: AbortSignal }) => Promise<SearchResult[]>
+
 export interface BaseSearchProps extends BaseComponentProps<
 	SearchVariant,
 	| 'root'
@@ -114,6 +120,14 @@ export interface BaseSearchProps extends BaseComponentProps<
 	 * и показываются как есть — без клиентской фильтрации по подстроке (maxResults применяется)
 	 */
 	isRemote?: boolean
+	/**
+	 * Асинхронный источник результатов вместо `results` (`(query, { signal }) => Promise<SearchResult[]>`). Вызывается
+	 * там же, где приходит событие `search` (после паузы `debounceMs` при `isInstant`, по Enter без него). Защита от гонок:
+	 * новый запрос отменяет прежний (`signal`), а ответ, пришедший позже ответа на более новый запрос, не показывается.
+	 * Пока запрос идёт, поиск в состоянии загрузки; ошибка источника очищает список. Результаты показываются как при `isRemote`
+	 * (без фильтрации по подстроке). Событие `search` по-прежнему приходит
+	 */
+	source?: SearchSource
 	/** Автопоиск при вводе */
 	isInstant?: boolean
 	/** Задержка автопоиска (мс) */

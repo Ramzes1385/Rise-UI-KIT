@@ -1,4 +1,4 @@
-import type { Ref } from 'vue'
+import type { ComputedRef, Ref } from 'vue'
 import type { SearchMode, SearchResult } from '@components/BaseSearch/types/BaseSearch.types'
 
 export interface UseSearchStateOptions {
@@ -41,6 +41,8 @@ export interface SearchStateContext {
 	options: UseSearchStateOptions
 	query: Ref<string>
 	isFocused: Ref<boolean>
+	/** Список результатов показан: стрелки и Enter выбирают пункты только пока он виден */
+	isListShown: ComputedRef<boolean>
 	/** Поиск запущен по Enter (для режима без мгновенного поиска) */
 	isSearchTriggered: Ref<boolean>
 	debounce: SearchDebounce
