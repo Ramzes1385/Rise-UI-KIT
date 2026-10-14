@@ -1962,3 +1962,4 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 - **BaseMap** (история `media-basemap--controls` и все, где `hasControls`): кнопка «Моё местоположение» — прицел (круг с четырьмя штрихами) вместо капли `map-pin`.
 - **BaseImageMapEditor** (новая история `media-baseimagemapeditor--delete-confirm`; `--groups` и `--mouse-editing`): окно подтверждения удаления по центру; поле цвета в панели свойств (заливка, обводка, цвет группы) — рядом с полем ввода образец цвета (кнопка `BaseColorPicker`), существующие истории с панелью цвета получают этот образец.
 - **BaseColorPicker** (новая история `form-basecolorpicker--tokens`): образец-токен, строка «Токен var(--rise-primary): #…» над полями и группа «Токены кита» среди палитр. Остальные истории не меняются.
+- **BaseDashboardGrid**: область нажатия ручки расширена вверх невидимым `::before` до 24px по высоте (WCAG 2.5.8), но не больше зазора сетки; видимая полоса 16px не меняется.

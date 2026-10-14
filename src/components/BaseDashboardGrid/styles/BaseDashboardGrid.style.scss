@@ -83,6 +83,15 @@
 		touch-action: none;
 	}
 
+	&__handle::before {
+		position: absolute;
+		right: 0;
+		bottom: 100%;
+		left: 0;
+		height: min(max(0px, calc(24px - #{sz(ct(dashboard-grid, padding-y, 16px))})), var(--dashboard-grid-gap, 0px));
+		content: '';
+	}
+
 	&__resize {
 		position: absolute;
 		right: 0;

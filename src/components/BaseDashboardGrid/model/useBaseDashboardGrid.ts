@@ -72,9 +72,10 @@ function useDashboardGridStyles(
 	dragRect: ShallowRef<DashboardDragRect | null>,
 ) {
 	return {
-		heightStyle: computed((): CSSProperties =>
-			items.value.length ? { height: `${gridHeight(items.value, state.metrics.value)}px` } : {},
-		),
+		heightStyle: computed((): CSSProperties => {
+			const gap = { '--dashboard-grid-gap': `${state.metrics.value.gap}px` }
+			return items.value.length ? { ...gap, height: `${gridHeight(items.value, state.metrics.value)}px` } : gap
+		}),
 		placeholderStyle: computed((): CSSProperties | null => {
 			const item = items.value.find(other => other.id === dragRect.value?.id)
 			return item ? rectStyle(itemRect(item, state.metrics.value)) : null

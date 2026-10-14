@@ -42,5 +42,10 @@ export const Editable: StoryObj<typeof meta> = {
 		await expect(widget).toHaveAccessibleDescription(/Enter или пробел — взять виджет/)
 		await expect(widget.querySelector('[data-handle]')).not.toBeNull()
 		await expect(widget.querySelector('[data-resize]')).not.toBeNull()
+		const handle = widget.querySelector('[data-handle]') as HTMLElement
+		const rect = handle.getBoundingClientRect()
+		const above = document.elementFromPoint(rect.left + rect.width / 2, rect.top - 4)
+		await expect(above?.closest('[data-handle]')).toBe(handle)
+		await expect(rect.height + parseFloat(getComputedStyle(handle, '::before').height)).toBeGreaterThanOrEqual(24)
 	},
 }
