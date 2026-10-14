@@ -99,7 +99,7 @@
 				@pointermove="zoom.handlePointerMove"
 				@pointerup="zoom.handlePointerEnd"
 				@pointercancel="zoom.handlePointerEnd"
-				@lostpointercapture="zoom.handlePointerEnd">
+				@lostpointercapture.self="zoom.handlePointerEnd">
 				<img
 					ref="zoomImgRef"
 					:key="gallery.currentZoomSrc.value"

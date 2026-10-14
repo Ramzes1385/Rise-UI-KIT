@@ -112,6 +112,9 @@ test('просмотр: клик мышью по фону закрывает о�
 
 	await page.getByRole('button', { name: 'Сбросить' }).click()
 	const background = await stageBackground(page)
+	await expect
+		.poll(() => page.evaluate(({ x, y }) => document.elementFromPoint(x, y)?.className, background))
+		.toContain('base-image__zoom-container')
 	await page.mouse.click(background.x, background.y)
 	await expect(page.getByRole('dialog')).toBeHidden()
 })
