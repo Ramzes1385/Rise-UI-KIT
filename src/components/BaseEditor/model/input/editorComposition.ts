@@ -1,4 +1,4 @@
-import type { EditorComposition } from '../../types/EditorComposition.types'
+import type { EditorComposition } from '../../types/model/EditorComposition.types'
 
 export function useEditorComposition(onEnd: () => void): EditorComposition {
 	const state = { isActive: false }

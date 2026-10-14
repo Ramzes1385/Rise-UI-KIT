@@ -9,7 +9,7 @@ import type {
 	EditorMediaKind,
 	EditorUploadContext,
 	EditorUploadSlot,
-} from '../../types/EditorUpload.types'
+} from '../../types/model/EditorUpload.types'
 
 function openSlot(ctx: EditorUploadContext, id: number, kind: EditorMediaKind): EditorUploadSlot {
 	if (ctx.toolbar.isCodeMode.value) return { id, snapshot: null }

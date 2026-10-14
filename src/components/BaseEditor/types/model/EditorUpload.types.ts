@@ -1,6 +1,6 @@
 import type { Ref } from 'vue'
 import type { useEditorToolbar } from '@composables/editor/useEditorToolbar'
-import type { EditorUploadMedia, EditorUploadResult } from './BaseEditor.types'
+import type { EditorUploadMedia, EditorUploadResult } from '../BaseEditor.types'
 
 /** Ответ `uploadMedia`: адрес или `{ src, alt }` */
 export type EditorUploadAnswer = string | EditorUploadResult

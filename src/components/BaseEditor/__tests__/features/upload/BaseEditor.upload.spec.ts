@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
-import BaseEditor from '../../ui/BaseEditor.vue'
-import type { EditorUploadMedia } from '../../types/BaseEditor.types'
+import BaseEditor from '../../../ui/BaseEditor.vue'
+import type { EditorUploadMedia } from '../../../types/BaseEditor.types'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 
 const stubs = { BaseTooltip: { template: '<div class="tooltip-stub"><slot /></div>' } }

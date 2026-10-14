@@ -1,11 +1,11 @@
 import { UI_EDITOR } from '@/locales/messages'
 import { escapeHtml } from '@utils/dom/htmlUtils'
-import type { EditorMediaFile, EditorMediaKind, EditorUploadAnswer } from '../../types/EditorUpload.types'
+import type { EditorMediaFile, EditorMediaKind, EditorUploadAnswer } from '../../types/model/EditorUpload.types'
 
 const UPLOAD_ATTR = 'data-editor-upload'
 const VIDEO_STYLE = 'max-width:100%;border-radius:8px;'
 
-export function mediaKind(file: File): EditorMediaKind | null {
+function mediaKind(file: File): EditorMediaKind | null {
 	if (file.type.startsWith('image/')) return 'image'
 	return file.type.startsWith('video/') ? 'video' : null
 }

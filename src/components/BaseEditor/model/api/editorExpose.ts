@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import type { EditorApiContext } from '../../types/EditorApi.types'
+import type { EditorApiContext } from '../../types/model/EditorApi.types'
 import type { BaseEditorExpose, BaseEditorToolbarSlotProps } from '../../types/BaseEditor.types'
 
 function activeField(ctx: EditorApiContext): () => HTMLElement | null {

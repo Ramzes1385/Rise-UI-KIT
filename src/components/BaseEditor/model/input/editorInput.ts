@@ -1,5 +1,5 @@
 import { getHistoryKind } from '@composables/editor/useEditorHistory'
-import type { EditorInputDeps, EditorInputHandlers, EditorInputSource } from '../../types/EditorInput.types'
+import type { EditorInputDeps, EditorInputHandlers, EditorInputSource } from '../../types/model/EditorInput.types'
 
 function kindOf(source?: EditorInputSource) {
 	if (typeof source === 'string') return source
