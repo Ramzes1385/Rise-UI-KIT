@@ -74,7 +74,9 @@ function applyAutocompleteWord(state: ChatSuggestionState, word: string): void {
 	shown.value = true
 	hidden.value = false
 	const query = isMention ? state.mentionQuery : state.commandQuery
-	query.value = word.slice(1).toLowerCase()
+	const nextQuery = word.slice(1).toLowerCase()
+	if (query.value !== nextQuery) state.activeSuggestionIndex.value = 0
+	query.value = nextQuery
 }
 
 /** Открывает пустой список команд с первым активным пунктом */

@@ -39,8 +39,8 @@
 					:max-badges="maxBadges"
 					@avatar-click="handleAvatarClick(item.message)"
 					@select="handleSelect(item.message.id)"
-					@retry="handleRetry(item.message.id)"
-					@discard="handleDiscard(item.message.id)"
+					@retry="handleRetry(item.message.id, $event)"
+					@discard="handleDiscard(item.message.id, $event)"
 					@reply-action="handleReplyAction(item.message)"
 					@context-menu="handleContextMenu($event, item.message)"
 					@reply-click="handleReplyClick"
@@ -65,9 +65,9 @@
 			v-if="messages.length === 0 && !isTyping && !isLoading"
 			variant="ghost"
 			is-compact
-			:icon="searchQuery ? 'search' : 'inbox'"
-			:title="searchQuery ? UI_CHAT_TEXT.SEARCH_EMPTY_TITLE : UI_CHAT_TEXT.EMPTY_TITLE"
-			:description="searchQuery ? UI_CHAT_TEXT.SEARCH_EMPTY_DESCRIPTION : UI_CHAT_TEXT.EMPTY_DESCRIPTION"
+			:icon="isSearchActive ? 'search' : 'inbox'"
+			:title="isSearchActive ? UI_CHAT_TEXT.SEARCH_EMPTY_TITLE : UI_CHAT_TEXT.EMPTY_TITLE"
+			:description="isSearchActive ? UI_CHAT_TEXT.SEARCH_EMPTY_DESCRIPTION : UI_CHAT_TEXT.EMPTY_DESCRIPTION"
 			:size-scale="sizeScale"
 			class="base-chat-message-list__empty" />
 
@@ -155,6 +155,7 @@ const props = withDefaults(defineProps<ChatMessageListProps>(), {
 const emit = defineEmits<ChatMessageListEmits>()
 
 const {
+	isSearchActive,
 	listRef,
 	contextMenuRef,
 	contextMenu,

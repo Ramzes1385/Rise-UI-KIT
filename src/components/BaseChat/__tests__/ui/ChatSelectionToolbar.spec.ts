@@ -25,6 +25,18 @@ describe('ChatSelectionToolbar', () => {
 		expect(emitted()['select-all']).toBeUndefined()
 	})
 
+	it('visibleSelectedCount: выбраны не все видимые — кнопка доступна, хотя выбранных всего столько же', () => {
+		render(ChatSelectionToolbar, { props: { selectedCount: 3, totalCount: 3, visibleSelectedCount: 1 } })
+
+		expect(screen.getByRole('button', { name: UI_CHAT_TEXT.SELECT_ALL })).not.toHaveAttribute('aria-disabled', 'true')
+	})
+
+	it('visibleSelectedCount: выбраны все видимые — кнопка недоступна', () => {
+		render(ChatSelectionToolbar, { props: { selectedCount: 5, totalCount: 2, visibleSelectedCount: 2 } })
+
+		expect(screen.getByRole('button', { name: UI_CHAT_TEXT.SELECT_ALL })).toHaveAttribute('aria-disabled', 'true')
+	})
+
 	it('без totalCount кнопка всегда доступна', () => {
 		render(ChatSelectionToolbar, { props: { selectedCount: 5 } })
 

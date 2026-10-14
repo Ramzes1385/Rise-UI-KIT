@@ -1,5 +1,5 @@
-import { validateFile } from '@utils/media/fileUtils'
 /** Утилиты: проверка выбранных файлов поля ввода чата по типу, размеру и числу вложений */
+import { validateFile } from '@utils/media/fileUtils'
 import { getLocale, pluralize } from '@/locales/state'
 import type { ChatAttachmentRejection } from '@components/BaseChat/types/BaseChat.types'
 import type { ChatAttachmentLimits, ChatAttachmentCheck } from '../types/useChatInputState.types'

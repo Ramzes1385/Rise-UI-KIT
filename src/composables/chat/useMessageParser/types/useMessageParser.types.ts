@@ -8,6 +8,13 @@ export interface MessageToken {
 	value: string
 }
 
+/** Токен, найденный в тексте, и границы заменяемого им фрагмента */
+export interface ScannedToken {
+	tokens: MessageToken[]
+	from: number
+	to: number
+}
+
 export interface UseMessageParserOptions {
 	/** Поисковый запрос для подсветки (строка или getter-функция) */
 	searchQuery?: string | (() => string)

@@ -52,19 +52,27 @@ describe('useChatActions: write-message', () => {
 		expect(warn).not.toHaveBeenCalled()
 	})
 
-	it('в компоненте без слушателя avatar-click предупреждения нет', () => {
+	it('со слушателем write-message эмитит только его, без предупреждения', () => {
 		const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 		const emit = vi.fn()
 		const actions = mountActions(emit, { onWriteMessage: vi.fn() })
 
 		actions.handleWriteMessage('u1')
 
-		expect(emit).toHaveBeenCalledWith('write-message', 'u1')
-		expect(emit).toHaveBeenCalledWith('avatar-click', 'u1')
+		expect(emit.mock.calls).toEqual([['write-message', 'u1']])
 		expect(warn).not.toHaveBeenCalled()
 	})
 
-	it('со слушателем avatar-click предупреждает об устаревании и эмитит оба события', () => {
+	it('без слушателей эмитит write-message', () => {
+		const emit = vi.fn()
+		const actions = mountActions(emit, {})
+
+		actions.handleWriteMessage('u1')
+
+		expect(emit.mock.calls).toEqual([['write-message', 'u1']])
+	})
+
+	it('со слушателем только avatar-click предупреждает об устаревании и эмитит avatar-click', () => {
 		const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 		const emit = vi.fn()
 		const actions = mountActions(emit, { onAvatarClick: vi.fn() })
@@ -72,9 +80,17 @@ describe('useChatActions: write-message', () => {
 		actions.handleWriteMessage('u1')
 
 		expect(warn).toHaveBeenCalledExactlyOnceWith(`[rise-ui-kit] ${formatMessage(UI_WARNINGS.CHAT_WRITE_MESSAGE_AVATAR_CLICK, {})}`)
-		expect(emit.mock.calls).toEqual([
-			['write-message', 'u1'],
-			['avatar-click', 'u1'],
-		])
+		expect(emit.mock.calls).toEqual([['avatar-click', 'u1']])
+	})
+
+	it('при обоих слушателях реакция одна: только write-message', () => {
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+		const emit = vi.fn()
+		const actions = mountActions(emit, { onWriteMessage: vi.fn(), onAvatarClick: vi.fn() })
+
+		actions.handleWriteMessage('u1')
+
+		expect(emit.mock.calls).toEqual([['write-message', 'u1']])
+		expect(warn).not.toHaveBeenCalled()
 	})
 })

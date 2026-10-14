@@ -9,7 +9,7 @@ export const SendFailed: StoryObj<typeof meta> = {
 		docs: {
 			description: {
 				story: [
-					'Сообщение не отправлено: статус `failed` у своего сообщения. Под ним — «Не отправлено» (`role="alert"`) и кнопки «Повторить» и «Удалить»;',
+					'Сообщение не отправлено: статус `failed` у своего сообщения. Под ним — «Не отправлено» (`role="status"`) и кнопки «Повторить» и «Удалить»;',
 					'они вызывают события `retry-message` и `discard-message` с id сообщения (удаление — без подтверждения). Приложение само решает,',
 					'что делать: отправить заново или убрать сообщение из ленты. Действия сообщения и контекстное меню у такого сообщения скрыты.',
 				].join('\n'),
@@ -25,7 +25,7 @@ export const SendFailed: StoryObj<typeof meta> = {
 	},
 	play: async ({ canvasElement, userEvent, args }) => {
 		const message = within(getMessage(canvasElement, 'failed-1'))
-		await expect(message.getByRole('alert')).toHaveTextContent('Не отправлено')
+		await expect(message.getByRole('status')).toHaveTextContent('Не отправлено')
 		await expect(message.queryByRole('button', { name: 'Другие действия с сообщением' })).not.toBeInTheDocument()
 
 		const retry = message.getByRole('button', { name: 'Повторить отправку сообщения' })

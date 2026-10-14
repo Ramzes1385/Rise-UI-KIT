@@ -177,16 +177,62 @@ describe('useChatInputState', () => {
 			expect(context.state.showCommands.value).toBe(false)
 		})
 
-		it('Enter без пункта под выделением ничего не отправляет', async () => {
+		it('сужение списка запросом возвращает выделение на первый пункт: Enter выбирает его, а не проглатывается', async () => {
 			const context = setup()
 			await type(context, '@')
 			context.state.handleKeyDown(key('ArrowDown'))
 			context.state.handleKeyDown(key('ArrowDown'))
+			expect(context.state.activeSuggestionIndex.value).toBe(2)
 
 			await type(context, '@бор')
-			context.state.handleKeyDown(key('Enter'))
+			expect(context.state.activeSuggestionIndex.value).toBe(0)
+			const enter = key('Enter')
+			context.state.handleKeyDown(enter)
 
+			expect(enter.defaultPrevented).toBe(true)
+			expect(context.state.text.value).toBe('@Борис ')
 			expect(context.emit).not.toHaveBeenCalled()
+		})
+
+		it('список сократился из-за смены участников: индекс ужимается к последнему пункту', async () => {
+			const props = reactive({ members: [...members], commands })
+			const context = setup(props)
+			await type(context, '@')
+			context.state.handleKeyDown(key('ArrowUp'))
+			expect(context.state.activeSuggestionIndex.value).toBe(2)
+
+			props.members = [members[0]]
+			await nextTick()
+
+			expect(context.state.activeSuggestionIndex.value).toBe(0)
+			const enter = key('Enter')
+			context.state.handleKeyDown(enter)
+			expect(context.state.text.value).toBe('@Анна ')
+		})
+
+		it('список команд сократился: индекс ужимается так же', async () => {
+			const props = reactive({ members, commands: [...commands] })
+			const context = setup(props)
+			await type(context, '/')
+			context.state.handleKeyDown(key('ArrowUp'))
+			expect(context.state.activeSuggestionIndex.value).toBe(2)
+
+			props.commands = commands.slice(0, 2)
+			await nextTick()
+
+			expect(context.state.activeSuggestionIndex.value).toBe(1)
+		})
+
+		it('список опустел: индекс не уходит в минус, Enter отправляет сообщение', async () => {
+			const props = reactive({ members: [...members], commands })
+			const context = setup(props)
+			await type(context, '@')
+			props.members = []
+			await nextTick()
+
+			expect(context.state.activeSuggestionIndex.value).toBe(0)
+			context.state.handleKeyDown(key('Enter'))
+			expect(context.emit).toHaveBeenCalledWith('send', { text: '@', attachments: undefined })
 		})
 
 		it('другие клавиши при открытом списке не перехватываются', async () => {

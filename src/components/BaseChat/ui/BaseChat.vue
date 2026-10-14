@@ -30,6 +30,7 @@
 				@unpin="handleUnpin" />
 
 			<ChatMessageList
+				:key="chatId"
 				ref="messageListRef"
 				:class="ui('list')"
 				:message-class="ui('message')"
@@ -99,6 +100,7 @@
 				:class="ui('toolbar')"
 				:selected-count="selectedMessageIds.length"
 				:total-count="filteredMessages.length"
+				:visible-selected-count="visibleSelectedCount"
 				:size-scale="sizeScale"
 				@select-all="handleSelectAll"
 				@forward="handleForwardSelected"
@@ -229,6 +231,7 @@ const {
 	pinnedMessages,
 	currentPinnedIndex,
 	filteredMessages,
+	visibleSelectedCount,
 	allImagesUrls,
 	handleMessageSelect,
 	handleSelectAll,

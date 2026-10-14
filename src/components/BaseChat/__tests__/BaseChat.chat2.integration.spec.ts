@@ -61,6 +61,56 @@ describe('BaseChat: выбор всех сообщений', () => {
 
 		expect(container.querySelectorAll('.base-chat-message-list__item--selected')).toHaveLength(1)
 	})
+
+	it('выбрано невидимое при поиске сообщение: «Выбрать всё» остаётся доступным для найденных', async () => {
+		const { container } = renderChat()
+		await enterSelection()
+		await fireEvent.click(screen.getByLabelText('Поиск по сообщениям'))
+		await userEvent.type(container.querySelector('.base-chat-header__search-input input') as HTMLElement, 'дела')
+
+		const selectAll = screen.getByRole('button', { name: UI_CHAT_TEXT.SELECT_ALL })
+		expect(selectAll).not.toHaveAttribute('aria-disabled', 'true')
+		await fireEvent.click(selectAll)
+
+		expect(container.querySelectorAll('.base-chat-message-list__item--selected')).toHaveLength(1)
+		expect(screen.getByRole('button', { name: UI_CHAT_TEXT.SELECT_ALL })).toHaveAttribute('aria-disabled', 'true')
+	})
+})
+
+describe('BaseChat: смена чата', () => {
+	it('закрывает диалог удаления сообщений и сбрасывает выбор', async () => {
+		const { container, rerender } = renderChat({ chatId: 'a', isGroup: true, members: GROUP_MEMBERS, currentUserRole: 'admin' })
+		await enterSelection()
+		await fireEvent.click(screen.getByText('Удалить'))
+		expect(screen.getByText('Удалить сообщения?')).toBeInTheDocument()
+
+		await rerender({ chatId: 'b' })
+
+		await waitFor(() => expect(screen.queryByText('Удалить сообщения?')).not.toBeInTheDocument())
+		expect(container.querySelector('.base-chat-selection-toolbar')).toBeNull()
+	})
+
+	it('закрывает подтверждение исключения', async () => {
+		const { rerender } = renderChat({ chatId: 'a', isGroup: true, members: GROUP_MEMBERS, currentUserRole: 'admin' })
+		await fireEvent.click(screen.getByLabelText('Информация о чате'))
+		await fireEvent.click(screen.getByLabelText('Действия с участником Борис'))
+		await fireEvent.click(screen.getByText(UI_CHAT_TEXT.EXCLUDE))
+		const confirm = formatMessage(UI_CHAT_TEXT.KICK_CONFIRM, { name: 'Борис' })
+		expect(screen.getByText(confirm)).toBeInTheDocument()
+
+		await rerender({ chatId: 'b' })
+
+		await waitFor(() => expect(screen.queryByText(confirm)).not.toBeInTheDocument())
+	})
+
+	it('лента пересоздаётся: состояние прокрутки не переезжает в другой чат', async () => {
+		const { container, rerender } = renderChat({ chatId: 'a' })
+		const before = container.querySelector('.base-chat-message-list')
+
+		await rerender({ chatId: 'b' })
+
+		expect(container.querySelector('.base-chat-message-list')).not.toBe(before)
+	})
 })
 
 describe('BaseChat: Escape в режиме выбора', () => {
@@ -133,18 +183,29 @@ describe('BaseChat: write-message', () => {
 		await fireEvent.click(screen.getByText('Написать сообщение'))
 	}
 
-	it('без слушателя avatar-click эмитит оба события без предупреждения', async () => {
+	it('без слушателей эмитит только write-message и без предупреждения', async () => {
 		const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 		const { container, emitted } = renderChat({ isGroup: true, members: GROUP_MEMBERS })
 
 		await clickWrite(container)
 
 		expect((emitted()['write-message'] as Array<[string]>).at(-1)?.[0]).toBe('a1')
-		expect((emitted()['avatar-click'] as Array<[string]>).at(-1)?.[0]).toBe('a1')
+		expect(emitted()['avatar-click']).toBeUndefined()
 		expect(warn).not.toHaveBeenCalled()
 	})
 
-	it('со слушателем avatar-click предупреждает об устаревании', async () => {
+	it('только со слушателем avatar-click приходит avatar-click и предупреждение об устаревании', async () => {
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+		const onAvatarClick = vi.fn()
+		const { container } = renderChat({ isGroup: true, members: GROUP_MEMBERS, onAvatarClick })
+
+		await clickWrite(container)
+
+		expect(onAvatarClick).toHaveBeenCalledExactlyOnceWith('a1')
+		expect(warn).toHaveBeenCalledWith(`[rise-ui-kit] ${formatMessage(UI_WARNINGS.CHAT_WRITE_MESSAGE_AVATAR_CLICK, {})}`)
+	})
+
+	it('при обоих слушателях реакция одна: write-message, а avatar-click не вызывается', async () => {
 		const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 		const onAvatarClick = vi.fn()
 		const onWriteMessage = vi.fn()
@@ -152,9 +213,9 @@ describe('BaseChat: write-message', () => {
 
 		await clickWrite(container)
 
-		expect(onWriteMessage).toHaveBeenCalledWith('a1')
-		expect(onAvatarClick).toHaveBeenCalledWith('a1')
-		expect(warn).toHaveBeenCalledWith(`[rise-ui-kit] ${formatMessage(UI_WARNINGS.CHAT_WRITE_MESSAGE_AVATAR_CLICK, {})}`)
+		expect(onWriteMessage).toHaveBeenCalledExactlyOnceWith('a1')
+		expect(onAvatarClick).not.toHaveBeenCalled()
+		expect(warn).not.toHaveBeenCalled()
 	})
 })
 

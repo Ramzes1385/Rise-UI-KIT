@@ -88,6 +88,9 @@ describe('useChatMessageActions', () => {
 		})
 
 		describe('фокус после «Повторить» и «Удалить»', () => {
+			const keyboardClick = new MouseEvent('click', { detail: 0 })
+			const mouseClick = new MouseEvent('click', { detail: 1 })
+
 			function setupFailed() {
 				const context = setup()
 				const chat = document.createElement('div')
@@ -101,19 +104,50 @@ describe('useChatMessageActions', () => {
 				return { ...context, button, input }
 			}
 
+			afterEach(() => {
+				vi.useRealTimers()
+			})
+
 			it.each(['handleRetry', 'handleDiscard'] as const)(
-				'%s: кнопка пропала вместе с фокусом, он уходит в поле ввода',
+				'%s с клавиатуры: кнопка пропала вместе с фокусом, он уходит в поле ввода',
 				async handler => {
 					const { actions, button, input } = setupFailed()
 					button.focus()
 
-					actions[handler]('m1')
+					actions[handler]('m1', keyboardClick)
 					button.remove()
-					await nextTick()
-
-					expect(input).toHaveFocus()
+					await vi.waitFor(() => expect(input).toHaveFocus())
 				},
 			)
+
+			it('ждёт исчезновения кнопки: пока она в DOM, фокус остаётся на ней', async () => {
+				const { actions, button, input, list } = setupFailed()
+				button.focus()
+
+				actions.handleRetry('m1', keyboardClick)
+				list.append(document.createElement('span'))
+				await nextTick()
+				await new Promise(resolve => setTimeout(resolve, 0))
+
+				expect(button).toHaveFocus()
+				expect(input).not.toHaveFocus()
+				button.remove()
+				await vi.waitFor(() => expect(input).toHaveFocus())
+			})
+
+			it.each([
+				['клик мышью или касание', mouseClick],
+				['вызов без события', undefined],
+			])('%s: фокус в поле ввода не переносится (экранная клавиатура)', async (_name, trigger) => {
+				const { actions, button, input } = setupFailed()
+				button.focus()
+
+				actions.handleRetry('m1', trigger)
+				button.remove()
+				await new Promise(resolve => setTimeout(resolve, 0))
+
+				expect(input).not.toHaveFocus()
+			})
 
 			it('фокус, который успел встать на другой элемент, не переносится', async () => {
 				const { actions, button, input } = setupFailed()
@@ -121,19 +155,21 @@ describe('useChatMessageActions', () => {
 				document.body.append(other)
 				button.focus()
 
-				actions.handleRetry('m1')
+				actions.handleRetry('m1', keyboardClick)
 				other.focus()
-				await nextTick()
+				button.remove()
+				await new Promise(resolve => setTimeout(resolve, 0))
 
 				expect(other).toHaveFocus()
 				expect(input).not.toHaveFocus()
 			})
 
 			it('фокус вне ленты (клавиатуру не трогали) остаётся на месте', async () => {
-				const { actions, input } = setupFailed()
+				const { actions, button, input } = setupFailed()
 
-				actions.handleDiscard('m1')
-				await nextTick()
+				actions.handleDiscard('m1', keyboardClick)
+				button.remove()
+				await new Promise(resolve => setTimeout(resolve, 0))
 
 				expect(input).not.toHaveFocus()
 			})
@@ -142,7 +178,30 @@ describe('useChatMessageActions', () => {
 				const { actions } = setup()
 				actions.listRef.value = null
 
-				expect(() => actions.handleRetry('m1')).not.toThrow()
+				expect(() => actions.handleRetry('m1', keyboardClick)).not.toThrow()
+			})
+
+			it('кнопка не ушла за 10 секунд: ожидание снимается, позднее исчезновение фокус не переносит', async () => {
+				vi.useFakeTimers()
+				const { actions, button, input } = setupFailed()
+				button.focus()
+
+				actions.handleRetry('m1', keyboardClick)
+				vi.advanceTimersByTime(10_000)
+				button.remove()
+				await vi.advanceTimersByTimeAsync(10)
+
+				expect(input).not.toHaveFocus()
+			})
+
+			it('новое нажатие отменяет прежнее ожидание', async () => {
+				const { actions, button, input } = setupFailed()
+				button.focus()
+
+				actions.handleRetry('m1', keyboardClick)
+				actions.handleDiscard('m1', keyboardClick)
+				button.remove()
+				await vi.waitFor(() => expect(input).toHaveFocus())
 			})
 		})
 

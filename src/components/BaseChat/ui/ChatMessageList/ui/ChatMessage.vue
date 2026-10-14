@@ -135,7 +135,7 @@
 			</div>
 
 			<div v-if="isFailed" class="base-chat-message-list__failed" role="group" :aria-label="UI_CHAT_TEXT.STATUS_FAILED">
-				<span class="base-chat-message-list__failed-text" role="alert">
+				<span class="base-chat-message-list__failed-text" role="status">
 					<BaseIcon name="alert-triangle" :size-scale="sizeScale * CHAT_SCALE.STATUS" />
 					{{ UI_CHAT_TEXT.STATUS_FAILED }}
 				</span>

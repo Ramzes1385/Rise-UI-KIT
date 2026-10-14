@@ -24,7 +24,7 @@ function useListScroll(props: MessageListProps, emit: ChatMessageListEmits, list
 		isSmooth: motion.isAppending,
 		getFirstId: () => props.messages[0]?.id,
 		hasIdBefore: id => props.messages.findIndex(message => message.id === id) > 0,
-		canLoadMore: () => Boolean(props.hasMoreMessages) && !props.isLoadingMore,
+		canLoadMore: () => Boolean(props.hasMoreMessages) && !props.isLoadingMore && !props.isLoading,
 		onLoadMore: () => emit('load-more'),
 	})
 	return { motion, timeline, scroll }
@@ -38,6 +38,7 @@ export function useChatMessageList(props: MessageListProps, emit: ChatMessageLis
 	return {
 		...actions,
 		timeline,
+		isSearchActive: computed(() => Boolean(props.searchQuery?.trim())),
 		hasNewBelow: scroll.hasNewBelow,
 		handleJumpToNew: scroll.handleJumpToNew,
 		handleListScroll(): void {

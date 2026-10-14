@@ -117,7 +117,7 @@ describe('ChatMessage', () => {
 			render(ChatMessageItem, { props: { message: failed, sizeScale: 100 } })
 
 			const group = screen.getByRole('group', { name: UI_CHAT_TEXT.STATUS_FAILED })
-			expect(within(group).getByRole('alert')).toHaveTextContent(UI_CHAT_TEXT.STATUS_FAILED)
+			expect(within(group).getByRole('status')).toHaveTextContent(UI_CHAT_TEXT.STATUS_FAILED)
 			expect(within(group).getByRole('button', { name: UI_CHAT_TEXT.RETRY_ARIA })).toHaveTextContent(UI_CHAT_TEXT.RETRY)
 			expect(within(group).getByRole('button', { name: UI_CHAT_TEXT.DISCARD_ARIA })).toHaveTextContent(UI_CHAT_TEXT.DELETE)
 		})

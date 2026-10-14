@@ -14,7 +14,8 @@ import type { UseChatStateEmit, UseChatStateOptions, UseChatStateProps } from '.
  * обходят все закрепы по кругу. Список — проп `pinnedMessages`, а без него — `messages[].isPinned`. Индекс не выходит
  * за список: после открепления последнего по порядку закрепа панель показывает новый последний, а не «3 из 2».
  * Закрепа нет в загруженной части истории (`messages`) — вместо прокрутки событие `jump-to-message`: приложение подгружает
- * сообщение, и как только оно появляется в `messages`, лента прокручивается к нему.
+ * сообщение, и как только оно появляется в `messages`, лента прокручивается к нему. Закреп сняли, пока сообщение
+ * подгружалось, — ожидание отменяется: поздняя подгрузка не уводит ленту к тому, что уже не закреплено.
  */
 function usePinnedMessages(props: UseChatStateProps, emit: UseChatStateEmit, options: UseChatStateOptions) {
 	const currentPinnedIndex = ref(0)
@@ -28,6 +29,7 @@ function usePinnedMessages(props: UseChatStateProps, emit: UseChatStateEmit, opt
 	watch(
 		() => pinnedMessages.value.map(message => message.id),
 		(ids, previous = []) => {
+			if (pendingJumpId.value !== null && !ids.includes(pendingJumpId.value)) pendingJumpId.value = null
 			const added = ids.filter(id => !previous.includes(id)).pop()
 			if (added !== undefined) currentPinnedIndex.value = ids.indexOf(added)
 			else currentPinnedIndex.value = Math.max(0, Math.min(currentPinnedIndex.value, ids.length - 1))
@@ -114,6 +116,10 @@ function useChatState(props: UseChatStateProps, emit: UseChatStateEmit, options:
 		...info,
 		...pinned,
 		filteredMessages,
+		visibleSelectedCount: computed((): number => {
+			const visible = new Set(filteredMessages.value.map(message => message.id))
+			return selectedMessageIds.value.filter(id => visible.has(id)).length
+		}),
 		allImagesUrls: useAllImages(props),
 		handleMessageSelect,
 		handleSelectAll: () => selectAll(filteredMessages.value.map(message => message.id)),

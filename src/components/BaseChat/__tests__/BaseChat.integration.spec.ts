@@ -533,7 +533,7 @@ describe('BaseChat integration', () => {
 			await fireEvent.click(screen.getByLabelText('Информация о чате'))
 		}
 
-		it('должен эмитить avatar-click при клике "Написать сообщение" в профиле участника', async () => {
+		it('должен эмитить write-message при клике "Написать сообщение" в профиле участника', async () => {
 			const { container, emitted } = renderChat({ isGroup: true, members: GROUP_MEMBERS })
 
 			await openInfo()
@@ -541,7 +541,7 @@ describe('BaseChat integration', () => {
 			await fireEvent.click(memberMain)
 			await fireEvent.click(screen.getByText('Написать сообщение'))
 
-			const events = emitted()['avatar-click'] as Array<[string]>
+			const events = emitted()['write-message'] as Array<[string]>
 			expect(events.at(-1)?.[0]).toBe('a1')
 		})
 

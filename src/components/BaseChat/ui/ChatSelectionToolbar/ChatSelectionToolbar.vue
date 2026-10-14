@@ -7,7 +7,7 @@
 					variant="ghost"
 					:size-scale="sizeScale"
 					is-focusable-when-disabled
-					:is-disabled="selectedCount >= totalCount"
+					:is-disabled="(visibleSelectedCount ?? selectedCount) >= totalCount"
 					@click="emit('select-all')">
 					<template #left>
 						<BaseIcon name="check" :size-scale="sizeScale * CHAT_SCALE.SMALL" />

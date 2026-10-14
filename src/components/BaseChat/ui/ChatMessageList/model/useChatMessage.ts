@@ -35,8 +35,8 @@ function createRelays(emit: ChatMessageItemEmits) {
 		handleAvatarClick: (): void => emit('avatar-click'),
 		handleReplyAction: (): void => emit('reply-action'),
 		handleContextMenu: (payload: MouseEvent): void => emit('context-menu', payload),
-		handleRetry: (): void => emit('retry'),
-		handleDiscard: (): void => emit('discard'),
+		handleRetry: (payload: MouseEvent): void => emit('retry', payload),
+		handleDiscard: (payload: MouseEvent): void => emit('discard', payload),
 		handleMoreClick(event: MouseEvent): void {
 			const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
 			emit('context-menu', new MouseEvent('contextmenu', { clientX: rect.left, clientY: rect.bottom + 4 }))

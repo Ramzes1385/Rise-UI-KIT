@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useUi } from '@composables/base/useUi'
 import { useChatState } from '@composables/chat/useChatState'
 import { useChatActions } from '@composables/chat/useChatActions'
@@ -39,6 +39,14 @@ export function useBaseChat(props: BaseChatProps, emit: BaseChatEmits) {
 		onKick: memberId => emit('kick-member', memberId),
 		onBan: payload => emit('ban-member', payload),
 	})
+
+	watch(
+		() => props.chatId,
+		() => {
+			deleteConfirm.handleCancelDelete()
+			memberConfirm.handleCancelMember()
+		},
+	)
 
 	return {
 		...standard,

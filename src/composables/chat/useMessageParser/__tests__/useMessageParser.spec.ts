@@ -130,6 +130,53 @@ describe('useMessageParser', () => {
 		})
 	})
 
+	describe('parseMessageText: скобки и длинные строки', () => {
+		const { parseMessageText } = useMessageParser()
+
+		it('парная скобка в конце адреса остаётся в ссылке (GFM)', () => {
+			expect(parseMessageText('см. https://ru.wikipedia.org/wiki/Foo_(bar) там')).toEqual([
+				{ type: 'text', value: 'см. ' },
+				{ type: 'link', value: 'https://ru.wikipedia.org/wiki/Foo_(bar)' },
+				{ type: 'text', value: ' там' },
+			])
+		})
+
+		it('точка после парной скобки отрезается, скобка остаётся', () => {
+			expect(parseMessageText('https://ru.wikipedia.org/wiki/Foo_(bar).')).toEqual([
+				{ type: 'link', value: 'https://ru.wikipedia.org/wiki/Foo_(bar)' },
+				{ type: 'text', value: '.' },
+			])
+		})
+
+		it('ссылка в скобках предложения теряет только внешнюю скобку', () => {
+			expect(parseMessageText('(смотри https://example.com/a)')).toEqual([
+				{ type: 'text', value: '(смотри ' },
+				{ type: 'link', value: 'https://example.com/a' },
+				{ type: 'text', value: ')' },
+			])
+		})
+
+		it('схема без адреса и адрес из одних знаков препинания — не ссылки', () => {
+			expect(parseMessageText('https:// и https://.')).toEqual([{ type: 'text', value: 'https:// и https://.' }])
+		})
+
+		it('упоминание после буквы суррогатной пары не считается упоминанием', () => {
+			expect(parseMessageText('\u{1D4D0}@anna')).toEqual([{ type: 'text', value: '\u{1D4D0}@anna' }])
+		})
+
+		it('строка в 50 000 символов разбирается без зависания', () => {
+			const text = `${'a'.repeat(50_000)} https://example.com/${'b'.repeat(50_000)}`
+			const tokens = parseMessageText(text)
+			expect(tokens).toHaveLength(2)
+			expect(tokens[1]).toEqual({ type: 'link', value: `https://example.com/${'b'.repeat(50_000)}` })
+		})
+
+		it('ссылка из 50 000 знаков «хвоста» и длинный ряд «@» разбираются без зависания', () => {
+			const text = `https://example.com/${'.)'.repeat(25_000)} @anna ${'@'.repeat(10_000)}`
+			expect(parseMessageText(text)[0]).toEqual({ type: 'link', value: 'https://example.com/' })
+		})
+	})
+
 	describe('getHighlightedParts', () => {
 		it('должен возвращать текст как единую часть без поискового запроса', () => {
 			const { getHighlightedParts } = useMessageParser()

@@ -104,6 +104,19 @@ describe('ChatMessageList: загрузка и пустая лента', () => {
 		expect(screen.queryByText(UI_CHAT_TEXT.EMPTY_TITLE)).not.toBeInTheDocument()
 	})
 
+	it('запрос из одних пробелов в пустом чате не превращает заглушку в «ничего не найдено»', () => {
+		render(ChatMessageList, { props: { messages: [], searchQuery: '   ' } })
+
+		expect(screen.getByText(UI_CHAT_TEXT.EMPTY_TITLE)).toBeInTheDocument()
+		expect(screen.queryByText(UI_CHAT_TEXT.SEARCH_EMPTY_TITLE)).not.toBeInTheDocument()
+	})
+
+	it('запрос без совпадений показывает «ничего не найдено»', () => {
+		render(ChatMessageList, { props: { messages: [], searchQuery: 'дела' } })
+
+		expect(screen.getByText(UI_CHAT_TEXT.SEARCH_EMPTY_TITLE)).toBeInTheDocument()
+	})
+
 	it('без загрузки пустая лента показывает компактную заглушку', () => {
 		const { container } = render(ChatMessageList, { props: { messages: [] } })
 
@@ -161,6 +174,17 @@ describe('ChatMessageList: подгрузка истории', () => {
 			await fireEvent.scroll(list)
 			expect(view.emitted()['load-more']).toBeUndefined()
 		}
+	})
+
+	it('пока идёт первичная загрузка (isLoading), load-more не отдаётся', async () => {
+		const { container, emitted } = render(ChatMessageList, { props: { hasMoreMessages: true, isLoading: true, messages: [msg('1')] } })
+		const list = container.querySelector('.base-chat-message-list') as HTMLElement
+		mockMetrics(list, { scrollHeight: () => 2000, clientHeight: 400 })
+		list.scrollTop = 0
+
+		await fireEvent.scroll(list)
+
+		expect(emitted()['load-more']).toBeUndefined()
 	})
 
 	it('если сообщения не заполняют ленту, при монтировании сразу просит ещё', () => {

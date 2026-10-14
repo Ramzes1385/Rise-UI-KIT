@@ -171,7 +171,7 @@ export interface BaseChatProps extends BaseComponentProps<(typeof CHAT_VARIANTS)
 	 * `error` с типом `attachment` — список отказов
 	 */
 	accept?: string
-	/** Наибольший размер одного вложения, МБ (как `maxSize` у BaseFileUpload). Файл больше не прикрепляется (сообщение под полем и событие `error`) */
+	/** Наибольший размер одного вложения, МБ (как `maxSize` у BaseFileUpload). Файл больше не прикрепляется (сообщение под полем и событие `error`). `0` или без значения — размер не ограничен */
 	maxFileSize?: number
 	/** Наибольшее число вложений в одном сообщении. Лишние файлы не прикрепляются (сообщение под полем и событие `error`) */
 	maxFiles?: number
@@ -224,7 +224,8 @@ export interface BaseChatEmits {
 	(event: 'send-voice', payload: { recording: VoiceRecording; replyToId?: string }): void
 	/**
 	 * `avatar-click` — клик по аватару или имени отправителя; `write-message` — «Написать сообщение» в профиле участника
-	 * (приложение открывает личный чат). Для «Написать сообщение» `avatar-click` ещё приходит в переходный период (с предупреждением в консоли)
+	 * (приложение открывает личный чат). Пока нет слушателя `write-message`, но есть `avatar-click`, «Написать сообщение»
+	 * приходит как `avatar-click` (переходный период, с предупреждением в консоли); при обоих слушателях — только `write-message`
 	 */
 	(event: 'avatar-click' | 'write-message', senderId: string): void
 	/** Изменился запрос поиска по сообщениям (в том числе очищен при закрытии поиска) */

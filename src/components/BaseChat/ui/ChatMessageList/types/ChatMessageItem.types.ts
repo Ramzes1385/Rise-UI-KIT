@@ -21,10 +21,10 @@ export interface ChatMessageItemProps {
 export interface ChatMessageItemEmits {
 	(event: 'avatar-click'): void
 	(event: 'select'): void
-	/** «Повторить» под сообщением со статусом `failed` */
-	(event: 'retry'): void
-	/** «Удалить» под сообщением со статусом `failed` */
-	(event: 'discard'): void
+	/** «Повторить» под сообщением со статусом `failed`; в payload — клик (по нему лента отличает клавиатуру от мыши и касания) */
+	(event: 'retry', payload: MouseEvent): void
+	/** «Удалить» под сообщением со статусом `failed`; в payload — клик (по нему лента отличает клавиатуру от мыши и касания) */
+	(event: 'discard', payload: MouseEvent): void
 	(event: 'reply-action'): void
 	(event: 'context-menu', payload: MouseEvent): void
 	(event: 'reply-click', replyToId: string): void

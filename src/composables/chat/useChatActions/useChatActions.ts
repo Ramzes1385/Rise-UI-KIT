@@ -1,9 +1,9 @@
+/** Composable: обработчики действий чата */
 import { warn } from '@/locales/warn'
 import { getCurrentInstance } from 'vue'
 import { UI_WARNINGS } from '@/locales/messages'
 import { downloadFile } from '@utils/media/fileUtils'
 import type { UseChatActionsOptions } from './types/useChatActions.types'
-/** Composable: обработчики действий чата */
 import { getRejectionMessages } from '@composables/chat/useChatInputState/attachments/chatAttachmentLimits'
 import type { ChatAttachmentRejection, ChatMessageAttachment } from '@components/BaseChat/types/BaseChat.types'
 
@@ -20,13 +20,24 @@ function downloadAttachment(emit: UseChatActionsOptions['emit'], file: ChatMessa
 
 /**
  * «Написать сообщение» в профиле участника: событие `write-message`. Пока приложения не перешли на него, то же действие
- * приходит и как `avatar-click`; предупреждение об устаревании — только тем, кто слушает `avatar-click`
+ * приходит и как `avatar-click`. Со слушателем `write-message` уходит только оно (реакция одна, даже если слушают оба
+ * события); без него, но со слушателем `avatar-click` — только `avatar-click` и предупреждение об устаревании.
+ * Вне компонента слушателей не видно — уходят оба события.
  */
 function useWriteMessage(emit: UseChatActionsOptions['emit']): (memberId: string) => void {
 	const instance = getCurrentInstance()
 	return memberId => {
-		emit('write-message', memberId)
-		if (instance?.vnode.props?.onAvatarClick) warn(UI_WARNINGS.CHAT_WRITE_MESSAGE_AVATAR_CLICK)
+		if (!instance) {
+			emit('write-message', memberId)
+			emit('avatar-click', memberId)
+			return
+		}
+		const listeners = instance.vnode.props
+		if (listeners?.onWriteMessage || !listeners?.onAvatarClick) {
+			emit('write-message', memberId)
+			return
+		}
+		warn(UI_WARNINGS.CHAT_WRITE_MESSAGE_AVATAR_CLICK)
 		emit('avatar-click', memberId)
 	}
 }

@@ -142,6 +142,18 @@ describe('useChatState unit', () => {
 			expect(emit).toHaveBeenCalledWith('message-select', '1')
 		})
 
+		it('visibleSelectedCount считает только выбранные, которые видны при поиске', () => {
+			const { state } = setup([message('1', { text: 'один' }), message('2', { text: 'два' }), message('3', { text: 'два три' })])
+			state.handleMessageSelect('1')
+			state.handleMessageSelect('2')
+			expect(state.visibleSelectedCount.value).toBe(2)
+
+			state.searchQuery.value = 'два'
+
+			expect(state.visibleSelectedCount.value).toBe(1)
+			expect(state.selectedMessageIds.value).toHaveLength(2)
+		})
+
 		it('снимает выделение при повторном выборе', () => {
 			const { state } = setup([message('1')])
 			state.handleMessageSelect('1')
@@ -440,6 +452,20 @@ describe('useChatState unit', () => {
 
 			expect(scrollToMessage).toHaveBeenCalledWith('far')
 			expect(emit).not.toHaveBeenCalledWith('jump-to-message', expect.anything())
+			scope.stop()
+		})
+
+		it('закреп сняли, пока сообщение подгружалось, — ожидание отменяется', async () => {
+			const { props, scrollToMessage, state, scope } = setupReactive([message('1')], [far])
+			state.handleScrollToPinned('far')
+
+			props.pinnedMessages = []
+			await nextTick()
+			props.messages = [far, message('1')]
+			await nextTick()
+			await nextTick()
+
+			expect(scrollToMessage).not.toHaveBeenCalled()
 			scope.stop()
 		})
 

@@ -1,6 +1,6 @@
 /** Composable: подсказки упоминаний (`@`) и команд (`/`) у поля ввода чата */
-import { computed } from 'vue'
-import type { UseChatSuggestionsOptions } from './types/useChatInputState.types'
+import { computed, watch } from 'vue'
+import type { ChatSuggestionState, UseChatSuggestionsOptions } from './types/useChatInputState.types'
 import {
 	applyAutocompleteWord,
 	createSuggestionState,
@@ -13,6 +13,13 @@ import {
 	openCommandList,
 	replaceWordBeforeCaret,
 } from './chatInputText'
+
+/** Список подсказок сократился (смена `members`/`commands`) — активный пункт не выходит за его конец */
+function clampActiveIndex(state: ChatSuggestionState, getLength: () => number): void {
+	watch(getLength, length => {
+		if (state.activeSuggestionIndex.value >= length) state.activeSuggestionIndex.value = Math.max(0, length - 1)
+	})
+}
 
 /** Состояние подсказок, автокомплит по слову перед кареткой, подстановка выбранного и кнопка команд */
 function useChatSuggestions(options: UseChatSuggestionsOptions) {
@@ -58,13 +65,17 @@ function useChatSuggestions(options: UseChatSuggestionsOptions) {
 		focusCaretLater(inputEl, edit.caret)
 	}
 
+	const filteredMembers = computed(() => filterMembers(props.members ?? [], state.mentionQuery.value))
+	const filteredCommands = computed(() => filterCommands(props.commands ?? [], state.commandQuery.value))
+	clampActiveIndex(state, () => (state.showCommands.value ? filteredCommands.value : filteredMembers.value).length)
+
 	return {
 		showMentions: state.showMentions,
 		showCommands: state.showCommands,
 		activeSuggestionIndex: state.activeSuggestionIndex,
 		hasCommands: computed(() => (props.commands ?? []).length > 0),
-		filteredMembers: computed(() => filterMembers(props.members ?? [], state.mentionQuery.value)),
-		filteredCommands: computed(() => filterCommands(props.commands ?? [], state.commandQuery.value)),
+		filteredMembers,
+		filteredCommands,
 		checkAutocomplete,
 		replaceCurrentWord,
 		toggleCommands,
