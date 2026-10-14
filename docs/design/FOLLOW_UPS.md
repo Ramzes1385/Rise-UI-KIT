@@ -348,7 +348,7 @@
 - Миксины `button-reset`, `tool-button` (бывший `base-editor-tool-button`) и `field-counter` лежат в `src/styles/_mixins.scss`, описаны в `DESIGN_SYSTEM.md`. Вид не менялся (снимки до/после, light и dark).
 - `button-reset` подключён в BaseBreadcrumbs, BaseReasoning, BaseToolCall. ~~В BaseChat остаётся `chat-button-reset` (14 подключений)~~ — a11y-fixes: BaseChat переведён на `button-reset`, `chat-button-reset` удалён.
 - `tool-button` BaseChat не подходит (кнопки чата — BaseButton и текстовые, не квадраты 28x28; a11y-fixes), а в тулбаре BaseTable иконочных кнопок нет (там BaseButton и BaseInput), поэтому Table не менялся.
-- Ещё ~45 мест вручную сбрасывают нативную кнопку (`border: 0; background: none; font: inherit`…) в компонентах, где курсор, выравнивание или фон отличаются от `button-reset`: переводить по одному вместе с правкой компонента.
+- ~~Ещё ~45 мест вручную сбрасывают нативную кнопку…~~ — hygiene-2: 25 правил в 14 компонентах переведены на `button-reset`, остальные оставлены с причиной (список — «Задача hygiene-2»).
 - Файлы wave4-polish не трогались: `__sr-only` в BaseGantt (`BaseGantt.style.scss`) и BaseDashboardGrid уже собираются миксином `visually-hidden`, замены не требуется; кнопки BaseTag, BaseSelect, BaseSearch, BaseInput со своим сбросом оставлены следующей пачке.
 - Счётчик `field-counter` есть только у BaseTextarea; «счётчики» BaseImage, BaseTour и ImageMapRoutes — не поля, миксин им не подходит.
 
@@ -408,3 +408,15 @@
 - Истории с неустойчивым кадром (play делает разное число шагов к моменту снимка): `blocks-auth--sign-in` (светлая тема), `data-basefilemanager--selection` и `--with-error`, `element-basetag--clickable`. Скриншот-тесты на них опираться не должны, пока play не дожидается конечного состояния (`waitFor` на видимом результате); эталонов у них нет. Сверено попиксельно 14.10, подробности — VISUAL_CHANGES, «Задача fix-ui».
 - BaseInput: кнопка показа пароля (`password-toggle`) осталась с `tabindex="-1"` — как и кнопка очистки до fix-ui, недоступна с клавиатуры (WCAG 2.1.1). Перевод на порядок Tab затронет все поля пароля приложений (лишняя остановка Tab в формах входа), решение отложено до отдельного обсуждения; варианты — `tabindex` по умолчанию и проп для скрытия из обхода.
 - BaseBanner: постоянная live-область при `isOpen=false` не сделана (DECISIONS 14.10): для `role="status"` озвучка появления остаётся ненадёжной, совет в JSDoc заменён.
+
+## Задача hygiene-2
+
+- Переведено на `@include button-reset;` 25 правил: BaseAccordion (`__header`), BaseAiMessage (`__action`), BaseAudioPlayer (`__cue`), BaseBottomNav (`__link`), BaseCalendar (`__day`, `__month-btn`, `__year-btn`), BaseCascader и BaseTreeSelect (`__tag-close`), BaseChart (`__legend-item`), BaseEventCalendar (`__event`, `__more-button`), BaseInplace (`__display`), BaseMediaPlayer (`__control`, `__chapter`, `__retry`, `__menu-item`, `__speed-preset`, `__big-play`, `__banner-close`, `__skip`, `__episodes-view`, `__chapter-item`), BaseNotificationCenter (`__main`), BaseSideBar (`__link`), BaseTag (`__remove`). Вид и DOM не менялись; где у правила не было `text-align`, добавлен `text-align: center` (миксин ставит `inherit`, нативная кнопка — `center`).
+- Оставлено с причиной:
+  - не кнопки: `<input>`/`<textarea>` (`__search-input` в BaseCascader и BaseTreeSelect, поле в BaseCommandPalette, `__control` в BasePromptInput) и блоки (`BaseAnchor`, `BaseCardInput`, `BaseEmpty`, `BaseForm`, `BaseMarkdown`, `BaseSideBar` `--mobile` и `__badge`);
+  - может быть не кнопкой, а `div`/`a` (миксин добавил бы курсор-указатель): BaseImage `__frame`, BaseStepper `__trigger`, BaseTag `__main`, BaseMediaPlayer `__share-link`;
+  - нет `color`, миксин сменил бы цвет текста кнопки с системного на унаследованный (изменение вида): BaseEmojiPicker `__tab` и `__emoji`, BaseSlider `__dot` и `__thumb`, BaseRange `__thumb--custom`;
+  - общее правило с не кнопкой: BaseMediaPlayer `__menu-title, __menu-back` (заголовок меню — `div`);
+  - `BaseImage` `-thumb.base-button`, `__zoom-dialog`, BaseImageCompare `--ghost`, BaseAutocomplete — не сброс кнопки.
+- Чужие файлы, сбросы остаются владельцам пачек: BaseChat и BaseCryptoProSign (fix-chat); BaseEditor (editor-3); BaseTable, BaseToolbar, BaseBadge, BaseInput, BaseBanner, BaseFileManager, BaseColorModeButton, BaseHoverCard (fix-ui); BaseDashboardGrid, BaseGantt, BaseMegaMenu, BaseMap, BaseImageMap, BaseImageMap3D, BaseImageMapEditor, BaseColorPicker (layout-maps).
+- Комментарий к `field-counter` в `_mixins.scss`: «моноширинный» заменён на «цифры одной ширины».

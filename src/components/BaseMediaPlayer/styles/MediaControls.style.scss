@@ -97,6 +97,8 @@
 	}
 
 	&__control {
+		@include button-reset;
+		text-align: center;
 		position: relative;
 		display: inline-flex;
 		flex: none;
@@ -106,12 +108,8 @@
 		min-width: sz(40px);
 		height: sz(40px);
 		padding: 0 sz(8px);
-		border: 0;
 		border-radius: sz(10px);
-		background-color: transparent;
 		color: var(--media-text);
-		font: inherit;
-		cursor: pointer;
 		transition:
 			background-color var(--media-normal) var(--media-ease),
 			color var(--media-normal) var(--media-ease),
@@ -472,20 +470,18 @@
 	}
 
 	&__chapter {
+		@include button-reset;
+		text-align: center;
 		display: inline-flex;
 		align-items: center;
 		gap: sz(2px);
 		min-width: 0;
 		max-width: sz(220px);
 		padding: sz(6px) sz(4px) sz(6px) sz(10px);
-		border: 0;
 		border-radius: sz(8px);
-		background-color: transparent;
 		color: var(--media-text);
-		font: inherit;
 		font-size: sz(var(--rise-font-size-sm));
 		white-space: nowrap;
-		cursor: pointer;
 		@include transition(background-color);
 		@include focus-ring;
 

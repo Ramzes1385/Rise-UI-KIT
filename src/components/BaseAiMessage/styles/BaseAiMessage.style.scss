@@ -133,17 +133,14 @@
 	}
 
 	&__action {
+		@include button-reset;
 		display: inline-flex;
 		align-items: center;
 		gap: sz(6px);
 		padding: sz(4px) sz(8px);
-		border: 0;
 		border-radius: sz(var(--rise-radius-sm));
-		background-color: transparent;
 		@include custom-text(color, var(--rise-text-muted));
-		font: inherit;
 		@include text-size(xs);
-		cursor: pointer;
 		@include transition-colors;
 		@include focus-ring;
 

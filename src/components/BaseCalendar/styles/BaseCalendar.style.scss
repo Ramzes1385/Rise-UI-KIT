@@ -115,6 +115,8 @@
 	}
 
 	&__day {
+		@include button-reset;
+		text-align: center;
 		position: relative;
 		display: inline-flex;
 		flex-direction: column;
@@ -123,15 +125,10 @@
 		box-sizing: border-box;
 		width: sz(var(--calendar-day-size));
 		height: sz(var(--calendar-day-size));
-		padding: 0;
-		border: 0;
 		border-radius: ct(calendar, day-radius, var(--rise-radius-full));
-		background-color: transparent;
 		color: var(--calendar-text);
-		font: inherit;
 		@include text-size(sm);
 		font-variant-numeric: tabular-nums;
-		cursor: pointer;
 		@include transition-colors;
 		@include focus-ring;
 
@@ -315,9 +312,8 @@
 
 	&__month-btn,
 	&__year-btn {
-		border: 0;
-		background-color: transparent;
-		font: inherit;
+		@include button-reset;
+		text-align: center;
 		@include menu-item;
 		justify-content: center;
 		text-transform: capitalize;

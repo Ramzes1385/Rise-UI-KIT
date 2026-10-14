@@ -10,14 +10,12 @@
 	}
 
 	&__display {
+		@include button-reset;
 		max-width: 100%;
-		margin: 0;
 		padding: sz(ct(inplace, display-padding-y, 2px) ct(inplace, display-padding-x, 4px));
-		border: none;
 		border-radius: sz(ct(inplace, display-radius, var(--rise-radius-sm)));
 		background-color: ct(inplace, display-bg, transparent);
 		color: ct(inplace, display-text, inherit);
-		font: inherit;
 		text-align: left;
 		text-decoration: underline dashed;
 		text-decoration-color: var(--rise-border-accented);

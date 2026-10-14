@@ -89,20 +89,18 @@
 	}
 
 	&__big-play {
+		@include button-reset;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		width: sz(80px);
 		height: sz(80px);
-		padding: 0;
-		border: 0;
 		border-radius: sz(22px);
 		background-color: var(--media-primary);
 		box-shadow:
 			0 10px 30px var(--media-glow),
 			0 4px 12px color-mix(in srgb, var(--rise-media-shade) 30%, transparent);
 		color: var(--media-text);
-		cursor: pointer;
 		pointer-events: auto;
 		transform: scale(1);
 		transition:
@@ -453,6 +451,7 @@
 	}
 
 	&__banner-close {
+		@include button-reset;
 		position: relative;
 		display: flex;
 		flex: none;
@@ -460,12 +459,9 @@
 		justify-content: center;
 		width: sz(28px);
 		height: sz(28px);
-		padding: 0;
-		border: 0;
 		border-radius: sz(8px);
 		background-color: color-mix(in srgb, var(--rise-media-highlight) 12%, transparent);
 		color: var(--media-text);
-		cursor: pointer;
 		@include transition(background-color, transform);
 		@include focus-ring;
 
@@ -484,6 +480,8 @@
 	}
 
 	&__skip {
+		@include button-reset;
+		text-align: center;
 		position: absolute;
 		right: sz(24px);
 		bottom: 0;
@@ -494,15 +492,12 @@
 		align-items: center;
 		gap: sz(8px);
 		padding: sz(10px) sz(14px) sz(10px) sz(20px);
-		border: 0;
 		border-radius: sz(10px);
 		background-color: color-mix(in srgb, var(--rise-media-highlight) 94%, transparent);
 		box-shadow: 0 8px 24px color-mix(in srgb, var(--rise-media-shade) 35%, transparent);
 		color: var(--rise-media-text-inverted);
-		font: inherit;
 		font-size: sz(15px);
 		font-weight: var(--rise-font-weight-semibold);
-		cursor: pointer;
 		transition:
 			translate var(--media-slow) var(--media-ease),
 			background-color var(--media-normal) var(--media-ease),

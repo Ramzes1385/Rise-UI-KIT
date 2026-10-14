@@ -25,20 +25,17 @@
 	}
 
 	&__header {
+		@include button-reset;
 		display: flex;
 		align-items: center;
 		gap: sz(6px);
 		width: 100%;
-		margin: 0;
-		border: 0;
-		font-family: inherit;
 		text-align: start;
 		padding: space(var(--accordion-pad-y) var(--accordion-pad-x));
 		border-radius: sz(var(--rise-radius-md));
 		@include text-size(sm);
 		font-size: sz(ct(accordion, header-font-size, var(--rise-font-size-sm)));
 		font-weight: ct(accordion, header-font-weight, var(--rise-font-weight-medium));
-		cursor: pointer;
 		user-select: none;
 		@include custom-text(color, ct(accordion, header-text, var(--rise-text-highlighted)));
 		@include custom-bg-all(background-color, transparent, var(--accordion-header-hover), var(--accordion-header-hover));

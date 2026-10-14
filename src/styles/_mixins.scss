@@ -65,7 +65,7 @@
 	}
 }
 
-// Счётчик символов под полем (BaseTextarea): мелкий моноширинный по цифрам текст; $color — токен компонента.
+// Счётчик символов под полем (BaseTextarea): мелкий текст с цифрами одной ширины; $color — токен компонента.
 @mixin field-counter($color: var(--rise-text-muted)) {
 	@include text-size(xs);
 	color: $color;

@@ -139,6 +139,8 @@
 	}
 
 	&__link {
+		@include button-reset;
+		text-align: center;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -146,14 +148,9 @@
 		box-sizing: border-box;
 		width: 100%;
 		min-height: sz(ct(bottom-nav, height, 56px));
-		margin: 0;
 		padding: sz(8px) sz(4px) sz(6px);
-		border: none;
 		border-radius: sz(var(--rise-radius-md));
-		background-color: transparent;
-		font: inherit;
 		text-decoration: none;
-		cursor: pointer;
 		-webkit-tap-highlight-color: transparent;
 		@include custom-text(color, ct(bottom-nav, text, var(--rise-text-toned)));
 		@include transition-colors;

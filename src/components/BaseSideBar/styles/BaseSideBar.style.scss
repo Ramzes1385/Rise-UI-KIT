@@ -260,6 +260,7 @@
 	}
 
 	&__link {
+		@include button-reset;
 		position: relative;
 		display: flex;
 		align-items: center;
@@ -267,18 +268,13 @@
 		width: 100%;
 		min-width: 0;
 		min-height: sz(var(--sidebar-item-height));
-		margin: 0;
 		padding: sz(4px) sz(var(--sidebar-item-pad-x));
-		border: none;
 		border-radius: sz(ct(side-bar, item-radius, var(--rise-radius-md)));
-		background-color: transparent;
 		@include custom-text(color, ct(side-bar, item-text, var(--rise-text-muted)));
-		font: inherit;
 		@include text-size(sm);
 		font-weight: var(--rise-font-weight-medium);
 		text-align: left;
 		text-decoration: none;
-		cursor: pointer;
 		@include transition-colors;
 		@include focus-ring(-2px);
 

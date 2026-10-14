@@ -89,6 +89,7 @@
 	}
 
 	&__tag-close {
+		@include button-reset;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
@@ -96,12 +97,7 @@
 		width: sz(16px);
 		height: sz(16px);
 		margin-right: sz(-4px);
-		padding: 0;
-		border: none;
 		border-radius: sz(var(--rise-radius-xs));
-		background-color: transparent;
-		color: inherit;
-		cursor: pointer;
 		@include transition-colors;
 
 		@include hover {

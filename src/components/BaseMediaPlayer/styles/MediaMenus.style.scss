@@ -132,21 +132,18 @@
 	}
 
 	&__menu-item {
+		@include button-reset;
 		display: flex;
 		align-items: center;
 		gap: sz(8px);
 		box-sizing: border-box;
 		width: 100%;
 		padding: sz(7px) sz(12px) sz(7px) sz(8px);
-		border: 0;
-		background-color: transparent;
 		color: var(--media-text);
-		font: inherit;
 		font-size: sz(var(--rise-font-size-sm));
 		line-height: sz(20px);
 		text-align: left;
 		white-space: nowrap;
-		cursor: pointer;
 		transition:
 			background-color var(--media-fast) var(--media-ease),
 			color var(--media-fast) var(--media-ease);
@@ -330,16 +327,14 @@
 	}
 
 	&__speed-preset {
+		@include button-reset;
 		min-width: sz(40px);
 		padding: sz(4px) sz(10px);
-		border: 0;
 		border-radius: sz(8px);
 		background-color: var(--media-hover);
 		color: var(--media-text);
-		font: inherit;
 		font-size: sz(13px);
 		font-variant-numeric: tabular-nums;
-		cursor: pointer;
 		@include transition(background-color, color);
 		@include focus-ring;
 

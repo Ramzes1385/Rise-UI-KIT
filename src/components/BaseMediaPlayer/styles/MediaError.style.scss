@@ -105,18 +105,17 @@ $media-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
 	}
 
 	&__retry {
+		@include button-reset;
+		text-align: center;
 		display: inline-flex;
 		align-items: center;
 		gap: sz(6px);
 		padding: sz(10px) sz(20px);
-		border: 0;
 		border-radius: sz(10px);
 		background-color: var(--media-primary-strong);
 		color: var(--media-text);
-		font: inherit;
 		font-size: sz(15px);
 		font-weight: var(--rise-font-weight-semibold);
-		cursor: pointer;
 		transition:
 			box-shadow var(--media-normal) var(--media-ease),
 			transform var(--media-normal) var(--media-spring);
