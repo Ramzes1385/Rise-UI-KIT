@@ -131,7 +131,7 @@ describe('BaseEditor: defineExpose и слот toolbar', () => {
 		await fireEvent.click(screen.getByRole('button', { name: 'Своя кнопка' }))
 		expect(screen.getByRole('textbox').querySelector('b')?.textContent).toBe('vstavka')
 
-		window.getSelection()?.selectAllChildren(screen.getByRole('textbox').querySelector('p') as HTMLElement)
+		window.getSelection()?.selectAllChildren(screen.getByRole('textbox').lastElementChild as HTMLElement)
 		props.applyFormat('bold')
 		expect(screen.getByRole('textbox').querySelector('b')).not.toBeNull()
 		props.applyBlock('h2')

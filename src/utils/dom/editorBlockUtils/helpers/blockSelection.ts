@@ -1,7 +1,7 @@
 /** Утилиты: какие блоки (абзацы, заголовки, пункты списка) задевает выделение редактора */
 import { getBlockParent } from '../../editorDomUtils'
-import { collapseToStart, getSelectionRange } from '../../editorInsertUtils'
 import { getTextRange, selectTextRange, textOffset } from '../../editorFormatUtils'
+import { collapseToStart, getSelectionRange, selectRange } from '../../editorInsertUtils'
 
 /** Теги блоков первого уровня: всё, что не входит в этот список, считается строчным содержимым */
 const BLOCK_TAGS = new Set(['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'BLOCKQUOTE', 'PRE', 'UL', 'OL', 'DIV', 'HR', 'TABLE', 'LI'])
@@ -92,4 +92,29 @@ function selectedBlocks(root: HTMLElement): HTMLElement[] {
 	)
 }
 
-export { emptyParagraph, selectedBlocks }
+/** Текстовый узел принадлежит вложенному списку блока, а не его собственному тексту */
+function isInNestedList(node: Text, block: HTMLElement): boolean {
+	const list = node.parentElement?.closest('ul, ol')
+	return list !== null && list !== undefined && block.contains(list)
+}
+
+/** Каретка в блоке на смещении собственного текста блока (вложенные списки не считаются); в пустом блоке — в начале */
+function placeCaretInBlock(block: HTMLElement, offset: number): void {
+	const walker = document.createTreeWalker(block, NodeFilter.SHOW_TEXT)
+	let passed = 0
+	while (walker.nextNode()) {
+		const node = walker.currentNode as Text
+		if (isInNestedList(node, block)) continue
+		if (offset <= passed + node.data.length) {
+			const range = document.createRange()
+			range.setStart(node, offset - passed)
+			range.collapse(true)
+			selectRange(range)
+			return
+		}
+		passed += node.data.length
+	}
+	collapseToStart(block)
+}
+
+export { emptyParagraph, placeCaretInBlock, selectedBlocks }

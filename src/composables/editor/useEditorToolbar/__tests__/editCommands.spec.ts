@@ -101,7 +101,7 @@ describe('editCommands', () => {
 
 			window.getSelection()?.removeAllRanges()
 			insertHtmlCommand(ctx as unknown as UseToolbarCommandsOptions, '<i>y</i>')
-			expect(editor.innerHTML).toBe('<p>a<b>x</b>b</p><i>y</i>')
+			expect(editor.innerHTML).toBe('<p>a<b>x</b>b</p><p><i>y</i></p>')
 			expect(ctx.onInput).toHaveBeenCalledTimes(2)
 		})
 

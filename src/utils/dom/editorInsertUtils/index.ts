@@ -1,6 +1,7 @@
 export {
 	collapseToEnd,
 	collapseToStart,
+	deleteSelection,
 	getSelectionRange,
 	insertHtmlAtSelection,
 	insertLineBreakAtSelection,

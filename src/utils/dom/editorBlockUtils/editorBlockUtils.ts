@@ -1,11 +1,12 @@
-import { emptyParagraph, selectedBlocks } from './helpers/blockSelection'
-/** Утилиты: блоки, списки, выравнивание и абзацы редактора через Selection и Range вместо `document.execCommand` */
-import { getTextRange, isEmptyFragment, selectTextRange } from '../editorFormatUtils'
-import { collapseToStart, getSelectionRange, selectRange } from '../editorInsertUtils'
+import { emptyParagraph, placeCaretInBlock, selectedBlocks } from './helpers/blockSelection'
 import type { EditorAlign, EditorBlockTag, EditorListTag } from './types/editorBlockUtils.types'
+/** Утилиты: блоки, списки, выравнивание и абзацы редактора через Selection и Range вместо `document.execCommand` */
+import { getTextRange, isEmptyFragment, selectTextRange, textOffset } from '../editorFormatUtils'
+import { collapseToStart, deleteSelection, getSelectionRange, selectRange } from '../editorInsertUtils'
 import { alignBlock, convertToItem, mergeAdjacentLists, retagBlock, switchList, unwrapListItem } from './helpers/blockOps'
 
 const HEADING_RE = /^H[1-6]$/
+const TEXT_BLOCK_TAGS = new Set(['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'BLOCKQUOTE', 'PRE', 'DIV'])
 const INLINE_SELECTOR = 'b, strong, i, em, u, s, strike, del, span, font, a, code, mark, sub, sup'
 
 /** Абзац внутри пункта списка работает как сам пункт: команды списков меняют пункт целиком */
@@ -14,19 +15,19 @@ function itemOf(block: HTMLElement): HTMLElement {
 }
 
 /**
- * Выполняет действие над каждым выделенным блоком и возвращает выделение на место: по тексту, а в пустом блоке —
- * в начало первого блока, который вернуло действие. false, если блоков нет.
+ * Выполняет действие над каждым выделенным блоком и возвращает выделение на место: свёрнутая каретка встаёт в блок,
+ * который вернуло действие, на то же смещение внутри него, непустое выделение пересчитывается по тексту, а в пустом
+ * блоке каретка встаёт в начало первого блока. false, если блоков нет.
  */
-function forEachSelectedBlock(root: HTMLElement, action: (block: HTMLElement) => HTMLElement | void, isItemLevel = false): boolean {
+function forEachSelectedBlock(root: HTMLElement, action: (block: HTMLElement) => HTMLElement, isItemLevel = false): boolean {
 	const blocks = selectedBlocks(root)
 	const textRange = getTextRange(root)
 	if (blocks.length === 0 || !textRange) return false
 	const targets = isItemLevel ? [...new Set(blocks.map(itemOf))] : blocks
-	const results = targets.map(action)
-	selectTextRange(root, textRange)
-	const anchor = window.getSelection()?.anchorNode
-	const first = results.find(result => result instanceof HTMLElement)
-	if ((!anchor || anchor === root) && first) collapseToStart(first)
+	const caretOffset = textRange.start - textOffset(root, targets[0], 0)
+	const [first] = targets.map(action)
+	if (textRange.start === textRange.end) placeCaretInBlock(first, caretOffset)
+	else selectTextRange(root, textRange)
 	return true
 }
 
@@ -86,10 +87,18 @@ function pruneEmptyInline(block: HTMLElement): void {
 	})
 }
 
-/** Блок без содержимого получает заглушку `<br>`, чтобы не схлопнуться */
+/** Блок без содержимого получает заглушку `<br>`, чтобы не схлопнуться; пункт с абзацем внутри — абзац пункта */
 function finishBlock(block: HTMLElement): void {
 	pruneEmptyInline(block)
-	if (isEmptyBlock(block)) block.appendChild(document.createElement('br'))
+	const inner = block.tagName === 'LI' ? Array.from(block.children).filter(child => TEXT_BLOCK_TAGS.has(child.tagName)) : []
+	if (inner.length > 0) inner.forEach(child => finishBlock(child as HTMLElement))
+	else if (isEmptyBlock(block) && block.querySelector('br') === null) block.appendChild(document.createElement('br'))
+}
+
+/** Куда ставить каретку в новом блоке: в пункте с абзацем или заголовком внутри - в него */
+function caretTarget(block: HTMLElement): HTMLElement {
+	const first = block.firstElementChild
+	return block.tagName === 'LI' && first && TEXT_BLOCK_TAGS.has(first.tagName) ? (first as HTMLElement) : block
 }
 
 /** Новая строка в блоке кода: перевод строки в тексте, в конце блока — два, чтобы строка была видна */
@@ -117,7 +126,7 @@ function splitBlock(range: Range, block: HTMLElement): void {
 	finishBlock(block)
 	finishBlock(next as HTMLElement)
 	block.after(next)
-	collapseToStart(next)
+	collapseToStart(caretTarget(next as HTMLElement))
 }
 
 /** Пустой пункт или пустая цитата завершают список или цитату: блок становится абзацем */
@@ -134,8 +143,9 @@ function leaveContainer(block: HTMLElement): void {
 function insertParagraphAtSelection(root: HTMLElement): boolean {
 	const initial = getSelectionRange(root)
 	if (!initial) return false
-	initial.deleteContents()
-	const [block] = selectedBlocks(root)
+	deleteSelection(root, initial)
+	const [selected] = selectedBlocks(root)
+	const block = selected && selected.parentElement?.tagName === 'LI' ? selected.parentElement : selected
 	const range = getSelectionRange(root) as Range
 	if (!block) {
 		const paragraph = emptyParagraph()

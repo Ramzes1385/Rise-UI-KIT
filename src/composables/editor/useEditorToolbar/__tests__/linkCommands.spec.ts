@@ -206,7 +206,7 @@ describe('linkCommands', () => {
 			const range = window.getSelection()!.getRangeAt(0)
 			expect(range.collapsed).toBe(true)
 			expect(editor.innerHTML).toBe(
-				'<p>текст</p><a href="https://a.test" target="_blank" rel="noopener noreferrer">https://a.test</a>',
+				'<p>текст</p><p><a href="https://a.test" target="_blank" rel="noopener noreferrer">https://a.test</a></p>',
 			)
 			expect(ctx.onInput).toHaveBeenCalledTimes(1)
 		})

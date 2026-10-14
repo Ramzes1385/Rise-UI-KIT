@@ -55,7 +55,62 @@ function hasContent(node: Element | DocumentFragment | Text): boolean {
 	return node instanceof Text ? false : node.querySelector(CONTENT_ELEMENTS) !== null
 }
 
-/** HTML разбирается в «неживом» шаблоне: скрипты и обработчики не исполняются, пока узлы не вставлены */
+function isBreakOnly(block: HTMLElement): boolean {
+	return block.childNodes.length === 1 && block.firstChild?.nodeName === 'BR'
+}
+
+/** Убирает опустевший элемент и опустевших предков до области */
+function removeEmptyAncestors(node: HTMLElement | null, root: HTMLElement): void {
+	let current = node
+	while (current && current !== root && !current.hasChildNodes()) {
+		const parent: HTMLElement | null = current.parentElement
+		current.remove()
+		current = parent
+	}
+}
+
+/** Содержимое блока конца выделения переезжает в блок начала; возвращает диапазон на месте стыка */
+function mergeBlocks(start: HTMLElement, end: HTMLElement, root: HTMLElement): Range {
+	if (isBreakOnly(start)) start.replaceChildren()
+	const join = start.childNodes.length
+	const parent = end.parentElement
+	if (!isBreakOnly(end)) start.append(...Array.from(end.childNodes))
+	end.remove()
+	removeEmptyAncestors(parent, root)
+	if (!start.hasChildNodes()) start.appendChild(document.createElement('br'))
+	const range = document.createRange()
+	range.setStart(start, join)
+	range.collapse(true)
+	return range
+}
+
+/**
+ * Удаляет выделение и возвращает диапазон каретки. Выделение через блоки склеивает крайние блоки в один, как в браузерах
+ * и ProseMirror; если удалена вся область, в ней остаётся пустой абзац.
+ */
+function deleteSelection(root: HTMLElement, range: Range): Range {
+	if (range.collapsed) return range
+	const start = getBlockParent(range.startContainer, root)
+	const end = getBlockParent(range.endContainer, root)
+	range.deleteContents()
+	const isMergeable = start !== end && start !== root && end !== root && !start.contains(end) && !end.contains(start)
+	if (isMergeable) {
+		const merged = mergeBlocks(start, end, root)
+		selectRange(merged)
+		return merged
+	}
+	if (root.hasChildNodes()) return range
+	const paragraph = document.createElement('p')
+	paragraph.appendChild(document.createElement('br'))
+	root.appendChild(paragraph)
+	collapseToStart(paragraph)
+	return getSelectionRange(root) as Range
+}
+
+/**
+ * HTML разбирается в шаблоне, но `importNode` переносит узлы в документ: обработчики вроде `onerror` у `img` могут
+ * сработать ещё до вставки в область. Скрипты после разбора убираются, остальное защищает только очистка HTML вызывающим.
+ */
 function parseHtmlFragment(html: string): DocumentFragment {
 	const template = document.createElement('template')
 	template.innerHTML = html
@@ -64,8 +119,32 @@ function parseHtmlFragment(html: string): DocumentFragment {
 	return fragment
 }
 
+function isBlockFragmentNode(node: Node): boolean {
+	return node instanceof Element && BLOCK_FRAGMENT_TAGS.has(node.tagName)
+}
+
 function hasBlockContent(fragment: DocumentFragment): boolean {
-	return Array.from(fragment.childNodes).some(node => node instanceof Element && BLOCK_FRAGMENT_TAGS.has(node.tagName))
+	return Array.from(fragment.childNodes).some(isBlockFragmentNode)
+}
+
+/** Смешанная вставка «строчное + блок»: подряд идущие строчные узлы получают свой абзац, пробелы между блоками отбрасываются */
+function groupInlineRuns(fragment: DocumentFragment): DocumentFragment {
+	const grouped = document.createDocumentFragment()
+	let run: HTMLParagraphElement | null = null
+	for (const node of Array.from(fragment.childNodes)) {
+		if (isBlockFragmentNode(node)) {
+			run = null
+			grouped.append(node)
+			continue
+		}
+		if (!run && node instanceof Text && node.data.trim() === '') continue
+		if (!run) {
+			run = document.createElement('p')
+			grouped.append(run)
+		}
+		run.append(node)
+	}
+	return grouped
 }
 
 /** В пункте списка блоки теряют обёртку: абзацы идут строками через `<br>`, вложенные списки остаются */
@@ -129,6 +208,14 @@ function insertInline(range: Range, fragment: DocumentFragment): void {
 	collapseAfter(last)
 }
 
+/** Каретка прямо в области, вне блока: строчная вставка получает свой абзац */
+function insertInlineInRoot(range: Range, fragment: DocumentFragment): void {
+	const paragraph = document.createElement('p')
+	paragraph.append(fragment)
+	range.insertNode(paragraph)
+	collapseToEnd(paragraph)
+}
+
 function insertBlocks(root: HTMLElement, range: Range, fragment: DocumentFragment): void {
 	const block = getBlockParent(range.startContainer, root)
 	if (block.tagName === 'LI') {
@@ -152,15 +239,16 @@ function insertBlocks(root: HTMLElement, range: Range, fragment: DocumentFragmen
 function insertHtmlAtSelection(root: HTMLElement, html: string): boolean {
 	const range = getSelectionRange(root)
 	if (!range) return false
-	range.deleteContents()
+	const caret = deleteSelection(root, range)
 	const fragment = parseHtmlFragment(html)
 	if (!fragment.firstChild) {
-		selectRange(range)
+		selectRange(caret)
 		return true
 	}
-	dropPlaceholderBreak(range)
-	if (hasBlockContent(fragment)) insertBlocks(root, range, fragment)
-	else insertInline(range, fragment)
+	dropPlaceholderBreak(caret)
+	if (hasBlockContent(fragment)) insertBlocks(root, caret, groupInlineRuns(fragment))
+	else if (caret.startContainer === root) insertInlineInRoot(caret, fragment)
+	else insertInline(caret, fragment)
 	return true
 }
 
@@ -180,9 +268,9 @@ function hasContentAfter(node: Node, root: HTMLElement): boolean {
  * Возвращает false, если выделения в области нет.
  */
 function insertLineBreakAtSelection(root: HTMLElement): boolean {
-	const range = getSelectionRange(root)
-	if (!range) return false
-	range.deleteContents()
+	const selected = getSelectionRange(root)
+	if (!selected) return false
+	const range = deleteSelection(root, selected)
 	const lineBreak = document.createElement('br')
 	range.insertNode(lineBreak)
 	if (!hasContentAfter(lineBreak, root)) lineBreak.after(document.createElement('br'))
@@ -203,6 +291,7 @@ export {
 	collapseToEnd,
 	collapseToStart,
 	getSelectionRange,
+	deleteSelection,
 	hasContent,
 	insertHtmlAtSelection,
 	insertLineBreakAtSelection,

@@ -153,8 +153,8 @@ describe('BaseEditor integration', () => {
 			getContent(container).dispatchEvent(event)
 
 			expect(event.defaultPrevented).toBe(true)
-			expect(getContent(container).innerHTML).toBe('<b>жирный</b>')
-			expect(emitted()['update:modelValue'].at(-1)).toEqual(['<b>жирный</b>'])
+			expect(getContent(container).innerHTML).toBe('<p><b>жирный</b></p>')
+			expect(emitted()['update:modelValue'].at(-1)).toEqual(['<p><b>жирный</b></p>'])
 		})
 
 		it('вставляет простой текст как текст с переносами строк', () => {
@@ -162,7 +162,7 @@ describe('BaseEditor integration', () => {
 
 			getContent(container).dispatchEvent(createPasteEvent({ 'text/plain': 'Строка <b>1</b>\nСтрока 2' }))
 
-			expect(getContent(container).innerHTML).toBe('Строка &lt;b&gt;1&lt;/b&gt;<br>Строка 2')
+			expect(getContent(container).innerHTML).toBe('<p>Строка &lt;b&gt;1&lt;/b&gt;<br>Строка 2</p>')
 		})
 
 		it('не перехватывает вставку без текста и HTML (например, файлы)', () => {
@@ -182,7 +182,7 @@ describe('BaseEditor integration', () => {
 			getContent(container).dispatchEvent(event)
 
 			expect(event.defaultPrevented).toBe(true)
-			expect(getContent(container).innerHTML).toBe('<img src="x">')
+			expect(getContent(container).innerHTML).toBe('<p><img src="x"></p>')
 		})
 
 		it('не перехватывает перетаскивание внутри редактора', async () => {
