@@ -144,6 +144,10 @@
 					:size-scale="sizeScale" />
 			</div>
 
+			<div v-if="isSelectable" role="status" :class="[ui('selection-status'), classes.selectionStatus]">
+				{{ selectionStatusText }}
+			</div>
+
 			<div v-if="loadMode === 'button' && hasMoreRows" :class="[ui('load-more'), classes.loadMore]">
 				<BaseButton
 					variant="outline"
@@ -223,6 +227,8 @@ const props = withDefaults(
 		expandedIds: undefined,
 		page: undefined,
 		totalRows: undefined,
+		isManualFiltering: false,
+		isManualSorting: false,
 		selectedIds: undefined,
 		selectAllScope: undefined,
 		isRowInteractive: undefined,
@@ -329,6 +335,7 @@ const {
 	isExportOpen,
 	exportData,
 	clearSelection,
+	selectionStatusText,
 } = useBaseTable(props, emit)
 
 defineExpose<BaseTableExpose>({ exportData, clearSelection })

@@ -11,7 +11,8 @@ export const Selection: StoryObj<typeof meta> = {
 					'Выбор строк (`behavior.selectable`): чекбоксы в строках и «Выбрать все» в шапке, выбранная строка подсвечена.',
 					'Отключённую строку (`isDisabled`) выбрать нельзя. При поиске «Выбрать все» отмечает только найденные строки,',
 					'а событие `select` получает выбранные строки целиком. Когда выбрана часть строк, «Выбрать все» в частичном',
-					'состоянии (черта, `indeterminate`). Поиск без совпадений показывает «Ничего не найдено» (`emptyFilteredText`).',
+					'состоянии (черта, `indeterminate`). Выбранные строки, скрытые поиском, остаются в выборе (и в `select`): под таблицей',
+					'область `role="status"` сообщает, сколько их. Поиск без совпадений показывает «Ничего не найдено» (`emptyFilteredText`).',
 				].join('\n'),
 			},
 		},
@@ -35,6 +36,10 @@ export const Selection: StoryObj<typeof meta> = {
 		await userEvent.click(selectAll)
 		await expect(selectAll).toBeChecked()
 		await expect(args.onSelect).toHaveBeenLastCalledWith([expect.objectContaining({ id: 2 }), expect.objectContaining({ id: 8 })])
+		const search = canvas.getByLabelText('Поиск по таблице')
+		await userEvent.clear(search)
+		await userEvent.type(search, 'Москва')
+		await waitFor(() => expect(canvas.getByRole('status')).toHaveTextContent('Выбрано 2 скрытые строки'))
 		await userEvent.type(canvas.getByLabelText('Поиск по таблице'), 'ъъъ')
 		await waitFor(() => expect(canvas.getByText('Ничего не найдено')).toBeVisible())
 	},

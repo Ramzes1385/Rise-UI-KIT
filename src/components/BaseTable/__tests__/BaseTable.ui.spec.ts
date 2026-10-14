@@ -70,7 +70,7 @@ describe('BaseTable: проп ui', () => {
 		expect(part(container, 'th')).toHaveClass('u-th', 'own-th', 'base-table__th--expand')
 		expect(part(container, 'td')).toHaveClass('u-td', 'own-td', 'base-table__td--expand')
 		expect(part(container, 'tr')).toHaveClass('u-tr', 'base-table__tr--expandable')
-		const absent = new Set(['load-more', 'active-filters', 'nested-wrapper'])
+		const absent = new Set(['load-more', 'active-filters', 'nested-wrapper', 'selection-status'])
 		for (const name of TABLE_PARTS.filter(item => !absent.has(item))) expect(part(container, name)).toHaveClass(`u-${name}`)
 	})
 

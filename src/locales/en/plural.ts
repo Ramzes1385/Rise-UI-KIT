@@ -19,5 +19,9 @@ export const enPlural = {
 	CRYPTOPRO_EXPIRES: { one: 'expires in {n} day', other: 'expires in {n} days' },
 	SEARCH_RESULTS: { one: '{n} result found', other: '{n} results found' },
 	FILE_MANAGER_ITEMS: { one: '{n} item', other: '{n} items' },
+	TABLE_HIDDEN_SELECTED: {
+		one: '{n} selected row is hidden by the filter and stays selected',
+		other: '{n} selected rows are hidden by the filter and stay selected',
+	},
 	FILE_MANAGER_SELECTED: { one: '{n} selected', other: '{n} selected' },
 }

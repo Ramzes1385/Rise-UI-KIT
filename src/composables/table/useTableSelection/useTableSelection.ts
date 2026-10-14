@@ -2,6 +2,7 @@
 import { watch } from 'vue'
 import { useTableSelectedIds } from './useTableSelectedIds'
 import { useTableSelectAllState } from './useTableSelectAllState'
+import { useTableHiddenSelection } from './useTableHiddenSelection'
 import type { TableRow } from '@components/BaseTable/types/BaseTable.types'
 import { collectDisabledSelectedIds, collectRowFlags, mergeSelectedIds, toggleSelectedId } from './useTableSelectionUtils'
 import type { SelectionSyncState, UseTableSelectionOptions, UseTableSelectionReturn } from './types/useTableSelection.types'
@@ -28,7 +29,7 @@ function syncSelectionWithRows(state: SelectionSyncState): void {
 }
 
 function useTableSelection(options: UseTableSelectionOptions): UseTableSelectionReturn {
-	const { rows, filteredRows = rows, onSelect, onSelectedIdsChange, isKeepingOutOfScope = () => false } = options
+	const { rows, filteredRows = rows, visibleRows = rows, onSelect, onSelectedIdsChange, isKeepingOutOfScope = () => false } = options
 	const { isControlled, internalIds, selectedIds, selectedRows } = useTableSelectedIds(options)
 
 	function applySelection(next: Set<string | number>): void {
@@ -49,6 +50,8 @@ function useTableSelection(options: UseTableSelectionOptions): UseTableSelection
 	}
 
 	const { selectableFilteredRows, isAllSelected, isSomeSelected, isSelectAllDisabled } = useTableSelectAllState(filteredRows, selectedIds)
+
+	const hiddenSelectedCount = useTableHiddenSelection(rows, visibleRows, selectedIds)
 
 	function toggleRow(row: TableRow): void {
 		applySelection(toggleSelectedId(selectedIds.value, row.id))
@@ -86,6 +89,7 @@ function useTableSelection(options: UseTableSelectionOptions): UseTableSelection
 		isAllSelected,
 		isSomeSelected,
 		isSelectAllDisabled,
+		hiddenSelectedCount,
 		isSelected,
 		toggleRow,
 		toggleAll,

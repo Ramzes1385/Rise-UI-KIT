@@ -10,6 +10,17 @@
 		border-top: 1px solid var(--tbl-border);
 	}
 
+	&__selection-status {
+		@include text-size(sm);
+		padding: space(8px 16px);
+		border-top: 1px solid var(--tbl-border);
+		color: var(--rise-text-muted);
+
+		&:empty {
+			display: none;
+		}
+	}
+
 	&__footer-bar {
 		display: flex;
 		flex-wrap: wrap;

@@ -43,6 +43,7 @@ export const TABLE_PARTS = [
 	'expanded-wrapper',
 	'nested-wrapper',
 	'load-more',
+	'selection-status',
 	'footer-bar',
 	'page-size',
 	'pagination-info',
@@ -258,6 +259,7 @@ export interface BaseTableProps extends BaseComponentProps<
 	| 'tbody'
 	| 'td'
 	| 'loadMore'
+	| 'selectionStatus'
 	| 'footerBar'
 	| 'pageSize'
 	| 'paginationInfo'
@@ -290,9 +292,20 @@ export interface BaseTableProps extends BaseComponentProps<
 	 * Всего строк на сервере (серверная пагинация): `rows` — только текущая страница, а число страниц, подпись
 	 * «1–10 из 100» и пагинация считаются по `totalRows`. В режиме `pagination` строки не нарезаются по `pageSize`; в
 	 * `button` и `infinite` подгрузка продолжается, пока в `rows` меньше `totalRows`. Поиск, фильтры и сортировка
-	 * по-прежнему применяются к переданным строкам: для серверных передайте на сервер события `search`, `filter`, `sort`
+	 * по умолчанию применяются к переданным строкам; серверные — `isManualFiltering` и `isManualSorting`
 	 */
 	totalRows?: number
+	/**
+	 * Серверные поиск и фильтры: таблица не применяет их к `rows` (приходят уже отобранными), а только сообщает события
+	 * `search` и `filter`; страница при вводе поиска и смене фильтров по-прежнему сбрасывается на первую. Работает и без `totalRows`.
+	 * Пустая страница при активном поиске или фильтре показывает «Ничего не найдено», а не «Нет данных»
+	 */
+	isManualFiltering?: boolean
+	/**
+	 * Серверная сортировка: таблица не сортирует `rows` (приходят уже упорядоченными), а только показывает стрелки,
+	 * `aria-sort` и сообщает событие `sort`. Страница при сортировке не сбрасывается — приложение решает само
+	 */
+	isManualSorting?: boolean
 	/**
 	 * Область действия «Выбрать все» в шапке (`filtered`, `page`, `all`): по умолчанию строки, прошедшие поиск и фильтры, на всех
 	 * страницах. С `page` — только показанные сейчас; с `all` — все переданные `rows`. Состояние флажка («все», «часть») считается
@@ -526,7 +539,17 @@ export interface BaseTableSlots {
 
 export type TableProps = PropsWithDefaults<
 	BaseTableProps,
-	'isLoading' | 'hasMore' | 'height' | 'pageSize' | 'pageSizeOptions' | 'loadMode' | 'searchDebounce' | 'isVirtual' | 'rowHeight'
+	| 'isLoading'
+	| 'hasMore'
+	| 'isManualFiltering'
+	| 'isManualSorting'
+	| 'height'
+	| 'pageSize'
+	| 'pageSizeOptions'
+	| 'loadMode'
+	| 'searchDebounce'
+	| 'isVirtual'
+	| 'rowHeight'
 >
 
 /** Смещения закреплённых колонок, px: служебные колонки по типу, колонки слева и справа по `key` */

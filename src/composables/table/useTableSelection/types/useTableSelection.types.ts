@@ -10,6 +10,11 @@ export interface UseTableSelectionOptions {
 	 */
 	filteredRows?: Ref<TableRow[]>
 	/**
+	 * Строки, видимые после поиска и фильтров (все страницы): выбранные строки `rows` вне этого набора считаются скрытыми
+	 * (`hiddenSelectedCount`). По умолчанию совпадает с rows — скрытых нет
+	 */
+	visibleRows?: Ref<TableRow[]>
+	/**
 	 * Сохранять ли выбор строк вне `filteredRows` при «Выбрать все» и снятии выбора (область «страница»).
 	 * По умолчанию `false`: строки вне области теряют выбор
 	 */
@@ -37,6 +42,8 @@ export interface UseTableSelectionReturn {
 	isSomeSelected: ComputedRef<boolean>
 	/** Доступных строк в отфильтрованном наборе нет: «Выбрать все» неактивен */
 	isSelectAllDisabled: ComputedRef<boolean>
+	/** Сколько выбранных строк `rows` скрыто поиском или фильтрами: они остаются в выборе и в payload `select` */
+	hiddenSelectedCount: ComputedRef<number>
 	/** Проверить, выбрана ли строка */
 	isSelected: (row: TableRow) => boolean
 	/** Переключить выбор строки */

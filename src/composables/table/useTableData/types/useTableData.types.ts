@@ -18,6 +18,10 @@ export interface UseTableDataOptions {
 	isMultiSort: () => boolean
 	/** Дебаунс поиска (мс) */
 	searchDebounce: () => number
+	/** Серверный поиск и фильтры: таблица не применяет их к `rows`, а только сообщает в `onSearch` и `onFilter` */
+	isManualFiltering?: () => boolean
+	/** Серверная сортировка: таблица не сортирует `rows`, а только сообщает в `onSort` */
+	isManualSorting?: () => boolean
 	/** Язык сравнения строк при сортировке (BCP 47); без него — язык кита */
 	sortLocale?: () => string | undefined
 	/** Пояс (IANA), в котором фильтр по датам считает сутки; без него — пояс пользователя */

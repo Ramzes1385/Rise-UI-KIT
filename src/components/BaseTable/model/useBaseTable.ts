@@ -2,6 +2,7 @@ import { warn } from '@/locales/warn'
 import type { ComputedRef, Ref } from 'vue'
 import { useUi } from '@composables/base/useUi'
 import { provideTableSlots } from './useTableSlots'
+import { getLocale, pluralize } from '@/locales/state'
 import { useBaseTableExport } from './useBaseTableExport'
 import { usePadding } from '@composables/base/usePadding'
 import { useTableStickyOffsets } from './useTableStickyOffsets'
@@ -38,6 +39,7 @@ const TABLE_ELEMENTS = [
 	'tbody',
 	'td',
 	'loadMore',
+	'selectionStatus',
 	'footerBar',
 	'pageSize',
 	'paginationInfo',
@@ -85,6 +87,8 @@ function useComposition(props: TableProps, emit: BaseTableEmits, features: Retur
 		searchDebounce: computed(() => props.searchDebounce),
 		sortLocale: computed(() => props.sortLocale),
 		timeZone: computed(() => props.timeZone),
+		isManualFiltering: computed(() => props.isManualFiltering),
+		isManualSorting: computed(() => props.isManualSorting),
 		expandedIds: computed(() => props.expandedIds),
 		isResizable: features.isResizable,
 		hasRowNumber: features.hasRowNumber,
@@ -171,7 +175,10 @@ function useTableSticky(
 }
 
 function useEmptyState(props: TableProps, table: ReturnType<typeof useTableComposition>) {
-	const isFiltered = computed(() => props.rows.length > 0 && table.processedRows.value.length === 0)
+	const hasQuery = computed(() => table.searchQuery.value !== '' || table.activeFilters.value.length > 0)
+	const isFiltered = computed(
+		() => table.processedRows.value.length === 0 && (props.rows.length > 0 || (props.isManualFiltering && hasQuery.value)),
+	)
 	return {
 		isFiltered,
 		bodyEmptyText: computed(() =>
@@ -210,6 +217,13 @@ function useDuplicateIdWarning(props: TableProps): void {
 		},
 		{ immediate: true },
 	)
+}
+
+function useSelectionStatus(table: ReturnType<typeof useTableComposition>) {
+	return computed(() => {
+		const count = table.hiddenSelectedCount.value
+		return count > 0 ? pluralize(getLocale().plural.TABLE_HIDDEN_SELECTED, count) : ''
+	})
 }
 
 function useRowInteractive(props: TableProps) {
@@ -259,6 +273,7 @@ export function useBaseTable(props: TableProps, emit: BaseTableEmits) {
 		...useTableVirtual(props, table.displayedRows, tableWrapperRef),
 		...useTableSticky(tableWrapperRef, table, features),
 		...useEmptyState(props, table),
+		selectionStatusText: useSelectionStatus(table),
 		getIsRowInteractive: useRowInteractive(props),
 	}
 }

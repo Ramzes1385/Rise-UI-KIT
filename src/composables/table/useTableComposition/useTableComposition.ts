@@ -46,6 +46,7 @@ function useTableComposition(options: UseTableCompositionOptions) {
 		isSomeSelected: selection.isSomeSelected,
 		isSelectAllDisabled: selection.isSelectAllDisabled,
 		isSelected: selection.isSelected,
+		hiddenSelectedCount: selection.hiddenSelectedCount,
 		clearSelection: selection.clearSelection,
 		isExpanded: expand.isExpanded,
 		toggleExpand: expand.toggleExpand,

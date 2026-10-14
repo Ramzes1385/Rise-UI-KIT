@@ -11,6 +11,8 @@ export interface UseTableCompositionOptions {
 	totalRows?: ComputedRef<number | undefined>
 	selectedIds?: ComputedRef<Array<string | number> | undefined>
 	isMultiSort: ComputedRef<boolean>
+	isManualFiltering?: ComputedRef<boolean>
+	isManualSorting?: ComputedRef<boolean>
 	searchDebounce: ComputedRef<number>
 	expandedIds?: ComputedRef<Array<string | number> | undefined>
 	sortLocale?: ComputedRef<string | undefined>

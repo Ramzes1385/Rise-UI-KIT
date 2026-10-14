@@ -307,3 +307,43 @@ describe('useTableSelection: управляемый выбор и clearSelection
 		expect(onSelectedIdsChange).toHaveBeenCalledTimes(1)
 	})
 })
+
+describe('useTableSelection: hiddenSelectedCount', () => {
+	const makeRows = (): TableRow[] => [
+		{ id: '1', data: {} },
+		{ id: '2', data: {} },
+		{ id: '3', data: {}, isDisabled: true, isSelected: true },
+	]
+
+	it('без visibleRows скрытых нет', () => {
+		const rows = ref(makeRows())
+		const { hiddenSelectedCount, toggleRow } = useTableSelection({ rows })
+		toggleRow(rows.value[0])
+		expect(hiddenSelectedCount.value).toBe(0)
+	})
+
+	it('считает выбранные строки вне visibleRows, включая disabled, выбранные родителем', () => {
+		const rows = ref(makeRows())
+		const visibleRows = ref<TableRow[]>([rows.value[1]])
+		const { hiddenSelectedCount, toggleRow } = useTableSelection({ rows, visibleRows })
+		expect(hiddenSelectedCount.value).toBe(1)
+		toggleRow(rows.value[0])
+		expect(hiddenSelectedCount.value).toBe(2)
+		toggleRow(rows.value[1])
+		expect(hiddenSelectedCount.value).toBe(2)
+		visibleRows.value = rows.value
+		expect(hiddenSelectedCount.value).toBe(0)
+	})
+
+	it('при пустом выборе возвращает 0 без обхода строк', () => {
+		const rows = ref<TableRow[]>([{ id: '1', data: {} }])
+		const { hiddenSelectedCount } = useTableSelection({ rows, visibleRows: ref([]) })
+		expect(hiddenSelectedCount.value).toBe(0)
+	})
+
+	it('id выбранных строк, которых нет в rows (другая страница сервера), скрытыми не считаются', () => {
+		const rows = ref<TableRow[]>([{ id: '1', data: {} }])
+		const { hiddenSelectedCount } = useTableSelection({ rows, visibleRows: ref(rows.value), selectedIds: () => ['1', '99'] })
+		expect(hiddenSelectedCount.value).toBe(0)
+	})
+})

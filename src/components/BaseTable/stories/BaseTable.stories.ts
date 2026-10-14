@@ -49,6 +49,7 @@ export const ColumnResizeTouch = cases.ColumnResizeTouch
 export const ControlledPagination = cases.ControlledPagination
 export const ServerTotalRows = cases.ServerTotalRows
 export const ControlledSelection = cases.ControlledSelection
+export const ServerSide = cases.ServerSide
 export const StickyColumnsResize = cases.StickyColumnsResize
 export const SortCompare = cases.SortCompare
 export const DateFilterTimezone = cases.DateFilterTimezone

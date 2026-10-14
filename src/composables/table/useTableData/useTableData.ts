@@ -34,7 +34,7 @@ import type { UseTableDataOptions, UseTableDataReturn } from './types/useTableDa
 function useTableData(options: UseTableDataOptions): UseTableDataReturn {
 	const { rows, columns, loadMode, pageSize, hasMore, isMultiSort, searchDebounce, sortLocale, timeZone, onSearch, onSort, onFilter } =
 		options
-	const { onPageSizeChange, page, onPageChange, totalRows } = options
+	const { onPageSizeChange, page, onPageChange, totalRows, isManualFiltering, isManualSorting } = options
 
 	const { searchQuery, handleSearchInput } = useTableSearch({ searchDebounce, onSearch })
 
@@ -56,6 +56,8 @@ function useTableData(options: UseTableDataOptions): UseTableDataReturn {
 		sortStates: sort.sortStates,
 		locale: sortLocale,
 		timeZone,
+		isManualFiltering,
+		isManualSorting,
 	})
 
 	const pagination = useTablePagination({ processedRows, loadMode, pageSize, hasMore, onPageSizeChange, page, onPageChange, totalRows })

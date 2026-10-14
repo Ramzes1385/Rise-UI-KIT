@@ -6,7 +6,7 @@ import type { UseTableCompositionOptions } from './types/useTableComposition.typ
 
 function useTableCompositionData(options: UseTableCompositionOptions, localColumns: Ref<TableColumn[]>) {
 	const { rows, loadMode, pageSize, hasMore, isMultiSort, searchDebounce, sortLocale, emit } = options
-	const { page, totalRows, timeZone } = options
+	const { page, totalRows, timeZone, isManualFiltering, isManualSorting } = options
 
 	return useTableData({
 		rows,
@@ -18,6 +18,8 @@ function useTableCompositionData(options: UseTableCompositionOptions, localColum
 		searchDebounce: () => searchDebounce.value,
 		sortLocale: () => sortLocale?.value,
 		timeZone: () => timeZone?.value,
+		isManualFiltering: () => isManualFiltering?.value ?? false,
+		isManualSorting: () => isManualSorting?.value ?? false,
 		onSearch: (q: string) => emit('search', q),
 		onSort: states => emit('sort', states),
 		onFilter: filters => emit('filter', filters),

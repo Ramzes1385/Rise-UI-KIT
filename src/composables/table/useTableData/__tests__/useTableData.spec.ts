@@ -929,3 +929,41 @@ describe('useTableData', () => {
 		})
 	})
 })
+
+describe('useTableData: серверный режим', () => {
+	it('isManualFiltering: поиск и фильтры только сообщаются, строки остаются как переданы', () => {
+		const onSearch = vi.fn()
+		const onFilter = vi.fn()
+		const { processedRows, handleSearchInput, addFilter, activeFilters } = useTableData(
+			createDefaultOptions({ isManualFiltering: () => true, onSearch, onFilter, searchDebounce: () => 0 }),
+		)
+		vi.useFakeTimers()
+		handleSearchInput('анна')
+		vi.runAllTimers()
+		vi.useRealTimers()
+		addFilter({ column: ref('city'), operator: ref('eq'), value: ref('москва') })
+		expect(processedRows.value).toHaveLength(4)
+		expect(onSearch).toHaveBeenCalledWith('анна')
+		expect(activeFilters.value).toHaveLength(1)
+		expect(onFilter).toHaveBeenCalledTimes(1)
+	})
+
+	it('isManualSorting: сортировка только сообщается, порядок строк не меняется', () => {
+		const onSort = vi.fn()
+		const { processedRows, handleSort } = useTableData(createDefaultOptions({ isManualSorting: () => true, onSort }))
+		handleSort(testColumns.value[1])
+		handleSort(testColumns.value[1])
+		expect(onSort).toHaveBeenLastCalledWith([{ key: 'age', direction: 'desc' }])
+		expect(processedRows.value.map(row => row.id)).toEqual([1, 2, 3, 4])
+	})
+
+	it('isManualSorting не отключает поиск и фильтры, isManualFiltering — сортировку', () => {
+		const sorted = useTableData(createDefaultOptions({ isManualFiltering: () => true }))
+		sorted.handleSort(testColumns.value[1])
+		expect(sorted.processedRows.value.map(row => row.id)).toEqual([3, 1, 2, 4])
+
+		const searched = useTableData(createDefaultOptions({ isManualSorting: () => true }))
+		searched.handleSearchInput('анна')
+		expect(searched.processedRows.value.map(row => row.id)).toEqual([1])
+	})
+})
