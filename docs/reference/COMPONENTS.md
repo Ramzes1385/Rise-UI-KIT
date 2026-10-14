@@ -115,7 +115,7 @@ const value = ref('')
 <BaseInput v-model="email" type="email" aria-label="E-mail" :input-attrs="{ name: 'email', autocomplete: 'email', 'data-testid': 'email' }" />
 ```
 
-Поле поиска — `type="search"` (нативный `searchbox`, слева иконка лупы; `icon=""` убирает её, `icon="имя"` ставит свою у любого типа): `<BaseInput v-model="query" type="search" aria-label="Поиск" />`.
+Поле поиска — `type="search"` (нативный `searchbox`, слева иконка лупы; `icon=""` убирает её, `icon="имя"` ставит свою у любого типа): `<BaseInput v-model="query" type="search" aria-label="Поиск" />`. Пока в поле есть текст, справа кнопка «Очистить» (в порядке Tab), а Esc очищает поле и не закрывает окно, в котором оно стоит (закрывает следующий Esc).
 
 ---
 
@@ -3502,6 +3502,7 @@ BaseEditor
 BaseEmojiPicker
 BaseEmpty
 BaseFab
+BaseFileManager
 BaseFileUpload
 BaseFilterBuilder
 BaseFooter

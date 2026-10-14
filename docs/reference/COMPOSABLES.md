@@ -612,7 +612,7 @@ readThemeAttrs(anchorEl) // { 'data-theme': 'dark', 'data-rise-theme': 'playful'
 
 ## useToolbarKeyboard (table-audit)
 
-Клавиатура панели инструментов по APG Toolbar. На нём тулбар BaseTable. Корень панели — элемент с `role="toolbar"` и именем.
+Клавиатура панели инструментов по APG Toolbar. На нём BaseToolbar и тулбар BaseTable. Корень панели — элемент с `role="toolbar"` и именем.
 
 ```ts
 import { useToolbarKeyboard } from '@ramzes1385/rise-ui-kit/composables'
@@ -623,6 +623,6 @@ const { handleKeydown, handleFocusin, focusItem } = useToolbarKeyboard({ rootRef
 ```
 
 - Управляющие элементы — кнопки, ссылки, поля, `[role="combobox"]` и всё с `tabindex`; отключённые, скрытые (`hidden`, `aria-hidden`, `inert`, `data-toolbar-skip`) и вложенные в другой элемент (кнопка внутри `combobox`) в обход не входят.
-- Одна остановка Tab: текущий элемент получает `tabindex="0"`, остальные — `-1` (и `data-toolbar-item`); текущим становится сфокусированный. Разметка отслеживается MutationObserver.
-- ← и → (при `orientation: () => 'vertical'` — ↑ и ↓), Home и End переносят фокус по кругу. В поле ввода стрелка уводит фокус, только когда каретка у края текста в сторону движения; Home и End в поле остаются за ним. События с `Ctrl`, `Alt`, `Meta` и уже обработанные (`defaultPrevented`) пропускаются.
+- Одна остановка Tab: текущий элемент получает `tabindex="0"`, остальные — `-1` (и `data-toolbar-item`); текущим становится сфокусированный. Разметка отслеживается MutationObserver (дети, `disabled`, `aria-disabled`, `hidden`, `inert`, `aria-hidden`, `data-toolbar-skip`); панель, появившаяся после монтирования (`v-if`), подхватывается, как только `rootRef` получит элемент.
+- ← и → (при `orientation: () => 'vertical'` — ↑ и ↓), Home и End переносят фокус по кругу. В поле ввода стрелка уводит фокус, только когда каретка у края текста в сторону движения; в поле без каретки (`type="number"`, `email`) стрелки остаются за ним; Home и End в поле остаются за ним. События с `Ctrl`, `Alt`, `Meta` и уже обработанные (`defaultPrevented`) пропускаются.
 - `focusItem(index)` — фокус на элемент по номеру (`-1` — последний), `sync()` — переставить `tabindex` вручную, `getItems()` — текущий список.

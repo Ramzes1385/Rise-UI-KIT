@@ -275,3 +275,36 @@
 - **Тени и фон темы**: `--rise-shadow-strength` (1) — сила всех теней; `--rise-color-neutral-0` (`#fff`) — фон светлой темы и инверсные белые; `--rise-font-heading` — шрифт заголовков (по умолчанию как `--rise-font-sans`).
 - **Слой CSS**: `@ramzes1385/rise-ui-kit/styles.layer.css` кладёт кит в `@layer rise` — CSS приложения правит любую часть (`.base-card__header`) без `!important`. Классы частей — также проп `ui`.
 - **Reduced motion** действует и внутри тем: длительности обнуляются на `[data-theme]` и `[data-rise-theme]`.
+
+## Задача fix-ui: волны 5–6 и правки общей проверки
+
+Записи по MIGRATION разделов `table-audit`, `table-2`, `chat-features`, `chat-2`, `a11y-fixes`, `editor-pickers`, `editor-2`, `maps-polish`, `misc-a` и `fix-ui`: то, что заметит приложение в DOM, порядке Tab и умолчаниях. Подробности и ломающие изменения (`!`) — в [v2/MIGRATION.md](../v2/MIGRATION.md).
+
+**DOM**
+
+- **BaseTable.** У свёрнутой раскрываемой строки нет пустого `tr.base-table__tr--expanded-content`: он появляется, пока строка раскрыта или сворачивается (селекторы и сдвиг строк в тестах). В режиме `loadMode: 'infinite'` под таблицей лежит `div.base-table__sentinel` (`aria-hidden`, высота 1px). Корень тулбара — `role="toolbar"` с именем «Инструменты таблицы», элементы панели получают `tabindex` и `data-toolbar-item`. Ручка ресайза — `role="separator"` на pointer events.
+- **BaseEditor.** Внутри `.base-editor` появился слой `.base-editor__frame`, который несёт рамку, фон, радиус и тень: стили приложения на `.base-editor { border … }` перенесите на него. Кнопки «Изображение» и «Видео» — `BaseButton` вместо `<label>`, класс `base-editor__btn--file` удалён, файловое поле скрыто. С `name` добавляется скрытое `<input type="hidden">`. Диалог ссылки вместо `window.prompt`.
+- **BaseSideBar.** Пункты-ссылки — `<a class="base-link base-link--ghost base-sidebar__link">` (BaseLink): селекторы приложения по `.base-link` затрагивают и сайдбар.
+- **BaseImageMap3D.** Список объектов для скринридера — по списку `ul.base-image-map-3d__objects` на каждый этаж (раньше один); в панели камеры новая кнопка «Во весь экран» (`:has-fullscreen="false"` убирает).
+- **BaseProgress, BaseNotification, BaseTour.** Полоса таймера — BaseProgress с `countdown` (`div.base-progress--countdown`, `aria-hidden`); у BaseTour убраны `ui['progress-bar-fill']` и `--tour-progress`. RTL-правила написаны через `[dir='rtl'] &`.
+- **BaseChat.** «Исключить» и «Забанить» спрашивают подтверждение; `ban-member` отдаёт только `{ memberId }`; «Открепить» вызывает `unpin-message`; для «не отправлено» (`status: 'failed'`) — кнопки «Повторить» и «Удалить» и скрытое меню.
+- **BaseInput `type="search"`.** Кнопка «Очистить» теперь в порядке Tab (раньше `tabindex="-1"`).
+
+**Порядок Tab и клавиатура**
+
+- **BaseEditor.** Панель — одна остановка Tab (было около 21), внутри стрелки, Home и End; область текста `isReadonly` входит в порядок Tab.
+- **BaseTable, BaseToolbar.** Панель — одна остановка Tab; в текстовом поле стрелка уводит фокус только у края текста, в числовом поле и поле e-mail стрелки остаются в поле. Delete и Backspace на метке фильтра удаляют её. После «Повторить» и «Удалить» в BaseChat фокус переходит в поле ввода.
+- **BaseChat.** Enter на открытой подсказке `@` и `/` выбирает пункт и не отправляет сообщение; ArrowUp в пустом поле открывает правку последнего своего сообщения.
+- **BaseInput `type="search"`.** Esc в непустом поле очищает его и не доходит до окна, в котором оно стоит.
+- **BaseFileManager.** После отмены окна фокус возвращается на кнопку, а при `activeElement === body` (Safari) — на элемент списка.
+
+**Умолчания и поведение**
+
+- **BaseTable.** Фильтр по датам считает сутки момента времени (`Date`, timestamp, ISO с зоной) в поясе пользователя, раньше в UTC; пояс задаёт `timeZone`. `selectAllScope="page"` не сбрасывает выбор других страниц; смена `pageSize` не сбрасывает управляемый `page`. Страницу, выбор и раскрытие строк можно вести снаружи: `v-model:page`, `v-model:selectedIds`, `v-model:expandedIds`. `useTableSelection().selectedIds` стал `ComputedRef`.
+- **BaseEditor.** Enter вставляет абзац, Shift+Enter — `<br>`; цвет текста по умолчанию — цвет области, а не `#000000`.
+- **BaseImageMap3D.** `hasFullscreen`, `hasLegend`, `isPulsing` работают в 3D-виде; `scene3d.outline: true` рисует контур по рёбрам GLB.
+- **BaseBadge.** Кликабельная точка без `label` получила имя «Индикатор» и предупреждение в консоли.
+
+**Сборка**
+
+- Ленивые чанки плагина: приложению с `createUiKitPlugin` стартовая загрузка меньше, с именованными импортами — без изменений (измерения — FOLLOW_UPS, «Задача misc-a»).

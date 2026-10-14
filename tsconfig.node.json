@@ -25,7 +25,8 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": [
-    "build/**/*.ts"
+    "build/**/*.ts",
+    "src/plugin/registry/lazyNames.ts"
   ],
   /* Код для браузера и jsdom (превью Storybook, настройка Vitest) проверяется в tsconfig.app.json */
   "exclude": [

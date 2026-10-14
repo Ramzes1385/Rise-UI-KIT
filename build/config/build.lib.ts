@@ -1,8 +1,6 @@
 import { resolve } from 'node:path'
 import type { BuildOptions } from 'vite'
-
-/** Тяжёлые компоненты `src/plugin/registry/lazy.ts`: каждый — в свой чанк, который плагин грузит по `import()` */
-const LAZY_COMPONENTS = ['BaseCalendar', 'BaseChat', 'BaseDatePicker', 'BaseEditor', 'BaseFileUpload', 'BaseTable']
+import { LAZY_COMPONENT_NAMES } from '../../src/plugin/registry/lazyNames'
 
 export function createLibBuildConfig(): BuildOptions {
 	return {
@@ -38,11 +36,11 @@ export function createLibBuildConfig(): BuildOptions {
 				strictExecutionOrder: true,
 				chunkFileNames: 'chunks/[name]-[hash].js',
 
-				// Тяжёлые компоненты плагина — в свои чанки без общих зависимостей: потребитель, которому нужен только
+				// Тяжёлые компоненты плагина (`src/plugin/registry/lazyNames.ts`, тот же список в реестре) — в свои чанки без общих зависимостей: потребитель, которому нужен только
 				// createUiKitPlugin, грузит их по import() (FOLLOW_UPS № 58)
 				codeSplitting: {
 					includeDependenciesRecursively: false,
-					groups: LAZY_COMPONENTS.map(component => ({
+					groups: LAZY_COMPONENT_NAMES.map(component => ({
 						name: `lazy-${component}`,
 						test: new RegExp(`[\\/]src[\\/]components[\\/]${component}[\\/](?:ui|model|styles)[\\/]`),
 						priority: 10,
