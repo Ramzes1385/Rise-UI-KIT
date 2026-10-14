@@ -50,3 +50,12 @@ export const LONG_LAYOUT: DashboardLayoutItem[] = [
 
 export const LONG_TEXT =
 	'Выручка выросла во всех направлениях, кроме подписок: там клиенты чаще переходили на годовые тарифы, а ежемесячные платежи сократились. Подробный разбор по регионам и каналам привлечения — в приложении к отчёту.'
+
+export const SCROLL_LAYOUT: DashboardLayoutItem[] = Array.from({ length: 12 }, (_, index) => ({
+	id: `card-${index + 1}`,
+	label: `Виджет ${index + 1}`,
+	x: (index % 3) * 4,
+	y: Math.floor(index / 3) * 2,
+	w: 4,
+	h: 2,
+}))

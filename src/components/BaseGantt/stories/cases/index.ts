@@ -1,6 +1,7 @@
 export { Default } from './Default'
 export { Scales } from './content/Scales'
 export { Dependencies } from './content/Dependencies'
+export { DependencyTypes } from './content/DependencyTypes'
 export { Milestones } from './content/Milestones'
 export { Editable } from './behavior/Editable'
 export { Variants } from './appearance/Variants'

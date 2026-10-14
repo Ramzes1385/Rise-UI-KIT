@@ -1,5 +1,5 @@
 import type { ComputedRef, Ref, ShallowRef } from 'vue'
-import type { BaseGanttEmits, GanttProps, GanttScale, GanttTask, GanttTaskId } from './BaseGantt.types'
+import type { BaseGanttEmits, GanttDependencyType, GanttProps, GanttScale, GanttTask, GanttTaskId } from './BaseGantt.types'
 
 /** Диапазон дней шкалы: первый день и число дней */
 export interface GanttRange {
@@ -29,12 +29,18 @@ export interface GanttItem {
 	end: Date
 	progress: number
 	parentId: GanttTaskId | null
-	dependencies: GanttTaskId[]
+	dependencies: GanttLink[]
 	isMilestone: boolean
 	level: number
 	hasChildren: boolean
 	position: number
 	setSize: number
+}
+
+/** Нормализованная связь: предшественник и тип */
+export interface GanttLink {
+	id: GanttTaskId
+	type: GanttDependencyType
 }
 
 /** Первый и последний день задачи */
@@ -85,6 +91,7 @@ export interface GanttRowView {
 	barStyle: Record<string, string>
 	progressStyle: Record<string, string>
 	label: string
+	dependencyText: string
 }
 
 /** Размеры диаграммы в px с учётом `sizeScale` */
@@ -197,4 +204,12 @@ export interface GanttNavigationParts {
 	collapse: GanttCollapseApi
 	editing: GanttKeyEditing
 	focus: GanttFocusApi
+}
+
+/** Обработчики окна на время нажатия на полосу */
+export interface GanttPressHandlers {
+	move: (event: PointerEvent) => void
+	up: () => void
+	cancel: () => void
+	escape: (event: KeyboardEvent) => void
 }

@@ -17,6 +17,7 @@ export default meta
 
 export const Default = cases.Default
 export const Editable = cases.Editable
+export const AutoScroll = cases.AutoScroll
 export const StaticItems = cases.StaticItems
 export const Responsive = cases.Responsive
 export const Variants = cases.Variants

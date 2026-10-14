@@ -40,6 +40,22 @@ export type BaseGanttPart = (typeof GANTT_PARTS)[number]
 /** Идентификатор задачи */
 export type GanttTaskId = string | number
 
+/**
+ * Тип связи между задачами (как в MS Project и зрелых диаграммах Ганта): первая буква — край предшественника, вторая — зависимой.
+ * FS — окончание — начало (по умолчанию), SS — начало — начало, FF — окончание — окончание, SF — начало — окончание.
+ */
+export const GANTT_DEPENDENCY_TYPES = ['FS', 'SS', 'FF', 'SF'] as const
+
+export type GanttDependencyType = (typeof GANTT_DEPENDENCY_TYPES)[number]
+
+/** Связь с типом: предшественник и тип. Обычный `id` в `dependencies` — то же самое с типом `FS` */
+export interface GanttDependency {
+	/** Идентификатор предшественника */
+	id: GanttTaskId
+	/** Тип связи. Не задан — `FS`; неизвестный принимается за `FS` с предупреждением */
+	type?: GanttDependencyType
+}
+
 /** Дата задачи: `Date` или строка `ГГГГ-ММ-ДД` (также `ГГГГ-ММ-ДДTЧЧ:ММ`); время отбрасывается, важен календарный день */
 export type GanttDate = Date | string
 
@@ -57,8 +73,11 @@ export interface GanttTask {
 	progress?: number
 	/** Родитель в дереве. Неизвестный или замкнутый в цикл родитель игнорируется: задача показывается на верхнем уровне */
 	parentId?: GanttTaskId
-	/** Задачи, после которых начинается эта (зависимость «окончание — начало»). Неизвестные и замыкающие цикл игнорируются */
-	dependencies?: GanttTaskId[]
+	/**
+	 * Предшественники: `id` (связь «окончание — начало») или `{ id, type }` с типом `FS`, `SS`, `FF`, `SF`.
+	 * Неизвестные и замыкающие цикл игнорируются; при повторе одного `id` берётся первая запись
+	 */
+	dependencies?: Array<GanttTaskId | GanttDependency>
 	/** Веха: точка во времени без длительности, рисуется ромбом */
 	isMilestone?: boolean
 }

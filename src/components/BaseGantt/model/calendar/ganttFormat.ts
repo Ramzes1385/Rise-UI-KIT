@@ -1,5 +1,6 @@
 import { UI_GANTT } from '@/locales/messages'
 import { durationDays } from '../edit/ganttEdit'
+import type { GanttTaskId } from '../../types/BaseGantt.types'
 import { formatMessage, getLocale, pluralize } from '@/locales/state'
 import type { GanttEdit, GanttItem, GanttScaleFormat, GanttScaleUnit, GanttSpan } from '../../types/BaseGanttModel.types'
 
@@ -11,6 +12,13 @@ const SCALE_OPTIONS: Record<GanttScaleUnit, Intl.DateTimeFormatOptions> = {
 }
 
 const DEFAULT_DATE_FORMAT: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric' }
+
+const DEPENDENCY_TEXT = {
+	FS: 'DEPENDENCY_FS',
+	SS: 'DEPENDENCY_SS',
+	FF: 'DEPENDENCY_FF',
+	SF: 'DEPENDENCY_SF',
+} as const
 
 const dateFormats = new Map<string, Intl.DateTimeFormat>()
 
@@ -42,6 +50,14 @@ export function taskLabel(item: GanttItem, span: GanttSpan, format: Intl.DateTim
 		end: format.format(span.end),
 		progress: Math.round(item.progress),
 	})
+}
+
+export function dependencyLabel(item: GanttItem, namesById: ReadonlyMap<GanttTaskId, string>): string {
+	const parts = item.dependencies.flatMap(({ id, type }) => {
+		const name = namesById.get(id)
+		return name === undefined ? [] : [formatMessage(UI_GANTT.DEPENDENCY_ITEM, { name, type: UI_GANTT[DEPENDENCY_TEXT[type]] })]
+	})
+	return parts.length ? formatMessage(UI_GANTT.DEPENDENCIES, { list: parts.join(', ') }) : ''
 }
 
 export function editMessage(item: GanttItem, edit: GanttEdit, format: Intl.DateTimeFormat): string {

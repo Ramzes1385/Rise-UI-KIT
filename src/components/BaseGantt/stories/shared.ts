@@ -75,3 +75,11 @@ export function manyTasks(groups: number): GanttTask[] {
 		]
 	}).flat()
 }
+
+export const LINK_TYPE_TASKS: GanttTask[] = [
+	{ id: 'base', name: 'Основа', start: '2025-05-05', end: '2025-05-12', progress: 100 },
+	{ id: 'fs', name: 'Окончание — начало', start: '2025-05-14', end: '2025-05-19', dependencies: ['base'] },
+	{ id: 'ss', name: 'Начало — начало', start: '2025-05-06', end: '2025-05-13', dependencies: [{ id: 'base', type: 'SS' }] },
+	{ id: 'ff', name: 'Окончание — окончание', start: '2025-05-09', end: '2025-05-15', dependencies: [{ id: 'base', type: 'FF' }] },
+	{ id: 'sf', name: 'Начало — окончание', start: '2025-05-01', end: '2025-05-06', dependencies: [{ id: 'base', type: 'SF' }] },
+]

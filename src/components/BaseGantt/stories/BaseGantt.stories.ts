@@ -18,6 +18,7 @@ export default meta
 export const Default = cases.Default
 export const Scales = cases.Scales
 export const Dependencies = cases.Dependencies
+export const DependencyTypes = cases.DependencyTypes
 export const Milestones = cases.Milestones
 export const Editable = cases.Editable
 export const Variants = cases.Variants

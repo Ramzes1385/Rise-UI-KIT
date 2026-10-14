@@ -2,7 +2,7 @@ import { computed } from 'vue'
 import { getLocale } from '@/locales/state'
 import { boxOf, spanOf } from './ganttBoxes'
 import { dependencyArrow } from './ganttLayout'
-import { getDateFormat, taskLabel } from '../calendar/ganttFormat'
+import { dependencyLabel, getDateFormat, taskLabel } from '../calendar/ganttFormat'
 import type { GanttContext, GanttRowsState, GanttRowView, GanttRowWindow } from '../../types/BaseGanttModel.types'
 
 function px(value: number): string {
@@ -21,6 +21,7 @@ export function useGanttRows(context: GanttContext, state: GanttRowsState) {
 		const { rows, range, metrics } = context
 		const draft = context.draft.value
 		const format = getDateFormat(getLocale().intl, context.props.dateFormat)
+		const namesById = new Map(context.items.value.map(other => [other.id, other.name]))
 		return renderedIndexes(state.window.value, state.activeIndex.value, rows.value.length).map(index => {
 			const item = rows.value[index]
 			const span = spanOf(item, draft)
@@ -35,6 +36,7 @@ export function useGanttRows(context: GanttContext, state: GanttRowsState) {
 				barStyle: { left: px(box.x), width: px(box.width) },
 				progressStyle: { width: `${item.progress}%` },
 				label: taskLabel(item, span, format),
+				dependencyText: dependencyLabel(item, namesById),
 			}
 		})
 	})
@@ -49,10 +51,10 @@ export function useGanttRows(context: GanttContext, state: GanttRowsState) {
 		const lines: string[] = []
 		const heads: string[] = []
 		for (const [index, item] of rows.value.entries()) {
-			for (const dependencyId of item.dependencies) {
-				const from = indexById.get(dependencyId)
+			for (const { id, type } of item.dependencies) {
+				const from = indexById.get(id)
 				if (from === undefined) continue
-				const arrow = dependencyArrow(box(from), box(index), metrics.value.rowHeight)
+				const arrow = dependencyArrow(box(from), box(index), { rowHeight: metrics.value.rowHeight, type })
 				lines.push(arrow.line)
 				heads.push(arrow.head)
 			}

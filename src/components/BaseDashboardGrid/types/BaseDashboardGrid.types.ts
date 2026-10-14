@@ -198,3 +198,23 @@ export interface DashboardGridState {
 	announce: (message: DashboardAnnouncement, item: DashboardLayoutItem) => void
 	commit: (layout: DashboardLayoutItem[], id: string, action: DashboardChangeAction) => void
 }
+
+/** Точка указателя в координатах окна, px */
+export interface DashboardScrollPoint {
+	x: number
+	y: number
+}
+
+/** Сколько px реально прокрутилось за шаг автопрокрутки: окно плюс прокручиваемый предок */
+export interface DashboardScrollDelta {
+	dx: number
+	dy: number
+}
+
+/** Прямоугольник области окна, в которой работает автопрокрутка, px */
+export interface DashboardScrollBounds {
+	left: number
+	top: number
+	right: number
+	bottom: number
+}

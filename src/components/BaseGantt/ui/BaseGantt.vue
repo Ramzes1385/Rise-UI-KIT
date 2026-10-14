@@ -102,7 +102,7 @@
 									role="button"
 									tabindex="-1"
 									:aria-label="row.label"
-									:aria-describedby="isEditable ? hintId : undefined"
+									:aria-describedby="describedBy(row)"
 									:aria-disabled="isDisabled || undefined"
 									:class="[
 										row.item.isMilestone ? ui('milestone') : ui('bar'),
@@ -124,6 +124,9 @@
 										</template>
 									</template>
 								</div>
+								<span v-if="row.dependencyText" :id="dependencyId(row)" class="base-gantt__relation">{{
+									row.dependencyText
+								}}</span>
 							</div>
 						</div>
 					</div>
@@ -178,6 +181,8 @@ const {
 	items,
 	rows,
 	hintId,
+	dependencyId,
+	describedBy,
 	skeletonRows,
 	gridLabel,
 	rootStyle,

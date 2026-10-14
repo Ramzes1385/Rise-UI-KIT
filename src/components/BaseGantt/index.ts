@@ -1,4 +1,4 @@
-export { GANTT_PARTS, GANTT_SCALES, GANTT_VARIANTS } from './types/BaseGantt.types'
+export { GANTT_DEPENDENCY_TYPES, GANTT_PARTS, GANTT_SCALES, GANTT_VARIANTS } from './types/BaseGantt.types'
 export type {
 	BaseGanttEmits,
 	BaseGanttPart,
@@ -7,6 +7,8 @@ export type {
 	GanttChangeKind,
 	GanttChangeSource,
 	GanttDate,
+	GanttDependency,
+	GanttDependencyType,
 	GanttScale,
 	GanttTask,
 	GanttTaskChange,

@@ -1,8 +1,9 @@
 import { warn } from '@/locales/warn'
 import { UI_GANTT } from '@/locales/messages'
 import { parseGanttDate } from '../calendar/ganttCalendar'
-import type { GanttItem } from '../../types/BaseGanttModel.types'
-import type { GanttTask, GanttTaskId } from '../../types/BaseGantt.types'
+import { GANTT_DEPENDENCY_TYPES } from '../../types/BaseGantt.types'
+import type { GanttItem, GanttLink } from '../../types/BaseGanttModel.types'
+import type { GanttDependency, GanttTask, GanttTaskId } from '../../types/BaseGantt.types'
 
 function clampProgress(value: number | undefined): number {
 	if (value === undefined || Number.isNaN(value)) return 0
@@ -98,11 +99,28 @@ function reaches(successors: Map<GanttTaskId, GanttTaskId[]>, from: GanttTaskId,
 	return false
 }
 
+function toLink(item: GanttItem, dependency: GanttTaskId | GanttDependency): GanttLink {
+	if (typeof dependency !== 'object') return { id: dependency, type: 'FS' }
+	const { id, type = 'FS' } = dependency
+	if (GANTT_DEPENDENCY_TYPES.includes(type)) return { id, type }
+	warn(UI_GANTT.WARN_BAD_DEPENDENCY_TYPE, { id: item.id, dependencyId: id, type })
+	return { id, type: 'FS' }
+}
+
+function uniqueLinks(item: GanttItem): GanttLink[] {
+	const links = new Map<GanttTaskId, GanttLink>()
+	for (const dependency of item.task.dependencies ?? []) {
+		const link = toLink(item, dependency)
+		if (!links.has(link.id)) links.set(link.id, link)
+	}
+	return [...links.values()]
+}
+
 function linkDependencies(items: GanttItem[]): void {
 	const known = new Set(items.map(item => item.id))
 	const successors = new Map<GanttTaskId, GanttTaskId[]>()
 	for (const item of items) {
-		for (const dependencyId of new Set(item.task.dependencies ?? [])) {
+		for (const { id: dependencyId, type } of uniqueLinks(item)) {
 			if (!known.has(dependencyId)) {
 				warn(UI_GANTT.WARN_BAD_DEPENDENCY, { id: item.id, dependencyId })
 				continue
@@ -111,7 +129,7 @@ function linkDependencies(items: GanttItem[]): void {
 				warn(UI_GANTT.WARN_DEPENDENCY_CYCLE, { id: item.id, dependencyId })
 				continue
 			}
-			item.dependencies.push(dependencyId)
+			item.dependencies.push({ id: dependencyId, type })
 			successors.set(dependencyId, [...(successors.get(dependencyId) ?? []), item.id])
 		}
 	}

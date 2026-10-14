@@ -59,6 +59,7 @@
 	}
 
 	&__item--editable {
+		flex-direction: column;
 		cursor: grab;
 	}
 
@@ -67,14 +68,14 @@
 	}
 
 	&__handle {
-		position: absolute;
-		top: sz(4px);
-		right: sz(4px);
+		order: -1;
 		display: flex;
+		flex: none;
 		align-items: center;
-		justify-content: center;
-		width: sz(24px);
-		height: sz(24px);
+		justify-content: flex-end;
+		box-sizing: border-box;
+		height: sz(28px);
+		padding-inline: sz(8px);
 		color: var(--rise-text-muted);
 		border-radius: sz(var(--rise-radius-sm));
 		cursor: grab;

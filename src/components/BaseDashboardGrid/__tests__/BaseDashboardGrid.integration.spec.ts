@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/vitest'
+import { nextTick } from 'vue'
 import BaseDashboardGrid from '../ui/BaseDashboardGrid.vue'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import type { DashboardLayoutItem } from '../types/BaseDashboardGrid.types'
@@ -230,6 +231,64 @@ describe('BaseDashboardGrid указатель', () => {
 			{ id: 'b', y: 2 },
 		])
 		expect(lastCall(onChange)).toMatchObject({ id: 'a', action: 'move' })
+	})
+
+	describe('автопрокрутка у края', () => {
+		let scrolledY: number
+		let scrollBy: ReturnType<typeof vi.fn>
+
+		beforeEach(() => {
+			vi.useFakeTimers()
+			scrolledY = 0
+			scrollBy = vi.fn((_x: number, dy: number) => {
+				scrolledY += dy
+			})
+			vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(600)
+			vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(800)
+			vi.spyOn(window, 'scrollY', 'get').mockImplementation(() => scrolledY)
+			window.scrollBy = scrollBy as unknown as typeof window.scrollBy
+		})
+		afterEach(() => vi.useRealTimers())
+
+		it('указатель у нижнего края окна прокручивает его, а виджет едет за указателем', async () => {
+			const { container } = renderGrid()
+			const widget = itemOf(container, 'a')
+
+			await fireEvent.pointerDown(widget, pointer(210, 590))
+			await fireEvent.pointerMove(widget, pointer(210, 600))
+			vi.advanceTimersToNextFrame()
+			vi.advanceTimersToNextFrame()
+			vi.advanceTimersToNextFrame()
+			await nextTick()
+
+			expect(scrollBy).toHaveBeenCalledTimes(3)
+			expect(widget.style.transform).toBe('translate3d(0px, 82px, 0)')
+		})
+
+		it('после pointerup и pointercancel прокрутка останавливается', async () => {
+			const { container } = renderGrid()
+			const widget = itemOf(container, 'a')
+
+			await fireEvent.pointerDown(widget, pointer(210, 600))
+			vi.advanceTimersToNextFrame()
+			await fireEvent.pointerUp(widget, pointer(210, 600))
+			vi.advanceTimersToNextFrame()
+			await fireEvent.pointerDown(widget, pointer(210, 600))
+			vi.advanceTimersToNextFrame()
+			await fireEvent.pointerCancel(widget, pointer(210, 600))
+			vi.advanceTimersToNextFrame()
+
+			expect(scrollBy).toHaveBeenCalledTimes(2)
+		})
+
+		it('в середине окна не прокручивает', async () => {
+			const { container } = renderGrid()
+
+			await fireEvent.pointerDown(itemOf(container, 'a'), pointer(210, 300))
+			vi.advanceTimersToNextFrame()
+
+			expect(scrollBy).not.toHaveBeenCalled()
+		})
 	})
 
 	it('если виджет вернулся на то же место, события нет', async () => {

@@ -1,4 +1,4 @@
-import { computed, ref, useId } from 'vue'
+import { computed, ref } from 'vue'
 import { UI_GANTT } from '@/locales/messages'
 import { useGanttFocus } from './useGanttFocus'
 import { useUi } from '@composables/base/useUi'
@@ -9,6 +9,7 @@ import { useGanttNavigation } from './useGanttNavigation'
 import { useGanttCollapse } from './view/useGanttCollapse'
 import { useGanttViewport } from './view/useGanttViewport'
 import { normalizeTasks, visibleItems } from './tasks/ganttTasks'
+import { useGanttDescriptions } from './view/useGanttDescriptions'
 import type { BaseGanttEmits, GanttProps } from '../types/BaseGantt.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { GanttContext, GanttDraft, GanttItem } from '../types/BaseGanttModel.types'
@@ -52,12 +53,12 @@ export function useBaseGantt(props: GanttProps, emit: BaseGanttEmits) {
 		ui: useUi(props, 'base-gantt'),
 		items,
 		rows,
-		hintId: `${useId()}-hint`,
 		skeletonRows: SKELETON_ROWS,
 		gridLabel: computed((): string => props.ariaLabel || UI_GANTT.LABEL),
 		...timeline,
 		...useGanttStyles(context, timeline.chartWidth, timeline.bodyHeight),
 		...useGanttRows(context, rowsState),
+		...useGanttDescriptions(props),
 		scroller: viewport.scroller,
 		onScroll: viewport.onScroll,
 		grid: focus.grid,

@@ -210,6 +210,59 @@ describe('BaseGantt — клики и свёртка', () => {
 		expect(barOf(/^Проект/)).toBeInTheDocument()
 		expect(container.querySelector('.base-gantt__arrow-lines')?.getAttribute('d')).toBe('')
 	})
+
+	it('тип связи: стрелки всех четырёх типов рисуются, описание связи — через aria-describedby', () => {
+		const tasks: GanttTask[] = [
+			{ id: 'a', name: 'Первая', start: '2026-10-05', end: '2026-10-08' },
+			{ id: 'b', name: 'Вторая', start: '2026-10-09', end: '2026-10-12' },
+			{
+				id: 'c',
+				name: 'Третья',
+				start: '2026-10-13',
+				end: '2026-10-14',
+				dependencies: ['a', { id: 'b', type: 'SS' }, { id: 'a', type: 'FF' }],
+			},
+			{
+				id: 'd',
+				name: 'Четвёртая',
+				start: '2026-10-15',
+				dependencies: [
+					{ id: 'c', type: 'SF' },
+					{ id: 'b', type: 'FF' },
+				],
+			},
+		]
+		const { container } = renderGantt({ tasks })
+
+		const lines = container.querySelector('.base-gantt__arrow-lines')?.getAttribute('d') ?? ''
+		expect(lines.match(/M/g)).toHaveLength(4)
+		const bar = barOf(/^Третья/)
+		const description = document.getElementById(bar.getAttribute('aria-describedby') as string)
+		expect(description).toHaveTextContent('Зависит от: «Первая» (окончание — начало), «Вторая» (начало — начало)')
+		expect(barOf(/^Первая/)).not.toHaveAttribute('aria-describedby')
+		expect(document.getElementById(barOf(/^Четвёртая/).getAttribute('aria-describedby') as string)).toHaveTextContent(
+			'«Третья» (начало — окончание), «Вторая» (окончание — окончание)',
+		)
+	})
+
+	it('описание связи идёт после подсказки правки', () => {
+		const tasks: GanttTask[] = [
+			{ id: 'a', name: 'Первая', start: '2026-10-05' },
+			{ id: 'b', name: 'Вторая', start: '2026-10-09', dependencies: ['a'] },
+		]
+		renderGantt({ tasks, isEditable: true })
+
+		expect(
+			barOf(/^Вторая/)
+				.getAttribute('aria-describedby')
+				?.split(' '),
+		).toHaveLength(2)
+		expect(
+			barOf(/^Первая/)
+				.getAttribute('aria-describedby')
+				?.split(' '),
+		).toHaveLength(1)
+	})
 })
 
 describe('BaseGantt — зависимости', () => {
@@ -386,6 +439,8 @@ describe('BaseGantt — перетаскивание мышью', () => {
 		await fireEvent.pointerCancel(bar)
 		await fireEvent.pointerUp(bar)
 		expect(bar).not.toHaveClass('base-gantt__bar--dragging')
+		await user.click(bar)
+		expect(clicks(emitted())).toHaveLength(1)
 		await press(bar, 100)
 		await fireEvent.pointerMove(bar, { clientX: 172 })
 		bar.focus()

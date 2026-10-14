@@ -84,7 +84,7 @@ describe('ganttTasks', () => {
 
 		it('зависимости: оставляет известные без повторов', () => {
 			const items = normalizeTasks([task('a'), task('b', { dependencies: ['a', 'a'] })])
-			expect(items[1].dependencies).toEqual(['a'])
+			expect(items[1].dependencies).toEqual([{ id: 'a', type: 'FS' }])
 		})
 
 		it('зависимости: неизвестные и замыкающие цикл игнорирует с предупреждением', () => {
@@ -93,9 +93,27 @@ describe('ganttTasks', () => {
 				task('b', { dependencies: ['c'] }),
 				task('c', { dependencies: ['a'] }),
 			])
-			expect(items.map(item => item.dependencies)).toEqual([['b'], ['c'], []])
+			expect(items.map(item => item.dependencies)).toEqual([[{ id: 'b', type: 'FS' }], [{ id: 'c', type: 'FS' }], []])
 			expect(warn).toHaveBeenCalledWith(expect.stringContaining('такой задачи нет'))
 			expect(warn).toHaveBeenCalledWith(expect.stringContaining('замыкает цикл'))
+		})
+
+		it('зависимости: тип связи из { id, type }, первая запись одного id побеждает', () => {
+			const items = normalizeTasks([
+				task('a'),
+				task('b'),
+				task('c', { dependencies: [{ id: 'a', type: 'SS' }, { id: 'b' }, { id: 'a', type: 'FF' }, 'b'] }),
+			])
+			expect(items[2].dependencies).toEqual([
+				{ id: 'a', type: 'SS' },
+				{ id: 'b', type: 'FS' },
+			])
+		})
+
+		it('зависимости: неизвестный тип принимается за FS с предупреждением', () => {
+			const items = normalizeTasks([task('a'), task('b', { dependencies: [{ id: 'a', type: 'XX' as 'FS' }] })])
+			expect(items[1].dependencies).toEqual([{ id: 'a', type: 'FS' }])
+			expect(warn).toHaveBeenCalledWith(expect.stringContaining('неизвестный тип «XX»'))
 		})
 
 		it('зависимости: ромб из связей не мешает проверке цикла', () => {
@@ -106,7 +124,7 @@ describe('ganttTasks', () => {
 				task('v', { dependencies: ['y', 'z'] }),
 				task('w', { dependencies: ['k'] }),
 			])
-			expect(items.find(item => item.id === 'w')?.dependencies).toEqual(['k'])
+			expect(items.find(item => item.id === 'w')?.dependencies).toEqual([{ id: 'k', type: 'FS' }])
 		})
 
 		it('пустой список даёт пустой результат', () => {

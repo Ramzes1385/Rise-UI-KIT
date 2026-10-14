@@ -1,6 +1,6 @@
 import { onBeforeUnmount } from 'vue'
 import { pointerEdit } from './ganttEdit'
-import type { GanttContext, GanttEdit, GanttItem, GanttPress } from '../../types/BaseGanttModel.types'
+import type { GanttContext, GanttEdit, GanttItem, GanttPress, GanttPressHandlers } from '../../types/BaseGanttModel.types'
 
 const DRAG_THRESHOLD = 3
 
@@ -14,9 +14,23 @@ function capturePointer(event: PointerEvent): void {
 	void (event.isTrusted && target.setPointerCapture?.(event.pointerId))
 }
 
+function listenToPress(handlers: GanttPressHandlers): () => void {
+	window.addEventListener('pointermove', handlers.move)
+	window.addEventListener('pointerup', handlers.up)
+	window.addEventListener('pointercancel', handlers.cancel)
+	window.addEventListener('keydown', handlers.escape)
+	return () => {
+		window.removeEventListener('pointermove', handlers.move)
+		window.removeEventListener('pointerup', handlers.up)
+		window.removeEventListener('pointercancel', handlers.cancel)
+		window.removeEventListener('keydown', handlers.escape)
+	}
+}
+
 export function useGanttPointer(context: GanttContext, commit: (item: GanttItem, edit: GanttEdit) => void) {
 	let press: GanttPress | null = null
 	let isClickSuppressed = false
+	let unlisten: (() => void) | null = null
 
 	function onPointerMove(event: PointerEvent): void {
 		const current = press as GanttPress
@@ -29,15 +43,16 @@ export function useGanttPointer(context: GanttContext, commit: (item: GanttItem,
 		context.draft.value = { id: current.item.id, edit }
 	}
 
-	function stop(): void {
-		isClickSuppressed = Boolean(press?.isMoved)
-		window.removeEventListener('pointermove', onPointerMove)
-		window.removeEventListener('pointerup', onPointerUp)
-		window.removeEventListener('pointercancel', stop)
-		window.removeEventListener('keydown', onEscape)
+	function end(isSuppressed: boolean): void {
+		isClickSuppressed = isSuppressed
+		unlisten?.()
+		unlisten = null
 		press = null
 		context.draft.value = null
 	}
+
+	const stop = (): void => end(Boolean(press?.isMoved))
+	const cancel = (): void => end(false)
 
 	function onPointerUp(): void {
 		const current = press as GanttPress
@@ -50,6 +65,8 @@ export function useGanttPointer(context: GanttContext, commit: (item: GanttItem,
 		if (event.key === 'Escape') stop()
 	}
 
+	const handlers: GanttPressHandlers = { move: onPointerMove, up: onPointerUp, cancel, escape: onEscape }
+
 	onBeforeUnmount(stop)
 
 	return {
@@ -57,10 +74,7 @@ export function useGanttPointer(context: GanttContext, commit: (item: GanttItem,
 			if (!context.props.isEditable || context.props.isDisabled || event.button !== 0) return
 			capturePointer(event)
 			press = { item, kind: pressKind(event.target), x: event.clientX, isMoved: false }
-			window.addEventListener('pointermove', onPointerMove)
-			window.addEventListener('pointerup', onPointerUp)
-			window.addEventListener('pointercancel', stop)
-			window.addEventListener('keydown', onEscape)
+			unlisten = listenToPress(handlers)
 		},
 		consumeSuppressedClick(): boolean {
 			const wasSuppressed = isClickSuppressed

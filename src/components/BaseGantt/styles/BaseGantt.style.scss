@@ -304,6 +304,7 @@ $gantt-handle: sz(8px);
 	}
 
 	&__hint,
+	&__relation,
 	&__status {
 		@include visually-hidden;
 	}
