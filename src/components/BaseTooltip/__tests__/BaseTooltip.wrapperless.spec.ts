@@ -2,7 +2,7 @@ import '@testing-library/jest-dom/vitest'
 import { defineComponent, h } from 'vue'
 import BaseTooltip from '../ui/BaseTooltip.vue'
 import { BaseButton } from '@components/BaseButton'
-import { render, screen } from '@testing-library/vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 afterEach(() => {
 	vi.useRealTimers()
@@ -202,5 +202,55 @@ describe('BaseTooltip: уже связанное описание', () => {
 		button.focus()
 		await vi.advanceTimersByTimeAsync(200)
 		expect(button.getAttribute('aria-describedby')).toBe(`missing ${screen.getByRole('tooltip').id}`)
+	})
+})
+
+describe('BaseTooltip: описание обновляется вместе с текстом', () => {
+	it('текст подсказки стал равен описанию из aria-describedby — id подсказки снимается, и возвращается при расхождении', async () => {
+		vi.useFakeTimers()
+		document.body.insertAdjacentHTML('beforeend', '<span id="hint-c">Доступно через 3 с</span>')
+		const { rerender } = render(BaseTooltip, {
+			props: { text: 'Подсказка', isWrapperless: true },
+			slots: { default: '<button type="button" aria-describedby="hint-c">Далее</button>' },
+		})
+		const button = screen.getByRole('button')
+		button.focus()
+		await vi.advanceTimersByTimeAsync(200)
+		expect(button.getAttribute('aria-describedby')).toBe(`hint-c ${screen.getByRole('tooltip').id}`)
+
+		await rerender({ text: 'Доступно через 3 с' })
+		expect(button).toHaveAttribute('aria-describedby', 'hint-c')
+
+		await rerender({ text: 'Другой текст' })
+		expect(button.getAttribute('aria-describedby')).toBe(`hint-c ${screen.getByRole('tooltip').id}`)
+		document.getElementById('hint-c')?.remove()
+	})
+
+	it('пустой текст подсказки: связанные описания не проверяются', async () => {
+		vi.useFakeTimers()
+		render(BaseTooltip, {
+			props: { text: '', isWrapperless: true, isAlwaysVisible: true },
+			slots: { default: '<button type="button" aria-describedby="x">Далее</button>' },
+		})
+		await vi.advanceTimersByTimeAsync(50)
+		expect(screen.getByRole('button')).toHaveAttribute('aria-describedby', 'x')
+	})
+})
+
+describe('BaseTooltip: указатель переходит на подсказку', () => {
+	it('наведение на саму подсказку отменяет скрытие', async () => {
+		vi.useFakeTimers()
+		render(BaseTooltip, { props: { text: 'Подсказка' }, slots: { default: '<button type="button">Цель</button>' } })
+		const button = screen.getByRole('button')
+		button.focus()
+		await vi.advanceTimersByTimeAsync(200)
+		const tooltip = screen.getByRole('tooltip')
+
+		button.blur()
+		await vi.advanceTimersByTimeAsync(50)
+		await fireEvent.mouseEnter(tooltip)
+		await vi.advanceTimersByTimeAsync(500)
+
+		expect(screen.getByRole('tooltip')).toBeInTheDocument()
 	})
 })

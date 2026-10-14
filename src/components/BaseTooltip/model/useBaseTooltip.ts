@@ -8,8 +8,8 @@ import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseTooltipPart, TooltipProps } from '../types/BaseTooltip.types'
 import { useTriggerAttributes } from '@composables/overlay/useTriggerAttributes'
 import { getAccessibleName, getBoundsRect, getFixedOrigin } from '@utils/dom/domUtils'
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import { useInheritedThemeAttrs, useTeleportTarget } from '@composables/app/useTeleportTarget'
+import { computed, nextTick, onBeforeUnmount, onMounted, onUpdated, ref, useId, watch } from 'vue'
 import { calcTooltipPosition, calcTooltipShift, resolveTooltipPlacement } from '@utils/dom/tooltipUtils'
 
 const GAP = 8
@@ -189,9 +189,8 @@ function getLinkedDescriptions(trigger: HTMLElement | null, ownId: string): stri
 	return ids.map(id => trigger.ownerDocument.getElementById(id)?.textContent?.trim() ?? '').filter(Boolean)
 }
 
-function isTextAlreadyAnnounced(trigger: HTMLElement | null, text: string, ownId: string): boolean {
+function isCoveredByLinked(trigger: HTMLElement | null, text: string, ownId: string): boolean {
 	if (!text) return false
-	if (nameCoversText(getAccessibleName(trigger), text)) return true
 	return getLinkedDescriptions(trigger, ownId).some(description => nameCoversText(description, text))
 }
 
@@ -201,18 +200,25 @@ function useDescribedTrigger(
 	shown: { isShown: ComputedRef<boolean>; tooltipId: string },
 ) {
 	const { isShown, tooltipId } = shown
-	let findTrigger: () => HTMLElement | null = () => null
+	function getCurrentTrigger(): HTMLElement | null {
+		return props.isWrapperless ? wrapperRef.value : getTrigger()
+	}
+	const isLinkedCovered = ref(false)
+	const refreshLinked = (): void => {
+		isLinkedCovered.value = isCoveredByLinked(getCurrentTrigger(), props.text.trim(), tooltipId)
+	}
 	const triggerAttributes = computed(() => {
 		if (!isShown.value) return { 'aria-describedby': undefined }
-		const trigger = props.isWrapperless ? wrapperRef.value : findTrigger()
 		const text = props.text.trim()
-		return { 'aria-describedby': isTextAlreadyAnnounced(trigger, text, tooltipId) ? undefined : tooltipId }
+		const isNamed = text && nameCoversText(getAccessibleName(getCurrentTrigger()), text)
+		return { 'aria-describedby': isNamed || isLinkedCovered.value ? undefined : tooltipId }
 	})
 	const { getTrigger } = useTriggerAttributes(
 		() => (props.isWrapperless ? null : wrapperRef.value),
 		() => triggerAttributes.value,
 	)
-	findTrigger = getTrigger
+	watch(isShown, refreshLinked)
+	onUpdated(refreshLinked)
 	return triggerAttributes
 }
 
