@@ -205,6 +205,18 @@ describe('useChatMessageActions', () => {
 			})
 		})
 
+		it('вне области эффектов (без компонента) работает без ошибок', () => {
+			const emit = vi.fn()
+			const actions = useChatMessageActions({
+				selectedMessageIds: { value: [] },
+				emit: emit as unknown as UseChatMessageActionsOptions['emit'],
+			})
+
+			actions.handleRetry('m1', new MouseEvent('click', { detail: 0 }))
+
+			expect(emit).toHaveBeenCalledWith('retry-message', 'm1')
+		})
+
 		it('реакция на сообщении переключается', () => {
 			const { actions, emit } = setup()
 

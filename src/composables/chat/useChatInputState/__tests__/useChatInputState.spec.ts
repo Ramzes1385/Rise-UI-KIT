@@ -210,6 +210,20 @@ describe('useChatInputState', () => {
 			expect(context.state.text.value).toBe('@Анна ')
 		})
 
+		it('список сократился, а индекс ещё не ужат (до сброса наблюдателя): Enter выбирает последний пункт', async () => {
+			const props = reactive({ members: [...members], commands })
+			const context = setup(props)
+			await type(context, '@')
+			context.state.handleKeyDown(key('ArrowUp'))
+
+			props.members = members.slice(0, 2)
+			const enter = key('Enter')
+			context.state.handleKeyDown(enter)
+
+			expect(enter.defaultPrevented).toBe(true)
+			expect(context.state.text.value).toBe('@Борис ')
+		})
+
 		it('список команд сократился: индекс ужимается так же', async () => {
 			const props = reactive({ members, commands: [...commands] })
 			const context = setup(props)

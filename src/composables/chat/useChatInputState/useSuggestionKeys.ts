@@ -9,16 +9,17 @@ import type { ChatSuggestionKeysSource, SuggestionList } from './types/useChatIn
 function useSuggestionKeys(suggestions: ChatSuggestionKeysSource) {
 	const { showMentions, showCommands, activeSuggestionIndex, filteredMembers, filteredCommands, replaceCurrentWord } = suggestions
 
+	/** Индекс активного пункта в пределах списка: список мог сократиться раньше, чем сработало ужатие индекса */
+	const clampedIndex = (list: SuggestionList): number => Math.min(activeSuggestionIndex.value, list.items.length - 1)
+
 	function pickSuggestion(list: SuggestionList): void {
-		const selected = list.items[activeSuggestionIndex.value]
-		if (!selected) return
-		replaceCurrentWord(list.prefix, selected.name)
+		replaceCurrentWord(list.prefix, list.items[clampedIndex(list)]!.name)
 	}
 
 	/** Стрелки, Enter и Escape в списке подсказок; true — клавиша обработана */
 	function handleSuggestionNavigation(event: KeyboardEvent, list: SuggestionList): boolean {
 		if (list.items.length === 0) return false
-		const nextIndex = getNextSuggestionIndex(event.key, activeSuggestionIndex.value, list.items.length)
+		const nextIndex = getNextSuggestionIndex(event.key, clampedIndex(list), list.items.length)
 		if (nextIndex !== null) {
 			event.preventDefault()
 			activeSuggestionIndex.value = nextIndex

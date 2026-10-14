@@ -8,7 +8,6 @@ const URL_TAIL = '.,;:!?»”"\''
 /** Символ перед `@`, при котором это не упоминание, а часть слова или адреса (`user@host`, `a.@b`) */
 const MENTION_BLOCKER = /[\p{L}\p{N}_.]$/u
 const TOKEN_REGEX = new RegExp(String.raw`(https?:\/\/\S+)|(@${WORD}+)|((?:^|\s)\/${WORD}+)`, 'giu')
-const SCHEME_LENGTH_PATTERN = /^https?:\/\//i
 
 /** Конец адреса без «хвоста» предложения: знаки препинания и непарная `)` отрезаются, парная `)` остаётся */
 function getLinkEnd(raw: string): number {
@@ -29,7 +28,7 @@ function getLinkEnd(raw: string): number {
 function readLink(link: string, index: number, regex: RegExp): ScannedToken | null {
 	const end = getLinkEnd(link)
 	regex.lastIndex = index + Math.max(end, 1)
-	if (end <= (SCHEME_LENGTH_PATTERN.exec(link)?.[0].length ?? 0)) return null
+	if (end <= link.indexOf('//') + 2) return null
 	return { tokens: [{ type: 'link', value: link.slice(0, end) }], from: index, to: index + end }
 }
 
