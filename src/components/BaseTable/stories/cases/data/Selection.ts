@@ -39,7 +39,7 @@ export const Selection: StoryObj<typeof meta> = {
 		const search = canvas.getByLabelText('Поиск по таблице')
 		await userEvent.clear(search)
 		await userEvent.type(search, 'Москва')
-		await waitFor(() => expect(canvas.getByRole('status')).toHaveTextContent('Выбрано 2 скрытые строки'))
+		await waitFor(() => expect(canvas.getByRole('status')).toHaveTextContent('Выбраны 2 скрытые строки'))
 		await userEvent.type(canvas.getByLabelText('Поиск по таблице'), 'ъъъ')
 		await waitFor(() => expect(canvas.getByText('Ничего не найдено')).toBeVisible())
 	},

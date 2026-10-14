@@ -147,7 +147,7 @@ describe('BaseTable: выбранные строки, скрытые поиск�
 		const wrapper = mountTable({ behavior: { selectable: true } })
 		await wrapper.findAll('tbody input[type="checkbox"]')[0].setValue(true)
 		await typeSearch(wrapper, 'Анна')
-		expect(status(wrapper)).toBe('Выбрано 1 скрытая строка — она остаётся в выборе')
+		expect(status(wrapper)).toBe('Выбрана 1 скрытая строка — она остаётся в выборе')
 		await typeSearch(wrapper, '')
 		expect(status(wrapper)).toBe('')
 		wrapper.unmount()
@@ -168,7 +168,7 @@ describe('BaseTable: выбранные строки, скрытые поиск�
 		expect(status(wrapper)).toContain('Выбрано 6 скрытых строк')
 		await wrapper.setProps({ rows: [...rows.slice(0, 2), { id: 99, data: { name: 'Найти', age: 1 } }] })
 		await nextTick()
-		expect(status(wrapper)).toContain('Выбрано 2 скрытые строки')
+		expect(status(wrapper)).toContain('Выбраны 2 скрытые строки')
 		wrapper.unmount()
 	})
 

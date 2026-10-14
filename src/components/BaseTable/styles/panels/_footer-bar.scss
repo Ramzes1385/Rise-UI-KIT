@@ -17,7 +17,7 @@
 		color: var(--rise-text-muted);
 
 		&:empty {
-			display: none;
+			@include visually-hidden;
 		}
 	}
 

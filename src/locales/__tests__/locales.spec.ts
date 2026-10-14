@@ -92,6 +92,21 @@ describe('pluralize и formatNumber', () => {
 		expect(pluralize({ other: '{n} шт.' }, 3)).toBe('3 шт.')
 	})
 
+	it.each([
+		[1, 'Выбрана 1 скрытая строка — она остаётся в выборе'],
+		[2, 'Выбраны 2 скрытые строки — они остаются в выборе'],
+		[5, 'Выбрано 5 скрытых строк — они остаются в выборе'],
+		[21, 'Выбрана 21 скрытая строка — она остаётся в выборе'],
+	])('строки таблицы, скрытые поиском: %i согласуется с глаголом', (count, expected) => {
+		expect(pluralize(ru.plural.TABLE_HIDDEN_SELECTED, count, ru as UiKitLocale)).toBe(expected)
+	})
+
+	it('английский текст про скрытые строки называет и поиск', () => {
+		expect(pluralize(en.plural.TABLE_HIDDEN_SELECTED, 2, en)).toBe(
+			'2 selected rows are hidden by the search or filters and stay selected',
+		)
+	})
+
 	it('числа в формате языка', () => {
 		expect(formatNumber(1234.5)).toBe('1\u00a0234,5')
 		expect(formatNumber(1234.5, undefined, en)).toBe('1,234.5')

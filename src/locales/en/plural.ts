@@ -20,8 +20,8 @@ export const enPlural = {
 	SEARCH_RESULTS: { one: '{n} result found', other: '{n} results found' },
 	FILE_MANAGER_ITEMS: { one: '{n} item', other: '{n} items' },
 	TABLE_HIDDEN_SELECTED: {
-		one: '{n} selected row is hidden by the filter and stays selected',
-		other: '{n} selected rows are hidden by the filter and stay selected',
+		one: '{n} selected row is hidden by the search or filters and stays selected',
+		other: '{n} selected rows are hidden by the search or filters and stay selected',
 	},
 	FILE_MANAGER_SELECTED: { one: '{n} selected', other: '{n} selected' },
 }
