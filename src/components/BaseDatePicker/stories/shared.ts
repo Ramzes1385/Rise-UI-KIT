@@ -9,17 +9,8 @@ export function dayName(days: number): string {
 
 const SHORT_DAY = new Intl.DateTimeFormat('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' })
 
-function fromToday(days: number): Date {
-	const now = new Date()
-	return new Date(now.getFullYear(), now.getMonth(), now.getDate() + days)
-}
-
-export function todayName(days: number): string {
-	return DAY_NAME.format(fromToday(days))
-}
-
 export function todayRange(from: number, to: number): string {
-	return `${SHORT_DAY.format(fromToday(from))} — ${SHORT_DAY.format(fromToday(to))}`
+	return `${SHORT_DAY.format(storyDate(from))} — ${SHORT_DAY.format(storyDate(to))}`
 }
 
 export async function findPanel(): Promise<HTMLElement> {

@@ -526,3 +526,4 @@
 ## Задача files-dates
 
 - ~~**BaseFileManager, редактор имени внутри `role="listbox"`.**~~ — files-dates: поле вынесено из списка, строка остаётся скрытой `option`; положение считается по `offsetTop/Left/Width/Height` строки в момент начала правки, при изменении размеров во время правки (resize окна, смена вида) поле не перемещается до следующей правки.
+- ~~**BaseDatePicker, `stories/shared.ts`: `new Date()` вместо `STORY_TODAY`.**~~ — files-dates: история «Готовые периоды» останавливает часы (`freezeStoryClock`), `todayName` убран, `todayRange` считает от `STORY_TODAY`. Другие истории DatePicker «сегодня» от часов не берут.

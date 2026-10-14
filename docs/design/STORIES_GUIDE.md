@@ -171,6 +171,7 @@ Stories, которые нужны только как проверка (кла�
 
 - **Изображения.** `placeholderImage()`, `STORY_IMAGES`, `avatarImage()` из `@/stories/helpers`. Без внешних URL (placehold.co, unsplash, picsum…). Для состояния ошибки загрузки — `BROKEN_IMAGE_SRC`.
 - **Даты.** `STORY_TODAY` и `storyDate(±дней)` вместо `new Date()`. Visual-тесты дополнительно фиксируют время браузера на `STORY_TODAY`.
+  Если компонент сам берёт «сегодня» (`new Date()` внутри — готовые периоды BaseDatePicker), история останавливает часы: `beforeEach: () => freezeStoryClock()` из `@/stories/helpers` ставит `new Date()` и `Date.now()` на `STORY_TODAY` и возвращает функцию, которая откатывает часы после истории. Play сверяет имена дней через `storyDate()`.
 - **Случайности.** Без `Math.random()`. Данные таблиц, чатов, деревьев — фиксированные массивы.
 - **Таймеры.** Без `setInterval`/`setTimeout`, меняющих картинку, если это не суть story (например, автопрокрутка слайдера).
 - **Тексты.** На русском, реалистичные и короткие, без «Lorem ipsum» и «test123».

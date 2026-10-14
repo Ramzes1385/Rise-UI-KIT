@@ -1,6 +1,7 @@
 export { useStorySetup } from './controls/model'
 export { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup, slotArgType } from './controls/argTypes'
 export { avatarImage, BROKEN_IMAGE_SRC, placeholderImage, STORY_IMAGES, STORY_TODAY, STORY_USERS, storyDate } from './render/data/fixtures'
+export { freezeStoryClock } from './render/data/clock'
 export { STORY_WAIT_TIMEOUT, tabTo } from './play'
 export { withJsonLd } from './render/decorators/jsonLd'
 export { StoryRouterLink } from './render/data/router'
