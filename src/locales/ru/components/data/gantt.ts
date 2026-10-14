@@ -24,6 +24,7 @@ export const ruGantt = {
 		WARN_BAD_PARENT: 'BaseGantt: у задачи «{id}» нет родителя «{parentId}» — задача показана на верхнем уровне',
 		WARN_PARENT_CYCLE: 'BaseGantt: parentId задачи «{id}» замыкает цикл — задача показана на верхнем уровне',
 		WARN_BAD_DEPENDENCY: 'BaseGantt: зависимость задачи «{id}» от «{dependencyId}» игнорируется — такой задачи нет',
+		WARN_EMPTY_DEPENDENCY: 'BaseGantt: в dependencies задачи «{id}» есть пустое значение (null или undefined) — оно пропущено',
 		WARN_BAD_DEPENDENCY_TYPE: 'BaseGantt: у связи задачи «{id}» с «{dependencyId}» неизвестный тип «{type}» — принят «FS»',
 		WARN_DEPENDENCY_CYCLE: 'BaseGantt: зависимость задачи «{id}» от «{dependencyId}» игнорируется — она замыкает цикл',
 	},

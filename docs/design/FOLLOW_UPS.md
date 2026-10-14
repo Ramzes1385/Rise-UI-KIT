@@ -428,3 +428,11 @@
 - Каретка без выделения: невидимый символ U+200B в DOM (убирается при отправке значения). Если приложение читает `rootRef.innerHTML` напрямую, берите `getHtml()`.
 
 - `useToolbarKeyboard` (fix-ui) подключает наблюдатель за разметкой только при монтировании корня; у панели BaseEditor корень появляется позже (после `isReadonly`), поэтому `useBaseEditorToolbar` вызывает `sync` в `onUpdated`. Если fix-ui научит composable следить за корнем, вызов можно убрать.
+
+## Задача layout-fix
+
+- BaseDashboardGrid: `::before` ручки у карточек первой строки поднимается над сеткой на величину зазора и перехватывает клики по элементам над ней; кит не знает, есть ли над карточкой другая строка. Полоса-ручка (и `::after`) перекрывает верх `__body` и его полосу прокрутки, если у тела есть вертикальный скроллбар. Исправление — ручка в потоке над телом или отступ первой строки.
+- BaseGantt: `useGanttRows.ts` пересчитывает `namesById` на каждый pointermove; `verticalLane` при x = -10 может обрезаться контейнером. Не правилось.
+- `cssColor.ts`: почти прозрачные цвета теряют точность (canvas хранит premultiplied); `useMapThemeStamp.ts` (BaseMap) и `useMapScheme.ts` и новый `useColorPickerTheme.ts` (BaseColorPicker) повторяют один и тот же наблюдатель за темой. Если появится четвёртый, вынести в `src/composables/app/` один общий.
+- BaseColorPicker: `isSwatchSelected` сравнивает токены без `trim()`; формулировка «до показа панели» про MegaMenu неточна при `openKey` (в BaseMegaMenu, не правилось).
+- BaseImageMapEditor: `deleteSelected()` из expose удаляет без подтверждения; JSDoc `BaseImageMapEditorExpose.deleteSelected` не говорит «без подтверждения, обратимо через `undo()`» (не правилось: файл типов у layout-maps/editor-3).

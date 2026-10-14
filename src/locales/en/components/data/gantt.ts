@@ -24,6 +24,7 @@ export const enGantt = {
 		WARN_BAD_PARENT: 'BaseGantt: task “{id}” has no parent “{parentId}” — shown at the top level',
 		WARN_PARENT_CYCLE: 'BaseGantt: parentId of task “{id}” closes a cycle — shown at the top level',
 		WARN_BAD_DEPENDENCY: 'BaseGantt: dependency of task “{id}” on “{dependencyId}” is ignored — there is no such task',
+		WARN_EMPTY_DEPENDENCY: 'BaseGantt: dependencies of task “{id}” contain an empty value (null or undefined) — it is skipped',
 		WARN_BAD_DEPENDENCY_TYPE: 'BaseGantt: link of task “{id}” to “{dependencyId}” has unknown type “{type}” — treated as “FS”',
 		WARN_DEPENDENCY_CYCLE: 'BaseGantt: dependency of task “{id}” on “{dependencyId}” is ignored — it closes a cycle',
 	},

@@ -1,6 +1,8 @@
 import { UI_COLOR_PICKER } from '@/locales/messages'
 import type { ColorPalette } from '../types/BaseColorPicker.types'
 
+const TOKEN_NAME = /^var\(\s*--(?:rise-)?([\w-]+)/
+
 export const DEFAULT_COLOR_PRESETS = [
 	'#f97316',
 	'#ef4444',
@@ -29,4 +31,8 @@ const KIT_COLOR_TOKENS = [
 
 export function getKitTokenPalette(): ColorPalette {
 	return { label: UI_COLOR_PICKER.TOKENS, colors: KIT_COLOR_TOKENS }
+}
+
+export function swatchName(color: string): string {
+	return TOKEN_NAME.exec(color.trim())?.[1] ?? color
 }

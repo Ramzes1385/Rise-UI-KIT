@@ -87,6 +87,16 @@ describe('ganttTasks', () => {
 			expect(items[1].dependencies).toEqual([{ id: 'a', type: 'FS' }])
 		})
 
+		it('зависимости: null и undefined пропускаются, предупреждение одно на задачу', () => {
+			const items = normalizeTasks([
+				task('a'),
+				task('b', { dependencies: [null, 'a', undefined, null] as unknown as GanttTask['dependencies'] }),
+			])
+			expect(items[1].dependencies).toEqual([{ id: 'a', type: 'FS' }])
+			expect(warn).toHaveBeenCalledTimes(1)
+			expect(warn).toHaveBeenCalledWith(expect.stringContaining('пустое значение'))
+		})
+
 		it('зависимости: неизвестные и замыкающие цикл игнорирует с предупреждением', () => {
 			const items = normalizeTasks([
 				task('a', { dependencies: ['b', 'нет', 'a'] }),

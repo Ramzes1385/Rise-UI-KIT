@@ -2,7 +2,15 @@ import type { DashboardScrollBounds, DashboardScrollDelta, DashboardScrollPoint 
 
 const EDGE_ZONE = 56
 const MAX_SPEED = 24
+const FRAME_MS = 1000 / 60
+const MAX_FRAME_SCALE = 4
+const FRAME_JITTER = 0.1
 const SCROLLABLE = /auto|scroll|overlay/
+
+export function frameScale(elapsedMs: number): number {
+	const ratio = Math.max(0, elapsedMs) / FRAME_MS
+	return Math.abs(ratio - 1) < FRAME_JITTER ? 1 : Math.min(MAX_FRAME_SCALE, ratio)
+}
 
 export function edgeSpeed(position: number, min: number, max: number): number {
 	const zone = Math.min(EDGE_ZONE, (max - min) / 2)
@@ -38,8 +46,15 @@ function visibleBounds(element: HTMLElement): DashboardScrollBounds {
 	}
 }
 
-function speedIn(point: DashboardScrollPoint, bounds: DashboardScrollBounds): DashboardScrollDelta {
-	return { dx: edgeSpeed(point.x, bounds.left, bounds.right), dy: edgeSpeed(point.y, bounds.top, bounds.bottom) }
+function scaled(speed: number, scale: number): number {
+	return speed === 0 ? 0 : Math.sign(speed) * Math.ceil(Math.abs(speed) * scale)
+}
+
+function speedIn(point: DashboardScrollPoint, bounds: DashboardScrollBounds, scale: number): DashboardScrollDelta {
+	return {
+		dx: scaled(edgeSpeed(point.x, bounds.left, bounds.right), scale),
+		dy: scaled(edgeSpeed(point.y, bounds.top, bounds.bottom), scale),
+	}
 }
 
 const NO_SCROLL: DashboardScrollDelta = { dx: 0, dy: 0 }
@@ -52,8 +67,7 @@ function scrollElement(element: HTMLElement, speed: DashboardScrollDelta): Dashb
 	if (isIdle(speed)) return NO_SCROLL
 	const left = element.scrollLeft
 	const top = element.scrollTop
-	element.scrollLeft = left + speed.dx
-	element.scrollTop = top + speed.dy
+	element.scrollTo({ left: left + speed.dx, top: top + speed.dy, behavior: 'instant' })
 	return { dx: element.scrollLeft - left, dy: element.scrollTop - top }
 }
 
@@ -61,13 +75,13 @@ function scrollWindow(speed: DashboardScrollDelta): DashboardScrollDelta {
 	if (isIdle(speed)) return NO_SCROLL
 	const left = window.scrollX
 	const top = window.scrollY
-	window.scrollBy(speed.dx, speed.dy)
+	window.scrollBy({ left: speed.dx, top: speed.dy, behavior: 'instant' })
 	return { dx: window.scrollX - left, dy: window.scrollY - top }
 }
 
-export function autoScrollStep(root: HTMLElement | null, point: DashboardScrollPoint): DashboardScrollDelta {
+export function autoScrollStep(root: HTMLElement | null, point: DashboardScrollPoint, scale = 1): DashboardScrollDelta {
 	const parent = findScrollParent(root)
-	const inParent = parent ? scrollElement(parent, speedIn(point, visibleBounds(parent))) : NO_SCROLL
-	const inWindow = scrollWindow(speedIn(point, viewportBounds()))
+	const inParent = parent ? scrollElement(parent, speedIn(point, visibleBounds(parent), scale)) : NO_SCROLL
+	const inWindow = scrollWindow(speedIn(point, viewportBounds(), scale))
 	return { dx: inParent.dx + inWindow.dx, dy: inParent.dy + inWindow.dy }
 }

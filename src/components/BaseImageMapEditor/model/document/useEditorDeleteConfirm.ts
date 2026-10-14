@@ -26,7 +26,7 @@ export function useEditorDeleteConfirm(ctx: EditorContext, panel: ReturnType<typ
 	}
 
 	async function confirmed(next: EditorDeleteRequest | null, run: () => void): Promise<boolean> {
-		if (!next || ctx.isDisabled() || !(await ask(next))) return false
+		if (!next || ctx.isDisabled() || !(await ask(next)) || ctx.isDisabled()) return false
 		run()
 		return true
 	}
@@ -41,7 +41,11 @@ export function useEditorDeleteConfirm(ctx: EditorContext, panel: ReturnType<typ
 		},
 		deleteSelected(): Promise<boolean> {
 			const selected = ctx.selection.getSelected()
-			return confirmed(selected ? describe('OBJECT', selected.title) : null, panel.deleteSelected)
+			return confirmed(selected ? describe('OBJECT', selected.title) : null, () => {
+				if (!selected || !ctx.doc.getData().objects.some(item => item.id === selected.id)) return
+				if (ctx.selection.getSelected()?.id !== selected.id) ctx.selection.select(selected.id)
+				panel.deleteSelected()
+			})
 		},
 		removeLayer(id: string): Promise<boolean> {
 			const layer = ctx.doc.getData().layers.find(item => item.id === id)

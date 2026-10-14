@@ -240,8 +240,8 @@ describe('BaseDashboardGrid указатель', () => {
 		beforeEach(() => {
 			vi.useFakeTimers()
 			scrolledY = 0
-			scrollBy = vi.fn((_x: number, dy: number) => {
-				scrolledY += dy
+			scrollBy = vi.fn((options: ScrollToOptions) => {
+				scrolledY += options.top ?? 0
 			})
 			vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(600)
 			vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(800)
@@ -269,16 +269,64 @@ describe('BaseDashboardGrid указатель', () => {
 			const { container } = renderGrid()
 			const widget = itemOf(container, 'a')
 
-			await fireEvent.pointerDown(widget, pointer(210, 600))
+			await fireEvent.pointerDown(widget, pointer(210, 590))
+			await fireEvent.pointerMove(widget, pointer(210, 600))
 			vi.advanceTimersToNextFrame()
 			await fireEvent.pointerUp(widget, pointer(210, 600))
 			vi.advanceTimersToNextFrame()
-			await fireEvent.pointerDown(widget, pointer(210, 600))
+			await fireEvent.pointerDown(widget, pointer(210, 590))
+			await fireEvent.pointerMove(widget, pointer(210, 600))
 			vi.advanceTimersToNextFrame()
 			await fireEvent.pointerCancel(widget, pointer(210, 600))
 			vi.advanceTimersToNextFrame()
 
 			expect(scrollBy).toHaveBeenCalledTimes(2)
+		})
+
+		it('Escape посреди автопрокрутки отменяет перенос и останавливает прокрутку', async () => {
+			const { container, onChange } = renderGrid()
+			const widget = itemOf(container, 'a')
+
+			await fireEvent.pointerDown(widget, pointer(210, 590))
+			await fireEvent.pointerMove(widget, pointer(210, 600))
+			vi.advanceTimersToNextFrame()
+			await fireEvent.keyDown(widget, { key: 'Escape' })
+			vi.advanceTimersToNextFrame()
+			vi.advanceTimersToNextFrame()
+			await nextTick()
+
+			expect(scrollBy).toHaveBeenCalledTimes(1)
+			expect(widget).not.toHaveClass('base-dashboard-grid__item--dragging')
+			expect(onChange).not.toHaveBeenCalled()
+		})
+
+		it('размонтирование посреди автопрокрутки останавливает цикл', async () => {
+			const { container, unmount } = renderGrid()
+
+			await fireEvent.pointerDown(itemOf(container, 'a'), pointer(210, 590))
+			await fireEvent.pointerMove(itemOf(container, 'a'), pointer(210, 600))
+			vi.advanceTimersToNextFrame()
+			unmount()
+			vi.advanceTimersToNextFrame()
+			vi.advanceTimersToNextFrame()
+
+			expect(scrollBy).toHaveBeenCalledTimes(1)
+		})
+
+		it('нажатие у края без движения не прокручивает и не двигает виджет', async () => {
+			const { container, onChange, onLayout } = renderGrid()
+			const widget = itemOf(container, 'a')
+
+			await fireEvent.pointerDown(widget, pointer(210, 598))
+			await fireEvent.pointerMove(widget, pointer(211, 599))
+			vi.advanceTimersToNextFrame()
+			vi.advanceTimersToNextFrame()
+			await fireEvent.pointerUp(widget, pointer(211, 599))
+
+			expect(scrollBy).not.toHaveBeenCalled()
+			expect(onChange).not.toHaveBeenCalled()
+			expect(onLayout).not.toHaveBeenCalled()
+			expect(widget.style.transform).toBe('translate3d(0px, 0px, 0)')
 		})
 
 		it('в середине окна не прокручивает', async () => {

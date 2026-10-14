@@ -14,6 +14,7 @@ import type {
 	DashboardScrollPoint,
 } from '../../types/BaseDashboardGrid.types'
 
+const DRAG_THRESHOLD = 3
 const INTERACTIVE_SELECTOR = 'a[href], button, input, select, textarea, [contenteditable], [data-no-drag]'
 
 function canStart(event: PointerEvent, item: DashboardLayoutItem, mode: DashboardChangeAction): boolean {
@@ -49,6 +50,7 @@ function useDragPreview(state: DashboardGridState) {
 	let drag: DashboardPointerDrag | null = null
 	let point: DashboardScrollPoint = { x: 0, y: 0 }
 	let scrolled: DashboardScrollDelta = { dx: 0, dy: 0 }
+	let isMoved = false
 
 	function update(current: DashboardPointerDrag): void {
 		const delta = { dx: point.x - current.startX + scrolled.dx, dy: point.y - current.startY + scrolled.dy }
@@ -62,8 +64,14 @@ function useDragPreview(state: DashboardGridState) {
 		get current(): DashboardPointerDrag | null {
 			return drag
 		},
+		reachesThreshold(next: DashboardScrollPoint): boolean {
+			const current = drag as DashboardPointerDrag
+			isMoved ||= Math.hypot(next.x - current.startX, next.y - current.startY) >= DRAG_THRESHOLD
+			return isMoved
+		},
 		begin(next: DashboardPointerDrag, start: DashboardScrollPoint, item: DashboardLayoutItem): void {
 			drag = next
+			isMoved = false
 			point = start
 			scrolled = { dx: 0, dy: 0 }
 			dragRect.value = { id: item.id, rect: itemRect(item, state.metrics.value) }
@@ -105,11 +113,12 @@ export function useDashboardGridPointer(state: DashboardGridState) {
 			;(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId)
 			const point = { x: event.clientX, y: event.clientY }
 			preview.begin({ ...startDrag(event, item, mode), base: state.layout.value }, point, item)
-			autoScroll.start(state.rootRef.value, point)
 		},
 		handlePointerMove(event: PointerEvent): void {
 			if (!isOwnEvent(event)) return
 			const point = { x: event.clientX, y: event.clientY }
+			if (!preview.reachesThreshold(point)) return
+			if (!autoScroll.isRunning) autoScroll.start(state.rootRef.value, point)
 			autoScroll.move(point)
 			preview.move(point)
 		},

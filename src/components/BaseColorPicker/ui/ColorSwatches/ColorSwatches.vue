@@ -8,7 +8,7 @@
 				type="button"
 				:class="[ui('preset'), { 'base-color-picker__preset--selected': isSelected(color) }, swatchClass]"
 				:style="{ backgroundColor: color, '--picker-swatch-color': color }"
-				:aria-label="`${UI_COLOR_PICKER.PRESET} ${color}`"
+				:aria-label="`${UI_COLOR_PICKER.PRESET} ${swatchName(color)}`"
 				:aria-pressed="isSelected(color) ? 'true' : 'false'"
 				@click="emit('select', color)" />
 		</div>
@@ -17,6 +17,7 @@
 
 <script setup lang="ts">
 import { UI_COLOR_PICKER } from '@/locales/messages'
+import { swatchName } from '../../model/colorPresets'
 import type { ColorSwatchesEmits, ColorSwatchesProps } from '../../types/BaseColorPicker.types'
 
 defineProps<ColorSwatchesProps>()

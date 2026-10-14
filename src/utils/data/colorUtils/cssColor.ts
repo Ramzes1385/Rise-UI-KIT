@@ -5,9 +5,21 @@ import { rgbToHex } from './colorUtils'
 const MODERN_COLOR = /(?:oklch|oklab|lch|lab|hwb|color|color-mix)\(/i
 const MAX_CHANNEL = 255
 
+let probeCanvas: HTMLCanvasElement | null = null
+
 function getContext(): CanvasRenderingContext2D | null {
 	if (typeof document === 'undefined') return null
-	return document.createElement('canvas').getContext('2d', { willReadFrequently: true })
+	probeCanvas ??= document.createElement('canvas')
+	return probeCanvas.getContext('2d', { willReadFrequently: true })
+}
+
+function isParsedByCanvas(ctx: CanvasRenderingContext2D, color: string): boolean {
+	ctx.fillStyle = '#000000'
+	ctx.fillStyle = color
+	const onBlack = ctx.fillStyle
+	ctx.fillStyle = '#ffffff'
+	ctx.fillStyle = color
+	return onBlack === ctx.fillStyle
 }
 
 /** Нужно ли приводить цвет: современные записи, которые не понимает часть сторонних библиотек (Google Maps, canvas-графики) */
@@ -22,8 +34,8 @@ export function isModernCssColor(color: string): boolean {
 export function normalizeCssColor(color: string): string | null {
 	const ctx = getContext()
 	if (!ctx) return null
+	if (!isParsedByCanvas(ctx, color)) return null
 	ctx.clearRect(0, 0, 1, 1)
-	ctx.fillStyle = '#000000'
 	ctx.fillStyle = color
 	ctx.fillRect(0, 0, 1, 1)
 	const [r, g, b, a] = ctx.getImageData(0, 0, 1, 1).data

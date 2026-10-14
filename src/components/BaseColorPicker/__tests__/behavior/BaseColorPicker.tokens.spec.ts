@@ -1,16 +1,19 @@
 import '@testing-library/jest-dom/vitest'
 import BaseColorPicker from '../../ui/BaseColorPicker.vue'
-import { getKitTokenPalette } from '../../model/colorPresets'
-import { fireEvent, render, screen } from '@testing-library/vue'
+import { getKitTokenPalette, swatchName } from '../../model/colorPresets'
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
+
+let tokenColor = ''
 
 function mockTokenColor(color: string): void {
+	tokenColor = color
 	const original = window.getComputedStyle
 	vi.spyOn(window, 'getComputedStyle').mockImplementation(element => {
 		const style = original(element)
 		const isToken = (element as HTMLElement).style.color.includes('var(')
 		return new Proxy(style, {
 			get(target, key) {
-				if (key === 'color' && isToken) return color
+				if (key === 'color' && isToken) return tokenColor
 				const value = Reflect.get(target, key, target)
 				return typeof value === 'function' ? value.bind(target) : value
 			},
@@ -36,15 +39,34 @@ describe('BaseColorPicker: токены var(--rise-*)', () => {
 		expect(palette.colors.every(color => color.startsWith('var(--rise-'))).toBe(true)
 	})
 
+	it('swatchName: токен — без var(--rise- и скобки, другое имя — без var(--, обычный цвет как есть', () => {
+		expect(swatchName('var(--rise-border-accented)')).toBe('border-accented')
+		expect(swatchName(' var( --brand, #fff) ')).toBe('brand')
+		expect(swatchName('#3b82f6')).toBe('#3b82f6')
+	})
+
 	it('значение-токен: образец красится самим токеном, имя кнопки называет токен, панель показывает цвет токена', async () => {
 		mockTokenColor('rgb(59, 130, 246)')
 		const { container } = render(BaseColorPicker, { props: { modelValue: 'var(--rise-primary)', ariaLabel: 'Цвет заливки' } })
 		const swatch = container.querySelector<HTMLElement>('.base-color-picker__swatch') as HTMLElement
 
 		expect(swatch.style.backgroundColor).toBe('var(--rise-primary)')
-		expect(swatch).toHaveAccessibleName('Цвет заливки, выбран var(--rise-primary)')
+		expect(swatch).toHaveAccessibleName('Цвет заливки, выбран primary')
 		await openPanel(container)
-		expect(document.body.querySelector('.base-color-picker__token')).toHaveTextContent('Токен var(--rise-primary): #3b82f6')
+		expect(document.body.querySelector('.base-color-picker__token')).toHaveTextContent('Токен primary: #3b82f6')
+	})
+
+	it('цвет токена следует за сменой темы', async () => {
+		mockTokenColor('rgb(59, 130, 246)')
+		const { container } = render(BaseColorPicker, { props: { modelValue: 'var(--rise-primary)' } })
+		await openPanel(container)
+		expect(document.body.querySelector('.base-color-picker__token')).toHaveTextContent('#3b82f6')
+
+		tokenColor = 'rgb(249, 115, 22)'
+		document.documentElement.setAttribute('data-theme', 'dark')
+
+		await waitFor(() => expect(document.body.querySelector('.base-color-picker__token')).toHaveTextContent('Токен primary: #f97316'))
+		document.documentElement.removeAttribute('data-theme')
 	})
 
 	it('цвет токена в oklch() приводится к hex для полей панели', async () => {
@@ -67,14 +89,14 @@ describe('BaseColorPicker: токены var(--rise-*)', () => {
 			props: { modelValue: '#ff0000', palettes: [getKitTokenPalette()] },
 		})
 		await openPanel(container)
-		await fireEvent.click(screen.getByRole('button', { name: 'Пресет var(--rise-success)' }))
+		await fireEvent.click(screen.getByRole('button', { name: 'Пресет success' }))
 
 		expect(emitted('update:modelValue')).toEqual([['var(--rise-success)']])
 		expect(emitted('change')).toEqual([['var(--rise-success)']])
 		await rerender({ modelValue: 'var(--rise-success)' })
 		await openPanel(container)
-		expect(screen.getByRole('button', { name: 'Пресет var(--rise-success)' })).toHaveAttribute('aria-pressed', 'true')
-		expect(screen.getByRole('button', { name: 'Пресет var(--rise-error)' })).toHaveAttribute('aria-pressed', 'false')
+		expect(screen.getByRole('button', { name: 'Пресет success' })).toHaveAttribute('aria-pressed', 'true')
+		expect(screen.getByRole('button', { name: 'Пресет error' })).toHaveAttribute('aria-pressed', 'false')
 		expect(screen.getByRole('button', { name: 'Пресет #f97316' })).toHaveAttribute('aria-pressed', 'false')
 	})
 

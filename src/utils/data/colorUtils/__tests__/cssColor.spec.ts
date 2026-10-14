@@ -43,6 +43,36 @@ describe('cssColor', () => {
 		expect(normalizeCssColor('color(srgb 0.04 0.08 0.12 / 0.5)')).toBe('rgba(10, 20, 30, 0.5)')
 	})
 
+	it('normalizeCssColor: неразобранный цвет — null, чёрный и белый разобраны', () => {
+		let style = '#000000'
+		const context = {
+			clearRect: vi.fn(),
+			fillRect: vi.fn(),
+			getImageData: vi.fn(() => ({ data: Uint8ClampedArray.from([0, 0, 0, 255]) })),
+			get fillStyle() {
+				return style
+			},
+			set fillStyle(value: string) {
+				if (value.startsWith('#') || value === 'black') style = value
+			},
+		}
+		vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(context as unknown as CanvasRenderingContext2D)
+
+		expect(normalizeCssColor('oklch(0.7 0.1)')).toBeNull()
+		expect(context.fillRect).not.toHaveBeenCalled()
+		expect(normalizeCssColor('black')).toBe('#000000')
+	})
+
+	it('normalizeCssColor: один canvas на все вызовы', () => {
+		mockCanvas([1, 2, 3, 255])
+		const create = vi.spyOn(document, 'createElement')
+
+		normalizeCssColor('oklch(0.62 0.19 259)')
+		normalizeCssColor('oklch(0.5 0.1 100)')
+
+		expect(create.mock.calls.filter(([tag]) => tag === 'canvas').length).toBeLessThanOrEqual(1)
+	})
+
 	it('normalizeCssColor: без canvas — null', () => {
 		vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null)
 

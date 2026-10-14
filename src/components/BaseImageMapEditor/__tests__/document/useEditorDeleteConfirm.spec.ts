@@ -4,13 +4,17 @@ import { useEditorDeleteConfirm } from '../../model/document/useEditorDeleteConf
 
 function setup(isDisabled = false) {
 	const data = makeMap()
+	const state = { isDisabled, selectedId: data.objects[0].id }
+	const select = vi.fn((id: string | null) => {
+		if (id) state.selectedId = id
+	})
 	const ctx = {
-		isDisabled: () => isDisabled,
+		isDisabled: () => state.isDisabled,
 		doc: { getData: () => data },
-		selection: { getSelected: () => data.objects[0] },
+		selection: { getSelected: () => data.objects.find(item => item.id === state.selectedId), select },
 	} as unknown as EditorContext
 	const panel = { deleteSelected: vi.fn(), removeLayer: vi.fn(), removeGroup: vi.fn() }
-	return { panel, confirm: useEditorDeleteConfirm(ctx, panel as never) }
+	return { data, state, select, panel, confirm: useEditorDeleteConfirm(ctx, panel as never) }
 }
 
 describe('useEditorDeleteConfirm', () => {
@@ -53,6 +57,47 @@ describe('useEditorDeleteConfirm', () => {
 		const disabled = setup(true)
 		expect(await disabled.confirm.deleteSelected()).toBe(false)
 		expect(disabled.confirm.isOpen.value).toBe(false)
+	})
+
+	it('после подтверждения перепроверяется отключение: ничего не удаляется', async () => {
+		const { confirm, panel, state } = setup()
+
+		const result = confirm.removeLayer('l1')
+		state.isDisabled = true
+		confirm.close(true)
+
+		expect(await result).toBe(false)
+		expect(panel.removeLayer).not.toHaveBeenCalled()
+	})
+
+	it('удаляется объект из вопроса, а не текущее выделение', async () => {
+		const { confirm, panel, state, select, data } = setup()
+		const asked = data.objects[0]
+
+		const result = confirm.deleteSelected()
+		expect(confirm.request.value?.title).toContain(asked.title)
+		state.selectedId = data.objects[1].id
+		confirm.close(true)
+
+		expect(await result).toBe(true)
+		expect(select).toHaveBeenCalledWith(asked.id)
+		expect(panel.deleteSelected).toHaveBeenCalledOnce()
+	})
+
+	it('если названного объекта уже нет, удаление не выполняется; выделение не трогается, когда оно совпадает', async () => {
+		const first = setup()
+		const pending = first.confirm.deleteSelected()
+		first.confirm.close(true)
+		await pending
+		expect(first.select).not.toHaveBeenCalled()
+		expect(first.panel.deleteSelected).toHaveBeenCalledOnce()
+
+		const second = setup()
+		const gone = second.confirm.deleteSelected()
+		second.data.objects.splice(0, 1)
+		second.confirm.close(true)
+		await gone
+		expect(second.panel.deleteSelected).not.toHaveBeenCalled()
 	})
 
 	it('закрытие без вопроса ничего не делает', () => {

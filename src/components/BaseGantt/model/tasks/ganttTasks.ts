@@ -109,7 +109,13 @@ function toLink(item: GanttItem, dependency: GanttTaskId | GanttDependency): Gan
 
 function uniqueLinks(item: GanttItem): GanttLink[] {
 	const links = new Map<GanttTaskId, GanttLink>()
+	let isEmptyReported = false
 	for (const dependency of item.task.dependencies ?? []) {
+		if (dependency === null || dependency === undefined) {
+			if (!isEmptyReported) warn(UI_GANTT.WARN_EMPTY_DEPENDENCY, { id: item.id })
+			isEmptyReported = true
+			continue
+		}
 		const link = toLink(item, dependency)
 		if (!links.has(link.id)) links.set(link.id, link)
 	}

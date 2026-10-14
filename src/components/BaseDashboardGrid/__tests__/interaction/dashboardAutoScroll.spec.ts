@@ -1,4 +1,4 @@
-import { autoScrollStep, edgeSpeed, findScrollParent } from '../../model/interaction/dashboardAutoScroll'
+import { autoScrollStep, edgeSpeed, findScrollParent, frameScale } from '../../model/interaction/dashboardAutoScroll'
 
 function scroller(overflow: string, size: { client: number; scroll: number }, axis: 'x' | 'y' = 'y'): HTMLElement {
 	const element = document.createElement('div')
@@ -8,6 +8,19 @@ function scroller(overflow: string, size: { client: number; scroll: number }, ax
 	Object.defineProperty(element, `client${prop}`, { value: size.client, configurable: true })
 	Object.defineProperty(element, `scroll${prop}`, { value: size.scroll, configurable: true })
 	return element
+}
+
+function trackScroll(element: HTMLElement): ReturnType<typeof vi.fn> {
+	let left = 0
+	let top = 0
+	Object.defineProperty(element, 'scrollLeft', { get: () => left, configurable: true })
+	Object.defineProperty(element, 'scrollTop', { get: () => top, configurable: true })
+	const scrollTo = vi.fn((options: ScrollToOptions) => {
+		left = options.left ?? left
+		top = options.top ?? top
+	})
+	element.scrollTo = scrollTo as unknown as typeof element.scrollTo
+	return scrollTo
 }
 
 function rectOf(top: number, bottom: number): DOMRect {
@@ -31,6 +44,16 @@ describe('dashboardAutoScroll', () => {
 
 		it('у пустой области скорость нулевая', () => {
 			expect(edgeSpeed(5, 10, 10)).toBe(0)
+		})
+	})
+
+	describe('frameScale', () => {
+		it('кадр 60 Гц с дрожанием даёт 1, быстрый кадр меньше, медленный больше, предел 4', () => {
+			expect(frameScale(16.7)).toBe(1)
+			expect(frameScale(1000 / 144)).toBeCloseTo(0.4167, 3)
+			expect(frameScale(1000 / 30)).toBeCloseTo(2, 3)
+			expect(frameScale(5000)).toBe(4)
+			expect(frameScale(-5)).toBe(0)
 		})
 	})
 
@@ -76,11 +99,14 @@ describe('dashboardAutoScroll', () => {
 		it('у нижнего края окна прокручивает окно и возвращает сдвиг', () => {
 			let y = 0
 			vi.spyOn(window, 'scrollY', 'get').mockImplementation(() => y)
-			vi.spyOn(window, 'scrollBy').mockImplementation((_x, dy) => {
-				y += dy as number
-			})
+			const scrollBy = vi.spyOn(window, 'scrollBy').mockImplementation(((options: ScrollToOptions) => {
+				y += options.top ?? 0
+			}) as typeof window.scrollBy)
 
 			expect(autoScrollStep(null, { x: 400, y: 600 })).toEqual({ dx: 0, dy: 24 })
+			expect(scrollBy).toHaveBeenCalledWith({ left: 0, top: 24, behavior: 'instant' })
+			expect(autoScrollStep(null, { x: 400, y: 600 }, 0.5).dy).toBe(12)
+			expect(autoScrollStep(null, { x: 400, y: 0 }, 2).dy).toBe(-48)
 		})
 
 		it('у края прокручиваемого предка двигает его, а предок короче окна', () => {
@@ -90,11 +116,12 @@ describe('dashboardAutoScroll', () => {
 			document.body.append(parent)
 			vi.spyOn(parent, 'getBoundingClientRect').mockReturnValue(rectOf(100, 300))
 			vi.spyOn(window, 'scrollBy').mockImplementation(() => undefined)
-			parent.scrollTop = 0
+			const scrollTo = trackScroll(parent)
 
-			const delta = autoScrollStep(leaf, { x: 200, y: 105 })
+			const delta = autoScrollStep(leaf, { x: 200, y: 295 })
 
-			expect(delta.dy).toBe(parent.scrollTop)
+			expect(delta.dy).toBe(22)
+			expect(scrollTo).toHaveBeenCalledWith({ left: 0, top: 22, behavior: 'instant' })
 		})
 
 		it('предок не двигается, пока указатель далеко от его краёв', () => {
@@ -114,8 +141,7 @@ describe('dashboardAutoScroll', () => {
 			document.body.append(parent)
 			vi.spyOn(parent, 'getBoundingClientRect').mockReturnValue(rectOf(-400, 2000))
 			vi.spyOn(window, 'scrollBy').mockImplementation(() => undefined)
-			let top = 0
-			Object.defineProperty(parent, 'scrollTop', { get: () => top, set: (value: number) => (top = value), configurable: true })
+			trackScroll(parent)
 
 			expect(autoScrollStep(leaf, { x: 200, y: 590 }).dy).toBeGreaterThan(0)
 		})

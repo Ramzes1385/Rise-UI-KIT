@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
 import { computed, ref } from 'vue'
+import { swatchName } from './colorPresets'
 import { useEyeDropper } from './useEyeDropper'
 import { formatMessage } from '@/locales/state'
 import { useUi } from '@composables/base/useUi'
@@ -9,6 +10,7 @@ import { useColorPickerArea } from './useColorPickerArea'
 import { useColorPickerFields } from './useColorPickerFields'
 import { useColorPickerMotion } from './useColorPickerMotion'
 import { useFormField } from '@composables/form/useFormField'
+import { useColorPickerTheme } from './theme/useColorPickerTheme'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import { useColorPicker } from '@composables/form/useColorPicker'
 import type { UseColorPickerReturn } from '@composables/form/useColorPicker'
@@ -44,7 +46,7 @@ function useSwatchSelection(
 
 function useTriggerAttrs(props: ColorPickerProps, picker: UseColorPickerReturn) {
 	return computed(() => {
-		const color = isCssVarColor(props.modelValue) ? props.modelValue : picker.value.value
+		const color = isCssVarColor(props.modelValue) ? swatchName(props.modelValue) : picker.value.value
 		return {
 			...props.triggerAttrs,
 			'aria-label': props.ariaLabel
@@ -59,14 +61,20 @@ function useTokenValue(props: ColorPickerProps, picker: UseColorPickerReturn, sw
 	return {
 		triggerColor: computed((): string => (isToken.value ? props.modelValue : swatchColor.value)),
 		tokenText: computed((): string =>
-			isToken.value ? formatMessage(UI_COLOR_PICKER.TOKEN_VALUE, { token: props.modelValue.trim(), color: picker.hex.value }) : '',
+			isToken.value
+				? formatMessage(UI_COLOR_PICKER.TOKEN_VALUE, { token: swatchName(props.modelValue), color: picker.hex.value })
+				: '',
 		),
 	}
 }
 
 function usePicker(props: ColorPickerProps, emit: BaseColorPickerEmits, scope: Ref<HTMLElement | null>): UseColorPickerReturn {
+	const theme = useColorPickerTheme()
 	return useColorPicker({
-		getValue: () => (isCssVarColor(props.modelValue) ? resolveCssColor(props.modelValue, scope.value) : props.modelValue),
+		getValue: () => {
+			const stamp = theme.value
+			return isCssVarColor(props.modelValue) && stamp >= 0 ? resolveCssColor(props.modelValue, scope.value) : props.modelValue
+		},
 		getFormat: () => props.format,
 		hasAlpha: () => props.hasAlpha,
 		onChange: value => {

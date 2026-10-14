@@ -75,7 +75,7 @@
 		align-items: center;
 		justify-content: flex-end;
 		box-sizing: border-box;
-		height: sz(ct(dashboard-grid, padding-y, 16px));
+		height: max(#{sz(ct(dashboard-grid, padding-y, 16px))}, #{sz(12px)});
 		padding-inline: sz(6px);
 		color: var(--rise-text-muted);
 		border-radius: sz(var(--rise-radius-sm));
@@ -83,13 +83,22 @@
 		touch-action: none;
 	}
 
-	&__handle::before {
+	&__handle::before,
+	&__handle::after {
 		position: absolute;
 		right: 0;
-		bottom: 100%;
 		left: 0;
-		height: min(max(0px, calc(24px - #{sz(ct(dashboard-grid, padding-y, 16px))})), var(--dashboard-grid-gap, 0px));
 		content: '';
+	}
+
+	&__handle::before {
+		bottom: 100%;
+		height: min(max(0px, calc(24px - 100%)), var(--dashboard-grid-gap, 0px));
+	}
+
+	&__handle::after {
+		top: 100%;
+		height: max(0px, calc(24px - 100% - var(--dashboard-grid-gap, 0px)));
 	}
 
 	&__resize {
