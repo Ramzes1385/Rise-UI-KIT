@@ -123,7 +123,7 @@
 						:key="page"
 						type="button"
 						:class="[ui('dot'), { 'base-slider__dot--active': page === currentPage }, classes.dot]"
-						:aria-label="slideLabel(page * perGroup)"
+						:aria-label="slideLabel(pageStart(page))"
 						:aria-current="page === currentPage ? 'true' : undefined"
 						@click="goToPage(page)"></button>
 				</div>
@@ -182,6 +182,7 @@ const props = withDefaults(
 		isVertical: false,
 		thumbnailsPosition: 'bottom',
 		initialIndex: 0,
+		index: undefined,
 		height: '400px',
 		sizeScale: SIZE_SCALE_DEFAULT,
 		spaceBetween: 0,
@@ -225,7 +226,7 @@ const {
 	hasNavigation,
 	canNavigate,
 	arrowVariant,
-	perGroup,
+	pageStart,
 	isSlideVisible,
 	slideEffectStyle,
 	slideLabel,

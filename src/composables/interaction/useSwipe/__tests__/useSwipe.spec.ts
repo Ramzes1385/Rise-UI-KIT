@@ -828,4 +828,48 @@ describe('useSwipe', () => {
 			removeSpy.mockRestore()
 		})
 	})
+	describe('ось касания (SLD-7)', () => {
+		it('касание, ушедшее поперёк оси дальше порога, прерывается: слайд не листается, страница прокручивается', () => {
+			const onSwipeNext = vi.fn()
+			const onDragEnd = vi.fn()
+			const onDragOffset = vi.fn()
+			const swipe = withSetup(() => useSwipe({ isVertical: () => false, onSwipeNext, onDragEnd, onDragOffset }))
+
+			swipe.onTouchStart(createTouchEvent('touchstart', [{ clientX: 200, clientY: 100 }]))
+			swipe.onTouchMove(createTouchEvent('touchmove', [{ clientX: 195, clientY: 140 }]))
+
+			expect(swipe.isDragging.value).toBe(false)
+			expect(onDragOffset).toHaveBeenLastCalledWith(0)
+
+			swipe.onTouchMove(createTouchEvent('touchmove', [{ clientX: 100, clientY: 145 }]))
+			swipe.onTouchEnd(createTouchEvent('touchend', [{ clientX: 100, clientY: 145 }]))
+
+			expect(onSwipeNext).not.toHaveBeenCalled()
+			expect(onDragEnd).not.toHaveBeenCalled()
+		})
+
+		it('небольшое поперечное смещение (до 10px) жест не прерывает', () => {
+			const swipe = withSetup(() => useSwipe({ isVertical: () => false }))
+
+			swipe.onTouchStart(createTouchEvent('touchstart', [{ clientX: 200, clientY: 100 }]))
+			swipe.onTouchMove(createTouchEvent('touchmove', [{ clientX: 198, clientY: 108 }]))
+
+			expect(swipe.isDragging.value).toBe(true)
+		})
+
+		it('в вертикальном режиме поперечной считается горизонталь; новое касание ось сбрасывает', () => {
+			const onSwipeNext = vi.fn()
+			const swipe = withSetup(() => useSwipe({ isVertical: () => true, onSwipeNext }))
+
+			swipe.onTouchStart(createTouchEvent('touchstart', [{ clientX: 100, clientY: 200 }]))
+			swipe.onTouchMove(createTouchEvent('touchmove', [{ clientX: 150, clientY: 195 }]))
+			expect(swipe.isDragging.value).toBe(false)
+
+			swipe.onTouchStart(createTouchEvent('touchstart', [{ clientX: 100, clientY: 200 }]))
+			swipe.onTouchMove(createTouchEvent('touchmove', [{ clientX: 102, clientY: 120 }]))
+			swipe.onTouchEnd(createTouchEvent('touchend', [{ clientX: 102, clientY: 120 }]))
+
+			expect(onSwipeNext).toHaveBeenCalledTimes(1)
+		})
+	})
 })

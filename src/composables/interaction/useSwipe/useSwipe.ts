@@ -13,6 +13,9 @@ import type {
 /** Смещение указателя (px), после которого отпускание мыши считается перетаскиванием, а не кликом */
 const CLICK_SLOP = 5
 
+/** Смещение (px), после которого касание получает ось: поперечное движение отдаётся прокрутке страницы */
+const AXIS_LOCK_SLOP = 10
+
 /** Порог свайпа по умолчанию, px */
 const DEFAULT_THRESHOLD = 50
 
@@ -127,6 +130,7 @@ function createDragSession(options: UseSwipeOptions): SwipeDragSession {
 			dragOffset.value = 0
 		},
 		offsetAt: point => toDelta(start, point, options.isVertical()).main,
+		deltaAt: point => toDelta(start, point, options.isVertical()),
 		scheduleOffset: scheduler.schedule,
 		cancel: scheduler.cancel,
 		finish: point => {
@@ -148,14 +152,26 @@ function createDragSession(options: UseSwipeOptions): SwipeDragSession {
 	}
 }
 
-/** Обработчики касаний: начало, движение (смещение не чаще кадра), отпускание и прерывание системой (touchcancel — без свайпа) */
+/**
+ * Обработчики касаний: начало, движение (смещение не чаще кадра), отпускание и прерывание системой (touchcancel — без свайпа).
+ * Когда касание ушло дальше `AXIS_LOCK_SLOP`, а поперёк оси свайпа — дальше, чем вдоль, жест прерывается: дальше прокручивается страница
+ */
 function createTouchHandlers(session: SwipeDragSession) {
+	let isCrossAxis = false
 	return {
-		onTouchStart: (event: TouchEvent): void => session.begin(toPoint(event.touches[0])),
+		onTouchStart: (event: TouchEvent): void => {
+			isCrossAxis = false
+			session.begin(toPoint(event.touches[0]))
+		},
 		onTouchMove: (event: TouchEvent): void => {
-			if (!session.isDragging.value) return
-			const offset = session.offsetAt(toPoint(event.touches[0]))
-			session.scheduleOffset(() => offset)
+			if (!session.isDragging.value || isCrossAxis) return
+			const delta = session.deltaAt(toPoint(event.touches[0]))
+			if (Math.abs(delta.cross) > Math.abs(delta.main) && Math.abs(delta.cross) > AXIS_LOCK_SLOP) {
+				isCrossAxis = true
+				session.abort()
+				return
+			}
+			session.scheduleOffset(() => delta.main)
 		},
 		onTouchEnd: (event: TouchEvent): void => {
 			if (session.isDragging.value) session.finish(toPoint(event.changedTouches[0]))

@@ -378,6 +378,85 @@ describe('BaseSlider unit', () => {
 		})
 	})
 
+	describe('v-model:index (SLD-9)', () => {
+		const THREE: SliderItem[] = [...ITEMS, { src: 'slide3.jpg', alt: 'Слайд 3', type: 'image' }]
+		const activeIndex = (container: Element): number =>
+			Array.from(container.querySelectorAll('.base-slider__slide')).findIndex(slide =>
+				slide.classList.contains('base-slider__slide--active'),
+			)
+
+		it('index задаёт начальный слайд вместо initialIndex', () => {
+			const { container } = render(BaseSlider, { props: { items: THREE, index: 2, initialIndex: 1 } })
+
+			expect(activeIndex(container)).toBe(2)
+		})
+
+		it('смена index снаружи переключает слайд без change', async () => {
+			const { container, rerender, emitted } = render(BaseSlider, { props: { items: THREE, index: 0 } })
+
+			await rerender({ index: 2 })
+
+			expect(activeIndex(container)).toBe(2)
+			expect(emitted().change).toBeUndefined()
+		})
+
+		it('листание эмитит update:index вместе с change', async () => {
+			const { container, emitted } = render(BaseSlider, { props: { items: THREE, index: 0 } })
+
+			await fireEvent.click(container.querySelector('.base-slider__arrow--next')!)
+
+			expect(emitted()['update:index']).toEqual([[1]])
+			expect(emitted().change).toEqual([[1]])
+		})
+
+		it('без index update:index тоже эмитится, а слайдер ведёт номер сам', async () => {
+			const { container, emitted } = render(BaseSlider, { props: { items: THREE } })
+
+			await fireEvent.click(container.querySelector('.base-slider__arrow--next')!)
+
+			expect(emitted()['update:index']).toEqual([[1]])
+			expect(activeIndex(container)).toBe(1)
+		})
+
+		it('index за краем сжимается до края и возвращается в update:index', async () => {
+			const { container, rerender, emitted } = render(BaseSlider, { props: { items: THREE, index: 0 } })
+
+			await rerender({ index: 9 })
+
+			expect(activeIndex(container)).toBe(2)
+			expect(emitted()['update:index']).toEqual([[2]])
+		})
+
+		it('v-model:index связывает родителя и слайдер в обе стороны', async () => {
+			const current = ref(1)
+			const Host = defineComponent({
+				setup: () => () =>
+					h(BaseSlider, { items: THREE, index: current.value, 'onUpdate:index': (value: number) => (current.value = value) }),
+			})
+			const { container } = render(Host)
+
+			await fireEvent.click(container.querySelector('.base-slider__arrow--next')!)
+			expect(current.value).toBe(2)
+
+			current.value = 0
+			await nextTick()
+			expect(activeIndex(container)).toBe(0)
+		})
+	})
+
+	describe('точки при slidesPerGroup, не кратном числу слайдов', () => {
+		it('последняя точка ведёт к последнему слайду и подписана его номером', async () => {
+			const items = Array.from({ length: 5 }, (_, i) => ({ src: `s${i}.jpg`, alt: `Слайд ${i}`, type: 'image' as const }))
+			const { container } = render(BaseSlider, { props: { items, slidesPerView: 2, slidesPerGroup: 2 } })
+			const dots = container.querySelectorAll('.base-slider__dot')
+
+			expect(dots).toHaveLength(3)
+			await fireEvent.click(dots[2])
+			expect(container.querySelectorAll('.base-slider__slide')[3].classList.contains('base-slider__slide--active')).toBe(true)
+			expect(dots[2]).toHaveAttribute('aria-current', 'true')
+		})
+	})
+
 	describe('scoped default-слот', () => {
 		it('должен передавать item и index в scoped default-слот', () => {
 			const { container } = render(BaseSlider, {

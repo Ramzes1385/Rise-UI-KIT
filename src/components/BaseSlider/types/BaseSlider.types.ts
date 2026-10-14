@@ -128,6 +128,11 @@ export interface BaseSliderProps extends Omit<
 	isVertical?: boolean
 	/** Начальный слайд */
 	initialIndex?: number
+	/**
+	 * Номер текущего слайда для `v-model:index`: задан — слайдер следует за ним (номер за краем сжимается до края и возвращается
+	 * в `update:index`); не задан — слайдер ведёт номер сам, начиная с `initialIndex`
+	 */
+	index?: number
 	/** Высота слайдера */
 	height?: string
 	/** Отступ между слайдами (px) */
@@ -168,6 +173,7 @@ export interface BaseSliderExpose {
 
 export interface BaseSliderEmits {
 	(event: 'change', index: number): void
+	(event: 'update:index', index: number): void
 	(event: 'next'): void
 	(event: 'prev'): void
 }

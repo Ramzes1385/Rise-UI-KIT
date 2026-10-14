@@ -60,7 +60,7 @@ function useSliderState(props: SliderProps, emit: BaseSliderEmits) {
 		autoplayInterval: () => props.autoplayInterval,
 		isLoop: () => props.isLoop,
 		isVertical: () => props.isVertical,
-		initialIndex: () => props.initialIndex,
+		initialIndex: () => props.index ?? props.initialIndex,
 		spaceBetween: () => props.spaceBetween,
 		slidesPerView: () => props.slidesPerView,
 		slidesPerGroup: () => props.slidesPerGroup,
@@ -144,6 +144,9 @@ export function useBaseSlider(props: SliderProps, emit: BaseSliderEmits) {
 	}
 	const videos = useSlideVideos(slider.viewportRef, isSlideVisible, slider.stopAutoplay)
 	watch(slider.currentIndex, videos.pauseHiddenVideos, { flush: 'post' })
+	watch(slider.currentIndex, value => {
+		if (value !== props.index) emit('update:index', value)
+	})
 
 	return {
 		ui: useUi(props, 'base-slider'),
@@ -153,7 +156,6 @@ export function useBaseSlider(props: SliderProps, emit: BaseSliderEmits) {
 		hasNavigation: computed(() => props.navigation !== 'none'),
 		canNavigate: computed(() => slider.maxIndex.value > 0),
 		arrowVariant: computed(() => (props.arrowsPosition === 'center' ? 'shadow' : 'outline')),
-		perGroup: computed(() => Math.max(1, props.slidesPerGroup)),
 		isSlideVisible,
 		slideEffectStyle: useSlideEffect(props, () => slider.currentIndex.value),
 		onVideoPlay: videos.onVideoPlay,

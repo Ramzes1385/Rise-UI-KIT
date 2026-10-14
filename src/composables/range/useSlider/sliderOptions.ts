@@ -43,10 +43,23 @@ function maxSlideIndex(settings: ResolvedSliderOptions): number {
 	return Math.max(0, settings.itemCount() - perView(settings))
 }
 
+/**
+ * Описание: номера слайдов, на которых останавливается слайдер при шаге `slidesPerGroup`: 0, g, 2g… и обязательно последний (`maxSlideIndex`),
+ * чтобы вперёд и назад проходились одни и те же остановки, даже если шаг не кратен числу слайдов
+ */
+function slidePositions(settings: ResolvedSliderOptions): number[] {
+	const max = maxSlideIndex(settings)
+	const step = perGroup(settings)
+	const positions: number[] = []
+	for (let index = 0; index < max; index += step) positions.push(index)
+	positions.push(max)
+	return positions
+}
+
 /** Описание: целый индекс в границах 0…maxSlideIndex; NaN и бесконечность — 0 */
 function clampSlideIndex(settings: ResolvedSliderOptions, index: number): number {
 	if (!Number.isFinite(index)) return 0
 	return Math.max(0, Math.min(Math.trunc(index), maxSlideIndex(settings)))
 }
 
-export { clampSlideIndex, maxSlideIndex, perGroup, perView, resolveSliderOptions }
+export { clampSlideIndex, maxSlideIndex, perView, resolveSliderOptions, slidePositions }

@@ -28,10 +28,10 @@ function useSlider(options: UseSliderOptions): UseSliderReturn {
 	const { viewportRef, viewportSize, measure } = useSliderViewport(settings.isVertical)
 	const dragOffset = ref(0)
 
-	/** Snap-логика: решить, переключать слайд или вернуться */
+	/** Snap-логика: решить, переключать слайд или вернуться; жест, у которого поперечное смещение больше продольного, слайд не листает */
 	function handleDragEnd(delta: { main: number; cross: number }): void {
 		const vpSize = measure()
-		if (vpSize === 0) return
+		if (vpSize === 0 || Math.abs(delta.cross) > Math.abs(delta.main)) return
 		if ((Math.abs(delta.main) / vpSize) * 100 < settings.snapThreshold) return
 		if (delta.main < 0) navigation.goNext()
 		else navigation.goPrev()

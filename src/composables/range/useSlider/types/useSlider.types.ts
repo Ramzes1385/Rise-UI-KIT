@@ -47,7 +47,7 @@ interface UseSliderReturn {
 	slideStyle: ComputedRef<Record<string, string>>
 	/** Максимальный индекс слайда */
 	maxIndex: ComputedRef<number>
-	/** Количество страниц навигации */
+	/** Количество страниц навигации: остановки через `slidesPerGroup` и последний слайд */
 	pageCount: ComputedRef<number>
 	/** Индекс текущей страницы */
 	currentPage: ComputedRef<number>
@@ -57,6 +57,8 @@ interface UseSliderReturn {
 	goNext: () => void
 	/** Предыдущий слайд */
 	goPrev: () => void
+	/** Номер слайда, с которого начинается страница навигации (последняя страница — последний возможный слайд) */
+	pageStart: (page: number) => number
 	/** Перейти к странице навигации */
 	goToPage: (page: number) => void
 	/**
@@ -122,7 +124,7 @@ interface SliderTrackStyleInput {
 /** Возврат useSliderNavigation: текущий слайд, страницы и переходы */
 type UseSliderNavigationReturn = Pick<
 	UseSliderReturn,
-	'currentIndex' | 'maxIndex' | 'pageCount' | 'currentPage' | 'goTo' | 'goNext' | 'goPrev' | 'goToPage'
+	'currentIndex' | 'maxIndex' | 'pageCount' | 'currentPage' | 'pageStart' | 'goTo' | 'goNext' | 'goPrev' | 'goToPage'
 >
 
 /** Возврат useSliderAutoplay: управление автопрокруткой и обработчики корня, ставящие её на паузу */

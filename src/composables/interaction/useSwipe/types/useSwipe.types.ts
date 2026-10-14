@@ -44,6 +44,8 @@ interface SwipeDragSession {
 	begin: (point: SwipePoint) => void
 	/** Смещение точки от начала жеста вдоль направления свайпа */
 	offsetAt: (point: SwipePoint) => number
+	/** Смещение точки от начала жеста по осям окна и вдоль / поперёк направления свайпа */
+	deltaAt: (point: SwipePoint) => SwipeDelta
 	/** Обновить смещение в следующем кадре */
 	scheduleOffset: SwipeOffsetScheduler['schedule']
 	/** Отменить запланированный кадр */

@@ -1,7 +1,7 @@
 /** Composable: навигация слайдера — текущий индекс, страницы, переходы вперёд и назад с учётом loop */
 import type { Ref } from 'vue'
 import { computed, ref, watch } from 'vue'
-import { clampSlideIndex, maxSlideIndex, perGroup } from './sliderOptions'
+import { clampSlideIndex, maxSlideIndex, slidePositions } from './sliderOptions'
 import type { ResolvedSliderOptions, UseSliderNavigationReturn } from './types/useSlider.types'
 
 /** Описание: держит индекс в границах при смене начального индекса и количества слайдов */
@@ -15,7 +15,7 @@ function watchIndexBounds(settings: ResolvedSliderOptions, currentIndex: Ref<num
 	})
 }
 
-/** Описание: текущий слайд и страницы; переход на slidesPerGroup, за краем — на другой край при loop; один экран слайдов — переходов нет */
+/** Описание: текущий слайд и страницы; переход на следующую остановку (`slidePositions`: шаг `slidesPerGroup` и последний слайд), за краем — на другой край при loop; один экран слайдов — переходов нет */
 function useSliderNavigation(settings: ResolvedSliderOptions): UseSliderNavigationReturn {
 	const currentIndex = ref(clampSlideIndex(settings, settings.initialIndex()))
 
@@ -27,9 +27,15 @@ function useSliderNavigation(settings: ResolvedSliderOptions): UseSliderNavigati
 		settings.onChange?.(target)
 	}
 
+	/** Номер слайда страницы; страница за краем — край */
+	function pageStart(page: number): number {
+		const positions = slidePositions(settings)
+		return positions[Math.min(Math.max(Math.trunc(page) || 0, 0), positions.length - 1)]
+	}
+
 	function goNext(): void {
-		const next = currentIndex.value + perGroup(settings)
-		if (next > maxSlideIndex(settings)) {
+		const next = slidePositions(settings).find(position => position > currentIndex.value)
+		if (next === undefined) {
 			if (settings.isLoop()) goTo(0)
 			return
 		}
@@ -38,8 +44,10 @@ function useSliderNavigation(settings: ResolvedSliderOptions): UseSliderNavigati
 	}
 
 	function goPrev(): void {
-		const prev = currentIndex.value - perGroup(settings)
-		if (prev < 0) {
+		const prev = slidePositions(settings)
+			.filter(position => position < currentIndex.value)
+			.pop()
+		if (prev === undefined) {
 			if (settings.isLoop()) goTo(maxSlideIndex(settings))
 			return
 		}
@@ -52,12 +60,13 @@ function useSliderNavigation(settings: ResolvedSliderOptions): UseSliderNavigati
 	return {
 		currentIndex,
 		maxIndex: computed(() => maxSlideIndex(settings)),
-		pageCount: computed(() => Math.ceil((maxSlideIndex(settings) + 1) / perGroup(settings))),
-		currentPage: computed(() => Math.floor(currentIndex.value / perGroup(settings))),
+		pageCount: computed(() => slidePositions(settings).length),
+		currentPage: computed(() => slidePositions(settings).filter(position => position <= currentIndex.value).length - 1),
+		pageStart,
 		goTo,
 		goNext,
 		goPrev,
-		goToPage: (page: number): void => goTo(clampSlideIndex(settings, page * perGroup(settings))),
+		goToPage: (page: number): void => goTo(pageStart(page)),
 	}
 }
 

@@ -29,6 +29,7 @@ export const Flip = cases.Flip
 export const Cards = cases.Cards
 export const Creative = cases.Creative
 export const Autoplay = cases.Autoplay
+export const ControlledIndex = cases.ControlledIndex
 export const WithoutLoop = cases.WithoutLoop
 export const Vertical = cases.Vertical
 export const SlidesPerView = cases.SlidesPerView

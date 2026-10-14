@@ -426,19 +426,23 @@ describe('useSlider', () => {
 			expect(slider.isRotating.value).toBe(false)
 		})
 
-		it('не должен запускать autoplay при prefers-reduced-motion и должен реагировать на смену настройки', () => {
+		it('не должен запускать autoplay при prefers-reduced-motion и должен реагировать на смену настройки', async () => {
 			vi.useFakeTimers()
 			const reducedMotion = stubReducedMotion(true)
 			const slider = withSetup(() => useSlider(createOptions(AUTOPLAY)))
 
 			vi.advanceTimersByTime(3000)
 			expect(slider.currentIndex.value).toBe(0)
+			await nextTick()
+			expect(slider.isAutoplayStopped.value).toBe(true)
 
 			reducedMotion.emitChange(false)
+			await nextTick()
 			vi.advanceTimersByTime(1000)
 			expect(slider.currentIndex.value).toBe(1)
 
 			reducedMotion.emitChange(true)
+			await nextTick()
 			vi.advanceTimersByTime(3000)
 			expect(slider.currentIndex.value).toBe(1)
 		})
@@ -534,6 +538,67 @@ describe('useSlider', () => {
 			slider.goToPage(10)
 
 			expect(slider.currentIndex.value).toBe(4)
+		})
+	})
+
+	describe('slidesPerGroup, не кратный числу слайдов (SLD-8)', () => {
+		const options = () => createOptions({ itemCount: () => 5, slidesPerView: () => 2, slidesPerGroup: () => 2 })
+
+		it('вперёд проходит 0, 2, последний слайд 3 и возвращается к 0', () => {
+			const slider = withSetup(() => useSlider(options()))
+			const visited = [slider.currentIndex.value]
+
+			for (let step = 0; step < 4; step++) {
+				slider.goNext()
+				visited.push(slider.currentIndex.value)
+			}
+
+			expect(visited).toEqual([0, 2, 3, 0, 2])
+		})
+
+		it('назад проходит те же остановки: с 0 на последний слайд, затем 2 и 0', () => {
+			const slider = withSetup(() => useSlider(options()))
+			const visited = [slider.currentIndex.value]
+
+			for (let step = 0; step < 3; step++) {
+				slider.goPrev()
+				visited.push(slider.currentIndex.value)
+			}
+
+			expect(visited).toEqual([0, 3, 2, 0])
+		})
+
+		it('со слайда между остановками идёт на ближайшую остановку в своём направлении', () => {
+			const slider = withSetup(() => useSlider(options()))
+			slider.goTo(1)
+
+			slider.goNext()
+			expect(slider.currentIndex.value).toBe(2)
+
+			slider.goTo(1)
+			slider.goPrev()
+			expect(slider.currentIndex.value).toBe(0)
+		})
+
+		it('страницы совпадают с остановками: последняя страница — последний слайд', () => {
+			const slider = withSetup(() => useSlider(options()))
+
+			expect(slider.pageCount.value).toBe(3)
+			expect([0, 1, 2].map(slider.pageStart)).toEqual([0, 2, 3])
+
+			slider.goToPage(2)
+			expect(slider.currentIndex.value).toBe(3)
+			expect(slider.currentPage.value).toBe(2)
+			slider.goTo(1)
+			expect(slider.currentPage.value).toBe(0)
+		})
+
+		it('номер страницы за краем и NaN не ломают переход', () => {
+			const slider = withSetup(() => useSlider(options()))
+
+			expect(slider.pageStart(-4)).toBe(0)
+			expect(slider.pageStart(99)).toBe(3)
+			expect(slider.pageStart(Number.NaN)).toBe(0)
 		})
 	})
 
@@ -749,6 +814,14 @@ describe('useSlider', () => {
 
 				// offsetPercent = (50/500)*100 = 10% < snapThreshold(20)
 				swipeCallbacks.onDragEnd!({ main: -50, cross: 0 })
+
+				expect(slider.currentIndex.value).toBe(0)
+			})
+
+			it('не должен переключать слайд, если жест больше поперёк оси, чем вдоль (SLD-7)', () => {
+				const slider = withSetupDOM(() => useSlider(createOptions()))
+
+				swipeCallbacks.onDragEnd!({ main: -150, cross: 200 })
 
 				expect(slider.currentIndex.value).toBe(0)
 			})

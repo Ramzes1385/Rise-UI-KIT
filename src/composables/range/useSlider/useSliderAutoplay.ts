@@ -1,35 +1,11 @@
 /** Composable: автопрокрутка слайдера по APG Carousel — кнопка «Остановить/Запустить», пауза под указателем и при фокусе, prefers-reduced-motion */
 import type { Ref } from 'vue'
+import { useReducedMotion } from '@composables/app/useReducedMotion'
 import { onBeforeUnmount, onMounted, readonly, ref, watch } from 'vue'
 import type { ResolvedSliderOptions, SliderAutoplayControls, UseSliderAutoplayReturn } from './types/useSlider.types'
 
-/** Медиазапрос системной настройки «уменьшить движение» */
-const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
-
 /** Атрибут кнопки управления автопрокруткой (ставит компонент): фокус на ней прокрутку не останавливает */
 const ROTATION_CONTROL_ATTR = 'data-slider-rotation'
-
-/** Описание: следит за prefers-reduced-motion с монтирования; `onChange` — при монтировании (если включена) и при смене настройки */
-function useReducedMotion(onChange: (isReduced: boolean) => void): void {
-	let query: MediaQueryList | null = null
-
-	function handleChange(event: MediaQueryListEvent): void {
-		onChange(event.matches)
-	}
-
-	onMounted(() => {
-		// matchMedia отсутствует в SSR и jsdom — тогда считаем, что ограничения движения нет
-		if (typeof window.matchMedia !== 'function') return
-		query = window.matchMedia(REDUCED_MOTION_QUERY)
-		if (query.matches) onChange(true)
-		query.addEventListener('change', handleChange)
-	})
-
-	onBeforeUnmount(() => {
-		query?.removeEventListener('change', handleChange)
-		query = null
-	})
-}
 
 /** Описание: фокус пришёл на кнопку управления автопрокруткой */
 function isRotationControl(target: EventTarget | null): boolean {
@@ -69,8 +45,11 @@ function useSliderAutoplay(settings: ResolvedSliderOptions, controls: SliderAuto
 	/** Причины временной паузы храним раздельно: уход мыши не возобновляет прокрутку, пока внутри фокус, и наоборот */
 	const paused = { hover: false, focus: false }
 
+	const isReducedMotion = useReducedMotion()
+
 	function startAutoplay(): void {
-		if (!settings.isAutoplay() || isStopped.value || paused.hover || paused.focus || !controls.canRotate()) return
+		if (!settings.isAutoplay() || isStopped.value || isReducedMotion.value || paused.hover || paused.focus || !controls.canRotate())
+			return
 		autoplayTimer = setInterval(controls.goNext, settings.autoplayInterval())
 		isRotating.value = true
 	}
@@ -97,7 +76,7 @@ function useSliderAutoplay(settings: ResolvedSliderOptions, controls: SliderAuto
 		resumeAutoplay()
 	}
 
-	useReducedMotion(setStopped)
+	watch(isReducedMotion, setStopped)
 	watch([settings.isAutoplay, settings.autoplayInterval, controls.canRotate], resumeAutoplay)
 	onMounted(startAutoplay)
 	onBeforeUnmount(pauseAutoplay)
