@@ -102,6 +102,7 @@
 			:is-open="contextMenu.isOpen"
 			:x="contextMenu.x"
 			:y="contextMenu.y"
+			:anchor-y="contextMenu.anchorY"
 			:message="contextMenu.message"
 			:current-user-role="currentUserRole"
 			:size-scale="sizeScale"

@@ -92,6 +92,60 @@ describe('placeContextMenu', () => {
 		vi.unstubAllGlobals()
 	})
 
+	it('открытое кнопкой меню у нижнего края переворачивается вверх от верха кнопки, не закрывая её', () => {
+		stubViewport()
+
+		expect(placeContextMenu({ x: 100, y: 700, anchorY: 660 }, menuElement({ width: 200, height: 280 })).top).toBe(380)
+	})
+
+	it('anchorY не мешает, пока меню помещается вниз', () => {
+		stubViewport()
+
+		expect(placeContextMenu({ x: 100, y: 120, anchorY: 80 }, menuElement({ width: 200, height: 280 })).top).toBe(120)
+	})
+
+	it('ширина меряется при left: 0 и прежний left возвращается', () => {
+		stubViewport()
+		const menu = document.createElement('div')
+		document.body.append(menu)
+		Object.defineProperty(menu, 'offsetHeight', { value: 100 })
+		menu.style.left = '940px'
+		const seen: string[] = []
+		Object.defineProperty(menu, 'offsetWidth', {
+			get: () => {
+				seen.push(menu.style.left)
+				return 200
+			},
+		})
+
+		placeContextMenu({ x: 940, y: 100 }, menu)
+
+		expect(seen).toEqual(['0px'])
+		expect(menu.style.left).toBe('940px')
+	})
+
+	it('окно и размеры берутся из документа меню (iframe, Picture-in-Picture)', () => {
+		const foreign = document.implementation.createHTMLDocument('')
+		const menu = foreign.createElement('div')
+		Object.defineProperty(menu, 'offsetWidth', { value: 200 })
+		Object.defineProperty(menu, 'offsetHeight', { value: 100 })
+		foreign.body.append(menu)
+		vi.spyOn(foreign.documentElement, 'clientWidth', 'get').mockReturnValue(300)
+		vi.spyOn(foreign.documentElement, 'clientHeight', 'get').mockReturnValue(150)
+
+		expect(placeContextMenu({ x: 280, y: 140 }, menu)).toEqual({ top: 40, left: 80, maxHeight: undefined })
+	})
+
+	it('у документа без окна и без размеров меню остаётся с прижатием к краю', () => {
+		const foreign = document.implementation.createHTMLDocument('')
+		const menu = foreign.createElement('div')
+		Object.defineProperty(menu, 'offsetWidth', { value: 100 })
+		Object.defineProperty(menu, 'offsetHeight', { value: 100 })
+		foreign.body.append(menu)
+
+		expect(placeContextMenu({ x: 50, y: 50 }, menu).left).toBe(8)
+	})
+
 	it('внутри предка с transform координаты отсчитываются от него', () => {
 		stubViewport()
 		const frame = document.createElement('div')

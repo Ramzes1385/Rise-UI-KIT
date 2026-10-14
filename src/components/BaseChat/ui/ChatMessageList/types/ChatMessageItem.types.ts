@@ -1,6 +1,12 @@
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { ChatBadge, ChatMessage, ChatMessageAttachment } from '../../../types/BaseChat.types'
 
+/**
+ * Событие вызова контекстного меню: `anchorTop` — верх кнопки «Другие действия» в координатах окна (меню открыто кнопкой):
+ * при перевороте вверх меню встаёт над кнопкой, а не закрывает её
+ */
+export type ChatContextMenuEvent = MouseEvent & { anchorTop?: number }
+
 export interface ChatMessageItemProps {
 	message: ChatMessage
 	isGroup?: boolean
@@ -26,7 +32,7 @@ export interface ChatMessageItemEmits {
 	/** «Удалить» под сообщением со статусом `failed`; в payload — клик (по нему лента отличает клавиатуру от мыши и касания) */
 	(event: 'discard', payload: MouseEvent): void
 	(event: 'reply-action'): void
-	(event: 'context-menu', payload: MouseEvent): void
+	(event: 'context-menu', payload: ChatContextMenuEvent): void
 	(event: 'reply-click', replyToId: string): void
 	(event: 'download', file: ChatMessageAttachment): void
 	(event: 'file-click', file: ChatMessageAttachment): void

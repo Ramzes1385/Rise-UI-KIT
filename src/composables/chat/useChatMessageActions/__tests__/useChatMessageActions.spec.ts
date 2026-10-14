@@ -70,6 +70,16 @@ describe('useChatMessageActions', () => {
 			expect(emit).toHaveBeenCalledWith('reply-click', 'm0')
 		})
 
+		it('верх кнопки «Другие действия» (anchorTop) сохраняется как anchorY, у обычного вызова его нет', () => {
+			const { actions } = setup()
+
+			actions.handleContextMenu(Object.assign(rightClick(100, 120), { anchorTop: 96 }), message)
+			expect(actions.contextMenu.value.anchorY).toBe(96)
+
+			actions.handleContextMenu(rightClick(100, 120), message)
+			expect(actions.contextMenu.value.anchorY).toBeUndefined()
+		})
+
 		it.each([
 			['handleSelect', 'message-select', 'm1'],
 			['handleRetry', 'retry-message', 'm1'],

@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { describe, expect, it } from 'vitest'
 import { UI_CHAT_TEXT } from '@/locales/messages'
+import { describe, expect, it, vi } from 'vitest'
 import ChatMessageItem from '../ui/ChatMessage.vue'
 import type { ChatMessage } from '../../../types/BaseChat.types'
 import { fireEvent, render, screen, within } from '@testing-library/vue'
@@ -165,6 +165,21 @@ describe('ChatMessage', () => {
 
 			expect(emitted()['context-menu']).toHaveLength(1)
 			expect(screen.queryByRole('group', { name: UI_CHAT_TEXT.STATUS_FAILED })).toBeNull()
+		})
+
+		it('«Другие действия» открывает меню под кнопкой и передаёт верх кнопки для переворота вверх', async () => {
+			const { emitted } = render(ChatMessageItem, {
+				props: { message: { ...BASE_MESSAGE, sender: 'me', status: 'sent' }, sizeScale: 100 },
+			})
+			const more = screen.getByRole('button', { name: UI_CHAT_TEXT.MORE_ACTIONS_ARIA })
+			vi.spyOn(more, 'getBoundingClientRect').mockReturnValue(new DOMRect(30, 200, 24, 24))
+
+			await fireEvent.click(more)
+
+			const [event] = emitted()['context-menu'][0] as [MouseEvent & { anchorTop?: number }]
+			expect(event.clientX).toBe(30)
+			expect(event.clientY).toBe(228)
+			expect(event.anchorTop).toBe(196)
 		})
 
 		it('чужое сообщение со статусом failed блока ошибки не показывает', () => {

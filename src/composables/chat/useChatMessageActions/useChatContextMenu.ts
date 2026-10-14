@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { copyTextToClipboard } from '@utils/dom/clipboardUtils'
 import { useClickOutside } from '@composables/overlay/useClickOutside'
+import type { ChatContextMenuEvent } from '@components/BaseChat/ui/ChatMessageList/types/ChatMessageItem.types'
 import type { ChatMessageContextMenuExpose } from '@components/BaseChat/ui/ChatMessageList/types/ChatMessageContextMenu.types'
 import type { ChatContextMenuState, UseChatContextMenuOptions, UseChatMessageActionsOptions } from './types/useChatMessageActions.types'
 
@@ -43,7 +44,7 @@ function useChatContextMenu(options: UseChatContextMenuOptions) {
 	 */
 	const contextMenuElement = computed(() => contextMenuRef.value?.menuRef ?? null)
 
-	function handleContextMenu(event: MouseEvent, message: ChatContextMenuState['message']): void {
+	function handleContextMenu(event: ChatContextMenuEvent, message: ChatContextMenuState['message']): void {
 		/* istanbul ignore next — defensive */
 		if (selectedMessageIds.value.length > 0) return
 		returnFocusTarget = getFocusedHtmlElement(listRef.value?.ownerDocument ?? document)
@@ -52,6 +53,7 @@ function useChatContextMenu(options: UseChatContextMenuOptions) {
 			isOpen: true,
 			x: Math.max(CONTEXT_MENU_GAP, event.clientX),
 			y: Math.max(CONTEXT_MENU_GAP, event.clientY),
+			anchorY: event.anchorTop,
 			message,
 		}
 	}

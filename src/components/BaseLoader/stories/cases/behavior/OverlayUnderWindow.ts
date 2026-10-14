@@ -5,7 +5,7 @@ import type { StoryObj } from '@storybook/vue3-vite'
 import { storySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
-	<div class="story-narrow" data-testid="stage" style="position: relative">
+	<div class="story-narrow story-stage" data-testid="stage">
 		<div class="story-frame" data-testid="container">
 			<section class="story-col" aria-label="Отчёт за май">
 				<strong>Отчёт за май</strong>
@@ -14,11 +14,10 @@ const template = `
 			<BaseLoader v-bind="args" />
 		</div>
 		<div
-			class="story-frame"
+			class="story-frame story-window"
 			role="dialog"
 			aria-label="Открытое окно"
-			data-testid="window"
-			style="position: absolute; inset-block-start: 24px; inset-inline-start: 24px; z-index: var(--rise-z-overlay); background: var(--rise-bg)">
+			data-testid="window">
 			Окно поверх карточки
 		</div>
 	</div>

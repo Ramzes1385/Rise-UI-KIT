@@ -67,6 +67,20 @@ body.sb-show-main,
 	border-radius: 8px;
 }
 
+/** Сцена для окна поверх контейнера (история BaseLoader «OverlayUnderWindow»): точка отсчёта для `story-window`. */
+.story-stage {
+	position: relative;
+}
+
+/** Окно поверх соседнего контейнера на слое окон кита (история BaseLoader «OverlayUnderWindow»). */
+.story-window {
+	position: absolute;
+	inset-block-start: 24px;
+	inset-inline-start: 24px;
+	z-index: var(--rise-z-overlay);
+	background: var(--rise-bg);
+}
+
 /** Карта на тени с ореолом (история BaseMap «Theming», customClass.root): свойства, которых кит не задаёт. */
 .story-map-elevated {
 	outline: 4px solid var(--rise-primary-soft);

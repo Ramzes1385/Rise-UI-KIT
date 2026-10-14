@@ -45,7 +45,12 @@ function isFixedContainer(style: CSSStyleDeclaration): boolean {
 
 /** Элемент в верхнем слое (во весь экран): его потомки отсчитываются от окна, предки не влияют */
 function isTopLayer(element: Element): boolean {
-	return document.fullscreenElement === element
+	return element.ownerDocument.fullscreenElement === element
+}
+
+/** Вычисленный стиль в окне документа элемента (iframe, Picture-in-Picture), а не глобального `window` */
+function getStyleIn(node: Element): CSSStyleDeclaration {
+	return (node.ownerDocument.defaultView ?? window).getComputedStyle(node)
 }
 
 /**
@@ -62,8 +67,8 @@ function isTopLayer(element: Element): boolean {
  * ```
  */
 export function getFixedOrigin(container: Element | null | undefined): FixedOrigin {
-	for (let node = container; node && node !== document.documentElement; node = node.parentElement) {
-		if (isFixedContainer(getComputedStyle(node))) {
+	for (let node = container; node && node !== node.ownerDocument.documentElement; node = node.parentElement) {
+		if (isFixedContainer(getStyleIn(node))) {
 			const rect = node.getBoundingClientRect()
 			return { x: rect.left + node.clientLeft - node.scrollLeft, y: rect.top + node.clientTop - node.scrollTop }
 		}

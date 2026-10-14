@@ -25,6 +25,8 @@ export interface ChatContextMenuState {
 	isOpen: boolean
 	x: number
 	y: number
+	/** Верх кнопки «Другие действия», открывшей меню (координаты окна): переворот вверх отсчитывается от него */
+	anchorY?: number
 	message: ChatMessage | null
 }
 

@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { UI_CHAT_TEXT } from '@/locales/messages'
-import type { ChatMessageItemEmits, MessageItemProps } from '../types/ChatMessageItem.types'
 import type { ChatMessage, ChatMessageAttachment, ChatMessageStatus } from '../../../types/BaseChat.types'
+import type { ChatContextMenuEvent, ChatMessageItemEmits, MessageItemProps } from '../types/ChatMessageItem.types'
 
 function getMessageImageUrls(message: ChatMessage): string[] {
 	return message.attachments?.filter(attachment => attachment.type === 'image').map(attachment => attachment.url) ?? []
@@ -34,12 +34,15 @@ function createRelays(emit: ChatMessageItemEmits) {
 		handleSelect: (): void => emit('select'),
 		handleAvatarClick: (): void => emit('avatar-click'),
 		handleReplyAction: (): void => emit('reply-action'),
-		handleContextMenu: (payload: MouseEvent): void => emit('context-menu', payload),
+		handleContextMenu: (payload: ChatContextMenuEvent): void => emit('context-menu', payload),
 		handleRetry: (payload: MouseEvent): void => emit('retry', payload),
 		handleDiscard: (payload: MouseEvent): void => emit('discard', payload),
 		handleMoreClick(event: MouseEvent): void {
 			const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
-			emit('context-menu', new MouseEvent('contextmenu', { clientX: rect.left, clientY: rect.bottom + 4 }))
+			emit(
+				'context-menu',
+				Object.assign(new MouseEvent('contextmenu', { clientX: rect.left, clientY: rect.bottom + 4 }), { anchorTop: rect.top - 4 }),
+			)
 		},
 		handleReplyClick(replyToId?: string): void {
 			if (replyToId) emit('reply-click', replyToId)
@@ -58,7 +61,7 @@ export function useChatMessage(props: MessageItemProps, emit: ChatMessageItemEmi
 	return {
 		...sender,
 		...relays,
-		handleContextMenu(payload: MouseEvent): void {
+		handleContextMenu(payload: ChatContextMenuEvent): void {
 			if (!sender.isFailed.value) relays.handleContextMenu(payload)
 		},
 	}

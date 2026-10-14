@@ -105,6 +105,29 @@ describe('domUtils', () => {
 			expect(getFixedOrigin(document.documentElement)).toEqual({ x: 0, y: 0 })
 		})
 
+		it('предок в другом документе: стиль берётся из окна его документа, полноэкранность — из его document', () => {
+			const foreign = document.implementation.createHTMLDocument('')
+			const outer = foreign.createElement('div')
+			const inner = foreign.createElement('div')
+			outer.style.transform = 'translateZ(0)'
+			outer.append(inner)
+			foreign.body.append(outer)
+			vi.spyOn(outer, 'getBoundingClientRect').mockReturnValue(new DOMRect(10, 20, 50, 50))
+
+			expect(foreign.defaultView).toBeNull()
+			expect(getFixedOrigin(inner)).toEqual({ x: 10, y: 20 })
+		})
+
+		it('окно документа предка даёт стиль через собственный getComputedStyle', () => {
+			const { outer, inner } = tree()
+			const view = outer.ownerDocument.defaultView!
+			const spy = vi.spyOn(view, 'getComputedStyle')
+
+			getFixedOrigin(inner)
+
+			expect(spy).toHaveBeenCalledWith(inner)
+		})
+
 		it('значение none не создаёт систему координат', () => {
 			const { outer, inner } = tree()
 			outer.style.transform = 'none'

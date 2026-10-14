@@ -4,6 +4,8 @@ export interface ChatMessageContextMenuProps {
 	isOpen: boolean
 	x: number
 	y: number
+	/** Верх кнопки, открывшей меню (координаты окна, px): при перевороте вверх меню встаёт над ней */
+	anchorY?: number
 	message: ChatMessage | null
 	currentUserRole: 'admin' | 'member'
 	sizeScale: number
@@ -31,6 +33,8 @@ export interface ChatMessageContextMenuExpose {
 export interface ChatMenuPoint {
 	x: number
 	y: number
+	/** Верх кнопки, открывшей меню: переворот вверх отсчитывается от него */
+	anchorY?: number
 }
 
 export interface ChatMenuSize {

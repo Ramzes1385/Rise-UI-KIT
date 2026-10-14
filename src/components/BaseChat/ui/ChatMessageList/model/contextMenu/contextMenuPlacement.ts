@@ -3,9 +3,10 @@ import type { ChatMenuPlacement, ChatMenuPoint, ChatMenuSize } from '../../types
 
 const VIEWPORT_MARGIN = 8
 
-function getViewport(): ChatMenuSize {
-	const root = document.documentElement
-	return { width: root.clientWidth || window.innerWidth, height: root.clientHeight || window.innerHeight }
+function getViewport(ownerDocument: Document): ChatMenuSize {
+	const root = ownerDocument.documentElement
+	const view = ownerDocument.defaultView
+	return { width: root.clientWidth || view?.innerWidth || 0, height: root.clientHeight || view?.innerHeight || 0 }
 }
 
 function placeAlongX(x: number, width: number, viewport: number): number {
@@ -14,23 +15,33 @@ function placeAlongX(x: number, width: number, viewport: number): number {
 	return Math.max(VIEWPORT_MARGIN, viewport - width - VIEWPORT_MARGIN)
 }
 
-function placeAlongY(y: number, height: number, viewport: number): Pick<ChatMenuPlacement, 'top' | 'maxHeight'> {
+function placeAlongY(point: ChatMenuPoint, height: number, viewport: number): Pick<ChatMenuPlacement, 'top' | 'maxHeight'> {
+	const { y } = point
+	const flipY = point.anchorY ?? y
 	const below = viewport - y - VIEWPORT_MARGIN
-	const above = y - VIEWPORT_MARGIN
+	const above = flipY - VIEWPORT_MARGIN
 	if (height <= below) return { top: Math.max(VIEWPORT_MARGIN, y), maxHeight: undefined }
-	if (height <= above) return { top: y - height, maxHeight: undefined }
+	if (height <= above) return { top: flipY - height, maxHeight: undefined }
 	if (below >= above) return { top: Math.max(VIEWPORT_MARGIN, y), maxHeight: Math.max(0, below) }
 	return { top: VIEWPORT_MARGIN, maxHeight: Math.max(0, above) }
 }
 
-export function placeContextMenu(point: ChatMenuPoint, menu: HTMLElement): ChatMenuPlacement {
+function measureMenu(menu: HTMLElement): ChatMenuSize {
+	const previousLeft = menu.style.left
+	menu.style.left = '0px'
 	const size = { width: menu.offsetWidth, height: menu.offsetHeight }
+	menu.style.left = previousLeft
+	return size
+}
+
+export function placeContextMenu(point: ChatMenuPoint, menu: HTMLElement): ChatMenuPlacement {
+	const size = measureMenu(menu)
 	const origin = getFixedOrigin(menu.parentElement)
 	if (size.width === 0 || size.height === 0) {
 		return { top: point.y - origin.y, left: point.x - origin.x, maxHeight: undefined }
 	}
-	const viewport = getViewport()
-	const vertical = placeAlongY(point.y, size.height, viewport.height)
+	const viewport = getViewport(menu.ownerDocument)
+	const vertical = placeAlongY(point, size.height, viewport.height)
 	return {
 		top: vertical.top - origin.y,
 		left: placeAlongX(point.x, size.width, viewport.width) - origin.x,

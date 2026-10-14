@@ -2049,3 +2049,8 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 - **BaseDashboardGrid**: высота ручки — через `space()`; при `--rise-density: 1` снимки без изменений (проверено попиксельно до/после).
 - **BaseMediaPlayer**: кнопки скорости (`__speed-preset`) через `custom-button-colors` — добавлен цвет нажатия (`--custom-bg-active` равен цвету наведения), остальное прежнее; радиус подсказки — `var(--rise-radius-md)` (6 px при радиусе кита по умолчанию, как раньше); подсказки с радиусом, изменённым приложением, меняются вместе с ним.
 - **BaseColorPicker, история IconTrigger**: `triggerVariant` и `hasIndicator` в Controls; вид тот же. Убран повторный `focus-ring` у `--icon`: кольцо фокуса то же.
+
+## Задача wave8-fix3b
+
+- **BasePagination, история `OutOfRange`** (`modelValue: 7`, `total: 30`): последняя существующая страница 3 теперь выделена как текущая (индикатор, `aria-current`); раньше текущей не было и индикатор не показывался. Остальные истории не меняются.
+- **BaseLoader, история `OverlayUnderWindow`**: позиционирование окна вынесено из inline-стилей в классы `story-stage` и `story-window` (`build/storybook/preview.scss`); вид тот же.

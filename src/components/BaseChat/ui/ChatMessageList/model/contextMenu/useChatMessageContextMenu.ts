@@ -45,12 +45,12 @@ export function useChatMessageContextMenu(props: ChatMessageContextMenuProps, em
 	const layerStyle = useLayerIndex(() => props.isOpen)
 	const placement = ref<ChatMenuPlacement | null>(null)
 	watch(
-		() => [props.isOpen, props.x, props.y],
+		() => [props.isOpen, props.x, props.y, props.anchorY],
 		() => {
 			placement.value = null
 			if (!props.isOpen) return
 			nextTick(() => {
-				if (menuRef.value) placement.value = placeContextMenu({ x: props.x, y: props.y }, menuRef.value)
+				if (menuRef.value) placement.value = placeContextMenu({ x: props.x, y: props.y, anchorY: props.anchorY }, menuRef.value)
 				getItems(menuRef.value)[0]?.focus()
 			})
 		},
