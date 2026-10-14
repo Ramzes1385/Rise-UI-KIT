@@ -202,6 +202,15 @@ export const ruMapEditor = {
 		/** Сообщения для скринридера (role="status") */
 		CREATED: 'Добавлен объект «{title}»',
 		DELETED: 'Удалён объект «{title}»',
+		/** Подтверждение удаления */
+		CONFIRM_DELETE: 'Удалить',
+		CONFIRM_UNDO: 'Вернуть можно кнопкой «Отменить» или Ctrl+Z.',
+		CONFIRM_OBJECT: 'Удалить объект «{title}»?',
+		CONFIRM_OBJECT_TEXT: 'Объект исчезнет с карты. {undo}',
+		CONFIRM_LAYER: 'Удалить этаж «{title}»?',
+		CONFIRM_LAYER_TEXT: 'Вместе с этажом удалятся его объекты и маршруты. {undo}',
+		CONFIRM_GROUP: 'Удалить группу «{title}»?',
+		CONFIRM_GROUP_TEXT: 'Объекты группы останутся на карте без группы. {undo}',
 		UNDONE: 'Правка отменена',
 		REDONE: 'Правка повторена',
 		POSITION: 'Слева {x} %, сверху {y} %',

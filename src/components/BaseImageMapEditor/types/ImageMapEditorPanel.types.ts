@@ -3,6 +3,12 @@ import type { useEditorPanel } from '../model/panel/useEditorPanel'
 import type { BaseImageMapEditorPart } from './BaseImageMapEditor.types'
 import type { ImageMapData, ImageMapLayer, ImageMapObject } from '@components/BaseImageMap/types/imageMapData.types'
 
+/** Поля и действия панели: удаление этажа и группы идёт через подтверждение и возвращает `true`, если удалено */
+type EditorPanelApi = Omit<ReturnType<typeof useEditorPanel>, 'removeLayer' | 'removeGroup'> & {
+	removeLayer: (id: string) => Promise<boolean>
+	removeGroup: (id: string) => Promise<boolean>
+}
+
 /** Пропсы панели свойств редактора (внутренний компонент) */
 export interface ImageMapEditorPanelProps {
 	/** JSON карты */
@@ -14,7 +20,7 @@ export interface ImageMapEditorPanelProps {
 	/** Объекты показанного слоя */
 	objects: ImageMapObject[]
 	/** Поля и действия панели */
-	panel: ReturnType<typeof useEditorPanel>
+	panel: EditorPanelApi
 	/** Редактор отключён */
 	isDisabled: boolean
 	/** Класс панели из `classes.panel` */
@@ -45,7 +51,7 @@ export type EditorPanelList = 'layer' | 'group' | 'up' | 'down'
 /** Пропсы раздела «3D» панели свойств (внутренний компонент) */
 export interface ImageMapEditorPanel3dProps {
 	/** Поля и действия панели */
-	panel: ReturnType<typeof useEditorPanel>
+	panel: EditorPanelApi
 	/** Название показанного этажа — подпись полей 3D этажа */
 	layerTitle?: string
 	/** Выделенный объект: у объекта `svg` показываются части */

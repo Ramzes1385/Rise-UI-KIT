@@ -61,6 +61,9 @@ export const enForms = {
 		EYE_DROPPER: 'Pick color from screen',
 		PRESETS: 'Presets',
 		RECENT: 'Recent',
+		/** Kit token palette and the line with the chosen token's color */
+		TOKENS: 'Kit tokens',
+		TOKEN_VALUE: 'Token {token}: {color}',
 	},
 	filterBuilder: {
 		LABEL: 'Filter',

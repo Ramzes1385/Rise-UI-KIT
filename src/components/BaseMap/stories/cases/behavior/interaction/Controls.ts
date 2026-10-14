@@ -35,7 +35,7 @@ export const Controls: StoryObj<typeof meta> = {
 			description: {
 				story: [
 					'`hasControls` добавляет поверх карты кнопки «Приблизить», «Отдалить» и «Моё местоположение» — группа с именем «Управление картой».',
-					'Крайние масштабы не отключают кнопку нативно, а ставят `aria-disabled`: фокус остаётся на ней. «Моё местоположение» спрашивает `navigator.geolocation`:',
+					'Крайние масштабы не отключают кнопку нативно, а ставят `aria-disabled`: фокус остаётся на ней. «Моё местоположение» (значок-прицел) спрашивает `navigator.geolocation`:',
 					'успех перемещает карту (масштаб не меньше 14) и вызывает `locate` с координатами, отказ вызывает `locate-error` (`denied`, `unavailable`, `timeout`, `unsupported`)',
 					'и пишет причину в область `role="status"` под кнопками. В примере геолокация подменена шпионом, ответ браузера не требуется.',
 					'С ключом из `.env.local` — Яндекс Карты, без него — демо-поставщик без сети.',
@@ -59,6 +59,7 @@ export const Controls: StoryObj<typeof meta> = {
 		const zoomIn = within(group).getByRole('button', { name: 'Приблизить' })
 		const locate = within(group).getByRole('button', { name: 'Моё местоположение' })
 		await expect(within(group).getByRole('button', { name: 'Отдалить' })).toBeInTheDocument()
+		await expect(locate.querySelector('use')?.getAttribute('href')).toMatch(/#crosshair$/)
 
 		await tabTo(zoomIn, userEvent)
 		await userEvent.keyboard('{Enter}')

@@ -10,6 +10,7 @@ import { useEditorKeyboard } from './canvas/useEditorKeyboard'
 import { useEditorDocument } from './document/useEditorDocument'
 import { useEditorSelection } from './document/useEditorSelection'
 import type { EditorContext } from '../types/imageMapEditorInternal.types'
+import { useEditorDeleteConfirm } from './document/useEditorDeleteConfirm'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { canvasHelp, toolOptions, useEditorAnnouncer, useEditorZoom } from './useEditorView'
 import type { BaseImageMapEditorEmits, BaseImageMapEditorExpose, ImageMapEditorProps } from '../types/BaseImageMapEditor.types'
@@ -61,7 +62,16 @@ function useParts(props: ImageMapEditorProps, core: ReturnType<typeof useCore>) 
 		svgContainerRef,
 		svgPrefix: canvas.svgPrefix,
 	})
-	return { pointer, panel, commands, keyboard, canvas, files }
+	const deletion = useEditorDeleteConfirm(ctx, panel)
+	return {
+		pointer,
+		panel: { ...panel, removeLayer: deletion.removeLayer, removeGroup: deletion.removeGroup },
+		commands,
+		keyboard,
+		canvas,
+		files,
+		deletion,
+	}
 }
 
 export function useBaseImageMapEditor(props: ImageMapEditorProps, emit: BaseImageMapEditorEmits) {

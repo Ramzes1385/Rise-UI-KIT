@@ -1,5 +1,6 @@
 import { nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
+import { confirmDelete } from '../utils/editorTestUtils'
 import BaseImageMapEditor from '../../ui/BaseImageMapEditor.vue'
 import type { ImageMapData } from '@components/BaseImageMap/types/imageMapData.types'
 
@@ -58,6 +59,7 @@ describe('BaseImageMapEditor: исправление по отчёту 1157 — 
 	it('удаление текущего этажа: показанный «по умолчанию» этаж приходит в update:layer', async () => {
 		const wrapper = mount(BaseImageMapEditor, { props: { modelValue: makeMap(), layer: 'l1' } })
 		await buttonByText(wrapper, 'Удалить этаж «Первый»').trigger('click')
+		await confirmDelete()
 		await nextTick()
 		expect(currentItems(wrapper)).toEqual(['Второй'])
 		expect(wrapper.emitted('update:layer')).toEqual([['l2']])

@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
 import userEvent from '@testing-library/user-event'
-import { fireEvent, screen, within } from '@testing-library/vue'
-import { lastModel, makeMap, renderEditor } from '../utils/editorTestUtils'
+import { fireEvent, screen, waitFor, within } from '@testing-library/vue'
+import { confirmDelete, lastModel, makeMap, renderEditor } from '../utils/editorTestUtils'
 
 function button(name: string): HTMLElement {
 	return screen.getByRole('button', { name })
@@ -24,6 +24,7 @@ describe('BaseImageMapEditor — кнопки-шаги на пределе ос�
 		const user = userEvent.setup()
 		const { emitted } = renderEditor({ selected: 'r1' })
 		await fireEvent.click(button('Удалить (Delete)'))
+		await confirmDelete()
 		const undo = button('Отменить (Ctrl+Z)')
 		undo.focus()
 		await user.keyboard('{Enter}')
@@ -44,7 +45,8 @@ describe('BaseImageMapEditor — кнопки-шаги на пределе ос�
 		const remove = button('Удалить (Delete)')
 		remove.focus()
 		await user.keyboard('{Enter}')
-		expectFocusedAtLimit(remove)
+		await confirmDelete()
+		await waitFor(() => expectFocusedAtLimit(remove))
 		expect(button('Дублировать (Ctrl+D)')).toHaveAttribute('aria-disabled', 'true')
 	})
 

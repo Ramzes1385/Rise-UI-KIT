@@ -1,5 +1,6 @@
-import { fireEvent, render } from '@testing-library/vue'
+import { expect } from 'vitest'
 import BaseImageMapEditor from '../../ui/BaseImageMapEditor.vue'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
 import type { BaseImageMapEditorProps } from '../../types/BaseImageMapEditor.types'
 import type { ImageMapData } from '@components/BaseImageMap/types/imageMapData.types'
 
@@ -83,4 +84,10 @@ export function statusOf(container: Element): HTMLElement {
 
 export function pressKey(target: Element, init: ConstructorParameters<typeof KeyboardEvent>[1]): boolean {
 	return target.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, cancelable: true, ...init }))
+}
+
+export async function confirmDelete(): Promise<void> {
+	const dialog = await screen.findByRole('alertdialog')
+	await fireEvent.click(within(dialog).getByRole('button', { name: 'Удалить' }))
+	await waitFor(() => expect(screen.queryByRole('alertdialog')).toBeNull())
 }

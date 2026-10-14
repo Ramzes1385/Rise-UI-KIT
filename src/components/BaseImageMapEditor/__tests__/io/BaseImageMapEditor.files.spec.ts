@@ -4,7 +4,7 @@ import { mount } from '@vue/test-utils'
 import BaseImageMapEditor from '../../ui/BaseImageMapEditor.vue'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import type { BaseImageMapEditorExpose } from '../../types/BaseImageMapEditor.types'
-import { lastModel, makeMap, makeSvgMap, renderEditor, statusOf, SVG_MARKUP } from '../utils/editorTestUtils'
+import { confirmDelete, lastModel, makeMap, makeSvgMap, renderEditor, statusOf, SVG_MARKUP } from '../utils/editorTestUtils'
 
 class LoadedImage {
 	naturalWidth = 640
@@ -151,6 +151,7 @@ describe('BaseImageMapEditor файлы: JSON', () => {
 		expect(emitted()['import-error']).toHaveLength(1)
 		expect(emitted()['update:modelValue']).toBeUndefined()
 		await fireEvent.click(screen.getByRole('button', { name: 'Удалить (Delete)' }))
+		await confirmDelete()
 		expect(screen.queryByRole('alert')).toBeNull()
 	})
 

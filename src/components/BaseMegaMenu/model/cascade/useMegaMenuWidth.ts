@@ -1,4 +1,4 @@
-import type { MegaMenuProps } from '../types/BaseMegaMenu.types'
+import type { MegaMenuProps } from '../../types/BaseMegaMenu.types'
 import { computed, onBeforeUnmount, onMounted, ref, type Ref } from 'vue'
 
 const MIN_DRILL_DEPTH = 2

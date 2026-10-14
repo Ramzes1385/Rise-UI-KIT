@@ -102,6 +102,14 @@ import { isValidHex } from '@ramzes1385/rise-ui-kit/utils'
 const valid = isValidHex('#42b883') // true; допускаются 3 и 6 знаков, с # и без
 ```
 
+`cssColor` (задача layout-maps) — цвета для сторонних библиотек, которые не понимают `var()` и современные записи: `resolveCssColor(value, scope)` вычисляет `var(--…)` в `scope` (учитывает тему области) и приводит `oklch()`, `color()`, `color-mix()` к `#rrggbb` или `rgba()` через canvas; `normalizeCssColor(color)` — только приведение (`null` без canvas); `isCssVarColor(color)` — это `var(--имя)`; `isModernCssColor(color)` — запись, которую надо приводить.
+
+```ts
+import { resolveCssColor } from '@ramzes1385/rise-ui-kit/utils'
+
+resolveCssColor('var(--rise-primary)', document.querySelector('.map')) // '#3b82f6' в теме области
+```
+
 ---
 
 ## urlUtils

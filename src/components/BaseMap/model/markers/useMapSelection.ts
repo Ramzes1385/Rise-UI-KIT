@@ -36,9 +36,9 @@ export function useMapSelection(props: BaseMapProps, emit: BaseMapEmits, slots: 
 			current.value = value ?? null
 		},
 	)
-	watch(hosts, list => {
+	watch(hosts, (list, previous) => {
 		const isMissing = current.value !== null && !list.some(host => host.marker.id === current.value)
-		if (list.length && isMissing) select(null)
+		if (isMissing && (list.length || previous.length)) select(null)
 	})
 	watch([hosts, current], decorate, { flush: 'post' })
 

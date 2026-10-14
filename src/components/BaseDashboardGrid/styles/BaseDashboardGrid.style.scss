@@ -63,6 +63,10 @@
 		cursor: grab;
 	}
 
+	&__item--editable &__body {
+		padding-top: 0;
+	}
+
 	&__item--static {
 		border-style: dashed;
 	}
@@ -74,8 +78,8 @@
 		align-items: center;
 		justify-content: flex-end;
 		box-sizing: border-box;
-		height: sz(28px);
-		padding-inline: sz(8px);
+		height: sz(24px);
+		padding-inline: sz(6px);
 		color: var(--rise-text-muted);
 		border-radius: sz(var(--rise-radius-sm));
 		cursor: grab;

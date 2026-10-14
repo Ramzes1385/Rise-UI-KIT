@@ -8,7 +8,7 @@ export const Groups: StoryObj<typeof meta> = {
 			description: {
 				story: [
 					'Панель «Группы»: у каждой группы — своя рамка с полями (название, цвет, значок) и кнопкой удаления.',
-					'«Добавить группу» создаёт «Группа N»; объекту группа назначается полем «Группа» в его свойствах.',
+					'«Добавить группу» создаёт «Группа N»; объекту группа назначается полем «Группа» в его свойствах. Удаление группы просит подтверждения.',
 				].join('\n'),
 			},
 		},
@@ -25,6 +25,8 @@ export const Groups: StoryObj<typeof meta> = {
 		await expect(canvas.getByRole('group', { name: 'Парковки' })).toBeVisible()
 
 		await userEvent.click(canvas.getByRole('button', { name: 'Удалить группу «Парковки»' }))
+		const dialog = await within(document.body).findByRole('alertdialog', { name: 'Удалить группу «Парковки»?' })
+		await userEvent.click(within(dialog).getByRole('button', { name: 'Удалить' }))
 		await expect(canvas.queryByRole('group', { name: 'Парковки' })).not.toBeInTheDocument()
 		await expect(canvas.getByRole('group', { name: 'Сервис' })).toBeVisible()
 	},

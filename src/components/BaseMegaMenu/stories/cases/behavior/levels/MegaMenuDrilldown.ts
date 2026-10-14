@@ -1,7 +1,7 @@
-import { CASCADE_ITEMS } from '../../shared'
+import { CASCADE_ITEMS } from '../../../shared'
 import { expect, waitFor } from 'storybook/test'
-import type meta from '../../BaseMegaMenu.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
+import type meta from '../../../BaseMegaMenu.stories'
 
 export const MegaMenuDrilldown: StoryObj<typeof meta> = {
 	parameters: {

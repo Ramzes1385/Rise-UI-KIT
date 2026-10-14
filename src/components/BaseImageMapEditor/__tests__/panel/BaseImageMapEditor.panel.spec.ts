@@ -7,7 +7,7 @@ import BaseImageMapEditor from '../../ui/BaseImageMapEditor.vue'
 import ImageMapEditorField from '../../ui/ImageMapEditorField.vue'
 import type { ImageMapData } from '@components/BaseImageMap/types/imageMapData.types'
 import type { EditorField, EditorFieldValue } from '../../types/imageMapEditorInternal.types'
-import { lastModel, makeMap, makeSvgMap, renderEditor, statusOf } from '../utils/editorTestUtils'
+import { confirmDelete, lastModel, makeMap, makeSvgMap, renderEditor, statusOf } from '../utils/editorTestUtils'
 
 function modelObject(emitted: () => Record<string, unknown[][]>, id: string) {
 	return lastModel(emitted)?.objects.find(object => object.id === id)
@@ -278,6 +278,7 @@ describe('BaseImageMapEditor панель: этажи', () => {
 	it('удаление этажа удаляет его объекты и показывает следующий', async () => {
 		const { container, emitted } = renderEditor()
 		await fireEvent.click(screen.getByRole('button', { name: 'Удалить этаж «Первый»' }))
+		await confirmDelete()
 		await nextTick()
 		const model = lastModel(emitted)
 		expect(model.layers.map(layer => layer.id)).toEqual(['l2'])
@@ -286,6 +287,7 @@ describe('BaseImageMapEditor панель: этажи', () => {
 		expect(screen.getByRole('button', { name: /^Фонтан\s*Эллипс$/ })).toBeInTheDocument()
 		expect(statusOf(container).textContent).not.toBe('')
 		await fireEvent.click(screen.getByRole('button', { name: 'Удалить этаж «Второй»' }))
+		await confirmDelete()
 		expect(screen.getByText('Откройте картинку или SVG — это будет первый этаж карты')).toBeInTheDocument()
 	})
 
@@ -338,6 +340,7 @@ describe('BaseImageMapEditor панель: группы', () => {
 		await fireEvent.update(screen.getAllByLabelText('Цвет')[1] as HTMLElement, 'red')
 		expect(lastModel(emitted).groups?.[1]).toMatchObject({ color: 'red' })
 		await fireEvent.click(screen.getByRole('button', { name: 'Удалить группу «Магазины»' }))
+		await confirmDelete()
 		const model = lastModel(emitted)
 		expect(model.groups?.map(group => group.id)).toEqual(['group-1'])
 		expect(model.objects.find(object => object.id === 'p1')).not.toHaveProperty('group')
@@ -374,6 +377,7 @@ describe('BaseImageMapEditor панель: удаление этажа и гру
 	it('удаление не текущего этажа текущий не меняет; фокус — на соседнюю строку', async () => {
 		const { emitted } = renderEditor({ modelValue: threeFloors(), layer: 'l3', selected: 'e1' })
 		await fireEvent.click(screen.getByRole('button', { name: 'Удалить этаж «Второй»' }))
+		await confirmDelete()
 		expect(emitted()['update:layer']).toBeUndefined()
 		await nextTick()
 		expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Третий' }))
@@ -382,8 +386,10 @@ describe('BaseImageMapEditor панель: удаление этажа и гру
 	it('удаление текущего этажа показывает следующий, у последнего — предыдущий', async () => {
 		const { emitted } = renderEditor({ modelValue: threeFloors(), layer: 'l2' })
 		await fireEvent.click(screen.getByRole('button', { name: 'Удалить этаж «Второй»' }))
+		await confirmDelete()
 		expect(emitted()['update:layer']).toEqual([['l3']])
 		await fireEvent.click(screen.getByRole('button', { name: 'Удалить этаж «Третий»' }))
+		await confirmDelete()
 		expect(emitted()['update:layer']).toEqual([['l3'], ['l1']])
 		await nextTick()
 		expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Первый' }))
@@ -394,6 +400,7 @@ describe('BaseImageMapEditor панель: удаление этажа и гру
 		map.layers = map.layers.slice(0, 1)
 		renderEditor({ modelValue: map })
 		await fireEvent.click(screen.getByRole('button', { name: 'Удалить этаж «Первый»' }))
+		await confirmDelete()
 		await nextTick()
 		expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Добавить этаж' }))
 	})
@@ -401,9 +408,11 @@ describe('BaseImageMapEditor панель: удаление этажа и гру
 	it('удаление группы — фокус на соседнюю группу, после последней — на «Добавить группу»', async () => {
 		renderEditor({ modelValue: threeFloors() })
 		await fireEvent.click(screen.getByRole('button', { name: 'Удалить группу «Магазины»' }))
+		await confirmDelete()
 		await nextTick()
 		expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Удалить группу «Кафе»' }))
 		await fireEvent.click(screen.getByRole('button', { name: 'Удалить группу «Кафе»' }))
+		await confirmDelete()
 		await nextTick()
 		expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Добавить группу' }))
 	})

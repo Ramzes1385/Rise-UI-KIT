@@ -2,7 +2,7 @@ import { computed, watch } from 'vue'
 import { useFieldErrors } from './field/useFieldErrors'
 import type { ImageMap3DData } from '@components/BaseImageMap3D/types/imageMap3dData.types'
 import type { EditorContext, EditorFieldValue as FieldValue } from '../../types/imageMapEditorInternal.types'
-import { applyLayer3d, applyScene3d, layer3dFields, layer3dIssue, scene3dFields, scene3dIssue } from './fields3d'
+import { applyLayer3d, applyScene3d, isModelOnly, layer3dFields, layer3dIssue, scene3dFields, scene3dIssue } from './fields3d'
 
 export function useEditor3dFields(ctx: EditorContext, isEnabled: () => boolean) {
 	const layerErrors = useFieldErrors()
@@ -23,9 +23,10 @@ export function useEditor3dFields(ctx: EditorContext, isEnabled: () => boolean) 
 			const layer = ctx.selection.getLayer()
 			return isEnabled() && layer ? layer3dFields(layer, layerErrors.errors.value) : []
 		}),
-		scene3dFields: computed(() =>
-			isEnabled() ? scene3dFields((ctx.doc.getData() as ImageMap3DData).scene3d, sceneErrors.errors.value) : [],
-		),
+		scene3dFields: computed(() => {
+			const data = ctx.doc.getData() as ImageMap3DData
+			return isEnabled() ? scene3dFields(data.scene3d, sceneErrors.errors.value, isModelOnly(data)) : []
+		}),
 		setLayer3dField(key: string, value: FieldValue): void {
 			const layer = ctx.selection.getLayer()
 			if (!layer || ctx.isDisabled() || !layerErrors.check(key, layer3dIssue(layer, key, value))) return

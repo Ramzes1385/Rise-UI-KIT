@@ -52,12 +52,12 @@ export type BaseColorPickerPart = (typeof COLOR_PICKER_PARTS)[number]
 export interface ColorPalette {
 	/** Подпись группы, она же доступное имя группы образцов */
 	label: string
-	/** Цвета палитры в любом поддерживаемом формате (HEX, `rgb()`, `hsl()`) */
+	/** Цвета палитры в любом поддерживаемом формате (HEX, `rgb()`, `hsl()`) или токен `var(--rise-primary)`: выбор токена отдаёт в v-model саму строку */
 	colors: readonly string[]
 }
 
 export interface BaseColorPickerProps extends BaseComponentProps<string, 'root' | 'swatch' | 'panel' | 'fields' | 'preset' | 'reset'> {
-	/** Цвет (v-model): HEX (`#rgb`, `#rrggbb`, с прозрачностью `#rrggbbaa`), `rgb()` / `rgba()` или `hsl()` / `hsla()`. Наружу уходит в формате `format`; выбранный пресет и введённый HEX — без искажений */
+	/** Цвет (v-model): токен `var(--rise-primary)` (панель показывает его цвет в текущей теме, правка в панели заменяет токен обычным цветом) или HEX (`#rgb`, `#rrggbb`, с прозрачностью `#rrggbbaa`), `rgb()` / `rgba()` или `hsl()` / `hsla()`. Наружу уходит в формате `format`; выбранный пресет и введённый HEX — без искажений */
 	modelValue: string
 	/** Формат значения v-model: `hex` (по умолчанию), `rgb` или `hsl`. С прозрачностью — `#rrggbbaa`, `rgba()`, `hsla()` */
 	format?: ColorFormat

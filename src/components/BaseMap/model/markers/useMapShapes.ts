@@ -28,9 +28,9 @@ export function shapeLabels(props: BaseMapProps): string[] {
 export function useMapShapes(
 	props: BaseMapProps,
 	adapter: { value: MapAdapter | null },
-	deps: { area: { value: HTMLElement | null }; scheme: { value: MapResolvedScheme } },
+	deps: { area: { value: HTMLElement | null }; scheme: { value: MapResolvedScheme }; theme: { value: number } },
 ): void {
 	const apply = (): void => adapter.value?.setShapes(buildShapes(deps.area.value, props))
 	watch(() => adapter.value, apply, { flush: 'sync' })
-	watch(() => [props.polylines, props.polygons, deps.scheme.value], apply, { deep: true })
+	watch(() => [props.polylines, props.polygons, deps.scheme.value, deps.theme.value], apply, { deep: true })
 }

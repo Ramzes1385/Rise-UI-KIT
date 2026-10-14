@@ -195,6 +195,34 @@ describe('BaseMap: метки и балун', () => {
 		expect(warehouse).toHaveFocus()
 	})
 
+	it('выбор сбрасывается, когда список меток стал пустым или метки выбранной больше нет', async () => {
+		fakeYandex()
+		const { emitted, rerender } = render(BaseMap, {
+			props: { apiKey: 'KEY', markers: MARKERS, selected: 2 },
+			slots: { balloon: () => h('p', 'Описание') },
+		})
+		await ready(emitted)
+		await screen.findByRole('dialog', { name: 'Склад' })
+
+		await rerender({ markers: [] })
+		await waitFor(() => expect(emitted('update:selected')).toEqual([[null]]))
+		expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+
+		await rerender({ markers: MARKERS, selected: 1 })
+		await rerender({ markers: [MARKERS[1]] })
+		await waitFor(() => expect(emitted('update:selected')).toEqual([[null], [null]]))
+	})
+
+	it('кнопка «моё местоположение» с иконкой-прицелом', async () => {
+		fakeYandex()
+		const { emitted, container } = render(BaseMap, { props: { apiKey: 'KEY', hasControls: true } })
+		await ready(emitted)
+
+		const button = screen.getByRole('button', { name: 'Моё местоположение' })
+		expect(button.querySelector('use')?.getAttribute('href')).toMatch(/#crosshair$/)
+		expect(container.querySelector('use[href$="#map-pin"]')).toBeNull()
+	})
+
 	it('без слота balloon выбор лишь отмечает метку (Google)', async () => {
 		const google = fakeGoogle()
 		google.install()

@@ -148,7 +148,11 @@ export function layer3dIssue(layer: ImageMapLayer, key: string, value: FieldValu
 	return issueText({ layers: [candidate], objects: [] }, `layers["${layer.id}"].${LAYER_PATHS[key]}`)
 }
 
-export function scene3dFields(scene: ImageMapScene3D | undefined, errors: Record<string, string>): EditorField[] {
+export function isModelOnly(data: ImageMap3DData): boolean {
+	return data.layers.length > 0 && data.layers.every(layer => Boolean((layer as ImageMap3DLayer).model))
+}
+
+export function scene3dFields(scene: ImageMapScene3D | undefined, errors: Record<string, string>, hasModelsOnly = false): EditorField[] {
 	const t = UI_IMAGE_MAP_EDITOR
 	const labels = [t.FIELD_FLOOR_GAP, t.FIELD_FLOOR_THICKNESS, t.FIELD_OBJECT_HEIGHT, t.FIELD_BEVEL]
 	const numbers = SCENE_KEYS.map((key, index) => ({
@@ -160,20 +164,20 @@ export function scene3dFields(scene: ImageMapScene3D | undefined, errors: Record
 		key: 'outline',
 		kind: 'switch',
 		label: t.FIELD_OUTLINE,
-		value: scene?.outline ?? true,
+		value: scene?.outline ?? !hasModelsOnly,
 		error: errors.outline,
 	}
 	return [...numbers, outline]
 }
 
-function sceneValue(key: string, value: FieldValue): number | boolean | undefined {
+function sceneValue(key: string, value: FieldValue, outlineDefault: boolean): number | boolean | undefined {
 	if (key !== 'outline') return toNumber(value)
-	return value === false ? false : undefined
+	return Boolean(value) === outlineDefault ? undefined : Boolean(value)
 }
 
 export function applyScene3d(data: ImageMap3DData, key: string, value: FieldValue): void {
 	const scene: Record<string, unknown> = { ...data.scene3d }
-	assign(scene, key, sceneValue(key, value))
+	assign(scene, key, sceneValue(key, value, !isModelOnly(data)))
 	if (Object.keys(scene).length) data.scene3d = scene as ImageMapScene3D
 	else delete data.scene3d
 }

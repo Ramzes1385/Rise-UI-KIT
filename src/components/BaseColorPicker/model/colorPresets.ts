@@ -1,3 +1,6 @@
+import { UI_COLOR_PICKER } from '@/locales/messages'
+import type { ColorPalette } from '../types/BaseColorPicker.types'
+
 export const DEFAULT_COLOR_PRESETS = [
 	'#f97316',
 	'#ef4444',
@@ -12,3 +15,18 @@ export const DEFAULT_COLOR_PRESETS = [
 	'#4b5563',
 	'#000000',
 ] as const
+
+const KIT_COLOR_TOKENS = [
+	'var(--rise-primary)',
+	'var(--rise-success)',
+	'var(--rise-info)',
+	'var(--rise-warning)',
+	'var(--rise-error)',
+	'var(--rise-text)',
+	'var(--rise-border-accented)',
+	'var(--rise-bg-accented)',
+] as const
+
+export function getKitTokenPalette(): ColorPalette {
+	return { label: UI_COLOR_PICKER.TOKENS, colors: KIT_COLOR_TOKENS }
+}

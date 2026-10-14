@@ -40,17 +40,19 @@ export function useRouteTube(options: RouteTubeOptions) {
 		growRoute(next, progress.value.value)
 	}
 
+	const routeLayerId = (): string | undefined => (options.getLayerMode() === 'single' ? options.getLayerId() : undefined)
+
 	function build(): void {
 		clear()
 		const route = options.getRoute()
 		const data = options.getData()
-		const layerId = options.getLayerMode() === 'single' ? options.getLayerId() : undefined
+		const layerId = routeLayerId()
 		tube = options.renderer.value && route ? createRouteTube(routeSegments(route, data, layerId), data) : null
 		if (tube) show(tube)
 		options.invalidate()
 	}
 
-	watch([options.renderer, options.getRoute, options.getData, options.getLayerId, options.getLayerMode], build, { flush: 'post' })
+	watch([options.renderer, options.getRoute, options.getData, routeLayerId], build, { flush: 'post' })
 
 	watch(progress.value, value => {
 		if (tube) growRoute(tube, value)

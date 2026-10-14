@@ -167,6 +167,26 @@ describe('BaseImageMap3D: маршруты', () => {
 		wrapper.remove()
 	})
 
+	it('смена этажа пересоздаёт маршрут в single и не трогает его в stack', async () => {
+		document.documentElement.setAttribute('data-rise-motion', 'none')
+		const single = await renderRoutes({ route: { from: 'start', to: 'goal' }, layerMode: 'single' })
+		const firstSingle = single.tube()
+		single.exposed.value?.setLayer('f2')
+		await nextTick()
+		await nextTick()
+		flushFrames()
+		expect(single.tube()).not.toBe(firstSingle)
+		single.unmount()
+
+		const stack = await renderRoutes({ route: { from: 'start', to: 'goal' }, layerMode: 'stack' })
+		const firstStack = stack.tube()
+		stack.exposed.value?.setLayer('f2')
+		await nextTick()
+		await nextTick()
+		flushFrames()
+		expect(stack.tube()).toBe(firstStack)
+	})
+
 	it('уход в 2D освобождает трубку; панель маршрута — и в 2D', async () => {
 		document.documentElement.setAttribute('data-rise-motion', 'none')
 		const { tube, exposed, container } = await renderRoutes({ route: { from: 'start', to: 'goal' } })

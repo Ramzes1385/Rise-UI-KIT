@@ -25,6 +25,7 @@ export const WithError = cases.WithError
 export const Empty = cases.Empty
 export const Floors = cases.Floors
 export const Groups = cases.Groups
+export const DeleteConfirm = cases.DeleteConfirm
 export const Zoom = cases.Zoom
 export const LongContent = cases.LongContent
 export const Preview = cases.Preview

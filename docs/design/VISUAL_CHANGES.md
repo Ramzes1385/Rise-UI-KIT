@@ -1956,6 +1956,9 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 
 Эталонов снимков не создавал и не обновлял; ожидаемые изменения:
 
-- **BaseDashboardGrid** (истории `layout-basedashboardgrid--editable`, `--keyboard`, `--static-items`, `--animations`, `--sizes`, `--variants`, `--theming`, `--custom-color`, `--long-content`, где `isEditable`): ручка перетаскивания — не квадрат 24px поверх правого верхнего угла, а полоса высотой 28px над содержимым с значком справа; тело карточки начинается под ней, карточка с тем же размером показывает на 28px меньше места под содержимое. Виджеты `isStatic` и режим без редактирования не меняются.
+- **BaseDashboardGrid** (истории `layout-basedashboardgrid--editable`, `--keyboard`, `--static-items`, `--responsive`, `--long-content`, `--animations`, где `isEditable`; новая история `--auto-scroll`): ручка перетаскивания — не квадрат 24px поверх правого верхнего угла, а полоса высотой 24px над содержимым со значком справа; тело карточки начинается под ней без верхнего отступа, содержимое сдвигается вниз на 8px и в карточке той же высоты остаётся на 8px меньше места. Виджеты `isStatic` и режим без редактирования не меняются.
 
 - **BaseMegaMenu** (новая история `navigation-basemegamenu--drilldown-by-width`): два меню — шириной 360px (drill-down: заголовок уровня, «Назад к …») и 720px (каскад). Существующие истории не меняются (`drilldown` по умолчанию `never`; у `MegaMenuDrilldown` `always`).
+- **BaseMap** (история `media-basemap--controls` и все, где `hasControls`): кнопка «Моё местоположение» — прицел (круг с четырьмя штрихами) вместо капли `map-pin`.
+- **BaseImageMapEditor** (новая история `media-baseimagemapeditor--delete-confirm`; `--groups` и `--mouse-editing`): окно подтверждения удаления по центру; поле цвета в панели свойств (заливка, обводка, цвет группы) — рядом с полем ввода образец цвета (кнопка `BaseColorPicker`), существующие истории с панелью цвета получают этот образец.
+- **BaseColorPicker** (новая история `form-basecolorpicker--tokens`): образец-токен, строка «Токен var(--rise-primary): #…» над полями и группа «Токены кита» среди палитр. Остальные истории не меняются.

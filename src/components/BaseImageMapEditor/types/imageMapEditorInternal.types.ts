@@ -257,3 +257,11 @@ export interface EditorSelectionSync {
 	/** Выделить объект (эмитит update:selected) */
 	select: (id: string | null) => void
 }
+
+/** Что спрашивает окно подтверждения удаления: вопрос и пояснение последствий */
+export interface EditorDeleteRequest {
+	/** Вопрос — доступное имя окна */
+	title: string
+	/** Пояснение последствий и способ вернуть */
+	description: string
+}

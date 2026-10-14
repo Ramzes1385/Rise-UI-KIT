@@ -16,7 +16,7 @@
 					{ 'base-color-picker__swatch--translucent': !hasTransparentSwatch && alphaPercent < 100 },
 					classes.swatch,
 				]"
-				:style="hasTransparentSwatch ? undefined : { backgroundColor: swatchColor, '--picker-swatch-color': swatchColor }"
+				:style="hasTransparentSwatch ? undefined : { backgroundColor: triggerColor, '--picker-swatch-color': triggerColor }"
 				:disabled="isDisabled"
 				:aria-expanded="isOpen ? 'true' : 'false'">
 				<slot name="trigger" />
@@ -56,7 +56,7 @@
 						<BaseIcon name="eyedropper" :size-scale="sizeScale" aria-label="" />
 					</BaseButton>
 				</BaseTooltip>
-				<span :class="ui('preview')" :style="{ '--picker-swatch-color': swatchColor }" aria-hidden="true" />
+				<span :class="ui('preview')" :style="{ '--picker-swatch-color': triggerColor }" aria-hidden="true" />
 				<div :class="ui('sliders')">
 					<div :class="ui('track')" :style="hueThumbStyle">
 						<input
@@ -86,6 +86,8 @@
 					</div>
 				</div>
 			</div>
+
+			<p v-if="tokenText" class="base-color-picker__token">{{ tokenText }}</p>
 
 			<div v-if="!isHexHidden" :class="[ui('fields'), classes.fields]">
 				<div v-if="formats.length > 1" :class="ui('formats')" role="group" :aria-label="UI_COLOR_PICKER.FORMAT">
@@ -226,7 +228,8 @@ const {
 	hexInputValue,
 	handleHexInput,
 	alphaPercent,
-	swatchColor,
+	triggerColor,
+	tokenText,
 	formatLabel,
 	setInputFormat,
 	handleChannelChange,

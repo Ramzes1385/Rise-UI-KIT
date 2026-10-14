@@ -290,6 +290,17 @@
 		gap: space(8px);
 	}
 
+	&__color-row {
+		display: flex;
+		align-items: flex-end;
+		gap: space(8px);
+
+		> :first-child {
+			flex: 1;
+			min-width: 0;
+		}
+	}
+
 	&__heading {
 		margin: 0;
 		color: ct(image-map-editor, heading-text, var(--rise-text-highlighted));

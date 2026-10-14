@@ -3,6 +3,7 @@ import { useMapScheme } from './useMapScheme'
 import { watchAdapter } from './watchAdapter'
 import { useMapAdapter } from './useMapAdapter'
 import { useUi } from '@composables/base/useUi'
+import { useMapThemeStamp } from './useMapThemeStamp'
 import { useMapGestures } from './view/useMapGestures'
 import { useMapPlaceholder } from './useMapPlaceholder'
 import { useMapClusters } from './markers/useMapClusters'
@@ -84,7 +85,7 @@ export function useBaseMap(props: BaseMapProps, emit: BaseMapEmits, slots: MapSl
 	})
 	const items = useMapClusters(props, map.lastView)
 	useMapSync(props, map, { scheme, items })
-	useMapShapes(props, map.adapter, { area: canvasRef, scheme })
+	useMapShapes(props, map.adapter, { area: canvasRef, scheme, theme: useMapThemeStamp() })
 	const navigation = useMapNavigation(props, emit, map)
 	cluster.open = navigation.openCluster
 	const gestures = useMapGestures(props, { zoomBy: navigation.zoomBy, notify: navigation.showNotice })

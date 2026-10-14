@@ -1,6 +1,7 @@
 import { computed, ref, watch } from 'vue'
 import { formatMessage } from '@/locales/state'
 import { UI_IMAGE_MAP_EDITOR } from '@/locales/messages'
+import { getKitTokenPalette } from '@components/BaseColorPicker'
 import type { ImageMapEditorFieldEmits, ImageMapEditorFieldProps } from '../../../types/ImageMapEditorField.types'
 
 export function useImageMapEditorField(props: ImageMapEditorFieldProps, emit: ImageMapEditorFieldEmits) {
@@ -15,6 +16,7 @@ export function useImageMapEditorField(props: ImageMapEditorFieldProps, emit: Im
 
 	return {
 		shown,
+		palettes: [getKitTokenPalette()],
 		tokenValue,
 		tokenLabel,
 		input(value: string | null | undefined): void {

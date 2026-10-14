@@ -1,8 +1,8 @@
-import { WIDTH_ITEMS } from '../../shared'
+import { WIDTH_ITEMS } from '../../../shared'
 import { expect, waitFor } from 'storybook/test'
-import type meta from '../../BaseMegaMenu.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import BaseMegaMenu from '../../../ui/BaseMegaMenu.vue'
+import type meta from '../../../BaseMegaMenu.stories'
+import BaseMegaMenu from '../../../../ui/BaseMegaMenu.vue'
 import { literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const items = WIDTH_ITEMS

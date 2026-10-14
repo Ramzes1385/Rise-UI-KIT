@@ -115,6 +115,24 @@ describe('ImageMapEditorField', () => {
 		expect(select.props('options')).toEqual([])
 	})
 
+	it('color: выбор цвета — BaseColorPicker с палитрой токенов кита, показывает значение поля или подсказку', async () => {
+		const wrapper = mount(ImageMapEditorField, {
+			props: { field: { ...COLOR, placeholder: 'var(--rise-primary)', value: '' }, isDisabled: true },
+		})
+		const picker = wrapper.findComponent({ name: 'BaseColorPicker' })
+
+		expect(picker.props('modelValue')).toBe('var(--rise-primary)')
+		expect(picker.props('ariaLabel')).toBe('Заливка')
+		expect(picker.props('isDisabled')).toBe(true)
+		expect(picker.props('palettes')).toEqual([expect.objectContaining({ label: 'Токены кита' })])
+		picker.vm.$emit('update:modelValue', 'var(--rise-error)')
+		expect(wrapper.emitted('update')).toEqual([['var(--rise-error)']])
+		await wrapper.setProps({ field: { ...COLOR, value: '#ff0000', placeholder: undefined } })
+		expect(picker.props('modelValue')).toBe('#ff0000')
+		await wrapper.setProps({ field: { ...COLOR, value: '', placeholder: undefined } })
+		expect(picker.props('modelValue')).toBe('')
+	})
+
 	it('trimOnBlur: пробелы по краям убираются, когда поле теряет фокус; без флага и без пробелов — нет', async () => {
 		const field: EditorField = { key: 'name', kind: 'text', label: 'Имя', value: ' a b ', isTrimmedOnBlur: true }
 		const wrapper = mount(ImageMapEditorField, { props: { field, isDisabled: false } })

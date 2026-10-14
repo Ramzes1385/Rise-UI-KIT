@@ -9,22 +9,30 @@ import { useColorPickerArea } from './useColorPickerArea'
 import { useColorPickerFields } from './useColorPickerFields'
 import { useColorPickerMotion } from './useColorPickerMotion'
 import { useFormField } from '@composables/form/useFormField'
-import { formatColor, parseColor } from '@utils/data/colorUtils'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import { useColorPicker } from '@composables/form/useColorPicker'
 import type { UseColorPickerReturn } from '@composables/form/useColorPicker'
 import type { BaseColorPickerEmits, ColorPickerProps } from '../types/BaseColorPicker.types'
+import { formatColor, isCssVarColor, parseColor, resolveCssColor } from '@utils/data/colorUtils'
 
 const CLASS_KEYS = ['root', 'swatch', 'panel', 'fields', 'preset', 'reset']
 
-function useSwatchSelection(picker: UseColorPickerReturn, emit: BaseColorPickerEmits, isOpen: Ref<boolean>) {
+function useSwatchSelection(
+	props: ColorPickerProps,
+	parts: { picker: UseColorPickerReturn; emit: BaseColorPickerEmits; isOpen: Ref<boolean> },
+) {
+	const { picker, emit, isOpen } = parts
 	return {
 		isSwatchSelected(color: string): boolean {
+			if (isCssVarColor(color) || isCssVarColor(props.modelValue)) return color === props.modelValue
 			const parsed = parseColor(color)
 			return parsed !== null && formatColor(parsed, 'hex') === formatColor({ ...picker.rgb.value, a: picker.alpha.value }, 'hex')
 		},
 		handleSwatchSelect(color: string): void {
-			picker.setHex(color)
+			if (isCssVarColor(color)) {
+				emit('update:modelValue', color)
+				emit('change', color)
+			} else picker.setHex(color)
 			isOpen.value = false
 		},
 		handleReset(): void {
@@ -35,17 +43,30 @@ function useSwatchSelection(picker: UseColorPickerReturn, emit: BaseColorPickerE
 }
 
 function useTriggerAttrs(props: ColorPickerProps, picker: UseColorPickerReturn) {
-	return computed(() => ({
-		...props.triggerAttrs,
-		'aria-label': props.ariaLabel
-			? formatMessage(UI_COLOR_PICKER.NAMED_TRIGGER, { label: props.ariaLabel, color: picker.value.value })
-			: `${UI_COLOR_PICKER.SELECTED_COLOR} ${picker.value.value}`,
-	}))
+	return computed(() => {
+		const color = isCssVarColor(props.modelValue) ? props.modelValue : picker.value.value
+		return {
+			...props.triggerAttrs,
+			'aria-label': props.ariaLabel
+				? formatMessage(UI_COLOR_PICKER.NAMED_TRIGGER, { label: props.ariaLabel, color })
+				: `${UI_COLOR_PICKER.SELECTED_COLOR} ${color}`,
+		}
+	})
 }
 
-function usePicker(props: ColorPickerProps, emit: BaseColorPickerEmits): UseColorPickerReturn {
+function useTokenValue(props: ColorPickerProps, picker: UseColorPickerReturn, swatchColor: Ref<string>) {
+	const isToken = computed(() => isCssVarColor(props.modelValue))
+	return {
+		triggerColor: computed((): string => (isToken.value ? props.modelValue : swatchColor.value)),
+		tokenText: computed((): string =>
+			isToken.value ? formatMessage(UI_COLOR_PICKER.TOKEN_VALUE, { token: props.modelValue.trim(), color: picker.hex.value }) : '',
+		),
+	}
+}
+
+function usePicker(props: ColorPickerProps, emit: BaseColorPickerEmits, scope: Ref<HTMLElement | null>): UseColorPickerReturn {
 	return useColorPicker({
-		getValue: () => props.modelValue,
+		getValue: () => (isCssVarColor(props.modelValue) ? resolveCssColor(props.modelValue, scope.value) : props.modelValue),
 		getFormat: () => props.format,
 		hasAlpha: () => props.hasAlpha,
 		onChange: value => {
@@ -60,9 +81,10 @@ export function useBaseColorPicker(props: ColorPickerProps, emit: BaseColorPicke
 	const swatchRef = ref<HTMLElement | null>(null)
 	const isOpen = ref(false)
 	const formField = useFormField({ value: () => props.modelValue })
-	const picker = usePicker(props, emit)
+	const picker = usePicker(props, emit, swatchRef)
 	const recent = useRecentColors(props, emit, { isOpen, picker })
 	const motion = useColorPickerMotion(picker, swatchRef)
+	const fields = useColorPickerFields(props, picker)
 
 	return {
 		ui: useUi(props, 'base-color-picker'),
@@ -73,13 +95,14 @@ export function useBaseColorPicker(props: ColorPickerProps, emit: BaseColorPicke
 		triggerAttrs: useTriggerAttrs(props, picker),
 		...motion,
 		...useColorPickerArea(picker, motion.isDragging),
-		...useColorPickerFields(props, picker),
+		...fields,
 		...recent,
 		hasSwatches: computed(
 			(): boolean => !props.isPresetsHidden || (props.palettes?.length ?? 0) > 0 || recent.recentColors.value.length > 0,
 		),
 		...useEyeDropper(picker),
-		...useSwatchSelection(picker, emit, isOpen),
+		...useSwatchSelection(props, { picker, emit, isOpen }),
+		...useTokenValue(props, picker, fields.swatchColor),
 		exposed: {
 			rootRef: swatchRef,
 			focus: () => swatchRef.value?.focus(),

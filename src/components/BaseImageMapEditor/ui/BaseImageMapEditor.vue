@@ -48,7 +48,7 @@
 					:aria-label="UI_IMAGE_MAP_EDITOR.DELETE"
 					:is-disabled="isDisabled || !selected"
 					:is-focusable-when-disabled="!isDisabled"
-					@click="commands.deleteSelected">
+					@click="deletion.deleteSelected">
 					<template #left><BaseIcon name="trash" /></template>
 				</BaseButton>
 			</div>
@@ -243,6 +243,14 @@
 			tabindex="-1"
 			aria-hidden="true"
 			@change="files.handleJsonFile" />
+		<BaseConfirm
+			:is-open="deletion.isOpen.value"
+			:title="deletion.request.value?.title ?? ''"
+			:description="deletion.request.value?.description"
+			:confirm-label="UI_IMAGE_MAP_EDITOR.CONFIRM_DELETE"
+			is-danger
+			:size-scale="sizeScale"
+			@close="deletion.close" />
 	</section>
 </template>
 
@@ -251,6 +259,7 @@ import '../styles/BaseImageMapEditor.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { BaseButton } from '@components/BaseButton'
+import { BaseConfirm } from '@components/BaseConfirm'
 import { BaseImageMap } from '@components/BaseImageMap'
 import { BaseSegmented } from '@components/BaseSegmented'
 import ImageMapEditorPanel from './ImageMapEditorPanel.vue'
@@ -318,6 +327,7 @@ const {
 	keyboard,
 	canvas,
 	files,
+	deletion,
 	exposed,
 } = useBaseImageMapEditor(props, emit)
 

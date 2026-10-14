@@ -1,4 +1,4 @@
-import { expect } from 'storybook/test'
+import { expect, within } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../BaseImageMapEditor.stories'
 import { pointAt, stageOf, statusOf } from '../../shared'
@@ -8,7 +8,7 @@ export const MouseEditing: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
 			description: {
-				story: 'Сценарий мышью: протяжка инструментом «Прямоугольник» создаёт фигуру, Ctrl+Z отменяет, Ctrl+Shift+Z повторяет, кнопка «Удалить» убирает выделенное.',
+				story: 'Сценарий мышью: протяжка инструментом «Прямоугольник» создаёт фигуру, Ctrl+Z отменяет, Ctrl+Shift+Z повторяет, кнопка «Удалить» спрашивает подтверждение и убирает выделенное.',
 			},
 		},
 	},
@@ -31,6 +31,8 @@ export const MouseEditing: StoryObj<typeof meta> = {
 		await expect(statusOf(canvasElement)).toHaveTextContent('Правка повторена')
 		await userEvent.click(canvas.getByRole('button', { name: 'Прямоугольник 2 Прямоугольник' }))
 		await userEvent.click(canvas.getByRole('button', { name: 'Удалить (Delete)' }))
+		const dialog = await within(document.body).findByRole('alertdialog', { name: 'Удалить объект «Прямоугольник 2»?' })
+		await userEvent.click(within(dialog).getByRole('button', { name: 'Удалить' }))
 		await expect(statusOf(canvasElement)).toHaveTextContent('Удалён объект «Прямоугольник 2»')
 		await expect(canvas.queryByRole('button', { name: 'Прямоугольник 2 Прямоугольник' })).not.toBeInTheDocument()
 	},

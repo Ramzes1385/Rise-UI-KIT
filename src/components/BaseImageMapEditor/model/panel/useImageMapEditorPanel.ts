@@ -49,15 +49,13 @@ export function useImageMapEditorPanel(props: ImageMapEditorPanelProps) {
 			props.panel.moveLayer(id, delta)
 			focus.keepFocus(delta < 0 ? 'up' : 'down', id)
 		},
-		removeLayer(id: string): void {
+		async removeLayer(id: string): Promise<void> {
 			const index = layerIds().indexOf(id)
-			props.panel.removeLayer(id)
-			focus.focusNear('layer', layerIds, index)
+			if (await props.panel.removeLayer(id)) focus.focusNear('layer', layerIds, index)
 		},
-		removeGroup(id: string): void {
+		async removeGroup(id: string): Promise<void> {
 			const index = groupIds().indexOf(id)
-			props.panel.removeGroup(id)
-			focus.focusNear('group', groupIds, index)
+			if (await props.panel.removeGroup(id)) focus.focusNear('group', groupIds, index)
 		},
 	}
 }

@@ -22,6 +22,7 @@ export const Sizes = cases.Sizes
 export const Disabled = cases.Disabled
 export const Presets = cases.Presets
 export const Palettes = cases.Palettes
+export const Tokens = cases.Tokens
 export const Minimal = cases.Minimal
 export const TriggerSlot = cases.TriggerSlot
 export const HexInput = cases.HexInput

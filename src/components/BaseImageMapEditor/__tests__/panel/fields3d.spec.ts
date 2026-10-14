@@ -10,6 +10,7 @@ import {
 	layer3dIssue,
 	object3dIssue,
 	object3dSection,
+	isModelOnly,
 	scene3dFields,
 	scene3dIssue,
 } from '../../model/panel/fields3d'
@@ -125,6 +126,25 @@ describe('fields3d: сцена', () => {
 			{ value: 3 },
 			{ value: false, error: 'e' },
 		])
+	})
+
+	it('карта только из GLB-этажей: контур по умолчанию выключен, включённым хранится явно', () => {
+		const models: ImageMap3DData = {
+			layers: [
+				{ id: 'a', title: 'А', width: 10, height: 10, model: { url: '/a.glb' } },
+				{ id: 'b', title: 'Б', width: 10, height: 10, model: { url: '/b.glb' } },
+			],
+			objects: [],
+		}
+		expect(isModelOnly(models)).toBe(true)
+		expect(isModelOnly({ ...models, layers: [...models.layers, { id: 'c', title: 'В', width: 10, height: 10 }] })).toBe(false)
+		expect(isModelOnly({ layers: [], objects: [] })).toBe(false)
+		expect(scene3dFields(undefined, {}, true)[4]).toMatchObject({ value: false })
+		expect(scene3dFields({ outline: true }, {}, true)[4]).toMatchObject({ value: true })
+		applyScene3d(models, 'outline', true)
+		expect(models.scene3d).toEqual({ outline: true })
+		applyScene3d(models, 'outline', false)
+		expect(models.scene3d).toBeUndefined()
 	})
 
 	it('applyScene3d: контур хранится только выключенным (умолчание — включён)', () => {

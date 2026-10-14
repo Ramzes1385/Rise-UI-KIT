@@ -5,7 +5,7 @@ import { createUiKitPlugin } from '@/plugin'
 import BaseImageMapEditor from '../ui/BaseImageMapEditor.vue'
 import { fireEvent, render, screen, within } from '@testing-library/vue'
 import type { BaseImageMapEditorExpose } from '../types/BaseImageMapEditor.types'
-import { lastModel, makeMap, makeSvgMap, pressKey, renderEditor } from './utils/editorTestUtils'
+import { confirmDelete, lastModel, makeMap, makeSvgMap, pressKey, renderEditor } from './utils/editorTestUtils'
 
 function zoomButton(name: string): HTMLElement {
 	const toolbar = document.querySelector('.base-image-map-editor__toolbar') as HTMLElement
@@ -141,6 +141,7 @@ describe('BaseImageMapEditor v-model', () => {
 		const value = makeMap()
 		const { emitted } = renderEditor({ modelValue: value, selected: 'r1' })
 		await fireEvent.click(deleteButton())
+		await confirmDelete()
 		const next = lastModel(emitted)
 		expect(next).not.toBe(value)
 		expect(next.objects.map(object => object.id)).toEqual(['p1', 'pg', 'e1'])
@@ -150,6 +151,7 @@ describe('BaseImageMapEditor v-model', () => {
 	it('тот же JSON снаружи (копия эмита) не сбрасывает историю', async () => {
 		const { emitted, rerender } = renderEditor({ selected: 'r1' })
 		await fireEvent.click(deleteButton())
+		await confirmDelete()
 		await rerender({ modelValue: JSON.parse(JSON.stringify(lastModel(emitted))) })
 		expect(screen.getByRole('button', { name: 'Отменить (Ctrl+Z)' })).toBeEnabled()
 	})
@@ -157,6 +159,7 @@ describe('BaseImageMapEditor v-model', () => {
 	it('тот же объект, что эмитнут, не сбрасывает историю', async () => {
 		const { emitted, rerender } = renderEditor({ selected: 'r1' })
 		await fireEvent.click(deleteButton())
+		await confirmDelete()
 		await rerender({ modelValue: lastModel(emitted) })
 		expect(screen.getByRole('button', { name: 'Отменить (Ctrl+Z)' })).toBeEnabled()
 	})
@@ -164,6 +167,7 @@ describe('BaseImageMapEditor v-model', () => {
 	it('другой JSON снаружи заменяет карту и очищает историю', async () => {
 		const { rerender } = renderEditor({ selected: 'r1' })
 		await fireEvent.click(deleteButton())
+		await confirmDelete()
 		await rerender({ modelValue: makeSvgMap() })
 		expect(screen.getByRole('button', { name: 'Отменить (Ctrl+Z)' })).toHaveAttribute('aria-disabled', 'true')
 		expect(screen.getByRole('button', { name: /Склад/ })).toBeInTheDocument()
@@ -189,6 +193,7 @@ describe('BaseImageMapEditor история', () => {
 		expect(undo).toHaveAttribute('aria-disabled', 'true')
 		expect(redo).toHaveAttribute('aria-disabled', 'true')
 		await fireEvent.click(deleteButton())
+		await confirmDelete()
 		expect(screen.queryByRole('button', { name: /Зал/ })).toBeNull()
 		await fireEvent.click(undo)
 		await nextTick()
@@ -206,6 +211,7 @@ describe('BaseImageMapEditor история', () => {
 		const { container } = renderEditor({ selected: 'r1' })
 		const root = container.querySelector('.base-image-map-editor') as HTMLElement
 		await fireEvent.click(deleteButton())
+		await confirmDelete()
 		pressKey(root, { key: 'z', ctrlKey: true })
 		await nextTick()
 		expect(screen.getByRole('button', { name: /Зал/ })).toBeInTheDocument()
@@ -234,6 +240,7 @@ describe('BaseImageMapEditor история', () => {
 	it('в полях ввода Ctrl+Z остаётся полю', async () => {
 		const { emitted } = renderEditor({ selected: 'r1' })
 		await fireEvent.click(deleteButton())
+		await confirmDelete()
 		const input = screen.getByLabelText('Название этажа')
 		expect(pressKey(input, { key: 'z', ctrlKey: true })).toBe(true)
 		expect(lastModel(emitted).objects).toHaveLength(3)
@@ -242,6 +249,7 @@ describe('BaseImageMapEditor история', () => {
 	it('isDisabled: сочетания клавиш не работают', async () => {
 		const { container, rerender, emitted } = renderEditor({ selected: 'r1' })
 		await fireEvent.click(deleteButton())
+		await confirmDelete()
 		await rerender({ isDisabled: true })
 		expect(pressKey(container.querySelector('.base-image-map-editor') as HTMLElement, { key: 'z', ctrlKey: true })).toBe(true)
 		expect(lastModel(emitted).objects).toHaveLength(3)

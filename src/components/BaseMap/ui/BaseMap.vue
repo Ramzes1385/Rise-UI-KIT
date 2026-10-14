@@ -53,7 +53,7 @@
 				<BaseIcon name="minus" :size-scale="calcIconScale('md', sizeScale)" />
 			</BaseButton>
 			<BaseButton variant="outline" :size-scale="sizeScale" :aria-label="UI_MAP.LOCATE" :is-loading="isLocating" @click="locate">
-				<BaseIcon name="map-pin" :size-scale="calcIconScale('md', sizeScale)" />
+				<BaseIcon name="crosshair" :size-scale="calcIconScale('md', sizeScale)" />
 			</BaseButton>
 		</div>
 		<div v-if="hasControls || !isScrollZoom" class="base-map__notice" role="status">
