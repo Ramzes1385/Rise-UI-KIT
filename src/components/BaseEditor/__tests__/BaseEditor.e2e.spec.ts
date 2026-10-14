@@ -86,3 +86,57 @@ test('нативное historyUndo при непустом стеке гасит
 	expect(isPrevented).toBe(true)
 	await expect(textbox).toHaveText('alpha beta gamma')
 })
+
+async function setContent(page: Page, html: string, caret: { selector: string; offset: number; endSelector?: string; endOffset?: number }) {
+	const textbox = page.getByRole('textbox', { name: 'Текстовый редактор' })
+	await textbox.evaluate(
+		(element, args) => {
+			element.innerHTML = args.html
+			const start = element.querySelector(args.caret.selector)!
+			const end = args.caret.endSelector ? element.querySelector(args.caret.endSelector)! : start
+			const startNode = start.firstChild ?? start
+			const endNode = end.firstChild ?? end
+			window.getSelection()!.setBaseAndExtent(startNode, args.caret.offset, endNode, args.caret.endOffset ?? args.caret.offset)
+			element.focus()
+			element.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText' }))
+		},
+		{ html, caret },
+	)
+	await page.waitForTimeout(300)
+	return textbox
+}
+
+test('Enter в пустом абзаце даёт один <br> в каждом абзаце', async ({ page }) => {
+	await openEditor(page)
+	const textbox = await setContent(page, '<p>a</p><p><br></p>', { selector: 'p:last-child', offset: 0 })
+	await page.keyboard.press('Enter')
+	await expect.poll(() => textbox.innerHTML()).toBe('<p>a</p><p><br></p><p><br></p>')
+})
+
+test('Enter поверх выделения через два абзаца склеивает края и делит заново', async ({ page }) => {
+	await openEditor(page)
+	const textbox = await setContent(page, '<p>hello</p><p>world</p>', {
+		selector: 'p:first-child',
+		offset: 3,
+		endSelector: 'p:last-child',
+		endOffset: 2,
+	})
+	await page.keyboard.press('Enter')
+	await expect.poll(() => textbox.innerHTML()).toBe('<p>hel</p><p>rld</p>')
+})
+
+test('после «Маркированный список» каретка остаётся в конце своего блока, а не уходит в следующий', async ({ page }) => {
+	await openEditor(page)
+	const textbox = await setContent(page, '<p>one</p><p>two</p>', { selector: 'p:first-child', offset: 3 })
+	await page.getByRole('button', { name: 'Маркированный список' }).click()
+	await page.keyboard.type('X')
+	await expect.poll(() => textbox.innerHTML()).toBe('<ul><li>oneX</li></ul><p>two</p>')
+})
+
+test('включённое на каретке начертание не оставляет невидимый символ, когда каретка ушла', async ({ page }) => {
+	await openEditor(page)
+	const textbox = await setContent(page, '<p>one two</p>', { selector: 'p', offset: 3 })
+	await page.keyboard.press('Control+b')
+	await page.keyboard.press('ArrowLeft')
+	await expect.poll(() => textbox.evaluate(element => element.innerHTML.includes('​'))).toBe(false)
+})
