@@ -3,7 +3,7 @@ import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseTooltip from '../../../ui/BaseTooltip.vue'
 import { TOOLTIP_VARIANTS } from '../../../types/BaseTooltip.types'
-import { literal, storySource, useStorySetup, docsFrame } from '@/stories/helpers'
+import { docsFrame, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const variants = TOOLTIP_VARIANTS
 

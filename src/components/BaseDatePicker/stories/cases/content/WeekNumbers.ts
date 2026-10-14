@@ -2,7 +2,7 @@ import { expect } from 'storybook/test'
 import { findPanel } from '../../shared'
 import type meta from '../../BaseDatePicker.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { storyDate, docsFrame } from '@/stories/helpers'
+import { docsFrame, storyDate } from '@/stories/helpers'
 
 export const WeekNumbers: StoryObj<typeof meta> = {
 	args: { modelValue: storyDate(0, 0, 0), showWeekNumber: true },

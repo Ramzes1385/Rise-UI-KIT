@@ -3,7 +3,7 @@ import BaseTour from '../../../ui/BaseTour.vue'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { screen, within, waitFor, expect } from 'storybook/test'
-import { storySource, useStorySetup, docsFrame } from '@/stories/helpers'
+import { docsFrame, storySource, useStorySetup } from '@/stories/helpers'
 
 const models = { isOpen: 'isOpen' }
 

@@ -1,5 +1,5 @@
 import type meta from '../BaseDropdownMenu.stories'
-import { tabTo, docsFrame } from '@/stories/helpers'
+import { docsFrame, tabTo } from '@/stories/helpers'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { expect, screen, waitFor, within } from 'storybook/test'
 

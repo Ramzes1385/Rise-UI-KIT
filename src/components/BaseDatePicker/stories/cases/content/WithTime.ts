@@ -1,7 +1,7 @@
 import { findPanel, dayName } from '../../shared'
 import type meta from '../../BaseDatePicker.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { storyDate, docsFrame } from '@/stories/helpers'
+import { docsFrame, storyDate } from '@/stories/helpers'
 import { within, expect, waitFor, screen } from 'storybook/test'
 
 export const WithTime: StoryObj<typeof meta> = {

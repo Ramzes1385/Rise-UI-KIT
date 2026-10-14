@@ -1,7 +1,7 @@
 import { expect } from 'storybook/test'
 import type meta from '../../BaseDatePicker.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { storyDate, resolveColor } from '@/stories/helpers'
+import { resolveColor, storyDate } from '@/stories/helpers'
 
 export const CustomColor: StoryObj<typeof meta> = {
 	parameters: {

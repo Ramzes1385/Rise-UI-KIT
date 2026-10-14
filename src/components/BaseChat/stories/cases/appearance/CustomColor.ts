@@ -3,7 +3,7 @@ import type meta from '../../BaseChat.stories'
 import BaseChat from '../../../ui/BaseChat.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { CHAT_SCRIPT, useStoryMessages } from '../../shared'
-import { literal, storySource, useStorySetup, resolveColor } from '@/stories/helpers'
+import { literal, resolveColor, storySource, useStorySetup } from '@/stories/helpers'
 
 const LIGHT = { bg: { base: '#f0f9ff' }, text: { base: '#0c4a6e' } }
 

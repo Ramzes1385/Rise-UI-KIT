@@ -4,7 +4,7 @@ import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../BaseDropdownMenu.stories'
 import BaseDropdownMenu from '../../../ui/BaseDropdownMenu.vue'
 import { screen, within, expect, waitFor } from 'storybook/test'
-import { storySource, useStorySetup, docsFrame } from '@/stories/helpers'
+import { docsFrame, storySource, useStorySetup } from '@/stories/helpers'
 import type { DropdownMenuItem } from '../../../types/BaseDropdownMenu.types'
 
 const script = `

@@ -4,7 +4,7 @@ import type meta from '../../BaseSlideover.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseSlideover from '../../../ui/BaseSlideover.vue'
-import { storySource, useStorySetup, resolveColor } from '@/stories/helpers'
+import { resolveColor, storySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
 	<div class="story-frame" style="height: 260px;">

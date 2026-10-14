@@ -3,7 +3,7 @@ import type meta from '../../BasePopconfirm.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { expect, screen, waitFor } from 'storybook/test'
 import BasePopconfirm from '../../../ui/BasePopconfirm.vue'
-import { motionPresetsStory, docsFrame } from '@/stories/helpers'
+import { docsFrame, motionPresetsStory } from '@/stories/helpers'
 
 const motion = motionPresetsStory({
 	item: `

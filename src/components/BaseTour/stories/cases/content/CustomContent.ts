@@ -5,7 +5,7 @@ import { BaseText } from '@components/BaseText'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { screen, expect, within } from 'storybook/test'
-import { storySource, useStorySetup, docsFrame } from '@/stories/helpers'
+import { docsFrame, storySource, useStorySetup } from '@/stories/helpers'
 
 const models = { isOpen: 'isOpen', step: 'step' }
 

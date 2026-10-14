@@ -3,7 +3,7 @@ import type { StoryObj } from '@storybook/vue3-vite'
 import { findPanel, monthsForWidth } from '../../shared'
 import { expect, screen, waitFor } from 'storybook/test'
 import BaseDatePicker from '../../../ui/BaseDatePicker.vue'
-import { storySource, useStorySetup, docsFrame } from '@/stories/helpers'
+import { docsFrame, storySource, useStorySetup } from '@/stories/helpers'
 
 const state = { deadline: null, trip: null, report: null }
 

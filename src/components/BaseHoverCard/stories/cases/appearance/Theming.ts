@@ -5,7 +5,7 @@ import type meta from '../../BaseHoverCard.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseHoverCard from '../../../ui/BaseHoverCard.vue'
-import { isStoryBranded, literal, storySource, useStorySetup, docsFrame } from '@/stories/helpers'
+import { docsFrame, isStoryBranded, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const ui = { panel: 'story-themed-panel', inner: 'story-themed-inner' }
 

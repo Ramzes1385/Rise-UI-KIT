@@ -3,7 +3,7 @@ import type meta from '../../../BaseDatePicker.stories'
 import BaseDatePicker from '../../../../ui/BaseDatePicker.vue'
 import { findPanel, dayName, todayRange } from '../../../shared'
 import { within, expect, screen, waitFor } from 'storybook/test'
-import { freezeStoryClock, storySource, tabTo, useStorySetup, docsFrame } from '@/stories/helpers'
+import { docsFrame, freezeStoryClock, storySource, tabTo, useStorySetup } from '@/stories/helpers'
 
 const state = { start: null, end: null }
 

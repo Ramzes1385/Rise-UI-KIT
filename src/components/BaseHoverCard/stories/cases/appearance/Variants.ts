@@ -6,7 +6,7 @@ import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseHoverCard from '../../../ui/BaseHoverCard.vue'
 import { HOVER_CARD_VARIANTS } from '../../../types/BaseHoverCard.types'
-import { literal, storySource, useStorySetup, docsFrame } from '@/stories/helpers'
+import { docsFrame, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const variants = HOVER_CARD_VARIANTS
 

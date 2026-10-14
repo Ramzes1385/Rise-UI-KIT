@@ -3,7 +3,7 @@ import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { screen, waitFor, expect } from 'storybook/test'
 import BaseDropdownMenu from '../../ui/BaseDropdownMenu.vue'
-import { storySource, useStorySetup, docsFrame } from '@/stories/helpers'
+import { docsFrame, storySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
 	<BaseDropdownMenu v-bind="args">

@@ -4,7 +4,7 @@ import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseDropdown from '../../../ui/BaseDropdown.vue'
 import { DROPDOWN_VARIANTS } from '../../../types/BaseDropdown.types'
-import { storySource, useStorySetup, docsFrame } from '@/stories/helpers'
+import { docsFrame, storySource, useStorySetup } from '@/stories/helpers'
 
 const HIDDEN_ARGS = ['isOpen', 'variant', 'onUpdate:isOpen']
 

@@ -3,7 +3,7 @@ import type meta from '../../BasePopconfirm.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BasePopconfirm from '../../../ui/BasePopconfirm.vue'
 import { screen, waitFor, expect, within } from 'storybook/test'
-import { storySource, useStorySetup, docsFrame } from '@/stories/helpers'
+import { docsFrame, storySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
 	<BasePopconfirm v-bind="args">

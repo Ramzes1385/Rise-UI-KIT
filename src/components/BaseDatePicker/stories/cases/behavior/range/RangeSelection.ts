@@ -3,7 +3,7 @@ import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../../BaseDatePicker.stories'
 import BaseDatePicker from '../../../../ui/BaseDatePicker.vue'
 import { expect, within, waitFor, screen } from 'storybook/test'
-import { storyDate, storySource, useStorySetup, docsFrame } from '@/stories/helpers'
+import { docsFrame, storyDate, storySource, useStorySetup } from '@/stories/helpers'
 
 const state = { start: storyDate(-3, 0, 0), end: storyDate(3, 0, 0) }
 

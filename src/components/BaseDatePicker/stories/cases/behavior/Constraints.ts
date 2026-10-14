@@ -2,7 +2,7 @@ import { within, expect } from 'storybook/test'
 import { findPanel, dayName } from '../../shared'
 import type meta from '../../BaseDatePicker.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { storyDate, docsFrame } from '@/stories/helpers'
+import { docsFrame, storyDate } from '@/stories/helpers'
 
 export const Constraints: StoryObj<typeof meta> = {
 	args: {

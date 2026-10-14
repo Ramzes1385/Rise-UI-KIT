@@ -5,7 +5,7 @@ import type { StoryObj } from '@storybook/vue3-vite'
 import { expect, screen, waitFor } from 'storybook/test'
 import BaseHoverCard from '../../../ui/BaseHoverCard.vue'
 import { panelOf, SHOWCASE_OWN_ARGS } from '../../shared'
-import { literal, storySource, useStorySetup, docsFrame } from '@/stories/helpers'
+import { docsFrame, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const cells = [
 	{ position: 'top', text: 'Карточка сверху', padding: '96px 0 0 64px' },

@@ -4,7 +4,7 @@ import type meta from '../../BaseTooltip.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseTooltip from '../../../ui/BaseTooltip.vue'
-import { isStoryBranded, literal, storySource, useStorySetup, docsFrame } from '@/stories/helpers'
+import { docsFrame, isStoryBranded, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const ui = { popup: 'story-themed-tooltip', text: 'story-themed-text' }
 

@@ -3,7 +3,7 @@ import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../BaseDropdownMenu.stories'
 import BaseDropdownMenu from '../../../ui/BaseDropdownMenu.vue'
 import { DROPDOWN_MENU_VARIANTS } from '../../../types/BaseDropdownMenu.types'
-import { literal, storySource, useStorySetup, docsFrame } from '@/stories/helpers'
+import { docsFrame, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const HIDDEN_ARGS = ['isOpen', 'variant', 'items']
 

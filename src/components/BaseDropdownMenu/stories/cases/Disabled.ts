@@ -3,7 +3,7 @@ import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseDropdownMenu from '../../ui/BaseDropdownMenu.vue'
 import { screen, waitFor, expect, within } from 'storybook/test'
-import { storySource, tabTo, useStorySetup, docsFrame } from '@/stories/helpers'
+import { docsFrame, storySource, tabTo, useStorySetup } from '@/stories/helpers'
 
 const template = `
 	<div class="story-row">

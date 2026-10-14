@@ -5,7 +5,7 @@ import { BaseButton } from '@components/BaseButton'
 import BaseDropdown from '../../ui/BaseDropdown.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type { BaseMenuItem } from '@components/BaseMenu'
-import { literal, storySource, useStorySetup, docsFrame } from '@/stories/helpers'
+import { docsFrame, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const PROJECTS: BaseMenuItem[][] = [
 	[

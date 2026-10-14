@@ -5,7 +5,7 @@ import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BasePopover from '../../../ui/BasePopover.vue'
 import { screen, waitFor, expect } from 'storybook/test'
-import { literal, storySource, useStorySetup, docsFrame } from '@/stories/helpers'
+import { docsFrame, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const cells = [
 	{ position: 'top', text: 'Сверху', padding: '64px 0 0 64px' },

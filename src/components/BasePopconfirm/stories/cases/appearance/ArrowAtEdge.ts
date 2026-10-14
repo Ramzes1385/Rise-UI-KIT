@@ -3,7 +3,7 @@ import type meta from '../../BasePopconfirm.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { expect, screen, waitFor } from 'storybook/test'
 import BasePopconfirm from '../../../ui/BasePopconfirm.vue'
-import { storySource, useStorySetup, docsFrame } from '@/stories/helpers'
+import { docsFrame, storySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
 	<div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%">

@@ -3,7 +3,7 @@ import type meta from '../../BasePopconfirm.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BasePopconfirm from '../../../ui/BasePopconfirm.vue'
 import { POPCONFIRM_VARIANTS } from '../../../types/BasePopconfirm.types'
-import { literal, storySource, useStorySetup, docsFrame } from '@/stories/helpers'
+import { docsFrame, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const variants = POPCONFIRM_VARIANTS
 

@@ -5,7 +5,7 @@ import type meta from '../../BaseHoverCard.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseHoverCard from '../../../ui/BaseHoverCard.vue'
-import { literal, SIZE_PRESETS, sizeLabel, storySource, useStorySetup, docsFrame } from '@/stories/helpers'
+import { docsFrame, literal, SIZE_PRESETS, sizeLabel, storySource, useStorySetup } from '@/stories/helpers'
 
 const presets = SIZE_PRESETS.filter(preset => ['sm', 'md', 'lg'].includes(preset.name)).map(preset => ({
 	name: preset.name,

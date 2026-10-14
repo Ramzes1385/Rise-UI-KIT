@@ -3,7 +3,7 @@ import type meta from '../../BaseTooltip.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseTooltip from '../../../ui/BaseTooltip.vue'
-import { storySource, useStorySetup, docsFrame, resolveColor } from '@/stories/helpers'
+import { docsFrame, resolveColor, storySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
 	<BaseTooltip v-bind="args">

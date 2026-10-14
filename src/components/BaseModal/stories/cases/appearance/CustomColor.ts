@@ -4,7 +4,7 @@ import { SHOWCASE_OWN_ARGS } from '../../shared'
 import BaseModal from '../../../ui/BaseModal.vue'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { storySource, useStorySetup, resolveColor } from '@/stories/helpers'
+import { resolveColor, storySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
 	<div class="story-frame story-medium" style="height: 280px;">
