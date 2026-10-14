@@ -22,10 +22,10 @@ class BatchCancelled extends Error {}
 const CANCEL_BUTTON = '.base-crypto-pro-sign__cancel'
 const RUN_BUTTON = '.base-crypto-pro-sign__actions button'
 
-function handOverFocusFromCancel(): void {
+function handOverFocusFromCancel(): MutationObserver | null {
 	const cancel = document.activeElement
 	const root = cancel?.closest('.base-crypto-pro-sign')
-	if (!root || !cancel?.matches(CANCEL_BUTTON)) return
+	if (!root || !cancel?.matches(CANCEL_BUTTON)) return null
 	const observer = new MutationObserver(() => {
 		const run = root.querySelector<HTMLButtonElement>(RUN_BUTTON)
 		if (cancel.isConnected || !run || run.disabled) return
@@ -33,6 +33,7 @@ function handOverFocusFromCancel(): void {
 		if (document.activeElement === document.body) run.focus()
 	})
 	observer.observe(root, { childList: true, subtree: true, attributes: true, attributeFilter: ['disabled'] })
+	return observer
 }
 
 function initialItems(files: File[], threshold: number): CryptoProBatchItem[] {
@@ -94,13 +95,21 @@ function useBatchQueue(setup: Omit<BatchFileSetup, 'control'>) {
 	const control: CryptoProBatchControl = { isCancelRequested: false }
 	const isRunning = shallowRef(false)
 	const isCancelling = shallowRef(false)
+	let isDisposed = false
+	let focusObserver: MutationObserver | null = null
 	return {
 		isRunning,
 		isCancelling,
+		isDisposed: (): boolean => isDisposed,
 		requestCancel: (): void => {
 			if (!isRunning.value) return
 			control.isCancelRequested = true
 			isCancelling.value = true
+		},
+		dispose(): void {
+			isDisposed = true
+			control.isCancelRequested = true
+			focusObserver?.disconnect()
 		},
 		async run(files: File[]): Promise<void> {
 			control.isCancelRequested = false
@@ -108,11 +117,11 @@ function useBatchQueue(setup: Omit<BatchFileSetup, 'control'>) {
 			setup.list.set(initialItems(files, setup.props.hashThreshold ?? Infinity))
 			try {
 				for (const [index, file] of files.entries()) {
-					if (control.isCancelRequested) return setup.list.cancelPending()
+					if (isDisposed || control.isCancelRequested) return setup.list.cancelPending()
 					await signFile(file, index, { ...setup, control })
 				}
 			} finally {
-				handOverFocusFromCancel()
+				focusObserver = isDisposed ? null : handOverFocusFromCancel()
 				isRunning.value = false
 				isCancelling.value = false
 			}
@@ -128,12 +137,13 @@ export function useCryptoProSignBatch(
 	const { context, batch, state } = setup
 	const list = useBatchItems()
 	const queue = useBatchQueue({ props, emit, context, list })
-	if (getCurrentScope()) onScopeDispose(queue.requestCancel)
+	if (getCurrentScope()) onScopeDispose(queue.dispose)
 
 	const signAll = (): Promise<CryptoProBatchResult | null> =>
 		guarded(state, async () => {
 			const files = batch.files.value
 			if (!files.length || !context.certificate.value || !(await ensureReady(context))) return null
+			if (queue.isDisposed()) return null
 			await queue.run(files)
 			const result = summarize(list.items.value)
 			state.announcement.value = formatMessage(UI_CRYPTOPRO.BATCH_SUMMARY, {

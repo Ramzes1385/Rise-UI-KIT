@@ -113,33 +113,39 @@ describe('useTablePagination', () => {
 	it('смена pageSize не сбрасывает управляемый page, пока он в пределах', async () => {
 		const pageSize = ref(1)
 		const page = ref(2)
+		const onPageChange = vi.fn()
 		const { currentPage } = useTablePagination({
 			processedRows: testRows,
 			loadMode: () => 'pagination',
 			pageSize,
 			page: () => page.value,
+			onPageChange,
 		})
 		expect(currentPage.value).toBe(2)
 		pageSize.value = 2
 		await nextTick()
+		await nextTick()
 		expect(currentPage.value).toBe(2)
+		expect(onPageChange).not.toHaveBeenCalled()
 	})
 
-	it('смена pageSize ужимает управляемый page, если он вышел за последнюю страницу', async () => {
+	it('смена pageSize ужимает управляемый page до последней страницы, а не до первой', async () => {
 		const pageSize = ref(1)
-		const page = ref(3)
+		const page = ref(4)
+		const onPageChange = vi.fn((value: number) => (page.value = value))
 		const { currentPage } = useTablePagination({
 			processedRows: testRows,
 			loadMode: () => 'pagination',
 			pageSize,
 			page: () => page.value,
-			onPageChange: value => (page.value = value),
+			onPageChange,
 		})
-		pageSize.value = 10
+		pageSize.value = 2
 		await nextTick()
 		await nextTick()
-		expect(page.value).toBe(1)
-		expect(currentPage.value).toBe(1)
+		expect(onPageChange).toHaveBeenCalledTimes(1)
+		expect(onPageChange).toHaveBeenCalledWith(2)
+		expect(currentPage.value).toBe(2)
 	})
 
 	it('TBL-8: в режиме button смена pageSize сбрасывает число показанных строк', async () => {

@@ -77,8 +77,11 @@ function canStartRegex(source: string, index: number): boolean {
 	return word !== null && REGEX_AFTER_WORDS.has(word[1]!)
 }
 
+/** `/>` закрывает JSX-тег (`<A b={1} /> <C d={2} />`); регулярка `/>/` и `/>+/` продолжается символом литерала */
+const JSX_SELF_CLOSE = /\/>(?![/+*?{|)\]])/y
+
 const regexLiteralRule: CodeRule = (source, index) => {
-	if (source[index] !== '/' || !canStartRegex(source, index)) return null
+	if (source[index] !== '/' || !canStartRegex(source, index) || matchAt(JSX_SELF_CLOSE, source, index)) return null
 	const text = matchAt(REGEX_LITERAL, source, index)
 	return text === null ? null : { type: 'string', length: text.length }
 }

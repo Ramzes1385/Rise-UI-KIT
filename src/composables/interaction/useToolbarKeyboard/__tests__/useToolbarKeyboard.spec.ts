@@ -137,6 +137,17 @@ describe('useToolbarKeyboard', () => {
 		wrapper.unmount()
 	})
 
+	it('выбор цвета и файла (color, file) не текстовые: стрелки уводят фокус', () => {
+		const { root, wrapper } = mountToolbar('<button>A</button><input type="color" /><input type="file" /><button>B</button>')
+		const [color, file] = [...root.querySelectorAll<HTMLInputElement>('input')]
+		color.focus()
+		expect(press(color, 'ArrowRight').defaultPrevented).toBe(true)
+		expect(document.activeElement).toBe(file)
+		expect(press(file, 'ArrowLeft').defaultPrevented).toBe(true)
+		expect(document.activeElement).toBe(color)
+		wrapper.unmount()
+	})
+
 	it('textarea в обходе: стрелка внутри текста остаётся за ним', () => {
 		const { root, wrapper } = mountToolbar('<button>A</button><textarea>ab</textarea>')
 		const area = root.querySelector('textarea') as HTMLTextAreaElement

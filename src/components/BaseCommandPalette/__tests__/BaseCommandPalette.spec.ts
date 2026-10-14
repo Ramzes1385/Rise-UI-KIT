@@ -106,6 +106,17 @@ describe('BaseCommandPalette', () => {
 		expect(search()).toHaveValue('')
 	})
 
+	it('Escape закрывает палитру и при непустом запросе: запрос не очищается, закрытие одно', async () => {
+		const { emitted } = render(BaseCommandPalette, { props: { commands: COMMANDS } })
+		await ctrlK()
+		await fireEvent.update(search(), 'гла')
+		const event = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })
+		search().dispatchEvent(event)
+		expect(event.defaultPrevented).toBe(true)
+		await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
+		expect(emitted('update:isOpen')).toEqual([[true], [false]])
+	})
+
 	it('своё сочетание и null, Escape закрывает, слот command, язык и оформление', async () => {
 		setLocale('en')
 		const { emitted, rerender } = render(BaseCommandPalette, {

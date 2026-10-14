@@ -6,6 +6,8 @@
 		role="log"
 		:aria-label="UI_CHAT_TEXT.MESSAGES_ARIA"
 		@scroll="handleListScroll">
+		<div class="base-chat-message-list__announcer" role="status">{{ failedAnnouncement }}</div>
+
 		<div v-if="isLoadingMore" class="base-chat-message-list__loading-more">
 			<BaseLoader variant="spinner" :label="UI_CHAT_TEXT.LOADING_MORE" :size-scale="sizeScale * CHAT_SCALE.SPINNER" />
 		</div>
@@ -190,6 +192,7 @@ const {
 	timeline,
 	hasNewBelow,
 	handleJumpToNew,
+	failedAnnouncement,
 	exposed,
 } = useChatMessageList(props, emit)
 

@@ -8,11 +8,19 @@ import { useClickable } from '@composables/interaction/useClickable'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseBadgeEmits, BaseBadgeProps } from '../types/BaseBadge.types'
 
+let isDotWarned = false
+
+function warnUnnamedDot(isUnnamed: boolean): void {
+	if (!isUnnamed || isDotWarned) return
+	isDotWarned = true
+	warn(UI_WARNINGS.BADGE_DOT_WITHOUT_LABEL)
+}
+
 export function useBaseBadge(props: BaseBadgeProps, emit: BaseBadgeEmits) {
 	const clickable = useClickable({ event: 'click', isDisabled: () => Boolean(props.isDisabled) })
 
 	const isUnnamedDotButton = computed(() => Boolean(props.isDot) && clickable.isClickable.value && !props.label)
-	watch(isUnnamedDotButton, isUnnamed => isUnnamed && warn(UI_WARNINGS.BADGE_DOT_WITHOUT_LABEL), { immediate: true })
+	watch(isUnnamedDotButton, warnUnnamedDot, { immediate: true })
 
 	return {
 		...useStandardBaseComponent('base-badge', props, ['root', 'text', 'remove']),

@@ -25,9 +25,15 @@ function useHistoryLoading(listRef: Ref<HTMLElement | null>, options: ChatListSc
 		})
 	})
 
-	onMounted(() => {
+	function fillIfShort(): void {
 		const element = listRef.value
 		if (element && element.scrollHeight <= element.clientHeight) requestMore()
+	}
+
+	onMounted(fillIfShort)
+
+	watch(canLoadMore, isAllowed => {
+		if (isAllowed) nextTick(fillIfShort)
 	})
 
 	return {

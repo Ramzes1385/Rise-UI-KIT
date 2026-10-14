@@ -132,6 +132,17 @@ describe('codeHighlightUtils: JavaScript и TypeScript', () => {
 		expect(typed('<br /> 2 <img src="x" />', language)).toEqual(['number:2', 'string:"x"'])
 	})
 
+	it.each(['jsx', 'tsx'])('%s: самозакрывающиеся теги с выражениями в атрибутах не дают литерал', language => {
+		const code = '<A b={1} /> <C d={2} />'
+		expect(typed(code, language)).toEqual(['number:1', 'number:2'])
+		expect(joined(code, language)).toBe(code)
+	})
+
+	it('регулярка с > в начале остаётся литералом', () => {
+		expect(typed('x = />/g.test(s) 1', 'js')).toEqual(['string:/>/g', 'function:test', 'number:1'])
+		expect(typed('x = />+/.test(s)', 'js')).toEqual(['string:/>+/', 'function:test'])
+	})
+
 	it('регулярка после стрелки и оператора по-прежнему литерал, после `>` и `<` как сравнения — нет', () => {
 		expect(typed("s => /'/.test(s)", 'js')).toEqual(["string:/'/", 'function:test'])
 		expect(typed("s =>   /'/.test(s)", 'js')).toEqual(["string:/'/", 'function:test'])

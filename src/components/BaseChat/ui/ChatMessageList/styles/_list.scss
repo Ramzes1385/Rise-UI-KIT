@@ -77,6 +77,10 @@
 		min-height: sz(32px);
 	}
 
+	&__announcer {
+		@include visually-hidden;
+	}
+
 	&__checkbox .base-checkbox__label {
 		@include visually-hidden;
 	}

@@ -88,6 +88,17 @@ describe('ChatHeader unit', () => {
 			await waitFor(() => expect(screen.getByRole('button', { name: 'Поиск по сообщениям' })).toHaveFocus())
 		})
 
+		it('из поля поиска с текстом одно нажатие очищает запрос и закрывает поиск', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(ChatHeader, { props: { title: 'Чат', isSearching: true, searchQuery: 'кот' } })
+			screen.getByRole('searchbox', { name: 'Поиск по сообщениям' }).focus()
+
+			await user.keyboard('{Escape}')
+
+			expect(emitted()['update:searchQuery']).toEqual([['']])
+			expect(emitted()['toggle-search']).toHaveLength(1)
+		})
+
 		it('отменяет действие по умолчанию', () => {
 			render(ChatHeader, { props: { title: 'Чат', isSearching: true } })
 			const event = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })

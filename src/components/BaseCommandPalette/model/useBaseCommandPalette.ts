@@ -69,6 +69,21 @@ function useCommandList(props: BaseCommandPaletteProps, isOpen: { value: boolean
 	return { prefix, query, activeIndex, groups, options, activeId, moveTo, reset, searchRef }
 }
 
+function createKeyActions(
+	list: ReturnType<typeof useCommandList>,
+	run: (command: CommandItem) => void,
+	setOpen: (value: boolean) => void,
+): Record<string, () => void> {
+	return {
+		ArrowDown: () => list.moveTo(nextEnabled(list.options.value, list.activeIndex.value, 1)),
+		ArrowUp: () => list.moveTo(nextEnabled(list.options.value, list.activeIndex.value, -1)),
+		Home: () => list.moveTo(nextEnabled(list.options.value, -1, 1)),
+		End: () => list.moveTo(nextEnabled(list.options.value, list.options.value.length, -1)),
+		Escape: () => setOpen(false),
+		Enter: () => list.options.value[list.activeIndex.value] && run(list.options.value[list.activeIndex.value].command),
+	}
+}
+
 export function useBaseCommandPalette(props: BaseCommandPaletteProps, emit: BaseCommandPaletteEmits) {
 	const { isOpen, setOpen } = useOpenState(props, emit)
 	const list = useCommandList(props, isOpen)
@@ -78,13 +93,7 @@ export function useBaseCommandPalette(props: BaseCommandPaletteProps, emit: Base
 		emit('select', command)
 		command.onSelect?.()
 	}
-	const keyActions: Record<string, () => void> = {
-		ArrowDown: () => list.moveTo(nextEnabled(list.options.value, list.activeIndex.value, 1)),
-		ArrowUp: () => list.moveTo(nextEnabled(list.options.value, list.activeIndex.value, -1)),
-		Home: () => list.moveTo(nextEnabled(list.options.value, -1, 1)),
-		End: () => list.moveTo(nextEnabled(list.options.value, list.options.value.length, -1)),
-		Enter: () => list.options.value[list.activeIndex.value] && run(list.options.value[list.activeIndex.value].command),
-	}
+	const keyActions = createKeyActions(list, run, setOpen)
 	const { classes } = useCustomClass({ getClass: () => props.customClass, elementKeys: ['root', 'input', 'option'] })
 	const ui = useUi(props, 'base-command-palette')
 	return {

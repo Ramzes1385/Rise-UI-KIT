@@ -798,6 +798,36 @@ describe('ChatMessageList unit', () => {
 			expect(emitted()['discard-message']).toBeUndefined()
 		})
 
+		const announcer = (): HTMLElement => document.querySelector('.base-chat-message-list__announcer') as HTMLElement
+
+		it('сбой, случившийся после монтирования, озвучивается постоянной live-областью ленты', async () => {
+			const sending: ChatMessage = { ...failed, status: 'sending' }
+			const { rerender } = render(ChatMessageList, { props: { messages: [...BASE_MESSAGES, sending] } })
+			expect(announcer()).toHaveAttribute('role', 'status')
+			expect(announcer()).toBeEmptyDOMElement()
+
+			await rerender({ messages: [...BASE_MESSAGES, failed] })
+
+			await waitFor(() => expect(announcer()).toHaveTextContent(UI_CHAT_TEXT.STATUS_FAILED))
+			await rerender({ messages: [...BASE_MESSAGES, failed, { ...BASE_MESSAGES[1], id: 'next' }] })
+			expect(announcer()).toHaveTextContent(UI_CHAT_TEXT.STATUS_FAILED)
+		})
+
+		it('сообщения, которые были failed при монтировании, не зачитываются', async () => {
+			const { rerender } = render(ChatMessageList, { props: { messages: [...BASE_MESSAGES, failed] } })
+			await rerender({ messages: [...BASE_MESSAGES, failed, { ...BASE_MESSAGES[0], id: 'new' }] })
+
+			expect(announcer()).toBeEmptyDOMElement()
+		})
+
+		it('повторный сбой после «Повторить» объявляется снова', async () => {
+			const { rerender } = render(ChatMessageList, { props: { messages: [...BASE_MESSAGES, failed] } })
+			await rerender({ messages: [...BASE_MESSAGES, { ...failed, status: 'sending' }] })
+			await rerender({ messages: [...BASE_MESSAGES, failed] })
+
+			await waitFor(() => expect(announcer()).toHaveTextContent(UI_CHAT_TEXT.STATUS_FAILED))
+		})
+
 		it('«Удалить» эмитит discard-message с id сообщения', async () => {
 			const { emitted } = render(ChatMessageList, { props: { messages: [...BASE_MESSAGES, failed] } })
 

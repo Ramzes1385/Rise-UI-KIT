@@ -1,5 +1,5 @@
-import { computed } from 'vue'
 import { UI_CHAT_TEXT } from '@/locales/messages'
+import { computed, nextTick, ref, watch } from 'vue'
 import { buildChatTimeline } from './timeline/chatTimeline'
 import { useChatListScroll } from './timeline/useChatListScroll'
 import { useChatMessageMotion } from '../../../model/useChatMessageMotion'
@@ -30,6 +30,26 @@ function useListScroll(props: MessageListProps, emit: ChatMessageListEmits, list
 	return { motion, timeline, scroll }
 }
 
+function useFailedAnnouncement(props: MessageListProps) {
+	const announcement = ref('')
+	const failedIds = (): Set<string> => new Set(props.messages.filter(message => message.status === 'failed').map(message => message.id))
+	let known = failedIds()
+	watch(
+		() => props.messages,
+		() => {
+			const current = failedIds()
+			const hasNewFailure = [...current].some(id => !known.has(id))
+			known = current
+			if (!hasNewFailure) return
+			announcement.value = ''
+			nextTick(() => {
+				announcement.value = UI_CHAT_TEXT.STATUS_FAILED
+			})
+		},
+	)
+	return announcement
+}
+
 export function useChatMessageList(props: MessageListProps, emit: ChatMessageListEmits) {
 	const actions = useChatMessageActions({ selectedMessageIds: computed(() => props.selectedMessageIds), emit })
 	const badgesBySender = computed(() => new Map(props.members.map(member => [member.id, member.badges ?? []])))
@@ -38,6 +58,7 @@ export function useChatMessageList(props: MessageListProps, emit: ChatMessageLis
 	return {
 		...actions,
 		timeline,
+		failedAnnouncement: useFailedAnnouncement(props),
 		isSearchActive: computed(() => Boolean(props.searchQuery?.trim())),
 		hasNewBelow: scroll.hasNewBelow,
 		handleJumpToNew: scroll.handleJumpToNew,

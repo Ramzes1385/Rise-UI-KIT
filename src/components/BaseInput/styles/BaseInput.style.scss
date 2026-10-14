@@ -194,6 +194,10 @@
 		z-index: 1;
 		transform: translateY(-50%);
 		color: var(--rise-text-muted);
+
+		&:focus-visible {
+			outline-offset: -2px;
+		}
 	}
 
 	&--password &__field,

@@ -41,7 +41,7 @@
 
 	@media (pointer: coarse) {
 		&__th--resizable {
-			padding-right: calc(var(--tbl-pad-right) + #{sz(16px)});
+			padding-right: calc(#{space(var(--tbl-pad-right))} + #{sz(16px)});
 		}
 	}
 

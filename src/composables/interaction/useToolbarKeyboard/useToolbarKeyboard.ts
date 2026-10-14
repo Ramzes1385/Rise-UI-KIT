@@ -5,7 +5,7 @@ import type { UseToolbarKeyboardOptions, UseToolbarKeyboardReturn } from './type
 const ITEM_SELECTOR =
 	'button, a[href], input:not([type="hidden"]), select, textarea, [role="combobox"], [tabindex]:not([tabindex="-1"]), [data-toolbar-item]'
 const SKIPPED = '[inert], [aria-hidden="true"], [hidden], [data-toolbar-skip]'
-const NON_TEXT_INPUT_TYPES = ['button', 'checkbox', 'radio', 'submit', 'reset', 'image']
+const NON_TEXT_INPUT_TYPES = ['button', 'checkbox', 'radio', 'submit', 'reset', 'image', 'color', 'file']
 const OBSERVED_ATTRIBUTES = ['disabled', 'aria-disabled', 'hidden', 'inert', 'aria-hidden', 'data-toolbar-skip']
 
 function isTextEntry(element: HTMLElement): boolean {

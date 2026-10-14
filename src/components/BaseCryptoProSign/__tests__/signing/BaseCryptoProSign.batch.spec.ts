@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import type { CadesSignPlugin } from '../../types/cadesSign.types'
 import { fireEvent, screen, waitFor, within } from '@testing-library/vue'
 import type { CryptoProBatchResult, CryptoProSignResult } from '../../types/BaseCryptoProSign.types'
-import { callsOf, freezeDate, lastEmitted, renderExposed, renderReady, restoreEmulation } from '../cryptoProSignTestUtils'
+import { NOW, callsOf, freezeDate, lastEmitted, renderExposed, renderReady, restoreEmulation } from '../cryptoProSignTestUtils'
 
 beforeEach(() => freezeDate())
 
@@ -150,15 +150,16 @@ describe('BaseCryptoProSign — несколько файлов (isMultiple)', (
 	})
 
 	it('размонтирование прекращает очередь: после текущего файла остальные не подписываются', async () => {
+		vi.useFakeTimers({ toFake: ['setTimeout', 'Date'], now: NOW, shouldAdvanceTime: true })
 		const { emulation, unmount } = await renderReady({ props: PROPS }, { delay: 300 })
 		await upload([file('a.txt'), file('b.txt'), file('c.txt')])
 		await start()
 		await screen.findByRole('button', { name: 'Отменить' })
 
 		unmount()
-		await new Promise(resolve => setTimeout(resolve, 1500))
+		await vi.advanceTimersByTimeAsync(1500)
 
-		expect(callsOf(emulation, 'CadesSignedData.SignCades').length).toBeLessThanOrEqual(1)
+		expect(callsOf(emulation, 'CadesSignedData.SignCades')).toHaveLength(1)
 	})
 
 	it('отмена во время расчёта хэша прерывает файл', async () => {

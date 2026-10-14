@@ -328,6 +328,7 @@
 
 	&__speed-preset {
 		@include button-reset;
+		text-align: center;
 		min-width: sz(40px);
 		padding: sz(4px) sz(10px);
 		border-radius: sz(8px);

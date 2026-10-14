@@ -25,7 +25,7 @@ export const SendFailed: StoryObj<typeof meta> = {
 	},
 	play: async ({ canvasElement, userEvent, args }) => {
 		const message = within(getMessage(canvasElement, 'failed-1'))
-		await expect(message.getByRole('status')).toHaveTextContent('Не отправлено')
+		await expect(message.getByRole('group', { name: 'Не отправлено' })).toBeVisible()
 		await expect(message.queryByRole('button', { name: 'Другие действия с сообщением' })).not.toBeInTheDocument()
 
 		const retry = message.getByRole('button', { name: 'Повторить отправку сообщения' })

@@ -23,11 +23,12 @@ function useChatSelection(options: UseChatSelectionOptions) {
 	}
 
 	function selectAll(messageIds: string[]): void {
+		const selected = new Set(selectedMessageIds.value)
 		for (const messageId of messageIds) {
-			if (!selectedMessageIds.value.includes(messageId)) {
-				selectedMessageIds.value.push(messageId)
-				options.onMessageSelect(messageId)
-			}
+			if (selected.has(messageId)) continue
+			selected.add(messageId)
+			selectedMessageIds.value.push(messageId)
+			options.onMessageSelect(messageId)
 		}
 	}
 

@@ -295,6 +295,29 @@ describe('useChatListScroll', () => {
 			expect(onLoadMore).toHaveBeenCalledOnce()
 		})
 
+		it('короткая страница при загрузке на монтировании: подгрузка повторяется, когда загрузка закончилась', async () => {
+			const { onLoadMore, state } = setup({ canLoadMore: false, ids: ['a', 'b'] })
+			expect(onLoadMore).not.toHaveBeenCalled()
+
+			state.canLoadMore = true
+			await nextTick()
+			await nextTick()
+
+			expect(onLoadMore).toHaveBeenCalledOnce()
+		})
+
+		it('когда подгрузка снова разрешена, а лента заполнена, ничего не просит', async () => {
+			const { onLoadMore, state } = setup({ canLoadMore: false })
+
+			state.canLoadMore = true
+			await nextTick()
+			await nextTick()
+			state.canLoadMore = false
+			await nextTick()
+
+			expect(onLoadMore).not.toHaveBeenCalled()
+		})
+
 		it('при монтировании не просит, если лента заполнена или подгружать нечего', () => {
 			const filled = setup({ canLoadMore: true })
 			const nothing = setup({ canLoadMore: false, ids: ['a'] })

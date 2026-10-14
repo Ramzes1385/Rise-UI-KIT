@@ -41,6 +41,18 @@ describe('BaseBadge: палитра, точка, счётчик', () => {
 		warning.mockRestore()
 	})
 
+	it('предупреждение о кликабельной точке без label — один раз, а не на каждый экземпляр', async () => {
+		vi.resetModules()
+		const { default: FreshBadge } = await import('../ui/BaseBadge.vue')
+		const warning = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+		render(FreshBadge, { props: { isDot: true }, attrs: { onClick: vi.fn() } })
+		render(FreshBadge, { props: { isDot: true }, attrs: { onClick: vi.fn() } })
+		render(FreshBadge, { props: { isDot: true }, attrs: { onClick: vi.fn() } })
+
+		expect(warning).toHaveBeenCalledTimes(1)
+		warning.mockRestore()
+	})
+
 	it('круглый счётчик получает модификатор --round', () => {
 		const { container } = render(BaseBadge, { props: { isRound: true, label: '12' } })
 		expect(container.firstElementChild).toHaveClass('base-badge--round')

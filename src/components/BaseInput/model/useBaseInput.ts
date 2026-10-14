@@ -96,7 +96,7 @@ export function useBaseInput(props: InputProps, emit: BaseInputEmits) {
 		isClearVisible,
 		handleKeydown(event: KeyboardEvent): void {
 			maskedValue.masked.handleKeydown(event)
-			if (event.key !== 'Escape' || event.defaultPrevented || !isClearVisible.value) return
+			if (event.key !== 'Escape' || event.defaultPrevented || event.isComposing || !isClearVisible.value) return
 			event.preventDefault()
 			emit('update:modelValue', '')
 		},

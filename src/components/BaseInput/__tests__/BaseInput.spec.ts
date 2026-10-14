@@ -799,6 +799,14 @@ describe('BaseInput: имя и атрибуты поля', () => {
 			expect(text.emitted()['update:modelValue']).toBeUndefined()
 		})
 
+		it('Esc во время IME-композиции поле не очищает', () => {
+			const { emitted } = render(BaseInput, { props: { modelValue: 'кот', type: 'search', ariaLabel: 'Поиск' } })
+			const event = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true, isComposing: true })
+			screen.getByRole('searchbox').dispatchEvent(event)
+			expect(event.defaultPrevented).toBe(false)
+			expect(emitted()['update:modelValue']).toBeUndefined()
+		})
+
 		it('кнопки очистки нет у выключенного, только читаемого и обычного поля', () => {
 			render(BaseInput, { props: { modelValue: 'a', type: 'search', isDisabled: true } })
 			expect(screen.queryByRole('button', { name: 'Очистить' })).not.toBeInTheDocument()
