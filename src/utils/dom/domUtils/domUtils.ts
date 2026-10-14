@@ -1,5 +1,5 @@
 /** Утилиты: безопасное приведение DOM-типов и координаты fixed-элементов */
-import type { FixedOrigin } from './types/domUtils.types'
+import type { FixedBounds, FixedOrigin } from './types/domUtils.types'
 
 export function toHTMLElement(target: EventTarget | null): HTMLElement | null {
 	if (target instanceof HTMLElement) return target
@@ -70,6 +70,24 @@ export function getFixedOrigin(container: Element | null | undefined): FixedOrig
 		if (isTopLayer(node)) break
 	}
 	return { x: 0, y: 0 }
+}
+
+/** Атрибут предка, который задаёт границы для подсказок и панелей внутри него (плеер): они сдвигаются внутрь его рамки */
+const BOUNDS_ATTRIBUTE = 'data-rise-bounds'
+
+/**
+ * Границы для подсказок внутри `container`: рамка ближайшего предка с атрибутом `data-rise-bounds` (в координатах окна).
+ * `null` — предка нет, границы — окно. Подсказки кита сдвигаются внутрь этой рамки: у края плеера подсказка не выходит за него.
+ *
+ * @example
+ * // <div data-rise-bounds> … <BaseTooltip> … </div>
+ * const bounds = getBoundsRect(tooltip.parentElement)
+ */
+export function getBoundsRect(container: Element | null | undefined): FixedBounds | null {
+	const node = container?.closest(`[${BOUNDS_ATTRIBUTE}]`)
+	if (!node) return null
+	const rect = node.getBoundingClientRect()
+	return { x: rect.left + node.clientLeft, y: rect.top + node.clientTop, width: node.clientWidth, height: node.clientHeight }
 }
 
 function normalizeText(value: string | null | undefined): string {

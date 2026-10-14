@@ -22,6 +22,8 @@ export interface MediaControlButtonProps {
 	badge?: number
 	/** Кнопка-переключатель: `aria-pressed` */
 	isPressed?: boolean
+	/** Кнопка раскрывает панель, и она открыта (`aria-expanded`): подсказка не показывается, чтобы не закрывать панель */
+	ariaExpanded?: boolean
 	/** Кнопка включена (подсветка иконки), без `aria-pressed`: например, субтитры у кнопки меню */
 	isActive?: boolean
 }

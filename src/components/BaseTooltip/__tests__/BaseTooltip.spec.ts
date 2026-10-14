@@ -408,4 +408,31 @@ describe('BaseTooltip: доступность и край окна', () => {
 		expect(tooltip.style.left).toBe('360px')
 		layer.remove()
 	})
+	it('подсказка в предке с data-rise-bounds (плеер) сдвигается внутрь его рамки, а не окна', async () => {
+		vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(120)
+		vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(24)
+		const layer = document.createElement('div')
+		layer.style.transform = 'translateZ(0)'
+		layer.setAttribute('data-rise-bounds', '')
+		Object.defineProperty(layer, 'clientWidth', { configurable: true, value: 400 })
+		Object.defineProperty(layer, 'clientHeight', { configurable: true, value: 600 })
+		layer.getBoundingClientRect = () =>
+			({ top: 100, left: 50, width: 400, height: 600, bottom: 700, right: 450, x: 50, y: 100, toJSON: () => ({}) }) as DOMRect
+		document.body.append(layer)
+		const { container } = render(BaseTooltip, {
+			props: { text: 'Подсказка', isAlwaysVisible: true, position: 'bottom' },
+			slots: { default: '<button type="button">?</button>' },
+			global: { provide: { [TELEPORT_TARGET_KEY as symbol]: layer } },
+		})
+		const wrapper = container.querySelector('.base-tooltip') as HTMLElement
+		wrapper.getBoundingClientRect = () =>
+			({ top: 300, left: 400, width: 20, height: 20, bottom: 320, right: 420, x: 400, y: 300, toJSON: () => ({}) }) as DOMRect
+		await new Promise(resolve => requestAnimationFrame(() => resolve(null)))
+		await new Promise(resolve => requestAnimationFrame(() => resolve(null)))
+
+		const tooltip = await screen.findByRole('tooltip')
+		await waitFor(() => expect(tooltip.style.left).toBe('332px'))
+		expect(tooltip.style.getPropertyValue('--tooltip-arrow-offset')).toBe('28px')
+		layer.remove()
+	})
 })

@@ -1,6 +1,7 @@
 <template>
 	<div
 		ref="rootRef"
+		data-rise-bounds
 		:class="[
 			ui('root'),
 			variantClass,
@@ -83,29 +84,30 @@
 					</div>
 				</Transition>
 				<div v-if="captionLines.length || isCaptionDragging" :class="ui('captions')">
-					<div
-						class="base-media-player__caption-box"
-						:class="captionBoxClass"
-						:style="captionBoxStyle"
-						:data-tooltip="UI_PLAYER.CAPTIONS_DRAG"
-						@pointerdown="onCaptionPointerDown"
-						@pointermove="onCaptionPointerMove"
-						@pointerup="onCaptionPointerUp"
-						@pointercancel="onCaptionPointerUp"
-						@lostpointercapture="onCaptionPointerUp">
-						<span v-for="(line, lineIndex) in captionLines" :key="lineIndex" class="base-media-player__caption-line">
-							<span
-								v-for="(segment, segmentIndex) in line"
-								:key="segmentIndex"
-								:class="{
-									'base-media-player__caption--italic': segment.isItalic,
-									'base-media-player__caption--bold': segment.isBold,
-									'base-media-player__caption--underline': segment.isUnderline,
-								}">
-								{{ segment.text }}
+					<BaseTooltip is-wrapperless :text="UI_PLAYER.CAPTIONS_DRAG">
+						<div
+							class="base-media-player__caption-box"
+							:class="captionBoxClass"
+							:style="captionBoxStyle"
+							@pointerdown="onCaptionPointerDown"
+							@pointermove="onCaptionPointerMove"
+							@pointerup="onCaptionPointerUp"
+							@pointercancel="onCaptionPointerUp"
+							@lostpointercapture="onCaptionPointerUp">
+							<span v-for="(line, lineIndex) in captionLines" :key="lineIndex" class="base-media-player__caption-line">
+								<span
+									v-for="(segment, segmentIndex) in line"
+									:key="segmentIndex"
+									:class="{
+										'base-media-player__caption--italic': segment.isItalic,
+										'base-media-player__caption--bold': segment.isBold,
+										'base-media-player__caption--underline': segment.isUnderline,
+									}">
+									{{ segment.text }}
+								</span>
 							</span>
-						</span>
-					</div>
+						</div>
+					</BaseTooltip>
 				</div>
 				<div
 					v-if="seekHint"
@@ -207,6 +209,7 @@ import { UI_PLAYER } from '../model/messages'
 import { BaseLink } from '@components/BaseLink'
 import MediaIcon from './controls/MediaIcon.vue'
 import { BaseButton } from '@components/BaseButton'
+import { BaseTooltip } from '@components/BaseTooltip'
 import MediaNotices from './overlays/MediaNotices.vue'
 import MediaNextCard from './overlays/MediaNextCard.vue'
 import MediaAdOverlay from './overlays/MediaAdOverlay.vue'

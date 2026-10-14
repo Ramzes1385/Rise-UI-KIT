@@ -326,27 +326,26 @@
 		gap: sz(6px);
 	}
 
-	&__speed-preset {
-		@include button-reset;
-		text-align: center;
-		min-width: sz(40px);
-		padding: sz(4px) sz(10px);
-		border-radius: sz(8px);
-		background-color: var(--media-hover);
-		color: var(--media-text);
-		font-size: sz(13px);
-		font-variant-numeric: tabular-nums;
-		@include transition(background-color, color);
-		@include focus-ring;
+	&__speed-preset.base-button {
+		--custom-bg: var(--media-hover);
+		--custom-bg-hover: color-mix(in srgb, var(--rise-media-highlight) 20%, transparent);
+		--custom-text: var(--media-text);
+		--btn-pad-top: 4px;
+		--btn-pad-bottom: 4px;
+		--btn-pad-left: 10px;
+		--btn-pad-right: 10px;
 
-		&:hover {
-			background-color: color-mix(in srgb, var(--rise-media-highlight) 20%, transparent);
-		}
+		min-width: sz(40px);
+		border: 0;
+		border-radius: sz(8px);
+		font-size: sz(13px);
+		font-weight: inherit;
+		line-height: normal;
+		font-variant-numeric: tabular-nums;
 	}
 
-	&__speed-preset--active,
-	&__speed-preset--active:hover {
-		background-color: var(--media-primary-strong);
-		color: var(--media-text);
+	&__speed-preset--active.base-button {
+		--custom-bg: var(--media-primary-strong);
+		--custom-bg-hover: var(--media-primary-strong);
 	}
 }

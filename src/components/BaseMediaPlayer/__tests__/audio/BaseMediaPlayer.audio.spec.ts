@@ -2,7 +2,7 @@ import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
 import BaseMediaPlayer from '../../ui/BaseMediaPlayer.vue'
-import { fakeMedia, playerMenu } from '../utils/BaseMediaPlayer.test-utils'
+import { fakeMedia, playerMenu, tooltipOf } from '../utils/BaseMediaPlayer.test-utils'
 
 const AUDIO_TRACKS = [{ label: 'Оригинал' }, { src: '/audio/anilibria.m4a', label: 'AniLibria', isDefault: true }]
 
@@ -35,7 +35,8 @@ describe('BaseMediaPlayer: озвучки', () => {
 		expect(audioElement.volume).toBe(0.6)
 		expect(dub.options()).toEqual(['Оригинал', 'AniLibria'])
 		expect(dub.checked()).toBe('AniLibria')
-		expect(wrapper.get('button[aria-label="Озвучка"]').attributes('data-tooltip')).toBe('Озвучка: AniLibria')
+		expect(await tooltipOf(wrapper.get('button[aria-label="Озвучка"]').element)).toBe('Озвучка: AniLibria')
+		expect(document.querySelector('[role="tooltip"]')?.closest('.base-media-player__layer')?.parentElement).toBe(wrapper.element)
 		dub.pick('Оригинал')
 		await nextTick()
 		expect(videoElement.muted).toBe(false)

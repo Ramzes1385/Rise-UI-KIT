@@ -1,3 +1,4 @@
+import { tabTo } from '@/stories/helpers'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../BaseMediaPlayer.stories'
 import { expect, waitFor, within } from 'storybook/test'
@@ -25,7 +26,8 @@ export const AudioTracks: StoryObj<typeof meta> = {
 		await expect(storyVideo(canvasElement).muted).toBe(true)
 
 		const dub = canvas.getByRole('button', { name: 'Озвучка' })
-		await expect(dub).toHaveAttribute('data-tooltip', 'Озвучка: Озвучка A (330 Гц)')
+		await tabTo(dub, userEvent)
+		await expect(await player.findByRole('tooltip')).toHaveTextContent('Озвучка: Озвучка A (330 Гц)')
 		await userEvent.click(dub)
 		await userEvent.click(await player.findByRole('menuitemradio', { name: 'Оригинал' }))
 		await waitFor(() => expect(audio.hasAttribute('src')).toBe(false))

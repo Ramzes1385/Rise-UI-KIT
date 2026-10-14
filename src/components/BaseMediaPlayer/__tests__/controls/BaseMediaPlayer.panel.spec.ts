@@ -5,8 +5,8 @@ import type { VueWrapper } from '@vue/test-utils'
 import BaseMediaPlayer from '../../ui/BaseMediaPlayer.vue'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import type { FakeMediaValues } from '../utils/BaseMediaPlayer.test-utils'
-import { fakeMedia, playerMenu } from '../utils/BaseMediaPlayer.test-utils'
 import type { BaseMediaPlayerProps } from '../../types/BaseMediaPlayer.types'
+import { fakeMedia, playerMenu, tooltipOf } from '../utils/BaseMediaPlayer.test-utils'
 
 const SOURCE = '/media/demo.webm'
 
@@ -333,7 +333,7 @@ describe('BaseMediaPlayer: панель', () => {
 		await choose('button[aria-label="Озвучка"]', 'Студия')
 		expect(isOpen()).toBe(false)
 		expect(wrapper.get('button[aria-label="Озвучка"]').text()).toBe('')
-		expect(wrapper.get('button[aria-label="Озвучка"]').attributes('data-tooltip')).toBe('Озвучка: Студия')
+		expect(await tooltipOf(wrapper.get('button[aria-label="Озвучка"]').element)).toBe('Озвучка: Студия')
 		await wrapper.get('.base-media-player__chapter').trigger('click')
 		await wrapper
 			.findAll('.base-media-player__chapter-item')

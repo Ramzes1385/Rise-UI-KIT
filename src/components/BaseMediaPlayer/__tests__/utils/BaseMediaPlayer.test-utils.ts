@@ -1,4 +1,4 @@
-import { vi } from 'vitest'
+import { expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import type { VueWrapper } from '@vue/test-utils'
 import MediaControlBar from '../../ui/controls/MediaControlBar.vue'
@@ -134,4 +134,10 @@ export function playerMenu(wrapper: VueWrapper, name: string) {
 				?.onSelect?.(),
 		submenu: (label: string) => items().find(item => item.label.startsWith(label))?.children?.items ?? [],
 	}
+}
+
+export async function tooltipOf(trigger: Element): Promise<string> {
+	trigger.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
+	await vi.waitFor(() => expect(document.querySelector('[role="tooltip"]')).not.toBeNull())
+	return document.querySelector('[role="tooltip"]')?.textContent?.trim() ?? ''
 }

@@ -262,6 +262,14 @@ const origin = getFixedOrigin(panel.parentElement)
 panel.style.top = `${trigger.getBoundingClientRect().bottom - origin.y}px`
 ```
 
+`getBoundsRect(container)` — рамка `{ x, y, width, height }` (в координатах окна) ближайшего предка с атрибутом `data-rise-bounds`, `null` — предка нет, границы — окно. Подсказки кита сдвигаются внутрь этой рамки: у края плеера (корень плеера несёт `data-rise-bounds`) подсказка не выходит за него. Атрибут можно поставить на свой контейнер, внутрь которого телепортируются подсказки.
+
+```ts
+import { getBoundsRect } from '@ramzes1385/rise-ui-kit/utils'
+
+const bounds = getBoundsRect(panel.parentElement) // { x, y, width, height } | null
+```
+
 ---
 
 ## eventUtils, recurrenceUtils, icsUtils

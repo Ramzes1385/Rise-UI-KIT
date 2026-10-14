@@ -35,16 +35,16 @@
 			</BaseButton>
 		</div>
 		<div class="base-media-player__speed-presets">
-			<button
+			<BaseButton
 				v-for="preset in presets"
 				:key="preset.value"
-				type="button"
+				variant="ghost"
 				class="base-media-player__speed-preset"
 				:class="{ 'base-media-player__speed-preset--active': preset.isActive }"
 				:aria-pressed="preset.isActive"
 				@click="select(preset.value)">
 				{{ preset.label }}
-			</button>
+			</BaseButton>
 		</div>
 	</div>
 </template>

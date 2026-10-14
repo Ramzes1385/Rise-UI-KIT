@@ -3,8 +3,8 @@ import { nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
 import BaseMediaPlayer from '../../ui/BaseMediaPlayer.vue'
 import { fireEvent, render, screen } from '@testing-library/vue'
-import { playerMenu, fakeMedia } from '../utils/BaseMediaPlayer.test-utils'
 import type { BaseMediaPlayerProps } from '../../types/BaseMediaPlayer.types'
+import { playerMenu, fakeMedia, tooltipOf } from '../utils/BaseMediaPlayer.test-utils'
 
 const SOURCE = '/media/demo.webm'
 
@@ -188,7 +188,7 @@ describe('BaseMediaPlayer: субтитры', () => {
 		area.getBoundingClientRect = () => ({ width: 1000, height: 500 }) as DOMRect
 		box.getBoundingClientRect = () => ({ width: 200, height: 50 }) as DOMRect
 
-		expect(box).toHaveAttribute('data-tooltip', 'Перетащите, чтобы переместить субтитры')
+		expect(await tooltipOf(box)).toBe('Перетащите, чтобы переместить субтитры')
 		await fireEvent.pointerDown(box, { button: 0, clientX: 500, clientY: 430 })
 		await fireEvent.pointerMove(box, { clientX: 400, clientY: 230 })
 		expect(box.style.left).toBe('40%')

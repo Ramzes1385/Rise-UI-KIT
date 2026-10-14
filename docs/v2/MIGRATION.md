@@ -2905,3 +2905,9 @@ BaseEditor, замечания проверки по диалогу ссылки
 - **BaseFileManager, объявление**: после переименования и создания папки скринридер слышит «Переименовано: «имя»» и «Создана папка «имя»» (`UI_FILE_MANAGER.RENAMED`, `FOLDER_CREATED`; невидимая область `aria-live="polite"`). Объявление не зависит от того, принял ли приложение `rename` и `create-folder`.
 - **Истории (только внутри кита)**: помощник `freezeStoryClock()` в `@/stories/helpers`; API компонентов не менялся.
 - **BaseImage, BaseChip**: API, DOM и вид не менялись (только внутри: миксин `custom-button-colors` в стилях BaseImage).
+
+## Задача player
+
+- **BaseMediaPlayer, подсказки (C1)**: подсказки кнопок панели, переключателя «Автопереход», блока субтитров и ссылок актёров — `BaseTooltip` (без обёртки, `isWrapperless`), а не CSS-псевдоэлемент `::after` с `content: attr(data-tooltip)`. Атрибут `data-tooltip` с этих элементов убран: тесты и селекторы приложения по `[data-tooltip]` замените на роль `tooltip` (подсказка появляется при наведении и при фокусе с клавиатуры, живёт в слое `.base-media-player__layer` внутри корня плеера и поэтому видна в полноэкранном режиме). Пока кнопка раскрывает открытую панель (`aria-expanded="true"`), подсказки нет; на время показа кнопка получает `aria-describedby` на подсказку, если текст подсказки отличается от её `aria-label` («Озвучка: AniLibria»); при совпадении текста атрибута нет.
+- **BaseMediaPlayer, пресеты скорости**: кнопки пресетов в меню скорости — `BaseButton` (класс `base-media-player__speed-preset` остался, добавились `base-button`, `base-button--ghost`, `base-button__label`); активный пресет по-прежнему `aria-pressed="true"` и класс `--active`.
+- **BaseTooltip, границы**: подсказка внутри предка с атрибутом `data-rise-bounds` (корень BaseMediaPlayer) сдвигается внутрь его рамки, а не только внутрь окна. Без атрибута поведение прежнее. В `utils` добавлена `getBoundsRect(container)`.

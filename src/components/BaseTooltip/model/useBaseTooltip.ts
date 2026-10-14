@@ -3,10 +3,11 @@ import { useUi } from '@composables/base/useUi'
 import type { UiClassFn } from '@composables/base/useUi'
 import type { TooltipLayout } from '@utils/dom/tooltipUtils'
 import { useEscapeKey } from '@composables/overlay/useEscapeKey'
-import { getAccessibleName, getFixedOrigin } from '@utils/dom/domUtils'
+import type { FixedBounds, FixedOrigin } from '@utils/dom/domUtils'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseTooltipPart, TooltipProps } from '../types/BaseTooltip.types'
 import { useTriggerAttributes } from '@composables/overlay/useTriggerAttributes'
+import { getAccessibleName, getBoundsRect, getFixedOrigin } from '@utils/dom/domUtils'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import { useInheritedThemeAttrs, useTeleportTarget } from '@composables/app/useTeleportTarget'
 import { calcTooltipPosition, calcTooltipShift, resolveTooltipPlacement } from '@utils/dom/tooltipUtils'
@@ -20,11 +21,31 @@ function getViewport(): { width: number; height: number } {
 	return { width: root.clientWidth || window.innerWidth, height: root.clientHeight || window.innerHeight }
 }
 
+function visibleBounds(bounds: FixedBounds | null): { x: number; y: number; width: number; height: number } {
+	const { width: windowWidth, height: windowHeight } = getViewport()
+	const left = Math.max(0, bounds?.x ?? 0)
+	const top = Math.max(0, bounds?.y ?? 0)
+	const right = Math.min(windowWidth, bounds ? bounds.x + bounds.width : windowWidth)
+	const bottom = Math.min(windowHeight, bounds ? bounds.y + bounds.height : windowHeight)
+	return { x: left, y: top, width: right - left, height: bottom - top }
+}
+
+function syncFixedFrame(container: Element | null | undefined, frame: { origin: Ref<FixedOrigin>; bounds: Ref<FixedBounds | null> }): void {
+	const { x, y } = getFixedOrigin(container)
+	if (frame.origin.value.x !== x || frame.origin.value.y !== y) frame.origin.value = { x, y }
+	const clip = getBoundsRect(container)
+	if (JSON.stringify(clip) !== JSON.stringify(frame.bounds.value)) frame.bounds.value = clip
+}
+
 function useTooltipPosition(props: TooltipProps, wrapperRef: Ref<HTMLElement | null>, popupRef: Ref<HTMLElement | null>) {
 	const coords = ref({ top: 0, left: 0, width: 0, height: 0 })
 	const origin = ref({ x: 0, y: 0 })
 	const popupSize = ref({ width: 0, height: 0 })
-	const currentLayout = (): TooltipLayout => ({ coords: coords.value, size: popupSize.value, viewport: getViewport() })
+	const bounds = ref<FixedBounds | null>(null)
+	const currentLayout = (): TooltipLayout => {
+		const { x, y, ...viewport } = visibleBounds(bounds.value)
+		return { coords: { ...coords.value, top: coords.value.top - y, left: coords.value.left - x }, size: popupSize.value, viewport }
+	}
 	const placement = computed(() => resolveTooltipPlacement(props.position, currentLayout(), GAP))
 
 	return {
@@ -47,8 +68,7 @@ function useTooltipPosition(props: TooltipProps, wrapperRef: Ref<HTMLElement | n
 			if (current.top !== top || current.left !== left || current.width !== width || current.height !== height) {
 				coords.value = { top, left, width, height }
 			}
-			const { x, y } = getFixedOrigin(popupRef.value?.parentElement)
-			if (origin.value.x !== x || origin.value.y !== y) origin.value = { x, y }
+			syncFixedFrame(popupRef.value?.parentElement, { origin, bounds })
 		},
 		measurePopup(): void {
 			const popup = popupRef.value

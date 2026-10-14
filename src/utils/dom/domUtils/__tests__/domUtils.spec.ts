@@ -1,6 +1,14 @@
 import '@testing-library/jest-dom/vitest'
 import { describe, it, expect, vi, afterEach } from 'vitest'
-import { getAccessibleName, getActiveElement, getFixedOrigin, toHTMLElement, toHTMLInputElement, toHTMLTextAreaElement } from '../domUtils'
+import {
+	getAccessibleName,
+	getActiveElement,
+	getBoundsRect,
+	getFixedOrigin,
+	toHTMLElement,
+	toHTMLInputElement,
+	toHTMLTextAreaElement,
+} from '../domUtils'
 
 describe('domUtils', () => {
 	afterEach(() => {
@@ -162,6 +170,32 @@ describe('domUtils', () => {
 		it('пустой элемент — пустая строка', () => {
 			document.body.innerHTML = '<button id="t"></button>'
 			expect(getAccessibleName(document.getElementById('t'))).toBe('')
+		})
+	})
+	describe('getBoundsRect', () => {
+		afterEach(() => {
+			document.body.replaceChildren()
+		})
+
+		it('нет предка с data-rise-bounds — null', () => {
+			const inner = document.createElement('div')
+			document.body.append(inner)
+			expect(getBoundsRect(inner)).toBeNull()
+			expect(getBoundsRect(null)).toBeNull()
+		})
+
+		it('рамка ближайшего предка с data-rise-bounds без рамок и полос прокрутки', () => {
+			const outer = document.createElement('div')
+			const inner = document.createElement('div')
+			outer.setAttribute('data-rise-bounds', '')
+			outer.append(inner)
+			document.body.append(outer)
+			vi.spyOn(outer, 'getBoundingClientRect').mockReturnValue(new DOMRect(40, 300, 500, 200))
+			vi.spyOn(outer, 'clientLeft', 'get').mockReturnValue(2)
+			vi.spyOn(outer, 'clientTop', 'get').mockReturnValue(3)
+			vi.spyOn(outer, 'clientWidth', 'get').mockReturnValue(496)
+			vi.spyOn(outer, 'clientHeight', 'get').mockReturnValue(194)
+			expect(getBoundsRect(inner)).toEqual({ x: 42, y: 303, width: 496, height: 194 })
 		})
 	})
 })

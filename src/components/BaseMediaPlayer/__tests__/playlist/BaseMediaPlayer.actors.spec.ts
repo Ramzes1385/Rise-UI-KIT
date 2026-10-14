@@ -2,7 +2,7 @@ import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
 import BaseMediaPlayer from '../../ui/BaseMediaPlayer.vue'
-import { fakeMedia } from '../utils/BaseMediaPlayer.test-utils'
+import { fakeMedia, tooltipOf } from '../utils/BaseMediaPlayer.test-utils'
 import type { MediaPlaylist } from '../../types/content/MediaPlaylist.types'
 
 const SEASON_CAST = [
@@ -71,6 +71,7 @@ describe('BaseMediaPlayer: «В ролях»', () => {
 			target: '_blank',
 			rel: 'noopener noreferrer',
 		})
+		expect(await tooltipOf(links[0].element)).toBe('Instagram')
 		await episodes.trigger('click')
 		expect(panel.find('.base-media-player__episodes-list').exists()).toBe(true)
 	})

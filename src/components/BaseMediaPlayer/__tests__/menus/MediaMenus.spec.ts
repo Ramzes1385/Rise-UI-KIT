@@ -5,10 +5,10 @@ import MediaSlider from '../../ui/controls/MediaSlider.vue'
 import MediaSwitch from '../../ui/controls/MediaSwitch.vue'
 import { useMediaPip } from '../../model/screen/useMediaPip'
 import { useMediaMenus } from '../../model/menus/useMediaMenus'
-import { withSetup } from '../utils/BaseMediaPlayer.test-utils'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import type { MediaMenuList } from '../../types/menus/MediaMenu.types'
 import MediaControlButton from '../../ui/controls/MediaControlButton.vue'
+import { tooltipOf, withSetup } from '../utils/BaseMediaPlayer.test-utils'
 import type { MediaMenusSource } from '../../types/controls/MediaControls.types'
 
 const HD = { id: '/media/hd.webm', label: '720p' }
@@ -165,7 +165,7 @@ describe('кнопки панели', () => {
 		const { rerender } = render(MediaControlButton, { props: { icon: 'speed', label: 'Скорость воспроизведения', text: '1,5×' } })
 		const button = screen.getByRole('button', { name: 'Скорость воспроизведения' })
 
-		expect(button).toHaveAttribute('data-tooltip', 'Скорость воспроизведения')
+		expect(await tooltipOf(button)).toBe('Скорость воспроизведения')
 		expect(button).not.toHaveAttribute('aria-pressed')
 		expect(button).toHaveTextContent('1,5×')
 		expect(button.querySelector('path')).toHaveAttribute('d', expect.stringMatching(/^M/))
@@ -174,6 +174,32 @@ describe('кнопки панели', () => {
 		expect(screen.getByRole('button', { name: 'Назад на 10 с' })).toHaveAttribute('aria-pressed', 'true')
 		expect(button).toHaveClass('base-media-player__control--stacked', 'base-media-player__control--active')
 		expect(button.querySelector('.base-media-player__control-badge')).toHaveTextContent('3')
+	})
+
+	it('подсказка кнопки: подробный текст описывает кнопку, у раскрытой панели подсказки нет, имя не дублируется', async () => {
+		const { rerender } = render(MediaControlButton, { props: { icon: 'dub', label: 'Озвучка', tooltip: 'Озвучка: AniLibria' } })
+		const button = screen.getByRole('button', { name: 'Озвучка' })
+
+		expect(await tooltipOf(button)).toBe('Озвучка: AniLibria')
+		expect(button.getAttribute('aria-describedby')).toBe(document.querySelector('[role="tooltip"]')?.id)
+		button.dispatchEvent(new FocusEvent('focusout', { bubbles: true }))
+		await vi.waitFor(() => expect(document.querySelector('[role="tooltip"]')).toBeNull())
+
+		await rerender({ tooltip: undefined, ariaExpanded: true })
+		expect(button).toHaveAttribute('aria-expanded', 'true')
+		button.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
+		await new Promise(resolve => setTimeout(resolve, 200))
+		expect(document.querySelector('[role="tooltip"]')).toBeNull()
+
+		await rerender({ ariaExpanded: false })
+		expect(await tooltipOf(button)).toBe('Озвучка')
+		expect(button).not.toHaveAttribute('aria-describedby')
+	})
+
+	it('подсказка переключателя: подпись показывается при фокусе', async () => {
+		render(MediaSwitch, { props: { label: 'Автовоспроизведение', isChecked: false } })
+
+		expect(await tooltipOf(screen.getByRole('switch', { name: 'Автовоспроизведение' }))).toBe('Автовоспроизведение')
 	})
 
 	it('переключатель: role=switch, щелчок сообщает новое значение', async () => {

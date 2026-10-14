@@ -46,19 +46,18 @@
 								<span v-if="actor.role" class="base-media-player__actor-role">{{ actor.role }}</span>
 							</span>
 							<span v-if="actor.links.length" class="base-media-player__actor-links">
-								<BaseLink
-									v-for="link in actor.links"
-									:key="link.url"
-									variant="ghost"
-									class="base-media-player__actor-link"
-									:href="link.url"
-									target="_blank"
-									:has-external-icon="false"
-									:aria-label="link.ariaLabel"
-									:data-tooltip="link.label"
-									:style="{ '--media-share-color': link.color }">
-									<MediaIcon :name="link.icon" />
-								</BaseLink>
+								<BaseTooltip v-for="link in actor.links" :key="link.url" is-wrapperless :text="link.label">
+									<BaseLink
+										variant="ghost"
+										class="base-media-player__actor-link"
+										:href="link.url"
+										target="_blank"
+										:has-external-icon="false"
+										:aria-label="link.ariaLabel"
+										:style="{ '--media-share-color': link.color }">
+										<MediaIcon :name="link.icon" />
+									</BaseLink>
+								</BaseTooltip>
 							</span>
 						</li>
 					</ul>
@@ -103,6 +102,7 @@
 import { BaseLink } from '@components/BaseLink'
 import MediaIcon from '../controls/MediaIcon.vue'
 import { BaseAvatar } from '@components/BaseAvatar'
+import { BaseTooltip } from '@components/BaseTooltip'
 import { UI_ARIA, UI_PLAYER } from '../../model/messages'
 import MediaControlButton from '../controls/MediaControlButton.vue'
 import { useMediaEpisodesPanel } from '../../model/panels/useMediaEpisodesPanel'
