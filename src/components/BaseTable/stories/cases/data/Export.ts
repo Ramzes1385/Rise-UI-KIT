@@ -78,7 +78,7 @@ export const Export: StoryObj<typeof meta> = {
 		const csv = await screen.findByRole('menuitem', { name: 'CSV' }, { timeout: STORY_WAIT_TIMEOUT })
 		await waitFor(() => expect(screen.getByRole('menuitem', { name: 'Excel (XLSX)' })).toBeVisible(), { timeout: STORY_WAIT_TIMEOUT })
 		await userEvent.click(csv)
-		await waitFor(() => expect(canvas.getByRole('status')).toHaveTextContent('CSV: строк 6, колонок 6'))
+		await waitFor(() => expect(canvas.getByText('CSV: строк 6, колонок 6')).toBeVisible())
 		await expect(args.onExport).toHaveBeenCalledWith(expect.objectContaining({ format: 'csv' }))
 	},
 }

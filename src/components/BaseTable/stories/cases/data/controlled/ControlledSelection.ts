@@ -58,11 +58,11 @@ export const ControlledSelection: StoryObj<typeof meta> = {
 		template,
 	}),
 	play: async ({ canvas, userEvent }) => {
-		await expect(canvas.getByRole('status')).toHaveTextContent('Выбрано заказов: 1')
+		await expect(canvas.getByText('Выбрано заказов: 1')).toBeVisible()
 		await expect(canvas.getByRole('checkbox', { name: 'Выбрать строку 3' })).toBeChecked()
 
 		await userEvent.click(canvas.getByRole('checkbox', { name: 'Выбрать строку 1' }))
-		await waitFor(() => expect(canvas.getByRole('status')).toHaveTextContent('Выбрано заказов: 2'))
+		await waitFor(() => expect(canvas.getByText('Выбрано заказов: 2')).toBeVisible())
 		await expect(canvas.getByRole('checkbox', { name: 'Выбрать строку 1' })).toBeChecked()
 
 		const set = canvas.getByRole('button', { name: 'Выбрать два заказа' })
@@ -74,7 +74,7 @@ export const ControlledSelection: StoryObj<typeof meta> = {
 		const clear = canvas.getByRole('button', { name: 'Снять выбор' })
 		clear.focus()
 		await userEvent.keyboard('{Enter}')
-		await waitFor(() => expect(canvas.getByRole('status')).toHaveTextContent('Выбрано заказов: 0'))
+		await waitFor(() => expect(canvas.getByText('Выбрано заказов: 0')).toBeVisible())
 		await expect(canvas.getByRole('checkbox', { name: 'Выбрать строку 1' })).not.toBeChecked()
 	},
 }
