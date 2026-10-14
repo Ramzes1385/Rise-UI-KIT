@@ -34,10 +34,11 @@ export function useFileManagerList(core: FileManagerCore, commands: FileManagerC
 		stopObserving()
 		if (!current) return
 		void nextTick(() => {
-			if (editing.value !== current) return
-			observeEditor(current)
-			const input = mainRef.value?.querySelector<HTMLInputElement>('.base-file-manager__editor input')
-			if (input) selectName(input, current.mode === 'rename' ? core.index.value.byId.get(current.id) : undefined)
+			if (editing.value === current) {
+				observeEditor(current)
+				const input = mainRef.value?.querySelector<HTMLInputElement>('.base-file-manager__editor input')
+				if (input) selectName(input, current.mode === 'rename' ? core.index.value.byId.get(current.id) : undefined)
+			}
 		})
 	})
 
