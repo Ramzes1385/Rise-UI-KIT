@@ -487,3 +487,10 @@
 | Постоянная live-область BaseBanner при `isOpen=false` | Решение DECISIONS 14.10 | Задача fix-ui |
 | Накопление изменений `useScrollableRegion` через `requestAnimationFrame` | Замер: ≈0,014 мс на кадр | № 60 |
 | Цвет родителя у кнопок Kanban и InputNumber | Решено в wave2-fix и polish-1 | Задача core1 |
+
+## Задача hygiene-3
+
+- Переведено на `@include button-reset;` 4 правила: BaseBadge (`__remove`), BaseImageMap (`__entry`, `__route-step`), BaseImageMapEditor (`__item`); `text-align` везде прежний (`center` у `__remove`, `start` у остальных). Вид и DOM не менялись.
+- Остальные компоненты списка (BaseChat, BaseCryptoProSign, BaseToolbar, BaseInput, BaseBanner, BaseColorModeButton, BaseHoverCard, BaseImageMap3D) ручного сброса кнопки уже не имеют: BaseChat переведён в a11y-fixes, остальные строят кнопки на BaseButton.
+- Оставлено с причиной: BaseImageMap `__point` (тег приходит из данных: `a`, `button` или `div`, курсор не задан — миксин добавил бы `pointer`), BaseImageMap3D `__point` и `__svg-object` (не кнопки), BaseImageMap `__filter` (`fieldset`).
+- Новый миксин `field-reset` (рамка, обводка, фон, цвет, шрифт) — сброс повторялся в четырёх местах: BaseInput `__field`, BaseCascader и BaseTreeSelect `__search-input`, BasePromptInput `__control`. Остальные поля (BaseTextarea, BaseMention, BasePin, ChatInput) рисуют рамку через `field-box`, BaseCommandPalette использует BaseInput. Вид не менялся.

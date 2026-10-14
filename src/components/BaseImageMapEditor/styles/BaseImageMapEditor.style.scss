@@ -343,6 +343,7 @@
 	}
 
 	&__item {
+		@include button-reset;
 		display: flex;
 		flex: 1;
 		align-items: baseline;
@@ -351,15 +352,11 @@
 		box-sizing: border-box;
 		width: 100%;
 		min-width: 0;
-		margin: 0;
 		padding: space(6px 8px);
 		border: 1px solid transparent;
 		border-radius: sz(var(--rise-radius-md));
-		background: none;
 		color: var(--rise-text);
-		font: inherit;
 		text-align: start;
-		cursor: pointer;
 		@include text-size(sm);
 		@include transition-colors;
 		@include focus-ring(0);

@@ -24,16 +24,12 @@
 	}
 
 	&__field {
+		@include field-reset;
 		flex: 1;
 		width: 100%;
 		min-width: 0;
 		padding: sz(ct(input, padding-y, var(--rise-control-padding-y))) sz(ct(input, padding-x, var(--rise-control-padding-x)));
-		border: none;
 		border-radius: 0;
-		outline: none;
-		background-color: transparent;
-		color: inherit;
-		font: inherit;
 		@include control-text;
 
 		&::placeholder {

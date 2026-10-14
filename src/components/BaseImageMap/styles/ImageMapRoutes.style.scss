@@ -112,20 +112,15 @@
 	}
 
 	&__route-step {
+		@include button-reset;
 		display: flex;
 		align-items: baseline;
 		gap: sz(8px);
 		box-sizing: border-box;
 		width: 100%;
-		margin: 0;
 		padding: space(6px 8px);
-		border: 0;
 		border-radius: sz(ct(image-map, route-step-radius, var(--rise-radius-md)));
-		background: none;
-		color: inherit;
-		font: inherit;
 		text-align: start;
-		cursor: pointer;
 		@include text-size(sm);
 		@include transition-colors;
 		@include focus-ring;

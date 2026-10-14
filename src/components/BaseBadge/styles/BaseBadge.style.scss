@@ -112,18 +112,15 @@
 	}
 
 	&__remove {
+		@include button-reset;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		flex-shrink: 0;
 		width: sz(ct(badge, remove-width, 16px));
 		height: sz(ct(badge, remove-height, 16px));
-		padding: 0;
-		border: 0;
 		border-radius: sz(var(--rise-radius-xs));
-		background-color: transparent;
-		color: inherit;
-		cursor: pointer;
+		text-align: center;
 		opacity: 0.7;
 		@include transition(opacity, background-color);
 		@include focus-ring(1px);

@@ -198,14 +198,11 @@
 	}
 
 	&__search-input {
+		@include field-reset;
 		flex: 1;
 		min-width: 0;
 		padding: sz(var(--rise-control-padding-y)) 0;
-		border: none;
-		outline: none;
-		background-color: transparent;
 		color: var(--rise-text-highlighted);
-		font: inherit;
 		@include control-text;
 
 		&::placeholder {

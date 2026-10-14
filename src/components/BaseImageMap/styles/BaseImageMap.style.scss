@@ -421,21 +421,18 @@
 	}
 
 	&__entry {
+		@include button-reset;
 		display: flex;
 		align-items: center;
 		gap: sz(10px);
 		box-sizing: border-box;
 		width: 100%;
-		margin: 0;
 		padding: space(6px 8px);
 		border: 1px solid transparent;
 		border-radius: sz(ct(image-map, entry-radius, var(--rise-radius-md)));
-		background: none;
 		color: var(--rise-text);
-		font: inherit;
 		text-align: start;
 		text-decoration: none;
-		cursor: pointer;
 		@include text-size(sm);
 		@include transition-colors;
 		@include focus-ring(0);

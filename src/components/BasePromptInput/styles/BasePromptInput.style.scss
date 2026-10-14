@@ -20,6 +20,7 @@
 	}
 
 	&__control {
+		@include field-reset;
 		display: block;
 		box-sizing: border-box;
 		width: 100%;
@@ -27,14 +28,9 @@
 		margin: 0;
 		padding: sz(12px) sz(14px) sz(4px);
 		overflow-y: auto;
-		border: 0;
-		background-color: transparent;
-		color: inherit;
-		font: inherit;
 		@include control-text;
 		font-size: sz(ct(prompt-input, control-font-size, var(--rise-control-font-size)));
 		resize: none;
-		outline: none;
 		@include scrollbar-thin;
 
 		&::placeholder {
