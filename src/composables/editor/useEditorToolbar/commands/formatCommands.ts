@@ -96,8 +96,7 @@ function handleHeadingChange(ctx: UseToolbarCommandsOptions, value: string | num
 function clearCodeFormatting(ctx: UseToolbarCommandsOptions): void {
 	const el = ctx.getCodeTextarea()
 	if (!el) return
-	replaceCodeSelection(el, ctx.codeContent, selected => selected.replace(/<[^>]*>/g, ''))
-	ctx.onInput()
+	if (!replaceCodeSelection(el, ctx.codeContent, selected => selected.replace(/<[^>]*>/g, ''))) ctx.onInput()
 }
 
 /** Визуальный режим: снимает начертание, цвета, блок и список */

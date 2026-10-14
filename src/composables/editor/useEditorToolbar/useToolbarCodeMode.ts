@@ -19,8 +19,7 @@ function useToolbarCodeMode(options: UseToolbarCodeModeOptions) {
 	function editCodeSelection(replace: (selected: string) => string): void {
 		const el = getCodeTextarea()
 		if (!el) return
-		replaceCodeSelection(el, codeContent, replace)
-		onInput()
+		if (!replaceCodeSelection(el, codeContent, replace)) onInput()
 	}
 
 	function toggleCodeMode(): void {

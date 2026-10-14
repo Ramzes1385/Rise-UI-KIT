@@ -100,6 +100,15 @@ function fillEmptyRoot(root: HTMLElement): Range {
 	return getSelectionRange(root) as Range
 }
 
+/** Список не принимает текст прямо в себя: каретка спускается в первый (или последний) пункт, в том числе вложенного списка */
+function descendIntoLists(node: Node | null, isForward: boolean): Node | null {
+	let current = node
+	while (current instanceof HTMLElement && LIST_TAGS.has(current.tagName)) {
+		current = isForward ? current.firstElementChild : current.lastElementChild
+	}
+	return current
+}
+
 /**
  * Выделение, одним концом лежавшее прямо в корне (`(root, 0)` у «Выделить всё» до первого текстового узла),
  * после удаления остаётся на корне: каретка уходит в начало следующего блока (или в конец последнего), чтобы
@@ -108,7 +117,7 @@ function fillEmptyRoot(root: HTMLElement): Range {
 function moveCaretIntoBlock(root: HTMLElement, range: Range): Range {
 	if (range.startContainer !== root) return range
 	const forward = root.childNodes[range.startOffset]
-	const target = forward ?? root.lastChild
+	const target = descendIntoLists(forward ?? root.lastChild, Boolean(forward))
 	if (!(target instanceof HTMLElement) || target.matches(CONTENT_ELEMENTS)) return range
 	const caret = document.createRange()
 	caret.selectNodeContents(target)

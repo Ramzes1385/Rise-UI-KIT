@@ -271,6 +271,24 @@ describe('insertHtmlAtSelection: выделение через блоки и с�
 			expect(root.innerHTML).toBe('<p>a</p><p><br></p>')
 		})
 
+		it('начало в корне, конец внутри первого списка: вставка попадает в пункт, а не между ul и li', () => {
+			const root = createRoot('<ul><li>one</li><li>second</li></ul><p>tail</p>')
+			select([root, 0], [root.querySelector('li')!.firstChild!, 1])
+
+			insertHtmlAtSelection(root, 'X')
+
+			expect(root.innerHTML).toBe('<ul><li>Xne</li><li>second</li></ul><p>tail</p>')
+		})
+
+		it('удалён хвост после списка: каретка в конце последнего пункта списка', () => {
+			const root = createRoot('<ol><li>x</li><li>yz</li></ol><p>tail</p>')
+			select([root, 1], [root, 2])
+
+			insertHtmlAtSelection(root, 'X')
+
+			expect(root.innerHTML).toBe('<ol><li>x</li><li>yzX</li></ol>')
+		})
+
 		it('каретка рядом с разделителем остаётся на корне', () => {
 			const root = createRoot('<p>a</p><p>b</p><hr>')
 			select([root, 0], [root, 2])

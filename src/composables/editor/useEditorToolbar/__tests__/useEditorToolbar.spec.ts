@@ -883,7 +883,7 @@ describe('useEditorToolbar', () => {
 			expect(document.execCommand).toHaveBeenCalledWith('insertText', false, '<b>hello</b>')
 			expect(textarea.value).toBe('say <b>hello</b> now')
 			expect(toolbar.codeContent.value).toBe('say <b>hello</b> now')
-			expect(onInput).toHaveBeenCalled()
+			expect(onInput).not.toHaveBeenCalled()
 		})
 
 		it('выделение возвращается в поле перед вставкой, чтобы команда заменила его', () => {

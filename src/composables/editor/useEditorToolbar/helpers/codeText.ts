@@ -7,8 +7,9 @@ import type { UseToolbarCodeModeOptions } from '../types/useToolbarCodeMode.type
  * Правка идёт через `execCommand('insertText')` в самом поле: это единственный способ записать текст в нативную
  * историю поля, и Ctrl+Z отменяет обёртку тегами так же, как набор. Присваивание `value` стёрло бы историю.
  * Где поле не получило фокус (его держит диалог), команды нет или она отказала, текст ставится присваиванием, и такая правка не отменяется.
+ * Возвращает `true`, если правку сделала команда: поле само сообщило о вводе событием `input`, и вызывающий не сообщает о ней второй раз.
  */
-function replaceCodeSelection(el: HTMLTextAreaElement, content: Ref<string>, replace: (selected: string) => string): void {
+function replaceCodeSelection(el: HTMLTextAreaElement, content: Ref<string>, replace: (selected: string) => string): boolean {
 	const start = el.selectionStart
 	const end = el.selectionEnd
 	const replacement = replace(content.value.substring(start, end))
@@ -20,9 +21,10 @@ function replaceCodeSelection(el: HTMLTextAreaElement, content: Ref<string>, rep
 		document.execCommand('insertText', false, replacement)
 	) {
 		content.value = el.value
-		return
+		return true
 	}
 	content.value = content.value.substring(0, start) + replacement + content.value.substring(end)
+	return false
 }
 
 /** Поле textarea режима кода: сам элемент или textareaRef компонента поля */
