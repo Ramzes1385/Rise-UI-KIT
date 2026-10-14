@@ -1957,3 +1957,5 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 Эталонов снимков не создавал и не обновлял; ожидаемые изменения:
 
 - **BaseDashboardGrid** (истории `layout-basedashboardgrid--editable`, `--keyboard`, `--static-items`, `--animations`, `--sizes`, `--variants`, `--theming`, `--custom-color`, `--long-content`, где `isEditable`): ручка перетаскивания — не квадрат 24px поверх правого верхнего угла, а полоса высотой 28px над содержимым с значком справа; тело карточки начинается под ней, карточка с тем же размером показывает на 28px меньше места под содержимое. Виджеты `isStatic` и режим без редактирования не меняются.
+
+- **BaseMegaMenu** (новая история `navigation-basemegamenu--drilldown-by-width`): два меню — шириной 360px (drill-down: заголовок уровня, «Назад к …») и 720px (каскад). Существующие истории не меняются (`drilldown` по умолчанию `never`; у `MegaMenuDrilldown` `always`).

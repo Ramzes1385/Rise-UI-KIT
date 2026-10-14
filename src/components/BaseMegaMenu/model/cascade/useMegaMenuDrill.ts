@@ -24,7 +24,7 @@ function useDrillLevel(props: MegaMenuDrillGroupProps) {
 	const path = shallowRef<MegaMenuLinkEntry[]>([])
 	const current = computed(() => path.value.at(-1))
 	const depth = computed(() => path.value.length)
-	const rootTitle = props.group.title ?? props.item.label
+	const rootTitle = computed(() => props.group.title ?? props.item.label)
 	const levelTitle = computed(() => current.value?.link.label ?? props.group.title)
 
 	return {
@@ -38,7 +38,7 @@ function useDrillLevel(props: MegaMenuDrillGroupProps) {
 		levelTitleId: computed(() => `${props.titleId}-${depth.value}`),
 		parentId: computed(() => current.value?.id ?? props.linksId),
 		backLabel: computed(() =>
-			formatMessage(UI_ARIA.MEGA_MENU_BACK_TO, { title: depth.value > 1 ? path.value[depth.value - 2].link.label : rootTitle }),
+			formatMessage(UI_ARIA.MEGA_MENU_BACK_TO, { title: depth.value > 1 ? path.value[depth.value - 2].link.label : rootTitle.value }),
 		),
 	}
 }
@@ -79,7 +79,7 @@ export function useMegaMenuDrill(props: MegaMenuDrillGroupProps, emit: MegaMenuD
 		const leftId = level.current.value?.id ?? ''
 		direction.value = 'back'
 		level.path.value = level.path.value.slice(0, -1)
-		announcement.value = announceLevel(level.levelTitle.value ?? level.rootTitle, level.links.value)
+		announcement.value = announceLevel(level.levelTitle.value ?? level.rootTitle.value, level.links.value)
 		void nextTick(() => document.getElementById(leftId)?.focus())
 	}
 

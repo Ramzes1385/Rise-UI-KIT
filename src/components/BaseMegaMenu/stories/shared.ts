@@ -223,3 +223,33 @@ export const CASCADE_ITEMS: MegaMenuItem[] = [
 	},
 	{ key: 'pricing', label: 'Цены', to: '/pricing' },
 ]
+
+export const WIDTH_ITEMS: MegaMenuItem[] = [
+	{
+		key: 'catalog',
+		label: 'Каталог',
+		groups: [
+			{
+				title: 'Товары',
+				items: [
+					{
+						label: 'Электроника',
+						children: [
+							{ label: 'Телефоны', to: '/c/phones' },
+							{ label: 'Ноутбуки', to: '/c/laptops' },
+							{ label: 'Планшеты', to: '/c/tablets' },
+						],
+					},
+					{
+						label: 'Дом и сад',
+						children: [
+							{ label: 'Мебель', to: '/c/furniture' },
+							{ label: 'Инструменты', to: '/c/tools' },
+						],
+					},
+					{ label: 'Распродажа', to: '/c/sale' },
+				],
+			},
+		],
+	},
+]

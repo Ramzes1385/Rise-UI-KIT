@@ -230,7 +230,96 @@ describe('BaseMegaMenu: drill-down', () => {
 	})
 })
 
+function stubMenuWidth(initial: number) {
+	let width = initial
+	let notify: () => void = () => undefined
+	vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(() => width)
+	vi.stubGlobal(
+		'ResizeObserver',
+		class {
+			constructor(callback: () => void) {
+				notify = callback
+			}
+			observe = vi.fn()
+			disconnect = vi.fn()
+		},
+	)
+	return async (next: number): Promise<void> => {
+		width = next
+		notify()
+		await nextTick()
+	}
+}
+
 describe('BaseMegaMenu: режим auto', () => {
+	afterEach(() => vi.restoreAllMocks())
+
+	it('узкое меню: auto включает drill-down и для двухуровневого раздела, широкое оставляет каскад', async () => {
+		stubMenuWidth(400)
+		await openCatalog({ drilldown: 'auto' })
+		await fireEvent.click(screen.getByRole('button', { name: 'Плоский' }))
+		await waitFor(() => expect(document.querySelector('.base-mega-menu__drill')).not.toBeNull())
+		cleanup()
+
+		stubMenuWidth(600)
+		await openCatalog({ drilldown: 'auto' })
+		await fireEvent.click(screen.getByRole('button', { name: 'Плоский' }))
+		await waitFor(() => expect(document.querySelector('.base-mega-menu__drill')).toBeNull())
+		expect(screen.getByRole('button', { name: 'Блог' })).toHaveAttribute('aria-expanded', 'false')
+	})
+
+	it('смена ширины переключает режим на лету, drilldownBelow=0 ширину не учитывает', async () => {
+		const resize = stubMenuWidth(600)
+		await openCatalog({ drilldown: 'auto', drilldownFrom: 4 })
+		await fireEvent.click(screen.getByRole('button', { name: 'Плоский' }))
+		expect(document.querySelector('.base-mega-menu__drill')).toBeNull()
+
+		await resize(300)
+		expect(document.querySelector('.base-mega-menu__drill')).not.toBeNull()
+		await resize(900)
+		expect(document.querySelector('.base-mega-menu__drill')).toBeNull()
+	})
+
+	it('порог ширины масштабируется sizeScale и отключается нулём', async () => {
+		stubMenuWidth(300)
+		const { rerender } = await openCatalog({ drilldown: 'auto', drilldownFrom: 4, sizeScale: 50 })
+		expect(document.querySelector('.base-mega-menu__drill')).toBeNull()
+
+		await rerender({ sizeScale: 100 })
+		expect(document.querySelector('.base-mega-menu__drill')).not.toBeNull()
+		await rerender({ drilldownBelow: 0 })
+		expect(document.querySelector('.base-mega-menu__drill')).toBeNull()
+		await rerender({ drilldownBelow: 400, drilldown: 'never' })
+		expect(document.querySelector('.base-mega-menu__drill')).toBeNull()
+	})
+
+	it('ширина 0 (меню не измерено) и drilldownFrom, меньший двух, не меняют порог', async () => {
+		stubMenuWidth(0)
+		await openCatalog({ drilldown: 'auto', drilldownFrom: 4 })
+		expect(document.querySelector('.base-mega-menu__drill')).toBeNull()
+		stubMenuWidth(100)
+		cleanup()
+		await openCatalog({ drilldown: 'auto', drilldownFrom: 1 })
+		expect(document.querySelector('.base-mega-menu__drill')).not.toBeNull()
+	})
+
+	it('без ResizeObserver ширина замеряется один раз при монтировании', async () => {
+		vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(300)
+		vi.stubGlobal('ResizeObserver', undefined)
+		await openCatalog({ drilldown: 'auto', drilldownFrom: 4 })
+
+		expect(document.querySelector('.base-mega-menu__drill')).not.toBeNull()
+	})
+
+	it('название корня «Назад» следует за подписью раздела', async () => {
+		const { rerender } = await openCatalog()
+		await fireEvent.click(link('Сервис'))
+		expect(screen.getByRole('button', { name: 'Назад к «Каталог»' })).toBeInTheDocument()
+
+		await rerender({ items: [{ ...ITEMS[0], label: 'Товары' }, ITEMS[1]] })
+		expect(screen.getByRole('button', { name: 'Назад к «Товары»' })).toBeInTheDocument()
+	})
+
 	it('включает drill-down у разделов, где вложенность каталога не меньше drilldownFrom', async () => {
 		await openCatalog({ drilldown: 'auto' })
 

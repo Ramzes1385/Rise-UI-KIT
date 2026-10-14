@@ -165,6 +165,12 @@ export interface BaseMegaMenuProps extends BaseComponentProps<
 	 * их `children` — уровень 2, `children` вложенных — уровень 3. По умолчанию 3: каскад остаётся для двух уровней
 	 */
 	drilldownFrom?: number
+	/**
+	 * Для `drilldown: 'auto'`: ширина меню в px (с учётом `sizeScale`), уже которой каскад заменяется drill-down
+	 * для разделов с вложенностью от двух уровней — справа от пункта каскаду не хватает места. Ширина замеряется
+	 * при монтировании, до показа панели, и следит за изменением размера. `0` — ширину не учитывать. По умолчанию 480
+	 */
+	drilldownBelow?: number
 	/** Имя ориентира навигации. По умолчанию «Главное меню» */
 	ariaLabel?: string
 	/**
@@ -348,5 +354,5 @@ export type MegaMenuOpenSource = 'hover' | 'click'
 
 export type MegaMenuProps = PropsWithDefaults<
 	BaseMegaMenuProps,
-	'trigger' | 'openDelay' | 'closeDelay' | 'mobileBreakpoint' | 'drilldown' | 'drilldownFrom' | 'sizeScale'
+	'trigger' | 'openDelay' | 'closeDelay' | 'mobileBreakpoint' | 'drilldown' | 'drilldownFrom' | 'drilldownBelow' | 'sizeScale'
 >

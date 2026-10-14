@@ -152,6 +152,7 @@ const props = withDefaults(
 		mobileBreakpoint: 'md',
 		drilldown: 'never',
 		drilldownFrom: 3,
+		drilldownBelow: 480,
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )

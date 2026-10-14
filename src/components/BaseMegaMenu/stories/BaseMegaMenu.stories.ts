@@ -32,5 +32,6 @@ export const Mobile = cases.Mobile
 export const Keyboard = cases.Keyboard
 export const Cascade = cases.Cascade
 export const MegaMenuDrilldown = cases.MegaMenuDrilldown
+export const DrilldownByWidth = cases.DrilldownByWidth
 export const Theming = cases.Theming
 export const Animations = cases.Animations

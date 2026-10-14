@@ -3,6 +3,7 @@ import { UI_ARIA } from '@/locales/messages'
 import { useUi } from '@composables/base/useUi'
 import { useMegaMenuHover } from './useMegaMenuHover'
 import { useMegaMenuState } from './useMegaMenuState'
+import { useMegaMenuWidth } from './useMegaMenuWidth'
 import { useMotion } from '@composables/app/useMotion'
 import { calcIconScale } from '@utils/media/iconUtils'
 import { useLayer } from '@composables/app/useLayerStack'
@@ -47,6 +48,7 @@ export function useBaseMegaMenu(props: MegaMenuProps, emit: BaseMegaMenuEmits) {
 	const listRef = ref<HTMLElement | null>(null)
 	const state = useMegaMenuState(props, emit)
 	const mobile = useMobileMenu(props)
+	const { drilldownDepth } = useMegaMenuWidth(rootRef, props)
 	const isHoverEnabled = (): boolean => props.trigger === 'hover' && !mobile.isMobileMode.value
 	const hover = useMegaMenuHover(props, state, isHoverEnabled)
 	const layer = useMenuLayer(rootRef, state, () => Boolean(state.openItem.value) || mobile.isMobileOpen.value)
@@ -74,7 +76,7 @@ export function useBaseMegaMenu(props: MegaMenuProps, emit: BaseMegaMenuEmits) {
 		getItemKey,
 		iconScale: computed(() => calcIconScale('sm', props.sizeScale)),
 		hasPanel,
-		isDrilldownItem: (item: MegaMenuItem): boolean => isDrilldownItem(item, props.drilldown, props.drilldownFrom),
+		isDrilldownItem: (item: MegaMenuItem): boolean => isDrilldownItem(item, props.drilldown, drilldownDepth.value),
 		hoverDelays: computed(() => (isHoverEnabled() ? { open: props.openDelay, close: props.closeDelay } : undefined)),
 		select,
 		handleTriggerClick(item: MegaMenuItem): void {
