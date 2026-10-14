@@ -118,6 +118,35 @@ describe('BaseCryptoProSign — несколько файлов (isMultiple)', (
 		expect(total).toMatchObject({ signedCount: 1, cancelledCount: 2 })
 		expect(items()[2]).toHaveTextContent('отменён')
 		expect(screen.queryByRole('button', { name: 'Отменить' })).not.toBeInTheDocument()
+		await waitFor(() => expect(signButton()).toHaveFocus())
+	})
+
+	it('очередь закончилась, фокус на «Отменить» (успех): он переходит на «Подписать»', async () => {
+		const { emitted } = await renderReady({ props: PROPS }, { delay: 100 })
+		await upload([file('a.txt'), file('b.txt')])
+		await start()
+		const cancel = await screen.findByRole('button', { name: 'Отменить' })
+		cancel.focus()
+
+		await waitFor(() => expect(emitted()['signed-all']).toBeTruthy())
+
+		expect(screen.queryByRole('button', { name: 'Отменить' })).not.toBeInTheDocument()
+		await waitFor(() => expect(signButton()).toHaveFocus())
+	})
+
+	it('очередь закончилась, фокус не на «Отменить»: фокус не трогаем', async () => {
+		const { emitted } = await renderReady({ props: PROPS }, { delay: 100 })
+		await upload([file('a.txt')])
+		await start()
+		await screen.findByRole('button', { name: 'Отменить' })
+		const other = document.createElement('button')
+		document.body.append(other)
+		other.focus()
+
+		await waitFor(() => expect(emitted()['signed-all']).toBeTruthy())
+
+		expect(other).toHaveFocus()
+		other.remove()
 	})
 
 	it('размонтирование прекращает очередь: после текущего файла остальные не подписываются', async () => {

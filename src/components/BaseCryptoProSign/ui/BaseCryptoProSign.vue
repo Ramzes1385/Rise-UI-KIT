@@ -75,7 +75,13 @@
 				<BaseButton :is-loading="isBusy" :is-disabled="!canRun" @click="run">
 					{{ runLabel }}
 				</BaseButton>
-				<BaseButton v-if="isRunning" variant="outline" is-focusable-when-disabled :is-disabled="isCancelling" @click="cancel">
+				<BaseButton
+					v-if="isRunning"
+					class="base-crypto-pro-sign__cancel"
+					variant="outline"
+					is-focusable-when-disabled
+					:is-disabled="isCancelling"
+					@click="cancel">
 					{{ UI_CRYPTOPRO.BATCH_CANCEL }}
 				</BaseButton>
 				<BaseButton v-if="signResult && hasDownload && !isVerify && !isBatch" variant="outline" @click="download">

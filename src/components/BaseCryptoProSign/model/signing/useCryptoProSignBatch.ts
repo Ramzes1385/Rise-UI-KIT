@@ -19,6 +19,22 @@ import type {
 
 class BatchCancelled extends Error {}
 
+const CANCEL_BUTTON = '.base-crypto-pro-sign__cancel'
+const RUN_BUTTON = '.base-crypto-pro-sign__actions button'
+
+function handOverFocusFromCancel(): void {
+	const cancel = document.activeElement
+	const root = cancel?.closest('.base-crypto-pro-sign')
+	if (!root || !cancel?.matches(CANCEL_BUTTON)) return
+	const observer = new MutationObserver(() => {
+		const run = root.querySelector<HTMLButtonElement>(RUN_BUTTON)
+		if (cancel.isConnected || !run || run.disabled) return
+		observer.disconnect()
+		if (document.activeElement === document.body) run.focus()
+	})
+	observer.observe(root, { childList: true, subtree: true, attributes: true, attributeFilter: ['disabled'] })
+}
+
 function initialItems(files: File[], threshold: number): CryptoProBatchItem[] {
 	return files.map((file, index) => ({
 		id: index + 1,
@@ -96,6 +112,7 @@ function useBatchQueue(setup: Omit<BatchFileSetup, 'control'>) {
 					await signFile(file, index, { ...setup, control })
 				}
 			} finally {
+				handOverFocusFromCancel()
 				isRunning.value = false
 				isCancelling.value = false
 			}
