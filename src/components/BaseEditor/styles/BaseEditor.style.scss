@@ -86,33 +86,6 @@
 		@include visually-hidden;
 	}
 
-	&__color-picker {
-		display: inline-flex;
-	}
-
-	& &__color-picker .base-color-picker__swatch {
-		@include tool-button;
-		background-image: none;
-		@include focus-ring;
-
-		&:focus-within {
-			border-color: transparent;
-			box-shadow: none;
-		}
-	}
-
-	&__color-picker--active .base-color-picker__swatch::after {
-		content: '';
-		position: absolute;
-		right: sz(7px);
-		bottom: sz(3px);
-		left: sz(7px);
-		height: sz(3px);
-		border-radius: var(--rise-radius-full);
-		background-color: var(--editor-swatch-color);
-		box-shadow: 0 0 0 1px var(--rise-border);
-	}
-
 	&__heading-select {
 		width: sz(136px);
 	}

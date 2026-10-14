@@ -178,7 +178,7 @@ describe('BaseEditor: модель редактора', () => {
 
 		await wrapper.find('.base-editor__content').trigger('focus')
 
-		expect(wrapper.find('.base-editor__color-picker--active').exists()).toBe(true)
+		expect(wrapper.find('.base-color-picker__swatch--indicated').exists()).toBe(true)
 	})
 
 	it('фокус вне элементов панели не меняет остановку Tab', async () => {

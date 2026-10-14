@@ -88,9 +88,12 @@ describe('use: ссылки на элементы разворачиваются
 		const fan = (level: number) => Array.from({ length: 10 }, () => `<use href="#a${level}"/>`).join('')
 		const levels = ['<g id="a0"><rect width="1" height="1"/></g>']
 		for (let level = 1; level <= 8; level += 1) levels.push(`<g id="a${level}">${fan(level - 1)}</g>`)
-		const started = performance.now()
+		const clone = vi.spyOn(Node.prototype, 'cloneNode')
 		const paths = parseSvgPaths(svg(levels.join('')), LAYER)
-		expect(performance.now() - started).toBeLessThan(5000)
+		const copies = clone.mock.calls.length
+		clone.mockRestore()
+		expect(copies).toBeGreaterThan(0)
+		expect(copies).toBeLessThanOrEqual(500)
 		expect(paths.length).toBeLessThanOrEqual(20_000)
 		expect(svgElementShapes(paths, 'a1')).toHaveLength(10)
 		expect(svgElementShapes(paths, 'a8')).toEqual([])

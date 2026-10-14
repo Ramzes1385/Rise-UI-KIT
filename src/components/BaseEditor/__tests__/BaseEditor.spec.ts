@@ -240,9 +240,9 @@ describe('BaseEditor unit', () => {
 
 			await pickers[0].vm.$emit('change', '#ff0000')
 
-			const textPicker = wrapper.find('.base-editor__color-picker--active')
+			const textPicker = wrapper.find('.base-color-picker__swatch--indicated')
 			expect(textPicker.exists()).toBe(true)
-			expect(textPicker.attributes('style')).toContain('--editor-swatch-color')
+			expect(textPicker.attributes('style')).toContain('--picker-swatch-color')
 		})
 
 		it('сбрасывает цвет текста и снимает индикатор при reset первого пикера', async () => {
@@ -256,10 +256,10 @@ describe('BaseEditor unit', () => {
 
 			const pickers = wrapper.findAllComponents(BaseColorPicker)
 			await pickers[0].vm.$emit('change', '#ff0000')
-			expect(wrapper.find('.base-editor__color-picker--active').exists()).toBe(true)
+			expect(wrapper.find('.base-color-picker__swatch--indicated').exists()).toBe(true)
 
 			await pickers[0].vm.$emit('reset')
-			expect(wrapper.find('.base-editor__color-picker--active').exists()).toBe(false)
+			expect(wrapper.find('.base-color-picker__swatch--indicated').exists()).toBe(false)
 		})
 
 		it('применяет цвет фона и активирует индикатор при change второго пикера', async () => {
@@ -275,9 +275,9 @@ describe('BaseEditor unit', () => {
 			await pickers[1].vm.$emit('update:modelValue', '#00ff00')
 			await pickers[1].vm.$emit('change', '#00ff00')
 
-			const bgPicker = wrapper.find('.base-editor__color-picker--active')
+			const bgPicker = wrapper.find('.base-color-picker__swatch--indicated')
 			expect(bgPicker.exists()).toBe(true)
-			expect(bgPicker.attributes('style')).toContain('--editor-swatch-color')
+			expect(bgPicker.attributes('style')).toContain('--picker-swatch-color')
 		})
 
 		it('сбрасывает цвет фона и снимает индикатор при reset второго пикера', async () => {
@@ -291,10 +291,10 @@ describe('BaseEditor unit', () => {
 
 			const pickers = wrapper.findAllComponents(BaseColorPicker)
 			await pickers[1].vm.$emit('change', '#00ff00')
-			expect(wrapper.find('.base-editor__color-picker--active').exists()).toBe(true)
+			expect(wrapper.find('.base-color-picker__swatch--indicated').exists()).toBe(true)
 
 			await pickers[1].vm.$emit('reset')
-			expect(wrapper.find('.base-editor__color-picker--active').exists()).toBe(false)
+			expect(wrapper.find('.base-color-picker__swatch--indicated').exists()).toBe(false)
 		})
 	})
 

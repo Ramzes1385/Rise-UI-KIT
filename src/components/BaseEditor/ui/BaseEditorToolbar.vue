@@ -27,9 +27,6 @@
 				<BaseTooltip :text="UI_EDITOR.TEXT_COLOR" position="top" :size-scale="sizeScale">
 					<BaseColorPicker
 						v-model="textColorModel"
-						class="base-editor__color-picker"
-						:class="{ 'base-editor__color-picker--active': isTextColorActive }"
-						:style="isTextColorActive ? { '--editor-swatch-color': textColorModel } : undefined"
 						:aria-label="UI_EDITOR.TEXT_COLOR"
 						:custom-class="colorPickerClasses"
 						:size-scale="sizeScale"
@@ -48,9 +45,6 @@
 				<BaseTooltip :text="UI_EDITOR.BG_COLOR" position="top" :size-scale="sizeScale">
 					<BaseColorPicker
 						v-model="backgroundColorModel"
-						class="base-editor__color-picker"
-						:class="{ 'base-editor__color-picker--active': isBackgroundColorActive }"
-						:style="isBackgroundColorActive ? { '--editor-swatch-color': backgroundColorModel } : undefined"
 						:aria-label="UI_EDITOR.BG_COLOR"
 						:custom-class="colorPickerClasses"
 						:size-scale="sizeScale"

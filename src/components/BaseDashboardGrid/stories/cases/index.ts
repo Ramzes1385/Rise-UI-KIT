@@ -1,5 +1,6 @@
 export { Default } from './Default'
 export { Editable } from './behavior/Editable'
+export { SmallGap } from './behavior/SmallGap'
 export { AutoScroll } from './behavior/AutoScroll'
 export { StaticItems } from './behavior/StaticItems'
 export { Responsive } from './behavior/Responsive'
