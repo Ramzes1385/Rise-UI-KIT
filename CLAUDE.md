@@ -131,6 +131,9 @@ docs/            CONTRIBUTING, reference/, design/, v2/, audit/
 - `withDefaults` без `kitDefaults` молча отключает `defaults` из плагина: нужен тест с `createUiKitPlugin({ defaults })`.
 - `:dir(rtl)` и логические свойства (`inset-inline-end`, `border-start-end-radius`…) lightningcss при цели сборки es2020 превращает в `:lang(...)`, и `dir="rtl"` их не включает: в собранном пакете такие RTL-правила мертвы, хотя в dev и тестах работают. Только `[dir='rtl'] &` и физические свойства; `:dir(` запрещён stylelint, проверка — нет `:lang(` в `dist/styles.css` после `npm run build`.
 - Больше 22 перегрузок в `defineEmits` — vue-tsc теряет типы событий (`on${Capitalize<any>}` в `$props`, ломается `Partial<$props>` в тестах). Новые события — в существующие сигнатуры с union (`'pin-message' | 'unpin-message'`), как в BaseChat.
+- `findLast` и `findLastIndex`, как и `.at()`, нет в `lib` сборки пакета: в коде кита — `filter().pop()` или цикл; ловит `npx vue-tsc -p build/lib/tsconfig.lib.json --noEmit`.
+- Проп-функция без значения по умолчанию не перечисляется в `kitDefaults`: `source: undefined` там превращал `props.source` в функцию-значение (умолчание пропа типа Function Vue не вызывает как фабрику) — BaseSearch, поймали тесты.
+- BaseEditor: DOM области редактора меняется только в составе записанной правки (`applyEdit` или `beforeinput` после `history.capture()`). Правка мимо истории отмены (снятие заполнителей на `selectionchange`, очистка на `copy`/`cut`) даёт «пустой» Ctrl+Z, который ничего видимого не отменяет; буфер обмена — через `clipboardData`.
 
 ## Окружение: подводные камни
 
@@ -141,6 +144,7 @@ docs/            CONTRIBUTING, reference/, design/, v2/, audit/
 - E2E и скриншот-тесты сами поднимают dev-сервер Storybook (`npm run storybook -- --ci`); с `PLAYWRIGHT_REUSE_SERVER=true` используют уже запущенный (`build/tests/playwright.config.ts`).
 - Скрипты покрытия задают `NODE_OPTIONS=--max-old-space-size=16384`: на машине с меньшей памятью запускай тесты по путям.
 - `git stash` общий для всех worktree репозитория: `stash pop` в одной папке забирает запись другой. В worktree stash не используется; сравнение с базой — временная папка `git worktree add --detach <путь> <хеш>` или `git diff > <файл>` и `git apply`.
+- `docs/` попадает под правило `.gitignore`, хотя файлы отслеживаются: `git add docs` отказывает с подсказкой про `-f` — добавляй изменённые документы поимённо (`git add docs/v2/MIGRATION.md …`).
 
 ## Агенты Claude Code
 
