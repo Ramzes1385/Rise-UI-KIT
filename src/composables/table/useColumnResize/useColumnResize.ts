@@ -14,7 +14,7 @@ function useColumnResize<TColumn extends ResizeColumn>({
 	onColumnsChange,
 }: UseColumnResizeParams<TColumn>) {
 	const resizeState = ref<ResizeState>(createIdleResizeState())
-	let restoreWidths: () => void = () => undefined
+	let restoreWidths: (() => void) | null = null
 	const resizeBy = createKeyboardResize({ columns, visibleColumns, minWidth, onColumnResize, onColumnsChange })
 
 	const drag = useResizeDrag({ onMove: handleMove, onEnd: stopResize })
@@ -30,7 +30,7 @@ function useColumnResize<TColumn extends ResizeColumn>({
 		if (!resizeState.value.isResizing) return
 
 		cancelResize()
-		if (isCancelled) return restoreWidths()
+		if (isCancelled) return restoreWidths?.()
 		const column = columns.value.find(item => item.key === resizeState.value.columnKey)
 		/* istanbul ignore else -- Колонка существует для пользовательского resize. */
 		if (column) {

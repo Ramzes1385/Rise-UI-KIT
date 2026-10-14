@@ -288,6 +288,7 @@
 - **BaseImageMap3D.** Список объектов для скринридера — по списку `ul.base-image-map-3d__objects` на каждый этаж (раньше один); в панели камеры новая кнопка «Во весь экран» (`:has-fullscreen="false"` убирает).
 - **BaseProgress, BaseNotification, BaseTour.** Полоса таймера — BaseProgress с `countdown` (`div.base-progress--countdown`, `aria-hidden`); у BaseTour убраны `ui['progress-bar-fill']` и `--tour-progress`. RTL-правила написаны через `[dir='rtl'] &`.
 - **BaseChat.** «Исключить» и «Забанить» спрашивают подтверждение; `ban-member` отдаёт только `{ memberId }`; «Открепить» вызывает `unpin-message`; для «не отправлено» (`status: 'failed'`) — кнопки «Повторить» и «Удалить» и скрытое меню.
+- **BaseChat (правки fix-chat).** Публичные `useChatActions` и `useChatState` сменили контракт, появилось событие `write-message` — подробности в [MIGRATION](../v2/MIGRATION.md), «Задача fix-chat». «Не отправлено» у сообщения теперь `role="status"`, а не `alert`. Фокус после «Повторить» и «Удалить» уходит в поле ввода только при вызове с клавиатуры (после клика мышью остаётся как есть). `useChatState` возвращает новое поле `visibleSelectedCount`; у `ChatSelectionToolbar` появился необязательный проп `visibleSelectedCount`.
 - **BaseInput `type="search"`.** Кнопка «Очистить» теперь в порядке Tab (раньше `tabindex="-1"`).
 
 **Порядок Tab и клавиатура**
