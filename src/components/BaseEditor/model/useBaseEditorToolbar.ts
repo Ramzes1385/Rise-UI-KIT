@@ -1,9 +1,9 @@
-import { computed, ref, watch } from 'vue'
 import { UI_EDITOR } from '@/locales/messages'
 import { useUi } from '@composables/base/useUi'
-import { useToolbarRoving } from './useToolbarRoving'
+import { computed, onUpdated, ref, watch } from 'vue'
 import { calcIconScale } from '@utils/media/iconUtils'
 import { EDITOR_MENU_SCALE_RATIO } from './editorScale'
+import { useToolbarKeyboard } from '@composables/interaction/useToolbarKeyboard'
 import type { BaseEditorToolbarProps, ToolbarButton } from '../types/BaseEditorToolbar.types'
 
 function inlineGroups(): { key: string; items: ToolbarButton[] }[] {
@@ -72,6 +72,23 @@ function blockGroups(): { key: string; items: ToolbarButton[] }[] {
 	]
 }
 
+const TEXT_FIELD_SELECTOR =
+	'textarea, select, [contenteditable="true"], input:not([type="button"], [type="checkbox"], [type="color"], [type="file"], [type="radio"])'
+
+function useToolbarFocus() {
+	const toolbarRef = ref<HTMLElement | null>(null)
+	const keyboard = useToolbarKeyboard({ rootRef: toolbarRef })
+	onUpdated(keyboard.sync)
+	return {
+		toolbarRef,
+		handleFocusIn: keyboard.handleFocusin,
+		handleKeyDown: keyboard.handleKeydown,
+		handleMouseDown(event: MouseEvent): void {
+			if (!(event.target instanceof Element) || !event.target.closest(TEXT_FIELD_SELECTOR)) event.preventDefault()
+		},
+	}
+}
+
 const HEADING_VALUES = new Set(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'])
 
 function useHeadingValue(props: BaseEditorToolbarProps) {
@@ -94,7 +111,7 @@ export function useBaseEditorToolbar(props: BaseEditorToolbarProps) {
 		},
 	)
 	return {
-		...useToolbarRoving(),
+		...useToolbarFocus(),
 		ui: useUi(props, 'base-editor'),
 		headingValue: useHeadingValue(props),
 		textColorModel,

@@ -86,6 +86,17 @@ function applyVisualLink(ctx: UseToolbarCommandsOptions, value: EditorLinkValue,
 	markSelectedLinks(root, value.isNewTab)
 }
 
+/** Каретка в конец содержимого: ссылка, поставленная без сохранённого выделения, оказывается в конце текста, а не пропадает */
+function placeCaretAtEnd(root: HTMLElement): void {
+	root.focus()
+	const range = document.createRange()
+	range.selectNodeContents(root)
+	range.collapse(false)
+	const selection = window.getSelection()
+	selection?.removeAllRanges()
+	selection?.addRange(range)
+}
+
 /** Ставит ссылку на выделение (визуальный режим и режим кода), значение `url` уже проверено `resolveLinkUrl` */
 function applyLink(ctx: UseToolbarCommandsOptions, value: EditorLinkValue): void {
 	if (ctx.isCodeMode.value) {
@@ -93,7 +104,8 @@ function applyLink(ctx: UseToolbarCommandsOptions, value: EditorLinkValue): void
 		return
 	}
 	const root = ctx.editorRef.value
-	if (!root || !ctx.restoreSelection()) return
+	if (!root) return
+	if (!ctx.restoreSelection()) placeCaretAtEnd(root)
 	applyVisualLink(ctx, value, root)
 	ctx.saveSelection()
 	ctx.onInput()

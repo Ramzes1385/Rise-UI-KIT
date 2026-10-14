@@ -140,4 +140,35 @@ describe('BaseEditor: defineExpose и слот toolbar', () => {
 		props.openLinkDialog()
 		props.focus()
 	})
+
+	it('команды слота при isReadonly и isDisabled не выполняются, как обещает JSDoc isLocked', async () => {
+		let received: BaseEditorToolbarSlotProps | null = null
+		const wrapper = render(BaseEditor, {
+			props: { modelValue: '<p>Текст</p>' },
+			global,
+			slots: {
+				toolbar: (slotProps: BaseEditorToolbarSlotProps) => {
+					received = slotProps
+					return h('span', 'панель')
+				},
+			},
+		})
+		await nextTick()
+		const props = received as unknown as BaseEditorToolbarSlotProps
+
+		await wrapper.rerender({ isReadonly: true })
+		props.applyFormat('bold')
+		props.applyBlock('h2')
+		props.toggleCodeMode()
+		await nextTick()
+		expect(document.execCommand).not.toHaveBeenCalled()
+
+		await wrapper.rerender({ isReadonly: false, isDisabled: true })
+		props.applyFormat('italic')
+		expect(document.execCommand).not.toHaveBeenCalled()
+
+		await wrapper.rerender({ isDisabled: false })
+		props.applyFormat('bold')
+		expect(document.execCommand).toHaveBeenCalledWith('bold', false)
+	})
 })

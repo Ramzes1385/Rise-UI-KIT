@@ -184,7 +184,7 @@ function useContentSync(
 	watch(
 		() => props.modelValue,
 		(newVal: string) => {
-			if (ctx.composition.isActive || consumeEcho(ctx.pending, newVal)) return
+			if (consumeEcho(ctx.pending, newVal) || ctx.composition.isActive) return
 			if (toolbar.isCodeMode.value) {
 				toolbar.codeContent.value = ctx.sanitize(newVal)
 				return
@@ -202,7 +202,13 @@ function useContentSync(
 	})
 }
 
-function useEditorFocus(emit: BaseEditorEmits, engine: ReturnType<typeof useEditorEngine>, formField: { onBlur: () => void }) {
+function useEditorFocus(
+	emit: BaseEditorEmits,
+	engine: ReturnType<typeof useEditorEngine>,
+	field: { formField: { onBlur: () => void }; overlays: Ref<HTMLElement | null>[] },
+) {
+	const isInOwnOverlay = (target: EventTarget | null | undefined): boolean =>
+		target instanceof Node && field.overlays.some(overlay => overlay.value?.contains(target))
 	return {
 		handleFocus(): void {
 			if (typeof document.execCommand === 'function') document.execCommand('defaultParagraphSeparator', false, 'p')
@@ -210,8 +216,8 @@ function useEditorFocus(emit: BaseEditorEmits, engine: ReturnType<typeof useEdit
 			engine.state.isFocused.value = true
 			emit('focus')
 		},
-		handleBlur(): void {
-			formField.onBlur()
+		handleBlur(event?: FocusEvent): void {
+			if (!isInOwnOverlay(event?.relatedTarget)) field.formField.onBlur()
 			engine.toolbar.saveSelection()
 			engine.state.isFocused.value = false
 			emit('blur')
@@ -266,6 +272,6 @@ export function useBaseEditor(props: EditorProps, emit: BaseEditorEmits) {
 		...insert,
 		exposed: api.exposed,
 		toolbarSlotProps: api.slotProps,
-		...useEditorFocus(emit, engine, field.formField),
+		...useEditorFocus(emit, engine, { formField: field.formField, overlays: [link.linkDialogRef, engine.toolbar.contextMenuRef] }),
 	}
 }

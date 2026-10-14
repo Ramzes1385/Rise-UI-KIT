@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom/vitest'
-import { nextTick } from 'vue'
+import { h, nextTick } from 'vue'
 import BaseEditor from '../ui/BaseEditor.vue'
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
 
@@ -204,5 +204,29 @@ describe('BaseEditor: пустота и цвет по умолчанию', () =>
 		await nextTick()
 
 		expect(screen.getByRole('button', { name: /^Цвет текста, выбран #000000/ })).toBeInTheDocument()
+	})
+})
+
+describe('BaseEditor: mousedown на панели', () => {
+	afterEach(() => {
+		document.body.innerHTML = ''
+	})
+
+	it('кнопки не забирают фокус у текста, а поле своего слота получает его', async () => {
+		render(BaseEditor, {
+			global,
+			slots: {
+				toolbar: () => [h('button', { type: 'button' }, 'Своя'), h('input', { 'aria-label': 'Своё поле' })],
+			},
+		})
+		await nextTick()
+
+		const onButton = new MouseEvent('mousedown', { bubbles: true, cancelable: true })
+		screen.getByRole('button', { name: 'Своя' }).dispatchEvent(onButton)
+		const onField = new MouseEvent('mousedown', { bubbles: true, cancelable: true })
+		screen.getByLabelText('Своё поле').dispatchEvent(onField)
+
+		expect(onButton.defaultPrevented).toBe(true)
+		expect(onField.defaultPrevented).toBe(false)
 	})
 })

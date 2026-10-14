@@ -89,6 +89,60 @@ describe('BaseEditor: ввод через IME', () => {
 		expect(replaced).not.toBe(paragraph)
 	})
 
+	it('значение, которое редактор сам отправил до композиции, не считается внешним, когда эхо пришло во время неё', async () => {
+		const wrapper = render(BaseEditor, { props: { modelValue: '' }, global: { stubs } })
+		const textbox = screen.getByRole('textbox')
+
+		await type(textbox, '<p>a</p>')
+		await fireEvent.compositionStart(textbox)
+		await wrapper.rerender({ modelValue: '<p>a</p>' })
+		await fireEvent.compositionEnd(textbox)
+		await wrapper.rerender({ modelValue: '' })
+
+		expect(textbox.innerHTML).toBe('')
+	})
+
+	it('Safari: compositionend раньше последнего input — итог уходит, значение не теряется', async () => {
+		const wrapper = render(BaseEditor, { global: { stubs } })
+		const textbox = screen.getByRole('textbox')
+
+		await fireEvent.compositionStart(textbox)
+		textbox.innerHTML = 'にほん'
+		await fireEvent.compositionEnd(textbox)
+		await fireEvent.input(textbox)
+
+		expect(emitted(wrapper)[emitted(wrapper).length - 1]).toBe('にほん')
+		expect(new Set(emitted(wrapper))).toEqual(new Set(['にほん']))
+	})
+
+	it('Chrome и Firefox: input раньше compositionend — итог уходит один раз по окончании', async () => {
+		const wrapper = render(BaseEditor, { global: { stubs } })
+		const textbox = screen.getByRole('textbox')
+
+		await fireEvent.compositionStart(textbox)
+		await type(textbox, 'にほん')
+		expect(emitted(wrapper)).toEqual([])
+		await fireEvent.compositionEnd(textbox)
+
+		expect(emitted(wrapper)).toEqual(['にほん'])
+	})
+
+	it('уход фокуса в диалог ссылки (Ctrl+K) не показывает ошибку пустого обязательного редактора', async () => {
+		render(BaseEditor, { props: { isRequired: true }, global: { stubs } })
+		const textbox = screen.getByRole('textbox')
+		textbox.focus()
+
+		const hotkey = new KeyboardEvent('keydown', { code: 'KeyK', key: 'k', ctrlKey: true, bubbles: true, cancelable: true })
+		textbox.dispatchEvent(hotkey)
+		const field = await screen.findByLabelText('Адрес ссылки')
+		await fireEvent.blur(textbox, { relatedTarget: field })
+
+		expect(screen.queryByText('Обязательное поле')).toBeNull()
+
+		await fireEvent.blur(textbox, { relatedTarget: document.body })
+		expect(screen.getByText('Обязательное поле')).toBeInTheDocument()
+	})
+
 	it('композиция в поле кода тоже не отправляет промежуточные значения', async () => {
 		const wrapper = render(BaseEditor, { props: { modelValue: '<p>a</p>' }, global: { stubs } })
 		await fireEvent.click(screen.getByRole('button', { name: 'Режим кода' }))

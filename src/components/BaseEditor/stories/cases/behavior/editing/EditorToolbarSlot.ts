@@ -23,7 +23,8 @@ export const EditorToolbarSlot: StoryObj<typeof meta> = {
 			description: {
 				story: [
 					'Слот `toolbar` с аргументами: `applyFormat`, `applyBlock`, `insertHtml`, `activeStates`, `isCodeMode`, `toggleCodeMode`,',
-					'`openLinkDialog`, `focus`. Слот заменяет стандартные кнопки; клики по панели не уводят выделение из текста.',
+					'`openLinkDialog`, `focus`. Слот заменяет стандартные кнопки; нажатие на кнопку панели не уводит выделение из текста,',
+					'а собственные поля слота получают фокус как обычно. В режиме чтения и у отключённого редактора команды слота ничего не делают.',
 					'Методы `focus()`, `getHtml()`, `insertHtml()`, `validate()` и `reset()` доступны через `ref` на редактор.',
 				].join(' '),
 			},

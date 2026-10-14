@@ -5,7 +5,7 @@
 		:class="[ui('toolbar'), classes.toolbar]"
 		role="toolbar"
 		:aria-label="UI_EDITOR.TOOLBAR_LABEL"
-		@mousedown.prevent
+		@mousedown="handleMouseDown"
 		@focusin="handleFocusIn"
 		@keydown="handleKeyDown">
 		<slot name="toolbar">
@@ -199,6 +199,7 @@ const {
 	toolbarRef,
 	handleFocusIn,
 	handleKeyDown,
+	handleMouseDown,
 	headingValue,
 	textColorModel,
 	backgroundColorModel,

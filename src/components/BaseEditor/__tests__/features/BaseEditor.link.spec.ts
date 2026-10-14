@@ -82,6 +82,27 @@ describe('BaseEditor: диалог ссылки', () => {
 		expect(lastEmitted(wrapper)).toContain('href="https://enter.test"')
 	})
 
+	it('Enter на кнопке «Удалить ссылку», в флажке и при подтверждении IME ссылку не применяет', async () => {
+		const wrapper = render(BaseEditor, { props: { modelValue: LINKED }, global: { stubs } })
+		await selectLinkText(screen.getByRole('textbox'))
+		await fireEvent.click(screen.getByRole('button', { name: 'Ссылка' }))
+		const input = await screen.findByLabelText('Адрес ссылки')
+		await fireEvent.update(input, 'https://ime.test')
+
+		const onButton = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true })
+		screen.getByRole('button', { name: 'Удалить ссылку' }).dispatchEvent(onButton)
+		const onCheckbox = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true })
+		screen.getByRole('checkbox', { name: 'Открыть в новой вкладке' }).dispatchEvent(onCheckbox)
+		const composing = new KeyboardEvent('keydown', { key: 'Enter', isComposing: true, bubbles: true, cancelable: true })
+		input.dispatchEvent(composing)
+		const legacyIme = new KeyboardEvent('keydown', { key: 'Enter', keyCode: 229, bubbles: true, cancelable: true })
+		input.dispatchEvent(legacyIme)
+
+		expect([onButton, onCheckbox, composing, legacyIme].map(event => event.defaultPrevented)).toEqual([false, false, false, false])
+		expect(screen.getByRole('dialog')).toBeInTheDocument()
+		expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+	})
+
 	it.each(['javascript:alert(1)', '', 'data:text/html,x'])('адрес «%s» отклоняется с сообщением, диалог остаётся', async value => {
 		const wrapper = render(BaseEditor, { props: { modelValue: LINKED }, global: { stubs } })
 		await selectLinkText(screen.getByRole('textbox'))

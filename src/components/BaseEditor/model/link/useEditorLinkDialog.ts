@@ -3,6 +3,8 @@ import { UI_EDITOR } from '@/locales/messages'
 import { computed, nextTick, reactive, ref, watch } from 'vue'
 import type { EditorLinkDialogState, EditorToolbar } from '../../types/EditorLinkDialog.types'
 
+const IME_KEY_CODE = 229
+
 function createLinkDialogState(): EditorLinkDialogState {
 	return { isVisible: false, x: 0, y: 0, url: '', isNewTab: false, hasLink: false, error: '' }
 }
@@ -21,6 +23,14 @@ function openedDialogState(toolbar: EditorToolbar): EditorLinkDialogState {
 		error: '',
 		isVisible: true,
 	}
+}
+
+function submitOnEnter(event: KeyboardEvent, submit: () => void): void {
+	const { target } = event
+	if (event.isComposing || event.keyCode === IME_KEY_CODE) return
+	if (!(target instanceof HTMLInputElement) || target.type === 'checkbox') return
+	event.preventDefault()
+	submit()
 }
 
 function useLinkDialogFocus(dialog: EditorLinkDialogState, dialogRef: Ref<HTMLElement | null>, toolbar: EditorToolbar): void {
@@ -86,6 +96,7 @@ export function useEditorLinkDialog(toolbar: EditorToolbar, isLocked: ComputedRe
 		openLinkDialog,
 		closeLinkDialog,
 		applyLinkDialog,
+		handleLinkDialogEnter: (event: KeyboardEvent) => submitOnEnter(event, applyLinkDialog),
 		removeLinkFromDialog,
 		setLinkUrl,
 	}

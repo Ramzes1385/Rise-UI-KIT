@@ -164,7 +164,7 @@
 			:aria-label="UI_EDITOR.LINK_DIALOG_LABEL"
 			:ui="{ inner: ui('context-menu') }"
 			@close="closeLinkDialog">
-			<div ref="linkDialogRef" class="base-editor__link-dialog" @keydown.enter.prevent="applyLinkDialog">
+			<div ref="linkDialogRef" class="base-editor__link-dialog" @keydown.enter="handleLinkDialogEnter">
 				<BaseInput
 					:model-value="linkDialog.url"
 					:label="UI_EDITOR.LINK_URL"
@@ -253,6 +253,7 @@ const {
 	openLinkDialog,
 	closeLinkDialog,
 	applyLinkDialog,
+	handleLinkDialogEnter,
 	removeLinkFromDialog,
 	setLinkUrl,
 	closeContextMenu,

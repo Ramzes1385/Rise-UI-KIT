@@ -67,6 +67,29 @@ describe('linkCommands', () => {
 		})
 	})
 
+	describe('обходы проверки адреса', () => {
+		it.each(['JAVASCRIPT:alert(1)', '  javascript:alert(1)', 'vbscript:msgbox(1)', 'VBScript:msgbox(1)', ' data:text/html;base64,AA'])(
+			'отклоняет «%s»',
+			input => {
+				expect(resolveLinkUrl(input)).toBeNull()
+			},
+		)
+
+		it.each([
+			'java\tscript:alert(1)',
+			'java\nscript:alert(1)',
+			'\u0001javascript:alert(1)',
+			'\u0000javascript:alert(1)',
+			'%6Aavascript:alert(1)',
+			'javascript&colon;alert(1)',
+			'jav&#x09;ascript:alert(1)',
+		])('%j не становится исполняемой схемой: адрес отклонён либо остаётся «https://…»', input => {
+			const url = resolveLinkUrl(input)
+			expect(url === null || url.startsWith('https://')).toBe(true)
+			expect(decodeURIComponent(url ?? '')).not.toMatch(/^(javascript|vbscript|data):/i)
+		})
+	})
+
 	describe('readLinkAtSelection', () => {
 		it('возвращает адрес и признак новой вкладки у ссылки под выделением', () => {
 			const { editor, ctx } = createContext('<p><a href="https://a.test" target="_blank">ссылка</a> и текст</p>')
@@ -166,16 +189,29 @@ describe('linkCommands', () => {
 			expect(document.execCommand).not.toHaveBeenCalled()
 		})
 
-		it('без области или без сохранённого выделения ничего не делает', () => {
+		it('без области ничего не делает', () => {
 			const { ctx } = createContext('<p>текст</p>')
-			ctx.restoreSelection = vi.fn(() => false)
+			ctx.editorRef.value = null
 			applyLink(ctx, { url: 'https://a.test', isNewTab: false })
 			expect(document.execCommand).not.toHaveBeenCalled()
 			expect(ctx.onInput).not.toHaveBeenCalled()
+		})
 
-			ctx.editorRef.value = null
-			applyLink(ctx, { url: 'https://a.test', isNewTab: false })
-			expect(ctx.onInput).not.toHaveBeenCalled()
+		it('без сохранённого выделения ставит адрес ссылкой в конец содержимого, а не закрывает диалог молча', () => {
+			const { editor, ctx } = createContext('<p>текст</p>')
+			ctx.restoreSelection = vi.fn(() => false)
+
+			applyLink(ctx, { url: 'https://a.test', isNewTab: true })
+
+			const range = window.getSelection()!.getRangeAt(0)
+			expect(range.collapsed).toBe(true)
+			expect(range.startContainer).toBe(editor)
+			expect(document.execCommand).toHaveBeenCalledWith(
+				'insertHTML',
+				false,
+				'<a href="https://a.test" target="_blank" rel="noopener noreferrer">https://a.test</a>',
+			)
+			expect(ctx.onInput).toHaveBeenCalledTimes(1)
 		})
 
 		it('выделенный текст оборачивается в ссылку командой createLink, новая вкладка помечает ссылку', () => {

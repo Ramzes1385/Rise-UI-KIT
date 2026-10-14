@@ -14,6 +14,12 @@ function insertVisualHtml(ctx: EditorApiContext, html: string): void {
 	ctx.handleInput()
 }
 
+function whenUnlocked<Args extends unknown[]>(ctx: EditorApiContext, action: (...args: Args) => void): (...args: Args) => void {
+	return (...args) => {
+		if (!ctx.isLocked.value) action(...args)
+	}
+}
+
 export function createEditorApi(ctx: EditorApiContext) {
 	const field = activeField(ctx)
 	const insertHtml = (html: string): void => {
@@ -34,11 +40,11 @@ export function createEditorApi(ctx: EditorApiContext) {
 		activeStates: ctx.toolbar.activeStates,
 		isCodeMode: ctx.toolbar.isCodeMode.value,
 		isLocked: ctx.isLocked.value,
-		applyFormat: ctx.toolbar.applyFormat,
-		applyBlock: ctx.toolbar.applyBlock,
+		applyFormat: whenUnlocked(ctx, ctx.toolbar.applyFormat),
+		applyBlock: whenUnlocked(ctx, ctx.toolbar.applyBlock),
 		insertHtml,
 		openLinkDialog: ctx.openLinkDialog,
-		toggleCodeMode: ctx.toolbar.toggleCodeMode,
+		toggleCodeMode: whenUnlocked(ctx, ctx.toolbar.toggleCodeMode),
 		focus: exposed.focus,
 	}))
 	return { exposed: { ...exposed, rootRef: ctx.editorRef, isEmpty: ctx.isEmpty }, slotProps }
