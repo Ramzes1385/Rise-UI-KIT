@@ -1,9 +1,12 @@
 import type { Ref } from 'vue'
+import type { EditorHistoryKind } from '../../useEditorHistory'
 import type { EditorActiveStates } from './useEditorToolbar.types'
 
 export interface UseToolbarCommandsOptions {
 	editorRef: Ref<HTMLDivElement | null>
-	onInput: () => void
+	onInput: (kind?: EditorHistoryKind) => void
+	/** Вызывается перед правкой DOM: запоминает выделение «до» для истории отмены */
+	onBeforeChange?: () => void
 	activeStates: EditorActiveStates
 	updateActiveStates: () => void
 	saveSelection: () => void
@@ -20,7 +23,7 @@ export interface UseToolbarCommandsOptions {
 /** Часть опций команд, которая нужна правке DOM: область, выделение и сообщение о вводе */
 export type EditorEditContext = Pick<
 	UseToolbarCommandsOptions,
-	'editorRef' | 'ensureSelection' | 'onInput' | 'saveSelection' | 'updateActiveStates'
+	'editorRef' | 'ensureSelection' | 'onBeforeChange' | 'onInput' | 'saveSelection' | 'updateActiveStates'
 >
 
 /** Свойство встроенного стиля, которое меняют цветовые команды */

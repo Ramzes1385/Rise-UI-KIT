@@ -52,6 +52,7 @@ function applyFormat(ctx: UseToolbarCommandsOptions, command: string): void {
 		return
 	}
 	ctx.ensureSelection()
+	ctx.onBeforeChange?.()
 	document.execCommand(command, false)
 	commitVisualChange(ctx)
 }
@@ -62,6 +63,7 @@ function applyBlock(ctx: UseToolbarCommandsOptions, tag: string): void {
 		return
 	}
 	ctx.ensureSelection()
+	ctx.onBeforeChange?.()
 	document.execCommand('formatBlock', false, tag)
 	commitVisualChange(ctx)
 }
@@ -77,6 +79,7 @@ function handleHeadingChange(ctx: UseToolbarCommandsOptions, value: string | num
 		return
 	}
 	ctx.ensureSelection()
+	ctx.onBeforeChange?.()
 	document.execCommand('formatBlock', false, String(value))
 	commitVisualChange(ctx)
 }
@@ -92,6 +95,7 @@ function clearCodeFormatting(ctx: UseToolbarCommandsOptions): void {
 /** Визуальный режим: снимает начертание, цвета, блок и список */
 function clearVisualFormatting(ctx: UseToolbarCommandsOptions): void {
 	ctx.ensureSelection()
+	ctx.onBeforeChange?.()
 	document.execCommand('removeFormat', false)
 	stripInlineStyle(ctx, 'color')
 	stripInlineStyle(ctx, 'backgroundColor')

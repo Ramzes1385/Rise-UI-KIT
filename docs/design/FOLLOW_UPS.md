@@ -417,3 +417,11 @@
   - `BaseImage` `-thumb.base-button`, `__zoom-dialog`, BaseImageCompare `--ghost`, BaseAutocomplete — не сброс кнопки.
 - Чужие файлы, сбросы остаются владельцам пачек: BaseChat и BaseCryptoProSign (fix-chat); BaseEditor (editor-3); BaseTable, BaseToolbar, BaseBadge, BaseInput, BaseBanner, BaseFileManager, BaseColorModeButton, BaseHoverCard (fix-ui); BaseDashboardGrid, BaseGantt, BaseMegaMenu, BaseMap, BaseImageMap, BaseImageMap3D, BaseImageMapEditor, BaseColorPicker (layout-maps).
 - Комментарий к `field-counter` в `_mixins.scss`: «моноширинный» заменён на «цифры одной ширины».
+
+## Задача editor-3
+
+- Кнопки «Отменить» и «Повторить» на панели BaseEditor — для сенсорных экранов, где после команды без набора отменить нечем (нативное меню «Правка» и жест iOS видят только нативный стек). Визуальное изменение, решает владелец; кнопкам нужен `isFocusableWhenDisabled` (кнопка отключается от собственного нажатия).
+- Обёртки тегами в режиме кода (`wrapCodeSelection`) нативно не отменяются (прогон исследователя): набор в поле кода отменяется нативно, а правка тегами из панели — нет.
+- «Правка → Отменить» в меню браузера доступно, только пока в нативном стеке есть набор.
+- `useHotkeys` и Ctrl+B/I/U сопоставляют буквы по `event.code`: на Dvorak и Colemak срабатывает не та клавиша — перейти на «латинская `key`, иначе `code`», как в истории редактора.
+

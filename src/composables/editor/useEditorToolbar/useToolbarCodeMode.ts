@@ -8,6 +8,7 @@ function useToolbarCodeMode(options: UseToolbarCodeModeOptions) {
 
 	const isCodeMode = ref(false)
 	const codeContent = ref('')
+	let entryHtml = ''
 
 	function getCodeTextarea(): HTMLTextAreaElement | null {
 		return resolveCodeTextarea(codeTextareaRef.value)
@@ -24,14 +25,15 @@ function useToolbarCodeMode(options: UseToolbarCodeModeOptions) {
 	function toggleCodeMode(): void {
 		if (!isCodeMode.value) {
 			if (!editorRef.value) return
-			codeContent.value = editorRef.value.innerHTML
+			entryHtml = editorRef.value.innerHTML
+			codeContent.value = entryHtml
 			isCodeMode.value = true
 			return
 		}
 		isCodeMode.value = false
 		nextTick(() => {
 			if (!editorRef.value) return
-			editorRef.value.innerHTML = sanitize(codeContent.value)
+			editorRef.value.innerHTML = codeContent.value === entryHtml ? entryHtml : sanitize(codeContent.value)
 			onInput()
 		})
 	}

@@ -44,3 +44,4 @@ export const EditorLinkDialog = cases.EditorLinkDialog
 export const EditorFormatSync = cases.EditorFormatSync
 export const EditorToolbarSlot = cases.EditorToolbarSlot
 export const EditorPaste = cases.EditorPaste
+export const EditorUndo = cases.EditorUndo

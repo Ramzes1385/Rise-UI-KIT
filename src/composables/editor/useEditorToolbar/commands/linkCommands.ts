@@ -102,6 +102,7 @@ function applyLink(ctx: UseToolbarCommandsOptions, value: EditorLinkValue): void
 	const root = ctx.editorRef.value
 	if (!root) return
 	if (!ctx.restoreSelection()) placeCaretAtEnd(root)
+	ctx.onBeforeChange?.()
 	applyVisualLink(ctx, value, root)
 	ctx.saveSelection()
 	ctx.onInput()
@@ -121,6 +122,7 @@ function selectNodes(nodes: Node[]): void {
 /** Снимает ссылку под выделением: разворачивает элемент `<a>`, текст остаётся выделенным */
 function removeLink(ctx: UseToolbarCommandsOptions): void {
 	if (ctx.isCodeMode.value || !ctx.restoreSelection()) return
+	ctx.onBeforeChange?.()
 	const link = findLinkAtSelection(ctx)
 	if (!link) {
 		document.execCommand('unlink', false)

@@ -31,6 +31,7 @@ function applyInlineColor(ctx: UseToolbarCommandsOptions, property: InlineStyleP
 		return
 	}
 	ctx.restoreSelection()
+	ctx.onBeforeChange?.()
 	document.execCommand(command, false, color)
 	ctx.saveSelection()
 	ctx.onInput()
@@ -44,6 +45,7 @@ function resetInlineColor(ctx: UseToolbarCommandsOptions, property: InlineStyleP
 		return
 	}
 	ctx.restoreSelection()
+	ctx.onBeforeChange?.()
 	stripInlineStyle(ctx, property)
 	ctx.saveSelection()
 	ctx.onInput()

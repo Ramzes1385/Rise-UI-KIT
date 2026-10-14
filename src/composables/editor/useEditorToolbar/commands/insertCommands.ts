@@ -32,6 +32,7 @@ function insertLink(ctx: UseToolbarCommandsOptions): void {
 	}
 	ctx.saveSelection()
 	ctx.restoreSelection()
+	ctx.onBeforeChange?.()
 	document.execCommand('createLink', false, url)
 	ctx.saveSelection()
 	ctx.onInput()

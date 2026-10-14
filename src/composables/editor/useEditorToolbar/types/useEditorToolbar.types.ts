@@ -1,4 +1,5 @@
 import type { Ref } from 'vue'
+import type { EditorHistoryKind } from '../../useEditorHistory'
 
 export interface EditorActiveStates {
 	isBold: boolean
@@ -28,7 +29,10 @@ export interface MediaContextMenuState {
 export interface UseEditorToolbarOptions {
 	editorRef: Ref<HTMLDivElement | null>
 	codeTextareaRef: Ref<HTMLTextAreaElement | { textareaRef: HTMLTextAreaElement | null } | null>
-	onInput: () => void
+	/** Сообщает о правке; `kind` — вид правки для истории отмены (по умолчанию `command`) */
+	onInput: (kind?: EditorHistoryKind) => void
+	/** Вызывается после отмены или повтора, когда содержимое области уже восстановлено */
+	onRestore?: () => void
 	promptForUrl?: () => string | null
 	/** Режим только для чтения: контекстное меню медиа не открывается и не меняет содержимое */
 	isReadonly?: () => boolean

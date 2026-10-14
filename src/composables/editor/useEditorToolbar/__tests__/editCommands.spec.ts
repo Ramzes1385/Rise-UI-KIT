@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom/vitest'
-import { ref } from 'vue'
+import { nextTick, ref } from 'vue'
 import { mount } from '@vue/test-utils'
 import { useEditorToolbar } from '../useEditorToolbar'
 import type { EditorEditContext, UseToolbarCommandsOptions } from '../types/useToolbarCommands.types'
@@ -38,7 +38,7 @@ describe('editCommands', () => {
 		const { ctx } = createContext('<p>a</p>')
 
 		commitVisualChange(ctx as unknown as EditorEditContext)
-		await Promise.resolve()
+		await nextTick()
 
 		expect(ctx.saveSelection).toHaveBeenCalledTimes(1)
 		expect(ctx.onInput).toHaveBeenCalledTimes(1)
@@ -132,5 +132,97 @@ describe('editCommands', () => {
 
 		expect(editor.innerHTML).toBe('<p>ab<b>x</b></p>')
 		expect(onInput).toHaveBeenCalledTimes(1)
+	})
+
+	it('история тулбара: вставка отменяется и повторяется, onRestore сообщает о восстановлении', () => {
+		const { editor } = createContext('<p>ab</p>')
+		const onRestore = vi.fn()
+		const state = { isReadonly: false }
+		let toolbar!: ReturnType<typeof useEditorToolbar>
+		mount({
+			setup() {
+				toolbar = useEditorToolbar({
+					editorRef: ref(editor),
+					codeTextareaRef: ref(null),
+					onInput: kind => toolbar.history.record(kind ?? 'command'),
+					onRestore,
+					isReadonly: () => state.isReadonly,
+				})
+				return () => null
+			},
+		})
+		toolbar.history.reset()
+		caretAt(editor.querySelector('p')!.firstChild!, 2)
+		toolbar.insertHtml('<b>x</b>')
+
+		expect(toolbar.history.canUndo.value).toBe(true)
+		toolbar.history.undo()
+		expect(editor.innerHTML).toBe('<p>ab</p>')
+		expect(onRestore).toHaveBeenCalledTimes(1)
+		toolbar.history.redo()
+		expect(editor.innerHTML).toBe('<p>ab<b>x</b></p>')
+
+		state.isReadonly = true
+		expect(toolbar.history.undo()).toBe(false)
+		state.isReadonly = false
+		toolbar.toggleCodeMode()
+		expect(toolbar.history.undo()).toBe(false)
+	})
+
+	it('useEditorToolbar без onRestore: отмена не падает', () => {
+		const { editor } = createContext('<p>ab</p>')
+		let toolbar!: ReturnType<typeof useEditorToolbar>
+		mount({
+			setup() {
+				toolbar = useEditorToolbar({
+					editorRef: ref(editor),
+					codeTextareaRef: ref(null),
+					onInput: kind => toolbar.history.record(kind ?? 'command'),
+				})
+				return () => null
+			},
+		})
+		toolbar.history.reset()
+		caretAt(editor.querySelector('p')!.firstChild!, 2)
+		toolbar.insertHtml('<b>x</b>')
+
+		expect(toolbar.history.undo()).toBe(true)
+	})
+
+	it('режим кода: без правок возвращается исходный HTML без очистки, с правкой — результат sanitize или код как есть', async () => {
+		const { editor } = createContext('<p onclick="x()">ab</p>')
+		const sanitize = vi.fn((html: string) => html.replace(' onclick="x()"', ''))
+		let toolbar!: ReturnType<typeof useEditorToolbar>
+		mount({
+			setup() {
+				toolbar = useEditorToolbar({ editorRef: ref(editor), codeTextareaRef: ref(null), onInput: vi.fn(), sanitize })
+				return () => null
+			},
+		})
+
+		toolbar.toggleCodeMode()
+		toolbar.toggleCodeMode()
+		await nextTick()
+		expect(editor.innerHTML).toBe('<p onclick="x()">ab</p>')
+		expect(sanitize).not.toHaveBeenCalled()
+
+		toolbar.toggleCodeMode()
+		toolbar.codeContent.value = '<p onclick="x()">changed</p>'
+		toolbar.toggleCodeMode()
+		await nextTick()
+		expect(editor.innerHTML).toBe('<p>changed</p>')
+
+		let plain!: ReturnType<typeof useEditorToolbar>
+		mount({
+			setup() {
+				plain = useEditorToolbar({ editorRef: ref(editor), codeTextareaRef: ref(null), onInput: vi.fn() })
+				return () => null
+			},
+		})
+		plain.toggleCodeMode()
+		plain.codeContent.value = '<p>raw</p>'
+		plain.toggleCodeMode()
+		await nextTick()
+		expect(editor.innerHTML).toBe('<p>raw</p>')
 	})
 })

@@ -19,6 +19,11 @@ function whenUnlocked<Args extends unknown[]>(ctx: EditorApiContext, action: (..
 	}
 }
 
+function stepHistory(ctx: EditorApiContext, direction: 'redo' | 'undo'): void {
+	ctx.editorRef.value?.focus()
+	ctx.toolbar.history[direction]()
+}
+
 export function createEditorApi(ctx: EditorApiContext) {
 	const field = activeField(ctx)
 	const insertHtml = (html: string): void => {
@@ -27,13 +32,15 @@ export function createEditorApi(ctx: EditorApiContext) {
 		if (ctx.toolbar.isCodeMode.value) ctx.toolbar.insertCodeAtCursor(clean)
 		else insertVisualHtml(ctx, clean)
 	}
-	const exposed: Omit<BaseEditorExpose, 'rootRef' | 'isEmpty'> = {
+	const exposed: Omit<BaseEditorExpose, 'canRedo' | 'canUndo' | 'isEmpty' | 'rootRef'> = {
 		focus: () => field()?.focus(),
 		blur: () => field()?.blur(),
 		getHtml: () => ctx.sanitize(ctx.toolbar.isCodeMode.value ? ctx.toolbar.codeContent.value : (ctx.editorRef.value?.innerHTML ?? '')),
 		insertHtml,
 		validate: ctx.formField.validate,
 		reset: ctx.formField.reset,
+		undo: () => stepHistory(ctx, 'undo'),
+		redo: () => stepHistory(ctx, 'redo'),
 	}
 	const slotProps = computed((): BaseEditorToolbarSlotProps => ({
 		activeStates: ctx.toolbar.activeStates,
@@ -45,6 +52,11 @@ export function createEditorApi(ctx: EditorApiContext) {
 		openLinkDialog: ctx.openLinkDialog,
 		toggleCodeMode: whenUnlocked(ctx, ctx.toolbar.toggleCodeMode),
 		focus: exposed.focus,
+		undo: exposed.undo,
+		redo: exposed.redo,
+		canUndo: ctx.toolbar.history.canUndo.value,
+		canRedo: ctx.toolbar.history.canRedo.value,
 	}))
-	return { exposed: { ...exposed, rootRef: ctx.editorRef, isEmpty: ctx.isEmpty }, slotProps }
+	const { canUndo, canRedo } = ctx.toolbar.history
+	return { exposed: { ...exposed, rootRef: ctx.editorRef, isEmpty: ctx.isEmpty, canUndo, canRedo }, slotProps }
 }

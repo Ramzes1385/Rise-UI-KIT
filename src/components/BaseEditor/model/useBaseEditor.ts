@@ -4,6 +4,7 @@ import { useUi } from '@composables/base/useUi'
 import { createEditorApi } from './api/editorExpose'
 import { EDITOR_MENU_SCALE_RATIO } from './editorScale'
 import { useEditorField } from './field/useEditorField'
+import { createEditorInput } from './input/editorInput'
 import type { DropPoint } from '../types/EditorApi.types'
 import type { BaseSelectOption } from '@components/BaseSelect'
 import { escapeHtml, sanitizeHtml } from '@utils/dom/htmlUtils'
@@ -13,6 +14,7 @@ import { consumeEcho, rememberEmitted } from './input/editorDraft'
 import { useFormDisabled } from '@composables/form/useFormContext'
 import { useEditorState } from '@composables/editor/useEditorState'
 import { useEditorSelectionSync } from './input/editorSelectionSync'
+import type { EditorInputHandlers } from '../types/EditorInput.types'
 import { useEditorToolbar } from '@composables/editor/useEditorToolbar'
 import type { EditorComposition } from '../types/EditorComposition.types'
 import { rangeFromStatic, selectRange } from '@utils/dom/editorInsertUtils'
@@ -52,10 +54,12 @@ function useEditorEngine(
 	refs: { editorRef: Ref<HTMLDivElement | null>; codeTextareaRef: Ref<{ textareaRef: HTMLTextAreaElement | null } | null> },
 	options: { isLocked: ComputedRef<boolean>; sanitize: (html: string) => string; pending: string[] },
 ) {
-	const composition = useEditorComposition(() => handleInput())
+	const handlers = {} as EditorInputHandlers
+	const composition = useEditorComposition(() => handlers.handleInput('typing'))
 	const toolbar = useEditorToolbar({
 		...refs,
-		onInput: () => handleInput(),
+		onInput: kind => handlers.handleInput(kind),
+		onRestore: () => handlers.restore(),
 		isReadonly: () => options.isLocked.value,
 		sanitize: options.sanitize,
 	})
@@ -70,22 +74,15 @@ function useEditorEngine(
 		rememberEmitted(options.pending, value)
 		emit('update:modelValue', value)
 	}
-	function handleInput(): void {
-		if (composition.isActive) {
-			state.checkEmpty()
-			return
-		}
-		if (toolbar.isCodeMode.value) {
-			emitValue(options.sanitize(toolbar.codeContent.value))
-			return
-		}
-		if (!refs.editorRef.value) return
-		toolbar.convertInlineHtml()
-		emitValue(options.sanitize(refs.editorRef.value.innerHTML))
-		toolbar.updateActiveStates()
-		state.checkEmpty()
+	Object.assign(
+		handlers,
+		createEditorInput({ editorRef: refs.editorRef, sanitize: options.sanitize, emitValue, composition, toolbar, state }),
+	)
+	const handleCompositionStart = (): void => {
+		composition.handleCompositionStart()
+		toolbar.history.capture()
 	}
-	return { toolbar, state, handleInput, composition }
+	return { toolbar, state, handleInput: handlers.handleInput, composition, handleCompositionStart }
 }
 
 function plainTextToHtml(text: string): string {
@@ -111,8 +108,9 @@ function selectDropTarget(event: InputEvent, point: DropPoint | null): void {
 
 function useSafeInsert(
 	isLocked: ComputedRef<boolean>,
-	options: { sanitize: (html: string) => string; insertHtml: (html: string) => void },
+	options: { sanitize: (html: string) => string; engine: ReturnType<typeof useEditorEngine> },
 ) {
+	const { toolbar, composition } = options.engine
 	const isInternalDrag = ref(false)
 	const state: { dropPoint: DropPoint | null } = { dropPoint: null }
 	function insertFromPaste(event: InputEvent): void {
@@ -121,14 +119,14 @@ function useSafeInsert(
 		const text = data?.getData('text/plain')
 		if (!html && !text) return
 		event.preventDefault()
-		options.insertHtml(html ? options.sanitize(html) : plainTextToHtml(text ?? ''))
+		toolbar.insertHtml(html ? options.sanitize(html) : plainTextToHtml(text ?? ''))
 	}
 	function insertFromDrop(event: InputEvent): void {
 		const html = event.dataTransfer?.getData('text/html')
 		if (isInternalDrag.value || !html) return
 		event.preventDefault()
 		selectDropTarget(event, state.dropPoint)
-		options.insertHtml(options.sanitize(html))
+		toolbar.insertHtml(options.sanitize(html), 'drag')
 	}
 	return {
 		isInternalDrag,
@@ -136,7 +134,7 @@ function useSafeInsert(
 			state.dropPoint = { x: event.clientX, y: event.clientY }
 		},
 		handleBeforeInput(event: InputEvent): void {
-			if (isLocked.value) return
+			if (toolbar.history.handleBeforeInput(event, composition.isActive) || isLocked.value) return
 			if (event.inputType === 'insertFromPaste') insertFromPaste(event)
 			else if (event.inputType === 'insertFromDrop') insertFromDrop(event)
 		},
@@ -162,7 +160,7 @@ function useMediaMenu(
 	return {
 		mediaMenuAnchor: computed(() => ({ x: toolbar.contextMenu.x, y: toolbar.contextMenu.y })),
 		handleKeyDown(event: KeyboardEvent): void {
-			if (options.composition.isActive) return
+			if (options.composition.isActive || toolbar.history.handleKeyDown(event)) return
 			if (isLinkHotkey(event)) {
 				event.preventDefault()
 				options.openLinkDialog()
@@ -205,15 +203,18 @@ function useContentSync(
 			if (consumeEcho(ctx.pending, newVal) || ctx.composition.isActive) return
 			if (toolbar.isCodeMode.value) {
 				toolbar.codeContent.value = ctx.sanitize(newVal)
+				toolbar.history.reset()
 				return
 			}
 			if (!editorRef.value || editorRef.value.innerHTML === newVal) return
 			editorRef.value.innerHTML = ctx.sanitize(newVal)
+			toolbar.history.reset()
 			state.checkEmpty()
 		},
 	)
 	onMounted(() => {
 		if (editorRef.value && props.modelValue) editorRef.value.innerHTML = ctx.sanitize(props.modelValue)
+		toolbar.history.reset()
 		state.checkEmpty()
 		state.refreshTextColor()
 		if (props.isAutofocus) editorRef.value?.focus()
@@ -253,7 +254,7 @@ export function useBaseEditor(props: EditorProps, emit: BaseEditorEmits) {
 	const sanitize = (html: string): string => (props.sanitize ?? sanitizeHtml)(html)
 	const pending: string[] = []
 	const engine = useEditorEngine(emit, { editorRef, codeTextareaRef }, { isLocked, sanitize, pending })
-	const insert = useSafeInsert(isLocked, { sanitize, insertHtml: engine.toolbar.insertHtml })
+	const insert = useSafeInsert(isLocked, { sanitize, engine })
 	const link = useEditorLinkDialog(engine.toolbar, isLocked)
 	const mediaMenu = useMediaMenu(editorRef, engine.toolbar, { composition: engine.composition, openLinkDialog: link.openLinkDialog })
 	useContentSync(props, editorRef, { isLocked, sanitize, engine, pending, composition: engine.composition })
@@ -280,7 +281,7 @@ export function useBaseEditor(props: EditorProps, emit: BaseEditorEmits) {
 		headingOptions: headingOptions(),
 		...engine.toolbar,
 		...link,
-		handleCompositionStart: engine.composition.handleCompositionStart,
+		handleCompositionStart: engine.handleCompositionStart,
 		handleCompositionEnd: engine.composition.handleCompositionEnd,
 		mediaMenuAnchor: mediaMenu.mediaMenuAnchor,
 		...engine.state,
