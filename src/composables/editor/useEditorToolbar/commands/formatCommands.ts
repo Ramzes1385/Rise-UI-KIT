@@ -1,6 +1,7 @@
-/** Утилиты: команды форматирования тулбара редактора (начертание, блоки, очистка, горячие клавиши) */
 import { stripInlineStyle } from './colorCommands'
 import { replaceCodeSelection } from '../helpers/codeText'
+/** Утилиты: команды форматирования тулбара редактора (начертание, блоки, очистка, горячие клавиши) */
+import { getShortcutLetter } from '@utils/dom/keyboardUtils'
 import { applyEdit, insertLineBreakCommand } from './editCommands'
 import { ALIGN_MAP, FORMAT_CONFIG } from '@utils/dom/editorDomUtils'
 import type { EditorAlign, EditorBlockTag } from '@utils/dom/editorBlockUtils'
@@ -9,13 +10,13 @@ import { removeInlineFormatting, toggleInlineFormat } from '@utils/dom/editorFor
 import { clearBlockFormatting, setAlign, setBlockTag, toggleList } from '@utils/dom/editorBlockUtils'
 
 /**
- * Горячие клавиши форматирования: Ctrl (⌘ на macOS) + клавиша. Ключ — физическая клавиша (`event.code`),
- * поэтому сочетания работают в любой раскладке, в том числе в русской.
+ * Горячие клавиши форматирования: Ctrl (⌘ на macOS) + клавиша. Ключ — буква по правилу `getShortcutLetter`
+ * (латинская из `event.key`, иначе физическая клавиша): сочетания работают на Dvorak и в русской раскладке.
  */
 const FORMAT_HOTKEYS: Readonly<Record<string, string | undefined>> = {
-	KeyB: 'bold',
-	KeyI: 'italic',
-	KeyU: 'underline',
+	b: 'bold',
+	i: 'italic',
+	u: 'underline',
 }
 
 /** Команды списков визуального режима: вид списка */
@@ -39,7 +40,7 @@ const IME_KEY_CODE = 229
 /** Команда форматирования для сочетания клавиш или undefined, если это не горячая клавиша редактора */
 function getHotkeyCommand(event: KeyboardEvent): string | undefined {
 	if (!(event.ctrlKey || event.metaKey) || event.shiftKey || event.altKey) return undefined
-	return FORMAT_HOTKEYS[event.code]
+	return FORMAT_HOTKEYS[getShortcutLetter(event)]
 }
 
 /** Начертание или список в режиме кода: оборачивает выделение тегами */

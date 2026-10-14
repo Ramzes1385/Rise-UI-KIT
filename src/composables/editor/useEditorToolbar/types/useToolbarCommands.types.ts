@@ -18,6 +18,8 @@ export interface UseToolbarCommandsOptions {
 	insertCodeAtCursor: (html: string) => void
 	getCodeTextarea: () => HTMLTextAreaElement | null
 	promptForUrl?: () => string | null
+	/** Адрес `blob:` для вставляемого файла; освобождается при размонтировании и сбросе истории */
+	createMediaUrl: (file: Blob) => string
 }
 
 /** Часть опций команд, которая нужна правке DOM: область, выделение и сообщение о вводе */

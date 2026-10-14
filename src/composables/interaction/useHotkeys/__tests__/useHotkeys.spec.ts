@@ -27,6 +27,18 @@ describe('useHotkeys', () => {
 		expect(matchesHotkey(new KeyboardEvent('keydown', { key: 'Escape', shiftKey: true }), 'escape', false)).toBe(false)
 	})
 
+	it.each([
+		['en QWERTY', { key: 'z', code: 'KeyZ' }, true],
+		['ru: «я» на физической KeyZ', { key: 'я', code: 'KeyZ' }, true],
+		['de QWERTZ: Z на физической KeyY', { key: 'z', code: 'KeyY' }, true],
+		['de QWERTZ: физическая KeyZ несёт Y', { key: 'y', code: 'KeyZ' }, false],
+		['Dvorak: Z на физической Slash', { key: 'z', code: 'Slash' }, true],
+		['Dvorak: физическая KeyZ несёт «;»', { key: ';', code: 'KeyZ' }, false],
+		['Colemak: физическая KeyZ несёт X', { key: 'x', code: 'KeyZ' }, false],
+	])('matchesHotkey: буква по раскладке — %s', (_name, init, expected) => {
+		expect(matchesHotkey(new KeyboardEvent('keydown', { ...init, ctrlKey: true }), 'mod+z', false)).toBe(expected)
+	})
+
 	it('isMacPlatform по navigator', () => {
 		vi.stubGlobal('navigator', { platform: 'MacIntel', userAgent: '' })
 		expect(isMacPlatform()).toBe(true)

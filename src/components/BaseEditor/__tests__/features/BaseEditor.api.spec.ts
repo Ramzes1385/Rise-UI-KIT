@@ -15,10 +15,6 @@ function mountEditor(props: Record<string, unknown> = {}) {
 }
 
 describe('BaseEditor: defineExpose и слот toolbar', () => {
-	beforeEach(() => {
-		Object.defineProperty(document, 'execCommand', { value: vi.fn(() => true), configurable: true, writable: true })
-	})
-
 	afterEach(() => {
 		vi.restoreAllMocks()
 		document.body.innerHTML = ''

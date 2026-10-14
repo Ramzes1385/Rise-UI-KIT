@@ -1,6 +1,7 @@
 import type { MaybeRefOrGetter } from 'vue'
-/** Composable: горячие клавиши на странице с учётом платформы и раскладки */
 import { onScopeDispose, toValue, watch } from 'vue'
+/** Composable: горячие клавиши на странице с учётом платформы и раскладки */
+import { getShortcutLetter } from '@utils/dom/keyboardUtils'
 import type { HotkeyMap, ParsedHotkey, UseHotkeysOptions } from './types/useHotkeys.types'
 
 const KEY_ALIASES: Record<string, string> = {
@@ -35,7 +36,7 @@ export function parseHotkey(hotkey: string, isMac = isMacPlatform()): ParsedHotk
 }
 
 function isSameKey(event: KeyboardEvent, key: string): boolean {
-	if (/^[a-z]$/.test(key)) return event.code === `Key${key.toUpperCase()}`
+	if (/^[a-z]$/.test(key)) return getShortcutLetter(event) === key
 	if (/^\d$/.test(key)) return event.code === `Digit${key}`
 	return event.key.toLowerCase() === key
 }

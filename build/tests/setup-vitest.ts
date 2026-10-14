@@ -68,10 +68,20 @@ globalThis.window.prompt = vi.fn(() => null)
 /** Мок window.confirm — отсутствует в jsdom */
 globalThis.window.confirm = vi.fn(() => true)
 
-/** Мок execCommand — отсутствует в jsdom, нужен для BaseEditor */
+/**
+ * Мок execCommand — отсутствует в jsdom, нужен для BaseEditor. `insertText` в сфокусированном поле ввода ведёт себя
+ * как в браузере: заменяет выделение и шлёт `input` (так режим кода редактора пишет в нативную историю поля).
+ */
 Object.defineProperty(document, 'execCommand', {
 	configurable: true,
-	value: vi.fn(() => true),
+	value: vi.fn((command: string, _showUi?: boolean, value?: string) => {
+		const field = document.activeElement
+		if (command === 'insertText' && (field instanceof HTMLTextAreaElement || field instanceof HTMLInputElement)) {
+			field.setRangeText(String(value), field.selectionStart ?? 0, field.selectionEnd ?? 0, 'end')
+			field.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText', data: value }))
+		}
+		return true
+	}),
 })
 
 /** Мок DataTransfer — отсутствует в jsdom, нужен для FileUpload/Editor/Pin story-тестов */

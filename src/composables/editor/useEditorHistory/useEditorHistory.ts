@@ -12,6 +12,7 @@ function createHistoryHandlers(
 	step: (direction: EditorHistoryDirection) => boolean,
 	capture: () => void,
 ) {
+	let isAfterDragDelete = false
 	return {
 		handleKeyDown(event: KeyboardEvent): boolean {
 			const action = options.isEnabled() ? getHistoryAction(event, isMacPlatform()) : null
@@ -27,7 +28,8 @@ function createHistoryHandlers(
 				if (!isComposing) step(event.inputType === 'historyUndo' ? 'undo' : 'redo')
 				return true
 			}
-			if (!isComposing && event.inputType !== 'insertFromDrop') capture()
+			if (!isComposing && !(event.inputType === 'insertFromDrop' && isAfterDragDelete)) capture()
+			isAfterDragDelete = event.inputType === 'deleteByDrag'
 			return false
 		},
 	}

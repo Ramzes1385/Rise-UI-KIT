@@ -2,13 +2,27 @@
 import type { Ref } from 'vue'
 import type { UseToolbarCodeModeOptions } from '../types/useToolbarCodeMode.types'
 
-/** Заменяет выделение в поле кода результатом replace(выделенный текст), ставит фокус в поле */
+/**
+ * Заменяет выделение в поле кода результатом replace(выделенный текст), ставит фокус в поле.
+ * Правка идёт через `execCommand('insertText')` в самом поле: это единственный способ записать текст в нативную
+ * историю поля, и Ctrl+Z отменяет обёртку тегами так же, как набор. Присваивание `value` стёрло бы историю.
+ * Где поле не получило фокус (его держит диалог), команды нет или она отказала, текст ставится присваиванием, и такая правка не отменяется.
+ */
 function replaceCodeSelection(el: HTMLTextAreaElement, content: Ref<string>, replace: (selected: string) => string): void {
 	const start = el.selectionStart
 	const end = el.selectionEnd
-	const selected = content.value.substring(start, end)
-	content.value = content.value.substring(0, start) + replace(selected) + content.value.substring(end)
+	const replacement = replace(content.value.substring(start, end))
 	el.focus()
+	el.setSelectionRange(start, end)
+	if (
+		document.activeElement === el &&
+		typeof document.execCommand === 'function' &&
+		document.execCommand('insertText', false, replacement)
+	) {
+		content.value = el.value
+		return
+	}
+	content.value = content.value.substring(0, start) + replacement + content.value.substring(end)
 }
 
 /** Поле textarea режима кода: сам элемент или textareaRef компонента поля */

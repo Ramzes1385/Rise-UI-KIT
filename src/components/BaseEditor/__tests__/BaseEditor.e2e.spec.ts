@@ -162,3 +162,22 @@ test('копирование с заполнителем кладёт в буф�
 	expect(copied).toBe('one two')
 	expect(await textbox.innerHTML()).toContain('data-rise-pending')
 })
+
+test('режим кода: обёртка тегами из панели отменяется Ctrl+Z нативной историей поля, Ctrl+Y повторяет', async ({ page }) => {
+	await openEditor(page)
+	await page.getByRole('button', { name: 'Режим кода' }).click()
+	const code = page.getByRole('textbox', { name: 'HTML-код' })
+	await expect(code).toHaveValue('<p>alpha beta gamma</p>')
+	await code.evaluate(element => {
+		element.focus()
+		;(element as HTMLTextAreaElement).setSelectionRange(3, 8)
+	})
+
+	await page.getByRole('button', { name: 'Жирный' }).click()
+	await expect(code).toHaveValue('<p><b>alpha</b> beta gamma</p>')
+
+	await page.keyboard.press('Control+z')
+	await expect(code).toHaveValue('<p>alpha beta gamma</p>')
+	await page.keyboard.press('Control+y')
+	await expect(code).toHaveValue('<p><b>alpha</b> beta gamma</p>')
+})

@@ -1,5 +1,6 @@
 import type { ComputedRef, Ref } from 'vue'
 import { UI_EDITOR } from '@/locales/messages'
+import { getShortcutLetter } from '@utils/dom/keyboardUtils'
 import { computed, nextTick, reactive, ref, watch } from 'vue'
 import type { EditorLinkDialogState, EditorToolbar } from '../../types/EditorLinkDialog.types'
 
@@ -10,7 +11,7 @@ function createLinkDialogState(): EditorLinkDialogState {
 }
 
 export function isLinkHotkey(event: KeyboardEvent): boolean {
-	return (event.ctrlKey || event.metaKey) && !event.shiftKey && !event.altKey && event.code === 'KeyK'
+	return (event.ctrlKey || event.metaKey) && !event.shiftKey && !event.altKey && getShortcutLetter(event) === 'k'
 }
 
 function openedDialogState(toolbar: EditorToolbar): EditorLinkDialogState {

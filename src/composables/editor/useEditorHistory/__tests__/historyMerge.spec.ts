@@ -193,4 +193,14 @@ describe('useEditorHistory: склейка и сброс', () => {
 			expect(ctx.root.innerHTML).toBe('<p>ab</p>')
 		})
 	})
+
+	it('откат системных часов не вливает правку в старый шаг', () => {
+		const ctx = setup()
+		caretAt(ctx.root, 1)
+		append(ctx, 'typing', 'b')
+		vi.setSystemTime(new Date('2025-05-15T09:00:00Z'))
+		append(ctx, 'typing', 'c')
+
+		expect(countSteps(ctx)).toBe(2)
+	})
 })

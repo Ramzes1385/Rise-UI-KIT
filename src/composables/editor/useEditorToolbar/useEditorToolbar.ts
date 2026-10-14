@@ -3,6 +3,7 @@ import { useEditorHistory } from '../useEditorHistory'
 import { useToolbarCodeMode } from './useToolbarCodeMode'
 import { useToolbarCommands } from './useToolbarCommands'
 import { useToolbarMediaMenu } from './useToolbarMediaMenu'
+import { useToolbarMediaUrls } from './useToolbarMediaUrls'
 import { useToolbarSelection } from './useToolbarSelection'
 import type { UseEditorToolbarOptions } from './types/useEditorToolbar.types'
 
@@ -11,11 +12,19 @@ function useEditorToolbar(options: UseEditorToolbarOptions) {
 
 	const selection = useToolbarSelection({ editorRef })
 	const codeMode = useToolbarCodeMode({ editorRef, codeTextareaRef, onInput, sanitize: options.sanitize })
-	const history = useEditorHistory({
+	const mediaUrls = useToolbarMediaUrls({ editorRef, codeContent: codeMode.codeContent })
+	const baseHistory = useEditorHistory({
 		root: editorRef,
 		isEnabled: () => !options.isReadonly?.() && !codeMode.isCodeMode.value,
 		onRestore: () => options.onRestore?.(),
 	})
+	const history = {
+		...baseHistory,
+		reset(): void {
+			baseHistory.reset()
+			mediaUrls.prune()
+		},
+	}
 	const mediaMenu = useToolbarMediaMenu({ editorRef, onInput, isReadonly: options.isReadonly })
 	const saveSelection = (): void => {
 		selection.saveSelection()
@@ -25,6 +34,7 @@ function useEditorToolbar(options: UseEditorToolbarOptions) {
 		editorRef,
 		onInput,
 		onBeforeChange: history.capture,
+		createMediaUrl: mediaUrls.create,
 		activeStates: selection.activeStates,
 		updateActiveStates: selection.updateActiveStates,
 		saveSelection,

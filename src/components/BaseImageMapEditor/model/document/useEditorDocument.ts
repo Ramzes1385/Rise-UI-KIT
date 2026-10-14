@@ -1,5 +1,5 @@
 import { ref, watch } from 'vue'
-import { useEditorHistory } from './useEditorHistory'
+import { useImageMapHistory } from './useImageMapHistory'
 import type { EditorMutation } from '../../types/imageMapEditorInternal.types'
 import type { ImageMapData } from '@components/BaseImageMap/types/imageMapData.types'
 import { IMAGE_MAP_DATA_VERSION } from '@components/BaseImageMap/types/imageMapData.types'
@@ -15,7 +15,7 @@ function cloneMap(data: ImageMapData): ImageMapData {
 
 export function useEditorDocument(props: ImageMapEditorProps, emit: BaseImageMapEditorEmits) {
 	const data = ref<ImageMapData>(cloneMap(props.modelValue ?? emptyMap()))
-	const history = useEditorHistory(() => props.historyLimit)
+	const history = useImageMapHistory(() => props.historyLimit)
 	let lastEmitted: ImageMapData | undefined
 
 	watch(

@@ -28,7 +28,6 @@ function lastEmitted(wrapper: ReturnType<typeof render>): string {
 
 describe('BaseEditor: диалог ссылки', () => {
 	beforeEach(() => {
-		Object.defineProperty(document, 'execCommand', { value: vi.fn(() => true), configurable: true, writable: true })
 		Range.prototype.getClientRects = vi.fn(() => [{ left: 20, bottom: 40, width: 10, height: 10 }] as unknown as DOMRectList)
 		Range.prototype.getBoundingClientRect = vi.fn(() => ({ left: 20, bottom: 40, width: 10, height: 10 }) as DOMRect)
 		vi.spyOn(window, 'prompt').mockReturnValue('https://prompt.test')

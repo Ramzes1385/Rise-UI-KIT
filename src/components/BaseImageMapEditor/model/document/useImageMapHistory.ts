@@ -4,7 +4,7 @@ function last(stack: string[]): string | undefined {
 	return stack[stack.length - 1]
 }
 
-export function useEditorHistory(getLimit: () => number) {
+export function useImageMapHistory(getLimit: () => number) {
 	const undoStack = shallowRef<string[]>([])
 	const redoStack = shallowRef<string[]>([])
 	let pending: string | undefined

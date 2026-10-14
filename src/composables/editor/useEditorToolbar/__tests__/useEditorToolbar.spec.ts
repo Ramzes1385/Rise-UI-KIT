@@ -76,7 +76,7 @@ describe('useEditorToolbar', () => {
 	beforeEach(() => {
 		// execCommand не существует в jsdom
 		Object.defineProperty(document, 'execCommand', {
-			value: vi.fn().mockReturnValue(true),
+			value: vi.fn().mockReturnValue(false),
 			configurable: true,
 			writable: true,
 		})
@@ -771,6 +771,154 @@ describe('useEditorToolbar', () => {
 		})
 	})
 
+	describe('Адреса blob: вставленных медиа (EDT-4)', () => {
+		function setup() {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const wrapper = mount({
+				setup() {
+					return { toolbar: useEditorToolbar({ editorRef, codeTextareaRef, onInput }) }
+				},
+				render: () => null,
+			})
+			const { toolbar } = wrapper.vm as unknown as { toolbar: ReturnType<typeof useEditorToolbar> }
+			const upload = (url: string) => {
+				vi.mocked(URL.createObjectURL).mockReturnValueOnce(url)
+				const input = document.createElement('input')
+				Object.defineProperty(input, 'files', { value: [new File([''], 'a.png')] })
+				toolbar.handleImageUpload({ target: input } as unknown as Event)
+			}
+			return { editorRef, toolbar, wrapper, upload }
+		}
+
+		it('при размонтировании освобождает все созданные адреса', () => {
+			const revoke = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined)
+			const { editorRef, toolbar, wrapper, upload } = setup()
+			placeCaret(editorRef.value!, '<p>ab</p>', 1)
+			toolbar.saveSelection()
+			upload('blob:one')
+			upload('blob:two')
+			expect(revoke).not.toHaveBeenCalled()
+			wrapper.unmount()
+			expect(revoke.mock.calls.map(call => call[0]).sort()).toEqual(['blob:one', 'blob:two'])
+		})
+
+		it('сброс истории освобождает только адреса, которых нет в содержимом', () => {
+			const revoke = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined)
+			const { editorRef, toolbar, wrapper, upload } = setup()
+			placeCaret(editorRef.value!, '<p>ab</p>', 1)
+			toolbar.saveSelection()
+			upload('blob:kept')
+			upload('blob:gone')
+			editorRef.value!.querySelector('img[src="blob:gone"]')!.remove()
+			toolbar.history.reset()
+			expect(revoke).toHaveBeenCalledTimes(1)
+			expect(revoke).toHaveBeenCalledWith('blob:gone')
+			wrapper.unmount()
+			expect(revoke).toHaveBeenCalledTimes(2)
+			expect(revoke).toHaveBeenLastCalledWith('blob:kept')
+		})
+
+		it('без области сброс истории не падает и освобождает адреса, которых нет в коде', () => {
+			const revoke = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined)
+			const { editorRef, toolbar, wrapper, upload } = setup()
+			placeCaret(editorRef.value!, '<p>ab</p>', 1)
+			toolbar.saveSelection()
+			upload('blob:one')
+			editorRef.value = null
+			toolbar.history.reset()
+			expect(revoke).toHaveBeenCalledWith('blob:one')
+			wrapper.unmount()
+		})
+
+		it('адрес в коде режима кода не освобождается при сбросе, пока он в коде; освобождённый — не дважды', () => {
+			const revoke = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined)
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const textarea = document.createElement('textarea')
+			codeTextareaRef.value = { textareaRef: textarea }
+			const wrapper = mount({
+				setup() {
+					return { toolbar: useEditorToolbar({ editorRef, codeTextareaRef, onInput }) }
+				},
+				render: () => null,
+			})
+			const { toolbar } = wrapper.vm as unknown as { toolbar: ReturnType<typeof useEditorToolbar> }
+			toolbar.isCodeMode.value = true
+			vi.mocked(URL.createObjectURL).mockReturnValueOnce('blob:code')
+			const input = document.createElement('input')
+			Object.defineProperty(input, 'files', { value: [new File([''], 'a.png')] })
+			toolbar.handleImageUpload({ target: input } as unknown as Event)
+			expect(toolbar.codeContent.value).toContain('blob:code')
+			toolbar.history.reset()
+			expect(revoke).not.toHaveBeenCalled()
+			toolbar.codeContent.value = ''
+			toolbar.history.reset()
+			toolbar.history.reset()
+			expect(revoke).toHaveBeenCalledTimes(1)
+			wrapper.unmount()
+			expect(revoke).toHaveBeenCalledTimes(1)
+		})
+	})
+
+	describe('Режим кода: правка тегами через нативную историю поля', () => {
+		function setupCode(value: string, range: [number, number]) {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const textarea = document.createElement('textarea')
+			textarea.value = value
+			document.body.append(textarea)
+			textarea.setSelectionRange(...range)
+			codeTextareaRef.value = { textareaRef: textarea }
+			const toolbar = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			toolbar.isCodeMode.value = true
+			toolbar.codeContent.value = value
+			return { toolbar, textarea, onInput }
+		}
+
+		it('обёртка идёт через execCommand insertText в поле и читает итог из него', () => {
+			const { toolbar, textarea, onInput } = setupCode('say hello now', [4, 9])
+			vi.mocked(document.execCommand).mockImplementation((_command, _ui, text) => {
+				textarea.setRangeText(String(text), textarea.selectionStart, textarea.selectionEnd, 'end')
+				return true
+			})
+			toolbar.applyFormat('bold')
+			expect(document.execCommand).toHaveBeenCalledWith('insertText', false, '<b>hello</b>')
+			expect(textarea.value).toBe('say <b>hello</b> now')
+			expect(toolbar.codeContent.value).toBe('say <b>hello</b> now')
+			expect(onInput).toHaveBeenCalled()
+		})
+
+		it('выделение возвращается в поле перед вставкой, чтобы команда заменила его', () => {
+			const { toolbar, textarea } = setupCode('abcdef', [1, 3])
+			vi.mocked(document.execCommand).mockImplementation(() => {
+				expect([textarea.selectionStart, textarea.selectionEnd]).toEqual([1, 3])
+				return true
+			})
+			toolbar.insertSeparator()
+			expect(document.execCommand).toHaveBeenCalledWith('insertText', false, '<hr>')
+		})
+
+		it('где команда отказала, текст ставится присваиванием', () => {
+			const { toolbar } = setupCode('abcdef', [1, 3])
+			toolbar.insertSeparator()
+			expect(document.execCommand).toHaveBeenCalledTimes(1)
+			expect(toolbar.codeContent.value).toBe('a<hr>def')
+		})
+
+		it('где поле не получило фокус, текст ставится присваиванием', () => {
+			const { toolbar, textarea } = setupCode('abcdef', [1, 3])
+			textarea.remove()
+			toolbar.insertSeparator()
+			expect(document.execCommand).not.toHaveBeenCalled()
+			expect(toolbar.codeContent.value).toBe('a<hr>def')
+		})
+
+		it('где execCommand нет, текст ставится присваиванием', () => {
+			const { toolbar } = setupCode('abcdef', [1, 3])
+			Object.defineProperty(document, 'execCommand', { value: undefined, configurable: true, writable: true })
+			toolbar.insertSeparator()
+			expect(toolbar.codeContent.value).toBe('a<hr>def')
+		})
+	})
+
 	describe('Keyboard and HTML conversion', () => {
 		it('handleKeyDown Enter без Shift оставляет абзац браузеру', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
@@ -825,14 +973,16 @@ describe('useEditorToolbar', () => {
 		})
 
 		it.each([
-			['Ctrl+B', { code: 'KeyB', ctrlKey: true }, 'b'],
-			['⌘+I', { code: 'KeyI', metaKey: true }, 'i'],
+			['Ctrl+B', { code: 'KeyB', key: 'b', ctrlKey: true }, 'b'],
+			['⌘+I', { code: 'KeyI', key: 'i', metaKey: true }, 'i'],
 			['Ctrl+U в русской раскладке (key = «г»)', { code: 'KeyU', key: 'г', ctrlKey: true }, 'u'],
+			['Ctrl+B на Dvorak (буква B на физической KeyN)', { code: 'KeyN', key: 'b', ctrlKey: true }, 'b'],
+			['Ctrl+I на Colemak (буква I на физической KeyL)', { code: 'KeyL', key: 'i', ctrlKey: true }, 'i'],
 		])('handleKeyDown: %s применяет форматирование вместо действия браузера', (_name, keys, tag) => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
 			const { handleKeyDown } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
 			selectText(editorRef.value!, '<p>hello</p>', [0, 5])
-			const event = { key: 'x', shiftKey: false, preventDefault: vi.fn(), ...keys } as unknown as KeyboardEvent
+			const event = { shiftKey: false, preventDefault: vi.fn(), ...keys } as unknown as KeyboardEvent
 
 			handleKeyDown(event)
 
@@ -842,14 +992,15 @@ describe('useEditorToolbar', () => {
 		})
 
 		it.each([
-			['Ctrl+Shift+B', { code: 'KeyB', ctrlKey: true, shiftKey: true }],
-			['Ctrl+Alt+B', { code: 'KeyB', ctrlKey: true, altKey: true }],
-			['Ctrl+K (не горячая клавиша редактора)', { code: 'KeyK', ctrlKey: true }],
-			['B без модификатора', { code: 'KeyB' }],
+			['Ctrl+Shift+B', { code: 'KeyB', key: 'b', ctrlKey: true, shiftKey: true }],
+			['Ctrl+Alt+B', { code: 'KeyB', key: 'b', ctrlKey: true, altKey: true }],
+			['Ctrl+K (не горячая клавиша редактора)', { code: 'KeyK', key: 'k', ctrlKey: true }],
+			['B без модификатора', { code: 'KeyB', key: 'b' }],
+			['Ctrl+Б на Dvorak: физическая KeyB несёт другую букву', { code: 'KeyB', key: 'x', ctrlKey: true }],
 		])('handleKeyDown: %s не перехватывается', (_name, keys) => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
 			const { handleKeyDown } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
-			const event = { key: 'b', shiftKey: false, preventDefault: vi.fn(), ...keys } as unknown as KeyboardEvent
+			const event = { shiftKey: false, preventDefault: vi.fn(), ...keys } as unknown as KeyboardEvent
 
 			handleKeyDown(event)
 

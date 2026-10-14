@@ -356,7 +356,7 @@ describe('useEditorHistory', () => {
 			expect(ctx.root.innerHTML).toBe('<p>ab</p>')
 		})
 
-		it('прочий beforeinput запоминает выделение, insertFromDrop и композиция — нет', () => {
+		it('прочий beforeinput и сброс извне запоминают выделение, композиция — нет', () => {
 			const ctx = setup('<p>abc</p>')
 			const text = ctx.root.querySelector('p')!.firstChild as Text
 			window.getSelection()?.setBaseAndExtent(text, 1, text, 1)
@@ -364,12 +364,37 @@ describe('useEditorHistory', () => {
 			expect(ctx.history.handleBeforeInput(inputEvent('insertText'), false)).toBe(false)
 			text.data = 'aXbc'
 			window.getSelection()?.setBaseAndExtent(text, 2, text, 2)
-			expect(ctx.history.handleBeforeInput(inputEvent('insertFromDrop'), false)).toBe(false)
 			expect(ctx.history.handleBeforeInput(inputEvent('insertCompositionText'), true)).toBe(false)
 			ctx.history.record('typing')
 
 			ctx.history.undo()
 			expect(window.getSelection()!.anchorOffset).toBe(1)
+		})
+
+		it('insertFromDrop после deleteByDrag не затирает выделение «до», без него — запоминает место сброса', () => {
+			const ctx = setup('<p>abcd</p>')
+			const text = ctx.root.querySelector('p')!.firstChild as Text
+			window.getSelection()?.setBaseAndExtent(text, 0, text, 1)
+			ctx.history.handleBeforeInput(inputEvent('deleteByDrag'), false)
+			text.data = 'bcd'
+			window.getSelection()?.setBaseAndExtent(text, 3, text, 3)
+			ctx.history.handleBeforeInput(inputEvent('insertFromDrop'), false)
+			text.data = 'bcda'
+			ctx.history.record('drag')
+			ctx.history.undo()
+			expect(ctx.root.innerHTML).toBe('<p>abcd</p>')
+			expect(window.getSelection()!.anchorOffset).toBe(0)
+
+			ctx.history.reset()
+			const dropped = ctx.root.querySelector('p')!.firstChild as Text
+			window.getSelection()?.setBaseAndExtent(dropped, 2, dropped, 2)
+			ctx.history.handleBeforeInput(inputEvent('insertFromDrop'), false)
+			dropped.data = 'abXcd'
+			window.getSelection()?.setBaseAndExtent(dropped, 3, dropped, 3)
+			ctx.history.record('drag')
+			ctx.history.undo()
+			expect(ctx.root.innerHTML).toBe('<p>abcd</p>')
+			expect(window.getSelection()!.anchorOffset).toBe(2)
 		})
 
 		it('reset очищает стеки и берёт текущее содержимое за исходное', () => {

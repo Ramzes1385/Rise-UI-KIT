@@ -14,6 +14,8 @@ describe('getHistoryAction', () => {
 		['русская раскладка: я на KeyZ', { key: 'я', code: 'KeyZ', ctrlKey: true }, false, 'undo'],
 		['русская раскладка: н на KeyY', { key: 'н', code: 'KeyY', ctrlKey: true }, false, 'redo'],
 		['QWERTZ: z на KeyY — отмена, не повтор', { key: 'z', code: 'KeyY', ctrlKey: true }, false, 'undo'],
+		['Dvorak: z на физической Slash', { key: 'z', code: 'Slash', ctrlKey: true }, false, 'undo'],
+		['Dvorak: y на физической KeyF', { key: 'y', code: 'KeyF', ctrlKey: true }, false, 'redo'],
 	] as const)('%s', (...row) => {
 		const [, init, isMac, expected] = row
 		expect(getHistoryAction(key(init), isMac)).toBe(expected)

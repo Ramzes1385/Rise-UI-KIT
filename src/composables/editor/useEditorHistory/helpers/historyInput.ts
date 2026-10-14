@@ -1,18 +1,11 @@
 /** Утилиты: что означают клавиши и виды ввода для истории отмены редактора */
+import { getShortcutLetter } from '@utils/dom/keyboardUtils'
 import type { EditorHistoryKind } from '../types/useEditorHistory.types'
 
 /** keyCode, который браузер ставит клавишам во время набора через IME */
 const IME_KEY_CODE = 229
 const TYPING_INPUT_TYPES = new Set(['insertText', 'insertCompositionText', 'insertParagraph', 'insertLineBreak'])
 const DRAG_INPUT_TYPES = new Set(['deleteByDrag', 'insertFromDrop'])
-
-/**
- * Буква сочетания: латинская `event.key`, иначе физическая клавиша по `event.code`.
- * Так отмена работает и в русской раскладке (`я` на `KeyZ`), и в QWERTZ, где Z и Y поменялись местами.
- */
-function shortcutLetter(event: KeyboardEvent): string {
-	return /^[a-z]$/i.test(event.key) ? event.key.toLowerCase() : event.code.replace(/^Key/, '').toLowerCase()
-}
 
 /** Нажатие без Ctrl и ⌘, с Alt или во время набора через IME истории не принадлежит */
 function isIgnoredKey(event: KeyboardEvent): boolean {
@@ -25,7 +18,7 @@ function isIgnoredKey(event: KeyboardEvent): boolean {
  */
 function getHistoryAction(event: KeyboardEvent, isMac: boolean): 'redo' | 'undo' | null {
 	if (isIgnoredKey(event)) return null
-	const letter = shortcutLetter(event)
+	const letter = getShortcutLetter(event)
 	if (letter === 'z') return event.shiftKey ? 'redo' : 'undo'
 	return letter === 'y' && event.ctrlKey && !event.shiftKey && !isMac ? 'redo' : null
 }

@@ -91,6 +91,32 @@ function fillEmptyBlock(root: HTMLElement, block: HTMLElement, range: Range): Ra
 	return range
 }
 
+/** Область опустела: в ней остаётся пустой абзац с кареткой */
+function fillEmptyRoot(root: HTMLElement): Range {
+	const paragraph = document.createElement('p')
+	paragraph.appendChild(document.createElement('br'))
+	root.appendChild(paragraph)
+	collapseToStart(paragraph)
+	return getSelectionRange(root) as Range
+}
+
+/**
+ * Выделение, одним концом лежавшее прямо в корне (`(root, 0)` у «Выделить всё» до первого текстового узла),
+ * после удаления остаётся на корне: каретка уходит в начало следующего блока (или в конец последнего), чтобы
+ * вставка не оказалась вне блока и крайний блок не остался отдельным.
+ */
+function moveCaretIntoBlock(root: HTMLElement, range: Range): Range {
+	if (range.startContainer !== root) return range
+	const forward = root.childNodes[range.startOffset]
+	const target = forward ?? root.lastChild
+	if (!(target instanceof HTMLElement) || target.matches(CONTENT_ELEMENTS)) return range
+	const caret = document.createRange()
+	caret.selectNodeContents(target)
+	caret.collapse(Boolean(forward))
+	selectRange(caret)
+	return caret
+}
+
 /**
  * Удаляет выделение и возвращает диапазон каретки. Выделение через блоки склеивает крайние блоки в один, как в браузерах
  * и ProseMirror; если удалена вся область, в ней остаётся пустой абзац.
@@ -106,12 +132,9 @@ function deleteSelection(root: HTMLElement, range: Range): Range {
 		selectRange(merged)
 		return merged
 	}
-	if (root.hasChildNodes()) return fillEmptyBlock(root, start, range)
-	const paragraph = document.createElement('p')
-	paragraph.appendChild(document.createElement('br'))
-	root.appendChild(paragraph)
-	collapseToStart(paragraph)
-	return getSelectionRange(root) as Range
+	if (!root.hasChildNodes()) return fillEmptyRoot(root)
+	const caret = moveCaretIntoBlock(root, range)
+	return fillEmptyBlock(root, getBlockParent(caret.startContainer, root), caret)
 }
 
 /**

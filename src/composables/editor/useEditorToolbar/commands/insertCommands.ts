@@ -44,11 +44,11 @@ function insertSeparator(ctx: UseToolbarCommandsOptions): void {
 	insertHtmlCommand(ctx, '<hr>')
 }
 
-/** Вставляет выбранный в поле файла медиафайл по адресу blob: и очищает поле */
+/** Вставляет выбранный в поле файла медиафайл по адресу blob: (его освобождает реестр тулбара) и очищает поле */
 function insertUploadedMedia(ctx: UseToolbarCommandsOptions, event: Event, markup: MediaMarkup): void {
 	if (!(event.target instanceof HTMLInputElement)) return
 	if (!event.target.files?.length) return
-	const url = URL.createObjectURL(event.target.files[0])
+	const url = ctx.createMediaUrl(event.target.files[0])
 	if (ctx.isCodeMode.value) {
 		ctx.insertCodeAtCursor(markup.code(url))
 		event.target.value = ''

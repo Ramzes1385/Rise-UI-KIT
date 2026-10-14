@@ -233,5 +233,51 @@ describe('insertHtmlAtSelection: выделение через блоки и с�
 
 			expect(root.querySelector('br')).toBeNull()
 		})
+
+		it('начало прямо в корне при конце внутри абзаца: каретка уходит в начало оставшегося блока', () => {
+			const root = createRoot('<p>hello</p><p>world</p>')
+			select([root, 0], [root.lastElementChild!.firstChild!, 2])
+
+			insertHtmlAtSelection(root, 'X')
+
+			expect(root.innerHTML).toBe('<p>Xrld</p>')
+		})
+
+		it('конец прямо в корне после последнего блока: каретка остаётся в предыдущем блоке', () => {
+			const root = createRoot('<p>hello</p><p>world</p>')
+			select([root.firstElementChild!.firstChild!, 2], [root, 2])
+
+			insertHtmlAtSelection(root, 'X')
+
+			expect(root.innerHTML).toBe('<p>heX</p>')
+		})
+
+		it('оба конца в корне: удаляются целые блоки, каретка в следующем', () => {
+			const root = createRoot('<p>a</p><p>b</p><p>c</p>')
+			select([root, 0], [root, 1])
+
+			deleteSelection(root, window.getSelection()!.getRangeAt(0))
+
+			expect(root.innerHTML).toBe('<p>b</p><p>c</p>')
+			expect(window.getSelection()!.anchorNode).toBe(root.firstElementChild)
+		})
+
+		it('опустевший блок под кареткой получает заглушку <br>', () => {
+			const root = createRoot('<p>a</p><p>b</p>')
+			select([root, 1], [root.lastElementChild!.firstChild!, 1])
+
+			deleteSelection(root, window.getSelection()!.getRangeAt(0))
+
+			expect(root.innerHTML).toBe('<p>a</p><p><br></p>')
+		})
+
+		it('каретка рядом с разделителем остаётся на корне', () => {
+			const root = createRoot('<p>a</p><p>b</p><hr>')
+			select([root, 0], [root, 2])
+
+			deleteSelection(root, window.getSelection()!.getRangeAt(0))
+
+			expect(root.innerHTML).toBe('<hr>')
+		})
 	})
 })

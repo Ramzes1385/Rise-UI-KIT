@@ -27,17 +27,22 @@ function resetHistoryState(state: EditorHistoryState, root: HTMLElement | null):
 	state.redo = []
 	state.open = null
 	state.captured = null
-	state.present = root ? { html: root.innerHTML, selection: readSelectionPath(root) } : null
-	state.lastDom = root ? root.innerHTML : ''
+	const html = root ? root.innerHTML : ''
+	state.present = root ? { html, selection: readSelectionPath(root) } : null
+	state.lastDom = html
 }
 
 function isSameSelection(first: EditorSelectionPath | null, second: EditorSelectionPath | null): boolean {
 	return JSON.stringify(first) === JSON.stringify(second)
 }
 
-/** Правку можно влить в открытый шаг: тот же вид, не пауза, каретка не прыгала; перетаскивание — только по времени */
+/**
+ * Правку можно влить в открытый шаг: тот же вид, не пауза, каретка не прыгала; перетаскивание — только по времени.
+ * Откат системных часов (`now` раньше открытого шага) паузой не считается, но и склейки не даёт: новый шаг.
+ */
 function canMerge(open: EditorHistoryEntry, change: EditorHistoryChange, before: EditorSelectionPath | null): boolean {
-	if (change.kind === 'command' || open.kind !== change.kind || change.now - open.time >= GROUP_PAUSE) return false
+	if (change.kind === 'command' || open.kind !== change.kind || change.now < open.time || change.now - open.time >= GROUP_PAUSE)
+		return false
 	return change.kind === 'drag' || (open.count < GROUP_SIZE && isSameSelection(before, open.selectionAfter))
 }
 
