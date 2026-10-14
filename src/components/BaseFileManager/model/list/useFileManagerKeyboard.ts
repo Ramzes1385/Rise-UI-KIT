@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
 import { onBeforeUnmount } from 'vue'
+import { getShortcutLetter } from '@utils/dom/keyboardUtils'
 import { findTypeaheadIndex } from '@utils/navigation/menuUtils'
 import type {
 	FileManagerCommands,
@@ -94,7 +95,7 @@ export function useFileManagerKeyboard(core: FileManagerCore, commands: FileMana
 			moveFocus(core, targetIndex(currentIndex(core), core.entries.value.length, step), event)
 			return true
 		}
-		if ((event.ctrlKey || event.metaKey) && event.code === 'KeyA') return runCommand(core.selection.selectAll)
+		if ((event.ctrlKey || event.metaKey) && getShortcutLetter(event) === 'a') return runCommand(core.selection.selectAll)
 		return KEY_HANDLERS[event.key]?.(context) ?? typeahead(event)
 	}
 

@@ -82,6 +82,20 @@ describe('BaseFileManager: клавиатура', () => {
 		expect(lastSelection(emitted)).toEqual([[]])
 	})
 
+	it('Ctrl+A работает на русской раскладке (key «ф», code KeyA), а не только по коду клавиши', async () => {
+		const { emitted } = renderManager()
+		option('docs').focus()
+		await fireEvent.keyDown(option('docs'), { key: 'ф', code: 'KeyA', ctrlKey: true })
+		expect(lastSelection(emitted)).toEqual([['docs', 'photos', 'logo', 'notes', 'readme']])
+	})
+
+	it('Ctrl+A на Dvorak: клавиша с кодом KeyA, на которой напечатана другая буква, выбор не меняет', async () => {
+		const { emitted } = renderManager()
+		option('docs').focus()
+		await fireEvent.keyDown(option('docs'), { key: 'o', code: 'KeyA', ctrlKey: true })
+		expect(emitted('update:selected')).toBeUndefined()
+	})
+
 	it('Escape без выбора не перехватывается', async () => {
 		renderManager()
 		option('docs').focus()

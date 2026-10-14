@@ -1,7 +1,8 @@
 import type { Ref } from 'vue'
-import { nextTick, reactive, ref, watch } from 'vue'
 import { getExtension } from '@utils/media/fileUtils'
 import { ENTRY_SELECTOR } from '../lib/fileManagerDom'
+import { useEditorPlacement } from './useEditorPlacement'
+import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { useFileManagerKeyboard } from './useFileManagerKeyboard'
 import type { FileManagerItem } from '../../types/BaseFileManager.types'
 import type { FileManagerCommands, FileManagerCore, FileManagerEditing } from '../../types/FileManagerInternal.types'
@@ -12,14 +13,9 @@ function selectName(input: HTMLInputElement, item: FileManagerItem | undefined):
 	input.setSelectionRange(0, extension ? input.value.length - extension.length - 1 : input.value.length)
 }
 
-function rowBox(row: HTMLElement) {
-	return { top: `${row.offsetTop}px`, left: `${row.offsetLeft}px`, width: `${row.offsetWidth}px`, minHeight: `${row.offsetHeight}px` }
-}
-
 export function useFileManagerList(core: FileManagerCore, commands: FileManagerCommands, editing: Ref<FileManagerEditing | null>) {
 	const listRef = ref<HTMLElement | null>(null)
 	const mainRef = ref<HTMLElement | null>(null)
-	const editorBox = reactive({ top: '0px', left: '0px', width: 'auto', minHeight: '0px' })
 	const { handleListKeydown } = useFileManagerKeyboard(core, commands, listRef)
 
 	function findElement(id: string | null): HTMLElement | null {
@@ -32,15 +28,20 @@ export function useFileManagerList(core: FileManagerCore, commands: FileManagerC
 		if (request) void nextTick(() => findElement(request.id)?.focus())
 	})
 
+	const { editorBox, stopObserving, observeEditor } = useEditorPlacement(listRef, findElement)
+
 	watch(editing, current => {
+		stopObserving()
 		if (!current) return
 		void nextTick(() => {
-			const row = current.mode === 'rename' ? findElement(current.id) : null
-			if (row) Object.assign(editorBox, rowBox(row))
+			if (editing.value !== current) return
+			observeEditor(current)
 			const input = mainRef.value?.querySelector<HTMLInputElement>('.base-file-manager__editor input')
 			if (input) selectName(input, current.mode === 'rename' ? core.index.value.byId.get(current.id) : undefined)
 		})
 	})
+
+	onBeforeUnmount(stopObserving)
 
 	return {
 		listRef,

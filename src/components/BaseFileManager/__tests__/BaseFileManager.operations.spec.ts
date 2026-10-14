@@ -98,6 +98,37 @@ describe('BaseFileManager: новая папка', () => {
 })
 
 describe('BaseFileManager: переименование', () => {
+	it('положение поля имени пересчитывается при изменении размеров строки и списка, наблюдатель снимается', async () => {
+		const watchers = new Map<Element, () => void>()
+		const disconnect = vi.fn()
+		vi.stubGlobal(
+			'ResizeObserver',
+			class {
+				callback: () => void
+				constructor(callback: () => void) {
+					this.callback = callback
+				}
+				observe(target: Element) {
+					watchers.set(target, this.callback)
+				}
+				unobserve() {}
+				disconnect = disconnect
+			},
+		)
+		const { unmount } = renderManager({ selected: ['logo'] })
+		await userEvent.click(button(UI_FILE_MANAGER.RENAME))
+		const group = screen.getByRole('group', { name: 'Новое имя для «logo.png»' })
+		const row = document.querySelector('[data-entry-id="logo"]') as HTMLElement
+		await waitFor(() => expect(watchers.has(row)).toBe(true))
+		Object.defineProperty(row, 'offsetWidth', { configurable: true, value: 321 })
+		watchers.get(row)?.()
+		await waitFor(() => expect(group.style.width).toBe('321px'))
+		await userEvent.keyboard('{Escape}')
+		expect(disconnect).toHaveBeenCalled()
+		unmount()
+		vi.unstubAllGlobals()
+	})
+
 	it('кнопка открывает поле с именем; выделено имя без расширения; Enter сообщает rename', async () => {
 		const { emitted } = renderManager({ selected: ['logo'] })
 		await userEvent.click(button(UI_FILE_MANAGER.RENAME))
