@@ -42,7 +42,9 @@ export const Editable: StoryObj<typeof meta> = {
 		await expect(widget).toHaveAccessibleDescription(/Enter или пробел — взять виджет/)
 		await expect(widget.querySelector('[data-handle]')).not.toBeNull()
 		await expect(widget.querySelector('[data-resize]')).not.toBeNull()
-		const handle = widget.querySelector('[data-handle]') as HTMLElement
+		await expect(getComputedStyle(widget.querySelector('[data-handle]') as HTMLElement, '::before').display).toBe('none')
+		const lower = canvas.getByRole('group', { name: 'Динамика продаж' })
+		const handle = lower.querySelector('[data-handle]') as HTMLElement
 		const rect = handle.getBoundingClientRect()
 		const above = document.elementFromPoint(rect.left + rect.width / 2, rect.top - 4)
 		await expect(above?.closest('[data-handle]')).toBe(handle)
