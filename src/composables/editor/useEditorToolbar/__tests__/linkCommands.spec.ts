@@ -211,30 +211,31 @@ describe('linkCommands', () => {
 			expect(ctx.onInput).toHaveBeenCalledTimes(1)
 		})
 
-		it('выделенный текст оборачивается в ссылку командой createLink, новая вкладка помечает ссылку', () => {
+		it('выделенный текст оборачивается в ссылку, новая вкладка помечает только её', () => {
 			const { editor, ctx } = createContext('<p>один два <a href="https://old.test">три</a></p>')
 			const text = editor.querySelector('p')!.firstChild!
-			vi.mocked(document.execCommand).mockImplementation((command, _ui, value) => {
-				if (command !== 'createLink') return true
-				const link = document.createElement('a')
-				link.href = String(value)
-				window.getSelection()!.getRangeAt(0).surroundContents(link)
-				return true
-			})
 			selectText(text, 0, 4)
-			vi.spyOn(window.getSelection()!, 'containsNode').mockImplementation(
-				node => (node as Element).getAttribute('href') === 'https://a.test',
-			)
 
 			applyLink(ctx, { url: 'https://a.test', isNewTab: true })
 
-			const link = editor.querySelector('a')!
-			expect(document.execCommand).toHaveBeenCalledWith('createLink', false, 'https://a.test')
-			expect(link).toHaveAttribute('target', '_blank')
-			expect(link).toHaveAttribute('rel', 'noopener noreferrer')
-			expect(editor.querySelectorAll('a')[1]).not.toHaveAttribute('target')
+			const links = editor.querySelectorAll('a')
+			expect(links[0]).toHaveAttribute('href', 'https://a.test')
+			expect(links[0]).toHaveAttribute('target', '_blank')
+			expect(links[0]).toHaveAttribute('rel', 'noopener noreferrer')
+			expect(links[0].textContent).toBe('один')
+			expect(links[1]).not.toHaveAttribute('target')
+			expect(document.execCommand).not.toHaveBeenCalled()
 			expect(ctx.saveSelection).toHaveBeenCalled()
 			expect(ctx.onInput).toHaveBeenCalled()
+		})
+
+		it('без новой вкладки у ссылки нет target и rel', () => {
+			const { editor, ctx } = createContext('<p>один два</p>')
+			selectText(editor.querySelector('p')!.firstChild!, 0, 4)
+
+			applyLink(ctx, { url: 'https://a.test', isNewTab: false })
+
+			expect(editor.innerHTML).toBe('<p><a href="https://a.test">один</a> два</p>')
 		})
 
 		it('пустое выделение вставляет ссылку с адресом как текстом', () => {
@@ -301,13 +302,14 @@ describe('linkCommands', () => {
 			expect(ctx.onInput).toHaveBeenCalled()
 		})
 
-		it('выделение вне одной ссылки снимает ссылки командой unlink', () => {
-			const { editor, ctx } = createContext('<p>просто текст</p>')
-			selectText(editor.querySelector('p')!.firstChild!, 0, 5)
+		it('выделение вне одной ссылки снимает все ссылки внутри него', () => {
+			const { editor, ctx } = createContext('<p>до <a href="https://a.test">одна</a> и <a href="https://b.test">две</a> после</p>')
+			editor.ownerDocument.defaultView!.getSelection()!.selectAllChildren(editor.querySelector('p')!)
 
 			removeLink(ctx)
 
-			expect(document.execCommand).toHaveBeenCalledWith('unlink', false)
+			expect(editor.innerHTML).toBe('<p>до одна и две после</p>')
+			expect(document.execCommand).not.toHaveBeenCalled()
 			expect(ctx.onInput).toHaveBeenCalled()
 		})
 

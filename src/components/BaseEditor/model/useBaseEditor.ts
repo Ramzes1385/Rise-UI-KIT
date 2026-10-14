@@ -10,6 +10,7 @@ import type { BaseSelectOption } from '@components/BaseSelect'
 import { escapeHtml, sanitizeHtml } from '@utils/dom/htmlUtils'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useEditorComposition } from './input/editorComposition'
+import { stripPlaceholders } from '@utils/dom/editorFormatUtils'
 import { consumeEcho, rememberEmitted } from './input/editorDraft'
 import { useFormDisabled } from '@composables/form/useFormContext'
 import { useEditorState } from '@composables/editor/useEditorState'
@@ -251,7 +252,7 @@ export function useBaseEditor(props: EditorProps, emit: BaseEditorEmits) {
 	const standard = useStandardBaseComponent('base-editor', props, EDITOR_ELEMENTS)
 	const editorRef = ref<HTMLDivElement | null>(null)
 	const codeTextareaRef = ref<{ textareaRef: HTMLTextAreaElement | null } | null>(null)
-	const sanitize = (html: string): string => (props.sanitize ?? sanitizeHtml)(html)
+	const sanitize = (html: string): string => (props.sanitize ?? sanitizeHtml)(stripPlaceholders(html))
 	const pending: string[] = []
 	const engine = useEditorEngine(emit, { editorRef, codeTextareaRef }, { isLocked, sanitize, pending })
 	const insert = useSafeInsert(isLocked, { sanitize, engine })

@@ -1,10 +1,12 @@
 /** Утилиты: цвет текста и фона в тулбаре редактора */
+import { applyEdit } from './editCommands'
+import { applyInlineStyle } from '@utils/dom/editorFormatUtils'
 import type { InlineStyleProperty, UseToolbarCommandsOptions } from '../types/useToolbarCommands.types'
 
-/** Команда execCommand и CSS-свойство для каждого цветового свойства */
-const COLOR_COMMANDS: Readonly<Record<InlineStyleProperty, { command: string; css: string; reset: string }>> = {
-	color: { command: 'foreColor', css: 'color', reset: 'inherit' },
-	backgroundColor: { command: 'hiliteColor', css: 'background-color', reset: 'transparent' },
+/** CSS-свойство и значение сброса для каждого цветового свойства */
+const COLOR_COMMANDS: Readonly<Record<InlineStyleProperty, { css: string; reset: string }>> = {
+	color: { css: 'color', reset: 'inherit' },
+	backgroundColor: { css: 'background-color', reset: 'transparent' },
 }
 
 /** Убирает цвет текста или фона у элементов, которые пересекают выделение */
@@ -25,16 +27,13 @@ function stripInlineStyle(ctx: UseToolbarCommandsOptions, property: InlineStyleP
 
 /** Задаёт цвет текста или фона выделенному фрагменту */
 function applyInlineColor(ctx: UseToolbarCommandsOptions, property: InlineStyleProperty, color: string): void {
-	const { command, css } = COLOR_COMMANDS[property]
+	const { css } = COLOR_COMMANDS[property]
 	if (ctx.isCodeMode.value) {
 		ctx.wrapCodeSelection(`<span style="${css}:${color}">`, '</span>')
 		return
 	}
 	ctx.restoreSelection()
-	ctx.onBeforeChange?.()
-	document.execCommand(command, false, color)
-	ctx.saveSelection()
-	ctx.onInput()
+	applyEdit(ctx, root => applyInlineStyle(root, css, color))
 }
 
 /** Сбрасывает цвет текста или фона выделенного фрагмента */
@@ -45,10 +44,10 @@ function resetInlineColor(ctx: UseToolbarCommandsOptions, property: InlineStyleP
 		return
 	}
 	ctx.restoreSelection()
-	ctx.onBeforeChange?.()
-	stripInlineStyle(ctx, property)
-	ctx.saveSelection()
-	ctx.onInput()
+	applyEdit(ctx, () => {
+		stripInlineStyle(ctx, property)
+		return true
+	})
 }
 
 export { applyInlineColor, resetInlineColor, stripInlineStyle }

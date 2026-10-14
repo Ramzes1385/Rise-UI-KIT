@@ -2,8 +2,9 @@
 import { warn } from '@/locales/warn'
 import { UI_WARNINGS } from '@/locales/messages'
 import { escapeHtml } from '@utils/dom/htmlUtils'
-import { insertHtmlCommand } from './editCommands'
+import { applyEdit, insertHtmlCommand } from './editCommands'
 import { isSafeUrl, normalizeLinkUrl } from '@utils/data/urlUtils'
+import { wrapSelectionInLink } from '@utils/dom/editorFormatUtils'
 import type { MediaMarkup, UseToolbarCommandsOptions } from '../types/useToolbarCommands.types'
 
 const videoMarkup = (url: string): string => `<video src="${url}" controls style="max-width:100%;border-radius:8px;"></video><br/>`
@@ -32,10 +33,7 @@ function insertLink(ctx: UseToolbarCommandsOptions): void {
 	}
 	ctx.saveSelection()
 	ctx.restoreSelection()
-	ctx.onBeforeChange?.()
-	document.execCommand('createLink', false, url)
-	ctx.saveSelection()
-	ctx.onInput()
+	applyEdit(ctx, root => wrapSelectionInLink(root, { href: url }))
 }
 
 function insertSeparator(ctx: UseToolbarCommandsOptions): void {

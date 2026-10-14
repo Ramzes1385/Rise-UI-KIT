@@ -131,8 +131,9 @@ describe('BaseEditor: defineExpose и слот toolbar', () => {
 		await fireEvent.click(screen.getByRole('button', { name: 'Своя кнопка' }))
 		expect(screen.getByRole('textbox').querySelector('b')?.textContent).toBe('vstavka')
 
+		window.getSelection()?.selectAllChildren(screen.getByRole('textbox').querySelector('p') as HTMLElement)
 		props.applyFormat('bold')
-		expect(document.execCommand).toHaveBeenCalledWith('bold', false)
+		expect(screen.getByRole('textbox').querySelector('b')).not.toBeNull()
 		props.applyBlock('h2')
 		expect(document.execCommand).toHaveBeenCalledWith('formatBlock', false, 'h2')
 		props.toggleCodeMode()
@@ -157,19 +158,24 @@ describe('BaseEditor: defineExpose и слот toolbar', () => {
 		await nextTick()
 		const props = received as unknown as BaseEditorToolbarSlotProps
 
+		const content = screen.getByRole('textbox')
+		window.getSelection()?.selectAllChildren(content.querySelector('p') as HTMLElement)
+
 		await wrapper.rerender({ isReadonly: true })
 		props.applyFormat('bold')
 		props.applyBlock('h2')
 		props.toggleCodeMode()
 		await nextTick()
 		expect(document.execCommand).not.toHaveBeenCalled()
+		expect(content.innerHTML).toBe('<p>Текст</p>')
 
 		await wrapper.rerender({ isReadonly: false, isDisabled: true })
 		props.applyFormat('italic')
-		expect(document.execCommand).not.toHaveBeenCalled()
+		expect(content.innerHTML).toBe('<p>Текст</p>')
 
 		await wrapper.rerender({ isDisabled: false })
+		window.getSelection()?.selectAllChildren(content.querySelector('p') as HTMLElement)
 		props.applyFormat('bold')
-		expect(document.execCommand).toHaveBeenCalledWith('bold', false)
+		expect(content.innerHTML).toBe('<p><b>Текст</b></p>')
 	})
 })

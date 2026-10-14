@@ -43,27 +43,10 @@ function selectWord(textbox: HTMLElement, start: number, end: number): void {
 	window.getSelection()?.setBaseAndExtent(text, start, text, end)
 }
 
-function mockExecCommand(): void {
-	Object.defineProperty(document, 'execCommand', {
-		configurable: true,
-		writable: true,
-		value: vi.fn((command: string) => {
-			if (command === 'bold') {
-				const range = window.getSelection()!.getRangeAt(0)
-				const strong = document.createElement('strong')
-				range.surroundContents(strong)
-				window.getSelection()!.selectAllChildren(strong)
-			}
-			return true
-		}),
-	})
-}
-
 describe('BaseEditor: история отмены', () => {
 	beforeEach(() => {
 		vi.useFakeTimers({ toFake: ['Date'] })
 		vi.setSystemTime(new Date('2025-05-15T10:00:00Z'))
-		mockExecCommand()
 	})
 
 	afterEach(() => {
@@ -89,7 +72,7 @@ describe('BaseEditor: история отмены', () => {
 
 		const undo = await undoKey(textbox)
 		expect(undo.defaultPrevented).toBe(true)
-		expect(textbox.innerHTML).toBe('<p>Привет <strong>мир</strong>!!</p>')
+		expect(textbox.innerHTML).toBe('<p>Привет <b>мир</b>!!</p>')
 		await undoKey(textbox)
 		expect(textbox.innerHTML).toBe('<p>Привет мир!!</p>')
 		await undoKey(textbox)
@@ -99,8 +82,8 @@ describe('BaseEditor: история отмены', () => {
 		await redoKey(textbox)
 		expect(textbox.innerHTML).toBe('<p>Привет мир!!</p>')
 		await redoShiftKey(textbox)
-		expect(textbox.innerHTML).toBe('<p>Привет <strong>мир</strong>!!</p>')
-		expect(emitted(wrapper).at(-1)).toBe('<p>Привет <strong>мир</strong>!!</p>')
+		expect(textbox.innerHTML).toBe('<p>Привет <b>мир</b>!!</p>')
+		expect(emitted(wrapper).at(-1)).toBe('<p>Привет <b>мир</b>!!</p>')
 	})
 
 	it('кнопка «Жирный» и Ctrl+Z: разметка снята, то же слово выделено', async () => {
@@ -111,10 +94,10 @@ describe('BaseEditor: история отмены', () => {
 		await fireEvent.keyUp(textbox)
 
 		await fireEvent.click(screen.getByRole('button', { name: 'Жирный' }))
-		expect(textbox.querySelector('strong')).not.toBeNull()
+		expect(textbox.querySelector('b')).not.toBeNull()
 		await undoKey(textbox)
 
-		expect(textbox.querySelector('strong')).toBeNull()
+		expect(textbox.querySelector('b')).toBeNull()
 		expect(window.getSelection()?.toString()).toBe('мир')
 	})
 
@@ -129,7 +112,7 @@ describe('BaseEditor: история отмены', () => {
 
 		await fireEvent.click(screen.getByRole('button', { name: 'Жирный' }))
 
-		expect(textbox.querySelector('strong')?.textContent).toBe('мир')
+		expect(textbox.querySelector('b')?.textContent).toBe('мир')
 	})
 
 	it('вставка из буфера и insertHtml — по одному шагу', async () => {

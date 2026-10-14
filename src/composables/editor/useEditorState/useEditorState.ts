@@ -12,7 +12,7 @@ const MEDIA_SELECTOR = 'img, video, hr'
 
 /** В области (или самой области) нет ни текста, ни медиа (изображение, видео, разделитель) */
 function isContentEmpty(root: HTMLElement | null): boolean {
-	return !root || (!root.textContent?.trim() && !root.querySelector(MEDIA_SELECTOR))
+	return !root || (!root.textContent?.replaceAll('\u200b', '').trim() && !root.querySelector(MEDIA_SELECTOR))
 }
 
 /** Реальный цвет текста области (в тёмной теме светлый) в формате HEX или null, если стили не определяют цвет */

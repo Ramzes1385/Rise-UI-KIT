@@ -2,8 +2,9 @@
 import { stripInlineStyle } from './colorCommands'
 import { replaceCodeSelection } from '../helpers/codeText'
 import { FORMAT_CONFIG, isInsideList } from '@utils/dom/editorDomUtils'
-import { commitVisualChange, insertLineBreakCommand } from './editCommands'
 import type { UseToolbarCommandsOptions } from '../types/useToolbarCommands.types'
+import { applyEdit, commitVisualChange, insertLineBreakCommand } from './editCommands'
+import { removeInlineFormatting, toggleInlineFormat } from '@utils/dom/editorFormatUtils'
 
 /**
  * Горячие клавиши форматирования: Ctrl (⌘ на macOS) + клавиша. Ключ — физическая клавиша (`event.code`),
@@ -51,6 +52,11 @@ function applyFormat(ctx: UseToolbarCommandsOptions, command: string): void {
 		wrapFormatInCode(ctx, command)
 		return
 	}
+	const config = FORMAT_CONFIG[command]
+	if (config) {
+		applyEdit(ctx, root => toggleInlineFormat(root, { tag: config.primary, tags: config.match }))
+		return
+	}
 	ctx.ensureSelection()
 	ctx.onBeforeChange?.()
 	document.execCommand(command, false)
@@ -96,7 +102,7 @@ function clearCodeFormatting(ctx: UseToolbarCommandsOptions): void {
 function clearVisualFormatting(ctx: UseToolbarCommandsOptions): void {
 	ctx.ensureSelection()
 	ctx.onBeforeChange?.()
-	document.execCommand('removeFormat', false)
+	removeInlineFormatting(ctx.editorRef.value!)
 	stripInlineStyle(ctx, 'color')
 	stripInlineStyle(ctx, 'backgroundColor')
 	document.execCommand('formatBlock', false, 'p')

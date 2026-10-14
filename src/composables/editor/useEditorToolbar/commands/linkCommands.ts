@@ -2,6 +2,7 @@
 import { escapeHtml } from '@utils/dom/htmlUtils'
 import { findAncestorByTags } from '@utils/dom/editorDomUtils'
 import { isSafeUrl, normalizeLinkUrl } from '@utils/data/urlUtils'
+import { unlinkSelection, wrapSelectionInLink } from '@utils/dom/editorFormatUtils'
 import { collapseToEnd, insertHtmlAtSelection } from '@utils/dom/editorInsertUtils'
 import type { EditorLinkValue, UseToolbarCommandsOptions } from '../types/useToolbarCommands.types'
 
@@ -62,14 +63,6 @@ function getSelectionPoint(ctx: UseToolbarCommandsOptions): { x: number; y: numb
 	return { x: box?.left ?? 0, y: (box?.top ?? 0) + FALLBACK_OFFSET }
 }
 
-/** Ссылкам, попавшим в выделение, задаёт `target` и `rel` */
-function markSelectedLinks(root: HTMLElement, isNewTab: boolean): void {
-	const selection = window.getSelection()
-	root.querySelectorAll('a').forEach(link => {
-		if (selection?.containsNode(link, true)) setLinkTarget(link, isNewTab)
-	})
-}
-
 /** Ссылка на месте выделения: правит существующую, вставляет адрес как текст при пустом выделении, иначе оборачивает выделение */
 function applyVisualLink(ctx: UseToolbarCommandsOptions, value: EditorLinkValue, root: HTMLElement): void {
 	const existing = findLinkAtSelection(ctx)
@@ -83,8 +76,11 @@ function applyVisualLink(ctx: UseToolbarCommandsOptions, value: EditorLinkValue,
 		insertHtmlAtSelection(root, markup)
 		return
 	}
-	document.execCommand('createLink', false, value.url)
-	markSelectedLinks(root, value.isNewTab)
+	wrapSelectionInLink(root, {
+		href: value.url,
+		target: value.isNewTab ? '_blank' : undefined,
+		rel: value.isNewTab ? NEW_TAB_REL : undefined,
+	})
 }
 
 /** Каретка в конец содержимого: ссылка, поставленная без сохранённого выделения, оказывается в конце текста, а не пропадает */
@@ -125,7 +121,7 @@ function removeLink(ctx: UseToolbarCommandsOptions): void {
 	ctx.onBeforeChange?.()
 	const link = findLinkAtSelection(ctx)
 	if (!link) {
-		document.execCommand('unlink', false)
+		unlinkSelection(ctx.editorRef.value!)
 	} else {
 		const children = Array.from(link.childNodes)
 		link.replaceWith(...children)

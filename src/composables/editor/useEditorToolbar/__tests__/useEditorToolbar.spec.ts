@@ -42,6 +42,14 @@ function mockGetSelection(overrides: Record<string, unknown> = {}) {
 	return selection
 }
 
+function selectText(editor: HTMLElement, html: string, [start, end]: [number, number]): void {
+	vi.mocked(window.getSelection).mockRestore()
+	editor.innerHTML = html
+	document.body.appendChild(editor)
+	const text = document.createTreeWalker(editor, NodeFilter.SHOW_TEXT).nextNode() as Text
+	window.getSelection()!.setBaseAndExtent(text, start, text, end)
+}
+
 function placeCaret(editor: HTMLElement, html: string, offset: number): void {
 	vi.mocked(window.getSelection).mockRestore()
 	editor.innerHTML = html
@@ -146,11 +154,28 @@ describe('useEditorToolbar', () => {
 	})
 
 	describe('applyFormat', () => {
-		it('визуальный режим: вызывает execCommand', () => {
+		it('визуальный режим: начертание включается и снимается тегами без execCommand', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
 			const { applyFormat } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			selectText(editorRef.value!, '<p>hello world</p>', [0, 5])
+
 			applyFormat('bold')
-			expect(document.execCommand).toHaveBeenCalledWith('bold', false)
+			expect(editorRef.value!.innerHTML).toBe('<p><b>hello</b> world</p>')
+			applyFormat('italic')
+			applyFormat('underline')
+			applyFormat('strikeThrough')
+			expect(editorRef.value!.innerHTML).toBe('<p><b><i><u><s>hello</s></u></i></b> world</p>')
+			applyFormat('bold')
+			expect(editorRef.value!.innerHTML).toBe('<p><i><u><s>hello</s></u></i> world</p>')
+			expect(onInput).toHaveBeenCalledTimes(5)
+			expect(document.execCommand).not.toHaveBeenCalled()
+		})
+
+		it('визуальный режим: команды вне начертания (выравнивание) идут через execCommand', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { applyFormat } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			applyFormat('justifyCenter')
+			expect(document.execCommand).toHaveBeenCalledWith('justifyCenter', false)
 		})
 
 		it('режим кода: оборачивает тегами', () => {
@@ -233,17 +258,22 @@ describe('useEditorToolbar', () => {
 	})
 
 	describe('applyColor / handleColorInput', () => {
-		it('визуальный режим: вызывает foreColor', () => {
+		it('визуальный режим: цвет текста — span со style, повторный выбор меняет цвет того же span', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
-			const { applyColor, handleColorInput } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			const { applyColor, handleColorInput, saveSelection } = withSetup(() =>
+				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
+			)
+			selectText(editorRef.value!, '<p>hello</p>', [0, 5])
+			saveSelection()
+
 			applyColor('#ff0000')
-			expect(document.execCommand).toHaveBeenCalledWith('foreColor', false, '#ff0000')
+			expect(editorRef.value!.innerHTML).toBe('<p><span style="color: rgb(255, 0, 0);">hello</span></p>')
 
 			const input = document.createElement('input')
 			input.value = '#00ff00'
-			const event = { target: input } as unknown as Event
-			handleColorInput(event)
-			expect(document.execCommand).toHaveBeenCalledWith('foreColor', false, '#00ff00')
+			handleColorInput({ target: input } as unknown as Event)
+			expect(editorRef.value!.innerHTML).toBe('<p><span style="color: rgb(0, 255, 0);">hello</span></p>')
+			expect(document.execCommand).not.toHaveBeenCalled()
 		})
 
 		it('режим кода: оборачивает в span', () => {
@@ -257,11 +287,15 @@ describe('useEditorToolbar', () => {
 	})
 
 	describe('applyBackgroundColor', () => {
-		it('визуальный режим: вызывает hiliteColor', () => {
+		it('визуальный режим: фон — span с background-color', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
-			const { applyBackgroundColor } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			const { applyBackgroundColor, saveSelection } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			selectText(editorRef.value!, '<p>hello</p>', [0, 5])
+			saveSelection()
+
 			applyBackgroundColor('#ffff00')
-			expect(document.execCommand).toHaveBeenCalledWith('hiliteColor', false, '#ffff00')
+
+			expect(editorRef.value!.innerHTML).toBe('<p><span style="background-color: rgb(255, 255, 0);">hello</span></p>')
 		})
 
 		it('режим кода: оборачивает в span с background-color', () => {
@@ -343,13 +377,18 @@ describe('useEditorToolbar', () => {
 	})
 
 	describe('insertLink', () => {
-		it('визуальный режим: вызывает createLink', () => {
+		it('визуальный режим: оборачивает выделение в ссылку', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
-			const { insertLink } = withSetup(() =>
+			const { insertLink, saveSelection } = withSetup(() =>
 				useEditorToolbar({ editorRef, codeTextareaRef, onInput, promptForUrl: () => 'https://example.com' }),
 			)
+			selectText(editorRef.value!, '<p>hello</p>', [0, 5])
+			saveSelection()
+
 			insertLink()
-			expect(document.execCommand).toHaveBeenCalledWith('createLink', false, 'https://example.com')
+
+			expect(editorRef.value!.innerHTML).toBe('<p><a href="https://example.com">hello</a></p>')
+			expect(onInput).toHaveBeenCalledTimes(1)
 		})
 
 		it('режим кода: оборачивает в a', () => {
@@ -365,11 +404,15 @@ describe('useEditorToolbar', () => {
 
 		it('дополняет адрес без схемы до https', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
-			const { insertLink } = withSetup(() =>
+			const { insertLink, saveSelection } = withSetup(() =>
 				useEditorToolbar({ editorRef, codeTextareaRef, onInput, promptForUrl: () => 'example.com/docs' }),
 			)
+			selectText(editorRef.value!, '<p>hello</p>', [0, 5])
+			saveSelection()
+
 			insertLink()
-			expect(document.execCommand).toHaveBeenCalledWith('createLink', false, 'https://example.com/docs')
+
+			expect(editorRef.value!.querySelector('a')!.getAttribute('href')).toBe('https://example.com/docs')
 		})
 
 		it.each(['javascript:alert(1)', ' JaVaScRiPt:alert(1)', 'data:text/html,<script>alert(1)</script>', 'vbscript:msgbox(1)'])(
@@ -379,7 +422,7 @@ describe('useEditorToolbar', () => {
 				const { editorRef, codeTextareaRef, onInput } = createOptions()
 				const { insertLink } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput, promptForUrl: () => url }))
 				insertLink()
-				expect(document.execCommand).not.toHaveBeenCalledWith('createLink', false, expect.anything())
+				expect(editorRef.value!.querySelector('a')).toBeNull()
 				expect(onInput).not.toHaveBeenCalled()
 				expect(warn).toHaveBeenCalledWith(expect.stringContaining('небезопасной схемой'))
 			},
@@ -414,36 +457,25 @@ describe('useEditorToolbar', () => {
 	})
 
 	describe('clearAllFormatting', () => {
-		it('визуальный режим: вызывает removeFormat и сбрасывает списки', () => {
+		it('визуальный режим: снимает оформление текста и сбрасывает маркированный список', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
-			const ul = document.createElement('ul')
-			const li = document.createElement('li')
-			li.textContent = 'item'
-			ul.appendChild(li)
-			editorRef.value!.appendChild(ul)
-
-			const range = mockRange({ commonAncestorContainer: li.firstChild })
-			mockGetSelection({ anchorNode: li.firstChild, rangeCount: 1, getRangeAt: vi.fn().mockReturnValue(range) })
-
 			const { clearAllFormatting } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			selectText(editorRef.value!, '<ul><li><b>item</b></li></ul>', [0, 4])
+
 			clearAllFormatting()
-			expect(document.execCommand).toHaveBeenCalledWith('removeFormat', false)
+
+			expect(editorRef.value!.querySelector('b')).toBeNull()
 			expect(document.execCommand).toHaveBeenCalledWith('insertUnorderedList', false)
+			expect(document.execCommand).not.toHaveBeenCalledWith('removeFormat', false)
 		})
 
 		it('визуальный режим: сбрасывает нумерованные списки', () => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
-			const ol = document.createElement('ol')
-			const li = document.createElement('li')
-			li.textContent = 'item'
-			ol.appendChild(li)
-			editorRef.value!.appendChild(ol)
-
-			const range = mockRange({ commonAncestorContainer: li.firstChild })
-			mockGetSelection({ anchorNode: li.firstChild, rangeCount: 1, getRangeAt: vi.fn().mockReturnValue(range) })
-
 			const { clearAllFormatting } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			selectText(editorRef.value!, '<ol><li>item</li></ol>', [0, 4])
+
 			clearAllFormatting()
+
 			expect(document.execCommand).toHaveBeenCalledWith('insertOrderedList', false)
 		})
 
@@ -743,18 +775,19 @@ describe('useEditorToolbar', () => {
 		})
 
 		it.each([
-			['Ctrl+B', { code: 'KeyB', ctrlKey: true }, 'bold'],
-			['⌘+I', { code: 'KeyI', metaKey: true }, 'italic'],
-			['Ctrl+U в русской раскладке (key = «г»)', { code: 'KeyU', key: 'г', ctrlKey: true }, 'underline'],
-		])('handleKeyDown: %s применяет форматирование вместо действия браузера', (_name, keys, command) => {
+			['Ctrl+B', { code: 'KeyB', ctrlKey: true }, 'b'],
+			['⌘+I', { code: 'KeyI', metaKey: true }, 'i'],
+			['Ctrl+U в русской раскладке (key = «г»)', { code: 'KeyU', key: 'г', ctrlKey: true }, 'u'],
+		])('handleKeyDown: %s применяет форматирование вместо действия браузера', (_name, keys, tag) => {
 			const { editorRef, codeTextareaRef, onInput } = createOptions()
 			const { handleKeyDown } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			selectText(editorRef.value!, '<p>hello</p>', [0, 5])
 			const event = { key: 'x', shiftKey: false, preventDefault: vi.fn(), ...keys } as unknown as KeyboardEvent
 
 			handleKeyDown(event)
 
 			expect(event.preventDefault).toHaveBeenCalledOnce()
-			expect(document.execCommand).toHaveBeenCalledWith(command, false)
+			expect(editorRef.value!.querySelector(tag)?.textContent).toBe('hello')
 			expect(onInput).toHaveBeenCalled()
 		})
 

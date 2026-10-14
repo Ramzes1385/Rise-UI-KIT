@@ -219,18 +219,18 @@ describe('BaseEditor integration', () => {
 	})
 
 	describe('горячие клавиши', () => {
-		it('Ctrl+B в области текста делает текст жирным вместо действия браузера и отправляет v-model', async () => {
-			const execCommand = vi.fn(() => true)
-			Object.defineProperty(document, 'execCommand', { configurable: true, value: execCommand })
+		it('Ctrl+B в области текста делает выделенный текст жирным вместо действия браузера и отправляет v-model', async () => {
 			const { container, emitted } = render(BaseEditor, { props: { modelValue: '<p>Текст</p>' } })
+			const content = getContent(container)
+			window.getSelection()?.selectAllChildren(content.querySelector('p') as HTMLElement)
 			const event = new KeyboardEvent('keydown', { key: 'b', code: 'KeyB', ctrlKey: true, bubbles: true, cancelable: true })
 
-			getContent(container).dispatchEvent(event)
+			content.dispatchEvent(event)
 			await nextTick()
 
 			expect(event.defaultPrevented).toBe(true)
-			expect(execCommand).toHaveBeenCalledWith('bold', false)
-			expect(emitted()['update:modelValue']).toBeTruthy()
+			expect(content.innerHTML).toBe('<p><b>Текст</b></p>')
+			expect(emitted()['update:modelValue'].at(-1)).toEqual(['<p><b>Текст</b></p>'])
 		})
 	})
 
