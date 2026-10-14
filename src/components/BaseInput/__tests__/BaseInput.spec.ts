@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom/vitest'
 import BaseInput from '../ui/BaseInput.vue'
+import userEvent from '@testing-library/user-event'
 import { fireEvent, render, screen } from '@testing-library/vue'
 
 describe('BaseInput unit', () => {
@@ -757,6 +758,45 @@ describe('BaseInput: имя и атрибуты поля', () => {
 
 			expect(emitted()['update:modelValue']).toEqual([['']])
 			expect(screen.getByRole('searchbox')).toHaveFocus()
+		})
+
+		it('кнопка очистки доступна с клавиатуры: в порядке Tab, без tabindex=-1', async () => {
+			render(BaseInput, { props: { modelValue: 'кот', type: 'search', ariaLabel: 'Поиск' } })
+			expect(screen.getByRole('button', { name: 'Очистить' })).not.toHaveAttribute('tabindex')
+			screen.getByRole('searchbox').focus()
+			await userEvent.tab()
+			expect(screen.getByRole('button', { name: 'Очистить' })).toHaveFocus()
+		})
+
+		it('Esc в поиске с текстом очищает поле и не пускает Esc дальше к слою; в пустом поле Esc не трогают', async () => {
+			const onKeydown = vi.fn()
+			const { emitted, rerender } = render(BaseInput, {
+				props: { modelValue: 'кот', type: 'search', ariaLabel: 'Поиск', onKeydown },
+			})
+			const field = screen.getByRole('searchbox')
+			const event = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })
+			field.dispatchEvent(event)
+			expect(event.defaultPrevented).toBe(true)
+			expect(emitted()['update:modelValue']).toEqual([['']])
+			expect(onKeydown).toHaveBeenCalledTimes(1)
+
+			await rerender({ modelValue: '' })
+			const second = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })
+			field.dispatchEvent(second)
+			expect(second.defaultPrevented).toBe(false)
+			expect(emitted()['update:modelValue']).toHaveLength(1)
+		})
+
+		it('Esc, перехваченный обработчиком keydown родителя, поле не очищает; в обычном поле Esc не очищает', async () => {
+			const prevent = (event: KeyboardEvent): void => event.preventDefault()
+			const guarded = render(BaseInput, { props: { modelValue: 'кот', type: 'search', ariaLabel: 'Поиск', onKeydown: prevent } })
+			await fireEvent.keyDown(screen.getByRole('searchbox'), { key: 'Escape' })
+			expect(guarded.emitted()['update:modelValue']).toBeUndefined()
+			guarded.unmount()
+
+			const text = render(BaseInput, { props: { modelValue: 'кот', ariaLabel: 'Текст' } })
+			await fireEvent.keyDown(screen.getByRole('textbox'), { key: 'Escape' })
+			expect(text.emitted()['update:modelValue']).toBeUndefined()
 		})
 
 		it('кнопки очистки нет у выключенного, только читаемого и обычного поля', () => {

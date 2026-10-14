@@ -100,6 +100,7 @@ export const enBase = {
 		/** fu-keyboard: имя кликабельного BaseAvatar без alt и name; имя кликабельного индикатора BaseChip */
 		AVATAR: 'Avatar',
 		CHIP_BADGE: 'Badge: {value}',
+		BADGE_DOT: 'Badge',
 		RANGE_VALUE: 'Value',
 		RANGE_MIN: 'Minimum',
 		RANGE_MAX: 'Maximum',
@@ -206,6 +207,7 @@ export const enBase = {
 	},
 	/** Console warnings for the app developer */
 	warnings: {
+		BADGE_DOT_WITHOUT_LABEL: 'BaseBadge: the clickable dot (isDot) has no label — screen readers will call it “Badge”; set label',
 		BOTTOM_NAV_ITEM_COUNT:
 			'BaseBottomNav: {count} items — bottom navigation is designed for {min}–{max}; move the rest to a “More” item',
 		POPOVER_ANCHOR_WITHOUT_LABEL:

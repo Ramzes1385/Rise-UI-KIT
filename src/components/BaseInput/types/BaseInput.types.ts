@@ -70,7 +70,8 @@ export interface BaseInputProps extends BaseComponentProps<
 	modelValue: string | number | null
 	/**
 	 * Тип инпута; `search` — поле поиска (нативный `type="search"`, по умолчанию с иконкой лупы слева, `enterkeyhint="search"`
-	 * и своя кнопка «Очистить» справа, пока есть текст: нативная кнопка скрыта, потому что в Firefox её нет)
+	 * и своя кнопка «Очистить» справа, пока есть текст: нативная кнопка скрыта, потому что в Firefox её нет; кнопка входит
+	 * в порядок Tab. Esc в непустом поле очищает его и не доходит до слоёв (окно закрывается следующим Esc))
 	 */
 	type?: 'text' | 'email' | 'tel' | 'number' | 'password' | 'search' | 'date'
 	/** Плейсхолдер */

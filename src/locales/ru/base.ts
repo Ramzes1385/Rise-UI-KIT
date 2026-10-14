@@ -107,6 +107,8 @@ export const ruBase = {
 		/** fu-keyboard: имя кликабельного BaseAvatar без alt и name; имя кликабельного индикатора BaseChip */
 		AVATAR: 'Аватар',
 		CHIP_BADGE: 'Индикатор: {value}',
+		/** Запасное имя кликабельной точки BaseBadge без label */
+		BADGE_DOT: 'Индикатор',
 		/** Имена ползунков BaseRange без ariaLabel: одно значение, границы диапазона, точки */
 		RANGE_VALUE: 'Значение',
 		RANGE_MIN: 'Минимум',
@@ -231,6 +233,7 @@ export const ruBase = {
 	},
 	/** Предупреждения в консоли для разработчика приложения */
 	warnings: {
+		BADGE_DOT_WITHOUT_LABEL: 'BaseBadge: у кликабельной точки (isDot) нет label — читалки экрана назовут её «Индикатор»; задайте label',
 		BOTTOM_NAV_ITEM_COUNT:
 			'BaseBottomNav: пунктов {count} — нижняя навигация рассчитана на {min}–{max}; остальное вынесите в пункт «Ещё»',
 		POPOVER_ANCHOR_WITHOUT_LABEL:

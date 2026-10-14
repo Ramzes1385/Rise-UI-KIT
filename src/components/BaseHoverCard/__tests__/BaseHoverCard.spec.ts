@@ -310,6 +310,47 @@ describe('BaseHoverCard unit', () => {
 			expect(count(rendered, 'close')).toBe(1)
 		})
 
+		it('focusout без relatedTarget (окно потеряло фокус), пока фокус остаётся внутри карточки, не закрывает; после ухода фокуса закрывает', async () => {
+			const rendered = render(BaseHoverCard, {
+				slots: {
+					trigger: '<a href="#a">Профиль</a>',
+					default: '<button type="button">Первая</button><button type="button">Вторая</button>',
+				},
+			})
+			const link = screen.getByRole('link', { name: 'Профиль' })
+			await fireEvent.focusIn(link)
+			await nextTick()
+			const first = screen.getByRole('button', { name: 'Первая' })
+			const second = screen.getByRole('button', { name: 'Вторая' })
+			first.focus()
+			await fireEvent.focusIn(first)
+			await fireEvent.focusOut(first, { relatedTarget: second })
+			await fireEvent.focusIn(second)
+			second.focus()
+			await fireEvent.focusOut(second)
+			await advance(1000)
+			expect(count(rendered, 'close')).toBe(0)
+
+			second.blur()
+			await fireEvent.focusOut(second)
+			await advance(150)
+			expect(count(rendered, 'close')).toBe(1)
+		})
+
+		it('focusout триггера без relatedTarget при closeDelay=0 тоже учитывает фокус внутри карточки', async () => {
+			const rendered = render(BaseHoverCard, {
+				props: { closeDelay: 0 },
+				slots: { trigger: '<a href="#a">Профиль</a>', default: '<button type="button">Действие</button>' },
+			})
+			const link = screen.getByRole('link', { name: 'Профиль' })
+			await fireEvent.focusIn(link)
+			await nextTick()
+			screen.getByRole('button', { name: 'Действие' }).focus()
+			await fireEvent.focusOut(link)
+			await advance(10)
+			expect(count(rendered, 'close')).toBe(0)
+		})
+
 		it('focusout из карточки на триггер не закрывает', async () => {
 			const rendered = render(BaseHoverCard, {
 				slots: { trigger: '<a href="#a">Профиль</a>', default: '<button type="button">Действие</button>' },

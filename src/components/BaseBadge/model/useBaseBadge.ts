@@ -1,14 +1,18 @@
-import { computed, ref } from 'vue'
+import { warn } from '@/locales/warn'
 import { formatMessage } from '@/locales'
+import { computed, ref, watch } from 'vue'
 import { useUi } from '@composables/base/useUi'
-import { UI_ARIA, UI_TEXT } from '@/locales/messages'
 import { calcIconScale } from '@utils/media/iconUtils'
+import { UI_ARIA, UI_TEXT, UI_WARNINGS } from '@/locales/messages'
 import { useClickable } from '@composables/interaction/useClickable'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseBadgeEmits, BaseBadgeProps } from '../types/BaseBadge.types'
 
 export function useBaseBadge(props: BaseBadgeProps, emit: BaseBadgeEmits) {
 	const clickable = useClickable({ event: 'click', isDisabled: () => Boolean(props.isDisabled) })
+
+	const isUnnamedDotButton = computed(() => Boolean(props.isDot) && clickable.isClickable.value && !props.label)
+	watch(isUnnamedDotButton, isUnnamed => isUnnamed && warn(UI_WARNINGS.BADGE_DOT_WITHOUT_LABEL), { immediate: true })
 
 	return {
 		...useStandardBaseComponent('base-badge', props, ['root', 'text', 'remove']),
@@ -19,7 +23,7 @@ export function useBaseBadge(props: BaseBadgeProps, emit: BaseBadgeEmits) {
 		statusClass: computed(() => (props.status && props.status !== 'primary' ? `base-badge--status-${props.status}` : '')),
 		dotAttributes: computed(() => {
 			if (!props.isDot) return {}
-			if (clickable.isClickable.value) return props.label ? { 'aria-label': props.label } : {}
+			if (clickable.isClickable.value) return { 'aria-label': props.label || UI_ARIA.BADGE_DOT }
 			return props.label ? { role: 'img', 'aria-label': props.label } : { 'aria-hidden': 'true' as const }
 		}),
 		resolvedRemoveLabel: computed(

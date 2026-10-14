@@ -15,14 +15,14 @@
 	}
 
 	@include hover {
-		.base-tooltip:has(> .base-color-mode-button:disabled) {
-			display: inline-flex;
-		}
-
 		.base-color-mode-button__icons {
 			color: ct(color-mode-button, text-hover, ct(color-mode-button, text, currentcolor));
 		}
 	}
+}
+
+.base-tooltip:has(> .base-color-mode-button:disabled) {
+	display: inline-flex;
 }
 
 .base-color-mode-button__icons {

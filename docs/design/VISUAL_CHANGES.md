@@ -1937,3 +1937,9 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 
 - `data-basetable--load-more`: высота таблицы в истории 140 px (в записи table-audit была 180 px) — подпись и рамка уже на 140 px; сама таблица прежняя.
 - BaseTable на touch (`pointer: coarse`): у колонок с ресайзом правый отступ шапки больше на 16 px, чтобы ручка ресайза (24 px) не перекрывала иконку сортировки. На мыши вид прежний.
+
+Порция 2 (мелкие компоненты):
+
+- BaseColorModeButton, `disabled`: обёртка подсказки получает `display: inline-flex` (раньше правило не срабатывало и обёртка была `inline-block`): исчезает строчный зазор под кнопкой, высота обёртки равна высоте кнопки. Истории с `isDisabled` (`element-basecolormodebutton--disabled`) могут сместиться на 1–4 px по вертикали.
+- BaseInput, `type="search"`: кнопка «Очистить» остаётся на месте; в Tab-обходе вид не меняется (фокусное кольцо видно на самой кнопке при Tab).
+- BaseBadge, BaseBanner, BaseFileManager, BaseHoverCard: вид не меняется.

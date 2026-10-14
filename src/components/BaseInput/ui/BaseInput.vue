@@ -47,7 +47,7 @@
 				:disabled="isDisabled"
 				:readonly="isReadonly"
 				@input="masked.handleInput"
-				@keydown="masked.handleKeydown"
+				@keydown="handleKeydown"
 				@blur="handleBlur"
 				@focus="handleFocus" />
 			<BaseButton
@@ -55,7 +55,6 @@
 				variant="ghost"
 				:class="ui('clear')"
 				:custom-class="classes.clear"
-				tabindex="-1"
 				:aria-label="UI_ARIA.CLEAR_VALUE"
 				:size-scale="sizeScale"
 				@click="clearSearch">
@@ -164,6 +163,7 @@ const {
 	togglePasswordVisibility,
 	isClearVisible,
 	clearSearch,
+	handleKeydown,
 	passwordRuleResults,
 	handleBlur,
 	handleFocus,

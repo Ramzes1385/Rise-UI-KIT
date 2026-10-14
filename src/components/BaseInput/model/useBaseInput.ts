@@ -81,17 +81,25 @@ export function useBaseInput(props: InputProps, emit: BaseInputEmits) {
 	const standard = useStandardBaseComponent('base-input', props, INPUT_ELEMENTS)
 	const inputRef = ref<HTMLInputElement | null>(null)
 	const field = useInputControl(props)
+	const maskedValue = useMaskedValue(props, emit, inputRef)
+	const isClearVisible = computed(
+		() => props.type === 'search' && !props.isDisabled && !props.isReadonly && toText(props.modelValue) !== '',
+	)
 
 	return {
 		...standard,
 		inputRef,
 		...field,
 		ui: useUi(props, 'base-input'),
-		...useMaskedValue(props, emit, inputRef),
+		...maskedValue,
 		...usePasswordVisibility({ type: toRef(props, 'type') }),
-		isClearVisible: computed(
-			() => props.type === 'search' && !props.isDisabled && !props.isReadonly && toText(props.modelValue) !== '',
-		),
+		isClearVisible,
+		handleKeydown(event: KeyboardEvent): void {
+			maskedValue.masked.handleKeydown(event)
+			if (event.key !== 'Escape' || event.defaultPrevented || !isClearVisible.value) return
+			event.preventDefault()
+			emit('update:modelValue', '')
+		},
 		clearSearch(): void {
 			emit('update:modelValue', '')
 			inputRef.value?.focus()

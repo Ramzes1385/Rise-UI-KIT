@@ -13,7 +13,8 @@ function useOpenerFocus(core: FileManagerCore) {
 	let opener: HTMLElement | null = null
 	return {
 		remember(): void {
-			opener = document.activeElement instanceof HTMLElement ? document.activeElement : null
+			const active = document.activeElement
+			opener = active instanceof HTMLElement && active !== document.body ? active : null
 		},
 		restore(isRowFocus = false): void {
 			const target = opener

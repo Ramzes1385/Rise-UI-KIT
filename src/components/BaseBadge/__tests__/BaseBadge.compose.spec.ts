@@ -22,7 +22,8 @@ describe('BaseBadge: палитра, точка, счётчик', () => {
 		expect(dot).not.toHaveAttribute('aria-hidden')
 	})
 
-	it('кликабельная точка с label — кнопка с именем label (без role="img"), без label — кнопка без aria-label', async () => {
+	it('кликабельная точка с label — кнопка с именем label (без role="img"), без label — запасное имя и предупреждение', async () => {
+		const warning = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 		const onClick = vi.fn()
 		const { container, rerender } = render(BaseBadge, { props: { isDot: true, label: 'Есть новые' }, attrs: { onClick } })
 		const dot = screen.getByRole('button', { name: 'Есть новые' })
@@ -31,8 +32,13 @@ describe('BaseBadge: палитра, точка, счётчик', () => {
 		await fireEvent.click(dot)
 		expect(onClick).toHaveBeenCalledTimes(1)
 
+		expect(warning).not.toHaveBeenCalled()
+
 		await rerender({ label: undefined })
-		expect(container.firstElementChild).not.toHaveAttribute('aria-label')
+		expect(screen.getByRole('button', { name: 'Индикатор' })).toBe(container.firstElementChild)
+		expect(warning).toHaveBeenCalledTimes(1)
+		expect(warning.mock.calls[0][0]).toContain('BaseBadge')
+		warning.mockRestore()
 	})
 
 	it('круглый счётчик получает модификатор --round', () => {

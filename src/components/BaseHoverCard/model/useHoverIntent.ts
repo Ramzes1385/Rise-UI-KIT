@@ -10,11 +10,16 @@ export function useHoverIntent(options: HoverIntentOptions): HoverIntent & { can
 		timer = undefined
 	}
 
-	function schedule(value: boolean, delay: number): void {
+	function apply(value: boolean, isFocusLoss: boolean): void {
+		const isFocusStillInside = isFocusLoss && !value && options.isWithinCard(document.activeElement)
+		if (!isFocusStillInside) options.setOpen(value)
+	}
+
+	function schedule(value: boolean, delay: number, isFocusLoss = false): void {
 		cancel()
 		if (value && options.isDisabled()) return
-		if (delay <= 0) options.setOpen(value)
-		else timer = setTimeout(() => options.setOpen(value), delay)
+		if (delay <= 0) apply(value, isFocusLoss)
+		else timer = setTimeout(() => apply(value, isFocusLoss), delay)
 	}
 
 	onBeforeUnmount(cancel)
@@ -41,13 +46,13 @@ export function useHoverIntent(options: HoverIntentOptions): HoverIntent & { can
 		},
 		handleFocusout(event) {
 			pointerType = 'mouse'
-			if (!options.isWithinCard(event.relatedTarget)) schedule(false, options.closeDelay())
+			if (!options.isWithinCard(event.relatedTarget)) schedule(false, options.closeDelay(), true)
 		},
 		hold: cancel,
 		release(event) {
 			const isTouch = event instanceof PointerEvent && event.pointerType === 'touch'
 			const isToCard = event instanceof FocusEvent && options.isWithinCard(event.relatedTarget)
-			if (!isTouch && !isToCard) schedule(false, options.closeDelay())
+			if (!isTouch && !isToCard) schedule(false, options.closeDelay(), event instanceof FocusEvent)
 		},
 	}
 }

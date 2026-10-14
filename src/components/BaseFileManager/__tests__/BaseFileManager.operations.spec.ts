@@ -197,6 +197,15 @@ describe('BaseFileManager: удаление', () => {
 		expect(opener).not.toHaveFocus()
 	})
 
+	it('кнопка не получила фокус при клике (Safari, activeElement = body): после отмены фокус уходит в список, а не в body', async () => {
+		renderManager({ selected: ['logo'] })
+		;(document.activeElement as HTMLElement | null)?.blur()
+		expect(document.activeElement).toBe(document.body)
+		await fireEvent.click(button(UI_FILE_MANAGER.DELETE))
+		await fireEvent.click(screen.getByRole('button', { name: 'Отмена' }))
+		await waitFor(() => expect(screen.getByRole('listbox')).toContainElement(document.activeElement as HTMLElement))
+	})
+
 	it('окно, открытое клавишей Delete из списка, после отмены возвращает фокус на запись', async () => {
 		renderManager()
 		option('docs').focus()
