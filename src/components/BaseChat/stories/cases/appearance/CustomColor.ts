@@ -3,7 +3,7 @@ import type meta from '../../BaseChat.stories'
 import BaseChat from '../../../ui/BaseChat.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { CHAT_SCRIPT, useStoryMessages } from '../../shared'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { literal, storySource, useStorySetup, resolveColor } from '@/stories/helpers'
 
 const LIGHT = { bg: { base: '#f0f9ff' }, text: { base: '#0c4a6e' } }
 
@@ -30,15 +30,6 @@ const color =
 		? ${literal(DARK)}
 		: ${literal(LIGHT)}
 ${CHAT_SCRIPT}`
-
-function resolveColor(value: string): string {
-	const probe = document.createElement('span')
-	probe.style.color = value
-	document.body.append(probe)
-	const resolved = getComputedStyle(probe).color
-	probe.remove()
-	return resolved
-}
 
 export const CustomColor: StoryObj<typeof meta> = {
 	render: args => ({

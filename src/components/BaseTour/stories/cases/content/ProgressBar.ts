@@ -1,5 +1,6 @@
+import { STEPS } from '../../shared'
+import { docsFrame } from '@/stories/helpers'
 import type meta from '../../BaseTour.stories'
-import { docsFrame, STEPS } from '../../shared'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { screen, expect, within } from 'storybook/test'
 import type { TourStep } from '../../../types/BaseTour.types'

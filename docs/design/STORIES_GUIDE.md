@@ -350,3 +350,10 @@ export const Open: StoryObj<typeof meta> = {
 - Истории с таймерами (`duration`, `setInterval`) идут по реальному времени: ждите результата через `waitFor(…, { timeout: STORY_WAIT_TIMEOUT })`, а не паузой.
 
 Правок `build/storybook/preview.ts` и помощников не сделано: каждое ограничение обходится в самой истории, а общая правка (например, сброс шпионов только до `updateArgs`) меняет поведение всех историй с `fn()`.
+
+## Задача files-dates: помощники историй
+
+- `docsFrame(height)` — параметры `docs` для оверлея, открытого при монтировании или рисуемого поверх страницы (подсказка, поповер, меню, тур): на Docs история идёт в рамке (`story.inline: false`) заданной высоты. Использование: `docs: { ...docsFrame(240), description, source }`. Раньше функцию копировал `stories/shared.ts` каждого компонента группы Overlay.
+- `resolveColor(value)` — цвет в том виде, как его вернёт `getComputedStyle` (`var(--rise-primary)` → `rgb(…)`): для сверки в play историй `CustomColor`. Локальные копии в историях удалены.
+- `freezeStoryClock()` — остановленные часы истории (раздел 7).
+- Оба помощника не попадают в «Show code»: он строится из `template`, `imports` и `state`, а `docs.story` в код не входит.

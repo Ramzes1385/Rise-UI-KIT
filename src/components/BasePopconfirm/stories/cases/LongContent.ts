@@ -1,4 +1,4 @@
-import { docsFrame } from '../shared'
+import { docsFrame } from '@/stories/helpers'
 import { screen, expect } from 'storybook/test'
 import type meta from '../BasePopconfirm.stories'
 import type { StoryObj } from '@storybook/vue3-vite'

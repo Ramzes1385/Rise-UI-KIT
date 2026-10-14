@@ -154,10 +154,12 @@
 
 	&-btn.base-button,
 	&-nav.base-button {
-		--custom-bg: transparent;
-		--custom-bg-hover: var(--rise-media-control-hover);
-		--custom-bg-active: var(--rise-media-control-active);
-		--custom-text: var(--rise-media-text);
+		@include custom-button-colors(
+			transparent,
+			var(--rise-media-control-hover),
+			var(--rise-media-control-active),
+			var(--rise-media-text)
+		);
 		--btn-pad-top: 5px;
 		--btn-pad-right: 5px;
 		--btn-pad-bottom: 5px;
@@ -185,9 +187,7 @@
 	}
 
 	&-nav.base-button {
-		--custom-bg: var(--rise-media-surface);
-		--custom-bg-hover: var(--rise-media-surface-hover);
-		--custom-bg-active: var(--rise-media-surface-hover);
+		@include custom-button-colors(var(--rise-media-surface), var(--rise-media-surface-hover));
 		--btn-pad-top: 9px;
 		--btn-pad-right: 9px;
 		--btn-pad-bottom: 9px;

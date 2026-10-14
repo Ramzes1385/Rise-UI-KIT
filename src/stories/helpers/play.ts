@@ -16,3 +16,13 @@ export async function tabTo(element: Element, userEvent: UserEvent = defaultUser
 
 /** Ожидание по умолчанию для асинхронных проверок (оверлеи с анимацией, ленивые изображения), мс. */
 export const STORY_WAIT_TIMEOUT = 3000
+
+/** Цвет в том виде, как его вернёт `getComputedStyle` (`var(--rise-primary)` → `rgb(…)`): для сверки цветов в play */
+export function resolveColor(value: string): string {
+	const probe = document.createElement('span')
+	probe.style.color = value
+	document.body.append(probe)
+	const resolved = getComputedStyle(probe).color
+	probe.remove()
+	return resolved
+}

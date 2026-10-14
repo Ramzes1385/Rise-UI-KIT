@@ -4,16 +4,7 @@ import { SHOWCASE_OWN_ARGS } from '../../shared'
 import BaseModal from '../../../ui/BaseModal.vue'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { storySource, useStorySetup } from '@/stories/helpers'
-
-function resolveColor(value: string): string {
-	const probe = document.createElement('span')
-	probe.style.color = value
-	document.body.append(probe)
-	const resolved = getComputedStyle(probe).color
-	probe.remove()
-	return resolved
-}
+import { storySource, useStorySetup, resolveColor } from '@/stories/helpers'
 
 const template = `
 	<div class="story-frame story-medium" style="height: 280px;">

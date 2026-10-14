@@ -1,9 +1,9 @@
+import { findPanel, dayName } from '../../shared'
 import type meta from '../../BaseDatePicker.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseDatePicker from '../../../ui/BaseDatePicker.vue'
-import { docsFrame, findPanel, dayName } from '../../shared'
 import { within, expect, waitFor, screen } from 'storybook/test'
-import { storyDate, storySource, useStorySetup } from '@/stories/helpers'
+import { storyDate, storySource, useStorySetup, docsFrame } from '@/stories/helpers'
 
 const models = { dates: 'selectedDates' }
 

@@ -1,4 +1,3 @@
-import { docsFrame } from '../../shared'
 import { BaseApp } from '@components/BaseApp'
 import { BaseText } from '@components/BaseText'
 import { expect, screen } from 'storybook/test'
@@ -6,7 +5,7 @@ import type meta from '../../BaseDropdown.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseDropdown from '../../../ui/BaseDropdown.vue'
-import { isStoryBranded, literal, storySource, useStorySetup } from '@/stories/helpers'
+import { isStoryBranded, literal, storySource, useStorySetup, docsFrame } from '@/stories/helpers'
 
 const ui = { panel: 'story-themed-panel' }
 

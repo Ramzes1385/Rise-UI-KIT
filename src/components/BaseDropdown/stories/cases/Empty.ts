@@ -1,11 +1,10 @@
-import { docsFrame } from '../shared'
 import type meta from '../BaseDropdown.stories'
 import { BaseText } from '@components/BaseText'
 import { BaseButton } from '@components/BaseButton'
 import BaseDropdown from '../../ui/BaseDropdown.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { waitFor, expect, screen } from 'storybook/test'
-import { storySource, useStorySetup } from '@/stories/helpers'
+import { storySource, useStorySetup, docsFrame } from '@/stories/helpers'
 
 const models = { isOpen: 'isOpen' }
 

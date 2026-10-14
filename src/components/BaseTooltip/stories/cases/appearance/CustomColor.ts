@@ -1,25 +1,15 @@
-import { docsFrame } from '../../shared'
 import { screen, expect } from 'storybook/test'
 import type meta from '../../BaseTooltip.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseTooltip from '../../../ui/BaseTooltip.vue'
-import { storySource, useStorySetup } from '@/stories/helpers'
+import { storySource, useStorySetup, docsFrame, resolveColor } from '@/stories/helpers'
 
 const template = `
 	<BaseTooltip v-bind="args">
 		<BaseButton variant="outline">Субтитры</BaseButton>
 	</BaseTooltip>
 `
-
-function resolveColor(value: string): string {
-	const probe = document.createElement('span')
-	probe.style.color = value
-	document.body.append(probe)
-	const resolved = getComputedStyle(probe).color
-	probe.remove()
-	return resolved
-}
 
 export const CustomColor: StoryObj<typeof meta> = {
 	args: {

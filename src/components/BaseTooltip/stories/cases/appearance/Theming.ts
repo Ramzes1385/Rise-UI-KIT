@@ -1,11 +1,10 @@
-import { docsFrame } from '../../shared'
 import { BaseApp } from '@components/BaseApp'
 import { expect, screen } from 'storybook/test'
 import type meta from '../../BaseTooltip.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseTooltip from '../../../ui/BaseTooltip.vue'
-import { isStoryBranded, literal, storySource, useStorySetup } from '@/stories/helpers'
+import { isStoryBranded, literal, storySource, useStorySetup, docsFrame } from '@/stories/helpers'
 
 const ui = { popup: 'story-themed-tooltip', text: 'story-themed-text' }
 

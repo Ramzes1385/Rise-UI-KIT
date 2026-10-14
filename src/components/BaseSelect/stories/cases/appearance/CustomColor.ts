@@ -1,16 +1,8 @@
 import { GENRES } from '../../shared'
 import { expect } from 'storybook/test'
 import type meta from '../../BaseSelect.stories'
+import { resolveColor } from '@/stories/helpers'
 import type { StoryObj } from '@storybook/vue3-vite'
-
-function resolveColor(value: string): string {
-	const probe = document.createElement('span')
-	probe.style.color = value
-	document.body.append(probe)
-	const resolved = getComputedStyle(probe).color
-	probe.remove()
-	return resolved
-}
 
 export const CustomColor: StoryObj<typeof meta> = {
 	parameters: {

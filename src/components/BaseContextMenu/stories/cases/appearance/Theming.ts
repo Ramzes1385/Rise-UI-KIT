@@ -1,11 +1,10 @@
-import { docsFrame } from '../../shared'
 import { BaseApp } from '@components/BaseApp'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../BaseContextMenu.stories'
 import BaseContextMenu from '../../../ui/BaseContextMenu.vue'
 import { screen, expect, waitFor, within } from 'storybook/test'
-import { isStoryBranded, literal, storySource, useStorySetup } from '@/stories/helpers'
+import { isStoryBranded, literal, storySource, useStorySetup, docsFrame } from '@/stories/helpers'
 
 const ui = { panel: 'story-themed-panel', item: 'story-themed-item' }
 

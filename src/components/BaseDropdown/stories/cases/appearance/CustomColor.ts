@@ -1,19 +1,9 @@
-import { docsFrame } from '../../shared'
 import { screen, expect } from 'storybook/test'
 import type meta from '../../BaseDropdown.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseDropdown from '../../../ui/BaseDropdown.vue'
-import { storySource, useStorySetup } from '@/stories/helpers'
-
-function resolveColor(value: string): string {
-	const probe = document.createElement('span')
-	probe.style.color = value
-	document.body.append(probe)
-	const resolved = getComputedStyle(probe).color
-	probe.remove()
-	return resolved
-}
+import { storySource, useStorySetup, docsFrame, resolveColor } from '@/stories/helpers'
 
 const models = { isOpen: 'isOpen' }
 

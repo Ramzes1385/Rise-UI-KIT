@@ -1,15 +1,7 @@
 import { expect, within } from 'storybook/test'
+import { resolveColor } from '@/stories/helpers'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../BaseNotification.stories'
-
-function resolveColor(value: string): string {
-	const probe = document.createElement('span')
-	probe.style.color = value
-	document.body.append(probe)
-	const resolved = getComputedStyle(probe).color
-	probe.remove()
-	return resolved
-}
 
 export const CustomColor: StoryObj<typeof meta> = {
 	args: {

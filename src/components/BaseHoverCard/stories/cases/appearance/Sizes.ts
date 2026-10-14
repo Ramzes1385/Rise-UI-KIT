@@ -1,11 +1,11 @@
 import { BaseText } from '@components/BaseText'
 import { expect, screen } from 'storybook/test'
+import { SHOWCASE_OWN_ARGS } from '../../shared'
 import type meta from '../../BaseHoverCard.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseHoverCard from '../../../ui/BaseHoverCard.vue'
-import { docsFrame, SHOWCASE_OWN_ARGS } from '../../shared'
-import { literal, SIZE_PRESETS, sizeLabel, storySource, useStorySetup } from '@/stories/helpers'
+import { literal, SIZE_PRESETS, sizeLabel, storySource, useStorySetup, docsFrame } from '@/stories/helpers'
 
 const presets = SIZE_PRESETS.filter(preset => ['sm', 'md', 'lg'].includes(preset.name)).map(preset => ({
 	name: preset.name,

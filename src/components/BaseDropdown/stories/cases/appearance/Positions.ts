@@ -1,10 +1,9 @@
-import { docsFrame } from '../../shared'
 import { BaseText } from '@components/BaseText'
 import type meta from '../../BaseDropdown.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseDropdown from '../../../ui/BaseDropdown.vue'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { literal, storySource, useStorySetup, docsFrame } from '@/stories/helpers'
 
 const HIDDEN_ARGS = ['isOpen', 'position', 'onUpdate:isOpen']
 

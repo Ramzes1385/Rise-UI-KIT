@@ -1,10 +1,9 @@
-import { docsFrame } from '../shared'
 import type meta from '../BaseTooltip.stories'
 import { screen, expect } from 'storybook/test'
 import BaseTooltip from '../../ui/BaseTooltip.vue'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { storySource, useStorySetup } from '@/stories/helpers'
+import { storySource, useStorySetup, docsFrame } from '@/stories/helpers'
 
 const template = `
 	<BaseTooltip v-bind="args">

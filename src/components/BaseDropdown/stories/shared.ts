@@ -7,7 +7,3 @@ export const FILE_ACTIONS: BaseMenuItem[][] = [
 		{ label: 'Удалить', icon: 'trash' },
 	],
 ]
-
-export function docsFrame(height: number) {
-	return { story: { inline: false, height: `${height}px` } }
-}

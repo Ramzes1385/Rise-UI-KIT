@@ -1,9 +1,9 @@
 import type meta from '../../BaseDatePicker.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
+import { findPanel, monthsForWidth } from '../../shared'
 import { expect, screen, waitFor } from 'storybook/test'
 import BaseDatePicker from '../../../ui/BaseDatePicker.vue'
-import { storySource, useStorySetup } from '@/stories/helpers'
-import { docsFrame, findPanel, monthsForWidth } from '../../shared'
+import { storySource, useStorySetup, docsFrame } from '@/stories/helpers'
 
 const state = { deadline: null, trip: null, report: null }
 

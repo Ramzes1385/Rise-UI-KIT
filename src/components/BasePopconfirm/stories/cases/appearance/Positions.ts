@@ -1,9 +1,8 @@
-import { docsFrame } from '../../shared'
 import { BaseButton } from '@components/BaseButton'
 import type meta from '../../BasePopconfirm.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BasePopconfirm from '../../../ui/BasePopconfirm.vue'
-import { storySource, useStorySetup } from '@/stories/helpers'
+import { storySource, useStorySetup, docsFrame } from '@/stories/helpers'
 
 const OWN_ARGS = ['isOpen', 'position', 'description']
 

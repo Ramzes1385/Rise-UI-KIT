@@ -1,10 +1,9 @@
-import { docsFrame } from '../../shared'
 import type meta from '../../BaseTooltip.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseTooltip from '../../../ui/BaseTooltip.vue'
 import { screen, waitFor, expect } from 'storybook/test'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { literal, storySource, useStorySetup, docsFrame } from '@/stories/helpers'
 
 const items = [
 	{ position: 'left', text: 'Слева' },

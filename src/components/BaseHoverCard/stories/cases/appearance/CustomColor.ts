@@ -1,11 +1,11 @@
+import { panelOf } from '../../shared'
 import { expect } from 'storybook/test'
 import { BaseText } from '@components/BaseText'
 import type meta from '../../BaseHoverCard.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseHoverCard from '../../../ui/BaseHoverCard.vue'
-import { storySource, useStorySetup } from '@/stories/helpers'
-import { docsFrame, panelOf, resolveColor } from '../../shared'
+import { storySource, useStorySetup, docsFrame, resolveColor } from '@/stories/helpers'
 
 const models = { isOpen: 'isOpen' }
 

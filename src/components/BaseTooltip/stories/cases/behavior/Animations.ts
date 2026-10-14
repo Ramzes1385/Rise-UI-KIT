@@ -1,10 +1,9 @@
-import { docsFrame } from '../../shared'
 import type meta from '../../BaseTooltip.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseTooltip from '../../../ui/BaseTooltip.vue'
-import { motionPresetsStory } from '@/stories/helpers'
 import { expect, screen, waitFor } from 'storybook/test'
+import { motionPresetsStory, docsFrame } from '@/stories/helpers'
 
 const motion = motionPresetsStory({
 	item: `

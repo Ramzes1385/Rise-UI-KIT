@@ -1,11 +1,10 @@
-import { docsFrame } from '../../shared'
 import { BaseApp } from '@components/BaseApp'
 import { expect, screen } from 'storybook/test'
 import { BaseButton } from '@components/BaseButton'
 import type meta from '../../BasePopconfirm.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BasePopconfirm from '../../../ui/BasePopconfirm.vue'
-import { isStoryBranded, literal, storySource, useStorySetup } from '@/stories/helpers'
+import { isStoryBranded, literal, storySource, useStorySetup, docsFrame } from '@/stories/helpers'
 
 const ui = { root: 'story-themed-popconfirm', actions: 'story-themed-actions' }
 

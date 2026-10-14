@@ -1,11 +1,11 @@
 import { BaseText } from '@components/BaseText'
+import { SHOWCASE_OWN_ARGS } from '../../shared'
 import type meta from '../../BasePopover.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BasePopover from '../../../ui/BasePopover.vue'
-import { docsFrame, SHOWCASE_OWN_ARGS } from '../../shared'
 import { POPOVER_VARIANTS } from '../../../types/BasePopover.types'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { literal, storySource, useStorySetup, docsFrame } from '@/stories/helpers'
 
 const variants = POPOVER_VARIANTS
 

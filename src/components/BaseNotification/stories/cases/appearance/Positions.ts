@@ -4,8 +4,8 @@ import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../BaseNotification.stories'
 import { screen, waitFor, expect } from 'storybook/test'
-import { storySource, useStorySetup } from '@/stories/helpers'
 import BaseNotification from '../../../ui/BaseNotification.vue'
+import { docsFrame, storySource, useStorySetup } from '@/stories/helpers'
 import type { BaseNotificationExpose } from '../../../types/BaseNotification.types'
 
 const template = `
@@ -32,7 +32,7 @@ export const Positions: StoryObj<typeof meta> = {
 					'Меняйте значение в Controls; «Показать ещё» добавляет уведомление в стопку (исчезает через 3 секунды).',
 				].join('\n'),
 			},
-			story: { inline: false, height: '240px' },
+			...docsFrame(240),
 			source: storySource({
 				template,
 				imports: ['BaseNotification', 'BaseButton', 'type BaseNotificationExpose'],

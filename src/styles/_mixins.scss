@@ -216,6 +216,16 @@
 	}
 }
 
+@mixin custom-button-colors($bg, $hover: $bg, $active: $hover, $text: null) {
+	--custom-bg: #{$bg};
+	--custom-bg-hover: #{$hover};
+	--custom-bg-active: #{$active};
+
+	@if $text {
+		--custom-text: #{$text};
+	}
+}
+
 @mixin custom-bg-reset {
 	--custom-bg: initial;
 	--custom-bg-hover: initial;

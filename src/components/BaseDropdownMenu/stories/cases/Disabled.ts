@@ -1,10 +1,9 @@
-import { docsFrame } from '../shared'
 import type meta from '../BaseDropdownMenu.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseDropdownMenu from '../../ui/BaseDropdownMenu.vue'
 import { screen, waitFor, expect, within } from 'storybook/test'
-import { storySource, tabTo, useStorySetup } from '@/stories/helpers'
+import { storySource, tabTo, useStorySetup, docsFrame } from '@/stories/helpers'
 
 const template = `
 	<div class="story-row">

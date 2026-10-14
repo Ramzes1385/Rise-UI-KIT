@@ -1,11 +1,10 @@
-import { docsFrame } from '../../shared'
 import { BaseLink } from '@components/BaseLink'
 import { BaseText } from '@components/BaseText'
 import type meta from '../../BaseHoverCard.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { expect, screen, waitFor } from 'storybook/test'
 import BaseHoverCard from '../../../ui/BaseHoverCard.vue'
-import { literal, placeholderImage, storySource, useStorySetup } from '@/stories/helpers'
+import { literal, placeholderImage, storySource, useStorySetup, docsFrame } from '@/stories/helpers'
 
 const models = { isOpen: 'isOpen' }
 

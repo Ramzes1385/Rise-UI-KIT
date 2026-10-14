@@ -4,7 +4,7 @@ import type meta from '../../BaseSlideover.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseSlideover from '../../../ui/BaseSlideover.vue'
-import { storySource, useStorySetup } from '@/stories/helpers'
+import { storySource, useStorySetup, resolveColor } from '@/stories/helpers'
 
 const template = `
 	<div class="story-frame" style="height: 260px;">
@@ -16,15 +16,6 @@ const template = `
 		</BaseSlideover>
 	</div>
 `
-
-function resolveColor(value: string): string {
-	const probe = document.createElement('span')
-	probe.style.color = value
-	document.body.append(probe)
-	const resolved = getComputedStyle(probe).color
-	probe.remove()
-	return resolved
-}
 
 export const CustomColor: StoryObj<typeof meta> = {
 	args: {

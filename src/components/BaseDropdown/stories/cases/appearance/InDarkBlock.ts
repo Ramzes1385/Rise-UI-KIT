@@ -1,3 +1,4 @@
+import { FILE_ACTIONS } from '../../shared'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseMenu } from '@components/BaseMenu'
 import { BaseText } from '@components/BaseText'
@@ -5,9 +6,8 @@ import { screen, expect } from 'storybook/test'
 import type meta from '../../BaseDropdown.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { docsFrame, FILE_ACTIONS } from '../../shared'
 import BaseDropdown from '../../../ui/BaseDropdown.vue'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { literal, storySource, useStorySetup, docsFrame } from '@/stories/helpers'
 
 const HIDDEN_ARGS = ['isOpen', 'onUpdate:isOpen']
 

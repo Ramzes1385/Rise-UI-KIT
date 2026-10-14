@@ -1,10 +1,9 @@
-import { docsFrame } from '../../shared'
 import { BaseButton } from '@components/BaseButton'
 import type meta from '../../BasePopconfirm.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { motionPresetsStory } from '@/stories/helpers'
 import { expect, screen, waitFor } from 'storybook/test'
 import BasePopconfirm from '../../../ui/BasePopconfirm.vue'
+import { motionPresetsStory, docsFrame } from '@/stories/helpers'
 
 const motion = motionPresetsStory({
 	item: `

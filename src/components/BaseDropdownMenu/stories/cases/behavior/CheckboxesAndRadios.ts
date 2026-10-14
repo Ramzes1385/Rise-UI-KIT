@@ -1,11 +1,10 @@
 import { ref } from 'vue'
-import { docsFrame } from '../../shared'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../BaseDropdownMenu.stories'
-import { storySource, useStorySetup } from '@/stories/helpers'
 import BaseDropdownMenu from '../../../ui/BaseDropdownMenu.vue'
 import { screen, within, expect, waitFor } from 'storybook/test'
+import { storySource, useStorySetup, docsFrame } from '@/stories/helpers'
 import type { DropdownMenuItem } from '../../../types/BaseDropdownMenu.types'
 
 const script = `

@@ -1,4 +1,3 @@
-import { docsFrame } from '../shared'
 import type meta from '../BaseDropdown.stories'
 import { BaseMenu } from '@components/BaseMenu'
 import { screen, expect } from 'storybook/test'
@@ -6,7 +5,7 @@ import { BaseButton } from '@components/BaseButton'
 import BaseDropdown from '../../ui/BaseDropdown.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type { BaseMenuItem } from '@components/BaseMenu'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { literal, storySource, useStorySetup, docsFrame } from '@/stories/helpers'
 
 const PROJECTS: BaseMenuItem[][] = [
 	[

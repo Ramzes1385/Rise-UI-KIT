@@ -1,11 +1,11 @@
 import { BaseText } from '@components/BaseText'
+import { SHOWCASE_OWN_ARGS } from '../../shared'
 import type meta from '../../BaseHoverCard.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { expect, screen, waitFor } from 'storybook/test'
 import BaseHoverCard from '../../../ui/BaseHoverCard.vue'
-import { docsFrame, SHOWCASE_OWN_ARGS } from '../../shared'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { literal, storySource, useStorySetup, docsFrame } from '@/stories/helpers'
 
 const delays = [
 	{ label: 'Сразу', openDelay: 0, closeDelay: 0 },

@@ -1,11 +1,11 @@
+import { SHOWCASE_OWN_ARGS } from '../../shared'
 import type meta from '../../BasePopover.stories'
 import { BaseButton } from '@components/BaseButton'
 import { BaseSelect } from '@components/BaseSelect'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BasePopover from '../../../ui/BasePopover.vue'
 import { screen, waitFor, expect } from 'storybook/test'
-import { docsFrame, SHOWCASE_OWN_ARGS } from '../../shared'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { literal, storySource, useStorySetup, docsFrame } from '@/stories/helpers'
 
 const statuses = [
 	{ value: 'draft', label: 'Черновик' },

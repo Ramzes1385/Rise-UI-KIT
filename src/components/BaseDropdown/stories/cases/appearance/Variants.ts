@@ -1,11 +1,10 @@
-import { docsFrame } from '../../shared'
 import { BaseText } from '@components/BaseText'
 import type meta from '../../BaseDropdown.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseDropdown from '../../../ui/BaseDropdown.vue'
-import { storySource, useStorySetup } from '@/stories/helpers'
 import { DROPDOWN_VARIANTS } from '../../../types/BaseDropdown.types'
+import { storySource, useStorySetup, docsFrame } from '@/stories/helpers'
 
 const HIDDEN_ARGS = ['isOpen', 'variant', 'onUpdate:isOpen']
 
