@@ -9,6 +9,11 @@ export const COLOR_PICKER_POSITIONS = ['top', 'bottom', 'left', 'right'] as cons
 
 export type ColorPickerPosition = (typeof COLOR_PICKER_POSITIONS)[number]
 
+/** Вид кнопки-триггера: образец, залитый цветом, или плоская кнопка-иконка */
+export const COLOR_PICKER_TRIGGER_VARIANTS = ['swatch', 'icon'] as const
+
+export type ColorPickerTriggerVariant = (typeof COLOR_PICKER_TRIGGER_VARIANTS)[number]
+
 /**
  * Части выбора цвета для пропа `ui` (БЭМ-элементы `.base-color-picker__<часть>`, `root` — корень): swatch — образец-триггер,
  * popover — всплывающая панель, panel — содержимое панели, area — область насыщенности и яркости, marker — её маркер,
@@ -87,6 +92,10 @@ export interface BaseColorPickerProps extends BaseComponentProps<string, 'root' 
 	isResettable?: boolean
 	/** Текст кнопки сброса */
 	resetLabel?: string
+	/** Вид кнопки-триггера: `swatch` — образец, залитый цветом (по умолчанию); `icon` — плоская кнопка-иконка 28 px без заливки для тулбара, иконка — в слоте `trigger`. Своего CSS поверх `.base-color-picker__swatch` не нужно */
+	triggerVariant?: ColorPickerTriggerVariant
+	/** Только при `triggerVariant="icon"`: полоска текущего цвета под иконкой */
+	hasIndicator?: boolean
 	/** Не заливать образец цветом — для своего содержимого в слоте `trigger` (например, иконки) */
 	hasTransparentSwatch?: boolean
 	/** Отключённое состояние: образец не открывает панель */

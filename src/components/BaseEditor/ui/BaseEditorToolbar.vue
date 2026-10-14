@@ -33,7 +33,8 @@
 						:aria-label="UI_EDITOR.TEXT_COLOR"
 						:custom-class="colorPickerClasses"
 						:size-scale="sizeScale"
-						has-transparent-swatch
+						trigger-variant="icon"
+						:has-indicator="isTextColorActive"
 						is-resettable
 						:reset-label="UI_EDITOR.TEXT_COLOR_RESET"
 						@mousedown.prevent="emit('saveSelection')"
@@ -53,7 +54,8 @@
 						:aria-label="UI_EDITOR.BG_COLOR"
 						:custom-class="colorPickerClasses"
 						:size-scale="sizeScale"
-						has-transparent-swatch
+						trigger-variant="icon"
+						:has-indicator="isBackgroundColorActive"
 						is-resettable
 						:reset-label="UI_EDITOR.BG_COLOR_RESET"
 						@mousedown.prevent="emit('saveSelection')"

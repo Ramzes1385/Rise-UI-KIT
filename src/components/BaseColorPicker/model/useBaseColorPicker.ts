@@ -10,7 +10,7 @@ import { useColorPickerArea } from './useColorPickerArea'
 import { useColorPickerFields } from './useColorPickerFields'
 import { useColorPickerMotion } from './useColorPickerMotion'
 import { useFormField } from '@composables/form/useFormField'
-import { useColorPickerTheme } from './theme/useColorPickerTheme'
+import { usePageThemeStamp } from '@composables/app/usePageTheme'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import { useColorPicker } from '@composables/form/useColorPicker'
 import type { UseColorPickerReturn } from '@composables/form/useColorPicker'
@@ -26,7 +26,7 @@ function useSwatchSelection(
 	const { picker, emit, isOpen } = parts
 	return {
 		isSwatchSelected(color: string): boolean {
-			if (isCssVarColor(color) || isCssVarColor(props.modelValue)) return color === props.modelValue
+			if (isCssVarColor(color) || isCssVarColor(props.modelValue)) return color.trim() === props.modelValue.trim()
 			const parsed = parseColor(color)
 			return parsed !== null && formatColor(parsed, 'hex') === formatColor({ ...picker.rgb.value, a: picker.alpha.value }, 'hex')
 		},
@@ -41,6 +41,19 @@ function useSwatchSelection(
 			emit('reset')
 			isOpen.value = false
 		},
+	}
+}
+
+function useSwatchLook(props: ColorPickerProps, triggerColor: Ref<string>) {
+	const isIconTrigger = computed((): boolean => props.triggerVariant === 'icon')
+	const isSwatchFilled = computed((): boolean => !props.hasTransparentSwatch && !isIconTrigger.value)
+	return {
+		isIconTrigger,
+		isSwatchFilled,
+		swatchStyle: computed((): Record<string, string> | undefined => {
+			if (isSwatchFilled.value) return { backgroundColor: triggerColor.value, '--picker-swatch-color': triggerColor.value }
+			return isIconTrigger.value && props.hasIndicator ? { '--picker-swatch-color': triggerColor.value } : undefined
+		}),
 	}
 }
 
@@ -69,7 +82,7 @@ function useTokenValue(props: ColorPickerProps, picker: UseColorPickerReturn, sw
 }
 
 function usePicker(props: ColorPickerProps, emit: BaseColorPickerEmits, scope: Ref<HTMLElement | null>): UseColorPickerReturn {
-	const theme = useColorPickerTheme()
+	const theme = usePageThemeStamp()
 	return useColorPicker({
 		getValue: () => {
 			const stamp = theme.value
@@ -93,6 +106,7 @@ export function useBaseColorPicker(props: ColorPickerProps, emit: BaseColorPicke
 	const recent = useRecentColors(props, emit, { isOpen, picker })
 	const motion = useColorPickerMotion(picker, swatchRef)
 	const fields = useColorPickerFields(props, picker)
+	const tokenValue = useTokenValue(props, picker, fields.swatchColor)
 
 	return {
 		ui: useUi(props, 'base-color-picker'),
@@ -110,7 +124,8 @@ export function useBaseColorPicker(props: ColorPickerProps, emit: BaseColorPicke
 		),
 		...useEyeDropper(picker),
 		...useSwatchSelection(props, { picker, emit, isOpen }),
-		...useTokenValue(props, picker, fields.swatchColor),
+		...tokenValue,
+		...useSwatchLook(props, tokenValue.triggerColor),
 		exposed: {
 			rootRef: swatchRef,
 			focus: () => swatchRef.value?.focus(),

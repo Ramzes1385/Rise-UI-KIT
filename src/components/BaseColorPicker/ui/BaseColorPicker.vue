@@ -13,10 +13,14 @@
 				type="button"
 				:class="[
 					ui('swatch'),
-					{ 'base-color-picker__swatch--translucent': !hasTransparentSwatch && alphaPercent < 100 },
+					{
+						'base-color-picker__swatch--translucent': isSwatchFilled && alphaPercent < 100,
+						'base-color-picker__swatch--icon': isIconTrigger,
+						'base-color-picker__swatch--indicated': isIconTrigger && hasIndicator,
+					},
 					classes.swatch,
 				]"
-				:style="hasTransparentSwatch ? undefined : { backgroundColor: triggerColor, '--picker-swatch-color': triggerColor }"
+				:style="swatchStyle"
 				:disabled="isDisabled"
 				:aria-expanded="isOpen ? 'true' : 'false'">
 				<slot name="trigger" />
@@ -199,6 +203,8 @@ const props = withDefaults(
 		isPresetsHidden: false,
 		isResettable: false,
 		hasTransparentSwatch: false,
+		triggerVariant: 'swatch',
+		hasIndicator: false,
 		isDisabled: false,
 		sizeScale: SIZE_SCALE_DEFAULT,
 		presets: () => DEFAULT_COLOR_PRESETS,
@@ -229,6 +235,9 @@ const {
 	handleHexInput,
 	alphaPercent,
 	triggerColor,
+	isSwatchFilled,
+	isIconTrigger,
+	swatchStyle,
 	tokenText,
 	formatLabel,
 	setInputFormat,

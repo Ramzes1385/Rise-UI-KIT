@@ -31,6 +31,24 @@
 		&--translucent {
 			background: linear-gradient(var(--picker-swatch-color), var(--picker-swatch-color)), var(--picker-checker);
 		}
+
+		&--icon {
+			@include tool-button;
+			@include focus-ring;
+			background-image: none;
+		}
+
+		&--indicated::after {
+			content: '';
+			position: absolute;
+			right: sz(7px);
+			bottom: sz(3px);
+			left: sz(7px);
+			height: sz(3px);
+			border-radius: var(--rise-radius-full);
+			background-color: var(--picker-swatch-color);
+			box-shadow: 0 0 0 1px var(--rise-border);
+		}
 	}
 
 	&__popover.base-dropdown__panel {

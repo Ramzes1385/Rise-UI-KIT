@@ -176,6 +176,29 @@ describe('BaseColorPicker — unit', () => {
 		expect(swatch?.style.backgroundColor).toBe('')
 	})
 
+	it('triggerVariant="icon" — плоская кнопка без заливки, полоска цвета только с hasIndicator', () => {
+		const icon = render(BaseColorPicker, { props: { modelValue: '#ff0000', triggerVariant: 'icon' } })
+		const swatch = icon.container.querySelector<HTMLElement>('.base-color-picker__swatch')
+		expect(swatch).toHaveClass('base-color-picker__swatch--icon')
+		expect(swatch).not.toHaveClass('base-color-picker__swatch--indicated')
+		expect(swatch?.style.backgroundColor).toBe('')
+		expect(swatch?.style.getPropertyValue('--picker-swatch-color')).toBe('')
+		icon.unmount()
+
+		const indicated = render(BaseColorPicker, { props: { modelValue: '#ff0000', triggerVariant: 'icon', hasIndicator: true } })
+		const marked = indicated.container.querySelector<HTMLElement>('.base-color-picker__swatch')
+		expect(marked).toHaveClass('base-color-picker__swatch--indicated')
+		expect(marked?.style.getPropertyValue('--picker-swatch-color')).toBe('rgb(255, 0, 0)')
+		expect(marked?.style.backgroundColor).toBe('')
+	})
+
+	it('hasIndicator не действует на залитый образец', () => {
+		const { container } = render(BaseColorPicker, { props: { modelValue: '#ff0000', hasIndicator: true } })
+		const swatch = container.querySelector<HTMLElement>('.base-color-picker__swatch')
+		expect(swatch).not.toHaveClass('base-color-picker__swatch--icon', 'base-color-picker__swatch--indicated')
+		expect(swatch?.style.backgroundColor).not.toBe('')
+	})
+
 	it('рендерит кнопку сброса с подписью и эмитит reset', async () => {
 		const { container, emitted } = render(BaseColorPicker, {
 			props: { modelValue: '#ff0000', isResettable: true, resetLabel: 'Без цвета' },

@@ -12,6 +12,8 @@ export const args = {
 	isPresetsHidden: false,
 	isResettable: false,
 	hasTransparentSwatch: false,
+	triggerVariant: 'swatch',
+	hasIndicator: false,
 	isDisabled: false,
 	'onUpdate:modelValue': fn(),
 	onChange: fn(),

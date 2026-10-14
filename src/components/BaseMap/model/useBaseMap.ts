@@ -3,12 +3,12 @@ import { useMapScheme } from './useMapScheme'
 import { watchAdapter } from './watchAdapter'
 import { useMapAdapter } from './useMapAdapter'
 import { useUi } from '@composables/base/useUi'
-import { useMapThemeStamp } from './useMapThemeStamp'
 import { useMapGestures } from './view/useMapGestures'
 import { useMapPlaceholder } from './useMapPlaceholder'
 import { useMapClusters } from './markers/useMapClusters'
 import { useMapNavigation } from './view/useMapNavigation'
 import { useMapSelection } from './markers/useMapSelection'
+import { usePageThemeStamp } from '@composables/app/usePageTheme'
 import { shapeLabels, useMapShapes } from './markers/useMapShapes'
 import { useStructuredData } from '@composables/seo/useStructuredData'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
@@ -85,7 +85,7 @@ export function useBaseMap(props: BaseMapProps, emit: BaseMapEmits, slots: MapSl
 	})
 	const items = useMapClusters(props, map.lastView)
 	useMapSync(props, map, { scheme, items })
-	useMapShapes(props, map.adapter, { area: canvasRef, scheme, theme: useMapThemeStamp() })
+	useMapShapes(props, map.adapter, { area: canvasRef, scheme, theme: usePageThemeStamp() })
 	const navigation = useMapNavigation(props, emit, map)
 	cluster.open = navigation.openCluster
 	const gestures = useMapGestures(props, { zoomBy: navigation.zoomBy, notify: navigation.showNotice })

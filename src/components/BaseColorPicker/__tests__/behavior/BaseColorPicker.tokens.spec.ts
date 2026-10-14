@@ -84,6 +84,14 @@ describe('BaseColorPicker: токены var(--rise-*)', () => {
 		expect(document.body.querySelector('.base-color-picker__token')).toHaveTextContent('#010203')
 	})
 
+	it('токен с пробелами по краям в v-model всё равно отмечает пресет выбранным', async () => {
+		const { container } = render(BaseColorPicker, {
+			props: { modelValue: ' var(--rise-success) ', palettes: [getKitTokenPalette()] },
+		})
+		await openPanel(container)
+		expect(screen.getByRole('button', { name: 'Пресет success' })).toHaveAttribute('aria-pressed', 'true')
+	})
+
 	it('выбор токена из палитры отдаёт строку var(--…) как есть и отмечает образец выбранным', async () => {
 		const { container, emitted, rerender } = render(BaseColorPicker, {
 			props: { modelValue: '#ff0000', palettes: [getKitTokenPalette()] },

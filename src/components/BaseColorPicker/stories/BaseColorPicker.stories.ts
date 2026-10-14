@@ -25,6 +25,7 @@ export const Palettes = cases.Palettes
 export const Tokens = cases.Tokens
 export const Minimal = cases.Minimal
 export const TriggerSlot = cases.TriggerSlot
+export const IconTrigger = cases.IconTrigger
 export const HexInput = cases.HexInput
 export const ColorPickerHexDraft = cases.ColorPickerHexDraft
 export const Formats = cases.Formats

@@ -1,6 +1,7 @@
 import type { MapScheme } from '../types/BaseMap.types'
+import { computed, onMounted, ref, type Ref } from 'vue'
+import { usePageTheme } from '@composables/app/usePageTheme'
 import type { MapResolvedScheme } from '../types/providers.types'
-import { computed, onBeforeUnmount, onMounted, ref, type Ref } from 'vue'
 
 const THEME_ATTRIBUTES = ['data-theme']
 const DARK_QUERY = '(prefers-color-scheme: dark)'
@@ -14,25 +15,13 @@ function isDarkTheme(area: HTMLElement | null): boolean {
 
 export function useMapScheme(scheme: () => MapScheme | undefined, area: Ref<HTMLElement | null>) {
 	const isAutoDark = ref(false)
-	let observer: MutationObserver | null = null
-	let media: MediaQueryList | null = null
 
 	const refresh = (): void => {
 		isAutoDark.value = isDarkTheme(area.value)
 	}
 
-	onMounted(() => {
-		refresh()
-		observer = new MutationObserver(refresh)
-		observer.observe(document.documentElement, { attributes: true, subtree: true, attributeFilter: THEME_ATTRIBUTES })
-		media = typeof window.matchMedia === 'function' ? window.matchMedia(DARK_QUERY) : null
-		media?.addEventListener('change', refresh)
-	})
-
-	onBeforeUnmount(() => {
-		observer?.disconnect()
-		media?.removeEventListener('change', refresh)
-	})
+	onMounted(refresh)
+	usePageTheme(refresh, THEME_ATTRIBUTES)
 
 	return computed<MapResolvedScheme>(() => {
 		const value = scheme() ?? 'auto'
