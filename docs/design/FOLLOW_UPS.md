@@ -520,7 +520,7 @@
 - Счётчик скрытых выбранных строк не предлагает действия «Снять выбор скрытых»: снять выбор можно `clearSelection()` или «Выбрать все» с областью `filtered`. Кнопка в самой области — по запросу приложений.
 - `isManualSorting` не сбрасывает страницу при смене сортировки (приложение решает само); при смене сортировки сервером в `v-model:page` она остаётся прежней.
 
-- BaseSearch: SRCH-2 (`source` с отменой и отбрасыванием устаревших ответов), SRCH-3, SRCH-10 а, б, в, д (индекс) сделаны — `docs/v2/MIGRATION.md`, «Задача table-search». Остаются: SRCH-10 г (закрытие BaseModal по `click.self` после выделения текста — в BaseModal), Home/End/PageUp/PageDown по списку не добавлены (APG combobox отдаёт Home и End полю), SRCH-7 (`blur()` в режиме default не снимает фокус с поля), SRCH-8 (атрибут `readonly` вместо `isReadonly` у поля-триггера модалки) и SRCH-9 (`inheritAttrs` у BaseSearchOverlay) не правились.
+- BaseSearch: SRCH-2 (`source` с отменой и отбрасыванием устаревших ответов), SRCH-3, SRCH-10 а, б, в, д (индекс) сделаны — `docs/v2/MIGRATION.md`, «Задача table-search». Остаются: ~~SRCH-10 г (закрытие BaseModal по `click.self` после выделения текста — в BaseModal)~~ — search-tails, Home/End/PageUp/PageDown по списку не добавлены (APG combobox отдаёт Home и End полю), ~~SRCH-7 (`blur()` в режиме default не снимает фокус с поля)~~ — search-tails, ~~SRCH-8 (атрибут `readonly` вместо `isReadonly` у поля-триггера модалки)~~ — search-tails и SRCH-9 (`inheritAttrs` у BaseSearchOverlay) — не делаем: решение владельца 15.10 по № 1 (`inheritAttrs: false` не делаем), нужду закрывают `inputAttrs` и `triggerAttrs` — search-tails.
 - Функции в `kitDefaults`: значение-функция остаётся как есть, а Vue для props типа `Function` считает её значением по умолчанию — `source: undefined` в `kitDefaults('BaseSearch', …)` сделал бы `props.source` непустой функцией (поймали тестами). Проп-функцию без умолчания в `kitDefaults` не перечисляют.
 
 ## Задача files-dates
@@ -573,7 +573,7 @@
 
 - Сделано: BaseEditor (вставка в начало списка после `(root, 0)`, одно `update:modelValue` в режиме кода), BaseTable (форма «Выбрана/Выбраны/Выбрано», живая область визуально скрыта), BaseSearch (отмена запроса при внешней смене `modelValue`, текст ошибки источника, ↓ без перехвата, когда открывать нечего), документы (MIGRATION, FOLLOW_UPS).
 - Ограничение раскладок: греческая Q и ивритские Q, W не срабатывают как буквы сочетаний (`getShortcutLetter`) — осознанно, из-за Dvorak; точного решения без API раскладки нет.
-- Не делалось: текст ошибки источника для BaseAddressInput и BaseDadataInput (они тоже на `useRemoteSuggestions`, `hasError` теперь доступен, но их пустое состояние не менялось); перевод `emptyText` в публичные слоты BaseSearch (слот `empty` по-прежнему заменяет текст целиком).
+- Не делалось: ~~текст ошибки источника для BaseAddressInput и BaseDadataInput (они тоже на `useRemoteSuggestions`, `hasError` теперь доступен, но их пустое состояние не менялось)~~ — search-tails; перевод `emptyText` в публичные слоты BaseSearch (слот `empty` по-прежнему заменяет текст целиком).
 - В строках, на которые указал вердикт check-wave8 (№ 35, 51, 90, Ctrl+B/I/U, `useEditorHistory`, «в конце», `~~player~~`), проставлены зачёркивания и ссылки; № 35, 51 и 90 выведены из списка «не сверялись» раздела «Задача followups-audit».
 
 ## Задача wave8-fix3b
@@ -592,3 +592,9 @@
 
 - C6 закрыт. MediaWatchPanel: метка статуса участника уже была BaseBadge (compose-3, player); теперь цвета задаёт палитра бейджа (`status="success"` у подключившегося и ведущего, `status="neutral"` у приглашённого; `--badge-soft` и `--badge-role-text` переопределены на тёмную поверхность плеера, цвета те же). Тест поведения и play истории `WatchParty` проверяют палитру и то, что текст метки виден скринридеру.
 - **Осознанно не делаем: режим «шаги-точки» у BaseProgress.** Точки BaseTour — не прогресс, а указатель текущего шага: активная точка вытянута в «таблетку» (18 px), пройденные не закрашиваются. BaseProgress с `steps` закрашивал бы все пройденные точки и менял вид тура, а чтобы сохранить вид, понадобился бы отдельный вариант «таблетка» только ради одного потребителя. Доступность от переноса не выигрывает: точки `aria-hidden`, шаг озвучивают счётчик «N / M» и live-область тура; полосу BaseProgress тур уже использует, когда шагов больше, чем помещается точками (`useDots`), у BaseStepper — настоящие шаги. Вернуться к вопросу, если второй компонент (например пагинация слайдера) потребует то же — тогда общий компонент «индикатор позиции», а не режим BaseProgress.
+
+## Задача search-tails
+
+- Сделано: SRCH-7 (`blur()` BaseSearch снимает фокус с настоящего `input` во всех режимах: BaseSearchInput и BaseSearchOverlay получили `blur` в expose), SRCH-8 (триггер модалки на `isReadonly`), SRCH-10 г (BaseModal, BaseSlideover, BaseDrawer, а с ними модальный и боковой режимы BaseSearch не закрываются, если нажатие началось внутри панели), текст ошибки источника в BaseAddressInput и BaseDadataInput (`UI_TEXT.SEARCH_FAILED`, проп `emptyText` у BaseAutocomplete).
+- Не делаем: SRCH-9 (`inheritAttrs` у BaseSearchOverlay) — решение владельца 15.10 по № 1.
+- Отложено: тот же приём «закрывать, только если pointerdown был на подложке» не применён к `@click.self` в BaseImageZoom (`BaseImageZoom.vue`) — там нет полей ввода, выделение текста невозможно; при необходимости `usePopup` уже отдаёт `handleOverlayPointerdown`.
