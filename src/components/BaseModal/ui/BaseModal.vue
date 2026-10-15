@@ -14,6 +14,7 @@
 				]"
 				:style="[sizeScaleStyle, variantStyle, customColorStyle, layerStyle]"
 				v-bind="themeAttrs"
+				@pointerdown="handleOverlayPointerdown"
 				@click.self="handleOverlayClick">
 				<div
 					ref="contentRef"
@@ -98,6 +99,7 @@ const {
 	fullScreenClass,
 	layerStyle,
 	handleOverlayClick,
+	handleOverlayPointerdown,
 	handleClose,
 	contentRef,
 	bodyRef,

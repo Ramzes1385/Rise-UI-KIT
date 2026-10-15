@@ -428,4 +428,51 @@ describe('usePopup', () => {
 			expect(document.body.style.overflow).toBe('')
 		})
 	})
+
+	describe('нажатие, начатое внутри панели', () => {
+		function createPanelComponent() {
+			return defineComponent({
+				setup() {
+					const { handleOverlayClick, handleOverlayPointerdown } = usePopup({
+						isOpen: () => true,
+						closeOnOverlay: () => true,
+						closeOnEscape: () => false,
+						onClose,
+					})
+					return () =>
+						h('div', { 'data-testid': 'overlay', onPointerdown: handleOverlayPointerdown, onClick: handleOverlayClick }, [
+							h('div', { 'data-testid': 'panel' }),
+						])
+				},
+			})
+		}
+
+		it('не закрывает popup, если pointerdown был на панели, а click пришёл на оверлей', async () => {
+			const { getByTestId } = render(createPanelComponent())
+
+			await fireEvent.pointerDown(getByTestId('panel'))
+			await fireEvent.click(getByTestId('overlay'))
+
+			expect(onClose).not.toHaveBeenCalled()
+		})
+
+		it('закрывает popup, если pointerdown и click были на оверлее', async () => {
+			const { getByTestId } = render(createPanelComponent())
+
+			await fireEvent.pointerDown(getByTestId('overlay'))
+			await fireEvent.click(getByTestId('overlay'))
+
+			expect(onClose).toHaveBeenCalledTimes(1)
+		})
+
+		it('сбрасывает признак после click: следующий click без pointerdown закрывает', async () => {
+			const { getByTestId } = render(createPanelComponent())
+
+			await fireEvent.pointerDown(getByTestId('panel'))
+			await fireEvent.click(getByTestId('overlay'))
+			await fireEvent.click(getByTestId('overlay'))
+
+			expect(onClose).toHaveBeenCalledTimes(1)
+		})
+	})
 })

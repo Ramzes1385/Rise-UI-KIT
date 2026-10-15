@@ -11,7 +11,7 @@ import { useOwnThemeAttrs, useTeleportTarget } from '@composables/app/useTelepor
 const MODAL_ELEMENTS = ['root', 'content', 'header', 'headerLeft', 'title', 'close', 'body', 'footer']
 
 function useModalClose(props: BaseModalProps, emit: BaseModalEmits) {
-	const { handleOverlayClick, close } = usePopup({
+	const { handleOverlayClick, handleOverlayPointerdown, close } = usePopup({
 		isOpen: () => props.isOpen,
 		closeOnOverlay: () => props.closeOnOverlay ?? true,
 		closeOnEscape: () => props.closeOnEscape ?? true,
@@ -21,7 +21,7 @@ function useModalClose(props: BaseModalProps, emit: BaseModalEmits) {
 			emit('close')
 		},
 	})
-	return { handleOverlayClick, handleClose: close }
+	return { handleOverlayClick, handleOverlayPointerdown, handleClose: close }
 }
 
 function useModalDialog(props: BaseModalProps) {

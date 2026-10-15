@@ -12,6 +12,7 @@
 				]"
 				:style="[sizeScaleStyle, customColorStyle, layerStyle]"
 				v-bind="themeAttrs"
+				@pointerdown="handleOverlayPointerdown"
 				@click.self="handleOverlayClick">
 				<div
 					ref="panelRef"
@@ -96,6 +97,7 @@ const {
 	hasHeader,
 	hasDefaultTitle,
 	handleOverlayClick,
+	handleOverlayPointerdown,
 	handleClose,
 	panelRef,
 	bodyRef,

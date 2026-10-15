@@ -16,7 +16,7 @@ function isEscapeTarget(scope: HTMLElement | null | undefined): boolean {
  *
  * @example
  * ```ts
- * const { handleOverlayClick, close } = usePopup({
+ * const { handleOverlayClick, handleOverlayPointerdown, close } = usePopup({
  *   isOpen: () => props.isOpen,
  *   closeOnOverlay: () => props.closeOnOverlay,
  *   closeOnEscape: () => props.closeOnEscape,
@@ -29,6 +29,7 @@ function isEscapeTarget(scope: HTMLElement | null | undefined): boolean {
  */
 function usePopup(options: UsePopupOptions): {
 	handleOverlayClick: () => void
+	handleOverlayPointerdown: (event: PointerEvent) => void
 	close: () => void
 } {
 	const { isOpen, closeOnOverlay, closeOnEscape, onClose, lockScroll, escapeScope } = options
@@ -44,8 +45,20 @@ function usePopup(options: UsePopupOptions): {
 		onClose()
 	}
 
+	/**
+	 * Нажатие, начатое внутри панели (выделение текста в поле) и отпущенное над подложкой, даёт click на подложке:
+	 * окно не закрывается, если последний pointerdown был не на самой подложке
+	 */
+	let isPressedInside = false
+
+	function handleOverlayPointerdown(event: PointerEvent): void {
+		isPressedInside = event.target !== event.currentTarget
+	}
+
 	function handleOverlayClick(): void {
-		if (closeOnOverlay()) {
+		const wasPressedInside = isPressedInside
+		isPressedInside = false
+		if (!wasPressedInside && closeOnOverlay()) {
 			close()
 		}
 	}
@@ -81,7 +94,7 @@ function usePopup(options: UsePopupOptions): {
 
 	onUnmounted(unlock)
 
-	return { handleOverlayClick, close }
+	return { handleOverlayClick, handleOverlayPointerdown, close }
 }
 
 export { usePopup }

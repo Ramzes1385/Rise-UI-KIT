@@ -46,7 +46,7 @@ function useSlideoverClose(
 	emit: BaseSlideoverEmits,
 	dialog: { isModal: ComputedRef<boolean>; panelRef: Ref<HTMLElement | null> },
 ) {
-	const { handleOverlayClick, close } = usePopup({
+	const { handleOverlayClick, handleOverlayPointerdown, close } = usePopup({
 		isOpen: () => props.isOpen,
 		closeOnOverlay: () => props.closeOnOverlay,
 		closeOnEscape: () => props.closeOnEscape,
@@ -57,7 +57,7 @@ function useSlideoverClose(
 			emit('close')
 		},
 	})
-	return { handleOverlayClick, handleClose: close }
+	return { handleOverlayClick, handleOverlayPointerdown, handleClose: close }
 }
 
 function useSlideoverDialog(props: SlideoverProps, isContainedMode: ComputedRef<boolean>) {

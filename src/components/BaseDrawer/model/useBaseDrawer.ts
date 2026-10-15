@@ -17,7 +17,7 @@ function isDragHandle(target: HTMLElement): boolean {
 }
 
 function useDrawerClose(props: DrawerProps, emit: BaseDrawerEmits) {
-	const { handleOverlayClick, close } = usePopup({
+	const { handleOverlayClick, handleOverlayPointerdown, close } = usePopup({
 		isOpen: () => props.isOpen,
 		closeOnOverlay: () => props.closeOnOverlay,
 		closeOnEscape: () => props.closeOnEscape,
@@ -26,7 +26,7 @@ function useDrawerClose(props: DrawerProps, emit: BaseDrawerEmits) {
 			emit('close')
 		},
 	})
-	return { handleOverlayClick, handleClose: close }
+	return { handleOverlayClick, handleOverlayPointerdown, handleClose: close }
 }
 
 function useDragOffset(props: DrawerProps) {
