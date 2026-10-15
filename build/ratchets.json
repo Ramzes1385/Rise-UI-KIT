@@ -24,13 +24,21 @@
 			"gzip": 141430,
 			"budget": 155648
 		},
+		"media.css": {
+			"gzip": 15227,
+			"budget": 17408
+		},
 		"media.js": {
 			"gzip": 179729,
 			"budget": 198656
 		},
+		"media.layer.css": {
+			"gzip": 60,
+			"budget": 2048
+		},
 		"styles.css": {
-			"gzip": 113189,
-			"budget": 124928
+			"gzip": 98958,
+			"budget": 109568
 		},
 		"styles.layer.css": {
 			"gzip": 61,

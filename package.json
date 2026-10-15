@@ -79,6 +79,16 @@
       "import": "./dist/styles.layer.css",
       "default": "./dist/styles.layer.css"
     },
+    "./media.css": {
+      "types": "./dist/styles.d.ts",
+      "import": "./dist/media.css",
+      "default": "./dist/media.css"
+    },
+    "./media.layer.css": {
+      "types": "./dist/styles.d.ts",
+      "import": "./dist/media.layer.css",
+      "default": "./dist/media.layer.css"
+    },
     "./icons.svg": "./dist/icons.svg",
     "./package.json": "./package.json"
   },
@@ -103,6 +113,7 @@
     "test:story-source": "node scripts/check-story-source.mjs",
     "test:slot-docs": "node scripts/check-slot-docs.mjs",
     "test:ratchets": "node scripts/check-ratchets.mjs",
+    "test:css-split": "node scripts/check-css-split.mjs",
     "test:folders": "node scripts/check-folder-size.mjs",
     "test:custom-color": "node scripts/check-custom-color-scope.mjs",
     "create:component": "node scripts/create-component.mjs",
@@ -123,13 +134,14 @@
     "test:all": "npm run test:components:coverage && npm run test:composables:coverage && npm run test:utils:coverage && npm run test:e2e && npm run test:visual && npm run test:folders",
     "build": "npm run build:lib",
     "build:lib": "npm run build:lib:js && npm run build:lib:types && npm run build:lib:resolve-aliases",
-    "build:lib:js": "vite build --config build/lib/vite.lib.config.ts",
+    "build:lib:js": "vite build --config build/lib/vite.lib.config.ts && npm run build:lib:media-css",
+    "build:lib:media-css": "vite build --config build/lib/vite.media-css.config.ts",
     "build:lib:types": "vue-tsc -p build/lib/tsconfig.lib.json --declaration --emitDeclarationOnly",
     "build:lib:resolve-aliases": "node build/lib/resolve-aliases.mjs",
     "pack:dry": "npm run build:lib && npm pack --dry-run",
     "release": "semantic-release --extends ./build/release/semantic-release.config.cjs",
     "release:dry": "semantic-release --dry-run --extends ./build/release/semantic-release.local.config.cjs",
-    "ci:validate": "npm run lint && npm run lint:styles && npm run lint:unused && npm run format:check && npm run typecheck && npm run test:unit && npm run pack:dry && npm run test:ratchets && npm run test:folders && npm run test:custom-color",
+    "ci:validate": "npm run lint && npm run lint:styles && npm run lint:unused && npm run format:check && npm run typecheck && npm run test:unit && npm run pack:dry && npm run test:css-split && npm run test:ratchets && npm run test:folders && npm run test:custom-color",
     "ci:release": "npm run release"
   },
   "dependencies": {
@@ -321,7 +333,8 @@
     ],
     "vite": {
       "config": [
-        "build/lib/vite.lib.config.ts"
+        "build/lib/vite.lib.config.ts",
+        "build/lib/vite.media-css.config.ts"
       ]
     },
     "vitest": {

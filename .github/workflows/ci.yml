@@ -48,6 +48,10 @@ jobs:
       - name: Type check & build
         run: npm run build
 
+      # Разбиение CSS: в dist/styles.css нет стилей плеера, в dist/media.css есть и нет токенов кита
+      - name: CSS split (styles.css / media.css)
+        run: npm run test:css-split
+
       # Храповики (build/ratchets.json): размер входов dist в gzip — в бюджете, исключений покрытия и предупреждений ESLint — не больше базы
       - name: Ratchets (bundle size, coverage excludes, lint warnings)
         run: npm run test:ratchets
