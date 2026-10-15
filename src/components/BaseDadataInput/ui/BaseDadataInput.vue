@@ -12,6 +12,7 @@
 		:is-disabled="isDisabled"
 		:is-required="isRequired"
 		:is-loading="isLoading"
+		:empty-text="emptyText"
 		:input-attrs="inputAttrs"
 		:size-scale="sizeScale"
 		:color="color"
@@ -21,9 +22,7 @@
 		is-custom-allowed
 		@update:model-value="handleChange"
 		@search="handleSearch"
-		@blur="handleBlur">
-		<template #empty>{{ emptyText }}</template>
-	</BaseAutocomplete>
+		@blur="handleBlur" />
 </template>
 
 <script setup lang="ts">

@@ -1,3 +1,4 @@
+import { UI_TEXT } from '@/locales/messages'
 import { useUi } from '@composables/base/useUi'
 import { computed, shallowRef, watch } from 'vue'
 import { useCustomClass } from '@composables/base/useCustomClass'
@@ -16,7 +17,7 @@ function useWrapperUi(props: BaseAddressInputProps) {
 }
 
 export function useBaseAddressInput(props: BaseAddressInputProps, emit: BaseAddressInputEmits) {
-	const { suggestions, isLoading, search } = useRemoteSuggestions({
+	const { suggestions, isLoading, hasError, search } = useRemoteSuggestions({
 		source: () => props.source,
 		minChars: () => props.minChars ?? 3,
 		debounce: () => props.debounce ?? 300,
@@ -33,6 +34,7 @@ export function useBaseAddressInput(props: BaseAddressInputProps, emit: BaseAddr
 		classes: useCustomClass({ getClass: () => props.customClass, elementKeys: ['root', 'field', 'panel', 'option'] }).classes,
 		value,
 		isLoading,
+		emptyText: computed((): string | undefined => (hasError.value ? UI_TEXT.SEARCH_FAILED : undefined)),
 		options: computed(() =>
 			suggestions.value.map(item => ({ value: item.value, label: item.value, description: item.unrestrictedValue })),
 		),

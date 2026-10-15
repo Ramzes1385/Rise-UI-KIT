@@ -82,6 +82,8 @@ export interface BaseAutocompleteProps extends BaseComponentProps<InputVariant, 
 	isRemote?: boolean
 	/** Идёт загрузка вариантов: в списке — «Загрузка…» */
 	isLoading?: boolean
+	/** Текст пустого списка и его объявления в live-области; по умолчанию «Ничего не найдено» (например, ошибку источника передаёт родитель) */
+	emptyText?: string
 	/** Своя фильтрация вариантов по запросу; по умолчанию — подпись содержит запрос без учёта регистра */
 	filter?: (option: AutocompleteOption, query: string) => boolean
 	/** Сколько вариантов показывать в списке (по умолчанию все) */

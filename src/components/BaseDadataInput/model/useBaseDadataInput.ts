@@ -182,7 +182,7 @@ export function useBaseDadataInput(props: BaseDadataInputProps, emit: BaseDadata
 		fieldValue: computed(() => (state.isEditing.value ? null : state.value.value || null)),
 		isLoading: state.isLoading,
 		shownError: state.shownError,
-		emptyText: computed(() => state.digitMessage.value || UI_TEXT.NO_RESULTS),
+		emptyText: computed(() => state.digitMessage.value || (state.hasError.value ? UI_TEXT.SEARCH_FAILED : UI_TEXT.NO_RESULTS)),
 		kindLabel: computed(() => UI_DADATA[KIND_LABELS[kind.value]]),
 		inputAttrs: computed(() => INPUT_ATTRS[kind.value]),
 		options: computed(() =>

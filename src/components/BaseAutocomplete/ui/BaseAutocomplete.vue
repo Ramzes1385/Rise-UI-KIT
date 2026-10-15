@@ -91,7 +91,7 @@
 							variant="ghost"
 							:class="[ui('empty'), classes.empty]"
 							:size-scale="sizeScale">
-							<slot name="empty">{{ UI_TEXT.NO_RESULTS }}</slot>
+							<slot name="empty">{{ emptyLabel }}</slot>
 						</BaseEmpty>
 					</Transition>
 				</div>
@@ -148,6 +148,7 @@ const {
 	optionId,
 	highlight,
 	statusText,
+	emptyLabel,
 	comboboxAttrs,
 	handleInput,
 	handleClick,

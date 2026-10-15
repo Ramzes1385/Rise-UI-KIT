@@ -222,14 +222,16 @@ function useFieldEvents(emit: BaseAutocompleteEmits, ctx: ReturnType<typeof useA
 
 function useAutocompleteView(props: AutocompleteProps, ctx: ReturnType<typeof useAutocompleteState>, listboxId: string) {
 	const optionId = (index: number): string => `${listboxId}-option-${index}`
+	const emptyLabel = computed((): string => props.emptyText ?? UI_TEXT.NO_RESULTS)
 	return {
 		optionId,
 		highlight: (label: string) => highlightParts(label, ctx.query.value.trim(), ctx.isFiltering.value),
+		emptyLabel,
 		statusText: computed(() => {
 			if (!ctx.isOpen.value || !ctx.isFiltering.value) return ''
 			if (props.isLoading) return UI_TEXT.LOADING
 			const count = ctx.visibleOptions.value.length
-			return count > 0 ? pluralize(getLocale().plural.SEARCH_RESULTS, count) : UI_TEXT.NO_RESULTS
+			return count > 0 ? pluralize(getLocale().plural.SEARCH_RESULTS, count) : emptyLabel.value
 		}),
 		comboboxAttrs: computed(() => ({
 			...props.inputAttrs,

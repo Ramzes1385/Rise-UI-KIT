@@ -10,6 +10,7 @@
 		:is-disabled="isDisabled"
 		:is-required="isRequired"
 		:is-loading="isLoading"
+		:empty-text="emptyText"
 		:input-attrs="{ autocomplete: 'off' }"
 		:size-scale="sizeScale"
 		:color="color"
@@ -43,5 +44,5 @@ const props = withDefaults(
 
 const emit = defineEmits<BaseAddressInputEmits>()
 
-const { ui, autocompleteUi, classes, value, isLoading, options, search, handleChange } = useBaseAddressInput(props, emit)
+const { ui, autocompleteUi, classes, value, isLoading, emptyText, options, search, handleChange } = useBaseAddressInput(props, emit)
 </script>
