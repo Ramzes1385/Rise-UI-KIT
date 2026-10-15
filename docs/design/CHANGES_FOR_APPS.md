@@ -426,6 +426,8 @@
 
 - BaseAnimation: Vue-классы переходов получили префикс — `.fade-enter-active` → `.rise-fade-enter-active`, `.list-move` → `.rise-list-move` и так далее (таблица — MIGRATION, «Задача text-anim»). Проп `name` прежний. Если приложение стилизовало эти глобальные классы, добавьте `rise-`.
 
+## Задача w12-c6-watch
+
 - BaseMediaPlayer, окно совместного просмотра: метка статуса участника стала BaseBadge с палитрой `success`/`neutral` (цвета прежние). К классам метки добавлен `base-badge--status-success` или `base-badge--status-neutral`; собственное правило кита для `--joined` убрано — если приложение стилизовало метку, проверьте его: переменные `--custom-bg`/`--custom-text` по-прежнему перекрывают палитру. Подробности — MIGRATION, «Задача w12-c6-watch».
 
 ## Задача w12-css-split
