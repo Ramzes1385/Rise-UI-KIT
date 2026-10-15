@@ -129,6 +129,17 @@ describe('BaseFileManager: переименование', () => {
 		vi.unstubAllGlobals()
 	})
 
+	it('при смене вида поле имени сразу встаёт на новое место строки', async () => {
+		const { rerender } = renderManager({ selected: ['logo'] })
+		await userEvent.click(button(UI_FILE_MANAGER.RENAME))
+		const group = screen.getByRole('group', { name: 'Новое имя для «logo.png»' })
+		const row = document.querySelector('[data-entry-id="logo"]') as HTMLElement
+		Object.defineProperty(row, 'offsetLeft', { configurable: true, value: 140 })
+		Object.defineProperty(row, 'offsetTop', { configurable: true, value: 90 })
+		await rerender({ view: 'grid' })
+		await waitFor(() => expect([group.style.left, group.style.top]).toEqual(['140px', '90px']))
+	})
+
 	it('кнопка открывает поле с именем; выделено имя без расширения; Enter сообщает rename', async () => {
 		const { emitted } = renderManager({ selected: ['logo'] })
 		await userEvent.click(button(UI_FILE_MANAGER.RENAME))

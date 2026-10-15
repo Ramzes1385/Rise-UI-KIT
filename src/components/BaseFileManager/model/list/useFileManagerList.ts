@@ -28,7 +28,7 @@ export function useFileManagerList(core: FileManagerCore, commands: FileManagerC
 		if (request) void nextTick(() => findElement(request.id)?.focus())
 	})
 
-	const { editorBox, stopObserving, observeEditor } = useEditorPlacement(listRef, findElement)
+	const { editorBox, stopObserving, observeEditor } = useEditorPlacement(listRef, findElement, () => core.view.get())
 
 	watch(editing, current => {
 		stopObserving()

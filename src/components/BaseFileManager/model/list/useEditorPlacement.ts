@@ -1,14 +1,19 @@
 import type { Ref } from 'vue'
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
 import type { FileManagerEditing } from '../../types/FileManagerInternal.types'
 
 function rowBox(row: HTMLElement) {
 	return { top: `${row.offsetTop}px`, left: `${row.offsetLeft}px`, width: `${row.offsetWidth}px`, minHeight: `${row.offsetHeight}px` }
 }
 
-export function useEditorPlacement(listRef: Ref<HTMLElement | null>, findElement: (id: string | null) => HTMLElement | null) {
+export function useEditorPlacement(
+	listRef: Ref<HTMLElement | null>,
+	findElement: (id: string | null) => HTMLElement | null,
+	view: () => string,
+) {
 	const editorBox = reactive({ top: '0px', left: '0px', width: 'auto', minHeight: '0px' })
 	let observer: ResizeObserver | null = null
+	let active: FileManagerEditing | null = null
 
 	function placeEditor(current: FileManagerEditing): HTMLElement | null {
 		const row = current.mode === 'rename' ? findElement(current.id) : null
@@ -17,18 +22,28 @@ export function useEditorPlacement(listRef: Ref<HTMLElement | null>, findElement
 	}
 
 	function stopObserving(): void {
+		active = null
 		observer?.disconnect()
 		observer = null
 	}
 
 	function observeEditor(current: FileManagerEditing): void {
 		stopObserving()
+		active = current
 		const row = placeEditor(current)
 		if (typeof ResizeObserver === 'undefined' || !row) return
 		observer = new ResizeObserver(() => placeEditor(current))
 		observer.observe(row)
 		if (listRef.value) observer.observe(listRef.value)
 	}
+
+	watch(
+		view,
+		() => {
+			if (active) placeEditor(active)
+		},
+		{ flush: 'post' },
+	)
 
 	return { editorBox, stopObserving, observeEditor }
 }
