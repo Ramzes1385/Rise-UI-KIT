@@ -32,7 +32,8 @@ function memberView(member: MediaWatchMember): MediaWatchMemberView {
 		.map(word => word[0].toUpperCase())
 		.join('')
 	const avatar = member.avatar && isSafeUrl(member.avatar, AVATAR_PROTOCOLS) ? member.avatar : undefined
-	return { ...member, avatar, initials, statusText: statusText(member) }
+	const badgeStatus = member.status === 'joined' ? 'success' : 'neutral'
+	return { ...member, avatar, initials, statusText: statusText(member), badgeStatus }
 }
 
 function useEchoGuard() {

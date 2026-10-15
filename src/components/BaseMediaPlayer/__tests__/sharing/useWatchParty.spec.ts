@@ -105,6 +105,7 @@ describe('совместный просмотр', () => {
 			['Б', undefined, 'Смотрит'],
 			['В', undefined, 'Приглашён'],
 		])
+		expect(result.watchMembers.value.map(member => member.badgeStatus)).toEqual(['success', 'success', 'neutral'])
 		expect(result.watchCount.value).toBe(2)
 		expect(result.watchLink.value).toBe('https://example.com/watch/room-1')
 		result.copyWatchLink()

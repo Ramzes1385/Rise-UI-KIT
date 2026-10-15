@@ -593,8 +593,8 @@
 	}
 
 	&__watch-status.base-badge {
-		--custom-bg: color-mix(in srgb, var(--rise-media-highlight) 10%, transparent);
-		--custom-text: color-mix(in srgb, var(--media-text) 82%, transparent);
+		--badge-soft: color-mix(in srgb, var(--rise-media-highlight) 10%, transparent);
+		--badge-role-text: color-mix(in srgb, var(--media-text) 82%, transparent);
 
 		flex: none;
 		padding: sz(2px) sz(8px);
@@ -603,9 +603,9 @@
 		font-weight: var(--rise-font-weight-semibold);
 	}
 
-	&__watch-status--joined.base-badge {
-		--custom-bg: color-mix(in srgb, var(--rise-color-success-500) 18%, transparent);
-		--custom-text: var(--rise-color-success-400);
+	&__watch-status.base-badge--status-success {
+		--badge-soft: color-mix(in srgb, var(--rise-color-success-500) 18%, transparent);
+		--badge-role-text: var(--rise-color-success-400);
 	}
 
 	&__watch-empty .base-empty {

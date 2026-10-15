@@ -135,6 +135,7 @@ export const WatchParty: StoryObj<typeof meta> = {
 		await userEvent.type(panel.getByRole('textbox', { name: 'Почта участника' }), 'anna@example.com')
 		await fireEvent.submit(canvasElement.querySelector('.base-media-player__watch form') as HTMLFormElement)
 		await expect(await panel.findByText('anna@example.com')).toBeInTheDocument()
-		await expect(panel.getByText('Приглашён')).toBeInTheDocument()
+		await expect(panel.getByText('Приглашён').closest('.base-badge')).toHaveClass('base-badge--status-neutral')
+		await expect(panel.getByText('Ведущий').closest('.base-badge')).toHaveClass('base-badge--status-success')
 	},
 }

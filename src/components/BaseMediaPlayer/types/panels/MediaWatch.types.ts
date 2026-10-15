@@ -1,3 +1,4 @@
+import type { BadgeStatus } from '@components/BaseBadge'
 import type { MediaActions, MediaElementRef, MediaState } from '../playback/MediaCore.types'
 
 export const MEDIA_WATCH_EVENT_TYPES = ['play', 'pause', 'seek', 'rate'] as const
@@ -48,6 +49,8 @@ export interface MediaWatchMemberView extends MediaWatchMember {
 	initials: string
 	/** «Смотрит», «Приглашён», «Ведущий» */
 	statusText: string
+	/** Палитра метки статуса BaseBadge: `success` у подключившегося и ведущего, `neutral` у приглашённого */
+	badgeStatus: BadgeStatus
 }
 
 export interface MediaWatchOptions {

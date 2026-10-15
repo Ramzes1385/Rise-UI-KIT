@@ -74,6 +74,31 @@ describe('BaseMediaPlayer: совместный просмотр', () => {
 		wrapper.unmount()
 	})
 
+	it('статус участника — BaseBadge с палитрой по смыслу: текст виден скринридеру, роль и aria-hidden не ставятся', async () => {
+		const { wrapper } = await setup({
+			watchParty: { ...PARTY, members: [...PARTY.members!, { id: 'c', name: 'Вика', status: 'joined' }] },
+		})
+
+		await wrapper.get('button[aria-label="Совместный просмотр"]').trigger('click')
+		const statuses = wrapper.findAll('.base-media-player__watch-status')
+		expect(statuses.map(status => [status.text(), status.classes().includes('base-badge--soft')])).toEqual([
+			['Ведущий', true],
+			['Приглашён', true],
+			['Смотрит', true],
+		])
+		expect(statuses.map(status => status.classes().filter(name => name.startsWith('base-badge--status-')))).toEqual([
+			['base-badge--status-success'],
+			['base-badge--status-neutral'],
+			['base-badge--status-success'],
+		])
+		for (const status of statuses) {
+			expect(status.attributes('role')).toBeUndefined()
+			expect(status.attributes('aria-hidden')).toBeUndefined()
+			expect(status.classes()).not.toContain('base-badge--dot')
+		}
+		wrapper.unmount()
+	})
+
 	it('без участников — подсказка; события watch-sync и applyWatchEvent через ref', async () => {
 		const { wrapper, fake } = await setup({ watchParty: { link: 'https://example.com/watch/room-2' } })
 

@@ -3038,3 +3038,8 @@ BaseEditor, замечания проверки по диалогу ссылки
 - **Что сделать:** если CSS приложения переопределял или использовал эти глобальные классы (например, `.fade-enter-active { transition-duration: 1s }`) — добавьте префикс. Собственные `<Transition name="fade">` приложения кит больше не стилизует: классов `.fade-*` у него нет, нужен свой CSS или `name="rise-fade"`.
 - **Внутри кита:** других мест с голыми глобальными классами нет — остальные переходы используют классы с префиксом компонента (`base-…-enter-active`). Миксины `enter-fade`/`enter-slide`/`enter-scale` принимают имя как раньше.
 - **`collapse`:** высота раскрывается строкой сетки `0fr ↔ 1fr` без `interpolate-size`, поэтому Firefox и Safari не прыгают (исправлено ранее, раздел про `.base-animation__inner`).
+
+## Задача w12-c6-watch
+
+- BaseMediaPlayer, окно совместного просмотра: метка статуса участника получила палитру BaseBadge (`status`: `success` у подключившегося и ведущего, `neutral` у приглашённого) вместо локальных `--custom-bg`/`--custom-text`. Вид тот же. В разметке метки добавился класс `base-badge--status-success` или `base-badge--status-neutral`; классы `base-media-player__watch-status--joined` и `--invited` остались, но правила для `--joined` в CSS кита больше нет (цвет даёт палитра).
+- Тип `MediaWatchMemberView` (элемент `watchMembers` внутри плеера) получил поле `badgeStatus: BadgeStatus`; публичные типы `MediaWatchMember`, `MediaWatchParty` не менялись. Ломающих изменений нет.

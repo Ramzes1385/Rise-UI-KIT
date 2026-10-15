@@ -45,6 +45,7 @@
 				{{ ' ' }}
 				<BaseBadge
 					variant="soft"
+					:status="member.badgeStatus"
 					class="base-media-player__watch-status"
 					:class="`base-media-player__watch-status--${member.status}`"
 					:label="member.statusText" />
