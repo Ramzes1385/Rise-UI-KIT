@@ -12,11 +12,12 @@ import { BaseSelect } from '@components/BaseSelect'
 import { watchCustomBrand } from '@/stories/helpers'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { BaseCheckbox } from '@components/BaseCheckbox'
+import { THEME_PRESETS } from '@utils/theme/themeUtils'
 import { expect, waitFor, within } from 'storybook/test'
 import { BaseSegmented } from '@components/BaseSegmented'
 import { BaseColorPicker } from '@components/BaseColorPicker'
 import { BaseNotification } from '@components/BaseNotification'
-import { scriptSource, staticStorySource, useStorySetup } from '@/stories/helpers'
+import { resolveColor, scriptSource, staticStorySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
 	<div class="fnd-builder">
@@ -228,7 +229,6 @@ export const Builder: StoryObj<typeof meta> = {
 		await expect(dark).toHaveAttribute('data-rise-theme', 'brand')
 
 		const save = within(light).getByRole('button', { name: 'Сохранить' })
-		const corporate = getComputedStyle(save).backgroundColor
 		canvas.getByRole('button', { name: 'playful' }).focus()
 		await userEvent.keyboard('{Enter}')
 		await waitFor(() => expect(canvasElement.querySelector('[data-code="js"]')).toHaveTextContent("primary: '#7c3aed'"))
@@ -248,6 +248,6 @@ export const Builder: StoryObj<typeof meta> = {
 			clean.dispose()
 		}
 
-		await waitFor(() => expect(getComputedStyle(save).backgroundColor).not.toBe(corporate))
+		await waitFor(() => expect(getComputedStyle(save).backgroundColor).toBe(resolveColor(THEME_PRESETS.playful.primary)))
 	},
 }

@@ -39,8 +39,10 @@ export const NoExtension: StoryObj<typeof meta> = {
 	}),
 	play: async ({ canvas }) => {
 		const steps = canvas.getByRole('list', { name: 'Диагностика КриптоПро' })
-		await waitFor(() => expect(within(steps).getAllByText('Ошибка')).toHaveLength(1))
-		await expect(within(steps).getAllByText('Ожидает')).toHaveLength(3)
+		await waitFor(() => {
+			expect(within(steps).getAllByText('Ошибка')).toHaveLength(1)
+			expect(within(steps).getAllByText('Ожидает')).toHaveLength(3)
+		})
 		await expect(canvas.getByText(/Расширение КриптоПро ЭЦП Browser plug-in не отвечает/)).toBeVisible()
 	},
 }
