@@ -42,6 +42,8 @@ export interface BaseSearchOverlayEmits {
 export interface BaseSearchOverlayExpose {
 	/** Устанавливает фокус на поле ввода оверлея */
 	focus: () => void
+	/** Снимает фокус с поля ввода оверлея */
+	blur: () => void
 	/** Открывает оверлей */
 	open: () => void
 	/** Закрывает оверлей */

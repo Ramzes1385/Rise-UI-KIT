@@ -13,7 +13,7 @@
 			:error="error"
 			:class="[ui('trigger'), ui('field')]"
 			:custom-class="classes.trigger"
-			readonly
+			is-readonly
 			type="text"
 			@focus="onTriggerFocus"
 			@click="open">

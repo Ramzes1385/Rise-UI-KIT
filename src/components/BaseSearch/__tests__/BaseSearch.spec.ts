@@ -18,7 +18,7 @@ const globalConfig = {
 			template:
 				'<div class="base-input-stub" :class="customClass" :data-placeholder="placeholder" :data-error="error"><slot name="prefix" /><slot name="suffix" /></div>',
 			props: ['modelValue', 'placeholder', 'variant', 'sizeScale', 'isDisabled', 'error', 'type', 'customClass'],
-			methods: { focus: vi.fn() },
+			methods: { focus: vi.fn(), blur: vi.fn() },
 		},
 		BaseButton: {
 			template: '<button class="base-button-stub" :class="customClass"><slot /></button>',
@@ -449,7 +449,7 @@ describe('BaseSearch unit', () => {
 							'<div class="base-input-stub" :data-placeholder="placeholder" :data-error="error"><input :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" /><slot name="prefix" /><slot name="suffix" /></div>',
 						props: ['modelValue', 'placeholder', 'variant', 'sizeScale', 'isDisabled', 'error', 'type'],
 						emits: ['update:modelValue'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -492,7 +492,7 @@ describe('BaseSearch unit', () => {
 							'<div class="base-input-stub"><input :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" /><slot name="prefix" /><slot name="suffix" /></div>',
 						props: ['modelValue', 'placeholder', 'variant', 'sizeScale', 'isDisabled', 'error', 'type'],
 						emits: ['update:modelValue'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -694,7 +694,7 @@ describe('BaseSearch unit', () => {
 						template: '<input class="base-input-stub" @focus="$emit(\'focus\')" @blur="$emit(\'blur\')" :value="modelValue" />',
 						props: ['modelValue', 'placeholder', 'variant', 'sizeScale', 'isDisabled', 'error', 'type'],
 						emits: ['update:modelValue', 'focus', 'blur', 'keydown'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -888,7 +888,7 @@ describe('BaseSearch unit', () => {
 							'<div class="base-input-stub"><input :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" /><slot name="prefix" /><slot name="suffix" /></div>',
 						props: ['modelValue', 'placeholder', 'variant', 'sizeScale', 'isDisabled', 'error', 'type'],
 						emits: ['update:modelValue'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -924,7 +924,7 @@ describe('BaseSearch unit', () => {
 							'<input class="base-input-stub" @focus="$emit(\'focus\')" @keydown="$emit(\'keydown\', $event)" :value="modelValue" />',
 						props: ['modelValue', 'placeholder', 'variant', 'sizeScale', 'isDisabled', 'error', 'type'],
 						emits: ['update:modelValue', 'focus', 'blur', 'keydown'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -961,7 +961,7 @@ describe('BaseSearch unit', () => {
 							'<div class="base-input-stub"><input :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" /><slot name="prefix" /><slot name="suffix" /></div>',
 						props: ['modelValue', 'placeholder', 'variant', 'sizeScale', 'isDisabled', 'error', 'type'],
 						emits: ['update:modelValue'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -1031,7 +1031,7 @@ describe('BaseSearch unit', () => {
 						'<input class="base-input-stub" :value="modelValue" @focus="$emit(\'focus\')" @keydown="$emit(\'keydown\', $event)" @input="$emit(\'update:modelValue\', $event.target.value)" />',
 					props: ['modelValue'],
 					emits: ['focus', 'keydown', 'update:modelValue'],
-					methods: { focus: vi.fn() },
+					methods: { focus: vi.fn(), blur: vi.fn() },
 				},
 			},
 		}
@@ -1149,7 +1149,7 @@ describe('BaseSearch unit', () => {
 						template: '<input class="base-input-stub" @focus="$emit(\'focus\')" @blur="$emit(\'blur\')" :value="modelValue" />',
 						props: ['modelValue', 'placeholder', 'variant', 'sizeScale', 'isDisabled', 'error', 'type'],
 						emits: ['update:modelValue', 'focus', 'blur', 'keydown'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -1182,7 +1182,7 @@ describe('BaseSearch unit', () => {
 						template: '<input class="base-input-stub" @focus="$emit(\'focus\')" @blur="$emit(\'blur\')" :value="modelValue" />',
 						props: ['modelValue'],
 						emits: ['focus', 'blur'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -1213,7 +1213,7 @@ describe('BaseSearch unit', () => {
 						template: '<input class="base-input-stub" @focus="$emit(\'focus\')" :value="modelValue" />',
 						props: ['modelValue'],
 						emits: ['focus'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -1243,7 +1243,7 @@ describe('BaseSearch unit', () => {
 						template: '<input class="base-input-stub" @focus="$emit(\'focus\')" :value="modelValue" />',
 						props: ['modelValue'],
 						emits: ['focus'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -1276,7 +1276,7 @@ describe('BaseSearch unit', () => {
 						template: '<input class="base-input-stub" @focus="$emit(\'focus\')" />',
 						props: ['modelValue'],
 						emits: ['focus'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -1311,7 +1311,7 @@ describe('BaseSearch unit', () => {
 						template: '<input class="base-input-stub" @focus="$emit(\'focus\')" />',
 						props: ['modelValue'],
 						emits: ['focus'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -1418,7 +1418,7 @@ describe('BaseSearch unit', () => {
 							'<input class="base-input-stub" @focus="$emit(\'focus\')" @keydown="$emit(\'keydown\', $event)" :value="modelValue" />',
 						props: ['modelValue'],
 						emits: ['focus', 'keydown'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -1452,7 +1452,7 @@ describe('BaseSearch unit', () => {
 					BaseInput: {
 						template: '<input class="base-input-stub" @focus="$emit(\'focus\')" @keydown="$emit(\'keydown\', $event)" />',
 						emits: ['focus', 'keydown'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -1479,7 +1479,7 @@ describe('BaseSearch unit', () => {
 					BaseInput: {
 						template: '<input class="base-input-stub" @focus="$emit(\'focus\')" @keydown="$emit(\'keydown\', $event)" />',
 						emits: ['focus', 'keydown'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -1564,7 +1564,7 @@ describe('BaseSearch unit', () => {
 					BaseInput: {
 						template: '<div class="base-input-stub"><slot name="suffix" /></div>',
 						props: ['modelValue'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -1605,7 +1605,7 @@ describe('BaseSearch unit', () => {
 							'<div class="base-input-stub"><input :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" /><slot name="suffix" /></div>',
 						props: ['modelValue'],
 						emits: ['update:modelValue'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -1707,7 +1707,7 @@ describe('BaseSearch unit', () => {
 							'<div class="base-input-stub"><input :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" /><slot name="suffix" /></div>',
 						props: ['modelValue'],
 						emits: ['update:modelValue'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}

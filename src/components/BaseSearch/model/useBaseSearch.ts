@@ -1,4 +1,3 @@
-import type { Ref } from 'vue'
 import { computed, ref, useId } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
 import { useUi } from '@composables/base/useUi'
@@ -51,14 +50,6 @@ function isOverlayMode(props: SearchProps): boolean {
 	return props.mode === 'modal' || props.mode === 'sidebar'
 }
 
-function blurActiveInput(props: SearchProps, rootRef: Ref<HTMLElement | null>): void {
-	if (!isOverlayMode(props)) {
-		rootRef.value?.querySelector<HTMLElement>('.base-input')?.blur()
-		return
-	}
-	if (document.activeElement instanceof HTMLElement) document.activeElement.blur()
-}
-
 function useSearchInputs(props: SearchProps) {
 	const baseInputRef = ref<InstanceType<typeof BaseSearchInput> | null>(null)
 	const overlayRef = ref<InstanceType<typeof BaseSearchOverlay> | null>(null)
@@ -68,6 +59,10 @@ function useSearchInputs(props: SearchProps) {
 		focusActiveInput(): void {
 			if (isOverlayMode(props)) overlayRef.value?.focus()
 			else baseInputRef.value?.focus()
+		},
+		blurActiveInput(): void {
+			if (isOverlayMode(props)) overlayRef.value?.blur()
+			else baseInputRef.value?.blur()
 		},
 		closeOverlay(): void {
 			overlayRef.value?.close()
@@ -177,7 +172,7 @@ export function useBaseSearch(props: SearchProps, emit: BaseSearchEmits) {
 		exposed: {
 			rootRef,
 			focus: inputs.focusActiveInput,
-			blur: () => blurActiveInput(props, rootRef),
+			blur: inputs.blurActiveInput,
 			validate: formField.validate,
 			reset: formField.reset,
 		},

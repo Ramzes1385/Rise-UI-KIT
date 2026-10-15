@@ -19,6 +19,7 @@ export function useBaseSearchInput(props: BaseSearchInputProps, emit: BaseSearch
 		handleClear: (): void => emit('clear'),
 		exposed: {
 			focus: (): void => inputRef.value?.focus(),
+			blur: (): void => inputRef.value?.blur(),
 		} satisfies BaseSearchInputExpose,
 	}
 }

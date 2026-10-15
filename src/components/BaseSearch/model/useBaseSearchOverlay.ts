@@ -78,6 +78,11 @@ export function useBaseSearchOverlay(props: BaseSearchOverlayProps, emit: (event
 		onDialogToggle: (value: boolean): void => {
 			if (!value) close()
 		},
-		exposed: { focus: (): void => inputRef.value?.focus(), open, close } satisfies BaseSearchOverlayExpose,
+		exposed: {
+			focus: (): void => inputRef.value?.focus(),
+			blur: (): void => inputRef.value?.blur(),
+			open,
+			close,
+		} satisfies BaseSearchOverlayExpose,
 	}
 }

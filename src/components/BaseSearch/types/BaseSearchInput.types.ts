@@ -30,4 +30,6 @@ export interface BaseSearchInputEmits {
 export interface BaseSearchInputExpose {
 	/** Устанавливает фокус на поле ввода */
 	focus: () => void
+	/** Снимает фокус с поля ввода */
+	blur: () => void
 }
