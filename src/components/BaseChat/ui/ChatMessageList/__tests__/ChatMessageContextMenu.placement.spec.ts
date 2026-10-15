@@ -218,4 +218,40 @@ describe('ChatMessageContextMenu: положение', () => {
 		expect(menu?.style.overflowY).toBe('auto')
 		wrapper.unmount()
 	})
+
+	it('открытое меню пересчитывается при изменении размера окна и перестаёт слушать после закрытия', async () => {
+		stubViewport()
+		vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(200)
+		vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(300)
+		const removeSpy = vi.spyOn(window, 'removeEventListener')
+		const wrapper = mount(ChatMessageContextMenu, { props: { ...props, isOpen: true, x: 700, y: 100 }, attachTo: document.body })
+		await nextTick()
+		await nextTick()
+		const menu = document.querySelector<HTMLElement>('.base-chat-context-menu')
+		expect(menu?.style.left).toBe('700px')
+
+		vi.spyOn(document.documentElement, 'clientWidth', 'get').mockReturnValue(800)
+		window.dispatchEvent(new Event('resize'))
+		await nextTick()
+		expect(menu?.style.left).toBe('500px')
+
+		await wrapper.setProps({ isOpen: false })
+		await nextTick()
+		expect(removeSpy).toHaveBeenCalledWith('resize', expect.any(Function))
+		wrapper.unmount()
+	})
+
+	it('документ без окна: на resize не подписывается', async () => {
+		stubViewport()
+		vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(200)
+		vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(300)
+		const addSpy = vi.spyOn(window, 'addEventListener')
+		vi.spyOn(document, 'defaultView', 'get').mockReturnValue(null)
+		const wrapper = mount(ChatMessageContextMenu, { props: { ...props, isOpen: true, x: 100, y: 100 }, attachTo: document.body })
+		await nextTick()
+		await nextTick()
+
+		expect(addSpy).not.toHaveBeenCalledWith('resize', expect.any(Function))
+		wrapper.unmount()
+	})
 })

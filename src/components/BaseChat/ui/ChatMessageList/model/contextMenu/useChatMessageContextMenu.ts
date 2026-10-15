@@ -34,6 +34,19 @@ function createMenuKeydown(menuRef: Ref<HTMLElement | null>, emit: ChatMessageCo
 	}
 }
 
+function useRepositionOnResize(menuRef: Ref<HTMLElement | null>, reposition: () => void): void {
+	watch(
+		menuRef,
+		(menu, _previous, onCleanup) => {
+			const view = menu?.ownerDocument.defaultView
+			if (!view) return
+			view.addEventListener('resize', reposition)
+			onCleanup(() => view.removeEventListener('resize', reposition))
+		},
+		{ flush: 'post' },
+	)
+}
+
 export function useChatMessageContextMenu(props: ChatMessageContextMenuProps, emit: ChatMessageContextMenuEmits) {
 	const teleportTarget = useTeleportTarget()
 	const menuRef = ref<HTMLElement | null>(null)
@@ -44,13 +57,17 @@ export function useChatMessageContextMenu(props: ChatMessageContextMenuProps, em
 	)
 	const layerStyle = useLayerIndex(() => props.isOpen)
 	const placement = ref<ChatMenuPlacement | null>(null)
+	const reposition = (): void => {
+		if (menuRef.value) placement.value = placeContextMenu({ x: props.x, y: props.y, anchorY: props.anchorY }, menuRef.value)
+	}
+	useRepositionOnResize(menuRef, reposition)
 	watch(
 		() => [props.isOpen, props.x, props.y, props.anchorY],
 		() => {
 			placement.value = null
 			if (!props.isOpen) return
 			nextTick(() => {
-				if (menuRef.value) placement.value = placeContextMenu({ x: props.x, y: props.y, anchorY: props.anchorY }, menuRef.value)
+				reposition()
 				getItems(menuRef.value)[0]?.focus()
 			})
 		},
