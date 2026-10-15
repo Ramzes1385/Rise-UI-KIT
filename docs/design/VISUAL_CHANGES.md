@@ -2084,3 +2084,8 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 ## Задача overlay-tails
 
 - BaseDropdown: новая история `InScaledContainer` (панель внутри контейнера с `scale(0.75)`). Вид остальных историй не меняется; эталонов для новой истории нет.
+
+## Задача stories-fix
+
+- BaseEditor, `EditorUpload` и вставка видео: inline-стиль видео (`max-width: 100%; border-radius: 8px`) убран, те же правила задаёт CSS области редактора (`max-width: 100%`, `height: auto`, `border-radius: sz(var(--rise-radius-md))`). Скругление видео было 8 px, стало `--rise-radius-md` (6 px в теме `rise`, следует теме) — как у изображений; ширина и высота не меняются.
+- Истории `data-basekanban--theming`, `chat-basereasoning--theming`, `media-basemap--theming`: перекрашенный фон колонки, блока и карты — `color-mix(in srgb, var(--rise-primary) 18%, var(--rise-bg))` вместо `var(--rise-primary-soft)`. В теме `playful-light` `primary-soft` совпадает с фоном по умолчанию (`rgb(250, 249, 255)`) и сравнение «токены меняют вид» падало. В теме `rise` оттенок слегка другой (светло-акцентный вместо `primary-soft`).

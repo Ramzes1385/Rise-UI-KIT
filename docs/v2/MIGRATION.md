@@ -3091,3 +3091,7 @@ import { BaseMediaPlayer } from '@ramzes1385/rise-ui-kit/media'
 
 - Открытое меню «Другие действия» сообщения чата пересчитывает положение при изменении размера окна (`resize` окна его документа: iframe и Picture-in-Picture тоже) и не закрывается.
 - Поле переименования BaseFileManager при смене вида (`view`) сразу встаёт на новое место строки; при изменении размеров строки и списка — через `ResizeObserver`, как и раньше.
+
+## Задача stories-fix
+
+- **BaseEditor, видео из `uploadMedia`**: `<video>`, который редактор вставляет по ответу `uploadMedia`, больше не получает inline `style="max-width:100%;border-radius:8px;"` — ширину и скругление задаёт CSS области редактора (`.base-editor__content :where(img, video)`: `max-width: 100%`, `height: auto`, `border-radius`). Санитайзер `sanitizeHtml` этот `style` пропускал (`max-width` и `border-radius` в списке разрешённых), поэтому раньше он попадал в `v-model`. **Что сделать:** если приложение хранит HTML и сравнивает его со строкой с `style` или выводит видео вне редактора, добавьте свои `max-width: 100%` и `height: auto` для `video`; уже сохранённый HTML со `style` показывается и очищается как раньше.
