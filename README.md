@@ -78,7 +78,7 @@ import '@ramzes1385/rise-ui-kit/styles'
 
 ### Стили видеоплеера
 
-Стили `BaseMediaPlayer` не входят в `styles.css` — они в `media.css`. Приложение с плеером подключает оба файла, `media.css` — после `styles`; токены лежат только в `styles.css`, `media.css` их не повторяет:
+Стили `BaseMediaPlayer` и `BasePresentationPlayer` не входят в `styles.css` — они в `media.css`. Приложение с плеером подключает оба файла, `media.css` — после `styles`; токены лежат только в `styles.css`, `media.css` их не повторяет:
 
 ```ts
 import '@ramzes1385/rise-ui-kit/styles'
