@@ -58,6 +58,24 @@ describe('useFlyoutPosition', () => {
 		expect(result.panelStyle.value.top).toBe('20px')
 	})
 
+	it('предок с scale(0.5): координаты панели переводятся в единицы предка', async () => {
+		const container = createMockElement({ left: 40, top: 30, width: 600, height: 400 })
+		container.style.transform = 'scale(0.5)'
+		Object.defineProperty(container, 'offsetWidth', { configurable: true, value: 1200 })
+		Object.defineProperty(container, 'offsetHeight', { configurable: true, value: 800 })
+		const anchorRef = ref<HTMLElement | null>(createMockElement({ left: 100, right: 300, top: 50 }))
+		const panel = createMockElement({ width: 220, height: 200 })
+		container.append(panel)
+		const panelRef = ref<HTMLElement | null>(panel)
+
+		const { result } = withSetup(() => useFlyoutPosition({ anchorRef, panelRef, isOpen: () => true }))
+		result.updatePosition()
+		await nextTick()
+
+		expect(result.panelStyle.value.left).toBe('528px')
+		expect(result.panelStyle.value.top).toBe('40px')
+	})
+
 	it('считает горизонталь от boundaryRef, а вертикаль от anchorRef', async () => {
 		const anchorRef = ref<HTMLElement | null>(createMockElement({ left: 60, right: 150, top: 80 }))
 		const boundaryRef = ref<HTMLElement | null>(createMockElement({ left: 16, right: 300, top: 40 }))

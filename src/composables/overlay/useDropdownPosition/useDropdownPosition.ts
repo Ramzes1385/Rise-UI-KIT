@@ -1,5 +1,5 @@
 /** Composable: позиционирование выпадающей панели с переворотом и сдвигом у края окна */
-import { getFixedOrigin } from '@utils/dom/domUtils'
+import { getFixedOrigin, toFixedSpace } from '@utils/dom/domUtils'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, type Ref, watch } from 'vue'
 import type { DropdownAnchor, DropdownPosition } from '@components/BaseDropdown/types/BaseDropdown.types'
 import type { Align, Edge, Geometry, Side, Size, UseDropdownPositionOptions } from './types/useDropdownPosition.types'
@@ -126,7 +126,8 @@ function arrowOffsetFor(geometry: Geometry, side: Side, point: { top: number; le
  */
 function toPanelSpace(point: { top: number; left: number }, panel: HTMLElement | null): { top: number; left: number } {
 	const origin = getFixedOrigin(panel?.parentElement)
-	return { top: point.top - origin.y, left: point.left - origin.x }
+	const local = toFixedSpace(origin, point.left, point.top)
+	return { top: local.y, left: local.x }
 }
 
 /**

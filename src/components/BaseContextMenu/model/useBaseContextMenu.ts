@@ -1,7 +1,7 @@
 import { computed, nextTick, ref } from 'vue'
 import { useUi } from '@composables/base/useUi'
-import { getFixedOrigin } from '@utils/dom/domUtils'
 import { useCustomClass } from '@composables/base/useCustomClass'
+import { getFixedOrigin, toFixedSpace } from '@utils/dom/domUtils'
 import type DropdownMenuContent from '@components/BaseDropdownMenu/ui/DropdownMenuContent.vue'
 import type { BaseContextMenuEmits, BaseContextMenuProps } from '../types/BaseContextMenu.types'
 import type { DropdownMenuItem } from '@components/BaseDropdownMenu/types/BaseDropdownMenu.types'
@@ -29,7 +29,7 @@ function useMenuOpening(emit: BaseContextMenuEmits) {
 		async openAt(x: number, y: number, focusFirst = false): Promise<void> {
 			returnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null
 			const origin = getFixedOrigin(rootRef.value)
-			point.value = { x: x - origin.x, y: y - origin.y }
+			point.value = toFixedSpace(origin, x, y)
 			setOpen(true)
 			await nextTick()
 			if (focusFirst) contentRef.value?.focusFirst()

@@ -333,6 +333,22 @@ describe('useDropdownPosition', () => {
 		container.remove()
 	})
 
+	it('предок с scale(0.5): координаты панели переводятся в единицы предка', () => {
+		const container = document.createElement('div')
+		container.style.transform = 'scale(0.5)'
+		container.getBoundingClientRect = () => rect(120, 30, { width: 600, height: 400 })
+		Object.defineProperty(container, 'offsetWidth', { configurable: true, value: 1200 })
+		Object.defineProperty(container, 'offsetHeight', { configurable: true, value: 800 })
+		const panel = createPanel()
+		container.append(panel)
+		document.body.append(container)
+
+		const { api } = setup({ position: 'bottom-start', trigger: rect(700, 400), panel })
+
+		expect(api.coords.value).toEqual({ top: (700 - GAP - 50 - 120) / 0.5, left: (400 - 30) / 0.5 })
+		container.remove()
+	})
+
 	describe('стрелка', () => {
 		it.each([
 			{ position: 'bottom', side: 'top', offset: 50 },

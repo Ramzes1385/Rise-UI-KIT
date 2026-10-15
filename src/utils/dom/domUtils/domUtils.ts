@@ -53,28 +53,50 @@ function getStyleIn(node: Element): CSSStyleDeclaration {
 	return (node.ownerDocument.defaultView ?? window).getComputedStyle(node)
 }
 
+/** Масштаб предка по одной оси: отношение размера в окне к размеру в единицах предка (`transform: scale`, `zoom`) */
+function getAxisScale(rendered: number, layout: number): number {
+	if (!layout || !rendered) return 1
+	return rendered / layout
+}
+
 /**
- * Где на экране начало координат для `position: fixed` потомков `container`. Обычно это окно — `{ x: 0, y: 0 }`.
+ * Где на экране начало координат для `position: fixed` потомков `container` и во сколько раз единицы предка
+ * отличаются от пикселей окна. Обычно это окно без масштаба — `{ x: 0, y: 0, scaleX: 1, scaleY: 1 }`.
  * Но если у `container` или его предка есть `transform`, `filter`, `contain` и т. п., fixed-элемент
  * отсчитывается от этого предка: так Storybook на странице Docs оборачивает истории, так же ведут себя
- * анимированные окна и слайдеры. Координаты из `getBoundingClientRect` (окно) переводятся в координаты
- * для `top`/`left` вычитанием этой точки.
+ * анимированные окна и слайдеры. Если у предка ещё и `transform: scale(…)` или `zoom`, `top`/`left` панели
+ * измеряются в его единицах, а `getBoundingClientRect` — в пикселях окна: `scaleX`/`scaleY` — это отношение.
+ * Координаты окна переводятся в `top`/`left` через `toFixedSpace`. Прокрутка предка в `dir="rtl"` (`scrollLeft`
+ * отрицательный) отдельного учёта не требует: знак уже даёт сдвиг в нужную сторону.
  *
  * @example
  * ```ts
  * const origin = getFixedOrigin(panel.parentElement)
- * panel.style.top = `${rect.bottom - origin.y}px`
+ * const { x, y } = toFixedSpace(origin, rect.left, rect.bottom)
+ * panel.style.top = `${y}px`
  * ```
  */
 export function getFixedOrigin(container: Element | null | undefined): FixedOrigin {
 	for (let node = container; node && node !== node.ownerDocument.documentElement; node = node.parentElement) {
 		if (isFixedContainer(getStyleIn(node))) {
 			const rect = node.getBoundingClientRect()
-			return { x: rect.left + node.clientLeft - node.scrollLeft, y: rect.top + node.clientTop - node.scrollTop }
+			const scaleX = getAxisScale(rect.width, (node as HTMLElement).offsetWidth)
+			const scaleY = getAxisScale(rect.height, (node as HTMLElement).offsetHeight)
+			return {
+				x: rect.left + (node.clientLeft - node.scrollLeft) * scaleX,
+				y: rect.top + (node.clientTop - node.scrollTop) * scaleY,
+				scaleX,
+				scaleY,
+			}
 		}
 		if (isTopLayer(node)) break
 	}
-	return { x: 0, y: 0 }
+	return { x: 0, y: 0, scaleX: 1, scaleY: 1 }
+}
+
+/** Точка окна в координатах `top`/`left` fixed-потомка предка из `getFixedOrigin`: со сдвигом начала и учётом масштаба */
+export function toFixedSpace(origin: FixedOrigin, x: number, y: number): { x: number; y: number } {
+	return { x: (x - origin.x) / origin.scaleX, y: (y - origin.y) / origin.scaleY }
 }
 
 /** Атрибут предка, который задаёт границы для подсказок и панелей внутри него (плеер): они сдвигаются внутрь его рамки */

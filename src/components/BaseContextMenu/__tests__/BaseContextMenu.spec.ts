@@ -52,6 +52,29 @@ describe('BaseContextMenu', () => {
 		host.remove()
 	})
 
+	it('предок с scale(0.5): якорь ставится в единицах предка', async () => {
+		const host = document.createElement('div')
+		host.style.transform = 'scale(0.5)'
+		host.getBoundingClientRect = () => new DOMRect(30, 200, 600, 400)
+		Object.defineProperty(host, 'offsetWidth', { configurable: true, value: 1200 })
+		Object.defineProperty(host, 'offsetHeight', { configurable: true, value: 800 })
+		document.body.append(host)
+		render(BaseContextMenu, {
+			props: { items: ITEMS },
+			slots: { default: () => h('button', { type: 'button' }, 'Кадр') },
+			container: host,
+		})
+		screen
+			.getByRole('button', { name: 'Кадр' })
+			.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true, clientX: 330, clientY: 450 }))
+		await nextTick()
+
+		const anchor = host.querySelector('.base-context-menu__anchor') as HTMLElement
+		expect(anchor.style.left).toBe('600px')
+		expect(anchor.style.top).toBe('500px')
+		host.remove()
+	})
+
 	it('Shift+F10 и клавиша «Меню» открывают меню у элемента с фокусом, на первом пункте; другие клавиши — нет', async () => {
 		const { card } = renderArea({ ariaLabel: 'Действия с серией' })
 		card.focus()

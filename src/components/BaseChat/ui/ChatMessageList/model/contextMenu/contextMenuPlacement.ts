@@ -1,4 +1,4 @@
-import { getFixedOrigin } from '@utils/dom/domUtils'
+import { getFixedOrigin, toFixedSpace } from '@utils/dom/domUtils'
 import type { ChatMenuPlacement, ChatMenuPoint, ChatMenuSize } from '../../types/ChatMessageContextMenu.types'
 
 const VIEWPORT_MARGIN = 8
@@ -38,13 +38,11 @@ export function placeContextMenu(point: ChatMenuPoint, menu: HTMLElement): ChatM
 	const size = measureMenu(menu)
 	const origin = getFixedOrigin(menu.parentElement)
 	if (size.width === 0 || size.height === 0) {
-		return { top: point.y - origin.y, left: point.x - origin.x, maxHeight: undefined }
+		const local = toFixedSpace(origin, point.x, point.y)
+		return { top: local.y, left: local.x, maxHeight: undefined }
 	}
 	const viewport = getViewport(menu.ownerDocument)
 	const vertical = placeAlongY(point, size.height, viewport.height)
-	return {
-		top: vertical.top - origin.y,
-		left: placeAlongX(point.x, size.width, viewport.width) - origin.x,
-		maxHeight: vertical.maxHeight,
-	}
+	const local = toFixedSpace(origin, placeAlongX(point.x, size.width, viewport.width), vertical.top)
+	return { top: local.y, left: local.x, maxHeight: vertical.maxHeight }
 }

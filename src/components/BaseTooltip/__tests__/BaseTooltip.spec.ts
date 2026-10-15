@@ -389,6 +389,8 @@ describe('BaseTooltip: доступность и край окна', () => {
 		vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(24)
 		const layer = document.createElement('div')
 		layer.style.transform = 'translateZ(0)'
+		Object.defineProperty(layer, 'offsetWidth', { configurable: true, value: 800 })
+		Object.defineProperty(layer, 'offsetHeight', { configurable: true, value: 600 })
 		layer.getBoundingClientRect = () =>
 			({ top: 100, left: 50, width: 800, height: 600, bottom: 700, right: 850, x: 50, y: 100, toJSON: () => ({}) }) as DOMRect
 		document.body.append(layer)
@@ -408,12 +410,40 @@ describe('BaseTooltip: доступность и край окна', () => {
 		expect(tooltip.style.left).toBe('360px')
 		layer.remove()
 	})
+	it('подсказка в предке с scale(0.5): top и left в единицах предка', async () => {
+		vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(120)
+		vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(24)
+		const layer = document.createElement('div')
+		layer.style.transform = 'scale(0.5)'
+		Object.defineProperty(layer, 'offsetWidth', { configurable: true, value: 1600 })
+		Object.defineProperty(layer, 'offsetHeight', { configurable: true, value: 1200 })
+		layer.getBoundingClientRect = () =>
+			({ top: 100, left: 50, width: 800, height: 600, bottom: 700, right: 850, x: 50, y: 100, toJSON: () => ({}) }) as DOMRect
+		document.body.append(layer)
+		const { container } = render(BaseTooltip, {
+			props: { text: 'Подсказка', isAlwaysVisible: true, position: 'bottom' },
+			slots: { default: '<button type="button">?</button>' },
+			global: { provide: { [TELEPORT_TARGET_KEY as symbol]: layer } },
+		})
+		const wrapper = container.querySelector('.base-tooltip') as HTMLElement
+		wrapper.getBoundingClientRect = () =>
+			({ top: 300, left: 400, width: 20, height: 20, bottom: 320, right: 420, x: 400, y: 300, toJSON: () => ({}) }) as DOMRect
+		await new Promise(resolve => requestAnimationFrame(() => resolve(null)))
+		await new Promise(resolve => requestAnimationFrame(() => resolve(null)))
+
+		const tooltip = await screen.findByRole('tooltip')
+		await waitFor(() => expect(tooltip.style.top).toBe('448px'))
+		expect(tooltip.style.left).toBe('720px')
+		layer.remove()
+	})
 	it('подсказка в предке с data-rise-bounds (плеер) сдвигается внутрь его рамки, а не окна', async () => {
 		vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(120)
 		vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(24)
 		const layer = document.createElement('div')
 		layer.style.transform = 'translateZ(0)'
 		layer.setAttribute('data-rise-bounds', '')
+		Object.defineProperty(layer, 'offsetWidth', { configurable: true, value: 400 })
+		Object.defineProperty(layer, 'offsetHeight', { configurable: true, value: 600 })
 		Object.defineProperty(layer, 'clientWidth', { configurable: true, value: 400 })
 		Object.defineProperty(layer, 'clientHeight', { configurable: true, value: 600 })
 		layer.getBoundingClientRect = () =>

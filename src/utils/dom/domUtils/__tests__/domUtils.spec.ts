@@ -5,6 +5,7 @@ import {
 	getActiveElement,
 	getBoundsRect,
 	getFixedOrigin,
+	toFixedSpace,
 	toHTMLElement,
 	toHTMLInputElement,
 	toHTMLTextAreaElement,
@@ -100,9 +101,9 @@ describe('domUtils', () => {
 
 		it('без предков с трансформацией — начало окна', () => {
 			const { inner } = tree()
-			expect(getFixedOrigin(inner)).toEqual({ x: 0, y: 0 })
-			expect(getFixedOrigin(null)).toEqual({ x: 0, y: 0 })
-			expect(getFixedOrigin(document.documentElement)).toEqual({ x: 0, y: 0 })
+			expect(getFixedOrigin(inner)).toEqual({ x: 0, y: 0, scaleX: 1, scaleY: 1 })
+			expect(getFixedOrigin(null)).toEqual({ x: 0, y: 0, scaleX: 1, scaleY: 1 })
+			expect(getFixedOrigin(document.documentElement)).toEqual({ x: 0, y: 0, scaleX: 1, scaleY: 1 })
 		})
 
 		it('предок в другом документе: стиль берётся из окна его документа, полноэкранность — из его document', () => {
@@ -115,7 +116,7 @@ describe('domUtils', () => {
 			vi.spyOn(outer, 'getBoundingClientRect').mockReturnValue(new DOMRect(10, 20, 50, 50))
 
 			expect(foreign.defaultView).toBeNull()
-			expect(getFixedOrigin(inner)).toEqual({ x: 10, y: 20 })
+			expect(getFixedOrigin(inner)).toEqual({ x: 10, y: 20, scaleX: 1, scaleY: 1 })
 		})
 
 		it('окно документа предка даёт стиль через собственный getComputedStyle', () => {
@@ -131,7 +132,7 @@ describe('domUtils', () => {
 		it('значение none не создаёт систему координат', () => {
 			const { outer, inner } = tree()
 			outer.style.transform = 'none'
-			expect(getFixedOrigin(inner)).toEqual({ x: 0, y: 0 })
+			expect(getFixedOrigin(inner)).toEqual({ x: 0, y: 0, scaleX: 1, scaleY: 1 })
 		})
 
 		it.each([
@@ -147,20 +148,46 @@ describe('domUtils', () => {
 			vi.spyOn(outer, 'clientTop', 'get').mockReturnValue(3)
 			outer.scrollTop = 0
 			vi.spyOn(outer, 'scrollTop', 'get').mockReturnValue(100)
-			expect(getFixedOrigin(inner)).toEqual({ x: 42, y: 203 })
+			expect(getFixedOrigin(inner)).toEqual({ x: 42, y: 203, scaleX: 1, scaleY: 1 })
 		})
 
 		it('сам контейнер тоже учитывается', () => {
 			const { outer } = tree()
 			outer.style.transform = 'translateX(0)'
-			expect(getFixedOrigin(outer)).toEqual({ x: 40, y: 300 })
+			expect(getFixedOrigin(outer)).toEqual({ x: 40, y: 300, scaleX: 1, scaleY: 1 })
+		})
+
+		it('масштаб предка (scale, zoom): отношение размера в окне к размеру в единицах предка', () => {
+			const { outer, inner } = tree()
+			outer.style.transform = 'scale(0.5)'
+			vi.spyOn(outer, 'offsetWidth', 'get').mockReturnValue(1000)
+			vi.spyOn(outer, 'offsetHeight', 'get').mockReturnValue(400)
+			vi.spyOn(outer, 'clientLeft', 'get').mockReturnValue(4)
+			vi.spyOn(outer, 'scrollTop', 'get').mockReturnValue(20)
+			const origin = getFixedOrigin(inner)
+			expect(origin).toEqual({ x: 42, y: 290, scaleX: 0.5, scaleY: 0.5 })
+			expect(toFixedSpace(origin, 142, 390)).toEqual({ x: 200, y: 200 })
+		})
+
+		it('предок без размера (offset = 0) — масштаб 1', () => {
+			const { outer, inner } = tree()
+			outer.style.transform = 'scale(0.5)'
+			expect(getFixedOrigin(inner)).toMatchObject({ scaleX: 1, scaleY: 1 })
+		})
+
+		it('dir="rtl": отрицательный scrollLeft сдвигает начало вправо, как и положено', () => {
+			const { outer, inner } = tree()
+			outer.dir = 'rtl'
+			outer.style.transform = 'translateZ(0)'
+			vi.spyOn(outer, 'scrollLeft', 'get').mockReturnValue(-30)
+			expect(getFixedOrigin(inner).x).toBe(70)
 		})
 
 		it('элемент во весь экран отсекает трансформированных предков', () => {
 			const { outer, inner } = tree()
 			outer.style.transform = 'translateX(0)'
 			Object.defineProperty(document, 'fullscreenElement', { configurable: true, get: () => inner })
-			expect(getFixedOrigin(inner)).toEqual({ x: 0, y: 0 })
+			expect(getFixedOrigin(inner)).toEqual({ x: 0, y: 0, scaleX: 1, scaleY: 1 })
 			Reflect.deleteProperty(document, 'fullscreenElement')
 		})
 	})

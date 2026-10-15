@@ -1,5 +1,5 @@
 /** Composable: позиционирование каскадной flyout-панели через position: fixed */
-import { getFixedOrigin } from '@utils/dom/domUtils'
+import { getFixedOrigin, toFixedSpace } from '@utils/dom/domUtils'
 import { nextTick, onBeforeUnmount, onMounted, readonly, ref, watch } from 'vue'
 import type { UseFlyoutPositionOptions, UseFlyoutPositionReturn } from './types/useFlyoutPosition.types'
 
@@ -58,7 +58,8 @@ function useFlyoutPosition(options: UseFlyoutPositionOptions): UseFlyoutPosition
 		const horizontal = resolveLeft(boundaryRect, panelWidth, gap)
 		isFlipped.value = horizontal.isFlipped
 
-		panelStyle.value = { position: 'fixed', top: `${top - origin.y}px`, left: `${horizontal.left - origin.x}px` }
+		const local = toFixedSpace(origin, horizontal.left, top)
+		panelStyle.value = { position: 'fixed', top: `${local.y}px`, left: `${local.x}px` }
 	}
 
 	function handleScrollOrResize(): void {

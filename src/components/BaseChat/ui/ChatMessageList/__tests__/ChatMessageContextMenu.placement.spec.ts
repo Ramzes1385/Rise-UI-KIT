@@ -156,6 +156,19 @@ describe('placeContextMenu', () => {
 
 		expect(placeContextMenu({ x: 200, y: 300 }, menu)).toEqual({ top: 230, left: 150, maxHeight: undefined })
 	})
+
+	it('предок с scale(0.5): координаты меню переводятся в единицы предка', () => {
+		stubViewport()
+		const frame = document.createElement('div')
+		frame.style.transform = 'scale(0.5)'
+		frame.getBoundingClientRect = () => new DOMRect(50, 70, 400, 300)
+		Object.defineProperty(frame, 'offsetWidth', { configurable: true, value: 800 })
+		Object.defineProperty(frame, 'offsetHeight', { configurable: true, value: 600 })
+		document.body.append(frame)
+		const menu = menuElement({ width: 100, height: 100 }, frame)
+
+		expect(placeContextMenu({ x: 200, y: 300 }, menu)).toEqual({ top: 460, left: 300, maxHeight: undefined })
+	})
 })
 
 describe('ChatMessageContextMenu: положение', () => {
