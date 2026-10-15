@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/vitest'
+import { h, nextTick, ref } from 'vue'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
 import DatePickerField from '../../ui/DatePickerField/DatePickerField.vue'
@@ -29,6 +30,27 @@ const DEFAULT_PROPS = {
 	inputVariant: 'outline' as const,
 	sizeScale: 100,
 }
+
+describe('DatePickerField: isReadonly и передача пропса после монтирования', () => {
+	it('родитель начал и перестал передавать isReadonly — значение следует за этим', async () => {
+		const isPassed = ref(false)
+		const { isReadonly: _unpassed, ...baseProps } = DEFAULT_PROPS
+		const Host = { setup: () => () => h(DatePickerField, { ...baseProps, ...(isPassed.value ? { isReadonly: false } : {}) }) }
+		const { BaseInput: _stubbed, ...stubs } = GLOBAL_STUBS
+		const { container } = render(Host, { global: { stubs } })
+		const input = (): HTMLInputElement => container.querySelector('input')!
+		await nextTick()
+		expect(input().readOnly).toBe(true)
+
+		isPassed.value = true
+		await nextTick()
+		expect(input().readOnly).toBe(false)
+
+		isPassed.value = false
+		await nextTick()
+		expect(input().readOnly).toBe(true)
+	})
+})
 
 describe('DatePickerField', () => {
 	describe('рендер', () => {

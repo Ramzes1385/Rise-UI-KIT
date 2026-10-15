@@ -17,19 +17,18 @@ const ACTIVATION_KEYS = new Set(['Enter', ' '])
  */
 export function useClickable(options: UseClickableOptions): UseClickableReturn {
 	const { wasPropPassed } = useExplicitPropDetection()
-	const hasListener = wasPropPassed(toHandlerKey(camelize(options.event))) || wasPropPassed(toHandlerKey(options.event))
-	const isClickable = computed(() => hasListener)
+	const isClickable = computed(() => wasPropPassed(toHandlerKey(camelize(options.event))) || wasPropPassed(toHandlerKey(options.event)))
 	const isDisabled = (): boolean => Boolean(options.isDisabled?.())
-	const canActivate = (): boolean => hasListener && !isDisabled()
+	const canActivate = (): boolean => isClickable.value && !isDisabled()
 
 	const clickableAttributes = computed((): ClickableAttributes => ({
-		role: hasListener ? 'button' : undefined,
+		role: isClickable.value ? 'button' : undefined,
 		tabindex: canActivate() ? '0' : undefined,
-		'aria-disabled': hasListener && isDisabled() ? 'true' : undefined,
+		'aria-disabled': isClickable.value && isDisabled() ? 'true' : undefined,
 	}))
 
 	function handleKeydown(event: KeyboardEvent): void {
-		if (!hasListener || event.target !== event.currentTarget || !ACTIVATION_KEYS.has(event.key)) return
+		if (!isClickable.value || event.target !== event.currentTarget || !ACTIVATION_KEYS.has(event.key)) return
 		event.preventDefault()
 		if (canActivate() && !event.repeat) (event.currentTarget as HTMLElement).click()
 	}

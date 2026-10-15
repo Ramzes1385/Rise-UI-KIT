@@ -1,21 +1,24 @@
-import { computed, ref, useId } from 'vue'
+import { computed, ref, useId, watch } from 'vue'
 import { getItemKey, hasPanel } from './megaMenuItems'
 import { useExplicitPropDetection } from '@composables/base/useExplicitPropDetection'
 import type { BaseMegaMenuEmits, MegaMenuItem, MegaMenuOpenSource, MegaMenuProps } from '../types/BaseMegaMenu.types'
 
 export function useMegaMenuState(props: MegaMenuProps, emit: BaseMegaMenuEmits) {
 	const { wasPropPassed } = useExplicitPropDetection()
-	const isControlled = wasPropPassed('openKey')
+	const isControlled = computed(() => wasPropPassed('openKey'))
 	const internalKey = ref<string | undefined>()
 	const source = ref<MegaMenuOpenSource>('click')
 	const baseId = useId()
-	const openKey = computed(() => (isControlled ? props.openKey : internalKey.value))
+	const openKey = computed(() => (isControlled.value ? props.openKey : internalKey.value))
+	watch([isControlled, () => props.openKey], ([controlled, value]) => {
+		if (controlled) internalKey.value = value
+	})
 	const openItem = computed(() => props.items?.find(item => hasPanel(item) && getItemKey(item) === openKey.value))
 
 	function setOpen(key: string | undefined, by: MegaMenuOpenSource): void {
 		source.value = by
 		if (key === openKey.value) return
-		internalKey.value = key
+		if (!isControlled.value) internalKey.value = key
 		emit('update:openKey', key)
 	}
 

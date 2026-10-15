@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom/vitest'
 import BaseMegaMenu from '../ui/BaseMegaMenu.vue'
-import { defineComponent, h, markRaw, nextTick } from 'vue'
 import type { MegaMenuItem } from '../types/BaseMegaMenu.types'
 import { resolvePlacement } from '../model/cascade/cascadeItems'
+import { defineComponent, h, markRaw, nextTick, ref } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/vue'
 
@@ -449,5 +449,30 @@ describe('BaseMegaMenu: каскад — обычный, не reactive масс�
 		expect(button('Планшеты')).toHaveAttribute('aria-expanded', 'true')
 		expect(button('Телефоны')).toHaveAttribute('aria-expanded', 'false')
 		await waitFor(() => expect(link('iPad')).toHaveFocus())
+	})
+})
+
+describe('BaseMegaMenu: управляемость openKey меняется после монтирования', () => {
+	it('родитель начал передавать openKey — меню подчиняется ему, перестал — снова работает само', async () => {
+		const isControlled = ref(false)
+		const Host = defineComponent({
+			setup: () => () => h(BaseMegaMenu, { items: ITEMS, trigger: 'click', ...(isControlled.value ? { openKey: undefined } : {}) }),
+		})
+		render(Host)
+		const trigger = (): HTMLElement => screen.getByRole('button', { name: 'Каталог' })
+
+		await fireEvent.click(trigger())
+		expect(trigger()).toHaveAttribute('aria-expanded', 'true')
+
+		isControlled.value = true
+		await nextTick()
+		expect(trigger()).toHaveAttribute('aria-expanded', 'false')
+		await fireEvent.click(trigger())
+		expect(trigger()).toHaveAttribute('aria-expanded', 'false')
+
+		isControlled.value = false
+		await nextTick()
+		await fireEvent.click(trigger())
+		expect(trigger()).toHaveAttribute('aria-expanded', 'true')
 	})
 })

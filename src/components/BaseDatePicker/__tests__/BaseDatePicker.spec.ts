@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/vitest'
+import { h, nextTick, ref } from 'vue'
 import BaseDatePicker from '../ui/BaseDatePicker.vue'
 import { fireEvent, render, screen } from '@testing-library/vue'
 
@@ -632,5 +633,30 @@ describe('BaseDatePicker unit', () => {
 			await fireEvent.click(container.querySelector<HTMLElement>('.icon-btn-stub')!)
 			expect(escapeKeyOptions.isActive?.()).toBe(true)
 		})
+	})
+})
+
+describe('BaseDatePicker: пропсы, которые родитель начал или перестал передавать после монтирования', () => {
+	it('isReadonly и пропсы календаря (locale) следуют за набором переданных', async () => {
+		const isPassed = ref(false)
+		const Host = {
+			setup: () => () => h(BaseDatePicker, { ...(isPassed.value ? { isReadonly: false, locale: 'en-US' } : {}) }),
+		}
+		const { container } = render(Host, { global: { stubs } })
+		const input = (): HTMLInputElement => container.querySelector('input')!
+		await fireEvent.click(container.querySelector('.date-picker-field-stub')!)
+		const panel = (): Element => container.querySelector('.date-picker-panel-stub')!
+		expect(input().readOnly).toBe(true)
+		expect(panel()).toHaveAttribute('data-locale', 'ru-RU')
+
+		isPassed.value = true
+		await nextTick()
+		expect(input().readOnly).toBe(false)
+		expect(panel()).toHaveAttribute('data-locale', 'en-US')
+
+		isPassed.value = false
+		await nextTick()
+		expect(input().readOnly).toBe(true)
+		expect(panel()).toHaveAttribute('data-locale', 'ru-RU')
 	})
 })

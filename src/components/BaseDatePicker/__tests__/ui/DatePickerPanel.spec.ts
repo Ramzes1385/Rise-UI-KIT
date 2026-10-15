@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/vitest'
+import { h, nextTick, ref } from 'vue'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
 import { BaseCalendar } from '@components/BaseCalendar'
@@ -21,6 +22,7 @@ const GLOBAL_STUBS = {
 				:data-locale="locale"
 				:data-min-date="constraints?.minDate?.getDate()"
 				:data-show-time="String(timeConfig?.showTime)"
+				:data-is24="String(timeConfig?.is24Hour)"
 				:data-show-navigation="String(displayConfig?.showNavigation)"
 				:data-show-week-number="String(displayConfig?.showWeekNumber)"
 				:data-unknown-attrs="Object.keys($attrs).filter(name => name !== 'class' && !name.startsWith('on')).join(',')">
@@ -67,6 +69,25 @@ const DEFAULT_PROPS = {
 }
 
 const STUBS = { ...GLOBAL_STUBS, teleport: true }
+
+describe('DatePickerPanel: is24Hour и передача пропса после монтирования', () => {
+	it('родитель начал и перестал передавать is24Hour — значение следует за этим', async () => {
+		const isPassed = ref(false)
+		const { is24Hour: _unpassed, ...baseProps } = DEFAULT_PROPS
+		const Host = { setup: () => () => h(DatePickerPanel, { ...baseProps, ...(isPassed.value ? { is24Hour: false } : {}) }) }
+		const { container } = render(Host, { global: { stubs: STUBS } })
+		const calendar = (): Element => container.querySelector('.base-calendar')!
+		expect(calendar()).toHaveAttribute('data-is24', 'true')
+
+		isPassed.value = true
+		await nextTick()
+		expect(calendar()).toHaveAttribute('data-is24', 'false')
+
+		isPassed.value = false
+		await nextTick()
+		expect(calendar()).toHaveAttribute('data-is24', 'true')
+	})
+})
 
 describe('DatePickerPanel', () => {
 	describe('рендер', () => {

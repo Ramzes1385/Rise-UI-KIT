@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom/vitest'
-import { defineComponent, ref } from 'vue'
 import BaseDropdown from '../ui/BaseDropdown.vue'
 import { BaseSelect } from '@components/BaseSelect'
 import userEvent from '@testing-library/user-event'
+import { defineComponent, h, nextTick, ref } from 'vue'
 import { fireEvent, render, screen } from '@testing-library/vue'
 
 function renderDropdownWithInput() {
@@ -66,6 +66,35 @@ describe('BaseDropdown integration', () => {
 
 			expect(emitted()).not.toHaveProperty('close')
 			expect(emitted()).not.toHaveProperty('update:isOpen')
+		})
+	})
+
+	describe('closeOnEscape: родитель начал или перестал передавать проп после монтирования', () => {
+		it('закрытие по Escape следует за набором переданных пропсов', async () => {
+			const isPassed = ref(false)
+			const onClose = vi.fn()
+			const Host = defineComponent({
+				setup: () => () =>
+					h(
+						BaseDropdown,
+						{ isOpen: true, onClose, ...(isPassed.value ? { closeOnEscape: false } : {}) },
+						{ default: () => h('button', 'Триггер'), dropdown: () => h('p', 'Контент') },
+					),
+			})
+			render(Host)
+
+			await fireEvent.keyDown(document, { key: 'Escape' })
+			expect(onClose).toHaveBeenCalledTimes(1)
+
+			isPassed.value = true
+			await nextTick()
+			await fireEvent.keyDown(document, { key: 'Escape' })
+			expect(onClose).toHaveBeenCalledTimes(1)
+
+			isPassed.value = false
+			await nextTick()
+			await fireEvent.keyDown(document, { key: 'Escape' })
+			expect(onClose).toHaveBeenCalledTimes(2)
 		})
 	})
 

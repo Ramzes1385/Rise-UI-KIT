@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { defineComponent, h } from 'vue'
+import { computed, defineComponent, h, nextTick, ref } from 'vue'
 import { useExplicitPropDetection } from '../useExplicitPropDetection'
 import type { UseExplicitPropDetectionReturn } from '../types/useExplicitPropDetection.types'
 
@@ -41,5 +41,63 @@ describe('useExplicitPropDetection', () => {
 		const { wasPropPassed, resolveBooleanPropDefault } = useExplicitPropDetection()
 		expect(wasPropPassed('isOpen')).toBe(false)
 		expect(resolveBooleanPropDefault('isOpen', false, true)).toBe(true)
+	})
+
+	describe('родитель меняет набор переданных пропсов после монтирования', () => {
+		function mountToggle() {
+			const isPassed = ref(false)
+			const hasListener = ref(false)
+			let passed!: { prop: () => boolean; listener: () => boolean; resolved: () => boolean }
+			const Child = defineComponent({
+				props: { isOpen: { type: Boolean, default: undefined } },
+				setup(props) {
+					const { wasPropPassed, resolveBooleanPropDefault } = useExplicitPropDetection()
+					const prop = computed(() => wasPropPassed('isOpen'))
+					const listener = computed(() => wasPropPassed('onClick'))
+					const resolved = computed(() => resolveBooleanPropDefault('isOpen', props.isOpen, true))
+					passed = { prop: () => prop.value, listener: () => listener.value, resolved: () => resolved.value }
+					return () => h('div')
+				},
+			})
+			mount(
+				defineComponent({
+					setup: () => () =>
+						h(Child, {
+							...(isPassed.value ? { 'is-open': false } : {}),
+							...(hasListener.value ? { onClick: () => undefined } : {}),
+						}),
+				}),
+			)
+			return { isPassed, hasListener, get: () => passed }
+		}
+
+		it('проп начали передавать — computed видит это, перестали — снова нет', async () => {
+			const { isPassed, get } = mountToggle()
+			expect(get().prop()).toBe(false)
+			expect(get().resolved()).toBe(true)
+
+			isPassed.value = true
+			await nextTick()
+			expect(get().prop()).toBe(true)
+			expect(get().resolved()).toBe(false)
+
+			isPassed.value = false
+			await nextTick()
+			expect(get().prop()).toBe(false)
+			expect(get().resolved()).toBe(true)
+		})
+
+		it('слушатель добавили и убрали — computed следует за ним', async () => {
+			const { hasListener, get } = mountToggle()
+			expect(get().listener()).toBe(false)
+
+			hasListener.value = true
+			await nextTick()
+			expect(get().listener()).toBe(true)
+
+			hasListener.value = false
+			await nextTick()
+			expect(get().listener()).toBe(false)
+		})
 	})
 })

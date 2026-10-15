@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
-import { defineComponent, h, ref } from 'vue'
 import { useClickable } from '../useClickable'
+import { defineComponent, h, nextTick, ref } from 'vue'
 
 function mountClickable(listeners: Record<string, unknown>, isDisabled?: () => boolean) {
 	const Child = defineComponent({
@@ -96,5 +96,38 @@ describe('useClickable', () => {
 		const hyphen = mount(defineComponent({ setup: () => () => h(Child, { 'onClick-badge': vi.fn() }) }))
 		const none = mount(defineComponent({ setup: () => () => h(Child) }))
 		expect([camel.text(), hyphen.text(), none.text()]).toEqual(['true', 'true', 'false'])
+	})
+
+	it('слушатель клика появился и исчез после монтирования — элемент становится кнопкой и перестаёт ей быть', async () => {
+		const hasListener = ref(false)
+		const Child = defineComponent({
+			emits: ['click'],
+			setup(_, { emit }) {
+				const { clickableAttributes, handleKeydown } = useClickable({ event: 'click' })
+				return () =>
+					h('span', {
+						...clickableAttributes.value,
+						onClick: (event: MouseEvent) => emit('click', event),
+						onKeydown: handleKeydown,
+					})
+			},
+		})
+		const wrapper = mount(defineComponent({ setup: () => () => h(Child, hasListener.value ? { onClick: () => undefined } : {}) }), {
+			attachTo: document.body,
+		})
+		const element = wrapper.get('span').element
+		expect(element.getAttribute('role')).toBeNull()
+
+		hasListener.value = true
+		await nextTick()
+		expect(element.getAttribute('role')).toBe('button')
+		expect(element.getAttribute('tabindex')).toBe('0')
+		expect(press(element, 'Enter').defaultPrevented).toBe(true)
+
+		hasListener.value = false
+		await nextTick()
+		expect(element.getAttribute('role')).toBeNull()
+		expect(press(element, 'Enter').defaultPrevented).toBe(false)
+		wrapper.unmount()
 	})
 })
