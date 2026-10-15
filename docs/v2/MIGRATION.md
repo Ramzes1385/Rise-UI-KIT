@@ -3073,3 +3073,21 @@ import { BaseMediaPlayer } from '@ramzes1385/rise-ui-kit/media'
 - **BaseAutocomplete:** новый необязательный проп `emptyText` — текст пустого списка и его объявления в live-области (по умолчанию «Ничего не найдено»). Слот `empty` по-прежнему заменяет текст в списке.
 - **`usePopup`:** возвращает ещё `handleOverlayPointerdown(event)`; подложку вешайте `@pointerdown` вместе с `@click.self`.
 
+## Задача overlay-tails
+
+### Панели и подсказки в масштабированных контейнерах
+
+`BaseDropdown`, `BaseTooltip`, `BaseContextMenu`, меню сообщения BaseChat и flyout-панели (`useFlyoutPosition`) внутри предка с `transform: scale(…)` или `zoom` (если такой предок задаёт систему координат для `position: fixed`, например слой телепорта внутри анимированного окна) раньше смещались: координаты `getBoundingClientRect` в пикселях окна подставлялись в `top`/`left` в единицах предка. Теперь они делятся на масштаб предка (`offsetWidth` к ширине в окне). Без масштаба поведение прежнее.
+
+- **Внутренний API:** `getFixedOrigin` из `@utils/dom/domUtils` возвращает `{ x, y, scaleX, scaleY }` (было `{ x, y }`); для перевода точки окна в `top`/`left` добавлена `toFixedSpace(origin, x, y)`. Приложение, которое вызывало `getFixedOrigin` само, вычитает `origin.x` как раньше, но делит результат на `origin.scaleX`.
+
+### Управляемые пропсы и слушатели
+
+`useExplicitPropDetection` (и `wasPropPassed` в нём) читает `vnode.props` при каждом обновлении компонента. Если родитель начал или перестал передавать проп (`closeOnEscape` у BaseDropdown, `openKey` у BaseMegaMenu, `isReadonly`, `is24Hour`, пропсы календаря у BaseDatePicker) или слушатель клика (`useClickable`: роль `button`, `tabindex`, Enter и Space) уже после монтирования, компонент подхватывает это сразу, а не остаётся в состоянии на момент создания.
+
+- BaseMegaMenu: пока меню управляемое (`openKey` передан), внутреннее состояние зеркалит `openKey`; после того как родитель перестал его передавать, меню остаётся в последнем положении и дальше управляется само.
+
+### Меню сообщения BaseChat и BaseFileManager
+
+- Открытое меню «Другие действия» сообщения чата пересчитывает положение при изменении размера окна (`resize` окна его документа: iframe и Picture-in-Picture тоже) и не закрывается.
+- Поле переименования BaseFileManager при смене вида (`view`) сразу встаёт на новое место строки; при изменении размеров строки и списка — через `ResizeObserver`, как и раньше.

@@ -525,7 +525,7 @@
 
 ## Задача files-dates
 
-- ~~**BaseFileManager, редактор имени внутри `role="listbox"`.**~~ — files-dates: поле вынесено из списка, строка остаётся скрытой `option`; положение считается по `offsetTop/Left/Width/Height` строки в момент начала правки, при изменении размеров во время правки (resize окна, смена вида) поле не перемещается до следующей правки.
+- ~~**BaseFileManager, редактор имени внутри `role="listbox"`.**~~ — files-dates: поле вынесено из списка, строка остаётся скрытой `option`; положение считается по `offsetTop/Left/Width/Height` строки в момент начала правки, при изменении размеров во время правки (resize окна, смена вида) поле не перемещается до следующей правки. Поправка — overlay-tails: поле пересчитывается через `ResizeObserver` строки и списка, а при смене `view` — сразу.
 - ~~**BaseDatePicker, `stories/shared.ts`: `new Date()` вместо `STORY_TODAY`.**~~ — files-dates: история «Готовые периоды» останавливает часы (`freezeStoryClock`), `todayName` убран, `todayRange` считает от `STORY_TODAY`. Другие истории DatePicker «сегодня» от часов не берут.
 - ~~**№ 51: `resolveColor()` и обёртка `docs.story.inline: false` + `height` для оверлеев.**~~ — files-dates: `resolveColor` и `docsFrame` в `src/stories/helpers`; истории Overlay (ContextMenu, Dropdown, DropdownMenu, HoverCard, Modal, Notification, Popconfirm, Popover, Slideover, Tooltip, Tour), а также Calendar, Chat, DatePicker, Range, Select переведены. `docsFrame` остаётся локальным в `stories/shared.ts` у BaseCascader, BaseColorPicker, BaseSearch, BaseSelect, BaseTreeSelect (Form; BaseColorPicker и BaseSearch — чужие пачки).
 - **BaseChip**: правила вариантов `soft`/`outline`/`ghost`/`shadow` для `.base-chip__badge.base-badge` не удалены. Они повторяют варианты BaseBadge (`--soft`, `--outline`…), но селектор чипа (два класса) сильнее, чем `.base-badge--soft` (один), и без повтора фон из токена `chip-badge-bg` перебил бы вариант. Убрать повтор можно только сменой каскада (слои или нулевая специфичность базы бейджа) — это затронет токены `--rise-chip-badge-*` приложений; оставлено без правок.
@@ -561,8 +561,8 @@
 ## Задача notify-sidebar
 
 - № 21 (BaseNotification): сделано NTF-4 (`notificationKey`), NTF-6 (`color`/`sizeScale`/`position`/`customClass` в `add()`), NTF-8 (проп `maxVisible`, очередь по позициям). Не делалось: `useToast()` не принимает `position`/`color`/`sizeScale`/`customClass`/`maxVisible` (у хранилища свой `toaster.max`); по умолчанию предела нет (`maxVisible: 0`) — менять умолчание на конечное — решение владельца. Пауза по наведению общая для всех областей одного компонента.
-- № 29 (BaseSideBar): сделаны SB-3, SB-9, SB-11, SB-12. SB-9 исправлен локально (`isCollapsed: undefined` в умолчаниях + проверка значения); общий `useExplicitPropDetection` по-прежнему читает `vnode.props` один раз при setup — им пользуются BaseDropdown, BaseMegaMenu (`openKey`), BaseDatePicker, `useClickable` (чужие области; для слушателей снимок уместен). Дубли ключей на одном уровне различаются порядковым номером, а не отвергаются.
-- № 5 (меню «Другие действия» в BaseChat): сделано — переворот по реальному размеру, поправка на предка с `transform`, ограничение высоты. Меню не пересчитывается при изменении размера окна пока открыто (закрывается кликом снаружи и прокруткой ленты). `useScrollToMessage` — на `useReducedMotion`; `calcDerivedScale` — в BaseCommentThread и BaseNotificationCenter.
+- № 29 (BaseSideBar): сделаны SB-3, SB-9, SB-11, SB-12. SB-9 исправлен локально (`isCollapsed: undefined` в умолчаниях + проверка значения); ~~общий `useExplicitPropDetection` по-прежнему читает `vnode.props` один раз при setup — им пользуются BaseDropdown, BaseMegaMenu (`openKey`), BaseDatePicker, `useClickable` (чужие области; для слушателей снимок уместен)~~ — overlay-tails: читает при каждом обновлении. Дубли ключей на одном уровне различаются порядковым номером, а не отвергаются.
+- № 5 (меню «Другие действия» в BaseChat): сделано — переворот по реальному размеру, поправка на предка с `transform`, ограничение высоты. ~~Меню не пересчитывается при изменении размера окна пока открыто~~ — overlay-tails (закрывается кликом снаружи и прокруткой ленты). `useScrollToMessage` — на `useReducedMotion`; `calcDerivedScale` — в BaseCommentThread и BaseNotificationCenter.
 
 ## Задача wave8-tails
 
@@ -579,7 +579,7 @@
 ## Задача wave8-fix3b
 
 - Сделано: BaseSlider (явный запуск при reduced motion, `update:index` при монтировании), покрытие `useSideBarNavigationKeys`, BaseSideBar (`isCollapsed` из `defaults` не делает панель управляемой), BaseNotification (пауза по областям, имена областей с положением, порядок `items`), BasePagination (прижатая текущая), `useSwipe` (фиксация оси), меню чата (документ меню, ширина при `left: 0`, переворот от верха кнопки), история `OverlayUnderWindow` без inline-позиционирования.
-- Не делалось: учёт `scale`/`zoom` предка и RTL в `getFixedOrigin` (мелочь вердикта check-wave8); отдельный каталог положений для имён областей уведомлений вне `UI_ARIA`.
+- Не делалось: ~~учёт `scale`/`zoom` предка и RTL в `getFixedOrigin` (мелочь вердикта check-wave8)~~ — overlay-tails; отдельный каталог положений для имён областей уведомлений вне `UI_ARIA`.
 - Решение: управляемость BaseSideBar определяется по `vnode.props` (как `useExplicitPropDetection`, но вычисляется при каждом обновлении: родитель может начать или перестать передавать проп после монтирования, это проверяют тесты SB-9).
 
 ## Задача editor-upload
@@ -598,3 +598,9 @@
 - Сделано: SRCH-7 (`blur()` BaseSearch снимает фокус с настоящего `input` во всех режимах: BaseSearchInput и BaseSearchOverlay получили `blur` в expose), SRCH-8 (триггер модалки на `isReadonly`), SRCH-10 г (BaseModal, BaseSlideover, BaseDrawer, а с ними модальный и боковой режимы BaseSearch не закрываются, если нажатие началось внутри панели), текст ошибки источника в BaseAddressInput и BaseDadataInput (`UI_TEXT.SEARCH_FAILED`, проп `emptyText` у BaseAutocomplete).
 - Не делаем: SRCH-9 (`inheritAttrs` у BaseSearchOverlay) — решение владельца 15.10 по № 1.
 - Отложено: тот же приём «закрывать, только если pointerdown был на подложке» не применён к `@click.self` в BaseImageZoom (`BaseImageZoom.vue`) — там нет полей ввода, выделение текста невозможно; при необходимости `usePopup` уже отдаёт `handleOverlayPointerdown`.
+
+## Задача overlay-tails
+
+- Сделано: `getFixedOrigin` учитывает `scale`/`zoom` предка (`scaleX`/`scaleY`, перевод точки окна в `top`/`left` — `toFixedSpace`); RTL (`scrollLeft` < 0) проверен в Chromium — отдельного учёта не требует; меню сообщения чата берёт `ownerDocument` и `defaultView` меню (уже было) и пересчитывается на `resize` окна своего документа; поле переименования BaseFileManager встаёт на новое место при смене вида; `useExplicitPropDetection` читает `vnode.props` при каждом обновлении (BaseDropdown, BaseMegaMenu, BaseDatePicker, `useClickable`).
+- Не делалось: зазор `gap` подсказок и панелей остаётся в единицах предка (внутри масштабированного контейнера он уменьшается вместе с ним); `calcTooltipShift` у подсказки считает сдвиг в пикселях окна. `zoom` проверен в Chromium (современная семантика, `getBoundingClientRect` и `offsetWidth` дают отношение); в Firefox и Safari не проверялся.
+- `useBaseSideBar` не переведён на общий composable: у него своя проверка по `vnode.props`, работающая через `props.isCollapsed`.
