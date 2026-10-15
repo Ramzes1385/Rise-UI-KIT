@@ -1,3 +1,4 @@
+import type { Ref } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
 import { useSearchMotion } from './useSearchMotion'
 import type BaseSearchInput from '../ui/BaseSearchInput.vue'
@@ -29,6 +30,15 @@ function useLayerClasses(props: BaseSearchOverlayProps) {
 		closeIconCustomClass: computed(() => props.classes[`${prefix.value}CloseIcon`]),
 		resultsClass: computed(() => [props.ui(`${prefix.value}-results`), props.classes[`${prefix.value}Results`]]),
 	}
+}
+
+function createExposed(inputRef: Ref<InstanceType<typeof BaseSearchInput> | null>, open: () => void, close: () => void) {
+	return {
+		focus: (): void => inputRef.value?.focus(),
+		blur: (): void => inputRef.value?.blur(),
+		open,
+		close,
+	} satisfies BaseSearchOverlayExpose
 }
 
 export function useBaseSearchOverlay(props: BaseSearchOverlayProps, emit: (event: 'close') => void) {
@@ -78,11 +88,6 @@ export function useBaseSearchOverlay(props: BaseSearchOverlayProps, emit: (event
 		onDialogToggle: (value: boolean): void => {
 			if (!value) close()
 		},
-		exposed: {
-			focus: (): void => inputRef.value?.focus(),
-			blur: (): void => inputRef.value?.blur(),
-			open,
-			close,
-		} satisfies BaseSearchOverlayExpose,
+		exposed: createExposed(inputRef, open, close),
 	}
 }
