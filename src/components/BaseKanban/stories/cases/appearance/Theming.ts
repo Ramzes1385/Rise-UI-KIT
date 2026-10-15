@@ -11,7 +11,7 @@ const models = { cards: 'cards' }
 const template = `
 	<div style="display: grid; gap: 24px">
 		<BaseKanban v-bind="args" v-model:cards="cards" aria-label="По умолчанию" />
-		<div style="--rise-kanban-gap: 20px; --rise-kanban-column-bg: var(--rise-primary-soft); --rise-kanban-column-radius: var(--rise-radius-xl); --rise-kanban-column-padding-x: 12px; --rise-kanban-column-padding-y: 12px; --rise-kanban-header-text: var(--rise-primary-text); --rise-kanban-header-font-weight: var(--rise-font-weight-bold); --rise-kanban-card-bg: var(--rise-bg); --rise-kanban-card-border: var(--rise-primary); --rise-kanban-card-radius: var(--rise-radius-lg); --rise-kanban-card-shadow: var(--rise-shadow-md);">
+		<div style="--rise-kanban-gap: 20px; --rise-kanban-column-bg: color-mix(in srgb, var(--rise-primary) 18%, var(--rise-bg)); --rise-kanban-column-radius: var(--rise-radius-xl); --rise-kanban-column-padding-x: 12px; --rise-kanban-column-padding-y: 12px; --rise-kanban-header-text: var(--rise-primary-text); --rise-kanban-header-font-weight: var(--rise-font-weight-bold); --rise-kanban-card-bg: var(--rise-bg); --rise-kanban-card-border: var(--rise-primary); --rise-kanban-card-radius: var(--rise-radius-lg); --rise-kanban-card-shadow: var(--rise-shadow-md);">
 			<BaseKanban v-bind="args" v-model:cards="cards" aria-label="Токены на контейнере" />
 		</div>
 		<BaseKanban v-bind="args" v-model:cards="cards" aria-label="Классы через ui" :ui="ui" />

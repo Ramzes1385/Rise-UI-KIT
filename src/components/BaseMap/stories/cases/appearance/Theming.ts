@@ -5,14 +5,14 @@ import { OFFICES, liveOrDemo } from '../../shared'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { isStoryBranded, literal, storySource, useStorySetup, withYandexMapsKey } from '@/stories/helpers'
 
-const color = { bg: { base: 'var(--rise-primary-soft)' }, text: { base: 'var(--rise-primary)' } }
+const color = { bg: { base: 'color-mix(in srgb, var(--rise-primary) 18%, var(--rise-bg))' }, text: { base: 'var(--rise-primary)' } }
 
 const ui = { root: 'story-map-elevated', placeholder: 'story-map-striped' }
 
 const template = `
 	<div class="story-grid" style="--story-grid-min: 260px">
 		<BaseMap v-bind="args" aria-label="По умолчанию" />
-		<div style="--rise-map-radius: 24px; --rise-map-border: var(--rise-primary); --rise-map-bg: var(--rise-primary-soft); --rise-map-marker-bg: var(--rise-error); --rise-map-tooltip-bg: var(--rise-primary); --rise-map-tooltip-text: var(--rise-text-inverted);">
+		<div style="--rise-map-radius: 24px; --rise-map-border: var(--rise-primary); --rise-map-bg: color-mix(in srgb, var(--rise-primary) 18%, var(--rise-bg)); --rise-map-marker-bg: var(--rise-error); --rise-map-tooltip-bg: var(--rise-primary); --rise-map-tooltip-text: var(--rise-text-inverted);">
 			<BaseMap v-bind="args" aria-label="Токены на контейнере" />
 		</div>
 		<BaseMap v-bind="args" variant="outline" :color="color" aria-label="Проп color" />

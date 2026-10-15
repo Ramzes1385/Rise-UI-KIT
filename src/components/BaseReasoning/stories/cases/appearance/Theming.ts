@@ -9,7 +9,7 @@ const ui = { root: 'story-themed-reasoning', trigger: 'story-themed-trigger' }
 const template = `
 	<div class="story-stack story-medium">
 		<BaseReasoning v-bind="args" variant="soft" title="По умолчанию" />
-		<div style="--rise-reasoning-bg: var(--rise-primary-soft); --rise-reasoning-text: var(--rise-primary-text); --rise-reasoning-radius: var(--rise-radius-2xl); --rise-reasoning-padding-x: 20px; --rise-reasoning-trigger-font-weight: var(--rise-font-weight-bold);">
+		<div style="--rise-reasoning-bg: color-mix(in srgb, var(--rise-primary) 18%, var(--rise-bg)); --rise-reasoning-text: var(--rise-primary-text); --rise-reasoning-radius: var(--rise-radius-2xl); --rise-reasoning-padding-x: 20px; --rise-reasoning-trigger-font-weight: var(--rise-font-weight-bold);">
 			<BaseReasoning v-bind="args" variant="soft" title="Токены на контейнере" />
 		</div>
 		<BaseReasoning v-bind="args" variant="soft" title="Классы через ui" :ui="ui" />
