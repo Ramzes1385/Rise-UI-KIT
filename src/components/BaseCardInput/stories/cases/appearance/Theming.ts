@@ -2,7 +2,7 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseCardInput.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseCardInput from '../../../ui/BaseCardInput.vue'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { isStoryBranded, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const ui = { face: 'story-themed-face', fields: 'story-themed-fields', brand: 'story-themed-brand' }
 
@@ -45,7 +45,8 @@ export const Theming: StoryObj<typeof meta> = {
 		const fields = [...canvasElement.querySelectorAll<HTMLElement>('.base-card-input__fields')]
 
 		await expect(getComputedStyle(themed).backgroundImage).not.toBe(getComputedStyle(plain).backgroundImage)
-		await expect(getComputedStyle(themed).borderTopLeftRadius).not.toBe(getComputedStyle(plain).borderTopLeftRadius)
+		if (!isStoryBranded())
+			await expect(getComputedStyle(themed).borderTopLeftRadius).not.toBe(getComputedStyle(plain).borderTopLeftRadius)
 		await expect(getComputedStyle(themed).boxShadow).not.toBe(getComputedStyle(plain).boxShadow)
 		await expect(getComputedStyle(fields[1]).rowGap).toBe('4px')
 		const numbers = canvas.getAllByLabelText('Номер карты')

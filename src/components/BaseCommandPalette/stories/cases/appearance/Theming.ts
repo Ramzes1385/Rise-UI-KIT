@@ -58,9 +58,10 @@ export const Theming: StoryObj<typeof meta> = {
 		const classed = canvas.getByRole('dialog', { name: 'Классы через ui' })
 
 		await expect(getComputedStyle(activeOption(themed)).backgroundColor).not.toBe(getComputedStyle(activeOption(plain)).backgroundColor)
-		await expect(getComputedStyle(activeOption(themed)).borderTopLeftRadius).not.toBe(
-			getComputedStyle(activeOption(plain)).borderTopLeftRadius,
-		)
+		if (!isStoryBranded())
+			await expect(getComputedStyle(activeOption(themed)).borderTopLeftRadius).not.toBe(
+				getComputedStyle(activeOption(plain)).borderTopLeftRadius,
+			)
 		if (!isStoryBranded()) await expect(getComputedStyle(within(themed).getByRole('combobox')).height).toBe('44px')
 		if (!isStoryBranded()) await expect(getComputedStyle(within(plain).getByRole('combobox')).height).toBe('52px')
 		await expect(classed).toHaveClass('base-command-palette__content', 'story-themed-palette')

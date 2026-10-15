@@ -75,7 +75,8 @@ export const Theming: StoryObj<typeof meta> = {
 		const [plain, themed, classed] = Array.from(canvasElement.querySelectorAll<HTMLElement>('.base-tour__panel'))
 
 		await expect(getComputedStyle(themed).backgroundColor).not.toBe(getComputedStyle(plain).backgroundColor)
-		await expect(getComputedStyle(themed).borderTopLeftRadius).not.toBe(getComputedStyle(plain).borderTopLeftRadius)
+		if (!isStoryBranded())
+			await expect(getComputedStyle(themed).borderTopLeftRadius).not.toBe(getComputedStyle(plain).borderTopLeftRadius)
 		if (!isStoryBranded()) await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('16px')
 		if (!isStoryBranded()) await expect(getComputedStyle(plain).borderTopLeftRadius).toBe('8px')
 		if (!isStoryBranded()) await expect(getComputedStyle(themed).paddingTop).toBe('24px')

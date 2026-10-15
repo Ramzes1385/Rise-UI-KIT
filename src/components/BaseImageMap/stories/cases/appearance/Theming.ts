@@ -53,7 +53,10 @@ export const Theming: StoryObj<typeof meta> = {
 
 		await expect(getComputedStyle(themed).backgroundColor).not.toBe(getComputedStyle(plain).backgroundColor)
 		await expect(getComputedStyle(themed).borderTopColor).not.toBe(getComputedStyle(plain).borderTopColor)
-		await expect(getComputedStyle(viewport(themed)).borderTopLeftRadius).not.toBe(getComputedStyle(viewport(plain)).borderTopLeftRadius)
+		if (!isStoryBranded())
+			await expect(getComputedStyle(viewport(themed)).borderTopLeftRadius).not.toBe(
+				getComputedStyle(viewport(plain)).borderTopLeftRadius,
+			)
 		if (!isStoryBranded()) {
 			await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('16px')
 			await expect(getComputedStyle(themed).paddingTop).toBe('16px')

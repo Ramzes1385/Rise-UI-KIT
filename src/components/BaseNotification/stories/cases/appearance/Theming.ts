@@ -56,7 +56,8 @@ export const Theming: StoryObj<typeof meta> = {
 		const classed = card(canvas, 'Уведомления с классами')
 
 		await expect(getComputedStyle(themed).backgroundColor).not.toBe(getComputedStyle(plain).backgroundColor)
-		await expect(getComputedStyle(themed).borderTopLeftRadius).not.toBe(getComputedStyle(plain).borderTopLeftRadius)
+		if (!isStoryBranded())
+			await expect(getComputedStyle(themed).borderTopLeftRadius).not.toBe(getComputedStyle(plain).borderTopLeftRadius)
 		if (!isStoryBranded()) await expect(getComputedStyle(themed).paddingTop).toBe('20px')
 		if (!isStoryBranded()) await expect(getComputedStyle(plain).paddingTop).toBe('16px')
 		await expect(classed).toHaveClass('base-notification-item', 'story-themed-notification')

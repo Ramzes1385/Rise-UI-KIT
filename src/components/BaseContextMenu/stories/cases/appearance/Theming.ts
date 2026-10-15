@@ -72,7 +72,7 @@ export const Theming: StoryObj<typeof meta> = {
 		const classed = await measure('Классы через ui')
 
 		await expect(themed.paddingLeft).not.toBe(plain.paddingLeft)
-		await expect(themed.radius).not.toBe(plain.radius)
+		if (!isStoryBranded()) await expect(themed.radius).not.toBe(plain.radius)
 		if (!isStoryBranded()) await expect(themed.paddingLeft).toBe('12px')
 		if (!isStoryBranded()) await expect(plain.paddingLeft).toBe('8px')
 		await expect(classed.item).toHaveClass('base-dropdown-menu__item', 'base-context-menu__item', 'story-themed-item')

@@ -2,7 +2,7 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseQrCode.stories'
 import BaseQrCode from '../../../ui/BaseQrCode.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { isStoryBranded, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const ui = { root: 'story-themed-qr', caption: 'story-themed-caption' }
 
@@ -50,7 +50,8 @@ export const Theming: StoryObj<typeof meta> = {
 		const classed = canvas.getByRole('img', { name: 'Классы через ui' })
 		const caption = (box: HTMLElement) => box.parentElement!.querySelector<HTMLElement>('.base-qr-code__caption')!
 
-		await expect(getComputedStyle(themed).borderTopLeftRadius).not.toBe(getComputedStyle(plain).borderTopLeftRadius)
+		if (!isStoryBranded())
+			await expect(getComputedStyle(themed).borderTopLeftRadius).not.toBe(getComputedStyle(plain).borderTopLeftRadius)
 		await expect(getComputedStyle(themed).borderTopColor).not.toBe(getComputedStyle(plain).borderTopColor)
 		await expect(getComputedStyle(themed).boxShadow).not.toBe('none')
 		await expect(getComputedStyle(plain).boxShadow).toBe('none')

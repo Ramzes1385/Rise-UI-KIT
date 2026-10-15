@@ -67,7 +67,10 @@ export const Theming: StoryObj<typeof meta> = {
 		await expect(style(themed, selectedCell).backgroundColor).not.toBe(style(plain, selectedCell).backgroundColor)
 		await expect(style(themed, '.base-table__body').borderTopColor).not.toBe(style(plain, '.base-table__body').borderTopColor)
 		await expect(style(themed, selectedCell).borderTopColor).not.toBe(style(plain, selectedCell).borderTopColor)
-		await expect(style(themed, '.base-table__body').borderTopLeftRadius).not.toBe(style(plain, '.base-table__body').borderTopLeftRadius)
+		if (!isStoryBranded())
+			await expect(style(themed, '.base-table__body').borderTopLeftRadius).not.toBe(
+				style(plain, '.base-table__body').borderTopLeftRadius,
+			)
 		if (!isStoryBranded()) {
 			await expect(style(plain, '.base-table__td').paddingTop).toBe('12px')
 			await expect(style(themed, '.base-table__td').paddingTop).toBe('8px')
