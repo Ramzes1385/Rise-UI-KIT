@@ -3043,3 +3043,24 @@ BaseEditor, замечания проверки по диалогу ссылки
 
 - BaseMediaPlayer, окно совместного просмотра: метка статуса участника получила палитру BaseBadge (`status`: `success` у подключившегося и ведущего, `neutral` у приглашённого) вместо локальных `--custom-bg`/`--custom-text`. Вид тот же. В разметке метки добавился класс `base-badge--status-success` или `base-badge--status-neutral`; классы `base-media-player__watch-status--joined` и `--invited` остались, но правила для `--joined` в CSS кита больше нет (цвет даёт палитра).
 - Тип `MediaWatchMemberView` (элемент `watchMembers` внутри плеера) получил поле `badgeStatus: BadgeStatus`; публичные типы `MediaWatchMember`, `MediaWatchParty` не менялись. Ломающих изменений нет.
+
+## Задача w12-css-split
+
+### Стили плеера отдельным файлом `media.css` (ломающее, PLAN Н.2)
+
+- **Было:** `styles.css` кита (≈1 МБ, ≈111 КБ gzip) включал и стили видеоплеера `BaseMediaPlayer` (≈130 КБ, ≈15 КБ gzip) и `BasePresentationPlayer`, хотя их код — отдельный вход `./media`. Приложение без плеера всё равно загружало эти стили.
+- **Стало:** стили плеера собираются в `dist/media.css`, из `dist/styles.css` они убраны. Токены (`--rise-*`, тёмная тема, `data-rise-motion`) и общие стили — один раз, в `styles.css`; `media.css` рассчитан на подключение вместе с ним и токены не дублирует. Правила в двух файлах те же, что были в одном (проверено: набор правил `styles.css` + `media.css` совпадает с прежним `styles.css` блок в блок). Новые подпути пакета: `@ramzes1385/rise-ui-kit/media.css` и `@ramzes1385/rise-ui-kit/media.layer.css` (то же, что `styles.layer.css`: `@import url('./media.css') layer(rise);`).
+- **Что сделать:** приложение, которое использует `BaseMediaPlayer` или `BasePresentationPlayer` из `@ramzes1385/rise-ui-kit/media`, добавляет один импорт после `styles`. Без него плеер остаётся без оформления (кнопки, панель, оверлеи не стилизованы). Приложение без плеера ничего не меняет и получает `styles.css` меньше на ≈13% (≈14 КБ gzip).
+
+```ts
+import '@ramzes1385/rise-ui-kit/styles'
+import '@ramzes1385/rise-ui-kit/media.css'
+import { BaseMediaPlayer } from '@ramzes1385/rise-ui-kit/media'
+```
+
+В CSS приложения со слоями: `@import '@ramzes1385/rise-ui-kit/styles.layer.css';` и следом `@import '@ramzes1385/rise-ui-kit/media.layer.css';` — оба файла кладут стили в слой `rise`.
+
+- **Порядок.** `media.css` подключайте после `styles.css`: часть правил плеера переопределяет общие компоненты (например, `.base-modal__content` в окне «Поделиться»), а раньше они шли внутри `styles.css` в том же порядке.
+- **Пакет `@ramzes1385/rise-media-player`** (`build/media-package`): переход с `/media` по-прежнему заменяет импорт `@ramzes1385/rise-ui-kit/media` и стили; вместо `rise-ui-kit/media.css` подключается `@ramzes1385/rise-media-player/styles.css`.
+- **Для кита.** Сборка пакета стала двухпроходной: `vite.lib.config.ts` (всё, кроме стилей плеера) и `vite.media-css.config.ts` (`media.css`, тот же вход `./media`, те же настройки CSS); список папок со стилями плеера — `build/config/cssSplit.ts` (`MEDIA_STYLE_DIRS`). Файл стилей из этого списка не должен подключаться другими входами — сборка падает с сообщением. Проверка результата — `npm run test:css-split` (входит в `ci:validate`); бюджеты размера: `styles.css` снижен до 107 КБ gzip, `media.css` — 17 КБ.
+- **Не затронуто:** Storybook, e2e и скриншот-тесты берут стили из исходников (`src/styles/index.scss` и SCSS компонентов), а не из `dist`; их вид не меняется. Вариант «стили у каждого компонента» (PLAN Н.2, (б)) остаётся отдельным этапом после 2.0.

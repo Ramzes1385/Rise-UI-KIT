@@ -230,9 +230,10 @@ npm run test:e2e -- src/components/BaseSideBar
 
 # 4. Build и храповики (размер пакета, исключения покрытия, предупреждения ESLint — ниже)
 npm run build
+npm run test:css-split
 npm run test:ratchets
 
-# 5. Базовая CI-валидация: lint, стили, неиспользуемый код, форматирование, типы, unit-тесты, сухая сборка пакета, храповики
+# 5. Базовая CI-валидация: lint, стили, неиспользуемый код, форматирование, типы, unit-тесты, сухая сборка пакета, разбиение CSS, храповики
 #    (пороги покрытия, stories/a11y-гейты и e2e/visual CI запускает отдельными job)
 npm run ci:validate
 
@@ -248,7 +249,7 @@ npm run release:dry
 
 | Что | Правило |
 |---|---|
-| Размер каждого входа пакета (`exports` в `package.json`: `index.js`, `components.js`, …, `styles.css`, `icons.svg`) в gzip — файл входа вместе с чанками, которые он подгружает статическими `import`; динамические `import()` не считаются | не больше бюджета (`size.<вход>.budget`); нужна свежая сборка `npm run build` |
+| Размер каждого входа пакета (`exports` в `package.json`: `index.js`, `components.js`, …, `styles.css`, `media.css`, `icons.svg`) в gzip — файл входа вместе с чанками, которые он подгружает статическими `import`; динамические `import()` не считаются | не больше бюджета (`size.<вход>.budget`); нужна свежая сборка `npm run build` |
 | Число `--coverage.exclude` в каждом скрипте `test:*:coverage` | не больше базы (`coverageExcludes`); у нового скрипта база — 0 |
 | Число предупреждений `eslint "src/**/*.{ts,vue}"` — то же, что `npm run lint` | не больше базы (`lintWarnings`) |
 

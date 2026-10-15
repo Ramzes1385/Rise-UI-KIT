@@ -35,7 +35,7 @@ import { BaseMediaPlayer } from '@ramzes1385/rise-media-player'
 ## Переход с `@ramzes1385/rise-ui-kit/media`
 
 1. Установите пакет и замените импорт: `@ramzes1385/rise-ui-kit/media` → `@ramzes1385/rise-media-player`.
-2. Добавьте `import '@ramzes1385/rise-media-player/styles.css'`: во входе кита стили плеера были в общем `styles.css`.
+2. Замените стили: вместо `import '@ramzes1385/rise-ui-kit/media.css'` подключите `import '@ramzes1385/rise-media-player/styles.css'` (в ките стили плеера — отдельный `media.css`, в общий `styles.css` они не входят).
 
 Остальное без изменений.
 

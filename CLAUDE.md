@@ -88,7 +88,7 @@ docs/            CONTRIBUTING, reference/, design/, v2/, audit/
 | Прогон историй (play, axe, обе темы) | `node scripts/serve-storybook-static.mjs` (порт 6006), затем `node scripts/check-stories.mjs --url=http://localhost:6006 --filter='<regex id>' --concurrency=2` |
 | E2E | `npm run test:e2e` |
 | Скриншот-тесты | `npx playwright test --config build/tests/playwright.config.ts --project=visual-chromium --update-snapshots=none` |
-| Сборка пакета | `npm run build`, `npm run pack:dry` |
+| Сборка пакета (два прохода Vite: `styles.css` и `media.css` плеера) | `npm run build`, `npm run pack:dry`, затем `npm run test:css-split` — в `styles.css` нет стилей плеера, в `media.css` нет токенов |
 | Как в CI | `npm run ci:validate` |
 
 - Скриншот-тесты — только с `--update-snapshots=none`. Эталоны не создаются и не обновляются (`test:visual:update` не запускать): их делает владелец. Каждое ожидаемое визуальное изменение описывается в docs/design/VISUAL_CHANGES.md.
@@ -129,7 +129,7 @@ docs/            CONTRIBUTING, reference/, design/, v2/, audit/
 - Live-регион (`aria-live`, `role="status"`) озвучивает изменение, а не начальный текст: текст ставится после монтирования.
 - Переход, который ждёт `transitionend`: при `prefers-reduced-motion` или нулевой длительности события не будет — сразу конечное состояние, без ожидания; при обычной анимации — страховочный таймер на случай, если событие не придёт. Всплывший `transitionend` потомка переход не завершает.
 - `withDefaults` без `kitDefaults` молча отключает `defaults` из плагина: нужен тест с `createUiKitPlugin({ defaults })`.
-- `:dir(rtl)` и логические свойства (`inset-inline-end`, `border-start-end-radius`…) lightningcss при цели сборки es2020 превращает в `:lang(...)`, и `dir="rtl"` их не включает: в собранном пакете такие RTL-правила мертвы, хотя в dev и тестах работают. Только `[dir='rtl'] &` и физические свойства; `:dir(` запрещён stylelint, проверка — нет `:lang(` в `dist/styles.css` после `npm run build`.
+- `:dir(rtl)` и логические свойства (`inset-inline-end`, `border-start-end-radius`…) lightningcss при цели сборки es2020 превращает в `:lang(...)`, и `dir="rtl"` их не включает: в собранном пакете такие RTL-правила мертвы, хотя в dev и тестах работают. Только `[dir='rtl'] &` и физические свойства; `:dir(` запрещён stylelint, проверка — нет `:lang(` в `dist/styles.css` и `dist/media.css` после `npm run build`.
 - Больше 22 перегрузок в `defineEmits` — vue-tsc теряет типы событий (`on${Capitalize<any>}` в `$props`, ломается `Partial<$props>` в тестах). Новые события — в существующие сигнатуры с union (`'pin-message' | 'unpin-message'`), как в BaseChat.
 - `findLast` и `findLastIndex`, как и `.at()`, нет в `lib` сборки пакета: в коде кита — `filter().pop()` или цикл; ловит `npx vue-tsc -p build/lib/tsconfig.lib.json --noEmit`.
 - Проп-функция без значения по умолчанию не перечисляется в `kitDefaults`: `source: undefined` там превращал `props.source` в функцию-значение (умолчание пропа типа Function Vue не вызывает как фабрику) — BaseSearch, поймали тесты.

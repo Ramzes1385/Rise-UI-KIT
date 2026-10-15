@@ -20,7 +20,7 @@
 - строки интерфейса на русском и английском, свой язык — `defineLocale`;
 - типы TypeScript для props, событий, слотов и методов;
 - в зависимостях только Vue и шрифты Inter и JetBrains Mono; потоки HLS — через hls.js, который подключает приложение;
-- видеоплеер — отдельным входом `@ramzes1385/rise-ui-kit/media`: приложения без плеера его код не загружают;
+- видеоплеер — отдельным входом `@ramzes1385/rise-ui-kit/media` и отдельными стилями `media.css`: приложения без плеера не загружают ни его код, ни его стили;
 - электронная подпись `BaseCryptoProSign` и `useCryptoPro`: пользователю нужны КриптоПро CSP, ЭЦП Browser plug-in с расширением для браузера и сертификат с закрытым ключом; приложение раздаёт скрипт `cadesplugin_api.js` с сайта КриптоПро и подключает его на странице или передаёт адрес в `script-url` — подробности и ограничения в docs/reference/COMPONENTS.md, раздел BaseCryptoProSign;
 - composables и utils: горячие клавиши, ловушка фокуса, слои оверлеев, виртуальный список, даты, файлы, субтитры, проверка ссылок.
 
@@ -75,6 +75,23 @@ import '@ramzes1385/rise-ui-kit/styles'
 ```
 
 `styles.layer.css` — одна строка `@import url('./styles.css') layer(rise);`. Стили вне слоёв сильнее любого слоя, поэтому `@layer app` можно и не объявлять. С Tailwind CSS v4: `@layer theme, base, rise, components, utilities;`. По умолчанию `styles.css` без слоя: глобальные сбросы приложения (`button { padding: 0 }`) иначе перебили бы кит.
+
+### Стили видеоплеера
+
+Стили `BaseMediaPlayer` не входят в `styles.css` — они в `media.css`. Приложение с плеером подключает оба файла, `media.css` — после `styles`; токены лежат только в `styles.css`, `media.css` их не повторяет:
+
+```ts
+import '@ramzes1385/rise-ui-kit/styles'
+import '@ramzes1385/rise-ui-kit/media.css'
+```
+
+Со слоями — рядом с `styles.layer.css` (оба кладут стили в слой `rise`):
+
+```css
+@layer reset, rise, app;
+@import '@ramzes1385/rise-ui-kit/styles.layer.css';
+@import '@ramzes1385/rise-ui-kit/media.layer.css';
+```
 
 ### Шрифты
 
@@ -393,9 +410,9 @@ const size = utils.formatFileSize(1024) // то же, что formatFileSize(1024
 
 Исключение — сервисы всего приложения: `useToast`, `useOverlay`, `useConfirm`, `useLoadingBar`, `useColorMode`, `useLocale`, а также `setLocale`, `defineLocale` и словари `ru`, `en` импортируются из корня пакета по имени, как компоненты.
 
-Видеоплеер `BaseMediaPlayer` и его типы — только из подпути `@ramzes1385/rise-ui-kit/media`: в корень пакета и в плагин он не входит, поэтому приложения без плеера его код не загружают.
+Видеоплеер `BaseMediaPlayer` и его типы — только из подпути `@ramzes1385/rise-ui-kit/media`: в корень пакета и в плагин он не входит, поэтому приложения без плеера его код не загружают. Стили плеера — отдельным файлом `@ramzes1385/rise-ui-kit/media.css` (см. «Подключение стилей»).
 
-Подпути из `package.json#exports`: `/components`, `/composables`, `/utils`, `/icons` (константы спрайта и `createIconPlugin`), `/media` (видеоплеер), `/map3d` (3D-карта этажей), `/styles` (`/styles.css`), `/icons.svg`.
+Подпути из `package.json#exports`: `/components`, `/composables`, `/utils`, `/icons` (константы спрайта и `createIconPlugin`), `/media` (видеоплеер), `/map3d` (3D-карта этажей), `/styles` (`/styles.css`), `/media.css` (стили плеера), `/icons.svg`.
 
 ### 3D-карта этажей
 

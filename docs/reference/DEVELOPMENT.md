@@ -107,6 +107,9 @@ dist/icons.js          # /icons
 dist/media.js          # /media — видеоплеер
 dist/chunks/           # общие части; данные эмодзи грузятся отдельным файлом при первом показе
 dist/styles.css        # стили и токены: /styles и /styles.css
+dist/styles.layer.css  # то же в слое rise: /styles.layer.css
+dist/media.css         # стили видеоплеера без токенов: /media.css (подключается после styles.css)
+dist/media.layer.css   # то же в слое rise: /media.layer.css
 dist/icons.svg         # спрайт иконок: /icons.svg
 dist/**/*.d.ts         # типы
 ```
