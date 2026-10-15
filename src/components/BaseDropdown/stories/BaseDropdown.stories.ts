@@ -31,3 +31,4 @@ export const DialogPanel = cases.DialogPanel
 export const TabFromPanel = cases.TabFromPanel
 export const Theming = cases.Theming
 export const Animations = cases.Animations
+export const InScaledContainer = cases.InScaledContainer
