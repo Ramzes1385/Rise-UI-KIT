@@ -3,7 +3,6 @@ import { escapeHtml } from '@utils/dom/htmlUtils'
 import type { EditorMediaFile, EditorMediaKind, EditorUploadAnswer } from '../../types/model/EditorUpload.types'
 
 const UPLOAD_ATTR = 'data-editor-upload'
-const VIDEO_STYLE = 'max-width:100%;border-radius:8px;'
 
 function mediaKind(file: File): EditorMediaKind | null {
 	if (file.type.startsWith('image/')) return 'image'
@@ -38,7 +37,7 @@ export function stripUploadPlaceholders(html: string): string {
 export function mediaHtml(kind: EditorMediaKind, result: EditorUploadAnswer): string {
 	const { src, alt = '' } = typeof result === 'string' ? { src: result } : result
 	const url = escapeHtml(src)
-	if (kind === 'video') return `<video src="${url}" controls style="${VIDEO_STYLE}"></video><br/>`
+	if (kind === 'video') return `<video src="${url}" controls></video><br/>`
 	return `<img src="${url}" alt="${escapeHtml(alt)}">`
 }
 

@@ -111,6 +111,7 @@ describe('BaseEditor: загрузка медиа (uploadMedia)', () => {
 
 		expect(textbox.querySelector('video')).toHaveAttribute('src', 'https://cdn.example.com/a.mp4')
 		expect(textbox.querySelector('video')).toHaveAttribute('controls')
+		expect(textbox.querySelector('video')).not.toHaveAttribute('style')
 	})
 
 	it('ошибка: заглушка убрана без шага в истории, сообщение с role=alert и событие upload-error', async () => {
