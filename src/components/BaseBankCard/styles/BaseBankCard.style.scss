@@ -61,10 +61,10 @@
 	&--full &__holder {
 		grid-area: holder;
 		overflow: hidden;
-		letter-spacing: 0.06em;
 		text-overflow: ellipsis;
 		text-transform: uppercase;
 		white-space: nowrap;
+		@include caps-tracking(0.06em);
 	}
 
 	&--full &__expiry {

@@ -192,8 +192,8 @@
 		color: var(--media-muted);
 		font-size: sz(var(--rise-font-size-xs));
 		font-weight: var(--rise-font-weight-bold);
-		letter-spacing: 0.04em;
 		text-transform: uppercase;
+		@include caps-tracking(0.04em);
 	}
 
 	&__actors-list {
@@ -540,8 +540,8 @@
 		color: var(--media-muted);
 		font-size: sz(var(--rise-font-size-xs));
 		font-weight: var(--rise-font-weight-semibold);
-		letter-spacing: 0.04em;
 		text-transform: uppercase;
+		@include caps-tracking(0.04em);
 	}
 
 	&__watch-members {

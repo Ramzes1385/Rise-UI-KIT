@@ -75,6 +75,17 @@
 	}
 }
 
+// Разрядка подписей в верхнем регистре (`text-transform: uppercase`): для латиницы и кириллицы — `$value`, для китайского и
+// японского (`:lang(zh)`, `:lang(ja)`) — без разрядки: иероглифы не имеют регистра, и интервал только разводит знаки.
+@mixin caps-tracking($value) {
+	letter-spacing: $value;
+
+	&:lang(zh),
+	&:lang(ja) {
+		letter-spacing: 0;
+	}
+}
+
 // Счётчик символов под полем (BaseTextarea): мелкий текст с цифрами одной ширины; $color — токен компонента.
 @mixin field-counter($color: var(--rise-text-muted)) {
 	@include text-size(xs);

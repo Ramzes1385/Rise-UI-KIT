@@ -101,7 +101,7 @@
 		font-weight: var(--rise-font-weight-semibold);
 		color: var(--rise-text-highlighted);
 		text-transform: uppercase;
-		letter-spacing: 0.04em;
+		@include caps-tracking(0.04em);
 	}
 
 	&__media {

@@ -300,8 +300,8 @@
 		color: color-mix(in srgb, var(--media-primary) 55%, var(--media-text));
 		font-size: sz(11px);
 		font-weight: var(--rise-font-weight-semibold);
-		letter-spacing: 0.04em;
 		text-transform: uppercase;
+		@include caps-tracking(0.04em);
 	}
 
 	&__achievement-title {
