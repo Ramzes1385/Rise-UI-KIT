@@ -2122,3 +2122,12 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 ## Задача anim-layout-2
 
 - Storybook, истории «Анимации»: колонки пресетов равной ширины — четыре в ряд, когда каждой хватает `--story-motion-min` (240 px), иначе две или одна. Растягиваемые компоненты (Accordion, Slider, Alert, графики) больше не раздуваются на всю строку. Истории BaseProgress, BaseSkeleton, BaseSeparator, BaseAudioPlayer, BaseVoiceRecorder — без обёртки ширины meta; BaseTooltip, BasePopover, BaseHoverCard, BasePopconfirm, BaseTour — раскладка `padded` вместо `centered`. Меняются снимки `*--animations`.
+
+## Задача w13-l10n-core
+
+Вид на русском не меняется. Эталоны не трогались.
+
+- **BaseHeatmap, английский язык**: неделя начинается с воскресенья (`firstDayOfWeek: 0` словаря en), поэтому столбцы-недели сдвигаются на один день, а подписи слева — «Sun, Tue, Thu» вместо «Mon, Wed, Fri». Для русского (первый день — понедельник) разметка и подписи прежние («Пн, Ср, Пт»). Затрагивает снимки историй BaseHeatmap только при запуске с языком en.
+- **BaseLoader, истории**: подпись `Загрузка...` больше не зашита в аргументы историй, а берётся из словаря текущего языка; на русском она та же (`element-baseloader--default`, `--sizes`, `--variants`, `--animations`, `--theming`, `--custom-color`).
+- **BaseColorPicker, палитра «Токены кита»**: название палитры следует за языком («Токены кита» / «Kit tokens»); на русском то же.
+- **Новая страница Foundations/Localization** (4 истории: «Язык», «Свои тексты», «Свой язык», «Форматы») — новые снимки, их делает владелец.

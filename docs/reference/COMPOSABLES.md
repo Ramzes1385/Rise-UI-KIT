@@ -645,3 +645,19 @@ const { handleKeydown, handleFocusin, focusItem } = useToolbarKeyboard({ rootRef
 - Одна остановка Tab: текущий элемент получает `tabindex="0"`, остальные — `-1` (и `data-toolbar-item`); текущим становится сфокусированный. Разметка отслеживается MutationObserver (дети, `disabled`, `aria-disabled`, `hidden`, `inert`, `aria-hidden`, `data-toolbar-skip`); панель, появившаяся после монтирования (`v-if`), подхватывается, как только `rootRef` получит элемент.
 - ← и → (при `orientation: () => 'vertical'` — ↑ и ↓), Home и End переносят фокус по кругу. В поле ввода стрелка уводит фокус, только когда каретка у края текста в сторону движения; в поле без каретки (`type="number"`, `email`) стрелки остаются за ним; Home и End в поле остаются за ним. События с `Ctrl`, `Alt`, `Meta` и уже обработанные (`defaultPrevented`) пропускаются.
 - `focusItem(index)` — фокус на элемент по номеру (`-1` — последний), `sync()` — переставить `tabindex` вручную, `getItems()` — текущий список.
+
+## useLocale и язык кита (w13-l10n-core)
+
+`useLocale()` (корень пакета) — доступ к языку кита из компонента приложения. Язык один на страницу; меняется на лету.
+
+| Поле | Что это |
+|---|---|
+| `locale` | `ComputedRef<string>` — код текущего языка |
+| `locales` | `ComputedRef<string[]>` — коды доступных языков: встроенные и добавленные `registerLocale()`; для переключателя языка |
+| `messages` | `ComputedRef<UiKitLocale>` — словарь текущего языка (`messages.value.text.EMPTY`) |
+| `setLocale(locale)` | код встроенного или зарегистрированного языка либо словарь (`defineLocale`) |
+| `formatNumber(value, options?)`, `formatDate(date, options?)`, `plural(forms, count)`, `formatMessage(template, params)` | форматы по правилам текущего языка (`messages.intl`) |
+
+Рядом из корня пакета — `defineLocale(base, overrides)` (строки поверх готового языка), `registerLocale(locale)` (регистрация своего языка по `locale.code`), словари `ru` и `en`, тип `UiKitLocale` (TypeScript подскажет все ключи). `registerLocale` повторно с тем же кодом заменяет словарь, в том числе встроенный; если язык включён, строки обновляются сразу.
+
+Словарь задаёт: строки (`text`, `aria` и разделы компонентов), `intl` — языковой тег для `Intl` (даты, числа, валюты, множественное число, сортировка, регистр в поиске), `firstDayOfWeek` — первый день недели (0 — воскресенье, 1 — понедельник). Компоненты берут формат и первый день недели из языка кита, если не получили явные `locale` и `firstDayOfWeek`. Живые примеры и код — Storybook «Foundations / Localization», README, раздел «Языки».
