@@ -1,7 +1,9 @@
 /** Регрессия: utils/index.ts реэкспортировал storybookUtils с runtime-импортом 'storybook/test' — lib-сборка вшивала тестовый рантайм Storybook (~600 КБ) в dist/utils, подгружаемый при импорте корня пакета. */
 
 import ts from 'typescript'
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
+import { execFileSync } from 'node:child_process'
+import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import { dirname, join, normalize, relative, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -103,8 +105,22 @@ describe('границы npm-пакета', () => {
 /** Входы кита, через которые плеер (отдельный вход `/media`, позже — отдельный пакет) может брать его код */
 const KIT_ENTRIES = ['index.ts', 'components/index.ts', 'composables/index.ts', 'utils/index.ts', 'icons/index.ts']
 
-/** Папки отдельного пакета плеера: сам плеер и презентация на его ядре; друг из друга они берут код напрямую */
-const MEDIA_DIRS = ['components/BaseMediaPlayer', 'components/BasePresentationPlayer'].map(dir => join(SRC, dir))
+/** Пакеты из `build/packages/packages.json`: папки компонентов кита, входы пакета и входы, которым разрешён `three` */
+interface PackageConfig {
+	name: string
+	components: Array<{ dir: string; to: string }>
+	entries: Record<string, string[]>
+	threeEntries: string[]
+}
+
+const PACKAGES: Record<string, PackageConfig> = JSON.parse(readFileSync(join(ROOT, 'build/packages/packages.json'), 'utf8'))
+
+function packageDirs(config: PackageConfig): string[] {
+	return config.components.map(({ dir }) => join(SRC, 'components', dir))
+}
+
+/** Строки и формат языка кита пакет берёт через сгенерированный `src/kitLocale.ts` (публичный `useLocale()`): имена проверяет сборка пакета в extract.mjs */
+const KIT_LOCALE_SPECIFIER = /^@\/locales\/(?:messages|state|warn)$/
 
 function kitPublicNames(): Set<string> {
 	const host = { ...ts.sys, onUnRecoverableConfigFileDiagnostic: () => undefined }
@@ -137,17 +153,18 @@ function importedNames(clause: ts.ImportClause | undefined, exportClause: ts.Nam
 	return names
 }
 
-/** Импорты папки плеера из остального кита: файл, модуль и импортируемые имена */
-function mediaKitImports(): Array<{ file: string; specifier: string; name: string }> {
-	return MEDIA_DIRS.flatMap(listSources).flatMap(file => {
+/** Импорты папок пакета из остального кита: файл, модуль и импортируемые имена */
+function packageKitImports(dirs: string[]): Array<{ file: string; specifier: string; name: string }> {
+	return dirs.flatMap(listSources).flatMap(file => {
 		let source = readFileSync(file, 'utf8')
 		if (file.endsWith('.vue')) source = [...source.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(match => match[1]).join('\n')
 		const tree = ts.createSourceFile(file, source, ts.ScriptTarget.Latest)
 		return tree.statements.flatMap(statement => {
 			if (!(ts.isImportDeclaration(statement) || ts.isExportDeclaration(statement)) || !statement.moduleSpecifier) return []
 			const specifier = (statement.moduleSpecifier as ts.StringLiteral).text
+			if (KIT_LOCALE_SPECIFIER.test(specifier)) return []
 			const target = resolveSpecifier(specifier, file)
-			if (!target || MEDIA_DIRS.some(dir => target.startsWith(dir + sep))) return []
+			if (!target || dirs.some(dir => target.startsWith(dir + sep))) return []
 			const names = ts.isImportDeclaration(statement)
 				? importedNames(statement.importClause, undefined)
 				: importedNames(undefined, statement.exportClause)
@@ -156,12 +173,56 @@ function mediaKitImports(): Array<{ file: string; specifier: string; name: strin
 	})
 }
 
-describe('границы плеера', () => {
-	it('папка плеера берёт код кита только из его публичных входов: каждое имя экспортирует пакет', () => {
-		const imports = mediaKitImports()
+describe.each(Object.entries(PACKAGES))('границы пакета %s', (key, config) => {
+	const dirs = packageDirs(config)
+
+	it('папки пакета берут код кита только из его публичных входов: каждое имя экспортирует пакет', () => {
+		const imports = packageKitImports(dirs)
 		const publicNames = kitPublicNames()
 		expect(imports.length).toBeGreaterThan(0)
 		expect(imports.filter(({ name }) => !publicNames.has(name))).toEqual([])
+	})
+
+	it('внешние runtime-импорты пакета объявлены в peerDependencies шаблона', () => {
+		const template = JSON.parse(readFileSync(join(ROOT, 'build/packages/templates', key, 'package.json'), 'utf8'))
+		const declared = new Set([...Object.keys(template.peerDependencies ?? {}), ...Object.keys(template.dependencies ?? {})])
+		const external = new Set(
+			dirs
+				.flatMap(listSources)
+				.flatMap(file =>
+					runtimeSpecifiers(file).filter(specifier => !specifier.startsWith('.') && !resolveSpecifier(specifier, file)),
+				)
+				.map(specifier => (specifier.startsWith('@') ? specifier.split('/').slice(0, 2).join('/') : specifier.split('/')[0])),
+		)
+		expect([...external].filter(name => !declared.has(name))).toEqual([])
+	})
+
+	it('three — только в папках входов threeEntries; остальные входы пакета его не достигают', () => {
+		const threeDirs = config.threeEntries.flatMap(entry => config.entries[entry]).map(dir => join(SRC, 'components', dir))
+		const offenders = dirs
+			.flatMap(listSources)
+			.filter(importsThree)
+			.filter(file => !threeDirs.some(dir => file.startsWith(dir + sep)))
+		expect(offenders.map(file => relative(ROOT, file))).toEqual([])
+		const plainEntries = Object.entries(config.entries)
+			.filter(([entry]) => !config.threeEntries.includes(entry))
+			.flatMap(([, entryDirs]) => entryDirs.map(dir => `components/${dir}/index.ts`))
+		expect([...reachableFrom(plainEntries)].filter(importsThree).map(file => relative(ROOT, file))).toEqual([])
+	})
+
+	it('extract.mjs собирает пакет: импорты кита переписаны, внутренних модулей нет', () => {
+		const out = mkdtempSync(join(tmpdir(), `rise-${key}-`))
+		try {
+			execFileSync('node', [join(ROOT, 'build/packages/extract.mjs'), key, join(out, 'pkg')], { stdio: 'pipe' })
+			const sources = listSources(join(out, 'pkg/src'))
+			expect(sources.length).toBeGreaterThan(0)
+			const leftovers = sources.filter(file =>
+				/from\s+['"]@(?:components|composables|utils|icons|styles)?\//.test(readFileSync(file, 'utf8')),
+			)
+			expect(leftovers).toEqual([])
+		} finally {
+			rmSync(out, { recursive: true, force: true })
+		}
 	})
 })
 

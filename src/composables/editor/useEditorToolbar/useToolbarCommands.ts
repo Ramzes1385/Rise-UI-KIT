@@ -49,7 +49,7 @@ function useToolbarCommands(options: UseToolbarCommandsOptions) {
 			if (event.target instanceof HTMLInputElement) applyColor(event.target.value)
 		},
 		insertLink: () => insertLink(options),
-		resolveLinkUrl,
+		resolveLinkUrl: (input: string) => resolveLinkUrl(input),
 		readLink: () => readLinkAtSelection(options),
 		applyLink: (value: EditorLinkValue) => applyLink(options, value),
 		removeLink: () => removeLink(options),

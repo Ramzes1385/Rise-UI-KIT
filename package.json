@@ -926,7 +926,7 @@
       "src/map3d.ts",
       "src/composables/crypto/useCryptoPro/emulation/index.ts",
       "scripts/*.mjs",
-      "build/media-package/extract.mjs"
+      "build/packages/extract.mjs"
     ],
     "project": [
       "src/**/*.{ts,vue,mdx}",
@@ -989,7 +989,7 @@
       "lightningcss"
     ],
     "ignore": [
-      "build/media-package/template/**"
+      "build/packages/templates/**"
     ],
     "ignoreIssues": {
       "src/plugin/plugin.ts": [
