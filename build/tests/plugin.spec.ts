@@ -7,6 +7,7 @@ import { en } from '@/locales/en'
 import { ru } from '@/locales/ru'
 import { UI_ARIA, UI_TEXT } from '@/locales/messages'
 import { createUiKitPlugin, UI_COMPONENTS, uiKitPlugin } from '@/plugin'
+import type { UiKitPluginOptions } from '@/plugin'
 import { TELEPORT_TARGET_KEY } from '@composables/app/useTeleportTarget/useTeleportTarget'
 import { useTheme } from '@composables/app/useTheme/useTheme'
 import { createTheme } from '@utils/theme/themeUtils'
@@ -99,8 +100,7 @@ describe('createUiKitPlugin', () => {
 	})
 	it('locale принимает словарь, строки поверх готового языка и код зарегистрированного языка', () => {
 		const Probe = defineComponent({ setup: () => () => h('output', UI_TEXT.EMPTY) })
-		const mountWith = (locale: Parameters<typeof createUiKitPlugin>[0] extends infer O ? NonNullable<O>['locale'] : never) =>
-			mount(Probe, { global: { plugins: [createUiKitPlugin({ locale })] } })
+		const mountWith = (locale: UiKitPluginOptions['locale']) => mount(Probe, { global: { plugins: [createUiKitPlugin({ locale })] } })
 
 		expect(mountWith(defineLocale(ru, { text: { EMPTY: 'Пока пусто' } })).text()).toBe('Пока пусто')
 		expect(UI_TEXT.CANCEL).toBe(ru.text.CANCEL)
