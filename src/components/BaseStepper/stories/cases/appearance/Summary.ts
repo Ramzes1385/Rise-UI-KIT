@@ -49,7 +49,7 @@ export const Summary: StoryObj<typeof meta> = {
 	play: async ({ canvasElement }) => {
 		const [titled, count, none] = [...canvasElement.querySelectorAll<HTMLElement>('.base-stepper')]
 		await waitFor(() => expect(getComputedStyle(titled, '::after').content).toContain('Шаг 2 из 4: Доставка'))
-		await expect(getComputedStyle(count, '::after').content).toMatch(/Шаг 2 из 4"?$/)
+		await expect(getComputedStyle(count, '::after').content).toContain('Шаг 2 из 4"')
 		await expect(getComputedStyle(none, '::after').content).toBe('none')
 	},
 }
