@@ -3199,3 +3199,13 @@ app.use(createUiKitConfig({ locale: 'en', theme: 'corporate' }))
 - BaseTabs в RTL: стрелки ← и → меняются местами; в `ltr` поведение прежнее. Если приложение перехватывало стрелки на списке вкладок в RTL — проверьте.
 - BaseSegmented: DOM сегмента вынесен во внутренний компонент (разметка и классы не менялись), добавлен проп `isIconOnly`.
 - BaseImageMapEditor: в области уже 760 px DOM панели другой (кнопки-раскрыватели в заголовках, свёрнутые разделы без содержимого), кнопки файлов и инструменты — иконки с именем; на широкой раскладке разметка прежняя, кроме обёртки `base-image-map-editor__section-body` вокруг содержимого раздела.
+
+## Задача w14-fu-triage
+
+Не ломающая.
+
+- **Ошибки полей озвучиваются сразу** (поведение, доступность): текст ошибки в `FormFieldError` (BaseInput, BaseTextarea, BaseSelect, BaseCheckbox, BaseSwitch, BaseRadio, BaseCheckboxGroup, BaseCardInput, BaseTreeSelect, BaseCascader, BaseMention, BaseSignaturePad, BaseSegmented, BasePin, BaseEditor) и сообщение об ошибке в `BaseFormField` получили `role="alert"`. Раньше ошибку читал скринридер только при переходе фокуса на поле (`aria-describedby`), теперь появление ошибки объявляется сразу. Ошибка, показанная при первой отрисовке, не озвучивается (озвучивается появление, а не начальный текст). Тест приложения, который ищет единственный `role="alert"` на странице с невалидной формой через `getByRole('alert')`, теперь найдёт несколько — берите `getAllByRole('alert')` или ищите внутри поля (`within`).
+- **`useToast().add()`: `position`, `color`, `sizeScale`, `customClass`** (новое необязательное API, minor): оформляют только это уведомление, как у `add()` самого BaseNotification; без них действуют настройки `toaster`. Уведомления с разными углами лежат в отдельных областях, у каждой имя с положением («Уведомления: внизу слева»). `maxVisible` у `useToast` не нужен: лишние, самые старые, закрывает `toaster.max`.
+- **BaseEditor, `uploadMedia`**: кнопки «Изображение» и «Видео» принимают несколько файлов за один выбор (`multiple`), каждый файл грузится отдельно и вставляется заглушкой по порядку выбора. Без `uploadMedia` — по-прежнему один файл с `blob:`.
+- Без изменений для приложений: BaseSideBar берёт признак «`isCollapsed` передан родителем» из общего `useExplicitPropDetection` (то же поведение); у подписи значения и описания пункта BaseMention добавлен переход цвета (вид в покое прежний).
+- Тесты: `defaults.BaseMap` плагина (`BaseMap.ui.spec.ts`), `role="alert"` у ошибок полей (`BaseFormField.spec.ts`, `BaseFormField.theming.spec.ts`), `useToast` с позицией и оформлением (`BaseApp.spec.ts`), несколько файлов в BaseEditor (`BaseEditor.upload.spec.ts`).

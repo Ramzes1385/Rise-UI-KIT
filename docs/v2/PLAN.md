@@ -289,3 +289,7 @@
 - Первый день недели из явного `locale` (BaseCalendar, BaseDatePicker, `src/utils/calendar/weekUtils`), проп `firstDayOfWeek` у BaseHeatmap.
 - Миксин `caps-tracking`: без разрядки подписей в верхнем регистре на `:lang(zh)` и `:lang(ja)`.
 - Документы: MIGRATION, CHANGES_FOR_APPS, VISUAL_CHANGES, FOLLOW_UPS, DESIGN_SYSTEM, COMPONENTS, README. Эталоны скриншотов — владельцу.
+
+## Задача w14-fu-triage
+
+Волна 14 (16.10): разбор старых открытых пунктов `docs/design/FOLLOW_UPS.md` до раздела «Задача followups-audit» включительно и задач после него до «Задача anim-layout-2». Что закрыто как уже сделанное (с проверкой по коду), что сделано, что осталось и почему — таблица в разделе «Задача w14-fu-triage» FOLLOW_UPS. Из нового кода: `role="alert"` у ошибок полей, оформление отдельного уведомления в `useToast`, несколько файлов у кнопок BaseEditor, переход цвета в списке BaseMention, тест `defaults.BaseMap`.
