@@ -1,5 +1,5 @@
 /** Точка отсчёта в координатах окна: левый верхний угол */
-export interface WindowPoint {
+interface WindowPoint {
 	x: number
 	y: number
 }
