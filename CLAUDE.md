@@ -88,7 +88,7 @@ docs/            CONTRIBUTING, reference/, design/, v2/, audit/
 | Прогон историй (play, axe, обе темы) | `node scripts/serve-storybook-static.mjs` (порт 6006), затем `node scripts/check-stories.mjs --url=http://localhost:6006 --filter='<regex id>' --concurrency=2` |
 | E2E | `npm run test:e2e` |
 | Скриншот-тесты | `npx playwright test --config build/tests/playwright.config.ts --project=visual-chromium --update-snapshots=none` |
-| Сборка пакета (два прохода Vite: `styles.css` и `media.css` плеера) | `npm run build`, `npm run pack:dry`, затем `npm run test:css-split` — в `styles.css` нет стилей плеера, в `media.css` нет токенов |
+| Сборка пакета (четыре прохода Vite: JS всех входов и подпутей, `styles.css`, `media.css` плеера, CSS подпутей и `tokens.css` — docs/reference/DEVELOPMENT.md, «Сборка») | `npm run build`, `npm run pack:dry`, затем `npm run test:css-split` — в `styles.css` нет стилей плеера, в `media.css` и `style.css` компонентов нет токенов, правила CSS подпутей = правила `styles.css`; `npm run test:subpaths` — приложение из `npm pack` с компонентом с подпути (подпуть нового компонента в exports добавляет `create:component`, вручную — `npm run generate:subpath-exports`) |
 | Как в CI | `npm run ci:validate` |
 
 - Скриншот-тесты — только с `--update-snapshots=none`. Эталоны не создаются и не обновляются (`test:visual:update` не запускать): их делает владелец. Каждое ожидаемое визуальное изменение описывается в docs/design/VISUAL_CHANGES.md.
@@ -137,6 +137,7 @@ docs/            CONTRIBUTING, reference/, design/, v2/, audit/
 - `import.meta.env.DEV` при сборке кита становится `false` навсегда: предупреждения для разработчиков приложений — под `process.env.NODE_ENV !== 'production'`.
 - Лишний слот в шаблоне (`<template #x>` у компонента без слота `x`) vue-tsc не ловит даже со `strictTemplates`: слоты сверяет `npm run test:slot-docs` и ревью.
 - jest-dom `toHaveClass` падает на элементе из другого документа (iframe): в таких тестах — `element.classList.contains(...)`.
+- `output.strictExecutionOrder` в сборке пакета заворачивает модули в обёртки инициализации, и приложение на Vite 8 при `sideEffects` пакета выбрасывает их вызов: импортированный компонент — `undefined`, хотя тесты кита и Storybook (они на исходниках) зелёные. Ловит только сборка приложения из пакета — `npm run test:subpaths` (компонент должен отрисоваться).
 
 ## Окружение: подводные камни
 

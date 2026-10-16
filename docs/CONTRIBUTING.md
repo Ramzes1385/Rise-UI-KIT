@@ -145,7 +145,7 @@ npm run create:component -- InputNumber --group=Form --kind=form --long
 | `--loading`, `--empty`, `--long` | Включить проверку состояний Loading, Empty, LongContent и создать заготовки этих stories |
 | `--dry-run` | Показать, что будет создано, ничего не записывая |
 
-Скрипт создаёт `index.ts`, типы `types/BaseX.types.ts`, компонент и его логику `model/useBaseX.ts`, стили, stories (по файлам, как в разделе «Stories»), unit-, integration- и visual-тесты. Экспорт добавляется в `src/components/index.ts`, регистрация — в `src/plugin/registry/components.ts`, имя компонента — в наборы `scripts/check-a11y-coverage.mjs`.
+Скрипт создаёт `index.ts`, типы `types/BaseX.types.ts`, компонент и его логику `model/useBaseX.ts`, стили, stories (по файлам, как в разделе «Stories»), unit-, integration- и visual-тесты. Экспорт добавляется в `src/components/index.ts`, подпуть `./BaseX` — в exports `package.json` (точечная установка, `scripts/generate-subpath-exports.mjs`), регистрация — в `src/plugin/registry/components.ts`, имя компонента — в наборы `scripts/check-a11y-coverage.mjs`.
 
 Заготовка сразу проходит lint, проверку типов, тесты с покрытием 100% и прогон stories в обеих темах. Назначение, размеры и различия вариантов автор описывает сам: эти места помечены `TODO(scaffold)`, и `npm run test:a11y:coverage` не пройдёт, пока метки остаются.
 
@@ -249,7 +249,7 @@ npm run release:dry
 
 | Что | Правило |
 |---|---|
-| Размер каждого входа пакета (`exports` в `package.json`: `index.js`, `components.js`, …, `styles.css`, `media.css`, `icons.svg`) в gzip — файл входа вместе с чанками, которые он подгружает статическими `import`; динамические `import()` не считаются | не больше бюджета (`size.<вход>.budget`); нужна свежая сборка `npm run build` |
+| Размер каждого входа пакета (`exports` в `package.json`: `index.js`, `components.js`, …, `styles.css`, `media.css`, `tokens.css`, `icons.svg`) в gzip — файл входа вместе с чанками и CSS, которые он подгружает статическими `import`; динамические `import()` не считаются. Подпути компонентов — один бюджет `components/*/index.js` на самый тяжёлый, CSS папок компонентов — `components/*/style.css` на самый тяжёлый файл | не больше бюджета (`size.<вход>.budget`); нужна свежая сборка `npm run build` |
 | Число `--coverage.exclude` в каждом скрипте `test:*:coverage` | не больше базы (`coverageExcludes`); у нового скрипта база — 0 |
 | Число предупреждений `eslint "src/**/*.{ts,vue}"` — то же, что `npm run lint` | не больше базы (`lintWarnings`) |
 

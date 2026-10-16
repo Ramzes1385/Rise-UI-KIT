@@ -3095,3 +3095,28 @@ import { BaseMediaPlayer } from '@ramzes1385/rise-ui-kit/media'
 ## Задача stories-fix
 
 - **BaseEditor, видео из `uploadMedia`**: `<video>`, который редактор вставляет по ответу `uploadMedia`, больше не получает inline `style="max-width:100%;border-radius:8px;"` — ширину и скругление задаёт CSS области редактора (`.base-editor__content :where(img, video)`: `max-width: 100%`, `height: auto`, `border-radius`). Санитайзер `sanitizeHtml` этот `style` пропускал (`max-width` и `border-radius` в списке разрешённых), поэтому раньше он попадал в `v-model`. **Что сделать:** если приложение хранит HTML и сравнивает его со строкой с `style` или выводит видео вне редактора, добавьте свои `max-width: 100%` и `height: auto` для `video`; уже сохранённый HTML со `style` показывается и очищается как раньше.
+
+## Задача w13-subpaths
+
+### Точечная установка: подпуть на каждый компонент и `tokens.css` (новое, PLAN Н.2 вариант «б»)
+
+- **Было:** компоненты — только из корня или `/components`, стили — один `styles.css` (≈97 КБ gzip) на все компоненты.
+- **Стало:** у каждого компонента из `/components` есть свой подпуть — `@ramzes1385/rise-ui-kit/BaseButton`, `/BaseSelect`, … (147 штук, отдают то же, что раздел компонента в `/components`: компонент, константы, типы). JS подпути сам импортирует CSS компонента и тех, что он использует внутри (`dist/components/<Имя>/style.css`, без токенов); токены, темы, движение и база шрифта — `@ramzes1385/rise-ui-kit/tokens.css` (`tokens.layer.css` — в слое `rise`), подключается один раз. Подпути делят код с корнем и `/components`: в приложении один экземпляр компонента и ключей `provide`/`inject`, настройки `createUiKitPlugin` действуют и на компоненты из подпутей.
+- **Сколько:** приложение Vite 8 из `npm pack`, BaseButton с подпути + `tokens.css` — CSS 4,8 КБ gzip (с корнем и `styles.css` — 96,9 КБ), JS тот же (27,8 КБ вместе с vue); BaseSelect — CSS 8,5 КБ против 96,9 КБ, JS 91,4 КБ в обоих случаях. Снимки страниц с подпути и из корня совпадают байт в байт (`npm run test:subpaths`).
+- **Что сделать:** ничего — корень, `/components`, `styles.css`, `styles.layer.css`, `/media`, `media.css`, `/map3d` и плагин работают как раньше. Перейти на точечную установку — заменить `import '@ramzes1385/rise-ui-kit/styles'` на `import '@ramzes1385/rise-ui-kit/tokens.css'` и импортировать компоненты с подпутей (README, «Точечная установка»). С SSR пакет нужно пропустить через сборку: Vite — `ssr.noExternal: ['@ramzes1385/rise-ui-kit']`, Nuxt — `build.transpile: ['@ramzes1385/rise-ui-kit']`. Плагин по-прежнему регистрирует все компоненты глобально и тянет их JS — при точечной установке язык задаёт `setLocale`, тема — `applyTheme`.
+
+```ts
+import '@ramzes1385/rise-ui-kit/tokens.css'
+import { BaseButton } from '@ramzes1385/rise-ui-kit/BaseButton'
+```
+
+### Сборка: обычный ESM вместо `strictExecutionOrder` (исправление)
+
+- **Было:** с задачи FOLLOW_UPS № 58 чанки пакета собирались с `output.strictExecutionOrder`: код модулей лежал в обёртках инициализации (`var X; init = () => { X = … }`), вход вызывал их при загрузке. Приложение на Vite 8 (rolldown) при именованном импорте из корня выбрасывало вызов обёртки — пакет объявляет свой JS без побочных эффектов (`sideEffects`), — и компонент оказывался `undefined`: `h(BaseButton)` давал пустой комментарий вместо кнопки. Проверено на сборке `feat/rise-v2` 9e60a0d1: приложение с `import { BaseButton } from '@ramzes1385/rise-ui-kit'` не рисовало кнопку.
+- **Стало:** основной проход — обычный ESM, код по чанкам делит rolldown по набору входов (у каждого компонента теперь свой вход-подпуть); приложение берёт только использованное, и компонент отрисовывается. Тяжёлые компоненты плагина (BaseTable, BaseChat, …) по-прежнему не в стартовом JS приложения с `createUiKitPlugin`, а в чанках по `import()` (+114,9 КБ gzip по требованию), — без групп `lazy-*`.
+- **Что заметит приложение:** в `dist/chunks/` ≈390 файлов вместо ≈40, имена другие (в exports их нет, импорт из `dist/chunks` не поддерживается). В `sideEffects` пакета добавлен `./dist/components/*/index.js` — вход подпути, который импортирует CSS. `styles.css` и `media.css` — байт в байт прежние.
+
+### Для кита
+
+- Сборка JS и CSS — четыре прохода (`build:lib:js`): `vite.lib.config.ts` (JS всех входов и подпутей), `vite.styles-css.config.ts` (`styles.css` — граф и группы `lazy-*` как раньше, поэтому порядок правил прежний), `vite.media-css.config.ts`, `vite.subpath-css.config.ts` (`style.css` компонентов и `tokens.css`; токены prelude отрезаются по модулю-метке `@use 'rise:css-split-marker'` сразу после prelude — стили частичных файлов вроде `@use './body/cell'` у BaseTable остаются). Список подпутей — реэкспорты `src/components/index.ts` (`build/config/subpaths.ts`); exports пишет `npm run generate:subpath-exports`, подпуть нового компонента добавляет и `create:component` (сверку делают `build/tests/subpaths.spec.ts` и `npm run test:subpaths`).
+- Проверки: `npm run test:css-split` дополнительно сверяет правила `tokens.css` + всех `style.css` с `styles.css` (19 611 правил, совпадают в обе стороны; 3D-карта без подпути не входит), `npm run test:subpaths` (в `ci:validate` и CI — без снимков). Бюджеты размера пересчитаны: сумма gzip по файлам входа выросла из-за числа файлов (`index.js` 654 → 814 КБ, `components.js` 623 → 783 КБ по метрике ратчета; сумма байтов чанков без сжатия почти та же — 2,47 → 2,51 МБ); новые бюджеты — `tokens.css`, самый тяжёлый подпуть (`components/*/index.js`, сейчас BaseImageMapEditor, 204 КБ gzip вместе с CSS) и самый тяжёлый CSS компонента (`components/*/style.css`, BaseChat, 5,9 КБ gzip).

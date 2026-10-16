@@ -85,6 +85,7 @@ npm run storybook
 | `npm run test:contrast` | контраст пар токенов «текст/фон» в обеих темах |
 | `npm run test:e2e` | e2e в Chromium (Playwright) против Storybook; без `PLAYWRIGHT_REUSE_SERVER=true` Playwright сам запускает Storybook |
 | `npm run test:visual` | скриншоты против эталонов; эталоны не обновляются автоматически — их создают после просмотра изменений (в CI — по метке `visual:update-baselines` у PR) |
+| `npm run test:subpaths` | точечная установка: exports подпутей совпадают со списком компонентов (`npm run generate:subpath-exports` их переписывает), приложение Vite из `npm pack` с BaseButton / BaseSelect с подпути получает только их JS и CSS, снимки совпадают с импортом из корня (`--no-screenshot` — без Chromium). Нужна сборка |
 | `npm run ci:validate` | базовая проверка перед push: линтеры, форматирование, типы, unit-тесты, сухая сборка пакета |
 
 ---
@@ -105,7 +106,11 @@ dist/composables.js    # /composables
 dist/utils.js          # /utils
 dist/icons.js          # /icons
 dist/media.js          # /media — видеоплеер
-dist/chunks/           # общие части; данные эмодзи грузятся отдельным файлом при первом показе
+dist/chunks/           # общие части (по набору входов, которым они нужны); данные эмодзи грузятся отдельным файлом при первом показе
+dist/components/<Имя>/index.js   # подпуть /<Имя>: импорт CSS компонента и того, что он использует, и реэкспорт из chunks/
+dist/components/<Имя>/style.css  # собственные стили папки компонента, без токенов
+dist/tokens.css        # токены, темы, движение, база шрифта — для подпутей: /tokens.css
+dist/tokens.layer.css  # то же в слое rise: /tokens.layer.css
 dist/styles.css        # стили и токены: /styles и /styles.css
 dist/styles.layer.css  # то же в слое rise: /styles.layer.css
 dist/media.css         # стили видеоплеера без токенов: /media.css (подключается после styles.css)
@@ -113,6 +118,8 @@ dist/media.layer.css   # то же в слое rise: /media.layer.css
 dist/icons.svg         # спрайт иконок: /icons.svg
 dist/**/*.d.ts         # типы
 ```
+
+Сборка JS и CSS — четыре прохода Vite (`build:lib:js`): основной `build/lib/vite.lib.config.ts` (JS всех входов и подпутей, спрайт; обычный ESM — код по чанкам делит rolldown по набору входов), `vite.styles-css.config.ts` (`styles.css` — граф входов и группы `lazy-*` как до подпутей, поэтому порядок правил прежний), `vite.media-css.config.ts` (`media.css`) и `vite.subpath-css.config.ts` (`components/<Имя>/style.css` и `tokens.css`: токены, которые prelude кладёт в каждый стиль, отрезаются по метке, `build/plugins/subpathCss.ts`). Вход подпути импортирует CSS папок компонентов, которые он использует, в порядке выполнения модулей (`build/plugins/subpaths.ts`); список подпутей — реэкспорты `src/components/index.ts` (`build/config/subpaths.ts`). `npm run test:css-split` сверяет: правила `tokens.css` + всех `style.css` — ровно правила `styles.css` (кроме 3D-карты, у неё нет подпути).
 
 Локальный пакет для проверки в приложении:
 

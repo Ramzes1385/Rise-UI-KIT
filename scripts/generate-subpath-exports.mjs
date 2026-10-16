@@ -19,13 +19,13 @@ const GENERATED_KEY = /^\.\/(?:Base\w+|tokens(?:\.layer)?\.css)$/
 
 const cssExport = file => ({ types: './dist/styles.d.ts', import: `./dist/${file}`, default: `./dist/${file}` })
 
-/** Подпути, которые должны быть в exports, в порядке записи */
-export function subpathExports(root = ROOT) {
+/** Подпути, которые должны быть в exports, в порядке записи (`components` — список компонентов, если его ещё нет на диске) */
+export function subpathExports(root = ROOT, components = readPublicComponents(root)) {
 	const entries = [
 		[`./${TOKENS_CSS_FILE}`, cssExport(TOKENS_CSS_FILE)],
 		[`./${TOKENS_LAYER_CSS_FILE}`, cssExport(TOKENS_LAYER_CSS_FILE)],
 	]
-	for (const component of readPublicComponents(root)) {
+	for (const component of components) {
 		const file = subpathEntryName(component)
 		entries.push([`./${component}`, { types: `./dist/${file}.d.ts`, import: `./dist/${file}.js` }])
 	}
@@ -33,11 +33,11 @@ export function subpathExports(root = ROOT) {
 }
 
 /** exports пакета с подпутями на месте: свои ключи — как были, сгенерированные — заново */
-export function withSubpathExports(exports, root = ROOT) {
+export function withSubpathExports(exports, root = ROOT, components = readPublicComponents(root)) {
 	const own = Object.entries(exports).filter(([key]) => !GENERATED_KEY.test(key))
 	const anchor = own.findIndex(([key]) => key === ANCHOR)
 	const at = anchor < 0 ? own.length : anchor
-	return Object.fromEntries([...own.slice(0, at), ...Object.entries(subpathExports(root)), ...own.slice(at)])
+	return Object.fromEntries([...own.slice(0, at), ...Object.entries(subpathExports(root, components)), ...own.slice(at)])
 }
 
 function main() {

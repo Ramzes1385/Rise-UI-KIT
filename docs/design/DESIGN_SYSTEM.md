@@ -14,7 +14,7 @@
 
 ## 1. Токены
 
-Все токены объявлены в `src/styles/_tokens.scss`. Они подключаются в каждый стиль компонента через prelude (`build/config/css.ts`) и попадают в `dist/styles.css` (стили плеера вынесены в `dist/media.css` без токенов, `build/plugins/cssSplit.ts`); повторы правил схлопывает минификатор, повторы блоков `@media` — плагин сборки `build/plugins/cssDedupe.ts`.
+Все токены объявлены в `src/styles/_tokens.scss`. Они подключаются в каждый стиль компонента через prelude (`build/config/css.ts`) и попадают в `dist/styles.css` (стили плеера вынесены в `dist/media.css` без токенов, `build/plugins/cssSplit.ts`) и в `dist/tokens.css` для точечной установки — там токены один раз, а `dist/components/<Имя>/style.css` их не повторяют (`build/plugins/subpathCss.ts`); повторы правил схлопывает минификатор, повторы блоков `@media` — плагин сборки `build/plugins/cssDedupe.ts`.
 
 ### 1.1. Три уровня
 
@@ -41,7 +41,7 @@
 
 **Тема на области** — `data-rise-theme` и `data-theme` на одном элементе. Семантика (уровень 2) вычисляется там, где объявлена, — на `:root` и `[data-theme]`; сиды на элементе без `data-theme` до неё не доходят (палитра на `div` без `data-theme` кнопку не перекрасит). Телепортированные панели копируют с якоря оба атрибута (`useInheritedThemeAttrs`). Тему создаёт `createTheme()` — задача theme-api; пресет движения — атрибут `data-rise-motion` рядом с `data-rise-theme` (задача motion-core). Токены компонентов, заданные на произвольном контейнере, в телепортированную панель не попадают — задайте их в теме или на `:root`.
 
-**Порядок CSS.** `@ramzes1385/rise-ui-kit/styles.layer.css` кладёт весь кит в `@layer rise`: стили приложения вне слоя сильнее при любой специфичности и порядке подключения. Порядок слоёв задаёт приложение: `@layer reset, rise, app;` (с Tailwind v4 — `@layer theme, base, rise, components, utilities;`). `styles.css` остаётся без слоя. Стили видеоплеера — отдельно: `media.css` и `media.layer.css` (тот же слой `rise`), подключаются после `styles.css` / `styles.layer.css`.
+**Порядок CSS.** `@ramzes1385/rise-ui-kit/styles.layer.css` кладёт весь кит в `@layer rise`: стили приложения вне слоя сильнее при любой специфичности и порядке подключения. Порядок слоёв задаёт приложение: `@layer reset, rise, app;` (с Tailwind v4 — `@layer theme, base, rise, components, utilities;`). `styles.css` остаётся без слоя. Стили видеоплеера — отдельно: `media.css` и `media.layer.css` (тот же слой `rise`), подключаются после `styles.css` / `styles.layer.css`. При точечной установке (`@ramzes1385/rise-ui-kit/BaseButton`) JS компонента подключает свой CSS сам, без слоя; `tokens.layer.css` кладёт в слой только токены.
 
 ### 1.2. Семантические токены
 

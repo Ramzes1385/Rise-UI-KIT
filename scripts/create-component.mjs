@@ -3,6 +3,8 @@
 import { execFileSync } from 'node:child_process'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
+import { readPublicComponents } from '../build/config/subpaths.ts'
+import { withSubpathExports } from './generate-subpath-exports.mjs'
 
 const ROOT = resolve(process.cwd())
 const COMPONENTS_DIR = join(ROOT, 'src/components')
@@ -765,6 +767,14 @@ function registerInBarrel(n, changes) {
 	changes.set(path, `${lines.join('\n')}\n`)
 }
 
+/** Подпуть `./<Имя>` в exports package.json (точечная установка, scripts/generate-subpath-exports.mjs) */
+function registerInExports(n, changes) {
+	const path = join(ROOT, 'package.json')
+	const pkg = JSON.parse(readFileSync(path, 'utf-8'))
+	const components = [...readPublicComponents(ROOT), n.name].sort()
+	changes.set(path, `${JSON.stringify({ ...pkg, exports: withSubpathExports(pkg.exports, ROOT, components) }, null, 2)}\n`)
+}
+
 function registerInPlugin(n, changes) {
 	const path = join(ROOT, 'src/plugin/registry/components.ts')
 	let source = readFileSync(path, 'utf-8')
@@ -839,6 +849,7 @@ function main() {
 	])
 	const changes = new Map()
 	registerInBarrel(n, changes)
+	registerInExports(n, changes)
 	registerInPlugin(n, changes)
 	const sets = registerInA11yGate(n, options.kind, flags, changes)
 
@@ -858,7 +869,7 @@ function main() {
 
 	if (options.lint) {
 		// Сначала Prettier: он переносит длинные строки, и от этого зависит длина импортов, по которой ESLint их сортирует
-		const formattable = [...created, ...changes].map(([path]) => path)
+		const formattable = [...created, ...changes].map(([path]) => path).filter(path => !path.endsWith('package.json'))
 		execFileSync('npx', ['prettier', '--write', '--log-level', 'warn', ...formattable], { stdio: 'inherit', cwd: ROOT })
 		const lintable = [
 			...created.map(([path]) => path).filter(path => /\.(ts|vue)$/.test(path)),
@@ -874,7 +885,7 @@ function main() {
 
 	console.log(`\n✅ Создан ${n.name} (${options.kind}) в разделе Storybook «${options.group}».`)
 	console.log(
-		`   Регистрация: src/components/index.ts, src/plugin/registry/components.ts${sets.length ? `, check-a11y-coverage (${sets.join(', ')})` : ''}.`,
+		`   Регистрация: src/components/index.ts, подпуть ./${n.name} в package.json, src/plugin/registry/components.ts${sets.length ? `, check-a11y-coverage (${sets.join(', ')})` : ''}.`,
 	)
 	console.log(`\nДальше:`)
 	console.log(`  1. Заполните места с пометкой ${TODO} — без этого проверка stories не пройдёт.`)

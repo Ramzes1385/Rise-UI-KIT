@@ -93,6 +93,52 @@ import '@ramzes1385/rise-ui-kit/media.css'
 @import '@ramzes1385/rise-ui-kit/media.layer.css';
 ```
 
+### Точечная установка
+
+Компонент можно подключить с его подпути: в сборку приложения попадут JS и CSS только этого компонента и тех, что он использует внутри (BaseSelect тянет BaseDropdown, BaseInput, BaseIcon…). Токены, тема и база шрифта — отдельным файлом `tokens.css`, один раз:
+
+```ts
+// main.ts
+import '@ramzes1385/rise-ui-kit/tokens.css'
+```
+
+```vue
+<script setup lang="ts">
+import { BaseButton } from '@ramzes1385/rise-ui-kit/BaseButton'
+import { BaseSelect, type BaseSelectOption } from '@ramzes1385/rise-ui-kit/BaseSelect'
+</script>
+```
+
+- Подпуть есть у каждого компонента из `@ramzes1385/rise-ui-kit/components` (`/BaseButton`, `/BaseTable`, …) и отдаёт то же, что его раздел там: компонент, его константы и типы. Плеер и 3D-карта — по-прежнему `/media` и `/map3d`.
+- CSS компонента JS подпути подключает сам — `styles.css` не нужен. Приложение на Vite 8: CSS всех компонентов `tokens.css` + BaseButton — 4,8 КБ gzip против 96,9 КБ у `styles.css`, с BaseSelect — 8,5 КБ.
+- Подпути, корень и `/components` делят один код: компонент из подпути и из корня — один и тот же, настройки `createUiKitPlugin` (`defaults`, тема, язык) действуют на оба. Но плагин регистрирует все компоненты глобально, и их JS попадает в сборку; при точечной установке язык задаёт `setLocale` из корня, тему — `applyTheme`.
+- Подключили `styles.css` — `tokens.css` уже не нужен (токены в нём есть). Стили компонентов с подпутей — без каскадного слоя; `tokens.layer.css` кладёт в слой `rise` только токены. Весь кит в слое — `styles.layer.css` и импорт из корня.
+- Импорт `.css` из JS пакета обрабатывает сборщик (Vite, webpack). При SSR пакет нужно пропустить через сборку, а не отдавать Node как внешний модуль — иначе Node не знает расширения `.css`.
+
+**Vite + SSR** (`vite.config.ts`):
+
+```ts
+export default defineConfig({
+	ssr: { noExternal: ['@ramzes1385/rise-ui-kit'] },
+})
+```
+
+**Nuxt** (`nuxt.config.ts`) — как у других китов, у которых JS компонента импортирует свой CSS:
+
+```ts
+export default defineNuxtConfig({
+	css: ['@ramzes1385/rise-ui-kit/tokens.css'],
+	build: { transpile: ['@ramzes1385/rise-ui-kit'] },
+})
+```
+
+```vue
+<!-- pages/index.vue -->
+<script setup lang="ts">
+import { BaseButton } from '@ramzes1385/rise-ui-kit/BaseButton'
+</script>
+```
+
 ### Шрифты
 
 Дизайн-токены `--rise-font-sans` и `--rise-font-mono` ссылаются на `Inter Variable` и `JetBrains Mono Variable`, но `dist/styles.css` не содержит `@font-face` — файлы шрифтов подключает приложение. Пакеты `@fontsource-variable/inter` и `@fontsource-variable/jetbrains-mono` устанавливаются вместе с библиотекой (они в `dependencies`):
@@ -412,7 +458,7 @@ const size = utils.formatFileSize(1024) // то же, что formatFileSize(1024
 
 Видеоплеер `BaseMediaPlayer` и его типы — только из подпути `@ramzes1385/rise-ui-kit/media`: в корень пакета и в плагин он не входит, поэтому приложения без плеера его код не загружают. Стили плеера — отдельным файлом `@ramzes1385/rise-ui-kit/media.css` (см. «Подключение стилей»).
 
-Подпути из `package.json#exports`: `/components`, `/composables`, `/utils`, `/icons` (константы спрайта и `createIconPlugin`), `/media` (видеоплеер), `/map3d` (3D-карта этажей), `/styles` (`/styles.css`), `/media.css` (стили плеера), `/icons.svg`.
+Подпути из `package.json#exports`: `/components`, `/composables`, `/utils`, `/icons` (константы спрайта и `createIconPlugin`), `/media` (видеоплеер), `/map3d` (3D-карта этажей), `/styles` (`/styles.css`), `/media.css` (стили плеера), `/icons.svg`, а также подпуть на каждый компонент (`/BaseButton`, `/BaseSelect`, …) и `/tokens.css` для них (см. «Точечная установка»).
 
 ### 3D-карта этажей
 
