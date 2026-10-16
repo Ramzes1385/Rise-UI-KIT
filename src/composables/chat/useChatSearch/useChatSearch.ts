@@ -1,5 +1,6 @@
 /** Composable: поиск по сообщениям чата */
 import { computed, ref, watch } from 'vue'
+import { foldSearchText } from '@utils/data/textUtils'
 import type { UseChatSearchOptions } from './types/useChatSearch.types'
 import type { ChatMessage } from '@components/BaseChat/types/BaseChat.types'
 
@@ -9,9 +10,9 @@ function useChatSearch(options: UseChatSearchOptions) {
 	const isSearching = ref(false)
 
 	const filteredMessages = computed((): ChatMessage[] => {
-		const query = searchQuery.value.trim().toLowerCase()
+		const query = foldSearchText(searchQuery.value.trim())
 		if (!query) return options.getMessages()
-		return options.getMessages().filter(message => message.text?.toLowerCase().includes(query))
+		return options.getMessages().filter(message => message.text && foldSearchText(message.text).includes(query))
 	})
 
 	// Закрытие поиска возвращает полную ленту: иначе лента оставалась бы отфильтрованной по запросу,

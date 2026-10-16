@@ -12,10 +12,10 @@ function byGroup(input: SectionsInput): ImageMapDirectorySection[] {
 	return [...sections, other].filter(section => section.entries.length > 0)
 }
 
-function byLetter(entries: ImageMapDirectoryEntry[]): ImageMapDirectorySection[] {
+function byLetter(entries: ImageMapDirectoryEntry[], locale: string): ImageMapDirectorySection[] {
 	const sections = new Map<string, ImageMapDirectorySection>()
 	for (const entry of entries) {
-		const letter = normalizeText(entry.item.object.title).charAt(0).toLocaleUpperCase() || '#'
+		const letter = [...normalizeText(entry.item.object.title)][0]?.toLocaleUpperCase(locale) || '#'
 		const section = sections.get(letter) ?? { id: letter, title: letter, entries: [] }
 		section.entries.push(entry)
 		sections.set(letter, section)
@@ -27,6 +27,6 @@ export function directorySections(input: SectionsInput): ImageMapDirectorySectio
 	const collator = new Intl.Collator(input.locale, { numeric: true, sensitivity: 'base' })
 	const sorted = [...input.entries].sort((a, b) => collator.compare(a.item.object.title, b.item.object.title))
 	if (input.groupBy === 'group') return byGroup({ ...input, entries: sorted })
-	if (input.groupBy === 'alpha') return byLetter(sorted)
+	if (input.groupBy === 'alpha') return byLetter(sorted, input.locale)
 	return sorted.length ? [{ id: 'all', title: '', entries: sorted }] : []
 }

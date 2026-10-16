@@ -1,5 +1,6 @@
-/** Утилиты: правка текста поля ввода чата у каретки и разбор слова для подсказок */
 import { nextTick, ref } from 'vue'
+/** Утилиты: правка текста поля ввода чата у каретки и разбор слова для подсказок */
+import { foldSearchText } from '@utils/data/textUtils'
 import type { ChatCommand, ChatMember } from '@components/BaseChat/types/BaseChat.types'
 import type { ChatInputElement, ChatSuggestionState, ChatTextEdit } from './types/useChatInputState.types'
 
@@ -36,12 +37,14 @@ function focusCaretLater(inputEl: ChatInputElement | null, caret: number): void 
 
 /** Участники, у которых имя или роль содержит запрос (запрос — в нижнем регистре) */
 function filterMembers(members: ChatMember[], query: string): ChatMember[] {
-	return members.filter(member => member.name.toLowerCase().includes(query) || (member.role && member.role.toLowerCase().includes(query)))
+	return members.filter(
+		member => foldSearchText(member.name).includes(query) || (member.role && foldSearchText(member.role).includes(query)),
+	)
 }
 
 /** Команды, имя которых содержит запрос (запрос — в нижнем регистре) */
 function filterCommands(commands: ChatCommand[], query: string): ChatCommand[] {
-	return commands.filter(command => command.name.toLowerCase().includes(query))
+	return commands.filter(command => foldSearchText(command.name).includes(query))
 }
 
 /** Начальное состояние: списки скрыты, запросы пустые, активен первый пункт */
@@ -74,7 +77,7 @@ function applyAutocompleteWord(state: ChatSuggestionState, word: string): void {
 	shown.value = true
 	hidden.value = false
 	const query = isMention ? state.mentionQuery : state.commandQuery
-	const nextQuery = word.slice(1).toLowerCase()
+	const nextQuery = foldSearchText(word.slice(1))
 	if (query.value !== nextQuery) state.activeSuggestionIndex.value = 0
 	query.value = nextQuery
 }

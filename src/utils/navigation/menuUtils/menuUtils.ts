@@ -1,4 +1,5 @@
 /** Утилиты меню: группы пунктов и поиск пункта по первым буквам */
+import { foldSearchText } from '@utils/data/textUtils'
 
 /**
  * Пункты меню группами. Плоский список — одна группа; пустой список — ни одной.
@@ -21,13 +22,13 @@ function toMenuGroups<T extends object>(items: readonly T[] | readonly (readonly
  * findTypeaheadIndex(['Копировать', 'Вставить', 'Выделить всё'], 'в', 1) // 2
  */
 function findTypeaheadIndex(labels: readonly string[], query: string, currentIndex: number): number {
-	const normalized = query.toLocaleLowerCase()
+	const normalized = foldSearchText(query)
 	const isSameChar = [...normalized].every(char => char === normalized[0])
 	const search = isSameChar ? normalized[0] : normalized
 	const start = isSameChar ? currentIndex + 1 : Math.max(currentIndex, 0)
 	for (let offset = 0; offset < labels.length; offset++) {
 		const index = (start + offset) % labels.length
-		if (labels[index].toLocaleLowerCase().startsWith(search)) return index
+		if (foldSearchText(labels[index]).startsWith(search)) return index
 	}
 	return -1
 }

@@ -1,18 +1,19 @@
 /** Утилиты: отбор опций, поиск доступной опции и значения выбора для useSelect */
+import { foldSearchText } from '@utils/data/textUtils'
 import { findTypeaheadIndex } from '@utils/navigation/menuUtils'
 import type { SelectStep, SelectValue } from './types/useSelect.types'
 import type { BaseSelectOption } from '@components/BaseSelect/types/BaseSelect.types'
 
 function matchesQuery(opt: BaseSelectOption, query: string): boolean {
-	const matchLabel = opt.label.toLowerCase().includes(query)
-	const matchDesc = opt.description ? opt.description.toLowerCase().includes(query) : false
+	const matchLabel = foldSearchText(opt.label).includes(query)
+	const matchDesc = opt.description ? foldSearchText(opt.description).includes(query) : false
 	return matchLabel || matchDesc
 }
 
 /** Описание: опции, подпись или описание которых содержит запрос (без учёта регистра); пустой запрос — все опции */
 function filterSelectOptions(options: BaseSelectOption[], searchQuery: string): BaseSelectOption[] {
 	if (!searchQuery) return options
-	const query = searchQuery.toLowerCase()
+	const query = foldSearchText(searchQuery)
 	return options.filter(opt => matchesQuery(opt, query))
 }
 

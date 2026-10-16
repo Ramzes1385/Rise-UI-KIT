@@ -5,17 +5,18 @@ import { computed, ref, useId, watch } from 'vue'
 import { getLocale, pluralize } from '@/locales/state'
 import type { BaseInput } from '@components/BaseInput'
 import { useMotion } from '@composables/app/useMotion'
+import { foldSearchText } from '@utils/data/textUtils'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import { useFormDisabled } from '@composables/form/useFormContext'
 import { AUTOCOMPLETE_INPUT_PARTS } from '../types/BaseAutocomplete.types'
 import type { AutocompleteOption, AutocompleteProps, BaseAutocompleteEmits, BaseAutocompletePart } from '../types/BaseAutocomplete.types'
 
 function defaultFilter(option: AutocompleteOption, text: string): boolean {
-	return option.label.toLocaleLowerCase(getLocale().intl).includes(text.toLocaleLowerCase(getLocale().intl))
+	return foldSearchText(option.label).includes(foldSearchText(text))
 }
 
 function highlightParts(label: string, text: string, isFiltering: boolean): { text: string; isMatch: boolean }[] {
-	const start = isFiltering && text ? label.toLocaleLowerCase().indexOf(text.toLocaleLowerCase()) : -1
+	const start = isFiltering && text ? foldSearchText(label).indexOf(foldSearchText(text)) : -1
 	if (start === -1) return [{ text: label, isMatch: false }]
 	return [
 		{ text: label.slice(0, start), isMatch: false },
@@ -128,7 +129,7 @@ function useSelection(props: AutocompleteProps, emit: BaseAutocompleteEmits, sta
 			if (!state.isFiltering.value) return
 			state.isFiltering.value = false
 			const text = state.query.value.trim()
-			const exact = props.options.find(option => !option.isDisabled && option.label.toLocaleLowerCase() === text.toLocaleLowerCase())
+			const exact = props.options.find(option => !option.isDisabled && foldSearchText(option.label) === foldSearchText(text))
 			if (!text) setValue(null)
 			else if (exact) setValue(exact.value)
 			else if (props.isCustomAllowed) {

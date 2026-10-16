@@ -1,6 +1,7 @@
 import { formatMessage } from '@/locales/state'
 import { UI_TRANSCRIPT } from '@/locales/messages'
 import { downloadFile } from '@utils/media/fileUtils'
+import { foldSearchText } from '@utils/data/textUtils'
 import { formatMediaTime } from '@utils/media/mediaUtils'
 import { useTranscriptScroll } from './useTranscriptScroll'
 import { useTranscriptSource } from './useTranscriptSource'
@@ -29,9 +30,9 @@ function useTranscriptItems(cues: () => AudioTranscriptCue[], playback: AudioTra
 	const currentIndex = computed(() => findCueIndex(cues(), playback.currentTime()))
 	const reference = computed(() => Math.max(playback.duration(), cues()[cues().length - 1]?.end ?? 0))
 	const items = computed<AudioTranscriptItem[]>(() => {
-		const needle = query.value.trim().toLocaleLowerCase()
+		const needle = foldSearchText(query.value.trim())
 		return cues()
-			.filter(cue => !needle || `${cue.speaker}\n${cue.text}`.toLocaleLowerCase().includes(needle))
+			.filter(cue => !needle || foldSearchText(`${cue.speaker}\n${cue.text}`).includes(needle))
 			.map(cue => ({
 				...cue,
 				time: formatMediaTime(cue.start, reference.value),

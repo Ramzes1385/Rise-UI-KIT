@@ -1,11 +1,12 @@
 import { computed, ref } from 'vue'
 import { titleOf } from './transferSides'
+import { foldSearchText } from '@utils/data/textUtils'
 import { UI_LIST, UI_TRANSFER } from '@/locales/messages'
 import type { ListItem, ListModelValue } from '@components/BaseList'
 import type { TransferPanel, TransferPanelsState, TransferProps, TransferSide } from '../types/BaseTransfer.types'
 
 const defaultMatch = (item: ListItem, query: string): boolean =>
-	`${item.title} ${item.description ?? ''}`.toLocaleLowerCase().includes(query.toLocaleLowerCase())
+	foldSearchText(`${item.title} ${item.description ?? ''}`).includes(foldSearchText(query))
 
 function useTransferSides<T extends ListItem>(props: TransferProps<T>) {
 	const byId = computed(() => new Map(props.items.map(item => [item.id, item])))

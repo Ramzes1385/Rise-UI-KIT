@@ -13,7 +13,13 @@ const GAP = 2
 
 export function useBaseHeatmap(props: BaseHeatmapProps) {
 	const format = (value: number): string => (props.formatValue ?? formatNumber)(value)
-	const cells = computed(() => heatmapCells(props.data, { end: toDay(props.endDate ?? new Date()), weeks: props.weeks ?? 53 }))
+	const cells = computed(() =>
+		heatmapCells(props.data, {
+			end: toDay(props.endDate ?? new Date()),
+			weeks: props.weeks ?? 53,
+			firstDay: getLocale().firstDayOfWeek,
+		}),
+	)
 	const dateText = (date: Date): string =>
 		new Intl.DateTimeFormat(getLocale().intl, { day: 'numeric', month: 'long', year: 'numeric' }).format(date)
 	const active = shallowRef<HeatmapCell | null>(null)
@@ -27,7 +33,8 @@ export function useBaseHeatmap(props: BaseHeatmapProps) {
 		months: computed(() => heatmapMonths(cells.value, getLocale().intl)),
 		weekdays: computed(() => {
 			const format = new Intl.DateTimeFormat(getLocale().intl, { weekday: 'short' })
-			return [0, 2, 4].map(index => ({ index, label: format.format(new Date(2024, 0, 1 + index)) }))
+			const sunday = 7
+			return [0, 2, 4].map(index => ({ index, label: format.format(new Date(2024, 0, sunday + getLocale().firstDayOfWeek + index)) }))
 		}),
 		width: computed(() => (cells.value[cells.value.length - 1].week + 1) * (CELL + GAP)),
 		cellSize: CELL,

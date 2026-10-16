@@ -1,10 +1,11 @@
 /** Утилиты: отбор результатов поиска по запросу */
+import { foldSearchText } from '@utils/data/textUtils'
 import type { UseSearchStateOptions } from './types/useSearchState.types'
 import type { SearchResult } from '@components/BaseSearch/types/BaseSearch.types'
 
 function matchesQuery(item: SearchResult, lowerQuery: string): boolean {
-	const matchTitle = item.title.toLowerCase().includes(lowerQuery)
-	const matchDesc = item.description?.toLowerCase().includes(lowerQuery) ?? false
+	const matchTitle = foldSearchText(item.title).includes(lowerQuery)
+	const matchDesc = Boolean(item.description && foldSearchText(item.description).includes(lowerQuery))
 	return matchTitle || matchDesc
 }
 
@@ -13,7 +14,7 @@ function filterSearchResults(options: UseSearchStateOptions, query: string): Sea
 	if (!query) return []
 	// Сервер ищет не только по подстроке (транслит, опечатки, другие поля) — повторная фильтрация скрыла бы его ответ
 	if (options.isRemote?.()) return options.results().slice(0, options.maxResults())
-	const lowerQuery = query.toLowerCase()
+	const lowerQuery = foldSearchText(query)
 	return options
 		.results()
 		.filter(item => matchesQuery(item, lowerQuery))

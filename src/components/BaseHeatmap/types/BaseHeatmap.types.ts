@@ -27,6 +27,7 @@ export interface HeatmapCell {
 	value: number
 	level: number
 	week: number
+	/** Номер строки в неделе: 0 — первый день недели языка кита (`locale.firstDayOfWeek`) */
 	weekday: number
 }
 

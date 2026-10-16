@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/vitest'
+import { setLocale } from '@/locales/state'
 import BaseColorPicker from '../../ui/BaseColorPicker.vue'
 import { getKitTokenPalette, swatchName } from '../../model/colorPresets'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
@@ -27,6 +28,7 @@ async function openPanel(container: ParentNode): Promise<void> {
 
 describe('BaseColorPicker: токены var(--rise-*)', () => {
 	afterEach(() => {
+		setLocale('ru')
 		vi.restoreAllMocks()
 		document.body.querySelectorAll('.base-dropdown__panel').forEach(element => element.remove())
 	})
@@ -37,6 +39,14 @@ describe('BaseColorPicker: токены var(--rise-*)', () => {
 		expect(palette.label).toBe('Токены кита')
 		expect(palette.colors).toHaveLength(8)
 		expect(palette.colors.every(color => color.startsWith('var(--rise-'))).toBe(true)
+	})
+
+	it('подпись палитры следует за языком кита и после создания палитры', () => {
+		const palette = getKitTokenPalette()
+		expect(palette.label).toBe('Токены кита')
+
+		setLocale('en')
+		expect(palette.label).toBe('Kit tokens')
 	})
 
 	it('swatchName: токен — без var(--rise- и скобки, другое имя — без var(--, обычный цвет как есть', () => {

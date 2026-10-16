@@ -12,4 +12,11 @@ describe('календарь активности', () => {
 		expect(cells[0].weekday).toBe(0)
 		expect(cells[cells.length - 1]).toMatchObject({ key: '2025-05-18', week: 1, weekday: 6 })
 	})
+
+	it('первый день недели из аргумента: неделя с воскресенья', () => {
+		const cells = heatmapCells([], { end: toDay('2025-05-18'), weeks: 2, firstDay: 0 })
+		expect(cells[0].key).toBe('2025-05-11')
+		expect(cells[0].weekday).toBe(0)
+		expect(cells[cells.length - 1]).toMatchObject({ key: '2025-05-18', week: 1, weekday: 0 })
+	})
 })

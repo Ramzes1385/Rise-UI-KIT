@@ -1,14 +1,15 @@
+import { foldSearchText } from '@utils/data/textUtils'
 import type { TreeIndex } from '@utils/navigation/treeUtils'
 import type { TreeNode } from '@components/BaseTree/types/BaseTree.types'
 import type { TreeSelectRow, TreeSelectRowsLevel, TreeSelectRowsSource, TreeSelectSearchScope } from '../types/BaseTreeSelect.types'
 
 function findSearchScope(index: TreeIndex, query: string): TreeSelectSearchScope | null {
-	const needle = query.trim().toLowerCase()
+	const needle = foldSearchText(query.trim())
 	if (!needle) return null
 	const matches = new Set<string>()
 	const ancestors = new Set<string>()
 	for (const [id, node] of index.nodes) {
-		if (!node.label.toLowerCase().includes(needle)) continue
+		if (!foldSearchText(node.label).includes(needle)) continue
 		matches.add(id)
 		for (let parentId = index.parents.get(id); parentId !== undefined; parentId = index.parents.get(parentId)) ancestors.add(parentId)
 	}

@@ -1,4 +1,5 @@
 import { currentLocale } from '@/locales/state'
+import { foldSearchText } from '@utils/data/textUtils'
 import { formatFileSize, getExtension, getFileIconName } from '@utils/media/fileUtils'
 import type { FileManagerItem, FileManagerSort, FileManagerSortKey } from '../../types/BaseFileManager.types'
 
@@ -25,9 +26,9 @@ export function sortEntries(entries: readonly FileManagerItem[], sort: FileManag
 }
 
 export function filterEntries(entries: readonly FileManagerItem[], query: string): FileManagerItem[] {
-	const needle = query.trim().toLocaleLowerCase()
+	const needle = foldSearchText(query.trim())
 	if (!needle) return [...entries]
-	return entries.filter(item => item.name.toLocaleLowerCase().includes(needle))
+	return entries.filter(item => foldSearchText(item.name).includes(needle))
 }
 
 export function formatEntrySize(item: FileManagerItem): string {

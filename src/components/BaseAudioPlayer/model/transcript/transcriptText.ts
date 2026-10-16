@@ -1,3 +1,4 @@
+import { foldSearchText } from '@utils/data/textUtils'
 import { formatMediaTime } from '@utils/media/mediaUtils'
 import type { SubtitleCue } from '@utils/media/subtitleUtils'
 import type { AudioTranscriptCue, AudioTranscriptPart } from '../../types/AudioTranscript.types'
@@ -33,9 +34,9 @@ export function findCueIndex(cues: AudioTranscriptCue[], time: number): number {
 }
 
 export function splitMatches(text: string, query: string): AudioTranscriptPart[] {
-	const needle = query.trim().toLocaleLowerCase()
+	const needle = foldSearchText(query.trim())
 	if (!needle) return [{ text, isMatch: false }]
-	const haystack = text.toLocaleLowerCase()
+	const haystack = foldSearchText(text)
 	const parts: AudioTranscriptPart[] = []
 	let from = 0
 	for (let at = haystack.indexOf(needle); at !== -1; at = haystack.indexOf(needle, from)) {

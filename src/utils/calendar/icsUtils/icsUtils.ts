@@ -49,6 +49,10 @@ const ZONED_TIME = /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})?$/
 
 const DAY_MS = 86_400_000
 
+/**
+ * Язык `en-US` здесь — вычислительный, не показ пользователю: по `formatToParts` берутся только числа года, месяца, дня и времени
+ * (латинские цифры, порядок частей не важен), по ним считается смещение пояса. Язык кита не нужен и менял бы лишь цифры и подписи.
+ */
 const zoneFormatters = new Map<string, Intl.DateTimeFormat | null>()
 
 function createZoneFormatter(timeZone: string): Intl.DateTimeFormat | null {

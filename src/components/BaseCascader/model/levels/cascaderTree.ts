@@ -1,3 +1,4 @@
+import { foldSearchText } from '@utils/data/textUtils'
 import type { TreeIndex } from '@utils/navigation/treeUtils'
 import type { BaseCascaderNode, CascaderPath, CascaderSearchResult, CascaderValue } from '../../types/BaseCascader.types'
 
@@ -43,11 +44,11 @@ function pathTo(index: TreeIndex, id: string): CascaderPath {
 }
 
 export function searchCascader(index: TreeIndex, query: string, isSelectable: (node: BaseCascaderNode) => boolean): CascaderSearchResult[] {
-	const needle = query.trim().toLowerCase()
+	const needle = foldSearchText(query.trim())
 	const results: CascaderSearchResult[] = []
 	for (const id of index.order) {
 		const node = index.nodes.get(id) as BaseCascaderNode
-		const text = `${node.label} ${node.description ?? ''}`.toLowerCase()
+		const text = foldSearchText(`${node.label} ${node.description ?? ''}`)
 		if (!text.includes(needle) || !isSelectable({ ...node, isDisabled: false })) continue
 		const nodes = pathTo(index, id).map(step => index.nodes.get(step) as BaseCascaderNode)
 		results.push({

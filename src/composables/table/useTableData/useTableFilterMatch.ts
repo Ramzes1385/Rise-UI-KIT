@@ -1,3 +1,4 @@
+import { foldSearchText } from '@utils/data/textUtils'
 /** Утилиты: проверка строки таблицы по фильтру колонки — текст, числа, даты, выбор из списка */
 import type { FilterScope } from './types/useTableDataUtils.types'
 import { toCalendarDay, toSortKey } from '@utils/navigation/tableUtils'
@@ -36,7 +37,7 @@ function isEmpty(value: unknown): boolean {
 }
 
 function matchesText(text: string, filter: ColumnFilter): boolean {
-	const value = filter.value.toLowerCase()
+	const value = foldSearchText(filter.value)
 	if (filter.operator === 'eq') return text === value
 	if (filter.operator === 'ne') return text !== value
 	return filter.operator === 'contains' ? text.includes(value) : true
@@ -74,8 +75,8 @@ function matchesByKind(target: { cell: unknown; text: string; filter: ColumnFilt
 function matchesFilterByKind(row: TableRow, filter: ColumnFilter, scope: FilterScope): boolean {
 	const cell = row.data[filter.key]
 	if (isEmpty(cell)) return filter.operator === 'ne'
-	const text = String(cell).toLowerCase()
-	if (filter.operator === 'in') return getFilterValues(filter).some(item => item.toLowerCase() === text)
+	const text = foldSearchText(String(cell))
+	if (filter.operator === 'in') return getFilterValues(filter).some(item => foldSearchText(item) === text)
 	return matchesByKind({ cell, text, filter }, scope)
 }
 

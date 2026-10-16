@@ -1,8 +1,8 @@
 import { computed, ref, watch } from 'vue'
-import { formatMessage } from '@/locales/state'
 import { routeLines, routeMarkers } from './routeView'
 import { routeSteps, walkedMeters } from './routeSteps'
 import { UI_IMAGE_MAP_ROUTES } from '@/locales/messages'
+import { formatMessage, getLocale } from '@/locales/state'
 import type { MapParts } from '../../types/internal/imageMapInternal.types'
 import type { BaseImageMapEmits, ImageMapProps } from '../../types/BaseImageMap.types'
 import { buildRouteGraph, findRoutePath, isStepFree, objectNodes } from './routeGraph'
@@ -85,7 +85,7 @@ function useRouteOptions(props: ImageMapProps, core: MapParts) {
 						: item.object.title
 				return { value: item.object.id, label }
 			})
-			.sort((first, second) => first.label.localeCompare(second.label))
+			.sort((first, second) => first.label.localeCompare(second.label, getLocale().intl, { numeric: true }))
 	})
 }
 

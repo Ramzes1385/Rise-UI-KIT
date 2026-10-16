@@ -8,6 +8,8 @@ export const DAY_MINUTES = 1440
 export const DAY_MS = 86_400_000
 const HORIZON_DAYS = 7
 const RANGE_PATTERN = /^\s*(\d{1,2}):(\d{2})\s*[-–—]\s*(\d{1,2}):(\d{2})\s*$/
+const INTERNAL_PARTS_LOCALE = 'en-US'
+
 const partsFormats = new Map<string, Intl.DateTimeFormat>()
 
 function toMinutes(hours: string, minutes: string): number | null {
@@ -35,7 +37,7 @@ function parseRanges(ranges: ImageMapTimeRange[] | undefined, id: string): Hours
 export function isValidTimeZone(timeZone: string | undefined): boolean {
 	if (!timeZone) return true
 	try {
-		new Intl.DateTimeFormat('en-US', { timeZone })
+		new Intl.DateTimeFormat(INTERNAL_PARTS_LOCALE, { timeZone })
 		return true
 	} catch {
 		return false
@@ -64,7 +66,7 @@ function partsFormat(timeZone: string | undefined): Intl.DateTimeFormat {
 	const key = timeZone ?? ''
 	const cached = partsFormats.get(key)
 	if (cached) return cached
-	const format = new Intl.DateTimeFormat('en-US', {
+	const format = new Intl.DateTimeFormat(INTERNAL_PARTS_LOCALE, {
 		timeZone,
 		hourCycle: 'h23',
 		year: 'numeric',

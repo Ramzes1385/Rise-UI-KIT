@@ -133,6 +133,7 @@ function toSortTimestamp(value: unknown): number | null {
 	return null
 }
 
+/** `en-CA` — вычислительный язык, не показ пользователю: из `formatToParts` берутся только числа года, месяца и дня (латинские цифры) */
 function dayFormatter(timeZone: string): Intl.DateTimeFormat | null {
 	if (dayFormatters.has(timeZone)) return dayFormatters.get(timeZone) ?? null
 	let formatter: Intl.DateTimeFormat | null = null

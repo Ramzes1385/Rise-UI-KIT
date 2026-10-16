@@ -64,9 +64,9 @@ export function nameError(index: FileManagerIndex, target: FileManagerNameTarget
 	const value = name.trim()
 	if (!value) return 'empty'
 	if (FORBIDDEN_NAME.test(value) || value === '.' || value === '..') return 'forbidden'
-	const key = value.toLocaleLowerCase()
+	const key = value.toLocaleLowerCase(currentLocale.value.intl)
 	const isTaken = (index.children.get(target.parentId) ?? []).some(
-		item => item.id !== target.exceptId && item.name.toLocaleLowerCase() === key,
+		item => item.id !== target.exceptId && item.name.toLocaleLowerCase(currentLocale.value.intl) === key,
 	)
 	return isTaken ? 'exists' : null
 }

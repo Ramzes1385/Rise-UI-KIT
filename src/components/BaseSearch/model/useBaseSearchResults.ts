@@ -1,9 +1,10 @@
+import { foldSearchText } from '@utils/data/textUtils'
 import type { SearchResult } from '../types/BaseSearch.types'
 import type { BaseSearchResultsEmits, BaseSearchResultsProps, TextPart } from '../types/BaseSearchResults.types'
 
 function splitTextByQuery(text: string, rawQuery: string): TextPart[] {
-	const query = rawQuery.trim().toLowerCase()
-	const lowerText = text.toLowerCase()
+	const query = foldSearchText(rawQuery.trim())
+	const lowerText = foldSearchText(text)
 	if (!query || lowerText.length !== text.length) return [{ text, isMatch: false }]
 
 	const parts: TextPart[] = []

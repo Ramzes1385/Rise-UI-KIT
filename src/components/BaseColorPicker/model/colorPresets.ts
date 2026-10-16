@@ -30,7 +30,12 @@ const KIT_COLOR_TOKENS = [
 ] as const
 
 export function getKitTokenPalette(): ColorPalette {
-	return { label: UI_COLOR_PICKER.TOKENS, colors: KIT_COLOR_TOKENS }
+	return {
+		get label(): string {
+			return UI_COLOR_PICKER.TOKENS
+		},
+		colors: KIT_COLOR_TOKENS,
+	}
 }
 
 export function swatchName(color: string): string {

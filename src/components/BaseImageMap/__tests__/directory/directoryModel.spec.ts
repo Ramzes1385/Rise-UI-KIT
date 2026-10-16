@@ -117,6 +117,13 @@ describe('directorySections', () => {
 		expect(sections[2]?.entries.map(item => item.item.object.title)).toEqual(['Еда', 'Ёлка'])
 	})
 
+	it('alpha: письмо без регистра и символы вне BMP не ломают разделы; регистр — по языку', () => {
+		const cjk = [entry('東京タワー'), entry('𠮷野家'), entry('北京'), entry('istanbul')]
+		const sections = directorySections({ ...base, locale: 'ja-JP', entries: cjk, groupBy: 'alpha' })
+		expect(sections.map(section => section.title).sort()).toEqual(['I', '北', '東', '𠮷'].sort())
+		expect(directorySections({ ...base, locale: 'tr-TR', entries: [entry('istanbul')], groupBy: 'alpha' })[0]?.title).toBe('İ')
+	})
+
 	it('none: один раздел без заголовка; пусто — без разделов', () => {
 		const sections = directorySections({ ...base, entries, groupBy: 'none' })
 		expect(sections).toHaveLength(1)

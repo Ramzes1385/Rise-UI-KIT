@@ -75,4 +75,18 @@ describe('BaseHeatmap', () => {
 		expect(container.querySelector('rect.base-heatmap__cell--1')).toBeNull()
 		expect(screen.getByRole('img')).toHaveAccessibleName(/^Commits: 0 in total, peak 0 on/)
 	})
+
+	it('первый день недели и названия дней — из языка кита: по-русски с понедельника, по-английски с воскресенья', () => {
+		const labels = (): (string | null)[] =>
+			Array.from(document.querySelectorAll('.base-heatmap__caption')).map(node => node.textContent)
+		const ru = render(BaseHeatmap, { props: { data: DATA, label: 'Коммиты', endDate: '2025-05-18', weeks: 3 } })
+		expect(labels()).toEqual(expect.arrayContaining(['пн', 'ср', 'пт']))
+		expect(ru.container.querySelector('.base-heatmap__cell')).toHaveAttribute('y', '18')
+		ru.unmount()
+
+		setLocale('en')
+		const en = render(BaseHeatmap, { props: { data: DATA, label: 'Commits', endDate: '2025-05-18', weeks: 3 } })
+		expect(labels()).toEqual(expect.arrayContaining(['Sun', 'Tue', 'Thu']))
+		expect(en.container.querySelector('.base-heatmap__cell')).toHaveAttribute('y', '18')
+	})
 })
