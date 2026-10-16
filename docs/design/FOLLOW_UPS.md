@@ -212,7 +212,7 @@
 ## Задача polish-1
 
 - ~~`calcDerivedScale` (`@utils/media/iconUtils`, задача wave2-fix) у долей 0.875 и 0.75 в BaseSignaturePad (кнопки «Отменить» и «Очистить», `sizeScale * 0.875`): помощника в базе fa23fc58 нет, он придёт со слиянием wave2-fix — после него заменить умножение в `BaseSignaturePad.vue` (при `sizeScale` ≈114 результат ровно 100 читается как «наследовать»).~~ — сделано при сведении волны 3 (оркестратор), тест в `BaseSignaturePad.compose.spec.ts`. Осталось у BaseCommentThread и BaseNotificationCenter (зона compose-1).
-- `ImageMapDirectory` и `ImageMapRoutePanel` используются и в BaseImageMap3D: там проп `ui` не передан, части получают только классы кита. Если у BaseImageMap3D появится `ui`, передать его так же.
+- ~~`ImageMapDirectory` и `ImageMapRoutePanel` используются и в BaseImageMap3D: там проп `ui` не передан, части получают только классы кита. Если у BaseImageMap3D появится `ui`, передать его так же.~~ — w14-plugin-config: у BaseImageMap3D проп `ui` (`IMAGE_MAP_3D_PARTS`) действует в 3D-виде и передаётся в `ImageMapDirectory`, `ImageMapRoutePanel`, `ImageMapLegend` и в 2D-вид.
 
 ## Задача stories-splitter
 
@@ -453,7 +453,7 @@
 | ~~`calcDerivedScale` вместо `sizeScale * 0.875` и `* 0.75` в BaseCommentThread и BaseNotificationCenter~~ — notify-sidebar | Задачи wave2-fix, polish-1 | S |
 | ~~`BaseSubtitleEditor`: тултип таймлайна; анонс ошибки времени (`aria-live` в FormFieldError)~~ — nav-media (анонс — локальная область; общий `FormFieldError` — «Задача nav-media») | Задача compose-2 | S |
 | ~~Горячие клавиши Ctrl+B/I/U (`formatCommands`) и `useHotkeys`: латинская `key`, иначе `code` (Dvorak, Colemak)~~ — editor-4 | Задача editor-3 | S |
-| `ui` у `ImageMapDirectory` и `ImageMapRoutePanel` внутри BaseImageMap3D, когда у него появится `ui` | Задача polish-1 | S |
+| ~~`ui` у `ImageMapDirectory` и `ImageMapRoutePanel` внутри BaseImageMap3D, когда у него появится `ui`~~ — w14-plugin-config | Задача polish-1 | S |
 
 **Нужно решение владельца:**
 

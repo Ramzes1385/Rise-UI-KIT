@@ -1,8 +1,8 @@
 <template>
 	<div
 		ref="rootRef"
-		class="base-image-map-3d"
 		:class="[
+			ui('root'),
 			variantClass,
 			classes.root,
 			{ 'base-image-map-3d--fullscreen': isFullscreen, 'base-image-map-3d--fullscreen-fallback': isFullscreenFallback },
@@ -10,13 +10,13 @@
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<BaseSegmented
 			v-if="hasViewSwitch"
-			class="base-image-map-3d__views"
+			:class="ui('views')"
 			:custom-class="classes.views"
 			:model-value="shownView"
 			:options="viewOptions"
 			:aria-label="UI_IMAGE_MAP_3D.VIEW"
 			@update:model-value="setView($event === '2d' ? '2d' : '3d')" />
-		<BaseImageMap v-if="shownView === '2d'" v-bind="mapBindings">
+		<BaseImageMap v-if="shownView === '2d'" v-bind="mapBindings" :ui="uiProp">
 			<template v-if="$slots.tooltip" #tooltip="slotProps"><slot name="tooltip" v-bind="slotProps" /></template>
 			<template v-if="$slots.popup" #popup="slotProps"><slot name="popup" v-bind="slotProps" /></template>
 			<template v-if="$slots.point" #point="slotProps"><slot name="point" v-bind="slotProps" /></template>
@@ -33,12 +33,10 @@
 				'base-image-map-3d__layout--end': directoryPosition === 'end',
 			}">
 			<div class="base-image-map-3d__main">
-				<div
-					v-if="layerOptions.length > 1 || hasZoomControls || hasFullscreenButton"
-					class="base-image-map-3d__toolbar"
-					:class="classes.toolbar">
+				<div v-if="layerOptions.length > 1 || hasZoomControls || hasFullscreenButton" :class="[ui('toolbar'), classes.toolbar]">
 					<BaseSegmented
 						v-if="layerOptions.length > 1"
+						:class="ui('layers')"
 						:custom-class="classes.layers"
 						:model-value="map.data.currentLayer.value?.id"
 						:options="layerOptions"
@@ -46,8 +44,7 @@
 						@update:model-value="map.actions.setLayer(String($event))" />
 					<div
 						v-if="hasZoomControls || hasFullscreenButton"
-						class="base-image-map-3d__camera"
-						:class="classes.camera"
+						:class="[ui('camera'), classes.camera]"
 						role="group"
 						:aria-label="UI_IMAGE_MAP_3D.CAMERA">
 						<template v-if="hasZoomControls">
@@ -90,8 +87,7 @@
 				</div>
 				<div
 					ref="viewportRef"
-					class="base-image-map-3d__viewport"
-					:class="[classes.viewport, { 'base-image-map-3d__viewport--empty': !map.data.currentLayer.value }]"
+					:class="[ui('viewport'), classes.viewport, { 'base-image-map-3d__viewport--empty': !map.data.currentLayer.value }]"
 					:style="isFullscreen ? undefined : viewportStyle"
 					tabindex="0"
 					role="group"
@@ -108,12 +104,8 @@
 					@pointercancel="onPointerUp"
 					@pointerleave="onPointerLeave"
 					@click="onClick">
-					<canvas v-if="hasCanvas" ref="canvasRef" class="base-image-map-3d__canvas" :class="classes.canvas" aria-hidden="true" />
-					<div
-						v-if="loadState"
-						class="base-image-map-3d__state"
-						:class="`base-image-map-3d__state--${loadState.kind}`"
-						aria-hidden="true">
+					<canvas v-if="hasCanvas" ref="canvasRef" :class="[ui('canvas'), classes.canvas]" aria-hidden="true" />
+					<div v-if="loadState" :class="[ui('state'), `base-image-map-3d__state--${loadState.kind}`]" aria-hidden="true">
 						<span class="base-image-map-3d__state-text">{{ loadState.text }}</span>
 					</div>
 					<div v-if="points.length" class="base-image-map-3d__points" aria-hidden="true">
@@ -122,8 +114,8 @@
 							v-show="point.isVisible"
 							:key="point.item.object.id"
 							v-bind="point.attributes"
-							class="base-image-map-3d__point"
 							:class="[
+								ui('point'),
 								classes.point,
 								{
 									'base-image-map-3d__point--active': point.isActive,
@@ -133,14 +125,14 @@
 								},
 							]"
 							:style="point.style">
-							<span class="base-image-map-3d__marker">
+							<span :class="ui('marker')">
 								<slot name="point" :object="point.item.object" :group="point.item.group" :is-active="point.isActive">
 									<BaseIcon
 										v-if="point.point.icon ?? point.item.group?.icon"
 										:name="(point.point.icon ?? point.item.group?.icon) as string" />
 								</slot>
 							</span>
-							<span v-if="point.point.label" class="base-image-map-3d__label">{{ point.point.label }}</span>
+							<span v-if="point.point.label" :class="ui('label')">{{ point.point.label }}</span>
 						</span>
 					</div>
 					<div
@@ -149,6 +141,7 @@
 						ref="cardRef"
 						class="base-image-map-3d__card"
 						:class="[
+							ui('tooltip'),
 							classes.tooltip,
 							{ 'base-image-map-3d__card--below': card?.isBelow, 'base-image-map-3d__card--pending': !card },
 						]"
@@ -162,8 +155,8 @@
 							<ImageMapCard :item="cardItem" :hours="map.hours.hoursOf(cardItem.object.id)" />
 						</slot>
 					</div>
-					<p :id="hintId" class="base-image-map-3d__hint">{{ UI_IMAGE_MAP_3D.KEYBOARD_HINT }}</p>
-					<p class="base-image-map-3d__hint" aria-live="polite">{{ liveText }}</p>
+					<p :id="hintId" :class="ui('hint')">{{ UI_IMAGE_MAP_3D.KEYBOARD_HINT }}</p>
+					<p :class="ui('hint')" aria-live="polite">{{ liveText }}</p>
 				</div>
 				<div v-if="objectGroups.length" ref="objectsRef" @focusout="onFocusOut">
 					<ul v-for="group in objectGroups" :key="group.id" class="base-image-map-3d__objects" :aria-label="group.label">
@@ -183,7 +176,8 @@
 				<ImageMapLegend
 					v-if="map.directory.legend.value.length"
 					:groups="map.directory.legend.value"
-					:custom-class="classes.legend" />
+					:custom-class="classes.legend"
+					:ui="sharedUi" />
 				<ImageMapRoutePanel
 					v-if="hasRoutes && data.routes"
 					:custom-class="classes.route"
@@ -193,6 +187,7 @@
 					:summary="map.routes.routeSummary.value"
 					:is-unreachable="map.routes.isRouteUnreachable.value"
 					:has-step-free="map.routes.hasStepFree.value"
+					:ui="sharedUi"
 					@update:value="map.routes.setRoute"
 					@show-layer="map.routes.showRouteLayer" />
 			</div>
@@ -206,6 +201,7 @@
 				:status-text="map.directory.statusText.value"
 				:has-clear="map.directory.hasClear.value"
 				:classes="directoryClasses"
+				:ui="sharedUi"
 				@update:search="map.filters.setSearch"
 				@set-filter="map.filters.setFilter"
 				@toggle-filter="map.directory.toggleFilter"
@@ -220,10 +216,7 @@
 				</template>
 			</ImageMapDirectory>
 		</div>
-		<p
-			class="base-image-map-3d__status"
-			:class="[classes.status, { 'base-image-map-3d__status--hidden': !isStatusShown }]"
-			role="status">
+		<p :class="[ui('status'), classes.status, { 'base-image-map-3d__status--hidden': !isStatusShown }]" role="status">
 			{{ statusText }}
 		</p>
 		<component
@@ -232,7 +225,7 @@
 			:is-open="true"
 			:title="map.overlay.popupItem.value.object.title"
 			v-bind="map.overlay.isSheet.value ? { direction: 'bottom' } : {}"
-			:custom-class="{ root: classes.popup }"
+			:custom-class="{ root: popupClass }"
 			@close="map.overlay.closePopup"
 			@update:is-open="map.overlay.closePopup">
 			<slot
@@ -326,6 +319,10 @@ const {
 	mapBindings,
 	layerOptions,
 	directoryClasses,
+	ui,
+	sharedUi,
+	uiProp,
+	popupClass,
 	camera,
 	card,
 	cardItem,

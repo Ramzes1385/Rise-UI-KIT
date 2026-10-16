@@ -1,8 +1,10 @@
 import type { Camera, Object3D } from 'three'
+import type { UiProp } from '@composables/base/useUi'
 import type { ImageMap3DData } from './imageMap3dData.types'
 import type { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
+import { IMAGE_MAP_PARTS } from '@components/BaseImageMap/types/BaseImageMap.types'
 import type {
 	BaseImageMapEmits,
 	BaseImageMapProps,
@@ -56,6 +58,24 @@ export const IMAGE_MAP_3D_FALLBACK_REASONS = ['unsupported', 'error'] as const
 /** Причина перехода в 2D */
 export type ImageMap3DFallbackReason = (typeof IMAGE_MAP_3D_FALLBACK_REASONS)[number]
 
+/** Части, которые есть только у 3D-карты: `.base-image-map-3d__<часть>` */
+const IMAGE_MAP_3D_OWN_PARTS = ['views', 'camera', 'canvas', 'state', 'status', 'popup'] as const
+
+/**
+ * Части BaseImageMap3D для пропа `ui` (`root` — вся карта). Названия общих частей — как у BaseImageMap (`IMAGE_MAP_PARTS`), поэтому
+ * один объект `ui` работает и в 3D-, и в 2D-виде (`has2dToggle`).
+ * В 3D-виде действуют (БЭМ-элементы `.base-image-map-3d__<часть>`): views — переключатель «3D / 2D», toolbar — панель над сценой,
+ * layers — переключатель этажей, camera — кнопки камеры, viewport — область сцены, canvas — холст, state — плашка загрузки и ошибки,
+ * point — точка поверх сцены, marker — значок точки, label — подпись точки, hint — подсказки под сценой, tooltip — карточка объекта
+ * у точки, status — строка статуса, popup — окно карточки объекта; у общих с BaseImageMap подкомпонентов (классы `.base-image-map__<часть>`) —
+ * legend, legend-item, swatch (легенда), directory, search, filters, results, list, entry (список объектов), route, route-steps,
+ * route-step (панель «Как пройти»). Остальные общие части (zoom, stage, image, svg, shapes, object) — только в 2D-виде.
+ */
+export const IMAGE_MAP_3D_PARTS = [...IMAGE_MAP_PARTS, ...IMAGE_MAP_3D_OWN_PARTS] as const
+
+/** Часть BaseImageMap3D для пропа `ui` (или `root`) */
+export type BaseImageMap3DPart = (typeof IMAGE_MAP_3D_PARTS)[number]
+
 /** Элементы для `customClass` */
 type ImageMap3DClassKey =
 	| 'root'
@@ -75,7 +95,7 @@ type ImageMap3DClassKey =
 	| 'status'
 
 /** Пропсы BaseImageMap, которых у 3D-карты нет или они свои: колесо, предел и начальная область масштаба — у камеры */
-type ImageMap2DOnlyProp = 'data' | 'wheelZoom' | 'maxZoom' | 'initArea' | 'variant' | 'sizeScale' | 'color' | 'customClass'
+type ImageMap2DOnlyProp = 'data' | 'wheelZoom' | 'maxZoom' | 'initArea' | 'variant' | 'sizeScale' | 'color' | 'customClass' | 'ui'
 
 /**
  * Пропсы компонента BaseImageMap3D. Общие с BaseImageMap пропсы называются так же и передаются в 2D-вид
@@ -104,6 +124,15 @@ export interface BaseImageMap3DProps
 	 * По умолчанию `false`; без WebGL переключатель не показывается
 	 */
 	has2dToggle?: boolean
+	/**
+	 * Классы частей (`root`, `viewport`, `camera`, `point`, `tooltip`, `legend`, `directory`, `route`… — см. `IMAGE_MAP_3D_PARTS`) —
+	 * добавляются к классам кита. В 2D-виде тот же объект получает BaseImageMap. Глобально — `defaults.BaseImageMap3D.ui` плагина,
+	 * классы склеиваются.
+	 *
+	 * @example
+	 * <BaseImageMap3D :data="plan" :ui="{ root: 'shadow-sm', camera: 'opacity-80' }" />
+	 */
+	ui?: UiProp<BaseImageMap3DPart>
 }
 
 /** Пропсы после `withDefaults` */

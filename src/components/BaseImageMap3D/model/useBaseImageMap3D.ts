@@ -2,6 +2,7 @@ import type { Ref } from 'vue'
 import { warn3dData } from './validate3d'
 import { hasWebGL } from './webglSupport'
 import { formatMessage } from '@/locales/state'
+import { useImageMap3DUi } from './useImageMap3DUi'
 import { useImageMap3DMap } from './useImageMap3DMap'
 import { useObjectList } from './interaction/useObjectList'
 import { UI_IMAGE_MAP, UI_IMAGE_MAP_3D } from '@/locales/messages'
@@ -245,6 +246,7 @@ export function useBaseImageMap3D(props: ImageMap3DProps, emit: BaseImageMap3DEm
 
 	return {
 		...base,
+		...useImageMap3DUi(props, base.classes),
 		...usePresentation(props, map, base.classes),
 		...input,
 		...useObjectList(props, map, viewportRef),

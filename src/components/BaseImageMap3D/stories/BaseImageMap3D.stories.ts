@@ -31,3 +31,4 @@ export const Fullscreen3D = cases.Fullscreen3D
 export const PulsingMarkers = cases.PulsingMarkers
 export const ObjectsAllFloors = cases.ObjectsAllFloors
 export const GlbOutline = cases.GlbOutline
+export const Theming = cases.Theming
