@@ -8,6 +8,13 @@ body.sb-show-main,
 	font-family: var(--rise-font-sans);
 }
 
+// Layout «centered»: корень — flex-элемент с `min-width: auto`, и история с широкой раскладкой растягивала бы страницу.
+// Корень не шире окна; широкому демо история даёт свою рамку с прокруткой (`max-width: 100%; overflow-x: auto`).
+.sb-show-main.sb-main-centered #storybook-root {
+	min-width: 0;
+	max-width: 100%;
+}
+
 // Используются в шаблонах stories вместо inline-стилей: `<div class="story-row">…</div>`.
 
 /** Ряд элементов с переносом: варианты кнопок, бейджей, чипов. */
@@ -24,6 +31,10 @@ body.sb-show-main,
 	flex-direction: column;
 	align-items: flex-start;
 	gap: 12px;
+
+	> * {
+		max-width: 100%;
+	}
 }
 
 /** Колонка на всю ширину: поля форм, карточки. */
@@ -31,6 +42,7 @@ body.sb-show-main,
 	display: flex;
 	flex-direction: column;
 	gap: 16px;
+	box-sizing: border-box;
 	width: 100%;
 }
 
@@ -50,11 +62,13 @@ body.sb-show-main,
 }
 
 .story-narrow {
+	box-sizing: border-box;
 	width: 100%;
 	max-width: 360px;
 }
 
 .story-medium {
+	box-sizing: border-box;
 	width: 100%;
 	max-width: 560px;
 }
@@ -62,6 +76,7 @@ body.sb-show-main,
 /** Рамка-контейнер: показывает границы области (например, isContained у Modal). */
 .story-frame {
 	position: relative;
+	box-sizing: border-box;
 	padding: 16px;
 	border: 1px dashed var(--rise-border-accented);
 	border-radius: 8px;
