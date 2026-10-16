@@ -1,11 +1,11 @@
-import { en } from '../en'
-import { ja } from '../ja'
-import { kk } from '../kk'
-import { ru } from '../ru'
-import { uz } from '../uz'
-import { zh } from '../zh'
-import { localized } from '../localized'
-import { defineLocale, formatMessage, setLocale } from '../state'
+import { en } from '../../en'
+import { ja } from '../../ja'
+import { kk } from '../../kk'
+import { ru } from '../../ru'
+import { uz } from '../../uz'
+import { zh } from '../../zh'
+import { localized } from '../../localized'
+import { defineLocale, formatMessage, setLocale } from '../../state'
 
 afterEach(() => {
 	setLocale('ru')

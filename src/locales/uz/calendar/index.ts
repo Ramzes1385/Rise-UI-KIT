@@ -1,4 +1,4 @@
-import type { UiKitLocale } from '../types/locales.types'
+import type { UiKitLocale } from '../../types/locales.types'
 
 /** Запасные названия месяцев и дней и фразы относительного времени: для браузеров без данных Intl узбекского (корневые данные урезанного ICU); значения — данные CLDR */
 export const uzCalendar: Pick<UiKitLocale, 'calendarNames' | 'relativeTime'> = {

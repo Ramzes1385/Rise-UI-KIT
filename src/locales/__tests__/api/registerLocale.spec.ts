@@ -1,8 +1,8 @@
-import { en } from '../en'
-import { ru } from '../ru'
-import { UI_ARIA, UI_TEXT } from '../messages'
-import type { UiKitLocale } from '../types/locales.types'
-import { defineLocale, formatNumber, getLocale, localeCodes, registerLocale, setLocale } from '../state'
+import { en } from '../../en'
+import { ru } from '../../ru'
+import { UI_ARIA, UI_TEXT } from '../../messages'
+import type { UiKitLocale } from '../../types/locales.types'
+import { defineLocale, formatNumber, getLocale, localeCodes, registerLocale, setLocale } from '../../state'
 
 const de: UiKitLocale = defineLocale(en, {
 	code: 'de',

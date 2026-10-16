@@ -1,8 +1,8 @@
-import { ja } from '../ja'
-import { zh } from '../zh'
-import { UI_TEXT } from '../messages'
+import { ja } from '../../ja'
+import { zh } from '../../zh'
+import { UI_TEXT } from '../../messages'
 import { foldSearchText } from '@utils/data/textUtils'
-import { formatMessage, formatNumber, getLocale, pluralize, registerLocale, setLocale } from '../state'
+import { formatMessage, formatNumber, getLocale, pluralize, registerLocale, setLocale } from '../../state'
 import { formatDate, formatMultiple, formatPopoverDate, formatRange, formatRelativeTime } from '@utils/data/dateUtils'
 
 describe('китайский и японский языки', () => {

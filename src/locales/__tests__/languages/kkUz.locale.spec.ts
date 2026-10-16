@@ -1,7 +1,7 @@
-import { kk } from '../kk'
-import { uz } from '../uz'
+import { kk } from '../../kk'
+import { uz } from '../../uz'
 import { useLocale } from '@composables/app/useLocale'
-import { currentLocale, formatNumber, getLocale, LOCALES, pluralize, registerLocale, setLocale } from '../state'
+import { currentLocale, formatNumber, getLocale, LOCALES, pluralize, registerLocale, setLocale } from '../../state'
 
 const COUNTS = [1, 2, 5, 11, 21, 22]
 const DATE = new Date(Date.UTC(2025, 4, 7, 12))
