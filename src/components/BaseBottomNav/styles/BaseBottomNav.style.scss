@@ -173,7 +173,9 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		min-width: sz(56px);
+		box-sizing: border-box;
+		min-width: min(#{sz(80px)}, calc(100% + #{sz(8px)}));
+		max-width: calc(100% + #{sz(8px)});
 		padding: sz(2px) sz(12px);
 		border-radius: var(--rise-radius-full);
 		@include transition-colors;
@@ -210,6 +212,7 @@
 	&__link--primary &__icon-wrap {
 		width: var(--bottom-nav-primary-size);
 		min-width: 0;
+		max-width: none;
 		height: var(--bottom-nav-primary-size);
 		margin-top: calc(var(--bottom-nav-primary-size) / -2);
 		padding: 0;
