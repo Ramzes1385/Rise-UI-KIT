@@ -1,6 +1,6 @@
 <template>
 	<figure ref="root" :class="[ui('root'), variantClass, animationClass, classes.root]" :style="sizeScaleStyle" :aria-label="label">
-		<div :class="ui('chart')" :style="{ width: `${size}px`, height: `${size}px` }">
+		<div :class="ui('chart')" :style="{ width: `${size}px`, aspectRatio: '1' }">
 			<svg :class="ui('svg')" viewBox="0 0 42 42" aria-hidden="true">
 				<circle :class="ui('track')" cx="21" cy="21" :r="circleRadius" pathLength="100" />
 				<circle
