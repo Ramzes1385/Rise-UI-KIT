@@ -210,7 +210,7 @@ export const uzBase = {
 		DASHBOARD_GRID_DUPLICATE_ID: 'BaseDashboardGrid: «{id}» id si joylashuvda takrorlanadi — takrorlari koʻrsatilmadi',
 		TOOLTIP_WRAPPERLESS_ROOT:
 			'BaseTooltip: isWrapperless boʻlganda trigger slotining ildizi matn yoki fragment emas, element boʻlishi kerak — maslahat bogʻlanmadi',
-		UNKNOWN_LOCALE: '«{locale}» tili nomaʼlum. Oʻrnatilganlari: {locales}; oʻz tilingiz — defineLocale()',
+		UNKNOWN_LOCALE: '«{locale}» tili nomaʼlum. Mavjudlari: {locales}; oʻz tilingiz — registerLocale()',
 		TOAST_WITHOUT_APP: 'useToast: <BaseApp> topilmadi — bildirishnoma koʻrsatilmadi. Ilovani <BaseApp> ichiga oʻrang.',
 		OVERLAY_WITHOUT_APP: 'useOverlay: <BaseApp> topilmadi — overlay koʻrsatilmadi. Ilovani <BaseApp> ichiga oʻrang.',
 		EDITOR_UNSAFE_LINK: 'BaseEditor: xavfli sxemali havola qoʻyilmadi: {url}',

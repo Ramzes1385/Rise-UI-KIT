@@ -209,7 +209,7 @@ export const kkBase = {
 		DASHBOARD_GRID_DUPLICATE_ID: 'BaseDashboardGrid: «{id}» id-і орналасуда қайталанады — қайталанғандар көрсетілмеді',
 		TOOLTIP_WRAPPERLESS_ROOT:
 			'BaseTooltip: isWrapperless кезінде trigger слотының түбірі мәтін немесе фрагмент емес, элемент болуы тиіс — көмекші мәтін байланбады',
-		UNKNOWN_LOCALE: '«{locale}» тілі белгісіз. Кіріктірілгендері: {locales}; өз тіліңіз — defineLocale()',
+		UNKNOWN_LOCALE: '«{locale}» тілі белгісіз. Қолжетімділері: {locales}; өз тіліңіз — registerLocale()',
 		TOAST_WITHOUT_APP: 'useToast: <BaseApp> табылмады — хабарландыру көрсетілмеді. Қосымшаңызды <BaseApp> ішіне орналастырыңыз.',
 		OVERLAY_WITHOUT_APP: 'useOverlay: <BaseApp> табылмады — оверлей көрсетілмеді. Қосымшаңызды <BaseApp> ішіне орналастырыңыз.',
 		EDITOR_UNSAFE_LINK: 'BaseEditor: қауіпті схемасы бар сілтеме қойылмады: {url}',

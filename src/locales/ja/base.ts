@@ -208,7 +208,7 @@ export const jaBase = {
 		DASHBOARD_GRID_DUPLICATE_ID: 'BaseDashboardGrid：id「{id}」がレイアウトに複数あります。重複した項目は表示されません',
 		TOOLTIP_WRAPPERLESS_ROOT:
 			'BaseTooltip：isWrapperless では trigger スロットのルートをテキストやフラグメントではなく要素にする必要があります。ツールチップは関連付けられていません',
-		UNKNOWN_LOCALE: '不明なロケール「{locale}」です。組み込み：{locales}。独自のロケールには defineLocale() を使ってください',
+		UNKNOWN_LOCALE: '不明なロケール「{locale}」です。利用可能：{locales}。独自のロケールは registerLocale() で追加してください',
 		TOAST_WITHOUT_APP: 'useToast：<BaseApp> が見つからないため、通知を表示できませんでした。アプリを <BaseApp> で囲んでください。',
 		OVERLAY_WITHOUT_APP:
 			'useOverlay：<BaseApp> が見つからないため、オーバーレイを表示できませんでした。アプリを <BaseApp> で囲んでください。',
