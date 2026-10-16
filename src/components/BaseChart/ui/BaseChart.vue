@@ -123,25 +123,27 @@
 					</button>
 				</li>
 			</ul>
-			<table class="base-chart__hidden">
-				<caption>
-					{{
-						label
-					}}
-				</caption>
-				<thead>
-					<tr>
-						<th scope="col">{{ labelsTitle ?? UI_CHARTS.CATEGORY }}</th>
-						<th v-for="view in seriesViews" :key="view.name" scope="col">{{ view.name }}</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr v-for="row in tableRows" :key="row.key">
-						<th scope="row">{{ row.label }}</th>
-						<td v-for="(cell, index) in row.cells" :key="index">{{ cell }}</td>
-					</tr>
-				</tbody>
-			</table>
+			<div class="base-chart__hidden">
+				<table>
+					<caption>
+						{{
+							label
+						}}
+					</caption>
+					<thead>
+						<tr>
+							<th scope="col">{{ labelsTitle ?? UI_CHARTS.CATEGORY }}</th>
+							<th v-for="view in seriesViews" :key="view.name" scope="col">{{ view.name }}</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="row in tableRows" :key="row.key">
+							<th scope="row">{{ row.label }}</th>
+							<td v-for="(cell, index) in row.cells" :key="index">{{ cell }}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 		</template>
 	</figure>
 </template>

@@ -9,8 +9,10 @@
 	--alert-ring: currentcolor;
 
 	display: flex;
+	flex-wrap: wrap;
 	align-items: flex-start;
 	gap: space(ct(alert, gap, 10px));
+	box-sizing: border-box;
 	padding: space(ct(alert, padding-y, 12px) ct(alert, padding-x, 16px));
 	border: 1px solid ct(alert, border, transparent);
 	border-radius: sz(ct(alert, radius, var(--rise-radius-lg)));
@@ -69,7 +71,7 @@
 
 	&__content {
 		display: flex;
-		flex: 1;
+		flex: 1 1 sz(120px);
 		flex-direction: column;
 		gap: sz(4px);
 		min-width: 0;
@@ -102,8 +104,10 @@
 
 	&__actions {
 		display: flex;
+		flex-wrap: wrap;
 		align-items: center;
 		flex-shrink: 0;
+		max-width: 100%;
 		gap: sz(8px);
 	}
 
