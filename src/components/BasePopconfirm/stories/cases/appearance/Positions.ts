@@ -7,16 +7,18 @@ import { docsFrame, storySource, useStorySetup } from '@/stories/helpers'
 const OWN_ARGS = ['isOpen', 'position', 'description']
 
 const template = `
-	<div style="display: grid; grid-template-columns: repeat(3, auto); gap: 140px 24px; align-items: center; justify-items: center; padding: 120px 280px;">
-		<span />
-		<BasePopconfirm v-bind="args" :is-open="true" position="top" title="Сверху"><BaseButton variant="outline">top</BaseButton></BasePopconfirm>
-		<span />
-		<BasePopconfirm v-bind="args" :is-open="true" position="left" title="Слева"><BaseButton variant="outline">left</BaseButton></BasePopconfirm>
-		<span />
-		<BasePopconfirm v-bind="args" :is-open="true" position="right" title="Справа"><BaseButton variant="outline">right</BaseButton></BasePopconfirm>
-		<span />
-		<BasePopconfirm v-bind="args" :is-open="true" position="bottom" title="Снизу"><BaseButton variant="outline">bottom</BaseButton></BasePopconfirm>
-		<span />
+	<div style="max-width: 100%; overflow-x: auto;">
+		<div style="display: grid; grid-template-columns: repeat(3, auto); gap: 140px 24px; align-items: center; justify-items: center; padding: 120px 280px;">
+			<span />
+			<BasePopconfirm v-bind="args" :is-open="true" position="top" title="Сверху"><BaseButton variant="outline">top</BaseButton></BasePopconfirm>
+			<span />
+			<BasePopconfirm v-bind="args" :is-open="true" position="left" title="Слева"><BaseButton variant="outline">left</BaseButton></BasePopconfirm>
+			<span />
+			<BasePopconfirm v-bind="args" :is-open="true" position="right" title="Справа"><BaseButton variant="outline">right</BaseButton></BasePopconfirm>
+			<span />
+			<BasePopconfirm v-bind="args" :is-open="true" position="bottom" title="Снизу"><BaseButton variant="outline">bottom</BaseButton></BasePopconfirm>
+			<span />
+		</div>
 	</div>
 `
 

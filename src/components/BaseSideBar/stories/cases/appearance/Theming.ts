@@ -8,12 +8,12 @@ import { isStoryBranded, literal, storySource, useStorySetup } from '@/stories/h
 const ui = { root: 'story-themed-side-bar', title: 'story-themed-title' }
 
 const template = `
-	<div class="story-row" style="flex-wrap: nowrap; align-items: stretch; height: 420px;">
-		<BaseSideBar v-bind="args" title="По умолчанию" />
-		<div style="display: flex; --rise-side-bar-bg: var(--rise-bg-muted); --rise-side-bar-border: var(--rise-primary); --rise-side-bar-item-radius: var(--rise-radius-full); --rise-side-bar-item-bg-selected: var(--rise-primary); --rise-side-bar-item-text-selected: var(--rise-on-primary);">
+	<div class="story-row" style="align-items: stretch;">
+		<BaseSideBar v-bind="args" title="По умолчанию" style="height: 420px;" />
+		<div style="display: flex; height: 420px; --rise-side-bar-bg: var(--rise-bg-muted); --rise-side-bar-border: var(--rise-primary); --rise-side-bar-item-radius: var(--rise-radius-full); --rise-side-bar-item-bg-selected: var(--rise-primary); --rise-side-bar-item-text-selected: var(--rise-on-primary);">
 			<BaseSideBar v-bind="args" title="Токены на контейнере" />
 		</div>
-		<BaseSideBar v-bind="args" title="Классы через ui" :ui="ui" />
+		<BaseSideBar v-bind="args" title="Классы через ui" :ui="ui" style="height: 420px;" />
 	</div>
 `
 

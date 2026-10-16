@@ -16,7 +16,7 @@ const actions = FILE_ACTIONS
 const state = { isOpen: false }
 
 const template = `
-	<div data-story-scaled style="width: 480px; height: 240px; transform: scale(0.75); transform-origin: top left; padding: 16px; border: 1px dashed var(--rise-border);">
+	<div data-story-scaled style="box-sizing: border-box; width: 100%; max-width: 480px; height: 240px; transform: scale(0.75); transform-origin: top left; padding: 16px; border: 1px dashed var(--rise-border);">
 		<BaseApp teleport-to="#story-scaled-layer">
 			<BaseDropdown v-bind="args" v-model:is-open="isOpen" position="bottom-start">
 				<BaseButton variant="outline" @click="isOpen = !isOpen">

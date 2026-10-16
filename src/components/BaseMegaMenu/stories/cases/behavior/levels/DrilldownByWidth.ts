@@ -11,8 +11,10 @@ const widths = [360, 720]
 
 const template = `
 	<div class="story-stack">
-		<div v-for="width in widths" :key="width" :data-width="width" :style="{ width: width + 'px', minHeight: '300px' }">
-			<BaseMegaMenu v-bind="args" :items="items" open-key="catalog" :aria-label="'Меню шириной ' + width" />
+		<div v-for="width in widths" :key="width" style="max-width: 100%; overflow-x: auto;">
+			<div :data-width="width" :style="{ width: width + 'px', minHeight: '300px' }">
+				<BaseMegaMenu v-bind="args" :items="items" open-key="catalog" :aria-label="'Меню шириной ' + width" />
+			</div>
 		</div>
 	</div>
 `

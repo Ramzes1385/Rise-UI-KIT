@@ -7,7 +7,7 @@ import { literal, storySource, useStorySetup } from '@/stories/helpers'
 const variants = PIE_CHART_VARIANTS
 
 const template = `
-	<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 32px">
+	<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr)); gap: 32px">
 		<BasePieChart v-for="variant in variants" :key="variant" v-bind="args" :variant="variant" />
 	</div>
 `

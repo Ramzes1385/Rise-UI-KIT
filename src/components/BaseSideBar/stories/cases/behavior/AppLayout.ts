@@ -11,7 +11,7 @@ const user = USER
 const models = { isCollapsed: 'isCollapsed' }
 
 const template = `
-	<div style="display: flex; height: 420px;">
+	<div style="display: flex; height: 420px; overflow-x: auto;">
 		<BaseSideBar v-bind="args" v-model:is-collapsed="isCollapsed">
 			<template #footer>
 				<div class="story-row" style="flex-wrap: nowrap; gap: 8px;">
@@ -20,7 +20,7 @@ const template = `
 				</div>
 			</template>
 		</BaseSideBar>
-		<main style="flex: 1; padding: 24px;">Основное содержимое страницы</main>
+		<main style="flex: 1; min-width: 240px; padding: 24px;">Основное содержимое страницы</main>
 	</div>
 `
 

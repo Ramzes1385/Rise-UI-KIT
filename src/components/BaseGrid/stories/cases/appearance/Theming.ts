@@ -8,15 +8,15 @@ const ui = { root: 'story-themed-grid' }
 
 const template = `
 	<div class="story-stack">
-		<BaseGrid v-bind="args" :cols="4">
+		<BaseGrid v-bind="args" :cols="{ base: 2, md: 4 }">
 			<div v-for="n in 4" :key="n" style="padding: 8px 16px; border: 1px solid var(--rise-border); border-radius: 8px; background: var(--rise-bg-elevated)">По умолчанию</div>
 		</BaseGrid>
 		<div style="--rise-grid-gap: 40px;">
-			<BaseGrid v-bind="args" :cols="4">
+			<BaseGrid v-bind="args" :cols="{ base: 2, md: 4 }">
 				<div v-for="n in 4" :key="n" style="padding: 8px 16px; border: 1px solid var(--rise-border); border-radius: 8px; background: var(--rise-bg-elevated)">Токен на обёртке</div>
 			</BaseGrid>
 		</div>
-		<BaseGrid v-bind="args" :cols="4" :ui="ui">
+		<BaseGrid v-bind="args" :cols="{ base: 2, md: 4 }" :ui="ui">
 			<div v-for="n in 4" :key="n" style="padding: 8px 16px; border: 1px solid var(--rise-border); border-radius: 8px; background: var(--rise-bg-elevated)">Классы через ui</div>
 		</BaseGrid>
 	</div>

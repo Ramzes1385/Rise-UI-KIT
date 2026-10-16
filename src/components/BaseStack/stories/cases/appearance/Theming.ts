@@ -8,15 +8,15 @@ const ui = { root: 'story-themed-stack' }
 
 const template = `
 	<div class="story-stack">
-		<BaseStack v-bind="args" direction="row">
+		<BaseStack v-bind="args" direction="row" is-wrap>
 			<div v-for="n in 3" :key="n" style="padding: 8px 16px; border: 1px solid var(--rise-border); border-radius: 8px; background: var(--rise-bg-elevated)">По умолчанию</div>
 		</BaseStack>
 		<div style="--rise-stack-gap: 40px;">
-			<BaseStack v-bind="args" direction="row">
+			<BaseStack v-bind="args" direction="row" is-wrap>
 				<div v-for="n in 3" :key="n" style="padding: 8px 16px; border: 1px solid var(--rise-border); border-radius: 8px; background: var(--rise-bg-elevated)">Токен на обёртке</div>
 			</BaseStack>
 		</div>
-		<BaseStack v-bind="args" direction="row" :ui="ui">
+		<BaseStack v-bind="args" direction="row" is-wrap :ui="ui">
 			<div v-for="n in 3" :key="n" style="padding: 8px 16px; border: 1px solid var(--rise-border); border-radius: 8px; background: var(--rise-bg-elevated)">Классы через ui</div>
 		</BaseStack>
 	</div>
@@ -38,7 +38,7 @@ export const Theming: StoryObj<typeof meta> = {
 				template,
 				imports: ['BaseStack'],
 				script: `const ui = ${literal(ui)}`,
-				omit: ['direction'],
+				omit: ['direction', 'isWrap'],
 			}),
 		},
 	},

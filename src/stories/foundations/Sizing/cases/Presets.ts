@@ -13,7 +13,7 @@ const STATE = { text: '', lang: 'ru', on: true, checked: true }
 
 const template = `
 	<div class="story-stack">
-		<div v-for="preset in presets" :key="preset.name" class="story-row" style="flex-wrap: nowrap;">
+		<div v-for="preset in presets" :key="preset.name" class="story-row">
 			<span class="story-label">{{ preset.name }} · {{ preset.sizeScale }}<br />{{ preset.control }}</span>
 			<BaseButton :size-scale="preset.sizeScale">Сохранить</BaseButton>
 			<div style="width: 150px;"><BaseInput v-model="text" placeholder="Поле ввода" :size-scale="preset.sizeScale" /></div>

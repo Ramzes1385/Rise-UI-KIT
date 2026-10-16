@@ -9,7 +9,7 @@ import { docsFrame, isStoryBranded, literal, storySource, useStorySetup } from '
 const ui = { panel: 'story-themed-panel', item: 'story-themed-item' }
 
 const template = `
-	<div style="display: grid; grid-template-columns: repeat(3, 260px); gap: 16px; align-items: start;">
+	<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 260px)); gap: 16px; align-items: start;">
 		<BaseDropdownMenu v-bind="args" is-open aria-label="По умолчанию">
 			<BaseButton variant="outline">По умолчанию</BaseButton>
 		</BaseDropdownMenu>

@@ -11,8 +11,8 @@ const state = { isCollapsed: false }
 const hidden = [...SLOT_KEYS, 'isCollapsed', 'onUpdate:isCollapsed']
 
 const template = `
-	<div style="display: flex; gap: 16px; height: 420px;">
-		<BaseSideBar v-bind="args" v-model:is-collapsed="isCollapsed" />
+	<div style="display: flex; flex-wrap: wrap; gap: 16px;">
+		<BaseSideBar v-bind="args" v-model:is-collapsed="isCollapsed" style="height: 420px;" />
 		<div class="story-col">
 			<BaseButton variant="outline" @click="isCollapsed = !isCollapsed">Переключить панель</BaseButton>
 			<span class="story-label">isCollapsed: {{ isCollapsed }}</span>
