@@ -54,6 +54,7 @@ describe('useMaskedInputHandlers', () => {
 
 		it.each([
 			['digits', 'a1b2-3', '123'],
+			['digits', '１２ａ３', '123'],
 			['letters', 'Ab1 вГ-2', 'AbвГ'],
 			['alphanumeric', 'a1 б2-!', 'a1б2'],
 		] as const)('allowedChars=%s отбрасывает недопустимые символы в поле и в модели', (filter, typed, expected) => {

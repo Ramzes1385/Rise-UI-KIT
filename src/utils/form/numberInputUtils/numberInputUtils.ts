@@ -1,11 +1,12 @@
 /** Утилиты поля числа (BaseInputNumber): разбор ввода, округление, границы */
+import { toHalfWidth } from '@utils/data/textUtils'
 
 /**
  * Разобрать набранный текст: `1,5` и `1.5` — 1.5, пробелы и знак U+2212 допускаются.
  * `null` — пустое поле, `undefined` — ввод ещё не число (`-`, `1,2,`, буквы)
  */
 function parseNumberInput(text: string): number | null | undefined {
-	const normalized = text.replace(/\s/g, '').replace(/−/g, '-').replace(',', '.')
+	const normalized = toHalfWidth(text).replace(/\s/g, '').replace(/−/g, '-').replace(',', '.')
 	if (normalized === '') return null
 	if (!/^[-+]?(\d+\.?\d*|\.\d+)$/.test(normalized)) return undefined
 	return Number(normalized)

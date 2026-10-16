@@ -6,6 +6,7 @@ import { getLocale, pluralize } from '@/locales/state'
 import type { BaseInput } from '@components/BaseInput'
 import { useMotion } from '@composables/app/useMotion'
 import { foldSearchText } from '@utils/data/textUtils'
+import { isImeKeydown } from '@utils/dom/keyboardUtils'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import { useFormDisabled } from '@composables/form/useFormContext'
 import { AUTOCOMPLETE_INPUT_PARTS } from '../types/BaseAutocomplete.types'
@@ -210,7 +211,7 @@ function useFieldEvents(emit: BaseAutocompleteEmits, ctx: ReturnType<typeof useA
 			if (!ctx.isOpen.value) ctx.open()
 		},
 		handleKeydown(event: KeyboardEvent): void {
-			if (!ctx.canOpen.value) return
+			if (!ctx.canOpen.value || isImeKeydown(event)) return
 			keyActions.get(event.key)?.(event)
 		},
 		handleBlur(event: FocusEvent): void {

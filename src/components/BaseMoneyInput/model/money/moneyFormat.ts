@@ -1,3 +1,4 @@
+import { toHalfWidth } from '@utils/data/textUtils'
 import type { UiKitLocale } from '@/locales/types/locales.types'
 import type { MoneyFormat } from '../../types/BaseMoneyInput.types'
 
@@ -19,7 +20,8 @@ export function moneyFormat(locale: UiKitLocale, options: { currency: string; mi
 	}
 }
 
-export function cleanMoney(text: string, format: MoneyFormat): string {
+export function cleanMoney(rawText: string, format: MoneyFormat): string {
+	const text = toHalfWidth(rawText)
 	const isNegative = format.isNegativeAllowed && /^\s*[-−]/.test(text)
 	const ungrouped = /[.,]/.test(format.group) ? text.split(format.group).join('') : text
 	const kept = ungrouped.replace(/[^\d.,]/g, '')

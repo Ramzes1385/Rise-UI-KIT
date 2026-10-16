@@ -1,5 +1,6 @@
 /** Утилиты: банковская карта — марка по номеру, группировка цифр, проверка Луна, срок действия */
 import { CARD_BRANDS } from './cardBrands'
+import { toHalfWidth } from '@utils/data/textUtils'
 import type { CardBrand, CardBrandOptions, CardBrandPoolEntry as PoolEntry, CardExpiry, CardPrefix } from './types/cardUtils.types'
 
 const MIN_NUMBER_LENGTH = 12
@@ -9,7 +10,7 @@ const MAX_EXPIRY_YEARS = 20
 
 /** Только цифры номера: пробелы, дефисы и прочие знаки отброшены */
 export function cardDigits(value: string): string {
-	return value.replace(/\D/g, '')
+	return toHalfWidth(value).replace(/\D/g, '')
 }
 
 function prefixLength(digits: string, prefix: CardPrefix): number {

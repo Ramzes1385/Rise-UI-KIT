@@ -9,12 +9,13 @@ import type {
 const SAMPLE_DATE = new Date(2000, 10, 25)
 const EXAMPLE_END = new Date(2000, 11, 3)
 const GROUPS: Record<DatePickerDatePart, string> = { day: /(\d{1,2})/.source, month: /(\d{1,2})/.source, year: /(\d{4})/.source }
-const DATE_SEPARATOR = /\s*[./-]\s*/.source
-const TIME_PATTERN = /(?:[,\s]+(\d{1,2}):(\d{2})(?::(\d{2}))?(?:\s*([ap])\.?m\.?)?)?/.source
-const TRAILING_DOT = /\.?/.source
-const SEPARATORS_ONLY = /^[\s,.…—–-]*$/
+const DATE_SEPARATOR = /\s*[./年月-]\s*/.source
+const TIME_PATTERN = /(?:[,\s]+(?:(上午|午前|下午|午後)\s*)?(\d{1,2}):(\d{2})(?::(\d{2}))?(?:\s*([ap])\.?m\.?)?)?/.source
+const TRAILING_DOT = /[.日]?/.source
+const SEPARATORS_ONLY = /^[\s,.…—–~〜至-]*$/
 const HAS_SEPARATOR = /[^\s,]/
 const FIRST_TIME_GROUP = 4
+const CJK_AFTERNOON = new Set(['下午', '午後'])
 
 function getDateOrder(locale: string): DatePickerDatePart[] {
 	const parts = new Intl.DateTimeFormat(locale, { day: '2-digit', month: '2-digit', year: 'numeric' }).formatToParts(SAMPLE_DATE)
@@ -32,8 +33,9 @@ function toHours(time: DatePickerTimeParts): number | null {
 }
 
 function readTime(match: RegExpMatchArray): DatePickerTimeParts | null {
-	const [hours, minutes, seconds, meridiem] = match.slice(FIRST_TIME_GROUP, FIRST_TIME_GROUP + 4)
+	const [cjkMeridiem, hours, minutes, seconds, latinMeridiem] = match.slice(FIRST_TIME_GROUP, FIRST_TIME_GROUP + 5)
 	if (hours === undefined) return null
+	const meridiem = latinMeridiem ?? (cjkMeridiem && (CJK_AFTERNOON.has(cjkMeridiem) ? 'p' : 'a'))
 	return { hours: Number(hours), minutes: Number(minutes), seconds: Number(seconds ?? 0), meridiem }
 }
 
@@ -79,7 +81,7 @@ export function getDateRangeExample(options: DatePickerTextOptions): string {
 }
 
 export function parseDateRangeText(text: string, options: DatePickerTextOptions): DatePickerParsedText | null {
-	const trimmed = text.trim()
+	const trimmed = text.normalize('NFKC').trim()
 	if (!trimmed) return { start: null, end: null }
 
 	const order = getDateOrder(options.locale)

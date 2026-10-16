@@ -93,7 +93,7 @@
 					:custom-class="hiddenLabel"
 					:size-scale="sizeScale"
 					@update:model-value="emit('update:filter-value', $event)"
-					@keydown.enter="emit('add-filter')" />
+					@keydown="handleFilterEnter" />
 				<BaseInput
 					v-if="isRangeOperator"
 					class="base-table__filter-field base-table__filter-field--value"
@@ -104,7 +104,7 @@
 					:custom-class="hiddenLabel"
 					:size-scale="sizeScale"
 					@update:model-value="emit('update:filter-value-to', $event)"
-					@keydown.enter="emit('add-filter')" />
+					@keydown="handleFilterEnter" />
 			</template>
 			<BaseButton
 				variant="outline"
@@ -202,6 +202,7 @@ const {
 	toolbarRef,
 	handleKeydown,
 	handleFocusin,
+	handleFilterEnter,
 	removeFilter,
 	toDate,
 	setDateValue,

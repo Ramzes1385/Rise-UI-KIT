@@ -1,5 +1,6 @@
 import { nextTick, ref, useId } from 'vue'
 import { useUi } from '@composables/base/useUi'
+import { isImeKeydown } from '@utils/dom/keyboardUtils'
 import { useFormDisabled } from '@composables/form/useFormContext'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseInplaceEmits, InplaceProps, InplaceState } from '../types/BaseInplace.types'
@@ -48,6 +49,7 @@ export function useBaseInplace(props: InplaceProps, emit: BaseInplaceEmits) {
 	const actions = useInplaceActions(props, emit, state)
 
 	function handleKeydown(event: KeyboardEvent): void {
+		if (isImeKeydown(event)) return
 		if (event.key === 'Enter') {
 			event.preventDefault()
 			void actions.save()

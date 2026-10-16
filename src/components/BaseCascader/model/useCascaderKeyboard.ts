@@ -1,3 +1,4 @@
+import { isImeKeydown } from '@utils/dom/keyboardUtils'
 import type { CascaderKeyActions, CascaderKeyHandler } from '../types/BaseCascader.types'
 
 const openOr =
@@ -58,6 +59,7 @@ export function useCascaderKeyboard(actions: CascaderKeyActions) {
 			runKey(event, COLUMN_KEYS[event.key], actions)
 		},
 		handleSearchKeydown(event: KeyboardEvent): void {
+			if (isImeKeydown(event)) return
 			if (closeOnTab(event)) {
 				event.preventDefault()
 				return

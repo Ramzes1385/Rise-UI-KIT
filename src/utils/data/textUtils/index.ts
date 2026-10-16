@@ -1,1 +1,1 @@
-export { foldSearchText } from './textUtils'
+export { foldSearchText, toHalfWidth } from './textUtils'

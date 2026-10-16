@@ -203,6 +203,7 @@ describe('cardUtils', () => {
 	describe('cardDigits и cardNumberMaxLength', () => {
 		it('cardDigits оставляет только цифры', () => {
 			expect(cardDigits(' 4242-4242 ab42 ')).toBe('4242424242')
+			expect(cardDigits('４２４２　４２４２')).toBe('42424242')
 			expect(cardDigits('')).toBe('')
 		})
 

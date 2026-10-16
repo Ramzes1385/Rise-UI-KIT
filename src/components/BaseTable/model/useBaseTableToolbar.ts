@@ -1,5 +1,6 @@
 import { useTableUi } from './useTableUi'
 import { computed, nextTick, ref } from 'vue'
+import { isImeKeydown } from '@utils/dom/keyboardUtils'
 import type { DropdownMenuItem } from '@components/BaseDropdownMenu'
 import { useToolbarKeyboard } from '@composables/interaction/useToolbarKeyboard'
 import type { BaseTableToolbarEmits, BaseTableToolbarProps } from '../types/toolbar/BaseTableToolbar.types'
@@ -48,6 +49,9 @@ export function useBaseTableToolbar(props: BaseTableToolbarProps, emit: BaseTabl
 		handleKeydown: keyboard.handleKeydown,
 		handleFocusin: keyboard.handleFocusin,
 		removeFilter,
+		handleFilterEnter(event: KeyboardEvent): void {
+			if (event.key === 'Enter' && !isImeKeydown(event)) emit('add-filter')
+		},
 		toDate: fromIsoDay,
 		setDateValue: (date: Date | null): void => emit('update:filter-value', toIsoDay(date)),
 		setDateValueTo: (date: Date | null): void => emit('update:filter-value-to', toIsoDay(date)),

@@ -1,6 +1,7 @@
 /** Composable: обработчики ввода для маскированных полей */
 import { nextTick } from 'vue'
 import { useInputMask } from './useInputMask'
+import { toHalfWidth } from '@utils/data/textUtils'
 import type {
 	AllowedCharsFilter,
 	MaskedInputContext,
@@ -60,12 +61,13 @@ function applyMaskedInput({ options, mask }: MaskedInputContext, target: HTMLInp
 }
 
 function applyFilteredInput(options: UseMaskedInputHandlersOptions, target: HTMLInputElement): void {
-	const rawValue = target.value
+	const typed = target.value
 	const filter = options.getAllowedChars?.()
-	const value = filter ? rawValue.replace(DISALLOWED_CHARS[filter], '') : rawValue
-	if (value !== rawValue) {
+	const halfWidth = filter === 'digits' ? toHalfWidth(typed) : typed
+	const value = filter ? halfWidth.replace(DISALLOWED_CHARS[filter], '') : halfWidth
+	if (value !== typed) {
 		// Курсор остаётся там, где был бы без отброшенного символа
-		const cursor = Math.max(0, (target.selectionStart ?? value.length) - (rawValue.length - value.length))
+		const cursor = Math.max(0, (target.selectionStart ?? value.length) - (typed.length - value.length))
 		target.value = value
 		setCursorPos(options, cursor)
 	}

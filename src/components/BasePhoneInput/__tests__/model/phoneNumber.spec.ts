@@ -8,6 +8,7 @@ describe('номер телефона', () => {
 		expect(maskSize('(###) ###-##-##')).toBe(10)
 		expect(maskPlaceholder('(###) ###-##-##')).toBe('(000) 000-00-00')
 		expect(onlyDigits('+7 (916) 123')).toBe('7916123')
+		expect(onlyDigits('＋８（９１６）１２３')).toBe('8916123')
 	})
 
 	it('parsePhone: пусто, предпочтительная страна, самый длинный код, неизвестный код', () => {

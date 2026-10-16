@@ -1,3 +1,4 @@
+import { toHalfWidth } from '@utils/data/textUtils'
 import type { RequisiteKind, RequisiteRule } from '../../types/BaseRequisiteInput.types'
 import {
 	isValidAccount,
@@ -21,4 +22,8 @@ export const REQUISITE_RULES: Record<RequisiteKind, RequisiteRule> = {
 }
 
 export const cleanRequisite = (text: string, kind: RequisiteKind): string =>
-	kind === 'kpp' ? text.toUpperCase().replace(/[^\dA-Z]/g, '') : text.replace(/\D/g, '')
+	kind === 'kpp'
+		? toHalfWidth(text)
+				.toUpperCase()
+				.replace(/[^\dA-Z]/g, '')
+		: toHalfWidth(text).replace(/\D/g, '')

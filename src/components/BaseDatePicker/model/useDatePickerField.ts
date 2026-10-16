@@ -1,6 +1,7 @@
 import { computed, ref, watchPostEffect } from 'vue'
 import type { BaseInput } from '@components/BaseInput'
 import { inputUiOf, partClassOf } from './datePickerUi'
+import { isImeKeydown } from '@utils/dom/keyboardUtils'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import { useExplicitPropDetection } from '@composables/base/useExplicitPropDetection'
 import type { DatePickerFieldEmits, DatePickerFieldProps } from '../types/DatePickerField.types'
@@ -66,7 +67,7 @@ export function useDatePickerField(props: DatePickerFieldProps, emit: DatePicker
 			if (resolvedProps.value.isEditable) emit('text-commit')
 		},
 		handleFieldKeydown(event: KeyboardEvent): void {
-			if (resolvedProps.value.isDisabled || handleDraftKey(event)) return
+			if (resolvedProps.value.isDisabled || isImeKeydown(event) || handleDraftKey(event)) return
 			if (event.key !== 'Enter' && event.key !== 'ArrowDown') return
 			event.preventDefault()
 			emit('keyboard-open')

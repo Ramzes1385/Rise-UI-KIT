@@ -1,4 +1,5 @@
 import { onMounted, ref } from 'vue'
+import { isImeKeydown } from '@utils/dom/keyboardUtils'
 import type { KanbanTextEditorEmits, KanbanTextEditorProps } from '../../types/KanbanParts.types'
 
 export function useKanbanTextEditor(props: KanbanTextEditorProps, emit: KanbanTextEditorEmits) {
@@ -31,7 +32,7 @@ export function useKanbanTextEditor(props: KanbanTextEditorProps, emit: KanbanTe
 			text.value = value
 		},
 		handleKeydown(event: KeyboardEvent): void {
-			if (event.isComposing) return
+			if (isImeKeydown(event)) return
 			if (event.key === 'Escape') {
 				event.stopPropagation()
 				cancel()

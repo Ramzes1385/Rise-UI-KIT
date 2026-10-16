@@ -1,3 +1,4 @@
+import { isImeKeydown } from '@utils/dom/keyboardUtils'
 import type { TreeSelectKeyAction, TreeSelectKeysContext, TreeSelectRow } from '../types/BaseTreeSelect.types'
 
 const CLOSED_KEYS = new Set(['Enter', ' ', 'ArrowDown', 'ArrowUp', 'Home', 'End'])
@@ -68,7 +69,7 @@ function handleOpenKey(context: TreeSelectKeysContext, event: KeyboardEvent, isS
 export function useTreeSelectKeys(context: TreeSelectKeysContext) {
 	return {
 		handleKeydown(event: KeyboardEvent, isSearch = false): void {
-			if (context.isDisabled() || event.isComposing) return
+			if (context.isDisabled() || isImeKeydown(event)) return
 			if (context.isOpen.value) {
 				handleOpenKey(context, event, isSearch)
 				return

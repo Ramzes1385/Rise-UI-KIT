@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { formatNumber } from '@/locales/state'
 import { useUi } from '@composables/base/useUi'
 import type { BaseInput } from '@components/BaseInput'
+import { isImeKeydown } from '@utils/dom/keyboardUtils'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import { useFormDisabled } from '@composables/form/useFormContext'
 import { INPUT_NUMBER_PARTS } from '../types/BaseInputNumber.types'
@@ -62,7 +63,7 @@ function useNumberKeyboard(props: InputNumberProps, actions: NumberCommit): (eve
 	}
 
 	return event => {
-		if (props.isReadonly) return
+		if (props.isReadonly || isImeKeydown(event)) return
 		const step = stepFor(event.key)
 		if (step) {
 			event.preventDefault()

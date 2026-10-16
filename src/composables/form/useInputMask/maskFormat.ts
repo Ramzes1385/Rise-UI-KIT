@@ -1,3 +1,4 @@
+import { toHalfWidth } from '@utils/data/textUtils'
 import { isGreedy, isToken, matchesToken } from './maskTokens'
 /** Утилиты: наложение и снятие маски ввода */
 import type { MaskScanState } from './types/useInputMask.types'
@@ -114,8 +115,10 @@ function stripStep(state: MaskScanState, mask: string, value: string): void {
 }
 
 /** Описание: снимает маску — оставляет только символы, попавшие в токены */
-function stripMask(value: string, mask: string): string {
-	if (!mask) return value
+function stripMask(rawValue: string, mask: string): string {
+	if (!mask) return rawValue
+
+	const value = toHalfWidth(rawValue)
 
 	const state = createScanState()
 	while (state.valueIndex < value.length && state.maskIndex < mask.length) {

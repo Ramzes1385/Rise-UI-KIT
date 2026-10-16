@@ -2,6 +2,7 @@ import type { Ref } from 'vue'
 import { currentLocale } from '@/locales/state'
 import { useUi } from '@composables/base/useUi'
 import { nextEmojiIndex } from './emojiNavigation'
+import { isImeKeydown } from '@utils/dom/keyboardUtils'
 import { buildSections, emojiKey, loadEmojiData } from './emojiData'
 import { computed, nextTick, ref, shallowRef, useId, watch } from 'vue'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
@@ -131,7 +132,7 @@ export function useBaseEmojiPicker(props: BaseEmojiPickerProps, emit: BaseEmojiP
 		select,
 		handleSearchKeydown(event: KeyboardEvent): void {
 			const first = state.sections.value[0]?.items[0]
-			if (!first || (event.key !== 'ArrowDown' && event.key !== 'Enter')) return
+			if (!first || isImeKeydown(event) || (event.key !== 'ArrowDown' && event.key !== 'Enter')) return
 			event.preventDefault()
 			if (event.key === 'Enter') select(first, 0)
 			else focus.focusIndex(focus.activeIndex.value)

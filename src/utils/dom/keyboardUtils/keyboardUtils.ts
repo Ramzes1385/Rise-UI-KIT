@@ -1,8 +1,9 @@
-/** Утилиты: какая буква сочетания клавиш нажата, независимо от раскладки */
+/** Утилиты: какая буква сочетания клавиш нажата, независимо от раскладки; нажатие, которое принадлежит IME */
 
 const LATIN_LETTER = /^[a-z]$/i
 const ASCII_CHAR = /^[ -~]$/
 const LETTER_CODE = /^Key([A-Z])$/
+const IME_KEY_CODE = 229
 
 /**
  * Буква нажатия для горячих клавиш: латинская буква из `event.key`, иначе буква физической клавиши из `event.code`.
@@ -18,4 +19,13 @@ function getShortcutLetter(event: Pick<KeyboardEvent, 'code' | 'key'>): string {
 	return LETTER_CODE.exec(event.code)?.[1]?.toLowerCase() ?? ''
 }
 
-export { getShortcutLetter }
+/**
+ * Нажатие обработал IME (китайский, японский, корейский ввод): Enter подтверждает слово, стрелки выбирают вариант, Esc отменяет
+ * композицию — полю и списку эти клавиши не принадлежат. `isComposing` — стандарт; Safari шлёт `compositionend` раньше последнего
+ * `keydown`, и у того `isComposing` уже `false`, зато `keyCode` — 229 (`key: 'Process'` у остальных браузеров при композиции).
+ */
+function isImeKeydown(event: Pick<KeyboardEvent, 'isComposing' | 'keyCode'>): boolean {
+	return event.isComposing || event.keyCode === IME_KEY_CODE
+}
+
+export { getShortcutLetter, isImeKeydown }

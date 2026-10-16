@@ -1,6 +1,7 @@
 import type { Ref } from 'vue'
 import { useUi } from '@composables/base/useUi'
 import { computed, ref, toRef, useId } from 'vue'
+import { isImeKeydown } from '@utils/dom/keyboardUtils'
 import { useFormField } from '@composables/form/useFormField'
 import { useFieldControl } from '@composables/form/useFormContext'
 import { useMaskedInputHandlers } from '@composables/form/useInputMask'
@@ -96,7 +97,7 @@ export function useBaseInput(props: InputProps, emit: BaseInputEmits) {
 		isClearVisible,
 		handleKeydown(event: KeyboardEvent): void {
 			maskedValue.masked.handleKeydown(event)
-			if (event.key !== 'Escape' || event.defaultPrevented || event.isComposing || !isClearVisible.value) return
+			if (event.key !== 'Escape' || event.defaultPrevented || isImeKeydown(event) || !isClearVisible.value) return
 			event.preventDefault()
 			emit('update:modelValue', '')
 		},

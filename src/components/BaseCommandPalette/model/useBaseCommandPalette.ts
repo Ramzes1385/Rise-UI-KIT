@@ -1,6 +1,7 @@
 import { useUi } from '@composables/base/useUi'
 import { useResultsMotion } from './useResultsMotion'
 import { UI_COMMAND_PALETTE } from '@/locales/messages'
+import { isImeKeydown } from '@utils/dom/keyboardUtils'
 import { useHotkeys } from '@composables/interaction/useHotkeys'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import { groupCommands, matchesCommand, nextEnabled } from './commands/commandSearch'
@@ -118,7 +119,7 @@ export function useBaseCommandPalette(props: BaseCommandPaletteProps, emit: Base
 			list.reset()
 		},
 		handleKeydown(event: KeyboardEvent): void {
-			if (event.isComposing || !(event.key in keyActions)) return
+			if (isImeKeydown(event) || !(event.key in keyActions)) return
 			event.preventDefault()
 			keyActions[event.key]()
 		},

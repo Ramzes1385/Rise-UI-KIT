@@ -8,6 +8,9 @@ describe('numberInputUtils', () => {
 		expect(parseNumberInput('+7')).toBe(7)
 		expect(parseNumberInput('.5')).toBe(0.5)
 		expect(parseNumberInput('2.')).toBe(2)
+		expect(parseNumberInput('１２３')).toBe(123)
+		expect(parseNumberInput('－１，５')).toBe(-1.5)
+		expect(parseNumberInput('１　０００．２５')).toBe(1000.25)
 	})
 
 	it('parseNumberInput: пусто — null, не число — undefined', () => {

@@ -5,6 +5,7 @@ import { formatMessage } from '@/locales/state'
 import { useUi } from '@composables/base/useUi'
 import type { BaseInput } from '@components/BaseInput'
 import { useMotion } from '@composables/app/useMotion'
+import { isImeKeydown } from '@utils/dom/keyboardUtils'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import { useFormDisabled } from '@composables/form/useFormContext'
 import type { BaseInputTagsEmits, InputTagsProps } from '../types/BaseInputTags.types'
@@ -146,7 +147,7 @@ function createFieldKeydown(
 	actions: { commitDraft: () => boolean; focusTag: (index: number) => void },
 ) {
 	return (event: KeyboardEvent): void => {
-		if (!canEdit.value) return
+		if (!canEdit.value || isImeKeydown(event)) return
 		const input = event.target as HTMLInputElement
 		const isAtStart = input.selectionStart === 0 && input.selectionEnd === 0
 		if (event.key === 'Enter') {

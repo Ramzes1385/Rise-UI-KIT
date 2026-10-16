@@ -1,6 +1,7 @@
 import type { Ref } from 'vue'
 import { useUi } from '@composables/base/useUi'
 import { useMotion } from '@composables/app/useMotion'
+import { isImeKeydown } from '@utils/dom/keyboardUtils'
 import { computed, nextTick, ref, useId, watch } from 'vue'
 import { useFieldControl } from '@composables/form/useFormContext'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
@@ -100,7 +101,7 @@ function useMentionActions(
 		handleKeydown(event: KeyboardEvent): void {
 			const action = listKeyAction(event.key)
 			const needsItems = action !== 'dismiss' && suggestions.value.length === 0
-			if (!action || !state.mention.value || needsItems || event.isComposing) return
+			if (!action || !state.mention.value || needsItems || isImeKeydown(event)) return
 			event.preventDefault()
 			actions[action]()
 		},

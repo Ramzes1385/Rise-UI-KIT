@@ -1,6 +1,7 @@
 import { computed, ref, watch } from 'vue'
 import { formatMessage } from '@/locales/state'
 import { UI_FILE_MANAGER } from '@/locales/messages'
+import { isImeKeydown } from '@utils/dom/keyboardUtils'
 import { nameError, uniqueName } from '../lib/fileManagerIndex'
 import type { FileManagerCore, FileManagerEditing, FileManagerNameError } from '../../types/FileManagerInternal.types'
 
@@ -79,7 +80,7 @@ export function useFileManagerEditing(core: FileManagerCore) {
 		announcement,
 		...labels,
 		handleEditorKeydown(event: KeyboardEvent): void {
-			if (event.isComposing) return
+			if (isImeKeydown(event)) return
 			if (event.key === 'Enter' && editing.value) commit(editing.value, true)
 			else if (event.key === 'Escape') close(true)
 			else return

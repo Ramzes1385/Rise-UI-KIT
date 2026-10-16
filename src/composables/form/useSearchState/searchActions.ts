@@ -1,3 +1,4 @@
+import { isImeKeydown } from '@utils/dom/keyboardUtils'
 /** Утилиты: действия поиска — ввод, выбор, очистка, запуск по Enter */
 import type { SearchResult } from '@components/BaseSearch/types/BaseSearch.types'
 import type { SearchNavigation, SearchStateContext, UseSearchStateOptions } from './types/useSearchState.types'
@@ -47,7 +48,7 @@ function createSearchHandlers(ctx: SearchStateContext, nav: SearchNavigation) {
 	}
 
 	function handleKeydown(e: KeyboardEvent): void {
-		if (e.isComposing) return
+		if (isImeKeydown(e)) return
 		if (e.key === 'Enter' && nav.highlightedIndex.value < 0 && query.value) {
 			e.preventDefault()
 			ctx.debounce.cancel()

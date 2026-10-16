@@ -13,6 +13,8 @@ import {
 
 const RU: DatePickerTextOptions = { locale: 'ru-RU', showTime: false, showSeconds: false, is24Hour: true }
 const RU_TIME: DatePickerTextOptions = { ...RU, showTime: true }
+const ZH: DatePickerTextOptions = { locale: 'zh-CN', showTime: false, showSeconds: false, is24Hour: true }
+const JA_TIME: DatePickerTextOptions = { locale: 'ja-JP', showTime: true, showSeconds: true, is24Hour: false }
 const EN_TIME: DatePickerTextOptions = { locale: 'en-US', showTime: true, showSeconds: false, is24Hour: false }
 
 const CONFIG: BaseDatePickerCalendarConfig = {
@@ -91,6 +93,43 @@ describe('parseDateRangeText', () => {
 
 	it.each(['10/01/2026, 13:00 PM', '10/01/2026, 00:30 AM'])('12-часовое время в «%s» отклоняет', text => {
 		expect(parseDateRangeText(text, EN_TIME)).toBeNull()
+	})
+
+	it.each([
+		['2026/10/01 — 2026/10/05', ZH],
+		['2026年10月1日 ~ 2026年10月5日', ZH],
+		['２０２６／１０／０１　〜　２０２６／１０／０５', ZH],
+		['2026-10-01 至 2026-10-05', ZH],
+		['2026年10月1日　～　2026年10月5日', { ...ZH, locale: 'ja-JP' }],
+	])('китайский и японский ввод «%s»: иероглифы дат, полная ширина, ～ и 至', (text, options) => {
+		expect(parseDateRangeText(text, options)).toEqual({ start: new Date(2026, 9, 1), end: new Date(2026, 9, 5) })
+	})
+
+	it('вывод формата языка читается обратно, в том числе «下午» и «午後» в 12-часовом времени', () => {
+		const date = new Date(2026, 9, 16, 15, 30, 5)
+		const zhText = date.toLocaleString('zh-CN', {
+			day: '2-digit',
+			month: '2-digit',
+			year: 'numeric',
+			hour: '2-digit',
+			minute: '2-digit',
+			second: '2-digit',
+			hour12: true,
+		})
+		const jaText = date.toLocaleString('ja-JP', {
+			day: '2-digit',
+			month: '2-digit',
+			year: 'numeric',
+			hour: '2-digit',
+			minute: '2-digit',
+			second: '2-digit',
+			hour12: true,
+		})
+
+		expect(parseDateRangeText(zhText, { ...JA_TIME, locale: 'zh-CN' })).toEqual({ start: date, end: null })
+		expect(parseDateRangeText(jaText, JA_TIME)).toEqual({ start: date, end: null })
+		expect(parseDateRangeText('2026/10/16 上午09:05:00', JA_TIME)).toEqual({ start: new Date(2026, 9, 16, 9, 5), end: null })
+		expect(parseDateRangeText('2026/10/16 午前12:00:00', JA_TIME)).toEqual({ start: new Date(2026, 9, 16, 0, 0), end: null })
 	})
 
 	it('порядок дня, месяца и года берёт из языка поля', () => {

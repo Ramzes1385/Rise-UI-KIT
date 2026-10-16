@@ -1,4 +1,5 @@
 import { computed, inject, onMounted, ref } from 'vue'
+import { isImeKeydown } from '@utils/dom/keyboardUtils'
 import { COMMENT_THREAD_KEY } from './thread/commentTree'
 import { calcDerivedScale } from '@utils/media/iconUtils'
 import type { CommentThreadContext } from '../types/BaseCommentThread.types'
@@ -28,6 +29,7 @@ export function useCommentComposer(props: CommentComposerProps, emit: CommentCom
 		submit,
 		cancel: (): void => emit('cancel'),
 		handleKeydown(event: KeyboardEvent): void {
+			if (isImeKeydown(event)) return
 			if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
 				event.preventDefault()
 				submit()

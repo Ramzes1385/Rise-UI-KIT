@@ -1,7 +1,8 @@
 import { getLocale } from '@/locales/state'
+import { toHalfWidth } from '@utils/data/textUtils'
 import type { ParsedPhone, PhoneCountry } from '../../types/BasePhoneInput.types'
 
-export const onlyDigits = (text: string): string => text.replace(/\D/g, '')
+export const onlyDigits = (text: string): string => toHalfWidth(text).replace(/\D/g, '')
 
 export const maskSize = (mask: string): number => mask.split('#').length - 1
 

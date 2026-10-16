@@ -3,6 +3,7 @@ import type { ComputedRef, Ref } from 'vue'
 import { UI_TEXT } from '@/locales/messages'
 import { useUi } from '@composables/base/useUi'
 import { useMotion } from '@composables/app/useMotion'
+import { isImeKeydown } from '@utils/dom/keyboardUtils'
 import { useFormField } from '@composables/form/useFormField'
 import { useSelect, useSelectKeys } from '@composables/form/useSelect'
 import type { BaseSelectEmits, SelectProps } from '../types/BaseSelect.types'
@@ -86,6 +87,7 @@ function useSelectKeyboard(props: SelectProps, select: ReturnType<typeof useSele
 	return {
 		handleTriggerKeydown,
 		handleSearchKeydown(event: KeyboardEvent): void {
+			if (isImeKeydown(event)) return
 			if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
 				event.preventDefault()
 				select.moveActive(event.key === 'ArrowDown' ? 1 : -1)

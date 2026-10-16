@@ -16,6 +16,7 @@ describe('формат суммы', () => {
 
 	it('cleanMoney: цифры, один разделитель, копейки, минус и разряды другого языка', () => {
 		expect(cleanMoney('1 234,567', RUB)).toBe('1234.56')
+		expect(cleanMoney('１２３４．５６７', RUB)).toBe('1234.56')
 		expect(cleanMoney('00012.5.1', RUB)).toBe('12.51')
 		expect(cleanMoney('-5 руб', RUB)).toBe('5')
 		expect(cleanMoney('-1,234.5', USD)).toBe('-1234.5')
