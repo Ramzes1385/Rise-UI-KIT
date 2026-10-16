@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom/vitest'
-import BaseSearch from '../ui/BaseSearch.vue'
+import BaseSearch from '../../ui/BaseSearch.vue'
 import userEvent from '@testing-library/user-event'
 import { render, screen, waitFor } from '@testing-library/vue'
 

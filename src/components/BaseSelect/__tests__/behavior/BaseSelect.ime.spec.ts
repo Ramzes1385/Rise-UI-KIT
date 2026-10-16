@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom/vitest'
-import BaseSelect from '../ui/BaseSelect.vue'
+import BaseSelect from '../../ui/BaseSelect.vue'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, render, screen } from '@testing-library/vue'
-import type { BaseSelectOption } from '../types/BaseSelect.types'
+import type { BaseSelectOption } from '../../types/BaseSelect.types'
 
 const OPTIONS: BaseSelectOption[] = [
 	{ value: 'cn', label: '中国' },

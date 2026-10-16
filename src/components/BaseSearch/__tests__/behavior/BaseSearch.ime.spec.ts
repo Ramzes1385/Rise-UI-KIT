@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom/vitest'
-import BaseSearch from '../ui/BaseSearch.vue'
+import BaseSearch from '../../ui/BaseSearch.vue'
 import { fireEvent, render, screen } from '@testing-library/vue'
 
 vi.mock('@composables/overlay/useClickOutside', () => ({ useClickOutside: vi.fn() }))
