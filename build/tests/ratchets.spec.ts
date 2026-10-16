@@ -126,6 +126,33 @@ describe('check-ratchets', () => {
 		expect(output).toMatch(/размер: index\.js — [\d.]+ КБ gzip, бюджет 4\.0 КБ/)
 	})
 
+	it('подпути компонентов — один бюджет на самый тяжёлый вход (вместе с его CSS), CSS папок — на самый тяжёлый файл', () => {
+		mkdirSync(join(root, 'dist/components/BaseA'), { recursive: true })
+		mkdirSync(join(root, 'dist/components/BaseB'), { recursive: true })
+		write('package.json', {
+			...PACKAGE,
+			exports: {
+				...PACKAGE.exports,
+				'./BaseA': { types: './dist/components/BaseA/index.d.ts', import: './dist/components/BaseA/index.js' },
+				'./BaseB': { types: './dist/components/BaseB/index.d.ts', import: './dist/components/BaseB/index.js' },
+			},
+		})
+		write('dist/components/BaseA/index.js', 'import"./style.css";export { a } from "../../chunks/a-1.js"\n')
+		write('dist/components/BaseA/style.css', `.base-a{content:"${noise(3000)}"}`)
+		write('dist/components/BaseB/index.js', 'export const b = 1\n')
+		const groups = { 'components/*/index.js': { gzip: 0, budget: 1024 }, 'components/*/style.css': { gzip: 0, budget: 4096 } }
+		write('build/ratchets.json', { ...BASE, size: { ...BASE.size, ...groups } })
+
+		const { status, output } = run()
+
+		expect(status).toBe(1)
+		expect(output).toMatch(/размер: components\/\*\/index\.js — [\d.]+ КБ gzip, бюджет 1\.0 КБ/)
+		expect(output).toContain('components/*/index.js: ')
+		expect(output).toContain('(самый тяжёлый — components/BaseA/index.js)')
+		expect(output).toContain('(самый тяжёлый — components/BaseA/style.css)')
+		expect(output).not.toContain('у входа components/BaseB/index.js нет бюджета')
+	})
+
 	it('вход без бюджета и отсутствующий dist роняют проверку', () => {
 		write('build/ratchets.json', { ...BASE, size: { 'index.js': BASE.size['index.js'] } })
 

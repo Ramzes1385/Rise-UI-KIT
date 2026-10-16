@@ -67,6 +67,12 @@ describe('check-css-split', () => {
 		write('dist/styles.css', `${TOKENS}.base-button{color:red}`)
 		write('dist/media.css', PLAYER)
 		write('dist/media.layer.css', "@import url('./media.css') layer(rise);\n")
+		mkdirSync(join(root, 'src/components/BaseButton/styles'), { recursive: true })
+		mkdirSync(join(root, 'dist/components/BaseButton'), { recursive: true })
+		write('src/components/index.ts', "export * from './BaseButton'\n")
+		write('dist/tokens.css', TOKENS)
+		write('dist/components/BaseButton/index.js', 'import"./style.css";export{}')
+		write('dist/components/BaseButton/style.css', '.base-button{color:red}')
 	})
 
 	afterEach(() => {
@@ -124,5 +130,40 @@ describe('check-css-split', () => {
 
 		expect(status).toBe(1)
 		expect(output).toContain('нет dist/media.css')
+	})
+
+	it('подпути: токены в style.css компонента роняют проверку', () => {
+		write('dist/components/BaseButton/style.css', `${TOKENS}.base-button{color:red}`)
+
+		const { status, output } = run()
+
+		expect(status).toBe(1)
+		expect(output).toContain('components/BaseButton/style.css содержит токены кита (:root)')
+	})
+
+	it('подпути: правило styles.css, которого нет в CSS подпутей, и лишнее правило роняют проверку', () => {
+		write('dist/styles.css', `${TOKENS}.base-button{color:red;padding:0}`)
+		expect(run().output).toContain('в CSS подпутей нет 1 правил styles.css, например: .base-button | padding:0')
+
+		write('dist/styles.css', TOKENS)
+		expect(run().output).toContain('в CSS подпутей 1 правил, которых нет в styles.css')
+	})
+
+	it('подпути: склейка селекторов минификатором и комментарии на сравнение не влияют', () => {
+		mkdirSync(join(root, 'dist/components/BaseIcon'), { recursive: true })
+		write('src/components/index.ts', "export * from './BaseButton'\nexport * from './BaseIcon'\n")
+		write('dist/components/BaseIcon/index.js', 'export{}')
+		write('dist/components/BaseIcon/style.css', '.base-icon{color:red}')
+		write('dist/styles.css', `/*$vite$:1*/${TOKENS}.base-button,.base-icon{color:red}`)
+
+		expect(run().status).toBe(0)
+	})
+
+	it('подпути: нет входа подпути или CSS, который он импортирует, — проверка падает', () => {
+		write('dist/components/BaseButton/index.js', 'import"../BaseIcon/style.css";export{}')
+		expect(run().output).toContain('./BaseButton импортирует ../BaseIcon/style.css, а файла нет')
+
+		rmSync(join(root, 'dist/components/BaseButton/index.js'))
+		expect(run().output).toContain('нет dist/components/BaseButton/index.js')
 	})
 })

@@ -52,6 +52,10 @@ jobs:
       - name: CSS split (styles.css / media.css)
         run: npm run test:css-split
 
+      # Точечная установка: exports подпутей совпадают со списком компонентов, приложение из tarball берёт только BaseButton / BaseSelect
+      - name: Subpaths (exports, app from tarball imports one component)
+        run: npm run test:subpaths -- --no-screenshot
+
       # Храповики (build/ratchets.json): размер входов dist в gzip — в бюджете, исключений покрытия и предупреждений ESLint — не больше базы
       - name: Ratchets (bundle size, coverage excludes, lint warnings)
         run: npm run test:ratchets

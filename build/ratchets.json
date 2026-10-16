@@ -1,52 +1,68 @@
 {
 	"size": {
 		"components.js": {
-			"gzip": 637953,
-			"budget": 702464
+			"gzip": 801621,
+			"budget": 882688
+		},
+		"components/*/index.js": {
+			"gzip": 209339,
+			"budget": 230400
 		},
 		"composables.js": {
-			"gzip": 144728,
-			"budget": 159744
+			"gzip": 168668,
+			"budget": 186368
 		},
 		"icons.js": {
-			"gzip": 3522,
-			"budget": 5120
+			"gzip": 4106,
+			"budget": 6144
 		},
 		"icons.svg": {
-			"gzip": 4470,
+			"gzip": 4586,
 			"budget": 6144
 		},
 		"index.js": {
-			"gzip": 670225,
-			"budget": 737280
+			"gzip": 833772,
+			"budget": 917504
 		},
 		"map3d.js": {
-			"gzip": 141430,
-			"budget": 155648
+			"gzip": 155357,
+			"budget": 171008
 		},
 		"media.css": {
-			"gzip": 15227,
+			"gzip": 15237,
 			"budget": 17408
 		},
 		"media.js": {
-			"gzip": 179729,
-			"budget": 198656
+			"gzip": 197076,
+			"budget": 217088
 		},
 		"media.layer.css": {
 			"gzip": 60,
 			"budget": 2048
 		},
 		"styles.css": {
-			"gzip": 98958,
+			"gzip": 99588,
 			"budget": 109568
 		},
 		"styles.layer.css": {
 			"gzip": 61,
 			"budget": 2048
 		},
+		"tokens.css": {
+			"gzip": 3737,
+			"budget": 5120
+		},
+		"tokens.layer.css": {
+			"gzip": 61,
+			"budget": 2048
+		},
 		"utils.js": {
-			"gzip": 91692,
-			"budget": 101376
+			"gzip": 97671,
+			"budget": 107520
+		},
+		"components/*/style.css": {
+			"gzip": 6023,
+			"budget": 7168
 		}
 	},
 	"coverageExcludes": {
