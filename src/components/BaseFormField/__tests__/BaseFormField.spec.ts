@@ -77,6 +77,15 @@ describe('BaseFormField unit', () => {
 			expect(screen.getByText('Обязательное поле')).toBeInTheDocument()
 		})
 
+		it('ошибка — role="alert": появление объявляется сразу, без ошибки роли нет', async () => {
+			const { rerender } = render(BaseFormField, { props: { description: 'Подсказка' } })
+			expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+
+			await rerender({ error: 'Обязательное поле' })
+
+			expect(await screen.findByRole('alert')).toHaveTextContent('Обязательное поле')
+		})
+
 		it('должен добавлять класс --error когда есть ошибка', () => {
 			const { container } = render(BaseFormField, { props: { error: 'Ошибка' } })
 

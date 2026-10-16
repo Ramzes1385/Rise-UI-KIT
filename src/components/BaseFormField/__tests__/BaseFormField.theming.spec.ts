@@ -101,6 +101,7 @@ describe('FormFieldError', () => {
 
 		expect(screen.getByText('Ошибка')).toHaveAttribute('id', 'e1')
 		expect(screen.getByText('Ошибка')).toHaveClass('field__error')
+		expect(screen.getByRole('alert')).toHaveTextContent('Ошибка')
 		await rerender({ error: '' })
 		expect(container.querySelector('.field__error')).not.toBeInTheDocument()
 	})

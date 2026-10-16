@@ -37,7 +37,7 @@
 		<div class="base-form-field__message" :class="[{ 'base-form-field__message--open': error }, classes.animation]">
 			<div class="base-form-field__message-body">
 				<Transition name="base-form-field-message">
-					<p v-if="error" :id="errorId" :class="[ui('error'), classes.error]">
+					<p v-if="error" :id="errorId" role="alert" :class="[ui('error'), classes.error]">
 						{{ error }}
 					</p>
 				</Transition>

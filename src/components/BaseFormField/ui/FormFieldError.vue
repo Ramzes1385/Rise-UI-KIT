@@ -1,6 +1,6 @@
 <template>
 	<Transition name="base-form-field-error">
-		<BaseText v-if="error" :id="id" tag="span" :class="className" :custom-class="customClass" :size-scale="sizeScale">{{
+		<BaseText v-if="error" :id="id" tag="span" role="alert" :class="className" :custom-class="customClass" :size-scale="sizeScale">{{
 			error
 		}}</BaseText>
 	</Transition>
