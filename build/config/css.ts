@@ -26,13 +26,14 @@ export function createScssOptions() {
 	}
 }
 
-export function createCssConfig(mode: string): CSSOptions {
+/** `scss` — свои настройки Sass для отдельного прохода сборки (CSS подпутей, build/plugins/subpathCss.ts) */
+export function createCssConfig(mode: string, scss: object = createScssOptions()): CSSOptions {
 	const isProduction = isProductionMode(mode)
 
 	return {
 		transformer: 'lightningcss',
 		preprocessorOptions: {
-			scss: createScssOptions(),
+			scss,
 		},
 
 		devSourcemap: !isProduction,

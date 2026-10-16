@@ -1,11 +1,17 @@
 import { resolve } from 'node:path'
 import type { BuildOptions } from 'vite'
 import { LAZY_COMPONENT_NAMES } from '../../src/plugin/registry/lazyNames'
+import { createSubpathEntries } from '../plugins/subpaths'
 
-export function createLibBuildConfig(): BuildOptions {
+/**
+ * Входы и чанки пакета. `withSubpaths` — основной проход (JS всех входов и подпутей `./<Компонент>`, build/plugins/subpaths.ts);
+ * без них — проход `styles.css` (vite.styles-css.config.ts): тот же граф, что до подпутей, поэтому порядок правил в `styles.css`
+ * не зависит от того, как подпути делят код на чанки (Vite склеивает CSS по чанкам).
+ */
+export function createLibBuildConfig({ withSubpaths }: { withSubpaths: boolean }): BuildOptions {
 	return {
 		outDir: 'dist',
-		emptyOutDir: true,
+		emptyOutDir: withSubpaths,
 		sourcemap: false,
 		cssCodeSplit: false,
 		target: 'es2020',
@@ -21,6 +27,8 @@ export function createLibBuildConfig(): BuildOptions {
 				icons: resolve(process.cwd(), 'src/icons/index.ts'),
 				media: resolve(process.cwd(), 'src/components/BaseMediaPlayer/index.ts'),
 				map3d: resolve(process.cwd(), 'src/map3d.ts'),
+				// Подпути `./<Компонент>` (build/config/subpaths.ts): `components/<Компонент>/index.js`
+				...(withSubpaths ? createSubpathEntries() : {}),
 			},
 			formats: ['es'],
 			cssFileName: 'styles',

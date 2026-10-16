@@ -104,22 +104,39 @@ function createFilterPlugin(role: CssSplitRole): Plugin {
 	}
 }
 
-/** Сборка `media.css` (`only`) оставляет в бандле только его: остальное (JS, спрайт) уже лежит в dist от основной сборки */
-function createKeepCssPlugin(): Plugin {
+/**
+ * Проход только ради одного файла стилей (`media.css`, `styles.css`) оставляет в бандле только его:
+ * остальное (JS, спрайт) уже лежит в dist от основной сборки
+ */
+export function createKeepCssPlugin(fileName: string): Plugin {
 	return {
-		name: 'rise:css-split-keep-css',
+		name: `rise:keep-${fileName}`,
 		apply: 'build',
 		enforce: 'post',
 		generateBundle(_, bundle) {
 			for (const [name, file] of Object.entries(bundle)) {
-				if (name !== 'media.css') delete bundle[name]
-				else if (file.type !== 'asset') this.error('css-split: media.css должен быть файлом стилей')
+				if (name !== fileName) delete bundle[name]
+				else if (file.type !== 'asset') this.error(`css-split: ${fileName} должен быть файлом стилей`)
 			}
-			if (!bundle['media.css']) this.error('css-split: media.css не собран — у плеера нет стилей')
+			if (!bundle[fileName]) this.error(`css-split: ${fileName} не собран`)
+		},
+	}
+}
+
+/** Основной проход: `styles.css` собирает отдельный проход (vite.styles-css.config.ts), здесь его нет */
+export function createDropCssPlugin(fileName: string): Plugin {
+	return {
+		name: `rise:drop-${fileName}`,
+		apply: 'build',
+		enforce: 'post',
+		generateBundle(_, bundle) {
+			delete bundle[fileName]
 		},
 	}
 }
 
 export function createCssSplitPlugins(role: CssSplitRole): Plugin[] {
-	return role === 'exclude' ? [createFilterPlugin(role)] : [createMarkerPlugin(), createFilterPlugin(role), createKeepCssPlugin()]
+	return role === 'exclude'
+		? [createFilterPlugin(role)]
+		: [createMarkerPlugin(), createFilterPlugin(role), createKeepCssPlugin('media.css')]
 }

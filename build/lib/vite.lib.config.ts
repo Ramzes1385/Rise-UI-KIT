@@ -1,4 +1,8 @@
-/** Storybook и Vitest настроены отдельно — build/storybook/main.ts и build/tests/vitest.config.ts. */
+/**
+ * Основной проход сборки пакета: JS всех входов и подпутей, спрайт, `*.layer.css`, типы стилей. Остальные проходы (порядок —
+ * `build:lib:js` в package.json): `styles.css` — vite.styles-css.config.ts, `media.css` — vite.media-css.config.ts,
+ * CSS подпутей и `tokens.css` — vite.subpath-css.config.ts. Storybook и Vitest настроены отдельно — build/storybook/main.ts и build/tests/vitest.config.ts.
+ */
 
 import { defineConfig } from 'vite'
 import type { Plugin } from 'vite'
@@ -6,8 +10,8 @@ import { createLibBuildConfig } from '../config/build.lib'
 import { createCssConfig } from '../config/css'
 import { createResolveConfig } from '../config/resolve'
 import { createPlugins } from '../plugins'
-import { createCssDedupePlugin } from '../plugins/cssDedupe'
-import { createCssSplitPlugins } from '../plugins/cssSplit'
+import { createCssSplitPlugins, createDropCssPlugin } from '../plugins/cssSplit'
+import { createSubpathsPlugin } from '../plugins/subpaths'
 
 /** `@ramzes1385/rise-ui-kit/styles.layer.css`: весь кит в слое `rise` — стили приложения без слоя сильнее без `!important` */
 const LAYER_CSS = "@import url('./styles.css') layer(rise);\n"
@@ -33,8 +37,14 @@ function createStylesTypesPlugin(): Plugin {
 export default defineConfig(({ mode }) => ({
 	resolve: createResolveConfig(),
 	css: createCssConfig(mode),
-	plugins: [...createPlugins(mode), ...createCssSplitPlugins('exclude'), createStylesTypesPlugin(), createCssDedupePlugin()],
-	build: createLibBuildConfig(),
+	plugins: [
+		...createPlugins(mode),
+		...createCssSplitPlugins('exclude'),
+		createStylesTypesPlugin(),
+		createSubpathsPlugin(),
+		createDropCssPlugin('styles.css'),
+	],
+	build: createLibBuildConfig({ withSubpaths: true }),
 	// Каталога public/ у библиотеки нет: в dist попадает только собранный код, стили и спрайт
 	publicDir: false,
 }))
