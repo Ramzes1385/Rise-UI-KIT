@@ -1,6 +1,7 @@
 .base-kanban {
 	@include custom-color-scope;
 	box-sizing: border-box;
+	width: 100%;
 	max-width: 100%;
 	min-width: 0;
 	@include text-size(sm);
