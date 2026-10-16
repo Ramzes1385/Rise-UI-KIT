@@ -36,6 +36,7 @@ const motion = motionPresetsStory({
 
 export const Animations: StoryObj<typeof meta> = {
 	name: 'Анимации',
+	decorators: [() => ({ template: '<div style="--story-motion-min: 460px;"><story /></div>' })],
 	parameters: {
 		controls: { include: ['variant', 'sizeScale'] },
 		docs: {
