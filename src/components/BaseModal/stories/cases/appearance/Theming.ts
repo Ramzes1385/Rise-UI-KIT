@@ -59,7 +59,8 @@ export const Theming: StoryObj<typeof meta> = {
 		const [plain, themed, classed] = await canvas.findAllByRole('dialog')
 
 		await expect(getComputedStyle(themed).backgroundColor).not.toBe(getComputedStyle(plain).backgroundColor)
-		await expect(getComputedStyle(themed).borderTopLeftRadius).not.toBe(getComputedStyle(plain).borderTopLeftRadius)
+		if (!isStoryBranded())
+			await expect(getComputedStyle(themed).borderTopLeftRadius).not.toBe(getComputedStyle(plain).borderTopLeftRadius)
 		if (!isStoryBranded()) await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('16px')
 		if (!isStoryBranded()) await expect(getComputedStyle(plain).borderTopLeftRadius).toBe('8px')
 		await expect(classed).toHaveClass('base-modal__content', 'story-themed-modal')

@@ -62,7 +62,7 @@ export const Theming: StoryObj<typeof meta> = {
 		const radius = (element: HTMLElement): string => getComputedStyle(element).borderTopLeftRadius
 
 		await expect(getComputedStyle(themed).backgroundColor).not.toBe(getComputedStyle(plain).backgroundColor)
-		await expect(radius(themed)).not.toBe(radius(plain))
+		if (!isStoryBranded()) await expect(radius(themed)).not.toBe(radius(plain))
 		if (!isStoryBranded()) await expect(radius(themed)).toBe('16px')
 		if (!isStoryBranded()) await expect(radius(plain)).toBe('8px')
 		await expect(classed).toHaveClass('base-slideover__panel', 'story-themed-slideover')

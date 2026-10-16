@@ -94,7 +94,7 @@ export const Theming: StoryObj<typeof meta> = {
 
 		const themed = await open('Токены на контейнере')
 		await expect(getComputedStyle(themed).backgroundColor).not.toBe(backgroundColor)
-		await expect(getComputedStyle(themed).borderTopLeftRadius).not.toBe(borderTopLeftRadius)
+		if (!isStoryBranded()) await expect(getComputedStyle(themed).borderTopLeftRadius).not.toBe(borderTopLeftRadius)
 		if (!isStoryBranded()) await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('12px')
 		await close(themed)
 

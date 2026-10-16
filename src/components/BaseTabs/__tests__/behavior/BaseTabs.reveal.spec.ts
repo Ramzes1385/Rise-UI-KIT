@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
-import BaseTabs from '../ui/BaseTabs.vue'
+import BaseTabs from '../../ui/BaseTabs.vue'
 import { render } from '@testing-library/vue'
-import type { TabItem } from '../types/BaseTabs.types'
+import type { TabItem } from '../../types/BaseTabs.types'
 
 const ITEMS: TabItem[] = Array.from({ length: 8 }, (_, index) => ({ id: `tab-${index}`, label: `Вкладка ${index}` }))
 

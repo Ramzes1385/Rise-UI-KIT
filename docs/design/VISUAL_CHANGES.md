@@ -2118,3 +2118,7 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 - **BasePieChart**: `max-width: 100%` у круга, высота — `aspect-ratio: 1` (была inline `height`): круг больше контейнера сжимается, а не вылезает.
 - **BaseChart**: не менялся — высота `height` (проп) честная, ширина масштабируется по контейнеру; 786 px колонки — четыре графика (grow, draw, fade, none) по 150 px и подписи.
 - Истории «Анимации» BaseModal, BaseSlideover, BaseCookieConsent, BaseSplitter: контейнер-рамка получил `align-self: stretch` — в колонке с `align-items: flex-start` он сжимался до 32 px, поэтому у тела была «горизонтальная прокрутка» на 320 px (в компонентах причины не было). Меняются снимки этих историй.
+
+## Задача anim-layout-2
+
+- Storybook, истории «Анимации»: колонки пресетов равной ширины — четыре в ряд, когда каждой хватает `--story-motion-min` (240 px), иначе две или одна. Растягиваемые компоненты (Accordion, Slider, Alert, графики) больше не раздуваются на всю строку. Истории BaseProgress, BaseSkeleton, BaseSeparator, BaseAudioPlayer, BaseVoiceRecorder — без обёртки ширины meta; BaseTooltip, BasePopover, BaseHoverCard, BasePopconfirm, BaseTour — раскладка `padded` вместо `centered`. Меняются снимки `*--animations`.

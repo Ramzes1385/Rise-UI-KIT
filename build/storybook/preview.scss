@@ -139,6 +139,11 @@ body.sb-show-main,
  * иначе две или одна — на телефоне колонка во всю ширину. Компонент тянется и сжимается под колонку
  * (`max-width: 100%`); компоненту, которому нужно больше места, история задаёт свой `--story-motion-min`.
  */
+// Обёртка ширины из meta (`story-medium`) не сужает историю «Анимации»: колонкам нужна вся строка
+.story-medium:has(.story-motion) {
+	max-width: none;
+}
+
 .story-motion {
 	display: flex;
 	flex-direction: column;

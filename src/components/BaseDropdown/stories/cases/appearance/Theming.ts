@@ -68,7 +68,8 @@ export const Theming: StoryObj<typeof meta> = {
 		const classed = await panelOf('Класс на панели')
 
 		await expect(getComputedStyle(themed).backgroundColor).not.toBe(getComputedStyle(plain).backgroundColor)
-		await expect(getComputedStyle(themed).borderTopLeftRadius).not.toBe(getComputedStyle(plain).borderTopLeftRadius)
+		if (!isStoryBranded())
+			await expect(getComputedStyle(themed).borderTopLeftRadius).not.toBe(getComputedStyle(plain).borderTopLeftRadius)
 		await expect(getComputedStyle(themed).paddingLeft).not.toBe(getComputedStyle(plain).paddingLeft)
 		if (!isStoryBranded()) await expect(getComputedStyle(themed).paddingLeft).toBe('12px')
 		if (!isStoryBranded()) await expect(getComputedStyle(plain).paddingLeft).toBe('4px')

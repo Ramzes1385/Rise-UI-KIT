@@ -26,6 +26,7 @@ export const Animations: StoryObj<typeof meta> = {
 	name: 'Анимации',
 	args: { animation: 'scale' },
 	parameters: {
+		layout: 'padded',
 		controls: { include: ['animation', 'position', 'variant'] },
 		docs: {
 			description: {

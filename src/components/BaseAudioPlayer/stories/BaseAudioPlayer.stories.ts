@@ -11,7 +11,7 @@ const meta = {
 	parameters,
 	argTypes,
 	args,
-	decorators: [() => ({ template: '<div style="max-width: 420px;"><story /></div>' })],
+	decorators: [(_, { name }) => ({ template: name === 'Анимации' ? '<story />' : '<div style="max-width: 420px;"><story /></div>' })],
 } satisfies Meta<typeof BaseAudioPlayer>
 
 export default meta

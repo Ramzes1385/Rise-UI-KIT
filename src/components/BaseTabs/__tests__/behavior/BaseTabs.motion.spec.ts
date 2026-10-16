@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
-import BaseTabs from '../ui/BaseTabs.vue'
-import type { TabItem } from '../types/BaseTabs.types'
+import BaseTabs from '../../ui/BaseTabs.vue'
+import type { TabItem } from '../../types/BaseTabs.types'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 
 const TABS: TabItem[] = [
