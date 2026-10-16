@@ -1,19 +1,21 @@
 import { en } from '../en'
+import { ja } from '../ja'
 import { kk } from '../kk'
 import { ru } from '../ru'
 import { uz } from '../uz'
+import { zh } from '../zh'
 import type { UiKitLocale } from '../types/locales.types'
 import { currentLocale, defineLocale, formatMessage, formatNumber, getLocale, LOCALES, pluralize, setLocale } from '../state'
 
 const SECTIONS = Object.keys(ru).filter(key => !['code', 'intl', 'firstDayOfWeek'].includes(key)) as (keyof typeof ru & keyof UiKitLocale)[]
 
-const TRANSLATIONS = Object.entries(LOCALES).filter(([code]) => code !== 'ru') as [string, UiKitLocale][]
+const ALL_LOCALES: UiKitLocale[] = [ru, en, kk, uz, zh, ja]
+const TRANSLATIONS = ALL_LOCALES.filter(locale => locale.code !== 'ru').map(locale => [locale.code, locale]) as [string, UiKitLocale][]
 const placeholders = (value: string) => [...value.matchAll(/\{(\w+)\}/g)].map(match => match[1]).sort()
 
 describe.each(TRANSLATIONS)('словарь %s', (code, locale) => {
-	it('код языка совпадает с ключом в LOCALES', () => {
+	it('код языка совпадает с именем словаря', () => {
 		expect(locale.code).toBe(code)
-		expect(LOCALES[code as keyof typeof LOCALES]).toBe(locale)
 	})
 
 	it('те же разделы, что в русском', () => {
@@ -55,17 +57,19 @@ describe.each(TRANSLATIONS)('словарь %s', (code, locale) => {
 	})
 })
 
-describe('словари: встроенные языки', () => {
+describe('словари: встроенные и подключаемые языки', () => {
 	it('языковые теги Intl и первый день недели', () => {
 		expect(LOCALES.ru.intl).toBe('ru-RU')
 		expect(LOCALES.en.intl).toBe('en-US')
-		expect(LOCALES.kk.intl).toBe('kk-KZ')
-		expect(LOCALES.uz.intl).toBe('uz-Latn-UZ')
-		expect([ru.firstDayOfWeek, en.firstDayOfWeek, kk.firstDayOfWeek, uz.firstDayOfWeek]).toEqual([1, 0, 1, 1])
+		expect(kk.intl).toBe('kk-KZ')
+		expect(uz.intl).toBe('uz-Latn-UZ')
+		expect(zh.intl).toBe('zh-CN')
+		expect(ja.intl).toBe('ja-JP')
+		expect(ALL_LOCALES.map(locale => locale.firstDayOfWeek)).toEqual([1, 0, 1, 1, 1, 0])
 	})
 
 	it('языковой тег каждого языка понимает Intl: не подменяется запасным', () => {
-		for (const locale of Object.values(LOCALES)) {
+		for (const locale of ALL_LOCALES) {
 			expect(Intl.DateTimeFormat.supportedLocalesOf([locale.intl])).toEqual([locale.intl])
 			expect(Intl.NumberFormat.supportedLocalesOf([locale.intl])).toEqual([locale.intl])
 			expect(Intl.PluralRules.supportedLocalesOf([locale.intl])).toEqual([locale.intl])

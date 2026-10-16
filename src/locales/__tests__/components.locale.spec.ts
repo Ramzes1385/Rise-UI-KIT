@@ -1,14 +1,21 @@
 import '@testing-library/jest-dom/vitest'
+import { kk } from '../kk'
+import { uz } from '../uz'
 import { mount } from '@vue/test-utils'
 import { createUiKitPlugin } from '@/plugin'
 import { BaseApp } from '@components/BaseApp'
-import { getLocale, setLocale } from '../state'
 import { BaseModal } from '@components/BaseModal'
 import { defineComponent, h, nextTick } from 'vue'
 import { BaseConfirm } from '@components/BaseConfirm'
 import { render, screen } from '@testing-library/vue'
 import { BaseCalendar } from '@components/BaseCalendar'
 import { BasePagination } from '@components/BasePagination'
+import { getLocale, registerLocale, setLocale } from '../state'
+
+beforeAll(() => {
+	registerLocale(kk)
+	registerLocale(uz)
+})
 
 describe('компоненты на английском', () => {
 	it('строки интерфейса и значения props по умолчанию меняются на лету', async () => {

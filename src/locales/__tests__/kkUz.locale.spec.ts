@@ -1,11 +1,16 @@
 import { kk } from '../kk'
 import { uz } from '../uz'
 import { useLocale } from '@composables/app/useLocale'
-import { currentLocale, formatNumber, getLocale, LOCALES, pluralize, setLocale } from '../state'
+import { currentLocale, formatNumber, getLocale, LOCALES, pluralize, registerLocale, setLocale } from '../state'
 
 const COUNTS = [1, 2, 5, 11, 21, 22]
 const DATE = new Date(Date.UTC(2025, 4, 7, 12))
 const DATE_OPTIONS: Intl.DateTimeFormatOptions = { dateStyle: 'long', timeZone: 'UTC' }
+
+beforeAll(() => {
+	registerLocale(kk)
+	registerLocale(uz)
+})
 
 afterEach(() => {
 	setLocale('ru')
@@ -25,12 +30,13 @@ describe.each([
 		expect(getLocale().code).toBe('ru')
 	})
 
-	it('есть в LOCALES, неизвестный код язык не меняет', () => {
+	it('подключается через registerLocale, неизвестный код язык не меняет', () => {
 		const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
 		setLocale(code)
 		setLocale('xx' as 'ru')
 
-		expect(LOCALES[code]).toBe(locale)
+		expect(useLocale().locales.value).toContain(code)
+		expect(Object.keys(LOCALES)).not.toContain(code)
 		expect(getLocale().code).toBe(code)
 		expect(warn).toHaveBeenCalledWith(expect.stringContaining(`«xx»`))
 		expect(warn.mock.calls[0][0]).toContain(Object.keys(LOCALES).join(', '))

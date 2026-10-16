@@ -8,7 +8,8 @@
 import { setup } from '@storybook/vue3-vite'
 import { configure } from 'storybook/test'
 import { LINK_COMPONENT_KEY } from '../../src/composables/interaction/useLink/useLink'
-import { LOCALES, setLocale } from '../../src/locales/state'
+import { ja, kk, uz, zh } from '../../src/locales'
+import { localeCodes, registerLocale, setLocale } from '../../src/locales/state'
 import { MOTION_PRESETS, type MotionPreset } from '../../src/composables/app/useMotion/types/useMotion.types'
 import { MOTION_ATTRIBUTE } from '../../src/composables/app/useMotion/motionTokens'
 import { applyStoryBrand, STORY_BRAND_DEFAULT, STORY_WAIT_TIMEOUT, StoryRouterLink } from '../../src/stories/helpers'
@@ -116,10 +117,13 @@ const withMotion: Decorator = (story, context) => {
 	return story()
 }
 
-/** Язык строк кита: тексты stories остаются русскими, меняются строки самих компонентов и формат дат; любой код из `LOCALES`, иначе `ru`; lang у zh и ja нужен для шрифтов */
+/** Подключаемые языки кита регистрируются один раз: в приложении так же — `registerLocale(kk)` */
+for (const locale of [kk, uz, zh, ja]) registerLocale(locale)
+
+/** Язык строк кита: тексты stories остаются русскими, меняются строки самих компонентов и формат дат; любой встроенный или подключённый код, иначе `ru`; lang у zh и ja нужен для шрифтов */
 const withLocale: Decorator = (story, context) => {
 	const code = String(context.globals.locale)
-	setLocale(code in LOCALES ? (code as keyof typeof LOCALES) : 'ru')
+	setLocale(localeCodes.value.includes(code) ? code : 'ru')
 	document.documentElement.lang = code === 'zh' || code === 'ja' ? code : 'en'
 	return story()
 }

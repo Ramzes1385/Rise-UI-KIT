@@ -2,10 +2,15 @@ import { ja } from '../ja'
 import { zh } from '../zh'
 import { UI_TEXT } from '../messages'
 import { foldSearchText } from '@utils/data/textUtils'
-import { formatMessage, formatNumber, getLocale, LOCALES, pluralize, setLocale } from '../state'
+import { formatMessage, formatNumber, getLocale, pluralize, registerLocale, setLocale } from '../state'
 import { formatDate, formatMultiple, formatPopoverDate, formatRange, formatRelativeTime } from '@utils/data/dateUtils'
 
 describe('китайский и японский языки', () => {
+	beforeAll(() => {
+		registerLocale(zh)
+		registerLocale(ja)
+	})
+
 	afterEach(() => {
 		setLocale('ru')
 	})
@@ -17,7 +22,6 @@ describe('китайский и японский языки', () => {
 		setLocale(code)
 
 		expect(getLocale()).toBe(locale)
-		expect(LOCALES[code]).toBe(locale)
 		expect(locale.code).toBe(code)
 		expect(UI_TEXT.CANCEL).toBe(cancel)
 		expect(UI_TEXT.EMPTY).toBe(empty)
