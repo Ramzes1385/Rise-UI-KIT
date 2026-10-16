@@ -1,0 +1,28 @@
+/** Sonli matnlar: oʻzbek tilida son bilan kelgan ot birlikda turadi, shuning uchun one va other bir xil (CLDR: one — 1, other — qolgani) */
+export const uzPlural = {
+	DATES_SELECTED: { one: '{n} ta sana tanlandi', other: '{n} ta sana tanlandi' },
+	DAYS: { one: '{n} kun', other: '{n} kun' },
+	PARTICIPANTS: { one: '{n} ta ishtirokchi', other: '{n} ta ishtirokchi' },
+	CARDS: { one: '{n} ta kartochka', other: '{n} ta kartochka' },
+	COMMENTS: { one: '{n} ta izoh', other: '{n} ta izoh' },
+	ATTACHMENTS: { one: '{n} ta biriktirma', other: '{n} ta biriktirma' },
+	JSON_KEYS: { one: '{n} ta kalit', other: '{n} ta kalit' },
+	MEGA_MENU_ITEMS: { one: '{n} ta band', other: '{n} ta band' },
+	JSON_ITEMS: { one: '{n} ta element', other: '{n} ta element' },
+	SIGNATURE_STROKES: { one: '{n} ta chiziq', other: '{n} ta chiziq' },
+	NOTIFICATIONS_UNREAD: { one: '{n} ta yangi', other: '{n} ta yangi' },
+	CHAT_UNREAD: { one: '{n} ta oʻqilmagan xabar', other: '{n} ta oʻqilmagan xabar' },
+	CHAT_MAX_FILES: { one: 'Koʻpi bilan {n} ta fayl biriktirish mumkin', other: 'Koʻpi bilan {n} ta fayl biriktirish mumkin' },
+	REPLIES: { one: '{n} ta javob', other: '{n} ta javob' },
+	BADGES_MORE: { one: 'Yana {n} ta nishon', other: 'Yana {n} ta nishon' },
+	BREADCRUMBS_HIDDEN: { one: 'Yana {n} ta boʻlimni koʻrsatish', other: 'Yana {n} ta boʻlimni koʻrsatish' },
+	GANTT_DAYS: { one: '{n} kun', other: '{n} kun' },
+	CRYPTOPRO_EXPIRES: { one: '{n} kundan keyin muddati tugaydi', other: '{n} kundan keyin muddati tugaydi' },
+	SEARCH_RESULTS: { one: '{n} ta natija topildi', other: '{n} ta natija topildi' },
+	FILE_MANAGER_ITEMS: { one: '{n} ta element', other: '{n} ta element' },
+	TABLE_HIDDEN_SELECTED: {
+		one: 'Qidiruv yoki filtrlar yashirgan {n} ta tanlangan qator tanlovda qoladi',
+		other: 'Qidiruv yoki filtrlar yashirgan {n} ta tanlangan qator tanlovda qoladi',
+	},
+	FILE_MANAGER_SELECTED: { one: 'tanlandi: {n}', other: 'tanlandi: {n}' },
+}

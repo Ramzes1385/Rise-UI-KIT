@@ -8,7 +8,7 @@
 import { setup } from '@storybook/vue3-vite'
 import { configure } from 'storybook/test'
 import { LINK_COMPONENT_KEY } from '../../src/composables/interaction/useLink/useLink'
-import { setLocale } from '../../src/locales/state'
+import { LOCALES, setLocale } from '../../src/locales/state'
 import { MOTION_PRESETS, type MotionPreset } from '../../src/composables/app/useMotion/types/useMotion.types'
 import { MOTION_ATTRIBUTE } from '../../src/composables/app/useMotion/motionTokens'
 import { applyStoryBrand, STORY_BRAND_DEFAULT, STORY_WAIT_TIMEOUT, StoryRouterLink } from '../../src/stories/helpers'
@@ -45,7 +45,7 @@ const FONT_SAMPLES = ['14px "Inter Variable"', 'italic 14px "Inter Variable"', '
  * например, прокрутка ленты BaseChat от смены высоты строк закрывала только что открытое меню сообщения.
  */
 async function loadFonts(): Promise<void> {
-	await Promise.all(FONT_SAMPLES.map(font => document.fonts.load(font, 'Aa Яя 09')))
+	await Promise.all(FONT_SAMPLES.map(font => document.fonts.load(font, 'Aa Яя 09 Әә')))
 }
 
 /** Внутренний объект Storybook: текущая отрисовка story и её настройки (`autoplay` — запускать ли play) */
@@ -116,9 +116,10 @@ const withMotion: Decorator = (story, context) => {
 	return story()
 }
 
-/** Язык строк кита: тексты stories остаются русскими, меняются строки самих компонентов и формат дат */
+/** Язык строк кита: тексты stories остаются русскими, меняются строки самих компонентов и формат дат. Любой код из `LOCALES`, иначе `ru` */
 const withLocale: Decorator = (story, context) => {
-	setLocale(context.globals.locale === 'en' ? 'en' : 'ru')
+	const code = context.globals.locale as string
+	setLocale(Object.keys(LOCALES).includes(code) ? (code as keyof typeof LOCALES) : 'ru')
 	return story()
 }
 
@@ -180,6 +181,8 @@ const preview: Preview = {
 				items: [
 					{ value: 'ru', title: 'Русский' },
 					{ value: 'en', title: 'English' },
+					{ value: 'kk', title: 'Қазақша' },
+					{ value: 'uz', title: 'Oʻzbekcha' },
 				],
 				dynamicTitle: true,
 			},

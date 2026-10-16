@@ -1,20 +1,33 @@
 import { en } from '../en'
+import { kk } from '../kk'
 import { ru } from '../ru'
+import { uz } from '../uz'
 import type { UiKitLocale } from '../types/locales.types'
 import { currentLocale, defineLocale, formatMessage, formatNumber, getLocale, LOCALES, pluralize, setLocale } from '../state'
 
 const SECTIONS = Object.keys(ru).filter(key => !['code', 'intl', 'firstDayOfWeek'].includes(key)) as (keyof typeof ru & keyof UiKitLocale)[]
 
-describe('словари', () => {
-	it.each(SECTIONS)('в английском разделе %s те же ключи, что в русском', section => {
-		expect(Object.keys(en[section]).sort()).toEqual(Object.keys(ru[section]).sort())
+const TRANSLATIONS = Object.entries(LOCALES).filter(([code]) => code !== 'ru') as [string, UiKitLocale][]
+const placeholders = (value: string) => [...value.matchAll(/\{(\w+)\}/g)].map(match => match[1]).sort()
+
+describe.each(TRANSLATIONS)('словарь %s', (code, locale) => {
+	it('код языка совпадает с ключом в LOCALES', () => {
+		expect(locale.code).toBe(code)
+		expect(LOCALES[code as keyof typeof LOCALES]).toBe(locale)
+	})
+
+	it('те же разделы, что в русском', () => {
+		expect(Object.keys(locale).sort()).toEqual(Object.keys(ru).sort())
+	})
+
+	it.each(SECTIONS)('раздел %s: те же ключи, что в русском', section => {
+		expect(Object.keys(locale[section]).sort()).toEqual(Object.keys(ru[section]).sort())
 	})
 
 	it('места для значений {name} в переводе те же, что в оригинале', () => {
-		const placeholders = (value: string) => [...value.matchAll(/\{(\w+)\}/g)].map(match => match[1]).sort()
 		for (const section of SECTIONS.filter(name => name !== 'plural')) {
 			for (const [key, value] of Object.entries(ru[section])) {
-				expect([section, key, placeholders((en[section] as Record<string, string>)[key])]).toEqual([
+				expect([section, key, placeholders((locale[section] as Record<string, string>)[key])]).toEqual([
 					section,
 					key,
 					placeholders(value),
@@ -23,10 +36,40 @@ describe('словари', () => {
 		}
 	})
 
-	it('встроенные языки и первый день недели', () => {
+	it('формы множественного числа: есть other, места для значений те же, что в русском', () => {
+		for (const [key, forms] of Object.entries(locale.plural)) {
+			const expected = placeholders((ru.plural as Record<string, { other: string }>)[key].other)
+			expect([key, typeof forms.other]).toEqual([key, 'string'])
+			for (const form of Object.values(forms as Record<string, string>)) {
+				expect([key, placeholders(form)]).toEqual([key, expected])
+			}
+		}
+	})
+
+	it('строки не пустые и без лишних пробелов по краям', () => {
+		for (const section of SECTIONS.filter(name => name !== 'plural')) {
+			for (const [key, value] of Object.entries(locale[section] as Record<string, string>)) {
+				expect([section, key, value.trim() === value && value.length > 0]).toEqual([section, key, true])
+			}
+		}
+	})
+})
+
+describe('словари: встроенные языки', () => {
+	it('языковые теги Intl и первый день недели', () => {
 		expect(LOCALES.ru.intl).toBe('ru-RU')
 		expect(LOCALES.en.intl).toBe('en-US')
-		expect([ru.firstDayOfWeek, en.firstDayOfWeek]).toEqual([1, 0])
+		expect(LOCALES.kk.intl).toBe('kk-KZ')
+		expect(LOCALES.uz.intl).toBe('uz-Latn-UZ')
+		expect([ru.firstDayOfWeek, en.firstDayOfWeek, kk.firstDayOfWeek, uz.firstDayOfWeek]).toEqual([1, 0, 1, 1])
+	})
+
+	it('языковой тег каждого языка понимает Intl: не подменяется запасным', () => {
+		for (const locale of Object.values(LOCALES)) {
+			expect(Intl.DateTimeFormat.supportedLocalesOf([locale.intl])).toEqual([locale.intl])
+			expect(Intl.NumberFormat.supportedLocalesOf([locale.intl])).toEqual([locale.intl])
+			expect(Intl.PluralRules.supportedLocalesOf([locale.intl])).toEqual([locale.intl])
+		}
 	})
 })
 

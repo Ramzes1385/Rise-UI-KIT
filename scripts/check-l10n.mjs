@@ -12,8 +12,8 @@ import { parse as parseSfc } from '@vue/compiler-sfc'
 
 const ROOT = join(import.meta.dirname, '..')
 const SOURCES = ['src/components', 'src/composables', 'src/utils', 'src/plugin', 'src/icons', 'src/locales']
-/** Словари `ru` и `en` — и есть место для текстов; их проверяет тест src/locales */
-const SKIPPED_DIRS = new Set(['__tests__', 'stories', 'node_modules', 'ru', 'en'])
+/** Словари `ru`, `en`, `kk` и `uz` — и есть место для текстов; их проверяет тест src/locales */
+const SKIPPED_DIRS = new Set(['__tests__', 'stories', 'node_modules', 'ru', 'en', 'kk', 'uz'])
 const CYRILLIC = /[Ѐ-ӿ]/
 const LATIN_WORD = /[A-Za-z]{2,}/
 const HUMAN_ATTRIBUTES = new Set([
