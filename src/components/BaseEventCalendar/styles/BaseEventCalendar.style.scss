@@ -11,7 +11,9 @@
 	flex-direction: column;
 	gap: space(12px);
 	box-sizing: border-box;
+	width: 100%;
 	min-width: 0;
+	container: base-event-calendar / inline-size;
 	padding: space(12px);
 	border: 1px solid ct(event-calendar, border, var(--rise-border));
 	border-radius: sz(ct(event-calendar, radius, var(--rise-radius-lg)));
@@ -530,5 +532,25 @@
 		box-sizing: border-box;
 		border: 2px solid var(--rise-primary);
 		border-radius: sz(var(--rise-radius-sm));
+	}
+
+	@container base-event-calendar (max-width: 420px) {
+		&__view {
+			--axis-width: #{sz(44px)};
+		}
+
+		&__day {
+			min-height: sz(64px);
+		}
+
+		&__day-number {
+			min-width: sz(20px);
+			padding: 0 sz(4px);
+			line-height: sz(20px);
+		}
+
+		&__weekday {
+			padding: space(4px 2px);
+		}
 	}
 }
