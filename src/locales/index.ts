@@ -1,6 +1,8 @@
 export { en } from './en'
+export { ja } from './ja'
 export { kk } from './kk'
 export { ru } from './ru'
 export { uz } from './uz'
+export { zh } from './zh'
 export { defineLocale, formatMessage, LOCALES, pluralize, registerLocale, setLocale } from './state'
 export type { LocaleInput, LocaleOverrides, PluralForms, UiKitLocale } from './types/locales.types'

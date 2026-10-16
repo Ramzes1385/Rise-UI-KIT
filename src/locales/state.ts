@@ -1,12 +1,14 @@
 import { en } from './en'
+import { ja } from './ja'
 import { kk } from './kk'
 import { ru } from './ru'
 import { uz } from './uz'
+import { zh } from './zh'
 /** Текущий язык кита: один на страницу. Его задают `createUiKitPlugin({ locale })`, `<BaseApp locale>` и `setLocale()` */
 import { computed, shallowRef } from 'vue'
 import type { LocaleInput, LocaleOverrides, UiKitLocale } from './types/locales.types'
 
-export const LOCALES = { ru: ru as UiKitLocale, en, kk, uz } as const
+export const LOCALES = { ru: ru as UiKitLocale, en, kk, uz, zh, ja } as const
 
 /** Текущий язык: shallowRef — компоненты перерисовываются при смене языка */
 export const currentLocale = shallowRef<UiKitLocale>(LOCALES.ru)

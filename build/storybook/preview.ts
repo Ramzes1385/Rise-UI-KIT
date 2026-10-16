@@ -183,6 +183,8 @@ const preview: Preview = {
 					{ value: 'en', title: 'English' },
 					{ value: 'kk', title: 'Қазақша' },
 					{ value: 'uz', title: 'Oʻzbekcha' },
+					{ value: 'zh', title: '中文' },
+					{ value: 'ja', title: '日本語' },
 				],
 				dynamicTitle: true,
 			},
