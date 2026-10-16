@@ -92,6 +92,31 @@ formatRelativeTime('2025-05-14T09:00:00', { now: new Date(2025, 4, 15, 10, 30), 
 
 ---
 
+## dateFormatUtils, textUtils (поиск) — задача w14-l10n-deep
+
+Форматы дат языка кита с запасными названиями. Компоненты кита не зовут `new Intl.DateTimeFormat(...)` сами: даты, названия месяцев и дней недели идут через `createDateFormat`, `formatDateText`, `getMonthNames`, `getWeekdayNames`. Если для языка в браузере нет данных `Intl` (урезанный ICU: у `kk` формат уходит в английский, у `uz` остаются корневые «M05»), а в словаре есть `calendarNames`, названия берутся из словаря (`hasIntlData` определяет нехватку). Остальное — обычный `Intl`.
+
+```ts
+import { createDateFormat, formatDateText, getMonthNames, getWeekdayNames } from '@ramzes1385/rise-ui-kit/utils'
+
+formatDateText(new Date(2025, 4, 7), { day: 'numeric', month: 'long' }) // язык кита: «7 мамыр» на kk даже без данных Intl
+createDateFormat('uz-Latn-UZ', { weekday: 'long' }).format(date) // «chorshanba»
+getMonthNames('kk-KZ') // ['Қаңтар', 'Ақпан', …] с января
+getWeekdayNames('kk-KZ', 'long') // с воскресенья
+```
+
+Запасной формат поддерживает `weekday`, `day`, `month`, `year`, `hour`, `minute`, `second`, `hour12`, `dateStyle`, `timeStyle`, `timeZone`; `formatRange` соединяет две даты. Свои запасные названия у языка — `calendarNames` и `relativeTime` в `defineLocale` (README, «Языки»).
+
+Поиск: `foldSearchText(text, locale?)` приводит регистр (по языку), «ё» → «е», полную ширину (`ＡＢＣ` → `abc`), полуширинную кану (`ｶﾞ` → `ガ`), а для японского ещё катакану к хирагане. `findSearchMatches(text, query, locale?)` возвращает диапазоны совпадений **в исходной строке** (длина свёрнутой строки может отличаться), `highlightSearchMatches(text, query, locale?)` — части `{ text, isMatch }` для подсветки. На них строят подсветку BaseSearch, BaseAutocomplete, BaseChat и расшифровка BaseAudioPlayer.
+
+```ts
+import { highlightSearchMatches } from '@ramzes1385/rise-ui-kit/utils'
+
+highlightSearchMatches('ＡＢＣ def', 'abc') // [{ text: 'ＡＢＣ', isMatch: true }, { text: ' def', isMatch: false }]
+```
+
+---
+
 ## colorUtils
 
 Утилиты для работы с цветами.
@@ -349,6 +374,7 @@ clipboardUtils
 codeHighlightUtils
 colorUtils
 dadataUtils
+dateFormatUtils
 dateUtils
 domUtils
 editorDomUtils
@@ -378,6 +404,7 @@ structuredDataUtils
 subtitleUtils
 tableExportUtils
 tableUtils
+textUtils
 themeUtils
 timeUtils
 tooltipUtils

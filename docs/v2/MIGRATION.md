@@ -3209,3 +3209,32 @@ app.use(createUiKitConfig({ locale: 'en', theme: 'corporate' }))
 - **BaseEditor, `uploadMedia`**: кнопки «Изображение» и «Видео» принимают несколько файлов за один выбор (`multiple`), каждый файл грузится отдельно и вставляется заглушкой по порядку выбора. Без `uploadMedia` — по-прежнему один файл с `blob:`.
 - Без изменений для приложений: BaseSideBar берёт признак «`isCollapsed` передан родителем» из общего `useExplicitPropDetection` (то же поведение); у подписи значения и описания пункта BaseMention добавлен переход цвета (вид в покое прежний).
 - Тесты: `defaults.BaseMap` плагина (`BaseMap.ui.spec.ts`), `role="alert"` у ошибок полей (`BaseFormField.spec.ts`, `BaseFormField.theming.spec.ts`), `useToast` с позицией и оформлением (`BaseApp.spec.ts`), несколько файлов в BaseEditor (`BaseEditor.upload.spec.ts`).
+
+## Задача w14-l10n-deep
+
+Углублённая локализация. Для приложений не ломающая: прежние ключи словаря, которые приложение задавало через `defineLocale`, продолжают работать (старые ключи в словари кита не входят, но принимаются типом `UiKitLocale` как необязательные, и кит собирает подпись из них по-старому). Поэтому заголовка с `!` у изменения нет; чтобы подпись звучала правильно на казахском, узбекском и японском, переезжайте на новые шаблоны.
+
+- **Составные подписи — целые шаблоны.** Было (куски, склеивались в русском порядке слов) → стало (шаблон с подстановками, `formatMessage`):
+
+| Раздел | Было | Стало |
+|---|---|---|
+| `rating` | `OF` («из»), `ARIA_PREFIX` | `VALUE_OF_MAX` («{value} из {max}»), `VALUE_LABEL` («Оценка {value} из {max}»), `RANGE_LABEL` («Оценка от 0 до {max}») |
+| `chat` | `TYPING_SUFFIX` | `TYPING` («{name} печатает») |
+| `chat` | `PINNED_COUNTER` | `PINNED_POSITION` («{index} из {total}») |
+| `chat` | `SELECTED_PREFIX` | `SELECTED_COUNT` («Выбрано: {count}») |
+| `chat` | `PROFILE_ARIA` | `PROFILE_OF` («Профиль: {name}») |
+| `chat` | `ADD_REACTION` | `ADD_REACTION_EMOJI` («Поставить реакцию {emoji}») |
+| `chat` | `DOWNLOAD_IMAGE`, `DOWNLOAD_FILE` | `DOWNLOAD_IMAGE_NAMED`, `DOWNLOAD_FILE_NAMED` («Скачать файл {name}») |
+| `chat` | `MEMBER_ACTIONS` | `MEMBER_ACTIONS_NAMED` («Действия с участником {name}») |
+| `chat` | `QUICK_REPLY` | `QUICK_REPLY_NAMED` («Быстрый ответ: {reply}») |
+| `chat` | `REMOVE_ATTACHMENT` | `REMOVE_ATTACHMENT_NAMED` («Удалить вложение {name}») |
+| `chat` | `PARTICIPANTS_SUFFIX` | убран, кит его не использовал |
+| `text` | `FILE_MAX_SIZE_PREFIX`, `FILE_MAX_SIZE_SUFFIX` | `FILE_MAX_SIZE` («до {size} МБ») |
+
+  Старые ключи прежнего словаря работают, только если заданы **все** ключи пары (`FILE_MAX_SIZE_PREFIX` и `FILE_MAX_SIZE_SUFFIX`); `rating.VALUE_LABEL` по-старому берёт ещё и `rating.LABEL`. Подписи, где существительное стоит перед значением («Точка 2», «Заголовок 3», «Пресет Красный», «Выбранный цвет»), оставлены ключами-кусками: порядок слов в них одинаков во всех языках кита.
+- **Новый ключ `text.DELETE_ITEM`** («Удалить {name}») — доступное имя кнопки удаления в BaseTreeSelect, BaseCascader и BaseFileUpload. Раньше собиралось из `text.DELETE` и имени; переопределение `text.DELETE` на эти подписи больше не влияет, задайте `text.DELETE_ITEM`.
+- **Новые необязательные поля словаря** `calendarNames` (`months`, `monthsShort`, `weekdays`, `weekdaysShort`, `patterns`) и `relativeTime` — запасные названия месяцев и дней и фразы относительного времени для браузеров без данных `Intl` этого языка; у `kk` и `uz` заполнены. Типы `CalendarNames`, `CalendarPatterns`, `RelativeTimeNames` экспортируются из корня пакета. Свой язык без этих полей работает как раньше (`Intl` браузера).
+- **Новые утилиты** (`@ramzes1385/rise-ui-kit/utils`): `createDateFormat(intl, options)`, `formatDateText(date, options, intl?)`, `getMonthNames(intl, style?)`, `getWeekdayNames(intl, style?)`, `getNumericDateOrder(intl)`, `formatRelativeUnit(value, unit, intl)`, `hasIntlData(intl)`; для поиска — `foldSearchTextWithMap`, `findSearchMatches`, `highlightSearchMatches`. `getMonthNames` и `getWeekdayNames` переехали из внутреннего модуля календаря в `dateFormatUtils`.
+- **`foldSearchText`** сворачивает ещё и ширину знаков (`ＡＢＣ`, `１２３`, `，` → `abc`, `123`, `,`; идеографический пробел → обычный), полуширинную кану (`ｶﾞ` → `ガ`), а для японского (`locale.intl` = `ja…`) катакану → хирагану. Длина результата может отличаться от исходной — смещения для подсветки считайте через `findSearchMatches`. Для текста без полной ширины и каны результат прежний.
+- **BaseImageMap, `directoryGroupBy: 'alpha'`**: японский — разделы по рядам каны (あ, か, さ, た, な, は, ま, や, ら, わ), латиница — своя буква, остальное — «#» (в конце); китайский — один список без разделов (`id: 'all'`, пустой заголовок). Раньше каждый иероглиф и каждая кана были отдельным разделом.
+- **Подсветка совпадений** (BaseSearch, BaseAutocomplete, расшифровка BaseAudioPlayer, поиск в BaseChat) идёт по общему `highlightSearchMatches`: подсвечивается исходный текст, даже когда запрос найден через «е»/«ё», полную ширину или кану. BaseChat теперь подсвечивает и по «е»/«ё» (искал сообщения по ним и раньше, подсвечивал нет); запрос обрезается по краям пробелами, как при поиске.
