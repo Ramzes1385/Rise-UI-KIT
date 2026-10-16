@@ -8,7 +8,7 @@ import { motionPresetsStory } from '@/stories/helpers'
 
 const motion = motionPresetsStory({
 	item: `
-		<div class="story-frame" style="height: 200px;">
+		<div class="story-frame" style="align-self: stretch; height: 200px;">
 			<BaseModal v-bind="args" v-model:is-open="isOpen" is-contained title="Окно">
 				<BaseText>Появление и уход.</BaseText>
 			</BaseModal>

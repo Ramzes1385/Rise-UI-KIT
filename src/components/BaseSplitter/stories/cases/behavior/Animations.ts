@@ -7,7 +7,7 @@ import BaseSplitter from '../../../ui/BaseSplitter.vue'
 
 const motion = motionPresetsStory({
 	item: `
-		<div style="height: 120px; border: 1px solid var(--rise-border); border-radius: 8px; overflow: hidden">
+		<div style="align-self: stretch; height: 120px; border: 1px solid var(--rise-border); border-radius: 8px; overflow: hidden">
 			<BaseSplitter v-bind="args" :variant="isGhost ? 'ghost' : 'default'">
 				<template #start><p style="margin: 12px 16px">Письма</p></template>
 				<template #end><p style="margin: 12px 16px">Письмо</p></template>

@@ -7,7 +7,7 @@ import BaseCookieConsent from '../../../ui/BaseCookieConsent.vue'
 
 const motion = motionPresetsStory({
 	item: `
-		<div class="story-frame" style="height: 360px; background: var(--rise-bg-muted)">
+		<div class="story-frame" style="align-self: stretch; height: 360px; background: var(--rise-bg-muted)">
 			<BaseCookieConsent v-bind="args" v-model:is-open="isOpen" label="Cookies %preset%" />
 		</div>
 	`,

@@ -9,7 +9,7 @@ import BaseSlideover from '../../../ui/BaseSlideover.vue'
 
 const motion = motionPresetsStory({
 	item: `
-		<div class="story-frame" style="height: 200px;">
+		<div class="story-frame" style="align-self: stretch; height: 200px;">
 			<BaseSlideover v-bind="args" v-model:is-open="isOpen" is-contained title="Панель">
 				<BaseText>Появление и уход.</BaseText>
 			</BaseSlideover>
