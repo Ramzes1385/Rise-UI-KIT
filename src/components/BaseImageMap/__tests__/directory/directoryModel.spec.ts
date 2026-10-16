@@ -117,11 +117,63 @@ describe('directorySections', () => {
 		expect(sections[2]?.entries.map(item => item.item.object.title)).toEqual(['Еда', 'Ёлка'])
 	})
 
-	it('alpha: письмо без регистра и символы вне BMP не ломают разделы; регистр — по языку', () => {
-		const cjk = [entry('東京タワー'), entry('𠮷野家'), entry('北京'), entry('istanbul')]
-		const sections = directorySections({ ...base, locale: 'ja-JP', entries: cjk, groupBy: 'alpha' })
-		expect(sections.map(section => section.title).sort()).toEqual(['I', '北', '東', '𠮷'].sort())
+	it('alpha: символы вне BMP не ломают разделы; регистр — по языку', () => {
+		const sections = directorySections({ ...base, locale: 'ru-RU', entries: [entry('𠮷野家'), entry('Яр')], groupBy: 'alpha' })
+		expect(sections.map(section => section.title).sort()).toEqual(['Я', '𠮷'].sort())
 		expect(directorySections({ ...base, locale: 'tr-TR', entries: [entry('istanbul')], groupBy: 'alpha' })[0]?.title).toBe('İ')
+	})
+
+	it('alpha, японский: разделы по рядам каны, катакана и озвончение — в свой ряд, латиница — своя буква, иероглифы и цифры — «#» в конце', () => {
+		const titles = [
+			'あおい書店',
+			'アイス',
+			'ｶﾌｪ',
+			'ガス',
+			'さくら',
+			'ソバ',
+			'とうきょう',
+			'ナナ',
+			'パン',
+			'ラーメン',
+			'わさび',
+			'istanbul',
+			'東京タワー',
+			'北京',
+			'7番',
+		]
+		const sections = directorySections({ ...base, locale: 'ja-JP', entries: titles.map(title => entry(title)), groupBy: 'alpha' })
+		expect(sections.map(section => section.title)).toEqual(['I', 'あ', 'か', 'さ', 'た', 'な', 'は', 'ら', 'わ', '#'])
+		const titleOf = (letter: string): string[] | undefined =>
+			sections.find(section => section.title === letter)?.entries.map(item => item.item.object.title)
+		expect(titleOf('か')).toEqual(['ｶﾌｪ', 'ガス'])
+		expect(titleOf('さ')).toEqual(['さくら', 'ソバ'])
+		expect(titleOf('は')).toEqual(['パン'])
+		expect(titleOf('#')).toEqual(expect.arrayContaining(['東京タワー', '北京', '7番']))
+	})
+
+	it('alpha, японский: пустое название — «#»; малые кана и «ゔ» относятся к своему ряду', () => {
+		const sections = directorySections({
+			...base,
+			locale: 'ja',
+			entries: [entry(''), entry('ゃ'), entry('ヴァ'), entry('ぁ')],
+			groupBy: 'alpha',
+		})
+		expect(sections.map(section => section.title).sort()).toEqual(['#', 'あ', 'や'].sort())
+	})
+
+	it('alpha, китайский: без алфавита нет разделов — один список, отсортированный по языку', () => {
+		const sections = directorySections({
+			...base,
+			locale: 'zh-CN',
+			entries: [entry('北京'), entry('上海'), entry('Cafe')],
+			groupBy: 'alpha',
+		})
+		expect(sections).toHaveLength(1)
+		expect(sections[0]).toMatchObject({ id: 'all', title: '' })
+		expect(sections[0]?.entries.map(item => item.item.object.title)).toEqual(
+			['北京', 'Cafe', '上海'].sort(new Intl.Collator('zh-CN').compare),
+		)
+		expect(directorySections({ ...base, locale: 'zh-CN', entries: [], groupBy: 'alpha' })).toEqual([])
 	})
 
 	it('none: один раздел без заголовка; пусто — без разделов', () => {
