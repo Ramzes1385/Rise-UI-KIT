@@ -2,6 +2,7 @@
 	@include custom-color-scope;
 	box-sizing: border-box;
 	max-width: 100%;
+	min-width: 0;
 	@include text-size(sm);
 	@include custom-text(color, var(--rise-text));
 
@@ -9,18 +10,26 @@
 		display: flex;
 		align-items: flex-start;
 		gap: space(ct(kanban, gap, 12px));
+		min-width: 0;
 		padding-bottom: sz(4px);
 		overflow-x: auto;
+		scroll-snap-type: x proximity;
 		@include scrollbar-thin;
+	}
+
+	&--dragging &__board {
+		scroll-snap-type: none;
 	}
 
 	&__column {
 		display: flex;
-		flex: none;
+		flex: 0 1 sz(272px);
 		flex-direction: column;
 		gap: space(8px);
 		box-sizing: border-box;
-		width: sz(272px);
+		min-width: min(#{sz(200px)}, 100%);
+		max-width: 100%;
+		scroll-snap-align: start;
 		padding: space(ct(kanban, column-padding-y, 8px) ct(kanban, column-padding-x, 8px));
 		border-radius: sz(ct(kanban, column-radius, var(--rise-radius-lg)));
 		@include custom-bg(background-color, ct(kanban, column-bg, var(--rise-bg-muted)));
@@ -127,8 +136,9 @@
 	}
 
 	&__column--collapsed {
+		flex: none;
 		align-items: center;
-		width: auto;
+		min-width: 0;
 		padding-inline: sz(4px);
 	}
 
