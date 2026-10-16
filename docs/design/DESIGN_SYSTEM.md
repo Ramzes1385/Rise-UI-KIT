@@ -218,6 +218,7 @@
 1. **Только токены.** Цвета — `--rise-*` (семантические). Никаких HEX/`rgb()`/`rgba()`/`--color-*`/палитр в стилях компонентов. Полупрозрачность — через `color-mix(in srgb, var(--rise-…) N%, transparent)`.
 2. **Все длины через `sz()`.** Исключения — в разделе 2.
 3. **Шрифт — парой.** `@include text-size(sm)` или `@include control-text`, а не голый `font-size`. Начертания — `var(--rise-font-weight-*)`.
+   - Подпись в верхнем регистре с разрядкой — `@include caps-tracking(0.04em)` последним в правиле: на `:lang(zh)` и `:lang(ja)` разрядка обнуляется (иероглифы без регистра, интервал только разводит знаки), для остальных языков вид не меняется. Просто `letter-spacing` у `text-transform: uppercase` не пишем.
 4. **Радиусы из шкалы:**
    - контролы, пункты меню, поповеры — `md` (`--rise-control-radius`);
    - карточки, модальные окна, алерты, тосты — `lg`;
@@ -238,7 +239,7 @@
    - Остальное — `@include transition(prop…)`: длительность из токенов, при `prefers-reduced-motion` она обнуляется.
    - Декоративные бесконечные анимации (пульсация, шиммер) — внутри `@include motion-safe`. Спиннеры загрузки крутятся всегда.
    - Имена `@keyframes` — с префиксом компонента (`base-button-spin`).
-   - RTL — `[dir='rtl'] &`, а не `&:dir(rtl)`: lightningcss при цели сборки `es2020` превращает `:dir()` в `:is(:lang(…))`, и `dir="rtl"` такое правило не включает. Stylelint запрещает `:dir(` (`selector-pseudo-class-disallowed-list`). Логические свойства (`inset-inline-end`, `border-start-end-radius`, `margin-inline-start` и т. п.) lightningcss при той же цели переписывает через `:lang()`, поэтому RTL-правила в собранном пакете (`dist/styles.css`) не срабатывали, хотя в dev-режиме и тестах работали: пишите физические свойства (`left`/`right`) и отдельное правило `[dir='rtl'] &`. Ограничение такого правила: вложенный `dir="ltr"` внутри `dir="rtl"` его не отменяет (селектор смотрит на любого предка с `dir="rtl"`); если нужен вложенный LTR-блок, верните значение ниже по каскаду правилом `[dir='rtl'] [dir='ltr'] &`. Проверка сборки — в `dist/styles.css` после `npm run build` нет `:lang(`.
+   - RTL — `[dir='rtl'] &`, а не `&:dir(rtl)`: lightningcss при цели сборки `es2020` превращает `:dir()` в `:is(:lang(…))`, и `dir="rtl"` такое правило не включает. Stylelint запрещает `:dir(` (`selector-pseudo-class-disallowed-list`). Логические свойства (`inset-inline-end`, `border-start-end-radius`, `margin-inline-start` и т. п.) lightningcss при той же цели переписывает через `:lang()`, поэтому RTL-правила в собранном пакете (`dist/styles.css`) не срабатывали, хотя в dev-режиме и тестах работали: пишите физические свойства (`left`/`right`) и отдельное правило `[dir='rtl'] &`. Ограничение такого правила: вложенный `dir="ltr"` внутри `dir="rtl"` его не отменяет (селектор смотрит на любого предка с `dir="rtl"`); если нужен вложенный LTR-блок, верните значение ниже по каскаду правилом `[dir='rtl'] [dir='ltr'] &`. Проверка сборки — в `dist/styles.css` после `npm run build` нет `:lang(`, кроме `:lang(zh)` и `:lang(ja)` из миксина `caps-tracking` (lightningcss оставляет их как есть, см. п. 3).
 8. **Кастомный цвет.** Свойства, которые может перекрасить проп `color`, пишутся через миксины `custom-bg*` / `custom-text*` с токеном по умолчанию.
 9. **Без тем в компонентах.** Правила `[data-theme='dark'] .base-x` не пишем: тему делают токены.
 10. **Без мёртвых селекторов.** Модификатор, которого нет в шаблоне, удаляется. Пример — размерные `--sm/--md/--lg` у полей без пропа `size`.
@@ -374,6 +375,7 @@
 | `space($values)` | Отступы поверхностей: как `sz()`, но ещё × `--rise-density` — `space(16px)` → `calc(16px * var(--size-scale, 1) * var(--rise-density, 1))` |
 | `ct($component, $prop, $fallback)` | Токен компонента: `ct(button, bg, var(--rise-primary))` → `var(--rise-button-bg, var(--rise-primary))`; `$component: null` — только запасное значение |
 | `text-size($size)` | Кегль и интерлиньяж из шкалы: `2xs`, `xs`, `sm`, `base`, `lg`, `xl`, `2xl`, `3xl` |
+| `caps-tracking($value)` | Разрядка подписи в верхнем регистре; на `:lang(zh)` и `:lang(ja)` — `0`. Ставится последним в правиле |
 | `control-text` | Кегль и интерлиньяж контролов: 14/20 при `sizeScale` 100 |
 | `transition($props...)` | Переход перечисленных свойств с `--rise-duration` и `--rise-ease` |
 | `transition-colors($duration)` | Переход цвета, фона, рамки, контура, тени и прозрачности; по умолчанию `--rise-duration-fast` |

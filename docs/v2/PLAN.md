@@ -278,3 +278,14 @@
 ## Задача w13-packages
 
 Отдельные пакеты для крупных компонентов по образцу плеера (волна 13, запрос владельца 16.10: «устанавливать точечно эти компоненты в npm»). Сделано: один механизм `build/packages/extract.mjs <имя> <папка>` с описанием пакетов в `build/packages/packages.json` (media, maps, editor), общий шаблон `templates/common/` и свои `templates/<имя>/` (package.json, vite.config, README на русском); `src/kitLocale.ts` для строк интерфейса через публичный `useLocale()`; границы пакетов в `build/tests/packageBoundaries.spec.ts` (имена из публичных входов кита, внешние импорты в peerDependencies, `three` только в `/map3d`, прогон `extract.mjs`); недостающие имена добавлены в публичные экспорты кита. Проверено: извлечение, `npm install` с `.tgz` кита, `npm run build` (vite и vue-tsc), `npm pack`, сборка и Chromium-проверка тестового приложения. Найдено вне задачи: `strictExecutionOrder` ломает `vite build` приложений (FOLLOW_UPS, «Задача w13-packages»). Репозитории и публикацию делает владелец.
+
+## Задача w14-forms-misc
+
+Волна 14, пачка форм и мелочей (поручение владельца 16.10 19:02: исполнить отложенное из FOLLOW_UPS). Оценка ≈1 ч 30 мин.
+
+- BaseInput: `box-sizing: border-box` у обёртки (выход за корень на 2 px → 0), локальные исправления убраны.
+- BaseStepper: проп `summary` (`titled`, `count`, `none`); BaseFormWizard передаёт `count` — без повтора названия шага в узкой колонке.
+- BaseInputTags: `，` и `、` — разделители по умолчанию; BaseEditor: IME-защита Enter в полях размера медиа; BaseDatePicker: «から» в диапазоне.
+- Первый день недели из явного `locale` (BaseCalendar, BaseDatePicker, `src/utils/calendar/weekUtils`), проп `firstDayOfWeek` у BaseHeatmap.
+- Миксин `caps-tracking`: без разрядки подписей в верхнем регистре на `:lang(zh)` и `:lang(ja)`.
+- Документы: MIGRATION, CHANGES_FOR_APPS, VISUAL_CHANGES, FOLLOW_UPS, DESIGN_SYSTEM, COMPONENTS, README. Эталоны скриншотов — владельцу.

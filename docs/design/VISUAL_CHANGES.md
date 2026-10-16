@@ -2145,3 +2145,14 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 ## Задача w14-plugin-config
 
 - BaseImageMap3D: вид не меняется — `ui` добавляет только пользовательские классы, у переключателя этажей, карточки у точки и окна карточки добавлены классы без стилей (`base-image-map-3d__layers`, `__tooltip`, `__popup`). Новая история `Media/BaseImageMap3D/Theming` («Части и токены»): снимков для неё нет (эталонов не создавал); существующие эталоны BaseImageMap3D не затронуты.
+
+## Задача w14-forms-misc
+
+Эталоны не обновлялись. Снимки `BaseInput` и производных, где поле занимает всю ширину, изменятся на правом краю рамки (см. первый пункт) — их пересоздаёт владелец.
+
+- **BaseInput** (и стори BaseInputNumber, BaseMoneyInput, BasePhoneInput, BaseDatePicker — поле, BaseAutocomplete, BaseCardInput, BaseSearch, BaseRequisiteInput): правая граница рамки сдвинулась на 2 px влево, к краю корня (раньше выходила за него). В браузере сверено попарно «до / после», обе темы, 1280 и 320 px, 14 историй: расхождения только в полосе правого края рамки шириной 2 px, остальное попиксельно совпадает; выход обёртки за корень 2 px → 0 во всех. Шаг: `box-sizing: border-box` у `.base-input__wrapper`.
+- **BaseFormWizard** (колонка до 480 px; истории `Default`, `LongContent` в узких контейнерах и на 320 / 280 px): под лентой вместо «Шаг 1 из 6: Сведения об организации…» — «Шаг 1 из 6». Название шага осталось в заголовке ниже. Шире 480 px вид тот же. Ожидаемое изменение снимков, где мастер стоит в колонке уже 480 px.
+- **BaseStepper**: новая история `Summary` (три ленты: `titled`, `count`, `none` в колонке 360 px). Существующие истории не меняются (сверено `Default`, `Narrow`).
+- **BaseHeatmap**: новая история `FirstDayOfWeek` (три календаря: язык кита, с воскресенья, с субботы). Существующие не меняются.
+- **BaseCalendar**: история `Locale` теперь без явного `firstDayOfWeek: 0` — неделя с воскресенья из `locale="en-US"`; вид тот же.
+- **zh и ja**: подписи в верхнем регистре без разрядки — BaseTimeline (день), BaseBankCard и BaseCardInput (имя владельца), BaseMediaPlayer (достижение, актёры, участники). Computed `letter-spacing` в Storybook: ru `0.84px` (как было), zh и ja — `normal`. Эталоны ru и en не затронуты.

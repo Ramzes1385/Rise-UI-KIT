@@ -515,3 +515,14 @@
 
 - Новое: `createUiKitConfig(options)` (из `@ramzes1385/rise-ui-kit/config` или корня) — язык, тема, `defaults`, `icons`, `iconSpritePath`, `linkComponent`, `teleportTo`, `motion`, `reducedMotion` без регистрации компонентов и без их JS в сборке. Нужен приложениям с точечной установкой (`@ramzes1385/rise-ui-kit/BaseButton`): раньше настройки были только у `createUiKitPlugin`, который тянул все компоненты (451,8 КБ gzip стартового JS против 77,4 КБ с кнопкой и настройками). Существующие приложения — без изменений (README, «Точечная установка»; MIGRATION, «Задача w14-plugin-config»).
 - BaseImageMap3D: проп `ui` (классы частей поверх классов кита) теперь работает и в 3D-виде и доходит до вложенных списка объектов, легенды и панели маршрута; части — `IMAGE_MAP_3D_PARTS` из `/map3d`, глобально — `defaults.BaseImageMap3D.ui`. У переключателя этажей, карточки у точки и окна карточки появились классы `base-image-map-3d__layers`, `__tooltip`, `__popup` (без стилей). Прежде `ui` применялся только в 2D-виде (MIGRATION, «Задача w14-plugin-config»).
+
+## Задача w14-forms-misc
+
+- **BaseInput и всё на его основе** (BaseInputNumber, BaseMoneyInput, BasePhoneInput, BaseSearch, BaseAutocomplete, поле BaseDatePicker, BaseCardInput, BaseRequisiteInput, BaseInputTags и др.): рамка поля теперь заканчивается ровно на правой границе корня — раньше при `width: 100%` она выходила за него на 2 px (`box-sizing` обёртки не был `border-box`). Поле больше не выступает за колонку; у приложений со своим выравниванием «на 2 px» правило можно убрать.
+- **Первый день недели в BaseCalendar и BaseDatePicker с явным `locale`** определяется самим `locale` (`Intl.Locale.getWeekInfo()`): `locale="en-US"` на русском ките — неделя с воскресенья. Нужен прежний — задайте `firstDayOfWeek`. Данные недели берутся из движка браузера (Chromium 141 из Playwright отдаёт их и для `kk`, `uz`); нет `Intl.Locale.getWeekInfo` / `weekInfo` — первый день языка кита.
+- **BaseHeatmap**: проп `firstDayOfWeek`.
+- **BaseInputTags**: `，` и `、` — разделители по умолчанию (см. MIGRATION).
+- **BaseFormWizard** в узкой колонке (до 480 px): под лентой «Шаг 2 из 4», название шага — только в заголовке ниже. Нужна прежняя подпись у ленты, собранной вручную, — `summary="titled"` у BaseStepper (по умолчанию).
+- **BaseStepper**: проп `summary` (`titled`, `count`, `none`).
+- **Подписи в верхнем регистре на китайском и японском** (BaseTimeline — день, BaseBankCard и BaseCardInput — имя владельца, плеер — «Достижение», «Актёры», «Участники») больше не разрежены (`letter-spacing: 0` на `:lang(zh)` и `:lang(ja)`); нужен `lang` на `<html>` или предке. Для остальных языков вид прежний.
+- **BaseDatePicker**: ручной ввод диапазона понимает «から»; **BaseEditor**: Enter в полях размера медиа не срабатывает, пока IME подтверждает слово.
