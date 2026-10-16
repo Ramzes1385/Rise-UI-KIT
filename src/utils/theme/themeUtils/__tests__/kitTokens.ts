@@ -19,5 +19,5 @@ function scssMixin(name: string): string {
 }
 
 export function scssValue(mixin: string, token: string): string | undefined {
-	return Array.from(scssMixin(mixin).matchAll(new RegExp(`${token}: ([^;]+);`, 'g')), match => match[1])[0]
+	return Array.from(scssMixin(mixin).matchAll(new RegExp(`${token}:\\s*([^;]+);`, 'g')), match => match[1].replace(/\s+/g, ' ').trim())[0]
 }

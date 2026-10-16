@@ -88,8 +88,10 @@ export const KIT_PALETTES: Record<ThemeRole, ThemePalette> & { neutral: ThemeNeu
 /** Главный оттенок роли в светлом режиме (`$light-main-shade` в `_tokens.scss`): заливка кнопки, текст роли */
 export const KIT_MAIN_SHADES: Record<ThemeRole, 600 | 700> = { primary: 700, success: 700, info: 600, warning: 700, error: 600 }
 
-const KIT_FONT_SANS = "'Inter Variable', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif"
-const KIT_FONT_MONO = "'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+const KIT_FONT_SANS =
+	"'Inter Variable', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Source Han Sans SC', sans-serif"
+const KIT_FONT_MONO =
+	"'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, 'PingFang SC', 'Microsoft YaHei', 'Noto Sans Mono CJK SC', monospace"
 
 /**
  * Готовые темы: `rise` — вид кита (палитры как есть, генератор не используется), `corporate` — админки и таблицы,

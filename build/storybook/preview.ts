@@ -116,10 +116,11 @@ const withMotion: Decorator = (story, context) => {
 	return story()
 }
 
-/** Язык строк кита: тексты stories остаются русскими, меняются строки самих компонентов и формат дат. Любой код из `LOCALES`, иначе `ru` */
+/** Язык строк кита: тексты stories остаются русскими, меняются строки самих компонентов и формат дат; любой код из `LOCALES`, иначе `ru`; lang у zh и ja нужен для шрифтов */
 const withLocale: Decorator = (story, context) => {
-	const code = context.globals.locale as string
-	setLocale(Object.keys(LOCALES).includes(code) ? (code as keyof typeof LOCALES) : 'ru')
+	const code = String(context.globals.locale)
+	setLocale(code in LOCALES ? (code as keyof typeof LOCALES) : 'ru')
+	document.documentElement.lang = code === 'zh' || code === 'ja' ? code : 'en'
 	return story()
 }
 
