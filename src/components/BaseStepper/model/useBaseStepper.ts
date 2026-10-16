@@ -3,7 +3,7 @@ import { UI_STEPPER } from '@/locales/messages'
 import { useUi } from '@composables/base/useUi'
 import { useStepperMotion } from './useStepperMotion'
 import { useStepperScroll } from './useStepperScroll'
-import { activeStep, useStepRangeWarning } from './stepperStep'
+import { activeStep, stepSummary, useStepRangeWarning } from './stepperStep'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseStepperEmits, BaseStepperProps } from '../types/BaseStepper.types'
 
@@ -57,6 +57,7 @@ export function useBaseStepper(props: BaseStepperProps, emit: BaseStepperEmits) 
 		...scroll,
 		...useStepperMotion(props, scroll.itemsRef),
 		optionalLabel: computed(() => UI_STEPPER.OPTIONAL),
+		summary: computed(() => stepSummary(props)),
 		stepState: (index: number) => stepState(props, index),
 		isStepPassed: (index: number): boolean => index + 1 < activeStep(props),
 		statusText: (index: number): string => statusText(stepState(props, index)),

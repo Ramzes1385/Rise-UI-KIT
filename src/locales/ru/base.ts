@@ -184,6 +184,9 @@ export const ruBase = {
 		/** Состояние шага для экранного диктора: «Доставка, пройден» */
 		COMPLETED: 'пройден',
 		ERROR: 'ошибка',
+		/** Краткая подпись компактного вида на узкой ширине: «Шаг 2 из 4» */
+		PROGRESS: 'Шаг {current} из {total}',
+		PROGRESS_TITLED: 'Шаг {current} из {total}: {title}',
 	},
 	rating: {
 		ARIA_PREFIX: 'Оценка от 0 до',

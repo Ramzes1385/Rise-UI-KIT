@@ -103,7 +103,10 @@ export interface BaseStepperProps extends BaseComponentProps<
 	modelValue: number
 	/** Список шагов */
 	items: BaseStepperStep[]
-	/** Ориентация */
+	/**
+	 * Ориентация. Горизонтальный степпер следит за собственной шириной: до 480px лента сжимается до индикаторов с линиями
+	 * (подписи остаются для скринридера), а под ней выводится «Шаг N из M: подпись» текущего шага
+	 */
 	orientation?: StepperOrientation
 	/** Форма индикатора */
 	shape?: StepperShape

@@ -160,6 +160,8 @@ export const enBase = {
 		OPTIONAL: 'Optional',
 		COMPLETED: 'completed',
 		ERROR: 'error',
+		PROGRESS: 'Step {current} of {total}',
+		PROGRESS_TITLED: 'Step {current} of {total}: {title}',
 	},
 	rating: {
 		ARIA_PREFIX: 'Rating from 0 to',

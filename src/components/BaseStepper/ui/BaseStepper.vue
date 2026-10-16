@@ -1,7 +1,8 @@
 <template>
 	<div
 		:class="[ui('root'), `base-stepper--${orientation}`, `base-stepper--${shape}`, variantClass, motionClass, classes.root]"
-		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
+		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
+		:data-summary="orientation === 'horizontal' ? summary : undefined">
 		<div v-if="$slots.header" :class="[ui('header'), classes.header]">
 			<slot name="header" />
 		</div>
@@ -102,6 +103,7 @@ const {
 	itemsRef,
 	isItemsFocusable,
 	optionalLabel,
+	summary,
 	stepState,
 	isStepPassed,
 	statusText,

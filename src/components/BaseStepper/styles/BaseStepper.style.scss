@@ -14,6 +14,10 @@
 	flex-direction: column;
 	width: 100%;
 
+	&--horizontal {
+		container-type: inline-size;
+	}
+
 	&__header {
 		display: flex;
 		width: 100%;
@@ -367,6 +371,42 @@
 		&--stepped:not(.base-stepper--instant) &__step--active &__indicator-wrapper {
 			animation: base-stepper-step-in var(--rise-duration) var(--rise-ease-spring);
 		}
+	}
+}
+
+@container (max-width: 480px) {
+	.base-stepper--horizontal::after {
+		content: attr(data-summary);
+		content: attr(data-summary) / '';
+		order: 1;
+		margin-top: sz(12px);
+		color: ct(stepper-label, text-active, var(--rise-text-highlighted));
+		font-size: sz(ct(stepper-label, font-size, var(--rise-font-size-sm)));
+		font-weight: ct(stepper-label, font-weight, var(--rise-font-weight-medium));
+		line-height: sz(var(--rise-line-height-sm));
+		overflow-wrap: anywhere;
+		text-align: center;
+	}
+
+	.base-stepper--horizontal .base-stepper__footer {
+		order: 2;
+	}
+
+	.base-stepper--horizontal:not(.base-stepper--empty) .base-stepper__items {
+		--stepper-line-gap: #{sz(2px)};
+	}
+
+	.base-stepper--horizontal .base-stepper__items {
+		margin-inline: 0;
+	}
+
+	.base-stepper--horizontal .base-stepper__step,
+	.base-stepper--horizontal .base-stepper__trigger {
+		min-width: 0;
+	}
+
+	.base-stepper--horizontal .base-stepper__content {
+		@include visually-hidden;
 	}
 }
 
