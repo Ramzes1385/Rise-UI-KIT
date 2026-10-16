@@ -5,10 +5,10 @@ import { computed, ref, useId, watch } from 'vue'
 import { getLocale, pluralize } from '@/locales/state'
 import type { BaseInput } from '@components/BaseInput'
 import { useMotion } from '@composables/app/useMotion'
-import { foldSearchText } from '@utils/data/textUtils'
 import { isImeKeydown } from '@utils/dom/keyboardUtils'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import { useFormDisabled } from '@composables/form/useFormContext'
+import { findSearchMatches, foldSearchText } from '@utils/data/textUtils'
 import { AUTOCOMPLETE_INPUT_PARTS } from '../types/BaseAutocomplete.types'
 import type { AutocompleteOption, AutocompleteProps, BaseAutocompleteEmits, BaseAutocompletePart } from '../types/BaseAutocomplete.types'
 
@@ -17,12 +17,12 @@ function defaultFilter(option: AutocompleteOption, text: string): boolean {
 }
 
 function highlightParts(label: string, text: string, isFiltering: boolean): { text: string; isMatch: boolean }[] {
-	const start = isFiltering && text ? foldSearchText(label).indexOf(foldSearchText(text)) : -1
-	if (start === -1) return [{ text: label, isMatch: false }]
+	const match = isFiltering ? findSearchMatches(label, text)[0] : undefined
+	if (!match) return [{ text: label, isMatch: false }]
 	return [
-		{ text: label.slice(0, start), isMatch: false },
-		{ text: label.slice(start, start + text.length), isMatch: true },
-		{ text: label.slice(start + text.length), isMatch: false },
+		{ text: label.slice(0, match.start), isMatch: false },
+		{ text: label.slice(match.start, match.end), isMatch: true },
+		{ text: label.slice(match.end), isMatch: false },
 	].filter(part => part.text)
 }
 

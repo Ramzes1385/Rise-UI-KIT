@@ -32,7 +32,7 @@ const ALLOWED = [
 		file: 'src/components/BaseEmojiPicker/model/data/emojiRu.ts',
 		reason: 'русские названия эмодзи — данные поиска, английские — в emojiEn.ts',
 	},
-	{ file: 'src/utils/data/textUtils/textUtils.ts', text: 'е', reason: 'поиск без различия «е» и «ё»' },
+	{ file: 'src/utils/data/textUtils/searchFold.ts', text: 'е', reason: 'поиск без различия «е» и «ё»' },
 	{
 		file: 'src/components/BaseChat/model/slideover/useChatSlideover.ts',
 		text: 'сети',

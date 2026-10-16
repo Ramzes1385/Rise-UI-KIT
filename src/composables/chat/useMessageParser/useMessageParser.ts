@@ -1,4 +1,5 @@
 /** Composable: разбор текста сообщения на сегменты */
+import { highlightSearchMatches } from '@utils/data/textUtils'
 import type { MessageToken, ScannedToken, TextPart, UseMessageParserOptions, UseMessageParserReturn } from './types/useMessageParser.types'
 
 /** Буква любого алфавита (в том числе і, ї, є), цифра или подчёркивание: имя упоминания и команды */
@@ -72,12 +73,7 @@ function splitMessage(text: string): MessageToken[] {
 
 /** Текст по частям: совпадения с поисковым запросом помечены `isMatch` */
 function highlightText(text: string, searchQuery: string): TextPart[] {
-	if (!searchQuery) return [{ text, isMatch: false }]
-	const escapedQuery = searchQuery.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
-	return text
-		.split(new RegExp(`(${escapedQuery})`, 'gi'))
-		.filter(Boolean)
-		.map(part => ({ text: part, isMatch: part.toLowerCase() === searchQuery.toLowerCase() }))
+	return highlightSearchMatches(text, searchQuery.trim())
 }
 
 /**

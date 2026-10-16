@@ -97,7 +97,7 @@ describe('китайский и японский языки', () => {
 
 	it('поиск без различия регистра работает на иероглифах и кане', () => {
 		expect(foldSearchText('日本語テキスト')).toBe('日本語テキスト')
-		expect(foldSearchText('你好，World')).toBe('你好，world')
+		expect(foldSearchText('你好，World')).toBe('你好,world')
 		expect(foldSearchText('ひらがな カタカナ').includes(foldSearchText('カタカナ'))).toBe(true)
 		expect(foldSearchText('中文搜索').includes(foldSearchText('文搜'))).toBe(true)
 	})
