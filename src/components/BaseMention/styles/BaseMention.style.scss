@@ -99,6 +99,7 @@
 		color: var(--rise-text-muted);
 		@include text-size(xs);
 		@include truncate;
+		@include transition-colors;
 	}
 
 	&__option-description {
