@@ -4,6 +4,7 @@
 	flex-direction: column;
 	gap: sz(ct(comment-thread, gap, 16px));
 	box-sizing: border-box;
+	width: 100%;
 	min-width: 0;
 	padding: space(ct(comment-thread, padding, 16px));
 	border: 1px solid ct(comment-thread, border, var(--rise-border));
