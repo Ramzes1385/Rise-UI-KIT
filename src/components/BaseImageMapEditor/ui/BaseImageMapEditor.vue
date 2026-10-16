@@ -14,6 +14,7 @@
 				:model-value="tool.tool.value"
 				:options="toolOptions"
 				:aria-label="UI_IMAGE_MAP_EDITOR.TOOLS"
+				:ui="{ track: 'base-image-map-editor__tools' }"
 				:is-disabled="isDisabled || isPreview || !currentLayer"
 				@update:model-value="tool.setTool($event as ImageMapEditorTool)" />
 			<div :class="ui('group')" role="group" :aria-label="UI_IMAGE_MAP_EDITOR.HISTORY">

@@ -35,6 +35,10 @@
 		gap: sz(8px);
 	}
 
+	&__tools.base-segmented__track {
+		flex-wrap: wrap;
+	}
+
 	&__group {
 		display: inline-flex;
 		flex-wrap: wrap;
@@ -383,6 +387,23 @@
 
 	&--disabled &__stage {
 		cursor: default;
+	}
+
+	@container base-image-map-editor (max-width: 759px) {
+		&__panel {
+			max-height: min(70vh, #{sz(560px)});
+			padding-inline-end: sz(4px);
+			overflow: auto;
+			@include scrollbar-thin;
+		}
+
+		&__list {
+			max-height: sz(160px);
+		}
+
+		&__fieldset {
+			padding: space(6px 8px 8px);
+		}
 	}
 
 	@container base-image-map-editor (min-width: 760px) {
