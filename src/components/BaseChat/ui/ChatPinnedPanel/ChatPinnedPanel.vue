@@ -7,7 +7,9 @@
 					<span class="base-chat-pinned-panel__title">
 						{{ UI_CHAT_TEXT.PINNED_MESSAGE }}
 						{{
-							pinnedMessages.length > 1 ? `(${displayIndex + 1} ${UI_CHAT_TEXT.PINNED_COUNTER} ${pinnedMessages.length})` : ''
+							pinnedMessages.length > 1
+								? `(${formatMessage(UI_CHAT_TEXT.PINNED_POSITION, { index: displayIndex + 1, total: pinnedMessages.length })})`
+								: ''
 						}}
 					</span>
 					<span class="base-chat-pinned-panel__preview">{{ currentMessageText }}</span>
@@ -50,6 +52,7 @@
 
 <script setup lang="ts">
 import './ChatPinnedPanel.style.scss'
+import { formatMessage } from '@/locales/state'
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { CHAT_SCALE } from '../../model/chatScale'

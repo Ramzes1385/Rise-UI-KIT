@@ -10,7 +10,7 @@
 				variant="ghost"
 				:size-scale="sizeScale"
 				class="base-chat-input__preview-remove"
-				:aria-label="`${UI_CHAT_TEXT.REMOVE_ATTACHMENT} ${file.name}`"
+				:aria-label="formatMessage(UI_CHAT_TEXT.REMOVE_ATTACHMENT_NAMED, { name: file.name })"
 				@click="handleRemove(index)">
 				<BaseIcon name="close" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
 			</BaseButton>
@@ -19,6 +19,7 @@
 </template>
 
 <script setup lang="ts">
+import { formatMessage } from '@/locales/state'
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseImage } from '@components/BaseImage'

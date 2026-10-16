@@ -7,7 +7,7 @@
 				variant="outline"
 				:size-scale="sizeScale * quickReplyScale"
 				class="base-chat-input__quick-reply-btn"
-				:aria-label="`${UI_CHAT_TEXT.QUICK_REPLY} ${reply}`"
+				:aria-label="formatMessage(UI_CHAT_TEXT.QUICK_REPLY_NAMED, { reply })"
 				@click="handleQuickReply(reply)">
 				{{ reply }}
 			</BaseButton>
@@ -207,6 +207,7 @@
 <script setup lang="ts">
 import '@components/BaseImage/styles/BaseImage.style.scss'
 import './ChatInput.style.scss'
+import { formatMessage } from '@/locales/state'
 import { BaseIcon } from '@components/BaseIcon'
 import { CHAT_SCALE } from '../../model/chatScale'
 import ChatEmojiPicker from './ChatEmojiPicker.vue'

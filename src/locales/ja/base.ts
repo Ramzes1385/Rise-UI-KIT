@@ -32,8 +32,8 @@ export const jaBase = {
 		COLLAPSE: '折りたたむ',
 		FILE_SELECT: 'ファイルを選択',
 		FILE_DROP: 'ここにファイルをドロップ',
-		FILE_MAX_SIZE_PREFIX: '最大',
-		FILE_MAX_SIZE_SUFFIX: 'MB',
+		FILE_MAX_SIZE: '最大 {size} MB',
+		DELETE_ITEM: '{name} を削除',
 		PAGE_RANGE: '{from}–{to} 件 / 全 {total} 件',
 		SIZE_B: 'B',
 		SIZE_KB: 'KB',
@@ -146,9 +146,10 @@ export const jaBase = {
 		PROGRESS_TITLED: 'ステップ {current} / {total}：{title}',
 	},
 	rating: {
-		ARIA_PREFIX: '評価の範囲：0 ～',
+		RANGE_LABEL: '評価の範囲：0 ～ {max}',
 		LABEL: '評価',
-		OF: '/',
+		VALUE_OF_MAX: '{max} 点中 {value} 点',
+		VALUE_LABEL: '評価：{max} 点中 {value} 点',
 	},
 	checklist: {
 		TITLE: 'はじめに',

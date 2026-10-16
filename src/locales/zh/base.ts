@@ -32,8 +32,8 @@ export const zhBase = {
 		COLLAPSE: '收起',
 		FILE_SELECT: '选择文件',
 		FILE_DROP: '将文件拖放到此处',
-		FILE_MAX_SIZE_PREFIX: '最大',
-		FILE_MAX_SIZE_SUFFIX: 'MB',
+		FILE_MAX_SIZE: '最大 {size} MB',
+		DELETE_ITEM: '删除 {name}',
 		PAGE_RANGE: '第 {from}–{to} 条，共 {total} 条',
 		SIZE_B: 'B',
 		SIZE_KB: 'KB',
@@ -146,9 +146,10 @@ export const zhBase = {
 		PROGRESS_TITLED: '第 {current} 步，共 {total} 步：{title}',
 	},
 	rating: {
-		ARIA_PREFIX: '评分，范围 0 到',
+		RANGE_LABEL: '评分，范围 0 到 {max}',
 		LABEL: '评分',
-		OF: '/',
+		VALUE_OF_MAX: '{value}（满分 {max}）',
+		VALUE_LABEL: '评分 {value}（满分 {max}）',
 	},
 	checklist: {
 		TITLE: '快速上手',

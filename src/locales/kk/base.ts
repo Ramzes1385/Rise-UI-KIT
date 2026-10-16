@@ -32,8 +32,8 @@ export const kkBase = {
 		COLLAPSE: 'Жию',
 		FILE_SELECT: 'Файлдарды таңдаңыз',
 		FILE_DROP: 'Файлдарды осында сүйреп әкеліңіз',
-		FILE_MAX_SIZE_PREFIX: 'Ең көбі',
-		FILE_MAX_SIZE_SUFFIX: 'МБ',
+		FILE_MAX_SIZE: 'Ең көбі {size} МБ',
+		DELETE_ITEM: '{name} жою',
 		PAGE_RANGE: '{total} ішінен {from}–{to}',
 		SIZE_B: 'Б',
 		SIZE_KB: 'КБ',
@@ -146,9 +146,10 @@ export const kkBase = {
 		PROGRESS_TITLED: '{total} ішінен {current}-қадам: {title}',
 	},
 	rating: {
-		ARIA_PREFIX: 'Бағалау, ең жоғары мәні',
+		RANGE_LABEL: 'Бағалау, ең жоғары мәні {max}',
 		LABEL: 'Баға',
-		OF: '/',
+		VALUE_OF_MAX: '{max} ішінен {value}',
+		VALUE_LABEL: 'Баға: {max} ішінен {value}',
 	},
 	checklist: {
 		TITLE: 'Алғашқы қадамдар',

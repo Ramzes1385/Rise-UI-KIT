@@ -17,7 +17,7 @@
 					role="menuitem"
 					tabindex="-1"
 					class="base-chat-context-menu__reaction-btn"
-					:aria-label="`${UI_CHAT_TEXT.ADD_REACTION} ${emoji}`"
+					:aria-label="formatMessage(UI_CHAT_TEXT.ADD_REACTION_EMOJI, { emoji })"
 					@click="handleReaction(emoji)">
 					{{ emoji }}
 				</button>
@@ -73,6 +73,7 @@
 </template>
 
 <script setup lang="ts">
+import { formatMessage } from '@/locales/state'
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { CHAT_SCALE } from '../../../model/chatScale'

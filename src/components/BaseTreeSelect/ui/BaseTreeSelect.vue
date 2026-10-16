@@ -68,7 +68,7 @@
 									type="button"
 									:class="[ui('tag-close'), classes.tagClose]"
 									tabindex="-1"
-									:aria-label="`${UI_TEXT.DELETE} ${node.label}`"
+									:aria-label="formatMessage(UI_TEXT.DELETE_ITEM, { name: node.label })"
 									@click.stop="removeValue(node.id)">
 									<BaseIcon name="x-mark" :size-scale="calcIconScale('xs', sizeScale)" />
 								</button>
@@ -142,6 +142,7 @@
 import '@components/BaseText/styles/BaseText.style.scss'
 import '../styles/BaseTreeSelect.style.scss'
 import { UI_TEXT } from '@/locales/messages'
+import { formatMessage } from '@/locales/state'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
 import { BaseBadge } from '@components/BaseBadge'

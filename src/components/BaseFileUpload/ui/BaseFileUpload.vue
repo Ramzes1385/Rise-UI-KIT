@@ -51,7 +51,7 @@
 				<span v-if="emptyText" :class="[ui('drop-text'), classes.dropText]">{{ emptyText }}</span>
 				<span v-if="accept || maxSize" :class="[ui('hint'), classes.hint]">
 					<span v-if="accept">{{ formatHint }}</span>
-					<span v-if="maxSize">{{ UI_TEXT.FILE_MAX_SIZE_PREFIX }} {{ maxSize }} {{ UI_TEXT.FILE_MAX_SIZE_SUFFIX }}</span>
+					<span v-if="maxSize">{{ formatMessage(UI_TEXT.FILE_MAX_SIZE, { size: maxSize }) }}</span>
 				</span>
 			</slot>
 		</div>
@@ -125,7 +125,7 @@
 					variant="ghost"
 					:class="ui('remove')"
 					:custom-class="classes.remove"
-					:aria-label="`${UI_TEXT.DELETE} ${item.name}`"
+					:aria-label="formatMessage(UI_TEXT.DELETE_ITEM, { name: item.name })"
 					:is-disabled="isControlDisabled"
 					:size-scale="sizeScale"
 					@click="handleRemove(item)">

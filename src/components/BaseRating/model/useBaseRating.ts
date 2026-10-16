@@ -2,8 +2,8 @@ import { computed, ref } from 'vue'
 import type { ComputedRef } from 'vue'
 import { ratingBounds } from './ratingBounds'
 import { UI_RATING } from '@/locales/messages'
-import { formatNumber } from '@/locales/state'
 import { useUi } from '@composables/base/useUi'
+import { formatMessage, formatNumber } from '@/locales/state'
 import { useFormField } from '@composables/form/useFormField'
 import { useFormDisabled } from '@composables/form/useFormContext'
 import type { StructuredData } from '@utils/seo/structuredDataUtils'
@@ -30,16 +30,16 @@ function formatRatingValue(value: number, minimumFractionDigits = 0): string {
 }
 
 function ratingAria(props: RatingProps, bounds: RatingBounds, isDisabled: boolean) {
-	const valueText = `${formatRatingValue(bounds.value)} ${UI_RATING.OF} ${bounds.max}`
-	if (props.isReadonly && !isDisabled) return { role: 'img', 'aria-label': `${UI_RATING.LABEL} ${valueText}` }
+	const values = { value: formatRatingValue(bounds.value), max: bounds.max }
+	if (props.isReadonly && !isDisabled) return { role: 'img', 'aria-label': formatMessage(UI_RATING.VALUE_LABEL, values) }
 	return {
 		role: 'slider',
 		tabindex: isDisabled ? undefined : 0,
-		'aria-label': `${UI_RATING.ARIA_PREFIX} ${bounds.max}`,
+		'aria-label': formatMessage(UI_RATING.RANGE_LABEL, { max: bounds.max }),
 		'aria-valuemin': 0,
 		'aria-valuemax': bounds.max,
 		'aria-valuenow': bounds.value,
-		'aria-valuetext': valueText,
+		'aria-valuetext': formatMessage(UI_RATING.VALUE_OF_MAX, values),
 		'aria-disabled': isDisabled ? ('true' as const) : undefined,
 	}
 }

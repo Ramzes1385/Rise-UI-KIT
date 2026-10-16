@@ -104,7 +104,7 @@
 											variant="ghost"
 											:size-scale="sizeScale"
 											class="base-chat-slideover__admin-btn"
-											:aria-label="`${UI_CHAT_TEXT.MEMBER_ACTIONS} ${member.name}`"
+											:aria-label="formatMessage(UI_CHAT_TEXT.MEMBER_ACTIONS_NAMED, { name: member.name })"
 											aria-haspopup="menu"
 											:aria-expanded="activeAdminMenuId === member.id ? 'true' : 'false'"
 											@click="toggleAdminMenu(member.id)"
@@ -117,7 +117,7 @@
 												:id="`${idPrefix}-menu-${member.id}`"
 												class="base-chat-slideover__admin-dropdown"
 												role="menu"
-												:aria-label="`${UI_CHAT_TEXT.MEMBER_ACTIONS} ${member.name}`">
+												:aria-label="formatMessage(UI_CHAT_TEXT.MEMBER_ACTIONS_NAMED, { name: member.name })">
 												<button
 													type="button"
 													role="menuitem"
@@ -245,6 +245,7 @@
 
 <script setup lang="ts">
 import './ChatSlideover.style.scss'
+import { formatMessage } from '@/locales/state'
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { CHAT_SCALE } from '../../model/chatScale'

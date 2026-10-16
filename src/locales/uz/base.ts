@@ -32,8 +32,8 @@ export const uzBase = {
 		COLLAPSE: 'Yigʻish',
 		FILE_SELECT: 'Fayllarni tanlang',
 		FILE_DROP: 'Fayllarni bu yerga tashlang',
-		FILE_MAX_SIZE_PREFIX: 'Maksimal',
-		FILE_MAX_SIZE_SUFFIX: 'MB',
+		FILE_MAX_SIZE: 'Maksimal {size} MB',
+		DELETE_ITEM: '{name} oʻchirish',
 		PAGE_RANGE: '{total} tadan {from}–{to}',
 		SIZE_B: 'B',
 		SIZE_KB: 'KB',
@@ -146,9 +146,10 @@ export const uzBase = {
 		PROGRESS_TITLED: '{total} tadan {current}-qadam: {title}',
 	},
 	rating: {
-		ARIA_PREFIX: 'Baholash, eng yuqori qiymat',
+		RANGE_LABEL: 'Baholash, eng yuqori qiymat {max}',
 		LABEL: 'Baho',
-		OF: '/',
+		VALUE_OF_MAX: '{max} dan {value}',
+		VALUE_LABEL: 'Baho: {max} dan {value}',
 	},
 	checklist: {
 		TITLE: 'Dastlabki qadamlar',

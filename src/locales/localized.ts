@@ -1,5 +1,6 @@
-/** Раздел словаря текущего языка как объект строк, напр. `localized('aria').CLOSE`; читается через shallowRef, поэтому шаблоны и computed обновляются при смене языка (`setLocale`). */
 import { currentLocale } from './state'
+/** Раздел словаря текущего языка как объект строк, напр. `localized('aria').CLOSE`; читается через shallowRef, поэтому шаблоны и computed обновляются при смене языка (`setLocale`). */
+import { legacyMessage } from './legacyKeys'
 import type { LocaleSection, UiKitLocale } from './types/locales.types'
 
 export function localized<K extends LocaleSection>(section: K): Readonly<UiKitLocale[K]> {
@@ -8,7 +9,11 @@ export function localized<K extends LocaleSection>(section: K): Readonly<UiKitLo
 		{},
 		{
 			get(target, key) {
-				if (typeof key === 'string' && key in messages()) return messages()[key]
+				if (typeof key === 'string') {
+					const legacy = legacyMessage(section, key, messages())
+					if (legacy !== undefined) return legacy
+					if (key in messages()) return messages()[key]
+				}
 				return Reflect.get(target, key)
 			},
 			has(target, key) {
@@ -19,7 +24,12 @@ export function localized<K extends LocaleSection>(section: K): Readonly<UiKitLo
 			},
 			getOwnPropertyDescriptor(target, key) {
 				if (typeof key === 'string' && key in messages())
-					return { value: messages()[key], enumerable: true, configurable: true, writable: false }
+					return {
+						value: legacyMessage(section, key, messages()) ?? messages()[key],
+						enumerable: true,
+						configurable: true,
+						writable: false,
+					}
 				return Reflect.getOwnPropertyDescriptor(target, key)
 			},
 		},

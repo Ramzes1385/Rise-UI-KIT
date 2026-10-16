@@ -36,8 +36,8 @@ export const enBase = {
 		COLLAPSE: 'Collapse',
 		FILE_SELECT: 'Choose files',
 		FILE_DROP: 'Drop files here',
-		FILE_MAX_SIZE_PREFIX: 'up to',
-		FILE_MAX_SIZE_SUFFIX: 'MB',
+		FILE_MAX_SIZE: 'up to {size} MB',
+		DELETE_ITEM: 'Delete {name}',
 		PAGE_RANGE: '{from}–{to} of {total}',
 		SIZE_B: 'B',
 		SIZE_KB: 'KB',
@@ -164,9 +164,10 @@ export const enBase = {
 		PROGRESS_TITLED: 'Step {current} of {total}: {title}',
 	},
 	rating: {
-		ARIA_PREFIX: 'Rating from 0 to',
+		RANGE_LABEL: 'Rating from 0 to {max}',
 		LABEL: 'Rating',
-		OF: 'of',
+		VALUE_OF_MAX: '{value} of {max}',
+		VALUE_LABEL: 'Rating {value} of {max}',
 	},
 	checklist: {
 		TITLE: 'Getting started',

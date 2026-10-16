@@ -23,7 +23,7 @@
 				variant="ghost"
 				:size-scale="sizeScale"
 				class="base-chat-slideover__file-download"
-				:aria-label="`${UI_CHAT_TEXT.DOWNLOAD_FILE} ${file.name}`"
+				:aria-label="formatMessage(UI_CHAT_TEXT.DOWNLOAD_FILE_NAMED, { name: file.name })"
 				@click="emit('download-file', file)">
 				<BaseIcon name="download" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
 			</BaseButton>
@@ -32,6 +32,7 @@
 </template>
 
 <script setup lang="ts">
+import { formatMessage } from '@/locales/state'
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseEmpty } from '@components/BaseEmpty'

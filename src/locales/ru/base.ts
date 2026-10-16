@@ -40,8 +40,8 @@ export const ruBase = {
 		COLLAPSE: 'Свернуть',
 		FILE_SELECT: 'Выберите файлы',
 		FILE_DROP: 'Перетащите файлы сюда',
-		FILE_MAX_SIZE_PREFIX: 'до',
-		FILE_MAX_SIZE_SUFFIX: 'МБ',
+		FILE_MAX_SIZE: 'до {size} МБ',
+		DELETE_ITEM: 'Удалить {name}',
 		/** Строка страниц пагинации: «1–10 из 100» */
 		PAGE_RANGE: '{from}–{to} из {total}',
 		SIZE_B: 'Б',
@@ -189,11 +189,12 @@ export const ruBase = {
 		PROGRESS_TITLED: 'Шаг {current} из {total}: {title}',
 	},
 	rating: {
-		ARIA_PREFIX: 'Оценка от 0 до',
+		RANGE_LABEL: 'Оценка от 0 до {max}',
 		/** Имя рейтинга только для чтения (role="img"): «Оценка 4.5 из 5» */
 		LABEL: 'Оценка',
 		/** Связка значения и максимума в aria-valuetext и имени: «3 из 5» */
-		OF: 'из',
+		VALUE_OF_MAX: '{value} из {max}',
+		VALUE_LABEL: 'Оценка {value} из {max}',
 	},
 	/** Чек-лист первых шагов */
 	checklist: {

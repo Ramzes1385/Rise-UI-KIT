@@ -3,8 +3,28 @@ import type { LOCALES } from '../state'
 
 type Base = typeof ru
 
+/** Прежние ключи-куски составных подписей: в словарях кита их нет; заданные приложением, они работают (см. `legacyKeys.ts`) */
+interface LegacyKeys {
+	rating: 'OF' | 'ARIA_PREFIX'
+	text: 'FILE_MAX_SIZE_PREFIX' | 'FILE_MAX_SIZE_SUFFIX'
+	chat:
+		| 'TYPING_SUFFIX'
+		| 'PINNED_COUNTER'
+		| 'SELECTED_PREFIX'
+		| 'PARTICIPANTS_SUFFIX'
+		| 'PROFILE_ARIA'
+		| 'ADD_REACTION'
+		| 'DOWNLOAD_IMAGE'
+		| 'DOWNLOAD_FILE'
+		| 'MEMBER_ACTIONS'
+		| 'QUICK_REPLY'
+		| 'REMOVE_ATTACHMENT'
+}
+
+type Legacy<K> = K extends keyof LegacyKeys ? { readonly [P in LegacyKeys[K]]?: string } : unknown
+
 /** Строки раздела словаря: ключи как в русском словаре, значения — строки */
-type Section<K extends keyof Base> = { readonly [P in keyof Base[K]]: string }
+type Section<K extends keyof Base> = { readonly [P in keyof Base[K]]: string } & Legacy<K>
 
 /** Формы слова для чисел: ключи — категории `Intl.PluralRules` (`one`, `few`, `many`, `other`…), `{n}` — число */
 export type PluralForms = Partial<Record<Intl.LDMLPluralRule, string>> & { readonly other: string }
@@ -152,3 +172,14 @@ export type LocaleOverrides = Partial<Pick<UiKitLocale, 'code' | 'intl' | 'first
 
 /** Язык: код встроенного языка (подсказка редактора), код языка из `registerLocale()` или словарь (`defineLocale`) */
 export type LocaleInput = keyof typeof LOCALES | (string & Record<never, never>) | UiKitLocale
+
+/** Строки раздела словаря как карта: ключ — строка или `undefined` */
+export type MessageMap = Readonly<Record<string, string | undefined>>
+
+/** Правило прежнего ключа-куска: что должно быть задано и как собрать шаблон нового ключа */
+export interface LegacyMessage {
+	/** Старые ключи, которые должно задать приложение, чтобы подпись собралась по-старому */
+	readonly requires: readonly string[]
+	/** Шаблон нового ключа, собранный из старых кусков */
+	readonly build: (messages: MessageMap) => string
+}

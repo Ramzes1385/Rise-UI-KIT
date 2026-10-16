@@ -18,7 +18,7 @@
 					variant="outline"
 					:size-scale="sizeScale"
 					class="base-chat-message-list__download-btn"
-					:aria-label="`${UI_CHAT_TEXT.DOWNLOAD_IMAGE} ${img.name}`"
+					:aria-label="formatMessage(UI_CHAT_TEXT.DOWNLOAD_IMAGE_NAMED, { name: img.name })"
 					@click.stop="handleDownload(img)">
 					<BaseIcon name="download" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
 				</BaseButton>
@@ -51,7 +51,7 @@
 					variant="ghost"
 					:size-scale="sizeScale"
 					class="base-chat-message-list__download-btn"
-					:aria-label="`${UI_CHAT_TEXT.DOWNLOAD_FILE} ${file.name}`"
+					:aria-label="formatMessage(UI_CHAT_TEXT.DOWNLOAD_FILE_NAMED, { name: file.name })"
 					@click.stop="handleDownload(file)">
 					<BaseIcon name="download" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
 				</BaseButton>
@@ -61,6 +61,7 @@
 </template>
 
 <script setup lang="ts">
+import { formatMessage } from '@/locales/state'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
 import { BaseButton } from '@components/BaseButton'

@@ -1,4 +1,5 @@
 import { computed } from 'vue'
+import { formatMessage } from '@/locales/state'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import type { ChatMessage, ChatMessageAttachment, ChatMessageStatus } from '../../../types/BaseChat.types'
 import type { ChatContextMenuEvent, ChatMessageItemEmits, MessageItemProps } from '../types/ChatMessageItem.types'
@@ -19,7 +20,9 @@ function useSender(props: MessageItemProps) {
 		showSenderName: computed(() => props.isGroup && props.message.sender === 'other' && Boolean(props.message.senderName)),
 		senderName: computed(() => props.message.senderName || 'Companion'),
 		avatarLabel: computed(() =>
-			props.message.senderName ? `${UI_CHAT_TEXT.PROFILE_ARIA} ${props.message.senderName}` : UI_CHAT_TEXT.SENDER_PROFILE_ARIA,
+			props.message.senderName
+				? formatMessage(UI_CHAT_TEXT.PROFILE_OF, { name: props.message.senderName })
+				: UI_CHAT_TEXT.SENDER_PROFILE_ARIA,
 		),
 		statusLabel: computed(() =>
 			props.message.status && props.message.status !== 'sending' ? statusLabels[props.message.status] : undefined,

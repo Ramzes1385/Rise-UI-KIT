@@ -1,7 +1,9 @@
 <template>
 	<div class="base-chat-selection-toolbar">
 		<div class="base-chat-selection-toolbar__surface" role="group" :aria-label="UI_CHAT_TEXT.SELECTION_TOOLBAR">
-			<span class="base-chat-selection-toolbar__info" aria-live="polite">{{ UI_CHAT_TEXT.SELECTED_PREFIX }} {{ selectedCount }}</span>
+			<span class="base-chat-selection-toolbar__info" aria-live="polite">{{
+				formatMessage(UI_CHAT_TEXT.SELECTED_COUNT, { count: selectedCount })
+			}}</span>
 			<div class="base-chat-selection-toolbar__actions">
 				<BaseButton
 					variant="ghost"
@@ -43,6 +45,7 @@
 
 <script setup lang="ts">
 import './ChatSelectionToolbar.style.scss'
+import { formatMessage } from '@/locales/state'
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { CHAT_SCALE } from '../../model/chatScale'

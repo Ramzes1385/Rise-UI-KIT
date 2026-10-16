@@ -1,3 +1,4 @@
+import { formatMessage } from '@/locales/state'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { computed, nextTick, ref, watch } from 'vue'
 import { buildChatTimeline } from './timeline/chatTimeline'
@@ -73,7 +74,7 @@ export function useChatMessageList(props: MessageListProps, emit: ChatMessageLis
 		activeContextMessageId: computed(() => actions.contextMenu.value.message?.id ?? null),
 		isSelectionMode: computed(() => props.selectedMessageIds.length > 0),
 		typingLabel: computed(() =>
-			props.typingUsername ? `${props.typingUsername} ${UI_CHAT_TEXT.TYPING_SUFFIX}` : UI_CHAT_TEXT.TYPING_LABEL,
+			props.typingUsername ? formatMessage(UI_CHAT_TEXT.TYPING, { name: props.typingUsername }) : UI_CHAT_TEXT.TYPING_LABEL,
 		),
 		senderBadges: (message: ChatMessage): ChatBadge[] => badgesBySender.value.get(message.senderId ?? '') ?? [],
 		exposed: { scrollToMessage: actions.scrollToMessage },

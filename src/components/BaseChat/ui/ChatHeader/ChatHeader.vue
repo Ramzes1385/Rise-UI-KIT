@@ -5,7 +5,7 @@
 				v-if="avatar"
 				type="button"
 				class="base-chat-header__avatar-button"
-				:aria-label="`${UI_CHAT_TEXT.PROFILE_ARIA} ${title}`"
+				:aria-label="formatMessage(UI_CHAT_TEXT.PROFILE_OF, { name: title })"
 				@click="handleAvatarClick">
 				<BaseAvatar :src="avatar" :name="title" :size-scale="sizeScale" class="base-chat-header__avatar" />
 			</button>
@@ -56,6 +56,7 @@
 
 <script setup lang="ts">
 import './ChatHeader.style.scss'
+import { formatMessage } from '@/locales/state'
 import { BaseIcon } from '@components/BaseIcon'
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseInput } from '@components/BaseInput'
