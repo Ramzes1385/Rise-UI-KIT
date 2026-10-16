@@ -1,5 +1,9 @@
 import type { Ref } from 'vue'
-import type { NOTIFICATION_TYPES, NOTIFICATION_VARIANTS } from '@components/BaseNotification/types/BaseNotification.types'
+import type {
+	BaseNotificationProps,
+	NOTIFICATION_TYPES,
+	NOTIFICATION_VARIANTS,
+} from '@components/BaseNotification/types/BaseNotification.types'
 
 /** Идентификатор уведомления: свой (строка или число) или выданный хранилищем */
 export type ToastId = string | number
@@ -32,6 +36,14 @@ export interface ToastOptions {
 	isPersistent?: boolean
 	/** Кнопки действий под текстом. Нажатие закрывает уведомление */
 	actions?: ToastAction[]
+	/** Угол экрана для этого уведомления. Без значения — `toaster.position` у BaseApp; уведомления разных углов лежат в отдельных областях */
+	position?: BaseNotificationProps['position']
+	/** Кастомный цвет этого уведомления поверх темы (как `color` у BaseNotification) */
+	color?: BaseNotificationProps['color']
+	/** Масштаб этого уведомления в процентах. Без значения — `toaster.sizeScale` у BaseApp */
+	sizeScale?: number
+	/** Дополнительные классы этого уведомления: строка — на карточку, объект — по частям (`{ root, notification, icon, … }`) */
+	customClass?: BaseNotificationProps['customClass']
 }
 
 /** Уведомление в хранилище: параметры с обязательным id */

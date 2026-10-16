@@ -20,6 +20,7 @@ export default meta
 export const Default = cases.Default
 export const UpdateInPlace = cases.UpdateInPlace
 export const Actions = cases.Actions
+export const ToastOptions = cases.ToastOptions
 export const OverlayFromCode = cases.OverlayFromCode
 export const LayerContainer = cases.LayerContainer
 export const LoadingBar = cases.LoadingBar

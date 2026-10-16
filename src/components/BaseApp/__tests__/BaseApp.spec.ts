@@ -125,6 +125,30 @@ describe('BaseApp', () => {
 			expect(region.style.getPropertyValue('--size-scale')).toBe('1.2')
 		})
 
+		it('оформляет уведомление своими position, sizeScale, color и customClass, остальные берут настройки toaster', async () => {
+			const { toast } = renderApp({ position: 'top-right', sizeScale: 100 })
+
+			toast.add({ title: 'Обычное' })
+			toast.add({
+				title: 'Особое',
+				position: 'bottom-left',
+				sizeScale: 150,
+				customClass: 'toast-special',
+				color: { bg: { base: '#112233' } },
+			})
+
+			expect(await screen.findByRole('region', { name: 'Уведомления: внизу слева' })).toHaveClass('base-notification--bottom-left')
+			expect(screen.getByRole('region', { name: 'Уведомления: вверху справа' })).toHaveClass('base-notification--top-right')
+			const special = screen.getByText('Особое').closest('.base-notification-item') as HTMLElement
+			const common = screen.getByText('Обычное').closest('.base-notification-item') as HTMLElement
+			expect(special.closest('.base-notification')).toHaveClass('base-notification--bottom-left')
+			expect(common.closest('.base-notification')).toHaveClass('base-notification--top-right')
+			expect(special).toHaveClass('toast-special')
+			expect(common).not.toHaveClass('toast-special')
+			expect(special.style.getPropertyValue('--size-scale')).toBe('1.5')
+			expect(special.style.getPropertyValue('--custom-bg')).toBe('#112233')
+		})
+
 		it('делает свои хранилища активными и снимает их при размонтировании', () => {
 			const { unmount } = renderApp()
 			const toastStore = getActiveToastStore()

@@ -1,6 +1,7 @@
 export { Default } from './Default'
 export { UpdateInPlace } from './behavior/UpdateInPlace'
 export { Actions } from './behavior/Actions'
+export { ToastOptions } from './behavior/ToastOptions'
 export { OverlayFromCode } from './behavior/OverlayFromCode'
 export { LayerContainer } from './content/LayerContainer'
 export { LoadingBar } from './behavior/LoadingBar'
