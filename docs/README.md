@@ -61,7 +61,7 @@ Rise-UI-KIT/
 │   ├── config/           # общие части Vite-конфигов: алиасы, SCSS, сборка библиотеки
 │   ├── husky/            # git-хуки
 │   ├── lib/              # Vite конфиг для библиотеки
-│   ├── media-package/    # заготовка отдельного пакета плеера
+│   ├── packages/         # заготовки отдельных пакетов: плеер, карты, редактор
 │   ├── plugins/          # Vite-плагины: Vue, SVG, спрайт иконок
 │   ├── release/          # semantic-release конфиги
 │   ├── storybook/        # конфигурация Storybook

@@ -473,3 +473,8 @@
 - Точечная установка: `import { BaseButton } from '@ramzes1385/rise-ui-kit/BaseButton'` и один раз `import '@ramzes1385/rise-ui-kit/tokens.css'` — в сборку попадают JS и CSS только использованных компонентов (BaseButton: CSS 4,8 КБ gzip вместо 96,9 КБ у `styles.css`). Подпуть есть у каждого компонента из `/components`. Корень, `/components`, `styles.css` и плагин — без изменений (README, «Точечная установка»; MIGRATION, «Задача w13-subpaths»).
 - Исправление: на Vite 8 компонент, импортированный по имени из корня пакета ветки 2.0, был `undefined` и не отрисовывался — теперь отрисовывается, а в сборку приложения попадает только использованный код. Файлов в `dist/chunks/` больше (≈390), `styles.css` и `media.css` прежние.
 - SSR с подпутями: пакет — в `ssr.noExternal` (Vite) или `build.transpile` (Nuxt), иначе Node не импортирует `.css` из JS пакета.
+
+## Задача w13-packages
+
+- В `/composables` и `/utils` появились новые публичные имена для редактора (`useEditorHistory`, `getClipboardData`, `stripPlaceholders`, `selectRange`, `getShortcutLetter`, `foldSearchText` и другие — список в MIGRATION): поведение кита не меняется, конфликтов имён нет.
+- Крупные компоненты можно ставить отдельными пакетами (`@ramzes1385/rise-media-player`, `rise-maps`, `rise-editor`) после их публикации владельцем; импорты из кита продолжают работать (README, «Отдельные пакеты»).

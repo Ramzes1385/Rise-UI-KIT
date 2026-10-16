@@ -490,6 +490,18 @@ import { BaseButton } from '@ramzes1385/rise-ui-kit'
 
 ---
 
+### Отдельные пакеты
+
+Крупные компоненты можно ставить отдельными пакетами — по образцу плеера, со своим релизом и стилями. Пакеты строятся из публичных входов кита: он и Vue — их peerDependencies, язык (`setLocale()`, `defineLocale()`), настройки плагина и иконки приходят из кита.
+
+| Пакет | Что внутри | Стили |
+|---|---|---|
+| `@ramzes1385/rise-media-player` | `BaseMediaPlayer`, `BasePresentationPlayer` | `@ramzes1385/rise-media-player/styles.css` |
+| `@ramzes1385/rise-maps` | `BaseMap`, `BaseImageMap`, `BaseImageMapEditor`; `BaseImageMap3D` — вход `/map3d`, `three` необязателен | `@ramzes1385/rise-maps/styles.css` |
+| `@ramzes1385/rise-editor` | `BaseEditor` | `@ramzes1385/rise-editor/styles.css` |
+
+Пока пакеты не опубликованы, их содержимое готовит скрипт кита: `node build/packages/extract.mjs <media|maps|editor> <пустая папка>`, затем в папке `npm install` и `npm run build`. Что внутри, как переносить и что решить владельцу до публикации (репозитории, тесты и stories в пакетах, словарь, версия кита) — в [build/packages/README.md](build/packages/README.md). Компоненты остаются и в ките — приложения, которым не нужна точечная установка, ничего не меняют.
+
 ## Документация
 
 | Документ | Что внутри |

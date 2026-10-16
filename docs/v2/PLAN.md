@@ -274,3 +274,7 @@
 1. Подключить папку проекта с компьютера.
 2. Написать: «Выполни следующую порцию из `docs/v2/PLAN.md`».
 3. Новой сессии нужно заново развернуть окружение: скопировать репозиторий, `npm ci`, браузер Playwright — это около 30–60 минут.
+
+## Задача w13-packages
+
+Отдельные пакеты для крупных компонентов по образцу плеера (волна 13, запрос владельца 16.10: «устанавливать точечно эти компоненты в npm»). Сделано: один механизм `build/packages/extract.mjs <имя> <папка>` с описанием пакетов в `build/packages/packages.json` (media, maps, editor), общий шаблон `templates/common/` и свои `templates/<имя>/` (package.json, vite.config, README на русском); `src/kitLocale.ts` для строк интерфейса через публичный `useLocale()`; границы пакетов в `build/tests/packageBoundaries.spec.ts` (имена из публичных входов кита, внешние импорты в peerDependencies, `three` только в `/map3d`, прогон `extract.mjs`); недостающие имена добавлены в публичные экспорты кита. Проверено: извлечение, `npm install` с `.tgz` кита, `npm run build` (vite и vue-tsc), `npm pack`, сборка и Chromium-проверка тестового приложения. Найдено вне задачи: `strictExecutionOrder` ломает `vite build` приложений (FOLLOW_UPS, «Задача w13-packages»). Репозитории и публикацию делает владелец.
