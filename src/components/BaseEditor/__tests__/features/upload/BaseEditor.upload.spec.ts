@@ -32,9 +32,9 @@ function transferEvent(inputType: string, files: File[]): InputEvent {
 	return event
 }
 
-async function pickFile(accept: string, file: File | null): Promise<void> {
+async function pickFile(accept: string, file: File | File[] | null): Promise<void> {
 	const input = document.querySelector<HTMLInputElement>(`input[type="file"][accept="${accept}"]`) as HTMLInputElement
-	Object.defineProperty(input, 'files', { value: file ? [file] : [], configurable: true })
+	Object.defineProperty(input, 'files', { value: file ? [file].flat() : [], configurable: true })
 	await fireEvent.change(input)
 }
 
@@ -276,6 +276,35 @@ describe('BaseEditor: загрузка медиа (uploadMedia)', () => {
 		calls[1].reject(new Error('x'))
 		await waitFor(() => expect(wrapper.emitted('upload-error')).toHaveLength(1))
 		expect(screen.getByRole('alert')).toHaveTextContent('g.png')
+	})
+
+	it('с uploadMedia кнопки принимают несколько файлов: каждый грузится отдельно, заглушки идут по порядку выбора', async () => {
+		const { calls, textbox, uploadMedia } = setup()
+		const imageInput = document.querySelector<HTMLInputElement>('input[type="file"][accept="image/*"]')
+		const videoInput = document.querySelector<HTMLInputElement>('input[type="file"][accept="video/*"]')
+		expect(imageInput?.multiple).toBe(true)
+		expect(videoInput?.multiple).toBe(true)
+
+		await pickFile('image/*', [png('a.png'), png('b.png')])
+
+		expect(uploadMedia).toHaveBeenCalledTimes(2)
+		expect(calls.map(call => call.file.name)).toEqual(['a.png', 'b.png'])
+		expect(textbox.querySelectorAll('[data-editor-upload]')).toHaveLength(2)
+
+		calls[1].resolve('https://cdn.example.com/b.png')
+		calls[0].resolve('https://cdn.example.com/a.png')
+		await waitFor(() => expect(textbox.querySelectorAll('img')).toHaveLength(2))
+		expect(Array.from(textbox.querySelectorAll('img'), image => image.getAttribute('src'))).toEqual([
+			'https://cdn.example.com/a.png',
+			'https://cdn.example.com/b.png',
+		])
+	})
+
+	it('без uploadMedia выбор по-прежнему один файл', () => {
+		render(BaseEditor, { props: { modelValue: '<p>Текст</p>' }, global: { stubs } })
+
+		expect(document.querySelector<HTMLInputElement>('input[type="file"][accept="image/*"]')?.multiple).toBe(false)
+		expect(document.querySelector<HTMLInputElement>('input[type="file"][accept="video/*"]')?.multiple).toBe(false)
 	})
 
 	it('без uploadMedia кнопка вставляет blob:, а вставка файлов не перехватывается', async () => {

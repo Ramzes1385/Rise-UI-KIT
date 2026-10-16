@@ -42,6 +42,8 @@ export interface BaseEditorToolbarProps {
 	isTextColorActive: boolean
 	/** Активен ли цвет фона */
 	isBackgroundColorActive: boolean
+	/** Задан `uploadMedia`: кнопки изображения и видео принимают несколько файлов за один выбор */
+	isMultipleUpload?: boolean
 	/** Изображение или видео выделено целиком: кнопка размера и удаления медиа доступна */
 	isMediaSelected: boolean
 	/** Показывать группу кнопок «Отменить» и «Повторить» */

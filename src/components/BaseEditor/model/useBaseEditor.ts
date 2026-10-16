@@ -283,8 +283,9 @@ function useEditorFocus(
 	}
 }
 
-function uploadState(upload: ReturnType<typeof useEditorUpload>) {
+function uploadState(upload: ReturnType<typeof useEditorUpload>, props: EditorProps) {
 	return {
+		isMultipleUpload: computed(() => Boolean(props.uploadMedia)),
 		handleImageUpload: upload.handleImageUpload,
 		handleVideoUpload: upload.handleVideoUpload,
 		uploadError: upload.error,
@@ -328,7 +329,7 @@ export function useBaseEditor(props: EditorProps, emit: BaseEditorEmits) {
 		menuControlScale: computed(() => props.sizeScale * EDITOR_MENU_SCALE_RATIO),
 		headingOptions: headingOptions(),
 		...engine.toolbar,
-		...uploadState(engine.upload),
+		...uploadState(engine.upload, props),
 		...link,
 		handleCompositionStart: engine.handleCompositionStart,
 		handleCompositionEnd: engine.composition.handleCompositionEnd,

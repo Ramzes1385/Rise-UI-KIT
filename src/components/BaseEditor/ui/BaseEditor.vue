@@ -37,6 +37,7 @@
 				:is-media-selected="Boolean(selectedMedia)"
 				:has-toolbar="hasToolbar"
 				:has-history-buttons="hasHistoryButtons"
+				:is-multiple-upload="isMultipleUpload"
 				:can-undo="history.canUndo.value"
 				:can-redo="history.canRedo.value"
 				:heading-options="headingOptions"
@@ -244,6 +245,7 @@ const {
 	exposed,
 	uploadError,
 	isUploading,
+	isMultipleUpload,
 	toolbarSlotProps,
 	formValue,
 	handleCompositionStart,

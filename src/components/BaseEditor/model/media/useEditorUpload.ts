@@ -49,12 +49,12 @@ function resultHtml(ctx: EditorUploadContext, kind: EditorMediaKind, result: Edi
 	return hasMediaSource(html) ? html : ''
 }
 
-function takeInputFile(event: Event): File | null {
+function takeInputFiles(event: Event): File[] {
 	const input = event.target
-	if (!(input instanceof HTMLInputElement) || !input.files?.length) return null
-	const file = input.files[0]
+	if (!(input instanceof HTMLInputElement) || !input.files?.length) return []
+	const files = Array.from(input.files)
 	input.value = ''
-	return file
+	return files
 }
 
 async function finishUpload(
@@ -118,8 +118,7 @@ export function useEditorUpload(ctx: EditorUploadContext) {
 
 	function handleInputFile(event: Event, kind: EditorMediaKind, fallback: (event: Event) => void): void {
 		if (!ctx.getUpload()) return fallback(event)
-		const file = takeInputFile(event)
-		if (file) launch({ file, kind }, true)
+		takeInputFiles(event).forEach((file, index) => launch({ file, kind }, index === 0))
 	}
 
 	return {
