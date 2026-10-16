@@ -5,7 +5,7 @@ import { useTween } from '@composables/interaction/useTween'
 import { formatMessage, formatNumber } from '@/locales/state'
 import type { BaseSparklineProps } from '../types/BaseSparkline.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
-import { areaPath, barHeight, linePath, nearestIndex, sparklinePoints } from './chart/sparklineGeometry'
+import { areaPath, barHeight, linePath, nearestBarIndex, nearestIndex, sparklinePoints } from './chart/sparklineGeometry'
 
 export function useBaseSparkline(props: BaseSparklineProps) {
 	const height = computed(() => props.height ?? 32)
@@ -14,6 +14,14 @@ export function useBaseSparkline(props: BaseSparklineProps) {
 	const tween = useTween(() => props.values, { target: rootRef })
 	const points = computed(() => sparklinePoints(tween.value.value, { height: height.value, labels: props.labels ?? [] }))
 	const activeIndex = ref<number | null>(null)
+	function indexAt(clientX: number, root: HTMLElement): number {
+		if (props.variant === 'bar') {
+			const bars = Array.from(root.querySelectorAll('.base-sparkline__bar'), bar => bar.getBoundingClientRect())
+			return nearestBarIndex(clientX, bars)
+		}
+		const line = root.querySelector('svg') ?? root
+		return nearestIndex(clientX, line.getBoundingClientRect(), props.values.length)
+	}
 	return {
 		...useStandardBaseComponent('base-sparkline', props, ['root']),
 		ui: useUi(props, 'base-sparkline'),
@@ -37,8 +45,7 @@ export function useBaseSparkline(props: BaseSparklineProps) {
 			})
 		}),
 		handlePointerMove(event: PointerEvent): void {
-			const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
-			activeIndex.value = props.values.length ? nearestIndex(event.clientX, rect, props.values.length) : null
+			activeIndex.value = props.values.length ? indexAt(event.clientX, event.currentTarget as HTMLElement) : null
 		},
 		handlePointerLeave(): void {
 			activeIndex.value = null

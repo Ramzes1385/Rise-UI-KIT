@@ -3,7 +3,7 @@ import { createUiKitPlugin } from '@/plugin'
 import { makeMap, renderEditor } from './utils/editorTestUtils'
 import { IMAGE_MAP_EDITOR_PARTS } from '../types/BaseImageMapEditor.types'
 
-const PARTS = IMAGE_MAP_EDITOR_PARTS.filter(part => part !== 'empty')
+const PARTS = IMAGE_MAP_EDITOR_PARTS.filter(part => part !== 'empty' && part !== 'toggle')
 
 describe('BaseImageMapEditor: проп ui', () => {
 	it('классы частей добавляются к БЭМ-классам кита, customClass и модификаторы сохраняются', () => {

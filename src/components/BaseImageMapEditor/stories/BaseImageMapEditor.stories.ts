@@ -20,6 +20,7 @@ export default meta
 export const Default = cases.Default
 export const Variants = cases.Variants
 export const Theming = cases.Theming
+export const Narrow = cases.Narrow
 export const Disabled = cases.Disabled
 export const WithError = cases.WithError
 export const Empty = cases.Empty

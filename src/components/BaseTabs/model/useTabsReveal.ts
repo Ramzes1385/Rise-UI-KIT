@@ -1,4 +1,5 @@
 import type { Ref } from 'vue'
+import { isRtl } from './tabsDirection'
 import { nextTick, onMounted, watch } from 'vue'
 import { useReducedMotion } from '@composables/app/useReducedMotion'
 
@@ -9,6 +10,11 @@ function revealTarget(list: HTMLElement, tab: HTMLElement): number | null {
 	return start - (list.clientWidth - tab.offsetWidth) / 2
 }
 
+function clampScroll(list: HTMLElement, left: number): number {
+	if (!isRtl(list)) return Math.max(left, 0)
+	return Math.min(Math.max(left, list.clientWidth - list.scrollWidth), 0)
+}
+
 export function useTabsReveal(listRef: Ref<HTMLElement | null>, selectedIndex: Ref<number>): void {
 	const isReducedMotion = useReducedMotion()
 
@@ -17,7 +23,7 @@ export function useTabsReveal(listRef: Ref<HTMLElement | null>, selectedIndex: R
 		const tab = list?.querySelectorAll<HTMLElement>('[role="tab"]')[selectedIndex.value]
 		if (!list || !tab || list.scrollWidth <= list.clientWidth) return
 		const left = revealTarget(list, tab)
-		if (left !== null) list.scrollTo({ left: Math.max(left, 0), behavior })
+		if (left !== null) list.scrollTo({ left: clampScroll(list, left), behavior })
 	}
 
 	onMounted(() => reveal('auto'))

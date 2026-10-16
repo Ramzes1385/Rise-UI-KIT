@@ -52,7 +52,15 @@ export function useEditorZoom(getLayer: () => ImageMapLayer | undefined) {
 	}
 }
 
-export function toolOptions() {
+const TOOL_ICONS: Record<ImageMapEditorTool, string> = {
+	select: 'tool-select',
+	point: 'tool-point',
+	rect: 'tool-rect',
+	ellipse: 'tool-ellipse',
+	polygon: 'tool-polygon',
+}
+
+export function toolOptions(isNarrow = false) {
 	const labels: Record<ImageMapEditorTool, string> = {
 		select: UI_IMAGE_MAP_EDITOR.TOOL_SELECT,
 		point: UI_IMAGE_MAP_EDITOR.TOOL_POINT,
@@ -60,7 +68,7 @@ export function toolOptions() {
 		ellipse: UI_IMAGE_MAP_EDITOR.TOOL_ELLIPSE,
 		polygon: UI_IMAGE_MAP_EDITOR.TOOL_POLYGON,
 	}
-	return IMAGE_MAP_EDITOR_TOOLS.map(tool => ({ value: tool, label: labels[tool] }))
+	return IMAGE_MAP_EDITOR_TOOLS.map(tool => ({ value: tool, label: labels[tool], icon: isNarrow ? TOOL_ICONS[tool] : undefined }))
 }
 
 export function canvasHelp(props: ImageMapEditorProps, tool: ImageMapEditorTool): string {

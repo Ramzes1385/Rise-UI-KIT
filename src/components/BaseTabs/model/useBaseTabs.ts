@@ -1,4 +1,5 @@
 import type { Ref } from 'vue'
+import { isRtl } from './tabsDirection'
 import { useTabsReveal } from './useTabsReveal'
 import { useUi } from '@composables/base/useUi'
 import { toHTMLElement } from '@utils/dom/domUtils'
@@ -21,19 +22,16 @@ function findEnabledIndex(items: BaseTabsProps['items'], start: number, step: 1 
 	return -1
 }
 
-function resolveKeyTarget(items: BaseTabsProps['items'], key: string, currentIndex: number): number | null {
-	switch (key) {
-		case 'ArrowRight':
-			return findEnabledIndex(items, currentIndex, 1)
-		case 'ArrowLeft':
-			return findEnabledIndex(items, currentIndex, -1)
-		case 'Home':
-			return findEnabledIndex(items, -1, 1)
-		case 'End':
-			return findEnabledIndex(items, items.length, -1)
-		default:
-			return null
-	}
+const ARROW_STEPS: Record<'ltr' | 'rtl', Partial<Record<string, 1 | -1>>> = {
+	ltr: { ArrowRight: 1, ArrowLeft: -1 },
+	rtl: { ArrowRight: -1, ArrowLeft: 1 },
+}
+
+function resolveKeyTarget(items: BaseTabsProps['items'], key: string, current: { index: number; isReversed: boolean }): number | null {
+	if (key === 'Home') return findEnabledIndex(items, -1, 1)
+	if (key === 'End') return findEnabledIndex(items, items.length, -1)
+	const step = ARROW_STEPS[current.isReversed ? 'rtl' : 'ltr'][key]
+	return step ? findEnabledIndex(items, current.index, step) : null
 }
 
 function tabsAround(list: HTMLElement | null, target: EventTarget | null): { tabs: HTMLElement[]; index: number } {
@@ -47,7 +45,7 @@ function createListKeydown(props: BaseTabsProps, listRef: Ref<HTMLElement | null
 		if (event.altKey || event.ctrlKey || event.metaKey) return
 		const { tabs, index } = tabsAround(listRef.value, event.target)
 		if (index === -1) return
-		const targetIndex = resolveKeyTarget(props.items, event.key, index)
+		const targetIndex = resolveKeyTarget(props.items, event.key, { index, isReversed: isRtl(listRef.value) })
 		if (targetIndex === null || targetIndex === -1) return
 		event.preventDefault()
 		tabs[targetIndex].focus()
@@ -59,13 +57,21 @@ function createListKeydown(props: BaseTabsProps, listRef: Ref<HTMLElement | null
 function useScrollButtons(props: BaseTabsProps, listRef: Ref<HTMLElement | null>) {
 	const canScrollLeft = ref(false)
 	const canScrollRight = ref(false)
+	const canScrollStart = ref(false)
+	const canScrollEnd = ref(false)
 	let resizeObserver: ResizeObserver | null = null
 
 	const updateScrollState = (): void => {
 		const el = listRef.value
 		if (!el) return
-		canScrollLeft.value = el.scrollLeft > 0
-		canScrollRight.value = el.scrollLeft + el.clientWidth < el.scrollWidth - 1
+		const offset = Math.abs(el.scrollLeft)
+		const hasStartHidden = offset > 0
+		const hasEndHidden = offset + el.clientWidth < el.scrollWidth - 1
+		const isReversed = isRtl(el)
+		canScrollStart.value = hasStartHidden
+		canScrollEnd.value = hasEndHidden
+		canScrollLeft.value = isReversed ? hasEndHidden : hasStartHidden
+		canScrollRight.value = isReversed ? hasStartHidden : hasEndHidden
 	}
 	const setupObserver = (): void => {
 		resizeObserver?.disconnect()
@@ -91,8 +97,8 @@ function useScrollButtons(props: BaseTabsProps, listRef: Ref<HTMLElement | null>
 	return {
 		canScrollLeft,
 		canScrollRight,
-		isFadeStart: computed(() => !props.isScrollable && canScrollLeft.value),
-		isFadeEnd: computed(() => !props.isScrollable && canScrollRight.value),
+		isFadeStart: computed(() => !props.isScrollable && canScrollStart.value),
+		isFadeEnd: computed(() => !props.isScrollable && canScrollEnd.value),
 		handleListScroll: (): void => updateScrollState(),
 		handleScrollLeft: (): void => scrollByPage(-1),
 		handleScrollRight: (): void => scrollByPage(1),

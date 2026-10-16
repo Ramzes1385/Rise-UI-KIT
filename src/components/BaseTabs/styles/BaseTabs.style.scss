@@ -68,6 +68,18 @@
 		--tabs-fade-end: #{sz(24px)};
 	}
 
+	[dir='rtl'] &--fade-start &__list,
+	[dir='rtl'] &--fade-end &__list,
+	&[dir='rtl'].base-tabs--fade-start &__list,
+	&[dir='rtl'].base-tabs--fade-end &__list {
+		mask-image: linear-gradient(to left, transparent, #000 var(--tabs-fade-start), #000 calc(100% - var(--tabs-fade-end)), transparent);
+	}
+
+	[dir='rtl'] &__nav,
+	&[dir='rtl'] &__nav {
+		flex-direction: row-reverse;
+	}
+
 	&__indicator {
 		@include sliding-indicator('&--instant');
 	}

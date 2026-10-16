@@ -64,6 +64,14 @@
 		}
 	}
 
+	&__segment--icon-only {
+		padding-inline: sz(8px);
+	}
+
+	&__text--hidden {
+		@include visually-hidden;
+	}
+
 	&__indicator {
 		@include sliding-indicator;
 		box-sizing: border-box;

@@ -1,5 +1,6 @@
 <template>
 	<section
+		ref="rootRef"
 		:class="[
 			ui('root'),
 			variantClass,
@@ -15,6 +16,7 @@
 				:options="toolOptions"
 				:aria-label="UI_IMAGE_MAP_EDITOR.TOOLS"
 				:ui="{ track: 'base-image-map-editor__tools' }"
+				:is-icon-only="isNarrow"
 				:is-disabled="isDisabled || isPreview || !currentLayer"
 				@update:model-value="tool.setTool($event as ImageMapEditorTool)" />
 			<div :class="ui('group')" role="group" :aria-label="UI_IMAGE_MAP_EDITOR.HISTORY">
@@ -57,25 +59,31 @@
 				{{ UI_IMAGE_MAP_EDITOR.FINISH_POLYGON }}
 			</BaseButton>
 			<div :class="ui('group')" role="group" :aria-label="UI_IMAGE_MAP_EDITOR.FILES">
-				<BaseButton variant="ghost" :is-disabled="isDisabled" @click="files.openBackground('replace')">
-					<template #left><BaseIcon name="image" /></template>
-					{{ currentLayer ? UI_IMAGE_MAP_EDITOR.REPLACE_IMAGE : UI_IMAGE_MAP_EDITOR.OPEN_IMAGE }}
-				</BaseButton>
-				<BaseButton
-					v-if="currentLayer?.svg || currentLayer?.svgUrl"
-					variant="ghost"
+				<ImageMapEditorFileButton
+					:label="currentLayer ? UI_IMAGE_MAP_EDITOR.REPLACE_IMAGE : UI_IMAGE_MAP_EDITOR.OPEN_IMAGE"
+					icon="image"
+					:is-narrow="isNarrow"
 					:is-disabled="isDisabled"
-					@click="files.importSvgObjects">
-					{{ UI_IMAGE_MAP_EDITOR.IMPORT_SVG }}
-				</BaseButton>
-				<BaseButton variant="ghost" :is-disabled="isDisabled" @click="files.openJson">
-					<template #left><BaseIcon name="upload" /></template>
-					{{ UI_IMAGE_MAP_EDITOR.IMPORT_JSON }}
-				</BaseButton>
-				<BaseButton variant="ghost" @click="files.exportFile">
-					<template #left><BaseIcon name="download" /></template>
-					{{ UI_IMAGE_MAP_EDITOR.EXPORT_JSON }}
-				</BaseButton>
+					@click="files.openBackground('replace')" />
+				<ImageMapEditorFileButton
+					v-if="currentLayer?.svg || currentLayer?.svgUrl"
+					:label="UI_IMAGE_MAP_EDITOR.IMPORT_SVG"
+					icon="file-svg"
+					:has-wide-icon="false"
+					:is-narrow="isNarrow"
+					:is-disabled="isDisabled"
+					@click="files.importSvgObjects" />
+				<ImageMapEditorFileButton
+					:label="UI_IMAGE_MAP_EDITOR.IMPORT_JSON"
+					icon="upload"
+					:is-narrow="isNarrow"
+					:is-disabled="isDisabled"
+					@click="files.openJson" />
+				<ImageMapEditorFileButton
+					:label="UI_IMAGE_MAP_EDITOR.EXPORT_JSON"
+					icon="download"
+					:is-narrow="isNarrow"
+					@click="files.exportFile" />
 			</div>
 			<div :class="ui('group')" role="group" :aria-label="UI_IMAGE_MAP_EDITOR.ZOOM">
 				<BaseButton
@@ -220,6 +228,7 @@
 				:selected="selected"
 				:objects="canvas.objects.value"
 				:panel="panel"
+				:sections="sections"
 				:is-disabled="isDisabled"
 				:panel-class="classes.panel"
 				:ui="ui"
@@ -265,6 +274,7 @@ import { BaseImageMap } from '@components/BaseImageMap'
 import { BaseSegmented } from '@components/BaseSegmented'
 import ImageMapEditorPanel from './ImageMapEditorPanel.vue'
 import { kitDefaults } from '@composables/base/useDefaults'
+import ImageMapEditorFileButton from './ImageMapEditorFileButton.vue'
 import { useBaseImageMapEditor } from '../model/useBaseImageMapEditor'
 import { UI_ARIA, UI_IMAGE_MAP, UI_IMAGE_MAP_EDITOR } from '@/locales/messages'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
@@ -302,6 +312,9 @@ const {
 	variantStyle,
 	customColorStyle,
 	classes,
+	rootRef,
+	isNarrow,
+	sections,
 	stageRef,
 	svgContainerRef,
 	backgroundInputRef,

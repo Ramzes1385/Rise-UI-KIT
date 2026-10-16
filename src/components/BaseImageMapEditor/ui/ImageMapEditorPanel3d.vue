@@ -1,6 +1,5 @@
 <template>
-	<section :class="ui('section')">
-		<h3 :class="ui('heading')">{{ UI_IMAGE_MAP_EDITOR.SECTION_3D }}</h3>
+	<ImageMapEditorSection id="scene3d" :title="UI_IMAGE_MAP_EDITOR.SECTION_3D" :sections="sections" :ui="ui">
 		<fieldset v-if="panel.layer3dFields.value.length" :class="ui('fieldset')">
 			<legend :class="ui('legend')">
 				{{ formatMessage(UI_IMAGE_MAP_EDITOR.LAYER_3D, { title: layerTitle ?? '' }) }}
@@ -32,7 +31,7 @@
 				:is-disabled="isDisabled"
 				@update="panel.setScene3dField(field.key, $event)" />
 		</fieldset>
-	</section>
+	</ImageMapEditorSection>
 </template>
 
 <script setup lang="ts">
@@ -40,6 +39,7 @@ import { formatMessage } from '@/locales/state'
 import { UI_IMAGE_MAP_EDITOR } from '@/locales/messages'
 import ImageMapEditorRows from './ImageMapEditorRows.vue'
 import ImageMapEditorField from './ImageMapEditorField.vue'
+import ImageMapEditorSection from './ImageMapEditorSection.vue'
 import type { ImageMapEditorPanel3dProps } from '../types/ImageMapEditorPanel.types'
 
 defineProps<ImageMapEditorPanel3dProps>()

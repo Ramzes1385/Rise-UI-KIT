@@ -33,3 +33,16 @@ export function nearestIndex(clientX: number, rect: { left: number; width: numbe
 	const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width))
 	return Math.round(ratio * (count - 1))
 }
+
+export function nearestBarIndex(clientX: number, bars: readonly { left: number; width: number }[]): number {
+	let nearest = 0
+	let distance = Infinity
+	bars.forEach((bar, index) => {
+		const gap = Math.abs(clientX - (bar.left + bar.width / 2))
+		if (gap < distance) {
+			nearest = index
+			distance = gap
+		}
+	})
+	return nearest
+}

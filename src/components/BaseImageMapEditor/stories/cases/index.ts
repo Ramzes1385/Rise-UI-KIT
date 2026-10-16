@@ -1,6 +1,7 @@
 export { Default } from './Default'
 export { Variants } from './appearance/Variants'
 export { Theming } from './appearance/Theming'
+export { Narrow } from './appearance/Narrow'
 export { Disabled } from './states/Disabled'
 export { WithError } from './states/WithError'
 export { Empty } from './states/Empty'

@@ -27,7 +27,8 @@ export type ImageMapEditorTool = (typeof IMAGE_MAP_EDITOR_TOOLS)[number]
  * toolbar — панель инструментов, group — группа кнопок, layout — холст и панель, main — колонка холста,
  * viewport — область прокрутки холста, stage — холст, empty — пустое состояние, help — подсказка под холстом,
  * error — текст ошибки, panel — панель свойств, section — раздел панели, heading — заголовок раздела,
- * list — список объектов или этажей, item — строка списка, fieldset — группа полей, legend — подпись группы полей.
+ * toggle — кнопка-раскрыватель заголовка раздела (только на узкой раскладке), list — список объектов или этажей,
+ * item — строка списка, fieldset — группа полей, legend — подпись группы полей.
  */
 export const IMAGE_MAP_EDITOR_PARTS = [
 	'toolbar',
@@ -42,6 +43,7 @@ export const IMAGE_MAP_EDITOR_PARTS = [
 	'panel',
 	'section',
 	'heading',
+	'toggle',
 	'list',
 	'item',
 	'fieldset',

@@ -1,4 +1,4 @@
-import type { UiProp } from '@composables/base/useUi'
+import type { UiClassFn, UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /**
@@ -46,6 +46,11 @@ export interface BaseSegmentedProps extends BaseComponentProps<
 	isDisabled?: boolean
 	/** Во всю ширину: сегменты делят её поровну */
 	isBlock?: boolean
+	/**
+	 * Только иконки: подпись сегмента с иконкой скрыта визуально, но остаётся его доступным именем, а при наведении
+	 * и фокусе показывается подсказкой (BaseTooltip). Сегмент без иконки остаётся с видимой подписью.
+	 */
+	isIconOnly?: boolean
 	/** Текст ошибки под группой */
 	error?: string
 	/**
@@ -63,4 +68,30 @@ export interface BaseSegmentedEmits {
 	(event: 'update:modelValue', value: string | number): void
 	/** То же после действия пользователя */
 	(event: 'change', value: string | number): void
+}
+
+/** Пропсы сегмента (внутренний компонент) */
+export interface SegmentedItemProps {
+	/** Сегмент */
+	option: SegmentedOption
+	/** Сегмент выбран */
+	isChecked: boolean
+	/** Сегмент отключён */
+	isDisabled: boolean
+	/** Подпись скрыта: у сегмента есть иконка и включён `isIconOnly` */
+	isIconOnly: boolean
+	/** Имя нативных radio группы */
+	name: string
+	/** Классы частей (проп `ui`) */
+	ui: UiClassFn<BaseSegmentedPart>
+	/** Класс сегмента из `customClass.segment` */
+	customClass?: string
+	/** Масштаб размера в процентах */
+	sizeScale: number
+}
+
+/** События сегмента (внутренний компонент) */
+export interface SegmentedItemEmits {
+	/** Сегмент выбран */
+	(event: 'select', value: string | number): void
 }

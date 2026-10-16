@@ -4,6 +4,18 @@ import BaseSparkline from '../ui/BaseSparkline.vue'
 import { fireEvent, render, screen } from '@testing-library/vue'
 
 const rect = { left: 0, width: 200, top: 0, height: 32, right: 200, bottom: 32, x: 0, y: 0 } as DOMRect
+const lineRect = { ...rect, left: 4, width: 192, x: 4, right: 196 } as DOMRect
+
+function mockGeometry(): void {
+	vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (this: Element) {
+		if (this instanceof SVGElement) return lineRect
+		if (this.classList.contains('base-sparkline__bar')) {
+			const index = [...(this.parentElement?.children ?? [])].indexOf(this)
+			return { ...rect, left: index * 24, width: 20 } as DOMRect
+		}
+		return rect
+	})
+}
 
 describe('BaseSparkline', () => {
 	afterEach(() => {
@@ -22,7 +34,7 @@ describe('BaseSparkline', () => {
 	})
 
 	it('наведение: ближайшее значение и подпись; уход — подсказка пропадает', async () => {
-		vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue(rect)
+		mockGeometry()
 		const { container } = render(BaseSparkline, {
 			props: {
 				values: [3, 9, 5],
@@ -44,7 +56,7 @@ describe('BaseSparkline', () => {
 	})
 
 	it('столбики, пустой набор, один столбик и свой цвет', async () => {
-		vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue(rect)
+		mockGeometry()
 		const { container, rerender } = render(BaseSparkline, {
 			props: { values: [2, -4, 0], label: 'Баланс', variant: 'bar', markColor: 'rgb(1, 2, 3)', height: 40, sizeScale: 125 },
 		})
@@ -60,5 +72,36 @@ describe('BaseSparkline', () => {
 		expect(container.querySelector('.base-sparkline__tooltip')).toBeNull()
 		await rerender({ values: [7], variant: 'line' })
 		expect(container.querySelector('.base-sparkline__line')).toHaveAttribute('d', 'M50.00 20.00')
+	})
+
+	it('наведение считает по геометрии линии, а не корня: отступ 4 px на краях не сдвигает ближайшую точку', async () => {
+		mockGeometry()
+		const { container } = render(BaseSparkline, {
+			props: { values: [1, 2, 3, 4, 5], labels: ['a', 'b', 'c', 'd', 'e'], label: 'Ряд' },
+		})
+		const root = container.querySelector('.base-sparkline') as HTMLElement
+		const tooltip = (): string => container.querySelector('.base-sparkline__tooltip')?.textContent ?? ''
+
+		await fireEvent.pointerMove(root, { clientX: 26 })
+		expect(tooltip()).toContain('a')
+		await fireEvent.pointerMove(root, { clientX: 30 })
+		expect(tooltip()).toContain('b')
+		await fireEvent.pointerMove(root, { clientX: 1 })
+		expect(tooltip()).toContain('a')
+		await fireEvent.pointerMove(root, { clientX: 199 })
+		expect(tooltip()).toContain('e')
+	})
+
+	it('столбики: ближайший столбик по их реальному положению, а не по доле ширины корня', async () => {
+		mockGeometry()
+		const { container } = render(BaseSparkline, { props: { values: [2, 4, 6], label: 'Баланс', variant: 'bar' } })
+		const bars = container.querySelectorAll('.base-sparkline__bar')
+		const root = container.querySelector('.base-sparkline') as HTMLElement
+
+		await fireEvent.pointerMove(root, { clientX: 150 })
+		expect(bars[2]).toHaveClass('base-sparkline__bar--active')
+		await fireEvent.pointerMove(root, { clientX: 30 })
+		expect(bars[1]).toHaveClass('base-sparkline__bar--active')
+		expect(bars[2]).not.toHaveClass('base-sparkline__bar--active')
 	})
 })

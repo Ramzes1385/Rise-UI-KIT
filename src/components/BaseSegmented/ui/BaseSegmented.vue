@@ -5,6 +5,7 @@
 			variantClass,
 			{
 				'base-segmented--block': isBlock,
+				'base-segmented--icon-only': isIconOnly,
 				'base-segmented--disabled': isControlDisabled,
 				'base-segmented--error': control.hasError.value,
 			},
@@ -34,29 +35,31 @@
 					},
 				]"
 				aria-hidden="true"></span>
-			<label
-				v-for="option in options"
-				:key="option.value"
-				data-indicator-item
-				:class="[
-					ui('segment'),
-					{
-						'base-segmented__segment--checked': option.value === modelValue,
-						'base-segmented__segment--disabled': isControlDisabled || option.isDisabled,
-					},
-					classes.segment,
-				]">
-				<input
-					type="radio"
-					:class="ui('input')"
+			<template v-for="option in options" :key="option.value">
+				<BaseTooltip v-if="isIconOnly && option.icon" is-wrapperless :text="option.label" :size-scale="sizeScale">
+					<SegmentedItem
+						:option="option"
+						:is-checked="option.value === modelValue"
+						:is-disabled="isControlDisabled || Boolean(option.isDisabled)"
+						is-icon-only
+						:name="radioName"
+						:ui="ui"
+						:custom-class="classes.segment"
+						:size-scale="sizeScale"
+						@select="select" />
+				</BaseTooltip>
+				<SegmentedItem
+					v-else
+					:option="option"
+					:is-checked="option.value === modelValue"
+					:is-disabled="isControlDisabled || Boolean(option.isDisabled)"
+					:is-icon-only="false"
 					:name="radioName"
-					:value="option.value"
-					:checked="option.value === modelValue"
-					:disabled="isControlDisabled || option.isDisabled"
-					@change="select(option.value)" />
-				<BaseIcon v-if="option.icon" :name="option.icon" :class="ui('icon')" :size-scale="calcIconScale('sm', sizeScale)" />
-				<span :class="ui('text')">{{ option.label }}</span>
-			</label>
+					:ui="ui"
+					:custom-class="classes.segment"
+					:size-scale="sizeScale"
+					@select="select" />
+			</template>
 		</div>
 		<FormFieldError
 			:id="errorId"
@@ -69,8 +72,8 @@
 
 <script setup lang="ts">
 import '../styles/BaseSegmented.style.scss'
-import { BaseIcon } from '@components/BaseIcon'
-import { calcIconScale } from '@utils/media/iconUtils'
+import SegmentedItem from './SegmentedItem.vue'
+import { BaseTooltip } from '@components/BaseTooltip'
 import { kitDefaults } from '@composables/base/useDefaults'
 import { useBaseSegmented } from '../model/useBaseSegmented'
 import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
@@ -84,6 +87,7 @@ const props = withDefaults(
 		modelValue: null,
 		isDisabled: false,
 		isBlock: false,
+		isIconOnly: false,
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )

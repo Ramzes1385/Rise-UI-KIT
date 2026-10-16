@@ -5,8 +5,10 @@ import { useEditorTool } from './canvas/useEditorTool'
 import { useEditorPanel } from './panel/useEditorPanel'
 import { UI_IMAGE_MAP_EDITOR } from '@/locales/messages'
 import { useEditorCanvas } from './canvas/useEditorCanvas'
+import { useEditorNarrow } from './layout/useEditorNarrow'
 import { useEditorPointer } from './canvas/useEditorPointer'
 import { useEditorKeyboard } from './canvas/useEditorKeyboard'
+import { useEditorSections } from './layout/useEditorSections'
 import { useEditorDocument } from './document/useEditorDocument'
 import { useEditorSelection } from './document/useEditorSelection'
 import type { EditorContext } from '../types/imageMapEditorInternal.types'
@@ -74,15 +76,27 @@ function useParts(props: ImageMapEditorProps, core: ReturnType<typeof useCore>) 
 	}
 }
 
+function useLayout(selection: ReturnType<typeof useCore>['selection']) {
+	const rootRef = ref<HTMLElement | null>(null)
+	const narrow = useEditorNarrow(rootRef)
+	const sections = useEditorSections(narrow, {
+		hasLayer: () => Boolean(selection.currentLayer.value),
+		hasSelection: () => Boolean(selection.selected.value),
+	})
+	return { rootRef, isNarrow: narrow.isNarrow, sections }
+}
+
 export function useBaseImageMapEditor(props: ImageMapEditorProps, emit: BaseImageMapEditorEmits) {
 	const core = useCore(props, emit)
 	const { doc, selection, tool, announcer } = core
 	const parts = useParts(props, core)
+	const layout = useLayout(selection)
 
 	return {
 		...useStandardBaseComponent('base-image-map-editor', props, CLASS_KEYS),
 		ui: useUi(props, 'base-image-map-editor'),
 		...parts,
+		...layout,
 		stageRef: core.stageRef,
 		svgContainerRef: core.svgContainerRef,
 		backgroundInputRef: parts.files.backgroundInputRef,
@@ -101,7 +115,7 @@ export function useBaseImageMapEditor(props: ImageMapEditorProps, emit: BaseImag
 		isPreview: ref(false),
 		helpId: useId(),
 		errorId: useId(),
-		toolOptions: computed(toolOptions),
+		toolOptions: computed(() => toolOptions(layout.isNarrow.value)),
 		help: computed(() => canvasHelp(props, tool.tool.value)),
 		exposed: {
 			undo: parts.commands.undo,

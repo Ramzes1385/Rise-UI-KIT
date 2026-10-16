@@ -1,7 +1,6 @@
 <template>
 	<aside :class="[ui('panel'), panelClass]">
-		<section v-if="currentLayer" :class="ui('section')">
-			<h3 :class="ui('heading')">{{ UI_IMAGE_MAP_EDITOR.OBJECTS }}</h3>
+		<ImageMapEditorSection v-if="currentLayer" id="objects" :title="UI_IMAGE_MAP_EDITOR.OBJECTS" :sections="sections" :ui="ui">
 			<ul v-if="objects.length" :class="ui('list')">
 				<li v-for="object in objects" :key="object.id">
 					<button
@@ -15,10 +14,9 @@
 				</li>
 			</ul>
 			<BaseText v-else tag="p" class="base-image-map-editor__hint">{{ UI_IMAGE_MAP_EDITOR.NO_OBJECTS }}</BaseText>
-		</section>
+		</ImageMapEditorSection>
 
-		<section v-if="currentLayer" :class="ui('section')">
-			<h3 :class="ui('heading')">{{ UI_IMAGE_MAP_EDITOR.PROPERTIES }}</h3>
+		<ImageMapEditorSection v-if="currentLayer" id="properties" :title="UI_IMAGE_MAP_EDITOR.PROPERTIES" :sections="sections" :ui="ui">
 			<BaseText v-if="!selected" tag="p" class="base-image-map-editor__hint">{{ UI_IMAGE_MAP_EDITOR.NOTHING_SELECTED }}</BaseText>
 			<fieldset v-for="section in panel.sections.value" :key="section.id" :class="ui('fieldset')">
 				<legend :class="ui('legend')">{{ section.title }}</legend>
@@ -29,10 +27,9 @@
 					:is-disabled="isDisabled"
 					@update="panel.setField(field.key, $event)" />
 			</fieldset>
-		</section>
+		</ImageMapEditorSection>
 
-		<section :class="ui('section')">
-			<h3 :class="ui('heading')">{{ UI_IMAGE_MAP_EDITOR.LAYERS }}</h3>
+		<ImageMapEditorSection id="layers" :title="UI_IMAGE_MAP_EDITOR.LAYERS" :sections="sections" :ui="ui">
 			<ul v-if="data.layers.length" :class="ui('list')">
 				<li v-for="(layer, index) in data.layers" :key="layer.id" class="base-image-map-editor__row">
 					<button
@@ -82,7 +79,7 @@
 				<template #left><BaseIcon name="plus" /></template>
 				{{ UI_IMAGE_MAP_EDITOR.ADD_LAYER }}
 			</BaseButton>
-		</section>
+		</ImageMapEditorSection>
 
 		<ImageMapEditorPanel3d
 			v-if="panel.scene3dFields.value.length"
@@ -90,10 +87,10 @@
 			:layer-title="currentLayer?.title"
 			:selected="selected"
 			:is-disabled="isDisabled"
+			:sections="sections"
 			:ui="ui" />
 
-		<section :class="ui('section')">
-			<h3 :class="ui('heading')">{{ UI_IMAGE_MAP_EDITOR.FILTERS }}</h3>
+		<ImageMapEditorSection id="filters" :title="UI_IMAGE_MAP_EDITOR.FILTERS" :sections="sections" :ui="ui">
 			<ImageMapEditorRows
 				:rows="panel.filterRows.value"
 				:add-label="UI_IMAGE_MAP_EDITOR.ADD_FILTER"
@@ -105,10 +102,9 @@
 				@update-child="panel.setFilterOption"
 				@add-child="panel.addFilterOption"
 				@remove-child="panel.removeFilterOption" />
-		</section>
+		</ImageMapEditorSection>
 
-		<section :class="ui('section')">
-			<h3 :class="ui('heading')">{{ UI_IMAGE_MAP_EDITOR.STYLES }}</h3>
+		<ImageMapEditorSection id="styles" :title="UI_IMAGE_MAP_EDITOR.STYLES" :sections="sections" :ui="ui">
 			<ImageMapEditorRows
 				:rows="panel.styleRows.value"
 				:add-label="UI_IMAGE_MAP_EDITOR.ADD_STYLE"
@@ -117,10 +113,9 @@
 				@update="panel.setStyleField"
 				@add="panel.addStyle"
 				@remove="panel.removeStyle" />
-		</section>
+		</ImageMapEditorSection>
 
-		<section :class="ui('section')">
-			<h3 :class="ui('heading')">{{ UI_IMAGE_MAP_EDITOR.GROUPS }}</h3>
+		<ImageMapEditorSection id="groups" :title="UI_IMAGE_MAP_EDITOR.GROUPS" :sections="sections" :ui="ui">
 			<fieldset v-for="group in panel.groups.value" :key="group.id" :class="ui('fieldset')">
 				<legend :class="ui('legend')">{{ group.title }}</legend>
 				<ImageMapEditorField
@@ -138,7 +133,7 @@
 				<template #left><BaseIcon name="plus" /></template>
 				{{ UI_IMAGE_MAP_EDITOR.ADD_GROUP }}
 			</BaseButton>
-		</section>
+		</ImageMapEditorSection>
 	</aside>
 </template>
 
@@ -152,6 +147,7 @@ import { typeLabel } from '../model/canvas/useEditorTool'
 import ImageMapEditorRows from './ImageMapEditorRows.vue'
 import ImageMapEditorField from './ImageMapEditorField.vue'
 import ImageMapEditorPanel3d from './ImageMapEditorPanel3d.vue'
+import ImageMapEditorSection from './ImageMapEditorSection.vue'
 import { useImageMapEditorPanel } from '../model/panel/useImageMapEditorPanel'
 import type { ImageMapEditorPanelEmits, ImageMapEditorPanelProps } from '../types/ImageMapEditorPanel.types'
 

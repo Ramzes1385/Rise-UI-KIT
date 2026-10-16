@@ -1,5 +1,6 @@
 import type { UiClassFn } from '@composables/base/useUi'
 import type { useEditorPanel } from '../model/panel/useEditorPanel'
+import type { EditorSectionsApi } from './ImageMapEditorLayout.types'
 import type { BaseImageMapEditorPart } from './BaseImageMapEditor.types'
 import type { ImageMapData, ImageMapLayer, ImageMapObject } from '@components/BaseImageMap/types/imageMapData.types'
 
@@ -25,6 +26,8 @@ export interface ImageMapEditorPanelProps {
 	isDisabled: boolean
 	/** Класс панели из `classes.panel` */
 	panelClass?: string
+	/** Состояние разделов панели: сворачивание на узкой раскладке */
+	sections: EditorSectionsApi
 	/** Классы частей редактора (проп `ui`) */
 	ui: UiClassFn<BaseImageMapEditorPart>
 }
@@ -58,6 +61,8 @@ export interface ImageMapEditorPanel3dProps {
 	selected?: ImageMapObject
 	/** Редактор отключён */
 	isDisabled: boolean
+	/** Состояние разделов панели: сворачивание на узкой раскладке */
+	sections: EditorSectionsApi
 	/** Классы частей редактора (проп `ui`) */
 	ui: UiClassFn<BaseImageMapEditorPart>
 }
