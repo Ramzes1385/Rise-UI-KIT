@@ -5,6 +5,7 @@ import { createEditorApi } from './api/editorExpose'
 import { EDITOR_MENU_SCALE_RATIO } from './editorScale'
 import { useEditorField } from './field/useEditorField'
 import { createEditorInput } from './input/editorInput'
+import { isImeKeydown } from '@utils/dom/keyboardUtils'
 import { useEditorUpload } from './media/useEditorUpload'
 import { stripUploadPlaceholders } from './media/editorUpload'
 import type { BaseSelectOption } from '@components/BaseSelect'
@@ -193,6 +194,11 @@ function useMediaMenu(
 	)
 	return {
 		mediaMenuAnchor: computed(() => ({ x: toolbar.contextMenu.x, y: toolbar.contextMenu.y })),
+		handleMediaSizeEnter(event: KeyboardEvent): void {
+			if (isImeKeydown(event)) return
+			event.preventDefault()
+			toolbar.applyMediaSize()
+		},
 		handleKeyDown(event: KeyboardEvent): void {
 			if (options.composition.isActive || toolbar.history.handleKeyDown(event)) return
 			if (isLinkHotkey(event)) {
@@ -326,11 +332,10 @@ export function useBaseEditor(props: EditorProps, emit: BaseEditorEmits) {
 		...link,
 		handleCompositionStart: engine.handleCompositionStart,
 		handleCompositionEnd: engine.composition.handleCompositionEnd,
-		mediaMenuAnchor: mediaMenu.mediaMenuAnchor,
+		...mediaMenu,
 		...engine.state,
 		handleInput: engine.handleInput,
 		...createClipboardHandlers(editorRef, () => !isLocked.value && engine.toolbar.deleteSelection()),
-		handleKeyDown: mediaMenu.handleKeyDown,
 		...insert,
 		exposed: api.exposed,
 		toolbarSlotProps: api.slotProps,

@@ -1,10 +1,8 @@
 import type { ComputedRef, Ref } from 'vue'
 import { UI_EDITOR } from '@/locales/messages'
-import { getShortcutLetter } from '@utils/dom/keyboardUtils'
 import { computed, nextTick, reactive, ref, watch } from 'vue'
+import { getShortcutLetter, isImeKeydown } from '@utils/dom/keyboardUtils'
 import type { EditorLinkDialogState, EditorToolbar } from '../../types/model/EditorLinkDialog.types'
-
-const IME_KEY_CODE = 229
 
 function createLinkDialogState(): EditorLinkDialogState {
 	return { isVisible: false, x: 0, y: 0, url: '', isNewTab: false, hasLink: false, error: '' }
@@ -28,7 +26,7 @@ function openedDialogState(toolbar: EditorToolbar): EditorLinkDialogState {
 
 function submitOnEnter(event: KeyboardEvent, submit: () => void): void {
 	const { target } = event
-	if (event.isComposing || event.keyCode === IME_KEY_CODE) return
+	if (isImeKeydown(event)) return
 	if (!(target instanceof HTMLInputElement) || target.type === 'checkbox') return
 	event.preventDefault()
 	submit()

@@ -53,6 +53,7 @@ import { BaseBadge } from '@components/BaseBadge'
 import { BaseInput } from '@components/BaseInput'
 import { kitDefaults } from '@composables/base/useDefaults'
 import { useBaseInputTags } from '../model/useBaseInputTags'
+import { INPUT_TAGS_SEPARATORS } from '../types/BaseInputTags.types'
 import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseInputTagsEmits, BaseInputTagsProps } from '../types/BaseInputTags.types'
 
@@ -65,7 +66,7 @@ const props = withDefaults(
 		isReadonly: false,
 		isRequired: false,
 		isUnique: true,
-		separators: () => [','],
+		separators: () => [...INPUT_TAGS_SEPARATORS],
 		isAddOnBlur: true,
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),

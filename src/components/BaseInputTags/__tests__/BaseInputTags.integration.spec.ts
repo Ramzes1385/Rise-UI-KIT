@@ -56,6 +56,25 @@ describe('BaseInputTags integration', () => {
 		expect(model.value).toHaveLength(4)
 	})
 
+	it('китайская запятая «，» и японская «、» завершают тег наравне с «,»; своё значение separators их не включает', async () => {
+		const user = userEvent.setup()
+		const { field, model } = renderModel()
+
+		await user.type(field, '你好，世界、日本語,')
+		expect(model.value).toEqual(['你好', '世界', '日本語'])
+
+		await user.paste('Vue，Vite、Nuxt')
+		expect(model.value).toEqual(['你好', '世界', '日本語', 'Vue', 'Vite', 'Nuxt'])
+	})
+
+	it('со своим separators китайская запятая — обычный знак тега', async () => {
+		const user = userEvent.setup()
+		const { field, model } = renderModel([], { separators: [';'] })
+
+		await user.type(field, '你好，世界;')
+		expect(model.value).toEqual(['你好，世界'])
+	})
+
 	it('validate отклоняет тег — текст остаётся в поле; maxTags ограничивает', async () => {
 		const user = userEvent.setup()
 		const validate = (tag: string) => tag.includes('@')

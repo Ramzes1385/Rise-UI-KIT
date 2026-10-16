@@ -139,7 +139,7 @@
 			:ui="{ inner: ui('context-menu') }"
 			@close="closeContextMenu">
 			<div ref="contextMenuRef" class="base-editor__context-menu-body">
-				<div class="base-editor__context-menu-row" @keydown.enter.prevent="applyMediaSize">
+				<div class="base-editor__context-menu-row" @keydown.enter="handleMediaSizeEnter">
 					<BaseInput
 						:model-value="contextMenu.width"
 						type="number"
@@ -281,6 +281,7 @@ const {
 	handleCodeInput,
 	handleContextMenu,
 	applyMediaSize,
+	handleMediaSizeEnter,
 	removeMedia,
 	saveSelection,
 	handleKeyDown,

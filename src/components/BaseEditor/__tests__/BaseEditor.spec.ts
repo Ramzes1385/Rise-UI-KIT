@@ -479,6 +479,24 @@ describe('BaseEditor unit', () => {
 			expect(content).toHaveFocus()
 		})
 
+		it.each([
+			['Chrome и Firefox: isComposing', { isComposing: true }],
+			['Safari: compositionend раньше keydown, keyCode 229', { keyCode: 229 }],
+		])('%s: Enter подтверждает слово IME и размер не применяет', async (_name, init) => {
+			const { width, image } = await openMediaMenu()
+
+			await fireEvent.update(width, '240')
+			const confirm = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true, ...init })
+			width.dispatchEvent(confirm)
+
+			expect(confirm.defaultPrevented).toBe(false)
+			expect(image.style.width).toBe('')
+			expect(screen.getByRole('dialog', { name: 'Размер медиа' })).toBeInTheDocument()
+
+			await fireEvent.keyDown(width, { key: 'Enter', keyCode: 13 })
+			expect(image.style.width).toBe('240px')
+		})
+
 		it('«Удалить» убирает медиа из текста и возвращает фокус в текст', async () => {
 			const { menu, content } = await openMediaMenu()
 

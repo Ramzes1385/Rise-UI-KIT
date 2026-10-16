@@ -101,8 +101,19 @@ describe('parseDateRangeText', () => {
 		['２０２６／１０／０１　〜　２０２６／１０／０５', ZH],
 		['2026-10-01 至 2026-10-05', ZH],
 		['2026年10月1日　～　2026年10月5日', { ...ZH, locale: 'ja-JP' }],
-	])('китайский и японский ввод «%s»: иероглифы дат, полная ширина, ～ и 至', (text, options) => {
+		['2026/10/01から2026/10/05', { ...ZH, locale: 'ja-JP' }],
+		['2026年10月1日 から 2026年10月5日', { ...ZH, locale: 'ja-JP' }],
+		['２０２６／１０／０１　から　２０２６／１０／０５', { ...ZH, locale: 'ja-JP' }],
+	])('китайский и японский ввод «%s»: иероглифы дат, полная ширина, ～, 至 и から', (text, options) => {
 		expect(parseDateRangeText(text, options)).toEqual({ start: new Date(2026, 9, 1), end: new Date(2026, 9, 5) })
+	})
+
+	it('«から» после одной даты — открытый диапазон; без дат и в середине даты не разделитель', () => {
+		const ja = { ...ZH, locale: 'ja-JP' }
+
+		expect(parseDateRangeText('2026/10/01から', ja)).toEqual({ start: new Date(2026, 9, 1), end: null })
+		expect(parseDateRangeText('から', ja)).toBeNull()
+		expect(parseDateRangeText('2026/10/から01', ja)).toBeNull()
 	})
 
 	it('вывод формата языка читается обратно, в том числе «下午» и «午後» в 12-часовом времени', () => {

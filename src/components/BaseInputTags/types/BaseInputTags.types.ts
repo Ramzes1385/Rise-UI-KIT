@@ -15,6 +15,9 @@ export const INPUT_TAGS_VARIANTS = [
 	'underline',
 ] as const satisfies readonly InputVariant[]
 
+/** Разделители по умолчанию: запятая, полноширинная запятая китайского (`，`) и японская `、` */
+export const INPUT_TAGS_SEPARATORS = [',', '，', '、'] as const
+
 /**
  * Части поля тегов для пропа `ui` (БЭМ-элементы `.base-input-tags__<часть>`, `root` — обёртка компонента): list — список
  * тегов, tag — тег, text — текст тега, remove — кнопка удаления, status — скрытое объявление для чтения с экрана.
@@ -43,7 +46,10 @@ export interface BaseInputTagsProps extends BaseComponentProps<InputVariant, 'ro
 	maxTags?: number
 	/** Без повторов (по умолчанию): такой же тег не добавляется */
 	isUnique?: boolean
-	/** Символы, которые завершают тег при вводе и вставке (Enter завершает всегда). По умолчанию — запятая */
+	/**
+	 * Символы, которые завершают тег при вводе и вставке (Enter завершает всегда). По умолчанию — запятая, китайская
+	 * запятая `，` и японская `、`; свой список заменяет умолчание целиком
+	 */
 	separators?: string[]
 	/** Добавлять набранный текст тегом при выходе из поля (по умолчанию да) */
 	isAddOnBlur?: boolean
