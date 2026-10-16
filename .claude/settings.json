@@ -39,9 +39,7 @@
       "Bash(npm run pack:dry)",
       "Bash(npm run ci:validate)",
       "Bash(npm run create:component *)",
-      "Bash(npm install *)",
       "Bash(npm ci *)",
-      "Bash(npm uninstall *)",
       "Bash(npm run format)",
       "Bash(npm run lint:fix)",
       "Edit(/package.json)",
@@ -50,6 +48,8 @@
     ],
     "deny": [],
     "ask": [
+      "Bash(npm install *)",
+      "Bash(npm uninstall *)",
       "Bash(git push *)",
       "Bash(npm publish *)",
       "Bash(npm run release*)",
