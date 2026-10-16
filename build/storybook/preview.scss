@@ -135,9 +135,9 @@ body.sb-show-main,
 
 /**
  * История «Анимации»: кнопка «Повторить» и колонки пресетов движения (`data-rise-motion` на каждой).
- * Колонки подстраиваются под содержимое и ширину экрана: ширина колонки — от ширины компонента
- * (не меньше `--story-motion-min`, не больше строки), лишние колонки переносятся на следующую строку.
- * Компонент шире колонки сжимается до неё (`max-width: 100%`) — широкие компоненты прокручиваются у себя внутри.
+ * Колонки равной ширины: четыре в ряд, когда каждой хватает `--story-motion-min` (по умолчанию 240 px),
+ * иначе две или одна — на телефоне колонка во всю ширину. Компонент тянется и сжимается под колонку
+ * (`max-width: 100%`); компоненту, которому нужно больше места, история задаёт свой `--story-motion-min`.
  */
 .story-motion {
 	display: flex;
@@ -147,21 +147,19 @@ body.sb-show-main,
 	width: 100%;
 
 	&__presets {
-		display: flex;
-		flex-wrap: wrap;
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--story-motion-min, 240px)), 1fr));
 		gap: 12px;
 		width: 100%;
 	}
 
 	&__preset {
 		display: flex;
-		flex: 1 1 auto;
 		flex-direction: column;
 		align-items: flex-start;
 		gap: 8px;
 		box-sizing: border-box;
-		min-width: min(100%, var(--story-motion-min, 200px));
-		max-width: 100%;
+		min-width: 0;
 		padding: 12px;
 		border: 1px dashed var(--rise-border);
 		border-radius: var(--rise-radius-lg);
