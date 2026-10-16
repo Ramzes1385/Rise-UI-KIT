@@ -2089,3 +2089,8 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 
 - BaseEditor, `EditorUpload` и вставка видео: inline-стиль видео (`max-width: 100%; border-radius: 8px`) убран, те же правила задаёт CSS области редактора (`max-width: 100%`, `height: auto`, `border-radius: sz(var(--rise-radius-md))`). Скругление видео было 8 px, стало `--rise-radius-md` (6 px в теме `rise`, следует теме) — как у изображений; ширина и высота не меняются.
 - Истории `data-basekanban--theming`, `chat-basereasoning--theming`, `media-basemap--theming`: перекрашенный фон колонки, блока и карты — `color-mix(in srgb, var(--rise-primary) 18%, var(--rise-bg))` вместо `var(--rise-primary-soft)`. В теме `playful-light` `primary-soft` совпадает с фоном по умолчанию (`rgb(250, 249, 255)`) и сравнение «токены меняют вид» падало. В теме `rise` оттенок слегка другой (светло-акцентный вместо `primary-soft`).
+
+## Задача anim-layout
+
+- Storybook, истории «Анимации» всех компонентов (150): колонки пресетов движения подстраиваются под ширину компонента и экрана. Было: сетка `auto-fill` по 160 px на любом экране, широкие компоненты (BaseKanban, BaseGantt, BaseTable, BaseChat, BaseMediaPlayer, BaseImageMapEditor и др., 47 историй) вылезали за колонку и наезжали на соседние, на 375 px — горизонтальная прокрутка страницы. Стало: колонка не уже `--story-motion-min` (200 px) и не шире строки, лишние переносятся; компонент шире колонки сжимается до неё. Меняются снимки историй `*--animations`; вид самих компонентов не меняется.
+- BaseFab и BaseBackTop, история «Анимации»: кнопка стоит у правого края своей колонки (была у левого края соседней).

@@ -8,7 +8,7 @@ import { BaseAnimation } from '@components/BaseAnimation'
 
 const motion = motionPresetsStory({
 	item: `
-		<div style="position: relative; height: 96px;">
+		<div style="position: relative; align-self: stretch; height: 96px;">
 			<BaseAnimation :key="replay" name="scale">
 				<BaseFab v-bind="args" />
 			</BaseAnimation>

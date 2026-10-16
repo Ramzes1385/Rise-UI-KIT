@@ -613,3 +613,11 @@
 - Не исправлено: `media-basepresentationplayer--animations` (`playful-light`, воспроизводится на базе): axe `color-contrast`, `.base-media-player__time[aria-hidden="true"]` — `#ffffff` на `#fdfdfe` (1.01:1), первый плеер с `data-rise-motion="expressive"`; фон дока под временем в playful-light светлый, текст белый. Нужен разбор токенов дока BaseMediaPlayer в брендовой теме.
 - Не воспроизведено: `form-basemention--default` (`playful-light`): axe `color-contrast` 4.41:1 у `.base-mention__option-value` (`#72707b` на `#f4f3fc`, нужно 4.5:1) один раз за полный прогон, на базе дважды зелёный. Вероятно, пара «приглушённый текст на активной опции» в `playful-light` на грани; проверить `--rise-text-muted` на `--rise-primary-soft`/hover-фоне (`npm run test:contrast`).
 - Решение (aria-busy): `aria-busy` на контейнере `frame` BaseEditor оставлен как есть по решению оркестратора.
+
+## Задача anim-layout
+
+Аудит историй «Анимации» на ширинах 375, 768, 1280 и 1920 px (скрипт оркестратора): 47 из 150 ломали вёрстку, после правки — 0, кроме пункта ниже.
+
+| Что | Откуда | Объём |
+|---|---|---|
+| BaseSubtitleEditor уже ≈320 px: колонка текста реплики сжимается до одного символа, кнопка воспроизведения наезжает на поле — нужна узкая раскладка строки (текст под временем) | Задача anim-layout | S |

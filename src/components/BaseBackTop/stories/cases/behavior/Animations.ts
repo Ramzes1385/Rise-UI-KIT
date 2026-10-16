@@ -7,7 +7,7 @@ import { motionPresetsStory } from '@/stories/helpers'
 
 const motion = motionPresetsStory({
 	item: `
-		<div class="story-frame" style="height: 120px;">
+		<div class="story-frame" style="align-self: stretch; height: 120px;">
 			<BaseBackTop v-bind="args" :visibility-height="isShown ? -1 : Infinity" />
 		</div>
 	`,
