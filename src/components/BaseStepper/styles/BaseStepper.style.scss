@@ -375,7 +375,7 @@
 }
 
 @container (max-width: 480px) {
-	.base-stepper--horizontal::after {
+	.base-stepper--horizontal[data-summary]::after {
 		content: attr(data-summary);
 		content: attr(data-summary) / '';
 		order: 1;

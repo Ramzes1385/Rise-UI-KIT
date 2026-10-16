@@ -12,6 +12,7 @@
 					:items="stepperItems"
 					:is-linear="isLinear"
 					:clickable="isDisabled || isLoading ? 'none' : 'all'"
+					summary="count"
 					:size-scale="sizeScale"
 					@update:model-value="handleStepper" />
 			</div>

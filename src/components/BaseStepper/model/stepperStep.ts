@@ -13,9 +13,10 @@ export function activeStep(props: BaseStepperProps): number {
 
 export function stepSummary(props: BaseStepperProps): string {
 	const step = props.items[activeStep(props) - 1]
-	if (!step) return ''
+	if (!step || props.summary === 'none') return ''
 	const params = { current: activeStep(props), total: props.items.length, title: step.label }
-	return formatMessage(step.label ? UI_STEPPER.PROGRESS_TITLED : UI_STEPPER.PROGRESS, params)
+	const isTitled = props.summary !== 'count' && step.label
+	return formatMessage(isTitled ? UI_STEPPER.PROGRESS_TITLED : UI_STEPPER.PROGRESS, params)
 }
 
 export function useStepRangeWarning(props: BaseStepperProps): void {

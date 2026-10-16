@@ -77,6 +77,15 @@ export const STEPPER_PARTS = [
 
 export type BaseStepperPart = (typeof STEPPER_PARTS)[number]
 
+/**
+ * Подпись текущего шага под лентой в компактном виде (до 480px): `titled` — «Шаг N из M: подпись», `count` — только «Шаг N из M»
+ * (когда заголовок шага рядом уже есть, как у BaseFormWizard), `none` — без подписи. Подпись только для глаз: скринридер
+ * читает шаги списка и `aria-current`, поэтому от режима доступность не меняется
+ */
+export const STEPPER_SUMMARIES = ['titled', 'count', 'none'] as const
+
+export type StepperSummary = (typeof STEPPER_SUMMARIES)[number]
+
 export const STEPPER_ORIENTATIONS = ['horizontal', 'vertical'] as const
 
 export type StepperOrientation = (typeof STEPPER_ORIENTATIONS)[number]
@@ -110,6 +119,8 @@ export interface BaseStepperProps extends BaseComponentProps<
 	orientation?: StepperOrientation
 	/** Форма индикатора */
 	shape?: StepperShape
+	/** Подпись текущего шага под лентой в компактном виде (до 480px), у горизонтального степпера: `titled` (по умолчанию), `count` или `none` */
+	summary?: StepperSummary
 	/**
 	 * Линейный процесс: вперёд — только на следующий шаг после текущего, дальние шаги недоступны до прохождения;
 	 * к пройденным шагам можно вернуться

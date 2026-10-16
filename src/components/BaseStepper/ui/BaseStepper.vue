@@ -2,7 +2,7 @@
 	<div
 		:class="[ui('root'), `base-stepper--${orientation}`, `base-stepper--${shape}`, variantClass, motionClass, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
-		:data-summary="orientation === 'horizontal' ? summary : undefined">
+		:data-summary="orientation === 'horizontal' && summary ? summary : undefined">
 		<div v-if="$slots.header" :class="[ui('header'), classes.header]">
 			<slot name="header" />
 		</div>
@@ -83,6 +83,7 @@ const props = withDefaults(
 		variant: DEFAULT_VARIANT,
 		orientation: 'horizontal',
 		shape: 'circle',
+		summary: 'titled',
 		isLinear: false,
 		clickable: 'all',
 		sizeScale: SIZE_SCALE_DEFAULT,

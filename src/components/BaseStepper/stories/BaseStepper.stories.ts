@@ -22,6 +22,7 @@ export const Shapes = cases.Shapes
 export const Vertical = cases.Vertical
 export const Sizes = cases.Sizes
 export const Narrow = cases.Narrow
+export const Summary = cases.Summary
 export const CustomColor = cases.CustomColor
 export const Disabled = cases.Disabled
 export const Errors = cases.Errors

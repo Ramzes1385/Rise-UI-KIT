@@ -44,6 +44,14 @@ describe('BaseFormWizard unit', () => {
 			expect(screen.getByText('Данные для входа')).toBeInTheDocument()
 		})
 
+		it('подпись компактной ленты — «Шаг N из M» без названия: заголовок шага уже стоит ниже, а имена шагов остаются у ленты', () => {
+			const { container } = render(BaseFormWizard, { props: { steps: STEPS, step: 'profile' }, slots })
+
+			expect(container.querySelector('.base-stepper')).toHaveAttribute('data-summary', 'Шаг 2 из 3')
+			expect(screen.getByRole('heading', { level: 2, name: 'Профиль' })).toBeInTheDocument()
+			expect(container.querySelector('.base-stepper__step--active')).toHaveTextContent('Профиль')
+		})
+
 		it('область шага — группа с именем заголовка и описанием', () => {
 			render(BaseFormWizard, { props: { steps: STEPS }, slots })
 
