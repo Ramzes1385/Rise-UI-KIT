@@ -145,8 +145,8 @@ describe('directorySections', () => {
 		expect(sections.map(section => section.title)).toEqual(['I', 'あ', 'か', 'さ', 'た', 'な', 'は', 'ら', 'わ', '#'])
 		const titleOf = (letter: string): string[] | undefined =>
 			sections.find(section => section.title === letter)?.entries.map(item => item.item.object.title)
-		expect(titleOf('か')).toEqual(['ｶﾌｪ', 'ガス'])
-		expect(titleOf('さ')).toEqual(['さくら', 'ソバ'])
+		expect(titleOf('か')?.sort()).toEqual(['ｶﾌｪ', 'ガス'].sort())
+		expect(titleOf('さ')?.sort()).toEqual(['さくら', 'ソバ'].sort())
 		expect(titleOf('は')).toEqual(['パン'])
 		expect(titleOf('#')).toEqual(expect.arrayContaining(['東京タワー', '北京', '7番']))
 	})

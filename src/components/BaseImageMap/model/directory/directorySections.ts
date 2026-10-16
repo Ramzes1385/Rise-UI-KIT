@@ -28,7 +28,8 @@ const KANA_ROWS = [
 	'らりるれろ',
 	'ゎわゐゑをん',
 ]
-const KANA_ROW_OF = new Map(KANA_ROWS.flatMap(row => [...row].map(char => [char, [...row][0]] as const)))
+const KANA_ROW_HEADS = ['あ', 'か', 'さ', 'た', 'な', 'は', 'ま', 'や', 'ら', 'わ']
+const KANA_ROW_OF = new Map(KANA_ROWS.flatMap((row, index) => [...row].map(char => [char, KANA_ROW_HEADS[index]] as const)))
 
 function languageOf(locale: string): string {
 	return locale.split('-')[0].toLowerCase()
