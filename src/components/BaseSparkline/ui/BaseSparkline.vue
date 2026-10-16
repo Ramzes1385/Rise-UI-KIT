@@ -21,9 +21,9 @@
 		<span
 			v-if="variant !== 'bar' && points.length"
 			:class="ui('dot')"
-			:style="{ left: `${(active ?? points[points.length - 1]).x}%`, top: `${(active ?? points[points.length - 1]).y}px` }"
+			:style="{ '--sparkline-x': (active ?? points[points.length - 1]).x, top: `${(active ?? points[points.length - 1]).y}px` }"
 			aria-hidden="true" />
-		<span v-if="active" :class="ui('tooltip')" :style="{ left: `${active.x}%` }" aria-hidden="true">
+		<span v-if="active" :class="ui('tooltip')" :style="{ '--sparkline-x': active.x }" aria-hidden="true">
 			<strong>{{ format(active.value) }}</strong>
 			<span v-if="active.label">{{ active.label }}</span>
 		</span>

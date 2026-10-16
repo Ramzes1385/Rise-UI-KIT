@@ -17,7 +17,7 @@ describe('BaseSparkline', () => {
 		expect(screen.getByRole('img', { name: 'Заказы: от 3 до 9, последнее значение 5' })).toBeInTheDocument()
 		expect(container.querySelector('.base-sparkline__line')).toHaveAttribute('d', 'M0.00 28.00 L50.00 4.00 L100.00 20.00')
 		expect(container.querySelector('.base-sparkline__area')).toBeNull()
-		expect((container.querySelector('.base-sparkline__dot') as HTMLElement).style.left).toBe('100%')
+		expect((container.querySelector('.base-sparkline__dot') as HTMLElement).style.getPropertyValue('--sparkline-x')).toBe('100')
 		expect((container.querySelector('.base-sparkline') as HTMLElement).style.height).toBe('32px')
 	})
 
@@ -37,7 +37,7 @@ describe('BaseSparkline', () => {
 		expect(container.querySelector('.base-sparkline__area')).toHaveAttribute('d', expect.stringContaining('Z'))
 		await fireEvent.pointerMove(root, { clientX: 95 })
 		expect(container.querySelector('.base-sparkline__tooltip')).toHaveTextContent('9 шт.фев')
-		expect((container.querySelector('.base-sparkline__dot') as HTMLElement).style.left).toBe('50%')
+		expect((container.querySelector('.base-sparkline__dot') as HTMLElement).style.getPropertyValue('--sparkline-x')).toBe('50')
 		await fireEvent.pointerLeave(root)
 		expect(container.querySelector('.base-sparkline__tooltip')).toBeNull()
 		expect(screen.getByRole('img')).toHaveAccessibleName('Заказы: от 3 шт. до 9 шт., последнее значение 5 шт.')
