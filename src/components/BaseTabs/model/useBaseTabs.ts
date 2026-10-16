@@ -1,4 +1,5 @@
 import type { Ref } from 'vue'
+import { useTabsReveal } from './useTabsReveal'
 import { useUi } from '@composables/base/useUi'
 import { toHTMLElement } from '@utils/dom/domUtils'
 import { useMotion } from '@composables/app/useMotion'
@@ -69,14 +70,10 @@ function useScrollButtons(props: BaseTabsProps, listRef: Ref<HTMLElement | null>
 	const setupObserver = (): void => {
 		resizeObserver?.disconnect()
 		resizeObserver = null
-		if (props.isScrollable && listRef.value) {
-			resizeObserver = new ResizeObserver(updateScrollState)
-			resizeObserver.observe(listRef.value)
-			nextTick(updateScrollState)
-		} else {
-			canScrollLeft.value = false
-			canScrollRight.value = false
-		}
+		if (!listRef.value) return
+		resizeObserver = new ResizeObserver(updateScrollState)
+		resizeObserver.observe(listRef.value)
+		nextTick(updateScrollState)
 	}
 	const scrollByPage = (direction: 1 | -1): void => {
 		const el = listRef.value
@@ -85,12 +82,17 @@ function useScrollButtons(props: BaseTabsProps, listRef: Ref<HTMLElement | null>
 	}
 
 	onMounted(setupObserver)
-	watch(() => props.isScrollable, setupObserver)
+	watch(
+		() => props.items.length,
+		() => nextTick(updateScrollState),
+	)
 	onUnmounted(() => resizeObserver?.disconnect())
 
 	return {
 		canScrollLeft,
 		canScrollRight,
+		isFadeStart: computed(() => !props.isScrollable && canScrollLeft.value),
+		isFadeEnd: computed(() => !props.isScrollable && canScrollRight.value),
 		handleListScroll: (): void => updateScrollState(),
 		handleScrollLeft: (): void => scrollByPage(-1),
 		handleScrollRight: (): void => scrollByPage(1),
@@ -168,6 +170,7 @@ export function useBaseTabs(props: BaseTabsProps, emit: BaseTabsEmits) {
 		emit('update:modelValue', id)
 		emit('change', id)
 	}
+	useTabsReveal(listRef, selectedIndex)
 
 	return {
 		...standard,

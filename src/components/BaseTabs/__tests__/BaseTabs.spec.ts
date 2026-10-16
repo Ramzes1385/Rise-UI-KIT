@@ -11,6 +11,8 @@ global.ResizeObserver = class ResizeObserver {
 import BaseTabs from '../ui/BaseTabs.vue'
 import type { TabItem } from '../types/BaseTabs.types'
 
+Object.defineProperty(HTMLElement.prototype, 'scrollTo', { configurable: true, value: vi.fn() })
+
 const TABS: TabItem[] = [
 	{ id: 'info', label: 'Информация' },
 	{ id: 'specs', label: 'Характеристики' },

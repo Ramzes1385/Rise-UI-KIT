@@ -7,6 +7,8 @@
 			{
 				'base-tabs--full-width': isFullWidth,
 				'base-tabs--scrollable': isScrollable,
+				'base-tabs--fade-start': isFadeStart,
+				'base-tabs--fade-end': isFadeEnd,
 				'base-tabs--indicator-ready': isIndicatorVisible,
 			},
 		]"
@@ -137,6 +139,8 @@ const {
 	handlePointerUp,
 	canScrollLeft,
 	canScrollRight,
+	isFadeStart,
+	isFadeEnd,
 	handleListScroll,
 	handleScrollLeft,
 	handleScrollRight,

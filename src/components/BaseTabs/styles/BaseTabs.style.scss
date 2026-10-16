@@ -46,6 +46,28 @@
 		}
 	}
 
+	&--fade-start &__list,
+	&--fade-end &__list {
+		--tabs-fade-start: 0px;
+		--tabs-fade-end: 0px;
+
+		mask-image: linear-gradient(
+			to right,
+			transparent,
+			#000 var(--tabs-fade-start),
+			#000 calc(100% - var(--tabs-fade-end)),
+			transparent
+		);
+	}
+
+	&--fade-start &__list {
+		--tabs-fade-start: #{sz(24px)};
+	}
+
+	&--fade-end &__list {
+		--tabs-fade-end: #{sz(24px)};
+	}
+
 	&__indicator {
 		@include sliding-indicator('&--instant');
 	}
