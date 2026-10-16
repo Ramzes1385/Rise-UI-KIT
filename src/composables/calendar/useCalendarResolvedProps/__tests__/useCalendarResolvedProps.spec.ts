@@ -110,6 +110,17 @@ describe('useCalendarResolvedProps', () => {
 		})
 	})
 
+	it('первый день недели: явный firstDayOfWeek важнее locale, явный locale другого языка — из Intl, locale кита — из словаря', () => {
+		expect(useCalendarResolvedProps({ locale: 'en-US' }).value.firstDayOfWeek).toBe(0)
+		expect(useCalendarResolvedProps({ locale: 'de-DE' }).value.firstDayOfWeek).toBe(1)
+		expect(useCalendarResolvedProps({ locale: 'en-US', firstDayOfWeek: 3 }).value.firstDayOfWeek).toBe(3)
+		expect(useCalendarResolvedProps({ locale: 'ru-RU' }).value.firstDayOfWeek).toBe(1)
+
+		setLocale('en')
+		expect(useCalendarResolvedProps({ locale: 'ru-RU' }).value.firstDayOfWeek).toBe(1)
+		expect(useCalendarResolvedProps({}).value.firstDayOfWeek).toBe(0)
+	})
+
 	it('пересчитывается при смене пропсов и языка кита', () => {
 		const props = reactive<BaseCalendarProps>({})
 		const resolved = useCalendarResolvedProps(props)

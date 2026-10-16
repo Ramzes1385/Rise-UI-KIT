@@ -20,9 +20,9 @@ export interface BaseDatePickerCalendarProps {
 	highlights?: CalendarHighlight[]
 	/** Конфигурация выходных */
 	weekends?: CalendarWeekends | null
-	/** Первый день недели */
+	/** Первый день недели; без пропа — по явному `locale` (`Intl.Locale.getWeekInfo()`), без него — из языка кита */
 	firstDayOfWeek?: CalendarWeekday
-	/** Локаль */
+	/** Локаль (`Intl`) календаря и разбора текста; по умолчанию — язык кита */
 	locale?: string
 	/** Показывать время */
 	showTime?: boolean

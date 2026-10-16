@@ -1,5 +1,6 @@
 import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
+import type { CalendarWeekday } from '@components/BaseCalendar/types/BaseCalendar.types'
 
 /** Варианты оформления: `default` — ячейки со скруглением, `square` — квадратные ячейки */
 export const HEATMAP_VARIANTS = ['default', 'square'] as const
@@ -27,7 +28,7 @@ export interface HeatmapCell {
 	value: number
 	level: number
 	week: number
-	/** Номер строки в неделе: 0 — первый день недели языка кита (`locale.firstDayOfWeek`) */
+	/** Номер строки в неделе: 0 — первый день недели (проп `firstDayOfWeek`, по умолчанию — язык кита) */
 	weekday: number
 }
 
@@ -50,6 +51,8 @@ export interface BaseHeatmapProps extends BaseComponentProps<(typeof HEATMAP_VAR
 	endDate?: string | Date
 	/** Сколько недель показывать; по умолчанию 53 — год */
 	weeks?: number
+	/** Первый день недели (строка 0): 0 — воскресенье, 1 — понедельник … 6 — суббота. По умолчанию — из языка кита (`firstDayOfWeek` словаря) */
+	firstDayOfWeek?: CalendarWeekday
 	/** Цвет насыщенных дней: токен или CSS-цвет. По умолчанию — бирюзовый цвет графиков `--rise-chart-3` */
 	markColor?: string
 	/** Формат значения в подсказке и описании */

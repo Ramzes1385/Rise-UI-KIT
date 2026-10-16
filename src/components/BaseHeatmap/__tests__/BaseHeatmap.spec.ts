@@ -89,4 +89,24 @@ describe('BaseHeatmap', () => {
 		expect(labels()).toEqual(expect.arrayContaining(['Sun', 'Tue', 'Thu']))
 		expect(en.container.querySelector('.base-heatmap__cell')).toHaveAttribute('y', '18')
 	})
+
+	it('проп firstDayOfWeek важнее языка кита: строки и подписи дней начинаются с нужного дня', () => {
+		const labels = (): (string | null)[] =>
+			Array.from(document.querySelectorAll('.base-heatmap__caption')).map(node => node.textContent)
+		const sunday = render(BaseHeatmap, {
+			props: { data: DATA, label: 'Коммиты', endDate: '2025-05-18', weeks: 3, firstDayOfWeek: 0 },
+		})
+		expect(labels()).toEqual(expect.arrayContaining(['вс', 'вт', 'чт']))
+		sunday.unmount()
+
+		const saturday = render(BaseHeatmap, {
+			props: { data: DATA, label: 'Коммиты', endDate: '2025-05-18', weeks: 3, firstDayOfWeek: 6 },
+		})
+		expect(labels()).toEqual(expect.arrayContaining(['сб', 'пн', 'ср']))
+		saturday.unmount()
+
+		setLocale('en')
+		render(BaseHeatmap, { props: { data: DATA, label: 'Commits', endDate: '2025-05-18', weeks: 3, firstDayOfWeek: 1 } })
+		expect(labels()).toEqual(expect.arrayContaining(['Mon', 'Wed', 'Fri']))
+	})
 })

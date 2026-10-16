@@ -42,6 +42,7 @@ const props = withDefaults(defineProps<BaseHeatmapProps>(), {
 	variant: 'default',
 	endDate: undefined,
 	weeks: 53,
+	firstDayOfWeek: undefined,
 	markColor: undefined,
 	formatValue: undefined,
 	sizeScale: SIZE_SCALE_DEFAULT,

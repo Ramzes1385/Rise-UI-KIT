@@ -13,11 +13,12 @@ const GAP = 2
 
 export function useBaseHeatmap(props: BaseHeatmapProps) {
 	const format = (value: number): string => (props.formatValue ?? formatNumber)(value)
+	const firstDay = computed(() => props.firstDayOfWeek ?? getLocale().firstDayOfWeek)
 	const cells = computed(() =>
 		heatmapCells(props.data, {
 			end: toDay(props.endDate ?? new Date()),
 			weeks: props.weeks ?? 53,
-			firstDay: getLocale().firstDayOfWeek,
+			firstDay: firstDay.value,
 		}),
 	)
 	const dateText = (date: Date): string =>
@@ -34,7 +35,7 @@ export function useBaseHeatmap(props: BaseHeatmapProps) {
 		weekdays: computed(() => {
 			const format = new Intl.DateTimeFormat(getLocale().intl, { weekday: 'short' })
 			const sunday = 7
-			return [0, 2, 4].map(index => ({ index, label: format.format(new Date(2024, 0, sunday + getLocale().firstDayOfWeek + index)) }))
+			return [0, 2, 4].map(index => ({ index, label: format.format(new Date(2024, 0, sunday + firstDay.value + index)) }))
 		}),
 		width: computed(() => (cells.value[cells.value.length - 1].week + 1) * (CELL + GAP)),
 		cellSize: CELL,

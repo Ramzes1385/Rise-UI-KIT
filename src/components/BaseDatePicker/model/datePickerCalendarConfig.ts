@@ -1,5 +1,6 @@
 import { getLocale } from '@/locales/state'
 import type { CalendarWeekday } from '@components/BaseCalendar'
+import { resolveFirstDayOfWeek } from '@utils/calendar/weekUtils'
 import type {
 	BaseDatePickerCalendarConfig,
 	BaseDatePickerCalendarProps,
@@ -64,6 +65,9 @@ function assignDefined<Key extends keyof BaseDatePickerCalendarConfig>(
 export function pickDatePickerCalendarConfig(source: BaseDatePickerCalendarProps): BaseDatePickerCalendarConfig {
 	const config = calendarDefaults()
 	for (const name of EXPLICIT_CALENDAR_PROPS) assignDefined(config, source, name)
+	if (source.firstDayOfWeek === undefined || source.firstDayOfWeek === null) {
+		config.firstDayOfWeek = resolveFirstDayOfWeek(config.locale) as CalendarWeekday
+	}
 	return config
 }
 

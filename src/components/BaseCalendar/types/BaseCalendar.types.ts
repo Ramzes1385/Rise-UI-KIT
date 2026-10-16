@@ -155,9 +155,12 @@ export interface BaseCalendarProps extends BaseComponentProps<
 	highlights?: CalendarHighlight[]
 	/** Конфигурация выходных */
 	weekends?: CalendarWeekends | null
-	/** Первый день недели (0=вс, 1=пн) */
+	/**
+	 * Первый день недели (0=вс, 1=пн). Без пропа — по явному `locale` (`Intl.Locale.getWeekInfo()`: `en-US` — воскресенье,
+	 * `de-DE` — понедельник), без `locale` и при `locale` языка кита — из языка кита (`firstDayOfWeek` словаря)
+	 */
 	firstDayOfWeek?: CalendarWeekday
-	/** Локаль */
+	/** Локаль (`Intl`) названий месяцев и дней; по умолчанию — язык кита */
 	locale?: string
 	/** Показывать popover при клике на дату */
 	showDatePopover?: boolean

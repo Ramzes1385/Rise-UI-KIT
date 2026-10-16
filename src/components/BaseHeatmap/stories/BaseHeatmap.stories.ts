@@ -19,3 +19,4 @@ export const Default = cases.Default
 export const Variants = cases.Variants
 export const Theming = cases.Theming
 export const Animations = cases.Animations
+export const FirstDayOfWeek = cases.FirstDayOfWeek

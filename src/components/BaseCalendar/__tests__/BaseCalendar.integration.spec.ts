@@ -13,6 +13,28 @@ const stubs = {
 }
 
 describe('BaseCalendar integration', () => {
+	describe('первый день недели', () => {
+		const firstWeekday = (container: Element): string | null => container.querySelector('.base-calendar__weekday')?.textContent ?? null
+
+		it('явный locale без firstDayOfWeek — первый день недели этого языка, не языка кита', () => {
+			const { container } = render(BaseCalendar, { props: { modelValue: new Date(2024, 0, 1), locale: 'en-US' }, global: { stubs } })
+
+			expect(firstWeekday(container)).toMatch(/^su/i)
+		})
+
+		it('firstDayOfWeek важнее locale; без обоих — язык кита', () => {
+			const explicit = render(BaseCalendar, {
+				props: { modelValue: new Date(2024, 0, 1), locale: 'en-US', firstDayOfWeek: 1 },
+				global: { stubs },
+			})
+			expect(firstWeekday(explicit.container)).toMatch(/^mo/i)
+			explicit.unmount()
+
+			const byKit = render(BaseCalendar, { props: { modelValue: new Date(2024, 0, 1) }, global: { stubs } })
+			expect(firstWeekday(byKit.container)).toMatch(/^(пн|mo)/i)
+		})
+	})
+
 	describe('selectionMode: single', () => {
 		it('должен эмитить update:modelValue при выборе даты', async () => {
 			const date = new Date(2024, 0, 1)

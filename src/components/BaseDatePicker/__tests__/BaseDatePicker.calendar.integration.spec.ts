@@ -18,6 +18,25 @@ function getCurrentMonthDay(panel: HTMLElement, day: number): HTMLButtonElement 
 }
 
 describe('BaseDatePicker + реальный BaseCalendar', () => {
+	it('первый день недели берётся из явного locale: en-US — воскресенье, а firstDayOfWeek важнее locale', async () => {
+		const { unmount } = render(BaseDatePicker, { props: { modelValue: new Date(2026, 8, 25), locale: 'en-US' } })
+		const panel = await openPanel()
+		expect(panel.querySelector('.base-calendar__weekday')?.textContent).toMatch(/^su/i)
+		unmount()
+		document.body.innerHTML = ''
+
+		render(BaseDatePicker, { props: { modelValue: new Date(2026, 8, 25), locale: 'en-US', firstDayOfWeek: 1 } })
+		const mondayPanel = await openPanel()
+		expect(mondayPanel.querySelector('.base-calendar__weekday')?.textContent).toMatch(/^mo/i)
+	})
+
+	it('без locale первый день недели — языка кита (понедельник для ru)', async () => {
+		render(BaseDatePicker, { props: { modelValue: new Date(2026, 8, 25) } })
+
+		const panel = await openPanel()
+		expect(panel.querySelector('.base-calendar__weekday')?.textContent).toMatch(/^(пн|mo)/i)
+	})
+
 	it('minDate: дата раньше minDate недоступна для выбора', async () => {
 		const { emitted } = render(BaseDatePicker, {
 			props: {

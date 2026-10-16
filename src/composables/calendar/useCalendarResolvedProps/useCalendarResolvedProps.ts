@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import type { ComputedRef } from 'vue'
 import { getLocale } from '@/locales/state'
+import { resolveFirstDayOfWeek } from '@utils/calendar/weekUtils'
 import type { ResolvedCalendarProps } from './types/useCalendarResolvedProps.types'
 import type {
 	BaseCalendarProps,
@@ -56,8 +57,8 @@ function resolveDisplay(props: BaseCalendarProps) {
 
 function resolveAppearance(props: BaseCalendarProps) {
 	return {
-		// Первый день недели и формат дат — из языка кита (setLocale), если не заданы пропсами
-		firstDayOfWeek: props.firstDayOfWeek ?? (getLocale().firstDayOfWeek as CalendarWeekday),
+		// Формат дат — из языка кита (setLocale), если не задан пропсом; первый день недели — из явного locale, иначе из языка кита
+		firstDayOfWeek: props.firstDayOfWeek ?? (resolveFirstDayOfWeek(props.locale) as CalendarWeekday),
 		locale: props.locale ?? getLocale().intl,
 		variant: props.variant ?? 'default',
 		color: props.color,
