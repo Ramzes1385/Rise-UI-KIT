@@ -1,5 +1,6 @@
 import { UI_IMAGE_MAP } from '@/locales/messages'
 import { formatMessage, getLocale } from '@/locales/state'
+import { createDateFormat } from '@utils/data/dateFormatUtils'
 import type { ImageMapHoursDay, ImageMapHoursState } from '../../types/ImageMapHours.types'
 import type { HoursRange, ParsedHours, ZonedMoment } from '../../types/internal/imageMapInternal.types'
 import { DAY_MINUTES, DAY_MS, dayRanges, hoursPhase, weekdayIndex, zonedMoment } from './hoursSchedule'
@@ -8,11 +9,11 @@ const MONDAY = Date.UTC(2024, 0, 1)
 
 function clock(minutes: number, locale: string): string {
 	const wall = Date.UTC(2024, 0, 1, 0, minutes % DAY_MINUTES)
-	return new Intl.DateTimeFormat(locale, { hour: 'numeric', minute: '2-digit', timeZone: 'UTC' }).format(wall)
+	return createDateFormat(locale, { hour: 'numeric', minute: '2-digit', timeZone: 'UTC' }).format(wall)
 }
 
 function weekday(day: number, locale: string): string {
-	return new Intl.DateTimeFormat(locale, { weekday: 'short', timeZone: 'UTC' }).format(day)
+	return createDateFormat(locale, { weekday: 'short', timeZone: 'UTC' }).format(day)
 }
 
 function template(isOpen: boolean, isSoon: boolean): string {

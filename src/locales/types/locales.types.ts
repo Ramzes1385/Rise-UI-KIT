@@ -9,6 +9,55 @@ type Section<K extends keyof Base> = { readonly [P in keyof Base[K]]: string }
 /** Формы слова для чисел: ключи — категории `Intl.PluralRules` (`one`, `few`, `many`, `other`…), `{n}` — число */
 export type PluralForms = Partial<Record<Intl.LDMLPluralRule, string>> & { readonly other: string }
 
+/** Шаблоны даты с названием месяца для `calendarNames`: `{day}`, `{month}`, `{year}`, `{weekday}`, `{date}` */
+export interface CalendarPatterns {
+	/** День, месяц и год: `{year} ж. {day} {month}` (kk), `{day}-{month}, {year}` (uz) */
+	readonly dayMonthYear: string
+	/** День и месяц: `{day} {month}` */
+	readonly dayMonth: string
+	/** Месяц и год: `{year} ж. {month}` */
+	readonly monthYear: string
+	/** Дата цифрами: `{day}.{month}.{year}`; отсутствующие части отбрасываются вместе с разделителем */
+	readonly numeric: string
+	/** Дата и день недели: `{date}, {weekday}` (kk), `{weekday}, {date}` (uz) */
+	readonly withWeekday: string
+}
+
+/**
+ * Запасные названия месяцев и дней недели языка: используются, когда в браузере нет данных `Intl` для языка
+ * (урезанный ICU: для `kk` формат уходит в английский, для `uz` остаются корневые «M05»).
+ * Нужны только языкам, у которых такая нехватка бывает; остальным поле не задают.
+ */
+export interface CalendarNames {
+	/** Двенадцать названий месяцев с января, как отдельное слово (заголовок): «Мамыр». Внутри даты берутся в нижнем регистре */
+	readonly months: readonly string[]
+	/** Двенадцать кратких названий месяцев с января: «мам.» */
+	readonly monthsShort: readonly string[]
+	/** Семь названий дней недели с воскресенья: «сәрсенбі» */
+	readonly weekdays: readonly string[]
+	/** Семь кратких названий дней недели с воскресенья: «ср» */
+	readonly weekdaysShort: readonly string[]
+	readonly patterns: CalendarPatterns
+}
+
+/** Единицы относительного времени, для которых у языка есть запасные фразы */
+export type RelativeTimeUnit = 'minute' | 'hour' | 'day'
+
+/**
+ * Запасные фразы относительного времени («5 минут бұрын») для языка без данных `Intl.RelativeTimeFormat` в браузере;
+ * `{n}` — число. Задаются вместе с `calendarNames`.
+ */
+export interface RelativeTimeNames {
+	/** «Сейчас» (меньше минуты) */
+	readonly now: string
+	readonly yesterday: string
+	readonly tomorrow: string
+	/** В прошлом: «{n} минут бұрын» */
+	readonly past: Readonly<Record<RelativeTimeUnit, string>>
+	/** В будущем: «{n} минуттан кейін» */
+	readonly future: Readonly<Record<RelativeTimeUnit, string>>
+}
+
 /**
  * Язык кита: строки интерфейса, языковой тег для Intl и первый день недели.
  * Свой язык — `defineLocale(en, { … })` поверх готового словаря.
@@ -20,6 +69,10 @@ export interface UiKitLocale {
 	intl: string
 	/** Первый день недели в календаре: 0 — воскресенье, 1 — понедельник */
 	firstDayOfWeek: number
+	/** Запасные названия месяцев и дней для браузеров без данных `Intl` этого языка; необязательно (см. `CalendarNames`) */
+	calendarNames?: CalendarNames
+	/** Запасные фразы относительного времени для браузеров без данных `Intl` этого языка; необязательно */
+	relativeTime?: RelativeTimeNames
 	text: Section<'text'>
 	aria: Section<'aria'>
 	tour: Section<'tour'>
@@ -88,9 +141,12 @@ export interface UiKitLocale {
 	plural: { readonly [P in keyof Base['plural']]: PluralForms }
 }
 
-export type LocaleSection = Exclude<keyof UiKitLocale, 'code' | 'intl' | 'firstDayOfWeek' | 'plural'>
+export type LocaleSection = Exclude<keyof UiKitLocale, 'code' | 'intl' | 'firstDayOfWeek' | 'plural' | 'calendarNames' | 'relativeTime'>
 
 export type LocaleOverrides = Partial<Pick<UiKitLocale, 'code' | 'intl' | 'firstDayOfWeek'>> & {
+	calendarNames?: Partial<CalendarNames>
+	relativeTime?: Partial<RelativeTimeNames>
+} & {
 	[K in LocaleSection | 'plural']?: Partial<UiKitLocale[K]>
 }
 

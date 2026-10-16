@@ -1,4 +1,5 @@
 import { formatDatePickerValue } from '@utils/data/dateUtils'
+import { getNumericDateOrder } from '@utils/data/dateFormatUtils'
 import type {
 	DatePickerDatePart,
 	DatePickerParsedText,
@@ -16,11 +17,6 @@ const SEPARATORS_ONLY = /^(?:[\s,.…—–~〜至-]|から)*$/
 const HAS_SEPARATOR = /[^\s,]/
 const FIRST_TIME_GROUP = 4
 const CJK_AFTERNOON = new Set(['下午', '午後'])
-
-function getDateOrder(locale: string): DatePickerDatePart[] {
-	const parts = new Intl.DateTimeFormat(locale, { day: '2-digit', month: '2-digit', year: 'numeric' }).formatToParts(SAMPLE_DATE)
-	return parts.map(part => part.type).filter((type): type is DatePickerDatePart => type in GROUPS)
-}
 
 function buildTokenPattern(order: DatePickerDatePart[]): RegExp {
 	return new RegExp(order.map(part => GROUPS[part]).join(DATE_SEPARATOR) + TRAILING_DOT + TIME_PATTERN, 'gi')
@@ -84,7 +80,7 @@ export function parseDateRangeText(text: string, options: DatePickerTextOptions)
 	const trimmed = text.normalize('NFKC').trim()
 	if (!trimmed) return { start: null, end: null }
 
-	const order = getDateOrder(options.locale)
+	const order = getNumericDateOrder(options.locale)
 	const matches = findDateMatches(trimmed, order)
 	if (!matches) return null
 

@@ -1,5 +1,6 @@
 /** Composable: язык кита — строки интерфейса, даты, числа и множественное число */
 import { computed } from 'vue'
+import { formatDateText } from '@utils/data/dateFormatUtils'
 import type { UseLocaleReturn } from './types/useLocale.types'
 import { currentLocale, formatMessage, formatNumber, localeCodes, pluralize, setLocale } from '@/locales/state'
 
@@ -19,7 +20,7 @@ export function useLocale(): UseLocaleReturn {
 		messages: computed(() => currentLocale.value),
 		setLocale,
 		formatNumber: (value, options) => formatNumber(value, options),
-		formatDate: (date, options) => new Intl.DateTimeFormat(currentLocale.value.intl, options).format(date),
+		formatDate: (date, options) => formatDateText(date, options ?? {}, currentLocale.value.intl),
 		plural: (forms, count) => pluralize(forms, count),
 		formatMessage,
 	}

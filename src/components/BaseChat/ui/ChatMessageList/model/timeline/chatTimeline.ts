@@ -1,5 +1,6 @@
 import { UI_CHAT_TEXT } from '@/locales/messages'
 import { getLocale, pluralize } from '@/locales/state'
+import { formatDateText } from '@utils/data/dateFormatUtils'
 import type { ChatMessage } from '../../../../types/BaseChat.types'
 import type { ChatTimelineItem, ChatTimelineOptions } from '../../types/timeline/ChatTimeline.types'
 
@@ -17,7 +18,7 @@ function dayLabel(day: number, todayStart: number): string {
 	if (diff === 1) return UI_CHAT_TEXT.YESTERDAY
 	const isSameYear = new Date(day).getFullYear() === new Date(todayStart).getFullYear()
 	const format: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', year: isSameYear ? undefined : 'numeric' }
-	return new Intl.DateTimeFormat(getLocale().intl, format).format(day)
+	return formatDateText(day, format)
 }
 
 function findUnread(messages: readonly ChatMessage[], lastReadId: string | undefined): { id: string; count: number } | null {

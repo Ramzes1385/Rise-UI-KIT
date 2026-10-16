@@ -1,6 +1,8 @@
 import { UI_EVENT_CALENDAR } from '@/locales/messages'
 import { getLocale, formatMessage } from '@/locales/state'
+import { createDateFormat } from '@utils/data/dateFormatUtils'
 import { addDays, startOfDay } from '@utils/calendar/eventUtils'
+import type { DateFormatter } from '@utils/data/dateFormatUtils'
 import type { NormalizedCalendarEvent } from '@utils/calendar/eventUtils'
 import type { EventCalendarPeriod, EventCalendarView } from '../types/BaseEventCalendar.types'
 
@@ -11,14 +13,14 @@ const VIEW_LABELS = {
 	list: 'VIEW_LIST',
 } as const
 
-const formatters = new Map<string, Intl.DateTimeFormat>()
+const formatters = new Map<string, DateFormatter>()
 
-function formatter(options: Intl.DateTimeFormatOptions): Intl.DateTimeFormat {
+function formatter(options: Intl.DateTimeFormatOptions): DateFormatter {
 	const { intl } = getLocale()
 	const key = `${intl}|${JSON.stringify(options)}`
 	const cached = formatters.get(key)
 	if (cached) return cached
-	const created = new Intl.DateTimeFormat(intl, options)
+	const created = createDateFormat(intl, options)
 	formatters.set(key, created)
 	return created
 }

@@ -1,3 +1,4 @@
+import { createDateFormat } from '@utils/data/dateFormatUtils'
 import type { HeatmapCell, HeatmapDay, HeatmapMonth } from '../../types/BaseHeatmap.types'
 
 export const toDay = (value: string | Date): Date => {
@@ -41,7 +42,7 @@ export function heatmapCells(data: readonly HeatmapDay[], context: { end: Date; 
 }
 
 export function heatmapMonths(cells: readonly HeatmapCell[], locale: string): HeatmapMonth[] {
-	const format = new Intl.DateTimeFormat(locale, { month: 'short' })
+	const format = createDateFormat(locale, { month: 'short' })
 	return cells
 		.filter(cell => cell.date.getDate() <= 7 && cell.weekday === 0 && cell.week < cells[cells.length - 1].week)
 		.map(cell => ({ key: cell.key, label: format.format(cell.date).replace('.', ''), week: cell.week }))

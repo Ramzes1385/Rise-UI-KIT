@@ -1,6 +1,7 @@
 import { UI_CHARTS } from '@/locales/messages'
 import { useUi } from '@composables/base/useUi'
 import { ref, computed, shallowRef } from 'vue'
+import { formatDateText } from '@utils/data/dateFormatUtils'
 import { formatMessage, formatNumber, getLocale } from '@/locales/state'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseHeatmapProps, HeatmapCell } from '../types/BaseHeatmap.types'
@@ -21,8 +22,7 @@ export function useBaseHeatmap(props: BaseHeatmapProps) {
 			firstDay: firstDay.value,
 		}),
 	)
-	const dateText = (date: Date): string =>
-		new Intl.DateTimeFormat(getLocale().intl, { day: 'numeric', month: 'long', year: 'numeric' }).format(date)
+	const dateText = (date: Date): string => formatDateText(date, { day: 'numeric', month: 'long', year: 'numeric' })
 	const active = shallowRef<HeatmapCell | null>(null)
 	const scrollRef = ref<HTMLElement | null>(null)
 	return {
@@ -33,9 +33,11 @@ export function useBaseHeatmap(props: BaseHeatmapProps) {
 		cells,
 		months: computed(() => heatmapMonths(cells.value, getLocale().intl)),
 		weekdays: computed(() => {
-			const format = new Intl.DateTimeFormat(getLocale().intl, { weekday: 'short' })
 			const sunday = 7
-			return [0, 2, 4].map(index => ({ index, label: format.format(new Date(2024, 0, sunday + firstDay.value + index)) }))
+			return [0, 2, 4].map(index => ({
+				index,
+				label: formatDateText(new Date(2024, 0, sunday + firstDay.value + index), { weekday: 'short' }),
+			}))
 		}),
 		width: computed(() => (cells.value[cells.value.length - 1].week + 1) * (CELL + GAP)),
 		cellSize: CELL,

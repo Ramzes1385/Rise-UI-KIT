@@ -5,4 +5,13 @@ export { ru } from './ru'
 export { uz } from './uz'
 export { zh } from './zh'
 export { defineLocale, formatMessage, LOCALES, pluralize, registerLocale, setLocale } from './state'
-export type { LocaleInput, LocaleOverrides, PluralForms, UiKitLocale } from './types/locales.types'
+export type {
+	CalendarNames,
+	CalendarPatterns,
+	LocaleInput,
+	LocaleOverrides,
+	PluralForms,
+	RelativeTimeNames,
+	RelativeTimeUnit,
+	UiKitLocale,
+} from './types/locales.types'

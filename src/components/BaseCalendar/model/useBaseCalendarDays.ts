@@ -1,6 +1,8 @@
 import { computed, ref, useSlots } from 'vue'
 import { useCalendarUi } from './useCalendarUi'
 import { hideLeaving } from './useCalendarMotion'
+import { createDateFormat } from '@utils/data/dateFormatUtils'
+import type { DateFormatter } from '@utils/data/dateFormatUtils'
 import { useClickOutside } from '@composables/overlay/useClickOutside'
 import type { BaseCalendarDaysProps } from '../types/BaseCalendarDays.types'
 
@@ -10,7 +12,7 @@ function popoverClassFor(column: number): string | undefined {
 	return undefined
 }
 
-function dayCell(props: BaseCalendarDaysProps, day: { date: Date; index: number; hasDaySlot: boolean; labelFormat: Intl.DateTimeFormat }) {
+function dayCell(props: BaseCalendarDaysProps, day: { date: Date; index: number; hasDaySlot: boolean; labelFormat: DateFormatter }) {
 	const { date, index } = day
 	const dayClassMap = props.dayClasses(date, day.hasDaySlot)
 	const highlight = props.getHighlight(date)
@@ -39,9 +41,7 @@ export function useBaseCalendarDays(props: BaseCalendarDaysProps) {
 		isCapture: true,
 	})
 	const hasDaySlot = computed((): boolean => !!slots.day)
-	const labelFormat = computed(
-		() => new Intl.DateTimeFormat(props.locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }),
-	)
+	const labelFormat = computed(() => createDateFormat(props.locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }))
 
 	return {
 		ui: useCalendarUi(),

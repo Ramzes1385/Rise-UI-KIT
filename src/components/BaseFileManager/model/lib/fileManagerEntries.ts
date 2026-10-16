@@ -1,5 +1,6 @@
 import { currentLocale } from '@/locales/state'
 import { foldSearchText } from '@utils/data/textUtils'
+import { formatDateText } from '@utils/data/dateFormatUtils'
 import { formatFileSize, getExtension, getFileIconName } from '@utils/media/fileUtils'
 import type { FileManagerItem, FileManagerSort, FileManagerSortKey } from '../../types/BaseFileManager.types'
 
@@ -37,7 +38,7 @@ export function formatEntrySize(item: FileManagerItem): string {
 
 export function formatModified(value: FileManagerItem['modifiedAt']): string {
 	if (value === undefined || Number.isNaN(new Date(value).getTime())) return ''
-	return new Intl.DateTimeFormat(currentLocale.value.intl, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value))
+	return formatDateText(new Date(value), { dateStyle: 'medium', timeStyle: 'short' }, currentLocale.value.intl)
 }
 
 export function entryIcon(item: FileManagerItem): string {

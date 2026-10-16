@@ -26,17 +26,6 @@ function resolveToday(options: { today?: () => Date | undefined }): Date {
 	return options.today?.() ?? new Date()
 }
 
-function getMonthNames(locale: string): string[] {
-	const formatter = new Intl.DateTimeFormat(locale, { month: 'long' })
-	return Array.from({ length: 12 }, (_, index) => formatter.format(new Date(2000, index, 1)))
-}
-
-/** Названия дней недели с воскресенья: 1 января 2023 — воскресенье */
-function getWeekdayNames(locale: string): string[] {
-	const formatter = new Intl.DateTimeFormat(locale, { weekday: 'short' })
-	return Array.from({ length: 7 }, (_, index) => formatter.format(new Date(2023, 0, 1 + index)))
-}
-
 function orderWeekdays(names: string[], offset: number): string[] {
 	return Array.from({ length: 7 }, (_, index) => names[(index + offset) % 7])
 }
@@ -156,8 +145,6 @@ export {
 	buildYearRange,
 	createDayAvailability,
 	createDayMarkers,
-	getMonthNames,
-	getWeekdayNames,
 	hasNextMonth,
 	hasPrevMonth,
 	orderWeekdays,

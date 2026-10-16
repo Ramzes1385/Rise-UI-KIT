@@ -5,8 +5,6 @@ import {
 	buildMonthDays,
 	buildYearRange,
 	createDayMarkers,
-	getMonthNames,
-	getWeekdayNames,
 	hasNextMonth,
 	hasPrevMonth,
 	orderWeekdays,
@@ -33,18 +31,6 @@ function viewState(year: number, month: number, view: CalendarView = 'days') {
 
 describe('calendarUtils', () => {
 	describe('Названия', () => {
-		it('должен вернуть 12 названий месяцев в локали', () => {
-			const names = getMonthNames('ru')
-			expect(names).toHaveLength(12)
-			expect(names[0]).toMatch(/январ/i)
-			expect(names[11]).toMatch(/декабр/i)
-		})
-
-		it('должен вернуть дни недели начиная с воскресенья', () => {
-			const names = getWeekdayNames('en')
-			expect(names).toEqual(['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'])
-		})
-
 		it('должен сдвинуть дни недели на первый день недели', () => {
 			expect(orderWeekdays(['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'], 1)).toEqual(['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс'])
 		})

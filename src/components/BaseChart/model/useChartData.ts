@@ -1,6 +1,7 @@
 import { computed, type Ref } from 'vue'
 import { UI_CHARTS } from '@/locales/messages'
-import { formatMessage, formatNumber, getLocale } from '@/locales/state'
+import { formatDateText } from '@utils/data/dateFormatUtils'
+import { formatMessage, formatNumber } from '@/locales/state'
 import { chartDomain, seriesSpans, spanExtent, stackSpans } from './chart/chartScale'
 import { areaPath, bandSlot, barRect, linePath, tickIndexes, xPosition, yPosition } from './chart/chartGeometry'
 import type {
@@ -32,8 +33,7 @@ function useChartFormat(props: BaseChartProps) {
 		formatValue: (value: number): string => (props.formatValue ? props.formatValue(value) : formatNumber(value, props.valueFormat)),
 		formatLabel(label: ChartLabel | undefined): string {
 			if (props.formatLabel && label !== undefined) return props.formatLabel(label)
-			if (label instanceof Date)
-				return new Intl.DateTimeFormat(getLocale().intl, props.labelFormat ?? DEFAULT_LABEL_FORMAT).format(label)
+			if (label instanceof Date) return formatDateText(label, props.labelFormat ?? DEFAULT_LABEL_FORMAT)
 			return typeof label === 'number' ? formatNumber(label) : (label ?? '')
 		},
 	}

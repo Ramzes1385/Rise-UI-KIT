@@ -1,5 +1,6 @@
 import { UI_CRYPTOPRO } from '@/locales/messages'
 import { formatFileSize } from '@utils/media/fileUtils'
+import { formatDateText } from '@utils/data/dateFormatUtils'
 import type { BaseSelectOption } from '@components/BaseSelect'
 import { formatMessage, getLocale, pluralize } from '@/locales/state'
 import type { CryptoProSignMode } from '../types/BaseCryptoProSign.types'
@@ -10,7 +11,7 @@ const EXPIRY_WARNING_DAYS = 30
 
 export function formatDate(date: Date, withTime = false): string {
 	const time: Intl.DateTimeFormatOptions = withTime ? { hour: '2-digit', minute: '2-digit' } : {}
-	return new Intl.DateTimeFormat(getLocale().intl, { day: '2-digit', month: '2-digit', year: 'numeric', ...time }).format(date)
+	return formatDateText(date, { day: '2-digit', month: '2-digit', year: 'numeric', ...time })
 }
 
 export function isUsable(certificate: CryptoProCertificate, now: Date): boolean {

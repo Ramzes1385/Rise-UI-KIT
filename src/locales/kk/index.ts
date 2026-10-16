@@ -4,6 +4,7 @@ import { kkData } from './data'
 import { kkForms } from './forms'
 import { kkMedia } from './media'
 import { kkPlural } from './plural'
+import { kkCalendar } from './calendar'
 import { kkCard } from './components/card'
 import { kkNotices } from './components/notices'
 import { kkGantt } from './components/data/gantt'
@@ -23,6 +24,7 @@ export const kk: UiKitLocale = {
 	intl: 'kk-KZ',
 	firstDayOfWeek: 1,
 	...kkBase,
+	...kkCalendar,
 	...kkForms,
 	...kkCard,
 	...kkMedia,

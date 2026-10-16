@@ -1,6 +1,7 @@
 /** Утилиты: работа с датами — сравнение, парсинг, форматирование */
 
 import { getLocale, pluralize } from '@/locales/state'
+import { createDateFormat, formatRelativeUnit } from '../dateFormatUtils'
 import type {
 	BuildDateOptions,
 	FormatDateOptions,
@@ -68,7 +69,7 @@ function formatDate(options: FormatDateOptions): string {
 	const { date, showTime, showSeconds, is24Hour, locale } = options
 
 	if (showTime) {
-		return date.toLocaleString(locale, {
+		return createDateFormat(locale, {
 			day: '2-digit',
 			month: '2-digit',
 			year: 'numeric',
@@ -76,14 +77,10 @@ function formatDate(options: FormatDateOptions): string {
 			minute: '2-digit',
 			...(showSeconds ? { second: '2-digit' } : {}),
 			hour12: !is24Hour,
-		})
+		}).format(date)
 	}
 
-	return date.toLocaleDateString(locale, {
-		day: '2-digit',
-		month: '2-digit',
-		year: 'numeric',
-	})
+	return createDateFormat(locale, { day: '2-digit', month: '2-digit', year: 'numeric' }).format(date)
 }
 
 function formatRange(options: FormatRangeOptions): string {
@@ -138,12 +135,7 @@ function formatDatePickerValue(options: FormatDatePickerValueOptions): string {
 }
 
 function formatPopoverDate(options: FormatPopoverDateOptions): string {
-	return options.date.toLocaleDateString(options.locale, {
-		day: 'numeric',
-		month: 'long',
-		year: 'numeric',
-		weekday: 'long',
-	})
+	return createDateFormat(options.locale, { day: 'numeric', month: 'long', year: 'numeric', weekday: 'long' }).format(options.date)
 }
 
 const RELATIVE_STEPS: readonly (readonly [number, number, Intl.RelativeTimeFormatUnit])[] = [
@@ -165,10 +157,10 @@ function formatRelativeTime(date: Date | string | number, options: FormatRelativ
 	const step = RELATIVE_STEPS.find(([limit]) => Math.abs(seconds) < limit)
 	if (step) {
 		const [, size, unit] = step
-		return new Intl.RelativeTimeFormat(locale, { numeric: 'auto' }).format(unit === 'second' ? 0 : Math.round(seconds / size), unit)
+		return formatRelativeUnit(unit === 'second' ? 0 : Math.round(seconds / size), unit, locale)
 	}
 	const year = target.getFullYear() === now.getFullYear() ? undefined : 'numeric'
-	return target.toLocaleDateString(locale, { day: 'numeric', month: 'long', year })
+	return createDateFormat(locale, { day: 'numeric', month: 'long', year }).format(target)
 }
 
 export {

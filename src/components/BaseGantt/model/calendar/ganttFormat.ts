@@ -1,6 +1,8 @@
 import { UI_GANTT } from '@/locales/messages'
 import { durationDays } from '../edit/ganttEdit'
 import type { GanttTaskId } from '../../types/BaseGantt.types'
+import { createDateFormat } from '@utils/data/dateFormatUtils'
+import type { DateFormatter } from '@utils/data/dateFormatUtils'
 import { formatMessage, getLocale, pluralize } from '@/locales/state'
 import type { GanttEdit, GanttItem, GanttScaleFormat, GanttScaleUnit, GanttSpan } from '../../types/BaseGanttModel.types'
 
@@ -20,13 +22,13 @@ const DEPENDENCY_TEXT = {
 	SF: 'DEPENDENCY_SF',
 } as const
 
-const dateFormats = new Map<string, Intl.DateTimeFormat>()
+const dateFormats = new Map<string, DateFormatter>()
 
-export function getDateFormat(intl: string, options: Intl.DateTimeFormatOptions = DEFAULT_DATE_FORMAT): Intl.DateTimeFormat {
+export function getDateFormat(intl: string, options: Intl.DateTimeFormatOptions = DEFAULT_DATE_FORMAT): DateFormatter {
 	const key = `${intl}|${JSON.stringify(options)}`
 	let format = dateFormats.get(key)
 	if (!format) {
-		format = new Intl.DateTimeFormat(intl, options)
+		format = createDateFormat(intl, options)
 		dateFormats.set(key, format)
 	}
 	return format
@@ -34,15 +36,15 @@ export function getDateFormat(intl: string, options: Intl.DateTimeFormatOptions 
 
 export function createScaleFormat(intl: string): GanttScaleFormat {
 	const formats = Object.fromEntries(
-		Object.entries(SCALE_OPTIONS).map(([unit, options]) => [unit, new Intl.DateTimeFormat(intl, options)]),
-	) as Record<GanttScaleUnit, Intl.DateTimeFormat>
+		Object.entries(SCALE_OPTIONS).map(([unit, options]) => [unit, createDateFormat(intl, options)]),
+	) as Record<GanttScaleUnit, DateFormatter>
 	return (date, unit) => {
 		const text = formats[unit].format(date)
 		return text.charAt(0).toLocaleUpperCase(intl) + text.slice(1)
 	}
 }
 
-export function taskLabel(item: GanttItem, span: GanttSpan, format: Intl.DateTimeFormat): string {
+export function taskLabel(item: GanttItem, span: GanttSpan, format: DateFormatter): string {
 	if (item.isMilestone) return formatMessage(UI_GANTT.MILESTONE_LABEL, { name: item.name, date: format.format(span.start) })
 	return formatMessage(UI_GANTT.TASK_LABEL, {
 		name: item.name,
@@ -60,7 +62,7 @@ export function dependencyLabel(item: GanttItem, namesById: ReadonlyMap<GanttTas
 	return parts.length ? formatMessage(UI_GANTT.DEPENDENCIES, { list: parts.join(', ') }) : ''
 }
 
-export function editMessage(item: GanttItem, edit: GanttEdit, format: Intl.DateTimeFormat): string {
+export function editMessage(item: GanttItem, edit: GanttEdit, format: DateFormatter): string {
 	const { start, end } = edit.span
 	if (item.isMilestone) return formatMessage(UI_GANTT.MILESTONE_MOVED, { name: item.name, date: format.format(start) })
 	const dates = { name: item.name, start: format.format(start), end: format.format(end) }

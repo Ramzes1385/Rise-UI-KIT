@@ -2,7 +2,8 @@
 import { computed } from 'vue'
 import { getWeekNumber } from '@utils/data/dateUtils'
 import type { UseCalendarGridOptions } from './types/useCalendarGrid.types'
-import { buildMonthDays, buildYearRange, getMonthNames, getWeekdayNames, orderWeekdays } from './calendarUtils'
+import { getMonthNames, getWeekdayNames } from '@utils/data/dateFormatUtils'
+import { buildMonthDays, buildYearRange, orderWeekdays } from './calendarUtils'
 
 function useCalendarGrid(options: UseCalendarGridOptions) {
 	const { currentMonth, currentYear, currentView, locale, firstDayOfWeek, showYear } = options

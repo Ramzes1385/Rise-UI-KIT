@@ -26,6 +26,15 @@ export function registerLocale(locale: UiKitLocale): void {
 	if (currentLocale.value.code === locale.code) currentLocale.value = locale
 }
 
+/** Словарь с запасными названиями месяцев и дней для языкового тега Intl: сначала тот же тег, затем тот же основной язык (`kk` для `kk-KZ`) */
+export function findCalendarLocale(intl: string): UiKitLocale | undefined {
+	const candidates = [currentLocale.value, ...registered.value.values(), ...Object.values(LOCALES)].filter(locale => locale.calendarNames)
+	const language = intl.split('-')[0].toLowerCase()
+	return (
+		candidates.find(locale => locale.intl === intl) ?? candidates.find(locale => locale.intl.split('-')[0].toLowerCase() === language)
+	)
+}
+
 /** Коды доступных языков: встроенные и зарегистрированные; реактивный список для переключателя языка */
 export const localeCodes = computed(() => [...new Set([...Object.keys(LOCALES), ...registered.value.keys()])])
 

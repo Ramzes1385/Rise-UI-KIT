@@ -7,6 +7,7 @@ import { zh } from '../zh'
 import type { UiKitLocale } from '../types/locales.types'
 import { currentLocale, defineLocale, formatMessage, formatNumber, getLocale, LOCALES, pluralize, setLocale } from '../state'
 
+const OPTIONAL_FIELDS = ['calendarNames', 'relativeTime']
 const SECTIONS = Object.keys(ru).filter(key => !['code', 'intl', 'firstDayOfWeek'].includes(key)) as (keyof typeof ru & keyof UiKitLocale)[]
 
 const ALL_LOCALES: UiKitLocale[] = [ru, en, kk, uz, zh, ja]
@@ -19,7 +20,11 @@ describe.each(TRANSLATIONS)('словарь %s', (code, locale) => {
 	})
 
 	it('те же разделы, что в русском', () => {
-		expect(Object.keys(locale).sort()).toEqual(Object.keys(ru).sort())
+		expect(
+			Object.keys(locale)
+				.filter(key => !OPTIONAL_FIELDS.includes(key))
+				.sort(),
+		).toEqual(Object.keys(ru).sort())
 	})
 
 	it.each(SECTIONS)('раздел %s: те же ключи, что в русском', section => {

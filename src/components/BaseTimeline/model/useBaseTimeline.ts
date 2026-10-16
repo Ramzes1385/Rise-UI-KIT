@@ -1,6 +1,6 @@
 import { computed } from 'vue'
-import { getLocale } from '@/locales/state'
 import { useUi } from '@composables/base/useUi'
+import { formatDateText } from '@utils/data/dateFormatUtils'
 import type { BaseTimelineProps } from '../types/BaseTimeline.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 
@@ -13,7 +13,7 @@ const DAY_FORMAT: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', 
 const TIME_FORMAT: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit' }
 
 function formatIntl(date: Date, options: Intl.DateTimeFormatOptions): string {
-	return new Intl.DateTimeFormat(getLocale().intl, options).format(date)
+	return formatDateText(date, options)
 }
 
 function dayOf(value: Date | string | undefined): string | undefined {

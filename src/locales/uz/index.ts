@@ -4,6 +4,7 @@ import { uzData } from './data'
 import { uzForms } from './forms'
 import { uzMedia } from './media'
 import { uzPlural } from './plural'
+import { uzCalendar } from './calendar'
 import { uzCard } from './components/card'
 import { uzNotices } from './components/notices'
 import { uzGantt } from './components/data/gantt'
@@ -23,6 +24,7 @@ export const uz: UiKitLocale = {
 	intl: 'uz-Latn-UZ',
 	firstDayOfWeek: 1,
 	...uzBase,
+	...uzCalendar,
 	...uzForms,
 	...uzCard,
 	...uzMedia,

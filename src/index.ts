@@ -17,7 +17,16 @@ export type {
 	UseLocaleReturn,
 } from './composables'
 export { defineLocale, en, formatMessage, ja, kk, LOCALES, pluralize, registerLocale, ru, setLocale, uz, zh } from './locales'
-export type { LocaleInput, LocaleOverrides, PluralForms, UiKitLocale } from './locales'
+export type {
+	CalendarNames,
+	CalendarPatterns,
+	LocaleInput,
+	LocaleOverrides,
+	PluralForms,
+	RelativeTimeNames,
+	RelativeTimeUnit,
+	UiKitLocale,
+} from './locales'
 export * as icons from './icons'
 export { createUiKitConfig, createUiKitPlugin, default, UI_COMPONENTS, uiKitPlugin } from './plugin'
 export type { UiKitConfigOptions, UiKitPluginOptions } from './plugin'

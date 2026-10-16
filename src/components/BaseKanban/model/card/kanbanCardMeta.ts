@@ -1,4 +1,5 @@
 import { UI_KANBAN } from '@/locales/messages'
+import { formatDateText } from '@utils/data/dateFormatUtils'
 import { formatMessage, getLocale, pluralize } from '@/locales/state'
 import type { KanbanCard, KanbanCardMeta, KanbanDueStatus, KanbanPriority } from '../../types/BaseKanban.types'
 
@@ -26,8 +27,7 @@ function dueStatus(due: Date, today: Date, isDone: boolean): KanbanDueStatus {
 	return days === 1 ? 'tomorrow' : 'later'
 }
 
-const formatDay = (date: Date, month: 'short' | 'long'): string =>
-	new Intl.DateTimeFormat(getLocale().intl, { day: 'numeric', month }).format(date)
+const formatDay = (date: Date, month: 'short' | 'long'): string => formatDateText(date, { day: 'numeric', month })
 
 function dueText(status: KanbanDueStatus, date: Date): string {
 	if (status === 'today') return UI_KANBAN.TODAY
