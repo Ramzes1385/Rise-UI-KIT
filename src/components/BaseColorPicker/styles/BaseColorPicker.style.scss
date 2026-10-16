@@ -280,7 +280,6 @@
 	}
 
 	&__channel .base-input__wrapper {
-		box-sizing: border-box;
 		@include field-box(color-picker);
 	}
 

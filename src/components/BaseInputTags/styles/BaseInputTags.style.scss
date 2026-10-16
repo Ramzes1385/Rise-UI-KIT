@@ -12,10 +12,6 @@
 	display: block;
 	width: 100%;
 
-	.base-input__wrapper {
-		box-sizing: border-box;
-	}
-
 	&--has-tags .base-input__wrapper {
 		flex-wrap: wrap;
 		align-items: center;

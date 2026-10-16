@@ -110,7 +110,6 @@
 	}
 
 	&__input .base-input__wrapper {
-		box-sizing: border-box;
 		@include field-box(filter-builder-field);
 	}
 

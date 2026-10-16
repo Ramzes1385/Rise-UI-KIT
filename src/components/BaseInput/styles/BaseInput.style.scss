@@ -18,6 +18,7 @@
 		position: relative;
 		display: flex;
 		align-items: stretch;
+		box-sizing: border-box;
 		width: 100%;
 		overflow: hidden;
 		@include field-box(input);
