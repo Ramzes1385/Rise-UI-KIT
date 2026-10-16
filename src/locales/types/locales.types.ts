@@ -94,4 +94,5 @@ export type LocaleOverrides = Partial<Pick<UiKitLocale, 'code' | 'intl' | 'first
 	[K in LocaleSection | 'plural']?: Partial<UiKitLocale[K]>
 }
 
-export type LocaleInput = keyof typeof LOCALES | UiKitLocale
+/** Язык: код встроенного языка (подсказка редактора), код языка из `registerLocale()` или словарь (`defineLocale`) */
+export type LocaleInput = keyof typeof LOCALES | (string & Record<never, never>) | UiKitLocale

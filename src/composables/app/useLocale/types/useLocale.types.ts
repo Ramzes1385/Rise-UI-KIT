@@ -4,9 +4,11 @@ import type { LocaleInput, PluralForms, UiKitLocale } from '@/locales/types/loca
 export interface UseLocaleReturn {
 	/** Код текущего языка: `ru`, `en` */
 	locale: ComputedRef<string>
+	/** Коды доступных языков: встроенные и добавленные `registerLocale()` — для переключателя языка */
+	locales: ComputedRef<string[]>
 	/** Словарь текущего языка */
 	messages: ComputedRef<UiKitLocale>
-	/** Меняет язык кита: код встроенного языка или словарь (`defineLocale`) */
+	/** Меняет язык кита: код встроенного или зарегистрированного (`registerLocale`) языка либо словарь (`defineLocale`) */
 	setLocale: (locale: LocaleInput) => void
 	/** Число в формате языка: `1 234,5` по-русски, `1,234.5` по-английски */
 	formatNumber: (value: number, options?: Intl.NumberFormatOptions) => string

@@ -23,7 +23,7 @@ describe('warn', () => {
 		setLocale('en')
 		setLocale('de' as 'ru')
 
-		expect(spy).toHaveBeenCalledWith('[rise-ui-kit] Unknown locale "de". Built-in: ru, en; for your own use defineLocale()')
+		expect(spy).toHaveBeenCalledWith('[rise-ui-kit] Unknown locale "de". Available: ru, en; add your own with registerLocale()')
 		spy.mockRestore()
 	})
 })

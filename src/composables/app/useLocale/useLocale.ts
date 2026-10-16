@@ -1,7 +1,7 @@
 /** Composable: язык кита — строки интерфейса, даты, числа и множественное число */
 import { computed } from 'vue'
 import type { UseLocaleReturn } from './types/useLocale.types'
-import { currentLocale, formatMessage, formatNumber, pluralize, setLocale } from '@/locales/state'
+import { currentLocale, formatMessage, formatNumber, localeCodes, pluralize, setLocale } from '@/locales/state'
 
 /**
  * Язык кита: один на страницу. По умолчанию русский; `setLocale('en')`, `createUiKitPlugin({ locale })`
@@ -15,6 +15,7 @@ import { currentLocale, formatMessage, formatNumber, pluralize, setLocale } from
 export function useLocale(): UseLocaleReturn {
 	return {
 		locale: computed(() => currentLocale.value.code),
+		locales: localeCodes,
 		messages: computed(() => currentLocale.value),
 		setLocale,
 		formatNumber: (value, options) => formatNumber(value, options),

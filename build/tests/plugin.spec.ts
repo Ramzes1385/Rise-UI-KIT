@@ -1,9 +1,11 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { mount } from '@vue/test-utils'
-import { setLocale } from '@/locales/state'
+import { defineLocale, registerLocale, setLocale } from '@/locales/state'
 import { defineComponent, h, inject } from 'vue'
-import { UI_ARIA } from '@/locales/messages'
+import { en } from '@/locales/en'
+import { ru } from '@/locales/ru'
+import { UI_ARIA, UI_TEXT } from '@/locales/messages'
 import { createUiKitPlugin, UI_COMPONENTS, uiKitPlugin } from '@/plugin'
 import { TELEPORT_TARGET_KEY } from '@composables/app/useTeleportTarget/useTeleportTarget'
 import { useTheme } from '@composables/app/useTheme/useTheme'
@@ -95,6 +97,22 @@ describe('createUiKitPlugin', () => {
 		expect(UI_ARIA.BREADCRUMBS_NAV).toBe('Breadcrumbs')
 		setLocale('ru')
 	})
+	it('locale принимает словарь, строки поверх готового языка и код зарегистрированного языка', () => {
+		const Probe = defineComponent({ setup: () => () => h('output', UI_TEXT.EMPTY) })
+		const mountWith = (locale: Parameters<typeof createUiKitPlugin>[0] extends infer O ? NonNullable<O>['locale'] : never) =>
+			mount(Probe, { global: { plugins: [createUiKitPlugin({ locale })] } })
+
+		expect(mountWith(defineLocale(ru, { text: { EMPTY: 'Пока пусто' } })).text()).toBe('Пока пусто')
+		expect(UI_TEXT.CANCEL).toBe(ru.text.CANCEL)
+
+		expect(mountWith(defineLocale(en, { code: 'en-GB', text: { EMPTY: 'Nothing here' } })).text()).toBe('Nothing here')
+		expect(UI_TEXT.CANCEL).toBe(en.text.CANCEL)
+
+		registerLocale(defineLocale(en, { code: 'xx', intl: 'de-DE', text: { EMPTY: 'Leer' } }))
+		expect(mountWith('xx').text()).toBe('Leer')
+		setLocale('ru')
+	})
+
 	it('theme, themes и themeNonce: тема на html, style с nonce, свои темы доступны useTheme', () => {
 		const brand = createTheme({ name: 'brand', primary: '#0f766e' })
 		mount(defineComponent({ setup: () => () => h('div') }), {

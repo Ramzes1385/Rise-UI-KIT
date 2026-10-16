@@ -1,7 +1,6 @@
 import '@testing-library/jest-dom/vitest'
 import BaseApp from '../ui/BaseApp.vue'
 import { defineComponent, h } from 'vue'
-import { getLocale, setLocale } from '@/locales/state'
 import type { UseToastReturn } from '@composables/app/useToast'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import type { BaseAppToasterOptions } from '../types/BaseApp.types'
@@ -9,6 +8,7 @@ import { useTeleportTarget } from '@composables/app/useTeleportTarget'
 import type { UseOverlayReturn } from '@composables/overlay/useOverlay'
 import { getActiveToastStore, useToast } from '@composables/app/useToast'
 import { getActiveOverlayStore, useOverlay } from '@composables/overlay/useOverlay'
+import { defineLocale, getLocale, registerLocale, setLocale } from '@/locales/state'
 
 const TestDialog = defineComponent({
 	name: 'TestDialog',
@@ -75,6 +75,18 @@ describe('BaseApp', () => {
 		render(BaseApp, { props: { locale: 'en' }, slots: { default: () => h('main', 'Приложение') } })
 
 		expect(getLocale().code).toBe('en')
+		setLocale('ru')
+	})
+
+	it('locale принимает код зарегистрированного языка и словарь со своими строками', async () => {
+		const brand = defineLocale(getLocale(), { code: 'brand', text: { EMPTY: 'Пока пусто' } })
+		registerLocale(brand)
+		const view = render(BaseApp, { props: { locale: 'brand' }, slots: { default: () => h('main', 'Приложение') } })
+
+		expect(getLocale()).toBe(brand)
+
+		await view.rerender({ locale: defineLocale(brand, { code: 'other' }) })
+		expect(getLocale().code).toBe('other')
 		setLocale('ru')
 	})
 

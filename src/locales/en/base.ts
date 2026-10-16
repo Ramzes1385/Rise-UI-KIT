@@ -229,7 +229,7 @@ export const enBase = {
 		DASHBOARD_GRID_DUPLICATE_ID: 'BaseDashboardGrid: id "{id}" appears in the layout more than once — duplicates are not shown',
 		TOOLTIP_WRAPPERLESS_ROOT:
 			'BaseTooltip: with isWrapperless the root of the trigger slot must be an element, not text or a fragment — the tooltip is not attached',
-		UNKNOWN_LOCALE: 'Unknown locale "{locale}". Built-in: {locales}; for your own use defineLocale()',
+		UNKNOWN_LOCALE: 'Unknown locale "{locale}". Available: {locales}; add your own with registerLocale()',
 		TOAST_WITHOUT_APP: 'useToast: <BaseApp> not found — the notification was not shown. Wrap the app in <BaseApp>.',
 		OVERLAY_WITHOUT_APP: 'useOverlay: <BaseApp> not found — the overlay was not shown. Wrap the app in <BaseApp>.',
 		EDITOR_UNSAFE_LINK: 'BaseEditor: a link with an unsafe scheme was not inserted: {url}',

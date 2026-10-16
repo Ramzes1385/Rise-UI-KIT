@@ -1,5 +1,6 @@
+import { en } from '@/locales/en'
 import { useLocale } from '../useLocale'
-import { setLocale } from '@/locales/state'
+import { defineLocale, registerLocale, setLocale } from '@/locales/state'
 
 afterEach(() => {
 	setLocale('ru')
@@ -29,5 +30,16 @@ describe('useLocale', () => {
 		expect(formatNumber(1234.5)).toBe('1,234.5')
 		expect(formatDate(date, { month: 'long' })).toBe('May')
 		expect(plural({ one: '{n} file', other: '{n} files' }, 1)).toBe('1 file')
+	})
+
+	it('locales — коды доступных языков, включая зарегистрированные', () => {
+		const { locales, locale, setLocale: change } = useLocale()
+		expect(locales.value).toEqual(expect.arrayContaining(['ru', 'en']))
+
+		registerLocale(defineLocale(en, { code: 'tt', intl: 'tt-RU' }))
+		expect(locales.value).toContain('tt')
+
+		change('tt')
+		expect(locale.value).toBe('tt')
 	})
 })

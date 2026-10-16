@@ -259,7 +259,7 @@ export const ruBase = {
 		DASHBOARD_GRID_DUPLICATE_ID: 'BaseDashboardGrid: id «{id}» встречается в раскладке повторно — повторы не показаны',
 		TOOLTIP_WRAPPERLESS_ROOT:
 			'BaseTooltip: при isWrapperless корень слота trigger должен быть элементом, а не текстом или фрагментом — подсказка не привязана',
-		UNKNOWN_LOCALE: 'Неизвестный язык «{locale}». Встроенные: {locales}; свой — defineLocale()',
+		UNKNOWN_LOCALE: 'Неизвестный язык «{locale}». Доступные: {locales}; свой язык — registerLocale()',
 		TOAST_WITHOUT_APP: 'useToast: не найден <BaseApp> — уведомление не показано. Оберните приложение в <BaseApp>.',
 		OVERLAY_WITHOUT_APP: 'useOverlay: не найден <BaseApp> — оверлей не показан. Оберните приложение в <BaseApp>.',
 		EDITOR_UNSAFE_LINK: 'BaseEditor: ссылка с небезопасной схемой не вставлена: {url}',

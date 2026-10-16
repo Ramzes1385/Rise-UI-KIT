@@ -1,7 +1,7 @@
 import { en } from './en'
 import { ru } from './ru'
 /** Текущий язык кита: один на страницу. Его задают `createUiKitPlugin({ locale })`, `<BaseApp locale>` и `setLocale()` */
-import { shallowRef } from 'vue'
+import { computed, shallowRef } from 'vue'
 import type { LocaleInput, LocaleOverrides, UiKitLocale } from './types/locales.types'
 
 export const LOCALES = { ru: ru as UiKitLocale, en } as const
@@ -9,16 +9,38 @@ export const LOCALES = { ru: ru as UiKitLocale, en } as const
 /** Текущий язык: shallowRef — компоненты перерисовываются при смене языка */
 export const currentLocale = shallowRef<UiKitLocale>(LOCALES.ru)
 
-/** Меняет язык кита. Неизвестный код оставляет текущий язык и пишет предупреждение */
+/** Языки, зарегистрированные приложением через `registerLocale()`: по коду; shallowRef — список кодов реактивен */
+const registered = shallowRef<ReadonlyMap<string, UiKitLocale>>(new Map())
+
+/**
+ * Регистрирует язык приложения по `locale.code`: после этого его принимают `setLocale('xx')`, `<BaseApp locale="xx">`
+ * и `createUiKitPlugin({ locale: 'xx' })`. Повторная регистрация того же кода (в том числе встроенного `ru`, `en`)
+ * заменяет прежний словарь; если этот язык сейчас включён, строки обновляются сразу.
+ *
+ * @example
+ * registerLocale(defineLocale(en, { code: 'de', intl: 'de-DE', firstDayOfWeek: 1, text: { EMPTY: 'Leer' } }))
+ * setLocale('de')
+ */
+export function registerLocale(locale: UiKitLocale): void {
+	registered.value = new Map(registered.value).set(locale.code, locale)
+	if (currentLocale.value.code === locale.code) currentLocale.value = locale
+}
+
+/** Коды доступных языков: встроенные и зарегистрированные; реактивный список для переключателя языка */
+export const localeCodes = computed(() => [...new Set([...Object.keys(LOCALES), ...registered.value.keys()])])
+
+/** Меняет язык кита: код встроенного или зарегистрированного (`registerLocale`) языка либо словарь. Неизвестный код оставляет текущий язык и пишет предупреждение */
 export function setLocale(locale: LocaleInput): void {
 	if (typeof locale !== 'string') {
 		currentLocale.value = locale
 		return
 	}
-	const builtIn = LOCALES[locale]
-	if (builtIn) currentLocale.value = builtIn
+	const known =
+		registered.value.get(locale) ??
+		(Object.keys(LOCALES).includes(locale) ? (LOCALES as Record<string, UiKitLocale>)[locale] : undefined)
+	if (known) currentLocale.value = known
 	else {
-		const message = formatMessage(currentLocale.value.warnings.UNKNOWN_LOCALE, { locale, locales: Object.keys(LOCALES).join(', ') })
+		const message = formatMessage(currentLocale.value.warnings.UNKNOWN_LOCALE, { locale, locales: localeCodes.value.join(', ') })
 		console.warn(`[rise-ui-kit] ${message}`)
 	}
 }
