@@ -6,6 +6,7 @@
 	box-sizing: border-box;
 	width: 100%;
 	min-width: 0;
+	container-type: inline-size;
 	padding: space(ct(subtitle-editor, padding, 12px));
 	border: 1px solid ct(subtitle-editor, border, var(--rise-border));
 	border-radius: sz(ct(subtitle-editor, radius, var(--rise-radius-lg)));
@@ -131,6 +132,45 @@
 	&__actions {
 		display: flex;
 		gap: sz(2px);
+	}
+
+	@container (max-width: 480px) {
+		&__row {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: flex-start;
+			gap: 0 sz(6px);
+
+			&::after {
+				content: '';
+				flex: 1 0 100%;
+				order: 1;
+			}
+		}
+
+		&__number {
+			flex: none;
+			width: sz(24px);
+		}
+
+		&__time {
+			flex: 1 1 0;
+			min-width: sz(64px);
+			max-width: sz(96px);
+		}
+
+		&__text {
+			flex: 1 1 0;
+			order: 2;
+			min-width: 0;
+			margin-top: sz(6px);
+		}
+
+		&__actions {
+			flex: none;
+			order: 3;
+			margin-top: sz(6px);
+		}
 	}
 }
 
