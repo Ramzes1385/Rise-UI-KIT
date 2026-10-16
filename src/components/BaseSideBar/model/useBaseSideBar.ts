@@ -1,4 +1,5 @@
 import { useUi } from '@composables/base/useUi'
+import { computed, ref, useSlots, watch } from 'vue'
 import { UI_ARIA, UI_TEXT } from '@/locales/messages'
 import { SideBarPassthrough } from './SideBarPassthrough'
 import { BaseSlideover } from '@components/BaseSlideover'
@@ -6,8 +7,8 @@ import { usePadding } from '@composables/base/usePadding'
 import { useBreakpoint } from '@composables/app/useBreakpoint'
 import { useLinkComponent } from '@composables/interaction/useLink'
 import { useSideBarCollapseMotion } from './useSideBarCollapseMotion'
-import { computed, getCurrentInstance, ref, useSlots, watch } from 'vue'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import { useExplicitPropDetection } from '@composables/base/useExplicitPropDetection'
 import type { BaseSideBarEmits, SideBarItem, SideBarProps } from '../types/BaseSideBar.types'
 
 const SIDEBAR_ELEMENTS = ['root', 'header', 'title', 'toggle', 'navigation', 'loading', 'body', 'footer', 'collapsed']
@@ -42,13 +43,9 @@ function useSideBarMobile(props: SideBarProps, emit: BaseSideBarEmits) {
 }
 
 function useCollapsedState(props: SideBarProps, emit: BaseSideBarEmits) {
-	const instance = getCurrentInstance()
+	const { wasPropPassed } = useExplicitPropDetection()
 	const internalCollapsed = ref(props.isCollapsed === true)
-	const isCollapsedControlled = computed(() => {
-		const hasValue = props.isCollapsed !== undefined
-		const rawProps = instance?.vnode.props ?? {}
-		return hasValue && ('isCollapsed' in rawProps || 'is-collapsed' in rawProps)
-	})
+	const isCollapsedControlled = computed(() => props.isCollapsed !== undefined && wasPropPassed('isCollapsed'))
 	const isCollapsedState = computed(() => (isCollapsedControlled.value ? props.isCollapsed === true : internalCollapsed.value))
 
 	watch(
