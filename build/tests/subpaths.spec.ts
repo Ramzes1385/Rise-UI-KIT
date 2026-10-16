@@ -3,10 +3,9 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import type { Rollup } from 'vite'
-import { componentOfModule, readPublicComponents } from '../config/subpaths'
+import { componentOfModule, readPublicComponents, subpathExports, withSubpathExports } from '../config/subpaths'
 import { createSubpathCssGroups, createSubpathScssOptions } from '../plugins/subpathCss'
 import { collectStyleComponents, createSubpathEntries } from '../plugins/subpaths'
-import { subpathExports, withSubpathExports } from '../../scripts/generate-subpath-exports.mjs'
 
 const ROOT = resolve(import.meta.dirname, '../..')
 const pkg = JSON.parse(readFileSync(resolve(ROOT, 'package.json'), 'utf8')) as { exports: Record<string, unknown> }

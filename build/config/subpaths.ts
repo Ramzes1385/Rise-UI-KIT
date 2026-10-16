@@ -44,3 +44,42 @@ export const TOKENS_LAYER_CSS_FILE = 'tokens.layer.css'
 
 /** Файл SCSS с токенами и базой кита: в `tokens.css` он попадает целиком, вместе с выводом prelude (build/config/css.ts) */
 export const TOKENS_SOURCE = 'src/styles/kit.scss'
+
+type ExportTarget = string | Record<string, string>
+
+const EXPORTS_ANCHOR = './icons.svg'
+const GENERATED_EXPORT = /^\.\/(?:Base\w+|tokens(?:\.layer)?\.css)$/
+
+const cssExport = (file: string): Record<string, string> => ({
+	types: './dist/styles.d.ts',
+	import: `./dist/${file}`,
+	default: `./dist/${file}`,
+})
+
+/** Ключи exports точечной установки в порядке записи (`components` — список, если его ещё нет на диске, как в create:component) */
+export function subpathExports(
+	root: string = process.cwd(),
+	components: string[] = readPublicComponents(root),
+): Record<string, ExportTarget> {
+	const entries: [string, ExportTarget][] = [
+		[`./${TOKENS_CSS_FILE}`, cssExport(TOKENS_CSS_FILE)],
+		[`./${TOKENS_LAYER_CSS_FILE}`, cssExport(TOKENS_LAYER_CSS_FILE)],
+	]
+	for (const component of components) {
+		const file = subpathEntryName(component)
+		entries.push([`./${component}`, { types: `./dist/${file}.d.ts`, import: `./dist/${file}.js` }])
+	}
+	return Object.fromEntries(entries)
+}
+
+/** exports пакета с подпутями на месте: свои ключи — как были, сгенерированные — заново, перед `./icons.svg` */
+export function withSubpathExports(
+	exports: Record<string, unknown>,
+	root: string = process.cwd(),
+	components: string[] = readPublicComponents(root),
+): Record<string, unknown> {
+	const own = Object.entries(exports).filter(([key]) => !GENERATED_EXPORT.test(key))
+	const anchor = own.findIndex(([key]) => key === EXPORTS_ANCHOR)
+	const at = anchor < 0 ? own.length : anchor
+	return Object.fromEntries([...own.slice(0, at), ...Object.entries(subpathExports(root, components)), ...own.slice(at)])
+}

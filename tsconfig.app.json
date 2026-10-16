@@ -62,6 +62,11 @@
     "build/tests/*.spec.ts",
     "build/plugins/slotDocs.ts",
     "build/plugins/cssSplit.ts",
-    "build/config/cssSplit.ts"
+    "build/config/cssSplit.ts",
+    "build/plugins/subpaths.ts",
+    "build/plugins/subpathCss.ts",
+    "build/config/subpaths.ts",
+    "build/config/css.ts",
+    "build/utils/helpers.ts"
   ]
 }

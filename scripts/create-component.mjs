@@ -3,8 +3,7 @@
 import { execFileSync } from 'node:child_process'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
-import { readPublicComponents } from '../build/config/subpaths.ts'
-import { withSubpathExports } from './generate-subpath-exports.mjs'
+import { readPublicComponents, withSubpathExports } from '../build/config/subpaths.ts'
 
 const ROOT = resolve(process.cwd())
 const COMPONENTS_DIR = join(ROOT, 'src/components')
