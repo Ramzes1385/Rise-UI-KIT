@@ -1,5 +1,5 @@
 /** Сведения о неделе языка (`Intl.Locale`): `firstDay` — 1 (понедельник) … 7 (воскресенье) */
-export interface LocaleWeekInfo {
+interface LocaleWeekInfo {
 	firstDay?: number
 }
 
