@@ -2,11 +2,13 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { mount } from '@vue/test-utils'
 import { defineLocale, registerLocale, setLocale } from '@/locales/state'
-import { defineComponent, h, inject } from 'vue'
+import { createApp, defineComponent, h, inject } from 'vue'
 import { en } from '@/locales/en'
 import { ru } from '@/locales/ru'
 import { UI_ARIA, UI_TEXT } from '@/locales/messages'
-import { createUiKitPlugin, UI_COMPONENTS, uiKitPlugin } from '@/plugin'
+import { createUiKitConfig, createUiKitPlugin, UI_COMPONENTS, uiKitPlugin } from '@/plugin'
+import * as kitRoot from '@/index'
+import { createUiKitConfig as createUiKitConfigEntry } from '@/config'
 import type { UiKitPluginOptions } from '@/plugin'
 import { TELEPORT_TARGET_KEY } from '@composables/app/useTeleportTarget/useTeleportTarget'
 import { useTheme } from '@composables/app/useTheme/useTheme'
@@ -126,5 +128,94 @@ describe('createUiKitPlugin', () => {
 		expect(useTheme().theme.value).toBe('corporate')
 		document.documentElement.removeAttribute('data-rise-theme')
 		document.documentElement.removeAttribute('data-theme')
+	})
+})
+
+describe('createUiKitConfig', () => {
+	const Probe = defineComponent({ setup: () => () => h('output', String(inject(TELEPORT_TARGET_KEY, 'body'))) })
+
+	afterEach(() => {
+		setLocale('ru')
+		document.documentElement.removeAttribute('data-rise-theme')
+		document.documentElement.removeAttribute('data-theme')
+		document.documentElement.removeAttribute('data-rise-motion')
+		document.documentElement.removeAttribute('data-rise-reduced-motion')
+	})
+
+	it('не регистрирует компоненты глобально', () => {
+		const app = createApp({ render: () => null }).use(createUiKitConfig({ locale: 'ru' }))
+
+		expect(app.component('BaseButton')).toBeUndefined()
+		expect(app.component('BaseTable')).toBeUndefined()
+	})
+
+	it('без настроек ничего не меняет', () => {
+		const wrapper = mount(Probe, { global: { plugins: [createUiKitConfig()] } })
+
+		expect(wrapper.text()).toBe('body')
+		expect(document.documentElement.hasAttribute('data-rise-theme')).toBe(false)
+		expect(UI_ARIA.BREADCRUMBS_NAV).toBe(ru.aria.BREADCRUMBS_NAV)
+	})
+
+	it('defaults, icons, iconSpritePath: компоненты с подпутей и из корня получают настройки', () => {
+		const plugin = createUiKitConfig({
+			iconSpritePath: '/icons.svg',
+			icons: { close: 'x-mark', search: CustomIcon },
+			defaults: { global: { sizeScale: 90 }, BaseButton: { variant: 'soft' } },
+		})
+		const wrapper = mount(
+			{ render: () => [h(BaseButton, null, () => 'Сохранить'), h(BaseIcon, { name: 'close' }), h(BaseIcon, { name: 'search' })] },
+			{ global: { plugins: [plugin] } },
+		)
+
+		const button = wrapper.get('button')
+		expect(button.classes()).toContain('base-button--soft')
+		expect(button.attributes('style')).toContain('--size-scale: 0.9')
+		expect(wrapper.get('use').attributes('href')).toBe('/icons.svg#x-mark')
+		expect(wrapper.get('[data-custom]').classes()).toContain('base-icon__svg')
+	})
+
+	it('linkComponent: ссылки на маршруты рендерит компонент приложения', () => {
+		const wrapper = mount(BaseLink, {
+			props: { to: '/docs', label: 'Документация' },
+			global: { plugins: [createUiKitConfig({ linkComponent: RouterLinkStub })] },
+		})
+
+		expect(wrapper.get('a').attributes()).toMatchObject({ href: '/docs', 'data-router': '' })
+	})
+
+	it('teleportTo и locale: контейнер слоёв для provide, язык — для всего кита', () => {
+		const wrapper = mount(Probe, { global: { plugins: [createUiKitConfig({ teleportTo: '#layers', locale: 'en' })] } })
+
+		expect(wrapper.text()).toBe('#layers')
+		expect(UI_ARIA.BREADCRUMBS_NAV).toBe('Breadcrumbs')
+	})
+
+	it('theme, themes, themeNonce, motion и reducedMotion: атрибуты на html, style с nonce', () => {
+		const brand = createTheme({ name: 'brand', primary: '#0f766e' })
+		createApp({ render: () => null }).use(
+			createUiKitConfig({ theme: brand, themes: [brand], themeNonce: 'nonce-2', motion: 'subtle', reducedMotion: 'always' }),
+		)
+
+		const root = document.documentElement
+		expect(root.getAttribute('data-rise-theme')).toBe('brand')
+		expect(document.head.querySelector<HTMLStyleElement>('style[data-rise-theme-style="brand"]')?.nonce).toBe('nonce-2')
+		expect(root.getAttribute('data-rise-motion')).toBe('subtle')
+		expect(root.getAttribute('data-rise-reduced-motion')).toBe('always')
+	})
+
+	it('без document (SSR): движение и тема не трогают html, остальные настройки ставятся', () => {
+		vi.stubGlobal('document', undefined)
+		const app = createApp({ render: () => null })
+		app.use(createUiKitConfig({ motion: 'subtle', reducedMotion: 'always', locale: 'en' }))
+		vi.unstubAllGlobals()
+
+		expect(document.documentElement.hasAttribute('data-rise-motion')).toBe(false)
+		expect(UI_ARIA.BREADCRUMBS_NAV).toBe('Breadcrumbs')
+	})
+
+	it('экспортируется из входа плагина, корня и /config — одной и той же функцией', () => {
+		expect(kitRoot.createUiKitConfig).toBe(createUiKitConfig)
+		expect(createUiKitConfigEntry).toBe(createUiKitConfig)
 	})
 })

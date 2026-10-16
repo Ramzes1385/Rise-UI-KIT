@@ -8,6 +8,9 @@
  * - `root-button` — то же из корня пакета + `styles.css`: с чем сравнивается размер;
  * - `subpath-select` — `@ramzes1385/rise-ui-kit/BaseSelect` (внутри BaseDropdown, BaseInput, BaseIcon…) + `tokens.css`:
  *   их CSS приходит сам, а снимок страницы с открытым списком совпадает со снимком `root-select` (корень + `styles.css`);
+ * - `config-subpath` — `BaseButton` с подпути + `createUiKitConfig` из `@ramzes1385/rise-ui-kit/config` (настройки без регистрации
+ *   компонентов): в JS нет BaseTable и BaseEditor, а настройки (`defaults`) доходят до компонента — класс `base-button--soft`;
+ *   `config-root` — то же, но `createUiKitConfig` из корня пакета (тряска дерева отсекает реестр компонентов);
  * - `plugin` — `createUiKitPlugin` из корня: тяжёлые компоненты (BaseTable…) не в стартовом JS, а в чанке по `import()` (FOLLOW_UPS № 58).
  *
  * В каждом сценарии код компонента должен дойти до приложения (класс `base-button`/`base-select` в JS), а в браузере —
@@ -55,13 +58,41 @@ createApp({ render: () => h('main', { style: 'padding: 24px' }, [h(resolveCompon
 	.mount('#app')
 `
 
+const CONFIG_APP = (buttonFrom, configFrom) => `import { createApp, h } from 'vue'
+import { BaseButton } from '${buttonFrom}'
+import { createUiKitConfig } from '${configFrom}'
+createApp({ render: () => h('main', { style: 'padding: 24px' }, [h(BaseButton, null, () => 'Сохранить')]) })
+	.use(createUiKitConfig({ locale: 'en', theme: 'corporate', motion: 'subtle', defaults: { BaseButton: { variant: 'soft' } } }))
+	.mount('#app')
+`
+
 const SCENARIOS = [
 	{ name: 'subpath-button', css: 'tokens.css', code: BUTTON_APP(`${PACKAGE}/BaseButton`), marker: 'base-button' },
 	{ name: 'root-button', css: 'styles.css', code: BUTTON_APP(PACKAGE), marker: 'base-button' },
 	{ name: 'subpath-select', css: 'tokens.css', code: SELECT_APP(`${PACKAGE}/BaseSelect`), marker: 'base-select' },
 	{ name: 'root-select', css: 'styles.css', code: SELECT_APP(PACKAGE), marker: 'base-select' },
+	{
+		name: 'config-subpath',
+		css: 'tokens.css',
+		code: CONFIG_APP(`${PACKAGE}/BaseButton`, `${PACKAGE}/config`),
+		marker: 'base-button',
+		applied: 'base-button--soft',
+	},
+	{
+		name: 'config-root',
+		css: 'tokens.css',
+		code: CONFIG_APP(`${PACKAGE}/BaseButton`, PACKAGE),
+		marker: 'base-button',
+		applied: 'base-button--soft',
+	},
 	{ name: 'plugin', css: 'styles.css', code: PLUGIN_APP, marker: 'base-button' },
 ]
+
+/**
+ * Предел gzip-JS приложения с кнопкой и `createUiKitConfig` (замер 16.10: 77,4 КБ при 27,8 КБ у одной кнопки): настройки языка тянут
+ * словари ru и en (≈50 КБ gzip), без реестра компонентов — а с `createUiKitPlugin` стартовый JS 451,8 КБ
+ */
+const CONFIG_JS_MAX = 90 * 1024
 
 const kb = bytes => `${(bytes / 1024).toFixed(1)} КБ`
 
@@ -138,6 +169,21 @@ function checkContent(results, problems) {
 	expect(problems, !/base-table/.test(plugin.js.text), 'plugin: BaseTable попал в стартовый JS приложения с createUiKitPlugin')
 	expect(problems, /base-table/.test(plugin.allJs), 'plugin: нет чанка BaseTable для import()')
 	const button = results['subpath-button']
+	for (const name of ['config-subpath', 'config-root']) {
+		const config = results[name]
+		expect(problems, !/base-table|base-editor/.test(config.js.text), `${name}: в JS есть код BaseTable или BaseEditor`)
+		expect(
+			problems,
+			!/base-table|base-editor/.test(config.allJs),
+			`${name}: BaseTable или BaseEditor попали в сборку (в том числе чанком по import())`,
+		)
+		expect(
+			problems,
+			config.js.gzip < CONFIG_JS_MAX,
+			`${name}: JS ${kb(config.js.gzip)} — больше ${kb(CONFIG_JS_MAX)}: в сборку попало лишнее`,
+		)
+		expect(problems, config.lazy === 0, `${name}: в сборке есть чанки по import() — реестр компонентов плагина не отсечён`)
+	}
 	expect(problems, !/base-table|base-editor/.test(button.js.text), 'subpath-button: в JS есть код BaseTable или BaseEditor')
 	expect(problems, button.css.text.includes('.base-button'), 'subpath-button: в CSS нет .base-button')
 	expect(problems, button.css.text.includes('--rise-color-primary-500'), 'subpath-button: в CSS нет токенов (tokens.css)')
@@ -171,6 +217,7 @@ async function screenshot(browser, result, file) {
 			await page.getByRole('combobox').first().click()
 			await page.getByRole('option', { name: 'Волгоград' }).waitFor()
 		}
+		if (result.applied) await page.locator(`.${result.applied}`).first().waitFor({ timeout: 5000 })
 		await page.screenshot({ path: file, animations: 'disabled' })
 		return readFileSync(file)
 	} finally {

@@ -42,6 +42,7 @@ export function createLibBuildConfig({ withSubpaths }: { withSubpaths: boolean }
 			entry: {
 				index: resolve(process.cwd(), 'src/index.ts'),
 				plugin: resolve(process.cwd(), 'src/plugin/index.ts'),
+				config: resolve(process.cwd(), 'src/config.ts'),
 				components: resolve(process.cwd(), 'src/components/index.ts'),
 				composables: resolve(process.cwd(), 'src/composables/index.ts'),
 				utils: resolve(process.cwd(), 'src/utils/index.ts'),

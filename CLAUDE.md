@@ -22,7 +22,7 @@ src/utils/<область>/xUtils/       dom/ data/ media/ form/ navigation/
 src/locales/     ru/ en/ по областям, messages.ts, state.ts (formatMessage, pluralize), warn.ts
 src/styles/      _tokens.scss, _mixins.scss, _functions.scss (sz())
 src/stories/     Introduction.mdx, foundations/, blocks/, helpers/ (storySource, useStorySetup, play)
-src/plugin/      createUiKitPlugin, registry/
+src/plugin/      createUiKitPlugin, createUiKitConfig (настройки без реестра компонентов), registry/
 build/           commitlint/ config/ husky/ lib/ media-package/ plugins/ release/ storybook/ tests/ (vitest, playwright, visual.ts) utils/
 scripts/         проверки (check-*.mjs), create-component, lint-new-files, serve-storybook-static, portion-scope
 docs/            CONTRIBUTING, reference/, design/, v2/, audit/

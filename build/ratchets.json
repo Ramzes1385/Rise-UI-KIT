@@ -12,6 +12,10 @@
 			"gzip": 168668,
 			"budget": 186368
 		},
+		"config.js": {
+			"gzip": 58470,
+			"budget": 64512
+		},
 		"icons.js": {
 			"gzip": 4106,
 			"budget": 6144

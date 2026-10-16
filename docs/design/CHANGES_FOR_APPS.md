@@ -510,3 +510,7 @@
 ## Задача w13 (сведение языков)
 
 - Казахский, узбекский, китайский и японский словари не встроены в `LOCALES` (там только `ru` и `en`): их подключают `registerLocale(kk)` перед `setLocale('kk')` / `createUiKitPlugin({ locale: 'kk' })` / `<BaseApp locale="kk">`. Так в сборку приложения попадают только нужные языки (все шесть словарей вместе — ≈+70 КБ gzip к каждому входу).
+
+## Задача w14-plugin-config
+
+- Новое: `createUiKitConfig(options)` (из `@ramzes1385/rise-ui-kit/config` или корня) — язык, тема, `defaults`, `icons`, `iconSpritePath`, `linkComponent`, `teleportTo`, `motion`, `reducedMotion` без регистрации компонентов и без их JS в сборке. Нужен приложениям с точечной установкой (`@ramzes1385/rise-ui-kit/BaseButton`): раньше настройки были только у `createUiKitPlugin`, который тянул все компоненты (451,8 КБ gzip стартового JS против 77,4 КБ с кнопкой и настройками). Существующие приложения — без изменений (README, «Точечная установка»; MIGRATION, «Задача w14-plugin-config»).

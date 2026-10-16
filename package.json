@@ -64,6 +64,10 @@
       "types": "./dist/map3d.d.ts",
       "import": "./dist/map3d.js"
     },
+    "./config": {
+      "types": "./dist/config.d.ts",
+      "import": "./dist/config.js"
+    },
     "./styles": {
       "types": "./dist/styles.d.ts",
       "import": "./dist/styles.css",
@@ -924,6 +928,7 @@
       "src/components/BaseCryptoProSign/model/emulation/cryptoProSignEmulation.ts",
       "src/components/BaseMediaPlayer/index.ts",
       "src/map3d.ts",
+      "src/config.ts",
       "src/composables/crypto/useCryptoPro/emulation/index.ts",
       "scripts/*.mjs",
       "build/packages/extract.mjs"

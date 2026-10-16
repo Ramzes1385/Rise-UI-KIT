@@ -113,9 +113,34 @@ import { BaseSelect, type BaseSelectOption } from '@ramzes1385/rise-ui-kit/BaseS
 </script>
 ```
 
+**Настройки без регистрации компонентов.** `createUiKitConfig` из `@ramzes1385/rise-ui-kit/config` ставит всё то же, что `createUiKitPlugin`, — `locale`, `theme`, `themes`, `themeNonce`, `defaults`, `icons`, `iconSpritePath`, `linkComponent`, `teleportTo`, `motion`, `reducedMotion`, — кроме `prefix` и регистрации компонентов. Реестр компонентов он не импортирует, поэтому их JS в сборку не попадает:
+
+```ts
+// main.ts
+import { createApp } from 'vue'
+import { RouterLink } from 'vue-router'
+import { createUiKitConfig } from '@ramzes1385/rise-ui-kit/config'
+import '@ramzes1385/rise-ui-kit/tokens.css'
+import App from './App.vue'
+
+createApp(App)
+	.use(
+		createUiKitConfig({
+			locale: 'en',
+			theme: 'corporate',
+			defaults: { global: { sizeScale: 90 }, BaseButton: { variant: 'soft' } },
+			linkComponent: RouterLink,
+			iconSpritePath: '/icons.svg',
+		}),
+	)
+	.mount('#app')
+```
+
+Функция есть и в корне пакета (`import { createUiKitConfig } from '@ramzes1385/rise-ui-kit'`): сборщик отсекает реестр и там, но подпуть `/config` гарантирует, что ничего лишнего не подтянется. Замер на приложении из `npm pack` (Vite 8): кнопка с подпути — 27,8 КБ gzip JS; она же с `createUiKitConfig` (язык, тема, `defaults`) — 77,4 КБ, и ни BaseTable, ни BaseEditor в сборке нет. Разница — словари `ru` и `en` (≈50 КБ gzip): они нужны любому компоненту с текстом и входят в состояние языка кита. Компоненты, которые в приложении используют текст (BaseSelect и др.), их и так подтягивают.
+
 - Подпуть есть у каждого компонента из `@ramzes1385/rise-ui-kit/components` (`/BaseButton`, `/BaseTable`, …) и отдаёт то же, что его раздел там: компонент, его константы и типы. Плеер и 3D-карта — по-прежнему `/media` и `/map3d`.
 - CSS компонента JS подпути подключает сам — `styles.css` не нужен. Приложение на Vite 8: CSS всех компонентов `tokens.css` + BaseButton — 4,8 КБ gzip против 96,9 КБ у `styles.css`, с BaseSelect — 8,5 КБ.
-- Подпути, корень и `/components` делят один код: компонент из подпути и из корня — один и тот же, настройки `createUiKitPlugin` (`defaults`, тема, язык) действуют на оба. Но плагин регистрирует все компоненты глобально, и их JS попадает в сборку; при точечной установке язык задаёт `setLocale` из корня, тему — `applyTheme`.
+- Подпути, корень и `/components` делят один код: компонент из подпути и из корня — один и тот же, настройки кита (`defaults`, тема, язык) действуют на оба. Но `createUiKitPlugin` регистрирует все компоненты глобально, и их JS попадает в сборку (приложение с ним — 451,8 КБ gzip стартового JS против 27,8 КБ с одной кнопкой). При точечной установке настройки задаёт `createUiKitConfig` — тот же набор опций без регистрации компонентов (см. ниже).
 - Подключили `styles.css` — `tokens.css` уже не нужен (токены в нём есть). Стили компонентов с подпутей — без каскадного слоя; `tokens.layer.css` кладёт в слой `rise` только токены. Весь кит в слое — `styles.layer.css` и импорт из корня.
 - Импорт `.css` из JS пакета обрабатывает сборщик (Vite, webpack). При SSR пакет нужно пропустить через сборку, а не отдавать Node как внешний модуль — иначе Node не знает расширения `.css`.
 
@@ -287,7 +312,7 @@ app.use(createUiKitPlugin({ iconSpritePath: '/icons.svg' }))
 app.mount('#app')
 ```
 
-Опции `createUiKitPlugin`:
+Опции `createUiKitPlugin` (кроме `prefix` — они же у `createUiKitConfig`, см. «Точечная установка»):
 
 - `prefix` — префикс глобальных имён (`prefix: 'Ui'` → `UiBaseButton`);
 - `iconSpritePath` — путь к спрайту иконок;

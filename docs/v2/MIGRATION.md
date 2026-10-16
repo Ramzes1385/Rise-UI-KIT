@@ -3154,3 +3154,23 @@ import { BaseButton } from '@ramzes1385/rise-ui-kit/BaseButton'
 ## Задача w13 (сведение языков)
 
 - Казахский, узбекский, китайский и японский словари не встроены в `LOCALES` (там только `ru` и `en`): их подключают `registerLocale(kk)` перед `setLocale('kk')` / `createUiKitPlugin({ locale: 'kk' })` / `<BaseApp locale="kk">`. Так в сборку приложения попадают только нужные языки (все шесть словарей вместе — ≈+70 КБ gzip к каждому входу).
+
+## Задача w14-plugin-config
+
+### `createUiKitConfig`: настройки кита без регистрации компонентов (новое, не ломающее)
+
+- **Было:** `createUiKitPlugin` — единственный способ задать язык, тему, `defaults`, `icons`, `linkComponent`, `motion`, `iconSpritePath`, `teleportTo`; он же регистрировал все компоненты (`UI_COMPONENTS`), и JS всех компонентов попадал в сборку: приложение с плагином — 451,8 КБ gzip стартового JS (+115 КБ тяжёлых компонентов по `import()`) против 27,8 КБ с одной кнопкой с подпути. При точечной установке настройки приходилось ставить отдельными функциями (`setLocale`, `applyTheme`), а `defaults`, `icons`, `linkComponent` и `motion` — не было никак.
+- **Стало:** `createUiKitConfig(options)` — плагин Vue с теми же опциями, что у `createUiKitPlugin`, кроме `prefix`: `locale`, `theme`, `themes`, `themeNonce`, `defaults`, `icons`, `iconSpritePath`, `linkComponent`, `teleportTo`, `motion`, `reducedMotion`. Компоненты он не регистрирует и реестр не импортирует: JS компонентов в сборку не попадает. Экспорт — подпуть `@ramzes1385/rise-ui-kit/config` (гарантированно лёгкий вход), корень и `plugin`-вход; тип опций — `UiKitConfigOptions` (`UiKitPluginOptions` теперь расширяет его полем `prefix`). `createUiKitPlugin` ставит ровно те же настройки, поведение не изменилось.
+- **Сколько:** приложение Vite 8 из `npm pack`: кнопка с подпути — 27,8 КБ gzip JS, с `createUiKitConfig` (язык, тема, `defaults`, движение) — 77,4 КБ (из корня и с подпути `/config` — одинаково), в сборке нет BaseTable и BaseEditor, чанков по `import()` нет; `createUiKitPlugin` — 451,8 КБ. Разница в 49,6 КБ — словари `ru` и `en`, которые входят в состояние языка (`setLocale`) и нужны каждому компоненту с текстом.
+- **Что сделать:** ничего. Точечной установке — `app.use(createUiKitConfig({ locale: 'en', defaults: { BaseButton: { variant: 'soft' } } }))` вместо `createUiKitPlugin` (README, «Точечная установка»); обе функции вместе ставить не нужно.
+
+```ts
+import { createUiKitConfig } from '@ramzes1385/rise-ui-kit/config'
+import '@ramzes1385/rise-ui-kit/tokens.css'
+
+app.use(createUiKitConfig({ locale: 'en', theme: 'corporate' }))
+```
+
+### Для кита
+
+- Новый вход сборки `config` (`src/config.ts`, `build/config/build.lib.ts`), ключ `./config` в `exports` (свой, скрипт `generate:subpath-exports` его не трогает), бюджет `config.js` в `build/ratchets.json`. Границу «вход не достигает компонентов и реестра» сторожит `build/tests/packageBoundaries.spec.ts`, а на деле — сценарии `config-subpath` и `config-root` в `npm run test:subpaths` (JS без BaseTable и BaseEditor, без чанков по `import()`, не больше 90 КБ gzip; в браузере настройки доходят до компонента).

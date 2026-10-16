@@ -19,6 +19,7 @@ const PUBLIC_ENTRIES = [
 	'icons/index.ts',
 	'components/BaseMediaPlayer/index.ts',
 	'map3d.ts',
+	'config.ts',
 ]
 
 const ALIASES: Record<string, string> = {
@@ -271,5 +272,14 @@ describe('границы входа /map3d', () => {
 
 	it('вход /map3d импортирует three', () => {
 		expect([...reachableFrom(['map3d.ts'])].some(importsThree)).toBe(true)
+	})
+})
+
+describe('границы входа /config', () => {
+	it('настройки кита не достигают компонентов и реестра плагина: JS компонентов в сборку не попадает', () => {
+		const reachable = [...reachableFrom(['config.ts'])].map(file => relative(SRC, file).split(sep).join('/'))
+		expect(reachable).toContain('plugin/options.ts')
+		expect(reachable.filter(file => file.startsWith('components/') || file.startsWith('plugin/registry/'))).toEqual([])
+		expect(reachable).not.toContain('plugin/plugin.ts')
 	})
 })

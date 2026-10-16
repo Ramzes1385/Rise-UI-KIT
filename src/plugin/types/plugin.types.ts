@@ -6,9 +6,8 @@ import type { Theme, ThemePresetName } from '../../utils/theme/themeUtils/types/
 import type { TeleportTarget } from '../../composables/app/useTeleportTarget/types/useTeleportTarget.types'
 import type { MotionPreset, ReducedMotionMode } from '../../composables/app/useMotion/types/useMotion.types'
 
-export interface UiKitPluginOptions {
-	/** Префикс для глобальных имён компонентов. */
-	prefix?: string
+/** Настройки кита без регистрации компонентов: `createUiKitConfig(options)` и основа `createUiKitPlugin`. */
+export interface UiKitConfigOptions {
 	/**
 	 * Путь к SVG-спрайту иконок (например '/assets/icons.svg' или URL из импорта '…/icons.svg?url').
 	 * По умолчанию 'icons.svg' — относительный путь, который на вложенных маршрутах SPA резолвится неверно.
@@ -57,4 +56,10 @@ export interface UiKitPluginOptions {
 	 * всегда (киоски, тесты): атрибут `data-rise-reduced-motion="always"` на `<html>`. Отключить системную настройку нельзя
 	 */
 	reducedMotion?: ReducedMotionMode
+}
+
+/** Настройки `createUiKitPlugin`: те же, что у `createUiKitConfig`, и префикс имён глобально зарегистрированных компонентов. */
+export interface UiKitPluginOptions extends UiKitConfigOptions {
+	/** Префикс для глобальных имён компонентов. */
+	prefix?: string
 }
