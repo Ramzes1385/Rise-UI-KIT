@@ -475,4 +475,15 @@ describe('useDropdownPosition в RTL', () => {
 		expect(api.panelStyle.value.left).toBe(`${left}px`)
 		expect(api.panelStyle.value.transformOrigin).toBe(transformOrigin)
 	})
+
+	it('якорь без обёртки: направление берётся у панели', () => {
+		const area = document.createElement('div')
+		area.setAttribute('dir', 'rtl')
+		const panel = createPanel()
+		area.append(panel)
+		document.body.append(area)
+		const { api } = setup({ position: 'bottom-start', wrapper: null, panel, anchor: { x: 400, y: 300, width: 200, height: 40 } })
+		expect(api.panelStyle.value.left).toBe('500px')
+		expect(api.panelStyle.value.transformOrigin).toBe('top right')
+	})
 })

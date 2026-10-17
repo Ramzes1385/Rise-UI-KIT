@@ -112,6 +112,36 @@ describe('readThemeAttrs', () => {
 		expect(readThemeAttrs(document.createElement('button'))).toEqual({})
 		expect(readThemeAttrs(null)).toEqual({})
 	})
+
+	describe('dir — только если направление якоря отличается от страницы', () => {
+		afterEach(() => {
+			document.documentElement.style.direction = ''
+			document.body.replaceChildren()
+		})
+
+		function anchorWithDirection(direction: string): HTMLElement {
+			const anchor = document.createElement('button')
+			anchor.style.direction = direction
+			document.body.append(anchor)
+			return anchor
+		}
+
+		it('блок справа налево на странице слева направо — dir="rtl"', () => {
+			document.documentElement.style.direction = 'ltr'
+			expect(readThemeAttrs(anchorWithDirection('rtl'))).toEqual({ dir: 'rtl' })
+		})
+
+		it('направление якоря совпадает со страницей — dir нет', () => {
+			document.documentElement.style.direction = 'rtl'
+			expect(readThemeAttrs(anchorWithDirection('rtl'))).toEqual({})
+		})
+
+		it('направление не вычислено (якорь вне документа: браузер отдаёт пустую строку) — dir нет', () => {
+			const computed = vi.spyOn(window, 'getComputedStyle').mockReturnValue({ direction: '' } as CSSStyleDeclaration)
+			expect(readThemeAttrs(document.createElement('button'))).toEqual({})
+			computed.mockRestore()
+		})
+	})
 })
 
 describe('useInheritedThemeAttrs', () => {
@@ -184,13 +214,15 @@ describe('useOwnThemeAttrs', () => {
 		area.remove()
 	})
 
-	it('вне компонента (без экземпляра) — пустой объект', () => {
+	it('вне компонента (без экземпляра) — пустой объект; Vue предупреждает об onMounted вне setup', () => {
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 		let attrs!: ReturnType<typeof useOwnThemeAttrs>
 		const scope = effectScope()
 		scope.run(() => {
 			attrs = useOwnThemeAttrs(() => true)
 		})
 		expect(attrs.value).toEqual({})
+		expect(warn).toHaveBeenCalledWith(expect.stringContaining('onMounted is called when there is no active component instance'))
 		scope.stop()
 	})
 })

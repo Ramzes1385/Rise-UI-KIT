@@ -1,6 +1,6 @@
 /** Код для «Show code»: ровно то, что рисует превью истории, — её шаблон и текущие значения из Controls. */
 
-import { STORY_STYLES } from './storyStyles'
+import { STORY_STYLES, storyStyleRules } from './storyStyles'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useSizeScale/useSizeScale'
 import type { ShownAttribute, StorySourceContext, StorySourceOptions } from '../../types/helpers.types'
 
@@ -207,16 +207,7 @@ function expandArgs(template: string, attributes: readonly ShownAttribute[]): st
 /** Правила классов-помощников историй, которые встречаются в шаблоне, — блоком `<style scoped>` */
 function storyStyles(template: string): string {
 	const used = [...template.matchAll(/\sclass="([^"]+)"/g)].flatMap(match => match[1].split(/\s+/))
-	const rules = [...new Set(used)]
-		.filter(name => name in STORY_STYLES)
-		.map(
-			name =>
-				`.${name} {\n${STORY_STYLES[name]
-					.split(/;\s*/)
-					.filter(Boolean)
-					.map(rule => `\t${rule};`)
-					.join('\n')}\n}`,
-		)
+	const rules = [...new Set(used)].filter(name => name in STORY_STYLES).flatMap(storyStyleRules)
 	return rules.length ? `\n\n<style scoped>\n${rules.join('\n\n')}\n</style>` : ''
 }
 

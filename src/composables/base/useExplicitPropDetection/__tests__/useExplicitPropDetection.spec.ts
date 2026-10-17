@@ -99,5 +99,25 @@ describe('useExplicitPropDetection', () => {
 			await nextTick()
 			expect(get().listener()).toBe(false)
 		})
+
+		it('родитель перестал передавать пропсы совсем (props вершины — null) — проп не передан', async () => {
+			const isPassed = ref(true)
+			let wasPassed!: () => boolean
+			const Child = defineComponent({
+				props: { isOpen: { type: Boolean, default: undefined } },
+				setup() {
+					const { wasPropPassed } = useExplicitPropDetection()
+					const passed = computed(() => wasPropPassed('isOpen'))
+					wasPassed = () => passed.value
+					return () => h('div')
+				},
+			})
+			mount(defineComponent({ setup: () => () => h(Child, isPassed.value ? { isOpen: true } : null) }))
+			expect(wasPassed()).toBe(true)
+
+			isPassed.value = false
+			await nextTick()
+			expect(wasPassed()).toBe(false)
+		})
 	})
 })

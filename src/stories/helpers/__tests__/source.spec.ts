@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs'
-import { STORY_STYLES } from '../render/code/storyStyles'
+import { closingBrace, STORY_STYLES } from '../render/code/storyStyles'
 import { literal, staticStorySource, storySource, templateSource } from '../render/code/source'
 
 const COMPONENT = {
@@ -17,6 +17,22 @@ const TEMPLATE = `
 			<BasePhoneInput v-bind="args" v-model="phone" />
 		</div>
 	`
+
+/** Тела блоков `.story-x { … }` верхнего уровня preview.scss — по балансу скобок, без комментариев, пробелы сжаты */
+function previewHelperBlocks(): Record<string, string> {
+	const scss = readFileSync('build/storybook/preview.scss', 'utf8')
+		.replace(/\/\*[\s\S]*?\*\//g, '')
+		.replace(/^\s*\/\/.*$/gm, '')
+	const blocks: Record<string, string> = {}
+	for (const match of scss.matchAll(/^\.(story-[\w-]+) \{/gm)) {
+		const open = match.index + match[0].length - 1
+		blocks[match[1]] = scss
+			.slice(open + 1, closingBrace(scss, open))
+			.replace(/\s+/g, ' ')
+			.trim()
+	}
+	return blocks
+}
 
 describe('код для «Show code»', () => {
 	it('шаблон без общего отступа и пустой первой строки', () => {
@@ -118,12 +134,31 @@ describe('код для «Show code»', () => {
 		)
 	})
 
-	it('правила классов-помощников совпадают с build/storybook/preview.scss', () => {
-		const scss = readFileSync('build/storybook/preview.scss', 'utf8')
-		for (const [name, rules] of Object.entries(STORY_STYLES)) {
-			const block = new RegExp(`\\.${name} \\{([^}]*)\\}`).exec(scss)?.[1] ?? ''
-			expect(block.replace(/\s+/g, ' ').trim(), name).toBe(rules)
-		}
+	it('правила классов-помощников совпадают с build/storybook/preview.scss — с вложенными, каждый помощник', () => {
+		const blocks = previewHelperBlocks()
+		expect(Object.keys(STORY_STYLES).sort()).toEqual(Object.keys(blocks).sort())
+		for (const [name, rules] of Object.entries(STORY_STYLES)) expect(rules, name).toBe(blocks[name])
+	})
+
+	it('вложенные правила помощника — отдельными блоками CSS: `> *` и `&__part` от класса', () => {
+		const code = storySource({
+			template: '<div class="story-col"><BaseBadge v-bind="args" /></div>',
+			imports: ['BaseBadge'],
+		}).transform('', {
+			args: {},
+		})
+		expect(code).toContain('.story-col {\n\tdisplay: flex;\n\tflex-direction: column;\n\talign-items: flex-start;\n\tgap: 12px;\n}')
+		expect(code).toContain('.story-col > * {\n\tmax-width: 100%;\n}')
+		const motion = storySource({
+			template: '<div class="story-motion"><div class="story-motion__presets" /></div>',
+			imports: [],
+		}).transform('', { args: {} })
+		expect(motion.match(/^\.[^{]+(?= \{$)/gm)).toEqual([
+			'.story-motion',
+			'.story-motion__presets',
+			'.story-motion__preset',
+			'.story-motion__preset > *',
+		])
 	})
 
 	it('{{ slots.default }} — текст слота из Controls прямо в теге, с экранированием', () => {
