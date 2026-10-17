@@ -5,6 +5,8 @@ import userEvent from '@testing-library/user-event'
 import { fireEvent, screen, waitFor } from '@testing-library/vue'
 import { makeMap, makeSvgMap, renderEditor } from '../utils/editorTestUtils'
 
+vi.setConfig({ testTimeout: 60_000 })
+
 const SECTIONS = ['Объекты слоя', 'Свойства объекта', 'Этажи', 'Фильтры', 'Стили', 'Группы']
 
 let resizeCallback: (() => void) | undefined

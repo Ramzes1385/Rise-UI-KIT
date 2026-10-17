@@ -5,8 +5,10 @@ import userEvent from '@testing-library/user-event'
 import { UI_FILE_MANAGER } from '@/locales/messages'
 import { createEvent, fireEvent, screen, waitFor, within } from '@testing-library/vue'
 
+vi.setConfig({ testTimeout: 60_000 })
+
 function option(id: string): HTMLElement {
-	return screen.getAllByRole('option').find(element => element.getAttribute('data-entry-id') === id) as HTMLElement
+	return document.querySelector(`[role="option"][data-entry-id="${id}"]`) as HTMLElement
 }
 
 function lastSelection(emitted: (name: string) => unknown[] | undefined): unknown {

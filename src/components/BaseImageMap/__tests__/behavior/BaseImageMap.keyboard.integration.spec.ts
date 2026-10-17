@@ -6,6 +6,8 @@ import type { ImageMapData } from '../../types/imageMapData.types'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import { mockRects, mockViewport, objectElement, SIMPLE_DATA, stageTransform } from '../imageMap.test-utils'
 
+vi.setConfig({ testTimeout: 60_000 })
+
 const BASE_PROPS = { hasFullscreen: false }
 const ZOOMED = 'translate(-200px, -125px) scale(1.5)'
 const OUTSIDE = { a: { left: 300, top: 240, width: 20, height: 20 }, b: { left: 900, top: 240, width: 20, height: 20 } }

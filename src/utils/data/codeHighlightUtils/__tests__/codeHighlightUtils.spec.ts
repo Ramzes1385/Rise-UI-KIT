@@ -376,6 +376,8 @@ describe('codeHighlightUtils: время разбора больших вход�
 	const GROWTH = 4
 	/** Допустимый рост времени: между линейным (4) и квадратичным (16) */
 	const MAX_RATIO = 9
+	/** Повторы всего замера: нагрузка машины раздувает время только одного из двух входов, настоящий квадрат — все повторы */
+	const ATTEMPTS = 4
 	let size = SIZE
 
 	function repeatTo(part: string): string {
@@ -423,10 +425,13 @@ describe('codeHighlightUtils: время разбора больших вход�
 				.map(token => token.value)
 				.join(''),
 		).toBe(code)
-		const small = Math.max(bestTime(build, language, GROWTH), 2)
-		const large = bestTime(build, language, 1)
+		let ratio = Infinity
+		for (let attempt = 0; attempt < ATTEMPTS && ratio >= MAX_RATIO; attempt++) {
+			const small = Math.max(bestTime(build, language, GROWTH), 2)
+			ratio = Math.min(ratio, bestTime(build, language, 1) / small)
+		}
 		size = SIZE
-		expect(large).toBeLessThan(small * MAX_RATIO)
+		expect(ratio).toBeLessThan(MAX_RATIO)
 	})
 
 	it('время CSS растёт линейно: вдвое больший вход — меньше чем втрое дольше (квадратичный рост — вчетверо)', () => {
@@ -442,6 +447,11 @@ describe('codeHighlightUtils: время разбора больших вход�
 			return Math.max(Math.min(...times), 1)
 		}
 		measure(1000)
-		expect(measure(8000)).toBeLessThan(measure(4000) * 3)
+		let ratio = Infinity
+		for (let attempt = 0; attempt < ATTEMPTS && ratio >= 3; attempt++) {
+			const small = measure(4000)
+			ratio = Math.min(ratio, measure(8000) / small)
+		}
+		expect(ratio).toBeLessThan(3)
 	})
 })

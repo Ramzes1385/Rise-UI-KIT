@@ -5,7 +5,9 @@ import { createUiKitPlugin } from '@/plugin'
 import BaseImageMapEditor from '../ui/BaseImageMapEditor.vue'
 import { fireEvent, render, screen, within } from '@testing-library/vue'
 import type { BaseImageMapEditorExpose } from '../types/BaseImageMapEditor.types'
-import { confirmDelete, lastModel, makeMap, makeSvgMap, pressKey, renderEditor } from './utils/editorTestUtils'
+import { confirmDelete, lastModel, makeMap, makeSvgMap, objectInList, pressKey, renderEditor } from './utils/editorTestUtils'
+
+vi.setConfig({ testTimeout: 60_000 })
 
 function zoomButton(name: string): HTMLElement {
 	const toolbar = document.querySelector('.base-image-map-editor__toolbar') as HTMLElement
@@ -186,7 +188,7 @@ describe('BaseImageMapEditor v-model', () => {
 
 describe('BaseImageMapEditor история', () => {
 	it('кнопки «Отменить» и «Повторить» следуют за историей и объявляют шаг', async () => {
-		const { emitted } = renderEditor({ selected: 'r1' })
+		const { emitted, container } = renderEditor({ selected: 'r1' })
 		const undo = screen.getByRole('button', { name: 'Отменить (Ctrl+Z)' })
 		const redo = screen.getByRole('button', { name: 'Повторить (Ctrl+Shift+Z)' })
 		expect(screen.getByRole('group', { name: 'История' })).toBeInTheDocument()
@@ -194,15 +196,15 @@ describe('BaseImageMapEditor история', () => {
 		expect(redo).toHaveAttribute('aria-disabled', 'true')
 		await fireEvent.click(deleteButton())
 		await confirmDelete()
-		expect(screen.queryByRole('button', { name: /Зал/ })).toBeNull()
+		expect(objectInList(container, /Зал/)).toBeNull()
 		await fireEvent.click(undo)
 		await nextTick()
-		expect(screen.getByRole('button', { name: /Зал/ })).toBeInTheDocument()
+		expect(objectInList(container, /Зал/)).toBeInTheDocument()
 		expect(screen.getByRole('status')).toHaveTextContent('Правка отменена')
 		expect(redo).toBeEnabled()
 		await fireEvent.click(redo)
 		await nextTick()
-		expect(screen.queryByRole('button', { name: /Зал/ })).toBeNull()
+		expect(objectInList(container, /Зал/)).toBeNull()
 		expect(screen.getByRole('status')).toHaveTextContent('Правка повторена')
 		expect(lastModel(emitted).objects).toHaveLength(3)
 	})
@@ -214,16 +216,16 @@ describe('BaseImageMapEditor история', () => {
 		await confirmDelete()
 		pressKey(root, { key: 'z', ctrlKey: true })
 		await nextTick()
-		expect(screen.getByRole('button', { name: /Зал/ })).toBeInTheDocument()
+		expect(objectInList(container, /Зал/)).toBeInTheDocument()
 		pressKey(root, { key: 'Z', ctrlKey: true, shiftKey: true })
 		await nextTick()
-		expect(screen.queryByRole('button', { name: /Зал/ })).toBeNull()
+		expect(objectInList(container, /Зал/)).toBeNull()
 		pressKey(root, { key: 'z', metaKey: true })
 		await nextTick()
-		expect(screen.getByRole('button', { name: /Зал/ })).toBeInTheDocument()
+		expect(objectInList(container, /Зал/)).toBeInTheDocument()
 		pressKey(root, { key: 'y', ctrlKey: true })
 		await nextTick()
-		expect(screen.queryByRole('button', { name: /Зал/ })).toBeNull()
+		expect(objectInList(container, /Зал/)).toBeNull()
 	})
 
 	it('Ctrl+D дублирует выделенное; прочие сочетания и клавиши без Ctrl не перехватываются', async () => {

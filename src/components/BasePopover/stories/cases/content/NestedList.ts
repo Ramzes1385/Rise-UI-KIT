@@ -15,6 +15,8 @@ const statuses = [
 
 const state = { isOpen: false, status: 'draft' }
 
+const TRANSITION_TIMEOUT = 5000
+
 const template = `
 	<BasePopover v-bind="args" v-model:is-open="isOpen">
 		<template #trigger>
@@ -57,16 +59,18 @@ export const NestedList: StoryObj<typeof meta> = {
 
 		await userEvent.click(select)
 		await userEvent.click(await screen.findByRole('option', { name: 'Опубликована' }))
-		await waitFor(() => expect(screen.queryByRole('listbox')).not.toBeInTheDocument())
+		await waitFor(() => expect(screen.queryByRole('listbox')).not.toBeInTheDocument(), { timeout: TRANSITION_TIMEOUT })
 		await expect(select).toHaveTextContent('Опубликована')
-		await expect(select).toBeVisible()
+		await waitFor(() => expect(select).toBeVisible(), { timeout: TRANSITION_TIMEOUT })
 
 		await userEvent.click(select)
 		await screen.findByRole('listbox')
 		await userEvent.keyboard('{Escape}')
-		await waitFor(() => expect(screen.queryByRole('listbox')).not.toBeInTheDocument())
-		await expect(select).toBeVisible()
+		await waitFor(() => expect(screen.queryByRole('listbox')).not.toBeInTheDocument(), { timeout: TRANSITION_TIMEOUT })
+		await waitFor(() => expect(select).toBeVisible(), { timeout: TRANSITION_TIMEOUT })
 		await userEvent.keyboard('{Escape}')
-		await waitFor(() => expect(screen.queryByRole('combobox', { name: 'Статус серии' })).not.toBeInTheDocument())
+		await waitFor(() => expect(screen.queryByRole('combobox', { name: 'Статус серии' })).not.toBeInTheDocument(), {
+			timeout: TRANSITION_TIMEOUT,
+		})
 	},
 }

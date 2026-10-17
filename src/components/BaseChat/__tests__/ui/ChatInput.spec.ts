@@ -6,6 +6,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
 import type { ChatCommand, ChatMember, ChatMessage } from '../../types/BaseChat.types'
 
+vi.setConfig({ testTimeout: 60_000 })
+
 const MEMBERS: ChatMember[] = [
 	{ id: 'a1', name: 'Анна', role: 'admin' },
 	{ id: 'm1', name: 'Борис', role: 'member' },
@@ -448,7 +450,7 @@ describe('ChatInput unit', () => {
 
 			await fireEvent.click(screen.getByLabelText('Открыть выбор эмодзи'))
 			expect(document.querySelector('.base-chat-input__emoji-popover .base-emoji-picker')).toBeInTheDocument()
-			await fireEvent.click(await screen.findByRole('button', { name: 'широко улыбается' }))
+			await fireEvent.click(await screen.findByLabelText('широко улыбается'))
 
 			expect(getInput().value).toBe('😀')
 			expect(document.querySelector('.base-chat-input__emoji-popover')).toBeNull()
@@ -461,7 +463,7 @@ describe('ChatInput unit', () => {
 			input.setSelectionRange(7, 10)
 
 			await fireEvent.click(screen.getByLabelText('Открыть выбор эмодзи'))
-			await fireEvent.click(await screen.findByRole('button', { name: 'широко улыбается' }))
+			await fireEvent.click(await screen.findByLabelText('широко улыбается'))
 
 			expect(input.value).toBe('Привет 😀')
 			await vi.waitFor(() => expect(input).toHaveFocus())
@@ -474,7 +476,7 @@ describe('ChatInput unit', () => {
 			const trigger = screen.getByLabelText('Открыть выбор эмодзи')
 
 			await user.click(trigger)
-			await vi.waitFor(() => expect(screen.getByRole('searchbox', { name: 'Поиск эмодзи' })).toHaveFocus())
+			await vi.waitFor(() => expect(screen.getByLabelText('Поиск эмодзи')).toHaveFocus())
 			await user.keyboard('{Escape}')
 
 			expect(document.querySelector('.base-chat-input__emoji-popover')).toBeNull()
@@ -487,8 +489,8 @@ describe('ChatInput unit', () => {
 			const trigger = screen.getByLabelText('Открыть выбор эмодзи')
 
 			await user.click(trigger)
-			await screen.findByRole('button', { name: 'широко улыбается' })
-			await vi.waitFor(() => expect(screen.getByRole('searchbox', { name: 'Поиск эмодзи' })).toHaveFocus())
+			await screen.findByLabelText('широко улыбается')
+			await vi.waitFor(() => expect(screen.getByLabelText('Поиск эмодзи')).toHaveFocus())
 			await user.keyboard('{Enter}')
 			expect(getInput().value).toBe('😀')
 

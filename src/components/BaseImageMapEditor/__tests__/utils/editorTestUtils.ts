@@ -82,6 +82,12 @@ export function statusOf(container: Element): HTMLElement {
 	return container.querySelector('.base-image-map-editor__status') as HTMLElement
 }
 
+export function objectInList(container: Element, title: RegExp): HTMLElement | null {
+	const panel = container.querySelector<HTMLElement>('.base-image-map-editor__panel')
+	if (!panel) throw new Error('panel')
+	return within(panel).queryByText(title)
+}
+
 export function pressKey(target: Element, init: ConstructorParameters<typeof KeyboardEvent>[1]): boolean {
 	return target.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, cancelable: true, ...init }))
 }

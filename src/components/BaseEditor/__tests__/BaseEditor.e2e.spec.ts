@@ -1,4 +1,4 @@
-import { expect, type Page, test } from '@playwright/test'
+import { expect, type Locator, type Page, test } from '@playwright/test'
 
 const STORY = '/iframe.html?id=editor-baseeditor--empty'
 
@@ -17,16 +17,30 @@ async function openEditor(page: Page) {
 	return textbox
 }
 
+async function dblclickWord(page: Page, textbox: Locator, range: { from: number; to: number }) {
+	const position = await textbox.evaluate((element, offsets) => {
+		const text = element.querySelector('p')!.firstChild as Text
+		const range = document.createRange()
+		range.setStart(text, offsets.from)
+		range.setEnd(text, offsets.to)
+		const rect = range.getBoundingClientRect()
+		const box = element.getBoundingClientRect()
+		return { x: rect.x + rect.width / 2 - box.x, y: rect.y + rect.height / 2 - box.y }
+	}, range)
+	await textbox.dblclick({ position })
+	return page.evaluate(() => window.getSelection()?.toString().trim())
+}
+
 test('набор и команда отменяются по шагам настоящими клавишами, повтор — Ctrl+Y и Ctrl+Shift+Z', async ({ page }) => {
 	const textbox = await openEditor(page)
 	await textbox.click()
 	await page.keyboard.press('Control+End')
 
-	await page.keyboard.type(' one')
+	await page.keyboard.insertText(' one')
 	await page.keyboard.press('Control+b')
-	await page.keyboard.type(' bold')
+	await page.keyboard.insertText(' bold')
 	await page.waitForTimeout(600)
-	await page.keyboard.type(' two')
+	await page.keyboard.insertText(' two')
 	await expect(textbox).toContainText('alpha beta gamma one bold two')
 
 	await page.keyboard.press('Control+z')
@@ -49,8 +63,7 @@ test('набор и команда отменяются по шагам наст
 
 test('перетаскивание выделенного слова — один шаг: Ctrl+Z возвращает слово на место', async ({ page }) => {
 	const textbox = await openEditor(page)
-	await textbox.dblclick({ position: { x: 60, y: 10 } })
-	const selected = await page.evaluate(() => window.getSelection()?.toString().trim())
+	const selected = await dblclickWord(page, textbox, { from: 6, to: 10 })
 	expect(selected).toBe('beta')
 	const word = await page.evaluate(() => {
 		const rect = window.getSelection()!.getRangeAt(0).getBoundingClientRect()
@@ -74,7 +87,7 @@ test('нативное historyUndo при непустом стеке гасит
 	const textbox = await openEditor(page)
 	await textbox.click()
 	await page.keyboard.press('Control+End')
-	await page.keyboard.type(' more')
+	await page.keyboard.insertText(' more')
 	await expect(textbox).toContainText('more')
 
 	const isPrevented = await textbox.evaluate(element => {
