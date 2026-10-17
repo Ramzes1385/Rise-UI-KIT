@@ -22,7 +22,6 @@ const MIN_GAP_Y = 34
 const centerX = (rect: FlowRect): number => rect.x + rect.width / 2
 const centerY = (rect: FlowRect): number => rect.y + rect.height / 2
 const sum = (values: number[]): number => values.reduce((total, value) => total + value, 0)
-const mean = (values: number[]): number => (values.length ? sum(values) / values.length : 0)
 
 function isBoundary(node: FlowLayoutNode): boolean {
 	return idef0KindOf(node) === 'boundary'
@@ -70,12 +69,13 @@ function spread(entries: { id: string; center: number; size: number }[]): Record
 function alongAxis(boundary: Idef0LayoutBoundary, rects: Idef0LayoutRects, isVertical: boolean): number {
 	const anchors = boundary.anchors.map(id => rects[id]!)
 	const values = anchors.map(rect => (isVertical ? centerY(rect) : centerX(rect)))
-	if (values.length) return mean(values)
+	if (values.length) return sum(values) / values.length
 	return isVertical ? ORIGIN.y : ORIGIN.x
 }
 
 function contentBounds(rects: Idef0LayoutRects): { left: number; top: number; right: number; bottom: number } {
 	const all = Object.values(rects)
+	if (!all.length) return { left: ORIGIN.x, top: ORIGIN.y, right: ORIGIN.x, bottom: ORIGIN.y }
 	return {
 		left: Math.min(...all.map(rect => rect.x)),
 		top: Math.min(...all.map(rect => rect.y)),

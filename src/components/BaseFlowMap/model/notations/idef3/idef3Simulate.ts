@@ -43,7 +43,7 @@ function isReady(run: Idef3Run, node: FlowNode): boolean {
 	if (run.fired.has(node.id)) return false
 	const semantics = idef3Gateways[idef3KindOf(node) as Idef3Junction]
 	const needed = semantics?.join === 'all' ? flowIn(run.graph, node).length : 1
-	return (run.arrived.get(node.id) ?? 0) >= needed
+	return run.arrived.get(node.id)! >= needed
 }
 
 function nodeStep(node: FlowNode): IdefDraftStep {
