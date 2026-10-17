@@ -189,6 +189,14 @@
 
 **Темы в Storybook.** На панели два переключателя: «Тема» — режим (`data-theme`: светлая, тёмная) и «Бренд» — тема `createTheme()` поверх режима (`data-rise-theme` на том же `<html>`): `rise` — кит как есть (без `data-rise-theme`), `corporate`, `playful`, `minimal` и `custom` — последняя тема страницы **Foundations → Конструктор темы**. Режим и бренд сочетаются как в приложении: `brand × theme` = `data-rise-theme × data-theme` на одном элементе. Ссылка на историю в нужной теме — `?globals=theme:dark;brand:corporate`; прогон историй — `node scripts/check-stories.mjs --themes=light,dark,corporate,playful,minimal`. Конструктор собирает `ThemeInput`, показывает компоненты в светлой и тёмной, контраст пар `THEME_CONTRAST_PAIRS` и выдаёт код: `applyTheme(createTheme({...}))` или готовый CSS для подключения без JS.
 
+### 1.7. Экспорт токенов (W3C Design Tokens)
+
+Токены и четыре пресета тем выгружаются в JSON формата W3C Design Tokens: `dist/tokens.json` (кит, светлый режим) и `dist/tokens/<тема>.<режим>.json` (`rise`, `corporate`, `playful`, `minimal` × светлый и тёмный). Это единственный машиночитаемый вид токенов для Figma (Tokens Studio), Style Dictionary и мобильных платформ; подробно, с именами, форматами значений и подключением — [DESIGN_TOKENS.md](./DESIGN_TOKENS.md).
+
+- Источник — `_tokens.scss` и `createTheme(THEME_PRESETS[имя])`: экспорт ничего не дублирует, значения считаются при сборке (`npm run build:lib:tokens`).
+- Новый токен с именем `--rise-…` в `_tokens.scss` нужно описать в `build/tokens/tokenMap.ts` (путь и тип): без правила сборка и тест `build/tests/tokensExport.spec.ts` падают с понятным сообщением.
+- Новый вид значения (функция CSS вне `var()`, `calc()`, `color-mix(in srgb)`) — в `build/tokens/cssValue.ts`; незнакомая запись — исключение, а не неверное значение.
+
 ## 2. Размеры и масштаб
 
 - Размер компонента задаёт `sizeScale` — число в процентах. 100 — базовый размер.
@@ -366,6 +374,7 @@
 - `src/stories/` — страницы Foundations и хелперы stories.
 - `scripts/check-contrast.mjs` — проверка контраста токенов.
 - `scripts/check-component-tokens.mjs` — проверка токенов компонентов (уровень 3) и таблица [COMPONENT_TOKENS.md](./COMPONENT_TOKENS.md).
+- `scripts/build-tokens.mjs`, `build/tokens/` — экспорт токенов в W3C Design Tokens ([DESIGN_TOKENS.md](./DESIGN_TOKENS.md)).
 
 ### Миксины и функции
 

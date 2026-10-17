@@ -76,6 +76,7 @@ docs/            CONTRIBUTING, reference/, design/, v2/, audit/
 |---|---|
 | Состав порции и команды по нему | `node scripts/portion-scope.mjs [--base=feat/rise-v2] [BaseX \| путь …]` — разделы, id историй, тесты с порогом покрытия |
 | Тесты (unit и integration, jsdom) | `npx vitest run --config build/tests/vitest.config.ts --project unit-integration <пути>`; всё — `npm run test:unit` |
+| Долгий фаззинг XSS (в CI и по расписанию не запускается; обычный `test:unit` гоняет те же файлы с малым числом итераций) | `npm run test:fuzz -- --iterations=50000` (`--seed`, `--target`, `--only=<цель>:<номер>` — повтор итерации, `--report=<файл>`); перед релизом и после правок `htmlUtils`, `urlUtils`, Markdown, редактора |
 | Покрытие composables — 100% на файл | `npm run test:composables:coverage` (исключения — `--coverage.exclude` в самом скрипте) |
 | Покрытие компонентов — 100% строк, функций и операторов на файл | `npm run test:components:coverage` (тяжёлые компоненты исключены, для них `test:components-heavy:coverage` без порога) |
 | Покрытие утилит | `npm run test:utils:coverage` |
@@ -88,7 +89,7 @@ docs/            CONTRIBUTING, reference/, design/, v2/, audit/
 | Прогон историй (play, axe, обе темы) | `node scripts/serve-storybook-static.mjs` (порт 6006), затем `node scripts/check-stories.mjs --url=http://localhost:6006 --filter='<regex id>' --concurrency=2` |
 | E2E | `npm run test:e2e` |
 | Скриншот-тесты | `npx playwright test --config build/tests/playwright.config.ts --project=visual-chromium --update-snapshots=none` |
-| Сборка пакета (четыре прохода Vite: JS всех входов и подпутей, `styles.css`, `media.css` плеера, CSS подпутей и `tokens.css` — docs/reference/DEVELOPMENT.md, «Сборка») | `npm run build`, `npm run pack:dry`, затем `npm run test:css-split` — в `styles.css` нет стилей плеера, в `media.css` и `style.css` компонентов нет токенов, правила CSS подпутей = правила `styles.css`; `npm run test:subpaths` — приложение из `npm pack` с компонентом с подпути (подпуть нового компонента в exports добавляет `create:component`, вручную — `npm run generate:subpath-exports`) |
+| Сборка пакета (четыре прохода Vite: JS всех входов и подпутей, `styles.css`, `media.css` плеера, CSS подпутей и `tokens.css`, затем `dist/tokens.json` и `dist/tokens/*.json` — docs/reference/DEVELOPMENT.md, «Сборка») | `npm run build`, `npm run pack:dry`, затем `npm run test:css-split` — в `styles.css` нет стилей плеера, в `media.css` и `style.css` компонентов нет токенов, правила CSS подпутей = правила `styles.css`; `npm run test:subpaths` — приложение из `npm pack` с компонентом с подпути (подпуть нового компонента в exports добавляет `create:component`, вручную — `npm run generate:subpath-exports`) |
 | Как в CI | `npm run ci:validate` |
 
 - Скриншот-тесты — только с `--update-snapshots=none`. Эталоны не создаются и не обновляются (`test:visual:update` не запускать): их делает владелец. Каждое ожидаемое визуальное изменение описывается в docs/design/VISUAL_CHANGES.md.

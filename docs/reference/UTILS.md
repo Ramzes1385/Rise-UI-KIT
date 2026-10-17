@@ -150,6 +150,15 @@ isSafeUrl('javascript:alert(1)') // false
 isSafeUrl('blob:https://example.com/7f3c', DOWNLOAD_PROTOCOLS) // true
 ```
 
+`isSafeImageUrl(url)` — адрес изображения из недоверенных данных: относительный, `http:`, `https:`, `blob:` или встроенное `data:image/*`; `javascript:` и `data:` другого типа (`data:text/html`) отклоняются. Так BaseMarkdown и `sanitizeHtml` проверяют `src` картинок.
+
+```ts
+import { isSafeImageUrl } from '@ramzes1385/rise-ui-kit/utils'
+
+isSafeImageUrl('data:image/png;base64,iVBORw0KGgo=') // true
+isSafeImageUrl('data:text/html,<script>alert(1)</script>') // false
+```
+
 `isEmailFormat` — синтаксис адреса почты (`имя@домен.зона`, без пробелов); существование ящика не проверяет.
 
 ```ts

@@ -344,6 +344,18 @@ createApp(App).use(createUiKitPlugin({ theme: brand })) // или theme: 'corpor
 - Не заданный вход тема не трогает: значение остаётся от кита или от `:root` приложения. Что угодно ещё — вход `tokens` (`{ '--rise-button-radius': '999px' }`); чёрному бренду в тёмной теме — `primaryDark: '#fafafa'`.
 - Проверка своей темы — `createTheme(…).contrast` (все пары `npm run test:contrast`, у каждой `ok`). Подробно — [DESIGN_SYSTEM, «Темы бренда»](docs/design/DESIGN_SYSTEM.md).
 
+### Токены для дизайна
+
+Токены и готовые темы экспортируются в формате [W3C Design Tokens](https://www.w3.org/community/design-tokens/) (`$value`, `$type`, группы): для Figma (Tokens Studio), Style Dictionary и мобильных платформ. Собирает их `npm run build`, отдельных зависимостей нет.
+
+```ts
+import tokens from '@ramzes1385/rise-ui-kit/tokens.json' with { type: 'json' }
+import corporateDark from '@ramzes1385/rise-ui-kit/tokens/corporate.dark.json' with { type: 'json' }
+```
+
+- `tokens.json` — кит без темы (светлый режим); `tokens/<тема>.<режим>.json` — темы `rise`, `corporate`, `playful`, `minimal` в светлом и тёмном режиме. Каждый файл полный: палитры, семантические цвета (ссылками на палитру), шрифты, размеры, скругления, тени, длительности, кривые, слои.
+- Тест сверяет файлы с `_tokens.scss` (каждая переменная `--rise-*` есть в каждом файле) и со значениями `createTheme`. Что в экспорт не входит и как подключить Figma и Style Dictionary — [docs/design/DESIGN_TOKENS.md](docs/design/DESIGN_TOKENS.md).
+
 ---
 
 ## Иконки
@@ -643,7 +655,7 @@ const size = utils.formatFileSize(1024) // то же, что formatFileSize(1024
 
 Видеоплеер `BaseMediaPlayer` и его типы — только из подпути `@ramzes1385/rise-ui-kit/media`: в корень пакета и в плагин он не входит, поэтому приложения без плеера его код не загружают. Стили плеера — отдельным файлом `@ramzes1385/rise-ui-kit/media.css` (см. «Подключение стилей»).
 
-Подпути из `package.json#exports`: `/components`, `/composables`, `/utils`, `/icons` (константы спрайта и `createIconPlugin`), `/media` (видеоплеер), `/map3d` (3D-карта этажей), `/styles` (`/styles.css`), `/media.css` (стили плеера), `/icons.svg`, а также подпуть на каждый компонент (`/BaseButton`, `/BaseSelect`, …) и `/tokens.css` для них (см. «Точечная установка»), `/config` (`createUiKitConfig`), `/resolver` (резолвер для `unplugin-vue-components`), `/nuxt` (модуль Nuxt) и `/global` (типы шаблонов) — см. «Автоимпорт» и «Типы в шаблонах».
+Подпути из `package.json#exports`: `/components`, `/composables`, `/utils`, `/icons` (константы спрайта и `createIconPlugin`), `/media` (видеоплеер), `/map3d` (3D-карта этажей), `/styles` (`/styles.css`), `/media.css` (стили плеера), `/tokens.json` и `/tokens/<тема>.<режим>.json` (токены для дизайна), `/icons.svg`, а также подпуть на каждый компонент (`/BaseButton`, `/BaseSelect`, …) и `/tokens.css` для них (см. «Точечная установка»), `/config` (`createUiKitConfig`), `/resolver` (резолвер для `unplugin-vue-components`), `/nuxt` (модуль Nuxt) и `/global` (типы шаблонов) — см. «Автоимпорт» и «Типы в шаблонах».
 
 ### 3D-карта этажей
 
@@ -687,6 +699,34 @@ import { BaseButton } from '@ramzes1385/rise-ui-kit'
 
 Пока пакеты не опубликованы, их содержимое готовит скрипт кита: `node build/packages/extract.mjs <media|maps|editor> <пустая папка>`, затем в папке `npm install` и `npm run build`. Что внутри, как переносить и что решить владельцу до публикации (репозитории, тесты и stories в пакетах, словарь, версия кита) — в [build/packages/README.md](build/packages/README.md). Компоненты остаются и в ките — приложения, которым не нужна точечная установка, ничего не меняют.
 
+## Безопасность
+
+Кит выводит текст пользователей так, чтобы он оставался текстом: приложению не нужно очищать его перед передачей в компоненты.
+
+| Что выводится | Гарантия |
+|---|---|
+| Любой текст из props и данных (подписи, имена, сообщения чата, комментарии, строки таблиц, JSON, код, diff) | Вывод через шаблоны Vue: разметка в тексте остаётся текстом. `v-html` в ките — только JSON-LD (экранирован) и SVG плана после `sanitizeSvg` |
+| `BaseMarkdown`, `BaseAiMessage`, сообщения чата с Markdown | Собственный разбор в дерево узлов без `v-html`: HTML-теги выводятся текстом; ссылки — только `http:`, `https:`, `mailto:`, `tel:` и относительные (`javascript:`, `vbscript:`, `data:` остаются текстом); картинки — `http:`, `https:`, `blob:` и `data:image/*`; глубже 32 уровней вложенности — обычный текст |
+| `BaseEditor` (`v-model` — HTML) | `modelValue`, вставка из буфера, перетаскивание, `insertHtml`, режим кода и вставка после `uploadMedia` проходят `sanitizeHtml`; ссылки — только `http:`, `https:`, `mailto:`, `tel:` |
+| `sanitizeHtml(html)` для вашей разметки (CMS, письма, API) | Белый список элементов, атрибутов и CSS-свойств: `script`, `style`, `iframe`, `svg`, формы и другие опасные элементы удаляются вместе с содержимым, `on*`, `class`, `id`, `srcset` и прочие неразрешённые атрибуты — тоже; `href` — как выше, `src` — `http:`, `https:`, `blob:` и `data:image/*` у `img`; `target="_blank"` получает `rel="noopener noreferrer"`; результат устойчив (повторная очистка не меняет его), глубже 128 уровней элементы отбрасываются. Без DOM (SSR) возвращает экранированный текст |
+| Ссылки (`BaseLink` и компоненты, которые строят ссылки через него) | `isSafeUrl`: опасные схемы не попадают в `href`, переход по ним не выполняется |
+| JSON-LD (проп `seo`) | `<`, `>`, `&`, U+2028 и U+2029 экранируются: строка `</script>` в данных не закрывает тег |
+| SVG плана (`BaseImageMap`, `BaseImageMapEditor`) | `sanitizeSvg`: белый список элементов, нет `script`, `on*` и внешних ссылок |
+
+Чего кит не делает:
+
+- Адреса ресурсов из данных приложения — аватар, вложение чата, `src` у `BaseImage`, аудио и видео — отдаются браузеру как есть: браузеры не исполняют `javascript:` в `src` картинок и медиа. Если такой адрес вводит пользователь, проверяйте его при сохранении; для картинки есть `isSafeImageUrl`. Ссылки-переходы (`href`) кит фильтрует всегда.
+- Кит не заменяет `Content-Security-Policy`, очистку на сервере и проверку загружаемых файлов.
+
+Как это проверяется. Помимо тестов компонентов, в `build/tests/fuzz` — фаззинг XSS без зависимостей: свой детерминированный генератор (одно зерно — те же входы) собирает входы из словаря опасных конструкций (теги `script`, `iframe`, `svg`, `math`, `style`, `form`; `on*` в разных регистрах, с пробелами и NUL; `javascript:`, `vbscript:`, `data:` в `href`, `src`, `xlink:href`, `action`, `formaction`, `srcset`, `poster`; сущности `&#x6A;avascript`; комментарии, CDATA, незакрытые теги, вложенность, mXSS вроде `<svg><style><img>`; ссылки, картинки и автоссылки Markdown). Проверка независима от кита: схему адреса читает `URL` по стандарту WHATWG, исполнение скрипта ловит шпион на `alert`, разметка после очистки разбирается как `innerHTML` и не должна содержать запрещённых элементов, `on*` и опасных адресов; повторная очистка не должна менять результат.
+
+- Обычный `npm run test:unit` гоняет около 1500 входов (до 10 секунд).
+- Долгий прогон — `npm run test:fuzz -- --iterations=50000` (последний полный прогон (общая машина, 2 ядра): 537 500 входов утилит и разбора (`sanitizeHtml` 130 000, адреса 150 000, `parseMarkdown` 150 000, `escapeHtml` 50 000, `serializeJsonLd` 50 000, SVG 7 500) и 19 630 входов компонентов, нарушений 0; 18 итераций jsdom не засчитаны — его собственные ошибки разбора, см. FOLLOW_UPS). Он не входит в CI и не запускается по расписанию: запускайте перед релизом и после правок `htmlUtils`, `urlUtils`, Markdown и редактора.
+- Упавшую итерацию повторяет `npm run test:fuzz -- --only=<цель>:<номер>`; найденный вход сокращается до минимального и печатается в отчёте.
+- Ограничения: прогон идёт в jsdom, не в браузере; найденное и починенное — в `docs/design/FOLLOW_UPS.md`, «Задача w16-security-tokens».
+
+---
+
 ## Документация
 
 | Документ | Что внутри |
@@ -700,6 +740,7 @@ import { BaseButton } from '@ramzes1385/rise-ui-kit'
 | [Переход на 2.0](docs/v2/MIGRATION.md) | Что изменилось для приложения и что сделать при обновлении с 1.x |
 | [Что заметит приложение после редизайна](docs/design/CHANGES_FOR_APPS.md) | Значения по умолчанию, DOM, доступность, токены |
 | [Дизайн-система](docs/design/DESIGN_SYSTEM.md) | Токены `--rise-*`, темы, размеры, правила стилей |
+| [Токены для дизайна](docs/design/DESIGN_TOKENS.md) | `tokens.json` в формате W3C Design Tokens: имена, значения, Figma (Tokens Studio), Style Dictionary |
 | [Разработка](docs/reference/DEVELOPMENT.md) | Стек, структура репозитория, Storybook, тесты, сборка, CI |
 | [Ведение репозитория](docs/CONTRIBUTING.md) | Ветки, коммиты, pull request, релизы, новый компонент |
 

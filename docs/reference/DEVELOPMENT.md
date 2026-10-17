@@ -79,6 +79,7 @@ npm run storybook
 | `npm run test:components:coverage`, `test:composables:coverage`, `test:utils:coverage` | те же тесты с порогом покрытия 100% на файл |
 | `node scripts/portion-scope.mjs [--base=feat/rise-v2] [--json] [BaseX \| путь …]` | состав порции — что изменилось относительно базы; разделы и id историй; команды тестов с порогом покрытия по путям (пороги и исключения — из `test:*:coverage`) |
 | `npx vue-tsc -p build/lib/tsconfig.lib.json --noEmit` | типы сборки пакета — то же, что `build:lib:types`, без записи в `dist/` |
+| `npm run test:fuzz -- --iterations=50000` | долгий фаззинг XSS (`build/tests/fuzz`): `sanitizeHtml`, Markdown, адреса, SVG, JSON-LD и компоненты с пользовательским текстом; флаги `--seed`, `--target`, `--only=<цель>:<номер>` (повтор одной итерации), `--report=<файл>`. В CI и по расписанию не запускается (обычный `test:unit` гоняет те же файлы с малым числом итераций, до 10 секунд); запускайте перед релизом и после правок `htmlUtils`, `urlUtils`, Markdown, редактора |
 | `npm run test:slot-docs` | у каждого слота есть описание в JSDoc |
 | `npm run test:stories` | все истории в светлой и тёмной теме: рендер, play-проверки, ошибки консоли, axe. Нужен Storybook на порту 6006: `npm run storybook` или собранный — `npm run build-storybook` и `node scripts/serve-storybook-static.mjs` |
 | `npm run test:stories-coverage`, `test:a11y:coverage` | у каждого компонента есть обязательные истории и проверка клавиатуры |
@@ -120,10 +121,12 @@ dist/styles.layer.css  # то же в слое rise: /styles.layer.css
 dist/media.css         # стили видеоплеера без токенов: /media.css (подключается после styles.css)
 dist/media.layer.css   # то же в слое rise: /media.layer.css
 dist/icons.svg         # спрайт иконок: /icons.svg
+dist/tokens.json       # токены в формате W3C Design Tokens: /tokens.json
+dist/tokens/<тема>.<режим>.json   # темы rise, corporate, playful, minimal в светлом и тёмном режиме: /tokens/*.json
 dist/**/*.d.ts         # типы
 ```
 
-Сборка JS и CSS — четыре прохода Vite (`build:lib:js`): основной `build/lib/vite.lib.config.ts` (JS всех входов и подпутей, спрайт; обычный ESM — код по чанкам делит rolldown по набору входов), `vite.styles-css.config.ts` (`styles.css` — граф входов и группы `lazy-*` как до подпутей, поэтому порядок правил прежний), `vite.media-css.config.ts` (`media.css`) и `vite.subpath-css.config.ts` (`components/<Имя>/style.css` и `tokens.css`: токены, которые prelude кладёт в каждый стиль, отрезаются по метке, `build/plugins/subpathCss.ts`). Вход подпути импортирует CSS папок компонентов, которые он использует, в порядке выполнения модулей (`build/plugins/subpaths.ts`); список подпутей — реэкспорты `src/components/index.ts` (`build/config/subpaths.ts`). `npm run test:css-split` сверяет: правила `tokens.css` + всех `style.css` — ровно правила `styles.css` (кроме 3D-карты, у неё нет подпути).
+Сборка JS и CSS — четыре прохода Vite и пятый шаг (`build:lib:js`; шаг `build:lib:tokens` пишет `dist/tokens.json` и `dist/tokens/*.json`: `scripts/build-tokens.mjs`, `build/tokens/`, [DESIGN_TOKENS.md](../design/DESIGN_TOKENS.md)); проходы Vite: основной `build/lib/vite.lib.config.ts` (JS всех входов и подпутей, спрайт; обычный ESM — код по чанкам делит rolldown по набору входов), `vite.styles-css.config.ts` (`styles.css` — граф входов и группы `lazy-*` как до подпутей, поэтому порядок правил прежний), `vite.media-css.config.ts` (`media.css`) и `vite.subpath-css.config.ts` (`components/<Имя>/style.css` и `tokens.css`: токены, которые prelude кладёт в каждый стиль, отрезаются по метке, `build/plugins/subpathCss.ts`). Вход подпути импортирует CSS папок компонентов, которые он использует, в порядке выполнения модулей (`build/plugins/subpaths.ts`); список подпутей — реэкспорты `src/components/index.ts` (`build/config/subpaths.ts`). `npm run test:css-split` сверяет: правила `tokens.css` + всех `style.css` — ровно правила `styles.css` (кроме 3D-карты, у неё нет подпути).
 
 Локальный пакет для проверки в приложении:
 

@@ -15,6 +15,7 @@
 | [v2/PLAN.md](./v2/PLAN.md) | План версии 2.0: порции работы, решения, статус |
 | [v2/MIGRATION.md](./v2/MIGRATION.md) | Переход на 2.0: что меняется для приложения (пополняется по порциям) |
 | [design/DESIGN_SYSTEM.md](./design/DESIGN_SYSTEM.md) | Дизайн-система: токены `--rise-*`, темы, размеры, правила и рецепты стилей компонентов |
+| [design/DESIGN_TOKENS.md](./design/DESIGN_TOKENS.md) | Токены в формате W3C Design Tokens: файлы, имена, значения, Figma (Tokens Studio) и Style Dictionary |
 | [design/STORIES_GUIDE.md](./design/STORIES_GUIDE.md) | Как писать stories: структура, argTypes, v-model, play-проверки, visual/e2e |
 | [design/VISUAL_CHANGES.md](./design/VISUAL_CHANGES.md) | Визуальные изменения редизайна по компонентам (объяснение нового baseline) |
 | [design/CHANGES_FOR_APPS.md](./design/CHANGES_FOR_APPS.md) | Что заметит приложение после редизайна: значения по умолчанию, DOM, доступность, токены |
