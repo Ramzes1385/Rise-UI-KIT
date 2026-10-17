@@ -8,16 +8,23 @@ import { uzCalendar } from './calendar'
 import { uzCard } from './components/card'
 import { uzNotices } from './components/notices'
 import { uzGantt } from './components/data/gantt'
+import { uzFlowMap } from './components/flow/map'
 import { uzMapEditor } from './components/mapEditor'
 import { uzRoadmap } from './components/data/roadmap'
 import { uzImageMap3d } from './components/imageMap3d'
 import { uzTranscript } from './components/transcript'
+import { uzFlowPanels } from './components/flow/panels'
 import type { UiKitLocale } from '../types/locales.types'
 import { uzPresentation } from './components/presentation'
+import { uzFlowScenario } from './components/flow/scenario'
 import { uzFormWizard } from './components/form/formWizard'
 import { uzEventCalendar } from './components/eventCalendar'
 import { uzFileManager } from './components/data/fileManager'
+import { uzFlowDfd } from './components/flow/notations/process/dfd'
 import { uzDashboardGrid } from './components/layout/dashboardGrid'
+import { uzFlowBpmn } from './components/flow/notations/process/bpmn'
+import { uzFlowIdef } from './components/flow/notations/process/idef'
+import { uzFlowServices } from './components/flow/notations/architecture/services'
 
 /** Oʻzbek tili lugʻati (lotin yozuvi). Kalitlar va `{name}` oʻrinlari rus lugʻatidagidek (`ru/`) */
 export const uz: UiKitLocale = {
@@ -32,6 +39,13 @@ export const uz: UiKitLocale = {
 	...uzPresentation,
 	...uzMapEditor,
 	...uzImageMap3d,
+	...uzFlowMap,
+	...uzFlowScenario,
+	...uzFlowPanels,
+	...uzFlowServices,
+	...uzFlowBpmn,
+	...uzFlowIdef,
+	...uzFlowDfd,
 	...uzChat,
 	...uzData,
 	...uzEventCalendar,

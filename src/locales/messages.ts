@@ -4,15 +4,22 @@ import { localized } from './localized'
 import { ruCard } from './ru/components/card'
 import { ruGantt } from './ru/components/data/gantt'
 import { ruRoadmap } from './ru/components/data/roadmap'
+import { ruFlowMap } from './ru/components/flow/map'
 import { ruImageMap3d } from './ru/components/imageMap3d'
 import { ruTranscript } from './ru/components/transcript'
+import { ruFlowPanels } from './ru/components/flow/panels'
 import { ruImageMapEditor } from './ru/components/mapEditor'
 import { ruPresentation } from './ru/components/presentation'
+import { ruFlowScenario } from './ru/components/flow/scenario'
 import { ruFormWizard } from './ru/components/form/formWizard'
 import { ruEventCalendar } from './ru/components/eventCalendar'
 import { ruFileManager } from './ru/components/data/fileManager'
+import { ruFlowDfd } from './ru/components/flow/notations/process/dfd'
 import { ruDashboardGrid } from './ru/components/layout/dashboardGrid'
+import { ruFlowBpmn } from './ru/components/flow/notations/process/bpmn'
+import { ruFlowIdef } from './ru/components/flow/notations/process/idef'
 import { ruBanner, ruCookieConsent, ruResult } from './ru/components/notices'
+import { ruFlowServices } from './ru/components/flow/notations/architecture/services'
 import { ruAi, ruChat, ruCommentThread, ruEditor, ruEmoji, ruMarkdown, ruMention } from './ru/chat'
 import {
 	ruAudio,
@@ -174,6 +181,15 @@ export const UI_IMAGE_MAP_ROUTES = /* @__PURE__ */ localized('imageMapRoutes', r
 export const UI_IMAGE_MAP_EDITOR = /* @__PURE__ */ localized('imageMapEditor', ruImageMapEditor)
 /** 3D-карта BaseImageMap3D */
 export const UI_IMAGE_MAP_3D = /* @__PURE__ */ localized('imageMap3d', ruImageMap3d)
+
+/** Карта взаимодействий BaseFlowMap и её нотации */
+export const UI_FLOW_MAP = /* @__PURE__ */ localized('flowMap', ruFlowMap)
+export const UI_FLOW_SCENARIO = /* @__PURE__ */ localized('flowScenario', ruFlowScenario)
+export const UI_FLOW_PANELS = /* @__PURE__ */ localized('flowPanels', ruFlowPanels)
+export const UI_FLOW_SERVICES = /* @__PURE__ */ localized('flowServices', ruFlowServices)
+export const UI_FLOW_BPMN = /* @__PURE__ */ localized('flowBpmn', ruFlowBpmn)
+export const UI_FLOW_IDEF = /* @__PURE__ */ localized('flowIdef', ruFlowIdef)
+export const UI_FLOW_DFD = /* @__PURE__ */ localized('flowDfd', ruFlowDfd)
 
 /** Просмотр JSON */
 export const UI_JSON_VIEWER = /* @__PURE__ */ localized('jsonViewer', ruJsonViewer)

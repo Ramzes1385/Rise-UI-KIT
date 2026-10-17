@@ -58,6 +58,7 @@ export const SUBPATH_COMPONENT_NAMES = [
 	'BaseFileManager',
 	'BaseFileUpload',
 	'BaseFilterBuilder',
+	'BaseFlowMap',
 	'BaseFooter',
 	'BaseForm',
 	'BaseFormField',

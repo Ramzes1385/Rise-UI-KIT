@@ -348,6 +348,10 @@
       "types": "./dist/components/BaseFilterBuilder/index.d.ts",
       "import": "./dist/components/BaseFilterBuilder/index.js"
     },
+    "./BaseFlowMap": {
+      "types": "./dist/components/BaseFlowMap/index.d.ts",
+      "import": "./dist/components/BaseFlowMap/index.js"
+    },
     "./BaseFooter": {
       "types": "./dist/components/BaseFooter/index.d.ts",
       "import": "./dist/components/BaseFooter/index.js"

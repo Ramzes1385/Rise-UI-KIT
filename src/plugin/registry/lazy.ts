@@ -10,5 +10,6 @@ export const LAZY_COMPONENTS: Record<(typeof LAZY_COMPONENT_NAMES)[number], Comp
 	BaseDatePicker: defineAsyncComponent(() => import('../../components/BaseDatePicker/ui/BaseDatePicker.vue')),
 	BaseEditor: defineAsyncComponent(() => import('../../components/BaseEditor/ui/BaseEditor.vue')),
 	BaseFileUpload: defineAsyncComponent(() => import('../../components/BaseFileUpload/ui/BaseFileUpload.vue')),
+	BaseFlowMap: defineAsyncComponent(() => import('../../components/BaseFlowMap/ui/BaseFlowMap.vue')),
 	BaseTable: defineAsyncComponent(() => import('../../components/BaseTable/ui/BaseTable.vue')),
 }

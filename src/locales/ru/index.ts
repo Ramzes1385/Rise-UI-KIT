@@ -2,15 +2,22 @@ import { ruPlural } from './plural'
 import { ruCard } from './components/card'
 import { ruGantt } from './components/data/gantt'
 import { ruRoadmap } from './components/data/roadmap'
+import { ruFlowMap } from './components/flow/map'
 import { ruImageMap3d } from './components/imageMap3d'
 import { ruTranscript } from './components/transcript'
+import { ruFlowPanels } from './components/flow/panels'
 import { ruImageMapEditor } from './components/mapEditor'
 import { ruPresentation } from './components/presentation'
+import { ruFlowScenario } from './components/flow/scenario'
 import { ruFormWizard } from './components/form/formWizard'
 import { ruEventCalendar } from './components/eventCalendar'
 import { ruFileManager } from './components/data/fileManager'
+import { ruFlowDfd } from './components/flow/notations/process/dfd'
 import { ruDashboardGrid } from './components/layout/dashboardGrid'
+import { ruFlowBpmn } from './components/flow/notations/process/bpmn'
+import { ruFlowIdef } from './components/flow/notations/process/idef'
 import { ruBanner, ruCookieConsent, ruResult } from './components/notices'
+import { ruFlowServices } from './components/flow/notations/architecture/services'
 import { ruAi, ruChat, ruCommentThread, ruEditor, ruEmoji, ruMarkdown, ruMention } from './chat'
 import {
 	ruAudio,
@@ -109,6 +116,13 @@ export const ru = {
 	presentation: ruPresentation,
 	imageMapEditor: ruImageMapEditor,
 	imageMap3d: ruImageMap3d,
+	flowMap: ruFlowMap,
+	flowScenario: ruFlowScenario,
+	flowPanels: ruFlowPanels,
+	flowServices: ruFlowServices,
+	flowBpmn: ruFlowBpmn,
+	flowIdef: ruFlowIdef,
+	flowDfd: ruFlowDfd,
 	chat: ruChat,
 	editor: ruEditor,
 	markdown: ruMarkdown,

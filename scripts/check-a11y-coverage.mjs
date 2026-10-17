@@ -140,6 +140,7 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseFileManager',
 	'BaseFormWizard',
 	'BaseRoadmap',
+	'BaseFlowMap',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */
@@ -208,6 +209,7 @@ const INTERACTIVE_WITH_DISABLED = new Set([
 	'BaseFileManager',
 	'BaseFormWizard',
 	'BaseRoadmap',
+	'BaseFlowMap',
 ])
 
 /** Формовые компоненты, требующие story Error */
@@ -263,6 +265,7 @@ const LOADING_COMPONENTS = new Set([
 	'BaseFileManager',
 	'BaseFormWizard',
 	'BaseRoadmap',
+	'BaseFlowMap',
 ])
 
 const EMPTY_COMPONENTS = new Set([
@@ -300,6 +303,7 @@ const EMPTY_COMPONENTS = new Set([
 	'BaseFileManager',
 	'BaseFormWizard',
 	'BaseRoadmap',
+	'BaseFlowMap',
 ])
 
 const LONG_CONTENT_COMPONENTS = new Set([
@@ -350,6 +354,7 @@ const LONG_CONTENT_COMPONENTS = new Set([
 	'BaseFileManager',
 	'BaseFormWizard',
 	'BaseRoadmap',
+	'BaseFlowMap',
 ])
 
 const REQUIRED_STORIES_INTERACTIVE = ['Default', 'Disabled']
