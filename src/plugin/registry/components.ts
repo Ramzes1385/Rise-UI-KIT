@@ -6,6 +6,7 @@
 import type { Component } from 'vue'
 import { LAZY_COMPONENTS } from './lazy'
 import { BaseApp } from '../../components/BaseApp'
+import { BaseRoadmap } from '../../components/BaseRoadmap'
 import { BaseFab } from '../../components/BaseFab'
 import { BaseKbd } from '../../components/BaseKbd'
 import { BaseMap } from '../../components/BaseMap'
@@ -253,6 +254,7 @@ export const UI_COMPONENTS: Record<string, Component> = {
 	BaseReasoning,
 	BaseRequisiteInput,
 	BaseResult,
+	BaseRoadmap,
 	BaseScrollArea,
 	BaseSearch,
 	BaseSegmented,

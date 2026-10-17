@@ -109,6 +109,7 @@ export const SUBPATH_COMPONENT_NAMES = [
 	'BaseReasoning',
 	'BaseRequisiteInput',
 	'BaseResult',
+	'BaseRoadmap',
 	'BaseScrollArea',
 	'BaseSearch',
 	'BaseSegmented',

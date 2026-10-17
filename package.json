@@ -552,6 +552,10 @@
       "types": "./dist/components/BaseResult/index.d.ts",
       "import": "./dist/components/BaseResult/index.js"
     },
+    "./BaseRoadmap": {
+      "types": "./dist/components/BaseRoadmap/index.d.ts",
+      "import": "./dist/components/BaseRoadmap/index.js"
+    },
     "./BaseScrollArea": {
       "types": "./dist/components/BaseScrollArea/index.d.ts",
       "import": "./dist/components/BaseScrollArea/index.js"

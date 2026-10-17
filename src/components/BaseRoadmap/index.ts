@@ -1,0 +1,40 @@
+export { ROADMAP_FILTERS, ROADMAP_LAYOUTS, ROADMAP_PARTS, ROADMAP_VARIANTS } from './types/BaseRoadmap.types'
+export type {
+	BaseRoadmapEmits,
+	BaseRoadmapExpose,
+	BaseRoadmapPart,
+	BaseRoadmapProps,
+	BaseRoadmapSlots,
+	RoadmapFilter,
+	RoadmapHooks,
+	RoadmapLayout,
+	RoadmapStatusChange,
+	RoadmapTopicState,
+	RoadmapVariant,
+} from './types/BaseRoadmap.types'
+export {
+	ROADMAP_DATA_VERSION,
+	ROADMAP_MATERIAL_KINDS,
+	ROADMAP_PROGRESS_STATUSES,
+	ROADMAP_STAGE_STATUSES,
+	ROADMAP_TOPIC_KINDS,
+	ROADMAP_TOPIC_STATUSES,
+} from './types/roadmapData.types'
+export type {
+	RoadmapData,
+	RoadmapMaterial,
+	RoadmapMaterialKind,
+	RoadmapProgress,
+	RoadmapProgressStatus,
+	RoadmapProgressStorage,
+	RoadmapStage,
+	RoadmapStage3D,
+	RoadmapStageStatus,
+	RoadmapSubtopic,
+	RoadmapTopic,
+	RoadmapTopicKind,
+	RoadmapTopicProgress,
+	RoadmapTopicStatus,
+	RoadmapView3D,
+} from './types/roadmapData.types'
+export { default as BaseRoadmap } from './ui/BaseRoadmap.vue'

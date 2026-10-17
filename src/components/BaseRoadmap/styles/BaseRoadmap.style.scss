@@ -1,0 +1,18 @@
+.base-roadmap {
+	@include custom-color-scope;
+	display: block;
+	box-sizing: border-box;
+	max-width: 100%;
+	min-width: 0;
+	@include custom-bg(background-color, var(--rise-bg));
+	@include custom-text(color, var(--rise-text));
+
+	&--outline {
+		border: 1px solid var(--rise-border-accented);
+		border-radius: sz(var(--rise-radius-md));
+	}
+
+	&--ghost {
+		@include custom-bg(background-color, transparent);
+	}
+}
