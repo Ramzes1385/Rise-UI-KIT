@@ -9,6 +9,12 @@
  * - `<бренд>-<режим>` — бренд (глобал `brand`: `rise`, `corporate`, `playful`, `minimal`, `custom`) поверх режима,
  *   например `corporate-light,corporate-dark`; `<бренд>` без режима — оба режима: `corporate` = `corporate-light,corporate-dark`.
  * Пример: `node scripts/check-stories.mjs --filter='^foundations-' --themes=light,dark,corporate,playful,minimal`.
+ *
+ * `--widths=<список>` — ширины окна в px (по умолчанию одна — `DEFAULT_WIDTH`), каждая история на каждой ширине; CI гоняет `375,1280`.
+ * После play страница не должна прокручиваться по горизонтали: `scrollWidth` не больше `clientWidth` и ни один видимый элемент
+ * не выступает за правый край окна (с учётом обрезки предками с `overflow`; `position: fixed` и скрытое не считаются).
+ * Рамки историй с намеренной внутренней прокруткой обрезаются своим `overflow` и выступом не считаются; настоящие исключения —
+ * в `OVERFLOW_ALLOWED` с причиной. Результат — в отчёте тем же форматом: ошибка «Переполнение по ширине…», у записи поле `width`.
  */
 
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
@@ -26,6 +32,15 @@ const PAGE_LEVEL_RULES = ['html-has-lang', 'landmark-one-main', 'page-has-headin
 const DONE_PHASES = ['played', 'completed', 'finished', 'errored', 'aborted']
 const FAILED_EVENTS = ['playFunctionThrewException', 'storyThrewException', 'storyErrored', 'unhandledErrorsWhilePlaying']
 const RENDER_TIMEOUT = 30_000
+const DEFAULT_WIDTH = 1100
+const VIEWPORT_HEIGHT = 800
+/** Допуск округления: подпиксельные границы и 1 px рамки не считаются переполнением */
+const OVERFLOW_TOLERANCE = 1
+/**
+ * Истории, которым переполнение страницы разрешено: `{ id: RegExp id истории, widths?: [px], reason }`.
+ * Пока пусто: все истории укладываются в 375 и 1280 px. Добавлять только с причиной, которую нельзя убрать правкой истории.
+ */
+const OVERFLOW_ALLOWED = []
 /** Адреса, которые stories запрашивают заведомо без ответа, чтобы показать ошибку загрузки */
 const EXPECTED_MISSING_RE = /__story-missing/
 /** Режимы и бренды тем: глобалы `theme` и `brand` из build/storybook/preview.ts */
@@ -50,7 +65,7 @@ function themeGlobals(theme) {
 }
 
 function parseArgs(argv) {
-	const options = { url: 'http://localhost:6006', themes: 'light,dark', filter: '', concurrency: '4', report: '' }
+	const options = { url: 'http://localhost:6006', themes: 'light,dark', filter: '', concurrency: '4', report: '', widths: '' }
 	for (const arg of argv) {
 		const match = /^--([a-z]+)=(.*)$/.exec(arg)
 		if (!match || !(match[1] in options)) {
@@ -65,7 +80,19 @@ function parseArgs(argv) {
 		filter: options.filter ? new RegExp(options.filter) : null,
 		concurrency: Math.max(1, Number(options.concurrency) || 1),
 		report: options.report,
+		widths: parseWidths(options.widths),
 	}
+}
+
+/** `--widths=375,1280` → `[375, 1280]`; без параметра — одна ширина по умолчанию */
+function parseWidths(value) {
+	if (!value) return [DEFAULT_WIDTH]
+	const widths = value.split(',').map(Number)
+	if (widths.some(width => !Number.isInteger(width) || width < 200 || width > 4000)) {
+		console.error(`❌ --widths: целые числа от 200 до 4000 через запятую, получено «${value}»`)
+		process.exit(2)
+	}
+	return [...new Set(widths)]
 }
 
 /** Слушатель событий Storybook в iframe: ошибки play-функции приходят через канал аддонов. */
@@ -104,8 +131,64 @@ async function runAxe(rules) {
 	}))
 }
 
-async function checkStory(page, options, story, theme) {
-	const result = { id: story.id, theme, errors: [], violations: [] }
+/**
+ * Горизонтальное переполнение страницы (выполняется в браузере): запас прокрутки документа и самый выступающий
+ * за правый край окна видимый элемент. Обход сверху вниз несёт правую границу, до которой предки с `overflow` обрезают потомков.
+ */
+function measureOverflow() {
+	const root = document.documentElement
+	const viewport = root.clientWidth
+	let worst = 0
+	let culprit = ''
+	function describe(node) {
+		const classes = typeof node.className === 'string' ? node.className.trim().split(/\s+/).filter(Boolean).slice(0, 2) : []
+		return node.tagName.toLowerCase() + (node.id ? `#${node.id}` : '') + classes.map(name => `.${name}`).join('')
+	}
+	function walk(node, clipRight) {
+		const style = getComputedStyle(node)
+		if (style.display === 'none' || style.position === 'fixed') return
+		const rect = node.getBoundingClientRect()
+		if (rect.width > 0 && style.visibility === 'visible') {
+			const excess = Math.min(rect.right, clipRight) - viewport
+			if (excess > worst) {
+				worst = excess
+				culprit = describe(node)
+			}
+		}
+		const childClip = style.overflowX === 'visible' ? clipRight : Math.min(clipRight, rect.right)
+		for (const child of node.children) walk(child, childClip)
+	}
+	return document.fonts.ready.then(
+		() =>
+			new Promise(resolve =>
+				requestAnimationFrame(() =>
+					requestAnimationFrame(() => {
+						for (const child of document.body.children) walk(child, Infinity)
+						resolve({ page: root.scrollWidth - viewport, viewport, worst: Math.round(worst), culprit })
+					}),
+				),
+			),
+	)
+}
+
+function overflowError(measured, width) {
+	const parts = []
+	if (measured.page > OVERFLOW_TOLERANCE)
+		parts.push(`страница шире окна на ${measured.page} px (scrollWidth ${measured.viewport + measured.page} > ${measured.viewport})`)
+	if (measured.worst > OVERFLOW_TOLERANCE) parts.push(`${measured.culprit} выступает за правый край на ${measured.worst} px`)
+	return parts.length ? `Переполнение по ширине ${width} px: ${parts.join('; ')}` : null
+}
+
+function isOverflowMessage(error) {
+	return error.startsWith('Переполнение по ширине')
+}
+
+function isOverflowAllowed(id, width) {
+	return OVERFLOW_ALLOWED.some(entry => entry.id.test(id) && (!entry.widths || entry.widths.includes(width)))
+}
+
+async function checkStory(page, options, story, theme, width) {
+	const result = { id: story.id, theme, width, errors: [], violations: [] }
 	const onPageError = error => result.errors.push(`Исключение: ${String(error.message).slice(0, 300)}`)
 	const onConsole = message => {
 		// Ошибки загрузки ресурсов браузер дублирует в консоль — их проверяет onResponse
@@ -142,6 +225,11 @@ async function checkStory(page, options, story, theme) {
 		const events = await page.evaluate(() => window.__storyEvents ?? [])
 		for (const event of events) result.errors.push(`${event.name}: ${event.details}`)
 
+		if (phase !== 'timeout' && !isOverflowAllowed(story.id, width)) {
+			const message = overflowError(await page.evaluate(measureOverflow), width)
+			if (message) result.errors.push(message)
+		}
+
 		const rules = await page.evaluate(readA11yConfig, PAGE_LEVEL_RULES)
 		if (rules) {
 			await page.addScriptTag({ content: AXE_SOURCE })
@@ -171,8 +259,11 @@ async function main() {
 	const stories = Object.values(index.entries).filter(
 		entry => entry.type === 'story' && isTested(entry) && (!options.filter || options.filter.test(entry.id)),
 	)
-	const jobs = stories.flatMap(story => options.themes.map(theme => ({ story, theme })))
-	console.log(`=== Прогон stories: ${stories.length} × темы ${options.themes.join(', ')} = ${jobs.length} ===`)
+	const jobs = stories.flatMap(story => options.themes.flatMap(theme => options.widths.map(width => ({ story, theme, width }))))
+	const total = jobs.length
+	console.log(
+		`=== Прогон stories: ${stories.length} × темы ${options.themes.join(', ')} × ширины ${options.widths.join(', ')} px = ${total} ===`,
+	)
 
 	const origin = new URL(options.url).origin
 	const browser = await chromium.launch()
@@ -180,7 +271,10 @@ async function main() {
 	const startedAt = Date.now()
 
 	async function worker() {
-		const context = await browser.newContext({ viewport: { width: 1100, height: 800 }, reducedMotion: 'reduce' })
+		const context = await browser.newContext({
+			viewport: { width: options.widths[0], height: VIEWPORT_HEIGHT },
+			reducedMotion: 'reduce',
+		})
 		await context.addInitScript(CHANNEL_LISTENER)
 		const page = await context.newPage()
 		const external = new Set()
@@ -192,12 +286,13 @@ async function main() {
 			return route.abort()
 		})
 		while (jobs.length) {
-			const { story, theme } = jobs.shift()
+			const { story, theme, width } = jobs.shift()
 			external.clear()
-			const result = await checkStory(page, options, story, theme)
+			await page.setViewportSize({ width, height: VIEWPORT_HEIGHT })
+			const result = await checkStory(page, options, story, theme, width)
 			for (const url of external) result.errors.push(`Внешний запрос: ${url.slice(0, 200)}`)
 			results.push(result)
-			if (results.length % 100 === 0) console.log(`  ${results.length} / ${stories.length * options.themes.length}`)
+			if (results.length % 100 === 0) console.log(`  ${results.length} / ${total}`)
 		}
 		await context.close()
 	}
@@ -212,10 +307,10 @@ async function main() {
 	}
 	const seconds = Math.round((Date.now() - startedAt) / 1000)
 	console.log(
-		`\nПроверено: ${results.length} за ${seconds} с. С ошибками: ${results.filter(result => result.errors.length).length}. С нарушениями axe: ${results.filter(result => result.violations.length).length}.`,
+		`\nПроверено: ${results.length} за ${seconds} с. С ошибками: ${results.filter(result => result.errors.length).length}. С нарушениями axe: ${results.filter(result => result.violations.length).length}. С переполнением по ширине: ${results.filter(result => result.errors.some(isOverflowMessage)).length}.`,
 	)
 	for (const result of failed.slice(0, 50)) {
-		console.log(`\n❌ ${result.id} (${result.theme})`)
+		console.log(`\n❌ ${result.id} (${result.theme}, ${result.width} px)`)
 		for (const error of result.errors.slice(0, 3)) console.log(`   ${error}`)
 		for (const violation of result.violations.slice(0, 3))
 			console.log(`   axe ${violation.id} (${violation.impact}, узлов: ${violation.nodes}): ${violation.target}`)
