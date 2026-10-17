@@ -16,12 +16,12 @@
 		flex-wrap: wrap;
 		align-items: center;
 		gap: sz(ct(input-tags, gap, 4px));
-		padding-left: sz(4px);
+		padding-inline-start: sz(4px);
 	}
 
 	&--has-tags .base-input__field {
 		flex: 1 0 sz(96px);
-		padding-left: sz(4px);
+		padding-inline-start: sz(4px);
 	}
 
 	&__list {
@@ -42,7 +42,7 @@
 
 		.base-badge {
 			height: sz(ct(input-tags, tag-height, 22px));
-			padding-left: sz(ct(input-tags, tag-padding-x, 8px));
+			padding-inline-start: sz(ct(input-tags, tag-padding-x, 8px));
 			border-color: ct(input-tags, tag-border, var(--rise-border));
 			border-radius: sz(ct(input-tags, tag-radius, var(--rise-radius-sm)));
 			background-color: ct(input-tags, tag-bg, var(--rise-bg-elevated));

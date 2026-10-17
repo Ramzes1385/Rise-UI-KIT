@@ -33,15 +33,15 @@
 		display: flex;
 		flex-direction: column;
 		gap: sz(2px);
-		padding-right: sz(ct(date-picker, panel-gap, 4px));
-		border-right: 1px solid ct(date-picker, presets-border, var(--rise-border));
+		padding-inline-end: sz(ct(date-picker, panel-gap, 4px));
+		border-inline-end: 1px solid ct(date-picker, presets-border, var(--rise-border));
 
 		@include respond-below(mobile) {
 			grid-row: auto;
 			flex-flow: row wrap;
-			padding-right: 0;
+			padding-inline-end: 0;
 			padding-bottom: sz(ct(date-picker, panel-gap, 4px));
-			border-right: 0;
+			border-inline-end: 0;
 			border-bottom: 1px solid ct(date-picker, presets-border, var(--rise-border));
 		}
 	}
@@ -82,7 +82,7 @@
 	}
 
 	&__nav-btn--double .base-icon + .base-icon {
-		margin-left: sz(-12px);
+		margin-inline-start: sz(-12px);
 	}
 
 	&__year-title {

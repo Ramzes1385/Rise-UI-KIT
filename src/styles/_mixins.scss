@@ -3,6 +3,13 @@
 @use './variables' as *;
 @use './functions' as *;
 
+// Остров слева направо: пространственные элементы (шкала времени, до / после), которые не зеркалятся в RTL.
+// `direction` и `--rise-dir` возвращают LTR всему поддереву, JS-проверки (`isRtl`) тоже видят LTR.
+@mixin ltr-surface {
+	direction: ltr;
+	--rise-dir: 1;
+}
+
 @mixin flex-center {
 	display: flex;
 	align-items: center;
@@ -274,7 +281,7 @@
 }
 
 @mixin field-required {
-	margin-left: sz(2px);
+	margin-inline-start: sz(2px);
 	color: var(--rise-error);
 }
 
@@ -427,16 +434,24 @@
 }
 
 // $dir — откуда въезжает содержимое: `up` — снизу вверх, `down`, `left` — справа налево, `right`. Уход — дальше по ходу.
+// Горизонтальные `left` и `right` — вдоль строки: в RTL меняются местами (`--rise-dir`, kit.scss).
 @mixin enter-slide($name, $dir: up, $distance: var(--rise-motion-distance)) {
 	$axis: 'X';
 	$sign: -1;
+	$flip: '';
 	@if $dir == up or $dir == down {
 		$axis: 'Y';
+	} @else {
+		$flip: ' * var(--rise-dir, 1)';
 	}
 	@if $dir == up or $dir == left {
 		$sign: 1;
 	}
-	@include enter-transform($name, translate#{$axis }(calc(#{$distance} * #{$sign})), translate#{$axis }(calc(#{$distance} * #{-$sign})));
+	@include enter-transform(
+		$name,
+		translate#{$axis }(calc(#{$distance} * #{$sign}#{$flip})),
+		translate#{$axis }(calc(#{$distance} * #{-$sign}#{$flip}))
+	);
 }
 
 // Проп `animation` оверлея (fade | scale | slide | pop | none): появление и уход `<Transition name="$name">`.

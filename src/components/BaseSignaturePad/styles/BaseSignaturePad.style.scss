@@ -40,9 +40,8 @@
 
 	&__baseline {
 		position: absolute;
-		right: sz(20px);
+		inset-inline: sz(20px);
 		bottom: 24%;
-		left: sz(20px);
 		border-bottom: 1px solid ct(signature-pad, baseline-border, var(--rise-border-accented));
 		color: ct(signature-pad, baseline-text, var(--rise-text-toned));
 		line-height: 1;

@@ -7,6 +7,7 @@
 	@include custom-text(color, ct(pin, text, var(--rise-text-highlighted)));
 
 	&__cells {
+		@include ltr-surface;
 		display: flex;
 		gap: sz(ct(pin, gap, 6px));
 	}

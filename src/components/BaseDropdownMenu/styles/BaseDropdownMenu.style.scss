@@ -133,7 +133,7 @@
 
 	&__shortcut {
 		flex-shrink: 0;
-		padding-left: sz(16px);
+		padding-inline-start: sz(16px);
 		@include text-size(xs);
 		color: var(--dm-panel-text, var(--dm-shortcut-text));
 	}

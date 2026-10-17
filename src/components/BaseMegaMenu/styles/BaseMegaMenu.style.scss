@@ -87,9 +87,8 @@
 
 		&::after {
 			position: absolute;
-			right: sz(12px);
+			inset-inline: sz(12px);
 			bottom: sz(2px);
-			left: sz(12px);
 			height: 2px;
 			border-radius: sz(var(--rise-radius-full));
 			background-color: var(--rise-primary);
@@ -117,7 +116,7 @@
 		flex-shrink: 0;
 		align-items: center;
 		gap: sz(8px);
-		margin-left: auto;
+		margin-inline-start: auto;
 		@include reset-custom-color;
 	}
 
@@ -136,8 +135,7 @@
 	&__panel {
 		position: absolute;
 		top: calc(100% + #{sz(8px)});
-		right: 0;
-		left: 0;
+		inset-inline: 0;
 		z-index: var(--rise-z-overlay);
 		padding: space(ct(mega-menu, panel-padding, 20px));
 		@include floating-surface;
@@ -146,9 +144,8 @@
 
 		&::before {
 			position: absolute;
-			right: 0;
+			inset-inline: 0;
 			bottom: 100%;
-			left: 0;
 			height: sz(8px);
 			content: '';
 		}
@@ -157,7 +154,8 @@
 	&__panel--inline {
 		position: static;
 		margin-top: sz(4px);
-		padding: sz(8px 0 8px 12px);
+		padding-block: sz(8px);
+		padding-inline: sz(12px 0);
 		border: none;
 		border-radius: 0;
 		box-shadow: none;
@@ -192,8 +190,8 @@
 	}
 
 	&__group + &__group {
-		padding-left: sz(16px);
-		border-left: 1px solid var(--rise-border-muted);
+		padding-inline-start: sz(16px);
+		border-inline-start: 1px solid var(--rise-border-muted);
 	}
 
 	&__group-title {
@@ -253,7 +251,7 @@
 		border: none;
 		background-color: transparent;
 		font-family: inherit;
-		text-align: left;
+		text-align: start;
 		cursor: pointer;
 		@include focus-ring;
 
@@ -270,7 +268,7 @@
 	&__link-chevron {
 		flex-shrink: 0;
 		align-self: center;
-		margin-left: auto;
+		margin-inline-start: auto;
 		color: var(--rise-text-muted);
 		@include transition(transform);
 	}
@@ -304,7 +302,7 @@
 		color: var(--rise-text-muted);
 		font-family: inherit;
 		@include text-size(sm);
-		text-align: left;
+		text-align: start;
 		cursor: pointer;
 		@include transition-colors;
 		@include focus-ring;
@@ -322,7 +320,7 @@
 	&__sub {
 		position: absolute;
 		top: sz(-8px);
-		left: calc(100% + #{sz(8px)});
+		inset-inline-start: calc(100% + #{sz(8px)});
 		z-index: 1;
 		width: max-content;
 		min-width: sz(220px);
@@ -334,7 +332,7 @@
 		&::before {
 			position: absolute;
 			top: 0;
-			right: 100%;
+			inset-inline-end: 100%;
 			bottom: 0;
 			width: sz(10px);
 			content: '';
@@ -343,8 +341,7 @@
 
 	&__sub--below {
 		top: calc(100% + #{sz(4px)});
-		right: 0;
-		left: auto;
+		inset-inline: auto 0;
 
 		&::before {
 			inset: auto 0 100%;
@@ -435,8 +432,8 @@
 	}
 
 	&--mobile &__group + &__group {
-		padding-left: 0;
-		border-left: none;
+		padding-inline-start: 0;
+		border-inline-start: none;
 	}
 
 	&--mobile &__bar {
@@ -456,7 +453,7 @@
 	}
 
 	&--mobile &__chevron {
-		margin-left: auto;
+		margin-inline-start: auto;
 	}
 
 	&--mobile &__sub {
@@ -465,9 +462,10 @@
 		min-width: 0;
 		max-width: none;
 		margin-top: sz(2px);
-		padding: sz(0 0 0 12px);
+		padding-block: sz(0);
+		padding-inline: sz(12px 0);
 		border: none;
-		border-left: 1px solid var(--rise-border-muted);
+		border-inline-start: 1px solid var(--rise-border-muted);
 		border-radius: 0;
 		box-shadow: none;
 		background-color: transparent;
@@ -478,11 +476,11 @@
 	}
 
 	&--mobile &__link-chevron {
-		transform: rotate(90deg);
+		transform: rotate(dir-angle(90deg));
 	}
 
 	&--mobile &__link--expanded &__link-chevron {
-		transform: rotate(-90deg);
+		transform: rotate(dir-angle(-90deg));
 	}
 
 	&--mobile &__promo-image {

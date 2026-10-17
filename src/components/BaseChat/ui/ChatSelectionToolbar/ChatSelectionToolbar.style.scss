@@ -11,7 +11,8 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: sz(8px);
-		padding: sz(4px) sz(4px) sz(4px) sz(12px);
+		padding-block: sz(4px);
+		padding-inline: sz(12px) sz(4px);
 		border: 1px solid var(--rise-border);
 		border-radius: sz(var(--rise-radius-lg));
 		background-color: var(--rise-bg);

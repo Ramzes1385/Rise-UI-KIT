@@ -34,7 +34,7 @@
 		min-width: 0;
 		@include button-reset;
 		padding: space(ct(tool-call, trigger-padding-y, 8px) ct(tool-call, padding-x, 12px));
-		text-align: left;
+		text-align: start;
 		@include transition-colors;
 		@include focus-ring(-2px);
 

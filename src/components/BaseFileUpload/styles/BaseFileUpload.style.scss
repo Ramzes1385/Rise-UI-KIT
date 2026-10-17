@@ -67,7 +67,7 @@
 
 		> span:not(:last-child)::after {
 			content: '·';
-			margin-left: sz(6px);
+			margin-inline-start: sz(6px);
 		}
 	}
 
@@ -188,7 +188,7 @@
 
 		> span:not(:last-child)::after {
 			content: '·';
-			margin-left: sz(6px);
+			margin-inline-start: sz(6px);
 			color: var(--rise-text-muted);
 		}
 	}

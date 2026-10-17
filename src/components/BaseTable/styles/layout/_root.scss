@@ -52,7 +52,7 @@
 	&--bordered {
 		.base-table__th + .base-table__th,
 		.base-table__td + .base-table__td {
-			border-left: 1px solid var(--tbl-border);
+			border-inline-start: 1px solid var(--tbl-border);
 		}
 	}
 

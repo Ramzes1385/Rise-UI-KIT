@@ -42,7 +42,7 @@
 	&__controls {
 		position: absolute;
 		top: sz(ct(map, controls-gap, 8px));
-		right: sz(ct(map, controls-gap, 8px));
+		inset-inline-end: sz(ct(map, controls-gap, 8px));
 		display: flex;
 		flex-direction: column;
 		gap: sz(4px);
@@ -51,7 +51,7 @@
 	&__notice {
 		position: absolute;
 		bottom: sz(ct(map, controls-gap, 8px));
-		left: sz(ct(map, controls-gap, 8px));
+		inset-inline-start: sz(ct(map, controls-gap, 8px));
 		z-index: 1;
 		max-width: calc(100% - #{sz(16px)});
 		pointer-events: none;

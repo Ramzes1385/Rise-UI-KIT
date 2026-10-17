@@ -89,12 +89,12 @@
 
 	&__list {
 		margin: sz(8px) 0 sz(10px);
-		padding-left: sz(24px);
+		padding-inline-start: sz(24px);
 	}
 
 	&__item {
 		margin: sz(4px) 0;
-		padding-left: sz(4px);
+		padding-inline-start: sz(4px);
 
 		&::marker {
 			color: var(--rise-text-muted);
@@ -107,19 +107,20 @@
 
 	&__item--task {
 		list-style: none;
-		margin-left: sz(-20px);
+		margin-inline-start: sz(-20px);
 	}
 
 	&__check.base-checkbox {
 		display: inline-flex;
-		margin-right: sz(8px);
+		margin-inline-end: sz(8px);
 		vertical-align: sz(-3px);
 	}
 
 	&__quote {
 		margin: sz(12px) 0;
-		padding: sz(2px) 0 sz(2px) sz(12px);
-		border-left: sz(3px) solid ct(markdown, quote-border, var(--rise-primary));
+		padding-block: sz(2px);
+		padding-inline: sz(12px) 0;
+		border-inline-start: sz(3px) solid ct(markdown, quote-border, var(--rise-primary));
 		@include custom-text(color, ct(markdown, quote-text, var(--rise-text-muted)));
 
 		> :last-child {
@@ -148,7 +149,8 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: sz(8px);
-		padding: sz(4px) sz(4px) sz(4px) sz(12px);
+		padding-block: sz(4px);
+		padding-inline: sz(12px) sz(4px);
 		border-bottom: 1px solid var(--rise-border);
 		color: var(--rise-text-muted);
 		@include text-size(xs);
@@ -195,6 +197,8 @@
 	}
 
 	&__pre {
+		@include ltr-surface;
+
 		margin: 0;
 		padding: space(12px 16px);
 		overflow-x: auto;
@@ -227,7 +231,7 @@
 		:where(th, td) {
 			padding: space(6px 12px);
 			border: 1px solid ct(markdown, table-border, var(--rise-border));
-			text-align: left;
+			text-align: start;
 			vertical-align: top;
 		}
 
@@ -249,7 +253,7 @@
 		display: inline-block;
 		width: sz(8px);
 		height: 1.1em;
-		margin-left: sz(2px);
+		margin-inline-start: sz(2px);
 		vertical-align: text-bottom;
 		border-radius: sz(2px);
 		background-color: var(--rise-primary);

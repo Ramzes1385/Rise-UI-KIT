@@ -52,7 +52,8 @@
 		align-items: center;
 		gap: sz(6px);
 		max-width: 100%;
-		padding: sz(4px) sz(10px) sz(4px) sz(8px);
+		padding-block: sz(4px);
+		padding-inline: sz(8px) sz(10px);
 		border: 1px solid var(--rise-border);
 		border-radius: var(--rise-radius-full);
 		background-color: var(--rise-bg-muted);

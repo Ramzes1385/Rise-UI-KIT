@@ -40,9 +40,8 @@
 		&--indicated::after {
 			content: '';
 			position: absolute;
-			right: sz(7px);
+			inset-inline: sz(7px);
 			bottom: sz(3px);
-			left: sz(7px);
 			height: sz(3px);
 			border-radius: var(--rise-radius-full);
 			background-color: var(--picker-swatch-color);
@@ -113,13 +112,13 @@
 
 	&__marker {
 		top: 0;
-		left: 0;
+		inset-inline-start: 0;
 		transform: translate(calc(var(--picker-marker-x) * 1cqw - 50%), calc(var(--picker-marker-y) * 1cqh - 50%));
 	}
 
 	&__thumb {
 		top: 50%;
-		left: 0;
+		inset-inline-start: 0;
 		transform: translate(calc(var(--picker-thumb-x) * (100cqw - #{sz(14px)})), -50%);
 	}
 

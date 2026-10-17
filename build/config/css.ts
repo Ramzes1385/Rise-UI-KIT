@@ -1,5 +1,6 @@
 /** Глобальный prelude инжектится во все стили компонентов, кроме самих модулей-источников — иначе Sass-ошибка «Module loop». */
 
+import { Features } from 'lightningcss'
 import type { CSSOptions } from 'vite'
 import { isProductionMode } from '../utils/helpers.ts'
 
@@ -32,6 +33,7 @@ export function createCssConfig(mode: string, scss: object = createScssOptions()
 
 	return {
 		transformer: 'lightningcss',
+		lightningcss: { exclude: Features.LogicalProperties },
 		preprocessorOptions: {
 			scss,
 		},

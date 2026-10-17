@@ -65,7 +65,7 @@
 		position: absolute;
 		top: sz(var(--timeline-marker));
 		bottom: 0;
-		left: calc(var(--timeline-side-offset, 0px) + #{sz(calc(var(--timeline-marker) / 2))} - 1px);
+		inset-inline-start: calc(var(--timeline-side-offset, 0px) + #{sz(calc(var(--timeline-marker) / 2))} - 1px);
 		width: 2px;
 		background-color: ct(timeline, line-bg, var(--rise-border));
 	}
@@ -88,7 +88,7 @@
 		font-variant-numeric: tabular-nums;
 		width: sz(88px);
 		padding-top: sz(4px);
-		text-align: right;
+		text-align: end;
 	}
 
 	&--date-side {
@@ -149,14 +149,13 @@
 	&--horizontal &__item {
 		flex: 1 0 sz(160px);
 		flex-direction: column;
-		padding-right: space(ct(timeline, gap, 16px));
+		padding-inline-end: space(ct(timeline, gap, 16px));
 		padding-bottom: 0;
 	}
 
 	&--horizontal &__line {
 		top: calc(#{sz(calc(var(--timeline-marker) / 2))} - 1px);
-		right: 0;
-		left: sz(var(--timeline-marker));
+		inset-inline: sz(var(--timeline-marker)) 0;
 		width: auto;
 		height: 2px;
 	}

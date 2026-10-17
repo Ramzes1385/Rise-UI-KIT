@@ -30,7 +30,8 @@ $code-token-types: keyword, string, number, comment, function, tag, attribute, p
 		align-items: center;
 		gap: space(8px);
 		min-height: sz(ct(code, header-height, 32px));
-		padding: space(4px 4px 4px 12px);
+		padding-block: space(4px);
+		padding-inline: space(12px 4px);
 		border-bottom: 1px solid ct(code, border, var(--rise-border));
 		background-color: ct(code, header-bg, transparent);
 		color: ct(code, header-text, var(--rise-text-toned));
@@ -59,6 +60,8 @@ $code-token-types: keyword, string, number, comment, function, tag, attribute, p
 	}
 
 	&__pre {
+		@include ltr-surface;
+
 		margin: 0;
 		padding: space(ct(code, padding-y, 12px)) 0;
 		overflow: auto;
@@ -101,9 +104,9 @@ $code-token-types: keyword, string, number, comment, function, tag, attribute, p
 	&__number {
 		flex-shrink: 0;
 		width: var(--base-code-number-width);
-		margin-right: sz(16px);
+		margin-inline-end: sz(16px);
 		color: var(--rise-text-toned);
-		text-align: right;
+		text-align: end;
 		user-select: none;
 	}
 

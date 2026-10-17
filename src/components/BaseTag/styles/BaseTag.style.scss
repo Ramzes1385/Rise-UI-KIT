@@ -134,7 +134,8 @@
 		justify-content: center;
 		width: sz(20px);
 		height: sz(20px);
-		margin: 0 sz(3px) 0 0;
+		margin-block: 0;
+		margin-inline: 0 sz(3px);
 		border-radius: var(--rise-radius-full);
 		@include transition-colors;
 		@include focus-ring(0);

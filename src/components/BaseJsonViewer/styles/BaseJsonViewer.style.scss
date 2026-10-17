@@ -1,4 +1,5 @@
 .base-json-viewer {
+	@include ltr-surface;
 	@include custom-color-scope;
 	display: flex;
 	flex-direction: column;
@@ -36,7 +37,7 @@
 	}
 
 	&__status {
-		margin-left: auto;
+		margin-inline-start: auto;
 		padding-inline: sz(8px);
 		color: var(--rise-text-toned);
 		@include text-size(xs);

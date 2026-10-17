@@ -4,13 +4,14 @@
 
 .base-table {
 	&__td {
-		padding: space(var(--tbl-pad-top) var(--tbl-pad-right) var(--tbl-pad-bottom) var(--tbl-pad-left));
+		padding-block: space(var(--tbl-pad-top) var(--tbl-pad-bottom));
+		padding-inline: space(var(--tbl-pad-left) var(--tbl-pad-right));
 		border-top: 1px solid var(--tbl-border);
 		background-color: var(--tbl-row-bg, transparent);
 		color: var(--tbl-text);
 		font-size: var(--tbl-font-size);
 		line-height: sz(var(--rise-line-height-sm));
-		text-align: left;
+		text-align: start;
 		vertical-align: middle;
 		@include transition-colors;
 
@@ -19,23 +20,23 @@
 		}
 
 		&--right {
-			text-align: right;
+			text-align: end;
 		}
 
 		&--sticky-left {
 			position: sticky;
-			left: 0;
+			inset-inline-start: 0;
 			z-index: 1;
 			background-color: var(--tbl-row-bg, var(--tbl-bg));
-			box-shadow: inset -1px 0 0 var(--tbl-border);
+			box-shadow: inset dir-x(-1px) 0 0 var(--tbl-border);
 		}
 
 		&--sticky-right {
 			position: sticky;
-			right: 0;
+			inset-inline-end: 0;
 			z-index: 1;
 			background-color: var(--tbl-row-bg, var(--tbl-bg));
-			box-shadow: inset 1px 0 0 var(--tbl-border);
+			box-shadow: inset dir-x(1px) 0 0 var(--tbl-border);
 		}
 
 		&--empty {
@@ -65,7 +66,7 @@
 	&__td--number,
 	&__th--expand,
 	&__td--expand {
-		padding-right: 0;
+		padding-inline-end: 0;
 	}
 
 	&__td--number {
@@ -102,7 +103,8 @@
 	}
 
 	&__expanded-wrapper {
-		padding: space(var(--tbl-pad-top) var(--tbl-pad-right) var(--tbl-pad-bottom) var(--tbl-pad-left));
+		padding-block: space(var(--tbl-pad-top) var(--tbl-pad-bottom));
+		padding-inline: space(var(--tbl-pad-left) var(--tbl-pad-right));
 		@include reset-custom-color;
 	}
 
@@ -164,16 +166,16 @@
 
 	.base-table__th--check,
 	.base-table__td--check {
-		left: var(--tbl-sticky-check, 0);
+		inset-inline-start: var(--tbl-sticky-check, 0);
 	}
 
 	.base-table__th--number,
 	.base-table__td--number {
-		left: var(--tbl-sticky-number, 0);
+		inset-inline-start: var(--tbl-sticky-number, 0);
 	}
 
 	.base-table__th--expand,
 	.base-table__td--expand {
-		left: var(--tbl-sticky-expand, 0);
+		inset-inline-start: var(--tbl-sticky-expand, 0);
 	}
 }

@@ -78,6 +78,7 @@
 	[dir='rtl'] &__nav,
 	&[dir='rtl'] &__nav {
 		flex-direction: row-reverse;
+		justify-content: flex-end;
 	}
 
 	&__indicator {
@@ -170,8 +171,7 @@
 
 	.base-tabs-panel-leave-active {
 		position: absolute;
-		right: 0;
-		left: 0;
+		inset-inline: 0;
 		pointer-events: none;
 	}
 
@@ -202,9 +202,8 @@
 	&--arc:not(&--indicator-ready) &__tab--active.base-button::after {
 		content: '';
 		position: absolute;
-		right: 1px;
+		inset-inline: 1px;
 		bottom: 0;
-		left: 1px;
 		height: ct(tabs, indicator-height, 2px);
 		border-radius: var(--rise-radius-full);
 		background-color: var(--custom-bg-active, ct(tabs, indicator-bg, var(--rise-primary)));

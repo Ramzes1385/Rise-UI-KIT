@@ -1,6 +1,6 @@
 @keyframes base-marquee-x {
 	to {
-		transform: translateX(-100%);
+		transform: translateX(dir-x(-100%));
 	}
 }
 

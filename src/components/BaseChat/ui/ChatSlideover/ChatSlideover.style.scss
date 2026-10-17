@@ -77,7 +77,7 @@
 		margin: sz(8px) 0 0;
 		@include text-size(sm);
 		color: var(--rise-text);
-		text-align: left;
+		text-align: start;
 	}
 
 	&__profile-actions {
@@ -125,7 +125,7 @@
 		display: flex;
 		align-items: center;
 		gap: sz(4px);
-		padding-right: sz(4px);
+		padding-inline-end: sz(4px);
 	}
 
 	&__member-main {
@@ -237,7 +237,8 @@
 	}
 
 	&__info-value {
-		margin: 0 0 0 sz(24px);
+		margin-block: 0;
+		margin-inline: sz(24px) 0;
 		@include text-size(sm);
 		font-weight: var(--rise-font-weight-medium);
 		color: var(--rise-text-highlighted);

@@ -25,23 +25,23 @@
 	@include custom-bg-hover(background-color, ct(fab, bg-hover, var(--rise-primary-hover)));
 
 	&--bottom-right {
-		right: calc(var(--fab-offset) + env(safe-area-inset-right, 0px));
+		inset-inline-end: calc(var(--fab-offset) + env(safe-area-inset-right, 0px));
 		bottom: calc(var(--fab-offset) + env(safe-area-inset-bottom, 0px));
 	}
 
 	&--bottom-left {
 		bottom: calc(var(--fab-offset) + env(safe-area-inset-bottom, 0px));
-		left: calc(var(--fab-offset) + env(safe-area-inset-left, 0px));
+		inset-inline-start: calc(var(--fab-offset) + env(safe-area-inset-left, 0px));
 	}
 
 	&--top-right {
 		top: calc(var(--fab-offset) + env(safe-area-inset-top, 0px));
-		right: calc(var(--fab-offset) + env(safe-area-inset-right, 0px));
+		inset-inline-end: calc(var(--fab-offset) + env(safe-area-inset-right, 0px));
 	}
 
 	&--top-left {
 		top: calc(var(--fab-offset) + env(safe-area-inset-top, 0px));
-		left: calc(var(--fab-offset) + env(safe-area-inset-left, 0px));
+		inset-inline-start: calc(var(--fab-offset) + env(safe-area-inset-left, 0px));
 	}
 
 	&--contained {

@@ -122,7 +122,8 @@
 		--custom-bg-active: color-mix(in srgb, currentcolor 18%, transparent);
 
 		max-width: none;
-		margin: sz(-2px) sz(-4px) sz(-2px) 0;
+		margin-block: sz(-2px);
+		margin-inline: 0 sz(-4px);
 	}
 
 	&__close .base-icon__svg {

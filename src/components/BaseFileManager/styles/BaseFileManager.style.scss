@@ -40,7 +40,7 @@
 		min-width: 0;
 		padding: space(8px);
 		overflow: auto;
-		border-right: 1px solid var(--rise-border);
+		border-inline-end: 1px solid var(--rise-border);
 		@include scrollbar-thin;
 	}
 

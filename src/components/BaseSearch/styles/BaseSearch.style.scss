@@ -18,13 +18,13 @@
 
 	&__icon {
 		flex-shrink: 0;
-		padding-left: sz(var(--rise-control-padding-x));
-		margin-right: sz(2px);
+		padding-inline-start: sz(var(--rise-control-padding-x));
+		margin-inline-end: sz(2px);
 		color: ct(search, icon-text, var(--rise-text-muted));
 	}
 
 	&--underline &__icon {
-		padding-left: 0;
+		padding-inline-start: 0;
 	}
 
 	&__actions {
@@ -32,8 +32,7 @@
 		flex-shrink: 0;
 		align-items: center;
 		gap: sz(4px);
-		padding-right: sz(4px);
-		padding-left: sz(4px);
+		padding-inline: sz(4px);
 		@include reset-custom-color;
 	}
 
@@ -110,7 +109,7 @@
 
 	&__result &__result-category {
 		flex-shrink: 0;
-		margin-left: auto;
+		margin-inline-start: auto;
 		color: var(--rise-text-muted);
 		@include text-size(xs);
 	}
@@ -215,7 +214,8 @@
 	&__sidebar.base-slideover__panel {
 		width: sz(380px);
 		max-width: 90vw;
-		border-width: 0 0 0 1px;
+		border-width: 0;
+		border-inline-start-width: 1px;
 		border-radius: 0;
 	}
 

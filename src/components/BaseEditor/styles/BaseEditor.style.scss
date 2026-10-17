@@ -107,7 +107,7 @@
 
 		&--empty::before {
 			content: attr(data-placeholder);
-			float: left;
+			float: inline-start;
 			height: 0;
 			color: var(--rise-text-dimmed);
 			pointer-events: none;
@@ -160,12 +160,12 @@
 
 		:where(ul, ol) {
 			margin: sz(8px) 0;
-			padding-left: sz(24px);
+			padding-inline-start: sz(24px);
 		}
 
 		:where(li) {
 			margin: sz(4px) 0;
-			padding-left: sz(4px);
+			padding-inline-start: sz(4px);
 		}
 
 		:where(li)::marker {
@@ -174,8 +174,8 @@
 
 		:where(blockquote) {
 			margin: sz(12px) 0;
-			padding-left: sz(12px);
-			border-left: sz(3px) solid var(--rise-primary);
+			padding-inline-start: sz(12px);
+			border-inline-start: sz(3px) solid var(--rise-primary);
 			color: var(--rise-text-muted);
 		}
 

@@ -6,11 +6,11 @@
 	background-color: ct(slideover, bg, var(--rise-overlay));
 
 	&--right {
-		--overlay-slide: 100% 0;
+		--overlay-slide: calc(var(--rise-dir, 1) * 100%) 0;
 	}
 
 	&--left {
-		--overlay-slide: -100% 0;
+		--overlay-slide: calc(var(--rise-dir, 1) * -100%) 0;
 	}
 
 	&--contained {
@@ -49,15 +49,21 @@
 		outline: none;
 
 		&--right {
-			right: 0;
-			border-radius: sz(ct(slideover-panel, radius, var(--rise-radius-lg))) 0 0 sz(ct(slideover-panel, radius, var(--rise-radius-lg)));
-			transform-origin: right center;
+			inset-inline-end: 0;
+			border-start-start-radius: sz(ct(slideover-panel, radius, var(--rise-radius-lg)));
+			border-start-end-radius: 0;
+			border-end-end-radius: 0;
+			border-end-start-radius: sz(ct(slideover-panel, radius, var(--rise-radius-lg)));
+			transform-origin: dir-pos(100%) center;
 		}
 
 		&--left {
-			left: 0;
-			border-radius: 0 sz(ct(slideover-panel, radius, var(--rise-radius-lg))) sz(ct(slideover-panel, radius, var(--rise-radius-lg))) 0;
-			transform-origin: left center;
+			inset-inline-start: 0;
+			border-start-start-radius: 0;
+			border-start-end-radius: sz(ct(slideover-panel, radius, var(--rise-radius-lg)));
+			border-end-end-radius: sz(ct(slideover-panel, radius, var(--rise-radius-lg)));
+			border-end-start-radius: 0;
+			transform-origin: dir-pos(0%) center;
 		}
 
 		&--full {
@@ -75,7 +81,8 @@
 		flex: none;
 		align-items: center;
 		gap: sz(12px);
-		padding: space(var(--slideover-pad-top) var(--slideover-pad-right) var(--slideover-pad-bottom) var(--slideover-pad-left));
+		padding-block: space(var(--slideover-pad-top) var(--slideover-pad-bottom));
+		padding-inline: space(var(--slideover-pad-left) var(--slideover-pad-right));
 		border-bottom: 1px solid var(--rise-border);
 	}
 
@@ -98,13 +105,14 @@
 		--btn-pad-left: 5px;
 
 		flex: none;
-		margin-left: auto;
+		margin-inline-start: auto;
 	}
 
 	&__body {
 		flex: 1 1 auto;
 		min-height: 0;
-		padding: space(var(--slideover-pad-top) var(--slideover-pad-right) var(--slideover-pad-bottom) var(--slideover-pad-left));
+		padding-block: space(var(--slideover-pad-top) var(--slideover-pad-bottom));
+		padding-inline: space(var(--slideover-pad-left) var(--slideover-pad-right));
 		overflow-y: auto;
 		@include scrollbar-thin;
 		@include focus-ring(-2px);
@@ -118,7 +126,8 @@
 		align-items: center;
 		justify-content: flex-end;
 		gap: sz(8px);
-		padding: space(var(--slideover-pad-top) var(--slideover-pad-right) var(--slideover-pad-bottom) var(--slideover-pad-left));
+		padding-block: space(var(--slideover-pad-top) var(--slideover-pad-bottom));
+		padding-inline: space(var(--slideover-pad-left) var(--slideover-pad-right));
 		border-top: 1px solid var(--rise-border);
 		@include reset-custom-color;
 	}

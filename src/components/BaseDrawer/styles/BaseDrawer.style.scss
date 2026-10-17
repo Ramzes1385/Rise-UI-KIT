@@ -14,11 +14,11 @@
 	}
 
 	&--left {
-		--overlay-slide: -100% 0;
+		--overlay-slide: calc(var(--rise-dir, 1) * -100%) 0;
 	}
 
 	&--right {
-		--overlay-slide: 100% 0;
+		--overlay-slide: calc(var(--rise-dir, 1) * 100%) 0;
 	}
 
 	&--no-overlay {
@@ -45,8 +45,7 @@
 
 		&--bottom,
 		&--top {
-			right: 0;
-			left: 0;
+			inset-inline: 0;
 			max-height: 85dvh;
 		}
 
@@ -73,17 +72,23 @@
 		}
 
 		&--left {
-			left: 0;
-			border-left: none;
-			border-radius: 0 sz(ct(drawer-panel, radius, var(--rise-radius-2xl))) sz(ct(drawer-panel, radius, var(--rise-radius-2xl))) 0;
-			transform-origin: left center;
+			inset-inline-start: 0;
+			border-inline-start: none;
+			border-start-start-radius: 0;
+			border-start-end-radius: sz(ct(drawer-panel, radius, var(--rise-radius-2xl)));
+			border-end-end-radius: sz(ct(drawer-panel, radius, var(--rise-radius-2xl)));
+			border-end-start-radius: 0;
+			transform-origin: dir-pos(0%) center;
 		}
 
 		&--right {
-			right: 0;
-			border-right: none;
-			border-radius: sz(ct(drawer-panel, radius, var(--rise-radius-2xl))) 0 0 sz(ct(drawer-panel, radius, var(--rise-radius-2xl)));
-			transform-origin: right center;
+			inset-inline-end: 0;
+			border-inline-end: none;
+			border-start-start-radius: sz(ct(drawer-panel, radius, var(--rise-radius-2xl)));
+			border-start-end-radius: 0;
+			border-end-end-radius: 0;
+			border-end-start-radius: sz(ct(drawer-panel, radius, var(--rise-radius-2xl)));
+			transform-origin: dir-pos(100%) center;
 		}
 	}
 
@@ -115,11 +120,11 @@
 	}
 
 	&__panel--left &__handle {
-		right: sz(6px);
+		inset-inline-end: sz(6px);
 	}
 
 	&__panel--right &__handle {
-		left: sz(6px);
+		inset-inline-start: sz(6px);
 	}
 
 	&__header {

@@ -57,7 +57,7 @@
 		flex: none;
 		width: sz(36px);
 		@include custom-text(color, ct(filter-builder, joiner-text, var(--rise-text-muted)));
-		text-align: right;
+		text-align: end;
 	}
 
 	&__select {
@@ -80,7 +80,7 @@
 
 	&__select select {
 		max-width: 100%;
-		padding-right: sz(30px);
+		padding-inline-end: sz(30px);
 		appearance: none;
 		cursor: pointer;
 	}
@@ -88,7 +88,7 @@
 	&__select .base-icon {
 		position: absolute;
 		top: 50%;
-		right: sz(8px);
+		inset-inline-end: sz(8px);
 		width: sz(16px);
 		height: sz(16px);
 		color: var(--rise-text-muted);
@@ -151,7 +151,7 @@
 		display: flex;
 		flex-wrap: wrap;
 		gap: space(4px);
-		margin-left: sz(-8px);
+		margin-inline-start: sz(-8px);
 	}
 
 	&__button.base-button {

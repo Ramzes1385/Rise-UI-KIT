@@ -218,7 +218,7 @@
 		@include reset-custom-color;
 		position: absolute;
 		top: 100%;
-		left: 50%;
+		inset-inline-start: 50%;
 		z-index: 10;
 		box-sizing: border-box;
 		min-width: sz(180px);
@@ -227,23 +227,22 @@
 		@include floating-surface;
 		white-space: nowrap;
 		user-select: text;
-		transform: translateX(-50%);
+		transform: translateX(calc(var(--rise-dir, 1) * -50%));
 
 		&--start {
-			transform: translateX(sz(-18px));
+			transform: translateX(calc(var(--rise-dir, 1) * #{sz(-18px)}));
 		}
 
 		&--end {
-			right: 50%;
-			left: auto;
-			transform: translateX(sz(18px));
+			inset-inline: auto 50%;
+			transform: translateX(calc(var(--rise-dir, 1) * #{sz(18px)}));
 		}
 	}
 
 	&__popover-arrow {
 		position: absolute;
 		top: 0;
-		left: 50%;
+		inset-inline-start: 50%;
 		box-sizing: border-box;
 		width: sz(8px);
 		height: sz(8px);
@@ -251,17 +250,16 @@
 		border-right-color: transparent;
 		border-bottom-color: transparent;
 		background-color: var(--rise-bg);
-		transform: translate(-50%, -50%) rotate(45deg);
+		transform: translate(calc(var(--rise-dir, 1) * -50%), -50%) rotate(45deg);
 	}
 
 	&__popover--start &__popover-arrow {
-		left: sz(18px);
+		inset-inline-start: sz(18px);
 	}
 
 	&__popover--end &__popover-arrow {
-		left: auto;
-		right: sz(18px);
-		transform: translate(50%, -50%) rotate(45deg);
+		inset-inline: auto sz(18px);
+		transform: translate(calc(var(--rise-dir, 1) * 50%), -50%) rotate(45deg);
 	}
 
 	&__popover-date {
@@ -386,7 +384,7 @@
 	&__time-ampm.base-button {
 		flex: none;
 		min-width: sz(44px);
-		margin-left: sz(4px);
+		margin-inline-start: sz(4px);
 	}
 
 	&__footer {

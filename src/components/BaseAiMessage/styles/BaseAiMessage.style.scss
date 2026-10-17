@@ -129,7 +129,7 @@
 		display: flex;
 		flex-wrap: wrap;
 		gap: sz(4px);
-		margin-left: sz(-8px);
+		margin-inline-start: sz(-8px);
 	}
 
 	&__action {
@@ -177,7 +177,7 @@
 	}
 
 	&__action--retry.base-button {
-		margin-left: auto;
+		margin-inline-start: auto;
 		color: var(--rise-text);
 	}
 

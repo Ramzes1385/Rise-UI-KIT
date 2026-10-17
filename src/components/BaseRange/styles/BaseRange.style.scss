@@ -1,3 +1,17 @@
+@use 'sass:string';
+
+@function range-inset($edge) {
+	$start: 'var(--range-fill-start, 0%)';
+	$rest: '(100% - var(--range-fill-end, 0%))';
+	$same: $start;
+	$other: $rest;
+	@if $edge == right {
+		$same: $rest;
+		$other: $start;
+	}
+	@return string.unquote('calc(#{$same} * (1 + var(--rise-dir, 1)) / 2 + #{$other} * (1 - var(--rise-dir, 1)) / 2)');
+}
+
 .base-range {
 	@include custom-color-scope;
 	display: flex;
@@ -65,25 +79,23 @@
 	&__fill {
 		position: absolute;
 		top: 0;
-		left: 0;
+		inset-inline-start: 0;
 		width: 100%;
 		height: 100%;
 		border-radius: ct(range, track-radius, var(--rise-radius-full));
 		@include custom-bg(background-color, ct(range, fill-bg, var(--rise-primary)));
-		clip-path: inset(
-			0 calc(100% - var(--range-fill-end, 0%)) 0 var(--range-fill-start, 0%) round ct(range, track-radius, var(--rise-radius-full))
-		);
+		clip-path: inset(0 #{range-inset(right)} 0 #{range-inset(left)} round ct(range, track-radius, var(--rise-radius-full)));
 		transition: clip-path var(--rise-duration-fast) var(--rise-ease-out);
 	}
 
 	&__thumb-container {
 		position: absolute;
 		top: 50%;
-		left: 0;
+		inset-inline-start: 0;
 		z-index: 1;
 		display: flex;
 		cursor: grab;
-		transform: translate(calc(var(--range-offset, 0) * 1cqw - 50%), -50%);
+		transform: translate(calc((var(--range-offset, 0) * 1cqw - 50%) * var(--rise-dir, 1)), -50%);
 		transition: transform var(--rise-duration-fast) var(--rise-ease-out);
 
 		&:active {
@@ -143,7 +155,7 @@
 		flex-direction: column;
 		align-items: center;
 		gap: sz(4px);
-		transform: translateX(-50%);
+		transform: translateX(calc(-50% * var(--rise-dir, 1)));
 	}
 
 	&__mark-tick {
@@ -202,8 +214,8 @@
 
 	&--vertical &__thumb-container {
 		top: 100%;
-		left: 50%;
-		transform: translate(-50%, calc(-50% - var(--range-offset, 0) * 1cqh));
+		inset-inline-start: 50%;
+		transform: translate(calc(-50% * var(--rise-dir, 1)), calc(-50% - var(--range-offset, 0) * 1cqh));
 	}
 
 	&--vertical &__marks {

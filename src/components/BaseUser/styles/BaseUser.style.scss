@@ -6,7 +6,7 @@
 	max-width: 100%;
 	min-width: 0;
 	@include custom-text(color, ct(user, text, var(--rise-text-highlighted)));
-	text-align: left;
+	text-align: start;
 
 	&--vertical {
 		flex-direction: column;

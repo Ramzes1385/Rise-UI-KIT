@@ -21,7 +21,7 @@
 	min-width: sz(var(--sidebar-width));
 	height: 100%;
 	overflow: hidden;
-	border-right: 1px solid ct(side-bar, border, var(--rise-border));
+	border-inline-end: 1px solid ct(side-bar, border, var(--rise-border));
 	box-shadow: ct(side-bar, shadow, none);
 	@include custom-bg(background-color, ct(side-bar, bg, var(--rise-bg)));
 	@include custom-text(color, ct(side-bar, text, var(--rise-text)));
@@ -37,7 +37,8 @@
 		justify-content: space-between;
 		gap: sz(8px);
 		min-height: sz(56px);
-		padding: 0 space(var(--sidebar-pad-right)) 0 calc(#{space(var(--sidebar-pad-left))} + #{sz(8px)});
+		padding-block: 0;
+		padding-inline: calc(#{space(var(--sidebar-pad-left))} + #{sz(8px)}) space(var(--sidebar-pad-right));
 	}
 
 	&__title {
@@ -51,7 +52,7 @@
 
 	&__toggle-tooltip {
 		flex-shrink: 0;
-		margin-left: auto;
+		margin-inline-start: auto;
 	}
 
 	&__toggle.base-button {
@@ -68,14 +69,15 @@
 		flex: 1 1 auto;
 		flex-direction: column;
 		min-height: 0;
-		padding: space(var(--sidebar-pad-top) var(--sidebar-pad-right) var(--sidebar-pad-bottom) var(--sidebar-pad-left));
+		padding-block: space(var(--sidebar-pad-top) var(--sidebar-pad-bottom));
+		padding-inline: space(var(--sidebar-pad-left) var(--sidebar-pad-right));
 		overflow-y: auto;
 		@include scrollbar-thin;
 	}
 
 	&__body {
-		padding: space(var(--sidebar-pad-top) var(--sidebar-pad-right) var(--sidebar-pad-bottom))
-			calc(#{space(var(--sidebar-pad-left))} + #{sz(8px)});
+		padding-block: space(var(--sidebar-pad-top) var(--sidebar-pad-bottom));
+		padding-inline: calc(#{space(var(--sidebar-pad-left))} + #{sz(8px)}) space(var(--sidebar-pad-right));
 		@include text-size(sm);
 		@include custom-text(color, var(--rise-text-muted));
 	}
@@ -83,7 +85,8 @@
 	&__footer {
 		flex-shrink: 0;
 		margin-top: auto;
-		padding: space(var(--sidebar-pad-top) var(--sidebar-pad-right) var(--sidebar-pad-bottom) var(--sidebar-pad-left));
+		padding-block: space(var(--sidebar-pad-top) var(--sidebar-pad-bottom));
+		padding-inline: space(var(--sidebar-pad-left) var(--sidebar-pad-right));
 		border-top: 1px solid ct(side-bar, border, var(--rise-border));
 		@include text-size(sm);
 		@include custom-text(color, var(--rise-text-muted));
@@ -103,8 +106,8 @@
 		flex-shrink: 0;
 		flex-direction: column;
 		gap: sz(12px);
-		padding: space(var(--sidebar-pad-top) var(--sidebar-pad-right) var(--sidebar-pad-bottom))
-			calc(#{space(var(--sidebar-pad-left))} + #{sz(8px)});
+		padding-block: space(var(--sidebar-pad-top) var(--sidebar-pad-bottom));
+		padding-inline: calc(#{space(var(--sidebar-pad-left))} + #{sz(8px)}) space(var(--sidebar-pad-right));
 	}
 
 	&--collapsed {
@@ -118,13 +121,12 @@
 	}
 
 	&--collapsed &__toggle-tooltip {
-		margin-left: 0;
+		margin-inline-start: 0;
 	}
 
 	&--collapsed &__navigation {
 		align-items: center;
-		padding-right: sz(8px);
-		padding-left: sz(8px);
+		padding-inline: sz(8px);
 	}
 
 	&--collapsed &__footer {
@@ -151,7 +153,7 @@
 	}
 
 	&--ghost {
-		border-right-color: transparent;
+		border-inline-end-color: transparent;
 		@include custom-bg(background-color, transparent);
 	}
 
@@ -273,7 +275,7 @@
 		@include custom-text(color, ct(side-bar, item-text, var(--rise-text-muted)));
 		@include text-size(sm);
 		font-weight: var(--rise-font-weight-medium);
-		text-align: left;
+		text-align: start;
 		text-decoration: none;
 		@include transition-colors;
 		@include focus-ring(-2px);
@@ -281,7 +283,7 @@
 		&::before {
 			position: absolute;
 			top: 50%;
-			left: 0;
+			inset-inline-start: 0;
 			width: sz(3px);
 			height: sz(16px);
 			border-radius: sz(var(--rise-radius-full));
@@ -424,7 +426,7 @@
 	&__dot {
 		position: absolute;
 		top: sz(5px);
-		right: sz(5px);
+		inset-inline-end: sz(5px);
 		width: sz(7px);
 		height: sz(7px);
 		border-radius: sz(var(--rise-radius-full));
@@ -461,13 +463,14 @@
 
 	&__children {
 		position: relative;
-		margin: sz(2px) 0 sz(2px) calc(#{sz(var(--sidebar-item-pad-x))} + #{sz(var(--sidebar-icon-size))} / 2);
-		padding-left: sz(10px);
-		border-left: 1px solid var(--rise-border);
+		margin-block: sz(2px);
+		margin-inline: calc(#{sz(var(--sidebar-item-pad-x))} + #{sz(var(--sidebar-icon-size))} / 2) 0;
+		padding-inline-start: sz(10px);
+		border-inline-start: 1px solid var(--rise-border);
 	}
 
 	&--nested &__link::before {
-		left: calc(-1 * #{sz(10px)} - 1px);
+		inset-inline-start: calc(-1 * #{sz(10px)} - 1px);
 		width: 1px;
 		height: 100%;
 		border-radius: 0;

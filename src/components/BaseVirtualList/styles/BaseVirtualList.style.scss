@@ -16,8 +16,7 @@
 	&__item {
 		position: absolute;
 		top: 0;
-		right: 0;
-		left: 0;
+		inset-inline: 0;
 		padding: ct(virtual-list, item-padding-y, 0) ct(virtual-list, item-padding-x, 0);
 	}
 }

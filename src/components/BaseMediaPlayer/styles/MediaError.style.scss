@@ -256,11 +256,11 @@ $media-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
 
 		&:nth-child(1) {
 			top: -30%;
-			left: -15%;
+			inset-inline-start: -15%;
 		}
 
 		&:nth-child(2) {
-			right: -20%;
+			inset-inline-end: -20%;
 			bottom: -40%;
 			width: 80%;
 			background-image: radial-gradient(
@@ -272,7 +272,7 @@ $media-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
 
 		&:nth-child(3) {
 			top: 20%;
-			left: 30%;
+			inset-inline-start: 30%;
 			width: 45%;
 			background-image: radial-gradient(closest-side, color-mix(in srgb, var(--rise-media-highlight) 14%, transparent), transparent);
 		}
@@ -329,8 +329,7 @@ $media-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
 	}
 
 	&__error-roll {
-		right: 0;
-		left: 0;
+		inset-inline: 0;
 		height: 18%;
 		background-image: linear-gradient(
 			to bottom,

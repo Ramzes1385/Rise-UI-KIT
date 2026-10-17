@@ -4,6 +4,7 @@ $gantt-bar-radius: ct(gantt-bar, radius, var(--rise-radius-sm));
 $gantt-handle: sz(8px);
 
 .base-gantt {
+	@include ltr-surface;
 	@include custom-color-scope;
 	@include custom-bg('--gantt-color', ct(gantt-bar, bg, var(--rise-primary)));
 
@@ -34,7 +35,8 @@ $gantt-handle: sz(8px);
 		min-height: 0;
 		overflow: auto;
 		overscroll-behavior: contain;
-		scroll-padding: var(--gantt-header-height) 0 0 var(--gantt-list-width);
+		scroll-padding-block: var(--gantt-header-height) 0;
+		scroll-padding-inline: var(--gantt-list-width) 0;
 		@include scrollbar-thin;
 	}
 
@@ -102,13 +104,13 @@ $gantt-handle: sz(8px);
 	&__header-name {
 		position: sticky;
 		z-index: 2;
-		left: 0;
+		inset-inline-start: 0;
 		display: flex;
 		flex: 0 0 var(--gantt-list-width);
 		align-items: flex-end;
 		box-sizing: border-box;
 		padding: sz(6px) sz(12px);
-		border-right: 1px solid $gantt-row-border;
+		border-inline-end: 1px solid $gantt-row-border;
 		background-color: ct(gantt-header, bg, var(--rise-bg-elevated));
 	}
 
@@ -129,7 +131,7 @@ $gantt-handle: sz(8px);
 		box-sizing: border-box;
 		height: 50%;
 		overflow: hidden;
-		border-left: 1px solid $gantt-row-border;
+		border-inline-start: 1px solid $gantt-row-border;
 		white-space: nowrap;
 
 		&--top {
@@ -146,8 +148,7 @@ $gantt-handle: sz(8px);
 
 	&__row {
 		position: absolute;
-		right: 0;
-		left: 0;
+		inset-inline: 0;
 		display: flex;
 		box-sizing: border-box;
 		height: var(--gantt-row-height);
@@ -167,7 +168,7 @@ $gantt-handle: sz(8px);
 	&__name {
 		position: sticky;
 		z-index: 2;
-		left: 0;
+		inset-inline-start: 0;
 		display: flex;
 		flex: 0 0 var(--gantt-list-width);
 		align-items: center;
@@ -176,7 +177,7 @@ $gantt-handle: sz(8px);
 		padding-inline: sz(12px);
 		padding-inline-start: calc(#{sz(12px)} + var(--gantt-level, 0) * #{sz(18px)});
 		overflow: hidden;
-		border-right: 1px solid $gantt-row-border;
+		border-inline-end: 1px solid $gantt-row-border;
 		background-color: ct(gantt-name, bg, var(--rise-bg));
 		cursor: pointer;
 	}
@@ -203,7 +204,7 @@ $gantt-handle: sz(8px);
 		}
 
 		&--expanded {
-			transform: rotate(90deg);
+			transform: rotate(dir-angle(90deg));
 		}
 
 		&--leaf {
@@ -257,7 +258,7 @@ $gantt-handle: sz(8px);
 		position: absolute;
 		top: 0;
 		bottom: 0;
-		left: 0;
+		inset-inline-start: 0;
 		background-color: var(--gantt-color);
 		pointer-events: none;
 	}
@@ -278,11 +279,11 @@ $gantt-handle: sz(8px);
 		cursor: ew-resize;
 
 		&--start {
-			left: 0;
+			inset-inline-start: 0;
 		}
 
 		&--end {
-			right: 0;
+			inset-inline-end: 0;
 		}
 	}
 

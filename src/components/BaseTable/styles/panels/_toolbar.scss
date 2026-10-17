@@ -21,7 +21,7 @@
 	&__search-icon {
 		display: flex;
 		align-items: center;
-		padding-left: sz(var(--rise-control-padding-x));
+		padding-inline-start: sz(var(--rise-control-padding-x));
 		color: var(--rise-text-muted);
 	}
 

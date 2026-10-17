@@ -87,7 +87,7 @@
 	}
 
 	&--removable {
-		padding-right: sz(ct(badge, remove-padding, 2px));
+		padding-inline-end: sz(ct(badge, remove-padding, 2px));
 	}
 
 	&--shadow {

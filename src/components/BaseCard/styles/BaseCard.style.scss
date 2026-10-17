@@ -71,10 +71,8 @@
 		justify-content: space-between;
 		flex-shrink: 0;
 		gap: sz(12px);
-		padding: space(
-			ct(card, header-padding-y, var(--card-pad-top)) ct(card, header-padding-x, var(--card-pad-right))
-				ct(card, header-padding-y, var(--card-pad-bottom)) ct(card, header-padding-x, var(--card-pad-left))
-		);
+		padding-block: space(ct(card, header-padding-y, var(--card-pad-top)) ct(card, header-padding-y, var(--card-pad-bottom)));
+		padding-inline: space(ct(card, header-padding-x, var(--card-pad-left)) ct(card, header-padding-x, var(--card-pad-right)));
 		border-bottom: 1px solid ct(card, border, var(--rise-border));
 		background-color: ct(card, header-bg, transparent);
 	}
@@ -112,7 +110,8 @@
 		@include reset-custom-color;
 		flex: 1;
 		min-height: 0;
-		padding: space(var(--card-pad-top) var(--card-pad-right) var(--card-pad-bottom) var(--card-pad-left));
+		padding-block: space(var(--card-pad-top) var(--card-pad-bottom));
+		padding-inline: space(var(--card-pad-left) var(--card-pad-right));
 		overflow-wrap: break-word;
 
 		&:empty {
@@ -128,7 +127,8 @@
 		@include reset-custom-color;
 		flex-shrink: 0;
 		margin-top: auto;
-		padding: space(var(--card-pad-top) var(--card-pad-right) var(--card-pad-bottom) var(--card-pad-left));
+		padding-block: space(var(--card-pad-top) var(--card-pad-bottom));
+		padding-inline: space(var(--card-pad-left) var(--card-pad-right));
 		border-top: 1px solid ct(card, border, var(--rise-border));
 	}
 

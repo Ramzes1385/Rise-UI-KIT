@@ -1,4 +1,5 @@
 .base-image-compare {
+	@include ltr-surface;
 	position: relative;
 	box-sizing: border-box;
 	max-width: 100%;
@@ -42,11 +43,11 @@
 	}
 
 	&__label--before {
-		left: sz(10px);
+		inset-inline-start: sz(10px);
 	}
 
 	&__label--after {
-		right: sz(10px);
+		inset-inline-end: sz(10px);
 	}
 
 	&__track {
@@ -60,7 +61,7 @@
 		position: absolute;
 		top: 0;
 		bottom: 0;
-		left: 0;
+		inset-inline-start: 0;
 		width: ct(image-compare-divider, width, 2px);
 		background-color: ct(image-compare-divider, bg, var(--rise-media-highlight));
 		box-shadow: 0 0 0 1px color-mix(in srgb, var(--rise-media-shade) 25%, transparent);
@@ -70,7 +71,7 @@
 	&__handle {
 		position: absolute;
 		top: 50%;
-		left: 0;
+		inset-inline-start: 0;
 		display: flex;
 		align-items: center;
 		justify-content: center;

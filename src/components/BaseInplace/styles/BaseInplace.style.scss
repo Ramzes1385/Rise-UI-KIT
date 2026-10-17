@@ -16,7 +16,7 @@
 		border-radius: sz(ct(inplace, display-radius, var(--rise-radius-sm)));
 		background-color: ct(inplace, display-bg, transparent);
 		color: ct(inplace, display-text, inherit);
-		text-align: left;
+		text-align: start;
 		text-decoration: underline dashed;
 		text-decoration-color: var(--rise-border-accented);
 		text-underline-offset: 0.25em;

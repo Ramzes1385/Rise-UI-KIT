@@ -14,12 +14,12 @@
 	}
 
 	&__main.base-button {
-		border-top-right-radius: 0;
-		border-bottom-right-radius: 0;
+		border-start-end-radius: 0;
+		border-end-end-radius: 0;
 	}
 
 	&__menu {
-		margin-left: ct(split-button, gap, -1px);
+		margin-inline-start: ct(split-button, gap, -1px);
 	}
 
 	&__toggle.base-button {
@@ -28,11 +28,11 @@
 		--btn-pad-left: #{ct(split-button-toggle, padding-x, 8px)};
 		--btn-pad-right: #{ct(split-button-toggle, padding-x, 8px)};
 
-		border-top-left-radius: 0;
-		border-bottom-left-radius: 0;
+		border-start-start-radius: 0;
+		border-end-start-radius: 0;
 	}
 
 	&--default &__toggle.base-button {
-		box-shadow: inset 1px 0 0 ct(split-button-toggle, border, color-mix(in srgb, currentcolor 30%, transparent));
+		box-shadow: inset dir-x(1px) 0 0 ct(split-button-toggle, border, color-mix(in srgb, currentcolor 30%, transparent));
 	}
 }

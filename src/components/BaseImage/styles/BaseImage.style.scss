@@ -201,11 +201,11 @@
 	}
 
 	&-nav--prev.base-button {
-		left: sz(16px);
+		inset-inline-start: sz(16px);
 	}
 
 	&-nav--next.base-button {
-		right: sz(16px);
+		inset-inline-end: sz(16px);
 	}
 
 	&-container {
@@ -334,7 +334,7 @@
 .base-image__minimap {
 	position: absolute;
 	bottom: sz(16px);
-	left: sz(16px);
+	inset-inline-start: sz(16px);
 	z-index: 1;
 	width: sz(200px);
 	height: sz(150px);
@@ -355,7 +355,7 @@
 .base-image__minimap-viewport {
 	position: absolute;
 	top: 0;
-	left: 0;
+	inset-inline-start: 0;
 	border: 2px solid var(--rise-primary);
 	border-radius: sz(var(--rise-radius-xs));
 	background-color: color-mix(in srgb, var(--rise-primary) 15%, transparent);

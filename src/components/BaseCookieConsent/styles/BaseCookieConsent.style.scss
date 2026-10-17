@@ -21,18 +21,17 @@
 	@include custom-text(color, ct(cookie-consent, text, var(--rise-text-muted)));
 
 	&--bottom {
-		right: 0;
-		left: 0;
+		inset-inline: 0;
 		margin-inline: auto;
 	}
 
 	&--bottom-left {
-		left: calc(var(--consent-offset) + env(safe-area-inset-left, 0px));
+		inset-inline-start: calc(var(--consent-offset) + env(safe-area-inset-left, 0px));
 		width: min(calc(100% - var(--consent-offset) * 2), #{sz(420px)});
 	}
 
 	&--bottom-right {
-		right: calc(var(--consent-offset) + env(safe-area-inset-right, 0px));
+		inset-inline-end: calc(var(--consent-offset) + env(safe-area-inset-right, 0px));
 		width: min(calc(100% - var(--consent-offset) * 2), #{sz(420px)});
 	}
 
@@ -88,7 +87,7 @@
 	& &__category-description {
 		@include inherit-custom-color;
 		margin: 0;
-		padding-left: calc(#{sz($switch-track-width)} + #{sz($switch-row-gap)});
+		padding-inline-start: calc(#{sz($switch-track-width)} + #{sz($switch-row-gap)});
 		color: var(--rise-text-muted);
 		font-size: sz(var(--rise-font-size-xs));
 		line-height: sz(var(--rise-line-height-xs));

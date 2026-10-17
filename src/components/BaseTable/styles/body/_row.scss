@@ -35,7 +35,7 @@
 		}
 
 		&--child > .base-table__td--expand + .base-table__td {
-			padding-left: calc(#{space(var(--tbl-pad-left))} + #{sz(20px)});
+			padding-inline-start: calc(#{space(var(--tbl-pad-left))} + #{sz(20px)});
 		}
 	}
 }

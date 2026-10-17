@@ -11,8 +11,11 @@
 		min-width: 0;
 		max-width: sz(320px);
 		padding: sz(4px) sz(8px);
-		border-left: sz(2px) solid var(--rise-primary);
-		border-radius: 0 sz(var(--rise-radius-sm)) sz(var(--rise-radius-sm)) 0;
+		border-inline-start: sz(2px) solid var(--rise-primary);
+		border-start-start-radius: 0;
+		border-start-end-radius: sz(var(--rise-radius-sm));
+		border-end-end-radius: sz(var(--rise-radius-sm));
+		border-end-start-radius: 0;
 		background-color: var(--chat-quote-bg);
 		@include text-size(xs);
 		@include focus-ring;

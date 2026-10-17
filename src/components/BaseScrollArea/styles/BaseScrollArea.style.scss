@@ -41,15 +41,14 @@
 
 		&--y {
 			top: 0;
-			right: 0;
+			inset-inline-end: 0;
 			bottom: 0;
 			width: sz(ct(scroll-area-bar, width, 10px));
 		}
 
 		&--x {
-			right: 0;
+			inset-inline: 0;
 			bottom: 0;
-			left: 0;
 			height: sz(ct(scroll-area-bar, width, 10px));
 		}
 	}
@@ -73,8 +72,7 @@
 	}
 
 	&__bar--y &__thumb {
-		right: sz(2px);
-		left: sz(2px);
+		inset-inline: sz(2px);
 	}
 
 	&__bar--x &__thumb {

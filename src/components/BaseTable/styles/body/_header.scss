@@ -7,14 +7,15 @@
 		position: sticky;
 		top: 0;
 		z-index: 2;
-		padding: space(var(--tbl-pad-top) var(--tbl-pad-right) var(--tbl-pad-bottom) var(--tbl-pad-left));
+		padding-block: space(var(--tbl-pad-top) var(--tbl-pad-bottom));
+		padding-inline: space(var(--tbl-pad-left) var(--tbl-pad-right));
 		border-bottom: 1px solid var(--rise-border-accented);
 		background-color: var(--tbl-head-bg);
 		color: var(--tbl-head-text);
 		font-size: var(--tbl-font-size);
 		line-height: sz(var(--rise-line-height-sm));
 		font-weight: ct(table, header-font-weight, var(--rise-font-weight-semibold));
-		text-align: left;
+		text-align: start;
 		white-space: nowrap;
 		vertical-align: middle;
 
@@ -23,25 +24,25 @@
 		}
 
 		&--right {
-			text-align: right;
+			text-align: end;
 		}
 
 		&--sticky-left {
-			left: 0;
+			inset-inline-start: 0;
 			z-index: 3;
-			box-shadow: inset -1px 0 0 var(--tbl-border);
+			box-shadow: inset dir-x(-1px) 0 0 var(--tbl-border);
 		}
 
 		&--sticky-right {
-			right: 0;
+			inset-inline-end: 0;
 			z-index: 3;
-			box-shadow: inset 1px 0 0 var(--tbl-border);
+			box-shadow: inset dir-x(1px) 0 0 var(--tbl-border);
 		}
 	}
 
 	@media (pointer: coarse) {
 		&__th--resizable {
-			padding-right: calc(#{space(var(--tbl-pad-right))} + #{sz(16px)});
+			padding-inline-end: calc(#{space(var(--tbl-pad-right))} + #{sz(16px)});
 		}
 	}
 
@@ -103,7 +104,7 @@
 	&__resizer {
 		position: absolute;
 		top: 0;
-		right: 0;
+		inset-inline-end: 0;
 		bottom: 0;
 		z-index: 1;
 		width: sz(8px);
@@ -119,7 +120,7 @@
 			content: '';
 			position: absolute;
 			top: 0;
-			right: 0;
+			inset-inline-end: 0;
 			bottom: 0;
 			width: 2px;
 			background-color: var(--rise-border-accented);

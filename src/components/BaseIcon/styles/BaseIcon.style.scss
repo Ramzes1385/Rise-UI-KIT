@@ -6,6 +6,10 @@
 	color: ct(icon, text, currentcolor);
 	fill: currentcolor;
 
+	&--directional {
+		scale: var(--rise-dir, 1) 1;
+	}
+
 	&__svg {
 		width: sz(ct(icon, icon-size, 20px));
 		height: sz(ct(icon, icon-size, 20px));

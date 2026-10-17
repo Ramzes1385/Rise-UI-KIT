@@ -45,8 +45,8 @@
 	&--floating {
 		--bottom-nav-bar-padding: #{space(6px)};
 
-		padding: 0 calc(#{space(12px)} + env(safe-area-inset-right, 0)) calc(#{space(12px)} + env(safe-area-inset-bottom, 0))
-			calc(#{space(12px)} + env(safe-area-inset-left, 0));
+		padding-block: 0 calc(#{space(12px)} + env(safe-area-inset-bottom, 0));
+		padding-inline: calc(#{space(12px)} + env(safe-area-inset-left, 0)) calc(#{space(12px)} + env(safe-area-inset-right, 0));
 		border-top: none;
 		background-color: transparent;
 	}
@@ -232,7 +232,7 @@
 	&__badge {
 		position: absolute;
 		top: sz(-4px);
-		left: calc(50% + #{sz(6px)});
+		inset-inline-start: calc(50% + #{sz(6px)});
 		pointer-events: none;
 	}
 

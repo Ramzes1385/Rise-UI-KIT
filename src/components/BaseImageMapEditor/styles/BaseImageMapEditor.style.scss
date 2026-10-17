@@ -230,8 +230,7 @@
 
 		&::before {
 			top: 50%;
-			left: -6px;
-			right: -6px;
+			inset-inline: -6px;
 			height: 2px;
 			margin-top: -1px;
 		}
@@ -241,7 +240,7 @@
 			top: -6px;
 			bottom: -6px;
 			width: 2px;
-			margin-left: -1px;
+			margin-inline-start: -1px;
 		}
 	}
 

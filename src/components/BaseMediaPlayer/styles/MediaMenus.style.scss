@@ -16,16 +16,16 @@
 		box-shadow: 0 12px 36px color-mix(in srgb, var(--rise-media-shade) 45%, transparent);
 		color: var(--media-text);
 		backdrop-filter: blur(16px) saturate(140%);
-		transform-origin: bottom right;
+		transform-origin: dir-pos(100%) bottom;
 	}
 
 	&__popover--top-end {
-		right: 0;
+		inset-inline-end: 0;
 	}
 
 	&__popover--top-start {
-		left: 0;
-		transform-origin: bottom left;
+		inset-inline-start: 0;
+		transform-origin: dir-pos(0%) bottom;
 	}
 
 	&__popover-enter-active {
@@ -57,7 +57,7 @@
 	&__menu-view {
 		position: absolute;
 		top: 0;
-		left: 0;
+		inset-inline-start: 0;
 		box-sizing: border-box;
 		width: max-content;
 		min-width: sz(150px);
@@ -106,12 +106,12 @@
 		font: inherit;
 		font-size: sz(13px);
 		font-weight: var(--rise-font-weight-semibold);
-		text-align: left;
+		text-align: start;
 		white-space: nowrap;
 	}
 
 	&__menu-back {
-		padding-left: sz(6px);
+		padding-inline-start: sz(6px);
 		color: var(--media-text);
 		cursor: pointer;
 		@include transition(background-color);
@@ -142,7 +142,7 @@
 		color: var(--media-text);
 		font-size: sz(var(--rise-font-size-sm));
 		line-height: sz(20px);
-		text-align: left;
+		text-align: start;
 		white-space: nowrap;
 		transition:
 			background-color var(--media-fast) var(--media-ease),
@@ -182,15 +182,15 @@
 	}
 
 	&__menu-hint {
-		margin-left: auto;
-		padding-left: sz(16px);
+		margin-inline-start: auto;
+		padding-inline-start: sz(16px);
 		color: var(--media-muted);
 		font-size: sz(13px);
 		font-weight: var(--rise-font-weight-normal);
 	}
 
 	&__menu-arrow {
-		margin-right: sz(-4px);
+		margin-inline-end: sz(-4px);
 		color: var(--media-muted);
 
 		&.base-media-player__icon {
@@ -200,7 +200,7 @@
 	}
 
 	&__menu-label + &__menu-arrow {
-		margin-left: auto;
+		margin-inline-start: auto;
 	}
 
 	&__speed {
@@ -283,7 +283,7 @@
 			height: sz(4px);
 			border-radius: sz(2px);
 			background: linear-gradient(
-				to right,
+				dir-angle(90deg),
 				var(--media-primary) var(--speed-fill),
 				color-mix(in srgb, var(--rise-media-highlight) 25%, transparent) var(--speed-fill)
 			);
@@ -293,7 +293,7 @@
 			height: sz(4px);
 			border-radius: sz(2px);
 			background: linear-gradient(
-				to right,
+				dir-angle(90deg),
 				var(--media-primary) var(--speed-fill),
 				color-mix(in srgb, var(--rise-media-highlight) 25%, transparent) var(--speed-fill)
 			);

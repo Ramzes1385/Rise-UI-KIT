@@ -48,7 +48,7 @@
 	&__mini-bar {
 		position: absolute;
 		top: sz(6px);
-		right: sz(6px);
+		inset-inline-end: sz(6px);
 		z-index: 8;
 		display: flex;
 		gap: sz(2px);
@@ -110,7 +110,7 @@
 	&__episodes {
 		position: absolute;
 		top: 0;
-		right: 0;
+		inset-inline-end: 0;
 		bottom: 0;
 		z-index: 7;
 		display: flex;
@@ -188,7 +188,8 @@
 	}
 
 	&__actors-title {
-		margin: 0 0 sz(8px) sz(4px);
+		margin-block: 0 sz(8px);
+		margin-inline: sz(4px) 0;
 		color: var(--media-muted);
 		font-size: sz(var(--rise-font-size-xs));
 		font-weight: var(--rise-font-weight-bold);
@@ -350,7 +351,7 @@
 		background-color: color-mix(in srgb, var(--rise-media-highlight) 5%, transparent);
 		color: inherit;
 		font: inherit;
-		text-align: left;
+		text-align: start;
 		cursor: pointer;
 		transition:
 			background-color var(--media-normal) var(--media-ease),
@@ -412,7 +413,7 @@
 
 	&__episode-duration {
 		position: absolute;
-		right: sz(4px);
+		inset-inline-end: sz(4px);
 		bottom: sz(4px);
 		padding: sz(1px) sz(5px);
 		border-radius: sz(4px);
@@ -616,13 +617,13 @@
 		position: absolute;
 		top: 0;
 		bottom: 0;
-		left: 0;
+		inset-inline-start: 0;
 		z-index: 7;
 		display: flex;
 		flex-direction: column;
 		box-sizing: border-box;
 		width: min(#{sz(340px)}, 86%);
-		border-right: 1px solid var(--media-border);
+		border-inline-end: 1px solid var(--media-border);
 		background-color: color-mix(
 			in srgb,
 			color-mix(in srgb, var(--rise-media-highlight) 3.92%, var(--rise-media-shade)) 55%,
@@ -677,7 +678,7 @@
 		padding: sz(10px) sz(12px);
 		overflow: hidden;
 		border-radius: sz(10px);
-		text-align: left;
+		text-align: start;
 		@include transition(background-color, transform);
 		@include focus-ring(-2px);
 
@@ -713,9 +714,8 @@
 
 	&__chapter-progress {
 		position: absolute;
-		right: 0;
+		inset-inline: 0;
 		bottom: 0;
-		left: 0;
 		height: sz(2px);
 		background-color: var(--segment-color);
 		transform: scaleX(var(--chapter-progress, 0));

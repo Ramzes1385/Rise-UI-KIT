@@ -64,7 +64,7 @@
 
 	&__arrow {
 		flex-shrink: 0;
-		margin-left: auto;
+		margin-inline-start: auto;
 		color: var(--rise-text-muted);
 		@include transition(transform);
 	}
@@ -74,7 +74,7 @@
 	}
 
 	&--has-tags &__trigger {
-		padding-left: sz(ct(cascader, padding-y, var(--rise-control-padding-y)));
+		padding-inline-start: sz(ct(cascader, padding-y, var(--rise-control-padding-y)));
 	}
 
 	&__tag {
@@ -96,7 +96,7 @@
 		flex-shrink: 0;
 		width: sz(16px);
 		height: sz(16px);
-		margin-right: sz(-4px);
+		margin-inline-end: sz(-4px);
 		border-radius: sz(var(--rise-radius-xs));
 		@include transition-colors;
 
@@ -139,8 +139,7 @@
 	}
 
 	&--underline &__trigger {
-		padding-right: 0;
-		padding-left: 0;
+		padding-inline: 0;
 		border-width: 0 0 1px;
 		border-radius: 0;
 		@include custom-bg(background-color, transparent);
@@ -222,7 +221,7 @@
 		min-height: sz(120px);
 
 		& + & {
-			border-left: 1px solid var(--rise-border);
+			border-inline-start: 1px solid var(--rise-border);
 		}
 	}
 
@@ -295,13 +294,13 @@
 
 	&__option-arrow {
 		flex-shrink: 0;
-		margin-left: auto;
+		margin-inline-start: auto;
 		color: var(--rise-text-muted);
 	}
 
 	&__check {
 		flex-shrink: 0;
-		margin-left: auto;
+		margin-inline-start: auto;
 		color: var(--rise-primary);
 	}
 

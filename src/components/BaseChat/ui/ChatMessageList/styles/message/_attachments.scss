@@ -76,7 +76,7 @@
 	&__collage-item &__download-btn {
 		position: absolute;
 		top: sz(6px);
-		right: sz(6px);
+		inset-inline-end: sz(6px);
 		opacity: 0;
 		@include transition(opacity);
 	}

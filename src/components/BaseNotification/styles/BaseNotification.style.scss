@@ -12,17 +12,17 @@
 	@include scrollbar-thin;
 
 	&--top-left {
-		--overlay-slide: calc(var(--rise-motion-distance) * -1) 0;
+		--overlay-slide: calc(var(--rise-dir, 1) * var(--rise-motion-distance) * -1) 0;
 
 		top: 0;
-		left: 0;
+		inset-inline-start: 0;
 	}
 
 	&--top-right {
-		--overlay-slide: var(--rise-motion-distance) 0;
+		--overlay-slide: calc(var(--rise-dir, 1) * var(--rise-motion-distance)) 0;
 
 		top: 0;
-		right: 0;
+		inset-inline-end: 0;
 	}
 
 	&--top-center {
@@ -34,16 +34,16 @@
 	}
 
 	&--bottom-left {
-		--overlay-slide: calc(var(--rise-motion-distance) * -1) 0;
+		--overlay-slide: calc(var(--rise-dir, 1) * var(--rise-motion-distance) * -1) 0;
 
 		bottom: 0;
-		left: 0;
+		inset-inline-start: 0;
 	}
 
 	&--bottom-right {
-		--overlay-slide: var(--rise-motion-distance) 0;
+		--overlay-slide: calc(var(--rise-dir, 1) * var(--rise-motion-distance)) 0;
 
-		right: 0;
+		inset-inline-end: 0;
 		bottom: 0;
 	}
 
@@ -68,8 +68,7 @@
 	}
 	@include respond-below('mobile') {
 		&:not(.base-notification--contained) {
-			right: 0;
-			left: 0;
+			inset-inline: 0;
 			width: 100%;
 			translate: none;
 		}
@@ -162,7 +161,8 @@
 		--btn-pad-left: 3px;
 
 		flex: none;
-		margin: sz(-2px) sz(-4px) sz(-2px) 0;
+		margin-block: sz(-2px);
+		margin-inline: 0 sz(-4px);
 	}
 
 	&__actions {
@@ -176,9 +176,8 @@
 		--progress-color: var(--notification-color);
 
 		position: absolute;
-		right: 0;
+		inset-inline: 0;
 		bottom: 0;
-		left: 0;
 
 		.base-progress__track {
 			height: sz(3px);

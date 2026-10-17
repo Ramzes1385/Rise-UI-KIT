@@ -1,4 +1,6 @@
 .base-chart {
+	@include ltr-surface;
+
 	display: flex;
 	flex-direction: column;
 	gap: space(12px);
@@ -23,7 +25,7 @@
 		@include text-size(xs);
 		font-size: sz(ct(chart, axis-font-size, var(--rise-font-size-xs)));
 		font-variant-numeric: tabular-nums;
-		text-align: right;
+		text-align: end;
 	}
 
 	&__y-tick {
@@ -100,7 +102,7 @@
 		box-sizing: border-box;
 		pointer-events: none;
 		top: 0;
-		left: 0;
+		inset-inline-start: 0;
 		transform: translate(var(--base-chart-marker-x, 0), var(--base-chart-marker-y, 0)) translate(-50%, -50%);
 	}
 
@@ -119,7 +121,7 @@
 		box-shadow: ct(chart, tooltip-shadow, var(--rise-shadow-md));
 		pointer-events: none;
 		white-space: nowrap;
-		left: 0;
+		inset-inline-start: 0;
 		transform: translateX(var(--base-chart-guide-x, 0)) translateX(sz(12px));
 		@include text-size(xs);
 	}

@@ -10,7 +10,7 @@
 		display: inline-flex;
 
 		& + & {
-			margin-left: sz(-8px);
+			margin-inline-start: sz(-8px);
 		}
 
 		.base-avatar {

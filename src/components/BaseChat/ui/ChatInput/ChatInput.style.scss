@@ -6,7 +6,8 @@
 	flex: none;
 	flex-direction: column;
 	gap: sz(8px);
-	padding: sz(12px) sz(12px) sz(12px) sz(16px);
+	padding-block: sz(12px);
+	padding-inline: sz(16px) sz(12px);
 	@include chat-section-border(top);
 
 	&__quick-replies {
@@ -23,9 +24,13 @@
 		display: flex;
 		align-items: center;
 		gap: sz(8px);
-		padding: sz(4px) sz(4px) sz(4px) sz(10px);
-		border-left: sz(2px) solid var(--rise-primary);
-		border-radius: 0 sz(var(--rise-radius-md)) sz(var(--rise-radius-md)) 0;
+		padding-block: sz(4px);
+		padding-inline: sz(10px) sz(4px);
+		border-inline-start: sz(2px) solid var(--rise-primary);
+		border-start-start-radius: 0;
+		border-start-end-radius: sz(var(--rise-radius-md));
+		border-end-end-radius: sz(var(--rise-radius-md));
+		border-end-start-radius: 0;
 		background-color: var(--rise-bg-muted);
 	}
 
@@ -60,9 +65,13 @@
 		display: flex;
 		align-items: center;
 		gap: sz(8px);
-		padding: sz(4px) sz(4px) sz(4px) sz(10px);
-		border-left: sz(2px) solid var(--rise-error);
-		border-radius: 0 sz(var(--rise-radius-md)) sz(var(--rise-radius-md)) 0;
+		padding-block: sz(4px);
+		padding-inline: sz(10px) sz(4px);
+		border-inline-start: sz(2px) solid var(--rise-error);
+		border-start-start-radius: 0;
+		border-start-end-radius: sz(var(--rise-radius-md));
+		border-end-end-radius: sz(var(--rise-radius-md));
+		border-end-start-radius: 0;
 		background-color: var(--rise-error-soft);
 		color: var(--rise-error-text);
 		@include text-size(xs);
@@ -98,7 +107,8 @@
 		align-items: center;
 		gap: sz(6px);
 		max-width: sz(220px);
-		padding: sz(3px) sz(3px) sz(3px) sz(4px);
+		padding-block: sz(3px);
+		padding-inline: sz(4px) sz(3px);
 		border: 1px solid var(--rise-border);
 		border-radius: sz(var(--rise-radius-md));
 		background-color: var(--rise-bg);
@@ -153,7 +163,7 @@
 	}
 
 	&__send-btn.base-button {
-		margin-left: sz(4px);
+		margin-inline-start: sz(4px);
 	}
 
 	&__file-input {
@@ -208,7 +218,7 @@
 	&__autocomplete {
 		position: absolute;
 		bottom: calc(100% + #{sz(4px)});
-		left: 0;
+		inset-inline-start: 0;
 		z-index: 20;
 		display: flex;
 		flex-direction: column;

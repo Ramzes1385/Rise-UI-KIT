@@ -17,10 +17,11 @@
 		gap: sz(ct(reasoning, trigger-gap, 6px));
 		max-width: 100%;
 		@include button-reset;
-		padding: sz(4px) sz(6px) sz(4px) 0;
+		padding-block: sz(4px);
+		padding-inline: 0 sz(6px);
 		border-radius: sz(var(--rise-radius-sm));
 		font-weight: ct(reasoning, trigger-font-weight, var(--rise-font-weight-medium));
-		text-align: left;
+		text-align: start;
 		@include transition-colors;
 		@include focus-ring;
 
@@ -74,9 +75,9 @@
 	&__content {
 		min-height: 0;
 		margin-top: sz(4px);
-		padding-left: sz(12px);
+		padding-inline-start: sz(12px);
 		overflow: hidden;
-		border-left: sz(2px) solid ct(reasoning, content-border, var(--rise-border));
+		border-inline-start: sz(2px) solid ct(reasoning, content-border, var(--rise-border));
 	}
 
 	&--soft,
@@ -102,8 +103,8 @@
 	&--soft &__content,
 	&--outline &__content,
 	&--ghost &__content {
-		padding-left: 0;
-		border-left: 0;
+		padding-inline-start: 0;
+		border-inline-start: 0;
 	}
 }
 

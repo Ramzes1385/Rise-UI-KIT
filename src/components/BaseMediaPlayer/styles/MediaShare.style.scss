@@ -44,15 +44,20 @@
 	}
 
 	&__share-networks--back &__share-list {
-		mask-image: linear-gradient(to right, transparent, var(--rise-media-shade) #{sz(48px)});
+		mask-image: linear-gradient(dir-angle(90deg), transparent, var(--rise-media-shade) #{sz(48px)});
 	}
 
 	&__share-networks--forward &__share-list {
-		mask-image: linear-gradient(to left, transparent, var(--rise-media-shade) #{sz(48px)});
+		mask-image: linear-gradient(dir-angle(-90deg), transparent, var(--rise-media-shade) #{sz(48px)});
 	}
 
 	&__share-networks--back.base-media-player__share-networks--forward &__share-list {
-		mask-image: linear-gradient(to right, transparent, var(--rise-media-shade) #{sz(48px)} calc(100% - #{sz(48px)}), transparent);
+		mask-image: linear-gradient(
+			dir-angle(90deg),
+			transparent,
+			var(--rise-media-shade) #{sz(48px)} calc(100% - #{sz(48px)}),
+			transparent
+		);
 	}
 
 	&__share-item {
@@ -164,11 +169,11 @@
 	}
 
 	&__share-scroll--back.base-button {
-		left: 0;
+		inset-inline-start: 0;
 	}
 
 	&__share-scroll--forward.base-button {
-		right: 0;
+		inset-inline-end: 0;
 	}
 
 	&__share-row {

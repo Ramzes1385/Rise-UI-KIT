@@ -13,7 +13,8 @@
 		z-index: calc(var(--rise-z-overlay) + var(--rise-layer-index, 0));
 		box-sizing: border-box;
 		min-width: sz(ct(dropdown-panel, width, 128px));
-		padding: space(var(--dd-pad-top) var(--dd-pad-right) var(--dd-pad-bottom) var(--dd-pad-left));
+		padding-block: space(var(--dd-pad-top) var(--dd-pad-bottom));
+		padding-inline: space(var(--dd-pad-left) var(--dd-pad-right));
 		overflow-y: auto;
 		@include floating-surface;
 		border-color: var(--dd-border);

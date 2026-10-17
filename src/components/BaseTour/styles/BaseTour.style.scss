@@ -174,7 +174,8 @@
 	--btn-pad-left: 3px;
 
 	flex: none;
-	margin: sz(-2px) sz(-4px) sz(-2px) auto;
+	margin-block: sz(-2px);
+	margin-inline: auto sz(-4px);
 	color: var(--rise-text-muted);
 }
 
@@ -233,7 +234,7 @@
 	display: inline-flex;
 	flex: none;
 	gap: sz(8px);
-	margin-left: auto;
+	margin-inline-start: auto;
 }
 
 .base-tour-enter-active {

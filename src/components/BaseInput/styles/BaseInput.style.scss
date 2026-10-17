@@ -43,7 +43,7 @@
 		display: flex;
 		align-self: center;
 		flex-shrink: 0;
-		margin-left: sz(ct(input, padding-x, var(--rise-control-padding-x)));
+		margin-inline-start: sz(ct(input, padding-x, var(--rise-control-padding-x)));
 		color: var(--rise-text-muted);
 	}
 
@@ -53,7 +53,7 @@
 	}
 
 	&--has-icon &__field {
-		padding-left: sz(8px);
+		padding-inline-start: sz(8px);
 	}
 
 	&__prefix,
@@ -68,23 +68,23 @@
 	}
 
 	&__prefix {
-		padding-left: sz(ct(input, padding-x, var(--rise-control-padding-x)));
+		padding-inline-start: sz(ct(input, padding-x, var(--rise-control-padding-x)));
 	}
 
 	&__postfix {
-		padding-right: sz(ct(input, padding-x, var(--rise-control-padding-x)));
+		padding-inline-end: sz(ct(input, padding-x, var(--rise-control-padding-x)));
 	}
 
 	&--has-prefix &__field {
-		padding-left: sz(4px);
+		padding-inline-start: sz(4px);
 	}
 
 	&--has-icon.base-input--has-prefix &__prefix {
-		padding-left: sz(6px);
+		padding-inline-start: sz(6px);
 	}
 
 	&--has-postfix &__field {
-		padding-right: sz(4px);
+		padding-inline-end: sz(4px);
 	}
 
 	&--outline &__wrapper {
@@ -128,20 +128,19 @@
 	}
 
 	&--underline &__field {
-		padding-left: 0;
-		padding-right: 0;
+		padding-inline: 0;
 	}
 
 	&--underline &__prefix {
-		padding-left: 0;
+		padding-inline-start: 0;
 	}
 
 	&--underline &__icon {
-		margin-left: 0;
+		margin-inline-start: 0;
 	}
 
 	&--underline &__postfix {
-		padding-right: 0;
+		padding-inline-end: 0;
 	}
 
 	&--soft &__wrapper:focus-within,
@@ -187,7 +186,7 @@
 
 		position: absolute;
 		top: 50%;
-		right: sz(4px);
+		inset-inline-end: sz(4px);
 		z-index: 1;
 		transform: translateY(-50%);
 		color: var(--rise-text-muted);
@@ -199,11 +198,11 @@
 
 	&--password &__field,
 	&--clearable &__field {
-		padding-right: sz(36px);
+		padding-inline-end: sz(36px);
 	}
 
 	&--password.base-input--has-postfix &__field {
-		padding-right: sz(72px);
+		padding-inline-end: sz(72px);
 	}
 
 	&__password-icon {

@@ -7,7 +7,8 @@
 	align-items: center;
 	gap: sz(12px);
 	min-height: sz(56px);
-	padding: sz(12px) sz(12px) sz(12px) sz(16px);
+	padding-block: sz(12px);
+	padding-inline: sz(16px) sz(12px);
 	@include chat-section-border(bottom);
 
 	&__info {

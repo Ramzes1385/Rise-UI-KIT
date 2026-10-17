@@ -68,7 +68,7 @@
 			color: var(--rise-text-toned);
 			font-family: var(--rise-font-sans);
 			font-weight: var(--rise-font-weight-medium);
-			text-align: left;
+			text-align: start;
 		}
 	}
 
@@ -78,7 +78,7 @@
 	}
 
 	&__table--split th + th {
-		border-left: 1px solid ct(text-diff, border, var(--rise-border));
+		border-inline-start: 1px solid ct(text-diff, border, var(--rise-border));
 	}
 
 	&__number,
@@ -92,7 +92,7 @@
 		width: 1%;
 		padding: space(2px 8px);
 		color: var(--rise-text-toned);
-		text-align: right;
+		text-align: end;
 		white-space: nowrap;
 		vertical-align: top;
 		user-select: none;
@@ -107,7 +107,8 @@
 	}
 
 	&__text {
-		padding: space(2px 12px 2px 4px);
+		padding-block: space(2px);
+		padding-inline: space(4px 12px);
 		white-space: pre-wrap;
 		overflow-wrap: anywhere;
 		vertical-align: top;
@@ -118,7 +119,7 @@
 	}
 
 	&__table--split &__number:nth-child(3) {
-		border-left: 1px solid ct(text-diff, border, var(--rise-border));
+		border-inline-start: 1px solid ct(text-diff, border, var(--rise-border));
 	}
 
 	&__cell--added {

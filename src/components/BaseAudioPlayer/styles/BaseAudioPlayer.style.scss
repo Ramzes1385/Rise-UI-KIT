@@ -210,13 +210,13 @@
 
 		&--current {
 			background-color: ct(audio-player, cue-bg-selected, var(--rise-primary-soft));
-			box-shadow: inset 3px 0 0 ct(audio-player, cue-border-selected, var(--rise-primary));
+			box-shadow: inset dir-x(3px) 0 0 ct(audio-player, cue-border-selected, var(--rise-primary));
 		}
 	}
 
 	&--ghost &__cue--current {
 		background-color: color-mix(in srgb, currentcolor 14%, transparent);
-		box-shadow: inset 3px 0 0 currentcolor;
+		box-shadow: inset dir-x(3px) 0 0 currentcolor;
 	}
 
 	&__cue-time {

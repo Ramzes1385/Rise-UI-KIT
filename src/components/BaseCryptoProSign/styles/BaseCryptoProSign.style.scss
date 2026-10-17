@@ -129,7 +129,7 @@
 
 	&__step--checking &__dot {
 		border-color: var(--rise-primary);
-		border-right-color: transparent;
+		border-inline-end-color: transparent;
 
 		@include motion-safe {
 			animation: base-crypto-pro-sign-spin calc(var(--rise-duration-slow) * 3) linear infinite;
@@ -198,7 +198,7 @@
 
 	&__item--signing &__dot {
 		border-color: var(--rise-primary);
-		border-right-color: transparent;
+		border-inline-end-color: transparent;
 
 		@include motion-safe {
 			animation: base-crypto-pro-sign-spin calc(var(--rise-duration-slow) * 3) linear infinite;

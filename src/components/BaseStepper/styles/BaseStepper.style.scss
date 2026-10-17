@@ -263,23 +263,27 @@
 
 	&--horizontal &__step:not(:first-child)::before,
 	&--horizontal &__line-fill--start {
-		right: calc(50% + var(--stepper-size) / 2 + var(--stepper-line-gap));
-		left: 0;
-		border-radius: 0 var(--stepper-line-radius) var(--stepper-line-radius) 0;
+		inset-inline: 0 calc(50% + var(--stepper-size) / 2 + var(--stepper-line-gap));
+		border-start-start-radius: 0;
+		border-start-end-radius: var(--stepper-line-radius);
+		border-end-end-radius: var(--stepper-line-radius);
+		border-end-start-radius: 0;
 	}
 
 	&--horizontal &__step:not(:last-child)::after,
 	&--horizontal &__line-fill--end {
-		right: 0;
-		left: calc(50% + var(--stepper-size) / 2 + var(--stepper-line-gap));
-		border-radius: var(--stepper-line-radius) 0 0 var(--stepper-line-radius);
+		inset-inline: calc(50% + var(--stepper-size) / 2 + var(--stepper-line-gap)) 0;
+		border-start-start-radius: var(--stepper-line-radius);
+		border-start-end-radius: 0;
+		border-end-end-radius: 0;
+		border-end-start-radius: var(--stepper-line-radius);
 	}
 
 	&--vertical &__step:not(:last-child)::after,
 	&--vertical &__line-fill {
 		top: calc(var(--stepper-size) + var(--stepper-line-gap));
 		bottom: var(--stepper-line-gap);
-		left: calc(var(--stepper-size) / 2 - var(--stepper-line) / 2);
+		inset-inline-start: calc(var(--stepper-size) / 2 - var(--stepper-line) / 2);
 		width: var(--stepper-line);
 		border-radius: var(--stepper-line-radius);
 	}
@@ -294,7 +298,7 @@
 
 	&--horizontal &__line-fill {
 		transform: scaleX(0);
-		transform-origin: left center;
+		transform-origin: dir-pos(0%) center;
 	}
 
 	&--vertical &__line-fill {

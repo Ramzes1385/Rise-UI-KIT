@@ -6,17 +6,17 @@
 	&__settings {
 		display: flex;
 		align-items: center;
-		margin-left: auto;
+		margin-inline-start: auto;
 	}
 
 	&__export {
 		display: flex;
 		align-items: center;
-		margin-left: auto;
+		margin-inline-start: auto;
 	}
 
 	&__settings + &__export {
-		margin-left: 0;
+		margin-inline-start: 0;
 	}
 
 	&__settings-panel {

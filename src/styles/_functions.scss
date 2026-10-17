@@ -45,3 +45,19 @@
 
 	@return string.unquote('var(--rise-#{$component}-#{$prop}, #{$fallback})');
 }
+
+// Направление письма в значениях, которые нельзя записать логическим свойством. `--rise-dir` — 1 в LTR и −1 в RTL (kit.scss).
+// Сдвиг вдоль строки: dir-x(16px) — вправо в LTR, влево в RTL; dir-x(-50%) — к началу строки.
+@function dir-x($value) {
+	@return string.unquote('calc(var(--rise-dir, 1) * #{$value})');
+}
+
+// Угол градиента «вдоль строки»: dir-angle(90deg) — слева направо в LTR и справа налево в RTL.
+@function dir-angle($angle) {
+	@return dir-x($angle);
+}
+
+// Позиция вдоль строки в процентах от начала: dir-pos(0%) — начало строки (слева в LTR, справа в RTL), dir-pos(100%) — конец.
+@function dir-pos($percent) {
+	@return string.unquote('calc(50% + (#{$percent} - 50%) * var(--rise-dir, 1))');
+}

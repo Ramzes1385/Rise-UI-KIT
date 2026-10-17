@@ -39,7 +39,7 @@
 	&__popup {
 		position: absolute;
 		top: calc(100% + #{sz(4px)});
-		left: 0;
+		inset-inline-start: 0;
 		z-index: var(--rise-z-overlay);
 		box-sizing: border-box;
 		width: min(100%, #{sz(320px)});

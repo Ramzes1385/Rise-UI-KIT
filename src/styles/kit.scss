@@ -12,3 +12,17 @@
 :where(code, kbd, samp, pre):where([class^='base-'], [class*=' base-']) {
 	font-family: var(--rise-font-mono);
 }
+
+// Знак направления письма для сдвигов и градиентов, которые зависят от стороны: translateX(calc(var(--rise-dir) * 10px)).
+// 1 в LTR, −1 в RTL; наследуется, поэтому вложенный dir="ltr" внутри RTL возвращает 1. Служебная переменная, не токен темы.
+:root {
+	--rise-dir: 1;
+}
+
+[dir='rtl'] {
+	--rise-dir: -1;
+}
+
+[dir='ltr'] {
+	--rise-dir: 1;
+}

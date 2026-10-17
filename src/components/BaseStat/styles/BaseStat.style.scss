@@ -99,18 +99,18 @@ $stat-padding-x: ct(stat, padding-x, 16px);
 	&__icon {
 		position: absolute;
 		top: space($stat-padding-y);
-		right: space($stat-padding-x);
+		inset-inline-end: space($stat-padding-x);
 		display: flex;
 		color: ct(stat-icon, text, var(--rise-text-muted));
 	}
 
 	&--with-icon &__label {
-		padding-right: sz(32px);
+		padding-inline-end: sz(32px);
 	}
 
 	&--ghost &__icon {
 		top: 0;
-		right: 0;
+		inset-inline-end: 0;
 	}
 
 	&__chart {

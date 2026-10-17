@@ -121,7 +121,7 @@
 		}
 
 		&__move-icon {
-			transform: rotate(90deg);
+			transform: rotate(dir-angle(90deg));
 		}
 	}
 }

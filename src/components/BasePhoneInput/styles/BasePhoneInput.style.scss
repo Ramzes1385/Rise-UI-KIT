@@ -3,16 +3,15 @@
 		display: flex;
 		flex: none;
 		align-self: stretch;
-		margin-right: sz(4px);
-		border-right: 1px solid ct(phone-input, country-border, var(--rise-border));
+		margin-inline-end: sz(4px);
+		border-inline-end: 1px solid ct(phone-input, country-border, var(--rise-border));
 	}
 
 	&__trigger {
 		display: inline-flex;
 		align-items: center;
 		gap: sz(6px);
-		padding-right: sz(8px);
-		padding-left: sz(var(--rise-control-padding-x));
+		padding-inline: sz(var(--rise-control-padding-x)) sz(8px);
 		outline: none;
 		color: inherit;
 		white-space: nowrap;

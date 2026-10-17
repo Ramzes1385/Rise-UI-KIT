@@ -167,7 +167,7 @@
 	&__actions {
 		position: absolute;
 		top: sz(-16px);
-		right: sz(8px);
+		inset-inline-end: sz(8px);
 		z-index: 1;
 		display: flex;
 		gap: sz(2px);
@@ -179,11 +179,6 @@
 		opacity: 0;
 		pointer-events: none;
 		@include transition(opacity);
-
-		[dir='rtl'] & {
-			right: auto;
-			left: sz(8px);
-		}
 	}
 
 	@media (hover: hover) {

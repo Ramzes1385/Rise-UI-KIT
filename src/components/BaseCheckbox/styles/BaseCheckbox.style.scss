@@ -81,7 +81,7 @@
 
 	& &__error-text {
 		display: block;
-		padding-left: sz(24px);
+		padding-inline-start: sz(24px);
 		@include field-error;
 	}
 

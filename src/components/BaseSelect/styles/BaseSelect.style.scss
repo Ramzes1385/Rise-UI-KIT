@@ -85,7 +85,7 @@
 
 	&__arrow {
 		flex-shrink: 0;
-		margin-left: auto;
+		margin-inline-start: auto;
 		color: var(--rise-text-muted);
 		@include transition(transform);
 	}
@@ -95,7 +95,7 @@
 	}
 
 	&--has-tags &__trigger {
-		padding-left: sz(ct(select, padding-y, var(--rise-control-padding-y)));
+		padding-inline-start: sz(ct(select, padding-y, var(--rise-control-padding-y)));
 	}
 
 	&__tag {
@@ -149,8 +149,7 @@
 	}
 
 	&--underline &__trigger {
-		padding-right: 0;
-		padding-left: 0;
+		padding-inline: 0;
 		border-width: 0 0 1px;
 		border-radius: 0;
 		@include custom-bg(background-color, transparent);
@@ -283,7 +282,7 @@
 
 	&__check {
 		flex-shrink: 0;
-		margin-left: auto;
+		margin-inline-start: auto;
 		color: var(--rise-primary);
 	}
 

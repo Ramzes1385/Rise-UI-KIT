@@ -33,7 +33,7 @@
 		@include button-reset;
 		border-radius: sz(var(--rise-radius-sm));
 		font-weight: ct(breadcrumbs, font-weight, var(--rise-font-weight-medium));
-		text-align: left;
+		text-align: start;
 		text-decoration: none;
 		@include transition-colors;
 		@include focus-ring;

@@ -205,7 +205,7 @@
 		background-color: ct(kanban, card-bg, var(--rise-bg));
 		color: var(--rise-text);
 		box-shadow: ct(kanban, card-shadow, var(--rise-shadow-xs));
-		text-align: left;
+		text-align: start;
 		user-select: none;
 	}
 
@@ -249,7 +249,7 @@
 	&__ghost {
 		position: fixed;
 		top: 0;
-		left: 0;
+		inset-inline-start: 0;
 		z-index: var(--rise-z-overlay);
 		box-sizing: border-box;
 		@include text-size(sm);

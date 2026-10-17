@@ -26,7 +26,7 @@
 		}
 
 		.base-input__icon {
-			margin-left: sz(16px);
+			margin-inline-start: sz(16px);
 		}
 
 		.base-input__icon .base-icon__svg {
@@ -36,7 +36,8 @@
 
 		.base-input__field {
 			height: sz(ct(command-palette-input, height, 52px));
-			padding: space(0 16px 0 10px);
+			padding-block: space(0);
+			padding-inline: space(10px 16px);
 			color: var(--rise-text-highlighted);
 			font-size: sz(ct(command-palette-input, font-size, var(--rise-font-size-md)));
 			line-height: sz(var(--rise-line-height-md));

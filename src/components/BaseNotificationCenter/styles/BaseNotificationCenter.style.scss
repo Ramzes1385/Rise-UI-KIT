@@ -39,7 +39,7 @@
 	}
 
 	&__read-all {
-		margin-left: auto;
+		margin-inline-start: auto;
 	}
 
 	&__list {
@@ -75,7 +75,7 @@
 		min-width: 0;
 		padding: sz(ct(notification-center-item, padding-y, 8px) ct(notification-center-item, padding-x, 8px));
 		border-radius: sz(var(--rise-radius-md));
-		text-align: left;
+		text-align: start;
 		@include transition-colors;
 		@include focus-ring(-2px);
 

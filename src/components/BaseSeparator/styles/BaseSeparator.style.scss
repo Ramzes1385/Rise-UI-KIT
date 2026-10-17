@@ -30,7 +30,7 @@
 
 	&--vertical &__line {
 		min-height: 0;
-		border-left-width: var(--sep-thickness, 1px);
+		border-inline-start-width: var(--sep-thickness, 1px);
 	}
 
 	&--horizontal:not(.base-separator--with-content) {

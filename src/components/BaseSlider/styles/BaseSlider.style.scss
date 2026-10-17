@@ -162,8 +162,8 @@
 		inset: 0 20%;
 		border-radius: sz(ct(slider, slide-radius, var(--rise-radius-lg)));
 		opacity: clamp(0, calc(2.5 - var(--slide-distance, 0)), 1);
-		transform: translateX(calc(var(--slide-offset, 0) * 75%)) translateZ(calc(var(--slide-distance, 0) * #{sz(-160px)}))
-			rotateY(calc(var(--slide-offset, 0) * -40deg));
+		transform: translateX(calc(var(--slide-offset, 0) * var(--rise-dir, 1) * 75%))
+			translateZ(calc(var(--slide-distance, 0) * #{sz(-160px)})) rotateY(calc(var(--slide-offset, 0) * var(--rise-dir, 1) * -40deg));
 	}
 
 	&--coverflow &__slide:not(&__slide--active) {
@@ -179,7 +179,7 @@
 	&--flip &__slide {
 		border-radius: sz(ct(slider, slide-radius, var(--rise-radius-lg)));
 		opacity: clamp(0, calc(2 - var(--slide-distance, 0)), 1);
-		transform: rotateY(calc(var(--slide-offset, 0) * -180deg));
+		transform: rotateY(calc(var(--slide-offset, 0) * var(--rise-dir, 1) * -180deg));
 		backface-visibility: hidden;
 	}
 
@@ -192,8 +192,8 @@
 		border-radius: sz(ct(slider, slide-radius, var(--rise-radius-lg)));
 		box-shadow: var(--rise-shadow-md);
 		opacity: clamp(0, calc(3 - var(--slide-distance, 0)), 1);
-		transform: translateX(calc(min(var(--slide-offset, 0), 0) * 125% + max(var(--slide-offset, 0), 0) * 7%))
-			rotate(calc(var(--slide-offset, 0) * 3deg)) scale(calc(1 - max(var(--slide-offset, 0), 0) * 0.06));
+		transform: translateX(calc((min(var(--slide-offset, 0), 0) * 125% + max(var(--slide-offset, 0), 0) * 7%) * var(--rise-dir, 1)))
+			rotate(calc(var(--slide-offset, 0) * var(--rise-dir, 1) * 3deg)) scale(calc(1 - max(var(--slide-offset, 0), 0) * 0.06));
 	}
 
 	&--vertical.base-slider--cards &__slide {
@@ -204,7 +204,7 @@
 
 	&--creative &__slide {
 		opacity: clamp(0, calc(2 - var(--slide-distance, 0)), 1);
-		transform: translateX(calc(max(var(--slide-offset, 0), 0) * 100% + min(var(--slide-offset, 0), 0) * 20%))
+		transform: translateX(calc((max(var(--slide-offset, 0), 0) * 100% + min(var(--slide-offset, 0), 0) * 20%) * var(--rise-dir, 1)))
 			scale(calc(1 + min(var(--slide-offset, 0), 0) * 0.1));
 		filter: brightness(calc(1 + min(var(--slide-offset, 0), 0) * 0.4));
 	}
@@ -229,9 +229,8 @@
 
 	&__caption {
 		position: absolute;
-		right: 0;
+		inset-inline: 0;
 		bottom: 0;
-		left: 0;
 		padding: space(32px 16px 16px);
 		background-image: linear-gradient(to top, var(--rise-media-scrim), transparent);
 		color: var(--rise-media-text);
@@ -273,7 +272,7 @@
 
 		position: absolute;
 		top: sz(12px);
-		left: sz(12px);
+		inset-inline-start: sz(12px);
 		z-index: 2;
 		border-radius: var(--rise-radius-full);
 	}
@@ -320,12 +319,12 @@
 
 	&--arrows-top-left &__arrows,
 	&--arrows-bottom-left &__arrows {
-		left: 0;
+		inset-inline-start: 0;
 	}
 
 	&--arrows-top-right &__arrows,
 	&--arrows-bottom-right &__arrows {
-		right: 0;
+		inset-inline-end: 0;
 	}
 
 	&__navigation {
@@ -338,7 +337,7 @@
 	&--vertical &__navigation {
 		flex-direction: row;
 		padding-top: 0;
-		padding-left: space(12px);
+		padding-inline-start: space(12px);
 	}
 
 	&__dots {
@@ -455,7 +454,8 @@
 		flex-direction: column;
 		justify-content: flex-start;
 		margin: sz(-4px) 0;
-		padding: sz(4px) sz(4px) sz(4px) 0;
+		padding-block: sz(4px);
+		padding-inline: 0 sz(4px);
 		overflow: hidden auto;
 	}
 
@@ -534,12 +534,11 @@
 		}
 
 		&--thumbs-left &__navigation {
-			padding-left: 0;
-			padding-right: sz(8px);
+			padding-inline: 0 sz(8px);
 		}
 
 		&--thumbs-right &__navigation {
-			padding-left: sz(8px);
+			padding-inline-start: sz(8px);
 		}
 
 		&--thumbs-left &__dots,

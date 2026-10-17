@@ -27,19 +27,19 @@ $group-radius: sz(ct(button-group, radius, var(--rise-control-radius)));
 	}
 
 	&--horizontal > * + * {
-		margin-left: ct(button-group, gap, -1px);
+		margin-inline-start: ct(button-group, gap, -1px);
 	}
 
 	&--horizontal > :first-child,
 	&--horizontal > :first-child .base-button {
-		border-top-left-radius: $group-radius;
-		border-bottom-left-radius: $group-radius;
+		border-start-start-radius: $group-radius;
+		border-end-start-radius: $group-radius;
 	}
 
 	&--horizontal > :last-child,
 	&--horizontal > :last-child .base-button {
-		border-top-right-radius: $group-radius;
-		border-bottom-right-radius: $group-radius;
+		border-start-end-radius: $group-radius;
+		border-end-end-radius: $group-radius;
 	}
 
 	&--vertical {
@@ -51,12 +51,12 @@ $group-radius: sz(ct(button-group, radius, var(--rise-control-radius)));
 	}
 
 	&--vertical > :first-child {
-		border-top-left-radius: $group-radius;
-		border-top-right-radius: $group-radius;
+		border-start-start-radius: $group-radius;
+		border-start-end-radius: $group-radius;
 	}
 
 	&--vertical > :last-child {
-		border-bottom-left-radius: $group-radius;
-		border-bottom-right-radius: $group-radius;
+		border-end-start-radius: $group-radius;
+		border-end-end-radius: $group-radius;
 	}
 }

@@ -119,8 +119,7 @@
 	&--overlay {
 		position: absolute;
 		top: 0;
-		right: 0;
-		left: 0;
+		inset-inline: 0;
 		z-index: calc(var(--rise-z-overlay) - 2);
 	}
 

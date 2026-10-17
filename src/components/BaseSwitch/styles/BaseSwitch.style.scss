@@ -54,7 +54,7 @@
 	&__handle {
 		position: absolute;
 		top: sz(2px);
-		left: sz(2px);
+		inset-inline-start: sz(2px);
 		width: sz(16px);
 		height: sz(16px);
 		border-radius: var(--rise-radius-full);
@@ -69,7 +69,7 @@
 
 	&__input:checked + &__slider &__handle {
 		background-color: var(--switch-checked-thumb);
-		transform: translateX(sz(16px));
+		transform: translateX(dir-x(sz(16px)));
 	}
 
 	&__input:focus-visible + &__slider {
@@ -104,7 +104,7 @@
 
 	& &__error-text {
 		display: block;
-		padding-left: calc(#{sz($switch-track-width)} + #{sz($switch-row-gap)});
+		padding-inline-start: calc(#{sz($switch-track-width)} + #{sz($switch-row-gap)});
 		@include field-error;
 	}
 
@@ -124,7 +124,7 @@
 	}
 
 	&--reverse &__error-text {
-		padding-left: 0;
+		padding-inline-start: 0;
 	}
 
 	&--outline {

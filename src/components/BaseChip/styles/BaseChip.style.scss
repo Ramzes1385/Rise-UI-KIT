@@ -27,26 +27,26 @@
 
 	&__badge--top-right.base-badge {
 		top: 0;
-		right: 0;
-		transform: translate(50%, -50%);
+		inset-inline-end: 0;
+		transform: translate(dir-x(50%), -50%);
 	}
 
 	&__badge--top-left.base-badge {
 		top: 0;
-		left: 0;
-		transform: translate(-50%, -50%);
+		inset-inline-start: 0;
+		transform: translate(dir-x(-50%), -50%);
 	}
 
 	&__badge--bottom-right.base-badge {
 		bottom: 0;
-		right: 0;
-		transform: translate(50%, 50%);
+		inset-inline-end: 0;
+		transform: translate(dir-x(50%), 50%);
 	}
 
 	&__badge--bottom-left.base-badge {
 		bottom: 0;
-		left: 0;
-		transform: translate(-50%, 50%);
+		inset-inline-start: 0;
+		transform: translate(dir-x(-50%), 50%);
 	}
 
 	&--soft &__badge.base-badge {

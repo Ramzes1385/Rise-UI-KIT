@@ -79,7 +79,7 @@
 		transition: transform var(--rise-duration-slow) var(--rise-ease-emphasized);
 
 		&--expanded {
-			transform: rotate(90deg);
+			transform: rotate(dir-angle(90deg));
 		}
 	}
 
@@ -140,9 +140,9 @@
 
 	&__children {
 		@include expand-rows;
-		margin-left: sz(15px);
-		padding-left: space(ct(tree, children-padding-x, 4px));
-		border-left: 1px solid ct(tree, children-border, var(--rise-border));
+		margin-inline-start: sz(15px);
+		padding-inline-start: space(ct(tree, children-padding-x, 4px));
+		border-inline-start: 1px solid ct(tree, children-border, var(--rise-border));
 
 		&--open {
 			@include expand-rows-open;
@@ -170,20 +170,20 @@
 .base-tree__row {
 	position: absolute;
 	top: 0;
-	right: 0;
-	left: 0;
+	inset-inline: 0;
 }
 
 .base-tree__node--flat {
 	--base-tree-indent: calc(#{sz(16px)} + #{space(ct(tree, children-padding-x, 4px))});
 
-	padding-left: calc(var(--base-tree-depth, 0) * var(--base-tree-indent));
+	padding-inline-start: calc(var(--base-tree-depth, 0) * var(--base-tree-indent));
 	background-image: repeating-linear-gradient(
-		to right,
+		dir-angle(90deg),
 		transparent 0 #{sz(15px)},
 		#{ct(tree, children-border, var(--rise-border))} #{sz(15px)} calc(#{sz(15px)} + 1px),
 		transparent calc(#{sz(15px)} + 1px) var(--base-tree-indent)
 	);
 	background-repeat: no-repeat;
+	background-position: dir-pos(0%) 0;
 	background-size: calc(var(--base-tree-depth, 0) * var(--base-tree-indent)) 100%;
 }

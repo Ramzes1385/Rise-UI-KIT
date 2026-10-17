@@ -67,7 +67,7 @@
 	}
 
 	&__label {
-		text-align: left;
+		text-align: start;
 		overflow-wrap: anywhere;
 	}
 
@@ -83,7 +83,7 @@
 		flex-shrink: 0;
 		align-items: center;
 		justify-content: center;
-		margin-left: auto;
+		margin-inline-start: auto;
 		color: var(--rise-text-muted);
 		transition:
 			transform var(--rise-duration-slow) var(--rise-ease-emphasized),
@@ -206,8 +206,8 @@
 
 	&--arrow-start &__arrow {
 		order: -1;
-		margin-left: 0;
-		transform: rotate(-90deg);
+		margin-inline-start: 0;
+		transform: rotate(dir-angle(-90deg));
 	}
 
 	&--arrow-start &__item--open &__arrow {
@@ -215,7 +215,7 @@
 	}
 
 	&--arrow-start &__content {
-		padding-left: calc((var(--accordion-pad-x) * var(--rise-density, 1) + 26px) * var(--size-scale, 1));
+		padding-inline-start: calc((var(--accordion-pad-x) * var(--rise-density, 1) + 26px) * var(--size-scale, 1));
 	}
 
 	&--icon-swap &__arrow,

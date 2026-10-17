@@ -47,7 +47,7 @@
 	&__ghost {
 		position: fixed;
 		top: 0;
-		left: 0;
+		inset-inline-start: 0;
 		z-index: var(--rise-z-overlay);
 		box-shadow: var(--rise-shadow-lg);
 		cursor: grabbing;

@@ -1,9 +1,9 @@
 .base-media-player {
 	&__controls {
+		@include ltr-surface;
 		position: absolute;
-		right: 0;
+		inset-inline: 0;
 		bottom: 0;
-		left: 0;
 		display: flex;
 		flex-direction: column;
 		gap: sz(6px);
@@ -262,7 +262,7 @@
 	&__control-badge {
 		position: absolute;
 		top: sz(2px);
-		right: sz(2px);
+		inset-inline-end: sz(2px);
 		min-width: sz(18px);
 		height: sz(18px);
 		padding: 0 sz(4px);
@@ -280,9 +280,8 @@
 
 	&__captions-button.base-media-player__control--active::before {
 		position: absolute;
-		right: sz(10px);
+		inset-inline: sz(10px);
 		bottom: sz(5px);
-		left: sz(10px);
 		height: sz(2px);
 		border-radius: sz(1px);
 		background-color: var(--media-primary);
@@ -339,7 +338,8 @@
 		align-items: center;
 		width: sz(84px);
 		height: auto;
-		padding: 0 sz(8px) 0 0;
+		padding-block: 0;
+		padding-inline: 0 sz(8px);
 		pointer-events: auto;
 		opacity: 1;
 		transform: none;
@@ -469,7 +469,7 @@
 	&__switch-thumb {
 		position: absolute;
 		top: sz(2px);
-		left: sz(2px);
+		inset-inline-start: sz(2px);
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
