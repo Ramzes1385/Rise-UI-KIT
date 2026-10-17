@@ -1,4 +1,5 @@
 @use './roadmap-panel';
+@use './roadmap-layouts';
 
 .base-roadmap {
 	@include custom-color-scope;

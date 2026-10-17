@@ -1,0 +1,369 @@
+@use '@styles/functions' as *;
+@use '@styles/mixins' as *;
+
+@function rl($prop) {
+	@return calc(var(#{$prop}) * var(--size-scale, 1) * 1px);
+}
+
+.base-roadmap {
+	&__canvas {
+		position: relative;
+		flex: none;
+		inline-size: rl(--rl-width);
+		block-size: rl(--rl-height);
+		margin-inline: auto;
+
+		&--horizontal {
+			margin-inline: 0;
+		}
+	}
+
+	&__lines {
+		position: absolute;
+		inset-block-start: 0;
+		inset-inline-start: 0;
+		inline-size: 100%;
+		block-size: 100%;
+		overflow: visible;
+		pointer-events: none;
+	}
+
+	&__spine-base,
+	&__spine-halo,
+	&__spine-done,
+	&__branch,
+	&__link {
+		fill: none;
+		stroke-linecap: round;
+	}
+
+	&__spine-base {
+		stroke: ct(roadmap, spine, var(--rise-border-accented));
+		stroke-width: calc(#{ct(roadmap, spine-width, 4px)} * 0.75);
+		stroke-dasharray: 0.5 8;
+	}
+
+	&__spine-halo {
+		stroke: var(--rise-primary-soft);
+		stroke-width: calc(#{ct(roadmap, spine-width, 4px)} * 3.5);
+	}
+
+	&__spine-done {
+		stroke: ct(roadmap, spine-done, var(--rise-primary));
+		stroke-width: ct(roadmap, spine-width, 4px);
+	}
+
+	&__spine-halo,
+	&__spine-done {
+		@include motion-safe {
+			transition: stroke-dasharray var(--rise-duration-xslow) var(--rise-ease-emphasized);
+			animation: base-roadmap-grow calc(var(--rise-duration-xslow) * 3.8) var(--rise-ease-emphasized) backwards;
+		}
+	}
+
+	&__branch {
+		stroke: ct(roadmap, branch, var(--rise-border-accented));
+		stroke-width: 1.5;
+		stroke-dasharray: 1;
+
+		&--done {
+			stroke: color-mix(in srgb, var(--rise-primary) 38%, transparent);
+		}
+
+		&--filtered {
+			opacity: 0.3;
+		}
+
+		@include motion-safe {
+			animation: base-roadmap-draw var(--rise-duration-xslow) var(--rise-ease-emphasized) backwards;
+			animation-delay: calc(var(--rl-i, 0) * var(--rise-motion-stagger));
+		}
+	}
+
+	&__link {
+		stroke: var(--rise-primary);
+		stroke-width: 1.5;
+		stroke-dasharray: 4 4;
+		opacity: 0.7;
+	}
+
+	&__runner-layer {
+		position: absolute;
+		inset-block-start: 0;
+		inset-inline-start: 0;
+		inline-size: calc(var(--rl-width) * 1px);
+		block-size: calc(var(--rl-height) * 1px);
+		pointer-events: none;
+		transform: scale(var(--size-scale, 1));
+		transform-origin: dir-pos(0%) 0;
+	}
+
+	&__runner {
+		position: absolute;
+		inset: 0 auto auto 0;
+		inline-size: 12px;
+		block-size: 12px;
+		background-color: var(--rise-primary);
+		border-radius: 50%;
+		box-shadow:
+			0 0 0 3px var(--rise-bg),
+			0 0 16px 5px color-mix(in srgb, ct(roadmap, milestone-ring, var(--rise-primary)) 55%, transparent);
+		offset-anchor: 50% 50%;
+		offset-rotate: 0deg;
+		opacity: 0;
+
+		@include motion-safe {
+			animation: base-roadmap-run calc(var(--rise-duration-loop) * 3.6) cubic-bezier(0.45, 0, 0.25, 1)
+				calc(var(--rise-duration-loop) * 2) infinite;
+			@include loop-state;
+		}
+	}
+
+	&__mark {
+		position: absolute;
+		inset-block-start: rl(--rl-y);
+		inset-inline-start: rl(--rl-x);
+		inline-size: 0;
+		block-size: 0;
+		font-size: sz(12px);
+		font-weight: var(--rise-font-weight-medium);
+		color: var(--rise-text-muted);
+		pointer-events: none;
+
+		@include motion-safe {
+			animation: base-roadmap-fade var(--rise-duration-xslow) var(--rise-ease) backwards;
+		}
+	}
+
+	&__mark-dot {
+		position: absolute;
+		inset-block-start: sz(-7px);
+		inset-inline-start: sz(-7px);
+		inline-size: sz(14px);
+		block-size: sz(14px);
+		background-color: ct(roadmap, spine-done, var(--rise-primary));
+		border-radius: 50%;
+		box-shadow: 0 0 0 sz(4px) var(--rise-primary-soft);
+	}
+
+	&__mark-label {
+		position: absolute;
+		inset-block-start: 50%;
+		inset-inline-end: sz(14px);
+		inline-size: max-content;
+		white-space: nowrap;
+		translate: 0 -50%;
+	}
+
+	&__goal-flag {
+		position: absolute;
+		inset-block-start: sz(-15px);
+		inset-inline-start: sz(-15px);
+		display: grid;
+		place-items: center;
+		inline-size: sz(30px);
+		block-size: sz(30px);
+		color: var(--rise-text-muted);
+		background-color: var(--rise-bg);
+		border: 1.5px dashed var(--rise-border-accented);
+		border-radius: 50%;
+
+		svg {
+			fill: none;
+			stroke: currentcolor;
+			stroke-width: 1.6;
+			stroke-linecap: round;
+			stroke-linejoin: round;
+		}
+	}
+
+	&__goal-text {
+		position: absolute;
+		inset-block-start: 50%;
+		inset-inline-start: sz(24px);
+		inline-size: max-content;
+		max-inline-size: sz(260px);
+		white-space: nowrap;
+		translate: 0 -50%;
+		@include truncate;
+	}
+
+	&__canvas--snake &__goal-text,
+	&__canvas--horizontal &__goal-text {
+		inset-block-start: sz(24px);
+		inset-inline-start: 0;
+		max-inline-size: sz(220px);
+		text-align: center;
+		translate: dir-x(-50%) 0;
+	}
+
+	&__stages,
+	&__branch-list {
+		padding: 0;
+		margin: 0;
+		list-style: none;
+	}
+
+	&__stages {
+		position: absolute;
+		inset: 0;
+	}
+
+	&__branch-list {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+	}
+
+	&__canvas &__station {
+		position: absolute;
+		inset-block-start: rl(--rl-y);
+		inset-inline-start: rl(--rl-x);
+		inline-size: sz(228px);
+		block-size: sz(54px);
+		background-color: ct(roadmap, topic-bg, var(--rise-bg));
+		border: 1px solid ct(roadmap, topic-border, var(--rise-border));
+		border-radius: sz(14px);
+		box-shadow: var(--rise-shadow-sm);
+		@include transition-colors;
+
+		@include motion-safe {
+			animation: base-roadmap-station-in var(--rise-duration-xslow) var(--rise-ease-spring) backwards;
+			animation-delay: calc(var(--rl-i, 0) * 4 * var(--rise-motion-stagger));
+		}
+
+		@include hover {
+			box-shadow: var(--rise-shadow-md);
+		}
+
+		.base-roadmap__stage-button {
+			block-size: 100%;
+			min-block-size: 0;
+			padding-inline: sz(9px) sz(12px);
+			border-radius: inherit;
+		}
+
+		.base-roadmap__stage-title {
+			@include truncate;
+		}
+	}
+
+	&__stage--current &__canvas &__station {
+		border-color: var(--rise-primary);
+		box-shadow:
+			0 0 0 sz(4px) var(--rise-primary-soft),
+			var(--rise-shadow-md);
+	}
+
+	&__stage--locked &__canvas &__station {
+		background-color: var(--rise-bg-muted);
+		border-style: dashed;
+		box-shadow: none;
+	}
+
+	&__branch-item {
+		position: absolute;
+		inset-block-start: rl(--rl-y);
+		inset-inline-start: rl(--rl-x);
+		inline-size: sz(200px);
+		pointer-events: auto;
+
+		&--start {
+			--rl-dx: #{dir-x(calc(var(--rise-motion-distance, 8px) * 5))};
+		}
+
+		&--end {
+			--rl-dx: #{dir-x(calc(var(--rise-motion-distance, 8px) * -5))};
+		}
+
+		&--below {
+			--rl-dy: calc(var(--rise-motion-distance, 8px) * -1);
+		}
+
+		@include motion-safe {
+			animation: base-roadmap-topic-in var(--rise-duration-slow) var(--rise-ease-spring) backwards;
+			animation-delay: calc(var(--rl-i, 0) * var(--rise-motion-stagger));
+		}
+	}
+
+	&__canvas--snake &__branch-item,
+	&__canvas--horizontal &__branch-item {
+		inline-size: sz(196px);
+	}
+
+	&__area--horizontal {
+		padding: 0;
+	}
+
+	&__body &__area--horizontal {
+		overflow: hidden;
+	}
+
+	&__scroll {
+		inline-size: 100%;
+		padding: space(24px);
+	}
+}
+
+.base-roadmap-reveal-leave-active {
+	@include motion-safe {
+		transition: opacity var(--rise-duration-fast) var(--rise-ease-in);
+	}
+}
+
+.base-roadmap-reveal-leave-to {
+	opacity: 0;
+}
+
+@keyframes base-roadmap-grow {
+	from {
+		stroke-dasharray: 0 1;
+	}
+}
+
+@keyframes base-roadmap-draw {
+	from {
+		stroke-dashoffset: 1;
+	}
+}
+
+@keyframes base-roadmap-run {
+	0% {
+		offset-distance: 0%;
+		opacity: 0;
+	}
+
+	10% {
+		opacity: 1;
+	}
+
+	84% {
+		opacity: 1;
+	}
+
+	100% {
+		offset-distance: calc(var(--rl-solid, 1) * 100%);
+		opacity: 0;
+	}
+}
+
+@keyframes base-roadmap-fade {
+	from {
+		opacity: 0;
+	}
+}
+
+@keyframes base-roadmap-station-in {
+	from {
+		opacity: 0;
+		transform: translateY(var(--rise-motion-distance, 8px)) scale(var(--rise-motion-scale-from, 0.95));
+	}
+}
+
+@keyframes base-roadmap-topic-in {
+	from {
+		opacity: 0;
+		translate: var(--rl-dx, 0) var(--rl-dy, 0);
+		scale: var(--rise-motion-scale-from, 0.95);
+	}
+}
