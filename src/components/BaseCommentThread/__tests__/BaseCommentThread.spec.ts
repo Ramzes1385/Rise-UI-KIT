@@ -41,6 +41,20 @@ describe('BaseCommentThread unit', () => {
 		expect(container.querySelector('time')).toHaveAttribute('datetime', new Date(COMMENTS[0].date).toISOString())
 	})
 
+	it('комментарий с некорректной датой выводится без времени и не ломает ветку (фаззинг XSS)', () => {
+		const comments = [
+			{ id: 'bad', author: ivan, text: 'Текст', date: '<img src=x onerror=alert(1)>' },
+			{ id: 'ok', author: anna, text: 'Рядом', date: NOW },
+		]
+		const { container } = renderThread({ comments })
+		expect(screen.getByText('Текст')).toBeInTheDocument()
+		expect(screen.getByText('Рядом')).toBeInTheDocument()
+		const times = container.querySelectorAll('time')
+		expect(times[0]).not.toHaveAttribute('datetime')
+		expect(times[0]).toHaveTextContent('')
+		expect(times[1]).toHaveAttribute('datetime', NOW.toISOString())
+	})
+
 	it('«Нравится»: счётчик, нажатое состояние и событие like', async () => {
 		const { emitted } = renderThread()
 		const liked = screen.getByRole('button', { name: 'Нравится · 2' })

@@ -208,4 +208,44 @@ describe('htmlUtils.sanitizeHtml', () => {
 			}
 		})
 	})
+	describe('случаи, найденные фаззингом XSS (build/tests/fuzz)', () => {
+		it.each([
+			['<constructor onclick="alert(1)">x</constructor>', 'x'],
+			['<constructor title="t" href="javascript:alert(1)">y</constructor>', 'y'],
+			['<p><constructor>a</constructor><valueof>b</valueof></p>', '<p>ab</p>'],
+			['<__proto__ onclick="alert(1)">z', '&lt;__proto__ onclick="alert(1)"&gt;z'],
+		])('имя constructor из Object.prototype — обычный неизвестный элемент: %j', (html, expected) => {
+			expect(() => sanitizeHtml(html)).not.toThrow()
+			expect(sanitizeHtml(html)).toBe(expected)
+		})
+
+		it('результат — неподвижная точка очистки: вложенные заголовки после разворота элемента не перестраиваются при повторном разборе', () => {
+			const first = sanitizeHtml('<h1><x><h2>t</h2></x></h1>')
+			expect(first).toBe('<h1></h1><h2>t</h2>')
+			expect(sanitizeHtml(first)).toBe(first)
+			expect(new DOMParser().parseFromString(first, 'text/html').body.innerHTML).toBe(first)
+		})
+
+		it('разметка без удалений возвращается за один проход в той же сериализации', () => {
+			const html = '<p>Текст <a href="https://example.com" target="_blank" rel="noopener noreferrer">ссылка</a></p>'
+			expect(sanitizeHtml(html)).toBe(html)
+		})
+
+		it('вложенность глубже 128 уровней отбрасывается, а не уходит в рекурсию', () => {
+			const depthOf = (element: Element): number => 1 + Math.max(0, ...[...element.children].map(depthOf))
+			const result = sanitizeHtml(`${'<div>'.repeat(200)}x${'</div>'.repeat(200)}`)
+			const body = new DOMParser().parseFromString(result, 'text/html').body
+			expect(depthOf(body) - 1).toBeLessThanOrEqual(128)
+			expect(result).not.toContain('x')
+			expect(sanitizeHtml(`${'<div>'.repeat(100)}x${'</div>'.repeat(100)}`)).toContain('x')
+		})
+
+		it.each([
+			['<img src="data:text/html;base64,PHNjcmlwdD4=" alt="">', '<img alt="">'],
+			['<img src="  data:image/png;base64,iVBORw0KGgo=" alt="">', '<img src="  data:image/png;base64,iVBORw0KGgo=" alt="">'],
+			['<img src="java\tscript:alert(1)" alt="">', '<img alt="">'],
+		])('адрес картинки проверяется как в браузере: %j', (html, expected) => {
+			expect(sanitizeHtml(html)).toBe(expected)
+		})
+	})
 })

@@ -147,10 +147,12 @@ const RELATIVE_STEPS: readonly (readonly [number, number, Intl.RelativeTimeForma
 
 /**
  * Время относительно «сейчас» по правилам языка: «сейчас», «5 минут назад», «вчера», «через 2 дня».
- * Дальше недели — дата: «3 мая», в другом году — «3 мая 2024 г.».
+ * Дальше недели — дата: «3 мая», в другом году — «3 мая 2024 г.». Некорректная дата из данных — пустая строка:
+ * `Intl.DateTimeFormat.format` на ней бросает `RangeError`, и одна плохая запись ломала бы весь список.
  */
 function formatRelativeTime(date: Date | string | number, options: FormatRelativeTimeOptions = {}): string {
 	const target = new Date(date)
+	if (Number.isNaN(target.getTime())) return ''
 	const now = options.now ?? new Date()
 	const locale = options.locale ?? getLocale().intl
 	const seconds = Math.round((target.getTime() - now.getTime()) / 1000)

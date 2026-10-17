@@ -84,6 +84,14 @@ describe('parseMarkdown: строчные элементы', () => {
 		])
 	})
 
+	it('картинки: data: только с типом image, иначе подпись (фаззинг XSS)', () => {
+		expect(
+			inline(
+				'![ок](data:image/png;base64,AAAA) ![документ](data:text/html;base64,PHNjcmlwdD4=) ![скрипт](DaTa:application/javascript,x)',
+			),
+		).toEqual([{ type: 'image', src: 'data:image/png;base64,AAAA', alt: 'ок' }, text(' документ скрипт')])
+	})
+
 	it('перевод строки: перенос в режиме чата, иначе пробел; два пробела в конце — перенос всегда', () => {
 		expect(inline('раз\nдва')).toEqual([text('раз'), { type: 'br' }, text('два')])
 		expect(inline('раз\nдва', false)).toEqual([text('раз два')])
@@ -172,6 +180,67 @@ describe('parseMarkdown: блоки', () => {
 			{ type: 'paragraph', children: [text('код?')] },
 		])
 		expect(parseMarkdown('')).toEqual([])
+	})
+})
+
+function elapsed(run: () => void): number {
+	const started = performance.now()
+	run()
+	return performance.now() - started
+}
+
+function blockDepth(blocks: readonly MarkdownBlock[]): number {
+	return Math.max(0, ...blocks.map(block => (block.type === 'blockquote' ? 1 + blockDepth(block.children) : 0)))
+}
+
+function inlineDepth(nodes: readonly MarkdownInline[]): number {
+	return Math.max(0, ...nodes.map(node => ('children' in node ? 1 + inlineDepth(node.children) : 0)))
+}
+
+describe('parseMarkdown: патологические входы (фаззинг XSS)', () => {
+	const LIMIT_MS = 2000
+
+	it.each([
+		['непарные **', '**a '.repeat(8000)],
+		['непарные *', '*a '.repeat(10_000)],
+		['непарные _', '_a '.repeat(10_000)],
+		['непарные ~~', '~~a '.repeat(8000)],
+		['открытые ссылки [a](', '[a]('.repeat(8000)],
+		['открытые картинки ![a](', '![a]('.repeat(6000)],
+		['открытые скобки [', '['.repeat(30_000)],
+		['вложенные подписи ссылок', `${'[a '.repeat(5000)}${']('.repeat(5000)}`],
+		['список из пунктов', '- a\n'.repeat(8000)],
+		['один пункт из строк', `- a\n${'  b\n'.repeat(8000)}`],
+	])('%s: разбор за линейное время, а не за секунды', (_name, source) => {
+		expect(elapsed(() => parseMarkdown(source))).toBeLessThan(LIMIT_MS)
+	})
+
+	it('цитаты и списки глубже 32 уровней — текст: рекурсия не упирается в стек', () => {
+		const blocks = parseMarkdown('> '.repeat(5000))
+		expect(blockDepth(blocks)).toBeLessThanOrEqual(33)
+		expect(() => parseMarkdown('- '.repeat(5000))).not.toThrow()
+		expect(() => parseMarkdown('> - '.repeat(5000))).not.toThrow()
+	})
+
+	it('выделения и подписи ссылок глубже 32 уровней — текст', () => {
+		expect(inlineDepth(inline(`${'*'.repeat(5000)}a${'*'.repeat(5000)}`))).toBeLessThanOrEqual(33)
+		expect(inlineDepth(inline(`${'['.repeat(5000)}a${'](https://a.ru)'.repeat(5000)}`))).toBeLessThanOrEqual(33)
+	})
+
+	it('ответ прежний: пары скобок и выделения вне патологии разбираются как раньше', () => {
+		expect(inline('[a [b](x) c](https://a.ru/(1)) [d]( ](e)')).toEqual([
+			{
+				type: 'link',
+				href: 'https://a.ru/(1)',
+				isExternal: true,
+				children: [text('a '), { type: 'link', href: 'x', isExternal: false, children: [text('b')] }, text(' c')],
+			},
+			text(' [d]( ](e)'),
+		])
+		expect(inline('**a *b* c** *d')).toEqual([
+			{ type: 'strong', children: [text('a '), { type: 'em', children: [text('b')] }, text(' c')] },
+			text(' *d'),
+		])
 	})
 })
 

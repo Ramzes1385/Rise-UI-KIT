@@ -6,7 +6,7 @@ import { computed, inject, nextTick, ref, useId } from 'vue'
 import type { CommentNodeProps } from '../types/CommentNode.types'
 import { formatMessage, getLocale, pluralize } from '@/locales/state'
 import type { CommentThreadContext } from '../types/BaseCommentThread.types'
-import { COMMENT_THREAD_KEY, countComments, leaveAtOnce } from './thread/commentTree'
+import { COMMENT_THREAD_KEY, countComments, isoDate, leaveAtOnce } from './thread/commentTree'
 
 function useNodeTexts(props: CommentNodeProps, isCollapsed: () => boolean) {
 	return {
@@ -46,7 +46,7 @@ export function useCommentNode(props: CommentNodeProps) {
 		sizeScale: computed(() => context.sizeScale()),
 		compactScale: computed(() => calcDerivedScale(context.sizeScale(), COMPACT_SCALE_RATIO)),
 		time: computed(() => formatRelativeTime(props.comment.date, { now: context.now() })),
-		iso: computed(() => new Date(props.comment.date).toISOString()),
+		iso: computed(() => isoDate(props.comment.date)),
 		openReply: (): void => context.openReply(props.comment.id),
 		toggleLike: (): void => context.toggleLike(props.comment),
 		toggleReplies: (): void => context.toggleReplies(props.comment.id),

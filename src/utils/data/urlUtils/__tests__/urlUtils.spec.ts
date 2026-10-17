@@ -1,4 +1,4 @@
-import { DOWNLOAD_PROTOCOLS, isEmailFormat, isExternalUrl, isSafeUrl, normalizeLinkUrl } from '../urlUtils'
+import { DOWNLOAD_PROTOCOLS, isEmailFormat, isExternalUrl, isSafeImageUrl, isSafeUrl, normalizeLinkUrl } from '../urlUtils'
 
 describe('urlUtils.isSafeUrl', () => {
 	it.each([
@@ -94,5 +94,42 @@ describe('urlUtils.isEmailFormat', () => {
 		expect(isEmailFormat('a@b')).toBe(false)
 		expect(isEmailFormat('a b@c.ru')).toBe(false)
 		expect(isEmailFormat('@b.ru')).toBe(false)
+	})
+})
+
+describe('urlUtils.isSafeImageUrl', () => {
+	it.each([
+		'https://example.com/a.png',
+		'http://example.com/a.png',
+		'blob:https://example.com/0e1f',
+		'/img/a.png',
+		'./a.png',
+		'//cdn.example.com/a.png',
+		'data:image/png;base64,iVBORw0KGgo=',
+		'data:image/svg+xml;charset=utf-8,%3Csvg%3E%3C%2Fsvg%3E',
+		'  DATA:IMAGE/webp;base64,AAAA',
+		'da\tta:image/gif;base64,R0lG',
+	])('%j — безопасный адрес картинки', url => {
+		expect(isSafeImageUrl(url)).toBe(true)
+	})
+
+	it.each([
+		'javascript:alert(1)',
+		'java\nscript:alert(1)',
+		'vbscript:x',
+		'data:text/html,<script>alert(1)</script>',
+		'data:text/html;base64,PHNjcmlwdD4=',
+		'data:application/javascript,alert(1)',
+		'data:,x',
+		'file:///etc/passwd',
+		'ftp://example.com/a.png',
+		'',
+		'   ',
+	])('%j — небезопасный адрес картинки', url => {
+		expect(isSafeImageUrl(url)).toBe(false)
+	})
+
+	it('не строка — небезопасно', () => {
+		expect(isSafeImageUrl(undefined as unknown as string)).toBe(false)
 	})
 })

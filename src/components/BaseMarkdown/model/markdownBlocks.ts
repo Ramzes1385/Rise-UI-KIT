@@ -2,6 +2,7 @@ import { parseInline } from './markdownInline'
 import type {
 	MarkdownAlign,
 	MarkdownBlock,
+	MarkdownBlockOptions,
 	MarkdownBlockRule,
 	MarkdownHeadingLevel,
 	MarkdownInline,
@@ -9,6 +10,8 @@ import type {
 	MarkdownListItem,
 	MarkdownListMarker,
 } from '../types/BaseMarkdown.types'
+
+const MAX_DEPTH = 32
 
 const FENCE = /^( {0,3})(`{3,}|~{3,})[ \t]*([^\s`]*)/
 
@@ -84,45 +87,54 @@ function headingRule(options: MarkdownInlineOptions): MarkdownBlockRule {
 
 const ruleRule: MarkdownBlockRule = (lines, index) => (RULE.test(lines[index]) ? { block: { type: 'hr' }, next: index + 1 } : null)
 
-function quoteRule(options: MarkdownInlineOptions): MarkdownBlockRule {
+const deeper = (options: MarkdownBlockOptions): MarkdownBlockOptions => ({ ...options, depth: (options.depth ?? 0) + 1 })
+
+function quoteRule(options: MarkdownBlockOptions): MarkdownBlockRule {
 	return (lines, index) => {
 		if (!QUOTE.test(lines[index])) return null
 		let next = index
 		while (next < lines.length && QUOTE.test(lines[next])) next += 1
 		const inner = lines.slice(index, next).map(line => line.replace(QUOTE, ''))
-		return { block: { type: 'blockquote', children: parseBlocks(inner, options) }, next }
+		return { block: { type: 'blockquote', children: parseBlocks(inner, deeper(options)) }, next }
 	}
+}
+
+function firstFilled(lines: readonly string[], from: number): number {
+	let index = from
+	while (index < lines.length && isBlank(lines[index])) index += 1
+	return index
+}
+
+function isItemBreak(lines: readonly string[], next: number, marker: MarkdownListMarker): boolean {
+	const line = lines[next]
+	if (!isBlank(line)) return indentOf(line) < marker.offset && Boolean(listMarker(line) || startsBlock(line))
+	const following = firstFilled(lines, next)
+	return following >= lines.length || indentOf(lines[following]) < marker.offset
 }
 
 function itemEnd(lines: readonly string[], index: number, marker: MarkdownListMarker): number {
 	let next = index + 1
-	while (next < lines.length) {
-		const line = lines[next]
-		const following = lines.slice(next).find(item => !isBlank(item))
-		if (isBlank(line) && (following === undefined || indentOf(following) < marker.offset)) break
-		if (!isBlank(line) && indentOf(line) < marker.offset && (listMarker(line) || startsBlock(line))) break
-		next += 1
-	}
+	while (next < lines.length && !isItemBreak(lines, next, marker)) next += 1
 	return next
 }
 
-function listItem(lines: readonly string[], marker: MarkdownListMarker, options: MarkdownInlineOptions): MarkdownListItem {
+function listItem(lines: readonly string[], marker: MarkdownListMarker, options: MarkdownBlockOptions): MarkdownListItem {
 	const task = TASK.exec(marker.text)
 	const content = [task ? marker.text.slice(task[0].length) : marker.text, ...lines.map(line => dedent(line, marker.offset))]
-	const children = parseBlocks(content, options)
+	const children = parseBlocks(content, deeper(options))
 	const [first] = children
 	const inline = children.length === 1 && first?.type === 'paragraph' ? first.children : null
 	return { checked: task ? task[1] !== ' ' : null, inline, children: inline ? [] : children }
 }
 
 function nextItem(lines: readonly string[], index: number, first: MarkdownListMarker): number | null {
-	const next = lines.slice(index).findIndex(line => !isBlank(line))
-	if (next < 0) return null
-	const marker = listMarker(lines[index + next])
-	return marker && marker.ordered === first.ordered && marker.indent === first.indent ? index + next : null
+	const next = firstFilled(lines, index)
+	if (next >= lines.length) return null
+	const marker = listMarker(lines[next])
+	return marker && marker.ordered === first.ordered && marker.indent === first.indent ? next : null
 }
 
-function listRule(options: MarkdownInlineOptions): MarkdownBlockRule {
+function listRule(options: MarkdownBlockOptions): MarkdownBlockRule {
 	return (lines, index) => {
 		const first = listMarker(lines[index])
 		if (!first) return null
@@ -184,8 +196,9 @@ function paragraphBlock(lines: readonly string[], index: number, options: Markdo
 	return { block, next: setext ? next + 1 : next }
 }
 
-function blockRules(options: MarkdownInlineOptions): MarkdownBlockRule[] {
-	return [fenceRule(), headingRule(options), ruleRule, quoteRule(options), listRule(options), tableRule(options)]
+function blockRules(options: MarkdownBlockOptions): MarkdownBlockRule[] {
+	const nested = (options.depth ?? 0) < MAX_DEPTH ? [quoteRule(options), listRule(options)] : []
+	return [fenceRule(), headingRule(options), ruleRule, ...nested, tableRule(options)]
 }
 
 function firstBlock(rules: readonly MarkdownBlockRule[], lines: readonly string[], index: number) {
@@ -196,7 +209,7 @@ function firstBlock(rules: readonly MarkdownBlockRule[], lines: readonly string[
 	return null
 }
 
-export function parseBlocks(lines: readonly string[], options: MarkdownInlineOptions): MarkdownBlock[] {
+export function parseBlocks(lines: readonly string[], options: MarkdownBlockOptions): MarkdownBlock[] {
 	const rules = blockRules(options)
 	const blocks: MarkdownBlock[] = []
 	let index = 0

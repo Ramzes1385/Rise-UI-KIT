@@ -5,8 +5,8 @@ import { computed, provide, ref, shallowRef } from 'vue'
 import { useStructuredData } from '@composables/seo/useStructuredData'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { StructuredDataContext } from '@composables/seo/useStructuredData'
-import { COMMENT_THREAD_KEY, countComments, leaveAtOnce } from './thread/commentTree'
 import type { StructuredData, StructuredDataObject } from '@utils/seo/structuredDataUtils'
+import { COMMENT_THREAD_KEY, countComments, isoDate, leaveAtOnce } from './thread/commentTree'
 import type { CommentItem, CommentThreadProps, BaseCommentThreadEmits } from '../types/BaseCommentThread.types'
 
 function toggled(set: ReadonlySet<string>, id: string): ReadonlySet<string> {
@@ -14,11 +14,6 @@ function toggled(set: ReadonlySet<string>, id: string): ReadonlySet<string> {
 	if (next.has(id)) next.delete(id)
 	else next.add(id)
 	return next
-}
-
-function isoDate(date: CommentItem['date']): string | undefined {
-	const time = new Date(date)
-	return Number.isNaN(time.getTime()) ? undefined : time.toISOString()
 }
 
 function commentSchema(comment: CommentItem, url: StructuredDataContext['url']): StructuredDataObject {

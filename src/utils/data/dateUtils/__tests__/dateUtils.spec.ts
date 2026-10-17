@@ -386,6 +386,13 @@ describe('dateUtils', () => {
 			expect(formatRelativeTime(new Date(2024, 4, 3, 9).getTime(), { now: NOW })).toBe('3 мая 2024 г.')
 		})
 
+		it('некорректная дата из данных — пустая строка, а не RangeError (фаззинг XSS)', () => {
+			expect(formatRelativeTime('не дата', { now: NOW })).toBe('')
+			expect(formatRelativeTime(Number.NaN, { now: NOW })).toBe('')
+			expect(formatRelativeTime(new Date('x'), { now: NOW })).toBe('')
+			expect(formatRelativeTime('<img src=x onerror=alert(1)>')).toBe('')
+		})
+
 		it('язык кита по умолчанию и свой язык', () => {
 			setLocale('en')
 			expect(formatRelativeTime(ago(5 * 60), { now: NOW })).toBe('5 minutes ago')

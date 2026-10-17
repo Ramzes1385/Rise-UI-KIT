@@ -41,6 +41,21 @@ function isSafeUrl(url: string, allowedProtocols: readonly string[] = NAVIGATION
 	return allowedProtocols.includes(`${scheme.toLowerCase()}:`)
 }
 
+/** Схемы адресов изображений: blob: — файлы, выбранные пользователем */
+const IMAGE_PROTOCOLS = ['http:', 'https:', 'blob:'] as const
+
+/** Встроенные изображения: только `data:image/*`. SVG внутри `<img>` не исполняет скрипты, документ `data:text/html` картинкой не бывает */
+const DATA_IMAGE_RE = /^data:image\/[\w.+-]+[;,]/i
+
+/**
+ * Проверяет адрес изображения из недоверенных данных: относительный, http, https, blob или `data:image/*`.
+ * `javascript:` и `data:` другого типа отклоняются.
+ */
+function isSafeImageUrl(url: string): boolean {
+	if (typeof url !== 'string') return false
+	return isSafeUrl(url, IMAGE_PROTOCOLS) || DATA_IMAGE_RE.test(normalizeUrl(url))
+}
+
 /** Адрес электронной почты без схемы: team@example.com */
 const EMAIL_RE = /^[^\s@/]+@[^\s@/]+\.[^\s@/]+$/
 /** Хост с портом без схемы: localhost:3000, example.com:8080/path — двоеточие здесь не отделяет схему */
@@ -76,4 +91,4 @@ function isExternalUrl(url: string): boolean {
 	return normalized.startsWith('//') || SCHEME_RE.test(normalized)
 }
 
-export { DOWNLOAD_PROTOCOLS, isEmailFormat, isExternalUrl, isSafeUrl, NAVIGATION_PROTOCOLS, normalizeLinkUrl }
+export { DOWNLOAD_PROTOCOLS, isEmailFormat, isExternalUrl, isSafeImageUrl, isSafeUrl, NAVIGATION_PROTOCOLS, normalizeLinkUrl }

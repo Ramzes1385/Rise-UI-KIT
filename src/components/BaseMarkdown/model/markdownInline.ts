@@ -1,9 +1,13 @@
-import { isExternalUrl, isSafeUrl } from '@utils/data/urlUtils'
-import type { MarkdownInline, MarkdownInlineOptions, MarkdownInlineRule } from '../types/BaseMarkdown.types'
+import { isExternalUrl, isSafeImageUrl, isSafeUrl } from '@utils/data/urlUtils'
+import type {
+	MarkdownDelimiterPairs,
+	MarkdownInline,
+	MarkdownInlineOptions,
+	MarkdownInlineRule,
+	MarkdownPairLookups,
+} from '../types/BaseMarkdown.types'
 
 const LINK_PROTOCOLS = ['http:', 'https:', 'mailto:', 'tel:'] as const
-
-const IMAGE_PROTOCOLS = ['http:', 'https:', 'blob:', 'data:'] as const
 
 const PUNCTUATION = /[!-/:-@[-`{-~]/
 
@@ -13,41 +17,50 @@ const BARE_URL = /^(?:https?:\/\/|www\.)[^\s<]+/i
 
 const TRAILING = /[.,;:!?'"»)\]]+$/
 
+const MAX_INLINE_DEPTH = 32
+
 const text = (value: string): MarkdownInline => ({ type: 'text', value })
+
+const deeper = (options: MarkdownInlineOptions): MarkdownInlineOptions => ({ ...options, inlineDepth: (options.inlineDepth ?? 0) + 1 })
 
 const isWebLink = (href: string): boolean => /^https?:/i.test(href) && isExternalUrl(href)
 
-function readBracket(source: string, start: number): number {
-	let depth = 0
-	for (let index = start; index < source.length; index += 1) {
+function pairDelimiters(source: string, open: string, close: string): MarkdownDelimiterPairs {
+	const pairs = new Map<number, number>()
+	const stack: number[] = []
+	for (let index = 0; index < source.length; index += 1) {
 		const char = source[index]
 		if (char === '\\') index += 1
-		else if (char === '[') depth += 1
-		else if (char === ']' && --depth === 0) return index
+		else if (char === open) stack.push(index)
+		else if (char === close && stack.length) pairs.set(stack.pop() as number, index)
 	}
-	return -1
+	return pairs
 }
 
-function readDestination(source: string, start: number): { href: string; end: number } | null {
-	if (source[start] !== '(') return null
-	let depth = 0
-	for (let index = start; index < source.length; index += 1) {
-		const char = source[index]
-		if (char === '\\') index += 1
-		else if (char === '(') depth += 1
-		else if (char === ')' && --depth === 0) {
-			const inner = source.slice(start + 1, index).trim()
-			const href = (inner.match(/^<([^>]*)>/)?.[1] ?? inner.split(/\s+/)[0] ?? '').trim()
-			return { href, end: index + 1 }
+function createPairLookup(open: string, close: string): (source: string) => MarkdownDelimiterPairs {
+	let lastSource: string | null = null
+	let pairs: MarkdownDelimiterPairs = new Map()
+	return source => {
+		if (source !== lastSource) {
+			lastSource = source
+			pairs = pairDelimiters(source, open, close)
 		}
+		return pairs
 	}
-	return null
 }
 
-function readLinkParts(source: string, start: number): { label: string; href: string; end: number } | null {
-	const close = readBracket(source, start)
-	if (close < 0) return null
-	const destination = readDestination(source, close + 1)
+function readDestination(source: string, start: number, parens: MarkdownDelimiterPairs): { href: string; end: number } | null {
+	const close = source[start] === '(' ? parens.get(start) : undefined
+	if (close === undefined) return null
+	const inner = source.slice(start + 1, close).trim()
+	const href = (inner.match(/^<([^>]*)>/)?.[1] ?? inner.split(/\s+/)[0] ?? '').trim()
+	return { href, end: close + 1 }
+}
+
+function readLinkParts(source: string, start: number, lookups: MarkdownPairLookups): { label: string; href: string; end: number } | null {
+	const close = lookups.brackets(source).get(start)
+	if (close === undefined) return null
+	const destination = readDestination(source, close + 1, lookups.parens(source))
 	return destination && { label: source.slice(start + 1, close), href: destination.href, end: destination.end }
 }
 
@@ -66,24 +79,24 @@ const codeRule: MarkdownInlineRule = (source, index) => {
 	return { node: { type: 'code', value }, end: match.index + fence.length }
 }
 
-const imageRule: MarkdownInlineRule = (source, index) => {
-	if (source[index] !== '!' || source[index + 1] !== '[') return null
-	const parts = readLinkParts(source, index + 1)
-	if (!parts) return null
-	const node: MarkdownInline = isSafeUrl(parts.href, IMAGE_PROTOCOLS)
-		? { type: 'image', src: parts.href, alt: parts.label }
-		: text(parts.label)
-	return { node, end: parts.end }
+function imageRule(lookups: MarkdownPairLookups): MarkdownInlineRule {
+	return (source, index) => {
+		if (source[index] !== '!' || source[index + 1] !== '[') return null
+		const parts = readLinkParts(source, index + 1, lookups)
+		if (!parts) return null
+		const node: MarkdownInline = isSafeImageUrl(parts.href) ? { type: 'image', src: parts.href, alt: parts.label } : text(parts.label)
+		return { node, end: parts.end }
+	}
 }
 
-function linkRule(options: MarkdownInlineOptions): MarkdownInlineRule {
+function linkRule(options: MarkdownInlineOptions, lookups: MarkdownPairLookups): MarkdownInlineRule {
 	return (source, index) => {
 		if (source[index] !== '[') return null
-		const parts = readLinkParts(source, index)
+		const parts = readLinkParts(source, index, lookups)
 		if (!parts) return null
 		const node: MarkdownInline =
 			parts.href && isSafeUrl(parts.href, LINK_PROTOCOLS)
-				? { type: 'link', href: parts.href, isExternal: isWebLink(parts.href), children: parseInline(parts.label, options) }
+				? { type: 'link', href: parts.href, isExternal: isWebLink(parts.href), children: parseInline(parts.label, deeper(options)) }
 				: text(parts.label)
 		return { node, end: parts.end }
 	}
@@ -123,14 +136,18 @@ function findCloser(source: string, marker: string, from: number): number {
 }
 
 function delimitedRule(marker: string, type: 'strong' | 'em' | 'del', options: MarkdownInlineOptions): MarkdownInlineRule {
+	let noCloserFrom = Infinity
 	return (source, index) => {
 		if (!source.startsWith(marker, index)) return null
 		const open = index + marker.length
 		const isIntraword = marker[0] === '_' && WORD.test(source[index - 1] ?? '')
-		if (isIntraword || /\s/.test(source[open] ?? ' ')) return null
+		if (isIntraword || /\s/.test(source[open] ?? ' ') || open + 1 >= noCloserFrom) return null
 		const close = findCloser(source, marker, open + 1)
-		if (close < 0) return null
-		return { node: { type, children: parseInline(source.slice(open, close), options) }, end: close + marker.length }
+		if (close < 0) {
+			noCloserFrom = Math.min(noCloserFrom, open + 1)
+			return null
+		}
+		return { node: { type, children: parseInline(source.slice(open, close), deeper(options)) }, end: close + marker.length }
 	}
 }
 
@@ -143,11 +160,12 @@ function lineBreakRule(options: MarkdownInlineOptions): MarkdownInlineRule {
 }
 
 function inlineRules(options: MarkdownInlineOptions): MarkdownInlineRule[] {
+	const lookups: MarkdownPairLookups = { brackets: createPairLookup('[', ']'), parens: createPairLookup('(', ')') }
 	return [
 		escapeRule,
 		codeRule,
-		imageRule,
-		linkRule(options),
+		imageRule(lookups),
+		linkRule(options, lookups),
 		autolinkRule,
 		delimitedRule('**', 'strong', options),
 		delimitedRule('__', 'strong', options),
@@ -167,6 +185,7 @@ function firstMatch(rules: readonly MarkdownInlineRule[], source: string, index:
 }
 
 export function parseInline(source: string, options: MarkdownInlineOptions): MarkdownInline[] {
+	if ((options.inlineDepth ?? 0) > MAX_INLINE_DEPTH) return source ? [text(source)] : []
 	const rules = inlineRules(options)
 	const nodes: MarkdownInline[] = []
 	let buffer = ''
