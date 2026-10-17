@@ -40,6 +40,13 @@ jobs:
       - name: Format check
         run: npm run format:check
 
+      # В папке src не больше 7 файлов; корень компонента сбрасывает --custom-*
+      - name: Folder size (≤ 7 files)
+        run: npm run test:folders
+
+      - name: Custom color scope
+        run: npm run test:custom-color
+
       # vue-tsc -b: исходники вместе с тестами и stories (tsconfig.app.json) и конфиги сборки (tsconfig.node.json).
       # Сборка ниже проверяет только tsconfig.lib.json (без *.spec.ts), поэтому ошибки типов в тестах туда не попадают.
       - name: Type check (app, tests, build configs)
@@ -47,6 +54,10 @@ jobs:
 
       - name: Type check & build
         run: npm run build
+
+      # Состав npm-пакета (pack:dry без повторной сборки)
+      - name: Package contents (npm pack --dry-run)
+        run: npm pack --dry-run
 
       # Разбиение CSS: в dist/styles.css нет стилей плеера, в dist/media.css есть и нет токенов кита
       - name: CSS split (styles.css / media.css)
@@ -88,9 +99,35 @@ jobs:
       - name: Check «Show code» is the exact preview code
         run: npm run test:story-source
 
-  stories-run:
-    name: Stories Run (render, play, axe)
+  # Storybook собирается один раз: stories-run и e2e-and-visual берут готовую сборку из артефакта
+  storybook-build:
+    name: Build Storybook
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build Storybook
+        run: npm run build-storybook
+
+      - name: Upload built Storybook
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-static
+          path: storybook-static
+          retention-days: 1
+
+  stories-run:
+    name: Stories Run (render, play, axe, page width)
+    needs: storybook-build
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
 
@@ -110,15 +147,19 @@ jobs:
       - name: Install Playwright Chromium
         run: npx playwright install chromium --with-deps
 
-      - name: Build Storybook
-        run: npm run build-storybook
+      - name: Download built Storybook
+        uses: actions/download-artifact@v4
+        with:
+          name: storybook-static
+          path: storybook-static
 
-      # Каждая story в светлой и тёмной теме: рендер, play-функция, axe, без внешних запросов
+      # Каждая story в светлой и тёмной теме на ширинах окна 375 и 1280 px: рендер, play-функция, axe,
+      # без внешних запросов и без горизонтальной прокрутки страницы
       - name: Run all stories
         run: |
           node scripts/serve-storybook-static.mjs &
           npx wait-on http://localhost:6006
-          npm run test:stories -- --concurrency=3 --report=test-results/stories-report.json
+          npm run test:stories -- --widths=375,1280 --concurrency=3 --report=test-results/stories-report.json
 
       - name: Upload stories report
         uses: actions/upload-artifact@v4
@@ -164,6 +205,7 @@ jobs:
 
   e2e-and-visual:
     name: E2E & Visual Regression
+    needs: storybook-build
     runs-on: ubuntu-latest
     # contents: write нужен только шагу auto-commit обновлённых baseline (он запускается лишь по метке, см. ниже)
     permissions:
@@ -194,17 +236,18 @@ jobs:
       - name: Install Playwright Chromium
         run: npx playwright install chromium --with-deps
 
-      - name: Build Storybook
-        run: npm run build-storybook
+      - name: Download built Storybook
+        uses: actions/download-artifact@v4
+        with:
+          name: storybook-static
+          path: storybook-static
 
+      # Playwright сам поднимает scripts/serve-storybook-static.mjs на собранном Storybook (STORYBOOK_SERVER=static по умолчанию):
+      # dev-сервер Storybook на медленных машинах не успевал стартовать
       - name: Run E2E & visual against built Storybook
         run: |
-          node scripts/serve-storybook-static.mjs &
-          npx wait-on http://localhost:6006
           npm run test:e2e
           npm run test:visual
-        env:
-          PLAYWRIGHT_REUSE_SERVER: "true"
 
       # === Cross-platform baseline regeneration ===
       # Без `if: always()` этот шаг skipped бы по дефолту, когда visual-тесты
@@ -214,12 +257,7 @@ jobs:
       # «лечения» настоящей визуальной регрессии коммитом новых скриншотов.
       - name: Regenerate visual baselines on Linux
         if: always() && env.UPDATE_VISUAL_BASELINES == 'true'
-        run: |
-          node scripts/serve-storybook-static.mjs &
-          npx wait-on http://localhost:6006
-          npx playwright test --config build/tests/playwright.config.ts --project=visual-chromium --update-snapshots
-        env:
-          PLAYWRIGHT_REUSE_SERVER: "true"
+        run: npx playwright test --config build/tests/playwright.config.ts --project=visual-chromium --update-snapshots
 
       - name: Commit updated baselines to PR
         if: always() && env.UPDATE_VISUAL_BASELINES == 'true'
