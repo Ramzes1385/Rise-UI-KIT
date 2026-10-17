@@ -2200,3 +2200,9 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
   - MegaMenu «Drill-down по ширине» и Popconfirm «Позиции» — широкая демонстрация в рамке с горизонтальной прокруткой на узком окне.
   - Dropdown «В масштабированном контейнере» — рамка `width: 100%` до 480 px, `border-box`: на 1280 px внутренняя ширина рамки 448 вместо 480 px.
 - **Storybook, layout `centered`**: корень истории не шире окна (`min-width: 0; max-width: 100%`).
+
+## w16-ci-checks
+
+- **Foundations / Motion «Токены»**: область с таблицей получила `role="region"`, `tabindex="0"` и имя «Токены движения» — при навигации Tab вокруг неё появляется кольцо фокуса, в покое вид прежний. Скриншотов у истории нет.
+- **Описания в Docs** (текст над историей): BaseCardInput «Inline», BaseTabs «На всю ширину», BaseFooter и BaseHeader «Компактный», BaseCookieConsent «Положения», BaseSlideover «Токены», BaseTour «Стороны» — добавлена фраза о том, как история ведёт себя на узком экране.
+- BasePresentationPlayer «Список слайдов»: подсказка заблокированного слайда — «Доступно через 30 с» вместо «…6 с» (`minDuration` 30 с, как у «Токенов»); скриншот-тестов у истории нет.

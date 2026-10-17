@@ -81,11 +81,11 @@ npm run storybook
 | `npx vue-tsc -p build/lib/tsconfig.lib.json --noEmit` | типы сборки пакета — то же, что `build:lib:types`, без записи в `dist/` |
 | `npm run test:fuzz -- --iterations=50000` | долгий фаззинг XSS (`build/tests/fuzz`): `sanitizeHtml`, Markdown, адреса, SVG, JSON-LD и компоненты с пользовательским текстом; флаги `--seed`, `--target`, `--only=<цель>:<номер>` (повтор одной итерации), `--report=<файл>`. В CI и по расписанию не запускается (обычный `test:unit` гоняет те же файлы с малым числом итераций, до 10 секунд); запускайте перед релизом и после правок `htmlUtils`, `urlUtils`, Markdown, редактора |
 | `npm run test:slot-docs` | у каждого слота есть описание в JSDoc |
-| `npm run test:stories` | все истории в светлой и тёмной теме: рендер, play-проверки, ошибки консоли, axe. Нужен Storybook на порту 6006: `npm run storybook` или собранный — `npm run build-storybook` и `node scripts/serve-storybook-static.mjs` |
+| `npm run test:stories` | все истории в светлой и тёмной теме: рендер, play-проверки, ошибки консоли, axe, горизонтальное переполнение страницы. Нужен Storybook на порту 6006: `npm run storybook` или собранный — `npm run build-storybook` и `node scripts/serve-storybook-static.mjs` (порт — `PORT`, папка сборки — `SB_DIR`). `--widths=375,1280` — каждая история на каждой ширине окна (в CI так; по умолчанию одна ширина, 1100 px); `--filter=<regex id>`, `--themes=…`, `--concurrency=<N>`, `--report=<файл>`. Страница не должна прокручиваться по горизонтали, и ни один видимый элемент не выступает за правый край окна (с учётом обрезки предками с `overflow`); исключения — список `OVERFLOW_ALLOWED` в скрипте, с причиной |
 | `npm run test:stories-coverage`, `test:a11y:coverage` | у каждого компонента есть обязательные истории и проверка клавиатуры |
 | `npm run test:contrast` | контраст пар токенов «текст/фон» в обеих темах |
-| `npm run test:e2e` | e2e в Chromium (Playwright) против Storybook; без `PLAYWRIGHT_REUSE_SERVER=true` Playwright сам запускает Storybook |
-| `npm run test:visual` | скриншоты против эталонов; эталоны не обновляются автоматически — их создают после просмотра изменений (в CI — по метке `visual:update-baselines` у PR) |
+| `npm run test:e2e` | e2e в Chromium (Playwright) против собранного Storybook: нужна сборка (`npm run build-storybook`), `storybook-static` Playwright отдаёт сам (`scripts/serve-storybook-static.mjs`, старт мгновенный). Так же в CI. `npm run test:e2e:dev` — против dev-сервера Storybook (для отладки с правкой кода; старт долгий, на медленной машине ждёт до 5 мин). `PLAYWRIGHT_REUSE_SERVER=true` — сервер уже запущен (`STORYBOOK_URL` — его адрес). Видео упавших тестов пишется, только если в наборе браузеров Playwright есть ffmpeg (`PLAYWRIGHT_VIDEO=off` отключает) |
+| `npm run test:visual`, `test:visual:dev` | скриншоты против эталонов (сервер Storybook — как у `test:e2e`); эталоны не обновляются автоматически — их создают после просмотра изменений (в CI — по метке `visual:update-baselines` у PR) |
 | `npm run test:subpaths` | точечная установка: exports подпутей совпадают со списком компонентов (`npm run generate:subpath-exports` их переписывает), приложение Vite из `npm pack` с BaseButton / BaseSelect с подпути получает только их JS и CSS, снимки совпадают с импортом из корня (`--no-screenshot` — без Chromium); резолвер, `global.d.ts` и модуль Nuxt из tarball совпадают с exports. Нужна сборка |
 | `npm run test:autoimport` | автоимпорт на пакете из `npm pack` с пакетами из реестра npm (сеть, ≈2,5 мин; не в `ci:validate`): Vite + `unplugin-vue-components` с `RiseUiResolver`, `vue-tsc` (опечатка в пропе), Nuxt (SSR, токены, тема), Playwright. Флаги `--no-nuxt`, `--no-screenshot`, `--keep`. Нужна сборка |
 | `npm run ci:validate` | базовая проверка перед push: линтеры, форматирование, типы, unit-тесты, сухая сборка пакета |
@@ -143,11 +143,12 @@ npm install ../Rise-UI-KIT/ramzes1385-rise-ui-kit-x.y.z.tgz
 
 `.github/workflows/ci.yml` на push и pull request в `main` и `develop`:
 
-- **Lint & Types** — линтеры, форматирование, типы, сборка библиотеки;
+- **Lint & Types** — линтеры, форматирование, размер папок, типы, сборка библиотеки, состав пакета (`npm pack --dry-run`), разбиение CSS, подпути, храповики: вместе с job «Unit & Integration» это всё, что запускает `npm run ci:validate`;
 - **Stories & A11y Coverage** — обязательные истории и проверки клавиатуры;
-- **Stories Run** — все истории в двух темах (рендер, play, axe) и контраст токенов;
+- **Build Storybook** — одна сборка Storybook, из артефакта её берут два job ниже (повторной сборки нет);
+- **Stories Run** — все истории в двух темах на ширинах окна 375 и 1280 px (рендер, play, axe, горизонтальная прокрутка страницы) и контраст токенов;
 - **Unit & Integration** — тесты с порогом покрытия 100% на файл для компонентов, composables и utils;
-- **E2E & Visual Regression** — e2e и скриншоты против собранного Storybook.
+- **E2E & Visual Regression** — e2e и скриншоты на собранном Storybook (`storybook-static`): Playwright сам поднимает статический сервер.
 
 `deploy-storybook.yml` публикует Storybook на GitHub Pages после push в `main`, `release.yml` выпускает пакет (см. ниже).
 

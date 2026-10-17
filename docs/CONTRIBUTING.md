@@ -225,7 +225,8 @@ npm run format:check
 # 2. Unit-тесты (для конкретного компонента)
 npm run test:unit -- src/components/BaseSideBar
 
-# 3. E2E-тесты
+# 3. E2E-тесты (против собранного Storybook: сначала npm run build-storybook;
+#    для отладки с правкой кода — npm run test:e2e:dev, поднимает dev-сервер Storybook)
 npm run test:e2e -- src/components/BaseSideBar
 
 # 4. Build и храповики (размер пакета, исключения покрытия, предупреждения ESLint — ниже)
@@ -234,7 +235,7 @@ npm run test:css-split
 npm run test:ratchets
 
 # 5. Базовая CI-валидация: lint, стили, неиспользуемый код, форматирование, типы, unit-тесты, сухая сборка пакета, разбиение CSS, храповики
-#    (пороги покрытия, stories/a11y-гейты и e2e/visual CI запускает отдельными job)
+#    (пороги покрытия, stories/a11y-гейты, прогон историй на ширинах 375 и 1280 px и e2e/visual CI запускает отдельными job)
 npm run ci:validate
 
 # 6. Сухой прогон релиза (покажет будущую версию без publish)
@@ -440,6 +441,7 @@ git push -u origin feat/sidebar-disclosure-groups
 - [ ] `npm run typecheck` проходит (типы исходников и тестов)
 - [ ] `npm run test:unit` проходит
 - [ ] `npm run test:e2e` проходит (если затронуты компоненты с e2e)
+- [ ] `npm run test:stories -- --widths=375,1280 --filter=<история>` проходит (если менялся вид истории или раскладка: страница не прокручивается по горизонтали)
 - [ ] `npm run build` проходит
 - [ ] Storybook story добавлена или обновлена (если изменён компонент)
 - [ ] Нет `console.log`, закомментированного кода, TODO без Issue
