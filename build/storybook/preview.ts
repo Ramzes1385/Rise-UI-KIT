@@ -129,11 +129,17 @@ const withLocale: Decorator = (story, context) => {
 	return story()
 }
 
-/** Направление письма: `dir` на <html> и на корне истории — как `<html dir="rtl">` в приложении; по умолчанию `ltr` */
+/**
+ * Направление письма: `dir="rtl"` на <html> и на корне истории — как `<html dir="rtl">` в приложении. Для LTR атрибут
+ * снимается, а не ставится `dir="ltr"`: явный атрибут сдвигает сглаживание у панелей с `backdrop-filter` на 1–2 оттенка,
+ * и снимки LTR перестали бы совпадать с эталонами (направление по умолчанию и так слева направо).
+ */
 const withDirection: Decorator = (story, context) => {
-	const dir = context.globals.dir === 'rtl' ? 'rtl' : 'ltr'
-	document.documentElement.setAttribute('dir', dir)
-	document.getElementById('storybook-root')?.setAttribute('dir', dir)
+	const targets = [document.documentElement, document.getElementById('storybook-root')]
+	for (const element of targets) {
+		if (context.globals.dir === 'rtl') element?.setAttribute('dir', 'rtl')
+		else element?.removeAttribute('dir')
+	}
 	return story()
 }
 
