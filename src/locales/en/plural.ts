@@ -24,4 +24,8 @@ export const enPlural = {
 		other: '{n} selected rows are hidden by the search or filters and stay selected',
 	},
 	FILE_MANAGER_SELECTED: { one: '{n} selected', other: '{n} selected' },
+	ROADMAP_STAGES: { one: '{n} stage', other: '{n} stages' },
+	ROADMAP_TOPICS: { one: '{n} topic', other: '{n} topics' },
+	ROADMAP_OF_TOPICS: { one: '{n} topic', other: '{n} topics' },
+	ROADMAP_OF_SUBTOPICS: { one: '{n} subtopic', other: '{n} subtopics' },
 }

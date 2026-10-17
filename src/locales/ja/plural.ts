@@ -22,4 +22,8 @@ export const jaPlural = {
 	FILE_MANAGER_ITEMS: { other: '{n} 件' },
 	TABLE_HIDDEN_SELECTED: { other: '選択した {n} 行は検索またはフィルターで非表示ですが、選択されたままです' },
 	FILE_MANAGER_SELECTED: { other: '{n} 件を選択中' },
+	ROADMAP_STAGES: { other: '{n} ステージ' },
+	ROADMAP_TOPICS: { other: '{n} 件のトピック' },
+	ROADMAP_OF_TOPICS: { other: '{n} 件のトピック' },
+	ROADMAP_OF_SUBTOPICS: { other: '{n} 件のサブトピック' },
 }

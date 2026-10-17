@@ -25,4 +25,8 @@ export const kkPlural = {
 		other: 'Іздеу немесе сүзгілер жасырған {n} таңдалған жол таңдауда қалады',
 	},
 	FILE_MANAGER_SELECTED: { one: 'таңдалды: {n}', other: 'таңдалды: {n}' },
+	ROADMAP_STAGES: { one: '{n} кезең', other: '{n} кезең' },
+	ROADMAP_TOPICS: { one: '{n} тақырып', other: '{n} тақырып' },
+	ROADMAP_OF_TOPICS: { one: '{n} тақырып', other: '{n} тақырып' },
+	ROADMAP_OF_SUBTOPICS: { one: '{n} қосалқы тақырып', other: '{n} қосалқы тақырып' },
 }

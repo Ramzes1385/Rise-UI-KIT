@@ -25,4 +25,8 @@ export const uzPlural = {
 		other: 'Qidiruv yoki filtrlar yashirgan {n} ta tanlangan qator tanlovda qoladi',
 	},
 	FILE_MANAGER_SELECTED: { one: 'tanlandi: {n}', other: 'tanlandi: {n}' },
+	ROADMAP_STAGES: { one: '{n} ta bosqich', other: '{n} ta bosqich' },
+	ROADMAP_TOPICS: { one: '{n} ta mavzu', other: '{n} ta mavzu' },
+	ROADMAP_OF_TOPICS: { one: '{n} ta mavzu', other: '{n} ta mavzu' },
+	ROADMAP_OF_SUBTOPICS: { one: '{n} ta kichik mavzu', other: '{n} ta kichik mavzu' },
 }

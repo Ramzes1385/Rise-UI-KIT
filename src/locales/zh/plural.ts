@@ -22,4 +22,8 @@ export const zhPlural = {
 	FILE_MANAGER_ITEMS: { other: '{n} 项' },
 	TABLE_HIDDEN_SELECTED: { other: '有 {n} 个已选行被搜索或筛选隐藏，但仍保持选中' },
 	FILE_MANAGER_SELECTED: { other: '已选 {n} 项' },
+	ROADMAP_STAGES: { other: '{n} 个阶段' },
+	ROADMAP_TOPICS: { other: '{n} 个主题' },
+	ROADMAP_OF_TOPICS: { other: '{n} 个主题' },
+	ROADMAP_OF_SUBTOPICS: { other: '{n} 个子主题' },
 }
