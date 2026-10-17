@@ -6,7 +6,14 @@ import { isDevelopmentBuild } from '@utils/seo/structuredDataUtils'
 import type { RoadmapTopicState } from '../../types/BaseRoadmap.types'
 import { computeRoadmapStatuses, diffRoadmapCompletions } from './roadmapStatus'
 import type { RoadmapProgress, RoadmapProgressStatus, RoadmapStage, RoadmapTopic } from '../../types/roadmapData.types'
-import { emptyRoadmapProgress, mergeRoadmapProgress, roadmapProgressKey, withSubtopic, withTopicStatus } from './roadmapProgress'
+import {
+	emptyRoadmapProgress,
+	markedSubtopics,
+	mergeRoadmapProgress,
+	roadmapProgressKey,
+	withSubtopic,
+	withTopicStatus,
+} from './roadmapProgress'
 import type {
 	RoadmapChangeRequest,
 	RoadmapChangeSource,
@@ -78,6 +85,21 @@ async function runChange(
 	return true
 }
 
+function toggleSubtopicIn(
+	context: RoadmapProgressContext,
+	{ id, subtopicId, isDone }: { id: string; subtopicId: string; isDone?: boolean },
+): Promise<boolean> {
+	const topic = context.index.value.topics.get(id)?.topic
+	if (!topic || context.statuses.value.topics.get(id)?.status === 'locked') return Promise.resolve(false)
+	return runChange(context, { topicId: id, source: 'subtopic' }, base =>
+		withSubtopic(base, topic, {
+			subtopicId,
+			isDone: isDone ?? !markedSubtopics(base.topics[id], topic).includes(subtopicId),
+			now: new Date().toISOString(),
+		}),
+	)
+}
+
 async function mergeStored(context: RoadmapProgressContext, stored: RoadmapProgress): Promise<boolean> {
 	const { fromStored, fromLocal } = mergeRoadmapProgress(context.progress.value, stored)
 	const take = (base: RoadmapProgress, id: string): RoadmapProgress => ({ ...base, topics: { ...base.topics, [id]: stored.topics[id] } })
@@ -136,13 +158,8 @@ export function useRoadmapProgress(options: UseRoadmapProgressOptions) {
 			status !== null && isLocked(id)
 				? Promise.resolve(false)
 				: runChange(context, { topicId: id, source }, base => withTopicStatus(base, { topicId: id, status, now: now() })),
-		toggleSubtopic: (id: string, subtopicId: string, isDone?: boolean): Promise<boolean> => {
-			const topic = options.index.value.topics.get(id)?.topic
-			if (!topic || isLocked(id)) return Promise.resolve(false)
-			return runChange(context, { topicId: id, source: 'subtopic' }, base =>
-				withSubtopic(base, topic, { subtopicId, isDone: isDone ?? !base.topics[id]?.subtopics?.includes(subtopicId), now: now() }),
-			)
-		},
+		toggleSubtopic: (id: string, subtopicId: string, isDone?: boolean): Promise<boolean> =>
+			toggleSubtopicIn(context, { id, subtopicId, isDone }),
 		resetProgress: (): void => {
 			if (props.isDisabled) return
 			progress.value = emptyRoadmapProgress()
