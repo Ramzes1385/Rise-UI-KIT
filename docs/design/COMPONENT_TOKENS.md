@@ -1566,9 +1566,13 @@
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
 |---|---|---|---|---|
+| `--rise-roadmap-branch-border` | branch | border | — | `var(--rise-border-accented)` |
 | `--rise-roadmap-milestone-height` | milestone | height | — | `36px` |
 | `--rise-roadmap-milestone-ring` | milestone | ring | — | `var(--rise-primary)` |
 | `--rise-roadmap-milestone-width` | milestone | width | — | `36px` |
+| `--rise-roadmap-spine-border` | spine | border | — | `var(--rise-border-accented)` |
+| `--rise-roadmap-spine-done-border` | spine-done | border | — | `var(--rise-primary)` |
+| `--rise-roadmap-spine-width` | spine | width | — | `4px` |
 | `--rise-roadmap-topic-bg` | topic | bg | — | `var(--rise-bg)` |
 | `--rise-roadmap-topic-border` | topic | border | — | `var(--rise-border)` |
 | `--rise-roadmap-topic-current-bg` | topic-current | bg | — | `var(--rise-primary-soft)` |

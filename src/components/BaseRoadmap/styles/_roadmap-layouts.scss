@@ -38,7 +38,7 @@
 	}
 
 	&__spine-base {
-		stroke: ct(roadmap, spine, var(--rise-border-accented));
+		stroke: ct(roadmap, spine-border, var(--rise-border-accented));
 		stroke-width: calc(#{ct(roadmap, spine-width, 4px)} * 0.75);
 		stroke-dasharray: 0.5 8;
 	}
@@ -49,7 +49,7 @@
 	}
 
 	&__spine-done {
-		stroke: ct(roadmap, spine-done, var(--rise-primary));
+		stroke: ct(roadmap, spine-done-border, var(--rise-primary));
 		stroke-width: ct(roadmap, spine-width, 4px);
 	}
 
@@ -62,7 +62,7 @@
 	}
 
 	&__branch {
-		stroke: ct(roadmap, branch, var(--rise-border-accented));
+		stroke: ct(roadmap, branch-border, var(--rise-border-accented));
 		stroke-width: 1.5;
 		stroke-dasharray: 1;
 
@@ -141,7 +141,7 @@
 		inset-inline-start: sz(-7px);
 		inline-size: sz(14px);
 		block-size: sz(14px);
-		background-color: ct(roadmap, spine-done, var(--rise-primary));
+		background-color: ct(roadmap, spine-done-border, var(--rise-primary));
 		border-radius: 50%;
 		box-shadow: 0 0 0 sz(4px) var(--rise-primary-soft);
 	}

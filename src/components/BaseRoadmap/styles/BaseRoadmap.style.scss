@@ -129,8 +129,8 @@
 		border-radius: var(--rise-radius-full);
 
 		&--or {
-			color: var(--rise-info);
-			background-color: color-mix(in srgb, var(--rise-info) 12%, transparent);
+			color: var(--rise-info-text);
+			background-color: var(--rise-info-soft);
 		}
 
 		&--recommended {
