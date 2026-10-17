@@ -301,3 +301,14 @@
 - `@ramzes1385/rise-ui-kit/resolver` — `RiseUiResolver` для `unplugin-vue-components` (подпуть `BaseX`, `prefix`, `tokens`; плеер — `/media` + `media.css`); `@ramzes1385/rise-ui-kit/nuxt` — модуль Nuxt без `@nuxt/kit` (`components:extend`, токены, transpile, плагин `createUiKitConfig`); `@ramzes1385/rise-ui-kit/global` — `GlobalComponents` для шаблонов. Имена компонентов — `src/integrations/componentNames.ts`, его пишет генератор exports.
 - Проверки: `build/tests/autoimport.spec.ts`, сценарий автоимпорта в `npm run test:subpaths`, `npm run test:autoimport` (Vite + `unplugin-vue-components`, `vue-tsc`, Nuxt 4.6 — на пакете из `npm pack`, пакеты из реестра, не в CI), бюджеты `nuxt.js` и `resolver.js` в `build/ratchets.json`.
 - Отложено — FOLLOW_UPS, «Задача w16-autoimport» (тема в SSR Nuxt, Nuxt 3, другие сборщики).
+
+## Задача w16-lazy-locale
+
+Волна 16 (17.10): лёгкие словари и отчёт о весе компонентов. Оценка ≈3 ч, факт — в отчёте задачи.
+
+- Русский словарь — по разделам: каждый раздел `ru` — свой экспорт, `localized(раздел, ruРаздел)` в `messages.ts` с `/* @__PURE__ */`; текущий язык по умолчанию — `DEFAULT_LOCALE` без строк (`src/locales/current.ts`), недостающий раздел берётся из русского. Формы чисел — `UI_PLURAL` вместо `getLocale().plural`.
+- `en` не встроен: `registerLocale(en)`, `createUiKitPlugin` подключает его сам (`registerLocaleOnce`); `setLocale` готового, но не подключённого словаря — предупреждение `UNREGISTERED_LOCALE` с подсказкой. `LOCALES` — `@deprecated`. Ломающее — MIGRATION, «Задача w16-lazy-locale !».
+- Сборка: словари `en`, `kk`, `uz`, `zh`, `ja` — в своих чанках `locale-<код>` (иначе `en` попадал в чанк плагина и тянул реестр компонентов).
+- `test:subpaths`: сценарии BaseDatePicker и кнопка + `createUiKitConfig` без языка, храповик стартового JS `JS_MAX`, проверка словарей по `text.EMPTY`. `npm run report:sizes` → `docs/reference/SIZES.md`, `npm run test:sizes` — в `ci:validate` и CI.
+- Размер (JS gzip с Vue): BaseSelect 92,4 → 53,7 КБ, BaseDatePicker 105,8 → 68,1, кнопка + `createUiKitConfig` 77,9 → 34,6 (с `en` — 54,2), плагин 455,5 → 454,0.
+

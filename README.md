@@ -120,9 +120,11 @@ import { BaseSelect, type BaseSelectOption } from '@ramzes1385/rise-ui-kit/BaseS
 import { createApp } from 'vue'
 import { RouterLink } from 'vue-router'
 import { createUiKitConfig } from '@ramzes1385/rise-ui-kit/config'
+import { en, registerLocale } from '@ramzes1385/rise-ui-kit'
 import '@ramzes1385/rise-ui-kit/tokens.css'
 import App from './App.vue'
 
+registerLocale(en) // английский словарь — явно: встроен только ru
 createApp(App)
 	.use(
 		createUiKitConfig({
@@ -136,11 +138,24 @@ createApp(App)
 	.mount('#app')
 ```
 
-Функция есть и в корне пакета (`import { createUiKitConfig } from '@ramzes1385/rise-ui-kit'`): сборщик отсекает реестр и там, но подпуть `/config` гарантирует, что ничего лишнего не подтянется. Замер на приложении из `npm pack` (Vite 8): кнопка с подпути — 27,8 КБ gzip JS; она же с `createUiKitConfig` (язык, тема, `defaults`) — 77,4 КБ, и ни BaseTable, ни BaseEditor в сборке нет. Разница — словари `ru` и `en` (≈50 КБ gzip): они нужны любому компоненту с текстом и входят в состояние языка кита. Компоненты, которые в приложении используют текст (BaseSelect и др.), их и так подтягивают.
+Функция есть и в корне пакета (`import { createUiKitConfig } from '@ramzes1385/rise-ui-kit'`): сборщик отсекает реестр и там, но подпуть `/config` гарантирует, что ничего лишнего не подтянется.
+
+**Строки — только те, что читает компонент.** Каждый компонент берёт из русского словаря только свои разделы (`text`, `aria`, `datePicker`…), поэтому в сборку попадают только прочитанные строки; другие языки — целиком и только подключённые (`registerLocale(en)`, раздел «Языки»). Замер на приложении из `npm pack` (Vite 8, JS gzip вместе с Vue ≈23 КБ):
+
+| Приложение | JS gzip | До выноса словарей |
+|---|--:|--:|
+| BaseButton с подпути | 27,8 КБ | 27,8 КБ |
+| BaseButton + `createUiKitConfig` (тема, `defaults`) | 34,6 КБ | 77,9 КБ |
+| то же + `registerLocale(en)`, `locale: 'en'` | 54,2 КБ | 77,9 КБ |
+| BaseSelect с подпути | 53,7 КБ | 92,4 КБ |
+| BaseDatePicker с подпути | 68,1 КБ | 105,8 КБ |
+| `createUiKitPlugin` (все компоненты, `ru` и `en`) | 454,0 КБ | 455,5 КБ |
+
+Вес каждого компонента при импорте с подпути (JS и CSS, с учётом общих чанков) — таблица [docs/reference/SIZES.md](docs/reference/SIZES.md) (`npm run report:sizes`).
 
 - Подпуть есть у каждого компонента из `@ramzes1385/rise-ui-kit/components` (`/BaseButton`, `/BaseTable`, …) и отдаёт то же, что его раздел там: компонент, его константы и типы. Плеер и 3D-карта — по-прежнему `/media` и `/map3d`.
 - CSS компонента JS подпути подключает сам — `styles.css` не нужен. Приложение на Vite 8: CSS всех компонентов `tokens.css` + BaseButton — 4,8 КБ gzip против 96,9 КБ у `styles.css`, с BaseSelect — 8,5 КБ.
-- Подпути, корень и `/components` делят один код: компонент из подпути и из корня — один и тот же, настройки кита (`defaults`, тема, язык) действуют на оба. Но `createUiKitPlugin` регистрирует все компоненты глобально, и их JS попадает в сборку (приложение с ним — 451,8 КБ gzip стартового JS против 27,8 КБ с одной кнопкой). При точечной установке настройки задаёт `createUiKitConfig` — тот же набор опций без регистрации компонентов (см. ниже).
+- Подпути, корень и `/components` делят один код: компонент из подпути и из корня — один и тот же, настройки кита (`defaults`, тема, язык) действуют на оба. Но `createUiKitPlugin` регистрирует все компоненты глобально, и их JS попадает в сборку (приложение с ним — 454,0 КБ gzip стартового JS против 27,8 КБ с одной кнопкой). При точечной установке настройки задаёт `createUiKitConfig` — тот же набор опций без регистрации компонентов (см. ниже).
 - Подключили `styles.css` — `tokens.css` уже не нужен (токены в нём есть). Стили компонентов с подпутей — без каскадного слоя; `tokens.layer.css` кладёт в слой `rise` только токены. Весь кит в слое — `styles.layer.css` и импорт из корня.
 - Импорт `.css` из JS пакета обрабатывает сборщик (Vite, webpack). При SSR пакет нужно пропустить через сборку, а не отдавать Node как внешний модуль — иначе Node не знает расширения `.css`.
 
@@ -458,23 +473,26 @@ app.use(
 | `zh` | китайский упрощённый | `zh-CN` | понедельник |
 | `ja` | японский | `ja-JP` | воскресенье |
 
-`ru` и `en` встроены; `kk`, `uz`, `zh` и `ja` подключаются по выбору — в сборку приложения попадают только подключённые словари:
+Встроен только `ru`, и из него в сборку приложения попадают только разделы, которые читают его компоненты (кнопке без текста строки не нужны вовсе). `en`, `kk`, `uz`, `zh` и `ja` подключаются по выбору — словарь целиком, только подключённый (английский ≈20 КБ gzip). `createUiKitPlugin` подключает `en` сам (приложение с плагином и так получает все компоненты); при точечной установке, с `createUiKitConfig` или без плагина английский подключают так же, как остальные:
 
 ```ts
-import { kk, registerLocale, setLocale } from '@ramzes1385/rise-ui-kit'
+import { en, kk, registerLocale, setLocale } from '@ramzes1385/rise-ui-kit'
 
-registerLocale(kk) // один раз при старте
-setLocale('kk') // или createUiKitPlugin({ locale: 'kk' }), <BaseApp locale="kk">
+registerLocale(en) // один раз при старте
+registerLocale(kk)
+setLocale('kk') // или createUiKitPlugin({ locale: 'kk' }), createUiKitConfig({ locale: 'kk' }), <BaseApp locale="kk">
 ```
+
+Первая отрисовка и SSR — синхронные: словари ничего не загружают по сети, `registerLocale` — обычный импорт. Без регистрации `setLocale('en')` язык не меняет, а в консоли — подсказка с кодом подключения.
 
  Переводы `kk`, `uz`, `zh`, `ja` сделаны без носителя языка — до выпуска их стоит показать носителям; замечания по формулировкам удобно вносить через `defineLocale(kk, { text: { … } })`.
 
 **Задать язык** — любым из трёх способов:
 
 ```ts
-app.use(createUiKitPlugin({ locale: 'en' })) // 1. при создании приложения
+app.use(createUiKitPlugin({ locale: 'en' })) // 1. при создании приложения (плагин подключает en сам)
 // <BaseApp :locale="lang"> … </BaseApp>       // 2. проп, следует за значением
-setLocale('en')                                // 3. из любого места
+setLocale('en')                                // 3. из любого места (без плагина — после registerLocale(en))
 ```
 
 **Переопределить строки** — `defineLocale(base, overrides)` заменяет только переданные ключи, остальные берутся из `base`. Результат принимают плагин, `<BaseApp locale>` и `setLocale()`:
@@ -506,7 +524,7 @@ const { locale, locales, formatNumber, formatDate, plural } = useLocale()
 plural({ one: '{n} file', other: '{n} files' }, 3) // '3 files'
 ```
 
-Повторная регистрация того же кода заменяет словарь (в том числе у встроенных `ru` и `en`); включённый язык обновляется сразу. Неизвестный код `setLocale` не принимает: язык остаётся прежним, в консоль идёт предупреждение со списком доступных кодов.
+Повторная регистрация того же кода заменяет словарь (в том числе `ru` и `en`); включённый язык обновляется сразу, а `createUiKitPlugin` не затирает `en`, зарегистрированный приложением. Неизвестный код `setLocale` не принимает: язык остаётся прежним, в консоль идёт предупреждение со списком доступных кодов; у готового словаря кита, который не подключён (`setLocale('en')` без `registerLocale(en)`), — с подсказкой, как его подключить. Свой словарь без части разделов (не через `defineLocale`) недостающие разделы берёт из русского.
 
 **Форматы.** Календарь, выбор даты, график, канбан, диаграмма активности, расписание и другие компоненты берут формат дат и чисел (`locale.intl`) и первый день недели (`locale.firstDayOfWeek`) из языка кита, если не заданы пропсы `locale` и `firstDayOfWeek` — явный проп главнее; BaseCalendar и BaseDatePicker с явным `locale` без `firstDayOfWeek` берут первый день недели этого языка (`Intl.Locale`), а BaseHeatmap принимает свой `firstDayOfWeek`. Поиск и сравнение текста идут по языку кита: без учёта регистра, «е» равна «ё», письмо без регистра (китайский, японский, корейский) сравнивается как есть. Внутренние вычисления (часовой пояс в расписании и `.ics`, ISO-даты) от языка не зависят. Строки из props (`placeholder`, `label`) приложение переводит само.
 
@@ -735,6 +753,7 @@ import { BaseButton } from '@ramzes1385/rise-ui-kit'
 | [Компоненты](docs/reference/COMPONENTS.md) | Справочник: назначение, основные props и события, примеры |
 | [Composables](docs/reference/COMPOSABLES.md) | `useDebounce`, `useClickOutside`, `useEscapeKey`, `useFocusTrap`, `useHotkeys` и другие |
 | [Utils](docs/reference/UTILS.md) | Даты, файлы, цвета, субтитры, медиа, проверка ссылок, координаты `position: fixed` |
+| [Вес компонентов](docs/reference/SIZES.md) | JS и CSS (gzip) каждого компонента при импорте с подпути, с учётом общего кода |
 | [3D-карта этажей](docs/reference/MAP3D.md) | Вход `/map3d`: установка `three`, 3D-поля данных, модели GLB, камера, клавиатура, фолбэк на 2D |
 | [SEO-разметка](docs/reference/SEO.md) | Проп `seo`: JSON-LD schema.org у компонентов и проверка в Google Rich Results и Яндекс Вебмастере |
 | [Переход на 2.0](docs/v2/MIGRATION.md) | Что изменилось для приложения и что сделать при обновлении с 1.x |

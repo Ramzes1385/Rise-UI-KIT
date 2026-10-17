@@ -3262,3 +3262,23 @@ app.use(createUiKitConfig({ locale: 'en', theme: 'corporate' }))
 - **`formatRelativeTime`**: неверная дата даёт пустую строку (раньше `RangeError: Invalid time value`); так же ведут себя BaseCommentThread и BaseNotificationCenter с неверной датой комментария или уведомления.
 - **Новая утилита** `isSafeImageUrl(url)` (`@ramzes1385/rise-ui-kit/utils`) — проверка адреса картинки из недоверенных данных ([UTILS.md](../reference/UTILS.md), «urlUtils»).
 - **Новые файлы пакета**: `@ramzes1385/rise-ui-kit/tokens.json` и `@ramzes1385/rise-ui-kit/tokens/<тема>.<режим>.json` — токены кита и четырёх пресетов тем в формате W3C Design Tokens ([DESIGN_TOKENS.md](../design/DESIGN_TOKENS.md)).
+
+## Задача w16-lazy-locale !
+
+Лёгкие словари: в сборку приложения попадают только строки, которые читают его компоненты. **Ломающее для приложений без `createUiKitPlugin`, которые включают английский.**
+
+- **Встроен только `ru`; `en` подключается, как `kk`, `uz`, `zh`, `ja`.** Было: `setLocale('en')`, `<BaseApp locale="en">`, `createUiKitConfig({ locale: 'en' })` работали без подготовки, и словари `ru` и `en` целиком (≈47 КБ gzip) входили в любое приложение, которое трогало язык. Стало: один раз при старте `import { en, registerLocale } from '@ramzes1385/rise-ui-kit'; registerLocale(en)`. Без этого язык остаётся прежним, в консоли — `[rise-ui-kit] Язык «en» не подключён: … registerLocale(en)` (новый ключ `warnings.UNREGISTERED_LOCALE`; у своего неизвестного кода — прежний `UNKNOWN_LOCALE`).
+- **`createUiKitPlugin` подключает `en` сам**, если приложение не зарегистрировало свой словарь с кодом `en` (свой не затирается). Приложениям с плагином менять ничего не нужно; размер их сборки прежний (454,0 КБ gzip стартового JS против 455,5).
+- **Русский — по разделам.** Каждый компонент берёт из `ru` только свои разделы (`text`, `aria`, `datePicker`…); текущий язык по умолчанию — `{ code: 'ru', intl: 'ru-RU', firstDayOfWeek: 1 }` без строк. Синхронная отрисовка и SSR не меняются: ничего не грузится по сети. `defineLocale(ru, …)`, `registerLocale`, переопределения через `defineLocale`, прежние ключи-куски и смена языка на лету работают как раньше; тип `UiKitLocale` (подсказка всех ключей своего языка) не изменился.
+- **Свой словарь без части разделов** (объект, собранный не через `defineLocale`) недостающие разделы берёт из русского; раньше строки таких разделов были `undefined`.
+- **`localeCodes` и `useLocale().locales`** без плагина и регистраций — `['ru']` (было `['ru', 'en']`); после `registerLocale(en)` или с плагином — как раньше.
+- **`useLocale().messages`** — по-прежнему словарь целиком: у русского по умолчанию это объект `ru`, поэтому `useLocale()` подключает в сборку весь русский словарь (≈26 КБ gzip). Компонентам он не нужен; приложению, которому нужна одна строка, проще `defineLocale`/свои тексты.
+- **`LOCALES` устарел** (`@deprecated`): по-прежнему `{ ru, en }`, но кит его не читает и список доступных языков он больше не задаёт. Словари импортируйте напрямую (`import { en, ru } from '@ramzes1385/rise-ui-kit'`), коды — `useLocale().locales`.
+- **Тип `LocaleInput`** подсказывает коды всех готовых словарей (`'ru' | 'en' | 'kk' | 'uz' | 'zh' | 'ja'`, новый тип `KitLocaleCode`) и по-прежнему принимает любую строку и словарь.
+- **Новый ключ словаря `warnings.UNREGISTERED_LOCALE`** во всех шести словарях. Словарь через `defineLocale(en, …)` получает его из базы; словарь, написанный целиком как `UiKitLocale`, должен добавить ключ (TypeScript подскажет).
+- **Сборка пакета:** словари `en`, `kk`, `uz`, `zh`, `ja` — в своих чанках `dist/chunks/locale-<код>-*.js` (раньше `en` лежал в общем чанке словарей, затем — в чанке плагина); русский — по разделам в чанке `messages`.
+- **Новые скрипты:** `npm run report:sizes` (вес каждого компонента при импорте с подпути → `docs/reference/SIZES.md`), `npm run test:sizes` (таблица совпадает со сборкой; в `ci:validate` и CI).
+
+Размер приложения из `npm pack` (Vite 8, стартовый JS gzip вместе с Vue): BaseButton — 27,8 КБ (было 27,8); BaseButton + `createUiKitConfig` — 34,6 КБ (77,9), с `registerLocale(en)` и `locale: 'en'` — 54,2 КБ (77,9); BaseSelect — 53,7 КБ (92,4); BaseDatePicker — 68,1 КБ (105,8); `createUiKitPlugin` — 454,0 КБ (455,5).
+
+Что сделать: если приложение без `createUiKitPlugin` включает английский (`setLocale('en')`, `<BaseApp locale="en">`, `createUiKitConfig({ locale: 'en' })`), добавьте `registerLocale(en)` при старте; если строит меню языков по `Object.keys(LOCALES)` — перейдите на `useLocale().locales`.

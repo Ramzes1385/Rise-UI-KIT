@@ -88,6 +88,7 @@ npm run storybook
 | `npm run test:visual`, `test:visual:dev` | скриншоты против эталонов (сервер Storybook — как у `test:e2e`); эталоны не обновляются автоматически — их создают после просмотра изменений (в CI — по метке `visual:update-baselines` у PR) |
 | `npm run test:subpaths` | точечная установка: exports подпутей совпадают со списком компонентов (`npm run generate:subpath-exports` их переписывает), приложение Vite из `npm pack` с BaseButton / BaseSelect с подпути получает только их JS и CSS, снимки совпадают с импортом из корня (`--no-screenshot` — без Chromium); резолвер, `global.d.ts` и модуль Nuxt из tarball совпадают с exports. Нужна сборка |
 | `npm run test:autoimport` | автоимпорт на пакете из `npm pack` с пакетами из реестра npm (сеть, ≈2,5 мин; не в `ci:validate`): Vite + `unplugin-vue-components` с `RiseUiResolver`, `vue-tsc` (опечатка в пропе), Nuxt (SSR, токены, тема), Playwright. Флаги `--no-nuxt`, `--no-screenshot`, `--keep`. Нужна сборка |
+| `npm run report:sizes`, `npm run test:sizes` | вес каждого публичного компонента при импорте с подпути (мини-приложение Vite на компонент, JS и CSS gzip) — таблица `docs/reference/SIZES.md`; `test:sizes` сверяет её со сборкой (допуск 3 % или 0,3 КБ; шаг CI и `ci:validate`, ≈20–50 с). Нужна сборка |
 | `npm run ci:validate` | базовая проверка перед push: линтеры, форматирование, типы, unit-тесты, сухая сборка пакета |
 
 ---
