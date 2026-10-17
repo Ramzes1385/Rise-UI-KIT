@@ -27,7 +27,7 @@ const LOCALE_MODULE = 'kitLocale'
 
 const LOCALE_SPECIFIER = /^@\/locales\/(?:messages|state|warn)$/
 
-const LOCALE_FIXED_NAMES = ['formatMessage', 'formatNumber', 'getLocale', 'pluralize', 'warn']
+const LOCALE_FIXED_NAMES = ['currentLocale', 'formatMessage', 'formatNumber', 'getLocale', 'pluralize', 'warn']
 
 const KIT_ENTRIES = [
 	[/^@components(?:\/.*)?$/, `${KIT}/components`],
@@ -122,10 +122,11 @@ function usedLocaleNames(files) {
 	return [...names].sort()
 }
 
-/** Разделы словаря: `UI_MAP` → `map` — по `src/locales/messages.ts` кита */
+/** Разделы словаря: `UI_MAP` → `map` — по `src/locales/messages.ts` кита (`localized('map', ruMap)`, с пометкой `@__PURE__` или без) */
 function localeSections() {
 	const source = readFileSync(join(ROOT, 'src/locales/messages.ts'), 'utf8')
-	return new Map([...source.matchAll(/export const (\w+) = localized\('(\w+)'\)/g)].map(match => [match[1], match[2]]))
+	const pattern = /export const (\w+) = (?:\/\* @__PURE__ \*\/ )?localized\('(\w+)'[,)]/g
+	return new Map([...source.matchAll(pattern)].map(match => [match[1], match[2]]))
 }
 
 function writeKitLocale(target, names) {
@@ -158,6 +159,9 @@ export const pluralize = plural
 export function getLocale(): UiKitLocale {
 	return messages.value
 }
+
+/** Текущий словарь кита (\`.value.code\` — код языка), как \`currentLocale\` внутри кита */
+export const currentLocale = messages
 
 export function warn(message: string, params: Record<string, string | number> = {}): void {
 	console.warn(\`[rise-ui-kit] \${formatMessage(message, params)}\`)

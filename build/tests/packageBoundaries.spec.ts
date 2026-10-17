@@ -55,17 +55,25 @@ function resolveSpecifier(specifier: string, importer: string): string | null {
 }
 
 /** Runtime-импорты модуля: type-only импорты стираются компилятором и в бандл не попадают */
+/** Модули, которые файл импортирует во время выполнения: разбор TypeScript, без `import type` и строк, похожих на импорт */
 function runtimeSpecifiers(file: string): string[] {
 	let source = readFileSync(file, 'utf8')
 	if (file.endsWith('.vue')) {
 		source = [...source.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(match => match[1]).join('\n')
 	}
 	const specifiers: string[] = []
-	const staticRe = /^\s*(import|export)\s+(type\s+)?(?:[\s\S]*?\sfrom\s+)?['"]([^'"]+)['"]/gm
-	for (const match of source.matchAll(staticRe)) {
-		if (!match[2]) specifiers.push(match[3])
+	const visit = (node: ts.Node): void => {
+		if (ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier)) {
+			if (!node.importClause?.isTypeOnly) specifiers.push(node.moduleSpecifier.text)
+		} else if (ts.isExportDeclaration(node) && node.moduleSpecifier && ts.isStringLiteral(node.moduleSpecifier)) {
+			if (!node.isTypeOnly) specifiers.push(node.moduleSpecifier.text)
+		} else if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword) {
+			const [argument] = node.arguments
+			if (argument && ts.isStringLiteral(argument)) specifiers.push(argument.text)
+		}
+		ts.forEachChild(node, visit)
 	}
-	for (const match of source.matchAll(/\bimport\(\s*['"]([^'"]+)['"]\s*\)/g)) specifiers.push(match[1])
+	visit(ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS))
 	return specifiers.filter(specifier => !/\.(s?css|sass)$/.test(specifier))
 }
 

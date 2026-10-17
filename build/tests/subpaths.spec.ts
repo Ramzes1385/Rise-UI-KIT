@@ -39,7 +39,8 @@ describe('публичные компоненты и exports', () => {
 		expect(subpaths.sort()).toEqual(components.map(component => `./${component}`).sort())
 		for (const hidden of ['./BaseMediaPlayer', './BasePresentationPlayer', './BaseImageMap3D'])
 			expect(pkg.exports[hidden]).toBeUndefined()
-		expect(Object.keys(pkg.exports).filter(key => key.includes('*'))).toEqual([])
+		// единственный шаблон — темы токенов для дизайна (`dist/tokens/<тема>.<режим>.json`, задача w16-security-tokens)
+		expect(Object.keys(pkg.exports).filter(key => key.includes('*'))).toEqual(['./tokens/*.json'])
 		expect(Object.keys(subpathExports(ROOT))).toHaveLength(components.length + 5)
 		expect(Object.keys(subpathExports(ROOT)).filter(key => !/^\.\/Base/.test(key))).toEqual([
 			'./resolver',
