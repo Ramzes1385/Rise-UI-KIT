@@ -1,0 +1,25 @@
+/** BaseRoadmap roadmap: statuses, summary and data warnings */
+export const enRoadmap = {
+	roadmap: {
+		STORAGE_UNAVAILABLE: 'Progress storage is unavailable',
+		HOOK_FAILED: 'BaseRoadmap: the beforeStatusChange hook failed — status change cancelled: {error}',
+		TOPIC_LOCKED: 'Locked',
+		TOPIC_AVAILABLE: 'Available',
+		TOPIC_IN_PROGRESS: 'In progress',
+		TOPIC_DONE: 'Learned',
+		TOPIC_SKIPPED: 'Skipped',
+		STAGE_LOCKED: 'Locked',
+		STAGE_AVAILABLE: 'Available',
+		STAGE_CURRENT: 'Current',
+		STAGE_DONE: 'Completed',
+		SUMMARY_TOPICS: '{done} of {total} topics',
+		SUMMARY_PERCENT: '{percent}%',
+		SUMMARY_HOURS: 'about {hours} h left',
+		CONTINUE: 'Continue: {topic}',
+		CYCLE: 'BaseRoadmap: requires {path} forms a cycle — link ignored',
+		DUPLICATE_ID: 'BaseRoadmap: id «{id}» is repeated — the first occurrence is used',
+		UNKNOWN_REQUIRE: 'BaseRoadmap: «{id}» requires a missing «{target}» — link ignored',
+		NEGATIVE_HOURS: 'BaseRoadmap: topic «{id}» has hours = {value} below zero — estimate ignored',
+		UNKNOWN_KIND: 'BaseRoadmap: {path} = {value} is ignored — expected {expected}',
+	},
+}

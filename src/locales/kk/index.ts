@@ -9,6 +9,7 @@ import { kkCard } from './components/card'
 import { kkNotices } from './components/notices'
 import { kkGantt } from './components/data/gantt'
 import { kkMapEditor } from './components/mapEditor'
+import { kkRoadmap } from './components/data/roadmap'
 import { kkImageMap3d } from './components/imageMap3d'
 import { kkTranscript } from './components/transcript'
 import type { UiKitLocale } from '../types/locales.types'
@@ -40,5 +41,6 @@ export const kk: UiKitLocale = {
 	...kkGantt,
 	...kkFileManager,
 	...kkFormWizard,
+	...kkRoadmap,
 	plural: kkPlural,
 }

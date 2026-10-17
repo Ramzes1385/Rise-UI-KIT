@@ -155,6 +155,7 @@ export interface UiKitLocale {
 	gantt: Section<'gantt'>
 	fileManager: Section<'fileManager'>
 	formWizard: Section<'formWizard'>
+	roadmap: Section<'roadmap'>
 	datePicker: Section<'datePicker'>
 	warnings: Section<'warnings'>
 	plural: { readonly [P in keyof Base['plural']]: PluralForms }

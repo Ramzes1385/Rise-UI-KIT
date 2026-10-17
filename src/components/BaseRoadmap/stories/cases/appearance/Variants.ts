@@ -1,8 +1,8 @@
-import type meta from '../BaseRoadmap.stories'
-import BaseRoadmap from '../../ui/BaseRoadmap.vue'
+import type meta from '../../BaseRoadmap.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
+import BaseRoadmap from '../../../ui/BaseRoadmap.vue'
 import { storySource, useStorySetup } from '@/stories/helpers'
-import { ROADMAP_VARIANTS } from '../../types/BaseRoadmap.types'
+import { ROADMAP_VARIANTS } from '../../../types/BaseRoadmap.types'
 
 const template = `<div class="story-row"><BaseRoadmap v-for="variant in ROADMAP_VARIANTS" :key="variant" v-bind="args" :variant="variant" /></div>`
 

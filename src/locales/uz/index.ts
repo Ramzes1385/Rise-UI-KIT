@@ -9,6 +9,7 @@ import { uzCard } from './components/card'
 import { uzNotices } from './components/notices'
 import { uzGantt } from './components/data/gantt'
 import { uzMapEditor } from './components/mapEditor'
+import { uzRoadmap } from './components/data/roadmap'
 import { uzImageMap3d } from './components/imageMap3d'
 import { uzTranscript } from './components/transcript'
 import type { UiKitLocale } from '../types/locales.types'
@@ -40,5 +41,6 @@ export const uz: UiKitLocale = {
 	...uzGantt,
 	...uzFileManager,
 	...uzFormWizard,
+	...uzRoadmap,
 	plural: uzPlural,
 }

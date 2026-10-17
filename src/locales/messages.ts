@@ -3,6 +3,7 @@ import { ruPlural } from './ru/plural'
 import { localized } from './localized'
 import { ruCard } from './ru/components/card'
 import { ruGantt } from './ru/components/data/gantt'
+import { ruRoadmap } from './ru/components/data/roadmap'
 import { ruImageMap3d } from './ru/components/imageMap3d'
 import { ruTranscript } from './ru/components/transcript'
 import { ruImageMapEditor } from './ru/components/mapEditor'
@@ -231,6 +232,9 @@ export const UI_FILE_MANAGER = /* @__PURE__ */ localized('fileManager', ruFileMa
 
 /** Многошаговая форма BaseFormWizard */
 export const UI_FORM_WIZARD = /* @__PURE__ */ localized('formWizard', ruFormWizard)
+
+/** Роадмап BaseRoadmap: статусы, сводка, предупреждения о данных */
+export const UI_ROADMAP = /* @__PURE__ */ localized('roadmap', ruRoadmap)
 
 /** Диапазоны BaseDatePicker: готовые периоды, ошибки ввода */
 export const UI_DATE_PICKER = /* @__PURE__ */ localized('datePicker', ruDatePicker)

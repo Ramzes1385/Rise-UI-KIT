@@ -1,0 +1,25 @@
+/** BaseRoadmap 路线图：状态、汇总和数据警告 */
+export const zhRoadmap = {
+	roadmap: {
+		STORAGE_UNAVAILABLE: '进度存储不可用',
+		HOOK_FAILED: 'BaseRoadmap：beforeStatusChange 钩子出错，状态变更已取消：{error}',
+		TOPIC_LOCKED: '已锁定',
+		TOPIC_AVAILABLE: '可学习',
+		TOPIC_IN_PROGRESS: '学习中',
+		TOPIC_DONE: '已学完',
+		TOPIC_SKIPPED: '已跳过',
+		STAGE_LOCKED: '已锁定',
+		STAGE_AVAILABLE: '可开始',
+		STAGE_CURRENT: '当前',
+		STAGE_DONE: '已完成',
+		SUMMARY_TOPICS: '{done} / {total} 个主题',
+		SUMMARY_PERCENT: '{percent}%',
+		SUMMARY_HOURS: '还需约 {hours} 小时',
+		CONTINUE: '继续：{topic}',
+		CYCLE: 'BaseRoadmap：requires {path} 形成循环，已忽略该关联',
+		DUPLICATE_ID: 'BaseRoadmap：id「{id}」重复，仅使用第一次出现的',
+		UNKNOWN_REQUIRE: 'BaseRoadmap：「{id}」依赖不存在的「{target}」，已忽略该关联',
+		NEGATIVE_HOURS: 'BaseRoadmap：主题「{id}」的 hours = {value} 小于零，已忽略该估计',
+		UNKNOWN_KIND: 'BaseRoadmap：{path} = {value} 已忽略，应为 {expected}',
+	},
+}

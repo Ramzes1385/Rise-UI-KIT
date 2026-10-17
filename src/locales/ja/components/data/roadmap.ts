@@ -1,0 +1,25 @@
+/** BaseRoadmap ロードマップ：ステータス、サマリー、データの警告 */
+export const jaRoadmap = {
+	roadmap: {
+		STORAGE_UNAVAILABLE: '進捗ストレージを利用できません',
+		HOOK_FAILED: 'BaseRoadmap：beforeStatusChange フックでエラーが発生したため、ステータス変更を取り消しました：{error}',
+		TOPIC_LOCKED: 'ロック中',
+		TOPIC_AVAILABLE: '学習可能',
+		TOPIC_IN_PROGRESS: '学習中',
+		TOPIC_DONE: '学習済み',
+		TOPIC_SKIPPED: 'スキップ',
+		STAGE_LOCKED: 'ロック中',
+		STAGE_AVAILABLE: '開始可能',
+		STAGE_CURRENT: '現在',
+		STAGE_DONE: '完了',
+		SUMMARY_TOPICS: '{done} / {total} トピック',
+		SUMMARY_PERCENT: '{percent}%',
+		SUMMARY_HOURS: '残り約 {hours} 時間',
+		CONTINUE: '続ける：{topic}',
+		CYCLE: 'BaseRoadmap：requires {path} が循環しているため、この関連を無視しました',
+		DUPLICATE_ID: 'BaseRoadmap：id「{id}」が重複しています。最初のものを使用します',
+		UNKNOWN_REQUIRE: 'BaseRoadmap：「{id}」が存在しない「{target}」を必要としています。この関連を無視しました',
+		NEGATIVE_HOURS: 'BaseRoadmap：トピック「{id}」の hours = {value} が 0 未満のため、見積りを無視しました',
+		UNKNOWN_KIND: 'BaseRoadmap：{path} = {value} を無視しました。{expected} を指定してください',
+	},
+}

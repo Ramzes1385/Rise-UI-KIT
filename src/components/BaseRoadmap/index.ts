@@ -37,4 +37,5 @@ export type {
 	RoadmapTopicStatus,
 	RoadmapView3D,
 } from './types/roadmapData.types'
+export { createLocalStorageProgress } from './model/progress/localStorageProgress'
 export { default as BaseRoadmap } from './ui/BaseRoadmap.vue'

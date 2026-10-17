@@ -1,4 +1,4 @@
-import type meta from '../BaseRoadmap.stories'
+import type meta from '../../BaseRoadmap.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 
 export const Empty: StoryObj<typeof meta> = {

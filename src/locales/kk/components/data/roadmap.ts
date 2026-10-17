@@ -1,0 +1,25 @@
+/** BaseRoadmap жол картасы: күйлер, қорытынды және деректер туралы ескертулер */
+export const kkRoadmap = {
+	roadmap: {
+		STORAGE_UNAVAILABLE: 'Прогресс қоймасы қолжетімсіз',
+		HOOK_FAILED: 'BaseRoadmap: beforeStatusChange hook қатемен аяқталды — күйді өзгерту тоқтатылды: {error}',
+		TOPIC_LOCKED: 'Жабық',
+		TOPIC_AVAILABLE: 'Қолжетімді',
+		TOPIC_IN_PROGRESS: 'Үйренілуде',
+		TOPIC_DONE: 'Меңгерілді',
+		TOPIC_SKIPPED: 'Өткізілді',
+		STAGE_LOCKED: 'Жабық',
+		STAGE_AVAILABLE: 'Қолжетімді',
+		STAGE_CURRENT: 'Ағымдағы',
+		STAGE_DONE: 'Аяқталды',
+		SUMMARY_TOPICS: '{total} тақырыптың {done}-і',
+		SUMMARY_PERCENT: '{percent} %',
+		SUMMARY_HOURS: 'шамамен {hours} сағат қалды',
+		CONTINUE: 'Жалғастыру: {topic}',
+		CYCLE: 'BaseRoadmap: requires {path} цикл жасайды — байланыс ескерілмейді',
+		DUPLICATE_ID: 'BaseRoadmap: «{id}» id қайталанады — бірінші кездесуі ескеріледі',
+		UNKNOWN_REQUIRE: 'BaseRoadmap: «{id}» жоқ «{target}» элементін талап етеді — байланыс ескерілмейді',
+		NEGATIVE_HOURS: 'BaseRoadmap: «{id}» тақырыбының hours = {value} мәні нөлден кіші — бағалау ескерілмейді',
+		UNKNOWN_KIND: 'BaseRoadmap: {path} = {value} ескерілмейді — {expected} күтіледі',
+	},
+}

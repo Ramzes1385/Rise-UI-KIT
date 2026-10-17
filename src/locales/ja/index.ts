@@ -8,6 +8,7 @@ import { jaCard } from './components/card'
 import { jaNotices } from './components/notices'
 import { jaGantt } from './components/data/gantt'
 import { jaMapEditor } from './components/mapEditor'
+import { jaRoadmap } from './components/data/roadmap'
 import { jaImageMap3d } from './components/imageMap3d'
 import { jaTranscript } from './components/transcript'
 import type { UiKitLocale } from '../types/locales.types'
@@ -38,5 +39,6 @@ export const ja: UiKitLocale = {
 	...jaGantt,
 	...jaFileManager,
 	...jaFormWizard,
+	...jaRoadmap,
 	plural: jaPlural,
 }

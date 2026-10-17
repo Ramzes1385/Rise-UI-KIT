@@ -1,5 +1,5 @@
 import { expect } from 'storybook/test'
-import type meta from '../BaseRoadmap.stories'
+import type meta from '../../BaseRoadmap.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 
 export const CustomColor: StoryObj<typeof meta> = {

@@ -8,6 +8,7 @@ import { enCard } from './components/card'
 import { enNotices } from './components/notices'
 import { enGantt } from './components/data/gantt'
 import { enMapEditor } from './components/mapEditor'
+import { enRoadmap } from './components/data/roadmap'
 import { enImageMap3d } from './components/imageMap3d'
 import { enTranscript } from './components/transcript'
 import type { UiKitLocale } from '../types/locales.types'
@@ -38,5 +39,6 @@ export const en: UiKitLocale = {
 	...enGantt,
 	...enFileManager,
 	...enFormWizard,
+	...enRoadmap,
 	plural: enPlural,
 }

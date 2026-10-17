@@ -1,0 +1,25 @@
+/** BaseRoadmap yoʻl xaritasi: holatlar, xulosa va maʼlumotlar haqida ogohlantirishlar */
+export const uzRoadmap = {
+	roadmap: {
+		STORAGE_UNAVAILABLE: 'Progress saqlanadigan joy mavjud emas',
+		HOOK_FAILED: 'BaseRoadmap: beforeStatusChange hook xato bilan tugadi — holatni oʻzgartirish bekor qilindi: {error}',
+		TOPIC_LOCKED: 'Yopiq',
+		TOPIC_AVAILABLE: 'Mavjud',
+		TOPIC_IN_PROGRESS: 'Jarayonda',
+		TOPIC_DONE: 'Oʻrganildi',
+		TOPIC_SKIPPED: 'Oʻtkazib yuborildi',
+		STAGE_LOCKED: 'Yopiq',
+		STAGE_AVAILABLE: 'Mavjud',
+		STAGE_CURRENT: 'Joriy',
+		STAGE_DONE: 'Yakunlandi',
+		SUMMARY_TOPICS: '{total} ta mavzudan {done} tasi',
+		SUMMARY_PERCENT: '{percent} %',
+		SUMMARY_HOURS: 'taxminan {hours} soat qoldi',
+		CONTINUE: 'Davom etish: {topic}',
+		CYCLE: 'BaseRoadmap: requires {path} sikl hosil qiladi — bogʻlanish hisobga olinmadi',
+		DUPLICATE_ID: 'BaseRoadmap: «{id}» id takrorlanadi — birinchisi hisobga olindi',
+		UNKNOWN_REQUIRE: 'BaseRoadmap: «{id}» mavjud boʻlmagan «{target}» ni talab qiladi — bogʻlanish hisobga olinmadi',
+		NEGATIVE_HOURS: 'BaseRoadmap: «{id}» mavzusida hours = {value} noldan kichik — baho hisobga olinmadi',
+		UNKNOWN_KIND: 'BaseRoadmap: {path} = {value} hisobga olinmadi — {expected} kutiladi',
+	},
+}

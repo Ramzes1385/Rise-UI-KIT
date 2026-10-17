@@ -8,6 +8,7 @@ import { zhCard } from './components/card'
 import { zhNotices } from './components/notices'
 import { zhGantt } from './components/data/gantt'
 import { zhMapEditor } from './components/mapEditor'
+import { zhRoadmap } from './components/data/roadmap'
 import { zhImageMap3d } from './components/imageMap3d'
 import { zhTranscript } from './components/transcript'
 import type { UiKitLocale } from '../types/locales.types'
@@ -38,5 +39,6 @@ export const zh: UiKitLocale = {
 	...zhGantt,
 	...zhFileManager,
 	...zhFormWizard,
+	...zhRoadmap,
 	plural: zhPlural,
 }

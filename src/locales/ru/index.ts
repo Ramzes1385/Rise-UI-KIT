@@ -1,6 +1,7 @@
 import { ruPlural } from './plural'
 import { ruCard } from './components/card'
 import { ruGantt } from './components/data/gantt'
+import { ruRoadmap } from './components/data/roadmap'
 import { ruImageMap3d } from './components/imageMap3d'
 import { ruTranscript } from './components/transcript'
 import { ruImageMapEditor } from './components/mapEditor'
@@ -136,5 +137,6 @@ export const ru = {
 	gantt: ruGantt,
 	fileManager: ruFileManager,
 	formWizard: ruFormWizard,
+	roadmap: ruRoadmap,
 	plural: ruPlural,
 }

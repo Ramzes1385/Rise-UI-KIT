@@ -1,6 +1,6 @@
-import type meta from '../BaseRoadmap.stories'
-import BaseRoadmap from '../../ui/BaseRoadmap.vue'
+import type meta from '../../BaseRoadmap.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
+import BaseRoadmap from '../../../ui/BaseRoadmap.vue'
 import { literal, SIZE_PRESETS, sizeLabel, storySource, useStorySetup } from '@/stories/helpers'
 
 const presets = SIZE_PRESETS.map(preset => ({ name: preset.name, sizeScale: preset.sizeScale, label: sizeLabel(preset) }))
