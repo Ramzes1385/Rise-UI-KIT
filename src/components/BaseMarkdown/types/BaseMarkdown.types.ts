@@ -88,6 +88,25 @@ export type MarkdownInlineRule = (text: string, index: number) => { node: Markdo
 export interface MarkdownInlineOptions {
 	/** Одиночный перевод строки — перенос (`<br>`), а не пробел */
 	hasLineBreaks: boolean
+	/** Глубина вложенности выделений и ссылок; выставляет разбор, глубже предела — обычный текст */
+	inlineDepth?: number
+}
+
+/** Настройки блочного разбора: строчные плюс глубина вложенности цитат и списков (глубже предела — обычный текст) */
+export interface MarkdownBlockOptions extends MarkdownInlineOptions {
+	/** Глубина вложенности цитат и списков; выставляет разбор */
+	depth?: number
+}
+
+/** Пары парных знаков строки: индекс открывающего → индекс закрывающего */
+export type MarkdownDelimiterPairs = ReadonlyMap<number, number>
+
+/** Поиск пар квадратных и круглых скобок строки: таблицы считаются один раз на строку */
+export interface MarkdownPairLookups {
+	/** Пары `[`…`]` */
+	brackets: (source: string) => MarkdownDelimiterPairs
+	/** Пары `(`…`)` */
+	parens: (source: string) => MarkdownDelimiterPairs
 }
 
 /**

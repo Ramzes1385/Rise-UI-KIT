@@ -726,6 +726,7 @@
     "test:story-source": "node scripts/check-story-source.mjs",
     "test:slot-docs": "node scripts/check-slot-docs.mjs",
     "test:ratchets": "node scripts/check-ratchets.mjs",
+    "test:fuzz": "node scripts/run-fuzz.mjs",
     "test:css-split": "node scripts/check-css-split.mjs",
     "test:subpaths": "node scripts/generate-subpath-exports.mjs --check && node scripts/check-subpaths-app.mjs",
     "test:autoimport": "node scripts/check-autoimport-app.mjs",

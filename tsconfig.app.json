@@ -60,6 +60,7 @@
     "build/tests/setup-vitest.ts",
     "build/tests/visual.ts",
     "build/tests/*.spec.ts",
+    "build/tests/fuzz/*.ts",
     "build/plugins/slotDocs.ts",
     "build/plugins/cssSplit.ts",
     "build/config/cssSplit.ts",
