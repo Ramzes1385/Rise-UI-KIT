@@ -6,6 +6,9 @@ import { BaseSearch } from '@components/BaseSearch'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { staticStorySource, useStorySetup } from '@/stories/helpers'
 
+const SEARCH_END_GAP = 64
+const WIDE_MIN_WIDTH = 600
+
 const template = `
 	<BaseHeader title="Rise Docs" href="#home" nav-align="stretch" :is-sticky="false">
 		<BaseSearch placeholder="Поиск по документации" />
@@ -32,7 +35,9 @@ export const WithSearch: StoryObj<typeof meta> = {
 	}),
 	play: async ({ canvas }) => {
 		const header = canvas.getByRole('banner').getBoundingClientRect()
-		const search = canvas.getByRole('combobox', { name: 'Поиск по документации' })
-		await expect(search.getBoundingClientRect().width).toBeGreaterThan(header.width / 2)
+		const search = canvas.getByRole('combobox', { name: 'Поиск по документации' }).getBoundingClientRect()
+		const end = canvas.getByRole('button', { name: 'Войти' }).getBoundingClientRect()
+		await expect(end.left - search.right).toBeLessThan(SEARCH_END_GAP)
+		if (header.width >= WIDE_MIN_WIDTH) await expect(search.width).toBeGreaterThan(header.width / 2)
 	},
 }

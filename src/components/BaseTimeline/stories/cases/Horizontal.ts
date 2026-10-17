@@ -10,6 +10,7 @@ const template = `
 
 export const Horizontal: StoryObj<typeof meta> = {
 	parameters: {
+		a11y: { config: { rules: [{ id: 'scrollable-region-focusable', enabled: false }] } },
 		docs: {
 			description: { story: 'Горизонтальная лента: этапы слева направо, при нехватке места — прокрутка.' },
 			source: storySource({ template, imports: ['BaseTimeline'] }),

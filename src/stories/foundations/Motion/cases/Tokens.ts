@@ -7,7 +7,7 @@ import { MOTION_TOKEN_VALUE_SOURCE, MOTION_TOKENS, MotionTokenValue } from '../s
 const state = { tokens: MOTION_TOKENS }
 
 const template = `
-	<div class="fnd-motion-scroll">
+	<div class="fnd-motion-scroll" role="region" tabindex="0" aria-label="Токены движения">
 		<table class="fnd-motion-table">
 			<caption>Токены движения по пресетам</caption>
 			<thead>

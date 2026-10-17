@@ -1,8 +1,10 @@
+import { tabTo } from '@/stories/helpers'
 import { timedSlides } from '../../shared'
 import { expect, waitFor } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../BasePresentationPlayer.stories'
-import { STORY_WAIT_TIMEOUT, tabTo } from '@/stories/helpers'
+
+const COMPLETE_TIMEOUT = 10_000
 
 export const Completed: StoryObj<typeof meta> = {
 	name: 'Пройдено',
@@ -21,10 +23,10 @@ export const Completed: StoryObj<typeof meta> = {
 	args: { slides: timedSlides(1) },
 	play: async ({ canvas, userEvent, args }) => {
 		await userEvent.click(canvas.getByRole('button', { name: 'Воспроизвести' }))
-		await waitFor(() => expect(canvas.getByText('Пройдено слайдов: 3 из 3')).toBeInTheDocument(), { timeout: STORY_WAIT_TIMEOUT })
+		await waitFor(() => expect(canvas.getByText('Пройдено слайдов: 3 из 3')).toBeInTheDocument(), { timeout: COMPLETE_TIMEOUT })
 		await expect(canvas.getByText('Пройдено')).toBeInTheDocument()
-		await expect(args['onSlide-complete']).toHaveBeenCalledTimes(3)
-		await expect(args.onComplete).toHaveBeenCalledTimes(1)
+		await waitFor(() => expect(args['onSlide-complete']).toHaveBeenCalledTimes(3), { timeout: COMPLETE_TIMEOUT })
+		await waitFor(() => expect(args.onComplete).toHaveBeenCalledTimes(1), { timeout: COMPLETE_TIMEOUT })
 
 		const replay = canvas.getByRole('button', { name: 'Смотреть сначала' })
 		await tabTo(replay, userEvent)

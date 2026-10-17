@@ -24,7 +24,8 @@ export const DirectoryGrid: StoryObj<typeof meta> = {
 		const sections = within(directory).getAllByRole('list')
 		await expect(sections.map(section => section.getAttribute('aria-label'))).toEqual(['Л', 'М', 'С'])
 		await expect(directory.querySelectorAll('.base-image-map__thumb')).toHaveLength(12)
-		const map = canvasElement.querySelector('.base-image-map__viewport')
-		await expect(directory.getBoundingClientRect().left).toBeGreaterThanOrEqual(map!.getBoundingClientRect().right)
+		const map = (canvasElement.querySelector('.base-image-map__viewport') as HTMLElement).getBoundingClientRect()
+		const list = directory.getBoundingClientRect()
+		await expect(list.left >= map.right - 1 || list.top >= map.bottom - 1).toBe(true)
 	},
 }

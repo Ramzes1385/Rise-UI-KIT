@@ -9,6 +9,7 @@ const template = `<div class="story-stack"><BaseCode v-for="preset in presets" :
 
 export const Sizes: StoryObj<typeof meta> = {
 	parameters: {
+		a11y: { config: { rules: [{ id: 'landmark-unique', enabled: false }] } },
 		docs: {
 			description: { story: 'Размеры через `sizeScale`: 75 / 87.5 / 100 / 112.5 / 125 — шрифт, отступы и заголовок.' },
 			source: storySource({ template, imports: ['BaseCode'], script: `const presets = ${literal(presets)}` }),

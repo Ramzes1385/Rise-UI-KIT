@@ -6,11 +6,13 @@ import { storySource, useStorySetup } from '@/stories/helpers'
 
 const template = `<div class="story-medium"><BaseCardInput v-bind="args" /></div>`
 
+const WRAP_WIDTH = 503
+
 export const Inline: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
 			description: {
-				story: 'Раскладка `inline`: номер, срок и код в одну строку — для узких форм оплаты без имени владельца.',
+				story: 'Раскладка `inline`: номер, срок и код в одну строку — для узких форм оплаты без имени владельца. Если контейнер уже 503 px (телефон), номер уходит на отдельную строку, срок и код остаются рядом.',
 			},
 			source: storySource({ template, imports: ['BaseCardInput'] }),
 		},
@@ -22,9 +24,14 @@ export const Inline: StoryObj<typeof meta> = {
 		template,
 	}),
 	play: async ({ canvas }) => {
-		const number = canvas.getByLabelText('Номер карты').getBoundingClientRect()
+		const numberInput = canvas.getByLabelText('Номер карты')
+		const number = numberInput.getBoundingClientRect()
+		const expiry = canvas.getByLabelText('Срок действия').getBoundingClientRect()
 		const code = canvas.getByLabelText('Код').getBoundingClientRect()
-		await expect(Math.abs(number.top - code.top)).toBeLessThan(2)
+		const fieldsWidth = (numberInput.closest('.base-card-input__fields') as HTMLElement).clientWidth
+		await expect(Math.abs(expiry.top - code.top)).toBeLessThan(2)
+		if (fieldsWidth > WRAP_WIDTH) await expect(Math.abs(number.top - code.top)).toBeLessThan(2)
+		else await expect(code.top).toBeGreaterThan(number.bottom)
 		await expect(canvas.queryByLabelText('Имя владельца')).toBeNull()
 	},
 }

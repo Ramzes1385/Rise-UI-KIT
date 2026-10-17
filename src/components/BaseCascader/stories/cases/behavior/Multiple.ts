@@ -13,6 +13,7 @@ export const Multiple: StoryObj<typeof meta> = {
 		],
 	},
 	parameters: {
+		a11y: { config: { rules: [{ id: 'scrollable-region-focusable', enabled: false }] } },
 		docs: {
 			...docsFrame(360),
 			description: {

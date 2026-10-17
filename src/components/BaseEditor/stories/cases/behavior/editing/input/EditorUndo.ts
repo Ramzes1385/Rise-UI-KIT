@@ -5,6 +5,8 @@ import BaseEditor from '../../../../../ui/BaseEditor.vue'
 import { storySource, useStorySetup } from '@/stories/helpers'
 
 const models = { html: 'modelValue' }
+
+const BOLD_SELECTOR = 'b, strong'
 const state = { sent: 0 }
 
 const template = `
@@ -59,19 +61,19 @@ export const EditorUndo: StoryObj<typeof meta> = {
 		selectWord(textbox, 7, 10)
 
 		await userEvent.click(canvas.getByRole('button', { name: 'Жирный' }))
-		await waitFor(() => expect(within(textbox).getByText('мир').tagName).toBe('STRONG'))
+		await waitFor(() => expect(within(textbox).getByText('мир').closest(BOLD_SELECTOR)).not.toBeNull())
 
 		await userEvent.keyboard('{Control>}z{/Control}')
-		await waitFor(() => expect(textbox.querySelector('strong')).toBeNull())
+		await waitFor(() => expect(textbox.querySelector(BOLD_SELECTOR)).toBeNull())
 		await expect(textbox).toHaveTextContent('Привет мир')
 
 		await userEvent.keyboard('{Control>}y{/Control}')
-		await waitFor(() => expect(textbox.querySelector('strong')).not.toBeNull())
+		await waitFor(() => expect(textbox.querySelector(BOLD_SELECTOR)).not.toBeNull())
 
 		await userEvent.keyboard('{Control>}z{/Control}')
-		await waitFor(() => expect(textbox.querySelector('strong')).toBeNull())
+		await waitFor(() => expect(textbox.querySelector(BOLD_SELECTOR)).toBeNull())
 		await userEvent.keyboard('{Control>}{Shift>}z{/Shift}{/Control}')
-		await waitFor(() => expect(textbox.querySelector('strong')).not.toBeNull())
+		await waitFor(() => expect(textbox.querySelector(BOLD_SELECTOR)).not.toBeNull())
 
 		await userEvent.keyboard('{Control>}z{/Control}')
 		await userEvent.keyboard('{Control>}z{/Control}')
@@ -85,17 +87,17 @@ export const EditorUndo: StoryObj<typeof meta> = {
 		redoButton.focus()
 		await userEvent.keyboard('{Enter}')
 		await userEvent.keyboard('{Enter}')
-		await waitFor(() => expect(textbox.querySelector('strong')).not.toBeNull())
+		await waitFor(() => expect(textbox.querySelector(BOLD_SELECTOR)).not.toBeNull())
 		await expect(redoButton).toHaveAttribute('aria-disabled', 'true')
 		await expect(redoButton).toHaveFocus()
 
 		await userEvent.click(undoButton)
-		await waitFor(() => expect(textbox.querySelector('strong')).toBeNull())
+		await waitFor(() => expect(textbox.querySelector(BOLD_SELECTOR)).toBeNull())
 		await expect(textbox).toHaveTextContent('Привет мир')
 		await expect(redoButton).not.toHaveAttribute('aria-disabled')
 
 		await userEvent.click(redoButton)
-		await waitFor(() => expect(textbox.querySelector('strong')).not.toBeNull())
+		await waitFor(() => expect(textbox.querySelector(BOLD_SELECTOR)).not.toBeNull())
 		await expect(redoButton).toHaveAttribute('aria-disabled', 'true')
 	},
 }

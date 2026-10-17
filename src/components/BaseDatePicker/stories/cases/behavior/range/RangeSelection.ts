@@ -41,10 +41,12 @@ export const RangeSelection: StoryObj<typeof meta> = {
 		await expect(field).toHaveValue('12.05.2025 — 18.05.2025')
 
 		await userEvent.click(field)
-		const [may, june] = Array.from((await findPanel()).querySelectorAll<HTMLElement>('.base-calendar'))
+		const panel = await findPanel()
+		const [may, june] = Array.from(panel.querySelectorAll<HTMLElement>('.base-calendar'))
 		await expect(within(may).getByRole('button', { name: dayName(0) })).toHaveAttribute('aria-pressed', 'true')
 		await userEvent.click(within(may).getByRole('button', { name: dayName(4) }))
-		await userEvent.click(within(june).getByRole('button', { name: dayName(19) }))
+		if (!june) await userEvent.click(within(panel).getByRole('button', { name: 'Следующий месяц' }))
+		await userEvent.click(within(june ?? panel).getByRole('button', { name: dayName(19) }))
 		await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
 		await expect(field).toHaveValue('19.05.2025 — 03.06.2025')
 

@@ -5,6 +5,8 @@ import BaseCookieConsent from '../../../ui/BaseCookieConsent.vue'
 import { literal, storySource, useStorySetup } from '@/stories/helpers'
 import { COOKIE_CONSENT_POSITIONS } from '../../../types/BaseCookieConsent.types'
 
+const CORNER_FRAME_RATIO = 1.5
+
 const positions = [...COOKIE_CONSENT_POSITIONS]
 
 const template = `
@@ -24,7 +26,7 @@ export const Positions: StoryObj<typeof meta> = {
 		docs: {
 			description: {
 				story: [
-					'Три положения: `bottom` — по центру внизу (ширина до 720px), `bottom-left` и `bottom-right` — компактное окно (до 420px) в углу.',
+					'Три положения: `bottom` — по центру внизу (ширина до 720px), `bottom-left` и `bottom-right` — компактное окно (до 420px) в углу; на узком экране окно занимает всю ширину рамки.',
 					'С `isContained` окно остаётся внутри рамки, без него — закреплено в окне браузера.',
 				].join('\n'),
 			},
@@ -42,7 +44,10 @@ export const Positions: StoryObj<typeof meta> = {
 			frame: (dialog.parentElement as HTMLElement).getBoundingClientRect(),
 		}))
 		await expect(Math.abs(center.dialog.left - center.frame.left - (center.frame.right - center.dialog.right))).toBeLessThanOrEqual(1)
-		await expect(left.dialog.left - left.frame.left).toBeLessThan(right.dialog.left - right.frame.left)
+		const leftOffset = left.dialog.left - left.frame.left
+		const rightOffset = right.dialog.left - right.frame.left
+		if (left.frame.width >= left.dialog.width * CORNER_FRAME_RATIO) await expect(leftOffset).toBeLessThan(rightOffset)
+		else await expect(leftOffset).toBeLessThanOrEqual(rightOffset)
 		await expect(left.dialog.left - left.frame.left).toBeLessThan(40)
 		await expect(right.frame.right - right.dialog.right).toBeLessThan(40)
 		await expect(left.dialog.bottom).toBeLessThanOrEqual(left.frame.bottom)

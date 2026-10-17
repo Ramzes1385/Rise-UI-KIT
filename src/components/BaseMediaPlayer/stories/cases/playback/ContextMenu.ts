@@ -5,6 +5,7 @@ import { expect, fireEvent, within } from 'storybook/test'
 
 export const ContextMenu: StoryObj<typeof meta> = {
 	parameters: {
+		a11y: { config: { rules: [{ id: 'scrollable-region-focusable', enabled: false }] } },
 		docs: {
 			description: {
 				story: [

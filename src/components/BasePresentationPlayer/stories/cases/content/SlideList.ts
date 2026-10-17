@@ -22,7 +22,7 @@ export const SlideList: StoryObj<typeof meta> = {
 	},
 	args: {
 		navigation: 'linear',
-		slides: notedSlides({ minDuration: 6 }),
+		slides: notedSlides({ minDuration: 30 }),
 	},
 	play: async ({ canvas, userEvent }) => {
 		const listButton = canvas.getByRole('button', { name: 'Список слайдов' })

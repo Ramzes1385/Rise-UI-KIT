@@ -17,6 +17,11 @@ const cols = { lg: 12, md: 6, sm: 2 }
 
 const breakpoints = { sm: 0, md: 400, lg: 600 }
 
+function colsAt(width: number): number {
+	if (width >= breakpoints.lg) return cols.lg
+	return width >= breakpoints.md ? cols.md : cols.sm
+}
+
 const template = `
 	<div class="story-stack">
 		<div v-for="view in views" :key="view.name">
@@ -64,8 +69,13 @@ export const Responsive: StoryObj<typeof meta> = {
 	play: async ({ canvas }) => {
 		const grids = canvas.getAllByRole('group', { name: /^Сетка (lg|md|sm)$/ })
 		await expect(grids).toHaveLength(3)
-		const [wide, medium, narrow] = grids.map(grid => grid.getBoundingClientRect().height)
-		await expect(medium).toBeGreaterThan(wide)
-		await expect(narrow).toBeGreaterThan(medium)
+		const [wide, medium, narrow] = grids.map(grid => ({
+			cols: colsAt(grid.getBoundingClientRect().width),
+			height: grid.getBoundingClientRect().height,
+		}))
+		await expect(medium.height).toBeGreaterThanOrEqual(wide.height)
+		await expect(narrow.height).toBeGreaterThanOrEqual(medium.height)
+		if (medium.cols < wide.cols) await expect(medium.height).toBeGreaterThan(wide.height)
+		if (narrow.cols < medium.cols) await expect(narrow.height).toBeGreaterThan(medium.height)
 	},
 }
