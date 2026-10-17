@@ -828,6 +828,9 @@
 | `--rise-flow-map-toolbar-gap` | toolbar | gap | — | `2px` |
 | `--rise-flow-map-toolbar-radius` | toolbar | radius | — | `var(--rise-radius-lg)` |
 | `--rise-flow-map-toolbar-shadow` | toolbar | shadow | — | `var(--rise-shadow-sm)` |
+| `--rise-flow-map-edge-border-active` | edge | border | active | `var(--rise-primary)` |
+| `--rise-flow-map-particle-bg` | particle | bg | — | `var(--rise-text-muted)` |
+| `--rise-flow-map-token-bg` | token | bg | — | `var(--rise-primary)` |
 
 ## BaseFooter
 

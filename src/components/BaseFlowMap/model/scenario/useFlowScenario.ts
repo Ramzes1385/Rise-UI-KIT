@@ -52,6 +52,7 @@ function useScenarioDetails(model: FlowScenarioModel, props: FlowModelProps, run
 		actions,
 		choices,
 		isSimulated: computed(() => simulated.value !== null),
+		isSilent: ref(false),
 		select: id => {
 			runtime.selected.value = id
 		},
@@ -218,6 +219,7 @@ function useLifecycle(context: FlowScenarioContext, clock: FlowScenarioClock, pl
 	watch(runtime.selected, () => reset(context, clock), { flush: 'sync' })
 	onMounted(() => {
 		if (props.isAutoplay && !environment.isReducedMotion()) {
+			context.details.isSilent.value = true
 			play()
 		}
 	})
@@ -245,6 +247,12 @@ export function useFlowScenario(model: FlowScenarioModel, props: FlowModelProps,
 	const play = createPlay(context, clock)
 	useLifecycle(context, clock, play)
 	const info = { scenario: details.scenario, status: runtime.status, time: runtime.time, speed: runtime.speed }
+	const byUser =
+		<A extends unknown[]>(action: (...args: A) => void) =>
+		(...args: A) => {
+			details.isSilent.value = false
+			action(...args)
+		}
 	return {
 		state: computed(() =>
 			snapshotScenario(
@@ -253,11 +261,11 @@ export function useFlowScenario(model: FlowScenarioModel, props: FlowModelProps,
 			),
 		),
 		timeline: computed(() => build.value.entries),
-		play,
-		pause: createPause(context, clock),
-		stop: () => reset(context, clock),
-		seek: createSeek(context),
-		step: createStep(context, clock),
+		play: byUser(play),
+		pause: byUser(createPause(context, clock)),
+		stop: byUser(() => reset(context, clock)),
+		seek: byUser(createSeek(context)),
+		step: byUser(createStep(context, clock)),
 		setSpeed: speed => {
 			runtime.speed.value = clampSpeed(speed)
 		},

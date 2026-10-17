@@ -169,6 +169,8 @@ export interface FlowScenarioDetails {
 	choices: ComputedRef<FlowScenarioChoices>
 	/** Сценарий построен по модели нотации */
 	isSimulated: ComputedRef<boolean>
+	/** Сценарий запущен сам (`isAutoplay`) и пользователь его ещё не трогал: шаги не озвучиваются */
+	isSilent: Ref<boolean>
 	/** Выбрать сценарий, не запуская */
 	select: (id: string | null) => void
 }

@@ -2,6 +2,7 @@
 @use './nodes';
 @use './edges';
 @use './chrome';
+@use './scenario';
 
 .base-flow-map {
 	@include custom-color-scope;
