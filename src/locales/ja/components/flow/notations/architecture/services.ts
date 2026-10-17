@@ -1,11 +1,32 @@
-/** Нотация «Карта сервисов» BaseFlowMap */
+/** BaseFlowMap service map notation: kinds, groups, rules and validation messages (ja) */
 export const jaFlowServices = {
 	flowServices: {
-		/** Название нотации */
 		NAME: 'サービスマップ',
-		/** Вид узла */
+		NODE_USER: 'ユーザー',
+		NODE_CLIENT: 'クライアント',
+		NODE_GATEWAY: 'ゲートウェイ',
+		NODE_BALANCER: 'ロードバランサー',
 		NODE_SERVICE: 'サービス',
-		/** Вид связи */
+		NODE_FUNCTION: '関数',
+		NODE_DATABASE: 'データベース',
+		NODE_CACHE: 'キャッシュ',
+		NODE_QUEUE: 'キュー',
+		NODE_STORAGE: 'ストレージ',
+		NODE_EXTERNAL: '外部システム',
+		NODE_NOTE: 'メモ',
 		EDGE_CALL: '呼び出し',
+		EDGE_EVENT: 'イベント',
+		EDGE_DATA: 'データフロー',
+		GROUP_LANE: 'レーン',
+		GROUP_LAYER: 'レイヤー',
+		GROUP_ZONE: 'ゾーン',
+		PROP_PLATFORM: 'プラットフォーム',
+		PLATFORM_WEB: 'Web',
+		PLATFORM_MOBILE: 'モバイルアプリ',
+		RULES_SUMMARY: 'サービスはキャッシュとデータベースを呼び出し、クライアントはゲートウェイ経由のみ',
+		RULE_CLIENT_VIA_GATEWAY: 'クライアントとユーザーはゲートウェイかロードバランサーにのみ接続できます',
+		RULE_STORE_CALLS_NOBODY: 'データベース、キャッシュ、ストレージは他を呼び出しません',
+		RULE_QUEUE_EVENTS_ONLY: 'キューはサービスと関数にイベントのみを渡します',
+		RULE_NOTE_NO_EDGES: 'メモは接続に参加しません',
 	},
 }

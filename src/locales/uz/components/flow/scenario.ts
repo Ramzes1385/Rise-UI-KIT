@@ -1,7 +1,34 @@
-/** Сценарии BaseFlowMap: проигрыватель и озвучка шагов */
+/** BaseFlowMap scenarios: panel, steps, time units and announcements (uz) */
 export const uzFlowScenario = {
 	flowScenario: {
-		/** Название панели сценария */
 		PANEL: 'Ssenariy',
+		PLAY: 'Ishga tushirish',
+		PAUSE: 'Pauza',
+		RESTART: 'Boshidan boshlash',
+		STEP_BACK: 'Oldingi qadam',
+		STEP_FORWARD: 'Keyingi qadam',
+		SPEED: 'Tezlik',
+		SPEED_VALUE: '{n}×',
+		SEEK: 'Ssenariyni surish',
+		SELECT: 'Ssenariyni tanlash',
+		STEPS: 'Ssenariy qadamlari',
+		STEP_OF: '{total} ta qadamdan {n}-si',
+		READY: 'Ishga tayyor',
+		DONE: 'Ssenariy tugadi',
+		TOTAL: 'Jami ≈ {value}',
+		PARALLEL: 'Parallel',
+		CHOICE: 'Tarmoqlanish: {label}',
+		NONE: "Ssenariylar yo'q",
+		SIMULATED: "Sxema bo'yicha tuzilgan",
+		FAILED: 'xato',
+		ANNOUNCE_STEP: '{total} ta qadamdan {n}-si: {text}',
+		ANNOUNCE_PARALLEL: 'Parallel: {text}',
+		ANNOUNCE_DONE: 'Ssenariy tugadi: {summary}',
+		ANNOUNCE_DONE_PLAIN: 'Ssenariy tugadi',
+		UNIT_MS: 'ms',
+		UNIT_S: 's',
+		UNIT_MIN: 'daq',
+		UNIT_H: 'soat',
+		UNIT_D: 'kun',
 	},
 }

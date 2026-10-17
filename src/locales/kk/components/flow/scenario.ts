@@ -1,7 +1,34 @@
-/** Сценарии BaseFlowMap: проигрыватель и озвучка шагов */
+/** BaseFlowMap scenarios: panel, steps, time units and announcements (kk) */
 export const kkFlowScenario = {
 	flowScenario: {
-		/** Название панели сценария */
 		PANEL: 'Сценарий',
+		PLAY: 'Іске қосу',
+		PAUSE: 'Кідірту',
+		RESTART: 'Басынан бастау',
+		STEP_BACK: 'Алдыңғы қадам',
+		STEP_FORWARD: 'Келесі қадам',
+		SPEED: 'Жылдамдық',
+		SPEED_VALUE: '{n}×',
+		SEEK: 'Сценарийді айналдыру',
+		SELECT: 'Сценарийді таңдау',
+		STEPS: 'Сценарий қадамдары',
+		STEP_OF: '{total} қадамның {n}-і',
+		READY: 'Іске қосуға дайын',
+		DONE: 'Сценарий аяқталды',
+		TOTAL: 'Барлығы ≈ {value}',
+		PARALLEL: 'Параллель',
+		CHOICE: 'Тармақталу: {label}',
+		NONE: 'Сценарийлер жоқ',
+		SIMULATED: 'Сызба бойынша құрылған',
+		FAILED: 'қате',
+		ANNOUNCE_STEP: '{total} қадамның {n}-і: {text}',
+		ANNOUNCE_PARALLEL: 'Параллель: {text}',
+		ANNOUNCE_DONE: 'Сценарий аяқталды: {summary}',
+		ANNOUNCE_DONE_PLAIN: 'Сценарий аяқталды',
+		UNIT_MS: 'мс',
+		UNIT_S: 'с',
+		UNIT_MIN: 'мин',
+		UNIT_H: 'сағ',
+		UNIT_D: 'күн',
 	},
 }

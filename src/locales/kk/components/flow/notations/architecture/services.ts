@@ -1,11 +1,32 @@
-/** Нотация «Карта сервисов» BaseFlowMap */
+/** BaseFlowMap service map notation: kinds, groups, rules and validation messages (kk) */
 export const kkFlowServices = {
 	flowServices: {
-		/** Название нотации */
-		NAME: 'Қызметтер картасы',
-		/** Вид узла */
-		NODE_SERVICE: 'Қызмет',
-		/** Вид связи */
+		NAME: 'Сервистер картасы',
+		NODE_USER: 'Пайдаланушы',
+		NODE_CLIENT: 'Клиент',
+		NODE_GATEWAY: 'Шлюз',
+		NODE_BALANCER: 'Балансшы',
+		NODE_SERVICE: 'Сервис',
+		NODE_FUNCTION: 'Функция',
+		NODE_DATABASE: 'Деректер қоры',
+		NODE_CACHE: 'Кэш',
+		NODE_QUEUE: 'Кезек',
+		NODE_STORAGE: 'Қойма',
+		NODE_EXTERNAL: 'Сыртқы жүйе',
+		NODE_NOTE: 'Ескертпе',
 		EDGE_CALL: 'Шақыру',
+		EDGE_EVENT: 'Оқиға',
+		EDGE_DATA: 'Деректер ағыны',
+		GROUP_LANE: 'Жолақ',
+		GROUP_LAYER: 'Қабат',
+		GROUP_ZONE: 'Аймақ',
+		PROP_PLATFORM: 'Платформа',
+		PLATFORM_WEB: 'Веб',
+		PLATFORM_MOBILE: 'Мобильді қолданба',
+		RULES_SUMMARY: 'Сервистер кэш пен деректер қорын шақырады; клиенттер тек шлюз арқылы',
+		RULE_CLIENT_VIA_GATEWAY: 'Клиенттер мен пайдаланушылар тек шлюзге немесе балансшыға жүгінеді',
+		RULE_STORE_CALLS_NOBODY: 'Деректер қорлары, кэштер мен қоймалар ешкімді шақырмайды',
+		RULE_QUEUE_EVENTS_ONLY: 'Кезек тек сервистер мен функцияларға оқиға жібереді',
+		RULE_NOTE_NO_EDGES: 'Ескертпе байланыстарға қатыспайды',
 	},
 }

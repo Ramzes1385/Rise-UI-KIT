@@ -1,7 +1,34 @@
-/** Сценарии BaseFlowMap: проигрыватель и озвучка шагов */
+/** BaseFlowMap scenarios: panel, steps, time units and announcements (zh) */
 export const zhFlowScenario = {
 	flowScenario: {
-		/** Название панели сценария */
 		PANEL: '场景',
+		PLAY: '播放',
+		PAUSE: '暂停',
+		RESTART: '从头播放',
+		STEP_BACK: '上一步',
+		STEP_FORWARD: '下一步',
+		SPEED: '速度',
+		SPEED_VALUE: '{n}×',
+		SEEK: '场景进度',
+		SELECT: '选择场景',
+		STEPS: '场景步骤',
+		STEP_OF: '第 {n} 步，共 {total} 步',
+		READY: '准备播放',
+		DONE: '场景已完成',
+		TOTAL: '合计约 {value}',
+		PARALLEL: '并行',
+		CHOICE: '分支：{label}',
+		NONE: '没有场景',
+		SIMULATED: '根据图表生成',
+		FAILED: '错误',
+		ANNOUNCE_STEP: '第 {n} 步，共 {total} 步：{text}',
+		ANNOUNCE_PARALLEL: '并行：{text}',
+		ANNOUNCE_DONE: '场景已结束：{summary}',
+		ANNOUNCE_DONE_PLAIN: '场景已结束',
+		UNIT_MS: '毫秒',
+		UNIT_S: '秒',
+		UNIT_MIN: '分钟',
+		UNIT_H: '小时',
+		UNIT_D: '天',
 	},
 }

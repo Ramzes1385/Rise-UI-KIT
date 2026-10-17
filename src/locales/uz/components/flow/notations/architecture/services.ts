@@ -1,11 +1,32 @@
-/** Нотация «Карта сервисов» BaseFlowMap */
+/** BaseFlowMap service map notation: kinds, groups, rules and validation messages (uz) */
 export const uzFlowServices = {
 	flowServices: {
-		/** Название нотации */
-		NAME: 'Xizmatlar xaritasi',
-		/** Вид узла */
-		NODE_SERVICE: 'Xizmat',
-		/** Вид связи */
+		NAME: 'Servislar xaritasi',
+		NODE_USER: 'Foydalanuvchi',
+		NODE_CLIENT: 'Mijoz',
+		NODE_GATEWAY: 'Shlyuz',
+		NODE_BALANCER: 'Balanslagich',
+		NODE_SERVICE: 'Servis',
+		NODE_FUNCTION: 'Funksiya',
+		NODE_DATABASE: "Ma'lumotlar bazasi",
+		NODE_CACHE: 'Kesh',
+		NODE_QUEUE: 'Navbat',
+		NODE_STORAGE: 'Saqlash',
+		NODE_EXTERNAL: 'Tashqi tizim',
+		NODE_NOTE: 'Eslatma',
 		EDGE_CALL: 'Chaqiruv',
+		EDGE_EVENT: 'Hodisa',
+		EDGE_DATA: "Ma'lumotlar oqimi",
+		GROUP_LANE: "Yo'lak",
+		GROUP_LAYER: 'Qatlam',
+		GROUP_ZONE: 'Zona',
+		PROP_PLATFORM: 'Platforma',
+		PLATFORM_WEB: 'Veb',
+		PLATFORM_MOBILE: 'Mobil ilova',
+		RULES_SUMMARY: 'Servislar kesh va bazalarni chaqiradi; mijozlar faqat shlyuz orqali',
+		RULE_CLIENT_VIA_GATEWAY: 'Mijozlar va foydalanuvchilar faqat shlyuz yoki balanslagichga murojaat qiladi',
+		RULE_STORE_CALLS_NOBODY: 'Bazalar, keshlar va omborlar hech kimni chaqirmaydi',
+		RULE_QUEUE_EVENTS_ONLY: 'Navbat faqat servislar va funksiyalarga hodisa uzatadi',
+		RULE_NOTE_NO_EDGES: "Eslatma bog'lanishlarda qatnashmaydi",
 	},
 }

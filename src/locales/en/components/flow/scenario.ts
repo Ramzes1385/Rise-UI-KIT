@@ -1,7 +1,34 @@
-/** Сценарии BaseFlowMap: проигрыватель и озвучка шагов */
+/** BaseFlowMap scenarios: panel, steps, time units and announcements (en) */
 export const enFlowScenario = {
 	flowScenario: {
-		/** Название панели сценария */
 		PANEL: 'Scenario',
+		PLAY: 'Play',
+		PAUSE: 'Pause',
+		RESTART: 'Restart',
+		STEP_BACK: 'Previous step',
+		STEP_FORWARD: 'Next step',
+		SPEED: 'Speed',
+		SPEED_VALUE: '{n}×',
+		SEEK: 'Scenario position',
+		SELECT: 'Choose a scenario',
+		STEPS: 'Scenario steps',
+		STEP_OF: 'Step {n} of {total}',
+		READY: 'Ready to play',
+		DONE: 'Scenario finished',
+		TOTAL: 'Total ≈ {value}',
+		PARALLEL: 'In parallel',
+		CHOICE: 'Branch: {label}',
+		NONE: 'No scenarios',
+		SIMULATED: 'Built from the diagram',
+		FAILED: 'error',
+		ANNOUNCE_STEP: 'Step {n} of {total}: {text}',
+		ANNOUNCE_PARALLEL: 'In parallel: {text}',
+		ANNOUNCE_DONE: 'Scenario finished: {summary}',
+		ANNOUNCE_DONE_PLAIN: 'Scenario finished',
+		UNIT_MS: 'ms',
+		UNIT_S: 's',
+		UNIT_MIN: 'min',
+		UNIT_H: 'h',
+		UNIT_D: 'd',
 	},
 }

@@ -1,7 +1,34 @@
-/** Сценарии BaseFlowMap: проигрыватель и озвучка шагов */
+/** BaseFlowMap scenarios: panel, steps, time units and announcements (ja) */
 export const jaFlowScenario = {
 	flowScenario: {
-		/** Название панели сценария */
 		PANEL: 'シナリオ',
+		PLAY: '再生',
+		PAUSE: '一時停止',
+		RESTART: '最初から再生',
+		STEP_BACK: '前のステップ',
+		STEP_FORWARD: '次のステップ',
+		SPEED: '速度',
+		SPEED_VALUE: '{n}×',
+		SEEK: 'シナリオの位置',
+		SELECT: 'シナリオの選択',
+		STEPS: 'シナリオのステップ',
+		STEP_OF: 'ステップ {n} / {total}',
+		READY: '再生の準備完了',
+		DONE: 'シナリオ完了',
+		TOTAL: '合計 約 {value}',
+		PARALLEL: '並列',
+		CHOICE: '分岐：{label}',
+		NONE: 'シナリオはありません',
+		SIMULATED: '図から作成',
+		FAILED: 'エラー',
+		ANNOUNCE_STEP: 'ステップ {n} / {total}：{text}',
+		ANNOUNCE_PARALLEL: '並列：{text}',
+		ANNOUNCE_DONE: 'シナリオ完了：{summary}',
+		ANNOUNCE_DONE_PLAIN: 'シナリオ完了',
+		UNIT_MS: 'ミリ秒',
+		UNIT_S: '秒',
+		UNIT_MIN: '分',
+		UNIT_H: '時間',
+		UNIT_D: '日',
 	},
 }
