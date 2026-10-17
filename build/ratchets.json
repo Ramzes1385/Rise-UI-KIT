@@ -68,6 +68,14 @@
 			"gzip": 61,
 			"budget": 2048
 		},
+		"tokens.json": {
+			"gzip": 3629,
+			"budget": 5120
+		},
+		"tokens/*.json": {
+			"gzip": 3647,
+			"budget": 5120
+		},
 		"utils.js": {
 			"gzip": 97671,
 			"budget": 107520

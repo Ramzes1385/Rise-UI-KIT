@@ -19,7 +19,7 @@
 import { spawnSync } from 'node:child_process'
 import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { dirname, join, relative, resolve } from 'node:path'
+import { basename, dirname, join, relative, resolve } from 'node:path'
 import { gzipSync } from 'node:zlib'
 
 /** Запас бюджета размера над текущим размером: 10%, но не меньше 1 КБ */
@@ -33,6 +33,7 @@ const COVERAGE_EXCLUDE = /--coverage\.exclude[=\s]/g
 const SIZE_GROUPS = [
 	{ key: 'components/*/index.js', test: /^components\/[^/]+\/index\.js$/ },
 	{ key: 'components/*/style.css', test: /^components\/[^/]+\/style\.css$/, single: true },
+	{ key: 'tokens/*.json', test: /^tokens\/[^/]+\.json$/, single: true },
 ]
 const STATIC_IMPORT = /\b(?:import|export)\s*(?:[\w$*{},\s]*?\bfrom\s*)?["'](\.{1,2}\/[^"']+)["']/g
 
@@ -46,12 +47,30 @@ const DIST = join(ROOT, 'dist')
 const readJson = file => JSON.parse(readFileSync(file, 'utf8'))
 const kb = bytes => `${(bytes / 1024).toFixed(1)} КБ`
 
-/** Файлы `dist`, на которые ссылается `exports` пакета (кроме типов) */
+/** Файлы `dist` по шаблону с `*` в последнем сегменте (`./dist/tokens/*.json`) */
+function expandPattern(pattern) {
+	const folder = join(DIST, dirname(pattern))
+	if (!existsSync(folder)) return []
+	const name = new RegExp(
+		`^${basename(pattern)
+			.split('*')
+			.map(part => part.replace(/[.+?^${}()|[\]\\]/g, '\\$&'))
+			.join('[^/]+')}$`,
+	)
+	return readdirSync(folder)
+		.filter(file => name.test(file))
+		.map(file => `${dirname(pattern)}/${file}`)
+}
+
+/** Файлы `dist`, на которые ссылается `exports` пакета (кроме типов); шаблоны с `*` раскрываются по файлам в `dist` */
 function packageEntries(pkg) {
 	const files = new Set()
 	const collect = value => {
 		if (typeof value === 'string') {
-			if (value.startsWith('./dist/') && !value.endsWith('.d.ts')) files.add(value.slice('./dist/'.length))
+			if (!value.startsWith('./dist/') || value.endsWith('.d.ts')) return
+			const entry = value.slice('./dist/'.length)
+			if (entry.includes('*')) expandPattern(entry).forEach(file => files.add(file))
+			else files.add(entry)
 			return
 		}
 		if (value && typeof value === 'object') Object.entries(value).forEach(([key, inner]) => key !== 'types' && collect(inner))
