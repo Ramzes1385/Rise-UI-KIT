@@ -2,7 +2,7 @@ import type meta from '../../BaseEditor.stories'
 import BaseEditor from '../../../ui/BaseEditor.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { expect, waitFor, within } from 'storybook/test'
-import { storySource, tabTo, useStorySetup } from '@/stories/helpers'
+import { inlineKey, storySource, tabTo, useStorySetup } from '@/stories/helpers'
 
 const models = { html: 'modelValue' }
 
@@ -41,18 +41,18 @@ export const EditorToolbarKeyboard: StoryObj<typeof meta> = {
 		await userEvent.tab()
 		const undo = within(toolbar).getByRole('button', { name: 'Отменить' })
 		await expect(undo).toHaveFocus()
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await expect(within(toolbar).getByRole('button', { name: 'Повторить' })).toHaveFocus()
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		const bold = within(toolbar).getByRole('button', { name: 'Жирный' })
 		await expect(bold).toHaveFocus()
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await expect(within(toolbar).getByRole('button', { name: 'Курсив' })).toHaveFocus()
 		await userEvent.keyboard('{End}')
 		await expect(within(toolbar).getByRole('button', { name: 'Режим кода' })).toHaveFocus()
 		await userEvent.keyboard('{Home}')
 		await expect(undo).toHaveFocus()
-		await userEvent.keyboard('{ArrowRight}{ArrowRight}{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}').repeat(3))
 
 		const textbox = canvas.getByRole('textbox', { name: 'Текстовый редактор' })
 		await userEvent.tab()

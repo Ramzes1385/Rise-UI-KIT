@@ -1,9 +1,9 @@
 import { BaseButton } from '@components/BaseButton'
 import type meta from '../../BaseTreeSelect.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { motionPresetsStory } from '@/stories/helpers'
 import { expect, screen, waitFor } from 'storybook/test'
 import BaseTreeSelect from '../../../ui/BaseTreeSelect.vue'
+import { motionPresetsStory, inlineKey } from '@/stories/helpers'
 
 const motion = motionPresetsStory({
 	item: `
@@ -40,10 +40,10 @@ export const Animations: StoryObj<typeof meta> = {
 		field.focus()
 		await userEvent.keyboard('{ArrowDown}')
 		await waitFor(() => expect(field).toHaveAttribute('aria-expanded', 'true'))
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await waitFor(() => expect(screen.getByRole('treeitem', { name: 'Центральный округ' })).toHaveAttribute('aria-expanded', 'true'))
 		await waitFor(() => expect(screen.getByRole('treeitem', { name: 'Тула' })).toBeVisible())
-		await userEvent.keyboard('{ArrowLeft}')
+		await userEvent.keyboard(inlineKey('{ArrowLeft}'))
 		await waitFor(() => expect(screen.queryByRole('treeitem', { name: 'Тула' })).not.toBeInTheDocument())
 		await userEvent.keyboard('{Escape}')
 		await waitFor(() => expect(field).toHaveAttribute('aria-expanded', 'false'))

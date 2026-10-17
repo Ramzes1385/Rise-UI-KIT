@@ -442,3 +442,37 @@ describe('useDropdownPosition', () => {
 		})
 	})
 })
+
+describe('useDropdownPosition в RTL', () => {
+	function setupRtl(position: DropdownPosition) {
+		const wrapper = createWrapper(rect(300, 400))
+		wrapper.setAttribute('dir', 'rtl')
+		document.body.append(wrapper)
+		return setup({ position, wrapper })
+	}
+
+	afterEach(() => {
+		document.body.innerHTML = ''
+	})
+
+	it.each([
+		{ position: 'bottom-start', left: 500, transformOrigin: 'top right' },
+		{ position: 'bottom-end', left: 400, transformOrigin: 'top left' },
+		{ position: 'top-start', left: 500, transformOrigin: 'bottom right' },
+		{ position: 'top-end', left: 400, transformOrigin: 'bottom left' },
+		{ position: 'bottom', left: 450, transformOrigin: 'top center' },
+	] as const)('$position: start и end меняются местами', ({ position, left, transformOrigin }) => {
+		const { api } = setupRtl(position)
+		expect(api.panelStyle.value.left).toBe(`${left}px`)
+		expect(api.panelStyle.value.transformOrigin).toBe(transformOrigin)
+	})
+
+	it.each([
+		{ position: 'right-start', left: 604, transformOrigin: 'top left' },
+		{ position: 'left-start', left: 296, transformOrigin: 'top right' },
+	] as const)('$position: физические стороны left и right остаются', ({ position, left, transformOrigin }) => {
+		const { api } = setupRtl(position)
+		expect(api.panelStyle.value.left).toBe(`${left}px`)
+		expect(api.panelStyle.value.transformOrigin).toBe(transformOrigin)
+	})
+})

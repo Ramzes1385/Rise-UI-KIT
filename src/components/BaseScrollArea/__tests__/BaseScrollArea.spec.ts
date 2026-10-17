@@ -78,7 +78,7 @@ describe('BaseScrollArea unit', () => {
 		const horizontal = setup({ orientation: 'horizontal' }, size)
 		await Promise.resolve()
 		expect(horizontal.container.querySelector('.base-scroll-area__bar--y')).not.toBeInTheDocument()
-		expect(thumb(horizontal.container, 'x')).toHaveStyle({ width: '25%', left: '0%' })
+		expect(thumb(horizontal.container, 'x')).toHaveStyle({ width: '25%', insetInlineStart: '0%' })
 		horizontal.unmount()
 		const both = setup({ orientation: 'both' }, size)
 		await Promise.resolve()
@@ -158,5 +158,37 @@ describe('BaseScrollArea unit', () => {
 		expect(viewport.scrollTo).toHaveBeenNthCalledWith(2, { top: 0 })
 		expect(viewport.scrollTo).toHaveBeenNthCalledWith(3, { top: 400 })
 		expect(api.getViewport()).toBe(viewport)
+	})
+
+	describe('RTL', () => {
+		beforeEach(() => document.documentElement.setAttribute('dir', 'rtl'))
+		afterEach(() => document.documentElement.removeAttribute('dir'))
+
+		const size = { clientHeight: 100, scrollHeight: 100, clientWidth: 100, scrollWidth: 400 }
+
+		it('ползунок считает расстояние от правого края: scrollLeft отрицательный', async () => {
+			const { container, viewport } = setup({ orientation: 'horizontal' }, size)
+			viewport.scrollLeft = -150
+			await fireEvent.scroll(viewport)
+			expect(thumb(container, 'x')).toHaveStyle({ insetInlineStart: '37.5%' })
+		})
+
+		it('клик по полосе: доля считается от правого края, прокрутка уходит в минус', async () => {
+			const { container, viewport } = setup({ orientation: 'horizontal' }, size)
+			await Promise.resolve()
+			const bar = container.querySelector('.base-scroll-area__bar--x') as HTMLElement
+			bar.getBoundingClientRect = () => ({ top: 0, left: 0, right: 100, width: 100, height: 10 }) as DOMRect
+			await fireEvent.pointerDown(bar, { clientX: 75 })
+			expect(viewport.scrollLeft).toBe(-50)
+		})
+
+		it('перетаскивание ползунка влево прокручивает вперёд', async () => {
+			const { container, viewport } = setup({ orientation: 'horizontal' }, size)
+			await Promise.resolve()
+			const thumbX = thumb(container, 'x')
+			await fireEvent.pointerDown(thumbX, { button: 0, clientX: 50 })
+			await fireEvent.pointerMove(thumbX, { clientX: 40 })
+			expect(viewport.scrollLeft).toBe(-40)
+		})
 	})
 })

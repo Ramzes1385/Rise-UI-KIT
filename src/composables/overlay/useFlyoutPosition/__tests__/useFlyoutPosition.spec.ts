@@ -27,7 +27,10 @@ function setViewport(width: number, height: number): void {
 
 describe('useFlyoutPosition', () => {
 	beforeEach(() => setViewport(1280, 800))
-	afterEach(() => setViewport(1024, 768))
+	afterEach(() => {
+		setViewport(1024, 768)
+		document.body.innerHTML = ''
+	})
 
 	it('раскрывает панель вправо от якоря, когда места достаточно', async () => {
 		const anchorRef = ref<HTMLElement | null>(createMockElement({ left: 100, right: 300, top: 50 }))
@@ -99,6 +102,35 @@ describe('useFlyoutPosition', () => {
 
 		expect(result.isFlipped.value).toBe(true)
 		expect(Number.parseInt(result.panelStyle.value.left, 10)).toBeLessThan(1100)
+	})
+
+	describe('RTL', () => {
+		beforeEach(() => document.documentElement.setAttribute('dir', 'rtl'))
+		afterEach(() => document.documentElement.removeAttribute('dir'))
+
+		function openAt(rect: Partial<DOMRect>) {
+			const anchor = createMockElement(rect)
+			document.body.append(anchor)
+			const anchorRef = ref<HTMLElement | null>(anchor)
+			const panelRef = ref<HTMLElement | null>(createMockElement({ width: 220, height: 200 }))
+			const { result } = withSetup(() => useFlyoutPosition({ anchorRef, panelRef, isOpen: () => true }))
+			result.updatePosition()
+			return result
+		}
+
+		it('раскрывает панель влево от якоря, когда слева хватает места', () => {
+			const result = openAt({ left: 600, right: 800, top: 50 })
+
+			expect(result.isFlipped.value).toBe(false)
+			expect(result.panelStyle.value.left).toBe('376px')
+		})
+
+		it('делает flip вправо, когда слева не хватает места', () => {
+			const result = openAt({ left: 100, right: 300, top: 50 })
+
+			expect(result.isFlipped.value).toBe(true)
+			expect(result.panelStyle.value.left).toBe('304px')
+		})
 	})
 
 	it('прижимает панель к верху, если она выходит за нижний край', async () => {

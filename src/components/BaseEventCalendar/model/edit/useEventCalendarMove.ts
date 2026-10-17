@@ -1,6 +1,7 @@
 import { shallowRef } from 'vue'
 import { formatMessage } from '@/locales/state'
 import { UI_EVENT_CALENDAR } from '@/locales/messages'
+import { resolveArrowKey } from '@utils/dom/directionUtils'
 import { focusIn, formatRange } from './eventCalendarEditDom'
 import type { NormalizedCalendarEvent } from '@utils/calendar/eventUtils'
 import { findResource, neighborColumn } from '../resources/eventCalendarResources'
@@ -67,7 +68,7 @@ function keyTime(
 	const { event, grab, current, by } = key
 	const move = { by, isResize: event.shiftKey, step: context.step.value }
 	const isColumnStep = context.resources.value.length > 0 && grab.kind !== 'month' && !event.shiftKey
-	return (isColumnStep && columnTime(context, current, event.key)) || nextTime(current, grab, move)
+	return (isColumnStep && columnTime(context, current, resolveArrowKey(event))) || nextTime(current, grab, move)
 }
 
 function freeDraft(
@@ -85,7 +86,7 @@ function freeDraft(
 }
 
 function stepGrabbed(context: EventCalendarContext, event: KeyboardEvent, grab: EventCalendarGrab): void {
-	const by = stepOf(grab.kind, event.key, context.step.value)
+	const by = stepOf(grab.kind, resolveArrowKey(event), context.step.value)
 	const current = context.draft.value
 	if (!by || !current) return
 	event.preventDefault()

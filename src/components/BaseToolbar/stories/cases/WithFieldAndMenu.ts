@@ -5,7 +5,7 @@ import BaseToolbar from '../../ui/BaseToolbar.vue'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { BaseDropdownMenu } from '@components/BaseDropdownMenu'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { literal, storySource, useStorySetup, inlineKey } from '@/stories/helpers'
 
 const items = [{ label: 'Экспорт в CSV' }, { label: 'Экспорт в Excel' }]
 
@@ -37,7 +37,7 @@ export const WithFieldAndMenu: StoryObj<typeof meta> = {
 	play: async ({ canvas, userEvent }) => {
 		const search = canvas.getByRole('textbox', { name: 'Поиск по строкам' })
 		await userEvent.click(search)
-		await userEvent.keyboard('ab{ArrowLeft}')
+		await userEvent.keyboard('ab' + inlineKey('{ArrowLeft}'))
 		await expect(search).toHaveFocus()
 	},
 }

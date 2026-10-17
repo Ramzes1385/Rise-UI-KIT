@@ -24,7 +24,7 @@ function buildTrackStyle(input: SliderTrackStyleInput): Record<string, string> {
 	const gap = settings.spaceBetween()
 	const offsetPercent = viewportSize > 0 ? (input.dragOffset / viewportSize) * 100 : 0
 	const styles: Record<string, string> = {
-		transform: `translate${direction}(${offsetPercent - trackBasePercent(input)}%)`,
+		transform: `translate${direction}(${offsetPercent - (input.directionSign ?? 1) * trackBasePercent(input)}%)`,
 	}
 	if (gap > 0) styles.gap = `${gap}px`
 	if (input.isDragging) styles.transition = 'none'

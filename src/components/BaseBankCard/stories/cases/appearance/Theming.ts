@@ -48,7 +48,7 @@ export const Theming: StoryObj<typeof meta> = {
 		if (!isStoryBranded()) await expect(getComputedStyle(themed).width).toBe('360px')
 		if (!isStoryBranded()) await expect(getComputedStyle(plain).width).toBe('320px')
 		if (!isStoryBranded()) await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('16px')
-		if (!isStoryBranded()) await expect(getComputedStyle(themed).paddingLeft).toBe('28px')
+		if (!isStoryBranded()) await expect(getComputedStyle(themed).paddingInlineStart).toBe('28px')
 		await expect(getComputedStyle(themed).boxShadow).not.toBe(getComputedStyle(plain).boxShadow)
 		await expect(classed).toHaveClass('base-bank-card', 'story-themed-card')
 		await expect(classed.querySelector('.base-bank-card__number')).toHaveClass('story-themed-number')

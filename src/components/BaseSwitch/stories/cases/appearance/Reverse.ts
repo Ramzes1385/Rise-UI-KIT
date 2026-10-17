@@ -2,7 +2,7 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseSwitch.stories'
 import BaseSwitch from '../../../ui/BaseSwitch.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { storySource, useStorySetup } from '@/stories/helpers'
+import { inlineEnd, inlineStart, storySource, useStorySetup } from '@/stories/helpers'
 
 const state = { settings: { email: true, push: false, digest: true } }
 
@@ -35,6 +35,6 @@ export const Reverse: StoryObj<typeof meta> = {
 	play: async ({ canvas }) => {
 		const toggle = canvas.getByRole('switch', { name: 'Письма о заказах' })
 		const label = canvas.getByText('Письма о заказах')
-		await expect(toggle.getBoundingClientRect().left).toBeGreaterThan(label.getBoundingClientRect().right)
+		await expect(inlineStart(toggle.getBoundingClientRect())).toBeGreaterThan(inlineEnd(label.getBoundingClientRect()))
 	},
 }

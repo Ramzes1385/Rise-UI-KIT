@@ -119,6 +119,8 @@ interface SliderTrackStyleInput {
 	dragOffset: number
 	/** Идёт перетаскивание — без анимации перехода */
 	isDragging: boolean
+	/** Знак направления по горизонтали: 1 в LTR, −1 в RTL (лента идёт справа налево); по умолчанию 1 */
+	directionSign?: 1 | -1
 }
 
 /** Возврат useSliderNavigation: текущий слайд, страницы и переходы */

@@ -64,14 +64,17 @@ function withSetupFull<T>(composable: () => T): { result: T; wrapper: ReturnType
 }
 
 /** Обёртка с DOM-элементом для viewportRef */
-function withSetupDOM(composable: () => UseSliderReturn): UseSliderReturn {
+function withSetupDOM(composable: () => UseSliderReturn, options: { isAttached?: boolean } = {}): UseSliderReturn {
 	let result: UseSliderReturn
-	mount({
-		setup() {
-			result = composable()
-			return () => h('div', { ref: result!.viewportRef })
+	mount(
+		{
+			setup() {
+				result = composable()
+				return () => h('div', { ref: result!.viewportRef })
+			},
 		},
-	})
+		options.isAttached ? { attachTo: document.body } : {},
+	)
 	return result!
 }
 
@@ -804,6 +807,41 @@ describe('useSlider', () => {
 
 			// slideSize = (300 - (2-1)*10) / 2 = 145
 			expect(slider.slideStyle.value.height).toBe('145px')
+		})
+
+		describe('RTL', () => {
+			beforeEach(() => document.documentElement.setAttribute('dir', 'rtl'))
+			afterEach(() => {
+				document.documentElement.removeAttribute('dir')
+				document.body.innerHTML = ''
+			})
+
+			it('вперёд — свайп вправо, назад — влево', () => {
+				const slider = withSetupDOM(() => useSlider(createOptions({ initialIndex: () => 1 })), { isAttached: true })
+
+				swipeCallbacks.onDragEnd!({ main: 150, cross: 0 })
+				expect(slider.currentIndex.value).toBe(2)
+				swipeCallbacks.onDragEnd!({ main: -150, cross: 0 })
+				expect(slider.currentIndex.value).toBe(1)
+			})
+
+			it('лента сдвигается в обратную сторону: translateX(+индекс × 100%)', async () => {
+				const slider = withSetupDOM(() => useSlider(createOptions({ initialIndex: () => 1 })), { isAttached: true })
+				await nextTick()
+
+				expect(slider.trackStyle.value.transform).toBe('translateX(100%)')
+			})
+
+			it('вертикальная лента направление письма не учитывает', async () => {
+				const slider = withSetupDOM(() => useSlider(createOptions({ isVertical: () => true, initialIndex: () => 1 })), {
+					isAttached: true,
+				})
+				await nextTick()
+
+				swipeCallbacks.onDragEnd!({ main: -150, cross: 0 })
+				expect(slider.currentIndex.value).toBe(2)
+				expect(slider.trackStyle.value.transform).toBe('translateY(-200%)')
+			})
 		})
 
 		describe('handleDragEnd', () => {

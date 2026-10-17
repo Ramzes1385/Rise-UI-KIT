@@ -1,6 +1,6 @@
 import { docsFrame } from '../../shared'
-import { tabTo } from '@/stories/helpers'
 import type meta from '../../BaseTreeSelect.stories'
+import { tabTo, inlineKey } from '@/stories/helpers'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { expect, screen, waitFor } from 'storybook/test'
 
@@ -30,13 +30,13 @@ export const Keyboard: StoryObj<typeof meta> = {
 		await screen.findByRole('tree', { name: 'Город доставки' })
 		await expect(activeLabel(trigger)).toBe('Центральный округ')
 
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await waitFor(() => expect(screen.getByRole('treeitem', { name: 'Центральный округ' })).toHaveAttribute('aria-expanded', 'true'))
-		await userEvent.keyboard('{ArrowRight}{ArrowDown}{ArrowDown}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}') + '{ArrowDown}{ArrowDown}')
 		await expect(activeLabel(trigger)).toBe('Тула')
-		await userEvent.keyboard('{ArrowLeft}')
+		await userEvent.keyboard(inlineKey('{ArrowLeft}'))
 		await expect(activeLabel(trigger)).toBe('Центральный округ')
-		await userEvent.keyboard('{ArrowRight}{ArrowRight}{Enter}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}') + inlineKey('{ArrowRight}') + '{Enter}')
 
 		await waitFor(() => expect(trigger).toHaveAttribute('aria-expanded', 'false'))
 		await expect(trigger).toHaveTextContent('Москва')

@@ -19,7 +19,7 @@ describe('useRangeValues', () => {
 			expect(range.pointValues.value).toEqual([40])
 			expect(range.labelText.value).toBe('40')
 			expect(range.tooltipPosition.value).toBe('top')
-			expect(range.fillSegments.value).toEqual([{ left: '0%', width: '40%' }])
+			expect(range.fillSegments.value).toEqual([{ insetInlineStart: '0%', width: '40%' }])
 		})
 
 		it('обновляет modelValue и эмитит change', () => {
@@ -45,7 +45,7 @@ describe('useRangeValues', () => {
 			expect(range.mode.value).toBe('range')
 			expect(range.pointValues.value).toEqual([20, 70])
 			expect(range.labelText.value).toBe('20 — 70')
-			expect(range.fillSegments.value).toEqual([{ left: '20%', width: '50%' }])
+			expect(range.fillSegments.value).toEqual([{ insetInlineStart: '20%', width: '50%' }])
 		})
 
 		it('не даёт ползунку зайти за соседа и эмитит update:rangeValue', () => {
@@ -71,8 +71,8 @@ describe('useRangeValues', () => {
 			expect(range.mode.value).toBe('points')
 			expect(range.labelText.value).toBe('10 — 40 — 80')
 			expect(range.fillSegments.value).toEqual([
-				{ left: '10%', width: '30%' },
-				{ left: '40%', width: '40%' },
+				{ insetInlineStart: '10%', width: '30%' },
+				{ insetInlineStart: '40%', width: '40%' },
 			])
 			expect([range.thumbMin(0), range.thumbMax(0)]).toEqual([0, 40])
 			expect([range.thumbMin(1), range.thumbMax(1)]).toEqual([10, 80])
@@ -103,13 +103,13 @@ describe('useRangeValues', () => {
 
 	it('размещает ползунок и метку по горизонтали', () => {
 		const { range } = setup()
-		expect(range.thumbStyle(30)).toEqual({ left: '30%' })
-		expect(range.markStyle(50)).toEqual({ left: '50%' })
+		expect(range.thumbStyle(30)).toEqual({ insetInlineStart: '30%' })
+		expect(range.markStyle(50)).toEqual({ insetInlineStart: '50%' })
 	})
 
 	it('заливка корректна, когда точки идут по убыванию', () => {
 		const { range } = setup({ points: [80, 30] })
-		expect(range.fillSegments.value).toEqual([{ left: '30%', width: '50%' }])
+		expect(range.fillSegments.value).toEqual([{ insetInlineStart: '30%', width: '50%' }])
 	})
 
 	it('округляет к шагу и держит результат в границах', () => {
@@ -158,7 +158,7 @@ describe('useRangeValues', () => {
 			const { range } = setup({ min: 50, max: 10, modelValue: 30 })
 			expect(range.bounds.value).toEqual({ min: 50, max: 50, step: 10 })
 			expect(range.pointValues.value).toEqual([50])
-			expect(range.fillSegments.value).toEqual([{ left: '0%', width: '0%' }])
+			expect(range.fillSegments.value).toEqual([{ insetInlineStart: '0%', width: '0%' }])
 			expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('`max` = 10'))
 		})
 

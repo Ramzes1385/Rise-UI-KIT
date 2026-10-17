@@ -1,9 +1,9 @@
 import type meta from '../../BaseCascader.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { motionPresetsStory } from '@/stories/helpers'
 import BaseCascader from '../../../ui/BaseCascader.vue'
 import { expect, screen, waitFor } from 'storybook/test'
+import { motionPresetsStory, inlineKey } from '@/stories/helpers'
 
 const motion = motionPresetsStory({
 	item: `
@@ -40,7 +40,7 @@ export const Animations: StoryObj<typeof meta> = {
 		field.focus()
 		await userEvent.keyboard('{ArrowDown}')
 		await waitFor(() => expect(field).toHaveAttribute('aria-expanded', 'true'))
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await waitFor(() => expect(screen.getAllByRole('listbox')).toHaveLength(2))
 		await waitFor(() => expect(screen.getAllByRole('listbox')[1]).toBeVisible())
 		await expect(screen.getAllByRole('listbox')[1]).toHaveAccessibleName('Москва')

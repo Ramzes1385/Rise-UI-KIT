@@ -2,6 +2,7 @@ import { IMAGE_MAP_MALL } from '../../fixtures'
 import { expect, within } from 'storybook/test'
 import type meta from '../../BaseImageMap.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
+import { inlineEnd, inlineStart } from '@/stories/helpers'
 
 export const DirectoryGrid: StoryObj<typeof meta> = {
 	parameters: {
@@ -26,6 +27,6 @@ export const DirectoryGrid: StoryObj<typeof meta> = {
 		await expect(directory.querySelectorAll('.base-image-map__thumb')).toHaveLength(12)
 		const map = (canvasElement.querySelector('.base-image-map__viewport') as HTMLElement).getBoundingClientRect()
 		const list = directory.getBoundingClientRect()
-		await expect(list.left >= map.right - 1 || list.top >= map.bottom - 1).toBe(true)
+		await expect(inlineStart(list) >= inlineEnd(map) - 1 || list.top >= map.bottom - 1).toBe(true)
 	},
 }

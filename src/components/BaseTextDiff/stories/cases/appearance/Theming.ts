@@ -54,8 +54,8 @@ export const Theming: StoryObj<typeof meta> = {
 		await expect(part(themed, '.base-text-diff__table').fontSize).not.toBe(part(plain, '.base-text-diff__table').fontSize)
 		if (!isStoryBranded()) {
 			await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('12px')
-			await expect(part(plain, '.base-text-diff__summary').paddingLeft).toBe('12px')
-			await expect(part(themed, '.base-text-diff__summary').paddingLeft).toBe('16px')
+			await expect(part(plain, '.base-text-diff__summary').paddingInlineStart).toBe('12px')
+			await expect(part(themed, '.base-text-diff__summary').paddingInlineStart).toBe('16px')
 		}
 		await expect(classed).toHaveClass('base-text-diff', 'story-themed-diff')
 		await expect(classed.querySelector('.base-text-diff__summary')).toHaveClass('story-themed-summary')

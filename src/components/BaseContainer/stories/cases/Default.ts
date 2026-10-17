@@ -7,6 +7,6 @@ export const Default: StoryObj<typeof meta> = {
 	play: async ({ canvasElement }) => {
 		const container = canvasElement.querySelector('.base-container') as HTMLElement
 		await expect(getComputedStyle(container).maxWidth).toBe('768px')
-		await expect(getComputedStyle(container).marginLeft).toBe(getComputedStyle(container).marginRight)
+		await expect(getComputedStyle(container).marginInlineStart).toBe(getComputedStyle(container).marginInlineEnd)
 	},
 }

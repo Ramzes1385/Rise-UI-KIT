@@ -64,10 +64,10 @@ export const Theming: StoryObj<typeof meta> = {
 		const themed = await dialogOf('Токены на контейнере')
 		const classed = await dialogOf('Классы через ui')
 
-		await expect(getComputedStyle(themed).paddingLeft).not.toBe(getComputedStyle(plain).paddingLeft)
+		await expect(getComputedStyle(themed).paddingInlineStart).not.toBe(getComputedStyle(plain).paddingInlineStart)
 		await expect(getComputedStyle(themed).rowGap).not.toBe(getComputedStyle(plain).rowGap)
-		if (!isStoryBranded()) await expect(getComputedStyle(themed).paddingLeft).toBe('16px')
-		if (!isStoryBranded()) await expect(getComputedStyle(plain).paddingLeft).toBe('8px')
+		if (!isStoryBranded()) await expect(getComputedStyle(themed).paddingInlineStart).toBe('16px')
+		if (!isStoryBranded()) await expect(getComputedStyle(plain).paddingInlineStart).toBe('8px')
 		await expect(classed).toHaveClass('base-popconfirm', 'story-themed-popconfirm')
 		await expect(classed.querySelector('.base-popconfirm__actions')).toHaveClass('story-themed-actions')
 	},

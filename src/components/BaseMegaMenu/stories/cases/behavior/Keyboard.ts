@@ -1,3 +1,4 @@
+import { inlineKey } from '@/stories/helpers'
 import { expect, waitFor } from 'storybook/test'
 import type meta from '../../BaseMegaMenu.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
@@ -20,13 +21,13 @@ export const Keyboard: StoryObj<typeof meta> = {
 		const products = canvas.getByRole('button', { name: 'Продукты' })
 		await userEvent.tab()
 		await expect(products).toHaveFocus()
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await expect(canvas.getByRole('button', { name: 'Ресурсы' })).toHaveFocus()
-		await userEvent.keyboard('{ArrowLeft}{ArrowDown}')
+		await userEvent.keyboard(inlineKey('{ArrowLeft}') + '{ArrowDown}')
 		await waitFor(() => expect(canvas.getByRole('link', { name: /Аналитика/ })).toHaveFocus())
 		await userEvent.keyboard('{ArrowDown}')
 		await expect(canvas.getByRole('link', { name: /Документы/ })).toHaveFocus()
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await expect(canvas.getByRole('link', { name: /Почта/ })).toHaveFocus()
 		await userEvent.keyboard('{Escape}')
 		await expect(products).toHaveFocus()

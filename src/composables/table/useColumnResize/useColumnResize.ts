@@ -4,7 +4,14 @@ import { toHTMLElement } from '@utils/dom/domUtils'
 import { createKeyboardResize } from './createKeyboardResize'
 import { getCurrentInstance, onBeforeUnmount, ref } from 'vue'
 import type { ResizeColumn, ResizeState, UseColumnResizeParams } from './types/useColumnResize.types'
-import { applyResizeWidths, createIdleResizeState, findSiblingKey, measureSiblingWidth, snapshotWidths } from './useColumnResizeUtils'
+import {
+	applyResizeWidths,
+	createActiveResizeState,
+	createIdleResizeState,
+	findSiblingKey,
+	measureSiblingWidth,
+	snapshotWidths,
+} from './useColumnResizeUtils'
 
 function useColumnResize<TColumn extends ResizeColumn>({
 	columns,
@@ -54,14 +61,7 @@ function useColumnResize<TColumn extends ResizeColumn>({
 		const siblingKey = findSiblingKey(visibleColumns.value, columnKey)
 		const siblingWidth = siblingKey ? measureSiblingWidth(th, visibleColumns.value, columnKey) : 0
 		restoreWidths = snapshotWidths(columns.value, [columnKey, siblingKey])
-		resizeState.value = {
-			isResizing: true,
-			columnKey,
-			nextColumnKey: siblingKey,
-			startX: event.pageX,
-			startWidth: th.offsetWidth,
-			nextStartWidth: siblingWidth,
-		}
+		resizeState.value = createActiveResizeState({ columnKey, siblingKey, event, th, siblingWidth })
 
 		drag.attach(event)
 	}

@@ -1,17 +1,16 @@
 import { useUi } from '@composables/base/useUi'
 import { UI_DASHBOARD_GRID } from '@/locales/messages'
+import { useDirection } from '@composables/app/useDirection'
+import { computed, useId, watch, type CSSProperties } from 'vue'
 import { itemRect, gridHeight } from './layout/dashboardGeometry'
 import { useDashboardGridState } from './layout/useDashboardGridState'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { useDashboardGridPointer } from './interaction/useDashboardGridPointer'
 import { useDashboardGridKeyboard } from './interaction/useDashboardGridKeyboard'
-import { computed, useId, watch, type ComputedRef, type CSSProperties, type ShallowRef } from 'vue'
 import type {
 	BaseDashboardGridEmits,
-	DashboardDragRect,
 	DashboardGridProps,
-	DashboardGridState,
-	DashboardLayout,
+	DashboardGridStylesInput,
 	DashboardLayoutItem,
 	DashboardRect,
 } from '../types/BaseDashboardGrid.types'
@@ -20,7 +19,8 @@ const GRID_ELEMENTS = ['root', 'item', 'body', 'handle', 'resize', 'placeholder'
 
 export function useBaseDashboardGrid(props: DashboardGridProps, emit: BaseDashboardGridEmits) {
 	const { state, announcement, itemName } = useDashboardGridState(props, emit)
-	const pointer = useDashboardGridPointer(state)
+	const { sign } = useDirection(() => state.rootRef.value)
+	const pointer = useDashboardGridPointer(state, sign)
 	const keyboard = useDashboardGridKeyboard(state)
 	const items = computed(() => state.draft.value ?? state.layout.value)
 	const dragId = computed(() => pointer.dragRect.value?.id ?? null)
@@ -46,7 +46,7 @@ export function useBaseDashboardGrid(props: DashboardGridProps, emit: BaseDashbo
 		gridLabel: computed(() => props.ariaLabel || UI_DASHBOARD_GRID.LABEL),
 		hintText: computed(() => UI_DASHBOARD_GRID.HINT),
 		emptyText: computed(() => UI_DASHBOARD_GRID.EMPTY),
-		...useDashboardGridStyles(state, items, pointer.dragRect),
+		...useDashboardGridStyles({ state, items, dragRect: pointer.dragRect, sign }),
 		isFocusable,
 		itemName,
 		handleKeydown(event: KeyboardEvent): void {
@@ -66,11 +66,8 @@ export function useBaseDashboardGrid(props: DashboardGridProps, emit: BaseDashbo
 	}
 }
 
-function useDashboardGridStyles(
-	state: DashboardGridState,
-	items: ComputedRef<DashboardLayout>,
-	dragRect: ShallowRef<DashboardDragRect | null>,
-) {
+function useDashboardGridStyles(input: DashboardGridStylesInput) {
+	const { state, items, dragRect, sign } = input
 	return {
 		heightStyle: computed((): CSSProperties => {
 			const gap = { '--dashboard-grid-gap': `${state.metrics.value.gap}px` }
@@ -78,15 +75,15 @@ function useDashboardGridStyles(
 		}),
 		placeholderStyle: computed((): CSSProperties | null => {
 			const item = items.value.find(other => other.id === dragRect.value?.id)
-			return item ? rectStyle(itemRect(item, state.metrics.value)) : null
+			return item ? rectStyle(itemRect(item, state.metrics.value), sign.value) : null
 		}),
 		itemStyle(item: DashboardLayoutItem): CSSProperties {
 			const drag = dragRect.value
-			return rectStyle(drag?.id === item.id ? drag.rect : itemRect(item, state.metrics.value))
+			return rectStyle(drag?.id === item.id ? drag.rect : itemRect(item, state.metrics.value), sign.value)
 		},
 	}
 }
 
-function rectStyle(rect: DashboardRect): CSSProperties {
-	return { width: `${rect.width}px`, height: `${rect.height}px`, transform: `translate3d(${rect.left}px, ${rect.top}px, 0)` }
+function rectStyle(rect: DashboardRect, sign: number): CSSProperties {
+	return { width: `${rect.width}px`, height: `${rect.height}px`, transform: `translate3d(${sign * rect.left}px, ${rect.top}px, 0)` }
 }

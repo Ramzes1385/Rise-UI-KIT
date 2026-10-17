@@ -1,5 +1,5 @@
 <template>
-	<span :class="[ui('root'), classes.root]" :style="sizeScaleStyle">
+	<span :class="[ui('root'), { 'base-icon--directional': isDirectional }, classes.root]" :style="sizeScaleStyle">
 		<component
 			:is="icon.component"
 			v-if="icon.component"
@@ -41,5 +41,5 @@ const props = withDefaults(
 	}),
 )
 
-const { ui, sizeScaleStyle, classes, icon, isDecorative, iconStyle } = useBaseIcon(props)
+const { ui, sizeScaleStyle, classes, icon, isDirectional, isDecorative, iconStyle } = useBaseIcon(props)
 </script>

@@ -47,9 +47,9 @@ export const Theming: StoryObj<typeof meta> = {
 		const [plain, themed, classed] = [...canvasElement.querySelectorAll<HTMLElement>('.base-container')]
 
 		await expect(getComputedStyle(themed).maxWidth).not.toBe(getComputedStyle(plain).maxWidth)
-		await expect(getComputedStyle(themed).paddingLeft).not.toBe(getComputedStyle(plain).paddingLeft)
+		await expect(getComputedStyle(themed).paddingInlineStart).not.toBe(getComputedStyle(plain).paddingInlineStart)
 		if (!isStoryBranded()) await expect(getComputedStyle(themed).maxWidth).toBe('480px')
-		if (!isStoryBranded()) await expect(getComputedStyle(themed).paddingLeft).toBe('8px')
+		if (!isStoryBranded()) await expect(getComputedStyle(themed).paddingInlineStart).toBe('8px')
 		await expect(classed).toHaveClass('base-container', 'story-themed-container')
 	},
 }

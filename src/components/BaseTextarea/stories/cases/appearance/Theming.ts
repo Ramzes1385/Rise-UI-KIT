@@ -52,7 +52,7 @@ export const Theming: StoryObj<typeof meta> = {
 		await expect(getComputedStyle(themed).backgroundColor).not.toBe(getComputedStyle(plain).backgroundColor)
 		await expect(getComputedStyle(themed).borderTopColor).not.toBe(getComputedStyle(plain).borderTopColor)
 		await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('16px')
-		await expect(getComputedStyle(themed).paddingLeft).toBe('16px')
+		await expect(getComputedStyle(themed).paddingInlineStart).toBe('16px')
 		await userEvent.click(themed)
 		await expect(getComputedStyle(themed).borderTopColor).not.toBe(getComputedStyle(plain).borderTopColor)
 		await expect(classed).toHaveClass('base-textarea__field', 'story-themed-field')

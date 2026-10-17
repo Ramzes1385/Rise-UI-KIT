@@ -63,8 +63,8 @@ export const Theming: StoryObj<typeof meta> = {
 
 		await expect(getComputedStyle(themed).backgroundColor).not.toBe(getComputedStyle(plain).backgroundColor)
 		if (!isStoryBranded()) await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('12px')
-		await expect(item(themed).paddingLeft).toBe('8px')
-		await expect(item(plain).paddingLeft).toBe('0px')
+		await expect(item(themed).paddingInlineStart).toBe('8px')
+		await expect(item(plain).paddingInlineStart).toBe('0px')
 		await expect(classed).toHaveClass('base-virtual-list', 'story-themed-list')
 		await expect(classed.querySelector('.base-virtual-list__item')).toHaveClass('story-themed-item')
 	},

@@ -1,3 +1,4 @@
+import { resolveArrowKey } from '@utils/dom/directionUtils'
 /** Composable: перестановка с клавиатуры — пробел берёт, стрелки двигают, пробел или Enter кладут, Escape отменяет */
 import { computed, onBeforeUnmount, shallowRef, type Ref } from 'vue'
 import type { SortableMove, UseSortableOptions } from './types/useSortable.types'
@@ -57,7 +58,7 @@ export function useSortableKeyboard<TItem, TPlace>(options: UseSortableOptions<T
 		event.preventDefault()
 		if (event.key === 'Escape') options.onCancel(current.id, release(current.id))
 		else if (event.key === ' ' || event.key === 'Enter') options.onDrop(current, release(current.id))
-		else step(event.key, current.id)
+		else step(resolveArrowKey(event), current.id)
 	}
 	return {
 		grabbedId: computed(() => grabbed.value?.id ?? null),

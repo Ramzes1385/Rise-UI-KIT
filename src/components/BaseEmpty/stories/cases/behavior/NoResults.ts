@@ -14,7 +14,7 @@ const hidden = ['title', 'description', 'icon']
 const template = `
 	<div class="story-stack story-medium">
 		<BaseInput v-model="query" label="Поиск проектов" placeholder="Название проекта" />
-		<ul v-if="results.length" aria-label="Проекты" style="margin: 0; padding-left: 20px;">
+		<ul v-if="results.length" aria-label="Проекты" style="margin: 0; padding-inline-start: 20px;">
 			<li v-for="project in results" :key="project">{{ project }}</li>
 		</ul>
 		<BaseEmpty

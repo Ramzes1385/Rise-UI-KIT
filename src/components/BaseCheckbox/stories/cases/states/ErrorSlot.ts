@@ -9,7 +9,7 @@ const state = { checked: false }
 const template = `
 	<BaseCheckbox v-bind="args" v-model="checked">
 		<template #error>
-			<span style="padding-left: 24px; color: var(--rise-error); font-size: 14px; line-height: 20px;">
+			<span style="padding-inline-start: 24px; color: var(--rise-error); font-size: 14px; line-height: 20px;">
 				Прочитайте <a href="#offer" style="color: inherit;">условия оферты</a> и отметьте согласие
 			</span>
 		</template>

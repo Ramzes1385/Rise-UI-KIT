@@ -12,4 +12,6 @@ export interface InheritedThemeAttrs {
 	'data-rise-theme'?: string
 	/** Пресет движения ближайшего предка с `data-rise-motion`: `none`, `subtle`, `standard`, `expressive` */
 	'data-rise-motion'?: string
+	/** Направление письма якоря, если оно отличается от направления страницы: панель в `body` не видит `dir` своего блока */
+	dir?: 'ltr' | 'rtl'
 }

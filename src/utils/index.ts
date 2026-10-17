@@ -6,6 +6,7 @@ export * from './data/dateFormatUtils'
 export * from './data/dateUtils'
 export * from './data/dadataUtils'
 export * from './data/paymentQrUtils'
+export * from './dom/directionUtils'
 export * from './dom/domUtils'
 export {
 	ALIGN_MAP,

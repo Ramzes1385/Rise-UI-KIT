@@ -1,5 +1,6 @@
 import { UI_ARIA, UI_PLURAL } from '@/locales/messages'
 import { formatMessage, pluralize } from '@/locales/state'
+import { resolveArrowKey } from '@utils/dom/directionUtils'
 import { getFocusable, hasChildren } from '../megaMenuItems'
 import { computed, nextTick, provide, ref, shallowRef } from 'vue'
 import { LEVEL_LINK_SELECTOR, MEGA_MENU_CASCADE_KEY } from './cascadeItems'
@@ -45,7 +46,8 @@ function useDrillLevel(props: MegaMenuDrillGroupProps) {
 
 function createBackKeydown(back: () => void): (event: KeyboardEvent) => void {
 	return (event: KeyboardEvent): void => {
-		if (event.key !== 'ArrowLeft' && event.key !== 'Escape') return
+		const key = resolveArrowKey(event)
+		if (key !== 'ArrowLeft' && key !== 'Escape') return
 		stop(event)
 		back()
 	}
@@ -53,10 +55,11 @@ function createBackKeydown(back: () => void): (event: KeyboardEvent) => void {
 
 function createLevelKeydown(actions: { open: (entry: MegaMenuLinkEntry) => void; back: () => void }) {
 	return (entry: MegaMenuLinkEntry, event: KeyboardEvent): void => {
-		if (event.key === 'ArrowRight' && isParent(entry)) {
+		const key = resolveArrowKey(event)
+		if (key === 'ArrowRight' && isParent(entry)) {
 			stop(event)
 			actions.open(entry)
-		} else if (entry.depth > 0 && (event.key === 'ArrowLeft' || event.key === 'Escape')) {
+		} else if (entry.depth > 0 && (key === 'ArrowLeft' || key === 'Escape')) {
 			stop(event)
 			actions.back()
 		}

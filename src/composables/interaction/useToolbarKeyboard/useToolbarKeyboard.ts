@@ -1,5 +1,6 @@
 /** Composable: клавиатура панели инструментов по APG Toolbar — одна точка Tab, стрелки, Home и End */
 import { onBeforeUnmount, onMounted, watch } from 'vue'
+import { resolveArrowKey } from '@utils/dom/directionUtils'
 import type { UseToolbarKeyboardOptions, UseToolbarKeyboardReturn } from './types/useToolbarKeyboard.types'
 
 const ITEM_SELECTOR =
@@ -108,10 +109,10 @@ function useToolbarKeyboard(options: UseToolbarKeyboardOptions): UseToolbarKeybo
 		const index = items.indexOf(target)
 		if (index === -1) return
 		if (isTextEntry(target)) {
-			const direction = arrowDirection(event.key, isVertical())
+			const direction = arrowDirection(resolveArrowKey(event), isVertical())
 			if (!direction || !isCaretAtEdge(target, direction)) return
 		}
-		const next = targetIndex(event.key, { index, count: items.length }, isVertical())
+		const next = targetIndex(resolveArrowKey(event), { index, count: items.length }, isVertical())
 		if (next === undefined) return
 		event.preventDefault()
 		roving.setActive(items[next])

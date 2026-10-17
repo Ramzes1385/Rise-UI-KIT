@@ -50,8 +50,8 @@ export const Theming: StoryObj<typeof meta> = {
 		await expect(getComputedStyle(title(themed)).fontWeight).toBe('700')
 		await expect(getComputedStyle(title(plain)).fontWeight).toBe('600')
 		if (!isStoryBranded()) {
-			await expect(getComputedStyle(plain).paddingLeft).toBe('16px')
-			await expect(getComputedStyle(themed).paddingLeft).toBe('24px')
+			await expect(getComputedStyle(plain).paddingInlineStart).toBe('16px')
+			await expect(getComputedStyle(themed).paddingInlineStart).toBe('24px')
 		}
 		await expect(classed).toHaveClass('base-checklist', 'story-themed-checklist')
 		for (const item of classed.querySelectorAll('.base-checklist__item')) await expect(item).toHaveClass('story-themed-item')

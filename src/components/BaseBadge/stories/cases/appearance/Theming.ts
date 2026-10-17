@@ -50,8 +50,8 @@ export const Theming: StoryObj<typeof meta> = {
 
 		await expect(getComputedStyle(themed).backgroundColor).not.toBe(getComputedStyle(plain).backgroundColor)
 		await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('9999px')
-		await expect(getComputedStyle(themed).paddingLeft).toBe('10px')
-		await expect(getComputedStyle(plain).paddingLeft).toBe('7px')
+		await expect(getComputedStyle(themed).paddingInlineStart).toBe('10px')
+		await expect(getComputedStyle(plain).paddingInlineStart).toBe('7px')
 		await expect(getComputedStyle(themed).fontWeight).toBe('700')
 		await expect(classed).toHaveClass('base-badge', 'story-themed-badge')
 		await expect(classed.querySelector('.base-badge__text')).toHaveClass('story-themed-text')

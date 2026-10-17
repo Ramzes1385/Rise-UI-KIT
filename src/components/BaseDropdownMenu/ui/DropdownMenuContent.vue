@@ -22,7 +22,7 @@
 					<BaseDropdown
 						v-else-if="item.children?.length"
 						:is-open="openSubmenu === keyOf(groupIndex, itemIndex)"
-						position="right-start"
+						:position="submenuPosition"
 						:gap="4"
 						:variant="variant"
 						:size-scale="sizeScale"
@@ -120,6 +120,7 @@ const emit = defineEmits<DropdownMenuContentEmits>()
 
 const {
 	menuRef,
+	submenuPosition,
 	groups,
 	iconScale,
 	hasIndicators,

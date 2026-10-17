@@ -1,6 +1,6 @@
 import { expect } from 'storybook/test'
-import { tabTo } from '@/stories/helpers'
 import type meta from '../BaseSplitter.stories'
+import { inlineKey, tabTo } from '@/stories/helpers'
 import type { StoryObj } from '@storybook/vue3-vite'
 
 export const Keyboard: StoryObj<typeof meta> = {
@@ -13,7 +13,7 @@ export const Keyboard: StoryObj<typeof meta> = {
 	play: async ({ canvas, userEvent, args }) => {
 		const separator = canvas.getByRole('separator', { name: 'Список писем' })
 		await tabTo(separator, userEvent)
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await expect(separator).toHaveAttribute('aria-valuenow', '40')
 		await userEvent.keyboard('{End}')
 		await expect(separator).toHaveAttribute('aria-valuenow', '80')

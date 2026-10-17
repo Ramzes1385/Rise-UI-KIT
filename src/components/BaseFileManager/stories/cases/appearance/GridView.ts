@@ -1,7 +1,7 @@
-import { storySource } from '@/stories/helpers'
 import { expect, waitFor } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../BaseFileManager.stories'
+import { storySource, inlineKey } from '@/stories/helpers'
 import { type ManagerCaseOptions, managerRender, managerSource, managerTag } from '../../shared'
 
 const options: ManagerCaseOptions = {
@@ -32,7 +32,7 @@ export const GridView: StoryObj<typeof meta> = {
 		await expect(canvas.getByRole('listbox')).toHaveClass('base-file-manager__list--grid')
 
 		await userEvent.click(canvas.getByRole('option', { name: /^Архив/ }))
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await expect(canvas.getByRole('option', { name: /^Документы/ })).toHaveFocus()
 
 		await userEvent.click(canvas.getByRole('radio', { name: 'Список' }))

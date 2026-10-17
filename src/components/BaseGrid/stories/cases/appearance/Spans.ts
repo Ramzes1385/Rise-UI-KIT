@@ -3,7 +3,7 @@ import type meta from '../../BaseGrid.stories'
 import BaseGrid from '../../../ui/BaseGrid.vue'
 import { BaseGridItem } from '@components/BaseGrid'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { storySource, useStorySetup } from '@/stories/helpers'
+import { inlineStart, storySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
 	<div class="story-stack">
@@ -70,13 +70,13 @@ export const Spans: StoryObj<typeof meta> = {
 		const gridBox = offset.getBoundingClientRect()
 		const columnWidth = (gridBox.width - 11 * gap) / 12
 		const shifted = offset.children[0].getBoundingClientRect()
-		await expect(Math.abs(shifted.left - (gridBox.left + 6 * (columnWidth + gap)))).toBeLessThan(2)
+		await expect(Math.abs(inlineStart(shifted) - (inlineStart(gridBox) + 6 * (columnWidth + gap)))).toBeLessThan(2)
 
 		const fullBox = full.children[2].getBoundingClientRect()
 		await expect(Math.round(fullBox.width)).toBe(Math.round(full.getBoundingClientRect().width))
 		await expect(fullBox.top).toBeGreaterThan(full.children[0].getBoundingClientRect().top)
 
-		const [first, second, third] = [...order.children].map(cell => cell.getBoundingClientRect().left)
+		const [first, second, third] = [...order.children].map(cell => inlineStart(cell.getBoundingClientRect()))
 		await expect(second).toBeLessThan(third)
 		await expect(third).toBeLessThan(first)
 	},

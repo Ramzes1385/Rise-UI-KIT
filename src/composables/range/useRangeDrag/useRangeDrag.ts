@@ -1,6 +1,7 @@
 /** Composable: drag-взаимодействие ползунков range-слайдера */
 import { ref } from 'vue'
 import { useRangeDragListeners } from './useRangeDragListeners'
+import { isRtl, resolveArrowKey } from '@utils/dom/directionUtils'
 import { keyTarget, nearestIndex, trackRatio } from './rangeDragUtils'
 import type { UseRangeDragOptions, UseRangeDragReturn } from './types/useRangeDrag.types'
 
@@ -13,7 +14,10 @@ function useRangeDrag(options: UseRangeDragOptions): UseRangeDragReturn {
 	function getValueFromEvent(e: MouseEvent | TouchEvent): number {
 		/* istanbul ignore next -- Событие приходит только с отрисованного трека. */
 		if (!trackRef.value) return min()
-		const ratio = trackRatio(e, trackRef.value.getBoundingClientRect(), options.isVertical())
+		const ratio = trackRatio(e, trackRef.value.getBoundingClientRect(), {
+			isVertical: options.isVertical(),
+			isRtl: isRtl(trackRef.value),
+		})
 		return snapToStepValue(min() + ratio * (max() - min()))
 	}
 
@@ -42,7 +46,7 @@ function useRangeDrag(options: UseRangeDragOptions): UseRangeDragReturn {
 		if (isDisabled()) return
 		const { event, index } = payload
 		const current = pointValues.value[index]
-		const key = keyTarget(event.key, current, { min: min(), max: max(), step: options.step() })
+		const key = keyTarget(resolveArrowKey(event), current, { min: min(), max: max(), step: options.step() })
 		if (key === null) return
 		event.preventDefault()
 

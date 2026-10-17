@@ -1,9 +1,11 @@
 import { useUi } from '@composables/base/useUi'
 import { computed, ref, useSlots, watch } from 'vue'
 import { UI_ARIA, UI_TEXT } from '@/locales/messages'
+import { mirrorSide } from '@utils/dom/directionUtils'
 import { SideBarPassthrough } from './SideBarPassthrough'
 import { BaseSlideover } from '@components/BaseSlideover'
 import { usePadding } from '@composables/base/usePadding'
+import { useDirection } from '@composables/app/useDirection'
 import { useBreakpoint } from '@composables/app/useBreakpoint'
 import { useLinkComponent } from '@composables/interaction/useLink'
 import { useSideBarCollapseMotion } from './useSideBarCollapseMotion'
@@ -17,11 +19,13 @@ const SLIDEOVER_BASE_WIDTH = 420
 
 function useSideBarMobile(props: SideBarProps, emit: BaseSideBarEmits) {
 	const { isSmallerThan } = useBreakpoint()
+	const { isRtl } = useDirection()
 	const isMobileMode = computed(() => props.mobileBreakpoint !== undefined && isSmallerThan(props.mobileBreakpoint))
 	const setMobileOpen = (value: boolean): void => emit('update:isMobileOpen', value)
 
 	return {
 		isMobileMode,
+		tooltipPosition: computed(() => mirrorSide('right', isRtl.value)),
 		shellComponent: computed(() => (isMobileMode.value ? BaseSlideover : SideBarPassthrough)),
 		shellProps: computed(() => {
 			if (!isMobileMode.value) return {}

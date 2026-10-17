@@ -1,6 +1,7 @@
+import { isRtl } from '@utils/dom/directionUtils'
 /** Утилиты: расчёт ширин колонок и соседней колонки при перетаскивании границы */
 import type { ResizeColumn, ResizeState } from './types/useColumnResize.types'
-import type { ApplyResizeWidthsParams } from './types/useColumnResizeUtils.types'
+import type { ActiveResizeInit, ApplyResizeWidthsParams } from './types/useColumnResizeUtils.types'
 
 /** Начальное состояние: перетаскивания нет */
 function createIdleResizeState(): ResizeState {
@@ -11,6 +12,19 @@ function createIdleResizeState(): ResizeState {
 		startX: 0,
 		startWidth: 0,
 		nextStartWidth: 0,
+	}
+}
+
+/** Состояние начатого перетаскивания: ширины, точка старта и направление письма заголовка */
+function createActiveResizeState(init: ActiveResizeInit): ResizeState {
+	return {
+		isResizing: true,
+		columnKey: init.columnKey,
+		nextColumnKey: init.siblingKey,
+		startX: init.event.pageX,
+		isReversed: isRtl(init.th),
+		startWidth: init.th.offsetWidth,
+		nextStartWidth: init.siblingWidth,
 	}
 }
 
@@ -64,7 +78,8 @@ function applyResizeWidths({ columns, state, minWidth, pageX }: ApplyResizeWidth
 	const other = getWidthBounds(sibling, minWidth)
 	const from = sibling ? Math.max(own.min, total - other.max) : own.min
 	const to = sibling ? Math.min(own.max, total - other.min) : own.max
-	const desired = state.startWidth + pageX - state.startX
+	const shift = pageX - state.startX
+	const desired = state.startWidth + (state.isReversed ? -shift : shift)
 	const width = from > to ? state.startWidth : Math.min(Math.max(desired, from), to)
 
 	column.width = `${width}px`
@@ -79,4 +94,12 @@ function snapshotWidths(columns: ResizeColumn[], keys: string[]): () => void {
 	}
 }
 
-export { applyResizeWidths, createIdleResizeState, findSiblingKey, getWidthBounds, measureSiblingWidth, snapshotWidths }
+export {
+	applyResizeWidths,
+	createActiveResizeState,
+	createIdleResizeState,
+	findSiblingKey,
+	getWidthBounds,
+	measureSiblingWidth,
+	snapshotWidths,
+}

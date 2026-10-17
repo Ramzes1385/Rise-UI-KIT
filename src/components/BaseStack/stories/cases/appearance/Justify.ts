@@ -2,8 +2,8 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseStack.stories'
 import BaseStack from '../../../ui/BaseStack.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { storySource, useStorySetup } from '@/stories/helpers'
 import { STACK_JUSTIFIES } from '../../../types/BaseStack.types'
+import { inlineEnd, storySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
 	<div class="story-stack">
@@ -42,7 +42,7 @@ export const Justify: StoryObj<typeof meta> = {
 			'space-evenly',
 		])
 		const gapToEdge = (stack: HTMLElement) =>
-			stack.getBoundingClientRect().right - stack.lastElementChild!.getBoundingClientRect().right
+			inlineEnd(stack.getBoundingClientRect()) - inlineEnd(stack.lastElementChild!.getBoundingClientRect())
 		await expect(Math.round(gapToEdge(stacks[3]))).toBeLessThanOrEqual(1)
 		await expect(Math.round(gapToEdge(stacks[2]))).toBeLessThanOrEqual(1)
 		await expect(gapToEdge(stacks[0])).toBeGreaterThan(50)

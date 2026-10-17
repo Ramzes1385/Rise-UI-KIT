@@ -392,10 +392,10 @@ describe('BaseTable — закреплённые колонки', () => {
 		expect(table.style.getPropertyValue('--tbl-sticky-check')).toBe('0px')
 		expect(table.style.getPropertyValue('--tbl-sticky-number')).toBe('40px')
 		const headers = [...document.querySelectorAll<HTMLElement>('thead th')]
-		expect(headers[2].style.left).toBe('70px')
-		expect(headers[3].style.left).toBe('170px')
-		expect(headers[5].style.right).toBe('100px')
-		expect(headers[6].style.right).toBe('0px')
+		expect(headers[2].style.insetInlineStart).toBe('70px')
+		expect(headers[3].style.insetInlineStart).toBe('170px')
+		expect(headers[5].style.insetInlineEnd).toBe('100px')
+		expect(headers[6].style.insetInlineEnd).toBe('0px')
 		spy.mockRestore()
 	})
 
@@ -431,11 +431,11 @@ describe('BaseTable — закреплённые колонки', () => {
 		await nextTick()
 		const headers = [...document.querySelectorAll<HTMLElement>('thead th')]
 		expect([...observed.keys()].filter(element => element.tagName === 'TH')).toEqual(headers)
-		expect(headers[1].style.left).toBe('100px')
+		expect(headers[1].style.insetInlineStart).toBe('100px')
 		nameWidth = 160
 		observed.get(headers[0])?.()
 		await nextTick()
-		expect(headers[1].style.left).toBe('160px')
+		expect(headers[1].style.insetInlineStart).toBe('160px')
 		spy.mockRestore()
 		globalThis.ResizeObserver = Original
 	})

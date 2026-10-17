@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
 import { placeContextMenu } from './contextMenuPlacement'
+import { resolveArrowKey } from '@utils/dom/directionUtils'
 import { useLayerIndex } from '@composables/app/useLayerStack'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import { computed, getCurrentInstance, nextTick, ref, watch } from 'vue'
@@ -22,9 +23,10 @@ function createMenuKeydown(menuRef: Ref<HTMLElement | null>, emit: ChatMessageCo
 			Home: 0,
 			End: items.length - 1,
 		}
-		if (event.key in moves) {
+		const key = resolveArrowKey(event)
+		if (key in moves) {
 			event.preventDefault()
-			items[(moves[event.key] + items.length) % items.length]?.focus()
+			items[(moves[key] + items.length) % items.length]?.focus()
 			return
 		}
 		if (event.key === 'Escape' || event.key === 'Tab') {

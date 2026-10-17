@@ -52,8 +52,8 @@ export const Theming: StoryObj<typeof meta> = {
 			style(plain, '.base-list__item--selected').backgroundColor,
 		)
 		if (!isStoryBranded()) await expect(style(themed, '.base-list__item').minHeight).toBe('48px')
-		if (!isStoryBranded()) await expect(style(themed, '.base-list__item').paddingLeft).toBe('16px')
-		if (!isStoryBranded()) await expect(style(plain, '.base-list__item').paddingLeft).toBe('10px')
+		if (!isStoryBranded()) await expect(style(themed, '.base-list__item').paddingInlineStart).toBe('16px')
+		if (!isStoryBranded()) await expect(style(plain, '.base-list__item').paddingInlineStart).toBe('10px')
 		await expect(classed).toHaveClass('base-list', 'story-themed-list')
 		await expect(classed.querySelector('.base-list__viewport')).toHaveClass('story-themed-viewport')
 		await expect(classed.querySelector('.base-list__title')).toHaveClass('story-themed-title')

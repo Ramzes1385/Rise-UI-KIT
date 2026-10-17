@@ -1,4 +1,5 @@
 import { isImeKeydown } from '@utils/dom/keyboardUtils'
+import { resolveArrowKey } from '@utils/dom/directionUtils'
 import type { CascaderKeyActions, CascaderKeyHandler } from '../types/BaseCascader.types'
 
 const openOr =
@@ -56,7 +57,7 @@ export function useCascaderKeyboard(actions: CascaderKeyActions) {
 	return {
 		handleTriggerKeydown(event: KeyboardEvent): void {
 			if (actions.isDisabled() || closeOnTab(event)) return
-			runKey(event, COLUMN_KEYS[event.key], actions)
+			runKey(event, COLUMN_KEYS[resolveArrowKey(event)], actions)
 		},
 		handleSearchKeydown(event: KeyboardEvent): void {
 			if (isImeKeydown(event)) return
@@ -65,7 +66,7 @@ export function useCascaderKeyboard(actions: CascaderKeyActions) {
 				return
 			}
 			if (actions.isSearching()) runKey(event, RESULT_KEYS[event.key], actions)
-			else if (!SEARCH_TEXT_KEYS.has(event.key)) runKey(event, COLUMN_KEYS[event.key], actions)
+			else if (!SEARCH_TEXT_KEYS.has(event.key)) runKey(event, COLUMN_KEYS[resolveArrowKey(event)], actions)
 		},
 	}
 }

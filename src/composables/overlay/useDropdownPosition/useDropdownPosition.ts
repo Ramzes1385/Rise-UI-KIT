@@ -1,4 +1,5 @@
 /** Composable: позиционирование выпадающей панели с переворотом и сдвигом у края окна */
+import { isRtl } from '@utils/dom/directionUtils'
 import { getFixedOrigin, toFixedSpace } from '@utils/dom/domUtils'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, type Ref, watch } from 'vue'
 import type { DropdownAnchor, DropdownPosition } from '@components/BaseDropdown/types/BaseDropdown.types'
@@ -12,7 +13,7 @@ export const ARROW_EDGE_OFFSET = 12
 
 const OPPOSITE: Record<Side, Side> = { top: 'bottom', bottom: 'top', left: 'right', right: 'left' }
 
-/** Точка, из которой панель вырастает при появлении: угол или край у триггера */
+/** Точка, из которой панель вырастает при появлении: угол или край у триггера (для `start`/`end` — в LTR; в RTL стороны меняются местами) */
 const TRANSFORM_ORIGIN: Record<DropdownPosition, string> = {
 	'bottom-start': 'top left',
 	'bottom-end': 'top right',
@@ -31,6 +32,13 @@ const TRANSFORM_ORIGIN: Record<DropdownPosition, string> = {
 function parsePosition(position: DropdownPosition): { side: Side; align: Align } {
 	const [side, align] = position.split('-') as [Side, 'start' | 'end' | undefined]
 	return { side, align: align ?? 'center' }
+}
+
+/** Точка роста панели: `start`/`end` вдоль строки в RTL зеркалятся, физические `left`/`right` остаются */
+function transformOriginFor(position: DropdownPosition, rtl: boolean): string {
+	const origin = TRANSFORM_ORIGIN[position]
+	if (!rtl || !/-(start|end)$/.test(position) || position.startsWith('left') || position.startsWith('right')) return origin
+	return origin.includes('left') ? origin.replace('left', 'right') : origin.replace('right', 'left')
 }
 
 function toPosition(side: Side, align: Align): DropdownPosition {
@@ -55,6 +63,12 @@ function verticalEdge(rect: DOMRect): Edge {
 	return { start: rect.top, end: rect.bottom, middle: rect.top + rect.height / 2 }
 }
 
+/** Выравнивание вдоль строки в RTL: начало строки справа, поэтому `start` и `end` меняются местами */
+function alignAcross(align: Align, rtl: boolean): Align {
+	if (!rtl || align === 'center') return align
+	return align === 'start' ? 'end' : 'start'
+}
+
 /** Начало панели вдоль края: у начала края, у конца или по центру */
 function alignAlong(align: Align, edge: Edge, size: number): number {
 	if (align === 'start') return edge.start
@@ -62,12 +76,12 @@ function alignAlong(align: Align, edge: Edge, size: number): number {
 	return edge.middle - size / 2
 }
 
-/** Левый верхний угол панели для стороны и выравнивания относительно триггера */
+/** Левый верхний угол панели для стороны и выравнивания относительно триггера; `left`/`right` — физические стороны, `start`/`end` — вдоль строки */
 function place(geometry: Geometry, side: Side, align: Align): { top: number; left: number } {
-	const { rect, size, gap } = geometry
+	const { rect, size, gap, rtl } = geometry
 	if (side === 'top' || side === 'bottom') {
 		const top = side === 'bottom' ? rect.bottom + gap : rect.top - gap - size.height
-		return { top, left: alignAlong(align, horizontalEdge(rect), size.width) }
+		return { top, left: alignAlong(alignAcross(align, rtl), horizontalEdge(rect), size.width) }
 	}
 	const left = side === 'right' ? rect.right + gap : rect.left - gap - size.width
 	return { top: alignAlong(align, verticalEdge(rect), size.height), left }
@@ -133,13 +147,14 @@ function toPanelSpace(point: { top: number; left: number }, panel: HTMLElement |
 /**
  * Размер панели и ширина её рамки; до отрисовки — нули. `offsetWidth` округлён до целого, а дробную ширину знает только
  * `getBoundingClientRect` — его искажает масштаб появления (scale < 1), поэтому берётся большее из двух: панель не выходит
- * за отступ от края окна ни на дробную долю пикселя. Не отрисованная панель (offset = 0) — нули: rect у неё не настоящий
+ * за отступ от края окна ни на дробную долю пикселя; `offset` пересчитан в координаты окна по масштабу предка с transform. Не отрисованная панель (offset = 0) — нули: rect у неё не настоящий
  */
 function measurePanel(panel: HTMLElement | null): Pick<Geometry, 'size' | 'border'> {
 	if (!panel) return { size: { width: 0, height: 0 }, border: { left: 0, top: 0 } }
 	const rect = panel.getBoundingClientRect()
+	const { scaleX, scaleY } = getFixedOrigin(panel.parentElement)
 	return {
-		size: { width: preciseSize(panel.offsetWidth, rect.width), height: preciseSize(panel.offsetHeight, rect.height) },
+		size: { width: preciseSize(panel.offsetWidth * scaleX, rect.width), height: preciseSize(panel.offsetHeight * scaleY, rect.height) },
 		border: { left: panel.clientLeft, top: panel.clientTop },
 	}
 }
@@ -185,13 +200,13 @@ function getTriggerRect(wrapper: HTMLElement | null, anchor: DropdownAnchor | un
 function buildPanelStyle(
 	point: { top: number; left: number },
 	placement: DropdownPosition,
-	size: { maxHeight: string; width: number | null },
+	size: { maxHeight: string; width: number | null; rtl: boolean },
 ): Record<string, string> {
 	const style: Record<string, string> = {
 		maxHeight: size.maxHeight,
 		top: `${point.top}px`,
 		left: `${point.left}px`,
-		transformOrigin: TRANSFORM_ORIGIN[placement],
+		transformOrigin: transformOriginFor(placement, size.rtl),
 	}
 	if (size.width !== null) style.width = `${size.width}px`
 	return style
@@ -250,6 +265,7 @@ function useDropdownPosition(options: UseDropdownPositionOptions) {
 
 	const coords = ref({ top: 0, left: 0 })
 	const triggerWidth = ref(0)
+	const rtlMode = ref(false)
 	/** Сторона, с которой панель показана сейчас: после переворота отличается от `position` */
 	const placement = ref<DropdownPosition>(position())
 	const { arrow, arrowStyle, updateArrow } = useArrowState(OPPOSITE[parsePosition(position()).side])
@@ -263,7 +279,8 @@ function useDropdownPosition(options: UseDropdownPositionOptions) {
 
 		triggerWidth.value = rect.width
 		const panel = dropdownRef.value
-		const geometry: Geometry = { rect, ...measurePanel(panel), viewport: getViewport(), gap: gap() }
+		rtlMode.value = isRtl(wrapperRef.value ?? panel)
+		const geometry: Geometry = { rect, ...measurePanel(panel), viewport: getViewport(), gap: gap(), rtl: rtlMode.value }
 		const { side, align, top, left } = layoutPanel(geometry, position())
 
 		placement.value = toPosition(side, align)
@@ -276,7 +293,11 @@ function useDropdownPosition(options: UseDropdownPositionOptions) {
 
 	/** Стили панели (см. `buildPanelStyle`): ширина триггера — только при matchWidth */
 	const panelStyle = computed(() =>
-		buildPanelStyle(coords.value, placement.value, { maxHeight: maxHeight(), width: matchWidth() ? triggerWidth.value : null }),
+		buildPanelStyle(coords.value, placement.value, {
+			maxHeight: maxHeight(),
+			width: matchWidth() ? triggerWidth.value : null,
+			rtl: rtlMode.value,
+		}),
 	)
 
 	const { listen, unlisten } = useRepositionListeners(updatePosition, dropdownRef, wrapperRef)

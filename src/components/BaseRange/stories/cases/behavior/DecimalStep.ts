@@ -2,7 +2,7 @@ import type meta from '../../BaseRange.stories'
 import { waitFor, expect } from 'storybook/test'
 import BaseRange from '../../../ui/BaseRange.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { storySource, tabTo, useStorySetup } from '@/stories/helpers'
+import { storySource, tabTo, useStorySetup, inlineKey } from '@/stories/helpers'
 
 const state = { opacity: 0.5 }
 
@@ -26,7 +26,7 @@ export const DecimalStep: StoryObj<typeof meta> = {
 	play: async ({ canvas, userEvent }) => {
 		const thumb = canvas.getByRole('slider', { name: 'Прозрачность' })
 		await tabTo(thumb, userEvent)
-		await userEvent.keyboard('{ArrowLeft}{ArrowLeft}')
+		await userEvent.keyboard(inlineKey('{ArrowLeft}') + inlineKey('{ArrowLeft}'))
 		await waitFor(() => expect(thumb).toHaveAttribute('aria-valuenow', '0.3'))
 		await expect(canvas.getByText('0.3')).toBeVisible()
 	},

@@ -1,6 +1,6 @@
 import { expect } from 'storybook/test'
-import { tabTo } from '@/stories/helpers'
 import type meta from '../../BaseInputTags.stories'
+import { tabTo, inlineKey } from '@/stories/helpers'
 import type { StoryObj } from '@storybook/vue3-vite'
 
 export const Keyboard: StoryObj<typeof meta> = {
@@ -20,7 +20,7 @@ export const Keyboard: StoryObj<typeof meta> = {
 		await expect(field).toHaveValue('')
 		await userEvent.keyboard('{Backspace}')
 		await expect(canvas.getByRole('button', { name: 'Удалить Nuxt' })).toHaveFocus()
-		await userEvent.keyboard('{ArrowLeft}')
+		await userEvent.keyboard(inlineKey('{ArrowLeft}'))
 		await expect(canvas.getByRole('button', { name: 'Удалить TypeScript' })).toHaveFocus()
 		await userEvent.keyboard('{Backspace}')
 		await expect(args.onRemove).toHaveBeenLastCalledWith('TypeScript')

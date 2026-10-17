@@ -1,7 +1,7 @@
-import { tabTo } from '@/stories/helpers'
 import { pointOn, starOf } from '../../shared'
 import type meta from '../../BaseRating.stories'
 import { expect, waitFor } from 'storybook/test'
+import { tabTo, inlineKey } from '@/stories/helpers'
 import type { StoryObj } from '@storybook/vue3-vite'
 
 export const Precise: StoryObj<typeof meta> = {
@@ -29,7 +29,7 @@ export const Precise: StoryObj<typeof meta> = {
 		await userEvent.unhover(star)
 
 		await tabTo(canvas.getByRole('slider'), userEvent)
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await expect(canvas.getByRole('slider')).toHaveAttribute('aria-valuetext', '2,5 из 5')
 		await userEvent.keyboard('{PageUp}')
 		await expect(canvas.getByRole('slider')).toHaveAttribute('aria-valuenow', '3.5')

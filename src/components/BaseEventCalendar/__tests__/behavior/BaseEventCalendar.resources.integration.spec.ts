@@ -164,7 +164,7 @@ describe('BaseEventCalendar — ресурсы', () => {
 			renderCalendar({ events: [HOLIDAY, { ...HOLIDAY, id: 'holiday-c', resourceId: 3 }] })
 			const bars = [...document.querySelectorAll<HTMLElement>('.base-event-calendar__all-day-events [data-event-key]')]
 			expect(bars).toHaveLength(2)
-			const styles = bars.map(bar => [bar.style.left, bar.style.width])
+			const styles = bars.map(bar => [bar.style.insetInlineStart, bar.style.width])
 			expect(styles).toEqual([
 				[`${((7 / 21) * 100).toFixed(4)}%`, `${((2 / 21) * 100).toFixed(4)}%`],
 				[`${((14 / 21) * 100).toFixed(4)}%`, `${((2 / 21) * 100).toFixed(4)}%`],

@@ -1,4 +1,5 @@
 import { computed, ref, watch } from 'vue'
+import { resolveArrowKey } from '@utils/dom/directionUtils'
 import type { useSlider } from '@composables/range/useSlider'
 import { useReducedMotion } from '@composables/app/useReducedMotion'
 import { useScrollableRegion } from '@composables/interaction/useScrollableRegion'
@@ -66,7 +67,7 @@ export function useSliderThumbs(props: SliderProps, slider: Pick<ReturnType<type
 	function onThumbKeydown(event: KeyboardEvent, index: number): void {
 		const strip = thumbsRef.value!
 		const steps = isColumn(strip) ? VERTICAL_STEPS : HORIZONTAL_STEPS
-		const target = targetIndex(event.key, steps, { index, count: strip.children.length })
+		const target = targetIndex(resolveArrowKey(event), steps, { index, count: strip.children.length })
 		if (target === undefined) return
 		event.preventDefault()
 		slider.goTo(target)

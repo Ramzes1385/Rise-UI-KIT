@@ -1,3 +1,4 @@
+import { inlineKey } from '@/stories/helpers'
 import { CASCADE_ITEMS } from '../../../shared'
 import { expect, waitFor } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
@@ -28,13 +29,13 @@ export const MegaMenuDrilldown: StoryObj<typeof meta> = {
 		await expect(canvas.getByRole('button', { name: 'Назад к «Товары»' })).toBeVisible()
 		await expect(canvas.getByRole('list', { name: 'Электроника' })).toBeVisible()
 
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await waitFor(() => expect(canvas.getByRole('button', { name: 'Смартфоны' })).toHaveFocus())
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await waitFor(() => expect(canvas.getByRole('button', { name: 'Флагманы' })).toHaveFocus())
 		await expect(canvas.getByRole('button', { name: 'Назад к «Телефоны»' })).toBeVisible()
 
-		await userEvent.keyboard('{ArrowLeft}')
+		await userEvent.keyboard(inlineKey('{ArrowLeft}'))
 		await waitFor(() => expect(canvas.getByRole('button', { name: 'Смартфоны' })).toHaveFocus())
 		await userEvent.keyboard('{Escape}')
 		await waitFor(() => expect(canvas.getByRole('button', { name: 'Телефоны' })).toHaveFocus())

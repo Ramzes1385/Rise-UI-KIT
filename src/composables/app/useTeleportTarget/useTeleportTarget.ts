@@ -51,7 +51,7 @@ const INHERITED_ATTRS = ['data-theme', 'data-rise-theme', 'data-rise-motion'] as
 
 /**
  * Атрибуты области ближайших предков элемента: `data-theme`, `data-rise-theme` и пресет движения `data-rise-motion`
- * ищутся независимо (closest)
+ * ищутся независимо (closest); `dir` — только если направление письма якоря отличается от направления страницы
  */
 export function readThemeAttrs(anchor: Element | null | undefined): InheritedThemeAttrs {
 	const attrs: InheritedThemeAttrs = {}
@@ -59,7 +59,17 @@ export function readThemeAttrs(anchor: Element | null | undefined): InheritedThe
 		const value = anchor?.closest(`[${name}]`)?.getAttribute(name)
 		if (value) attrs[name] = value
 	}
+	const dir = readDirection(anchor)
+	if (dir) attrs.dir = dir
 	return attrs
+}
+
+/** Направление якоря, если оно отличается от направления страницы: панель в `body` не видит `dir` блока, из которого открыта */
+function readDirection(anchor: Element | null | undefined): 'ltr' | 'rtl' | undefined {
+	if (!anchor) return undefined
+	const own = getComputedStyle(anchor).direction
+	if (own !== 'ltr' && own !== 'rtl') return undefined
+	return own === getComputedStyle(document.documentElement).direction ? undefined : own
 }
 
 /**

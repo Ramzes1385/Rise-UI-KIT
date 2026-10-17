@@ -1,4 +1,5 @@
 import { ref } from 'vue'
+import { resolveArrowKey } from '@utils/dom/directionUtils'
 import { layoutsEqual, moveItem, resizeItem } from '../layout/dashboardLayout'
 import type { DashboardGridState, DashboardLayoutItem } from '../../types/BaseDashboardGrid.types'
 
@@ -44,7 +45,8 @@ export function useDashboardGridKeyboard(state: DashboardGridState) {
 		} else if (PICK_KEYS.includes(event.key)) {
 			grabbedId.value = null
 			dropItem(state, id)
-		} else if (event.key in ARROWS) stepItem(state, id, { delta: ARROWS[event.key], isResize: event.shiftKey })
+		} else if (resolveArrowKey(event) in ARROWS)
+			stepItem(state, id, { delta: ARROWS[resolveArrowKey(event)], isResize: event.shiftKey })
 		else return
 		event.preventDefault()
 	}

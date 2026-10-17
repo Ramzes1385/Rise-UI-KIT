@@ -8,7 +8,7 @@ export const Default: StoryObj<typeof meta> = {
 	play: async ({ canvas }) => {
 		const group = canvas.getByRole('group', { name: 'Период' })
 		const [first, middle] = group.querySelectorAll<HTMLElement>('.base-button')
-		await expect(getComputedStyle(middle).borderTopLeftRadius).toBe('0px')
-		if (!isStoryBranded()) await expect(getComputedStyle(first).borderTopLeftRadius).not.toBe('0px')
+		await expect(getComputedStyle(middle).borderStartStartRadius).toBe('0px')
+		if (!isStoryBranded()) await expect(getComputedStyle(first).borderStartStartRadius).not.toBe('0px')
 	},
 }

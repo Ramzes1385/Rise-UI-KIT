@@ -4,7 +4,7 @@ import { expect, waitFor } from 'storybook/test'
 import { BaseBadge } from '@components/BaseBadge'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type { TabItem } from '../../../types/BaseTabs.types'
-import { storySource, tabTo, useStorySetup } from '@/stories/helpers'
+import { storySource, tabTo, useStorySetup, inlineKey } from '@/stories/helpers'
 
 const OWN_ARGS = ['modelValue', 'onUpdate:modelValue']
 
@@ -48,7 +48,7 @@ export const IconSlot: StoryObj<typeof meta> = {
 		await userEvent.keyboard('{Enter}')
 		await expect(args.onChange).not.toHaveBeenCalled()
 
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		const sent = canvas.getByRole('tab', { name: 'Отправленные' })
 		await expect(sent).toHaveFocus()
 		await waitFor(() => expect(sent).toHaveAttribute('aria-selected', 'true'))

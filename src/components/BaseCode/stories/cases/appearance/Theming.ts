@@ -52,7 +52,7 @@ export const Theming: StoryObj<typeof meta> = {
 		if (!isStoryBranded()) await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('12px')
 		if (!isStoryBranded()) await expect(part(themed, 'pre').paddingTop).toBe('16px')
 		if (!isStoryBranded()) await expect(part(plain, 'pre').paddingTop).toBe('12px')
-		if (!isStoryBranded()) await expect(part(themed, 'line').paddingLeft).toBe('20px')
+		if (!isStoryBranded()) await expect(part(themed, 'line').paddingInlineStart).toBe('20px')
 		await expect(classed).toHaveClass('base-code', 'story-themed-code')
 		await expect(classed.querySelector('.base-code__header')).toHaveClass('story-themed-header')
 		await expect(classed.querySelector('.base-code__line')).toHaveClass('story-themed-line')

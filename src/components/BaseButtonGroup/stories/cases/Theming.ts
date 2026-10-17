@@ -62,9 +62,9 @@ export const Theming: StoryObj<typeof meta> = {
 
 		await expect(getComputedStyle(themed).backgroundColor).not.toBe(getComputedStyle(plain).backgroundColor)
 		if (!isStoryBranded()) await expect(getComputedStyle(themed).paddingTop).toBe('4px')
-		if (!isStoryBranded()) await expect(getComputedStyle(themed.querySelector('.base-button')!).borderTopLeftRadius).toBe('9999px')
-		if (!isStoryBranded()) await expect(second(themed).marginLeft).toBe('4px')
-		if (!isStoryBranded()) await expect(second(plain).marginLeft).toBe('-1px')
+		if (!isStoryBranded()) await expect(getComputedStyle(themed.querySelector('.base-button')!).borderStartStartRadius).toBe('9999px')
+		if (!isStoryBranded()) await expect(second(themed).marginInlineStart).toBe('4px')
+		if (!isStoryBranded()) await expect(second(plain).marginInlineStart).toBe('-1px')
 		await expect(classed).toHaveClass('base-button-group', 'story-themed-group')
 	},
 }

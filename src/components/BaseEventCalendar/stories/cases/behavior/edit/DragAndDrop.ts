@@ -3,8 +3,8 @@ import { models } from '../../../render'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../../BaseEventCalendar.stories'
 import BaseEventCalendar from '../../../../ui/BaseEventCalendar.vue'
-import { storySource, tabTo, useStorySetup } from '@/stories/helpers'
 import { EDIT_EVENTS, MOVE_SCRIPT, useMovableEvents } from '../../../shared'
+import { storySource, tabTo, useStorySetup, inlineKey } from '@/stories/helpers'
 
 const template = `
 	<BaseEventCalendar
@@ -53,7 +53,7 @@ export const DragAndDrop: StoryObj<typeof meta> = {
 		await userEvent.keyboard(' ')
 		await expect(status).toHaveTextContent(/^Событие «Встреча с командой» взято: 2 октября, 10:00–11:00\./)
 		await userEvent.keyboard('{ArrowDown}')
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await expect(status).toHaveTextContent('3 октября, 10:30–11:30')
 		await userEvent.keyboard('{Enter}')
 		await expect(status).toHaveTextContent('Событие «Встреча с командой» перенесено: 3 октября, 10:30–11:30')

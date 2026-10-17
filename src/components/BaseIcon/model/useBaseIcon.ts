@@ -4,6 +4,8 @@ import { useIcon } from '@composables/app/useIcon'
 import type { BaseIconProps } from '../types/BaseIcon.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 
+const DIRECTIONAL_ICONS = new Set(['arrow-left', 'arrow-right', 'chevron-left', 'chevron-right', 'undo', 'redo', 'reply', 'send'])
+
 function iconTransform(props: BaseIconProps): string {
 	const transforms: string[] = []
 	if (props.rotate) transforms.push(`rotate(${props.rotate}deg)`)
@@ -19,6 +21,7 @@ export function useBaseIcon(props: BaseIconProps) {
 		...useStandardBaseComponent('base-icon', props, ['root', 'svg']),
 		ui: useUi(props, 'base-icon'),
 		icon: computed(() => resolveIcon(props.name)),
+		isDirectional: computed(() => DIRECTIONAL_ICONS.has(props.name)),
 		isDecorative: computed(() => !props.ariaLabel),
 		iconStyle: computed(() => {
 			const styles: Record<string, string> = {}

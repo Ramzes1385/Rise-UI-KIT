@@ -2,7 +2,7 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseRange.stories'
 import BaseRange from '../../../ui/BaseRange.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { storySource, tabTo, useStorySetup } from '@/stories/helpers'
+import { storySource, tabTo, useStorySetup, inlineKey } from '@/stories/helpers'
 
 const state = { volume: 40 }
 
@@ -33,7 +33,7 @@ export const Keyboard: StoryObj<typeof meta> = {
 		const thumb = canvas.getByRole('slider', { name: 'Громкость' })
 		await tabTo(thumb, userEvent)
 
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await expect(thumb).toHaveAttribute('aria-valuenow', '41')
 		await expect(args.onChange).toHaveBeenLastCalledWith(41)
 

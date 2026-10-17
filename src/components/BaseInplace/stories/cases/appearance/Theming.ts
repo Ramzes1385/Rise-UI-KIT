@@ -45,8 +45,8 @@ export const Theming: StoryObj<typeof meta> = {
 		const [plain, themed, classed] = [...canvasElement.querySelectorAll<HTMLElement>('.base-inplace__display')]
 
 		await expect(getComputedStyle(themed).backgroundColor).not.toBe(getComputedStyle(plain).backgroundColor)
-		await expect(getComputedStyle(themed).paddingLeft).toBe('8px')
-		await expect(getComputedStyle(plain).paddingLeft).toBe('4px')
+		await expect(getComputedStyle(themed).paddingInlineStart).toBe('8px')
+		await expect(getComputedStyle(plain).paddingInlineStart).toBe('4px')
 		await expect(classed.closest('.base-inplace')).toHaveClass('story-themed-inplace')
 		await expect(classed).toHaveClass('base-inplace__display', 'story-themed-display')
 	},

@@ -3,8 +3,8 @@ import { waitFor, expect } from 'storybook/test'
 import BaseTable from '../../../ui/BaseTable.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type { TableColumn } from '../../../types/BaseTable.types'
-import { storySource, tabTo, useStorySetup } from '@/stories/helpers'
 import { ALL_ROWS, formatDate, formatRub, tableScript } from '../../shared'
+import { inlineDelta, inlineEnd, inlineKey, inlineStart, storySource, tabTo, useStorySetup } from '@/stories/helpers'
 
 const columns: TableColumn[] = [
 	{ key: 'number', label: 'Заказ', width: '120px', isSticky: 'left' },
@@ -52,19 +52,21 @@ export const StickyColumnsResize: StoryObj<typeof meta> = {
 	play: async ({ canvas, userEvent }) => {
 		const first = canvas.getByRole('columnheader', { name: 'Заказ' })
 		const second = canvas.getByRole('columnheader', { name: 'Покупатель' })
-		const leftOfSecond = (): number => Math.round(parseFloat(second.style.left))
+		const leftOfSecond = (): number => Math.round(parseFloat(second.style.insetInlineStart))
 		await waitFor(() => expect(leftOfSecond()).toBeGreaterThan(0))
 		const before = leftOfSecond()
 		const widthBefore = Math.round(first.getBoundingClientRect().width)
 
 		await tabTo(canvas.getByRole('separator', { name: 'Ширина колонки: Заказ' }), userEvent)
-		await userEvent.keyboard('{ArrowRight}{ArrowRight}{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}').repeat(3))
 		await waitFor(() => expect(Math.round(first.getBoundingClientRect().width)).toBe(widthBefore + 30))
 		await waitFor(() => expect(leftOfSecond()).toBe(before + 30))
-		await expect(Math.round(second.getBoundingClientRect().left)).toBe(Math.round(first.getBoundingClientRect().right))
+		await expect(Math.round(inlineStart(second.getBoundingClientRect()))).toBe(Math.round(inlineEnd(first.getBoundingClientRect())))
 
 		const scroller = canvas.getByRole('table').parentElement as HTMLElement
-		scroller.scrollLeft = 300
-		await waitFor(() => expect(Math.round(second.getBoundingClientRect().left)).toBe(Math.round(first.getBoundingClientRect().right)))
+		scroller.scrollLeft = inlineDelta(300)
+		await waitFor(() =>
+			expect(Math.round(inlineStart(second.getBoundingClientRect()))).toBe(Math.round(inlineEnd(first.getBoundingClientRect()))),
+		)
 	},
 }

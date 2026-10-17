@@ -2,7 +2,7 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseRating.stories'
 import BaseRating from '../../../ui/BaseRating.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { storySource, tabTo, useStorySetup } from '@/stories/helpers'
+import { storySource, tabTo, useStorySetup, inlineKey } from '@/stories/helpers'
 
 const state = { rating: 3 }
 
@@ -33,7 +33,7 @@ export const Keyboard: StoryObj<typeof meta> = {
 		await tabTo(rating, userEvent)
 		await expect(getComputedStyle(rating).outlineStyle).toBe('solid')
 
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await expect(rating).toHaveAttribute('aria-valuetext', '4 из 5')
 		await expect(args.onChange).toHaveBeenLastCalledWith(4)
 

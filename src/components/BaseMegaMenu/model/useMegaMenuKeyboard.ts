@@ -1,6 +1,7 @@
 import { nextTick } from 'vue'
 import type { Ref } from 'vue'
 import type { useMegaMenuState } from './useMegaMenuState'
+import { resolveArrowKey } from '@utils/dom/directionUtils'
 import type { MegaMenuItem } from '../types/BaseMegaMenu.types'
 import { getFocusable, getItemKey, getNextIndex, getPanelLinks, hasPanel } from './megaMenuItems'
 
@@ -24,7 +25,7 @@ function focusAdjacentSection(panel: HTMLElement, target: HTMLElement, key: stri
 export function useMegaMenuKeyboard(listRef: Ref<HTMLElement | null>, state: ReturnType<typeof useMegaMenuState>) {
 	function moveBetweenTriggers(event: KeyboardEvent, items: MegaMenuItem[]): void {
 		const triggers = getFocusable(listRef.value, TRIGGER_SELECTOR)
-		const next = getNextIndex(event.key, triggers.indexOf(event.target as HTMLElement), triggers.length)
+		const next = getNextIndex(resolveArrowKey(event), triggers.indexOf(event.target as HTMLElement), triggers.length)
 		if (next < 0) return
 		event.preventDefault()
 		triggers[next].focus()
@@ -46,13 +47,14 @@ export function useMegaMenuKeyboard(listRef: Ref<HTMLElement | null>, state: Ret
 		handlePanelKeydown(event: KeyboardEvent): void {
 			const panel = event.currentTarget as HTMLElement
 			const target = event.target as HTMLElement
-			if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+			const key = resolveArrowKey(event)
+			if (key === 'ArrowLeft' || key === 'ArrowRight') {
 				event.preventDefault()
-				focusAdjacentSection(panel, target, event.key)
+				focusAdjacentSection(panel, target, key)
 				return
 			}
 			const links = getPanelLinks(panel, PANEL_FOCUSABLE)
-			const next = getNextIndex(event.key, links.indexOf(target), links.length)
+			const next = getNextIndex(key, links.indexOf(target), links.length)
 			if (next < 0) return
 			event.preventDefault()
 			links[next].focus()

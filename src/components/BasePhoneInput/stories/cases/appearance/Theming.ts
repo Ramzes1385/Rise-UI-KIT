@@ -52,8 +52,8 @@ export const Theming: StoryObj<typeof meta> = {
 		const part = (root: HTMLElement, name: string) => root.querySelector<HTMLElement>(`.base-phone-input__${name}`)!
 		const wrapper = (root: HTMLElement) => root.querySelector<HTMLElement>('.base-input__wrapper')!
 
-		await expect(getComputedStyle(part(themed, 'country')).borderRightColor).not.toBe(
-			getComputedStyle(part(plain, 'country')).borderRightColor,
+		await expect(getComputedStyle(part(themed, 'country')).borderInlineEndColor).not.toBe(
+			getComputedStyle(part(plain, 'country')).borderInlineEndColor,
 		)
 		await expect(getComputedStyle(part(themed, 'flag')).borderTopLeftRadius).toBe('9999px')
 		await expect(getComputedStyle(wrapper(themed)).backgroundColor).not.toBe(getComputedStyle(wrapper(plain)).backgroundColor)

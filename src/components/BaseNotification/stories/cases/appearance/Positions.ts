@@ -5,8 +5,8 @@ import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../BaseNotification.stories'
 import { screen, waitFor, expect } from 'storybook/test'
 import BaseNotification from '../../../ui/BaseNotification.vue'
-import { docsFrame, storySource, useStorySetup } from '@/stories/helpers'
 import type { BaseNotificationExpose } from '../../../types/BaseNotification.types'
+import { docsFrame, inlineEnd, storySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
 	<BaseButton variant="outline" @click="showMore">Показать ещё</BaseButton>
@@ -58,7 +58,8 @@ export const Positions: StoryObj<typeof meta> = {
 		}),
 	play: async () => {
 		const item = await screen.findByRole('status')
-		await waitFor(() => expect(item.getBoundingClientRect().right).toBeCloseTo(document.documentElement.clientWidth - 16, 0))
+		const page = new DOMRect(0, 0, document.documentElement.clientWidth, 0)
+		await waitFor(() => expect(inlineEnd(page) - inlineEnd(item.getBoundingClientRect())).toBeCloseTo(16, 0))
 		await expect(item.getBoundingClientRect().top).toBeCloseTo(16, 0)
 	},
 }

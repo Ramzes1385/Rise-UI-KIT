@@ -55,8 +55,8 @@ export const Theming: StoryObj<typeof meta> = {
 		if (!isStoryBranded()) {
 			await expect(getComputedStyle(themed).minHeight).toBe('56px')
 			await expect(getComputedStyle(plain).minHeight).toBe('48px')
-			await expect(getComputedStyle(themed).paddingLeft).toBe('16px')
-			await expect(getComputedStyle(plain).paddingLeft).toBe('8px')
+			await expect(getComputedStyle(themed).paddingInlineStart).toBe('16px')
+			await expect(getComputedStyle(plain).paddingInlineStart).toBe('8px')
 			await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('16px')
 		}
 	},

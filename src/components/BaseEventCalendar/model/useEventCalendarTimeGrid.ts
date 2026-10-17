@@ -117,7 +117,7 @@ function useAllDay(context: EventCalendarContext, dayCount: ComputedRef<number>)
 		allDaySegments,
 		allDayLanes: computed(() => Math.max(1, ...allDaySegments.value.map(segment => segment.lane + 1))),
 		allDayStyle: (segment: CalendarWeekSegment) => ({
-			left: percent(segment.column / columnCount.value),
+			insetInlineStart: percent(segment.column / columnCount.value),
 			width: percent(segment.span / columnCount.value),
 			'--lane': segment.lane,
 		}),
@@ -134,7 +134,7 @@ export function useEventCalendarTimeGrid(context: EventCalendarContext) {
 		timedStyle: (segment: CalendarTimeSegment) => ({
 			top: percent(segment.top),
 			height: percent(segment.height),
-			left: percent(segment.column / segment.columns),
+			insetInlineStart: percent(segment.column / segment.columns),
 			width: percent(1 / segment.columns),
 		}),
 		workStyle: (work: NonNullable<EventCalendarTimeDay['work']>) => ({ top: percent(work.top), height: percent(work.height) }),

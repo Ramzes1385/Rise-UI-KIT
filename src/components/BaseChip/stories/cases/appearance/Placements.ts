@@ -5,7 +5,7 @@ import BaseChip from '../../../ui/BaseChip.vue'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { inlineEnd, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const placements = PLACEMENTS
 
@@ -45,7 +45,7 @@ export const Placements: StoryObj<typeof meta> = {
 		const buttonRect = button.getBoundingClientRect()
 		const badgeRect = topRight.getBoundingClientRect()
 		await expect(badgeRect.top + badgeRect.height / 2).toBeCloseTo(buttonRect.top, 0)
-		await expect(badgeRect.left + badgeRect.width / 2).toBeCloseTo(buttonRect.right, 0)
+		await expect(inlineEnd(new DOMRect(badgeRect.left + badgeRect.width / 2, 0, 0, 0))).toBeCloseTo(inlineEnd(buttonRect), 0)
 		await expect(bottomLeft).toHaveClass('base-chip__badge--bottom-left')
 	},
 }

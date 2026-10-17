@@ -57,6 +57,11 @@ export const Placement: StoryObj<typeof meta> = {
 		await waitFor(() => expect(top.getBoundingClientRect().bottom).toBeLessThanOrEqual(trigger('top').top))
 		await waitFor(() => expect(bottom.getBoundingClientRect().top).toBeGreaterThanOrEqual(trigger('bottom').bottom))
 		await waitFor(() => expect(left.getBoundingClientRect().right).toBeLessThanOrEqual(trigger('left').left))
-		await waitFor(() => expect(right.getBoundingClientRect().left).toBeGreaterThanOrEqual(trigger('right').right))
+		await waitFor(() => {
+			const rect = right.getBoundingClientRect()
+			const hasRoom = document.documentElement.clientWidth - trigger('right').right >= rect.width
+			if (hasRoom) expect(rect.left).toBeGreaterThanOrEqual(trigger('right').right)
+			else expect(rect.right).toBeLessThanOrEqual(trigger('right').left)
+		})
 	},
 }

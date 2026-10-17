@@ -19,7 +19,7 @@
 					</slot>
 				</template>
 
-				<BaseTooltip v-if="isCollapsible" :text="toggleLabel" position="right" class="base-side-bar__toggle-tooltip">
+				<BaseTooltip v-if="isCollapsible" :text="toggleLabel" :position="tooltipPosition" class="base-side-bar__toggle-tooltip">
 					<BaseButton
 						variant="ghost"
 						:aria-label="toggleLabel"
@@ -124,6 +124,7 @@ defineSlots<BaseSideBarSlots>()
 
 const {
 	rootRef,
+	tooltipPosition,
 	ui,
 	variantClass,
 	variantStyle,

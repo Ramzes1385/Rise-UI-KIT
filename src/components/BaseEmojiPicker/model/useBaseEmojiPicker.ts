@@ -3,6 +3,7 @@ import { currentLocale } from '@/locales/state'
 import { useUi } from '@composables/base/useUi'
 import { nextEmojiIndex } from './emojiNavigation'
 import { isImeKeydown } from '@utils/dom/keyboardUtils'
+import { resolveArrowKey } from '@utils/dom/directionUtils'
 import { buildSections, emojiKey, loadEmojiData } from './emojiData'
 import { computed, nextTick, ref, shallowRef, useId, watch } from 'vue'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
@@ -61,7 +62,7 @@ function useEmojiFocus(props: BaseEmojiPickerProps, sections: Ref<EmojiPickerSec
 		focusIndex,
 		handleGridKeydown(event: KeyboardEvent): void {
 			const lengths = sections.value.map(section => section.items.length)
-			const next = nextEmojiIndex(event.key, activeIndex.value, { lengths, columns: props.columns ?? 8 })
+			const next = nextEmojiIndex(resolveArrowKey(event), activeIndex.value, { lengths, columns: props.columns ?? 8 })
 			if (next === null) return
 			event.preventDefault()
 			focusIndex(next)

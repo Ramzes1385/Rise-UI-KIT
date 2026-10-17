@@ -49,7 +49,7 @@ export interface BaseHeaderProps extends BaseComponentProps<(typeof HEADER_VARIA
 	isOverlay?: boolean
 	/** Имя кнопки меню и заголовок выдвижного меню (по умолчанию «Меню») */
 	menuLabel?: string
-	/** Край окна, от которого выезжает меню */
+	/** Край окна, от которого выезжает меню: `left` — начало строки, `right` (по умолчанию) — конец; в RTL стороны меняются местами */
 	menuDirection?: DrawerDirection
 	/**
 	 * Классы частей шапки: добавляются к БЭМ-классам кита, глобальные — `defaults.BaseHeader.ui`.

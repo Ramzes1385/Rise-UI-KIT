@@ -2,9 +2,9 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseTable.stories'
 import BaseTable from '../../../ui/BaseTable.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { storySource, useStorySetup } from '@/stories/helpers'
 import type { TableColumn } from '../../../types/BaseTable.types'
 import { COLUMNS, ORDERS, tableScript, toRows } from '../../shared'
+import { inlineDelta, storySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
 	<BaseTable v-bind="args" :columns="columns" />
@@ -52,7 +52,7 @@ export const ColumnResizeTouch: StoryObj<typeof meta> = {
 		const at = (offset: number) => ({ clientX: x + offset, clientY: y, pageX: x + offset, pageY: y })
 		await userEvent.pointer([
 			{ keys: '[TouchA>]', target: handle, coords: at(0) },
-			{ pointerName: 'TouchA', target: handle, coords: at(400) },
+			{ pointerName: 'TouchA', target: handle, coords: at(inlineDelta(400)) },
 			{ keys: '[/TouchA]', target: handle },
 		])
 		await expect(args['onColumn-resize']).toHaveBeenLastCalledWith('number', 240)
@@ -63,7 +63,7 @@ export const ColumnResizeTouch: StoryObj<typeof meta> = {
 		const shift = (offset: number) => ({ clientX: startX + offset, clientY: y, pageX: startX + offset, pageY: y })
 		await userEvent.pointer([
 			{ keys: '[TouchA>]', target: handle, coords: shift(0) },
-			{ pointerName: 'TouchA', target: handle, coords: shift(-400) },
+			{ pointerName: 'TouchA', target: handle, coords: shift(inlineDelta(-400)) },
 			{ keys: '[/TouchA]', target: handle },
 		])
 		await expect(args['onColumn-resize']).toHaveBeenLastCalledWith('number', 120)

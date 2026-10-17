@@ -2,7 +2,7 @@ import type meta from '../BaseKanban.stories'
 import BaseKanban from '../../ui/BaseKanban.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { expect, screen, waitFor } from 'storybook/test'
-import { storySource, useStorySetup } from '@/stories/helpers'
+import { storySource, useStorySetup, inlineKey } from '@/stories/helpers'
 
 const models = { cards: 'cards' }
 
@@ -33,7 +33,7 @@ export const Default: StoryObj<typeof meta> = {
 		await userEvent.keyboard(' ')
 		await expect(card).toHaveAttribute('aria-pressed', 'true')
 		await expect(canvas.getByRole('status')).toHaveTextContent('Карточка «Поиск по эмодзи» взята')
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await expect(canvas.getByRole('status')).toHaveTextContent('«В работе», позиция 2 из 3')
 		await userEvent.keyboard(' ')
 		await expect(canvas.getByRole('list', { name: /^В работе, 3 карточки/ })).toHaveTextContent('Поиск по эмодзи')

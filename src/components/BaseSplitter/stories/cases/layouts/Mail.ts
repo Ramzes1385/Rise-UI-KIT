@@ -2,7 +2,7 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseSplitter.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseSplitter from '../../../ui/BaseSplitter.vue'
-import { literal, staticStorySource, tabTo, useStorySetup } from '@/stories/helpers'
+import { inlineKey, literal, staticStorySource, tabTo, useStorySetup } from '@/stories/helpers'
 
 const folders = ['Входящие', 'Отправленные', 'Черновики', 'Архив']
 
@@ -63,7 +63,7 @@ export const Mail: StoryObj<typeof meta> = {
 		await expect(listSeparator).toHaveAccessibleName('Список писем')
 		await expect(listSeparator).toHaveAttribute('aria-valuemax', '60')
 		await tabTo(folderSeparator, userEvent)
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await expect(folderSeparator).toHaveAttribute('aria-valuenow', '25')
 		await expect(listSeparator).toHaveAttribute('aria-valuenow', '30')
 	},

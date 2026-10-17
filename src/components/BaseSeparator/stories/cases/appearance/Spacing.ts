@@ -47,8 +47,8 @@ export const Spacing: StoryObj<typeof meta> = {
 	}),
 	play: async ({ canvas }) => {
 		const [themed, compact] = canvas.getAllByText('или')
-		await expect(getComputedStyle(themed).paddingLeft).toBe('12px')
-		await expect(getComputedStyle(compact).paddingLeft).toBe('8px')
+		await expect(getComputedStyle(themed).paddingInlineStart).toBe('12px')
+		await expect(getComputedStyle(compact).paddingInlineStart).toBe('8px')
 
 		const separators = canvas.getAllByRole('separator')
 		const line = separators[separators.length - 1]

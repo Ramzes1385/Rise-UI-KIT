@@ -5,7 +5,7 @@ import setupSource from './Resources.setup.ts?raw'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../BaseEventCalendar.stories'
 import BaseEventCalendar from '../../../ui/BaseEventCalendar.vue'
-import { scriptSource, storySource, tabTo, useStorySetup } from '@/stories/helpers'
+import { scriptSource, storySource, tabTo, useStorySetup, inlineKey } from '@/stories/helpers'
 
 const template = `
 	<div class="story-stack">
@@ -61,7 +61,7 @@ export const Resources: StoryObj<typeof meta> = {
 		const planning = canvas.getByRole('button', { name: 'Планёрка, 2 октября, 10:00–11:00, Синяя переговорная' })
 		await tabTo(planning, userEvent, 40)
 		await userEvent.keyboard(' ')
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await expect(status).toHaveTextContent('Зелёная переговорная')
 		await userEvent.keyboard('{Enter}')
 		await expect(args['onEvent-change']).toHaveBeenLastCalledWith(
@@ -75,8 +75,8 @@ export const Resources: StoryObj<typeof meta> = {
 		const column = canvasElement.querySelector<HTMLElement>('[role="group"][tabindex="0"]')!
 		await tabTo(column, userEvent, 40)
 		await expect(status).toHaveTextContent(/^Синяя переговорная, /)
-		await userEvent.keyboard('{ArrowRight}')
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await expect(status).toHaveTextContent(/^Большой зал, /)
 		await userEvent.keyboard('{Enter}')
 		await expect(args.onCreate).toHaveBeenLastCalledWith(expect.objectContaining({ resourceId: 'hall', allDay: false }))

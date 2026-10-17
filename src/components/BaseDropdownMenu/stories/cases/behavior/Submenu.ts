@@ -1,6 +1,6 @@
-import { docsFrame } from '@/stories/helpers'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../BaseDropdownMenu.stories'
+import { docsFrame, inlineKey } from '@/stories/helpers'
 import { screen, within, expect, waitFor } from 'storybook/test'
 
 export const Submenu: StoryObj<typeof meta> = {
@@ -22,12 +22,12 @@ export const Submenu: StoryObj<typeof meta> = {
 		await expect(download).toHaveAttribute('aria-haspopup', 'menu')
 
 		download.focus()
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		const submenu = await screen.findByRole('menu', { name: /Скачать/ })
 		await waitFor(() => expect(within(submenu).getByRole('menuitem', { name: 'Видео MP4' })).toHaveFocus())
 		await expect(download).toHaveAttribute('aria-expanded', 'true')
 
-		await userEvent.keyboard('{ArrowLeft}')
+		await userEvent.keyboard(inlineKey('{ArrowLeft}'))
 		await waitFor(() => expect(screen.queryByRole('menu', { name: /Скачать/ })).not.toBeInTheDocument())
 		await expect(download).toHaveFocus()
 

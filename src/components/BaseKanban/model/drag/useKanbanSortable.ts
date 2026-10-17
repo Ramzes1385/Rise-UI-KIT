@@ -1,5 +1,6 @@
 import { computed, nextTick, ref } from 'vue'
 import { cardElement, dropPlace } from '../board/kanbanDom'
+import { resolveArrowKey } from '@utils/dom/directionUtils'
 import { useSortable } from '@composables/interaction/useSortable'
 import type { KanbanBoardContext, KanbanCard, KanbanPlace } from '../../types/BaseKanban.types'
 import { columnCards, focusTarget, isSamePlace, locateCard, moveCard, stepPlace } from '../board/kanbanCards'
@@ -52,7 +53,9 @@ export function useKanbanSortable(context: KanbanBoardContext) {
 	const sortable = kanbanSortable(context, focus.focusCard)
 	const handleIdle = (event: KeyboardEvent, card: KanbanCard): void => {
 		const isAction = event.key === ' ' || event.key === 'Enter'
-		const target = isAction ? null : focusTarget(context.cards.value, context.columns.value, { cardId: card.id, key: event.key })
+		const target = isAction
+			? null
+			: focusTarget(context.cards.value, context.columns.value, { cardId: card.id, key: resolveArrowKey(event) })
 		if (event.key === ' ') sortable.grab(card)
 		else if (event.key === 'Enter' && !context.props.isDisabled) context.emit('open', card)
 		if (target) focus.focusCard(target.id)

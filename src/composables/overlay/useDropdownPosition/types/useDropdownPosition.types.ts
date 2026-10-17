@@ -35,6 +35,8 @@ export interface Geometry {
 	size: Size
 	viewport: Size
 	gap: number
+	/** Триггер пишется справа налево: выравнивание `start`/`end` зеркалится */
+	rtl: boolean
 	/** Рамка панели (`clientLeft`, `clientTop`): стрелка отсчитывается от её внутреннего края */
 	border: { left: number; top: number }
 }

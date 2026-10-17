@@ -11,7 +11,7 @@ const template = `
 	<div style="display: grid; gap: 12px; max-width: 560px">
 		<BaseToolCall v-bind="args" is-open>
 			<template #output>
-				<ul style="margin: 0; padding-left: 20px">
+				<ul style="margin: 0; padding-inline-start: 20px">
 					<li v-for="page in pages" :key="page.url"><a :href="page.url">{{ page.title }}</a></li>
 				</ul>
 			</template>

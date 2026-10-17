@@ -1,5 +1,6 @@
 /** Помощники для play-функций: каждая проверка должна утверждать наблюдаемое поведение (роль, доступное имя, атрибут, фокус, событие), а не то, что «элемент есть в DOM». */
 
+import { isRtl } from '@utils/dom/directionUtils'
 import type { UserEvent } from './types/helpers.types'
 import { expect, userEvent as defaultUserEvent } from 'storybook/test'
 
@@ -25,4 +26,25 @@ export function resolveColor(value: string): string {
 	const resolved = getComputedStyle(probe).color
 	probe.remove()
 	return resolved
+}
+
+/** Клавиша ← или → для `userEvent.keyboard` с учётом направления страницы: в RTL они меняются местами, как в самих компонентах */
+export function inlineKey(key: '{ArrowLeft}' | '{ArrowRight}'): string {
+	if (!isRtl(document.documentElement)) return key
+	return key === '{ArrowLeft}' ? '{ArrowRight}' : '{ArrowLeft}'
+}
+
+/** Расстояние от начала строки до начального края прямоугольника: `left` в LTR, `-right` в RTL (больше — дальше от начала строки) */
+export function inlineStart(rect: DOMRect): number {
+	return isRtl(document.documentElement) ? -rect.right : rect.left
+}
+
+/** То же для конечного края: `right` в LTR, `-left` в RTL */
+export function inlineEnd(rect: DOMRect): number {
+	return isRtl(document.documentElement) ? -rect.left : rect.right
+}
+
+/** Смещение указателя вдоль строки: положительное значение — к концу строки (вправо в LTR, влево в RTL) */
+export function inlineDelta(offset: number): number {
+	return isRtl(document.documentElement) ? -offset : offset
 }

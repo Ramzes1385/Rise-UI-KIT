@@ -2,7 +2,7 @@ import type meta from '../BaseTransfer.stories'
 import BaseTransfer from '../../ui/BaseTransfer.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { expect, waitFor, within } from 'storybook/test'
-import { storySource, useStorySetup } from '@/stories/helpers'
+import { inlineKey, storySource, useStorySetup } from '@/stories/helpers'
 
 const models = { value: 'modelValue' }
 
@@ -27,7 +27,7 @@ export const Default: StoryObj<typeof meta> = {
 		await userEvent.tab()
 		await userEvent.tab()
 		await expect(within(source).getByRole('option', { name: /Анна Смирнова/ })).toHaveFocus()
-		await userEvent.keyboard(' {Control>}{ArrowRight}{/Control}')
+		await userEvent.keyboard(' {Control>}' + inlineKey('{ArrowRight}') + '{/Control}')
 		const target = canvas.getByRole('listbox', { name: 'Выбрано' })
 		await waitFor(() => expect(within(target).getByRole('option', { name: /Анна Смирнова/ })).toBeInTheDocument())
 		await expect(within(source).getByRole('option', { name: /Борис Орлов/ })).toHaveFocus()

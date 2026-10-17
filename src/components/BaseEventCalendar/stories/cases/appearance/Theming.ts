@@ -66,12 +66,12 @@ export const Theming: StoryObj<typeof meta> = {
 		await expect(style(part(themed, 'weekday')).color).not.toBe(style(part(plain, 'weekday')).color)
 		await expect(style(part(themed, 'month')).borderTopColor).not.toBe(style(part(plain, 'month')).borderTopColor)
 		await expect(style(today(themed)).backgroundColor).not.toBe(style(today(plain)).backgroundColor)
-		await expect(style(part(themed, 'event')).borderBottomLeftRadius).not.toBe(style(part(plain, 'event')).borderBottomLeftRadius)
+		await expect(style(part(themed, 'event')).borderEndStartRadius).not.toBe(style(part(plain, 'event')).borderEndStartRadius)
 		if (!isStoryBranded()) {
 			await expect(style(part(plain, 'day')).paddingTop).toBe('4px')
 			await expect(style(part(themed, 'day')).paddingTop).toBe('8px')
-			await expect(style(part(plain, 'event')).paddingRight).toBe('6px')
-			await expect(style(part(themed, 'event')).paddingRight).toBe('10px')
+			await expect(style(part(plain, 'event')).paddingInlineEnd).toBe('6px')
+			await expect(style(part(themed, 'event')).paddingInlineEnd).toBe('10px')
 			await expect(style(part(plain, 'event')).fontSize).toBe('12px')
 			await expect(style(part(themed, 'event')).fontSize).toBe('14px')
 		}

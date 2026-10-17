@@ -1,13 +1,17 @@
 import { computed, ref } from 'vue'
 import { BaseLink } from '@components/BaseLink'
 import { useMotion } from '@composables/app/useMotion'
+import { mirrorSide } from '@utils/dom/directionUtils'
 import { useSideBarItemView } from './useSideBarItemView'
+import { useDirection } from '@composables/app/useDirection'
 import { useSideBarNavigation } from '@composables/navigation/useSideBarNavigation'
+import type { DropdownPosition } from '@components/BaseDropdown/types/BaseDropdown.types'
 import type { BaseSideBarNavigationEmits, BaseSideBarNavigationProps, SideBarItem } from '../types/BaseSideBar.types'
 
 export function useBaseSideBarNavigation(props: BaseSideBarNavigationProps, emit: BaseSideBarNavigationEmits) {
 	const rootRef = ref<HTMLElement | null>(null)
 	const motion = useMotion(rootRef)
+	const { isRtl } = useDirection(() => rootRef.value)
 	const navigation = useSideBarNavigation({ props, emit })
 	const view = useSideBarItemView(props, (item: SideBarItem, event: Event) => {
 		item.click?.(item, event as MouseEvent)
@@ -32,7 +36,14 @@ export function useBaseSideBarNavigation(props: BaseSideBarNavigationProps, emit
 			if (isButton(item)) return itemProps
 			return { ...itemProps, variant: 'ghost', hasExternalIcon: false, linkComponent: props.linkComponent }
 		},
+		tooltipPosition: computed(() => mirrorSide('right', isRtl.value)),
 		getFlyoutProps: (item: SideBarItem) =>
-			view.hasFlyout(item) ? { items: view.getFlyoutItems(item), position: 'right-start', ariaLabel: item.label } : {},
+			view.hasFlyout(item)
+				? {
+						items: view.getFlyoutItems(item),
+						position: mirrorSide<DropdownPosition>('right-start', isRtl.value),
+						ariaLabel: item.label,
+					}
+				: {},
 	}
 }

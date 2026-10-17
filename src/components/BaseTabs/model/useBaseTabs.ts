@@ -1,7 +1,7 @@
 import type { Ref } from 'vue'
-import { isRtl } from './tabsDirection'
 import { useTabsReveal } from './useTabsReveal'
 import { useUi } from '@composables/base/useUi'
+import { isRtl } from '@utils/dom/directionUtils'
 import { toHTMLElement } from '@utils/dom/domUtils'
 import { useMotion } from '@composables/app/useMotion'
 import type { BaseTabsEmits, BaseTabsProps } from '../types/BaseTabs.types'

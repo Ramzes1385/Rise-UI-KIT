@@ -74,8 +74,8 @@ export const Theming: StoryObj<typeof meta> = {
 		if (!isStoryBranded()) {
 			await expect(style(plain, '.base-table__td').paddingTop).toBe('12px')
 			await expect(style(themed, '.base-table__td').paddingTop).toBe('8px')
-			await expect(style(plain, '.base-table__th').paddingLeft).toBe('16px')
-			await expect(style(themed, '.base-table__th').paddingLeft).toBe('20px')
+			await expect(style(plain, '.base-table__th').paddingInlineStart).toBe('16px')
+			await expect(style(themed, '.base-table__th').paddingInlineStart).toBe('20px')
 			await expect(style(plain, '.base-table__body').borderTopLeftRadius).toBe('8px')
 		}
 		await expect(classed).toHaveClass('base-table', 'story-themed-table')

@@ -3,7 +3,7 @@ import type meta from '../../BaseImage.stories'
 import { screen, expect } from 'storybook/test'
 import BaseImage from '../../../ui/BaseImage.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { inlineKey, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const photos = GALLERY
 
@@ -54,7 +54,7 @@ export const Gallery: StoryObj<typeof meta> = {
 		const dialog = await screen.findByRole('dialog', { name: `Просмотр изображения: ${fog.alt}, изображение 2 из 5` })
 		await expect(dialog).toHaveTextContent('2 / 5')
 
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await expect(dialog).toHaveTextContent('3 / 5')
 		await expect(dialog).toHaveAccessibleName(`Просмотр изображения: ${third.alt}, изображение 3 из 5`)
 		await expect(screen.getByRole('button', { name: 'Изображение 3 из 5' })).toHaveAttribute('aria-current', 'true')

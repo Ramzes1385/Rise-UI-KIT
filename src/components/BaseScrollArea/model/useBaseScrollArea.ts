@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
 import { useUi } from '@composables/base/useUi'
+import { isRtl } from '@utils/dom/directionUtils'
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { Axis, BaseScrollAreaEmits, BaseScrollAreaExpose, BaseScrollAreaProps } from '../types/BaseScrollArea.types'
@@ -11,12 +12,12 @@ const SCROLL_IDLE_DELAY = 800
 function measure(viewport: HTMLElement, axis: Axis): { client: number; total: number; position: number } {
 	return axis === 'y'
 		? { client: viewport.clientHeight, total: viewport.scrollHeight, position: viewport.scrollTop }
-		: { client: viewport.clientWidth, total: viewport.scrollWidth, position: viewport.scrollLeft }
+		: { client: viewport.clientWidth, total: viewport.scrollWidth, position: Math.abs(viewport.scrollLeft) }
 }
 
 function setScroll(viewport: HTMLElement, axis: Axis, position: number): void {
 	if (axis === 'y') viewport.scrollTop = position
-	else viewport.scrollLeft = position
+	else viewport.scrollLeft = isRtl(viewport) ? -position : position
 }
 
 function useBars(props: BaseScrollAreaProps, viewportRef: Ref<HTMLElement | null>) {
@@ -42,7 +43,7 @@ function useBars(props: BaseScrollAreaProps, viewportRef: Ref<HTMLElement | null
 		},
 		thumbStyle(axis: Axis): Record<string, string> {
 			const { size, offset } = bars[axis]
-			return axis === 'y' ? { height: `${size}%`, top: `${offset}%` } : { width: `${size}%`, left: `${offset}%` }
+			return axis === 'y' ? { height: `${size}%`, top: `${offset}%` } : { width: `${size}%`, insetInlineStart: `${offset}%` }
 		},
 	}
 }
@@ -71,7 +72,8 @@ function useThumbDrag(viewportRef: Ref<HTMLElement | null>, bars: Record<Axis, {
 			const { client, total } = measure(viewport, axis)
 			const freeTrack = client - (bars[axis].size / 100) * client
 			if (freeTrack <= 0) return
-			const delta = (axis === 'y' ? event.clientY : event.clientX) - dragStartPointer
+			const sign = axis === 'x' && isRtl(viewport) ? -1 : 1
+			const delta = sign * ((axis === 'y' ? event.clientY : event.clientX) - dragStartPointer)
 			setScroll(viewport, axis, dragStartScroll + (delta * (total - client)) / freeTrack)
 		},
 		handleThumbPointerup(): void {
@@ -137,7 +139,8 @@ export function useBaseScrollArea(props: BaseScrollAreaProps, emit: BaseScrollAr
 			const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
 			const length = axis === 'y' ? rect.height : rect.width
 			if (length <= 0) return
-			const fraction = (axis === 'y' ? event.clientY - rect.top : event.clientX - rect.left) / length
+			const fromStart = axis === 'x' && isRtl(viewport) ? rect.right - event.clientX : event.clientX - rect.left
+			const fraction = (axis === 'y' ? event.clientY - rect.top : fromStart) / length
 			const { client, total } = measure(viewport, axis)
 			setScroll(viewport, axis, fraction * total - client / 2)
 		},

@@ -5,7 +5,7 @@ import { getDay } from '../../../shared'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../../BaseEventCalendar.stories'
 import BaseEventCalendar from '../../../../ui/BaseEventCalendar.vue'
-import { storySource, tabTo, useStorySetup } from '@/stories/helpers'
+import { storySource, tabTo, useStorySetup, inlineKey } from '@/stories/helpers'
 import type { EventCalendarSelection } from '../../../../types/BaseEventCalendar.types'
 
 const template = `
@@ -68,7 +68,7 @@ export const Selectable: StoryObj<typeof meta> = {
 	play: async ({ canvas, canvasElement, userEvent, args }) => {
 		const status = canvas.getByRole('status')
 		await tabTo(getDay(canvasElement, '2026-10-02'), userEvent)
-		await userEvent.keyboard('{Shift>}{ArrowRight}{ArrowRight}{/Shift}')
+		await userEvent.keyboard('{Shift>}' + inlineKey('{ArrowRight}') + inlineKey('{ArrowRight}') + '{/Shift}')
 		await expect(status).toHaveTextContent('Выделено: 2 октября — 4 октября')
 		await expect(getDay(canvasElement, '2026-10-03')).toHaveAttribute('aria-selected', 'true')
 		await userEvent.keyboard('{Enter}')

@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
 import { onBeforeUnmount } from 'vue'
+import { resolveArrowKey } from '@utils/dom/directionUtils'
 import { getShortcutLetter } from '@utils/dom/keyboardUtils'
 import { findTypeaheadIndex } from '@utils/navigation/menuUtils'
 import type {
@@ -91,7 +92,7 @@ export function useFileManagerKeyboard(core: FileManagerCore, commands: FileMana
 	function dispatch(context: FileManagerKeyContext): boolean {
 		const { event } = context
 		if (MOVE_KEYS.has(event.key)) {
-			const step = stepOf(event.key, columns(), core.view.get() === 'grid')
+			const step = stepOf(resolveArrowKey(event), columns(), core.view.get() === 'grid')
 			moveFocus(core, targetIndex(currentIndex(core), core.entries.value.length, step), event)
 			return true
 		}

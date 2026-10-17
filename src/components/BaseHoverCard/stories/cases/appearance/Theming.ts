@@ -69,10 +69,10 @@ export const Theming: StoryObj<typeof meta> = {
 		const themed = await innerOf('Токены на контейнере')
 		const classed = await innerOf('Классы на частях')
 
-		await expect(getComputedStyle(themed).paddingLeft).not.toBe(getComputedStyle(plain).paddingLeft)
+		await expect(getComputedStyle(themed).paddingInlineStart).not.toBe(getComputedStyle(plain).paddingInlineStart)
 		await expect(getComputedStyle(themed).fontSize).not.toBe(getComputedStyle(plain).fontSize)
-		if (!isStoryBranded()) await expect(getComputedStyle(themed).paddingLeft).toBe('24px')
-		if (!isStoryBranded()) await expect(getComputedStyle(plain).paddingLeft).toBe('16px')
+		if (!isStoryBranded()) await expect(getComputedStyle(themed).paddingInlineStart).toBe('24px')
+		if (!isStoryBranded()) await expect(getComputedStyle(plain).paddingInlineStart).toBe('16px')
 		await expect(classed).toHaveClass('base-hover-card__inner', 'story-themed-inner')
 		await expect(classed.closest('.base-dropdown__panel')).toHaveClass('base-hover-card__panel', 'story-themed-panel')
 	},

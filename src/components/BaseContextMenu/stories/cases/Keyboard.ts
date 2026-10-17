@@ -1,5 +1,5 @@
-import { tabTo } from '@/stories/helpers'
 import type meta from '../BaseContextMenu.stories'
+import { tabTo, inlineKey } from '@/stories/helpers'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { screen, waitFor, expect, within } from 'storybook/test'
 
@@ -22,7 +22,7 @@ export const Keyboard: StoryObj<typeof meta> = {
 		const menu = await screen.findByRole('menu', { name: 'Контекстное меню' })
 		await waitFor(() => expect(within(menu).getByRole('menuitem', { name: /Открыть/ })).toHaveFocus())
 
-		await userEvent.keyboard('{End}{ArrowUp}{ArrowRight}')
+		await userEvent.keyboard('{End}{ArrowUp}' + inlineKey('{ArrowRight}'))
 		const submenu = await screen.findByRole('menu', { name: /Переместить/ })
 		await waitFor(() => expect(within(submenu).getByRole('menuitem', { name: 'Сезон 1' })).toHaveFocus())
 

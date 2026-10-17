@@ -274,6 +274,29 @@ describe('useColumnResize — перетаскивание по реальной
 		expect(ctx.onColumnsChange).toHaveBeenCalledWith(ctx.columns.value)
 	})
 
+	it('в RTL движение указателя влево расширяет колонку', () => {
+		document.documentElement.setAttribute('dir', 'rtl')
+		const { table, ths } = buildHeader([100, 150])
+		const ctx = setup([
+			{ key: 'a', width: '100px' },
+			{ key: 'b', width: '150px' },
+		])
+		cleanup = () => {
+			ctx.wrapper.unmount()
+			table.remove()
+			document.documentElement.removeAttribute('dir')
+		}
+
+		ctx.result.startResize(press(ths[0].handle, 100), 'a')
+		move(70)
+		expect(ctx.columns.value[0].width).toBe('130px')
+		expect(ctx.columns.value[1].width).toBe('120px')
+
+		move(130)
+		expect(ctx.columns.value[0].width).toBe('70px')
+		expect(ctx.columns.value[1].width).toBe('180px')
+	})
+
 	it('не даёт соседней колонке стать уже минимума и не сжимает колонку меньше минимума', () => {
 		const { table, ths } = buildHeader([100, 150])
 		const ctx = setup(

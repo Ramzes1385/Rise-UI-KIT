@@ -65,9 +65,9 @@ export const Theming: StoryObj<typeof meta> = {
 		const classed = await popupOf('Классы через ui')
 
 		await expect(getComputedStyle(themed).backgroundColor).not.toBe(getComputedStyle(plain).backgroundColor)
-		await expect(getComputedStyle(themed).paddingLeft).not.toBe(getComputedStyle(plain).paddingLeft)
-		if (!isStoryBranded()) await expect(getComputedStyle(themed).paddingLeft).toBe('12px')
-		if (!isStoryBranded()) await expect(getComputedStyle(plain).paddingLeft).toBe('8px')
+		await expect(getComputedStyle(themed).paddingInlineStart).not.toBe(getComputedStyle(plain).paddingInlineStart)
+		if (!isStoryBranded()) await expect(getComputedStyle(themed).paddingInlineStart).toBe('12px')
+		if (!isStoryBranded()) await expect(getComputedStyle(plain).paddingInlineStart).toBe('8px')
 		await expect(classed).toHaveClass('base-tooltip-popup', 'story-themed-tooltip')
 		await expect(classed.querySelector('.base-tooltip__text')).toHaveClass('story-themed-text')
 	},

@@ -819,4 +819,30 @@ describe('BaseRange integration', () => {
 			expect(container.querySelector('.base-range__thumb')).toHaveAttribute('aria-valuemax', '100')
 		})
 	})
+
+	describe('RTL', () => {
+		function renderRtl(props: Record<string, unknown>) {
+			const host = document.body.appendChild(document.createElement('div'))
+			host.setAttribute('dir', 'rtl')
+			return render(BaseRange, { props, global: globalComponents, container: host })
+		}
+
+		it('ArrowLeft увеличивает, ArrowRight уменьшает значение', async () => {
+			const { container, emitted } = renderRtl({ modelValue: 50, min: 0, max: 100, step: 1 })
+			const thumb = container.querySelector('.base-range__thumb') as HTMLElement
+			await fireEvent.keyDown(thumb, { key: 'ArrowLeft' })
+			await fireEvent.keyDown(thumb, { key: 'ArrowRight' })
+			expect((emitted('update:modelValue') as number[][]).map(event => event[0])).toEqual([51, 49])
+		})
+
+		it('клик у правого края даёт минимум, у левого — максимум', async () => {
+			const { container, emitted } = renderRtl({ modelValue: 50, min: 0, max: 100 })
+			const track = container.querySelector('.base-range__track-wrapper') as HTMLElement
+			await fireEvent.mouseDown(track, { clientX: 200 })
+			await fireEvent.mouseUp(document)
+			await fireEvent.mouseDown(track, { clientX: 0 })
+			await fireEvent.mouseUp(document)
+			expect((emitted('update:modelValue') as number[][]).map(event => event[0])).toEqual([0, 100])
+		})
+	})
 })

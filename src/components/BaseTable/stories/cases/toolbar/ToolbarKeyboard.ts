@@ -2,8 +2,8 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseTable.stories'
 import BaseTable from '../../../ui/BaseTable.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { storySource, useStorySetup } from '@/stories/helpers'
 import { COLUMNS, ORDERS, toRows, tableScript } from '../../shared'
+import { storySource, useStorySetup, inlineKey } from '@/stories/helpers'
 
 const template = `
 	<BaseTable v-bind="args" :columns="columns" />
@@ -46,24 +46,24 @@ export const ToolbarKeyboard: StoryObj<typeof meta> = {
 		await expect(search).toHaveFocus()
 		await expect(toolbar.querySelectorAll('[tabindex="0"]')).toHaveLength(1)
 
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await expect(column).toHaveFocus()
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await expect(canvas.getByRole('combobox', { name: 'Условие фильтра' })).toHaveFocus()
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await expect(canvas.getByRole('textbox', { name: 'Значение фильтра' })).toHaveFocus()
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await expect(canvas.getByRole('button', { name: 'Добавить' })).toHaveFocus()
 		await userEvent.keyboard('{End}')
 		await expect(columnsButton).toHaveFocus()
 		await userEvent.keyboard('{Home}')
 		await expect(search).toHaveFocus()
-		await userEvent.keyboard('{ArrowLeft}')
+		await userEvent.keyboard(inlineKey('{ArrowLeft}'))
 		await expect(columnsButton).toHaveFocus()
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await expect(search).toHaveFocus()
 
-		await userEvent.keyboard('Москва{ArrowLeft}')
+		await userEvent.keyboard('Москва' + inlineKey('{ArrowLeft}'))
 		await expect(search).toHaveFocus()
 		await expect(search).toHaveValue('Москва')
 

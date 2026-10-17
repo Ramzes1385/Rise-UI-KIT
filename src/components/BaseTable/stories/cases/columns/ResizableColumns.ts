@@ -1,7 +1,7 @@
 import { expect } from 'storybook/test'
-import { tabTo } from '@/stories/helpers'
 import type meta from '../../BaseTable.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
+import { inlineDelta, inlineKey, tabTo } from '@/stories/helpers'
 
 export const ResizableColumns: StoryObj<typeof meta> = {
 	parameters: {
@@ -25,7 +25,7 @@ export const ResizableColumns: StoryObj<typeof meta> = {
 		const widthBefore = header.getBoundingClientRect().width
 		await userEvent.pointer([
 			{ keys: '[MouseLeft>]', target: handle, coords: { clientX: x, clientY: y, pageX: x, pageY: y } },
-			{ target: handle, coords: { clientX: x + 60, clientY: y, pageX: x + 60, pageY: y } },
+			{ target: handle, coords: { clientX: x + inlineDelta(60), clientY: y, pageX: x + inlineDelta(60), pageY: y } },
 			{ keys: '[/MouseLeft]', target: handle },
 		])
 		await expect(args['onColumn-resize']).toHaveBeenCalledWith('number', expect.any(Number))
@@ -34,7 +34,7 @@ export const ResizableColumns: StoryObj<typeof meta> = {
 		const keyboardHandle = canvas.getByRole('separator', { name: 'Ширина колонки: Заказ' })
 		await tabTo(keyboardHandle, userEvent)
 		const widthBeforeKey = header.getBoundingClientRect().width
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await expect(Math.round(header.getBoundingClientRect().width)).toBe(Math.round(widthBeforeKey + 10))
 		await expect(keyboardHandle).toHaveAttribute('aria-valuenow', String(Math.round(widthBeforeKey + 10)))
 	},

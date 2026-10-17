@@ -1,5 +1,5 @@
-import { tabTo } from '@/stories/helpers'
 import type meta from '../../BaseCascader.stories'
+import { tabTo, inlineKey } from '@/stories/helpers'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { expect, screen, waitFor } from 'storybook/test'
 
@@ -27,14 +27,14 @@ export const Keyboard: StoryObj<typeof meta> = {
 		await expect(field).toHaveAttribute('aria-expanded', 'true')
 		await expect(activeText(field)).toBe('Москва')
 
-		await userEvent.keyboard('{ArrowDown}{ArrowRight}')
+		await userEvent.keyboard('{ArrowDown}' + inlineKey('{ArrowRight}'))
 		await waitFor(() => expect(screen.getAllByRole('listbox')).toHaveLength(2))
 		await expect(screen.getAllByRole('listbox')[1]).toHaveAccessibleName('Санкт-Петербург')
 		await expect(activeText(field)).toBe('Адмиралтейский')
 
-		await userEvent.keyboard('{ArrowDown}{ArrowLeft}')
+		await userEvent.keyboard('{ArrowDown}' + inlineKey('{ArrowLeft}'))
 		await expect(activeText(field)).toBe('Санкт-Петербург')
-		await userEvent.keyboard('{ArrowRight}{End}{Enter}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}') + '{End}{Enter}')
 		await expect(field).toHaveAttribute('aria-expanded', 'false')
 		await expect(field).toHaveTextContent('Санкт-Петербург / Петроградский')
 		await expect(field).toHaveFocus()

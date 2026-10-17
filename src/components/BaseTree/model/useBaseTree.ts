@@ -2,6 +2,7 @@ import type { ComputedRef } from 'vue'
 import { useUi } from '@composables/base/useUi'
 import type { UiClassFn } from '@composables/base/useUi'
 import { TREE_CONTEXT_KEY } from '../types/BaseTree.types'
+import { resolveArrowKey } from '@utils/dom/directionUtils'
 import { findTypeaheadIndex } from '@utils/navigation/menuUtils'
 import { isolateFormField } from '@composables/form/useFormContext'
 import { useTreeState } from '@composables/navigation/useTreeState'
@@ -234,7 +235,7 @@ export function useBaseTree(props: TreeProps, emit: BaseTreeEmits) {
 			const index = tab.currentIndex()
 			const entry = visible[index]
 			if (!entry || event.target !== headers.headers.get(entry.node.id)) return
-			const action = keys.get(event.key)
+			const action = keys.get(resolveArrowKey(event))
 			if (action) action({ visible, index, entry })
 			else {
 				if (event.key.length !== 1 || event.ctrlKey || event.metaKey || event.altKey) return

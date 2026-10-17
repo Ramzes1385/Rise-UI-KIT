@@ -1,3 +1,4 @@
+import { inlineKey } from '@/stories/helpers'
 import type meta from '../../../BaseChat.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { expect, screen, within, waitFor } from 'storybook/test'
@@ -25,9 +26,9 @@ export const InfoPanel: StoryObj<typeof meta> = {
 		const membersTab = within(panel).getByRole('tab', { name: 'Участники' })
 		await waitFor(() => expect(membersTab).toHaveFocus())
 
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await waitFor(() => expect(within(panel).getByRole('tab', { name: 'Медиа' })).toHaveAttribute('aria-selected', 'true'))
-		await userEvent.keyboard('{ArrowLeft}')
+		await userEvent.keyboard(inlineKey('{ArrowLeft}'))
 
 		await userEvent.click(within(panel).getByRole('button', { name: `Действия с участником ${IVAN.name}` }))
 		await userEvent.click(await screen.findByRole('menuitem', { name: 'Сделать админом' }))

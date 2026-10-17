@@ -1,5 +1,5 @@
-import type { Ref, ShallowRef } from 'vue'
 import type { UiProp } from '@composables/base/useUi'
+import type { ComputedRef, Ref, ShallowRef } from 'vue'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
@@ -197,6 +197,14 @@ export interface DashboardGridState {
 	rules: () => DashboardLayoutRules
 	announce: (message: DashboardAnnouncement, item: DashboardLayoutItem) => void
 	commit: (layout: DashboardLayoutItem[], id: string, action: DashboardChangeAction) => void
+}
+
+/** Вход стилей сетки: состояние, текущий макет, перетаскиваемый прямоугольник и знак направления письма (1 в LTR, −1 в RTL) */
+export interface DashboardGridStylesInput {
+	state: DashboardGridState
+	items: ComputedRef<DashboardLayoutItem[]>
+	dragRect: ShallowRef<DashboardDragRect | null>
+	sign: ComputedRef<number>
 }
 
 /** Точка указателя в координатах окна, px */

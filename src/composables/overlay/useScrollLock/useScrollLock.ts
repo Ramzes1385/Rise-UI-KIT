@@ -9,12 +9,12 @@ import type { UseScrollLockReturn } from './types/useScrollLock.types'
  */
 let activeLocks = 0
 let initialOverflow = ''
-let initialPaddingRight = ''
+let initialPaddingEnd = ''
 
 /**
  * Composable для блокировки скролла body.
- * Сохраняет и восстанавливает исходные overflow и padding-right body.
- * Компенсирует ширину скроллбара через padding-right, чтобы body не дёргался.
+ * Сохраняет и восстанавливает исходные overflow и padding-inline-end body.
+ * Компенсирует ширину скроллбара через padding-inline-end (в RTL полоса слева), чтобы body не дёргался.
  * Идемпотентный: повторный lock/unlock одного экземпляра не меняет общий счётчик.
  *
  * @example
@@ -36,11 +36,11 @@ function useScrollLock(): UseScrollLockReturn {
 		if (activeLocks > 1) return
 
 		initialOverflow = document.body.style.overflow
-		initialPaddingRight = document.body.style.paddingRight
+		initialPaddingEnd = document.body.style.paddingInlineEnd
 		const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
 		document.body.style.overflow = 'hidden'
 		if (scrollbarWidth > 0) {
-			document.body.style.paddingRight = `${scrollbarWidth}px`
+			document.body.style.paddingInlineEnd = `${scrollbarWidth}px`
 		}
 	}
 
@@ -51,9 +51,9 @@ function useScrollLock(): UseScrollLockReturn {
 		if (activeLocks > 0) return
 
 		document.body.style.overflow = initialOverflow
-		document.body.style.paddingRight = initialPaddingRight
+		document.body.style.paddingInlineEnd = initialPaddingEnd
 		initialOverflow = ''
-		initialPaddingRight = ''
+		initialPaddingEnd = ''
 	}
 
 	return { lock, unlock }

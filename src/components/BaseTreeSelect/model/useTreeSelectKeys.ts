@@ -1,4 +1,5 @@
 import { isImeKeydown } from '@utils/dom/keyboardUtils'
+import { resolveArrowKey } from '@utils/dom/directionUtils'
 import type { TreeSelectKeyAction, TreeSelectKeysContext, TreeSelectRow } from '../types/BaseTreeSelect.types'
 
 const CLOSED_KEYS = new Set(['Enter', ' ', 'ArrowDown', 'ArrowUp', 'Home', 'End'])
@@ -60,7 +61,7 @@ function handleOpenKey(context: TreeSelectKeysContext, event: KeyboardEvent, isS
 		context.close()
 		return
 	}
-	const action = OPEN_KEYS.get(event.key)
+	const action = OPEN_KEYS.get(resolveArrowKey(event))
 	if (!action || isCaretKey(context, event, isSearch)) return
 	event.preventDefault()
 	action(context, context.rows.value[context.activeIndex.value])

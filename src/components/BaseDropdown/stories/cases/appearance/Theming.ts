@@ -70,9 +70,9 @@ export const Theming: StoryObj<typeof meta> = {
 		await expect(getComputedStyle(themed).backgroundColor).not.toBe(getComputedStyle(plain).backgroundColor)
 		if (!isStoryBranded())
 			await expect(getComputedStyle(themed).borderTopLeftRadius).not.toBe(getComputedStyle(plain).borderTopLeftRadius)
-		await expect(getComputedStyle(themed).paddingLeft).not.toBe(getComputedStyle(plain).paddingLeft)
-		if (!isStoryBranded()) await expect(getComputedStyle(themed).paddingLeft).toBe('12px')
-		if (!isStoryBranded()) await expect(getComputedStyle(plain).paddingLeft).toBe('4px')
+		await expect(getComputedStyle(themed).paddingInlineStart).not.toBe(getComputedStyle(plain).paddingInlineStart)
+		if (!isStoryBranded()) await expect(getComputedStyle(themed).paddingInlineStart).toBe('12px')
+		if (!isStoryBranded()) await expect(getComputedStyle(plain).paddingInlineStart).toBe('4px')
 		if (!isStoryBranded()) await expect(getComputedStyle(themed).minWidth).toBe('200px')
 		await expect(classed).toHaveClass('base-dropdown__panel', 'story-themed-panel')
 	},

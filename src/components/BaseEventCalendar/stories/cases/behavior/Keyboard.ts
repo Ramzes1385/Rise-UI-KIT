@@ -1,6 +1,6 @@
 import { getDay } from '../../shared'
 import { expect } from 'storybook/test'
-import { tabTo } from '@/stories/helpers'
+import { tabTo, inlineKey } from '@/stories/helpers'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../BaseEventCalendar.stories'
 
@@ -19,7 +19,7 @@ export const Keyboard: StoryObj<typeof meta> = {
 	play: async ({ canvas, canvasElement, userEvent, args }) => {
 		await tabTo(getDay(canvasElement, '2026-10-02'), userEvent)
 		await expect(getDay(canvasElement, '2026-10-02')).toHaveAttribute('aria-selected', 'true')
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await expect(getDay(canvasElement, '2026-10-03')).toHaveFocus()
 		await userEvent.keyboard('{ArrowDown}')
 		await expect(getDay(canvasElement, '2026-10-10')).toHaveFocus()
@@ -31,13 +31,21 @@ export const Keyboard: StoryObj<typeof meta> = {
 		await expect(canvas.getByRole('grid')).toHaveAccessibleName('Ноябрь 2026 г.')
 		await expect(getDay(canvasElement, '2026-11-11')).toHaveFocus()
 		await userEvent.keyboard('{PageUp}')
-		await userEvent.keyboard('{ArrowLeft}')
+		await userEvent.keyboard(inlineKey('{ArrowLeft}'))
 		await expect(getDay(canvasElement, '2026-10-10')).toHaveFocus()
 		await userEvent.keyboard('{ArrowUp}')
 		await userEvent.keyboard('{ArrowUp}')
-		await userEvent.keyboard('{ArrowLeft}')
+		await userEvent.keyboard(inlineKey('{ArrowLeft}'))
 		await expect(getDay(canvasElement, '2026-09-25')).toHaveFocus()
-		await userEvent.keyboard('{ArrowRight}{ArrowRight}{ArrowRight}{ArrowRight}{ArrowRight}{ArrowRight}{ArrowRight}')
+		await userEvent.keyboard(
+			inlineKey('{ArrowRight}') +
+				inlineKey('{ArrowRight}') +
+				inlineKey('{ArrowRight}') +
+				inlineKey('{ArrowRight}') +
+				inlineKey('{ArrowRight}') +
+				inlineKey('{ArrowRight}') +
+				inlineKey('{ArrowRight}'),
+		)
 		await expect(getDay(canvasElement, '2026-10-02')).toHaveFocus()
 		const meeting = canvas.getByRole('button', { name: 'Встреча с командой, 2 октября, 10:00–11:00' })
 		await userEvent.tab()

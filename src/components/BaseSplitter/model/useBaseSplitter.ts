@@ -2,10 +2,16 @@ import type { Ref } from 'vue'
 import { UI_ARIA } from '@/locales/messages'
 import { useUi } from '@composables/base/useUi'
 import { computed, ref, useId, watch } from 'vue'
+import { isRtl, resolveArrowKey } from '@utils/dom/directionUtils'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseSplitterEmits, SplitterPane, SplitterProps, SplitterSeparator, SplitterSizes } from '../types/BaseSplitter.types'
 
 const round = (value: number): number => Math.round(value * 10) / 10
+
+function offsetFromStart(event: PointerEvent, rect: DOMRect, axis: { isHorizontal: boolean; isReversed: boolean }): number {
+	if (!axis.isHorizontal) return event.clientY - rect.top
+	return axis.isReversed ? rect.right - event.clientX : event.clientX - rect.left
+}
 
 function sizesFrom(props: SplitterProps): number[] {
 	return props.sizes && props.sizes.length > 1 ? [...props.sizes] : [props.modelValue, round(100 - props.modelValue)]
@@ -72,7 +78,7 @@ function useSplitterKeyboard(props: SplitterProps, state: SplitterSizes): (event
 	}
 
 	return (event, index) => {
-		const next = sizeFor(event.key, index)
+		const next = sizeFor(resolveArrowKey(event), index)
 		if (next === undefined) return
 		event.preventDefault()
 		state.setSize(index, next, true)
@@ -94,11 +100,12 @@ function useSplitterDrag(props: SplitterProps, state: SplitterSizes & { rootRef:
 	function handlePointermove(event: PointerEvent): void {
 		const index = dragIndex.value
 		if (index === null) return
-		const rect = (state.rootRef.value as HTMLElement).getBoundingClientRect()
+		const root = state.rootRef.value as HTMLElement
+		const rect = root.getBoundingClientRect()
 		const isHorizontal = props.orientation === 'horizontal'
 		const length = isHorizontal ? rect.width : rect.height
 		if (length <= 0) return
-		const offset = isHorizontal ? event.clientX - rect.left : event.clientY - rect.top
+		const offset = offsetFromStart(event, rect, { isHorizontal, isReversed: isRtl(root) })
 		const before = state.sizes.value.slice(0, index).reduce((sum, size) => sum + size, 0)
 		state.setSize(index, round(round((offset / length) * 100) - before), false)
 	}

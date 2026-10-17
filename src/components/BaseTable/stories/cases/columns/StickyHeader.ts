@@ -2,9 +2,9 @@ import type meta from '../../BaseTable.stories'
 import { waitFor, expect } from 'storybook/test'
 import BaseTable from '../../../ui/BaseTable.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { storySource, useStorySetup } from '@/stories/helpers'
 import type { TableColumn } from '../../../types/BaseTable.types'
 import { ALL_ROWS, formatDate, formatRub, tableScript } from '../../shared'
+import { inlineDelta, inlineEnd, inlineStart, storySource, useStorySetup } from '@/stories/helpers'
 
 const columns: TableColumn[] = [
 	{ key: 'customer', label: 'Покупатель', width: '180px', isSticky: 'left' },
@@ -58,12 +58,16 @@ export const StickyHeader: StoryObj<typeof meta> = {
 		const header = canvas.getByRole('columnheader', { name: 'Заказ' })
 		await waitFor(() => expect(Math.round(header.getBoundingClientRect().top)).toBe(Math.round(scroller.getBoundingClientRect().top)))
 
-		scroller.scrollLeft = 300
+		scroller.scrollLeft = inlineDelta(300)
 		const checkCell = canvas.getByRole('checkbox', { name: 'Выбрать все строки' }).closest('th') as HTMLElement
 		const customer = canvas.getByRole('columnheader', { name: 'Покупатель' })
 		await waitFor(() =>
-			expect(Math.round(checkCell.getBoundingClientRect().left)).toBe(Math.round(scroller.getBoundingClientRect().left)),
+			expect(Math.round(inlineStart(checkCell.getBoundingClientRect()))).toBe(
+				Math.round(inlineStart(scroller.getBoundingClientRect())),
+			),
 		)
-		await expect(Math.round(customer.getBoundingClientRect().left)).toBe(Math.round(checkCell.getBoundingClientRect().right))
+		await expect(Math.round(inlineStart(customer.getBoundingClientRect()))).toBe(
+			Math.round(inlineEnd(checkCell.getBoundingClientRect())),
+		)
 	},
 }

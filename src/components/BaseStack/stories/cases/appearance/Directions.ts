@@ -2,8 +2,8 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseStack.stories'
 import BaseStack from '../../../ui/BaseStack.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { storySource, useStorySetup } from '@/stories/helpers'
 import { STACK_DIRECTIONS } from '../../../types/BaseStack.types'
+import { inlineStart, storySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
 	<div class="story-stack">
@@ -35,8 +35,8 @@ export const Directions: StoryObj<typeof meta> = {
 		const stacks = [...canvasElement.querySelectorAll<HTMLElement>('.base-stack')]
 		await expect(stacks.map(stack => getComputedStyle(stack).flexDirection)).toEqual([...STACK_DIRECTIONS])
 		const row = [...stacks[1].children].map(child => child.getBoundingClientRect())
-		await expect(row[1].left).toBeGreaterThan(row[0].left)
+		await expect(inlineStart(row[1])).toBeGreaterThan(inlineStart(row[0]))
 		const reversed = [...stacks[3].children].map(child => child.getBoundingClientRect())
-		await expect(reversed[1].left).toBeLessThan(reversed[0].left)
+		await expect(inlineStart(reversed[1])).toBeLessThan(inlineStart(reversed[0]))
 	},
 }

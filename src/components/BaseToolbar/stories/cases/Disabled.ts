@@ -6,7 +6,7 @@ import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { FORMAT_BUTTONS, ALIGN_BUTTONS } from '../shared'
 import { BaseSeparator } from '@components/BaseSeparator'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { literal, storySource, useStorySetup, inlineKey } from '@/stories/helpers'
 
 const format = FORMAT_BUTTONS
 
@@ -43,7 +43,7 @@ export const Disabled: StoryObj<typeof meta> = {
 	play: async ({ canvas, userEvent }) => {
 		await expect(canvas.getByRole('button', { name: 'По центру' })).toBeDisabled()
 		canvas.getByRole('button', { name: 'По левому краю' }).focus()
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await expect(canvas.getByRole('button', { name: 'По правому краю' })).toHaveFocus()
 	},
 }

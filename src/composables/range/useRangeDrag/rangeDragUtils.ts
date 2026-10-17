@@ -1,10 +1,11 @@
 /** Утилиты: положение указателя на треке range-слайдера, ближайший ползунок и значение по клавише */
 import type { RangeKeyBounds } from './types/useRangeDrag.types'
 
-/** Описание: доля трека под указателем, 0…1; у вертикального трека 0 — внизу */
-function trackRatio(event: MouseEvent | TouchEvent, rect: DOMRect, isVertical: boolean): number {
+/** Описание: доля трека под указателем, 0…1; у вертикального трека 0 — внизу, у горизонтального в RTL — справа */
+function trackRatio(event: MouseEvent | TouchEvent, rect: DOMRect, options: { isVertical: boolean; isRtl?: boolean }): number {
 	const point = 'touches' in event ? event.touches[0] : event
-	const ratio = isVertical ? 1 - (point.clientY - rect.top) / rect.height : (point.clientX - rect.left) / rect.width
+	const along = options.isRtl ? (rect.right - point.clientX) / rect.width : (point.clientX - rect.left) / rect.width
+	const ratio = options.isVertical ? 1 - (point.clientY - rect.top) / rect.height : along
 	return Math.max(0, Math.min(1, ratio))
 }
 

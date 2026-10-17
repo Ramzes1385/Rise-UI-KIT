@@ -56,13 +56,15 @@ export const Theming: StoryObj<typeof meta> = {
 
 		await expect(getComputedStyle(selected(themed)).backgroundColor).not.toBe(getComputedStyle(selected(plain)).backgroundColor)
 		await expect(getComputedStyle(selected(themed)).color).not.toBe(getComputedStyle(selected(plain)).color)
-		await expect(getComputedStyle(branch(themed)).borderLeftColor).not.toBe(getComputedStyle(branch(plain)).borderLeftColor)
+		await expect(getComputedStyle(branch(themed)).borderInlineStartColor).not.toBe(
+			getComputedStyle(branch(plain)).borderInlineStartColor,
+		)
 		await expect(getComputedStyle(themed).borderTopColor).not.toBe(getComputedStyle(plain).borderTopColor)
 		if (!isStoryBranded()) {
-			await expect(getComputedStyle(selected(plain)).paddingLeft).toBe('8px')
-			await expect(getComputedStyle(selected(themed)).paddingLeft).toBe('12px')
-			await expect(getComputedStyle(branch(plain)).paddingLeft).toBe('4px')
-			await expect(getComputedStyle(branch(themed)).paddingLeft).toBe('8px')
+			await expect(getComputedStyle(selected(plain)).paddingInlineStart).toBe('8px')
+			await expect(getComputedStyle(selected(themed)).paddingInlineStart).toBe('12px')
+			await expect(getComputedStyle(branch(plain)).paddingInlineStart).toBe('4px')
+			await expect(getComputedStyle(branch(themed)).paddingInlineStart).toBe('8px')
 		}
 		await expect(classed).toHaveClass('base-tree', 'story-themed-tree')
 		for (const part of classed.querySelectorAll('.base-tree__header')) await expect(part).toHaveClass('story-themed-header')

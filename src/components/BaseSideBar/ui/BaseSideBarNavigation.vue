@@ -55,7 +55,7 @@
 					v-if="isCollapsed"
 					v-bind="getFlyoutProps(item)"
 					class="base-side-bar-nav__flyout">
-					<component :is="hasFlyout(item) ? SideBarPassthrough : BaseTooltip" :text="item.label" position="right">
+					<component :is="hasFlyout(item) ? SideBarPassthrough : BaseTooltip" :text="item.label" :position="tooltipPosition">
 						<span class="base-side-bar-nav__tooltip-trigger">
 							<component
 								:is="getItemComponent(item)"
@@ -230,5 +230,6 @@ const {
 	getBadgeColor,
 	getCollapsedLabel,
 	getFlyoutProps,
+	tooltipPosition,
 } = useBaseSideBarNavigation(props, emit)
 </script>

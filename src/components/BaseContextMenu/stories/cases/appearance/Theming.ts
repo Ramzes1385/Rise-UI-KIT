@@ -62,7 +62,7 @@ export const Theming: StoryObj<typeof meta> = {
 			await userEvent.pointer({ keys: '[MouseRight]', target: canvas.getByRole('button', { name }) })
 			const item = within(await screen.findByRole('menu', { name })).getAllByRole('menuitem')[0]
 			const style = getComputedStyle(item)
-			const result = { item, paddingLeft: style.paddingLeft, radius: style.borderTopLeftRadius }
+			const result = { item, paddingInlineStart: style.paddingInlineStart, radius: style.borderTopLeftRadius }
 			await userEvent.keyboard('{Escape}')
 			await waitFor(() => expect(screen.queryByRole('menu')).not.toBeInTheDocument())
 			return result
@@ -71,10 +71,10 @@ export const Theming: StoryObj<typeof meta> = {
 		const themed = await measure('Токены')
 		const classed = await measure('Классы через ui')
 
-		await expect(themed.paddingLeft).not.toBe(plain.paddingLeft)
+		await expect(themed.paddingInlineStart).not.toBe(plain.paddingInlineStart)
 		if (!isStoryBranded()) await expect(themed.radius).not.toBe(plain.radius)
-		if (!isStoryBranded()) await expect(themed.paddingLeft).toBe('12px')
-		if (!isStoryBranded()) await expect(plain.paddingLeft).toBe('8px')
+		if (!isStoryBranded()) await expect(themed.paddingInlineStart).toBe('12px')
+		if (!isStoryBranded()) await expect(plain.paddingInlineStart).toBe('8px')
 		await expect(classed.item).toHaveClass('base-dropdown-menu__item', 'base-context-menu__item', 'story-themed-item')
 	},
 }

@@ -68,11 +68,11 @@ export const Theming: StoryObj<typeof meta> = {
 		const classed = await firstItem('Классы через ui')
 		const panelOf = (item: HTMLElement) => item.closest<HTMLElement>('.base-dropdown__panel')!
 
-		await expect(getComputedStyle(themed).paddingLeft).not.toBe(getComputedStyle(plain).paddingLeft)
+		await expect(getComputedStyle(themed).paddingInlineStart).not.toBe(getComputedStyle(plain).paddingInlineStart)
 		if (!isStoryBranded())
 			await expect(getComputedStyle(themed).borderTopLeftRadius).not.toBe(getComputedStyle(plain).borderTopLeftRadius)
-		if (!isStoryBranded()) await expect(getComputedStyle(themed).paddingLeft).toBe('12px')
-		if (!isStoryBranded()) await expect(getComputedStyle(plain).paddingLeft).toBe('8px')
+		if (!isStoryBranded()) await expect(getComputedStyle(themed).paddingInlineStart).toBe('12px')
+		if (!isStoryBranded()) await expect(getComputedStyle(plain).paddingInlineStart).toBe('8px')
 		if (!isStoryBranded()) await expect(getComputedStyle(panelOf(themed)).minWidth).toBe('240px')
 		await expect(classed).toHaveClass('base-dropdown-menu__item', 'story-themed-item')
 		await expect(panelOf(classed)).toHaveClass('base-dropdown-menu__panel', 'story-themed-panel')

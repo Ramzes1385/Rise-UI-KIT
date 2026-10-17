@@ -6,6 +6,7 @@ import { useUi } from '@composables/base/useUi'
 import type { BaseInput } from '@components/BaseInput'
 import { useMotion } from '@composables/app/useMotion'
 import { isImeKeydown } from '@utils/dom/keyboardUtils'
+import { resolveArrowKey } from '@utils/dom/directionUtils'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import { useFormDisabled } from '@composables/form/useFormContext'
 import type { BaseInputTagsEmits, InputTagsProps } from '../types/BaseInputTags.types'
@@ -133,7 +134,7 @@ function useTagKeys(props: InputTagsProps, removeAt: (index: number) => void, fo
 
 	return {
 		handleTagKeydown(event: KeyboardEvent, index: number): void {
-			const action = actions.get(event.key)
+			const action = actions.get(resolveArrowKey(event))
 			if (!action) return
 			action(event, index)
 			event.preventDefault()
@@ -152,7 +153,7 @@ function createFieldKeydown(
 		const isAtStart = input.selectionStart === 0 && input.selectionEnd === 0
 		if (event.key === 'Enter') {
 			if (actions.commitDraft()) event.preventDefault()
-		} else if ((event.key === 'Backspace' || event.key === 'ArrowLeft') && isAtStart && props.modelValue.length > 0) {
+		} else if ((event.key === 'Backspace' || resolveArrowKey(event) === 'ArrowLeft') && isAtStart && props.modelValue.length > 0) {
 			event.preventDefault()
 			actions.focusTag(props.modelValue.length - 1)
 		}

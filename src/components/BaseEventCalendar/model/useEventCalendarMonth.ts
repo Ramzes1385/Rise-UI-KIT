@@ -2,6 +2,7 @@ import { computed, nextTick, ref } from 'vue'
 import { formatMessage } from '@/locales/state'
 import { UI_EVENT_CALENDAR } from '@/locales/messages'
 import { shiftPeriod } from './useEventCalendarToolbar'
+import { resolveArrowKey } from '@utils/dom/directionUtils'
 import { formatDayLabel, formatFullDate, weekdayNames } from './eventCalendarFormat'
 import type { CalendarWeekSegment, NormalizedCalendarEvent } from '@utils/calendar/eventUtils'
 import { addDays, daysBetween, layoutWeek, startOfDay, toDayKey } from '@utils/calendar/eventUtils'
@@ -19,7 +20,8 @@ function keyStep(event: KeyboardEvent, date: Date, firstDay: number): Date | nul
 		PageUp: () => shiftPeriod('month', date, event.shiftKey ? -12 : -1),
 		PageDown: () => shiftPeriod('month', date, event.shiftKey ? 12 : 1),
 	}
-	return Object.hasOwn(steps, event.key) ? steps[event.key]() : null
+	const key = resolveArrowKey(event)
+	return Object.hasOwn(steps, key) ? steps[key]() : null
 }
 
 function coversDay(segment: CalendarWeekSegment, column: number): boolean {

@@ -57,7 +57,7 @@ export const Theming: StoryObj<typeof meta> = {
 		await expect(getComputedStyle(themed).backgroundColor).not.toBe(getComputedStyle(plain).backgroundColor)
 		await expect(getComputedStyle(themed).borderTopColor).not.toBe(getComputedStyle(plain).borderTopColor)
 		await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('9999px')
-		await expect(getComputedStyle(themed).paddingRight).toBe('16px')
+		await expect(getComputedStyle(themed).paddingInlineEnd).toBe('16px')
 		await expect(getComputedStyle(themedTag).backgroundColor).not.toBe(getComputedStyle(plainTag).backgroundColor)
 		await expect(classed).toHaveClass('base-select__trigger', 'story-themed-trigger')
 		await expect(canvas.getByRole('combobox', { name: 'Классы через ui' }).querySelector('.base-select__tag')).toHaveClass(

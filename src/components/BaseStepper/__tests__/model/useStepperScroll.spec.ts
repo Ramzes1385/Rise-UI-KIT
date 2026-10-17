@@ -109,4 +109,32 @@ describe('BaseStepper: прокрутка ленты', () => {
 		await rerender({ modelValue: 4 })
 		expect(scrollTo).not.toHaveBeenCalled()
 	})
+
+	describe('RTL', () => {
+		beforeEach(() => document.documentElement.setAttribute('dir', 'rtl'))
+		afterEach(() => document.documentElement.removeAttribute('dir'))
+
+		function mockRtlOffsets(clientWidth: number) {
+			vi.spyOn(HTMLElement.prototype, 'offsetLeft', 'get').mockImplementation(function (this: HTMLElement) {
+				const index = [...(this.parentElement?.children ?? [])].indexOf(this)
+				return clientWidth - (index + 1) * STEP_WIDTH
+			})
+		}
+
+		it('шаг за левым краем: лента прокручивается в минус', async () => {
+			mockLayout(480, 300)
+			mockRtlOffsets(300)
+			await renderStepper({ modelValue: 4 })
+			expect(scrollTo).toHaveBeenCalledWith({ left: -180, behavior: 'auto' })
+		})
+
+		it('шаг ближе к началу, чем видимая часть: возврат к началу строки', async () => {
+			mockLayout(480, 300)
+			mockRtlOffsets(300)
+			const { list, rerender } = await renderStepper({ modelValue: 2 })
+			list.scrollLeft = -180
+			await rerender({ modelValue: 1 })
+			expect(scrollTo).toHaveBeenCalledWith({ left: 0, behavior: 'smooth' })
+		})
+	})
 })

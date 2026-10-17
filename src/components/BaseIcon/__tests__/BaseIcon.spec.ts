@@ -170,3 +170,18 @@ describe('BaseIcon', () => {
 		})
 	})
 })
+
+describe('BaseIcon: направленные иконки (RTL)', () => {
+	it.each(['arrow-left', 'arrow-right', 'chevron-left', 'chevron-right', 'undo', 'redo', 'reply', 'send'])(
+		'%s зеркалится в RTL: класс base-icon--directional',
+		name => {
+			render(BaseIcon, { props: { name } })
+			expect(getIconRoot()).toHaveClass('base-icon--directional')
+		},
+	)
+
+	it.each(['chevron-down', 'chevron-up', 'star', 'play'])('%s не зеркалится', name => {
+		render(BaseIcon, { props: { name } })
+		expect(getIconRoot()).not.toHaveClass('base-icon--directional')
+	})
+})

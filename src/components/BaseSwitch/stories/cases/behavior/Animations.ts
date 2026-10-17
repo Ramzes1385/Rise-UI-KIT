@@ -21,7 +21,9 @@ const motion = motionPresetsStory({
 })
 
 const handleShifts = (canvasElement: HTMLElement) =>
-	[...canvasElement.querySelectorAll('.base-switch__handle')].map(handle => new DOMMatrix(getComputedStyle(handle).transform).m41)
+	[...canvasElement.querySelectorAll('.base-switch__handle')].map(handle =>
+		Math.abs(new DOMMatrix(getComputedStyle(handle).transform).m41),
+	)
 
 export const Animations: StoryObj<typeof meta> = {
 	name: 'Анимации',

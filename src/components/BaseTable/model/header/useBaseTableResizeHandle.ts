@@ -1,5 +1,6 @@
 import { useTableUi } from '../useTableUi'
 import { computed, onMounted, ref, watch } from 'vue'
+import { resolveArrowKey } from '@utils/dom/directionUtils'
 import { getWidthBounds } from '@composables/table/useColumnResize/useColumnResizeUtils'
 import type { BaseTableResizeHandleEmits, BaseTableResizeHandleProps } from '../../types/header/BaseTableResizeHandle.types'
 
@@ -49,7 +50,7 @@ export function useBaseTableResizeHandle(props: BaseTableResizeHandleProps, emit
 			emit('resize-start', event)
 		},
 		onKeydown(event: KeyboardEvent): void {
-			const direction = KEY_DIRECTION[event.key]
+			const direction = KEY_DIRECTION[resolveArrowKey(event)]
 			if (!direction) return
 			event.preventDefault()
 			event.stopPropagation()

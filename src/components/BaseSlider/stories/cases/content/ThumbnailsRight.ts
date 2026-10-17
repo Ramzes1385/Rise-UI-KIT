@@ -2,7 +2,7 @@ import { sliderNav } from '../../shared'
 import type meta from '../../BaseSlider.stories'
 import { expect, waitFor } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { STORY_WAIT_TIMEOUT } from '@/stories/helpers'
+import { inlineEnd, inlineStart, STORY_WAIT_TIMEOUT } from '@/stories/helpers'
 
 export const ThumbnailsRight: StoryObj<typeof meta> = {
 	parameters: {
@@ -19,7 +19,7 @@ export const ThumbnailsRight: StoryObj<typeof meta> = {
 	play: async ({ canvas, canvasElement, userEvent }) => {
 		const strip = canvasElement.querySelector<HTMLElement>('.base-slider__thumbs')!
 		const viewport = canvasElement.querySelector<HTMLElement>('.base-slider__viewport')!
-		await expect(strip.getBoundingClientRect().left).toBeGreaterThanOrEqual(viewport.getBoundingClientRect().right)
+		await expect(inlineStart(strip.getBoundingClientRect())).toBeGreaterThanOrEqual(inlineEnd(viewport.getBoundingClientRect()))
 
 		const prev = canvas.getByRole('button', { name: 'Предыдущий слайд' })
 		await userEvent.click(prev)

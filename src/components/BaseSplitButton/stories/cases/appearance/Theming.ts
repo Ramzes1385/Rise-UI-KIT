@@ -45,9 +45,11 @@ export const Theming: StoryObj<typeof meta> = {
 		const classed = canvas.getByRole('group', { name: 'Классы через ui' })
 		const part = (root: HTMLElement, name: string) => root.querySelector<HTMLElement>(`.base-split-button__${name}`)!
 
-		await expect(getComputedStyle(part(plain, 'menu')).marginLeft).toBe('-1px')
-		await expect(getComputedStyle(part(themed, 'menu')).marginLeft).not.toBe('-1px')
-		await expect(getComputedStyle(part(themed, 'toggle')).paddingLeft).not.toBe(getComputedStyle(part(plain, 'toggle')).paddingLeft)
+		await expect(getComputedStyle(part(plain, 'menu')).marginInlineStart).toBe('-1px')
+		await expect(getComputedStyle(part(themed, 'menu')).marginInlineStart).not.toBe('-1px')
+		await expect(getComputedStyle(part(themed, 'toggle')).paddingInlineStart).not.toBe(
+			getComputedStyle(part(plain, 'toggle')).paddingInlineStart,
+		)
 		await expect(getComputedStyle(part(themed, 'main')).backgroundColor).not.toBe(getComputedStyle(part(plain, 'main')).backgroundColor)
 		await expect(classed).toHaveClass('base-split-button', 'story-themed-split')
 		await expect(part(classed, 'toggle')).toHaveClass('base-button', 'story-themed-toggle')

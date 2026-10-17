@@ -1,3 +1,4 @@
+import { inlineKey } from '@/stories/helpers'
 import { CASCADE_ITEMS } from '../../../shared'
 import { expect, waitFor } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
@@ -25,23 +26,23 @@ export const Cascade: StoryObj<typeof meta> = {
 		await expect(electronics).toHaveAttribute('aria-expanded', 'true')
 		const phones = canvas.getByRole('button', { name: 'Телефоны' })
 		phones.focus()
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		const smartphones = canvas.getByRole('button', { name: 'Смартфоны' })
 		await waitFor(() => expect(smartphones).toHaveFocus())
 		await userEvent.keyboard('{ArrowDown}')
 		await expect(canvas.getByRole('link', { name: 'Кнопочные' })).toHaveFocus()
 		await userEvent.keyboard('{ArrowUp}')
 		await expect(smartphones).toHaveFocus()
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await waitFor(() => expect(canvas.getByRole('button', { name: 'Флагманы' })).toHaveFocus())
 		await expect(canvas.getByRole('list', { name: 'Смартфоны' })).toBeVisible()
-		await userEvent.keyboard('{ArrowLeft}')
+		await userEvent.keyboard(inlineKey('{ArrowLeft}'))
 		await expect(smartphones).toHaveFocus()
 		await expect(smartphones).toHaveAttribute('aria-expanded', 'false')
 		await userEvent.keyboard('{Escape}')
 		await expect(phones).toHaveFocus()
 		await expect(phones).toHaveAttribute('aria-expanded', 'false')
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await waitFor(() => expect(canvas.getByRole('button', { name: 'Смартфоны' })).toBeVisible())
 	},
 }

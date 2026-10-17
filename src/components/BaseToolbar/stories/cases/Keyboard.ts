@@ -1,6 +1,6 @@
 import { expect } from 'storybook/test'
-import { tabTo } from '@/stories/helpers'
 import type meta from '../BaseToolbar.stories'
+import { tabTo, inlineKey } from '@/stories/helpers'
 import type { StoryObj } from '@storybook/vue3-vite'
 
 export const Keyboard: StoryObj<typeof meta> = {
@@ -15,9 +15,9 @@ export const Keyboard: StoryObj<typeof meta> = {
 	play: async ({ canvas, userEvent }) => {
 		const bold = canvas.getByRole('button', { name: 'Полужирный' })
 		await tabTo(bold, userEvent)
-		await userEvent.keyboard('{ArrowLeft}')
+		await userEvent.keyboard(inlineKey('{ArrowLeft}'))
 		await expect(canvas.getByRole('button', { name: 'По правому краю' })).toHaveFocus()
-		await userEvent.keyboard('{Home}{ArrowRight}')
+		await userEvent.keyboard('{Home}' + inlineKey('{ArrowRight}'))
 		await expect(canvas.getByRole('button', { name: 'Курсив' })).toHaveFocus()
 		await userEvent.keyboard('{End}')
 		await expect(canvas.getByRole('button', { name: 'По правому краю' })).toHaveFocus()

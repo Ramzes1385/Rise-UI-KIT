@@ -1,4 +1,4 @@
-import { shallowRef } from 'vue'
+import { shallowRef, type ComputedRef } from 'vue'
 import { useDashboardGridAutoScroll } from './useDashboardGridAutoScroll'
 import { moveItem, resizeItem, layoutsEqual } from '../layout/dashboardLayout'
 import { cellAt, draggedRect, itemRect, sizeAt } from '../layout/dashboardGeometry'
@@ -45,7 +45,7 @@ function previewLayout(drag: DashboardPointerDrag, rect: DashboardRect, state: D
 		: resizeItem(drag.base, { id: drag.id, ...sizeAt(rect, metrics) }, state.rules())
 }
 
-function useDragPreview(state: DashboardGridState) {
+function useDragPreview(state: DashboardGridState, sign: ComputedRef<number>) {
 	const dragRect = shallowRef<DashboardDragRect | null>(null)
 	let drag: DashboardPointerDrag | null = null
 	let point: DashboardScrollPoint = { x: 0, y: 0 }
@@ -53,7 +53,7 @@ function useDragPreview(state: DashboardGridState) {
 	let isMoved = false
 
 	function update(current: DashboardPointerDrag): void {
-		const delta = { dx: point.x - current.startX + scrolled.dx, dy: point.y - current.startY + scrolled.dy }
+		const delta = { dx: sign.value * (point.x - current.startX + scrolled.dx), dy: point.y - current.startY + scrolled.dy }
 		const rect = draggedRect(current, delta, state.metrics.value)
 		dragRect.value = { id: current.id, rect }
 		state.draft.value = previewLayout(current, rect, state)
@@ -91,8 +91,8 @@ function useDragPreview(state: DashboardGridState) {
 	}
 }
 
-export function useDashboardGridPointer(state: DashboardGridState) {
-	const preview = useDragPreview(state)
+export function useDashboardGridPointer(state: DashboardGridState, sign: ComputedRef<number>) {
+	const preview = useDragPreview(state, sign)
 	const autoScroll = useDashboardGridAutoScroll(preview.scroll)
 
 	function reset(): void {

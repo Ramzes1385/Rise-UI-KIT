@@ -55,7 +55,7 @@ export const Theming: StoryObj<typeof meta> = {
 			const box = getComputedStyle(tooltip)
 			return {
 				tooltip,
-				padding: box.paddingLeft,
+				padding: box.paddingInlineStart,
 				paddingTop: box.paddingTop,
 				color: getComputedStyle(tooltip.firstElementChild!).color,
 			}

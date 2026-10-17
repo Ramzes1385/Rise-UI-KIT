@@ -6,6 +6,7 @@ import { useUi } from '@composables/base/useUi'
 import { formatMessage, formatNumber } from '@/locales/state'
 import { useFormField } from '@composables/form/useFormField'
 import { useFormDisabled } from '@composables/form/useFormContext'
+import { isRtl, resolveArrowKey } from '@utils/dom/directionUtils'
 import type { StructuredData } from '@utils/seo/structuredDataUtils'
 import { useStructuredData } from '@composables/seo/useStructuredData'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
@@ -13,9 +14,10 @@ import type { BaseRatingEmits, RatingBounds, RatingProps } from '../types/BaseRa
 import { rawValueFromPointer, snapRating, starFillPercent, stepDecimals, valueFromPointer } from '@utils/form/ratingUtils'
 
 function pointerRatio(event: MouseEvent): number {
-	const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
+	const star = event.currentTarget as HTMLElement
+	const rect = star.getBoundingClientRect()
 	if (rect.width === 0) return 1
-	return (event.clientX - rect.left) / rect.width
+	return isRtl(star) ? (rect.right - event.clientX) / rect.width : (event.clientX - rect.left) / rect.width
 }
 
 const VALUE_MAX_DECIMALS = 4
@@ -109,7 +111,7 @@ function useRatingInput(
 		clearHover,
 		handleKeydown(event: KeyboardEvent): void {
 			if (!isInteractive.value) return
-			const action = keyActions[event.key]
+			const action = keyActions[resolveArrowKey(event)]
 			if (!action) return
 			event.preventDefault()
 			clearHover()

@@ -2,6 +2,7 @@ import { nextTick, ref } from 'vue'
 import { formatMessage } from '@/locales/state'
 import { UI_TRANSFER } from '@/locales/messages'
 import { otherSide, titleOf } from './transferSides'
+import { resolveArrowKey } from '@utils/dom/directionUtils'
 import type { BaseListExpose, ListItem } from '@components/BaseList'
 import type { BaseTransferEmits, TransferPanelsState, TransferProps, TransferSide } from '../types/BaseTransfer.types'
 
@@ -57,7 +58,7 @@ export function useTransferMove<T extends ListItem>(props: TransferProps<T>, emi
 			focusAfter(otherSide(to), transfer(to), null)
 		},
 		handleListKeydown(event: KeyboardEvent, side: TransferSide): void {
-			const to = KEY_TARGETS[event.key]
+			const to = KEY_TARGETS[resolveArrowKey(event)]
 			if (!(event.ctrlKey || event.altKey) || !to || to === side) return
 			event.preventDefault()
 			const row = (event.target as HTMLElement).closest<HTMLElement>('[data-list-index]')

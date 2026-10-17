@@ -2,7 +2,7 @@ import { sliderNav } from '../../shared'
 import type meta from '../../BaseSlider.stories'
 import { expect, waitFor } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { STORY_WAIT_TIMEOUT } from '@/stories/helpers'
+import { inlineEnd, inlineStart, STORY_WAIT_TIMEOUT } from '@/stories/helpers'
 
 export const ThumbnailsLeft: StoryObj<typeof meta> = {
 	parameters: {
@@ -21,7 +21,7 @@ export const ThumbnailsLeft: StoryObj<typeof meta> = {
 		const strip = canvasElement.querySelector<HTMLElement>('.base-slider__thumbs')!
 		const viewport = canvasElement.querySelector<HTMLElement>('.base-slider__viewport')!
 		await expect(getComputedStyle(strip).flexDirection).toBe('column')
-		await expect(strip.getBoundingClientRect().right).toBeLessThanOrEqual(viewport.getBoundingClientRect().left)
+		await expect(inlineEnd(strip.getBoundingClientRect())).toBeLessThanOrEqual(inlineStart(viewport.getBoundingClientRect()))
 
 		sliderNav(canvasElement, 1).focus()
 		await userEvent.keyboard('{ArrowDown}')

@@ -20,8 +20,8 @@ const template = `
 			:src="user.avatar"
 			:alt="user.name"
 			:name="user.name"
-			:style="{ marginLeft: index ? '-8px' : 0, boxShadow: ring }" />
-		<BaseAvatar v-bind="args" :style="{ marginLeft: '-8px', boxShadow: ring }">+{{ rest }}</BaseAvatar>
+			:style="{ marginInlineStart: index ? '-8px' : 0, boxShadow: ring }" />
+		<BaseAvatar v-bind="args" :style="{ marginInlineStart: '-8px', boxShadow: ring }">+{{ rest }}</BaseAvatar>
 	</div>
 `
 

@@ -2,8 +2,8 @@ import { expect } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../BaseCookieConsent.stories'
 import BaseCookieConsent from '../../../ui/BaseCookieConsent.vue'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
 import { COOKIE_CONSENT_POSITIONS } from '../../../types/BaseCookieConsent.types'
+import { inlineEnd, inlineStart, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const CORNER_FRAME_RATIO = 1.5
 
@@ -43,13 +43,13 @@ export const Positions: StoryObj<typeof meta> = {
 			dialog: dialog.getBoundingClientRect(),
 			frame: (dialog.parentElement as HTMLElement).getBoundingClientRect(),
 		}))
-		await expect(Math.abs(center.dialog.left - center.frame.left - (center.frame.right - center.dialog.right))).toBeLessThanOrEqual(1)
-		const leftOffset = left.dialog.left - left.frame.left
-		const rightOffset = right.dialog.left - right.frame.left
-		if (left.frame.width >= left.dialog.width * CORNER_FRAME_RATIO) await expect(leftOffset).toBeLessThan(rightOffset)
-		else await expect(leftOffset).toBeLessThanOrEqual(rightOffset)
-		await expect(left.dialog.left - left.frame.left).toBeLessThan(40)
-		await expect(right.frame.right - right.dialog.right).toBeLessThan(40)
+		const startGap = (box: typeof left): number => inlineStart(box.dialog) - inlineStart(box.frame)
+		const endGap = (box: typeof left): number => inlineEnd(box.frame) - inlineEnd(box.dialog)
+		await expect(Math.abs(startGap(center) - endGap(center))).toBeLessThanOrEqual(1)
+		if (left.frame.width >= left.dialog.width * CORNER_FRAME_RATIO) await expect(startGap(left)).toBeLessThan(startGap(right))
+		else await expect(startGap(left)).toBeLessThanOrEqual(startGap(right))
+		await expect(startGap(left)).toBeLessThan(40)
+		await expect(endGap(right)).toBeLessThan(40)
 		await expect(left.dialog.bottom).toBeLessThanOrEqual(left.frame.bottom)
 	},
 }

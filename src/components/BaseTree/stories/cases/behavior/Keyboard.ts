@@ -1,7 +1,7 @@
 import { expect } from 'storybook/test'
 import { nodeHeader } from '../../shared'
-import { tabTo } from '@/stories/helpers'
 import type meta from '../../BaseTree.stories'
+import { tabTo, inlineKey } from '@/stories/helpers'
 import type { StoryObj } from '@storybook/vue3-vite'
 
 export const Keyboard: StoryObj<typeof meta> = {
@@ -24,15 +24,15 @@ export const Keyboard: StoryObj<typeof meta> = {
 		await tabTo(src, userEvent)
 		await expect(getComputedStyle(src).outlineStyle).toBe('solid')
 
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await expect(src).toHaveAttribute('aria-expanded', 'true')
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await expect(nodeHeader(canvasElement, 'components')).toHaveFocus()
 		await userEvent.keyboard('{ArrowDown}{ArrowDown}')
 		await expect(nodeHeader(canvasElement, 'App.vue')).toHaveFocus()
-		await userEvent.keyboard('{ArrowLeft}')
+		await userEvent.keyboard(inlineKey('{ArrowLeft}'))
 		await expect(src).toHaveFocus()
-		await userEvent.keyboard('{ArrowLeft}')
+		await userEvent.keyboard(inlineKey('{ArrowLeft}'))
 		await expect(src).toHaveAttribute('aria-expanded', 'false')
 
 		await userEvent.keyboard('{End}')

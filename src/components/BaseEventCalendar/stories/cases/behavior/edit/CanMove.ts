@@ -3,8 +3,8 @@ import { models } from '../../../render'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../../BaseEventCalendar.stories'
 import BaseEventCalendar from '../../../../ui/BaseEventCalendar.vue'
-import { storySource, tabTo, useStorySetup } from '@/stories/helpers'
 import { EDIT_EVENTS, MOVE_SCRIPT, useMovableEvents } from '../../../shared'
+import { storySource, tabTo, useStorySetup, inlineKey } from '@/stories/helpers'
 import type { EventCalendarChange } from '../../../../types/BaseEventCalendar.types'
 
 const template = `
@@ -58,10 +58,10 @@ export const CanMove: StoryObj<typeof meta> = {
 		const meeting = canvas.getByRole('button', { name: 'Встреча с командой, 2 октября, 10:00–11:00' })
 		await tabTo(meeting, userEvent, 40)
 		await userEvent.keyboard(' ')
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await expect(status).toHaveTextContent('Сюда событие «Встреча с командой» положить нельзя')
 		await expect(meeting).toHaveFocus()
-		await userEvent.keyboard('{ArrowLeft}')
+		await userEvent.keyboard(inlineKey('{ArrowLeft}'))
 		await expect(status).toHaveTextContent('1 октября, 10:00–11:00')
 		await userEvent.keyboard('{Enter}')
 		await expect(args['onEvent-change']).toHaveBeenLastCalledWith(

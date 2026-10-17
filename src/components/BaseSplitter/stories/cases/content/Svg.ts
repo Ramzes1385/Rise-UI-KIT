@@ -39,7 +39,7 @@ const template = `
 			<template #end>
 				<section aria-label="Пояснения" style="padding: 12px 16px">
 					<h3 style="margin-top: 0">Заказы по месяцам</h3>
-					<ul style="margin: 0; padding-left: 20px; display: grid; gap: 8px">
+					<ul style="margin: 0; padding-inline-start: 20px; display: grid; gap: 8px">
 						<li v-for="note in notes" :key="note">{{ note }}</li>
 					</ul>
 				</section>

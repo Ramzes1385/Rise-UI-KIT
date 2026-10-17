@@ -1,6 +1,7 @@
 import type meta from '../../BaseTabs.stories'
 import BaseTabs from '../../../ui/BaseTabs.vue'
 import { expect, waitFor } from 'storybook/test'
+import { isRtl } from '@utils/dom/directionUtils'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type { TabItem } from '../../../types/BaseTabs.types'
 import { storySource, useStorySetup } from '@/stories/helpers'
@@ -41,8 +42,9 @@ export const Scrollable: StoryObj<typeof meta> = {
 		template,
 	}),
 	play: async ({ canvas }) => {
-		const right = await canvas.findByRole('button', { name: 'Прокрутить вкладки вправо' })
-		await waitFor(() => expect(right).toBeVisible())
-		await expect(canvas.queryByRole('button', { name: 'Прокрутить вкладки влево' })).toBeNull()
+		const [toHidden, toStart] = isRtl(document.documentElement) ? ['влево', 'вправо'] : ['вправо', 'влево']
+		const hidden = await canvas.findByRole('button', { name: `Прокрутить вкладки ${toHidden}` })
+		await waitFor(() => expect(hidden).toBeVisible())
+		await expect(canvas.queryByRole('button', { name: `Прокрутить вкладки ${toStart}` })).toBeNull()
 	},
 }

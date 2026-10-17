@@ -80,7 +80,7 @@ export const Narrow: StoryObj<typeof meta> = {
 		}
 		await waitFor(() => expect(isInside(steps.at(-1)!.getBoundingClientRect(), list.getBoundingClientRect())).toBe(true))
 
-		await expect(list.scrollLeft).toBeGreaterThan(0)
+		await expect(Math.abs(list.scrollLeft)).toBeGreaterThan(0)
 		await userEvent.tab()
 		await expect(list).toHaveFocus()
 	},

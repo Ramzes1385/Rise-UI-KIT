@@ -5,6 +5,7 @@ import { useZoomMinimap } from './useZoomMinimap'
 import { normalizeZoomScales } from './zoomGeometry'
 import { useZoomTransform } from './useZoomTransform'
 import { useZoomPointer } from './gestures/useZoomPointer'
+import { resolveArrowKey } from '@utils/dom/directionUtils'
 import { useEscapeKey } from '@composables/overlay/useEscapeKey'
 import { computed, nextTick, onUnmounted, ref, watch } from 'vue'
 import { useScrollLock } from '@composables/overlay/useScrollLock'
@@ -55,7 +56,7 @@ function zoomKeyAction(
 /** Описание: клавиши открытого зума; с Ctrl, Alt и Meta — клавиши браузера; стрелки при увеличении двигают изображение */
 function handleZoomKey(event: KeyboardEvent, options: UseImageZoomOptions, transform: ReturnType<typeof useZoomTransform>): void {
 	if (event.ctrlKey || event.altKey || event.metaKey || panByKey(event, transform)) return
-	zoomKeyAction(event.key, options, transform)?.()
+	zoomKeyAction(resolveArrowKey(event), options, transform)?.()
 }
 
 /** Описание: центр изображения зума на экране с учётом сдвига, масштаба и поворота; изображения нет — `null` */

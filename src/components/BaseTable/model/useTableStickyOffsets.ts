@@ -64,8 +64,8 @@ export function useTableStickyOffsets(options: TableStickyOptions) {
 			Object.fromEntries(Object.entries(offsets.value.service).map(([key, offset]) => [`--tbl-sticky-${key}`, `${offset}px`])),
 		),
 		getStickyStyle(column: TableColumn): Record<string, string> {
-			if (column.isSticky === 'left') return { left: `${offsets.value.left[column.key] ?? 0}px` }
-			if (column.isSticky === 'right') return { right: `${offsets.value.right[column.key] ?? 0}px` }
+			if (column.isSticky === 'left') return { insetInlineStart: `${offsets.value.left[column.key] ?? 0}px` }
+			if (column.isSticky === 'right') return { insetInlineEnd: `${offsets.value.right[column.key] ?? 0}px` }
 			return {}
 		},
 	}

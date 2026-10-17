@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
 import { formatMessage, pluralize } from '@/locales/state'
+import { resolveArrowKey } from '@utils/dom/directionUtils'
 import { computed, nextTick, ref, useId, watch } from 'vue'
 import { UI_CHAT_TEXT, UI_PLURAL } from '@/locales/messages'
 import type { ChatInfoTab, ChatMember } from '../../types/BaseChat.types'
@@ -103,9 +104,10 @@ function usePanelTabs(props: ChatSlideoverPanelProps, emit: ChatSlideoverEmits, 
 			const tabs = availableTabs.value
 			const index = tabs.findIndex(tab => tab.id === props.activeTab)
 			const moves: Record<string, number> = { ArrowRight: index + 1, ArrowLeft: index - 1, Home: 0, End: tabs.length - 1 }
-			if (!(event.key in moves)) return
+			const key = resolveArrowKey(event)
+			if (!(key in moves)) return
 			event.preventDefault()
-			const next: ChatInfoTab = tabs[(moves[event.key] + tabs.length) % tabs.length].id
+			const next: ChatInfoTab = tabs[(moves[key] + tabs.length) % tabs.length].id
 			emit('update:activeTab', next)
 			nextTick(() => document.getElementById(`${idPrefix}-tab-${next}`)?.focus())
 		},

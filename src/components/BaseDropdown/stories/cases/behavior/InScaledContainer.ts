@@ -7,7 +7,7 @@ import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseDropdown from '../../../ui/BaseDropdown.vue'
 import { screen, waitFor, expect } from 'storybook/test'
-import { docsFrame, literal, storySource, useStorySetup } from '@/stories/helpers'
+import { docsFrame, inlineStart, literal, storySource, useStorySetup } from '@/stories/helpers'
 
 const HIDDEN_ARGS = ['isOpen', 'position', 'onUpdate:isOpen']
 
@@ -66,7 +66,7 @@ export const InScaledContainer: StoryObj<typeof meta> = {
 		await waitFor(() => {
 			const panelRect = panel.getBoundingClientRect()
 			const triggerRect = trigger.getBoundingClientRect()
-			expect(Math.abs(panelRect.left - triggerRect.left)).toBeLessThanOrEqual(2)
+			expect(Math.abs(inlineStart(panelRect) - inlineStart(triggerRect))).toBeLessThanOrEqual(2)
 			expect(panelRect.top - triggerRect.bottom).toBeGreaterThanOrEqual(0)
 			expect(panelRect.top - triggerRect.bottom).toBeLessThanOrEqual(12)
 		})

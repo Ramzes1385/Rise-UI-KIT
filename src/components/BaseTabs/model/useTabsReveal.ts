@@ -1,6 +1,6 @@
 import type { Ref } from 'vue'
-import { isRtl } from './tabsDirection'
 import { nextTick, onMounted, watch } from 'vue'
+import { isRtl } from '@utils/dom/directionUtils'
 import { useReducedMotion } from '@composables/app/useReducedMotion'
 
 function revealTarget(list: HTMLElement, tab: HTMLElement): number | null {

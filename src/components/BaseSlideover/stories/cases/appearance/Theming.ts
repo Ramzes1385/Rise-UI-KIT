@@ -61,7 +61,7 @@ export const Theming: StoryObj<typeof meta> = {
 	}),
 	play: async ({ canvas }) => {
 		const [plain, themed, classed] = await canvas.findAllByRole('dialog')
-		const radius = (element: HTMLElement): string => getComputedStyle(element).borderTopLeftRadius
+		const radius = (element: HTMLElement): string => getComputedStyle(element).borderStartStartRadius
 
 		await expect(getComputedStyle(themed).backgroundColor).not.toBe(getComputedStyle(plain).backgroundColor)
 		const hasRadius = !isStoryBranded() && !window.matchMedia(MOBILE_QUERY).matches

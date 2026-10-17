@@ -64,10 +64,12 @@ export const Theming: StoryObj<typeof meta> = {
 		await waitFor(() => expect(part(themed, 'notes')).toBeVisible())
 		await waitFor(() => expect(part(plain, 'notes')).toBeVisible())
 		await expect(getComputedStyle(part(themed, 'notes')).color).not.toBe(getComputedStyle(part(plain, 'notes')).color)
-		await expect(getComputedStyle(part(themed, 'notes')).paddingLeft).not.toBe(getComputedStyle(part(plain, 'notes')).paddingLeft)
+		await expect(getComputedStyle(part(themed, 'notes')).paddingInlineStart).not.toBe(
+			getComputedStyle(part(plain, 'notes')).paddingInlineStart,
+		)
 		if (!isStoryBranded()) {
-			await expect(getComputedStyle(part(plain, 'notes')).paddingLeft).toBe('20px')
-			await expect(getComputedStyle(part(themed, 'notes')).paddingLeft).toBe('32px')
+			await expect(getComputedStyle(part(plain, 'notes')).paddingInlineStart).toBe('20px')
+			await expect(getComputedStyle(part(themed, 'notes')).paddingInlineStart).toBe('32px')
 			await expect(getComputedStyle(part(plain, 'notes')).fontSize).toBe('15px')
 			await expect(getComputedStyle(part(themed, 'notes')).fontSize).toBe('18px')
 		}

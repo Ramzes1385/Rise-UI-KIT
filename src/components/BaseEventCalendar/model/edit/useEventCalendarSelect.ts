@@ -1,6 +1,7 @@
 import { formatMessage } from '@/locales/state'
 import { UI_EVENT_CALENDAR } from '@/locales/messages'
 import { computed, ref, shallowRef, useId } from 'vue'
+import { resolveArrowKey } from '@utils/dom/directionUtils'
 import { addDays, startOfDay } from '@utils/calendar/eventUtils'
 import { useEventCalendarPointer } from './useEventCalendarPointer'
 import type { EventCalendarSelection } from '../../types/BaseEventCalendar.types'
@@ -127,7 +128,8 @@ function stepTime(context: EventCalendarContext, event: KeyboardEvent, slot: Eve
 		ArrowLeft: () => neighborColumn(context, slot, { direction: -1, isSameResourceOnly: event.shiftKey }),
 		ArrowRight: () => neighborColumn(context, slot, { direction: 1, isSameResourceOnly: event.shiftKey }),
 	}
-	return Object.hasOwn(steps, event.key) ? steps[event.key]() : null
+	const key = resolveArrowKey(event)
+	return Object.hasOwn(steps, key) ? steps[key]() : null
 }
 
 function handleAction(api: EventCalendarSelectionApi, event: KeyboardEvent, current: EventCalendarSelectionState): boolean {

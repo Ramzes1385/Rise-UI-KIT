@@ -1,7 +1,7 @@
-import { tabTo } from '@/stories/helpers'
 import type meta from '../../BaseTabs.stories'
 import { expect, waitFor } from 'storybook/test'
 import { TABS_WITH_DISABLED } from '../../shared'
+import { tabTo, inlineKey } from '@/stories/helpers'
 import type { StoryObj } from '@storybook/vue3-vite'
 
 export const Keyboard: StoryObj<typeof meta> = {
@@ -24,7 +24,7 @@ export const Keyboard: StoryObj<typeof meta> = {
 		await expect(getComputedStyle(overview).outlineStyle).toBe('solid')
 		await expect(canvas.getByRole('tab', { name: 'Характеристики' })).toHaveAttribute('tabindex', '-1')
 
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await expect(canvas.getByRole('tab', { name: 'Характеристики' })).toHaveFocus()
 		await expect(args.onChange).toHaveBeenLastCalledWith('specs')
 

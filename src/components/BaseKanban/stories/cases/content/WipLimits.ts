@@ -2,8 +2,8 @@ import { expect } from 'storybook/test'
 import type meta from '../../BaseKanban.stories'
 import BaseKanban from '../../../ui/BaseKanban.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { storySource, useStorySetup } from '@/stories/helpers'
 import type { KanbanMove } from '../../../types/BaseKanban.types'
+import { storySource, useStorySetup, inlineKey } from '@/stories/helpers'
 
 const models = { cards: 'cards' }
 
@@ -36,7 +36,7 @@ export const WipLimits: StoryObj<typeof meta> = {
 		await expect(canvas.getByRole('list', { name: 'На проверке, 2 карточки, Превышен лимит 1' })).toBeInTheDocument()
 		await expect(canvasElement.querySelector('.base-kanban__column--over')).toHaveTextContent('2 / 1')
 		canvas.getByRole('button', { name: 'Тёмная тема для таблиц' }).focus()
-		await userEvent.keyboard(' {ArrowRight}{ArrowRight}{ArrowRight} ')
+		await userEvent.keyboard(' ' + inlineKey('{ArrowRight}') + inlineKey('{ArrowRight}') + inlineKey('{ArrowRight}') + ' ')
 		await expect(canvas.getByRole('status')).toHaveTextContent('Карточку «Тёмная тема для таблиц» нельзя положить в «Готово»')
 		await expect(canvas.getByRole('list', { name: /^К выполнению/ })).toHaveTextContent('Тёмная тема для таблиц')
 	},

@@ -58,8 +58,8 @@ export const Theming: StoryObj<typeof meta> = {
 		await expect(getComputedStyle(name(themed)).color).not.toBe(getComputedStyle(name(plain)).color)
 		await expect(getComputedStyle(avatar(themed)).borderTopLeftRadius).toBe('9999px')
 		if (!isStoryBranded()) {
-			await expect(getComputedStyle(body(themed)).paddingLeft).toBe('20px')
-			await expect(getComputedStyle(body(plain)).paddingLeft).toBe('16px')
+			await expect(getComputedStyle(body(themed)).paddingInlineStart).toBe('20px')
+			await expect(getComputedStyle(body(plain)).paddingInlineStart).toBe('16px')
 			await expect(getComputedStyle(name(themed)).fontWeight).toBe('700')
 		}
 		await expect(classed).toHaveClass('base-ai-message', 'story-themed-message')

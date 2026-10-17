@@ -59,8 +59,8 @@ export const Theming: StoryObj<typeof meta> = {
 		await expect(getComputedStyle(frame(themed)).borderTopColor).not.toBe(getComputedStyle(frame(plain)).borderTopColor)
 		await expect(getComputedStyle(toolbar(themed)).backgroundColor).not.toBe(getComputedStyle(toolbar(plain)).backgroundColor)
 		if (!isStoryBranded()) {
-			await expect(getComputedStyle(content(themed)).paddingLeft).toBe('24px')
-			await expect(getComputedStyle(content(plain)).paddingLeft).toBe('16px')
+			await expect(getComputedStyle(content(themed)).paddingInlineStart).toBe('24px')
+			await expect(getComputedStyle(content(plain)).paddingInlineStart).toBe('16px')
 		}
 		await expect(classed).toHaveClass('base-editor', 'story-themed-editor')
 		await expect(toolbar(classed)).toHaveClass('base-editor__toolbar', 'story-themed-toolbar')

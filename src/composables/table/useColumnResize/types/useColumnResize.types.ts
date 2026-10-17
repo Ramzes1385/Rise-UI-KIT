@@ -12,6 +12,8 @@ export interface ResizeState {
 	columnKey: string
 	nextColumnKey: string
 	startX: number
+	/** Таблица пишется справа налево: граница колонки с её конца, расширение — сдвиг указателя влево */
+	isReversed?: boolean
 	startWidth: number
 	nextStartWidth: number
 }

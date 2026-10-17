@@ -53,7 +53,7 @@ export const Theming: StoryObj<typeof meta> = {
 		if (!isStoryBranded()) await expect(body(themed).paddingTop).toBe('24px')
 		if (!isStoryBranded()) await expect(body(plain).paddingTop).toBe('16px')
 		if (!isStoryBranded()) await expect(body(dense).paddingTop).toBe('12px')
-		if (!isStoryBranded()) await expect(body(dense).paddingLeft).toBe('15px')
+		if (!isStoryBranded()) await expect(body(dense).paddingInlineStart).toBe('15px')
 		await expect(getComputedStyle(themed.querySelector('.base-card__header')!).backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
 		await expect(classed).toHaveClass('base-card', 'story-themed-card')
 		await expect(classed.querySelector('.base-card__body')).toHaveClass('story-themed-body')

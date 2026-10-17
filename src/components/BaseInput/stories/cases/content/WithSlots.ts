@@ -10,7 +10,7 @@ const template = `
 	<div class="story-narrow">
 		<BaseInput v-bind="args" v-model="query" label="Поиск" placeholder="Название проекта">
 			<template #prefix>
-				<span style="display: flex; align-items: center; padding-left: 10px; color: var(--rise-text-dimmed);">
+				<span style="display: flex; align-items: center; padding-inline-start: 10px; color: var(--rise-text-dimmed);">
 					<BaseIcon name="search" :size-scale="80" />
 				</span>
 			</template>

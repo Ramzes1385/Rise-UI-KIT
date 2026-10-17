@@ -1,8 +1,10 @@
 import type { ComputedRef, Ref } from 'vue'
 import { calcIconScale } from '@utils/media/iconUtils'
-import { computed, nextTick, onBeforeUnmount, ref, useId } from 'vue'
 import type { DropdownMenuItem } from '../types/BaseDropdownMenu.types'
+import { isRtl, mirrorSide, resolveArrowKey } from '@utils/dom/directionUtils'
 import { findTypeaheadIndex, toMenuGroups } from '@utils/navigation/menuUtils'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
+import type { DropdownPosition } from '@components/BaseDropdown/types/BaseDropdown.types'
 import type { DropdownMenuContentEmits, MenuContentProps } from '../types/DropdownMenuContent.types'
 
 const SUBMENU_HOVER_DELAY = 120
@@ -278,6 +280,16 @@ function createKeyActions(
 	])
 }
 
+function useSubmenuPosition(menuRef: Ref<HTMLElement | null>, openSubmenu: Ref<string | null>): Ref<DropdownPosition> {
+	const position = ref<DropdownPosition>('right-start')
+	const update = (): void => {
+		position.value = mirrorSide<DropdownPosition>('right-start', isRtl(menuRef.value))
+	}
+	onMounted(update)
+	watch(openSubmenu, update)
+	return position
+}
+
 export function useDropdownMenuContent(props: MenuContentProps, emit: DropdownMenuContentEmits) {
 	const baseId = useId()
 	const menuRef = ref<HTMLElement | null>(null)
@@ -288,9 +300,11 @@ export function useDropdownMenuContent(props: MenuContentProps, emit: DropdownMe
 	const typeahead = useTypeahead(nav)
 	const activation = useActivation(emit, nav, { registry, submenus })
 	const keyActions = createKeyActions(props, emit, { nav, submenus, typeahead, activation })
+	const submenuPosition = useSubmenuPosition(menuRef, submenus.openSubmenu)
 
 	return {
 		menuRef,
+		submenuPosition,
 		groups,
 		iconScale: computed(() => calcIconScale('sm', props.sizeScale)),
 		hasIndicators: computed(() => groups.value.some(group => group.some(isCheckable))),
@@ -312,7 +326,7 @@ export function useDropdownMenuContent(props: MenuContentProps, emit: DropdownMe
 		handlePointerMove: createPointerMove(registry, submenus),
 		handleKeydown(event: KeyboardEvent): void {
 			if (event.defaultPrevented) return
-			const action = keyActions.get(event.key)
+			const action = keyActions.get(resolveArrowKey(event))
 			if (action) {
 				if (!action(nav.navigable.value[nav.currentIndex()])) return
 			} else {

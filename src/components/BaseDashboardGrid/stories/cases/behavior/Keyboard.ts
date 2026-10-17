@@ -3,7 +3,7 @@ import { WIDGET_LAYOUT } from '../../shared'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../BaseDashboardGrid.stories'
 import BaseDashboardGrid from '../../../ui/BaseDashboardGrid.vue'
-import { storySource, tabTo, useStorySetup } from '@/stories/helpers'
+import { storySource, tabTo, useStorySetup, inlineKey } from '@/stories/helpers'
 
 const state = { layout: WIDGET_LAYOUT }
 
@@ -42,18 +42,18 @@ export const Keyboard: StoryObj<typeof meta> = {
 		await tabTo(widget, userEvent)
 		await userEvent.keyboard('{Enter}')
 		await expect(status).toHaveTextContent('Виджет «Выручка» взят')
-		await userEvent.keyboard('{ArrowRight}')
+		await userEvent.keyboard(inlineKey('{ArrowRight}'))
 		await expect(status).toHaveTextContent('«Выручка»: колонка 2, строка 1, ширина 4, высота 2')
 
 		await userEvent.keyboard('{Escape}')
 		await expect(status).toHaveTextContent('Перемещение отменено, виджет «Выручка» на прежнем месте')
 		await expect(args.onChange).not.toHaveBeenCalled()
 
-		await userEvent.keyboard('{Enter}{ArrowRight}{Enter}')
+		await userEvent.keyboard('{Enter}' + inlineKey('{ArrowRight}') + '{Enter}')
 		await expect(status).toHaveTextContent('Виджет «Выручка» положен: колонка 2, строка 1')
 		await expect(args.onChange).toHaveBeenLastCalledWith(expect.objectContaining({ id: 'revenue', action: 'move' }))
 
-		await userEvent.keyboard('{Enter}{Shift>}{ArrowRight}{/Shift}')
+		await userEvent.keyboard('{Enter}{Shift>}' + inlineKey('{ArrowRight}') + '{/Shift}')
 		await expect(status).toHaveTextContent('ширина 5')
 		await userEvent.keyboard('{Enter}')
 		await expect(args.onChange).toHaveBeenLastCalledWith(expect.objectContaining({ id: 'revenue', action: 'resize' }))
