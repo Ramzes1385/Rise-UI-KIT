@@ -62,18 +62,3 @@ function invertOne(change: FlowChange): FlowChange {
 export function invertFlowChanges(changes: readonly FlowChange[]): FlowChange[] {
 	return [...changes].reverse().map(invertOne)
 }
-
-export function indexFlowChanges(data: FlowMapData, changes: readonly FlowChange[]): FlowChange[] {
-	const lengths: Partial<Record<FlowEntity, number>> = {}
-	const shift = (entity: FlowEntity, by: number): number => {
-		const current = lengths[entity] ?? listOf(data, entity).length
-		lengths[entity] = current + by
-		return current
-	}
-	return changes.map(change => {
-		if (change.type === 'remove') shift(change.entity, -1)
-		if (change.type !== 'add') return change
-		const index = shift(change.entity, 1)
-		return change.index === undefined ? { ...change, index } : change
-	})
-}

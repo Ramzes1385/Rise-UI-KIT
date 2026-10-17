@@ -5,7 +5,7 @@ import { FLOW_DATA_VERSION } from '../../types/data/flowData.types'
 import type { FlowDataIssue } from '../../types/api/flowNotation.types'
 import type { FlowMigration } from '../../types/internal/core/flowCore.types'
 
-export const FLOW_MIGRATIONS: Record<number, FlowMigration> = {}
+const FLOW_MIGRATIONS: Record<number, FlowMigration> = {}
 
 function emptyData(): FlowMapData {
 	return { version: FLOW_DATA_VERSION, nodes: [], edges: [] }

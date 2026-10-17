@@ -802,6 +802,12 @@
 | `--rise-filter-builder-radius` | корень | radius | — | `var(--rise-radius-lg)` |
 | `--rise-filter-builder-text` | корень | text | — | `var(--rise-text)` |
 
+## BaseFlowMap
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-flow-map-canvas-bg` | canvas | bg | — | `var(--rise-bg-muted)` |
+
 ## BaseFooter
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |

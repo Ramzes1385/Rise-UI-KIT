@@ -11,7 +11,7 @@ const LISTS = [
 
 const LIST_KEYS = new Set<string>(LISTS.map(([, key]) => key))
 
-export function isFlowEqual(left: unknown, right: unknown): boolean {
+function isFlowEqual(left: unknown, right: unknown): boolean {
 	if (left === right) return true
 	if (typeof left !== 'object' || typeof right !== 'object' || left === null || right === null) return false
 	if (Array.isArray(left) !== Array.isArray(right)) return false

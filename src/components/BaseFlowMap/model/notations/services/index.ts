@@ -16,6 +16,10 @@ export const flowServices = defineFlowNotation({
 	edgeKinds: {
 		call: { label: () => UI_FLOW_SERVICES.EDGE_CALL, stroke: 'solid', endMarker: 'arrow', routing: 'curved' },
 	},
+	groupKinds: {
+		lane: { label: () => UI_FLOW_SERVICES.NAME, layout: 'tier', header: 'top', border: 'solid' },
+		layer: { label: () => UI_FLOW_SERVICES.NAME, layout: 'tier', header: 'top', border: 'solid' },
+	},
 	defaultNodeKind: 'service',
 	defaultEdgeKind: 'call',
 	layout: { algorithm: 'layered', direction: 'TB', routing: 'curved' },

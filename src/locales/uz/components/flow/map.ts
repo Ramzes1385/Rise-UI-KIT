@@ -51,5 +51,53 @@ export const uzFlowMap = {
 		REJECT_HOOK: '«{hook}» ishlovchisi bekor qildi',
 		/** Отказ: команда в режиме «Правки» без права предлагать */
 		REJECT_REVIEW_DRAFT: 'Mumkin emas: «Tuzatishlar» rejimida oʻzgarishlar taklifga tushadi',
+		/** Название сущности для предупреждения о повторе */
+		ENTITY_ROUTER: 'yoʻnaltirgich',
+		/** Название сущности для предупреждения о повторе */
+		ENTITY_LAYOUT: 'joylashuv',
+		/** Отказ: элемент не найден; `{id}` — id */
+		REJECT_NOT_FOUND: 'Mumkin emas: «{id}» topilmadi',
+		/** Отказ: id занят; `{id}` — id */
+		REJECT_DUPLICATE: 'Mumkin emas: «{id}» identifikatori band',
+		/** Отказ: данные изменились, пока шла проверка хуками */
+		REJECT_STALE: 'Tekshiruv paytida maʼlumotlar oʻzgardi — amal bekor qilindi',
+		/** Шаг истории: добавление узла; `{label}` — подпись */
+		CMD_ADD_NODE: '«{label}» tugunini qoʻshish',
+		/** Шаг истории: добавление связи */
+		CMD_ADD_EDGE: '«{source}» → «{target}» bogʻlanishini qoʻshish',
+		/** Шаг истории: соединение узлов */
+		CMD_CONNECT: '«{source}» → «{target}» ulash',
+		/** Шаг истории: изменение элемента; `{label}` — подпись или id */
+		CMD_UPDATE: '«{label}» ni tahrirlash',
+		/** Шаг истории: добавление группы */
+		CMD_ADD_GROUP: '«{label}» guruhini qoʻshish',
+		/** Шаг истории: удаление; `{count}` — сколько элементов */
+		CMD_DELETE: 'Oʻchirish: {count}',
+		/** Шаг истории: перемещение; `{count}` — сколько узлов */
+		CMD_MOVE: 'Koʻchirish: {count}',
+		/** Шаг истории: авто-раскладка */
+		CMD_LAYOUT: 'Avto-joylashuv',
+		/** Шаг истории: импорт JSON */
+		CMD_IMPORT: 'Maʼlumotlarni import qilish',
+		/** Шаг истории: принятое предложение; `{label}` — подпись */
+		CMD_ACCEPT: '«{label}» taklifi qabul qilindi',
+		/** Подпись предложения без названия */
+		SUGGESTION_DEFAULT: 'Tahrir taklifi',
+		/** Озвучка отмены; `{label}` — шаг */
+		ANNOUNCE_UNDO: 'Bekor qilindi: {label}',
+		/** Озвучка повтора; `{label}` — шаг */
+		ANNOUNCE_REDO: 'Takrorlandi: {label}',
+		/** Отказ: нотация не допускает связь; `{kind}` — вид связи, `{from}` и `{to}` — подписи узлов */
+		REJECT_CONNECTION: 'Mumkin emas: notatsiya «{from}» dan «{to}» ga «{kind}» bogʻlanishiga ruxsat bermaydi',
+		/** Отказ: порт не принимает связь этого направления; `{node}` — подпись узла, `{port}` — порт */
+		REJECT_PORT_DIRECTION: 'Mumkin emas: «{node}» ning «{port}» porti bunday bogʻlanishni qabul qilmaydi',
+		/** Отказ: порт занят; `{node}` — подпись узла, `{port}` — порт, `{max}` — предел */
+		REJECT_PORT_FULL: 'Mumkin emas: «{node}» ning «{port}» portiga koʻpi bilan {max} ta ulash mumkin',
+		/** Отказ: связь возможна только внутри одного пула */
+		REJECT_POOLS_SAME: 'Mumkin emas: bunday bogʻlanish faqat bitta pul ichida mumkin',
+		/** Отказ: связь возможна только между разными пулами */
+		REJECT_POOLS_DIFFERENT: 'Mumkin emas: bunday bogʻlanish faqat turli pullar orasida mumkin',
+		/** Предупреждение разработчику: раскладка не найдена; `{id}` — id, `{fallback}` — запасная */
+		WARN_UNKNOWN_LAYOUT: 'BaseFlowMap: «{id}» joylashuvi topilmadi — «{fallback}» ishlatildi',
 	},
 }

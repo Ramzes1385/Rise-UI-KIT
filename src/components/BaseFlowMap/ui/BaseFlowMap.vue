@@ -42,5 +42,7 @@ const emit = defineEmits<BaseFlowMapEmits>()
 
 defineSlots<BaseFlowMapSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, label, rootStyle } = useBaseFlowMap(props, emit)
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, label, rootStyle, model } = useBaseFlowMap(props, emit)
+
+defineExpose(model.controller)
 </script>
