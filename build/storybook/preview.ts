@@ -1,6 +1,7 @@
 /**
- * Режим (`data-theme` на <html> iframe), бренд (`data-rise-theme`), язык и пресет движения (`data-rise-motion`) переключаются
- * глобальными переменными Storybook `theme`/`brand`/`locale`/`motion`; для скриншотов — `?globals=theme:dark;motion:none`.
+ * Режим (`data-theme` на <html> iframe), бренд (`data-rise-theme`), язык, направление письма (`dir`) и пресет движения
+ * (`data-rise-motion`) переключаются глобальными переменными Storybook `theme`/`brand`/`locale`/`dir`/`motion`;
+ * для скриншотов — `?globals=theme:dark;motion:none`, для письма справа налево — `?globals=dir:rtl`.
  * `theme` — светлая или тёмная, `brand` — тема `createTheme()` поверх неё (пресеты и `custom` из конструктора): одна область
  * темы — `data-rise-theme` × `data-theme` на одном элементе (src/stories/helpers/theme/brand.ts).
  */
@@ -128,6 +129,14 @@ const withLocale: Decorator = (story, context) => {
 	return story()
 }
 
+/** Направление письма: `dir` на <html> и на корне истории — как `<html dir="rtl">` в приложении; по умолчанию `ltr` */
+const withDirection: Decorator = (story, context) => {
+	const dir = context.globals.dir === 'rtl' ? 'rtl' : 'ltr'
+	document.documentElement.setAttribute('dir', dir)
+	document.getElementById('storybook-root')?.setAttribute('dir', dir)
+	return story()
+}
+
 const preview: Preview = {
 	tags: ['autodocs'],
 
@@ -194,6 +203,18 @@ const preview: Preview = {
 				dynamicTitle: true,
 			},
 		},
+		dir: {
+			description: 'Направление письма: слева направо или справа налево (dir на html и корне истории)',
+			toolbar: {
+				title: 'Направление',
+				icon: 'switchalt',
+				items: [
+					{ value: 'ltr', title: 'Слева направо (LTR)' },
+					{ value: 'rtl', title: 'Справа налево (RTL)' },
+				],
+				dynamicTitle: true,
+			},
+		},
 	},
 
 	initialGlobals: {
@@ -201,9 +222,10 @@ const preview: Preview = {
 		brand: STORY_BRAND_DEFAULT,
 		motion: 'standard',
 		locale: 'ru',
+		dir: 'ltr',
 	},
 
-	decorators: [withTheme, withMotion, withLocale],
+	decorators: [withTheme, withMotion, withLocale, withDirection],
 
 	parameters: {
 		layout: 'padded',

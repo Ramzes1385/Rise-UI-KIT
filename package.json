@@ -728,6 +728,7 @@
     "test:unit": "vitest run --config build/tests/vitest.config.ts --project unit-integration",
     "test:a11y:coverage": "node scripts/check-a11y-coverage.mjs",
     "test:stories": "node scripts/check-stories.mjs",
+    "test:rtl": "node scripts/check-rtl.mjs",
     "test:stories-coverage": "node scripts/check-stories-coverage.mjs",
     "test:contrast": "node scripts/check-contrast.mjs --theme=all",
     "test:l10n": "node scripts/check-l10n.mjs",
@@ -899,11 +900,27 @@
           ],
           "/^(transition|animation)(-duration|-delay)?$/": [
             "/(^|[\\s,(])(\\d*\\.)?\\d*[1-9]\\d*m?s($|[\\s,)])/"
+          ],
+          "/^(text-align|float|clear)$/": [
+            "/^(left|right)$/"
+          ],
+          "/^(left|right)$/": [
+            "/^(?!50%$)/"
           ]
         },
         {
           "severity": "error",
-          "message": "Движение: переходы только по transform и opacity, длительности — токены var(--rise-duration…) (DESIGN_SYSTEM, «Движение»); исключение — отключение на строку с причиной"
+          "message": "Движение: переходы только по transform и opacity, длительности — токены var(--rise-duration…) (DESIGN_SYSTEM, «Движение»). RTL: text-align, float, clear — start/end, left/right — логические свойства, исключение 50% (DESIGN_SYSTEM, «Письмо справа налево»). Исключение — отключение на строку с причиной"
+        }
+      ],
+      "property-disallowed-list": [
+        [
+          "/^(margin|padding|scroll-margin|scroll-padding)-(left|right)$/",
+          "/^border-(left|right)(-(width|style|color))?$/",
+          "/^border-(top|bottom)-(left|right)-radius$/"
+        ],
+        {
+          "message": "RTL: логические свойства (margin-inline-start, border-inline-end, border-start-start-radius …); физические — только в файлах из списка «физических по устройству» (стрелки поповеров, индикаторы под JS, графики), см. DESIGN_SYSTEM, «Письмо справа налево»"
         }
       ]
     },
@@ -933,6 +950,34 @@
                 "-webkit-appearance",
                 "-moz-appearance"
               ]
+            }
+          ]
+        }
+      },
+      {
+        "files": [
+          "src/components/BaseDropdown/styles/BaseDropdown.style.scss",
+          "src/components/BaseTooltip/styles/BaseTooltip.style.scss",
+          "src/components/BaseTour/styles/BaseTour.style.scss",
+          "src/components/BaseCalendar/styles/BaseCalendar.style.scss",
+          "src/components/BaseMediaPlayer/styles/BaseMediaPlayer.style.scss",
+          "src/components/BaseAnchor/styles/BaseAnchor.style.scss",
+          "src/styles/_mixins.scss"
+        ],
+        "rules": {
+          "property-disallowed-list": null,
+          "declaration-property-value-disallowed-list": [
+            {
+              "/^(transition|animation)(-duration|-delay)?$/": [
+                "/(^|[\\s,(])(\\d*\\.)?\\d*[1-9]\\d*m?s($|[\\s,)])/"
+              ],
+              "/^transition(-property)?$/": [
+                "/(^|[\\s,])(min-|max-)?(width|height|top|left|right|bottom|inset|margin|padding)(-[a-z-]+)?($|[\\s,])/"
+              ]
+            },
+            {
+              "severity": "error",
+              "message": "Движение: переходы только по transform и opacity, длительности — токены var(--rise-duration…) (DESIGN_SYSTEM, «Движение»); исключение — отключение на строку с причиной"
             }
           ]
         }

@@ -12,9 +12,12 @@
  *
  * `--widths=<список>` — ширины окна в px (по умолчанию одна — `DEFAULT_WIDTH`), каждая история на каждой ширине; CI гоняет `375,1280`.
  * После play страница не должна прокручиваться по горизонтали: `scrollWidth` не больше `clientWidth` и ни один видимый элемент
- * не выступает за правый край окна (с учётом обрезки предками с `overflow`; `position: fixed` и скрытое не считаются).
+ * не выступает за конечный край окна (правый в LTR, левый в RTL) (с учётом обрезки предками с `overflow`; `position: fixed` и скрытое не считаются).
  * Рамки историй с намеренной внутренней прокруткой обрезаются своим `overflow` и выступом не считаются; настоящие исключения —
  * в `OVERFLOW_ALLOWED` с причиной. Результат — в отчёте тем же форматом: ошибка «Переполнение по ширине…», у записи поле `width`.
+ * `--dir=<ltr|rtl>` — направление письма (глобал Storybook `dir`: `dir` на html и корне истории); без параметра — как в preview.ts (`ltr`).
+ * Пример: `node scripts/check-stories.mjs --dir=rtl --themes=light` — все stories справа налево. Зеркалирование и переполнение страницы
+ * по ширинам 1280 и 375 проверяет `node scripts/check-rtl.mjs` (docs/design/DESIGN_SYSTEM.md, «Письмо справа налево»).
  */
 
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
@@ -71,6 +74,7 @@ const NARROW_PLAY_EXCEPTIONS = [
 const EXPECTED_MISSING_RE = /__story-missing/
 /** Режимы и бренды тем: глобалы `theme` и `brand` из build/storybook/preview.ts */
 const MODES = ['light', 'dark']
+const DIRECTIONS = ['ltr', 'rtl']
 const BRANDS = ['rise', 'corporate', 'playful', 'minimal', 'custom']
 
 /** Имя темы из `--themes` → имена с режимом: `light` → `light`, `corporate` → `corporate-light`, `corporate-dark` */
@@ -91,7 +95,7 @@ function themeGlobals(theme) {
 }
 
 function parseArgs(argv) {
-	const options = { url: 'http://localhost:6006', themes: 'light,dark', filter: '', concurrency: '4', report: '', widths: '' }
+	const options = { url: 'http://localhost:6006', themes: 'light,dark', filter: '', concurrency: '4', report: '', widths: '', dir: '' }
 	for (const arg of argv) {
 		const match = /^--([a-z]+)=(.*)$/.exec(arg)
 		if (!match || !(match[1] in options)) {
@@ -100,7 +104,12 @@ function parseArgs(argv) {
 		}
 		options[match[1]] = match[2]
 	}
+	if (options.dir && !DIRECTIONS.includes(options.dir)) {
+		console.error(`❌ Неизвестное направление «${options.dir}»: ${DIRECTIONS.join(', ')}`)
+		process.exit(2)
+	}
 	return {
+		dir: options.dir,
 		url: options.url.replace(/\/$/, ''),
 		themes: [...new Set(options.themes.split(',').filter(Boolean).flatMap(expandTheme))],
 		filter: options.filter ? new RegExp(options.filter) : null,
@@ -159,29 +168,33 @@ async function runAxe(rules) {
 
 /**
  * Горизонтальное переполнение страницы (выполняется в браузере): запас прокрутки документа и самый выступающий
- * за правый край окна видимый элемент. Обход сверху вниз несёт правую границу, до которой предки с `overflow` обрезают потомков.
+ * за конечный край окна видимый элемент (правый в LTR, левый в RTL). Обход сверху вниз несёт конечную границу, до которой предки
+ * с `overflow` обрезают потомков; координаты вдоль строки: `right` в LTR, `-left` в RTL.
  */
 function measureOverflow() {
 	const root = document.documentElement
 	const viewport = root.clientWidth
+	const rtl = getComputedStyle(root).direction === 'rtl'
+	const limit = rtl ? 0 : viewport
+	const endOf = rect => (rtl ? -rect.left : rect.right)
 	let worst = 0
 	let culprit = ''
 	function describe(node) {
 		const classes = typeof node.className === 'string' ? node.className.trim().split(/\s+/).filter(Boolean).slice(0, 2) : []
 		return node.tagName.toLowerCase() + (node.id ? `#${node.id}` : '') + classes.map(name => `.${name}`).join('')
 	}
-	function walk(node, clipRight) {
+	function walk(node, clipEnd) {
 		const style = getComputedStyle(node)
 		if (style.display === 'none' || style.position === 'fixed') return
 		const rect = node.getBoundingClientRect()
 		if (rect.width > 0 && style.visibility === 'visible') {
-			const excess = Math.min(rect.right, clipRight) - viewport
+			const excess = Math.min(endOf(rect), clipEnd) - limit
 			if (excess > worst) {
 				worst = excess
 				culprit = describe(node)
 			}
 		}
-		const childClip = style.overflowX === 'visible' ? clipRight : Math.min(clipRight, rect.right)
+		const childClip = style.overflowX === 'visible' ? clipEnd : Math.min(clipEnd, endOf(rect))
 		for (const child of node.children) walk(child, childClip)
 	}
 	return document.fonts.ready.then(
@@ -201,7 +214,7 @@ function overflowError(measured, width) {
 	const parts = []
 	if (measured.page > OVERFLOW_TOLERANCE)
 		parts.push(`страница шире окна на ${measured.page} px (scrollWidth ${measured.viewport + measured.page} > ${measured.viewport})`)
-	if (measured.worst > OVERFLOW_TOLERANCE) parts.push(`${measured.culprit} выступает за правый край на ${measured.worst} px`)
+	if (measured.worst > OVERFLOW_TOLERANCE) parts.push(`${measured.culprit} выступает за конечный край окна на ${measured.worst} px`)
 	return parts.length ? `Переполнение по ширине ${width} px: ${parts.join('; ')}` : null
 }
 
@@ -230,10 +243,13 @@ async function checkStory(page, options, story, theme, width) {
 	page.on('console', onConsole)
 	page.on('response', onResponse)
 	try {
-		await page.goto(`${options.url}/iframe.html?id=${story.id}&viewMode=story&globals=${themeGlobals(theme)}`, {
-			waitUntil: 'load',
-			timeout: 60_000,
-		})
+		await page.goto(
+			`${options.url}/iframe.html?id=${story.id}&viewMode=story&globals=${themeGlobals(theme)}${options.dir ? `;dir:${options.dir}` : ''}`,
+			{
+				waitUntil: 'load',
+				timeout: 60_000,
+			},
+		)
 		const phase = await page
 			.waitForFunction(
 				phases =>
@@ -321,8 +337,9 @@ async function main() {
 	)
 	const jobs = stories.flatMap(story => options.themes.flatMap(theme => options.widths.map(width => ({ story, theme, width }))))
 	const total = jobs.length
+	const dirNote = options.dir ? `, направление ${options.dir}` : ''
 	console.log(
-		`=== Прогон stories: ${stories.length} × темы ${options.themes.join(', ')} × ширины ${options.widths.join(', ')} px = ${total} ===`,
+		`=== Прогон stories: ${stories.length} × темы ${options.themes.join(', ')} × ширины ${options.widths.join(', ')} px${dirNote} = ${total} ===`,
 	)
 
 	const origin = new URL(options.url).origin
