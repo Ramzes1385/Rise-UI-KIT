@@ -12,7 +12,9 @@ import {
 	DEAD_PROPS,
 	DEFAULT_SLOT_REMOVED,
 	KIT,
+	LOCALE_REGISTRATION,
 	OBJECT_ARGS,
+	OPT_IN_LOCALES,
 	REMOVED_EXPORTS,
 	REMOVED_LOCALE_KEYS,
 	SECTION,
@@ -203,7 +205,7 @@ function wordRefs(code, name, isMember = false) {
 }
 
 /** Правки и предупреждения скрипта (`.ts`, `.js`, `<script>` в `.vue`). Позиции — внутри переданного текста. */
-export function scriptRules(an, selfIsMediaTarget) {
+export function scriptRules(an, selfIsMediaTarget, registersLocale) {
 	const { src, code, refs } = an
 	const edits = []
 	const warnings = []
@@ -331,6 +333,14 @@ export function scriptRules(an, selfIsMediaTarget) {
 				SECTION.upload,
 			)
 		}
+		if (!registersLocale && OPT_IN_LOCALES.includes(value) && /(?:\bsetLocale\s*\(|\blocale\s*:)\s*$/.test(before)) {
+			warn(
+				str.start,
+				'locale-register',
+				`язык '${value}' в 2.0 не встроен: без createUiKitPlugin вызовите registerLocale(${value}) из ${KIT} при старте приложения`,
+				SECTION.lazyLocale,
+			)
+		}
 		if (hasLocale && REMOVED_LOCALE_KEYS[value])
 			warn(str.start, 'locale-key', `ключ словаря ${value} удалён из ru/en: уберите его из defineLocale`, REMOVED_LOCALE_KEYS[value])
 	}
@@ -370,7 +380,7 @@ function wsBefore(src, at) {
 }
 
 /** Правки и предупреждения шаблона Vue. */
-export function templateRules(src, foreign, imported) {
+export function templateRules(src, foreign, imported, registersLocale) {
 	const edits = []
 	const warnings = []
 	const warn = (at, id, text, section) => warnings.push({ at, id, text, section })
@@ -430,6 +440,17 @@ export function templateRules(src, foreign, imported) {
 					'text-weight',
 					`BaseText tag="${staticTag.value}" без weight стал жирным: вес берётся из тега`,
 					SECTION.text,
+				)
+			}
+		}
+		if (tag === 'BaseApp' && !registersLocale) {
+			const locale = el.attrs.find(a => a.name === 'locale' && OPT_IN_LOCALES.includes(a.value))
+			if (locale) {
+				warn(
+					locale.start,
+					'locale-register',
+					`BaseApp locale="${locale.value}": язык в 2.0 не встроен — без createUiKitPlugin вызовите registerLocale(${locale.value}) из ${KIT} при старте приложения`,
+					SECTION.lazyLocale,
 				)
 			}
 		}
@@ -545,6 +566,7 @@ export function collectFacts(file, text) {
 		usesAnimation: false,
 		transitions: [],
 		dynamicTransition: false,
+		registersLocale: false,
 	}
 	const segments = segmentsOf(file, text)
 	const markPlayer = at => {
@@ -555,6 +577,7 @@ export function collectFacts(file, text) {
 		if (seg.kind === 'script') {
 			const an = analyzeScript(seg.text)
 			if (/\bBaseAnimation\b/.test(an.code)) facts.usesAnimation = true
+			if (LOCALE_REGISTRATION.test(an.code)) facts.registersLocale = true
 			for (const ref of an.refs) {
 				if (ref.kind === 'bare' && isStylesSpec(ref.spec)) facts.hasStyles = true
 				if (isMediaCssSpec(ref.spec)) facts.hasMedia = true
@@ -599,6 +622,7 @@ export function mergeFacts(entries) {
 		hasStyles: false,
 		hasMedia: false,
 		usesAnimation: false,
+		registersLocale: false,
 		ownTransitions: new Set(),
 		ownTransitionDynamic: false,
 		mediaTarget: null,
@@ -610,6 +634,7 @@ export function mergeFacts(entries) {
 		ctx.hasStyles ||= facts.hasStyles
 		ctx.hasMedia ||= facts.hasMedia
 		ctx.usesAnimation ||= facts.usesAnimation
+		ctx.registersLocale ||= facts.registersLocale
 		ctx.ownTransitionDynamic ||= facts.dynamicTransition
 		for (const name of facts.transitions) ctx.ownTransitions.add(name)
 	}
@@ -636,12 +661,12 @@ function runPass(file, text, ctx, isFirst) {
 	}
 	for (const { seg, an } of scripts) {
 		const take = !mediaDone && an.refs.some(r => r.kind === 'bare' && isStylesSpec(r.spec))
-		collect(seg, scriptRules(an, take))
+		collect(seg, scriptRules(an, take, ctx.registersLocale))
 		mediaDone ||= take
 	}
 	for (const seg of segments) {
 		if (seg.kind === 'template') {
-			collect(seg, templateRules(seg.text, foreign, imported))
+			collect(seg, templateRules(seg.text, foreign, imported, ctx.registersLocale))
 		} else if (seg.kind !== 'script') {
 			const take = !mediaDone && styleImportsOf(seg.text, seg.kind === 'scss').length > 0
 			collect(seg, cssRules(seg.text, seg.kind === 'scss', ctx, take))

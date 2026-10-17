@@ -97,6 +97,8 @@
       "import": "./dist/media.layer.css",
       "default": "./dist/media.layer.css"
     },
+    "./tokens.json": "./dist/tokens.json",
+    "./tokens/*.json": "./dist/tokens/*.json",
     "./resolver": {
       "types": "./dist/resolver.d.ts",
       "import": "./dist/resolver.js"
@@ -108,8 +110,6 @@
     "./global": {
       "types": "./dist/global.d.ts"
     },
-    "./tokens.json": "./dist/tokens.json",
-    "./tokens/*.json": "./dist/tokens/*.json",
     "./tokens.css": {
       "types": "./dist/styles.d.ts",
       "import": "./dist/tokens.css",

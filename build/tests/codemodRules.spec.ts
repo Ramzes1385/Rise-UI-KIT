@@ -176,6 +176,46 @@ describe('предупреждения в скриптах', () => {
 	})
 })
 
+describe('языки, которые в 2.0 не встроены', () => {
+	const setup = `import { createUiKitConfig, setLocale } from '${KIT}'\n`
+
+	it('setLocale и locale: готовый словарь без registerLocale и плагина — предупреждение со ссылкой на w16-lazy-locale', () => {
+		const result = one('main.ts', `${setup}setLocale('en')\napp.use(createUiKitConfig({ locale: "zh" }))\n`)
+		expect(result.edits).toBe(0)
+		expect(result.warnings.filter(w => w.id === 'locale-register').map(w => w.line)).toEqual([2, 3])
+		expect(result.warnings[0].text).toContain('registerLocale(en)')
+		expect(ids(one('main.ts', `${setup}setLocale('ru')\nsetLocale(code)\nconst x = { lang: 'en' }\nlog('en')\n`))).not.toContain(
+			'locale-register',
+		)
+	})
+
+	it('BaseApp locale="en" в шаблоне; :locale и ru — без предупреждения', () => {
+		const vue = (attrs: string) => `<template>\n\t<BaseApp ${attrs}><RouterView /></BaseApp>\n</template>\n`
+		expect(ids(one('App.vue', vue('locale="ja"')))).toEqual(['locale-register'])
+		expect(ids(one('App.vue', vue(':locale="en"')))).toEqual([])
+		expect(ids(one('App.vue', vue('locale="ru"')))).toEqual([])
+	})
+
+	it('проект подключает словари сам (registerLocale или createUiKitPlugin в любом файле) — молчит', () => {
+		const files = { 'App.vue': `<template>\n\t<BaseApp locale="en" />\n</template>\n`, 'main.ts': `${setup}setLocale('en')\n` }
+		expect(
+			ids(
+				one('main.ts', files['main.ts'], {
+					'App.vue': files['App.vue'],
+					'boot.ts': `import { registerLocale, en } from '${KIT}'\nregisterLocale(en)\n`,
+				}),
+			),
+		).toEqual([])
+		expect(
+			ids(
+				one('App.vue', files['App.vue'], {
+					'plugin.ts': `import { createUiKitPlugin } from '${KIT}'\napp.use(createUiKitPlugin())\n`,
+				}),
+			),
+		).toEqual([])
+	})
+})
+
 describe('шаблоны Vue', () => {
 	const sfc = (template: string, script = '') =>
 		`${script ? `<script setup lang="ts">\n${script}\n</script>\n\n` : ''}<template>\n${template}\n</template>\n`

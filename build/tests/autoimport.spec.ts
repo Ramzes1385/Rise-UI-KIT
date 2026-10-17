@@ -13,6 +13,7 @@ import {
 import { SUBPATH_COMPONENT_NAMES } from '../../src/integrations/componentNames'
 import { kebabCase, setupRiseUi } from '../../src/integrations/nuxt/riseUiModule'
 import riseUiKitPlugin from '../../src/integrations/nuxt/runtimePlugin'
+import { localeCodes } from '../../src/locales/state'
 import { RiseUiResolver } from '../../src/integrations/resolver/riseUiResolver'
 import riseUiModule from '../../src/integrations/nuxt/riseUiModule'
 import type { RiseUiNuxtComponent, RiseUiNuxtLike } from '../../src/integrations/types/integrations.types'
@@ -217,10 +218,19 @@ describe('модуль Nuxt (на заглушке nuxt)', () => {
 		expect(components.map(kebabCase).every(name => /^base-[a-z]+(?:-[a-z]+)*$/.test(name))).toBe(true)
 	})
 
-	it('runtime-плагин применяет настройки через createUiKitConfig на приложении Vue', () => {
+	it('runtime-плагин подключает словарь языка из настроек и применяет их через createUiKitConfig', async () => {
 		const used: unknown[] = []
-		riseUiKitPlugin({ vueApp: { use: plugin => used.push(plugin) }, $config: { public: { riseUiKit: { locale: 'en' } } } })
-		expect(used).toHaveLength(1)
+		const app = (riseUiKit?: { locale?: string }) => ({
+			vueApp: { use: (plugin: unknown) => used.push(plugin) },
+			$config: { public: { riseUiKit } },
+		})
+		expect(localeCodes.value).not.toContain('zh')
+		await riseUiKitPlugin(app({ locale: 'zh' }))
+		expect(localeCodes.value).toContain('zh')
+		await riseUiKitPlugin(app({ locale: 'ru' }))
+		await riseUiKitPlugin(app({ locale: 'constructor' }))
+		await riseUiKitPlugin(app())
+		expect(used).toHaveLength(4)
 		expect(typeof (used[0] as { install: unknown }).install).toBe('function')
 	})
 })

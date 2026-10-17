@@ -75,6 +75,10 @@ jobs:
       - name: Ratchets (bundle size, coverage excludes, lint warnings)
         run: npm run test:ratchets
 
+      # Кодмод перехода 1.x → 2.0 (bin/migrate): фикстуры приложения 1.x, идемпотентность, покрытие 100 % (≈20–50 с)
+      - name: Codemod (rise-ui-kit migrate, coverage 100%)
+        run: npm run test:codemod
+
   quality-gates:
     name: Stories & A11y Coverage
     runs-on: ubuntu-latest

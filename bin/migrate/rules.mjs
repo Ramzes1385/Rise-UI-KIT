@@ -60,7 +60,14 @@ export const SECTION = {
 	imageMap: 'Задача new-image-map: BaseImageMap',
 	l10nDeep: 'Задача w14-l10n-deep',
 	releasePrep: 'Задача release-prep',
+	lazyLocale: 'Задача w16-lazy-locale !',
 }
+
+/** Готовые словари, которые в 2.0 не встроены: без `createUiKitPlugin` приложение подключает их `registerLocale` (задача w16-lazy-locale). */
+export const OPT_IN_LOCALES = ['en', 'kk', 'uz', 'zh', 'ja']
+
+/** Признак, что проект подключает словари сам: `registerLocale(…)` или плагин кита, который подключает `en`. */
+export const LOCALE_REGISTRATION = /\b(?:registerLocale|createUiKitPlugin)\b/
 
 export const DEFAULT_SLOT_SECTION = SECTION.slots
 
