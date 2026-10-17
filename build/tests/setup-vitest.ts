@@ -116,6 +116,17 @@ globalThis.window.prompt = vi.fn(() => null)
 globalThis.window.confirm = vi.fn(() => true)
 
 /**
+ * Canvas без пакета `canvas`: jsdom возвращает `null` и печатает «Not implemented». Заглушка возвращает тот же `null`
+ * молча — компоненты идут по ветке «2D-контекста нет»; тест, которому нужен контекст, подменяет `getContext` сам.
+ */
+HTMLCanvasElement.prototype.getContext = function getContext() {
+	return null
+} as HTMLCanvasElement['getContext']
+
+/** `load()` медиаэлемента в jsdom ничего не делает и печатает «Not implemented»: заглушка — то же без сообщения */
+HTMLMediaElement.prototype.load = function load() {}
+
+/**
  * Мок execCommand — отсутствует в jsdom, нужен для BaseEditor. `insertText` в сфокусированном поле ввода ведёт себя
  * как в браузере: заменяет выделение и шлёт `input` (так режим кода редактора пишет в нативную историю поля).
  */

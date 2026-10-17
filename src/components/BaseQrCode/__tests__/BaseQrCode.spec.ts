@@ -23,6 +23,7 @@ describe('BaseQrCode unit', () => {
 	})
 
 	it('margin — поле в модулях: округляется, отрицательное становится нулём', async () => {
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 		const { container, rerender } = render(BaseQrCode, { props: { value: URL, margin: 0 } })
 		expect(container.querySelector('svg')).toHaveAttribute('viewBox', '0 0 25 25')
 		expect(container.querySelector('.base-qr-code__finder')?.getAttribute('d')).toMatch(/^M0 0h7v7h-7v-7z/)
@@ -30,6 +31,7 @@ describe('BaseQrCode unit', () => {
 		expect(container.querySelector('svg')).toHaveAttribute('viewBox', '0 0 25 25')
 		await rerender({ value: URL, margin: 1.6 })
 		expect(container.querySelector('svg')).toHaveAttribute('viewBox', '0 0 29 29')
+		expect(warn).toHaveBeenCalledWith(expect.stringContaining('поле вокруг кода — 0 в модулях'))
 	})
 
 	it('цвета по умолчанию — чёрный на белом, свои — moduleColor и backgroundColor', async () => {

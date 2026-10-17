@@ -881,10 +881,14 @@ describe('BaseSlider unit', () => {
 		})
 
 		it('без items не падает и не показывает навигацию (SLD-8)', () => {
+			const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 			const { container } = render(BaseSlider, { props: { items: undefined as unknown as SliderItem[] } })
 
 			expect(container.querySelector('.base-slider__slide')).toBeNull()
 			expect(container.querySelector('.base-slider__arrows')).toBeNull()
+			expect(warn.mock.calls.map(([message]) => String(message))).toEqual([
+				expect.stringContaining('Invalid prop: type check failed for prop "items"'),
+			])
 		})
 	})
 })

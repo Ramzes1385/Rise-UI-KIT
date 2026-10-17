@@ -194,6 +194,7 @@ describe('BaseImageMap3D: 3D-вид', () => {
 	})
 
 	it('без фабрики берёт WebGLRenderer three.js; ошибка создания — 2D, статус и событие error', async () => {
+		const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined)
 		const onFallback = vi.fn()
 		render(BaseImageMap3D, { props: { data: DATA_3D, onFallback } })
 		await waitFor(() =>
@@ -202,6 +203,7 @@ describe('BaseImageMap3D: 3D-вид', () => {
 		expect(onFallback).toHaveBeenCalledWith('error')
 		expect(document.querySelector('canvas')).toBeNull()
 		expect(document.querySelector('.base-image-map')).toBeInTheDocument()
+		await waitFor(() => expect(consoleError).toHaveBeenCalledWith(expect.stringContaining('THREE.WebGLRenderer')))
 	})
 
 	it('v-model:view: setView и проп view переключают 2D и 3D, холст создаётся заново', async () => {

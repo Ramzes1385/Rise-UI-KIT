@@ -34,7 +34,7 @@ function foldByUnits(text: string, lower: string, locale: string): FoldedText {
 	const starts: number[] = []
 	const ends: number[] = []
 	for (const match of sourceText.matchAll(UNIT)) {
-		const index = match.index ?? 0
+		const { index } = match
 		const unit = isAligned ? match[0] : match[0].toLocaleLowerCase(locale)
 		const folded = foldUnit(unit, isJa)
 		parts.push(folded)

@@ -5,6 +5,13 @@ import userEvent from '@testing-library/user-event'
 import type { BaseMenuItem } from '../types/BaseMenu.types'
 import { fireEvent, render, screen } from '@testing-library/vue'
 
+function stopLinkNavigation(event: MouseEvent): void {
+	if (event.target instanceof Element && event.target.closest('a[href]')) event.preventDefault()
+}
+
+beforeEach(() => window.addEventListener('click', stopLinkNavigation))
+afterEach(() => window.removeEventListener('click', stopLinkNavigation))
+
 const clickHandler = vi.fn()
 
 const ITEMS: BaseMenuItem[][] = [

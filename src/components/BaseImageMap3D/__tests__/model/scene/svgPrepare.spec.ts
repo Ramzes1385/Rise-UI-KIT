@@ -76,11 +76,13 @@ describe('use: ссылки на элементы разворачиваются
 	})
 
 	it('лавина вложенных use ограничена: разбор заканчивается с конечным числом фигур', () => {
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 		const fan = (level: number) => Array.from({ length: 10 }, () => `<use href="#l${level}"/>`).join('')
 		const levels = ['<g id="l0"><rect width="1" height="1"/></g>']
 		for (let level = 1; level < 8; level += 1) levels.push(`<g id="l${level}">${fan(level - 1)}</g>`)
 		const paths = parseSvgPaths(svg(`<defs>${levels.join('')}</defs><use id="boom" href="#l7"/>`), LAYER)
 		expect(paths.length).toBeLessThanOrEqual(500)
+		expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('слишком много ссылок use'))
 	})
 
 	it('цепочка a1…a8 по 10 use вне defs: объём копий ограничен, раскрытие останавливается с предупреждением', () => {

@@ -91,6 +91,21 @@ describe('hasIntlData', () => {
 		expect(hasIntlData('ja-JP')).toBe(true)
 	})
 
+	it('язык заявлен, но форматтер подставляет другой (en-US) — false', () => {
+		class SubstitutingDateTimeFormat extends RealDateTimeFormat {
+			static supportedLocalesOf(tags: string | string[]): string[] {
+				return Array.isArray(tags) ? tags : [tags]
+			}
+
+			resolvedOptions(): Intl.ResolvedDateTimeFormatOptions {
+				return { ...super.resolvedOptions(), locale: 'en-US' }
+			}
+		}
+		vi.stubGlobal('Intl', Object.assign(Object.create(Intl), { DateTimeFormat: SubstitutingDateTimeFormat }))
+		clearIntlDataCache()
+		expect(hasIntlData('kk-KZ')).toBe(false)
+	})
+
 	it('неверный языковой тег — false, без исключения', () => {
 		expect(hasIntlData('not a tag')).toBe(false)
 	})
@@ -230,6 +245,11 @@ describe('запасной формат: детали', () => {
 		expect(formatRelativeUnit(-2, 'days', 'kk')).toBe('2 күн бұрын')
 		expect(formatRelativeUnit(0, 'second', 'uz')).toBe('hozir')
 		expect(formatRelativeUnit(-1, 'week', 'kk')).toBe(new Intl.RelativeTimeFormat('kk', { numeric: 'auto' }).format(-1, 'week'))
+	})
+
+	it('числовой шаблон словаря без запрошенной части — она всё равно показывается', () => {
+		registerLocale(defineLocale(kk, { calendarNames: { patterns: { ...kk.calendarNames!.patterns, numeric: '{day}.{month}' } } }))
+		expect(createDateFormat('kk', { year: 'numeric' }).format(WEDNESDAY)).toBe('2025')
 	})
 
 	it('словарь приложения: defineLocale(kk, { calendarNames }) главнее встроенного', () => {

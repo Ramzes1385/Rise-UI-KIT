@@ -1,17 +1,19 @@
 import '@testing-library/jest-dom/vitest'
-import { defineComponent, h } from 'vue'
 import BaseLink from '../ui/BaseLink.vue'
+import { defineComponent, h, markRaw } from 'vue'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import { LINK_COMPONENT_KEY } from '@composables/interaction/useLink'
 
-const RouterLinkStub = defineComponent({
-	name: 'RouterLinkStub',
-	props: { to: { type: [String, Object], required: true } },
-	setup:
-		(props, { slots }) =>
-		() =>
-			h('a', { href: typeof props.to === 'string' ? props.to : '/resolved', 'data-router': '' }, slots.default?.()),
-})
+const RouterLinkStub = markRaw(
+	defineComponent({
+		name: 'RouterLinkStub',
+		props: { to: { type: [String, Object], required: true } },
+		setup:
+			(props, { slots }) =>
+			() =>
+				h('a', { href: typeof props.to === 'string' ? props.to : '/resolved', 'data-router': '' }, slots.default?.()),
+	}),
+)
 
 afterEach(() => {
 	vi.restoreAllMocks()

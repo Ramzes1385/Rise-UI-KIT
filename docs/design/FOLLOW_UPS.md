@@ -859,3 +859,17 @@
 - **Нестабильные истории** (падают независимо от направления под нагрузкой): `form-basecolorpicker--presets`, `editor-baseeditor--editor-undo`, `media-basepresentationplayer--completed`, `media-baseimagemapeditor--editor-parts-3-d`. Не RTL; отдельная задача по стабильности play.
 - **Эвристики аудита** шумят на строчном тексте и bidi; список классов — в шапке `scripts/check-rtl.mjs`. Правило переполнения не считает дефектом выход за тот же край, что и в LTR (физические виджеты).
 - **Сторонние виджеты и пользовательские слоты** (HTML приложения в слотах) приложение зеркалит само логическими свойствами.
+
+## Задача tests-clean
+
+Требование владельца: все тесты проходят без предупреждений и ошибок в выводе, покрытие 100 %. Сделано:
+
+- **Падения на 5da653c6 (2).** `source.spec`: в preview.scss у помощников появились `box-sizing` и вложенное `> * { max-width: 100% }`, а `STORY_STYLES` и тест читали блок до первой `}`. Теперь `STORY_STYLES` хранит тело блока с вложенными правилами, «Show code» разворачивает их в отдельные блоки CSS, тест сверяет блоки по балансу скобок и весь список помощников preview.scss. `codemodFixtures.spec`: бит `x` у `bin/rise-migrate.mjs` проверялся по файловой системе, на Windows он всегда 0 — теперь по индексу git (`100755`).
+- **Покрытие.** useTeleportTarget (`readDirection`), useDropdownPosition (якорь без обёртки в RTL), useExplicitPropDetection (props вершины `null`), searchFold (язык по умолчанию; мёртвое `match.index ?? 0` убрано), fallbackDate (день недели в поясе считается от календарной даты — без таблицы названий и мёртвого `?? 0`; числовой шаблон без запрошенных частей), dateFormatUtils (форматтер подставил другой язык) — 100 % по всем метрикам.
+- **Сторож консоли** в `build/tests/setup-vitest.ts`: неожиданный `console.warn`/`console.error` валит тест (после теста — файл); ошибки jsdom направлены в `console.error` теста (раньше шли в консоль Node без имени теста). Ожидаемое — шпион с проверкой. Заглушки: `HTMLCanvasElement.getContext` → `null` и `HTMLMediaElement.load` молча (то же, что jsdom, без «Not implemented»).
+- **Причины вывода на 5da653c6** (по логам владельца и прогонам затронутых файлов): предупреждения кита `warn()`, которые тест ожидает, но не перехватывал, — фаззинг (≈139), BaseQrCode, BaseImageMap.routes, BaseStepper, BaseImageMap3D (сцена, SVG); неверные данные теста — BasePopover без `ariaLabel`, BaseBottomNav с двумя пунктами, BaseLink с реактивным компонентом ссылки (теперь `markRaw`); хуки жизненного цикла вне setup — useTeleportTarget, useChatMessageActions, codeModeEvents; `[vitest]` мок `Intl.DateTimeFormat` стрелкой — icsUtils; jsdom: переход по ссылке ×13 (BaseMegaMenu, BaseMenu, BaseBottomNav — тест гасит переход, как роутер приложения), canvas ×6, `load()` ×2, `alert` ×3 (xssOracle на Windows), разбор CSS ×2 (фаззинг). Сводка фаззинга печатается только в `npm run test:fuzz`.
+
+Не сделано и почему:
+
+- **Полный прогон `test:unit` и скрипты покрытия целиком в облаке не запускались** (2 ядра, ≈45 мин на прогон; по решению координатора их гоняет владелец). Проверены затронутые файлы и покрытие шести файлов. Источники сообщений jsdom без имени теста найдены по соседству в логе владельца; если полный прогон покажет ещё такой источник — сторож теперь назовёт тест. S.
+- **`alert` в xssOracle** на Linux не воспроизводится (только в логе Windows): шпион ставится всегда, причина исполнения на Windows не выяснена. XS.

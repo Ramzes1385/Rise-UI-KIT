@@ -330,7 +330,8 @@ describe('командная строка', () => {
 		const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'))
 		expect(pkg.bin).toEqual({ 'rise-ui-kit': 'bin/rise-migrate.mjs' })
 		expect(pkg.files).toContain('bin')
-		expect(statSync(BIN).mode & 0o111).not.toBe(0)
+		const indexEntry = execFileSync('git', ['ls-files', '--stage', 'bin/rise-migrate.mjs'], { cwd: ROOT, encoding: 'utf8' })
+		expect(indexEntry, 'bin исполняемый в git (100755): на Windows бит x в файловой системе не хранится').toMatch(/^100755 /)
 	})
 })
 

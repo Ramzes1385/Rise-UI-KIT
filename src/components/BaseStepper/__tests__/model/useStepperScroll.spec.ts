@@ -97,10 +97,12 @@ describe('BaseStepper: прокрутка ленты', () => {
 	})
 
 	it('номер шага вне списка — прокручивает к ближайшему (последнему) шагу (ST-4)', async () => {
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 		mockLayout(480, 300)
 		const { rerender } = await renderStepper({ modelValue: 1 })
 		await rerender({ modelValue: 9 })
 		expect(scrollTo).toHaveBeenCalledWith({ left: 180, behavior: 'smooth' })
+		expect(warn).toHaveBeenCalledWith(expect.stringContaining('modelValue 9 вне диапазона 1…4'))
 	})
 
 	it('без прокрутки смена шага не трогает ленту', async () => {

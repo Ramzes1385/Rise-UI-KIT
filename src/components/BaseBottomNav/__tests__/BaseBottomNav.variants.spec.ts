@@ -76,7 +76,7 @@ describe('BaseBottomNav: варианты floating, glass, notched', () => {
 	})
 
 	it('notched без isPrimary — панель без выреза', () => {
-		const { container } = renderNav({ variant: 'notched', items: ITEMS.slice(0, 2) })
+		const { container } = renderNav({ variant: 'notched', items: [...ITEMS.slice(0, 2), { ...ITEMS[2], isPrimary: false }] })
 		expect(container.querySelector('.base-bottom-nav__bar')).not.toHaveClass('base-bottom-nav__bar--notched')
 		expect(container.querySelector('.base-bottom-nav__link--primary')).toBeNull()
 	})

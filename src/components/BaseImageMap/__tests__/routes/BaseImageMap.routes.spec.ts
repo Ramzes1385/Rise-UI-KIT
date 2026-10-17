@@ -228,6 +228,7 @@ describe('routeSteps', () => {
 	})
 
 	it('слой без названия в данных — id слоя; лифт в шагах', () => {
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 		const routes: ImageMapRoutes = {
 			nodes: [
 				{ id: 'a', layer: 'x', x: 0, y: 0 },
@@ -245,6 +246,7 @@ describe('routeSteps', () => {
 			'Поднимитесь на лифте: y',
 			'Идите к «Б»',
 		])
+		expect(warn).toHaveBeenCalledWith(expect.stringContaining('которого нет в data.layers'))
 	})
 
 	it('вверх и вниз — по порядку слоёв: эскалатор вниз с узлами сверху вниз и isOneWay', () => {

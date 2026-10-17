@@ -4,6 +4,13 @@ import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
 import type { BottomNavItem } from '../types/BaseBottomNav.types'
 
+function stopLinkNavigation(event: MouseEvent): void {
+	if (event.target instanceof Element && event.target.closest('a[href]')) event.preventDefault()
+}
+
+beforeEach(() => window.addEventListener('click', stopLinkNavigation))
+afterEach(() => window.removeEventListener('click', stopLinkNavigation))
+
 const ITEMS: BottomNavItem[] = [
 	{ value: 'home', label: 'Главная', icon: 'home' },
 	{ value: 'upload', label: 'Загрузка', icon: 'upload', isDisabled: true },

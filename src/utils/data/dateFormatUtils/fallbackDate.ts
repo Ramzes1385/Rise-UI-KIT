@@ -18,7 +18,6 @@ const TIME_STYLES: Record<NonNullable<Intl.DateTimeFormatOptions['timeStyle']>, 
 }
 
 const FIELD_KEYS = ['weekday', 'year', 'month', 'day', 'hour', 'minute', 'second'] as const
-const WEEKDAY_INDEX: Record<string, number> = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 }
 const NUMERIC_TOKEN = /\{(day|month|year)\}/
 const TWO_DIGITS = 2
 const YEAR_DIGITS = 2
@@ -29,7 +28,7 @@ const zoneFormats = new Map<string, Intl.DateTimeFormat>()
 function zoneFormat(timeZone: string): Intl.DateTimeFormat {
 	let format = zoneFormats.get(timeZone)
 	if (!format) {
-		format = new Intl.DateTimeFormat('en-US', { timeZone, year: 'numeric', month: 'numeric', day: 'numeric', weekday: 'short' })
+		format = new Intl.DateTimeFormat('en-US', { timeZone, year: 'numeric', month: 'numeric', day: 'numeric' })
 		zoneFormats.set(timeZone, format)
 	}
 	return format
@@ -46,7 +45,11 @@ function dateFields(date: Date, timeZone: string | undefined): DateFields {
 			.formatToParts(date)
 			.map(part => [part.type, part.value]),
 	)
-	return { year: Number(parts.year), month: Number(parts.month) - 1, day: Number(parts.day), weekday: WEEKDAY_INDEX[parts.weekday] ?? 0 }
+	const year = Number(parts.year)
+	const month = Number(parts.month) - 1
+	const day = Number(parts.day)
+	// День недели — от даты в поясе: у календарной даты он один в любом поясе
+	return { year, month, day, weekday: new Date(Date.UTC(year, month, day)).getUTCDay() }
 }
 
 /** Параметры без `dateStyle`/`timeStyle`; без единого поля — числовая дата, как у `Intl.DateTimeFormat` */
@@ -114,7 +117,7 @@ function datePart(fields: DateFields, context: FallbackContext): string {
 	if (!day && !month && !year) return ''
 	const texts = { day, month, year }
 	if (hasName) return formatMessage(textPattern(names.patterns, Boolean(day), Boolean(year)), texts)
-	return numericText(names.patterns.numeric, texts) || [day, year].filter(Boolean).join(' ')
+	return numericText(names.patterns.numeric, texts) || [day, month, year].filter(Boolean).join(' ')
 }
 
 function weekdayName(names: CalendarNames, weekday: number, style: string | undefined): string {

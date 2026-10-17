@@ -6,6 +6,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import { getCatalogDepth, getFocusable, isDrilldownItem } from '../model/megaMenuItems'
 
+function stopLinkNavigation(event: MouseEvent): void {
+	if (event.target instanceof Element && event.target.closest('a[href]')) event.preventDefault()
+}
+
+beforeEach(() => window.addEventListener('click', stopLinkNavigation))
+afterEach(() => window.removeEventListener('click', stopLinkNavigation))
+
 const ITEMS: MegaMenuItem[] = [
 	{
 		key: 'catalog',

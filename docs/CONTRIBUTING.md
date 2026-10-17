@@ -244,6 +244,8 @@ npm run release:dry
 
 Если что-то падает — исправь **до** push. Не коммить с падающими тестами.
 
+Тесты проходят без предупреждений и ошибок в выводе: неожиданный `console.warn`/`console.error` (`[Vue warn]`, `warn()` кита, ошибки jsdom) валит тест (`build/tests/setup-vitest.ts`). Причину устраняй — правильные пропсы, `attachTo`, ожидание асинхронных эффектов, заглушки среды, — а настоящую ошибку компонента исправляй в компоненте. Предупреждение, которое тест проверяет намеренно, перехватывай шпионом с проверкой: `vi.spyOn(console, 'warn').mockImplementation(() => undefined)` и `expect(…).toHaveBeenCalledWith(…)`.
+
 #### Храповики и бюджет размера
 
 `npm run test:ratchets` (`scripts/check-ratchets.mjs`) сверяет три числа с базой `build/ratchets.json`; шаг есть в `ci:validate` и в CI (job «Lint & Types», после сборки):

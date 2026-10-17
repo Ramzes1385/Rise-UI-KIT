@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { escapeHtml, sanitizeHtml } from '@utils/dom/htmlUtils'
 import { runTarget } from './fuzzRunner'
 import { createRng, seedFor } from './rng'
@@ -15,6 +15,12 @@ function toBody(html: string): HTMLElement {
 }
 
 describe('фаззинг XSS: проверка самих проверок', () => {
+	// Опасная разметка намеренно разбирается в DOM jsdom; если среда исполнит из неё alert (так было в прогоне на Windows),
+	// без шпиона jsdom печатает «Not implemented: Window's alert()». Проверки здесь — о разборе, не об исполнении
+	beforeEach(() => {
+		vi.spyOn(window, 'alert').mockImplementation(() => undefined)
+	})
+
 	it('генератор детерминирован: то же зерно — тот же вход, другой номер — другой', () => {
 		const first = Array.from({ length: 20 }, (_, index) => generateHtml(createRng(seedFor(7, 'x', index))))
 		const again = Array.from({ length: 20 }, (_, index) => generateHtml(createRng(seedFor(7, 'x', index))))

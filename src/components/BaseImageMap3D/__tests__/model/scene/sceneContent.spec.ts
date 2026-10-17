@@ -216,14 +216,17 @@ describe('сборка сцены', () => {
 	})
 
 	it('addSvgObjects выдавливает элементы SVG слоя по elementId; повторно — не дублирует', () => {
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 		const content = buildSceneContent(DATA, resolveFake)
 		expect(addSvgObjects(content, { data: DATA, layerId: 'f2', markup: SVG }, resolveFake)).toBe(1)
 		expect(content.objects.get('room')?.layerId).toBe('f2')
 		expect(addSvgObjects(content, { data: DATA, layerId: 'f2', markup: SVG }, resolveFake)).toBe(0)
 		expect(addSvgObjects(content, { data: DATA, layerId: 'f1', markup: SVG }, resolveFake)).toBe(0)
+		expect(warn).toHaveBeenCalledWith(expect.stringContaining('нет фигуры для элемента «missing»'))
 	})
 
 	it('addSvgObjects ставит фигуры по viewBox слоя: масштаб и сдвиг те же, что у картинки пола', () => {
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 		const scaled =
 			'<svg xmlns="http://www.w3.org/2000/svg" viewBox="10 5 50 25"><rect id="room" x="15" y="10" width="10" height="10"/></svg>'
 		const content = buildSceneContent(DATA, resolveFake)
@@ -232,6 +235,7 @@ describe('сборка сцены', () => {
 		geometry?.computeBoundingBox()
 		const box = geometry?.boundingBox
 		expect([box?.min.x, box?.max.x, box?.min.z, box?.max.z].map(Number)).toEqual([10, 30, 10, 30])
+		expect(warn).toHaveBeenCalledWith(expect.stringContaining('нет фигуры для элемента «missing»'))
 	})
 
 	it('applyLayerMode: stack — все этажи, неактивные полупрозрачны; single — только активный', () => {

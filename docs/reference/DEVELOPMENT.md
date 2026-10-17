@@ -77,6 +77,9 @@ npm run storybook
 | `npm run typecheck` | типы исходников, тестов, stories и конфигов сборки (`vue-tsc -b`) |
 | `npm run test:unit` | unit- и интеграционные тесты (Vitest, jsdom); один файл — `npm run test:unit -- src/components/BaseChat/__tests__/ChatInput.spec.ts` |
 | `npm run test:components:coverage`, `test:composables:coverage`, `test:utils:coverage` | те же тесты с порогом покрытия 100% на файл |
+
+Тест не печатает в консоль ни предупреждений, ни ошибок. Сторож в `build/tests/setup-vitest.ts` валит тест на неожиданном `console.warn` или `console.error` — `[Vue warn]`, предупреждение кита `warn()`, ошибку jsdom («Not implemented: …», «Could not parse CSS stylesheet»; их сторож переводит в `console.error` теста). Сообщение после конца теста (отложенная навигация jsdom, таймеры) валит файл. Ожидаемое предупреждение тест перехватывает шпионом и проверяет: `const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)`, затем `expect(warn).toHaveBeenCalledWith(…)`; пока стоит шпион, сторож молчит. Сторонний шум, не зависящий от кита, — список `IGNORED_CONSOLE` в setup, с причиной.
+
 | `node scripts/portion-scope.mjs [--base=feat/rise-v2] [--json] [BaseX \| путь …]` | состав порции — что изменилось относительно базы; разделы и id историй; команды тестов с порогом покрытия по путям (пороги и исключения — из `test:*:coverage`) |
 | `npx vue-tsc -p build/lib/tsconfig.lib.json --noEmit` | типы сборки пакета — то же, что `build:lib:types`, без записи в `dist/` |
 | `npm run test:fuzz -- --iterations=50000` | долгий фаззинг XSS (`build/tests/fuzz`): `sanitizeHtml`, Markdown, адреса, SVG, JSON-LD и компоненты с пользовательским текстом; флаги `--seed`, `--target`, `--only=<цель>:<номер>` (повтор одной итерации), `--report=<файл>`. В CI и по расписанию не запускается (обычный `test:unit` гоняет те же файлы с малым числом итераций, до 10 секунд); запускайте перед релизом и после правок `htmlUtils`, `urlUtils`, Markdown, редактора |

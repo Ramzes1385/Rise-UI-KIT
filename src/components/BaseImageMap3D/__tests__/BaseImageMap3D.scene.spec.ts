@@ -77,12 +77,14 @@ describe('BaseImageMap3D: сцена', () => {
 	})
 
 	it('этаж без картинки и SVG остаётся без текстуры; ошибка загрузки текстуры не ломает сцену', async () => {
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 		textureLoad.mockRejectedValue(new Error('404'))
 		const data = { ...DATA, layers: [{ id: 'bare', title: 'Пусто', width: 100, height: 100 }, DATA.layers[0]], objects: [] }
 		const { scene } = await renderScene({ data })
 		await waitFor(() => expect(textureLoad).toHaveBeenCalled())
 		const top = scene.getObjectByName('bare')?.getObjectByName('rise-floor-top') as Mesh<never, MeshStandardMaterial>
 		expect(top.material.map).toBeNull()
+		await waitFor(() => expect(warn).toHaveBeenCalledWith(expect.stringContaining('план этажа «f1» не загрузился')))
 	})
 
 	it('стопка: неактивные этажи полупрозрачны; переключатель этажей меняет активный и шлёт события', async () => {
@@ -195,6 +197,7 @@ describe('BaseImageMap3D: сцена', () => {
 	})
 
 	it('ошибка загрузки SVG слоя: пол без объектов SVG', async () => {
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 		vi.stubGlobal(
 			'fetch',
 			vi.fn(() => Promise.reject(new Error('offline'))),
@@ -207,6 +210,7 @@ describe('BaseImageMap3D: сцена', () => {
 		await new Promise(resolve => setTimeout(resolve, 0))
 		expect(scene.getObjectByName('u')).toBeDefined()
 		expect(scene.getObjectByName('hall')).toBeUndefined()
+		await waitFor(() => expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('план этажа «u» не загрузился')))
 	})
 
 	it('в 2D-виде смена темы и этажа сцену не трогает', async () => {
@@ -251,6 +255,7 @@ describe('BaseImageMap3D: сцена', () => {
 	})
 
 	it('модель не загрузилась — 2D и событие fallback(error); после размонтирования — без события', async () => {
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 		const onFallback = vi.fn()
 		const data = { layers: [{ id: 'm', title: 'M', width: 100, height: 100, model: { url: 'm.glb' } }], objects: [] }
 		const configureLoader = vi.fn(loader => {
@@ -267,6 +272,7 @@ describe('BaseImageMap3D: сцена', () => {
 		reject(new Error('late'))
 		await new Promise(resolve => setTimeout(resolve, 0))
 		expect(onFallback).toHaveBeenCalledOnce()
+		await waitFor(() => expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('модель этажа «m» (m.glb) не загрузилась')))
 	})
 
 	it('ошибка модели: предупреждение в dev; новые данные — новая попытка 3D', async () => {

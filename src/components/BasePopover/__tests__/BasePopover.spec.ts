@@ -354,7 +354,7 @@ describe('BasePopover: кнопка и диалог', () => {
 
 	describe('якорь вместо триггера', () => {
 		it('с anchor и без слота trigger обёртка триггера не рисуется', () => {
-			const { container } = render(BasePopover, { props: { isOpen: false, anchor: { x: 10, y: 20 } } })
+			const { container } = render(BasePopover, { props: { isOpen: false, anchor: { x: 10, y: 20 }, ariaLabel: 'Подсказка' } })
 
 			expect(container.querySelector('.base-popover__trigger')).not.toBeInTheDocument()
 		})

@@ -2225,3 +2225,7 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 - **Остаются слева направо** (намеренно): панель управления видеоплеера, сравнение «до / после», PIN, блоки кода и код в Markdown, спарклайны, графики, диаграмма Ганта, JSON-просмотрщик, карты, холсты, цветовые области, редактор субтитров и дорожка волны.
 - **Storybook**: в тулбаре переключатель «Направление» (глобал `dir`, значения `ltr`/`rtl`); по умолчанию `ltr`, вид историй не меняется.
 - **Новые истории**: нет; новые RTL-снимки не нужны, пока владелец не захочет закрепить RTL-эталоны (проверка идёт по автоаудиту `npm run test:rtl`).
+
+## Задача tests-clean
+
+- **Превью историй не меняются** (`build/storybook/preview.scss` не правился). Меняется только текст «Show code»: блок `<style scoped>` теперь содержит правила помощников точно как в preview.scss — `box-sizing: border-box` у `story-stack`, `story-narrow`, `story-medium`, `story-frame`; вложенное `.story-col > * { max-width: 100%; }`; помощники `story-stage`, `story-window`, `story-motion` (с `.story-motion__presets`, `.story-motion__preset` и `.story-motion__preset > *`). Снимки скриншот-тестов это не затрагивает.

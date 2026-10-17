@@ -104,6 +104,10 @@ describe('foldSearchText: ширина знаков и кана', () => {
 })
 
 describe('foldSearchTextWithMap', () => {
+	it('язык по умолчанию — язык кита', () => {
+		expect(foldSearchTextWithMap('Ёлка')).toEqual({ text: 'елка', starts: [0, 1, 2, 3], ends: [1, 2, 3, 4] })
+	})
+
 	it('без изменения длины карта не нужна', () => {
 		expect(foldSearchTextWithMap('Hello Мир', 'en-US')).toEqual({ text: 'hello мир', starts: null, ends: null })
 	})
