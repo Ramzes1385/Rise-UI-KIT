@@ -48,9 +48,12 @@ function chooseOutgoing(run: FlowSimulationRun, node: FlowNode): FlowEdge[] {
 	return split === 'one' ? chooseOne(run, node, edges) : chooseSome(run, node, edges)
 }
 
-function hasPendingUpstream(run: FlowSimulationRun, node: string): boolean {
+function hasPendingUpstream(run: FlowSimulationRun, node: string, moves: readonly FlowSimulationMove[]): boolean {
+	if (moves.some(move => move.node.id === node)) {
+		return true
+	}
 	const seen = new Set<string>([node])
-	const queue = [...run.waiting.keys(), ...run.ready].filter(id => id !== node)
+	const queue = [...run.waiting.keys(), ...run.ready, ...moves.map(move => move.node.id)].filter(id => id !== node)
 	while (queue.length > 0) {
 		const id = queue.shift() as string
 		if (!seen.has(id)) {
@@ -90,15 +93,15 @@ function joinAll(run: FlowSimulationRun, node: string, counts: Map<string, numbe
 	return isReady ? 1 : 0
 }
 
-function joinSome(run: FlowSimulationRun, node: string): number {
-	if (hasPendingUpstream(run, node)) {
+function joinSome(run: FlowSimulationRun, node: string, moves: readonly FlowSimulationMove[]): number {
+	if (hasPendingUpstream(run, node, moves)) {
 		return 0
 	}
 	run.waiting.delete(node)
 	return 1
 }
 
-function takeFirings(run: FlowSimulationRun, node: FlowNode): number {
+function takeFirings(run: FlowSimulationRun, node: FlowNode, moves: readonly FlowSimulationMove[]): number {
 	const counts = run.waiting.get(node.id)
 	if (!counts || counts.size === 0) {
 		return 0
@@ -107,7 +110,7 @@ function takeFirings(run: FlowSimulationRun, node: FlowNode): number {
 	if (join === 'one') {
 		return joinOne(run, node.id, counts)
 	}
-	return join === 'all' ? joinAll(run, node.id, counts) : joinSome(run, node.id)
+	return join === 'all' ? joinAll(run, node.id, counts) : joinSome(run, node.id, moves)
 }
 
 function fire(run: FlowSimulationRun, node: FlowNode): FlowSimulationMove[] {
@@ -124,7 +127,7 @@ function collectMoves(run: FlowSimulationRun): FlowSimulationMove[] {
 		return node ? fire(run, node) : []
 	})
 	run.graph.nodes.forEach(node => {
-		const firings = takeFirings(run, node)
+		const firings = takeFirings(run, node, moves)
 		for (let index = 0; index < firings; index += 1) {
 			moves.push(...fire(run, node))
 		}
