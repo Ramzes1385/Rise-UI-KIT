@@ -48,7 +48,33 @@ export const TOKENS_SOURCE = 'src/styles/kit.scss'
 type ExportTarget = string | Record<string, string>
 
 const EXPORTS_ANCHOR = './icons.svg'
-const GENERATED_EXPORT = /^\.\/(?:Base\w+|tokens(?:\.layer)?\.css)$/
+const GENERATED_EXPORT = /^\.\/(?:Base\w+|tokens(?:\.layer)?\.css|resolver|nuxt|global)$/
+
+/** Файл со списком имён публичных компонентов для резолвера и модуля Nuxt (их код — Node, без доступа к `src/components`) */
+export const COMPONENT_NAMES_FILE = 'src/integrations/componentNames.ts'
+
+/** Имя пакета в строках, которые собираются в код приложения: импорты подпутей и объявления типов */
+const PACKAGE_NAME = '@ramzes1385/rise-ui-kit'
+
+/** Текст `src/integrations/componentNames.ts` по списку компонентов (формат — как после prettier) */
+export function componentNamesSource(components: string[]): string {
+	const names = components.map(component => `\t'${component}',\n`).join('')
+	return [
+		'/** Утилиты: имена публичных компонентов с подпутями `@ramzes1385/rise-ui-kit/<Имя>` — файл пишет scripts/generate-subpath-exports.mjs */',
+		'',
+		`export const SUBPATH_COMPONENT_NAMES = [\n${names}] as const`,
+		'',
+	].join('\n')
+}
+
+/**
+ * Текст `dist/global.d.ts`: компоненты кита в `GlobalComponents` Vue — типы шаблонов для глобальной регистрации
+ * (`createUiKitPlugin`, Nuxt, `unplugin-vue-components`). Имена — по умолчанию, без префикса.
+ */
+export function globalTypesSource(components: string[]): string {
+	const lines = components.map(component => `\t\t${component}: typeof import('${PACKAGE_NAME}/${component}')['${component}']\n`).join('')
+	return `export {}\n\ndeclare module 'vue' {\n\texport interface GlobalComponents {\n${lines}\t}\n}\n`
+}
 
 const cssExport = (file: string): Record<string, string> => ({
 	types: './dist/styles.d.ts',
@@ -62,6 +88,9 @@ export function subpathExports(
 	components: string[] = readPublicComponents(root),
 ): Record<string, ExportTarget> {
 	const entries: [string, ExportTarget][] = [
+		['./resolver', { types: './dist/resolver.d.ts', import: './dist/resolver.js' }],
+		['./nuxt', { types: './dist/nuxt.d.ts', import: './dist/nuxt.js' }],
+		['./global', { types: './dist/global.d.ts' }],
 		[`./${TOKENS_CSS_FILE}`, cssExport(TOKENS_CSS_FILE)],
 		[`./${TOKENS_LAYER_CSS_FILE}`, cssExport(TOKENS_LAYER_CSS_FILE)],
 	]

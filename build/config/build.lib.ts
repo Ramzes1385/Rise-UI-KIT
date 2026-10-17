@@ -23,6 +23,15 @@ function createLazyGroups(): NonNullable<NonNullable<BuildOptions['rollupOptions
 	}
 }
 
+/** Входы автоимпорта: `./resolver`, `./nuxt` и runtime-плагин Nuxt, который `./nuxt` подключает по пути рядом с собой */
+function createIntegrationEntries(): Record<string, string> {
+	return {
+		resolver: resolve(process.cwd(), 'src/resolver.ts'),
+		nuxt: resolve(process.cwd(), 'src/nuxt.ts'),
+		'nuxt-plugin': resolve(process.cwd(), 'src/integrations/nuxt/runtimePlugin.ts'),
+	}
+}
+
 /**
  * Входы и чанки пакета. `withSubpaths` — основной проход: JS всех входов и подпутей `./<Компонент>` (build/plugins/subpaths.ts).
  * Обычный ESM без `strictExecutionOrder`: его обёртки инициализации модулей (`var X; init = () => { X = … }`) при
@@ -49,6 +58,8 @@ export function createLibBuildConfig({ withSubpaths }: { withSubpaths: boolean }
 				icons: resolve(process.cwd(), 'src/icons/index.ts'),
 				media: resolve(process.cwd(), 'src/components/BaseMediaPlayer/index.ts'),
 				map3d: resolve(process.cwd(), 'src/map3d.ts'),
+				// Автоимпорт: резолвер, модуль Nuxt и его плагин — без кода компонентов (src/integrations)
+				...(withSubpaths ? createIntegrationEntries() : {}),
 				// Подпути `./<Компонент>` (build/config/subpaths.ts): `components/<Компонент>/index.js`
 				...(withSubpaths ? createSubpathEntries() : {}),
 			},
@@ -57,7 +68,7 @@ export function createLibBuildConfig({ withSubpaths }: { withSubpaths: boolean }
 		},
 
 		rollupOptions: {
-			external: ['vue', /^three(\/.*)?$/],
+			external: ['vue', /^three(\/.*)?$/, /^node:/],
 			// Вход экспортирует ровно своё (без служебных имён); группам прохода styles.css нужен 'allow-extension'
 			preserveEntrySignatures: withSubpaths ? 'strict' : 'allow-extension',
 

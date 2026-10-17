@@ -20,6 +20,9 @@ const PUBLIC_ENTRIES = [
 	'components/BaseMediaPlayer/index.ts',
 	'map3d.ts',
 	'config.ts',
+	'resolver.ts',
+	'nuxt.ts',
+	'integrations/nuxt/runtimePlugin.ts',
 ]
 
 const ALIASES: Record<string, string> = {
@@ -92,7 +95,7 @@ describe('границы npm-пакета', () => {
 	it('публичные входы импортируют извне только peerDependencies и dependencies', () => {
 		const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'))
 		const allowed = new Set([...Object.keys(pkg.peerDependencies ?? {}), ...Object.keys(pkg.dependencies ?? {})])
-		const unexpected = [...collectExternalImports()].filter(([name]) => !allowed.has(name))
+		const unexpected = [...collectExternalImports()].filter(([name]) => !allowed.has(name) && !name.startsWith('node:'))
 		expect(unexpected).toEqual([])
 	})
 

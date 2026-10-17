@@ -40,7 +40,14 @@ describe('публичные компоненты и exports', () => {
 		for (const hidden of ['./BaseMediaPlayer', './BasePresentationPlayer', './BaseImageMap3D'])
 			expect(pkg.exports[hidden]).toBeUndefined()
 		expect(Object.keys(pkg.exports).filter(key => key.includes('*'))).toEqual([])
-		expect(Object.keys(subpathExports(ROOT))).toHaveLength(components.length + 2)
+		expect(Object.keys(subpathExports(ROOT))).toHaveLength(components.length + 5)
+		expect(Object.keys(subpathExports(ROOT)).filter(key => !/^\.\/Base/.test(key))).toEqual([
+			'./resolver',
+			'./nuxt',
+			'./global',
+			'./tokens.css',
+			'./tokens.layer.css',
+		])
 	})
 
 	it('tokens.css и tokens.layer.css — в exports, как styles.css', () => {

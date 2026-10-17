@@ -93,6 +93,17 @@
       "import": "./dist/media.layer.css",
       "default": "./dist/media.layer.css"
     },
+    "./resolver": {
+      "types": "./dist/resolver.d.ts",
+      "import": "./dist/resolver.js"
+    },
+    "./nuxt": {
+      "types": "./dist/nuxt.d.ts",
+      "import": "./dist/nuxt.js"
+    },
+    "./global": {
+      "types": "./dist/global.d.ts"
+    },
     "./tokens.css": {
       "types": "./dist/styles.d.ts",
       "import": "./dist/tokens.css",
@@ -717,6 +728,7 @@
     "test:ratchets": "node scripts/check-ratchets.mjs",
     "test:css-split": "node scripts/check-css-split.mjs",
     "test:subpaths": "node scripts/generate-subpath-exports.mjs --check && node scripts/check-subpaths-app.mjs",
+    "test:autoimport": "node scripts/check-autoimport-app.mjs",
     "generate:subpath-exports": "node scripts/generate-subpath-exports.mjs",
     "test:folders": "node scripts/check-folder-size.mjs",
     "test:custom-color": "node scripts/check-custom-color-scope.mjs",
@@ -929,6 +941,9 @@
       "src/components/BaseMediaPlayer/index.ts",
       "src/map3d.ts",
       "src/config.ts",
+      "src/resolver.ts",
+      "src/nuxt.ts",
+      "src/integrations/nuxt/runtimePlugin.ts",
       "src/composables/crypto/useCryptoPro/emulation/index.ts",
       "scripts/*.mjs",
       "build/packages/extract.mjs"

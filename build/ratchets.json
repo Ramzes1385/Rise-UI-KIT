@@ -44,6 +44,14 @@
 			"gzip": 60,
 			"budget": 2048
 		},
+		"nuxt.js": {
+			"gzip": 1744,
+			"budget": 3072
+		},
+		"resolver.js": {
+			"gzip": 1344,
+			"budget": 3072
+		},
 		"styles.css": {
 			"gzip": 99588,
 			"budget": 109568

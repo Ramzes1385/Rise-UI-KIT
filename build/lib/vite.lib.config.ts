@@ -8,6 +8,7 @@ import { defineConfig } from 'vite'
 import type { Plugin } from 'vite'
 import { createLibBuildConfig } from '../config/build.lib'
 import { createCssConfig } from '../config/css'
+import { globalTypesSource, readPublicComponents } from '../config/subpaths'
 import { createResolveConfig } from '../config/resolve'
 import { createPlugins } from '../plugins'
 import { createCssSplitPlugins, createDropCssPlugin } from '../plugins/cssSplit'
@@ -22,6 +23,7 @@ const MEDIA_LAYER_CSS = "@import url('./media.css') layer(rise);\n"
 /**
  * Типы для `import '@ramzes1385/rise-ui-kit/styles'` (exports в package.json): без них TypeScript у потребителя
  * не находит объявление модуля стилей (то же объявление у `media.css`). Файл кладётся в dist вместе со сборкой.
+ * Там же `global.d.ts` — компоненты кита в `GlobalComponents` Vue (`@ramzes1385/rise-ui-kit/global`, README «Типы в шаблонах»).
  */
 function createStylesTypesPlugin(): Plugin {
 	return {
@@ -30,6 +32,7 @@ function createStylesTypesPlugin(): Plugin {
 			this.emitFile({ type: 'asset', fileName: 'styles.d.ts', source: 'declare const styles: string\n\nexport default styles\n' })
 			this.emitFile({ type: 'asset', fileName: 'styles.layer.css', source: LAYER_CSS })
 			this.emitFile({ type: 'asset', fileName: 'media.layer.css', source: MEDIA_LAYER_CSS })
+			this.emitFile({ type: 'asset', fileName: 'global.d.ts', source: globalTypesSource(readPublicComponents()) })
 		},
 	}
 }

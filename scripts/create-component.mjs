@@ -3,7 +3,7 @@
 import { execFileSync } from 'node:child_process'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
-import { readPublicComponents, withSubpathExports } from '../build/config/subpaths.ts'
+import { COMPONENT_NAMES_FILE, componentNamesSource, readPublicComponents, withSubpathExports } from '../build/config/subpaths.ts'
 
 const ROOT = resolve(process.cwd())
 const COMPONENTS_DIR = join(ROOT, 'src/components')
@@ -766,12 +766,13 @@ function registerInBarrel(n, changes) {
 	changes.set(path, `${lines.join('\n')}\n`)
 }
 
-/** Подпуть `./<Имя>` в exports package.json (точечная установка, scripts/generate-subpath-exports.mjs) */
+/** Подпуть `./<Имя>` в exports package.json и имя в списке автоимпорта (точечная установка, scripts/generate-subpath-exports.mjs) */
 function registerInExports(n, changes) {
 	const path = join(ROOT, 'package.json')
 	const pkg = JSON.parse(readFileSync(path, 'utf-8'))
 	const components = [...readPublicComponents(ROOT), n.name].sort()
 	changes.set(path, `${JSON.stringify({ ...pkg, exports: withSubpathExports(pkg.exports, ROOT, components) }, null, 2)}\n`)
+	changes.set(join(ROOT, COMPONENT_NAMES_FILE), componentNamesSource(components))
 }
 
 function registerInPlugin(n, changes) {

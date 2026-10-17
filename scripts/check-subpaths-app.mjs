@@ -12,6 +12,9 @@
  *   компонентов): в JS нет BaseTable и BaseEditor, а настройки (`defaults`) доходят до компонента — класс `base-button--soft`;
  *   `config-root` — то же, но `createUiKitConfig` из корня пакета (тряска дерева отсекает реестр компонентов);
  * - `plugin` — `createUiKitPlugin` из корня: тяжёлые компоненты (BaseTable…) не в стартовом JS, а в чанке по `import()` (FOLLOW_UPS № 58).
+ * - автоимпорт (без сети, на пакете из tarball): `RiseUiResolver` из `/resolver` отдаёт для каждого публичного компонента подпуть, который
+ *   есть в `exports` и в файлах пакета; `global.d.ts` перечисляет те же компоненты; модуль `/nuxt` ставит плагин, файл которого лежит в пакете.
+ *   Сборка приложения с `unplugin-vue-components` и Nuxt тянет пакеты из реестра — `npm run test:autoimport` (scripts/check-autoimport-app.mjs).
  *
  * В каждом сценарии код компонента должен дойти до приложения (класс `base-button`/`base-select` в JS), а в браузере —
  * отрисоваться: так ловится тряска дерева, которая выбрасывает компонент целиком (импорт есть, а компонент `undefined`).
@@ -23,6 +26,7 @@ import { execFileSync } from 'node:child_process'
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { gzipSync } from 'node:zlib'
 import { build, preview } from 'vite'
 
@@ -252,6 +256,80 @@ async function compareScreenshots(app, results, problems) {
 	}
 }
 
+/** Автоимпорт на файлах пакета из tarball: что отдаёт резолвер и модуль Nuxt, есть ли это в `exports` и на диске */
+async function checkAutoimport(app, problems) {
+	const pkgDir = join(app, 'node_modules', PACKAGE)
+	const pkg = JSON.parse(readFileSync(join(pkgDir, 'package.json'), 'utf8'))
+	const file = target => join(pkgDir, target)
+	const exportedFile = key => {
+		const target = pkg.exports[key]
+		return typeof target === 'string' ? target : (target?.import ?? target?.types)
+	}
+	const { RiseUiResolver } = await import(pathToFileURL(file(exportedFile('./resolver'))).href)
+	const { default: nuxtModule } = await import(pathToFileURL(file(exportedFile('./nuxt'))).href)
+	const components = Object.keys(pkg.exports)
+		.filter(key => /^\.\/Base\w+$/.test(key))
+		.map(key => key.slice(2))
+	const resolver = RiseUiResolver()
+	const withTokens = RiseUiResolver({ tokens: true })
+
+	for (const name of components) {
+		const info = resolver.resolve(name)
+		const key = info && `.${info.from.slice(PACKAGE.length)}`
+		expect(problems, info?.name === name && key === `./${name}`, `автоимпорт: ${name} — резолвер отдал ${JSON.stringify(info)}`)
+		expect(problems, key && existsSync(file(exportedFile(key))), `автоимпорт: подпуть ${name} не найден в файлах пакета`)
+		expect(
+			problems,
+			withTokens.resolve(name)?.sideEffects?.[0] === `${PACKAGE}/tokens.css`,
+			`автоимпорт: ${name} без tokens.css в sideEffects`,
+		)
+	}
+	const player = resolver.resolve('BaseMediaPlayer')
+	expect(
+		problems,
+		player?.from === `${PACKAGE}/media` && player.sideEffects?.[0] === `${PACKAGE}/media.css`,
+		'автоимпорт: BaseMediaPlayer',
+	)
+	expect(
+		problems,
+		existsSync(file(exportedFile('./media'))) && existsSync(file(pkg.exports['./media.css'].import)),
+		'автоимпорт: нет /media или media.css',
+	)
+	expect(
+		problems,
+		resolver.resolve('RouterLink') === undefined && resolver.resolve('BaseNope') === undefined,
+		'автоимпорт: резолвер взял чужое имя',
+	)
+
+	const types = readFileSync(file(exportedFile('./global')), 'utf8')
+	const typed = [...types.matchAll(/^\t\t(Base\w+): typeof import\('[^']+\/(Base\w+)'\)\['(Base\w+)'\]$/gm)]
+	expect(
+		problems,
+		typed.length === components.length && typed.every(([, a, b, c]) => a === b && b === c),
+		'автоимпорт: global.d.ts не по списку компонентов',
+	)
+	expect(
+		problems,
+		types.includes("declare module 'vue'") && types.includes('GlobalComponents'),
+		'автоимпорт: global.d.ts без GlobalComponents',
+	)
+
+	const nuxt = { options: { css: [], build: { transpile: [] }, plugins: [], runtimeConfig: { public: {} } }, hook() {} }
+	nuxtModule({ config: { locale: 'en' } }, nuxt)
+	const pluginFile = nuxt.options.plugins[0]?.src
+	expect(
+		problems,
+		pluginFile && existsSync(pluginFile) && pluginFile.startsWith(pkgDir),
+		'автоимпорт: плагин модуля Nuxt не найден в пакете',
+	)
+	expect(
+		problems,
+		nuxt.options.css[0] === `${PACKAGE}/tokens.css` && nuxt.options.build.transpile[0] === PACKAGE,
+		'автоимпорт: модуль Nuxt не добавил токены и transpile',
+	)
+	console.log(`Автоимпорт: ✓ ${components.length} компонентов резолвера, global.d.ts и модуль Nuxt совпадают с пакетом из tarball.`)
+}
+
 function report(results) {
 	console.log('Размер приложения (gzip, вместе с vue):')
 	for (const [name, { js, lazy, css }] of Object.entries(results)) {
@@ -268,6 +346,7 @@ async function main() {
 		for (const scenario of SCENARIOS) results[scenario.name] = await buildScenario(app, scenario)
 		report(results)
 		checkContent(results, problems)
+		await checkAutoimport(app, problems)
 		if (SCREENSHOT) await compareScreenshots(app, results, problems)
 		else console.log('Снимки пропущены (--no-screenshot).')
 	} finally {
