@@ -186,6 +186,9 @@ function placeCaret(content: HTMLElement): void {
 	selection?.addRange(range)
 }
 
+/** jsdom загружает `iframe` из живого DOM и вызывает его `onload` вне теста: ввод с клавиатуры `iframe` в область не добавляет, поэтому в «набранный» HTML он не попадает */
+const withoutFrames = (html: string): string => html.replace(/<(\/?)iframe\b/gi, '<$1span')
+
 const settle = async (): Promise<void> => {
 	await nextTick()
 	await new Promise(resolve => setTimeout(resolve, 0))
@@ -262,7 +265,7 @@ async function editorViolations(host: EditorHost, input: EditorInput): Promise<s
 	await settle()
 	checkContent('uploadMedia')
 	checkEmitted('после вставок')
-	content.innerHTML = input.typed
+	content.innerHTML = withoutFrames(input.typed)
 	baseline = executed
 	content.dispatchEvent(new Event('input', { bubbles: true }))
 	await nextTick()
