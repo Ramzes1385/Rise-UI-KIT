@@ -93,8 +93,8 @@ function buildEdges(data: RoadmapData, index: RoadmapIndex): Map<string, Roadmap
 function closeCycle(state: RoadmapCycleState, edge: RoadmapGraphEdge): void {
 	const start = state.nodes.indexOf(edge.to)
 	const loop = [...state.path.slice(start), edge]
-	const target = edge.key === null ? [...loop].reverse().find(candidate => candidate.key !== null) : edge
-	if (target?.key) state.dropped.add(target.key)
+	const keys = loop.flatMap(candidate => (candidate.key === null ? [] : [candidate.key]))
+	state.dropped.add(keys[keys.length - 1])
 	state.issues.push({ code: 'CYCLE', params: { path: quote([...state.nodes.slice(start), edge.to]) } })
 }
 
