@@ -138,6 +138,30 @@ describe('useRoadmapProgress: подтемы', () => {
 	})
 })
 
+describe('useRoadmapProgress: снятие подтемы у изученной темы', () => {
+	it('done сбрасывается, подтемы — все кроме снятой, тема «в процессе», хук и события — по одному разу', async () => {
+		const beforeStatusChange = vi.fn()
+		const { model, emitted, order } = mountRoadmapModel({
+			data,
+			progress: progressOf({ t: { status: 'done' } }),
+			beforeStatusChange,
+		})
+		expect(await model.toggleSubtopic('t', 'y', false)).toBe(true)
+		expect(model.progress.value.topics.t).toEqual({ subtopics: ['x', 'z'], updatedAt: expect.any(String) })
+		expect(model.getTopicState('t')).toMatchObject({ status: 'in-progress', done: 2, total: 3 })
+		expect(beforeStatusChange).toHaveBeenCalledOnce()
+		expect(beforeStatusChange).toHaveBeenCalledWith(expect.objectContaining({ from: 'done', to: 'in-progress', source: 'subtopic' }))
+		expect(order).toEqual(['update:progress', 'status-change'])
+		expect(emitted('status-change')).toHaveLength(1)
+	})
+
+	it('отметка подтемы у изученной темы — false, событий нет', async () => {
+		const { model, order } = mountRoadmapModel({ data, progress: progressOf({ t: { status: 'done' } }) })
+		expect(await model.toggleSubtopic('t', 'x', true)).toBe(false)
+		expect(order).toEqual([])
+	})
+})
+
 describe('useRoadmapProgress: хук beforeStatusChange', () => {
 	it('false отменяет смену: нет событий и записи', async () => {
 		const beforeStatusChange = vi.fn(() => false)

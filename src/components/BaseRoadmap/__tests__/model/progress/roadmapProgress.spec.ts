@@ -72,7 +72,7 @@ describe('withTopicStatus', () => {
 })
 
 describe('withSubtopic', () => {
-	const target = topic('a', { subtopics })
+	const target = topic('a', { subtopics: [...subtopics, { id: 'z', title: 'Z' }] })
 
 	it('отмечает подтему и ставит метку', () => {
 		const next = withSubtopic(progressOf(), target, { subtopicId: 'x', isDone: true, now: NOW })
@@ -84,12 +84,22 @@ describe('withSubtopic', () => {
 		expect(withSubtopic(base, target, { subtopicId: 'x', isDone: false, now: NOW }).topics.a?.subtopics).toEqual(['y'])
 	})
 
-	it('правка подтем снимает явные done и skipped', () => {
-		for (const status of ['done', 'skipped'] as const) {
-			const base = progressOf({ a: { status, subtopics: ['x'] } })
-			const next = withSubtopic(base, target, { subtopicId: 'y', isDone: true, now: NOW })
-			expect(next.topics.a).toEqual({ subtopics: ['x', 'y'], updatedAt: NOW })
-		}
+	it('правка подтем снимает явный skipped', () => {
+		const base = progressOf({ a: { status: 'skipped', subtopics: ['x'] } })
+		const next = withSubtopic(base, target, { subtopicId: 'y', isDone: true, now: NOW })
+		expect(next.topics.a).toEqual({ subtopics: ['x', 'y'], updatedAt: NOW })
+	})
+
+	it('у явного done снятие подтемы записывает все остальные и сбрасывает done', () => {
+		const base = progressOf({ a: { status: 'done', updatedAt: 'old' } })
+		const next = withSubtopic(base, target, { subtopicId: 'y', isDone: false, now: NOW })
+		expect(next.topics.a).toEqual({ subtopics: ['x', 'z'], updatedAt: NOW })
+		expect(next.topics.a?.status).toBeUndefined()
+	})
+
+	it('у явного done отметка уже «отмеченной» подтемы — тот же объект', () => {
+		const base = progressOf({ a: { status: 'done', subtopics: ['x'] } })
+		expect(withSubtopic(base, target, { subtopicId: 'y', isDone: true, now: NOW })).toBe(base)
 	})
 
 	it('in-progress при правке подтем остаётся', () => {
