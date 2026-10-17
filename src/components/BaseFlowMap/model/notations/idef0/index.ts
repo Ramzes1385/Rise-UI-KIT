@@ -1,22 +1,21 @@
+import { idef0Rules } from './idef0Rules'
+import { idef0Simulate } from './idef0Simulate'
 import { defineFlowNotation } from '../registry'
+import { idef0Staircase } from './idef0Staircase'
 import { UI_FLOW_IDEF } from '@/locales/messages'
+import { idef0EdgeKinds, idef0NodeKinds } from './idef0Kinds'
 
 export const flowIdef0 = defineFlowNotation({
 	id: 'idef0',
-	label: () => UI_FLOW_IDEF.IDEF0_NAME,
+	label: () => UI_FLOW_IDEF.NOTATION_IDEF0,
 	standard: 'FIPS PUB 183 · IEEE 1320.1-1998',
-	nodeKinds: {
-		function: {
-			label: () => UI_FLOW_IDEF.IDEF0_FUNCTION,
-			render: 'svg',
-			shape: { shape: 'rect' },
-			size: { width: 168, height: 96 },
-		},
-	},
-	edgeKinds: {
-		arrow: { label: () => UI_FLOW_IDEF.IDEF0_ARROW, stroke: 'solid', endMarker: 'arrow', routing: 'orthogonal' },
-	},
+	nodeKinds: idef0NodeKinds,
+	edgeKinds: idef0EdgeKinds,
 	defaultNodeKind: 'function',
 	defaultEdgeKind: 'arrow',
-	layout: { algorithm: 'layered', direction: 'LR', routing: 'orthogonal' },
+	layout: { algorithm: 'idef0-staircase', direction: 'LR', routing: 'orthogonal' },
+	layouts: [idef0Staircase],
+	rules: idef0Rules,
+	semantics: { simulate: idef0Simulate },
+	rulesSummary: () => UI_FLOW_IDEF.RULES_SUMMARY_IDEF0,
 })
