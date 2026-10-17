@@ -1,0 +1,5 @@
+import { createTheme } from '@ramzes1385/rise-ui-kit'
+
+export const brand = createTheme({ name: 'brand', primary: '#4f46e5', motion: 'standard' })
+export const calm = createTheme({ name: 'calm', primary: '#0ea5e9', motion: 'subtle' })
+export const label = "motion: 'default'"

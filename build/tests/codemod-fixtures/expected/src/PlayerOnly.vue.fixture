@@ -1,0 +1,7 @@
+<script setup lang="ts">
+import { BaseMediaPlayer } from '@ramzes1385/rise-ui-kit/media'
+</script>
+
+<template>
+	<BaseMediaPlayer sources="/clip.mp4" title="Клип" />
+</template>

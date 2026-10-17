@@ -1,0 +1,8 @@
+<script setup lang="ts">
+import { BaseButton, BaseMediaPlayer } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BaseMediaPlayer sources="/video.mp4" title="Видео" />
+	<BaseButton>Далее</BaseButton>
+</template>

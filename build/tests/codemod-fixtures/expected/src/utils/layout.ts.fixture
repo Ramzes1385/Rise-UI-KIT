@@ -1,0 +1,27 @@
+import { utils } from '@ramzes1385/rise-ui-kit'
+import {
+	calcTooltipShift as shift,
+	calcTotalColumns,
+	resolveTooltipPlacement,
+	type TooltipCoords,
+} from '@ramzes1385/rise-ui-kit/utils'
+
+const coords: TooltipCoords = { top: 0, left: 0, width: 10, height: 10 }
+const size = { width: 100, height: 20 }
+const viewport = { width: 1024, height: 768 }
+const isSelectable = true
+const hasRowNumber = false
+const hasExpandableRows = true
+
+export const total = calcTotalColumns(5, { isSelectable, hasRowNumber, hasExpandableRows })
+export const totalNew = calcTotalColumns(5, { isSelectable, hasRowNumber, hasExpandableRows })
+export const totalNs = utils.calcTotalColumns(3, { isSelectable: true, hasRowNumber: false, hasExpandableRows: false })
+export const place = resolveTooltipPlacement('top', { coords, size, viewport })
+export const placeGap = resolveTooltipPlacement('bottom', { coords, size, viewport }, 12)
+export const moved = shift('left', { coords, size, viewport: { width: 800, height: 600 } })
+export const enterClass = 'tooltip-top'
+export const dynamicClass = `tooltip-${place}`
+
+// calcTotalColumns(1, true, true, true) в комментарии остаётся как есть
+export const note = 'calcTotalColumns(1, true, true, true)'
+export const calcTotalColumnsLabel = `calcTotalColumns(${total}, true, false, false)`

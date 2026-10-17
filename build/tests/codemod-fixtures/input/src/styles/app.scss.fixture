@@ -1,0 +1,66 @@
+// переходы BaseAnimation, объявленные приложением для кита
+.slide-up-enter-active,
+.slide-up-leave-active {
+	transition: transform 0.4s;
+}
+.scale-enter-from {
+	transform: scale(0.8);
+}
+.list-move {
+	transition: transform 0.3s;
+}
+.fade-enter-active {
+	transition: opacity 1s;
+}
+.collapse-leave-to {
+	height: 0;
+}
+.my-zoom-enter-active {
+	opacity: 0;
+}
+.rotate-enter-active-custom {
+	opacity: 0;
+}
+/* .bounce-enter-active { opacity: 0 } */
+.card::after {
+	content: '.flip-enter-active';
+}
+
+.modal-fade-enter-from {
+	opacity: 0;
+}
+.slideover-leave-active {
+	transition: transform 0.2s;
+}
+.dropdown-enter-to {
+	opacity: 1;
+}
+.tooltip-top-enter-from {
+	transform: translateY(4px);
+}
+
+:root {
+	--rise-anchor-gap: 4px;
+	--rise-tabs-indicator-bg: #fff;
+	--color-accent: #f97316;
+	--color-brand: #123456;
+	--kanban-ease: ease;
+	--rise-text-font-weight: 500;
+	--media-next-seconds: 5;
+}
+
+.base-mega-menu__column {
+	padding: 0;
+}
+div.base-tooltip {
+	color: red;
+}
+.base-editor {
+	border: 1px solid red;
+}
+.base-tag__main > .base-tag__icon {
+	margin: 0;
+}
+.title {
+	background: url(//cdn.example.com/bg.png); // комментарий после url
+}

@@ -56,6 +56,17 @@ pnpm add @ramzes1385/rise-ui-kit
 - **Firefox 113–120** — нет `:has()`: у BaseRadio с рамкой не подсвечивается выбранный вариант и кольцо фокуса, у BaseSegmented и кнопки файла в BaseEditor нет кольца фокуса с клавиатуры, в BaseCalendar не закрашивается выбранный диапазон, в BaseMediaPlayer нижний баннер может перекрыть субтитры и подсказки над панелью.
 - **Улучшения, без которых вид проще:** `field-sizing: content` (поле растёт по тексту), `interpolate-size` (плавное раскрытие до `auto`), `text-wrap: balance`, анимация через `@property` (вращение кольца BaseAvatar).
 
+### Переход с 1.x на 2.0
+
+Механическую часть перехода делает кодмод из пакета, без дополнительных установок:
+
+```bash
+npx @ramzes1385/rise-ui-kit migrate src          # по умолчанию --dry: diff и предупреждения, файлы не меняются
+npx @ramzes1385/rise-ui-kit migrate src --write  # записать правки (повторный запуск ничего не меняет)
+```
+
+Он переименовывает импорты (`/plugins` → `/icons`, `BaseMediaPlayer` → `/media`), подключает `media.css` при использовании плеера, переводит `calcTotalColumns`, `resolveTooltipPlacement` и `calcTooltipShift` на объект, убирает неработавшие пропсы `variant`, `sizeScale`, `color` у `BaseAnimation`, `BaseImage` и `BaseSlider`, добавляет префикс `rise-` классам переходов. Всё, что требует решения (удалённые слоты и события, токены, роли в тестах), он только показывает как `файл:строка` со ссылкой на раздел [docs/v2/MIGRATION.md](docs/v2/MIGRATION.md#автоматический-переход). Обрабатываются `.vue`, `.ts`, `.tsx`, `.js`, `.css`, `.scss`.
+
 ---
 
 ## Подключение стилей

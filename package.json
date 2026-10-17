@@ -19,7 +19,11 @@
   "directories": {
     "test": "tests"
   },
+  "bin": {
+    "rise-ui-kit": "bin/rise-migrate.mjs"
+  },
   "files": [
+    "bin",
     "dist",
     "README.md"
   ],
@@ -719,6 +723,8 @@
     "storybook": "node scripts/storybook-dev.mjs",
     "build-storybook": "storybook build --config-dir build/storybook",
     "typecheck": "vue-tsc -b",
+    "test:codemod": "vitest run --config build/tests/vitest.config.ts --project unit-integration --maxWorkers=1 build/tests/codemod --coverage --coverage.reportsDirectory=coverage/codemod --coverage.include=bin/migrate/*.mjs --coverage.thresholds.100",
+    "test:codemod-app": "node scripts/check-codemod-app.mjs",
     "test:unit": "vitest run --config build/tests/vitest.config.ts --project unit-integration",
     "test:a11y:coverage": "node scripts/check-a11y-coverage.mjs",
     "test:stories": "node scripts/check-stories.mjs",

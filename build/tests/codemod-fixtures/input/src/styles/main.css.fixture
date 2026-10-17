@@ -1,0 +1,2 @@
+@import '@ramzes1385/rise-ui-kit/styles.layer.css';
+@import './base.css';

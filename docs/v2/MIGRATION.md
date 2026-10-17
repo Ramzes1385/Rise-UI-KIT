@@ -4,6 +4,45 @@
 
 Внешний вид и значения по умолчанию после редизайна — [design/CHANGES_FOR_APPS.md](../design/CHANGES_FOR_APPS.md), изменения по компонентам — [design/VISUAL_CHANGES.md](../design/VISUAL_CHANGES.md).
 
+## Автоматический переход
+
+Механическую часть перехода делает кодмод из пакета: `npx @ramzes1385/rise-ui-kit migrate [папка] [--dry] [--write]`. Новых зависимостей у кита из-за него нет, работает на Node 22+.
+
+1. Обновите пакет: `npm install @ramzes1385/rise-ui-kit@^2` (нужен Vue 3.5).
+2. Запустите `npx @ramzes1385/rise-ui-kit migrate src` — по умолчанию это `--dry`: покажет diff и список предупреждений, файлы не тронет. Обрабатываются `.vue` (шаблон, `<script>`, `<style>`), `.ts`, `.tsx`, `.js`, `.jsx`, `.mjs`, `.css`, `.scss`; `node_modules`, `dist`, `coverage`, `.git` и `.d.ts` пропускаются.
+3. Просмотрите diff и добавьте `--write` — файлы изменятся. Повторный запуск ничего не меняет (проверено тестами: результат кодмода для него «чистый»).
+4. Пройдите предупреждения: у каждого есть `файл:строка`, пояснение и ссылка на раздел этого документа. Эти места кодмод не меняет — нужно решение человека.
+5. Запустите `vue-tsc` и сборку приложения — остаток (типы, роли в тестах, вид) они покажут.
+
+**Что кодмод меняет сам** (только когда уверен — по импортам из пакета, границам слов, без строк и комментариев):
+
+| Что | Правка |
+|---|---|
+| `@ramzes1385/rise-ui-kit/plugins` | `…/icons` (import, export, `import()`, `require`) |
+| `plugins` из корня пакета | `icons as plugins`; `kit.plugins` → `kit.icons` для `import * as kit` |
+| `BaseMediaPlayer` из корня и `/components` | импорт из `…/media` (к существующему импорту или новой строкой) |
+| Приложение использует плеер из `/media` | после `import '…/styles'` — `import '…/media.css'` (в CSS после `styles.layer.css` — `@import '…/media.layer.css'`), один раз на проект |
+| `calcTotalColumns`, `resolveTooltipPlacement`, `calcTooltipShift` | поля объектом, только при старом числе аргументов (поэтому повтор безопасен) |
+| `getTooltipTransition(x)` | `` `tooltip-${x}` `` (литерал остаётся литералом); лишний импорт убирается |
+| `createTheme({ motion: 'default' })` | `'standard'` |
+| Проп `variant`, `sizeScale`, `color` у `BaseAnimation`; `variant` у `BaseImage`; `variant`, `color` у `BaseSlider` | атрибут убирается из шаблона (`:x`, `v-bind:x`, `x`, kebab и camelCase, многострочные теги); `color` у `BaseImage` остаётся |
+| CSS-классы `.fade-*`, `.slide-up-*`, … `.collapse-*`, `.list-*` (и `.list-move`) | `.rise-…` — если в проекте есть `BaseAnimation` |
+| CSS-классы `.modal-fade-*`, `.slideover-*`, `.dropdown-*` | `.base-modal-*`, `.base-slideover-*`, `.base-dropdown-*` |
+
+Классы переходов кодмод не трогает, если в проекте есть свой `<Transition>`/`<transition-group>` с тем же именем (или с динамическим `:name`): такой класс может быть вашим. В этом случае он только предупреждает. Компонент с именем кита, импортированный из другого модуля (`import BaseAnimation from './BaseAnimation.vue'`), тоже не меняется.
+
+**О чём кодмод только предупреждает** (категория «решает человек»):
+
+- удалённые экспорты: `storybookUtils`, `buildBreadcrumbsSchema`, `SchemaBreadcrumbItem`, корневой `CalendarEvent`, `useTableComposition`, `useTableColumns`, `useTableToolbar` и их типы, `useMegaMenuTree`, `MegaMenuColumn`, `MegaMenuLayout`; изменившийся контракт `useChatActions`, `useChatState`, `useImageZoom`, `useSlider`, `useTableSelection`, `useTableFilter`;
+- шаблоны: `@confirm` у `BaseModal`; `events`, `#navigation`, `#event` у `BaseCalendar`; слот `default` у компонентов, где его убрали; `columns`, `layout`, `hoverDelay`, события и слоты `BaseMegaMenu`; `avatar-click`, `ban-member`, `add-member` у `BaseChat`; `for` у `BaseFormField`; `name`, `autocomplete`, `data-testid` на `BaseInput` и `BaseTextarea`; `router.push` в обработчиках `BaseBreadcrumbs`, `BaseMegaMenu`, `BaseTree`, `BaseSideBar`; `aria-label` с `role="group"`; `BaseText` с `h1`–`h6`, `strong`, `b` без `weight`; плеер в шаблоне без импорта;
+- данные в скриптах: значок вкладки строкой HTML, статус `'pending'` и `previewUrl` у `BaseFileUpload`, удалённые ключи словаря в `defineLocale` (`INSERT_EMOJI`, `CLOSE_PANEL`, `ATTACH_ERRORS`, `VIOLATION`, `URL_PROMPT`, `FILE_STATUS_PENDING`, `FILE_MAX_COUNT_PREFIX`, `EXIT_FULLSCREEN`, `PARTICIPANTS_SUFFIX`), вызовы с `...spread`;
+- CSS: удалённые и перестроенные классы (`base-mega-menu__column`, `base-table__settings-*`, `div.base-tooltip`, `.base-slider > .base-slider__stage`, `.base-tag__main > .base-tag__icon`, `.base-editor { border }` и другие), классы `.tooltip-<сторона>-*` (кит объединил стороны), токены: удалённые (`--rise-text-font-weight`, `--kanban-ease`), переименованная `--media-next-seconds` и разведённые (`--rise-anchor-gap`, `--rise-tabs-list-radius`, `--rise-stepper-indicator-radius`, `--rise-bottom-nav-border`, `--rise-tabs-indicator-bg` и другие), переопределение алиасов 1.x (`--color-accent`…);
+- проект: `vue` ниже 3.5 в `package.json`; плеер без импорта `styles` в просмотренных файлах.
+
+**Чего кодмод не видит** — проверьте сами: роли и разметку в тестах приложения (раздел «Порядок перехода», п. 10), изменившиеся значения по умолчанию (`isMultiMonth`, схема BaseMap, часовой пояс фильтра дат), вид и размеры (CHANGES_FOR_APPS), тип `NotificationId` (покажет `vue-tsc`), компоненты и функции, которые приложение получает не прямым импортом (через свой реэкспорт-файл или глобальную регистрацию).
+
+**Как он устроен и где ошибается.** Парсеров в зависимостях кита нет, поэтому кодмод — таблица правил поверх разбора по маске: комментарии, строки и регулярные выражения затираются пробелами, правила ищут слова по границам. Это не AST: динамически собранные имена, шаблоны внутри строк, `lang="pug"` и JSX-шаблоны он не разбирает. Перед `--write` изменения нужно просмотреть в diff и закоммитить отдельно.
+
 ## Порядок перехода
 
 1. Обновите пакет: `npm install @ramzes1385/rise-ui-kit@^2`. Нужен Vue 3.5 или новее.

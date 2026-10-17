@@ -1,0 +1,22 @@
+<script setup lang="ts">
+import { BaseAnimation, BaseImage, BaseSlider } from '@ramzes1385/rise-ui-kit'
+import OwnBadge from './OwnBadge.vue'
+
+const isOpen = true
+const variant = 'soft'
+</script>
+
+<template>
+	<BaseAnimation name="fade" :show="true">
+		<BaseImage src="/a.png" alt="a" :color="{ text: { base: 'red' } }" />
+	</BaseAnimation>
+	<base-animation
+		name="slide-up"
+		:show="isOpen"
+	>
+		<BaseSlider :items="[]" />
+	</base-animation>
+	<BaseAnimation name="scale">variant="trap" и color="trap" в тексте не трогаем</BaseAnimation>
+	<!-- <BaseAnimation variant="soft"> в комментарии остаётся как есть -->
+	<OwnBadge variant="soft" color="red" />
+</template>

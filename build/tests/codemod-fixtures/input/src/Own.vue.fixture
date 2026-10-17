@@ -1,0 +1,18 @@
+<script setup lang="ts">
+import BaseAnimation from './BaseAnimation.vue'
+</script>
+
+<template>
+	<BaseAnimation variant="mine" color="red" />
+	<Transition name="fade"><p>свой переход</p></Transition>
+	<transition-group name="list-own" tag="ul" />
+</template>
+
+<style scoped>
+.fade-enter-active {
+	transition: opacity 1s;
+}
+.fade-leave-to {
+	opacity: 0;
+}
+</style>
