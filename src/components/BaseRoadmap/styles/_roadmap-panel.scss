@@ -53,7 +53,10 @@
 		display: flex;
 		flex-direction: column;
 		gap: sz(6px);
-		--rise-progress-height: #{sz(4px)};
+
+		.base-progress__track {
+			height: sz(4px);
+		}
 	}
 
 	&__details-progress-row {
@@ -224,22 +227,27 @@
 
 	&__details-foot {
 		display: flex;
+		flex-wrap: wrap;
 		gap: sz(8px);
 		padding-block-start: sz(14px);
 		margin-block-start: auto;
+		background-color: var(--rise-bg);
 		border-block-start: 1px solid var(--rise-border);
+		position: sticky;
+		inset-block-end: 0;
 	}
 
-	&__details-mark,
+	&__details-mark {
+		flex: 1 1 100%;
+	}
+
 	&__details-next {
-		flex: 1;
+		flex: 1 1 0;
+		min-inline-size: 0;
 	}
 
 	&__details--sheet &__details-foot {
-		position: sticky;
-		inset-block-end: 0;
 		padding-block-end: sz(4px);
-		background-color: var(--rise-bg);
 	}
 
 	@media (pointer: coarse) {

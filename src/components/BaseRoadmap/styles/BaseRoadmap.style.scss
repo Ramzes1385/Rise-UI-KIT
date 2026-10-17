@@ -181,7 +181,9 @@
 	}
 
 	&__summary-progress {
-		--rise-progress-height: #{sz(6px)};
+		.base-progress__track {
+			height: sz(6px);
+		}
 	}
 
 	&__cta {
@@ -251,8 +253,8 @@
 		display: grid;
 		flex: none;
 		place-items: center;
-		inline-size: sz(ct(roadmap, milestone-size, 36px));
-		block-size: sz(ct(roadmap, milestone-size, 36px));
+		inline-size: sz(ct(roadmap, milestone-width, 36px));
+		block-size: sz(ct(roadmap, milestone-height, 36px));
 
 		svg {
 			position: absolute;
@@ -381,7 +383,7 @@
 	}
 
 	&__stage--current &__stage-disc {
-		fill: ct(roadmap, topic-current, var(--rise-primary-soft));
+		fill: ct(roadmap, topic-current-bg, var(--rise-primary-soft));
 	}
 
 	&__stage--current &__stage-number {
@@ -408,7 +410,7 @@
 
 	&__stage--locked &__stage-ring,
 	&__stage--locked &__chevron {
-		opacity: ct(roadmap, topic-locked-opacity, 0.72);
+		opacity: 0.72;
 	}
 
 	&__stage--locked &__stage-title {
@@ -474,7 +476,7 @@
 		}
 
 		&--done {
-			background-color: ct(roadmap, topic-done, color-mix(in srgb, var(--rise-primary) 4%, var(--rise-bg)));
+			background-color: ct(roadmap, topic-done-bg, color-mix(in srgb, var(--rise-primary) 4%, var(--rise-bg)));
 		}
 
 		&--in-progress {
@@ -488,7 +490,7 @@
 		}
 
 		&--locked &-icon {
-			opacity: ct(roadmap, topic-locked-opacity, 0.72);
+			opacity: 0.72;
 		}
 
 		&--selected {
@@ -563,7 +565,7 @@
 		box-shadow: none;
 
 		&--selected {
-			background-color: ct(roadmap, topic-current, var(--rise-primary-soft));
+			background-color: ct(roadmap, topic-current-bg, var(--rise-primary-soft));
 			border-color: transparent;
 			box-shadow: none;
 		}

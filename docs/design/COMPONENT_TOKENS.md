@@ -1562,6 +1562,19 @@
 | `--rise-result-title-font-size` | title | font-size | — | `var(--rise-font-size-xl)` |
 | `--rise-result-title-text` | title | text | — | `var(--rise-text-highlighted)` |
 
+## BaseRoadmap
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-roadmap-milestone-height` | milestone | height | — | `36px` |
+| `--rise-roadmap-milestone-ring` | milestone | ring | — | `var(--rise-primary)` |
+| `--rise-roadmap-milestone-width` | milestone | width | — | `36px` |
+| `--rise-roadmap-topic-bg` | topic | bg | — | `var(--rise-bg)` |
+| `--rise-roadmap-topic-border` | topic | border | — | `var(--rise-border)` |
+| `--rise-roadmap-topic-current-bg` | topic-current | bg | — | `var(--rise-primary-soft)` |
+| `--rise-roadmap-topic-done-bg` | topic-done | bg | — | `color-mix(in srgb, var(--rise-primary) 4%, var(--rise-bg))` |
+| `--rise-roadmap-topic-radius` | topic | radius | — | `calc(var(--rise-radius) * 2.5)` |
+
 ## BaseScrollArea
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
