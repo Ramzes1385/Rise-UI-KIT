@@ -293,3 +293,11 @@
 ## Задача w14-fu-triage
 
 Волна 14 (16.10): разбор старых открытых пунктов `docs/design/FOLLOW_UPS.md` до раздела «Задача followups-audit» включительно и задач после него до «Задача anim-layout-2». Что закрыто как уже сделанное (с проверкой по коду), что сделано, что осталось и почему — таблица в разделе «Задача w14-fu-triage» FOLLOW_UPS. Из нового кода: `role="alert"` у ошибок полей, оформление отдельного уведомления в `useToast`, несколько файлов у кнопок BaseEditor, переход цвета в списке BaseMention, тест `defaults.BaseMap`.
+
+## Задача w16-autoimport
+
+Автоимпорт компонентов кита и типы шаблонов (волна 16, поручение владельца 17.10). Оценка ≈3 ч.
+
+- `@ramzes1385/rise-ui-kit/resolver` — `RiseUiResolver` для `unplugin-vue-components` (подпуть `BaseX`, `prefix`, `tokens`; плеер — `/media` + `media.css`); `@ramzes1385/rise-ui-kit/nuxt` — модуль Nuxt без `@nuxt/kit` (`components:extend`, токены, transpile, плагин `createUiKitConfig`); `@ramzes1385/rise-ui-kit/global` — `GlobalComponents` для шаблонов. Имена компонентов — `src/integrations/componentNames.ts`, его пишет генератор exports.
+- Проверки: `build/tests/autoimport.spec.ts`, сценарий автоимпорта в `npm run test:subpaths`, `npm run test:autoimport` (Vite + `unplugin-vue-components`, `vue-tsc`, Nuxt 4.6 — на пакете из `npm pack`, пакеты из реестра, не в CI), бюджеты `nuxt.js` и `resolver.js` в `build/ratchets.json`.
+- Отложено — FOLLOW_UPS, «Задача w16-autoimport» (тема в SSR Nuxt, Nuxt 3, другие сборщики).

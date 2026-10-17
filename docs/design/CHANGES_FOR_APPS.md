@@ -553,3 +553,9 @@
 
 - **BaseAlert**: `box-sizing: border-box` на корне и перенос: корень `flex-wrap: wrap`, текст `flex: 1 1 120px`, блок `actions` тоже переносится. На узком контейнере действия переходят на следующую строку под текст; на достаточной ширине раскладка прежняя. Приложение, которое задавало алерту `width: 100%` и рассчитывало на `content-box`, получает ширину ровно родителя.
 - **BaseChart**: невидимая таблица данных для скринридера теперь внутри `<div class="base-chart__hidden">` (раньше сама `<table class="base-chart__hidden">`). Таблица с `position: absolute; width: 1px` не сжимается, и её реальная ширина растягивала страницу на телефоне. Если приложение или тесты искали `table.base-chart__hidden`, ищите `.base-chart__hidden table` или `getByRole('table')`.
+
+## Задача w16-autoimport
+
+- Автоимпорт компонентов. Vite: `Components({ resolvers: [RiseUiResolver()] })` из `unplugin-vue-components` с `RiseUiResolver` из `@ramzes1385/rise-ui-kit/resolver` — `<BaseButton>` и `<BaseSelect>` без `import`, в сборке только они и то, что они используют (приложение из `npm pack`: 93,1 КБ gzip JS и 8,7 КБ CSS, без BaseTable и BaseEditor). Nuxt: `modules: [['@ramzes1385/rise-ui-kit/nuxt', { config: { locale: 'en' } }]]` — компоненты, токены, `build.transpile` и настройки кита одним модулем. Опции, ограничения и проверки — README, «Автоимпорт».
+- Типы шаблонов: `/// <reference types="@ramzes1385/rise-ui-kit/global" />` (или `types` в tsconfig) — компоненты кита в `GlobalComponents`: опечатка в пропе и неверное значение ловятся `vue-tsc` (опечатка в имени пропа — со `strictTemplates`). Объявления для имён по умолчанию; с префиксом — `components.d.ts` плагина или `.nuxt/components.d.ts` (README, «Типы в шаблонах»).
+- Существующие приложения не меняются: корень, `/components`, подпути, `createUiKitPlugin` и `createUiKitConfig` работают как раньше.

@@ -3238,3 +3238,16 @@ app.use(createUiKitConfig({ locale: 'en', theme: 'corporate' }))
 - **`foldSearchText`** сворачивает ещё и ширину знаков (`ＡＢＣ`, `１２３`, `，` → `abc`, `123`, `,`; идеографический пробел → обычный), полуширинную кану (`ｶﾞ` → `ガ`), а для японского (`locale.intl` = `ja…`) катакану → хирагану. Длина результата может отличаться от исходной — смещения для подсветки считайте через `findSearchMatches`. Для текста без полной ширины и каны результат прежний.
 - **BaseImageMap, `directoryGroupBy: 'alpha'`**: японский — разделы по рядам каны (あ, か, さ, た, な, は, ま, や, ら, わ), латиница — своя буква, остальное — «#» (в конце); китайский — один список без разделов (`id: 'all'`, пустой заголовок). Раньше каждый иероглиф и каждая кана были отдельным разделом.
 - **Подсветка совпадений** (BaseSearch, BaseAutocomplete, расшифровка BaseAudioPlayer, поиск в BaseChat) идёт по общему `highlightSearchMatches`: подсвечивается исходный текст, даже когда запрос найден через «е»/«ё», полную ширину или кану. BaseChat теперь подсвечивает и по «е»/«ё» (искал сообщения по ним и раньше, подсвечивал нет); запрос обрезается по краям пробелами, как при поиске.
+
+## Задача w16-autoimport
+
+### Автоимпорт компонентов и типы шаблонов (новое)
+
+- **Было:** компоненты в шаблоне без импортов — только через `createUiKitPlugin` (регистрирует все, ≈452 КБ gzip стартового JS) или вручную `import` с подпути.
+- **Стало:** четыре новых входа пакета, ничего старого не затронуто:
+  - `@ramzes1385/rise-ui-kit/resolver` — `RiseUiResolver(options?)` для `unplugin-vue-components`: `<BaseButton>` → `import { BaseButton } from '@ramzes1385/rise-ui-kit/BaseButton'`. Опции `prefix` (имена вида `UiBaseButton`) и `tokens` (`true` / `'layer'` — `tokens.css` / `tokens.layer.css` вместе с компонентом). `BaseMediaPlayer` резолвится в `/media` с `media.css`;
+  - `@ramzes1385/rise-ui-kit/nuxt` — модуль Nuxt без зависимости от `@nuxt/kit`: автоимпорт компонентов (`components:extend`), `tokens.css` в `css`, `build.transpile`, плагин `createUiKitConfig` по опции `config` (`locale`, `theme`, `motion`, `reducedMotion`, `iconSpritePath`, `teleportTo`, `themeNonce`);
+  - `@ramzes1385/rise-ui-kit/global` — `GlobalComponents` Vue для всех подпутевых компонентов (типы шаблонов): `/// <reference types="@ramzes1385/rise-ui-kit/global" />` или `types` в tsconfig;
+  - `dist/nuxt-plugin.js` — служебный файл рядом с `nuxt.js`, в exports его нет.
+- **Что сделать:** ничего — это добавление. Чтобы перейти на автоимпорт, подключите резолвер или модуль (README, «Автоимпорт»), по желанию — типы (README, «Типы в шаблонах»). `unplugin-vue-components` и `@nuxt/kit` в зависимости кита не добавлялись: ставит приложение.
+- **Для кита:** имена публичных компонентов для резолвера и модуля Nuxt лежат в `src/integrations/componentNames.ts` — файл пишет `npm run generate:subpath-exports` (и `create:component`), как exports подпутей; `global.d.ts` собирает основной проход сборки из того же списка.

@@ -85,7 +85,8 @@ npm run storybook
 | `npm run test:contrast` | контраст пар токенов «текст/фон» в обеих темах |
 | `npm run test:e2e` | e2e в Chromium (Playwright) против Storybook; без `PLAYWRIGHT_REUSE_SERVER=true` Playwright сам запускает Storybook |
 | `npm run test:visual` | скриншоты против эталонов; эталоны не обновляются автоматически — их создают после просмотра изменений (в CI — по метке `visual:update-baselines` у PR) |
-| `npm run test:subpaths` | точечная установка: exports подпутей совпадают со списком компонентов (`npm run generate:subpath-exports` их переписывает), приложение Vite из `npm pack` с BaseButton / BaseSelect с подпути получает только их JS и CSS, снимки совпадают с импортом из корня (`--no-screenshot` — без Chromium). Нужна сборка |
+| `npm run test:subpaths` | точечная установка: exports подпутей совпадают со списком компонентов (`npm run generate:subpath-exports` их переписывает), приложение Vite из `npm pack` с BaseButton / BaseSelect с подпути получает только их JS и CSS, снимки совпадают с импортом из корня (`--no-screenshot` — без Chromium); резолвер, `global.d.ts` и модуль Nuxt из tarball совпадают с exports. Нужна сборка |
+| `npm run test:autoimport` | автоимпорт на пакете из `npm pack` с пакетами из реестра npm (сеть, ≈2,5 мин; не в `ci:validate`): Vite + `unplugin-vue-components` с `RiseUiResolver`, `vue-tsc` (опечатка в пропе), Nuxt (SSR, токены, тема), Playwright. Флаги `--no-nuxt`, `--no-screenshot`, `--keep`. Нужна сборка |
 | `npm run ci:validate` | базовая проверка перед push: линтеры, форматирование, типы, unit-тесты, сухая сборка пакета |
 
 ---
@@ -106,6 +107,9 @@ dist/composables.js    # /composables
 dist/utils.js          # /utils
 dist/icons.js          # /icons
 dist/media.js          # /media — видеоплеер
+dist/resolver.js       # /resolver — RiseUiResolver для unplugin-vue-components (без кода компонентов)
+dist/nuxt.js           # /nuxt — модуль Nuxt; рядом nuxt-plugin.js — его runtime-плагин (в exports нет)
+dist/global.d.ts       # /global — GlobalComponents для шаблонов (пишет основной проход сборки)
 dist/chunks/           # общие части (по набору входов, которым они нужны); данные эмодзи грузятся отдельным файлом при первом показе
 dist/components/<Имя>/index.js   # подпуть /<Имя>: импорт CSS компонента и того, что он использует, и реэкспорт из chunks/
 dist/components/<Имя>/style.css  # собственные стили папки компонента, без токенов

@@ -152,7 +152,7 @@ export default defineConfig({
 })
 ```
 
-**Nuxt** (`nuxt.config.ts`) — как у других китов, у которых JS компонента импортирует свой CSS:
+**Nuxt** — проще через модуль (см. «Автоимпорт»). Без модуля (`nuxt.config.ts`) — как у других китов, у которых JS компонента импортирует свой CSS:
 
 ```ts
 export default defineNuxtConfig({
@@ -167,6 +167,102 @@ export default defineNuxtConfig({
 import { BaseButton } from '@ramzes1385/rise-ui-kit/BaseButton'
 </script>
 ```
+
+### Автоимпорт
+
+Компоненты в шаблоне без импортов: в сборку попадают только те, что есть в шаблонах, — с подпутей (см. «Точечная установка»). Нужны два дополнения: резолвер или модуль, которые превращают `<BaseButton>` в импорт с подпути, и типы шаблонов (см. «Типы в шаблонах»). Пакеты автоимпорта (`unplugin-vue-components`, `@nuxt/kit`) кит не ставит и не импортирует.
+
+**Vite и `unplugin-vue-components`.** Приложение ставит плагин само (`npm i -D unplugin-vue-components`) и подключает резолвер кита:
+
+```ts
+// vite.config.ts
+import vue from '@vitejs/plugin-vue'
+import Components from 'unplugin-vue-components/vite'
+import { defineConfig } from 'vite'
+import { RiseUiResolver } from '@ramzes1385/rise-ui-kit/resolver'
+
+export default defineConfig({
+	plugins: [vue(), Components({ resolvers: [RiseUiResolver()] })],
+})
+```
+
+```ts
+// main.ts — токены один раз (или RiseUiResolver({ tokens: true }) без этой строки)
+import '@ramzes1385/rise-ui-kit/tokens.css'
+```
+
+```vue
+<!-- без import: плагин сам возьмёт BaseButton и BaseSelect с подпутей -->
+<template>
+	<BaseButton variant="soft">Сохранить</BaseButton>
+	<BaseSelect v-model="city" label="Город" :options="cities" />
+</template>
+```
+
+- `RiseUiResolver(options?)` знает только публичные компоненты кита (те же, у которых есть подпуть); чужие имена (`MyButton`, `RouterLink`) оставляет плагину. `<BaseMediaPlayer>` берёт из `/media` и подключает `media.css`: стили плеера не входят в его подпуть. `BaseImageMap3D` автоимпортом не подключается — ему нужен `three`, импортируйте его из `/map3d`.
+- CSS компонента подпуть подключает сам, поэтому у обычных компонентов `sideEffects` резолвер не задаёт. Исключения — токены при `tokens` и `media.css` у плеера.
+- Опции: `prefix` — префикс имён в шаблонах (`prefix: 'Ui'` → `<UiBaseButton>`, как у `createUiKitPlugin`; свой `prefix` у `unplugin-vue-components` относится к компонентам из папок приложения и на резолверы не действует); `tokens` — `true` подключает `tokens.css` вместе с компонентами, `'layer'` — `tokens.layer.css` (токены в слое `rise`); по умолчанию `false`.
+- Резолвер — обычный объект `{ type: 'component', resolve(name) }` без зависимости от сборщика. Проверено на Vite 8 с `unplugin-vue-components` 32; для webpack, Rspack и Rollup (у плагина есть и они) — по тому же контракту, но на них не запускалось.
+- Замер на приложении из `npm pack` (Vite 8): `<BaseButton>` и `<BaseSelect>` без импортов — 93,1 КБ gzip JS и 8,7 КБ CSS; ни BaseTable, ни BaseEditor в сборке нет.
+
+**Nuxt.** Модуль из пакета — функция Nuxt без зависимости от `@nuxt/kit`:
+
+```ts
+// nuxt.config.ts
+export default defineNuxtConfig({
+	modules: [['@ramzes1385/rise-ui-kit/nuxt', { config: { locale: 'en', theme: 'corporate' } }]],
+})
+```
+
+```vue
+<!-- pages/index.vue — без import -->
+<template>
+	<BaseButton variant="soft">Сохранить</BaseButton>
+</template>
+```
+
+Что делает модуль:
+
+- регистрирует публичные компоненты для автоимпорта Nuxt (хук `components:extend`, импорт с подпути каждого компонента): в сборку и на страницу попадают только использованные, а `.nuxt/components.d.ts` Nuxt пишет сам — отдельных типов не нужно. Компонент приложения с тем же именем главнее;
+- подключает `@ramzes1385/rise-ui-kit/tokens.css` в `css`;
+- добавляет пакет в `build.transpile` — нужно для SSR;
+- если задан `config`, ставит плагин Nuxt, который вызывает `createUiKitConfig` с этими настройками на сервере и в браузере.
+
+Опции модуля (кортеж в `modules` или ключ `riseUiKit` в `nuxt.config`; кортеж главнее):
+
+| Опция | По умолчанию | Что делает |
+|---|---|---|
+| `prefix` | `''` | префикс имён: `prefix: 'Ui'` → `<UiBaseButton>` |
+| `tokens` | `true` | `true` — `tokens.css`, `'layer'` — `tokens.layer.css` (слой `rise`), `false` — приложение подключает само |
+| `transpile` | `true` | добавить пакет в `build.transpile` |
+| `config` | — | настройки кита: `locale`, `theme` (имя пресета), `motion`, `reducedMotion`, `iconSpritePath`, `teleportTo` (селектор), `themeNonce` |
+
+В `config` — только значения, которые переживают сериализацию в `runtimeConfig.public`. Настройки-функции и компоненты (`defaults`, `icons`, `linkComponent`, `themes` из `createTheme`) задаёт плагин приложения: `nuxtApp.vueApp.use(createUiKitConfig({ linkComponent: NuxtLink, … }))` из `@ramzes1385/rise-ui-kit/config`. Тема из `config.theme` ставится в браузере после гидрации; на сервере CSS темы можно взять из `useTheme().css`.
+
+Проверено на Nuxt 4.6: сборка, страница SSR с `<BaseButton>`, гидрация без предупреждений, токены в CSS, тема после загрузки; то же с `prefix: 'Ui'` и `tokens: 'layer'`. Модуль принимает Nuxt 3.9 и новее, но на Nuxt 3 не запускался.
+
+Проверка на пакете из `npm pack`: `npm run test:autoimport` (нужны сборка и сеть: пакеты ставятся из реестра во временную папку).
+
+### Типы в шаблонах
+
+Глобально зарегистрированные компоненты (`createUiKitPlugin`, автоимпорт, `<component :is>`) Volar и `vue-tsc` видят через `GlobalComponents` Vue. Кит кладёт эти объявления в `@ramzes1385/rise-ui-kit/global` — по строке на каждый компонент вида `BaseButton: typeof import('@ramzes1385/rise-ui-kit/BaseButton')['BaseButton']`. Подключите одной строкой в `env.d.ts`:
+
+```ts
+/// <reference types="@ramzes1385/rise-ui-kit/global" />
+```
+
+или в `tsconfig.json` (поле `types` заменяет автоподключение `@types/*` — оставьте в нём и остальное, например `vite/client`):
+
+```json
+{ "compilerOptions": { "types": ["vite/client", "@ramzes1385/rise-ui-kit/global"] } }
+```
+
+После этого в шаблоне `<BaseButton variant="nope">` — ошибка типа, а `<BaseButton variantt="soft">` — ошибка неизвестного пропа, если включить `"vueCompilerOptions": { "strictTemplates": true }`. Без `strictTemplates` неизвестные атрибуты проходят как обычные атрибуты HTML.
+
+- Объявления — для имён по умолчанию (`BaseButton`). С `prefix` (`<UiBaseButton>`) их не хватает: `unplugin-vue-components` пишет свой `components.d.ts` с нужными именами (опция `dts`, по умолчанию включена при установленном TypeScript), Nuxt — свой `.nuxt/components.d.ts`.
+- Вместе с `components.d.ts` плагина объявления не конфликтуют: тип у обоих один и тот же.
+- Плеер (`/media`) и 3D-карта (`/map3d`) в `global` не входят — как и в `createUiKitPlugin`: их импортируют по имени.
+- Проверено `vue-tsc` 3.3 на пакете из `npm pack`: верный шаблон проходит, опечатка в пропе и неверное значение — ошибки (`npm run test:autoimport`).
 
 ### Шрифты
 
@@ -547,7 +643,7 @@ const size = utils.formatFileSize(1024) // то же, что formatFileSize(1024
 
 Видеоплеер `BaseMediaPlayer` и его типы — только из подпути `@ramzes1385/rise-ui-kit/media`: в корень пакета и в плагин он не входит, поэтому приложения без плеера его код не загружают. Стили плеера — отдельным файлом `@ramzes1385/rise-ui-kit/media.css` (см. «Подключение стилей»).
 
-Подпути из `package.json#exports`: `/components`, `/composables`, `/utils`, `/icons` (константы спрайта и `createIconPlugin`), `/media` (видеоплеер), `/map3d` (3D-карта этажей), `/styles` (`/styles.css`), `/media.css` (стили плеера), `/icons.svg`, а также подпуть на каждый компонент (`/BaseButton`, `/BaseSelect`, …) и `/tokens.css` для них (см. «Точечная установка»).
+Подпути из `package.json#exports`: `/components`, `/composables`, `/utils`, `/icons` (константы спрайта и `createIconPlugin`), `/media` (видеоплеер), `/map3d` (3D-карта этажей), `/styles` (`/styles.css`), `/media.css` (стили плеера), `/icons.svg`, а также подпуть на каждый компонент (`/BaseButton`, `/BaseSelect`, …) и `/tokens.css` для них (см. «Точечная установка»), `/config` (`createUiKitConfig`), `/resolver` (резолвер для `unplugin-vue-components`), `/nuxt` (модуль Nuxt) и `/global` (типы шаблонов) — см. «Автоимпорт» и «Типы в шаблонах».
 
 ### 3D-карта этажей
 
