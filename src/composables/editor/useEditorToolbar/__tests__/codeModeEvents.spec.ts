@@ -1,4 +1,5 @@
-import { ref } from 'vue'
+import { mount } from '@vue/test-utils'
+import { defineComponent, ref } from 'vue'
 import { useEditorToolbar } from '../useEditorToolbar'
 import { useToolbarCodeMode } from '../useToolbarCodeMode'
 
@@ -56,16 +57,21 @@ describe('useToolbarCodeMode: число сообщений о вводе', () =
 		textarea.setSelectionRange(0, 8)
 		Object.defineProperty(document, 'execCommand', { value: vi.fn(() => execResult), configurable: true, writable: true })
 		const onInput = vi.fn()
-		const toolbar = useEditorToolbar({
-			editorRef: ref(document.createElement('div')),
-			codeTextareaRef: ref(textarea),
-			onInput,
-		})
+		let toolbar!: ReturnType<typeof useEditorToolbar>
+		const host = mount(
+			defineComponent({
+				setup() {
+					toolbar = useEditorToolbar({ editorRef: ref(document.createElement('div')), codeTextareaRef: ref(textarea), onInput })
+					return () => null
+				},
+			}),
+		)
 		toolbar.isCodeMode.value = true
 		toolbar.codeContent.value = '<b>x</b>'
 
 		toolbar.clearAllFormatting()
 
 		expect(onInput).toHaveBeenCalledTimes(calls)
+		host.unmount()
 	})
 })

@@ -196,7 +196,7 @@ describe('icsUtils', () => {
 			})
 
 			it('Intl не создаёт форматтер пояса — время местное', async () => {
-				vi.spyOn(Intl, 'DateTimeFormat').mockImplementation(() => {
+				vi.spyOn(Intl, 'DateTimeFormat').mockImplementation(function () {
 					throw new RangeError('нет пояса')
 				})
 				expect((await freshSingle(NEW_YORK)).start).toEqual(new Date(2026, 9, 2, 10))

@@ -5,20 +5,57 @@ import { cleanup } from '@testing-library/vue'
 import { en } from '@/locales/en'
 import { registerLocale, setLocale } from '@/locales/state'
 
-// Подавление неинформативных логов и предупреждений в консоли тестов
-const originalLog = console.log
-console.log = (...args: unknown[]) => {
-	if (typeof args[0] === 'string' && args[0].includes('storybookTest transform')) return
-	originalLog(...args)
+/**
+ * Тест без предупреждений и ошибок в консоли: неожиданный `console.warn` или `console.error` — в том числе `[Vue warn]`,
+ * предупреждения кита `warn()` и сообщения jsdom («Not implemented: …», «Could not parse CSS») — валит тест.
+ * Ожидаемое предупреждение тест перехватывает шпионом и проверяет:
+ * `const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)` + `expect(warn).toHaveBeenCalledWith(…)`.
+ * Пока на консоли стоит шпион, сторож молчит: вызов уже записан шпионом.
+ */
+const GUARDED_CONSOLE = ['warn', 'error'] as const
+const unexpectedConsole: string[] = []
+
+/** Шум сторонних библиотек, которые от кита не зависят: исключение — с причиной */
+const IGNORED_CONSOLE = [
+	// Компилятор шаблонов Vue в Node предупреждает о параметре браузерной сборки; историям нужен рантайм-компилятор
+	'decodeEntities option is passed but will be ignored in non-browser builds',
+]
+
+function formatConsole(args: readonly unknown[]): string {
+	return args.map(arg => (arg instanceof Error ? (arg.stack ?? arg.message) : String(arg))).join(' ')
 }
 
-const originalWarn = console.warn
-console.warn = (...args: unknown[]) => {
-	if (typeof args[0] === 'string' && args[0].includes('decodeEntities option is passed but will be ignored in non-browser builds')) {
-		return
+for (const method of GUARDED_CONSOLE) {
+	const original = console[method].bind(console)
+	const guard = (...args: unknown[]): void => {
+		if (console[method] !== guard) return
+		const text = formatConsole(args)
+		if (IGNORED_CONSOLE.some(ignored => text.includes(ignored))) return
+		unexpectedConsole.push(`console.${method}: ${text}`)
+		original(...args)
 	}
-	originalWarn(...args)
+	console[method] = guard
 }
+
+function assertNoConsole(): void {
+	if (!unexpectedConsole.length) return
+	const messages = unexpectedConsole.splice(0)
+	throw new Error(
+		`Тест вывел в консоль ${messages.length} сообщ.: устраните причину или перехватите ожидаемое шпионом vi.spyOn(console, '…').\n${messages.join('\n')}`,
+	)
+}
+
+/**
+ * Ошибки jsdom («Not implemented: …», «Could not parse CSS stylesheet») по умолчанию идут в консоль Node мимо теста:
+ * без имени теста и мимо сторожа. Направляем их в `console.error` теста.
+ */
+const jsdomConsole = (
+	globalThis as {
+		jsdom?: { virtualConsole: { removeAllListeners(event: string): void; on(event: string, listener: (error: Error) => void): void } }
+	}
+).jsdom?.virtualConsole
+jsdomConsole?.removeAllListeners('jsdomError')
+jsdomConsole?.on('jsdomError', error => console.error(`jsdom: ${error.message}`))
 
 /** Английский словарь подключён, как в приложении с `createUiKitPlugin`: тесты переключают язык через `setLocale('en')` */
 registerLocale(en)
@@ -29,6 +66,12 @@ afterEach(() => {
 	vi.clearAllMocks()
 	// Язык кита — глобальный: тест, переключивший его, не должен менять язык следующих
 	setLocale('ru')
+	assertNoConsole()
+})
+
+/** Сообщения после конца теста (отложенная навигация jsdom, таймеры) валят файл */
+afterAll(() => {
+	assertNoConsole()
 })
 
 /** Мок ResizeObserver — отсутствует в jsdom, нужен для BaseSlider, BaseTree и др. */

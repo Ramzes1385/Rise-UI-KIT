@@ -1,4 +1,4 @@
-import { afterAll, describe, expect, it } from 'vitest'
+import { afterAll, afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { parseMarkdown } from '@components/BaseMarkdown/model/markdownDocument'
 import { resolveLinkUrl } from '@composables/editor/useEditorToolbar/commands/linkCommands'
 import { cleanSvg, sanitizeSvg } from '@components/BaseImageMap/model/svg/sanitizeSvg'
@@ -6,7 +6,7 @@ import { resolveLink } from '@composables/interaction/useLink/useLink'
 import { escapeHtml, sanitizeHtml } from '@utils/dom/htmlUtils'
 import { isSafeUrl, normalizeLinkUrl } from '@utils/data/urlUtils'
 import { serializeJsonLd } from '@utils/seo/structuredDataUtils'
-import { formatFindings, readFuzzConfig, reportSummary, runTarget } from './fuzzRunner'
+import { formatFindings, readFuzzConfig, reportSummary, runTarget, trapFuzzConsole } from './fuzzRunner'
 import type { TargetResult } from './fuzzRunner'
 import { generateHtml, generateJson, generateMarkdown, generateSvg, generateText, generateUrl } from './xssGenerators'
 import { isDataImageUrl, NAVIGATION_SCHEMES, reparsedHtml, sanitizedHtmlViolations, schemeOf } from './xssInvariants'
@@ -164,6 +164,16 @@ function escapeViolations(source: string): string[] {
 }
 
 describe('фаззинг XSS: утилиты и разбор', () => {
+	let expectFuzzConsole: () => void
+
+	beforeEach(() => {
+		expectFuzzConsole = trapFuzzConsole()
+	})
+
+	afterEach(() => {
+		expectFuzzConsole()
+	})
+
 	afterAll(() => {
 		reportSummary(results, config.seed)
 	})

@@ -215,7 +215,8 @@ describe('useChatMessageActions', () => {
 			})
 		})
 
-		it('вне области эффектов (без компонента) работает без ошибок', () => {
+		it('вне области эффектов (без компонента) работает; Vue предупреждает только о хуках жизненного цикла вне setup', () => {
+			const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 			const emit = vi.fn()
 			const actions = useChatMessageActions({
 				selectedMessageIds: { value: [] },
@@ -225,6 +226,9 @@ describe('useChatMessageActions', () => {
 			actions.handleRetry('m1', new MouseEvent('click', { detail: 0 }))
 
 			expect(emit).toHaveBeenCalledWith('retry-message', 'm1')
+			expect(warn).toHaveBeenCalled()
+			for (const [message] of warn.mock.calls)
+				expect(message).toMatch(/^\[Vue warn\]: on\w+ is called when there is no active component instance/)
 		})
 
 		it('реакция на сообщении переключается', () => {

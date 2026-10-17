@@ -3,6 +3,7 @@
 /** Прогон фаззинга: итерации с зерном от (запуск, цель, номер), сбор нарушений, сокращение входа до минимального, сводка */
 
 import { appendFileSync } from 'node:fs'
+import { expect, vi } from 'vitest'
 import { createRng, seedFor } from './rng'
 import type { Rng } from './rng'
 
@@ -172,9 +173,32 @@ function formatSummary(results: readonly TargetResult[], seed: number): string {
 	return [`Фаззинг XSS, зерно ${seed}`, ...lines, `  итого входов ${total}, нарушений ${violations}`].join('\n')
 }
 
-/** Печатает сводку в stdout (vitest глушит console.log при успехе) и дописывает её в файл FUZZ_REPORT, если он задан */
+/**
+ * Сводка по целям: в stdout — только в долгом прогоне (`npm run test:fuzz` задаёт FUZZ_ITERATIONS), чтобы вывод
+ * `npm run test:unit` оставался чистым; в файл FUZZ_REPORT — если он задан
+ */
 export function reportSummary(results: readonly TargetResult[], seed: number): void {
 	const text = `\n${formatSummary(results, seed)}\n`
-	process.stdout.write(text)
+	if (process.env.FUZZ_ITERATIONS) process.stdout.write(text)
 	if (process.env.FUZZ_REPORT) appendFileSync(process.env.FUZZ_REPORT, text)
+}
+
+const KIT_WARNING = /^\[rise-ui-kit\] /
+const JSDOM_CSS_ERROR = 'jsdom: Could not parse CSS stylesheet'
+
+/**
+ * Консоль цели фаззинга. Враждебные данные ожидаемо вызывают предупреждения кита `warn()` (небезопасная ссылка без
+ * адреса, неполная SEO-разметка) и ошибку разбора CSS jsdom (`<style>` из данных в `innerHTML`). Шпионы их перехватывают;
+ * возвращённая проверка (до `vi.restoreAllMocks()`) валит тест на любом другом сообщении.
+ */
+export function trapFuzzConsole(): () => void {
+	const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+	const error = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+	return () => {
+		const unexpected = [
+			...warn.mock.calls.map(args => String(args[0])).filter(text => !KIT_WARNING.test(text)),
+			...error.mock.calls.map(args => String(args[0])).filter(text => text !== JSDOM_CSS_ERROR),
+		]
+		expect(unexpected, 'фаззинг: неожиданные сообщения в консоли').toEqual([])
+	}
 }

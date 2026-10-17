@@ -15,7 +15,7 @@ import BaseCommentThread from '@components/BaseCommentThread/ui/BaseCommentThrea
 import { tokenizeCode } from '@utils/data/codeHighlightUtils'
 import { createRng } from './rng'
 import type { Rng } from './rng'
-import { formatFindings, readFuzzConfig, reportSummary, runTarget } from './fuzzRunner'
+import { formatFindings, readFuzzConfig, reportSummary, runTarget, trapFuzzConsole } from './fuzzRunner'
 import type { TargetResult } from './fuzzRunner'
 import { generateHtml, generateJson, generateMarkdown, generateText, generateUrl, mutate } from './xssGenerators'
 import { componentViolations, sanitizedHtmlViolations } from './xssInvariants'
@@ -289,7 +289,10 @@ async function editorViolations(host: EditorHost, input: EditorInput): Promise<s
 }
 
 describe('фаззинг XSS: компоненты', () => {
+	let expectFuzzConsole: () => void
+
 	beforeEach(() => {
+		expectFuzzConsole = trapFuzzConsole()
 		if (typeof document.execCommand !== 'function')
 			Object.defineProperty(document, 'execCommand', { value: () => false, configurable: true, writable: true })
 		vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:own')
@@ -300,6 +303,7 @@ describe('фаззинг XSS: компоненты', () => {
 	})
 
 	afterEach(() => {
+		expectFuzzConsole()
 		vi.restoreAllMocks()
 		window.getSelection()?.removeAllRanges()
 		document.body.innerHTML = ''
