@@ -295,7 +295,7 @@
 | `--rise-card-border` | корень | border | — | `var(--rise-border)` |
 | `--rise-card-border-hover` | корень | border | hover | `var(--rise-border-accented)` |
 | `--rise-card-header-bg` | header | bg | — | `transparent` |
-| `--rise-card-header-padding-x` | header | padding-x | — | `var(--card-pad-right)` |
+| `--rise-card-header-padding-x` | header | padding-x | — | `var(--card-pad-left)` |
 | `--rise-card-header-padding-y` | header | padding-y | — | `var(--card-pad-top)` |
 | `--rise-card-padding-x` | корень | padding-x | — | `20px` |
 | `--rise-card-padding-y` | корень | padding-y | — | `16px` |

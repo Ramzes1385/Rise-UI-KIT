@@ -3322,3 +3322,20 @@ app.use(createUiKitConfig({ locale: 'en', theme: 'corporate' }))
 Размер приложения из `npm pack` (Vite 8, стартовый JS gzip вместе с Vue): BaseButton — 27,8 КБ (было 27,8); BaseButton + `createUiKitConfig` — 34,6 КБ (77,9), с `registerLocale(en)` и `locale: 'en'` — 54,2 КБ (77,9); BaseSelect — 53,7 КБ (92,4); BaseDatePicker — 68,1 КБ (105,8); `createUiKitPlugin` — 454,0 КБ (455,5).
 
 Что сделать: если приложение без `createUiKitPlugin` включает английский (`setLocale('en')`, `<BaseApp locale="en">`, `createUiKitConfig({ locale: 'en' })`), добавьте `registerLocale(en)` при старте; если строит меню языков по `Object.keys(LOCALES)` — перейдите на `useLocale().locales`.
+
+## Задача w16-rtl
+
+- **Публичное API (минорное).** Утилиты `isRtl`, `getDirectionSign`, `mirrorArrowKey`, `mirrorSide`, `resolveArrowKey` (`@utils/dom/directionUtils`, экспорт `utils`) и composable `useDirection` (`@composables/app/useDirection`). Служебная CSS-переменная `--rise-dir` (`1`/`-1`) и SCSS-функции `dir-x`, `dir-angle`, `dir-pos`, миксин `ltr-surface` — внутренние инструменты кита, для стилей приложения годятся `calc(var(--rise-dir) * …)`.
+- **Стили.** Физические свойства компонентов заменены логическими (≈120 SCSS-файлов): те же значения в LTR. Правила приложения, перекрывающие BaseX физическими свойствами, в RTL остаются на левой стороне и могут перекрыть логическое правило кита — переведите их на логические. `lightningcss` собирается с `exclude: Features.LogicalProperties` (иначе при цели `es2020` логические свойства превращаются в `:lang()` и в RTL не работают).
+- **BaseDrawer, BaseSlideover, BaseNotification, BaseCookieConsent, BaseHeader (`menuDirection`)**: `left`/`right` в `side`, `direction` и углах — начало и конец строки: в RTL панель зеркалится (в LTR как раньше). Физическую сторону в RTL задайте противоположным значением.
+- **BaseDropdown, BaseTooltip**: `start`/`end` в `position` — по направлению строки (в LTR как раньше); `left`/`right` — физические.
+- **`useDropdownPosition`, `useFlyoutPosition`**: учитывают направление (в RTL `start` — правый край триггера; подменю — влево).
+- **`useTeleportTarget` / `readThemeAttrs`**: в `dir` телепортированной панели попадает направление блока-источника.
+- **`useScrollLock`**: компенсация полосы прокрутки — `padding-inline-end`.
+- **`useColumnResize`, `useRangeDrag`, `useSlider`, `useStepperScroll`, `useTableStickyOffsets`**: расчёты по направлению; в LTR результат прежний.
+- **Клавиши ← и →** в RTL меняются местами у Tree, TreeSelect, Cascader, DropdownMenu, MegaMenu, Toolbar, Tabs, Rating, Range, Slider, Stepper, Splitter, Transfer, InputTags, Kanban, FileManager, EventCalendar, DashboardGrid, EmojiPicker, чата и ручки ширины колонки Table.
+- **BaseEventCalendar**: inline-стили полос и событий — `inset-inline-start` вместо `left`.
+- **LTR-острова** (`direction: ltr`, `--rise-dir: 1` на корне): BaseCode, код в BaseMarkdown, BaseSparkline, BaseChart, BaseGantt, BaseJsonViewer, управление BaseMediaPlayer, BaseImageCompare, ячейки BasePin.
+- **BaseIcon**: у иконок направления класс `base-icon--directional`, зеркало через `scale: -1 1` в RTL.
+- **Stylelint**: запрещены физические `margin/padding/border/…-left/right`, `left`/`right`, `text-align: left|right`, `float`; список файлов-исключений — в `package.json → stylelint.overrides` (поповеры, подсказки, индикаторы под JS).
+- **Скрипты**: `check-stories --dir=rtl`, `npm run test:rtl` (`scripts/check-rtl.mjs`).

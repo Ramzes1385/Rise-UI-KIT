@@ -288,6 +288,7 @@ useCustomClass
 useCustomColor
 useCustomStyle
 useDebounce
+useDirection
 useDropdownPosition
 useEditorToolbar
 useEscapeKey
@@ -460,6 +461,23 @@ function scrollToTop(): void {
 
 ---
 
+## useDirection (w16-rtl)
+
+Направление письма компонента для расчётов в JS: сторона панели, знак сдвига, значок стрелки.
+
+```ts
+import { useDirection } from '@ramzes1385/rise-ui-kit/composables'
+
+const { isRtl, sign, update } = useDirection()
+const flyout = computed(() => (isRtl.value ? 'left-start' : 'right-start'))
+```
+
+- Читает вычисленный `direction` корневого элемента компонента при монтировании (у компонента с корнем-`<Teleport>` — его родителя). Свой элемент — `useDirection(() => rootRef.value)`.
+- `isRtl` (`Readonly<Ref<boolean>>`) до монтирования `false`; `sign` — `1` или `-1`; `update()` читает направление заново, если `dir` на странице меняют на лету.
+- Вызывается в `setup`. Им пользуются BaseSideBar, BaseHeader и лента BaseSlider; без компонента — `isRtl(element)` из `utils` (см. `directionUtils`).
+
+---
+
 ## useCryptoPro (new-cryptopro)
 
 Адаптер КриптоПро ЭЦП Browser plug-in: диагностика, сертификаты пользователя, присоединённая и отсоединённая подпись CAdES-BES. Без npm-пакетов, только асинхронный API плагина (`cadesplugin.CreateObjectAsync`, `propset_*`, `getLastError`).
@@ -621,7 +639,7 @@ ui('body') // 'base-x__body …' — строка подходит и для :cl
 
 ### useInheritedThemeAttrs и readThemeAttrs
 
-Тема области якоря для телепортированной панели: `{ 'data-theme'?, 'data-rise-theme'? }` ближайших предков (оба ищутся `closest` независимо), читается при открытии. На панели — `v-bind`. `useInheritedTheme` (только `data-theme`) оставлен для совместимости.
+Тема области якоря для телепортированной панели: `{ 'data-theme'?, 'data-rise-theme'?, 'data-rise-motion'?, dir? }` ближайших предков (атрибуты ищутся `closest` независимо), читается при открытии. `dir` («ltr» или «rtl») добавляется, только если направление якоря отличается от направления страницы: панель в `body` не видит `dir` блока, из которого открыта. На панели — `v-bind`. `useInheritedTheme` (только `data-theme`) оставлен для совместимости.
 
 ```ts
 const themeAttrs = useInheritedThemeAttrs(() => wrapperRef.value, () => props.isOpen)

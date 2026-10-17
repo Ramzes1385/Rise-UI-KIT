@@ -306,6 +306,24 @@ const bounds = getBoundsRect(panel.parentElement) // { x, y, width, height } | n
 
 ---
 
+## directionUtils (задача w16-rtl)
+
+Направление письма (LTR / RTL) и стрелки ← →, которые в RTL меняются местами. Направление берётся из вычисленного `direction` элемента: работает `dir` на `<html>`, на любом предке и на самом элементе, `dir="ltr"` внутри RTL возвращает LTR.
+
+```ts
+import { getDirectionSign, isRtl, mirrorArrowKey, mirrorSide, resolveArrowKey } from '@ramzes1385/rise-ui-kit/utils'
+
+isRtl(element) // true при direction: rtl; null и undefined — false
+getDirectionSign(element) // 1 в LTR, -1 в RTL: для сдвигов и доли указателя от начала строки
+resolveArrowKey(event) // в RTL нажатая ← даёт 'ArrowRight' («вперёд»); остальные клавиши как есть
+mirrorArrowKey('ArrowLeft', true) // 'ArrowRight'
+mirrorSide('right-start', true) // 'left-start': физические left и right меняются местами, top, bottom, start, end остаются
+```
+
+В обработчике клавиатуры вместо `event.key` читают `resolveArrowKey(event)` и сравнивают с `ArrowRight` как с «вперёд»; направление берётся у цели события, второй аргумент задаёт другой элемент. Для компонента есть `useDirection()` (раздел composables).
+
+---
+
 ## eventUtils, recurrenceUtils, icsUtils
 
 Календарь событий (BaseEventCalendar): разбор дат событий, повторы и iCalendar — без зависимостей.
@@ -385,6 +403,7 @@ colorUtils
 dadataUtils
 dateFormatUtils
 dateUtils
+directionUtils
 domUtils
 editorDomUtils
 eventUtils

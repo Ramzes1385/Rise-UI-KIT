@@ -321,3 +321,13 @@
 - Тесты (`npm run test:codemod`, `build/tests/codemod*.spec.ts`): приложение 1.x в `build/tests/codemod-fixtures` → ожидаемый результат, ловушки (похожие имена, строки, комментарии, чужие компоненты), идемпотентность, предупреждения категории (б), ссылки на заголовки MIGRATION; покрытие `bin/migrate/*.mjs` — 100% по строкам, ветвям, функциям и операторам.
 - Живая проверка (`npm run test:codemod-app`, `scripts/check-codemod-app.mjs`): приложение из фикстуры во временной папке, пакет из `npm pack` (tarball), кодмод через `npx`, затем `vue-tsc` и `vite build` против кита 2.0.
 - Документы: MIGRATION («Автоматический переход» в начале), CHANGES_FOR_APPS, README, FOLLOW_UPS.
+
+## Задача w16-rtl
+
+Волна 16 (17.10): полный аудит письма справа налево. Оценка ≈3 ч; факт ≈5,5 ч (07:11–12:45 по UTC+3) — оценка выросла в основном от объёма найденного (на старте RTL работал примерно у трети кита: расхождение зеркала в 865 историях из 1904, 16 ошибок play только в RTL) и от нагрузки общей машины (2 ядра, один Storybook на 1904 истории проходит полный аудит за ~1 ч).
+
+- Инструменты: переключатель «Направление» в Storybook (глобал `dir`), `check-stories --dir=rtl`, автоаудит `npm run test:rtl` (`scripts/check-rtl.mjs`: play и консоль, axe, переполнение, зеркало, 1280 и 375 px).
+- Код: утилиты `isRtl`, `getDirectionSign`, `mirrorArrowKey`, `mirrorSide`, `resolveArrowKey` и `useDirection`; клавиатура в RTL (← и → меняются) у ~25 компонентов; позиционирование панелей, ленты, шкалы, закрепление колонок, перетаскивание (Splitter, Range, Slider, DashboardGrid, Kanban, Table) читают направление.
+- Стили: ≈120 SCSS-файлов переведены на логические свойства; в LTR — ни пикселя (сверка 57 историй до и после, 0 устойчивых различий).
+- Тесты: `directionUtils` и `useDirection` — 100% покрытия; клавиатура в RTL — BaseTree, BaseRating, BaseSplitter, BaseDropdownMenu, BaseDashboardGrid.
+- Документы: README «Письмо справа налево», DESIGN_SYSTEM п. 15, VISUAL_CHANGES, CHANGES_FOR_APPS, MIGRATION, FOLLOW_UPS (перечень нерешённого).
