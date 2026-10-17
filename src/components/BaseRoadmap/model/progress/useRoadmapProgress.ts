@@ -3,6 +3,7 @@ import { UI_ROADMAP } from '@/locales/messages'
 import { computed, shallowRef, watch } from 'vue'
 import { useRoadmapStorage } from './useRoadmapStorage'
 import { isDevelopmentBuild } from '@utils/seo/structuredDataUtils'
+import type { RoadmapTopicState } from '../../types/BaseRoadmap.types'
 import { computeRoadmapStatuses, diffRoadmapCompletions } from './roadmapStatus'
 import type { RoadmapProgress, RoadmapProgressStatus, RoadmapStage, RoadmapTopic } from '../../types/roadmapData.types'
 import { emptyRoadmapProgress, mergeRoadmapProgress, roadmapProgressKey, withSubtopic, withTopicStatus } from './roadmapProgress'
@@ -32,7 +33,7 @@ async function isAllowed(
 	const entry = context.index.value.topics.get(request.topicId)
 	const hook = context.props.beforeStatusChange
 	if (!entry || !hook) return Boolean(entry)
-	const [from, to] = versions.map(progress => statusesOf(context, progress).topics.get(request.topicId)?.status ?? 'available')
+	const [from, to] = versions.map(progress => (statusesOf(context, progress).topics.get(request.topicId) as RoadmapTopicState).status)
 	setBusy(context, request.topicId, true)
 	try {
 		return (await hook({ topic: entry.topic, from, to, source: request.source })) !== false

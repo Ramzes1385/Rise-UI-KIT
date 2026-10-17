@@ -27,14 +27,19 @@ export function withTopicStatus(progress: RoadmapProgress, { topicId, status, no
 	return write(progress, topicId, { ...current, status, updatedAt: now })
 }
 
+function markedSubtopics(current: RoadmapTopicProgress | undefined, all: string[]): string[] {
+	return current?.status === 'done' ? all : (current?.subtopics ?? [])
+}
+
 export function withSubtopic(
 	progress: RoadmapProgress,
 	topic: RoadmapTopic,
 	{ subtopicId, isDone, now }: RoadmapSubtopicPatch,
 ): RoadmapProgress {
-	if (!topic.subtopics?.some(subtopic => subtopic.id === subtopicId)) return progress
+	const all = (topic.subtopics ?? []).map(subtopic => subtopic.id)
+	if (!all.includes(subtopicId)) return progress
 	const current = progress.topics[topic.id]
-	const marked = current?.subtopics ?? []
+	const marked = markedSubtopics(current, all)
 	if (marked.includes(subtopicId) === isDone) return progress
 	const subtopics = isDone ? [...marked, subtopicId] : marked.filter(id => id !== subtopicId)
 	const entry: RoadmapTopicProgress = { subtopics, updatedAt: now }
