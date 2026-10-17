@@ -1,10 +1,10 @@
 import type { ComponentPublicInstance } from 'vue'
-import { UI_COMMENT_THREAD } from '@/locales/messages'
 import { calcDerivedScale } from '@utils/media/iconUtils'
+import { formatMessage, pluralize } from '@/locales/state'
 import { formatRelativeTime } from '@utils/data/dateUtils'
 import { computed, inject, nextTick, ref, useId } from 'vue'
+import { UI_COMMENT_THREAD, UI_PLURAL } from '@/locales/messages'
 import type { CommentNodeProps } from '../types/CommentNode.types'
-import { formatMessage, getLocale, pluralize } from '@/locales/state'
 import type { CommentThreadContext } from '../types/BaseCommentThread.types'
 import { COMMENT_THREAD_KEY, countComments, isoDate, leaveAtOnce } from './thread/commentTree'
 
@@ -14,7 +14,7 @@ function useNodeTexts(props: CommentNodeProps, isCollapsed: () => boolean) {
 		repliesText: computed(() =>
 			isCollapsed()
 				? formatMessage(UI_COMMENT_THREAD.SHOW_REPLIES, {
-						replies: pluralize(getLocale().plural.REPLIES, countComments(props.comment.replies ?? [])),
+						replies: pluralize(UI_PLURAL.REPLIES, countComments(props.comment.replies ?? [])),
 					})
 				: UI_COMMENT_THREAD.HIDE_REPLIES,
 		),

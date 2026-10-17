@@ -1,8 +1,8 @@
 import { computed } from 'vue'
 import { getLocale, pluralize } from '@/locales/state'
 import { directorySections } from './directorySections'
-import { UI_IMAGE_MAP, UI_TEXT } from '@/locales/messages'
 import type { ImageMapProps } from '../../types/BaseImageMap.types'
+import { UI_IMAGE_MAP, UI_PLURAL, UI_TEXT } from '@/locales/messages'
 import { filterOptions, matchesSearch, searchText } from './filterUtils'
 import type { DirectoryContext } from '../../types/internal/imageMapInternal.types'
 import type { ResolvedImageMapObject } from '../../types/internal/imageMapModel.types'
@@ -68,7 +68,7 @@ export function useImageMapDirectory(props: ImageMapProps, context: DirectoryCon
 		statusText: computed((): string => {
 			if (!filters.search.value.trim() && !filters.hasSelection.value) return ''
 			const count = entries.value.length
-			return count ? pluralize(getLocale().plural.SEARCH_RESULTS, count) : UI_TEXT.NO_RESULTS
+			return count ? pluralize(UI_PLURAL.SEARCH_RESULTS, count) : UI_TEXT.NO_RESULTS
 		}),
 		hasClear: computed(() => Boolean(filters.search.value.trim()) || filters.hasSelection.value),
 		legend: computed(() => (props.hasLegend ? (props.data.groups ?? []) : [])),

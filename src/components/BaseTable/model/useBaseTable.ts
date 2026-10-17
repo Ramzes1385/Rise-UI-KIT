@@ -1,17 +1,17 @@
 import { warn } from '@/locales/warn'
+import { pluralize } from '@/locales/state'
 import type { ComputedRef, Ref } from 'vue'
 import { useUi } from '@composables/base/useUi'
 import { provideTableSlots } from './useTableSlots'
-import { getLocale, pluralize } from '@/locales/state'
 import { useBaseTableExport } from './useBaseTableExport'
 import { usePadding } from '@composables/base/usePadding'
 import { useTableStickyOffsets } from './useTableStickyOffsets'
 import { isolateFormField } from '@composables/form/useFormContext'
-import { TABLE_TEXT, UI_TEXT, UI_WARNINGS } from '@/locales/messages'
 import { useTableInfinite } from '@composables/table/useTableInfinite'
 import { useVirtualList } from '@composables/interaction/useVirtualList'
 import { useTableComposition } from '@composables/table/useTableComposition'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import { TABLE_TEXT, UI_PLURAL, UI_TEXT, UI_WARNINGS } from '@/locales/messages'
 import { useExpandTransition } from '@composables/interaction/useExpandTransition'
 import { useScrollableRegion } from '@composables/interaction/useScrollableRegion'
 import { TABLE_EXPAND_TRANSITION_KEY, TABLE_UI_KEY } from '../types/BaseTable.types'
@@ -222,7 +222,7 @@ function useDuplicateIdWarning(props: TableProps): void {
 function useSelectionStatus(table: ReturnType<typeof useTableComposition>) {
 	return computed(() => {
 		const count = table.hiddenSelectedCount.value
-		return count > 0 ? pluralize(getLocale().plural.TABLE_HIDDEN_SELECTED, count) : ''
+		return count > 0 ? pluralize(UI_PLURAL.TABLE_HIDDEN_SELECTED, count) : ''
 	})
 }
 

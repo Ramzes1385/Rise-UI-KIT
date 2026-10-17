@@ -210,6 +210,8 @@ export const jaBase = {
 		TOOLTIP_WRAPPERLESS_ROOT:
 			'BaseTooltip：isWrapperless では trigger スロットのルートをテキストやフラグメントではなく要素にする必要があります。ツールチップは関連付けられていません',
 		UNKNOWN_LOCALE: '不明なロケール「{locale}」です。利用可能：{locales}。独自のロケールは registerLocale() で追加してください',
+		UNREGISTERED_LOCALE:
+			"ロケール「{locale}」は登録されていません。起動時に辞書をインポートして一度登録してください — import { {locale}, registerLocale } from '@ramzes1385/rise-ui-kit'; registerLocale({locale})。利用可能：{locales}",
 		TOAST_WITHOUT_APP: 'useToast：<BaseApp> が見つからないため、通知を表示できませんでした。アプリを <BaseApp> で囲んでください。',
 		OVERLAY_WITHOUT_APP:
 			'useOverlay：<BaseApp> が見つからないため、オーバーレイを表示できませんでした。アプリを <BaseApp> で囲んでください。',

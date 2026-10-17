@@ -1,11 +1,11 @@
 import { toHalfWidth } from '@utils/data/textUtils'
-import type { UiKitLocale } from '@/locales/types/locales.types'
+import type { LocaleCore } from '@/locales/types/locales.types'
 import type { MoneyFormat } from '../../types/BaseMoneyInput.types'
 
 const partOf = (parts: Intl.NumberFormatPart[], type: Intl.NumberFormatPartTypes): string =>
 	parts.find(part => part.type === type)?.value ?? ''
 
-export function moneyFormat(locale: UiKitLocale, options: { currency: string; min: number }): MoneyFormat {
+export function moneyFormat(locale: LocaleCore, options: { currency: string; min: number }): MoneyFormat {
 	const currency = new Intl.NumberFormat(locale.intl, { style: 'currency', currency: options.currency })
 	const parts = currency.formatToParts(-12345.6)
 	const types = parts.map(part => part.type)

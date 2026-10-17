@@ -1,6 +1,6 @@
-import { UI_KANBAN } from '@/locales/messages'
+import { UI_KANBAN, UI_PLURAL } from '@/locales/messages'
+import { formatMessage, pluralize } from '@/locales/state'
 import { formatDateText } from '@utils/data/dateFormatUtils'
-import { formatMessage, getLocale, pluralize } from '@/locales/state'
 import type { KanbanCard, KanbanCardMeta, KanbanDueStatus, KanbanPriority } from '../../types/BaseKanban.types'
 
 const DAY = 24 * 60 * 60 * 1000
@@ -72,7 +72,7 @@ function statusParts(card: KanbanCard, context: { today: Date; isDone: boolean }
 }
 
 function countParts(card: KanbanCard): (string | undefined)[] {
-	const plural = getLocale().plural
+	const plural = UI_PLURAL
 	return [
 		card.subtasks ? formatMessage(UI_KANBAN.SUBTASKS, { ...card.subtasks }) : '',
 		card.comments ? pluralize(plural.COMMENTS, card.comments) : '',

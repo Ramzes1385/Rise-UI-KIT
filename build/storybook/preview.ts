@@ -8,7 +8,7 @@
 import { setup } from '@storybook/vue3-vite'
 import { configure } from 'storybook/test'
 import { LINK_COMPONENT_KEY } from '../../src/composables/interaction/useLink/useLink'
-import { ja, kk, uz, zh } from '../../src/locales'
+import { en, ja, kk, uz, zh } from '../../src/locales'
 import { localeCodes, registerLocale, setLocale } from '../../src/locales/state'
 import { MOTION_PRESETS, type MotionPreset } from '../../src/composables/app/useMotion/types/useMotion.types'
 import { MOTION_ATTRIBUTE } from '../../src/composables/app/useMotion/motionTokens'
@@ -117,8 +117,8 @@ const withMotion: Decorator = (story, context) => {
 	return story()
 }
 
-/** Подключаемые языки кита регистрируются один раз: в приложении так же — `registerLocale(kk)` */
-for (const locale of [kk, uz, zh, ja]) registerLocale(locale)
+/** Подключаемые языки кита регистрируются один раз: в приложении так же — `registerLocale(en)` (или `createUiKitPlugin`), `registerLocale(kk)` */
+for (const locale of [en, kk, uz, zh, ja]) registerLocale(locale)
 
 /** Язык строк кита: тексты stories остаются русскими, меняются строки самих компонентов и формат дат; любой встроенный или подключённый код, иначе `ru`; lang у zh и ja нужен для шрифтов */
 const withLocale: Decorator = (story, context) => {

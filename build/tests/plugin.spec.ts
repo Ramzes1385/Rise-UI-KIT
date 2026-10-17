@@ -115,6 +115,27 @@ describe('createUiKitPlugin', () => {
 		setLocale('ru')
 	})
 
+	it('подключает английский словарь, если приложение не зарегистрировало en само', async () => {
+		vi.resetModules()
+		const state = await import('@/locales/state')
+		const plugin = await import('@/plugin')
+		expect(state.localeCodes.value).toEqual(['ru'])
+
+		createApp({ render: () => null }).use(plugin.createUiKitPlugin({ locale: 'en' }))
+		expect(state.localeCodes.value).toEqual(['ru', 'en'])
+		expect(state.getLocale().code).toBe('en')
+	})
+
+	it('свой словарь en приложения плагин не заменяет', () => {
+		const custom = defineLocale(en, { text: { EMPTY: 'Nothing yet' } })
+		registerLocale(custom)
+		const Probe = defineComponent({ setup: () => () => h('output', UI_TEXT.EMPTY) })
+
+		expect(mount(Probe, { global: { plugins: [createUiKitPlugin({ locale: 'en' })] } }).text()).toBe('Nothing yet')
+		registerLocale(en)
+		setLocale('ru')
+	})
+
 	it('theme, themes и themeNonce: тема на html, style с nonce, свои темы доступны useTheme', () => {
 		const brand = createTheme({ name: 'brand', primary: '#0f766e' })
 		mount(defineComponent({ setup: () => () => h('div') }), {
@@ -140,6 +161,18 @@ describe('createUiKitConfig', () => {
 		document.documentElement.removeAttribute('data-theme')
 		document.documentElement.removeAttribute('data-rise-motion')
 		document.documentElement.removeAttribute('data-rise-reduced-motion')
+	})
+
+	it('не подключает en: без registerLocale(en) язык остаётся русским, в консоли — подсказка', async () => {
+		vi.resetModules()
+		const state = await import('@/locales/state')
+		const config = await import('@/config')
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+		createApp({ render: () => null }).use(config.createUiKitConfig({ locale: 'en' }))
+		expect(state.getLocale().code).toBe('ru')
+		expect(warn).toHaveBeenCalledWith(expect.stringContaining('registerLocale(en)'))
+		warn.mockRestore()
 	})
 
 	it('не регистрирует компоненты глобально', () => {

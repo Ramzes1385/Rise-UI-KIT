@@ -23,6 +23,7 @@ describe('useLocale', () => {
 
 		expect(formatNumber(1234.5)).toBe('1\u00a0234,5')
 		expect(formatDate(date, { month: 'long' })).toBe('май')
+		expect(formatDate(date)).toBe(new Intl.DateTimeFormat('ru-RU').format(date))
 		expect(plural({ one: '{n} файл', few: '{n} файла', many: '{n} файлов', other: '{n} файла' }, 5)).toBe('5 файлов')
 		expect(formatMessage('{a}+{b}', { a: 1, b: 2 })).toBe('1+2')
 

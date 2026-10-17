@@ -733,6 +733,8 @@
     "test:subpaths": "node scripts/generate-subpath-exports.mjs --check && node scripts/check-subpaths-app.mjs",
     "test:autoimport": "node scripts/check-autoimport-app.mjs",
     "generate:subpath-exports": "node scripts/generate-subpath-exports.mjs",
+    "report:sizes": "node scripts/report-sizes.mjs",
+    "test:sizes": "node scripts/report-sizes.mjs --check",
     "test:folders": "node scripts/check-folder-size.mjs",
     "test:custom-color": "node scripts/check-custom-color-scope.mjs",
     "create:component": "node scripts/create-component.mjs",
@@ -765,7 +767,7 @@
     "pack:dry": "npm run build:lib && npm pack --dry-run",
     "release": "semantic-release --extends ./build/release/semantic-release.config.cjs",
     "release:dry": "semantic-release --dry-run --extends ./build/release/semantic-release.local.config.cjs",
-    "ci:validate": "npm run lint && npm run lint:styles && npm run lint:unused && npm run format:check && npm run typecheck && npm run test:unit && npm run pack:dry && npm run test:css-split && npm run test:subpaths -- --no-screenshot && npm run test:ratchets && npm run test:folders && npm run test:custom-color",
+    "ci:validate": "npm run lint && npm run lint:styles && npm run lint:unused && npm run format:check && npm run typecheck && npm run test:unit && npm run pack:dry && npm run test:css-split && npm run test:subpaths -- --no-screenshot && npm run test:sizes && npm run test:ratchets && npm run test:folders && npm run test:custom-color",
     "ci:release": "npm run release"
   },
   "dependencies": {

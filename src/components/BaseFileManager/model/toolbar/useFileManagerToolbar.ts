@@ -1,8 +1,8 @@
 import { computed } from 'vue'
-import { UI_FILE_MANAGER } from '@/locales/messages'
+import { formatMessage, pluralize } from '@/locales/state'
+import { UI_FILE_MANAGER, UI_PLURAL } from '@/locales/messages'
 import type { SegmentedOption } from '@components/BaseSegmented'
 import type { BreadcrumbItem } from '@components/BaseBreadcrumbs'
-import { formatMessage, getLocale, pluralize } from '@/locales/state'
 import type { FileManagerCore, FileManagerSortButton } from '../../types/FileManagerInternal.types'
 import { FILE_MANAGER_SORT_KEYS, type FileManagerSortKey, type FileManagerView } from '../../types/BaseFileManager.types'
 
@@ -37,7 +37,7 @@ function useToolbarSort(core: FileManagerCore) {
 function useToolbarTexts(core: FileManagerCore) {
 	return {
 		statusText: computed((): string => {
-			const plural = getLocale().plural
+			const plural = UI_PLURAL
 			const total = pluralize(plural.FILE_MANAGER_ITEMS, core.entries.value.length)
 			const count = core.selection.selectedIds.value.length
 			return count ? `${total} · ${pluralize(plural.FILE_MANAGER_SELECTED, count)}` : total

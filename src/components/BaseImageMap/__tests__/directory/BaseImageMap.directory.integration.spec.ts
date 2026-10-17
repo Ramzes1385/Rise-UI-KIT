@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom/vitest'
 import { h } from 'vue'
+import { pluralize } from '@/locales/state'
 import userEvent from '@testing-library/user-event'
 import BaseImageMap from '../../ui/BaseImageMap.vue'
-import { getLocale, pluralize } from '@/locales/state'
-import { UI_IMAGE_MAP, UI_TEXT } from '@/locales/messages'
 import { IMAGE_MAP_HOTSPOTS } from '../../stories/fixtures'
+import { UI_IMAGE_MAP, UI_PLURAL, UI_TEXT } from '@/locales/messages'
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
 import { DIRECTORY_PROPS, directoryData, entryIds, entryOf, objectOf } from './imageMapDirectory.test-utils'
 
@@ -17,7 +17,7 @@ function directory(): HTMLElement {
 }
 
 function found(count: number): string {
-	return pluralize(getLocale().plural.SEARCH_RESULTS, count)
+	return pluralize(UI_PLURAL.SEARCH_RESULTS, count)
 }
 
 function status(): HTMLElement {

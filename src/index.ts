@@ -20,6 +20,7 @@ export { defineLocale, en, formatMessage, ja, kk, LOCALES, pluralize, registerLo
 export type {
 	CalendarNames,
 	CalendarPatterns,
+	KitLocaleCode,
 	LocaleInput,
 	LocaleOverrides,
 	PluralForms,

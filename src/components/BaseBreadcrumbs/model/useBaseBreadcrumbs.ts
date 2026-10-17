@@ -1,10 +1,10 @@
 import type { Ref } from 'vue'
 import { computed, ref, watch } from 'vue'
-import { UI_ARIA } from '@/locales/messages'
+import { pluralize } from '@/locales/state'
 import { useUi } from '@composables/base/useUi'
-import { getLocale, pluralize } from '@/locales/state'
 import { useMotion } from '@composables/app/useMotion'
 import { calcIconScale } from '@utils/media/iconUtils'
+import { UI_ARIA, UI_PLURAL } from '@/locales/messages'
 import type { ResolvedLink } from '@composables/interaction/useLink'
 import type { StructuredData } from '@utils/seo/structuredDataUtils'
 import { useStructuredData } from '@composables/seo/useStructuredData'
@@ -66,9 +66,7 @@ function useVisibleItems(props: BreadcrumbsProps) {
 		visibleItems: computed<BreadcrumbItem[]>(() => (isCollapsed.value ? trailItems.value.slice(-props.maxItems) : trailItems.value)),
 		collapsedItems,
 		toggleLabel: computed(() =>
-			isCollapsed.value
-				? pluralize(getLocale().plural.BREADCRUMBS_HIDDEN, collapsedItems.value.length)
-				: UI_ARIA.BREADCRUMBS_COLLAPSE,
+			isCollapsed.value ? pluralize(UI_PLURAL.BREADCRUMBS_HIDDEN, collapsedItems.value.length) : UI_ARIA.BREADCRUMBS_COLLAPSE,
 		),
 		toggleExpanded(): void {
 			isExpanded.value = !isExpanded.value

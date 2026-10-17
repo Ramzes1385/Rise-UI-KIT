@@ -1,5 +1,6 @@
+import { pluralize } from '@/locales/state'
+import { UI_PLURAL } from '@/locales/messages'
 import { useUi } from '@composables/base/useUi'
-import { getLocale, pluralize } from '@/locales/state'
 import { useMotion } from '@composables/app/useMotion'
 import { computed, provide, ref, shallowRef } from 'vue'
 import { useStructuredData } from '@composables/seo/useStructuredData'
@@ -62,7 +63,7 @@ export function useBaseCommentThread(props: CommentThreadProps, emit: BaseCommen
 		isMotionReduced: motion.isReduced,
 		leaveAtOnce,
 		...useStandardBaseComponent('base-comment-thread', props, ['root', 'list', 'composer']),
-		countText: computed(() => pluralize(getLocale().plural.COMMENTS, countComments(props.comments))),
+		countText: computed(() => pluralize(UI_PLURAL.COMMENTS, countComments(props.comments))),
 		...useStructuredData(
 			'BaseCommentThread',
 			() => props.seo,

@@ -4,8 +4,9 @@ import { kk } from '../kk'
 import { ru } from '../ru'
 import { uz } from '../uz'
 import { zh } from '../zh'
+import { LOCALES } from '..'
 import type { UiKitLocale } from '../types/locales.types'
-import { currentLocale, defineLocale, formatMessage, formatNumber, getLocale, LOCALES, pluralize, setLocale } from '../state'
+import { currentLocale, defineLocale, formatMessage, formatNumber, getLocale, pluralize, setLocale } from '../state'
 
 const OPTIONAL_FIELDS = ['calendarNames', 'relativeTime']
 const SECTIONS = Object.keys(ru).filter(key => !['code', 'intl', 'firstDayOfWeek'].includes(key)) as (keyof typeof ru & keyof UiKitLocale)[]

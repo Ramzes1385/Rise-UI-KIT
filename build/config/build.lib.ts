@@ -32,6 +32,13 @@ function createIntegrationEntries(): Record<string, string> {
 	}
 }
 
+/** Готовые словари, кроме встроенного `ru`, — каждый в своём чанке: `en` импортирует и плагин, и без группы rolldown клал словарь в чанк
+ * плагина, и приложение, взявшее `en` из корня ради `registerLocale(en)`, получало реестр всех компонентов (`uiKitPlugin`) */
+const LOCALE_GROUPS = ['en', 'kk', 'uz', 'zh', 'ja'].map(code => ({
+	name: `locale-${code}`,
+	test: new RegExp(`[\\/]src[\\/]locales[\\/]${code}[\\/]`),
+}))
+
 /**
  * Входы и чанки пакета. `withSubpaths` — основной проход: JS всех входов и подпутей `./<Компонент>` (build/plugins/subpaths.ts).
  * Обычный ESM без `strictExecutionOrder`: его обёртки инициализации модулей (`var X; init = () => { X = … }`) при
@@ -75,7 +82,7 @@ export function createLibBuildConfig({ withSubpaths }: { withSubpaths: boolean }
 			output: {
 				entryFileNames: '[name].js',
 				chunkFileNames: 'chunks/[name]-[hash].js',
-				...(withSubpaths ? {} : createLazyGroups()),
+				...(withSubpaths ? { codeSplitting: { groups: LOCALE_GROUPS } } : createLazyGroups()),
 
 				assetFileNames: assetInfo => {
 					const name = assetInfo.name ?? ''

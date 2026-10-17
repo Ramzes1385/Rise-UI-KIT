@@ -1,9 +1,9 @@
 import { computed, ref, useId } from 'vue'
 import { useUi } from '@composables/base/useUi'
-import { UI_SIGNATURE_PAD } from '@/locales/messages'
 import { signaturePng } from './signature/signaturePng'
+import { formatMessage, pluralize } from '@/locales/state'
 import { useSignatureDrawing } from './useSignatureDrawing'
-import { formatMessage, getLocale, pluralize } from '@/locales/state'
+import { UI_PLURAL, UI_SIGNATURE_PAD } from '@/locales/messages'
 import { signaturePath, signatureSvg } from './signature/signaturePath'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { useFieldControl, useFormDisabled } from '@composables/form/useFormContext'
@@ -68,7 +68,7 @@ export function useBaseSignaturePad(props: SignaturePadProps, emit: BaseSignatur
 		inkLabel: computed(() =>
 			isEmpty.value
 				? UI_SIGNATURE_PAD.EMPTY
-				: formatMessage(UI_SIGNATURE_PAD.DRAWN, { strokes: pluralize(getLocale().plural.SIGNATURE_STROKES, strokes.value.length) }),
+				: formatMessage(UI_SIGNATURE_PAD.DRAWN, { strokes: pluralize(UI_PLURAL.SIGNATURE_STROKES, strokes.value.length) }),
 		),
 		handlePointerDown: drawing.handlePointerDown,
 		undo,

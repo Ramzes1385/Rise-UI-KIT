@@ -1,5 +1,4 @@
 import type { ru } from '../ru'
-import type { LOCALES } from '../state'
 
 type Base = typeof ru
 
@@ -163,6 +162,21 @@ export interface UiKitLocale {
 
 export type LocaleSection = Exclude<keyof UiKitLocale, 'code' | 'intl' | 'firstDayOfWeek' | 'plural' | 'calendarNames' | 'relativeTime'>
 
+/** Поля языка без строк: код, тег Intl, первый день недели и запасные названия для браузеров без данных `Intl` */
+export type LocaleCore = Pick<UiKitLocale, 'code' | 'intl' | 'firstDayOfWeek' | 'calendarNames' | 'relativeTime'>
+
+/**
+ * Текущий язык кита: словарь целиком (`registerLocale`, `setLocale(словарь)`) или русский по умолчанию без строк —
+ * строки русского компоненты берут из своих разделов (`messages.ts`), поэтому в сборку попадают только прочитанные разделы
+ */
+export type ActiveLocale = LocaleCore & Partial<Omit<UiKitLocale, keyof LocaleCore>>
+
+/** Коды готовых словарей кита: `ru` встроен, остальные подключаются через `registerLocale()` (`en` подключает и `createUiKitPlugin`) */
+export const KIT_LOCALE_CODES = ['ru', 'en', 'kk', 'uz', 'zh', 'ja'] as const
+
+/** Код готового словаря кита */
+export type KitLocaleCode = (typeof KIT_LOCALE_CODES)[number]
+
 export type LocaleOverrides = Partial<Pick<UiKitLocale, 'code' | 'intl' | 'firstDayOfWeek'>> & {
 	calendarNames?: Partial<CalendarNames>
 	relativeTime?: Partial<RelativeTimeNames>
@@ -170,8 +184,8 @@ export type LocaleOverrides = Partial<Pick<UiKitLocale, 'code' | 'intl' | 'first
 	[K in LocaleSection | 'plural']?: Partial<UiKitLocale[K]>
 }
 
-/** Язык: код встроенного языка (подсказка редактора), код языка из `registerLocale()` или словарь (`defineLocale`) */
-export type LocaleInput = keyof typeof LOCALES | (string & Record<never, never>) | UiKitLocale
+/** Язык: код готового словаря (подсказка редактора; кроме `ru` — после `registerLocale()`), код своего языка из `registerLocale()` или словарь (`defineLocale`) */
+export type LocaleInput = KitLocaleCode | (string & Record<never, never>) | UiKitLocale
 
 /** Строки раздела словаря как карта: ключ — строка или `undefined` */
 export type MessageMap = Readonly<Record<string, string | undefined>>

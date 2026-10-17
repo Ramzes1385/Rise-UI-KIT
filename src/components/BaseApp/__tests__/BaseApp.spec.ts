@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/vitest'
+import { ru } from '@/locales/ru'
 import BaseApp from '../ui/BaseApp.vue'
 import { defineComponent, h } from 'vue'
 import type { UseToastReturn } from '@composables/app/useToast'
@@ -79,7 +80,7 @@ describe('BaseApp', () => {
 	})
 
 	it('locale принимает код зарегистрированного языка и словарь со своими строками', async () => {
-		const brand = defineLocale(getLocale(), { code: 'brand', text: { EMPTY: 'Пока пусто' } })
+		const brand = defineLocale(ru, { code: 'brand', text: { EMPTY: 'Пока пусто' } })
 		registerLocale(brand)
 		const view = render(BaseApp, { props: { locale: 'brand' }, slots: { default: () => h('main', 'Приложение') } })
 

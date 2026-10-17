@@ -1,4 +1,5 @@
-import { getLocale, pluralize } from '@/locales/state'
+import { pluralize } from '@/locales/state'
+import { UI_PLURAL } from '@/locales/messages'
 import type { ChatAttachmentRejection } from '@components/BaseChat/types/BaseChat.types'
 import { checkAttachments, getRejectionMessages, toFileList } from '../attachments/chatAttachmentLimits'
 
@@ -65,7 +66,7 @@ describe('checkAttachments', () => {
 			['3.txt', 'count'],
 			['4.txt', 'count'],
 		])
-		const expected = pluralize(getLocale().plural.CHAT_MAX_FILES, 2)
+		const expected = pluralize(UI_PLURAL.CHAT_MAX_FILES, 2)
 		expect(rejections.map(item => item.message)).toEqual([expected, expected])
 	})
 

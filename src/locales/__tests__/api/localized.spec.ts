@@ -1,3 +1,4 @@
+import { ru } from '../../ru'
 import { computed } from 'vue'
 import { setLocale } from '../../state'
 import { localized } from '../../localized'
@@ -31,9 +32,16 @@ describe('localized', () => {
 	})
 
 	it('неизвестный ключ — undefined', () => {
-		const section = localized('tour')
+		const section = localized('tour', ru.tour)
 
 		expect((section as Record<string, unknown>).MISSING).toBeUndefined()
 		expect(Object.getOwnPropertyDescriptor(section, 'MISSING')).toBeUndefined()
+	})
+
+	it('символьный ключ — свойство самого объекта, а не строка словаря', () => {
+		const section = localized('tour', ru.tour)
+
+		expect((section as Record<symbol, unknown>)[Symbol.toStringTag]).toBeUndefined()
+		expect(Symbol.iterator in section).toBe(false)
 	})
 })

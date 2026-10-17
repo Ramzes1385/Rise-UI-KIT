@@ -1,9 +1,9 @@
 import { computed, ref, useId } from 'vue'
-import { UI_TEXT } from '@/locales/messages'
+import { pluralize } from '@/locales/state'
 import { useUi } from '@composables/base/useUi'
 import { useSearchMotion } from './useSearchMotion'
 import { getSearchOptionId } from './searchOptionId'
-import { getLocale, pluralize } from '@/locales/state'
+import { UI_PLURAL, UI_TEXT } from '@/locales/messages'
 import type BaseSearchInput from '../ui/BaseSearchInput.vue'
 import { useFormField } from '@composables/form/useFormField'
 import type BaseSearchOverlay from '../ui/BaseSearchOverlay.vue'
@@ -144,7 +144,7 @@ function useSearchA11y(props: SearchProps, search: ReturnType<typeof useSearch>)
 		resultsStatus: computed((): string => {
 			if (!search.query.value || search.isBusy.value) return ''
 			const count = search.visibleResults.value.length
-			return count ? pluralize(getLocale().plural.SEARCH_RESULTS, count) : search.emptyText.value
+			return count ? pluralize(UI_PLURAL.SEARCH_RESULTS, count) : search.emptyText.value
 		}),
 	}
 }

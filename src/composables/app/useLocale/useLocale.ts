@@ -1,7 +1,10 @@
 /** Composable: язык кита — строки интерфейса, даты, числа и множественное число */
 import { computed } from 'vue'
+import { ru } from '@/locales/ru'
+import { DEFAULT_LOCALE } from '@/locales/current'
 import { formatDateText } from '@utils/data/dateFormatUtils'
 import type { UseLocaleReturn } from './types/useLocale.types'
+import type { UiKitLocale } from '@/locales/types/locales.types'
 import { currentLocale, formatMessage, formatNumber, localeCodes, pluralize, setLocale } from '@/locales/state'
 
 /**
@@ -17,7 +20,7 @@ export function useLocale(): UseLocaleReturn {
 	return {
 		locale: computed(() => currentLocale.value.code),
 		locales: localeCodes,
-		messages: computed(() => currentLocale.value),
+		messages: computed(() => (currentLocale.value === DEFAULT_LOCALE ? ru : (currentLocale.value as UiKitLocale))),
 		setLocale,
 		formatNumber: (value, options) => formatNumber(value, options),
 		formatDate: (date, options) => formatDateText(date, options ?? {}, currentLocale.value.intl),

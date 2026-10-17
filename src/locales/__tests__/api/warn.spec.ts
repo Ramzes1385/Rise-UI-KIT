@@ -1,6 +1,6 @@
 import { warn } from '../../warn'
 import { UI_WARNINGS } from '../../messages'
-import { LOCALES, setLocale } from '../../state'
+import { localeCodes, setLocale } from '../../state'
 
 describe('warn', () => {
 	afterEach(() => setLocale('ru'))
@@ -24,7 +24,7 @@ describe('warn', () => {
 		setLocale('de' as 'ru')
 
 		expect(spy).toHaveBeenCalledWith(
-			`[rise-ui-kit] Unknown locale "de". Available: ${Object.keys(LOCALES).join(', ')}; add your own with registerLocale()`,
+			`[rise-ui-kit] Unknown locale "de". Available: ${localeCodes.value.join(', ')}; add your own with registerLocale()`,
 		)
 		spy.mockRestore()
 	})

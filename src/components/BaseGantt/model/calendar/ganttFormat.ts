@@ -1,9 +1,9 @@
-import { UI_GANTT } from '@/locales/messages'
 import { durationDays } from '../edit/ganttEdit'
+import { UI_GANTT, UI_PLURAL } from '@/locales/messages'
+import { formatMessage, pluralize } from '@/locales/state'
 import type { GanttTaskId } from '../../types/BaseGantt.types'
 import { createDateFormat } from '@utils/data/dateFormatUtils'
 import type { DateFormatter } from '@utils/data/dateFormatUtils'
-import { formatMessage, getLocale, pluralize } from '@/locales/state'
 import type { GanttEdit, GanttItem, GanttScaleFormat, GanttScaleUnit, GanttSpan } from '../../types/BaseGanttModel.types'
 
 const SCALE_OPTIONS: Record<GanttScaleUnit, Intl.DateTimeFormatOptions> = {
@@ -67,5 +67,5 @@ export function editMessage(item: GanttItem, edit: GanttEdit, format: DateFormat
 	if (item.isMilestone) return formatMessage(UI_GANTT.MILESTONE_MOVED, { name: item.name, date: format.format(start) })
 	const dates = { name: item.name, start: format.format(start), end: format.format(end) }
 	if (edit.kind === 'move') return formatMessage(UI_GANTT.MOVED, dates)
-	return formatMessage(UI_GANTT.RESIZED, { ...dates, duration: pluralize(getLocale().plural.GANTT_DAYS, durationDays(edit.span)) })
+	return formatMessage(UI_GANTT.RESIZED, { ...dates, duration: pluralize(UI_PLURAL.GANTT_DAYS, durationDays(edit.span)) })
 }

@@ -1,12 +1,12 @@
-import { UI_ARIA } from '@/locales/messages'
+import { UI_ARIA, UI_PLURAL } from '@/locales/messages'
+import { formatMessage, pluralize } from '@/locales/state'
 import { getFocusable, hasChildren } from '../megaMenuItems'
 import { computed, nextTick, provide, ref, shallowRef } from 'vue'
-import { formatMessage, getLocale, pluralize } from '@/locales/state'
 import { LEVEL_LINK_SELECTOR, MEGA_MENU_CASCADE_KEY } from './cascadeItems'
 import type { MegaMenuDrillGroupEmits, MegaMenuDrillGroupProps, MegaMenuLink, MegaMenuLinkEntry } from '../../types/BaseMegaMenu.types'
 
 function announceLevel(title: string, links: MegaMenuLink[]): string {
-	return formatMessage(UI_ARIA.MEGA_MENU_LEVEL, { title, count: pluralize(getLocale().plural.MEGA_MENU_ITEMS, links.length) })
+	return formatMessage(UI_ARIA.MEGA_MENU_LEVEL, { title, count: pluralize(UI_PLURAL.MEGA_MENU_ITEMS, links.length) })
 }
 
 function isParent(entry: MegaMenuLinkEntry): boolean {

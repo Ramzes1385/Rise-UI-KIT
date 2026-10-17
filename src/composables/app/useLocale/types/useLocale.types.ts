@@ -4,9 +4,9 @@ import type { LocaleInput, PluralForms, UiKitLocale } from '@/locales/types/loca
 export interface UseLocaleReturn {
 	/** Код текущего языка: `ru`, `en` */
 	locale: ComputedRef<string>
-	/** Коды доступных языков: встроенные и добавленные `registerLocale()` — для переключателя языка */
+	/** Коды доступных языков: `ru` и добавленные `registerLocale()` — для переключателя языка */
 	locales: ComputedRef<string[]>
-	/** Словарь текущего языка */
+	/** Словарь текущего языка целиком; у русского по умолчанию — `ru` (поэтому `useLocale` подключает в сборку весь русский словарь) */
 	messages: ComputedRef<UiKitLocale>
 	/** Меняет язык кита: код встроенного или зарегистрированного (`registerLocale`) языка либо словарь (`defineLocale`) */
 	setLocale: (locale: LocaleInput) => void

@@ -2,7 +2,8 @@
 /** Jest-dom матчеры подключаются в каждом тест-файле отдельно (import '@testing-library/jest-dom/vitest'), а не здесь. */
 
 import { cleanup } from '@testing-library/vue'
-import { setLocale } from '@/locales/state'
+import { en } from '@/locales/en'
+import { registerLocale, setLocale } from '@/locales/state'
 
 // Подавление неинформативных логов и предупреждений в консоли тестов
 const originalLog = console.log
@@ -18,6 +19,9 @@ console.warn = (...args: unknown[]) => {
 	}
 	originalWarn(...args)
 }
+
+/** Английский словарь подключён, как в приложении с `createUiKitPlugin`: тесты переключают язык через `setLocale('en')` */
+registerLocale(en)
 
 afterEach(() => {
 	cleanup()

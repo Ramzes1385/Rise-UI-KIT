@@ -231,6 +231,8 @@ export const enBase = {
 		TOOLTIP_WRAPPERLESS_ROOT:
 			'BaseTooltip: with isWrapperless the root of the trigger slot must be an element, not text or a fragment — the tooltip is not attached',
 		UNKNOWN_LOCALE: 'Unknown locale "{locale}". Available: {locales}; add your own with registerLocale()',
+		UNREGISTERED_LOCALE:
+			'Locale "{locale}" is not registered: import the dictionary and register it once at startup — import { {locale}, registerLocale } from \'@ramzes1385/rise-ui-kit\'; registerLocale({locale}). Available: {locales}',
 		TOAST_WITHOUT_APP: 'useToast: <BaseApp> not found — the notification was not shown. Wrap the app in <BaseApp>.',
 		OVERLAY_WITHOUT_APP: 'useOverlay: <BaseApp> not found — the overlay was not shown. Wrap the app in <BaseApp>.',
 		EDITOR_UNSAFE_LINK: 'BaseEditor: a link with an unsafe scheme was not inserted: {url}',

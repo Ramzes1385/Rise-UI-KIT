@@ -1,7 +1,7 @@
 import type { Ref } from 'vue'
-import { UI_CHAT_TEXT } from '@/locales/messages'
+import { formatMessage, pluralize } from '@/locales/state'
 import { computed, nextTick, ref, useId, watch } from 'vue'
-import { formatMessage, getLocale, pluralize } from '@/locales/state'
+import { UI_CHAT_TEXT, UI_PLURAL } from '@/locales/messages'
 import type { ChatInfoTab, ChatMember } from '../../types/BaseChat.types'
 import type { ChatSlideoverEmits, ChatSlideoverPanelProps } from '../../types/ChatSlideover.types'
 
@@ -135,7 +135,7 @@ function usePanelMember(props: ChatSlideoverPanelProps) {
 			}),
 		),
 		titleText: computed((): string => (props.activeTab === 'profile' ? UI_CHAT_TEXT.PROFILE : UI_CHAT_TEXT.INFORMATION)),
-		membersCountLabel: computed(() => pluralize(getLocale().plural.PARTICIPANTS, props.members.length)),
+		membersCountLabel: computed(() => pluralize(UI_PLURAL.PARTICIPANTS, props.members.length)),
 	}
 }
 

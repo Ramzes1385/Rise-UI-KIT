@@ -1,10 +1,11 @@
-import { currentLocale } from './state'
-/** Раздел словаря текущего языка как объект строк, напр. `localized('aria').CLOSE`; читается через shallowRef, поэтому шаблоны и computed обновляются при смене языка (`setLocale`). */
+/** Раздел словаря текущего языка как объект строк, напр. `localized('aria', ruAria).CLOSE`: нет раздела у языка (русский по умолчанию) — строки `fallback`. */
+import { currentLocale } from './current'
 import { legacyMessage } from './legacyKeys'
-import type { LocaleSection, UiKitLocale } from './types/locales.types'
+import type { LocaleSection, MessageMap, UiKitLocale } from './types/locales.types'
 
-export function localized<K extends LocaleSection>(section: K): Readonly<UiKitLocale[K]> {
-	const messages = (): Record<string, string> => currentLocale.value[section] as Record<string, string>
+/** Читается через shallowRef: шаблоны и computed обновляются при смене языка (`setLocale`) */
+export function localized<K extends LocaleSection | 'plural'>(section: K, fallback: UiKitLocale[K]): Readonly<UiKitLocale[K]> {
+	const messages = (): MessageMap => (currentLocale.value[section] ?? fallback) as unknown as MessageMap
 	return new Proxy(
 		{},
 		{

@@ -1,5 +1,5 @@
-import { UI_CHAT_TEXT } from '@/locales/messages'
-import { getLocale, pluralize } from '@/locales/state'
+import { pluralize } from '@/locales/state'
+import { UI_CHAT_TEXT, UI_PLURAL } from '@/locales/messages'
 import { formatDateText } from '@utils/data/dateFormatUtils'
 import type { ChatMessage } from '../../../../types/BaseChat.types'
 import type { ChatTimelineItem, ChatTimelineOptions } from '../../types/timeline/ChatTimeline.types'
@@ -39,7 +39,7 @@ function buildChatTimeline(options: ChatTimelineOptions): ChatTimelineItem[] {
 		if (day !== null && day !== previousDay) items.push({ type: 'date', key: `date-${day}`, label: dayLabel(day, todayStart) })
 		if (day !== null) previousDay = day
 		if (unread?.id === message.id) {
-			items.push({ type: 'unread', key: 'unread', label: pluralize(getLocale().plural.CHAT_UNREAD, unread.count) })
+			items.push({ type: 'unread', key: 'unread', label: pluralize(UI_PLURAL.CHAT_UNREAD, unread.count) })
 		}
 		items.push({ type: 'message', key: message.id, message })
 	}

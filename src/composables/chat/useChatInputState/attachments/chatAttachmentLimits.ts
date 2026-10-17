@@ -1,6 +1,7 @@
+import { pluralize } from '@/locales/state'
+import { UI_PLURAL } from '@/locales/messages'
 /** Утилиты: проверка выбранных файлов поля ввода чата по типу, размеру и числу вложений */
 import { validateFile } from '@utils/media/fileUtils'
-import { getLocale, pluralize } from '@/locales/state'
 import type { ChatAttachmentRejection } from '@components/BaseChat/types/BaseChat.types'
 import type { ChatAttachmentLimits, ChatAttachmentCheck } from '../types/useChatInputState.types'
 
@@ -25,7 +26,7 @@ function checkAttachments(files: File[], attachedCount: number, limits: ChatAtta
 		const rejection = rejectFile(file, limits)
 		if (rejection) rejections.push(rejection)
 		else if (limits.maxFiles !== undefined && attachedCount + accepted.length >= limits.maxFiles) {
-			overflow ||= pluralize(getLocale().plural.CHAT_MAX_FILES, limits.maxFiles)
+			overflow ||= pluralize(UI_PLURAL.CHAT_MAX_FILES, limits.maxFiles)
 			rejections.push({ name: file.name, reason: 'count', message: overflow })
 		} else accepted.push(file)
 	}

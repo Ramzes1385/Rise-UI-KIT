@@ -1,8 +1,8 @@
-import { UI_CRYPTOPRO } from '@/locales/messages'
 import { formatFileSize } from '@utils/media/fileUtils'
+import { formatMessage, pluralize } from '@/locales/state'
+import { UI_CRYPTOPRO, UI_PLURAL } from '@/locales/messages'
 import { formatDateText } from '@utils/data/dateFormatUtils'
 import type { BaseSelectOption } from '@components/BaseSelect'
-import { formatMessage, getLocale, pluralize } from '@/locales/state'
 import type { CryptoProSignMode } from '../types/BaseCryptoProSign.types'
 import type { CryptoProCertificate } from '@composables/crypto/useCryptoPro'
 
@@ -25,7 +25,7 @@ function validity(certificate: CryptoProCertificate, now: Date): string {
 	if (!certificate.isValid) return UI_CRYPTOPRO.NOT_VALID
 	const days = Math.floor(left / DAY)
 	if (days > EXPIRY_WARNING_DAYS) return formatMessage(UI_CRYPTOPRO.VALID_TO, { date: formatDate(certificate.validTo) })
-	return days === 0 ? UI_CRYPTOPRO.EXPIRES_TODAY : pluralize(getLocale().plural.CRYPTOPRO_EXPIRES, days)
+	return days === 0 ? UI_CRYPTOPRO.EXPIRES_TODAY : pluralize(UI_PLURAL.CRYPTOPRO_EXPIRES, days)
 }
 
 export function certificateOption(certificate: CryptoProCertificate, now: Date): BaseSelectOption {

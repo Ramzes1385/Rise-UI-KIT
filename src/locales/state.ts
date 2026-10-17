@@ -1,23 +1,24 @@
-import { en } from './en'
-import { ru } from './ru'
-/** Текущий язык кита: один на страницу. Его задают `createUiKitPlugin({ locale })`, `<BaseApp locale>` и `setLocale()` */
+import { localized } from './localized'
+/** Язык кита: регистрация словарей, смена языка, подстановки и множественное число; язык задают `createUiKitPlugin({ locale })`, `<BaseApp locale>` и `setLocale()` */
 import { computed, shallowRef } from 'vue'
-import type { LocaleInput, LocaleOverrides, UiKitLocale } from './types/locales.types'
+import { ruLocaleWarnings } from './ru/base'
+import { KIT_LOCALE_CODES } from './types/locales.types'
+import { currentLocale, DEFAULT_LOCALE } from './current'
+import type { ActiveLocale, LocaleCore, LocaleInput, LocaleOverrides, UiKitLocale } from './types/locales.types'
 
-export const LOCALES = { ru: ru as UiKitLocale, en } as const
+export { currentLocale } from './current'
 
-/** Текущий язык: shallowRef — компоненты перерисовываются при смене языка */
-export const currentLocale = shallowRef<UiKitLocale>(LOCALES.ru)
-
-/** Языки, зарегистрированные приложением через `registerLocale()`: по коду; shallowRef — список кодов реактивен */
+/** Языки, зарегистрированные через `registerLocale()`: по коду; shallowRef — список кодов реактивен */
 const registered = shallowRef<ReadonlyMap<string, UiKitLocale>>(new Map())
 
 /**
- * Регистрирует язык приложения по `locale.code`: после этого его принимают `setLocale('xx')`, `<BaseApp locale="xx">`
- * и `createUiKitPlugin({ locale: 'xx' })`. Повторная регистрация того же кода (в том числе встроенного `ru`, `en`)
- * заменяет прежний словарь; если этот язык сейчас включён, строки обновляются сразу.
+ * Регистрирует язык по `locale.code`: после этого его принимают `setLocale('xx')`, `<BaseApp locale="xx">`
+ * и `createUiKitPlugin({ locale: 'xx' })`. Встроен только `ru`; готовые `en`, `kk`, `uz`, `zh`, `ja` и свои языки подключаются
+ * так, и в сборку приложения попадают только подключённые словари (`createUiKitPlugin` подключает `en` сам).
+ * Повторная регистрация того же кода (в том числе `ru`) заменяет прежний словарь; если этот язык сейчас включён, строки обновляются сразу.
  *
  * @example
+ * registerLocale(en)
  * registerLocale(defineLocale(en, { code: 'de', intl: 'de-DE', firstDayOfWeek: 1, text: { EMPTY: 'Leer' } }))
  * setLocale('de')
  */
@@ -26,35 +27,49 @@ export function registerLocale(locale: UiKitLocale): void {
 	if (currentLocale.value.code === locale.code) currentLocale.value = locale
 }
 
+/** Регистрирует язык, только если его код ещё не зарегистрирован: так `createUiKitPlugin` подключает `en`, не затирая словарь приложения */
+export function registerLocaleOnce(locale: UiKitLocale): void {
+	if (!registered.value.has(locale.code)) registerLocale(locale)
+}
+
 /** Словарь с запасными названиями месяцев и дней для языкового тега Intl: сначала тот же тег, затем тот же основной язык (`kk` для `kk-KZ`) */
-export function findCalendarLocale(intl: string): UiKitLocale | undefined {
-	const candidates = [currentLocale.value, ...registered.value.values(), ...Object.values(LOCALES)].filter(locale => locale.calendarNames)
+export function findCalendarLocale(intl: string): LocaleCore | undefined {
+	const candidates = [currentLocale.value, ...registered.value.values()].filter(locale => locale.calendarNames)
 	const language = intl.split('-')[0].toLowerCase()
 	return (
 		candidates.find(locale => locale.intl === intl) ?? candidates.find(locale => locale.intl.split('-')[0].toLowerCase() === language)
 	)
 }
 
-/** Коды доступных языков: встроенные и зарегистрированные; реактивный список для переключателя языка */
-export const localeCodes = computed(() => [...new Set([...Object.keys(LOCALES), ...registered.value.keys()])])
+/** Коды доступных языков: `ru` и зарегистрированные; реактивный список для переключателя языка */
+export const localeCodes = computed(() => [...new Set([DEFAULT_LOCALE.code, ...registered.value.keys()])])
 
-/** Меняет язык кита: код встроенного или зарегистрированного (`registerLocale`) языка либо словарь. Неизвестный код оставляет текущий язык и пишет предупреждение */
+/** Две строки раздела `warnings` для `setLocale`: русские — из `ruLocaleWarnings`, поэтому смена языка не тянет в сборку весь раздел */
+const LOCALE_WARNINGS = /* @__PURE__ */ localized('warnings', ruLocaleWarnings as UiKitLocale['warnings'])
+
+/** Предупреждение о неизвестном коде: у готового, но не подключённого словаря кита — подсказка, как его подключить */
+function warnUnknownLocale(locale: string): void {
+	const template = (KIT_LOCALE_CODES as readonly string[]).includes(locale)
+		? LOCALE_WARNINGS.UNREGISTERED_LOCALE
+		: LOCALE_WARNINGS.UNKNOWN_LOCALE
+	console.warn(`[rise-ui-kit] ${formatMessage(template, { locale, locales: localeCodes.value.join(', ') })}`)
+}
+
+/**
+ * Меняет язык кита: код зарегистрированного (`registerLocale`) языка, `ru` либо словарь. Неизвестный код оставляет текущий язык
+ * и пишет предупреждение; у готового словаря кита, который не подключён (`setLocale('en')` без `registerLocale(en)`), — с подсказкой
+ */
 export function setLocale(locale: LocaleInput): void {
 	if (typeof locale !== 'string') {
 		currentLocale.value = locale
 		return
 	}
-	const known =
-		registered.value.get(locale) ??
-		(Object.keys(LOCALES).includes(locale) ? (LOCALES as Record<string, UiKitLocale>)[locale] : undefined)
+	const known = registered.value.get(locale) ?? (locale === DEFAULT_LOCALE.code ? DEFAULT_LOCALE : undefined)
 	if (known) currentLocale.value = known
-	else {
-		const message = formatMessage(currentLocale.value.warnings.UNKNOWN_LOCALE, { locale, locales: localeCodes.value.join(', ') })
-		console.warn(`[rise-ui-kit] ${message}`)
-	}
+	else warnUnknownLocale(locale)
 }
 
-export function getLocale(): UiKitLocale {
+export function getLocale(): ActiveLocale {
 	return currentLocale.value
 }
 
@@ -75,7 +90,7 @@ export function defineLocale(base: UiKitLocale, overrides: LocaleOverrides): UiK
 }
 
 /** Число в формате текущего языка: `1,5` по-русски, `1.5` по-английски */
-export function formatNumber(value: number, options?: Intl.NumberFormatOptions, locale: UiKitLocale = currentLocale.value): string {
+export function formatNumber(value: number, options?: Intl.NumberFormatOptions, locale: LocaleCore = currentLocale.value): string {
 	return new Intl.NumberFormat(locale.intl, options).format(value)
 }
 
@@ -88,7 +103,7 @@ export function formatMessage(template: string, params: Record<string, string | 
 export function pluralize(
 	forms: { readonly other: string } & Partial<Record<Intl.LDMLPluralRule, string>>,
 	count: number,
-	locale: UiKitLocale = currentLocale.value,
+	locale: LocaleCore = currentLocale.value,
 ): string {
 	const category = new Intl.PluralRules(locale.intl).select(count)
 	return formatMessage(forms[category] ?? forms.other, { n: formatNumber(count, undefined, locale) })

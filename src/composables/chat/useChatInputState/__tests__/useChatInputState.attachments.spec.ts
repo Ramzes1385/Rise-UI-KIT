@@ -1,4 +1,5 @@
-import { getLocale, pluralize } from '@/locales/state'
+import { pluralize } from '@/locales/state'
+import { UI_PLURAL } from '@/locales/messages'
 import { useChatInputState } from '../useChatInputState'
 import type { UseChatInputStateOptions } from '../types/useChatInputState.types'
 
@@ -74,7 +75,7 @@ describe('useChatInputState: ограничения вложений', () => {
 			expect.objectContaining({ name: '3.txt', reason: 'count' }),
 		])
 		expect(state.attachments.value.map(item => item.name)).toEqual(['1.txt'])
-		expect(state.attachmentErrors.value).toEqual([pluralize(getLocale().plural.CHAT_MAX_FILES, 1)])
+		expect(state.attachmentErrors.value).toEqual([pluralize(UI_PLURAL.CHAT_MAX_FILES, 1)])
 	})
 
 	it('без отказов attach-error не эмитится, ошибки пусты', () => {

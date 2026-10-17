@@ -1,9 +1,9 @@
+import { pluralize } from '@/locales/state'
 import { useUi } from '@composables/base/useUi'
 import { computed, ref, useId, watch } from 'vue'
-import { getLocale, pluralize } from '@/locales/state'
 import { calcDerivedScale } from '@utils/media/iconUtils'
 import { formatRelativeTime } from '@utils/data/dateUtils'
-import { UI_NOTIFICATION_CENTER } from '@/locales/messages'
+import { UI_NOTIFICATION_CENTER, UI_PLURAL } from '@/locales/messages'
 import { changedIds, unreadCount, visibleItems, withRead } from './list/notificationList'
 import { SIZE_SCALE_DEFAULT, useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type {
@@ -50,7 +50,7 @@ export function useBaseNotificationCenter(props: NotificationCenterProps, emit: 
 		filter,
 		setFilter,
 		unread,
-		unreadText: computed(() => (unread.value ? pluralize(getLocale().plural.NOTIFICATIONS_UNREAD, unread.value) : '')),
+		unreadText: computed(() => (unread.value ? pluralize(UI_PLURAL.NOTIFICATIONS_UNREAD, unread.value) : '')),
 		visible: computed(() => visibleItems(props.items, filter.value)),
 		filterOptions: computed(() => [
 			{ value: 'all', label: UI_NOTIFICATION_CENTER.ALL },

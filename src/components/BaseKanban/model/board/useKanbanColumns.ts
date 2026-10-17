@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { columnCards } from './kanbanCards'
-import { UI_KANBAN } from '@/locales/messages'
-import { formatMessage, getLocale, pluralize } from '@/locales/state'
+import { UI_KANBAN, UI_PLURAL } from '@/locales/messages'
+import { formatMessage, pluralize } from '@/locales/state'
 import type { KanbanBoardContext, KanbanColumn, KanbanColumnView } from '../../types/BaseKanban.types'
 
 function countText(column: KanbanColumn, sizes: { shown: number; total: number }): string {
@@ -20,7 +20,7 @@ function columnView(column: KanbanColumn, context: KanbanBoardContext): KanbanCo
 		cards: own,
 		isOverLimit,
 		isCollapsed: context.collapsed.value.includes(column.id),
-		label: [column.title, pluralize(getLocale().plural.CARDS, own.length), limitText].filter(Boolean).join(', '),
+		label: [column.title, pluralize(UI_PLURAL.CARDS, own.length), limitText].filter(Boolean).join(', '),
 		count: countText(column, { shown: own.length, total }),
 		emptyText: total ? UI_KANBAN.EMPTY_FILTERED : UI_KANBAN.EMPTY,
 	}

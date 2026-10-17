@@ -1,7 +1,7 @@
 /** Прежние ключи-куски составных подписей: в словарях кита их нет, но заданные приложением через `defineLocale` они по-прежнему работают */
 import type { LegacyMessage, LocaleSection, MessageMap } from './types/locales.types'
 
-const LEGACY: Partial<Record<LocaleSection, Record<string, LegacyMessage>>> = {
+const LEGACY: Partial<Record<LocaleSection | 'plural', Record<string, LegacyMessage>>> = {
 	rating: {
 		VALUE_OF_MAX: { requires: ['OF'], build: m => `{value} ${m.OF} {max}` },
 		VALUE_LABEL: { requires: ['OF'], build: m => `${m.LABEL} {value} ${m.OF} {max}` },
@@ -31,7 +31,7 @@ const LEGACY: Partial<Record<LocaleSection, Record<string, LegacyMessage>>> = {
  * Шаблон нового ключа, собранный из прежних ключей-кусков, если приложение задало их в своём словаре;
  * `undefined` — прежних ключей нет, берётся строка словаря.
  */
-export function legacyMessage(section: LocaleSection, key: string, messages: MessageMap): string | undefined {
+export function legacyMessage(section: LocaleSection | 'plural', key: string, messages: MessageMap): string | undefined {
 	const entries = LEGACY[section]
 	const entry = entries && Object.prototype.hasOwnProperty.call(entries, key) ? entries[key] : undefined
 	return entry?.requires.every(name => messages[name] !== undefined) ? entry.build(messages) : undefined

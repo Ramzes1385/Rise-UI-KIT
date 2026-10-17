@@ -67,6 +67,10 @@ jobs:
       - name: Subpaths (exports, app from tarball imports one component)
         run: npm run test:subpaths -- --no-screenshot
 
+      # Вес компонентов: docs/reference/SIZES.md совпадает со сборкой (мини-приложение на компонент, ≈20–50 с)
+      - name: Component sizes (docs/reference/SIZES.md is up to date)
+        run: npm run test:sizes
+
       # Храповики (build/ratchets.json): размер входов dist в gzip — в бюджете, исключений покрытия и предупреждений ESLint — не больше базы
       - name: Ratchets (bundle size, coverage excludes, lint warnings)
         run: npm run test:ratchets

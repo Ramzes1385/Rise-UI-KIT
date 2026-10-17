@@ -1,44 +1,44 @@
 {
 	"size": {
 		"components.js": {
-			"gzip": 801621,
-			"budget": 882688
+			"gzip": 793038,
+			"budget": 872448
 		},
 		"components/*/index.js": {
-			"gzip": 209339,
-			"budget": 230400
+			"gzip": 198352,
+			"budget": 219136
 		},
 		"composables.js": {
-			"gzip": 168668,
-			"budget": 186368
+			"gzip": 155499,
+			"budget": 172032
 		},
 		"config.js": {
-			"gzip": 58470,
-			"budget": 64512
+			"gzip": 39513,
+			"budget": 44032
 		},
 		"icons.js": {
-			"gzip": 4106,
+			"gzip": 4450,
 			"budget": 6144
 		},
 		"icons.svg": {
-			"gzip": 4586,
+			"gzip": 4694,
 			"budget": 6144
 		},
 		"index.js": {
-			"gzip": 926720,
-			"budget": 947200
+			"gzip": 940319,
+			"budget": 961536
 		},
 		"map3d.js": {
-			"gzip": 155357,
-			"budget": 171008
+			"gzip": 147860,
+			"budget": 162816
 		},
 		"media.css": {
-			"gzip": 15237,
+			"gzip": 15290,
 			"budget": 17408
 		},
 		"media.js": {
-			"gzip": 197076,
-			"budget": 217088
+			"gzip": 179794,
+			"budget": 198656
 		},
 		"media.layer.css": {
 			"gzip": 60,
@@ -53,7 +53,7 @@
 			"budget": 3072
 		},
 		"styles.css": {
-			"gzip": 99588,
+			"gzip": 99961,
 			"budget": 109568
 		},
 		"styles.layer.css": {
@@ -61,7 +61,7 @@
 			"budget": 2048
 		},
 		"tokens.css": {
-			"gzip": 3737,
+			"gzip": 3901,
 			"budget": 5120
 		},
 		"tokens.layer.css": {
@@ -77,8 +77,8 @@
 			"budget": 5120
 		},
 		"utils.js": {
-			"gzip": 97671,
-			"budget": 107520
+			"gzip": 86609,
+			"budget": 96256
 		},
 		"components/*/style.css": {
 			"gzip": 6023,

@@ -1,5 +1,6 @@
 /** Утилиты: работа с датами — сравнение, парсинг, форматирование */
 
+import { UI_PLURAL } from '@/locales/messages'
 import { getLocale, pluralize } from '@/locales/state'
 import { createDateFormat, formatRelativeUnit } from '../dateFormatUtils'
 import type {
@@ -105,7 +106,7 @@ function formatMultiple(options: FormatMultipleOptions): string {
 		return dates.map(d => formatDate({ ...baseOpts, date: d })).join(', ')
 	}
 
-	return pluralize(getLocale().plural.DATES_SELECTED, dates.length)
+	return pluralize(UI_PLURAL.DATES_SELECTED, dates.length)
 }
 
 /** Форматировать значение date picker с учётом режима выбора */

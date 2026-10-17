@@ -1,5 +1,6 @@
+import { pluralize } from '@/locales/state'
+import { UI_PLURAL } from '@/locales/messages'
 import type { TreeNode } from '@components/BaseTree'
-import { getLocale, pluralize } from '@/locales/state'
 import type { JsonNodeView, JsonValueType } from '../../types/BaseJsonViewer.types'
 
 const ROOT = '$'
@@ -27,7 +28,7 @@ function entriesOf(value: unknown): [string | number, unknown][] {
 }
 
 export function jsonPreview(value: unknown, type: JsonValueType): string {
-	const plural = getLocale().plural
+	const plural = UI_PLURAL
 	if (type === 'array') {
 		const size = (value as unknown[]).length
 		return size ? pluralize(plural.JSON_ITEMS, size) : '[]'

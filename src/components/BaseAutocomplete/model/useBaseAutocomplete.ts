@@ -1,10 +1,10 @@
 import type { ComputedRef } from 'vue'
-import { UI_TEXT } from '@/locales/messages'
+import { pluralize } from '@/locales/state'
 import { useUi } from '@composables/base/useUi'
 import { computed, ref, useId, watch } from 'vue'
-import { getLocale, pluralize } from '@/locales/state'
 import type { BaseInput } from '@components/BaseInput'
 import { useMotion } from '@composables/app/useMotion'
+import { UI_PLURAL, UI_TEXT } from '@/locales/messages'
 import { isImeKeydown } from '@utils/dom/keyboardUtils'
 import { useCustomClass } from '@composables/base/useCustomClass'
 import { useFormDisabled } from '@composables/form/useFormContext'
@@ -233,7 +233,7 @@ function useAutocompleteView(props: AutocompleteProps, ctx: ReturnType<typeof us
 			if (!ctx.isOpen.value || !ctx.isFiltering.value) return ''
 			if (props.isLoading) return UI_TEXT.LOADING
 			const count = ctx.visibleOptions.value.length
-			return count > 0 ? pluralize(getLocale().plural.SEARCH_RESULTS, count) : emptyLabel.value
+			return count > 0 ? pluralize(UI_PLURAL.SEARCH_RESULTS, count) : emptyLabel.value
 		}),
 		comboboxAttrs: computed(() => ({
 			...props.inputAttrs,

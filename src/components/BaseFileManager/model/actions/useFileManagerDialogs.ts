@@ -1,6 +1,6 @@
 import { computed, nextTick, ref } from 'vue'
-import { UI_FILE_MANAGER } from '@/locales/messages'
-import { formatMessage, getLocale, pluralize } from '@/locales/state'
+import { formatMessage, pluralize } from '@/locales/state'
+import { UI_FILE_MANAGER, UI_PLURAL } from '@/locales/messages'
 import type { FileManagerCore } from '../../types/FileManagerInternal.types'
 import { canMoveTo, folderToNodeId, folderTree, nodeIdToFolder } from '../lib/fileManagerIndex'
 
@@ -36,7 +36,7 @@ function useDeleteDialog(core: FileManagerCore) {
 		deleteTitle: computed(() => {
 			if (ids.value.length === 1)
 				return formatMessage(UI_FILE_MANAGER.DELETE_ONE_TITLE, { name: core.index.value.byId.get(ids.value[0])?.name ?? '' })
-			const count = pluralize(getLocale().plural.FILE_MANAGER_ITEMS, ids.value.length)
+			const count = pluralize(UI_PLURAL.FILE_MANAGER_ITEMS, ids.value.length)
 			return formatMessage(UI_FILE_MANAGER.DELETE_MANY_TITLE, { count })
 		}),
 		deleteDescription: computed(() =>

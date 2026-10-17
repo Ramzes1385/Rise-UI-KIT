@@ -1,7 +1,7 @@
 import { computed, ref, watch } from 'vue'
 import { useSlideTimer } from './useSlideTimer'
+import { currentLocale } from '@/locales/state'
 import { useSlideSpeech } from './useSlideSpeech'
-import { useLocale } from '@composables/app/useLocale'
 import { useSlideSpeechService } from './useSlideSpeechService'
 import { indexAtTime, safeUrl, slideSpan, trackStarts } from './timeline'
 import type { SlidePlaybackOptions } from '../../types/PresentationModel.types'
@@ -9,7 +9,6 @@ import { useMediaElement } from '@components/BaseMediaPlayer/model/core/useMedia
 import type { BasePresentationPlayerProps } from '../../types/BasePresentationPlayer.types'
 
 function useSpeechService(props: BasePresentationPlayerProps, options: SlidePlaybackOptions, isShared: () => boolean) {
-	const { locale } = useLocale()
 	return useSlideSpeechService({
 		provider: () => props.speechProvider,
 		slides: () => props.slides,
@@ -17,7 +16,7 @@ function useSpeechService(props: BasePresentationPlayerProps, options: SlidePlay
 		isShared,
 		isPrefetching: () => options.isPlaying.value && options.isVisible.value,
 		voice: () => props.speechVoice,
-		lang: () => locale.value,
+		lang: () => currentLocale.value.code,
 		onError: options.onSpeechError,
 	})
 }
@@ -196,7 +195,6 @@ function useSpeech(
 	options: SlidePlaybackOptions,
 ) {
 	const { sources, sound } = parts
-	const { locale } = useLocale()
 	const speech = useSlideSpeech({
 		text: () => sources.speechText.value,
 		key: () => sources.slide.value?.id,
@@ -205,7 +203,7 @@ function useSpeech(
 		volume: () => sound.volume.value,
 		isMuted: () => sound.isMuted.value,
 		voice: () => props.speechVoice,
-		lang: () => locale.value,
+		lang: () => currentLocale.value.code,
 		onEnd: () => options.onSlideEnd(),
 	})
 	return speech.isSpeech

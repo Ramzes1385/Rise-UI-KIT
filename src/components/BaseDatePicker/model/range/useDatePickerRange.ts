@@ -1,9 +1,9 @@
 import { warn } from '@/locales/warn'
 import { computed, ref, watch } from 'vue'
-import { UI_DATE_PICKER } from '@/locales/messages'
+import { formatMessage, pluralize } from '@/locales/state'
 import { resolveDatePickerPresets } from './dateRangePresets'
 import { isSameDay, toDateOnly } from '@utils/data/dateUtils'
-import { formatMessage, getLocale, pluralize } from '@/locales/state'
+import { UI_DATE_PICKER, UI_PLURAL } from '@/locales/messages'
 import { getDateRangeExample, parseDateRangeText } from './dateRangeText'
 import { createDateAvailability, findRangeIssue, resolveRangeLimits } from './dateRangeLimits'
 import type {
@@ -19,7 +19,7 @@ function issueMessage(issue: DatePickerInputIssue, textOptions: DatePickerTextOp
 	if (issue === 'format') return formatMessage(UI_DATE_PICKER.ERROR_FORMAT, { example: getDateRangeExample(textOptions) })
 	if (issue === 'unavailable') return UI_DATE_PICKER.ERROR_UNAVAILABLE
 	const template = issue === 'min-days' ? UI_DATE_PICKER.ERROR_MIN_DAYS : UI_DATE_PICKER.ERROR_MAX_DAYS
-	return formatMessage(template, { days: pluralize(getLocale().plural.DAYS, days ?? 0) })
+	return formatMessage(template, { days: pluralize(UI_PLURAL.DAYS, days ?? 0) })
 }
 
 function isSameRange(range: DatePickerRange, start: Date | null, end: Date | null): boolean {

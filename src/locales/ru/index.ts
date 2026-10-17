@@ -1,42 +1,140 @@
-import { ruBase } from './base'
-import { ruChat } from './chat'
-import { ruData } from './data'
-import { ruForms } from './forms'
-import { ruMedia } from './media'
 import { ruPlural } from './plural'
 import { ruCard } from './components/card'
-import { ruNotices } from './components/notices'
 import { ruGantt } from './components/data/gantt'
-import { ruMapEditor } from './components/mapEditor'
 import { ruImageMap3d } from './components/imageMap3d'
 import { ruTranscript } from './components/transcript'
+import { ruImageMapEditor } from './components/mapEditor'
 import { ruPresentation } from './components/presentation'
 import { ruFormWizard } from './components/form/formWizard'
 import { ruEventCalendar } from './components/eventCalendar'
 import { ruFileManager } from './components/data/fileManager'
 import { ruDashboardGrid } from './components/layout/dashboardGrid'
-/** Русский словарь кита (язык по умолчанию); ключи совпадают с `UI_TEXT`, `UI_ARIA` и др.; `{name}` — место для значения (formatMessage), `plural` — формы чисел (Intl.PluralRules). */
+import { ruBanner, ruCookieConsent, ruResult } from './components/notices'
+import { ruAi, ruChat, ruCommentThread, ruEditor, ruEmoji, ruMarkdown, ruMention } from './chat'
+import {
+	ruAudio,
+	ruCarousel,
+	ruFileUpload,
+	ruImageCompare,
+	ruImageMap,
+	ruImageMapRoutes,
+	ruImageViewer,
+	ruPlayer,
+	ruSubtitles,
+} from './media'
+import {
+	ruAria,
+	ruChecklist,
+	ruCommandPalette,
+	ruMarquee,
+	ruNotificationCenter,
+	ruQrCode,
+	ruRating,
+	ruStepper,
+	ruTag,
+	ruText,
+	ruTour,
+	ruWarnings,
+} from './base'
+import {
+	ruCharts,
+	ruCodeBlock,
+	ruCountdown,
+	ruDescriptions,
+	ruJsonViewer,
+	ruKanban,
+	ruList,
+	ruMap,
+	ruTable,
+	ruTableExport,
+	ruTextDiff,
+	ruTransfer,
+} from './data'
+import {
+	ruAvatarCropper,
+	ruCalendar,
+	ruColorPicker,
+	ruCryptopro,
+	ruDadata,
+	ruDatePicker,
+	ruFilter,
+	ruFilterBuilder,
+	ruPhoneInput,
+	ruRequisites,
+	ruSignaturePad,
+	ruValueWarnings,
+} from './forms'
+/** Русский словарь кита (язык по умолчанию) целиком: все разделы. Компоненты берут свои разделы по отдельности (`messages.ts`), поэтому в сборку приложения без `ru` попадают только прочитанные разделы; `{name}` — место для значения (formatMessage), `plural` — формы чисел (Intl.PluralRules). */
 export const ru = {
 	code: 'ru',
 	/** Языковой тег для Intl: даты, числа, множественное число */
 	intl: 'ru-RU',
 	/** Первый день недели в календаре: 0 — воскресенье, 1 — понедельник */
 	firstDayOfWeek: 1,
-	...ruBase,
-	...ruForms,
-	...ruCard,
-	...ruMedia,
-	...ruPresentation,
-	...ruMapEditor,
-	...ruImageMap3d,
-	...ruChat,
-	...ruData,
-	...ruEventCalendar,
-	...ruTranscript,
-	...ruNotices,
-	...ruDashboardGrid,
-	...ruGantt,
-	...ruFileManager,
-	...ruFormWizard,
+	text: ruText,
+	aria: ruAria,
+	tour: ruTour,
+	stepper: ruStepper,
+	rating: ruRating,
+	checklist: ruChecklist,
+	commandPalette: ruCommandPalette,
+	qrCode: ruQrCode,
+	marquee: ruMarquee,
+	tag: ruTag,
+	notificationCenter: ruNotificationCenter,
+	warnings: ruWarnings,
+	filter: ruFilter,
+	calendar: ruCalendar,
+	datePicker: ruDatePicker,
+	colorPicker: ruColorPicker,
+	filterBuilder: ruFilterBuilder,
+	phoneInput: ruPhoneInput,
+	requisites: ruRequisites,
+	dadata: ruDadata,
+	signaturePad: ruSignaturePad,
+	avatarCropper: ruAvatarCropper,
+	valueWarnings: ruValueWarnings,
+	cryptopro: ruCryptopro,
+	card: ruCard,
+	player: ruPlayer,
+	audio: ruAudio,
+	subtitles: ruSubtitles,
+	imageCompare: ruImageCompare,
+	imageViewer: ruImageViewer,
+	carousel: ruCarousel,
+	fileUpload: ruFileUpload,
+	imageMap: ruImageMap,
+	imageMapRoutes: ruImageMapRoutes,
+	presentation: ruPresentation,
+	imageMapEditor: ruImageMapEditor,
+	imageMap3d: ruImageMap3d,
+	chat: ruChat,
+	editor: ruEditor,
+	markdown: ruMarkdown,
+	ai: ruAi,
+	emoji: ruEmoji,
+	mention: ruMention,
+	commentThread: ruCommentThread,
+	table: ruTable,
+	tableExport: ruTableExport,
+	kanban: ruKanban,
+	charts: ruCharts,
+	descriptions: ruDescriptions,
+	codeBlock: ruCodeBlock,
+	jsonViewer: ruJsonViewer,
+	textDiff: ruTextDiff,
+	map: ruMap,
+	countdown: ruCountdown,
+	list: ruList,
+	transfer: ruTransfer,
+	eventCalendar: ruEventCalendar,
+	transcript: ruTranscript,
+	result: ruResult,
+	banner: ruBanner,
+	cookieConsent: ruCookieConsent,
+	dashboardGrid: ruDashboardGrid,
+	gantt: ruGantt,
+	fileManager: ruFileManager,
+	formWizard: ruFormWizard,
 	plural: ruPlural,
 }

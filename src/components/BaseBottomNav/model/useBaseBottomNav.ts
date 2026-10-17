@@ -1,9 +1,9 @@
 import { warn } from '@/locales/warn'
+import { pluralize } from '@/locales/state'
 import { useUi } from '@composables/base/useUi'
-import { getLocale, pluralize } from '@/locales/state'
 import { useMotion } from '@composables/app/useMotion'
 import { calcIconScale } from '@utils/media/iconUtils'
-import { UI_ARIA, UI_WARNINGS } from '@/locales/messages'
+import { UI_ARIA, UI_PLURAL, UI_WARNINGS } from '@/locales/messages'
 import type { ResolvedLink } from '@composables/interaction/useLink'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import { computed, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
@@ -69,7 +69,7 @@ function badgeOf(item: BottomNavItem, maxBadge: number): BottomNavEntry['badge']
 	const { badge } = item
 	if (typeof badge === 'number') {
 		if (badge <= 0) return null
-		const label = item.badgeLabel ?? pluralize(getLocale().plural.NOTIFICATIONS_UNREAD, badge)
+		const label = item.badgeLabel ?? pluralize(UI_PLURAL.NOTIFICATIONS_UNREAD, badge)
 		return { text: badge > maxBadge ? `${maxBadge}+` : String(badge), label }
 	}
 	if (!badge) return null
