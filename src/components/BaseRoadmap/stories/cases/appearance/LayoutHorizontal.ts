@@ -16,7 +16,7 @@ export const LayoutHorizontal: StoryObj<typeof meta> = {
 			},
 		},
 	},
-	args: { layout: 'horizontal', selected: null },
+	args: { layout: 'horizontal', selected: null, narrowLayout: null },
 	play: async ({ canvas, canvasElement }) => {
 		await expect(await canvas.findByRole('button', { name: /^Vue Router/ })).toBeVisible()
 		await expect(canvasElement.querySelector('.base-roadmap__canvas--horizontal')).not.toBeNull()

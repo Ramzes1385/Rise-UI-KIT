@@ -16,7 +16,7 @@ export const LayoutList: StoryObj<typeof meta> = {
 			},
 		},
 	},
-	args: { layout: 'list', selected: null },
+	args: { layout: 'list', selected: null, narrowLayout: null },
 	play: async ({ canvas, canvasElement }) => {
 		await expect(await canvas.findByRole('button', { name: /^Vue Router/ })).toBeVisible()
 		await expect(canvasElement.querySelector('.base-roadmap__list')).not.toBeNull()

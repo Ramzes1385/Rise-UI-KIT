@@ -16,7 +16,7 @@ export const LayoutSnake: StoryObj<typeof meta> = {
 			},
 		},
 	},
-	args: { layout: 'snake', selected: null },
+	args: { layout: 'snake', selected: null, narrowLayout: null },
 	play: async ({ canvas, canvasElement }) => {
 		await expect(await canvas.findByRole('button', { name: /^Vue Router/ })).toBeVisible()
 		await expect(canvasElement.querySelector('.base-roadmap__canvas--snake')).not.toBeNull()

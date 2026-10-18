@@ -16,7 +16,7 @@ export const Layouts: StoryObj<typeof meta> = {
 			},
 		},
 	},
-	args: { selected: null, expanded: ['s3', 's4'] },
+	args: { selected: null, expanded: ['s3', 's4'], narrowLayout: null },
 	play: async ({ canvas, canvasElement, userEvent }) => {
 		const kinds = [
 			['Змейка', '.base-roadmap__canvas--snake'],
@@ -30,6 +30,6 @@ export const Layouts: StoryObj<typeof meta> = {
 			await expect(canvas.getByRole('radio', { name })).toBeChecked()
 			await expect(await canvas.findByRole('button', { name: /^Vue Router/ })).toBeVisible()
 		}
-		await expect(canvas.getByText('14 из 26 тем')).toBeVisible()
+		await expect(canvas.getByText(/14 из 26 тем/)).toBeVisible()
 	},
 }

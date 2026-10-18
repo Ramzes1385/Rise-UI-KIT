@@ -2241,7 +2241,6 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 - **Токены**: `--rise-roadmap-*` (bg, border, radius, ring, width, height и др.) — в `docs/design/COMPONENT_TOKENS.md`.
 - **Эталоны скриншотов не создавались**: снимки сделает владелец после появления историй.
 
-## Раздел VISUAL_CHANGES (для docs/design/VISUAL_CHANGES.md — допишет Storybook/оркестратор; в параллельной ветке файл не правил)
 ### BaseRoadmap — раскладки «Путь», «Змейка», «Лента» (rm-view-layouts)
 - Новые раскладки `layout="path" | "snake" | "horizontal"` (раньше была заготовка без вида). Эталонов снимков нет — их создаёт владелец.
 - Путь: вертикальный хребет с чередованием ±50 px, карточки этапов 228 × 54, темы веером ветками (200 × 34), пройденный участок сплошной с бегущей точкой, будущий — пунктир, «Старт» и «Цель — …».
@@ -2254,3 +2253,10 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 - **Метка «или»**: цвет `--rise-info-text` на `--rise-info-soft` (контраст в светлой теме около 8:1 вместо около 4:1); в тёмной теме светлее прежнего.
 - **Метка «советуем»**: цвет `--rise-success-text` на `--rise-success-soft` (контраст в светлой теме не ниже 4,5:1); в тёмной теме не хуже.
 - **Проп `color`**: при заданном `color.text` заголовок, подзаголовок и сводка берут его цвет; без `color` вид не меняется.
+
+### BaseRoadmap — истории (rm-view-shell, Storybook)
+
+- **Новые истории `Data/BaseRoadmap`, существующих снимков нет**: компонент новый, эталоны создаёт владелец. Демо-данные — путь «Frontend-разработчик на Vue» из мокапа Roadmap.dc.html (`stories/demo/frontendVue.ts`: 6 этапов, 26 тем, 14 изучено, «Pinia» — 1 из 3 подтем, «Nuxt» — альтернатива «Vue Router», «Storybook» — по желанию, «Продакшн» закрыт до «Качество»), короткий путь «Старт во Vue» (`stories/demo/mini.ts`) — для витрин.
+- **Что показывают**: `Default` — путь с раскрытым этапом «Vue 3»; play выбирает «Pinia», справа открывается её панель (мокап Roadmap), `Layouts` — переключатель «Путь / Змейка / Список / Лента» на одних данных, `LayoutSnake`, `LayoutList`, `LayoutHorizontal` — раскладки по отдельности (лист «05 Раскладки» RoadmapKit), `Narrow` — 375 px: список, «Продолжить» внизу, нижняя шторка темы (RoadmapMobile), `Rtl` — `dir="rtl"` (RoadmapMobile), `Alternatives` — «или», «советуем», «По желанию», `Locked` — закрытые темы и этап (замок, «нужно знать»), `Materials` — семь видов материалов, внешняя и внутренняя ссылки, `Progress` — `v-model:progress` и `createLocalStorageProgress`, `Hooks` — `beforeStatusChange` с BaseConfirm, `Keyboard` — Tab, Enter, пробел, Escape, `Variants`, `Sizes`, `CustomColor`, состояния `Disabled`, `Loading`, `Empty`, `WithError` (ошибка хранилища), `LongContent` (24 этапа × 7 тем, длинные названия, все раскладки), `Animations` (четыре пресета движения).
+- **Скриншот-тесты** (`__tests__/BaseRoadmap.visual.spec.ts`, 1440 × 1000, светлая и тёмная темы): `default`, `layout-snake`, `layout-list`, `layout-horizontal`, `variants`, `locked`. Эталонов в репозитории нет — после появления делает владелец.
+- **Известные нарушения доступности в самом компоненте** (не историй): контраст метки «советуем» в светлой теме и текст заголовка и подзаголовка при `color` (CustomColor) — inbox разработчику.

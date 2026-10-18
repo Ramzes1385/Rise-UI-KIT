@@ -1,7 +1,7 @@
-import { expect } from 'storybook/test'
-import { docsFrame } from '@/stories/helpers'
 import type meta from '../../BaseRoadmap.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
+import { expect, screen, waitFor } from 'storybook/test'
+import { docsFrame, STORY_WAIT_TIMEOUT } from '@/stories/helpers'
 
 export const Disabled: StoryObj<typeof meta> = {
 	parameters: {
@@ -15,14 +15,15 @@ export const Disabled: StoryObj<typeof meta> = {
 			},
 		},
 	},
-	args: { isDisabled: true },
+	args: { isDisabled: true, selected: null },
 	play: async ({ canvas, userEvent, args }) => {
 		await expect(canvas.getByRole('region', { name: 'Frontend-разработчик на Vue' })).toHaveAttribute('aria-disabled', 'true')
-		await expect(await canvas.findByRole('checkbox', { name: 'Геттеры и действия' })).toBeDisabled()
-		await expect(canvas.getByRole('button', { name: 'Отметить изученной' })).toBeDisabled()
-
 		await userEvent.click(await canvas.findByRole('button', { name: /^Vue Router/ }))
-		await expect(await canvas.findByRole('heading', { level: 2, name: 'Vue Router' })).toBeVisible()
+		await waitFor(() => expect(screen.getByRole('heading', { level: 2, name: 'Vue Router' })).toBeVisible(), {
+			timeout: STORY_WAIT_TIMEOUT,
+		})
+		await expect(await screen.findByRole('checkbox', { name: 'Навигационные хуки' })).toBeDisabled()
+		await expect(screen.getByRole('button', { name: 'Отметить изученной' })).toBeDisabled()
 		await expect(args['onStatus-change']).not.toHaveBeenCalled()
 	},
 }

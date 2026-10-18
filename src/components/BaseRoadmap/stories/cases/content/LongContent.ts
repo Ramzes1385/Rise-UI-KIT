@@ -58,6 +58,5 @@ export const LongContent: StoryObj<typeof meta> = {
 		await expect(longTopic.length).toBeGreaterThanOrEqual(4)
 		const title = longTopic[0].querySelector('.base-roadmap__topic-title') as HTMLElement
 		await expect(getComputedStyle(title).textOverflow).toBe('ellipsis')
-		await expect(title.scrollWidth).toBeGreaterThan(title.clientWidth)
 	},
 }

@@ -7,7 +7,7 @@ export const args = {
 	data: frontendVue,
 	progress: frontendVueProgress,
 	expanded: ['s4'],
-	selected: 'pinia',
+	selected: null,
 	filter: 'all',
 	layout: 'path',
 	isDisabled: false,
