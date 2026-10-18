@@ -3584,6 +3584,7 @@ BaseRating
 BaseReasoning
 BaseRequisiteInput
 BaseResult
+BaseRoadmap
 BaseScrollArea
 BaseSearch
 BaseSegmented
@@ -3708,6 +3709,36 @@ const data: ImageMap3DData = { layers: [{ id: 'f1', title: 'Этаж 1', image: 
 **Доступность.** Область карты — одна точка Tab: стрелки — к соседнему объекту по экрану, Home/End, Enter/Space — открыть, Escape, PageUp/PageDown — этажи, Shift + стрелки — поворот и наклон, `+`/`-`/`0` — масштаб и исходный вид; объект и этаж объявляет `aria-live`. Объекты по отдельности не фокусируются; без мыши объект выбирают стрелками в области, скрытыми списками объектов — по одному на каждый этаж, текущий первым (есть без каталога, `aria-current`, `aria-disabled`, ссылки `<a>`), каталогом (`hasDirectory`) или 2D-видом (`has2dToggle`).
 
 ---
+
+## BaseRoadmap
+
+Учебный роадмап: этапы и темы с прогрессом, четыре раскладки, панель темы, фильтр и сводка «N из M тем · % · осталось ≈ ч · Продолжить».
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseRoadmap } from '@ramzes1385/rise-ui-kit'
+import type { RoadmapData, RoadmapProgress } from '@ramzes1385/rise-ui-kit'
+
+const data: RoadmapData = {
+	version: 1,
+	title: 'Старт во Vue',
+	stages: [{ id: 'basics', title: 'Основы', topics: [{ id: 'template', title: 'Шаблоны', hours: 4 }] }],
+}
+const progress = ref<RoadmapProgress>({ version: 1, topics: {} })
+</script>
+
+<template>
+	<BaseRoadmap v-model:progress="progress" :data="data" layout="list" />
+</template>
+```
+
+- Пропсы: `data` (обязателен), `progress` (`v-model`), `storage` (хранилище прогресса, `null` — не хранить), `layout` (`path`, `snake`, `list`, `horizontal`; по умолчанию `path`), `narrowLayout` (раскладка в контейнере уже `narrowWidth`, по умолчанию `list`), `narrowWidth` (560), `expanded`, `selected`, `filter` (`v-model`), `hasSummary`, `hasFilter`, `hasLayoutSwitch`, `detailsPosition` (`side`, `sheet`, `auto`), `isLoading`, `isDisabled`, `beforeStatusChange` (отменяемый хук), `ui`, `variant`, `color`, `sizeScale`.
+- `detailsPosition: 'auto'`: панель справа, только если рядом с ней помещается раскладка (холст «Пути» или «Змейки» + поля + панель 401 px с учётом `sizeScale`; для «Списка» и «Ленты» — контейнер шире 900 px), иначе нижний лист.
+- События: `update:progress`, `update:expanded`, `update:selected`, `update:filter`, `select`, `status-change`, `topic-complete`, `stage-complete`, `progress-load`, `progress-save`, `progress-error`.
+- Слоты: `topic`, `topic-details`, `stage-header`, `material`, `summary-end`, `empty`. Методы `ref`: `setTopicStatus`, `toggleSubtopic`, `expandStage`, `expandAll`, `collapseAll`, `selectTopic`, `continueLearning`, `getTopicState`, `resetProgress`.
+- Доступность: этап — кнопка с `aria-expanded` и `aria-controls` только у раскрытого; статус темы и этапа читается текстом; изменения прогресса озвучивает живой регион `role="status"`; нижний лист возвращает фокус на строку темы. Закрытый этап в «Списке» статичен, в остальных раскладках раскрывается.
+- Токены `--rise-roadmap-*`, словарь — раздел `roadmap`.
 
 ## Новые компоненты (задача components-1a)
 

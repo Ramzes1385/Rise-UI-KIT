@@ -3339,3 +3339,14 @@ app.use(createUiKitConfig({ locale: 'en', theme: 'corporate' }))
 - **BaseIcon**: у иконок направления класс `base-icon--directional`, зеркало через `scale: -1 1` в RTL.
 - **Stylelint**: запрещены физические `margin/padding/border/…-left/right`, `left`/`right`, `text-align: left|right`, `float`; список файлов-исключений — в `package.json → stylelint.overrides` (поповеры, подсказки, индикаторы под JS).
 - **Скрипты**: `check-stories --dir=rtl`, `npm run test:rtl` (`scripts/check-rtl.mjs`).
+
+## Новый компонент: BaseRoadmap (roadmap, фаза 1)
+
+Новый компонент, изменений в существующих нет. API — в `docs/reference/COMPONENTS.md`, раздел «BaseRoadmap».
+
+- **BaseRoadmap** (`Data`): учебный роадмап — этапы и темы, прогресс, раскладки `path`, `snake`, `list`, `horizontal`, панель темы. Регистрируется плагином, экспортируется из кита и с подпути `@ramzes1385/rise-ui-kit/BaseRoadmap`.
+- Новый раздел словаря `roadmap` (`UI_ROADMAP`): приложение с собственным языком через `defineLocale()` добавляет переводы этого раздела.
+- Токены `--rise-roadmap-*` (список — `docs/design/COMPONENT_TOKENS.md`).
+- Прогресс хранится вне компонента: `v-model:progress` или `storage` (`createLocalStorageProgress`); без них прогресс живёт в памяти.
+- **Поведение `detailsPosition: 'auto'`**: панель темы справа, только если рядом с ней помещается раскладка (холст «Пути» или «Змейки» + поля + панель 401 px с учётом `sizeScale`; для «Списка» и «Ленты» — контейнер шире 900 px); иначе нижний лист BaseDrawer. Нужна фиксированная позиция — `side` или `sheet`.
+- Размер входа: в полный вход `index.js` компонент добавляет около 32 КБ gzip; подпуть и tree-shaking приложений не затрагиваются.
