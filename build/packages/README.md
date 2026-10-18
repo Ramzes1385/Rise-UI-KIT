@@ -17,6 +17,7 @@ npm run build
 
 - шаблон проекта: общий `templates/common/` (`tsconfig.json`, `tsconfig.build.json` — типы в `dist`) и свой `templates/<имя>/` (`package.json` с китом и Vue в peerDependencies, `vite.config.ts` — lib-сборка, `vue` и кит внешние, README пакета);
 - компоненты без тестов и stories — папки из `packages.json`; импорты `@components/*`, `@composables/*`, `@utils/*`, `@icons/*` и `@/locales` переписаны на `@ramzes1385/rise-ui-kit/components`, `/composables`, `/utils`, `/icons` и корень, импорты между компонентами одного пакета — на относительные пути. Импорт другого внутреннего модуля кита и относительный импорт за пределы пакета останавливают скрипт с ошибкой;
+- общие папки кита — поле `shared` (например, `scene3d`: 3D-ядро `src/scene3d` без тестов копируется в `src/scene3d` пакета); импорты `@/scene3d/…` переписаны на относительные пути;
 - `src/kitLocale.ts` — если компоненты берут строки интерфейса из внутренних модулей кита (`@/locales/messages`, `/state`, `/warn`): файл читает словарь кита публичным `useLocale()` и отдаёт те же имена (`UI_MAP`, `warn`, `getLocale`…). Разделы `UI_*` берутся из `src/locales/messages.ts`; неизвестное имя останавливает скрипт;
 - SCSS-помощники кита (`_functions.scss`, `_mixins.scss`, `_variables.scss`) в `src/styles/kit/` без токенов.
 
@@ -27,7 +28,8 @@ npm run build
 - `name` — имя пакета в npm;
 - `components` — папки компонентов кита (`src/components/<dir>`) и их место в `src/` пакета (`to`; пустая строка — корень `src/`, там лежит `index.ts` компонента);
 - `entries` — входы пакета, которые создаёт скрипт (`src/<файл>` с `export *` из папок); пусто — вход пакета `src/index.ts` самого компонента;
-- `threeEntries` — входы, которым разрешён `three` (остальные входы его не достигают: проверяет тот же spec).
+- `threeEntries` — входы, которым разрешён `three` (остальные входы его не достигают: проверяет тот же spec);
+- `shared` — общие папки `src/<имя>` кита, которые пакет копирует целиком (необязательное; общие папки так же могут импортировать `three`).
 
 Новый пакет: запись в `packages.json`, папка `templates/<имя>/` (`package.json`, `vite.config.ts`, `README.md`), прогон `build/tests/packageBoundaries.spec.ts`.
 

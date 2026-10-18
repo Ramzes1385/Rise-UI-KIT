@@ -9,14 +9,15 @@ import { uzCard } from './components/card'
 import { uzNotices } from './components/notices'
 import { uzGantt } from './components/data/gantt'
 import { uzFlowMap } from './components/flow/map'
-import { uzMapEditor } from './components/mapEditor'
 import { uzRoadmap } from './components/data/roadmap'
-import { uzImageMap3d } from './components/imageMap3d'
 import { uzTranscript } from './components/transcript'
 import { uzFlowEditor } from './components/flow/editor'
 import { uzFlowPanels } from './components/flow/panels'
 import { uzFlowReview } from './components/flow/review'
+import { uzScene3d } from './components/map/scene3d'
+import { uzMapEditor } from './components/map/mapEditor'
 import type { UiKitLocale } from '../types/locales.types'
+import { uzImageMap3d } from './components/map/imageMap3d'
 import { uzPresentation } from './components/presentation'
 import { uzFlowScenario } from './components/flow/scenario'
 import { uzFormWizard } from './components/form/formWizard'
@@ -60,6 +61,7 @@ export const uz: UiKitLocale = {
 	...uzFlowSequence,
 	...uzFlowC4,
 	...uzFlowEventStorming,
+	...uzScene3d,
 	...uzChat,
 	...uzData,
 	...uzEventCalendar,

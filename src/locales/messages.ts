@@ -5,12 +5,12 @@ import { ruCard } from './ru/components/card'
 import { ruGantt } from './ru/components/data/gantt'
 import { ruFlowMap } from './ru/components/flow/map'
 import { ruRoadmap } from './ru/components/data/roadmap'
-import { ruImageMap3d } from './ru/components/imageMap3d'
 import { ruTranscript } from './ru/components/transcript'
 import { ruFlowEditor } from './ru/components/flow/editor'
 import { ruFlowPanels } from './ru/components/flow/panels'
 import { ruFlowReview } from './ru/components/flow/review'
-import { ruImageMapEditor } from './ru/components/mapEditor'
+import { ruScene3d } from './ru/components/map/scene3d'
+import { ruImageMap3d } from './ru/components/map/imageMap3d'
 import { ruPresentation } from './ru/components/presentation'
 import { ruFlowScenario } from './ru/components/flow/scenario'
 import { ruFormWizard } from './ru/components/form/formWizard'
@@ -20,6 +20,7 @@ import { ruRoadmapEdit } from './ru/components/data/roadmapEdit'
 import { ruRoadmapReview } from './ru/components/data/roadmapReview'
 import { ruFlowDfd } from './ru/components/flow/notations/process/dfd'
 import { ruFlowEpc } from './ru/components/flow/notations/process/epc'
+import { ruImageMapEditor } from './ru/components/map/mapEditor'
 import { ruDashboardGrid } from './ru/components/layout/dashboardGrid'
 import { ruFlowBpmn } from './ru/components/flow/notations/process/bpmn'
 import { ruFlowIdef } from './ru/components/flow/notations/process/idef'
@@ -189,6 +190,8 @@ export const UI_IMAGE_MAP_ROUTES = /* @__PURE__ */ localized('imageMapRoutes', r
 export const UI_IMAGE_MAP_EDITOR = /* @__PURE__ */ localized('imageMapEditor', ruImageMapEditor)
 /** 3D-карта BaseImageMap3D */
 export const UI_IMAGE_MAP_3D = /* @__PURE__ */ localized('imageMap3d', ruImageMap3d)
+/** Общее 3D-ядро: роль области, переход в 2D, камера, подсказка клавиш */
+export const UI_SCENE_3D = /* @__PURE__ */ localized('scene3d', ruScene3d)
 
 /** Карта взаимодействий BaseFlowMap и её нотации */
 export const UI_FLOW_MAP = /* @__PURE__ */ localized('flowMap', ruFlowMap)

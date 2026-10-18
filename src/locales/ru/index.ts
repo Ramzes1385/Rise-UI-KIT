@@ -3,12 +3,12 @@ import { ruCard } from './components/card'
 import { ruGantt } from './components/data/gantt'
 import { ruFlowMap } from './components/flow/map'
 import { ruRoadmap } from './components/data/roadmap'
-import { ruImageMap3d } from './components/imageMap3d'
 import { ruTranscript } from './components/transcript'
 import { ruFlowEditor } from './components/flow/editor'
 import { ruFlowPanels } from './components/flow/panels'
 import { ruFlowReview } from './components/flow/review'
-import { ruImageMapEditor } from './components/mapEditor'
+import { ruScene3d } from './components/map/scene3d'
+import { ruImageMap3d } from './components/map/imageMap3d'
 import { ruPresentation } from './components/presentation'
 import { ruFlowScenario } from './components/flow/scenario'
 import { ruFormWizard } from './components/form/formWizard'
@@ -18,6 +18,7 @@ import { ruRoadmapEdit } from './components/data/roadmapEdit'
 import { ruRoadmapReview } from './components/data/roadmapReview'
 import { ruFlowDfd } from './components/flow/notations/process/dfd'
 import { ruFlowEpc } from './components/flow/notations/process/epc'
+import { ruImageMapEditor } from './components/map/mapEditor'
 import { ruDashboardGrid } from './components/layout/dashboardGrid'
 import { ruFlowBpmn } from './components/flow/notations/process/bpmn'
 import { ruFlowIdef } from './components/flow/notations/process/idef'
@@ -137,6 +138,7 @@ export const ru = {
 	flowSequence: ruFlowSequence,
 	flowC4: ruFlowC4,
 	flowEventStorming: ruFlowEventStorming,
+	scene3d: ruScene3d,
 	chat: ruChat,
 	editor: ruEditor,
 	markdown: ruMarkdown,

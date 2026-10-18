@@ -1,7 +1,7 @@
 /**
  * Готовит содержимое отдельного репозитория пакета: `node build/packages/extract.mjs <имя> <папка>`.
  * Пакеты (media, maps, editor) описаны в packages.json: папки компонентов кита, их место в `src/` пакета и входы.
- * Копирует компоненты без тестов и stories, переписывает импорты кита на публичные входы `@ramzes1385/rise-ui-kit`,
+ * Копирует компоненты и общие папки кита (`shared`, например 3D-ядро `scene3d`) без тестов и stories, переписывает импорты кита на публичные входы `@ramzes1385/rise-ui-kit`,
  * кладёт SCSS-помощники кита и шаблон проекта (общий `templates/common/` и свой `templates/<имя>/`).
  * Строки интерфейса (`@/locales/messages`, `/state`, `/warn` — внутренности кита) идут через `src/kitLocale.ts`:
  * он читает словарь кита публичным `useLocale()`, как плеер.
@@ -39,6 +39,8 @@ const KIT_ENTRIES = [
 
 const INTERNAL = /^@(?:\/|styles\/)/
 
+const SHARED_ROOT = '@/'
+
 const SPECIFIER = /(\bfrom\s+|\bimport\s+|\bimport\(\s*)(['"])([^'"]+)\2/g
 
 const EXTENSIONS = ['', '.ts', '.vue', '.scss', '/index.ts']
@@ -60,11 +62,19 @@ function relativeImport(from, to) {
 	return path.startsWith('.') ? path : `./${path}`
 }
 
-function rewriteImports(source, file, target, components) {
+function sharedPath(specifier, file, src, shared) {
+	const dir = shared.find(name => specifier === `${SHARED_ROOT}${name}` || specifier.startsWith(`${SHARED_ROOT}${name}/`))
+	return dir ? relativeImport(file, join(src, specifier.slice(SHARED_ROOT.length))) : null
+}
+
+function rewriteImports(source, file, target, config) {
+	const { components, shared = [] } = config
 	const src = join(target, 'src')
 	return source.replace(SPECIFIER, (match, keyword, quote, specifier) => {
 		const local = packagePath(specifier, file, src, components)
 		if (local) return `${keyword}${quote}${local}${quote}`
+		const common = sharedPath(specifier, file, src, shared)
+		if (common) return `${keyword}${quote}${common}${quote}`
 		if (LOCALE_SPECIFIER.test(specifier)) return `${keyword}${quote}${relativeImport(file, join(src, LOCALE_MODULE))}${quote}`
 		const entry = KIT_ENTRIES.find(([pattern]) => pattern.test(specifier))
 		if (entry) return `${keyword}${quote}${entry[1]}${quote}`
@@ -88,6 +98,15 @@ function copyComponents(target, components) {
 	const src = join(target, 'src')
 	for (const { dir, to } of components) {
 		cpSync(join(COMPONENTS, dir), join(src, to), {
+			recursive: true,
+			filter: path => !SKIPPED_DIRS.includes(path.split(/[\\/]/).pop()) || !statSync(path).isDirectory(),
+		})
+	}
+}
+
+function copyShared(target, shared) {
+	for (const dir of shared) {
+		cpSync(join(ROOT, 'src', dir), join(target, 'src', dir), {
 			recursive: true,
 			filter: path => !SKIPPED_DIRS.includes(path.split(/[\\/]/).pop()) || !statSync(path).isDirectory(),
 		})
@@ -197,11 +216,12 @@ if (existsSync(target) && readdirSync(target).length > 0) {
 cpSync(join(TEMPLATES, 'common'), target, { recursive: true })
 cpSync(join(TEMPLATES, name), target, { recursive: true })
 copyComponents(target, config.components)
+copyShared(target, config.shared ?? [])
 writeEntries(target, config.entries)
 const files = sourceFiles(join(target, 'src'))
 const localeNames = usedLocaleNames(files)
 for (const file of files) {
-	writeFileSync(file, rewriteImports(readFileSync(file, 'utf8'), file, target, config.components))
+	writeFileSync(file, rewriteImports(readFileSync(file, 'utf8'), file, target, config))
 }
 writeKitLocale(target, localeNames)
 copyKitScss(target)

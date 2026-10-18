@@ -8,14 +8,15 @@ import { enCard } from './components/card'
 import { enNotices } from './components/notices'
 import { enGantt } from './components/data/gantt'
 import { enFlowMap } from './components/flow/map'
-import { enMapEditor } from './components/mapEditor'
 import { enRoadmap } from './components/data/roadmap'
-import { enImageMap3d } from './components/imageMap3d'
 import { enTranscript } from './components/transcript'
 import { enFlowEditor } from './components/flow/editor'
 import { enFlowPanels } from './components/flow/panels'
 import { enFlowReview } from './components/flow/review'
+import { enScene3d } from './components/map/scene3d'
+import { enMapEditor } from './components/map/mapEditor'
 import type { UiKitLocale } from '../types/locales.types'
+import { enImageMap3d } from './components/map/imageMap3d'
 import { enPresentation } from './components/presentation'
 import { enFlowScenario } from './components/flow/scenario'
 import { enFormWizard } from './components/form/formWizard'
@@ -58,6 +59,7 @@ export const en: UiKitLocale = {
 	...enFlowSequence,
 	...enFlowC4,
 	...enFlowEventStorming,
+	...enScene3d,
 	...enChat,
 	...enData,
 	...enEventCalendar,

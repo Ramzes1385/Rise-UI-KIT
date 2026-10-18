@@ -147,6 +147,7 @@ export interface UiKitLocale {
 	flowSequence: Section<'flowSequence'>
 	flowC4: Section<'flowC4'>
 	flowEventStorming: Section<'flowEventStorming'>
+	scene3d: Section<'scene3d'>
 	jsonViewer: Section<'jsonViewer'>
 	map: Section<'map'>
 	textDiff: Section<'textDiff'>

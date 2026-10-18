@@ -8,14 +8,15 @@ import { zhCard } from './components/card'
 import { zhNotices } from './components/notices'
 import { zhGantt } from './components/data/gantt'
 import { zhFlowMap } from './components/flow/map'
-import { zhMapEditor } from './components/mapEditor'
 import { zhRoadmap } from './components/data/roadmap'
-import { zhImageMap3d } from './components/imageMap3d'
 import { zhTranscript } from './components/transcript'
 import { zhFlowEditor } from './components/flow/editor'
 import { zhFlowPanels } from './components/flow/panels'
 import { zhFlowReview } from './components/flow/review'
+import { zhScene3d } from './components/map/scene3d'
+import { zhMapEditor } from './components/map/mapEditor'
 import type { UiKitLocale } from '../types/locales.types'
+import { zhImageMap3d } from './components/map/imageMap3d'
 import { zhPresentation } from './components/presentation'
 import { zhFlowScenario } from './components/flow/scenario'
 import { zhFormWizard } from './components/form/formWizard'
@@ -58,6 +59,7 @@ export const zh: UiKitLocale = {
 	...zhFlowSequence,
 	...zhFlowC4,
 	...zhFlowEventStorming,
+	...zhScene3d,
 	...zhChat,
 	...zhData,
 	...zhEventCalendar,

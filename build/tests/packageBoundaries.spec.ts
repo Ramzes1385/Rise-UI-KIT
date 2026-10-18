@@ -123,12 +123,13 @@ interface PackageConfig {
 	components: Array<{ dir: string; to: string }>
 	entries: Record<string, string[]>
 	threeEntries: string[]
+	shared?: string[]
 }
 
 const PACKAGES: Record<string, PackageConfig> = JSON.parse(readFileSync(join(ROOT, 'build/packages/packages.json'), 'utf8'))
 
 function packageDirs(config: PackageConfig): string[] {
-	return config.components.map(({ dir }) => join(SRC, 'components', dir))
+	return [...config.components.map(({ dir }) => join(SRC, 'components', dir)), ...(config.shared ?? []).map(dir => join(SRC, dir))]
 }
 
 /** Строки и формат языка кита пакет берёт через сгенерированный `src/kitLocale.ts` (публичный `useLocale()`): имена проверяет сборка пакета в extract.mjs */
@@ -210,7 +211,10 @@ describe.each(Object.entries(PACKAGES))('границы пакета %s', (key, 
 	})
 
 	it('three — только в папках входов threeEntries; остальные входы пакета его не достигают', () => {
-		const threeDirs = config.threeEntries.flatMap(entry => config.entries[entry]).map(dir => join(SRC, 'components', dir))
+		const threeDirs = [
+			...config.threeEntries.flatMap(entry => config.entries[entry]).map(dir => join(SRC, 'components', dir)),
+			...(config.shared ?? []).map(dir => join(SRC, dir)),
+		]
 		const offenders = dirs
 			.flatMap(listSources)
 			.filter(importsThree)
@@ -238,11 +242,20 @@ describe.each(Object.entries(PACKAGES))('границы пакета %s', (key, 
 	})
 })
 
-/** Где разрешён `three` (вход `/map3d`): остальной кит и его входы WebGL-движок не тянут */
-const MAP3D_DIR = join(SRC, 'components/BaseImageMap3D')
-const MAP3D_ENTRY = join(SRC, 'map3d.ts')
-/** Модули BaseImageMap3D, которые берёт основной вход (BaseImageMapEditor проверяет 3D-поля JSON): без three и сцены */
-const MAP3D_SHARED = ['model/validate3d.ts']
+/** Где разрешён `three`: 3D-ядро, папки трёх 3D-компонентов и их входы (`/map3d`, `/flow3d`, `/roadmap3d`); остальной кит и его входы WebGL-движок не тянут */
+const THREE_DIRS = [
+	join(SRC, 'scene3d'),
+	join(SRC, 'components/BaseImageMap3D'),
+	join(SRC, 'components/BaseFlowMap3D'),
+	join(SRC, 'components/BaseRoadmap3D'),
+]
+const THREE_ENTRIES = ['map3d.ts', 'flow3d.ts', 'roadmap3d.ts'].map(entry => join(SRC, entry))
+/** Модули в этих папках, которые основной вход берёт без three: проверка 3D-полей данных карты (редактор карты) и таблицы моделей 3D (значок узла 2D) */
+const THREE_SHARED = ['components/BaseImageMap3D/model/validate3d.ts', 'scene3d/models/presets.ts', 'scene3d/models/keywords.ts'].map(
+	file => join(SRC, file),
+)
+
+const isThreeFile = (file: string): boolean => THREE_DIRS.some(dir => file.startsWith(dir + sep)) || THREE_ENTRIES.includes(file)
 
 function importsThree(file: string): boolean {
 	return runtimeSpecifiers(file).some(specifier => /^three(\/.*)?$/.test(specifier))
@@ -263,22 +276,36 @@ function reachableFrom(entries: string[]): Set<string> {
 	return seen
 }
 
-describe('границы входа /map3d', () => {
-	it('three импортируется только из BaseImageMap3D и src/map3d.ts', () => {
+describe('границы 3D: ядро и входы /map3d, /flow3d, /roadmap3d', () => {
+	it('three импортируется только из ядра, трёх 3D-компонентов и их входов', () => {
 		const offenders = listSources(SRC)
-			.filter(file => !file.startsWith(MAP3D_DIR + sep) && file !== MAP3D_ENTRY)
+			.filter(file => !isThreeFile(file))
 			.filter(importsThree)
 			.map(file => relative(ROOT, file))
 		expect(offenders).toEqual([])
 	})
 
-	it('входы кита и /media достигают из BaseImageMap3D только проверки данных без three (редактор карты)', () => {
+	it('входы кита и /media достигают из 3D только данные без three (проверка данных карты, таблицы моделей)', () => {
 		const reachable = [...reachableFrom([...KIT_ENTRIES, 'components/BaseMediaPlayer/index.ts'])]
-		const fromMap3d = reachable
-			.filter(file => file.startsWith(MAP3D_DIR + sep))
-			.map(file => relative(MAP3D_DIR, file).split(sep).join('/'))
-		expect(fromMap3d.filter(file => !MAP3D_SHARED.includes(file))).toEqual([])
+		expect(
+			reachable
+				.filter(isThreeFile)
+				.filter(file => !THREE_SHARED.includes(file))
+				.map(file => relative(ROOT, file)),
+		).toEqual([])
 		expect(reachable.filter(importsThree).map(file => relative(ROOT, file))).toEqual([])
+	})
+
+	it('3D-ядро не зависит от 3D-компонентов и их входов', () => {
+		const components = THREE_DIRS.filter(dir => dir !== join(SRC, 'scene3d'))
+		const offenders = listSources(join(SRC, 'scene3d')).flatMap(file =>
+			runtimeSpecifiers(file)
+				.map(specifier => resolveSpecifier(specifier, file))
+				.filter((target): target is string => target !== null)
+				.filter(target => THREE_ENTRIES.includes(target) || components.some(dir => target.startsWith(dir + sep)))
+				.map(target => `${relative(ROOT, file)} → ${relative(ROOT, target)}`),
+		)
+		expect(offenders).toEqual([])
 	})
 
 	it('вход /map3d импортирует three', () => {

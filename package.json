@@ -1013,7 +1013,8 @@
       "src/integrations/nuxt/runtimePlugin.ts",
       "src/composables/crypto/useCryptoPro/emulation/index.ts",
       "scripts/*.mjs",
-      "build/packages/extract.mjs"
+      "build/packages/extract.mjs",
+      "src/scene3d/**/*.ts"
     ],
     "project": [
       "src/**/*.{ts,vue,mdx}",

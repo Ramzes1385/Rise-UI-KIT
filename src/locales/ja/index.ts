@@ -8,14 +8,15 @@ import { jaCard } from './components/card'
 import { jaNotices } from './components/notices'
 import { jaGantt } from './components/data/gantt'
 import { jaFlowMap } from './components/flow/map'
-import { jaMapEditor } from './components/mapEditor'
 import { jaRoadmap } from './components/data/roadmap'
-import { jaImageMap3d } from './components/imageMap3d'
 import { jaTranscript } from './components/transcript'
 import { jaFlowEditor } from './components/flow/editor'
 import { jaFlowPanels } from './components/flow/panels'
 import { jaFlowReview } from './components/flow/review'
+import { jaScene3d } from './components/map/scene3d'
+import { jaMapEditor } from './components/map/mapEditor'
 import type { UiKitLocale } from '../types/locales.types'
+import { jaImageMap3d } from './components/map/imageMap3d'
 import { jaPresentation } from './components/presentation'
 import { jaFlowScenario } from './components/flow/scenario'
 import { jaFormWizard } from './components/form/formWizard'
@@ -58,6 +59,7 @@ export const ja: UiKitLocale = {
 	...jaFlowSequence,
 	...jaFlowC4,
 	...jaFlowEventStorming,
+	...jaScene3d,
 	...jaChat,
 	...jaData,
 	...jaEventCalendar,

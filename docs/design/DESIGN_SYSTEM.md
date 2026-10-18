@@ -489,3 +489,28 @@
 ```
 
 Компонент может завести свои переменные поверх общих (`--base-modal-motion-distance: var(--rise-motion-distance)`) — это точка стилизации темы.
+
+## 7. Токены 3D-сцены (`--rise-scene3d-*`)
+
+Цвета 3D-сцены (BaseImageMap3D, BaseFlowMap3D, BaseRoadmap3D) читает JS, а не CSS: `src/scene3d/theme/colorResolver.ts` разбирает строку токена с запасным значением (`var(--rise-scene3d-ground, var(--rise-bg))`) в цвет three при каждой смене темы. Токены не объявляются в `_tokens.scss` — приложение переопределяет их там же, где остальные `--rise-*`; без переопределения работает запасной токен кита. Роли и запасные значения — `src/scene3d/theme/scenePalette.ts`.
+
+| Токен | Запасной | Где виден |
+|---|---|---|
+| `--rise-scene3d-ground` | `--rise-bg` | земля под сценой, фон подписей на земле |
+| `--rise-scene3d-grid` | `--rise-border-muted` | сетка земли |
+| `--rise-scene3d-body` | `--rise-primary` | корпус моделей и блоков |
+| `--rise-scene3d-body-soft` | `--rise-primary-soft` | второстепенные поверхности моделей |
+| `--rise-scene3d-metal` | `--rise-bg-muted` | металл, подставки |
+| `--rise-scene3d-screen` | `--rise-primary` | экраны, светящиеся детали |
+| `--rise-scene3d-line` | `--rise-text` | ленты-связи |
+| `--rise-scene3d-line-async` | `--rise-warning` | пунктирные ленты асинхронных связей |
+| `--rise-scene3d-active` | `--rise-chart-2` | активный шаг, токен сценария |
+| `--rise-scene3d-platform` | `--rise-primary-soft` | платформы слоёв и групп |
+| `--rise-scene3d-island-top` | `--rise-bg-elevated` | верх острова роадмапа |
+| `--rise-scene3d-cliff` | `--rise-bg-accented` | уступы острова |
+| `--rise-scene3d-road` | `--rise-bg-inverted` | дорога роадмапа |
+
+- Тёмная ли тема, сцена решает по яркости разобранного `--rise-bg` (порог — относительная яркость 0,179, ниже неё белый текст контрастнее чёрного), а не по имени темы: так работают и брендовые темы. От этого зависят две предустановки света (`src/scene3d/scene/lights.ts`).
+- Тени — от `--rise-shadow-strength`. Цвета этапов роадмапа — `--rise-chart-1…6` по номеру этапа (по кругу).
+- Подписи на земле рисуются цветом `--rise-text`, при контрасте с `--rise-scene3d-ground` ниже 4,5:1 — `--rise-text-muted`, затем чёрным или белым (`groundTextTone`). `npm run test:contrast` WebGL не покрывает: пара проверяется расчётом в юнит-тесте палитры.
+- Тон и вид по умолчанию: `toneMapping = NoToneMapping`, вывод sRGB — цвета сцены совпадают с токенами 2D.

@@ -9,14 +9,15 @@ import { kkCard } from './components/card'
 import { kkNotices } from './components/notices'
 import { kkGantt } from './components/data/gantt'
 import { kkFlowMap } from './components/flow/map'
-import { kkMapEditor } from './components/mapEditor'
 import { kkRoadmap } from './components/data/roadmap'
-import { kkImageMap3d } from './components/imageMap3d'
 import { kkTranscript } from './components/transcript'
 import { kkFlowEditor } from './components/flow/editor'
 import { kkFlowPanels } from './components/flow/panels'
 import { kkFlowReview } from './components/flow/review'
+import { kkScene3d } from './components/map/scene3d'
+import { kkMapEditor } from './components/map/mapEditor'
 import type { UiKitLocale } from '../types/locales.types'
+import { kkImageMap3d } from './components/map/imageMap3d'
 import { kkPresentation } from './components/presentation'
 import { kkFlowScenario } from './components/flow/scenario'
 import { kkFormWizard } from './components/form/formWizard'
@@ -60,6 +61,7 @@ export const kk: UiKitLocale = {
 	...kkFlowSequence,
 	...kkFlowC4,
 	...kkFlowEventStorming,
+	...kkScene3d,
 	...kkChat,
 	...kkData,
 	...kkEventCalendar,

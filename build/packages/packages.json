@@ -20,7 +20,8 @@
 			"index.ts": ["BaseMap", "BaseImageMap", "BaseImageMapEditor"],
 			"map3d.ts": ["BaseImageMap3D"]
 		},
-		"threeEntries": ["map3d.ts"]
+		"threeEntries": ["map3d.ts"],
+		"shared": ["scene3d"]
 	},
 	"editor": {
 		"name": "@ramzes1385/rise-editor",
