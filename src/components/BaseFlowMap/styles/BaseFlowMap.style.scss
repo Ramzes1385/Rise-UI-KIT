@@ -18,4 +18,14 @@
 	border-radius: sz(var(--rise-radius-xl));
 	color: var(--rise-text);
 	background-color: var(--rise-flow-map-canvas-bg, var(--rise-bg-muted));
+
+	&--outline {
+		border-color: var(--rise-border-accented);
+	}
+
+	&--ghost {
+		border-color: transparent;
+		border-radius: 0;
+		background-color: transparent;
+	}
 }

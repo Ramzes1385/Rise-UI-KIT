@@ -129,7 +129,7 @@ function labelRequests(edges: readonly FlowEdge[], routes: Record<string, FlowRo
 }
 
 function fallbackRouting(scope: FlowLayoutScope): string {
-	return scope.data.layout?.routing ?? scope.notation.layout?.routing ?? scope.overrides?.routing ?? 'curved'
+	return scope.overrides?.routing ?? scope.data.layout?.routing ?? scope.notation.layout?.routing ?? 'curved'
 }
 
 export function computeRoutes(

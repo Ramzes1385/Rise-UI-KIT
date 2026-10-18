@@ -1,5 +1,6 @@
 <template>
-	<section
+	<div
+		role="group"
 		:class="[chrome.ui('list'), !chrome.hasList && 'base-flow-map__sr']"
 		:tabindex="chrome.hasList ? 0 : undefined"
 		:aria-label="UI_FLOW_MAP.LIST_TITLE">
@@ -19,7 +20,7 @@
 				</button>
 			</li>
 		</ul>
-	</section>
+	</div>
 </template>
 
 <script setup lang="ts">

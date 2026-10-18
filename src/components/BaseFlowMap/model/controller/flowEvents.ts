@@ -18,12 +18,16 @@ function callSafely(name: string, handler: (value: never) => void, value: unknow
 	}
 }
 
-function handlerName(listener: unknown): string {
-	return typeof listener === 'function' ? listener.name : ''
+function handlerName(listener: { name: string }): string {
+	return listener.name
 }
 
 function subMeta(sub: FlowEventSub, results: ReadonlyMap<string, string>): FlowBindingMeta {
 	return { id: sub.id, name: sub.name, handler: handlerName(sub.handler), lastResult: results.get(sub.name) }
+}
+
+function ownMeta(name: string, listener: { name: string }, results: ReadonlyMap<string, string>): FlowBindingMeta {
+	return { id: `event:${name}`, name, handler: handlerName(listener), lastResult: results.get(name) }
 }
 
 export function createFlowEvents(options: FlowModelOptions): FlowEventBus {
@@ -52,9 +56,7 @@ export function createFlowEvents(options: FlowModelOptions): FlowEventBus {
 	const list = (): FlowBinding[] => {
 		const fromSubs = subs.map(sub => toBinding(subMeta(sub, results), sub))
 		const listeners = Object.entries(options.listeners?.() ?? {}).filter(([, listener]) => typeof listener === 'function')
-		const fromOwn = listeners.map(([name, listener]) =>
-			toBinding({ id: `event:${name}`, name, handler: handlerName(listener), lastResult: results.get(name) }, ownOf(name)),
-		)
+		const fromOwn = listeners.map(([name, listener]) => toBinding(ownMeta(name, listener as { name: string }, results), ownOf(name)))
 		return [...fromOwn, ...fromSubs]
 	}
 

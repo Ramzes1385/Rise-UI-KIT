@@ -23,7 +23,7 @@ function placeOne(marker: FlowShapeMarker, size: FlowSize, index: number): FlowP
 	const sign = marker.placement === 'center' ? CENTER_SIGN : SIGN
 	const left = x + { start: 0, middle: -sign / 2, end: -sign }[anchor]
 	return {
-		key: `${index}:${marker.placement}:${marker.text ?? marker.path ?? ''}`,
+		key: `${index}:${marker.placement}`,
 		text: marker.text,
 		path: marker.path,
 		x: marker.path ? left : x,
