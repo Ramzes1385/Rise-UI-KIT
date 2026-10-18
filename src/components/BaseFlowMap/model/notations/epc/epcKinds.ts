@@ -16,7 +16,7 @@ const ARROW = 'M4 12h14M13 6l6 6-6 6'
 
 const tinted = (token: string): Pick<FlowShapeDef, 'fill' | 'stroke' | 'text'> => ({
 	fill: `var(${token})`,
-	stroke: `color-mix(in srgb, var(${token}) 45%, ${INK})`,
+	stroke: `color-mix(in srgb, var(${token}) 65%, var(--rise-text-highlighted))`,
 	text: INK,
 })
 

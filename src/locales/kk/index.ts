@@ -21,10 +21,14 @@ import { kkFormWizard } from './components/form/formWizard'
 import { kkEventCalendar } from './components/eventCalendar'
 import { kkFileManager } from './components/data/fileManager'
 import { kkFlowDfd } from './components/flow/notations/process/dfd'
+import { kkFlowEpc } from './components/flow/notations/process/epc'
 import { kkDashboardGrid } from './components/layout/dashboardGrid'
 import { kkFlowBpmn } from './components/flow/notations/process/bpmn'
 import { kkFlowIdef } from './components/flow/notations/process/idef'
+import { kkFlowC4 } from './components/flow/notations/architecture/c4'
+import { kkFlowSequence } from './components/flow/notations/architecture/sequence'
 import { kkFlowServices } from './components/flow/notations/architecture/services'
+import { kkFlowEventStorming } from './components/flow/notations/architecture/eventStorming'
 
 /** Қазақ тілінің сөздігі (кирилл жазуы). Кілттер мен `{name}` орындары орыс сөздігіндегідей (`ru/`) */
 export const kk: UiKitLocale = {
@@ -46,6 +50,10 @@ export const kk: UiKitLocale = {
 	...kkFlowBpmn,
 	...kkFlowIdef,
 	...kkFlowDfd,
+	...kkFlowEpc,
+	...kkFlowSequence,
+	...kkFlowC4,
+	...kkFlowEventStorming,
 	...kkChat,
 	...kkData,
 	...kkEventCalendar,

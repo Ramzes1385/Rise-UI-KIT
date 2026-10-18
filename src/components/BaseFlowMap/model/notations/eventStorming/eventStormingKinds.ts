@@ -10,7 +10,12 @@ function sticker(token: string, options: Pick<FlowNodeKindDef, 'label' | 'model3
 		render: 'html',
 		size: STICKER,
 		paletteGroup: 'event-storming',
-		shape: { shape: 'note', fill: `var(${token})`, stroke: `color-mix(in srgb, var(${token}) 60%, ${INK})`, text: INK },
+		shape: {
+			shape: 'note',
+			fill: `var(${token})`,
+			stroke: `color-mix(in srgb, var(${token}) 65%, var(--rise-text-highlighted))`,
+			text: INK,
+		},
 		...options,
 	}
 }

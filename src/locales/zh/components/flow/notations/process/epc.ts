@@ -1,0 +1,28 @@
+/** Нотация EPC (eEPC) BaseFlowMap: виды, правила, предупреждения */
+export const zhFlowEpc = {
+	flowEpc: {
+		NOTATION: 'EPC / eEPC',
+		RULES_SUMMARY: '事件与功能交替出现；流程以事件开始并以事件结束；事件之后不能接 OR 分支',
+		EVENT: '事件',
+		FUNCTION: '功能',
+		AND: 'AND 连接器',
+		OR: 'OR 连接器',
+		XOR: 'XOR 连接器',
+		ORG_UNIT: '组织单元',
+		INFORMATION: '信息对象',
+		PROCESS_INTERFACE: '流程接口',
+		CONTROL: '控制流',
+		ASSIGNMENT: '与功能的关联',
+		PROP_LATENCY: '执行时间（毫秒）',
+		SIMULATION: '流程演示',
+		RULE_EVENT_EVENT: '不允许连续两个事件——中间必须有功能',
+		RULE_FUNCTION_FUNCTION: '不允许连续两个功能——中间必须有事件',
+		RULE_EVENT_SPLIT: '事件之后不能接 OR 或 XOR 分支：事件不做决策，由功能决策',
+		RULE_ASSIGNMENT: '组织单元和信息对象只能与功能相连',
+		RULE_ASIDE_FLOW: '组织单元和信息对象不属于控制流',
+		WARN_START: '流程以“{name}”开始——必须以事件开始',
+		WARN_END: '流程在“{name}”结束——必须以事件结束',
+		WARN_ALTERNATION: '事件与功能未交替：“{source}” → “{target}”',
+		WARN_EVENT_SPLIT: '“{name}”之后接了 OR 或 XOR 分支',
+	},
+}

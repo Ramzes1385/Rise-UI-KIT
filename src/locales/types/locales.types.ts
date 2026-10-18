@@ -141,6 +141,10 @@ export interface UiKitLocale {
 	flowBpmn: Section<'flowBpmn'>
 	flowIdef: Section<'flowIdef'>
 	flowDfd: Section<'flowDfd'>
+	flowEpc: Section<'flowEpc'>
+	flowSequence: Section<'flowSequence'>
+	flowC4: Section<'flowC4'>
+	flowEventStorming: Section<'flowEventStorming'>
 	jsonViewer: Section<'jsonViewer'>
 	map: Section<'map'>
 	textDiff: Section<'textDiff'>

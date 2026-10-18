@@ -23,4 +23,3 @@ export const flowC4 = defineFlowNotation({
 })
 
 export { c4CardLine } from './c4Card'
-export { collapsedGroupIds } from './c4Zoom'

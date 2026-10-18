@@ -1,0 +1,28 @@
+/** Нотация EPC (eEPC) BaseFlowMap: виды, правила, предупреждения */
+export const enFlowEpc = {
+	flowEpc: {
+		NOTATION: 'EPC / eEPC',
+		RULES_SUMMARY: 'events and functions alternate; a process starts and ends with an event; no OR split after an event',
+		EVENT: 'Event',
+		FUNCTION: 'Function',
+		AND: 'AND connector',
+		OR: 'OR connector',
+		XOR: 'XOR connector',
+		ORG_UNIT: 'Organizational unit',
+		INFORMATION: 'Information object',
+		PROCESS_INTERFACE: 'Process interface',
+		CONTROL: 'Control flow',
+		ASSIGNMENT: 'Assignment to a function',
+		PROP_LATENCY: 'Execution time, ms',
+		SIMULATION: 'Process walk-through',
+		RULE_EVENT_EVENT: 'Two events in a row are not allowed — a function must come between them',
+		RULE_FUNCTION_FUNCTION: 'Two functions in a row are not allowed — an event must come between them',
+		RULE_EVENT_SPLIT: 'An event cannot be followed by an OR or XOR split: events do not decide, functions do',
+		RULE_ASSIGNMENT: 'An organizational unit or information object connects to a function only',
+		RULE_ASIDE_FLOW: 'An organizational unit or information object is not part of the control flow',
+		WARN_START: 'The process starts with “{name}” — it must start with an event',
+		WARN_END: 'The process ends at “{name}” — it must end with an event',
+		WARN_ALTERNATION: 'Events and functions do not alternate: “{source}” → “{target}”',
+		WARN_EVENT_SPLIT: '“{name}” is followed by an OR or XOR split',
+	},
+}

@@ -1,0 +1,28 @@
+/** Нотация EPC (eEPC) BaseFlowMap: виды, правила, предупреждения */
+export const jaFlowEpc = {
+	flowEpc: {
+		NOTATION: 'EPC / eEPC',
+		RULES_SUMMARY: 'イベントと機能が交互に並ぶ。プロセスはイベントで始まりイベントで終わる。イベントの後に OR 分岐は置かない',
+		EVENT: 'イベント',
+		FUNCTION: '機能',
+		AND: 'AND コネクタ',
+		OR: 'OR コネクタ',
+		XOR: 'XOR コネクタ',
+		ORG_UNIT: '組織単位',
+		INFORMATION: '情報オブジェクト',
+		PROCESS_INTERFACE: 'プロセスインターフェース',
+		CONTROL: '制御フロー',
+		ASSIGNMENT: '機能への割り当て',
+		PROP_LATENCY: '実行時間（ミリ秒）',
+		SIMULATION: 'プロセスの流れ',
+		RULE_EVENT_EVENT: 'イベントを連続させることはできません。間に機能が必要です',
+		RULE_FUNCTION_FUNCTION: '機能を連続させることはできません。間にイベントが必要です',
+		RULE_EVENT_SPLIT: 'イベントの後に OR / XOR の分岐は置けません。判断するのはイベントではなく機能です',
+		RULE_ASSIGNMENT: '組織単位と情報オブジェクトは機能にのみ接続できます',
+		RULE_ASIDE_FLOW: '組織単位と情報オブジェクトは制御フローに含まれません',
+		WARN_START: 'プロセスが「{name}」から始まっています。イベントで始める必要があります',
+		WARN_END: 'プロセスが「{name}」で終わっています。イベントで終える必要があります',
+		WARN_ALTERNATION: 'イベントと機能が交互になっていません：「{source}」→「{target}」',
+		WARN_EVENT_SPLIT: '「{name}」の後に OR / XOR の分岐があります',
+	},
+}

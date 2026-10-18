@@ -21,10 +21,14 @@ import { uzFormWizard } from './components/form/formWizard'
 import { uzEventCalendar } from './components/eventCalendar'
 import { uzFileManager } from './components/data/fileManager'
 import { uzFlowDfd } from './components/flow/notations/process/dfd'
+import { uzFlowEpc } from './components/flow/notations/process/epc'
 import { uzDashboardGrid } from './components/layout/dashboardGrid'
 import { uzFlowBpmn } from './components/flow/notations/process/bpmn'
 import { uzFlowIdef } from './components/flow/notations/process/idef'
+import { uzFlowC4 } from './components/flow/notations/architecture/c4'
+import { uzFlowSequence } from './components/flow/notations/architecture/sequence'
 import { uzFlowServices } from './components/flow/notations/architecture/services'
+import { uzFlowEventStorming } from './components/flow/notations/architecture/eventStorming'
 
 /** Oʻzbek tili lugʻati (lotin yozuvi). Kalitlar va `{name}` oʻrinlari rus lugʻatidagidek (`ru/`) */
 export const uz: UiKitLocale = {
@@ -46,6 +50,10 @@ export const uz: UiKitLocale = {
 	...uzFlowBpmn,
 	...uzFlowIdef,
 	...uzFlowDfd,
+	...uzFlowEpc,
+	...uzFlowSequence,
+	...uzFlowC4,
+	...uzFlowEventStorming,
 	...uzChat,
 	...uzData,
 	...uzEventCalendar,

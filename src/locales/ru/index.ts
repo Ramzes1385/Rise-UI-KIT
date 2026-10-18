@@ -13,11 +13,15 @@ import { ruFormWizard } from './components/form/formWizard'
 import { ruEventCalendar } from './components/eventCalendar'
 import { ruFileManager } from './components/data/fileManager'
 import { ruFlowDfd } from './components/flow/notations/process/dfd'
+import { ruFlowEpc } from './components/flow/notations/process/epc'
 import { ruDashboardGrid } from './components/layout/dashboardGrid'
 import { ruFlowBpmn } from './components/flow/notations/process/bpmn'
 import { ruFlowIdef } from './components/flow/notations/process/idef'
+import { ruFlowC4 } from './components/flow/notations/architecture/c4'
 import { ruBanner, ruCookieConsent, ruResult } from './components/notices'
+import { ruFlowSequence } from './components/flow/notations/architecture/sequence'
 import { ruFlowServices } from './components/flow/notations/architecture/services'
+import { ruFlowEventStorming } from './components/flow/notations/architecture/eventStorming'
 import { ruAi, ruChat, ruCommentThread, ruEditor, ruEmoji, ruMarkdown, ruMention } from './chat'
 import {
 	ruAudio,
@@ -123,6 +127,10 @@ export const ru = {
 	flowBpmn: ruFlowBpmn,
 	flowIdef: ruFlowIdef,
 	flowDfd: ruFlowDfd,
+	flowEpc: ruFlowEpc,
+	flowSequence: ruFlowSequence,
+	flowC4: ruFlowC4,
+	flowEventStorming: ruFlowEventStorming,
 	chat: ruChat,
 	editor: ruEditor,
 	markdown: ruMarkdown,

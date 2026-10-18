@@ -20,10 +20,14 @@ import { enFormWizard } from './components/form/formWizard'
 import { enEventCalendar } from './components/eventCalendar'
 import { enFileManager } from './components/data/fileManager'
 import { enFlowDfd } from './components/flow/notations/process/dfd'
+import { enFlowEpc } from './components/flow/notations/process/epc'
 import { enDashboardGrid } from './components/layout/dashboardGrid'
 import { enFlowBpmn } from './components/flow/notations/process/bpmn'
 import { enFlowIdef } from './components/flow/notations/process/idef'
+import { enFlowC4 } from './components/flow/notations/architecture/c4'
+import { enFlowSequence } from './components/flow/notations/architecture/sequence'
 import { enFlowServices } from './components/flow/notations/architecture/services'
+import { enFlowEventStorming } from './components/flow/notations/architecture/eventStorming'
 
 /** Английский словарь кита. Ключи и места для значений — как в русском (`ru/`) */
 export const en: UiKitLocale = {
@@ -44,6 +48,10 @@ export const en: UiKitLocale = {
 	...enFlowBpmn,
 	...enFlowIdef,
 	...enFlowDfd,
+	...enFlowEpc,
+	...enFlowSequence,
+	...enFlowC4,
+	...enFlowEventStorming,
 	...enChat,
 	...enData,
 	...enEventCalendar,

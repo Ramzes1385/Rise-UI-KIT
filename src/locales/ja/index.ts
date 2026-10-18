@@ -20,10 +20,14 @@ import { jaFormWizard } from './components/form/formWizard'
 import { jaEventCalendar } from './components/eventCalendar'
 import { jaFileManager } from './components/data/fileManager'
 import { jaFlowDfd } from './components/flow/notations/process/dfd'
+import { jaFlowEpc } from './components/flow/notations/process/epc'
 import { jaDashboardGrid } from './components/layout/dashboardGrid'
 import { jaFlowBpmn } from './components/flow/notations/process/bpmn'
 import { jaFlowIdef } from './components/flow/notations/process/idef'
+import { jaFlowC4 } from './components/flow/notations/architecture/c4'
+import { jaFlowSequence } from './components/flow/notations/architecture/sequence'
 import { jaFlowServices } from './components/flow/notations/architecture/services'
+import { jaFlowEventStorming } from './components/flow/notations/architecture/eventStorming'
 
 /** Японский словарь кита. Ключи и места для значений — как в русском (`ru/`) */
 export const ja: UiKitLocale = {
@@ -44,6 +48,10 @@ export const ja: UiKitLocale = {
 	...jaFlowBpmn,
 	...jaFlowIdef,
 	...jaFlowDfd,
+	...jaFlowEpc,
+	...jaFlowSequence,
+	...jaFlowC4,
+	...jaFlowEventStorming,
 	...jaChat,
 	...jaData,
 	...jaEventCalendar,

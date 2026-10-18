@@ -1,0 +1,22 @@
+/** Нотация C4 BaseFlowMap: виды, правила, предупреждения */
+export const jaFlowC4 = {
+	flowC4: {
+		NOTATION: 'C4',
+		RULES_SUMMARY: 'すべての関係にラベルを付ける。境界にはコンテナとコンポーネントを置き、人物は外に置く',
+		PERSON: '人物',
+		SOFTWARE_SYSTEM: 'ソフトウェアシステム',
+		CONTAINER: 'コンテナ',
+		COMPONENT: 'コンポーネント',
+		EXTERNAL_PERSON: '外部の人物',
+		EXTERNAL_SYSTEM: '外部システム',
+		ENTERPRISE_BOUNDARY: '企業境界',
+		SYSTEM_BOUNDARY: 'システム境界',
+		CONTAINER_BOUNDARY: 'コンテナ境界',
+		RELATIONSHIP: '関係',
+		PROP_TECHNOLOGY: '技術',
+		CARD_LINE: '[{kind}：{technology}]',
+		CARD_LINE_PLAIN: '[{kind}]',
+		RULE_CONTAIN: '「{group}」に置けるのは次のみです：{kinds}',
+		WARN_NO_LABEL: '関係「{source}」→「{target}」にラベルがありません。C4 ではすべての線にラベルを付けます',
+	},
+}

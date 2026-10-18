@@ -33,6 +33,7 @@ const RULES: readonly PathRule[] = [
 	{ pattern: /^media-(.+)$/, path: match => ['media', match[1]], type: null },
 	{ pattern: /^chart-(\d+)$/, path: match => ['chart', match[1]], type: 'color' },
 	{ pattern: /^code-(.+)$/, path: match => ['code', match[1]], type: 'color' },
+	{ pattern: /^flow-(.+)$/, path: match => ['flow', match[1]], type: 'color' },
 	{
 		pattern: /^(?:bg|text|border|on|overlay|focus-ring|primary|success|info|warning|error)(?:-.+)?$/,
 		path: match => ['color', match[0]],

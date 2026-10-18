@@ -17,7 +17,12 @@ function card(
 		render: 'html',
 		size: CARD_SIZE,
 		paletteGroup: 'c4',
-		shape: { shape: 'round-rect', fill: `var(${token})`, stroke: `color-mix(in srgb, var(${token}) 55%, ${INK})`, text },
+		shape: {
+			shape: 'round-rect',
+			fill: `var(${token})`,
+			stroke: `color-mix(in srgb, var(${token}) 65%, var(--rise-text-highlighted))`,
+			text,
+		},
 		...options,
 	}
 }

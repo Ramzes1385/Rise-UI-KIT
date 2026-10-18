@@ -20,10 +20,14 @@ import { zhFormWizard } from './components/form/formWizard'
 import { zhEventCalendar } from './components/eventCalendar'
 import { zhFileManager } from './components/data/fileManager'
 import { zhFlowDfd } from './components/flow/notations/process/dfd'
+import { zhFlowEpc } from './components/flow/notations/process/epc'
 import { zhDashboardGrid } from './components/layout/dashboardGrid'
 import { zhFlowBpmn } from './components/flow/notations/process/bpmn'
 import { zhFlowIdef } from './components/flow/notations/process/idef'
+import { zhFlowC4 } from './components/flow/notations/architecture/c4'
+import { zhFlowSequence } from './components/flow/notations/architecture/sequence'
 import { zhFlowServices } from './components/flow/notations/architecture/services'
+import { zhFlowEventStorming } from './components/flow/notations/architecture/eventStorming'
 
 /** Китайский упрощённый словарь кита. Ключи и места для значений — как в русском (`ru/`) */
 export const zh: UiKitLocale = {
@@ -44,6 +48,10 @@ export const zh: UiKitLocale = {
 	...zhFlowBpmn,
 	...zhFlowIdef,
 	...zhFlowDfd,
+	...zhFlowEpc,
+	...zhFlowSequence,
+	...zhFlowC4,
+	...zhFlowEventStorming,
 	...zhChat,
 	...zhData,
 	...zhEventCalendar,

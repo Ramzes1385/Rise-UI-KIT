@@ -15,11 +15,15 @@ import { ruFormWizard } from './ru/components/form/formWizard'
 import { ruEventCalendar } from './ru/components/eventCalendar'
 import { ruFileManager } from './ru/components/data/fileManager'
 import { ruFlowDfd } from './ru/components/flow/notations/process/dfd'
+import { ruFlowEpc } from './ru/components/flow/notations/process/epc'
 import { ruDashboardGrid } from './ru/components/layout/dashboardGrid'
 import { ruFlowBpmn } from './ru/components/flow/notations/process/bpmn'
 import { ruFlowIdef } from './ru/components/flow/notations/process/idef'
+import { ruFlowC4 } from './ru/components/flow/notations/architecture/c4'
 import { ruBanner, ruCookieConsent, ruResult } from './ru/components/notices'
+import { ruFlowSequence } from './ru/components/flow/notations/architecture/sequence'
 import { ruFlowServices } from './ru/components/flow/notations/architecture/services'
+import { ruFlowEventStorming } from './ru/components/flow/notations/architecture/eventStorming'
 import { ruAi, ruChat, ruCommentThread, ruEditor, ruEmoji, ruMarkdown, ruMention } from './ru/chat'
 import {
 	ruAudio,
@@ -190,6 +194,10 @@ export const UI_FLOW_SERVICES = /* @__PURE__ */ localized('flowServices', ruFlow
 export const UI_FLOW_BPMN = /* @__PURE__ */ localized('flowBpmn', ruFlowBpmn)
 export const UI_FLOW_IDEF = /* @__PURE__ */ localized('flowIdef', ruFlowIdef)
 export const UI_FLOW_DFD = /* @__PURE__ */ localized('flowDfd', ruFlowDfd)
+export const UI_FLOW_EPC = /* @__PURE__ */ localized('flowEpc', ruFlowEpc)
+export const UI_FLOW_SEQUENCE = /* @__PURE__ */ localized('flowSequence', ruFlowSequence)
+export const UI_FLOW_C4 = /* @__PURE__ */ localized('flowC4', ruFlowC4)
+export const UI_FLOW_EVENT_STORMING = /* @__PURE__ */ localized('flowEventStorming', ruFlowEventStorming)
 
 /** Просмотр JSON */
 export const UI_JSON_VIEWER = /* @__PURE__ */ localized('jsonViewer', ruJsonViewer)

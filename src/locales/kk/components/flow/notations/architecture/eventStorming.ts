@@ -1,0 +1,26 @@
+/** Нотация Event Storming BaseFlowMap: виды, правила, предупреждения */
+export const kkFlowEventStorming = {
+	flowEventStorming: {
+		NOTATION: 'Event Storming',
+		RULES_SUMMARY: 'актор команда береді, агрегат немесе сыртқы жүйе оқиға тудырады, саясат келесі команданы іске қосады',
+		DOMAIN_EVENT: 'Домен оқиғасы',
+		COMMAND: 'Команда',
+		ACTOR: 'Актор',
+		AGGREGATE: 'Агрегат',
+		POLICY: 'Саясат',
+		READ_MODEL: 'Оқу моделі',
+		EXTERNAL_SYSTEM: 'Сыртқы жүйе',
+		HOTSPOT: 'Қызу нүкте',
+		OPPORTUNITY: 'Мүмкіндік',
+		CONTEXT: 'Шектелген контекст',
+		FLOW: 'Ағын',
+		WARN_GRAMMAR: 'Ағында «{source}» → «{target}» өтуі жоқ: {expected}',
+		EXPECTED_ACTOR: 'актор команда береді',
+		EXPECTED_COMMAND: 'команданы агрегат немесе сыртқы жүйе қабылдайды',
+		EXPECTED_AGGREGATE: 'агрегат оқиға тудырады',
+		EXPECTED_EXTERNAL: 'сыртқы жүйе оқиға тудырады',
+		EXPECTED_EVENT: 'оқиға саясатты іске қосады, оқу моделін жаңартады немесе командаға әкеледі',
+		EXPECTED_POLICY: 'саясат команданы іске қосады',
+		EXPECTED_READ_MODEL: 'оқу моделі акторға көрсетіледі',
+	},
+}
