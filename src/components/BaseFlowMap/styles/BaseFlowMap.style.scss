@@ -3,6 +3,7 @@
 @use './edges';
 @use './chrome';
 @use './scenario';
+@use './panels';
 
 .base-flow-map {
 	@include custom-color-scope;
@@ -18,4 +19,3 @@
 	color: var(--rise-text);
 	background-color: var(--rise-flow-map-canvas-bg, var(--rise-bg-muted));
 }
-@use 'panels';
