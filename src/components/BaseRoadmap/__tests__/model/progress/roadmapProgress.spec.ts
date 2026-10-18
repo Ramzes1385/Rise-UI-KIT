@@ -1,6 +1,7 @@
 import { progressOf, topic } from '../fixtures/roadmapFixtures'
 import {
 	emptyRoadmapProgress,
+	markedSubtopics,
 	mergeRoadmapProgress,
 	normalizeRoadmapProgress,
 	roadmapProgressKey,
@@ -68,6 +69,21 @@ describe('withTopicStatus', () => {
 	it('null у темы без прогресса — тот же объект', () => {
 		const base = progressOf()
 		expect(withTopicStatus(base, { topicId: 'a', status: null, now: NOW })).toBe(base)
+	})
+})
+
+describe('markedSubtopics', () => {
+	const target = topic('a', { subtopics })
+
+	it('у явного done — все подтемы темы', () => {
+		expect(markedSubtopics({ status: 'done', subtopics: ['x'] }, target)).toEqual(['x', 'y'])
+		expect(markedSubtopics({ status: 'done' }, topic('b'))).toEqual([])
+	})
+
+	it('иначе — отмеченные из прогресса; нет записи или массива — пусто', () => {
+		expect(markedSubtopics({ status: 'skipped', subtopics: ['y'] }, target)).toEqual(['y'])
+		expect(markedSubtopics({ status: 'in-progress' }, target)).toEqual([])
+		expect(markedSubtopics(undefined, target)).toEqual([])
 	})
 })
 

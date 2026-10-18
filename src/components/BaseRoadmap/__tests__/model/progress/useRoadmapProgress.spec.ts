@@ -155,6 +155,29 @@ describe('useRoadmapProgress: снятие подтемы у изученной 
 		expect(emitted('status-change')).toHaveLength(1)
 	})
 
+	it('toggleSubtopic без isDone у изученной темы без массива подтем снимает подтему', async () => {
+		const beforeStatusChange = vi.fn()
+		const { model, emitted, order } = mountRoadmapModel({
+			data,
+			progress: progressOf({ t: { status: 'done' } }),
+			beforeStatusChange,
+		})
+		expect(await model.toggleSubtopic('t', 'y')).toBe(true)
+		expect(model.progress.value.topics.t).toEqual({ subtopics: ['x', 'z'], updatedAt: expect.any(String) })
+		expect(model.getTopicState('t')).toMatchObject({ status: 'in-progress', done: 2, total: 3 })
+		expect(beforeStatusChange).toHaveBeenCalledOnce()
+		expect(order).toEqual(['update:progress', 'status-change'])
+		expect(emitted('status-change')[0]).toEqual([expect.objectContaining({ from: 'done', to: 'in-progress', source: 'subtopic' })])
+	})
+
+	it('toggleSubtopic без isDone у обычной темы переключает как раньше', async () => {
+		const { model } = mountRoadmapModel({ data, progress: progressOf({ t: { subtopics: ['x'] } }) })
+		expect(await model.toggleSubtopic('t', 'y')).toBe(true)
+		expect(model.progress.value.topics.t?.subtopics).toEqual(['x', 'y'])
+		expect(await model.toggleSubtopic('t', 'x')).toBe(true)
+		expect(model.progress.value.topics.t?.subtopics).toEqual(['y'])
+	})
+
 	it('отметка подтемы у изученной темы — false, событий нет', async () => {
 		const { model, order } = mountRoadmapModel({ data, progress: progressOf({ t: { status: 'done' } }) })
 		expect(await model.toggleSubtopic('t', 'x', true)).toBe(false)
