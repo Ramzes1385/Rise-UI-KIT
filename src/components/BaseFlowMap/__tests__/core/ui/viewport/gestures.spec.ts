@@ -129,4 +129,28 @@ describe('BaseFlowMap жесты', () => {
 		await fireEvent.pointerMove(board(), { pointerId: 2, clientX: 140, clientY: 100 })
 		expect(sceneView(container)).toEqual(start)
 	})
+
+	it('пан начинается после сдвига больше 4 px и считает его от точки нажатия', async () => {
+		const { container } = await opened()
+		const start = sceneView(container)
+		await fireEvent.pointerDown(board(), { pointerId: 1, clientX: 10, clientY: 10 })
+		await fireEvent.pointerMove(board(), { pointerId: 1, clientX: 12, clientY: 12 })
+		await fireEvent.pointerMove(board(), { pointerId: 1, clientX: 14, clientY: 10 })
+		expect(sceneView(container)).toEqual(start)
+		await fireEvent.pointerMove(board(), { pointerId: 1, clientX: 25, clientY: 10 })
+		expect(sceneView(container)).toEqual({ x: start.x + 15, y: start.y, zoom: start.zoom })
+		await fireEvent.pointerMove(board(), { pointerId: 1, clientX: 26, clientY: 10 })
+		expect(sceneView(container).x).toBe(start.x + 16)
+	})
+
+	it('после отпускания новый жест снова ждёт порога', async () => {
+		const { container } = await opened()
+		const start = sceneView(container)
+		await fireEvent.pointerDown(board(), { pointerId: 1, clientX: 0, clientY: 0 })
+		await fireEvent.pointerMove(board(), { pointerId: 1, clientX: 20, clientY: 0 })
+		await fireEvent.pointerUp(board(), { pointerId: 1 })
+		await fireEvent.pointerDown(board(), { pointerId: 1, clientX: 50, clientY: 50 })
+		await fireEvent.pointerMove(board(), { pointerId: 1, clientX: 52, clientY: 50 })
+		expect(sceneView(container).x).toBe(start.x + 20)
+	})
 })

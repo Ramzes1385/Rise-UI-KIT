@@ -249,4 +249,29 @@ describe('BaseFlowMap холст', () => {
 		expect(texts).toEqual(['Под', ''])
 		expect(container.querySelector('.base-flow-map__edge--dotted .base-flow-map__edge-line')).toHaveAttribute('marker-start')
 	})
+
+	it('знаки фигур SVG-узла рисуются текстом и контуром', () => {
+		const kind = {
+			label: () => 'Функция',
+			render: 'svg' as const,
+			shape: {
+				shape: 'rect' as const,
+				markers: () => [
+					{ text: '1', placement: 'top-start' as const },
+					{ path: 'M0 0h24v24z', placement: 'center' as const, isFilled: true },
+					{ path: 'M0 0h24', placement: 'bottom-end' as const },
+					{ placement: 'top-end' as const },
+				],
+			},
+			size: { width: 120, height: 60 },
+		}
+		const notation = { id: 'signs', label: () => 'Знаки', nodeKinds: { fn: kind }, edgeKinds: {}, defaultNodeKind: 'fn' }
+		const { container } = mountMap({
+			notations: [notation as never],
+			data: mapData({ notation: 'signs', nodes: [{ id: 'f', kind: 'fn', label: 'Узел', ...pinned(0, 0) }], edges: [] }),
+		})
+		expect(container.querySelector('.base-flow-map__shape-text')).toHaveTextContent('1')
+		expect(container.querySelectorAll('.base-flow-map__shape-sign')).toHaveLength(2)
+		expect(container.querySelectorAll('.base-flow-map__shape-sign--filled')).toHaveLength(1)
+	})
 })

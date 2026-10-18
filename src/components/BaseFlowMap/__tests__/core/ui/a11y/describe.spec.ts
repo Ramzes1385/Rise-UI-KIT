@@ -41,6 +41,8 @@ describe('flowFocus', () => {
 		expect(typeaheadMatch(items, 'a', 'a')).toBe('b')
 		expect(typeaheadMatch(items, 'a', 'b')).toBe('a')
 		expect(typeaheadMatch(items, 'al', 'b')).toBe('b')
+		expect(typeaheadMatch(items, 'aa', 'a')).toBe('b')
+		expect(typeaheadMatch(items, 'aaa', 'b')).toBe('a')
 		expect(typeaheadMatch(items, 'G', null)).toBe('c')
 		expect(typeaheadMatch(items, 'zz', 'a')).toBeNull()
 		expect(typeaheadMatch([], 'a', null)).toBeNull()
@@ -148,6 +150,7 @@ describe('BaseFlowMap живой регион и список', () => {
 		const result = mountMap()
 		const list = screen.getByRole('region', { name: UI_FLOW_MAP.LIST_TITLE })
 		expect(list).toHaveClass('base-flow-map__sr')
+		expect(list).not.toHaveAttribute('tabindex')
 		const buttons = screen.getAllByRole('button', { name: /Alpha|Beta|Gamma|→/ }).filter(item => list.contains(item))
 		expect(buttons).toHaveLength(5)
 		expect(buttons.every(item => item.getAttribute('tabindex') === '-1')).toBe(true)
@@ -164,6 +167,7 @@ describe('BaseFlowMap живой регион и список', () => {
 		expect(screen.getByRole('heading', { name: UI_FLOW_MAP.LIST_NODES })).toBeInTheDocument()
 		expect(screen.getByRole('heading', { name: UI_FLOW_MAP.LIST_EDGES })).toBeInTheDocument()
 		expect(screen.getByRole('button', { name: /^Alpha, Сервис/ })).toHaveAttribute('tabindex', '0')
+		expect(list).toHaveAttribute('tabindex', '0')
 	})
 
 	it('при загрузке и ошибке скрытого списка нет', async () => {

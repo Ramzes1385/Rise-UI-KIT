@@ -142,4 +142,17 @@ describe('BaseFlowMap поиск узла', () => {
 		await nextTick()
 		expect(screen.queryByRole('option')).not.toBeInTheDocument()
 	})
+
+	it('поиск находит узел по id, даже если подпись другая', async () => {
+		mountMap({ data: mapData({ nodes: [{ id: 'billing', kind: 'service', label: 'Касса' }], edges: [] }), panels: ['search'] })
+		const input = screen.getByPlaceholderText(UI_FLOW_MAP.SEARCH)
+		await fireEvent.focus(input)
+		await fireEvent.update(input, 'BILL')
+		expect(await screen.findByRole('option', { name: /Касса/ })).toBeInTheDocument()
+	})
+
+	it('ui.root из свойств попадает на корень карты', () => {
+		const { container } = mountMap({ ui: { root: 'my-root' } })
+		expect(container.firstElementChild).toHaveClass('my-root')
+	})
 })

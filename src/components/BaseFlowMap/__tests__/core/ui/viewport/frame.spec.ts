@@ -260,4 +260,16 @@ describe('createViewportAnimation', () => {
 		expect(isAnimating.value).toBe(false)
 		vi.unstubAllGlobals()
 	})
+
+	it('метка кадра раньше старта не отбрасывает вид назад за начало', () => {
+		vi.unstubAllGlobals()
+		const callbacks: ((now: number) => void)[] = []
+		vi.stubGlobal('requestAnimationFrame', (callback: (now: number) => void) => callbacks.push(callback))
+		vi.stubGlobal('performance', { now: () => 1000 })
+		const viewport = ref({ x: 0, y: 0, zoom: 1 })
+		createViewportAnimation(viewport, ref(false), vi.fn()).run({ x: 100, y: 0, zoom: 2 })
+		callbacks[0](500)
+		expect(viewport.value).toEqual({ x: 0, y: 0, zoom: 1 })
+		vi.unstubAllGlobals()
+	})
 })

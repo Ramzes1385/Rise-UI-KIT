@@ -103,12 +103,16 @@ describe('BaseFlowMap привязки (getBindings)', () => {
 		controller.on('beforeConnect', function guardConnect() {
 			return true
 		})
-		controller.on('node-leave', () => undefined)
+		controller.on('node-leave', function whenLeft() {})
 		const bindings = controller.getBindings()
 		expect(bindings.find(item => item.name === 'beforeChange')).toMatchObject({ handler: 'guardChange', isCancellable: true, calls: 0 })
 		expect(bindings.find(item => item.name === 'beforeConnect')).toMatchObject({ handler: 'guardConnect', isCancellable: true })
 		expect(bindings.find(item => item.id === 'event:node-click')).toMatchObject({ handler: 'whenClicked', isCancellable: false })
-		expect(bindings.find(item => item.name === 'node-leave')).toMatchObject({ isCancellable: false, isEnabled: true })
+		expect(bindings.find(item => item.name === 'node-leave')).toMatchObject({
+			handler: 'whenLeft',
+			isCancellable: false,
+			isEnabled: true,
+		})
 		expect(new Set(bindings.map(item => item.id)).size).toBe(bindings.length)
 	})
 

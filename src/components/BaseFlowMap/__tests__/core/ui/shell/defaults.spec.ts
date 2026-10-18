@@ -46,4 +46,12 @@ describe('BaseFlowMap defaults приложения', () => {
 		})
 		expect(getByRole('graphics-object', { name: /^Вещь, Своё/ })).toBeInTheDocument()
 	})
+
+	it('ui.root из defaults и из экземпляра попадает на корень', () => {
+		const { container } = render(BaseFlowMap, {
+			props: { data: mapData(), ui: { root: 'own-root' } },
+			global: { plugins: [plugin({ ui: { root: 'app-root' } })] },
+		})
+		expect(container.firstElementChild).toHaveClass('base-flow-map', 'app-root', 'own-root')
+	})
 })
