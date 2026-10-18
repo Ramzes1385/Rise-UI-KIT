@@ -152,6 +152,10 @@
 		pointer-events: none;
 	}
 
+	&__list.base-flow-map__sr {
+		overflow: hidden;
+	}
+
 	&__list {
 		max-height: sz(160px);
 		padding: sz(8px 16px);

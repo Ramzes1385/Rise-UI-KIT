@@ -1,5 +1,8 @@
 <template>
-	<section :class="[chrome.ui('list'), !chrome.hasList && 'base-flow-map__sr']" :aria-label="UI_FLOW_MAP.LIST_TITLE">
+	<section
+		:class="[chrome.ui('list'), !chrome.hasList && 'base-flow-map__sr']"
+		:tabindex="chrome.hasList ? 0 : undefined"
+		:aria-label="UI_FLOW_MAP.LIST_TITLE">
 		<h3 class="base-flow-map__list-title">{{ UI_FLOW_MAP.LIST_NODES }}</h3>
 		<ul>
 			<li v-for="item in canvas.nodes" :key="item.id">

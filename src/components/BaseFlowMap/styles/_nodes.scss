@@ -147,6 +147,24 @@
 			stroke: var(--flow-node-line);
 		}
 
+		.base-flow-map__shape-sign {
+			fill: none;
+			stroke: var(--flow-node-line);
+			stroke-width: 1.5;
+			pointer-events: none;
+
+			&--filled {
+				fill: var(--flow-node-line);
+			}
+		}
+
+		.base-flow-map__shape-text {
+			font-size: 11px;
+			font-weight: var(--rise-font-weight-semibold);
+			fill: var(--flow-node-text, #{ct(flow-map, node-text, var(--rise-text-highlighted))});
+			pointer-events: none;
+		}
+
 		.base-flow-map__node-label {
 			font-size: 13px;
 			fill: var(--flow-node-text, #{ct(flow-map, node-text, var(--rise-text-highlighted))});

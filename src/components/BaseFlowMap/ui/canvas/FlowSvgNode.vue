@@ -30,6 +30,23 @@
 		@pointerleave="canvas.pick.hover(null, $event)">
 		<path class="base-flow-map__shape" :d="item.shape.path" />
 		<path v-if="item.shape.inner" class="base-flow-map__shape-inner" :d="item.shape.inner" />
+		<template v-for="marker in placeMarkers(item.kind.shape.markers?.(item.node) ?? [], item.rect)" :key="marker.key">
+			<path
+				v-if="marker.path"
+				class="base-flow-map__shape-sign"
+				:class="{ 'base-flow-map__shape-sign--filled': marker.isFilled }"
+				:d="marker.path"
+				:transform="`translate(${marker.x} ${marker.y}) scale(${marker.scale})`" />
+			<text
+				v-else
+				class="base-flow-map__shape-text"
+				:x="marker.x"
+				:y="marker.y"
+				:text-anchor="marker.anchor"
+				dominant-baseline="central">
+				{{ marker.text }}
+			</text>
+		</template>
 		<text
 			class="base-flow-map__node-label"
 			:x="item.rect.width / 2"
@@ -42,6 +59,7 @@
 </template>
 
 <script setup lang="ts">
+import { placeMarkers } from '../../model/render/shapeMarkers'
 import { useFlowCanvasContext } from '../../model/context/flowContext'
 import type { FlowNodeItem } from '../../types/internal/core/flowRenderInternal.types'
 

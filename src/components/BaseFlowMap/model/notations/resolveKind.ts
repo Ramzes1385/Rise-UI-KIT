@@ -27,6 +27,13 @@ function reportUnknown(kind: string, notation: FlowNotation): void {
 	warn(UI_FLOW_MAP.WARN_UNKNOWN_KIND, { kind, notation: notation.id })
 }
 
+export function applyNotationStyle(notation: FlowNotation, style: unknown): FlowNotation {
+	const overrides = typeof style === 'string' ? notation.styles?.[style]?.nodeKinds : undefined
+	if (!overrides) return notation
+	const nodeKinds = Object.fromEntries(Object.entries(notation.nodeKinds).map(([id, def]) => [id, { ...def, ...overrides[id] }]))
+	return { ...notation, nodeKinds }
+}
+
 export function findNodeKind(kind: string, own: FlowNotation, registry: ReadonlyMap<string, FlowNotation>): FlowNodeKindDef | undefined {
 	return pick(item => item.nodeKinds, kind, { own, registry }).def
 }

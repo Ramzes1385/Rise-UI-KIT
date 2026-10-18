@@ -9,6 +9,7 @@ import { validateFlowData } from '../data/flowValidate'
 import { normalizeFlowData } from '../data/flowNormalize'
 import { createLayoutRegistry } from '../layout/registry'
 import { createRouterRegistry } from '../routing/registry'
+import { applyNotationStyle } from '../notations/resolveKind'
 import { createNotationRegistry } from '../notations/registry'
 import type { FlowMapData } from '../../types/data/flowData.types'
 import type { FlowModelProps } from '../../types/internal/flowModel.types'
@@ -81,7 +82,9 @@ function useLoadedData(props: FlowModelProps, registry: ComputedRef<Map<string, 
 export function useFlowState(props: FlowModelProps, onLoad: (issues: FlowDataIssue[]) => void, isCompact?: () => boolean): FlowState {
 	const { plugins, registry, layouts, routers } = useRegistries(props)
 	const { data, commit } = useLoadedData(props, registry, onLoad)
-	const notation = computed(() => pickNotation(registry.value, data.value.notation))
+	const notation = computed(() =>
+		applyNotationStyle(pickNotation(registry.value, data.value.notation), data.value.layout?.options?.style),
+	)
 	const graph = computed(() => buildFlowGraph(data.value))
 	const issues = computed(() => [
 		...validateFlowData(data.value, notation.value, registry.value),
