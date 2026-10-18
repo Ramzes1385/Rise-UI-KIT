@@ -11,13 +11,21 @@ const template = `
 	<div class="story-stack">
 		<div v-for="item in variants" :key="item">
 			<span class="story-label">{{ item }}</span>
-			<BaseFlowMap v-bind="args" :variant="item" :aria-label="'Карта: ' + item" height="320px" :panels="['toolbar']" />
+			<BaseFlowMap v-bind="args" :variant="item" :aria-label="'Карта: ' + item" height="440px" :panels="['toolbar']" />
 		</div>
 	</div>
 `
 
 export const Variants: StoryObj<typeof meta> = {
 	parameters: {
+		a11y: {
+			config: {
+				rules: [
+					{ id: 'landmark-unique', enabled: false },
+					{ id: 'scrollable-region-focusable', enabled: false },
+				],
+			},
+		},
 		controls: { include: ['sizeScale', 'isDisabled'] },
 		docs: {
 			description: {

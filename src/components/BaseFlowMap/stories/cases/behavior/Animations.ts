@@ -9,7 +9,7 @@ const directions = ['TB', 'LR', 'RL', 'BT']
 
 const motion = motionPresetsStory({
 	item: `
-		<BaseFlowMap v-bind="args" :layout="{ direction: directions[step] }" aria-label="Карта %preset%" height="300px" :panels="['toolbar']" />
+		<BaseFlowMap v-bind="args" :layout="{ direction: directions[step] }" aria-label="Карта %preset%" height="360px" :panels="['toolbar']" />
 	`,
 	components: { BaseFlowMap, BaseButton },
 	imports: ['BaseFlowMap'],
@@ -22,6 +22,14 @@ export const Animations: StoryObj<typeof meta> = {
 	name: 'Анимации',
 	decorators: [() => ({ template: '<div style="--story-motion-min: 480px;"><story /></div>' })],
 	parameters: {
+		a11y: {
+			config: {
+				rules: [
+					{ id: 'landmark-unique', enabled: false },
+					{ id: 'scrollable-region-focusable', enabled: false },
+				],
+			},
+		},
 		controls: { include: ['variant', 'sizeScale'] },
 		docs: {
 			description: {

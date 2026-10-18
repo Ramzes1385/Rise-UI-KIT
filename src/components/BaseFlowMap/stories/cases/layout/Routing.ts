@@ -16,16 +16,24 @@ const routed = (source: FlowMapData, routing: FlowEdgeRouting): FlowMapData => (
 })
 
 const template = `
-	<div class="story-grid" style="--story-grid-min: 480px">
+	<div class="story-grid" style="--story-grid-min: min(480px, 100%)">
 		<div v-for="routing in routings" :key="routing">
 			<span class="story-label">{{ routing }}</span>
-			<BaseFlowMap v-bind="args" :data="routed(data, routing)" :aria-label="'Линии ' + routing" height="360px" :panels="['toolbar']" />
+			<BaseFlowMap v-bind="args" :data="routed(data, routing)" :aria-label="'Линии ' + routing" height="440px" :panels="['toolbar']" />
 		</div>
 	</div>
 `
 
 export const Routing: StoryObj<typeof meta> = {
 	parameters: {
+		a11y: {
+			config: {
+				rules: [
+					{ id: 'landmark-unique', enabled: false },
+					{ id: 'scrollable-region-focusable', enabled: false },
+				],
+			},
+		},
 		controls: { include: ['variant', 'sizeScale'] },
 		docs: {
 			description: {

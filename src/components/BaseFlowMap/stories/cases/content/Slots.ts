@@ -1,5 +1,6 @@
 import { flowNode } from '../../shared'
-import { expect } from 'storybook/test'
+import { BaseIcon } from '@components/BaseIcon'
+import { expect, waitFor } from 'storybook/test'
 import type meta from '../../BaseFlowMap.stories'
 import { BaseBadge } from '@components/BaseBadge'
 import { BaseButton } from '@components/BaseButton'
@@ -20,7 +21,7 @@ const template = `
 		</template>
 		<template #group-label="{ group }">▸ {{ group.label }}</template>
 		<template #toolbar="{ controller }">
-			<BaseButton variant="ghost" aria-label="Выделить всё" @click="controller.select(controller.getData().nodes.map(node => node.id))">∗</BaseButton>
+			<BaseButton variant="ghost" aria-label="Выбрать Orders" @click="controller.select(['orders'])"><BaseIcon name="star" /></BaseButton>
 		</template>
 	</BaseFlowMap>
 `
@@ -36,11 +37,11 @@ export const Slots: StoryObj<typeof meta> = {
 					'Слот не отменяет доступность: роль, имя и клавиатура узла остаются на обёртке ядра.',
 				].join('\n'),
 			},
-			source: storySource({ template, imports: ['BaseFlowMap', 'BaseBadge', 'BaseButton'], omit: ['panels'] }),
+			source: storySource({ template, imports: ['BaseFlowMap', 'BaseBadge', 'BaseButton', 'BaseIcon'], omit: ['panels'] }),
 		},
 	},
 	render: args => ({
-		components: { BaseFlowMap, BaseBadge, BaseButton },
+		components: { BaseFlowMap, BaseBadge, BaseButton, BaseIcon },
 		setup: useStorySetup(args),
 		template,
 	}),
@@ -49,8 +50,8 @@ export const Slots: StoryObj<typeof meta> = {
 		await expect(orders.querySelector('.base-badge')).toHaveTextContent('Go · 840 rps')
 		await expect(orders.querySelector('.base-flow-map__node-label')).toBeNull()
 		await expect(canvas.getByText('▸ Клиенты')).toBeVisible()
-		await userEvent.click(canvas.getByRole('button', { name: 'Выделить всё' }))
-		await expect(orders).toHaveAttribute('aria-current', 'true')
-		await expect(orders.querySelector('.base-badge')).toHaveTextContent('выбран')
+		await userEvent.click(canvas.getByRole('button', { name: 'Выбрать Orders' }))
+		await waitFor(() => expect(orders).toHaveAttribute('aria-current', 'true'))
+		await waitFor(() => expect(orders.querySelector('.base-badge')).toHaveTextContent('выбран'))
 	},
 }

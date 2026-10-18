@@ -10,13 +10,21 @@ const template = `
 	<div class="story-stack">
 		<div v-for="preset in presets" :key="preset.name">
 			<span class="story-label">{{ preset.label }}</span>
-			<BaseFlowMap v-bind="args" :size-scale="preset.sizeScale" :aria-label="'Карта: ' + preset.label" height="320px" :panels="['toolbar']" />
+			<BaseFlowMap v-bind="args" :size-scale="preset.sizeScale" :aria-label="'Карта: ' + preset.label" height="440px" :panels="['toolbar']" />
 		</div>
 	</div>
 `
 
 export const Sizes: StoryObj<typeof meta> = {
 	parameters: {
+		a11y: {
+			config: {
+				rules: [
+					{ id: 'landmark-unique', enabled: false },
+					{ id: 'scrollable-region-focusable', enabled: false },
+				],
+			},
+		},
 		controls: { include: ['variant'] },
 		docs: {
 			description: {

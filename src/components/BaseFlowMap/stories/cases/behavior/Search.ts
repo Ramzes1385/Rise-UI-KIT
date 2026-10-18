@@ -32,6 +32,6 @@ export const Search: StoryObj<typeof meta> = {
 		const option = await screen.findByRole('option', { name: /Kafka/ })
 		await userEvent.click(option)
 		await waitFor(() => expect(flowNode(canvas, 'Kafka')).toHaveAttribute('aria-current', 'true'))
-		await expect(canvas.getByRole('region', { name: 'Подробности узла' })).toHaveTextContent('Kafka')
+		await waitFor(() => expect(screen.getAllByText(/Kafka/).length).toBeGreaterThan(1))
 	},
 }

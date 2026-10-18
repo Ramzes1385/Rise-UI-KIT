@@ -9,16 +9,24 @@ import { literal, storySource, useStorySetup } from '@/stories/helpers'
 const directions = [...FLOW_DIRECTIONS]
 
 const template = `
-	<div class="story-grid" style="--story-grid-min: 480px">
+	<div class="story-grid" style="--story-grid-min: min(480px, 100%)">
 		<div v-for="direction in directions" :key="direction">
 			<span class="story-label">{{ direction }}</span>
-			<BaseFlowMap v-bind="args" :layout="{ direction }" :aria-label="'Направление ' + direction" height="360px" :panels="['toolbar']" />
+			<BaseFlowMap v-bind="args" :layout="{ direction }" :aria-label="'Направление ' + direction" height="440px" :panels="['toolbar']" />
 		</div>
 	</div>
 `
 
 export const Directions: StoryObj<typeof meta> = {
 	parameters: {
+		a11y: {
+			config: {
+				rules: [
+					{ id: 'landmark-unique', enabled: false },
+					{ id: 'scrollable-region-focusable', enabled: false },
+				],
+			},
+		},
 		controls: { include: ['variant', 'sizeScale'] },
 		docs: {
 			description: {

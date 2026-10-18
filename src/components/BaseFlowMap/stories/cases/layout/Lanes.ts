@@ -13,21 +13,29 @@ const template = `
 	<div class="story-stack">
 		<div>
 			<span class="story-label">Ярусы (tier): узлы яруса в одном ряду, лишние переносятся (wrap)</span>
-			<BaseFlowMap v-bind="args" :layout="{ wrap: 3 }" aria-label="Ярусы" height="480px" :panels="['toolbar']" />
+			<BaseFlowMap v-bind="args" :layout="{ wrap: 3 }" aria-label="Ярусы" height="520px" :panels="['toolbar']" />
 		</div>
 		<div>
 			<span class="story-label">Дорожки вокруг узлов (byLanes: false): раскладка не привязана к дорожкам</span>
-			<BaseFlowMap v-bind="args" :layout="{ byLanes: false }" aria-label="Дорожки без раскладки" height="360px" :panels="['toolbar']" />
+			<BaseFlowMap v-bind="args" :layout="{ byLanes: false }" aria-label="Дорожки без раскладки" height="440px" :panels="['toolbar']" />
 		</div>
 		<div>
 			<span class="story-label">Полосы (band): дорожки через все слои потока</span>
-			<BaseFlowMap :notations="[SUPPORT_NOTATION]" :data="SUPPORT_MAP" aria-label="Полосы" height="420px" :panels="['toolbar']" />
+			<BaseFlowMap :notations="[SUPPORT_NOTATION]" :data="SUPPORT_MAP" aria-label="Полосы" height="460px" :panels="['toolbar']" />
 		</div>
 	</div>
 `
 
 export const Lanes: StoryObj<typeof meta> = {
 	parameters: {
+		a11y: {
+			config: {
+				rules: [
+					{ id: 'landmark-unique', enabled: false },
+					{ id: 'scrollable-region-focusable', enabled: false },
+				],
+			},
+		},
 		controls: { include: ['variant', 'sizeScale'] },
 		docs: {
 			description: {

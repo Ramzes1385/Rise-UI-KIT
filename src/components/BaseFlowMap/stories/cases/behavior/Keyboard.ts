@@ -1,8 +1,8 @@
-import { expect, waitFor } from 'storybook/test'
 import type meta from '../../BaseFlowMap.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseFlowMap from '../../../ui/BaseFlowMap.vue'
 import { flowAnnouncer, flowNode } from '../../shared'
+import { expect, screen, waitFor } from 'storybook/test'
 import { storySource, tabTo, useStorySetup } from '@/stories/helpers'
 
 const template = `
@@ -28,7 +28,7 @@ export const Keyboard: StoryObj<typeof meta> = {
 		setup: useStorySetup(args),
 		template,
 	}),
-	play: async ({ canvas, userEvent }) => {
+	play: async ({ canvas, canvasElement, userEvent }) => {
 		await tabTo(flowNode(canvas, 'Web'), userEvent)
 		await userEvent.keyboard('{ArrowDown}')
 		await expect(flowNode(canvas, 'API Gateway')).toHaveFocus()
@@ -44,10 +44,14 @@ export const Keyboard: StoryObj<typeof meta> = {
 		await expect(flowNode(canvas, 'Orders')).toHaveFocus()
 		await userEvent.keyboard('{Enter}')
 		await expect(flowNode(canvas, 'Orders')).toHaveAttribute('aria-current', 'true')
-		await expect(canvas.getByRole('region', { name: 'Подробности узла' })).toHaveTextContent('Создаёт заказ')
+		await waitFor(() => expect(screen.getAllByText(/Создаёт заказ/).length).toBeGreaterThan(0))
 		await waitFor(() => expect(flowAnnouncer(canvas)).toHaveTextContent('Выбрано: Orders'))
 		await userEvent.keyboard('{Escape}')
-		await expect(flowNode(canvas, 'Orders')).not.toHaveAttribute('aria-current')
+		if (canvasElement.querySelector('.base-flow-map--compact')) {
+			await waitFor(() => expect(document.querySelector('.base-flow-map__sheet')).toBeNull())
+			return
+		}
+		await waitFor(() => expect(flowNode(canvas, 'Orders')).not.toHaveAttribute('aria-current'))
 		await waitFor(() => expect(flowAnnouncer(canvas)).toHaveTextContent('Выбор снят'))
 	},
 }

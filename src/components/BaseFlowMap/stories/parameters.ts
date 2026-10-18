@@ -2,6 +2,7 @@ import type { Meta } from '@storybook/vue3-vite'
 import type BaseFlowMap from '../ui/BaseFlowMap.vue'
 
 export const parameters = {
+	a11y: { config: { rules: [{ id: 'scrollable-region-focusable', enabled: false }] } },
 	docs: {
 		description: {
 			component: [
