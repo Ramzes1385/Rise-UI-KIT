@@ -22,7 +22,7 @@ function isTravelling(entry: FlowTimelineEntry, input: FlowMarksInput, progress:
 }
 
 function markEdge(entry: FlowTimelineEntry, input: FlowMarksInput, marks: FlowScenarioMarks): void {
-	const route = entry.edge ? input.routes[entry.edge] : undefined
+	const route = input.routes[entry.edge as string]
 	if (!route) {
 		return
 	}

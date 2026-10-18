@@ -40,7 +40,7 @@ function fillTable(points: readonly FlowPoint[], sums: number[], table: Pick<Flo
 
 export function sampleRoute(points: readonly FlowPoint[], step: number = FLOW_ROUTE_STEP): FlowRouteTable | null {
 	const sums = measure(points)
-	const length = sums[sums.length - 1] ?? 0
+	const length = sums[sums.length - 1] as number
 	if (points.length < 2 || length <= 0) {
 		return null
 	}

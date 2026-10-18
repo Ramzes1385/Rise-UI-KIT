@@ -82,8 +82,8 @@ export function useFlowDetails() {
 		team: view.value?.owner ? formatMessage(UI_FLOW_PANELS.DETAILS_TEAM, { name: view.value.owner.name }) : '',
 	}))
 
-	function onSheetChange(isOpen: boolean): void {
-		if (!isOpen) close()
+	function onSheetChange(): void {
+		close()
 	}
 
 	return { view, isCompact, isSheetOpen, labels, close, onKeydown, onSheetChange }

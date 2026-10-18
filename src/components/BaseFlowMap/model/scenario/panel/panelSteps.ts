@@ -32,5 +32,5 @@ const SPEEDS = [0.5, 1, 2]
 
 export function nextSpeed(speed: number): number {
 	const index = SPEEDS.indexOf(speed)
-	return SPEEDS[(index + 1) % SPEEDS.length] ?? 1
+	return SPEEDS[(index + 1) % SPEEDS.length] as number
 }

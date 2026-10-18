@@ -38,7 +38,7 @@ export function useFlowScenarioAnnounce(context: FlowMapContext): void {
 			.map(action => (action ? describeAction(action, context.model.graph.value) : ''))
 		return activeSteps.length > 1
 			? formatMessage(UI_FLOW_SCENARIO.ANNOUNCE_PARALLEL, { text: texts.join('; ') })
-			: formatMessage(UI_FLOW_SCENARIO.ANNOUNCE_STEP, { n: stepIndex + 1, total: stepCount, text: texts[0] ?? '' })
+			: formatMessage(UI_FLOW_SCENARIO.ANNOUNCE_STEP, { n: stepIndex + 1, total: stepCount, text: texts[0] as string })
 	}
 	watch(
 		() => state.value.activeSteps.join('|'),

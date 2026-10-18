@@ -69,13 +69,13 @@ function hasPendingUpstream(run: FlowSimulationRun, node: string, moves: readonl
 }
 
 function takeOnePerEdge(run: FlowSimulationRun, node: string, edges: FlowEdge[]): void {
-	const counts = run.waiting.get(node)
+	const counts = run.waiting.get(node) as Map<string, number>
 	edges.forEach(edge => {
-		const left = (counts?.get(edge.id) ?? 0) - 1
+		const left = (counts.get(edge.id) as number) - 1
 		if (left > 0) {
-			counts?.set(edge.id, left)
+			counts.set(edge.id, left)
 		} else {
-			counts?.delete(edge.id)
+			counts.delete(edge.id)
 		}
 	})
 }
@@ -122,10 +122,7 @@ function fire(run: FlowSimulationRun, node: FlowNode): FlowSimulationMove[] {
 }
 
 function collectMoves(run: FlowSimulationRun): FlowSimulationMove[] {
-	const moves = run.ready.splice(0).flatMap(id => {
-		const node = run.graph.nodes.get(id)
-		return node ? fire(run, node) : []
-	})
+	const moves = run.ready.splice(0).flatMap(id => fire(run, run.graph.nodes.get(id) as FlowNode))
 	run.graph.nodes.forEach(node => {
 		const firings = takeFirings(run, node, moves)
 		for (let index = 0; index < firings; index += 1) {

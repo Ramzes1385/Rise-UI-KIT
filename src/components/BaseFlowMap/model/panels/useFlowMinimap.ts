@@ -44,8 +44,7 @@ function useMinimapControls(context: FlowMapContext, transform: ComputedRef<Flow
 	const isDragging = ref(false)
 
 	function moveTo(event: PointerEvent, isAnimated: boolean): void {
-		const box = rootRef.value?.getBoundingClientRect()
-		if (!box) return
+		const box = (rootRef.value as HTMLElement).getBoundingClientRect()
 		const center = fromMinimapPoint(pointInMinimap(event, box), transform.value)
 		context.setViewport(viewportCenteredOn(center, context.viewport.value, context.frame.value), { isAnimated })
 	}

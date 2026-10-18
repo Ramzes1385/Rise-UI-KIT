@@ -170,7 +170,7 @@ function createPlay(context: FlowScenarioContext, clock: FlowScenarioClock): Flo
 	}
 }
 
-function createSeek(context: FlowScenarioContext): FlowScenarioDriver['seek'] {
+function createSeek(context: FlowScenarioContext, clock: FlowScenarioClock): FlowScenarioDriver['seek'] {
 	return to => {
 		const target = seekTarget(context.build.value, to)
 		if (target === null) {
@@ -179,6 +179,8 @@ function createSeek(context: FlowScenarioContext): FlowScenarioDriver['seek'] {
 		const { runtime, build } = context
 		runtime.time.value = target
 		if (target >= build.value.duration) {
+			context.session.token += 1
+			clock.stop()
 			runtime.status.value = 'ended'
 		} else if (runtime.status.value !== 'playing') {
 			runtime.status.value = 'paused'
@@ -264,7 +266,7 @@ export function useFlowScenario(model: FlowScenarioModel, props: FlowModelProps,
 		play: byUser(play),
 		pause: byUser(createPause(context, clock)),
 		stop: byUser(() => reset(context, clock)),
-		seek: byUser(createSeek(context)),
+		seek: byUser(createSeek(context, clock)),
 		step: byUser(createStep(context, clock)),
 		setSpeed: speed => {
 			runtime.speed.value = clampSpeed(speed)

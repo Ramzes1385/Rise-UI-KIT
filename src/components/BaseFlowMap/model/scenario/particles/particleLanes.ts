@@ -20,7 +20,7 @@ export function collectLanes(source: FlowLaneSource): FlowParticleLane[] {
 			lanes.push({
 				id: edge.id,
 				table,
-				rate: traffic.rate ?? 0,
+				rate: traffic.rate as number,
 				speed: traffic.speed ?? FLOW_PARTICLE_SPEED,
 				direction: directionOf(traffic),
 				isHot: source.hot.has(edge.id),
