@@ -54,6 +54,18 @@ describe('BaseRoadmap: v-model:progress', () => {
 		expect(screen.getByRole('checkbox', { name: 'Теги' })).not.toBeChecked()
 	})
 
+	it('снятие флажка подтемы у изученной темы возвращает её в процесс', async () => {
+		const { user, emitted } = await renderRoadmap({ props: { progress: HTML_DONE, selected: 'html' } })
+		const boxes = within(screen.getByRole('complementary', { name: 'Подробности темы' })).getAllByRole('checkbox')
+		expect(boxes.every(box => (box as HTMLInputElement).checked)).toBe(true)
+		await user.click(screen.getByRole('checkbox', { name: 'Теги' }))
+		expect(screen.getByRole('checkbox', { name: 'Теги' })).not.toBeChecked()
+		expect(screen.getByRole('checkbox', { name: 'Формы' })).toBeChecked()
+		expect(screen.getByRole('button', { name: /^HTML.*в процессе, 1 из 2 подтем/ })).toBeInTheDocument()
+		expect(emitted()['status-change']).toEqual([[expect.objectContaining({ from: 'done', to: 'in-progress', source: 'subtopic' })]])
+		expect(screen.getByRole('status')).toHaveTextContent('HTML: в процессе · 0 из 5 тем')
+	})
+
 	it('пропуск и сброс через меню «Ещё»', async () => {
 		const { user } = await renderRoadmap()
 		await user.click(screen.getByRole('button', { name: /^HTML/ }))
