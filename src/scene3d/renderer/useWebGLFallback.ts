@@ -1,4 +1,5 @@
 import { hasWebGL } from './webglSupport'
+import { UI_SCENE_3D } from '@/locales/messages'
 import { computed, onMounted, ref, shallowRef, watch } from 'vue'
 import type { Scene3DFallbackReason } from '../types/scene3d.types'
 import type { Scene3DFallbackOptions } from '../types/internal/scene3dInternal.types'
@@ -14,7 +15,9 @@ export function useWebGLFallback(options: Scene3DFallbackOptions) {
 		return hasRenderError.value ? 'error' : null
 	})
 
-	const statusText = computed(() => (reason.value ? options.getMessages()[reason.value] : ''))
+	const getMessages =
+		options.getMessages ?? (() => ({ unsupported: UI_SCENE_3D.FALLBACK_UNSUPPORTED, error: UI_SCENE_3D.FALLBACK_ERROR }))
+	const statusText = computed(() => (reason.value ? getMessages()[reason.value] : ''))
 
 	onMounted(() => {
 		isSupported.value = hasWebGL()

@@ -11,6 +11,15 @@ import type { ImageMap3DLayerMode, ImageMap3DProps, ImageMap3DRenderer } from '.
 import type { ResolvedImageMapObject } from '@components/BaseImageMap/types/internal/imageMapModel.types'
 import type { ImageMap3DData, ImageMap3DLayer, ImageMap3DObject, ImageMapLayerModel } from '../imageMap3dData.types'
 import type {
+	Scene3DCameraKeyAction,
+	Scene3DCameraPose,
+	Scene3DCardPlacement,
+	Scene3DColorResolver,
+	Scene3DScreenSize,
+	Scene3DScreenSpot,
+	Scene3DViewCamera,
+} from '@/scene3d/types/internal/scene3dInternal.types'
+import type {
 	Box3,
 	BufferGeometry,
 	Camera,
@@ -28,17 +37,6 @@ import type {
 	Shape,
 	TubeGeometry,
 } from 'three'
-import type {
-	Scene3DCameraKeyAction,
-	Scene3DCameraPose,
-	Scene3DCardPlacement,
-	Scene3DColorResolver,
-	Scene3DPointerOptions,
-	Scene3DPoseState,
-	Scene3DScreenSize,
-	Scene3DScreenSpot,
-	Scene3DViewCamera,
-} from '@/scene3d/types/internal/scene3dInternal.types'
 
 /** Правило проверки 3D-поля данных */
 export type ImageMap3DFieldRule =
@@ -364,9 +362,6 @@ export interface StageOptions {
 	onError: (error: unknown) => void
 }
 
-/** Положение камеры: твин, масштаб, OrbitControls и переходы */
-export type CameraPoseState = Scene3DPoseState
-
 /** Размер области карты, px */
 export type ScreenSize = Scene3DScreenSize
 
@@ -395,9 +390,6 @@ export interface ScenePointView {
 	/** Метка пульсирует: `isPulsing` карты или точки */
 	isPulsing: boolean
 }
-
-/** Указатель над сценой */
-export type ScenePointerOptions = Scene3DPointerOptions
 
 /** Клавиатура объектов сцены */
 export interface SceneKeyboardOptions {

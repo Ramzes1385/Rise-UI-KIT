@@ -199,8 +199,8 @@ export interface Scene3DFallbackOptions {
 	getView: () => '2d' | '3d'
 	/** Сообщить о переходе в 2D */
 	onFallback: (reason: Scene3DFallbackReason) => void
-	/** Тексты статуса для скринридера: читаются при каждом обращении (язык меняется на лету) */
-	getMessages: () => Record<Scene3DFallbackReason, string>
+	/** Тексты статуса для скринридера: читаются при каждом обращении (язык меняется на лету); без них — `UI_SCENE_3D` */
+	getMessages?: () => Record<Scene3DFallbackReason, string>
 }
 
 /** Размещение модели: общие поля `ImageMapLayerModel` и `Model3DGltfDefinition` */
