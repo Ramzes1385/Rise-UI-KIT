@@ -113,6 +113,32 @@ describe('computeRoutes', () => {
 		expect(overridden.routes['1'].points).toHaveLength(2)
 	})
 
+	it('приоритет способа: edge, вид связи, проп layout, data.layout, нотация, curved', () => {
+		const straightKind: FlowNotation = {
+			...plainNotation,
+			edgeKinds: { call: { label: () => 'c', stroke: 'solid', routing: 'straight' } },
+		}
+		const curvedEdge = map({ nodes: pair.nodes, edges: [edge('1', ['a', 'b'], { routing: 'curved' })] })
+		const edgeOverKind = routesOf(createScope(curvedEdge, { notation: straightKind, layout: { direction: 'LR' } }))
+		expect(edgeOverKind.routes['1'].points.length).toBeGreaterThan(10)
+		const propOverData = routesOf(
+			createScope(pair, {
+				notation: bareNotation(),
+				overrides: { routing: 'straight' },
+				layout: { direction: 'LR', routing: 'curved' },
+			}),
+		)
+		expect(propOverData.routes['1'].points).toHaveLength(2)
+		const dataOverNotation = routesOf(
+			createScope(pair, { notation: bareNotation({ routing: 'straight' }), layout: { direction: 'LR', routing: 'curved' } }),
+		)
+		expect(dataOverNotation.routes['1'].points.length).toBeGreaterThan(10)
+		const kindOverProp = routesOf(
+			createScope(pair, { notation: straightKind, overrides: { routing: 'curved' }, layout: { direction: 'LR' } }),
+		)
+		expect(kindOverProp.routes['1'].points).toHaveLength(2)
+	})
+
 	it('своя маршрутизация плагина по id', () => {
 		const mine = [
 			{ x: 0, y: 0 },

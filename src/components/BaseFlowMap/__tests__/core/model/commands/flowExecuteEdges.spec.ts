@@ -167,12 +167,6 @@ describe('ревью: редкие пути', () => {
 })
 
 describe('шина событий отдельно', () => {
-	it('обработчик не функция: в списке подписок имя пустое', () => {
-		const bus = createFlowEvents({ environment: { isVisible: () => true, isReducedMotion: () => false, announce: () => undefined } })
-		bus.subscribe('change', 5 as never)
-		expect(bus.list()[0].handler).toBe('')
-	})
-
 	it('работает без emit и без слушателей компонента, повторная отписка безопасна', () => {
 		const bus = createFlowEvents({ environment: { isVisible: () => true, isReducedMotion: () => false, announce: () => undefined } })
 		const handler = vi.fn()

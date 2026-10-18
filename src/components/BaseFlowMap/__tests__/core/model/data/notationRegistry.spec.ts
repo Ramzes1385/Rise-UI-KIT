@@ -52,6 +52,16 @@ describe('registry', () => {
 		expect(warn.mock.calls[0][0]).toContain('x')
 	})
 
+	it('createNotationRegistry: тот же объект повторно — молча, другой объект с тем же id — предупреждение', () => {
+		const base = notation('base')
+		const extra = notation('extra')
+		createNotationRegistry(base, [base, extra, extra])
+		expect(warn).not.toHaveBeenCalled()
+		createNotationRegistry(base, [extra, { ...extra }])
+		expect(warn).toHaveBeenCalledTimes(1)
+		expect(warn.mock.calls[0][0]).toContain('extra')
+	})
+
 	it('createNotationRegistry: базовая нотация первая, дополнительные поверх, повтор id — предупреждение', () => {
 		const base = notation('base')
 		const extra = notation('extra')
