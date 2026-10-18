@@ -30,8 +30,7 @@ function duplicates(entity: FlowEntity, list: readonly { id: string }[]): FlowDa
 	return issues
 }
 
-function portsOf(node: FlowNode | undefined, notation: FlowNotation | undefined, registry: ReadonlyMap<string, FlowNotation>) {
-	if (!node) return undefined
+function portsOf(node: FlowNode, notation: FlowNotation | undefined, registry: ReadonlyMap<string, FlowNotation>) {
 	if (node.ports) return node.ports
 	return notation ? findNodeKind(node.kind, notation, registry)?.ports : undefined
 }
@@ -51,7 +50,7 @@ function edgeIssues(edge: FlowEdge, check: (id: string) => FlowNode | undefined,
 		if (!node) {
 			issues.push(error('missing-node', formatMessage(UI_FLOW_MAP.ISSUE_MISSING_NODE, { edge: edge.id, node: nodeId }), target))
 		} else if (!hasPort(ports(node), portId)) {
-			const message = formatMessage(UI_FLOW_MAP.ISSUE_MISSING_PORT, { edge: edge.id, node: nodeId, port: portId ?? '' })
+			const message = formatMessage(UI_FLOW_MAP.ISSUE_MISSING_PORT, { edge: edge.id, node: nodeId, port: portId as string })
 			issues.push(error('missing-port', message, target))
 		}
 	}

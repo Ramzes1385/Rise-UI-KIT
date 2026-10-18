@@ -24,7 +24,9 @@
 		@click="canvas.pick.pick({ entity: 'group', id: item.id }, $event)"
 		@contextmenu="canvas.pick.menu({ entity: 'group', id: item.id }, $event)">
 		<span :class="canvas.ui('label')">
-			<slot name="group-label" :group="item.group">{{ item.group.label }}</slot>
+			<span class="base-flow-map__label-text"
+				><slot name="group-label" :group="item.group">{{ item.group.label }}</slot></span
+			>
 		</span>
 	</div>
 </template>

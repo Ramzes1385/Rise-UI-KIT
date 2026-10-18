@@ -3,9 +3,33 @@
 
 .base-flow-map {
 	&__body {
-		position: relative;
+		display: flex;
 		flex: 1;
 		min-height: 0;
+	}
+
+	&__stage {
+		position: relative;
+		flex: 1;
+		min-width: 0;
+		min-height: 0;
+	}
+
+	&__side {
+		display: flex;
+		flex: none;
+		flex-direction: column;
+		gap: sz(12px);
+		box-sizing: border-box;
+		inline-size: sz(ct(flow-map, details-width, 340px));
+		overflow: auto;
+		padding: sz(16px);
+		border-inline-start: 1px solid var(--rise-border);
+		background-color: var(--rise-bg-muted);
+
+		&:not(:has(*)) {
+			display: none;
+		}
 	}
 
 	&__state {
@@ -53,9 +77,9 @@
 		inset-block-start: 0;
 		inset-inline-start: 0;
 		box-sizing: border-box;
-		border: 1px solid var(--flow-group-color, ct(flow-map, group-border, var(--rise-border)));
+		border: 1px solid color-mix(in srgb, var(--flow-group-color, #{ct(flow-map, group-border, var(--rise-border))}) 40%, transparent);
 		border-radius: sz(ct(flow-map, group-radius, var(--rise-radius-xl)));
-		background-color: ct(flow-map, group-bg, color-mix(in srgb, var(--rise-bg) 55%, transparent));
+		background-color: ct(flow-map, group-bg, color-mix(in srgb, var(--flow-group-color, var(--rise-bg)) 5%, transparent));
 		pointer-events: none;
 
 		&--dashed {
@@ -65,10 +89,15 @@
 		&--header-start > .base-flow-map__label {
 			inset-block: 0;
 			inset-inline-start: 0;
-			inline-size: sz(28px);
-			border-inline-end: 1px solid var(--rise-border);
-			writing-mode: vertical-rl;
-			transform: rotate(180deg);
+			inline-size: sz(30px);
+			justify-content: center;
+			border-start-start-radius: inherit;
+			border-end-start-radius: inherit;
+
+			.base-flow-map__label-text {
+				writing-mode: vertical-rl;
+				transform: rotate(180deg);
+			}
 		}
 
 		&--header-top > .base-flow-map__label {
@@ -76,6 +105,8 @@
 			inset-inline: 0;
 			block-size: sz(32px);
 			padding-inline: sz(12px);
+			border-start-start-radius: inherit;
+			border-start-end-radius: inherit;
 		}
 	}
 
@@ -84,12 +115,17 @@
 		display: flex;
 		align-items: center;
 		font-size: sz(var(--rise-font-size-xs));
-		font-weight: var(--rise-font-weight-medium);
-		letter-spacing: 0.04em;
+		font-weight: var(--rise-font-weight-semibold);
+		letter-spacing: 0.09em;
 		text-transform: uppercase;
-		color: ct(flow-map, group-text, var(--rise-text-muted));
+		color: var(--flow-group-color, #{ct(flow-map, group-text, var(--rise-text-muted))});
+		background-color: color-mix(in srgb, var(--flow-group-color, var(--rise-border)) 11%, transparent);
 		pointer-events: auto;
 		cursor: pointer;
+	}
+
+	&__label-text {
+		white-space: nowrap;
 	}
 
 	&__hint {

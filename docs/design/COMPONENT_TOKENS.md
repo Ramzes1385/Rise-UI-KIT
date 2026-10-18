@@ -817,7 +817,7 @@
 | `--rise-flow-map-edge-border` | edge | border | — | `var(--rise-border-accented)` |
 | `--rise-flow-map-edge-border-active` | edge | border | active | `var(--rise-primary)` |
 | `--rise-flow-map-edge-border-selected` | edge | border | selected | `var(--rise-primary)` |
-| `--rise-flow-map-group-bg` | group | bg | — | `color-mix(in srgb, var(--rise-bg) 55%, transparent)` |
+| `--rise-flow-map-group-bg` | group | bg | — | `color-mix(in srgb, var(--flow-group-color, var(--rise-bg)) 5%, transparent)` |
 | `--rise-flow-map-group-border` | group | border | — | `var(--rise-border)` |
 | `--rise-flow-map-group-radius` | group | radius | — | `var(--rise-radius-xl)` |
 | `--rise-flow-map-group-text` | group | text | — | `var(--rise-text-muted)` |
@@ -826,7 +826,6 @@
 | `--rise-flow-map-legend-bg` | legend | bg | — | `color-mix(in srgb, var(--rise-bg) 92%, transparent)` |
 | `--rise-flow-map-legend-border` | legend | border | — | `var(--rise-border)` |
 | `--rise-flow-map-legend-gap` | legend | gap | — | `6px` |
-| `--rise-flow-map-legend-padding` | legend | padding | — | `10px 12px` |
 | `--rise-flow-map-legend-radius` | legend | radius | — | `var(--rise-radius-lg)` |
 | `--rise-flow-map-legend-shadow` | legend | shadow | — | `var(--rise-shadow-sm)` |
 | `--rise-flow-map-legend-width` | legend | width | — | `204px` |

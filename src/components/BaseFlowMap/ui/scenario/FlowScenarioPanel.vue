@@ -1,12 +1,12 @@
 <template>
 	<section
+		v-if="scenario"
 		class="base-flow-map__scenario-panel"
 		:class="{ 'base-flow-map__scenario-panel--compact': isCompact }"
 		:role="isCompact ? 'group' : undefined"
 		:aria-label="UI_FLOW_SCENARIO.PANEL"
 		:data-status="status">
-		<p v-if="!scenario" class="base-flow-map__scenario-empty">{{ UI_FLOW_SCENARIO.NONE }}</p>
-		<template v-else-if="isCompact">
+		<template v-if="isCompact">
 			<BaseButton
 				class="base-flow-map__scenario-play"
 				:aria-label="isPlaying ? UI_FLOW_SCENARIO.PAUSE : UI_FLOW_SCENARIO.PLAY"

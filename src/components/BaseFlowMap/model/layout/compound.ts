@@ -87,7 +87,28 @@ function layoutBoxLevel(level: BoxLevel): FlowLayoutResult {
 	return expandBoxes(flat, boxes)
 }
 
-export function layoutCompound(input: FlowLayoutInput): FlowLayoutResult {
+function cycleStart(group: FlowLayoutGroup, byId: ReadonlyMap<string, FlowLayoutGroup>): FlowLayoutGroup | undefined {
+	const seen = new Set<string>()
+	let current: FlowLayoutGroup | undefined = group
+	while (current && !seen.has(current.id)) {
+		seen.add(current.id)
+		current = current.parent === undefined ? undefined : byId.get(current.parent)
+	}
+	return current
+}
+
+function breakCycles(groups: readonly FlowLayoutGroup[]): FlowLayoutGroup[] {
+	const next = groups.map(group => ({ ...group }))
+	const byId = indexGroups(next)
+	for (const group of next) {
+		const start = cycleStart(group, byId)
+		if (start) start.parent = undefined
+	}
+	return next
+}
+
+export function layoutCompound(source: FlowLayoutInput): FlowLayoutResult {
+	const input = { ...source, groups: breakCycles(source.groups) }
 	const hasBoxes = input.groups.some(group => group.layout === 'box')
 	if (!hasBoxes) return layoutFlat(input)
 	return layoutBoxLevel({ input, byId: indexGroups(input.groups), owner: undefined })

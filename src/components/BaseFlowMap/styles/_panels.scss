@@ -1,3 +1,6 @@
+@use '@styles/mixins' as *;
+@use '@styles/functions' as *;
+
 .base-flow-map {
 	&__minimap {
 		position: absolute;
@@ -73,7 +76,7 @@
 		box-sizing: border-box;
 		width: sz(ct(flow-map, legend-width, 204px));
 		max-width: calc(100% - #{sz(32px)});
-		padding: space(ct(flow-map, legend-padding, 10px 12px));
+		padding: space(10px 12px);
 		border: 1px solid ct(flow-map, legend-border, var(--rise-border));
 		border-radius: sz(ct(flow-map, legend-radius, var(--rise-radius-lg)));
 		box-shadow: ct(flow-map, legend-shadow, var(--rise-shadow-sm));
@@ -162,14 +165,8 @@
 	}
 
 	&__details {
-		position: absolute;
-		inset-block: sz(16px);
-		inset-inline-end: sz(16px);
-		z-index: 5;
 		box-sizing: border-box;
-		width: sz(ct(flow-map, details-width, 340px));
-		max-width: calc(100% - #{sz(32px)});
-		overflow: auto;
+		flex: none;
 		padding: space(ct(flow-map, details-padding, 14px));
 		border: 1px solid ct(flow-map, details-border, var(--rise-border));
 		border-radius: sz(ct(flow-map, details-radius, var(--rise-radius-xl)));
@@ -262,10 +259,20 @@
 			font-size: sz(var(--rise-font-size-xs));
 		}
 	}
+}
 
-	&:has(&__details) &__legend,
-	&:has(&__details) &__minimap {
-		inset-inline-end: calc(#{sz(ct(flow-map, details-width, 340px))} + #{sz(32px)});
+.base-flow-map--compact .base-flow-map__legend {
+	inset-block-start: sz(12px);
+	inset-inline-end: sz(12px);
+
+	&--collapsed .base-flow-map__legend-toggle {
+		min-inline-size: sz(44px);
+		padding-inline: sz(10px);
+		justify-content: center;
+
+		> span:last-child {
+			@include visually-hidden;
+		}
 	}
 }
 

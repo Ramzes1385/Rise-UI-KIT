@@ -1,16 +1,13 @@
 <template>
-	<BaseToolbar
-		:class="chrome.ui('toolbar')"
-		:aria-label="UI_FLOW_MAP.TOOLBAR"
-		:orientation="chrome.isCompact ? 'horizontal' : 'vertical'">
-		<BaseButton variant="ghost" :aria-label="UI_FLOW_MAP.ZOOM_IN" @click="chrome.zoomIn">
-			<BaseIcon name="plus" />
+	<BaseToolbar :class="chrome.ui('toolbar')" :aria-label="UI_FLOW_MAP.TOOLBAR" orientation="horizontal">
+		<BaseButton variant="ghost" :aria-label="UI_FLOW_MAP.ZOOM_OUT" @click="chrome.zoomOut">
+			<BaseIcon name="minus" />
 		</BaseButton>
 		<span class="base-flow-map__zoom" :aria-label="formatMessage(UI_FLOW_MAP.ZOOM_VALUE, { percent: chrome.percent })">
 			{{ chrome.percent }}%
 		</span>
-		<BaseButton variant="ghost" :aria-label="UI_FLOW_MAP.ZOOM_OUT" @click="chrome.zoomOut">
-			<BaseIcon name="minus" />
+		<BaseButton variant="ghost" :aria-label="UI_FLOW_MAP.ZOOM_IN" @click="chrome.zoomIn">
+			<BaseIcon name="plus" />
 		</BaseButton>
 		<BaseButton variant="ghost" :aria-label="UI_FLOW_MAP.FIT" @click="chrome.fit">
 			<BaseIcon name="fullscreen" />

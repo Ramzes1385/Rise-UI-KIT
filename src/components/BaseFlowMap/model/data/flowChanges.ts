@@ -8,8 +8,16 @@ function listOf(data: FlowMapData, entity: FlowEntity): readonly FlowItem[] {
 	return (data[COLLECTIONS[entity]] ?? []) as readonly FlowItem[]
 }
 
+const OPTIONAL_COLLECTIONS: readonly FlowCollection[] = ['groups', 'scenarios']
+
 function withList(data: FlowMapData, entity: FlowEntity, list: FlowItem[]): FlowMapData {
-	return { ...data, [COLLECTIONS[entity]]: list }
+	const key = COLLECTIONS[entity]
+	if (list.length === 0 && OPTIONAL_COLLECTIONS.includes(key)) {
+		const rest = { ...data } as Record<string, unknown>
+		delete rest[key]
+		return rest as unknown as FlowMapData
+	}
+	return { ...data, [key]: list }
 }
 
 function mergeFields<T extends object>(target: T, patch: Record<string, unknown>): T {

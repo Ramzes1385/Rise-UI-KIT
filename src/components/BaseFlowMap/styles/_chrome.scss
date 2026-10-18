@@ -27,8 +27,8 @@
 
 	&__toolbar.base-toolbar {
 		position: absolute;
-		inset-block-start: sz(12px);
-		inset-inline-end: sz(12px);
+		inset-block-end: sz(16px);
+		inset-inline-start: sz(16px);
 		z-index: 2;
 		align-items: center;
 		gap: sz(ct(flow-map, toolbar-gap, 2px));
@@ -58,7 +58,8 @@
 	}
 
 	&--compact &__toolbar.base-toolbar {
-		inset-block: auto sz(12px);
+		inset-block: sz(12px) auto;
+		inset-inline: sz(12px) auto;
 
 		.base-button {
 			min-inline-size: 44px;
