@@ -41,6 +41,18 @@ const CLEAN_CODE_SIZE_RULES = {
 	'max-lines': ['error', { max: 400, skipBlankLines: true, skipComments: true }],
 }
 
+const THREE_RESTRICTED_PATTERNS = [
+	{
+		regex: '^three(/.*)?$',
+		message:
+			'three импортируется только из src/scene3d, BaseImageMap3D, BaseFlowMap3D, BaseRoadmap3D и их входов (/map3d, /flow3d, /roadmap3d)',
+	},
+	{
+		regex: '^@/scene3d(/.*)?$',
+		message: '3D-ядро импортируется только из 3D-компонентов и их входов',
+	},
+]
+
 export default tseslint.config(
 	{
 		ignores: ['dist/**', 'coverage/**', 'storybook-static/**', 'node_modules/**', '**/*.d.ts', 'build/**', 'scripts/**'],
@@ -133,18 +145,30 @@ export default tseslint.config(
 		rules: CLEAN_CODE_SIZE_RULES,
 	},
 
-	// three — только во входе /map3d (BaseImageMap3D и src/map3d.ts): основной вход не тянет WebGL-движок
+	// three и 3D-ядро — только в src/scene3d, папках 3D-компонентов и их входах: основной вход не тянет WebGL-движок
 	{
 		files: ['src/**/*.{ts,vue}'],
-		ignores: ['src/components/BaseImageMap3D/**', 'src/map3d.ts'],
+		ignores: [
+			'src/scene3d/**',
+			'src/components/{BaseImageMap3D,BaseFlowMap3D,BaseRoadmap3D}/**',
+			'src/{map3d,flow3d,roadmap3d}.ts',
+			'src/components/BaseFlowMap/model/notations/services/**',
+		],
+		rules: { 'no-restricted-imports': ['error', { patterns: THREE_RESTRICTED_PATTERNS }] },
+	},
+
+	// Нотация «сервисы» 2D-карты берёт из ядра только данные без three: таблицы пресетов и слов
+	{
+		files: ['src/components/BaseFlowMap/model/notations/services/**/*.ts'],
 		rules: {
 			'no-restricted-imports': [
 				'error',
 				{
 					patterns: [
+						THREE_RESTRICTED_PATTERNS[0],
 						{
-							regex: '^three(/.*)?$',
-							message: 'three импортируется только из src/components/BaseImageMap3D и src/map3d.ts (вход /map3d)',
+							regex: '^@/scene3d(?!/models/(presets|keywords)$)(/.*)?$',
+							message: 'Из 3D-ядра можно только @/scene3d/models/presets и @/scene3d/models/keywords (без three)',
 						},
 					],
 				},
