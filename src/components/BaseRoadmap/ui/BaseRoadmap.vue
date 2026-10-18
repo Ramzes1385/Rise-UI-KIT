@@ -6,7 +6,6 @@
 		:style="[sizeScaleStyle, customColorStyle]"
 		:aria-label="ariaLabel ?? data.title"
 		:aria-busy="isLoading || undefined"
-		:aria-disabled="isDisabled || undefined"
 		role="region"
 		@keydown="onDetailsKeydown">
 		<div class="base-roadmap__sr" role="status" aria-live="polite" aria-atomic="true">{{ liveText }}</div>

@@ -1,5 +1,7 @@
 import type { RoadmapData, RoadmapProgress } from '../../types/roadmapData.types'
 
+export const DEMO_EXTERNAL_URL = 'https://example.org'
+
 export const miniRoadmap: RoadmapData = {
 	version: 1,
 	id: 'vue-start',

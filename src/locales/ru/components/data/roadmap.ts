@@ -50,8 +50,6 @@ export const ruRoadmap = {
 	/** Тема в списке для скринридера: части склеиваются запятой; `{titles}` — названия требований */
 	TOPIC_SUBTOPICS: '{done} из {of}',
 	TOPIC_NEEDS: 'закрыта: нужно знать {titles}',
-	TOPIC_TOGGLE_DONE: 'Отметить изученной: {title}',
-	TOPIC_TOGGLE_UNDONE: 'Вернуть в работу: {title}',
 	/** Панель темы */
 	PANEL_LABEL: 'Подробности темы',
 	PANEL_STAGE: 'Этап {n} · {title}',
@@ -81,7 +79,6 @@ export const ruRoadmap = {
 	/** Нет этапов и загрузка */
 	EMPTY: 'В пути пока нет этапов',
 	LOADING: 'Загрузка пути',
-	LOADING_TOPIC: 'Загрузка темы',
 	/** Ошибка `save` у `createLocalStorageProgress`, когда localStorage недоступен */
 	STORAGE_UNAVAILABLE: 'Хранилище прогресса недоступно',
 	/** Предупреждение: хук упал; `{error}` — текст ошибки */

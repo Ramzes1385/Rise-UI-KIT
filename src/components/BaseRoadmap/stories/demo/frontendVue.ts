@@ -1,3 +1,4 @@
+import { DEMO_EXTERNAL_URL } from './mini'
 import type { RoadmapData, RoadmapProgress } from '../../types/roadmapData.types'
 
 export const frontendVue: RoadmapData = {
@@ -202,7 +203,7 @@ export const frontendVue: RoadmapData = {
 						{ id: 'pinia-3', title: 'Плагины и SSR' },
 					],
 					materials: [
-						{ kind: 'doc', title: 'Руководство по Pinia', minutes: 40, url: 'https://pinia.vuejs.org' },
+						{ kind: 'doc', title: 'Руководство по Pinia', minutes: 40, url: `${DEMO_EXTERNAL_URL}/pinia` },
 						{ kind: 'article', title: 'Стор корзины на примерах', minutes: 15 },
 						{ kind: 'practice', title: 'Задание: стор каталога', minutes: 60 },
 					],

@@ -1,7 +1,7 @@
-import { noProgress } from '../../demo/mini'
 import type meta from '../../BaseRoadmap.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { expect, screen, waitFor } from 'storybook/test'
+import { DEMO_EXTERNAL_URL, noProgress } from '../../demo/mini'
 import { docsFrame, STORY_WAIT_TIMEOUT } from '@/stories/helpers'
 import type { RoadmapData } from '../../../types/roadmapData.types'
 
@@ -24,13 +24,13 @@ const withMaterials: RoadmapData = {
 						{ id: 'pinia-2', title: 'Геттеры и действия' },
 					],
 					materials: [
-						{ id: 'guide', kind: 'doc', title: 'Руководство по Pinia', minutes: 40, url: 'https://pinia.vuejs.org' },
+						{ id: 'guide', kind: 'doc', title: 'Руководство по Pinia', minutes: 40, url: `${DEMO_EXTERNAL_URL}/pinia` },
 						{ id: 'cart', kind: 'article', title: 'Стор корзины на примерах', minutes: 15, url: '/articles/pinia-cart' },
-						{ id: 'talk', kind: 'video', title: 'Pinia за 40 минут', minutes: 40, url: 'https://example.org/video/pinia' },
+						{ id: 'talk', kind: 'video', title: 'Pinia за 40 минут', minutes: 40, url: `${DEMO_EXTERNAL_URL}/video/pinia` },
 						{ id: 'course', kind: 'course', title: 'Курс «Состояние во Vue»', minutes: 360 },
 						{ id: 'book', kind: 'book', title: 'Книга «Архитектура фронтенда»' },
 						{ id: 'task', kind: 'practice', title: 'Задание: стор каталога', minutes: 60 },
-						{ id: 'repo', kind: 'link', title: 'Пример проекта', url: 'https://example.org/pinia-demo' },
+						{ id: 'repo', kind: 'link', title: 'Пример проекта', url: `${DEMO_EXTERNAL_URL}/pinia-demo` },
 					],
 				},
 			],

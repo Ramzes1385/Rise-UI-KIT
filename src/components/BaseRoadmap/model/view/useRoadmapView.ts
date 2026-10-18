@@ -4,6 +4,7 @@ import { UI_ROADMAP } from '@/locales/messages'
 import { formatMessage } from '@/locales/state'
 import { useRoadmapLive } from './useRoadmapLive'
 import { subtitleText } from './format/roadmapText'
+import { sideMinWidth } from './format/roadmapPanel'
 import { useRoadmapNarrow } from './useRoadmapNarrow'
 import { useRoadmapActions } from './useRoadmapActions'
 import { useRoadmapDetails } from './useRoadmapDetails'
@@ -21,14 +22,20 @@ function filterOptions(): SegmentedOption[] {
 }
 
 export function useRoadmapView(props: RoadmapProps, model: RoadmapModel, rootRef: Ref<HTMLElement | null>) {
-	const narrow = useRoadmapNarrow({ rootRef, narrowWidth: () => props.narrowWidth, detailsPosition: () => props.detailsPosition })
+	const layouts = useRoadmapLayouts(props, () => narrow.isNarrow.value)
+	const narrow = useRoadmapNarrow({
+		rootRef,
+		narrowWidth: () => props.narrowWidth,
+		detailsPosition: () => props.detailsPosition,
+		sideMinWidth: () => sideMinWidth(layouts.layout.value, model.data.value.stages.length, props.sizeScale),
+	})
 	const live = useRoadmapLive()
 	const details = useRoadmapDetails({ rootRef, mode: narrow.detailsMode, ...model })
 	const actions = useRoadmapActions({ model, live, details })
 
 	return {
 		...narrow,
-		...useRoadmapLayouts(props, () => narrow.isNarrow.value),
+		...layouts,
 		...actions,
 		liveText: live.text,
 		selected: details.selected,

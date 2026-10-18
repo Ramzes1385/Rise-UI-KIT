@@ -23,6 +23,12 @@ export type RoadmapDetailsMode = 'side' | 'sheet'
 /** Ширина контейнера, px, выше которой `detailsPosition: 'auto'` ставит панель справа */
 export const ROADMAP_SIDE_MIN_WIDTH = 900
 
+/** Ширина панели справа с полями и границей, px при масштабе 100 */
+export const ROADMAP_PANEL_WIDTH = 401
+
+/** Поля области раскладки по обе стороны плюс запас на полосу прокрутки, px при масштабе 100 */
+export const ROADMAP_AREA_GUTTER = 64
+
 /** Сводка для шапки: «14 из 26 тем · 54 % · осталось ≈ 96 ч · Продолжить: Pinia» */
 export interface RoadmapSummaryView {
 	done: number
@@ -193,6 +199,8 @@ export interface UseRoadmapNarrowOptions {
 	rootRef: Ref<HTMLElement | null>
 	narrowWidth: () => number
 	detailsPosition: () => 'side' | 'sheet' | 'auto'
+	/** Ширина контейнера, выше которой при `auto` панель встаёт справа */
+	sideMinWidth: () => number
 }
 
 /** Что нужно `useRoadmapDetails` */
