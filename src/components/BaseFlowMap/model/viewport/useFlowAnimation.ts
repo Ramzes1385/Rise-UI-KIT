@@ -26,7 +26,7 @@ export function createViewportAnimation(
 		const started = performance.now()
 		isAnimating.value = true
 		const step = (now: number): void => {
-			const progress = Math.min(1, (now - started) / DURATION)
+			const progress = Math.max(0, Math.min(1, (now - started) / DURATION))
 			viewport.value = mixViewport(from, to, ease(progress))
 			if (progress < 1) {
 				timer = requestAnimationFrame(step)

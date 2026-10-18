@@ -45,8 +45,9 @@ export function nearestInDirection(
 }
 
 export function typeaheadMatch(items: readonly { id: string; label: string }[], buffer: string, current: string | null): string | null {
-	const query = buffer.toLowerCase()
-	const start = Math.max(0, items.findIndex(item => item.id === current) + (buffer.length === 1 ? 1 : 0))
+	const isRepeat = [...buffer].every(char => char === buffer[0])
+	const query = (isRepeat ? buffer[0] : buffer).toLowerCase()
+	const start = Math.max(0, items.findIndex(item => item.id === current) + (isRepeat ? 1 : 0))
 	const ordered = [...items.slice(start), ...items.slice(0, start)]
 	return ordered.find(item => item.label.toLowerCase().startsWith(query))?.id ?? null
 }

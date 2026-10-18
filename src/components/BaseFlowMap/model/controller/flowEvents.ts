@@ -22,6 +22,10 @@ function handlerName(listener: unknown): string {
 	return typeof listener === 'function' ? listener.name : ''
 }
 
+function subMeta(sub: FlowEventSub, results: ReadonlyMap<string, string>): FlowBindingMeta {
+	return { id: sub.id, name: sub.name, handler: handlerName(sub.handler), lastResult: results.get(sub.name) }
+}
+
 export function createFlowEvents(options: FlowModelOptions): FlowEventBus {
 	const subs: FlowEventSub[] = []
 	const own = new Map<string, FlowEventState>()
@@ -46,7 +50,7 @@ export function createFlowEvents(options: FlowModelOptions): FlowEventBus {
 	}
 
 	const list = (): FlowBinding[] => {
-		const fromSubs = subs.map(sub => toBinding({ id: sub.id, name: sub.name, handler: '', lastResult: results.get(sub.name) }, sub))
+		const fromSubs = subs.map(sub => toBinding(subMeta(sub, results), sub))
 		const listeners = Object.entries(options.listeners?.() ?? {}).filter(([, listener]) => typeof listener === 'function')
 		const fromOwn = listeners.map(([name, listener]) =>
 			toBinding({ id: `event:${name}`, name, handler: handlerName(listener), lastResult: results.get(name) }, ownOf(name)),

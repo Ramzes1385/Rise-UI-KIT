@@ -36,6 +36,7 @@ export function useBaseFlowMap(props: BaseFlowMapProps, emit: BaseFlowMapEmits) 
 	return {
 		...useStandardBaseComponent('base-flow-map', props, [...FLOW_MAP_PARTS]),
 		...{ hasHeader, hasToolbar, hasSearch, hasMinimap, hasLegend, hasScenario, hasDetails, isEmpty },
+		ui: rendering.ui,
 		model,
 		editing: useFlowEditing(model),
 		review: useFlowReview(model),

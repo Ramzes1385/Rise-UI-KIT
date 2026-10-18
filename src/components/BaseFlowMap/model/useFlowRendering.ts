@@ -29,5 +29,5 @@ export function useFlowRendering(
 	const active = useFlowHighlight(model, hovered)
 	const canvas = useFlowCanvas({ model, map, view, focus, gestures, frame, pick, active, ui })
 	model.setView(createFlowViewApi(model, { view, frame, focus }, canvas.scene))
-	return { canvas, chrome: useFlowChrome(props, { model, map, view, pick, ui }) }
+	return { ui, canvas, chrome: useFlowChrome(props, { model, map, view, pick, ui }) }
 }

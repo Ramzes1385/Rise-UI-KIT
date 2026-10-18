@@ -1,7 +1,6 @@
 <template>
 	<section
-		class="base-flow-map"
-		:class="[variantClass, classes.root, isCompact && 'base-flow-map--compact', isDisabled && 'base-flow-map--disabled']"
+		:class="[ui('root'), variantClass, classes.root, isCompact && 'base-flow-map--compact', isDisabled && 'base-flow-map--disabled']"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle, rootStyle]"
 		role="region"
 		:aria-roledescription="UI_FLOW_MAP.ROLE"
@@ -96,6 +95,7 @@ const {
 	variantStyle,
 	customColorStyle,
 	classes,
+	ui,
 	label,
 	rootStyle,
 	model,

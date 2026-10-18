@@ -4,6 +4,7 @@
 		class="base-flow-map__search"
 		:placeholder="UI_FLOW_MAP.SEARCH"
 		:results="chrome.results"
+		is-remote
 		is-instant
 		@select="chrome.choose(String($event.id))" />
 </template>

@@ -6,6 +6,7 @@ import type { FlowFrameState, FlowGestureHandlers, FlowViewState } from '../../t
 
 const WHEEL_STEP = 0.0015
 const HINT_MS = 1600
+const PAN_THRESHOLD = 4
 
 function distance(first: FlowPoint, second: FlowPoint): number {
 	return Math.hypot(first.x - second.x, first.y - second.y)
@@ -21,9 +22,9 @@ function drag(view: FlowViewState, pointers: Map<number, FlowPoint>, moved: { id
 		view.setViewport({ ...current, x: current.x + moved.to.x - moved.from.x, y: current.y + moved.to.y - moved.from.y })
 		return
 	}
-	const other = [...pointers.entries()].find(([id]) => id !== moved.id)?.[1]
-	const before = other ? distance(moved.from, other) : 0
-	if (other && before > 0) {
+	const other = [...pointers.entries()].find(([id]) => id !== moved.id)?.[1] as FlowPoint
+	const before = distance(moved.from, other)
+	if (before > 0) {
 		const anchor = middle(moved.to, other)
 		view.setViewport(zoomAt(current, { factor: distance(moved.to, other) / before, anchor }, view.limits()))
 	}
@@ -35,6 +36,8 @@ export function useFlowGestures(
 	view: FlowViewState,
 ): FlowGestureHandlers {
 	const pointers = new Map<number, FlowPoint>()
+	const origins = new Map<number, FlowPoint>()
+	const panning = new Set<number>()
 	let hintTimer: ReturnType<typeof setTimeout> | undefined
 
 	function local(event: { clientX: number; clientY: number }): FlowPoint {
@@ -45,6 +48,7 @@ export function useFlowGestures(
 	function onPointerdown(event: PointerEvent): void {
 		if (event.button > 0 || (event.target as Element).closest('[data-flow-id]')) return
 		pointers.set(event.pointerId, local(event))
+		origins.set(event.pointerId, local(event))
 		frame.element.value?.setPointerCapture?.(event.pointerId)
 	}
 
@@ -53,11 +57,17 @@ export function useFlowGestures(
 		if (!from) return
 		const to = local(event)
 		pointers.set(event.pointerId, to)
-		drag(view, pointers, { id: event.pointerId, from, to })
+		const origin = origins.get(event.pointerId) as FlowPoint
+		const isPending = !panning.has(event.pointerId) && pointers.size === 1
+		if (isPending && distance(origin, to) <= PAN_THRESHOLD) return
+		if (isPending) panning.add(event.pointerId)
+		drag(view, pointers, { id: event.pointerId, from: isPending ? origin : from, to })
 	}
 
 	function onPointerup(event: PointerEvent): void {
 		pointers.delete(event.pointerId)
+		origins.delete(event.pointerId)
+		panning.delete(event.pointerId)
 	}
 
 	function showHint(): void {
