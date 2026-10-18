@@ -200,7 +200,7 @@ export interface UseRoadmapNarrowOptions {
 	narrowWidth: () => number
 	detailsPosition: () => 'side' | 'sheet' | 'auto'
 	/** Ширина контейнера, выше которой при `auto` панель встаёт справа */
-	sideMinWidth: () => number
+	sideMinWidth?: () => number
 }
 
 /** Что нужно `useRoadmapDetails` */
