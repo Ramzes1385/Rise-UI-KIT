@@ -306,7 +306,7 @@ describe('useFlowScenario: сценарий по модели нотации', (
 	const simulated: FlowScenario = { id: 'sim', label: 'Обход', steps: [act('s1', { edge: 'e1', duration: 400 })] }
 
 	it('без сценариев в данных строится нотацией, получает выбранные ветки', () => {
-		const simulate = vi.fn(() => simulated)
+		const simulate = vi.fn((_graph: unknown, _choices: unknown) => simulated)
 		const { driver, details } = mountScenario({
 			data: mapOf([]),
 			props: { choices: { gw: 'yes' } },

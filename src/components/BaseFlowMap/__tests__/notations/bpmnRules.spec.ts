@@ -313,7 +313,7 @@ describe('BPMN: проверка карты (validate)', () => {
 		['intermediate', 'conditional', true],
 		['intermediate', 'timer', true],
 	])('событие «%s» не допускает запуск «%s» (isThrowing: %s)', (kind, trigger, isThrowing) => {
-		const issues = issuesOf({ nodes: [node('ev', kind, { label: 'Событие', props: { trigger, isThrowing } })] })
+		const issues = issuesOf({ nodes: [node('ev', kind, { label: 'Событие', props: { trigger, isThrowing: isThrowing ?? false } })] })
 		expect(issues).toEqual([
 			{
 				level: 'warning',
@@ -333,7 +333,7 @@ describe('BPMN: проверка карты (validate)', () => {
 		['intermediate', 'escalation', true],
 		['intermediate', 'link', true],
 	])('событие «%s» с запуском «%s» (isThrowing: %s) допустимо', (kind, trigger, isThrowing) => {
-		expect(issuesOf({ nodes: [node('ev', kind, { props: { trigger, isThrowing } })] })).toEqual([])
+		expect(issuesOf({ nodes: [node('ev', kind, { props: { trigger, isThrowing: isThrowing ?? false } })] })).toEqual([])
 	})
 
 	it('событие без запуска, не событие с любыми свойствами — без замечаний о запуске', () => {

@@ -16,6 +16,7 @@ export interface HarnessOptions {
 	props?: Partial<FlowModelProps>
 	notation?: Partial<FlowNotation>
 	edgeEffect?: (edge: FlowEdge) => FlowEdgeKindDef['effect']
+	edgeKind?: (edge: FlowEdge) => Partial<FlowEdgeKindDef>
 	isVisible?: boolean
 	isReducedMotion?: boolean
 }
@@ -30,7 +31,7 @@ export interface Harness {
 	unmount: () => void
 }
 
-interface Parts {
+export interface Parts {
 	model: FlowScenarioModel
 	props: FlowModelProps
 	hooks: Harness['hooks']
@@ -38,14 +39,14 @@ interface Parts {
 	environment: Harness['environment']
 }
 
-function createParts(options: HarnessOptions): Parts {
+export function createParts(options: HarnessOptions): Parts {
 	const data = shallowRef(options.data)
 	const hooks = createHookRunner<FlowHooks>()
 	const model = {
 		data,
 		graph: computed(() => buildFlowGraph(data.value)),
 		notation: computed(() => ({ id: 'test', ...options.notation }) as FlowNotation),
-		edgeKind: (edge: FlowEdge) => ({ effect: options.edgeEffect?.(edge) }) as FlowEdgeKindDef,
+		edgeKind: (edge: FlowEdge) => ({ effect: options.edgeEffect?.(edge), ...options.edgeKind?.(edge) }) as FlowEdgeKindDef,
 		hooks,
 	} as unknown as FlowScenarioModel
 	const props = reactive({ data: options.data, ...options.props }) as FlowModelProps
