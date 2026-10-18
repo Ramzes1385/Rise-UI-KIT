@@ -17,7 +17,7 @@
 		</div>
 		<div v-else class="base-flow-map__body">
 			<div class="base-flow-map__stage">
-				<FlowCanvas>
+				<FlowCanvas :particles="particles">
 					<template v-if="$slots.node" #node="slotProps"><slot name="node" v-bind="slotProps" /></template>
 					<template v-if="$slots['edge-label']" #edge-label="slotProps"><slot name="edge-label" v-bind="slotProps" /></template>
 					<template v-if="$slots['group-label']" #group-label="slotProps"

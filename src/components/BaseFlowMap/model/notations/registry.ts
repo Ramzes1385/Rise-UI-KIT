@@ -23,7 +23,8 @@ export function createRegistry<T extends { id: string }>(items: readonly T[], en
 export function createNotationRegistry(defaults: FlowNotation, extra: readonly FlowNotation[]): Map<string, FlowNotation> {
 	const registry = new Map<string, FlowNotation>([[defaults.id, defaults]])
 	for (const notation of extra) {
-		if (registry.has(notation.id)) warn(UI_FLOW_MAP.WARN_DUPLICATE_NOTATION, { id: notation.id })
+		if (registry.has(notation.id) && registry.get(notation.id) !== notation)
+			warn(UI_FLOW_MAP.WARN_DUPLICATE_NOTATION, { id: notation.id })
 		registry.set(notation.id, notation)
 	}
 	return registry

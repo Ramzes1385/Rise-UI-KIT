@@ -16,7 +16,7 @@ export function clampSpeed(speed: number): number {
 	return Math.min(FLOW_SPEED_MAX, Math.max(FLOW_SPEED_MIN, speed))
 }
 
-export function clampTime(time: number, duration: number): number {
+function clampTime(time: number, duration: number): number {
 	if (!Number.isFinite(time)) {
 		return 0
 	}

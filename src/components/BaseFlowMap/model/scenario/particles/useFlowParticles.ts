@@ -10,7 +10,7 @@ import type { FlowParticleSlot } from '../../../types/internal/flowParticles.typ
 import type { FlowParticles } from '../../../types/internal/flowScenarioLayer.types'
 import { FLOW_PARTICLE_LIMIT, FLOW_VIEW_MARGIN } from '../../../types/internal/flowParticles.types'
 
-export function particleLimit(value: boolean | number | undefined): number {
+function particleLimit(value: boolean | number | undefined): number {
 	if (value === false) {
 		return 0
 	}

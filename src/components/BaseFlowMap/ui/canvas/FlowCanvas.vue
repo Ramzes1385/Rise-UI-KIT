@@ -25,7 +25,7 @@
 				<FlowEdgeLabels>
 					<template v-if="$slots['edge-label']" #edge-label="slotProps"><slot name="edge-label" v-bind="slotProps" /></template>
 				</FlowEdgeLabels>
-				<FlowScenarioLayer />
+				<FlowScenarioLayer :particles="particles" />
 				<FlowEditLayer />
 				<FlowReviewLayer />
 			</svg>
@@ -53,6 +53,8 @@ import FlowReviewLayer from '../review/FlowReviewLayer.vue'
 import FlowScenarioLayer from '../scenario/FlowScenarioLayer.vue'
 import type { BaseFlowMapSlots } from '../../types/BaseFlowMap.types'
 import { useFlowCanvasContext, useFlowChromeContext } from '../../model/context/flowContext'
+
+defineProps<{ particles?: boolean | number }>()
 
 defineSlots<Pick<BaseFlowMapSlots, 'node' | 'edge-label' | 'group-label' | 'empty'>>()
 

@@ -10,7 +10,7 @@ export interface FlowScenarioLayerProps {
 }
 
 /** Пройденный или идущий участок связи: прорисовывается копией пути */
-export interface FlowTrailMark {
+interface FlowTrailMark {
 	/** Id шага */
 	id: string
 	/** Путь SVG связи */
@@ -36,7 +36,7 @@ export interface FlowTokenMark {
 }
 
 /** Пульс узла, который работает на шаге */
-export interface FlowPulseMark {
+interface FlowPulseMark {
 	/** Id шага */
 	id: string
 	/** Рамка узла */

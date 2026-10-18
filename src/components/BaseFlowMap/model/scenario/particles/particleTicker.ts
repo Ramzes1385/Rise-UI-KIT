@@ -1,7 +1,7 @@
 import { FLOW_PARTICLES_PER_LANE } from '../../../types/internal/flowParticles.types'
 import type { FlowParticleLane, FlowParticleSlot } from '../../../types/internal/flowParticles.types'
 
-export function wantedParticles(lane: FlowParticleLane): number {
+function wantedParticles(lane: FlowParticleLane): number {
 	if (lane.rate <= 0 || lane.speed <= 0) {
 		return 0
 	}
