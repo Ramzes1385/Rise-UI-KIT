@@ -1,6 +1,6 @@
 import { vi } from 'vitest'
 import type { RoadmapMaterialKind } from '../../types/roadmapData.types'
-import { isExternalUrl, materialIconPath, materialKindText, materialMetaText } from '../../model/view/format/roadmapMaterial'
+import { isExternalUrl, materialIconPath, materialMetaText } from '../../model/view/format/roadmapMaterial'
 
 const UNKNOWN = 'unknown' as RoadmapMaterialKind
 
@@ -40,12 +40,12 @@ describe('roadmapMaterial', () => {
 		{ kind: 'practice', text: 'Практика' },
 		{ kind: 'link', text: 'Ссылка' },
 	] as const)('вид $kind называется «$text», у каждого свой значок', ({ kind, text }) => {
-		expect(materialKindText(kind)).toBe(text)
+		expect(materialMetaText({ title: 'M', kind })).toBe(text)
 		expect(materialIconPath(kind)).toMatch(/^M/)
 	})
 
 	it('неизвестный вид — как ссылка', () => {
-		expect(materialKindText(UNKNOWN)).toBe('Ссылка')
+		expect(materialMetaText({ title: 'M', kind: UNKNOWN })).toBe('Ссылка')
 		expect(materialIconPath(UNKNOWN)).toBe(materialIconPath('link'))
 	})
 

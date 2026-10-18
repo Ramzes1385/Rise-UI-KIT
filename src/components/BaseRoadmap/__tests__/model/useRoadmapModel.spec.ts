@@ -41,6 +41,22 @@ describe('useRoadmapModel: сводка и данные', () => {
 		expect(model.getTopicState('ghost')).toBeNull()
 	})
 
+	it('isBusy у вида темы берётся из busyTopics, пока хук ждёт Promise', async () => {
+		let resolve: (value: boolean) => void = () => undefined
+		const { model } = mountRoadmapModel({ data, beforeStatusChange: () => new Promise<boolean>(done => (resolve = done)) })
+		const busyIds = () =>
+			model.stageViews.value
+				.flatMap(stage => stage.topics)
+				.filter(view => view.isBusy)
+				.map(view => view.topic.id)
+		expect(busyIds()).toEqual([])
+		const pending = model.setTopicStatus('a', 'done')
+		expect(busyIds()).toEqual(['a'])
+		resolve(true)
+		await pending
+		expect(busyIds()).toEqual([])
+	})
+
 	it('statuses и busyTopics доступны', () => {
 		const { model } = mountRoadmapModel({ data })
 		expect(model.statuses.value.currentStageId).toBe('s1')

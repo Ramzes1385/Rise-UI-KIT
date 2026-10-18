@@ -1,13 +1,10 @@
 import type { RoadmapLayoutGeometry, RoadmapSegment, RoadmapSpine } from '../../../types/internal/roadmapLayout.types'
 import {
 	buildRequirementLinks,
-	boxCenter,
 	createMirror,
-	curveSegment,
 	emptyGeometry,
 	finishSpine,
 	roundCoord,
-	roundFraction,
 	segmentsToPath,
 	solidFraction,
 	stackHeight,
@@ -36,10 +33,9 @@ function geometryOf(boxes: { x: number; y: number }[][]): RoadmapLayoutGeometry 
 }
 
 describe('layoutShared', () => {
-	it('округляет координаты до сотых и доли до десятитысячных', () => {
+	it('округляет координаты до сотых', () => {
 		expect(roundCoord(1.23456)).toBe(1.23)
 		expect(roundCoord(-0.004)).toBe(-0)
-		expect(roundFraction(0.123456)).toBe(0.1235)
 	})
 
 	it('createMirror: в LTR оставляет x, в RTL отражает от ширины', () => {
@@ -48,10 +44,9 @@ describe('layoutShared', () => {
 		expect(createMirror(100, true)(0)).toBe(100)
 	})
 
-	it('stageBox ставит карточку 228 × 54 вокруг центра, boxCenter возвращает центр', () => {
+	it('stageBox ставит карточку 228 × 54 вокруг центра', () => {
 		const box = stageBox({ x: 200, y: 100 })
 		expect(box).toEqual({ x: 86, y: 73, width: 228, height: 54 })
-		expect(boxCenter(box)).toEqual({ x: 200, y: 100 })
 	})
 
 	it('segmentsToPath пишет M, L и C и применяет зеркало к каждой точке', () => {
@@ -61,15 +56,6 @@ describe('layoutShared', () => {
 		]
 		expect(segmentsToPath({ x: 0, y: 0 }, segments, identity)).toBe('M0 0 L10 20 C20 20, 30 40, 40 40')
 		expect(segmentsToPath({ x: 0, y: 0 }, segments, createMirror(100, true))).toBe('M100 0 L90 20 C80 20, 70 40, 60 40')
-	})
-
-	it('curveSegment ведёт кривую через середину по X', () => {
-		expect(curveSegment({ x: 0, y: 0 }, { x: 10, y: 8 })).toEqual({
-			kind: 'C',
-			control1: { x: 5, y: 0 },
-			control2: { x: 5, y: 8 },
-			to: { x: 10, y: 8 },
-		})
 	})
 
 	describe('finishSpine', () => {

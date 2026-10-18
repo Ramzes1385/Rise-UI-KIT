@@ -78,6 +78,7 @@ interface TopicViewInput {
 	topic?: Partial<RoadmapTopic>
 	isAlternative?: boolean
 	isSelected?: boolean
+	isBusy?: boolean
 }
 
 const TOPIC_VIEW_DEFAULTS = {
@@ -90,16 +91,18 @@ const TOPIC_VIEW_DEFAULTS = {
 	missing: [] as string[],
 	isAlternative: false,
 	isSelected: false,
+	isBusy: false,
 } as const
 
 export function topicView(input: TopicViewInput = {}): RoadmapTopicView {
-	const { id, title, status, done, total, fraction, missing, isAlternative, isSelected } = { ...TOPIC_VIEW_DEFAULTS, ...input }
+	const { id, title, status, done, total, fraction, missing, isAlternative, isSelected, isBusy } = { ...TOPIC_VIEW_DEFAULTS, ...input }
 	return {
 		topic: { id, title, ...input.topic },
 		state: { status, done, total, fraction, missing },
 		isSelected,
 		isFiltered: false,
 		isAlternative,
+		isBusy,
 	}
 }
 

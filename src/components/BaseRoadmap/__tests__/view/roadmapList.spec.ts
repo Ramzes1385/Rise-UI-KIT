@@ -98,6 +98,14 @@ describe('RoadmapList', () => {
 		expect(await screen.findByRole('button', { name: /^D/ })).toBeInTheDocument()
 	})
 
+	it('занятая тема помечена aria-busy', () => {
+		const list = stages()
+		list[0].topics[0] = { ...list[0].topics[0], isBusy: true }
+		const { container } = render(RoadmapList, { props: { stages: list, progress: 0, ui } })
+		expect(container.querySelector('[data-topic-id="a"]')).toHaveAttribute('aria-busy', 'true')
+		expect(container.querySelector('[data-topic-id="b"]')).not.toHaveAttribute('aria-busy')
+	})
+
 	it('реестр раскладок содержит все четыре', () => {
 		expect(Object.keys(ROADMAP_LAYOUT_COMPONENTS).sort()).toEqual(['horizontal', 'list', 'path', 'snake'])
 		expect(ROADMAP_LAYOUT_COMPONENTS.list).toBe(RoadmapList)

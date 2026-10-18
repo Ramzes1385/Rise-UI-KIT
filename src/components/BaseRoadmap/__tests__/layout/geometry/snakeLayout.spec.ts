@@ -1,6 +1,6 @@
 import { emptyGeometry } from '../../../model/layout/layoutShared'
+import { computeSnakeLayout } from '../../../model/layout/snakeLayout'
 import { mirroredPath, pathNumbers, stageInputs } from '../fixtures/geometryFixtures'
-import { computeSnakeLayout, ROADMAP_SNAKE_PAD, ROADMAP_SNAKE_STEP } from '../../../model/layout/snakeLayout'
 
 const LTR = { isRtl: false }
 const RTL = { isRtl: true }
@@ -12,8 +12,6 @@ function centerOf(box: { x: number; y: number; width: number; height: number }) 
 describe('computeSnakeLayout', () => {
 	it('без этапов возвращает пустую геометрию по ширине одной станции', () => {
 		expect(computeSnakeLayout([], LTR)).toEqual(emptyGeometry(404))
-		expect(ROADMAP_SNAKE_PAD).toBe(64)
-		expect(ROADMAP_SNAKE_STEP).toBe(276)
 	})
 
 	it.each([

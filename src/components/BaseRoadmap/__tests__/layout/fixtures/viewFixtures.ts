@@ -9,6 +9,7 @@ interface TopicViewInput {
 	topic?: Partial<RoadmapTopic>
 	isSelected?: boolean
 	isAlternative?: boolean
+	isBusy?: boolean
 }
 
 export function topicView(input: TopicViewInput = {}): RoadmapTopicView {
@@ -18,6 +19,7 @@ export function topicView(input: TopicViewInput = {}): RoadmapTopicView {
 		isSelected: input.isSelected ?? false,
 		isFiltered: false,
 		isAlternative: input.isAlternative ?? false,
+		isBusy: input.isBusy ?? false,
 	}
 }
 

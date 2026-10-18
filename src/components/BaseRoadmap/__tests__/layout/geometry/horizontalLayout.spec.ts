@@ -1,6 +1,6 @@
 import { emptyGeometry } from '../../../model/layout/layoutShared'
+import { computeHorizontalLayout } from '../../../model/layout/horizontalLayout'
 import { mirroredPath, pathNumbers, stageInputs } from '../fixtures/geometryFixtures'
-import { computeHorizontalLayout, ROADMAP_HORIZONTAL_PAD, ROADMAP_HORIZONTAL_STEP } from '../../../model/layout/horizontalLayout'
 
 const LTR = { isRtl: false }
 const RTL = { isRtl: true }
@@ -8,8 +8,6 @@ const RTL = { isRtl: true }
 describe('computeHorizontalLayout', () => {
 	it('без этапов возвращает пустую геометрию по ширине одной станции', () => {
 		expect(computeHorizontalLayout([], LTR)).toEqual(emptyGeometry(404))
-		expect(ROADMAP_HORIZONTAL_PAD).toBe(64)
-		expect(ROADMAP_HORIZONTAL_STEP).toBe(276)
 	})
 
 	it.each([

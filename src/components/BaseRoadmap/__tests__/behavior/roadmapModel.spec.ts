@@ -237,6 +237,20 @@ describe('BaseRoadmap: beforeStatusChange', () => {
 		expect(screen.getByRole('complementary', { name: 'Подробности темы' }).firstElementChild).not.toHaveAttribute('aria-busy')
 	})
 
+	it('пока хук ждёт, строка темы в списке и в раскладке «Путь» помечена aria-busy', async () => {
+		let resolve: (value: boolean) => void = () => undefined
+		const hook = () => new Promise<boolean>(done => (resolve = done))
+		const { user } = await renderRoadmap({ props: { beforeStatusChange: hook } })
+		await user.click(screen.getByRole('button', { name: /^HTML/ }))
+		await user.click(screen.getByRole('button', { name: 'Отметить изученной' }))
+		expect(topicRow('HTML')).toHaveAttribute('aria-busy', 'true')
+		expect(topicRow('CSS')).not.toHaveAttribute('aria-busy')
+		await user.click(screen.getByRole('radio', { name: 'Путь' }))
+		expect(document.querySelector('[data-topic-id="html"]')).toHaveAttribute('aria-busy', 'true')
+		resolve(true)
+		await vi.waitFor(() => expect(document.querySelector('[data-topic-id="html"]')).not.toHaveAttribute('aria-busy'))
+	})
+
 	it('асинхронный false отменяет смену и освобождает тему', async () => {
 		const { user, emitted } = await renderRoadmap({ props: { beforeStatusChange: () => Promise.resolve(false) } })
 		await user.click(screen.getByRole('button', { name: /^HTML/ }))

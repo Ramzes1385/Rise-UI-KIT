@@ -8,6 +8,7 @@ describe('buildStageViews', () => {
 		const views = buildStageViews({
 			data,
 			statuses: statusesOf(data, progressOf({ a: { status: 'done' } })),
+			busy: new Set(['b']),
 			expanded: ['s2'],
 			filter: 'all',
 			selectedId: 'c',
@@ -17,12 +18,15 @@ describe('buildStageViews', () => {
 		expect(views[0].headingId).toBe('rm-stage-0-heading')
 		expect(views[1]).toMatchObject({ isExpanded: true, panelId: 'rm-stage-1-panel' })
 		expect(views[1].topics[0].isSelected).toBe(true)
+		expect(views[0].topics.map(view => view.isBusy)).toEqual([false, true])
+		expect(views[1].topics[0].isBusy).toBe(false)
 	})
 
 	it('запасные значения, если статусов для этапа и темы нет: этап доступен, тема доступна без прогресса', () => {
 		const views = buildStageViews({
 			data,
 			statuses: { topics: new Map(), stages: new Map(), currentStageId: null },
+			busy: new Set<string>(),
 			expanded: [],
 			filter: 'all',
 			selectedId: null,

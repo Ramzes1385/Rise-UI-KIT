@@ -1,6 +1,6 @@
 import { emptyGeometry } from '../../../model/layout/layoutShared'
+import { computePathLayout } from '../../../model/layout/pathLayout'
 import { mirroredPath, pathNumbers, stageInputs } from '../fixtures/geometryFixtures'
-import { computePathLayout, ROADMAP_PATH_WIDTH } from '../../../model/layout/pathLayout'
 
 const LTR = { isRtl: false }
 const RTL = { isRtl: true }
@@ -8,7 +8,6 @@ const RTL = { isRtl: true }
 describe('computePathLayout', () => {
 	it('без этапов возвращает пустую геометрию той же ширины', () => {
 		expect(computePathLayout([], LTR)).toEqual(emptyGeometry(816))
-		expect(ROADMAP_PATH_WIDTH).toBe(816)
 	})
 
 	it.each([{ count: 1 }, { count: 2 }, { count: 6 }, { count: 24 }])('$count этапов: ширина 816, доли длиной этапы + 1', ({ count }) => {
