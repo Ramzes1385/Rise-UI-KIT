@@ -5,6 +5,7 @@ import type { StoryObj } from '@storybook/vue3-vite'
 import { MAIN_MAP } from '../../../fixtures/services'
 import BaseFlowMap from '../../../../ui/BaseFlowMap.vue'
 import { storySource, useStorySetup } from '@/stories/helpers'
+import { expectDetails, isCompact } from '../../../scenarioShared'
 
 const template = `
 	<BaseFlowMap v-bind="args" />
@@ -29,12 +30,16 @@ export const Services: StoryObj<typeof meta> = {
 		setup: useStorySetup(args),
 		template,
 	}),
-	play: async ({ canvas, userEvent }) => {
+	play: async ({ canvas, canvasElement, userEvent }) => {
 		await userEvent.click(flowNode(canvas, 'Payments'))
-		const details = canvas.getByRole('region', { name: 'Подробности узла' })
-		await expect(details).toHaveTextContent('Задержки')
-		await expect(within(details).getByText('Вызывает')).toBeVisible()
-		await expect(details).toHaveTextContent('Банк')
+		if (await isCompact(canvasElement)) {
+			await expectDetails({ canvas, canvasElement, userEvent }, 'Задержки')
+		} else {
+			const details = canvas.getByRole('region', { name: 'Подробности узла' })
+			await expect(details).toHaveTextContent('Задержки')
+			await expect(within(details).getByText('Вызывает')).toBeVisible()
+			await expect(details).toHaveTextContent('Банк')
+		}
 		await expect(flowNode(canvas, 'Банк')).toBeVisible()
 	},
 }

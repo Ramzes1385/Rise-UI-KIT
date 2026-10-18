@@ -6,7 +6,7 @@ import { flowNode, flowNodes } from '../../../shared'
 import BaseFlowMap from '../../../../ui/BaseFlowMap.vue'
 import { storySource, useStorySetup } from '@/stories/helpers'
 import { RETURN_PROCESS } from '../../../fixtures/process/bpmn'
-import { scenarioPanel, scenarioStep, scenarioSteps } from '../../../scenarioShared'
+import { isCompact, scenarioPanel, scenarioStep, scenarioSteps } from '../../../scenarioShared'
 
 const template = `
 	<BaseFlowMap v-bind="args" :notations="[flowBpmn]" />
@@ -26,19 +26,20 @@ export const Bpmn: StoryObj<typeof meta> = {
 			source: storySource({ template, imports: ['BaseFlowMap', 'flowBpmn'] }),
 		},
 	},
-	args: { data: RETURN_PROCESS, height: '680px' },
+	args: { data: RETURN_PROCESS, height: '680px', particles: false },
 	render: args => ({
 		components: { BaseFlowMap },
 		setup: useStorySetup(args, { data: { flowBpmn } }),
 		template,
 	}),
-	play: async ({ canvas, userEvent }) => {
+	play: async ({ canvas, canvasElement, userEvent }) => {
 		await expect(flowNodes(canvas)).toHaveLength(17)
-		await expect(scenarioSteps(canvas)).toHaveLength(15)
+		if (!(await isCompact(canvasElement))) await expect(scenarioSteps(canvas)).toHaveLength(15)
 		await expect(canvas.getByText('Клиент')).toBeVisible()
 		await expect(canvas.getByText('Интернет-магазин')).toBeVisible()
 		await expect(flowNode(canvas, 'Заявка корректна?')).toBeVisible()
 		await expect(canvas.getByRole('graphics-symbol', { name: /Поток сообщений.*Отправить товар → Принять посылку/ })).toBeVisible()
+		if (await isCompact(canvasElement)) return
 		await userEvent.click(scenarioStep(canvas, /Принять посылку → Разветвление/))
 		await expect(scenarioStep(canvas, /Принять посылку → Разветвление/)).toHaveAttribute('aria-current', 'step')
 		await expect(scenarioPanel(canvas)).toHaveTextContent('Шаг 9 из 15')

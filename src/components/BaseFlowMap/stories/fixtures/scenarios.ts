@@ -2,7 +2,7 @@ import { MAIN_MAP } from './services'
 import type { FlowMapData } from '../../types/data/flowData.types'
 import type { FlowScenario } from '../../types/data/flowScenario.types'
 
-export const PARALLEL_SCENARIO: FlowScenario = {
+const PARALLEL_SCENARIO: FlowScenario = {
 	id: 'checkout-parallel',
 	label: 'Оформление заказа: резерв и оплата параллельно',
 	description: 'Orders одновременно резервирует товар и проводит оплату, следующий шаг ждёт обе ветки',
@@ -27,7 +27,7 @@ export const PARALLEL_SCENARIO: FlowScenario = {
 	],
 }
 
-export const CHOICE_SCENARIO: FlowScenario = {
+const CHOICE_SCENARIO: FlowScenario = {
 	id: 'checkout-choice',
 	label: 'Оформление заказа: исход оплаты',
 	description: 'После запроса оплаты банк отвечает — заказ сохраняется или отменяется',

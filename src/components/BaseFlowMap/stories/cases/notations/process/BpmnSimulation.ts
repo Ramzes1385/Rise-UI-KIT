@@ -6,7 +6,7 @@ import type { StoryObj } from '@storybook/vue3-vite'
 import BaseFlowMap from '../../../../ui/BaseFlowMap.vue'
 import { storySource, useStorySetup } from '@/stories/helpers'
 import { RETURN_PROCESS_PLAIN } from '../../../fixtures/process/bpmn'
-import { scenarioPanel, scenarioSteps } from '../../../scenarioShared'
+import { compactTotal, isCompact, scenarioPanel, scenarioSteps } from '../../../scenarioShared'
 
 const template = `
 	<div class="story-stack">
@@ -35,13 +35,22 @@ export const BpmnSimulation: StoryObj<typeof meta> = {
 			source: storySource({ template, imports: ['BaseFlowMap', 'BaseButton', 'flowBpmn'], state: { answer: 'да' } }),
 		},
 	},
-	args: { data: RETURN_PROCESS_PLAIN, height: '640px' },
+	args: { data: RETURN_PROCESS_PLAIN, height: '640px', particles: false },
 	render: args => ({
 		components: { BaseFlowMap, BaseButton },
 		setup: useStorySetup(args, { state: { answer: 'да' }, data: { flowBpmn } }),
 		template,
 	}),
-	play: async ({ canvas, userEvent }) => {
+	play: async ({ canvas, canvasElement, userEvent }) => {
+		if (await isCompact(canvasElement)) {
+			const full = await compactTotal(canvas, userEvent)
+			await expect(full).toBeGreaterThan(10)
+			await userEvent.click(canvas.getByRole('button', { name: 'Нужно уточнение' }))
+			await expect(await compactTotal(canvas, userEvent)).toBeLessThan(full)
+			await userEvent.click(canvas.getByRole('button', { name: 'Заявка корректна' }))
+			await expect(await compactTotal(canvas, userEvent)).toBe(full)
+			return
+		}
 		await expect(scenarioPanel(canvas)).toHaveTextContent('Построен по схеме')
 		const full = scenarioSteps(canvas).length
 		await expect(full).toBeGreaterThan(10)
