@@ -49,7 +49,7 @@ export function randomData(random: Random): FlowMapData {
 	}))
 	const data: FlowMapData = { version: 1, nodes, edges }
 	if (random() < 0.5) data.title = pickOne(random, LABELS)
-	if (random() < 0.5) data.groups = groups
+	if (groups.length > 0 && random() < 0.5) data.groups = groups
 	if (random() < 0.3) data.layout = { direction: 'LR', nodeGap: randomInt(random, 80) }
 	return data
 }

@@ -1,7 +1,14 @@
 import type { FlowNotation } from '../../../../types/api/flowNotation.types'
 import { BASE_GROUP_KINDS, FALLBACK_EDGE_KIND, FALLBACK_GROUP_KIND, FALLBACK_NODE_KIND } from '../../../../model/notations/base'
 import { createNotationRegistry, createRegistry, defineFlowNotation, defineFlowPlugin } from '../../../../model/notations/registry'
-import { parseKindRef, resolveEdgeKind, resolveGroupKind, resolveNodeKind, findNodeKind } from '../../../../model/notations/resolveKind'
+import {
+	applyNotationStyle,
+	parseKindRef,
+	resolveEdgeKind,
+	resolveGroupKind,
+	resolveNodeKind,
+	findNodeKind,
+} from '../../../../model/notations/resolveKind'
 
 const box = { label: () => 'K', render: 'html', shape: { shape: 'rect' }, size: { width: 1, height: 1 } } as const
 
@@ -127,5 +134,19 @@ describe('base', () => {
 		expect(FALLBACK_NODE_KIND.label()).toBe('')
 		expect(FALLBACK_EDGE_KIND.label()).toBe('')
 		expect(FALLBACK_GROUP_KIND.label()).toBe('')
+	})
+})
+
+describe('applyNotationStyle', () => {
+	const styled = notation('styled', {
+		styles: { alt: { label: () => 'Alt', nodeKinds: { 'styled-node': { size: { width: 7, height: 8 } } } } },
+	})
+
+	it('накладывает переопределения вида; неизвестный стиль и не строка оставляют нотацию', () => {
+		const result = applyNotationStyle(styled, 'alt')
+		expect(result.nodeKinds['styled-node'].size).toEqual({ width: 7, height: 8 })
+		expect(result.nodeKinds['styled-node'].label).toBe(styled.nodeKinds['styled-node'].label)
+		expect(applyNotationStyle(styled, 'none')).toBe(styled)
+		expect(applyNotationStyle(styled, 5)).toBe(styled)
 	})
 })

@@ -1,19 +1,10 @@
 import { edge, group, map, node } from '../fixtures/flowData'
 import { diffFlowData } from '../../../../model/data/flowDiff'
-import type { FlowMapData } from '../../../../types/data/flowData.types'
 import type { FlowChange } from '../../../../types/data/flowReview.types'
 import { createRandom, mutate, randomChanges, randomData } from '../fixtures/seeded'
 import { applyFlowChanges, invertFlowChanges } from '../../../../model/data/flowChanges'
 
 const CASES = 200
-
-function canon(data: FlowMapData): FlowMapData {
-	const result = { ...data }
-	for (const key of ['groups', 'scenarios'] as const) {
-		if (result[key]?.length === 0) delete result[key]
-	}
-	return result
-}
 
 describe('applyFlowChanges', () => {
 	const base = map({ title: 'T', nodes: [node('a'), node('b')], edges: [edge('e', ['a', 'b'])] })
@@ -101,6 +92,16 @@ describe('invertFlowChanges', () => {
 	})
 })
 
+describe('пустой необязательный список', () => {
+	it('remove последнего элемента убирает поле, откат add тоже', () => {
+		const data = map({ nodes: [node('a')], groups: [group('g')] })
+		const removed = applyFlowChanges(data, [{ type: 'remove', entity: 'group', id: 'g', value: group('g'), index: 0 }])
+		expect('groups' in removed).toBe(false)
+		const added = applyFlowChanges(map({ nodes: [node('a')] }), [{ type: 'add', entity: 'group', value: group('g') }])
+		expect('groups' in applyFlowChanges(added, invertFlowChanges([{ type: 'add', entity: 'group', value: group('g') }]))).toBe(false)
+	})
+})
+
 describe('свойства на случайных наборах (зерно)', () => {
 	it(`apply ∘ invert = id на ${CASES} наборах`, () => {
 		for (let seed = 1; seed <= CASES; seed += 1) {
@@ -109,7 +110,7 @@ describe('свойства на случайных наборах (зерно)',
 			const changes = randomChanges(random, data, applyFlowChanges)
 			const changed = applyFlowChanges(data, changes)
 			const restored = applyFlowChanges(changed, invertFlowChanges(changes))
-			expect(canon(restored), `зерно ${seed}`).toEqual(canon(data))
+			expect(restored, `зерно ${seed}`).toEqual(data)
 		}
 	})
 
@@ -119,8 +120,8 @@ describe('свойства на случайных наборах (зерно)',
 			const base = randomData(random)
 			const target = mutate(random, base)
 			const changes = diffFlowData(base, target)
-			expect(canon(applyFlowChanges(base, changes)), `зерно ${seed}`).toEqual(canon(target))
-			expect(canon(applyFlowChanges(target, invertFlowChanges(changes))), `обратно, зерно ${seed}`).toEqual(canon(base))
+			expect(applyFlowChanges(base, changes), `зерно ${seed}`).toEqual(target)
+			expect(applyFlowChanges(target, invertFlowChanges(changes)), `обратно, зерно ${seed}`).toEqual(base)
 		}
 	})
 
