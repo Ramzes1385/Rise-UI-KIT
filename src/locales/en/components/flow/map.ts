@@ -99,5 +99,67 @@ export const enFlowMap = {
 		REJECT_POOLS_DIFFERENT: 'Not allowed: this edge is only possible between different pools',
 		/** Предупреждение разработчику: раскладка не найдена; `{id}` — id, `{fallback}` — запасная */
 		WARN_UNKNOWN_LAYOUT: 'BaseFlowMap: layout “{id}” not found — “{fallback}” is used',
+		/** Кнопка: увеличить масштаб */
+		ZOOM_IN: 'Zoom in',
+		/** Кнопка: уменьшить масштаб */
+		ZOOM_OUT: 'Zoom out',
+		/** Кнопка: вписать карту в область */
+		FIT: 'Fit to screen',
+		/** Масштаб в процентах; `{percent}` — значение */
+		ZOOM_VALUE: 'Zoom {percent}%',
+		/** Подпись панели инструментов карты */
+		TOOLBAR: 'Map tools',
+		/** Подпись и подсказка поля поиска узла */
+		SEARCH: 'Find a node',
+		/** Подсказка при прокрутке колесом без Ctrl */
+		WHEEL_HINT: 'Zoom: hold Ctrl or ⌘ and scroll',
+		/** Подсказка клавиш для скринридера */
+		KEYBOARD_HINT: 'Arrow keys move between nodes, ] and [ follow the node’s edges, Enter selects, Escape clears the selection',
+		/** Заголовок структурного списка карты */
+		LIST_TITLE: 'Map structure',
+		/** Заголовок списка узлов */
+		LIST_NODES: 'Nodes',
+		/** Заголовок списка связей */
+		LIST_EDGES: 'Edges',
+		/** Текст пустой карты */
+		EMPTY: 'The map has no nodes yet',
+		/** Подпись загрузки карты */
+		LOADING: 'Loading the map…',
+		/** Статус: всё работает */
+		STATUS_OK: 'Operational',
+		/** Статус: предупреждение */
+		STATUS_WARNING: 'Warning',
+		/** Статус: ошибка */
+		STATUS_ERROR: 'Error',
+		/** Статус: недоступен */
+		STATUS_DOWN: 'Down',
+		/** Статус: нет данных */
+		STATUS_UNKNOWN: 'No data',
+		/** Описание узла для скринридера; `{label}` — подпись, `{kind}` — вид */
+		NODE_ARIA: '{label}, {kind}',
+		/** Описание узла со статусом; `{status}` — статус */
+		NODE_ARIA_STATUS: '{label}, {kind}, status: {status}',
+		/** Число связей узла; `{incoming}` — входящих, `{outgoing}` — исходящих */
+		ARIA_LINKS: 'Incoming edges: {incoming}, outgoing: {outgoing}',
+		/** Описание связи; `{kind}` — вид, `{source}` и `{target}` — подписи узлов */
+		EDGE_ARIA: '{kind}: {source} → {target}',
+		/** Описание связи с подписью; `{label}` — подпись связи */
+		EDGE_ARIA_LABELED: '{kind} “{label}”: {source} → {target}',
+		/** Озвучка выбора; `{label}` — подпись */
+		ANNOUNCE_SELECTED: 'Selected: {label}',
+		/** Озвучка снятия выбора */
+		ANNOUNCE_CLEARED: 'Selection cleared',
+		/** Заголовок ошибки загрузки карты */
+		ERROR_TITLE: 'The map could not be shown',
+		/** Подпись холста для скринридера; `{title}` — название карты */
+		CANVAS_ARIA: 'Diagram: {title}',
+		/** Режим «Просмотр» в переключателе шапки */
+		MODE_VIEW: 'View',
+		/** Режим «Правка» в переключателе шапки */
+		MODE_EDIT: 'Edit',
+		/** Режим «Правки» в переключателе шапки */
+		MODE_REVIEW: 'Review',
+		/** Подпись переключателя режимов */
+		MODES: 'Map mode',
 	},
 }

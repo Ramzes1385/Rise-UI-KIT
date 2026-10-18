@@ -6,6 +6,7 @@ import type { ConcreteSide } from '../../types/internal/core/flowRouteInternal.t
 const SAMPLES = 28
 const MIN_REACH = 24
 const MAX_REACH = 140
+const ARCH_REACH = 40
 
 function cubic(points: readonly [FlowPoint, FlowPoint, FlowPoint, FlowPoint], t: number): FlowPoint {
 	const [p0, p1, p2, p3] = points
@@ -38,10 +39,36 @@ function spline(anchors: readonly FlowPoint[]): FlowPoint[] {
 	return result
 }
 
-function route(edge: FlowLayoutEdge, context: { source: FlowRect; target: FlowRect; points?: FlowPoint[] }): FlowPoint[] {
-	const { out, into, start, end } = endpoints(edge, context.source, context.target)
-	if (context.points && context.points.length > 0) return spline([start, ...context.points, end])
-	const distance = reach(start, end)
+function isBlocked(start: FlowPoint, end: FlowPoint, obstacles: readonly FlowRect[]): boolean {
+	return obstacles.some(rect =>
+		Array.from({ length: 9 }, (_, step) => step / 8).some(t => {
+			const x = start.x + (end.x - start.x) * t
+			const y = start.y + (end.y - start.y) * t
+			return x > rect.x && x < rect.x + rect.width && y > rect.y && y < rect.y + rect.height
+		}),
+	)
+}
+
+function isArch(
+	edge: FlowLayoutEdge,
+	ends: { out: ConcreteSide; start: FlowPoint; end: FlowPoint },
+	obstacles: readonly FlowRect[],
+): boolean {
+	if (edge.sourceSide || edge.targetSide) return false
+	return (ends.out === 'left' || ends.out === 'right') && isBlocked(ends.start, ends.end, obstacles)
+}
+
+function route(
+	edge: FlowLayoutEdge,
+	context: { source: FlowRect; target: FlowRect; obstacles?: readonly FlowRect[]; points?: FlowPoint[] },
+): FlowPoint[] {
+	const base = endpoints(edge, context.source, context.target)
+	if (context.points && context.points.length > 0) return spline([base.start, ...context.points, base.end])
+	const isArched = isArch(edge, base, context.obstacles ?? [])
+	const { out, into, start, end } = isArched
+		? endpoints({ ...edge, sourceSide: 'bottom', targetSide: 'bottom' }, context.source, context.target)
+		: base
+	const distance = isArched ? ARCH_REACH : reach(start, end)
 	const curve: [FlowPoint, FlowPoint, FlowPoint, FlowPoint] = [start, control(start, out, distance), control(end, into, distance), end]
 	return Array.from({ length: SAMPLES + 1 }, (_, step) => cubic(curve, step / SAMPLES))
 }

@@ -1,5 +1,5 @@
+import { layoutCompound } from './compound'
 import { UI_FLOW_MAP } from '@/locales/messages'
-import { layoutCompound } from './layered/compound'
 import { applyFixed, snapToGrid } from './placement'
 import { createRegistry } from '../notations/registry'
 import type { FlowLayoutAlgorithm, FlowLayoutInput, FlowLayoutResult } from '../../types/api/flowLayout.types'

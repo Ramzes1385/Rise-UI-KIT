@@ -99,5 +99,68 @@ export const uzFlowMap = {
 		REJECT_POOLS_DIFFERENT: 'Mumkin emas: bunday bogʻlanish faqat turli pullar orasida mumkin',
 		/** Предупреждение разработчику: раскладка не найдена; `{id}` — id, `{fallback}` — запасная */
 		WARN_UNKNOWN_LAYOUT: 'BaseFlowMap: «{id}» joylashuvi topilmadi — «{fallback}» ishlatildi',
+		/** Кнопка: увеличить масштаб */
+		ZOOM_IN: 'Kattalashtirish',
+		/** Кнопка: уменьшить масштаб */
+		ZOOM_OUT: 'Kichraytirish',
+		/** Кнопка: вписать карту в область */
+		FIT: 'Ekranga sigʻdirish',
+		/** Масштаб в процентах; `{percent}` — значение */
+		ZOOM_VALUE: 'Masshtab {percent} %',
+		/** Подпись панели инструментов карты */
+		TOOLBAR: 'Xarita vositalari',
+		/** Подпись и подсказка поля поиска узла */
+		SEARCH: 'Tugunni topish',
+		/** Подсказка при прокрутке колесом без Ctrl */
+		WHEEL_HINT: 'Masshtab: Ctrl yoki ⌘ va sichqoncha gʻildiragi',
+		/** Подсказка клавиш для скринридера */
+		KEYBOARD_HINT:
+			'Strelkalar — tugunlar orasida, ] va [ — tugun bogʻlanishlari boʻyicha, Enter — tanlash, Escape — tanlovni bekor qilish',
+		/** Заголовок структурного списка карты */
+		LIST_TITLE: 'Xarita tuzilmasi',
+		/** Заголовок списка узлов */
+		LIST_NODES: 'Tugunlar',
+		/** Заголовок списка связей */
+		LIST_EDGES: 'Bogʻlanishlar',
+		/** Текст пустой карты */
+		EMPTY: 'Xaritada hozircha tugun yoʻq',
+		/** Подпись загрузки карты */
+		LOADING: 'Xarita yuklanmoqda…',
+		/** Статус: всё работает */
+		STATUS_OK: 'Ishlayapti',
+		/** Статус: предупреждение */
+		STATUS_WARNING: 'Ogohlantirish',
+		/** Статус: ошибка */
+		STATUS_ERROR: 'Xato',
+		/** Статус: недоступен */
+		STATUS_DOWN: 'Mavjud emas',
+		/** Статус: нет данных */
+		STATUS_UNKNOWN: 'Maʼlumot yoʻq',
+		/** Описание узла для скринридера; `{label}` — подпись, `{kind}` — вид */
+		NODE_ARIA: '{label}, {kind}',
+		/** Описание узла со статусом; `{status}` — статус */
+		NODE_ARIA_STATUS: '{label}, {kind}, holati: {status}',
+		/** Число связей узла; `{incoming}` — входящих, `{outgoing}` — исходящих */
+		ARIA_LINKS: 'Kiruvchi bogʻlanish: {incoming}, chiquvchi: {outgoing}',
+		/** Описание связи; `{kind}` — вид, `{source}` и `{target}` — подписи узлов */
+		EDGE_ARIA: '{kind}: {source} → {target}',
+		/** Описание связи с подписью; `{label}` — подпись связи */
+		EDGE_ARIA_LABELED: '{kind} «{label}»: {source} → {target}',
+		/** Озвучка выбора; `{label}` — подпись */
+		ANNOUNCE_SELECTED: 'Tanlandi: {label}',
+		/** Озвучка снятия выбора */
+		ANNOUNCE_CLEARED: 'Tanlov bekor qilindi',
+		/** Заголовок ошибки загрузки карты */
+		ERROR_TITLE: 'Xaritani koʻrsatib boʻlmadi',
+		/** Подпись холста для скринридера; `{title}` — название карты */
+		CANVAS_ARIA: 'Sxema: {title}',
+		/** Режим «Просмотр» в переключателе шапки */
+		MODE_VIEW: 'Koʻrish',
+		/** Режим «Правка» в переключателе шапки */
+		MODE_EDIT: 'Tahrirlash',
+		/** Режим «Правки» в переключателе шапки */
+		MODE_REVIEW: 'Koʻrib chiqish',
+		/** Подпись переключателя режимов */
+		MODES: 'Xarita rejimi',
 	},
 }

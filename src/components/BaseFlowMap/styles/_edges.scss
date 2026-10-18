@@ -1,0 +1,91 @@
+@use '@styles/functions' as *;
+
+.base-flow-map {
+	&__edge {
+		--flow-edge-line: var(--flow-edge-color, #{ct(flow-map, edge-border, var(--rise-border-accented))});
+
+		outline: none;
+		pointer-events: none;
+
+		&--dashed .base-flow-map__edge-line {
+			stroke-dasharray: 6 4;
+		}
+
+		&--dotted .base-flow-map__edge-line {
+			stroke-dasharray: 2 4;
+		}
+
+		&[data-status='error'],
+		&[data-status='down'] {
+			--flow-edge-line: var(--rise-error);
+		}
+
+		&[data-status='warning'] {
+			--flow-edge-line: var(--rise-warning);
+		}
+
+		&--selected,
+		&--highlighted,
+		&:focus-visible {
+			--flow-edge-line: #{ct(flow-map, edge-border-selected, var(--rise-primary))};
+
+			.base-flow-map__edge-line {
+				stroke-width: 2.5;
+			}
+		}
+
+		&--dim {
+			opacity: 0.25;
+		}
+	}
+
+	&__edge-hit {
+		fill: none;
+		stroke: transparent;
+		stroke-width: 14;
+		pointer-events: stroke;
+		cursor: pointer;
+	}
+
+	&__edge-line {
+		fill: none;
+		stroke: var(--flow-edge-line);
+		stroke-width: 1.5;
+	}
+
+	&__marker {
+		overflow: visible;
+		fill: none;
+		stroke: var(--rise-border-accented);
+		stroke: context-stroke;
+		stroke-width: 1.2;
+
+		&--filled {
+			fill: var(--rise-border-accented);
+			fill: context-stroke;
+		}
+	}
+
+	&__edge-label {
+		overflow: visible;
+		pointer-events: none;
+
+		&--dim {
+			opacity: 0.25;
+		}
+	}
+
+	&__edge-label-text {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		block-size: 100%;
+		font-size: sz(11px);
+		color: ct(flow-map, label-text, var(--rise-text-muted));
+		white-space: nowrap;
+
+		&--highlighted {
+			color: var(--rise-text-highlighted);
+		}
+	}
+}

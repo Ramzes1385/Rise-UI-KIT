@@ -78,7 +78,7 @@ function useLoadedData(props: FlowModelProps, registry: ComputedRef<Map<string, 
 	return { data, commit }
 }
 
-export function useFlowState(props: FlowModelProps, onLoad: (issues: FlowDataIssue[]) => void): FlowState {
+export function useFlowState(props: FlowModelProps, onLoad: (issues: FlowDataIssue[]) => void, isCompact?: () => boolean): FlowState {
 	const { plugins, registry, layouts, routers } = useRegistries(props)
 	const { data, commit } = useLoadedData(props, registry, onLoad)
 	const notation = computed(() => pickNotation(registry.value, data.value.notation))
@@ -94,6 +94,7 @@ export function useFlowState(props: FlowModelProps, onLoad: (issues: FlowDataIss
 		layouts: layouts.value,
 		routers: routers.value,
 		overrides: props.layout,
+		isCompact: isCompact?.() ?? false,
 	}))
 	return { data, registry, notation, graph, issues, scope, ...useOverlay(props), commit }
 }

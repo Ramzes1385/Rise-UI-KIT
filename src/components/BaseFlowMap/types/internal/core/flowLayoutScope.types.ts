@@ -16,6 +16,8 @@ export interface FlowLayoutScope {
 	routers: ReadonlyMap<string, FlowRouter>
 	/** Настройки поверх данных (проп `layout`) */
 	overrides?: FlowLayoutSettings
+	/** Компактный вид: плитки вместо карточек, ярусы переносятся по 3 */
+	isCompact?: boolean
 }
 
 /** Параметры одного запуска раскладки */

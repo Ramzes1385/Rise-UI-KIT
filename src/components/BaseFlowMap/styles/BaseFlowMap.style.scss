@@ -1,7 +1,13 @@
+@use './canvas';
+@use './nodes';
+@use './edges';
+@use './chrome';
+
 .base-flow-map {
 	@include custom-color-scope;
 	position: relative;
-	display: block;
+	display: flex;
+	flex-direction: column;
 	box-sizing: border-box;
 	max-width: 100%;
 	min-width: 0;

@@ -1,0 +1,161 @@
+@use '@styles/mixins' as *;
+@use '@styles/functions' as *;
+
+.base-flow-map {
+	&__node {
+		--flow-node-line: var(--flow-node-stroke, #{ct(flow-map, node-border, var(--rise-border-accented))});
+
+		position: absolute;
+		inset-block-start: 0;
+		inset-inline-start: 0;
+		display: flex;
+		align-items: center;
+		gap: sz(ct(flow-map, node-gap, 10px));
+		box-sizing: border-box;
+		padding: sz(0 12px);
+		border: 1px solid var(--flow-node-line);
+		border-radius: sz(ct(flow-map, node-radius, var(--rise-radius-lg)));
+		color: var(--flow-node-text, #{ct(flow-map, node-text, var(--rise-text-highlighted))});
+		background-color: var(--flow-node-fill, #{ct(flow-map, node-bg, var(--rise-bg))});
+		box-shadow: ct(flow-map, node-shadow, var(--rise-shadow-xs));
+		outline: none;
+		pointer-events: auto;
+		cursor: pointer;
+
+		@include motion-safe {
+			transition:
+				opacity var(--rise-duration-fast),
+				border-color var(--rise-duration-fast),
+				box-shadow var(--rise-duration-fast);
+		}
+
+		&:hover,
+		&--highlighted {
+			border-color: ct(flow-map, node-border-hover, var(--rise-primary));
+		}
+
+		&--selected {
+			border-color: ct(flow-map, node-border-selected, var(--rise-primary));
+			box-shadow: 0 0 0 2px color-mix(in srgb, var(--rise-primary) 30%, transparent);
+		}
+
+		&:focus-visible,
+		&--focused:focus-visible {
+			outline: 2px solid var(--rise-focus-ring);
+			outline-offset: 2px;
+		}
+
+		&--external {
+			border-style: dashed;
+		}
+
+		&--dim {
+			opacity: 0.35;
+		}
+
+		&--tile {
+			flex-direction: column;
+			justify-content: center;
+			gap: sz(2px);
+			padding: sz(4px);
+			text-align: center;
+
+			.base-flow-map__node-subtitle {
+				display: none;
+			}
+
+			.base-flow-map__node-label {
+				font-size: sz(11px);
+			}
+		}
+	}
+
+	&__node-icon {
+		display: inline-flex;
+		flex: none;
+		align-items: center;
+		justify-content: center;
+		inline-size: sz(32px);
+		block-size: sz(32px);
+		border-radius: sz(var(--rise-radius-md));
+		color: var(--rise-primary);
+		background-color: var(--rise-bg-muted);
+
+		svg {
+			fill: none;
+			stroke: currentcolor;
+			stroke-width: 1.6;
+			stroke-linecap: round;
+			stroke-linejoin: round;
+		}
+	}
+
+	&__node--tile &__node-icon {
+		inline-size: sz(24px);
+		block-size: sz(24px);
+	}
+
+	&__node-text {
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+	}
+
+	&__node-label {
+		overflow: hidden;
+		font-size: sz(var(--rise-font-size-sm));
+		font-weight: var(--rise-font-weight-medium);
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	&__node-subtitle {
+		overflow: hidden;
+		font-size: sz(var(--rise-font-size-xs));
+		color: var(--rise-text-muted);
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	&__node-status {
+		position: absolute;
+		inset-block-start: sz(8px);
+		inset-inline-end: sz(8px);
+		inline-size: sz(8px);
+		block-size: sz(8px);
+		border-radius: 50%;
+		background-color: var(--flow-status-color, var(--rise-text-dimmed));
+	}
+
+	&__node--svg {
+		position: static;
+		display: block;
+		padding: 0;
+		border: 0;
+		background: none;
+		box-shadow: none;
+
+		.base-flow-map__shape {
+			fill: var(--flow-node-fill, #{ct(flow-map, node-bg, var(--rise-bg))});
+			stroke: var(--flow-node-line);
+			stroke-width: 1.5;
+			pointer-events: all;
+		}
+
+		.base-flow-map__shape-inner {
+			fill: none;
+			stroke: var(--flow-node-line);
+		}
+
+		.base-flow-map__node-label {
+			font-size: 13px;
+			fill: var(--flow-node-text, #{ct(flow-map, node-text, var(--rise-text-highlighted))});
+			pointer-events: none;
+		}
+
+		&.base-flow-map__node--selected .base-flow-map__shape {
+			stroke: var(--rise-primary);
+			stroke-width: 2.5;
+		}
+	}
+}

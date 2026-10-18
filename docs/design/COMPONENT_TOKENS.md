@@ -807,6 +807,27 @@
 | Токен | Часть | Свойство | Состояние | По умолчанию |
 |---|---|---|---|---|
 | `--rise-flow-map-canvas-bg` | canvas | bg | — | `var(--rise-bg-muted)` |
+| `--rise-flow-map-canvas-border` | canvas | border | — | `var(--rise-border-accented)` |
+| `--rise-flow-map-edge-border` | edge | border | — | `var(--rise-border-accented)` |
+| `--rise-flow-map-edge-border-selected` | edge | border | selected | `var(--rise-primary)` |
+| `--rise-flow-map-group-bg` | group | bg | — | `color-mix(in srgb, var(--rise-bg) 55%, transparent)` |
+| `--rise-flow-map-group-border` | group | border | — | `var(--rise-border)` |
+| `--rise-flow-map-group-radius` | group | radius | — | `var(--rise-radius-xl)` |
+| `--rise-flow-map-group-text` | group | text | — | `var(--rise-text-muted)` |
+| `--rise-flow-map-header-height` | header | height | — | `56px` |
+| `--rise-flow-map-label-text` | label | text | — | `var(--rise-text-muted)` |
+| `--rise-flow-map-node-bg` | node | bg | — | `var(--rise-bg)` |
+| `--rise-flow-map-node-border` | node | border | — | `var(--rise-border-accented)` |
+| `--rise-flow-map-node-border-hover` | node | border | hover | `var(--rise-primary)` |
+| `--rise-flow-map-node-border-selected` | node | border | selected | `var(--rise-primary)` |
+| `--rise-flow-map-node-gap` | node | gap | — | `10px` |
+| `--rise-flow-map-node-radius` | node | radius | — | `var(--rise-radius-lg)` |
+| `--rise-flow-map-node-shadow` | node | shadow | — | `var(--rise-shadow-xs)` |
+| `--rise-flow-map-node-text` | node | text | — | `var(--rise-text-highlighted)` |
+| `--rise-flow-map-toolbar-bg` | toolbar | bg | — | `var(--rise-bg)` |
+| `--rise-flow-map-toolbar-gap` | toolbar | gap | — | `2px` |
+| `--rise-flow-map-toolbar-radius` | toolbar | radius | — | `var(--rise-radius-lg)` |
+| `--rise-flow-map-toolbar-shadow` | toolbar | shadow | — | `var(--rise-shadow-sm)` |
 
 ## BaseFooter
 

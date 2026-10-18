@@ -9,13 +9,23 @@ const LABEL_PADDING = 40
 const MAX_WIDTH = 320
 const HEADER_START = 28
 const HEADER_TOP = 32
+const COMPACT_TILE: FlowSize = { width: 72, height: 56 }
+const COMPACT_SETTINGS: FlowLayoutSettings = { wrap: 3, nodeGap: 16, rankGap: 40 }
 
 function mergeLayoutSettings(scope: FlowLayoutScope, run?: FlowLayoutRun): FlowLayoutInput['settings'] {
-	return { ...DEFAULTS, ...scope.notation.layout, ...scope.data.layout, ...scope.overrides, ...run?.settings }
+	return {
+		...DEFAULTS,
+		...(scope.isCompact ? COMPACT_SETTINGS : undefined),
+		...scope.notation.layout,
+		...scope.data.layout,
+		...scope.overrides,
+		...run?.settings,
+	}
 }
 
 function nodeSize(node: FlowNode, scope: FlowLayoutScope): FlowSize {
 	const base = resolveNodeKind(node.kind, scope.notation, scope.registry)
+	if (scope.isCompact && base.render === 'html' && !node.size) return COMPACT_TILE
 	const wanted = estimateTextWidth(node.label, 13) + LABEL_PADDING
 	const width = node.size?.width ?? Math.min(MAX_WIDTH, Math.max(base.size.width, base.render === 'html' ? wanted : 0))
 	return { width, height: node.size?.height ?? base.size.height }

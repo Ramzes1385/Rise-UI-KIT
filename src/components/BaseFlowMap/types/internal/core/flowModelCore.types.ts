@@ -19,6 +19,8 @@ export interface FlowModelOptions {
 	environment: FlowModelEnvironment
 	/** Слушатели событий из `vnode.props`: имя события → функция (для панели «Хуки») */
 	listeners?: () => Record<string, unknown>
+	/** Компактный вид: ширина области меньше `compactBreakpoint`; нет — карточки */
+	isCompact?: () => boolean
 }
 
 /** Подписка на событие через `controller.on` */

@@ -106,14 +106,9 @@ function inferSide(from: FlowRect, to: FlowRect): ConcreteSide {
 	return dx >= 0 ? 'right' : 'left'
 }
 
-function opposite(side: ConcreteSide): ConcreteSide {
-	const map: Record<ConcreteSide, ConcreteSide> = { top: 'bottom', bottom: 'top', left: 'right', right: 'left' }
-	return map[side]
-}
-
 export function resolveSides(edge: FlowLayoutEdge, source: FlowRect, target: FlowRect): { out: ConcreteSide; into: ConcreteSide } {
 	const out = edge.sourceSide && edge.sourceSide !== 'auto' ? edge.sourceSide : inferSide(source, target)
-	const into = edge.targetSide && edge.targetSide !== 'auto' ? edge.targetSide : opposite(inferSide(target, source))
+	const into = edge.targetSide && edge.targetSide !== 'auto' ? edge.targetSide : inferSide(target, source)
 	return { out, into }
 }
 

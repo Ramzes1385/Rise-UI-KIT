@@ -4016,3 +4016,16 @@ function rename(id: string, name: string): void {
 - `monthsShown`: число месяцев в панели; без значения — по ширине поля (`isMultiMonth`, `maxMonths`).
 - Ввод с клавиатуры: при `isReadonly=false` период вводится в поле («01.10.2026 — 05.10.2026»; разделитель — дефис или тире, один день — одна дата). Порядок «день, месяц, год» — как поле показывает даты на языке `locale` (`dateFormat` его не меняет). Enter и уход из поля применяют ввод, Escape отменяет. Не принятый текст остаётся в поле с ошибкой и событием `input-invalid (issue, text)`, `issue` — `format`, `unavailable`, `min-days`, `max-days`.
 - Части `ui`: `presets` (колонка периодов) и `preset` (кнопка).
+
+## BaseFlowMap (ядро, flow-core)
+
+Карта взаимодействий 2D: узлы и связи по данным `FlowMapData`, ярусы и полосы, пан и масштаб, клавиатура и скринридер. Данные, нотации, контроллер и хуки — типы в `src/components/BaseFlowMap/types/`; нотации BPMN, IDEF и DFD, сценарии, «Правка» и «Правки», панели и 3D — отдельные части того же компонента.
+
+- **Пропсы**: `data` (обязателен), `notations`, `plugins`, `mode` (`view` | `edit` | `review`) и `modes` (переключатель шапки), `selection`, `layout`, `scenario`, `isAutoplay`, `choices`, `live`, `particles`, `suggestions`, `comments`, `versions`, `compareWith`, `currentUser`, `savedAt`, `compactBreakpoint` (640), `panels` (по умолчанию `toolbar`, `minimap`, `legend`, `scenario`, `details`; ещё `search`, `list`), `ariaLabel`, `height` (560px), `wheelZoom` (`ctrl` | `always` | `none`), `minZoom` (0,2), `maxZoom` (3), `isLoading`, `isDisabled`, `error`, `ui`, хуки (`beforeChange`, `beforeConnect`…).
+- **События**: `update:data`, `update:mode`, `update:selection`, `change`, `reject`, `node-click`, `node-dblclick`, `node-contextmenu`, `node-enter`, `node-leave`, то же для `edge-*`, `group-click`, `group-contextmenu`, `node-move`, `focus-change`, `viewport-change`, `history-change`, `validate`, `ready` (контроллер), `error`.
+- **Слоты**: `node`, `edge-label`, `group-label`, `toolbar`, `empty`.
+- **Части `ui`**: `header`, `toolbar`, `viewport`, `canvas`, `node`, `edge`, `group`, `label`, `list` и остальные из `FLOW_MAP_PARTS`.
+- **Клавиатура**: Tab — к карте (один узел в порядке обхода), стрелки — к ближайшему узлу, `]` и `[` — по связям вперёд и назад (с узла — к первой исходящей или входящей связи, со связи — к её концу), набор букв — по подписи, Home и End — первый и последний узел, Enter — выбрать и открыть подробности, Escape — снять выбор.
+- **Доступность**: `role="graphics-document"` на области, `graphics-object` на узле и группе, `graphics-symbol` на связи; `aria-roledescription` узла — название его вида; выбранный — `aria-current`; структурный список узлов и связей скрыт и открывается панелью `list`; live-регион озвучивает выбор и снятие выбора.
+- **Экспорт**: `exportSvg()` и `exportPng()` собирают картинку из данных карты (содержимое или видимая область, прозрачный фон), цвета читают из токенов темы.
+- **Токены** `--rise-flow-map-*`: `canvas-bg`, `canvas-border`, `node-bg|border|radius|shadow|text|gap`, `node-border-hover|selected`, `edge-border`, `edge-border-selected`, `group-bg|border|radius|text`, `label-text`, `header-height`, `toolbar-bg|gap|radius|shadow`.

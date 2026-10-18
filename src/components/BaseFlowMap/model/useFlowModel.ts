@@ -13,6 +13,7 @@ import type { FlowHooks } from '../types/api/flowController.types'
 import type { FlowDataIssue } from '../types/api/flowNotation.types'
 import type { FlowChange, FlowSuggestion } from '../types/data/flowReview.types'
 import type { FlowModel, FlowModelProps } from '../types/internal/flowModel.types'
+import type { FlowModelInternal } from '../types/internal/core/flowRenderInternal.types'
 import { createHookRunner, useCommandHistory } from '@composables/editor/useCommandHistory'
 import { resolveEdgeKind, resolveGroupKind, resolveNodeKind } from './notations/resolveKind'
 import type { FlowEventBus, FlowModelBase, FlowModelOptions, FlowState } from '../types/internal/core/flowModelCore.types'
@@ -63,9 +64,9 @@ function createExecution(props: FlowModelProps, state: FlowState, events: FlowEv
 	return { ...context, execute: createExecutor(context) }
 }
 
-export function useFlowModel(props: FlowModelProps, options: FlowModelOptions): FlowModel {
+export function useFlowModel(props: FlowModelProps, options: FlowModelOptions): FlowModelInternal {
 	const events = createFlowEvents(options)
-	const state = useFlowState(props, issues => reportLoad(events, issues))
+	const state = useFlowState(props, issues => reportLoad(events, issues), options.isCompact)
 	const execution = createExecution(props, state, events)
 	const { layout, routes } = useFlowLayout(state.scope)
 	const { hooks, history, draft, execute } = execution
@@ -78,7 +79,7 @@ export function useFlowModel(props: FlowModelProps, options: FlowModelOptions): 
 	const scenario = useFlowScenario(base, props, options.environment)
 	const holder = createViewHolder()
 	const parts = { ...execution, layout, announce: options.environment.announce, scenario, view: holder.view }
-	const model: FlowModel = { ...base, scenario, controller: createController(parts), setView: holder.set }
+	const model: FlowModelInternal = { ...base, scenario, controller: createController(parts), setView: holder.set, events }
 	wireEvents(model, events, props)
 	return model
 }

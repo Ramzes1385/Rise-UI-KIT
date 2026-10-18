@@ -1,8 +1,8 @@
-import { layoutFlat } from './layered'
-import { ancestorsOf, indexGroups } from './groups'
-import type { FlowRect } from '../../../types/data/flowData.types'
-import type { BoxLayout, BoxLevel } from '../../../types/internal/core/flowLayoutInternal.types'
-import type { FlowLayoutGroup, FlowLayoutInput, FlowLayoutNode, FlowLayoutResult } from '../../../types/api/flowLayout.types'
+import { layoutFlat } from './layered/layered'
+import { ancestorsOf, indexGroups } from './layered/groups'
+import type { FlowRect } from '../../types/data/flowData.types'
+import type { BoxLayout, BoxLevel } from '../../types/internal/core/flowLayoutInternal.types'
+import type { FlowLayoutGroup, FlowLayoutInput, FlowLayoutNode, FlowLayoutResult } from '../../types/api/flowLayout.types'
 
 const BOX_PAD = 16
 const SUPER_PREFIX = 'box:'
