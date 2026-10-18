@@ -26,7 +26,7 @@ export interface MapOptions extends HarnessOptions {
 	global?: Record<string, unknown>
 }
 
-export interface MapRefs {
+interface MapRefs {
 	routes: Ref<Record<string, FlowRoute>>
 	viewport: Ref<FlowViewport>
 	frame: Ref<FlowSize>

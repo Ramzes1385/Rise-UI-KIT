@@ -132,6 +132,43 @@ describe('simulateTokens', () => {
 		expect(flat.indexOf('jz')).toBeGreaterThan(flat.indexOf('gj'))
 	})
 
+	it('inclusive join (some) не зависит от порядка узлов: токен, идущий в том же круге, учитывается', () => {
+		const flows = [
+			edge('ab', 'a', 'b'),
+			edge('ac', 'a', 'c'),
+			edge('bj', 'b', 'j'),
+			edge('cd', 'c', 'd'),
+			edge('dj', 'd', 'j'),
+			edge('jz', 'j', 'z'),
+		]
+		for (const order of [
+			['a', 'b', 'c', 'd', 'j', 'z'],
+			['a', 'b', 'c', 'j', 'd', 'z'],
+		]) {
+			const graph = graphOf(
+				order.map(id => node(id, id === 'j' ? 'or' : 'service')),
+				flows,
+			)
+			expect(edgesOf(simulateTokens(graph, {}, config)?.steps), order.join()).toEqual([['ab', 'ac'], ['bj', 'cd'], ['dj'], ['jz']])
+		}
+	})
+
+	it('inclusive join (some) ждёт и токен, который только что вышел на цепочку к слиянию', () => {
+		const graph = graphOf(
+			[node('a'), node('b'), node('c'), node('d1'), node('d2'), node('j', 'or'), node('z')],
+			[
+				edge('ab', 'a', 'b'),
+				edge('ac', 'a', 'c'),
+				edge('bj', 'b', 'j'),
+				edge('cd1', 'c', 'd1'),
+				edge('d1d2', 'd1', 'd2'),
+				edge('d2j', 'd2', 'j'),
+				edge('jz', 'j', 'z'),
+			],
+		)
+		expect(edgesOf(simulateTokens(graph, {}, config)?.steps)).toEqual([['ab', 'ac'], ['bj', 'cd1'], ['d1d2'], ['d2j'], ['jz']])
+	})
+
 	describe('exclusive split (one)', () => {
 		const graph = graphOf(
 			[node('a'), node('x', 'xor'), node('p'), node('f'), node('q')],
