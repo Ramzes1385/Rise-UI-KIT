@@ -1,19 +1,20 @@
 import type { Box3 } from 'three'
-import { sceneFrame } from './camera/sceneFrame'
-import { toNdc } from './interaction/projection'
 import { computed, shallowRef, watch } from 'vue'
-import { cameraKeyAction } from './camera/cameraKeys'
+import { toNdc } from '@/scene3d/overlay/projection'
 import { useRouteTube } from './viewport/useRouteTube'
 import { pickObjectId } from './interaction/pickObject'
-import { useScenePinch } from './interaction/useScenePinch'
-import { createWebGLRenderer } from './scene/createRenderer'
+import { cameraKeyAction } from '@/scene3d/camera/cameraKeys'
+import { useScenePinch } from '@/scene3d/input/useScenePinch'
+import { fitViewCamera, sceneFrame } from './camera/sceneFrame'
 import { useSceneOverlay } from './interaction/useSceneOverlay'
-import { useScenePointer } from './interaction/useScenePointer'
 import { useSceneKeyboard } from './interaction/useSceneKeyboard'
+import { useScenePointer } from '@/scene3d/input/useScenePointer'
 import { useCameraController } from './camera/useCameraController'
 import { useImageMap3DScene } from './viewport/useImageMap3DScene'
-import { useImageMap3DViewport } from './viewport/useImageMap3DViewport'
+import { createWebGLRenderer } from '@/scene3d/renderer/createRenderer'
+import { useScene3DViewport } from '@/scene3d/renderer/useScene3DViewport'
 import type { Center } from '@components/BaseImageMap/types/internal/imageMapInternal.types'
+import { IMAGE_MAP_OBJECT_ATTR } from '@components/BaseImageMap/types/internal/imageMapModel.types'
 import type { CameraKeyAction, ImageMap3DStage, SceneFraming, StageOptions } from '../types/internal/imageMap3dInternal.types'
 
 function runCameraAction(camera: ReturnType<typeof useCameraController>, action: CameraKeyAction): void {
@@ -50,7 +51,7 @@ function useStageOverlay(
 	options: StageOptions,
 	parts: {
 		state: ReturnType<typeof useStageState>
-		viewport: ReturnType<typeof useImageMap3DViewport>
+		viewport: ReturnType<typeof useScene3DViewport>
 		scene: ReturnType<typeof useImageMap3DScene>
 	},
 ) {
@@ -83,14 +84,15 @@ export function useImageMap3DStage(options: StageOptions) {
 	const { props, map } = options
 	const state = useStageState(options)
 	const { modelBounds, getFraming } = useStageFraming(props)
-	const viewport = useImageMap3DViewport({
+	const viewport = useScene3DViewport({
 		canvasRef: options.canvasRef,
 		hostRef: options.hostRef,
-		getFraming,
+		fit: (camera, size) => fitViewCamera(camera, size, getFraming()),
 		getFactory: () => props.rendererFactory ?? createWebGLRenderer,
 		getCameraKind: () => props.camera,
 		onError: options.onError,
 	})
+	watch(getFraming, viewport.refit)
 	const scene = useImageMap3DScene({
 		...viewport,
 		hostRef: options.hostRef,
@@ -156,9 +158,14 @@ function useFocusLeave(options: StageOptions, announce: (id: string | null) => v
 	}
 }
 
+function markerIdOf(target: EventTarget | null): string | null {
+	return target instanceof Element ? (target.closest(`[${IMAGE_MAP_OBJECT_ATTR}]`)?.getAttribute(IMAGE_MAP_OBJECT_ATTR) ?? null) : null
+}
+
 function useStagePointer(options: StageOptions, stage: ImageMap3DStage) {
 	const { map } = options
 	const pointer = useScenePointer({
+		markerAt: markerIdOf,
 		pickAt: (x, y) => {
 			const content = stage.scene.content.value
 			const ndc = options.hostRef.value ? toNdc(x, y, options.hostRef.value.getBoundingClientRect()) : null

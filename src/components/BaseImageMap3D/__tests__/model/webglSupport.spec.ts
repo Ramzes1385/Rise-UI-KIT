@@ -1,5 +1,5 @@
-import { hasWebGL } from '../../model/webglSupport'
 import { mockWebGL } from '../imageMap3d.test-utils'
+import { hasWebGL } from '@/scene3d/renderer/webglSupport'
 
 describe('hasWebGL', () => {
 	it('true, если холст даёт контекст webgl2, и сразу отпускает контекст', () => {

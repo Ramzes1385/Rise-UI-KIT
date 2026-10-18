@@ -1,11 +1,11 @@
 import { Vector2, Vector3 } from 'three'
 import type { Box3, Camera } from 'three'
-import type { CardPlacement, ScreenSize, ScreenSpot } from '../../types/internal/imageMap3dInternal.types'
+import type { Scene3DCardPlacement, Scene3DScreenSize, Scene3DScreenSpot } from '../types/internal/scene3dInternal.types'
 
 const CARD_GAP = 12
 const CARD_MARGIN = 8
 
-export function projectPoint(point: Vector3, camera: Camera, size: ScreenSize): ScreenSpot {
+export function projectPoint(point: Vector3, camera: Camera, size: Scene3DScreenSize): Scene3DScreenSpot {
 	camera.updateMatrixWorld()
 	const ndc = point.clone().project(camera)
 	const isInside = Math.abs(ndc.x) <= 1 && Math.abs(ndc.y) <= 1 && Math.abs(ndc.z) <= 1
@@ -27,7 +27,7 @@ export function toNdc(x: number, y: number, rect: DOMRect): Vector2 | null {
 	return new Vector2(((x - rect.left) / rect.width) * 2 - 1, 1 - ((y - rect.top) / rect.height) * 2)
 }
 
-export function placeCard(anchor: ScreenSpot, card: ScreenSize, size: ScreenSize): CardPlacement {
+export function placeCard(anchor: Scene3DScreenSpot, card: Scene3DScreenSize, size: Scene3DScreenSize): Scene3DCardPlacement {
 	const half = card.width / 2
 	const isBelow = anchor.y - CARD_GAP - card.height < 0
 	const minLeft = half + CARD_MARGIN

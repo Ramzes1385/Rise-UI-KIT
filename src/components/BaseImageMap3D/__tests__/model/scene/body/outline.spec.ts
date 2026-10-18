@@ -1,5 +1,5 @@
 import type { Intersection, LineBasicMaterial } from 'three'
-import { disposeObject } from '../../../../model/scene/disposeObject'
+import { disposeObject } from '@/scene3d/scene/disposeObject'
 import { buildSceneContent } from '../../../../model/scene/buildScene'
 import { applyObjectStates } from '../../../../model/scene/sceneState'
 import type { ImageMap3DData } from '../../../../types/imageMap3dData.types'

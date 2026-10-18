@@ -2,7 +2,7 @@ import { DATA_3D } from '../../imageMap3d.test-utils'
 import { sceneFrame } from '../../../model/camera/sceneFrame'
 import { sceneExtent } from '../../../model/scene/sceneLayout'
 import type { ImageMap3DData } from '../../../types/imageMap3dData.types'
-import { disposeMaterial, disposeObject } from '../../../model/scene/disposeObject'
+import { disposeMaterial, disposeObject } from '@/scene3d/scene/disposeObject'
 import { BoxGeometry, Group, Mesh, MeshBasicMaterial, Texture, Vector3 } from 'three'
 
 describe('disposeObject', () => {

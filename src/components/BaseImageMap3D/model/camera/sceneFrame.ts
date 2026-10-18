@@ -1,7 +1,15 @@
 import { Box3, Vector3 } from 'three'
+import type { CameraFraming } from '@/scene3d/types/internal/scene3dInternal.types'
 import type { ImageMap3DData, ImageMap3DLayer } from '../../types/imageMap3dData.types'
-import type { SceneFrame, SceneSettings } from '../../types/internal/imageMap3dInternal.types'
 import { layerElevation, objectLayerId, objectTop, sceneSettings } from '../scene/sceneLayout'
+import type { Scene3DScreenSize, Scene3DViewCamera } from '@/scene3d/types/internal/scene3dInternal.types'
+import type { SceneFrame, SceneFraming, SceneSettings } from '../../types/internal/imageMap3dInternal.types'
+import {
+	baseDistance as coreBaseDistance,
+	fitViewCamera as coreFitViewCamera,
+	frameHalf as coreFrameHalf,
+	MAP_ELEVATION,
+} from '@/scene3d/camera/cameraPose'
 
 const isSize = (value: number): boolean => Number.isFinite(value) && value > 0
 
@@ -31,4 +39,25 @@ export function sceneFrame(data: ImageMap3DData, models: readonly Box3[] = []): 
 	if (bounds.isEmpty()) bounds.set(new Vector3(), new Vector3(settings.extent, 0, settings.extent))
 	const size = bounds.getSize(new Vector3())
 	return { bounds, radius: Math.hypot(size.x, size.z) / 2, stackHalf: size.y / 2, floorHalf }
+}
+
+export function toCameraFraming({ frame, mode }: SceneFraming): CameraFraming {
+	return {
+		bounds: frame.bounds,
+		radius: frame.radius,
+		halfHeight: mode === 'single' ? frame.floorHalf : frame.stackHalf,
+		elevation: MAP_ELEVATION,
+	}
+}
+
+export function frameHalf(framing: SceneFraming, aspect: number): number {
+	return coreFrameHalf(toCameraFraming(framing), aspect)
+}
+
+export function baseDistance(camera: Scene3DViewCamera, framing: SceneFraming): number {
+	return coreBaseDistance(camera, toCameraFraming(framing))
+}
+
+export function fitViewCamera(camera: Scene3DViewCamera, size: Scene3DScreenSize, framing: SceneFraming): void {
+	coreFitViewCamera(camera, size, toCameraFraming(framing))
 }

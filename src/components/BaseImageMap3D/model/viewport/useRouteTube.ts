@@ -1,8 +1,8 @@
 import { watch } from 'vue'
-import { useSceneTheme } from './useSceneTheme'
-import { disposeObject } from '../scene/disposeObject'
 import { useTween } from '@composables/interaction/useTween'
-import { createColorResolver } from '../scene/materials/sceneColors'
+import { disposeObject } from '@/scene3d/scene/disposeObject'
+import { useSceneTheme } from '@/scene3d/theme/useSceneTheme'
+import { createColorResolver } from '@/scene3d/theme/colorResolver'
 import { createRouteTube, growRoute, routeSegments } from '../scene/routeTube'
 import type { RouteTube, RouteTubeOptions } from '../../types/internal/imageMap3dInternal.types'
 

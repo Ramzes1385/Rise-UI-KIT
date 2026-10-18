@@ -1,14 +1,14 @@
 import type { Box3 } from 'three'
-import type { ImageMap3DCamera } from '../../types/BaseImageMap3D.types'
 import { MathUtils, OrthographicCamera, PerspectiveCamera, Spherical, Vector3 } from 'three'
 import type {
-	CameraPose,
-	ImageMap3DViewCamera,
-	SceneFrame,
-	SceneFraming,
-	SceneRimPoint,
-	ScreenSize,
-} from '../../types/internal/imageMap3dInternal.types'
+	CameraFraming,
+	Scene3DPanFrame,
+	Scene3DCameraKind,
+	Scene3DCameraPose,
+	Scene3DRimPoint,
+	Scene3DScreenSize,
+	Scene3DViewCamera,
+} from '../types/internal/scene3dInternal.types'
 
 export const CAMERA_LIMITS = {
 	minPolar: MathUtils.degToRad(5),
@@ -18,7 +18,8 @@ export const CAMERA_LIMITS = {
 }
 
 const ISO_AZIMUTH = Math.PI / 4
-const ISO_POLAR = MathUtils.degToRad(90 - 35)
+/** Возвышение камеры карты, градусы; флоу и роадмап передают 35,264 */
+export const MAP_ELEVATION = 35
 const PERSPECTIVE_FOV = 35
 const MIN_FOV = 10
 const MAX_FOV = 60
@@ -35,25 +36,25 @@ const PAN_MARGIN = 0.1
 const NEAR = 0.1
 const FAR = 1_000_000
 
-export function createViewCamera(kind: ImageMap3DCamera): ImageMap3DViewCamera {
+export function createViewCamera(kind: Scene3DCameraKind): Scene3DViewCamera {
 	if (kind === 'perspective') return new PerspectiveCamera(PERSPECTIVE_FOV, 1, NEAR, FAR)
 	return new OrthographicCamera(-1, 1, 1, -1, NEAR, FAR)
 }
 
-function frameRange({ frame, mode }: SceneFraming): number {
-	return mode === 'single' ? frame.floorHalf : frame.stackHalf
+function polarOf(framing: CameraFraming): number {
+	return MathUtils.degToRad(90 - framing.elevation)
 }
 
-export function frameHalf(framing: SceneFraming, aspect: number): number {
-	const { radius } = framing.frame
-	const vertical = radius * Math.cos(ISO_POLAR) + frameRange(framing) * Math.sin(ISO_POLAR)
+export function frameHalf(framing: CameraFraming, aspect: number): number {
+	const { radius, halfHeight } = framing
+	const polar = polarOf(framing)
+	const vertical = radius * Math.cos(polar) + halfHeight * Math.sin(polar)
 	return Math.max(vertical, radius / Math.max(aspect, MIN_ASPECT)) * FRAME_MARGIN
 }
 
-function rimPoints(framing: SceneFraming): SceneRimPoint[] {
-	const { radius } = framing.frame
-	const range = frameRange(framing)
-	const [sin, cos] = [Math.sin(ISO_POLAR), Math.cos(ISO_POLAR)]
+function rimPoints(framing: CameraFraming): Scene3DRimPoint[] {
+	const { radius, halfHeight: range } = framing
+	const [sin, cos] = [Math.sin(polarOf(framing)), Math.cos(polarOf(framing))]
 	return Array.from({ length: RIM_STEPS * 2 }, (_, index) => {
 		const angle = (Math.floor(index / 2) / RIM_STEPS) * 2 * Math.PI
 		const height = index % 2 === 0 ? -range : range
@@ -65,26 +66,26 @@ function rimPoints(framing: SceneFraming): SceneRimPoint[] {
 	})
 }
 
-function spread(point: SceneRimPoint, aspect: number): number {
+function spread(point: Scene3DRimPoint, aspect: number): number {
 	return Math.max(point.up, point.sideways / Math.max(aspect, MIN_ASPECT))
 }
 
-function perspectiveDistance(framing: SceneFraming, aspect: number, fov: number): number {
+function perspectiveDistance(framing: CameraFraming, aspect: number, fov: number): number {
 	const slope = Math.tan(MathUtils.degToRad(fov / 2))
 	return Math.max(...rimPoints(framing).map(point => point.toward + (spread(point, aspect) * FRAME_MARGIN) / slope))
 }
 
-function perspectiveFov(framing: SceneFraming, distance: number, aspect: number): number {
+function perspectiveFov(framing: CameraFraming, distance: number, aspect: number): number {
 	const slope = Math.max(...rimPoints(framing).map(point => spread(point, aspect) / (distance - point.toward)))
 	return MathUtils.clamp(MathUtils.radToDeg(2 * Math.atan(slope * FRAME_MARGIN)), MIN_FOV, MAX_FOV)
 }
 
-export function baseDistance(camera: ImageMap3DViewCamera, framing: SceneFraming): number {
-	if (camera instanceof OrthographicCamera) return Math.hypot(framing.frame.radius, frameRange(framing)) * ORTHO_DISTANCE
+export function baseDistance(camera: Scene3DViewCamera, framing: CameraFraming): number {
+	if (camera instanceof OrthographicCamera) return Math.hypot(framing.radius, framing.halfHeight) * ORTHO_DISTANCE
 	return Math.max(perspectiveDistance(framing, REFERENCE_ASPECT, PERSPECTIVE_FOV), perspectiveDistance(framing, camera.aspect, MAX_FOV))
 }
 
-function fitPerspective(camera: PerspectiveCamera, aspect: number, framing: SceneFraming): void {
+function fitPerspective(camera: PerspectiveCamera, aspect: number, framing: CameraFraming): void {
 	camera.aspect = aspect
 	const distance = baseDistance(camera, framing)
 	camera.fov = perspectiveFov(framing, distance, aspect)
@@ -92,32 +93,32 @@ function fitPerspective(camera: PerspectiveCamera, aspect: number, framing: Scen
 	camera.far = distance * PERSPECTIVE_FAR
 }
 
-function fitOrthographic(camera: OrthographicCamera, aspect: number, framing: SceneFraming): void {
+function fitOrthographic(camera: OrthographicCamera, aspect: number, framing: CameraFraming): void {
 	const half = frameHalf(framing, aspect)
 	const distance = baseDistance(camera, framing)
-	const reach = Math.hypot(framing.frame.radius, frameRange(framing)) * ORTHO_DEPTH
+	const reach = Math.hypot(framing.radius, framing.halfHeight) * ORTHO_DEPTH
 	Object.assign(camera, { left: -half * aspect, right: half * aspect, top: half, bottom: -half })
 	camera.near = Math.max(distance - reach, distance * PERSPECTIVE_NEAR)
 	camera.far = distance + reach
 }
 
-export function fitViewCamera(camera: ImageMap3DViewCamera, size: ScreenSize, framing: SceneFraming): void {
+export function fitViewCamera(camera: Scene3DViewCamera, size: Scene3DScreenSize, framing: CameraFraming): void {
 	const aspect = size.width / Math.max(size.height, 1)
 	if (camera instanceof PerspectiveCamera) fitPerspective(camera, aspect, framing)
 	else fitOrthographic(camera, aspect, framing)
 	camera.updateProjectionMatrix()
 }
 
-export function panBounds(frame: SceneFrame): Box3 {
+export function panBounds(frame: Scene3DPanFrame): Box3 {
 	return frame.bounds.clone().expandByScalar(frame.radius * PAN_MARGIN)
 }
 
-export function limitTarget(target: Vector3, frame: SceneFrame): Vector3 {
+export function limitTarget(target: Vector3, frame: Scene3DPanFrame): Vector3 {
 	const { min, max } = panBounds(frame)
 	return target.clone().clamp(min, max)
 }
 
-export function clampPose(pose: CameraPose, frame?: SceneFrame): CameraPose {
+export function clampPose(pose: Scene3DCameraPose, frame?: Scene3DPanFrame): Scene3DCameraPose {
 	const [x, y, z, azimuth, polar, zoom] = pose
 	const target = frame ? limitTarget(new Vector3(x, y, z), frame) : new Vector3(x, y, z)
 	return [
@@ -130,17 +131,17 @@ export function clampPose(pose: CameraPose, frame?: SceneFrame): CameraPose {
 	]
 }
 
-export function defaultPose(center: Vector3): CameraPose {
-	return [center.x, center.y, center.z, ISO_AZIMUTH, ISO_POLAR, 1]
+export function defaultPose(center: Vector3, elevation: number = MAP_ELEVATION): Scene3DCameraPose {
+	return [center.x, center.y, center.z, ISO_AZIMUTH, MathUtils.degToRad(90 - elevation), 1]
 }
 
-export function readPose(camera: ImageMap3DViewCamera, target: Vector3, distance: number): CameraPose {
+export function readPose(camera: Scene3DViewCamera, target: Vector3, distance: number): Scene3DCameraPose {
 	const spherical = new Spherical().setFromVector3(camera.position.clone().sub(target))
 	const zoom = camera instanceof OrthographicCamera ? camera.zoom : distance / Math.max(spherical.radius, NEAR)
 	return [target.x, target.y, target.z, spherical.theta, spherical.phi, zoom]
 }
 
-export function applyPose(camera: ImageMap3DViewCamera, pose: CameraPose, distance: number): Vector3 {
+export function applyPose(camera: Scene3DViewCamera, pose: Scene3DCameraPose, distance: number): Vector3 {
 	const [x, y, z, azimuth, polar, zoom] = pose
 	const target = new Vector3(x, y, z)
 	const isOrtho = camera instanceof OrthographicCamera
@@ -152,12 +153,12 @@ export function applyPose(camera: ImageMap3DViewCamera, pose: CameraPose, distan
 	return target
 }
 
-export function visibleHalf(camera: ImageMap3DViewCamera, distance: number): { half: number; aspect: number } {
+export function visibleHalf(camera: Scene3DViewCamera, distance: number): { half: number; aspect: number } {
 	if (camera instanceof OrthographicCamera) return { half: camera.top, aspect: camera.right / camera.top }
 	return { half: distance * Math.tan(MathUtils.degToRad(camera.fov / 2)), aspect: camera.aspect }
 }
 
-export function objectPose(box: Box3, pose: CameraPose, view: { half: number; aspect: number }): CameraPose {
+export function objectPose(box: Box3, pose: Scene3DCameraPose, view: { half: number; aspect: number }): Scene3DCameraPose {
 	const center = box.getCenter(new Vector3())
 	const size = box.getSize(new Vector3())
 	const footprint = Math.max(Math.hypot(size.x, size.z), 1)

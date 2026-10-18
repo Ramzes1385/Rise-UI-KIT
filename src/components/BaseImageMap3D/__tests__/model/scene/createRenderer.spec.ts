@@ -1,4 +1,4 @@
-import { createWebGLRenderer } from '../../../model/scene/createRenderer'
+import { createWebGLRenderer } from '@/scene3d/renderer/createRenderer'
 
 const { WebGLRenderer } = vi.hoisted(() => ({
 	WebGLRenderer: vi.fn(function (this: Record<string, unknown>, options: unknown) {

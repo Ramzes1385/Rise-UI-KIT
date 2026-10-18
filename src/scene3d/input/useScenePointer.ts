@@ -1,18 +1,13 @@
 import { onBeforeUnmount } from 'vue'
-import { IMAGE_MAP_OBJECT_ATTR } from '@components/BaseImageMap/types/internal/imageMapModel.types'
-import type { PointerSpot, ScenePointerOptions } from '../../types/internal/imageMap3dInternal.types'
+import type { Scene3DPointerOptions, Scene3DPointerSpot } from '../types/internal/scene3dInternal.types'
 
 const DRAG_THRESHOLD = 4
 
-function markerIdOf(target: EventTarget | null): string | null {
-	return target instanceof Element ? (target.closest(`[${IMAGE_MAP_OBJECT_ATTR}]`)?.getAttribute(IMAGE_MAP_OBJECT_ATTR) ?? null) : null
-}
-
-function useHoverFrame(options: ScenePointerOptions) {
-	let spot: PointerSpot | null = null
+function useHoverFrame(options: Scene3DPointerOptions) {
+	let spot: Scene3DPointerSpot | null = null
 	let frame = 0
 
-	const pick = (at: PointerSpot): string | null => markerIdOf(at.target) ?? options.pickAt(at.x, at.y)
+	const pick = (at: Scene3DPointerSpot): string | null => options.markerAt?.(at.target) ?? options.pickAt(at.x, at.y)
 
 	function flush(): void {
 		frame = 0
@@ -31,14 +26,14 @@ function useHoverFrame(options: ScenePointerOptions) {
 	return {
 		pick,
 		cancel,
-		request(next: PointerSpot): void {
+		request(next: Scene3DPointerSpot): void {
 			spot = next
 			if (!frame) frame = requestAnimationFrame(flush)
 		},
 	}
 }
 
-export function useScenePointer(options: ScenePointerOptions) {
+export function useScenePointer(options: Scene3DPointerOptions) {
 	const hover = useHoverFrame(options)
 	let start: { x: number; y: number } | null = null
 

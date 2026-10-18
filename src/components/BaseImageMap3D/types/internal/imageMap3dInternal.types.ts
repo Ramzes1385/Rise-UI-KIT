@@ -2,22 +2,14 @@ import type { Vector3 } from 'three'
 import type { ComputedRef, Ref, ShallowRef } from 'vue'
 import type { useImageMap3DMap } from '../../model/useImageMap3DMap'
 import type { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
-import type { UseTweenReturn } from '@composables/interaction/useTween'
 import type { useImageMap3DStage } from '../../model/useImageMap3DStage'
-import type { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import type { ImageMapPoint } from '@components/BaseImageMap/types/imageMapData.types'
 import type { BaseImageMapProps } from '@components/BaseImageMap/types/BaseImageMap.types'
 import type { Center } from '@components/BaseImageMap/types/internal/imageMapInternal.types'
 import type { RouteGraph, RoutePath } from '@components/BaseImageMap/types/ImageMapRoutes.types'
+import type { ImageMap3DLayerMode, ImageMap3DProps, ImageMap3DRenderer } from '../BaseImageMap3D.types'
 import type { ResolvedImageMapObject } from '@components/BaseImageMap/types/internal/imageMapModel.types'
 import type { ImageMap3DData, ImageMap3DLayer, ImageMap3DObject, ImageMapLayerModel } from '../imageMap3dData.types'
-import type {
-	ImageMap3DCamera,
-	ImageMap3DLayerMode,
-	ImageMap3DProps,
-	ImageMap3DRenderer,
-	ImageMap3DRendererFactory,
-} from '../BaseImageMap3D.types'
 import type {
 	Box3,
 	BufferGeometry,
@@ -32,12 +24,21 @@ import type {
 	MeshBasicMaterial,
 	MeshStandardMaterial,
 	Object3D,
-	OrthographicCamera,
-	PerspectiveCamera,
 	Scene,
 	Shape,
 	TubeGeometry,
 } from 'three'
+import type {
+	Scene3DCameraKeyAction,
+	Scene3DCameraPose,
+	Scene3DCardPlacement,
+	Scene3DColorResolver,
+	Scene3DPointerOptions,
+	Scene3DPoseState,
+	Scene3DScreenSize,
+	Scene3DScreenSpot,
+	Scene3DViewCamera,
+} from '@/scene3d/types/internal/scene3dInternal.types'
 
 /** Правило проверки 3D-поля данных */
 export type ImageMap3DFieldRule =
@@ -55,22 +56,6 @@ export interface ImageMap3DIssue {
 
 /** Пропсы и обработчики событий для BaseImageMap в 2D-виде */
 export type ImageMap2DBindings = BaseImageMapProps & Record<string, unknown>
-
-/** Параметры области рисования 3D-карты */
-export interface ImageMap3DViewportOptions {
-	/** Холст: есть в DOM — рендерер работает, пропал — всё освобождается */
-	canvasRef: Readonly<Ref<HTMLCanvasElement | null>>
-	/** Элемент, по размеру которого рисуется сцена */
-	hostRef: Readonly<Ref<HTMLElement | null>>
-	/** Рамка кадра и режим этажей: по ним подбирается камера */
-	getFraming: () => SceneFraming
-	/** Фабрика рендерера */
-	getFactory: () => ImageMap3DRendererFactory
-	/** Вид камеры */
-	getCameraKind: () => ImageMap3DCamera
-	/** Рендерер не создался или графический контекст потерян и не вернулся */
-	onError: (error: unknown) => void
-}
 
 /** Состояние объекта в сцене: обычное, под указателем или в фокусе, выбранное */
 export type SceneObjectState = 'base' | 'hover' | 'active'
@@ -113,16 +98,6 @@ export interface SceneFraming {
 	mode: ImageMap3DLayerMode
 }
 
-/** Точка на ободе цилиндра сцены в системе камеры начального вида: по ней подбирается кадр перспективной камеры */
-export interface SceneRimPoint {
-	/** Смещение вбок от оси взгляда по модулю */
-	sideways: number
-	/** Смещение вверх от оси взгляда по модулю */
-	up: number
-	/** Смещение к камере вдоль оси взгляда: больше — ближе к камере */
-	toward: number
-}
-
 /** Цвет и непрозрачность материала в одном состоянии */
 export interface SceneStateColor {
 	/** Цвет */
@@ -132,7 +107,7 @@ export interface SceneStateColor {
 }
 
 /** CSS-цвет (в том числе `var(--rise-*)`) → цвет three в теме области карты */
-export type SceneColorResolver = (css: string) => Color
+export type SceneColorResolver = Scene3DColorResolver
 
 /** Объект карты в сцене: его меши и материал состояний */
 export interface SceneObjectEntry {
@@ -339,14 +314,13 @@ export interface SceneModelJob extends Omit<SceneSurfaceJob, 'floor' | 'onFailur
 }
 
 /** Камера сцены: ортографическая (изометрия) или перспективная */
-export type ImageMap3DViewCamera = OrthographicCamera | PerspectiveCamera
+export type ImageMap3DViewCamera = Scene3DViewCamera
 
 /** Положение камеры: цель `[x, y, z]`, азимут и полярный угол (радианы), масштаб */
-export type CameraPose = [number, number, number, number, number, number]
+export type CameraPose = Scene3DCameraPose
 
 /** Действие камеры по клавише */
-export type CameraKeyAction =
-	{ type: 'rotate'; degrees: number } | { type: 'tilt'; degrees: number } | { type: 'zoom'; direction: 1 | -1 } | { type: 'reset' }
+export type CameraKeyAction = Scene3DCameraKeyAction
 
 /** Параметры управления камерой */
 export interface CameraOptions {
@@ -391,48 +365,16 @@ export interface StageOptions {
 }
 
 /** Положение камеры: твин, масштаб, OrbitControls и переходы */
-export interface CameraPoseState {
-	/** Твин положения камеры */
-	tween: UseTweenReturn<CameraPose>
-	/** Текущий масштаб */
-	zoom: Ref<number>
-	/** OrbitControls, пока есть рендерер */
-	controls: ShallowRef<OrbitControls | null>
-	/** Положение камеры сейчас */
-	current: () => CameraPose
-	/** Основа следующего шага: цель идущего или ещё не показанного перехода (нажатия копятся) или положение сейчас */
-	next: () => CameraPose
-	/** Запомнить положение после жеста */
-	sync: () => void
-	/** Плавно перейти к положению */
-	goTo: (pose: CameraPose) => void
-	/** Сразу поставить положение */
-	jump: (pose: CameraPose) => void
-	/** Применить положение к камере без перехода (после подгонки камеры под область) */
-	show: (pose: CameraPose) => void
-	/** Последнее показанное положение */
-	lastPose: () => CameraPose | null
-}
+export type CameraPoseState = Scene3DPoseState
 
 /** Размер области карты, px */
-export interface ScreenSize {
-	width: number
-	height: number
-}
+export type ScreenSize = Scene3DScreenSize
 
 /** Точка сцены на экране: координаты в области карты (px) и видна ли она камере */
-export interface ScreenSpot {
-	x: number
-	y: number
-	isVisible: boolean
-}
+export type ScreenSpot = Scene3DScreenSpot
 
 /** Положение карточки объекта: якорь (px) и сторона — над объектом или под ним у верхнего края */
-export interface CardPlacement {
-	left: number
-	top: number
-	isBelow: boolean
-}
+export type CardPlacement = Scene3DCardPlacement
 
 /** Метка `point` над сценой */
 export interface ScenePointView {
@@ -454,25 +396,8 @@ export interface ScenePointView {
 	isPulsing: boolean
 }
 
-/** Последнее положение указателя: наведение по нему считается раз в кадр */
-export interface PointerSpot {
-	/** Элемент под указателем (метка точки) */
-	target: EventTarget | null
-	/** clientX */
-	x: number
-	/** clientY */
-	y: number
-}
-
 /** Указатель над сценой */
-export interface ScenePointerOptions {
-	/** Id объекта под точкой экрана (clientX, clientY) */
-	pickAt: (x: number, y: number) => string | null
-	/** Объект под указателем */
-	setHover: (id: string | null) => void
-	/** Выбрать объект */
-	activate: (id: string, event: Event) => void
-}
+export type ScenePointerOptions = Scene3DPointerOptions
 
 /** Клавиатура объектов сцены */
 export interface SceneKeyboardOptions {

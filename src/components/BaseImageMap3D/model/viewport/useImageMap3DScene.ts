@@ -1,12 +1,12 @@
 import { Box3 } from 'three'
-import { useSceneTheme } from './useSceneTheme'
 import { useLayerLoads } from './load/useLayerLoads'
-import { disposeObject } from '../scene/disposeObject'
 import { loadModelLayer } from './load/loadModelLayer'
 import { buildSceneContent } from '../scene/buildScene'
 import { onBeforeUnmount, shallowRef, watch } from 'vue'
 import { loadLayerSurface } from './load/loadLayerSurface'
-import { createColorResolver } from '../scene/materials/sceneColors'
+import { disposeObject } from '@/scene3d/scene/disposeObject'
+import { useSceneTheme } from '@/scene3d/theme/useSceneTheme'
+import { createColorResolver } from '@/scene3d/theme/colorResolver'
 import { applyLayerMode, applyObjectStates, recolorScene } from '../scene/sceneState'
 import type {
 	LayerLoads,

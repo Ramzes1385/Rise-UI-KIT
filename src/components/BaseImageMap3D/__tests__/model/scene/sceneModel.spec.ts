@@ -3,7 +3,7 @@ import { buildSceneContent } from '../../../model/scene/buildScene'
 import { attachModel } from '../../../model/scene/gltf/attachModel'
 import type { ImageMap3DData } from '../../../types/imageMap3dData.types'
 import { BoxGeometry, Color, Group, Mesh, MeshStandardMaterial } from 'three'
-import { findModelNode, loadLayerModel, placeModel } from '../../../model/scene/gltf/layerModel'
+import { findModelNode, loadLayerModel, placeModel } from '@/scene3d/scene/gltfLoader'
 
 const resolve = (css: string): Color => new Color(css.startsWith('var(') ? '#336699' : css)
 

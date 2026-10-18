@@ -1,24 +1,21 @@
-import { sceneFrame } from '../../../model/camera/sceneFrame'
-import { cameraKeyAction } from '../../../model/camera/cameraKeys'
+import { cameraKeyAction } from '@/scene3d/camera/cameraKeys'
 import type { ImageMap3DData } from '../../../types/imageMap3dData.types'
 import { Box3, MathUtils, OrthographicCamera, PerspectiveCamera, Vector3 } from 'three'
+import { baseDistance, fitViewCamera, frameHalf, sceneFrame } from '../../../model/camera/sceneFrame'
 import type { CameraPose, ImageMap3DViewCamera, SceneFraming } from '../../../types/internal/imageMap3dInternal.types'
 import {
 	CAMERA_LIMITS,
 	applyPose,
-	baseDistance,
 	clampPose,
 	createViewCamera,
 	defaultPose,
 	easeInOutCubic,
-	fitViewCamera,
-	frameHalf,
 	limitTarget,
 	objectPose,
 	panBounds,
 	readPose,
 	visibleHalf,
-} from '../../../model/camera/cameraPose'
+} from '@/scene3d/camera/cameraPose'
 
 const STACK_DATA: ImageMap3DData = {
 	layers: [

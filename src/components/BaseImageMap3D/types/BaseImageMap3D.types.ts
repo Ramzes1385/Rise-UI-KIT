@@ -1,10 +1,10 @@
-import type { Camera, Object3D } from 'three'
 import type { UiProp } from '@composables/base/useUi'
 import type { ImageMap3DData } from './imageMap3dData.types'
 import type { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import type { PropsWithDefaults } from '@composables/base/useDefaults'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import { IMAGE_MAP_PARTS } from '@components/BaseImageMap/types/BaseImageMap.types'
+import type { Scene3DRenderer, Scene3DRendererFactory } from '@/scene3d/types/scene3d.types'
 import type {
 	BaseImageMapEmits,
 	BaseImageMapProps,
@@ -31,26 +31,13 @@ export const IMAGE_MAP_3D_CAMERAS = ['isometric', 'perspective'] as const
 export type ImageMap3DCamera = (typeof IMAGE_MAP_3D_CAMERAS)[number]
 
 /**
- * Рендерер сцены: подмножество `WebGLRenderer`, которым пользуется карта.
+ * Рендерер сцены: подмножество `WebGLRenderer`, которым пользуется карта (то же, что у всех 3D-компонентов).
  * Своя реализация (тесты, особые настройки WebGL) передаётся через `rendererFactory`
  */
-export interface ImageMap3DRenderer {
-	/** Холст, в который рисует рендерер */
-	readonly domElement: HTMLCanvasElement
-	/** Плотность пикселей; карта передаёт `min(devicePixelRatio, 2)` */
-	setPixelRatio: (ratio: number) => void
-	/** Размер области рисования в CSS-пикселях; `updateStyle: false` — стиль холста не трогается */
-	setSize: (width: number, height: number, updateStyle?: boolean) => void
-	/** Нарисовать кадр */
-	render: (scene: Object3D, camera: Camera) => void
-	/** Освободить ресурсы рендерера */
-	dispose: () => void
-	/** Отпустить контекст WebGL сразу, не дожидаясь сборщика мусора */
-	forceContextLoss: () => void
-}
+export type ImageMap3DRenderer = Scene3DRenderer
 
 /** Фабрика рендерера: получает холст карты и возвращает рендерер; ошибка внутри — карта переходит в 2D */
-export type ImageMap3DRendererFactory = (canvas: HTMLCanvasElement) => ImageMap3DRenderer
+export type ImageMap3DRendererFactory = Scene3DRendererFactory
 
 /** Почему показан 2D-вид, хотя просили 3D: unsupported — нет WebGL; error — рендерер не создался или модель этажа не загрузилась */
 export const IMAGE_MAP_3D_FALLBACK_REASONS = ['unsupported', 'error'] as const

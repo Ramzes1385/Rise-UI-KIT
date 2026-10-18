@@ -1,15 +1,15 @@
 import { Scene } from 'three'
 import { watchContext } from './watchContext'
-import { useRenderLoop } from './useRenderLoop'
+import { useRenderLoop } from '../loop/useRenderLoop'
 import { disposeObject } from '../scene/disposeObject'
+import { createViewCamera } from '../camera/cameraPose'
 import { onBeforeUnmount, shallowRef, watch } from 'vue'
-import { createViewCamera, fitViewCamera } from '../camera/cameraPose'
-import type { ImageMap3DRenderer } from '../../types/BaseImageMap3D.types'
-import type { ImageMap3DViewportOptions } from '../../types/internal/imageMap3dInternal.types'
+import type { Scene3DRenderer } from '../types/scene3d.types'
+import type { Scene3DViewportOptions } from '../types/internal/scene3dInternal.types'
 
 const MAX_PIXEL_RATIO = 2
 
-function openRenderer(options: ImageMap3DViewportOptions, canvas: HTMLCanvasElement): ImageMap3DRenderer | null {
+function openRenderer(options: Scene3DViewportOptions, canvas: HTMLCanvasElement): Scene3DRenderer | null {
 	try {
 		const renderer = options.getFactory()(canvas)
 		renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO))
@@ -20,17 +20,17 @@ function openRenderer(options: ImageMap3DViewportOptions, canvas: HTMLCanvasElem
 	}
 }
 
-export function useImageMap3DViewport(options: ImageMap3DViewportOptions) {
+export function useScene3DViewport(options: Scene3DViewportOptions) {
 	const scene = new Scene()
 	const camera = shallowRef(createViewCamera(options.getCameraKind()))
-	const { renderer, invalidate, release, onFrame } = useRenderLoop(scene, () => camera.value)
+	const { renderer, invalidate, release, onFrame, animate, onBeforeRender } = useRenderLoop(scene, () => camera.value)
 	const disposers: Array<() => void> = []
 	const fitted = shallowRef(0)
 
 	function resize(width: number, height: number): void {
 		if (!renderer.value || width <= 0 || height <= 0) return
 		renderer.value.setSize(width, height, false)
-		fitViewCamera(camera.value, { width, height }, options.getFraming())
+		options.fit(camera.value, { width, height })
 		fitted.value += 1
 		invalidate()
 	}
@@ -67,8 +67,6 @@ export function useImageMap3DViewport(options: ImageMap3DViewportOptions) {
 
 	const refit = () => resize(options.hostRef.value?.clientWidth ?? 0, options.hostRef.value?.clientHeight ?? 0)
 
-	watch(options.getFraming, refit)
-
 	watch(options.getCameraKind, kind => {
 		camera.value = createViewCamera(kind)
 		refit()
@@ -76,5 +74,5 @@ export function useImageMap3DViewport(options: ImageMap3DViewportOptions) {
 
 	onBeforeUnmount(stop)
 
-	return { scene, camera, renderer, invalidate, onFrame, fitted }
+	return { scene, camera, renderer, invalidate, onFrame, animate, onBeforeRender, fitted, refit }
 }

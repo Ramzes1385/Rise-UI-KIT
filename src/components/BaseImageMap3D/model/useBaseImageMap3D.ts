@@ -1,23 +1,17 @@
 import type { Ref } from 'vue'
 import { warn3dData } from './validate3d'
-import { hasWebGL } from './webglSupport'
 import { formatMessage } from '@/locales/state'
 import { useImageMap3DUi } from './useImageMap3DUi'
 import { useImageMap3DMap } from './useImageMap3DMap'
 import { useObjectList } from './interaction/useObjectList'
+import { computed, ref, useId, useTemplateRef, watch } from 'vue'
 import { UI_IMAGE_MAP, UI_IMAGE_MAP_3D } from '@/locales/messages'
+import { useWebGLFallback } from '@/scene3d/renderer/useWebGLFallback'
 import { useImageMap3DStage, useStageInput } from './useImageMap3DStage'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
-import { computed, onMounted, ref, shallowRef, useId, useTemplateRef, watch } from 'vue'
 import { useImageMapFullscreen } from '@components/BaseImageMap/model/zoom/useImageMapFullscreen'
+import type { BaseImageMap3DEmits, BaseImageMap3DExpose, ImageMap3DProps, ImageMap3DView } from '../types/BaseImageMap3D.types'
 import type { ImageMap2DBindings, ImageMap3DLoadState, ImageMap3DStage, Map3DParts } from '../types/internal/imageMap3dInternal.types'
-import type {
-	BaseImageMap3DEmits,
-	BaseImageMap3DExpose,
-	ImageMap3DFallbackReason,
-	ImageMap3DProps,
-	ImageMap3DView,
-} from '../types/BaseImageMap3D.types'
 
 const OWN_PROPS = new Set(['view', 'rendererFactory', 'customClass', 'camera', 'layerMode', 'hasOrbit', 'configureLoader', 'has2dToggle'])
 
@@ -62,32 +56,6 @@ function useMapBindings(props: ImageMap3DProps, emit: BaseImageMap3DEmits, map: 
 	}))
 }
 
-function useFallback(emit: BaseImageMap3DEmits, getView: () => ImageMap3DView) {
-	const isSupported = shallowRef<boolean | null>(null)
-	const hasRenderError = ref(false)
-
-	const reason = computed<ImageMap3DFallbackReason | null>(() => {
-		if (getView() === '2d') return null
-		if (isSupported.value === false) return 'unsupported'
-		return hasRenderError.value ? 'error' : null
-	})
-
-	const statusText = computed(() => {
-		if (!reason.value) return ''
-		return reason.value === 'unsupported' ? UI_IMAGE_MAP_3D.FALLBACK_UNSUPPORTED : UI_IMAGE_MAP_3D.FALLBACK_ERROR
-	})
-
-	onMounted(() => {
-		isSupported.value = hasWebGL()
-	})
-
-	watch(reason, value => {
-		if (value) emit('fallback', value)
-	})
-
-	return { isSupported, hasRenderError, reason, statusText }
-}
-
 function useLoadState(props: ImageMap3DProps, scene: ImageMap3DStage['scene']) {
 	const state = computed((): ImageMap3DLoadState | null => {
 		const failed = props.data.layers.filter(layer => scene.failedLayerIds.value.includes(layer.id))
@@ -105,7 +73,11 @@ function useLoadState(props: ImageMap3DProps, scene: ImageMap3DStage['scene']) {
 
 function useViewModel(props: ImageMap3DProps, emit: BaseImageMap3DEmits) {
 	const view = ref<ImageMap3DView>(props.view)
-	const fallback = useFallback(emit, () => view.value)
+	const fallback = useWebGLFallback({
+		getView: () => view.value,
+		onFallback: reason => emit('fallback', reason),
+		getMessages: () => ({ unsupported: UI_IMAGE_MAP_3D.FALLBACK_UNSUPPORTED, error: UI_IMAGE_MAP_3D.FALLBACK_ERROR }),
+	})
 
 	watch(
 		() => props.view,
