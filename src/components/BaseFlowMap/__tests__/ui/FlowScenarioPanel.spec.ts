@@ -187,9 +187,9 @@ describe('FlowScenarioPanel: десктопная панель', () => {
 		expect(screen.getByText('Обход')).toBeInTheDocument()
 	})
 
-	it('нет сценариев — одна подпись и ничего больше', () => {
+	it('нет сценариев — панель ничего не рисует', () => {
 		mountPanel({ data: mapOf([]) })
-		expect(screen.getByText(UI_FLOW_SCENARIO.NONE)).toBeInTheDocument()
+		expect(screen.queryByRole('region')).toBeNull()
 		expect(screen.queryByRole('button')).toBeNull()
 	})
 
@@ -234,8 +234,9 @@ describe('FlowScenarioPanel: компактный плеер', () => {
 		expect(screen.getByRole('group', { name: UI_FLOW_SCENARIO.PANEL })).toBeInTheDocument()
 	})
 
-	it('нет сценариев — подпись и в компактном виде', () => {
+	it('нет сценариев — ничего не рисуется и в компактном виде', () => {
 		mountPanel({ isCompact: true, data: mapOf([]) })
-		expect(screen.getByText(UI_FLOW_SCENARIO.NONE)).toBeInTheDocument()
+		expect(screen.queryByRole('region')).toBeNull()
+		expect(screen.queryByRole('button')).toBeNull()
 	})
 })

@@ -1,6 +1,6 @@
 import { vi } from 'vitest'
 import { guardConsole } from '../helpers/consoleGuard.test-utils'
-import { sampleRoute } from '../../model/scenario/particles/routeSampler'
+import { cachedRouteTable } from '../../model/scenario/particles/routeSampler'
 import type { FlowParticleSlot } from '../../types/internal/flowParticles.types'
 import { installFakeFrames, type FakeFrames } from '../helpers/fakeFrames.test-utils'
 import { createParticleLoop, paintParticles } from '../../model/scenario/particles/particlePainter'
@@ -16,7 +16,7 @@ function circles(count: number): HTMLCollection {
 }
 
 function slot(count: number, length = 100): FlowParticleSlot {
-	const table = sampleRoute([
+	const table = cachedRouteTable([
 		{ x: 0, y: 0 },
 		{ x: length, y: 0 },
 	])!

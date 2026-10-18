@@ -1,6 +1,6 @@
 import type { FlowPoint } from '../../types/data/flowData.types'
 import { guardConsole } from '../helpers/consoleGuard.test-utils'
-import { cachedRouteTable, isRouteInView, readRoute, sampleRoute } from '../../model/scenario/particles/routeSampler'
+import { cachedRouteTable, isRouteInView, readRoute } from '../../model/scenario/particles/routeSampler'
 
 guardConsole()
 
@@ -15,35 +15,39 @@ const bend: FlowPoint[] = [
 ]
 
 function at(points: FlowPoint[], distance: number): FlowPoint {
-	const table = sampleRoute(points)
+	const table = cachedRouteTable(points)
 	const out = { x: -1, y: -1 }
 	readRoute(table!, distance, out)
 	return out
 }
 
-describe('sampleRoute', () => {
+describe('таблица маршрута', () => {
 	it('меряет длину ломаной и режет её шагом 6 px', () => {
-		const table = sampleRoute(line)
+		const table = cachedRouteTable(line)
 		expect(table?.length).toBe(100)
 		expect(table?.segments).toBe(17)
 		expect(table?.xs).toHaveLength(18)
-		expect(sampleRoute(bend)?.length).toBe(140)
+		expect(cachedRouteTable(bend)?.length).toBe(140)
 	})
 
-	it('свой шаг меняет число отрезков; отрезок всегда хотя бы один', () => {
-		expect(sampleRoute(line, 25)?.segments).toBe(4)
-		expect(sampleRoute(line, 1000)?.segments).toBe(1)
+	it('короткий маршрут — один отрезок', () => {
+		expect(
+			cachedRouteTable([
+				{ x: 0, y: 0 },
+				{ x: 3, y: 0 },
+			])?.segments,
+		).toBe(1)
 	})
 
 	it('границы маршрута — по опорным точкам', () => {
-		expect(sampleRoute(bend)?.bounds).toEqual({ x: 0, y: 0, width: 60, height: 80 })
+		expect(cachedRouteTable(bend)?.bounds).toEqual({ x: 0, y: 0, width: 60, height: 80 })
 	})
 
 	it('меньше двух точек или нулевая длина — null', () => {
-		expect(sampleRoute([])).toBeNull()
-		expect(sampleRoute([{ x: 5, y: 5 }])).toBeNull()
+		expect(cachedRouteTable([])).toBeNull()
+		expect(cachedRouteTable([{ x: 5, y: 5 }])).toBeNull()
 		expect(
-			sampleRoute([
+			cachedRouteTable([
 				{ x: 5, y: 5 },
 				{ x: 5, y: 5 },
 			]),
@@ -51,7 +55,7 @@ describe('sampleRoute', () => {
 	})
 
 	it('точки совпадающих подряд вершин не ломают таблицу', () => {
-		const table = sampleRoute([
+		const table = cachedRouteTable([
 			{ x: 0, y: 0 },
 			{ x: 0, y: 0 },
 			{ x: 50, y: 0 },
@@ -90,7 +94,7 @@ describe('readRoute', () => {
 
 	it('пишет в переданную точку, не создавая новую', () => {
 		const out = { x: 0, y: 0 }
-		readRoute(sampleRoute(line)!, 10, out)
+		readRoute(cachedRouteTable(line)!, 10, out)
 		expect(out.x).toBeCloseTo(10, 3)
 	})
 })
@@ -111,7 +115,7 @@ describe('cachedRouteTable', () => {
 })
 
 describe('isRouteInView', () => {
-	const table = sampleRoute(bend)!
+	const table = cachedRouteTable(bend)!
 
 	it('пересекает или касается видимой области — в виде', () => {
 		expect(isRouteInView(table, { x: 10, y: 10, width: 20, height: 20 })).toBe(true)

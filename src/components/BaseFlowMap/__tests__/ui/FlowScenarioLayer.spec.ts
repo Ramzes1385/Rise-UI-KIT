@@ -4,7 +4,6 @@ import type { FlowMapData } from '../../types/data/flowData.types'
 import { act, edge, node } from '../helpers/flowFixtures.test-utils'
 import type { FlowScenario } from '../../types/data/flowScenario.types'
 import FlowScenarioLayer from '../../ui/scenario/FlowScenarioLayer.vue'
-import { particleLimit } from '../../model/scenario/particles/useFlowParticles'
 import { installFakeFrames, type FakeFrames } from '../helpers/fakeFrames.test-utils'
 import { mountInMap, route, type MapHarness, type MapOptions } from '../helpers/mapHarness.test-utils'
 
@@ -70,16 +69,6 @@ afterEach(() => {
 	harness?.wrapper.unmount()
 	harness = undefined
 	frames.restore()
-})
-
-describe('particleLimit', () => {
-	it('false — частиц нет, число — целое не меньше нуля, иначе 400', () => {
-		expect(particleLimit(false)).toBe(0)
-		expect(particleLimit(7.9)).toBe(7)
-		expect(particleLimit(-4)).toBe(0)
-		expect(particleLimit(undefined)).toBe(400)
-		expect(particleLimit(true)).toBe(400)
-	})
 })
 
 describe('FlowScenarioLayer: слой сценария', () => {
@@ -160,6 +149,20 @@ describe('FlowScenarioLayer: частицы трафика', () => {
 		mountLayer({ particles: 4 })
 		await nextTick()
 		expect(circles()).toHaveLength(4)
+		harness?.wrapper.unmount()
+		mountLayer({ particles: 2.9 })
+		await nextTick()
+		expect(circles()).toHaveLength(2)
+	})
+
+	it('отрицательный предел — частиц нет; true — предел по умолчанию', async () => {
+		mountLayer({ particles: -4 })
+		await nextTick()
+		expect(circles()).toHaveLength(0)
+		harness?.wrapper.unmount()
+		mountLayer({ particles: true })
+		await nextTick()
+		expect(circles()).toHaveLength(6)
 	})
 
 	it('связь без трафика или со ставкой 0 частиц не имеет; трафик вида связи берётся, если у связи свой не задан', async () => {

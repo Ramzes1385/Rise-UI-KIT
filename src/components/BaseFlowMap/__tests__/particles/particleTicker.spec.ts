@@ -2,39 +2,41 @@ import { edge } from '../helpers/flowFixtures.test-utils'
 import type { FlowRoute } from '../../types/api/flowLayout.types'
 import { guardConsole } from '../helpers/consoleGuard.test-utils'
 import type { FlowTraffic } from '../../types/data/flowData.types'
-import { sampleRoute } from '../../model/scenario/particles/routeSampler'
+import { cachedRouteTable } from '../../model/scenario/particles/routeSampler'
 import { collectLanes } from '../../model/scenario/particles/particleLanes'
 import type { FlowParticleDirection, FlowParticleLane } from '../../types/internal/flowParticles.types'
-import { particleDistance, planParticles, wantedParticles } from '../../model/scenario/particles/particleTicker'
+import { particleDistance, planParticles } from '../../model/scenario/particles/particleTicker'
 
 guardConsole()
 
 function lane(extra: Partial<FlowParticleLane> & { length?: number } = {}): FlowParticleLane {
 	const { length = 240, ...rest } = extra
-	const table = sampleRoute([
+	const table = cachedRouteTable([
 		{ x: 0, y: 0 },
 		{ x: length, y: 0 },
 	])!
 	return { id: 'l', table, rate: 1, speed: 120, direction: 'forward', isHot: false, ...rest }
 }
 
-describe('wantedParticles', () => {
+describe('число точек связи', () => {
+	const wanted = (extra: Parameters<typeof lane>[0]) => planParticles([lane(extra)], 1000).reduce((sum, slot) => sum + slot.count, 0)
+
 	it('число точек = ставка × длина ÷ скорость, не меньше одной', () => {
-		expect(wantedParticles(lane())).toBe(2)
-		expect(wantedParticles(lane({ length: 600 }))).toBe(5)
-		expect(wantedParticles(lane({ rate: 0.1 }))).toBe(1)
+		expect(wanted({})).toBe(2)
+		expect(wanted({ length: 600 })).toBe(5)
+		expect(wanted({ rate: 0.1 })).toBe(1)
 	})
 
 	it('не больше 24 на направление, при двух направлениях — вдвое', () => {
-		expect(wantedParticles(lane({ length: 100000 }))).toBe(24)
-		expect(wantedParticles(lane({ length: 100000, direction: 'both' }))).toBe(48)
-		expect(wantedParticles(lane({ direction: 'both' }))).toBe(4)
+		expect(wanted({ length: 100000 })).toBe(24)
+		expect(wanted({ length: 100000, direction: 'both' })).toBe(48)
+		expect(wanted({ direction: 'both' })).toBe(4)
 	})
 
 	it('нулевая ставка или скорость — точек нет', () => {
-		expect(wantedParticles(lane({ rate: 0 }))).toBe(0)
-		expect(wantedParticles(lane({ speed: 0 }))).toBe(0)
-		expect(wantedParticles(lane({ rate: -1 }))).toBe(0)
+		expect(wanted({ rate: 0 })).toBe(0)
+		expect(wanted({ speed: 0 })).toBe(0)
+		expect(wanted({ rate: -1 })).toBe(0)
 	})
 })
 

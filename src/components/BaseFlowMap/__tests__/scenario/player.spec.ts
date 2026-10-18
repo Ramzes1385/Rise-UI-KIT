@@ -1,7 +1,7 @@
 import { act } from '../helpers/flowFixtures.test-utils'
 import { buildTimeline } from '../../model/scenario/timeline'
 import { guardConsole } from '../helpers/consoleGuard.test-utils'
-import { advanceClock, clampSpeed, clampTime, seekTarget, snapshotScenario, stepTarget } from '../../model/scenario/player'
+import { advanceClock, clampSpeed, seekTarget, snapshotScenario, stepTarget } from '../../model/scenario/player'
 
 const build = buildTimeline(
 	{
@@ -18,21 +18,13 @@ const build = buildTimeline(
 
 guardConsole()
 
-describe('clampSpeed и clampTime', () => {
+describe('clampSpeed', () => {
 	it('скорость зажимается в 0,25..4, нечисло — 1', () => {
 		expect(clampSpeed(2)).toBe(2)
 		expect(clampSpeed(0)).toBe(0.25)
 		expect(clampSpeed(99)).toBe(4)
 		expect(clampSpeed(Number.NaN)).toBe(1)
 		expect(clampSpeed(Number.POSITIVE_INFINITY)).toBe(1)
-	})
-
-	it('время зажимается в 0..длительность, нечисло — 0', () => {
-		expect(clampTime(500, 1000)).toBe(500)
-		expect(clampTime(-5, 1000)).toBe(0)
-		expect(clampTime(5000, 1000)).toBe(1000)
-		expect(clampTime(Number.NaN, 1000)).toBe(0)
-		expect(clampTime(10, -3)).toBe(0)
 	})
 })
 
@@ -107,6 +99,11 @@ describe('seekTarget', () => {
 		expect(seekTarget(build, 500)).toBe(500)
 		expect(seekTarget(build, -1)).toBe(0)
 		expect(seekTarget(build, 9999)).toBe(2800)
+		expect(seekTarget(build, Number.NaN)).toBe(0)
+	})
+
+	it('у сценария без длительности любое время — 0', () => {
+		expect(seekTarget({ entries: [], duration: -3 }, 10)).toBe(0)
 	})
 
 	it('шаг по номеру (дробная часть отбрасывается) и по id — его начало', () => {

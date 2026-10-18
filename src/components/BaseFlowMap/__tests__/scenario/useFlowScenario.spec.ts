@@ -229,6 +229,40 @@ describe('useFlowScenario: перемотка и шаги', () => {
 		expect(driver.state.value).toMatchObject({ status: 'playing', time: 1000 })
 	})
 
+	it('seek в конец во время проигрывания останавливает часы: кадров больше нет, время не уходит', () => {
+		const { driver } = mountScenario({ data: mapOf() })
+		driver.play()
+		frames.frame(0)
+		frames.frame(100)
+		expect(frames.pending()).toBe(1)
+		driver.seek(99999)
+		expect(driver.state.value).toMatchObject({ status: 'ended', time: 2000 })
+		expect(frames.pending()).toBe(0)
+		frames.frame(500)
+		expect(driver.state.value).toMatchObject({ status: 'ended', time: 2000 })
+	})
+
+	it('seek в конец зацикленного сценария тоже заканчивает его и не перезапускает', () => {
+		const { driver } = mountScenario({ data: mapOf([{ ...checkout, isLoop: true }]) })
+		driver.play()
+		frames.frame(0)
+		driver.seek(99999)
+		expect(driver.state.value).toMatchObject({ status: 'ended', time: 2000 })
+		expect(frames.pending()).toBe(0)
+	})
+
+	it('seek в конец делает недействительным запоздавший кадр', () => {
+		frames.restore()
+		frames = installFakeFrames({ ignoreCancel: true })
+		const { driver } = mountScenario({ data: mapOf() })
+		driver.play()
+		frames.frame(16)
+		driver.seek(99999)
+		frames.frame(16)
+		expect(driver.state.value).toMatchObject({ status: 'ended', time: 2000 })
+		expect(frames.pending()).toBe(0)
+	})
+
 	it('seek по id и номеру шага; неизвестный шаг игнорируется', () => {
 		const { driver } = mountScenario({ data: mapOf() })
 		driver.seek({ step: 'b' })

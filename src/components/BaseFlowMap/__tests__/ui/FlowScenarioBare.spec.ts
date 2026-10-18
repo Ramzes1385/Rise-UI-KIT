@@ -50,9 +50,10 @@ describe('части сценария без драйвера подробнос
 		view.select('x')
 	})
 
-	it('панель без подробностей сценария показывает «сценариев нет»', () => {
+	it('панель без подробностей сценария ничего не рисует', () => {
 		harness = mountBare(FlowScenarioPanel)
-		expect(screen.getByText(UI_FLOW_SCENARIO.NONE)).toBeInTheDocument()
+		expect(screen.queryByRole('region')).toBeNull()
+		expect(screen.queryByRole('button')).toBeNull()
 	})
 
 	it('слой без подробностей рисует только частицы, без отметок', () => {
