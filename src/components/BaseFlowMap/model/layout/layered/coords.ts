@@ -9,6 +9,7 @@ import type {
 const ITERATIONS = 4
 const BAND_PAD = 20
 const DUMMY_GAP = 10
+const EMPTY_BAND = 48
 
 function gapBetween(left: LayeredVertex, right: LayeredVertex, nodeGap: number): number {
 	if (left.band !== right.band) return 0
@@ -94,7 +95,10 @@ function packBands(graph: LayeredGraph, bands: number): void {
 	for (const vertex of graph.vertices) per[vertex.band].push(vertex)
 	let edge = 0
 	per.forEach(members => {
-		if (members.length === 0) return
+		if (members.length === 0) {
+			edge += EMPTY_BAND
+			return
+		}
 		const min = Math.min(...members.map(vertex => vertex.crossPos))
 		const shift = Math.max(0, edge + BAND_PAD - min)
 		for (const vertex of members) vertex.crossPos += shift
