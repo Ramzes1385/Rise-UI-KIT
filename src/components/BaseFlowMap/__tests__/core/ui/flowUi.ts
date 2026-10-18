@@ -68,3 +68,7 @@ export function runInHost<T>(setup: () => T): { value: T; unmount: () => void } 
 	const { unmount } = render(host)
 	return { value: value as T, unmount }
 }
+
+export function fired(result: { emitted: () => Record<string, unknown> }, name: string): unknown[][] {
+	return (result.emitted()[name] ?? []) as unknown[][]
+}

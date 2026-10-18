@@ -77,7 +77,7 @@ describe('flowDescribe', () => {
 			color: 'green',
 			icon: 'check',
 		})
-		expect(statusView('down', [{ id: 'ok', label: 'Норма' }])?.id).toBe('down')
+		expect(statusView('down', [{ id: 'ok', label: 'Норма', color: 'green', icon: 'check' }])?.id).toBe('down')
 	})
 
 	it('describeNode и describeLinks собирают подписи', () => {

@@ -217,4 +217,36 @@ describe('BaseFlowMap холст', () => {
 		await fireEvent.pointerEnter(screen.getByRole('graphics-object', { name: /^Beta/ }))
 		expect(container.querySelector('.base-flow-map__edge-label-text--highlighted')).toBeInTheDocument()
 	})
+
+	it('SVG-узлы с подписью под фигурой и без подписи, связь с начальным маркером', () => {
+		const svg = (labelPlacement: 'below' | 'none') => ({
+			label: () => labelPlacement,
+			render: 'svg' as const,
+			shape: { shape: 'circle' as const },
+			size: { width: 40, height: 40 },
+			labelPlacement,
+		})
+		const notation = {
+			id: 'marks',
+			label: () => 'Метки',
+			nodeKinds: { below: svg('below'), none: svg('none') },
+			edgeKinds: { link: { label: () => 'Связь', stroke: 'dotted', startMarker: 'circle', endMarker: 'open-arrow' } },
+			defaultNodeKind: 'below',
+			defaultEdgeKind: 'link',
+		}
+		const { container } = mountMap({
+			notations: [notation as never],
+			data: mapData({
+				notation: 'marks',
+				nodes: [
+					{ id: 'x', kind: 'below', label: 'Под', ...pinned(0, 0) },
+					{ id: 'y', kind: 'none', label: 'Скрыто', ...pinned(200, 0) },
+				],
+				edges: [{ id: 'l', source: 'x', target: 'y' }],
+			}),
+		})
+		const texts = [...container.querySelectorAll('svg .base-flow-map__node--svg text')].map(item => item.textContent?.trim())
+		expect(texts).toEqual(['Под', ''])
+		expect(container.querySelector('.base-flow-map__edge--dotted .base-flow-map__edge-line')).toHaveAttribute('marker-start')
+	})
 })
