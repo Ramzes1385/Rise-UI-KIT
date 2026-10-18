@@ -39,6 +39,6 @@ export const Rtl: StoryObj<typeof meta> = {
 		await expect(web.left).toBeLessThan(mobile.left)
 		const toolbar = canvas.getByRole('toolbar', { name: 'Инструменты карты' }).getBoundingClientRect()
 		const frame = region.getBoundingClientRect()
-		await expect(toolbar.left - frame.left).toBeLessThan(frame.right - toolbar.right)
+		await expect(frame.right - toolbar.right).toBeLessThan(toolbar.left - frame.left)
 	},
 }

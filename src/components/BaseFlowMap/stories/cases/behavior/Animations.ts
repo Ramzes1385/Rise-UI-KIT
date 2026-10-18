@@ -22,14 +22,6 @@ export const Animations: StoryObj<typeof meta> = {
 	name: 'Анимации',
 	decorators: [() => ({ template: '<div style="--story-motion-min: 480px;"><story /></div>' })],
 	parameters: {
-		a11y: {
-			config: {
-				rules: [
-					{ id: 'landmark-unique', enabled: false },
-					{ id: 'scrollable-region-focusable', enabled: false },
-				],
-			},
-		},
 		controls: { include: ['variant', 'sizeScale'] },
 		docs: {
 			description: {

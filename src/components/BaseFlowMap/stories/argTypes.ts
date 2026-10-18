@@ -16,7 +16,7 @@ export const argTypes = {
 	modes: { control: 'check', options: ['view', 'edit', 'review'], table: propGroup(ARG_GROUP.behavior) },
 	panels: { control: 'check', options: [...FLOW_MAP_PANELS], table: propGroup(ARG_GROUP.appearance) },
 	height: { control: 'text', table: propGroup(ARG_GROUP.appearance) },
-	particles: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
+	particles: { control: 'object', table: propGroup(ARG_GROUP.appearance) },
 	compactBreakpoint: { control: { type: 'number', min: 240, max: 1200, step: 20 }, table: propGroup(ARG_GROUP.appearance) },
 	isAutoplay: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
 	wheelZoom: { control: 'inline-radio', options: [...FLOW_MAP_WHEEL_MODES], table: propGroup(ARG_GROUP.behavior) },

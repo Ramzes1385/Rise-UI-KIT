@@ -18,14 +18,6 @@ const template = `
 
 export const Variants: StoryObj<typeof meta> = {
 	parameters: {
-		a11y: {
-			config: {
-				rules: [
-					{ id: 'landmark-unique', enabled: false },
-					{ id: 'scrollable-region-focusable', enabled: false },
-				],
-			},
-		},
 		controls: { include: ['sizeScale', 'isDisabled'] },
 		docs: {
 			description: {

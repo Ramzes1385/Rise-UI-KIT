@@ -19,14 +19,6 @@ const template = `
 export const Theming: StoryObj<typeof meta> = {
 	name: 'Токены',
 	parameters: {
-		a11y: {
-			config: {
-				rules: [
-					{ id: 'landmark-unique', enabled: false },
-					{ id: 'scrollable-region-focusable', enabled: false },
-				],
-			},
-		},
 		controls: { include: ['variant', 'sizeScale'] },
 		docs: {
 			description: {

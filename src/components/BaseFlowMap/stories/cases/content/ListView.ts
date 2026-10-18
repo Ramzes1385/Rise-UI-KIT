@@ -27,7 +27,7 @@ export const ListView: StoryObj<typeof meta> = {
 		template,
 	}),
 	play: async ({ canvas, userEvent }) => {
-		const list = canvas.getByRole('region', { name: 'Структура карты' })
+		const list = canvas.getByRole('group', { name: 'Структура карты' })
 		await expect(list).toBeVisible()
 		await expect(list.querySelectorAll('li')).toHaveLength(23)
 		const button = Array.from(list.querySelectorAll('button')).find(item => item.textContent?.includes('Payments'))!

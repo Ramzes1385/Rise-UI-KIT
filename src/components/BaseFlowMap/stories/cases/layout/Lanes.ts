@@ -28,14 +28,6 @@ const template = `
 
 export const Lanes: StoryObj<typeof meta> = {
 	parameters: {
-		a11y: {
-			config: {
-				rules: [
-					{ id: 'landmark-unique', enabled: false },
-					{ id: 'scrollable-region-focusable', enabled: false },
-				],
-			},
-		},
 		controls: { include: ['variant', 'sizeScale'] },
 		docs: {
 			description: {
