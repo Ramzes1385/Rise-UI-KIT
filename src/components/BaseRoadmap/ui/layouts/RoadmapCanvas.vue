@@ -67,6 +67,7 @@
 								:view="topic.view"
 								:ui="ui"
 								:missing="topic.missing"
+								:is-busy="topic.view.isBusy"
 								@select="emit('select-topic', $event)"
 								@toggle="emit('toggle-topic', $event)">
 								<template v-if="$slots.topic" #default="slotProps"><slot name="topic" v-bind="slotProps" /></template>

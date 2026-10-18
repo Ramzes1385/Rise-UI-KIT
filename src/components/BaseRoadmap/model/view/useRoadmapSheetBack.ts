@@ -6,7 +6,6 @@ export function useRoadmapSheetBack(isOpen: () => boolean, close: () => void) {
 	let isPushed = false
 
 	function onPopState(): void {
-		if (!isPushed) return
 		isPushed = false
 		window.removeEventListener('popstate', onPopState)
 		close()
@@ -25,7 +24,6 @@ export function useRoadmapSheetBack(isOpen: () => boolean, close: () => void) {
 			release()
 			return
 		}
-		if (isPushed) return
 		window.history.pushState({ ...(window.history.state as object | null), [HISTORY_KEY]: true }, '')
 		isPushed = true
 		window.addEventListener('popstate', onPopState)

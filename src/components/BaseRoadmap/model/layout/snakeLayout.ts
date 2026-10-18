@@ -19,14 +19,13 @@ import type {
 	RoadmapStageSlot,
 } from '../../types/internal/roadmapLayout.types'
 
-export const ROADMAP_SNAKE_COLUMNS = 3
-export const ROADMAP_SNAKE_STEP = 276
-export const ROADMAP_SNAKE_PAD = 64
+const ROADMAP_SNAKE_COLUMNS = 3
+const ROADMAP_SNAKE_STEP = 276
+const ROADMAP_SNAKE_PAD = 64
 const ROW_MIN = 150
 const ROW_TOP = 60
 const AFTER_STACK = ROADMAP_STAGE_HEIGHT + ROADMAP_STACK_GAP + 24
-const BULGE_MAX = 60
-const BULGE_RATIO = 0.4
+const BULGE = 60
 const BOTTOM_MIN = 90
 const BOTTOM_CLEARANCE = 24
 
@@ -58,7 +57,7 @@ function stationCenter(index: number, columns: number, rowsY: number[]): Roadmap
 }
 
 function turnSegment(from: RoadmapPoint, to: RoadmapPoint, direction: number): RoadmapSegment {
-	const bulge = Math.min(BULGE_MAX, (to.y - from.y) * BULGE_RATIO) * direction
+	const bulge = BULGE * direction
 	return {
 		kind: 'C',
 		control1: { x: from.x + bulge, y: from.y },

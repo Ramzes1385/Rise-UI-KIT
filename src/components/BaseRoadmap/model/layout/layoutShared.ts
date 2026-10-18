@@ -11,12 +11,12 @@ import type {
 	RoadmapTopicSlot,
 } from '../../types/internal/roadmapLayout.types'
 
-export const ROADMAP_STAGE_WIDTH = 228
+const ROADMAP_STAGE_WIDTH = 228
 export const ROADMAP_STAGE_HEIGHT = 54
 export const ROADMAP_TOPIC_WIDTH = 200
 export const ROADMAP_TOPIC_HEIGHT = 34
-export const ROADMAP_STACK_INDENT = 32
-export const ROADMAP_STACK_PITCH = 40
+const ROADMAP_STACK_INDENT = 32
+const ROADMAP_STACK_PITCH = 40
 export const ROADMAP_STACK_GAP = 16
 
 const CURVE_SAMPLES = 24
@@ -25,7 +25,7 @@ export function roundCoord(value: number): number {
 	return Math.round(value * 100) / 100
 }
 
-export function roundFraction(value: number): number {
+function roundFraction(value: number): number {
 	return Math.round(value * 10000) / 10000
 }
 
@@ -42,7 +42,7 @@ export function stageBox(center: RoadmapPoint): RoadmapBox {
 	}
 }
 
-export function boxCenter(box: RoadmapBox): RoadmapPoint {
+function boxCenter(box: RoadmapBox): RoadmapPoint {
 	return { x: box.x + box.width / 2, y: box.y + box.height / 2 }
 }
 
@@ -58,11 +58,6 @@ function formatSegment(segment: RoadmapSegment, mirror: (x: number) => number): 
 
 export function segmentsToPath(start: RoadmapPoint, segments: RoadmapSegment[], mirror: (x: number) => number): string {
 	return [`M${formatPoint(start, mirror)}`, ...segments.map(segment => formatSegment(segment, mirror))].join(' ')
-}
-
-export function curveSegment(from: RoadmapPoint, to: RoadmapPoint): RoadmapSegment {
-	const middle = (from.x + to.x) / 2
-	return { kind: 'C', control1: { x: middle, y: from.y }, control2: { x: middle, y: to.y }, to }
 }
 
 function cubicPoint(points: RoadmapPoint[], t: number): RoadmapPoint {

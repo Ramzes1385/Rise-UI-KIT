@@ -18,8 +18,7 @@ import type {
 } from '../roadmapData.types'
 
 /** Где открывается панель темы: колонка справа или нижний лист */
-export const ROADMAP_DETAILS_MODES = ['side', 'sheet'] as const
-export type RoadmapDetailsMode = (typeof ROADMAP_DETAILS_MODES)[number]
+export type RoadmapDetailsMode = 'side' | 'sheet'
 
 /** Ширина контейнера, px, выше которой `detailsPosition: 'auto'` ставит панель справа */
 export const ROADMAP_SIDE_MIN_WIDTH = 900

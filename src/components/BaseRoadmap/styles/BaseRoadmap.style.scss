@@ -47,13 +47,13 @@
 		font-size: sz(15px);
 		font-weight: var(--rise-font-weight-semibold);
 		line-height: sz(20px);
-		color: var(--rise-text-highlighted);
+		@include custom-text(color, var(--rise-text-highlighted));
 	}
 
 	&__subtitle {
 		margin: 0;
 		font-size: sz(12px);
-		color: var(--rise-text-muted);
+		@include custom-text(color, var(--rise-text-muted));
 	}
 
 	&__bar {
@@ -134,8 +134,8 @@
 		}
 
 		&--recommended {
-			color: var(--rise-success);
-			background-color: color-mix(in srgb, var(--rise-success) 12%, transparent);
+			color: var(--rise-success-text);
+			background-color: var(--rise-success-soft);
 		}
 	}
 
@@ -161,7 +161,7 @@
 		justify-content: space-between;
 		font-size: sz(12px);
 		line-height: sz(16px);
-		color: var(--rise-text-muted);
+		@include custom-text(color, var(--rise-text-muted));
 
 		&--narrow {
 			justify-content: flex-start;
@@ -170,14 +170,14 @@
 
 	&__summary-done {
 		font-weight: var(--rise-font-weight-semibold);
-		color: var(--rise-text-highlighted);
+		@include custom-text(color, var(--rise-text-highlighted));
 	}
 
 	&__summary-percent {
 		font-size: sz(28px);
 		font-weight: var(--rise-font-weight-bold);
 		line-height: sz(32px);
-		color: var(--rise-text-highlighted);
+		@include custom-text(color, var(--rise-text-highlighted));
 		font-variant-numeric: tabular-nums;
 	}
 

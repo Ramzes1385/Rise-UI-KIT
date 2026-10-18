@@ -24,11 +24,10 @@ export interface RoadmapLayoutOptions {
 }
 
 /** Раскладки, которые считает `useRoadmapLayout` */
-export const ROADMAP_CANVAS_LAYOUTS = ['path', 'snake', 'horizontal'] as const
-export type RoadmapCanvasLayout = (typeof ROADMAP_CANVAS_LAYOUTS)[number]
+export type RoadmapCanvasLayout = 'path' | 'snake' | 'horizontal'
 
 /** Сторона, на которую тема уходит от этапа: к началу строки, к концу или вниз */
-export type RoadmapTopicSide = 'start' | 'end' | 'below'
+type RoadmapTopicSide = 'start' | 'end' | 'below'
 
 /** Звено пути: прямая или кубическая кривая Безье от предыдущей точки */
 export type RoadmapSegment =

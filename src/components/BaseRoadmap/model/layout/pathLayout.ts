@@ -33,7 +33,7 @@ const GOAL_MIN_GAP = 60
 const GOAL_MARGIN = 14
 const BOTTOM_MARGIN = 30
 
-export const ROADMAP_PATH_WIDTH = 2 * (AMPLITUDE + BRANCH_END + ROADMAP_TOPIC_WIDTH)
+const ROADMAP_PATH_WIDTH = 2 * (AMPLITUDE + BRANCH_END + ROADMAP_TOPIC_WIDTH)
 
 function topicPitch(count: number): number {
 	return count === 2 ? 48 : 44

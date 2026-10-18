@@ -20,6 +20,7 @@ function buildTopicViews(stage: RoadmapStage, input: RoadmapViewInput): RoadmapT
 			isSelected: topic.id === input.selectedId,
 			isFiltered: isHidden(topic, input.filter),
 			isAlternative,
+			isBusy: input.busy.has(topic.id),
 		}
 	})
 }

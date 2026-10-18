@@ -27,6 +27,7 @@ export function useRoadmapModel(props: BaseRoadmapProps, emit: BaseRoadmapEmits)
 		buildStageViews({
 			data: data.value,
 			statuses: statuses.value,
+			busy: busy.value,
 			expanded: expansion.expandedIds.value,
 			filter: selection.filter.value,
 			selectedId: selection.selectedId.value,

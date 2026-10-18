@@ -17,8 +17,8 @@ import {
 	stageSlot,
 } from './layoutShared'
 
-export const ROADMAP_HORIZONTAL_STEP = 276
-export const ROADMAP_HORIZONTAL_PAD = 64
+const ROADMAP_HORIZONTAL_STEP = 276
+const ROADMAP_HORIZONTAL_PAD = 64
 const ROAD_Y = 60
 const BOTTOM_CLEARANCE = 32
 

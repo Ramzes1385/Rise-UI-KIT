@@ -34,7 +34,7 @@ function globalOrigin(): string | undefined {
 	return typeof location === 'undefined' ? undefined : location.origin
 }
 
-export function materialKindText(kind: RoadmapMaterialKind): string {
+function materialKindText(kind: RoadmapMaterialKind): string {
 	return (MATERIAL_KIND_TEXT[kind] ?? MATERIAL_KIND_TEXT.link)()
 }
 

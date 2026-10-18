@@ -2,7 +2,7 @@ import { ROADMAP_PROGRESS_STATUSES } from '../../types/roadmapData.types'
 import type { RoadmapMergeResult, RoadmapStatusPatch, RoadmapSubtopicPatch } from '../../types/internal/roadmapInternal.types'
 import type { RoadmapData, RoadmapProgress, RoadmapProgressStatus, RoadmapTopic, RoadmapTopicProgress } from '../../types/roadmapData.types'
 
-export const ROADMAP_PROGRESS_VERSION = 1
+const ROADMAP_PROGRESS_VERSION = 1
 export const ROADMAP_STORAGE_PREFIX = 'rise-roadmap:'
 
 export function emptyRoadmapProgress(): RoadmapProgress {

@@ -26,6 +26,8 @@ export interface RoadmapTopicView {
 	isFiltered: boolean
 	/** Не первая в группе `choice`: бейдж «Альтернатива», перед ней «или» */
 	isAlternative: boolean
+	/** Хук `beforeStatusChange` ещё ждёт Promise — у строки `aria-busy` */
+	isBusy: boolean
 }
 
 /** Этап для раскладки */
@@ -60,7 +62,7 @@ export interface RoadmapLayoutEmits {
 }
 
 /** Тема в индексе данных: сама тема и её этап */
-export interface RoadmapTopicEntry {
+interface RoadmapTopicEntry {
 	topic: RoadmapTopic
 	stage: RoadmapStage
 	/** Номер этапа с 0 */
@@ -77,7 +79,7 @@ export interface RoadmapIndex {
 export type RoadmapRequirements = Map<string, string[]>
 
 /** Ключи предупреждений о данных — ключи раздела словаря `UI_ROADMAP` */
-export type RoadmapIssueCode = 'CYCLE' | 'DUPLICATE_ID' | 'NEGATIVE_HOURS' | 'UNKNOWN_KIND' | 'UNKNOWN_REQUIRE'
+type RoadmapIssueCode = 'CYCLE' | 'DUPLICATE_ID' | 'NEGATIVE_HOURS' | 'UNKNOWN_KIND' | 'UNKNOWN_REQUIRE'
 
 /** Найденная проблема данных */
 export interface RoadmapIssue {
@@ -189,7 +191,7 @@ export interface RoadmapSummaryContext {
 }
 
 /** Группа `choice` в этапе: пройдена ли и сколько часов осталось у самой короткой темы */
-export interface RoadmapChoiceGroup {
+interface RoadmapChoiceGroup {
 	isPassed: boolean
 	least: number | null
 }
@@ -233,6 +235,7 @@ export interface UseRoadmapStorageOptions {
 export interface RoadmapViewInput {
 	data: RoadmapData
 	statuses: RoadmapStatuses
+	busy: ReadonlySet<string>
 	expanded: string[]
 	filter: RoadmapFilter
 	selectedId: string | null
