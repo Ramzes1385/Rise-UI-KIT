@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { h, nextTick } from 'vue'
 import { UI_FLOW_MAP } from '@/locales/messages'
+import { defineComponent, h, nextTick } from 'vue'
 import { fireEvent, screen } from '@testing-library/vue'
 import { mapData, mountMap, pinned, sceneOf, stubFrame } from '../flowUi'
 
@@ -273,5 +273,25 @@ describe('BaseFlowMap холст', () => {
 		expect(container.querySelector('.base-flow-map__shape-text')).toHaveTextContent('1')
 		expect(container.querySelectorAll('.base-flow-map__shape-sign')).toHaveLength(2)
 		expect(container.querySelectorAll('.base-flow-map__shape-sign--filled')).toHaveLength(1)
+	})
+
+	it.each([
+		{ particles: false, expected: 'false' },
+		{ particles: 12, expected: '12' },
+	])('проп particles ($particles) доходит до слоя сценария через холст', ({ particles, expected }) => {
+		const layer = defineComponent({
+			props: { particles: { type: [Boolean, Number], default: undefined } },
+			setup: props => () => h('g', { 'data-testid': 'layer', 'data-particles': String(props.particles) }),
+		})
+		mountMap({ particles }, { global: { stubs: { FlowScenarioLayer: layer } } })
+		expect(screen.getByTestId('layer')).toHaveAttribute('data-particles', expected)
+	})
+
+	it('вид ghost и outline даёт свой класс корня', () => {
+		const ghost = mountMap({ variant: 'ghost' })
+		expect(ghost.container.querySelector('.base-flow-map')).toHaveClass('base-flow-map--ghost')
+		ghost.unmount()
+		const outline = mountMap({ variant: 'outline' })
+		expect(outline.container.querySelector('.base-flow-map')).toHaveClass('base-flow-map--outline')
 	})
 })

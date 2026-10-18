@@ -148,7 +148,7 @@ describe('BaseFlowMap живой регион и список', () => {
 
 	it('скрытый список по умолчанию вне Tab-порядка, но доступен скринридеру и выбирает по кнопке', async () => {
 		const result = mountMap()
-		const list = screen.getByRole('region', { name: UI_FLOW_MAP.LIST_TITLE })
+		const list = screen.getByRole('group', { name: UI_FLOW_MAP.LIST_TITLE })
 		expect(list).toHaveClass('base-flow-map__sr')
 		expect(list).not.toHaveAttribute('tabindex')
 		const buttons = screen.getAllByRole('button', { name: /Alpha|Beta|Gamma|→/ }).filter(item => list.contains(item))
@@ -162,7 +162,7 @@ describe('BaseFlowMap живой регион и список', () => {
 
 	it('панель list делает список видимым и доступным по Tab', () => {
 		mountMap({ panels: ['list'] })
-		const list = screen.getByRole('region', { name: UI_FLOW_MAP.LIST_TITLE })
+		const list = screen.getByRole('group', { name: UI_FLOW_MAP.LIST_TITLE })
 		expect(list).not.toHaveClass('base-flow-map__sr')
 		expect(screen.getByRole('heading', { name: UI_FLOW_MAP.LIST_NODES })).toBeInTheDocument()
 		expect(screen.getByRole('heading', { name: UI_FLOW_MAP.LIST_EDGES })).toBeInTheDocument()
@@ -172,11 +172,11 @@ describe('BaseFlowMap живой регион и список', () => {
 
 	it('при загрузке и ошибке скрытого списка нет', async () => {
 		const { rerender } = mountMap({ isLoading: true })
-		expect(screen.queryByRole('region', { name: UI_FLOW_MAP.LIST_TITLE })).not.toBeInTheDocument()
+		expect(screen.queryByRole('group', { name: UI_FLOW_MAP.LIST_TITLE })).not.toBeInTheDocument()
 		await rerender({ isLoading: false, error: 'сбой' })
-		expect(screen.queryByRole('region', { name: UI_FLOW_MAP.LIST_TITLE })).not.toBeInTheDocument()
+		expect(screen.queryByRole('group', { name: UI_FLOW_MAP.LIST_TITLE })).not.toBeInTheDocument()
 		await rerender({ error: undefined, data: mapData() })
-		expect(screen.getByRole('region', { name: UI_FLOW_MAP.LIST_TITLE })).toBeInTheDocument()
+		expect(screen.getByRole('group', { name: UI_FLOW_MAP.LIST_TITLE })).toBeInTheDocument()
 	})
 
 	it('подсказка по клавишам привязана к области через aria-describedby', () => {
