@@ -428,6 +428,27 @@ describe('комментарии', () => {
 		state.comments.open(null)
 		expect(state.comments.activeId.value).toBeNull()
 	})
+
+	it('isJustClosed: цепочка только что закрыта — 300 мс; другая цепочка и закрытие без открытой не считаются', () => {
+		vi.useFakeTimers()
+		try {
+			vi.setSystemTime(10_000)
+			const { state } = createReviewHarness({ comments: [thread(), thread({ id: 't10' })] })
+			state.comments.open(null)
+			expect(state.comments.isJustClosed('t9')).toBe(false)
+			state.comments.open('t9')
+			expect(state.comments.isJustClosed('t9')).toBe(false)
+			state.comments.open(null)
+			expect(state.comments.isJustClosed('t9')).toBe(true)
+			expect(state.comments.isJustClosed('t10')).toBe(false)
+			vi.setSystemTime(10_299)
+			expect(state.comments.isJustClosed('t9')).toBe(true)
+			vi.setSystemTime(10_300)
+			expect(state.comments.isJustClosed('t9')).toBe(false)
+		} finally {
+			vi.useRealTimers()
+		}
+	})
 })
 
 describe('метки на холсте', () => {

@@ -4,6 +4,7 @@ import { formatMessage } from '@/locales/state'
 import { UI_FLOW_REVIEW } from '@/locales/messages'
 import userEvent from '@testing-library/user-event'
 import { mountReview, stubFrame } from '../fixtures/reviewUi'
+import { flowServices } from '../../../model/notations/services'
 import type { FlowChange } from '../../../types/data/flowReview.types'
 import { ANNA, addEdgeD, addNodeD, moveB, removeC, renameA, reviewData, suggestion } from '../fixtures/reviewHarness'
 
@@ -93,6 +94,32 @@ describe('метки на холсте', () => {
 		expect(Number(frame?.getAttribute('width'))).toBeGreaterThan(8)
 		expect(warn).toHaveBeenCalledWith(expect.stringContaining('такого-вида-нет'))
 		warn.mockRestore()
+	})
+
+	it('призрак узла вида без размера (обход типов в JS) получает размер по умолчанию 180×64', () => {
+		const sized = {
+			...flowServices,
+			id: 'sized',
+			nodeKinds: { ...flowServices.nodeKinds, ghost: { ...flowServices.nodeKinds.service, size: { width: 180, height: 64 } } },
+		}
+		const sizeless = {
+			...flowServices,
+			id: 'sizeless',
+			nodeKinds: { ...flowServices.nodeKinds, ghost: { ...flowServices.nodeKinds.service, size: undefined } as never },
+		}
+		const frameOf = (notation: typeof sized, id: string) => {
+			const added: FlowChange = { type: 'add', entity: 'node', value: { id: 'o', kind: 'ghost', label: 'Odd' } }
+			const view = mountReview({
+				notations: [notation],
+				data: reviewData({ notation: id }),
+				suggestions: [suggestion('s1', [added])],
+			})
+			const frame = marks('add')[0].querySelector('.base-flow-map__review-frame')
+			const size = [frame?.getAttribute('width'), frame?.getAttribute('height')]
+			view.unmount()
+			return size
+		}
+		expect(frameOf(sizeless, 'sizeless')).toEqual(frameOf(sized, 'sized'))
 	})
 
 	it('перемещение, которое вернуло узел на место, ничего не рисует', () => {

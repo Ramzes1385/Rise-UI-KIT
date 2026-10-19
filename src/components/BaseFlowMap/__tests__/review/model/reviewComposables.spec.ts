@@ -179,6 +179,28 @@ describe('useFlowReviewPins', () => {
 	})
 })
 
+describe('useFlowReviewPins: узкий вид', () => {
+	const comments = [{ id: 't1', target: { entity: 'node' as const, id: 'a' }, comments: [] }]
+
+	it('окно булавки не открывается: цепочка раскрывается в карточке, повторное открытие её закрывает', () => {
+		const { result } = createContextHarness(() => useFlowReviewPins(), { comments }, true)
+		const [pin] = result.pins.value
+		result.setOpen(pin.thread, true)
+		expect(result.activeId.value).toBe('t1')
+		expect(result.isOpen(pin.thread)).toBe(false)
+		result.setOpen(pin.thread, true)
+		expect(result.activeId.value).toBeNull()
+	})
+
+	it('закрытие окна булавки (isOpen=false) в узком виде активную цепочку не трогает', () => {
+		const { result } = createContextHarness(() => useFlowReviewPins(), { comments }, true)
+		const [pin] = result.pins.value
+		result.setOpen(pin.thread, true)
+		result.setOpen(pin.thread, false)
+		expect(result.activeId.value).toBe('t1')
+	})
+})
+
 describe('useFlowVersionList', () => {
 	it('без версий список пуст, кнопка называется по состоянию', () => {
 		const { result } = createContextHarness(() => useFlowVersionList())

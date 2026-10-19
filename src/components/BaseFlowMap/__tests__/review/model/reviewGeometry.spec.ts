@@ -25,9 +25,14 @@ describe('linePath', () => {
 		expect(linePath(rect(0, 0, { width: 100, height: 100 }), rect(200, 200, { width: 100, height: 100 }))).toBe('M100 100L200 200')
 	})
 
-	it('по горизонтали и вертикали путь остаётся корректным, без NaN', () => {
-		expect(linePath(rect(0, 0), rect(300, 0))).toMatch(/^M-?\d+(\.\d+)? 20L-?\d+(\.\d+)? 20$/)
-		expect(linePath(rect(0, 0), rect(0, 200))).toMatch(/^M50 -?\d+(\.\d+)?L50 -?\d+(\.\d+)?$/)
+	it('по горизонтали линия идёт от края до края по середине высоты, вправо и влево', () => {
+		expect(linePath(rect(0, 0), rect(300, 0))).toBe('M100 20L300 20')
+		expect(linePath(rect(300, 0), rect(0, 0))).toBe('M300 20L100 20')
+	})
+
+	it('по вертикали линия идёт от края до края по середине ширины, вниз и вверх', () => {
+		expect(linePath(rect(0, 0), rect(0, 200))).toBe('M50 40L50 200')
+		expect(linePath(rect(0, 200), rect(0, 0))).toBe('M50 200L50 40')
 	})
 
 	it('совпавшие центры дают точку в центре', () => {

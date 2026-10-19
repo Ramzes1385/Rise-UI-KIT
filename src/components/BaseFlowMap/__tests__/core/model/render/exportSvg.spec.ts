@@ -63,6 +63,80 @@ describe('buildSceneSvg', () => {
 	})
 })
 
+describe('buildSceneSvg: подзаголовок, подпись снизу и цвета узла (v6.2)', () => {
+	const only = (patch: Record<string, unknown>, shape: Record<string, unknown> = { shape: 'rect' }, root: Element | null = null) =>
+		scene({
+			root,
+			nodes: [{ rect: { x: 0, y: 0, width: 100, height: 60 }, node: { label: 'Имя' }, kind: { shape }, ...patch }],
+			edges: [],
+			groups: [],
+			labels: [],
+			markers: [],
+		} as never)
+	const textOf = (svg: string, content: string): string => svg.match(new RegExp(`<text [^>]*>${content}</text>`))?.[0] ?? ''
+
+	it('без подзаголовка подпись по центру узла, второй строки нет', () => {
+		const svg = buildSceneSvg(only({}))
+		expect(textOf(svg, 'Имя')).toContain('x="50" y="34" text-anchor="middle"')
+		expect(svg.match(/<text /g)).toHaveLength(1)
+	})
+
+	it('подзаголовок идёт второй строкой, приглушён и экранируется; подпись смещается вверх', () => {
+		const svg = buildSceneSvg(only({ subtitle: 'роль <A>' }))
+		expect(textOf(svg, 'Имя')).toContain('y="28" text-anchor="middle"')
+		const subtitle = textOf(svg, 'роль &lt;A&gt;')
+		expect(subtitle).toContain('x="50" y="44" text-anchor="middle" font-size="11"')
+		expect(subtitle).toContain('fill-opacity="0.8"')
+	})
+
+	it('подпись снизу слева: жирная, от левого края, подзаголовок под ней', () => {
+		const alone = buildSceneSvg(only({ isLabelBottom: true }))
+		expect(textOf(alone, 'Имя')).toContain('x="12" y="34" text-anchor="start" font-size="13" font-weight="600"')
+		const both = buildSceneSvg(only({ isLabelBottom: true, subtitle: 'под' }))
+		expect(textOf(both, 'Имя')).toContain('x="12" y="34" text-anchor="start"')
+		expect(textOf(both, 'под')).toContain('x="12" y="50" text-anchor="start"')
+	})
+
+	it('цвета фигуры: значения вида, цвет узла главнее обводки вида, без токенов — запасные', () => {
+		const root = document.createElement('div')
+		root.style.setProperty('--k-fill', '#111111')
+		root.style.setProperty('--k-line', '#222222')
+		root.style.setProperty('--k-text', '#333333')
+		root.style.setProperty('--k-mine', '#444444')
+		document.body.append(root)
+		const shape = { shape: 'rect', fill: 'var(--k-fill)', stroke: 'var(--k-line)', text: 'var(--k-text)' }
+		const byKind = buildSceneSvg(only({}, shape, root))
+		const own = buildSceneSvg(only({ node: { label: 'Имя', color: 'var(--k-mine)' } }, shape, root))
+		const plain = buildSceneSvg(only({}, { shape: 'rect' }, root))
+		root.remove()
+		expect(byKind).toContain('fill="#111111" stroke="#222222"')
+		expect(textOf(byKind, 'Имя')).toContain('fill="#333333"')
+		expect(own).toContain('fill="#111111" stroke="#444444"')
+		expect(plain).toContain('fill="#ffffff"')
+		expect(plain).not.toContain('#111111')
+	})
+
+	it('токен, которого нет, вложенный var и дыры в значении возвращают запасной цвет; без корня и без getComputedStyle — тоже', () => {
+		const root = document.createElement('div')
+		root.style.setProperty('--k-ok', '#555555')
+		document.body.append(root)
+		const fills = (fill: string, host: Element | null = root): string =>
+			buildSceneSvg(only({}, { shape: 'rect', fill }, host)).match(/<g transform[^>]*><path d="[^"]*" fill="([^"]*)"/)?.[1] ?? ''
+		const fallback = fills('var(--нет)')
+		expect(fallback).toBe('#ffffff')
+		expect(fills('var(--k-ok)')).toBe('#555555')
+		expect(fills('var(--k-ok, red)')).toBe('#555555')
+		expect(fills('var(--k-ok) var(--нет)')).toBe(fallback)
+		expect(fills('color-mix(in srgb, var(--нет) 40%, white)')).toBe(fallback)
+		expect(fills('rgb()')).toBe(fallback)
+		expect(fills('var(--k-ok)', null)).toBe(fallback)
+		vi.stubGlobal('getComputedStyle', undefined)
+		expect(fills('var(--k-ok)')).toBe(fallback)
+		vi.unstubAllGlobals()
+		root.remove()
+	})
+})
+
 describe('buildScenePng', () => {
 	const toBlob = vi.fn()
 	const drawImage = vi.fn()

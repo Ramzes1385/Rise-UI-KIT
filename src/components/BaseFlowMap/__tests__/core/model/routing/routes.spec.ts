@@ -34,6 +34,72 @@ function shapedNotation(shape: 'diamond' | 'ellipse' | 'rect'): FlowNotation {
 
 const pair: FlowMapData = map({ nodes: [node('a'), node('b')], edges: [edge('1', ['a', 'b'])] })
 
+describe('computeRoutes: isLabelObstacle (v6.2)', () => {
+	const kind = { label: () => 'K', render: 'html' as const, shape: { shape: 'rect' as const }, size: { width: 100, height: 40 } }
+	const notation: FlowNotation = {
+		...plainNotation,
+		id: 'obstacles',
+		nodeKinds: { service: kind, box: { ...kind, isLabelObstacle: true }, line: { ...kind, isLabelObstacle: false } },
+		edgeKinds: { call: { label: () => 'c', stroke: 'solid', routing: 'straight' } },
+	}
+	const rects = {
+		a: { x: 0, y: 0, width: 100, height: 40 },
+		b: { x: 500, y: 0, width: 100, height: 40 },
+		m: { x: 250, y: 0, width: 100, height: 40 },
+	}
+
+	function labelWith(middleKind: string | undefined, extra: Record<string, FlowRect> = {}) {
+		const data = map({
+			nodes: [node('a'), node('b'), ...(middleKind ? [node('m', { kind: middleKind })] : [])],
+			edges: [edge('1', ['a', 'b'], { label: 'сообщение' })],
+		})
+		const scope = createScope(data, { notation, layout: { direction: 'LR' } })
+		const layout = runFlowLayout(scope)
+		const placed = { ...layout, nodes: { ...layout.nodes, ...rects, ...extra } }
+		return computeRoutes(scope, placed, createLayoutInput(scope).edges)['1'].label
+	}
+
+	it('узел по умолчанию и с isLabelObstacle=true мешает: подпись уходит с его места', () => {
+		for (const middle of ['box', 'service']) {
+			const label = labelWith(middle)
+			expect(label).not.toBeNull()
+			const width = estimateTextWidth('сообщение', 12) + 12
+			const box = {
+				x: (label as NonNullable<typeof label>).point.x - width / 2,
+				y: (label as NonNullable<typeof label>).point.y - 10,
+				width,
+				height: 20,
+			}
+			expect(isOverlapping(box, rects.m)).toBe(false)
+		}
+	})
+
+	it('isLabelObstacle=false не мешает: подпись остаётся на середине линии, поверх узла', () => {
+		const label = labelWith('line')
+		expect(label?.point).toEqual({ x: 300, y: 20 })
+	})
+
+	it('связь между узлами раскладки без записи в данных получает маршрут (вид узла пуст)', () => {
+		const data = map({ nodes: [node('a')], edges: [edge('1', ['ghost', 'phantom'], { label: 'сообщение' })] })
+		const scope = createScope(data, { notation, layout: { direction: 'LR' } })
+		const layout = runFlowLayout(scope)
+		const placed = { ...layout, nodes: { ...layout.nodes, ghost: rects.a, phantom: rects.b } }
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+		const route = computeRoutes(scope, placed, createLayoutInput(scope).edges)['1']
+		expect(route.points.length).toBeGreaterThanOrEqual(2)
+		expect(route.label).not.toBeNull()
+		expect(warn).toHaveBeenCalled()
+		expect(warn.mock.calls[0][0]).toContain('не найден')
+		warn.mockRestore()
+	})
+
+	it('узел раскладки без записи в данных считается препятствием', () => {
+		const label = labelWith(undefined, { ghost: rects.m })
+		expect(label).not.toBeNull()
+		expect(label?.point).not.toEqual({ x: 300, y: 20 })
+	})
+})
+
 describe('computeRoutes', () => {
 	it('для каждой связи есть путь, точки и подпись (если есть label)', () => {
 		const data = map({ nodes: [node('a'), node('b')], edges: [edge('1', ['a', 'b'], { label: 'GET' }), edge('2', ['b', 'a'])] })

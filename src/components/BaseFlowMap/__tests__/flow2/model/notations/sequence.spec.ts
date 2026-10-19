@@ -1,10 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import { UI_FLOW_SEQUENCE } from '@/locales/messages'
+import { createScope } from '../../fixtures/flow2Scope'
 import { edge, map, node } from '../../fixtures/flow2Data'
 import { createHarness } from '../../fixtures/flow2Harness'
 import { buildFlowGraph } from '../../../../model/data/flowGraph'
+import { computeRoutes } from '../../../../model/layout/flowRoutes'
 import { flowSequence } from '../../../../model/notations/sequence'
+import { runFlowLayout } from '../../../../model/layout/useFlowLayout'
 import { placeMarkers } from '../../../../model/render/shapes/shapeMarkers'
+import { createLayoutInput } from '../../../../model/layout/flowLayoutInput'
 import type { FlowMapData, FlowValue } from '../../../../types/data/flowData.types'
 import { simulateSequence } from '../../../../model/notations/sequence/sequenceSimulate'
 import { hasOverlaps, isInside, issuesOf, layoutOf, verdictOf } from '../../fixtures/notationKit'
@@ -19,6 +23,30 @@ const frag = (id: string, props: Record<string, FlowValue>, extra = {}) => node(
 function data(nodes: ReturnType<typeof node>[], edges: ReturnType<typeof edge>[] = []): FlowMapData {
 	return map({ notation: 'sequence', nodes, edges })
 }
+
+describe('Sequence: подписи сообщений (v6.2, isLabelObstacle)', () => {
+	const labelled = data(
+		[life('a'), life('b'), life('c'), frag('f', { from: 'm1', to: 'm2' })],
+		[msg('m1', ['a', 'c'], 'sync', {}), msg('m2', ['c', 'a'], 'reply')].map(item => ({ ...item, label: `сообщение ${item.id}` })),
+	)
+
+	it('линии жизни, акторы и фрагменты помечены isLabelObstacle=false', () => {
+		for (const kind of ['lifeline', 'actor', 'fragment']) expect(flowSequence.nodeKinds[kind].isLabelObstacle).toBe(false)
+	})
+
+	it('подпись сообщения, проходящего через чужую линию жизни и фрагмент, размещается на середине линии', () => {
+		const scope = createScope({ ...labelled, notation: flowSequence.id }, { notation: flowSequence })
+		const layout = runFlowLayout(scope)
+		const routes = computeRoutes(scope, layout, createLayoutInput(scope).edges)
+		for (const id of ['m1', 'm2']) {
+			const label = routes[id].label
+			expect(label).not.toBeNull()
+			const points = routes[id].points
+			expect(label?.point.x).toBeCloseTo((points[0].x + points[1].x) / 2)
+			expect(label?.point.y).toBeCloseTo(points[0].y)
+		}
+	})
+})
 
 describe('Sequence: вспомогательные и фигуры', () => {
 	it('виды разбираются с префиксом нотации и без, actor тоже линия жизни', () => {
@@ -114,10 +142,12 @@ describe('Sequence: правила, отказ с причиной', () => {
 		expect(verdictOf(flowSequence, base, ['a', 'b', 'sync'])).toBe(true)
 	})
 
-	it('connect у пользователя: сообщение на фрагмент отклоняется таблицей нотации, повторное создание — правилом с причиной', async () => {
+	it('connect у пользователя: сообщение на фрагмент и от него отклоняется canConnect с причиной, повторное создание — тоже', async () => {
 		const { controller } = createHarness(base, { notations: [flowSequence] })
 		const onFragment = await controller.connect('a', 'f')
-		expect(onFragment.reject).toMatchObject({ by: 'rule', code: 'connection-not-allowed' })
+		expect(onFragment.reject).toMatchObject({ by: 'rule', code: 'sequence-fragment', message: UI_FLOW_SEQUENCE.RULE_FRAGMENT })
+		const fromFragment = await controller.connect('f', 'a')
+		expect(fromFragment.reject).toMatchObject({ by: 'rule', code: 'sequence-fragment', message: UI_FLOW_SEQUENCE.RULE_FRAGMENT })
 		const twice = await controller.connect('a', 'b', { kind: 'create' })
 		expect(twice.reject).toMatchObject({ by: 'rule', code: 'sequence-create-once' })
 		expect(twice.reject?.message).toContain('Бэк')
@@ -250,6 +280,17 @@ describe('Sequence: раскладка sequence', () => {
 		)
 		expect(nodes.b.height).toBeLessThan(plain.nodes.b.height)
 		expect(nodes.a.height).toBe(plain.nodes.a.height)
+	})
+
+	it('destroy: линия жизни кончается ровно на стрелке уничтожения, там же стоит крест', () => {
+		const destroyed = data(
+			[life('a'), life('b')],
+			[msg('m1', ['a', 'b']), msg('m2', ['a', 'b'], 'destroy'), msg('m3', ['b', 'a'], 'reply')],
+		)
+		const { nodes, edges } = layoutOf(flowSequence, destroyed)
+		expect(nodes.b.y + nodes.b.height).toBe(edges?.m2[0].y)
+		const open = layoutOf(flowSequence, data([life('a'), life('b')], [msg('m1', ['a', 'b']), msg('m2', ['a', 'b'])]))
+		expect(open.nodes.b.y + open.nodes.b.height).toBeGreaterThan(open.edges?.m2[0].y ?? 0)
 	})
 
 	it('фрагмент охватывает колонки и строки своих сообщений', () => {

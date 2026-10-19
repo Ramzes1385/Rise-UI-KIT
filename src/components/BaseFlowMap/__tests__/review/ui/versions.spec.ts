@@ -106,6 +106,31 @@ describe('вкладка «Версии»', () => {
 		expect(document.querySelector('.base-flow-map__review-layer')).not.toHaveAttribute('data-side')
 	})
 
+	it('автор версии подписан текстом под заголовком, аватар уменьшен до 75 %, у версии без автора строки нет', async () => {
+		const user = userEvent.setup()
+		mountReview({ versions: versions(), data: withDelta() })
+		await openVersions(user)
+		const cards = document.querySelectorAll('.base-flow-map__review-card')
+		const by = cards[0].querySelector('.base-flow-map__review-card-by') as HTMLElement
+		expect(by).not.toBeNull()
+		expect(by).toHaveTextContent(BORIS.name)
+		expect(cards[0].querySelector('.base-flow-map__review-card-head .base-avatar')).toBeNull()
+		expect((by.querySelector('.base-avatar') as HTMLElement).style.getPropertyValue('--size-scale')).toBe('0.75')
+		expect(cards[1].querySelector('.base-flow-map__review-card-by')).toBeNull()
+	})
+
+	it('идентичные версии без правок вручную: сводки нет, compare пуст (данные приводятся к нотации)', () => {
+		const same = reviewData()
+		const list: FlowVersion[] = [
+			{ id: 'v1', label: 'v1', date: 1000, data: reviewData() },
+			{ id: 'v2', label: 'v2', date: 2000, data: same },
+		]
+		const view = mountReview({ versions: list, data: same, compareWith: 'v1' })
+		expect(view.controller.compare('v1', 'v2')).toEqual([])
+		expect(view.controller.compare('v1')).toEqual([])
+		expect(screen.getByRole('group', { name: UI_FLOW_REVIEW.COMPARE }).querySelector('.base-flow-map__review-summary')).toBeNull()
+	})
+
 	it('версии без отличий: полоса есть, сводки нет', () => {
 		const same = reviewData({ edges: reviewData().edges.map(edge => ({ ...edge, kind: 'call' })) })
 		const list: FlowVersion[] = [

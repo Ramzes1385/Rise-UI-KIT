@@ -46,6 +46,15 @@ describe('панель фильтров', () => {
 		expect(titles()).toHaveLength(2)
 	})
 
+	it('аватары авторов и карточек предложений уменьшены до 75 %', () => {
+		mountReview({ suggestions: [suggestion('s1', [renameA]), suggestion('s2', [moveB], { author: BORIS })] })
+		const inToolbar = within(toolbar()).getByRole('group', { name: UI_FLOW_REVIEW.AUTHORS }).querySelectorAll('.base-avatar')
+		const inCards = document.querySelectorAll('.base-flow-map__review-card-head .base-avatar')
+		expect(inToolbar).toHaveLength(2)
+		expect(inCards).toHaveLength(2)
+		for (const avatar of [...inToolbar, ...inCards]) expect((avatar as HTMLElement).style.getPropertyValue('--size-scale')).toBe('0.75')
+	})
+
 	it('«Только мои» и «Неразрешённые» сужают список, «Всё» возвращает', async () => {
 		const user = userEvent.setup()
 		mountReview({

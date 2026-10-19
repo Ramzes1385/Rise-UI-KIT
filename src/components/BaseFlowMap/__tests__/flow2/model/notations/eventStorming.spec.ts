@@ -7,6 +7,7 @@ import { hasOverlaps, isInside, issuesOf, layoutOf } from '../../fixtures/notati
 import { stormingKindOf } from '../../../../model/notations/eventStorming/eventStormingRules'
 
 const es = (id: string, kind: string, extra = {}) => node(id, { kind, ...extra })
+const cx = (rect: { x: number; width: number }): number => rect.x + rect.width / 2
 const link = (id: string, ends: [string, string]) => edge(id, ends, { kind: 'flow' })
 
 function data(parts: Partial<FlowMapData>): FlowMapData {
@@ -139,14 +140,31 @@ describe('Event Storming: раскладка timeline', () => {
 		],
 	})
 
-	it('время идёт слева направо: ранг растёт по связям, полосы — по видам сверху вниз', () => {
+	it('время идёт слева направо: два шага потока на колонку, полосы — по видам сверху вниз', () => {
 		const { nodes } = layoutOf(flowEventStorming, flow)
-		expect(nodes.a.x).toBeLessThan(nodes.c.x)
-		expect(nodes.c.x).toBeLessThan(nodes.ag.x)
-		expect(nodes.ag.x).toBeLessThan(nodes.ev.x)
+		expect(cx(nodes.a)).toBe(cx(nodes.c))
+		expect(cx(nodes.ag)).toBe(cx(nodes.ev))
+		expect(cx(nodes.p)).toBe(cx(nodes.c2))
+		expect(nodes.a.x).toBeLessThan(nodes.ag.x)
+		expect(nodes.ag.x).toBeLessThan(nodes.p.x)
+		expect(nodes.p.x).toBeLessThan(nodes.ev2.x)
 		expect(nodes.a.y).toBeLessThan(nodes.c.y)
 		expect(nodes.c.y).toBeLessThan(nodes.ag.y)
 		expect(nodes.ag.y).toBeLessThan(nodes.ev.y)
+		expect(hasOverlaps(Object.values(nodes))).toBe(false)
+	})
+
+	it('одна полоса: четыре шага подряд — две колонки по два стикера друг под другом', () => {
+		const chain = data({
+			nodes: [es('c1', 'command'), es('c2', 'command'), es('c3', 'command'), es('c4', 'command')],
+			edges: [link('1', ['c1', 'c2']), link('2', ['c2', 'c3']), link('3', ['c3', 'c4'])],
+		})
+		const { nodes } = layoutOf(flowEventStorming, chain)
+		expect(cx(nodes.c1)).toBe(cx(nodes.c2))
+		expect(cx(nodes.c3)).toBe(cx(nodes.c4))
+		expect(nodes.c3.x).toBeGreaterThan(nodes.c1.x)
+		expect(nodes.c2.y).toBeGreaterThan(nodes.c1.y)
+		expect(nodes.c4.y).toBeGreaterThan(nodes.c3.y)
 		expect(hasOverlaps(Object.values(nodes))).toBe(false)
 	})
 
@@ -156,19 +174,19 @@ describe('Event Storming: раскладка timeline', () => {
 			edges: [link('1', ['c', 'e1']), link('2', ['c', 'e2']), link('3', ['c', 'e3'])],
 		})
 		const { nodes } = layoutOf(flowEventStorming, stack)
-		expect(nodes.e1.x).toBe(nodes.e2.x)
+		expect(cx(nodes.e1)).toBe(cx(nodes.e2))
 		expect(nodes.e2.y).toBeGreaterThan(nodes.e1.y)
 		expect(nodes.e3.y).toBeGreaterThan(nodes.e2.y)
 		expect(hasOverlaps(Object.values(nodes))).toBe(false)
 	})
 
-	it('обратная связь (цикл) не уводит ранги: события после политики возвращаются к первой команде', () => {
+	it('обратная связь (цикл) не уводит ранги: политика уходит в следующую колонку, возврат к команде её не двигает', () => {
 		const loop = data({
 			nodes: [es('c', 'command'), es('ev', 'domain-event'), es('p', 'policy')],
 			edges: [link('1', ['c', 'ev']), link('2', ['ev', 'p']), link('3', ['p', 'c'])],
 		})
 		const { nodes } = layoutOf(flowEventStorming, loop)
-		expect(nodes.c.x).toBeLessThan(nodes.ev.x)
+		expect(cx(nodes.c)).toBe(cx(nodes.ev))
 		expect(nodes.ev.x).toBeLessThan(nodes.p.x)
 	})
 
@@ -178,7 +196,9 @@ describe('Event Storming: раскладка timeline', () => {
 			edges: [link('1', ['c', 'c']), link('2', ['c', 'нет']), link('3', ['нет', 'ev']), link('4', ['c', 'ev'])],
 		})
 		const { nodes } = layoutOf(flowEventStorming, odd)
-		expect(nodes.c.x).toBeLessThan(nodes.ev.x)
+		expect(cx(nodes.c)).toBe(cx(nodes.ev))
+		expect(nodes.ev.y).toBeGreaterThan(nodes.c.y)
+		expect(hasOverlaps(Object.values(nodes))).toBe(false)
 	})
 
 	it('неизвестный вид уходит в последнюю полосу', () => {
@@ -209,6 +229,22 @@ describe('Event Storming: раскладка timeline', () => {
 		expect(groups.inner.height).toBeGreaterThan(nodes.ev.height)
 	})
 
+	it('контексты идут подряд: стикер вне контекста не вклинивается между его колонками', () => {
+		const mixed = data({
+			groups: [group('g1', { kind: 'context' })],
+			nodes: [es('c', 'command', { group: 'g1' }), es('f', 'actor'), es('ev', 'domain-event', { group: 'g1' })],
+			edges: [link('1', ['c', 'f']), link('2', ['f', 'ev'])],
+		})
+		const { nodes, groups } = layoutOf(flowEventStorming, mixed)
+		expect(isInside(nodes.c, groups.g1)).toBe(true)
+		expect(isInside(nodes.ev, groups.g1)).toBe(true)
+		expect(nodes.f.x).toBeGreaterThanOrEqual(groups.g1.x + groups.g1.width)
+		expect(nodes.ev.x).toBeGreaterThan(nodes.c.x)
+		expect(hasOverlaps([...Object.values(nodes), groups.g1].filter(rect => rect === groups.g1 || !isInside(rect, groups.g1)))).toBe(
+			false,
+		)
+	})
+
 	it('детерминизм и 0/1/2 элемента', () => {
 		expect(layoutOf(flowEventStorming, flow)).toEqual(layoutOf(flowEventStorming, flow))
 		const empty = layoutOf(flowEventStorming, data({}))
@@ -219,7 +255,8 @@ describe('Event Storming: раскладка timeline', () => {
 			flowEventStorming,
 			data({ nodes: [es('c', 'command'), es('ev', 'domain-event')], edges: [link('1', ['c', 'ev'])] }),
 		)
-		expect(two.nodes.ev.x).toBeGreaterThan(two.nodes.c.x)
+		expect(cx(two.nodes.ev)).toBe(cx(two.nodes.c))
+		expect(two.nodes.ev.y).toBeGreaterThan(two.nodes.c.y)
 	})
 
 	it('много стикеров: 60 событий в цепочке без наложений, границы охватывают всё', () => {

@@ -34,6 +34,33 @@ describe('строка состояния', () => {
 	})
 })
 
+describe('число привязок и скрытая внутренняя подписка', () => {
+	const count = () => within(status()).getByRole('button', { name: UI_FLOW_REVIEW.HOOKS }).querySelector('.base-flow-map__review-count')
+
+	it('внутренняя подписка flowReviewInternal не считается и не показывается: без обработчиков приложения — 0 и пустой список', async () => {
+		const user = userEvent.setup()
+		const view = mountReview()
+		expect(view.controller.getBindings().some(item => item.handler === 'flowReviewInternal')).toBe(true)
+		expect(count()).toHaveTextContent('0')
+		expect(count()).toHaveAttribute('aria-hidden', 'true')
+		await user.click(within(status()).getByRole('button', { name: UI_FLOW_REVIEW.HOOKS }))
+		const dialog = await screen.findByRole('dialog', { name: UI_FLOW_REVIEW.HOOKS })
+		expect(within(dialog).queryAllByRole('listitem')).toHaveLength(0)
+		expect(within(dialog).queryByText('update:suggestions', { selector: 'code' })).toBeNull()
+	})
+
+	it('число привязок видно сразу после монтирования и растёт после открытия окна; обработчик приложения на том же событии виден', async () => {
+		const user = userEvent.setup()
+		const view = mountReview({ plugins: [{ name: 'early', setup: controller => void controller.on('accept', () => undefined) }] })
+		expect(count()).toHaveTextContent('1')
+		view.controller.on('update:suggestions', () => undefined)
+		await user.click(within(status()).getByRole('button', { name: UI_FLOW_REVIEW.HOOKS }))
+		const dialog = await screen.findByRole('dialog', { name: UI_FLOW_REVIEW.HOOKS })
+		expect(within(dialog).getByText('update:suggestions', { selector: 'code' })).toBeInTheDocument()
+		expect(count()).toHaveTextContent('2')
+	})
+})
+
 describe('хуки правок', () => {
 	const openHooks = async (user: ReturnType<typeof userEvent.setup>) => {
 		const trigger = within(status()).getByRole('button', { name: UI_FLOW_REVIEW.HOOKS })

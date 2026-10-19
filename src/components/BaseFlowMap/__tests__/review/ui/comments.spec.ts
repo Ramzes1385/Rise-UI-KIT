@@ -149,6 +149,27 @@ describe('вкладка «Комментарии»', () => {
 		expect(document.querySelector('.base-flow-map__review-card .base-flow-map__review-thread')).toBeNull()
 	})
 
+	it('повторный клик по заголовку сворачивает цепочку; сразу после закрытия клик не открывает её снова, позже — открывает', async () => {
+		vi.useFakeTimers({ shouldAdvanceTime: true })
+		try {
+			const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+			mountReview({ comments: [thread('t1')] })
+			await openComments(user)
+			const title = screen.getByRole('button', { name: 'Alpha' })
+			await user.click(title)
+			expect(title).toHaveAttribute('aria-expanded', 'true')
+			await user.click(title)
+			expect(title).toHaveAttribute('aria-expanded', 'false')
+			await user.click(title)
+			expect(title).toHaveAttribute('aria-expanded', 'false')
+			vi.advanceTimersByTime(400)
+			await user.click(title)
+			expect(title).toHaveAttribute('aria-expanded', 'true')
+		} finally {
+			vi.useRealTimers()
+		}
+	})
+
 	it('в узком виде открытая цепочка раскрывается в карточке, ответ уходит событием', async () => {
 		const user = userEvent.setup()
 		const view = await mountCompact({ comments: [thread('t1')] })
