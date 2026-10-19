@@ -36,7 +36,7 @@ interface EditHostProps {
 	beforeDelete?: (context: never) => unknown
 }
 
-export interface EditContext {
+interface EditContext {
 	edit: RoadmapEditController
 	data: ShallowRef<RoadmapData>
 	hooks: RoadmapHookBoard
