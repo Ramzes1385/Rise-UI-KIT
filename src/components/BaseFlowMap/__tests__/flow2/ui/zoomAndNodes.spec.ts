@@ -53,6 +53,7 @@ describe('смысловой зум по масштабу вида', () => {
 		const view = await mountSettled()
 		const controller = view.controllerOf()
 		controller.setLevel(1)
+		controller.setViewport({ x: 0, y: 0, zoom: 1.2 })
 		await vi.advanceTimersByTimeAsync(300)
 		expect(controller.getLevel().index).toBe(1)
 		await vi.advanceTimersByTimeAsync(1000)

@@ -179,18 +179,18 @@ describe('маршруты: редкие пути', () => {
 		const source = { x: 0, y: 0, width: 100, height: 50 }
 		const tall = { x: 300, y: 0, width: 100, height: 200 }
 		const horizontal = orthogonalRouter.route(
-			{ id: 'e', source: 'a', target: 'b', sourceSide: 'left', targetSide: 'left' },
+			{ id: 'e', kind: 'default', source: 'a', target: 'b', sourceSide: 'left', targetSide: 'left' },
 			{ source, target: tall, obstacles: [] },
 		)
 		expect(Math.min(...horizontal.map(point => point.y))).toBeLessThan(0)
 		const wide = { x: 0, y: 300, width: 200, height: 50 }
 		const vertical = orthogonalRouter.route(
-			{ id: 'e', source: 'a', target: 'b', sourceSide: 'top', targetSide: 'top' },
+			{ id: 'e', kind: 'default', source: 'a', target: 'b', sourceSide: 'top', targetSide: 'top' },
 			{ source: { x: 100, y: 0, width: 100, height: 50 }, target: wide, obstacles: [] },
 		)
 		expect(vertical.length).toBeGreaterThan(2)
 		const left = orthogonalRouter.route(
-			{ id: 'e', source: 'a', target: 'b', sourceSide: 'top', targetSide: 'top' },
+			{ id: 'e', kind: 'default', source: 'a', target: 'b', sourceSide: 'top', targetSide: 'top' },
 			{ source: { x: 0, y: 0, width: 100, height: 50 }, target: wide, obstacles: [] },
 		)
 		expect(Math.min(...left.map(point => point.x))).toBeLessThan(0)

@@ -101,7 +101,7 @@ describe('стороны и концы связи', () => {
 	const right: FlowRect = { x: 300, y: 0, width: 100, height: 50 }
 	const below: FlowRect = { x: 0, y: 300, width: 100, height: 50 }
 	const above: FlowRect = { x: 0, y: -300, width: 100, height: 50 }
-	const layoutEdge = { id: 'e', source: 'a', target: 'b' }
+	const layoutEdge = { id: 'e', kind: 'default', source: 'a', target: 'b' }
 
 	it('сторона выводится по взаимному положению: вправо, влево, вниз, вверх', () => {
 		expect(resolveSides(layoutEdge, left, right)).toEqual({ out: 'right', into: 'left' })

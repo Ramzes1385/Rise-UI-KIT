@@ -13,7 +13,7 @@ function boundaryNode(id: string, icom: string, extra: number | Partial<FlowLayo
 
 function link(id: string, ends: string, targetSide?: FlowLayoutEdge['targetSide']): FlowLayoutEdge {
 	const [source = '', target = ''] = ends.split('>')
-	return { id, source, target, targetSide }
+	return { id, kind: 'default', source, target, targetSide }
 }
 
 function overlaps(a: FlowRect, b: FlowRect): boolean {

@@ -91,9 +91,9 @@ describe('контроллер: выделение, подсветка, живы
 		expect(eventsOf('validate').at(-1)).toEqual(issues)
 	})
 
-	it('экспорт изображений без холста даёт пустой результат, вид — запасной', async () => {
+	it('экспорт без холста даёт пустой SVG-документ, PNG — запасной, вид — запасной', async () => {
 		const { controller } = createHarness(data)
-		expect(await controller.exportSvg()).toBe('')
+		expect(await controller.exportSvg()).toMatch(/^<svg [^>]*>.*<\/svg>$/s)
 		expect((await controller.exportPng()).type).toBe('image/png')
 		expect(controller.getViewport()).toEqual({ x: 0, y: 0, zoom: 1 })
 		controller.setViewport({ x: 5, y: 6, zoom: 2 })

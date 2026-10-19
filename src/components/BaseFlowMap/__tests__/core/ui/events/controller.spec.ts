@@ -215,7 +215,7 @@ describe('BaseFlowMap плагины и контроллер до монтиро
 		mountMap({ plugins: [plugin] })
 		await Promise.resolve()
 		await Promise.resolve()
-		expect(seen).toEqual([{ x: 4, y: 5, zoom: 2 }, '', 'image/png'])
+		expect(seen).toEqual([{ x: 4, y: 5, zoom: 2 }, expect.stringMatching(/^<svg .*<\/svg>$/s), 'image/png'])
 	})
 
 	it('плагин вместе с нотацией добавляет вид узла в карту', () => {

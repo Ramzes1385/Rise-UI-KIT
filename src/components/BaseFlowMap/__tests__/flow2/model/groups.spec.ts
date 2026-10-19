@@ -220,19 +220,20 @@ describe('уровни: состояние и подписи', () => {
 		expect(controller.getLevel().labels).toEqual([fallback(1), fallback(2)])
 	})
 
-	it('setLevel зажимает номер в границы и возвращает масштаб в нужное окно', () => {
+	it('setLevel зажимает номер в границы и вписывает вид, а не меняет масштаб', () => {
 		const { controller, model } = open()
 		const view = stubView()
 		model.setView(view)
 		controller.setLevel(99)
 		expect(controller.getLevel().index).toBe(2)
-		expect(view.zoom).toHaveBeenLastCalledWith(1.2)
+		expect(view.fitView).toHaveBeenLastCalledWith({ isAnimated: true })
 		controller.setLevel(-3)
 		expect(controller.getLevel().index).toBe(0)
-		expect((view.zoom as ReturnType<typeof vi.fn>).mock.calls.at(-1)?.[0]).toBeCloseTo(Math.sqrt(0.2 * 0.5))
-		controller.setLevel(1)
+		controller.setLevel(1, { isAnimated: false })
 		expect(controller.getLevel().index).toBe(1)
-		expect((view.zoom as ReturnType<typeof vi.fn>).mock.calls.at(-1)?.[0]).toBeCloseTo(Math.sqrt(0.5 * 1))
+		expect(view.fitView).toHaveBeenLastCalledWith({ isAnimated: false })
+		expect(view.fitView).toHaveBeenCalledTimes(3)
+		expect(view.zoom).not.toHaveBeenCalled()
 	})
 
 	it('setLevel без смыслового зума ничего не делает', () => {
@@ -240,7 +241,7 @@ describe('уровни: состояние и подписи', () => {
 		const view = stubView()
 		model.setView(view)
 		controller.setLevel(1)
-		expect(view.zoom).not.toHaveBeenCalled()
+		expect(view.fitView).not.toHaveBeenCalled()
 		expect(controller.getLevel().count).toBe(0)
 	})
 

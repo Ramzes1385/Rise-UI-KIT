@@ -6,6 +6,7 @@ import type { FlowModelInternal } from '../../../../types/internal/core/flowRend
 function setup(isDisabled = false) {
 	const emit = vi.fn()
 	const select = vi.fn()
+	const enterGroup = vi.fn()
 	const openDetails = vi.fn()
 	const announce = vi.fn()
 	const model = {
@@ -16,12 +17,20 @@ function setup(isDisabled = false) {
 				groups: new Map([['g', { label: 'Группа' }]]),
 			},
 		},
+		shown: {
+			value: {
+				nodes: [
+					{ id: 'n', kind: 'task' },
+					{ id: 'block', kind: 'collapsed-group' },
+				],
+			},
+		},
 		events: { emit },
-		controller: { select },
+		controller: { select, enterGroup },
 	} as unknown as FlowModelInternal
 	const hovered = ref<string | null>(null)
 	const pick = useFlowPick(model, { openDetails, announce } as unknown as FlowMapContext, { hovered, isDisabled: () => isDisabled })
-	return { pick, emit, select, openDetails, announce, hovered }
+	return { pick, emit, select, enterGroup, openDetails, announce, hovered }
 }
 
 describe('useFlowPick', () => {
@@ -41,6 +50,18 @@ describe('useFlowPick', () => {
 			'Выбрано: нет-связи',
 			'Выбрано: нет-группы',
 		])
+	})
+
+	it('клик по блоку свёрнутой группы входит в группу, по обычному узлу, связи и группе — нет', () => {
+		const { pick, enterGroup, emit } = setup()
+		pick.pick({ entity: 'node', id: 'n' })
+		pick.pick({ entity: 'edge', id: 'block' })
+		pick.pick({ entity: 'group', id: 'block' })
+		pick.pick({ entity: 'node', id: 'нет-узла' })
+		expect(enterGroup).not.toHaveBeenCalled()
+		pick.pick({ entity: 'node', id: 'block' })
+		expect(enterGroup).toHaveBeenCalledExactlyOnceWith('block')
+		expect(emit).toHaveBeenLastCalledWith('node-click', { target: { entity: 'node', id: 'block' }, event: undefined })
 	})
 
 	it('выбор сценария ничего не шлёт событием, но выделяет и открывает подробности', () => {

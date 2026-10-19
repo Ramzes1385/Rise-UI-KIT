@@ -5,7 +5,7 @@ import { createRouterRegistry } from '../../../../model/routing/registry'
 import type { FlowLayoutEdge } from '../../../../types/api/flowLayout.types'
 import type { FlowPoint, FlowRect } from '../../../../types/data/flowData.types'
 
-const edge: FlowLayoutEdge = { id: 'e', source: 'a', target: 'b' }
+const edge: FlowLayoutEdge = { id: 'e', kind: 'default', source: 'a', target: 'b' }
 const box = (x: number, y: number): FlowRect => ({ x, y, width: 100, height: 50 })
 const source = box(0, 0)
 
