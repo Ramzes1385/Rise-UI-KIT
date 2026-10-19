@@ -1,3 +1,4 @@
+import type { CommentAuthor, CommentItem } from '@components/BaseCommentThread'
 import type { RoadmapData, RoadmapStage, RoadmapTopic } from './roadmapData.types'
 
 /** Сущности роадмапа */
@@ -39,3 +40,35 @@ export interface RoadmapTemplate {
 
 /** Изменение одного вида */
 export type RoadmapChangeOf<T extends RoadmapChange['type']> = Extract<RoadmapChange, { type: T }>
+
+/** Состояния предложения: ждёт решения, принято, отклонено */
+export const ROADMAP_PROPOSAL_STATUSES = ['open', 'accepted', 'rejected'] as const
+export type RoadmapProposalStatus = (typeof ROADMAP_PROPOSAL_STATUSES)[number]
+
+/** Предложение «Правок»: набор изменений, который автор отправил вместо применения */
+export interface RoadmapProposal {
+	id: string
+	author: CommentAuthor
+	date: Date | string | number
+	/** Заголовок («Добавить «Pinia»»); без него панель собирает его из изменений */
+	label?: string
+	changes: RoadmapChange[]
+	status: RoadmapProposalStatus
+}
+
+/** Цепочка комментариев к этапу или теме */
+export interface RoadmapCommentThread {
+	id: string
+	target: { entity: RoadmapEntity; id: string }
+	comments: CommentItem[]
+	isResolved?: boolean
+	/** Есть непрочитанное: цепочка выделена, пока её не откроют */
+	isUnread?: boolean
+}
+
+/** Данные «Правок» (`v-model:review`): предложения, цепочки комментариев и текущий пользователь */
+export interface RoadmapReviewData {
+	proposals?: RoadmapProposal[]
+	threads?: RoadmapCommentThread[]
+	currentUser?: CommentAuthor
+}
