@@ -36,3 +36,6 @@ export interface RoadmapTemplate {
 	stage?: Omit<RoadmapStage, 'id'> & { id?: string }
 	topic?: Omit<RoadmapTopic, 'id'> & { id?: string }
 }
+
+/** Изменение одного вида */
+export type RoadmapChangeOf<T extends RoadmapChange['type']> = Extract<RoadmapChange, { type: T }>

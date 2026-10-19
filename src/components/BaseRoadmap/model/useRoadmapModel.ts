@@ -3,7 +3,9 @@ import { computed, useId } from 'vue'
 import { useSyncedRef } from './state/useSyncedRef'
 import { buildStageViews } from './state/roadmapViews'
 import { buildRoadmapIndex } from './progress/roadmapStatus'
+import { createRoadmapHooks } from './edit/data/roadmapHooks'
 import { useRoadmapExpanded } from './state/useRoadmapExpanded'
+import { useRoadmapEditing } from './edit/run/useRoadmapEditing'
 import { useRoadmapSelection } from './state/useRoadmapSelection'
 import { useRoadmapProgress } from './progress/useRoadmapProgress'
 import { validateRoadmap, warnRoadmapIssues } from './progress/roadmapValidate'
@@ -17,11 +19,13 @@ export function useRoadmapModel(props: BaseRoadmapProps, emit: BaseRoadmapEmits)
 	watch(validation, value => warnRoadmapIssues(value.issues), { immediate: true })
 
 	const requires = computed(() => validation.value.requires)
-	const { progress, statuses, busy, ...changes } = useRoadmapProgress({ props, emit, data, index, requires })
+	const hooks = createRoadmapHooks(props)
+	const { progress, statuses, busy, ...changes } = useRoadmapProgress({ props, emit, data, index, requires, hooks })
 	const summary = computed(() => summarizeRoadmap(data.value, statuses.value, index.value))
 	const selection = useRoadmapSelection({ props, emit, index })
 	const expansion = useRoadmapExpanded({ props, emit, index, currentStageId: computed(() => statuses.value.currentStageId) })
 
+	const editing = useRoadmapEditing({ props, emit, data, hooks })
 	const uid = useId()
 	const stageViews = computed(() =>
 		buildStageViews({
@@ -56,6 +60,8 @@ export function useRoadmapModel(props: BaseRoadmapProps, emit: BaseRoadmapEmits)
 		...selection,
 		...expansion,
 		...changes,
+		...editing,
+		hooks,
 		continueLearning,
 		getTopicState: (id: string): RoadmapTopicState | null => statuses.value.topics.get(id) ?? null,
 	}

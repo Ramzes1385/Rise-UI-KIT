@@ -1,10 +1,8 @@
 import { formatMessage } from '@/locales/state'
 import { UI_ROADMAP_EDIT } from '@/locales/messages'
-import { ROADMAP_DATA_VERSION } from '../../types/roadmapData.types'
-import type { RoadmapTemplate } from '../../types/roadmapEdit.types'
-import type { RoadmapData, RoadmapStage, RoadmapTopic } from '../../types/roadmapData.types'
-
-export const ROADMAP_BUILTIN_TEMPLATE_IDS = ['empty', 'stage', 'topic', 'topic-subtopics', 'choice'] as const
+import { ROADMAP_DATA_VERSION } from '../../../types/roadmapData.types'
+import type { RoadmapTemplate } from '../../../types/roadmapEdit.types'
+import type { RoadmapData, RoadmapStage, RoadmapTopic } from '../../../types/roadmapData.types'
 
 export function collectRoadmapIds(data: RoadmapData): Set<string> {
 	return new Set(data.stages.flatMap(stage => [stage.id, ...stage.topics.map(topic => topic.id)]))
@@ -38,7 +36,7 @@ export function stageFromTemplate(template: NonNullable<RoadmapTemplate['stage']
 	return { ...cloneJson({ ...template, topics: [] }), id, topics }
 }
 
-export function builtinRoadmapTemplates(): RoadmapTemplate[] {
+function builtinRoadmapTemplates(): RoadmapTemplate[] {
 	const subtopic = (n: number) => ({ id: `s${n}`, title: formatMessage(UI_ROADMAP_EDIT.NEW_SUBTOPIC, { n }) })
 	return [
 		{
@@ -71,10 +69,4 @@ export function builtinRoadmapTemplates(): RoadmapTemplate[] {
 export function mergeRoadmapTemplates(custom: readonly RoadmapTemplate[] | undefined): RoadmapTemplate[] {
 	const own = custom ?? []
 	return [...builtinRoadmapTemplates().filter(item => !own.some(template => template.id === item.id)), ...own]
-}
-
-export function templateKind(template: RoadmapTemplate): 'data' | 'stage' | 'topic' | null {
-	if (template.data) return 'data'
-	if (template.stage) return 'stage'
-	return template.topic ? 'topic' : null
 }

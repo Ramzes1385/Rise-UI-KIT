@@ -1,4 +1,4 @@
-import type { RoadmapData } from '../../types/roadmapData.types'
+import type { RoadmapData } from '../../../types/roadmapData.types'
 
 function dependencies(data: RoadmapData, id: string): string[] {
 	for (const stage of data.stages) {

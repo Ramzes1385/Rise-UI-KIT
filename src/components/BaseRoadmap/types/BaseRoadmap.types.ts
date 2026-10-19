@@ -1,4 +1,5 @@
 import type { UiProp } from '@composables/base/useUi'
+import type { RoadmapChange, RoadmapTemplate } from './roadmapEdit.types'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import type {
 	RoadmapData,
@@ -20,6 +21,10 @@ export type RoadmapLayout = (typeof ROADMAP_LAYOUTS)[number]
 export const ROADMAP_FILTERS = ['all', 'required', 'optional'] as const
 export type RoadmapFilter = (typeof ROADMAP_FILTERS)[number]
 
+/** Режимы — те же имена, что `FLOW_MODES` карты: view — просмотр, edit — «Правка», review — «Правки» */
+export const ROADMAP_MODES = ['view', 'edit', 'review'] as const
+export type RoadmapMode = (typeof ROADMAP_MODES)[number]
+
 /** Варианты оформления — как у BaseFlowMap */
 export const ROADMAP_VARIANTS = ['default', 'outline', 'ghost'] as const
 export type RoadmapVariant = (typeof ROADMAP_VARIANTS)[number]
@@ -38,6 +43,9 @@ export const ROADMAP_PARTS = [
 	'details',
 	'materials',
 	'status',
+	'palette',
+	'inspector',
+	'item-toolbar',
 ] as const
 export type BaseRoadmapPart = (typeof ROADMAP_PARTS)[number]
 
@@ -45,6 +53,14 @@ export type BaseRoadmapPart = (typeof ROADMAP_PARTS)[number]
 export interface RoadmapHooks {
 	/** Перед сменой статуса темы (отметка, подтема, метод, хранилище) */
 	beforeStatusChange: (context: RoadmapStatusChange) => boolean | void | Promise<boolean | void>
+	/** Перед любым изменением данных в «Правке»; массив — заменить изменения */
+	beforeChange: (context: {
+		changes: RoadmapChange[]
+		command: string
+		data: RoadmapData
+	}) => boolean | void | RoadmapChange[] | Promise<boolean | void | RoadmapChange[]>
+	/** Перед удалением этапа или темы */
+	beforeDelete: (context: { stages: RoadmapStage[]; topics: RoadmapTopic[] }) => boolean | void | Promise<boolean | void>
 }
 
 /**
@@ -77,6 +93,14 @@ export interface BaseRoadmapProps extends BaseComponentProps<RoadmapVariant, Bas
 	hasLayoutSwitch?: boolean
 	/** Панель темы: side — справа, sheet — BaseDrawer снизу, auto — side, если контейнер шире 900 px */
 	detailsPosition?: 'side' | 'sheet' | 'auto'
+	/** Режим (`v-model:mode`) */
+	mode?: RoadmapMode
+	/** Режимы в переключателе шапки; пусто — переключателя нет */
+	modes?: RoadmapMode[]
+	/** Шаблоны палитры «Правки» после встроенных */
+	templates?: RoadmapTemplate[]
+	/** Когда приложение сохранило черновик — подпись «Черновик сохранён 00:52» в подвале «Правки» */
+	draftSavedAt?: Date | string | number | null
 	/** Подпись области; без неё — `data.title` */
 	ariaLabel?: string
 	/** Загрузка — скелетон */
@@ -91,16 +115,28 @@ export interface BaseRoadmapProps extends BaseComponentProps<RoadmapVariant, Bas
  * События компонента BaseRoadmap
  */
 export interface BaseRoadmapEmits {
+	(event: 'update:data', value: RoadmapData): void
 	(event: 'update:progress', value: RoadmapProgress): void
 	(event: 'update:expanded', value: string[]): void
 	(event: 'update:selected', value: string | null): void
 	(event: 'update:filter', value: RoadmapFilter): void
+	(event: 'update:mode', value: RoadmapMode): void
 	(event: 'select', value: RoadmapTopic | null): void
 	(event: 'status-change', value: RoadmapStatusChange): void
 	(event: 'topic-complete', value: { topic: RoadmapTopic; progress: RoadmapProgress }): void
 	(event: 'stage-complete', value: { stage: RoadmapStage; progress: RoadmapProgress }): void
 	(event: 'progress-load' | 'progress-save', value: RoadmapProgress): void
 	(event: 'progress-error', value: unknown): void
+	(event: 'reorder', value: RoadmapReorder): void
+	(event: 'publish', value: RoadmapData): void
+}
+
+/** Перестановка этапа или темы (событие после применения) */
+export interface RoadmapReorder {
+	entity: 'stage' | 'topic'
+	id: string
+	from: { stage: string | null; index: number }
+	to: { stage: string | null; index: number }
 }
 
 /** Смена статуса темы */
@@ -143,7 +179,7 @@ export interface BaseRoadmapSlots {
 	empty?: () => unknown
 }
 
-/** Методы ref */
+/** Методы ref: просмотр и прогресс; `on` подписывает хуки; правка (`addStage` … `importJson`) — через историю */
 export interface BaseRoadmapExpose {
 	setTopicStatus: (id: string, status: RoadmapProgressStatus | null) => Promise<boolean>
 	toggleSubtopic: (topicId: string, subtopicId: string, isDone?: boolean) => Promise<boolean>
@@ -154,4 +190,18 @@ export interface BaseRoadmapExpose {
 	continueLearning: () => void
 	getTopicState: (id: string) => RoadmapTopicState | null
 	resetProgress: () => void
+	on: <K extends keyof RoadmapHooks>(hook: K, handler: RoadmapHooks[K], options?: { priority?: number }) => () => void
+	addStage: (stage: RoadmapStage, index?: number) => Promise<boolean>
+	addTopic: (stage: string, topic: RoadmapTopic, index?: number) => Promise<boolean>
+	move: (id: string, to: { stage?: string; index: number }) => Promise<boolean>
+	update: (id: string, patch: Record<string, unknown>) => Promise<boolean>
+	remove: (ids: string[]) => Promise<boolean>
+	addRequirement: (id: string, requires: string) => Promise<boolean>
+	removeRequirement: (id: string, requires: string) => Promise<boolean>
+	insertTemplate: (template: string, to?: { stage?: string; index?: number }) => Promise<boolean>
+	transact: (label: string, run: () => Promise<void> | void) => Promise<boolean>
+	undo: () => boolean
+	redo: () => boolean
+	exportJson: () => string
+	importJson: (json: string | RoadmapData) => Promise<boolean>
 }

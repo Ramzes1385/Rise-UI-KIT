@@ -1,7 +1,7 @@
-import type { RoadmapChange } from '../../types/roadmapEdit.types'
-import type { RoadmapData, RoadmapStage, RoadmapTopic } from '../../types/roadmapData.types'
+import type { RoadmapChange, RoadmapChangeOf } from '../../../types/roadmapEdit.types'
+import type { RoadmapData, RoadmapStage, RoadmapTopic } from '../../../types/roadmapData.types'
 
-export function invertRoadmapChange(change: RoadmapChange): RoadmapChange {
+function invertRoadmapChange(change: RoadmapChange): RoadmapChange {
 	switch (change.type) {
 		case 'add':
 			return change.entity === 'stage'
@@ -34,7 +34,7 @@ function removeAt<T>(list: readonly T[], index: number): T[] {
 }
 
 function patched<T extends object>(target: T, patch: Record<string, unknown>): T {
-	const next: Record<string, unknown> = { ...target }
+	const next: Record<string, unknown> = { ...(target as Record<string, unknown>) }
 	for (const [key, value] of Object.entries(patch)) {
 		if (value === undefined) delete next[key]
 		else next[key] = value
@@ -60,28 +60,26 @@ function moveTopic(data: RoadmapData, change: Extract<RoadmapChange, { type: 'mo
 	return mapStage(without, change.to.stage, stage => ({ ...stage, topics: insertAt(stage.topics, change.to.index, entry) }))
 }
 
-type Of<T extends RoadmapChange['type']> = Extract<RoadmapChange, { type: T }>
-
-function applyAdd(data: RoadmapData, change: Of<'add'>): RoadmapData {
+function applyAdd(data: RoadmapData, change: RoadmapChangeOf<'add'>): RoadmapData {
 	return change.entity === 'stage'
 		? { ...data, stages: insertAt(data.stages, change.index, change.value) }
 		: mapStage(data, change.stage, stage => ({ ...stage, topics: insertAt(stage.topics, change.index, change.value) }))
 }
 
-function applyRemove(data: RoadmapData, change: Of<'remove'>): RoadmapData {
+function applyRemove(data: RoadmapData, change: RoadmapChangeOf<'remove'>): RoadmapData {
 	return change.entity === 'stage'
 		? { ...data, stages: data.stages.filter(stage => stage.id !== change.id) }
 		: mapStage(data, change.stage, stage => ({ ...stage, topics: stage.topics.filter(topic => topic.id !== change.id) }))
 }
 
-function applyMove(data: RoadmapData, change: Of<'move'>): RoadmapData {
+function applyMove(data: RoadmapData, change: RoadmapChangeOf<'move'>): RoadmapData {
 	if (change.entity === 'topic') return moveTopic(data, change)
 	return data.stages[change.from]?.id === change.id
 		? { ...data, stages: insertAt(removeAt(data.stages, change.from), change.to, data.stages[change.from]) }
 		: data
 }
 
-function applyUpdate(data: RoadmapData, change: Of<'update'>): RoadmapData {
+function applyUpdate(data: RoadmapData, change: RoadmapChangeOf<'update'>): RoadmapData {
 	return change.entity === 'stage'
 		? mapStage(data, change.id, stage => patched(stage, change.patch))
 		: mapTopic(data, change.id, topic => patched(topic, change.patch))

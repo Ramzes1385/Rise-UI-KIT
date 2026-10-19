@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import { useUi } from '@composables/base/useUi'
 import { useRoadmapModel } from './useRoadmapModel'
 import { useRoadmapView } from './view/useRoadmapView'
+import { useRoadmapModes } from './edit/run/useRoadmapModes'
 import type { RoadmapProps } from '../types/internal/roadmapView.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseRoadmapEmits, BaseRoadmapPart } from '../types/BaseRoadmap.types'
@@ -19,6 +20,8 @@ export function useBaseRoadmap(props: RoadmapProps, emit: BaseRoadmapEmits) {
 		continueLearning,
 		getTopicState,
 		resetProgress,
+		hooks,
+		editor,
 	} = model
 
 	return {
@@ -27,6 +30,11 @@ export function useBaseRoadmap(props: RoadmapProps, emit: BaseRoadmapEmits) {
 		rootRef,
 		...useRoadmapView(props, model, rootRef),
 		data: model.data,
+		currentMode: model.currentMode,
+		isEditing: model.isEditing,
+		setMode: model.setMode,
+		edit: editor.controller,
+		...useRoadmapModes(props, emit, model),
 		busyTopics: model.busyTopics,
 		stageViews: model.stageViews,
 		pathProgress: model.pathProgress,
@@ -43,6 +51,8 @@ export function useBaseRoadmap(props: RoadmapProps, emit: BaseRoadmapEmits) {
 			continueLearning,
 			getTopicState,
 			resetProgress,
+			on: hooks.on,
+			...editor.methods,
 		},
 	}
 }

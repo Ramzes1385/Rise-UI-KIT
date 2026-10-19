@@ -38,12 +38,16 @@ async function isAllowed(
 	versions: [RoadmapProgress, RoadmapProgress],
 ): Promise<boolean> {
 	const entry = context.index.value.topics.get(request.topicId)
-	const hook = context.props.beforeStatusChange
-	if (!entry || !hook) return Boolean(entry)
+	if (!entry || !context.hooks.has('beforeStatusChange')) return Boolean(entry)
 	const [from, to] = versions.map(progress => (statusesOf(context, progress).topics.get(request.topicId) as RoadmapTopicState).status)
 	setBusy(context, request.topicId, true)
 	try {
-		return (await hook({ topic: entry.topic, from, to, source: request.source })) !== false
+		const outcome = await context.hooks.run(
+			'beforeStatusChange',
+			{ topic: entry.topic, from, to, source: request.source },
+			undefined as never,
+		)
+		return !outcome.isCancelled
 	} catch (error) {
 		if (isDevelopmentBuild()) warn(UI_ROADMAP.HOOK_FAILED, { error: String(error) })
 		return false
