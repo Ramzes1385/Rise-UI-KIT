@@ -1,7 +1,7 @@
 import { vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { computed, defineComponent, h, nextTick, ref } from 'vue'
-import { useRoadmapDetails } from '../../model/view/useRoadmapDetails'
+import { useRoadmapDetails } from '../../../model/view/useRoadmapDetails'
 
 function setup(root: HTMLElement | null = null) {
 	const selectTopic = vi.fn()
