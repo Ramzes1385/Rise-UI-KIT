@@ -103,6 +103,8 @@ export interface FlowPanelStep {
 	start: number
 	/** Ветка параллельных шагов: подпись «Параллельно» */
 	isParallel: boolean
+	/** Действие шага (слот `scenario-step`) */
+	action: FlowScenarioAction
 }
 
 /** Что слой сценария отдаёт шаблону */
@@ -126,6 +128,8 @@ export interface FlowScenarioPanelView {
 	stepText: ComputedRef<string>
 	summary: ComputedRef<string>
 	speedText: ComputedRef<string>
+	/** Имя кнопки скорости: «Скорость: 1×» (содержит видимый текст) */
+	speedLabel: ComputedRef<string>
 	currentTitle: ComputedRef<string>
 	time: ComputedRef<number>
 	duration: ComputedRef<number>

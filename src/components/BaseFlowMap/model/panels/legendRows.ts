@@ -4,7 +4,15 @@ import type { FlowNodeKindDef } from '../../types/api/flowNotation.types'
 import type { FlowLegendEdgeShapes, FlowLegendRow, FlowPanelsSource } from '../../types/internal/flowPanels.types'
 
 function nodeRow(id: string, def: FlowNodeKindDef, isExternal?: boolean): FlowLegendRow {
-	return { id: `node:${id}`, entity: 'node', label: def.label(), shape: def.shape.shape, isExternal: isExternal ?? def.isExternal }
+	const sample = { entity: 'node' as const, kind: id }
+	return {
+		id: `node:${id}`,
+		entity: 'node',
+		label: def.label(),
+		shape: def.shape.shape,
+		isExternal: isExternal ?? def.isExternal,
+		sample,
+	}
 }
 
 function presentNodeRows(source: FlowPanelsSource): FlowLegendRow[] {
@@ -21,7 +29,8 @@ function presentEdgeRows(source: FlowPanelsSource): FlowLegendRow[] {
 		const kind = edge.kind ?? source.notation.defaultEdgeKind
 		if (seen.has(kind)) continue
 		const { label, stroke, startMarker, endMarker, color } = source.edgeKind(edge)
-		seen.set(kind, { id: `edge:${kind}`, entity: 'edge', label: label(), edge: { stroke, startMarker, endMarker, color } })
+		const sample = { entity: 'edge' as const, kind }
+		seen.set(kind, { id: `edge:${kind}`, entity: 'edge', label: label(), edge: { stroke, startMarker, endMarker, color }, sample })
 	}
 	return [...seen.values()]
 }
@@ -42,7 +51,7 @@ function statusRows(source: FlowPanelsSource): FlowLegendRow[] {
 		.filter(id => used.has(id))
 		.map(id => {
 			const status = resolveStatus(id, source.data)
-			return { id: `status:${id}`, entity: 'status' as const, label: status.label, status }
+			return { id: `status:${id}`, entity: 'status' as const, label: status.label, status, sample: { status: id } }
 		})
 }
 
@@ -52,12 +61,12 @@ function declaredRows(source: FlowPanelsSource): FlowLegendRow[] {
 	for (const item of items) {
 		const sample = item.sample
 		if ('status' in sample)
-			rows.push({ id: item.id, entity: 'status', label: item.label, status: resolveStatus(sample.status, source.data) })
+			rows.push({ id: item.id, entity: 'status', label: item.label, status: resolveStatus(sample.status, source.data), sample })
 		else if (sample.entity === 'node' && source.notation.nodeKinds[sample.kind]) {
-			rows.push({ ...nodeRow(sample.kind, source.notation.nodeKinds[sample.kind]!), id: item.id, label: item.label })
+			rows.push({ ...nodeRow(sample.kind, source.notation.nodeKinds[sample.kind]!), id: item.id, label: item.label, sample })
 		} else if (sample.entity === 'edge' && source.notation.edgeKinds[sample.kind]) {
 			const { stroke, startMarker, endMarker, color } = source.notation.edgeKinds[sample.kind]!
-			rows.push({ id: item.id, entity: 'edge', label: item.label, edge: { stroke, startMarker, endMarker, color } })
+			rows.push({ id: item.id, entity: 'edge', label: item.label, edge: { stroke, startMarker, endMarker, color }, sample })
 		}
 	}
 	return rows

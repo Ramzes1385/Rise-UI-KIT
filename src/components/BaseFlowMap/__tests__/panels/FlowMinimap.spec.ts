@@ -14,7 +14,7 @@ function mount(options: Parameters<typeof createFakeContext>[0] = {}) {
 }
 
 function minimap(): HTMLElement {
-	return screen.getByRole('group', { name: UI_FLOW_PANELS.MINIMAP })
+	return screen.getByRole('application', { name: UI_FLOW_PANELS.MINIMAP })
 }
 
 function pointer(type: string, at: [number, number], init: PointerEventInit = {}): PointerEvent {
@@ -22,16 +22,16 @@ function pointer(type: string, at: [number, number], init: PointerEventInit = {}
 }
 
 describe('FlowMinimap', () => {
-	it('показывается группой с подписью и подсказкой клавиш, доступной с клавиатуры', () => {
+	it('показывается областью с подписью и подсказкой клавиш, доступной с клавиатуры', () => {
 		mount()
 		const root = minimap()
 		expect(root).toHaveAttribute('tabindex', '0')
-		expect(root).toHaveAttribute('aria-description', UI_FLOW_PANELS.MINIMAP_HINT)
+		expect(root).toHaveAccessibleDescription(UI_FLOW_PANELS.MINIMAP_HINT)
 	})
 
 	it('на узком экране не показывается', () => {
 		mount({ isCompact: true })
-		expect(screen.queryByRole('group')).not.toBeInTheDocument()
+		expect(screen.queryByRole('application')).not.toBeInTheDocument()
 	})
 
 	it('рисует группы, узлы и рамку видимой области', () => {

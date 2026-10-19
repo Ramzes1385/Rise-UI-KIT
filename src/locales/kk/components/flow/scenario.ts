@@ -9,6 +9,8 @@ export const kkFlowScenario = {
 		STEP_FORWARD: 'Келесі қадам',
 		SPEED: 'Жылдамдық',
 		SPEED_VALUE: '{n}×',
+		/** Имя кнопки скорости: содержит видимое значение; `{value}` — «1×» */
+		SPEED_NAME: 'Жылдамдық: {value}',
 		SEEK: 'Сценарийді айналдыру',
 		SELECT: 'Сценарийді таңдау',
 		STEPS: 'Сценарий қадамдары',

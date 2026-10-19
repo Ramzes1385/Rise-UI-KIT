@@ -282,6 +282,28 @@
 	overflow: auto;
 }
 
+.base-flow-map__minimap-hint {
+	@include visually-hidden;
+}
+
+.base-flow-map__details-inspector {
+	padding: sz(12px 16px);
+	border-block-start: 1px solid var(--rise-border);
+}
+
+.base-flow-map__tooltip {
+	position: absolute;
+	z-index: 3;
+	max-inline-size: sz(280px);
+	padding: sz(6px 10px);
+	border-radius: var(--rise-radius-md);
+	font-size: sz(var(--rise-font-size-xs));
+	color: var(--rise-text-inverted);
+	background-color: var(--rise-bg-inverted);
+	transform: translateX(-50%);
+	pointer-events: none;
+}
+
 @keyframes base-flow-map-details-in {
 	from {
 		opacity: 0;

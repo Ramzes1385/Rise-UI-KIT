@@ -128,6 +128,8 @@ describe('легенда: строки', () => {
 	})
 })
 
+const EDGE_SAMPLE = { entity: 'edge', kind: 'x' } as const
+
 describe('легенда: образцы', () => {
 	it('shapePath даёт путь для каждой фигуры и прямоугольник по умолчанию', () => {
 		for (const shape of FLOW_SHAPES) expect(shapePath(shape)).toMatch(/^M/)
@@ -136,7 +138,7 @@ describe('легенда: образцы', () => {
 	})
 
 	it('связь без описания — сплошная линия без концов', () => {
-		expect(edgeSample({ id: 'x', entity: 'edge', label: 'x' })).toEqual({ line: 'M1 7h22', dash: '', marks: [] })
+		expect(edgeSample({ id: 'x', entity: 'edge', label: 'x', sample: EDGE_SAMPLE })).toEqual({ line: 'M1 7h22', dash: '', marks: [] })
 	})
 
 	it.each([
@@ -144,17 +146,23 @@ describe('легенда: образцы', () => {
 		['dashed', '4 3'],
 		['dotted', '1 3'],
 	] as const)('штрих «%s»', (stroke, dash) => {
-		expect(edgeSample({ id: 'x', entity: 'edge', label: 'x', edge: { stroke } }).dash).toBe(dash)
+		expect(edgeSample({ id: 'x', entity: 'edge', label: 'x', sample: EDGE_SAMPLE, edge: { stroke } }).dash).toBe(dash)
 	})
 
 	it.each(['arrow', 'open-arrow', 'double-arrow'] as const)('конец «%s» рисуется; заливка только у закрытых стрелок', endMarker => {
-		const marks = edgeSample({ id: 'x', entity: 'edge', label: 'x', edge: { stroke: 'solid', endMarker } }).marks
+		const marks = edgeSample({ id: 'x', entity: 'edge', label: 'x', sample: EDGE_SAMPLE, edge: { stroke: 'solid', endMarker } }).marks
 		expect(marks.length).toBe(endMarker === 'double-arrow' ? 2 : 1)
 		expect(marks.every(mark => mark.isFilled === (endMarker !== 'open-arrow'))).toBe(true)
 	})
 
 	it.each(['circle', 'diamond', 'slash'] as const)('начало «%s» рисуется без заливки и идёт перед концом', startMarker => {
-		const marks = edgeSample({ id: 'x', entity: 'edge', label: 'x', edge: { stroke: 'solid', startMarker, endMarker: 'arrow' } }).marks
+		const marks = edgeSample({
+			id: 'x',
+			entity: 'edge',
+			label: 'x',
+			sample: EDGE_SAMPLE,
+			edge: { stroke: 'solid', startMarker, endMarker: 'arrow' },
+		}).marks
 		expect(marks).toHaveLength(2)
 		expect(marks[0]!.isFilled).toBe(false)
 		expect(marks[1]!.isFilled).toBe(true)
@@ -162,7 +170,13 @@ describe('легенда: образцы', () => {
 
 	it('концы «none» ничего не рисуют', () => {
 		expect(
-			edgeSample({ id: 'x', entity: 'edge', label: 'x', edge: { stroke: 'solid', startMarker: 'none', endMarker: 'none' } }).marks,
+			edgeSample({
+				id: 'x',
+				entity: 'edge',
+				label: 'x',
+				sample: EDGE_SAMPLE,
+				edge: { stroke: 'solid', startMarker: 'none', endMarker: 'none' },
+			}).marks,
 		).toEqual([])
 	})
 })

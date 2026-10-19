@@ -21,7 +21,6 @@ function pushed(free: FlowRect, fixed: FlowRect, direction: string): FlowRect {
 
 function boundsOf(result: Pick<FlowLayoutResult, 'nodes' | 'groups'>): FlowRect {
 	const rects = [...Object.values(result.nodes), ...Object.values(result.groups)]
-	if (rects.length === 0) return { x: 0, y: 0, width: 0, height: 0 }
 	const left = Math.min(...rects.map(rect => rect.x))
 	const top = Math.min(...rects.map(rect => rect.y))
 	const right = Math.max(...rects.map(rect => rect.x + rect.width))
@@ -44,11 +43,11 @@ function clearFixed(input: FlowLayoutInput, nodes: Record<string, FlowRect>, fix
 }
 
 export function applyFixed(input: FlowLayoutInput, result: FlowLayoutResult): FlowLayoutResult {
-	const fixed = input.nodes.filter(node => node.fixed)
+	const fixed = input.nodes.flatMap(node => (node.fixed ? [{ node, at: node.fixed }] : []))
 	if (fixed.length === 0) return result
 	const nodes = { ...result.nodes }
-	for (const node of fixed) nodes[node.id] = { ...node.size, x: node.fixed?.x ?? 0, y: node.fixed?.y ?? 0 }
-	clearFixed(input, nodes, new Set(fixed.map(node => node.id)))
+	for (const { node, at } of fixed) nodes[node.id] = { ...node.size, x: at.x, y: at.y }
+	clearFixed(input, nodes, new Set(fixed.map(item => item.node.id)))
 	const next = { ...result, nodes }
 	return { ...next, bounds: boundsOf(next) }
 }

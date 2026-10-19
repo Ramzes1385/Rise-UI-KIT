@@ -93,31 +93,33 @@
 				<BaseButton variant="ghost" class="base-flow-map__scenario-icon" :aria-label="UI_FLOW_SCENARIO.STEP_FORWARD" @click="go(1)">
 					<template #left><BaseIcon name="chevron-right" class="base-flow-map__scenario-chevron" /></template>
 				</BaseButton>
-				<BaseButton variant="ghost" :aria-label="UI_FLOW_SCENARIO.SPEED" @click="cycleSpeed">{{ speedText }}</BaseButton>
+				<BaseButton variant="ghost" :aria-label="speedLabel" @click="cycleSpeed">{{ speedText }}</BaseButton>
 			</div>
 			<ol class="base-flow-map__scenario-steps" :aria-label="UI_FLOW_SCENARIO.STEPS">
-				<li v-for="step in steps" :key="step.id" class="base-flow-map__scenario-step-item">
-					<button
-						type="button"
-						class="base-flow-map__scenario-step"
-						:class="{
-							'base-flow-map__scenario-step--current': step.isCurrent,
-							'base-flow-map__scenario-step--done': step.isDone,
-							'base-flow-map__scenario-step--failed': step.isFailed,
-						}"
-						:aria-current="step.isCurrent ? 'step' : undefined"
-						@click="jump(step.id)">
-						<span class="base-flow-map__scenario-step-number">
-							<BaseIcon v-if="step.isDone" name="check" />
-							<template v-else>{{ step.number }}</template>
-						</span>
-						<span class="base-flow-map__scenario-step-text">
-							<b>{{ step.title }}</b>
-							<span v-if="step.detail">{{ step.detail }}</span>
-						</span>
-						<span class="base-flow-map__scenario-step-latency">{{ step.latency }}</span>
-						<span v-if="step.isFailed" class="base-flow-map__scenario-step-failed">{{ UI_FLOW_SCENARIO.FAILED }}</span>
-					</button>
+				<li v-for="(step, position) in steps" :key="step.id" class="base-flow-map__scenario-step-item">
+					<slot name="scenario-step" :step="step.action" :index="position" :is-active="step.isCurrent" :is-done="step.isDone">
+						<button
+							type="button"
+							class="base-flow-map__scenario-step"
+							:class="{
+								'base-flow-map__scenario-step--current': step.isCurrent,
+								'base-flow-map__scenario-step--done': step.isDone,
+								'base-flow-map__scenario-step--failed': step.isFailed,
+							}"
+							:aria-current="step.isCurrent ? 'step' : undefined"
+							@click="jump(step.id)">
+							<span class="base-flow-map__scenario-step-number">
+								<BaseIcon v-if="step.isDone" name="check" />
+								<template v-else>{{ step.number }}</template>
+							</span>
+							<span class="base-flow-map__scenario-step-text">
+								<b>{{ step.title }}</b>
+								<span v-if="step.detail">{{ step.detail }}</span>
+							</span>
+							<span class="base-flow-map__scenario-step-latency">{{ step.latency }}</span>
+							<span v-if="step.isFailed" class="base-flow-map__scenario-step-failed">{{ UI_FLOW_SCENARIO.FAILED }}</span>
+						</button>
+					</slot>
 				</li>
 			</ol>
 		</template>
@@ -129,7 +131,12 @@ import { BaseIcon } from '@components/BaseIcon'
 import { BaseRange } from '@components/BaseRange'
 import { BaseButton } from '@components/BaseButton'
 import { UI_FLOW_SCENARIO } from '@/locales/messages'
+import type { FlowScenarioAction } from '../../types/data/flowScenario.types'
 import { useFlowScenarioPanel } from '../../model/scenario/panel/useFlowScenarioPanel'
+
+defineSlots<{
+	'scenario-step'?: (props: { step: FlowScenarioAction; index: number; isActive: boolean; isDone: boolean }) => unknown
+}>()
 
 const {
 	scenario,
@@ -142,6 +149,7 @@ const {
 	stepText,
 	summary,
 	speedText,
+	speedLabel,
 	currentTitle,
 	time,
 	duration,

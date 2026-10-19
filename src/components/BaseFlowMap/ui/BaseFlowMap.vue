@@ -28,15 +28,38 @@
 				<FlowToolbar v-if="hasToolbar">
 					<template v-if="$slots.toolbar" #toolbar="slotProps"><slot name="toolbar" v-bind="slotProps" /></template>
 				</FlowToolbar>
+				<FlowTooltip v-if="$slots.tooltip">
+					<template #tooltip="slotProps"><slot name="tooltip" v-bind="slotProps" /></template>
+				</FlowTooltip>
 				<FlowMinimap v-if="hasMinimap && !isEmpty" />
-				<FlowLegend v-if="hasLegend && !isEmpty" />
-				<FlowScenarioPanel v-if="hasScenario && isCompact" />
+				<FlowLegend v-if="hasLegend && !isEmpty">
+					<template v-if="$slots.legend" #legend="slotProps"><slot name="legend" v-bind="slotProps" /></template>
+				</FlowLegend>
+				<FlowScenarioPanel v-if="hasScenario && isCompact">
+					<template v-if="$slots['scenario-step']" #scenario-step="slotProps"
+						><slot name="scenario-step" v-bind="slotProps"
+					/></template>
+				</FlowScenarioPanel>
 			</div>
 			<aside v-if="!isCompact" class="base-flow-map__side">
-				<FlowScenarioPanel v-if="hasScenario" />
-				<FlowDetails v-if="hasDetails" />
+				<FlowScenarioPanel v-if="hasScenario">
+					<template v-if="$slots['scenario-step']" #scenario-step="slotProps"
+						><slot name="scenario-step" v-bind="slotProps"
+					/></template>
+				</FlowScenarioPanel>
+				<FlowDetails v-if="hasDetails">
+					<template v-if="$slots.details" #details="slotProps"><slot name="details" v-bind="slotProps" /></template>
+					<template v-if="$slots['inspector-end']" #inspector-end="slotProps"
+						><slot name="inspector-end" v-bind="slotProps"
+					/></template>
+				</FlowDetails>
 			</aside>
-			<FlowDetails v-else-if="hasDetails" />
+			<FlowDetails v-else-if="hasDetails">
+				<template v-if="$slots.details" #details="slotProps"><slot name="details" v-bind="slotProps" /></template>
+				<template v-if="$slots['inspector-end']" #inspector-end="slotProps"
+					><slot name="inspector-end" v-bind="slotProps"
+				/></template>
+			</FlowDetails>
 		</div>
 		<FlowA11yList v-if="!isLoading && !error" />
 		<FlowLiveRegion :text="announcement" />
@@ -51,6 +74,7 @@ import FlowSearch from './chrome/FlowSearch.vue'
 import FlowLegend from './panels/FlowLegend.vue'
 import { UI_FLOW_MAP } from '@/locales/messages'
 import FlowToolbar from './chrome/FlowToolbar.vue'
+import FlowTooltip from './chrome/FlowTooltip.vue'
 import FlowDetails from './panels/FlowDetails.vue'
 import FlowMinimap from './panels/FlowMinimap.vue'
 import { BaseResult } from '@components/BaseResult'

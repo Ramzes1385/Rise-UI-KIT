@@ -63,9 +63,7 @@ function adjoinPeers(graph: LayeredGraph): void {
 	for (const [source, target] of graph.peers) {
 		const layer = graph.layers[graph.vertices[source].layer]
 		if (graph.vertices[source].band !== graph.vertices[target].band) continue
-		const from = layer.indexOf(target)
-		if (from < 0) continue
-		layer.splice(from, 1)
+		layer.splice(layer.indexOf(target), 1)
 		layer.splice(layer.indexOf(source) + 1, 0, target)
 	}
 }

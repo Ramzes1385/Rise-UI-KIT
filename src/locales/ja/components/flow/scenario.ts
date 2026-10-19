@@ -9,6 +9,8 @@ export const jaFlowScenario = {
 		STEP_FORWARD: '次のステップ',
 		SPEED: '速度',
 		SPEED_VALUE: '{n}×',
+		/** Имя кнопки скорости: содержит видимое значение; `{value}` — «1×» */
+		SPEED_NAME: '速度: {value}',
 		SEEK: 'シナリオの位置',
 		SELECT: 'シナリオの選択',
 		STEPS: 'シナリオのステップ',

@@ -23,6 +23,7 @@ export function useFlowLegend() {
 		isCompact,
 		isOpen,
 		hasRows: computed(() => rows.value.length > 0),
+		items: computed(() => rows.value.map(row => ({ id: row.id, label: row.label, sample: row.sample }))),
 		nodeRows,
 		edgeRows,
 		statusRows,

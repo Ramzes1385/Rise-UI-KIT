@@ -9,6 +9,8 @@ export const zhFlowScenario = {
 		STEP_FORWARD: '下一步',
 		SPEED: '速度',
 		SPEED_VALUE: '{n}×',
+		/** Имя кнопки скорости: содержит видимое значение; `{value}` — «1×» */
+		SPEED_NAME: '速度: {value}',
 		SEEK: '场景进度',
 		SELECT: '选择场景',
 		STEPS: '场景步骤',

@@ -133,7 +133,7 @@ describe('FlowScenarioPanel: десктопная панель', () => {
 	it('кнопка скорости переключает 1× → 2× → 0,5× → 1×', async () => {
 		mountPanel()
 		const user = userEvent.setup()
-		const speed = () => screen.getByRole('button', { name: UI_FLOW_SCENARIO.SPEED })
+		const speed = () => screen.getByRole('button', { name: new RegExp(`^${UI_FLOW_SCENARIO.SPEED}`) })
 		expect(speed()).toHaveTextContent(formatMessage(UI_FLOW_SCENARIO.SPEED_VALUE, { n: '1' }))
 		await user.click(speed())
 		expect(speed()).toHaveTextContent(formatMessage(UI_FLOW_SCENARIO.SPEED_VALUE, { n: '2' }))

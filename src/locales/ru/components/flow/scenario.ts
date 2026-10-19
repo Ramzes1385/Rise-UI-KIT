@@ -8,6 +8,8 @@ export const ruFlowScenario = {
 	STEP_FORWARD: 'Следующий шаг',
 	SPEED: 'Скорость',
 	SPEED_VALUE: '{n}×',
+	/** Имя кнопки скорости: содержит видимое значение; `{value}` — «1×» */
+	SPEED_NAME: 'Скорость: {value}',
 	SEEK: 'Перемотка сценария',
 	SELECT: 'Выбор сценария',
 	STEPS: 'Шаги сценария',

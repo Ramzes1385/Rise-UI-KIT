@@ -9,6 +9,8 @@ export const enFlowScenario = {
 		STEP_FORWARD: 'Next step',
 		SPEED: 'Speed',
 		SPEED_VALUE: '{n}×',
+		/** Имя кнопки скорости: содержит видимое значение; `{value}` — «1×» */
+		SPEED_NAME: 'Speed: {value}',
 		SEEK: 'Scenario position',
 		SELECT: 'Choose a scenario',
 		STEPS: 'Scenario steps',

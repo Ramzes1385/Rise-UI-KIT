@@ -10,7 +10,6 @@ function snap(value: number, grid: number): number {
 }
 
 function union(rects: readonly FlowRect[]): FlowRect {
-	if (rects.length === 0) return { x: 0, y: 0, width: 0, height: 0 }
 	const left = Math.min(...rects.map(rect => rect.x))
 	const top = Math.min(...rects.map(rect => rect.y))
 	const right = Math.max(...rects.map(rect => rect.x + rect.width))

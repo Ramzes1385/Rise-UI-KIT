@@ -44,6 +44,11 @@ export function useFlowScenarioPanel(): FlowScenarioPanelView {
 		stepText,
 		summary,
 		speedText: computed(() => formatMessage(UI_FLOW_SCENARIO.SPEED_VALUE, { n: formatNumber(state.value.speed) })),
+		speedLabel: computed(() =>
+			formatMessage(UI_FLOW_SCENARIO.SPEED_NAME, {
+				value: formatMessage(UI_FLOW_SCENARIO.SPEED_VALUE, { n: formatNumber(state.value.speed) }),
+			}),
+		),
 		currentTitle: computed(() => steps.value.find(step => step.isCurrent)?.title ?? ''),
 		time: computed(() => state.value.time),
 		duration: computed(() => state.value.duration),

@@ -29,7 +29,7 @@ function useBackClose(isOpen: Ref<boolean>, close: () => void) {
 		isPushed = true
 		window.addEventListener('popstate', onPop)
 	})
-	onBeforeUnmount(() => window.removeEventListener('popstate', onPop))
+	onBeforeUnmount(leave)
 }
 
 function useFocusReturn(context: FlowMapContext) {
@@ -49,6 +49,18 @@ function useSheetShift(context: FlowMapContext, isSheetOpen: Ref<boolean>) {
 		const rect = isOpen && id ? context.model.layout.value.nodes[id] : undefined
 		if (rect) context.setViewport(sheetViewport(rect, context.viewport.value, context.frame.value), { isAnimated: true })
 	})
+}
+
+function useSlotParts(context: FlowMapContext, close: () => void) {
+	const target = computed(() => context.details.value)
+	const graph = computed(() => context.model.graph.value)
+	const slotProps = computed(() => ({
+		target: target.value as NonNullable<typeof target.value>,
+		node: target.value ? graph.value.nodes.get(target.value.id) : undefined,
+		edge: target.value ? graph.value.edges.get(target.value.id) : undefined,
+		close,
+	}))
+	return { target, slotProps, controller: context.model.controller, isEditing: computed(() => context.model.mode.value === 'edit') }
 }
 
 export function useFlowDetails() {
@@ -86,5 +98,16 @@ export function useFlowDetails() {
 		close()
 	}
 
-	return { view, isCompact, isSheetOpen, labels, close, onKeydown, onSheetChange }
+	const slots = useSlotParts(context, close)
+
+	return {
+		...slots,
+		view,
+		isCompact,
+		isSheetOpen,
+		labels,
+		close,
+		onKeydown,
+		onSheetChange,
+	}
 }

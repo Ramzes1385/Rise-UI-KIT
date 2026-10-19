@@ -2,7 +2,14 @@ import type { FlowGraph } from '../api/flowLayout.types'
 import type { BadgeStatus } from '@components/BaseBadge'
 import type { FlowLiveState } from '../api/flowController.types'
 import type { DescriptionsItem } from '@components/BaseDescriptions'
-import type { FlowEdgeKindDef, FlowGroupKindDef, FlowNodeKindDef, FlowNotation, FlowShapeDef } from '../api/flowNotation.types'
+import type {
+	FlowEdgeKindDef,
+	FlowGroupKindDef,
+	FlowLegendItem,
+	FlowNodeKindDef,
+	FlowNotation,
+	FlowShapeDef,
+} from '../api/flowNotation.types'
 import type {
 	FlowEdge,
 	FlowField,
@@ -74,6 +81,8 @@ export interface FlowLegendRow {
 	edge?: FlowLegendEdgeSample
 	/** Статус */
 	status?: FlowStatusView
+	/** Образец для слота `legend` */
+	sample: FlowLegendItem['sample']
 }
 
 /** Что показывают подробности */

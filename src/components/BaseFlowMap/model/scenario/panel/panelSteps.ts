@@ -19,6 +19,7 @@ export function panelSteps({ timeline, actions, graph, state }: FlowPanelInput):
 			isFailed: FAILED.has(action.status ?? ''),
 			start: entry.start,
 			isParallel: Boolean(entry.branch?.includes(':')),
+			action,
 		}
 	})
 }

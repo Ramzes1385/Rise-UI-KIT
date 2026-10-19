@@ -4,15 +4,16 @@
 		ref="rootRef"
 		class="base-flow-map__minimap"
 		:class="{ 'base-flow-map__minimap--dragging': isDragging }"
-		role="group"
+		role="application"
 		tabindex="0"
 		:aria-label="label"
-		:aria-description="hint"
+		:aria-describedby="hintId"
 		@pointerdown="onPointerDown"
 		@pointermove="onPointerMove"
 		@pointerup="onPointerUp"
 		@pointercancel="onPointerUp"
 		@keydown="onKeydown">
+		<span :id="hintId" class="base-flow-map__minimap-hint">{{ hint }}</span>
 		<svg
 			class="base-flow-map__minimap-svg"
 			:width="size.width"
@@ -64,6 +65,7 @@ const {
 	viewportRect,
 	label,
 	hint,
+	hintId,
 	onPointerDown,
 	onPointerMove,
 	onPointerUp,

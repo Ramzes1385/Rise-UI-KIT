@@ -1,5 +1,5 @@
-import { computed, ref } from 'vue'
 import type { ComputedRef } from 'vue'
+import { computed, ref, useId } from 'vue'
 import { UI_FLOW_PANELS } from '@/locales/messages'
 import { useFlowMapContext } from '../context/flowContext'
 import { FLOW_MINIMAP_SIZE } from '../../types/internal/flowPanels.types'
@@ -94,5 +94,6 @@ export function useFlowMinimap() {
 		size: FLOW_MINIMAP_SIZE,
 		label: computed(() => UI_FLOW_PANELS.MINIMAP),
 		hint: computed(() => UI_FLOW_PANELS.MINIMAP_HINT),
+		hintId: `flow-minimap-hint-${useId()}`,
 	}
 }

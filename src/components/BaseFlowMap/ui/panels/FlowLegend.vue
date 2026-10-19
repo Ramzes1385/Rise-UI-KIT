@@ -9,7 +9,8 @@
 			<BaseIcon :name="isOpen ? 'chevron-down' : 'chevron-up'" />
 			<span>{{ toggleLabel }}</span>
 		</button>
-		<ul v-if="isOpen" class="base-flow-map__legend-list">
+		<div v-if="isOpen && $slots.legend" class="base-flow-map__legend-custom"><slot name="legend" :items="items" /></div>
+		<ul v-else-if="isOpen" class="base-flow-map__legend-list">
 			<li v-for="row in nodeRows" :key="row.id" class="base-flow-map__legend-row">
 				<svg class="base-flow-map__legend-sample" width="24" height="14" viewBox="0 0 24 14" aria-hidden="true" focusable="false">
 					<path
@@ -50,6 +51,9 @@
 import { BaseIcon } from '@components/BaseIcon'
 import { useFlowLegend } from '../../model/panels/useFlowLegend'
 import { edgeSample, shapePath } from '../../model/panels/legendRows'
+import type { FlowLegendItem } from '../../types/api/flowNotation.types'
 
-const { isCompact, isOpen, hasRows, nodeRows, edgeRows, statusRows, toggle, label, toggleLabel } = useFlowLegend()
+defineSlots<{ legend?: (props: { items: FlowLegendItem[] }) => unknown }>()
+
+const { isCompact, isOpen, hasRows, items, nodeRows, edgeRows, statusRows, toggle, label, toggleLabel } = useFlowLegend()
 </script>
