@@ -22,6 +22,7 @@ import { zhFormWizard } from './components/form/formWizard'
 import { zhEventCalendar } from './components/eventCalendar'
 import { zhFileManager } from './components/data/fileManager'
 import { zhRoadmapEdit } from './components/data/roadmapEdit'
+import { zhRoadmapReview } from './components/data/roadmapReview'
 import { zhFlowDfd } from './components/flow/notations/process/dfd'
 import { zhFlowEpc } from './components/flow/notations/process/epc'
 import { zhDashboardGrid } from './components/layout/dashboardGrid'
@@ -68,5 +69,6 @@ export const zh: UiKitLocale = {
 	...zhFormWizard,
 	...zhRoadmap,
 	...zhRoadmapEdit,
+	...zhRoadmapReview,
 	plural: zhPlural,
 }

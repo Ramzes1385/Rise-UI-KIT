@@ -71,7 +71,7 @@ function isRoadmapEntityChangeApplicable(data: RoadmapData, change: RoadmapEntit
 	return findEntity(data, change.entity, change.id) !== undefined
 }
 
-export function isRoadmapChangeApplicable(data: RoadmapData, change: RoadmapChange): boolean {
+function isRoadmapChangeApplicable(data: RoadmapData, change: RoadmapChange): boolean {
 	if (change.type !== 'root') return isRoadmapEntityChangeApplicable(data, change)
 	const current = data as unknown as Record<string, unknown>
 	return Object.entries(change.previous).every(([field, value]) => isReviewEqual(current[field], value))

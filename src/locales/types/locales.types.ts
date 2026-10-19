@@ -170,6 +170,7 @@ export interface UiKitLocale {
 	formWizard: Section<'formWizard'>
 	roadmap: Section<'roadmap'>
 	roadmapEdit: Section<'roadmapEdit'>
+	roadmapReview: Section<'roadmapReview'>
 	datePicker: Section<'datePicker'>
 	warnings: Section<'warnings'>
 	plural: { readonly [P in keyof Base['plural']]: PluralForms }

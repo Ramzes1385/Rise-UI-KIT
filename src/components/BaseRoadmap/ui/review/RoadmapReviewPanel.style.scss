@@ -1,0 +1,145 @@
+@use '@styles/mixins' as *;
+@use '@styles/functions' as *;
+
+.base-roadmap {
+	&__review {
+		display: flex;
+		flex-direction: column;
+		gap: sz(8px);
+		min-width: 0;
+		padding: sz(12px);
+		color: var(--rise-text);
+		background-color: var(--rise-bg);
+		border-inline-start: 1px solid var(--rise-border);
+
+		&--compact {
+			padding: sz(8px);
+			border-inline-start: 0;
+		}
+	}
+
+	&__review-actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: sz(8px);
+	}
+
+	&__review-thread {
+		min-width: 0;
+		padding-block: sz(4px);
+	}
+
+	&__review-list {
+		display: flex;
+		flex-direction: column;
+		gap: sz(10px);
+		padding-block-start: sz(10px);
+	}
+
+	&__review-items {
+		display: flex;
+		flex-direction: column;
+		gap: sz(8px);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	&__review-card {
+		display: flex;
+		flex-direction: column;
+		gap: sz(6px);
+		padding: sz(10px 12px);
+		border: 1px solid var(--rise-border);
+		border-radius: sz(var(--rise-radius-lg));
+		background-color: var(--rise-bg);
+
+		&--hot {
+			border-color: var(--rise-primary);
+			box-shadow: var(--rise-shadow-sm);
+		}
+
+		&--done {
+			opacity: 0.7;
+		}
+	}
+
+	&__review-card-head,
+	&__review-card-actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: sz(6px 8px);
+	}
+
+	&__review-card-author {
+		font-weight: 600;
+	}
+
+	&__review-card-time,
+	&__review-card-summary,
+	&__review-card-status,
+	&__review-hint,
+	&__review-reason {
+		margin: 0;
+		font-size: sz(var(--rise-font-size-xs));
+		color: var(--rise-text-muted);
+	}
+
+	&__review-reason {
+		flex-basis: 100%;
+		color: var(--rise-warning);
+	}
+
+	&__review-card-title {
+		margin: 0;
+		padding: 0;
+		border: 0;
+		font: inherit;
+		font-weight: 600;
+		text-align: start;
+		color: var(--rise-text-highlighted);
+		background: none;
+
+		&:is(button) {
+			cursor: pointer;
+
+			&:focus-visible {
+				outline: 2px solid var(--rise-primary);
+				outline-offset: 2px;
+			}
+		}
+	}
+
+	&__review-fields {
+		display: flex;
+		flex-direction: column;
+		gap: sz(2px);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		font-size: sz(var(--rise-font-size-xs));
+
+		del {
+			color: var(--rise-error);
+		}
+
+		ins {
+			text-decoration: none;
+			color: var(--rise-success);
+		}
+	}
+
+	&__review-field {
+		margin-inline-end: sz(6px);
+		color: var(--rise-text-muted);
+	}
+
+	&__review-composer {
+		display: flex;
+		flex-direction: column;
+		gap: sz(8px);
+	}
+}

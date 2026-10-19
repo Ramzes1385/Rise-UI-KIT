@@ -22,6 +22,7 @@ import { enFormWizard } from './components/form/formWizard'
 import { enEventCalendar } from './components/eventCalendar'
 import { enFileManager } from './components/data/fileManager'
 import { enRoadmapEdit } from './components/data/roadmapEdit'
+import { enRoadmapReview } from './components/data/roadmapReview'
 import { enFlowDfd } from './components/flow/notations/process/dfd'
 import { enFlowEpc } from './components/flow/notations/process/epc'
 import { enDashboardGrid } from './components/layout/dashboardGrid'
@@ -68,5 +69,6 @@ export const en: UiKitLocale = {
 	...enFormWizard,
 	...enRoadmap,
 	...enRoadmapEdit,
+	...enRoadmapReview,
 	plural: enPlural,
 }

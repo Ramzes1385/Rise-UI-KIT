@@ -15,6 +15,7 @@ import { ruFormWizard } from './components/form/formWizard'
 import { ruEventCalendar } from './components/eventCalendar'
 import { ruFileManager } from './components/data/fileManager'
 import { ruRoadmapEdit } from './components/data/roadmapEdit'
+import { ruRoadmapReview } from './components/data/roadmapReview'
 import { ruFlowDfd } from './components/flow/notations/process/dfd'
 import { ruFlowEpc } from './components/flow/notations/process/epc'
 import { ruDashboardGrid } from './components/layout/dashboardGrid'
@@ -166,5 +167,6 @@ export const ru = {
 	formWizard: ruFormWizard,
 	roadmap: ruRoadmap,
 	roadmapEdit: ruRoadmapEdit,
+	roadmapReview: ruRoadmapReview,
 	plural: ruPlural,
 }

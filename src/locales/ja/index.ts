@@ -22,6 +22,7 @@ import { jaFormWizard } from './components/form/formWizard'
 import { jaEventCalendar } from './components/eventCalendar'
 import { jaFileManager } from './components/data/fileManager'
 import { jaRoadmapEdit } from './components/data/roadmapEdit'
+import { jaRoadmapReview } from './components/data/roadmapReview'
 import { jaFlowDfd } from './components/flow/notations/process/dfd'
 import { jaFlowEpc } from './components/flow/notations/process/epc'
 import { jaDashboardGrid } from './components/layout/dashboardGrid'
@@ -68,5 +69,6 @@ export const ja: UiKitLocale = {
 	...jaFormWizard,
 	...jaRoadmap,
 	...jaRoadmapEdit,
+	...jaRoadmapReview,
 	plural: jaPlural,
 }

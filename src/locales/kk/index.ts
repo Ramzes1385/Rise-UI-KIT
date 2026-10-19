@@ -23,6 +23,7 @@ import { kkFormWizard } from './components/form/formWizard'
 import { kkEventCalendar } from './components/eventCalendar'
 import { kkFileManager } from './components/data/fileManager'
 import { kkRoadmapEdit } from './components/data/roadmapEdit'
+import { kkRoadmapReview } from './components/data/roadmapReview'
 import { kkFlowDfd } from './components/flow/notations/process/dfd'
 import { kkFlowEpc } from './components/flow/notations/process/epc'
 import { kkDashboardGrid } from './components/layout/dashboardGrid'
@@ -70,5 +71,6 @@ export const kk: UiKitLocale = {
 	...kkFormWizard,
 	...kkRoadmap,
 	...kkRoadmapEdit,
+	...kkRoadmapReview,
 	plural: kkPlural,
 }

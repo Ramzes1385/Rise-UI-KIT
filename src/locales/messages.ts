@@ -17,6 +17,7 @@ import { ruFormWizard } from './ru/components/form/formWizard'
 import { ruEventCalendar } from './ru/components/eventCalendar'
 import { ruFileManager } from './ru/components/data/fileManager'
 import { ruRoadmapEdit } from './ru/components/data/roadmapEdit'
+import { ruRoadmapReview } from './ru/components/data/roadmapReview'
 import { ruFlowDfd } from './ru/components/flow/notations/process/dfd'
 import { ruFlowEpc } from './ru/components/flow/notations/process/epc'
 import { ruDashboardGrid } from './ru/components/layout/dashboardGrid'
@@ -264,6 +265,8 @@ export const UI_FORM_WIZARD = /* @__PURE__ */ localized('formWizard', ruFormWiza
 
 /** Роадмап BaseRoadmap: статусы, сводка, предупреждения о данных */
 export const UI_ROADMAP = /* @__PURE__ */ localized('roadmap', ruRoadmap)
+/** «Правки» BaseRoadmap: предложения, комментарии, принять и отклонить */
+export const UI_ROADMAP_REVIEW = /* @__PURE__ */ localized('roadmapReview', ruRoadmapReview)
 
 /** Роадмап BaseRoadmap, режим «Правка»: шаблоны, свойства, перестановка, отказы */
 export const UI_ROADMAP_EDIT = /* @__PURE__ */ localized('roadmapEdit', ruRoadmapEdit)
