@@ -5,6 +5,7 @@ import { useFlowRendering } from './useFlowRendering'
 import { useFlowEditing } from './edit/useFlowEditing'
 import { useFlowReview } from './review/useFlowReview'
 import { useFlowFrame } from './viewport/useFlowFrame'
+import { useFlowPanels } from './viewport/useFlowPanels'
 import { useFlowAnnouncer } from './a11y/useFlowAnnouncer'
 import { FLOW_MAP_PARTS } from '../types/BaseFlowMap.types'
 import { computed, getCurrentInstance, onMounted } from 'vue'
@@ -35,22 +36,19 @@ export function useBaseFlowMap(props: BaseFlowMapProps, emit: BaseFlowMapEmits) 
 	const editing = useFlowEditing(model, { map: rendering.canvas.map, element: frame.element, props })
 	const { hasHeader, hasSearch, hasScenario, isEmpty } = rendering.chrome
 	const { state } = editing.context.env
-	// В «Правке» (мокап FlowEditor) нет легенды и мини-карты: их закрыли бы панель инструментов и строка состояния
-	const isEditChrome = computed(() => state.isEditing.value && !state.isCompact.value)
-	const hasMinimap = computed(() => rendering.chrome.hasMinimap.value && !isEditChrome.value)
-	const hasLegend = computed(() => rendering.chrome.hasLegend.value && !isEditChrome.value)
-	const hasToolbar = computed(() => rendering.chrome.hasToolbar.value && !(state.isEditing.value && !state.isCompact.value))
-	const hasDetails = computed(() => rendering.chrome.hasDetails.value && !state.isEditing.value)
+	const { hasToolbar, hasMinimap, hasLegend, hasDetails, editClasses } = useFlowPanels(props, {
+		model,
+		chrome: rendering.chrome,
+		state,
+		frame,
+	})
 	return {
 		...useStandardBaseComponent('base-flow-map', props, [...FLOW_MAP_PARTS]),
 		...{ hasHeader, hasToolbar, hasSearch, hasMinimap, hasLegend, hasScenario, hasDetails, isEmpty },
 		ui: rendering.ui,
 		model,
 		editing,
-		editClasses: computed(() => {
-			const isChrome = state.isEditing.value && !state.isCompact.value
-			return [isChrome && 'base-flow-map__stage--edit', isChrome && !state.isGridOn.value && 'base-flow-map__stage--no-grid']
-		}),
+		editClasses,
 		review: useFlowReview(model, props, announce),
 		announcement,
 		isCompact: frame.isCompact,

@@ -207,6 +207,8 @@ export interface FlowFrameState {
 	attach: (element: unknown) => void
 	/** Отступы под видимые легенду и мини-карту (в компактном виде нули) */
 	insets: () => FlowInsets
+	/** Задать ширину боковых панелей, вычитаемую из ширины корня при расчёте compact */
+	reserve: (width: () => number) => void
 }
 
 /** Отступы кадра, занятые панелями поверх холста, px */

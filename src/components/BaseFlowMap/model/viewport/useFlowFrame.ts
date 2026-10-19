@@ -22,6 +22,7 @@ export function useFlowFrame(props: Pick<BaseFlowMapProps, 'compactBreakpoint'>)
 	const frame = ref<FlowSize>({ width: 0, height: 0 })
 	const element = shallowRef<HTMLElement | null>(null)
 	const rootWidth = ref(0)
+	const reserved = shallowRef<() => number>(() => 0)
 	let root: HTMLElement | null = null
 	let observer: ResizeObserver | null = null
 
@@ -52,11 +53,10 @@ export function useFlowFrame(props: Pick<BaseFlowMapProps, 'compactBreakpoint'>)
 
 	onBeforeUnmount(() => observer?.disconnect())
 
-	// Мерим корень карты, а не область вида: палитра и панель свойств «Правки» сжимают её до нуля
 	const isCompact = computed(() => {
-		const width = rootWidth.value > 0 ? rootWidth.value : frame.value.width
-		return width > 0 && width < (props.compactBreakpoint ?? DEFAULT_BREAKPOINT)
+		const width = rootWidth.value > 0 ? rootWidth.value - reserved.value() : frame.value.width
+		return rootWidth.value + frame.value.width > 0 && width < (props.compactBreakpoint ?? DEFAULT_BREAKPOINT)
 	})
 	const insets = (): FlowInsets => (isCompact.value ? NO_INSETS : measureInsets(element.value))
-	return { frame, isCompact, element, attach, insets }
+	return { frame, isCompact, element, attach, insets, reserve: getter => (reserved.value = getter) }
 }
