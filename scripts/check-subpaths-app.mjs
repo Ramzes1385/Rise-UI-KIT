@@ -277,7 +277,9 @@ async function screenshot(browser, result, file) {
 		if (!rendered) return null
 		if (result.marker === 'base-select') {
 			await page.getByRole('combobox').first().click()
+			await page.getByRole('listbox').waitFor({ state: 'visible' })
 			await page.getByRole('option', { name: 'Волгоград' }).waitFor()
+			await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))))
 		}
 		if (result.applied) await page.locator(`.${result.applied}`).first().waitFor({ timeout: 5000 })
 		await page.screenshot({ path: file, animations: 'disabled' })
