@@ -7,6 +7,7 @@ import type { FlowFrameState, FlowInsets } from '../../types/internal/core/flowR
 const DEFAULT_BREAKPOINT = 640
 const OVERLAYS = '.base-flow-map__legend, .base-flow-map__minimap'
 const OVERLAY_GAP = 16
+const ROOT = '.base-flow-map'
 
 function measureInsets(element: HTMLElement | null): FlowInsets {
 	const stage = element?.closest('.base-flow-map__stage')
@@ -20,11 +21,14 @@ function measureInsets(element: HTMLElement | null): FlowInsets {
 export function useFlowFrame(props: Pick<BaseFlowMapProps, 'compactBreakpoint'>): FlowFrameState {
 	const frame = ref<FlowSize>({ width: 0, height: 0 })
 	const element = shallowRef<HTMLElement | null>(null)
+	const rootWidth = ref(0)
+	let root: HTMLElement | null = null
 	let observer: ResizeObserver | null = null
 
 	function measure(): void {
 		const target = element.value
 		if (!target) return
+		if (root && rootWidth.value !== root.clientWidth) rootWidth.value = root.clientWidth
 		const { width, height } = frame.value
 		if (width !== target.clientWidth || height !== target.clientHeight)
 			frame.value = { width: target.clientWidth, height: target.clientHeight }
@@ -36,16 +40,23 @@ export function useFlowFrame(props: Pick<BaseFlowMapProps, 'compactBreakpoint'>)
 		observer?.disconnect()
 		observer = null
 		element.value = target
+		root = target?.closest<HTMLElement>(ROOT) ?? null
+		rootWidth.value = 0
 		if (!target) return
 		measure()
 		if (typeof ResizeObserver === 'undefined') return
 		observer = new ResizeObserver(measure)
 		observer.observe(target)
+		if (root) observer.observe(root)
 	}
 
 	onBeforeUnmount(() => observer?.disconnect())
 
-	const isCompact = computed(() => frame.value.width > 0 && frame.value.width < (props.compactBreakpoint ?? DEFAULT_BREAKPOINT))
+	// Мерим корень карты, а не область вида: палитра и панель свойств «Правки» сжимают её до нуля
+	const isCompact = computed(() => {
+		const width = rootWidth.value > 0 ? rootWidth.value : frame.value.width
+		return width > 0 && width < (props.compactBreakpoint ?? DEFAULT_BREAKPOINT)
+	})
 	const insets = (): FlowInsets => (isCompact.value ? NO_INSETS : measureInsets(element.value))
 	return { frame, isCompact, element, attach, insets }
 }

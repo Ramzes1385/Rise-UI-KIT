@@ -33,8 +33,12 @@ export function useBaseFlowMap(props: BaseFlowMapProps, emit: BaseFlowMapEmits) 
 	const rendering = useFlowRendering(props, model, { frame, environment: { isReducedMotion, isVisible, announce } })
 	onMounted(() => model.events.emit('ready', model.controller))
 	const editing = useFlowEditing(model, { map: rendering.canvas.map, element: frame.element, props })
-	const { hasHeader, hasSearch, hasMinimap, hasLegend, hasScenario, isEmpty } = rendering.chrome
+	const { hasHeader, hasSearch, hasScenario, isEmpty } = rendering.chrome
 	const { state } = editing.context.env
+	// В «Правке» (мокап FlowEditor) нет легенды и мини-карты: их закрыли бы панель инструментов и строка состояния
+	const isEditChrome = computed(() => state.isEditing.value && !state.isCompact.value)
+	const hasMinimap = computed(() => rendering.chrome.hasMinimap.value && !isEditChrome.value)
+	const hasLegend = computed(() => rendering.chrome.hasLegend.value && !isEditChrome.value)
 	const hasToolbar = computed(() => rendering.chrome.hasToolbar.value && !(state.isEditing.value && !state.isCompact.value))
 	const hasDetails = computed(() => rendering.chrome.hasDetails.value && !state.isEditing.value)
 	return {

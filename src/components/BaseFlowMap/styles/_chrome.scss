@@ -153,6 +153,10 @@
 		color: var(--rise-text-dimmed);
 	}
 
+	&__stage--edit &__levelbar {
+		inset-block-start: sz(64px);
+	}
+
 	&--compact &__levelbar {
 		inset-block-start: sz(68px);
 		inset-inline-start: sz(12px);
