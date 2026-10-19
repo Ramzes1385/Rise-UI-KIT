@@ -1,5 +1,4 @@
 import { miniRoadmap } from '../../demo/mini'
-import { expect, waitFor } from 'storybook/test'
 import { reviewData, reviewProgress } from '../../demo/review'
 import type { RoadmapMode } from '../../../types/BaseRoadmap.types'
 
@@ -9,7 +8,7 @@ export const reviewTypes = { data: 'RoadmapData', mode: 'RoadmapMode', review: '
 
 export const reviewImports = ['BaseRoadmap', 'type RoadmapData', 'type RoadmapMode', 'type RoadmapReviewData']
 
-export const reviewModes: RoadmapMode[] = ['view', 'edit', 'review']
+const reviewModes: RoadmapMode[] = ['view', 'edit', 'review']
 
 export const reviewTemplate = `
 	<BaseRoadmap
@@ -48,5 +47,3 @@ export function proposalCard(canvasElement: HTMLElement, title: string): HTMLEle
 	if (!item) throw new Error(`Карточка «${title}» не найдена`)
 	return item
 }
-
-export const expectTab = (tab: HTMLElement, text: string | RegExp): Promise<void> => waitFor(() => expect(tab).toHaveTextContent(text))

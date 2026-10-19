@@ -27,7 +27,7 @@ export const EditHooksDenied: StoryObj<typeof meta> = {
 					'«Последний итог» появляется сразу после вызова хука. Здесь `beforeDelete` всегда отвечает `false`: «Удалить» у темы',
 					'ничего не меняет, над путём появляется плашка «Правка отменена обработчиком приложения», а в карточке подписки —',
 					'«Последний итог: отказ — удаление отменено». `beforeChange` при этом разрешает правки и показывает «разрешено».',
-					'После отказа выбор темы снимается: чтобы увидеть итог, откройте тему снова. Выключите переключатель подписки — и удаление пройдёт (его можно отменить Ctrl+Z).',
+					'Выбор темы после отказа остаётся, поэтому итог виден сразу. Выключите переключатель подписки — и удаление пройдёт (его можно отменить Ctrl+Z).',
 				].join('\n'),
 			},
 			source: storySource({
@@ -57,13 +57,12 @@ export const EditHooksDenied: StoryObj<typeof meta> = {
 		await expectStatus(canvasElement, /Тем 5 Изменений 0/)
 		await visible(() => canvasElement.querySelector('[data-roadmap-topic="template"] .base-roadmap__edit-pick') as HTMLElement)
 
-		const again = await openHooksTab(canvas, userEvent, /^Шаблоны/)
-		await visible(() => within(hookCard(again.inspector, 'keepTopics')).getByText('вызван 1'))
-		await visible(() => within(hookCard(again.inspector, 'keepTopics')).getByText('Последний итог: отказ — удаление отменено'))
-		await expect(within(hookCard(again.inspector, 'guardChange')).queryByText(/Последний итог/)).toBeNull()
+		await visible(() => within(hookCard(inspector, 'keepTopics')).getByText('вызван 1'))
+		await visible(() => within(hookCard(inspector, 'keepTopics')).getByText('Последний итог: отказ — удаление отменено'))
+		await expect(within(hookCard(inspector, 'guardChange')).queryByText(/Последний итог/)).toBeNull()
 
-		await userEvent.click(within(again.inspector).getByRole('switch', { name: 'Включить обработчик «beforeDelete → keepTopics»' }))
-		await userEvent.click(within(again.inspector).getByRole('button', { name: 'Удалить' }))
+		await userEvent.click(within(inspector).getByRole('switch', { name: 'Включить обработчик «beforeDelete → keepTopics»' }))
+		await userEvent.click(within(inspector).getByRole('button', { name: 'Удалить' }))
 		await expectStatus(canvasElement, /Тем 4 Изменений 1/)
 	},
 }

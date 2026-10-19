@@ -28,7 +28,7 @@ export const editArgs = {
 
 export const editControls = { include: ['mode', 'modes', 'isDisabled', 'sizeScale'] }
 
-export const editStatus = (canvasElement: HTMLElement): HTMLElement => {
+const editStatus = (canvasElement: HTMLElement): HTMLElement => {
 	const footer = canvasElement.querySelector<HTMLElement>('.base-roadmap__edit-status')
 	if (!footer) throw new Error('Подвал правки не найден')
 	return footer

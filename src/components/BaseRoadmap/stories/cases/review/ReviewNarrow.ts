@@ -47,7 +47,7 @@ export const ReviewNarrow: StoryObj<typeof meta> = {
 		await waitFor(() => expect(proposalCard(canvasElement, 'Поднять')).toHaveTextContent('Отклонено'))
 
 		await userEvent.click(panel.getByRole('tab', { name: /^Комментарии/ }))
-		await expect(await panel.findByRole('button', { name: 'Реактивность' })).toBeVisible()
+		await visible(() => panel.getByRole('button', { name: 'Реактивность' }))
 		await expect(root.scrollWidth).toBeLessThanOrEqual(root.clientWidth)
 	},
 }

@@ -20,7 +20,7 @@ const anna = { name: 'Анна' }
 
 export const reviewUser = { name: 'Роман' }
 
-export const reviewProposals: RoadmapProposal[] = [
+const reviewProposals: RoadmapProposal[] = [
 	{
 		id: 'p1',
 		author: ivan,
@@ -71,7 +71,7 @@ export const reviewProposals: RoadmapProposal[] = [
 	},
 ]
 
-export const reviewThreads: RoadmapCommentThread[] = [
+const reviewThreads: RoadmapCommentThread[] = [
 	{
 		id: 't1',
 		target: { entity: 'topic', id: 'reactivity' },
