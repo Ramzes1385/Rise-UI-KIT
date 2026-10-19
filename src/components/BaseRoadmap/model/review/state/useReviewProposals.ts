@@ -2,8 +2,8 @@ import { computed, ref } from 'vue'
 import { formatMessage } from '@/locales/state'
 import { UI_ROADMAP_REVIEW } from '@/locales/messages'
 import { proposalTitle } from '../format/roadmapReviewLabels'
+import { nextRoadmapReviewId } from '../format/roadmapReviewIds'
 import { setProposalStatus, toSuggestion } from '../format/roadmapProposals'
-import { nextReviewId } from '@components/BaseFlowMap/model/review/reviewComments'
 import type { RoadmapChange, RoadmapProposal } from '../../../types/roadmapEdit.types'
 import { isRoadmapProposalStale, roadmapReviewAdapter } from '../format/roadmapReviewAdapter'
 import { createSuggestionView, filterSuggestions, sortSuggestions } from '@components/BaseFlowMap/model/review/reviewSuggestions'
@@ -26,7 +26,7 @@ function propose(
 	const { changes, label } = draft
 	if (changes.length === 0) return null
 	const author = context.currentUser.value ?? { name: UI_ROADMAP_REVIEW.AUTHOR_GUEST }
-	const id = nextReviewId(
+	const id = nextRoadmapReviewId(
 		'p',
 		list.map(item => item.id),
 	)

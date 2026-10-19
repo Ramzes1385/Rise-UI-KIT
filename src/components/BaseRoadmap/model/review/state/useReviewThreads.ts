@@ -1,5 +1,6 @@
 import { computed, ref } from 'vue'
 import { UI_ROADMAP_REVIEW } from '@/locales/messages'
+import { roadmapThreadsByTarget } from '../format/roadmapReviewIds'
 import type { RoadmapCommentThread } from '../../../types/roadmapEdit.types'
 import type { RoadmapReviewContext, RoadmapReviewTarget, RoadmapReviewThreads } from '../../../types/internal/roadmapReview.types'
 import {
@@ -8,7 +9,6 @@ import {
 	createThread,
 	markThreadRead,
 	setThreadResolved,
-	threadsByTarget,
 	visibleThreads,
 } from '@components/BaseFlowMap/model/review/reviewComments'
 
@@ -51,6 +51,6 @@ export function useReviewThreads(context: RoadmapReviewContext): RoadmapReviewTh
 			if (threadId === null || !threads.value.find(item => item.id === threadId)?.isUnread) return
 			commitThreads(markThreadRead(threads.value, threadId))
 		},
-		threadsOf: target => threadsByTarget(threads.value).get(`${target.entity}:${target.id}`) ?? [],
+		threadsOf: target => roadmapThreadsByTarget(threads.value).get(`${target.entity}:${target.id}`) ?? [],
 	}
 }
