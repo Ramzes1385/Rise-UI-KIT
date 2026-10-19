@@ -69,6 +69,7 @@
 | BaseFileManager | 74,5 | 14,7 | 89,2 | — |
 | BaseFileUpload | 39,6 | 8,0 | 47,7 | — |
 | BaseFilterBuilder | 16,9 | 3,4 | 20,3 | — |
+| BaseFlowMap | 113,8 | 16,6 | 130,5 | — |
 | BaseFooter | 9,5 | 1,4 | 10,9 | — |
 | BaseForm | 5,2 | 1,3 | 6,5 | — |
 | BaseFormField | 6,8 | 0,9 | 7,6 | — |
