@@ -89,8 +89,8 @@ function edgeDrawable(mark: ReviewMark, scene: ReviewScene, focus: string | null
 		const source = nodeRect(scene, edge.source)
 		const target = nodeRect(scene, edge.target)
 		if (!source || !target) return null
-		const mid = pathMid({ path: '', points: [centerOf(source), centerOf(target)], label: null })
-		return { ...common, path: linePath(source, target), isGhost: true, glyphPoint: mid ?? centerOf(source) }
+		const mid = pathMid({ path: '', points: [centerOf(source), centerOf(target)], label: null }) as FlowPoint
+		return { ...common, path: linePath(source, target), isGhost: true, glyphPoint: mid }
 	}
 	const mid = pathMid(route)
 	return route && mid ? { ...common, path: route.path, glyphPoint: mid } : null

@@ -105,7 +105,7 @@ export function initialsOf(name: string): string {
 
 function findRoot(parents: Map<string, string>, id: string): string {
 	let root = id
-	while ((parents.get(root) ?? root) !== root) root = parents.get(root) as string
+	while (parents.get(root) !== root) root = parents.get(root) as string
 	return root
 }
 
