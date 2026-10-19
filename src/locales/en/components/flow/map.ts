@@ -171,5 +171,11 @@ export const enFlowMap = {
 		GROUP_COLLAPSE: 'Collapse {name}',
 		/** Имя кнопки-шеврона свёрнутой группы; `{name}` — название группы */
 		GROUP_EXPAND: 'Expand {name}',
+		/** Имя навигации-крошек: путь входа в группы */
+		CRUMBS_ARIA: 'Map levels',
+		/** Имя переключателя уровней смыслового зума */
+		LEVELS_ARIA: 'Level of detail',
+		/** Кнопка уровня: `{n}` — номер с 1, `{name}` — название уровня */
+		LEVEL_BUTTON: '{n} · {name}',
 	},
 }

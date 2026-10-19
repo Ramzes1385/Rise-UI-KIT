@@ -1,3 +1,4 @@
+@use '@styles/mixins' as *;
 @use '@styles/functions' as *;
 
 .base-flow-map {
@@ -69,5 +70,97 @@
 
 	&--disabled &__viewport {
 		cursor: default;
+	}
+
+	&__levelbar {
+		position: absolute;
+		inset-block-start: sz(16px);
+		inset-inline-start: sz(16px);
+		z-index: 2;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: sz(8px);
+		max-inline-size: calc(100% - #{sz(32px)});
+		pointer-events: none;
+	}
+
+	&__crumbs,
+	&__levels {
+		display: flex;
+		align-items: center;
+		gap: sz(4px);
+		min-block-size: sz(38px);
+		padding-inline: sz(10px);
+		border: 1px solid var(--rise-border);
+		border-radius: sz(ct(flow-map, toolbar-radius, var(--rise-radius-lg)));
+		font-size: sz(var(--rise-font-size-sm));
+		white-space: nowrap;
+		background-color: ct(flow-map, toolbar-bg, var(--rise-bg));
+		box-shadow: ct(flow-map, toolbar-shadow, var(--rise-shadow-xs));
+		pointer-events: auto;
+	}
+
+	&__levels {
+		padding: sz(3px);
+	}
+
+	&__crumbs-icon {
+		color: var(--rise-text-muted);
+	}
+
+	&__crumb,
+	&__level {
+		padding: sz(3px 8px);
+		border: 0;
+		border-radius: var(--rise-radius-sm);
+		font: inherit;
+		color: var(--rise-text-muted);
+		background: transparent;
+		cursor: pointer;
+
+		@include motion-safe {
+			transition:
+				background-color var(--rise-duration-fast),
+				color var(--rise-duration-fast);
+		}
+
+		&:hover {
+			color: var(--rise-text-highlighted);
+			background-color: var(--rise-bg-elevated);
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--rise-focus-ring);
+			outline-offset: 1px;
+		}
+	}
+
+	&__level--active,
+	&__level--active:hover {
+		font-weight: var(--rise-font-weight-semibold);
+		color: var(--rise-text-inverted);
+		background-color: var(--rise-primary);
+	}
+
+	&__crumb-current {
+		padding: sz(3px 8px);
+		font-weight: var(--rise-font-weight-semibold);
+		color: var(--rise-text-highlighted);
+	}
+
+	&__crumb-sep {
+		color: var(--rise-text-dimmed);
+	}
+
+	&--compact &__levelbar {
+		inset-block-start: sz(68px);
+		inset-inline-start: sz(12px);
+		max-inline-size: calc(100% - #{sz(24px)});
+	}
+
+	&--compact &__level {
+		min-inline-size: 36px;
+		min-block-size: 36px;
 	}
 }

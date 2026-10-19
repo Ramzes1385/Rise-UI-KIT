@@ -21,8 +21,9 @@ function endOf(id: string, owners: ReadonlyMap<string, string>): string {
 
 function mergedEdge(edges: readonly FlowEdge[], ends: { source: string; target: string }, texts: FlowGroupTexts): FlowEdge {
 	const { sourcePort: _sourcePort, targetPort: _targetPort, ...first } = edges[0]
-	if (edges.length === 1) return first
-	return { ...first, id: `collapsed:${ends.source}>${ends.target}`, label: texts.links(edges.length) }
+	const moved = { ...first, ...ends }
+	if (edges.length === 1) return moved
+	return { ...moved, id: `collapsed:${ends.source}>${ends.target}`, label: texts.links(edges.length) }
 }
 
 function collapseEdges(edges: readonly FlowEdge[], owners: ReadonlyMap<string, string>, texts: FlowGroupTexts): FlowEdge[] {

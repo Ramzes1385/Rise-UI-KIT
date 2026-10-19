@@ -1,5 +1,6 @@
 import { computed, provide, ref } from 'vue'
 import { UI_FLOW_MAP } from '@/locales/messages'
+import { useFlowLevelBar } from './useFlowLevelBar'
 import { FLOW_CHROME_CONTEXT } from '../context/flowContext'
 import type { FlowMode } from '../../types/api/flowController.types'
 import type { FlowMapContext } from '../../types/internal/flowModel.types'
@@ -67,6 +68,7 @@ export function useFlowChrome(
 		isCompact: map.isCompact,
 		...usePanels(props),
 		...useSearch(model, map, pick),
+		...useFlowLevelBar(model, () => map.isCompact.value),
 		title,
 		modes,
 		hasHeader: computed(() => Boolean(title.value) || modes.value.length > 0),

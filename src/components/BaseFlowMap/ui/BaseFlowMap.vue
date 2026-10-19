@@ -32,6 +32,9 @@
 					/></template>
 					<template v-if="$slots.empty" #empty><slot name="empty" /></template>
 				</FlowCanvas>
+				<FlowLevelBar v-if="!isEmpty">
+					<template v-if="$slots.level" #level="slotProps"><slot name="level" v-bind="slotProps" /></template>
+				</FlowLevelBar>
 				<FlowToolbar v-if="hasToolbar">
 					<template v-if="$slots.toolbar" #toolbar="slotProps"><slot name="toolbar" v-bind="slotProps" /></template>
 				</FlowToolbar>
@@ -82,6 +85,7 @@ import FlowDetails from './panels/FlowDetails.vue'
 import FlowMinimap from './panels/FlowMinimap.vue'
 import { BaseResult } from '@components/BaseResult'
 import FlowA11yList from './chrome/FlowA11yList.vue'
+import FlowLevelBar from './chrome/FlowLevelBar.vue'
 import { BaseSkeleton } from '@components/BaseSkeleton'
 import { useBaseFlowMap } from '../model/useBaseFlowMap'
 import FlowLiveRegion from './chrome/FlowLiveRegion.vue'

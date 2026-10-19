@@ -172,5 +172,11 @@ export const uzFlowMap = {
 		GROUP_COLLAPSE: '{name} guruhini yigʻish',
 		/** Имя кнопки-шеврона свёрнутой группы; `{name}` — название группы */
 		GROUP_EXPAND: '{name} guruhini ochish',
+		/** Имя навигации-крошек: путь входа в группы */
+		CRUMBS_ARIA: 'Sxema darajalari',
+		/** Имя переключателя уровней смыслового зума */
+		LEVELS_ARIA: 'Tafsilot darajasi',
+		/** Кнопка уровня: `{n}` — номер с 1, `{name}` — название уровня */
+		LEVEL_BUTTON: '{n} · {name}',
 	},
 }

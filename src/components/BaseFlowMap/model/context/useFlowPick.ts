@@ -1,6 +1,7 @@
 import type { Ref } from 'vue'
 import { formatMessage } from '@/locales/state'
 import { UI_FLOW_MAP } from '@/locales/messages'
+import { FLOW_COLLAPSED_KIND } from '../groups/tree/collapseData'
 import type { FlowElementRef } from '../../types/data/flowReview.types'
 import type { FlowMapContext } from '../../types/internal/flowModel.types'
 import type { FlowElementEvent } from '../../types/api/flowController.types'
@@ -11,6 +12,11 @@ function nameOf(model: FlowModelInternal, target: FlowElementRef): string {
 	if (target.entity === 'node') return graph.nodes.get(target.id)?.label ?? target.id
 	if (target.entity === 'group') return graph.groups.get(target.id)?.label ?? target.id
 	return graph.edges.get(target.id)?.label ?? target.id
+}
+
+function enterBlock(model: FlowModelInternal, target: FlowElementRef): void {
+	const node = target.entity === 'node' ? model.shown.value.nodes.find(item => item.id === target.id) : undefined
+	if (node?.kind === FLOW_COLLAPSED_KIND) model.controller.enterGroup(node.id)
 }
 
 export function useFlowPick(
@@ -34,6 +40,7 @@ export function useFlowPick(
 		map.openDetails(target)
 		map.announce(formatMessage(UI_FLOW_MAP.ANNOUNCE_SELECTED, { label: nameOf(model, target) }))
 		send('click', target, event)
+		enterBlock(model, target)
 	}
 
 	function clear(): void {
@@ -54,7 +61,10 @@ export function useFlowPick(
 		pick,
 		clear,
 		hover,
-		open: (target, event) => send('dblclick', target, event),
+		open: (target, event) => {
+			send('dblclick', target, event)
+			enterBlock(model, target)
+		},
 		menu: (target, event) => send('contextmenu', target, event),
 	}
 }

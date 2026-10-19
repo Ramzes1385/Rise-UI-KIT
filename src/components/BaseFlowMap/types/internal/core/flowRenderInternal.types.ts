@@ -7,7 +7,7 @@ import type { BaseFlowMapPart } from '../../BaseFlowMap.types'
 import type { FlowElementRef } from '../../data/flowReview.types'
 import type { FlowMapContext, FlowModel } from '../flowModel.types'
 import type { FlowEdgeKindDef, FlowNodeKindDef } from '../../api/flowNotation.types'
-import type { FlowMapController, FlowMode, FlowViewport } from '../../api/flowController.types'
+import type { FlowLevelState, FlowMapController, FlowMode, FlowViewport } from '../../api/flowController.types'
 import type { FlowEdge, FlowGroup, FlowMetric, FlowNode, FlowPoint, FlowRect, FlowSize } from '../../data/flowData.types'
 
 /** Классы частей карты */
@@ -321,6 +321,35 @@ export interface FlowCanvasContext {
 	toggleGroup: (id: string) => void
 }
 
+/** Крошка пути входа в группы */
+export interface FlowCrumbItem {
+	/** Ключ для v-for */
+	key: string
+	/** Название */
+	label: string
+	/** Длина пути входа, до которой ведёт крошка (0 — корень) */
+	depth: number
+	/** Текущая позиция */
+	isCurrent: boolean
+	/** Многоточие вместо скрытых крошек (узкий экран) */
+	isEllipsis: boolean
+}
+
+/** Что нужно полосе уровней от модели */
+export type FlowLevelBarParts = Pick<FlowModelInternal, 'level' | 'data' | 'graph' | 'controller'>
+
+/** Кнопка переключателя уровней смыслового зума */
+export interface FlowLevelButton {
+	/** Номер уровня с 0 */
+	index: number
+	/** Полная подпись: «2 · Контейнеры» */
+	text: string
+	/** Название уровня */
+	label: string
+	/** Уровень включён */
+	isActive: boolean
+}
+
 /** Кнопка переключателя режимов шапки */
 export interface FlowModeItem {
 	/** Режим */
@@ -357,6 +386,18 @@ export interface FlowChromeContext {
 	hasDetails: ComputedRef<boolean>
 	/** Название карты */
 	title: ComputedRef<string | undefined>
+	/** Уровень смыслового зума и путь входа */
+	level: ComputedRef<FlowLevelState>
+	/** Показать полосу крошек и уровней */
+	hasLevelBar: ComputedRef<boolean>
+	/** Крошки (на узком экране сокращены) */
+	crumbs: ComputedRef<FlowCrumbItem[]>
+	/** Кнопки уровней */
+	levels: ComputedRef<FlowLevelButton[]>
+	/** Выйти до длины пути `depth` */
+	goCrumb: (depth: number) => void
+	/** Перейти на уровень */
+	goLevel: (index: number) => void
 	/** Режимы переключателя */
 	modes: ComputedRef<FlowModeItem[]>
 	/** Переключить режим */
