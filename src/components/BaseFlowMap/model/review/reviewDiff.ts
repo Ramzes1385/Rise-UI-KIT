@@ -1,5 +1,5 @@
 import type {
-	ReviewAdapter,
+	ReviewDescriber,
 	ReviewChangeInfo,
 	ReviewChangeKind,
 	ReviewField,
@@ -62,7 +62,7 @@ function toMark(info: ReviewChangeInfo): ReviewMark {
 	return { key: markKey(info.entity, info.id), entity: info.entity, id: info.id, kind: info.kind, fields: info.fields, value: info.value }
 }
 
-export function buildReviewMarks<C>(changes: readonly C[], adapter: ReviewAdapter<C>): ReviewMark[] {
+export function buildReviewMarks<C>(changes: readonly C[], adapter: ReviewDescriber<C>): ReviewMark[] {
 	const marks = new Map<string, ReviewMark>()
 	for (const change of changes) {
 		const info = adapter.describe(change)
@@ -76,23 +76,15 @@ export function buildReviewMarks<C>(changes: readonly C[], adapter: ReviewAdapte
 
 export function buildSuggestionMarks<C>(
 	suggestions: readonly { id: string; author: { name: string }; changes: readonly C[] }[],
-	adapter: ReviewAdapter<C>,
+	adapter: ReviewDescriber<C>,
 ): ReviewMark[] {
 	return suggestions.flatMap(item =>
 		buildReviewMarks(item.changes, adapter).map(mark => ({ ...mark, suggestionId: item.id, author: item.author.name })),
 	)
 }
 
-export function indexMarks(marks: readonly ReviewMark[]): Map<string, ReviewMark> {
-	return new Map(marks.map(mark => [mark.key, mark]))
-}
-
 export function markGlyph(kind: ReviewChangeKind): string {
 	if (kind === 'add') return '+'
 	if (kind === 'remove') return '−'
 	return kind === 'move' ? '→' : '~'
-}
-
-export function visibleFields(mark: ReviewMark, hidden: readonly string[] = []): ReviewField[] {
-	return mark.fields.filter(item => !hidden.includes(item.field))
 }

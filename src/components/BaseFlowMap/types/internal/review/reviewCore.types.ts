@@ -1,11 +1,8 @@
 import type { CommentItem } from '@components/BaseCommentThread'
 import type { FlowSuggestionStatus, ReviewSuggestion } from '../../data/flowReview.types'
 
-/** Что сделало изменение с элементом: add — добавило, remove — убрало, rename — сменило подпись, move — сдвинуло, update — поменяло другие поля */
-export const REVIEW_CHANGE_KINDS = ['add', 'remove', 'rename', 'move', 'update'] as const
-
-/** Вид изменения элемента в «Правках» */
-export type ReviewChangeKind = (typeof REVIEW_CHANGE_KINDS)[number]
+/** Вид изменения элемента в «Правках»: add — добавило, remove — убрало, rename — сменило подпись, move — сдвинуло, update — поменяло другие поля */
+export type ReviewChangeKind = 'add' | 'remove' | 'rename' | 'move' | 'update'
 
 /** Вид предложения целиком: вид изменений или mixed, когда виды разные */
 export type ReviewSuggestionKind = ReviewChangeKind | 'mixed'
@@ -32,6 +29,8 @@ export interface ReviewChangeInfo {
 	fields: ReviewField[]
 	/** Добавленный или убранный элемент целиком */
 	value?: unknown
+	/** Id других элементов, без которых изменение не имеет смысла (концы связи) */
+	refs?: string[]
 }
 
 /** Как «Правки» читают изменения `C` — это единственное, что известно только карте или роадмапу */
@@ -41,6 +40,9 @@ export interface ReviewAdapter<C, D = unknown> {
 	/** Можно ли применить изменение к данным сейчас; без функции предложение не считается конфликтным */
 	isApplicable?: (data: D, change: C) => boolean
 }
+
+/** То, что нужно для показа изменений: без данных */
+export type ReviewDescriber<C> = Pick<ReviewAdapter<C>, 'describe'>
 
 /** Метка на элементе: что предложение делает с ним */
 export interface ReviewMark {

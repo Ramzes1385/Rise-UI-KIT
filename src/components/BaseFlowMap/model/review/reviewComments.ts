@@ -1,8 +1,7 @@
-import { markKey } from './reviewDiff'
 import type { CommentItem } from '@components/BaseCommentThread'
 import type { ReviewNewComment, ReviewThreadLike } from '../../types/internal/review/reviewCore.types'
 
-export function nextReviewId(prefix: string, used: Iterable<string>): string {
+function nextReviewId(prefix: string, used: Iterable<string>): string {
 	const taken = new Set(used)
 	let index = taken.size + 1
 	while (taken.has(`${prefix}${index}`)) index += 1
@@ -13,7 +12,7 @@ function collectIds(items: readonly CommentItem[]): string[] {
 	return items.flatMap(item => [item.id, ...collectIds(item.replies ?? [])])
 }
 
-export function allCommentIds(threads: readonly ReviewThreadLike[]): string[] {
+function allCommentIds(threads: readonly ReviewThreadLike[]): string[] {
 	return threads.flatMap(thread => [thread.id, ...collectIds(thread.comments)])
 }
 
@@ -73,16 +72,6 @@ export function visibleThreads<T extends ReviewThreadLike>(threads: readonly T[]
 
 export function commentCount(items: readonly CommentItem[]): number {
 	return items.reduce((sum, item) => sum + 1 + commentCount(item.replies ?? []), 0)
-}
-
-export function threadsByTarget<T extends ReviewThreadLike>(threads: readonly T[]): Map<string, T[]> {
-	const groups = new Map<string, T[]>()
-	for (const thread of threads) {
-		if (!thread.target) continue
-		const key = markKey(thread.target.entity, thread.target.id)
-		groups.set(key, [...(groups.get(key) ?? []), thread])
-	}
-	return groups
 }
 
 export function latestComment(thread: ReviewThreadLike): CommentItem | undefined {

@@ -1,9 +1,9 @@
-import { isReviewEqual } from './reviewDiff'
 import type { FlowSuggestionStatus, ReviewSuggestion } from '../../types/data/flowReview.types'
 import type {
 	ReviewAdapter,
 	ReviewChangeInfo,
 	ReviewCount,
+	ReviewDescriber,
 	ReviewFilter,
 	ReviewStaleContext,
 	ReviewStatusCounts,
@@ -16,11 +16,11 @@ export function toTimestamp(date: Date | string | number): number {
 	return typeof date === 'number' ? date : Date.parse(date)
 }
 
-export function describeChanges<C, D = unknown>(changes: readonly C[], adapter: ReviewAdapter<C, D>): ReviewChangeInfo[] {
+export function describeChanges<C>(changes: readonly C[], adapter: ReviewDescriber<C>): ReviewChangeInfo[] {
 	return changes.map(change => adapter.describe(change)).filter((info): info is ReviewChangeInfo => info !== null)
 }
 
-export function classifySuggestion(infos: readonly ReviewChangeInfo[]): ReviewSuggestionKind {
+function classifySuggestion(infos: readonly ReviewChangeInfo[]): ReviewSuggestionKind {
 	const kinds = new Set(infos.map(info => info.kind))
 	if (kinds.size === 1) return infos[0].kind
 	return 'mixed'
@@ -45,11 +45,7 @@ function isConflicting<C, D>(changes: readonly C[], data: D, adapter: ReviewAdap
 	return check ? changes.some(change => !check(data, change)) : false
 }
 
-export function isSuggestionStale<C, D>(
-	suggestion: ReviewSuggestion<C>,
-	context: ReviewStaleContext<D>,
-	adapter: ReviewAdapter<C, D>,
-): boolean {
+function isSuggestionStale<C, D>(suggestion: ReviewSuggestion<C>, context: ReviewStaleContext<D>, adapter: ReviewAdapter<C, D>): boolean {
 	if (suggestion.status !== 'open') return false
 	const { baseVersion } = suggestion
 	if (baseVersion !== undefined && context.versionId !== undefined && baseVersion !== context.versionId) return true
@@ -98,10 +94,6 @@ export function suggestionAuthors<C>(list: readonly ReviewSuggestion<C>[]): Revi
 	return [...authors.values()]
 }
 
-export function isSameSuggestionList<C>(first: readonly ReviewSuggestion<C>[], second: readonly ReviewSuggestion<C>[]): boolean {
-	return isReviewEqual(first, second)
-}
-
 export function initialsOf(name: string): string {
 	const parts = name.trim().split(/\s+/).filter(Boolean)
 	if (parts.length === 0) return ''
@@ -109,4 +101,28 @@ export function initialsOf(name: string): string {
 		.slice(0, 2)
 		.map(part => part.charAt(0).toUpperCase())
 		.join('')
+}
+
+function findRoot(parents: Map<string, string>, id: string): string {
+	let root = id
+	while ((parents.get(root) ?? root) !== root) root = parents.get(root) as string
+	return root
+}
+
+export function groupChanges<C>(changes: readonly C[], adapter: ReviewDescriber<C>): C[][] {
+	const infos = changes.map(change => adapter.describe(change))
+	const parents = new Map<string, string>()
+	for (const info of infos) if (info) parents.set(info.id, info.id)
+	for (const info of infos) {
+		for (const ref of info?.refs ?? []) {
+			if (info && parents.has(ref)) parents.set(findRoot(parents, ref), findRoot(parents, info.id))
+		}
+	}
+	const groups = new Map<string, C[]>()
+	changes.forEach((change, index) => {
+		const info = infos[index]
+		const key = info ? findRoot(parents, info.id) : '\u0000root'
+		groups.set(key, [...(groups.get(key) ?? []), change])
+	})
+	return [...groups.values()]
 }

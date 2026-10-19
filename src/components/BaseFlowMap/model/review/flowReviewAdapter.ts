@@ -1,6 +1,6 @@
 import { diffFields, isReviewEqual } from './reviewDiff'
 import type { FlowMapData } from '../../types/data/flowData.types'
-import type { FlowChange, FlowEntity } from '../../types/data/flowReview.types'
+import type { FlowAuthor, FlowChange, FlowEntity } from '../../types/data/flowReview.types'
 import type { ReviewAdapter, ReviewChangeInfo, ReviewChangeKind, ReviewField } from '../../types/internal/review/reviewCore.types'
 
 const LISTS: Record<FlowEntity, 'nodes' | 'edges' | 'groups' | 'scenarios'> = {
@@ -22,11 +22,16 @@ function describeUpdate(change: Extract<FlowChange, { type: 'update' }>): Review
 	return { kind: updateKind(fields), entity: change.entity, id: change.id, fields }
 }
 
+function endsOf(value: object): string[] | undefined {
+	const { source, target } = value as { source?: string; target?: string }
+	return source && target ? [source, target] : undefined
+}
+
 function describeFlowChange(change: FlowChange): ReviewChangeInfo | null {
 	if (change.type === 'root') return null
 	if (change.type === 'update') return describeUpdate(change)
 	const id = change.type === 'add' ? change.value.id : change.id
-	return { kind: change.type, entity: change.entity, id, fields: [], value: change.value }
+	return { kind: change.type, entity: change.entity, id, fields: [], value: change.value, refs: endsOf(change.value) }
 }
 
 function findItem(data: FlowMapData, entity: FlowEntity, id: string): Record<string, unknown> | undefined {
@@ -46,4 +51,8 @@ function isFlowChangeApplicable(data: FlowMapData, change: FlowChange): boolean 
 export const flowReviewAdapter: ReviewAdapter<FlowChange, FlowMapData> = {
 	describe: describeFlowChange,
 	isApplicable: isFlowChangeApplicable,
+}
+
+export function flowAuthor(user: FlowAuthor | undefined): FlowAuthor {
+	return user ?? { name: '' }
 }

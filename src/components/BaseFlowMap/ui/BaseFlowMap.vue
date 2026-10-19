@@ -45,7 +45,12 @@
 				<FlowLegend v-if="hasLegend && !isEmpty">
 					<template v-if="$slots.legend" #legend="slotProps"><slot name="legend" v-bind="slotProps" /></template>
 				</FlowLegend>
-				<FlowScenarioPanel v-if="hasScenario && isCompact" />
+				<FlowScenarioPanel v-if="hasScenario && isCompact">
+					<template v-if="$slots['scenario-step']" #scenario-step="slotProps"
+						><slot name="scenario-step" v-bind="slotProps"
+					/></template>
+				</FlowScenarioPanel>
+				<FlowReviewOverlay />
 			</div>
 			<aside v-if="!isCompact" class="base-flow-map__side">
 				<FlowScenarioPanel v-if="hasScenario">
@@ -59,13 +64,19 @@
 						><slot name="inspector-end" v-bind="slotProps"
 					/></template>
 				</FlowDetails>
+			<FlowReviewPanel />
+			</template>
+				<FlowReviewPanel />
 			</aside>
-			<FlowDetails v-else-if="hasDetails">
+			<template v-else>
+			<FlowDetails v-if="hasDetails">
 				<template v-if="$slots.details" #details="slotProps"><slot name="details" v-bind="slotProps" /></template>
 				<template v-if="$slots['inspector-end']" #inspector-end="slotProps"
 					><slot name="inspector-end" v-bind="slotProps"
 				/></template>
 			</FlowDetails>
+			<FlowReviewPanel />
+			</template>
 		</div>
 		<FlowA11yList v-if="!isLoading && !error" />
 		<FlowLiveRegion :text="announcement" />
@@ -89,7 +100,9 @@ import FlowLevelBar from './chrome/FlowLevelBar.vue'
 import { BaseSkeleton } from '@components/BaseSkeleton'
 import { useBaseFlowMap } from '../model/useBaseFlowMap'
 import FlowLiveRegion from './chrome/FlowLiveRegion.vue'
+import FlowReviewPanel from './review/FlowReviewPanel.vue'
 import { kitDefaults } from '@composables/base/useDefaults'
+import FlowReviewOverlay from './review/FlowReviewOverlay.vue'
 import FlowScenarioPanel from './scenario/FlowScenarioPanel.vue'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseFlowMapEmits, BaseFlowMapProps, BaseFlowMapSlots } from '../types/BaseFlowMap.types'

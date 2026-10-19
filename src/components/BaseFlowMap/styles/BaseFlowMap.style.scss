@@ -4,6 +4,7 @@
 @use './chrome';
 @use './scenario';
 @use './panels';
+@use './review/review';
 
 .base-flow-map {
 	@include custom-color-scope;

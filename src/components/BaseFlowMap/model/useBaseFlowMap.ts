@@ -39,7 +39,7 @@ export function useBaseFlowMap(props: BaseFlowMapProps, emit: BaseFlowMapEmits) 
 		ui: rendering.ui,
 		model,
 		editing: useFlowEditing(model),
-		review: useFlowReview(model),
+		review: useFlowReview(model, props, announce),
 		announcement,
 		isCompact: frame.isCompact,
 		isMorphing: model.groups.isMorphing,
