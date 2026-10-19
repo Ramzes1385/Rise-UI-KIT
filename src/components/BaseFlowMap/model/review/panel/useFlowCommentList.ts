@@ -69,7 +69,10 @@ export function useFlowCommentList() {
 function threadActions(review: FlowReviewState) {
 	const { comments, controller } = review
 	return {
-		toggle: (thread: FlowCommentThread) => comments.open(comments.activeId.value === thread.id ? null : thread.id),
+		toggle: (thread: FlowCommentThread) => {
+			if (comments.activeId.value === thread.id) comments.open(null)
+			else if (!comments.isJustClosed(thread.id)) comments.open(thread.id)
+		},
 		show: (thread: FlowCommentThread) => thread.target && controller.focus(thread.target.id),
 		reply: (thread: FlowCommentThread, value: { parentId: string | null; text: string }) =>
 			comments.reply(thread.id, value.text, value.parentId),

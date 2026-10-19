@@ -8,10 +8,13 @@
 				class="base-flow-map__review-card"
 				:class="item.isCompared && 'base-flow-map__review-card--hot'">
 				<div class="base-flow-map__review-card-head">
-					<BaseAvatar v-if="item.name" :name="item.name" :src="item.avatar" :size-scale="0.75" />
 					<span class="base-flow-map__review-card-author">{{ item.label }}</span>
 					<span class="base-flow-map__review-card-time">{{ item.time }}</span>
 					<BaseBadge v-if="item.isCurrent" :label="UI_FLOW_REVIEW.CURRENT" status="primary" variant="soft" />
+				</div>
+				<div v-if="item.name" class="base-flow-map__review-card-by">
+					<BaseAvatar :name="item.name" :src="item.avatar" :size-scale="75" />
+					<span>{{ item.name }}</span>
 				</div>
 				<p v-if="item.summary" class="base-flow-map__review-card-summary">{{ item.summary }}</p>
 				<div v-if="!item.isCurrent" class="base-flow-map__review-card-actions">

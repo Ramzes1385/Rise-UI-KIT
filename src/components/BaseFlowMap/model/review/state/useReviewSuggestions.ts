@@ -16,13 +16,17 @@ import {
 	suggestionAuthors,
 } from '../reviewSuggestions'
 
+export const REVIEW_INTERNAL_HANDLER = 'flowReviewInternal'
+
 function mirrorSuggestions(model: FlowModelInternal, props: FlowModelProps) {
 	const list = shallowRef<FlowSuggestion[]>([...(props.suggestions ?? [])])
 	watch(
 		() => props.suggestions,
 		value => (list.value = [...(value ?? [])]),
 	)
-	onScopeDispose(model.events.subscribe('update:suggestions', (value: FlowSuggestion[]) => (list.value = value)))
+	const onUpdate = (value: FlowSuggestion[]): void => void (list.value = value)
+	Object.defineProperty(onUpdate, 'name', { value: REVIEW_INTERNAL_HANDLER })
+	onScopeDispose(model.events.subscribe('update:suggestions', onUpdate))
 	return list
 }
 

@@ -3,6 +3,7 @@ import { formatMessage } from '@/locales/state'
 import { formatCount } from '../panel/reviewFormat'
 import { UI_FLOW_REVIEW } from '@/locales/messages'
 import { useFlowReviewState } from '../useFlowReviewState'
+import { REVIEW_INTERNAL_HANDLER } from '../state/useReviewSuggestions'
 import type { FlowBinding } from '../../../types/api/flowController.types'
 
 const REVIEW_NAMES = new Set(['beforeAccept', 'accept', 'decline', 'comment', 'update:suggestions', 'update:comments'])
@@ -13,8 +14,9 @@ export function useFlowReviewStatus() {
 	const isHooksOpen = ref(false)
 	const bindings = ref<FlowBinding[]>([])
 	const refresh = (): void => {
-		bindings.value = controller.getBindings().filter(item => REVIEW_NAMES.has(item.name))
+		bindings.value = controller.getBindings().filter(item => REVIEW_NAMES.has(item.name) && item.handler !== REVIEW_INTERNAL_HANDLER)
 	}
+	refresh()
 	return {
 		counts: suggestions.counts,
 		unreadText: computed(() =>

@@ -14,9 +14,10 @@
 		>
 		<BasePopover :is-open="isHooksOpen" position="top" :aria-label="UI_FLOW_REVIEW.HOOKS" @update:is-open="setHooksOpen">
 			<template #trigger>
-				<BaseButton variant="ghost" :aria-expanded="isHooksOpen">
+				<BaseButton variant="ghost" :aria-expanded="isHooksOpen" :title="hooksLabel">
 					<BaseIcon name="code" />
 					{{ UI_FLOW_REVIEW.HOOKS }}
+					<span class="base-flow-map__review-count" aria-hidden="true">{{ bindings.length }}</span>
 				</BaseButton>
 			</template>
 			<div class="base-flow-map__review-hooks">
@@ -49,6 +50,6 @@ import { BaseSwitch } from '@components/BaseSwitch'
 import { BasePopover } from '@components/BasePopover'
 import { useFlowReviewStatus } from '../../model/review/bar/useFlowReviewStatus'
 
-const { counts, commentCount, unreadText, isHooksOpen, bindings, setHooksOpen, toggleBinding, bindingLabel, callsLabel } =
+const { counts, commentCount, unreadText, isHooksOpen, bindings, hooksLabel, setHooksOpen, toggleBinding, bindingLabel, callsLabel } =
 	useFlowReviewStatus()
 </script>

@@ -2,8 +2,10 @@ import { shallowRef, watch } from 'vue'
 import { createFlowId } from '../data/flowIds'
 import { diffFlowData } from '../data/flowDiff'
 import { UI_FLOW_MAP } from '@/locales/messages'
+import { normalizeFlowData } from '../data/flowNormalize'
 import { hookReject, refuse } from '../execute/flowReject'
 import { acceptCommand } from '../commands/flowLayoutCommands'
+import type { FlowMapData } from '../../types/data/flowData.types'
 import type { FlowSuggestion } from '../../types/data/flowReview.types'
 import type { FlowCommandResult } from '../../types/api/flowController.types'
 import type { FlowReviewApi, FlowReviewParts, FlowSuggestionStore } from '../../types/internal/core/flowModelCore.types'
@@ -36,6 +38,11 @@ async function acceptSuggestion(parts: FlowReviewParts, store: FlowSuggestionSto
 	const accepted = result.isApplied ? store.update(found.id, { status: 'accepted' }) : undefined
 	if (accepted) parts.events.emit('accept', accepted)
 	return result
+}
+
+function loadVersion(parts: FlowReviewParts, data: FlowMapData): FlowMapData {
+	const { notation, registry } = parts.state
+	return normalizeFlowData(data, registry.value.get(data.notation ?? '') ?? notation.value, registry.value)
 }
 
 export function createReviewApi(parts: FlowReviewParts): FlowReviewApi {
@@ -71,7 +78,7 @@ export function createReviewApi(parts: FlowReviewParts): FlowReviewApi {
 			const versions = props.versions ?? []
 			const before = versions.find(item => item.id === base)?.data
 			const after = target === undefined ? state.data.value : versions.find(item => item.id === target)?.data
-			return before && after ? diffFlowData(before, after) : []
+			return before && after ? diffFlowData(loadVersion(parts, before), loadVersion(parts, after)) : []
 		},
 	}
 }

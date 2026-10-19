@@ -21,7 +21,7 @@
 				@focusin="setFocus(item.id)"
 				@focusout="setFocus(null)">
 				<div class="base-flow-map__review-card-head">
-					<BaseAvatar :name="item.name" :src="item.avatar" :size-scale="0.75" />
+					<BaseAvatar :name="item.name" :src="item.avatar" :size-scale="75" />
 					<span class="base-flow-map__review-card-author">{{ item.name }}</span>
 					<span class="base-flow-map__review-card-time">{{ item.time }}</span>
 					<BaseBadge :label="item.kind" :status="item.kindStatus" variant="soft" />

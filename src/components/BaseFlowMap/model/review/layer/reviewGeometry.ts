@@ -14,7 +14,7 @@ function clipToRect(rect: FlowRect, toward: FlowPoint): FlowPoint {
 	const dx = toward.x - center.x
 	const dy = toward.y - center.y
 	if (dx === 0 && dy === 0) return center
-	const scale = Math.min(rect.width / 2 / Math.abs(dx || Infinity), rect.height / 2 / Math.abs(dy || Infinity))
+	const scale = Math.min(rect.width / 2 / Math.abs(dx), rect.height / 2 / Math.abs(dy))
 	return { x: center.x + dx * scale, y: center.y + dy * scale }
 }
 

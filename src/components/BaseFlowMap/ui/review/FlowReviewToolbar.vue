@@ -11,7 +11,7 @@
 				:aria-pressed="author.isOn"
 				:aria-label="author.label"
 				@click="toggleAuthor(author.name)">
-				<BaseAvatar :name="author.name" :src="author.avatar" :size-scale="0.75" />
+				<BaseAvatar :name="author.name" :src="author.avatar" :size-scale="75" />
 			</button>
 		</div>
 		<div class="base-flow-map__review-group">

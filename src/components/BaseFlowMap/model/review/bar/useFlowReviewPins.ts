@@ -14,8 +14,11 @@ export function useFlowReviewPins() {
 		pins,
 		activeId: comments.activeId,
 		currentUser: review.currentUser,
-		isOpen: (thread: FlowCommentThread) => comments.activeId.value === thread.id,
-		setOpen: (thread: FlowCommentThread, isOpen: boolean) => comments.open(isOpen ? thread.id : null),
+		isOpen: (thread: FlowCommentThread) => !map.isCompact.value && comments.activeId.value === thread.id,
+		setOpen(thread: FlowCommentThread, isOpen: boolean) {
+			if (!map.isCompact.value) comments.open(isOpen ? thread.id : null)
+			else if (isOpen) comments.open(comments.activeId.value === thread.id ? null : thread.id)
+		},
 		reply: (thread: FlowCommentThread, value: { parentId: string | null; text: string }) =>
 			comments.reply(thread.id, value.text, value.parentId),
 		toggleResolved: (thread: FlowCommentThread) => comments.setResolved(thread.id, !thread.isResolved),

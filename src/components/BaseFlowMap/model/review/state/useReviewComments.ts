@@ -7,6 +7,8 @@ import type { FlowModelInternal } from '../../../types/internal/core/flowRenderI
 import type { FlowCommentTarget, FlowReviewComments } from '../../../types/internal/review/reviewState.types'
 import { addComment, countUnread, createThread, markThreadRead, setThreadResolved, visibleThreads } from '../reviewComments'
 
+const JUST_CLOSED_MS = 300
+
 export function useReviewComments(model: FlowModelInternal, props: FlowModelProps): FlowReviewComments {
 	const list = shallowRef<FlowCommentThread[]>([...(props.comments ?? [])])
 	watch(
@@ -15,6 +17,7 @@ export function useReviewComments(model: FlowModelInternal, props: FlowModelProp
 	)
 	const isResolvedShown = ref(true)
 	const activeId = ref<string | null>(null)
+	let closed = { id: '', at: 0 }
 	const commit = (next: FlowCommentThread[], threadId: string, action: FlowCommentEvent['action']): void => {
 		list.value = next
 		model.events.emit('update:comments', next)
@@ -43,7 +46,9 @@ export function useReviewComments(model: FlowModelInternal, props: FlowModelProp
 		setResolved(threadId, isResolved) {
 			commit(setThreadResolved(list.value, threadId, isResolved), threadId, isResolved ? 'resolve' : 'reopen')
 		},
+		isJustClosed: id => closed.id === id && Date.now() - closed.at < JUST_CLOSED_MS,
 		open(threadId) {
+			if (threadId === null && activeId.value !== null) closed = { id: activeId.value, at: Date.now() }
 			activeId.value = threadId
 			if (threadId === null) return
 			const found = list.value.find(item => item.id === threadId)

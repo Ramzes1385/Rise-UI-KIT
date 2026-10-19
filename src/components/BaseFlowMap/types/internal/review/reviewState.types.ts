@@ -78,6 +78,8 @@ export interface FlowReviewComments {
 	setResolved: (threadId: string, isResolved: boolean) => void
 	/** Открыть цепочку: помечает прочитанной */
 	open: (threadId: string | null) => void
+	/** Цепочку только что закрыли (клик вне булавки): заголовок карточки не должен открыть её снова */
+	isJustClosed: (threadId: string) => boolean
 }
 
 /** Состояние версий и сравнения */
