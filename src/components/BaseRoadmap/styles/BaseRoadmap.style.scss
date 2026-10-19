@@ -211,7 +211,7 @@
 		display: grid;
 		flex: none;
 		place-items: center;
-		@include custom-text(color, var(--rise-text-muted));
+		color: var(--rise-text-muted);
 		@include motion-safe {
 			transition: transform var(--rise-duration-slow) var(--rise-ease-out);
 		}
@@ -226,7 +226,7 @@
 		min-block-size: sz(56px);
 		padding-block: 0;
 		padding-inline: sz(10px) sz(8px);
-		@include custom-text(color, var(--rise-text));
+		color: var(--rise-text);
 		text-align: start;
 		cursor: pointer;
 		@include focus-ring(-2px);
@@ -322,7 +322,7 @@
 		position: relative;
 		font-size: sz(13px);
 		font-weight: var(--rise-font-weight-bold);
-		@include custom-text(color, var(--rise-text-muted));
+		color: var(--rise-text-muted);
 	}
 
 	&__stage-text {
@@ -336,13 +336,13 @@
 	&__stage-title {
 		font-size: sz(14px);
 		font-weight: var(--rise-font-weight-semibold);
-		@include custom-text(color, var(--rise-text-highlighted));
+		color: var(--rise-text-highlighted);
 	}
 
 	&__stage-meta {
 		@include truncate;
 		font-size: sz(12px);
-		@include custom-text(color, var(--rise-text-muted));
+		color: var(--rise-text-muted);
 	}
 
 	&__here {
@@ -415,7 +415,7 @@
 	}
 
 	&__stage--locked &__stage-title {
-		@include custom-text(color, var(--rise-text-muted));
+		color: var(--rise-text-muted);
 	}
 
 	&__list {
@@ -456,7 +456,7 @@
 		align-items: center;
 		min-block-size: sz(34px);
 		padding-inline: sz(10px) sz(9px);
-		@include custom-text(color, var(--rise-text-highlighted));
+		color: var(--rise-text-highlighted);
 		background-color: ct(roadmap, topic-bg, var(--rise-bg));
 		border: 1px solid ct(roadmap, topic-border, var(--rise-border));
 		border-radius: sz(ct(roadmap, topic-radius, calc(var(--rise-radius) * 2.5)));
@@ -485,7 +485,7 @@
 		}
 
 		&--locked {
-			@include custom-text(color, var(--rise-text-muted));
+			color: var(--rise-text-muted);
 			background-color: var(--rise-bg-muted);
 			box-shadow: none;
 		}
@@ -554,7 +554,7 @@
 		flex: none;
 		font-family: var(--rise-font-mono);
 		font-size: sz(11px);
-		@include custom-text(color, var(--rise-text-muted));
+		color: var(--rise-text-muted);
 	}
 
 	&__list &__topic {

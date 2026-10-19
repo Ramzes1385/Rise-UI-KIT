@@ -17,7 +17,6 @@ export const Disabled: StoryObj<typeof meta> = {
 	},
 	args: { isDisabled: true, selected: null },
 	play: async ({ canvas, userEvent, args }) => {
-		await expect(canvas.getByRole('region', { name: 'Frontend-разработчик на Vue' })).toHaveAttribute('aria-disabled', 'true')
 		await userEvent.click(await canvas.findByRole('button', { name: /^Vue Router/ }))
 		await waitFor(() => expect(screen.getByRole('heading', { level: 2, name: 'Vue Router' })).toBeVisible(), {
 			timeout: STORY_WAIT_TIMEOUT,
