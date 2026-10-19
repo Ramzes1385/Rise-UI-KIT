@@ -14,6 +14,7 @@ import { uzRoadmap } from './components/data/roadmap'
 import { uzImageMap3d } from './components/imageMap3d'
 import { uzTranscript } from './components/transcript'
 import { uzFlowPanels } from './components/flow/panels'
+import { uzFlowReview } from './components/flow/review'
 import type { UiKitLocale } from '../types/locales.types'
 import { uzPresentation } from './components/presentation'
 import { uzFlowScenario } from './components/flow/scenario'
@@ -46,6 +47,7 @@ export const uz: UiKitLocale = {
 	...uzFlowMap,
 	...uzFlowScenario,
 	...uzFlowPanels,
+	...uzFlowReview,
 	...uzFlowServices,
 	...uzFlowBpmn,
 	...uzFlowIdef,

@@ -13,6 +13,7 @@ import { enRoadmap } from './components/data/roadmap'
 import { enImageMap3d } from './components/imageMap3d'
 import { enTranscript } from './components/transcript'
 import { enFlowPanels } from './components/flow/panels'
+import { enFlowReview } from './components/flow/review'
 import type { UiKitLocale } from '../types/locales.types'
 import { enPresentation } from './components/presentation'
 import { enFlowScenario } from './components/flow/scenario'
@@ -44,6 +45,7 @@ export const en: UiKitLocale = {
 	...enFlowMap,
 	...enFlowScenario,
 	...enFlowPanels,
+	...enFlowReview,
 	...enFlowServices,
 	...enFlowBpmn,
 	...enFlowIdef,

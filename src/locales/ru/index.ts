@@ -6,6 +6,7 @@ import { ruRoadmap } from './components/data/roadmap'
 import { ruImageMap3d } from './components/imageMap3d'
 import { ruTranscript } from './components/transcript'
 import { ruFlowPanels } from './components/flow/panels'
+import { ruFlowReview } from './components/flow/review'
 import { ruImageMapEditor } from './components/mapEditor'
 import { ruPresentation } from './components/presentation'
 import { ruFlowScenario } from './components/flow/scenario'
@@ -123,6 +124,7 @@ export const ru = {
 	flowMap: ruFlowMap,
 	flowScenario: ruFlowScenario,
 	flowPanels: ruFlowPanels,
+	flowReview: ruFlowReview,
 	flowServices: ruFlowServices,
 	flowBpmn: ruFlowBpmn,
 	flowIdef: ruFlowIdef,

@@ -8,6 +8,7 @@ import { ruRoadmap } from './ru/components/data/roadmap'
 import { ruImageMap3d } from './ru/components/imageMap3d'
 import { ruTranscript } from './ru/components/transcript'
 import { ruFlowPanels } from './ru/components/flow/panels'
+import { ruFlowReview } from './ru/components/flow/review'
 import { ruImageMapEditor } from './ru/components/mapEditor'
 import { ruPresentation } from './ru/components/presentation'
 import { ruFlowScenario } from './ru/components/flow/scenario'
@@ -190,6 +191,7 @@ export const UI_IMAGE_MAP_3D = /* @__PURE__ */ localized('imageMap3d', ruImageMa
 export const UI_FLOW_MAP = /* @__PURE__ */ localized('flowMap', ruFlowMap)
 export const UI_FLOW_SCENARIO = /* @__PURE__ */ localized('flowScenario', ruFlowScenario)
 export const UI_FLOW_PANELS = /* @__PURE__ */ localized('flowPanels', ruFlowPanels)
+export const UI_FLOW_REVIEW = /* @__PURE__ */ localized('flowReview', ruFlowReview)
 export const UI_FLOW_SERVICES = /* @__PURE__ */ localized('flowServices', ruFlowServices)
 export const UI_FLOW_BPMN = /* @__PURE__ */ localized('flowBpmn', ruFlowBpmn)
 export const UI_FLOW_IDEF = /* @__PURE__ */ localized('flowIdef', ruFlowIdef)
