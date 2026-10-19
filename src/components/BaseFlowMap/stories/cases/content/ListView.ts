@@ -29,7 +29,7 @@ export const ListView: StoryObj<typeof meta> = {
 	play: async ({ canvas, userEvent }) => {
 		const list = canvas.getByRole('group', { name: 'Структура карты' })
 		await expect(list).toBeVisible()
-		await expect(list.querySelectorAll('li')).toHaveLength(23)
+		await expect(list.querySelectorAll('li')).toHaveLength(27)
 		const button = Array.from(list.querySelectorAll('button')).find(item => item.textContent?.includes('Payments'))!
 		await userEvent.click(button)
 		await expect(flowNode(canvas, 'Payments')).toHaveAttribute('aria-current', 'true')

@@ -35,8 +35,8 @@ export const Bpmn: StoryObj<typeof meta> = {
 	play: async ({ canvas, canvasElement, userEvent }) => {
 		await expect(flowNodes(canvas)).toHaveLength(17)
 		if (!(await isCompact(canvasElement))) await expect(scenarioSteps(canvas)).toHaveLength(15)
-		await expect(canvas.getByText('Клиент')).toBeVisible()
-		await expect(canvas.getByText('Интернет-магазин')).toBeVisible()
+		await expect(canvas.getAllByRole('graphics-object', { name: /^Клиент/ })[0]).toBeVisible()
+		await expect(canvas.getAllByRole('graphics-object', { name: /^Интернет-магазин/ })[0]).toBeVisible()
 		await expect(flowNode(canvas, 'Заявка корректна?')).toBeVisible()
 		await expect(canvas.getByRole('graphics-symbol', { name: /Поток сообщений.*Отправить товар → Принять посылку/ })).toBeVisible()
 		if (await isCompact(canvasElement)) return

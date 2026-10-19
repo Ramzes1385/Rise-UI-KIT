@@ -1,0 +1,42 @@
+import type { FlowMapData } from '../../../types/data/flowData.types'
+
+export const SHOP_C4: FlowMapData = {
+	version: 1,
+	notation: 'c4',
+	title: 'Интернет-магазин · C4',
+	description: 'Модель C4: контекст, контейнеры и компоненты — три уровня одной карты, переключаются масштабом',
+	groups: [
+		{ id: 'shop', kind: 'system-boundary', label: 'Интернет-магазин', description: 'Каталог, корзина, заказы и оплата' },
+		{ id: 'orders-svc', kind: 'container-boundary', label: 'Сервис заказов', parent: 'shop', props: { technology: 'Go' } },
+	],
+	nodes: [
+		{ id: 'buyer', kind: 'person', label: 'Покупатель', subtitle: 'Выбирает и покупает товары' },
+		{ id: 'web', kind: 'container', label: 'Web-приложение', group: 'shop', props: { technology: 'Vue' } },
+		{ id: 'mobile', kind: 'container', label: 'Мобильное приложение', group: 'shop', props: { technology: 'iOS/Android' } },
+		{ id: 'gw', kind: 'container', label: 'API Gateway', group: 'shop', props: { technology: 'Kong' } },
+		{ id: 'ctrl', kind: 'component', label: 'Контроллер заказов', group: 'orders-svc', props: { technology: 'gRPC' } },
+		{ id: 'pay', kind: 'component', label: 'Сервис оплаты', group: 'orders-svc' },
+		{ id: 'repo', kind: 'component', label: 'Репозиторий заказов', group: 'orders-svc', props: { technology: 'SQL' } },
+		{ id: 'pub', kind: 'component', label: 'Публикатор событий', group: 'orders-svc', props: { technology: 'Kafka' } },
+		{ id: 'db', kind: 'container', label: 'База заказов', group: 'shop', props: { technology: 'PostgreSQL' } },
+		{ id: 'bus', kind: 'container', label: 'Шина событий', group: 'shop', props: { technology: 'Kafka' } },
+		{ id: 'bank', kind: 'external-system', label: 'Банк', subtitle: 'Платёжный шлюз' },
+		{ id: 'delivery', kind: 'external-system', label: 'Служба доставки', subtitle: 'Курьеры и пункты выдачи' },
+		{ id: 'mail', kind: 'external-system', label: 'Email-рассылка', subtitle: 'Письма покупателям' },
+	],
+	edges: [
+		{ id: 'r1', source: 'buyer', target: 'web', label: 'Пользуется', props: { technology: 'HTTPS' } },
+		{ id: 'r2', source: 'buyer', target: 'mobile', label: 'Пользуется', props: { technology: 'HTTPS' } },
+		{ id: 'r3', source: 'web', target: 'gw', label: 'Вызывает API', props: { technology: 'JSON/HTTPS' } },
+		{ id: 'r4', source: 'mobile', target: 'gw', label: 'Вызывает API', props: { technology: 'JSON/HTTPS' } },
+		{ id: 'r5', source: 'gw', target: 'ctrl', label: 'Заказ', props: { technology: 'gRPC' } },
+		{ id: 'r6', source: 'ctrl', target: 'pay', label: 'charge()' },
+		{ id: 'r7', source: 'ctrl', target: 'repo', label: 'save()' },
+		{ id: 'r8', source: 'ctrl', target: 'pub', label: 'publish()' },
+		{ id: 'r9', source: 'pay', target: 'bank', label: 'Проводит оплату', props: { technology: 'HTTPS/JSON' } },
+		{ id: 'r10', source: 'repo', target: 'db', label: 'Пишет', props: { technology: 'SQL' } },
+		{ id: 'r11', source: 'pub', target: 'bus', label: 'Публикует', props: { technology: 'Kafka' } },
+		{ id: 'r12', source: 'bus', target: 'delivery', label: 'Передаёт доставку', props: { technology: 'REST' } },
+		{ id: 'r13', source: 'bus', target: 'mail', label: 'Шлёт письма', props: { technology: 'SMTP' } },
+	],
+}
