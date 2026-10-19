@@ -20,13 +20,7 @@ function createEditEnv(model: FlowModelInternal): FlowCommandEnv {
 			const rect = model.layout.value.nodes[id]
 			return rect ? { x: rect.x, y: rect.y } : undefined
 		},
-		scope: () => ({
-			data: model.data.value,
-			notation: model.notation.value,
-			registry: registry(),
-			layouts: new Map(),
-			routers: new Map(),
-		}),
+		scope: () => model.scope.value,
 		source: 'user',
 	}
 }

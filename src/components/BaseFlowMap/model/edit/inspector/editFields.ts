@@ -19,7 +19,7 @@ const ROUTING_LABELS: Record<string, () => string> = {
 	straight: () => UI_FLOW_EDITOR.ROUTING_STRAIGHT,
 }
 
-const STATUS_LABELS = (status: string): string => (UI_FLOW_EDITOR as Record<string, string>)[`STATE_${status.toUpperCase()}`] ?? status
+const STATUS_LABELS = (status: string): string => (UI_FLOW_EDITOR as Record<string, string>)[`STATE_${status.toUpperCase()}`]
 
 export function writer(context: FlowEditContext, entity: FlowEditable, id: string) {
 	return (patch: Record<string, unknown>) => void context.commands.update({ entity, id }, patch)

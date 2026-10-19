@@ -1,16 +1,19 @@
 import { formatMessage } from '@/locales/state'
 import { onScopeDispose, ref, watch } from 'vue'
-import { getFlowEditing } from '../useFlowEditing'
 import { UI_FLOW_EDITOR } from '@/locales/messages'
 import { useFlowMapContext } from '../../context/flowContext'
+import { EDIT_INTERNAL_HANDLER, getFlowEditing } from '../useFlowEditing'
 import type { FlowBinding } from '../../../types/api/flowController.types'
+import { REVIEW_INTERNAL_HANDLER } from '../../review/state/useReviewSuggestions'
 
 export function useFlowEditHooks() {
 	const { model } = useFlowMapContext()
 	const { context } = getFlowEditing(model)
 	const items = ref<FlowBinding[]>([])
 	const refresh = (): void => {
-		items.value = model.controller.getBindings()
+		items.value = model.controller
+			.getBindings()
+			.filter(item => item.handler !== EDIT_INTERNAL_HANDLER && item.handler !== REVIEW_INTERNAL_HANDLER)
 	}
 	refresh()
 	const offs = (['change', 'reject', 'history-change', 'update:selection'] as const).map(name =>

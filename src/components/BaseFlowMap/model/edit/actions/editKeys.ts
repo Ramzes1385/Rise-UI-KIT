@@ -9,7 +9,6 @@ const STEP = 8
 function toolKey(context: FlowEditContext, tool: FlowEditTool): () => void {
 	return () => {
 		const { state } = context.env
-		if (tool === 'note' && !noteKindOf(context)) return
 		state.tool.value = tool
 		if (tool === 'group' && context.env.model.selection.value.length > 0) {
 			state.tool.value = 'select'

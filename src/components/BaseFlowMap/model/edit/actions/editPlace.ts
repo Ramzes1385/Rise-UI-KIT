@@ -43,7 +43,7 @@ function followPoint(context: FlowEditContext, input: { rect: FlowRect; kind: st
 	const { model } = context.env
 	const { rect } = input
 	const isVertical = (model.data.value.layout?.direction ?? model.notation.value.layout?.direction) === 'TB'
-	const size = model.notation.value.nodeKinds[input.kind]?.size ?? { width: 160, height: 56 }
+	const size = model.notation.value.nodeKinds[input.kind].size
 	return isVertical
 		? { x: rect.x + rect.width / 2, y: rect.y + rect.height + FOLLOW_GAP + size.height / 2 }
 		: { x: rect.x + rect.width + FOLLOW_GAP + size.width / 2, y: rect.y + rect.height / 2 }

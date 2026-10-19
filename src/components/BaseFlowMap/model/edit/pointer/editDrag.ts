@@ -26,16 +26,16 @@ function dragIds(context: FlowEditContext, id: string, isToggle: boolean): strin
 	const nodes = new Set(model.graph.value.nodes.keys())
 	const selected = model.selection.value.filter(item => nodes.has(item))
 	if (selected.includes(id)) return selected
-	model.controller.select([id], isToggle ? 'add' : 'replace')
-	return isToggle ? [...selected, id] : [id]
+	if (isToggle) return [...selected, id]
+	model.controller.select([id], 'replace')
+	return [id]
 }
 
 function denial(context: FlowEditContext, ids: readonly string[], group: string | null): string | null {
 	const { model } = context.env
-	const target = group === null ? null : (model.graph.value.groups.get(group) ?? null)
+	const target = group === null ? null : model.graph.value.groups.get(group)!
 	for (const id of ids) {
-		const node = model.graph.value.nodes.get(id)
-		const verdict = node ? model.notation.value.rules?.canContain?.(target, node) : undefined
+		const verdict = model.notation.value.rules?.canContain?.(target, model.graph.value.nodes.get(id)!)
 		if (verdict !== undefined && verdict !== true) return verdict.message
 	}
 	return null
@@ -71,6 +71,7 @@ async function commit(
 export function startDrag(context: FlowEditContext, event: PointerEvent, id: string): void {
 	const { model, state } = context.env
 	const ids = dragIds(context, id, event.shiftKey || event.ctrlKey || event.metaKey)
+	const isAdded = !model.selection.value.includes(id)
 	const rects = Object.fromEntries(ids.flatMap(item => (model.layout.value.nodes[item] ? [[item, model.layout.value.nodes[item]]] : [])))
 	const moving = Object.values(rects)
 	const others = Object.entries(model.layout.value.nodes)
@@ -104,6 +105,7 @@ export function startDrag(context: FlowEditContext, event: PointerEvent, id: str
 		onMove: update,
 		onEnd: (_, isMoved) => {
 			context.flags.isClickSuppressed = isMoved
+			if (isMoved && isAdded) model.controller.select([id], 'add')
 			if (isMoved && moving.length > 0) void commit(context, { ids, rects, delta }).then(clear)
 			else clear()
 		},

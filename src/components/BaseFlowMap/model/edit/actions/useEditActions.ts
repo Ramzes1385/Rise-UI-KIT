@@ -138,8 +138,9 @@ export function useEditActions(env: FlowEditEnv, commands: FlowEditCommands, not
 		const isConfirmed =
 			!isPool ||
 			(await confirm({ title: UI_FLOW_EDITOR.CONFIRM_POOL_TITLE, description: UI_FLOW_EDITOR.CONFIRM_POOL_TEXT, isDanger: true }))
-		if (isConfirmed) await commands.remove([...ids])
-		model.controller.select([])
+		if (!isConfirmed) return
+		const result = await commands.remove([...ids])
+		if (result.isApplied) model.controller.select([])
 	}
 	return { removeSelection, ...clipboardActions(context, removeSelection), ...arrangeActions(context), ...selectionActions(context) }
 }

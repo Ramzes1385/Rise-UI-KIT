@@ -1,6 +1,6 @@
 <template>
-	<g :ref="layer.attach" class="base-flow-map__edit-layer" aria-hidden="true" />
-	<Teleport v-if="layer.host.value && layer.isActive.value" :to="layer.host.value">
+	<g :ref="layer.anchor" class="base-flow-map__edit-layer" aria-hidden="true" />
+	<Teleport v-if="layer.isActive.value && layer.host.value" :to="layer.host.value">
 		<svg class="base-flow-map__edit-svg" aria-hidden="true">
 			<rect
 				v-if="layer.drop.value"

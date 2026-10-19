@@ -1,6 +1,6 @@
-import { computed, shallowRef } from 'vue'
 import { portsOf } from '../geometry/editPorts'
 import { getFlowEditing } from '../useFlowEditing'
+import { computed, onMounted, ref, shallowRef } from 'vue'
 import { useFlowMapContext } from '../../context/flowContext'
 import type { FlowEditLayerPort } from '../../../types/internal/edit/flowEditApi.types'
 import type { FlowModelInternal } from '../../../types/internal/core/flowRenderInternal.types'
@@ -12,10 +12,8 @@ function linkPath(from: { x: number; y: number }, to: { x: number; y: number }):
 
 function portItems(model: FlowModelInternal, ids: readonly string[]): FlowEditLayerPort[] {
 	return ids.flatMap(id => {
-		const node = model.graph.value.nodes.get(id)
-		const rect = model.layout.value.nodes[id]
-		if (!node || !rect) return []
-		return portsOf(node.ports ?? model.nodeKind(node).ports, rect).map(port => ({
+		const node = model.graph.value.nodes.get(id)!
+		return portsOf(node.ports ?? model.nodeKind(node).ports, model.layout.value.nodes[id]).map(port => ({
 			...port,
 			key: `${id}|${port.id}|${port.side}`,
 			node: id,
@@ -27,7 +25,10 @@ export function useFlowEditLayer() {
 	const { model, viewport } = useFlowMapContext()
 	const editing = getFlowEditing(model)
 	const { state } = editing.context.env
-	const host = shallowRef<Element | null>(null)
+	const anchor = shallowRef<Element | null>(null)
+	const isMounted = ref(false)
+	onMounted(() => (isMounted.value = true))
+	const host = computed(() => (isMounted.value ? (anchor.value?.closest('.base-flow-map__canvas') ?? null) : null))
 	const zoom = computed(() => viewport.value.zoom)
 	const link = computed(() => {
 		const current = state.link.value
@@ -37,8 +38,7 @@ export function useFlowEditLayer() {
 	})
 	return {
 		host,
-		attach: (element: unknown) =>
-			(host.value = element instanceof Element ? (element.closest('.base-flow-map__canvas') ?? null) : null),
+		anchor,
 		isActive: state.isActive,
 		scale: computed(() => 1 / zoom.value),
 		marquee: state.marquee,

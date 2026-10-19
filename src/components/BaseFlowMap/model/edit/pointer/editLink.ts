@@ -24,8 +24,8 @@ function nodeAt(context: FlowEditContext, point: FlowPoint, skip: string): strin
 function anchorOf(context: FlowEditContext, end: FlowEditEnd): FlowPoint {
 	const { model } = context.env
 	const rect = model.layout.value.nodes[end.node]
-	const node = model.graph.value.nodes.get(end.node)
-	const ports = portsOf(node ? (node.ports ?? model.nodeKind(node).ports) : undefined, rect)
+	const node = model.graph.value.nodes.get(end.node)!
+	const ports = portsOf(node.ports ?? model.nodeKind(node).ports, rect)
 	const found = ports.find(port => port.id === (end.port ?? ''))
 	return found?.point ?? { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 }
 }

@@ -12,15 +12,18 @@ import type { FlowEditEnv } from '../../types/internal/edit/flowEdit.types'
 import type { FlowModelInternal } from '../../types/internal/core/flowRenderInternal.types'
 import type { FlowEditContext, FlowEditing } from '../../types/internal/edit/flowEditApi.types'
 
+export const EDIT_INTERNAL_HANDLER = 'flowEditInternal'
+
 const registry = new WeakMap<object, FlowEditing>()
 
 function wireReject(context: FlowEditContext): void {
 	const { model, map, state } = context.env
-	model.events.subscribe('reject', ((event: { message?: string }) => {
+	function flowEditInternal(event: { message?: string }): void {
 		if (!state.isActive.value || !event.message) return
 		context.notify('warning', formatMessage(UI_FLOW_EDITOR.NOTICE_DENIED, { message: event.message }))
 		map.announce(event.message)
-	}) as (value: never) => void)
+	}
+	model.events.subscribe('reject', flowEditInternal as (value: never) => void)
 	watch(state.isActive, isActive => {
 		if (isActive) return
 		state.tool.value = 'select'

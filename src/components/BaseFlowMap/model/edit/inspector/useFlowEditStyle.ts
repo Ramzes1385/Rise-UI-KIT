@@ -35,7 +35,7 @@ export function useFlowEditStyle(props: { id: string }) {
 			{ value: 'custom', label: UI_FLOW_EDITOR.MODEL_CUSTOM },
 		]
 	})
-	const modelValue = computed(() => (node.value?.model3d?.url ? 'custom' : (node.value?.model3d?.model ?? 'auto')))
+	const modelValue = computed(() => (node.value?.model3d?.url !== undefined ? 'custom' : (node.value?.model3d?.model ?? 'auto')))
 	return {
 		node,
 		models,
@@ -59,7 +59,7 @@ export function useFlowEditStyle(props: { id: string }) {
 			const current = node.value?.model3d
 			write({ model3d: modelPatch(id, current) })
 		},
-		setUrl: (value: string | number | null) => write({ model3d: { ...node.value?.model3d, url: String(value ?? '') || undefined } }),
+		setUrl: (value: string | number | null) => write({ model3d: { ...node.value?.model3d, url: String(value ?? '') } }),
 		text: {
 			color: UI_FLOW_EDITOR.STYLE_COLOR,
 			appearance: UI_FLOW_EDITOR.STYLE_APPEARANCE,
