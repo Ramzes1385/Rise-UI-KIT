@@ -5,7 +5,7 @@ import type { StoryObj } from '@storybook/vue3-vite'
 import BaseFlowMap from '../../../ui/BaseFlowMap.vue'
 import { expect, screen, waitFor } from 'storybook/test'
 import { storySource, useStorySetup } from '@/stories/helpers'
-import { editArgs, isNarrowMap, editModels, editNotices, editTemplate, expectStatus } from './editShared'
+import { editArgs, isNarrowMap, expectEditCompact, editModels, editNotices, editTemplate, expectStatus } from './editShared'
 
 export const EditKeyboard: StoryObj<typeof meta> = {
 	parameters: {
@@ -29,7 +29,7 @@ export const EditKeyboard: StoryObj<typeof meta> = {
 		template: editTemplate,
 	}),
 	play: async ({ canvas, canvasElement, userEvent }) => {
-		if (isNarrowMap(canvasElement)) return
+		if (isNarrowMap(canvasElement)) return expectEditCompact({ canvas, canvasElement, userEvent })
 		await userEvent.click(flowNode(canvas, 'Orders'))
 		await expectStatus(canvas, 'Выделено: 1')
 		await userEvent.keyboard('{Shift>}{ArrowRight}{/Shift}')

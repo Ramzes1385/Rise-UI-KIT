@@ -5,7 +5,7 @@ import type { StoryObj } from '@storybook/vue3-vite'
 import BaseFlowMap from '../../../ui/BaseFlowMap.vue'
 import { expect, waitFor, within } from 'storybook/test'
 import { storySource, useStorySetup } from '@/stories/helpers'
-import { editArgs, isNarrowMap, editModels, editNotices, editTemplate, expectStatus } from './editShared'
+import { editArgs, isNarrowMap, expectEditCompact, editModels, editNotices, editTemplate, expectStatus } from './editShared'
 
 const top = (node: HTMLElement): number => node.getBoundingClientRect().top
 
@@ -35,7 +35,7 @@ export const EditMultiSelect: StoryObj<typeof meta> = {
 		template: editTemplate,
 	}),
 	play: async ({ canvas, canvasElement, userEvent }) => {
-		if (isNarrowMap(canvasElement)) return
+		if (isNarrowMap(canvasElement)) return expectEditCompact({ canvas, canvasElement, userEvent })
 		const names = ['Orders', 'Inventory', 'Payments']
 		await userEvent.click(flowNode(canvas, names[0]))
 		await userEvent.keyboard('{Shift>}')

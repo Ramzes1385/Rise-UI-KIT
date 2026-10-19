@@ -5,8 +5,6 @@ import type { FlowAuthor, FlowCommentThread, FlowSuggestion, FlowVersion } from 
 const HOUR = 3_600_000
 const NOW = Date.UTC(2026, 9, 18, 9, 0)
 
-export const REVIEW_NOW = NOW
-
 export const REVIEW_AUTHORS: Record<'maria' | 'oleg' | 'ivan' | 'anna', FlowAuthor> = {
 	maria: { name: 'Мария' },
 	oleg: { name: 'Олег' },
@@ -25,7 +23,7 @@ const CART_NODE: FlowNode = {
 
 const CART_EDGE: FlowEdge = { id: 'e12', kind: 'data', source: 'orders', target: 'cart', label: 'корзина' }
 
-export const REVIEW_BASE: FlowMapData = { ...MAIN_MAP, scenarios: undefined }
+const REVIEW_BASE: FlowMapData = { ...MAIN_MAP, scenarios: undefined }
 
 export const REVIEW_CURRENT: FlowMapData = {
 	...REVIEW_BASE,

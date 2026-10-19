@@ -13,14 +13,13 @@ const template = `
 
 export const ReviewCompact: StoryObj<typeof meta> = {
 	parameters: {
-		a11y: { config: { rules: [{ id: 'scrollable-region-focusable', enabled: false }] } },
 		controls: { include: ['compactBreakpoint', 'isDisabled'] },
 		docs: {
 			description: {
 				story: [
 					'«Правки» на 375 px (мокап FlowMobile): область уже `compactBreakpoint`, поэтому карта остаётся сверху, а панель правок встаёт под ней листом со своей прокруткой: вкладки «Предложения», «Комментарии», «Версии» и карточки предложений. Фильтры «Авторы / Показывать» и легенда правок — двумя строками над картой, вкладок и подписей легенды карты они не закрывают.',
 					'Булавки комментариев и кнопки панели — не меньше 40 px под палец.',
-					'Правило axe `scrollable-region-focusable` у истории выключено: на узком экране легенда правок (`.base-flow-map__review-legend`) прокручивается горизонтально, но не фокусируется с клавиатуры — это дефект ядра, записка в inbox.',
+					'Булавки комментариев (`.base-flow-map__review-pin`) стоят в координатах холста и в RTL не зеркалятся — так задумано: точка привязки к схеме не должна уезжать от узла. Строки «было → стало», полоса сравнения и легенда в RTL зеркалятся.',
 				].join('\n'),
 			},
 			source: storySource({ template, imports: ['BaseFlowMap'], models: reviewModels }),

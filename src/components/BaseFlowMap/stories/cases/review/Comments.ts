@@ -8,14 +8,13 @@ import { reviewArgs, reviewModels, reviewTemplate } from '../../reviewShared'
 
 export const Comments: StoryObj<typeof meta> = {
 	parameters: {
-		a11y: { config: { rules: [{ id: 'scrollable-region-focusable', enabled: false }] } },
 		controls: { include: ['mode', 'isDisabled'] },
 		docs: {
 			description: {
 				story: [
 					'Комментарии к элементам карты: цепочка привязана к узлу, связи или группе (`target`) либо к точке холста (`point`). На карте — булавка с инициалами автора и числом комментариев; непрочитанная цепочка пульсирует (при reduced motion — без пульса).',
 					'Вкладка «Комментарии» — список цепочек в формате BaseCommentThread: ответы вложены, «Решено» скрывает цепочку (решённые возвращает переключатель «Показывать решённые»), «Показать» вписывает элемент в экран. Изменения идут через `v-model:comments`.',
-					'Правило axe `scrollable-region-focusable` у истории выключено: на узком экране легенда правок (`.base-flow-map__review-legend`) прокручивается горизонтально, но не фокусируется с клавиатуры — это дефект ядра, записка в inbox.',
+					'Булавки комментариев (`.base-flow-map__review-pin`) стоят в координатах холста и в RTL не зеркалятся — так задумано: точка привязки к схеме не должна уезжать от узла. Строки «было → стало», полоса сравнения и легенда в RTL зеркалятся.',
 				].join('\n'),
 			},
 			source: storySource({ template: reviewTemplate, imports: ['BaseFlowMap'], models: reviewModels }),

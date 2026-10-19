@@ -7,14 +7,13 @@ import { reviewArgs, reviewModels, reviewTemplate } from '../../reviewShared'
 
 export const Compare: StoryObj<typeof meta> = {
 	parameters: {
-		a11y: { config: { rules: [{ id: 'scrollable-region-focusable', enabled: false }] } },
 		controls: { include: ['mode', 'isDisabled'] },
 		docs: {
 			description: {
 				story: [
 					'Сравнение версий «Было / Стало / Разница»: `versions` — список версий, `compareWith` — id версии, с которой сравнивается текущая карта (`null` — без сравнения). Здесь включено сравнение с «v14»: полоса над картой переключает слои «Было · v14», «Стало · v15» и «Разница».',
 					'«Разница» отмечает добавленное зелёным, убранное красным («призрак» на старом месте), переименованное оранжевым. Вкладка «Версии» перечисляет версии с автором и временем; «Сравнить с текущей» включает сравнение, «Закрыть сравнение» снимает.',
-					'Правило axe `scrollable-region-focusable` у истории выключено: на узком экране легенда правок (`.base-flow-map__review-legend`) прокручивается горизонтально, но не фокусируется с клавиатуры — это дефект ядра, записка в inbox.',
+					'Булавки комментариев (`.base-flow-map__review-pin`) стоят в координатах холста и в RTL не зеркалятся — так задумано: точка привязки к схеме не должна уезжать от узла. Строки «было → стало», полоса сравнения и легенда в RTL зеркалятся.',
 				].join('\n'),
 			},
 			source: storySource({ template: reviewTemplate, imports: ['BaseFlowMap'], models: reviewModels }),
