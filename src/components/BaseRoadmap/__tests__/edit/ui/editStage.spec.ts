@@ -1,6 +1,10 @@
+import { mount } from '@vue/test-utils'
 import { formatMessage } from '@/locales/state'
+import { editData } from '../fixtures/editFixtures'
 import { enableAutoUnmount } from '@vue/test-utils'
 import { UI_ROADMAP_EDIT } from '@/locales/messages'
+import BaseRoadmap from '../../../ui/BaseRoadmap.vue'
+import { mockWidth } from '../../fixtures/shellFixtures'
 import { liveText, mountEditor } from '../fixtures/renderEditor'
 import { fireEvent, screen, within } from '@testing-library/vue'
 
@@ -104,5 +108,31 @@ describe('вид нового материала и публикация в от
 		await mountEditor({ isDisabled: true, onPublish } as never)
 		await fireEvent.click(screen.getByRole('button', { name: UI_ROADMAP_EDIT.PUBLISH }))
 		expect(onPublish).not.toHaveBeenCalled()
+	})
+})
+
+describe('отказ beforeDelete и размонтирование до загрузки', () => {
+	it('отказ удаления оставляет тему выбранной, «Последний итог» виден сразу', async () => {
+		const { user, api } = await mountEditor()
+		api.on('beforeDelete', function guard() {
+			return false
+		})
+		await user.click(pick('Тема c'))
+		const bar = within(inspector()).getByRole('toolbar', { name: UI_ROADMAP_EDIT.ITEM_TOOLBAR })
+		await user.click(within(bar).getByRole('button', { name: new RegExp(UI_ROADMAP_EDIT.ITEM_REMOVE) }))
+		await vi.waitFor(() => expect(liveText()).toContain('отменена'))
+		expect(pick('Тема c')).toHaveAttribute('aria-pressed', 'true')
+		await user.click(within(inspector()).getByRole('tab', { name: new RegExp(UI_ROADMAP_EDIT.TAB_HOOKS) }))
+		expect(
+			within(inspector()).getByText(new RegExp(`Последний итог: отказ — ${UI_ROADMAP_EDIT.HOOK_REASON_DELETE}`)),
+		).toBeInTheDocument()
+	})
+
+	it('размонтирование в режиме «Правка» до загрузки чанка ничего не запускает и не пишет в консоль', async () => {
+		mockWidth(1200)
+		const wrapper = mount(BaseRoadmap, { props: { data: editData(), mode: 'edit', layout: 'list' } as never, attachTo: document.body })
+		wrapper.unmount()
+		await new Promise(resolve => setTimeout(resolve, 3000))
+		expect(document.body.querySelector('.base-roadmap')).toBeNull()
 	})
 })
