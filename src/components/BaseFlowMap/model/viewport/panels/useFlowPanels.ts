@@ -8,7 +8,7 @@ import type { FlowFrameState, FlowModelInternal } from '../../../types/internal/
 const PALETTE_WIDTH = 224
 const SIDE_WIDTH = 340
 
-function sidePanelsWidth(mode: FlowMode, hasDetailsOrScenario: boolean, scale = 1): number {
+function sidePanelsWidth(mode: FlowMode, hasDetailsOrScenario: boolean, scale: number): number {
 	if (mode === 'edit') return (PALETTE_WIDTH + SIDE_WIDTH) * scale
 	if (mode === 'review' || hasDetailsOrScenario) return SIDE_WIDTH * scale
 	return 0
