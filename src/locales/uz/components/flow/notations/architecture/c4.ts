@@ -3,7 +3,7 @@ export const uzFlowC4 = {
 	flowC4: {
 		NOTATION: 'C4',
 		RULES_SUMMARY:
-			'har bir bog’lanish yoziladi; chegaralarda konteynerlar va komponentlar bo’ladi; odamlar chegaradan tashqarida turadi',
+			'har bir bogʻlanish yoziladi; chegaralarda konteynerlar va komponentlar boʻladi; odamlar chegaradan tashqarida turadi',
 		LEVEL_CONTEXT: 'Kontekst',
 		LEVEL_CONTAINERS: 'Konteynerlar',
 		LEVEL_COMPONENTS: 'Komponentlar',
@@ -16,11 +16,11 @@ export const uzFlowC4 = {
 		ENTERPRISE_BOUNDARY: 'Korxona chegarasi',
 		SYSTEM_BOUNDARY: 'Tizim chegarasi',
 		CONTAINER_BOUNDARY: 'Konteyner chegarasi',
-		RELATIONSHIP: 'Bog’lanish',
+		RELATIONSHIP: 'Bogʻlanish',
 		PROP_TECHNOLOGY: 'Texnologiya',
 		CARD_LINE: '[{kind}: {technology}]',
 		CARD_LINE_PLAIN: '[{kind}]',
-		RULE_CONTAIN: '“{group}” ichiga faqat quyidagilarni qo’yish mumkin: {kinds}',
-		WARN_NO_LABEL: '“{source}” → “{target}” bog’lanishida yozuv yo’q: C4 dagi har bir chiziq yoziladi',
+		RULE_CONTAIN: '“{group}” ichiga faqat quyidagilarni qoʻyish mumkin: {kinds}',
+		WARN_NO_LABEL: '“{source}” → “{target}” bogʻlanishida yozuv yoʻq: C4 dagi har bir chiziq yoziladi',
 	},
 }
