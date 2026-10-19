@@ -1,5 +1,5 @@
-import { edge, group, map, node } from '../fixtures/flowData'
-import { collectFlowIds, createFlowId } from '../../../../model/data/flowIds'
+import { edge, group, map, node } from '../../fixtures/flowData'
+import { collectFlowIds, createFlowId } from '../../../../../model/data/flowIds'
 
 describe('flowIds', () => {
 	it('collectFlowIds собирает id узлов, связей, групп и сценариев', () => {

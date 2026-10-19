@@ -1,8 +1,8 @@
-import { edge, group, map, node } from '../fixtures/flowData'
-import { diffFlowData } from '../../../../model/data/flowDiff'
-import type { FlowChange } from '../../../../types/data/flowReview.types'
-import { createRandom, mutate, randomChanges, randomData } from '../fixtures/seeded'
-import { applyFlowChanges, invertFlowChanges } from '../../../../model/data/flowChanges'
+import { edge, group, map, node } from '../../fixtures/flowData'
+import { diffFlowData } from '../../../../../model/data/flowDiff'
+import type { FlowChange } from '../../../../../types/data/flowReview.types'
+import { createRandom, mutate, randomChanges, randomData } from '../../fixtures/seeded'
+import { applyFlowChanges, invertFlowChanges } from '../../../../../model/data/flowChanges'
 
 const CASES = 200
 

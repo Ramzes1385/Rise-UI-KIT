@@ -457,6 +457,24 @@ describe('useFlowScenario: ветвление и хук resolveChoice', () => {
 		expect(second.driver.timeline.value.map(entry => entry.step)).toEqual(['ship'])
 	})
 
+	it('перемотка и повторный play до ответа хука запускают одни часы: поздний ответ второй цикл не заводит', async () => {
+		const { driver, hooks } = mountScenario({ data })
+		hooks.on('resolveChoice', async () => 'ok')
+		driver.play()
+		driver.seek({ step: 'ship' })
+		expect(driver.state.value.status).toBe('paused')
+		driver.play()
+		expect(driver.state.value.status).toBe('playing')
+		expect(frames.pending()).toBe(1)
+		await flushPromises()
+		expect(driver.state.value.status).toBe('playing')
+		expect(frames.pending()).toBe(1)
+		frames.run(80)
+		expect(frames.pending()).toBe(1)
+		expect(driver.state.value.time).toBeGreaterThan(0)
+		expect(driver.state.value.time).toBeLessThanOrEqual(80)
+	})
+
 	it('смена сценария до ответа хука отменяет запуск, ответы старого не попадают в новый', async () => {
 		const { driver, hooks, details } = mountScenario({ data: mapOf([branching, refund]) })
 		hooks.on('resolveChoice', async () => 'fail')

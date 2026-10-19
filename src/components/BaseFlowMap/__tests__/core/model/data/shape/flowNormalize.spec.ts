@@ -1,6 +1,6 @@
-import { edge, group, map, node } from '../fixtures/flowData'
-import { normalizeFlowData } from '../../../../model/data/flowNormalize'
-import type { FlowNotation } from '../../../../types/api/flowNotation.types'
+import { edge, group, map, node } from '../../fixtures/flowData'
+import { normalizeFlowData } from '../../../../../model/data/flowNormalize'
+import type { FlowNotation } from '../../../../../types/api/flowNotation.types'
 
 const notation: FlowNotation = {
 	id: 'test',

@@ -1,5 +1,6 @@
 import { edge, map, node } from '../fixtures/flowData'
 import { runFlowLayout } from '../../../../model/layout/useFlowLayout'
+import { buildLayeredGraph } from '../../../../model/layout/layered/graph'
 import type { FlowDirection } from '../../../../types/data/flowData.types'
 import { createScope, hasOverlaps, isInside } from '../fixtures/layoutScope'
 
@@ -18,6 +19,23 @@ describe('связь узла с самим собой', () => {
 		const { nodes } = runFlowLayout(createScope(data))
 		expect(Object.keys(nodes).sort()).toEqual(['a', 'b'])
 		expect(hasOverlaps(Object.values(nodes))).toBe(false)
+	})
+})
+
+describe('граф ярусов: связи внутри яруса', () => {
+	const vertex = (layer: number) => ({ id: `v${layer}`, isDummy: false, main: 10, cross: 10, band: 0, layer, mainPos: 0, crossPos: 0 })
+
+	it('связь двух узлов одного яруса запоминается как соседская; связь узла с самим собой — нет', () => {
+		const graph = buildLayeredGraph(
+			[vertex(0), vertex(0), vertex(1)],
+			[
+				[0, 1],
+				[1, 1],
+				[0, 2],
+			],
+		)
+		expect(graph.peers).toEqual([[0, 1]])
+		expect(graph.layers[0]).toEqual([0, 1])
 	})
 })
 

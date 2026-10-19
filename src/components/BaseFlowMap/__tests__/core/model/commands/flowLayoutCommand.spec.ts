@@ -72,6 +72,25 @@ describe('команда layout', () => {
 		expect(controller.getData().nodes[1].position).toEqual({ x: 800, y: 800 })
 	})
 
+	it('раскладка плагина, не вернувшая часть узлов, двигает только вернувшиеся', async () => {
+		const run = vi.fn(({ nodes }: { nodes: Array<{ id: string; size: { width: number; height: number } }> }) => ({
+			nodes: Object.fromEntries(
+				nodes.filter(item => item.id !== 'c').map((item, index) => [item.id, { ...item.size, x: index * 200, y: 40 }]),
+			),
+			groups: {},
+			bounds: { x: 0, y: 0, width: 400, height: 100 },
+		}))
+		const plugin = { name: 'partial', layouts: [{ id: 'partial', run: run as never }] }
+		const { controller } = createHarness(map({ ...data, layout: { algorithm: 'partial', gridSize: 0 } }), {
+			props: { plugins: [plugin] },
+		})
+		const result = await controller.layout()
+		const moved = result.changes.flatMap(change => (change.type === 'update' ? [change.id] : []))
+		expect(moved).toEqual(['a', 'b'])
+		expect(controller.getData().nodes.find(item => item.id === 'c')?.position).toBeUndefined()
+		expect(controller.getData().nodes.find(item => item.id === 'b')?.position).toEqual({ x: 200, y: 40 })
+	})
+
 	it('запрещена в режиме disabled', async () => {
 		const { controller } = createHarness(data, { props: { isDisabled: true } })
 		expect((await controller.layout()).reject?.code).toBe('disabled')

@@ -216,3 +216,50 @@ describe('рамки (box)', () => {
 		expect(isInside(nodes.n1, groups.g2)).toBe(true)
 	})
 })
+
+describe('полосы и ярусы вместе', () => {
+	const mixed = map({
+		groups: [
+			group('l1', { kind: 'lane', order: 0 }),
+			group('l2', { kind: 'lane', order: 1 }),
+			group('top', { kind: 'layer', parent: 'l2' }),
+		],
+		nodes: [node('a', { group: 'l1' }), node('b', { group: 'top' })],
+		edges: [edge('1', ['a', 'b'])],
+	})
+
+	it('связь между узлами одного яруса, но разных полос: узлы остаются в своих полосах и не накладываются', () => {
+		const { nodes, groups } = runFlowLayout(createScope(mixed, { notation: plainNotation, layout: { direction: 'LR' } }))
+		expect(isInside(nodes.a, groups.l1)).toBe(true)
+		expect(isInside(nodes.b, groups.l2)).toBe(true)
+		expect(groups.l2.y).toBeGreaterThan(groups.l1.y)
+		expect(hasOverlaps(Object.values(nodes))).toBe(false)
+	})
+})
+
+describe('полосы с рамкой-коробкой и сеткой', () => {
+	const withBox = map({
+		groups: [
+			group('l1', { kind: 'lane', order: 0 }),
+			group('l2', { kind: 'lane', order: 1 }),
+			group('box', { kind: 'zone', parent: 'l1' }),
+		],
+		nodes: [node('a', { group: 'box' }), node('b', { group: 'l2' })],
+		edges: [edge('1', ['a', 'b'])],
+	})
+
+	it('коробка внутри полосы получает рамку по узлам, полосы тянутся на всю ширину', () => {
+		const { nodes, groups } = runFlowLayout(createScope(withBox, { notation: plainNotation, layout: { direction: 'LR' } }))
+		expect(isInside(nodes.a, groups.box)).toBe(true)
+		expect(isInside(groups.box, groups.l1)).toBe(true)
+		expect(isInside(nodes.b, groups.l2)).toBe(true)
+	})
+
+	it('с сеткой 8 рамки полос стоят на узлах сетки', () => {
+		const { groups } = runFlowLayout(createScope(withBox, { notation: plainNotation, layout: { direction: 'LR', gridSize: 8 } }))
+		for (const id of ['l1', 'l2']) {
+			expect(groups[id].x % 8).toBe(0)
+			expect(groups[id].y % 8).toBe(0)
+		}
+	})
+})

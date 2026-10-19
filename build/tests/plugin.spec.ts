@@ -89,7 +89,7 @@ describe('createUiKitPlugin', () => {
 			Object.entries(UI_COMPONENTS)
 				.filter(([, component]) => '__asyncLoader' in component)
 				.map(([name]) => name),
-		).toEqual(['BaseCalendar', 'BaseChat', 'BaseDatePicker', 'BaseEditor', 'BaseFileUpload', 'BaseTable'])
+		).toEqual(['BaseCalendar', 'BaseChat', 'BaseDatePicker', 'BaseEditor', 'BaseFileUpload', 'BaseFlowMap', 'BaseTable'])
 	})
 
 	it('teleportTo и locale: контейнер слоёв для provide, язык — для всего кита', () => {

@@ -1,6 +1,6 @@
-import { edge, group, map, node } from '../fixtures/flowData'
-import { validateFlowData } from '../../../../model/data/flowValidate'
-import type { FlowDataIssue, FlowNotation } from '../../../../types/api/flowNotation.types'
+import { edge, group, map, node } from '../../fixtures/flowData'
+import { validateFlowData } from '../../../../../model/data/flowValidate'
+import type { FlowDataIssue, FlowNotation } from '../../../../../types/api/flowNotation.types'
 
 const kind = { label: () => 'K', render: 'html', shape: { shape: 'rect' }, size: { width: 10, height: 10 } } as const
 

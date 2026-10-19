@@ -1,5 +1,5 @@
-import { edge, group, map, node } from '../fixtures/flowData'
-import { buildFlowGraph } from '../../../../model/data/flowGraph'
+import { edge, group, map, node } from '../../fixtures/flowData'
+import { buildFlowGraph } from '../../../../../model/data/flowGraph'
 
 const data = map({
 	groups: [

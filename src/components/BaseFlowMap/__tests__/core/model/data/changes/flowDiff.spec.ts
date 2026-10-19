@@ -1,6 +1,6 @@
-import { edge, group, map, node } from '../fixtures/flowData'
-import { diffFlowData } from '../../../../model/data/flowDiff'
-import type { FlowChange } from '../../../../types/data/flowReview.types'
+import { edge, group, map, node } from '../../fixtures/flowData'
+import { diffFlowData } from '../../../../../model/data/flowDiff'
+import type { FlowChange } from '../../../../../types/data/flowReview.types'
 
 describe('diffFlowData', () => {
 	it('одинаковые данные — нет изменений', () => {

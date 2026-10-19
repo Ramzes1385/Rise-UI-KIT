@@ -1,5 +1,7 @@
 import { edge, map, node } from '../fixtures/flowData'
 import { createHarness } from '../fixtures/modelHarness'
+import { refuse } from '../../../../model/execute/flowReject'
+import type { FlowEventBus } from '../../../../types/internal/core/flowModelCore.types'
 import type { FlowChangeEvent, FlowRejectEvent } from '../../../../types/api/flowController.types'
 
 const services = map({
@@ -133,6 +135,26 @@ describe('конвейер команд', () => {
 		expect(seen).toHaveBeenCalledWith(expect.objectContaining({ command: 'add-node', source: 'api', data: services }))
 	})
 
+	it('сбой обработчика события error не ломает очередь: вызов отклоняется, следующая команда выполняется', async () => {
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+		let isBroken = true
+		const { controller } = createHarness(services, {
+			emit: name => {
+				if (name === 'error' && isBroken) throw new Error('listener')
+			},
+		})
+		const off = controller.on('beforeCreate', () => {
+			throw new Error('boom')
+		})
+		await expect(controller.addNode(node('x'))).rejects.toThrow('listener')
+		off()
+		isBroken = false
+		const next = await controller.addNode(node('y'))
+		expect(next.isApplied).toBe(true)
+		expect(controller.getData().nodes.map(item => item.id)).toContain('y')
+		warn.mockRestore()
+	})
+
 	it('исключение в хуке: предупреждение, событие error и отмена команды', async () => {
 		const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 		const { controller, eventsOf } = createHarness(services)
@@ -205,5 +227,36 @@ describe('конвейер команд', () => {
 	it('нейтральные поля не запускают проверку структуры', async () => {
 		const { controller } = createHarness(map({ nodes: [node('a', { group: 'ghost' })] }))
 		expect((await controller.updateNode('a', { subtitle: 'ok' })).isApplied).toBe(true)
+	})
+})
+
+describe('refuse: отказ и подсказка читателю с экрана', () => {
+	function bus() {
+		const emit = vi.fn()
+		const note = vi.fn()
+		return { events: { emit, note } as unknown as FlowEventBus, emit, note }
+	}
+
+	it('отказ хука с кодом озвучивается: код и сообщение уходят в note', () => {
+		const { events, emit, note } = bus()
+		const reject = { command: 'delete', by: 'hook' as const, code: 'beforeDelete', message: 'Нельзя' }
+		expect(refuse(events, reject)).toEqual({ isApplied: false, changes: [], reject })
+		expect(emit).toHaveBeenCalledWith('reject', reject)
+		expect(note).toHaveBeenCalledWith('beforeDelete', 'Нельзя')
+	})
+
+	it('у хука без сообщения озвучивается пустая строка', () => {
+		const { events, note } = bus()
+		refuse(events, { command: 'delete', by: 'hook', code: 'beforeDelete' })
+		expect(note).toHaveBeenCalledWith('beforeDelete', '')
+	})
+
+	it('отказ хука без кода и отказы правил и пределов не озвучиваются отдельно', () => {
+		const { events, emit, note } = bus()
+		refuse(events, { command: 'delete', by: 'hook' })
+		refuse(events, { command: 'connect', by: 'rule', code: 'port', message: 'Порт занят' })
+		refuse(events, { command: 'connect', by: 'limit', code: 'disabled' })
+		expect(emit).toHaveBeenCalledTimes(3)
+		expect(note).not.toHaveBeenCalled()
 	})
 })

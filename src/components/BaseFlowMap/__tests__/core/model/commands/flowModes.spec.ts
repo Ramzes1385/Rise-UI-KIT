@@ -1,7 +1,8 @@
-import { nextTick } from 'vue'
+import { nextTick, type Ref } from 'vue'
 import { edge, map, node } from '../fixtures/flowData'
 import { createHarness } from '../fixtures/modelHarness'
 import type { FlowMapData } from '../../../../types/data/flowData.types'
+import type { FlowSuggestion } from '../../../../types/data/flowReview.types'
 import type { FlowChangeEvent } from '../../../../types/api/flowController.types'
 
 const base = map({ nodes: [node('a'), node('b')], edges: [edge('e', ['a', 'b'], { kind: 'call' })] })
@@ -23,6 +24,20 @@ describe('режим review: правки уходят в черновик', () 
 		expect(draft?.status).toBe('open')
 		expect(draft?.id).toMatch(/^draft-/)
 		expect(draft?.label).toContain('c')
+	})
+
+	it('черновик без названия получает название первой же команды, а своё название сохраняется', async () => {
+		const { controller, model } = createHarness(base, { props: { mode: 'review', currentUser: user } })
+		const draft = model.draft as Ref<FlowSuggestion | null>
+		draft.value = { id: 'draft-x', author: user, date: 1, changes: [], status: 'open' }
+		await controller.addNode(node('c'))
+		expect(model.draft.value?.id).toBe('draft-x')
+		expect(model.draft.value?.date).toBe(1)
+		expect(model.draft.value?.label).toContain('c')
+		draft.value = { ...(draft.value as FlowSuggestion), label: 'Моё название' }
+		await controller.addNode(node('d'))
+		expect(model.draft.value?.label).toBe('Моё название')
+		expect(model.draft.value?.changes).toHaveLength(2)
 	})
 
 	it('без пользователя автор черновика пуст', async () => {

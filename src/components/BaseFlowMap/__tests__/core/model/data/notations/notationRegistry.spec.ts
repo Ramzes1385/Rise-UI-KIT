@@ -1,6 +1,6 @@
-import type { FlowNotation } from '../../../../types/api/flowNotation.types'
-import { BASE_GROUP_KINDS, FALLBACK_EDGE_KIND, FALLBACK_GROUP_KIND, FALLBACK_NODE_KIND } from '../../../../model/notations/base'
-import { createNotationRegistry, createRegistry, defineFlowNotation, defineFlowPlugin } from '../../../../model/notations/registry'
+import type { FlowNotation } from '../../../../../types/api/flowNotation.types'
+import { BASE_GROUP_KINDS, FALLBACK_EDGE_KIND, FALLBACK_GROUP_KIND, FALLBACK_NODE_KIND } from '../../../../../model/notations/base'
+import { createNotationRegistry, createRegistry, defineFlowNotation, defineFlowPlugin } from '../../../../../model/notations/registry'
 import {
 	applyNotationStyle,
 	parseKindRef,
@@ -8,7 +8,7 @@ import {
 	resolveGroupKind,
 	resolveNodeKind,
 	findNodeKind,
-} from '../../../../model/notations/resolveKind'
+} from '../../../../../model/notations/resolveKind'
 
 const box = { label: () => 'K', render: 'html', shape: { shape: 'rect' }, size: { width: 1, height: 1 } } as const
 

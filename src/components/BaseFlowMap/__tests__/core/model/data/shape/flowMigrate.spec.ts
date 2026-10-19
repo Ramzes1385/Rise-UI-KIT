@@ -1,6 +1,6 @@
 import { UI_FLOW_MAP } from '@/locales/messages'
-import { migrateFlowData } from '../../../../model/data/flowMigrate'
-import { FLOW_DATA_VERSION } from '../../../../types/data/flowData.types'
+import { migrateFlowData } from '../../../../../model/data/flowMigrate'
+import { FLOW_DATA_VERSION } from '../../../../../types/data/flowData.types'
 
 describe('migrateFlowData', () => {
 	it('данные текущей версии отдаются как есть, без замечаний', () => {

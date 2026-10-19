@@ -136,3 +136,12 @@ describe('стороны и концы связи', () => {
 		expect(NORMALS).toEqual({ top: { x: 0, y: -1 }, bottom: { x: 0, y: 1 }, left: { x: -1, y: 0 }, right: { x: 1, y: 0 } })
 	})
 })
+
+describe('clipToShape: узел нулевого размера', () => {
+	it('многоугольник без площади не имеет контура: точка выхода — центр узла', () => {
+		const point: FlowRect = { x: 40, y: 20, width: 0, height: 0 }
+		for (const shape of ['diamond', 'hexagon', 'parallelogram'] as const) {
+			expect(clipToShape(shape, point, { x: 400, y: 20 })).toEqual({ x: 40, y: 20 })
+		}
+	})
+})
