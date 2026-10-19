@@ -1,5 +1,5 @@
 import { expect, waitFor, within } from 'storybook/test'
-import type { BaseFlowMapProps } from '../types/BaseFlowMap.types'
+import type { BaseFlowMapProps } from '../../../types/BaseFlowMap.types'
 
 type StoryCanvas = ReturnType<typeof within>
 

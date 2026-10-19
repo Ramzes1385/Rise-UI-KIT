@@ -5,7 +5,7 @@ import type { StoryObj } from '@storybook/vue3-vite'
 import BaseFlowMap from '../../../ui/BaseFlowMap.vue'
 import { expect, screen, waitFor } from 'storybook/test'
 import { storySource, useStorySetup } from '@/stories/helpers'
-import { editArgs, isNarrowMap, editModels, editNotices, editTemplate, expectStatus } from '../../editShared'
+import { editArgs, isNarrowMap, editModels, editNotices, editTemplate, expectStatus } from './editShared'
 
 export const EditKeyboard: StoryObj<typeof meta> = {
 	parameters: {

@@ -1,9 +1,9 @@
 import { flowNode } from '../../shared'
 import type meta from '../../BaseFlowMap.stories'
 import { MAIN_MAP } from '../../fixtures/services'
+import { editArgs, editModels } from './editShared'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseFlowMap from '../../../ui/BaseFlowMap.vue'
-import { editArgs, editModels } from '../../editShared'
 import { storySource, useStorySetup } from '@/stories/helpers'
 import { expect, screen, waitFor, within } from 'storybook/test'
 

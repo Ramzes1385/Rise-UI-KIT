@@ -7,7 +7,7 @@ import type { StoryObj } from '@storybook/vue3-vite'
 import BaseFlowMap from '../../../ui/BaseFlowMap.vue'
 import setupSource from './setup/EditHooks.setup.ts?raw'
 import { expect, screen, waitFor, within } from 'storybook/test'
-import { editArgs, isNarrowMap, editNotices, expectStatus } from '../../editShared'
+import { editArgs, isNarrowMap, editNotices, expectStatus } from './editShared'
 import { scriptImports, scriptSource, storySource, useStorySetup } from '@/stories/helpers'
 
 const kit = scriptImports(setupSource, { imports: ['BaseFlowMap', 'BaseButton'] })

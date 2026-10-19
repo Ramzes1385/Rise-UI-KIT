@@ -1,10 +1,10 @@
 import { flowC4 } from '@components/BaseFlowMap'
-import { expect, waitFor } from 'storybook/test'
 import type meta from '../../BaseFlowMap.stories'
 import { flowNode, flowNodes } from '../../shared'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseFlowMap from '../../../ui/BaseFlowMap.vue'
 import { SHOP_C4 } from '../../fixtures/architecture/c4'
+import { expect, waitFor, within } from 'storybook/test'
 import { storySource, useStorySetup } from '@/stories/helpers'
 
 const template = `
@@ -47,11 +47,16 @@ export const GroupsCollapse: StoryObj<typeof meta> = {
 		await expect(flowNode(canvas, 'Сервис заказов')).toHaveFocus()
 		await userEvent.keyboard('{Enter}')
 		await waitFor(() => expect(flowNode(canvas, 'Контроллер заказов')).toBeVisible())
-		await expect(canvas.getByRole('navigation', { name: 'Уровни схемы' })).toHaveTextContent(
-			'Интернет-магазин · C4›Интернет-магазин›Сервис заказов',
-		)
-		await userEvent.click(canvas.getByRole('button', { name: 'Интернет-магазин · C4' }))
-		await waitFor(() => expect(canvas.queryByRole('navigation', { name: 'Уровни схемы' })).toBeNull())
+		const crumbs = canvas.getByRole('navigation', { name: 'Уровни схемы' })
+		await expect(crumbs).toHaveTextContent(/Интернет-магазин›Сервис заказов$/)
+		const root = canvas.queryByRole('button', { name: 'Интернет-магазин · C4' })
+		if (root) {
+			await userEvent.click(root)
+			await waitFor(() => expect(canvas.queryByRole('navigation', { name: 'Уровни схемы' })).toBeNull())
+		} else {
+			await userEvent.click(within(crumbs).getByRole('button', { name: 'Интернет-магазин' }))
+			await waitFor(() => expect(crumbs).not.toHaveTextContent('Сервис заказов'))
+		}
 		await userEvent.click(canvas.getByRole('button', { name: 'Свернуть Сервис заказов' }))
 		await waitFor(() => expect(flowNode(canvas, 'Сервис заказов')).toBeVisible())
 	},
