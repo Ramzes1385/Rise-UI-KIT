@@ -42,6 +42,7 @@ export const sequenceNodeKinds: Record<string, FlowNodeKindDef> = {
 		size: { width: 150, height: 420 },
 		labelPlacement: 'none',
 		model3d: 'auto',
+		isLabelObstacle: false,
 		paletteGroup: 'sequence',
 	},
 	actor: {
@@ -52,6 +53,7 @@ export const sequenceNodeKinds: Record<string, FlowNodeKindDef> = {
 		labelPlacement: 'none',
 		isExternal: true,
 		model3d: 'user',
+		isLabelObstacle: false,
 		paletteGroup: 'sequence',
 	},
 	fragment: {
@@ -72,6 +74,7 @@ export const sequenceNodeKinds: Record<string, FlowNodeKindDef> = {
 			to: { label: () => UI_FLOW_SEQUENCE.PROP_TO, type: 'text' },
 		},
 		model3d: 'auto',
+		isLabelObstacle: false,
 		paletteGroup: 'sequence',
 	},
 }
