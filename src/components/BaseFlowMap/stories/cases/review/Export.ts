@@ -28,7 +28,7 @@ export const Export: StoryObj<typeof meta> = {
 		docs: {
 			description: {
 				story: [
-					'Экспорт картинки: `controller.exportSvg(options)` возвращает строку SVG, `exportPng(options)` — `Blob` PNG; `area` выбирает всё содержимое или видимую область, `pixelRatio` — плотность PNG, `background` — фон темы или прозрачный. В картинку попадает то, что видно на карте: узлы с подписями и цветами статусов, связи и группы; интерфейс (панели, булавки) в неё не входит.',
+					'Экспорт картинки: `controller.exportSvg(options)` возвращает строку SVG, `exportPng(options)` — `Blob` PNG; `area` выбирает всё содержимое или видимую область, `pixelRatio` — плотность PNG, `background` — фон темы или прозрачный. В картинку попадает то, что видно на карте: узлы с подписями, подзаголовками (вторая строка карточки) и цветами статусов и акцента, связи и группы; интерфейс (панели, булавки) в неё не входит.',
 					'Приложение само сохраняет результат (ссылка на `Blob`, `download`); карта лишь отдаёт данные. Ошибка экспорта приходит событием `error` с кодом `export-failed`, а не исключением.',
 				].join('\n'),
 			},
@@ -49,7 +49,10 @@ export const Export: StoryObj<typeof meta> = {
 	}),
 	play: async ({ canvas, userEvent }) => {
 		await userEvent.click(canvas.getByRole('button', { name: 'Экспорт SVG' }))
-		await waitFor(() => expect(canvas.getByText(/^(SVG|PNG): /)).toHaveTextContent(/SVG: \d+ символов, начинается с <svg/))
+		await waitFor(() =>
+			expect(canvas.getByText(/^(SVG|PNG): /)).toHaveTextContent(/SVG: \d+ символов, начинается с <svg, подзаголовков: (\d+) из \1$/),
+		)
+		await expect(canvas.getByText(/^SVG: /)).not.toHaveTextContent(/подзаголовков: 0 из/)
 		await userEvent.click(canvas.getByRole('button', { name: 'Экспорт PNG' }))
 		await waitFor(() => expect(canvas.getByText(/^(SVG|PNG): /)).toHaveTextContent(/PNG: image\/png/), { timeout: 8000 })
 	},

@@ -7,14 +7,14 @@ import { reviewArgs, reviewModels, reviewTemplate } from '../../reviewShared'
 
 export const ReviewFilters: StoryObj<typeof meta> = {
 	parameters: {
-		a11y: { config: { rules: [{ id: 'color-contrast', enabled: false }] } },
+		a11y: { config: { rules: [{ id: 'scrollable-region-focusable', enabled: false }] } },
 		controls: { include: ['mode', 'isDisabled'] },
 		docs: {
 			description: {
 				story: [
 					'Фильтры правок над картой: «Авторы» — кнопки с аватарами (нажатая показывает автора, «{имя} — скрыт» убирает его предложения и комментарии с карты и из панели), «Показывать» — «Всё», «Только мои» (автор `currentUser`) и «Неразрешённые», переключатель «Только изменения» приглушает всё, кроме затронутого правками.',
 					'Фильтры меняют только показ: данные, предложения и счётчики вкладок не меняются.',
-					'Правило axe `color-contrast` у истории выключено: принятое предложение рисуется приглушённым, и у его автора и времени контраст ниже 4,5 : 1 — это дефект ядра, записка в inbox.',
+					'Правило axe `scrollable-region-focusable` у истории выключено: на узком экране легенда правок (`.base-flow-map__review-legend`) прокручивается горизонтально, но не фокусируется с клавиатуры — это дефект ядра, записка в inbox.',
 				].join('\n'),
 			},
 			source: storySource({ template: reviewTemplate, imports: ['BaseFlowMap'], models: reviewModels }),

@@ -1,7 +1,7 @@
-import { flowNode } from '../../shared'
 import { flowC4 } from '@components/BaseFlowMap'
 import { expect, waitFor } from 'storybook/test'
 import type meta from '../../BaseFlowMap.stories'
+import { flowNode, flowNodes } from '../../shared'
 import type { StoryObj } from '@storybook/vue3-vite'
 import BaseFlowMap from '../../../ui/BaseFlowMap.vue'
 import { SHOP_C4 } from '../../fixtures/architecture/c4'
@@ -13,14 +13,12 @@ const template = `
 
 export const GroupsCollapse: StoryObj<typeof meta> = {
 	parameters: {
-		a11y: { config: { rules: [{ id: 'color-contrast', enabled: false }] } },
 		docs: {
 			description: {
 				story: [
 					'Сворачивание групп вручную: смысловой зум выключен (`isSemanticZoom: false`), группа сворачивается шевроном в заголовке или полем `isCollapsed` в данных.',
 					'Свёрнутая группа показывается одним блоком: связи её содержимого с внешним миром сливаются в связи блока, внутренние связи скрыты. Состояние сворачивания — вид, а не данные: оно не попадает в историю правок и `update:data`.',
-					'Здесь «Сервис заказов» свёрнут в данных; шеврон «Развернуть» показывает компоненты, «Свернуть» возвращает блок.',
-					'Правило axe `color-contrast` у истории выключено: у человека (тёмно-синяя карточка) подзаголовок серый и не дотягивает до 4,5 : 1 — это дефект ядра, записка в inbox.',
+					'Здесь «Сервис заказов» свёрнут в данных; шеврон «Развернуть» показывает компоненты, «Свернуть» возвращает блок. У блока есть `tabindex`: Enter на нём входит в группу (крошки показывают путь, щелчок по крошке выходит), как двойной щелчок.',
 				].join('\n'),
 			},
 			source: storySource({ template, imports: ['BaseFlowMap', 'flowC4'] }),
@@ -40,6 +38,20 @@ export const GroupsCollapse: StoryObj<typeof meta> = {
 		await expect(flowNode(canvas, 'Сервис заказов')).toBeVisible()
 		await userEvent.click(canvas.getByRole('button', { name: 'Развернуть Сервис заказов' }))
 		await waitFor(() => expect(flowNode(canvas, 'Контроллер заказов')).toBeVisible())
+		await userEvent.click(canvas.getByRole('button', { name: 'Свернуть Сервис заказов' }))
+		await waitFor(() => expect(flowNode(canvas, 'Сервис заказов')).toBeVisible())
+		await waitFor(() =>
+			expect(flowNodes(canvas).some(node => node.getAttribute('aria-label')?.startsWith('Контроллер заказов'))).toBe(false),
+		)
+		flowNode(canvas, 'Сервис заказов').focus()
+		await expect(flowNode(canvas, 'Сервис заказов')).toHaveFocus()
+		await userEvent.keyboard('{Enter}')
+		await waitFor(() => expect(flowNode(canvas, 'Контроллер заказов')).toBeVisible())
+		await expect(canvas.getByRole('navigation', { name: 'Уровни схемы' })).toHaveTextContent(
+			'Интернет-магазин · C4›Интернет-магазин›Сервис заказов',
+		)
+		await userEvent.click(canvas.getByRole('button', { name: 'Интернет-магазин · C4' }))
+		await waitFor(() => expect(canvas.queryByRole('navigation', { name: 'Уровни схемы' })).toBeNull())
 		await userEvent.click(canvas.getByRole('button', { name: 'Свернуть Сервис заказов' }))
 		await waitFor(() => expect(flowNode(canvas, 'Сервис заказов')).toBeVisible())
 	},

@@ -13,6 +13,8 @@ const STORIES = [
 	'comments',
 	'compare',
 	'review-compact',
+	'edit',
+	'edit-multi-select',
 ] as const
 
 for (const theme of VISUAL_THEMES) {

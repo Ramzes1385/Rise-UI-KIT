@@ -7,7 +7,9 @@ export function setup() {
 
 	const exportSvg = async () => {
 		const svg = (await map.value?.exportSvg({ area: 'content', background: 'theme' })) ?? ''
-		result.value = `SVG: ${svg.length} символов, начинается с ${svg.slice(0, 4)}`
+		const subtitled = map.value?.getData().nodes.filter(node => node.subtitle) ?? []
+		const kept = subtitled.filter(node => svg.includes(String(node.subtitle))).length
+		result.value = `SVG: ${svg.length} символов, начинается с ${svg.slice(0, 4)}, подзаголовков: ${kept} из ${subtitled.length}`
 	}
 	const exportPng = async () => {
 		const blob = await map.value?.exportPng({ area: 'content', pixelRatio: 1 })
