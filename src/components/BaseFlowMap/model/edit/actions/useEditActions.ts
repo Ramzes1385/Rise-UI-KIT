@@ -1,3 +1,4 @@
+import { restoreFocus } from './editFocus'
 import { formatMessage } from '@/locales/state'
 import { unionOf } from '../geometry/editGeometry'
 import { UI_FLOW_EDITOR } from '@/locales/messages'
@@ -141,6 +142,7 @@ export function useEditActions(env: FlowEditEnv, commands: FlowEditCommands, not
 		if (!isConfirmed) return
 		const result = await commands.remove([...ids])
 		if (result.isApplied) model.controller.select([])
+		await restoreFocus(env)
 	}
 	return { removeSelection, ...clipboardActions(context, removeSelection), ...arrangeActions(context), ...selectionActions(context) }
 }
@@ -154,6 +156,7 @@ function stepHistory(context: FlowEditActionContext, direction: 'undo' | 'redo')
 	const state = model.history.state.value
 	const label = direction === 'undo' ? state.undoLabel : state.redoLabel
 	model.controller[direction]()
+	void restoreFocus(context.env)
 	if (!label) return
 	const text = direction === 'undo' ? UI_FLOW_EDITOR.NOTICE_UNDONE : UI_FLOW_EDITOR.NOTICE_REDONE
 	context.notify('info', formatMessage(text, { label }))

@@ -53,9 +53,19 @@ async function finishLink(context: FlowEditContext, link: FlowEditLink): Promise
 		state.link.value = null
 		return
 	}
+	await connectPending(context, link)
+}
+
+export async function connectPending(context: FlowEditContext, link: FlowEditLink): Promise<void> {
+	const { state } = context.env
+	if (!link.target) return
 	state.link.value = { ...link, verdict: 'pending' }
-	await context.commands.connect([link.source, link.target])
-	state.link.value = null
+	context.env.map.announce(UI_FLOW_EDITOR.CONNECT_PENDING)
+	try {
+		await context.commands.connect([link.source, link.target])
+	} finally {
+		state.link.value = null
+	}
 }
 
 export function startLink(context: FlowEditContext, event: PointerEvent, source: FlowEditEnd): void {
