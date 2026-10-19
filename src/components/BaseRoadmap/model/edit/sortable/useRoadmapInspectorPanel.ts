@@ -4,9 +4,12 @@ import { formatMessage } from '@/locales/state'
 import type { TabItem } from '@components/BaseTabs'
 import { UI_ROADMAP_EDIT } from '@/locales/messages'
 import type { BaseSelectOption } from '@components/BaseSelect'
+import { topicStatusText } from '../../view/format/roadmapText'
+import { useRoadmapHooksTab } from '../view/useRoadmapHooksTab'
 import { useRoadmapEditorContext } from '../view/roadmapEditorContext'
-import { ROADMAP_MATERIAL_KINDS } from '../../../types/roadmapData.types'
-import type { RoadmapMaterialKind } from '../../../types/roadmapData.types'
+import type { RoadmapMaterialKind, RoadmapProgressStatus } from '../../../types/roadmapData.types'
+import { ROADMAP_MATERIAL_KINDS, ROADMAP_PROGRESS_STATUSES } from '../../../types/roadmapData.types'
+const NO_STATUS = 'available'
 
 const KIND_TEXT: Record<RoadmapMaterialKind, () => string> = {
 	doc: () => UI_ROADMAP.MATERIAL_DOC,
@@ -23,6 +26,7 @@ export function useRoadmapInspectorPanel() {
 	const { inspector } = editor
 	const rootRef = ref<HTMLElement | null>(null)
 	const newKind = ref<RoadmapMaterialKind>('doc')
+	const hooksCount = useRoadmapHooksTab().count
 	const materialsCount = computed(() => inspector.topic.value?.materials?.length ?? 0)
 	return {
 		rootRef,
@@ -46,7 +50,15 @@ export function useRoadmapInspectorPanel() {
 		tabs: computed<TabItem[]>(() => [
 			{ id: 'topic', label: UI_ROADMAP_EDIT.TAB_TOPIC },
 			{ id: 'materials', label: `${UI_ROADMAP_EDIT.TAB_MATERIALS} ${materialsCount.value}` },
+			{ id: 'hooks', label: `${UI_ROADMAP_EDIT.TAB_HOOKS} ${hooksCount.value}` },
 		]),
+		defaultStatus: computed(() => inspector.topic.value?.defaultStatus ?? NO_STATUS),
+		defaultStatusOptions: computed<BaseSelectOption[]>(() => [
+			{ value: NO_STATUS, label: UI_ROADMAP_EDIT.DEFAULT_STATUS_NONE },
+			...ROADMAP_PROGRESS_STATUSES.map(status => ({ value: status, label: topicStatusText(status) })),
+		]),
+		onDefaultStatus: (value: unknown): void =>
+			void inspector.setDefaultStatus(value === NO_STATUS ? undefined : (value as RoadmapProgressStatus)),
 		requires: computed(() => inspector.topic.value?.requires ?? inspector.stage.value?.requires ?? []),
 		onRequires: (value: unknown): void => void inspector.setRequires(value as string[]),
 		onStage: (value: unknown): void => void inspector.moveToStage(value as string),

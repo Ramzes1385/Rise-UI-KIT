@@ -1,6 +1,6 @@
 import type { ComputedRef, Ref, ShallowRef } from 'vue'
 import type { UiClassFn } from '@composables/base/useUi'
-import type { HookRunner } from '@composables/editor/useCommandHistory/types/useCommandHistory.types'
+import type { RoadmapHookBoard } from './roadmapEdit.internal.types'
 import type {
 	RoadmapData,
 	RoadmapProgress,
@@ -14,7 +14,6 @@ import type {
 	BaseRoadmapPart,
 	BaseRoadmapProps,
 	RoadmapFilter,
-	RoadmapHooks,
 	RoadmapStatusChange,
 	RoadmapTopicState,
 } from '../BaseRoadmap.types'
@@ -141,7 +140,7 @@ export interface UseRoadmapProgressOptions {
 	data: Ref<RoadmapData>
 	index: ComputedRef<RoadmapIndex>
 	requires: ComputedRef<RoadmapRequirements>
-	hooks: HookRunner<RoadmapHooks>
+	hooks: RoadmapHookBoard
 }
 
 /** Вход вычисления статусов; `index` по умолчанию строится из `data` */

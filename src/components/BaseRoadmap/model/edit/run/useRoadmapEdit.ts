@@ -46,6 +46,7 @@ export function createRoadmapEdit(context: RoadmapEditContext): RoadmapEditContr
 		...state,
 		...createStructureMethods(context, run),
 		...createLinkMethods(context, run),
+		hooks: context.hooks,
 		viewData: computed(() => state.draft.value ?? context.data.value),
 		announce: text => announceRoadmap(state, text),
 		dismissRejection: () => (state.rejection.value = null),

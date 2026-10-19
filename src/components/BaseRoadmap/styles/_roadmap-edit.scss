@@ -452,6 +452,50 @@
 		color: var(--rise-warning);
 	}
 
+	&__hook {
+		display: flex;
+		flex-direction: column;
+		gap: space(4px);
+		padding: space(8px);
+		border: 1px solid var(--rise-border);
+		border-radius: sz(var(--rise-radius-sm));
+
+		&.is-off {
+			opacity: 0.6;
+		}
+	}
+
+	&__hook-top {
+		display: flex;
+		flex-wrap: wrap;
+		gap: space(6px);
+		align-items: center;
+	}
+
+	&__hook-event,
+	&__hook-fn {
+		font-family: var(--rise-font-mono);
+		font-size: sz(12px);
+		overflow-wrap: anywhere;
+	}
+
+	&__hook-fn {
+		color: var(--rise-primary);
+	}
+
+	&__hook-arrow {
+		color: var(--rise-text-muted);
+	}
+
+	&__hook-switch {
+		margin-inline-start: auto;
+	}
+
+	&__hook-note {
+		font-size: sz(12px);
+		color: var(--rise-text-muted);
+	}
+
 	&__inspector-foot {
 		display: flex;
 		gap: space(8px);

@@ -38,7 +38,7 @@ export interface RoadmapEditContext {
 	props: BaseRoadmapProps
 	emit: BaseRoadmapEmits
 	data: ShallowRef<RoadmapData>
-	hooks: HookRunner<RoadmapHooks>
+	hooks: RoadmapHookBoard
 }
 
 /** Выполнить команду правки */
@@ -83,6 +83,8 @@ export interface RoadmapEditController extends RoadmapEditExpose, RoadmapEditSta
 	/** Применить набор изменений одним шагом истории с подписью (принятое предложение «Правок») */
 	applyChanges: (changes: RoadmapChange[], label: string) => Promise<boolean>
 	templates: ComputedRef<RoadmapTemplate[]>
+	/** Хуки: подписки приложения и их итоги — вкладка «Хуки» */
+	hooks: RoadmapHookBoard
 	/** Выбор этапа или темы по id */
 	find: (id: string) => RoadmapFound | null
 }
@@ -124,7 +126,7 @@ export interface RoadmapFound {
 }
 
 /** Вкладка панели свойств */
-export type RoadmapInspectorTab = 'topic' | 'materials'
+export type RoadmapInspectorTab = 'topic' | 'materials' | 'hooks'
 
 /** Место темы при перестановке: этап и номер в нём */
 export interface RoadmapTopicPlace {
@@ -151,6 +153,19 @@ export interface RoadmapSortableActions {
 
 /** Имя хука, который подписывается из пропсов */
 export type RoadmapHookName = 'beforeStatusChange' | 'beforeChange' | 'beforeDelete'
+
+/** Итог последнего вызова обработчика: разрешил или отказал (с причиной) */
+export interface RoadmapHookResult {
+	isCancelled: boolean
+	reason?: string
+}
+
+/** Хуки роадмапа с учётом для вкладки «Хуки»: версия списка и последний итог каждого обработчика */
+export interface RoadmapHookBoard extends HookRunner<RoadmapHooks> {
+	/** Растёт при подписке, отписке, включении и каждом вызове — для обновления вкладки */
+	revision: ShallowRef<number>
+	resultOf: (id: string) => RoadmapHookResult | undefined
+}
 
 /** Подписка из пропса: функция и отписка */
 export interface RoadmapPropSubscription {

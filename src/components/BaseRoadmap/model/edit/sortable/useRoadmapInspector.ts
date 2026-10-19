@@ -5,8 +5,8 @@ import { wouldCreateCycle } from '../changes/roadmapCycles'
 import { buildAlternative } from '../changes/roadmapAlternative'
 import { findRoadmapEntity, roadmapTitle } from '../changes/roadmapFind'
 import { listPatch, newMaterial, nextSubtopic, replaceAt } from '../data/roadmapInspectorLists'
-import type { RoadmapMaterial, RoadmapMaterialKind, RoadmapSubtopic } from '../../../types/roadmapData.types'
 import type { RoadmapEditController, RoadmapInspectorTab } from '../../../types/internal/roadmapEdit.internal.types'
+import type { RoadmapMaterial, RoadmapMaterialKind, RoadmapProgressStatus, RoadmapSubtopic } from '../../../types/roadmapData.types'
 
 function inspectorSelectors(edit: RoadmapEditController) {
 	const targetId = shallowRef<string | null>(null)
@@ -62,6 +62,7 @@ export function useRoadmapInspector(edit: RoadmapEditController) {
 		},
 		setTitle: (value: string) => patch({ title: value }, 'title'),
 		setDescription: (value: string) => patch({ description: value === '' ? undefined : value }, 'description'),
+		setDefaultStatus: (value: RoadmapProgressStatus | undefined) => patch({ defaultStatus: value }),
 		setHours: (value: number | null) => patch({ hours: value ?? undefined }, 'hours'),
 		setOptional: (isOn: boolean) => patch({ kind: isOn ? 'optional' : undefined }),
 		setRequires: (list: string[]) => patch({ requires: list.length > 0 ? list : undefined }),

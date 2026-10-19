@@ -49,6 +49,10 @@ function deriveStatus(explicit: RoadmapProgressStatus | undefined, checked: numb
 	return explicit === 'in-progress' || checked > 0 ? 'in-progress' : 'available'
 }
 
+function explicitStatus(progress: RoadmapProgress, topic: RoadmapTopic): RoadmapProgressStatus | undefined {
+	return progress.topics[topic.id]?.status ?? topic.defaultStatus
+}
+
 function isSatisfied(context: RoadmapStatusContext, id: string): boolean {
 	const stage = context.index.stages.get(id)
 	if (stage) return stage.kind === 'optional' || isStageDone(context, stage)
@@ -68,7 +72,7 @@ function topicStateOf(context: RoadmapStatusContext, id: string): RoadmapTopicSt
 	context.visiting.delete(id)
 	const total = entry.topic.subtopics?.length ?? 0
 	const checked = countChecked(entry.topic, context.progress)
-	const status = missing.length ? 'locked' : deriveStatus(context.progress.topics[id]?.status, checked, total)
+	const status = missing.length ? 'locked' : deriveStatus(explicitStatus(context.progress, entry.topic), checked, total)
 	const fraction = total > 0 ? checked / total : Number(status === 'done')
 	const state = { status, done: checked, total, fraction, missing }
 	context.topics.set(id, state)

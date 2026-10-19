@@ -7,7 +7,7 @@
 				v-if="inspector.topic.value"
 				:items="tabs"
 				:model-value="inspector.tab.value"
-				@update:model-value="inspector.setTab($event as 'topic' | 'materials')">
+				@update:model-value="inspector.setTab($event as RoadmapInspectorTab)">
 				<template #panel-topic>
 					<div class="base-roadmap__inspector-pane">
 						<div class="base-roadmap__inspector-head">
@@ -21,12 +21,20 @@
 								:is-disabled="isDisabled()"
 								@update:model-value="inspector.setTitle(String($event))" />
 						</div>
-						<BaseSelect
-							:model-value="inspector.owner.value?.id"
-							:options="stageOptions"
-							:label="UI_ROADMAP_EDIT.F_STAGE"
-							:is-disabled="isDisabled()"
-							@update:model-value="onStage" />
+						<div class="base-roadmap__inspector-row">
+							<BaseSelect
+								:model-value="inspector.owner.value?.id"
+								:options="stageOptions"
+								:label="UI_ROADMAP_EDIT.F_STAGE"
+								:is-disabled="isDisabled()"
+								@update:model-value="onStage" />
+							<BaseSelect
+								:model-value="defaultStatus"
+								:options="defaultStatusOptions"
+								:label="UI_ROADMAP_EDIT.F_DEFAULT_STATUS"
+								:is-disabled="isDisabled()"
+								@update:model-value="onDefaultStatus" />
+						</div>
 						<div class="base-roadmap__inspector-row">
 							<BaseSwitch
 								:model-value="inspector.topic.value.kind === 'optional'"
@@ -94,6 +102,9 @@
 				<template #panel-materials>
 					<RoadmapInspectorMaterials />
 				</template>
+				<template #panel-hooks>
+					<RoadmapInspectorHooks />
+				</template>
 			</BaseTabs>
 			<div v-else-if="inspector.stage.value" class="base-roadmap__inspector-pane">
 				<div class="base-roadmap__inspector-head">
@@ -152,7 +163,9 @@ import { BaseTextarea } from '@components/BaseTextarea'
 import RoadmapItemToolbar from './RoadmapItemToolbar.vue'
 import { BaseInputNumber } from '@components/BaseInputNumber'
 import RoadmapInspectorMaterials from './RoadmapInspectorMaterials.vue'
+import RoadmapInspectorHooks from './inspector/RoadmapInspectorHooks.vue'
 import { useRoadmapEditorContext } from '../../model/edit/view/roadmapEditorContext'
+import type { RoadmapInspectorTab } from '../../types/internal/roadmapEdit.internal.types'
 import { useRoadmapInspectorPanel } from '../../model/edit/sortable/useRoadmapInspectorPanel'
 
 const { ui } = useRoadmapEditorContext()
@@ -167,6 +180,9 @@ const {
 	stageOptions,
 	tabs,
 	requires,
+	defaultStatus,
+	defaultStatusOptions,
+	onDefaultStatus,
 	onRequires,
 	onStage,
 	onHours,
