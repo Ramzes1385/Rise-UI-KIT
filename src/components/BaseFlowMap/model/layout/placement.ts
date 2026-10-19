@@ -42,13 +42,36 @@ function clearFixed(input: FlowLayoutInput, nodes: Record<string, FlowRect>, fix
 	}
 }
 
+function enclose(rect: FlowRect, inner: FlowRect): FlowRect {
+	const left = Math.min(rect.x, inner.x)
+	const top = Math.min(rect.y, inner.y)
+	return {
+		x: left,
+		y: top,
+		width: Math.max(rect.x + rect.width, inner.x + inner.width) - left,
+		height: Math.max(rect.y + rect.height, inner.y + inner.height) - top,
+	}
+}
+
+function growGroups(input: FlowLayoutInput, result: FlowLayoutResult, nodes: Record<string, FlowRect>): Record<string, FlowRect> {
+	const groups = { ...result.groups }
+	const byId = new Map(input.groups.map(group => [group.id, group]))
+	for (const node of input.nodes) {
+		if (!node.fixed) continue
+		for (let group = byId.get(node.group ?? ''); group; group = byId.get(group.parent ?? '')) {
+			if (group.layout === 'box' && groups[group.id]) groups[group.id] = enclose(groups[group.id], nodes[node.id])
+		}
+	}
+	return groups
+}
+
 export function applyFixed(input: FlowLayoutInput, result: FlowLayoutResult): FlowLayoutResult {
 	const fixed = input.nodes.flatMap(node => (node.fixed ? [{ node, at: node.fixed }] : []))
 	if (fixed.length === 0) return result
 	const nodes = { ...result.nodes }
 	for (const { node, at } of fixed) nodes[node.id] = { ...node.size, x: at.x, y: at.y }
 	clearFixed(input, nodes, new Set(fixed.map(item => item.node.id)))
-	const next = { ...result, nodes }
+	const next = { ...result, nodes, groups: growGroups(input, result, nodes) }
 	return { ...next, bounds: boundsOf(next) }
 }
 

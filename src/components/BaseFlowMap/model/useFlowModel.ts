@@ -95,6 +95,7 @@ export function useFlowModel(props: FlowModelProps, options: FlowModelOptions): 
 		setView: holder.set,
 		events,
 		groups: state.groups,
+		scope: state.scope,
 	}
 	wireEvents(model, events, props)
 	return model

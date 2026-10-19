@@ -4,6 +4,7 @@ import type { FlowGroupState } from '../flowGroups.types'
 import type { FlowEventBus } from './flowModelCore.types'
 import type { FlowRoute } from '../../api/flowLayout.types'
 import type { BaseFlowMapPart } from '../../BaseFlowMap.types'
+import type { FlowLayoutScope } from './flowLayoutScope.types'
 import type { FlowElementRef } from '../../data/flowReview.types'
 import type { FlowMapContext, FlowModel } from '../flowModel.types'
 import type { FlowEdgeKindDef, FlowNodeKindDef } from '../../api/flowNotation.types'
@@ -19,6 +20,8 @@ export interface FlowModelInternal extends FlowModel {
 	events: FlowEventBus
 	/** Свёрнутость групп и уровень смыслового зума */
 	groups: FlowGroupState
+	/** Область раскладки: данные, нотация, реестры алгоритмов и маршрутизаторов */
+	scope: ComputedRef<FlowLayoutScope>
 }
 
 /** Пределы масштаба */
