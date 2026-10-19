@@ -1,7 +1,7 @@
 import type { Meta } from '@storybook/vue3-vite'
 import type BaseRoadmap from '../ui/BaseRoadmap.vue'
 import { ARG_GROUP, baseArgTypes, propGroup } from '@/stories/helpers'
-import { ROADMAP_FILTERS, ROADMAP_LAYOUTS, ROADMAP_VARIANTS } from '../types/BaseRoadmap.types'
+import { ROADMAP_FILTERS, ROADMAP_LAYOUTS, ROADMAP_MODES, ROADMAP_VARIANTS } from '../types/BaseRoadmap.types'
 
 export const argTypes = {
 	...baseArgTypes({ variants: ROADMAP_VARIANTS }),
@@ -18,7 +18,14 @@ export const argTypes = {
 	hasSummary: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
 	hasFilter: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
 	hasLayoutSwitch: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
+	mode: { control: 'inline-radio', options: [...ROADMAP_MODES], table: propGroup(ARG_GROUP.state) },
+	modes: { control: 'object', table: propGroup(ARG_GROUP.behavior) },
+	review: { control: 'object', table: propGroup(ARG_GROUP.content) },
+	templates: { control: 'object', table: propGroup(ARG_GROUP.content) },
+	draftSavedAt: { control: 'date', table: propGroup(ARG_GROUP.content) },
 	beforeStatusChange: { control: false, table: propGroup(ARG_GROUP.behavior) },
+	beforeChange: { control: false, table: propGroup(ARG_GROUP.behavior) },
+	beforeDelete: { control: false, table: propGroup(ARG_GROUP.behavior) },
 	ariaLabel: { control: 'text', table: propGroup(ARG_GROUP.a11y) },
 	isLoading: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
 	isDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
