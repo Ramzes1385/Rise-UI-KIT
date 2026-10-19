@@ -32,13 +32,15 @@ export function useBaseFlowMap(props: BaseFlowMapProps, emit: BaseFlowMapEmits) 
 	})
 	const rendering = useFlowRendering(props, model, { frame, environment: { isReducedMotion, isVisible, announce } })
 	onMounted(() => model.events.emit('ready', model.controller))
-	const { hasHeader, hasToolbar, hasSearch, hasMinimap, hasLegend, hasScenario, hasDetails, isEmpty } = rendering.chrome
+	const editing = useFlowEditing(model, { map: rendering.canvas.map, element: frame.element, props })
+	const { hasHeader, hasToolbar, hasSearch, hasMinimap, hasLegend, hasScenario, isEmpty } = rendering.chrome
+	const hasDetails = computed(() => rendering.chrome.hasDetails.value && !editing.context.env.state.isEditing.value)
 	return {
 		...useStandardBaseComponent('base-flow-map', props, [...FLOW_MAP_PARTS]),
 		...{ hasHeader, hasToolbar, hasSearch, hasMinimap, hasLegend, hasScenario, hasDetails, isEmpty },
 		ui: rendering.ui,
 		model,
-		editing: useFlowEditing(model),
+		editing,
 		review: useFlowReview(model, props, announce),
 		announcement,
 		isCompact: frame.isCompact,
