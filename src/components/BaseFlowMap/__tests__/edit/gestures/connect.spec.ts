@@ -3,7 +3,7 @@ import { fireEvent } from '@testing-library/vue'
 import { guardConsole } from '../../helpers/consoleGuard.test-utils'
 import { editData, flush, liveText, mountEdit, screen, settle, waitFor, type EditMap } from '../editHarness'
 
-guardConsole()
+const guard = guardConsole()
 
 const port = (map: EditMap, id: string) => map.container.querySelector(`circle[data-edit-port="${id}|"]`) as SVGElement
 const edges = (map: EditMap) => map.data().edges
@@ -146,5 +146,61 @@ describe('соединение с клавиатуры', () => {
 		await fireEvent.keyDown(document.activeElement ?? document.body, { key: 'Escape' })
 		await waitFor(() => expect(screen.queryByRole('combobox', { name: 'Соединить с…' })).toBeNull())
 		expect(edges(map)).toHaveLength(2)
+	})
+	describe('асинхронный beforeConnect при выборе цели из списка', () => {
+		async function choose(map: EditMap) {
+			await select(map, 'gw')
+			await map.press('c')
+			const box = await screen.findByRole('combobox', { name: 'Соединить с…' })
+			await fireEvent.focus(box)
+			await fireEvent.click(box)
+			await fireEvent.click(await screen.findByRole('option', { name: /Оплата/ }))
+		}
+
+		it('пока ждём ответ — индикатор и объявление, после ответа — сброс и связь', async () => {
+			let answer!: (value: boolean) => void
+			const beforeConnect = vi.fn(() => new Promise<boolean>(resolve => (answer = resolve)))
+			const map = await mountEdit({ data: editData(), beforeConnect })
+			await choose(map)
+			await waitFor(() => expect(screen.getByLabelText('Ждём ответ приложения')).toBeInTheDocument())
+			expect(map.container.querySelector('.base-flow-map__edit-link')).toHaveAttribute('data-verdict', 'pending')
+			expect(await liveText(map)).toContain('Ждём ответ приложения')
+			expect(edges(map)).toHaveLength(2)
+			answer(true)
+			await waitFor(() => expect(edges(map)).toHaveLength(3))
+			await waitFor(() => expect(screen.queryByLabelText('Ждём ответ приложения')).toBeNull())
+			expect(map.container.querySelector('.base-flow-map__edit-link')).toBeNull()
+		})
+
+		it('отказ приложения сбрасывает индикатор, связи нет', async () => {
+			let answer!: (value: boolean) => void
+			const map = await mountEdit({ data: editData(), beforeConnect: () => new Promise<boolean>(resolve => (answer = resolve)) })
+			await choose(map)
+			await waitFor(() => expect(screen.getByLabelText('Ждём ответ приложения')).toBeInTheDocument())
+			answer(false)
+			await waitFor(() => expect(screen.queryByLabelText('Ждём ответ приложения')).toBeNull())
+			expect(edges(map)).toHaveLength(2)
+		})
+
+		it('отклонённый промис хука сбрасывает индикатор', async () => {
+			let fail!: (reason: unknown) => void
+			const map = await mountEdit({
+				data: editData(),
+				beforeConnect: () => new Promise<boolean>((_, reject) => (fail = reject)),
+			})
+			await choose(map)
+			await waitFor(() => expect(screen.getByLabelText('Ждём ответ приложения')).toBeInTheDocument())
+			fail(new Error('сбой'))
+			await waitFor(() => expect(screen.queryByLabelText('Ждём ответ приложения')).toBeNull())
+			expect(edges(map)).toHaveLength(2)
+			const logged = [guard.warn(), guard.error()]
+			expect(
+				logged
+					.flatMap(spy => spy.mock.calls)
+					.flat()
+					.join(),
+			).toContain('beforeConnect')
+			logged.forEach(spy => spy.mockClear())
+		})
 	})
 })

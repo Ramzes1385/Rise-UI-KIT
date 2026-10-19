@@ -1,9 +1,10 @@
 import '@testing-library/jest-dom/vitest'
 import { runInHost, stubFrame } from '../flowUi'
-import { effectScope, nextTick, ref } from 'vue'
+import { effectScope, nextTick, reactive, ref } from 'vue'
 import { useFlowFrame } from '../../../../model/viewport/useFlowFrame'
 import { useFlowVisibility } from '../../../../model/viewport/useFlowVisibility'
 import { createViewportAnimation } from '../../../../model/viewport/useFlowAnimation'
+import { sidePanelsWidth, useFlowPanels } from '../../../../model/viewport/useFlowPanels'
 import { boundsOf, centerViewport, clampZoom, fitViewport, isRevealed, mixViewport, zoomAt } from '../../../../model/viewport/viewGeometry'
 
 const limits = { min: 0.2, max: 3 }
@@ -145,6 +146,116 @@ describe('useFlowFrame', () => {
 		callbacks[0]()
 		expect(frame.frame.value.width).toBe(900)
 		vi.unstubAllGlobals()
+	})
+})
+
+describe('useFlowFrame: compact по ширине корня минус боковые панели', () => {
+	afterEach(() => vi.restoreAllMocks())
+
+	function withRoot(widths: { root: number; area: number }) {
+		vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(function (this: HTMLElement) {
+			return this.classList.contains('base-flow-map') ? widths.root : widths.area
+		})
+		vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(400)
+		const root = document.createElement('div')
+		root.className = 'base-flow-map'
+		const area = document.createElement('div')
+		root.append(area)
+		return area
+	}
+
+	it.each([
+		[375, 564, true],
+		[1280, 564, false],
+		[900, 340, true],
+	])('корень %i с панелями %i: compact = %s', (root, reserved, expected) => {
+		const { value: frame } = runInHost(() => useFlowFrame({}))
+		frame.reserve(() => reserved)
+		frame.attach(withRoot({ root, area: 5000 }))
+		expect(frame.isCompact.value).toBe(expected)
+	})
+
+	it('без корня берётся ширина области вида, резерв не вычитается', () => {
+		stubFrame(700, 400)
+		const { value: frame } = runInHost(() => useFlowFrame({}))
+		frame.reserve(() => 564)
+		frame.attach(document.createElement('div'))
+		expect(frame.isCompact.value).toBe(false)
+		stubFrame(600, 400)
+		frame.attach(document.createElement('div'))
+		expect(frame.isCompact.value).toBe(true)
+	})
+
+	it('без reserve ничего не вычитается', () => {
+		const { value: frame } = runInHost(() => useFlowFrame({}))
+		frame.attach(withRoot({ root: 700, area: 100 }))
+		expect(frame.isCompact.value).toBe(false)
+		frame.attach(withRoot({ root: 600, area: 100 }))
+		expect(frame.isCompact.value).toBe(true)
+	})
+
+	it('смена reserve пересчитывает isCompact', () => {
+		const { value: frame } = runInHost(() => useFlowFrame({}))
+		const reserved = ref(0)
+		frame.reserve(() => reserved.value)
+		frame.attach(withRoot({ root: 900, area: 100 }))
+		expect(frame.isCompact.value).toBe(false)
+		reserved.value = 340
+		expect(frame.isCompact.value).toBe(true)
+		frame.reserve(() => 0)
+		expect(frame.isCompact.value).toBe(false)
+	})
+})
+
+describe('sidePanelsWidth и useFlowPanels', () => {
+	it('edit — 564, review — 340, view — 340 при details или scenario, иначе 0', () => {
+		expect(sidePanelsWidth('edit', false)).toBe(564)
+		expect(sidePanelsWidth('edit', true)).toBe(564)
+		expect(sidePanelsWidth('review', false)).toBe(340)
+		expect(sidePanelsWidth('view', true)).toBe(340)
+		expect(sidePanelsWidth('view', false)).toBe(0)
+	})
+
+	it('множитель sizeScale/100 применяется к ширине', () => {
+		expect(sidePanelsWidth('edit', false, 1.5)).toBe(846)
+		expect(sidePanelsWidth('view', false, 2)).toBe(0)
+	})
+
+	it('useFlowPanels резервирует ширину по режиму, details/scenario и sizeScale', () => {
+		const mode = ref<'view' | 'edit' | 'review'>('view')
+		const flag = (value = false) => ref(value)
+		const chrome = {
+			hasToolbar: flag(true),
+			hasMinimap: flag(true),
+			hasLegend: flag(true),
+			hasScenario: flag(),
+			hasDetails: flag(),
+		}
+		let getter!: () => number
+		const parts = {
+			model: { mode },
+			chrome,
+			state: { isEditing: flag(), isCompact: flag(), isGridOn: flag(true) },
+			frame: { reserve: (value: () => number) => (getter = value) },
+		}
+		const props = reactive<{ sizeScale?: number }>({})
+		const { value: panels } = runInHost(() => useFlowPanels(props as never, parts as never))
+		expect(panels.hasLegend.value && panels.hasMinimap.value && panels.hasToolbar.value).toBe(true)
+		parts.state.isEditing.value = true
+		expect([panels.hasLegend.value, panels.hasMinimap.value, panels.hasToolbar.value]).toEqual([false, false, false])
+		parts.state.isCompact.value = true
+		expect([panels.hasLegend.value, panels.hasMinimap.value, panels.hasToolbar.value]).toEqual([true, true, true])
+		parts.state.isEditing.value = false
+		parts.state.isCompact.value = false
+		expect(getter()).toBe(0)
+		chrome.hasScenario.value = true
+		expect(getter()).toBe(340)
+		mode.value = 'edit'
+		expect(getter()).toBe(564)
+		props.sizeScale = 150
+		expect(getter()).toBe(846)
+		mode.value = 'review'
+		expect(getter()).toBe(510)
 	})
 })
 

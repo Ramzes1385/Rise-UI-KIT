@@ -2,7 +2,7 @@ import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
 import { UI_FLOW_SCENARIO } from '@/locales/messages'
 import { fireEvent, screen } from '@testing-library/vue'
-import { controllerOf, mapData, mockMedia, mountMap } from '../flowUi'
+import { controllerOf, mapData, mockMedia, mountMap, stubFrame } from '../flowUi'
 
 const data = () =>
 	mapData({
@@ -105,5 +105,24 @@ describe('BaseFlowMap подключение слоёв и панелей час
 		await vi.advanceTimersByTimeAsync(300)
 		expect(controller.getScenarioState().time).toBeGreaterThan(running)
 		vi.useRealTimers()
+	})
+})
+
+describe('легенда и мини-карта в режиме «Правка»', () => {
+	afterEach(() => vi.restoreAllMocks())
+
+	it('без compact в «Правке» их нет, в compact остаются', async () => {
+		stubFrame(1280)
+		const wide = mountMap({ mode: 'edit' })
+		await nextTick()
+		await nextTick()
+		expect(wide.container.querySelector('.base-flow-map__legend')).not.toBeInTheDocument()
+		expect(wide.container.querySelector('.base-flow-map__minimap')).not.toBeInTheDocument()
+		wide.unmount()
+		stubFrame(375)
+		const narrow = mountMap({ mode: 'edit' })
+		await nextTick()
+		await nextTick()
+		expect(narrow.container.querySelector('.base-flow-map__legend')).toBeInTheDocument()
 	})
 })

@@ -64,6 +64,13 @@ describe('вкладка «Предложения»', () => {
 		expect(within(item).getByRole('button', { name: UI_FLOW_REVIEW.DECLINE })).toBeInTheDocument()
 	})
 
+	it('стрелка «было → стало» несёт класс для зеркала RTL', () => {
+		mountReview({ suggestions: [suggestion('s1', [renameA])] })
+		const arrow = card('Предложение s1').querySelector('.base-flow-map__review-arrow')
+		expect(arrow).toHaveAttribute('aria-hidden', 'true')
+		expect(arrow).toHaveTextContent('→')
+	})
+
 	it('у предложения без подписи заголовок по умолчанию, у добавления нет строк полей', () => {
 		mountReview({ suggestions: [suggestion('s1', [addNodeD], { label: undefined })] })
 		const item = screen.getByRole('listitem', { name: formatMessage(UI_FLOW_REVIEW.SUGGESTION_ARIA, { title: '', name: ANNA.name }) })

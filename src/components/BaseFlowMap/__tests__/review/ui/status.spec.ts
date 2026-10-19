@@ -80,6 +80,16 @@ describe('хуки правок', () => {
 		expect(within(dialog).getByText(UI_FLOW_REVIEW.HOOKS_TITLE)).toBeInTheDocument()
 	})
 
+	it('стрелка «событие → обработчик» несёт класс для зеркала RTL', async () => {
+		const user = userEvent.setup()
+		const view = mountReview()
+		view.controller.on('accept', function onAccept(): void {})
+		const { dialog } = await openHooks(user)
+		const arrow = rowOf(dialog, 'accept').querySelector('.base-flow-map__review-arrow')
+		expect(arrow).toHaveAttribute('aria-hidden', 'true')
+		expect(arrow).toHaveTextContent('→')
+	})
+
 	it('обработчики приложения: событие, функция, отменяемость, число вызовов; выключатель', async () => {
 		const user = userEvent.setup()
 		const view = mountReview()

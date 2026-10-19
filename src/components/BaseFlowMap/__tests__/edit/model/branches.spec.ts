@@ -103,6 +103,19 @@ describe('части панели свойств напрямую', () => {
 })
 
 describe('окна правки напрямую', () => {
+	it('соединение: цель без места в раскладке соединяется без индикатора ожидания', async () => {
+		const map = await mountEdit({ data: editData() })
+		const connect = await map.probe(() => useFlowEditConnect())
+		const { context } = await map.probe(scope => scope)
+		context.env.state.linkFrom.value = 'gw'
+		connect.choose('ghost')
+		await settle()
+		await flush()
+		expect(context.env.state.linkFrom.value).toBeNull()
+		expect(context.env.state.link.value).toBeNull()
+		expect(map.data().edges).toHaveLength(2)
+	})
+
 	it('соединение: без источника целей нет, выбор пустого значения ничего не делает, подпись отказа, якорь без области', async () => {
 		const map = await mountEdit({ data: editData() })
 		const connect = await map.probe(() => useFlowEditConnect())

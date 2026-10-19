@@ -12,6 +12,14 @@ const toolbar = () => screen.getByRole('toolbar', { name: UI_FLOW_REVIEW.FILTERS
 const titles = () => screen.queryAllByRole('listitem', { name: /Предложение:/ }).map(item => item.getAttribute('aria-label'))
 
 describe('панель фильтров', () => {
+	it('легенда доступна с клавиатуры: tabindex=0 и доступное имя', () => {
+		mountReview()
+		const legend = screen.getByRole('list', { name: UI_FLOW_REVIEW.LEGEND })
+		expect(legend).toHaveAttribute('tabindex', '0')
+		legend.focus()
+		expect(legend).toHaveFocus()
+	})
+
 	it('легенда: добавлено, удалено, переименовано, перемещено, комментарий', () => {
 		mountReview()
 		const legend = screen.getByRole('list', { name: UI_FLOW_REVIEW.LEGEND })
