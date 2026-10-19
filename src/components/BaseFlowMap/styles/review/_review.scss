@@ -278,7 +278,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: sz(8px);
-		inline-size: min(sz(340px), 80vw);
+		inline-size: min(#{sz(340px)}, 80vw);
 		padding: sz(8px);
 	}
 
@@ -426,7 +426,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: sz(8px);
-		inline-size: min(sz(420px), 85vw);
+		inline-size: min(#{sz(420px)}, 85vw);
 		padding: sz(10px);
 	}
 
