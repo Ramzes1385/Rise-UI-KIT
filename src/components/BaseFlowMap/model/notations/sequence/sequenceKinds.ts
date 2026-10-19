@@ -91,5 +91,5 @@ export const sequenceEdgeKinds: Record<string, FlowEdgeKindDef> = {
 	async: message(() => UI_FLOW_SEQUENCE.ASYNC, { endMarker: 'open-arrow' }),
 	reply: message(() => UI_FLOW_SEQUENCE.REPLY, { stroke: 'dashed', endMarker: 'open-arrow', traffic: undefined }),
 	create: message(() => UI_FLOW_SEQUENCE.CREATE, { stroke: 'dashed', endMarker: 'open-arrow', traffic: undefined }),
-	destroy: message(() => UI_FLOW_SEQUENCE.DESTROY, {}),
+	destroy: message(() => UI_FLOW_SEQUENCE.DESTROY, { endMarker: 'cross' }),
 }

@@ -14,3 +14,23 @@ export function c4CardLine(node: FlowNode): string {
 	if (typeof technology === 'string' && technology) return formatMessage(UI_FLOW_C4.CARD_LINE, { kind, technology })
 	return formatMessage(UI_FLOW_C4.CARD_LINE_PLAIN, { kind })
 }
+
+const BLOCK_KINDS: Record<string, () => string> = {
+	'enterprise-boundary': () => UI_FLOW_C4.ENTERPRISE_BOUNDARY,
+	'system-boundary': () => UI_FLOW_C4.SOFTWARE_SYSTEM,
+	'container-boundary': () => UI_FLOW_C4.CONTAINER,
+}
+
+function technologyOf(node: FlowNode): string | undefined {
+	const groupProps = node.props?.groupProps
+	const technology = groupProps && typeof groupProps === 'object' && !Array.isArray(groupProps) ? groupProps.technology : undefined
+	return typeof technology === 'string' && technology ? technology : undefined
+}
+
+export function c4BlockLine(node: FlowNode): string {
+	const groupKind = node.props?.groupKind
+	const kind = typeof groupKind === 'string' ? BLOCK_KINDS[groupKind]?.() : undefined
+	if (kind === undefined) return node.subtitle ?? ''
+	const technology = technologyOf(node)
+	return technology ? formatMessage(UI_FLOW_C4.CARD_LINE, { kind, technology }) : formatMessage(UI_FLOW_C4.CARD_LINE_PLAIN, { kind })
+}

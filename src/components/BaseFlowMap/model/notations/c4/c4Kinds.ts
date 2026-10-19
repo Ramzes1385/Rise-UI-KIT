@@ -1,4 +1,5 @@
-import { UI_FLOW_C4 } from '@/locales/messages'
+import { c4BlockLine } from './c4Card'
+import { UI_FLOW_C4, UI_FLOW_MAP } from '@/locales/messages'
 import type { C4NodeKind } from '../../../types/notations/architecture/c4.types'
 import type { FlowEdgeKindDef, FlowGroupKindDef, FlowNodeKindDef, FlowPropDef } from '../../../types/api/flowNotation.types'
 
@@ -58,6 +59,22 @@ export const c4NodeKinds: Record<C4NodeKind, FlowNodeKindDef> = {
 		isExternal: true,
 		model3d: 'cloud',
 	}),
+}
+
+export const c4CollapsedKind: FlowNodeKindDef = {
+	label: () => UI_FLOW_MAP.COLLAPSED_GROUP,
+	render: 'html',
+	size: { width: 220, height: 80 },
+	labelPlacement: 'bottom-start',
+	subtitle: c4BlockLine,
+	isContainer: true,
+	shape: {
+		shape: 'round-rect',
+		ring: 'dashed',
+		fill: 'color-mix(in srgb, var(--rise-flow-c4-system) 6%, transparent)',
+		stroke: 'var(--rise-flow-c4-system)',
+		text: 'var(--rise-text-highlighted)',
+	},
 }
 
 const boundary = (label: () => string): FlowGroupKindDef => ({ label, layout: 'box', header: 'top', border: 'dashed' })
