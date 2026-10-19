@@ -1,4 +1,6 @@
 /** Общие строки: подписи и кнопки, доступные имена, тур, рейтинг, чек-лист */
+import { ruLocaleWarnings } from './localeWarnings'
+
 export const ruText = {
 	/** Ссылка промо-блока BaseMegaMenu */
 	MEGA_MENU_PROMO_LINK: 'Подробнее',
@@ -253,14 +255,6 @@ export const ruNotificationCenter = {
 	UNREAD_ITEM: 'не прочитано',
 	EMPTY: 'Уведомлений нет',
 	EMPTY_UNREAD: 'Всё прочитано',
-}
-
-/** Предупреждения `setLocale`: отдельным объектом — состояние языка берёт только их, без всего раздела `warnings` */
-export const ruLocaleWarnings = {
-	UNKNOWN_LOCALE: 'Неизвестный язык «{locale}». Доступные: {locales}; свой язык — registerLocale()',
-	/** `setLocale` с кодом готового словаря кита, который не подключён через `registerLocale()` */
-	UNREGISTERED_LOCALE:
-		"Язык «{locale}» не подключён: импортируйте словарь и зарегистрируйте его один раз при старте — import { {locale}, registerLocale } from '@ramzes1385/rise-ui-kit'; registerLocale({locale}). Доступные: {locales}",
 }
 
 /** Предупреждения в консоли для разработчика приложения */

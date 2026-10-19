@@ -1,3 +1,4 @@
+import { readdirSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import type { BuildOptions } from 'vite'
 import { LAZY_COMPONENT_NAMES } from '../../src/plugin/registry/lazyNames'
@@ -38,6 +39,47 @@ const LOCALE_GROUPS = ['en', 'kk', 'uz', 'zh', 'ja'].map(code => ({
 	name: `locale-${code}`,
 	test: new RegExp(`[\\/]src[\\/]locales[\\/]${code}[\\/]`),
 }))
+
+/** Обойти `dir` и вернуть пути всех `.ts`-файлов (разделы словаря лежат по областям, в том числе во вложенных папках) */
+function listSectionFiles(dir: string): string[] {
+	return readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
+		const path = resolve(dir, entry.name)
+		if (entry.isDirectory()) return listSectionFiles(path)
+		return entry.name.endsWith('.ts') ? [path] : []
+	})
+}
+
+/**
+ * Русский словарь по чанкам (`src/locales/sections/**`): файл `ru/**` и обёртки `UI_*` его разделов — свой чанк `locale-ru-<путь>`,
+ * чтобы раздел попадал туда, где его читают (в том числе в ленивый чанк компонента), а не в общий чанк `messages`.
+ * `locale-core` (`localized`, `current`, `legacyKeys`) — отдельная группа с большим приоритетом: без неё первая группа забирает эти
+ * общие зависимости, и все чанки словаря импортируют её (вместе со строками чата, которые тогда остаются в первом виде у всех).
+ * Группы без `strictExecutionOrder`: в модулях разделов и `ru/**` нет вызовов, кроме `localized` (`__tests__/sections.spec.ts`).
+ */
+export function createRuLocaleGroups() {
+	const localesDir = resolve(process.cwd(), 'src/locales')
+	const norm = (path: string): string => path.replace(/\\/g, '/')
+	const ruByModule = new Map<string, string>()
+	for (const file of listSectionFiles(resolve(localesDir, 'sections'))) {
+		const ruPath = /from '(?:\.\.\/)+(ru\/[^']+)'/.exec(readFileSync(file, 'utf8'))?.[1]
+		if (ruPath) ruByModule.set(norm(file), ruPath)
+	}
+	const sectionsByRu = new Map<string, Set<string>>()
+	for (const [module, ruPath] of ruByModule) {
+		const modules = sectionsByRu.get(ruPath) ?? new Set<string>([norm(resolve(localesDir, `${ruPath}.ts`))])
+		modules.add(module)
+		sectionsByRu.set(ruPath, modules)
+	}
+	const core = new Set(['localized', 'current', 'legacyKeys'].map(name => norm(resolve(localesDir, `${name}.ts`))))
+	return [
+		{ name: 'locale-core', test: (id: string) => core.has(norm(id)), priority: 20 },
+		...[...sectionsByRu].map(([ruPath, modules]) => ({
+			name: `locale-${ruPath.replace(/\//g, '-')}`,
+			test: (id: string) => modules.has(norm(id)),
+			priority: 10,
+		})),
+	]
+}
 
 /**
  * Входы и чанки пакета. `withSubpaths` — основной проход: JS всех входов и подпутей `./<Компонент>` (build/plugins/subpaths.ts).
@@ -82,7 +124,7 @@ export function createLibBuildConfig({ withSubpaths }: { withSubpaths: boolean }
 			output: {
 				entryFileNames: '[name].js',
 				chunkFileNames: 'chunks/[name]-[hash].js',
-				...(withSubpaths ? { codeSplitting: { groups: LOCALE_GROUPS } } : createLazyGroups()),
+				...(withSubpaths ? { codeSplitting: { groups: [...LOCALE_GROUPS, ...createRuLocaleGroups()] } } : createLazyGroups()),
 
 				assetFileNames: assetInfo => {
 					const name = assetInfo.name ?? ''
