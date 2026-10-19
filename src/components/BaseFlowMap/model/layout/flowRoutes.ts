@@ -118,14 +118,18 @@ function buildRoute(edge: FlowEdge, build: RouteBuild): { points: FlowPoint[]; p
 }
 
 function labelRequests(edges: readonly FlowEdge[], routes: Record<string, FlowRoute>): LabelRequest[] {
-	return edges
-		.filter(edge => edge.label && routes[edge.id])
-		.map(edge => ({
-			id: edge.id,
-			points: routes[edge.id].points,
-			width: estimateTextWidth(edge.label ?? '', 12) + LABEL_PADDING,
-			height: LABEL_HEIGHT,
-		}))
+	return edges.flatMap(edge =>
+		edge.label && routes[edge.id]
+			? [
+					{
+						id: edge.id,
+						points: routes[edge.id].points,
+						width: estimateTextWidth(edge.label, 12) + LABEL_PADDING,
+						height: LABEL_HEIGHT,
+					},
+				]
+			: [],
+	)
 }
 
 function fallbackRouting(scope: FlowLayoutScope): string {

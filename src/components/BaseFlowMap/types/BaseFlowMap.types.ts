@@ -197,7 +197,7 @@ export interface BaseFlowMapSlots {
 	toolbar?: (props: { controller: FlowMapController }) => unknown
 	/** Своя легенда */
 	legend?: (props: { items: FlowLegendItem[] }) => unknown
-	/** Строка шага в панели сценария */
+	/** Строка шага в панели сценария (только в широком виде: компактный плеер списка шагов не рисует) */
 	'scenario-step'?: (props: { step: FlowScenarioAction; index: number; isActive: boolean; isDone: boolean }) => unknown
 	/** Конец панели свойств «Правки» (раздел «3D» у BaseFlowMap3D, свои поля приложения) */
 	'inspector-end'?: (props: { target: FlowElementRef; controller: FlowMapController }) => unknown

@@ -5,7 +5,7 @@ const PUSH_GAP = 16
 const MAX_ROUNDS = 40
 
 function snap(value: number, grid: number): number {
-	return grid > 0 ? Math.round(value / grid) * grid : value
+	return Math.round(value / grid) * grid
 }
 
 function overlaps(a: FlowRect, b: FlowRect): boolean {

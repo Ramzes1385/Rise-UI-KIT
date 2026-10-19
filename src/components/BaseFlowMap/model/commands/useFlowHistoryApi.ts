@@ -21,8 +21,8 @@ function parse(json: string): unknown {
 }
 
 function failed(parts: FlowCommandParts, issues: FlowDataIssue[]): FlowImportResult {
-	const first = issues.find(issue => issue.level === 'error')
-	if (first) parts.events.emit('error', { code: first.code, message: first.message })
+	for (const { code, message } of issues.filter(issue => issue.level === 'error').slice(0, 1))
+		parts.events.emit('error', { code, message })
 	return { isApplied: false, changes: [], issues }
 }
 

@@ -1,6 +1,6 @@
 import { ancestorsOf } from './groups'
-import type { FlowLayoutResult } from '../../../types/api/flowLayout.types'
 import type { FlowPoint, FlowRect } from '../../../types/data/flowData.types'
+import type { FlowLayoutGroup, FlowLayoutResult } from '../../../types/api/flowLayout.types'
 import type { StripContext, StripFrame, StripScope } from '../../../types/internal/core/flowLayoutInternal.types'
 
 const PAD = 16
@@ -89,9 +89,9 @@ function bandStrip(scope: StripScope, groupId: string, isOwnY: boolean): FlowRec
 	return toRect(isOwnY, own, fullRange(scope, groupId, isOwnY))
 }
 
-function stripFor(scope: StripScope, groupId: string): FlowRect | null {
-	const group = scope.index.byId.get(groupId)
-	if (!group || group.layout === 'box') return null
+function stripFor(scope: StripScope, group: FlowLayoutGroup): FlowRect | null {
+	if (group.layout === 'box') return null
+	const groupId = group.id
 	const { direction } = scope.input.settings
 	const isOwnY = (group.layout === 'band') === (direction === 'LR' || direction === 'RL')
 	if (group.layout === 'band') return bandStrip(scope, groupId, isOwnY)
@@ -108,7 +108,7 @@ function stripsOf(scope: StripScope): Record<string, FlowRect> {
 	const groups: Record<string, FlowRect> = {}
 	if (!scope.byLanes) return groups
 	for (const group of scope.index.groups) {
-		const rect = stripFor(scope, group.id)
+		const rect = stripFor(scope, group)
 		if (rect) groups[group.id] = rect
 	}
 	return groups

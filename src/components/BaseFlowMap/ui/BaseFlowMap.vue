@@ -35,11 +35,7 @@
 				<FlowLegend v-if="hasLegend && !isEmpty">
 					<template v-if="$slots.legend" #legend="slotProps"><slot name="legend" v-bind="slotProps" /></template>
 				</FlowLegend>
-				<FlowScenarioPanel v-if="hasScenario && isCompact">
-					<template v-if="$slots['scenario-step']" #scenario-step="slotProps"
-						><slot name="scenario-step" v-bind="slotProps"
-					/></template>
-				</FlowScenarioPanel>
+				<FlowScenarioPanel v-if="hasScenario && isCompact" />
 			</div>
 			<aside v-if="!isCompact" class="base-flow-map__side">
 				<FlowScenarioPanel v-if="hasScenario">
