@@ -46,17 +46,11 @@ export interface FlowGroupState {
 	leave: (depth?: number) => string | null
 }
 
-/** Результат сворачивания: данные для раскладки */
-export interface FlowCollapsedView {
-	data: FlowMapData
-	groups: readonly FlowGroup[]
-}
-
 /** Методы контроллера для групп и уровней */
 export type FlowGroupsApi = Pick<FlowMapController, 'toggleGroup' | 'getCollapsed' | 'getLevel' | 'setLevel' | 'enterGroup' | 'leaveGroup'>
 
 /** Закрепление уровня: уровень, масштаб, при котором он закреплён, и время закрепления */
-export interface FlowGroupPin {
+interface FlowGroupPin {
 	level: number
 	zoom: number | null
 	at: number

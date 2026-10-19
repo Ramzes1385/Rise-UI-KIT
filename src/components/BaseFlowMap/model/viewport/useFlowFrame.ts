@@ -1,9 +1,21 @@
+import { NO_INSETS } from './viewGeometry'
 import type { FlowSize } from '../../types/data/flowData.types'
 import { computed, onBeforeUnmount, ref, shallowRef } from 'vue'
 import type { BaseFlowMapProps } from '../../types/BaseFlowMap.types'
-import type { FlowFrameState } from '../../types/internal/core/flowRenderInternal.types'
+import type { FlowFrameState, FlowInsets } from '../../types/internal/core/flowRenderInternal.types'
 
 const DEFAULT_BREAKPOINT = 640
+const OVERLAYS = '.base-flow-map__legend, .base-flow-map__minimap'
+const OVERLAY_GAP = 16
+
+function measureInsets(element: HTMLElement | null): FlowInsets {
+	const stage = element?.closest('.base-flow-map__stage')
+	if (!element || !stage) return NO_INSETS
+	const frame = element.getBoundingClientRect()
+	const widths = [...stage.querySelectorAll(OVERLAYS)].map(overlay => frame.right - overlay.getBoundingClientRect().left)
+	const right = Math.max(0, ...widths.filter(width => width > 0)) + (widths.length > 0 ? OVERLAY_GAP : 0)
+	return { ...NO_INSETS, right }
+}
 
 export function useFlowFrame(props: Pick<BaseFlowMapProps, 'compactBreakpoint'>): FlowFrameState {
 	const frame = ref<FlowSize>({ width: 0, height: 0 })
@@ -34,5 +46,6 @@ export function useFlowFrame(props: Pick<BaseFlowMapProps, 'compactBreakpoint'>)
 	onBeforeUnmount(() => observer?.disconnect())
 
 	const isCompact = computed(() => frame.value.width > 0 && frame.value.width < (props.compactBreakpoint ?? DEFAULT_BREAKPOINT))
-	return { frame, isCompact, element, attach }
+	const insets = (): FlowInsets => (isCompact.value ? NO_INSETS : measureInsets(element.value))
+	return { frame, isCompact, element, attach, insets }
 }

@@ -198,6 +198,16 @@ export interface FlowFrameState {
 	element: Ref<HTMLElement | null>
 	/** Подключить элемент и следить за размером: подходит для `:ref` */
 	attach: (element: unknown) => void
+	/** Отступы под видимые легенду и мини-карту (в компактном виде нули) */
+	insets: () => FlowInsets
+}
+
+/** Отступы кадра, занятые панелями поверх холста, px */
+export interface FlowInsets {
+	top: number
+	right: number
+	bottom: number
+	left: number
 }
 
 /** Вид: видимая область и методы */

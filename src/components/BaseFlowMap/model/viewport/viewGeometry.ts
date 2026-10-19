@@ -1,6 +1,6 @@
 import type { FlowViewport } from '../../types/api/flowController.types'
 import type { FlowRect, FlowSize } from '../../types/data/flowData.types'
-import type { FlowZoomLimits, FlowZoomStep } from '../../types/internal/core/flowRenderInternal.types'
+import type { FlowInsets, FlowZoomLimits, FlowZoomStep } from '../../types/internal/core/flowRenderInternal.types'
 
 export const FIT_PADDING = 32
 export const DEFAULT_VIEWPORT: FlowViewport = { x: 0, y: 0, zoom: 1 }
@@ -23,11 +23,27 @@ export function centerViewport(rect: FlowRect, frame: FlowSize, zoom: number): F
 	}
 }
 
-export function fitViewport(bounds: FlowRect, frame: FlowSize, fit: { padding: number; limits: FlowZoomLimits }): FlowViewport {
+export const NO_INSETS: FlowInsets = { top: 0, right: 0, bottom: 0, left: 0 }
+
+function freeArea(frame: FlowSize, padding: number, insets: FlowInsets): FlowRect {
+	const width = frame.width - insets.left - insets.right
+	const height = frame.height - insets.top - insets.bottom
+	if (width <= padding * 2 || height <= padding * 2) return { x: 0, y: 0, width: frame.width, height: frame.height }
+	return { x: insets.left, y: insets.top, width, height }
+}
+
+export function fitViewport(
+	bounds: FlowRect,
+	frame: FlowSize,
+	fit: { padding: number; limits: FlowZoomLimits; insets?: FlowInsets },
+): FlowViewport {
 	const { padding, limits } = fit
 	if (bounds.width <= 0 || bounds.height <= 0 || frame.width <= 0 || frame.height <= 0) return DEFAULT_VIEWPORT
-	const fitted = Math.min((frame.width - padding * 2) / bounds.width, (frame.height - padding * 2) / bounds.height)
-	return centerViewport(bounds, frame, clampZoom(Math.min(1, fitted), limits))
+	const area = freeArea(frame, padding, fit.insets ?? NO_INSETS)
+	const fitted = Math.min((area.width - padding * 2) / bounds.width, (area.height - padding * 2) / bounds.height)
+	const zoom = clampZoom(Math.min(1, fitted), limits)
+	const center = centerViewport(bounds, area, zoom)
+	return { zoom, x: center.x + area.x, y: center.y + area.y }
 }
 
 export function boundsOf(rects: readonly FlowRect[]): FlowRect | null {

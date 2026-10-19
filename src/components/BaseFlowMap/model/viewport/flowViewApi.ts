@@ -24,7 +24,7 @@ export function createFlowViewApi(
 		const rects = options?.ids ? options.ids.flatMap(id => rectOf(id) ?? []) : []
 		const bounds = (rects.length > 0 ? boundsOf(rects) : null) ?? model.layout.value.bounds
 		const limits = { ...view.limits(), max: options?.maxZoom ?? view.limits().max }
-		const next = fitViewport(bounds, frame.frame.value, { padding: options?.padding ?? FIT_PADDING, limits })
+		const next = fitViewport(bounds, frame.frame.value, { padding: options?.padding ?? FIT_PADDING, limits, insets: frame.insets() })
 		view.setViewport(next, { isAnimated: options?.isAnimated })
 	}
 

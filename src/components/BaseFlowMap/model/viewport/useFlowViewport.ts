@@ -32,7 +32,7 @@ export function useFlowViewport(model: FlowModelInternal, frame: FlowFrameState,
 
 	function fit(padding = FIT_PADDING): void {
 		isAuto = true
-		apply(fitViewport(model.layout.value.bounds, frame.frame.value, { padding, limits: limits() }))
+		apply(fitViewport(model.layout.value.bounds, frame.frame.value, { padding, limits: limits(), insets: frame.insets() }))
 	}
 
 	function zoomBy(factor: number): void {
