@@ -121,7 +121,7 @@
 | BaseReasoning | 24,1 | 4,5 | 28,5 | — |
 | BaseRequisiteInput | 15,3 | 2,9 | 18,2 | — |
 | BaseResult | 4,9 | 1,1 | 5,9 | — |
-| BaseRoadmap | 58,3 | 12,8 | 71,1 | — |
+| BaseRoadmap | 69,9 | 14,4 | 84,3 | 51,2 |
 | BaseScrollArea | 3,3 | 0,6 | 3,9 | — |
 | BaseSearch | 45,2 | 7,9 | 53,1 | — |
 | BaseSegmented | 16,9 | 2,6 | 19,5 | — |
