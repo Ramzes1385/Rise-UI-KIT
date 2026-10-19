@@ -99,6 +99,15 @@ describe('слот details', () => {
 		expect(screen.queryByRole('button', { name: 'свои:a:Alpha' })).not.toBeInTheDocument()
 	})
 
+	it('пока цель не выбрана, слот не вызывается', async () => {
+		const details = vi.fn(() => h('i', 'свои'))
+		mountMap({}, { slots: { details } })
+		await nextTick()
+		expect(details).not.toHaveBeenCalled()
+		await openDetails(/^Alpha/)
+		expect(details).toHaveBeenCalled()
+	})
+
 	it('для связи слот получает edge, а не node', async () => {
 		const details = vi.fn((props: { edge?: { id: string }; node?: unknown }) => h('i', `edge=${props.edge?.id};node=${props.node}`))
 		const { container } = mountMap({}, { slots: { details } })
@@ -127,10 +136,10 @@ describe('слот inspector-end', () => {
 		expect(screen.getByTestId('inspector')).toHaveTextContent('правка:b:object')
 	})
 
-	it('вместе со слотом details оба показываются', async () => {
+	it('в режиме «Правка» слот details не рисуется, а inspector-end остаётся в инспекторе', async () => {
 		mountMap({ mode: 'edit' }, { slots: { 'inspector-end': inspector, details: () => h('u', 'своё') } })
 		await openDetails(/^Beta/)
-		expect(screen.getByText('своё')).toBeInTheDocument()
+		expect(screen.queryByText('своё')).not.toBeInTheDocument()
 		expect(screen.getByTestId('inspector')).toBeInTheDocument()
 	})
 
@@ -187,11 +196,13 @@ describe('слот scenario-step', () => {
 
 	it('на узком экране плеер без списка шагов: слот не вызывается', async () => {
 		stubFrame(400, 500)
-		const { container } = mountMap({ data: scenarioData(), panels: ['scenario'] }, { slots: { 'scenario-step': step } })
+		const spy = vi.fn(step)
+		const { container } = mountMap({ data: scenarioData(), panels: ['scenario'] }, { slots: { 'scenario-step': spy } })
 		await nextTick()
 		await nextTick()
 		expect(container.querySelector('.base-flow-map__scenario-panel--compact')).not.toBeNull()
 		expect(screen.queryByTestId('step')).not.toBeInTheDocument()
+		expect(spy).not.toHaveBeenCalled()
 	})
 })
 

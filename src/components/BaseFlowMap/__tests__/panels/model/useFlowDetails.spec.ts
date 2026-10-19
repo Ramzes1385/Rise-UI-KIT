@@ -25,10 +25,4 @@ describe('useFlowDetails: свойства слота details', () => {
 		result.slotProps.value.close()
 		expect(openDetails).toHaveBeenCalledWith(null)
 	})
-
-	it('без цели ни узла, ни связи нет', () => {
-		const { result } = setup()
-		expect(result.slotProps.value.node).toBeUndefined()
-		expect(result.slotProps.value.edge).toBeUndefined()
-	})
 })

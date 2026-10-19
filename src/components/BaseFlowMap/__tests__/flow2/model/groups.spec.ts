@@ -307,6 +307,33 @@ describe('уровни: масштаб, дребезг и закрепление
 		expect(model.groups.level.value.index).toBe(0)
 	})
 
+	it('setLevel берёт репер из текущего масштаба: первый ручной зум больше 8 % после 700 мс отпускает уровень', () => {
+		const { model, controller } = open()
+		controller.setLevel(1)
+		vi.advanceTimersByTime(800)
+		model.groups.setZoom(3)
+		expect(model.groups.level.value.index).toBe(2)
+	})
+
+	it('setLevel: масштаб, изменившийся в окне 700 мс, перезаписывает репер', () => {
+		const { model, controller } = open()
+		controller.setLevel(1)
+		model.groups.setZoom(3)
+		vi.advanceTimersByTime(800)
+		model.groups.setZoom(3.1)
+		expect(model.groups.level.value.index).toBe(1)
+		model.groups.setZoom(0.3)
+		expect(model.groups.level.value.index).toBe(0)
+	})
+
+	it('setLevel: зум меньше 8 % после 700 мс уровень не отпускает', () => {
+		const { model, controller } = open()
+		controller.setLevel(1)
+		vi.advanceTimersByTime(800)
+		model.groups.setZoom(1.05)
+		expect(model.groups.level.value.index).toBe(1)
+	})
+
 	it('смена уровня масштабом сбрасывает явные переключения', () => {
 		const { model, controller } = open()
 		controller.toggleGroup('g1', false)
