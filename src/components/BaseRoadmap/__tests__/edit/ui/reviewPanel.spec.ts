@@ -2,6 +2,7 @@ import { formatMessage } from '@/locales/state'
 import { enableAutoUnmount } from '@vue/test-utils'
 import { mountReview } from '../fixtures/renderEditor'
 import { fireEvent, screen, within } from '@testing-library/vue'
+import type { BaseRoadmapExpose } from '../../../types/BaseRoadmap.types'
 import type { RoadmapReviewData } from '../../../types/roadmapEdit.types'
 import { UI_COMMENT_THREAD, UI_ROADMAP, UI_ROADMAP_REVIEW } from '@/locales/messages'
 
@@ -267,5 +268,16 @@ describe('«Правки»: редкие случаи комментариев',
 		await fireEvent.submit(input.closest('form') as HTMLFormElement)
 		expect(input).toHaveValue('   ')
 		expect(screen.getByRole('tab', { name: `${UI_ROADMAP_REVIEW.TAB_COMMENTS} 2` })).toBeInTheDocument()
+	})
+})
+
+describe('«Правки»: принять все при отказе обработчика', () => {
+	it('отказавший обработчик оставляет предложение ждать решения', async () => {
+		const { user, wrapper, onData } = await mountReview({ review: review() })
+		;(wrapper.vm as unknown as BaseRoadmapExpose).on('beforeChange', () => false)
+		await user.click(screen.getByRole('button', { name: 'Принять все: 1' }))
+		await vi.waitFor(() => expect(live().textContent).not.toBe(''))
+		expect(onData).not.toHaveBeenCalled()
+		expect(screen.getByRole('button', { name: /Принять все/ })).toBeInTheDocument()
 	})
 })

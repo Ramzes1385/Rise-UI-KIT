@@ -85,3 +85,24 @@ describe('вкладка «Хуки»: подписка с неизвестны�
 		expect(within(inspector()).getByText('custom')).toBeInTheDocument()
 	})
 })
+
+describe('вид нового материала и публикация в отключённом состоянии', () => {
+	it('выбранный вид попадает в новый материал', async () => {
+		const { user } = await mountEditor()
+		await user.click(pick('Тема a'))
+		await user.click(within(inspector()).getByRole('tab', { name: new RegExp(UI_ROADMAP_EDIT.TAB_MATERIALS) }))
+		await user.click(within(inspector()).getByRole('combobox', { name: UI_ROADMAP_EDIT.MATERIAL_NEW_KIND }))
+		await user.click(await screen.findByRole('option', { name: 'Видео' }))
+		await user.click(within(inspector()).getByRole('button', { name: new RegExp(UI_ROADMAP_EDIT.ADD_MATERIAL) }))
+		await vi.waitFor(() =>
+			expect(within(inspector()).getByRole('combobox', { name: UI_ROADMAP_EDIT.MATERIAL_KIND })).toHaveTextContent('Видео'),
+		)
+	})
+
+	it('в отключённом роадмапе публикация ничего не отдаёт', async () => {
+		const onPublish = vi.fn()
+		await mountEditor({ isDisabled: true, onPublish } as never)
+		await fireEvent.click(screen.getByRole('button', { name: UI_ROADMAP_EDIT.PUBLISH }))
+		expect(onPublish).not.toHaveBeenCalled()
+	})
+})
