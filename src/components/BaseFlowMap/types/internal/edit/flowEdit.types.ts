@@ -11,11 +11,8 @@ export const FLOW_EDIT_TOOLS = ['select', 'hand', 'connect', 'node', 'note', 'gr
 /** Инструмент «Правки» */
 export type FlowEditTool = (typeof FLOW_EDIT_TOOLS)[number]
 
-/** Выравнивание: края и центры по осям */
-export const FLOW_EDIT_ALIGNS = ['left', 'center', 'right', 'top', 'middle', 'bottom'] as const
-
 /** Способ выравнивания */
-export type FlowEditAlign = (typeof FLOW_EDIT_ALIGNS)[number]
+export type FlowEditAlign = 'left' | 'center' | 'right' | 'top' | 'middle' | 'bottom'
 
 /** Метка расстояния на направляющей: число px или слово «центр» */
 export interface FlowEditGuideMark {
@@ -40,7 +37,7 @@ export interface FlowEditGuide {
 }
 
 /** Призрак узла при перетаскивании */
-export interface FlowEditGhost {
+interface FlowEditGhost {
 	/** Id узла */
 	id: string
 	/** Новая рамка */
@@ -94,10 +91,7 @@ export interface FlowEditLabelDraft {
 }
 
 /** Вкладка панели свойств */
-export const FLOW_EDIT_TABS = ['props', 'style', 'data', 'hooks'] as const
-
-/** Вкладка панели свойств */
-export type FlowEditTab = (typeof FLOW_EDIT_TABS)[number]
+type FlowEditTab = 'props' | 'style' | 'data' | 'hooks'
 
 /** Состояние «Правки» */
 export interface FlowEditState {
@@ -175,3 +169,6 @@ export interface FlowEditView {
 	/** Рамка кадра на экране */
 	box: Pick<DOMRect, 'left' | 'top'> | undefined
 }
+
+/** Тип данных перетаскивания из палитры: вид узла */
+export const PALETTE_MIME = 'application/x-rise-flow-kind'

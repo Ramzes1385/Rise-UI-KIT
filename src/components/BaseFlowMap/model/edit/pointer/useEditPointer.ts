@@ -7,6 +7,7 @@ import { startMarquee, startPan } from './editMarquee'
 import { noteKindOf, placeNode } from '../actions/editPlace'
 import { createKeyMap, handleKeydown } from '../actions/editKeys'
 import type { FlowElementRef } from '../../../types/data/flowReview.types'
+import { PALETTE_MIME } from '../../../types/internal/edit/flowEdit.types'
 import type { FlowEditEnd } from '../../../types/internal/edit/flowEdit.types'
 import type { FlowEditContext } from '../../../types/internal/edit/flowEditApi.types'
 
@@ -90,6 +91,17 @@ function onContextmenu(context: FlowEditContext, event: MouseEvent): void {
 	state.menu.value = { x: event.clientX, y: event.clientY, target }
 }
 
+function onDragover(context: FlowEditContext, event: DragEvent): void {
+	if (context.env.state.isEditing.value && event.dataTransfer?.types.includes(PALETTE_MIME)) event.preventDefault()
+}
+
+function onDrop(context: FlowEditContext, event: DragEvent): void {
+	const kind = event.dataTransfer?.getData(PALETTE_MIME)
+	if (!kind || !context.env.state.isEditing.value) return
+	consume(event)
+	void placeNode(context, { kind, at: toCanvas(event, context.view()) })
+}
+
 function onKeyup(context: FlowEditContext, event: KeyboardEvent): void {
 	if (event.key === ' ') context.env.state.isHandHeld.value = false
 }
@@ -101,6 +113,8 @@ export function useEditPointer(context: FlowEditContext): void {
 		['click', (event: MouseEvent) => onClick(context, event)],
 		['dblclick', (event: MouseEvent) => onDblclick(context, event)],
 		['contextmenu', (event: MouseEvent) => onContextmenu(context, event)],
+		['dragover', (event: DragEvent) => onDragover(context, event)],
+		['drop', (event: DragEvent) => onDrop(context, event)],
 		['keydown', (event: KeyboardEvent) => handleKeydown(context, keys, event)],
 		['keyup', (event: KeyboardEvent) => onKeyup(context, event)],
 	]

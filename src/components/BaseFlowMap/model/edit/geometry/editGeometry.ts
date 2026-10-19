@@ -56,10 +56,6 @@ export function snapToGrid(value: number, grid: number): number {
 	return grid > 0 ? Math.round(value / grid) * grid : value
 }
 
-export function distanceBetween(first: FlowPoint, second: FlowPoint): number {
-	return Math.hypot(first.x - second.x, first.y - second.y)
-}
-
 export function areaOf(rect: FlowRect): number {
 	return rect.width * rect.height
 }

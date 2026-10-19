@@ -1,15 +1,16 @@
 import { formatMessage } from '@/locales/state'
-import { UI_FLOW_EDITOR } from '@/locales/messages'
-import { useEditPointer } from './pointer/useEditPointer'
-import { useEditState, useNotices } from './state/useEditState'
-import { useEditActions } from './actions/useEditActions'
-import { useEditCommands } from './actions/editCommands'
-import type { BaseFlowMapProps } from '../../types/BaseFlowMap.types'
-import type { FlowEditEnv } from '../../types/internal/edit/flowEdit.types'
-import type { FlowEditContext, FlowEditing } from '../../types/internal/edit/flowEditApi.types'
-import type { FlowMapContext } from '../../types/internal/flowModel.types'
-import type { FlowModelInternal } from '../../types/internal/core/flowRenderInternal.types'
 import { computed, type Ref, watch } from 'vue'
+import { UI_FLOW_EDITOR } from '@/locales/messages'
+import { useEditCommands } from './actions/editCommands'
+import { useEditActions } from './actions/useEditActions'
+import { useEditPointer } from './pointer/useEditPointer'
+import { useFlowMapContext } from '../context/flowContext'
+import { useEditState, useNotices } from './state/useEditState'
+import type { BaseFlowMapProps } from '../../types/BaseFlowMap.types'
+import type { FlowMapContext } from '../../types/internal/flowModel.types'
+import type { FlowEditEnv } from '../../types/internal/edit/flowEdit.types'
+import type { FlowModelInternal } from '../../types/internal/core/flowRenderInternal.types'
+import type { FlowEditContext, FlowEditing } from '../../types/internal/edit/flowEditApi.types'
 
 const registry = new WeakMap<object, FlowEditing>()
 
@@ -57,4 +58,8 @@ export function getFlowEditing(model: object): FlowEditing {
 	const editing = registry.get(model)
 	if (!editing) throw new Error('BaseFlowMap: edit state is missing')
 	return editing
+}
+
+export function useEditContext(): FlowEditContext {
+	return getFlowEditing(useFlowMapContext().model).context
 }

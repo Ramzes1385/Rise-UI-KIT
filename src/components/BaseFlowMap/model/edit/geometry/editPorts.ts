@@ -3,7 +3,7 @@ import type { FlowPort, FlowPortSide, FlowPoint, FlowRect } from '../../../types
 
 const SIDES: FlowPortSide[] = ['top', 'right', 'bottom', 'left']
 
-export function pointOnSide(rect: FlowRect, side: FlowPortSide, offset = 0.5): FlowPoint {
+function pointOnSide(rect: FlowRect, side: FlowPortSide, offset = 0.5): FlowPoint {
 	if (side === 'top') return { x: rect.x + rect.width * offset, y: rect.y }
 	if (side === 'bottom') return { x: rect.x + rect.width * offset, y: rect.y + rect.height }
 	if (side === 'left') return { x: rect.x, y: rect.y + rect.height * offset }

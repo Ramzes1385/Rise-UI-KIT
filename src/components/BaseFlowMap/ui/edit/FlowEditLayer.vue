@@ -11,7 +11,11 @@
 				:height="layer.drop.value.height" />
 			<g v-for="ghost in layer.ghosts.value" :key="ghost.id" class="base-flow-map__edit-ghost">
 				<rect :x="ghost.rect.x" :y="ghost.rect.y" :width="ghost.rect.width" :height="ghost.rect.height" rx="8" />
-				<text :x="ghost.rect.x + ghost.rect.width / 2" :y="ghost.rect.y + ghost.rect.height / 2" text-anchor="middle" dominant-baseline="central">
+				<text
+					:x="ghost.rect.x + ghost.rect.width / 2"
+					:y="ghost.rect.y + ghost.rect.height / 2"
+					text-anchor="middle"
+					dominant-baseline="central">
 					{{ ghost.label }}
 				</text>
 			</g>

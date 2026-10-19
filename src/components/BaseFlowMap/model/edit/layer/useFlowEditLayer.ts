@@ -48,7 +48,7 @@ export function useFlowEditLayer() {
 		guides: state.guides,
 		drop: computed(() => (state.dropGroup.value ? model.layout.value.groups[state.dropGroup.value] : undefined)),
 		link,
-		ports: computed(() => (state.isEditing.value ? portItems(model, state.portNodes.value) : [])),
+		ports: computed(() => (state.isEditing.value ? portItems(editing.context.env.model, state.portNodes.value) : [])),
 		hotPort: computed(() =>
 			state.link.value?.target ? `${state.link.value.target.node}|${state.link.value.target.port ?? ''}` : null,
 		),

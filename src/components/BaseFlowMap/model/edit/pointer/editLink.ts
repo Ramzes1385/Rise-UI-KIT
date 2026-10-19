@@ -13,7 +13,7 @@ export function endOfPort(value: string | null | undefined): FlowEditEnd | null 
 	return { node, port: port || undefined }
 }
 
-export function nodeAt(context: FlowEditContext, point: FlowPoint, skip: string): string | null {
+function nodeAt(context: FlowEditContext, point: FlowPoint, skip: string): string | null {
 	const { layout, graph } = context.env.model
 	const hit = Object.entries(layout.value.nodes).find(
 		([id, rect]) => id !== skip && graph.value.nodes.has(id) && containsPoint(rect, point),
@@ -21,7 +21,7 @@ export function nodeAt(context: FlowEditContext, point: FlowPoint, skip: string)
 	return hit?.[0] ?? null
 }
 
-export function anchorOf(context: FlowEditContext, end: FlowEditEnd): FlowPoint {
+function anchorOf(context: FlowEditContext, end: FlowEditEnd): FlowPoint {
 	const { model } = context.env
 	const rect = model.layout.value.nodes[end.node]
 	const node = model.graph.value.nodes.get(end.node)
@@ -43,7 +43,7 @@ function targetOf(context: FlowEditContext, input: { event: PointerEvent; point:
 	return node ? { node } : null
 }
 
-export async function finishLink(context: FlowEditContext, link: FlowEditLink): Promise<void> {
+async function finishLink(context: FlowEditContext, link: FlowEditLink): Promise<void> {
 	const { state } = context.env
 	if (link.verdict === 'no' && link.message) {
 		context.notify('warning', formatMessage(UI_FLOW_EDITOR.NOTICE_DENIED, { message: link.message }))

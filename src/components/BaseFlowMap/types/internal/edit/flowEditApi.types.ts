@@ -188,3 +188,35 @@ export interface FlowEditLayerPort extends FlowEditPort {
 	/** Узел */
 	node: string
 }
+
+/** Тип поля панели свойств */
+type FlowEditFieldType = 'text' | 'area' | 'number' | 'select' | 'switch' | 'segmented' | 'color'
+
+/** Вариант выбора поля */
+export interface FlowEditFieldOption {
+	/** Значение */
+	value: string
+	/** Подпись */
+	label: string
+}
+
+/** Поле панели свойств: значение, вид и запись через команду */
+export interface FlowEditFieldDef {
+	/** Ключ */
+	id: string
+	/** Вид поля */
+	type: FlowEditFieldType
+	/** Подпись */
+	label: string
+	/** Значение */
+	value: string | number | boolean | null | undefined
+	/** Варианты */
+	options?: FlowEditFieldOption[]
+	/** Поле недоступно */
+	isDisabled?: boolean
+	/** Записать значение */
+	commit: (value: string | number | boolean | null) => void
+}
+
+/** Что показывает панель свойств: карта, элемент или несколько элементов */
+export type FlowEditSubject = { type: 'map' } | { type: 'many'; ids: string[] } | { type: 'node' | 'edge' | 'group'; id: string }

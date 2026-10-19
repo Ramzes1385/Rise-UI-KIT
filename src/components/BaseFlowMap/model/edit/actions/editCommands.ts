@@ -11,7 +11,7 @@ import type { FlowEditCommands } from '../../../types/internal/edit/flowEditApi.
 import type { FlowModelInternal } from '../../../types/internal/core/flowRenderInternal.types'
 import { addGroupCommand, addNodeCommand, moveCommand, removeCommand, updateCommand } from '../../commands/flowCommands'
 
-export function createEditEnv(model: FlowModelInternal): FlowCommandEnv {
+function createEditEnv(model: FlowModelInternal): FlowCommandEnv {
 	const registry = () => new Map([[model.notation.value.id, model.notation.value]])
 	return {
 		notation: () => model.notation.value,
