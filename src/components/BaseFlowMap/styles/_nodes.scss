@@ -120,9 +120,9 @@
 	}
 
 	&__node-subtitle {
+		color: var(--flow-node-text, var(--rise-text-muted));
 		overflow: hidden;
 		font-size: sz(var(--rise-font-size-xs));
-		color: var(--rise-text-muted);
 		text-overflow: ellipsis;
 		white-space: nowrap;
 	}

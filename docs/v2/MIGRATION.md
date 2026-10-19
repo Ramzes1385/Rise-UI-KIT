@@ -3437,3 +3437,8 @@ app.use(createUiKitConfig({ locale: 'en', theme: 'corporate' }))
 - **Compact.** Только панель свойств в `BaseDrawer`; остальное скрыто.
 - **Словарь** (шесть языков): раздел `flowEditor`, `UI_FLOW_EDITOR`.
 - **Стили:** `styles/edit/_edit.scss`, токены `--rise-*`. Новых зависимостей нет.
+
+## BaseFlowMap · контракт v6.2
+
+- **Вид узла.** `FlowNodeKindDef.isLabelObstacle?: boolean` (по умолчанию `true`): `false` — узел не мешает подписям связей, они могут лежать поверх него (линия жизни UML Sequence).
+- **Подзаголовок карточки** красится цветом `--flow-node-text` вида (запасной — `--rise-text-muted`); **экспорт SVG/PNG** рисует подзаголовок, подпись внизу слева и заливку, обводку (`FlowNode.color`) и цвет текста вида, как на экране.

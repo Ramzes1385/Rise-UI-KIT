@@ -105,6 +105,8 @@ export interface FlowNodeKindDef {
 	isContainer?: boolean
 	/** Узлы вида — внешние системы (`FlowNode.isExternal` по умолчанию) */
 	isExternal?: boolean
+	/** Узел мешает подписям связей (по умолчанию — да); `false` — подписи могут лежать поверх (линия жизни UML Sequence) */
+	isLabelObstacle?: boolean
 	/** Поля `props` */
 	props?: Record<string, FlowPropDef>
 	/** Модель 3D по умолчанию — id встроенной модели (`server`, `db`, `gateway`, `cloud`… — таблица 6.1 контракта 3D) или `auto` (по ключевым словам); выбор — правило 6.2 контракта 3D */

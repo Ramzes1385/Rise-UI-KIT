@@ -29,6 +29,13 @@ function paletteOf(root: Element | null): FlowExportPalette {
 	return Object.fromEntries(entries) as FlowExportPalette
 }
 
+function resolvePaint(value: string | undefined, root: Element | null, fallback: string): string {
+	if (!value) return fallback
+	const style = root && typeof getComputedStyle !== 'undefined' ? getComputedStyle(root) : null
+	const resolved = value.replace(/var\((--[\w-]+)(?:,[^)]*)?\)/g, (_, name: string) => style?.getPropertyValue(name).trim() ?? '')
+	return resolved.includes('var(') || /\(\s*\)|,\s*\)|\s{2}/.test(resolved) || resolved.trim() === '' ? fallback : resolved
+}
+
 function areaOf(scene: FlowExportScene, options?: FlowExportImageOptions): FlowRect {
 	if (options?.area === 'viewport') {
 		const { viewport, frame } = scene
@@ -74,15 +81,35 @@ function markersOf(scene: FlowExportScene, colors: FlowExportPalette): string {
 		.join('')
 }
 
+function labelLine(height: number, flags: { hasSubtitle: boolean; isBottom: boolean }): number {
+	if (!flags.hasSubtitle) return height / 2 + 4
+	return flags.isBottom ? height - 26 : height / 2 - 2
+}
+
+function textsOf(item: FlowExportScene['nodes'][number], paint: { text: string }): string {
+	const { rect, node, subtitle, isLabelBottom } = item
+	const x = isLabelBottom ? 12 : rect.width / 2
+	const anchor = isLabelBottom ? 'start' : 'middle'
+	const weight = isLabelBottom ? ' font-weight="600"' : ''
+	const labelY = labelLine(rect.height, { hasSubtitle: Boolean(subtitle), isBottom: isLabelBottom })
+	const label = `<text x="${x}" y="${labelY}" text-anchor="${anchor}" font-size="13"${weight} fill="${paint.text}">${escape(node.label)}</text>`
+	if (!subtitle) return label
+	const subtitleY = isLabelBottom ? rect.height - 10 : rect.height / 2 + 14
+	return `${label}<text x="${x}" y="${subtitleY}" text-anchor="${anchor}" font-size="11" fill="${paint.text}" fill-opacity="0.8">${escape(subtitle)}</text>`
+}
+
 function nodesOf(scene: FlowExportScene, colors: FlowExportPalette): string {
 	return scene.nodes
-		.map(({ rect, node, kind }) => {
+		.map(item => {
+			const { rect, node, kind } = item
 			const shape = shapeView(kind.shape, rect)
-			const inner = shape.inner ? `<path d="${shape.inner}" fill="none" stroke="${colors.border}"/>` : ''
-			return (
-				`<g transform="translate(${rect.x} ${rect.y})"><path d="${shape.path}" fill="${colors.node}" stroke="${colors.border}"/>${inner}` +
-				`<text x="${rect.width / 2}" y="${rect.height / 2 + 4}" text-anchor="middle" font-size="13" fill="${colors.text}">${escape(node.label)}</text></g>`
-			)
+			const paint = {
+				fill: resolvePaint(kind.shape.fill, scene.root, colors.node),
+				stroke: resolvePaint(node.color ?? kind.shape.stroke, scene.root, colors.border),
+				text: resolvePaint(kind.shape.text, scene.root, colors.text),
+			}
+			const inner = shape.inner ? `<path d="${shape.inner}" fill="none" stroke="${paint.stroke}"/>` : ''
+			return `<g transform="translate(${rect.x} ${rect.y})"><path d="${shape.path}" fill="${paint.fill}" stroke="${paint.stroke}"/>${inner}${textsOf(item, paint)}</g>`
 		})
 		.join('')
 }

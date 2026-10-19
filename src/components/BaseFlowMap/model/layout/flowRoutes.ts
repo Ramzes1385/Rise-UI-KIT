@@ -132,6 +132,11 @@ function labelRequests(edges: readonly FlowEdge[], routes: Record<string, FlowRo
 	)
 }
 
+function isLabelObstacle(build: RouteBuild, id: string): boolean {
+	const kind = build.kinds.get(id)
+	return kind === undefined || resolveNodeKind(kind, build.scope.notation, build.scope.registry).isLabelObstacle !== false
+}
+
 function fallbackRouting(scope: FlowLayoutScope): string {
 	return scope.overrides?.routing ?? scope.data.layout?.routing ?? scope.notation.layout?.routing ?? 'curved'
 }
@@ -154,7 +159,8 @@ export function computeRoutes(
 		const built = build.layoutEdges.has(edge.id) ? buildRoute(edge, build) : null
 		if (built) routes[edge.id] = { path: built.path, points: built.points, label: null }
 	}
-	const labels = placeLabels(labelRequests(scope.data.edges, routes), Object.values(layout.nodes))
+	const obstacles = Object.entries(layout.nodes).flatMap(([id, rect]) => (isLabelObstacle(build, id) ? [rect] : []))
+	const labels = placeLabels(labelRequests(scope.data.edges, routes), obstacles)
 	for (const [id, label] of Object.entries(labels)) routes[id].label = label
 	return routes
 }
