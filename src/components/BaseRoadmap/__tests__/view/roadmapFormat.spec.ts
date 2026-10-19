@@ -1,5 +1,8 @@
 import { stageView, topicView } from '../fixtures/shellFixtures'
+import { computePathLayout } from '../../model/layout/pathLayout'
+import { computeSnakeLayout } from '../../model/layout/snakeLayout'
 import { legendItems } from '../../model/view/format/roadmapLegend'
+import { sideMinWidth } from '../../model/view/format/roadmapPanel'
 import { flattenTopics, nextTopicId } from '../../model/view/format/roadmapOrder'
 import { firstUnmetTitle, resolveRequirements, titlesOf } from '../../model/view/format/roadmapRequirements'
 
@@ -93,5 +96,27 @@ describe('roadmapRequirements', () => {
 		expect(firstUnmetTitle(['a', 'b', 'd', 'e'], stages)).toBe('D')
 		expect(firstUnmetTitle(['a', 'b'], stages)).toBeUndefined()
 		expect(firstUnmetTitle(undefined, stages)).toBeUndefined()
+	})
+})
+
+describe('sideMinWidth', () => {
+	const stagesOf = (count: number) => Array.from({ length: count }, () => ({ topics: 0, isExpanded: false }))
+
+	it('«Список» и «Лента» — порог 900 при любом масштабе', () => {
+		expect(sideMinWidth('list', 5, 100)).toBe(900)
+		expect(sideMinWidth('horizontal', 12, 100)).toBe(900)
+		expect(sideMinWidth('list', 5, 200)).toBe(900)
+	})
+
+	it('«Путь» — ширина холста + 64 + 401, умноженная на масштаб', () => {
+		const { width } = computePathLayout(stagesOf(3), { isRtl: false })
+		expect(sideMinWidth('path', 3, 100)).toBe(width + 64 + 401)
+		expect(sideMinWidth('path', 3, 125)).toBe(((width + 64 + 401) * 125) / 100)
+	})
+
+	it('«Змейка» считается по ширине своего холста, но не ниже 900', () => {
+		const { width } = computeSnakeLayout(stagesOf(9), { isRtl: false })
+		expect(sideMinWidth('snake', 9, 100)).toBe(Math.max(900, width + 64 + 401))
+		expect(sideMinWidth('snake', 1, 50)).toBe(900)
 	})
 })

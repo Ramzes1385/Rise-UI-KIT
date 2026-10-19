@@ -105,7 +105,8 @@ describe('BaseRoadmap: v-model:progress', () => {
 		await user.click(screen.getByRole('button', { name: /^HTML/ }))
 		expect(screen.getByRole('button', { name: 'Отметить изученной' })).toBeDisabled()
 		expect(screen.getByRole('checkbox', { name: 'Теги' })).toBeDisabled()
-		expect(screen.getByRole('region', { name: 'Фронтенд' })).toHaveAttribute('aria-disabled', 'true')
+		expect(screen.getByRole('region', { name: 'Фронтенд' })).not.toHaveAttribute('aria-disabled')
+		expect(screen.getByRole('button', { name: 'Ещё' })).toBeDisabled()
 	})
 })
 
