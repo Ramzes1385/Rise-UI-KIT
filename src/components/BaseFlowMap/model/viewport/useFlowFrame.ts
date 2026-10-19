@@ -26,9 +26,18 @@ export function useFlowFrame(props: Pick<BaseFlowMapProps, 'compactBreakpoint'>)
 	let root: HTMLElement | null = null
 	let observer: ResizeObserver | null = null
 
+	function resolveRoot(target: HTMLElement): void {
+		if (root?.isConnected) return
+		const found = target.closest<HTMLElement>(ROOT)
+		if (!found || found === root) return
+		root = found
+		observer?.observe(found)
+	}
+
 	function measure(): void {
 		const target = element.value
 		if (!target) return
+		resolveRoot(target)
 		if (root && rootWidth.value !== root.clientWidth) rootWidth.value = root.clientWidth
 		const { width, height } = frame.value
 		if (width !== target.clientWidth || height !== target.clientHeight)
@@ -41,7 +50,7 @@ export function useFlowFrame(props: Pick<BaseFlowMapProps, 'compactBreakpoint'>)
 		observer?.disconnect()
 		observer = null
 		element.value = target
-		root = target?.closest<HTMLElement>(ROOT) ?? null
+		root = null
 		rootWidth.value = 0
 		if (!target) return
 		measure()

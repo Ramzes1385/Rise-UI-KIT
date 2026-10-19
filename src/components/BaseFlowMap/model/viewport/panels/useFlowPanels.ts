@@ -1,14 +1,14 @@
 import { type ComputedRef, computed } from 'vue'
-import type { FlowMode } from '../../types/api/flowController.types'
-import type { BaseFlowMapProps } from '../../types/BaseFlowMap.types'
+import type { FlowMode } from '../../../types/api/flowController.types'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
-import type { FlowEditState } from '../../types/internal/edit/flowEdit.types'
-import type { FlowFrameState, FlowModelInternal } from '../../types/internal/core/flowRenderInternal.types'
+import type { BaseFlowMapProps } from '../../../types/BaseFlowMap.types'
+import type { FlowEditState } from '../../../types/internal/edit/flowEdit.types'
+import type { FlowFrameState, FlowModelInternal } from '../../../types/internal/core/flowRenderInternal.types'
 
 const PALETTE_WIDTH = 224
 const SIDE_WIDTH = 340
 
-export function sidePanelsWidth(mode: FlowMode, hasDetailsOrScenario: boolean, scale = 1): number {
+function sidePanelsWidth(mode: FlowMode, hasDetailsOrScenario: boolean, scale = 1): number {
 	if (mode === 'edit') return (PALETTE_WIDTH + SIDE_WIDTH) * scale
 	if (mode === 'review' || hasDetailsOrScenario) return SIDE_WIDTH * scale
 	return 0
