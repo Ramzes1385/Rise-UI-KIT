@@ -5,7 +5,7 @@
 Как считается: на каждый компонент собирается мини-приложение Vite (`createApp` + компонент), сборщик приложения сам отсекает из общих чанков пакета всё, что компонент не читает (разделы словаря, утилиты). Вес — gzip (уровень 9), в КБ:
 
 - **JS** — стартовый JS приложения минус приложение с одним Vue (23,1 КБ): код компонента, всего, что он использует внутри (BaseSelect — BaseDropdown, BaseInput, BaseIcon…), composables и русских строк тех разделов словаря, которые он читает;
-- **CSS** — стили компонента и внутренних компонентов, без `tokens.css` (токены и тема, 3,8 КБ — подключаются один раз на приложение);
+- **CSS** — стили компонента и внутренних компонентов, без `tokens.css` (токены и тема, 4,0 КБ — подключаются один раз на приложение);
 - **по import()** — чанки, которые компонент подгружает по требованию (тяжёлые части, данные); в стартовый вес не входят.
 
 Общий код (Vue-обвязка кита, composables, разделы словаря) у нескольких компонентов приложение получает один раз: вес двух компонентов вместе меньше суммы строк. Языки, кроме встроенного `ru`, не входят — словарь, подключённый `registerLocale(en)`, добавляет ≈20 КБ (README, «Языки»).
@@ -21,7 +21,7 @@
 | BaseAnimation | 4,3 | 0,7 | 5,0 | — |
 | BaseApp | 18,2 | 3,8 | 22,0 | — |
 | BaseAudioPlayer | 24,3 | 4,1 | 28,4 | — |
-| BaseAutocomplete | 25,9 | 4,2 | 30,2 | — |
+| BaseAutocomplete | 26,0 | 4,2 | 30,2 | — |
 | BaseAvatar | 12,3 | 1,4 | 13,7 | — |
 | BaseAvatarCropper | 22,6 | 2,7 | 25,3 | — |
 | BaseAvatarGroup | 13,5 | 1,7 | 15,2 | — |
@@ -29,8 +29,8 @@
 | BaseBadge | 11,9 | 1,4 | 13,2 | — |
 | BaseBankCard | 8,8 | 1,3 | 10,1 | — |
 | BaseBanner | 10,6 | 2,0 | 12,6 | — |
-| BaseBottomNav | 16,6 | 2,8 | 19,5 | — |
-| BaseBreadcrumbs | 15,3 | 1,5 | 16,9 | — |
+| BaseBottomNav | 16,7 | 2,8 | 19,5 | — |
+| BaseBreadcrumbs | 15,4 | 1,5 | 16,9 | — |
 | BaseButton | 4,6 | 1,2 | 5,9 | — |
 | BaseButtonGroup | 1,4 | 0,4 | 1,8 | — |
 | BaseCalendar | 25,5 | 5,2 | 30,7 | — |
@@ -38,7 +38,7 @@
 | BaseCardInput | 23,4 | 4,6 | 27,9 | — |
 | BaseCascader | 28,9 | 5,1 | 34,0 | — |
 | BaseChart | 13,8 | 1,8 | 15,6 | — |
-| BaseChat | 90,9 | 17,6 | 108,5 | 27,4 |
+| BaseChat | 91,0 | 17,6 | 108,6 | 27,4 |
 | BaseCheckbox | 8,8 | 1,8 | 10,5 | — |
 | BaseCheckboxGroup | 9,8 | 1,9 | 11,8 | — |
 | BaseChecklist | 19,6 | 4,9 | 24,5 | — |
@@ -56,7 +56,7 @@
 | BaseCryptoProSign | 69,1 | 12,9 | 82,0 | 1,4 |
 | BaseDadataInput | 29,1 | 4,2 | 33,3 | — |
 | BaseDashboardGrid | 13,5 | 1,8 | 15,2 | — |
-| BaseDatePicker | 45,3 | 6,7 | 51,9 | — |
+| BaseDatePicker | 45,3 | 6,7 | 52,0 | — |
 | BaseDescriptions | 8,1 | 2,1 | 10,2 | — |
 | BaseDrawer | 13,3 | 2,4 | 15,7 | — |
 | BaseDropdown | 10,3 | 1,0 | 11,3 | — |
@@ -69,12 +69,12 @@
 | BaseFileManager | 74,5 | 14,7 | 89,2 | — |
 | BaseFileUpload | 39,6 | 8,0 | 47,7 | — |
 | BaseFilterBuilder | 16,9 | 3,4 | 20,3 | — |
-| BaseFlowMap | 113,8 | 16,6 | 130,5 | — |
+| BaseFlowMap | 177,2 | 26,2 | 203,4 | — |
 | BaseFooter | 9,5 | 1,4 | 10,9 | — |
 | BaseForm | 5,2 | 1,3 | 6,5 | — |
 | BaseFormField | 6,8 | 0,9 | 7,6 | — |
 | BaseFormWizard | 18,3 | 4,6 | 22,8 | — |
-| BaseGantt | 16,1 | 2,6 | 18,8 | — |
+| BaseGantt | 16,2 | 2,6 | 18,8 | — |
 | BaseGrid | 1,7 | 0,5 | 2,2 | — |
 | BaseHeader | 18,1 | 3,2 | 21,3 | — |
 | BaseHeatmap | 5,6 | 0,7 | 6,3 | — |
@@ -83,14 +83,14 @@
 | BaseImage | 26,5 | 4,0 | 30,4 | — |
 | BaseImageCompare | 4,0 | 1,0 | 5,0 | — |
 | BaseImageMap | 65,7 | 11,4 | 77,1 | — |
-| BaseImageMapEditor | 102,9 | 15,2 | 118,2 | — |
+| BaseImageMapEditor | 103,1 | 15,2 | 118,3 | — |
 | BaseInfiniteScroll | 8,0 | 2,1 | 10,1 | — |
 | BaseInplace | 14,4 | 3,2 | 17,6 | — |
 | BaseInput | 13,7 | 2,8 | 16,6 | — |
 | BaseInputNumber | 15,6 | 3,1 | 18,6 | — |
 | BaseInputTags | 21,4 | 3,8 | 25,2 | — |
-| BaseJsonViewer | 23,7 | 3,9 | 27,7 | — |
-| BaseKanban | 49,5 | 8,4 | 58,0 | — |
+| BaseJsonViewer | 23,8 | 3,9 | 27,7 | — |
+| BaseKanban | 49,6 | 8,4 | 58,0 | — |
 | BaseKbd | 4,4 | 0,5 | 4,9 | — |
 | BaseLayout | 4,1 | 0,8 | 4,9 | — |
 | BaseLink | 7,7 | 0,7 | 8,4 | — |
@@ -105,7 +105,7 @@
 | BaseModal | 12,8 | 2,2 | 15,0 | — |
 | BaseMoneyInput | 15,1 | 2,9 | 17,9 | — |
 | BaseNotification | 16,4 | 3,6 | 20,1 | — |
-| BaseNotificationCenter | 31,2 | 5,7 | 37,0 | — |
+| BaseNotificationCenter | 31,3 | 5,7 | 37,0 | — |
 | BasePagination | 10,9 | 1,8 | 12,7 | — |
 | BasePhoneInput | 26,0 | 4,1 | 30,1 | — |
 | BasePieChart | 4,7 | 1,1 | 5,8 | — |
@@ -128,7 +128,7 @@
 | BaseSelect | 30,7 | 5,1 | 35,9 | — |
 | BaseSeparator | 3,2 | 0,5 | 3,7 | — |
 | BaseSideBar | 36,0 | 7,7 | 43,7 | — |
-| BaseSignaturePad | 10,1 | 2,3 | 12,4 | — |
+| BaseSignaturePad | 10,2 | 2,3 | 12,5 | — |
 | BaseSkeleton | 2,2 | 0,5 | 2,7 | — |
 | BaseSlideover | 13,0 | 2,4 | 15,3 | — |
 | BaseSlider | 32,1 | 5,7 | 37,8 | — |
