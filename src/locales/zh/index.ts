@@ -21,6 +21,7 @@ import { zhFlowScenario } from './components/flow/scenario'
 import { zhFormWizard } from './components/form/formWizard'
 import { zhEventCalendar } from './components/eventCalendar'
 import { zhFileManager } from './components/data/fileManager'
+import { zhRoadmapEdit } from './components/data/roadmapEdit'
 import { zhFlowDfd } from './components/flow/notations/process/dfd'
 import { zhFlowEpc } from './components/flow/notations/process/epc'
 import { zhDashboardGrid } from './components/layout/dashboardGrid'
@@ -66,5 +67,6 @@ export const zh: UiKitLocale = {
 	...zhFileManager,
 	...zhFormWizard,
 	...zhRoadmap,
+	...zhRoadmapEdit,
 	plural: zhPlural,
 }

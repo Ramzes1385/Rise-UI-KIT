@@ -22,6 +22,7 @@ import { uzFlowScenario } from './components/flow/scenario'
 import { uzFormWizard } from './components/form/formWizard'
 import { uzEventCalendar } from './components/eventCalendar'
 import { uzFileManager } from './components/data/fileManager'
+import { uzRoadmapEdit } from './components/data/roadmapEdit'
 import { uzFlowDfd } from './components/flow/notations/process/dfd'
 import { uzFlowEpc } from './components/flow/notations/process/epc'
 import { uzDashboardGrid } from './components/layout/dashboardGrid'
@@ -68,5 +69,6 @@ export const uz: UiKitLocale = {
 	...uzFileManager,
 	...uzFormWizard,
 	...uzRoadmap,
+	...uzRoadmapEdit,
 	plural: uzPlural,
 }

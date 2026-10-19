@@ -14,6 +14,7 @@ import { ruFlowScenario } from './components/flow/scenario'
 import { ruFormWizard } from './components/form/formWizard'
 import { ruEventCalendar } from './components/eventCalendar'
 import { ruFileManager } from './components/data/fileManager'
+import { ruRoadmapEdit } from './components/data/roadmapEdit'
 import { ruFlowDfd } from './components/flow/notations/process/dfd'
 import { ruFlowEpc } from './components/flow/notations/process/epc'
 import { ruDashboardGrid } from './components/layout/dashboardGrid'
@@ -164,5 +165,6 @@ export const ru = {
 	fileManager: ruFileManager,
 	formWizard: ruFormWizard,
 	roadmap: ruRoadmap,
+	roadmapEdit: ruRoadmapEdit,
 	plural: ruPlural,
 }

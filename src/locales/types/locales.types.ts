@@ -169,6 +169,7 @@ export interface UiKitLocale {
 	fileManager: Section<'fileManager'>
 	formWizard: Section<'formWizard'>
 	roadmap: Section<'roadmap'>
+	roadmapEdit: Section<'roadmapEdit'>
 	datePicker: Section<'datePicker'>
 	warnings: Section<'warnings'>
 	plural: { readonly [P in keyof Base['plural']]: PluralForms }

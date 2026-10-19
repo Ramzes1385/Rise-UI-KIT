@@ -22,6 +22,7 @@ import { kkFlowScenario } from './components/flow/scenario'
 import { kkFormWizard } from './components/form/formWizard'
 import { kkEventCalendar } from './components/eventCalendar'
 import { kkFileManager } from './components/data/fileManager'
+import { kkRoadmapEdit } from './components/data/roadmapEdit'
 import { kkFlowDfd } from './components/flow/notations/process/dfd'
 import { kkFlowEpc } from './components/flow/notations/process/epc'
 import { kkDashboardGrid } from './components/layout/dashboardGrid'
@@ -68,5 +69,6 @@ export const kk: UiKitLocale = {
 	...kkFileManager,
 	...kkFormWizard,
 	...kkRoadmap,
+	...kkRoadmapEdit,
 	plural: kkPlural,
 }

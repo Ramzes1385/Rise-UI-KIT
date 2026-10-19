@@ -16,6 +16,7 @@ import { ruFlowScenario } from './ru/components/flow/scenario'
 import { ruFormWizard } from './ru/components/form/formWizard'
 import { ruEventCalendar } from './ru/components/eventCalendar'
 import { ruFileManager } from './ru/components/data/fileManager'
+import { ruRoadmapEdit } from './ru/components/data/roadmapEdit'
 import { ruFlowDfd } from './ru/components/flow/notations/process/dfd'
 import { ruFlowEpc } from './ru/components/flow/notations/process/epc'
 import { ruDashboardGrid } from './ru/components/layout/dashboardGrid'
@@ -263,6 +264,9 @@ export const UI_FORM_WIZARD = /* @__PURE__ */ localized('formWizard', ruFormWiza
 
 /** Роадмап BaseRoadmap: статусы, сводка, предупреждения о данных */
 export const UI_ROADMAP = /* @__PURE__ */ localized('roadmap', ruRoadmap)
+
+/** Роадмап BaseRoadmap, режим «Правка»: шаблоны, свойства, перестановка, отказы */
+export const UI_ROADMAP_EDIT = /* @__PURE__ */ localized('roadmapEdit', ruRoadmapEdit)
 
 /** Диапазоны BaseDatePicker: готовые периоды, ошибки ввода */
 export const UI_DATE_PICKER = /* @__PURE__ */ localized('datePicker', ruDatePicker)
