@@ -6,6 +6,7 @@ import type { SequenceLifecycle } from '../../../types/notations/architecture/se
 import type { FlowConnectContext, FlowDataIssue, FlowNotationRules, FlowRuleResult } from '../../../types/api/flowNotation.types'
 
 const LIFELINES = ['lifeline', 'actor']
+const ANY = ['*']
 
 export function sequenceKindOf(node: { kind?: string }): string {
 	return (node.kind ?? '').replace(/^sequence:/, '')
@@ -68,7 +69,7 @@ function lifelineIssue(
 	node: FlowNode,
 	context: { rows: Map<string, number>; lifecycle: SequenceLifecycle },
 ): FlowDataIssue[] {
-	const row = context.rows.get(edge.id) ?? 0
+	const row = context.rows.get(edge.id) as number
 	const created = context.lifecycle.created.get(node.id)
 	const destroyed = context.lifecycle.destroyed.get(node.id)
 	const names = { name: edge.label || edge.id, lifeline: node.label || node.id }
@@ -100,11 +101,11 @@ function sequenceValidate(data: FlowMapData, graph: FlowGraph): FlowDataIssue[] 
 
 export const sequenceRules: FlowNotationRules = {
 	connections: [
-		{ edge: 'sync', from: LIFELINES, to: LIFELINES },
-		{ edge: 'async', from: LIFELINES, to: LIFELINES },
-		{ edge: 'reply', from: LIFELINES, to: LIFELINES },
-		{ edge: 'create', from: LIFELINES, to: LIFELINES },
-		{ edge: 'destroy', from: LIFELINES, to: LIFELINES },
+		{ edge: 'sync', from: ANY, to: ANY },
+		{ edge: 'async', from: ANY, to: ANY },
+		{ edge: 'reply', from: ANY, to: ANY },
+		{ edge: 'create', from: ANY, to: ANY },
+		{ edge: 'destroy', from: ANY, to: ANY },
 	],
 	canConnect: sequenceCanConnect,
 	validate: sequenceValidate,

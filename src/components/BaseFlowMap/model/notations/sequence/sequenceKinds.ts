@@ -79,6 +79,7 @@ export const sequenceNodeKinds: Record<string, FlowNodeKindDef> = {
 const message = (label: () => string, extra: Partial<FlowEdgeKindDef>): FlowEdgeKindDef => ({
 	label,
 	stroke: 'solid',
+	color: LINE,
 	endMarker: 'arrow',
 	routing: 'straight',
 	traffic: { rate: 0.5, speed: 120 },

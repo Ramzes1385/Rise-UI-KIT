@@ -39,7 +39,7 @@ function lifelineRect(node: FlowLayoutNode, x: number, context: { lifecycle: Seq
 	const created = context.lifecycle.created.get(node.id)
 	const destroyed = context.lifecycle.destroyed.get(node.id)
 	const top = created === undefined ? 0 : rowY(created) - HEADER_CENTER
-	const bottom = destroyed === undefined ? rowY(context.lastRow) + TAIL : rowY(destroyed) + LOOP_HALF
+	const bottom = destroyed === undefined ? rowY(context.lastRow) + TAIL : rowY(destroyed)
 	return { x, y: top, width: node.size.width, height: Math.max(bottom - top, MIN_HEIGHT) }
 }
 
@@ -117,7 +117,9 @@ function isNestedIn(inner: [number, number], outer: [number, number]): boolean {
 }
 
 function wrapNested(rects: Record<string, FlowRect>, spans: ReadonlyMap<string, [number, number]>): void {
-	const ids = [...spans.keys()].sort((a, b) => spanLength(spans.get(a)) - spanLength(spans.get(b)))
+	const ids = [...spans.keys()].sort(
+		(a, b) => spanLength(spans.get(a) as [number, number]) - spanLength(spans.get(b) as [number, number]),
+	)
 	ids.forEach((innerId, index) => {
 		for (const outerId of ids.slice(index + 1)) {
 			if (isNestedIn(spans.get(innerId) as [number, number], spans.get(outerId) as [number, number])) {
@@ -127,8 +129,8 @@ function wrapNested(rects: Record<string, FlowRect>, spans: ReadonlyMap<string, 
 	})
 }
 
-function spanLength(span: [number, number] | undefined): number {
-	return span ? span[1] - span[0] : 0
+function spanLength(span: [number, number]): number {
+	return span[1] - span[0]
 }
 
 function boundsOf(rects: readonly FlowRect[], routes: readonly FlowPoint[][]): FlowRect {
@@ -151,10 +153,10 @@ function runSequence(input: FlowLayoutInput): FlowLayoutResult {
 	const lastRow = Math.max(0, input.edges.length - 1)
 	const lifecycle = lifecycleOf(input.edges)
 	const rects: Record<string, FlowRect> = {}
-	for (const node of lifelines) rects[node.id] = lifelineRect(node, columns.get(node.id) ?? 0, { lifecycle, lastRow })
+	for (const node of lifelines) rects[node.id] = lifelineRect(node, columns.get(node.id) as number, { lifecycle, lastRow })
 	const created = new Set(lifecycle.created.keys())
 	const edges: Record<string, FlowPoint[]> = {}
-	for (const edge of input.edges) edges[edge.id] = messageRoute(edge, rowY(rows.get(edge.id) ?? 0), { rects, created })
+	for (const edge of input.edges) edges[edge.id] = messageRoute(edge, rowY(rows.get(edge.id) as number), { rects, created })
 	for (const node of fragments) rects[node.id] = fragmentRect(node, input, { rows, rects })
 	wrapNested(rects, new Map(fragments.map(node => [node.id, spanOf(node, rows, input.edges.length)])))
 	const nodes = Object.fromEntries(Object.entries(rects))
