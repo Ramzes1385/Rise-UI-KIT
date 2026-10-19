@@ -2,7 +2,10 @@ import { computed } from 'vue'
 import type { ComputedRef } from 'vue'
 import { glyphPath } from './shapes/flowGlyphs'
 import { shapeView } from './shapes/flowShapes'
+import { formatMessage } from '@/locales/state'
+import { UI_FLOW_MAP } from '@/locales/messages'
 import { highlightOf } from '../context/useFlowHighlight'
+import { FLOW_COLLAPSED_KIND } from '../groups/tree/collapseData'
 import type { FlowNodeKindDef } from '../../types/api/flowNotation.types'
 import type { FlowNode, FlowRect } from '../../types/data/flowData.types'
 import { describeLinks, describeNode, statusView } from '../a11y/flowDescribe'
@@ -30,6 +33,7 @@ function flagsOf(node: FlowNode, kind: FlowNodeKindDef, source: FlowRenderSource
 		isExternal: node.isExternal ?? kind.isExternal ?? false,
 		isCompact: map.isCompact.value && kind.render === 'html',
 		tabIndex: source.tabIndexOf(node.id),
+		expandLabel: node.kind === FLOW_COLLAPSED_KIND ? formatMessage(UI_FLOW_MAP.GROUP_EXPAND, { name: node.label }) : null,
 	}
 }
 
@@ -50,6 +54,6 @@ function buildNode(node: FlowNode, rect: FlowRect, source: FlowRenderSource): Fl
 export function useFlowNodes(source: FlowRenderSource): ComputedRef<FlowNodeItem[]> {
 	return computed(() => {
 		const rects = source.model.layout.value.nodes
-		return source.model.data.value.nodes.flatMap(node => (rects[node.id] ? [buildNode(node, rects[node.id], source)] : []))
+		return source.model.shown.value.nodes.flatMap(node => (rects[node.id] ? [buildNode(node, rects[node.id], source)] : []))
 	})
 }

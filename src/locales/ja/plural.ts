@@ -26,4 +26,8 @@ export const jaPlural = {
 	ROADMAP_TOPICS: { other: '{n} 件のトピック' },
 	ROADMAP_OF_TOPICS: { other: '{n} 件のトピック' },
 	ROADMAP_OF_SUBTOPICS: { other: '{n} 件のサブトピック' },
+	/** Блок свёрнутой группы BaseFlowMap: сколько элементов внутри */
+	FLOW_ITEMS: { other: '{n} 件' },
+	/** Слитая связь BaseFlowMap: сколько связей объединено */
+	FLOW_LINKS: { other: '{n} 本の接続' },
 }

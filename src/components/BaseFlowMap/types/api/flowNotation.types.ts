@@ -47,8 +47,8 @@ export interface FlowShapeMarker {
 	icon?: string
 	/** Текст (номер, буква соединения IDEF3 «&», «X», «O») */
 	text?: string
-	/** Где: center, top-start, top-end, bottom-center, bottom-start, bottom-end */
-	placement: 'center' | 'top-start' | 'top-end' | 'bottom-center' | 'bottom-start' | 'bottom-end'
+	/** Где: center, top-start, top-center, top-end, bottom-center, bottom-start, bottom-end */
+	placement: 'center' | 'top-start' | 'top-center' | 'top-end' | 'bottom-center' | 'bottom-start' | 'bottom-end'
 	/** Залит (бросающее событие BPMN) */
 	isFilled?: boolean
 }
@@ -259,8 +259,15 @@ export interface FlowNotation {
 	legend?: (data: FlowMapData) => FlowLegendItem[]
 	/** Раскладки нотации (`idef0-staircase`…): регистрируются вместе с нотацией */
 	layouts?: FlowLayoutAlgorithm[]
-	/** Смысловой зум: при масштабе меньше `minZoom` группы и контейнеры глубже `depth` свёрнуты (C4: контекст → контейнеры → компоненты) */
-	semanticZoom?: { minZoom: number; depth: number }[]
+	/**
+	 * Смысловой зум (C4: контекст → контейнеры → компоненты): записи по возрастанию `minZoom`.
+	 * `depth` — сколько уровней вложенности групп остаются развёрнутыми (корневая группа — уровень 0, группа с уровнем ≥ `depth` свёрнута).
+	 * Берётся первая запись, у которой `minZoom` больше текущего масштаба; выше последнего порога всё развёрнуто.
+	 * Уровней на одну больше, чем записей: запись `i` — уровень `i`, последний уровень — «всё развёрнуто»
+	 */
+	semanticZoom?: { minZoom: number; depth: number; label?: () => string }[]
+	/** Подпись последнего уровня смыслового зума (выше последнего порога); без неё — «Уровень N» из словаря */
+	semanticZoomLabel?: () => string
 	/** Варианты оформления нотации: DFD — `gane-sarson` и `yourdon-demarco`; выбор — `FlowLayoutSettings.options.style` */
 	styles?: Record<string, { label: () => string; nodeKinds: Record<string, Partial<FlowNodeKindDef>> }>
 }

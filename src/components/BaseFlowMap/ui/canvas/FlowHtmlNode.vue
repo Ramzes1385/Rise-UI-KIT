@@ -48,6 +48,15 @@
 				<span class="base-flow-map__node-label">{{ item.node.label }}</span>
 				<span v-if="item.node.subtitle && !item.isCompact" class="base-flow-map__node-subtitle">{{ item.node.subtitle }}</span>
 			</span>
+			<button
+				v-if="item.expandLabel"
+				type="button"
+				class="base-flow-map__toggle"
+				:aria-expanded="false"
+				:aria-label="item.expandLabel"
+				@click.stop="canvas.toggleGroup(item.id)">
+				<BaseIcon name="chevron-right" />
+			</button>
 			<span
 				v-if="item.status"
 				class="base-flow-map__node-status"

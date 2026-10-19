@@ -170,6 +170,20 @@ export interface FlowLiveState {
 	edges?: Record<string, { status?: FlowStatus; metrics?: FlowMetric[]; traffic?: FlowTraffic }>
 }
 
+/** Уровень смыслового зума и вход в группы */
+export interface FlowLevelState {
+	/** Номер уровня с 0: 0 — самый крупный план, последний — всё развёрнуто */
+	index: number
+	/** Число уровней: записей `semanticZoom` плюс один; 0 — смыслового зума нет или он отключён */
+	count: number
+	/** Подпись текущего уровня */
+	label: string
+	/** Подписи всех уровней по порядку */
+	labels: string[]
+	/** Вход в группы: id групп от корня до текущей (крошки) */
+	path: string[]
+}
+
 /** Параметры вписывания и фокуса */
 export interface FlowFitOptions {
 	/** Что вписать; по умолчанию всё */
@@ -270,6 +284,18 @@ export interface FlowMapController {
 	select: (ids: string[], mode?: 'replace' | 'add' | 'toggle') => void
 	/** Выделенное */
 	getSelection: () => string[]
+	/** Свернуть или развернуть группу: состояние вида, не данные — без `update:data` и истории правок; без `isCollapsed` — переключить */
+	toggleGroup: (id: string, isCollapsed?: boolean) => void
+	/** Id свёрнутых групп сейчас: из данных, по уровню зума и по явным переключениям */
+	getCollapsed: () => string[]
+	/** Уровень смыслового зума, подписи и путь входа */
+	getLevel: () => FlowLevelState
+	/** Перейти на уровень (масштаб подбирается под уровень; явные переключения групп сбрасываются) */
+	setLevel: (index: number, options?: { isAnimated?: boolean }) => void
+	/** Войти в группу: нужный уровень, группа развёрнута, вид вписан в неё */
+	enterGroup: (id: string, options?: { isAnimated?: boolean }) => void
+	/** Выйти из групп: `depth` — длина пути входа, до которой вернуться (0 — к корню); по умолчанию на шаг выше */
+	leaveGroup: (depth?: number, options?: { isAnimated?: boolean }) => void
 	/** Вписать в область */
 	fitView: (options?: FlowFitOptions) => void
 	/** Показать элемент и перевести на него фокус клавиатуры */
@@ -378,6 +404,10 @@ export interface FlowEventMap {
 	'focus-change': FlowElementRef | null
 	/** Видимая область */
 	'viewport-change': FlowViewport
+	/** Группа свёрнута или развёрнута (пользователем, контроллером, по уровню зума) */
+	'group-toggle': FlowElementEvent
+	/** Уровень смыслового зума или путь входа изменились */
+	'level-change': FlowLevelState
 	/** Состояние сценария (запуск, пауза, конец) */
 	'scenario-change': FlowScenarioState
 	/** Новый шаг сценария */

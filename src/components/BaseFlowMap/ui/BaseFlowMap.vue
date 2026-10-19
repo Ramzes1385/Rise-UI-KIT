@@ -1,6 +1,13 @@
 <template>
 	<section
-		:class="[ui('root'), variantClass, classes.root, isCompact && 'base-flow-map--compact', isDisabled && 'base-flow-map--disabled']"
+		:class="[
+			ui('root'),
+			variantClass,
+			classes.root,
+			isCompact && 'base-flow-map--compact',
+			isMorphing && 'base-flow-map--morph',
+			isDisabled && 'base-flow-map--disabled',
+		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle, rootStyle]"
 		role="region"
 		:aria-roledescription="UI_FLOW_MAP.ROLE"
@@ -94,6 +101,7 @@ const props = withDefaults(
 		panels: undefined,
 		scenario: undefined,
 		isAutoplay: false,
+		isSemanticZoom: true,
 		particles: 400,
 		compactBreakpoint: 640,
 		height: '560px',
@@ -121,6 +129,7 @@ const {
 	model,
 	announcement,
 	isCompact,
+	isMorphing,
 	hasHeader,
 	hasToolbar,
 	hasSearch,

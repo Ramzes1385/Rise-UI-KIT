@@ -48,6 +48,14 @@ function wireEvents(model: FlowModel, events: FlowEventBus, props: FlowModelProp
 		if (value.status !== previous.status || value.scenario !== previous.scenario) events.emit('scenario-change', value)
 		if (value.stepIndex !== previous.stepIndex) events.emit('scenario-step', value)
 	})
+	watch(model.collapsed, (next, previous) => {
+		for (const id of new Set([...next, ...previous])) {
+			if (next.has(id) !== previous.has(id)) events.emit('group-toggle', { target: { entity: 'group', id } })
+		}
+	})
+	watch(model.level, (next, previous) => {
+		if (next.index !== previous.index || next.path.join() !== previous.path.join()) events.emit('level-change', next)
+	})
 	watch(
 		() => props.plugins,
 		(plugins, _previous, onCleanup) => onCleanup(setupFlowPlugins(model.controller, plugins ?? [])),
@@ -70,16 +78,24 @@ export function useFlowModel(props: FlowModelProps, options: FlowModelOptions): 
 	const execution = createExecution(props, state, events)
 	const { layout, routes } = useFlowLayout(state.scope)
 	const { hooks, history, draft, execute } = execution
-	const { data, notation, graph, issues, selection, highlighted, live, mode } = state
+	const { data, shown, notation, graph, issues, selection, highlighted, live, mode } = state
 	const base: FlowModelBase = {
-		...{ data, notation, graph, issues, selection, highlighted, live, mode },
+		...{ data, shown, notation, graph, issues, selection, highlighted, live, mode },
+		...{ collapsed: state.groups.collapsed, level: state.groups.level },
 		...kindResolvers(state),
 		...{ layout, routes, hooks, history, draft, execute },
 	}
 	const scenario = useFlowScenario(base, props, options.environment)
 	const holder = createViewHolder()
 	const parts = { ...execution, layout, announce: options.environment.announce, scenario, view: holder.view }
-	const model: FlowModelInternal = { ...base, scenario, controller: createController(parts), setView: holder.set, events }
+	const model: FlowModelInternal = {
+		...base,
+		scenario,
+		controller: createController(parts),
+		setView: holder.set,
+		events,
+		groups: state.groups,
+	}
 	wireEvents(model, events, props)
 	return model
 }

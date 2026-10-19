@@ -28,4 +28,8 @@ export const enPlural = {
 	ROADMAP_TOPICS: { one: '{n} topic', other: '{n} topics' },
 	ROADMAP_OF_TOPICS: { one: '{n} topic', other: '{n} topics' },
 	ROADMAP_OF_SUBTOPICS: { one: '{n} subtopic', other: '{n} subtopics' },
+	/** Блок свёрнутой группы BaseFlowMap: сколько элементов внутри */
+	FLOW_ITEMS: { one: '{n} item', other: '{n} items' },
+	/** Слитая связь BaseFlowMap: сколько связей объединено */
+	FLOW_LINKS: { one: '{n} link', other: '{n} links' },
 }

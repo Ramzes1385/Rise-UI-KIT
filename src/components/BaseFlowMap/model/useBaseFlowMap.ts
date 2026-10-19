@@ -42,6 +42,7 @@ export function useBaseFlowMap(props: BaseFlowMapProps, emit: BaseFlowMapEmits) 
 		review: useFlowReview(model),
 		announcement,
 		isCompact: frame.isCompact,
+		isMorphing: model.groups.isMorphing,
 		label: computed(() => props.ariaLabel ?? model.data.value.title ?? UI_FLOW_MAP.DEFAULT_LABEL),
 		rootStyle: computed(() => ({ height: props.height })),
 	}

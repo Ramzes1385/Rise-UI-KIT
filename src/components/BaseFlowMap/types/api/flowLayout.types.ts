@@ -50,6 +50,10 @@ export interface FlowLayoutNode {
 export interface FlowLayoutEdge {
 	/** Id */
 	id: string
+	/** Вид связи нотации: фрагмент и стрелка сообщения UML Sequence зависят от вида */
+	kind: string
+	/** Поля нотации связи */
+	props?: Record<string, FlowValue>
 	/** Источник */
 	source: string
 	/** Приёмник */
@@ -66,6 +70,10 @@ export interface FlowLayoutEdge {
 export interface FlowLayoutGroup {
 	/** Id */
 	id: string
+	/** Вид группы нотации */
+	kind: string
+	/** Поля нотации группы */
+	props?: Record<string, FlowValue>
 	/** Полоса, ярус или рамка (`FlowGroupKindDef.layout`) */
 	layout: 'band' | 'tier' | 'box'
 	/** Родитель */

@@ -6,6 +6,7 @@ import { useFlowPick } from './context/useFlowPick'
 import { useFlowChrome } from './chrome/useFlowChrome'
 import { useFlowContext } from './context/useFlowContext'
 import { createFlowViewApi } from './viewport/flowViewApi'
+import { useFlowZoomLevel } from './groups/useFlowZoomLevel'
 import { useFlowGestures } from './viewport/useFlowGestures'
 import { useFlowViewport } from './viewport/useFlowViewport'
 import { useFlowHighlight } from './context/useFlowHighlight'
@@ -22,6 +23,7 @@ export function useFlowRendering(
 	const focused = ref<string | null>(null)
 	const hovered = ref<string | null>(null)
 	const view = useFlowViewport(model, frame, () => ({ min: props.minZoom ?? 0.2, max: props.maxZoom ?? 3 }))
+	useFlowZoomLevel(model, view)
 	const map = useFlowContext({ model, frame, view, focused, hovered, environment })
 	const pick = useFlowPick(model, map, { hovered, isDisabled: () => Boolean(props.isDisabled) })
 	const focus = useFlowFocus(model, { frame, view, focused }, pick)

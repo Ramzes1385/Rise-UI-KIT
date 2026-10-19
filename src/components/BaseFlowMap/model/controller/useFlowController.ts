@@ -1,5 +1,6 @@
 import { createReviewApi } from './flowReviewApi'
 import { createStateApi } from '../state/flowStateApi'
+import { createGroupsApi } from '../groups/flowGroupsApi'
 import { FLOW_HOOK_NAMES } from '../execute/flowHookProps'
 import { createEditApi } from '../commands/useFlowCommands'
 import { listBindings, toggleBinding } from './flowBindings'
@@ -38,8 +39,12 @@ export function createController(parts: FlowControllerParts): FlowMapController 
 		...createHistoryApi(parts),
 		...createReviewApi(parts),
 		...createScenarioApi(parts),
+		...createGroupsApi(parts),
 		fitView: options => view.fitView(options),
-		focus: (id, options) => view.focus(id, options),
+		focus(id, options) {
+			parts.state.groups.reveal([id])
+			view.focus(id, options)
+		},
 		zoom: to => view.zoom(to),
 		getViewport: () => view.getViewport(),
 		setViewport: (viewport, options) => view.setViewport(viewport, options),

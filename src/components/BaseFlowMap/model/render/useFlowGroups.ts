@@ -1,5 +1,7 @@
 import { computed } from 'vue'
 import type { ComputedRef } from 'vue'
+import { formatMessage } from '@/locales/state'
+import { UI_FLOW_MAP } from '@/locales/messages'
 import type { FlowGraph } from '../../types/api/flowLayout.types'
 import type { FlowGroupItem } from '../../types/internal/core/flowRenderInternal.types'
 import type { FlowModelInternal } from '../../types/internal/core/flowRenderInternal.types'
@@ -18,7 +20,7 @@ export function useFlowGroups(model: FlowModelInternal): ComputedRef<FlowGroupIt
 	return computed(() => {
 		const rects = model.layout.value.groups
 		const graph = model.graph.value
-		return (model.data.value.groups ?? [])
+		return (model.shown.value.groups ?? [])
 			.filter(group => rects[group.id])
 			.map(group => {
 				const kind = model.groupKind(group)
@@ -31,6 +33,7 @@ export function useFlowGroups(model: FlowModelInternal): ComputedRef<FlowGroupIt
 					header: kind.header ?? 'top',
 					border: kind.border ?? 'solid',
 					depth: depthOf(graph, group.id),
+					collapseLabel: formatMessage(UI_FLOW_MAP.GROUP_COLLAPSE, { name: group.label }),
 				}
 			})
 			.sort((first, second) => first.depth - second.depth)

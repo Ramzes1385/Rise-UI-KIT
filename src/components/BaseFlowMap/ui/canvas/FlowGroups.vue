@@ -24,6 +24,14 @@
 		@click="canvas.pick.pick({ entity: 'group', id: item.id }, $event)"
 		@contextmenu="canvas.pick.menu({ entity: 'group', id: item.id }, $event)">
 		<span :class="canvas.ui('label')">
+			<button
+				type="button"
+				class="base-flow-map__toggle"
+				:aria-expanded="true"
+				:aria-label="item.collapseLabel"
+				@click.stop="canvas.toggleGroup(item.id)">
+				<BaseIcon name="chevron-down" />
+			</button>
 			<span class="base-flow-map__label-text"
 				><slot name="group-label" :group="item.group">{{ item.group.label }}</slot></span
 			>
@@ -32,6 +40,7 @@
 </template>
 
 <script setup lang="ts">
+import { BaseIcon } from '@components/BaseIcon'
 import type { FlowGroup } from '../../types/data/flowData.types'
 import { useFlowCanvasContext } from '../../model/context/flowContext'
 

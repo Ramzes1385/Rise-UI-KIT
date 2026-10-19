@@ -10,12 +10,11 @@ function nameOf(nodes: ReadonlyMap<string, FlowNode>, edge: FlowEdge): { source:
 	return { source: nodes.get(edge.source)?.label ?? edge.source, target: nodes.get(edge.target)?.label ?? edge.target }
 }
 
-function buildEdge(edge: FlowEdge, source: FlowRenderSource): FlowEdgeItem | null {
+function buildEdge(edge: FlowEdge, source: FlowRenderSource, names: ReadonlyMap<string, FlowNode>): FlowEdgeItem | null {
 	const { model } = source
 	const route = model.routes.value[edge.id]
 	if (!route) return null
 	const kind = model.edgeKind(edge)
-	const names = model.graph.value.nodes
 	return {
 		...{ id: edge.id, edge, kind, route, color: kind.color, tabIndex: -1 },
 		...highlightOf(source.active.value, edge.id),
@@ -28,7 +27,10 @@ function buildEdge(edge: FlowEdge, source: FlowRenderSource): FlowEdgeItem | nul
 }
 
 export function useFlowEdges(source: FlowRenderSource): ComputedRef<FlowEdgeItem[]> {
-	return computed(() => source.model.data.value.edges.flatMap(edge => buildEdge(edge, source) ?? []))
+	return computed(() => {
+		const names = new Map(source.model.shown.value.nodes.map(node => [node.id, node]))
+		return source.model.shown.value.edges.flatMap(edge => buildEdge(edge, source, names) ?? [])
+	})
 }
 
 export function useFlowLabels(edges: ComputedRef<FlowEdgeItem[]>, isHidden: ComputedRef<boolean>): ComputedRef<FlowLabelItem[]> {

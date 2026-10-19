@@ -34,7 +34,7 @@ function focusElement(frame: FlowFrameState, id: string): void {
 
 function arrowTarget(model: FlowModelInternal, current: string | null, key: string): string | null {
 	const rects = model.layout.value.nodes
-	const candidates = model.data.value.nodes.flatMap(node =>
+	const candidates = model.shown.value.nodes.flatMap(node =>
 		rects[node.id] && node.id !== current ? [{ id: node.id, rect: rects[node.id] }] : [],
 	)
 	const from = current ? rects[current] : undefined
@@ -49,7 +49,7 @@ function createTypeahead(model: FlowModelInternal, focused: Ref<string | null>, 
 			buffer += key
 			clearTimeout(timer)
 			timer = setTimeout(() => (buffer = ''), TYPEAHEAD_MS)
-			const items = model.data.value.nodes.map(node => ({ id: node.id, label: node.label }))
+			const items = model.shown.value.nodes.map(node => ({ id: node.id, label: node.label }))
 			const found = typeaheadMatch(items, buffer, focused.value)
 			if (found) move(found)
 		},
@@ -75,8 +75,8 @@ export function useFlowFocus(
 	const keys: Record<string, (event: KeyboardEvent) => void> = {
 		']': along(1),
 		'[': along(-1),
-		Home: () => move(model.data.value.nodes[0]?.id ?? null),
-		End: () => move(model.data.value.nodes.at(-1)?.id ?? null),
+		Home: () => move(model.shown.value.nodes[0]?.id ?? null),
+		End: () => move(model.shown.value.nodes.at(-1)?.id ?? null),
 		Enter: () => focused.value && actions.pick({ entity: entityOf(model, focused.value) ?? 'node', id: focused.value }),
 		Escape: () => actions.clear(),
 	}
@@ -110,7 +110,7 @@ export function useFlowFocus(
 	onBeforeUnmount(typeahead.stop)
 
 	const tabIndexOf = (id: string): 0 | -1 => {
-		const current = focused.value && model.graph.value.nodes.has(focused.value) ? focused.value : model.data.value.nodes[0]?.id
+		const current = focused.value && model.graph.value.nodes.has(focused.value) ? focused.value : model.shown.value.nodes[0]?.id
 		return id === current ? 0 : -1
 	}
 	return { focused, move, onKeydown, onFocusin, onFocusout, tabIndexOf }

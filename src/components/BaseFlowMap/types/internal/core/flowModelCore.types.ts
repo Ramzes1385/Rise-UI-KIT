@@ -1,4 +1,5 @@
 import type { ComputedRef, Ref, ShallowRef } from 'vue'
+import type { FlowGroupState } from '../flowGroups.types'
 import type { FlowLayoutScope } from './flowLayoutScope.types'
 import type { FlowMapData, FlowPoint } from '../../data/flowData.types'
 import type { FlowGraph, FlowLayoutResult } from '../../api/flowLayout.types'
@@ -57,6 +58,10 @@ export interface FlowEventBus {
 export interface FlowState {
 	/** Данные после нормализации */
 	data: ShallowRef<FlowMapData>
+	/** Данные для раскладки и отрисовки: свёрнутые группы заменены блоками */
+	shown: ComputedRef<FlowMapData>
+	/** Свёрнутость групп и уровень смыслового зума */
+	groups: FlowGroupState
 	/** Нотации */
 	registry: ComputedRef<Map<string, FlowNotation>>
 	/** Нотация карты */

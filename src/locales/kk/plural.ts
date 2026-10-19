@@ -29,4 +29,8 @@ export const kkPlural = {
 	ROADMAP_TOPICS: { one: '{n} тақырып', other: '{n} тақырып' },
 	ROADMAP_OF_TOPICS: { one: '{n} тақырып', other: '{n} тақырып' },
 	ROADMAP_OF_SUBTOPICS: { one: '{n} қосалқы тақырып', other: '{n} қосалқы тақырып' },
+	/** Блок свёрнутой группы BaseFlowMap: сколько элементов внутри */
+	FLOW_ITEMS: { one: '{n} элемент', other: '{n} элемент' },
+	/** Слитая связь BaseFlowMap: сколько связей объединено */
+	FLOW_LINKS: { one: '{n} байланыс', other: '{n} байланыс' },
 }

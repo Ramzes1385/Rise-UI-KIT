@@ -29,4 +29,8 @@ export const uzPlural = {
 	ROADMAP_TOPICS: { one: '{n} ta mavzu', other: '{n} ta mavzu' },
 	ROADMAP_OF_TOPICS: { one: '{n} ta mavzu', other: '{n} ta mavzu' },
 	ROADMAP_OF_SUBTOPICS: { one: '{n} ta kichik mavzu', other: '{n} ta kichik mavzu' },
+	/** Блок свёрнутой группы BaseFlowMap: сколько элементов внутри */
+	FLOW_ITEMS: { one: '{n} ta element', other: '{n} ta element' },
+	/** Слитая связь BaseFlowMap: сколько связей объединено */
+	FLOW_LINKS: { one: '{n} ta bogʻlanish', other: '{n} ta bogʻlanish' },
 }

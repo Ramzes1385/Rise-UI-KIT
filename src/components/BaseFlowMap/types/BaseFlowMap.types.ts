@@ -11,6 +11,7 @@ import type {
 	FlowErrorEvent,
 	FlowHistoryState,
 	FlowHooks,
+	FlowLevelState,
 	FlowLiveState,
 	FlowMapController,
 	FlowMapPlugin,
@@ -82,6 +83,8 @@ export interface BaseFlowMapProps extends BaseComponentProps<FlowMapVariant, Bas
 	scenario?: string | null
 	/** Запускать сценарий сам (при reduced motion — нет) */
 	isAutoplay?: boolean
+	/** Смысловой зум нотации (`FlowNotation.semanticZoom`): по умолчанию включён; `false` — группы сворачиваются только вручную и по `isCollapsed` */
+	isSemanticZoom?: boolean
 	/** Выбор веток сценария */
 	choices?: FlowScenarioChoices
 	/** Живые данные */
@@ -124,7 +127,7 @@ export interface BaseFlowMapProps extends BaseComponentProps<FlowMapVariant, Bas
 	ui?: UiProp<BaseFlowMapPart>
 }
 
-/** События BaseFlowMap: 18 сигнатур (предел vue-tsc — 22, у BaseFlowMap3D ещё 4), однотипные — объединением; данные — `FlowEventMap` */
+/** События BaseFlowMap: 19 сигнатур (предел vue-tsc — 22, у BaseFlowMap3D ещё 4 — ему объединять сигнатуры), однотипные — объединением; данные — `FlowEventMap` */
 export interface BaseFlowMapEmits {
 	(event: 'update:data', value: FlowMapData): void
 	(event: 'update:mode', value: FlowMode): void
@@ -146,12 +149,14 @@ export interface BaseFlowMapEmits {
 			| 'edge-enter'
 			| 'edge-leave'
 			| 'group-click'
-			| 'group-contextmenu',
+			| 'group-contextmenu'
+			| 'group-toggle',
 		value: FlowElementEvent,
 	): void
 	(event: 'node-move', value: FlowMoveEvent): void
 	(event: 'focus-change', value: FlowElementRef | null): void
 	(event: 'viewport-change', value: FlowViewport): void
+	(event: 'level-change', value: FlowLevelState): void
 	(event: 'scenario-change' | 'scenario-step', value: FlowScenarioState): void
 	(event: 'history-change', value: FlowHistoryState): void
 	(event: 'validate', value: FlowDataIssue[]): void
@@ -195,6 +200,8 @@ export interface BaseFlowMapSlots {
 	details?: (props: { target: FlowElementRef; node?: FlowNode; edge?: FlowEdge; close: () => void }) => unknown
 	/** Кнопки в конце панели инструментов */
 	toolbar?: (props: { controller: FlowMapController }) => unknown
+	/** Уровень смыслового зума в полосе холста: добавляется после крошек и переключателя (мета сценария) */
+	level?: (props: { level: FlowLevelState; controller: FlowMapController }) => unknown
 	/** Своя легенда */
 	legend?: (props: { items: FlowLegendItem[] }) => unknown
 	/** Строка шага в панели сценария (только в широком виде: компактный плеер списка шагов не рисует) */

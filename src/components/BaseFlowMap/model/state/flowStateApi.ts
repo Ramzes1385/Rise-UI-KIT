@@ -46,6 +46,7 @@ function highlightIds(state: FlowState, path: string[] | { from: string; to: str
 export function createStateApi(state: FlowState, events: FlowEventBus): FlowStateApi {
 	return {
 		select(ids, mode = 'replace') {
+			state.groups.reveal(ids)
 			const current = state.selection.value
 			const next = nextSelection(current, ids, mode)
 			state.selection.value = next

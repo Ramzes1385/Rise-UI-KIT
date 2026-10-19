@@ -1,5 +1,6 @@
 import { warn } from '@/locales/warn'
 import { UI_FLOW_MAP } from '@/locales/messages'
+import { FLOW_COLLAPSED_KIND } from '../groups/tree/collapseData'
 import { BASE_GROUP_KINDS, FALLBACK_EDGE_KIND, FALLBACK_GROUP_KIND, FALLBACK_NODE_KIND } from './base'
 import type { FlowEdgeKindDef, FlowGroupKindDef, FlowNodeKindDef, FlowNotation } from '../../types/api/flowNotation.types'
 
@@ -32,6 +33,20 @@ export function applyNotationStyle(notation: FlowNotation, style: unknown): Flow
 	if (!overrides) return notation
 	const nodeKinds = Object.fromEntries(Object.entries(notation.nodeKinds).map(([id, def]) => [id, { ...def, ...overrides[id] }]))
 	return { ...notation, nodeKinds }
+}
+
+const COLLAPSED_KIND: FlowNodeKindDef = {
+	label: () => UI_FLOW_MAP.COLLAPSED_GROUP,
+	render: 'html',
+	shape: { shape: 'round-rect', ring: 'dashed' },
+	size: { width: 200, height: 72 },
+	icon: 'layers',
+	isContainer: true,
+}
+
+export function withCollapsedKind(notation: FlowNotation): FlowNotation {
+	if (notation.nodeKinds[FLOW_COLLAPSED_KIND]) return notation
+	return { ...notation, nodeKinds: { ...notation.nodeKinds, [FLOW_COLLAPSED_KIND]: COLLAPSED_KIND } }
 }
 
 export function findNodeKind(kind: string, own: FlowNotation, registry: ReadonlyMap<string, FlowNotation>): FlowNodeKindDef | undefined {

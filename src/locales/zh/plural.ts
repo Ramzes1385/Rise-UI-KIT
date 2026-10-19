@@ -26,4 +26,8 @@ export const zhPlural = {
 	ROADMAP_TOPICS: { other: '{n} 个主题' },
 	ROADMAP_OF_TOPICS: { other: '{n} 个主题' },
 	ROADMAP_OF_SUBTOPICS: { other: '{n} 个子主题' },
+	/** Блок свёрнутой группы BaseFlowMap: сколько элементов внутри */
+	FLOW_ITEMS: { other: '{n} 项' },
+	/** Слитая связь BaseFlowMap: сколько связей объединено */
+	FLOW_LINKS: { other: '{n} 条连接' },
 }

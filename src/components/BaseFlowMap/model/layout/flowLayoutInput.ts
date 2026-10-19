@@ -60,6 +60,8 @@ function createEdges(scope: FlowLayoutScope): FlowLayoutEdge[] {
 	const byId = new Map(scope.data.nodes.map(node => [node.id, node]))
 	return scope.data.edges.map(edge => ({
 		id: edge.id,
+		kind: edge.kind ?? scope.notation.defaultEdgeKind,
+		props: edge.props,
 		source: edge.source,
 		target: edge.target,
 		sourceSide: sideOf(byId.get(edge.source), edge.sourcePort, scope),
@@ -76,6 +78,8 @@ function headerOf(group: FlowGroup, scope: FlowLayoutScope): { layout: FlowLayou
 function createGroups(scope: FlowLayoutScope): FlowLayoutGroup[] {
 	return (scope.data.groups ?? []).map((group, index) => ({
 		id: group.id,
+		kind: group.kind,
+		props: group.props,
 		parent: group.parent,
 		order: group.order ?? index,
 		...headerOf(group, scope),

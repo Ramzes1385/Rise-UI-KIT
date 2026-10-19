@@ -119,6 +119,8 @@ export const enFlowMap = {
 		LIST_TITLE: 'Map structure',
 		/** Заголовок списка узлов */
 		LIST_NODES: 'Nodes',
+		/** Заголовок списка групп в списке элементов */
+		LIST_GROUPS: 'Groups',
 		/** Заголовок списка связей */
 		LIST_EDGES: 'Edges',
 		/** Текст пустой карты */
@@ -161,5 +163,13 @@ export const enFlowMap = {
 		MODE_REVIEW: 'Review',
 		/** Подпись переключателя режимов */
 		MODES: 'Map mode',
+		/** Подзаголовок-имя блока свёрнутой группы по умолчанию */
+		COLLAPSED_GROUP: 'Collapsed group',
+		/** Имя уровня смыслового зума без названия; `{n}` — номер с 1 */
+		LEVEL_NAME: 'Level {n}',
+		/** Имя кнопки-шеврона развёрнутой группы; `{name}` — название группы */
+		GROUP_COLLAPSE: 'Collapse {name}',
+		/** Имя кнопки-шеврона свёрнутой группы; `{name}` — название группы */
+		GROUP_EXPAND: 'Expand {name}',
 	},
 }

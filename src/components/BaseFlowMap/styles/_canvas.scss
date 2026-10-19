@@ -128,6 +128,42 @@
 		white-space: nowrap;
 	}
 
+	&__toggle {
+		display: inline-flex;
+		flex: none;
+		align-items: center;
+		justify-content: center;
+		inline-size: sz(22px);
+		block-size: sz(22px);
+		margin-inline-end: sz(4px);
+		padding: 0;
+		border: 0;
+		border-radius: var(--rise-radius-sm);
+		color: inherit;
+		background: transparent;
+		cursor: pointer;
+
+		&:focus-visible {
+			outline: 2px solid var(--rise-focus-ring);
+			outline-offset: 1px;
+		}
+	}
+
+	&__group--header-start &__toggle {
+		margin-inline-end: 0;
+		margin-block-end: sz(4px);
+		transform: rotate(180deg);
+	}
+
+	&--morph &__node,
+	&--morph &__group {
+		@include motion-safe {
+			transition:
+				transform var(--rise-duration-slow),
+				opacity var(--rise-duration-slow);
+		}
+	}
+
 	&__hint {
 		position: absolute;
 		inset-block-end: sz(12px);

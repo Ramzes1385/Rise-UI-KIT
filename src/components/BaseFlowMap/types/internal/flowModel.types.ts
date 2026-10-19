@@ -9,6 +9,7 @@ import type { FlowDataIssue, FlowEdgeKindDef, FlowGroupKindDef, FlowNodeKindDef,
 import type {
 	FlowCommandResult,
 	FlowHooks,
+	FlowLevelState,
 	FlowLiveState,
 	FlowMapController,
 	FlowMode,
@@ -27,6 +28,7 @@ export type FlowModelProps = Pick<
 	| 'layout'
 	| 'scenario'
 	| 'isAutoplay'
+	| 'isSemanticZoom'
 	| 'choices'
 	| 'live'
 	| 'suggestions'
@@ -94,6 +96,12 @@ export type FlowViewAdapter = Pick<
 export interface FlowModel {
 	/** Данные после нормализации (виды по умолчанию, порядок) */
 	data: Readonly<ShallowRef<FlowMapData>>
+	/** Данные для раскладки и отрисовки: свёрнутые группы заменены блоками, связи к скрытым узлам идут к блоку */
+	shown: ComputedRef<FlowMapData>
+	/** Id свёрнутых групп сейчас */
+	collapsed: ComputedRef<ReadonlySet<string>>
+	/** Уровень смыслового зума и путь входа */
+	level: ComputedRef<FlowLevelState>
 	/** Граф */
 	graph: ComputedRef<FlowGraph>
 	/** Нотация карты */

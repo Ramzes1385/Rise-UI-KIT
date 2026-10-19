@@ -1,5 +1,6 @@
 import type { ComputedRef, Ref } from 'vue'
 import type { UiClassFn } from '@composables/base/useUi'
+import type { FlowGroupState } from '../flowGroups.types'
 import type { FlowEventBus } from './flowModelCore.types'
 import type { FlowRoute } from '../../api/flowLayout.types'
 import type { BaseFlowMapPart } from '../../BaseFlowMap.types'
@@ -16,6 +17,8 @@ type FlowUiClass = UiClassFn<Exclude<BaseFlowMapPart, 'root'>>
 export interface FlowModelInternal extends FlowModel {
 	/** Шина событий */
 	events: FlowEventBus
+	/** Свёрнутость групп и уровень смыслового зума */
+	groups: FlowGroupState
 }
 
 /** Пределы масштаба */
@@ -76,6 +79,8 @@ export interface FlowNodeItem {
 	isCompact: boolean
 	/** Значение `tabindex` */
 	tabIndex: 0 | -1
+	/** Имя кнопки «Развернуть <группа>»; null — узел не блок свёрнутой группы */
+	expandLabel: string | null
 }
 
 /** Связь, готовая к отрисовке */
@@ -126,6 +131,8 @@ export interface FlowGroupItem {
 	border: 'solid' | 'dashed'
 	/** Глубина вложенности: порядок наложения */
 	depth: number
+	/** Имя кнопки-шеврона «Свернуть <группа>» */
+	collapseLabel: string
 }
 
 /** Подпись связи на холсте */
@@ -310,6 +317,8 @@ export interface FlowCanvasContext {
 	sceneStyle: ComputedRef<Record<string, string>>
 	/** Показывать подписи связей */
 	hasLabels: ComputedRef<boolean>
+	/** Свернуть или развернуть группу (блок свёрнутой группы — это её id) */
+	toggleGroup: (id: string) => void
 }
 
 /** Кнопка переключателя режимов шапки */

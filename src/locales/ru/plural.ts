@@ -73,4 +73,8 @@ export const ruPlural = {
 	ROADMAP_TOPICS: { one: '{n} тема', few: '{n} темы', many: '{n} тем', other: '{n} темы' },
 	ROADMAP_OF_TOPICS: { one: '{n} темы', few: '{n} тем', many: '{n} тем', other: '{n} тем' },
 	ROADMAP_OF_SUBTOPICS: { one: '{n} подтемы', few: '{n} подтем', many: '{n} подтем', other: '{n} подтем' },
+	/** Блок свёрнутой группы BaseFlowMap: сколько элементов внутри */
+	FLOW_ITEMS: { one: '{n} элемент', few: '{n} элемента', many: '{n} элементов', other: '{n} элемента' },
+	/** Слитая связь BaseFlowMap: сколько связей объединено */
+	FLOW_LINKS: { one: '{n} связь', few: '{n} связи', many: '{n} связей', other: '{n} связи' },
 }

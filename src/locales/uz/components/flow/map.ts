@@ -120,6 +120,8 @@ export const uzFlowMap = {
 		LIST_TITLE: 'Xarita tuzilmasi',
 		/** Заголовок списка узлов */
 		LIST_NODES: 'Tugunlar',
+		/** Заголовок списка групп в списке элементов */
+		LIST_GROUPS: 'Guruhlar',
 		/** Заголовок списка связей */
 		LIST_EDGES: 'Bogʻlanishlar',
 		/** Текст пустой карты */
@@ -162,5 +164,13 @@ export const uzFlowMap = {
 		MODE_REVIEW: 'Koʻrib chiqish',
 		/** Подпись переключателя режимов */
 		MODES: 'Xarita rejimi',
+		/** Подзаголовок-имя блока свёрнутой группы по умолчанию */
+		COLLAPSED_GROUP: 'Yigʻilgan guruh',
+		/** Имя уровня смыслового зума без названия; `{n}` — номер с 1 */
+		LEVEL_NAME: '{n}-daraja',
+		/** Имя кнопки-шеврона развёрнутой группы; `{name}` — название группы */
+		GROUP_COLLAPSE: '{name} guruhini yigʻish',
+		/** Имя кнопки-шеврона свёрнутой группы; `{name}` — название группы */
+		GROUP_EXPAND: '{name} guruhini ochish',
 	},
 }
