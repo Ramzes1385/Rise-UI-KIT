@@ -1,6 +1,6 @@
-import type { FlowSize } from '../../types/data/flowData.types'
-import type { FlowShapeMarker } from '../../types/api/flowNotation.types'
-import type { FlowPlacedMarker } from '../../types/internal/flowShapeMarkers.types'
+import type { FlowSize } from '../../../types/data/flowData.types'
+import type { FlowShapeMarker } from '../../../types/api/flowNotation.types'
+import type { FlowPlacedMarker } from '../../../types/internal/flowShapeMarkers.types'
 
 const PAD = 6
 const SIGN = 16

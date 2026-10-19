@@ -1,6 +1,6 @@
-import type { FlowSize } from '../../types/data/flowData.types'
-import type { FlowShapeDef } from '../../types/api/flowNotation.types'
-import type { FlowShapeBuilder, FlowShapeView } from '../../types/internal/core/flowRenderInternal.types'
+import type { FlowSize } from '../../../types/data/flowData.types'
+import type { FlowShapeDef } from '../../../types/api/flowNotation.types'
+import type { FlowShapeBuilder, FlowShapeView } from '../../../types/internal/core/flowRenderInternal.types'
 
 const RADIUS = 8
 const NOTE_FOLD = 10

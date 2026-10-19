@@ -1,4 +1,4 @@
-import { shapeView } from './flowShapes'
+import { shapeView } from './shapes/flowShapes'
 import type { FlowRect } from '../../types/data/flowData.types'
 import type { FlowExportImageOptions } from '../../types/api/flowController.types'
 import type { FlowExportPalette, FlowExportScene } from '../../types/internal/core/flowRenderInternal.types'

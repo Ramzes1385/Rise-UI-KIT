@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import { placeMarkers } from '../../model/render/shapeMarkers'
+import { placeMarkers } from '../../model/render/shapes/shapeMarkers'
 import { useFlowCanvasContext } from '../../model/context/flowContext'
 import type { FlowNodeItem } from '../../types/internal/core/flowRenderInternal.types'
 
