@@ -1,10 +1,10 @@
 import { setup } from './Events.setup'
 import setupSource from './Events.setup.ts?raw'
 import { expect, waitFor } from 'storybook/test'
-import type meta from '../../BaseFlowMap.stories'
-import { flowEdge, flowNode } from '../../shared'
+import type meta from '../../../BaseFlowMap.stories'
+import { flowEdge, flowNode } from '../../../shared'
 import type { StoryObj } from '@storybook/vue3-vite'
-import BaseFlowMap from '../../../ui/BaseFlowMap.vue'
+import BaseFlowMap from '../../../../ui/BaseFlowMap.vue'
 import { scriptImports, scriptSource, storySource, useStorySetup } from '@/stories/helpers'
 
 const kit = scriptImports(setupSource, { imports: ['BaseFlowMap'] })

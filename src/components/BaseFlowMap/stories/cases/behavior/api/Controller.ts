@@ -1,11 +1,11 @@
 import { setup } from './Controller.setup'
 import { expect, waitFor } from 'storybook/test'
-import type meta from '../../BaseFlowMap.stories'
-import { flowNode, flowNodes } from '../../shared'
 import setupSource from './Controller.setup.ts?raw'
 import { BaseButton } from '@components/BaseButton'
+import type meta from '../../../BaseFlowMap.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import BaseFlowMap from '../../../ui/BaseFlowMap.vue'
+import { flowNode, flowNodes } from '../../../shared'
+import BaseFlowMap from '../../../../ui/BaseFlowMap.vue'
 import { scriptImports, scriptSource, storySource, useStorySetup } from '@/stories/helpers'
 
 const models = { data: 'data' }
