@@ -48,7 +48,7 @@ function edgeTopic(current: RoadmapTopicPlace, count: number, key: string): Road
 export function stepTopic(data: RoadmapData, id: string, key: string): RoadmapTopicPlace | null {
 	const current = topicPlace(data, id)
 	if (current === null) return null
-	const count = data.stages.find(stage => stage.id === current.stage)?.topics.length ?? 0
+	const count = data.stages.find(stage => stage.id === current.stage)!.topics.length
 	if (key === 'Home' || key === 'End') return edgeTopic(current, count, key)
 	const delta = stepDelta(key)
 	if (delta === 0) return null

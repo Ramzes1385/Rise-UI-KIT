@@ -83,8 +83,8 @@ export function useRoadmapReviewPanel(
 	const proposalItems = computed(() => review.views.value.map(item => toProposalItem(item, data())))
 	const threadItems = computed(() => review.visibleThreads.value.map(thread => toThreadItem(thread, data(), review.activeThreadId.value)))
 	const targetName = computed(() => {
-		const current = target()
-		return current ? roadmapElementName(data(), current.entity, current.id) : ''
+		const current = target()!
+		return roadmapElementName(data(), current.entity, current.id)
 	})
 	const canComment = computed(() => Boolean(target()) && Boolean(review.currentUser.value))
 	return {

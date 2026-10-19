@@ -6,7 +6,7 @@ import { stagePlace, stepStage, stepTopic, topicPlace } from '../data/roadmapPla
 import type { RoadmapSortableActions, RoadmapSortableOptions, RoadmapTopicPlace } from '../../../types/internal/roadmapEdit.internal.types'
 
 function shared({ rootRef, edit, isDisabled }: RoadmapSortableOptions, actions: RoadmapSortableActions) {
-	const find = (selector: string): HTMLElement | null => rootRef.value?.querySelector<HTMLElement>(selector) ?? null
+	const find = (selector: string): HTMLElement | null => rootRef.value!.querySelector<HTMLElement>(selector)
 	return {
 		rootRef,
 		isDisabled,

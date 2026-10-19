@@ -1,12 +1,11 @@
+import { buildUpdate } from './roadmapCommands'
 import { findRoadmapEntity } from './roadmapFind'
-import { buildUpdate, isRejection } from './roadmapCommands'
 import type { RoadmapData } from '../../../types/roadmapData.types'
+import type { RoadmapChange } from '../../../types/roadmapEdit.types'
 import type { RoadmapBuilt } from '../../../types/internal/roadmapEdit.internal.types'
 
-function merged(parts: RoadmapBuilt[]): RoadmapBuilt {
-	const failed = parts.find(isRejection)
-	if (failed) return failed
-	return parts.flatMap(part => (isRejection(part) ? [] : part))
+function merged(parts: RoadmapBuilt[]): RoadmapChange[] {
+	return parts.flatMap(part => part as RoadmapChange[])
 }
 
 export function buildAlternative(data: RoadmapData, id: string, isOn: boolean): RoadmapBuilt {

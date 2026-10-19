@@ -15,12 +15,12 @@ export function moveLabel(current: RoadmapData, id: string, to: { stage?: string
 	const title = roadmapTitle(current, id)
 	if (change?.type !== 'move') return editText('LABEL_MOVE', { title })
 	if (change.entity === 'stage') return editText('LABEL_MOVE_STAGE', { title, n: change.to + 1, m: current.stages.length })
-	const stage = current.stages.find(item => item.id === change.to.stage)
+	const stage = current.stages.find(item => item.id === change.to.stage)!
 	const extra = change.from.stage === change.to.stage ? 0 : 1
 	return editText('LABEL_MOVE_TOPIC', {
 		title,
-		stage: stage?.title ?? '',
+		stage: stage.title,
 		n: change.to.index + 1,
-		m: (stage?.topics.length ?? 0) + extra,
+		m: stage.topics.length + extra,
 	})
 }

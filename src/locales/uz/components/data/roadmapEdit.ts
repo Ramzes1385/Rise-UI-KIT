@@ -108,7 +108,7 @@ export const uzRoadmapEdit = {
 		HOOK_REASON_ERROR: 'ishlovchi xato chiqardi',
 		HOOK_TOGGLE: '“{name}” ishlovchisini yoqish',
 		HOOK_D_STATUS: 'Mavzu holati oʻzgarishidan oldin. false qaytarsa, oʻzgarish bekor boʻladi.',
-		HOOK_D_CHANGE: 'Ma’lumotlarning har qanday tahriridan oldin. false bekor qiladi, massiv oʻzgarishlarni almashtiradi.',
+		HOOK_D_CHANGE: 'Maʼlumotlarning har qanday tahriridan oldin. false bekor qiladi, massiv oʻzgarishlarni almashtiradi.',
 		HOOK_D_DELETE: 'Bosqich yoki mavzu oʻchirilishidan oldin. false oʻchirishni bekor qiladi.',
 		F_DEFAULT_STATUS: 'Standart holat',
 		DEFAULT_STATUS_NONE: 'Mavjud',

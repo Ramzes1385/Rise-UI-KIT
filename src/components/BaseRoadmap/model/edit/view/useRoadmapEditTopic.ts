@@ -7,7 +7,7 @@ import type { RoadmapEditTopicProps } from '../../../types/internal/roadmapEditV
 
 export function useRoadmapEditTopic(props: RoadmapEditTopicProps) {
 	const { editor, sort, isDisabled } = useRoadmapEditorContext()
-	const { topic, stage } = props
+	const { stage } = props
 	return {
 		isDisabled,
 		isSelected: computed(() => editor.inspector.targetId.value === props.topic.id),
@@ -22,7 +22,6 @@ export function useRoadmapEditTopic(props: RoadmapEditTopicProps) {
 		}),
 		hoursText: computed(() => (props.topic.hours ? formatMessage(UI_ROADMAP.HOURS, { n: formatNumber(props.topic.hours) }) : '')),
 		handleLabel: computed(() => formatMessage(UI_ROADMAP_EDIT.HANDLE_TOPIC, { title: props.topic.title })),
-		activate: (): void => editor.activate(topic.id),
 		onKeydown: (event: KeyboardEvent): void => sort.onHandleKeydown(event, { kind: 'topic', value: props.topic }),
 		onPointerDown: (event: PointerEvent): void => sort.topics.handlePointerDown(event, props.topic),
 		onClick: (): void => {

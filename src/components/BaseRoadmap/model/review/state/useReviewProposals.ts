@@ -42,12 +42,11 @@ function createViews(context: RoadmapReviewContext, proposals: () => RoadmapProp
 		const filter = { show: show(), currentUser: context.currentUser.value?.name, isDoneShown: true }
 		const byId = new Map(proposals().map(item => [item.id, item]))
 		const shown = sortSuggestions(filterSuggestions(proposals().map(toSuggestion), filter))
-		return shown.flatMap(suggestion => {
-			const proposal = byId.get(suggestion.id)
-			if (!proposal) return []
+		return shown.map(suggestion => {
+			const proposal = byId.get(suggestion.id)!
 			const view = createSuggestionView(suggestion, { data }, roadmapReviewAdapter)
 			const isStale = proposal.status === 'open' && isRoadmapProposalStale(data, proposal.changes)
-			return [{ proposal, view: { ...view, isStale } }]
+			return { proposal, view: { ...view, isStale } }
 		})
 	})
 }

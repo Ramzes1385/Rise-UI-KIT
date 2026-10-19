@@ -12,9 +12,7 @@ export function useRoadmapEditorView(props: RoadmapEditorProps, emit: RoadmapEdi
 	const isDisabled = (): boolean => Boolean(props.isDisabled)
 	const editor = useRoadmapEditor(props.edit, () => inspectorRef.value?.focusTitle())
 	const sort = useRoadmapSortable({ rootRef: areaRef, edit: props.edit, isDisabled })
-	const publish = (): void => {
-		if (!isDisabled()) emit('publish')
-	}
+	const publish = (): void => emit('publish')
 	provideRoadmapEditor({ edit: props.edit, editor, sort, ui: props.ui, isDisabled, publish })
 	const pending = computed(() => editor.pending.value)
 	const isTemplate = computed(() => pending.value?.kind === 'template')
@@ -39,7 +37,6 @@ export function useRoadmapEditorView(props: RoadmapEditorProps, emit: RoadmapEdi
 		editor,
 		sort,
 		publish,
-		isReject: (): boolean => props.edit.rejection.value !== null,
 		savedText: (): string => editor.savedText(props.draftSavedAt),
 	}
 }

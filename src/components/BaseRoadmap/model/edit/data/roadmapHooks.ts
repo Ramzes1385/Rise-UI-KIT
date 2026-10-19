@@ -68,7 +68,7 @@ function createBoard(): RoadmapHookBoard {
 			}
 			Object.defineProperty(wrapped, 'name', { value: (handler as { name: string }).name })
 			const off = base.on(name, wrapped as unknown as typeof handler, options)
-			id = base.list().find(item => !known.has(item.id))?.id ?? ''
+			id = base.list().find(item => !known.has(item.id))!.id
 			bump()
 			return () => {
 				off()

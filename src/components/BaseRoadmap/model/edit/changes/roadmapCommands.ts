@@ -35,7 +35,7 @@ export function buildMove(data: RoadmapData, id: string, to: { stage?: string; i
 		return target === found.stageIndex ? [] : [{ type: 'move', entity: 'stage', id, from: found.stageIndex, to: target }]
 	}
 	const targetStage = data.stages.find(stage => stage.id === (to.stage ?? found.stage.id))
-	if (!targetStage) return rejectUnknown(to.stage ?? '')
+	if (!targetStage) return rejectUnknown(to.stage!)
 	const limit = targetStage === found.stage ? targetStage.topics.length - 1 : targetStage.topics.length
 	const index = clamp(to.index, limit)
 	if (targetStage === found.stage && index === found.topicIndex) return []
@@ -79,8 +79,7 @@ export function buildUpdate(data: RoadmapData, id: string, input: Record<string,
 function removedIds(data: RoadmapData, ids: readonly string[]): Set<string> {
 	const removed = new Set<string>()
 	for (const id of ids) {
-		const found = findRoadmapEntity(data, id)
-		if (!found) continue
+		const found = findRoadmapEntity(data, id)!
 		removed.add(id)
 		if (!found.topic) found.stage.topics.forEach(topic => removed.add(topic.id))
 	}

@@ -37,8 +37,8 @@ export function useRoadmapInspectorPanel() {
 		focusTitle: (): void => rootRef.value?.querySelector<HTMLInputElement>('[data-roadmap-title] input')?.focus(),
 		eyebrow: computed(() => {
 			const stage = inspector.owner.value
-			const index = edit.viewData.value.stages.findIndex(item => item.id === stage?.id)
-			return formatMessage(UI_ROADMAP_EDIT.EYEBROW, { n: index + 1, title: stage?.title ?? '' })
+			const index = edit.viewData.value.stages.findIndex(item => item.id === stage!.id)
+			return formatMessage(UI_ROADMAP_EDIT.EYEBROW, { n: index + 1, title: stage!.title })
 		}),
 		badge: computed(() => {
 			const item = inspector.topic.value ?? inspector.stage.value
@@ -68,6 +68,6 @@ export function useRoadmapInspectorPanel() {
 		removeSubtopicLabel: (title: string): string => formatMessage(UI_ROADMAP_EDIT.REMOVE_SUBTOPIC, { title }),
 		removeMaterialLabel: (title: string): string => formatMessage(UI_ROADMAP_EDIT.REMOVE_MATERIAL, { title }),
 		materials: computed(() => inspector.topic.value?.materials ?? []),
-		materialsHeading: computed(() => formatMessage(UI_ROADMAP_EDIT.MATERIALS_OF, { title: inspector.topic.value?.title ?? '' })),
+		materialsHeading: computed(() => formatMessage(UI_ROADMAP_EDIT.MATERIALS_OF, { title: inspector.topic.value!.title })),
 	}
 }

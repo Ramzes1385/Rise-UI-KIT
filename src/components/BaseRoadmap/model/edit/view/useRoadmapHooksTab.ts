@@ -36,7 +36,7 @@ export function useRoadmapHooksTab() {
 			const result = hooks.resultOf(item.id)
 			if (!result) return ''
 			const text = result.isCancelled
-				? formatMessage(UI_ROADMAP_EDIT.HOOK_RESULT_DENIED, { reason: result.reason ?? '' })
+				? formatMessage(UI_ROADMAP_EDIT.HOOK_RESULT_DENIED, { reason: result.reason! })
 				: UI_ROADMAP_EDIT.HOOK_RESULT_ALLOWED
 			return formatMessage(UI_ROADMAP_EDIT.HOOK_LAST, { result: text })
 		},
