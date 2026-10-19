@@ -2,10 +2,10 @@ import { edge } from '../helpers/flowFixtures.test-utils'
 import type { FlowRoute } from '../../types/api/flowLayout.types'
 import { guardConsole } from '../helpers/consoleGuard.test-utils'
 import type { FlowTraffic } from '../../types/data/flowData.types'
-import { cachedRouteTable } from '../../model/scenario/particles/routeSampler'
 import { collectLanes } from '../../model/scenario/particles/particleLanes'
-import type { FlowParticleDirection, FlowParticleLane } from '../../types/internal/flowParticles.types'
+import { cachedRouteTable } from '../../model/scenario/particles/routeSampler'
 import { particleDistance, planParticles } from '../../model/scenario/particles/particleTicker'
+import type { FlowParticleDirection, FlowParticleLane } from '../../types/internal/flowParticles.types'
 
 guardConsole()
 

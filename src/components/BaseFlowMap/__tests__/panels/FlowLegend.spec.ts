@@ -3,6 +3,7 @@ import { UI_FLOW_PANELS } from '@/locales/messages'
 import userEvent from '@testing-library/user-event'
 import FlowLegend from '../../ui/panels/FlowLegend.vue'
 import { render, screen, within } from '@testing-library/vue'
+import type { FlowStatusDef } from '../../types/data/flowData.types'
 import { createFakeContext, provideContext } from '../fixtures/panelsContext'
 
 function mount(options: Parameters<typeof createFakeContext>[0] = {}) {
@@ -65,6 +66,19 @@ describe('FlowLegend', () => {
 		expect(icons).toHaveLength(4)
 		expect(icons[0]!.style.color).toBe('var(--rise-success)')
 		expect(icons[3]!.style.color).toBe('rgb(204, 102, 0)')
+	})
+
+	it('пользовательский статус без значка получает значок по умолчанию', () => {
+		const { container } = mount({
+			data: {
+				version: 1,
+				nodes: [{ id: 'a', kind: 'service', label: 'А', status: 'custom' }],
+				edges: [],
+				statuses: [{ id: 'custom', label: 'Особый' } as FlowStatusDef],
+			},
+		})
+		expect(container.querySelectorAll('.base-flow-map__legend-status')).toHaveLength(1)
+		expect(within(legend()).getByText('Особый')).toBeInTheDocument()
 	})
 
 	it('на широком экране развёрнута и кнопки сворачивания не имеет', () => {
