@@ -2,6 +2,9 @@
 export const ruFlowC4 = {
 	NOTATION: 'C4',
 	RULES_SUMMARY: 'каждая связь подписана; границы содержат контейнеры и компоненты; люди остаются снаружи',
+	LEVEL_CONTEXT: 'Контекст',
+	LEVEL_CONTAINERS: 'Контейнеры',
+	LEVEL_COMPONENTS: 'Компоненты',
 	PERSON: 'Человек',
 	SOFTWARE_SYSTEM: 'Программная система',
 	CONTAINER: 'Контейнер',

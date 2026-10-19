@@ -16,8 +16,6 @@ export const jaFlowSequence = {
 		PROP_GUARD: 'ガード条件',
 		PROP_FROM: '最初のメッセージ（id）',
 		PROP_TO: '最後のメッセージ（id）',
-		PROP_CREATED_BY: '生成するメッセージ（id）',
-		PROP_DESTROYED_BY: '破棄するメッセージ（id）',
 		PROP_LATENCY: '時間（ミリ秒）',
 		OPERATOR_ALT: 'alt — いずれかの分岐',
 		OPERATOR_OPT: 'opt — 任意のブロック',

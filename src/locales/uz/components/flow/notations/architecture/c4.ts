@@ -4,6 +4,9 @@ export const uzFlowC4 = {
 		NOTATION: 'C4',
 		RULES_SUMMARY:
 			'har bir bog’lanish yoziladi; chegaralarda konteynerlar va komponentlar bo’ladi; odamlar chegaradan tashqarida turadi',
+		LEVEL_CONTEXT: 'Kontekst',
+		LEVEL_CONTAINERS: 'Konteynerlar',
+		LEVEL_COMPONENTS: 'Komponentlar',
 		PERSON: 'Odam',
 		SOFTWARE_SYSTEM: 'Dasturiy tizim',
 		CONTAINER: 'Konteyner',

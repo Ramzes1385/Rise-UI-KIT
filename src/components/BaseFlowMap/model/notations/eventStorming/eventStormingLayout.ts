@@ -10,7 +10,7 @@ import type {
 	FlowLayoutResult,
 } from '../../../types/api/flowLayout.types'
 
-export const TIMELINE_LANES = [
+const TIMELINE_LANES = [
 	'actor',
 	'command',
 	'aggregate',

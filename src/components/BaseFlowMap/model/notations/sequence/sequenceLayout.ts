@@ -1,7 +1,7 @@
 import { HEADER_TOP } from './sequencePaths'
-import { isLifeline, sequenceKindOf, textProp } from './sequenceRules'
 import type { FlowPoint, FlowRect } from '../../../types/data/flowData.types'
-import type { SequenceRows } from '../../../types/notations/architecture/sequence.types'
+import { isLifeline, lifecycleOf, sequenceKindOf, textProp } from './sequenceRules'
+import type { SequenceLifecycle, SequenceRows } from '../../../types/notations/architecture/sequence.types'
 import type {
 	FlowLayoutAlgorithm,
 	FlowLayoutEdge,
@@ -35,9 +35,9 @@ function rowsOf(edges: readonly FlowLayoutEdge[]): SequenceRows {
 	return new Map(edges.map((edge, index) => [edge.id, index]))
 }
 
-function lifelineRect(node: FlowLayoutNode, x: number, context: { rows: SequenceRows; lastRow: number }): FlowRect {
-	const created = context.rows.get(textProp(node, 'createdBy') ?? '')
-	const destroyed = context.rows.get(textProp(node, 'destroyedBy') ?? '')
+function lifelineRect(node: FlowLayoutNode, x: number, context: { lifecycle: SequenceLifecycle; lastRow: number }): FlowRect {
+	const created = context.lifecycle.created.get(node.id)
+	const destroyed = context.lifecycle.destroyed.get(node.id)
 	const top = created === undefined ? 0 : rowY(created) - HEADER_CENTER
 	const bottom = destroyed === undefined ? rowY(context.lastRow) + TAIL : rowY(destroyed) + LOOP_HALF
 	return { x, y: top, width: node.size.width, height: Math.max(bottom - top, MIN_HEIGHT) }
@@ -72,15 +72,6 @@ function messageRoute(
 		{ x: sourceX, y },
 		{ x: endpoint(target, sourceX, isHeader), y },
 	]
-}
-
-function createdTargets(input: FlowLayoutInput, lifelines: readonly FlowLayoutNode[], rows: SequenceRows): Set<string> {
-	const ids = new Set<string>()
-	for (const node of lifelines) {
-		const edge = textProp(node, 'createdBy')
-		if (edge !== undefined && rows.has(edge)) ids.add(node.id)
-	}
-	return ids
 }
 
 function spanOf(node: FlowLayoutNode, rows: SequenceRows, count: number): [number, number] {
@@ -158,9 +149,10 @@ function runSequence(input: FlowLayoutInput): FlowLayoutResult {
 	const columns = columnsOf(input, lifelines)
 	const rows = rowsOf(input.edges)
 	const lastRow = Math.max(0, input.edges.length - 1)
+	const lifecycle = lifecycleOf(input.edges)
 	const rects: Record<string, FlowRect> = {}
-	for (const node of lifelines) rects[node.id] = lifelineRect(node, columns.get(node.id) ?? 0, { rows, lastRow })
-	const created = createdTargets(input, lifelines, rows)
+	for (const node of lifelines) rects[node.id] = lifelineRect(node, columns.get(node.id) ?? 0, { lifecycle, lastRow })
+	const created = new Set(lifecycle.created.keys())
 	const edges: Record<string, FlowPoint[]> = {}
 	for (const edge of input.edges) edges[edge.id] = messageRoute(edge, rowY(rows.get(edge.id) ?? 0), { rects, created })
 	for (const node of fragments) rects[node.id] = fragmentRect(node, input, { rows, rects })

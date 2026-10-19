@@ -19,18 +19,13 @@ const OPERATORS: Record<SequenceOperator, () => string> = {
 	ref: () => UI_FLOW_SEQUENCE.OPERATOR_REF,
 }
 
-function titleMarkers(node: FlowNode, extra: FlowShapeMarker[] = []): FlowShapeMarker[] {
-	const markers: FlowShapeMarker[] = [{ text: node.label, placement: 'top-start' }, ...extra]
-	return node.props?.destroyedBy ? [...markers, { text: '×', placement: 'bottom-center' }] : markers
-}
-
 const lifelineShape = (extra: FlowShapeMarker[]): FlowShapeDef => ({
 	shape: 'path',
 	path: lifelinePath,
 	fill: FILL,
 	stroke: LINE,
 	text: LINE,
-	markers: node => titleMarkers(node, extra),
+	markers: node => [{ text: node.label, placement: 'top-center' }, ...extra],
 })
 
 function fragmentMarkers(node: FlowNode): FlowShapeMarker[] {
@@ -46,10 +41,6 @@ export const sequenceNodeKinds: Record<string, FlowNodeKindDef> = {
 		shape: lifelineShape([]),
 		size: { width: 150, height: 420 },
 		labelPlacement: 'none',
-		props: {
-			createdBy: { label: () => UI_FLOW_SEQUENCE.PROP_CREATED_BY, type: 'text' },
-			destroyedBy: { label: () => UI_FLOW_SEQUENCE.PROP_DESTROYED_BY, type: 'text' },
-		},
 		model3d: 'auto',
 		paletteGroup: 'sequence',
 	},
@@ -59,10 +50,6 @@ export const sequenceNodeKinds: Record<string, FlowNodeKindDef> = {
 		shape: lifelineShape([{ path: PERSON, placement: 'top-end' }]),
 		size: { width: 150, height: 420 },
 		labelPlacement: 'none',
-		props: {
-			createdBy: { label: () => UI_FLOW_SEQUENCE.PROP_CREATED_BY, type: 'text' },
-			destroyedBy: { label: () => UI_FLOW_SEQUENCE.PROP_DESTROYED_BY, type: 'text' },
-		},
 		isExternal: true,
 		model3d: 'user',
 		paletteGroup: 'sequence',

@@ -19,16 +19,8 @@ export const SEQUENCE_OPERATORS = ['alt', 'opt', 'loop', 'par', 'break', 'critic
 /** Оператор фрагмента */
 export type SequenceOperator = (typeof SEQUENCE_OPERATORS)[number]
 
-/** Поля линии жизни и актёра */
-export interface SequenceLifelineProps {
-	/** Id сообщения, которым линия жизни создаётся: заголовок встаёт на его строку */
-	createdBy?: string
-	/** Id сообщения, которым линия жизни уничтожается: линия обрывается крестом */
-	destroyedBy?: string
-}
-
-/** Линия жизни */
-export type SequenceLifelineNode = FlowNodeOf<'lifeline', SequenceLifelineProps>
+/** Линия жизни: создание и уничтожение задают сообщения вида `create` и `destroy`, а не поля узла */
+export type SequenceLifelineNode = FlowNodeOf<'lifeline'>
 
 /** Поля фрагмента: диапазон сообщений по их id, условие и оператор */
 export interface SequenceFragmentProps {
@@ -54,4 +46,12 @@ export interface SequenceColumn {
 	node: FlowLayoutNode
 	/** Левый край заголовка */
 	x: number
+}
+
+/** Создание и уничтожение линий жизни: id линии жизни → номер строки сообщения `create` или `destroy` */
+export interface SequenceLifecycle {
+	/** Строки создания */
+	created: ReadonlyMap<string, number>
+	/** Строки уничтожения */
+	destroyed: ReadonlyMap<string, number>
 }

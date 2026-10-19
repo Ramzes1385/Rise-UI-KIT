@@ -1,7 +1,7 @@
 import type { FlowSize } from '../../../types/data/flowData.types'
 
 export const HEADER_TOP = -6
-export const HEADER_BOTTOM = 28
+const HEADER_BOTTOM = 28
 const DASH = 6
 const GAP = 5
 const RADIUS = 6

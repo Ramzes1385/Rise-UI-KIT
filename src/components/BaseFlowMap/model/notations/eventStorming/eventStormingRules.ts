@@ -5,7 +5,7 @@ import type { FlowMapData, FlowNode } from '../../../types/data/flowData.types'
 import type { FlowDataIssue, FlowNotationRules } from '../../../types/api/flowNotation.types'
 import type { EventStormingGrammar } from '../../../types/notations/architecture/eventStorming.types'
 
-export const EVENT_STORMING_GRAMMAR: EventStormingGrammar = {
+const EVENT_STORMING_GRAMMAR: EventStormingGrammar = {
 	actor: ['command'],
 	command: ['aggregate', 'external-system'],
 	aggregate: ['domain-event'],

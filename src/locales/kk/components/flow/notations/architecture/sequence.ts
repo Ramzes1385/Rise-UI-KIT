@@ -17,8 +17,6 @@ export const kkFlowSequence = {
 		PROP_GUARD: 'Шарт',
 		PROP_FROM: 'Бірінші хабарлама (id)',
 		PROP_TO: 'Соңғы хабарлама (id)',
-		PROP_CREATED_BY: 'Құрылатын хабарлама (id)',
-		PROP_DESTROYED_BY: 'Жойылатын хабарлама (id)',
 		PROP_LATENCY: 'Уақыт, мс',
 		OPERATOR_ALT: 'alt — тармақтардың бірі',
 		OPERATOR_OPT: 'opt — міндетті емес блок',

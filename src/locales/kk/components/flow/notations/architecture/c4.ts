@@ -3,6 +3,9 @@ export const kkFlowC4 = {
 	flowC4: {
 		NOTATION: 'C4',
 		RULES_SUMMARY: 'әрбір байланыс белгіленеді; шекараларда контейнерлер мен компоненттер болады; адамдар шекарадан тыс тұрады',
+		LEVEL_CONTEXT: 'Контекст',
+		LEVEL_CONTAINERS: 'Контейнерлер',
+		LEVEL_COMPONENTS: 'Компоненттер',
 		PERSON: 'Адам',
 		SOFTWARE_SYSTEM: 'Бағдарламалық жүйе',
 		CONTAINER: 'Контейнер',

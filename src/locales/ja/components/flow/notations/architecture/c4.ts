@@ -3,6 +3,9 @@ export const jaFlowC4 = {
 	flowC4: {
 		NOTATION: 'C4',
 		RULES_SUMMARY: 'すべての関係にラベルを付ける。境界にはコンテナとコンポーネントを置き、人物は外に置く',
+		LEVEL_CONTEXT: 'コンテキスト',
+		LEVEL_CONTAINERS: 'コンテナ',
+		LEVEL_COMPONENTS: 'コンポーネント',
 		PERSON: '人物',
 		SOFTWARE_SYSTEM: 'ソフトウェアシステム',
 		CONTAINER: 'コンテナ',

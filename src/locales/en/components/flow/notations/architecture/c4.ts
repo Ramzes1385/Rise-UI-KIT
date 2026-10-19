@@ -3,6 +3,9 @@ export const enFlowC4 = {
 	flowC4: {
 		NOTATION: 'C4',
 		RULES_SUMMARY: 'every relationship is labeled; boundaries hold containers and components; people stay outside',
+		LEVEL_CONTEXT: 'Context',
+		LEVEL_CONTAINERS: 'Containers',
+		LEVEL_COMPONENTS: 'Components',
 		PERSON: 'Person',
 		SOFTWARE_SYSTEM: 'Software system',
 		CONTAINER: 'Container',

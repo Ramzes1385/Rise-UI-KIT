@@ -1,5 +1,5 @@
 import { c4Layout } from './c4Layout'
-import { C4_ZOOM_LEVELS } from './c4Zoom'
+import { C4_ZOOM_LEVELS } from './c4Levels'
 import { c4Legend, c4Rules } from './c4Rules'
 import { UI_FLOW_C4 } from '@/locales/messages'
 import { defineFlowNotation } from '../registry'
@@ -19,6 +19,7 @@ export const flowC4 = defineFlowNotation({
 	rules: c4Rules,
 	legend: c4Legend,
 	semanticZoom: C4_ZOOM_LEVELS,
+	semanticZoomLabel: () => UI_FLOW_C4.LEVEL_COMPONENTS,
 	rulesSummary: () => UI_FLOW_C4.RULES_SUMMARY,
 })
 

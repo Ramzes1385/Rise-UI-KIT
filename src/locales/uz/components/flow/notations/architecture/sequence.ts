@@ -16,8 +16,6 @@ export const uzFlowSequence = {
 		PROP_GUARD: 'Shart',
 		PROP_FROM: 'Birinchi xabar (id)',
 		PROP_TO: 'Oxirgi xabar (id)',
-		PROP_CREATED_BY: 'Yaratuvchi xabar (id)',
-		PROP_DESTROYED_BY: 'Yo’q qiluvchi xabar (id)',
 		PROP_LATENCY: 'Vaqt, ms',
 		OPERATOR_ALT: 'alt — tarmoqlardan biri',
 		OPERATOR_OPT: 'opt — ixtiyoriy blok',

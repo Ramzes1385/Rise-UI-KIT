@@ -3,6 +3,9 @@ export const zhFlowC4 = {
 	flowC4: {
 		NOTATION: 'C4',
 		RULES_SUMMARY: '每条关系都有标签；边界内放容器和组件；人员留在边界之外',
+		LEVEL_CONTEXT: '上下文',
+		LEVEL_CONTAINERS: '容器',
+		LEVEL_COMPONENTS: '组件',
 		PERSON: '人员',
 		SOFTWARE_SYSTEM: '软件系统',
 		CONTAINER: '容器',

@@ -16,8 +16,6 @@ export const enFlowSequence = {
 		PROP_GUARD: 'Guard',
 		PROP_FROM: 'First message (id)',
 		PROP_TO: 'Last message (id)',
-		PROP_CREATED_BY: 'Created by message (id)',
-		PROP_DESTROYED_BY: 'Destroyed by message (id)',
 		PROP_LATENCY: 'Time, ms',
 		OPERATOR_ALT: 'alt — one of the branches',
 		OPERATOR_OPT: 'opt — optional block',

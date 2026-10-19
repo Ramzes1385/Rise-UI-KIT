@@ -16,8 +16,6 @@ export const zhFlowSequence = {
 		PROP_GUARD: '守卫条件',
 		PROP_FROM: '第一条消息（id）',
 		PROP_TO: '最后一条消息（id）',
-		PROP_CREATED_BY: '由消息创建（id）',
-		PROP_DESTROYED_BY: '由消息销毁（id）',
 		PROP_LATENCY: '时间（毫秒）',
 		OPERATOR_ALT: 'alt——多个分支之一',
 		OPERATOR_OPT: 'opt——可选块',

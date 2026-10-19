@@ -15,8 +15,6 @@ export const ruFlowSequence = {
 	PROP_GUARD: 'Условие',
 	PROP_FROM: 'Первое сообщение (id)',
 	PROP_TO: 'Последнее сообщение (id)',
-	PROP_CREATED_BY: 'Создаётся сообщением (id)',
-	PROP_DESTROYED_BY: 'Уничтожается сообщением (id)',
 	PROP_LATENCY: 'Время, мс',
 	OPERATOR_ALT: 'alt — одна из ветвей',
 	OPERATOR_OPT: 'opt — необязательный блок',
