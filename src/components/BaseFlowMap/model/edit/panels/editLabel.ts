@@ -5,7 +5,7 @@ import type { FlowEditContext } from '../../../types/internal/edit/flowEditApi.t
 
 function edgeFrame(context: FlowEditContext, id: string): FlowRect | null {
 	const route = context.env.model.routes.value[id]
-	const point = route?.label?.point ?? route?.points[Math.floor((route?.points.length ?? 0) / 2)]
+	const point = route?.label?.point ?? route?.points[Math.floor(route.points.length / 2)]
 	return point ? { x: point.x - 60, y: point.y - 12, width: 120, height: 24 } : null
 }
 

@@ -16,9 +16,11 @@ export function useFlowEditHooks() {
 			.filter(item => item.handler !== EDIT_INTERNAL_HANDLER && item.handler !== REVIEW_INTERNAL_HANDLER)
 	}
 	refresh()
-	const offs = (['change', 'reject', 'history-change', 'update:selection'] as const).map(name =>
+	const later = (): void => void Promise.resolve().then(refresh)
+	const offs = (['change', 'history-change', 'update:selection'] as const).map(name =>
 		context.env.model.events.subscribe(name, refresh as (value: never) => void),
 	)
+	offs.push(context.env.model.events.subscribe('reject', later as (value: never) => void))
 	onScopeDispose(() => offs.forEach(off => off()))
 	watch(context.env.state.tab, refresh)
 	return {
