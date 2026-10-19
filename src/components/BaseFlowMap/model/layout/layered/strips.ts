@@ -46,7 +46,7 @@ function mainRange(context: StripContext, rows: [number, number]): [number, numb
 }
 
 function headerChain(context: StripContext, groupId: string): StripContext['index']['groups'] {
-	return ancestorsOf(groupId, context.index.byId).filter(group => group.layout !== 'box')
+	return ancestorsOf(groupId, context.index.byId)
 }
 
 function headerSum(chain: StripContext['index']['groups'], key: 'width' | 'height'): number {
@@ -65,8 +65,7 @@ function frameOf(nodes: Record<string, FlowRect>): StripFrame {
 
 function fullRange(scope: StripScope, groupId: string, isOwnY: boolean): [number, number] {
 	const key = isOwnY ? 'width' : 'height'
-	const strips = scope.index.groups.filter(group => group.layout !== 'box')
-	const total = Math.max(0, ...strips.map(group => headerSum(headerChain(scope, group.id), key)))
+	const total = Math.max(0, ...scope.index.groups.map(group => headerSum(headerChain(scope, group.id), key)))
 	const offset = headerSum(headerChain(scope, groupId).slice(1), key)
 	const { frame } = scope
 	return isOwnY ? [frame.left - total + offset, frame.right] : [frame.top - total + offset, frame.bottom]
@@ -90,7 +89,6 @@ function bandStrip(scope: StripScope, groupId: string, isOwnY: boolean): FlowRec
 }
 
 function stripFor(scope: StripScope, group: FlowLayoutGroup): FlowRect | null {
-	if (group.layout === 'box') return null
 	const groupId = group.id
 	const { direction } = scope.input.settings
 	const isOwnY = (group.layout === 'band') === (direction === 'LR' || direction === 'RL')
