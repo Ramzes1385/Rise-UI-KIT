@@ -70,5 +70,8 @@ export const EditHooks: StoryObj<typeof meta> = {
 		await expect(toggle).not.toBeChecked()
 		await expect(within(inspector).getByRole('tab', { name: /^Хуки/ })).toHaveTextContent('Хуки 2')
 		await expect(hookCard(inspector, 'keepTopics')).toHaveClass('is-off')
+		await userEvent.click(toggle)
+		await expect(toggle).toBeChecked()
+		await expect(within(inspector).getByRole('tab', { name: /^Хуки/ })).toHaveTextContent('Хуки 3')
 	},
 }
