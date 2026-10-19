@@ -13,6 +13,7 @@ import { uzMapEditor } from './components/mapEditor'
 import { uzRoadmap } from './components/data/roadmap'
 import { uzImageMap3d } from './components/imageMap3d'
 import { uzTranscript } from './components/transcript'
+import { uzFlowEditor } from './components/flow/editor'
 import { uzFlowPanels } from './components/flow/panels'
 import { uzFlowReview } from './components/flow/review'
 import type { UiKitLocale } from '../types/locales.types'
@@ -48,6 +49,7 @@ export const uz: UiKitLocale = {
 	...uzFlowScenario,
 	...uzFlowPanels,
 	...uzFlowReview,
+	...uzFlowEditor,
 	...uzFlowServices,
 	...uzFlowBpmn,
 	...uzFlowIdef,

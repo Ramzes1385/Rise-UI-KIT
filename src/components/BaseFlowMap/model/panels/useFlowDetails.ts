@@ -60,7 +60,7 @@ function useSlotParts(context: FlowMapContext, close: () => void) {
 		edge: target.value ? graph.value.edges.get(target.value.id) : undefined,
 		close,
 	}))
-	return { target, slotProps, controller: context.model.controller, isEditing: computed(() => context.model.mode.value === 'edit') }
+	return { slotProps }
 }
 
 export function useFlowDetails() {

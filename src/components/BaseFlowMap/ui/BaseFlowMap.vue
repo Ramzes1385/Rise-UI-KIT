@@ -23,7 +23,9 @@
 			<BaseResult status="error" :title="UI_FLOW_MAP.ERROR_TITLE" :description="error" is-live />
 		</div>
 		<div v-else class="base-flow-map__body">
-			<div class="base-flow-map__stage">
+			<FlowEditPalette />
+			<div :class="['base-flow-map__stage', ...editClasses]">
+				<FlowEditToolbar />
 				<FlowCanvas :particles="particles">
 					<template v-if="$slots.node" #node="slotProps"><slot name="node" v-bind="slotProps" /></template>
 					<template v-if="$slots['edge-label']" #edge-label="slotProps"><slot name="edge-label" v-bind="slotProps" /></template>
@@ -51,6 +53,8 @@
 					/></template>
 				</FlowScenarioPanel>
 				<FlowReviewOverlay />
+				<FlowEditStatus />
+				<FlowEditOverlay />
 			</div>
 			<aside v-if="!isCompact" class="base-flow-map__side">
 				<FlowScenarioPanel v-if="hasScenario">
@@ -60,22 +64,24 @@
 				</FlowScenarioPanel>
 				<FlowDetails v-if="hasDetails">
 					<template v-if="$slots.details" #details="slotProps"><slot name="details" v-bind="slotProps" /></template>
+				</FlowDetails>
+				<FlowReviewPanel />
+				<FlowEditInspector>
 					<template v-if="$slots['inspector-end']" #inspector-end="slotProps"
 						><slot name="inspector-end" v-bind="slotProps"
 					/></template>
-				</FlowDetails>
-			<FlowReviewPanel />
-			</template>
-				<FlowReviewPanel />
+				</FlowEditInspector>
 			</aside>
 			<template v-else>
-			<FlowDetails v-if="hasDetails">
-				<template v-if="$slots.details" #details="slotProps"><slot name="details" v-bind="slotProps" /></template>
-				<template v-if="$slots['inspector-end']" #inspector-end="slotProps"
-					><slot name="inspector-end" v-bind="slotProps"
-				/></template>
-			</FlowDetails>
-			<FlowReviewPanel />
+				<FlowDetails v-if="hasDetails">
+					<template v-if="$slots.details" #details="slotProps"><slot name="details" v-bind="slotProps" /></template>
+				</FlowDetails>
+				<FlowReviewPanel />
+				<FlowEditInspector>
+					<template v-if="$slots['inspector-end']" #inspector-end="slotProps"
+						><slot name="inspector-end" v-bind="slotProps"
+					/></template>
+				</FlowEditInspector>
 			</template>
 		</div>
 		<FlowA11yList v-if="!isLoading && !error" />
@@ -97,11 +103,16 @@ import FlowMinimap from './panels/FlowMinimap.vue'
 import { BaseResult } from '@components/BaseResult'
 import FlowA11yList from './chrome/FlowA11yList.vue'
 import FlowLevelBar from './chrome/FlowLevelBar.vue'
+import FlowEditStatus from './edit/FlowEditStatus.vue'
 import { BaseSkeleton } from '@components/BaseSkeleton'
 import { useBaseFlowMap } from '../model/useBaseFlowMap'
 import FlowLiveRegion from './chrome/FlowLiveRegion.vue'
+import FlowEditOverlay from './edit/FlowEditOverlay.vue'
+import FlowEditPalette from './edit/FlowEditPalette.vue'
+import FlowEditToolbar from './edit/FlowEditToolbar.vue'
 import FlowReviewPanel from './review/FlowReviewPanel.vue'
 import { kitDefaults } from '@composables/base/useDefaults'
+import FlowEditInspector from './edit/FlowEditInspector.vue'
 import FlowReviewOverlay from './review/FlowReviewOverlay.vue'
 import FlowScenarioPanel from './scenario/FlowScenarioPanel.vue'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
@@ -155,6 +166,7 @@ const {
 	hasScenario,
 	hasDetails,
 	isEmpty,
+	editClasses,
 } = useBaseFlowMap(props, emit)
 
 defineExpose(model.controller)

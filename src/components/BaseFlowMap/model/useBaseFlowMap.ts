@@ -33,14 +33,20 @@ export function useBaseFlowMap(props: BaseFlowMapProps, emit: BaseFlowMapEmits) 
 	const rendering = useFlowRendering(props, model, { frame, environment: { isReducedMotion, isVisible, announce } })
 	onMounted(() => model.events.emit('ready', model.controller))
 	const editing = useFlowEditing(model, { map: rendering.canvas.map, element: frame.element, props })
-	const { hasHeader, hasToolbar, hasSearch, hasMinimap, hasLegend, hasScenario, isEmpty } = rendering.chrome
-	const hasDetails = computed(() => rendering.chrome.hasDetails.value && !editing.context.env.state.isEditing.value)
+	const { hasHeader, hasSearch, hasMinimap, hasLegend, hasScenario, isEmpty } = rendering.chrome
+	const { state } = editing.context.env
+	const hasToolbar = computed(() => rendering.chrome.hasToolbar.value && !(state.isEditing.value && !state.isCompact.value))
+	const hasDetails = computed(() => rendering.chrome.hasDetails.value && !state.isEditing.value)
 	return {
 		...useStandardBaseComponent('base-flow-map', props, [...FLOW_MAP_PARTS]),
 		...{ hasHeader, hasToolbar, hasSearch, hasMinimap, hasLegend, hasScenario, hasDetails, isEmpty },
 		ui: rendering.ui,
 		model,
 		editing,
+		editClasses: computed(() => {
+			const isChrome = state.isEditing.value && !state.isCompact.value
+			return [isChrome && 'base-flow-map__stage--edit', isChrome && !state.isGridOn.value && 'base-flow-map__stage--no-grid']
+		}),
 		review: useFlowReview(model, props, announce),
 		announcement,
 		isCompact: frame.isCompact,

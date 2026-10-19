@@ -5,6 +5,7 @@
 @use './scenario';
 @use './panels';
 @use './review/review';
+@use './edit/edit';
 
 .base-flow-map {
 	@include custom-color-scope;

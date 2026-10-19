@@ -351,3 +351,7 @@ $bar-bottom: 34px;
 		display: none;
 	}
 }
+
+.base-flow-map__stage--no-grid .base-flow-map__viewport {
+	background-image: none;
+}

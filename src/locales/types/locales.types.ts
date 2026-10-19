@@ -138,6 +138,7 @@ export interface UiKitLocale {
 	flowScenario: Section<'flowScenario'>
 	flowPanels: Section<'flowPanels'>
 	flowReview: Section<'flowReview'>
+	flowEditor: Section<'flowEditor'>
 	flowServices: Section<'flowServices'>
 	flowBpmn: Section<'flowBpmn'>
 	flowIdef: Section<'flowIdef'>
