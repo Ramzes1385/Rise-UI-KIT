@@ -10,8 +10,10 @@ export function createGroupsApi(parts: FlowControllerParts): FlowGroupsApi {
 		toggleGroup: (id, isCollapsed) => groups.toggle(id, isCollapsed),
 		getCollapsed: () => [...groups.collapsed.value],
 		getLevel: () => groups.level.value,
-		setLevel(index) {
-			if (groups.entries.value.length > 0) view.zoom(groups.setLevel(index, ZOOM_LIMITS))
+		setLevel(index, options) {
+			if (groups.entries.value.length === 0) return
+			groups.setLevel(index, ZOOM_LIMITS)
+			view.fitView({ isAnimated: options?.isAnimated ?? true })
 		},
 		enterGroup(id, options) {
 			groups.enter(id)

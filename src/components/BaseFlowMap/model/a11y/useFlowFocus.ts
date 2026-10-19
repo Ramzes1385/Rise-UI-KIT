@@ -1,5 +1,5 @@
 import type { Ref } from 'vue'
-import { nextTick, onBeforeUnmount, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, watch } from 'vue'
 import type { FlowElementRef } from '../../types/data/flowReview.types'
 import { ARROW_DIRECTIONS, isPrintable, nearestInDirection, typeaheadMatch } from './flowFocus'
 import type {
@@ -14,7 +14,7 @@ const TYPEAHEAD_MS = 700
 
 function entityOf(model: FlowModelInternal, id: string): FlowElementRef['entity'] | null {
 	const graph = model.graph.value
-	if (graph.nodes.has(id)) return 'node'
+	if (model.shown.value.nodes.some(node => node.id === id)) return 'node'
 	if (graph.edges.has(id)) return 'edge'
 	return graph.groups.has(id) ? 'group' : null
 }
@@ -54,6 +54,14 @@ function createTypeahead(model: FlowModelInternal, focused: Ref<string | null>, 
 			if (found) move(found)
 		},
 		stop: () => clearTimeout(timer),
+	}
+}
+
+function createTabIndex(model: FlowModelInternal, focused: Ref<string | null>): (id: string) => 0 | -1 {
+	const shownIds = computed(() => new Set(model.shown.value.nodes.map(node => node.id)))
+	return id => {
+		const current = focused.value && shownIds.value.has(focused.value) ? focused.value : model.shown.value.nodes[0]?.id
+		return id === current ? 0 : -1
 	}
 }
 
@@ -109,9 +117,6 @@ export function useFlowFocus(
 
 	onBeforeUnmount(typeahead.stop)
 
-	const tabIndexOf = (id: string): 0 | -1 => {
-		const current = focused.value && model.graph.value.nodes.has(focused.value) ? focused.value : model.shown.value.nodes[0]?.id
-		return id === current ? 0 : -1
-	}
+	const tabIndexOf = createTabIndex(model, focused)
 	return { focused, move, onKeydown, onFocusin, onFocusout, tabIndexOf }
 }
