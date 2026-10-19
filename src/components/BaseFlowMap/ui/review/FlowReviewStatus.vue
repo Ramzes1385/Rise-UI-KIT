@@ -26,7 +26,7 @@
 				<ul class="base-flow-map__review-items">
 					<li v-for="binding in bindings" :key="binding.id" class="base-flow-map__review-hook">
 						<code>{{ binding.name }}</code>
-						<span aria-hidden="true">&rarr;</span>
+						<span class="base-flow-map__review-arrow" aria-hidden="true">&rarr;</span>
 						<code>{{ binding.handler || UI_FLOW_REVIEW.HOOK_ANONYMOUS }}</code>
 						<BaseBadge v-if="binding.isCancellable" :label="UI_FLOW_REVIEW.HOOK_CANCELLABLE" status="warning" variant="soft" />
 						<span class="base-flow-map__review-card-time">{{ callsLabel(binding) }}</span>

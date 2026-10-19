@@ -25,7 +25,7 @@
 			<BaseButton @click="submit">{{ submitLabel }}</BaseButton>
 		</template>
 	</div>
-	<ul class="base-flow-map__review-legend" :aria-label="UI_FLOW_REVIEW.LEGEND">
+	<ul class="base-flow-map__review-legend" tabindex="0" :aria-label="UI_FLOW_REVIEW.LEGEND">
 		<li v-for="item in legend" :key="item.kind" class="base-flow-map__review-legend-item">
 			<span class="base-flow-map__review-swatch" :class="`base-flow-map__review-swatch--${item.kind}`" aria-hidden="true" />
 			{{ item.label }}

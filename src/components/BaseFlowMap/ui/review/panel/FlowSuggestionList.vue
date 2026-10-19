@@ -33,7 +33,7 @@
 					<li v-for="row in item.fields" :key="row.key">
 						<span class="base-flow-map__review-field">{{ row.field }}</span>
 						<del>{{ row.before }}</del>
-						<span aria-hidden="true">&rarr;</span>
+						<span class="base-flow-map__review-arrow" aria-hidden="true">&rarr;</span>
 						<ins>{{ row.after }}</ins>
 					</li>
 				</ul>

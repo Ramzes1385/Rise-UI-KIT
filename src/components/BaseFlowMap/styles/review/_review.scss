@@ -44,8 +44,9 @@
 	&__review-compare {
 		position: absolute;
 		inset-block-end: sz(16px);
-		inset-inline: 50% auto;
-		transform: translateX(-50%);
+		inset-inline: 0;
+		inline-size: fit-content;
+		margin-inline: auto;
 	}
 
 	&--compact &__review-compare {
@@ -98,6 +99,11 @@
 	&__review-legend {
 		flex-wrap: nowrap;
 		overflow-x: auto;
+
+		&:focus-visible {
+			outline: 2px solid var(--rise-primary);
+			outline-offset: 2px;
+		}
 	}
 
 	&__review-bar,
@@ -422,6 +428,13 @@
 		list-style: none;
 		font-size: sz(var(--rise-font-size-xs));
 
+		li {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: baseline;
+			gap: sz(2px 6px);
+		}
+
 		del {
 			color: var(--rise-error);
 		}
@@ -433,8 +446,14 @@
 	}
 
 	&__review-field {
-		margin-inline-end: sz(6px);
 		color: var(--rise-text-muted);
+	}
+
+	&__review-arrow {
+		[dir='rtl'] & {
+			display: inline-block;
+			transform: scaleX(-1);
+		}
 	}
 
 	&__review-composer {
