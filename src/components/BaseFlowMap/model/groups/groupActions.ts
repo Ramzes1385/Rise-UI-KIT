@@ -5,9 +5,9 @@ import type { FlowGroupActions, FlowGroupCore } from '../../types/internal/flowG
 const SETTLE_MS = 700
 const RELEASE_RATIO = 0.08
 
-function setPin(core: FlowGroupCore, level: number): void {
+function setPin(core: FlowGroupCore, level: number, zoom: number | null = null): void {
 	core.isTouched.value = true
-	core.pin.value = { level, zoom: null, at: performance.now() }
+	core.pin.value = { level, zoom, at: performance.now() }
 	core.overrides.value = new Map()
 }
 
@@ -54,7 +54,7 @@ function reveal(core: FlowGroupCore, ids: readonly string[]): void {
 function setLevel(core: FlowGroupCore, target: number, limits: { min: number; max: number }): number {
 	const last = core.entries.value.length
 	const clamped = Math.min(Math.max(Math.round(target), 0), last)
-	if (last > 0) setPin(core, clamped)
+	if (last > 0) setPin(core, clamped, core.zoom.value)
 	core.trail.value = core.path.value
 	return last > 0 ? levelZoom(core.entries.value, clamped, limits) : core.zoom.value
 }

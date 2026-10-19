@@ -54,12 +54,15 @@ function useSheetShift(context: FlowMapContext, isSheetOpen: Ref<boolean>) {
 function useSlotParts(context: FlowMapContext, close: () => void) {
 	const target = computed(() => context.details.value)
 	const graph = computed(() => context.model.graph.value)
-	const slotProps = computed(() => ({
-		target: target.value as NonNullable<typeof target.value>,
-		node: target.value ? graph.value.nodes.get(target.value.id) : undefined,
-		edge: target.value ? graph.value.edges.get(target.value.id) : undefined,
-		close,
-	}))
+	const slotProps = computed(() => {
+		const current = target.value as NonNullable<typeof target.value>
+		return {
+			target: current,
+			node: graph.value.nodes.get(current.id),
+			edge: graph.value.edges.get(current.id),
+			close,
+		}
+	})
 	return { slotProps }
 }
 
