@@ -2,9 +2,9 @@ import '@testing-library/jest-dom/vitest'
 import { runInHost, stubFrame } from '../flowUi'
 import { effectScope, nextTick, reactive, ref } from 'vue'
 import { useFlowFrame } from '../../../../model/viewport/useFlowFrame'
+import { useFlowPanels } from '../../../../model/viewport/panels/useFlowPanels'
 import { useFlowVisibility } from '../../../../model/viewport/useFlowVisibility'
 import { createViewportAnimation } from '../../../../model/viewport/useFlowAnimation'
-import { sidePanelsWidth, useFlowPanels } from '../../../../model/viewport/useFlowPanels'
 import { boundsOf, centerViewport, clampZoom, fitViewport, isRevealed, mixViewport, zoomAt } from '../../../../model/viewport/viewGeometry'
 
 const limits = { min: 0.2, max: 3 }
@@ -207,55 +207,200 @@ describe('useFlowFrame: compact по ширине корня минус боко
 	})
 })
 
-describe('sidePanelsWidth и useFlowPanels', () => {
-	it('edit — 564, review — 340, view — 340 при details или scenario, иначе 0', () => {
-		expect(sidePanelsWidth('edit', false)).toBe(564)
-		expect(sidePanelsWidth('edit', true)).toBe(564)
-		expect(sidePanelsWidth('review', false)).toBe(340)
-		expect(sidePanelsWidth('view', true)).toBe(340)
-		expect(sidePanelsWidth('view', false)).toBe(0)
+describe('useFlowFrame: корень, найденный после attach', () => {
+	afterEach(() => vi.restoreAllMocks())
+
+	function observed() {
+		const callbacks: (() => void)[] = []
+		const targets: Element[] = []
+		vi.stubGlobal(
+			'ResizeObserver',
+			class {
+				constructor(callback: () => void) {
+					callbacks.push(callback)
+				}
+				observe(target: Element) {
+					targets.push(target)
+				}
+				disconnect() {}
+			},
+		)
+		return { callbacks, targets }
+	}
+
+	function sizes(widths: { root: number; area: number }) {
+		vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(function (this: HTMLElement) {
+			return this.classList.contains('base-flow-map') ? widths.root : widths.area
+		})
+		vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(400)
+	}
+
+	function detachedMap() {
+		const root = document.createElement('div')
+		root.className = 'base-flow-map'
+		const area = document.createElement('div')
+		root.append(area)
+		return { root, area }
+	}
+
+	it('attach до вставки в корень: подключили корень, наблюдатель нашёл его, rootWidth вырос, isCompact = true при viewport 0', () => {
+		const { callbacks, targets } = observed()
+		sizes({ root: 0, area: 0 })
+		const { value: frame } = runInHost(() => useFlowFrame({}))
+		frame.reserve(() => 340)
+		const area = document.createElement('div')
+		frame.attach(area)
+		expect(targets).toEqual([area])
+		expect(frame.isCompact.value).toBe(false)
+		const root = document.createElement('div')
+		root.className = 'base-flow-map'
+		root.append(area)
+		document.body.append(root)
+		sizes({ root: 800, area: 0 })
+		callbacks[0]()
+		expect(frame.frame.value).toEqual({ width: 0, height: 400 })
+		expect(frame.isCompact.value).toBe(true)
+		sizes({ root: 1280, area: 0 })
+		callbacks[0]()
+		expect(frame.isCompact.value).toBe(false)
+		root.remove()
 	})
 
-	it('множитель sizeScale/100 применяется к ширине', () => {
-		expect(sidePanelsWidth('edit', false, 1.5)).toBe(846)
-		expect(sidePanelsWidth('view', false, 2)).toBe(0)
+	it('наблюдатель следит и за областью вида, и за найденным позже корнем, корень не наблюдается дважды', () => {
+		const { callbacks, targets } = observed()
+		sizes({ root: 0, area: 0 })
+		const { value: frame } = runInHost(() => useFlowFrame({}))
+		const area = document.createElement('div')
+		frame.attach(area)
+		callbacks[0]()
+		expect(targets).toEqual([area])
+		const root = document.createElement('div')
+		root.className = 'base-flow-map'
+		root.append(area)
+		document.body.append(root)
+		sizes({ root: 500, area: 100 })
+		callbacks[0]()
+		expect(targets).toEqual([area, root])
+		callbacks[0]()
+		expect(targets).toEqual([area, root])
+		root.remove()
 	})
 
-	it('useFlowPanels резервирует ширину по режиму, details/scenario и sizeScale', () => {
-		const mode = ref<'view' | 'edit' | 'review'>('view')
+	it('отключённый корень заменяется найденным заново, вне .base-flow-map корень не появляется', () => {
+		const { callbacks, targets } = observed()
+		sizes({ root: 700, area: 100 })
+		const { value: frame } = runInHost(() => useFlowFrame({}))
+		const first = detachedMap()
+		document.body.append(first.root)
+		frame.attach(first.area)
+		expect(targets).toEqual([first.area, first.root])
+		first.root.remove()
+		first.root.append(first.area)
+		callbacks[0]()
+		expect(targets).toEqual([first.area, first.root])
+		const second = detachedMap()
+		document.body.append(second.root)
+		second.root.append(first.area)
+		callbacks[0]()
+		expect(targets).toEqual([first.area, first.root, second.root])
+		second.root.remove()
+		sizes({ root: 100, area: 700 })
+		const bare = document.createElement('div')
+		const lone = document.createElement('div')
+		document.body.append(bare)
+		bare.append(lone)
+		const { value: other } = runInHost(() => useFlowFrame({}))
+		other.attach(lone)
+		expect(other.isCompact.value).toBe(false)
+		bare.remove()
+	})
+})
+
+describe('useFlowPanels', () => {
+	function panelsOf(mode: 'view' | 'edit' | 'review', flags: { details?: boolean; scenario?: boolean } = {}, sizeScale?: number) {
+		const frame = runInHost(() => useFlowFrame({})).value
 		const flag = (value = false) => ref(value)
-		const chrome = {
-			hasToolbar: flag(true),
-			hasMinimap: flag(true),
-			hasLegend: flag(true),
-			hasScenario: flag(),
-			hasDetails: flag(),
-		}
-		let getter!: () => number
 		const parts = {
-			model: { mode },
-			chrome,
+			model: { mode: ref(mode) },
+			chrome: {
+				hasToolbar: flag(true),
+				hasMinimap: flag(true),
+				hasLegend: flag(true),
+				hasScenario: flag(flags.scenario),
+				hasDetails: flag(flags.details),
+			},
 			state: { isEditing: flag(), isCompact: flag(), isGridOn: flag(true) },
-			frame: { reserve: (value: () => number) => (getter = value) },
+			frame,
 		}
-		const props = reactive<{ sizeScale?: number }>({})
-		const { value: panels } = runInHost(() => useFlowPanels(props as never, parts as never))
+		const props = reactive<{ sizeScale?: number }>({ sizeScale })
+		const panels = runInHost(() => useFlowPanels(props as never, parts as never)).value
+		return { frame, panels, parts, props }
+	}
+
+	const compactAt = (frame: ReturnType<typeof panelsOf>['frame'], root: number) => {
+		frame.attach(
+			(() => {
+				vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(function (this: HTMLElement) {
+					return this.classList.contains('base-flow-map') ? root : 5000
+				})
+				vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(400)
+				const rootElement = document.createElement('div')
+				rootElement.className = 'base-flow-map'
+				const area = document.createElement('div')
+				rootElement.append(area)
+				return area
+			})(),
+		)
+		return frame.isCompact.value
+	}
+
+	afterEach(() => vi.restoreAllMocks())
+
+	it.each([
+		['edit', {}, 564],
+		['edit', { details: true }, 564],
+		['review', {}, 340],
+		['view', { details: true }, 340],
+		['view', { scenario: true }, 340],
+		['view', {}, 0],
+	] as const)('режим %s %o резервирует %i', (mode, flags, reserved) => {
+		const { frame } = panelsOf(mode, flags)
+		expect(compactAt(frame, reserved + 639)).toBe(true)
+		expect(compactAt(frame, reserved + 640)).toBe(false)
+	})
+
+	it('резерв умножается на sizeScale/100', () => {
+		const edit = panelsOf('edit', {}, 150).frame
+		expect(compactAt(edit, 846 + 639)).toBe(true)
+		expect(compactAt(edit, 846 + 640)).toBe(false)
+		const view = panelsOf('view', {}, 200).frame
+		expect(compactAt(view, 639)).toBe(true)
+		expect(compactAt(view, 640)).toBe(false)
+	})
+
+	it('режим, сценарий и sizeScale пересчитывают резерв на лету', () => {
+		const { frame, parts, props } = panelsOf('view')
+		expect(compactAt(frame, 1000)).toBe(false)
+		parts.chrome.hasScenario.value = true
+		expect(frame.isCompact.value).toBe(false)
+		parts.model.mode.value = 'edit'
+		expect(frame.isCompact.value).toBe(true)
+		props.sizeScale = 50
+		expect(frame.isCompact.value).toBe(false)
+		parts.model.mode.value = 'review'
+		props.sizeScale = 150
+		expect(frame.isCompact.value).toBe(true)
+		props.sizeScale = 50
+		expect(frame.isCompact.value).toBe(false)
+	})
+
+	it('панели прячутся в режиме правки и возвращаются в компактном виде', () => {
+		const { panels, parts } = panelsOf('view')
 		expect(panels.hasLegend.value && panels.hasMinimap.value && panels.hasToolbar.value).toBe(true)
 		parts.state.isEditing.value = true
 		expect([panels.hasLegend.value, panels.hasMinimap.value, panels.hasToolbar.value]).toEqual([false, false, false])
 		parts.state.isCompact.value = true
 		expect([panels.hasLegend.value, panels.hasMinimap.value, panels.hasToolbar.value]).toEqual([true, true, true])
-		parts.state.isEditing.value = false
-		parts.state.isCompact.value = false
-		expect(getter()).toBe(0)
-		chrome.hasScenario.value = true
-		expect(getter()).toBe(340)
-		mode.value = 'edit'
-		expect(getter()).toBe(564)
-		props.sizeScale = 150
-		expect(getter()).toBe(846)
-		mode.value = 'review'
-		expect(getter()).toBe(510)
 	})
 })
 

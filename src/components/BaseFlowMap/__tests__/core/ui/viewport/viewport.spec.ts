@@ -11,6 +11,13 @@ async function opened(props: Parameters<typeof mountMap>[0] = {}) {
 	return { ...result, controller: controllerOf(result as never) }
 }
 
+function stubAreaInRoot(width: number, height: number) {
+	vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(function (this: HTMLElement) {
+		return this.classList.contains('base-flow-map') ? 1280 : width
+	})
+	vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(height)
+}
+
 function useClock() {
 	vi.useFakeTimers({ toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'performance', 'setTimeout', 'clearTimeout'] })
 }
@@ -99,7 +106,7 @@ describe('BaseFlowMap вид', () => {
 	})
 
 	it('кнопка «Вписать» возвращает вид и снова включает автоподбор при смене размера', async () => {
-		stubFrame(800, 400)
+		stubAreaInRoot(800, 400)
 		const sizes: ResizeObserverCallback[] = []
 		vi.stubGlobal(
 			'ResizeObserver',
@@ -117,14 +124,14 @@ describe('BaseFlowMap вид', () => {
 		const fitted = sceneView(result.container)
 		await fireEvent.wheel(screen.getByRole('graphics-document'), { deltaY: -300, ctrlKey: true })
 		expect(sceneView(result.container)).not.toEqual(fitted)
-		stubFrame(200, 100)
+		stubAreaInRoot(200, 100)
 		sizes.forEach(callback => callback([], {} as ResizeObserver))
 		await nextTick()
 		await nextTick()
 		expect(sceneView(result.container).zoom).toBeGreaterThan(1.2)
 		await fireEvent.click(screen.getByRole('button', { name: 'Вписать в экран' }))
 		expect(sceneView(result.container).zoom).toBeLessThan(1)
-		stubFrame(800, 400)
+		stubAreaInRoot(800, 400)
 		sizes.forEach(callback => callback([], {} as ResizeObserver))
 		await nextTick()
 		await nextTick()

@@ -62,4 +62,57 @@ describe('BaseFlowMap компактный вид', () => {
 		await fireEvent.click(screen.getByRole('graphics-object', { name: /^Alpha/ }))
 		expect(await screen.findByRole('dialog')).toBeInTheDocument()
 	})
+
+	describe('первая отрисовка и смена ширины корня', () => {
+		let rootWidth = 0
+		let observers: (() => void)[] = []
+		const editMap = () => mountMap({ mode: 'edit' }, { attachTo: document.body })
+
+		beforeEach(() => {
+			observers = []
+			vi.stubGlobal(
+				'ResizeObserver',
+				class {
+					callback: () => void
+					constructor(callback: () => void) {
+						this.callback = callback
+						observers.push(callback)
+					}
+					observe() {
+						queueMicrotask(this.callback)
+					}
+					disconnect() {}
+				},
+			)
+			vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(function (this: HTMLElement) {
+				return this.classList.contains('base-flow-map') ? rootWidth : 0
+			})
+			vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(400)
+		})
+		afterEach(() => vi.unstubAllGlobals())
+
+		it('edit, корень 341 px, область 0: compact есть сразу после монтирования', async () => {
+			rootWidth = 341
+			const result = editMap()
+			await nextTick()
+			await nextTick()
+			expect(result.container.firstElementChild).toHaveClass('base-flow-map--compact')
+		})
+
+		it('смена ширины корня 1280 → 375 → 1280 переключает класс в обе стороны', async () => {
+			rootWidth = 1280
+			const result = editMap()
+			await nextTick()
+			const root = result.container.firstElementChild
+			expect(root).not.toHaveClass('base-flow-map--compact')
+			rootWidth = 375
+			observers.forEach(callback => callback())
+			await nextTick()
+			expect(root).toHaveClass('base-flow-map--compact')
+			rootWidth = 1280
+			observers.forEach(callback => callback())
+			await nextTick()
+			expect(root).not.toHaveClass('base-flow-map--compact')
+		})
+	})
 })
