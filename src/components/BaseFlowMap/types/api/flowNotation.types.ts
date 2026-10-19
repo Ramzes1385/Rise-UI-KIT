@@ -93,8 +93,10 @@ export interface FlowNodeKindDef {
 	shape: FlowShapeDef
 	/** Размер по умолчанию */
 	size: FlowSize
-	/** Подпись: inside — внутри, below — под фигурой (события и шлюзы BPMN), none — без подписи */
-	labelPlacement?: 'inside' | 'below' | 'none'
+	/** Подпись: inside — внутри, below — под фигурой (события и шлюзы BPMN), bottom-start — внизу слева у html-карточки (свёрнутая граница C4), none — без подписи */
+	labelPlacement?: 'inside' | 'below' | 'bottom-start' | 'none'
+	/** Подзаголовок html-карточки; без него — `FlowNode.subtitle`. У блока свёрнутой группы `props.groupKind` и `props.groupProps` — вид и поля группы */
+	subtitle?: (node: FlowNode) => string
 	/** Значок по умолчанию — имя BaseIcon */
 	icon?: string
 	/** Порты по умолчанию */
@@ -120,7 +122,7 @@ export interface FlowEdgeKindDef {
 	/** Начало линии: none, circle (сообщение BPMN), diamond, slash (поток по умолчанию) */
 	startMarker?: 'none' | 'circle' | 'diamond' | 'slash'
 	/** Конец линии: arrow — залитая стрелка, open-arrow — открытая, double-arrow — двойная (поток объектов IDEF3), none */
-	endMarker?: 'arrow' | 'open-arrow' | 'double-arrow' | 'none'
+	endMarker?: 'arrow' | 'open-arrow' | 'double-arrow' | 'cross' | 'none'
 	/** Цвет — токен; по умолчанию `--rise-flow-map-edge-border` */
 	color?: string
 	/** Вид линии по умолчанию */

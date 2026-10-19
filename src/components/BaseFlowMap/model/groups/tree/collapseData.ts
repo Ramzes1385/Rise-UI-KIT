@@ -9,7 +9,7 @@ function blockNode(group: FlowGroup, count: number, texts: FlowGroupTexts): Flow
 	const hasSize = size?.width !== undefined && size.height !== undefined
 	return {
 		...{ id: group.id, kind: FLOW_COLLAPSED_KIND, label: group.label, subtitle: texts.items(count), group: group.parent },
-		props: { isCollapsedGroup: true, count, color: group.color ?? '' },
+		props: { isCollapsedGroup: true, count, color: group.color ?? '', groupKind: group.kind, groupProps: group.props ?? {} },
 		...(position ? { position } : undefined),
 		...(hasSize ? { size: { width: size.width as number, height: size.height as number } } : undefined),
 	}

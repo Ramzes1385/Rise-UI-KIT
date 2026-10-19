@@ -3398,3 +3398,8 @@ app.use(createUiKitConfig({ locale: 'en', theme: 'corporate' }))
 - **Вписывание.** `fitView` и кнопка «Вписать» на широком экране оставляют место под видимые легенду и мини-карту (справа); на узком (`isCompact`) отступов нет.
 - **Словарь** (шесть языков): `flowMap.COLLAPSED_GROUP`, `LEVEL_NAME`, `GROUP_COLLAPSE`, `GROUP_EXPAND`, `LIST_GROUPS`, `CRUMBS_ARIA`, `LEVELS_ARIA`, `LEVEL_BUTTON`; формы чисел `FLOW_ITEMS`, `FLOW_LINKS` в `plural`. Пользовательскому словарю, собранному целиком как `UiKitLocale`, они нужны (TypeScript подскажет).
 - **События.** В `BaseFlowMapEmits` 19 сигнатур (предел vue-tsc — 22): `group-toggle` объединён с событиями групп.
+
+## BaseFlowMap · контракт v6.1
+
+- **Вид связи.** `FlowEdgeKindDef.endMarker` принимает `'cross'` (крест на конце: уничтожение линии жизни UML Sequence); рисуется в карте, легенде и экспорте.
+- **Вид узла и блок свёрнутой группы.** `FlowNodeKindDef.labelPlacement: 'bottom-start'` (html-карточка: подпись внизу слева) и `subtitle?(node)`; в `props` блока — `groupKind` и `groupProps` группы. Нотация может переопределить вид `collapsed-group`; без переопределения блок прежний («N элементов»).

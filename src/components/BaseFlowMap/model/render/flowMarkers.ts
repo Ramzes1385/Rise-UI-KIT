@@ -5,6 +5,7 @@ const END: Record<string, FlowMarkerDef> = {
 	arrow: { id: 'arrow', paths: ['M0 0L10 5L0 10Z'], isFilled: true, refX: 9 },
 	'open-arrow': { id: 'open-arrow', paths: ['M1 1L9 5L1 9'], isFilled: false, refX: 9 },
 	'double-arrow': { id: 'double-arrow', paths: ['M0 1L4 5L0 9', 'M5 1L9 5L5 9'], isFilled: false, refX: 9 },
+	cross: { id: 'cross', paths: ['M1 1L9 9', 'M9 1L1 9'], isFilled: false, refX: 5 },
 }
 
 const START: Record<string, FlowMarkerDef> = {

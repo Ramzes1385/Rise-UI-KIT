@@ -79,6 +79,10 @@ export interface FlowNodeItem {
 	isCompact: boolean
 	/** Значение `tabindex` */
 	tabIndex: 0 | -1
+	/** Подзаголовок html-карточки: `kind.subtitle(node)` или `node.subtitle` */
+	subtitle: string | undefined
+	/** Подпись внизу слева (`labelPlacement: 'bottom-start'`) */
+	isLabelBottom: boolean
 	/** Имя кнопки «Развернуть <группа>»; null — узел не блок свёрнутой группы */
 	expandLabel: string | null
 }

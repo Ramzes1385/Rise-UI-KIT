@@ -3,6 +3,7 @@
 		:class="[
 			canvas.ui('node'),
 			item.isCompact && 'base-flow-map__node--tile',
+			item.isLabelBottom && 'base-flow-map__node--label-bottom',
 			item.node.appearance === 'compact' && 'base-flow-map__node--compact',
 			item.isSelected && 'base-flow-map__node--selected',
 			item.isFocused && 'base-flow-map__node--focused',
@@ -46,7 +47,7 @@
 			</span>
 			<span class="base-flow-map__node-text">
 				<span class="base-flow-map__node-label">{{ item.node.label }}</span>
-				<span v-if="item.node.subtitle && !item.isCompact" class="base-flow-map__node-subtitle">{{ item.node.subtitle }}</span>
+				<span v-if="item.subtitle && !item.isCompact" class="base-flow-map__node-subtitle">{{ item.subtitle }}</span>
 			</span>
 			<button
 				v-if="item.expandLabel"

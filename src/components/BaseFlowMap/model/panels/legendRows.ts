@@ -100,6 +100,7 @@ const SHAPE_PATHS: Record<FlowShape, string> = {
 const END_MARKS: Record<string, { path: string; isFilled: boolean }[]> = {
 	arrow: [{ path: 'M23 7l-6-3.5v7z', isFilled: true }],
 	'open-arrow': [{ path: 'M17 3.5L23 7l-6 3.5', isFilled: false }],
+	cross: [{ path: 'M18 3.5l5 7M23 3.5l-5 7', isFilled: false }],
 	'double-arrow': [
 		{ path: 'M23 7l-5-3v6z', isFilled: true },
 		{ path: 'M17 7l-5-3v6z', isFilled: true },

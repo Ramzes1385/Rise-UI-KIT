@@ -33,6 +33,8 @@ function flagsOf(node: FlowNode, kind: FlowNodeKindDef, source: FlowRenderSource
 		isExternal: node.isExternal ?? kind.isExternal ?? false,
 		isCompact: map.isCompact.value && kind.render === 'html',
 		tabIndex: source.tabIndexOf(node.id),
+		subtitle: kind.subtitle?.(node) ?? node.subtitle,
+		isLabelBottom: kind.labelPlacement === 'bottom-start',
 		expandLabel: node.kind === FLOW_COLLAPSED_KIND ? formatMessage(UI_FLOW_MAP.GROUP_EXPAND, { name: node.label }) : null,
 	}
 }

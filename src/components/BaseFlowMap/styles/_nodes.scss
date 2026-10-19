@@ -49,6 +49,16 @@
 			border-style: dashed;
 		}
 
+		&--label-bottom {
+			align-items: flex-end;
+			padding-block: sz(10px);
+			text-align: start;
+
+			.base-flow-map__node-label {
+				font-weight: var(--rise-font-weight-semibold);
+			}
+		}
+
 		&--dim {
 			opacity: 0.35;
 		}
