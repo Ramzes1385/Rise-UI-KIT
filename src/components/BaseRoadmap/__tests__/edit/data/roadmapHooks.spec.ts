@@ -143,3 +143,14 @@ describe('доска хуков: итоги вызовов', () => {
 		expect(spy).not.toHaveBeenCalled()
 	})
 })
+
+describe('доска хуков: повторная сверка', () => {
+	it('смена одного пропса не пересоздаёт подписку соседнего', async () => {
+		const keep = vi.fn()
+		const { wrapper, hooks } = mountEdit({ data: editData(), beforeChange: keep })
+		const before = hooks.list('beforeChange')[0].id
+		await wrapper.setProps({ beforeDelete: vi.fn() })
+		expect(hooks.list('beforeChange')[0].id).toBe(before)
+		expect(hooks.list()).toHaveLength(2)
+	})
+})

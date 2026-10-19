@@ -1,11 +1,16 @@
+import { formatMessage } from '@/locales/state'
 import { enableAutoUnmount } from '@vue/test-utils'
-import { screen, within } from '@testing-library/vue'
 import { mountReview } from '../fixtures/renderEditor'
+import { fireEvent, screen, within } from '@testing-library/vue'
 import type { RoadmapReviewData } from '../../../types/roadmapEdit.types'
 import { UI_COMMENT_THREAD, UI_ROADMAP, UI_ROADMAP_REVIEW } from '@/locales/messages'
 
 vi.setConfig({ testTimeout: 60_000 })
 enableAutoUnmount(afterEach)
+
+function live(): HTMLElement {
+	return within(screen.getByRole('complementary', { name: UI_ROADMAP.PANEL_LABEL })).getByRole('status')
+}
 
 const ANNA = { name: 'Анна' }
 const ME = { name: 'Роман' }
@@ -107,6 +112,7 @@ describe('«Правки»: предложения', () => {
 			expect(within(card(/Переименовать тему a/)).getByText(UI_ROADMAP_REVIEW.STATUS_ACCEPTED)).toBeInTheDocument(),
 		)
 		expect(onData).toHaveBeenCalledOnce()
+		expect(live().textContent).toMatch(new RegExp(`^${formatMessage(UI_ROADMAP_REVIEW.ANNOUNCE_ACCEPTED, { label: '' })}.+`))
 		expect(onData.mock.calls[0][0].stages[0].topics[0].title).toBe('Новая тема')
 		expect(screen.getByRole('tab', { name: `${UI_ROADMAP_REVIEW.TAB_PROPOSALS} 1` })).toBeInTheDocument()
 	})
@@ -118,6 +124,7 @@ describe('«Правки»: предложения', () => {
 			expect(within(card(/Переименовать тему a/)).getByText(UI_ROADMAP_REVIEW.STATUS_REJECTED)).toBeInTheDocument(),
 		)
 		expect(onData).not.toHaveBeenCalled()
+		expect(live().textContent).toMatch(new RegExp(`^${formatMessage(UI_ROADMAP_REVIEW.ANNOUNCE_DECLINED, { label: '' })}.+`))
 	})
 
 	it('«Принять все» принимает только готовые, устаревшие остаются', async () => {
@@ -180,6 +187,7 @@ describe('«Правки»: комментарии', () => {
 		await user.click(send)
 		await vi.waitFor(() => expect(screen.getAllByText('Нужна ссылка').length).toBeGreaterThan(0))
 		expect(input).toHaveValue('')
+		expect(live()).toHaveTextContent(UI_ROADMAP_REVIEW.ANNOUNCE_COMMENT)
 		expect(screen.getByRole('tab', { name: `${UI_ROADMAP_REVIEW.TAB_COMMENTS} 3` })).toBeInTheDocument()
 	})
 
@@ -196,10 +204,13 @@ describe('«Правки»: комментарии', () => {
 		const form = boxes[boxes.length - 1].closest('form') as HTMLElement
 		await user.click(within(form).getByRole('button', { name: UI_COMMENT_THREAD.SEND }))
 		await vi.waitFor(() => expect(screen.getAllByText('Исправлю').length).toBeGreaterThan(0))
+		expect(live()).toHaveTextContent(UI_ROADMAP_REVIEW.ANNOUNCE_REPLY)
 		await user.click(screen.getAllByRole('button', { name: UI_ROADMAP_REVIEW.RESOLVE })[0])
 		await vi.waitFor(() => expect(screen.getAllByText(UI_ROADMAP_REVIEW.THREAD_RESOLVED).length).toBe(2))
+		expect(live()).toHaveTextContent(UI_ROADMAP_REVIEW.ANNOUNCE_RESOLVED)
 		await user.click(screen.getAllByRole('button', { name: UI_ROADMAP_REVIEW.REOPEN })[0])
 		await vi.waitFor(() => expect(screen.getAllByText(UI_ROADMAP_REVIEW.THREAD_RESOLVED).length).toBe(1))
+		expect(live()).toHaveTextContent(UI_ROADMAP_REVIEW.ANNOUNCE_REOPENED)
 		await user.click(thread)
 		expect(thread).toHaveAttribute('aria-expanded', 'false')
 	})
@@ -226,5 +237,35 @@ describe('«Правки» на узком экране', () => {
 	it('на широком экране панель без компактного вида, шторка темы не открывается', async () => {
 		await mountReview({ review: review() })
 		expect(screen.getByRole('region', { name: UI_ROADMAP_REVIEW.PANEL })).not.toHaveClass('base-roadmap__review--compact')
+	})
+})
+
+describe('«Правки»: редкие случаи комментариев', () => {
+	async function openComments(props: Parameters<typeof mountReview>[0]) {
+		const mounted = await mountReview(props)
+		await mounted.user.click(screen.getByRole('tab', { name: new RegExp(UI_ROADMAP_REVIEW.TAB_COMMENTS) }))
+		return mounted
+	}
+
+	it('цепочка без комментариев показывается с пустым текстом и без времени', async () => {
+		await openComments({ review: { currentUser: ME, threads: [{ id: 't9', target: { entity: 'topic', id: 'a' }, comments: [] }] } })
+		expect(screen.getByText(UI_ROADMAP_REVIEW.THREAD_OPEN)).toBeInTheDocument()
+	})
+
+	it('«Показать» для цепочки этапа ничего не выбирает в пути', async () => {
+		const { user } = await openComments({ review: review() })
+		const buttons = await screen.findAllByRole('button', { name: UI_ROADMAP_REVIEW.SHOW_ELEMENT })
+		await user.click(buttons[buttons.length - 1])
+		expect(screen.queryByRole('textbox', { name: /Комментарий к/ })).not.toBeInTheDocument()
+	})
+
+	it('пустой комментарий отправкой формы не создаёт цепочку', async () => {
+		const { user } = await openComments({ review: review() })
+		await user.click(screen.getByRole('button', { name: /^Тема b/ }))
+		const input = screen.getByRole('textbox', { name: 'Комментарий к «Тема b»' })
+		await user.type(input, '   ')
+		await fireEvent.submit(input.closest('form') as HTMLFormElement)
+		expect(input).toHaveValue('   ')
+		expect(screen.getByRole('tab', { name: `${UI_ROADMAP_REVIEW.TAB_COMMENTS} 2` })).toBeInTheDocument()
 	})
 })

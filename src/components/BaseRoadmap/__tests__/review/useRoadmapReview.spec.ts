@@ -4,6 +4,7 @@ import { effectScope, nextTick, ref } from 'vue'
 import { UI_ROADMAP_REVIEW } from '@/locales/messages'
 import { editData } from '../edit/fixtures/editFixtures'
 import { useRoadmapReview } from '../../model/review/useRoadmapReview'
+import { nextRoadmapReviewId } from '../../model/review/format/roadmapReviewIds'
 import type { RoadmapChange, RoadmapReviewData } from '../../types/roadmapEdit.types'
 
 const rename = (id: string, title: string, previous: string): RoadmapChange => ({
@@ -204,5 +205,18 @@ describe('useRoadmapReview: комментарии', () => {
 		expect(state.activeThreadId.value).toBe('t1')
 		expect(state.unreadCount.value).toBe(0)
 		expect(emitReview).toHaveBeenCalledOnce()
+	})
+})
+
+describe('nextRoadmapReviewId и автор по умолчанию', () => {
+	it('занятый следующий номер пропускается', () => {
+		expect(nextRoadmapReviewId('p', ['p2', 'p3'])).toBe('p4')
+		expect(nextRoadmapReviewId('c', [])).toBe('c1')
+	})
+
+	it('цепочка без пользователя получает автора «Гость»', () => {
+		const { state } = setup({})
+		state.startThread({ entity: 'topic', id: 'a' }, 'Привет')
+		expect(state.threads.value[0].comments[0].author.name).toBe(UI_ROADMAP_REVIEW.AUTHOR_GUEST)
 	})
 })

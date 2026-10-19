@@ -188,3 +188,16 @@ describe('buildReplace и pickTarget', () => {
 		expect(pickTarget(roadmap([]), {})).toBeNull()
 	})
 })
+
+describe('buildMove и buildRemove: редкие случаи', () => {
+	it('тема в неизвестный этап — отказ unknown', () => {
+		expect(buildMove(editData(), 'a', { stage: 'ghost', index: 0 })).toMatchObject({ code: 'unknown' })
+	})
+
+	it('этап, чей id совпал с id темы удаляемого этапа, не получает собственной записи об удалении', () => {
+		const data = roadmap([stage('s1', [topic('s2')]), stage('s2', [topic('x')])])
+		const built = buildRemove(data, ['s1'])
+		expect(built).toMatchObject([{ entity: 'stage', id: 's1' }])
+		expect(built).toHaveLength(1)
+	})
+})
