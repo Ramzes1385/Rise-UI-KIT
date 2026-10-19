@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, within } from '@testing-library/vue'
+import { guardConsole } from '../helpers/consoleGuard.test-utils'
 import { editData, flush, liveText, mountEdit, screen, settle, waitFor } from './editHarness'
 
 async function openArrange() {
@@ -9,18 +10,9 @@ async function openArrange() {
 	return screen.findByRole('menu')
 }
 
+guardConsole()
+
 describe('раскладка из режима «Правка»', () => {
-	let warn: ReturnType<typeof vi.spyOn>
-
-	beforeEach(() => {
-		warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
-	})
-
-	afterEach(() => {
-		for (const call of warn.mock.calls) expect(String(call[0])).toContain('раскладка «layered» не найдена')
-		vi.restoreAllMocks()
-	})
-
 	it('«Раскладка»: направление, дорожки, «Применить к выделенным»; озвучка «Схема разложена»', async () => {
 		const map = await mountEdit({ data: editData() })
 		let menu = await openArrange()

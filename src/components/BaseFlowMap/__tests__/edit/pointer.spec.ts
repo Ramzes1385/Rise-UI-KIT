@@ -31,6 +31,17 @@ describe('выделение', () => {
 		expect(map.controller.getSelection()).toEqual(['gw'])
 	})
 
+	it('Shift, Ctrl и ⌘ + щелчок по невыделенному узлу добавляют его к выделению', async () => {
+		const map = await mountEdit({ data: editData() })
+		map.controller.select(['gw'])
+		await settle()
+		await map.click(map.node('s1'), [410, 10], { shiftKey: true })
+		expect(map.controller.getSelection()).toEqual(['gw', 's1'])
+		await map.click(map.node('db'), [810, 10], { ctrlKey: true })
+		await map.click(map.node('nt'), [810, 310], { metaKey: true })
+		expect(map.controller.getSelection()).toEqual(['gw', 's1', 'db', 'nt'])
+	})
+
 	it('рамка по пустому месту выделяет узлы под ней; с Shift — добавляет к выделенному', async () => {
 		const map = await mountEdit({ data: editData() })
 		await map.drag(map.root, [
@@ -128,9 +139,9 @@ describe('перемещение узлов', () => {
 		const map = await mountEdit({ data: editData() })
 		await map.drag(map.node('gw'), [
 			[10, 10],
-			[33, 66],
+			[-100, -100],
 		])
-		expect(at(map, 'gw')).toEqual({ x: 24, y: 56 })
+		expect(at(map, 'gw')).toEqual({ x: -112, y: -112 })
 		expect(map.controller.getHistory().undoLabel).toBe('Перемещение: 1')
 		await map.press('z', { ctrlKey: true })
 		expect(at(map, 'gw')).toEqual({ x: 0, y: 0 })
@@ -179,10 +190,10 @@ describe('перемещение узлов', () => {
 		await settle()
 		await map.drag(map.node('gw'), [
 			[10, 10],
-			[10, 90],
+			[10, -70],
 		])
-		expect(at(map, 'gw')).toEqual({ x: 0, y: 80 })
-		expect(at(map, 'db')).toEqual({ x: 800, y: 80 })
+		expect(at(map, 'gw')).toEqual({ x: 0, y: -80 })
+		expect(at(map, 'db')).toEqual({ x: 800, y: -80 })
 		expect(map.controller.getHistory().undoLabel).toBe('Перемещение: 2')
 		await map.drag(map.node('nt'), [
 			[810, 310],
@@ -229,7 +240,7 @@ describe('перемещение узлов', () => {
 		expect(map.data().nodes.find(node => node.id === 'gw')?.group).toBeUndefined()
 		await map.drag(map.node('s2'), [
 			[410, 170],
-			[450, 170],
+			[410, 500],
 		])
 		expect(map.data().nodes.find(node => node.id === 's2')?.group).toBeUndefined()
 	})

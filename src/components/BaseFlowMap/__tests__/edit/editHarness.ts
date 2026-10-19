@@ -1,4 +1,3 @@
-import { vi } from 'vitest'
 import { BaseApp } from '@components/BaseApp'
 import { render } from '@testing-library/vue'
 import BaseFlowMap from '../../ui/BaseFlowMap.vue'
@@ -60,17 +59,6 @@ interface MountOptions {
 	width?: number
 	withApp?: boolean
 	slots?: Record<string, unknown>
-}
-
-function standInCanvas(): { standIn: HTMLElement; restore: () => void } {
-	const standIn = document.createElement('div')
-	standIn.className = 'base-flow-map__canvas-stand-in'
-	const closest = Element.prototype.closest
-	const spy = vi.spyOn(Element.prototype, 'closest').mockImplementation(function (this: Element, selector: string) {
-		const isLayer = selector === '.base-flow-map__canvas' && this.classList?.contains('base-flow-map__edit-layer')
-		return isLayer ? standIn : closest.call(this, selector)
-	} as never)
-	return { standIn, restore: () => spy.mockRestore() }
 }
 
 function renderInApp(props: Partial<BaseFlowMapProps>) {
@@ -144,13 +132,10 @@ function createGestures(container: Element, root: HTMLElement) {
 
 export async function mountEdit(props: Partial<BaseFlowMapProps> = {}, options: MountOptions = {}) {
 	stubFrame(options.width ?? 1000, 600)
-	const { standIn, restore } = standInCanvas()
 	const base = { mode: 'edit', modes: ['view', 'edit', 'review'], ...props } as Partial<BaseFlowMapProps>
 	const { result, ready } = renderMap(base, options)
 	await settle()
-	restore()
 	const root = result.container.querySelector('.base-flow-map__viewport') as HTMLElement
-	root.appendChild(standIn)
 	const controller = ready() as FlowMapController
 	controller.setViewport({ x: 100, y: 100, zoom: 1 })
 	await settle()

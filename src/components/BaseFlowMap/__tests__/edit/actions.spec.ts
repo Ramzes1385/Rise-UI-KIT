@@ -103,6 +103,7 @@ describe('удаление', () => {
 		await select(map, 'gw')
 		await map.press('Delete')
 		expect(ids(map)).toContain('gw')
+		expect(map.controller.getSelection()).toEqual(['gw'])
 		expect(notices().textContent).toMatch(/^Нельзя: /)
 	})
 

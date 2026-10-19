@@ -224,7 +224,7 @@ describe('слой правки и поля напрямую', () => {
 		const { context } = await map.probe(scope => scope)
 		context.env.state.ghosts.value = [{ id: 'нет', rect: { x: 0, y: 0, width: 10, height: 10 } }]
 		expect(layer.ghosts.value[0].label).toBe('нет')
-		layer.attach(null)
+		layer.anchor.value = null
 		expect(layer.host.value).toBeNull()
 	})
 
@@ -288,12 +288,10 @@ describe('слой правки и поля напрямую', () => {
 	})
 
 	it('вкладка «Хуки» без привязок показывает «Обработчиков нет»', async () => {
-		const map = await mountEdit({ data: editData() })
-		const bindings = map.controller.getBindings
-		map.controller.getBindings = () => []
+		await mountEdit({ data: editData() })
 		await fireEvent.click(screen.getByRole('tab', { name: 'Хуки' }))
 		expect(await screen.findByText('Обработчиков нет')).toBeInTheDocument()
-		map.controller.getBindings = bindings
+		expect(screen.queryByText(/update:suggestions|flowEditInternal|flowReviewInternal/)).not.toBeInTheDocument()
 	})
 
 	it('меню раскладки в нотации без направления показывает «Слева направо»', async () => {

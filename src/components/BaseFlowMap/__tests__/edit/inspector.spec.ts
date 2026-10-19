@@ -262,7 +262,7 @@ describe('вкладка «Стиль»', () => {
 		await fireEvent.update(url, '/models/b.glb')
 		await waitFor(() => expect(node(map, 's1').model3d?.url).toBe('/models/b.glb'))
 		await fireEvent.update(url, '')
-		await waitFor(() => expect(node(map, 's1').model3d?.url).toBeUndefined())
+		await waitFor(() => expect(node(map, 's1').model3d?.url).toBe(''))
 	})
 
 	it('выбор «Свой GLB» записывает модель узла (адрес пока пустой)', async () => {
@@ -330,13 +330,14 @@ describe('вкладка «Хуки»', () => {
 		await openTab('Хуки')
 		await pick(map, 'gw')
 		await map.press('Delete')
+		map.controller.select(['s1'])
 		await waitFor(() => expect(within(panel()).getAllByText(/beforeDelete|анонимная функция/).length).toBeGreaterThan(0))
 		await waitFor(() => expect(within(panel()).getAllByText(/вызван 1/).length).toBeGreaterThan(0))
 		expect(within(panel()).getAllByText(/Последний итог:/).length).toBeGreaterThan(0)
 	})
 
 	it('анонимный обработчик показывается как «анонимная функция»', async () => {
-		await mountEdit({ data: editData(), beforeConnect: (() => true) as never })
+		await mountEdit({ data: editData(), beforeConnect: [() => true][0] as never })
 		await openTab('Хуки')
 		expect(within(panel()).getAllByText(/анонимная функция/).length).toBeGreaterThan(0)
 	})

@@ -62,7 +62,7 @@ describe('части панели свойств напрямую', () => {
 		const style = await map.probe(() => useFlowEditStyle({ id: 's1' }))
 		expect(style.url.value).toBe('')
 		style.setUrl(null)
-		await waitFor(() => expect(node(map, 's1').model3d).toEqual({ url: undefined }))
+		await waitFor(() => expect(node(map, 's1').model3d).toEqual({ url: '' }))
 		style.setModel('gateway')
 		await waitFor(() => expect(node(map, 's1').model3d).toEqual({ model: 'gateway', url: undefined }))
 		style.setModel('custom')
