@@ -1,4 +1,5 @@
 import { UI_ROADMAP_EDIT } from '@/locales/messages'
+import type { RoadmapTopic } from '../../../types/roadmapData.types'
 import { editData, roadmap, stage, topic } from '../fixtures/editFixtures'
 import { applyRoadmapChanges } from '../../../model/edit/changes/roadmapChanges'
 import { buildAlternative } from '../../../model/edit/changes/roadmapAlternative'
@@ -58,7 +59,7 @@ describe('buildTemplate', () => {
 		const taken = buildTemplate(data, {
 			id: 't',
 			title: 'T',
-			stage: { id: 's1', title: 'Эт', topics: [{ title: 'без id' }, { id: 'a', title: 'A' }] },
+			stage: { id: 's1', title: 'Эт', topics: [{ title: 'без id' } as RoadmapTopic, { id: 'a', title: 'A' }] },
 		})
 		expect(taken).toMatchObject([{ value: { id: 'stage-1', topics: [{ id: 'topic-1' }, { id: 'topic-2' }] } }])
 	})

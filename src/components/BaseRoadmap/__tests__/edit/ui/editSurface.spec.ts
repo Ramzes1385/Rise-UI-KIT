@@ -13,7 +13,9 @@ const names = () =>
 describe('режимы «Просмотр» / «Правка» / «Правки»', () => {
 	it('переключатель в шапке меняет режим и сообщает наружу', async () => {
 		const onMode = vi.fn()
-		const { user } = await renderRoadmap({ props: { data: editData(), modes: ['view', 'edit', 'review'], 'onUpdate:mode': onMode } })
+		const { user } = await renderRoadmap({
+			props: { data: editData(), modes: ['view', 'edit', 'review'], 'onUpdate:mode': onMode } as never,
+		})
 		expect(screen.queryByLabelText(UI_ROADMAP_EDIT.AREA_LABEL)).not.toBeInTheDocument()
 		await user.click(screen.getByRole('radio', { name: UI_ROADMAP.MODE_EDIT }))
 		expect(onMode).toHaveBeenCalledWith('edit')

@@ -1,4 +1,5 @@
 import { UI_ROADMAP_EDIT } from '@/locales/messages'
+import type { RoadmapTopic } from '../../../types/roadmapData.types'
 import { importRoadmap } from '../../../model/edit/data/roadmapImport'
 import { editData, roadmap, stage, topic } from '../fixtures/editFixtures'
 import {
@@ -40,7 +41,10 @@ describe('id шаблонов', () => {
 
 	it('этап из шаблона получает id и id для каждой темы', () => {
 		const taken = new Set(['stage-1'])
-		const result = stageFromTemplate({ title: 'E', kind: 'optional', topics: [{ title: 'A' }, { id: 'x', title: 'B' }] }, taken)
+		const result = stageFromTemplate(
+			{ title: 'E', kind: 'optional', topics: [{ title: 'A' } as RoadmapTopic, { id: 'x', title: 'B' }] },
+			taken,
+		)
 		expect(result).toMatchObject({ id: 'stage-2', kind: 'optional', topics: [{ id: 'topic-1' }, { id: 'x' }] })
 	})
 })

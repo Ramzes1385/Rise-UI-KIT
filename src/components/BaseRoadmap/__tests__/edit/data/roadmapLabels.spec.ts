@@ -72,10 +72,10 @@ describe('stageMenu', () => {
 
 	it('пункты вызывают нужные действия', () => {
 		const { flat, edit, editor, rename } = build()
-		flat[0].onSelect?.()
-		flat[1].onSelect?.()
-		flat[2].onSelect?.()
-		flat[3].onSelect?.()
+		flat[0].onSelect?.(undefined as never)
+		flat[1].onSelect?.(undefined as never)
+		flat[2].onSelect?.(undefined as never)
+		flat[3].onSelect?.(undefined as never)
 		expect(rename).toHaveBeenCalledOnce()
 		expect(editor.duplicate).toHaveBeenCalledWith('s1')
 		expect(edit.update).toHaveBeenCalledWith('s1', { kind: 'optional' })
@@ -85,7 +85,7 @@ describe('stageMenu', () => {
 	it('у необязательного этапа пункт возвращает обязательность', () => {
 		const { flat, edit } = build(stage('s1', [], { kind: 'optional' }))
 		expect(flat[2].label).toBe(UI_ROADMAP_EDIT.MENU_REQUIRED)
-		flat[2].onSelect?.()
+		flat[2].onSelect?.(undefined as never)
 		expect(edit.update).toHaveBeenCalledWith('s1', { kind: undefined })
 	})
 })
