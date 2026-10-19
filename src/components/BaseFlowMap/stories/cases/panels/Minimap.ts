@@ -37,11 +37,11 @@ export const Minimap: StoryObj<typeof meta> = {
 	}),
 	play: async ({ canvas, canvasElement, userEvent }) => {
 		if (await isCompact(canvasElement)) {
-			await expect(canvas.queryByRole('group', { name: 'Мини-карта' })).toBeNull()
+			await expect(canvas.queryByRole('application', { name: 'Мини-карта' })).toBeNull()
 			await expect(canvas.getByRole('button', { name: 'Увеличить' })).toBeVisible()
 			return
 		}
-		const minimap = canvas.getByRole('group', { name: 'Мини-карта' })
+		const minimap = canvas.getByRole('application', { name: 'Мини-карта' })
 		await expect(minimap).toHaveAccessibleDescription('Стрелки сдвигают вид, Home вписывает всё содержимое')
 		await waitFor(() => expect(widthOf(minimap)).toBeGreaterThan(0))
 		const fitWidth = widthOf(minimap)
