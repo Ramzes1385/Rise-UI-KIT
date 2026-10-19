@@ -73,5 +73,9 @@ export const jaRoadmap = {
 		UNKNOWN_REQUIRE: 'BaseRoadmap：「{id}」が存在しない「{target}」を必要としています。この関連を無視しました',
 		NEGATIVE_HOURS: 'BaseRoadmap：トピック「{id}」の hours = {value} が 0 未満のため、見積りを無視しました',
 		UNKNOWN_KIND: 'BaseRoadmap：{path} = {value} を無視しました。{expected} を指定してください',
+		MODE_LABEL: 'モード',
+		MODE_VIEW: '表示',
+		MODE_EDIT: '編集',
+		MODE_REVIEW: 'レビュー',
 	},
 }

@@ -1,5 +1,5 @@
-import type { RoadmapProposal } from '../../types/roadmapEdit.types'
-import type { RoadmapSuggestion } from '../../types/internal/roadmapReview.types'
+import type { RoadmapProposal } from '../../../types/roadmapEdit.types'
+import type { RoadmapSuggestion } from '../../../types/internal/roadmapReview.types'
 
 export function toSuggestion(proposal: RoadmapProposal): RoadmapSuggestion {
 	const status: RoadmapSuggestion['status'] = proposal.status === 'rejected' ? 'declined' : proposal.status

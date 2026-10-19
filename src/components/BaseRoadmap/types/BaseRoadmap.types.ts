@@ -1,6 +1,6 @@
 import type { UiProp } from '@composables/base/useUi'
-import type { RoadmapChange, RoadmapTemplate } from './roadmapEdit.types'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
+import type { RoadmapChange, RoadmapProposal, RoadmapReviewData, RoadmapTemplate } from './roadmapEdit.types'
 import type {
 	RoadmapData,
 	RoadmapMaterial,
@@ -97,6 +97,8 @@ export interface BaseRoadmapProps extends BaseComponentProps<RoadmapVariant, Bas
 	mode?: RoadmapMode
 	/** Режимы в переключателе шапки; пусто — переключателя нет */
 	modes?: RoadmapMode[]
+	/** «Правки» (`v-model:review`): предложения, цепочки комментариев, текущий пользователь */
+	review?: RoadmapReviewData
 	/** Шаблоны палитры «Правки» после встроенных */
 	templates?: RoadmapTemplate[]
 	/** Когда приложение сохранило черновик — подпись «Черновик сохранён 00:52» в подвале «Правки» */
@@ -121,6 +123,7 @@ export interface BaseRoadmapEmits {
 	(event: 'update:selected', value: string | null): void
 	(event: 'update:filter', value: RoadmapFilter): void
 	(event: 'update:mode', value: RoadmapMode): void
+	(event: 'update:review', value: RoadmapReviewData): void
 	(event: 'select', value: RoadmapTopic | null): void
 	(event: 'status-change', value: RoadmapStatusChange): void
 	(event: 'topic-complete', value: { topic: RoadmapTopic; progress: RoadmapProgress }): void
@@ -203,5 +206,6 @@ export interface BaseRoadmapExpose {
 	undo: () => boolean
 	redo: () => boolean
 	exportJson: () => string
+	propose: (changes: RoadmapChange[], label?: string) => Promise<RoadmapProposal | null>
 	importJson: (json: string | RoadmapData) => Promise<boolean>
 }

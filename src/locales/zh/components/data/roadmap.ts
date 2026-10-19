@@ -73,5 +73,9 @@ export const zhRoadmap = {
 		UNKNOWN_REQUIRE: 'BaseRoadmap：「{id}」依赖不存在的「{target}」，已忽略该关联',
 		NEGATIVE_HOURS: 'BaseRoadmap：主题「{id}」的 hours = {value} 小于零，已忽略该估计',
 		UNKNOWN_KIND: 'BaseRoadmap：{path} = {value} 已忽略，应为 {expected}',
+		MODE_LABEL: '模式',
+		MODE_VIEW: '查看',
+		MODE_EDIT: '编辑',
+		MODE_REVIEW: '审阅',
 	},
 }

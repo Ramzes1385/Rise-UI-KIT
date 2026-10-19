@@ -32,7 +32,7 @@
 					:ui="{ root: ui('header') }"
 					:model-value="currentMode"
 					:options="modeOptions"
-					:aria-label="UI_ROADMAP_EDIT.MODE_LABEL"
+					:aria-label="UI_ROADMAP.MODE_LABEL"
 					@update:model-value="changeMode" />
 			</header>
 			<template v-if="isEditing">
@@ -43,7 +43,7 @@
 					:is-disabled="isDisabled"
 					:draft-saved-at="draftSavedAt"
 					@publish="publish" />
-				<div v-else class="base-roadmap__loading" role="group" :aria-label="UI_ROADMAP_EDIT.LOADING">
+				<div v-else class="base-roadmap__loading" role="group" :aria-label="UI_ROADMAP.LOADING">
 					<BaseSkeleton v-for="row in 3" :key="row" shape="rect" height="40" />
 				</div>
 			</template>
@@ -85,7 +85,17 @@
 						</component>
 						<slot v-else name="empty"><BaseEmpty :title="UI_ROADMAP.EMPTY" /></slot>
 					</div>
-					<aside v-if="isSidePanel && selected" class="base-roadmap__side" :aria-label="UI_ROADMAP.PANEL_LABEL">
+					<aside v-if="isReviewing" class="base-roadmap__side" :aria-label="UI_ROADMAP.PANEL_LABEL">
+						<RoadmapReviewPanel
+							v-if="reviewState"
+							:review="reviewState"
+							:data="data"
+							:target="reviewTarget"
+							:is-compact="isNarrow"
+							@show="showReviewTarget" />
+						<BaseSkeleton v-else shape="rect" height="120" />
+					</aside>
+					<aside v-else-if="isSidePanel && selected" class="base-roadmap__side" :aria-label="UI_ROADMAP.PANEL_LABEL">
 						<RoadmapTopicPanel
 							:view="selected.view"
 							:stage="selected.stage"
@@ -114,7 +124,7 @@
 				</div>
 				<BaseDrawer
 					direction="bottom"
-					:is-open="isSheetOpen"
+					:is-open="isSheetOpen && !isReviewing"
 					:title="selected?.view.topic.title"
 					:aria-label="UI_ROADMAP.PANEL_LABEL"
 					@update:is-open="onSheetUpdate">
@@ -147,6 +157,7 @@
 <script setup lang="ts">
 import '../styles/BaseRoadmap.style.scss'
 import { defineAsyncComponent } from 'vue'
+import { UI_ROADMAP } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseEmpty } from '@components/BaseEmpty'
 import { BaseButton } from '@components/BaseButton'
@@ -158,9 +169,9 @@ import { useBaseRoadmap } from '../model/useBaseRoadmap'
 import { BaseSegmented } from '@components/BaseSegmented'
 import { kitDefaults } from '@composables/base/useDefaults'
 import RoadmapTopicPanel from './parts/RoadmapTopicPanel.vue'
-import { UI_ROADMAP, UI_ROADMAP_EDIT } from '@/locales/messages'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 const RoadmapEditor = defineAsyncComponent(() => import('./edit/RoadmapEditor.vue'))
+const RoadmapReviewPanel = defineAsyncComponent(() => import('./review/RoadmapReviewPanel.vue'))
 import type { BaseRoadmapEmits, BaseRoadmapProps, BaseRoadmapSlots } from '../types/BaseRoadmap.types'
 
 const props = withDefaults(
@@ -225,6 +236,10 @@ const {
 	expose,
 	currentMode,
 	isEditing,
+	isReviewing,
+	reviewState,
+	reviewTarget,
+	showReviewTarget,
 	edit,
 	hasModes,
 	modeOptions,

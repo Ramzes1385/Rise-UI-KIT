@@ -1,6 +1,14 @@
 export { ROADMAP_FILTERS, ROADMAP_LAYOUTS, ROADMAP_MODES, ROADMAP_PARTS, ROADMAP_VARIANTS } from './types/BaseRoadmap.types'
-export { ROADMAP_ENTITIES } from './types/roadmapEdit.types'
-export type { RoadmapChange, RoadmapEntity, RoadmapTemplate } from './types/roadmapEdit.types'
+export { ROADMAP_ENTITIES, ROADMAP_PROPOSAL_STATUSES } from './types/roadmapEdit.types'
+export type {
+	RoadmapChange,
+	RoadmapCommentThread,
+	RoadmapEntity,
+	RoadmapProposal,
+	RoadmapProposalStatus,
+	RoadmapReviewData,
+	RoadmapTemplate,
+} from './types/roadmapEdit.types'
 export type {
 	BaseRoadmapEmits,
 	BaseRoadmapExpose,

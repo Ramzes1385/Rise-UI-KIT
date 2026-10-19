@@ -73,5 +73,9 @@ export const enRoadmap = {
 		UNKNOWN_REQUIRE: 'BaseRoadmap: «{id}» requires a missing «{target}» — link ignored',
 		NEGATIVE_HOURS: 'BaseRoadmap: topic «{id}» has hours = {value} below zero — estimate ignored',
 		UNKNOWN_KIND: 'BaseRoadmap: {path} = {value} is ignored — expected {expected}',
+		MODE_LABEL: 'Mode',
+		MODE_VIEW: 'View',
+		MODE_EDIT: 'Edit',
+		MODE_REVIEW: 'Review',
 	},
 }

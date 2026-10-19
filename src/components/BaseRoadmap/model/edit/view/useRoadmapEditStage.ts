@@ -1,8 +1,9 @@
 import { computed, nextTick } from 'vue'
 import { UI_PLURAL } from '@/locales/messages'
+import { UI_ROADMAP } from '@/locales/messages'
 import { stageMenu } from '../data/roadmapStageMenu'
+import { UI_ROADMAP_EDIT } from '@/locales/messages'
 import { useRoadmapEditorContext } from './roadmapEditorContext'
-import { UI_ROADMAP, UI_ROADMAP_EDIT } from '@/locales/messages'
 import { formatMessage, formatNumber, pluralize } from '@/locales/state'
 import type { RoadmapEditStageProps } from '../../../types/internal/roadmapEditView.types'
 

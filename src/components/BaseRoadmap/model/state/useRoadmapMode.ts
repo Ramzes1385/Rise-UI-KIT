@@ -8,6 +8,7 @@ export function useRoadmapMode(props: BaseRoadmapProps, emit: BaseRoadmapEmits):
 	return {
 		currentMode: mode,
 		isEditing: computed(() => mode.value === 'edit'),
+		isReviewing: computed(() => mode.value === 'review'),
 		setMode(next: RoadmapMode): void {
 			if (next === mode.value) return
 			mode.value = next

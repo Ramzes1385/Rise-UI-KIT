@@ -1,5 +1,6 @@
 import type { ComputedRef, Ref, ShallowRef } from 'vue'
 import type { UI_ROADMAP_EDIT } from '@/locales/messages'
+import type { RoadmapReviewState } from './roadmapReview.types'
 import type { RoadmapChange, RoadmapTemplate } from '../roadmapEdit.types'
 import type { RoadmapData, RoadmapStage, RoadmapTopic } from '../roadmapData.types'
 import type { CommandHistory, HookRunner } from '@composables/editor/useCommandHistory/types/useCommandHistory.types'
@@ -79,6 +80,8 @@ export interface RoadmapEditController extends RoadmapEditExpose, RoadmapEditSta
 	dismissRejection: () => void
 	/** Выполнить команду (с хуками и историей) */
 	run: (command: RoadmapCommand) => Promise<boolean>
+	/** Применить набор изменений одним шагом истории с подписью (принятое предложение «Правок») */
+	applyChanges: (changes: RoadmapChange[], label: string) => Promise<boolean>
 	templates: ComputedRef<RoadmapTemplate[]>
 	/** Выбор этапа или темы по id */
 	find: (id: string) => RoadmapFound | null
@@ -88,6 +91,7 @@ export interface RoadmapEditController extends RoadmapEditExpose, RoadmapEditSta
 export interface RoadmapModeState {
 	currentMode: ShallowRef<RoadmapMode>
 	isEditing: ComputedRef<boolean>
+	isReviewing: ComputedRef<boolean>
 	setMode: (mode: RoadmapMode) => void
 }
 
@@ -98,6 +102,7 @@ export interface RoadmapEditLoader {
 	methods: Omit<
 		BaseRoadmapExpose,
 		| 'on'
+		| 'propose'
 		| 'setTopicStatus'
 		| 'toggleSubtopic'
 		| 'expandStage'
@@ -203,3 +208,10 @@ export interface RoadmapEditorKeysContext {
 
 /** Состояние поверхности «Правки» (то, что возвращает `useRoadmapEditor`) */
 export type RoadmapEditorState = ReturnType<typeof import('../../model/edit/editor/useRoadmapEditor').useRoadmapEditor>
+
+/** Загрузчик «Правок»: код и состояние приходят отдельным чанком при первом обращении */
+export interface RoadmapReviewLoader {
+	state: ShallowRef<RoadmapReviewState | null>
+	load: () => Promise<RoadmapReviewState>
+	propose: BaseRoadmapExpose['propose']
+}

@@ -1,6 +1,6 @@
 import { UI_ROADMAP_REVIEW } from '@/locales/messages'
 import { currentLocale, formatMessage } from '@/locales/state'
-import type { RoadmapKindStatus as KindStatus } from '../../types/internal/roadmapReview.types'
+import type { RoadmapKindStatus as KindStatus } from '../../../types/internal/roadmapReview.types'
 import type { ReviewCount, ReviewSuggestionKind } from '@components/BaseFlowMap/types/internal/review/reviewCore.types'
 
 const PLURAL_ORDER: Record<string, number> = { one: 0, few: 1, many: 2, other: 3 }

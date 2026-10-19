@@ -54,13 +54,8 @@ export const ruRoadmapEdit = {
 	REJECT_CLOSE: 'Закрыть сообщение',
 	CYCLE_TITLE: 'Нельзя: получится круг зависимостей',
 	/** Шапка, палитра и поверхность */
-	MODE_LABEL: 'Режим',
-	MODE_VIEW: 'Просмотр',
-	MODE_EDIT: 'Правка',
-	MODE_REVIEW: 'Правки',
 	MODE_CHIP: 'Режим правки',
 	MODE_CHIP_HINT: '· изменения сохраняются в черновик',
-	LOADING: 'Загрузка правки',
 	AREA_LABEL: 'Путь обучения в режиме правки',
 	PALETTE_LABEL: 'Инструменты правки',
 	TOOL_LABEL: 'Инструмент',

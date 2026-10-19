@@ -1,7 +1,8 @@
 import { computed } from 'vue'
+import { UI_ROADMAP } from '@/locales/messages'
+import { UI_ROADMAP_EDIT } from '@/locales/messages'
 import { formatMessage, formatNumber } from '@/locales/state'
 import { useRoadmapEditorContext } from './roadmapEditorContext'
-import { UI_ROADMAP, UI_ROADMAP_EDIT } from '@/locales/messages'
 import type { RoadmapEditTopicProps } from '../../../types/internal/roadmapEditView.types'
 
 export function useRoadmapEditTopic(props: RoadmapEditTopicProps) {

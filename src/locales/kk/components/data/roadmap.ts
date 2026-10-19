@@ -73,5 +73,9 @@ export const kkRoadmap = {
 		UNKNOWN_REQUIRE: 'BaseRoadmap: «{id}» жоқ «{target}» элементін талап етеді — байланыс ескерілмейді',
 		NEGATIVE_HOURS: 'BaseRoadmap: «{id}» тақырыбының hours = {value} мәні нөлден кіші — бағалау ескерілмейді',
 		UNKNOWN_KIND: 'BaseRoadmap: {path} = {value} ескерілмейді — {expected} күтіледі',
+		MODE_LABEL: 'Режим',
+		MODE_VIEW: 'Қарау',
+		MODE_EDIT: 'Түзету',
+		MODE_REVIEW: 'Тексеру',
 	},
 }

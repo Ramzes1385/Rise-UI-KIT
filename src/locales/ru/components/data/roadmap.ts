@@ -89,4 +89,8 @@ export const ruRoadmap = {
 	UNKNOWN_REQUIRE: 'BaseRoadmap: «{id}» требует несуществующий «{target}» — связь не учтена',
 	NEGATIVE_HOURS: 'BaseRoadmap: у темы «{id}» hours = {value} меньше нуля — оценка не учтена',
 	UNKNOWN_KIND: 'BaseRoadmap: {path} = {value} не учтено — ожидается {expected}',
+	MODE_LABEL: 'Режим',
+	MODE_VIEW: 'Просмотр',
+	MODE_EDIT: 'Правка',
+	MODE_REVIEW: 'Правки',
 }

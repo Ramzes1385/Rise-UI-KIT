@@ -73,5 +73,9 @@ export const uzRoadmap = {
 		UNKNOWN_REQUIRE: 'BaseRoadmap: «{id}» mavjud boʻlmagan «{target}» ni talab qiladi — bogʻlanish hisobga olinmadi',
 		NEGATIVE_HOURS: 'BaseRoadmap: «{id}» mavzusida hours = {value} noldan kichik — baho hisobga olinmadi',
 		UNKNOWN_KIND: 'BaseRoadmap: {path} = {value} hisobga olinmadi — {expected} kutiladi',
+		MODE_LABEL: 'Rejim',
+		MODE_VIEW: 'Koʻrish',
+		MODE_EDIT: 'Tahrirlash',
+		MODE_REVIEW: 'Tekshirish',
 	},
 }

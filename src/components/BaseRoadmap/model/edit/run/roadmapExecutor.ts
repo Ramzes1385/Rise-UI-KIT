@@ -1,6 +1,7 @@
 import { warn } from '@/locales/warn'
+import { UI_ROADMAP } from '@/locales/messages'
+import { UI_ROADMAP_EDIT } from '@/locales/messages'
 import { isRejection } from '../changes/roadmapCommands'
-import { UI_ROADMAP, UI_ROADMAP_EDIT } from '@/locales/messages'
 import { isDevelopmentBuild } from '@utils/seo/structuredDataUtils'
 import type { RoadmapChange } from '../../../types/roadmapEdit.types'
 import type { RoadmapStage, RoadmapTopic } from '../../../types/roadmapData.types'

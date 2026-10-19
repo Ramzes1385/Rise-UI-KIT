@@ -1,13 +1,13 @@
 import { computed } from 'vue'
-import { UI_ROADMAP_EDIT } from '@/locales/messages'
+import { UI_ROADMAP } from '@/locales/messages'
 import type { SegmentedOption } from '@components/BaseSegmented'
 import type { BaseRoadmapEmits, RoadmapMode } from '../../../types/BaseRoadmap.types'
 import type { RoadmapModel, RoadmapProps } from '../../../types/internal/roadmapView.types'
 
 const MODE_TEXT: Record<RoadmapMode, () => string> = {
-	view: () => UI_ROADMAP_EDIT.MODE_VIEW,
-	edit: () => UI_ROADMAP_EDIT.MODE_EDIT,
-	review: () => UI_ROADMAP_EDIT.MODE_REVIEW,
+	view: () => UI_ROADMAP.MODE_VIEW,
+	edit: () => UI_ROADMAP.MODE_EDIT,
+	review: () => UI_ROADMAP.MODE_REVIEW,
 }
 
 export function useRoadmapModes(props: RoadmapProps, emit: BaseRoadmapEmits, model: RoadmapModel) {

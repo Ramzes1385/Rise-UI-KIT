@@ -50,6 +50,7 @@ export function createRoadmapEdit(context: RoadmapEditContext): RoadmapEditContr
 		announce: text => announceRoadmap(state, text),
 		dismissRejection: () => (state.rejection.value = null),
 		run,
+		applyChanges: (changes, label) => run({ name: 'review', label, build: () => changes }),
 		templates: computed(() => mergeRoadmapTemplates(context.props.templates)),
 		find: id => findRoadmapEntity(context.data.value, id),
 		undo: stepper(state, 'undo'),

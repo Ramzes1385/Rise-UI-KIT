@@ -1,11 +1,11 @@
 import { computed, ref } from 'vue'
 import { formatMessage } from '@/locales/state'
-import { proposalTitle } from '../roadmapReviewLabels'
 import { UI_ROADMAP_REVIEW } from '@/locales/messages'
-import { setProposalStatus, toSuggestion } from '../roadmapProposals'
+import { proposalTitle } from '../format/roadmapReviewLabels'
+import { setProposalStatus, toSuggestion } from '../format/roadmapProposals'
 import { nextReviewId } from '@components/BaseFlowMap/model/review/reviewComments'
 import type { RoadmapChange, RoadmapProposal } from '../../../types/roadmapEdit.types'
-import { isRoadmapProposalStale, roadmapReviewAdapter } from '../roadmapReviewAdapter'
+import { isRoadmapProposalStale, roadmapReviewAdapter } from '../format/roadmapReviewAdapter'
 import { createSuggestionView, filterSuggestions, sortSuggestions } from '@components/BaseFlowMap/model/review/reviewSuggestions'
 import type {
 	RoadmapProposalView,
