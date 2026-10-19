@@ -10,7 +10,7 @@ export function useRoadmapEditorActions(edit: RoadmapEditController, inspector: 
 		const found = edit.find(id)
 		if (!found) return
 		if (found.topic || found.stage.topics.length === 0) {
-			void edit.remove([id]).then(() => id === inspector.targetId.value && inspector.select(null))
+			void edit.remove([id]).then(isDone => isDone && id === inspector.targetId.value && inspector.select(null))
 			return
 		}
 		pending.value = { kind: 'stage', id, title: found.stage.title, topics: found.stage.topics.length }

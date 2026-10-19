@@ -21,6 +21,7 @@ export function useRoadmapReviewLoader(
 					apply: (changes, label) => edit.applyChanges(changes, label),
 					announce: edit.announce,
 				})
+			if (scope && !scope.active) return state.value as RoadmapReviewState
 			state.value = scope?.run(create) ?? create()
 			return state.value
 		})

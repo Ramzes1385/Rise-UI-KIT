@@ -62,7 +62,13 @@
 		}
 
 		&--done {
-			opacity: 0.7;
+			background-color: var(--rise-bg-muted);
+			border-color: var(--rise-border);
+
+			.base-roadmap__review-card-author,
+			.base-roadmap__review-card-time {
+				color: var(--rise-text-muted);
+			}
 		}
 	}
 

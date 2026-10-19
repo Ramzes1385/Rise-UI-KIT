@@ -8,6 +8,7 @@ export function useRoadmapEditLoader(context: RoadmapEditContext, isEditing: Com
 	const scope = getCurrentScope()
 	function load(): Promise<RoadmapEditController> {
 		pending ??= import('./useRoadmapEdit').then(({ createRoadmapEdit }) => {
+			if (scope && !scope.active) return controller.value as RoadmapEditController
 			controller.value = scope?.run(() => createRoadmapEdit(context)) ?? createRoadmapEdit(context)
 			return controller.value
 		})

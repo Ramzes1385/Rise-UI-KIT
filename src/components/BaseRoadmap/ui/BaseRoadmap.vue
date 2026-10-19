@@ -86,6 +86,7 @@
 						<slot v-else name="empty"><BaseEmpty :title="UI_ROADMAP.EMPTY" /></slot>
 					</div>
 					<aside v-if="isReviewing" class="base-roadmap__side" :aria-label="UI_ROADMAP.PANEL_LABEL">
+						<div class="base-roadmap__sr" role="status" aria-live="polite" aria-atomic="true">{{ edit?.liveText.value }}</div>
 						<RoadmapReviewPanel
 							v-if="reviewState"
 							:review="reviewState"

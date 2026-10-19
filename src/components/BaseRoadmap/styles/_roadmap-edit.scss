@@ -461,7 +461,13 @@
 		border-radius: sz(var(--rise-radius-sm));
 
 		&.is-off {
-			opacity: 0.6;
+			background-color: var(--rise-bg-muted);
+			border-style: dashed;
+
+			.base-roadmap__hook-event,
+			.base-roadmap__hook-fn {
+				color: var(--rise-text-muted);
+			}
 		}
 	}
 
