@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
+import { MODEL3D_LIBRARY } from '../../../models/library'
 import { countTriangles } from '../../../models/library/parts'
 import { boxModel, makeScope, makeTarget } from '../modelsTestHelpers'
 import { createModelContext } from '../../../models/runtime/modelContext'
@@ -27,7 +28,8 @@ describe('buildPreset', () => {
 
 	it('id таблицы, которого нет в библиотеке, — запасной server без warn', () => {
 		const warn = vi.fn()
-		const scope = makeScope({ warn })
+		// после волны 3а в библиотеке есть все id таблицы, поэтому её неполный вариант задаём явно
+		const scope = { ...makeScope({ warn }), library: { server: MODEL3D_LIBRARY.server } }
 		const instance = buildPreset(scope, makeTarget('a'), 'laptop')
 		expect(instance.anchor).toEqual(new Vector3(0, 0.99, 0))
 		expect(warn).not.toHaveBeenCalled()
@@ -39,6 +41,16 @@ describe('buildPreset', () => {
 		expect(warn).toHaveBeenCalledTimes(1)
 		expect(warn.mock.calls[0][0]).toContain('ghost')
 		expect(countTriangles(instance.object)).toBeGreaterThan(0)
+	})
+
+	it('id из прототипа объекта — warn и server', () => {
+		const warn = vi.fn()
+		;['constructor', 'toString'].forEach(id => {
+			const instance = buildPreset(makeScope({ warn }), makeTarget('a'), id)
+			expect(instance.anchor).toEqual(new Vector3(0, 0.99, 0))
+		})
+		expect(warn).toHaveBeenCalledTimes(2)
+		expect(warn.mock.calls[1][0]).toContain('toString')
 	})
 
 	it('без warn в опциях неизвестный id не падает', () => {

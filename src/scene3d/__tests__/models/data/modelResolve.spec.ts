@@ -67,6 +67,15 @@ describe('порядок выбора модели (6.2)', () => {
 		expect(result).toMatchObject({ key: 'cloud', source: 'kind' })
 	})
 
+	it('имена из прототипа: kindFallback — server; model3d.model — warn и server', () => {
+		const { resolve, warn } = setup()
+		;['constructor', 'toString', '__proto__'].forEach(name => {
+			expect(resolve({ kindModel: 'auto', kindFallback: name })).toMatchObject({ key: 'server', source: 'fallback' })
+			expect(resolve({ model3d: { model: name }, kindModel: 'auto' })).toMatchObject({ key: 'server', source: 'fallback' })
+		})
+		expect(warn).toHaveBeenCalledTimes(3)
+	})
+
 	it('пустой ключ в model3d пропускается без warn', () => {
 		const { resolve, warn } = setup()
 		expect(resolve({ model3d: { model: '' }, kindModel: 'db' }).source).toBe('kind')

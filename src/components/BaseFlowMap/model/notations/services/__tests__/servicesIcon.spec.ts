@@ -18,6 +18,11 @@ describe('servicesIcon', () => {
 		expect(servicesIcon({ label: 'HTML', kind: 'store' })).toBe(MODEL3D_PRESETS.db.icon)
 	})
 
+	it('вид с именем из прототипа объекта не падает: значок server', () => {
+		expect(servicesIcon({ kind: 'constructor' })).toBe(MODEL3D_PRESETS.server.icon)
+		expect(servicesIcon({ kind: 'toString' })).toBe(MODEL3D_PRESETS.server.icon)
+	})
+
 	it('нет слов — значок вида', () => {
 		expect(servicesIcon({ label: 'Что-то', kind: 'queue' })).toBe(MODEL3D_PRESETS.conveyor.icon)
 		expect(servicesIcon({ kind: 'client' })).toBe(MODEL3D_PRESETS.laptop.icon)

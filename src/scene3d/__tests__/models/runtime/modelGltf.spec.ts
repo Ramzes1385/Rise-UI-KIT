@@ -1,11 +1,10 @@
-import { resolve } from 'node:path'
-import { readFileSync } from 'node:fs'
 import { flush } from '../modelsTestHelpers'
 import { MODEL3D_LIBRARY } from '../../../models/library'
+import * as modelLibrary from '../../../scene/gltfLoader'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { GLTF } from 'three/addons/loaders/GLTFLoader.js'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
-import { createGltfLoader, gltfToInstance } from '../../../models/runtime/modelGltf'
+import { gltfToInstance } from '../../../models/runtime/modelGltf'
 import type { Model3DGltfSource } from '../../../types/internal/model3dInternal.types'
 import { createTestContext, createTestRegistry, node, runFrames } from '../modelsTestKit'
 import { AnimationClip, AnimationMixer, BoxGeometry, Group, Mesh, MeshStandardMaterial } from 'three'
@@ -26,80 +25,6 @@ function stubLoad(factory: (url: string) => Promise<GLTF> | GLTF) {
 }
 
 afterEach(() => vi.restoreAllMocks())
-
-describe('createGltfLoader', () => {
-	it('кеш по адресу: один файл на два узла, каждому свой клон, клипы общие', async () => {
-		const load = stubLoad(() => fakeGltf())
-		const loader = createGltfLoader()
-		const [a, b] = await Promise.all([loader.load('a.glb'), loader.load('a.glb')])
-		expect(load).toHaveBeenCalledTimes(1)
-		expect(a.object).not.toBe(b.object)
-		expect(a.object.children[0]).not.toBe(b.object.children[0])
-		expect((a.object.children[0] as Mesh).geometry).toBe((b.object.children[0] as Mesh).geometry)
-		expect(a.clips.map(clip => clip.name)).toEqual(['Open'])
-		await loader.load('b.glb')
-		expect(load).toHaveBeenCalledTimes(2)
-	})
-
-	it('configure получает загрузчик до загрузки', async () => {
-		stubLoad(() => fakeGltf())
-		const configure = vi.fn()
-		await createGltfLoader(configure).load('a.glb')
-		expect(configure).toHaveBeenCalledWith(expect.any(GLTFLoader))
-	})
-
-	it('ошибка не кешируется: следующий вызов пробует снова', async () => {
-		let attempt = 0
-		const load = stubLoad(async () => {
-			attempt += 1
-			if (attempt === 1) throw new Error('нет сети')
-			return fakeGltf()
-		})
-		const loader = createGltfLoader()
-		await expect(loader.load('a.glb')).rejects.toThrow('нет сети')
-		await expect(loader.load('a.glb')).resolves.toMatchObject({ clips: expect.any(Array) })
-		expect(load).toHaveBeenCalledTimes(2)
-	})
-
-	it('dispose освобождает оригиналы и очищает кеш', async () => {
-		const gltf = fakeGltf()
-		stubLoad(() => gltf)
-		const loader = createGltfLoader()
-		await loader.load('a.glb')
-		const mesh = gltf.scene.children[0] as Mesh
-		const geometry = vi.spyOn(mesh.geometry, 'dispose')
-		const material = vi.spyOn(mesh.material as MeshStandardMaterial, 'dispose')
-		await loader.dispose()
-		expect(geometry).toHaveBeenCalled()
-		expect(material).toHaveBeenCalled()
-		await loader.load('a.glb')
-	})
-
-	it('dispose при незавершённой загрузке, которая упадёт, не падает сам', async () => {
-		stubLoad(async () => {
-			throw new Error('сломан')
-		})
-		const loader = createGltfLoader()
-		const pending = loader.load('a.glb')
-		const disposing = loader.dispose()
-		await expect(pending).rejects.toThrow()
-		await expect(disposing).resolves.toBeUndefined()
-	})
-
-	it('kiosk.glb читается загрузчиком: узлы Body, Screen, Lamp, Flap, клип Open', async () => {
-		const file = readFileSync(resolve(process.cwd(), 'src/components/BaseFlowMap3D/stories/assets/kiosk.glb'))
-		const buffer = new ArrayBuffer(file.byteLength)
-		new Uint8Array(buffer).set(file)
-		vi.spyOn(GLTFLoader.prototype, 'loadAsync').mockImplementation(function (this: GLTFLoader) {
-			return this.parseAsync(buffer, '')
-		})
-		const source = await createGltfLoader().load('kiosk.glb')
-		const names: string[] = []
-		source.object.traverse(item => names.push(item.name))
-		expect(names).toEqual(expect.arrayContaining(['Body', 'Screen', 'Lamp', 'Flap']))
-		expect(source.clips.map(clip => clip.name)).toEqual(['Open'])
-	})
-})
 
 describe('gltfToInstance', () => {
 	const source = (): Model3DGltfSource => ({ object: fakeScene(), clips: [] })
@@ -238,6 +163,50 @@ describe('GLB в реестре', () => {
 		expect(load).toHaveBeenCalledWith('k.glb')
 		registry.dispose()
 		expect(dispose).not.toHaveBeenCalled()
+	})
+
+	it('без options.gltf создаётся библиотека ядра: файл грузится GLTFLoader и отдаёт клипы', async () => {
+		const load = stubLoad(() => fakeGltf())
+		const { registry, onModelReady } = setup({ getModels: () => model({ clips: { gate: 'Open' } }) })
+		registry.add('a', { node: node('a', 'x'), model3d: { model: 'k' } })
+		registry.add('b', { node: node('b', 'x'), model3d: { url: 'k.glb' } })
+		registry.commit()
+		await flush()
+		expect(load).toHaveBeenCalledTimes(1)
+		expect(load).toHaveBeenCalledWith('k.glb')
+		expect(bodyHolds(registry, 'a') && bodyHolds(registry, 'b')).toBe(true)
+		expect(onModelReady).toHaveBeenCalledTimes(2)
+		registry.dispose()
+	})
+
+	it('ownsGltf: dispose реестра вызывает dispose библиотеки ядра один раз', async () => {
+		const dispose = vi.spyOn(modelLibrary, 'createModelLibrary')
+		stubLoad(() => fakeGltf())
+		const { registry } = setup()
+		registry.add('a', { node: node('a', 'x'), model3d: { url: 'k.glb' } })
+		registry.commit()
+		await flush()
+		const created = dispose.mock.results[0].value as ReturnType<typeof modelLibrary.createModelLibrary>
+		const disposeLibrary = vi.spyOn(created, 'dispose')
+		registry.dispose()
+		expect(disposeLibrary).toHaveBeenCalledTimes(1)
+		registry.dispose()
+		expect(disposeLibrary).toHaveBeenCalledTimes(1)
+	})
+
+	it('ошибка загрузки GLB библиотекой ядра: server на месте узла и warn', async () => {
+		stubLoad(async () => {
+			throw new Error('нет сети')
+		})
+		const { registry, warn, onModelReady } = setup()
+		registry.add('a', { node: node('a', 'x'), model3d: { url: 'k.glb' } })
+		registry.commit()
+		await flush()
+		expect(warn).toHaveBeenCalledTimes(1)
+		expect(warn.mock.calls[0][0]).toContain('k.glb')
+		expect(bodyHolds(registry, 'a')).toBe(true)
+		expect(onModelReady).toHaveBeenCalledTimes(1)
+		registry.dispose()
 	})
 
 	it('пока файл грузится, повторный commit его не перезапускает', async () => {

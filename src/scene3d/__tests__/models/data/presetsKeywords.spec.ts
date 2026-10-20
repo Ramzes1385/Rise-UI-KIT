@@ -36,6 +36,10 @@ describe('presets: таблица встроенных моделей', () => {
 		expect(fallbackForKind('unknown-kind')).toBe('server')
 		expect(fallbackForKind(undefined)).toBe('server')
 	})
+
+	it('fallbackForKind: имена из прототипа объекта — server', () => {
+		;['constructor', 'toString', '__proto__', 'hasOwnProperty'].forEach(kind => expect(fallbackForKind(kind)).toBe('server'))
+	})
 })
 
 describe('keywords: нормализация и разбор', () => {

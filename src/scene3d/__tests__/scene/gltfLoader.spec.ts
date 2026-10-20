@@ -1,3 +1,5 @@
+import { resolve } from 'node:path'
+import { readFileSync } from 'node:fs'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { AnimationClip, BoxGeometry, Group, Mesh, MeshBasicMaterial } from 'three'
 import { createModelLibrary, loadLayerModel, placeModel, findModelNode } from '../../scene/gltfLoader'
@@ -105,5 +107,33 @@ describe('createModelLibrary', () => {
 		expect(dispose).toHaveBeenCalled()
 		await library.load('a.glb')
 		expect(load).toHaveBeenCalledTimes(3)
+	})
+
+	it('dispose при незавершённой загрузке, которая упадёт, не падает сам', async () => {
+		stubLoad(async () => {
+			throw new Error('сломан')
+		})
+		const library = createModelLibrary()
+		const pending = library.load('a.glb')
+		const disposing = library.dispose()
+		await expect(pending).rejects.toThrow('сломан')
+		await expect(disposing).resolves.toBeUndefined()
+	})
+
+	it('kiosk.glb читается: узлы Body, Screen, Lamp, Flap, клип Open у каждого клона', async () => {
+		const file = readFileSync(resolve(process.cwd(), 'src/components/BaseFlowMap3D/stories/assets/kiosk.glb'))
+		const buffer = new ArrayBuffer(file.byteLength)
+		new Uint8Array(buffer).set(file)
+		vi.spyOn(GLTFLoader.prototype, 'loadAsync').mockImplementation(function (this: GLTFLoader) {
+			return this.parseAsync(buffer, '')
+		})
+		const library = createModelLibrary()
+		const [first, second] = [await library.load('kiosk.glb'), await library.load('kiosk.glb')]
+		const names: string[] = []
+		first.object.traverse(item => names.push(item.name))
+		expect(names).toEqual(expect.arrayContaining(['Body', 'Screen', 'Lamp', 'Flap']))
+		expect(first.clips.map(clip => clip.name)).toEqual(['Open'])
+		expect(second.clips[0]).toBe(first.clips[0])
+		expect(second.object).not.toBe(first.object)
 	})
 })
