@@ -4,9 +4,9 @@
 
 .base-table {
 	@include custom-color-scope;
-	--tbl-pad-top: #{ct(table, cell-padding-y, 12px)};
+	--tbl-pad-top: #{ct(table, cell-padding-y, 13.5px)};
 	--tbl-pad-right: #{ct(table, cell-padding-x, 16px)};
-	--tbl-pad-bottom: #{ct(table, cell-padding-y, 12px)};
+	--tbl-pad-bottom: #{ct(table, cell-padding-y, 13.5px)};
 	--tbl-pad-left: #{ct(table, cell-padding-x, 16px)};
 	@include custom-bg(--tbl-bg, ct(table, bg, var(--rise-bg)));
 	@include custom-bg(--tbl-head-bg, ct(table, header-bg, ct(table, bg, var(--rise-bg))));
@@ -14,7 +14,7 @@
 	--tbl-border: #{ct(table, border, var(--rise-border))};
 	--tbl-font-size: #{sz(ct(table, font-size, var(--rise-font-size-sm)))};
 	@include custom-text(--tbl-text, ct(table, text, var(--rise-text)));
-	@include custom-text(--tbl-head-text, ct(table, header-text, var(--rise-text-highlighted)));
+	@include custom-text(--tbl-head-text, ct(table, header-text, var(--rise-text-muted)));
 
 	width: 100%;
 	font-family: var(--rise-font-sans);
@@ -27,7 +27,7 @@
 
 		box-sizing: border-box;
 		width: 100%;
-		border: 1px solid var(--tbl-border);
+		border: 1px solid transparent;
 		border-radius: sz(ct(table, radius, var(--rise-radius-lg)));
 		background-color: var(--tbl-bg);
 		overflow: hidden;
@@ -50,6 +50,8 @@
 	}
 
 	&--bordered {
+		border-color: var(--rise-border-accented);
+
 		.base-table__th + .base-table__th,
 		.base-table__td + .base-table__td {
 			border-inline-start: 1px solid var(--tbl-border);

@@ -97,8 +97,8 @@
 		position: absolute;
 		width: sz(10px);
 		height: sz(10px);
-		border: 2px solid var(--rise-bg);
-		border-radius: 50%;
+		border: 2px solid var(--rise-surface-bg, var(--rise-bg));
+		border-radius: var(--rise-radius-xs);
 		box-sizing: border-box;
 		pointer-events: none;
 		top: 0;
@@ -115,10 +115,11 @@
 		gap: space(2px);
 		min-width: sz(120px);
 		padding: space(ct(chart, tooltip-padding-y, 6px) ct(chart, tooltip-padding-x, 10px));
-		border: 1px solid ct(chart, tooltip-border, var(--rise-border));
-		border-radius: sz(ct(chart, tooltip-radius, var(--rise-radius-md)));
-		background-color: ct(chart, tooltip-bg, var(--rise-bg));
-		box-shadow: ct(chart, tooltip-shadow, var(--rise-shadow-md));
+		@include floating-surface(null);
+		border: 1px solid ct(chart, tooltip-border, transparent);
+		border-radius: sz(ct(chart, tooltip-radius, var(--rise-radius-lg)));
+		background-color: ct(chart, tooltip-bg, var(--rise-surface-floating));
+		box-shadow: ct(chart, tooltip-shadow, var(--rise-shadow-lg));
 		pointer-events: none;
 		white-space: nowrap;
 		inset-inline-start: 0;
@@ -224,8 +225,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		border: 1px dashed var(--rise-border);
 		border-radius: sz(var(--rise-radius-md));
+		background-color: var(--rise-bg-muted);
 		color: var(--rise-text-muted);
 	}
 

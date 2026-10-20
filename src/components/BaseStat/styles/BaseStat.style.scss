@@ -10,15 +10,16 @@ $stat-padding-x: ct(stat, padding-x, 16px);
 	box-sizing: border-box;
 	min-width: 0;
 	padding: space($stat-padding-y $stat-padding-x);
-	border: 1px solid ct(stat, border, var(--rise-border));
+	border: 1px solid ct(stat, border, transparent);
 	border-radius: sz(ct(stat, radius, var(--rise-radius-lg)));
 	box-shadow: ct(stat, shadow, none);
 	@include text-size(sm);
-	@include custom-bg(background-color, ct(stat, bg, var(--rise-bg)));
+	@include tonal-surface(muted);
+	@include custom-bg(background-color, ct(stat, bg, var(--rise-bg-muted)));
 	@include custom-text(color, var(--rise-text));
 
 	&--soft {
-		border-color: transparent;
+		@include tonal-surface(elevated);
 		@include custom-bg(background-color, var(--rise-bg-elevated));
 	}
 
@@ -29,12 +30,19 @@ $stat-padding-x: ct(stat, padding-x, 16px);
 
 	&--outline {
 		border-color: var(--rise-border-accented);
+		@include tonal-surface(page);
 		@include custom-bg(background-color, transparent);
+	}
+
+	&--shadow {
+		@include tonal-surface(floating);
+		@include custom-bg(background-color, var(--rise-surface-floating));
+		box-shadow: var(--rise-shadow-md);
 	}
 
 	&--ghost {
 		padding: 0;
-		border-color: transparent;
+		@include tonal-surface(none);
 		@include custom-bg(background-color, transparent);
 	}
 
@@ -47,6 +55,7 @@ $stat-padding-x: ct(stat, padding-x, 16px);
 	}
 
 	&__label {
+		@include caps-label;
 		@include custom-text(color, ct(stat-label, text, var(--rise-text-muted)));
 	}
 
@@ -57,6 +66,7 @@ $stat-padding-x: ct(stat, padding-x, 16px);
 		line-height: sz(var(--rise-line-height-2xl));
 		font-weight: ct(stat-value, font-weight, var(--rise-font-weight-semibold));
 		font-variant-numeric: tabular-nums;
+		letter-spacing: var(--rise-tracking-heading);
 		overflow-wrap: anywhere;
 		@include custom-text(color, ct(stat-value, text, var(--rise-text-highlighted)));
 
@@ -86,6 +96,16 @@ $stat-padding-x: ct(stat, padding-x, 16px);
 		@include transition-colors;
 	}
 
+	&__delta {
+		padding: sz(2px 6px);
+		border-radius: calc(var(--rise-radius-sm) - 1px);
+		background-color: var(--rise-bg-elevated);
+		font-family: var(--rise-font-mono);
+		font-size: sz(11px);
+		line-height: sz(16px);
+		font-variant-numeric: tabular-nums;
+	}
+
 	&__change--positive &__trend,
 	&__change--positive &__delta {
 		color: var(--rise-success-text);
@@ -94,6 +114,14 @@ $stat-padding-x: ct(stat, padding-x, 16px);
 	&__change--negative &__trend,
 	&__change--negative &__delta {
 		color: var(--rise-error-text);
+	}
+
+	&__change--positive &__delta {
+		background-color: var(--rise-success-soft);
+	}
+
+	&__change--negative &__delta {
+		background-color: var(--rise-error-soft);
 	}
 
 	&__icon {

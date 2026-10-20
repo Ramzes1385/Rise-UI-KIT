@@ -8,6 +8,7 @@
 	@include text-size(sm);
 	@include custom-text(color, var(--rise-text));
 	@include enter-scale(base-list__item);
+	--list-hover: var(--rise-bg-elevated);
 
 	&__label {
 		@include field-label;
@@ -17,24 +18,31 @@
 		box-sizing: border-box;
 		overflow-y: auto;
 		overscroll-behavior: contain;
-		border: 1px solid ct(list, border, var(--rise-border));
-		border-radius: sz(ct(list, radius, var(--rise-radius-md)));
+		border: 1px solid ct(list, border, transparent);
+		border-radius: sz(ct(list, radius, var(--rise-radius-lg)));
 		box-shadow: ct(list, shadow, none);
-		@include custom-bg(background-color, ct(list, bg, var(--rise-bg)));
+		@include tonal-surface(muted);
+		@include custom-bg(background-color, ct(list, bg, var(--rise-bg-muted)));
 		@include scrollbar-thin;
 	}
 
+	&--soft {
+		--list-hover: var(--rise-bg-accented);
+	}
+
 	&--soft &__viewport {
-		border-color: transparent;
+		@include tonal-surface(elevated);
 		@include custom-bg(background-color, var(--rise-bg-elevated));
 	}
 
 	&--outline &__viewport {
 		border-color: var(--rise-border-accented);
+		@include tonal-surface(page);
+		@include custom-bg(background-color, var(--rise-bg));
 	}
 
 	&--ghost &__viewport {
-		border-color: transparent;
+		@include tonal-surface(none);
 		@include custom-bg(background-color, transparent);
 	}
 
@@ -70,7 +78,7 @@
 		@include focus-ring(-2px);
 
 		@include hover {
-			background-color: ct(list, item-bg-hover, var(--rise-bg-elevated));
+			background-color: ct(list, item-bg-hover, var(--list-hover));
 		}
 	}
 
@@ -118,7 +126,7 @@
 	&__item--grabbed:focus-visible {
 		outline: 2px dashed var(--rise-primary);
 		outline-offset: -2px;
-		background-color: var(--rise-bg-elevated);
+		background-color: var(--list-hover);
 	}
 
 	&__item--placeholder {
@@ -211,9 +219,8 @@
 		gap: space(ct(list, item-gap, 10px));
 		box-sizing: border-box;
 		padding: space(ct(list, item-padding-y, 8px) ct(list, item-padding-x, 10px));
-		border: 1px solid var(--rise-border);
 		border-radius: sz(ct(list, item-radius, var(--rise-radius-sm)));
-		background-color: var(--rise-bg);
+		@include tonal-surface(floating);
 		color: var(--rise-text);
 		box-shadow: var(--rise-shadow-lg);
 	}

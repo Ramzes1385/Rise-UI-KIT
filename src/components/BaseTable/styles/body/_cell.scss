@@ -11,6 +11,7 @@
 		color: var(--tbl-text);
 		font-size: var(--tbl-font-size);
 		line-height: sz(var(--rise-line-height-sm));
+		font-variant-numeric: tabular-nums;
 		text-align: start;
 		vertical-align: middle;
 		@include transition-colors;

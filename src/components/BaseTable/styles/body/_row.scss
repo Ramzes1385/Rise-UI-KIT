@@ -13,8 +13,8 @@
 		}
 
 		&.base-table__tr--selected {
-			--tbl-row-bg: #{ct(table, row-bg-selected, var(--rise-primary-soft))};
-			--tbl-row-hover: #{ct(table, row-bg-selected, var(--rise-primary-soft-hover))};
+			--tbl-row-bg: #{ct(table, row-bg-selected, color-mix(in srgb, var(--rise-primary) 8%, var(--tbl-bg)))};
+			--tbl-row-hover: #{ct(table, row-bg-selected, color-mix(in srgb, var(--rise-primary) 12%, var(--tbl-bg)))};
 		}
 
 		&--disabled {

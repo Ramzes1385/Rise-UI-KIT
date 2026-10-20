@@ -8,6 +8,7 @@
 	@include text-size(sm);
 	@include custom-bg(background-color, ct(tree, bg, transparent));
 	@include custom-text(color, var(--rise-text));
+	--tree-hover: var(--rise-bg-elevated);
 
 	&--ghost {
 		padding: 0;
@@ -15,18 +16,26 @@
 
 	&--outline,
 	&--shadow {
-		border: 1px solid ct(tree, border, var(--rise-border));
 		border-radius: sz(var(--rise-radius-lg));
+		@include tonal-surface(page);
 		@include custom-bg(background-color, ct(tree, bg, var(--rise-bg)));
 	}
 
+	&--outline {
+		border: 1px solid ct(tree, border, var(--rise-border-accented));
+	}
+
 	&--shadow {
-		box-shadow: var(--rise-shadow-sm);
+		@include tonal-surface(floating);
+		@include custom-bg(background-color, ct(tree, bg, var(--rise-surface-floating)));
+		box-shadow: var(--rise-shadow-md);
 	}
 
 	&--soft {
+		--tree-hover: var(--rise-bg-accented);
 		border-radius: sz(var(--rise-radius-lg));
-		@include custom-bg(background-color, ct(tree, bg, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg))));
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, ct(tree, bg, var(--rise-bg-elevated)));
 	}
 
 	&__node {
@@ -39,12 +48,12 @@
 		min-height: ct(tree, item-height, auto);
 		gap: space(ct(tree, item-gap, 6px));
 		padding: space(6px ct(tree, item-padding-x, 8px));
-		border-radius: sz(ct(tree, item-radius, var(--rise-radius-md)));
+		border-radius: sz(ct(tree, item-radius, var(--rise-radius-sm)));
 		@include custom-text(color, ct(tree, item-text, var(--rise-text)));
 		@include focus-ring(-2px);
 
 		@include hover {
-			background-color: var(--custom-bg-hover, #{ct(tree, item-bg-hover, var(--rise-bg-elevated))});
+			background-color: var(--custom-bg-hover, #{ct(tree, item-bg-hover, var(--tree-hover))});
 			color: var(--custom-text-hover, var(--custom-text, var(--rise-text-highlighted)));
 		}
 	}

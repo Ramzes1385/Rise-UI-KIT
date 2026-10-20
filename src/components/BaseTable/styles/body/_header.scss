@@ -9,12 +9,11 @@
 		z-index: 2;
 		padding-block: space(var(--tbl-pad-top) var(--tbl-pad-bottom));
 		padding-inline: space(var(--tbl-pad-left) var(--tbl-pad-right));
-		border-bottom: 1px solid var(--rise-border-accented);
+		border-bottom: 1px solid var(--tbl-border);
 		background-color: var(--tbl-head-bg);
+		@include caps-label(10px);
 		color: var(--tbl-head-text);
-		font-size: var(--tbl-font-size);
-		line-height: sz(var(--rise-line-height-sm));
-		font-weight: ct(table, header-font-weight, var(--rise-font-weight-semibold));
+		font-weight: ct(table, header-font-weight, var(--rise-font-weight-normal));
 		text-align: start;
 		white-space: nowrap;
 		vertical-align: middle;
