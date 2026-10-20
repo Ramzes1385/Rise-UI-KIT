@@ -48,7 +48,7 @@ function mountPointer(options: { content?: Roadmap3DContent | null; hasHost?: bo
 	const pinchZoom = vi.fn()
 	const { result: pointer } = runInSetup(() =>
 		useRoadmap3DPointer({
-			hostRef: { value: options.hasHost === false ? null : host },
+			hostRef: { value: options.hasHost === false ? null : host } as never,
 			getContent: () => (options.content === undefined ? content : options.content),
 			getCamera: () => camera,
 			pinchZoom,

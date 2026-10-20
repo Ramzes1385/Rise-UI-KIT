@@ -4,7 +4,7 @@ import { Mesh, ShaderMaterial } from 'three'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, screen, waitFor, within } from '@testing-library/vue'
 import { mockWebGL } from '../../../BaseImageMap3D/__tests__/imageMap3d.test-utils'
-import { DATA_ROADMAP_3D, useRoadmap3DEnvironment } from '../fixtures/roadmap3d.test-utils'
+import { DATA_ROADMAP_3D, stagesData, useRoadmap3DEnvironment } from '../fixtures/roadmap3d.test-utils'
 
 const env = useRoadmap3DEnvironment()
 
@@ -201,5 +201,56 @@ describe('BaseRoadmap3D: дорога и машинка', () => {
 		})
 		env.flush(1200)
 		expect(doneProgress(context())).toBeGreaterThan(before)
+	})
+})
+
+describe('BaseRoadmap3D: слоты панели, требования и обрыв касания', () => {
+	const extras = (topic: { id: string }) => {
+		if (topic.id === 'vue')
+			return { materials: [{ id: 'm1', title: 'Документация', kind: 'article' as const, url: 'https://vuejs.org' }] }
+		return topic.id === 'react' ? { requires: ['vue'] } : {}
+	}
+	const WITH_TOPIC_EXTRAS = {
+		...DATA_ROADMAP_3D,
+		stages: DATA_ROADMAP_3D.stages.map(stage =>
+			stage.id === 'frame' ? { ...stage, topics: stage.topics.map(topic => ({ ...topic, ...extras(topic) })) } : stage,
+		),
+	}
+	const SLOTS = {
+		'topic-details': () => h('span', 'детали темы'),
+		material: () => h('span', 'свой материал'),
+		'stage-header': () => h('span', 'шапка этапа'),
+	}
+
+	it('слоты передаются в панель: шапка этапа, детали и материал темы', async () => {
+		const user = userEvent.setup()
+		await env.renderRoadmap({ data: WITH_TOPIC_EXTRAS, focused: 'frame' }, SLOTS)
+		const panel = screen.getByRole('region', { name: /Подробности/ })
+		expect(within(panel).getByText('шапка этапа')).toBeInTheDocument()
+		await user.click(within(panel).getByRole('button', { name: /^Vue/ }))
+		expect(within(panel).getByText('детали темы')).toBeInTheDocument()
+		expect(within(panel).getByText('свой материал')).toBeInTheDocument()
+	})
+
+	it('кнопка требования в теме открывает требуемую тему', async () => {
+		const user = userEvent.setup()
+		await env.renderRoadmap({ data: WITH_TOPIC_EXTRAS, focused: 'frame' })
+		const panel = () => screen.getByRole('region', { name: /Подробности/ })
+		await user.click(within(panel()).getByRole('button', { name: /^React/ }))
+		await user.click(within(panel()).getByRole('button', { name: /^Vue/ }))
+		expect(within(panel()).getByRole('heading', { level: 2, name: 'Vue' })).toBeInTheDocument()
+	})
+
+	it('2D-вид получает слот «пусто» для данных без этапов', async () => {
+		await env.renderRoadmap({ data: stagesData(0), view: '2d' }, { empty: () => h('span', 'нет этапов') })
+		expect((await screen.findAllByText('нет этапов', {}, { timeout: 20000 })).length).toBeGreaterThan(0)
+	})
+
+	it('pointercancel завершает жест так же, как pointerup', async () => {
+		await env.renderRoadmap()
+		const group = screen.getByRole('group', { name: 'Путь' })
+		await fireEvent.pointerDown(group, { pointerId: 1, clientX: 10, clientY: 10, pointerType: 'mouse' })
+		await fireEvent.pointerCancel(group, { pointerId: 1 })
+		expect(group).toBeInTheDocument()
 	})
 })

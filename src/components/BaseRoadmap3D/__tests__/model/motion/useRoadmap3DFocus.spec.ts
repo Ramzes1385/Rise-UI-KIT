@@ -113,7 +113,7 @@ describe('useRoadmap3DFocus: курсор и переходы', () => {
 	})
 
 	it('go без текущего этапа идёт на первый', () => {
-		const done = { version: 1, topics: { t1: { status: 'done' }, t2: { status: 'done' } } }
+		const done = { version: 1, topics: { t1: { status: 'done' }, t2: { status: 'done' } } } as never
 		const props = reactive({ focused: undefined }) as unknown as Roadmap3DProps
 		const mounted = mountWith(stagesData(2), done, ({ snapshot }) =>
 			useRoadmap3DFocus({ props, emit: vi.fn() as never, snapshot, getCamera: () => null, announce: vi.fn() }),
@@ -140,7 +140,7 @@ describe('useRoadmap3DFocus: слежение', () => {
 		;(props as { focused: string | null }).focused = 'frame'
 		await nextTick()
 		expect(focus.focused.value).toBe('frame')
-		;(props as { focused: string | null }).focused = undefined
+		;(props as { focused?: string | null }).focused = undefined
 		await nextTick()
 		expect(focus.focused.value).toBeNull()
 		;(props as { focused: string | null }).focused = null

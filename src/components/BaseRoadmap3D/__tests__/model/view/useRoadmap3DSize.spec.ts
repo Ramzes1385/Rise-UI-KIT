@@ -6,7 +6,9 @@ class Observer {
 	static instances: Observer[] = []
 	observe = vi.fn()
 	disconnect = vi.fn()
-	constructor(public callback: () => void) {
+	callback: () => void
+	constructor(callback: () => void) {
+		this.callback = callback
 		Observer.instances.push(this)
 	}
 }

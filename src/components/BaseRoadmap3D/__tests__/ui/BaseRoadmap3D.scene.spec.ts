@@ -98,7 +98,7 @@ describe('BaseRoadmap3D: прогресс двигает машинку и до�
 describe('BaseRoadmap3D: хуки сцены', () => {
 	it('onSceneReady получает сцену, камеру и рендерер; очистка вызывается при пересборке и размонтировании', async () => {
 		const cleanup = vi.fn()
-		const onSceneReady = vi.fn(() => cleanup)
+		const onSceneReady = vi.fn((_context: unknown) => cleanup)
 		const { rerender, unmount, renderer } = await env.renderRoadmap({ onSceneReady, quality: 'high' })
 		expect(onSceneReady).toHaveBeenCalledOnce()
 		const context = onSceneReady.mock.calls[0][0] as {

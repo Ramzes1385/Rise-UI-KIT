@@ -12,7 +12,7 @@ export function mountSnapshot(data: RoadmapData = DATA_ROADMAP_3D, progress: Roa
 
 type Context = { model: ReturnType<typeof useRoadmapModel>; snapshot: ReturnType<typeof useRoadmap3DSnapshot> }
 export function mountWith<T>(data: RoadmapData, progress: RoadmapProgress | undefined, extra: (context: Context) => T) {
-	let captured: (Context & { extra: T }) | null = null
+	let captured = null as (Context & { extra: T }) | null
 	const Host = defineComponent({
 		props: { data: { type: Object, required: true }, progress: { type: Object, default: undefined } },
 		emits: [

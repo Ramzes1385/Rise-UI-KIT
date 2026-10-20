@@ -21,9 +21,12 @@ const order = (data: RoadmapData) => data.stages.map(stage => stage.id)
 async function chooseModel(index: number) {
 	const trigger = editor().querySelector('.base-select__trigger') as HTMLElement
 	trigger.click()
-	await new Promise(resolve => setTimeout(resolve, 0))
-	const options = document.querySelectorAll('[role="option"]')
-	await fireEvent.click(options[index] as HTMLElement)
+	const options = await waitFor(() => {
+		const found = document.querySelectorAll('[role="option"]')
+		expect(found.length).toBeGreaterThan(0)
+		return found
+	})
+	await fireEvent.click(options[index < 0 ? options.length + index : index] as HTMLElement)
 }
 
 describe('BaseRoadmap3D: правка через панель', () => {
@@ -97,7 +100,7 @@ describe('BaseRoadmap3D: правка через панель', () => {
 		const { events } = await env.renderRoadmap({ ...EDIT, focused: 'basics' })
 		await chooseModel(1)
 		await waitFor(() => expect(lastData(events).stages[0].model3d?.model).toBeTruthy())
-		await chooseModel(document.querySelectorAll('[role="option"]').length - 1)
+		await chooseModel(-1)
 		const url = await within(editor()).findByRole('textbox', { name: 'Ссылка на GLB' })
 		await user.type(url, 'a.glb')
 		await waitFor(() => expect(lastData(events).stages[0].model3d?.url).toBe('a.glb'))
