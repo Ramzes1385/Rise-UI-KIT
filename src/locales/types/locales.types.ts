@@ -172,6 +172,7 @@ export interface UiKitLocale {
 	formWizard: Section<'formWizard'>
 	roadmap: Section<'roadmap'>
 	roadmapEdit: Section<'roadmapEdit'>
+	roadmap3d: Section<'roadmap3d'>
 	roadmapReview: Section<'roadmapReview'>
 	datePicker: Section<'datePicker'>
 	warnings: Section<'warnings'>

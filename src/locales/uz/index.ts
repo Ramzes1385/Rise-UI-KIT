@@ -18,6 +18,7 @@ import { uzFlowPanels } from './components/flow/panels'
 import { uzFlowReview } from './components/flow/review'
 import { uzMapEditor } from './components/map/mapEditor'
 import type { UiKitLocale } from '../types/locales.types'
+import { uzRoadmap3d } from './components/data/roadmap3d'
 import { uzImageMap3d } from './components/map/imageMap3d'
 import { uzPresentation } from './components/presentation'
 import { uzFlowScenario } from './components/flow/scenario'
@@ -74,6 +75,7 @@ export const uz: UiKitLocale = {
 	...uzFileManager,
 	...uzFormWizard,
 	...uzRoadmap,
+	...uzRoadmap3d,
 	...uzRoadmapEdit,
 	...uzRoadmapReview,
 	plural: uzPlural,

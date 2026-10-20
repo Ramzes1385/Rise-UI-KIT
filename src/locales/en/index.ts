@@ -17,6 +17,7 @@ import { enFlowPanels } from './components/flow/panels'
 import { enFlowReview } from './components/flow/review'
 import { enMapEditor } from './components/map/mapEditor'
 import type { UiKitLocale } from '../types/locales.types'
+import { enRoadmap3d } from './components/data/roadmap3d'
 import { enImageMap3d } from './components/map/imageMap3d'
 import { enPresentation } from './components/presentation'
 import { enFlowScenario } from './components/flow/scenario'
@@ -72,6 +73,7 @@ export const en: UiKitLocale = {
 	...enFileManager,
 	...enFormWizard,
 	...enRoadmap,
+	...enRoadmap3d,
 	...enRoadmapEdit,
 	...enRoadmapReview,
 	plural: enPlural,

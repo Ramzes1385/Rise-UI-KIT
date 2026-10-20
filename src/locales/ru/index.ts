@@ -9,6 +9,7 @@ import { ruTranscript } from './components/transcript'
 import { ruFlowEditor } from './components/flow/editor'
 import { ruFlowPanels } from './components/flow/panels'
 import { ruFlowReview } from './components/flow/review'
+import { ruRoadmap3d } from './components/data/roadmap3d'
 import { ruImageMap3d } from './components/map/imageMap3d'
 import { ruPresentation } from './components/presentation'
 import { ruFlowScenario } from './components/flow/scenario'
@@ -170,6 +171,7 @@ export const ru = {
 	fileManager: ruFileManager,
 	formWizard: ruFormWizard,
 	roadmap: ruRoadmap,
+	roadmap3d: ruRoadmap3d,
 	roadmapEdit: ruRoadmapEdit,
 	roadmapReview: ruRoadmapReview,
 	plural: ruPlural,

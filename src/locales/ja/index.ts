@@ -17,6 +17,7 @@ import { jaFlowPanels } from './components/flow/panels'
 import { jaFlowReview } from './components/flow/review'
 import { jaMapEditor } from './components/map/mapEditor'
 import type { UiKitLocale } from '../types/locales.types'
+import { jaRoadmap3d } from './components/data/roadmap3d'
 import { jaImageMap3d } from './components/map/imageMap3d'
 import { jaPresentation } from './components/presentation'
 import { jaFlowScenario } from './components/flow/scenario'
@@ -72,6 +73,7 @@ export const ja: UiKitLocale = {
 	...jaFileManager,
 	...jaFormWizard,
 	...jaRoadmap,
+	...jaRoadmap3d,
 	...jaRoadmapEdit,
 	...jaRoadmapReview,
 	plural: jaPlural,

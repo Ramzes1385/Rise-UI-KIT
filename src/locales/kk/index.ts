@@ -18,6 +18,7 @@ import { kkFlowPanels } from './components/flow/panels'
 import { kkFlowReview } from './components/flow/review'
 import { kkMapEditor } from './components/map/mapEditor'
 import type { UiKitLocale } from '../types/locales.types'
+import { kkRoadmap3d } from './components/data/roadmap3d'
 import { kkImageMap3d } from './components/map/imageMap3d'
 import { kkPresentation } from './components/presentation'
 import { kkFlowScenario } from './components/flow/scenario'
@@ -74,6 +75,7 @@ export const kk: UiKitLocale = {
 	...kkFileManager,
 	...kkFormWizard,
 	...kkRoadmap,
+	...kkRoadmap3d,
 	...kkRoadmapEdit,
 	...kkRoadmapReview,
 	plural: kkPlural,
