@@ -8,9 +8,8 @@
 		align-items: flex-start;
 		padding: space(10px 14px);
 		color: var(--rise-text);
-		background-color: var(--rise-bg);
-		border: 1px solid var(--rise-error);
-		border-radius: sz(var(--rise-radius-md));
+		background-color: var(--rise-error-soft);
+		border-radius: sz(var(--rise-radius-lg));
 	}
 
 	&__edit-reject-text {
@@ -29,7 +28,7 @@
 		align-items: center;
 		padding: space(10px 14px);
 		color: var(--rise-text);
-		border: 1px solid var(--rise-error);
-		border-radius: sz(var(--rise-radius-md));
+		background-color: var(--rise-error-soft);
+		border-radius: sz(var(--rise-radius-lg));
 	}
 }

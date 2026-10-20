@@ -14,7 +14,7 @@
 
 	&--outline {
 		border: 1px solid var(--rise-border-accented);
-		border-radius: sz(var(--rise-radius-md));
+		border-radius: sz(var(--rise-radius-lg));
 	}
 
 	&--ghost {
@@ -45,8 +45,8 @@
 	&__title {
 		margin: 0;
 		font-size: sz(15px);
-		font-weight: var(--rise-font-weight-semibold);
 		line-height: sz(20px);
+		@include heading;
 		@include custom-text(color, var(--rise-text-highlighted));
 	}
 
@@ -84,8 +84,10 @@
 		padding: space(24px);
 		overflow: auto;
 		background-color: var(--rise-bg-muted);
-		background-image: radial-gradient(var(--rise-border) 1px, transparent 1.3px);
-		background-size: sz(20px) sz(20px);
+		background-image:
+			linear-gradient(to right, var(--rise-border) 1px, transparent 1px),
+			linear-gradient(to bottom, var(--rise-border) 1px, transparent 1px);
+		background-size: sz(24px) sz(24px);
 
 		&--list {
 			background-image: none;
@@ -116,17 +118,16 @@
 		inline-size: sz(22px);
 		block-size: sz(12px);
 		border: 1.5px dashed var(--rise-border-accented);
-		border-radius: sz(4px);
+		border-radius: sz(var(--rise-radius-sm));
 	}
 
 	&__pill {
 		flex: none;
 		block-size: sz(18px);
 		padding-inline: sz(6px);
-		font-size: sz(10.5px);
-		font-weight: var(--rise-font-weight-semibold);
 		line-height: sz(18px);
-		border-radius: var(--rise-radius-full);
+		border-radius: calc(var(--rise-radius-sm) - 1px);
+		@include caps-label(10px, 0.08em);
 
 		&--or {
 			color: var(--rise-info-text);
@@ -161,6 +162,7 @@
 		justify-content: space-between;
 		font-size: sz(12px);
 		line-height: sz(16px);
+		font-variant-numeric: tabular-nums;
 		@include custom-text(color, var(--rise-text-muted));
 
 		&--narrow {
@@ -175,8 +177,8 @@
 
 	&__summary-percent {
 		font-size: sz(28px);
-		font-weight: var(--rise-font-weight-bold);
 		line-height: sz(32px);
+		@include heading;
 		@include custom-text(color, var(--rise-text-highlighted));
 		font-variant-numeric: tabular-nums;
 	}
@@ -276,7 +278,7 @@
 		fill: none;
 		stroke: ct(roadmap, milestone-ring, var(--rise-primary));
 		stroke-width: 3;
-		stroke-linecap: round;
+		stroke-linecap: butt;
 		transform: rotate(-90deg);
 		transform-box: fill-box;
 		transform-origin: center;
@@ -320,8 +322,10 @@
 
 	&__stage-number {
 		position: relative;
+		font-family: var(--rise-font-mono);
 		font-size: sz(13px);
 		font-weight: var(--rise-font-weight-bold);
+		font-variant-numeric: tabular-nums;
 		color: var(--rise-text-muted);
 	}
 
@@ -335,8 +339,7 @@
 
 	&__stage-title {
 		font-size: sz(14px);
-		font-weight: var(--rise-font-weight-semibold);
-		color: var(--rise-text-highlighted);
+		@include heading;
 	}
 
 	&__stage-meta {
@@ -351,15 +354,13 @@
 		inset-inline-start: 50%;
 		translate: -50% 0;
 		block-size: sz(20px);
-		padding-inline: sz(9px);
-		font-size: sz(11px);
-		font-weight: var(--rise-font-weight-semibold);
+		padding-inline: sz(8px);
 		line-height: sz(20px);
-		color: var(--rise-on-primary);
 		white-space: nowrap;
 		background-color: var(--rise-primary);
-		border-radius: var(--rise-radius-full);
-		box-shadow: var(--rise-shadow-sm);
+		border-radius: calc(var(--rise-radius-sm) - 1px);
+		@include caps-label(10px, 0.08em);
+		color: var(--rise-on-primary);
 
 		@at-root [dir='rtl'] #{&} {
 			translate: 50% 0;
@@ -388,7 +389,7 @@
 	}
 
 	&__stage--current &__stage-number {
-		color: var(--rise-primary);
+		color: var(--rise-primary-text);
 	}
 
 	&__stage--current &__stage-ring::after {
@@ -425,10 +426,8 @@
 		max-inline-size: sz(720px);
 		overflow: hidden;
 		list-style: none;
-		background-color: var(--rise-bg);
-		border: 1px solid var(--rise-border);
-		border-radius: sz(var(--rise-radius-2xl));
-		box-shadow: var(--rise-shadow-sm);
+		border-radius: sz(var(--rise-radius-lg));
+		@include tonal-surface(muted);
 
 		> li + li {
 			border-block-start: 1px solid var(--rise-border);
@@ -457,14 +456,12 @@
 		min-block-size: sz(34px);
 		padding-inline: sz(10px) sz(9px);
 		color: var(--rise-text-highlighted);
-		background-color: ct(roadmap, topic-bg, var(--rise-bg));
-		border: 1px solid ct(roadmap, topic-border, var(--rise-border));
-		border-radius: sz(ct(roadmap, topic-radius, calc(var(--rise-radius) * 2.5)));
-		box-shadow: var(--rise-shadow-xs);
+		background-color: ct(roadmap, topic-bg, var(--rise-surface-raised));
+		border: 1px solid ct(roadmap, topic-border, transparent);
+		border-radius: sz(ct(roadmap, topic-radius, var(--rise-radius-md)));
 		@include transition-colors;
 		@include hover {
-			border-color: var(--rise-border-accented);
-			box-shadow: var(--rise-shadow-sm);
+			background-color: ct(roadmap, topic-bg-hover, var(--rise-bg-elevated));
 		}
 
 		&:has(.base-roadmap__topic-button:focus-visible) {
@@ -473,11 +470,12 @@
 		}
 
 		&--optional {
+			border-color: var(--rise-border-accented);
 			border-style: dashed;
 		}
 
 		&--done {
-			background-color: ct(roadmap, topic-done-bg, color-mix(in srgb, var(--rise-primary) 4%, var(--rise-bg)));
+			background-color: ct(roadmap, topic-done-bg, color-mix(in srgb, var(--rise-primary) 8%, var(--rise-surface-raised)));
 		}
 
 		&--in-progress {
@@ -487,7 +485,6 @@
 		&--locked {
 			color: var(--rise-text-muted);
 			background-color: var(--rise-bg-muted);
-			box-shadow: none;
 		}
 
 		&--locked &-icon {
@@ -496,7 +493,7 @@
 
 		&--selected {
 			border-color: var(--rise-primary);
-			box-shadow: 0 0 0 3px var(--rise-primary-soft);
+			box-shadow: 0 0 0 1px var(--rise-primary);
 		}
 
 		&--filtered {
@@ -554,6 +551,7 @@
 		flex: none;
 		font-family: var(--rise-font-mono);
 		font-size: sz(11px);
+		font-variant-numeric: tabular-nums;
 		color: var(--rise-text-muted);
 	}
 
@@ -562,8 +560,11 @@
 		margin-inline: sz(8px);
 		background-color: transparent;
 		border-color: transparent;
-		border-radius: sz(10px);
-		box-shadow: none;
+		border-radius: sz(var(--rise-radius-md));
+
+		@include hover {
+			background-color: var(--rise-bg-elevated);
+		}
 
 		&--selected {
 			background-color: ct(roadmap, topic-current-bg, var(--rise-primary-soft));
@@ -572,7 +573,7 @@
 		}
 
 		&--optional {
-			border-color: var(--rise-border);
+			border-color: var(--rise-border-accented);
 		}
 
 		&--locked {

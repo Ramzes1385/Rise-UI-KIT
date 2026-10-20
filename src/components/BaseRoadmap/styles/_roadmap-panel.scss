@@ -9,8 +9,8 @@
 		inline-size: sz(360px);
 		padding: space(20px);
 		overflow: auto;
-		background-color: var(--rise-bg);
 		border-inline-start: 1px solid var(--rise-border);
+		@include tonal-surface(page);
 		@include scrollbar-thin;
 	}
 
@@ -37,10 +37,9 @@
 	&__details-title {
 		margin: 0;
 		font-size: sz(20px);
-		font-weight: var(--rise-font-weight-semibold);
 		line-height: sz(26px);
-		color: var(--rise-text-highlighted);
 		overflow-wrap: anywhere;
+		@include heading;
 	}
 
 	&__details-badges {
@@ -63,6 +62,7 @@
 		display: flex;
 		justify-content: space-between;
 		font-size: sz(12.5px);
+		font-variant-numeric: tabular-nums;
 		color: var(--rise-text-muted);
 	}
 
@@ -80,10 +80,7 @@
 
 	&__details-heading {
 		margin: sz(6px) 0 0;
-		font-size: sz(12px);
-		font-weight: var(--rise-font-weight-semibold);
-		line-height: sz(16px);
-		color: var(--rise-text-highlighted);
+		@include caps-label;
 	}
 
 	&__subtopics,
@@ -104,7 +101,7 @@
 		align-items: center;
 		min-block-size: sz(34px);
 		padding-inline: sz(8px);
-		border-radius: sz(8px);
+		border-radius: sz(var(--rise-radius-sm));
 		@include transition-colors;
 		@include hover {
 			background-color: var(--rise-bg-elevated);
@@ -122,13 +119,12 @@
 		padding: sz(8px);
 		color: var(--rise-text-highlighted);
 		text-decoration: none;
-		border: 1px solid var(--rise-border);
-		border-radius: sz(10px);
+		background-color: var(--rise-bg-muted);
+		border-radius: sz(var(--rise-radius-md));
 		@include transition-colors;
 		@include focus-ring;
 		@include hover {
 			background-color: var(--rise-bg-elevated);
-			border-color: var(--rise-border-accented);
 		}
 	}
 
@@ -138,9 +134,9 @@
 		place-items: center;
 		inline-size: sz(30px);
 		block-size: sz(30px);
-		color: var(--rise-primary);
+		color: var(--rise-primary-text);
 		background-color: var(--rise-primary-soft);
-		border-radius: sz(8px);
+		border-radius: sz(var(--rise-radius-sm));
 
 		svg {
 			fill: none;
@@ -200,13 +196,12 @@
 		color: var(--rise-text);
 		cursor: pointer;
 		background-color: var(--rise-bg-muted);
-		border: 1px solid var(--rise-border);
-		border-radius: var(--rise-radius-full);
+		border: 0;
+		border-radius: sz(var(--rise-radius-sm));
 		@include transition-colors;
 		@include focus-ring;
 		@include hover {
 			background-color: var(--rise-bg-elevated);
-			border-color: var(--rise-border-accented);
 		}
 	}
 
@@ -214,7 +209,7 @@
 		inline-size: sz(7px);
 		block-size: sz(7px);
 		background-color: var(--rise-border-accented);
-		border-radius: 50%;
+		border-radius: 1px;
 	}
 
 	&__requirement--done &__requirement-dot {
