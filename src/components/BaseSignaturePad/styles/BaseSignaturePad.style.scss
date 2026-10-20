@@ -74,13 +74,11 @@
 	}
 
 	&--soft &__surface {
-		border-color: transparent;
-		@include custom-bg(background-color, var(--rise-bg-elevated));
+		@include field-variant(signature-pad-surface, soft);
 	}
 
 	&--outline &__surface {
-		border-color: var(--rise-border-accented);
-		@include custom-bg(background-color, transparent);
+		@include field-variant(signature-pad-surface, outline);
 	}
 
 	&--error &__surface {

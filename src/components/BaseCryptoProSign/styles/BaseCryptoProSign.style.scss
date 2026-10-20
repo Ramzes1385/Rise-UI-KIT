@@ -9,10 +9,11 @@
 	min-width: 0;
 	max-width: 100%;
 	padding: ct(crypto-pro-sign, padding, space(16px));
-	border: 1px solid ct(crypto-pro-sign, border, var(--rise-border));
+	border: 1px solid ct(crypto-pro-sign, border, transparent);
 	border-radius: sz(ct(crypto-pro-sign, radius, var(--rise-radius-lg)));
 	@include text-size(sm);
-	@include custom-bg(background-color, ct(crypto-pro-sign, bg, var(--rise-bg)));
+	@include tonal-surface(muted);
+	@include custom-bg(background-color, ct(crypto-pro-sign, bg, var(--rise-bg-muted)));
 	@include custom-text(color, ct(crypto-pro-sign, text, var(--rise-text)));
 	@include custom-text(--crypto-pro-sign-text, ct(crypto-pro-sign, text, var(--rise-text)));
 
@@ -21,18 +22,19 @@
 	}
 
 	&--soft {
-		border-color: transparent;
+		@include tonal-surface(elevated);
 		@include custom-bg(background-color, var(--rise-bg-elevated));
 	}
 
 	&--outline {
 		border-color: var(--rise-border-accented);
+		@include tonal-surface(page);
 		@include custom-bg(background-color, transparent);
 	}
 
 	&--ghost {
 		padding: 0;
-		border-color: transparent;
+		@include tonal-surface(none);
 		@include custom-bg(background-color, transparent);
 	}
 
@@ -168,8 +170,9 @@
 		align-items: center;
 		gap: sz(4px) sz(8px);
 		padding: space(8px) space(12px);
-		border: 1px solid var(--rise-border);
+		border: 1px solid transparent;
 		border-radius: sz(var(--rise-radius-md));
+		background-color: var(--rise-field-bg);
 
 		&--signed {
 			border-color: var(--rise-success-border);
@@ -234,13 +237,11 @@
 	align-items: flex-start;
 	gap: ct(crypto-pro-sign, result-gap, sz(10px));
 	padding: ct(crypto-pro-sign, result-padding, space(12px));
-	border: 1px solid var(--rise-success-border);
-	border-radius: sz(ct(crypto-pro-sign, result-radius, var(--rise-radius-md)));
+	border-radius: sz(ct(crypto-pro-sign, result-radius, var(--rise-radius-lg)));
 	background-color: var(--rise-success-soft);
 	color: var(--rise-success-text);
 
 	&--invalid {
-		border-color: var(--rise-error-border);
 		background-color: var(--rise-error-soft);
 		color: var(--rise-error-text);
 	}

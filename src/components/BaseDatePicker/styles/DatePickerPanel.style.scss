@@ -7,12 +7,13 @@
 	box-sizing: border-box;
 	min-width: min-content;
 	max-width: calc(100vw - 16px);
-	padding: space(ct(date-picker, panel-padding, 4px));
 	overflow-y: auto;
-	background-color: ct(date-picker, panel-bg, var(--rise-bg));
+	@include tonal-surface(floating);
+	padding: space(ct(date-picker, panel-padding, 4px));
+	background-color: ct(date-picker, panel-bg, var(--rise-surface-floating));
 	color: ct(date-picker, panel-text, var(--rise-text));
-	border: 1px solid ct(date-picker, panel-border, var(--rise-border));
-	border-radius: sz(ct(date-picker, panel-radius, var(--rise-radius-md)));
+	border: 1px solid ct(date-picker, panel-border, transparent);
+	border-radius: sz(ct(date-picker, panel-radius, var(--rise-radius-lg)));
 	box-shadow: ct(date-picker, panel-shadow, var(--rise-shadow-lg));
 	@include text-size(sm);
 	@include scrollbar-thin;

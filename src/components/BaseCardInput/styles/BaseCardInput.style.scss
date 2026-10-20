@@ -50,7 +50,7 @@
 		padding: sz(16px 20px);
 		border-radius: ct(card-input, face-radius, sz(var(--rise-radius-xl)));
 		background: var(--base-card-input-face-custom-bg, #{ct(card-input, face-bg, var(--base-card-input-face-bg))});
-		box-shadow: ct(card-input, face-shadow, var(--rise-shadow-md));
+		box-shadow: ct(card-input, face-shadow, none);
 		backface-visibility: hidden;
 
 		&--front {
@@ -76,7 +76,7 @@
 		width: sz(40px);
 		height: sz(30px);
 		border-radius: sz(var(--rise-radius-md));
-		background: linear-gradient(135deg, var(--rise-color-warning-200), var(--rise-color-warning-400));
+		background: var(--rise-color-warning-300);
 	}
 
 	&__face-brand {
@@ -202,10 +202,10 @@
 
 	&__brand-name {
 		padding: sz(1px 6px);
-		border: 1px solid var(--rise-border);
 		border-radius: sz(var(--rise-radius-sm));
-		font-size: sz(var(--rise-font-size-xs));
+		background-color: var(--rise-bg-elevated);
 		white-space: nowrap;
+		@include caps-label(10px);
 	}
 
 	&__live {
@@ -213,7 +213,7 @@
 	}
 
 	&__error {
-		color: var(--rise-error);
+		color: var(--rise-error-text);
 		font-size: sz(var(--rise-font-size-xs));
 	}
 }

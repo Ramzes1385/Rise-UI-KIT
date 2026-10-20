@@ -32,7 +32,7 @@
 	& &__error {
 		display: block;
 		@include field-error;
-		color: ct(checkbox-group, error-text, var(--rise-error));
+		color: ct(checkbox-group, error-text, var(--rise-error-text));
 	}
 
 	&--error .base-checkbox {

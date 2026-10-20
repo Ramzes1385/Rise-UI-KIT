@@ -48,7 +48,7 @@ $gap: sz(ct(form-field, gap, 6px));
 	&__error {
 		margin: 0;
 		@include field-error;
-		color: ct(form-field, error-text, var(--rise-error));
+		color: ct(form-field, error-text, var(--rise-error-text));
 	}
 
 	&--outline,
@@ -59,17 +59,18 @@ $gap: sz(ct(form-field, gap, 6px));
 	}
 
 	&--outline {
-		border: 1px solid ct(form-field, border, var(--rise-border));
+		border: 1px solid ct(form-field, border, var(--rise-border-accented));
 	}
 
 	&--soft {
-		@include custom-bg(background-color, ct(form-field, bg, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg))));
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, ct(form-field, bg, var(--rise-bg-elevated)));
 	}
 
 	&--shadow {
-		border: 1px solid ct(form-field, border, var(--rise-border));
-		@include custom-bg(background-color, ct(form-field, bg, var(--rise-bg)));
-		box-shadow: ct(form-field, shadow, var(--rise-shadow-sm));
+		@include tonal-surface(floating);
+		@include custom-bg(background-color, ct(form-field, bg, var(--rise-surface-floating)));
+		box-shadow: ct(form-field, shadow, var(--rise-shadow-md));
 	}
 }
 

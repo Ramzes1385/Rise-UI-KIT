@@ -16,9 +16,10 @@
 		width: sz(32px);
 		height: sz(32px);
 		padding: 0;
-		border: 1px solid ct(color-picker, border, var(--rise-border-accented));
+		border: 1px solid ct(color-picker, border, transparent);
 		border-radius: sz(ct(color-picker, radius, var(--rise-control-radius)));
-		background-color: var(--rise-bg);
+		background-color: var(--rise-field-bg);
+		box-shadow: var(--picker-edge);
 		color: var(--rise-text);
 		cursor: pointer;
 		@include transition-colors;
@@ -43,7 +44,7 @@
 			inset-inline: sz(7px);
 			bottom: sz(3px);
 			height: sz(3px);
-			border-radius: var(--rise-radius-full);
+			border-radius: sz(var(--rise-radius-xs));
 			background-color: var(--picker-swatch-color);
 			box-shadow: 0 0 0 1px var(--rise-border);
 		}
@@ -52,7 +53,7 @@
 	&__popover.base-dropdown__panel {
 		--dd-bg: #{ct(color-picker, panel-bg, var(--custom-bg, var(--rise-bg)))};
 
-		border-radius: sz(ct(color-picker, panel-radius, var(--rise-radius-md)));
+		border-radius: sz(ct(color-picker, panel-radius, var(--rise-radius-lg)));
 		box-shadow: ct(color-picker, panel-shadow, var(--rise-shadow-lg));
 
 		.base-popover__inner {
@@ -101,7 +102,7 @@
 		width: sz(14px);
 		height: sz(14px);
 		border: 2px solid ct(color-picker, thumb-border, var(--picker-white));
-		border-radius: var(--rise-radius-full);
+		border-radius: sz(var(--rise-radius-xs));
 		box-shadow: ct(color-picker, thumb-shadow, var(--picker-thumb-shadow));
 		pointer-events: none;
 
@@ -165,7 +166,7 @@
 		flex: none;
 		width: sz(28px);
 		height: sz(28px);
-		border-radius: var(--rise-radius-full);
+		border-radius: sz(var(--rise-radius-sm));
 		background: linear-gradient(var(--picker-swatch-color), var(--picker-swatch-color)), var(--picker-checker);
 		box-shadow: var(--picker-edge);
 	}
@@ -185,7 +186,7 @@
 		width: 100%;
 		height: sz(10px);
 		margin: 0;
-		border-radius: var(--rise-radius-full);
+		border-radius: sz(var(--rise-radius-xs));
 		background: var(--picker-hue);
 		box-shadow: var(--picker-edge);
 		cursor: pointer;
@@ -247,9 +248,8 @@
 		}
 
 		&--active {
-			background-color: var(--rise-bg);
+			background-color: var(--rise-surface-selected);
 			color: var(--rise-text-highlighted);
-			box-shadow: var(--rise-shadow-xs);
 		}
 	}
 
@@ -272,10 +272,8 @@
 	}
 
 	&__channel-caption {
-		color: var(--rise-text-muted);
-		font-weight: var(--rise-font-weight-medium);
 		text-align: center;
-		@include text-size(2xs);
+		@include caps-label(10px);
 	}
 
 	&__channel .base-input__wrapper {
@@ -321,9 +319,7 @@
 	}
 
 	&__swatches-label {
-		color: var(--rise-text-muted);
-		font-weight: var(--rise-font-weight-medium);
-		@include text-size(xs);
+		@include caps-label;
 	}
 
 	&__presets {
@@ -339,7 +335,7 @@
 		height: sz(20px);
 		padding: 0;
 		border: none;
-		border-radius: ct(color-picker, preset-radius, var(--rise-radius-full));
+		border-radius: sz(ct(color-picker, preset-radius, var(--rise-radius-sm)));
 		background: linear-gradient(var(--picker-swatch-color), var(--picker-swatch-color)), var(--picker-checker);
 		box-shadow: var(--picker-edge);
 		cursor: pointer;
@@ -350,7 +346,7 @@
 			@include hover {
 				box-shadow:
 					var(--picker-edge),
-					0 0 0 2px var(--rise-bg),
+					0 0 0 2px var(--rise-surface-bg),
 					0 0 0 3px var(--rise-border-accented);
 			}
 		}
@@ -358,7 +354,7 @@
 		&--selected {
 			box-shadow:
 				var(--picker-edge),
-				0 0 0 2px var(--rise-bg),
+				0 0 0 2px var(--rise-surface-bg),
 				0 0 0 4px ct(color-picker, preset-ring-selected, var(--rise-primary));
 		}
 	}

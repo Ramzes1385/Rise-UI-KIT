@@ -26,7 +26,7 @@
 		cursor: pointer;
 		@include custom-bg-all(
 			background-color,
-			ct(file-upload, dropzone-bg, var(--rise-bg)),
+			ct(file-upload, dropzone-bg, var(--rise-bg-muted)),
 			ct(file-upload, dropzone-bg-hover, var(--rise-bg-elevated)),
 			ct(file-upload, dropzone-bg-hover, var(--rise-bg-elevated))
 		);
@@ -83,12 +83,7 @@
 
 	&--soft &__dropzone {
 		border-color: transparent;
-		@include custom-bg-all(
-			background-color,
-			color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg)),
-			var(--rise-bg-elevated),
-			var(--rise-bg-elevated)
-		);
+		@include custom-bg-all(background-color, var(--rise-bg-elevated), var(--rise-bg-accented), var(--rise-bg-accented));
 	}
 
 	&--ghost &__dropzone {
@@ -98,8 +93,9 @@
 
 	&--shadow &__dropzone {
 		border-style: solid;
-		border-color: var(--rise-border);
-		box-shadow: var(--rise-shadow-sm);
+		border-color: transparent;
+		@include custom-bg-all(background-color, var(--rise-surface-floating), var(--rise-bg-elevated), var(--rise-bg-elevated));
+		box-shadow: var(--rise-shadow-md);
 	}
 
 	&--dragover &__dropzone {
@@ -135,9 +131,9 @@
 		align-items: center;
 		gap: sz(12px);
 		padding: space(ct(file-upload, item-padding, 8px));
-		border: 1px solid ct(file-upload, item-border, var(--rise-border));
+		border: 1px solid ct(file-upload, item-border, transparent);
 		border-radius: sz(ct(file-upload, item-radius, var(--rise-radius-md)));
-		background-color: ct(file-upload, item-bg, var(--rise-bg));
+		background-color: ct(file-upload, item-bg, var(--rise-bg-muted));
 	}
 
 	&__preview {
@@ -146,7 +142,7 @@
 		width: sz(40px);
 		height: sz(40px);
 		overflow: hidden;
-		border-radius: sz(var(--rise-radius-sm));
+		border-radius: sz(var(--rise-radius-md));
 		background-color: var(--rise-bg-elevated);
 		color: var(--rise-text-toned);
 	}
@@ -206,7 +202,7 @@
 	&__file-error {
 		display: block;
 		@include text-size(xs);
-		color: var(--rise-error);
+		color: var(--rise-error-text);
 		overflow-wrap: anywhere;
 	}
 

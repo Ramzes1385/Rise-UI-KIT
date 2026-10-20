@@ -15,7 +15,7 @@ export const AVATAR_CROPPER_PARTS = ['area', 'image', 'frame', 'message', 'hint'
 /** Часть кадрировщика для пропа `ui` */
 export type BaseAvatarCropperPart = (typeof AVATAR_CROPPER_PARTS)[number]
 
-/** Форма кадра: circle — круглый аватар, square — квадратный со скруглением */
+/** Форма кадра: square — квадратный со скруглением (по умолчанию), circle — круглый аватар */
 export const AVATAR_CROP_SHAPES = ['circle', 'square'] as const
 
 /** Форма кадра */
@@ -59,7 +59,7 @@ export interface BaseAvatarCropperProps extends BaseComponentProps<(typeof AVATA
 	src: string
 	/** Кадр (v-model:crop) в пикселях исходного фото; без него — по центру во весь меньший край */
 	crop?: AvatarCrop
-	/** Форма кадра */
+	/** Форма кадра; по умолчанию `square` */
 	shape?: AvatarCropShape
 	/** Сторона области кадрирования в пикселях; на узком экране область сужается */
 	size?: number

@@ -26,23 +26,26 @@
 		box-sizing: border-box;
 		min-width: 0;
 		padding: space(ct(transfer, panel-padding, 10px));
-		border: 1px solid ct(transfer, panel-border, var(--rise-border));
-		border-radius: sz(ct(transfer, panel-radius, var(--rise-radius-md)));
-		@include custom-bg(background-color, ct(transfer, panel-bg, var(--rise-bg)));
+		border: 1px solid ct(transfer, panel-border, transparent);
+		border-radius: sz(ct(transfer, panel-radius, var(--rise-radius-lg)));
+		@include tonal-surface(muted);
+		@include custom-bg(background-color, ct(transfer, panel-bg, var(--rise-bg-muted)));
 	}
 
 	&--soft &__panel {
-		border-color: transparent;
+		@include tonal-surface(elevated);
 		@include custom-bg(background-color, ct(transfer, panel-bg, var(--rise-bg-elevated)));
 	}
 
 	&--outline &__panel {
 		border-color: ct(transfer, panel-border, var(--rise-border-accented));
+		@include tonal-surface(page);
+		@include custom-bg(background-color, ct(transfer, panel-bg, var(--rise-bg)));
 	}
 
 	&--ghost &__panel {
 		padding: 0;
-		border-color: transparent;
+		@include tonal-surface(none);
 		@include custom-bg(background-color, transparent);
 	}
 

@@ -16,12 +16,15 @@
 	&--outline,
 	&--soft {
 		padding: space(ct(form-wizard, padding-y, 20px) ct(form-wizard, padding-x, 24px));
-		border: 1px solid ct(form-wizard, border, var(--rise-border));
 		border-radius: sz(ct(form-wizard, radius, var(--rise-radius-lg)));
 	}
 
+	&--outline {
+		border: 1px solid ct(form-wizard, border, var(--rise-border-accented));
+	}
+
 	&--soft {
-		border-color: ct(form-wizard, border, transparent);
+		@include tonal-surface(elevated);
 		@include custom-bg(background-color, ct(form-wizard, bg, var(--rise-bg-elevated)));
 	}
 

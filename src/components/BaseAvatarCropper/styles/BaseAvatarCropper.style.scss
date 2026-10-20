@@ -57,14 +57,14 @@
 	&__frame {
 		position: absolute;
 		inset: 8%;
-		border-radius: 50%;
+		border-radius: sz(ct(avatar-cropper, frame-radius, var(--rise-radius-md)));
 		outline: 2px solid ct(avatar-cropper, frame-border, rgb(255 255 255 / 90%));
 		box-shadow: ct(avatar-cropper, frame-shadow, 0 0 0 100vmax rgb(0 0 0 / 55%));
 		pointer-events: none;
 	}
 
-	&--square &__frame {
-		border-radius: sz(ct(avatar-cropper, frame-radius, var(--rise-radius-md)));
+	&--circle &__frame {
+		border-radius: 50%;
 	}
 
 	&__message {
@@ -74,7 +74,7 @@
 		max-width: 80%;
 		padding: sz(6px) sz(12px);
 		border-radius: sz(var(--rise-radius-md));
-		background-color: ct(avatar-cropper, message-bg, var(--rise-bg));
+		background-color: ct(avatar-cropper, message-bg, var(--rise-surface-floating));
 		color: ct(avatar-cropper, message-text, var(--rise-text));
 		text-align: center;
 		transform: translate(-50%, -50%);

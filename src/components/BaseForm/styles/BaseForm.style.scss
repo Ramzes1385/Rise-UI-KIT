@@ -51,16 +51,17 @@
 	}
 
 	&--outline {
-		border: 1px solid ct(form, border, var(--rise-border));
+		border: 1px solid ct(form, border, var(--rise-border-accented));
 	}
 
 	&--soft {
-		@include custom-bg(background-color, ct(form, bg, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg))));
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, ct(form, bg, var(--rise-bg-elevated)));
 	}
 
 	&--shadow {
-		border: 1px solid ct(form, border, var(--rise-border));
-		@include custom-bg(background-color, ct(form, bg, var(--rise-bg)));
-		box-shadow: ct(form, shadow, var(--rise-shadow-sm));
+		@include tonal-surface(floating);
+		@include custom-bg(background-color, ct(form, bg, var(--rise-surface-floating)));
+		box-shadow: ct(form, shadow, var(--rise-shadow-md));
 	}
 }

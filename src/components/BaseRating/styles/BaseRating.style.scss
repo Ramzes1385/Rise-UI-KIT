@@ -80,13 +80,12 @@
 	}
 
 	&--shadow {
-		border-color: ct(rating, border, var(--rise-border-accented));
-		@include custom-bg(background-color, var(--rise-bg));
-		box-shadow: ct(rating, shadow, var(--rise-shadow-xs));
+		@include custom-bg(background-color, var(--rise-surface-floating));
+		box-shadow: ct(rating, shadow, var(--rise-shadow-sm));
 	}
 
 	&--soft {
-		@include custom-bg(background-color, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg)));
+		@include custom-bg(background-color, var(--rise-bg-muted));
 	}
 
 	&--soft.base-rating--interactive,

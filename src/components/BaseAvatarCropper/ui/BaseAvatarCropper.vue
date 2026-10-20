@@ -65,7 +65,7 @@ import type { BaseAvatarCropperEmits, BaseAvatarCropperExpose, BaseAvatarCropper
 const props = withDefaults(defineProps<BaseAvatarCropperProps>(), {
 	variant: 'default',
 	crop: undefined,
-	shape: 'circle',
+	shape: 'square',
 	size: 280,
 	maxZoom: 4,
 	label: undefined,
