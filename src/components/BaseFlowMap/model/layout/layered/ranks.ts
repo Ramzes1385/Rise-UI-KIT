@@ -1,4 +1,4 @@
-import type { CycleWalk, LayeredLink, RankAdjacency, RankInput } from '../../../types/internal/core/flowLayoutInternal.types'
+import type { CycleWalk, LayeredLink, RankAdjacency, RankInput } from '../../../types/internal/core/layout/flowLayoutInternal.types'
 
 function buildAdjacency({ count, links }: RankInput): RankAdjacency {
 	const out: number[][] = Array.from({ length: count }, () => [])

@@ -3,7 +3,7 @@ import { UI_ROADMAP_REVIEW } from '@/locales/messages'
 import { roadmapReviewAdapter } from './roadmapReviewAdapter'
 import type { RoadmapData } from '../../../types/roadmapData.types'
 import type { RoadmapChange, RoadmapEntity } from '../../../types/roadmapEdit.types'
-import { describeChanges } from '@components/BaseFlowMap/model/review/reviewSuggestions'
+import { describeChanges } from '@components/BaseFlowMap/model/review/data/reviewSuggestions'
 import type { ReviewChangeInfo } from '@components/BaseFlowMap/types/internal/review/reviewCore.types'
 
 export function roadmapElementName(data: RoadmapData, entity: RoadmapEntity, id: string): string {

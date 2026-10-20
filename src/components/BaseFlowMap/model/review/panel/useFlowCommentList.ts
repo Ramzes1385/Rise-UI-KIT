@@ -5,7 +5,7 @@ import { useFlowReviewState } from '../useFlowReviewState'
 import { formatRelativeTime } from '@utils/data/dateUtils'
 import { useFlowMapContext } from '../../context/flowContext'
 import { elementName, entityOfId } from '../flowReviewLabels'
-import { commentCount, latestComment } from '../reviewComments'
+import { commentCount, latestComment } from '../data/reviewComments'
 import type { FlowCommentThread } from '../../../types/data/flowReview.types'
 import type { FlowReviewState } from '../../../types/internal/review/reviewState.types'
 

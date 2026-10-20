@@ -286,7 +286,19 @@ describe('клавиши в полях и вне режима', () => {
 })
 
 describe('режим «Правки»: действия идут в черновик', () => {
-	it.todo('перетаскивание и удаление не меняют данные, а копятся в предложении к отправке')
+	it('перетаскивание и удаление не меняют данные, а копятся в предложении к отправке', async () => {
+		const map = await mountEdit({ data: editData(), mode: 'review', currentUser: { name: 'Роман' } })
+		expect(screen.queryByRole('toolbar', { name: 'Инструменты правки' })).toBeNull()
+		await map.drag(map.node('gw'), [
+			[10, 10],
+			[90, 90],
+		])
+		expect(pos(map, 'gw')).toEqual({ x: 0, y: 0 })
+		await select(map, 'nt')
+		await map.press('Delete')
+		expect(ids(map)).toContain('nt')
+		expect(await screen.findByRole('button', { name: /Отправить/ })).toBeInTheDocument()
+	})
 
 	it('выход из edit сбрасывает инструмент, подпись и меню', async () => {
 		const map = await mountEdit({ data: editData() })

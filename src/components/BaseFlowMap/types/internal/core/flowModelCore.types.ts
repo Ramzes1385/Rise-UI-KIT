@@ -1,6 +1,6 @@
 import type { ComputedRef, Ref, ShallowRef } from 'vue'
 import type { FlowGroupState } from '../flowGroups.types'
-import type { FlowLayoutScope } from './flowLayoutScope.types'
+import type { FlowLayoutScope } from './layout/flowLayoutScope.types'
 import type { FlowMapData, FlowPoint } from '../../data/flowData.types'
 import type { FlowGraph, FlowLayoutResult } from '../../api/flowLayout.types'
 import type { FlowDataIssue, FlowNotation } from '../../api/flowNotation.types'

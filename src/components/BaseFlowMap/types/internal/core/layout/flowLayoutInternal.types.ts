@@ -1,5 +1,5 @@
-import type { FlowRect, FlowSize } from '../../data/flowData.types'
-import type { FlowLayoutGroup, FlowLayoutInput, FlowLayoutResult } from '../../api/flowLayout.types'
+import type { FlowRect, FlowSize } from '../../../data/flowData.types'
+import type { FlowLayoutGroup, FlowLayoutInput, FlowLayoutResult } from '../../../api/flowLayout.types'
 
 /** Связь между вершинами: индексы источника и приёмника */
 export type LayeredLink = readonly [number, number]

@@ -14,7 +14,7 @@ import {
 	groupChanges,
 	sortSuggestions,
 	suggestionAuthors,
-} from '../reviewSuggestions'
+} from '../data/reviewSuggestions'
 
 export const REVIEW_INTERNAL_HANDLER = 'flowReviewInternal'
 

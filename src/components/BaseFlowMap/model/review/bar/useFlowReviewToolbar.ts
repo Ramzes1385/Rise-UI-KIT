@@ -1,8 +1,8 @@
 import { computed } from 'vue'
 import { formatMessage } from '@/locales/state'
-import { initialsOf } from '../reviewSuggestions'
 import { formatCount } from '../panel/reviewFormat'
 import { UI_FLOW_REVIEW } from '@/locales/messages'
+import { initialsOf } from '../data/reviewSuggestions'
 import { useFlowReviewState } from '../useFlowReviewState'
 import type { SegmentedOption } from '@components/BaseSegmented'
 

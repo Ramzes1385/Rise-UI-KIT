@@ -1,13 +1,13 @@
 import { shallowRef, watch } from 'vue'
-import { createFlowId } from '../data/flowIds'
-import { diffFlowData } from '../data/flowDiff'
 import { UI_FLOW_MAP } from '@/locales/messages'
-import { normalizeFlowData } from '../data/flowNormalize'
-import { hookReject, refuse } from '../execute/flowReject'
-import type { FlowMapData } from '../../types/data/flowData.types'
-import type { FlowSuggestion } from '../../types/data/flowReview.types'
-import type { FlowCommandResult } from '../../types/api/flowController.types'
-import type { FlowReviewApi, FlowReviewParts, FlowSuggestionStore } from '../../types/internal/core/flowModelCore.types'
+import { createFlowId } from '../../data/flowIds'
+import { diffFlowData } from '../../data/flowDiff'
+import { normalizeFlowData } from '../../data/flowNormalize'
+import { hookReject, refuse } from '../../execute/flowReject'
+import type { FlowMapData } from '../../../types/data/flowData.types'
+import type { FlowSuggestion } from '../../../types/data/flowReview.types'
+import type { FlowCommandResult } from '../../../types/api/flowController.types'
+import type { FlowReviewApi, FlowReviewParts, FlowSuggestionStore } from '../../../types/internal/core/flowModelCore.types'
 
 function createStore(parts: FlowReviewParts): FlowSuggestionStore {
 	const { props, events } = parts
@@ -30,7 +30,7 @@ function createStore(parts: FlowReviewParts): FlowSuggestionStore {
 }
 
 async function acceptSuggestion(parts: FlowReviewParts, store: FlowSuggestionStore, found: FlowSuggestion): Promise<FlowCommandResult> {
-	const { acceptCommand } = await import('../commands/flowLayoutCommands')
+	const { acceptCommand } = await import('../../commands/flowLayoutCommands')
 	const outcome = await parts.hooks.run('beforeAccept', { suggestion: found }, found)
 	const command = acceptCommand(outcome.value)
 	if (outcome.isCancelled) return refuse(parts.events, hookReject(command, 'beforeAccept'))

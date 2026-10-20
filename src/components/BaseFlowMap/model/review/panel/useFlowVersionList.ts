@@ -5,7 +5,7 @@ import { UI_FLOW_REVIEW } from '@/locales/messages'
 import { flowReviewAdapter } from '../flowReviewAdapter'
 import { useFlowReviewState } from '../useFlowReviewState'
 import { formatRelativeTime } from '@utils/data/dateUtils'
-import { initialsOf, describeChanges, summarizeChanges } from '../reviewSuggestions'
+import { initialsOf, describeChanges, summarizeChanges } from '../data/reviewSuggestions'
 
 export function useFlowVersionList() {
 	const { compare } = useFlowReviewState()

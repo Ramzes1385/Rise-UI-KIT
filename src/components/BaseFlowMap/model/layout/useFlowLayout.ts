@@ -5,7 +5,7 @@ import { computeRoutes } from './flowRoutes'
 import { UI_FLOW_MAP } from '@/locales/messages'
 import { createLayoutInput } from './flowLayoutInput'
 import type { FlowLayoutResult, FlowRoute } from '../../types/api/flowLayout.types'
-import type { FlowLayoutRun, FlowLayoutScope } from '../../types/internal/core/flowLayoutScope.types'
+import type { FlowLayoutRun, FlowLayoutScope } from '../../types/internal/core/layout/flowLayoutScope.types'
 
 const FALLBACK_ALGORITHM = 'layered'
 

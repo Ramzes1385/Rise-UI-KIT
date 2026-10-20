@@ -1,7 +1,7 @@
 import type { FlowShape } from '../../types/api/flowNotation.types'
 import type { FlowLayoutEdge } from '../../types/api/flowLayout.types'
 import type { FlowPoint, FlowRect } from '../../types/data/flowData.types'
-import type { ConcreteSide, Ray } from '../../types/internal/core/flowRouteInternal.types'
+import type { ConcreteSide, Ray } from '../../types/internal/core/layout/flowRouteInternal.types'
 
 const SKEW = 0.2
 const HEX = 0.25

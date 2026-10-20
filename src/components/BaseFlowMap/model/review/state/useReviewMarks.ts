@@ -1,7 +1,7 @@
 import type { ComputedRef } from 'vue'
 import { computed, onScopeDispose, watch } from 'vue'
 import { flowReviewAdapter } from '../flowReviewAdapter'
-import { buildReviewMarks, buildSuggestionMarks } from '../reviewDiff'
+import { buildReviewMarks, buildSuggestionMarks } from '../data/reviewDiff'
 import type { FlowModelProps } from '../../../types/internal/flowModel.types'
 import type { ReviewMark } from '../../../types/internal/review/reviewCore.types'
 import type { ReviewMarkParts } from '../../../types/internal/review/reviewState.types'

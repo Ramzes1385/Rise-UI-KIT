@@ -1,5 +1,12 @@
 import type { ReviewAdapter } from '../../../../types/internal/review/reviewCore.types'
-import { buildReviewMarks, buildSuggestionMarks, diffFields, isReviewEqual, markGlyph, markKey } from '../../../../model/review/reviewDiff'
+import {
+	buildReviewMarks,
+	buildSuggestionMarks,
+	diffFields,
+	isReviewEqual,
+	markGlyph,
+	markKey,
+} from '../../../../model/review/data/reviewDiff'
 
 interface Fake {
 	id: string

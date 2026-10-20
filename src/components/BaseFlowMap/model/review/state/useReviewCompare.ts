@@ -1,8 +1,8 @@
 import { computed, ref, watch } from 'vue'
 import { flowReviewAdapter } from '../flowReviewAdapter'
 import type { FlowModelProps } from '../../../types/internal/flowModel.types'
-import { toTimestamp, describeChanges, summarizeChanges } from '../reviewSuggestions'
 import type { FlowReviewCompare } from '../../../types/internal/review/reviewState.types'
+import { toTimestamp, describeChanges, summarizeChanges } from '../data/reviewSuggestions'
 import type { FlowModelInternal } from '../../../types/internal/core/flowRenderInternal.types'
 
 export function useReviewCompare(model: FlowModelInternal, props: FlowModelProps): FlowReviewCompare {

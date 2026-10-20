@@ -1,6 +1,6 @@
 import type { FlowLayoutScope } from './flowLayoutScope.types'
-import type { FlowLayoutEdge, FlowLayoutResult } from '../../api/flowLayout.types'
-import type { FlowPoint, FlowPortSide, FlowRect } from '../../data/flowData.types'
+import type { FlowLayoutEdge, FlowLayoutResult } from '../../../api/flowLayout.types'
+import type { FlowPoint, FlowPortSide, FlowRect } from '../../../data/flowData.types'
 
 /** Запрос на подпись связи: линия и размер подписи */
 export interface LabelRequest {

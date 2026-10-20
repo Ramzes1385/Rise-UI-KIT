@@ -12,7 +12,7 @@ import type {
 	LayeredLink,
 	LayeredVertex,
 	LayoutScope,
-} from '../../../types/internal/core/flowLayoutInternal.types'
+} from '../../../types/internal/core/layout/flowLayoutInternal.types'
 
 function isHorizontal(input: FlowLayoutInput): boolean {
 	return input.settings.direction === 'LR' || input.settings.direction === 'RL'

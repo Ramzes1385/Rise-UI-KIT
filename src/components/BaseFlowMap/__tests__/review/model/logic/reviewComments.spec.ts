@@ -8,7 +8,7 @@ import {
 	markThreadRead,
 	setThreadResolved,
 	visibleThreads,
-} from '../../../../model/review/reviewComments'
+} from '../../../../model/review/data/reviewComments'
 
 const author = { name: 'Анна' }
 const input = (text: string, date = 1) => ({ author, text, date })

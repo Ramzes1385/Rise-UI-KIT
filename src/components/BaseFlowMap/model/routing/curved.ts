@@ -1,7 +1,7 @@
 import { endpoints, NORMALS } from './shapes'
 import type { FlowPoint, FlowRect } from '../../types/data/flowData.types'
 import type { FlowLayoutEdge, FlowRouter } from '../../types/api/flowLayout.types'
-import type { ConcreteSide } from '../../types/internal/core/flowRouteInternal.types'
+import type { ConcreteSide } from '../../types/internal/core/layout/flowRouteInternal.types'
 
 const SAMPLES = 28
 const MIN_REACH = 24

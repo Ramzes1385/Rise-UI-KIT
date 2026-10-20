@@ -4,7 +4,7 @@ import type {
 	LayeredVertex,
 	LayerSpan,
 	StackPlan,
-} from '../../../types/internal/core/flowLayoutInternal.types'
+} from '../../../types/internal/core/layout/flowLayoutInternal.types'
 
 const ITERATIONS = 4
 const BAND_PAD = 20

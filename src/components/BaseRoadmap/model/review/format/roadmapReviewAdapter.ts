@@ -1,7 +1,7 @@
 import type { RoadmapChange } from '../../../types/roadmapEdit.types'
 import { applyRoadmapChanges } from '../../edit/changes/roadmapChanges'
-import { diffFields, isReviewEqual } from '@components/BaseFlowMap/model/review/reviewDiff'
 import type { RoadmapData, RoadmapStage, RoadmapTopic } from '../../../types/roadmapData.types'
+import { diffFields, isReviewEqual } from '@components/BaseFlowMap/model/review/data/reviewDiff'
 import type { RoadmapEntityChange, RoadmapUpdateChange as UpdateChange } from '../../../types/internal/roadmapReview.types'
 import type {
 	ReviewAdapter,

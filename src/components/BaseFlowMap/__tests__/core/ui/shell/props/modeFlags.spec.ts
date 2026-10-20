@@ -25,13 +25,14 @@ describe('useBaseFlowMap: признаки режима', () => {
 		expect(map.isReviewLoaded.value).toBe(false)
 	})
 
-	it('режим «Ревью» грузит только ревью: оно активно, часть правки не создаётся', async () => {
+	it('режим «Ревью» грузит ревью и модель правки для жестов, но интерфейс правки не включает', async () => {
 		const { map } = modelOf('review')
 		expect(map.isReviewLoaded.value).toBe(false)
 		await vi.waitFor(() => expect(map.isReviewLoaded.value).toBe(true), LOAD)
 		expect(map.review.value?.isActive.value).toBe(true)
-		expect(map.editing.value).toBeNull()
-		expect(map.isEditLoaded.value).toBe(false)
+		await vi.waitFor(() => expect(map.isEditLoaded.value).toBe(true), LOAD)
+		expect(map.editing.value).not.toBeNull()
+		expect(map.isEditing.value).toBe(false)
 	})
 
 	it('в режиме просмотра ничего не грузится, а при смене режима части подгружаются и признаки следуют за ним', async () => {

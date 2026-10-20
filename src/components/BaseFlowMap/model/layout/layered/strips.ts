@@ -1,7 +1,7 @@
 import { ancestorsOf } from './groups'
 import type { FlowPoint, FlowRect } from '../../../types/data/flowData.types'
 import type { FlowLayoutGroup, FlowLayoutResult } from '../../../types/api/flowLayout.types'
-import type { StripContext, StripFrame, StripScope } from '../../../types/internal/core/flowLayoutInternal.types'
+import type { StripContext, StripFrame, StripScope } from '../../../types/internal/core/layout/flowLayoutInternal.types'
 
 const PAD = 16
 

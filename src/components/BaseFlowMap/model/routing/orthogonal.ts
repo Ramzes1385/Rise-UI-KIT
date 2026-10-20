@@ -1,7 +1,7 @@
 import { endpoints, NORMALS } from './shapes'
 import type { FlowPoint } from '../../types/data/flowData.types'
 import type { FlowLayoutEdge, FlowRouter } from '../../types/api/flowLayout.types'
-import type { ConcreteSide, OrthogonalContext, RouteEnds } from '../../types/internal/core/flowRouteInternal.types'
+import type { ConcreteSide, OrthogonalContext, RouteEnds } from '../../types/internal/core/layout/flowRouteInternal.types'
 
 const STUB = 16
 const CHANNEL_STEP = 6

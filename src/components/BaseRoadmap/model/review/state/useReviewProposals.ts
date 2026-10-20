@@ -6,7 +6,7 @@ import { nextRoadmapReviewId } from '../format/roadmapReviewIds'
 import { setProposalStatus, toSuggestion } from '../format/roadmapProposals'
 import type { RoadmapChange, RoadmapProposal } from '../../../types/roadmapEdit.types'
 import { isRoadmapProposalStale, roadmapReviewAdapter } from '../format/roadmapReviewAdapter'
-import { createSuggestionView, filterSuggestions, sortSuggestions } from '@components/BaseFlowMap/model/review/reviewSuggestions'
+import { createSuggestionView, filterSuggestions, sortSuggestions } from '@components/BaseFlowMap/model/review/data/reviewSuggestions'
 import type {
 	RoadmapProposalView,
 	RoadmapReviewContext,

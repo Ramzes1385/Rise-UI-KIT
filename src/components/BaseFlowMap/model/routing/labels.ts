@@ -1,6 +1,6 @@
 import type { FlowRoute } from '../../types/api/flowLayout.types'
 import type { FlowPoint, FlowRect } from '../../types/data/flowData.types'
-import type { LabelRequest } from '../../types/internal/core/flowRouteInternal.types'
+import type { LabelRequest } from '../../types/internal/core/layout/flowRouteInternal.types'
 
 const CELL = 64
 const FRACTIONS = [0.5, 0.35, 0.65, 0.2, 0.8]

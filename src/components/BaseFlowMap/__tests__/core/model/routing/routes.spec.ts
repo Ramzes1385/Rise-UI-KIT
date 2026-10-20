@@ -7,9 +7,9 @@ import { estimateTextWidth } from '../../../../model/routing/textWidth'
 import { createLayoutInput } from '../../../../model/layout/flowLayoutInput'
 import type { FlowNotation } from '../../../../types/api/flowNotation.types'
 import type { FlowLayoutResult } from '../../../../types/api/flowLayout.types'
-import type { FlowLayoutScope } from '../../../../types/internal/core/flowLayoutScope.types'
 import type { FlowMapData, FlowPoint, FlowRect } from '../../../../types/data/flowData.types'
 import { createScope, hasOverlaps, isOverlapping, plainNotation } from '../fixtures/layoutScope'
+import type { FlowLayoutScope } from '../../../../types/internal/core/layout/flowLayoutScope.types'
 
 function routesOf(scope: FlowLayoutScope, layout?: FlowLayoutResult) {
 	const result = layout ?? runFlowLayout(scope)

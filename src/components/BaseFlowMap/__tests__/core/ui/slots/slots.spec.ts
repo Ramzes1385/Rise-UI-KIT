@@ -217,7 +217,14 @@ describe('кнопка скорости сценария', () => {
 })
 
 describe('запись истории листа подробностей', () => {
-	it.todo('лист, открытый до загрузки подробностей (первые 200 мс), добавляет запись истории')
+	it('лист, открытый до загрузки подробностей (первые 200 мс), добавляет запись истории', async () => {
+		const push = vi.spyOn(window.history, 'pushState')
+		stubFrame(400, 500)
+		mountMap()
+		await openDetails(/^Alpha/)
+		await screen.findByRole('dialog')
+		await waitFor(() => expect(push).toHaveBeenCalledWith({ riseFlowDetails: true }, ''))
+	})
 
 	afterEach(() => {
 		vi.restoreAllMocks()

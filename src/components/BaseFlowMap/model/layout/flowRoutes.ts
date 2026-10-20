@@ -3,9 +3,9 @@ import { estimateTextWidth } from '../routing/textWidth'
 import { centerOf, clipToShape, resolveSides } from '../routing/shapes'
 import { resolveEdgeKind, resolveNodeKind } from '../notations/resolveKind'
 import type { FlowEdge, FlowPoint, FlowRect } from '../../types/data/flowData.types'
-import type { FlowLayoutScope } from '../../types/internal/core/flowLayoutScope.types'
-import type { FlowNodeBox, LabelRequest, RouteBuild } from '../../types/internal/core/flowRouteInternal.types'
+import type { FlowLayoutScope } from '../../types/internal/core/layout/flowLayoutScope.types'
 import type { FlowLayoutEdge, FlowLayoutResult, FlowRoute, FlowRouter } from '../../types/api/flowLayout.types'
+import type { FlowNodeBox, LabelRequest, RouteBuild } from '../../types/internal/core/layout/flowRouteInternal.types'
 
 const RADIUS = 8
 const LABEL_HEIGHT = 20

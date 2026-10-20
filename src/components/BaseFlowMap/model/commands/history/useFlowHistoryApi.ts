@@ -1,8 +1,8 @@
 import { formatMessage } from '@/locales/state'
 import { UI_FLOW_MAP } from '@/locales/messages'
-import { applyFlowChanges } from '../data/flowChanges'
-import type { FlowChange } from '../../types/data/flowReview.types'
-import type { FlowCommandParts, FlowHistoryApi } from '../../types/internal/core/flowModelCore.types'
+import { applyFlowChanges } from '../../data/flowChanges'
+import type { FlowChange } from '../../../types/data/flowReview.types'
+import type { FlowCommandParts, FlowHistoryApi } from '../../../types/internal/core/flowModelCore.types'
 
 function applyRemote(parts: FlowCommandParts, changes: FlowChange[]): void {
 	const next = applyFlowChanges(parts.state.data.value, changes)

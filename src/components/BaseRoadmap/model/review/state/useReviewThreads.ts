@@ -10,7 +10,7 @@ import {
 	markThreadRead,
 	setThreadResolved,
 	visibleThreads,
-} from '@components/BaseFlowMap/model/review/reviewComments'
+} from '@components/BaseFlowMap/model/review/data/reviewComments'
 
 export function useReviewThreads(context: RoadmapReviewContext): RoadmapReviewThreads {
 	const { options } = context

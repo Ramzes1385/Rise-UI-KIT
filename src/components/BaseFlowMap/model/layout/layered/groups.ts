@@ -1,5 +1,5 @@
-import type { GroupIndex } from '../../../types/internal/core/flowLayoutInternal.types'
 import type { FlowLayoutGroup, FlowLayoutNode } from '../../../types/api/flowLayout.types'
+import type { GroupIndex } from '../../../types/internal/core/layout/flowLayoutInternal.types'
 
 function sortGroups(groups: readonly FlowLayoutGroup[]): FlowLayoutGroup[] {
 	return groups

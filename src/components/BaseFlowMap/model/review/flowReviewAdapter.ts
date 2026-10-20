@@ -1,4 +1,4 @@
-import { diffFields, isReviewEqual } from './reviewDiff'
+import { diffFields, isReviewEqual } from './data/reviewDiff'
 import type { FlowMapData } from '../../types/data/flowData.types'
 import type { FlowAuthor, FlowChange, FlowEntity } from '../../types/data/flowReview.types'
 import type { ReviewAdapter, ReviewChangeInfo, ReviewChangeKind, ReviewField } from '../../types/internal/review/reviewCore.types'

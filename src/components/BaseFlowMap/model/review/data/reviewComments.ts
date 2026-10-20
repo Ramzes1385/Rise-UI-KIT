@@ -1,5 +1,5 @@
 import type { CommentItem } from '@components/BaseCommentThread'
-import type { ReviewNewComment, ReviewThreadLike } from '../../types/internal/review/reviewCore.types'
+import type { ReviewNewComment, ReviewThreadLike } from '../../../types/internal/review/reviewCore.types'
 
 function nextReviewId(prefix: string, used: Iterable<string>): string {
 	const taken = new Set(used)

@@ -1,4 +1,4 @@
-import type { LayeredGraph, LayeredLink, LayeredVertex } from '../../../types/internal/core/flowLayoutInternal.types'
+import type { LayeredGraph, LayeredLink, LayeredVertex } from '../../../types/internal/core/layout/flowLayoutInternal.types'
 
 const DUMMY_CROSS = 8
 

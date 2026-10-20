@@ -5,7 +5,7 @@ import type { FlowModelProps } from '../../../types/internal/flowModel.types'
 import type { FlowCommentEvent } from '../../../types/api/flowController.types'
 import type { FlowModelInternal } from '../../../types/internal/core/flowRenderInternal.types'
 import type { FlowCommentTarget, FlowReviewComments } from '../../../types/internal/review/reviewState.types'
-import { addComment, countUnread, createThread, markThreadRead, setThreadResolved, visibleThreads } from '../reviewComments'
+import { addComment, countUnread, createThread, markThreadRead, setThreadResolved, visibleThreads } from '../data/reviewComments'
 
 const JUST_CLOSED_MS = 300
 

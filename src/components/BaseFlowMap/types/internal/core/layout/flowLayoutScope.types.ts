@@ -1,6 +1,6 @@
-import type { FlowNotation } from '../../api/flowNotation.types'
-import type { FlowLayoutAlgorithm, FlowRouter } from '../../api/flowLayout.types'
-import type { FlowLayoutSettings, FlowMapData, FlowPoint } from '../../data/flowData.types'
+import type { FlowNotation } from '../../../api/flowNotation.types'
+import type { FlowLayoutAlgorithm, FlowRouter } from '../../../api/flowLayout.types'
+import type { FlowLayoutSettings, FlowMapData, FlowPoint } from '../../../data/flowData.types'
 
 /** Всё, что нужно для раскладки и маршрутов: данные, нотация и реестры */
 export interface FlowLayoutScope {

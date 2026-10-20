@@ -1,6 +1,6 @@
 import { estimateTextWidth } from '../routing/textWidth'
 import { resolveGroupKind, resolveNodeKind } from '../notations/resolveKind'
-import type { FlowLayoutRun, FlowLayoutScope } from '../../types/internal/core/flowLayoutScope.types'
+import type { FlowLayoutRun, FlowLayoutScope } from '../../types/internal/core/layout/flowLayoutScope.types'
 import type { FlowLayoutEdge, FlowLayoutGroup, FlowLayoutInput, FlowLayoutNode } from '../../types/api/flowLayout.types'
 import type { FlowGroup, FlowLayoutSettings, FlowNode, FlowPoint, FlowPortSide, FlowSize } from '../../types/data/flowData.types'
 

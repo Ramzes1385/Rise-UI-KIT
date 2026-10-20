@@ -4,7 +4,7 @@ import type {
 	ReviewChangeKind,
 	ReviewField,
 	ReviewMark,
-} from '../../types/internal/review/reviewCore.types'
+} from '../../../types/internal/review/reviewCore.types'
 
 export function markKey(entity: string, id: string): string {
 	return `${entity}:${id}`

@@ -11,7 +11,7 @@ import {
 	suggestionAuthors,
 	summarizeChanges,
 	toTimestamp,
-} from '../../../../model/review/reviewSuggestions'
+} from '../../../../model/review/data/reviewSuggestions'
 
 interface FakeChange {
 	id: string

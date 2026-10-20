@@ -4,7 +4,7 @@ import { createRouterRegistry } from '../../../model/routing/registry'
 import type { FlowNotation } from '../../../types/api/flowNotation.types'
 import type { FlowLayoutAlgorithm } from '../../../types/api/flowLayout.types'
 import type { FlowLayoutSettings, FlowMapData } from '../../../types/data/flowData.types'
-import type { FlowLayoutScope } from '../../../types/internal/core/flowLayoutScope.types'
+import type { FlowLayoutScope } from '../../../types/internal/core/layout/flowLayoutScope.types'
 
 interface ScopeOptions {
 	layout?: FlowLayoutSettings

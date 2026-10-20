@@ -1,4 +1,4 @@
-import type { FlowSuggestionStatus, ReviewSuggestion } from '../../types/data/flowReview.types'
+import type { FlowSuggestionStatus, ReviewSuggestion } from '../../../types/data/flowReview.types'
 import type {
 	ReviewAdapter,
 	ReviewChangeInfo,
@@ -9,7 +9,7 @@ import type {
 	ReviewStatusCounts,
 	ReviewSuggestionKind,
 	ReviewSuggestionView,
-} from '../../types/internal/review/reviewCore.types'
+} from '../../../types/internal/review/reviewCore.types'
 
 export function toTimestamp(date: Date | string | number): number {
 	if (date instanceof Date) return date.getTime()

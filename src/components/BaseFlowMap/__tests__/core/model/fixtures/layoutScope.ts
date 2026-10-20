@@ -1,9 +1,9 @@
 import { flowServices } from '../../../../model/notations/services'
 import { createLayoutRegistry } from '../../../../model/layout/registry'
 import { createRouterRegistry } from '../../../../model/routing/registry'
-import type { FlowLayoutScope } from '../../../../types/internal/core/flowLayoutScope.types'
 import type { FlowLayoutAlgorithm, FlowRouter } from '../../../../types/api/flowLayout.types'
 import type { FlowNodeKindDef, FlowNotation } from '../../../../types/api/flowNotation.types'
+import type { FlowLayoutScope } from '../../../../types/internal/core/layout/flowLayoutScope.types'
 import type { FlowLayoutSettings, FlowMapData, FlowRect } from '../../../../types/data/flowData.types'
 
 interface ScopeOptions {

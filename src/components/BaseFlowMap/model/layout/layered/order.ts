@@ -1,4 +1,4 @@
-import type { LayeredGraph, OrderState } from '../../../types/internal/core/flowLayoutInternal.types'
+import type { LayeredGraph, OrderState } from '../../../types/internal/core/layout/flowLayoutInternal.types'
 
 const SWEEPS = 4
 const TRANSPOSE_PASSES = 2
