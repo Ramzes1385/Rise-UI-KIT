@@ -147,7 +147,8 @@ export function useFlowMap3DEnvironment() {
 		stubBrowser(size, queue)
 	})
 
-	afterEach(() => {
+	afterEach(async () => {
+		await vi.dynamicImportSettled()
 		vi.restoreAllMocks()
 		vi.unstubAllGlobals()
 		document.documentElement.removeAttribute('data-rise-motion')

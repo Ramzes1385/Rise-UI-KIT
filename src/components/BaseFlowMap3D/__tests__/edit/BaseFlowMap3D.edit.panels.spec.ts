@@ -73,6 +73,7 @@ describe('BaseFlowMap3D «Правка»: замена модели', () => {
 	})
 
 	it('свой GLB: адрес принимается, узел получает `url`; неверный адрес — предупреждение', async () => {
+		vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 		const map = await mountEdit({ data: LONE_DATA })
 		await map.select('a')
 		await openPalette()

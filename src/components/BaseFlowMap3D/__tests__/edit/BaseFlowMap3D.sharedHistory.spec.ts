@@ -43,4 +43,21 @@ describe('BaseFlowMap3D: общая история правок 2D и 3D', () =>
 		press(viewport(container), 'z', { ctrlKey: true })
 		await waitFor(() => expect(ids(api)).not.toContain('extra'))
 	})
+
+	it('после возврата из 2D в 3D масштаб и вид контроллера идут в камеру', async () => {
+		const { container, api } = await env.renderMap({ view: '3d' })
+		api().setView('2d')
+		await waitFor(() => expect(container.querySelector('.base-flow-map-3d__pane .base-flow-map__viewport')).not.toBeNull(), {
+			timeout: 15000,
+		})
+		api().setView('3d')
+		await waitFor(() => expect(container.querySelector('.base-flow-map-3d__pane .base-flow-map__viewport')).toBeNull(), {
+			timeout: 15000,
+		})
+		const before = api().getViewport()
+		expect(() => api().zoom('in')).not.toThrow()
+		for (let index = 0; index < 40; index += 1) env.flushFrames(50)
+		expect(api().getViewport().zoom).toBeGreaterThan(before.zoom)
+		expect(() => api().setViewport({ ...before, zoom: before.zoom })).not.toThrow()
+	})
 })

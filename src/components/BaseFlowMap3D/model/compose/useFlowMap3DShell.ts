@@ -48,17 +48,17 @@ export function useFlowMap3DShell(parts: FlowMap3DComposeParts, stage: FlowMap3D
 		getFadeMs: core.motion.fadeMs,
 	})
 	const transition = useFlowMap3DTransition({ shownView: view.shownView, camera: stage.camera, onReturn: flight.arrive })
-	model.setView(
-		createViewAdapter({
-			camera: stage.camera,
-			getView: () => view.shownView.value,
-			getTwoD: () => transition.twoD.value,
-			getSize: stage.size,
-			focusNode: input.focus.move,
-			getCapture: captureSource(parts, stage),
-			announce: core.announce,
-		}),
-	)
+	const adapter = createViewAdapter({
+		camera: stage.camera,
+		getView: () => view.shownView.value,
+		getTwoD: () => transition.twoD.value,
+		getSize: stage.size,
+		focusNode: input.focus.move,
+		getCapture: captureSource(parts, stage),
+		announce: core.announce,
+	})
+	model.setView(adapter)
+	watch(transition.twoD, twoD => !twoD && model.setView(adapter))
 	const controller = createFlowMap3DController({
 		base: model.controller,
 		camera: stage.camera,
