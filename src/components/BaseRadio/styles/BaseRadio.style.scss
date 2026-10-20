@@ -1,12 +1,13 @@
 .base-radio {
 	@include custom-color-scope;
-	--radio-border: #{ct(radio, circle-border, var(--rise-border-accented))};
-	--radio-bg: #{ct(radio, circle-bg, var(--rise-bg))};
+	--radio-border: #{ct(radio, circle-border, var(--rise-border-control))};
+	--radio-bg: #{ct(radio, circle-bg, transparent)};
 	--radio-bg-hover: #{ct(radio, circle-bg-hover, var(--rise-bg-elevated))};
 	--radio-checked-border: var(--custom-bg, #{ct(radio, circle-border-checked, var(--rise-primary))});
-	--radio-checked-bg-hover: var(--custom-bg-hover, var(--custom-bg, var(--rise-primary-hover)));
-	@include custom-bg(--radio-checked-bg, ct(radio, circle-bg-checked, var(--rise-primary)));
-	@include custom-text(--radio-dot, ct(radio, dot-bg, var(--rise-on-primary)));
+	--radio-checked-bg: #{ct(radio, circle-bg-checked, transparent)};
+	--radio-checked-bg-hover: var(--radio-checked-bg);
+	--radio-checked-border-width: #{sz(5px)};
+	@include custom-text(--radio-dot, ct(radio, dot-bg, transparent));
 
 	display: flex;
 	flex-direction: column;
@@ -39,9 +40,8 @@
 	}
 
 	&--outline {
-		--radio-bg: transparent;
+		--radio-checked-border-width: #{sz(1.5px)};
 		--radio-checked-bg-hover: var(--rise-bg-elevated);
-		@include custom-bg(--radio-checked-bg, transparent);
 		@include custom-text(--radio-dot, var(--rise-primary));
 	}
 
@@ -52,7 +52,7 @@
 	}
 
 	&--shadow .base-radio-item__circle {
-		box-shadow: ct(radio, circle-shadow, var(--rise-shadow-xs));
+		box-shadow: ct(radio, circle-shadow, var(--rise-shadow-sm));
 	}
 
 	&--bordered {
@@ -65,9 +65,9 @@
 			align-items: center;
 			box-sizing: border-box;
 			padding: sz(var(--rise-control-padding-y)) sz(var(--rise-control-padding-x));
-			border: 1px solid var(--radio-border);
+			border: 1px solid var(--radio-item-border, var(--rise-border-accented));
 			border-radius: sz(var(--rise-control-radius));
-			background-color: var(--rise-bg);
+			background-color: var(--rise-field-bg);
 			@include transition-colors;
 		}
 
@@ -99,6 +99,7 @@
 
 	&--error {
 		--radio-border: var(--rise-error);
+		--radio-item-border: var(--rise-error);
 	}
 }
 
@@ -137,7 +138,7 @@
 		box-sizing: border-box;
 		width: sz(16px);
 		height: sz(16px);
-		border: 1px solid var(--radio-border);
+		border: sz(1.5px) solid var(--radio-border);
 		border-radius: var(--rise-radius-full);
 		background-color: var(--radio-bg);
 		box-shadow: ct(radio, circle-shadow, none);
@@ -146,6 +147,7 @@
 	}
 
 	&__input:checked + &__circle {
+		border-width: var(--radio-checked-border-width);
 		border-color: var(--radio-checked-border);
 		background-color: var(--radio-checked-bg);
 	}

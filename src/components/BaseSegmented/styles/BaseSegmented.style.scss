@@ -1,8 +1,8 @@
 .base-segmented {
 	@include custom-color-scope;
-	--segment-checked-bg: var(--custom-bg, #{ct(segmented, indicator-bg, var(--rise-bg))});
+	--segment-checked-bg: var(--custom-bg, #{ct(segmented, indicator-bg, var(--rise-surface-selected))});
 	--segment-checked-text: var(--custom-text, #{ct(segmented, segment-text-checked, var(--rise-text-highlighted))});
-	--segment-checked-shadow: #{ct(segmented, indicator-shadow, var(--rise-shadow-sm))};
+	--segment-checked-shadow: #{ct(segmented, indicator-shadow, none)};
 	--segment-checked-border: transparent;
 	--segment-track-bg: #{ct(segmented, track-bg, var(--rise-bg-elevated))};
 	--segment-track-border: #{ct(segmented, track-border, transparent)};
@@ -36,7 +36,7 @@
 		justify-content: center;
 		gap: sz(6px);
 		flex-shrink: 0;
-		padding: sz(ct(segmented, segment-padding-y, 4px)) sz(ct(segmented, segment-padding-x, 12px));
+		padding: sz(ct(segmented, segment-padding-y, 3px)) sz(ct(segmented, segment-padding-x, 12px));
 		border: 1px solid transparent;
 		border-radius: sz(ct(segmented, segment-radius, var(--rise-radius-sm)));
 		color: ct(segmented, segment-text, var(--rise-text));
@@ -130,7 +130,7 @@
 	}
 
 	&--outline {
-		--segment-track-bg: var(--rise-bg);
+		--segment-track-bg: transparent;
 		--segment-track-border: var(--rise-border-accented);
 		--segment-checked-border: var(--custom-bg, var(--rise-primary));
 		--segment-checked-shadow: none;

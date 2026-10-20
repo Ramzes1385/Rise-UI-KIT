@@ -48,35 +48,20 @@
 			color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, box-shadow, opacity, height; // stylelint-disable-line declaration-property-value-disallowed-list, comment-pattern -- авторост меняет height от px к px: transform не раздвинет содержимое под полем
 	}
 
-	&--outline &__field {
-		@include custom-bg(background-color, transparent);
+	&--soft &__field {
+		@include field-variant(textarea, soft);
 	}
 
-	&--soft &__field {
-		border-color: transparent;
-		@include custom-bg(background-color, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg)));
-
-		@include hover {
-			@include custom-bg(background-color, var(--rise-bg-elevated));
-		}
+	&--outline &__field {
+		@include field-variant(textarea, outline);
 	}
 
 	&--ghost &__field {
-		border-color: transparent;
-		@include custom-bg(background-color, transparent);
-
-		@include hover {
-			@include custom-bg(background-color, var(--rise-bg-elevated));
-		}
-	}
-
-	&--soft &__field:focus,
-	&--ghost &__field:focus {
-		@include custom-bg(background-color, var(--rise-bg-elevated));
+		@include field-variant(textarea, ghost);
 	}
 
 	&--shadow &__field {
-		box-shadow: var(--rise-shadow-xs);
+		@include field-variant(textarea, shadow);
 	}
 
 	&--error &__field {

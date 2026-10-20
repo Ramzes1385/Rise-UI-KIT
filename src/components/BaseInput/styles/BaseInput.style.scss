@@ -87,44 +87,28 @@
 		padding-inline-end: sz(4px);
 	}
 
-	&--outline &__wrapper {
-		@include custom-bg(background-color, transparent);
-	}
-
 	&--soft &__wrapper {
-		border-color: transparent;
-		@include custom-bg(background-color, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg)));
-
-		@include hover {
-			@include custom-bg(background-color, var(--rise-bg-elevated));
-		}
-	}
-
-	&--ghost &__wrapper {
-		border-color: transparent;
-		@include custom-bg(background-color, transparent);
-
-		@include hover {
-			@include custom-bg(background-color, var(--rise-bg-elevated));
-		}
-	}
-
-	&--shadow &__wrapper {
-		box-shadow: var(--rise-shadow-xs);
+		@include field-variant(input, soft);
 	}
 
 	&--filled &__wrapper {
-		@include custom-bg(background-color, var(--rise-bg-elevated));
+		@include field-variant(input, filled);
+	}
+
+	&--outline &__wrapper {
+		@include field-variant(input, outline);
+	}
+
+	&--ghost &__wrapper {
+		@include field-variant(input, ghost);
+	}
+
+	&--shadow &__wrapper {
+		@include field-variant(input, shadow);
 	}
 
 	&--underline &__wrapper {
-		border-width: 0 0 1px;
-		border-radius: 0;
-		@include custom-bg(background-color, transparent);
-
-		&:focus-within {
-			box-shadow: 0 1px 0 0 ct(input, border-focus, var(--rise-primary));
-		}
+		@include field-variant(input, underline);
 	}
 
 	&--underline &__field {
@@ -143,18 +127,18 @@
 		padding-inline-end: 0;
 	}
 
-	&--soft &__wrapper:focus-within,
-	&--ghost &__wrapper:focus-within {
-		@include custom-bg(background-color, var(--rise-bg-elevated));
-	}
-
 	&--error &__wrapper {
 		border-color: var(--rise-error);
 		@include field-focus(var(--rise-error));
 	}
 
-	&--error.base-input--underline &__wrapper:focus-within {
-		box-shadow: 0 1px 0 0 var(--rise-error);
+	&--error.base-input--underline &__wrapper {
+		border-color: transparent transparent var(--rise-error);
+
+		&:focus-within {
+			border-color: transparent transparent var(--rise-error);
+			box-shadow: 0 1px 0 0 var(--rise-error);
+		}
 	}
 
 	&--readonly &__wrapper {
@@ -224,7 +208,7 @@
 		@include transition-colors(var(--rise-duration));
 
 		&--valid {
-			color: var(--rise-success);
+			color: var(--rise-success-text);
 		}
 	}
 

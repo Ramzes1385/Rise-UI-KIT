@@ -70,8 +70,8 @@
 		top: 50%;
 		box-sizing: border-box;
 		width: 100%;
-		height: sz(ct(range, track-height, 6px));
-		border-radius: ct(range, track-radius, var(--rise-radius-full));
+		height: sz(ct(range, track-height, 4px));
+		border-radius: ct(range, track-radius, calc(var(--rise-radius-xs) / 2));
 		background-color: ct(range, track-bg, var(--rise-bg-accented));
 		transform: translateY(-50%);
 	}
@@ -82,9 +82,9 @@
 		inset-inline-start: 0;
 		width: 100%;
 		height: 100%;
-		border-radius: ct(range, track-radius, var(--rise-radius-full));
+		border-radius: ct(range, track-radius, calc(var(--rise-radius-xs) / 2));
 		@include custom-bg(background-color, ct(range, fill-bg, var(--rise-primary)));
-		clip-path: inset(0 #{range-inset(right)} 0 #{range-inset(left)} round ct(range, track-radius, var(--rise-radius-full)));
+		clip-path: inset(0 #{range-inset(right)} 0 #{range-inset(left)} round ct(range, track-radius, calc(var(--rise-radius-xs) / 2)));
 		transition: clip-path var(--rise-duration-fast) var(--rise-ease-out);
 	}
 
@@ -113,13 +113,13 @@
 		align-items: center;
 		justify-content: center;
 		box-sizing: border-box;
-		width: sz(ct(range, thumb-width, 16px));
-		height: sz(ct(range, thumb-height, 16px));
+		width: sz(ct(range, thumb-width, 14px));
+		height: sz(ct(range, thumb-height, 14px));
 		border: 2px solid;
-		border-radius: ct(range, thumb-radius, var(--rise-radius-full));
+		border-radius: sz(ct(range, thumb-radius, var(--rise-radius-xs)));
 		@include custom-bg(border-color, ct(range, thumb-border, var(--rise-primary)));
-		background-color: ct(range, thumb-bg, var(--rise-bg));
-		box-shadow: ct(range, thumb-shadow, var(--rise-shadow-sm));
+		@include custom-bg(background-color, ct(range, thumb-bg, var(--rise-primary)));
+		box-shadow: ct(range, thumb-shadow, 0 0 0 sz(3px) var(--rise-surface-bg));
 		cursor: inherit;
 		@include transition-colors;
 		@include focus-ring;
@@ -201,14 +201,15 @@
 	&--vertical &__track {
 		top: 0;
 		left: 50%;
-		width: sz(ct(range, track-height, 6px));
+		width: sz(ct(range, track-height, 4px));
 		height: 100%;
 		transform: translateX(-50%);
 	}
 
 	&--vertical &__fill {
 		clip-path: inset(
-			calc(100% - var(--range-fill-end, 0%)) 0 var(--range-fill-start, 0%) 0 round ct(range, track-radius, var(--rise-radius-full))
+			calc(100% - var(--range-fill-end, 0%)) 0 var(--range-fill-start, 0%) 0 round
+				ct(range, track-radius, calc(var(--rise-radius-xs) / 2))
 		);
 	}
 
@@ -257,6 +258,6 @@
 	}
 
 	&--shadow &__thumb:not(.base-range__thumb--custom) {
-		box-shadow: ct(range, thumb-shadow, var(--rise-shadow-md));
+		box-shadow: ct(range, thumb-shadow, (0 0 0 sz(3px) var(--rise-surface-bg), var(--rise-shadow-md)));
 	}
 }

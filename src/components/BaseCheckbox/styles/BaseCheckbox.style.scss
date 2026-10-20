@@ -1,7 +1,7 @@
 .base-checkbox {
 	@include custom-color-scope;
-	--checkbox-border: #{ct(checkbox, box-border, var(--rise-border-accented))};
-	--checkbox-bg: #{ct(checkbox, box-bg, var(--rise-bg))};
+	--checkbox-border: #{ct(checkbox, box-border, var(--rise-border-control))};
+	--checkbox-bg: #{ct(checkbox, box-bg, transparent)};
 	--checkbox-bg-hover: #{ct(checkbox, box-bg-hover, var(--rise-bg-elevated))};
 	--checkbox-checked-border: var(--custom-bg, #{ct(checkbox, box-border-checked, var(--rise-primary))});
 	--checkbox-checked-bg-hover: var(--custom-bg-hover, var(--custom-bg, var(--rise-primary-hover)));
@@ -47,8 +47,8 @@
 		box-sizing: border-box;
 		width: sz(16px);
 		height: sz(16px);
-		border: 1px solid var(--checkbox-border);
-		border-radius: sz(ct(checkbox, box-radius, var(--rise-radius-sm)));
+		border: sz(1.5px) solid var(--checkbox-border);
+		border-radius: sz(ct(checkbox, box-radius, calc(var(--rise-radius-sm) - 1px)));
 		background-color: var(--checkbox-bg);
 		box-shadow: ct(checkbox, box-shadow, none);
 		pointer-events: none;
@@ -119,7 +119,7 @@
 	}
 
 	&--shadow &__box {
-		box-shadow: ct(checkbox, box-shadow, var(--rise-shadow-xs));
+		box-shadow: ct(checkbox, box-shadow, var(--rise-shadow-sm));
 	}
 
 	&--error {

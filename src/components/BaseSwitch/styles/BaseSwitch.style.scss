@@ -1,8 +1,8 @@
 .base-switch {
 	@include custom-color-scope;
 	--switch-track: #{ct(switch, slider-bg, var(--rise-bg-accented))};
-	--switch-thumb: #{ct(switch, handle-bg, var(--rise-bg))};
-	--switch-checked-thumb: #{ct(switch, handle-bg-checked, var(--rise-bg))};
+	--switch-thumb: #{ct(switch, handle-bg, var(--rise-text-muted))};
+	--switch-checked-thumb: #{ct(switch, handle-bg-checked, var(--rise-on-primary))};
 	--switch-checked-track-hover: var(--custom-bg-hover, var(--custom-bg, var(--rise-primary-hover)));
 	@include custom-bg(--switch-checked-track, ct(switch, slider-bg-checked, var(--rise-primary)));
 
@@ -44,7 +44,7 @@
 		display: block;
 		width: sz($switch-track-width);
 		height: sz(20px);
-		border-radius: var(--rise-radius-full);
+		border-radius: sz(var(--rise-radius-sm));
 		background-color: var(--switch-track);
 		box-shadow: ct(switch, slider-shadow, none);
 		pointer-events: none;
@@ -53,13 +53,13 @@
 
 	&__handle {
 		position: absolute;
-		top: sz(2px);
-		inset-inline-start: sz(2px);
-		width: sz(16px);
-		height: sz(16px);
-		border-radius: var(--rise-radius-full);
+		top: sz(3px);
+		inset-inline-start: sz(3px);
+		width: sz(14px);
+		height: sz(14px);
+		border-radius: sz(var(--rise-radius-xs));
 		background-color: var(--switch-thumb);
-		box-shadow: ct(switch, handle-shadow, var(--rise-shadow-sm));
+		box-shadow: ct(switch, handle-shadow, none);
 		@include transition(transform, background-color);
 	}
 
@@ -141,11 +141,11 @@
 	}
 
 	&--shadow &__slider {
-		box-shadow: ct(switch, slider-shadow, var(--rise-shadow-xs));
+		box-shadow: ct(switch, slider-shadow, var(--rise-shadow-sm));
 	}
 
 	&--shadow &__handle {
-		box-shadow: ct(switch, handle-shadow, var(--rise-shadow-md));
+		box-shadow: ct(switch, handle-shadow, var(--rise-shadow-xs));
 	}
 
 	&--error &__slider,

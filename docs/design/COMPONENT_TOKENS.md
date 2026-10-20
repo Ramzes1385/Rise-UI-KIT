@@ -114,7 +114,7 @@
 |---|---|---|---|---|
 | `--rise-autocomplete-empty-text` | empty | text | — | `var(--rise-text-muted)` |
 | `--rise-autocomplete-list-gap` | list | gap | — | `1px` |
-| `--rise-autocomplete-option-bg-hover` | option | bg | hover | `var(--rise-bg-elevated)` |
+| `--rise-autocomplete-option-bg-hover` | option | bg | hover | `var(--rise-surface-floating-hover)` |
 | `--rise-autocomplete-option-bg-selected` | option | bg | selected | `transparent` |
 | `--rise-autocomplete-option-padding-x` | option | padding-x | — | `8px` |
 | `--rise-autocomplete-option-padding-y` | option | padding-y | — | `6px` |
@@ -327,8 +327,8 @@
 | `--rise-cascader-border-focus` | корень | border | focus | `var(--rise-input-border-focus, var(--rise-primary))` |
 | `--rise-cascader-checkbox-bg-checked` | checkbox | bg | checked | `var(--rise-primary)` |
 | `--rise-cascader-column-width` | column | width | — | `200px` |
-| `--rise-cascader-option-bg-active` | option | bg | active | `var(--rise-bg-elevated)` |
-| `--rise-cascader-option-bg-open` | option | bg | open | `var(--rise-bg-elevated)` |
+| `--rise-cascader-option-bg-active` | option | bg | active | `var(--rise-surface-floating-hover)` |
+| `--rise-cascader-option-bg-open` | option | bg | open | `var(--rise-surface-floating-hover)` |
 | `--rise-cascader-option-font-weight-selected` | option | font-weight | selected | `var(--rise-font-weight-medium)` |
 | `--rise-cascader-padding-x` | корень | padding-x | — | `var(--rise-control-padding-x)` |
 | `--rise-cascader-padding-y` | корень | padding-y | — | `var(--rise-control-padding-y)` |
@@ -373,12 +373,12 @@
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
 |---|---|---|---|---|
-| `--rise-checkbox-box-bg` | box | bg | — | `var(--rise-bg)` |
+| `--rise-checkbox-box-bg` | box | bg | — | `transparent` |
 | `--rise-checkbox-box-bg-checked` | box | bg | checked | `var(--rise-primary)` |
 | `--rise-checkbox-box-bg-hover` | box | bg | hover | `var(--rise-bg-elevated)` |
-| `--rise-checkbox-box-border` | box | border | — | `var(--rise-border-accented)` |
+| `--rise-checkbox-box-border` | box | border | — | `var(--rise-border-control)` |
 | `--rise-checkbox-box-border-checked` | box | border | checked | `var(--rise-primary)` |
-| `--rise-checkbox-box-radius` | box | radius | — | `var(--rise-radius-sm)` |
+| `--rise-checkbox-box-radius` | box | radius | — | `calc(var(--rise-radius-sm) - 1px)` |
 | `--rise-checkbox-box-ring` | box | ring | — | `var(--rise-focus-ring)` |
 | `--rise-checkbox-box-shadow` | box | shadow | — | `none` |
 | `--rise-checkbox-icon-text` | icon | text | — | `var(--rise-on-primary)` |
@@ -1095,8 +1095,8 @@
 | Токен | Часть | Свойство | Состояние | По умолчанию |
 |---|---|---|---|---|
 | `--rise-input-number-button-bg` | button | bg | — | `transparent` |
-| `--rise-input-number-button-bg-active` | button | bg | active | `var(--rise-bg-elevated)` |
-| `--rise-input-number-button-bg-hover` | button | bg | hover | `var(--rise-bg-elevated)` |
+| `--rise-input-number-button-bg-active` | button | bg | active | `var(--rise-bg-accented)` |
+| `--rise-input-number-button-bg-hover` | button | bg | hover | `var(--rise-bg-accented)` |
 | `--rise-input-number-button-icon-size` | button | icon-size | — | `sz(20px)` |
 | `--rise-input-number-button-text` | button | text | — | `var(--rise-text-muted)` |
 | `--rise-input-number-button-text-disabled` | button | text | disabled | `var(--rise-text-muted)` |
@@ -1108,9 +1108,9 @@
 | Токен | Часть | Свойство | Состояние | По умолчанию |
 |---|---|---|---|---|
 | `--rise-input-tags-gap` | корень | gap | — | `4px` |
-| `--rise-input-tags-remove-bg-hover` | remove | bg | hover | `var(--rise-bg-accented)` |
-| `--rise-input-tags-tag-bg` | tag | bg | — | `var(--rise-bg-elevated)` |
-| `--rise-input-tags-tag-border` | tag | border | — | `var(--rise-border)` |
+| `--rise-input-tags-remove-bg-hover` | remove | bg | hover | `var(--rise-bg-elevated)` |
+| `--rise-input-tags-tag-bg` | tag | bg | — | `var(--rise-bg-accented)` |
+| `--rise-input-tags-tag-border` | tag | border | — | `transparent` |
 | `--rise-input-tags-tag-height` | tag | height | — | `22px` |
 | `--rise-input-tags-tag-padding-x` | tag | padding-x | — | `8px` |
 | `--rise-input-tags-tag-radius` | tag | radius | — | `var(--rise-radius-sm)` |
@@ -1316,12 +1316,12 @@
 | `--rise-mention-bg` | корень | bg | — | `var(--rise-input-bg, var(--rise-field-bg))` |
 | `--rise-mention-border` | корень | border | — | `var(--rise-input-border, transparent)` |
 | `--rise-mention-border-focus` | корень | border | focus | `var(--rise-input-border-focus, var(--rise-primary))` |
-| `--rise-mention-option-bg-hover` | option | bg | hover | `var(--rise-bg-elevated)` |
+| `--rise-mention-option-bg-hover` | option | bg | hover | `var(--rise-surface-floating-hover)` |
 | `--rise-mention-option-text` | option | text | — | `var(--rise-text)` |
 | `--rise-mention-padding-x` | корень | padding-x | — | `var(--rise-control-padding-x)` |
 | `--rise-mention-padding-y` | корень | padding-y | — | `var(--rise-control-padding-y)` |
-| `--rise-mention-popup-bg` | popup | bg | — | `var(--rise-bg)` |
-| `--rise-mention-popup-radius` | popup | radius | — | `var(--rise-radius-md)` |
+| `--rise-mention-popup-bg` | popup | bg | — | `var(--rise-surface-floating)` |
+| `--rise-mention-popup-radius` | popup | radius | — | `var(--rise-radius-lg)` |
 | `--rise-mention-popup-shadow` | popup | shadow | — | `var(--rise-shadow-lg)` |
 | `--rise-mention-radius` | корень | radius | — | `var(--rise-input-radius, var(--rise-control-radius))` |
 | `--rise-mention-text` | корень | text | — | `var(--rise-text-highlighted)` |
@@ -1414,13 +1414,13 @@
 | `--rise-phone-input-flag-radius` | flag | radius | — | `2px` |
 | `--rise-phone-input-flag-shadow` | flag | shadow | — | `0 0 0 1px color-mix(in srgb, var(--rise-text) 14%, transparent)` |
 | `--rise-phone-input-list-gap` | list | gap | — | `1px` |
-| `--rise-phone-input-option-bg-hover` | option | bg | hover | `var(--rise-bg-elevated)` |
+| `--rise-phone-input-option-bg-hover` | option | bg | hover | `var(--rise-surface-floating-hover)` |
 | `--rise-phone-input-option-bg-selected` | option | bg | selected | `transparent` |
 | `--rise-phone-input-option-padding-x` | option | padding-x | — | `8px` |
 | `--rise-phone-input-option-padding-y` | option | padding-y | — | `6px` |
 | `--rise-phone-input-option-text` | option | text | — | `var(--rise-text)` |
 | `--rise-phone-input-option-text-selected` | option | text | selected | `var(--rise-text-highlighted)` |
-| `--rise-phone-input-trigger-bg-hover` | trigger | bg | hover | `color-mix(in srgb, var(--rise-bg-elevated) 70%, transparent)` |
+| `--rise-phone-input-trigger-bg-hover` | trigger | bg | hover | `var(--rise-bg-accented)` |
 
 ## BasePieChart
 
@@ -1445,15 +1445,15 @@
 |---|---|---|---|---|
 | `--rise-pin-bg` | корень | bg | — | `var(--rise-input-bg, var(--rise-field-bg))` |
 | `--rise-pin-border` | корень | border | — | `var(--rise-input-border, transparent)` |
-| `--rise-pin-border-checked` | корень | border | checked | `ct(pin, border, var(--rise-border-accented))` |
+| `--rise-pin-border-checked` | корень | border | checked | `ct(pin, border, transparent)` |
 | `--rise-pin-border-focus` | корень | border | focus | `var(--rise-input-border-focus, var(--rise-primary))` |
 | `--rise-pin-font-size` | корень | font-size | — | `var(--rise-control-font-size)` |
 | `--rise-pin-font-weight` | корень | font-weight | — | `var(--rise-font-weight-medium)` |
 | `--rise-pin-gap` | корень | gap | — | `6px` |
-| `--rise-pin-height` | корень | height | — | `32px` |
+| `--rise-pin-height` | корень | height | — | `var(--rise-control-height)` |
 | `--rise-pin-radius` | корень | radius | — | `var(--rise-input-radius, var(--rise-control-radius))` |
 | `--rise-pin-text` | корень | text | — | `var(--rise-text-highlighted)` |
-| `--rise-pin-width` | корень | width | — | `32px` |
+| `--rise-pin-width` | корень | width | — | `var(--rise-control-height)` |
 
 ## BasePopconfirm
 
@@ -1538,14 +1538,14 @@
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
 |---|---|---|---|---|
-| `--rise-radio-circle-bg` | circle | bg | — | `var(--rise-bg)` |
-| `--rise-radio-circle-bg-checked` | circle | bg | checked | `var(--rise-primary)` |
+| `--rise-radio-circle-bg` | circle | bg | — | `transparent` |
+| `--rise-radio-circle-bg-checked` | circle | bg | checked | `transparent` |
 | `--rise-radio-circle-bg-hover` | circle | bg | hover | `var(--rise-bg-elevated)` |
-| `--rise-radio-circle-border` | circle | border | — | `var(--rise-border-accented)` |
+| `--rise-radio-circle-border` | circle | border | — | `var(--rise-border-control)` |
 | `--rise-radio-circle-border-checked` | circle | border | checked | `var(--rise-primary)` |
 | `--rise-radio-circle-ring` | circle | ring | — | `var(--rise-focus-ring)` |
-| `--rise-radio-circle-shadow` | circle | shadow | — | `var(--rise-shadow-xs)` |
-| `--rise-radio-dot-bg` | dot | bg | — | `var(--rise-on-primary)` |
+| `--rise-radio-circle-shadow` | circle | shadow | — | `var(--rise-shadow-sm)` |
+| `--rise-radio-dot-bg` | dot | bg | — | `transparent` |
 | `--rise-radio-item-text` | item | text | — | `var(--rise-text)` |
 | `--rise-radio-option-label-font-weight` | option-label | font-weight | — | `var(--rise-font-weight-medium)` |
 | `--rise-radio-options-gap` | options | gap | — | `8px` |
@@ -1557,15 +1557,15 @@
 | `--rise-range-fill-bg` | fill | bg | — | `var(--rise-primary)` |
 | `--rise-range-gap` | корень | gap | — | `8px` |
 | `--rise-range-label-value-text` | label-value | text | — | `var(--rise-text-highlighted)` |
-| `--rise-range-thumb-bg` | thumb | bg | — | `var(--rise-bg)` |
+| `--rise-range-thumb-bg` | thumb | bg | — | `var(--rise-primary)` |
 | `--rise-range-thumb-border` | thumb | border | — | `var(--rise-primary)` |
-| `--rise-range-thumb-height` | thumb | height | — | `16px` |
-| `--rise-range-thumb-radius` | thumb | radius | — | `var(--rise-radius-full)` |
-| `--rise-range-thumb-shadow` | thumb | shadow | — | `var(--rise-shadow-sm)` |
-| `--rise-range-thumb-width` | thumb | width | — | `16px` |
+| `--rise-range-thumb-height` | thumb | height | — | `14px` |
+| `--rise-range-thumb-radius` | thumb | radius | — | `var(--rise-radius-xs)` |
+| `--rise-range-thumb-shadow` | thumb | shadow | — | `0 0 0 sz(3px) var(--rise-surface-bg)` |
+| `--rise-range-thumb-width` | thumb | width | — | `14px` |
 | `--rise-range-track-bg` | track | bg | — | `var(--rise-bg-accented)` |
-| `--rise-range-track-height` | track | height | — | `6px` |
-| `--rise-range-track-radius` | track | radius | — | `var(--rise-radius-full)` |
+| `--rise-range-track-height` | track | height | — | `4px` |
+| `--rise-range-track-radius` | track | radius | — | `calc(var(--rise-radius-xs) / 2)` |
 
 ## BaseRating
 
@@ -1651,13 +1651,13 @@
 | `--rise-search-icon-text` | icon | text | — | `var(--rise-text-muted)` |
 | `--rise-search-match-bg` | match | bg | — | `var(--rise-primary-soft)` |
 | `--rise-search-overlay-bg` | overlay | bg | — | `var(--rise-overlay)` |
-| `--rise-search-panel-bg` | panel | bg | — | `var(--rise-bg)` |
+| `--rise-search-panel-bg` | panel | bg | — | `var(--rise-surface-dialog)` |
 | `--rise-search-panel-border` | panel | border | — | `var(--rise-border)` |
 | `--rise-search-panel-padding` | panel | padding | — | `4px` |
-| `--rise-search-panel-radius` | panel | radius | — | `var(--rise-radius-lg)` |
+| `--rise-search-panel-radius` | panel | radius | — | `var(--rise-radius-xl)` |
 | `--rise-search-panel-shadow` | panel | shadow | — | `var(--rise-shadow-xl)` |
-| `--rise-search-result-bg-hover` | result | bg | hover | `var(--rise-bg-elevated)` |
-| `--rise-search-result-bg-selected` | result | bg | selected | `var(--rise-bg-elevated)` |
+| `--rise-search-result-bg-hover` | result | bg | hover | `var(--rise-surface-floating-hover)` |
+| `--rise-search-result-bg-selected` | result | bg | selected | `var(--rise-surface-floating-hover)` |
 | `--rise-search-result-gap` | result | gap | — | `8px` |
 | `--rise-search-result-text` | result | text | — | `var(--rise-text)` |
 
@@ -1665,11 +1665,11 @@
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
 |---|---|---|---|---|
-| `--rise-segmented-indicator-bg` | indicator | bg | — | `var(--rise-bg)` |
-| `--rise-segmented-indicator-shadow` | indicator | shadow | — | `var(--rise-shadow-sm)` |
+| `--rise-segmented-indicator-bg` | indicator | bg | — | `var(--rise-surface-selected)` |
+| `--rise-segmented-indicator-shadow` | indicator | shadow | — | `none` |
 | `--rise-segmented-segment-font-weight` | segment | font-weight | — | `var(--rise-font-weight-medium)` |
 | `--rise-segmented-segment-padding-x` | segment | padding-x | — | `12px` |
-| `--rise-segmented-segment-padding-y` | segment | padding-y | — | `4px` |
+| `--rise-segmented-segment-padding-y` | segment | padding-y | — | `3px` |
 | `--rise-segmented-segment-radius` | segment | radius | — | `var(--rise-radius-sm)` |
 | `--rise-segmented-segment-text` | segment | text | — | `var(--rise-text)` |
 | `--rise-segmented-segment-text-checked` | segment | text | checked | `var(--rise-text-highlighted)` |
@@ -1685,7 +1685,7 @@
 | `--rise-select-bg` | корень | bg | — | `var(--rise-input-bg, var(--rise-field-bg))` |
 | `--rise-select-border` | корень | border | — | `var(--rise-input-border, transparent)` |
 | `--rise-select-border-focus` | корень | border | focus | `var(--rise-input-border-focus, var(--rise-primary))` |
-| `--rise-select-option-bg-hover` | option | bg | hover | `var(--rise-bg-elevated)` |
+| `--rise-select-option-bg-hover` | option | bg | hover | `var(--rise-surface-floating-hover)` |
 | `--rise-select-option-bg-selected` | option | bg | selected | `transparent` |
 | `--rise-select-option-padding-x` | option | padding-x | — | `8px` |
 | `--rise-select-option-padding-y` | option | padding-y | — | `6px` |
@@ -1884,9 +1884,9 @@
 | Токен | Часть | Свойство | Состояние | По умолчанию |
 |---|---|---|---|---|
 | `--rise-switch-description-text` | description | text | — | `var(--rise-text-muted)` |
-| `--rise-switch-handle-bg` | handle | bg | — | `var(--rise-bg)` |
-| `--rise-switch-handle-bg-checked` | handle | bg | checked | `var(--rise-bg)` |
-| `--rise-switch-handle-shadow` | handle | shadow | — | `var(--rise-shadow-sm)` |
+| `--rise-switch-handle-bg` | handle | bg | — | `var(--rise-text-muted)` |
+| `--rise-switch-handle-bg-checked` | handle | bg | checked | `var(--rise-on-primary)` |
+| `--rise-switch-handle-shadow` | handle | shadow | — | `none` |
 | `--rise-switch-label-text` | label | text | — | `var(--rise-text)` |
 | `--rise-switch-row-gap` | row | gap | — | `8px` |
 | `--rise-switch-slider-bg` | slider | bg | — | `var(--rise-bg-accented)` |
@@ -2103,8 +2103,8 @@
 | `--rise-tree-select-border` | корень | border | — | `var(--rise-input-border, transparent)` |
 | `--rise-tree-select-border-focus` | корень | border | focus | `var(--rise-input-border-focus, var(--rise-primary))` |
 | `--rise-tree-select-checkbox-bg-checked` | checkbox | bg | checked | `var(--rise-primary)` |
-| `--rise-tree-select-node-bg-active` | node | bg | active | `var(--rise-bg-elevated)` |
-| `--rise-tree-select-node-radius` | node | radius | — | `var(--rise-radius-md)` |
+| `--rise-tree-select-node-bg-active` | node | bg | active | `var(--rise-surface-floating-hover)` |
+| `--rise-tree-select-node-radius` | node | radius | — | `var(--rise-radius-sm)` |
 | `--rise-tree-select-padding-x` | корень | padding-x | — | `var(--rise-control-padding-x)` |
 | `--rise-tree-select-padding-y` | корень | padding-y | — | `var(--rise-control-padding-y)` |
 | `--rise-tree-select-radius` | корень | radius | — | `var(--rise-input-radius, var(--rise-control-radius))` |
