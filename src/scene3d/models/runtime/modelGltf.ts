@@ -1,41 +1,13 @@
-/** Утилиты: GLB-модели узлов — загрузка с кешем по адресу, клон, вписывание в клетку, окраска по ролям, клипы */
+/** Утилиты: GLB-модели узлов — вписывание в клетку, окраска по ролям, клипы */
 
 import type { Material, Mesh, Object3D } from 'three'
 import { findModelNode } from '../../scene/gltfLoader'
 import { Box3, Group, MathUtils, Vector3 } from 'three'
-import { disposeObject } from '../../scene/disposeObject'
-import { clone } from 'three/addons/utils/SkeletonUtils.js'
-import type { GLTF } from 'three/addons/loaders/GLTFLoader.js'
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
-import type { Model3DGltfLoader, Model3DGltfSource } from '../../types/internal/model3dInternal.types'
+import type { Model3DGltfSource } from '../../types/internal/model3dInternal.types'
 import type { Model3DContext, Model3DGltfDefinition, Model3DInstance, Model3DPart } from '../../types/model3d.types'
 
 /** Доля ширины клетки, которую занимает вписанная модель */
 const FOOTPRINT_SHARE = 0.9
-
-/** Загрузчик GLB компонента: каждый адрес грузится один раз, узлам отдаются клоны (со скелетами) и клипы; ошибка не кешируется */
-export function createGltfLoader(configure?: (loader: GLTFLoader) => void): Model3DGltfLoader {
-	const originals = new Map<string, Promise<GLTF>>()
-	return {
-		async load(url) {
-			let original = originals.get(url)
-			if (!original) {
-				const loader = new GLTFLoader()
-				configure?.(loader)
-				original = loader.loadAsync(url)
-				originals.set(url, original)
-				original.catch(() => originals.delete(url))
-			}
-			const gltf = await original
-			return { object: clone(gltf.scene), clips: gltf.animations }
-		},
-		async dispose() {
-			const loaded = await Promise.allSettled([...originals.values()])
-			originals.clear()
-			loaded.forEach(result => result.status === 'fulfilled' && disposeObject(result.value.scene))
-		},
-	}
-}
 
 function meshesOf(object: Object3D): Mesh[] {
 	const found: Mesh[] = []

@@ -5,7 +5,7 @@ import { MODEL3D_LIBRARY } from './library'
 import { createHandle } from './behavior/modelHandle'
 import { createModelBank } from './runtime/modelBank'
 import { resolveModel } from './runtime/modelResolve'
-import { createGltfLoader } from './runtime/modelGltf'
+import { createModelLibrary } from '../scene/gltfLoader'
 import type { Model3DHandle, Model3DState } from '../types/model3d.types'
 import { createGroup, groupKeyOf, syncGroup } from './behavior/instancing'
 import type { Model3DRuntime } from '../types/internal/model3dRuntime.types'
@@ -105,7 +105,7 @@ function commitBucket(rt: Model3DRuntime, key: string, fresh: Model3DEntry[]): v
 
 function ownedLoader(rt: Model3DRuntime): Model3DRuntime['gltf'] {
 	if (!rt.gltf && !rt.options.gltf) {
-		rt.gltf = createGltfLoader()
+		rt.gltf = createModelLibrary()
 		rt.ownsGltf = true
 	}
 	return rt.options.gltf ?? rt.gltf
