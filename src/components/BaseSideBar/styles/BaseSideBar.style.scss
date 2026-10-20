@@ -21,9 +21,9 @@
 	min-width: sz(var(--sidebar-width));
 	height: 100%;
 	overflow: hidden;
-	border-inline-end: 1px solid ct(side-bar, border, var(--rise-border));
 	box-shadow: ct(side-bar, shadow, none);
-	@include custom-bg(background-color, ct(side-bar, bg, var(--rise-bg)));
+	@include tonal-surface(muted);
+	@include custom-bg(background-color, ct(side-bar, bg, var(--rise-bg-muted)));
 	@include custom-text(color, ct(side-bar, text, var(--rise-text)));
 	transition-property:
 		width, min-width, background-color, border-color; // stylelint-disable-line declaration-property-value-disallowed-list, comment-pattern -- колонка раскладки: transform не сдвинет содержимое приложения
@@ -44,8 +44,8 @@
 	&__title {
 		min-width: 0;
 		margin: 0;
+		@include heading;
 		@include text-size(base);
-		font-weight: var(--rise-font-weight-semibold);
 		@include custom-text(color, var(--rise-text-highlighted));
 		@include truncate;
 	}
@@ -87,7 +87,7 @@
 		margin-top: auto;
 		padding-block: space(var(--sidebar-pad-top) var(--sidebar-pad-bottom));
 		padding-inline: space(var(--sidebar-pad-left) var(--sidebar-pad-right));
-		border-top: 1px solid ct(side-bar, border, var(--rise-border));
+		border-top: 1px solid var(--rise-border);
 		@include text-size(sm);
 		@include custom-text(color, var(--rise-text-muted));
 	}
@@ -153,22 +153,30 @@
 	}
 
 	&--ghost {
-		border-inline-end-color: transparent;
+		@include tonal-surface(none);
 		@include custom-bg(background-color, transparent);
 	}
 
 	&--outline,
 	&--shadow {
-		border: 1px solid ct(side-bar, border, var(--rise-border));
 		border-radius: sz(ct(side-bar, radius, var(--rise-radius-lg)));
+	}
+
+	&--outline {
+		border: 1px solid ct(side-bar, border, var(--rise-border-accented));
+		@include tonal-surface(page);
+		@include custom-bg(background-color, ct(side-bar, bg, var(--rise-bg)));
 	}
 
 	&--shadow {
 		box-shadow: ct(side-bar, shadow, var(--rise-shadow-md));
+		@include tonal-surface(floating);
+		@include custom-bg(background-color, ct(side-bar, bg, var(--rise-surface-floating)));
 	}
 
 	&--soft {
-		@include custom-bg(background-color, ct(side-bar, bg, var(--rise-bg-muted)));
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, ct(side-bar, bg, var(--rise-bg-elevated)));
 	}
 
 	&--soft .base-side-bar-nav__link:not(.base-side-bar-nav__link--current) {
@@ -238,8 +246,7 @@
 
 	&__group-label {
 		padding: 0 sz(var(--sidebar-item-pad-x));
-		@include text-size(xs);
-		font-weight: var(--rise-font-weight-semibold);
+		@include caps-label;
 		@include custom-text(color, var(--rise-text-muted));
 		@include truncate;
 	}
@@ -271,7 +278,7 @@
 		min-width: 0;
 		min-height: sz(var(--sidebar-item-height));
 		padding: sz(4px) sz(var(--sidebar-item-pad-x));
-		border-radius: sz(ct(side-bar, item-radius, var(--rise-radius-md)));
+		border-radius: sz(ct(side-bar, item-radius, var(--rise-radius-sm)));
 		@include custom-text(color, ct(side-bar, item-text, var(--rise-text-muted)));
 		@include text-size(sm);
 		font-weight: var(--rise-font-weight-medium);
@@ -286,7 +293,7 @@
 			inset-inline-start: 0;
 			width: sz(3px);
 			height: sz(16px);
-			border-radius: sz(var(--rise-radius-full));
+			border-radius: sz(var(--rise-radius-xs));
 			background-color: ct(side-bar, indicator-bg, var(--rise-primary));
 			transform: translateY(-50%) scaleY(0);
 			content: '';
@@ -307,7 +314,7 @@
 			color: var(--custom-text-hover, var(--rise-text-highlighted));
 
 			.base-side-bar-nav__icon {
-				color: var(--rise-primary);
+				color: var(--rise-primary-text);
 			}
 		}
 
@@ -320,7 +327,7 @@
 			}
 
 			.base-side-bar-nav__icon {
-				color: var(--rise-primary);
+				color: var(--rise-primary-text);
 			}
 
 			@include hover {
@@ -328,7 +335,7 @@
 				color: var(--custom-text-hover, #{ct(side-bar, item-text-selected, var(--rise-primary-text))});
 
 				.base-side-bar-nav__icon {
-					color: var(--rise-primary);
+					color: var(--rise-primary-text);
 				}
 			}
 		}
@@ -348,7 +355,7 @@
 	&__link.base-link {
 		@include inherit-custom-color;
 		display: flex;
-		border-radius: sz(ct(side-bar, item-radius, var(--rise-radius-md)));
+		border-radius: sz(ct(side-bar, item-radius, var(--rise-radius-sm)));
 		@include custom-text(color, ct(side-bar, item-text, var(--rise-text-muted)));
 		@include text-size(sm);
 		font-weight: var(--rise-font-weight-medium);
@@ -397,12 +404,10 @@
 		height: sz(20px);
 		padding: 0 sz(6px);
 		border: none;
-		border-radius: sz(var(--rise-radius-full));
+		border-radius: calc(#{sz(var(--rise-radius-sm))} - 1px);
+		@include caps-label(10px, 0.08em);
 		background-color: var(--rise-bg-elevated);
 		color: var(--rise-text-toned);
-		@include text-size(xs);
-		font-weight: var(--rise-font-weight-semibold);
-		font-variant-numeric: tabular-nums;
 		@include transition-colors;
 	}
 
@@ -427,9 +432,9 @@
 		position: absolute;
 		top: sz(5px);
 		inset-inline-end: sz(5px);
-		width: sz(7px);
-		height: sz(7px);
-		border-radius: sz(var(--rise-radius-full));
+		width: sz(6px);
+		height: sz(6px);
+		border-radius: sz(1px);
 
 		&--neutral {
 			background-color: var(--rise-text-muted);

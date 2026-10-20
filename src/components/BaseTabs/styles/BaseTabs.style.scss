@@ -190,7 +190,7 @@
 		z-index: 1;
 		width: calc(var(--indicator-w, 0px) - 2px);
 		height: ct(tabs, indicator-height, 2px);
-		border-radius: var(--rise-radius-full);
+		border-radius: 0;
 		background-color: var(--custom-bg-active, ct(tabs, indicator-bg, var(--rise-primary)));
 		transform: translate(
 			calc(var(--indicator-x, 0px) + 1px),
@@ -205,7 +205,7 @@
 		inset-inline: 1px;
 		bottom: 0;
 		height: ct(tabs, indicator-height, 2px);
-		border-radius: var(--rise-radius-full);
+		border-radius: 0;
 		background-color: var(--custom-bg-active, ct(tabs, indicator-bg, var(--rise-primary)));
 	}
 
@@ -232,20 +232,20 @@
 	&--pills &__list,
 	&--rounded &__list {
 		flex: 0 1 auto;
-		padding: space(ct(tabs, list-padding, 4px));
-		border-radius: sz(ct(tabs, list-radius, var(--rise-radius-lg)));
+		padding: space(ct(tabs, list-padding, 2px));
+		border-radius: sz(ct(tabs, list-radius, var(--rise-radius-md)));
 		@include custom-bg(background-color, ct(tabs, list-bg, var(--rise-bg-elevated)));
 	}
 
 	&--pills &__indicator,
 	&--rounded &__indicator {
-		border-radius: sz(ct(tabs, indicator-radius, var(--rise-control-radius)));
-		background-color: var(--custom-bg-active, ct(tabs, pills-indicator-bg, var(--rise-bg)));
-		box-shadow: ct(tabs, indicator-shadow, var(--rise-shadow-xs));
+		border-radius: sz(ct(tabs, indicator-radius, var(--rise-radius-sm)));
+		background-color: var(--custom-bg-active, ct(tabs, pills-indicator-bg, var(--rise-surface-selected)));
+		box-shadow: ct(tabs, indicator-shadow, none);
 	}
 
 	&--pills &__tab.base-button {
-		border-radius: sz(ct(tabs, indicator-radius, var(--rise-control-radius)));
+		border-radius: sz(ct(tabs, indicator-radius, var(--rise-radius-sm)));
 	}
 
 	&--pills &__tab.base-button,
@@ -268,25 +268,25 @@
 
 	&--pills:not(&--indicator-ready) &__tab--active.base-button,
 	&--rounded:not(&--indicator-ready) &__tab--active.base-button {
-		background-color: var(--custom-bg-active, ct(tabs, pills-indicator-bg, var(--rise-bg)));
-		box-shadow: ct(tabs, indicator-shadow, var(--rise-shadow-xs));
+		background-color: var(--custom-bg-active, ct(tabs, pills-indicator-bg, var(--rise-surface-selected)));
+		box-shadow: ct(tabs, indicator-shadow, none);
 
 		@include hover {
-			background-color: var(--custom-bg-active, ct(tabs, pills-indicator-bg, var(--rise-bg)));
+			background-color: var(--custom-bg-active, ct(tabs, pills-indicator-bg, var(--rise-surface-selected)));
 		}
 
 		@include active {
-			background-color: var(--custom-bg-active, ct(tabs, pills-indicator-bg, var(--rise-bg)));
+			background-color: var(--custom-bg-active, ct(tabs, pills-indicator-bg, var(--rise-surface-selected)));
 		}
 	}
 
 	&--rounded &__list {
-		border-radius: ct(tabs, rounded-list-radius, var(--rise-radius-full));
+		border-radius: sz(ct(tabs, rounded-list-radius, var(--rise-radius-lg)));
 	}
 
 	&--rounded &__indicator,
 	&--rounded &__tab.base-button {
-		border-radius: ct(tabs, rounded-indicator-radius, var(--rise-radius-full));
+		border-radius: sz(ct(tabs, rounded-indicator-radius, var(--rise-radius-md)));
 	}
 
 	&--full-width &__list {

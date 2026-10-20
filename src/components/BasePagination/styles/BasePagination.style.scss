@@ -23,7 +23,7 @@
 	&__indicator {
 		@include sliding-indicator('&--instant');
 		box-sizing: border-box;
-		border-radius: sz(ct(pagination, indicator-radius, var(--rise-control-radius)));
+		border-radius: sz(ct(pagination, indicator-radius, var(--rise-radius-sm)));
 		box-shadow: ct(pagination, indicator-shadow, none);
 		background-color: var(--custom-bg-active, #{ct(pagination, indicator-bg, var(--rise-primary))});
 	}
@@ -33,7 +33,14 @@
 		--btn-pad-left: #{ct(pagination, page-padding-x, 6px)};
 		--btn-pad-right: #{ct(pagination, page-padding-x, 6px)};
 
+		--btn-pad-top: 0px;
+		--btn-pad-bottom: 0px;
+
 		min-width: sz(32px);
+		height: sz(32px);
+		border-radius: sz(ct(pagination, page-radius, var(--rise-radius-sm)));
+		font-family: var(--rise-font-mono);
+		font-size: sz(12px);
 		font-variant-numeric: tabular-nums;
 	}
 
@@ -57,6 +64,11 @@
 		@include inherit-custom-color;
 		--btn-pad-left: #{ct(pagination, arrow-padding-x, var(--rise-control-padding-y))};
 		--btn-pad-right: #{ct(pagination, arrow-padding-x, var(--rise-control-padding-y))};
+		--btn-pad-top: 0px;
+		--btn-pad-bottom: 0px;
+
+		height: sz(32px);
+		border-radius: sz(ct(pagination, page-radius, var(--rise-radius-sm)));
 	}
 
 	&__ellipsis {
@@ -65,7 +77,8 @@
 		justify-content: center;
 		min-width: sz(32px);
 		height: sz(32px);
-		@include control-text;
+		font-family: var(--rise-font-mono);
+		font-size: sz(12px);
 		color: ct(pagination, ellipsis-text, var(--rise-text-muted));
 		user-select: none;
 	}

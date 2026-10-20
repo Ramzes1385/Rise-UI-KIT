@@ -19,9 +19,10 @@
 		gap: sz(8px);
 		min-height: sz(52px);
 		padding: sz(ct(mega-menu, padding-y, 8px) ct(mega-menu, padding-x, 12px));
-		border: 1px solid ct(mega-menu, border, var(--rise-border));
+		border: 1px solid transparent;
 		border-radius: sz(ct(mega-menu, radius, var(--rise-radius-lg)));
-		@include custom-bg(background-color, ct(mega-menu, bg, var(--rise-bg)));
+		@include tonal-surface(muted);
+		@include custom-bg(background-color, ct(mega-menu, bg, var(--rise-bg-muted)));
 		@include transition-colors;
 	}
 
@@ -51,7 +52,7 @@
 		margin: 0;
 		padding: sz(0 12px);
 		border: none;
-		border-radius: sz(var(--rise-radius-md));
+		border-radius: sz(var(--rise-radius-sm));
 		background-color: transparent;
 		@include custom-text(color, ct(mega-menu, trigger-text, var(--rise-text-toned)));
 		font: inherit;
@@ -90,7 +91,6 @@
 			inset-inline: sz(12px);
 			bottom: sz(2px);
 			height: 2px;
-			border-radius: sz(var(--rise-radius-full));
 			background-color: var(--rise-primary);
 			content: '';
 		}
@@ -197,9 +197,7 @@
 	&__group-title {
 		margin: 0;
 		padding: sz(0 8px);
-		@include text-size(xs);
-		font-weight: var(--rise-font-weight-semibold);
-		color: var(--rise-text-muted);
+		@include caps-label;
 	}
 
 	&__links {
@@ -221,27 +219,25 @@
 		align-items: flex-start;
 		gap: sz(12px);
 		padding: sz(8px);
-		border-radius: sz(var(--rise-radius-md));
+		border-radius: sz(var(--rise-radius-sm));
 		color: var(--rise-text);
 		@include text-size(sm);
 		text-decoration: none;
 		@include transition-colors;
 
 		@include hover {
-			background-color: ct(mega-menu, link-bg-hover, var(--rise-bg-muted));
+			background-color: ct(mega-menu, link-bg-hover, var(--rise-surface-floating-hover));
 			color: var(--rise-text-highlighted);
 			text-decoration: none;
 
 			.base-mega-menu__link-icon {
-				border-color: var(--rise-primary-border);
 				background-color: var(--rise-primary-soft);
-				color: var(--rise-primary);
+				color: var(--rise-primary-text);
 			}
 		}
 
 		&:focus-visible .base-mega-menu__link-icon {
-			border-color: var(--rise-primary-border);
-			color: var(--rise-primary);
+			color: var(--rise-primary-text);
 		}
 	}
 
@@ -261,7 +257,7 @@
 	}
 
 	&__link--expanded {
-		background-color: ct(mega-menu, link-bg-hover, var(--rise-bg-muted));
+		background-color: ct(mega-menu, link-bg-hover, var(--rise-surface-floating-hover));
 		color: var(--rise-text-highlighted);
 	}
 
@@ -297,7 +293,7 @@
 		margin: 0;
 		padding: sz(6px 8px);
 		border: none;
-		border-radius: sz(var(--rise-radius-md));
+		border-radius: sz(var(--rise-radius-sm));
 		background-color: transparent;
 		color: var(--rise-text-muted);
 		font-family: inherit;
@@ -308,7 +304,7 @@
 		@include focus-ring;
 
 		@include hover {
-			background-color: ct(mega-menu, link-bg-hover, var(--rise-bg-muted));
+			background-color: ct(mega-menu, link-bg-hover, var(--rise-surface-floating-hover));
 			color: var(--rise-text-highlighted);
 		}
 	}
@@ -357,9 +353,8 @@
 		justify-content: center;
 		width: sz(32px);
 		height: sz(32px);
-		border: 1px solid var(--rise-border);
-		border-radius: sz(var(--rise-radius-md));
-		background-color: var(--rise-bg);
+		border-radius: sz(var(--rise-radius-sm));
+		background-color: var(--rise-bg-elevated);
 		color: var(--rise-text-muted);
 		@include transition-colors;
 	}
@@ -381,9 +376,8 @@
 
 	&__link-badge.base-badge {
 		padding: sz(0 6px);
-		border-radius: sz(var(--rise-radius-full));
-		@include text-size(2xs);
-		font-weight: var(--rise-font-weight-semibold);
+		border-radius: calc(#{sz(var(--rise-radius-sm))} - 1px);
+		@include caps-label(10px, 0.08em);
 	}
 
 	&__link-desc {
@@ -397,8 +391,7 @@
 		gap: sz(6px);
 		min-width: 0;
 		padding: sz(16px);
-		border: 1px solid var(--rise-border);
-		border-radius: sz(var(--rise-radius-md));
+		border-radius: sz(var(--rise-radius-lg));
 		background-color: var(--rise-bg-muted);
 	}
 
@@ -493,21 +486,25 @@
 	}
 
 	&--ghost &__bar {
-		border-color: transparent;
+		@include tonal-surface(none);
 		@include custom-bg(background-color, transparent);
 	}
 
 	&--outline &__bar {
 		border-color: ct(mega-menu, border, var(--rise-border-accented));
+		@include tonal-surface(page);
+		@include custom-bg(background-color, ct(mega-menu, bg, var(--rise-bg)));
 	}
 
 	&--shadow &__bar {
 		box-shadow: var(--rise-shadow-sm);
+		@include tonal-surface(floating);
+		@include custom-bg(background-color, ct(mega-menu, bg, var(--rise-surface-floating)));
 	}
 
 	&--soft &__bar {
-		border-color: transparent;
-		@include custom-bg(background-color, var(--rise-bg-muted));
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, var(--rise-bg-elevated));
 	}
 
 	&--soft &__trigger {

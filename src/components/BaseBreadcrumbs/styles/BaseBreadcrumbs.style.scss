@@ -73,6 +73,7 @@
 		align-items: center;
 		justify-content: center;
 		flex-shrink: 0;
+		font-family: var(--rise-font-mono);
 		color: ct(breadcrumbs, sep-text, var(--rise-text-dimmed));
 		user-select: none;
 	}
@@ -90,7 +91,7 @@
 	&--ghost &__link,
 	&--ghost &__current {
 		padding: sz(2px 6px);
-		border-radius: sz(var(--rise-radius-md));
+		border-radius: sz(var(--rise-radius-sm));
 	}
 
 	&--ghost &__link {
@@ -112,18 +113,17 @@
 	}
 
 	&--outline {
-		border-color: ct(breadcrumbs, border, var(--rise-border));
+		border-color: ct(breadcrumbs, border, var(--rise-border-accented));
 		@include custom-bg(background-color, ct(breadcrumbs, bg, transparent));
 	}
 
 	&--shadow {
-		border-color: ct(breadcrumbs, border, var(--rise-border));
 		box-shadow: ct(breadcrumbs, shadow, var(--rise-shadow-sm));
-		@include custom-bg(background-color, ct(breadcrumbs, bg, var(--rise-bg)));
+		@include custom-bg(background-color, ct(breadcrumbs, bg, var(--rise-surface-floating)));
 	}
 
 	&--soft {
-		@include custom-bg(background-color, ct(breadcrumbs, bg, var(--rise-bg-muted)));
+		@include custom-bg(background-color, ct(breadcrumbs, bg, var(--rise-bg-elevated)));
 	}
 }
 

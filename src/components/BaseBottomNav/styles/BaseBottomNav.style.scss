@@ -2,7 +2,7 @@
 	@include custom-color-scope;
 	--bottom-nav-indicator: color-mix(in srgb, var(--custom-bg-active, var(--rise-primary)) 16%, transparent);
 	--bottom-nav-bar-padding: 0px;
-	--bottom-nav-notch-radius: #{sz(34px)};
+	--bottom-nav-notch-radius: #{sz(38px)};
 	--bottom-nav-primary-size: #{sz(52px)};
 
 	display: block;
@@ -10,10 +10,14 @@
 	width: 100%;
 	padding-inline: env(safe-area-inset-left, 0) env(safe-area-inset-right, 0);
 	padding-bottom: env(safe-area-inset-bottom, 0);
-	border-top: 1px solid ct(bottom-nav, border, var(--rise-border));
-	@include custom-bg(background-color, ct(bottom-nav, bg, var(--rise-bg)));
+	border-top: 1px solid transparent;
+	border-radius: sz(var(--rise-radius-lg));
+	@include tonal-surface(muted);
+	@include custom-bg(background-color, ct(bottom-nav, bg, var(--rise-bg-muted)));
 
 	&--fixed {
+		border-end-start-radius: 0;
+		border-end-end-radius: 0;
 		position: fixed;
 		inset-inline: 0;
 		bottom: 0;
@@ -29,16 +33,18 @@
 	}
 
 	&--soft {
-		border-top-color: transparent;
+		@include tonal-surface(elevated);
 		@include custom-bg(background-color, var(--rise-bg-elevated));
 	}
 
 	&--outline {
 		border-top-color: ct(bottom-nav, outline-border, var(--rise-border-accented));
+		@include tonal-surface(page);
+		@include custom-bg(background-color, ct(bottom-nav, bg, var(--rise-bg)));
 	}
 
 	&--ghost {
-		border-top-color: transparent;
+		@include tonal-surface(none);
 		@include custom-bg(background-color, transparent);
 	}
 
@@ -54,22 +60,17 @@
 	&--floating &__bar {
 		max-width: sz(480px);
 		margin-inline: auto;
-		border: 1px solid ct(bottom-nav, border, var(--rise-border));
-		border-radius: ct(bottom-nav, bar-radius, var(--rise-radius-2xl));
+		border-radius: sz(ct(bottom-nav, bar-radius, var(--rise-radius-lg)));
 		box-shadow: ct(bottom-nav, bar-shadow, var(--rise-shadow-lg));
-		@include custom-bg(background-color, ct(bottom-nav, bg, var(--rise-bg-elevated)));
+		@include tonal-surface(floating);
+		@include custom-bg(background-color, ct(bottom-nav, bg, var(--rise-surface-floating)));
 	}
 
 	&--glass {
 		--bottom-nav-bar-padding: #{space(4px)};
 
-		border-top-color: color-mix(in srgb, var(--rise-border) 60%, transparent);
 		@include custom-bg(background-color, var(--rise-bg-elevated));
-
-		@supports (backdrop-filter: blur(1px)) {
-			background-color: color-mix(in srgb, var(--custom-bg, var(--rise-bg)) 80%, transparent);
-			backdrop-filter: blur(#{sz(16px)}) saturate(1.8);
-		}
+		background-color: color-mix(in srgb, var(--custom-bg, var(--rise-bg-elevated)) 88%, transparent);
 	}
 
 	&--notched {
@@ -79,8 +80,7 @@
 	}
 
 	&--notched &__bar {
-		border-top: 1px solid ct(bottom-nav, border, var(--rise-border));
-		@include custom-bg(background-color, ct(bottom-nav, bg, var(--rise-bg)));
+		@include custom-bg(background-color, ct(bottom-nav, bg, var(--rise-bg-muted)));
 	}
 
 	&--notched &__bar--notched {
@@ -93,8 +93,8 @@
 		content: '';
 		position: absolute;
 		inset: 0;
-		border-top: 1px solid ct(bottom-nav, border, var(--rise-border));
-		@include custom-bg(background-color, ct(bottom-nav, bg, var(--rise-bg)));
+		border-radius: inherit;
+		@include custom-bg(background-color, ct(bottom-nav, bg, var(--rise-bg-muted)));
 		mask: radial-gradient(
 			circle at var(--bottom-nav-notch-x) 0,
 			transparent var(--bottom-nav-notch-radius),
@@ -110,7 +110,7 @@
 	&__indicator {
 		@include sliding-indicator('&--instant');
 
-		border-radius: var(--rise-radius-full);
+		border-radius: sz(var(--rise-radius-sm));
 		background-color: ct(bottom-nav, indicator-bg, var(--bottom-nav-indicator));
 	}
 
@@ -122,7 +122,7 @@
 
 	&--floating &__indicator,
 	&--glass &__indicator {
-		border-radius: var(--rise-radius-xl);
+		border-radius: sz(var(--rise-radius-md));
 	}
 
 	&__list {
@@ -149,7 +149,7 @@
 		width: 100%;
 		min-height: sz(ct(bottom-nav, height, 56px));
 		padding: sz(8px) sz(4px) sz(6px);
-		border-radius: sz(var(--rise-radius-md));
+		border-radius: sz(var(--rise-radius-sm));
 		text-decoration: none;
 		-webkit-tap-highlight-color: transparent;
 		@include custom-text(color, ct(bottom-nav, text, var(--rise-text-toned)));
@@ -177,7 +177,7 @@
 		min-width: min(#{sz(80px)}, calc(100% + #{sz(8px)}));
 		max-width: calc(100% + #{sz(8px)});
 		padding: sz(2px) sz(12px);
-		border-radius: var(--rise-radius-full);
+		border-radius: sz(var(--rise-radius-sm));
 		@include transition-colors;
 	}
 
@@ -200,7 +200,7 @@
 
 	&--floating:not(&--indicator-ready) &__link--active,
 	&--glass:not(&--indicator-ready) &__link--active {
-		border-radius: var(--rise-radius-xl);
+		border-radius: sz(var(--rise-radius-md));
 		background-color: ct(bottom-nav, indicator-bg, var(--bottom-nav-indicator));
 	}
 
@@ -216,7 +216,7 @@
 		height: var(--bottom-nav-primary-size);
 		margin-top: calc(var(--bottom-nav-primary-size) / -2);
 		padding: 0;
-		box-shadow: var(--rise-shadow-md);
+		border-radius: sz(var(--rise-radius-lg));
 		@include custom-bg(background-color, var(--rise-primary));
 		color: var(--custom-text, var(--rise-on-primary));
 	}

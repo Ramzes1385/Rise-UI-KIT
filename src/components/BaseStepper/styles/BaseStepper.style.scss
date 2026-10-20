@@ -3,7 +3,7 @@
 	--stepper-size: #{sz(ct(stepper-indicator, width, 28px))};
 	--stepper-line: #{sz(2px)};
 	--stepper-line-gap: #{sz(4px)};
-	--stepper-line-radius: var(--rise-radius-full);
+	--stepper-line-radius: 0;
 	--stepper-step-min-width: #{sz(112px)};
 	--stepper-accent: var(--custom-bg, #{ct(stepper, bg-checked, var(--rise-primary))});
 	--stepper-on-accent: var(--custom-text, #{ct(stepper, text-checked, var(--rise-on-primary))});
@@ -73,7 +73,7 @@
 		margin: 0;
 		padding: 0;
 		border: 0;
-		border-radius: sz(var(--rise-radius-md));
+		border-radius: sz(var(--rise-radius-sm));
 		background: none;
 		color: inherit;
 		font: inherit;
@@ -133,11 +133,13 @@
 		width: 100%;
 		height: 100%;
 		border: var(--stepper-line) solid transparent;
-		border-radius: ct(stepper-indicator, radius, var(--rise-radius-full));
+		border-radius: sz(ct(stepper-indicator, radius, var(--rise-radius-sm)));
 		background-color: ct(stepper-indicator, bg, var(--rise-bg-elevated));
-		color: ct(stepper-indicator, text, var(--rise-text-toned));
-		@include text-size(xs);
-		font-weight: var(--rise-font-weight-semibold);
+		color: ct(stepper-indicator, text, var(--rise-text-muted));
+		font-family: var(--rise-font-mono);
+		font-size: sz(11px);
+		line-height: sz(16px);
+		font-weight: var(--rise-font-weight-normal);
 		font-variant-numeric: tabular-nums;
 		@include transition-colors;
 
@@ -149,15 +151,14 @@
 	}
 
 	&__step--active &__indicator {
-		border-color: var(--stepper-accent);
-		background-color: var(--rise-bg);
-		color: var(--rise-text-highlighted);
+		background-color: color-mix(in srgb, var(--stepper-accent) 14%, transparent);
+		color: var(--custom-bg, var(--rise-primary-text));
 	}
 
 	&__step--active &__trigger--clickable {
 		@include hover {
 			.base-stepper__indicator {
-				background-color: var(--rise-bg);
+				background-color: color-mix(in srgb, var(--stepper-accent) 20%, transparent);
 			}
 		}
 	}
@@ -234,7 +235,7 @@
 
 	&__step--error &__label,
 	&__step--error &__description {
-		color: var(--rise-error);
+		color: var(--rise-error-text);
 	}
 
 	&__description {
@@ -342,7 +343,7 @@
 	}
 
 	&--square &__indicator {
-		border-radius: sz(ct(stepper-indicator, square-radius, var(--rise-radius-md)));
+		border-radius: sz(ct(stepper-indicator, square-radius, var(--rise-radius-xs)));
 	}
 
 	&--diamond &__indicator {
