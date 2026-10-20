@@ -81,5 +81,9 @@ export const jaRoadmap = {
 		MODE_VIEW: '表示',
 		MODE_EDIT: '編集',
 		MODE_REVIEW: 'レビュー',
+		HOOK_REASON_CHANGE: '編集「{command}」を取り消しました',
+		HOOK_REASON_DELETE: '削除を取り消しました',
+		HOOK_REASON_STATUS: 'トピック「{title}」のステータス変更を取り消しました',
+		HOOK_REASON_ERROR: 'ハンドラーがエラーを投げました',
 	},
 }

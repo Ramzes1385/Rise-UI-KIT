@@ -2,10 +2,10 @@ import { mount } from '@vue/test-utils'
 import { formatMessage } from '@/locales/state'
 import { editData } from '../fixtures/editFixtures'
 import { enableAutoUnmount } from '@vue/test-utils'
-import { UI_ROADMAP_EDIT } from '@/locales/messages'
 import BaseRoadmap from '../../../ui/BaseRoadmap.vue'
 import { mockWidth } from '../../fixtures/shellFixtures'
 import { liveText, mountEditor } from '../fixtures/renderEditor'
+import { UI_ROADMAP, UI_ROADMAP_EDIT } from '@/locales/messages'
 import { fireEvent, screen, within } from '@testing-library/vue'
 
 vi.setConfig({ testTimeout: 60_000 })
@@ -123,9 +123,7 @@ describe('отказ beforeDelete и размонтирование до заг�
 		await vi.waitFor(() => expect(liveText()).toContain('отменена'))
 		expect(pick('Тема c')).toHaveAttribute('aria-pressed', 'true')
 		await user.click(within(inspector()).getByRole('tab', { name: new RegExp(UI_ROADMAP_EDIT.TAB_HOOKS) }))
-		expect(
-			within(inspector()).getByText(new RegExp(`Последний итог: отказ — ${UI_ROADMAP_EDIT.HOOK_REASON_DELETE}`)),
-		).toBeInTheDocument()
+		expect(within(inspector()).getByText(new RegExp(`Последний итог: отказ — ${UI_ROADMAP.HOOK_REASON_DELETE}`))).toBeInTheDocument()
 	})
 
 	it('размонтирование в режиме «Правка» до загрузки чанка ничего не запускает и не пишет в консоль', async () => {

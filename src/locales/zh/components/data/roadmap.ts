@@ -81,5 +81,9 @@ export const zhRoadmap = {
 		MODE_VIEW: '查看',
 		MODE_EDIT: '编辑',
 		MODE_REVIEW: '审阅',
+		HOOK_REASON_CHANGE: '编辑“{command}”已取消',
+		HOOK_REASON_DELETE: '删除已取消',
+		HOOK_REASON_STATUS: '主题“{title}”的状态变更已取消',
+		HOOK_REASON_ERROR: '处理程序抛出了错误',
 	},
 }

@@ -1,5 +1,5 @@
 import { vi } from 'vitest'
-import { UI_ROADMAP_EDIT } from '@/locales/messages'
+import { UI_ROADMAP } from '@/locales/messages'
 import { mountEdit, editData } from '../fixtures/editFixtures'
 
 function hookFns() {
@@ -80,7 +80,7 @@ describe('доска хуков: итоги вызовов', () => {
 		await hooks.run('beforeDelete', { stages: [], topics: [] }, undefined as never)
 		const [change, remove] = hooks.list()
 		expect(hooks.resultOf(change.id)).toEqual({ isCancelled: true, reason: 'правка «update» отменена' })
-		expect(hooks.resultOf(remove.id)).toEqual({ isCancelled: true, reason: UI_ROADMAP_EDIT.HOOK_REASON_DELETE })
+		expect(hooks.resultOf(remove.id)).toEqual({ isCancelled: true, reason: UI_ROADMAP.HOOK_REASON_DELETE })
 	})
 
 	it('отказ beforeStatusChange называет тему; без контекста и без названия — пусто', async () => {
@@ -122,7 +122,7 @@ describe('доска хуков: итоги вызовов', () => {
 			throw new Error('сбой')
 		})
 		await expect(hooks.run('beforeChange', { changes: [], command: 'x', data: editData() }, [])).rejects.toThrow('сбой')
-		expect(hooks.resultOf(hooks.list()[0].id)).toEqual({ isCancelled: true, reason: UI_ROADMAP_EDIT.HOOK_REASON_ERROR })
+		expect(hooks.resultOf(hooks.list()[0].id)).toEqual({ isCancelled: true, reason: UI_ROADMAP.HOOK_REASON_ERROR })
 	})
 
 	it('отписка стирает итог; анонимная функция даёт пустое имя', async () => {

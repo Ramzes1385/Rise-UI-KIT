@@ -81,5 +81,9 @@ export const enRoadmap = {
 		MODE_VIEW: 'View',
 		MODE_EDIT: 'Edit',
 		MODE_REVIEW: 'Review',
+		HOOK_REASON_CHANGE: 'edit “{command}” cancelled',
+		HOOK_REASON_DELETE: 'deletion cancelled',
+		HOOK_REASON_STATUS: 'status change of topic “{title}” cancelled',
+		HOOK_REASON_ERROR: 'the handler threw an error',
 	},
 }

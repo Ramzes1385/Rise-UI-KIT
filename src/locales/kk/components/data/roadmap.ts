@@ -81,5 +81,9 @@ export const kkRoadmap = {
 		MODE_VIEW: 'Қарау',
 		MODE_EDIT: 'Түзету',
 		MODE_REVIEW: 'Тексеру',
+		HOOK_REASON_CHANGE: '«{command}» өңдеуі болдырылмады',
+		HOOK_REASON_DELETE: 'жою болдырылмады',
+		HOOK_REASON_STATUS: '«{title}» тақырыбының мәртебесін өзгерту болдырылмады',
+		HOOK_REASON_ERROR: 'өңдеуші қате шығарды',
 	},
 }

@@ -97,4 +97,8 @@ export const ruRoadmap = {
 	MODE_VIEW: 'Просмотр',
 	MODE_EDIT: 'Правка',
 	MODE_REVIEW: 'Правки',
+	HOOK_REASON_CHANGE: 'правка «{command}» отменена',
+	HOOK_REASON_DELETE: 'удаление отменено',
+	HOOK_REASON_STATUS: 'смена статуса темы «{title}» отменена',
+	HOOK_REASON_ERROR: 'обработчик выбросил ошибку',
 }

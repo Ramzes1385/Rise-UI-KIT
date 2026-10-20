@@ -1,5 +1,5 @@
+import { UI_ROADMAP } from '@/locales/messages'
 import { formatMessage } from '@/locales/state'
-import { UI_ROADMAP_EDIT } from '@/locales/messages'
 import { onScopeDispose, shallowRef, watch } from 'vue'
 import type { BaseRoadmapProps, RoadmapHooks } from '../../../types/BaseRoadmap.types'
 import { createHookRunner } from '@composables/editor/useCommandHistory/helpers/hookRunner'
@@ -19,9 +19,9 @@ function isThenable(value: unknown): value is PromiseLike<unknown> {
 
 function refusalReason(name: string, context: unknown): string {
 	const value = (context ?? {}) as Record<string, unknown>
-	if (name === 'beforeChange') return formatMessage(UI_ROADMAP_EDIT.HOOK_REASON_CHANGE, { command: String(value.command ?? '') })
-	if (name === 'beforeDelete') return UI_ROADMAP_EDIT.HOOK_REASON_DELETE
-	return formatMessage(UI_ROADMAP_EDIT.HOOK_REASON_STATUS, {
+	if (name === 'beforeChange') return formatMessage(UI_ROADMAP.HOOK_REASON_CHANGE, { command: String(value.command ?? '') })
+	if (name === 'beforeDelete') return UI_ROADMAP.HOOK_REASON_DELETE
+	return formatMessage(UI_ROADMAP.HOOK_REASON_STATUS, {
 		title: String((value.topic as { title?: string } | undefined)?.title ?? ''),
 	})
 }
@@ -62,7 +62,7 @@ function createBoard(): RoadmapHookBoard {
 					const answer = (handler as (value: never) => unknown)(context)
 					return isThenable(answer) ? Promise.resolve(answer).then(report) : report(answer)
 				} catch (error) {
-					note(id, { isCancelled: true, reason: UI_ROADMAP_EDIT.HOOK_REASON_ERROR })
+					note(id, { isCancelled: true, reason: UI_ROADMAP.HOOK_REASON_ERROR })
 					throw error
 				}
 			}

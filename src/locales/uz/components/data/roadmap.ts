@@ -81,5 +81,9 @@ export const uzRoadmap = {
 		MODE_VIEW: 'Koʻrish',
 		MODE_EDIT: 'Tahrirlash',
 		MODE_REVIEW: 'Tekshirish',
+		HOOK_REASON_CHANGE: '“{command}” tahriri bekor qilindi',
+		HOOK_REASON_DELETE: 'oʻchirish bekor qilindi',
+		HOOK_REASON_STATUS: '“{title}” mavzusi holatini oʻzgartirish bekor qilindi',
+		HOOK_REASON_ERROR: 'ishlovchi xato chiqardi',
 	},
 }
