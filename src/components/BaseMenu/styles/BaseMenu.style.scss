@@ -4,11 +4,11 @@
 	flex-direction: column;
 	min-width: sz(180px);
 	padding: space(ct(menu, padding, 4px));
+	@include transition-colors;
 	@include floating-surface;
 	border-radius: sz(ct(menu, radius, var(--rise-radius-lg)));
 	box-shadow: ct(menu, shadow, var(--rise-shadow-lg));
 	@include custom-bg(background-color, ct(menu, bg, var(--rise-surface-floating)));
-	@include transition-colors;
 
 	&__group {
 		display: flex;
