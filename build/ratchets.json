@@ -1,27 +1,27 @@
 {
 	"size": {
 		"components.js": {
-			"gzip": 939211,
-			"budget": 1033216
+			"gzip": 944392,
+			"budget": 1039360
 		},
 		"components/*/index.js": {
-			"gzip": 197372,
-			"budget": 218112
+			"gzip": 197260,
+			"budget": 217088
 		},
 		"composables.js": {
-			"gzip": 195745,
-			"budget": 216064
+			"gzip": 200015,
+			"budget": 220160
 		},
 		"config.js": {
-			"gzip": 19703,
+			"gzip": 19707,
 			"budget": 22528
 		},
 		"flow3d.js": {
-			"gzip": 139500,
-			"budget": 153600
+			"gzip": 140484,
+			"budget": 154624
 		},
 		"icons.js": {
-			"gzip": 4867,
+			"gzip": 4901,
 			"budget": 6144
 		},
 		"icons.svg": {
@@ -29,19 +29,19 @@
 			"budget": 7168
 		},
 		"index.js": {
-			"gzip": 1167968,
-			"budget": 1285120
+			"gzip": 1188370,
+			"budget": 1307648
 		},
 		"map3d.js": {
-			"gzip": 140276,
-			"budget": 154624
+			"gzip": 141332,
+			"budget": 155648
 		},
 		"media.css": {
 			"gzip": 15402,
 			"budget": 17408
 		},
 		"media.js": {
-			"gzip": 175871,
+			"gzip": 175810,
 			"budget": 193536
 		},
 		"media.layer.css": {
@@ -56,9 +56,13 @@
 			"gzip": 1355,
 			"budget": 3072
 		},
+		"roadmap3d.js": {
+			"gzip": 163285,
+			"budget": 180224
+		},
 		"styles.css": {
-			"gzip": 112934,
-			"budget": 124928
+			"gzip": 116621,
+			"budget": 129024
 		},
 		"styles.layer.css": {
 			"gzip": 61,
@@ -81,7 +85,7 @@
 			"budget": 5120
 		},
 		"utils.js": {
-			"gzip": 69066,
+			"gzip": 69100,
 			"budget": 76800
 		},
 		"components/*/style.css": {

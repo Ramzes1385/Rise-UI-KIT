@@ -69,7 +69,7 @@
 | BaseFileManager | 74,8 | 14,7 | 89,5 | — |
 | BaseFileUpload | 39,8 | 8,0 | 47,8 | — |
 | BaseFilterBuilder | 17,1 | 3,4 | 20,5 | — |
-| BaseFlowMap | 70,0 | 8,1 | 78,2 | 192,5 |
+| BaseFlowMap | 69,5 | 8,1 | 77,7 | 188,6 |
 | BaseFooter | 9,5 | 1,4 | 10,9 | — |
 | BaseForm | 5,5 | 1,3 | 6,8 | — |
 | BaseFormField | 7,0 | 0,9 | 7,9 | — |
@@ -121,7 +121,7 @@
 | BaseReasoning | 24,1 | 4,5 | 28,5 | — |
 | BaseRequisiteInput | 15,5 | 2,9 | 18,4 | — |
 | BaseResult | 4,9 | 1,1 | 5,9 | — |
-| BaseRoadmap | 67,3 | 14,5 | 81,8 | 67,5 |
+| BaseRoadmap | 67,4 | 14,5 | 81,9 | 67,6 |
 | BaseScrollArea | 3,3 | 0,6 | 3,9 | — |
 | BaseSearch | 45,4 | 7,9 | 53,4 | — |
 | BaseSegmented | 16,9 | 2,6 | 19,5 | — |
@@ -131,7 +131,7 @@
 | BaseSignaturePad | 10,2 | 2,3 | 12,5 | — |
 | BaseSkeleton | 2,2 | 0,5 | 2,7 | — |
 | BaseSlideover | 13,2 | 2,4 | 15,6 | — |
-| BaseSlider | 32,1 | 5,7 | 37,8 | — |
+| BaseSlider | 32,1 | 5,7 | 37,9 | — |
 | BaseSparkline | 5,2 | 0,7 | 6,0 | — |
 | BaseSplitButton | 24,4 | 3,6 | 28,0 | — |
 | BaseSplitter | 6,3 | 0,8 | 7,1 | — |
