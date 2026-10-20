@@ -65,7 +65,6 @@ function findChunkLoops(dist: string): string[] {
 /**
  * Петли, найденные при заведении теста (20.10) и пока не устранённые в коде кита; имена чанков без хеша. Список только сокращается:
  * новая петля роняет тест, а устранённая роняет его, пока строку не уберут отсюда.
- * - `BaseFlowMap → FlowDetails`: панель деталей (ленивая) берёт из чанка `BaseFlowMap` общие функции карты;
  * - `useCryptoPro → plugin`: `plugin` статически импортирует `useCryptoPro`, а тот вызывает `plugin` по `import()`.
  */
 const KNOWN_LOOPS = ['chunks/useCryptoPro → import() → chunks/plugin']

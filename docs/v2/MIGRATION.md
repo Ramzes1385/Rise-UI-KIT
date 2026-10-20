@@ -3497,7 +3497,7 @@ app.use(createUiKitConfig({ locale: 'en', theme: 'corporate' }))
 
 Публичный API не меняется: `registerLocale`, `defineLocale`, `setLocale`, `useLocale`, типы `UiKitLocale` и синхронный SSR работают как раньше, строки приложения (`defineLocale(base, overrides)`) тоже. Меняется состав сборки.
 
-- **Что сделано.** Каждый раздел `UI_*` лежит в своём модуле `src/locales/sections/<область>/<раздел>.ts`; `src/locales/messages.ts` стал реэкспортом, файлы компонентов не менялись. `ruLocaleWarnings` (две строки `setLocale`) вынесен в `ru/localeWarnings.ts`, `ru/base.ts` по-прежнему им пользуется.
+- **Что сделано.** Каждый раздел `UI_*` лежит в своём модуле `src/locales/sections/<область>/<раздел>.ts`; `src/locales/messages.ts` стал реэкспортом, файлы компонентов не менялись. `ruLocaleWarnings` (две строки `setLocale`) вынесен в `ru/rules/localeWarnings.ts`, `ru/base.ts` по-прежнему им пользуется.
 - **Сборка пакета.** В `build/config/build.lib.ts` рядом с `LOCALE_GROUPS` появились группы чанков русского словаря: `locale-core` (`localized`, `current`, `legacyKeys`) и `locale-ru-<файл ru/**>` (файл и обёртки его разделов). Теперь раздел попадает туда, где его читают, в том числе в ленивый чанк компонента, а не в общий чанк `messages`.
 - **Что получают приложения.** Замер на базе `integ/rm2-w3a` (ab0961b1, фаза 2 карты и роадмапа, волна 3а 3D): `config.js` (граф dist) — 19,0 КБ gzip (на этой базе до части С — 50,2, по старой сборке); `createUiKitConfig` без языка — 34,6 КБ с Vue (было 34,6). Вес отдельных компонентов: BaseFlowMap +1,4 (177,5 → 178,9), BaseImageMapEditor +1,1, BaseRoadmap 69,9 → 65,4 (по `import()` 51,1 → 57,4: строки «Правки» и «Правок» уехали в ленивые чанки); сумма JS по `SIZES.md` 2949,4 → 2961,6 (+0,41 %). Метрики «сумма gzip файлов» растут из-за новых чанков: `index.js` 1123,0 → 1165,3 КБ, `components.js` 927,5 → 948,1, `composables.js` 166,9 → 189,5 (бюджет 187 — поднимает проверка волны) — вес приложений от этого не растёт.
 - **Для авторов кита.** Новый раздел словаря — отдельный модуль в `sections/**` с одним `localized()` и реэкспорт в `messages.ts`; `src/locales/__tests__/sections.spec.ts` проверяет, что у раздела есть модуль и группа сборки и что в `sections/**` и `ru/**` нет вызовов при загрузке модуля (группы собраны без `strictExecutionOrder`). Раздел, который читает «чужой» компонент, возвращает свои строки в первый вид его компонента.
@@ -3505,13 +3505,12 @@ app.use(createUiKitConfig({ locale: 'en', theme: 'corporate' }))
 
 ### `test:subpaths` · `en` считается отдельно (flow-size-infra)
 
-- Сценарии `config-subpath` и `config-root` сверяются с `JS_MAX` (60 КБ) **без** словаря `en`; вес `en` — разница сценариев `bare-app-en` и `bare-app` (приложение без кита и с `registerLocale(en)`), свой предел `EN_MAX` = 45 КБ gzip (замер 43,3 КБ плюс запас на рост кита ≈1,7 КБ; поднимать строкой в DECISIONS).
+- Сценарии `config-subpath` и `config-root` сверяются с `JS_MAX` (60 КБ) **без** словаря `en`; вес `en` — разница сценариев `bare-app-en` и `bare-app` (приложение без кита и с `registerLocale(en)`), свой предел `EN_MAX` = 35 КБ gzip (замер ≈31,5 КБ; поднимать строкой в DECISIONS).
 - Новый сценарий `subpath-roadmap-edit`: `BaseRoadmap` с подпути в `mode: 'edit'` + `tokens.css`; выбор темы показывает вкладки (`.base-tabs`), в CSS приложения есть `.base-tabs`, `.base-textarea`, `.base-select`, `.base-input`.
 
 ### Сборка · CSS ленивых частей у входа подпути (flow-size-infra, С2)
 
-- `collectStyleComponents` (`build/plugins/subpaths.ts`) обходит и модули по `import()` (после статических, в порядке обнаружения): вход подпути подключает стили внутренних компонентов ленивых частей (правка роадмапа — BaseTabs, BaseTextarea, BaseSelect, BaseInput, BaseInputNumber, BaseConfirm и др.). Раньше при точечной установке они отрисовывались без CSS.
-- Цена: CSS `BaseRoadmap` в `SIZES.md` 14,5 → 21,3 КБ (+6,8; в решении ожидалось ≤ +4 — ленивые части берут ещё BaseSwitch, BaseAvatar, BaseCommentThread, BaseDropdownMenu, BaseCheckbox…). Без этих стилей правка и «Правки» при точечной установке нарисованы неверно.
+- `collectStyleComponents` (`build/plugins/subpaths.ts`) обходит только статический граф входа подпути; модули по `import()` в него не входят. Стили внутренних компонентов ленивой части (правка роадмапа — BaseTabs, BaseTextarea, BaseSelect, BaseInput, BaseConfirm и др.) приходят вместе с её чанком в слое `rise` (раздел «Стили ленивых частей карты и роадмапа» ниже), поэтому CSS входа не растёт: BaseRoadmap 14,5 КБ gzip в `SIZES.md`.
 
 ### BaseRoadmap · строки отказа хуков (flow-size-infra, Р)
 
@@ -3528,6 +3527,7 @@ app.use(createUiKitConfig({ locale: 'en', theme: 'corporate' }))
 - **SSR и гидрация.** Загрузка начинается после монтирования: на сервере и в первом кадре клиента режимы, сценарий и частицы не отрисованы, разметка ядра совпадает. Карта с `mode: 'edit'` или `'review'` на сервере приходит как просмотр, режим включается на клиенте после загрузки кода.
 - **Экран ошибки** (`error`) показывает `BaseResult`, который теперь загружается по `import()` и появляется через миг после каркаса карты. Метод `compare()` контроллера остаётся синхронным, поэтому `diffFlowData` из ядра не вынесен.
 - **Защита первого вида.** `eslint.config.js` запрещает статический импорт `model/edit`, `model/review`, `ui/edit`, `ui/review`, `ui/scenario`, `FlowSearch`, `FlowDetails` и `render/flowExportSvg` из остального кода BaseFlowMap, кроме `use…Loader`; новый код правки и «Правок» подключается только через `import()`.
+- **Сбой загрузки.** Если `import()` «Правки» или «Правок» не удался (сеть, устаревший чанк), над картой появляется сообщение «Не удалось загрузить» (`role="alert"`) с кнопкой «Повторить» (`UI_FLOW_MAP.LOAD_ERROR` и `LOAD_RETRY`, 6 языков). Повтор снова запрашивает код нужных режимов; успешная загрузка убирает сообщение. Команды сценария (`play`, `seek` и др.), ждавшие в очереди, при сбое загрузки сценария отбрасываются, поздняя загрузка их не выполняет.
 - **Для кода внутри кита и тестов.** `useBaseFlowMap().editing` и `.review` — `ShallowRef` (до загрузки `null`); признаки `isEditLoaded`, `isReviewLoaded`, `isScenarioLoaded`; тесты с `mode: 'edit'`, `'review'` и сценарием ждут загрузку (`vi.waitFor` или `flushPromises`). `useFlowModel(...).scenario` получил `isLoaded` и `load()`.
 
 ## Стили ленивых частей карты и роадмапа (flow-size, CSS)
