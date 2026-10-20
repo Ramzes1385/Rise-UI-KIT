@@ -25,7 +25,7 @@ export const scenarioSteps = (canvas: StoryCanvas): HTMLElement[] =>
 
 export const panelButton = (canvas: StoryCanvas, name: string): HTMLElement => within(scenarioPanel(canvas)).getByRole('button', { name })
 
-export const compactPlayer = (canvas: StoryCanvas): HTMLElement => canvas.getByRole('group', { name: 'Сценарий' })
+const compactPlayer = (canvas: StoryCanvas): HTMLElement => canvas.getByRole('group', { name: 'Сценарий' })
 
 export const compactTotal = async (canvas: StoryCanvas, userEvent: StoryUser): Promise<number> => {
 	const player = compactPlayer(canvas)
