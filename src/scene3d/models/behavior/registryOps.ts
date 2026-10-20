@@ -23,7 +23,7 @@ import type {
 const INSTANCED_FACTOR = { hover: 1.12, dimmed: 0.55, gray: 0.6 }
 
 function instanceFactor(entry: Model3DEntry): number {
-	const { look, computed } = entry
+	const { look, effective: computed } = entry
 	if (look.isGray) return INSTANCED_FACTOR.gray
 	if (computed.isDimmed) return INSTANCED_FACTOR.dimmed
 	return computed.isHovered ? INSTANCED_FACTOR.hover : 1
@@ -67,6 +67,7 @@ export function createEntry(
 		custom: new Map(),
 		colors: new Map(),
 		computed,
+		effective: computed,
 		override: {},
 		look: describeLook(computed),
 		runs: new Map(),
@@ -86,7 +87,7 @@ export function createEntry(
 
 /** Вид узла по состоянию: материалы, кольца, цвет экземпляра */
 export function applyLook(rt: Model3DRuntime, entry: Model3DEntry): void {
-	if (entry.mode === 'instanced' && entry.computed.isDragging) rt.hooks.detach(entry)
+	if (entry.mode === 'instanced' && entry.effective.isDragging) rt.hooks.detach(entry)
 	if (entry.mode === 'instanced') {
 		const group = rt.groups.get(entry.groupKey ?? '')
 		if (group) tintInstance(group, entry.groupIndex, instanceFactor(entry))
@@ -94,6 +95,7 @@ export function applyLook(rt: Model3DRuntime, entry: Model3DEntry): void {
 	if (entry.mode === 'object') restyleMaterials(entry, rt.scope)
 	syncDecor(entry, rt.scope)
 	if (entry.look.isPulsing) rt.hooks.wake()
+	if (entry.mode === 'object' && entry.groupKey) rt.hooks.settle(entry)
 }
 
 /** Пересчитать вид, если состояние изменилось (вычисленное компонентом или поверх него из дескриптора) */
@@ -103,7 +105,7 @@ export function refreshLook(rt: Model3DRuntime, entry: Model3DEntry): void {
 	if (key === entry.stateKey) return
 	entry.stateKey = key
 	entry.look = describeLook(state)
-	entry.computed = state
+	entry.effective = state
 	applyLook(rt, entry)
 }
 
@@ -225,7 +227,7 @@ export function tickEntries(rt: Model3DRuntime, delta: number): boolean {
 /** Вернуть узел в группу экземпляров, когда анимации кончились и вынос не нужен */
 export function settleEntry(rt: Model3DRuntime, entry: Model3DEntry): void {
 	const group = rt.groups.get(entry.groupKey ?? '')
-	const canReturn = group && !entry.computed.isDragging && groupKeyOf(entry) === entry.groupKey && !entry.runs.size
+	const canReturn = group && !entry.effective.isDragging && groupKeyOf(entry) === entry.groupKey && !entry.runs.size
 	if (!canReturn) return
 	entry.instance?.object.removeFromParent()
 	entry.instance?.dispose?.()

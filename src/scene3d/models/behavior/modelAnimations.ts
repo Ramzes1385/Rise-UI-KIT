@@ -70,11 +70,11 @@ export function playAnimation(
 		step(1)
 		return Promise.resolve()
 	}
-	hooks.detach(entry)
 	return new Promise<void>(done => {
 		const duration = options.duration ?? scope.options.getDuration?.() ?? DEFAULT_ANIMATION_MS
 		const run: Model3DRun = { name, elapsed: 0, duration: Math.max(duration, 1), repeat: options.repeat ?? 1, step, done, action: null }
 		entry.runs.set(name, run)
+		hooks.detach(entry)
 		hooks.wake()
 	})
 }

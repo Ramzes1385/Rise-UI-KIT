@@ -1,5 +1,6 @@
 /** Утилиты: сборка модели узла — встроенная по id, фабрика приложения, нормализация результата в `Model3DInstance` */
 
+import { isModel3DPreset } from '../presets'
 import { createModelContext } from './modelContext'
 import type { Material, Mesh, Object3D } from 'three'
 import type { Model3DBuildScope, Model3DBuildTarget } from '../../types/internal/model3dRuntime.types'
@@ -62,13 +63,11 @@ export function attachInstance(entry: Model3DEntry, instance: Model3DInstance): 
 }
 
 function builderOf(library: Model3DLibrary, id: string, warn: (message: string) => void): Model3DBuilder {
-	const builder = library[id]
-	if (builder) return builder
-	if (id !== 'server') warn(`3D-модель «${id}» ещё не входит в библиотеку, показан сервис`)
-	return library.server as Model3DBuilder
+	if (!isModel3DPreset(id)) warn(`Встроенной 3D-модели «${id}» нет, показан сервис`)
+	return library[id] ?? (library.server as Model3DBuilder)
 }
 
-/** Встроенная модель: фабрика библиотеки; нет в библиотеке — `server` и `warn` */
+/** Встроенная модель: фабрика библиотеки; её ещё нет в библиотеке — запасной `server`, неизвестный id — `server` и `warn` */
 export function buildPreset(scope: Model3DBuildScope, target: Model3DBuildTarget, preset: string): Model3DInstance {
 	const warn = scope.options.warn ?? (() => undefined)
 	return builderOf(scope.library, preset, warn)(target.node, createModelContext(scope, { ...target, modelId: preset }))

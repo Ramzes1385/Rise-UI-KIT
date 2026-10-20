@@ -130,6 +130,9 @@ function rebuild(rt: Model3DRuntime, entry: Model3DEntry, selection: Model3DSele
 	entry.selection = selection
 	entry.resolution = resolveModel(selection, resolveOptions(rt.options))
 	entry.groupKey = null
+	entry.colors.clear()
+	entry.custom.clear()
+	entry.override = {}
 	entry.handle = createHandle(entry, { scope: rt.scope, hooks: rt.hooks })
 }
 

@@ -138,7 +138,10 @@ export interface Model3DEntry {
 	derived: Map<Material, Material>
 	custom: Map<Model3DPart, Material>
 	colors: Map<Model3DPart | 'all', string>
+	/** Состояние, вычисленное компонентом */
 	computed: Model3DState
+	/** Итоговое состояние: вычисленное компонентом и поверх него `setState` дескриптора */
+	effective: Model3DState
 	override: Partial<Model3DState>
 	look: Model3DLook
 	runs: Map<string, Model3DRun>
