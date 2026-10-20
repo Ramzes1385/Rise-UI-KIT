@@ -8,19 +8,22 @@
 	min-width: 0;
 	container: base-image-map-editor / inline-size;
 	padding: space(ct(image-map-editor, padding, 8px));
-	border: 1px solid ct(image-map-editor, border, var(--rise-border));
+	border: 1px solid ct(image-map-editor, border, transparent);
 	border-radius: sz(ct(image-map-editor, radius, var(--rise-radius-lg)));
 	color: var(--rise-text);
-	@include custom-bg(background-color, ct(image-map-editor, bg, var(--rise-bg)));
+	@include tonal-surface(muted);
+	@include custom-bg(background-color, ct(image-map-editor, bg, var(--rise-bg-muted)));
 
 	&--outline {
 		border-color: ct(image-map-editor, border, var(--rise-border-accented));
+		@include tonal-surface(none);
 		@include custom-bg(background-color, transparent);
 	}
 
 	&--ghost {
 		padding: 0;
 		border-color: transparent;
+		@include tonal-surface(none);
 		@include custom-bg(background-color, transparent);
 	}
 
@@ -64,7 +67,7 @@
 		overflow: auto;
 		max-height: 70vh;
 		border-radius: sz(ct(image-map-editor, viewport-radius, var(--rise-radius-md)));
-		background-color: ct(image-map-editor, viewport-bg, var(--rise-bg-muted));
+		background-color: ct(image-map-editor, viewport-bg, var(--rise-bg-elevated));
 		@include scrollbar-thin;
 	}
 
@@ -80,7 +83,7 @@
 		pointer-events: none;
 
 		&--error {
-			color: var(--rise-error);
+			color: var(--rise-error-text);
 		}
 	}
 
@@ -186,7 +189,7 @@
 		width: var(--im-point-size, 28px);
 		height: var(--im-point-size, 28px);
 		border: 2px solid var(--rise-bg);
-		border-radius: 50%;
+		border-radius: var(--rise-radius-sm);
 		background-color: var(--im-fill, var(--rise-primary));
 		color: var(--rise-on-primary);
 		transform: translate(-50%, -50%);
@@ -206,7 +209,7 @@
 		width: sz(12px);
 		height: sz(12px);
 		border: 2px solid var(--rise-primary);
-		border-radius: sz(calc(var(--rise-radius) * 0.75));
+		border-radius: sz(var(--rise-radius-xs));
 		background-color: var(--rise-bg);
 		transform: translate(-50%, -50%);
 		cursor: nwse-resize;
@@ -217,7 +220,7 @@
 		width: sz(20px);
 		height: sz(20px);
 		border: sz(2px) solid var(--rise-primary);
-		border-radius: 50%;
+		border-radius: sz(var(--rise-radius-xs));
 		transform: translate(-50%, -50%);
 		pointer-events: none;
 
@@ -307,6 +310,7 @@
 
 	&__heading {
 		margin: 0;
+		@include heading;
 		color: ct(image-map-editor, heading-text, var(--rise-text-highlighted));
 		@include text-size(base);
 	}
@@ -346,8 +350,9 @@
 		min-width: 0;
 		margin: 0;
 		padding: space(8px 10px 10px);
-		border: 1px solid var(--rise-border);
+		border: 0;
 		border-radius: sz(var(--rise-radius-md));
+		@include tonal-surface(elevated);
 	}
 
 	&__legend {
@@ -355,8 +360,8 @@
 		max-width: 100%;
 		padding: sz(0 4px);
 		overflow-wrap: anywhere;
+		@include caps-label;
 		color: var(--rise-text-highlighted);
-		@include text-size(sm);
 	}
 
 	&__list {
@@ -412,8 +417,8 @@
 
 	&__item-type {
 		flex-shrink: 0;
+		@include caps-label(10px);
 		color: var(--rise-text-toned);
-		@include text-size(xs);
 	}
 
 	&--disabled &__stage {

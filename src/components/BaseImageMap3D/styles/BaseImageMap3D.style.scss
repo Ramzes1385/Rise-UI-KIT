@@ -69,9 +69,10 @@
 		overflow: hidden;
 		box-sizing: border-box;
 		width: 100%;
-		border: 1px solid var(--rise-border);
+		border: 1px solid transparent;
 		border-radius: sz(var(--rise-radius-lg));
-		@include custom-bg(background-color, var(--rise-bg));
+		@include tonal-surface(muted);
+		@include custom-bg(background-color, var(--rise-bg-muted));
 		@include focus-ring;
 	}
 
@@ -81,11 +82,13 @@
 
 	&--outline &__viewport {
 		border-color: var(--rise-border-accented);
+		@include tonal-surface(none);
 		@include custom-bg(background-color, transparent);
 	}
 
 	&--ghost &__viewport {
 		border-color: transparent;
+		@include tonal-surface(none);
 		@include custom-bg(background-color, transparent);
 	}
 
@@ -117,12 +120,11 @@
 			max-width: 100%;
 			padding: sz(6px) sz(12px);
 			border-radius: var(--rise-radius-md);
-			background-color: var(--rise-bg);
-			box-shadow: var(--rise-shadow-sm);
+			background-color: var(--rise-bg-elevated);
 		}
 
 		&--error {
-			color: var(--rise-error);
+			color: var(--rise-error-text);
 		}
 
 		&--loading {
@@ -157,9 +159,8 @@
 		width: sz(28px);
 		height: sz(28px);
 		border: 2px solid var(--rise-bg);
-		border-radius: var(--rise-radius-full);
+		border-radius: var(--rise-radius-sm);
 		background-color: var(--im-fill, var(--rise-primary));
-		box-shadow: var(--rise-shadow-md);
 		color: var(--rise-on-primary);
 		font-size: sz(15px);
 		@include transition(transform, background-color);
@@ -196,8 +197,7 @@
 		max-width: sz(160px);
 		padding: sz(1px) sz(6px);
 		border-radius: sz(var(--rise-radius-sm));
-		background-color: var(--rise-bg);
-		box-shadow: var(--rise-shadow-xs);
+		background-color: var(--rise-surface-floating);
 		color: var(--rise-text);
 		white-space: nowrap;
 		@include text-size(xs);
@@ -205,17 +205,13 @@
 	}
 
 	&__card {
+		@include floating-surface;
 		position: absolute;
 		z-index: 1;
 		box-sizing: border-box;
 		max-width: min(#{sz(280px)}, calc(100% - #{sz(16px)}));
 		padding: sz(12px) sz(16px);
 		overflow-wrap: anywhere;
-		border: 1px solid var(--rise-border);
-		border-radius: sz(var(--rise-radius-md));
-		background-color: var(--rise-bg);
-		box-shadow: var(--rise-shadow-lg);
-		color: var(--rise-text);
 		pointer-events: none;
 		transform: translate(-50%, -100%);
 

@@ -95,9 +95,9 @@
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
 |---|---|---|---|---|
-| `--rise-audio-player-bg` | корень | bg | — | `var(--rise-bg)` |
-| `--rise-audio-player-border` | корень | border | — | `var(--rise-border)` |
-| `--rise-audio-player-button-radius` | button | radius | — | `var(--rise-radius-full)` |
+| `--rise-audio-player-bg` | корень | bg | — | `var(--rise-bg-muted)` |
+| `--rise-audio-player-border` | корень | border | — | `transparent` |
+| `--rise-audio-player-button-radius` | button | radius | — | `var(--rise-radius-md)` |
 | `--rise-audio-player-cue-bg-selected` | cue | bg | selected | `var(--rise-primary-soft)` |
 | `--rise-audio-player-cue-border-selected` | cue | border | selected | `var(--rise-primary)` |
 | `--rise-audio-player-cue-radius` | cue | radius | — | `var(--rise-radius-md)` |
@@ -1003,15 +1003,15 @@
 | Токен | Часть | Свойство | Состояние | По умолчанию |
 |---|---|---|---|---|
 | `--rise-image-compare-bg` | корень | bg | — | `var(--rise-bg-muted)` |
-| `--rise-image-compare-border` | корень | border | — | `var(--rise-border)` |
+| `--rise-image-compare-border` | корень | border | — | `transparent` |
 | `--rise-image-compare-divider-bg` | divider | bg | — | `var(--rise-media-highlight)` |
 | `--rise-image-compare-divider-width` | divider | width | — | `2px` |
 | `--rise-image-compare-handle-bg` | handle | bg | — | `var(--rise-media-highlight)` |
-| `--rise-image-compare-handle-shadow` | handle | shadow | — | `var(--rise-shadow-md)` |
+| `--rise-image-compare-handle-shadow` | handle | shadow | — | `0 0 0 sz(3px) color-mix(in srgb, var(--rise-media-shade) 25%, transparent)` |
 | `--rise-image-compare-handle-text` | handle | text | — | `var(--rise-media-text-inverted)` |
 | `--rise-image-compare-label-bg` | label | bg | — | `color-mix(in srgb, var(--rise-media-shade) 65%, transparent)` |
 | `--rise-image-compare-label-font-weight` | label | font-weight | — | `var(--rise-font-weight-medium)` |
-| `--rise-image-compare-label-radius` | label | radius | — | `var(--rise-radius-full)` |
+| `--rise-image-compare-label-radius` | label | radius | — | `var(--rise-radius-sm)` |
 | `--rise-image-compare-label-text` | label | text | — | `var(--rise-media-text)` |
 | `--rise-image-compare-radius` | корень | radius | — | `var(--rise-radius-lg)` |
 
@@ -1019,8 +1019,8 @@
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
 |---|---|---|---|---|
-| `--rise-image-map-bg` | корень | bg | — | `var(--rise-bg)` |
-| `--rise-image-map-border` | корень | border | — | `var(--rise-border)` |
+| `--rise-image-map-bg` | корень | bg | — | `var(--rise-bg-muted)` |
+| `--rise-image-map-border` | корень | border | — | `transparent` |
 | `--rise-image-map-entry-bg-active` | entry | bg | active | `var(--rise-bg-elevated)` |
 | `--rise-image-map-entry-bg-hover` | entry | bg | hover | `var(--rise-bg-elevated)` |
 | `--rise-image-map-entry-border-active` | entry | border | active | `var(--rise-primary)` |
@@ -1028,21 +1028,21 @@
 | `--rise-image-map-gap` | корень | gap | — | `8px` |
 | `--rise-image-map-hint-bg` | hint | bg | — | `color-mix(in srgb, var(--rise-bg-inverted) 55%, transparent)` |
 | `--rise-image-map-hint-text` | hint | text | — | `var(--rise-text-inverted)` |
-| `--rise-image-map-label-bg` | label | bg | — | `var(--rise-bg)` |
+| `--rise-image-map-label-bg` | label | bg | — | `var(--rise-surface-floating)` |
 | `--rise-image-map-padding` | корень | padding | — | `8px` |
 | `--rise-image-map-radius` | корень | radius | — | `var(--rise-radius-lg)` |
-| `--rise-image-map-route-step-bg-hover` | route-step | bg | hover | `var(--rise-bg-muted)` |
+| `--rise-image-map-route-step-bg-hover` | route-step | bg | hover | `var(--rise-bg-elevated)` |
 | `--rise-image-map-route-step-radius` | route-step | radius | — | `var(--rise-radius-md)` |
 | `--rise-image-map-text` | корень | text | — | `var(--rise-text)` |
-| `--rise-image-map-viewport-bg` | viewport | bg | — | `var(--rise-bg-muted)` |
+| `--rise-image-map-viewport-bg` | viewport | bg | — | `var(--rise-bg-elevated)` |
 | `--rise-image-map-viewport-radius` | viewport | radius | — | `var(--rise-radius-md)` |
 
 ## BaseImageMapEditor
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
 |---|---|---|---|---|
-| `--rise-image-map-editor-bg` | корень | bg | — | `var(--rise-bg)` |
-| `--rise-image-map-editor-border` | корень | border | — | `var(--rise-border)` |
+| `--rise-image-map-editor-bg` | корень | bg | — | `var(--rise-bg-muted)` |
+| `--rise-image-map-editor-border` | корень | border | — | `transparent` |
 | `--rise-image-map-editor-gap` | корень | gap | — | `8px` |
 | `--rise-image-map-editor-heading-text` | heading | text | — | `var(--rise-text-highlighted)` |
 | `--rise-image-map-editor-item-bg-hover` | item | bg | hover | `var(--rise-bg-elevated)` |
@@ -1051,7 +1051,7 @@
 | `--rise-image-map-editor-padding` | корень | padding | — | `8px` |
 | `--rise-image-map-editor-panel-gap` | panel | gap | — | `16px` |
 | `--rise-image-map-editor-radius` | корень | radius | — | `var(--rise-radius-lg)` |
-| `--rise-image-map-editor-viewport-bg` | viewport | bg | — | `var(--rise-bg-muted)` |
+| `--rise-image-map-editor-viewport-bg` | viewport | bg | — | `var(--rise-bg-elevated)` |
 | `--rise-image-map-editor-viewport-radius` | viewport | radius | — | `var(--rise-radius-md)` |
 
 ## BaseInfiniteScroll
@@ -1219,22 +1219,22 @@
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
 |---|---|---|---|---|
-| `--rise-map-balloon-bg` | balloon | bg | — | `var(--rise-bg)` |
-| `--rise-map-balloon-border` | balloon | border | — | `var(--rise-border)` |
+| `--rise-map-balloon-bg` | balloon | bg | — | `var(--rise-surface-floating)` |
+| `--rise-map-balloon-border` | balloon | border | — | `transparent` |
 | `--rise-map-balloon-padding` | balloon | padding | — | `12px` |
-| `--rise-map-balloon-radius` | balloon | radius | — | `var(--rise-radius-md)` |
-| `--rise-map-balloon-shadow` | balloon | shadow | — | `var(--rise-shadow-md)` |
+| `--rise-map-balloon-radius` | balloon | radius | — | `var(--rise-radius-lg)` |
+| `--rise-map-balloon-shadow` | balloon | shadow | — | `var(--rise-shadow-lg)` |
 | `--rise-map-balloon-text` | balloon | text | — | `var(--rise-text)` |
 | `--rise-map-balloon-width` | balloon | width | — | `280px` |
 | `--rise-map-bg` | корень | bg | — | `var(--rise-bg-muted)` |
-| `--rise-map-border` | корень | border | — | `var(--rise-border)` |
+| `--rise-map-border` | корень | border | — | `transparent` |
 | `--rise-map-cluster-bg` | cluster | bg | — | `var(--rise-primary)` |
 | `--rise-map-controls-gap` | controls | gap | — | `8px` |
 | `--rise-map-marker-bg` | marker | bg | — | `var(--rise-primary)` |
 | `--rise-map-marker-border` | marker | border | — | `var(--rise-bg)` |
 | `--rise-map-marker-selected-border` | marker-selected | border | — | `var(--rise-border-accented)` |
-| `--rise-map-marker-shadow` | marker | shadow | — | `var(--rise-shadow-sm)` |
-| `--rise-map-marker-text` | marker | text | — | `var(--rise-text-inverted)` |
+| `--rise-map-marker-shadow` | marker | shadow | — | `none` |
+| `--rise-map-marker-text` | marker | text | — | `var(--rise-on-primary)` |
 | `--rise-map-marker-width` | marker | width | — | `24px` |
 | `--rise-map-placeholder-padding` | placeholder | padding | — | `16px` |
 | `--rise-map-radius` | корень | radius | — | `var(--rise-radius-lg)` |
@@ -1282,10 +1282,10 @@
 | `--rise-media-player-bg` | корень | bg | — | `var(--rise-media-shade)` |
 | `--rise-media-player-dialog-bg` | dialog | bg | — | `var(--rise-media-panel-solid)` |
 | `--rise-media-player-episodes-bg` | episodes | bg | — | `var(--rise-media-sheet)` |
-| `--rise-media-player-menu-radius` | menu | radius | — | `10px` |
+| `--rise-media-player-menu-radius` | menu | radius | — | `var(--rise-radius-lg)` |
 | `--rise-media-player-panel-bg` | panel | bg | — | `var(--rise-media-panel)` |
 | `--rise-media-player-progress-bg` | progress | bg | — | `var(--media-primary)` |
-| `--rise-media-player-radius` | корень | radius | — | `12px` |
+| `--rise-media-player-radius` | корень | radius | — | `var(--rise-radius-2xl)` |
 | `--rise-media-player-text` | корень | text | — | `var(--rise-media-text)` |
 | `--rise-media-player-thumb-bg` | thumb | bg | — | `var(--media-primary)` |
 | `--rise-media-player-title-font-size` | title | font-size | — | `18px` |
@@ -1484,7 +1484,7 @@
 | `--rise-presentation-player-done-icon-size` | done | icon-size | — | `48px` |
 | `--rise-presentation-player-done-padding` | done | padding | — | `24px` |
 | `--rise-presentation-player-done-title-font-size` | done-title | font-size | — | `var(--rise-font-size-2xl)` |
-| `--rise-presentation-player-done-title-font-weight` | done-title | font-weight | — | `var(--rise-font-weight-bold)` |
+| `--rise-presentation-player-done-title-font-weight` | done-title | font-weight | — | `var(--rise-font-weight-semibold)` |
 | `--rise-presentation-player-next-ring` | next | ring | — | `var(--media-primary)` |
 | `--rise-presentation-player-notes-font-size` | notes | font-size | — | `calc(var(--rise-font-size-base) - 1px)` |
 | `--rise-presentation-player-notes-padding-x` | notes | padding-x | — | `20px` |
@@ -1864,10 +1864,10 @@
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
 |---|---|---|---|---|
-| `--rise-subtitle-editor-bg` | корень | bg | — | `var(--rise-bg)` |
+| `--rise-subtitle-editor-bg` | корень | bg | — | `var(--rise-bg-muted)` |
 | `--rise-subtitle-editor-block-bg` | block | bg | — | `color-mix(in srgb, var(--rise-primary) 45%, transparent)` |
 | `--rise-subtitle-editor-block-bg-active` | block | bg | active | `var(--rise-primary)` |
-| `--rise-subtitle-editor-border` | корень | border | — | `var(--rise-border)` |
+| `--rise-subtitle-editor-border` | корень | border | — | `transparent` |
 | `--rise-subtitle-editor-gap` | корень | gap | — | `12px` |
 | `--rise-subtitle-editor-padding` | корень | padding | — | `12px` |
 | `--rise-subtitle-editor-radius` | корень | radius | — | `var(--rise-radius-lg)` |
@@ -2133,14 +2133,14 @@
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
 |---|---|---|---|---|
-| `--rise-voice-recorder-bg` | корень | bg | — | `var(--rise-bg)` |
-| `--rise-voice-recorder-border` | корень | border | — | `var(--rise-border)` |
+| `--rise-voice-recorder-bg` | корень | bg | — | `var(--rise-bg-muted)` |
+| `--rise-voice-recorder-border` | корень | border | — | `transparent` |
 | `--rise-voice-recorder-dot-bg` | dot | bg | — | `var(--rise-error)` |
-| `--rise-voice-recorder-error-text` | error | text | — | `var(--rise-error)` |
+| `--rise-voice-recorder-error-text` | error | text | — | `var(--rise-error-text)` |
 | `--rise-voice-recorder-gap` | корень | gap | — | `8px` |
 | `--rise-voice-recorder-height` | корень | height | — | `48px` |
 | `--rise-voice-recorder-level-bg` | level | bg | — | `var(--rise-primary)` |
-| `--rise-voice-recorder-level-radius` | level | radius | — | `var(--rise-radius-full)` |
+| `--rise-voice-recorder-level-radius` | level | radius | — | `calc(var(--rise-radius-xs) / 2)` |
 | `--rise-voice-recorder-meter-height` | meter | height | — | `28px` |
 | `--rise-voice-recorder-padding-x` | корень | padding-x | — | `8px` |
 | `--rise-voice-recorder-padding-y` | корень | padding-y | — | `6px` |
@@ -2152,7 +2152,7 @@
 | Токен | Часть | Свойство | Состояние | По умолчанию |
 |---|---|---|---|---|
 | `--rise-waveform-bar-bg` | bar | bg | — | `var(--rise-border-accented)` |
-| `--rise-waveform-bar-radius` | bar | radius | — | `var(--rise-radius-full)` |
+| `--rise-waveform-bar-radius` | bar | radius | — | `calc(var(--rise-radius-xs) / 2)` |
 | `--rise-waveform-fill-bg` | fill | bg | — | `var(--rise-primary)` |
 | `--rise-waveform-gap` | корень | gap | — | `2px` |
 | `--rise-waveform-height` | корень | height | — | `40px` |

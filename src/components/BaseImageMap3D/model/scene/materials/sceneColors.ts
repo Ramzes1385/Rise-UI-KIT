@@ -4,8 +4,8 @@ const STATES: SceneObjectState[] = ['base', 'hover', 'active']
 const DEFAULT_OPACITY: Record<SceneObjectState, number> = { base: 0.7, hover: 0.85, active: 1 }
 const DEFAULT_FILL = 'var(--rise-primary)'
 
-export const FLOOR_COLOR = 'var(--rise-bg-muted)'
-export const FLOOR_SIDE_COLOR = 'var(--rise-border)'
+export const FLOOR_COLOR = 'var(--rise-bg-elevated)'
+export const FLOOR_SIDE_COLOR = 'var(--rise-border-accented)'
 
 function stateValue(style: Record<string, string>, name: string, state: SceneObjectState): string | undefined {
 	return state === 'base' ? style[name] : (style[`${name}-${state}`] ?? style[name])

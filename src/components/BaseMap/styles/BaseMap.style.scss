@@ -5,13 +5,15 @@
 	width: 100%;
 	min-height: sz(160px);
 	overflow: hidden;
-	border: 1px solid ct(map, border, var(--rise-border));
+	border: 1px solid ct(map, border, transparent);
 	border-radius: sz(ct(map, radius, var(--rise-radius-lg)));
+	@include tonal-surface(muted);
 	@include custom-bg(background-color, ct(map, bg, var(--rise-bg-muted)));
 	@include custom-text(color, ct(map, text, var(--rise-text)));
 
 	&--outline {
 		border-color: var(--rise-border-accented);
+		@include tonal-surface(page);
 		@include custom-bg(background-color, var(--rise-bg));
 	}
 
@@ -46,6 +48,17 @@
 		display: flex;
 		flex-direction: column;
 		gap: sz(4px);
+
+		.base-button.base-button--outline {
+			border-color: transparent;
+			border-radius: sz(var(--rise-radius-md));
+			background-color: var(--rise-bg-elevated);
+			color: var(--rise-text-highlighted);
+
+			&:hover:not(:disabled, [aria-disabled='true']) {
+				background-color: var(--rise-bg-accented);
+			}
+		}
 	}
 
 	&__notice {
@@ -104,10 +117,10 @@
 		height: 100%;
 		padding: 0;
 		border: 2px solid ct(map, marker-border, var(--rise-bg));
-		border-radius: 50% 50% 50% 0;
+		border-radius: sz(var(--rise-radius-sm)) sz(var(--rise-radius-sm)) sz(var(--rise-radius-sm)) 0;
 		background: var(--base-map-marker-color);
-		color: ct(map, marker-text, var(--rise-text-inverted));
-		box-shadow: ct(map, marker-shadow, var(--rise-shadow-sm));
+		color: ct(map, marker-text, var(--rise-on-primary));
+		box-shadow: ct(map, marker-shadow, none);
 		cursor: pointer;
 		transform: rotate(-45deg);
 		@include focus-ring;
@@ -151,7 +164,7 @@
 		&--cluster {
 			--base-map-marker-color: #{ct(map, cluster-bg, var(--rise-primary))};
 
-			border-radius: 50%;
+			border-radius: sz(var(--rise-radius-md));
 			transform: none;
 
 			&::after {
@@ -180,7 +193,9 @@
 	}
 
 	&__marker-count {
+		font-family: var(--rise-font-mono);
 		font-weight: var(--rise-font-weight-semibold, 600);
+		font-variant-numeric: tabular-nums;
 		@include text-size(xs);
 	}
 
@@ -207,11 +222,11 @@
 		width: max-content;
 		max-width: sz(ct(map, balloon-width, 280px));
 		padding: space(ct(map, balloon-padding, 12px));
-		border: 1px solid ct(map, balloon-border, var(--rise-border));
-		border-radius: sz(ct(map, balloon-radius, var(--rise-radius-md)));
-		background: ct(map, balloon-bg, var(--rise-bg));
+		border: 1px solid ct(map, balloon-border, transparent);
+		border-radius: sz(ct(map, balloon-radius, var(--rise-radius-lg)));
+		background: ct(map, balloon-bg, var(--rise-surface-floating));
 		color: ct(map, balloon-text, var(--rise-text));
-		box-shadow: ct(map, balloon-shadow, var(--rise-shadow-md));
+		box-shadow: ct(map, balloon-shadow, var(--rise-shadow-lg));
 		cursor: auto;
 		transform: translateX(-50%);
 		@include text-size(sm);

@@ -9,19 +9,22 @@
 	min-width: 0;
 	container: base-image-map / inline-size;
 	padding: space(ct(image-map, padding, 8px));
-	border: 1px solid ct(image-map, border, var(--rise-border));
+	border: 1px solid ct(image-map, border, transparent);
 	border-radius: sz(ct(image-map, radius, var(--rise-radius-lg)));
 	color: ct(image-map, text, var(--rise-text));
-	@include custom-bg(background-color, ct(image-map, bg, var(--rise-bg)));
+	@include tonal-surface(muted);
+	@include custom-bg(background-color, ct(image-map, bg, var(--rise-bg-muted)));
 
 	&--outline {
 		border-color: var(--rise-border-accented);
+		@include tonal-surface(none);
 		@include custom-bg(background-color, transparent);
 	}
 
 	&--ghost {
 		padding: 0;
 		border-color: transparent;
+		@include tonal-surface(none);
 		@include custom-bg(background-color, transparent);
 	}
 
@@ -70,7 +73,7 @@
 		overflow: hidden;
 		width: 100%;
 		border-radius: sz(ct(image-map, viewport-radius, var(--rise-radius-md)));
-		background-color: ct(image-map, viewport-bg, var(--rise-bg-muted));
+		background-color: ct(image-map, viewport-bg, var(--rise-bg-elevated));
 		touch-action: pan-x pan-y;
 		user-select: none;
 		@include focus-ring(-2px);
@@ -210,9 +213,8 @@
 		width: var(--im-point-size, 28px);
 		height: var(--im-point-size, 28px);
 		border: 2px solid var(--rise-bg);
-		border-radius: var(--rise-radius-full);
+		border-radius: var(--rise-radius-sm);
 		background-color: var(--im-fill, var(--rise-primary));
-		box-shadow: var(--rise-shadow-md);
 		color: var(--rise-on-primary);
 		font-size: calc(var(--im-point-size, 28px) * 0.55);
 		@include transition(transform, background-color);
@@ -249,8 +251,7 @@
 		max-width: sz(160px);
 		padding: sz(1px) sz(6px);
 		border-radius: sz(var(--rise-radius-sm));
-		background-color: ct(image-map, label-bg, var(--rise-bg));
-		box-shadow: var(--rise-shadow-xs);
+		background-color: ct(image-map, label-bg, var(--rise-surface-floating));
 		color: var(--rise-text);
 		white-space: nowrap;
 		@include text-size(xs);
@@ -271,7 +272,7 @@
 	}
 
 	&__status--error {
-		color: var(--rise-error);
+		color: var(--rise-error-text);
 	}
 
 	&__hint {
@@ -333,9 +334,9 @@
 		justify-content: center;
 		width: sz(20px);
 		height: sz(20px);
-		border-radius: var(--rise-radius-full);
+		border-radius: var(--rise-radius-sm);
 		background-color: var(--im-swatch, var(--rise-primary));
-		color: var(--rise-text-inverted);
+		color: var(--rise-on-primary);
 		font-size: sz(12px);
 	}
 
@@ -362,8 +363,7 @@
 	&__filter-title {
 		margin-bottom: sz(6px);
 		padding: 0;
-		color: var(--rise-text-muted);
-		@include text-size(sm);
+		@include caps-label;
 	}
 
 	&__filter-options {
@@ -400,9 +400,7 @@
 	&__section-title {
 		margin: 0 0 sz(4px);
 		padding: sz(0 8px);
-		color: var(--rise-text-muted);
-		font-weight: var(--rise-font-weight-semibold);
-		@include text-size(xs);
+		@include caps-label;
 	}
 
 	&__entries {
@@ -460,7 +458,12 @@
 		align-items: stretch;
 		height: 100%;
 		padding: sz(6px);
-		border-color: var(--rise-border);
+		background-color: var(--rise-bg-elevated);
+
+		&.base-image-map__entry--hover,
+		&:hover {
+			background-color: var(--rise-bg-accented);
+		}
 	}
 
 	&__thumb {
@@ -599,7 +602,7 @@
 		flex-shrink: 0;
 		width: sz(8px);
 		height: sz(8px);
-		border-radius: var(--rise-radius-full);
+		border-radius: calc(var(--rise-radius-xs) / 2);
 		background: currentcolor;
 	}
 

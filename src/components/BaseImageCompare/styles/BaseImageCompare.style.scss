@@ -4,7 +4,7 @@
 	box-sizing: border-box;
 	max-width: 100%;
 	overflow: hidden;
-	border: 1px solid ct(image-compare, border, var(--rise-border));
+	border: 1px solid ct(image-compare, border, transparent);
 	border-radius: sz(ct(image-compare, radius, var(--rise-radius-lg)));
 	background-color: ct(image-compare, bg, var(--rise-bg-muted));
 	cursor: ew-resize;
@@ -34,10 +34,10 @@
 		position: absolute;
 		top: sz(10px);
 		padding: sz(2px) sz(8px);
-		border-radius: sz(ct(image-compare-label, radius, var(--rise-radius-full)));
+		border-radius: sz(ct(image-compare-label, radius, var(--rise-radius-sm)));
 		background-color: ct(image-compare-label, bg, color-mix(in srgb, var(--rise-media-shade) 65%, transparent));
+		@include caps-label(10px, 0.08em);
 		color: ct(image-compare-label, text, var(--rise-media-text));
-		@include text-size(xs);
 		font-weight: ct(image-compare-label, font-weight, var(--rise-font-weight-medium));
 		pointer-events: none;
 	}
@@ -77,9 +77,9 @@
 		justify-content: center;
 		width: sz(36px);
 		height: sz(36px);
-		border-radius: 50%;
+		border-radius: sz(var(--rise-radius-md));
 		background-color: ct(image-compare-handle, bg, var(--rise-media-highlight));
-		box-shadow: ct(image-compare-handle, shadow, var(--rise-shadow-md));
+		box-shadow: ct(image-compare-handle, shadow, 0 0 0 sz(3px) color-mix(in srgb, var(--rise-media-shade) 25%, transparent));
 		color: ct(image-compare-handle, text, var(--rise-media-text-inverted));
 		transform: translate(-50%, -50%);
 		cursor: ew-resize;
