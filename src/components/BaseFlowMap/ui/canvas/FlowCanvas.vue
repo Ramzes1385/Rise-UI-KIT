@@ -26,8 +26,8 @@
 					<template v-if="$slots['edge-label']" #edge-label="slotProps"><slot name="edge-label" v-bind="slotProps" /></template>
 				</FlowEdgeLabels>
 				<FlowScenarioLayer :particles="particles" />
-				<FlowEditLayer />
-				<FlowReviewLayer />
+				<FlowEditLayer v-if="modes.isEditLoaded" />
+				<FlowReviewLayer v-if="modes.isReviewLoaded" />
 			</svg>
 			<FlowHtmlNode v-for="item in canvas.htmlNodes" :key="item.id" :item="item">
 				<template v-if="$slots.node" #default="slotProps"><slot name="node" v-bind="slotProps" /></template>
@@ -48,11 +48,10 @@ import FlowSvgNode from './FlowSvgNode.vue'
 import FlowHtmlNode from './FlowHtmlNode.vue'
 import { UI_FLOW_MAP } from '@/locales/messages'
 import FlowEdgeLabels from './FlowEdgeLabels.vue'
-import FlowEditLayer from '../edit/FlowEditLayer.vue'
-import FlowReviewLayer from '../review/FlowReviewLayer.vue'
 import FlowScenarioLayer from '../scenario/FlowScenarioLayer.vue'
 import type { BaseFlowMapSlots } from '../../types/BaseFlowMap.types'
-import { useFlowCanvasContext, useFlowChromeContext } from '../../model/context/flowContext'
+import { FlowEditLayer, FlowReviewLayer } from '../lazy/flowLazyParts'
+import { useFlowCanvasContext, useFlowChromeContext, useFlowModesContext } from '../../model/context/flowContext'
 
 defineProps<{ particles?: boolean | number }>()
 
@@ -60,4 +59,5 @@ defineSlots<Pick<BaseFlowMapSlots, 'node' | 'edge-label' | 'group-label' | 'empt
 
 const canvas = useFlowCanvasContext()
 const chrome = useFlowChromeContext()
+const modes = useFlowModesContext()
 </script>

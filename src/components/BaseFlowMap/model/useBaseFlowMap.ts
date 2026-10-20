@@ -1,15 +1,15 @@
 import { useFlowModel } from './useFlowModel'
 import { UI_FLOW_MAP } from '@/locales/messages'
+import { useFlowModes } from './state/useFlowModes'
 import { readListeners } from './state/flowListeners'
 import { useFlowRendering } from './useFlowRendering'
-import { useFlowEditing } from './edit/useFlowEditing'
-import { useFlowReview } from './review/useFlowReview'
 import { useFlowFrame } from './viewport/useFlowFrame'
 import { useFlowAnnouncer } from './a11y/useFlowAnnouncer'
 import { FLOW_MAP_PARTS } from '../types/BaseFlowMap.types'
 import { computed, getCurrentInstance, onMounted } from 'vue'
 import { useFlowPanels } from './viewport/panels/useFlowPanels'
 import { useFlowVisibility } from './viewport/useFlowVisibility'
+import { loadEditUi, loadReviewUi } from '../ui/lazy/flowLazyParts'
 import { useReducedMotion } from '@composables/app/useReducedMotion'
 import type { FlowEmit } from '../types/internal/core/flowModelCore.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
@@ -33,13 +33,14 @@ export function useBaseFlowMap(props: BaseFlowMapProps, emit: BaseFlowMapEmits) 
 	})
 	const rendering = useFlowRendering(props, model, { frame, environment: { isReducedMotion, isVisible, announce } })
 	onMounted(() => model.events.emit('ready', model.controller))
-	const editing = useFlowEditing(model, { map: rendering.canvas.map, element: frame.element, props })
+	const modes = useFlowModes(props, {
+		...{ model, props, map: rendering.canvas.map, element: frame.element, announce },
+		...{ preload: loadEditUi, preloadReview: loadReviewUi },
+	})
 	const { hasHeader, hasSearch, hasScenario, isEmpty } = rendering.chrome
-	const { state } = editing.context.env
 	const { hasToolbar, hasMinimap, hasLegend, hasDetails, editClasses } = useFlowPanels(props, {
-		model,
 		chrome: rendering.chrome,
-		state,
+		modes: modes.state,
 		frame,
 	})
 	return {
@@ -47,9 +48,11 @@ export function useBaseFlowMap(props: BaseFlowMapProps, emit: BaseFlowMapEmits) 
 		...{ hasHeader, hasToolbar, hasSearch, hasMinimap, hasLegend, hasScenario, hasDetails, isEmpty },
 		ui: rendering.ui,
 		model,
-		editing,
 		editClasses,
-		review: useFlowReview(model, props, announce),
+		editing: modes.edit.part,
+		review: modes.review.part,
+		isEditLoaded: modes.state.isEditLoaded,
+		isReviewLoaded: modes.state.isReviewLoaded,
 		announcement,
 		isCompact: frame.isCompact,
 		isMorphing: model.groups.isMorphing,
