@@ -80,8 +80,9 @@ describe('componentOfModule', () => {
 	})
 })
 
-function moduleGraph(graph: Record<string, string[]>): (id: string) => Rollup.ModuleInfo | null {
-	return id => (graph[id] ? ({ importedIds: graph[id] } as unknown as Rollup.ModuleInfo) : null)
+function moduleGraph(graph: Record<string, string[]>, dynamic: Record<string, string[]> = {}): (id: string) => Rollup.ModuleInfo | null {
+	return id =>
+		graph[id] ? ({ importedIds: graph[id], dynamicallyImportedIds: dynamic[id] ?? [] } as unknown as Rollup.ModuleInfo) : null
 }
 
 describe('collectStyleComponents', () => {
@@ -113,6 +114,52 @@ describe('collectStyleComponents', () => {
 			'/r/src/utils/a.ts': [],
 		})
 		expect(collectStyleComponents(getModuleInfo, 'entry')).toEqual(['BaseButton'])
+	})
+})
+
+describe('collectStyleComponents: модули по import()', () => {
+	const lazyRoot = '/r/src/components/BaseRoadmap/ui/RoadmapEdit.vue'
+	const lazyStyle = '/r/src/components/BaseRoadmap/styles/RoadmapEdit.style.scss'
+	const tabs = '/r/src/components/BaseTabs/ui/BaseTabs.vue'
+	const tabsStyle = '/r/src/components/BaseTabs/styles/BaseTabs.style.scss'
+	const button = '/r/src/components/BaseButton/ui/BaseButton.vue'
+	const buttonStyle = '/r/src/components/BaseButton/styles/BaseButton.style.scss'
+	const view = '/r/src/components/BaseRoadmap/ui/BaseRoadmap.vue'
+	const viewStyle = '/r/src/components/BaseRoadmap/styles/BaseRoadmap.style.scss'
+
+	it('стили ленивой части идут после статических; компонент, уже подключённый статически, не дублируется', () => {
+		const getModuleInfo = moduleGraph(
+			{
+				entry: [view],
+				[view]: [viewStyle, button],
+				[viewStyle]: [],
+				[button]: [buttonStyle],
+				[buttonStyle]: [],
+				[lazyRoot]: [lazyStyle, tabs, button],
+				[lazyStyle]: [],
+				[tabs]: [tabsStyle],
+				[tabsStyle]: [],
+			},
+			{ [view]: [lazyRoot] },
+		)
+		expect(collectStyleComponents(getModuleInfo, 'entry')).toEqual(['BaseRoadmap', 'BaseButton', 'BaseTabs'])
+	})
+
+	it('import() внутри ленивого модуля тоже обходится, цикл через import() не зацикливает обход', () => {
+		const getModuleInfo = moduleGraph(
+			{ entry: [view], [view]: [], [lazyRoot]: [], [tabs]: [tabsStyle], [tabsStyle]: [] },
+			{ [view]: [lazyRoot], [lazyRoot]: [tabs, view], [tabs]: [lazyRoot] },
+		)
+		expect(collectStyleComponents(getModuleInfo, 'entry')).toEqual(['BaseTabs'])
+	})
+})
+
+describe.skipIf(!existsSync(resolve(ROOT, 'dist/components/BaseRoadmap/index.js')))('dist: CSS ленивых частей у входа подпути', () => {
+	it('вход BaseRoadmap подключает стили компонентов, которые берёт правка по import()', () => {
+		const entry = readFileSync(resolve(ROOT, 'dist/components/BaseRoadmap/index.js'), 'utf8')
+		for (const component of ['BaseTabs', 'BaseTextarea', 'BaseSelect', 'BaseInput', 'BaseInputNumber', 'BaseConfirm']) {
+			expect(entry, component).toContain(`import"../${component}/style.css"`)
+		}
 	})
 })
 

@@ -8,6 +8,7 @@
  * В начало входа сборка дописывает `import '../<Папка>/style.css'` по одному на каждую папку компонента, чьи стили
  * статически подключает подпуть (своя и внутренние компоненты), — в порядке выполнения модулей ESM, как правила лежат
  * в `styles.css`. CSS импортирует только вход подпути, общие чанки — нет: `./components` и корень по-прежнему без CSS.
+ * Стили модулей по `import()` (ленивые части компонента) подключаются тем же входом, после статических.
  * Сами `style.css` собирает отдельный проход (vite.subpath-css.config.ts): список папок он берёт из того же графа модулей.
  */
 
@@ -28,20 +29,27 @@ function isStyleModule(id: string): boolean {
 	return STYLE_FILE.test(id.split('?')[0]!)
 }
 
-/** Папки компонентов, чьи стили подключает модуль `entryId`, в порядке выполнения ESM (зависимости раньше импортёра, по порядку импортов) */
+/**
+ * Папки компонентов, чьи стили подключает модуль `entryId`, в порядке выполнения ESM: сперва статический граф (зависимости раньше
+ * импортёра, по порядку импортов), затем модули по `import()` в порядке обнаружения — их стили вход тоже подключает, иначе ленивая
+ * часть (правка роадмапа) берёт внутренние компоненты кита без CSS: чанки CSS не подключают, подключает только вход подпути.
+ */
 export function collectStyleComponents(getModuleInfo: (id: string) => Rollup.ModuleInfo | null, entryId: string): string[] {
 	const order: string[] = []
 	const seen = new Set<string>()
+	const lazy: string[] = []
 	const visit = (id: string): void => {
 		if (seen.has(id)) return
 		seen.add(id)
 		const info = getModuleInfo(id)
 		if (!info) return
 		info.importedIds.forEach(visit)
+		lazy.push(...info.dynamicallyImportedIds)
 		const component = isStyleModule(id) ? componentOfModule(id) : null
 		if (component && !order.includes(component)) order.push(component)
 	}
 	visit(entryId)
+	for (let index = 0; index < lazy.length; index++) visit(lazy[index]!)
 	return order
 }
 

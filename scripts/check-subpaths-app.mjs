@@ -16,6 +16,8 @@
  *   ни словаря `en`; `config-subpath` и `config-root` подключают `en` (`registerLocale(en)`, `locale: 'en'`);
  * - `bare-app` и `bare-app-en` — приложение без кита и с `registerLocale(en)`: разница gzip — вес словаря `en` (предел `EN_MAX`);
  *   `config-subpath` и `config-root` сверяются с `JS_MAX` без него;
+ * - `subpath-roadmap-edit` — `BaseRoadmap` с подпути в `mode: 'edit'` + `tokens.css`: правка и её внутренние компоненты грузятся по `import()`,
+ *   их CSS (BaseTabs, BaseTextarea…) подключает вход подпути;
  * - `plugin` — `createUiKitPlugin` из корня: тяжёлые компоненты (BaseTable…) не в стартовом JS, а в чанке по `import()` (FOLLOW_UPS № 58);
  *   плагин подключает `en` сам;
  * - автоимпорт (без сети, на пакете из tarball): `RiseUiResolver` из `/resolver` отдаёт для каждого публичного компонента подпуть, который
@@ -91,6 +93,13 @@ ${en ? `import { en, registerLocale } from '${PACKAGE}'\nregisterLocale(en)\n` :
 	.mount('#app')
 `
 
+/** BaseRoadmap в «Правке»: правка и её внутренние компоненты (BaseTabs, BaseTextarea, BaseSelect…) — чанки по `import()`, их CSS подключает вход подпути */
+const ROADMAP_EDIT_APP = from => `import { createApp, h } from 'vue'
+import { BaseRoadmap } from '${from}'
+const data = { version: 1, title: 'Путь', stages: [{ id: 's1', title: 'Основы', topics: [{ id: 't1', title: 'HTML', hours: 2 }] }] }
+createApp({ render: () => h('main', { style: 'padding: 24px; width: 960px' }, [h(BaseRoadmap, { data, mode: 'edit', modes: ['view', 'edit'] })]) }).mount('#app')
+`
+
 /** Приложение без кита и то же приложение с `registerLocale(en)`: разница gzip — вес словаря `en` отдельно от остального JS */
 const BARE_APP = withEn => `import { createApp, h } from 'vue'
 ${withEn ? `import { en, registerLocale } from '${PACKAGE}'\nregisterLocale(en)\n` : ''}createApp({ render: () => h('main', { class: 'app-ready' }, 'ok') }).mount('#app')
@@ -122,6 +131,17 @@ const SCENARIOS = [
 		code: CONFIG_APP(`${PACKAGE}/BaseButton`, PACKAGE),
 		marker: 'base-button',
 		applied: 'base-button--soft',
+	},
+	{
+		name: 'subpath-roadmap-edit',
+		css: 'tokens.css',
+		code: ROADMAP_EDIT_APP(`${PACKAGE}/BaseRoadmap`),
+		marker: 'base-roadmap',
+		// выбрать тему: инспектор рисует вкладки (BaseTabs) и поля (BaseTextarea) — их стили должны быть в CSS приложения
+		after: async page => {
+			await page.locator('[data-roadmap-topic] .base-roadmap__edit-pick').first().click()
+			await page.locator('.base-tabs').first().waitFor({ timeout: 5000 })
+		},
 	},
 	{ name: 'bare-app', css: 'tokens.css', code: BARE_APP(false), marker: 'app-ready' },
 	{ name: 'bare-app-en', css: 'tokens.css', code: BARE_APP(true), marker: 'app-ready' },
@@ -243,6 +263,11 @@ function checkContent(results, problems) {
 		expect(problems, config.lazy === 0, `${name}: в сборке есть чанки по import() — реестр компонентов плагина не отсечён`)
 	}
 	checkDictionaries(results, problems)
+	const roadmapEdit = results['subpath-roadmap-edit']
+	for (const name of ['.base-roadmap', '.base-tabs', '.base-textarea', '.base-select', '.base-input']) {
+		expect(problems, roadmapEdit.css.text.includes(name), `subpath-roadmap-edit: в CSS нет ${name} (стили ленивой части правки)`)
+	}
+	expect(problems, /base-roadmap__inspector/.test(roadmapEdit.allJs), 'subpath-roadmap-edit: нет кода правки (чанк по import())')
 	expect(problems, !/base-table|base-editor/.test(button.js.text), 'subpath-button: в JS есть код BaseTable или BaseEditor')
 	expect(problems, button.css.text.includes('.base-button'), 'subpath-button: в CSS нет .base-button')
 	expect(problems, button.css.text.includes('--rise-color-primary-500'), 'subpath-button: в CSS нет токенов (tokens.css)')
@@ -302,6 +327,7 @@ async function screenshot(browser, result, file) {
 			await page.getByRole('option', { name: 'Волгоград' }).waitFor()
 			await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))))
 		}
+		if (result.after) await result.after(page)
 		if (result.applied) await page.locator(`.${result.applied}`).first().waitFor({ timeout: 5000 })
 		await page.screenshot({ path: file, animations: 'disabled' })
 		return readFileSync(file)
