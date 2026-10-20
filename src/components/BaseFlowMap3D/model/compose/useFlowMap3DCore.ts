@@ -11,6 +11,10 @@ import { useFlowVisibility } from '@components/BaseFlowMap/model/viewport/useFlo
 import type { FlowModelProps } from '@components/BaseFlowMap/types/internal/flowModel.types'
 import type { FlowEmit } from '@components/BaseFlowMap/types/internal/core/flowModelCore.types'
 
+function withMode(props: FlowMap3DProps, mode: Readonly<Ref<string>>): FlowModelProps {
+	return new Proxy(props, { get: (target, key) => (key === 'mode' ? mode.value : Reflect.get(target, key)) }) as unknown as FlowModelProps
+}
+
 export function useFlowMap3DCore(props: FlowMap3DProps, emit: BaseFlowMap3DEmits, rootRef: Readonly<Ref<HTMLElement | null>>) {
 	const instance = getCurrentInstance()
 	const motion = useFlowMap3DMotion(rootRef)
@@ -19,7 +23,7 @@ export function useFlowMap3DCore(props: FlowMap3DProps, emit: BaseFlowMap3DEmits
 	const state = useFlowMap3DFrame(props, rootRef)
 	const { isVisible } = useFlowVisibility(rootRef as Ref<HTMLElement | null>)
 	const view = useFlowMap3DView({ props, emit, isNarrow: () => state.isNarrow.value })
-	const model = useFlowModel(props as unknown as FlowModelProps, {
+	const model = useFlowModel(withMode(props, view.mode), {
 		emit: emit as unknown as FlowEmit,
 		listeners: () => readListeners(instance?.vnode.props),
 		environment: { isVisible: () => isVisible.value, isReducedMotion: () => isReducedMotion.value, announce },

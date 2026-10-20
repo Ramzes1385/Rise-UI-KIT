@@ -11,11 +11,12 @@ import { useFlowMap3DSnapshot } from './data/useFlowMap3DSnapshot'
 import { useFlowMap3DBindings } from './view/useFlowMap3DBindings'
 import { useFlowMap3DTemplate } from './compose/useFlowMap3DTemplate'
 import { useFlowMap3DEditLoader } from './edit/useFlowMap3DEditLoader'
-import { onBeforeUnmount, ref, shallowRef, useTemplateRef } from 'vue'
 import { SCENE_3D_CAMERA_PRESETS } from '@/scene3d/types/scene3d.types'
 import type { Scene3DCameraPreset } from '@/scene3d/types/scene3d.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import { onBeforeUnmount, provide, ref, shallowRef, useTemplateRef } from 'vue'
 import type { FlowMap3DEditLoaderInput } from '../types/internal/flowMap3dEdit.types'
+import { FLOW_SHARED_MODEL } from '@components/BaseFlowMap/model/context/flowContext'
 import type { BaseFlowMap3DEmits, FlowMap3DProps } from '../types/BaseFlowMap3D.types'
 import type { FlowMap3DComposeParts, FlowMap3DInput, FlowMap3DRefs } from '../types/internal/flowMap3dCompose.types'
 
@@ -35,6 +36,7 @@ function useRefs(): FlowMap3DRefs {
 function useParts(props: FlowMap3DProps, emit: BaseFlowMap3DEmits): FlowMap3DComposeParts {
 	const refs = useRefs()
 	const core = useFlowMap3DCore(props, emit, refs.rootRef)
+	provide(FLOW_SHARED_MODEL, core.model)
 	return {
 		props,
 		emit,
