@@ -69,7 +69,6 @@ function createModels(options: Roadmap3DBuildOptions, getPalette: () => Roadmap3
 
 	function paint(items: readonly Roadmap3DStageItem[], states: Roadmap3DStates): void {
 		items.forEach(item => {
-			if (!keys.has(item.id)) return
 			registry.setState(item.id, {
 				isHovered: states.hover === item.id,
 				isSelected: states.selected === item.id,
@@ -88,7 +87,7 @@ function createModels(options: Roadmap3DBuildOptions, getPalette: () => Roadmap3
 
 	function refresh(items: readonly Roadmap3DStageItem[]): void {
 		items.forEach(item => {
-			if (!keys.has(item.id) || keys.get(item.id) === selectionKey(item)) return
+			if (keys.get(item.id) === selectionKey(item)) return
 			keys.set(item.id, selectionKey(item))
 			registry.update(item.id, item.selection)
 			tints.delete(item.id)

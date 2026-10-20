@@ -101,7 +101,10 @@ function startAnimation(options: Roadmap3DSceneOptions, built: Roadmap3DContent)
 	})
 }
 
-function watchScene(options: Roadmap3DSceneOptions, scene: { content: ShallowRef<Roadmap3DContent | null>; rebuild: () => void }): void {
+function watchScene(
+	options: Roadmap3DSceneOptions,
+	scene: { content: ShallowRef<Roadmap3DContent | null>; rebuild: () => void; getBuilt: () => string },
+): void {
 	const { viewport } = options
 	const { content } = scene
 	const structure = computed(() => structureOf(options))
@@ -109,6 +112,7 @@ function watchScene(options: Roadmap3DSceneOptions, scene: { content: ShallowRef
 		flush: 'post',
 	})
 	watch(options.snapshot, next => {
+		if (structureOf(options) !== scene.getBuilt()) return
 		content.value?.update(next, options.getStates())
 		viewport.invalidate()
 	})
@@ -132,6 +136,8 @@ export function useRoadmap3DScene(options: Roadmap3DSceneOptions) {
 	const hooks = useHooks(options, content)
 	const appModels = useScene3DModels()
 	let stopFrames: (() => void) | null = null
+	let builtKey = ''
+
 	function clear(): void {
 		hooks.stop()
 		stopFrames?.()
@@ -149,6 +155,7 @@ export function useRoadmap3DScene(options: Roadmap3DSceneOptions) {
 		enableShadows(renderer, detail.hasShadows)
 		const built = buildContent(buildOptionsOf(options, { host, detail, cache, gltf, appModels }))
 		content.value = built
+		builtKey = structureOf(options)
 		viewport.scene.add(built.root)
 		built.setStates(options.getStates())
 		stopFrames = startAnimation(options, built)
@@ -159,6 +166,7 @@ export function useRoadmap3DScene(options: Roadmap3DSceneOptions) {
 
 	watchScene(options, {
 		content,
+		getBuilt: () => builtKey,
 		rebuild: () => {
 			clear()
 			const host = options.hostRef.value

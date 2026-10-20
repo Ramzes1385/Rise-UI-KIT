@@ -123,12 +123,6 @@ export function useBaseRoadmap3D(props: Roadmap3DProps, emit: BaseRoadmap3DEmits
 		isCompact: core.isCompact,
 		isEditing: model.isEditing,
 		announcement: core.announcement,
-		setCamera: (next: Scene3DCameraPreset) => {
-			stage.camera.setPreset(next)
-			emit('update:camera', next)
-		},
-		goPrev: () => focus.go(-1),
-		goNext: () => focus.go(1),
 		onFocusOut: () => (focus.cursor.value = focus.focused.value),
 	}
 }

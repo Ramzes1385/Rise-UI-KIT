@@ -12,7 +12,7 @@ import type {
 
 const RING = { inner: 1.0, outer: 1.14, segments: 56, lift: 0.1 }
 export const GEM = { radius: 0.12, orbit: 2.15, lift: 0.3, limit: 80 }
-export const SCALE = 1.3
+const SCALE = 1.3
 const FULL = Math.PI * 2
 
 export function ringArc(share: number): RingGeometry {

@@ -175,7 +175,12 @@
 		}
 
 		&--dim {
-			opacity: 0.4;
+			border-color: transparent;
+			background-color: color-mix(in srgb, var(--rise-bg) 60%, transparent);
+
+			> :not(.base-roadmap-3d__tag-here) {
+				opacity: 0.45;
+			}
 		}
 	}
 
@@ -185,7 +190,7 @@
 		inset-inline-start: 50%;
 		padding: sz(1px) sz(10px);
 		border-radius: sz(var(--rise-radius-full));
-		background-color: color-mix(in srgb, var(--rise-error) 78%, black);
+		background-color: color-mix(in srgb, var(--rise-error) 50%, black);
 		color: white;
 		font-size: sz(var(--rise-font-size-xs));
 		font-weight: 600;
