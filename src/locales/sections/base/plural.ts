@@ -1,6 +1,6 @@
 /** Утилиты: раздел словаря — Общие подписи, доступные имена, предупреждения */
 
-import { ruPlural } from '../../ru/plural'
+import { ruPlural } from '../../ru/rules/plural'
 import { localized } from '../../localized'
 
 /** Формы слов для чисел (`pluralize`): `pluralize(UI_PLURAL.DAYS, 3)` */

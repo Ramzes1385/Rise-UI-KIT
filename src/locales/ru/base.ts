@@ -1,5 +1,5 @@
 /** Общие строки: подписи и кнопки, доступные имена, тур, рейтинг, чек-лист */
-import { ruLocaleWarnings } from './localeWarnings'
+import { ruLocaleWarnings } from './rules/localeWarnings'
 
 export const ruText = {
 	/** Ссылка промо-блока BaseMegaMenu */

@@ -5,6 +5,9 @@
  *   кладёт в начало каждого файла, отрезаются по метке: в этом проходе prelude заканчивается модулем-меткой
  *   (`@use 'rise:css-split-marker'`), и всё до неё в скомпилированном CSS — вывод prelude. Метка стоит после prelude,
  *   но до `@use` самого файла, поэтому стили частичных файлов (`@use './body/cell'` у BaseTable) остаются.
+ * - `components/<Имя>/style.layer.css` — то же внутри `@layer rise{…}`: готовый слой, а не `@import … layer(rise)`, потому что ленивый чанк
+ *   подключает файл из JS, и сборщики приложений по-разному разбирают `layer()` в `@import` (порядок, дубли запросов); так правила ленивой части
+ *   слабее любых неслойных стилей приложения и в том же слое, что у `styles.layer.css`.
  * - `tokens.css` — `src/styles/kit.scss` целиком: токены, темы, движение и база шрифта; `tokens.layer.css` — он же в слое `rise`.
  *
  * Модули каждой папки компонента — свой чанк (группа `codeSplitting`), CSS чанка — CSS этой папки; JS прохода не нужен
@@ -15,7 +18,14 @@ import { resolve } from 'node:path'
 import type { Plugin, Rollup } from 'vite'
 import { stripBeforeMarker } from './cssSplit'
 import { createScssOptions } from '../config/css'
-import { componentCssFile, componentOfModule, TOKENS_CSS_FILE, TOKENS_LAYER_CSS_FILE, TOKENS_SOURCE } from '../config/subpaths'
+import {
+	componentCssFile,
+	componentLayerCssFile,
+	componentOfModule,
+	TOKENS_CSS_FILE,
+	TOKENS_LAYER_CSS_FILE,
+	TOKENS_SOURCE,
+} from '../config/subpaths'
 
 const CSS_FILE = /\.(?:css|scss|sass)$/
 const MARKER_URL = 'rise:css-split-marker'
@@ -143,7 +153,13 @@ function createCollectPlugin(root: string): Plugin {
 			}
 			for (const name of Object.keys(bundle)) delete bundle[name]
 			if (!outputs.get(TOKENS_CSS_FILE)) fail(`subpath-css: ${TOKENS_CSS_FILE} не собран`)
-			for (const [fileName, source] of outputs) if (source.trim()) this.emitFile({ type: 'asset', fileName, source })
+			for (const [fileName, source] of outputs) {
+				if (!source.trim()) continue
+				this.emitFile({ type: 'asset', fileName, source })
+				const component = /^components\/(\w+)\/style\.css$/.exec(fileName)?.[1]
+				if (component)
+					this.emitFile({ type: 'asset', fileName: componentLayerCssFile(component), source: `@layer rise{${source}}\n` })
+			}
 			this.emitFile({ type: 'asset', fileName: TOKENS_LAYER_CSS_FILE, source: TOKENS_LAYER_CSS })
 		},
 	}

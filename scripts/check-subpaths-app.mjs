@@ -101,6 +101,16 @@ const data = { version: 1, title: 'Путь', stages: [{ id: 's1', title: 'Ос�
 createApp({ render: () => h('main', { style: 'padding: 24px; width: 960px' }, [h(BaseRoadmap, { data, mode: 'edit', modes: ['view', 'edit'] })]) }).mount('#app')
 `
 
+/** Корень пакета + `styles.css` и переопределение `.base-tabs` той же специфичности после него: CSS ленивой части (слой `rise`) его не перебивает */
+const ROOT_OVERRIDE_APP = `import { createApp, h } from 'vue'
+import { BaseRoadmap } from '${PACKAGE}'
+const override = document.createElement('style')
+override.textContent = '.base-tabs { display: grid; }'
+document.head.append(override)
+const data = { version: 1, title: 'Путь', stages: [{ id: 's1', title: 'Основы', topics: [{ id: 't1', title: 'HTML', hours: 2 }] }] }
+createApp({ render: () => h('main', { style: 'padding: 24px; width: 960px' }, [h(BaseRoadmap, { data, mode: 'edit', modes: ['view', 'edit'] })]) }).mount('#app')
+`
+
 /** BaseFlowMap в «Правке»: палитра и инспектор — чанки по `import()`, их CSS (BaseTabs, BaseInput…) подключают сами чанки */
 const FLOW_MAP_EDIT_APP = from => `import { createApp, h } from 'vue'
 import { BaseFlowMap } from '${from}'
@@ -162,6 +172,33 @@ const SCENARIOS = [
 			await page.locator('[data-roadmap-topic] .base-roadmap__edit-pick').first().click()
 			await page.locator('.base-tabs').first().waitFor({ timeout: 5000 })
 			await waitStyleRules(page, ['.base-tabs', '.base-textarea'])
+		},
+	},
+	{
+		name: 'root-roadmap-edit-override',
+		css: 'styles.css',
+		code: ROOT_OVERRIDE_APP,
+		marker: 'base-roadmap',
+		// после открытия правки CSS ленивого чанка загружен (стили BaseTabs в слое `rise`), переопределение приложения по-прежнему действует
+		after: async page => {
+			await page.locator('[data-roadmap-topic] .base-roadmap__edit-pick').first().click()
+			await page.locator('.base-tabs').first().waitFor({ timeout: 5000 })
+			await page.waitForFunction(
+				() =>
+					[...document.styleSheets].some(sheet =>
+						[...sheet.cssRules].some(
+							rule => rule.cssText.includes('@layer rise') || rule.constructor.name === 'CSSLayerBlockRule',
+						),
+					),
+				null,
+				{ timeout: 5000 },
+			)
+			const display = await page
+				.locator('.base-tabs')
+				.first()
+				.evaluate(element => getComputedStyle(element).display)
+			if (display !== 'grid')
+				throw new Error(`root-roadmap-edit-override: переопределение .base-tabs перебито CSS ленивого чанка (display: ${display})`)
 		},
 	},
 	{ name: 'subpath-roadmap-view', css: 'tokens.css', code: ROADMAP_VIEW_APP(`${PACKAGE}/BaseRoadmap`), marker: 'base-roadmap' },

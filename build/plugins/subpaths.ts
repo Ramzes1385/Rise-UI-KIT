@@ -8,14 +8,14 @@
  * В начало входа сборка дописывает `import '../<Папка>/style.css'` по одному на каждую папку компонента, чьи стили
  * статически подключает подпуть (своя и внутренние компоненты), — в порядке выполнения модулей ESM, как правила лежат
  * в `styles.css`. CSS импортирует только вход подпути, общие чанки — нет: `./components` и корень по-прежнему без CSS.
- * Стили модулей по `import()` (ленивые части компонента) вход не подключает: их `style.css` импортирует сам ленивый чанк
+ * Стили модулей по `import()` (ленивые части компонента) вход не подключает: их `style.layer.css` (слой `rise`) импортирует сам ленивый чанк
  * (то, чего нет у входа компонента, который вызывает `import()`), и приложение подтягивает CSS при загрузке чанка.
  * Сами `style.css` собирает отдельный проход (vite.subpath-css.config.ts): список папок он берёт из того же графа модулей.
  */
 
 import { posix, resolve } from 'node:path'
 import type { Plugin, Rollup } from 'vite'
-import { componentCssFile, componentOfModule, readPublicComponents, subpathEntryName } from '../config/subpaths'
+import { componentCssFile, componentLayerCssFile, componentOfModule, readPublicComponents, subpathEntryName } from '../config/subpaths'
 
 const VIRTUAL_PREFIX = 'virtual:rise-subpath/'
 const RESOLVED_PREFIX = `\0${VIRTUAL_PREFIX}`
@@ -69,9 +69,9 @@ export function lazyChunkStyleComponents(
 	return collectStyleComponents(getModuleInfo, lazyId).filter(component => !own.every(set => set.has(component)))
 }
 
-function cssImports(entryFile: string, components: string[]): string {
+function cssImports(entryFile: string, components: string[], file: (component: string) => string = componentCssFile): string {
 	const from = posix.dirname(entryFile)
-	return components.map(component => `import"./${posix.relative(from, componentCssFile(component))}";`.replace('"./../', '"../')).join('')
+	return components.map(component => `import"./${posix.relative(from, file(component))}";`.replace('"./../', '"../')).join('')
 }
 
 export function createSubpathsPlugin(root: string = process.cwd()): Plugin {
@@ -99,7 +99,8 @@ export function createSubpathsPlugin(root: string = process.cwd()): Plugin {
 				const components = isSubpath
 					? collectStyleComponents(getInfo, file.facadeModuleId)
 					: lazyChunkStyleComponents(getInfo, file.facadeModuleId, publicComponents)
-				file.code = `${cssImports(file.fileName, components)}${file.code}`
+				// ленивый чанк — CSS в слое `rise`: при корне со `styles.css` он слабее неслойных стилей приложения и ничего не перебивает
+				file.code = `${cssImports(file.fileName, components, isSubpath ? componentCssFile : componentLayerCssFile)}${file.code}`
 			}
 		},
 	}

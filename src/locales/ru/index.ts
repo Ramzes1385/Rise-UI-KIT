@@ -1,4 +1,4 @@
-import { ruPlural } from './plural'
+import { ruPlural } from './rules/plural'
 import { ruCard } from './components/card'
 import { ruGantt } from './components/data/gantt'
 import { ruFlowMap } from './components/flow/map'

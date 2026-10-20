@@ -182,14 +182,22 @@ describe.skipIf(!existsSync(resolve(DIST, 'components/BaseRoadmap/index.js')))('
 		const chunk = chunkOf(/^RoadmapEditor-.*\.js$/)
 		for (const component of ['BaseTabs', 'BaseTextarea']) {
 			expect(entry, component).not.toContain(`/${component}/style.css`)
-			expect(chunk, component).toContain(`/${component}/style.css"`)
+			expect(chunk, component).toContain(`/${component}/style.layer.css"`)
 		}
+	})
+
+	it('style.layer.css — тот же CSS в слое rise', () => {
+		const plain = readFileSync(resolve(DIST, 'components/BaseTabs/style.css'), 'utf8')
+		const layered = readFileSync(resolve(DIST, 'components/BaseTabs/style.layer.css'), 'utf8')
+		expect(layered.startsWith('@layer rise{')).toBe(true)
+		expect(layered.trimEnd().endsWith('}')).toBe(true)
+		expect(layered).toContain(plain.slice(0, 200))
 	})
 
 	it('вход BaseFlowMap не подключает стили инспектора и палитры: они у ленивых чанков', () => {
 		const entry = readFileSync(resolve(DIST, 'components/BaseFlowMap/index.js'), 'utf8')
 		const lazy = ['FlowEditInspector', 'FlowEditPalette'].map(name => chunkOf(new RegExp(`^${name}-.*\\.js$`))).join('\n')
-		const lazyCss = [...lazy.matchAll(/\/components\/(\w+)\/style\.css"/g)].map(match => match[1]!)
+		const lazyCss = [...lazy.matchAll(/\/components\/(\w+)\/style\.layer\.css"/g)].map(match => match[1]!)
 		expect(lazyCss.length).toBeGreaterThan(0)
 		for (const component of lazyCss) expect(entry, component).not.toContain(`/${component}/style.css"`)
 	})

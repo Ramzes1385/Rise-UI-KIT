@@ -7,6 +7,7 @@
  * - `components/<Имя>/index.js` — вход подпути: импорт CSS компонента и того, что он использует внутри, и реэкспорт из общих чанков
  *   основной сборки (тех же, что у `./` и `./components`: один экземпляр кода и ключей provide/inject на приложение);
  * - `components/<Имя>/style.css` — только собственные стили папки компонента, без токенов;
+ * - `components/<Имя>/style.layer.css` — они же, готовые в слое `rise` (`@layer rise{…}`): их подключают ленивые чанки;
  * - `components/<Имя>/index.d.ts` — типы (их кладёт `build:lib:types`);
  * - `tokens.css` и `tokens.layer.css` — токены, тема, движение и база шрифта кита: подключаются один раз.
  */
@@ -37,6 +38,11 @@ export function subpathEntryName(component: string): string {
 /** CSS папки компонента в dist */
 export function componentCssFile(component: string): string {
 	return `components/${component}/style.css`
+}
+
+/** CSS папки компонента в слое `rise` (`@layer rise{…}`): его импортируют ленивые чанки, чтобы не перебивать стили приложения */
+export function componentLayerCssFile(component: string): string {
+	return `components/${component}/style.layer.css`
 }
 
 export const TOKENS_CSS_FILE = 'tokens.css'
