@@ -8,6 +8,7 @@ import { useFlowFrame } from './viewport/useFlowFrame'
 import { useFlowAnnouncer } from './a11y/useFlowAnnouncer'
 import { FLOW_MAP_PARTS } from '../types/BaseFlowMap.types'
 import { useFlowLazyStart } from './state/useFlowLazyStart'
+import { useFlowSharedModel } from './state/useFlowSharedModel'
 import { useFlowPanels } from './viewport/panels/useFlowPanels'
 import { useFlowVisibility } from './viewport/useFlowVisibility'
 import { useReducedMotion } from '@composables/app/useReducedMotion'
@@ -22,17 +23,19 @@ export function useBaseFlowMap(props: BaseFlowMapProps, emit: BaseFlowMapEmits) 
 	const frame = useFlowFrame(props)
 	const { isVisible } = useFlowVisibility(frame.element)
 	const { announcement, announce } = useFlowAnnouncer()
-	const model = useFlowModel(props, {
-		emit: emit as unknown as FlowEmit,
-		listeners: () => readListeners(instance?.vnode.props),
-		environment: {
-			isVisible: () => isVisible.value,
-			isReducedMotion: () => isReducedMotion.value,
-			announce,
-		},
-		isCompact: () => frame.isCompact.value,
-		preloadScenario: loadScenarioUi,
-	})
+	const model =
+		useFlowSharedModel(emit) ??
+		useFlowModel(props, {
+			emit: emit as unknown as FlowEmit,
+			listeners: () => readListeners(instance?.vnode.props),
+			environment: {
+				isVisible: () => isVisible.value,
+				isReducedMotion: () => isReducedMotion.value,
+				announce,
+			},
+			isCompact: () => frame.isCompact.value,
+			preloadScenario: loadScenarioUi,
+		})
 	const rendering = useFlowRendering(props, model, { frame, environment: { isReducedMotion, isVisible, announce } })
 	const modes = useFlowModes(props, {
 		...{ model, props, map: rendering.canvas.map, element: frame.element, announce },
