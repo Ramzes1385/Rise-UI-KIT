@@ -1,5 +1,5 @@
 import { useRoadmapMode } from '../../state/useRoadmapMode'
-import { useRoadmapEditLoader } from './useRoadmapEditLoader'
+import { useRoadmapEditLoader } from './load/useRoadmapEditLoader'
 import { useRoadmapReviewLoader } from '../../review/useRoadmapReviewLoader'
 import type { RoadmapEditContext } from '../../../types/internal/roadmapEdit.internal.types'
 

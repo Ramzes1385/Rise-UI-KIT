@@ -173,9 +173,9 @@ import RoadmapSummary from './parts/RoadmapSummary.vue'
 import { BaseSkeleton } from '@components/BaseSkeleton'
 import { useBaseRoadmap } from '../model/useBaseRoadmap'
 import { BaseSegmented } from '@components/BaseSegmented'
-import RoadmapLoadError from './parts/RoadmapLoadError.vue'
 import { kitDefaults } from '@composables/base/useDefaults'
 import RoadmapTopicPanel from './parts/RoadmapTopicPanel.vue'
+import RoadmapLoadError from './parts/notices/RoadmapLoadError.vue'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 const RoadmapEditor = defineAsyncComponent(() => import('./edit/RoadmapEditor.vue'))
 const RoadmapReviewPanel = defineAsyncComponent(() => import('./review/RoadmapReviewPanel.vue'))

@@ -1,6 +1,6 @@
 import type { ComputedRef } from 'vue'
 import { getCurrentScope, shallowRef, watch } from 'vue'
-import { createRoadmapLazy } from '../edit/run/roadmapLazy'
+import { createRoadmapLazy } from '../edit/run/load/roadmapLazy'
 import type { RoadmapReviewState } from '../../types/internal/roadmapReview.types'
 import type { RoadmapEditContext, RoadmapEditLoader, RoadmapReviewLoader } from '../../types/internal/roadmapEdit.internal.types'
 

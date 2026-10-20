@@ -2,7 +2,7 @@ import { shallowRef } from 'vue'
 import { warn } from '@/locales/warn'
 import { UI_ROADMAP } from '@/locales/messages'
 import { isDevelopmentBuild } from '@utils/seo/structuredDataUtils'
-import type { RoadmapLazy } from '../../../types/internal/roadmapEdit.internal.types'
+import type { RoadmapLazy } from '../../../../types/internal/roadmapEdit.internal.types'
 
 export function createRoadmapLazy<T>(factory: () => Promise<T>, name: string): RoadmapLazy<T> {
 	const error = shallowRef(false)

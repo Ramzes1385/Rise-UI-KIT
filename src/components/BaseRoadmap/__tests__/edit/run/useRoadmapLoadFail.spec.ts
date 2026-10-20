@@ -8,9 +8,9 @@ import { computed, effectScope, shallowRef } from 'vue'
 import { mockWidth } from '../../fixtures/shellFixtures'
 import { enableAutoUnmount, mount } from '@vue/test-utils'
 import { createRoadmapHooks } from '../../../model/edit/data/roadmapHooks'
-import { useRoadmapEditLoader } from '../../../model/edit/run/useRoadmapEditLoader'
 import { UI_ROADMAP, UI_ROADMAP_EDIT, UI_ROADMAP_REVIEW } from '@/locales/messages'
 import { useRoadmapReviewLoader } from '../../../model/review/useRoadmapReviewLoader'
+import { useRoadmapEditLoader } from '../../../model/edit/run/load/useRoadmapEditLoader'
 
 const failing = vi.hoisted(() => ({ edit: false, review: false }))
 

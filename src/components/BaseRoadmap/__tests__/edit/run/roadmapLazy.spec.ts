@@ -1,7 +1,7 @@
 import { vi } from 'vitest'
 import { UI_ROADMAP } from '@/locales/messages'
 import { deferred } from '../fixtures/editFixtures'
-import { createRoadmapLazy } from '../../../model/edit/run/roadmapLazy'
+import { createRoadmapLazy } from '../../../model/edit/run/load/roadmapLazy'
 
 afterEach(() => {
 	vi.restoreAllMocks()

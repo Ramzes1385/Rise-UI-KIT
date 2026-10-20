@@ -13,12 +13,12 @@
 </template>
 
 <script setup lang="ts">
-import '../../styles/_roadmap-reject.scss'
+import '../../../styles/_roadmap-reject.scss'
 import { BaseKbd } from '@components/BaseKbd'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseButton } from '@components/BaseButton'
 import { UI_ROADMAP_EDIT } from '@/locales/messages'
-import type { RoadmapRejection } from '../../types/internal/roadmapEdit.internal.types'
+import type { RoadmapRejection } from '../../../types/internal/roadmapEdit.internal.types'
 
 defineProps<{
 	rejection: RoadmapRejection

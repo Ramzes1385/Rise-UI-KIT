@@ -44,7 +44,7 @@ export interface RoadmapEditContext {
 }
 
 /** Побочное действие шага истории: зовётся при отмене и повторе шага (статус принятого предложения) */
-export type RoadmapStepEffect = (direction: 'undo' | 'redo') => void
+type RoadmapStepEffect = (direction: 'undo' | 'redo') => void
 
 /** Выполнить команду правки */
 export type RoadmapRunner = (command: RoadmapCommand) => Promise<boolean>

@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import '../../styles/_roadmap-reject.scss'
+import '../../../styles/_roadmap-reject.scss'
 import { UI_ROADMAP } from '@/locales/messages'
 import { BaseButton } from '@components/BaseButton'
 

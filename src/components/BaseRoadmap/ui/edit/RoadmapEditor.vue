@@ -74,7 +74,7 @@ import { UI_ROADMAP_EDIT } from '@/locales/messages'
 import RoadmapEditStage from './RoadmapEditStage.vue'
 import RoadmapInspector from './RoadmapInspector.vue'
 import { BaseConfirm } from '@components/BaseConfirm'
-import RoadmapRejectNotice from '../parts/RoadmapRejectNotice.vue'
+import RoadmapRejectNotice from '../parts/notices/RoadmapRejectNotice.vue'
 import { useRoadmapEditorView } from '../../model/edit/view/useRoadmapEditorView'
 import type { RoadmapEditorEmits, RoadmapEditorProps } from '../../types/internal/roadmapEditView.types'
 

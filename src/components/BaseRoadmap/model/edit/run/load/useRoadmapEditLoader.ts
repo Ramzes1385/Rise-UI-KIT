@@ -1,14 +1,14 @@
 import type { ComputedRef } from 'vue'
 import { createRoadmapLazy } from './roadmapLazy'
 import { getCurrentScope, shallowRef, watch } from 'vue'
-import type { RoadmapEditContext, RoadmapEditController, RoadmapEditLoader } from '../../../types/internal/roadmapEdit.internal.types'
+import type { RoadmapEditContext, RoadmapEditController, RoadmapEditLoader } from '../../../../types/internal/roadmapEdit.internal.types'
 
 export function useRoadmapEditLoader(context: RoadmapEditContext, isEditing: ComputedRef<boolean>): RoadmapEditLoader {
 	const controller = shallowRef<RoadmapEditController | null>(null)
 	const scope = getCurrentScope()
 	const { load, error, retry } = createRoadmapLazy(
 		() =>
-			import('./useRoadmapEdit').then(({ createRoadmapEdit }) => {
+			import('../useRoadmapEdit').then(({ createRoadmapEdit }) => {
 				if (scope && !scope.active) return controller.value as RoadmapEditController
 				controller.value = scope?.run(() => createRoadmapEdit(context)) ?? createRoadmapEdit(context)
 				return controller.value

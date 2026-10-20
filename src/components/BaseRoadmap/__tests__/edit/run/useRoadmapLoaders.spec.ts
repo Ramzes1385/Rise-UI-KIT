@@ -3,8 +3,8 @@ import { editData } from '../fixtures/editFixtures'
 import { computed, effectScope, shallowRef } from 'vue'
 import { createRoadmapHooks } from '../../../model/edit/data/roadmapHooks'
 import { createRoadmapEdit } from '../../../model/edit/run/useRoadmapEdit'
-import { useRoadmapEditLoader } from '../../../model/edit/run/useRoadmapEditLoader'
 import { useRoadmapReviewLoader } from '../../../model/review/useRoadmapReviewLoader'
+import { useRoadmapEditLoader } from '../../../model/edit/run/load/useRoadmapEditLoader'
 import type { RoadmapEditLoader } from '../../../types/internal/roadmapEdit.internal.types'
 
 const keep = effectScope()
