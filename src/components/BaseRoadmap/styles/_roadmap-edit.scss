@@ -37,8 +37,10 @@
 		padding: space(20px 24px);
 		overflow: auto;
 		background-color: var(--rise-bg-muted);
-		background-image: radial-gradient(var(--rise-border) 1px, transparent 1.3px);
-		background-size: sz(20px) sz(20px);
+		background-image:
+			linear-gradient(to right, var(--rise-border) 1px, transparent 1px),
+			linear-gradient(to bottom, var(--rise-border) 1px, transparent 1px);
+		background-size: sz(24px) sz(24px);
 	}
 
 	&__edit-chip {
@@ -48,15 +50,13 @@
 		align-self: flex-start;
 		padding: space(4px 12px);
 		margin: 0;
-		font-size: sz(12px);
-		color: var(--rise-text-muted);
-		background-color: var(--rise-bg);
-		border: 1px solid var(--rise-border);
-		border-radius: sz(999px);
+		background-color: var(--rise-surface-raised);
+		border-radius: sz(var(--rise-radius-sm));
+		@include caps-label;
 
 		&--link {
-			color: var(--rise-primary);
-			border-color: var(--rise-primary);
+			color: var(--rise-primary-text);
+			background-color: var(--rise-primary-soft);
 		}
 	}
 
@@ -64,7 +64,7 @@
 		inline-size: sz(8px);
 		block-size: sz(8px);
 		background-color: var(--rise-primary);
-		border-radius: 50%;
+		border-radius: 1px;
 	}
 
 	&__edit-stages,
@@ -87,8 +87,8 @@
 	}
 
 	&__edit-stage {
-		background-color: var(--rise-bg);
-		border: 1px solid var(--rise-border);
+		background-color: var(--rise-surface-raised);
+		border: 1px solid transparent;
 		border-radius: sz(var(--rise-radius-md));
 
 		&--selected {
@@ -97,6 +97,7 @@
 		}
 
 		&--optional {
+			border-color: var(--rise-border-accented);
 			border-style: dashed;
 		}
 
@@ -142,32 +143,18 @@
 		justify-content: center;
 		inline-size: sz(28px);
 		block-size: sz(28px);
+		font-family: var(--rise-font-mono);
 		font-weight: var(--rise-font-weight-semibold);
-		color: var(--rise-primary);
+		font-variant-numeric: tabular-nums;
+		color: var(--rise-primary-text);
 		background-color: var(--rise-primary-soft);
-		border-radius: 50%;
+		border-radius: sz(var(--rise-radius-sm));
 	}
 
 	&__edit-handle,
 	&__edit-icon {
-		display: inline-flex;
-		flex: none;
-		align-items: center;
-		justify-content: center;
-		inline-size: sz(28px);
-		block-size: sz(28px);
-		padding: 0;
+		@include tool-button;
 		color: var(--rise-text-muted);
-		cursor: pointer;
-		background: transparent;
-		border: 0;
-		border-radius: sz(var(--rise-radius-sm));
-		@include focus-ring;
-
-		&:hover:not(:disabled) {
-			color: var(--rise-text-highlighted);
-			background-color: var(--rise-bg-muted);
-		}
 
 		&:disabled {
 			cursor: not-allowed;
@@ -180,7 +167,7 @@
 		touch-action: none;
 
 		&[aria-pressed='true'] {
-			color: var(--rise-primary);
+			color: var(--rise-primary-text);
 			background-color: var(--rise-primary-soft);
 		}
 	}
@@ -212,7 +199,7 @@
 		@include focus-ring;
 
 		&:hover:not(:disabled) {
-			background-color: var(--rise-bg-muted);
+			background-color: var(--rise-bg-elevated);
 		}
 
 		&[aria-pressed='true'] {
@@ -228,12 +215,11 @@
 	}
 
 	&__edit-pick-alt {
-		font-size: sz(11px);
-		color: var(--rise-text-muted);
-		text-transform: uppercase;
+		@include caps-label(10px);
 	}
 
 	&__edit-pick-hours {
+		font-family: var(--rise-font-mono);
 		font-size: sz(12px);
 		color: var(--rise-text-muted);
 		font-variant-numeric: tabular-nums;
@@ -243,15 +229,17 @@
 		display: flex;
 		gap: sz(4px);
 		align-items: center;
-		background-color: ct(roadmap, topic-bg, var(--rise-bg));
-		border: 1px solid ct(roadmap, topic-border, var(--rise-border));
-		border-radius: sz(ct(roadmap, topic-radius, 10px));
+		background-color: ct(roadmap, topic-bg, var(--rise-surface-raised));
+		border: 1px solid ct(roadmap, topic-border, transparent);
+		border-radius: sz(ct(roadmap, topic-radius, var(--rise-radius-md)));
 
 		&--selected {
 			border-color: var(--rise-primary);
+			box-shadow: 0 0 0 1px var(--rise-primary);
 		}
 
 		&--optional {
+			border-color: var(--rise-border-accented);
 			border-style: dashed;
 		}
 
@@ -287,7 +275,7 @@
 		@include focus-ring;
 
 		&:hover:not(:disabled) {
-			color: var(--rise-primary);
+			color: var(--rise-primary-text);
 			border-color: var(--rise-primary);
 		}
 	}
@@ -304,13 +292,11 @@
 		inset-inline-start: 0;
 		z-index: var(--rise-z-overlay);
 		box-sizing: border-box;
-		padding: space(8px 14px);
 		color: var(--rise-text-highlighted);
 		pointer-events: none;
-		background-color: var(--rise-bg);
-		border: 1px solid var(--rise-primary);
+		@include floating-surface(null);
+		padding: space(8px 14px);
 		border-radius: sz(var(--rise-radius-md));
-		box-shadow: var(--rise-shadow-lg);
 	}
 
 	&__edit-side {
@@ -320,8 +306,8 @@
 		inline-size: sz(360px);
 		padding: space(16px 20px);
 		overflow: auto;
-		background-color: var(--rise-bg);
 		border-inline-start: 1px solid var(--rise-border);
+		@include tonal-surface(page);
 	}
 
 	&__edit-status {
@@ -329,12 +315,11 @@
 		flex-wrap: wrap;
 		gap: space(8px 20px);
 		padding: space(8px 20px);
-		font-size: sz(12px);
-		color: var(--rise-text-muted);
 		border-block-start: 1px solid var(--rise-border);
+		@include caps-label;
 
 		&--warn {
-			color: var(--rise-warning);
+			color: var(--rise-warning-text);
 		}
 	}
 
@@ -365,8 +350,7 @@
 	}
 
 	&__inspector-eyebrow {
-		font-size: sz(12px);
-		color: var(--rise-text-muted);
+		@include caps-label;
 	}
 
 	&__inspector-row {
@@ -389,8 +373,7 @@
 	&__inspector-legend {
 		padding: 0;
 		margin-block-end: space(4px);
-		font-size: sz(12px);
-		color: var(--rise-text-muted);
+		@include caps-label;
 	}
 
 	&__inspector-empty {
@@ -419,8 +402,8 @@
 		grid-template-columns: 1fr auto;
 		gap: space(6px);
 		padding: space(8px);
-		border: 1px solid var(--rise-border);
-		border-radius: sz(var(--rise-radius-sm));
+		background-color: var(--rise-bg-muted);
+		border-radius: sz(var(--rise-radius-md));
 	}
 
 	&__inspector-warn {
@@ -429,7 +412,7 @@
 		align-items: center;
 		margin: 0;
 		font-size: sz(12px);
-		color: var(--rise-warning);
+		color: var(--rise-warning-text);
 	}
 
 	&__hook {
@@ -437,11 +420,13 @@
 		flex-direction: column;
 		gap: space(4px);
 		padding: space(8px);
-		border: 1px solid var(--rise-border);
-		border-radius: sz(var(--rise-radius-sm));
+		background-color: var(--rise-bg-muted);
+		border: 1px solid transparent;
+		border-radius: sz(var(--rise-radius-md));
 
 		&.is-off {
-			background-color: var(--rise-bg-muted);
+			background-color: transparent;
+			border-color: var(--rise-border-accented);
 			border-style: dashed;
 
 			.base-roadmap__hook-event,
@@ -466,7 +451,7 @@
 	}
 
 	&__hook-fn {
-		color: var(--rise-primary);
+		color: var(--rise-primary-text);
 	}
 
 	&__hook-arrow {

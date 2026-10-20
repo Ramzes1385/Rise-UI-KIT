@@ -1615,11 +1615,12 @@
 | `--rise-roadmap-spine-border` | spine | border | — | `var(--rise-border-accented)` |
 | `--rise-roadmap-spine-done-border` | spine-done | border | — | `var(--rise-primary)` |
 | `--rise-roadmap-spine-width` | spine | width | — | `4px` |
-| `--rise-roadmap-topic-bg` | topic | bg | — | `var(--rise-bg)` |
-| `--rise-roadmap-topic-border` | topic | border | — | `var(--rise-border)` |
+| `--rise-roadmap-topic-bg` | topic | bg | — | `var(--rise-surface-raised)` |
+| `--rise-roadmap-topic-bg-hover` | topic | bg | hover | `var(--rise-bg-elevated)` |
+| `--rise-roadmap-topic-border` | topic | border | — | `transparent` |
 | `--rise-roadmap-topic-current-bg` | topic-current | bg | — | `var(--rise-primary-soft)` |
-| `--rise-roadmap-topic-done-bg` | topic-done | bg | — | `color-mix(in srgb, var(--rise-primary) 4%, var(--rise-bg))` |
-| `--rise-roadmap-topic-radius` | topic | radius | — | `calc(var(--rise-radius) * 2.5)` |
+| `--rise-roadmap-topic-done-bg` | topic-done | bg | — | `color-mix(in srgb, var(--rise-primary) 8%, var(--rise-surface-raised))` |
+| `--rise-roadmap-topic-radius` | topic | radius | — | `var(--rise-radius-md)` |
 
 ## BaseScrollArea
 
