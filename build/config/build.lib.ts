@@ -55,6 +55,8 @@ function listSectionFiles(dir: string): string[] {
  * `locale-core` (`localized`, `current`, `legacyKeys`) — отдельная группа с большим приоритетом: без неё первая группа забирает эти
  * общие зависимости, и все чанки словаря импортируют её (вместе со строками чата, которые тогда остаются в первом виде у всех).
  * Группы без `strictExecutionOrder`: в модулях разделов и `ru/**` нет вызовов, кроме `localized` (`__tests__/sections.spec.ts`).
+ *
+ * @public Тест `sections.spec.ts` берёт функцию динамическим импортом (файл вне проекта vue-tsc) — knip его не видит
  */
 export function createRuLocaleGroups() {
 	const localesDir = resolve(process.cwd(), 'src/locales')

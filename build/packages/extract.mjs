@@ -141,11 +141,16 @@ function usedLocaleNames(files) {
 	return [...names].sort()
 }
 
-/** Разделы словаря: `UI_MAP` → `map` — по `src/locales/messages.ts` кита (`localized('map', ruMap)`, с пометкой `@__PURE__` или без) */
+/**
+ * Разделы словаря: `UI_MAP` → `map` — по модулям `src/locales/sections/**`, которые реэкспортирует `src/locales/messages.ts`
+ * (`localized('map', ruMap)`, с пометкой `@__PURE__` или без)
+ */
 function localeSections() {
-	const source = readFileSync(join(ROOT, 'src/locales/messages.ts'), 'utf8')
+	const messages = readFileSync(join(ROOT, 'src/locales/messages.ts'), 'utf8')
+	const modules = [...messages.matchAll(/from '\.\/(sections\/[\w/]+)'/g)].map(match => match[1])
 	const pattern = /export const (\w+) = (?:\/\* @__PURE__ \*\/ )?localized\('(\w+)'[,)]/g
-	return new Map([...source.matchAll(pattern)].map(match => [match[1], match[2]]))
+	const entries = modules.flatMap(path => [...readFileSync(join(ROOT, 'src/locales', `${path}.ts`), 'utf8').matchAll(pattern)])
+	return new Map(entries.map(match => [match[1], match[2]]))
 }
 
 function writeKitLocale(target, names) {

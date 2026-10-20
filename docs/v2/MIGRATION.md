@@ -3485,6 +3485,7 @@ app.use(createUiKitConfig({ locale: 'en', theme: 'corporate' }))
 - **Новое необязательное поле** `RoadmapTopic.defaultStatus?: 'in-progress' | 'done' | 'skipped'`. Если у темы нет своего статуса в прогрессе (`progress.topics[id].status`), расчёт берёт `defaultStatus`; дальше работают прежние правила (подтемы, `done` при всех отмеченных). Статус «закрыта» вычисляется по-прежнему и сильнее `defaultStatus`. Без поля всё считается как в фазе 1.
 - **«Правка».** Поле «Статус по умолчанию» в инспекторе темы; изменение — одна команда истории (`update`), отменяется Ctrl+Z.
 - **Вкладка «Хуки»** в инспекторе «Правки»: подписки на `beforeChange`, `beforeDelete` и `beforeStatusChange` (`ref.on` и пропсы), счётчик включённых, пустое состояние, переключатель, «Последний итог» (разрешено / отказ с причиной). Публичный API не меняется; словарь `roadmapEdit` получил ключи `TAB_HOOKS`, `HOOK_*`, `HOOKS_*`, `F_DEFAULT_STATUS`, `DEFAULT_STATUS_NONE` (на шести языках; собранному целиком `UiKitLocale` нужны новые ключи).
+
 ## Задача s3d-models
 
 - **Новое, без ломки.** Реестр 3D-моделей узлов в ядре `src/scene3d/models`: 35 встроенных моделей (24 по смыслу сервисов, запасные `server` и `shape`, 9 фигур пьедесталов роадмапа), выбор по названию и меткам (слова ru/en), свои модели — GLB по адресу или фабрика `(node, context) => Object3D`, управление через дескриптор `Model3DHandle`. Публичный вход — `/flow3d` и `/roadmap3d` (их добавляют части BaseFlowMap3D и BaseRoadmap3D): `defineModel3D`, `createScene3DModels`, `MODEL3D_PRESETS`, `MODEL3D_ANIMATIONS`, `MODEL3D_PARTS`, `MODEL3D_TONES` и типы. Существующие компоненты и входы не менялись.
@@ -3498,6 +3499,20 @@ app.use(createUiKitConfig({ locale: 'en', theme: 'corporate' }))
 
 - **Что сделано.** Каждый раздел `UI_*` лежит в своём модуле `src/locales/sections/<область>/<раздел>.ts`; `src/locales/messages.ts` стал реэкспортом, файлы компонентов не менялись. `ruLocaleWarnings` (две строки `setLocale`) вынесен в `ru/localeWarnings.ts`, `ru/base.ts` по-прежнему им пользуется.
 - **Сборка пакета.** В `build/config/build.lib.ts` рядом с `LOCALE_GROUPS` появились группы чанков русского словаря: `locale-core` (`localized`, `current`, `legacyKeys`) и `locale-ru-<файл ru/**>` (файл и обёртки его разделов). Теперь раздел попадает туда, где его читают, в том числе в ленивый чанк компонента, а не в общий чанк `messages`.
-- **Что получают приложения.** `config.js` (граф dist) — 19,0 КБ gzip вместо 52,6; приложение с `import { en, registerLocale }` из корня — 65,2 КБ стартового JS и 0 КБ по `import()` (было 83,4 и +75,8). Вес отдельных компонентов меняется в пределах +1,4 КБ (BaseFlowMap +1,4, BaseImageMapEditor +1,1 — мелкие модули разделов), BaseRoadmap −0,7; сумма по `SIZES.md` +0,47 %. Метрики «сумма gzip файлов» растут из-за новых чанков: `index.js` 1138,2 → 1158,1 КБ, `components.js` 932,3 → 950,0, `composables.js` 169,6 → 187,6 — вес приложений от этого не растёт, бюджеты в `ratchets.json` поднимает проверка волны.
+- **Что получают приложения.** Замер на базе `integ/rm2-w3a` (ab0961b1, фаза 2 карты и роадмапа, волна 3а 3D): `config.js` (граф dist) — 19,0 КБ gzip (на этой базе до части С — 50,2, по старой сборке); `createUiKitConfig` без языка — 34,6 КБ с Vue (было 34,6). Вес отдельных компонентов: BaseFlowMap +1,4 (177,5 → 178,9), BaseImageMapEditor +1,1, BaseRoadmap 69,9 → 65,4 (по `import()` 51,1 → 57,4: строки «Правки» и «Правок» уехали в ленивые чанки); сумма JS по `SIZES.md` 2949,4 → 2961,6 (+0,41 %). Метрики «сумма gzip файлов» растут из-за новых чанков: `index.js` 1123,0 → 1165,3 КБ, `components.js` 927,5 → 948,1, `composables.js` 166,9 → 189,5 (бюджет 187 — поднимает проверка волны) — вес приложений от этого не растёт.
 - **Для авторов кита.** Новый раздел словаря — отдельный модуль в `sections/**` с одним `localized()` и реэкспорт в `messages.ts`; `src/locales/__tests__/sections.spec.ts` проверяет, что у раздела есть модуль и группа сборки и что в `sections/**` и `ru/**` нет вызовов при загрузке модуля (группы собраны без `strictExecutionOrder`). Раздел, который читает «чужой» компонент, возвращает свои строки в первый вид его компонента.
 - **README.** Вес `en` — ≈29–31 КБ gzip, а не ≈20 (цифра отстала от словарей фаз 1 и 2).
+
+### `test:subpaths` · `en` считается отдельно (flow-size-infra)
+
+- Сценарии `config-subpath` и `config-root` сверяются с `JS_MAX` (60 КБ) **без** словаря `en`; вес `en` — разница сценариев `bare-app-en` и `bare-app` (приложение без кита и с `registerLocale(en)`), свой предел `EN_MAX` = 45 КБ gzip (замер 43,3 КБ плюс запас на рост кита ≈1,7 КБ; поднимать строкой в DECISIONS).
+- Новый сценарий `subpath-roadmap-edit`: `BaseRoadmap` с подпути в `mode: 'edit'` + `tokens.css`; выбор темы показывает вкладки (`.base-tabs`), в CSS приложения есть `.base-tabs`, `.base-textarea`, `.base-select`, `.base-input`.
+
+### Сборка · CSS ленивых частей у входа подпути (flow-size-infra, С2)
+
+- `collectStyleComponents` (`build/plugins/subpaths.ts`) обходит и модули по `import()` (после статических, в порядке обнаружения): вход подпути подключает стили внутренних компонентов ленивых частей (правка роадмапа — BaseTabs, BaseTextarea, BaseSelect, BaseInput, BaseInputNumber, BaseConfirm и др.). Раньше при точечной установке они отрисовывались без CSS.
+- Цена: CSS `BaseRoadmap` в `SIZES.md` 14,5 → 21,3 КБ (+6,8; в решении ожидалось ≤ +4 — ленивые части берут ещё BaseSwitch, BaseAvatar, BaseCommentThread, BaseDropdownMenu, BaseCheckbox…). Без этих стилей правка и «Правки» при точечной установке нарисованы неверно.
+
+### BaseRoadmap · строки отказа хуков (flow-size-infra, Р)
+
+- `HOOK_REASON_CHANGE`, `HOOK_REASON_DELETE`, `HOOK_REASON_STATUS`, `HOOK_REASON_ERROR` перенесены из раздела `roadmapEdit` в `roadmap` (`UI_ROADMAP.HOOK_REASON_*`, 6 языков). Приложение, которое подменяло эти строки через `defineLocale`, переносит их в раздел `roadmap`.

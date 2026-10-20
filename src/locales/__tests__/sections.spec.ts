@@ -3,9 +3,12 @@ import ts from 'typescript'
 import { resolve } from 'node:path'
 import * as messages from '../messages'
 import { readdirSync, readFileSync } from 'node:fs'
-import { createRuLocaleGroups } from '../../../build/config/build.lib'
 
 const LOCALES_DIR = resolve(__dirname, '..')
+/** Конфиг сборки лежит вне проекта `tsconfig.app.json`: путь не литерал, чтобы vue-tsc не включал его в программу */
+const BUILD_LIB = resolve(__dirname, '../../../build/config/build.lib.ts')
+type RuGroup = { name: string; test: (id: string) => boolean; priority: number }
+const { createRuLocaleGroups } = (await import(/* @vite-ignore */ BUILD_LIB)) as { createRuLocaleGroups: () => RuGroup[] }
 const NOT_SECTIONS = ['code', 'intl', 'firstDayOfWeek', 'calendarNames', 'relativeTime']
 
 function listFiles(dir: string): string[] {
@@ -65,7 +68,7 @@ describe('разделы словаря (sections/**)', () => {
 
 	it('раздел в messages.ts читает свой ключ языка', () => {
 		for (const section of SECTIONS) {
-			const value = (messages as Record<string, Record<string, string>>)[section.name!]
+			const value = (messages as unknown as Record<string, Record<string, string>>)[section.name!]
 			expect(Object.keys(value), section.name).toEqual(Object.keys((ru as unknown as Record<string, object>)[section.key!]))
 		}
 	})
