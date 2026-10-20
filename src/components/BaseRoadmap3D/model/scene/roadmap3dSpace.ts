@@ -14,7 +14,7 @@ export function toWorld(point: IslandPoint, y = 0): Vector3 {
 	return new Vector3(point.x, y, -point.z)
 }
 
-function worldBounds(bounds: IslandBounds): Box3 {
+export function worldBounds(bounds: IslandBounds): Box3 {
 	return new Box3(new Vector3(bounds.minX, -SLAB - STEP * 3, -bounds.maxZ), new Vector3(bounds.maxX, SKY, -bounds.minZ))
 }
 
