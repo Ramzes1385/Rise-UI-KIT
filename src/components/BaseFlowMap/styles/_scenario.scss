@@ -69,7 +69,7 @@
 
 	&__scenario-token-dot {
 		fill: var(--rise-flow-scenario-token, #{ct(flow-map, token-bg, var(--rise-primary))});
-		stroke: var(--rise-bg);
+		stroke: var(--rise-surface-bg, var(--rise-bg));
 		stroke-width: 1.5;
 	}
 
@@ -87,11 +87,9 @@
 		box-sizing: border-box;
 		min-width: 0;
 		padding: sz(14px) sz(12px) sz(8px);
-		border: 1px solid var(--rise-border);
-		border-radius: sz(var(--rise-radius-xl));
+		border-radius: sz(var(--rise-radius-lg));
 		color: var(--rise-text);
-		background-color: var(--rise-bg);
-		box-shadow: var(--rise-shadow-sm);
+		@include tonal-surface(page);
 		@include text-size(sm);
 
 		&--compact {
@@ -105,8 +103,7 @@
 			min-height: sz(60px);
 			padding-block: 0;
 			padding-inline: sz(8px) sz(6px);
-			border-radius: sz(18px);
-			box-shadow: var(--rise-shadow-lg);
+			@include floating-surface(null);
 		}
 	}
 
@@ -126,16 +123,12 @@
 	}
 
 	&__scenario-eyebrow {
-		color: var(--rise-text-muted);
-		font-size: sz(var(--rise-font-size-xs));
-		letter-spacing: 0.04em;
-		text-transform: uppercase;
+		@include caps-label;
 	}
 
 	&__scenario-name {
-		color: var(--rise-text-highlighted);
+		@include heading;
 		font-size: sz(15px);
-		font-weight: 600;
 	}
 
 	&__scenario-note {
@@ -162,7 +155,7 @@
 
 	&__scenario-segment {
 		block-size: sz(4px);
-		border-radius: sz(2px);
+		border-radius: sz(1px);
 		background-color: var(--rise-bg-accented);
 		@include transition-colors(var(--rise-duration-slow));
 
@@ -207,7 +200,7 @@
 		inline-size: 100%;
 		padding: sz(5px) sz(8px);
 		border: 0;
-		border-radius: sz(8px);
+		border-radius: sz(var(--rise-radius-sm));
 		color: var(--rise-text);
 		font: inherit;
 		text-align: start;
@@ -230,30 +223,27 @@
 		place-items: center;
 		inline-size: sz(22px);
 		block-size: sz(22px);
-		border: 1px solid var(--rise-border);
-		border-radius: 50%;
-		color: var(--rise-text);
+		border-radius: sz(var(--rise-radius-sm));
+		color: var(--rise-text-muted);
+		font-family: var(--rise-font-mono);
 		font-size: sz(11px);
-		font-weight: 600;
+		font-variant-numeric: tabular-nums;
 		background-color: var(--rise-bg-elevated);
 		@include transition-colors(var(--rise-duration-slow));
 
 		.base-flow-map__scenario-step--current & {
-			border-color: var(--rise-primary);
 			color: var(--rise-on-primary);
 			background-color: var(--rise-primary);
-			box-shadow: 0 0 0 4px var(--rise-primary-soft);
 		}
 
 		.base-flow-map__scenario-step--done & {
-			border-color: var(--rise-primary-border);
-			color: var(--rise-primary);
+			color: var(--rise-primary-text);
 			background-color: var(--rise-primary-soft);
 		}
 
 		.base-flow-map__scenario-step--failed & {
-			border-color: var(--rise-error);
-			color: var(--rise-error);
+			color: var(--rise-error-text);
+			background-color: var(--rise-error-soft);
 		}
 	}
 
@@ -281,10 +271,11 @@
 		color: var(--rise-text-muted);
 		font-family: var(--rise-font-mono);
 		font-size: sz(11px);
+		font-variant-numeric: tabular-nums;
 	}
 
 	&__scenario-step-failed {
-		color: var(--rise-error);
+		color: var(--rise-error-text);
 		font-size: sz(11px);
 		font-weight: 600;
 	}
@@ -293,7 +284,7 @@
 		flex: none;
 		inline-size: sz(44px);
 		block-size: sz(44px);
-		border-radius: 50%;
+		border-radius: sz(var(--rise-radius-md));
 	}
 
 	&__scenario-icon {

@@ -10,18 +10,16 @@
 		width: sz(ct(flow-map, minimap-width, 168px));
 		height: sz(ct(flow-map, minimap-height, 110px));
 		overflow: hidden;
-		border: 1px solid ct(flow-map, minimap-border, var(--rise-border));
+		border: 1px solid ct(flow-map, minimap-border, transparent);
 		border-radius: sz(ct(flow-map, minimap-radius, var(--rise-radius-lg)));
-		box-shadow: ct(flow-map, minimap-shadow, var(--rise-shadow-sm));
+		box-shadow: ct(flow-map, minimap-shadow, none);
+		@include tonal-surface(page);
 		background-color: ct(flow-map, minimap-bg, var(--rise-bg));
 		cursor: pointer;
 		touch-action: none;
 		user-select: none;
 
-		&:focus-visible {
-			outline: 2px solid var(--rise-primary);
-			outline-offset: 2px;
-		}
+		@include focus-ring;
 
 		&--dragging {
 			cursor: grabbing;
@@ -77,10 +75,11 @@
 		width: sz(ct(flow-map, legend-width, 204px));
 		max-width: calc(100% - #{sz(32px)});
 		padding: space(10px 12px);
-		border: 1px solid ct(flow-map, legend-border, var(--rise-border));
+		border: 1px solid ct(flow-map, legend-border, transparent);
 		border-radius: sz(ct(flow-map, legend-radius, var(--rise-radius-lg)));
-		box-shadow: ct(flow-map, legend-shadow, var(--rise-shadow-sm));
-		background-color: ct(flow-map, legend-bg, color-mix(in srgb, var(--rise-bg) 92%, transparent));
+		box-shadow: ct(flow-map, legend-shadow, none);
+		@include tonal-surface(page);
+		background-color: ct(flow-map, legend-bg, var(--rise-bg));
 		color: var(--rise-text);
 		font-size: sz(var(--rise-font-size-xs));
 		line-height: sz(var(--rise-line-height-xs));
@@ -103,10 +102,7 @@
 			font-weight: var(--rise-font-weight-medium);
 			cursor: pointer;
 
-			&:focus-visible {
-				outline: 2px solid var(--rise-primary);
-				outline-offset: -2px;
-			}
+			@include focus-ring(-2px);
 		}
 
 		&-list {
@@ -134,7 +130,7 @@
 		}
 
 		&-shape {
-			fill: var(--rise-bg);
+			fill: var(--rise-surface-raised);
 			stroke: var(--rise-text-highlighted);
 			stroke-width: 1.25px;
 
@@ -168,9 +164,10 @@
 		box-sizing: border-box;
 		flex: none;
 		padding: space(ct(flow-map, details-padding, 14px));
-		border: 1px solid ct(flow-map, details-border, var(--rise-border));
-		border-radius: sz(ct(flow-map, details-radius, var(--rise-radius-xl)));
-		box-shadow: ct(flow-map, details-shadow, var(--rise-shadow-lg));
+		border: 1px solid ct(flow-map, details-border, transparent);
+		border-radius: sz(ct(flow-map, details-radius, var(--rise-radius-lg)));
+		box-shadow: ct(flow-map, details-shadow, none);
+		@include tonal-surface(page);
 		background-color: ct(flow-map, details-bg, var(--rise-bg));
 		color: var(--rise-text);
 		animation: base-flow-map-details-in var(--rise-duration) var(--rise-ease);
@@ -196,10 +193,9 @@
 		}
 
 		&-name {
-			color: var(--rise-text-highlighted);
+			@include heading;
 			font-size: sz(var(--rise-font-size-md));
 			line-height: sz(var(--rise-line-height-md));
-			font-weight: var(--rise-font-weight-semibold);
 			overflow-wrap: anywhere;
 		}
 
@@ -224,7 +220,7 @@
 			font-size: sz(var(--rise-font-size-sm));
 
 			dt {
-				color: var(--rise-text-muted);
+				@include caps-label(10px);
 			}
 
 			dd {
@@ -295,9 +291,9 @@
 	position: absolute;
 	z-index: 3;
 	max-inline-size: sz(280px);
-	padding: sz(6px 10px);
-	border-radius: var(--rise-radius-md);
-	font-size: sz(var(--rise-font-size-xs));
+	padding: sz(6px 8px);
+	border-radius: sz(var(--rise-radius-sm));
+	@include text-size(xs);
 	color: var(--rise-text-inverted);
 	background-color: var(--rise-bg-inverted);
 	transform: translateX(-50%);

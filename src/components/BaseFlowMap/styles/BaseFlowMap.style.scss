@@ -16,7 +16,7 @@
 	max-width: 100%;
 	min-width: 0;
 	overflow: hidden;
-	border: 1px solid var(--rise-border);
+	border: 1px solid transparent;
 	border-radius: sz(var(--rise-radius-xl));
 	color: var(--rise-text);
 	background-color: var(--rise-flow-map-canvas-bg, var(--rise-bg-muted));

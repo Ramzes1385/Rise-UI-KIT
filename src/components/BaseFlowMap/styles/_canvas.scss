@@ -25,7 +25,7 @@
 		overflow: auto;
 		padding: sz(16px);
 		border-inline-start: 1px solid var(--rise-border);
-		background-color: var(--rise-bg-muted);
+		@include tonal-surface(muted);
 
 		&:not(:has(*)) {
 			display: none;
@@ -49,7 +49,9 @@
 		touch-action: none;
 		user-select: none;
 		cursor: grab;
-		background-image: radial-gradient(circle, ct(flow-map, canvas-border, var(--rise-border-accented)) 1px, transparent 1px);
+		background-image:
+			linear-gradient(to right, ct(flow-map, canvas-border, var(--rise-border)) 1px, transparent 1px),
+			linear-gradient(to bottom, ct(flow-map, canvas-border, var(--rise-border)) 1px, transparent 1px);
 		background-size: sz(24px) sz(24px);
 
 		&:active {
@@ -78,7 +80,7 @@
 		inset-inline-start: 0;
 		box-sizing: border-box;
 		border: 1px solid color-mix(in srgb, var(--flow-group-color, #{ct(flow-map, group-border, var(--rise-border))}) 40%, transparent);
-		border-radius: sz(ct(flow-map, group-radius, var(--rise-radius-xl)));
+		border-radius: sz(ct(flow-map, group-radius, var(--rise-radius-lg)));
 		background-color: ct(flow-map, group-bg, color-mix(in srgb, var(--flow-group-color, var(--rise-bg)) 5%, transparent));
 		pointer-events: none;
 
@@ -114,10 +116,7 @@
 		position: absolute;
 		display: flex;
 		align-items: center;
-		font-size: sz(var(--rise-font-size-xs));
-		font-weight: var(--rise-font-weight-semibold);
-		letter-spacing: 0.09em;
-		text-transform: uppercase;
+		@include caps-label;
 		color: var(--flow-group-color, #{ct(flow-map, group-text, var(--rise-text-muted))});
 		background-color: color-mix(in srgb, var(--flow-group-color, var(--rise-border)) 11%, transparent);
 		pointer-events: auto;
@@ -138,15 +137,12 @@
 		margin-inline-end: sz(4px);
 		padding: 0;
 		border: 0;
-		border-radius: var(--rise-radius-sm);
+		border-radius: sz(var(--rise-radius-sm));
 		color: inherit;
 		background: transparent;
 		cursor: pointer;
 
-		&:focus-visible {
-			outline: 2px solid var(--rise-focus-ring);
-			outline-offset: 1px;
-		}
+		@include focus-ring(1px);
 	}
 
 	&__group--header-start &__toggle {
@@ -169,9 +165,9 @@
 		inset-block-end: sz(12px);
 		inset-inline-start: 50%;
 		margin: 0;
-		padding: sz(6px 12px);
-		border-radius: var(--rise-radius-full);
-		font-size: sz(var(--rise-font-size-xs));
+		padding: sz(6px 8px);
+		border-radius: sz(var(--rise-radius-sm));
+		@include text-size(xs);
 		color: var(--rise-text-inverted);
 		background-color: var(--rise-bg-inverted);
 		transform: translateX(-50%);
@@ -198,7 +194,7 @@
 		overflow: auto;
 		border-top: 1px solid var(--rise-border);
 		font-size: sz(var(--rise-font-size-sm));
-		background-color: var(--rise-bg);
+		@include tonal-surface(page);
 
 		ul {
 			margin: 0;
@@ -219,7 +215,6 @@
 
 	&__list-title {
 		margin: sz(8px 0 4px);
-		font-size: sz(var(--rise-font-size-xs));
-		color: var(--rise-text-muted);
+		@include caps-label;
 	}
 }
