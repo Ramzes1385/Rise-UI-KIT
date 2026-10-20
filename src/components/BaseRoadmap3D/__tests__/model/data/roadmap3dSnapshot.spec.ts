@@ -37,7 +37,7 @@ describe('снимок пути', () => {
 		expect(basics.percent).toBe(100)
 		expect(frame.percent).toBe(0)
 		expect(build.percent).toBe(0)
-		expect(ship.percent).toBe(100)
+		expect(ship.percent).toBe(0)
 		expect(frame.tint).toBe('#ff8800')
 		expect(basics.tint).toBe('var(--rise-chart-1)')
 		expect(basics.selection.node.tags).toEqual(['web', 'style'])

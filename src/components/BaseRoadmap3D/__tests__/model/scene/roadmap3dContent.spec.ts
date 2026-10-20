@@ -89,4 +89,10 @@ describe('buildContent', () => {
 		expect(() => content.recolor(testPalette())).not.toThrow()
 		expect(() => content.dispose()).not.toThrow()
 	})
+
+	it('без деревьев и облаков перекраска не падает на пустых мешах', () => {
+		const content = buildContent(optionsFor(snapshotOf(), { detail: { hasTrees: false, hasClouds: false, hasShadows: false } }))
+		expect(() => content.recolor(testPalette())).not.toThrow()
+		content.dispose()
+	})
 })

@@ -214,4 +214,13 @@ describe('BaseRoadmap3D: данные и прогресс как у BaseRoadmap'
 		exposed.value?.setTopicStatus('vue', 'done')
 		await waitFor(() => expect(events['update:progress']?.length).toBeGreaterThan(0))
 	})
+
+	it('focus() у дескриптора модели фокусирует этап; getModel сцены на неизвестный id — null', async () => {
+		const onSceneReady = vi.fn((_context: unknown) => undefined)
+		const { exposed, events } = await env.renderRoadmap({ onSceneReady })
+		exposed.value?.getModel('frame')?.focus()
+		expect(events['update:focused']?.at(-1)).toEqual(['frame'])
+		const context = onSceneReady.mock.calls[0][0] as { getModel: (id: string) => unknown }
+		expect(context.getModel('нет')).toBeNull()
+	})
 })

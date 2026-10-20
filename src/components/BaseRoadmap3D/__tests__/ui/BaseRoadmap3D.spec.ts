@@ -246,6 +246,32 @@ describe('BaseRoadmap3D: слоты панели, требования и обр
 		expect((await screen.findAllByText('нет этапов', {}, { timeout: 20000 })).length).toBeGreaterThan(0)
 	})
 
+	it('2D-вид с выбранной темой получает слоты деталей и материала', async () => {
+		const data = {
+			...DATA_ROADMAP_3D,
+			stages: DATA_ROADMAP_3D.stages.map(stage =>
+				stage.id === 'frame'
+					? {
+							...stage,
+							topics: stage.topics.map(topic =>
+								topic.id === 'vue'
+									? {
+											...topic,
+											materials: [
+												{ id: 'm1', title: 'Документация', kind: 'article' as const, url: 'https://vuejs.org' },
+											],
+										}
+									: topic,
+							),
+						}
+					: stage,
+			),
+		}
+		await env.renderRoadmap({ data, view: '2d', layout: 'path', selected: 'vue' }, SLOTS)
+		expect((await screen.findAllByText('детали темы', {}, { timeout: 20000 })).length).toBeGreaterThan(0)
+		expect((await screen.findAllByText('свой материал', {}, { timeout: 20000 })).length).toBeGreaterThan(0)
+	})
+
 	it('pointercancel завершает жест так же, как pointerup', async () => {
 		await env.renderRoadmap()
 		const group = screen.getByRole('group', { name: 'Путь' })

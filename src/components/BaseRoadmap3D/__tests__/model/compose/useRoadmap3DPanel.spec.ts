@@ -129,3 +129,11 @@ describe('useRoadmap3DPanel: тема', () => {
 		expect(model.progress.value.topics.vue?.subtopics).toContain('vue-2')
 	})
 })
+
+describe('useRoadmap3DPanel: неизвестный фокус и требования', () => {
+	it('фокус на несуществующем этапе — панели нет', () => {
+		const { panel, focus } = mountPanel()
+		focus.focused.value = 'ghost'
+		expect(panel.stage.value).toBeNull()
+	})
+})

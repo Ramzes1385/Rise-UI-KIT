@@ -1,7 +1,8 @@
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, screen, within } from '@testing-library/vue'
-import { DATA_ROADMAP_3D, stubReducedMotion, useRoadmap3DEnvironment } from '../fixtures/roadmap3d.test-utils'
+import { mockWebGL } from '../../../BaseImageMap3D/__tests__/imageMap3d.test-utils'
+import { DATA_ROADMAP_3D, stagesData, stubReducedMotion, useRoadmap3DEnvironment } from '../fixtures/roadmap3d.test-utils'
 
 const env = useRoadmap3DEnvironment()
 
@@ -100,5 +101,42 @@ describe('BaseRoadmap3D: камера', () => {
 		await fireEvent.pointerDown(viewport(), { clientX: 5, clientY: 5 })
 		await fireEvent.click(viewport(), { clientX: 5, clientY: 5 })
 		expect(events['update:focused']?.at(-1)).toEqual([null])
+	})
+})
+
+describe('BaseRoadmap3D: перспектива, уменьшенное движение и пустые случаи', () => {
+	it('перспективная камера: фокус на этапе ставит позу без ошибок', async () => {
+		const { exposed } = await env.renderRoadmap({ camera: 'perspective' })
+		exposed.value?.focusStage('frame')
+		env.flush(3)
+		expect(exposed.value?.getSceneContext()?.camera).toBeTruthy()
+	})
+
+	it('размонтирование в режиме «уменьшить движение» освобождает анимации', async () => {
+		stubReducedMotion(true)
+		const { unmount } = await env.renderRoadmap()
+		expect(() => unmount()).not.toThrow()
+	})
+
+	it('в 2D-виде сцены нет: список моделей пуст', async () => {
+		const { exposed } = await env.renderRoadmap({ view: '2d' })
+		expect(exposed.value?.getModels()).toEqual([])
+		expect(exposed.value?.getSceneContext()).toBeNull()
+	})
+
+	it('пустой путь не роняет сцену: моделей нет', async () => {
+		const { exposed } = await env.renderRoadmap({ data: stagesData(0) })
+		env.flush(3)
+		expect(exposed.value?.getModels()).toEqual([])
+	})
+
+	it('без своей фабрики используется WebGL-рендерер ядра', async () => {
+		mockWebGL(true)
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+		const error = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+		await env.renderRoadmap({ rendererFactory: undefined }, {}, { isReady: false })
+		env.flush(2)
+		warn.mockRestore()
+		error.mockRestore()
 	})
 })

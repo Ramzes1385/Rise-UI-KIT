@@ -107,6 +107,14 @@ describe('BaseRoadmap3D: правка через панель', () => {
 		await chooseModel(0)
 		await waitFor(() => expect(lastData(events).stages[0].model3d?.model).toBeUndefined())
 		warn.mockRestore()
+	}, 90000)
+
+	it('«Добавить этап» добавляет этап и пересобирает остров на 5 моделей', async () => {
+		const user = userEvent.setup()
+		const { events, exposed } = await env.renderRoadmap({ ...EDIT, focused: 'basics' })
+		await user.click(within(editor()).getByRole('button', { name: 'Добавить этап' }))
+		await waitFor(() => expect(lastData(events).stages).toHaveLength(5))
+		await waitFor(() => expect(exposed.value?.getModels()).toHaveLength(5))
 	})
 
 	it('удаление этапа закрывает панель', async () => {

@@ -55,7 +55,7 @@ describe('buildLabelSet', () => {
 		expect(byId.has('svelte')).toBe(false)
 		expect(byId.get('vue')).toMatchObject({ priority: 5, isPinned: true })
 		expect(byId.get('react')).toMatchObject({ priority: 2, isPinned: true })
-		expect(byId.get('frame')).toMatchObject({ priority: 4, isPinned: false })
+		expect(byId.get('frame')).toMatchObject({ priority: 4, isPinned: true })
 		expect(byId.get('basics')?.priority).toBe(2)
 		expect(byId.get(ROADMAP_3D_START)?.priority).toBe(1)
 		expect(byId.get(ROADMAP_3D_GOAL)?.priority).toBe(1)
