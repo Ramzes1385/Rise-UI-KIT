@@ -3,6 +3,8 @@ import { ruCard } from './components/card'
 import { ruGantt } from './components/data/gantt'
 import { ruFlowMap } from './components/flow/map'
 import { ruRoadmap } from './components/data/roadmap'
+import { ruModels3d } from './components/models3d'
+import { ruScene3d } from './components/map/scene3d'
 import { ruTranscript } from './components/transcript'
 import { ruFlowEditor } from './components/flow/editor'
 import { ruFlowPanels } from './components/flow/panels'
@@ -139,6 +141,7 @@ export const ru = {
 	flowC4: ruFlowC4,
 	flowEventStorming: ruFlowEventStorming,
 	scene3d: ruScene3d,
+	models3d: ruModels3d,
 	chat: ruChat,
 	editor: ruEditor,
 	markdown: ruMarkdown,

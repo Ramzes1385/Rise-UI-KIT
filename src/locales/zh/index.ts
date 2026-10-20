@@ -9,6 +9,8 @@ import { zhNotices } from './components/notices'
 import { zhGantt } from './components/data/gantt'
 import { zhFlowMap } from './components/flow/map'
 import { zhRoadmap } from './components/data/roadmap'
+import { zhModels3d } from './components/models3d'
+import { zhScene3d } from './components/map/scene3d'
 import { zhTranscript } from './components/transcript'
 import { zhFlowEditor } from './components/flow/editor'
 import { zhFlowPanels } from './components/flow/panels'
@@ -60,6 +62,7 @@ export const zh: UiKitLocale = {
 	...zhFlowC4,
 	...zhFlowEventStorming,
 	...zhScene3d,
+	...zhModels3d,
 	...zhChat,
 	...zhData,
 	...zhEventCalendar,

@@ -24,6 +24,63 @@ export type Model3DAnimation = (typeof MODEL3D_ANIMATIONS)[number]
 export const MODEL3D_TONES = ['none', 'info', 'success', 'warning', 'danger', 'muted'] as const
 export type Model3DTone = (typeof MODEL3D_TONES)[number]
 
+/** Наборы встроенных моделей: service — карта, learning — пьедесталы роадмапа, base — запасные */
+export const MODEL3D_SETS = ['service', 'learning', 'base'] as const
+export type Model3DSet = (typeof MODEL3D_SETS)[number]
+
+/** Id встроенных моделей (ключи мокапа FlowModels3D, запасные и фигуры пьедесталов) */
+export const MODEL3D_PRESET_IDS = [
+	'laptop',
+	'phone',
+	'gateway',
+	'lock',
+	'cart',
+	'rack',
+	'terminal',
+	'bank',
+	'bell',
+	'ram',
+	'db',
+	'conveyor',
+	'globe',
+	'scales',
+	'search',
+	'analytics',
+	'bucket',
+	'mailbox',
+	'clock',
+	'scroll',
+	'monitor',
+	'ai',
+	'user',
+	'cloud',
+	'server',
+	'shape',
+	'window',
+	'code',
+	'gear',
+	'layers',
+	'flask',
+	'rocket',
+	'book',
+	'shield',
+	'flag',
+] as const
+export type Model3DPresetId = (typeof MODEL3D_PRESET_IDS)[number]
+
+/** Строка таблицы встроенных моделей: набор, вид, анимация по умолчанию и значок BaseIcon */
+export interface Model3DPresetInfo {
+	set: Model3DSet
+	/** Вид в палитре и библиотеке; у фигур пьедесталов и `shape` его нет */
+	kind: string | null
+	animation: Model3DAnimation
+	/** Имя значка BaseIcon: тот же смысл в 2D-нотации «сервисы» и в 3D */
+	icon: string
+}
+
+/** Модели по ключам: проп `models` компонента и `createScene3DModels` */
+export type Model3DDefinitions = Record<string, Model3DDefinition>
+
 export type Model3DDefinition = Model3DPresetDefinition | Model3DGltfDefinition | Model3DFactoryDefinition
 
 /** Общее у своих моделей (мокап FlowModels3D: `registerFlowModel(key, { words, kind, build, act })`) */

@@ -9,6 +9,8 @@ import { jaNotices } from './components/notices'
 import { jaGantt } from './components/data/gantt'
 import { jaFlowMap } from './components/flow/map'
 import { jaRoadmap } from './components/data/roadmap'
+import { jaModels3d } from './components/models3d'
+import { jaScene3d } from './components/map/scene3d'
 import { jaTranscript } from './components/transcript'
 import { jaFlowEditor } from './components/flow/editor'
 import { jaFlowPanels } from './components/flow/panels'
@@ -60,6 +62,7 @@ export const ja: UiKitLocale = {
 	...jaFlowC4,
 	...jaFlowEventStorming,
 	...jaScene3d,
+	...jaModels3d,
 	...jaChat,
 	...jaData,
 	...jaEventCalendar,

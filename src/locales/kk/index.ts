@@ -10,6 +10,8 @@ import { kkNotices } from './components/notices'
 import { kkGantt } from './components/data/gantt'
 import { kkFlowMap } from './components/flow/map'
 import { kkRoadmap } from './components/data/roadmap'
+import { kkModels3d } from './components/models3d'
+import { kkScene3d } from './components/map/scene3d'
 import { kkTranscript } from './components/transcript'
 import { kkFlowEditor } from './components/flow/editor'
 import { kkFlowPanels } from './components/flow/panels'
@@ -62,6 +64,7 @@ export const kk: UiKitLocale = {
 	...kkFlowC4,
 	...kkFlowEventStorming,
 	...kkScene3d,
+	...kkModels3d,
 	...kkChat,
 	...kkData,
 	...kkEventCalendar,

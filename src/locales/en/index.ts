@@ -9,6 +9,8 @@ import { enNotices } from './components/notices'
 import { enGantt } from './components/data/gantt'
 import { enFlowMap } from './components/flow/map'
 import { enRoadmap } from './components/data/roadmap'
+import { enModels3d } from './components/models3d'
+import { enScene3d } from './components/map/scene3d'
 import { enTranscript } from './components/transcript'
 import { enFlowEditor } from './components/flow/editor'
 import { enFlowPanels } from './components/flow/panels'
@@ -60,6 +62,7 @@ export const en: UiKitLocale = {
 	...enFlowC4,
 	...enFlowEventStorming,
 	...enScene3d,
+	...enModels3d,
 	...enChat,
 	...enData,
 	...enEventCalendar,

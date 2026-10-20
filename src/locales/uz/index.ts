@@ -10,6 +10,8 @@ import { uzNotices } from './components/notices'
 import { uzGantt } from './components/data/gantt'
 import { uzFlowMap } from './components/flow/map'
 import { uzRoadmap } from './components/data/roadmap'
+import { uzModels3d } from './components/models3d'
+import { uzScene3d } from './components/map/scene3d'
 import { uzTranscript } from './components/transcript'
 import { uzFlowEditor } from './components/flow/editor'
 import { uzFlowPanels } from './components/flow/panels'
@@ -62,6 +64,7 @@ export const uz: UiKitLocale = {
 	...uzFlowC4,
 	...uzFlowEventStorming,
 	...uzScene3d,
+	...uzModels3d,
 	...uzChat,
 	...uzData,
 	...uzEventCalendar,
