@@ -40,6 +40,31 @@ const LOCALE_GROUPS = ['en', 'kk', 'uz', 'zh', 'ja'].map(code => ({
 	test: new RegExp(`[\\/]src[\\/]locales[\\/]${code}[\\/]`),
 }))
 
+/**
+ * Общий код тяжёлых компонентов и их ленивых частей (`defineAsyncComponent(() => import(...))`, загрузчики по `import()`).
+ * Без групп rolldown клал такой код (контекст карты, легенду роадмапа) в чанк самого компонента, и ленивый чанк импортировал
+ * его обратно: компонент вызывает `import()` ленивого чанка, а тот статически импортирует чанк компонента. Приложение, которое
+ * берёт из корня пакета только `createUiKitConfig` или `en`, получало из-за такой петли все ленивые чанки (≈200 КБ gzip) без
+ * единого компонента: Vite 8 (rolldown) оставляет чанк по `import()`, если цель импортирует чанк его же вызывающего.
+ * Группа выносит общее в чанки без обратной связи. `entriesAware` обязателен: без него группа забирает и зависимости модулей
+ * (BaseButton, BaseIcon…) в один чанк, и плагин грузит его целиком (+15 КБ gzip в стартовом JS).
+ * Новый общий модуль ленивой части: `test:subpaths` покажет «в сборке есть чанки по import()» — добавь его сюда.
+ */
+const LAZY_SHARED_GROUPS = [
+	{
+		name: 'roadmap-shared',
+		test: /[\\/]BaseRoadmap[\\/](?:ui[\\/]parts[\\/](?:RoadmapLegend\.vue|notices[\\/])|model[\\/]view[\\/]format[\\/](?:roadmapLegend|roadmapText)\.ts)/,
+		priority: 10,
+		entriesAware: true,
+	},
+	{
+		name: 'flow-map-shared',
+		test: /[\\/]BaseFlowMap[\\/](?:model[\\/](?:context[\\/]flowContext|scenario[\\/]scenarioContext|notations[\\/](?:resolveKind|registry)|layout[\\/](?:compound|placement|useFlowLayout)|render[\\/]shapes[\\/]flowShapes|execute[\\/]flowReject|data[\\/](?:flowDiff|flowGraph|flowIds|flowValidate|flowMigrate|flowNormalize))\.ts|ui[\\/]canvas[\\/]FlowSvgNode\.vue)/,
+		priority: 10,
+		entriesAware: true,
+	},
+]
+
 /** Обойти `dir` и вернуть пути всех `.ts`-файлов (разделы словаря лежат по областям, в том числе во вложенных папках) */
 function listSectionFiles(dir: string): string[] {
 	return readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
@@ -126,7 +151,9 @@ export function createLibBuildConfig({ withSubpaths }: { withSubpaths: boolean }
 			output: {
 				entryFileNames: '[name].js',
 				chunkFileNames: 'chunks/[name]-[hash].js',
-				...(withSubpaths ? { codeSplitting: { groups: [...LOCALE_GROUPS, ...createRuLocaleGroups()] } } : createLazyGroups()),
+				...(withSubpaths
+					? { codeSplitting: { groups: [...LOCALE_GROUPS, ...createRuLocaleGroups(), ...LAZY_SHARED_GROUPS] } }
+					: createLazyGroups()),
 
 				assetFileNames: assetInfo => {
 					const name = assetInfo.name ?? ''
