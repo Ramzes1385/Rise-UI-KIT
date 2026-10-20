@@ -15,6 +15,7 @@ import { onBeforeUnmount, ref, shallowRef, useTemplateRef } from 'vue'
 import { SCENE_3D_CAMERA_PRESETS } from '@/scene3d/types/scene3d.types'
 import type { Scene3DCameraPreset } from '@/scene3d/types/scene3d.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import type { FlowMap3DEditLoaderInput } from '../types/internal/flowMap3dEdit.types'
 import type { BaseFlowMap3DEmits, FlowMap3DProps } from '../types/BaseFlowMap3D.types'
 import type { FlowMap3DComposeParts, FlowMap3DInput, FlowMap3DRefs } from '../types/internal/flowMap3dCompose.types'
 
@@ -74,6 +75,10 @@ function useStage(
 	})
 }
 
+function useEditor(parts: FlowMap3DComposeParts, scene: Pick<FlowMap3DEditLoaderInput, 'stage' | 'input' | 'ui'>) {
+	return useFlowMap3DEditLoader({ parts, ...scene, preload: loadEditUi })
+}
+
 export function useBaseFlowMap3D(props: FlowMap3DProps, emit: BaseFlowMap3DEmits) {
 	const base = useStandardBaseComponent('base-flow-map-3d', props, [...FLOW_MAP_3D_PARTS])
 	const parts = useParts(props, emit)
@@ -85,13 +90,7 @@ export function useBaseFlowMap3D(props: FlowMap3DProps, emit: BaseFlowMap3DEmits
 	onBeforeUnmount(() => input.value?.keyboard.stop())
 	const shell = useFlowMap3DShell(parts, stage, input.value)
 	const template = useFlowMap3DTemplate(parts, stage, { snapshot, classes: base.classes })
-	const editor = useFlowMap3DEditLoader({
-		parts,
-		stage: { ...stage, snapshot },
-		input: input.value,
-		ui: template.ui,
-		preload: loadEditUi,
-	})
+	const editor = useEditor(parts, { stage: { ...stage, snapshot }, input: input.value, ui: template.ui })
 	const { edit, panels: editPanels } = editor
 
 	return {

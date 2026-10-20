@@ -170,6 +170,7 @@ describe('палитра моделей', () => {
 				getModels: () => ({ mine: { create: () => null } }) as never,
 				getSelected: () => 'own',
 				getResolved: id => (id === 'b' ? 'queue' : null),
+				appModels: {},
 			}),
 		)
 		expect(palette.keyOf('own')).toBe('database')
@@ -188,7 +189,13 @@ describe('палитра моделей', () => {
 
 	it('без выбранного узла текущей модели нет', () => {
 		const palette = insideComponent(() =>
-			useModelPalette({ model: modelOf(), getModels: () => undefined, getSelected: () => null, getResolved: () => null }),
+			useModelPalette({
+				model: modelOf(),
+				appModels: {},
+				getModels: () => undefined,
+				getSelected: () => null,
+				getResolved: () => null,
+			}),
 		)
 		expect(palette.currentTitle.value).toBe('')
 	})
