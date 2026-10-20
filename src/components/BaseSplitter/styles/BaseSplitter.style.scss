@@ -77,7 +77,7 @@
 
 	&__handle {
 		position: relative;
-		border-radius: ct(splitter-handle, radius, var(--rise-radius-full));
+		border-radius: sz(ct(splitter-handle, radius, var(--rise-radius-xs)));
 		background-color: ct(splitter-handle, bg, var(--rise-border-accented));
 		@include transition-colors;
 	}

@@ -182,7 +182,7 @@
 	}
 
 	&__link--active &__icon-wrap {
-		color: var(--custom-bg-active, var(--rise-primary));
+		color: var(--custom-bg-active, var(--rise-primary-text));
 	}
 
 	&__link--active#{&}__link--disabled &__icon-wrap {

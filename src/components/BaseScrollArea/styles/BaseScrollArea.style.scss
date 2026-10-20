@@ -62,7 +62,7 @@
 
 	&__thumb {
 		position: absolute;
-		border-radius: ct(scroll-area-thumb, radius, var(--rise-radius-full));
+		border-radius: sz(ct(scroll-area-thumb, radius, var(--rise-radius-xs)));
 		background-color: ct(scroll-area-thumb, bg, var(--rise-border-accented));
 		@include transition-colors;
 

@@ -11,6 +11,7 @@
 
 	&--soft {
 		border-top-color: transparent;
+		@include tonal-surface(muted);
 		@include custom-bg(background-color, var(--rise-bg-muted));
 	}
 
@@ -76,8 +77,8 @@
 
 	&__column-title {
 		margin: 0 0 sz(12px);
-		font-weight: ct(footer-column-title, font-weight, var(--rise-font-weight-semibold));
-		@include custom-text(color, ct(footer-column-title, text, var(--rise-text)));
+		@include caps-label;
+		@include custom-text(color, ct(footer-column-title, text, var(--rise-text-muted)));
 	}
 
 	&__links {

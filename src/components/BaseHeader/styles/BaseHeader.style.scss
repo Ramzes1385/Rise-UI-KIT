@@ -11,6 +11,7 @@
 
 	&--soft {
 		border-bottom-color: transparent;
+		@include tonal-surface(muted);
 		@include custom-bg(background-color, var(--rise-bg-muted));
 	}
 
@@ -41,6 +42,7 @@
 	}
 
 	&__title {
+		@include heading;
 		font-size: sz(ct(header-title, font-size, var(--rise-font-size-md)));
 		line-height: sz(var(--rise-line-height-md));
 		font-weight: ct(header-title, font-weight, var(--rise-font-weight-semibold));
