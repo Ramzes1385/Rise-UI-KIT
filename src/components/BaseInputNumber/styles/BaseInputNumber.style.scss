@@ -14,8 +14,8 @@
 		border-radius: 0;
 		@include custom-text(color, ct(input-number, button-text, var(--rise-text-muted)));
 		@include custom-bg(background-color, ct(input-number, button-bg, transparent));
-		@include custom-bg-hover(background-color, ct(input-number, button-bg-hover, var(--rise-bg-elevated)));
-		@include custom-bg-active(background-color, ct(input-number, button-bg-active, var(--rise-bg-elevated)));
+		@include custom-bg-hover(background-color, ct(input-number, button-bg-hover, var(--rise-bg-accented)));
+		@include custom-bg-active(background-color, ct(input-number, button-bg-active, var(--rise-bg-accented)));
 
 		.base-icon__svg {
 			width: ct(input-number, button-icon-size, sz(20px));

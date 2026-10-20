@@ -66,11 +66,11 @@
 		color: ct(search, result-text, var(--rise-text));
 
 		@include hover {
-			background-color: ct(search, result-bg-hover, var(--rise-bg-elevated));
+			background-color: ct(search, result-bg-hover, var(--rise-surface-floating-hover));
 		}
 
 		&--highlighted {
-			background-color: ct(search, result-bg-selected, var(--rise-bg-elevated));
+			background-color: ct(search, result-bg-selected, var(--rise-surface-floating-hover));
 			color: var(--rise-text-highlighted);
 		}
 	}
@@ -79,6 +79,7 @@
 		flex-shrink: 0;
 		width: sz(32px);
 		height: sz(32px);
+		border-radius: sz(var(--rise-radius-sm));
 	}
 
 	&__result-icon {
@@ -160,15 +161,15 @@
 
 	&__modal.base-modal__content,
 	&__sidebar.base-slideover__panel {
-		border: 1px solid ct(search, panel-border, var(--rise-border));
-		background-color: ct(search, panel-bg, var(--rise-bg));
+		border: 0;
+		background-color: ct(search, panel-bg, var(--rise-surface-dialog));
 		color: var(--rise-text);
 		box-shadow: ct(search, panel-shadow, var(--rise-shadow-xl));
 	}
 
 	&__modal.base-modal__content {
 		max-width: sz(640px);
-		border-radius: sz(ct(search, panel-radius, var(--rise-radius-lg)));
+		border-radius: sz(ct(search, panel-radius, var(--rise-radius-xl)));
 	}
 
 	&__modal .base-modal__body,
@@ -214,8 +215,6 @@
 	&__sidebar.base-slideover__panel {
 		width: sz(380px);
 		max-width: 90vw;
-		border-width: 0;
-		border-inline-start-width: 1px;
 		border-radius: 0;
 	}
 
@@ -230,7 +229,7 @@
 	--dd-pad-bottom: #{ct(search, panel-padding, 4px)};
 	--dd-pad-left: #{ct(search, panel-padding, 4px)};
 
-	border-radius: sz(ct(search, panel-radius, var(--rise-radius-md)));
+	border-radius: sz(ct(search, panel-radius, var(--rise-radius-lg)));
 	background-color: ct(search, panel-bg, var(--dd-bg));
 }
 

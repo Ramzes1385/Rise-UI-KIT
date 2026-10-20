@@ -43,10 +43,13 @@
 		.base-badge {
 			height: sz(ct(input-tags, tag-height, 22px));
 			padding-inline-start: sz(ct(input-tags, tag-padding-x, 8px));
-			border-color: ct(input-tags, tag-border, var(--rise-border));
+			border-color: ct(input-tags, tag-border, transparent);
 			border-radius: sz(ct(input-tags, tag-radius, var(--rise-radius-sm)));
-			background-color: ct(input-tags, tag-bg, var(--rise-bg-elevated));
+			background-color: ct(input-tags, tag-bg, var(--rise-bg-accented));
 			color: ct(input-tags, tag-text, var(--rise-text-highlighted));
+			font-family: var(--rise-font-sans);
+			text-transform: none;
+			letter-spacing: normal;
 			@include text-size(xs);
 		}
 	}
@@ -55,7 +58,7 @@
 		color: var(--rise-text-muted);
 
 		@include hover {
-			background-color: ct(input-tags, remove-bg-hover, var(--rise-bg-accented));
+			background-color: ct(input-tags, remove-bg-hover, var(--rise-bg-elevated));
 			color: var(--rise-text-highlighted);
 		}
 	}

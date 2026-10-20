@@ -38,7 +38,7 @@
 		color: ct(autocomplete, option-text, var(--rise-text));
 
 		@include hover {
-			background-color: ct(autocomplete, option-bg-hover, var(--rise-bg-elevated));
+			background-color: ct(autocomplete, option-bg-hover, var(--rise-surface-floating-hover));
 		}
 
 		&--selected {
@@ -47,7 +47,7 @@
 		}
 
 		&--active {
-			background-color: ct(autocomplete, option-bg-hover, var(--rise-bg-elevated));
+			background-color: ct(autocomplete, option-bg-hover, var(--rise-surface-floating-hover));
 			color: var(--rise-text-highlighted);
 		}
 

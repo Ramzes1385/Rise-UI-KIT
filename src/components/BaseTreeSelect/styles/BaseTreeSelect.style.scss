@@ -36,10 +36,6 @@
 		@include field-box(tree-select);
 	}
 
-	&--open &__trigger {
-		@include field-open(tree-select);
-	}
-
 	&__values {
 		display: flex;
 		flex: 1;
@@ -109,48 +105,33 @@
 		}
 	}
 
-	&--outline &__trigger {
-		@include custom-bg(background-color, transparent);
+	&--soft &__trigger {
+		@include field-variant(tree-select, soft);
 	}
 
-	&--soft &__trigger {
-		border-color: transparent;
-		@include custom-bg(background-color, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg)));
-
-		@include hover {
-			@include custom-bg(background-color, var(--rise-bg-elevated));
-		}
+	&--outline &__trigger {
+		@include field-variant(tree-select, outline);
 	}
 
 	&--ghost &__trigger {
-		border-color: transparent;
-		@include custom-bg(background-color, transparent);
-
-		@include hover {
-			@include custom-bg(background-color, var(--rise-bg-elevated));
-		}
-	}
-
-	&--soft &__trigger:focus-within,
-	&--ghost &__trigger:focus-within,
-	&--soft.base-tree-select--open &__trigger,
-	&--ghost.base-tree-select--open &__trigger {
-		@include custom-bg(background-color, var(--rise-bg-elevated));
+		@include field-variant(tree-select, ghost);
 	}
 
 	&--shadow &__trigger {
-		box-shadow: var(--rise-shadow-xs);
+		@include field-variant(tree-select, shadow);
 	}
 
 	&--underline &__trigger {
 		padding-inline: 0;
-		border-width: 0 0 1px;
-		border-radius: 0;
-		@include custom-bg(background-color, transparent);
+		@include field-variant(tree-select, underline);
+	}
 
-		&:focus-within {
-			@include field-open(tree-select, true);
-		}
+	&--open &__trigger {
+		@include field-open(tree-select);
+	}
+
+	&--ghost.base-tree-select--open &__trigger {
+		@include custom-bg(background-color, var(--rise-bg-elevated));
 	}
 
 	&--underline.base-tree-select--open &__trigger {
@@ -165,6 +146,12 @@
 	&--error.base-tree-select--open &__trigger {
 		border-color: var(--rise-error);
 		box-shadow: 0 0 0 1px var(--rise-error);
+	}
+
+	&--error.base-tree-select--underline &__trigger,
+	&--error.base-tree-select--underline &__trigger:focus-within,
+	&--error.base-tree-select--underline.base-tree-select--open &__trigger {
+		border-color: transparent transparent var(--rise-error);
 	}
 
 	&--error.base-tree-select--underline &__trigger:focus-within,
@@ -226,10 +213,10 @@
 	&__node {
 		@include menu-item;
 		padding-inline-start: calc(var(--base-tree-select-depth, 0) * #{sz(20px)} + #{sz(4px)});
-		border-radius: sz(ct(tree-select, node-radius, var(--rise-radius-md)));
+		border-radius: sz(ct(tree-select, node-radius, var(--rise-radius-sm)));
 
 		&--active {
-			background-color: ct(tree-select, node-bg-active, var(--rise-bg-elevated));
+			background-color: ct(tree-select, node-bg-active, var(--rise-surface-floating-hover));
 			color: var(--rise-text-highlighted);
 		}
 
@@ -267,9 +254,9 @@
 		box-sizing: border-box;
 		width: sz(16px);
 		height: sz(16px);
-		border: 1px solid var(--rise-border-accented);
-		border-radius: sz(var(--rise-radius-sm));
-		background-color: var(--rise-bg);
+		border: sz(1.5px) solid var(--rise-border-control);
+		border-radius: calc(#{sz(var(--rise-radius-sm))} - 1px);
+		background-color: transparent;
 		color: var(--rise-on-primary);
 		@include transition-colors;
 	}

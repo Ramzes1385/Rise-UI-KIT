@@ -14,8 +14,8 @@
 
 	&__input {
 		box-sizing: border-box;
-		width: sz(ct(pin, width, 32px));
-		height: sz(ct(pin, height, 32px));
+		width: sz(ct(pin, width, var(--rise-control-height)));
+		height: sz(ct(pin, height, var(--rise-control-height)));
 		margin: 0;
 		padding: 0;
 		color: inherit;
@@ -40,7 +40,7 @@
 	}
 
 	&__input--filled {
-		border-color: ct(pin, border-checked, ct(pin, border, var(--rise-border-accented)));
+		border-color: ct(pin, border-checked, ct(pin, border, transparent));
 	}
 
 	&__input--pop {
@@ -49,35 +49,20 @@
 		}
 	}
 
-	&--outline &__input {
-		@include custom-bg(background-color, transparent);
+	&--soft &__input {
+		@include field-variant(pin, soft);
 	}
 
-	&--soft &__input {
-		border-color: transparent;
-		@include custom-bg(background-color, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg)));
-
-		@include hover {
-			@include custom-bg(background-color, var(--rise-bg-elevated));
-		}
+	&--outline &__input {
+		@include field-variant(pin, outline);
 	}
 
 	&--ghost &__input {
-		border-color: transparent;
-		@include custom-bg(background-color, transparent);
-
-		@include hover {
-			@include custom-bg(background-color, var(--rise-bg-elevated));
-		}
-	}
-
-	&--soft &__input:focus,
-	&--ghost &__input:focus {
-		@include custom-bg(background-color, var(--rise-bg-elevated));
+		@include field-variant(pin, ghost);
 	}
 
 	&--shadow &__input {
-		box-shadow: var(--rise-shadow-xs);
+		@include field-variant(pin, shadow);
 	}
 
 	&--error &__input {

@@ -20,7 +20,7 @@
 		@include transition-colors;
 
 		@include hover {
-			background-color: ct(phone-input, trigger-bg-hover, color-mix(in srgb, var(--rise-bg-elevated) 70%, transparent));
+			background-color: ct(phone-input, trigger-bg-hover, var(--rise-bg-accented));
 		}
 
 		&:focus-visible {
@@ -97,7 +97,7 @@
 		color: ct(phone-input, option-text, var(--rise-text));
 
 		@include hover {
-			background-color: ct(phone-input, option-bg-hover, var(--rise-bg-elevated));
+			background-color: ct(phone-input, option-bg-hover, var(--rise-surface-floating-hover));
 		}
 
 		&--selected {
@@ -107,7 +107,7 @@
 		}
 
 		&--active {
-			background-color: ct(phone-input, option-bg-hover, var(--rise-bg-elevated));
+			background-color: ct(phone-input, option-bg-hover, var(--rise-surface-floating-hover));
 			color: var(--rise-text-highlighted);
 		}
 	}

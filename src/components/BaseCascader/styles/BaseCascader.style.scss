@@ -36,10 +36,6 @@
 		@include field-box(cascader);
 	}
 
-	&--open &__trigger {
-		@include field-open(cascader);
-	}
-
 	&__values {
 		display: flex;
 		flex: 1;
@@ -105,48 +101,33 @@
 		}
 	}
 
-	&--outline &__trigger {
-		@include custom-bg(background-color, transparent);
+	&--soft &__trigger {
+		@include field-variant(cascader, soft);
 	}
 
-	&--soft &__trigger {
-		border-color: transparent;
-		@include custom-bg(background-color, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg)));
-
-		@include hover {
-			@include custom-bg(background-color, var(--rise-bg-elevated));
-		}
+	&--outline &__trigger {
+		@include field-variant(cascader, outline);
 	}
 
 	&--ghost &__trigger {
-		border-color: transparent;
-		@include custom-bg(background-color, transparent);
-
-		@include hover {
-			@include custom-bg(background-color, var(--rise-bg-elevated));
-		}
-	}
-
-	&--soft &__trigger:focus-within,
-	&--ghost &__trigger:focus-within,
-	&--soft.base-cascader--open &__trigger,
-	&--ghost.base-cascader--open &__trigger {
-		@include custom-bg(background-color, var(--rise-bg-elevated));
+		@include field-variant(cascader, ghost);
 	}
 
 	&--shadow &__trigger {
-		box-shadow: var(--rise-shadow-xs);
+		@include field-variant(cascader, shadow);
 	}
 
 	&--underline &__trigger {
 		padding-inline: 0;
-		border-width: 0 0 1px;
-		border-radius: 0;
-		@include custom-bg(background-color, transparent);
+		@include field-variant(cascader, underline);
+	}
 
-		&:focus-within {
-			@include field-open(cascader, true);
-		}
+	&--open &__trigger {
+		@include field-open(cascader);
+	}
+
+	&--ghost.base-cascader--open &__trigger {
+		@include custom-bg(background-color, var(--rise-bg-elevated));
 	}
 
 	&--underline.base-cascader--open &__trigger {
@@ -161,6 +142,12 @@
 	&--error.base-cascader--open &__trigger {
 		border-color: var(--rise-error);
 		box-shadow: 0 0 0 1px var(--rise-error);
+	}
+
+	&--error.base-cascader--underline &__trigger,
+	&--error.base-cascader--underline &__trigger:focus-within,
+	&--error.base-cascader--underline.base-cascader--open &__trigger {
+		border-color: transparent transparent var(--rise-error);
 	}
 
 	&--error.base-cascader--underline &__trigger:focus-within,
@@ -250,12 +237,13 @@
 		@include menu-item;
 
 		&--expanded {
-			background-color: ct(cascader, option-bg-open, var(--rise-bg-elevated));
+			background-color: ct(cascader, option-bg-open, var(--rise-surface-floating-hover));
 		}
 
 		&--active {
-			background-color: ct(cascader, option-bg-active, var(--rise-bg-elevated));
-			box-shadow: inset 0 0 0 1px var(--rise-border-accented);
+			outline: 2px solid var(--rise-focus-ring);
+			outline-offset: -2px;
+			background-color: ct(cascader, option-bg-active, var(--rise-surface-floating-hover));
 			color: var(--rise-text-highlighted);
 		}
 
@@ -312,9 +300,9 @@
 		box-sizing: border-box;
 		width: sz(16px);
 		height: sz(16px);
-		border: 1px solid var(--rise-border-accented);
-		border-radius: sz(var(--rise-radius-sm));
-		background-color: var(--rise-bg);
+		border: sz(1.5px) solid var(--rise-border-control);
+		border-radius: calc(#{sz(var(--rise-radius-sm))} - 1px);
+		background-color: transparent;
 		color: var(--rise-on-primary);
 		@include transition-colors;
 	}

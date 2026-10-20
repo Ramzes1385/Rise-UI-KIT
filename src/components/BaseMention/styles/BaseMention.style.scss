@@ -44,10 +44,9 @@
 		box-sizing: border-box;
 		width: min(100%, #{sz(320px)});
 		overflow: hidden;
-		background-color: ct(mention, popup-bg, var(--rise-bg));
-		color: var(--rise-text);
-		border: 1px solid var(--rise-border);
-		border-radius: sz(ct(mention, popup-radius, var(--rise-radius-md)));
+		@include floating-surface(null);
+		background-color: ct(mention, popup-bg, var(--rise-surface-floating));
+		border-radius: sz(ct(mention, popup-radius, var(--rise-radius-lg)));
 		box-shadow: ct(mention, popup-shadow, var(--rise-shadow-lg));
 		transform-origin: top left;
 	}
@@ -70,11 +69,11 @@
 		color: ct(mention, option-text, var(--rise-text));
 
 		@include hover {
-			background-color: ct(mention, option-bg-hover, var(--rise-bg-elevated));
+			background-color: ct(mention, option-bg-hover, var(--rise-surface-floating-hover));
 		}
 
 		&--active {
-			background-color: ct(mention, option-bg-hover, var(--rise-bg-elevated));
+			background-color: ct(mention, option-bg-hover, var(--rise-surface-floating-hover));
 			color: var(--rise-text-highlighted);
 		}
 	}
@@ -126,18 +125,16 @@
 		@include text-size(sm);
 	}
 
-	&--outline &__control {
-		@include custom-bg(background-color, transparent);
+	&--soft &__control {
+		@include field-variant(mention, soft);
 	}
 
-	&--soft &__control {
-		border-color: transparent;
-		@include custom-bg(background-color, var(--rise-bg-elevated));
+	&--outline &__control {
+		@include field-variant(mention, outline);
 	}
 
 	&--ghost &__control {
-		border-color: transparent;
-		@include custom-bg(background-color, transparent);
+		@include field-variant(mention, ghost);
 	}
 
 	&--error &__control {
