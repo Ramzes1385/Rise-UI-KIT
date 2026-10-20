@@ -26,7 +26,7 @@ export const ReviewFilters: StoryObj<typeof meta> = {
 		template: reviewTemplate,
 	}),
 	play: async ({ canvas, userEvent }) => {
-		await userEvent.click(canvas.getByRole('radio', { name: 'Только мои' }))
+		await userEvent.click(await canvas.findByRole('radio', { name: 'Только мои' }))
 		await waitFor(() => expect(canvas.queryByRole('button', { name: 'Уточнить подпись Notifications' })).toBeNull())
 		await expect(canvas.getByRole('button', { name: 'Переименовать Payments в Billing' })).toBeVisible()
 		await userEvent.click(canvas.getByRole('radio', { name: 'Всё' }))

@@ -4,7 +4,7 @@ import type { StoryObj } from '@storybook/vue3-vite'
 import BaseFlowMap from '../../../ui/BaseFlowMap.vue'
 import { PARALLEL_MAP } from '../../fixtures/scenarios'
 import { storySource, useStorySetup } from '@/stories/helpers'
-import { compactTotal, isCompact, panelButton, scenarioPanel, scenarioStep, scenarioSteps } from '../../scenarioShared'
+import { compactTotal, isCompact, panelButton, scenarioPanel, scenarioStep, scenarioSteps, waitScenario } from '../../scenarioShared'
 
 const template = `
 	<BaseFlowMap v-bind="args" />
@@ -30,9 +30,11 @@ export const ParallelBranches: StoryObj<typeof meta> = {
 	}),
 	play: async ({ canvas, canvasElement, userEvent }) => {
 		if (await isCompact(canvasElement)) {
+			await waitScenario(canvas, true)
 			await expect(await compactTotal(canvas, userEvent)).toBe(7)
 			return
 		}
+		await waitScenario(canvas)
 		await expect(scenarioSteps(canvas)).toHaveLength(7)
 		await userEvent.click(scenarioStep(canvas, /Orders → Inventory/))
 		await expect(scenarioPanel(canvas)).toHaveAttribute('data-status', 'paused')

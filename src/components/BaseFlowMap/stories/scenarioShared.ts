@@ -12,6 +12,9 @@ export const isCompact = async (canvasElement: HTMLElement): Promise<boolean> =>
 	return true
 }
 
+export const waitScenario = async (canvas: StoryCanvas, compact = false): Promise<HTMLElement> =>
+	compact ? canvas.findByRole('group', { name: 'Сценарий' }) : canvas.findByRole('region', { name: 'Сценарий' })
+
 export const scenarioPanel = (canvas: StoryCanvas): HTMLElement => canvas.getByRole('region', { name: 'Сценарий' })
 
 export const scenarioStep = (canvas: StoryCanvas, title: RegExp | string): HTMLElement =>
@@ -35,7 +38,7 @@ type PlayContext = { canvas: StoryCanvas; canvasElement: HTMLElement; userEvent:
 
 export const expectDetails = async ({ canvas, canvasElement, userEvent }: PlayContext, text: string | RegExp): Promise<void> => {
 	if (!(await isCompact(canvasElement))) {
-		await expect(canvas.getByRole('region', { name: 'Подробности узла' })).toHaveTextContent(text)
+		await expect(await canvas.findByRole('region', { name: 'Подробности узла' })).toHaveTextContent(text)
 		return
 	}
 	await expect(await screen.findByRole('dialog')).toHaveTextContent(text)

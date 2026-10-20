@@ -28,10 +28,10 @@ export const Comments: StoryObj<typeof meta> = {
 	}),
 	play: async ({ canvas, canvasElement, userEvent }) => {
 		if (await isCompact(canvasElement)) {
-			await expect(canvas.getByRole('tab', { name: /Комментарии/ })).toBeVisible()
+			await expect(await canvas.findByRole('tab', { name: /Комментарии/ })).toBeVisible()
 			return
 		}
-		await userEvent.click(canvas.getByRole('tab', { name: /Комментарии/ }))
+		await userEvent.click(await canvas.findByRole('tab', { name: /Комментарии/ }))
 		await waitFor(() => expect(canvas.getByRole('tab', { name: /Комментарии/ })).toHaveAttribute('aria-selected', 'true'))
 		await waitFor(() => expect(canvas.getAllByRole('button', { name: 'Решено' })).toHaveLength(2))
 		await waitFor(() => expect(canvas.getByRole('button', { name: 'Вернуть' })).toBeVisible())

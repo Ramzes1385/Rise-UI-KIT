@@ -6,7 +6,7 @@ import { flowNode, flowNodes } from '../../../shared'
 import BaseFlowMap from '../../../../ui/BaseFlowMap.vue'
 import { storySource, useStorySetup } from '@/stories/helpers'
 import { RETURN_PROCESS } from '../../../fixtures/process/bpmn'
-import { isCompact, scenarioPanel, scenarioStep, scenarioSteps } from '../../../scenarioShared'
+import { isCompact, scenarioPanel, scenarioStep, scenarioSteps, waitScenario } from '../../../scenarioShared'
 
 const template = `
 	<BaseFlowMap v-bind="args" :notations="[flowBpmn]" />
@@ -34,7 +34,10 @@ export const Bpmn: StoryObj<typeof meta> = {
 	}),
 	play: async ({ canvas, canvasElement, userEvent }) => {
 		await expect(flowNodes(canvas)).toHaveLength(17)
-		if (!(await isCompact(canvasElement))) await expect(scenarioSteps(canvas)).toHaveLength(15)
+		if (!(await isCompact(canvasElement))) {
+			await waitScenario(canvas)
+			await expect(scenarioSteps(canvas)).toHaveLength(15)
+		}
 		await expect(canvas.getAllByRole('graphics-object', { name: /^Клиент/ })[0]).toBeVisible()
 		await expect(canvas.getAllByRole('graphics-object', { name: /^Интернет-магазин/ })[0]).toBeVisible()
 		await expect(flowNode(canvas, 'Заявка корректна?')).toBeVisible()

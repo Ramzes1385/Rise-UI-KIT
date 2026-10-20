@@ -42,7 +42,7 @@ export const EditMultiSelect: StoryObj<typeof meta> = {
 		for (const name of names.slice(1)) await userEvent.click(flowNode(canvas, name))
 		await userEvent.keyboard('{/Shift}')
 		await expectStatus(canvas, 'Выделено: 3')
-		const inspector = canvas.getByRole('region', { name: 'Свойства и хуки' })
+		const inspector = await canvas.findByRole('region', { name: 'Свойства и хуки' })
 		await expect(within(inspector).getByText('Общие свойства')).toBeVisible()
 		await expect(within(inspector).getByText('Выбрано элементов: 3')).toBeVisible()
 		await expect(Math.abs(gaps(canvas, names)[0] - gaps(canvas, names)[1])).toBeGreaterThan(5)

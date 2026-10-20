@@ -30,10 +30,10 @@ export const Review: StoryObj<typeof meta> = {
 	}),
 	play: async ({ canvas, canvasElement, userEvent }) => {
 		if (await isCompact(canvasElement)) {
-			await expect(canvas.getByRole('tab', { name: /Предложения/ })).toBeVisible()
+			await expect(await canvas.findByRole('tab', { name: /Предложения/ })).toBeVisible()
 			return
 		}
-		await expect(canvas.getByRole('tab', { name: /Предложения 4/ })).toHaveAttribute('aria-selected', 'true')
+		await expect(await canvas.findByRole('tab', { name: /Предложения 4/ })).toHaveAttribute('aria-selected', 'true')
 		await expect(canvas.getByRole('button', { name: 'Принять все: 3' })).toBeVisible()
 		const accept = canvas.getAllByRole('button', { name: 'Принять' })
 		await expect(accept).toHaveLength(4)

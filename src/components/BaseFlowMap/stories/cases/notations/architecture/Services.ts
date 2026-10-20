@@ -35,7 +35,7 @@ export const Services: StoryObj<typeof meta> = {
 		if (await isCompact(canvasElement)) {
 			await expectDetails({ canvas, canvasElement, userEvent }, 'Задержки')
 		} else {
-			const details = canvas.getByRole('region', { name: 'Подробности узла' })
+			const details = await canvas.findByRole('region', { name: 'Подробности узла' })
 			await expect(details).toHaveTextContent('Задержки')
 			await expect(within(details).getByText('Вызывает')).toBeVisible()
 			await expect(details).toHaveTextContent('Банк')

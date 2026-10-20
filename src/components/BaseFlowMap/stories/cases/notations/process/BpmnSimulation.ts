@@ -6,7 +6,7 @@ import type { StoryObj } from '@storybook/vue3-vite'
 import BaseFlowMap from '../../../../ui/BaseFlowMap.vue'
 import { storySource, useStorySetup } from '@/stories/helpers'
 import { RETURN_PROCESS_PLAIN } from '../../../fixtures/process/bpmn'
-import { compactTotal, isCompact, scenarioPanel, scenarioSteps } from '../../../scenarioShared'
+import { compactTotal, isCompact, scenarioSteps, waitScenario } from '../../../scenarioShared'
 
 const template = `
 	<div class="story-stack">
@@ -43,6 +43,7 @@ export const BpmnSimulation: StoryObj<typeof meta> = {
 	}),
 	play: async ({ canvas, canvasElement, userEvent }) => {
 		if (await isCompact(canvasElement)) {
+			await waitScenario(canvas, true)
 			const full = await compactTotal(canvas, userEvent)
 			await expect(full).toBeGreaterThan(10)
 			await userEvent.click(canvas.getByRole('button', { name: 'Нужно уточнение' }))
@@ -51,7 +52,7 @@ export const BpmnSimulation: StoryObj<typeof meta> = {
 			await expect(await compactTotal(canvas, userEvent)).toBe(full)
 			return
 		}
-		await expect(scenarioPanel(canvas)).toHaveTextContent('Построен по схеме')
+		await expect(await waitScenario(canvas)).toHaveTextContent('Построен по схеме')
 		const full = scenarioSteps(canvas).length
 		await expect(full).toBeGreaterThan(10)
 		await userEvent.click(canvas.getByRole('button', { name: 'Нужно уточнение' }))

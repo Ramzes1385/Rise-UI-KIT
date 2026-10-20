@@ -10,8 +10,9 @@ export const WithError: StoryObj<typeof meta> = {
 	},
 	args: { error: 'Сервис схем недоступен. Повторите попытку через минуту.' },
 	play: async ({ canvas }) => {
-		await expect(canvas.getByRole('alert')).toHaveTextContent('Не удалось показать карту')
-		await expect(canvas.getByRole('alert')).toHaveTextContent('Сервис схем недоступен. Повторите попытку через минуту.')
+		const alert = await canvas.findByRole('alert')
+		await expect(alert).toHaveTextContent('Не удалось показать карту')
+		await expect(alert).toHaveTextContent('Сервис схем недоступен. Повторите попытку через минуту.')
 		await expect(canvas.queryByRole('graphics-document')).toBeNull()
 		await expect(canvas.queryByRole('toolbar')).toBeNull()
 	},

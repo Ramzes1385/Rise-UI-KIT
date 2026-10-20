@@ -33,13 +33,13 @@ export const ReviewCompact: StoryObj<typeof meta> = {
 	}),
 	play: async ({ canvas, canvasElement, userEvent }) => {
 		await waitFor(() => expect(canvas.getByRole('region', { name: 'Оформление заказа' })).toHaveClass('base-flow-map--compact'))
+		const tab = await canvas.findByRole('tab', { name: /Предложения/ })
 		const area = canvasElement.querySelector('.base-flow-map__viewport')!.getBoundingClientRect()
-		const tab = canvas.getByRole('tab', { name: /Предложения/ })
 		await expect(tab.getBoundingClientRect().top).toBeGreaterThanOrEqual(area.bottom - 1)
 		const filters = canvas.getByRole('toolbar', { name: 'Фильтры правок' }).getBoundingClientRect()
 		const legend = canvas.getByRole('list', { name: 'Легенда правок' }).getBoundingClientRect()
 		await expect(legend.top).toBeGreaterThanOrEqual(filters.bottom - 1)
-		await userEvent.click(canvas.getByRole('tab', { name: /Комментарии/ }))
+		await userEvent.click(await canvas.findByRole('tab', { name: /Комментарии/ }))
 		await waitFor(() => expect(canvas.getByRole('tab', { name: /Комментарии/ })).toHaveAttribute('aria-selected', 'true'))
 	},
 }

@@ -29,12 +29,12 @@ export const Edit: StoryObj<typeof meta> = {
 	}),
 	play: async ({ canvas, canvasElement, userEvent }) => {
 		if (isNarrowMap(canvasElement)) return expectEditCompact({ canvas, canvasElement, userEvent })
-		await expect(canvas.getByRole('toolbar', { name: 'Инструменты правки' })).toBeVisible()
+		await expect(await canvas.findByRole('toolbar', { name: 'Инструменты правки' })).toBeVisible()
 		await expect(canvas.getByRole('complementary', { name: 'Палитра элементов' })).toBeVisible()
 		await expectStatus(canvas, /Выделено: 0.*Узлов: 12 · связей: 11/)
 		await userEvent.click(flowNode(canvas, 'Orders'))
 		await expectStatus(canvas, 'Выделено: 1')
-		const inspector = canvas.getByRole('region', { name: 'Свойства и хуки' })
+		const inspector = await canvas.findByRole('region', { name: 'Свойства и хуки' })
 		for (const tab of ['Свойства', 'Стиль', 'Данные', 'Хуки']) {
 			await expect(await within(inspector).findByRole('tab', { name: tab })).toBeVisible()
 		}

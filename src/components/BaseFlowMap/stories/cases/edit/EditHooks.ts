@@ -59,7 +59,7 @@ export const EditHooks: StoryObj<typeof meta> = {
 		await waitFor(() => expect(editNotices(canvas)).toHaveTextContent('Нельзя: Отменено обработчиком «beforeDelete»'))
 		await expect(flowNode(canvas, 'Банк')).toBeVisible()
 		await expectStatus(canvas, 'Изменений: 0')
-		const inspector = canvas.getByRole('region', { name: 'Свойства и хуки' })
+		const inspector = await canvas.findByRole('region', { name: 'Свойства и хуки' })
 		await userEvent.click(within(inspector).getByRole('tab', { name: 'Хуки' }))
 		await waitFor(() => expect(within(inspector).getByText(/guardDelete · вызван 1/)).toBeVisible())
 		await expect(within(inspector).getByRole('switch', { name: 'Включить обработчик «guardDelete»' })).toBeChecked()

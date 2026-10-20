@@ -6,7 +6,7 @@ import { flowNode, flowNodes } from '../../../shared'
 import BaseFlowMap from '../../../../ui/BaseFlowMap.vue'
 import { SALES_IDEF0 } from '../../../fixtures/process/idef0'
 import { storySource, useStorySetup } from '@/stories/helpers'
-import { expectDetails, isCompact, scenarioPanel, scenarioStep } from '../../../scenarioShared'
+import { expectDetails, isCompact, scenarioStep, waitScenario } from '../../../scenarioShared'
 
 const template = `
 	<BaseFlowMap v-bind="args" :notations="[flowIdef0]" />
@@ -36,7 +36,7 @@ export const Idef0: StoryObj<typeof meta> = {
 		await expect(flowNode(canvas, 'Принять заказ')).toBeVisible()
 		await expect(flowNode(canvas, 'Заказ клиента')).toBeVisible()
 		if (!(await isCompact(canvasElement))) {
-			await expect(scenarioPanel(canvas)).toHaveTextContent('Построен по схеме')
+			await expect(await waitScenario(canvas)).toHaveTextContent('Построен по схеме')
 			await userEvent.click(scenarioStep(canvas, /Заказ клиента → Принять заказ/))
 			await expect(scenarioStep(canvas, /Заказ клиента → Принять заказ/)).toHaveAttribute('aria-current', 'step')
 		}

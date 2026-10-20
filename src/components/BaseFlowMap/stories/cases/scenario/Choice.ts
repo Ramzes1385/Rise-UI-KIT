@@ -5,7 +5,7 @@ import type { StoryObj } from '@storybook/vue3-vite'
 import BaseFlowMap from '../../../ui/BaseFlowMap.vue'
 import { CHOICE_MAP } from '../../fixtures/scenarios'
 import { storySource, useStorySetup } from '@/stories/helpers'
-import { compactTotal, isCompact, scenarioPanel, scenarioStep, scenarioSteps } from '../../scenarioShared'
+import { compactTotal, isCompact, scenarioPanel, scenarioStep, scenarioSteps, waitScenario } from '../../scenarioShared'
 
 const template = `
 	<div class="story-stack">
@@ -48,6 +48,7 @@ export const Choice: StoryObj<typeof meta> = {
 	}),
 	play: async ({ canvas, canvasElement, userEvent }) => {
 		if (await isCompact(canvasElement)) {
+			await waitScenario(canvas, true)
 			await userEvent.click(canvas.getByRole('button', { name: 'Отказ банка' }))
 			await expect(canvas.getByRole('button', { name: 'Отказ банка' })).toHaveAttribute('aria-pressed', 'true')
 			await expect(await compactTotal(canvas, userEvent)).toBe(5)
@@ -55,6 +56,7 @@ export const Choice: StoryObj<typeof meta> = {
 			await expect(await compactTotal(canvas, userEvent)).toBe(7)
 			return
 		}
+		await waitScenario(canvas)
 		await expect(scenarioSteps(canvas)).toHaveLength(7)
 		await expect(scenarioPanel(canvas)).not.toHaveTextContent('ошибка')
 		await userEvent.click(canvas.getByRole('button', { name: 'Отказ банка' }))

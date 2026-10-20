@@ -40,8 +40,10 @@ export const expectEditCompact = async ({ canvas, canvasElement, userEvent }: Pl
 	await waitFor(() => expect(canvasElement.querySelector('.base-flow-map--compact')).not.toBeNull())
 	await expect(canvas.queryByRole('toolbar', { name: 'Инструменты правки' })).toBeNull()
 	await expect(canvas.queryByRole('complementary', { name: 'Палитра элементов' })).toBeNull()
-	await userEvent.click(flowNode(canvas, 'Orders'))
-	const drawer = await screen.findByRole('dialog', { name: 'Свойства и хуки' })
+	const drawer = await waitFor(async () => {
+		await userEvent.click(flowNode(canvas, 'Orders'))
+		return screen.getByRole('dialog', { name: 'Свойства и хуки' })
+	})
 	await expect(within(drawer).getByRole('textbox', { name: 'Имя' })).toHaveValue('Orders')
 	await userEvent.keyboard('{Escape}')
 	await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())

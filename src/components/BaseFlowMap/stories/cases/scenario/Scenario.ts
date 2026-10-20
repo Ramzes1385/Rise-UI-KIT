@@ -5,7 +5,7 @@ import BaseFlowMap from '../../../ui/BaseFlowMap.vue'
 import { flowAnnouncer, flowNode } from '../../shared'
 import { expect, waitFor, within } from 'storybook/test'
 import { storySource, useStorySetup } from '@/stories/helpers'
-import { compactPlayer, compactTotal, isCompact, panelButton, scenarioPanel, scenarioStep, scenarioSteps } from '../../scenarioShared'
+import { compactTotal, isCompact, panelButton, scenarioStep, scenarioSteps, waitScenario } from '../../scenarioShared'
 
 const template = `
 	<BaseFlowMap v-bind="args" />
@@ -32,7 +32,7 @@ export const Scenario: StoryObj<typeof meta> = {
 	}),
 	play: async ({ canvas, canvasElement, userEvent }) => {
 		if (await isCompact(canvasElement)) {
-			const player = compactPlayer(canvas)
+			const player = await waitScenario(canvas, true)
 			await userEvent.click(within(player).getByRole('button', { name: 'Запустить' }))
 			await waitFor(() => expect(within(player).getByRole('button', { name: 'Пауза' })).toBeVisible())
 			await userEvent.click(within(player).getByRole('button', { name: 'Пауза' }))
@@ -40,7 +40,7 @@ export const Scenario: StoryObj<typeof meta> = {
 			await expect(flowNode(canvas, 'Payments')).toBeVisible()
 			return
 		}
-		const panel = scenarioPanel(canvas)
+		const panel = await waitScenario(canvas)
 		await expect(panel).toHaveAttribute('data-status', 'idle')
 		await expect(panel).toHaveTextContent('Готов к запуску')
 		await expect(scenarioSteps(canvas)).toHaveLength(9)

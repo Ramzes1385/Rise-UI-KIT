@@ -42,7 +42,7 @@ export const Default: StoryObj<typeof meta> = {
 		await expect(flowEdge(canvas, 'Вызов «gRPC»: API Gateway → Orders')).toBeVisible()
 		await expect(canvas.getByRole('group', { name: 'Обозначения' })).toBeVisible()
 		await expect(canvas.getByRole('application', { name: 'Мини-карта' })).toBeVisible()
-		await expect(canvas.getByRole('button', { name: 'Запустить' })).toBeEnabled()
+		await expect(await canvas.findByRole('button', { name: 'Запустить' })).toBeEnabled()
 		await expect(args.onReady).toHaveBeenCalledTimes(1)
 	},
 }

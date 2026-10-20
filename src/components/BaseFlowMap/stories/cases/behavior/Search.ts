@@ -27,7 +27,7 @@ export const Search: StoryObj<typeof meta> = {
 		template,
 	}),
 	play: async ({ canvas, userEvent }) => {
-		const field = canvas.getByPlaceholderText('Найти узел')
+		const field = await canvas.findByPlaceholderText('Найти узел')
 		await userEvent.type(field, 'kaf')
 		const option = await screen.findByRole('option', { name: /Kafka/ })
 		await userEvent.click(option)

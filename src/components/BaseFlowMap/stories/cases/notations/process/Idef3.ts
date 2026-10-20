@@ -6,7 +6,7 @@ import { flowNode, flowNodes } from '../../../shared'
 import BaseFlowMap from '../../../../ui/BaseFlowMap.vue'
 import { RETURN_IDEF3 } from '../../../fixtures/process/idef3'
 import { storySource, useStorySetup } from '@/stories/helpers'
-import { expectDetails, isCompact, scenarioPanel, scenarioSteps } from '../../../scenarioShared'
+import { expectDetails, isCompact, scenarioSteps, waitScenario } from '../../../scenarioShared'
 
 const template = `
 	<BaseFlowMap v-bind="args" :notations="[flowIdef3]" />
@@ -37,7 +37,7 @@ export const Idef3: StoryObj<typeof meta> = {
 		await expect(flowNode(canvas, 'UOB 8')).toBeVisible()
 		await expect(flowNode(canvas, 'И: синхронное слияние')).toBeVisible()
 		if (!(await isCompact(canvasElement))) {
-			await expect(scenarioPanel(canvas)).toHaveTextContent('Построен по схеме')
+			await expect(await waitScenario(canvas)).toHaveTextContent('Построен по схеме')
 			await expect(scenarioSteps(canvas).length).toBeGreaterThan(8)
 		}
 		await userEvent.click(flowNode(canvas, 'Исключающее ИЛИ: заявка корректна?'))
