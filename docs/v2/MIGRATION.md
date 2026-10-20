@@ -3516,3 +3516,14 @@ app.use(createUiKitConfig({ locale: 'en', theme: 'corporate' }))
 ### BaseRoadmap · строки отказа хуков (flow-size-infra, Р)
 
 - `HOOK_REASON_CHANGE`, `HOOK_REASON_DELETE`, `HOOK_REASON_STATUS`, `HOOK_REASON_ERROR` перенесены из раздела `roadmapEdit` в `roadmap` (`UI_ROADMAP.HOOK_REASON_*`, 6 языков). Приложение, которое подменяло эти строки через `defineLocale`, переносит их в раздел `roadmap`.
+
+## BaseFlowMap · ленивые режимы и части (flow-size, ядро)
+
+Первый вид карты стал легче: «Правка», «Правки», сценарий, поиск и подробности грузятся отдельными чанками. Публичный API не меняется (все методы контроллера, пропсы, события и слоты прежние), меняется момент, когда код готов.
+
+- **Режимы.** `mode: 'edit'` и `mode: 'review'` включаются, когда загружен код режима: до этого карта показывается как в просмотре, затем панели, классы сцены и ширина боковых колонок меняются разом. `mode: 'review'` и непустые `suggestions` или `comments` загружают «Правки»; если в `modes` есть `edit` или `review`, код режима скачивается заранее, в простое после монтирования.
+- **Контроллер.** Методы правки (`addNode`, `updateNode`, `addEdge`, `connect`, `updateEdge`, `addGroup`, `updateGroup`, `remove`, `move`, `layout`), `importJson`, `accept`, `exportSvg` и `exportPng` и раньше возвращали `Promise`: первый вызов теперь дожидается `import()` команд. `undo` и `redo` до первой команды ничего не делают (истории нет), `getHistory` и `transact` работают сразу.
+- **Сценарий.** Драйвер создаётся по `import()`, когда есть `scenario`, сценарии в данных, `isAutoplay`, нотация со `semantics.simulate` или включены частицы (`particles`, по умолчанию 400). `play`, `pause`, `stop`, `seek`, `step` и `setSpeed` до загрузки ждут в очереди и выполняются по порядку; `getScenarioState()` до загрузки возвращает состояние «ожидание». События `scenario-change` и `scenario-step` не срабатывают из-за самой загрузки.
+- **Поиск и подробности.** `FlowSearch` и `FlowDetails` — асинхронные компоненты; подробности скачиваются в простое после монтирования, поэтому первый выбор узла не ждёт сеть.
+- **SSR и гидрация.** Загрузка начинается после монтирования: на сервере и в первом кадре клиента режимы, сценарий и частицы не отрисованы, разметка ядра совпадает. Карта с `mode: 'edit'` или `'review'` на сервере приходит как просмотр, режим включается на клиенте после загрузки кода.
+- **Для кода внутри кита и тестов.** `useBaseFlowMap().editing` и `.review` — `ShallowRef` (до загрузки `null`); признаки `isEditLoaded`, `isReviewLoaded`, `isScenarioLoaded`; тесты с `mode: 'edit'`, `'review'` и сценарием ждут загрузку (`vi.waitFor` или `flushPromises`). `useFlowModel(...).scenario` получил `isLoaded` и `load()`.
