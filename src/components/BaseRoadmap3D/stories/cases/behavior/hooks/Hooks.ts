@@ -1,9 +1,9 @@
 import { setup } from './Hooks.setup'
 import setupSource from './Hooks.setup.ts?raw'
 import { expect, waitFor } from 'storybook/test'
-import type meta from '../../BaseRoadmap3D.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import BaseRoadmap3D from '../../../ui/BaseRoadmap3D.vue'
+import type meta from '../../../BaseRoadmap3D.stories'
+import BaseRoadmap3D from '../../../../ui/BaseRoadmap3D.vue'
 import { docsFrame, scriptImports, scriptSource, storySource, STORY_WAIT_TIMEOUT, useStorySetup } from '@/stories/helpers'
 
 const template = `

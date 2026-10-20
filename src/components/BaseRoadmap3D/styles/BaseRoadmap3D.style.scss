@@ -67,7 +67,19 @@
 	}
 
 	&__summary-text {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0 sz(6px);
 		color: var(--rise-text-muted);
+	}
+
+	&__summary-text > * {
+		unicode-bidi: isolate;
+	}
+
+	&__summary-text > :not(:first-child)::before {
+		content: '·';
+		margin-inline-end: sz(6px);
 	}
 
 	&__summary-text b {

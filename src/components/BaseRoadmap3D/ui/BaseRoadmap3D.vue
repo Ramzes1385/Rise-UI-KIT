@@ -25,8 +25,9 @@
 					role="group"
 					:aria-label="UI_ROADMAP.SUMMARY_LABEL">
 					<span class="base-roadmap-3d__summary-text">
-						<b>{{ summary.doneText }}</b> · {{ summary.percentText }}
-						<template v-if="summary.leftText"> · {{ summary.leftText }}</template>
+						<b>{{ summary.doneText }}</b>
+						<span>{{ summary.percentText }}</span>
+						<span v-if="summary.leftText">{{ summary.leftText }}</span>
 					</span>
 					<BaseProgress :value="summary.percent" :max="100" :aria-label="UI_ROADMAP.SUMMARY_LABEL" />
 				</div>
