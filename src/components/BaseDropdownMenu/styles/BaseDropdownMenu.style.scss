@@ -11,8 +11,8 @@
 		--dm-panel-width: #{ct(dropdown-menu-panel, width, 180px)};
 		--dm-panel-text: var(--custom-text);
 		--dm-item-text: #{ct(dropdown-menu-item, text, var(--rise-text))};
-		--dm-item-bg-hover: #{ct(dropdown-menu-item, bg-hover, var(--rise-bg-elevated))};
-		--dm-item-radius: #{ct(dropdown-menu-item, radius, var(--rise-radius-md))};
+		--dm-item-bg-hover: #{ct(dropdown-menu-item, bg-hover, var(--rise-surface-floating-hover))};
+		--dm-item-radius: #{ct(dropdown-menu-item, radius, var(--rise-radius-sm))};
 		--dm-item-padding-x: #{ct(dropdown-menu-item, padding-x, 8px)};
 		--dm-item-padding-y: #{ct(dropdown-menu-item, padding-y, 6px)};
 		--dm-item-font-size: #{ct(dropdown-menu-item, font-size, var(--rise-font-size-sm))};
@@ -70,7 +70,7 @@
 
 		&--danger,
 		&--danger:focus {
-			color: color-mix(in oklab, var(--rise-error) 70%, var(--dm-panel-text, var(--rise-error)));
+			color: color-mix(in oklab, var(--rise-error-text) 70%, var(--dm-panel-text, var(--rise-error-text)));
 
 			.base-dropdown-menu__icon {
 				color: inherit;
@@ -140,8 +140,7 @@
 
 	&__label {
 		padding: sz(6px var(--dm-item-padding-x) 2px);
-		@include text-size(xs);
-		font-weight: var(--rise-font-weight-semibold);
+		@include caps-label;
 		color: var(--dm-panel-text, var(--dm-label-text));
 	}
 

@@ -14,7 +14,7 @@
 	display: flex;
 	box-sizing: border-box;
 	max-width: sz(ct(tooltip, width, 280px));
-	padding: space(ct(tooltip, padding-y, 4px) ct(tooltip, padding-x, 8px));
+	padding: space(ct(tooltip, padding-y, 6px) ct(tooltip, padding-x, 8px));
 	border-radius: sz(ct(tooltip, radius, var(--rise-radius-sm)));
 	background-color: var(--tooltip-bg);
 	box-shadow:
@@ -118,8 +118,7 @@
 	}
 
 	&--shadow {
-		@include custom-bg(--tooltip-bg, var(--rise-bg));
-		--tooltip-border: var(--rise-border);
+		@include custom-bg(--tooltip-bg, var(--rise-surface-floating));
 
 		--tooltip-shadow: #{ct(tooltip, shadow, var(--rise-shadow-md))};
 

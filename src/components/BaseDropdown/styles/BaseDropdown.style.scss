@@ -6,8 +6,8 @@
 		--dd-pad-right: #{ct(dropdown-panel, padding, 4px)};
 		--dd-pad-bottom: #{ct(dropdown-panel, padding, 4px)};
 		--dd-pad-left: #{ct(dropdown-panel, padding, 4px)};
-		@include custom-bg(--dd-bg, ct(dropdown-panel, bg, var(--rise-bg)));
-		--dd-border: #{ct(dropdown-panel, border, var(--rise-border))};
+		@include custom-bg(--dd-bg, ct(dropdown-panel, bg, var(--rise-surface-floating)));
+		--dd-border: #{ct(dropdown-panel, border, transparent)};
 
 		position: fixed;
 		z-index: calc(var(--rise-z-overlay) + var(--rise-layer-index, 0));
@@ -17,8 +17,7 @@
 		padding-inline: space(var(--dd-pad-left) var(--dd-pad-right));
 		overflow-y: auto;
 		@include floating-surface;
-		border-color: var(--dd-border);
-		border-radius: sz(ct(dropdown-panel, radius, var(--rise-radius-md)));
+		border-radius: sz(ct(dropdown-panel, radius, var(--rise-radius-lg)));
 		background-color: var(--dd-bg);
 		@include custom-text(color, ct(dropdown-panel, text, var(--rise-text)));
 		box-shadow: ct(dropdown-panel, shadow, var(--rise-shadow-lg));
@@ -32,23 +31,19 @@
 		&--outline {
 			--dd-border: var(--rise-border-accented);
 
-			box-shadow: none;
+			box-shadow: inset 0 0 0 1px var(--dd-border);
 		}
 
 		&--shadow {
-			--dd-border: transparent;
-
 			box-shadow: var(--rise-shadow-xl);
 		}
 
 		&--soft {
-			@include custom-bg(--dd-bg, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg)));
-			--dd-border: transparent;
+			@include custom-bg(--dd-bg, var(--rise-bg-muted));
 		}
 
 		&--ghost {
 			@include custom-bg(--dd-bg, transparent);
-			--dd-border: transparent;
 
 			box-shadow: none;
 		}

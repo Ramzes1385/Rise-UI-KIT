@@ -14,8 +14,8 @@
 .base-context-menu__panel.base-dropdown-menu__panel {
 	--dm-panel-width: #{ct(context-menu-panel, width, 180px)};
 	--dm-item-text: #{ct(context-menu-item, text, var(--rise-text))};
-	--dm-item-bg-hover: #{ct(context-menu-item, bg-hover, var(--rise-bg-elevated))};
-	--dm-item-radius: #{ct(context-menu-item, radius, var(--rise-radius-md))};
+	--dm-item-bg-hover: #{ct(context-menu-item, bg-hover, var(--rise-surface-floating-hover))};
+	--dm-item-radius: #{ct(context-menu-item, radius, var(--rise-radius-sm))};
 	--dm-item-padding-x: #{ct(context-menu-item, padding-x, 8px)};
 	--dm-item-padding-y: #{ct(context-menu-item, padding-y, 6px)};
 	--dm-item-font-size: #{ct(context-menu-item, font-size, var(--rise-font-size-sm))};

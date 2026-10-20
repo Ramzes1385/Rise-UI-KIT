@@ -41,8 +41,9 @@
 		width: calc(#{sz(ct(slideover-panel, width, 420px))} * var(--slideover-width-scale, 1));
 		max-width: 100%;
 		overflow: hidden;
-		border: 1px solid ct(slideover-panel, border, var(--rise-border));
-		@include custom-bg(background-color, ct(slideover-panel, bg, var(--rise-bg)));
+		border: 0;
+		@include tonal-surface(dialog);
+		@include custom-bg(background-color, ct(slideover-panel, bg, var(--rise-surface-dialog)));
 		@include custom-text(color, ct(slideover-panel, text, var(--rise-text)));
 		@include text-size(sm);
 		box-shadow: ct(slideover-panel, shadow, var(--rise-shadow-xl));
@@ -50,18 +51,18 @@
 
 		&--right {
 			inset-inline-end: 0;
-			border-start-start-radius: sz(ct(slideover-panel, radius, var(--rise-radius-lg)));
+			border-start-start-radius: sz(ct(slideover-panel, radius, var(--rise-radius-xl)));
 			border-start-end-radius: 0;
 			border-end-end-radius: 0;
-			border-end-start-radius: sz(ct(slideover-panel, radius, var(--rise-radius-lg)));
+			border-end-start-radius: sz(ct(slideover-panel, radius, var(--rise-radius-xl)));
 			transform-origin: dir-pos(100%) center;
 		}
 
 		&--left {
 			inset-inline-start: 0;
 			border-start-start-radius: 0;
-			border-start-end-radius: sz(ct(slideover-panel, radius, var(--rise-radius-lg)));
-			border-end-end-radius: sz(ct(slideover-panel, radius, var(--rise-radius-lg)));
+			border-start-end-radius: sz(ct(slideover-panel, radius, var(--rise-radius-xl)));
+			border-end-end-radius: sz(ct(slideover-panel, radius, var(--rise-radius-xl)));
 			border-end-start-radius: 0;
 			transform-origin: dir-pos(0%) center;
 		}
@@ -91,6 +92,7 @@
 		flex: 1;
 		min-width: 0;
 		margin: 0;
+		@include heading;
 		font-size: sz(ct(slideover-title, font-size, var(--rise-font-size-base)));
 		line-height: sz(var(--rise-line-height-base));
 		@include custom-text(color, var(--rise-text-highlighted));
@@ -133,11 +135,10 @@
 	}
 
 	&--shadow &__panel {
-		border-color: transparent;
+		box-shadow: ct(slideover-panel, shadow, var(--rise-shadow-xl));
 	}
 
 	&--ghost &__panel {
-		border-color: transparent;
 		@include custom-bg(background-color, transparent);
 		box-shadow: none;
 	}

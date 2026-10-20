@@ -26,9 +26,10 @@
 		max-width: sz(ct(modal-content, width, 500px));
 		max-height: 100%;
 		overflow: hidden;
-		border: 1px solid ct(modal-content, border, var(--rise-border));
-		border-radius: sz(ct(modal-content, radius, var(--rise-radius-lg)));
-		@include custom-bg(background-color, ct(modal-content, bg, var(--rise-bg)));
+		border: 0;
+		border-radius: sz(ct(modal-content, radius, var(--rise-radius-xl)));
+		@include tonal-surface(dialog);
+		@include custom-bg(background-color, ct(modal-content, bg, var(--rise-surface-dialog)));
 		@include custom-text(color, ct(modal-content, text, var(--rise-text)));
 		@include text-size(sm);
 		box-shadow: ct(modal-content, shadow, var(--rise-shadow-xl));
@@ -65,6 +66,7 @@
 	&__title.base-text {
 		@include inherit-custom-color;
 		margin: 0;
+		@include heading;
 		font-size: sz(ct(modal-title, font-size, var(--rise-font-size-base)));
 		line-height: sz(var(--rise-line-height-base));
 		@include custom-text(color, var(--rise-text-highlighted));
@@ -104,7 +106,7 @@
 	}
 
 	&--shadow &__content {
-		border-color: transparent;
+		box-shadow: ct(modal-content, shadow, var(--rise-shadow-xl));
 	}
 
 	&--ghost &__content {

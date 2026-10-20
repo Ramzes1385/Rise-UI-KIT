@@ -25,7 +25,7 @@
 	top: 0;
 	left: 0;
 	box-sizing: border-box;
-	border-radius: ct(tour-spotlight, radius, 8px);
+	border-radius: sz(ct(tour-spotlight, radius, var(--rise-radius-lg)));
 	pointer-events: none;
 	box-shadow:
 		0 0 0 2px ct(tour-spotlight, ring, var(--rise-primary)),
@@ -93,39 +93,31 @@
 	box-sizing: border-box;
 	width: sz(10px);
 	height: sz(10px);
-	border: 1px solid ct(tour-card, border, var(--rise-border));
-	background-color: ct(tour-card, bg, var(--rise-bg));
+	border: 0;
+	background-color: ct(tour-card, bg, var(--rise-surface-floating));
 	pointer-events: none;
 
 	.base-tour__card--arrow-top > & {
 		top: 0;
 		left: var(--tour-arrow-offset, 50%);
-		border-right-color: transparent;
-		border-bottom-color: transparent;
 		transform: translate(-50%, -50%) rotate(45deg);
 	}
 
 	.base-tour__card--arrow-bottom > & {
 		bottom: 0;
 		left: var(--tour-arrow-offset, 50%);
-		border-top-color: transparent;
-		border-left-color: transparent;
 		transform: translate(-50%, 50%) rotate(45deg);
 	}
 
 	.base-tour__card--arrow-left > & {
 		top: var(--tour-arrow-offset, 50%);
 		left: 0;
-		border-top-color: transparent;
-		border-right-color: transparent;
 		transform: translate(-50%, -50%) rotate(45deg);
 	}
 
 	.base-tour__card--arrow-right > & {
 		top: var(--tour-arrow-offset, 50%);
 		right: 0;
-		border-bottom-color: transparent;
-		border-left-color: transparent;
 		transform: translate(50%, -50%) rotate(45deg);
 	}
 }
@@ -134,10 +126,10 @@
 	display: flex;
 	flex-direction: column;
 	box-sizing: border-box;
+	@include floating-surface(null);
 	padding: space(ct(tour-card, padding, 16px));
-	border: 1px solid ct(tour-card, border, var(--rise-border));
 	border-radius: sz(ct(tour-card, radius, var(--rise-radius-lg)));
-	background-color: ct(tour-card, bg, var(--rise-bg));
+	background-color: ct(tour-card, bg, var(--rise-surface-floating));
 	color: ct(tour-card, text, var(--rise-text));
 	@include text-size(sm);
 	box-shadow: ct(tour-card, shadow, var(--rise-shadow-lg));
@@ -154,9 +146,9 @@
 	flex: 1;
 	min-width: 0;
 	margin: 0;
+	@include heading;
 	font-size: sz(ct(tour-title, font-size, var(--rise-font-size-sm)));
 	line-height: sz(var(--rise-line-height-sm));
-	color: var(--rise-text-highlighted);
 	overflow-wrap: anywhere;
 }
 
@@ -199,7 +191,7 @@
 	flex: none;
 	width: sz(6px);
 	height: sz(6px);
-	border-radius: var(--rise-radius-full);
+	border-radius: sz(var(--rise-radius-xs));
 	background-color: var(--rise-bg-accented);
 	@include transition(width, background-color);
 
@@ -225,8 +217,7 @@
 
 .base-tour__counter.base-text {
 	flex: none;
-	@include text-size(xs);
-	color: var(--rise-text-muted);
+	@include caps-label;
 	white-space: nowrap;
 }
 

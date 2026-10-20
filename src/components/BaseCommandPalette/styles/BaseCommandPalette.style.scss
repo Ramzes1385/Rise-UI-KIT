@@ -69,10 +69,9 @@
 
 	&__group-title {
 		padding: sz(6px) sz(8px) sz(4px);
+		@include caps-label;
 		color: ct(command-palette-group-title, text, var(--rise-text-muted));
-		font-size: sz(ct(command-palette-group-title, font-size, var(--rise-font-size-xs)));
-		line-height: sz(var(--rise-line-height-xs));
-		font-weight: var(--rise-font-weight-medium);
+		font-size: sz(ct(command-palette-group-title, font-size, 11px));
 	}
 
 	&__option {
@@ -81,7 +80,7 @@
 		gap: sz(10px);
 		min-height: sz(40px);
 		padding: sz(ct(command-palette-option, padding-y, 6px) ct(command-palette-option, padding-x, 8px));
-		border-radius: sz(ct(command-palette-option, radius, var(--rise-radius-md)));
+		border-radius: sz(ct(command-palette-option, radius, var(--rise-radius-sm)));
 		color: var(--rise-text);
 		cursor: pointer;
 		@include text-size(sm);
@@ -89,7 +88,7 @@
 	}
 
 	&__option--active {
-		background-color: ct(command-palette-option, bg-selected, var(--rise-bg-elevated));
+		background-color: ct(command-palette-option, bg-selected, var(--rise-surface-floating-hover));
 		color: ct(command-palette-option, text-selected, var(--rise-text-highlighted));
 	}
 

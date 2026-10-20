@@ -35,8 +35,9 @@
 		flex-direction: column;
 		box-sizing: border-box;
 		overflow: hidden;
-		border: 1px solid ct(drawer-panel, border, var(--rise-border));
-		@include custom-bg(background-color, ct(drawer-panel, bg, var(--rise-bg)));
+		border: 0;
+		@include tonal-surface(dialog);
+		@include custom-bg(background-color, ct(drawer-panel, bg, var(--rise-surface-dialog)));
 		@include custom-text(color, ct(drawer-panel, text, var(--rise-text)));
 		@include text-size(sm);
 		box-shadow: ct(drawer-panel, shadow, var(--rise-shadow-xl));
@@ -51,15 +52,13 @@
 
 		&--bottom {
 			bottom: 0;
-			border-bottom: none;
-			border-radius: sz(ct(drawer-panel, radius, var(--rise-radius-2xl))) sz(ct(drawer-panel, radius, var(--rise-radius-2xl))) 0 0;
+			border-radius: sz(ct(drawer-panel, radius, var(--rise-radius-xl))) sz(ct(drawer-panel, radius, var(--rise-radius-xl))) 0 0;
 			transform-origin: bottom center;
 		}
 
 		&--top {
 			top: 0;
-			border-top: none;
-			border-radius: 0 0 sz(ct(drawer-panel, radius, var(--rise-radius-2xl))) sz(ct(drawer-panel, radius, var(--rise-radius-2xl)));
+			border-radius: 0 0 sz(ct(drawer-panel, radius, var(--rise-radius-xl))) sz(ct(drawer-panel, radius, var(--rise-radius-xl)));
 			transform-origin: top center;
 		}
 
@@ -73,21 +72,19 @@
 
 		&--left {
 			inset-inline-start: 0;
-			border-inline-start: none;
 			border-start-start-radius: 0;
-			border-start-end-radius: sz(ct(drawer-panel, radius, var(--rise-radius-2xl)));
-			border-end-end-radius: sz(ct(drawer-panel, radius, var(--rise-radius-2xl)));
+			border-start-end-radius: sz(ct(drawer-panel, radius, var(--rise-radius-xl)));
+			border-end-end-radius: sz(ct(drawer-panel, radius, var(--rise-radius-xl)));
 			border-end-start-radius: 0;
 			transform-origin: dir-pos(0%) center;
 		}
 
 		&--right {
 			inset-inline-end: 0;
-			border-inline-end: none;
-			border-start-start-radius: sz(ct(drawer-panel, radius, var(--rise-radius-2xl)));
+			border-start-start-radius: sz(ct(drawer-panel, radius, var(--rise-radius-xl)));
 			border-start-end-radius: 0;
 			border-end-end-radius: 0;
-			border-end-start-radius: sz(ct(drawer-panel, radius, var(--rise-radius-2xl)));
+			border-end-start-radius: sz(ct(drawer-panel, radius, var(--rise-radius-xl)));
 			transform-origin: dir-pos(100%) center;
 		}
 	}
@@ -98,7 +95,7 @@
 		width: sz(36px);
 		height: sz(4px);
 		margin: sz(8px) auto 0;
-		border-radius: var(--rise-radius-full);
+		border-radius: sz(var(--rise-radius-xs));
 		background-color: ct(drawer-handle, bg, var(--rise-border-accented));
 		cursor: grab;
 		touch-action: none;
@@ -138,6 +135,7 @@
 
 	&__title {
 		margin: 0;
+		@include heading;
 		font-size: sz(ct(drawer-title, font-size, var(--rise-font-size-md)));
 		line-height: sz(var(--rise-line-height-md));
 	}
