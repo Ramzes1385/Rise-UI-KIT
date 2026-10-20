@@ -850,6 +850,12 @@
 | `--rise-flow-map-toolbar-radius` | toolbar | radius | — | `var(--rise-radius-lg)` |
 | `--rise-flow-map-toolbar-shadow` | toolbar | shadow | — | `var(--rise-shadow-sm)` |
 
+## BaseFlowMap3D
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-flow-map3-d-canvas-bg` | canvas | bg | — | `var(--rise-bg-muted)` |
+
 ## BaseFooter
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |

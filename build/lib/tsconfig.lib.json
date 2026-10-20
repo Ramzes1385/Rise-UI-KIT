@@ -38,7 +38,7 @@
 		"../../src/nuxt.ts",
 		"../../src/integrations/**/*.ts",
 		"../../src/plugin/**/*.ts",
-		"../../src/vite-env.d.ts",
+		"../../src/types/vite-env.d.ts",
 		"../../src/**/*.d.ts",
 
 		"../../src/components/**/*.ts",

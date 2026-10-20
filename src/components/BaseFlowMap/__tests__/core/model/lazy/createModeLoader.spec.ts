@@ -1,5 +1,5 @@
 import { render } from '@testing-library/vue'
-import { createModeLoader } from '../../../../model/state/createModeLoader'
+import { createModeLoader } from '../../../../model/lazy/createModeLoader'
 import { computed, defineComponent, effectScope, h, nextTick, ref } from 'vue'
 
 function setup(isRequested = true) {

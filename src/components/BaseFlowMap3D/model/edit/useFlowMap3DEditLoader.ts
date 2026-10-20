@@ -1,6 +1,6 @@
 import { computed } from 'vue'
-import { runWhenIdle } from '@components/BaseFlowMap/model/state/runWhenIdle'
-import { createModeLoader } from '@components/BaseFlowMap/model/state/createModeLoader'
+import { runWhenIdle } from '@components/BaseFlowMap/model/lazy/runWhenIdle'
+import { createModeLoader } from '@components/BaseFlowMap/model/lazy/createModeLoader'
 import type { FlowMap3DEditKit, FlowMap3DEditLoaderInput } from '../../types/internal/flowMap3dEdit.types'
 
 const IDLE_EDIT = {

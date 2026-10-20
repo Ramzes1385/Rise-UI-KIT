@@ -1,6 +1,6 @@
 import { ref, shallowRef } from 'vue'
 import { runInHost } from '../../ui/flowUi'
-import { useFlowModes } from '../../../../model/state/useFlowModes'
+import { useFlowModes } from '../../../../model/lazy/useFlowModes'
 import type { FlowMode } from '../../../../types/api/flowController.types'
 
 const fakes = vi.hoisted(() => ({ edit: null as never as Record<string, never>, review: null as never as Record<string, never> }))

@@ -1,8 +1,8 @@
 @use '@styles/variables' as *;
 @use '@styles/mixins' as *;
 @use '@styles/functions' as *;
-@use '@components/BaseFlowMap/styles/scenario';
-@use '@components/BaseFlowMap/styles/panels';
+@use '../../BaseFlowMap/styles/scenario';
+@use '../../BaseFlowMap/styles/panels';
 
 .base-flow-map-3d {
 	@include custom-color-scope;
@@ -16,7 +16,7 @@
 	border: 1px solid var(--rise-border);
 	border-radius: sz(var(--rise-radius-xl));
 	color: var(--rise-text);
-	background-color: var(--rise-flow-map-canvas-bg, var(--rise-bg-muted));
+	background-color: var(--rise-flow-map3-d-canvas-bg, var(--rise-bg-muted));
 
 	&--disabled {
 		opacity: 0.6;
@@ -53,7 +53,7 @@
 	}
 
 	&__pane--in {
-		background-color: var(--rise-flow-map-canvas-bg, var(--rise-bg-muted));
+		background-color: var(--rise-flow-map3-d-canvas-bg, var(--rise-bg-muted));
 	}
 
 	&__map {

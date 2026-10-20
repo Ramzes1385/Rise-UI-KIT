@@ -30,7 +30,7 @@ storybook-static
 src/**/*.js
 src/**/*.js.map
 src/**/*.d.ts
-!src/vite-env.d.ts
+!src/types/vite-env.d.ts
 build/**/*.d.ts
 vite.config.d.ts
 

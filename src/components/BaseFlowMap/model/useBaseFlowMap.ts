@@ -1,13 +1,13 @@
 import { useFlowModel } from './useFlowModel'
 import { UI_FLOW_MAP } from '@/locales/messages'
+import { useFlowModes } from './lazy/useFlowModes'
 import { computed, getCurrentInstance } from 'vue'
-import { useFlowModes } from './state/useFlowModes'
 import { readListeners } from './state/flowListeners'
 import { useFlowRendering } from './useFlowRendering'
 import { useFlowFrame } from './viewport/useFlowFrame'
 import { useFlowAnnouncer } from './a11y/useFlowAnnouncer'
+import { useFlowLazyStart } from './lazy/useFlowLazyStart'
 import { FLOW_MAP_PARTS } from '../types/BaseFlowMap.types'
-import { useFlowLazyStart } from './state/useFlowLazyStart'
 import { useFlowSharedModel } from './state/useFlowSharedModel'
 import { useFlowPanels } from './viewport/panels/useFlowPanels'
 import { useFlowVisibility } from './viewport/useFlowVisibility'
@@ -16,6 +16,20 @@ import type { FlowEmit } from '../types/internal/core/flowModelCore.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseFlowMapEmits, BaseFlowMapProps } from '../types/BaseFlowMap.types'
 import { loadEditKernel, loadEditUi, loadReviewUi, loadScenarioUi } from '../ui/lazy/flowLazyLoaders'
+
+function exposeModes(modes: ReturnType<typeof useFlowModes>) {
+	const { state } = modes
+	return {
+		editing: modes.edit.part,
+		review: modes.review.part,
+		isEditLoaded: state.isEditLoaded,
+		isEditing: state.isEditing,
+		isReviewLoaded: state.isReviewLoaded,
+		isScenarioLoaded: state.isScenarioLoaded,
+		isLoadFailed: state.isLoadFailed,
+		retryLoad: state.retry,
+	}
+}
 
 export function useBaseFlowMap(props: BaseFlowMapProps, emit: BaseFlowMapEmits) {
 	const instance = getCurrentInstance()
@@ -54,14 +68,7 @@ export function useBaseFlowMap(props: BaseFlowMapProps, emit: BaseFlowMapEmits) 
 		ui: rendering.ui,
 		model,
 		editClasses,
-		editing: modes.edit.part,
-		review: modes.review.part,
-		isEditLoaded: modes.state.isEditLoaded,
-		isEditing: modes.state.isEditing,
-		isReviewLoaded: modes.state.isReviewLoaded,
-		isScenarioLoaded: modes.state.isScenarioLoaded,
-		isLoadFailed: modes.state.isLoadFailed,
-		retryLoad: modes.state.retry,
+		...exposeModes(modes),
 		announcement,
 		isCompact: frame.isCompact,
 		isMorphing: model.groups.isMorphing,

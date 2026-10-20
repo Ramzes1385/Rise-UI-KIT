@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom/vitest'
 import { Group } from 'three'
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { fireEvent, screen, waitFor, within } from '@testing-library/vue'
 import { LONE_DATA, T, nodeOf, tagOf, useEditHarness, viewport } from '../helpers/editHarness.test-utils'
 
@@ -74,6 +75,7 @@ describe('BaseFlowMap3D «Правка»: замена модели', () => {
 
 	it('свой GLB: адрес принимается, узел получает `url`; неверный адрес — предупреждение', async () => {
 		vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+		const load = vi.spyOn(GLTFLoader.prototype, 'loadAsync').mockResolvedValue({ scene: new Group(), animations: [] } as never)
 		const map = await mountEdit({ data: LONE_DATA })
 		await map.select('a')
 		await openPalette()
@@ -86,6 +88,7 @@ describe('BaseFlowMap3D «Правка»: замена модели', () => {
 		await fireEvent.update(field, '  https://cdn.example.ru/own.glb ')
 		await fireEvent.click(within(palette()).getByRole('button', { name: T.PALETTE_LOAD }))
 		await waitFor(() => expect(nodeOf(map.data(), 'a')?.model3d?.url).toBe('https://cdn.example.ru/own.glb'))
+		await waitFor(() => expect(load).toHaveBeenCalledWith('https://cdn.example.ru/own.glb'))
 	})
 
 	it('палитра перечисляет модели схемы и «ещё в реестре» с текущей отметкой', async () => {

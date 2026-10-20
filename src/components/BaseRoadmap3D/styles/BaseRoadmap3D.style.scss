@@ -1,7 +1,7 @@
 @use '@styles/variables' as *;
 @use '@styles/mixins' as *;
 @use '@styles/functions' as *;
-@use '@components/BaseRoadmap/styles/roadmap-panel';
+@use '../../BaseRoadmap/styles/roadmap-panel';
 
 .base-roadmap-3d {
 	@include custom-color-scope;

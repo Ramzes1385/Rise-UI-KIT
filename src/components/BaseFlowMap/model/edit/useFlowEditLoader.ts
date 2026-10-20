@@ -1,5 +1,5 @@
 import type { ComputedRef } from 'vue'
-import { createModeLoader } from '../state/createModeLoader'
+import { createModeLoader } from '../lazy/createModeLoader'
 import type { FlowEditLoader, FlowEditLoaderParts } from '../../types/internal/core/flowModes.types'
 
 export function useFlowEditLoader(parts: FlowEditLoaderParts, isRequested: ComputedRef<boolean>): FlowEditLoader {

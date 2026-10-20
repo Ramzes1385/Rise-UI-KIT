@@ -1,5 +1,5 @@
 import { effectScope } from 'vue'
-import { runWhenIdle } from '../../../../model/state/runWhenIdle'
+import { runWhenIdle } from '../../../../model/lazy/runWhenIdle'
 
 describe('runWhenIdle', () => {
 	afterEach(() => {

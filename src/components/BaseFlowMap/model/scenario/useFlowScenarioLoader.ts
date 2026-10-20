@@ -1,5 +1,5 @@
 import { FLOW_SCENARIO_DETAILS } from './scenarioContext'
-import { createModeLoader } from '../state/createModeLoader'
+import { createModeLoader } from '../lazy/createModeLoader'
 import { computed, getCurrentInstance, provide, watch } from 'vue'
 import type { FlowScenarioAction, FlowScenarioState } from '../../types/data/flowScenario.types'
 import type { FlowModelEnvironment, FlowModelProps, FlowScenarioDriver } from '../../types/internal/flowModel.types'
