@@ -2,7 +2,19 @@ import type { Ref, ShallowRef } from 'vue'
 import type { UseTweenReturn } from '@composables/interaction/useTween'
 import type { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import type { Scene3DFallbackReason, Scene3DRenderer, Scene3DRendererFactory } from '../scene3d.types'
-import type { Box3, BufferGeometry, Camera, Color, Material, OrthographicCamera, PerspectiveCamera, Texture, Vector3 } from 'three'
+import type {
+	AnimationClip,
+	Box3,
+	BufferGeometry,
+	Camera,
+	Color,
+	Material,
+	Object3D,
+	OrthographicCamera,
+	PerspectiveCamera,
+	Texture,
+	Vector3,
+} from 'three'
 
 /** Кадр, который видят хуки цикла: шаг времени (с, не больше 0,05) и время от первого кадра (с) */
 export interface Scene3DFrame {
@@ -289,4 +301,10 @@ export interface Scene3DLabelRect {
 	right: number
 	top: number
 	bottom: number
+}
+
+/** Загруженная модель: сцена и клипы анимаций файла (пустой список, если их нет) */
+export interface Scene3DLoadedModel {
+	object: Object3D
+	clips: AnimationClip[]
 }

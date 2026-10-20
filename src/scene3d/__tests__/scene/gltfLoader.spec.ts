@@ -1,5 +1,5 @@
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
-import { BoxGeometry, Group, Mesh, MeshBasicMaterial } from 'three'
+import { AnimationClip, BoxGeometry, Group, Mesh, MeshBasicMaterial } from 'three'
 import { createModelLibrary, loadLayerModel, placeModel, findModelNode } from '../../scene/gltfLoader'
 
 function modelScene(): Group {
@@ -8,7 +8,7 @@ function modelScene(): Group {
 	return scene
 }
 
-function stubLoad(impl: (url: string) => Promise<{ scene: Group }>) {
+function stubLoad(impl: (url: string) => Promise<{ scene: Group; animations?: AnimationClip[] }>) {
 	return vi.spyOn(GLTFLoader.prototype, 'loadAsync').mockImplementation(impl as never)
 }
 
@@ -48,9 +48,19 @@ describe('createModelLibrary', () => {
 		const library = createModelLibrary()
 		const [first, second] = [await library.load('a.glb'), await library.load('a.glb')]
 		expect(load).toHaveBeenCalledTimes(1)
-		expect(first).not.toBe(second)
-		expect(first.children).toHaveLength(1)
-		expect((first.children[0] as Mesh).geometry).toBe((second.children[0] as Mesh).geometry)
+		expect(first.object).not.toBe(second.object)
+		expect(first.object.children).toHaveLength(1)
+		expect((first.object.children[0] as Mesh).geometry).toBe((second.object.children[0] as Mesh).geometry)
+		expect(first.clips).toEqual([])
+	})
+
+	it('клипы файла отдаются вместе с клоном, общими для всех клонов', async () => {
+		const clip = new AnimationClip('spin', 1, [])
+		stubLoad(async () => ({ scene: modelScene(), animations: [clip] }))
+		const library = createModelLibrary()
+		const [first, second] = [await library.load('a.glb'), await library.load('a.glb')]
+		expect(first.clips).toEqual([clip])
+		expect(second.clips[0]).toBe(clip)
 	})
 
 	it('параллельные запросы одного адреса делят одну загрузку; другой адрес — отдельная', async () => {
@@ -76,7 +86,7 @@ describe('createModelLibrary', () => {
 		await expect(library.load('a.glb')).rejects.toThrow('404')
 		await Promise.resolve()
 		load.mockImplementation((async () => ({ scene: modelScene() })) as never)
-		await expect(library.load('a.glb')).resolves.toBeInstanceOf(Group)
+		await expect(library.load('a.glb')).resolves.toMatchObject({ object: expect.any(Group) })
 		expect(load).toHaveBeenCalledTimes(2)
 	})
 
