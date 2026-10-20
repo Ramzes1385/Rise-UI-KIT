@@ -134,6 +134,7 @@ export interface UiKitLocale {
 	imageMapRoutes: Section<'imageMapRoutes'>
 	imageMapEditor: Section<'imageMapEditor'>
 	imageMap3d: Section<'imageMap3d'>
+	flowMap3d: Section<'flowMap3d'>
 	flowMap: Section<'flowMap'>
 	flowScenario: Section<'flowScenario'>
 	flowPanels: Section<'flowPanels'>

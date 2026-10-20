@@ -135,6 +135,7 @@ export function createLibBuildConfig({ withSubpaths }: { withSubpaths: boolean }
 				media: resolve(process.cwd(), 'src/components/BaseMediaPlayer/index.ts'),
 				map3d: resolve(process.cwd(), 'src/map3d.ts'),
 				roadmap3d: resolve(process.cwd(), 'src/roadmap3d.ts'),
+				flow3d: resolve(process.cwd(), 'src/flow3d.ts'),
 				// Автоимпорт: резолвер, модуль Nuxt и его плагин — без кода компонентов (src/integrations)
 				...(withSubpaths ? createIntegrationEntries() : {}),
 				// Подпути `./<Компонент>` (build/config/subpaths.ts): `components/<Компонент>/index.js`

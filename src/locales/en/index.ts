@@ -15,6 +15,7 @@ import { enTranscript } from './components/transcript'
 import { enFlowEditor } from './components/flow/editor'
 import { enFlowPanels } from './components/flow/panels'
 import { enFlowReview } from './components/flow/review'
+import { enFlowMap3d } from './components/map/flowMap3d'
 import { enMapEditor } from './components/map/mapEditor'
 import type { UiKitLocale } from '../types/locales.types'
 import { enRoadmap3d } from './components/data/roadmap3d'
@@ -48,6 +49,7 @@ export const en: UiKitLocale = {
 	...enPresentation,
 	...enMapEditor,
 	...enImageMap3d,
+	...enFlowMap3d,
 	...enFlowMap,
 	...enFlowScenario,
 	...enFlowPanels,

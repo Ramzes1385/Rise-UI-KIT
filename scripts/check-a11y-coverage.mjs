@@ -142,6 +142,7 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseRoadmap',
 	'BaseRoadmap3D',
 	'BaseFlowMap',
+	'BaseFlowMap3D',
 ])
 
 /** Интерактивные компоненты с естественным Disabled-состоянием */
@@ -212,6 +213,7 @@ const INTERACTIVE_WITH_DISABLED = new Set([
 	'BaseRoadmap',
 	'BaseRoadmap3D',
 	'BaseFlowMap',
+	'BaseFlowMap3D',
 ])
 
 /** Формовые компоненты, требующие story Error */
@@ -269,6 +271,7 @@ const LOADING_COMPONENTS = new Set([
 	'BaseRoadmap',
 	'BaseRoadmap3D',
 	'BaseFlowMap',
+	'BaseFlowMap3D',
 ])
 
 const EMPTY_COMPONENTS = new Set([
@@ -308,6 +311,7 @@ const EMPTY_COMPONENTS = new Set([
 	'BaseRoadmap',
 	'BaseRoadmap3D',
 	'BaseFlowMap',
+	'BaseFlowMap3D',
 ])
 
 const LONG_CONTENT_COMPONENTS = new Set([
@@ -360,6 +364,7 @@ const LONG_CONTENT_COMPONENTS = new Set([
 	'BaseRoadmap',
 	'BaseRoadmap3D',
 	'BaseFlowMap',
+	'BaseFlowMap3D',
 ])
 
 const REQUIRED_STORIES_INTERACTIVE = ['Default', 'Disabled']

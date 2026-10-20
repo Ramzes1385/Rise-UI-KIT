@@ -15,6 +15,7 @@ import { zhTranscript } from './components/transcript'
 import { zhFlowEditor } from './components/flow/editor'
 import { zhFlowPanels } from './components/flow/panels'
 import { zhFlowReview } from './components/flow/review'
+import { zhFlowMap3d } from './components/map/flowMap3d'
 import { zhMapEditor } from './components/map/mapEditor'
 import type { UiKitLocale } from '../types/locales.types'
 import { zhRoadmap3d } from './components/data/roadmap3d'
@@ -48,6 +49,7 @@ export const zh: UiKitLocale = {
 	...zhPresentation,
 	...zhMapEditor,
 	...zhImageMap3d,
+	...zhFlowMap3d,
 	...zhFlowMap,
 	...zhFlowScenario,
 	...zhFlowPanels,

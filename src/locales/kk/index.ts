@@ -16,6 +16,7 @@ import { kkTranscript } from './components/transcript'
 import { kkFlowEditor } from './components/flow/editor'
 import { kkFlowPanels } from './components/flow/panels'
 import { kkFlowReview } from './components/flow/review'
+import { kkFlowMap3d } from './components/map/flowMap3d'
 import { kkMapEditor } from './components/map/mapEditor'
 import type { UiKitLocale } from '../types/locales.types'
 import { kkRoadmap3d } from './components/data/roadmap3d'
@@ -50,6 +51,7 @@ export const kk: UiKitLocale = {
 	...kkPresentation,
 	...kkMapEditor,
 	...kkImageMap3d,
+	...kkFlowMap3d,
 	...kkFlowMap,
 	...kkFlowScenario,
 	...kkFlowPanels,

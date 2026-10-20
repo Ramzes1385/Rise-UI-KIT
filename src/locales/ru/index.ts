@@ -10,6 +10,7 @@ import { ruFlowEditor } from './components/flow/editor'
 import { ruFlowPanels } from './components/flow/panels'
 import { ruFlowReview } from './components/flow/review'
 import { ruRoadmap3d } from './components/data/roadmap3d'
+import { ruFlowMap3d } from './components/map/flowMap3d'
 import { ruImageMap3d } from './components/map/imageMap3d'
 import { ruPresentation } from './components/presentation'
 import { ruFlowScenario } from './components/flow/scenario'
@@ -127,6 +128,7 @@ export const ru = {
 	presentation: ruPresentation,
 	imageMapEditor: ruImageMapEditor,
 	imageMap3d: ruImageMap3d,
+	flowMap3d: ruFlowMap3d,
 	flowMap: ruFlowMap,
 	flowScenario: ruFlowScenario,
 	flowPanels: ruFlowPanels,

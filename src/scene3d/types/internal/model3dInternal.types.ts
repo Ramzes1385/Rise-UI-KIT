@@ -161,6 +161,14 @@ export interface Model3DEntry {
 	handle: Model3DHandle
 }
 
+/** Меши группы инстансинга с их положением в модели */
+export interface Model3DGroupParts {
+	meshes: InstancedMesh[]
+	locals: Matrix4[]
+	roles: Model3DPart[]
+	ownedGeometries: BufferGeometry[]
+}
+
 /** Группа экземпляров одной встроенной модели: по InstancedMesh на часть */
 export interface Model3DInstancedGroup {
 	key: string
@@ -169,6 +177,8 @@ export interface Model3DInstancedGroup {
 	meshes: InstancedMesh[]
 	locals: Matrix4[]
 	roles: Model3DPart[]
+	/** Слитые геометрии группы: освобождаются вместе с ней */
+	ownedGeometries: BufferGeometry[]
 	ids: string[]
 	geometryKeys: Set<string>
 	materialKeys: Set<string>
@@ -236,6 +246,8 @@ export interface Model3DRegistryOptions {
 	library?: Model3DLibrary
 	/** Сколько узлов одной модели нужно, чтобы рисовать её инстансингом; по умолчанию 8 */
 	instanceThreshold?: number
+	/** Части модели с одним материалом сливаются в один InstancedMesh: меньше вызовов отрисовки; по умолчанию нет */
+	isMergedInstancing?: boolean
 	onModelReady?: (handle: Model3DHandle) => void
 	onFocus?: (id: string) => void
 	warn?: (message: string) => void

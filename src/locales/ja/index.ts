@@ -15,6 +15,7 @@ import { jaTranscript } from './components/transcript'
 import { jaFlowEditor } from './components/flow/editor'
 import { jaFlowPanels } from './components/flow/panels'
 import { jaFlowReview } from './components/flow/review'
+import { jaFlowMap3d } from './components/map/flowMap3d'
 import { jaMapEditor } from './components/map/mapEditor'
 import type { UiKitLocale } from '../types/locales.types'
 import { jaRoadmap3d } from './components/data/roadmap3d'
@@ -48,6 +49,7 @@ export const ja: UiKitLocale = {
 	...jaPresentation,
 	...jaMapEditor,
 	...jaImageMap3d,
+	...jaFlowMap3d,
 	...jaFlowMap,
 	...jaFlowScenario,
 	...jaFlowPanels,
