@@ -10,7 +10,7 @@ import { editArgs, isNarrowMap, expectEditCompact, editModels, editNotices, edit
 const top = (node: HTMLElement): number => node.getBoundingClientRect().top
 
 const gaps = (canvas: Parameters<typeof flowNode>[0], names: string[]): number[] => {
-	const rects = names.map(name => flowNode(canvas, name).getBoundingClientRect())
+	const rects = names.map(name => flowNode(canvas, name).getBoundingClientRect()).sort((a, b) => a.left - b.left)
 	return [rects[1].left - rects[0].right, rects[2].left - rects[1].right]
 }
 

@@ -39,7 +39,9 @@ export const EditCompact: StoryObj<typeof meta> = {
 		await expect(canvasElement.querySelector('.base-flow-map__edit-status')).toBeNull()
 		await userEvent.click(flowNode(canvas, 'Orders'))
 		const drawer = await screen.findByRole('dialog', { name: 'Свойства и хуки' })
-		await expect(within(drawer).getByText('Правка схемы — на планшете и десктопе. Здесь: свойства элемента.')).toBeVisible()
+		await waitFor(() =>
+			expect(within(drawer).getByText('Правка схемы — на планшете и десктопе. Здесь: свойства элемента.')).toBeVisible(),
+		)
 		await expect(within(drawer).queryByRole('tab')).toBeNull()
 		await expect(within(drawer).getByRole('textbox', { name: 'Имя' })).toHaveValue('Orders')
 		await userEvent.keyboard('{Escape}')
