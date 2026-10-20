@@ -4,7 +4,6 @@ import { diffFlowData } from '../data/flowDiff'
 import { UI_FLOW_MAP } from '@/locales/messages'
 import { normalizeFlowData } from '../data/flowNormalize'
 import { hookReject, refuse } from '../execute/flowReject'
-import { acceptCommand } from '../commands/flowLayoutCommands'
 import type { FlowMapData } from '../../types/data/flowData.types'
 import type { FlowSuggestion } from '../../types/data/flowReview.types'
 import type { FlowCommandResult } from '../../types/api/flowController.types'
@@ -31,6 +30,7 @@ function createStore(parts: FlowReviewParts): FlowSuggestionStore {
 }
 
 async function acceptSuggestion(parts: FlowReviewParts, store: FlowSuggestionStore, found: FlowSuggestion): Promise<FlowCommandResult> {
+	const { acceptCommand } = await import('../commands/flowLayoutCommands')
 	const outcome = await parts.hooks.run('beforeAccept', { suggestion: found }, found)
 	const command = acceptCommand(outcome.value)
 	if (outcome.isCancelled) return refuse(parts.events, hookReject(command, 'beforeAccept'))

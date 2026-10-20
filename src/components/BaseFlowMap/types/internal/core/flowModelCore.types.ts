@@ -22,6 +22,8 @@ export interface FlowModelOptions {
 	listeners?: () => Record<string, unknown>
 	/** Компактный вид: ширина области меньше `compactBreakpoint`; нет — карточки */
 	isCompact?: () => boolean
+	/** Догрузить интерфейс сценария вместе с драйвером: панель и слой появляются сразу */
+	preloadScenario?: () => Promise<unknown>
 }
 
 /** Подписка на событие через `controller.on` */

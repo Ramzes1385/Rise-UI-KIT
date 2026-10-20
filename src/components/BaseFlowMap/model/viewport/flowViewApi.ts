@@ -1,4 +1,3 @@
-import { buildScenePng, buildSceneSvg } from '../render/flowExportSvg'
 import type { FlowFitOptions } from '../../types/api/flowController.types'
 import type { FlowViewAdapter } from '../../types/internal/flowModel.types'
 import { boundsOf, centerViewport, clampZoom, fitViewport, FIT_PADDING } from './viewGeometry'
@@ -51,7 +50,15 @@ export function createFlowViewApi(
 		zoom,
 		getViewport: () => view.viewport.value,
 		setViewport: view.setViewport,
-		exportSvg: async options => buildSceneSvg(scene(), options),
-		exportPng: options => buildScenePng(scene(), options),
+		exportSvg: async options => {
+			const snapshot = scene()
+			const { buildSceneSvg } = await import('../render/flowExportSvg')
+			return buildSceneSvg(snapshot, options)
+		},
+		exportPng: async options => {
+			const snapshot = scene()
+			const { buildScenePng } = await import('../render/flowExportSvg')
+			return buildScenePng(snapshot, options)
+		},
 	}
 }

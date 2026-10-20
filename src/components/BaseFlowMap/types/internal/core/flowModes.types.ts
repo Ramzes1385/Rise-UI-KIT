@@ -14,7 +14,7 @@ export interface FlowEditLoaderParts {
 	/** Корневой элемент карты */
 	element: Readonly<Ref<HTMLElement | null>>
 	/** Пропсы карты */
-	props: Pick<BaseFlowMapProps, 'savedAt'>
+	props: Pick<BaseFlowMapProps, 'savedAt' | 'modes'>
 	/** Догрузить интерфейс «Правки» вместе с моделью: вид меняется целиком */
 	preload?: () => Promise<unknown>
 }
@@ -39,6 +39,8 @@ export interface FlowModeLoader<State> {
 	isLoaded: ComputedRef<boolean>
 	/** Загрузить часть (повторный вызов — тот же `import()`) */
 	load: () => Promise<State | null>
+	/** Скачать код заранее, ничего не создавая: следующая загрузка быстрая, вид не меняется */
+	prefetch: () => void
 }
 
 /** Загрузчик «Правки» */
@@ -59,4 +61,6 @@ export interface FlowModesState {
 	isEditLoaded: ComputedRef<boolean>
 	/** Код «Правок» загружен */
 	isReviewLoaded: ComputedRef<boolean>
+	/** Код сценария загружен: панель и слой можно показывать */
+	isScenarioLoaded: ComputedRef<boolean>
 }

@@ -1,6 +1,6 @@
 import type { ComputedRef } from 'vue'
-import { computed, getCurrentScope, onMounted, shallowRef, watch } from 'vue'
 import type { FlowModeLoader } from '../../types/internal/core/flowModes.types'
+import { computed, getCurrentInstance, getCurrentScope, onMounted, shallowRef, watch } from 'vue'
 
 export function createModeLoader<Module, State>(options: {
 	isRequested: ComputedRef<boolean>
@@ -31,7 +31,13 @@ export function createModeLoader<Module, State>(options: {
 		if (options.isRequested.value) load().catch(() => undefined)
 	}
 
-	onMounted(() => watch(options.isRequested, request, { immediate: true }))
+	const start = () => watch(options.isRequested, request, { immediate: true })
+	if (getCurrentInstance()) onMounted(start)
+	else start()
 
-	return { part, isLoaded: computed(() => part.value !== null), load }
+	function prefetch(): void {
+		Promise.all([options.module(), options.preload?.()]).catch(() => undefined)
+	}
+
+	return { part, isLoaded: computed(() => part.value !== null), load, prefetch }
 }

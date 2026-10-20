@@ -2,7 +2,7 @@ import type { ComputedRef, Ref } from 'vue'
 import type { FlowGraph } from '../api/flowLayout.types'
 import type { FlowEdge, FlowNode } from '../data/flowData.types'
 import type { FlowGatewaySemantics } from '../api/flowNotation.types'
-import type { FlowModel, FlowModelEnvironment, FlowModelProps } from './flowModel.types'
+import type { FlowModel, FlowModelEnvironment, FlowModelProps, FlowScenarioDriver } from './flowModel.types'
 import type {
 	FlowScenario,
 	FlowScenarioAction,
@@ -217,3 +217,9 @@ export interface FlowScenarioClock {
 
 /** Модель карты для драйвера сценария: всё, кроме самого сценария, контроллера и вида */
 export type FlowScenarioModel = Omit<FlowModel, 'scenario' | 'controller' | 'setView'>
+
+/** Созданный драйвер сценария с подробностями: их читают панель и слой */
+export interface FlowScenarioPart extends FlowScenarioDriver {
+	/** Подробности сценария */
+	details: FlowScenarioDetails
+}

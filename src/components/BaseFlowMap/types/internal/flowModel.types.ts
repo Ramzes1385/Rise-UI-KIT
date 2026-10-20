@@ -72,6 +72,10 @@ export interface FlowScenarioDriver {
 	state: Readonly<Ref<FlowScenarioState>>
 	/** Хронометраж выбранных веток */
 	timeline: Readonly<Ref<FlowTimelineEntry[]>>
+	/** Код сценария загружен и драйвер создан */
+	isLoaded: Readonly<Ref<boolean>>
+	/** Загрузить код сценария; до загрузки `play` и другие вызовы ждут в очереди */
+	load: () => Promise<void>
 	/** Запустить */
 	play: (scenario?: string) => void
 	/** Пауза */

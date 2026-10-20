@@ -16,6 +16,7 @@ import type {
 } from '../../types/data/flowScenario.types'
 import type {
 	FlowScenarioClock,
+	FlowScenarioPart,
 	FlowScenarioContext,
 	FlowScenarioDetails,
 	FlowScenarioModel,
@@ -219,16 +220,18 @@ function useLifecycle(context: FlowScenarioContext, clock: FlowScenarioClock, pl
 		{ flush: 'sync' },
 	)
 	watch(runtime.selected, () => reset(context, clock), { flush: 'sync' })
-	onMounted(() => {
+	const autoplay = () => {
 		if (props.isAutoplay && !environment.isReducedMotion()) {
 			context.details.isSilent.value = true
 			play()
 		}
-	})
+	}
+	if (getCurrentInstance()) onMounted(autoplay)
+	else autoplay()
 	onScopeDispose(() => reset(context, clock))
 }
 
-export function useFlowScenario(model: FlowScenarioModel, props: FlowModelProps, environment: FlowModelEnvironment): FlowScenarioDriver {
+export function useFlowScenario(model: FlowScenarioModel, props: FlowModelProps, environment: FlowModelEnvironment): FlowScenarioPart {
 	const runtime: FlowScenarioRuntime = {
 		selected: ref(props.scenario ?? null),
 		status: ref('idle'),
@@ -256,6 +259,9 @@ export function useFlowScenario(model: FlowScenarioModel, props: FlowModelProps,
 			action(...args)
 		}
 	return {
+		details,
+		isLoaded: computed(() => true),
+		load: () => Promise.resolve(),
 		state: computed(() =>
 			snapshotScenario(
 				{ scenario: info.scenario.value?.id ?? null, status: info.status.value, time: info.time.value, speed: info.speed.value },

@@ -47,13 +47,13 @@
 				<FlowLegend v-if="hasLegend && !isEmpty">
 					<template v-if="$slots.legend" #legend="slotProps"><slot name="legend" v-bind="slotProps" /></template>
 				</FlowLegend>
-				<FlowScenarioPanel v-if="hasScenario && isCompact" />
+				<FlowScenarioPanel v-if="hasScenario && isCompact && isScenarioLoaded" />
 				<FlowReviewOverlay v-if="isReviewLoaded" />
 				<FlowEditStatus v-if="isEditLoaded" />
 				<FlowEditOverlay v-if="isEditLoaded" />
 			</div>
 			<aside v-if="!isCompact" class="base-flow-map__side">
-				<FlowScenarioPanel v-if="hasScenario">
+				<FlowScenarioPanel v-if="hasScenario && isScenarioLoaded">
 					<template v-if="$slots['scenario-step']" #scenario-step="slotProps"
 						><slot name="scenario-step" v-bind="slotProps"
 					/></template>
@@ -89,12 +89,10 @@
 import '../styles/BaseFlowMap.style.scss'
 import FlowCanvas from './canvas/FlowCanvas.vue'
 import FlowHeader from './chrome/FlowHeader.vue'
-import FlowSearch from './chrome/FlowSearch.vue'
 import FlowLegend from './panels/FlowLegend.vue'
 import { UI_FLOW_MAP } from '@/locales/messages'
 import FlowToolbar from './chrome/FlowToolbar.vue'
 import FlowTooltip from './chrome/FlowTooltip.vue'
-import FlowDetails from './panels/FlowDetails.vue'
 import FlowMinimap from './panels/FlowMinimap.vue'
 import { BaseResult } from '@components/BaseResult'
 import FlowA11yList from './chrome/FlowA11yList.vue'
@@ -103,10 +101,10 @@ import { BaseSkeleton } from '@components/BaseSkeleton'
 import { useBaseFlowMap } from '../model/useBaseFlowMap'
 import FlowLiveRegion from './chrome/FlowLiveRegion.vue'
 import { kitDefaults } from '@composables/base/useDefaults'
-import FlowScenarioPanel from './scenario/FlowScenarioPanel.vue'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseFlowMapEmits, BaseFlowMapProps, BaseFlowMapSlots } from '../types/BaseFlowMap.types'
 import {
+	FlowDetails,
 	FlowEditInspector,
 	FlowEditOverlay,
 	FlowEditPalette,
@@ -114,6 +112,8 @@ import {
 	FlowEditToolbar,
 	FlowReviewOverlay,
 	FlowReviewPanel,
+	FlowScenarioPanel,
+	FlowSearch,
 } from './lazy/flowLazyParts'
 
 const props = withDefaults(
@@ -167,6 +167,7 @@ const {
 	editClasses,
 	isEditLoaded,
 	isReviewLoaded,
+	isScenarioLoaded,
 } = useBaseFlowMap(props, emit)
 
 defineExpose(model.controller)

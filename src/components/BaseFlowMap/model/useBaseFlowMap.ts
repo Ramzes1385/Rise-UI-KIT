@@ -1,18 +1,19 @@
 import { useFlowModel } from './useFlowModel'
 import { UI_FLOW_MAP } from '@/locales/messages'
+import { computed, getCurrentInstance } from 'vue'
 import { useFlowModes } from './state/useFlowModes'
 import { readListeners } from './state/flowListeners'
 import { useFlowRendering } from './useFlowRendering'
 import { useFlowFrame } from './viewport/useFlowFrame'
 import { useFlowAnnouncer } from './a11y/useFlowAnnouncer'
 import { FLOW_MAP_PARTS } from '../types/BaseFlowMap.types'
-import { computed, getCurrentInstance, onMounted } from 'vue'
+import { useFlowLazyStart } from './state/useFlowLazyStart'
 import { useFlowPanels } from './viewport/panels/useFlowPanels'
 import { useFlowVisibility } from './viewport/useFlowVisibility'
-import { loadEditUi, loadReviewUi } from '../ui/lazy/flowLazyParts'
 import { useReducedMotion } from '@composables/app/useReducedMotion'
 import type { FlowEmit } from '../types/internal/core/flowModelCore.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
+import { loadEditUi, loadReviewUi, loadScenarioUi } from '../ui/lazy/flowLazyParts'
 import type { BaseFlowMapEmits, BaseFlowMapProps } from '../types/BaseFlowMap.types'
 
 export function useBaseFlowMap(props: BaseFlowMapProps, emit: BaseFlowMapEmits) {
@@ -30,9 +31,9 @@ export function useBaseFlowMap(props: BaseFlowMapProps, emit: BaseFlowMapEmits) 
 			announce,
 		},
 		isCompact: () => frame.isCompact.value,
+		preloadScenario: loadScenarioUi,
 	})
 	const rendering = useFlowRendering(props, model, { frame, environment: { isReducedMotion, isVisible, announce } })
-	onMounted(() => model.events.emit('ready', model.controller))
 	const modes = useFlowModes(props, {
 		...{ model, props, map: rendering.canvas.map, element: frame.element, announce },
 		...{ preload: loadEditUi, preloadReview: loadReviewUi },
@@ -43,6 +44,7 @@ export function useBaseFlowMap(props: BaseFlowMapProps, emit: BaseFlowMapEmits) 
 		modes: modes.state,
 		frame,
 	})
+	useFlowLazyStart(props, model, hasDetails)
 	return {
 		...useStandardBaseComponent('base-flow-map', props, [...FLOW_MAP_PARTS]),
 		...{ hasHeader, hasToolbar, hasSearch, hasMinimap, hasLegend, hasScenario, hasDetails, isEmpty },
@@ -53,6 +55,7 @@ export function useBaseFlowMap(props: BaseFlowMapProps, emit: BaseFlowMapEmits) 
 		review: modes.review.part,
 		isEditLoaded: modes.state.isEditLoaded,
 		isReviewLoaded: modes.state.isReviewLoaded,
+		isScenarioLoaded: modes.state.isScenarioLoaded,
 		announcement,
 		isCompact: frame.isCompact,
 		isMorphing: model.groups.isMorphing,

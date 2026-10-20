@@ -1,4 +1,5 @@
-import { computed, provide } from 'vue'
+import { runWhenIdle } from './runWhenIdle'
+import { computed, onMounted, provide } from 'vue'
 import { FLOW_MODES_CONTEXT } from '../context/flowContext'
 import { useFlowEditLoader } from '../edit/useFlowEditLoader'
 import { useFlowReviewLoader } from '../review/useFlowReviewLoader'
@@ -21,10 +22,18 @@ export function useFlowModes(
 	const state: FlowModesState = {
 		isEditLoaded: edit.isLoaded,
 		isReviewLoaded: review.isLoaded,
+		isScenarioLoaded: computed(() => model.scenario.isLoaded.value),
 		isEditing: computed(() => isEditMode.value && edit.isLoaded.value),
 		isReviewing: computed(() => isReviewMode.value && review.isLoaded.value),
 		isGridOn: computed(() => edit.part.value?.context.env.state.isGridOn.value ?? true),
 	}
 	provide(FLOW_MODES_CONTEXT, state)
+	onMounted(() =>
+		runWhenIdle(() => {
+			const modes = parts.props.modes ?? []
+			if (modes.includes('edit')) edit.prefetch()
+			if (modes.includes('review')) review.prefetch()
+		}),
+	)
 	return { edit, review, state }
 }

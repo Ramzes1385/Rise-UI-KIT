@@ -6,7 +6,6 @@ import { useFlowLayout } from './layout/useFlowLayout'
 import { syncPropHooks } from './execute/flowHookProps'
 import { createFlowEvents } from './controller/flowEvents'
 import { setupFlowPlugins } from './controller/flowPlugins'
-import { useFlowScenario } from './scenario/useFlowScenario'
 import { createViewHolder } from './controller/flowViewAdapter'
 import { createController } from './controller/useFlowController'
 import type { FlowHooks } from '../types/api/flowController.types'
@@ -16,6 +15,7 @@ import type { FlowModel, FlowModelProps } from '../types/internal/flowModel.type
 import type { FlowModelInternal } from '../types/internal/core/flowRenderInternal.types'
 import { createHookRunner, useCommandHistory } from '@composables/editor/useCommandHistory'
 import { resolveEdgeKind, resolveGroupKind, resolveNodeKind } from './notations/resolveKind'
+import { IDLE_SCENARIO_STATE, useFlowScenarioLoader } from './scenario/useFlowScenarioLoader'
 import type { FlowEventBus, FlowModelBase, FlowModelOptions, FlowState } from '../types/internal/core/flowModelCore.types'
 
 function reportLoad(events: FlowEventBus, issues: FlowDataIssue[]): void {
@@ -44,7 +44,8 @@ function kindResolvers(state: FlowState): Pick<FlowModelBase, 'nodeKind' | 'edge
 
 function wireEvents(model: FlowModel, events: FlowEventBus, props: FlowModelProps): void {
 	watch(model.history.state, value => events.emit('history-change', { ...value }))
-	watch(model.scenario.state, (value, previous) => {
+	watch(model.scenario.state, (value, current) => {
+		const previous = current === IDLE_SCENARIO_STATE ? { ...current, scenario: value.scenario } : current
 		if (value.status !== previous.status || value.scenario !== previous.scenario) events.emit('scenario-change', value)
 		if (value.stepIndex !== previous.stepIndex) events.emit('scenario-step', value)
 	})
@@ -85,7 +86,7 @@ export function useFlowModel(props: FlowModelProps, options: FlowModelOptions): 
 		...kindResolvers(state),
 		...{ layout, routes, hooks, history, draft, execute },
 	}
-	const scenario = useFlowScenario(base, props, options.environment)
+	const scenario = useFlowScenarioLoader(base, props, { environment: options.environment, preload: options.preloadScenario })
 	const holder = createViewHolder()
 	const parts = { ...execution, layout, announce: options.environment.announce, scenario, view: holder.view }
 	const model: FlowModelInternal = {

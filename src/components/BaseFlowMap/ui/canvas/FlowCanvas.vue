@@ -25,7 +25,7 @@
 				<FlowEdgeLabels>
 					<template v-if="$slots['edge-label']" #edge-label="slotProps"><slot name="edge-label" v-bind="slotProps" /></template>
 				</FlowEdgeLabels>
-				<FlowScenarioLayer :particles="particles" />
+				<FlowScenarioLayer v-if="modes.isScenarioLoaded" :particles="particles" />
 				<FlowEditLayer v-if="modes.isEditLoaded" />
 				<FlowReviewLayer v-if="modes.isReviewLoaded" />
 			</svg>
@@ -48,9 +48,8 @@ import FlowSvgNode from './FlowSvgNode.vue'
 import FlowHtmlNode from './FlowHtmlNode.vue'
 import { UI_FLOW_MAP } from '@/locales/messages'
 import FlowEdgeLabels from './FlowEdgeLabels.vue'
-import FlowScenarioLayer from '../scenario/FlowScenarioLayer.vue'
 import type { BaseFlowMapSlots } from '../../types/BaseFlowMap.types'
-import { FlowEditLayer, FlowReviewLayer } from '../lazy/flowLazyParts'
+import { FlowEditLayer, FlowReviewLayer, FlowScenarioLayer } from '../lazy/flowLazyParts'
 import { useFlowCanvasContext, useFlowChromeContext, useFlowModesContext } from '../../model/context/flowContext'
 
 defineProps<{ particles?: boolean | number }>()

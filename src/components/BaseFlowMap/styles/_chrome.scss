@@ -49,6 +49,7 @@
 
 	&__bar {
 		flex: none;
+		min-block-size: calc(#{sz(17px)} + var(--rise-control-padding-y) * 2 + var(--rise-control-line-height) + 2px);
 		padding: sz(8px 16px);
 		border-bottom: 1px solid var(--rise-border);
 		background-color: var(--rise-bg);

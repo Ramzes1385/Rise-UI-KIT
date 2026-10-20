@@ -1,8 +1,8 @@
 import { createReviewApi } from './flowReviewApi'
+import { createLazyEditApi } from './flowLazyEditApi'
 import { createStateApi } from '../state/flowStateApi'
 import { createGroupsApi } from '../groups/flowGroupsApi'
 import { FLOW_HOOK_NAMES } from '../execute/flowHookProps'
-import { createEditApi } from '../commands/useFlowCommands'
 import { listBindings, toggleBinding } from './flowBindings'
 import { createHistoryApi } from '../commands/useFlowHistoryApi'
 import type { FlowControllerParts } from '../../types/internal/core/flowModelCore.types'
@@ -35,7 +35,7 @@ export function createController(parts: FlowControllerParts): FlowMapController 
 	const { view } = parts
 	return {
 		...createStateApi(parts.state, parts.events),
-		...createEditApi(parts),
+		...createLazyEditApi(parts),
 		...createHistoryApi(parts),
 		...createReviewApi(parts),
 		...createScenarioApi(parts),
