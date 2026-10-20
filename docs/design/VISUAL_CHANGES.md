@@ -2546,3 +2546,138 @@ Storybook (stories/new-cryptopro-ui): истории Default, Detached, File, La
 - **Скругления связей:** углы ломаных связей строятся тремя шагами вместо пяти, поворот чуть грубее, лент меньше по треугольникам.
 - **Большие сцены (больше 150 узлов):** мелкие детали моделей скрыты, пока клетка на экране мала (включаются по масштабу), частиц не больше 150, части моделей с одним материалом сливаются в один вызов отрисовки.
 - **Без снимков:** эталоны не создавались.
+
+## restyle — новый стиль 2.0
+
+Новый стиль применён ко всем 154 компонентам (эпик restyle: основа, шрифты, группы Element, Form, Navigation/Overlay/Layout, Data/Chat/Editor, Media, карта процессов и роадмап). Описание системы — [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md), что делать приложению — [CHANGES_FOR_APPS.md](./CHANGES_FOR_APPS.md) и [MIGRATION](../v2/MIGRATION.md#restyle--новый-стиль-20).
+
+**Эталоны скриншотов всех историй устарели — их обновляет владелец** (`test:visual:update` не запускать). Меняются все снимки: цвета, шрифты, радиусы, рамки, размеры контролов. Историй нужно добавить по новым вариантам: `tonal` у BaseButton и BaseSplitButton, `shadow` у BaseBankCard; в Theming BaseMarkdown токен `quote-border` заменить на `quote-bg`; описания историй, где перечислены умолчания токенов (`thumb-radius`, `track-height`, `avatar-width` и т. п.), устарели.
+
+### Общее для всех компонентов
+
+- **Палитры.** Нейтраль «Космос» (холодный сине-серый) вместо zinc, основной цвет «Янтарь» (`#ee5410`, в тёмной `#ff6a1f`) вместо оранжевого Tailwind; роли «Ион», «Аврора», «Мёд», «Плазма». Текст на заливке `primary` и `warning` — тёмный (`--rise-on-primary`), наведение у них светлее.
+- **Плоские тональные поверхности.** Карточка, список, панель, контейнеры данных — `bg-muted` без рамки и тени; `soft` — `bg-elevated`; рамка 1px `border-accented` — только `outline`; тень — только `shadow` и у всплывающих слоёв. Поля внутри тональных контейнеров на ступень светлее контейнера.
+- **Только прямоугольники.** Кнопки, бейджи, метки, вкладки, сегменты, переключатели, страницы, шаги, аватары, точки статуса, бегунки — прямоугольники с радиусами по шкале (xs 2 · sm 4 · md 6 · lg 8 · xl 12 · 2xl 16). Круги остались у радио, спиннера, кольцевого прогресса, круговой диаграммы и нотаций.
+- **Контролы 36px** вместо 32 (отступы 7×12, зазор 8): кнопки, поля, селекты, сегменты, ячейки пин-кода, аватар по умолчанию.
+- **Шрифты.** Rise Grotesk (Space Grotesk + Onest для кириллицы) и Rise Mono (Space Mono + IBM Plex Mono для кириллицы) вместо Inter и JetBrains Mono; знаки клавиш и меню — из шрифта кита; китайский и японский — Noto Sans SC / JP. Курсив — наклон браузера.
+- **Служебные подписи — моно капсом:** шапки таблиц, бейджи, подписи групп меню, подписи показателей, время, номера шагов и страниц, подписи полей-групп. Заголовки — Rise Grotesk 600 с отрицательной разрядкой.
+- **Всплывающие слои** (меню, поповеры, списки, тосты, подсказки графиков) — без рамки, радиус lg (было md), тень lg; окна и боковые панели — радиус xl, без рамки, тень xl; наведение на пункт — `surface-floating-hover`, высота пункта 32.
+- **Без эффектов:** убраны свечение, блики, градиенты заливок (прогресс, аватар ИИ, диапазон календаря, полоса дороги роадмапа), ореолы и `backdrop-filter` вне медиа.
+- **Движение:** 140 / 200 / 320 мс (было 150 / 200 / 300) и новые кривые — все переходы.
+- **Фокус** — как раньше (кольцо 2px); у пунктов меню с клавиатуры — кольцо внутри пункта.
+
+### Element
+
+| Компонент | Что изменилось в виде |
+|---|---|
+| BaseAlert | `shadow` — без рамки, фон `surface-floating`, `shadow-md`; остальные варианты по общему правилу |
+| BaseAvatar | форма по умолчанию — скруглённый квадрат (радиус md), размер 36px (было 32), инициалы 13px/600 `text-highlighted` на `bg-accented`; `outline` — рамка, `shadow` — без рамки; точка статуса — квадрат с кольцом цвета поверхности; кольцо `ring` — зазор цвета поверхности |
+| BaseAvatarGroup | кольцо 2px цвета поверхности; «+N» — 36px, `bg-accented`, форма как у аватаров, `tabular-nums` |
+| BaseBadge | Rise Mono капс 10px, высота 20, радиус 3 (было пилюля); `soft` — мягкий фон + `<роль>-text` без рамки; `outline` — рамка `currentcolor`; `ghost` — текст; `shadow` — `surface-floating` + `shadow-sm`; `isDot` — квадрат 8×8, `isRound` — прямоугольный счётчик |
+| BaseBankCard | компактная строка: `default` `bg-muted`, `soft` `bg-elevated`, `outline` рамка, `ghost`; полная карта — радиус xl и без тени; новый вариант `shadow` (полная — `shadow-md`, компактная — `surface-floating` + `shadow-sm`) |
+| BaseButton | новый вариант `tonal` (`bg-elevated`, наведение `bg-accented`); `default` — `primary` + тёмный `on-primary`; `outline` — прозрачная + рамка `border-accented`; `shadow` — `surface-floating` + `shadow-sm` без рамки; отступ по X 14px, высота 36 |
+| BaseButtonGroup, BaseSplitButton | сегменты с зазором 2px (было перекрытие −1px), скругление у крайних; разделитель-тень убран; у SplitButton — вариант `tonal` |
+| BaseCard | `default` `bg-muted` без рамки и тени; `soft` `bg-elevated`; `outline` `bg` + рамка; `shadow` `surface-floating` + `shadow-md`; `ghost`; разделители `--rise-border`; заголовок `heading`; наведение `hoverable` — смена тона |
+| BaseChip | счётчик — прямоугольник радиуса 3, Rise Mono 10px; кольцо цвета поверхности |
+| BaseColorModeButton | квадратная кнопка 36px |
+| BaseFab | скруглённый квадрат радиуса xl (был круг); тень `lg` оставлена |
+| BaseImage | кнопки и стрелки просмотрщика — тональные квадраты (были круги), панель радиуса lg, рамок у стрелок и миниатюр нет |
+| BaseKbd | Rise Mono 11px, `bg-elevated`, без рамки и «грани», радиус sm |
+| BaseLoader | спиннер — круг; точки, пульс, полосы — прямоугольники |
+| BaseMarkdown | заголовки `heading`; инлайн-код и блок кода — `--rise-field-bg` без рамки; шапка блока кода с разделителем, подпись языка `caps-label`; цитата — тональный блок без левой полосы; таблица как BaseTable |
+| BaseProgress | линия 4px (было 8), радиус 1, заливка `primary` без градиента; кольцо — круг |
+| BaseQrCode | `outline` — рамка `border-accented`; заглушка — тональная, без пунктира |
+| BaseSeparator | подпись внутри — `caps-label` 11px |
+| BaseSkeleton | `shape="circle"` — квадрат радиуса md |
+| BaseTag | тональная (`bg-elevated`), без рамки, радиус sm (был пилюля), высота 28; тон роли — мягкий фон; кнопка удаления — квадрат |
+| BaseText, BaseUser | заголовочные теги — `heading`; BaseUser — через квадратный аватар 36px |
+| BaseAnimation, BaseBanner, BaseIcon, BaseMarquee, BaseTagGroup, BaseWatermark | без изменений в собственных стилях |
+
+### Form
+
+| Компонент | Что изменилось в виде |
+|---|---|
+| BaseInput, BaseTextarea, BaseSelect, BaseAutocomplete, BaseMention, BaseCascader, BaseTreeSelect, BaseSignaturePad | оболочка `field-box`: тон `--rise-field-bg`, рамка прозрачная; семь вариантов поля (`default`, `soft`, `filled`, `outline`, `ghost`, `underline`, `shadow`); ошибка — рамка `error`; пункты списков — `menu-item`; списки — всплывающая поверхность без рамки |
+| BaseCheckbox, BaseRadio | флажок 16×16, радиус 3, рамка 1.5px `border-control`; радио — круг 16, отмеченное — кольцо 5px `primary` (точка только в `outline`); `bordered` у радио — тональные плитки |
+| BaseSwitch | дорожка 36×20 радиуса sm (макет — 34), бегунок 14×14 радиуса xs, без тени; выкл `text-muted`, вкл `on-primary` |
+| BaseRange | трек 4px, радиус 1; бегунок 14×14 радиуса xs, заливка `primary`, кольцо 3px цвета поверхности |
+| BaseSegmented | дорожка `bg-elevated`, пункт 28px, активный — `surface-selected` без тени |
+| BaseRating | `soft` — `bg-muted`, `shadow` — `surface-floating` + `shadow-sm` без рамки |
+| BaseInputNumber, BasePhoneInput | наведение на кнопки шага и выбора страны — `bg-accented` |
+| BaseInputTags | метка — `bg-accented` без рамки, регистр пользователя |
+| BasePin | ячейки 36×36 (было 32), заполненная без рамки |
+| BaseColorPicker | образцы и превью — квадраты (радиус sm), маркер и бегунки — квадраты радиуса xs, панель радиуса lg, подписи каналов `caps-label` |
+| BaseCardInput | плоская заглушка чипа, лицо карты без тени, метка марки — плитка `caps-label` |
+| BaseCheckboxGroup, BaseFormField | ошибка — `error-text`; форма/поле: `soft` — `bg-elevated` с поднятыми полями, `outline` — рамка `border-accented`, `shadow` — `surface-floating` + `shadow-md` |
+| BaseForm, BaseFormWizard, BaseTransfer, BaseCryptoProSign | контейнеры тональные (`bg-muted`, поля внутри светлее), без рамки; точки статуса проверки — кольцо-спиннер оставлено кругом |
+| BaseFileUpload | зона `bg-muted`, пунктир `border-accented` оставлен; строки файлов тональные, превью радиуса md |
+| BaseDatePicker | панель — всплывающая поверхность радиуса lg без рамки (ячейки дней — BaseCalendar) |
+| BaseSearch | результаты — `menu-item`; окно поиска — фон окна, радиус xl, без рамки |
+| BaseAvatarCropper | кадр по умолчанию — скруглённый квадрат, круг — по `shape="circle"` |
+| BaseAddressInput, BaseDadataInput, BaseInplace, BaseMoneyInput, BaseRequisiteInput, BaseTimePicker | без изменений в собственных стилях (поля и списки приходят от BaseInput, BaseSelect, BaseDropdown; BaseMoneyInput — `tabular-nums`) |
+
+### Navigation, Overlay, Layout
+
+| Компонент | Что изменилось в виде |
+|---|---|
+| BaseModal, BaseConfirm, BaseCommandPalette | окно `bg` (тёмная — `bg-muted`), радиус xl (было lg), без рамки, `shadow-xl`; заголовок `heading`; подписи групп палитры — `caps-label`, опции радиуса sm |
+| BaseDrawer, BaseSlideover | панель как окно; радиус xl только у внутренних углов (у Drawer было 2xl, у Slideover lg); ручка Drawer — радиус xs |
+| BaseDropdown, BasePopover, BaseHoverCard, BasePopconfirm | панель без рамки, радиус lg (было md), `surface-floating`; `outline` — рамка внутренней тенью; `shadow` — `shadow-xl`; `soft` — `bg-muted`; иконка Popconfirm — `error-text` |
+| BaseDropdownMenu, BaseContextMenu | пункты радиуса sm, наведение `surface-floating-hover`, подписи групп `caps-label`, опасный пункт `error-text` |
+| BaseMenu, BaseMegaMenu | панель без рамки радиуса lg; MegaMenu — строка `bg-muted`, плитка иконки `bg-elevated`, бейдж радиуса 3 |
+| BaseNotification, BaseNotificationCenter | тост без рамки, радиус lg, `shadow-lg`; иконка — плитка 28×28 радиуса sm; полоса прогресса 2px; центр уведомлений получил тень lg |
+| BaseTooltip | отступ 6/8 (было 4/8), `shadow` — без рамки |
+| BaseTour, BaseCookieConsent | карточка без рамки, радиус lg, `shadow-lg`; точки прогресса тура — прямоугольники |
+| BaseTabs | индикатор `underline`/`arc` — прямоугольник 2px; `pills` — дорожка радиуса md с отступом 2 (было lg и 4), выбранный `surface-selected` без тени; `rounded` — те же радиусы вместо круга |
+| BasePagination | страницы и стрелки 32×32 радиуса sm, Rise Mono 12px |
+| BaseStepper | номер — радиус sm (было круг), Rise Mono 11px, текущий — мягкий тон `primary` без рамки; `shape="circle"` рисуется скруглённым квадратом, `square` — радиуса xs |
+| BaseBottomNav | панель `bg-muted` без рамки, радиус lg (было 2xl); `glass` — полупрозрачная заливка 88 % без blur; главная кнопка — скруглённый квадрат без тени |
+| BaseBreadcrumbs, BaseToolbar | разделитель — Rise Mono; `outline` — рамка `border-accented`; `shadow` крошек — без рамки |
+| BaseSideBar | по умолчанию `bg-muted` без рамки сбоку (было `bg` + рамка); пункты радиуса sm; подписи групп `caps-label`; бейдж — радиус 3, точка — квадрат |
+| BaseDashboardGrid, BaseFooter, BaseHeader | плитки как карточки (`bg-muted`, без рамки); заголовки колонок футера — `caps-label`; заголовок шапки — `heading` |
+| BaseScrollArea, BaseSplitter | бегунок и ручка — радиус xs (были круги) |
+| BaseAnchor, BaseApp, BaseBackTop, BaseLink, BaseAffix, BaseContainer, BaseGrid, BaseLayout, BaseStack | без изменений в собственных стилях |
+
+### Data, Chat, Editor
+
+| Компонент | Что изменилось в виде |
+|---|---|
+| BaseTable | шапка — `caps-label` 10px `text-muted` (было 14px semibold), линия под шапкой `--rise-border`; внешней рамки нет, у `bordered` — рамка `border-accented`; строки ≈ 48px; выбранная — `primary` 8 % |
+| BaseList, BaseChecklist, BaseDescriptions, BaseFileManager, BaseFilterBuilder, BaseCode, BaseJsonViewer, BaseTextDiff, BaseCountdown, BaseEmpty, BaseCommentThread, BaseToolCall, BaseStat | контейнеры — тональные (`bg-muted`, `soft` `bg-elevated`, `outline` — рамка, `ghost`) без рамки, радиус lg; подписи — `caps-label`; заголовки — `heading`; наведение строк `bg-elevated`; BaseJsonViewer красит значения токенами `--rise-code-*`; BaseEmpty — тональная поверхность вместо пунктира; у BaseStat `shadow` получил стиль |
+| BaseTree, BaseAccordion | `default` без рамки; `outline` — рамка `border-accented`; `shadow` — `surface-floating` + `shadow-md`; `separated` аккордеона — тональные карточки; строки дерева радиуса sm |
+| BaseChart, BaseSparkline | маркер точки — квадрат радиуса xs (был круг); подсказка — всплывающая поверхность без рамки; пустое состояние `bg-muted` |
+| BaseCalendar | день — радиус md (был круг); сегодня — квадратная метка `primary-soft`; диапазон — полосы вместо градиентов; дни недели — `caps-label` |
+| BaseEventCalendar | контейнер тональный; сетка на `surface-raised`; события — прямоугольники с цветной полосой-заливкой вместо левой рамки; номер дня — прямоугольник |
+| BaseGantt | корень без рамки; шапка `bg-muted` + `caps-label` |
+| BaseTimeline | маркер — квадрат радиуса sm (был круг); текст маркера `on-<роль>`; дата — `caps-label` |
+| BaseKanban | колонки `bg-muted`; карточки `surface-raised` без рамки и тени; счётчики — прямоугольники радиуса 3 |
+| BaseResult | иконка — плитка радиуса lg (была круг) |
+| BaseHeatmap, BasePieChart, BaseSlider | ячейки тепловой карты радиуса xs; круговая диаграмма — круг (оставлен); стрелки слайдера — радиуса md (были круги), индикаторы — полосы 8×4 / 24×4 радиуса xs |
+| BaseAiMessage | аватар — радиус md, заливка `primary` без градиента; `soft` — тональный пузырь; время — `caps-label` |
+| BaseChat | пузыри радиуса lg без рамок (чужой `bg-muted`, свой `primary-soft`); `modern` — рамка + `shadow-xs`; кнопки аватара — радиуса md; реакции — метки радиуса sm; панель действий и контекстное меню — всплывающая поверхность |
+| BaseEmojiPicker | всплывающая поверхность без рамки; ячейки и вкладки радиуса sm; шрифт эмодзи — родовой `sans-serif` |
+| BasePromptInput | поле `field-box` радиуса lg; кнопки радиуса md (были круги) |
+| BaseReasoning | заголовок раскрывашки `caps-label`; `soft` `bg-muted` |
+| BaseEditor | область — `field-box` (тон, без рамки), панель — `tool-button` 28×28; код и цитаты в тексте — `bg-accented` без рамок |
+| BaseInfiniteScroll, BaseVirtualList | без изменений |
+
+### Media
+
+| Компонент | Что изменилось в виде |
+|---|---|
+| BaseMediaPlayer, BasePresentationPlayer | корень радиуса 2xl; кнопки, чипы, плитки — прямоугольники; большая кнопка воспроизведения — скруглённый квадрат радиуса xl без свечения; шкала времени 4px (при наведении 6px, без масштабирования), бегунок — квадрат; панели и меню поверх видео радиуса lg без рамок; текст на заливках акцента — тёмный `--rise-media-text-inverted`; подписи — `caps-label`, время — Rise Mono; убраны блик значка достижения и свечение значка ошибки |
+| BaseAudioPlayer | `bg-muted` без рамки; кнопки радиуса md (были круги); время — `caps-label` |
+| BaseWaveform, BaseVoiceRecorder | полосы — прямоугольники радиуса 1; точка записи — квадрат |
+| BaseSubtitleEditor | `bg-muted`, блоки шкалы радиуса xs, номер строки `caps-label` |
+| BaseImageCompare | без рамки; ручка — квадрат радиуса md с кольцом 3px (был круг с тенью); подписи радиуса sm |
+| BaseMap | `bg-muted` без рамки; кнопки управления — тональные квадраты; метка — скруглённый квадрат с острым углом вниз (была капля); кластер — скруглённый квадрат; балун — как всплывающая поверхность |
+| BaseImageMap, BaseImageMapEditor | `bg-muted` без рамки; метки — скруглённые квадраты радиуса sm без тени; маршрут без круглых концов; группы полей редактора — тональные плитки |
+| BaseImageMap3D | окно просмотра `bg-muted`; метки — квадраты; пол сцены `bg-elevated`, боковина `border-accented` |
+
+### Карта процессов и роадмап
+
+| Компонент | Что изменилось в виде |
+|---|---|
+| BaseFlowMap | холст `bg-muted`, сетка — линии 24px `--rise-border` вместо точек; шапка, панели, мини-карта, легенда, инспектор — тональные, без рамок и теней, радиус lg; узлы-карточки — `surface-raised`, радиус md, рамка прозрачная (цвет нотации её включает), выделение — рамка `primary` 2px; группы радиуса lg, подпись `caps-label`; форма и цвета нотаций не менялись; порты режима «Правка» и глиф комментария — квадраты (были круги); пин «Правок» — прямоугольник со срезанным углом; плавающие блоки — всплывающая поверхность |
+| BaseRoadmap | холст — линии 24px; карточки задач и станций — `surface-raised` радиуса md, без тени, выделение — рамка `primary` 2px; список `bg-muted`; бейджи «или» и «вы здесь» — радиуса 3, `caps-label`; дорога — квадратные штрихи, концы `butt`, полоса пройденного вдвое уже; бегунок — квадрат; метки времени `caps-label`; цель — квадрат; кольцо этапа — круг (оставлено) |
+| 3D-сцены (`scene3d/theme`) | правок нет: запасные токены на месте, цвета — «Янтарь» и «Космос». BaseFlowMap3D и BaseRoadmap3D как компонентов в этой ветке нет — эпик flow-roadmap переводит их на новый стиль после слияния |
