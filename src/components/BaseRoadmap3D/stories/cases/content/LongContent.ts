@@ -1,5 +1,5 @@
 import { expect } from 'storybook/test'
-import type meta from '../BaseRoadmap3D.stories'
+import type meta from '../../BaseRoadmap3D.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 
 export const LongContent: StoryObj<typeof meta> = {

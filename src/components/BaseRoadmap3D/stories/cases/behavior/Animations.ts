@@ -1,9 +1,9 @@
 import { expect } from 'storybook/test'
-import type meta from '../BaseRoadmap3D.stories'
+import type meta from '../../BaseRoadmap3D.stories'
 import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
-import BaseRoadmap3D from '../../ui/BaseRoadmap3D.vue'
 import { motionPresetsStory } from '@/stories/helpers'
+import BaseRoadmap3D from '../../../ui/BaseRoadmap3D.vue'
 import { miniProgress, miniRoadmap } from '@components/BaseRoadmap/stories/demo/mini'
 
 const motion = motionPresetsStory({

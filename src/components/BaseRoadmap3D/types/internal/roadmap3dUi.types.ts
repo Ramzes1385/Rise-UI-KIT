@@ -10,7 +10,7 @@ export interface RoadmapToolbarProps {
 	isMin: boolean
 }
 
-export interface RoadmapStepItem {
+interface RoadmapStepItem {
 	id: string
 	n: number
 	status: string
@@ -35,7 +35,7 @@ export interface RoadmapTourBarProps {
 }
 
 /** Этап в панели: данные раскладки, снимок и места в пути */
-export interface RoadmapPanelStage {
+interface RoadmapPanelStage {
 	view: RoadmapStageView
 	item: Roadmap3DStageItem
 	n: number
@@ -48,7 +48,7 @@ export interface RoadmapPanelStage {
 }
 
 /** Выбранная тема в панели */
-export interface RoadmapPanelTopic {
+interface RoadmapPanelTopic {
 	view: RoadmapTopicView
 	stage: RoadmapStageView
 	doneSubtopics: string[]

@@ -1,7 +1,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { Roadmap3DTourOptions } from '../../types/internal/roadmap3dCompose.types'
 
-export const TOUR_STEP_MS = 2600
+const TOUR_STEP_MS = 2600
 
 export function useRoadmapTour(options: Roadmap3DTourOptions) {
 	const isPlaying = ref(false)

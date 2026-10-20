@@ -11,7 +11,7 @@ const CHART_COUNT = 6
 const SMALL_PATH = 6
 const MEDIUM_PATH = 12
 
-export function defaultPerRow(stageCount: number): number {
+function defaultPerRow(stageCount: number): number {
 	if (stageCount <= SMALL_PATH) return 2
 	return stageCount <= MEDIUM_PATH ? 3 : 4
 }
@@ -21,7 +21,7 @@ export function perRowOf(data: RoadmapData): number {
 	return clampPerRow(typeof requested === 'number' ? requested : defaultPerRow(data.stages.length))
 }
 
-export function stageTint(stage: RoadmapStage, index: number): string {
+function stageTint(stage: RoadmapStage, index: number): string {
 	return stage.model3d?.tint ?? `var(--rise-chart-${(index % CHART_COUNT) + 1})`
 }
 

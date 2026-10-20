@@ -66,7 +66,7 @@ export interface Roadmap3DTourOptions {
 }
 
 /** Что нужно сцене от окна просмотра */
-export interface Roadmap3DViewportApi {
+interface Roadmap3DViewportApi {
 	scene: Scene
 	camera: Readonly<ShallowRef<Scene3DViewCamera>>
 	renderer: Readonly<ShallowRef<Scene3DRenderer | null>>
@@ -125,7 +125,7 @@ export interface Roadmap3DFocusOptions {
 	announce: (text: string) => void
 }
 
-export type Roadmap3DFocus = {
+type Roadmap3DFocus = {
 	focused: Ref<string | null>
 	cursor: Ref<string | null>
 	hovered: Ref<string | null>
@@ -139,7 +139,7 @@ export type Roadmap3DFocus = {
 	overview: () => void
 }
 
-export type Roadmap3DTour = {
+type Roadmap3DTour = {
 	isPlaying: Ref<boolean>
 	step: Ref<number>
 	total: Readonly<Ref<number>>
@@ -149,7 +149,7 @@ export type Roadmap3DTour = {
 	toggle: () => void
 }
 
-export type Roadmap3DEdit = {
+type Roadmap3DEdit = {
 	shift: (id: string, delta: -1 | 1) => Promise<boolean>
 	add: () => Promise<boolean>
 	setModel: (id: string, patch: { model?: string; url?: string }) => Promise<boolean>
@@ -157,7 +157,7 @@ export type Roadmap3DEdit = {
 	rename: (id: string, title: string) => Promise<boolean>
 }
 
-export type Roadmap3DPanel = {
+type Roadmap3DPanel = {
 	selectTopic: (id: string | null) => void
 	closePanel: () => void
 }

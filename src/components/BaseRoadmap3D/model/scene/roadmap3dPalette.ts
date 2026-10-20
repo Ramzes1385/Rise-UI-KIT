@@ -12,7 +12,7 @@ export function createRoadmapPalette(host: HTMLElement): Roadmap3DPalette {
 	return { palette: resolveScenePalette(resolve), resolve }
 }
 
-export function mixColor(from: Color, to: Color, share: number): Color {
+function mixColor(from: Color, to: Color, share: number): Color {
 	return from.clone().lerp(to, share)
 }
 

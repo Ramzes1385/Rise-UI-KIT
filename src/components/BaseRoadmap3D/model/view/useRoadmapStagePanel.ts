@@ -9,7 +9,7 @@ import { formatHours, topicStatusText } from '@components/BaseRoadmap/model/view
 
 const RING_RADIUS = 26
 const CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS
-export const CUSTOM_MODEL = '__custom'
+const CUSTOM_MODEL = '__custom'
 export const AUTO_MODEL = '__auto'
 
 const BADGES: Record<string, { status: BadgeStatus; text: string }> = {
@@ -18,7 +18,7 @@ const BADGES: Record<string, { status: BadgeStatus; text: string }> = {
 	locked: { status: 'neutral', text: UI_ROADMAP.STAGE_LOCKED },
 }
 
-export function modelOptions() {
+function modelOptions() {
 	return [
 		{ value: AUTO_MODEL, label: UI_ROADMAP_3D.MODEL_AUTO },
 		...presetsOfSet('learning').map(id => ({ value: id, label: modelTitle(id) })),

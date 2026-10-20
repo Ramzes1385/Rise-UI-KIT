@@ -1,4 +1,3 @@
-import type { Roadmap3DQuality } from '../BaseRoadmap3D.types'
 import type { ScenePalette } from '@/scene3d/types/internal/scene3dGeometry.types'
 import type { IslandModel, IslandPoint, RoadTable } from '../roadmap3dIsland.types'
 import type { Model3DDefinitions, Model3DHandle, Model3DNode } from '@/scene3d/types/model3d.types'
@@ -13,7 +12,7 @@ import type {
 } from '@/scene3d/types/internal/scene3dInternal.types'
 
 /** Тема этапа в снимке: статус и вид для камня у пьедестала и бирки-фишки */
-export interface Roadmap3DTopicItem {
+interface Roadmap3DTopicItem {
 	id: string
 	title: string
 	status: RoadmapTopicStatus
@@ -136,7 +135,7 @@ export interface Roadmap3DStates {
 }
 
 /** Что нужно сборке сцены от компонента */
-export interface Roadmap3DRuntime {
+interface Roadmap3DRuntime {
 	loop: Scene3DLoop
 	cache: Scene3DResourceCache
 	getModels: () => Model3DDefinitions
@@ -181,12 +180,6 @@ export interface Roadmap3DTag {
 export interface Roadmap3DLabelSet {
 	tags: Roadmap3DTag[]
 	items: Scene3DLabelItem[]
-}
-
-/** Качество, приведённое к решению «что рисовать» */
-export interface Roadmap3DQualityInput {
-	quality: Roadmap3DQuality
-	isCompact: boolean
 }
 
 /** Что нужно сборке всего содержимого сцены */

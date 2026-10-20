@@ -1,6 +1,6 @@
 import { tabTo } from '@/stories/helpers'
-import type meta from '../BaseRoadmap3D.stories'
 import { expect, waitFor } from 'storybook/test'
+import type meta from '../../BaseRoadmap3D.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 
 export const Keyboard: StoryObj<typeof meta> = {
