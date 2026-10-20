@@ -1,7 +1,7 @@
 import type { IslandCell, IslandEdgePair, IslandField, IslandPoint, IslandTerrace } from '../../types/roadmap3dIsland.types'
 
 export const ISLAND_TERRACE_LEVELS = [-0.5, -1.1, -1.8] as const
-export const ISLAND_SIMPLIFY_STEP = 2
+const ISLAND_SIMPLIFY_STEP = 2
 
 const CASE_EDGES: Record<number, IslandEdgePair[]> = {
 	1: [[0, 3]],

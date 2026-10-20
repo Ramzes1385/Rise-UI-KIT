@@ -1,9 +1,9 @@
 import type { IslandField, IslandPoint, RoadBuckets, RoadLayout } from '../../types/roadmap3dIsland.types'
 
-export const ISLAND_CELL = 0.5
+const ISLAND_CELL = 0.5
 export const ISLAND_CAP = 8
-export const ISLAND_MARGIN = 3.2
-export const ISLAND_PEDESTAL_RADIUS = 0.8
+const ISLAND_MARGIN = 3.2
+const ISLAND_PEDESTAL_RADIUS = 0.8
 export const ISLAND_GOAL_RADIUS = 2.6
 const ISLAND_NOISE_SIZE = 16
 const ISLAND_NOISE_SCALE = 0.18
