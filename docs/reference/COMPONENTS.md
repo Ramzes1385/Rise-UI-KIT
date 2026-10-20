@@ -14,6 +14,16 @@
 
 Текст кнопки передаётся в слот по умолчанию (иконки — в слоты `left` / `right`). По умолчанию `type="button"`; кнопке отправки формы нужен `type="submit"`. `is-loading` показывает индикатор и подавляет клики.
 
+Варианты (`variant`, по умолчанию `default`; константа `BUTTON_VARIANTS`):
+- `default` — заливка основным цветом (`--rise-primary`, текст `--rise-on-primary`), главное действие;
+- `soft` — мягкий фон основного цвета и `--rise-primary-text`;
+- `tonal` — нейтральная заливка `--rise-bg-elevated`, наведение `--rise-bg-accented`: вторичные действия («Отмена», «Позже»), панели инструментов;
+- `ghost` — прозрачная, фон появляется при наведении;
+- `outline` — прозрачная с рамкой `--rise-border-accented`;
+- `shadow` — поверхность `--rise-surface-floating` с тенью `shadow-sm`, без рамки.
+
+Высота 36px (`--rise-control-height`), отступы 7px 14px, радиус md; кнопка-иконка — квадрат. Цвет `color` и отступы `padding` меняют вид экземпляра.
+
 ### Пример
 
 ```vue
@@ -24,7 +34,9 @@ import { BaseButton } from '@ramzes1385/rise-ui-kit'
 <template>
 	<BaseButton>Сохранить</BaseButton>
 
-	<BaseButton variant="ghost">Отмена</BaseButton>
+	<BaseButton variant="tonal">Отмена</BaseButton>
+
+	<BaseButton variant="ghost">Позже</BaseButton>
 
 	<BaseButton is-disabled>Недоступно</BaseButton>
 </template>
@@ -34,7 +46,7 @@ import { BaseButton } from '@ramzes1385/rise-ui-kit'
 
 ## BaseButtonGroup
 
-Склеенные кнопки связанных действий: общие скругления у крайних, рамки соседей совпадают. `role="group"` с именем `aria-label`; каждая кнопка — отдельный таб-стоп (стрелки между кнопками — у `BaseToolbar`).
+Кнопки связанных действий: зазор 2px, скругление у крайних. `role="group"` с именем `aria-label`; каждая кнопка — отдельный таб-стоп (стрелки между кнопками — у `BaseToolbar`).
 
 ```vue
 <BaseButtonGroup aria-label="Период">
@@ -48,7 +60,7 @@ import { BaseButton } from '@ramzes1385/rise-ui-kit'
 
 ## BaseSplitButton
 
-Основное действие и меню похожих: `click` — основная кнопка, `select` — пункт меню (формат пунктов — как у `BaseDropdownMenu`). Кнопка меню называется «Другие действия» (`menu-label`).
+Основное действие и меню похожих: `click` — основная кнопка, `select` — пункт меню (формат пунктов — как у `BaseDropdownMenu`). Кнопка меню называется «Другие действия» (`menu-label`). Варианты — как у BaseButton (`SPLIT_BUTTON_VARIANTS`: `default`, `soft`, `tonal`, `ghost`, `outline`, `shadow`); половины стоят с зазором 2px, скругление у крайних.
 
 ```vue
 <BaseSplitButton label="Сохранить" :items="[{ label: 'Сохранить как черновик' }, { label: 'Сохранить и закрыть' }]" @click="save" @select="handleMenu" />
@@ -237,7 +249,7 @@ const cryptogram = await card.value.tokenize() // криптограмма → �
   <BaseBankCard brand="mir" last4="9019" cover="/img/cards/travel.jpg" />
   <BaseBankCard brand="visa" last4="4242" cover="linear-gradient(135deg, var(--rise-color-primary-800), var(--rise-color-success-900))" :has-cover-overlay="false" />
   ```
-- Варианты (`default`, `soft`, `outline`, `ghost`) меняют только строку `isCompact`. Компонент только показывает карту: выбор делает обёртка приложения (BaseRadio, пункт BaseSelect, кнопка).
+- Варианты (`BANK_CARD_VARIANTS`, по умолчанию `default`): `default` — строка `isCompact` на `bg-muted` без рамки, `soft` — `bg-elevated`, `outline` — рамка `border-accented`, `ghost` — без фона, `shadow` — тень (полная карта — `shadow-md`, строка — `surface-floating` + `shadow-sm`). Полная карта без тени по умолчанию (радиус xl); остальные варианты меняют только строку `isCompact`. Компонент только показывает карту: выбор делает обёртка приложения (BaseRadio, пункт BaseSelect, кнопка).
 - Чтение с экрана получает одну фразу — «Visa, номер заканчивается на 4242, срок до 12/30» (или «срок истёк …»); точки, значок и подписи скрыты.
 
 ---
@@ -1222,7 +1234,7 @@ import { BaseChip, BaseButton } from '@ramzes1385/rise-ui-kit'
 
 ## BaseAvatar
 
-Аватар пользователя.
+Аватар пользователя. Форма `shape` (`AVATAR_SHAPES`): `square` — скруглённый квадрат радиуса md (по умолчанию), `circle` — круг. Размер по умолчанию 36px (`--rise-avatar-width/height`, масштабируется `sizeScale`).
 
 ```vue
 <script setup lang="ts">
@@ -1238,7 +1250,7 @@ import { BaseAvatar } from '@ramzes1385/rise-ui-kit'
 
 ## BaseAvatarGroup
 
-Аватары внахлёст с остатком «+N»: список, скринридер слышит имена и «и ещё N»; если сверх `max` остаётся один человек, показывается он.
+Аватары внахлёст с остатком «+N»: список, скринридер слышит имена и «и ещё N»; если сверх `max` остаётся один человек, показывается он. Форма `shape` — как у BaseAvatar (по умолчанию `square`), «+N» — 36px той же формы, между аватарами кольцо 2px цвета поверхности.
 
 ```vue
 <BaseAvatarGroup :items="[{ name: 'Анна Смирнова', src: '/anna.jpg' }, { name: 'Иван Петров' }]" :max="4" aria-label="Участники" />
@@ -2066,7 +2078,7 @@ async function submit(): Promise<void> {
 
 ## BaseAvatarCropper
 
-Кадрирование аватара: круг или квадрат, фото двигают мышью или пальцем, масштаб — колёсиком, ползунком или клавишами.
+Кадрирование аватара: скруглённый квадрат (`shape="square"`, по умолчанию) или круг (`shape="circle"`, `AVATAR_CROP_SHAPES`), фото двигают мышью или пальцем, масштаб — колёсиком, ползунком или клавишами.
 
 ```vue
 <script setup lang="ts">
