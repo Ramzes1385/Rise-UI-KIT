@@ -1,7 +1,7 @@
 import { noProgress } from '../../demo/mini'
 import type meta from '../../BaseRoadmap.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { expect, screen, waitFor } from 'storybook/test'
+import { expect, screen, waitFor, within } from 'storybook/test'
 import { docsFrame, STORY_WAIT_TIMEOUT } from '@/stories/helpers'
 import type { RoadmapData } from '../../../types/roadmapData.types'
 
@@ -80,7 +80,15 @@ export const Alternatives: StoryObj<typeof meta> = {
 		await expect(canvas.getByRole('button', { name: /^Vue DevTools/ })).toHaveAccessibleName(/по желанию/)
 
 		await userEvent.click(nuxt)
-		await waitFor(() => expect(screen.getByText('Альтернатива')).toBeVisible(), { timeout: STORY_WAIT_TIMEOUT })
+		const panel = await waitFor(
+			() => {
+				const found = screen.queryByLabelText('Подробности темы') ?? screen.queryByRole('dialog', { name: /^Nuxt/ })
+				expect(found).not.toBeNull()
+				return found as HTMLElement
+			},
+			{ timeout: STORY_WAIT_TIMEOUT },
+		)
+		await waitFor(() => expect(within(panel).getByText('Альтернатива')).toBeVisible(), { timeout: STORY_WAIT_TIMEOUT })
 		await userEvent.keyboard('{Escape}')
 		await waitFor(() => expect(screen.queryByRole('button', { name: 'Отметить изученной' })).toBeNull())
 
