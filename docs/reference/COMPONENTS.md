@@ -3733,12 +3733,44 @@ const progress = ref<RoadmapProgress>({ version: 1, topics: {} })
 </template>
 ```
 
-- Пропсы: `data` (обязателен), `progress` (`v-model`), `storage` (хранилище прогресса, `null` — не хранить), `layout` (`path`, `snake`, `list`, `horizontal`; по умолчанию `path`), `narrowLayout` (раскладка в контейнере уже `narrowWidth`, по умолчанию `list`), `narrowWidth` (560), `expanded`, `selected`, `filter` (`v-model`), `hasSummary`, `hasFilter`, `hasLayoutSwitch`, `detailsPosition` (`side`, `sheet`, `auto`), `isLoading`, `isDisabled`, `beforeStatusChange` (отменяемый хук), `ui`, `variant`, `color`, `sizeScale`.
+- Пропсы: `data` (обязателен), `progress` (`v-model`), `storage` (хранилище прогресса, `null` — не хранить), `layout` (`path`, `snake`, `list`, `horizontal`; по умолчанию `path`), `narrowLayout` (раскладка в контейнере уже `narrowWidth`, по умолчанию `list`), `narrowWidth` (560), `expanded`, `selected`, `filter` (`v-model`), `hasSummary`, `hasFilter`, `hasLayoutSwitch`, `detailsPosition` (`side`, `sheet`, `auto`), `isLoading`, `isDisabled`, `beforeStatusChange` (отменяемый хук), `mode`, `modes`, `review`, `templates`, `draftSavedAt`, `beforeChange`, `beforeDelete` (фаза 2), `ui`, `variant`, `color`, `sizeScale`.
 - `detailsPosition: 'auto'`: панель справа, только если рядом с ней помещается раскладка (холст «Пути» или «Змейки» + поля + панель 401 px с учётом `sizeScale`; для «Списка» и «Ленты» — контейнер шире 900 px), иначе нижний лист.
-- События: `update:progress`, `update:expanded`, `update:selected`, `update:filter`, `select`, `status-change`, `topic-complete`, `stage-complete`, `progress-load`, `progress-save`, `progress-error`.
-- Слоты: `topic`, `topic-details`, `stage-header`, `material`, `summary-end`, `empty`. Методы `ref`: `setTopicStatus`, `toggleSubtopic`, `expandStage`, `expandAll`, `collapseAll`, `selectTopic`, `continueLearning`, `getTopicState`, `resetProgress`.
+- События: `update:progress`, `update:expanded`, `update:selected`, `update:filter`, `select`, `status-change`, `topic-complete`, `stage-complete`, `progress-load`, `progress-save`, `progress-error`, а в фазе 2 — `update:data`, `update:mode`, `update:review`, `reorder`, `publish`.
+- Слоты: `topic`, `topic-details`, `stage-header`, `material`, `summary-end`, `empty`. Методы `ref`: `setTopicStatus`, `toggleSubtopic`, `expandStage`, `expandAll`, `collapseAll`, `selectTopic`, `continueLearning`, `getTopicState`, `resetProgress`; методы правки и «Правок» — в разделе «Фаза 2» ниже.
 - Доступность: этап — кнопка с `aria-expanded` и `aria-controls` только у раскрытого; статус темы и этапа читается текстом; изменения прогресса озвучивает живой регион `role="status"`; нижний лист возвращает фокус на строку темы. Закрытый этап в «Списке» статичен, в остальных раскладках раскрывается.
 - Токены `--rise-roadmap-*`, словарь — раздел `roadmap`.
+
+### Фаза 2: «Правка», «Правки», хуки
+
+Просмотр без новых пропсов работает как раньше. Режимы, история и «Правки» подключаются пропсами `mode` и `modes`.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseRoadmap } from '@ramzes1385/rise-ui-kit'
+import type { RoadmapData, RoadmapMode, RoadmapReviewData } from '@ramzes1385/rise-ui-kit'
+
+const data = ref<RoadmapData>({ version: 1, title: 'Старт во Vue', stages: [] })
+const mode = ref<RoadmapMode>('view')
+const review = ref<RoadmapReviewData>({ proposals: [], threads: [], currentUser: { name: 'Анна' } })
+</script>
+
+<template>
+	<BaseRoadmap v-model:data="data" v-model:mode="mode" v-model:review="review" :modes="['view', 'edit', 'review']" />
+</template>
+```
+
+- **Пропсы**: `mode` (`v-model:mode`: `view` · `edit` · `review`), `modes` (режимы в переключателе шапки; пусто — переключателя нет), `review` (`v-model:review`: `proposals`, `threads`, `currentUser`), `templates` (шаблоны палитры после встроенных), `draftSavedAt` (подпись «Черновик сохранён ЧЧ:ММ» в подвале «Правки»), хуки `beforeChange` и `beforeDelete` рядом с `beforeStatusChange`.
+- **События**: `update:data` (после каждой правки), `update:mode`, `update:review`, `reorder` (`{ entity, id, from, to }` после переноса этапа или темы), `publish` (кнопка «Опубликовать путь»; сохранение данных — у приложения).
+- **«Правка» (`edit`)**: палитра (встроенные шаблоны «Пустой путь», «Этап», «Тема», «Тема с подтемами», «Развилка «или»» и шаблоны приложения из `templates`; шаблон всего пути заменяет данные одним шагом после подтверждения), инспектор этапа и темы с вкладкой «Хуки», панель элемента (`item-toolbar`). В инспекторе темы — поле **«Статус по умолчанию»** (`RoadmapTopic.defaultStatus`: `in-progress`, `done`, `skipped`): расчёт берёт его, пока у темы нет своего статуса в прогрессе; статус «закрыта» сильнее. Изменение — одна команда истории.
+- **История**: каждая правка — команда (`RoadmapChange`) через `beforeChange`; `Ctrl/⌘+Z`, `Ctrl/⌘+Shift+Z`, `Ctrl+Y`. Цикл зависимостей не добавляется: отказ с текстом в `role="status"`.
+- **Перестановка**: мышью за ручку «⋮⋮» (порог 5 px); с клавиатуры — пробел на ручке берёт элемент, стрелки двигают, пробел или Enter кладут, Escape отменяет; `Alt+↑/↓` сразу на место выше или ниже (тема за край этапа переходит в соседний этап); кнопки «Выше» и «Ниже» в панели элемента. Фокус остаётся на перемещённом, шаги объявляются.
+- **Хуки** (`beforeStatusChange`, `beforeChange`, `beforeDelete`): `false` отменяет, массив в `beforeChange` заменяет изменения, `Promise` ждётся. Кроме пропсов подписки добавляет `ref.on(hook, handler, { priority })` (возвращает отписку; порядок — по убыванию приоритета, первый отказ отменяет). Вкладка «Хуки» показывает подписки, счётчик включённых, переключатель и «Последний итог» (разрешено / отказ с причиной).
+- **«Правки» (`review`)**: путь с панелью предложений и комментариев справа (на узком контейнере — под путём). «Предложить» (`ref.propose(changes, label?)`) вместо применения правки; «Принять» применяет все изменения одним шагом истории (отмена — `Ctrl+Z`), «Отклонить» ставит `rejected`, данные не меняются. Устаревшее предложение (изменения нельзя применить к текущим данным) принять нельзя: кнопка неактивна с причиной. Комментарии — цепочки к этапу и теме (`BaseCommentThread`): начать, ответить, «Решено» / «Вернуть»; писать можно только при заданном `currentUser`.
+- **Методы `ref`** кроме просмотра: `on`, `addStage`, `addTopic`, `move`, `update`, `remove`, `addRequirement`, `removeRequirement`, `insertTemplate`, `transact`, `undo`, `redo`, `exportJson`, `importJson`, `propose`. Правки возвращают `Promise<boolean>` (`false` — отменил хук или правило); `importJson` отклоняет данные с повторами `id` и циклами.
+- **Загрузка**: код «Правки» и «Правок» — отдельные чанки по `import()`, они грузятся при первом переходе в `edit` или `review` или при первом вызове метода правки (просмотр их не тянет). Не загрузились — сообщение «Не удалось загрузить» с кнопкой «Повторить». До загрузки `undo()` и `redo()` возвращают `false`. Стили ленивых частей — с их чанками в слое `rise` (`components/BaseRoadmap/style.layer.css`).
+- **Вес** (`SIZES.md`, gzip): JS 67,4 КБ, CSS 14,5 КБ; по `import()` — 67,6 КБ.
+- Доп. части `ui`: `palette`, `inspector`, `item-toolbar`. Типы: `RoadmapChange`, `RoadmapTemplate`, `RoadmapEntity`, `RoadmapMode`, `RoadmapReorder`, `RoadmapProposal`, `RoadmapCommentThread`, `RoadmapReviewData`; константы `ROADMAP_MODES`, `ROADMAP_ENTITIES`, `ROADMAP_PROPOSAL_STATUSES`. Словарь — разделы `roadmap`, `roadmapEdit`, `roadmapReview`. 3D-вид — [BaseRoadmap3D](#baseroadmap3d).
 
 ## Новые компоненты (задача components-1a)
 
@@ -4017,15 +4049,176 @@ function rename(id: string, name: string): void {
 - Ввод с клавиатуры: при `isReadonly=false` период вводится в поле («01.10.2026 — 05.10.2026»; разделитель — дефис или тире, один день — одна дата). Порядок «день, месяц, год» — как поле показывает даты на языке `locale` (`dateFormat` его не меняет). Enter и уход из поля применяют ввод, Escape отменяет. Не принятый текст остаётся в поле с ошибкой и событием `input-invalid (issue, text)`, `issue` — `format`, `unavailable`, `min-days`, `max-days`.
 - Части `ui`: `presets` (колонка периодов) и `preset` (кнопка).
 
-## BaseFlowMap (ядро, flow-core)
+## BaseFlowMap
 
-Карта взаимодействий 2D: узлы и связи по данным `FlowMapData`, ярусы и полосы, пан и масштаб, клавиатура и скринридер. Данные, нотации, контроллер и хуки — типы в `src/components/BaseFlowMap/types/`; нотации BPMN, IDEF и DFD, сценарии, «Правка» и «Правки», панели и 3D — отдельные части того же компонента.
+Карта взаимодействий 2D: узлы и связи по данным `FlowMapData`, ярусы и полосы, пан и масштаб, клавиатура и скринридер. Умеет восемь нотаций, сворачивание групп со смысловым зумом, сценарии с частицами, режимы «Правка» и «Правки», панели (мини-карта, легенда, подробности, поиск, список) и экспорт. Данные, нотации, контроллер и хуки — типы в `src/components/BaseFlowMap/types/`; живые примеры — Storybook, раздел BaseFlowMap. 3D-вид тех же данных — [BaseFlowMap3D](#baseflowmap3d) и [FLOW3D.md](./FLOW3D.md).
 
-- **Пропсы**: `data` (обязателен), `notations`, `plugins`, `mode` (`view` | `edit` | `review`) и `modes` (переключатель шапки), `selection`, `layout`, `scenario`, `isAutoplay`, `choices`, `live`, `particles`, `suggestions`, `comments`, `versions`, `compareWith`, `currentUser`, `savedAt`, `compactBreakpoint` (640; сравнивается с шириной корня минус боковые панели; в `edit` вне compact легенда и мини-карта скрыты, как тулбар и детали), `panels` (по умолчанию `toolbar`, `minimap`, `legend`, `scenario`, `details`; ещё `search`, `list`), `ariaLabel`, `height` (560px), `wheelZoom` (`ctrl` | `always` | `none`), `minZoom` (0,2), `maxZoom` (3), `isLoading`, `isDisabled`, `error`, `ui`, хуки (`beforeChange`, `beforeConnect`…).
-- **События**: `update:data`, `update:mode`, `update:selection`, `change`, `reject`, `node-click`, `node-dblclick`, `node-contextmenu`, `node-enter`, `node-leave`, то же для `edge-*`, `group-click`, `group-contextmenu`, `node-move`, `focus-change`, `viewport-change`, `history-change`, `validate`, `ready` (контроллер), `error`.
-- **Слоты**: `node`, `edge-label`, `group-label`, `toolbar`, `empty`.
-- **Части `ui`**: `header`, `toolbar`, `viewport`, `canvas`, `node`, `edge`, `group`, `label`, `list` и остальные из `FLOW_MAP_PARTS`.
-- **Клавиатура**: Tab — к карте (один узел в порядке обхода), стрелки — к ближайшему узлу, `]` и `[` — по связям вперёд и назад (с узла — к первой исходящей или входящей связи, со связи — к её концу), набор букв — по подписи, Home и End — первый и последний узел, Enter — выбрать и открыть подробности, Escape — снять выбор.
-- **Доступность**: `role="graphics-document"` на области, `graphics-object` на узле и группе, `graphics-symbol` на связи; `aria-roledescription` узла — название его вида; выбранный — `aria-current`; структурный список узлов и связей скрыт и открывается панелью `list`; live-регион озвучивает выбор и снятие выбора.
-- **Экспорт**: `exportSvg()` и `exportPng()` собирают картинку из данных карты (содержимое или видимая область, прозрачный фон), цвета читают из токенов темы.
-- **Токены** `--rise-flow-map-*`: `canvas-bg`, `canvas-border`, `node-bg|border|radius|shadow|text|gap`, `node-border-hover|selected`, `edge-border`, `edge-border-selected`, `group-bg|border|radius|text`, `label-text`, `header-height`, `toolbar-bg|gap|radius|shadow`.
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseFlowMap, flowBpmn } from '@ramzes1385/rise-ui-kit'
+import type { FlowMapData, FlowMode } from '@ramzes1385/rise-ui-kit'
+
+const mode = ref<FlowMode>('view')
+const data = ref<FlowMapData>({
+	version: 1,
+	title: 'Заказ',
+	nodes: [
+		{ id: 'start', kind: 'start', label: 'Заказ получен' },
+		{ id: 'pay', kind: 'task', label: 'Оплата' },
+	],
+	edges: [{ id: 'e1', source: 'start', target: 'pay', kind: 'sequence' }],
+})
+</script>
+
+<template>
+	<BaseFlowMap v-model:data="data" v-model:mode="mode" :modes="['view', 'edit']" :notations="[flowBpmn]" />
+</template>
+```
+
+Вид узла и связи (`kind`) определяет нотация; имена видов — в её типах (`BpmnEventProps`, `C4TechnologyProps`…) и константах (`BPMN_*`, `SERVICES_*`). Версия `data` старше поддерживаемой мигрирует `migrateFlowData`, проблемы данных приходят событием `validate` и из `validateFlowData`.
+
+### Нотации
+
+По умолчанию — `services` («Карта сервисов»). Остальные подключаются явно: `:notations="[flowBpmn, flowC4]"` или `defaults.BaseFlowMap.notations` плагина; неподключённая нотация в сборку приложения не попадает. Свою нотацию описывает `defineFlowNotation`, свой плагин — `defineFlowPlugin`.
+
+| Нотация | Экспорт | Виды узлов | Связи | Раскладка и особенности |
+|---|---|---|---|---|
+| Карта сервисов (`services`) | `flowServices` | клиенты, шлюз, сервисы, очереди, хранилища | `call`, `event`, `data` | слоистая; группы `lane`, `layer`, рамка `zone` |
+| BPMN 2.0 (`bpmn`) | `flowBpmn` | события, задачи, подпроцесс, шлюзы, пулы и дорожки | `sequence`, `message`, `association`, `data-association` | правила: поток управления только внутри пула, поток сообщений — между пулами; `simulate` проводит токен по шлюзам |
+| IDEF0 (`idef0`) | `flowIdef0` | `function` (`props.code`), `boundary` (`props.icom`) | `arrow` | порты по ролям ICOM; раскладка `idef0-staircase` |
+| IDEF3 (`idef3`) | `flowIdef3` | `uob`, соединения `junction-and`, `junction-or`, `junction-xor`, `referent` | `precedence`, `relational`, `object-flow` | `simulate` токенами |
+| DFD (`dfd`) | `flowDfd` | `process`, `store`, `entity` | `flow` | стили `gane-sarson` (по умолчанию) и `yourdon-demarco` в `layout.options.style` |
+| EPC (`epc`) | `flowEpc` | `event`, `function`, `and`, `or`, `xor`, `org-unit`, `information`, `process-interface` | `control`, `assignment` | раскладка `epc`; правила чередования событий и функций |
+| UML Sequence (`sequence`) | `flowSequence` | `lifeline`, `actor`, `fragment` | `sync`, `async`, `reply`, `create`, `destroy` | раскладка `sequence`: линии жизни — колонки, сообщения — строки; фрагмент — узел с `props.from`, `props.to`, `props.operator` |
+| C4 (`c4`) | `flowC4` | `person`, `software-system`, `container`, `component`, внешние `external-person`, `external-system` | `relationship` | группы-границы `enterprise-boundary`, `system-boundary`, `container-boundary`; раскладка `c4-nested`; смысловой зум «Контекст · Контейнеры · Компоненты» |
+| Event Storming (`event-storming`) | `flowEventStorming` | стикеры `domain-event`, `command`, `actor`, `aggregate`, `policy`, `read-model`, `external-system`, `hotspot`, `opportunity` | `flow` | группы `context`; раскладка `timeline`; грамматика — только предупреждения |
+
+Правила нотаций отказывают с причиной (событие `reject`, текст в уведомлении «Нельзя: …»); предупреждения идут в `validate`. Подробности по каждой нотации — [MIGRATION.md](../v2/MIGRATION.md), разделы «BaseFlowMap · …».
+
+### Группы, сворачивание и смысловой зум
+
+- Группа сворачивается кнопкой-шевроном в заголовке (`aria-expanded`, Enter и Space), методом `toggleGroup(id, isCollapsed?)` или начальным `FlowGroup.isCollapsed`. Свёрнутая группа — один блок «N элементов»; связи к скрытому узлу идут к блоку, связи одной пары сливаются в одну («N связей»). Сворачивание — состояние вида: оно не меняет `data`, не вызывает `update:data` и не попадает в историю. `getCollapsed()` отдаёт свёрнутые id, событие `group-toggle` — переключение. Поиск, `select` и `focus` по скрытому узлу разворачивают нужные группы.
+- Смысловой зум: нотация с `semanticZoom` (записи `{ minZoom, depth, label? }`) сворачивает и разворачивает группы по масштабу после конца жеста (≈150 мс); ручное переключение действует до смены уровня. Выключить — `isSemanticZoom: false` (по умолчанию `true`). Контроллер: `getLevel()`, `setLevel(index)`, `enterGroup(id)`, `leaveGroup(depth?)`; событие `level-change`; слот `level`.
+- Полоса холста: крошки (путь входа в группу) и переключатель уровней. Клик или двойной клик по свёрнутой группе — вход: группа разворачивается, вид вписывается в неё. Уменьшенное движение — переходы без анимации.
+
+### Режимы
+
+`mode` (`v-model:mode`): `view`, `edit`, `review`; `modes` — какие из них показывает переключатель шапки (пусто — переключателя нет).
+
+- **«Правка» (`edit`)**: инструменты (выбор, рука, связь, узел, заметка, группа), выделение рамкой и Shift, перенос с привязкой к сетке 8 px и направляющими (Alt отключает), порты и соединение мышью и с клавиатуры (`C`), подпись на месте (`F2` или двойной щелчок), буфер обмена (JSON `{ riseFlow: 1, … }`), выравнивание и распределение, «В группу», меню раскладки, контекстное меню, справка клавиш. Панель свойств с вкладками «Свойства · Стиль · Данные · Хуки» и слотом `inspector-end`. Каждое действие — команда в истории: `Ctrl/⌘+Z`, `Ctrl/⌘+Shift+Z`; перетаскивание и вставка — один шаг, сдвиги стрелками склеиваются. Удаление пула спрашивает подтверждение. На узком экране — только панель свойств в `BaseDrawer`.
+- **«Правки» (`review`)**: те же действия идут в черновик, модель не меняется. «Отправить N предложений» делит черновик на предложения и вызывает `suggest`. На холсте: добавленное — штриховой призрак и «+», удалённое — точечная рамка и «−», изменённое — «~», перемещённое — призрак и пунктирная стрелка. Принять и отклонить — `accept` (хук `beforeAccept`, один шаг истории) и `decline`; устаревшее предложение принять нельзя. Комментарии — булавки у узла, связи, группы (`comments`, `update:comments`, событие `comment`), версии и «Сравнить с текущей» (`versions`, `compareWith`).
+- Вне compact (ширина области меньше `compactBreakpoint` считается за вычетом боковых панелей) в `edit` легенда и мини-карта скрыты.
+
+### Хуки
+
+Хуки — пропсы и подписки: `beforeChange`, `beforeCreate`, `beforeConnect`, `beforeDelete`, `beforeEditLabel`, `beforeImport`, `beforeAccept`, `resolveChoice`. Хук `before…` возвращает `false` (отказ с причиной в событии `reject` и уведомлении «Нельзя: …»), изменённое значение или `Promise`. Подписки добавляет `controller.on(hook, handler, { priority })` (возвращает отписку; порядок — по убыванию приоритета, первый отказ отменяет); вкладка «Хуки» панели свойств показывает привязки (`getBindings`) с выключателем.
+
+### Ленивые части и вес первого вида
+
+Первый вид (просмотр) не тянет код правки, «Правок», сценария, поиска и подробностей. Публичный API не меняется: методы контроллера, пропсы, события и слоты прежние, меняется момент, когда код готов.
+
+| Часть | Когда грузится по `import()` |
+|---|---|
+| «Правка» (команды, история, инструменты, палитра, панель свойств, наложение) | `mode: 'edit'` или `'review'`; первый вызов метода правки; если в `modes` есть `edit`, код скачивается заранее, в простое после монтирования (`requestIdleCallback`, запасной таймер 200 мс) |
+| «Правки» (панель, наложение, слой, состояние) | `mode: 'review'` или непустые `suggestions` и `comments`; при `review` в `modes` — в простое |
+| Сценарий (плеер, панель, слой) | есть `scenario`, `scenarios` в данных, `isAutoplay`, нотация со `semantics.simulate` или включены частицы (`particles`, по умолчанию 400); `play`, `pause`, `stop`, `seek`, `step`, `setSpeed` до загрузки ждут в очереди |
+| Подробности, поиск | асинхронные компоненты; подробности скачиваются в простое после монтирования, если панель включена |
+| Экспорт SVG и PNG, `importJson` | первый вызов метода |
+| Экран ошибки (`BaseResult`) | при `error` |
+
+- До загрузки режима карта показывается как в просмотре, затем панели, классы сцены и ширина колонок меняются разом. `undo` и `redo` до первой команды ничего не делают; `getHistory` и `transact` работают сразу; `getScenarioState()` до загрузки сценария возвращает «ожидание».
+- **Сбой загрузки**: если `import()` «Правки» или «Правок» не удался (сеть, устаревший чанк), над картой появляется сообщение «Не удалось загрузить» (`role="alert"`) с кнопкой «Повторить». Повтор запрашивает код нужных режимов заново; успешная загрузка убирает сообщение. Команды сценария, ждавшие в очереди, при сбое его загрузки отбрасываются.
+- **SSR и гидрация**: загрузка начинается после монтирования; на сервере и в первом кадре клиента режимы, сценарий и частицы не отрисованы, разметка ядра совпадает. Карта с `mode: 'edit'` приходит с сервера как просмотр.
+- **Стили** ленивых частей приходят с их чанками в слое `rise` (`components/BaseFlowMap/style.layer.css`), CSS входа не растёт.
+- **Вес первого вида** (`docs/reference/SIZES.md`, приложение с одним компонентом, gzip): JS 69,5 КБ и CSS 8,1 КБ; по `import()` догружается до 188,6 КБ.
+
+### Описание API
+
+- **Пропсы**: `data` (обязателен), `notations`, `plugins`, `mode` и `modes`, `selection`, `layout`, `scenario`, `isAutoplay`, `isSemanticZoom`, `choices`, `live`, `particles` (`false` или предел, 400), `suggestions`, `comments`, `versions`, `compareWith`, `currentUser`, `savedAt`, `compactBreakpoint` (640), `panels` (по умолчанию `toolbar`, `minimap`, `legend`, `scenario`, `details`; ещё `search`, `list`), `ariaLabel`, `height` (560px), `wheelZoom` (`ctrl` | `always` | `none`), `minZoom` (0,2), `maxZoom` (3), `isLoading`, `isDisabled`, `error`, `ui`, `variant`, `color`, `sizeScale`, хуки. Полный список — `BaseFlowMapProps`.
+- **События**: `update:data`, `update:mode`, `update:selection`, `update:suggestions`, `update:comments`, `change`, `reject`, `node-*`, `edge-*`, `group-click`, `group-contextmenu`, `group-toggle`, `node-move`, `focus-change`, `viewport-change`, `level-change`, `scenario-change`, `scenario-step`, `history-change`, `validate`, `accept`, `decline`, `comment`, `ready` (контроллер), `error`.
+- **Слоты**: `node`, `edge-label`, `group-label`, `tooltip`, `details`, `toolbar`, `level`, `legend`, `scenario-step`, `inspector-end`, `empty`.
+- **Части `ui`**: `FLOW_MAP_PARTS` — `root`, `header`, `toolbar`, `viewport`, `canvas`, `node`, `edge`, `group`, `label`, `minimap`, `legend`, `scenario`, `details`, `list`, `palette`, `inspector`, `review`.
+- **Контроллер** (`ref`, событие `ready`, `useFlowMap()`): данные и граф (`getData`, `getGraph`), правка (`addNode`, `updateNode`, `addEdge`, `connect`, `updateEdge`, `addGroup`, `updateGroup`, `remove`, `move`, `layout`, `transact`), история (`undo`, `redo`, `getHistory`, `clearHistory`), выделение и вид (`select`, `fitView`, `focus`, `zoom`, `getViewport`, `setViewport`), группы и уровни (`toggleGroup`, `getCollapsed`, `getLevel`, `setLevel`, `enterGroup`, `leaveGroup`), подсветка (`highlightPath`, `clearHighlight`), сценарий (`play`, `pause`, `stop`, `seek`, `step`, `setSpeed`, `getScenarioState`), живые данные (`setLive`, `setStatus`, `setMetrics`), `validate`, `exportJson`, `importJson`, `exportSvg`, `exportPng`, хуки (`on`, `getBindings`, `setBindingEnabled`), «Правки» (`suggest`, `accept`).
+- **Клавиатура**: Tab — к карте (один узел в порядке обхода), стрелки — к ближайшему узлу, `]` и `[` — по связям вперёд и назад, набор букв — по подписи, Home и End — первый и последний узел, Enter — выбрать и открыть подробности, Escape — снять выбор. В «Правке» — клавиши справки (`C`, `F2`, `Ctrl+Z`…).
+- **Доступность**: `role="graphics-document"` на области, `graphics-object` на узле и группе, `graphics-symbol` на связи; скрытый структурный список узлов, связей и групп (виден панелью `list`); live-регион озвучивает выбор, шаги сценария и отказы. Частицы и анимации отключаются при `prefers-reduced-motion`.
+- **Экспорт**: `exportSvg()` и `exportPng()` рисуют из данных карты с цветами темы (область `content` или `viewport`, фон `theme` или `transparent`).
+- **Токены** `--rise-flow-map-*` (холст, узел, связь, группа, подпись, панель инструментов, частицы) и палитра нотаций `--rise-flow-*`; словарь — раздел `flowMap` и разделы нотаций и панелей.
+
+## BaseFlowMap3D
+
+Карта взаимодействий и процессов в 3D на [three.js](https://threejs.org): узлы — модели на сетке (35 встроенных или свой GLB), связи — ленты, дуги и трубы, группы — рамки и платформы, режим «Слои», сценарий и частицы, «Правка» на сцене. Данные, нотации, хуки, выбор и сценарий — те же, что у [BaseFlowMap](#baseflowmap). Отдельный вход `@ramzes1385/rise-ui-kit/flow3d`: в корень пакета, `/components` и плагин компонент не входит, поэтому приложения без 3D не загружают ни его, ни three.js. `three` (`>=0.180.0 <0.200.0`) — необязательная peer-зависимость. Подробный справочник — [FLOW3D.md](./FLOW3D.md).
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseFlowMap3D } from '@ramzes1385/rise-ui-kit/flow3d'
+import type { FlowMap3DView } from '@ramzes1385/rise-ui-kit/flow3d'
+import type { FlowMapData } from '@ramzes1385/rise-ui-kit'
+
+const view = ref<FlowMap3DView>('3d')
+const data: FlowMapData = {
+	version: 1,
+	title: 'Магазин',
+	nodes: [
+		{ id: 'gw', kind: 'gateway', label: 'API Gateway' },
+		{ id: 'db', kind: 'database', label: 'Orders DB', model3d: { model: 'db' } },
+	],
+	edges: [{ id: 'e1', kind: 'call', source: 'gw', target: 'db' }],
+}
+</script>
+
+<template>
+	<BaseFlowMap3D v-model:view="view" :data="data" height="560px" @fallback="reason => console.info('Показан 2D:', reason)" />
+</template>
+```
+
+- **Пропсы**. Общие с BaseFlowMap называются так же (`data`, `notations`, `plugins`, `selection`, `layout`, `scenario`, `isAutoplay`, `choices`, `live`, `particles`, `isSemanticZoom`, `ariaLabel`, `height`, `wheelZoom`, `minZoom`, `maxZoom`, `isLoading`, `isDisabled`, `error`, хуки `before…`) и передаются 2D-виду. Свои: `view` (`3d` | `2d`, `v-model:view`), `camera` (`iso`, `iso-90`, `iso-180`, `iso-270`, `top`, `perspective`, `v-model:camera`), `isLayered` (`v-model:isLayered`), `quality` (`auto` | `low` | `high`), `mode` и `modes` (`view` | `edit`), `models`, `modelResolver`, `rendererFactory`, `configureLoader`, `has2dToggle`, `hasLayersToggle`, `hasCameraControls`, `ui`, хуки сцены `onSceneReady`, `onBeforeRender`, `onModelReady`. Нет в 3D: `panels`, `suggestions`, `comments`, `versions`, `compareWith`, `currentUser`, `savedAt` (режим `review` показывает 2D-вид). Полный список — `BaseFlowMap3DProps`.
+- **События**: все события BaseFlowMap, кроме «Правок» (`update:suggestions`, `update:comments`, `accept`, `decline`, `comment`), и свои `update:view`, `update:camera`, `update:isLayered`, `fallback` (`unsupported` | `error`); `ready` отдаёт `FlowMap3DController`. Тип — `BaseFlowMap3DEmits`.
+- **Слоты**: слоты BaseFlowMap (в 2D-виде они передаются ему) и `tag` — содержимое бирки узла над моделью (`FlowMap3DTagSlotProps`).
+- **Методы `ref`** (`BaseFlowMap3DExpose` = `FlowMap3DController`): всё, что у контроллера BaseFlowMap, и `setCamera`, `rotate`, `flyTo`, `setView`, `setLayered`, `getModel`, `getModels`, `getSceneContext`. `exportSvg` работает только через 2D-вид (иначе событие `error`), `exportPng` отдаёт кадр холста без бирок.
+- **Части `ui`**: `FLOW_MAP_3D_PARTS` — `root`, `viewport`, `canvas`, `tag`, `hint`, `dock`, `zoom`, `status`, `list`, а в «Правке» ещё `toolbar`, `palette`, `inspector`.
+- **Экспорт входа `/flow3d`**: `BaseFlowMap3D`, константы `FLOW_MAP_3D_VIEWS`, `FLOW_MAP_3D_MODES`, `FLOW_MAP_3D_QUALITIES`, `FLOW_MAP_3D_PARTS`, реестр моделей (`defineModel3D`, `createScene3DModels`, `MODEL3D_PRESETS`, `MODEL3D_ANIMATIONS`, `MODEL3D_PARTS`, `MODEL3D_TONES`, `MODEL3D_PRESET_IDS`, `MODEL3D_SETS`) и типы (`Model3DHandle`, `Scene3DContext`…). Типы 3D-полей данных (`FlowNode3D`, `FlowEdge3D`, `FlowGroup3D`, `FlowStep3D`, `FlowView3D`) — из корня пакета, файл `types/data/flowData3d.types.ts`.
+- **Доступность**: область сцены — `role="group"` с подсказкой клавиатуры, скрытый список узлов по группам, озвучка смены вида, «Слоёв», частиц и фокуса. Клавиатура и поиск по буквам — в [FLOW3D.md](./FLOW3D.md#клавиатура-и-скринридер).
+- **Запасной 2D-вид**: без WebGL, при ошибке рендерера, потере контекста или неудачной загрузке модели показывается BaseFlowMap с теми же данными, а событие `fallback` называет причину. На сервере (SSR) тоже рисуется 2D.
+- **Словарь** — раздел `flowMap3d` (`UI_FLOW_MAP_3D`) и `models3d` (названия моделей).
+
+## BaseRoadmap3D
+
+Роадмап в виде 3D-острова на three.js: дорога змейкой, пьедесталы этапов с моделями, машинка на текущем этапе, тур по этапам, панель этапа. Данные, прогресс, хранилище, режимы, хуки и события — те же, что у [BaseRoadmap](#baseroadmap). Отдельный вход `@ramzes1385/rise-ui-kit/roadmap3d` (как `/flow3d`, `three` — необязательная peer-зависимость; в корень, `/components` и плагин компонент не входит). Подробности — [FLOW3D.md](./FLOW3D.md#baseroadmap3d).
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { BaseRoadmap3D } from '@ramzes1385/rise-ui-kit/roadmap3d'
+import type { Roadmap3DView } from '@ramzes1385/rise-ui-kit/roadmap3d'
+import type { RoadmapData } from '@ramzes1385/rise-ui-kit'
+
+const view = ref<Roadmap3DView>('3d')
+const focused = ref<string | null>(null)
+const data: RoadmapData = {
+	version: 1,
+	title: 'Старт во Vue',
+	goal: 'Frontend-разработчик',
+	stages: [
+		{ id: 'basics', title: 'Основы', model3d: { model: 'code' }, topics: [{ id: 'template', title: 'Шаблоны', hours: 4 }] },
+		{ id: 'router', title: 'Маршрутизация', topics: [] },
+	],
+}
+</script>
+
+<template>
+	<BaseRoadmap3D v-model:view="view" v-model:focused="focused" :data="data" height="560px" />
+</template>
+```
+
+- **Пропсы**. Общие с BaseRoadmap: `data`, `progress`, `storage`, `layout`, `narrowLayout`, `narrowWidth`, `selected`, `hasSummary`, `hasLayoutSwitch`, `detailsPosition`, `mode`, `modes`, `review`, `templates`, `draftSavedAt`, `ariaLabel`, `isLoading`, `isDisabled`, хуки `beforeStatusChange`, `beforeChange`, `beforeDelete` — передаются 2D-виду. Нет в 3D: `expanded`, `hasFilter`, `filter`. Свои: `view` (`3d` | `2d`), `camera` (`v-model:camera`), `focused` (`v-model:focused`, id этапа), `isTourPlaying` (`v-model:isTourPlaying`), `models`, `quality` (`auto` | `low` | `high`), `rendererFactory`, `configureLoader`, `has2dToggle`, `hasTour`, `compactBreakpoint` (640), `height` (`560px`), `ui`, хуки сцены `onSceneReady`, `onBeforeRender`, `onModelReady`. Полный список — `BaseRoadmap3DProps`.
+- **События**: все события BaseRoadmap и `update:view`, `update:camera`, `update:focused`, `update:isTourPlaying`, `fallback` (`unsupported` | `error`).
+- **Слоты**: слоты BaseRoadmap; в 2D-виде они передаются 2D-роадмапу, `topic-details` и `material` — ещё и панели темы 3D.
+- **Методы `ref`** (`BaseRoadmap3DExpose`): методы BaseRoadmap (кроме `expandStage`, `expandAll`, `collapseAll`) и `setCamera`, `rotate`, `setView`, `focusStage(id | null)`, `setTour(isPlaying)`, `getModel`, `getModels`, `getSceneContext`, `getStage`.
+- **Данные 3D**: у этапа `model3d` (`model` — id встроенной модели или ключ из `models`, `url` — свой GLB, `scale`, `tint`), у пути `view3d` (`seed`, `perRow`, `hasCar`, `camera`).
+- **Правка и «Правки»**: режим `edit` открывает правку этапа в панели (название, порядок «Раньше / Позже», модель пьедестала и адрес своего GLB, добавить и удалить этап); изменения идут командами роадмапа, история общая с 2D. Режим `review` показывает 2D-вид.
+- **Запасной 2D-вид**: без WebGL, при ошибке рендерера, потере контекста или неудачной загрузке модели показывается `BaseRoadmap` (`layout="path"`) с теми же данными; причину называет событие `fallback`. На сервере рисуется скрытый список этапов, без three.
+- **Части `ui`**: `ROADMAP_3D_PARTS` — `root`, `header`, `viewport`, `canvas`, `tag`, `hint`, `toolbar`, `stepper`, `panel`, `tour`, `status`, `list`.
+- **Экспорт входа `/roadmap3d`**: `BaseRoadmap3D`, `ROADMAP_3D_VIEWS`, `ROADMAP_3D_QUALITIES`, `ROADMAP_3D_PARTS`, типы компонента и тот же набор реестра моделей, что у `/flow3d`.
+- **Словарь** — раздел `roadmap3d` (`UI_ROADMAP_3D`).

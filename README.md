@@ -158,7 +158,7 @@ createApp(App)
 |---|--:|--:|
 | BaseButton с подпути | 27,8 КБ | 27,8 КБ |
 | BaseButton + `createUiKitConfig` (тема, `defaults`) | 34,6 КБ | 77,9 КБ |
-| то же + `registerLocale(en)`, `locale: 'en'` | 54,2 КБ | 77,9 КБ |
+| то же + `registerLocale(en)`, `locale: 'en'` | ≈64–66 КБ (34,6 + словарь `en` ≈29–31 КБ; сумма посчитана, не замерена) | 77,9 КБ |
 | BaseSelect с подпути | 53,7 КБ | 92,4 КБ |
 | BaseDatePicker с подпути | 68,1 КБ | 105,8 КБ |
 | `createUiKitPlugin` (все компоненты, `ru` и `en`) | 454,0 КБ | 455,5 КБ |
