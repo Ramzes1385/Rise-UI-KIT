@@ -69,7 +69,7 @@
 | BaseFileManager | 74,5 | 14,7 | 89,2 | — |
 | BaseFileUpload | 39,6 | 8,0 | 47,7 | — |
 | BaseFilterBuilder | 16,9 | 3,4 | 20,3 | — |
-| BaseFlowMap | 177,2 | 26,2 | 203,4 | — |
+| BaseFlowMap | 177,5 | 26,2 | 203,7 | — |
 | BaseFooter | 9,5 | 1,4 | 10,9 | — |
 | BaseForm | 5,2 | 1,3 | 6,5 | — |
 | BaseFormField | 6,8 | 0,9 | 7,6 | — |
@@ -121,7 +121,7 @@
 | BaseReasoning | 24,1 | 4,5 | 28,5 | — |
 | BaseRequisiteInput | 15,3 | 2,9 | 18,2 | — |
 | BaseResult | 4,9 | 1,1 | 5,9 | — |
-| BaseRoadmap | 69,9 | 14,4 | 84,3 | 51,2 |
+| BaseRoadmap | 69,9 | 14,5 | 84,4 | 51,1 |
 | BaseScrollArea | 3,3 | 0,6 | 3,9 | — |
 | BaseSearch | 45,2 | 7,9 | 53,1 | — |
 | BaseSegmented | 16,9 | 2,6 | 19,5 | — |
