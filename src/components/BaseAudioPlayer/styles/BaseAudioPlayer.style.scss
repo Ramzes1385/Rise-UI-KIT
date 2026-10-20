@@ -8,13 +8,14 @@
 	width: 100%;
 	min-width: 0;
 	padding: space(ct(audio-player, padding-y, 8px) ct(audio-player, padding-x, 12px));
-	border: 1px solid ct(audio-player, border, var(--rise-border));
+	border: 1px solid ct(audio-player, border, transparent);
 	border-radius: sz(ct(audio-player, radius, var(--rise-radius-lg)));
-	@include custom-bg(background-color, ct(audio-player, bg, var(--rise-bg)));
+	@include tonal-surface(muted);
+	@include custom-bg(background-color, ct(audio-player, bg, var(--rise-bg-muted)));
 	@include custom-text(color, ct(audio-player, text, var(--rise-text)));
 
 	&--soft {
-		border-color: transparent;
+		@include tonal-surface(elevated);
 		@include custom-bg(background-color, var(--rise-bg-elevated));
 	}
 
@@ -24,8 +25,7 @@
 
 	&--ghost {
 		padding: 0;
-		border-color: transparent;
-		background-color: transparent;
+		@include tonal-surface(none);
 		color: inherit;
 	}
 
@@ -34,7 +34,7 @@
 	}
 
 	&__button {
-		border-radius: ct(audio-player, button-radius, var(--rise-radius-full));
+		border-radius: ct(audio-player, button-radius, var(--rise-radius-md));
 	}
 
 	&__body {
@@ -55,8 +55,7 @@
 	}
 
 	&__time {
-		@include text-size(xs);
-		font-variant-numeric: tabular-nums;
+		@include caps-label;
 		white-space: nowrap;
 		color: var(--rise-text-toned);
 	}
@@ -77,18 +76,18 @@
 		--custom-bg-active: color-mix(in srgb, currentcolor 18%, transparent);
 
 		min-width: sz(40px);
-		border-color: currentcolor;
-		border-radius: var(--rise-radius-full);
+		border-color: transparent;
+		border-radius: var(--rise-radius-sm);
+		background-color: color-mix(in srgb, currentcolor 10%, transparent);
+		@include caps-label;
 		color: inherit;
-		font-variant-numeric: tabular-nums;
-		@include text-size(xs);
 	}
 
 	&__error {
 		grid-column: 1 / -1;
 		margin: sz(4px) 0 0;
 		@include text-size(xs);
-		color: var(--rise-error);
+		color: var(--rise-error-text);
 	}
 
 	&__transcript-toggle.base-button {
@@ -96,7 +95,7 @@
 		--custom-bg-hover: color-mix(in srgb, currentcolor 12%, transparent);
 		--custom-bg-active: color-mix(in srgb, currentcolor 18%, transparent);
 
-		border-radius: var(--rise-radius-full);
+		border-radius: var(--rise-radius-md);
 		color: inherit;
 
 		&[aria-expanded='true'] {
@@ -151,7 +150,7 @@
 	}
 
 	&__transcript-download.base-button {
-		border-radius: var(--rise-radius-full);
+		border-radius: var(--rise-radius-md);
 		color: inherit;
 	}
 
@@ -222,8 +221,7 @@
 	&__cue-time {
 		grid-row: 1 / span 2;
 		padding-top: sz(1px);
-		@include text-size(xs);
-		font-variant-numeric: tabular-nums;
+		@include caps-label;
 		color: var(--rise-text-toned);
 	}
 

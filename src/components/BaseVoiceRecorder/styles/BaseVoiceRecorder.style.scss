@@ -8,13 +8,14 @@
 	min-width: 0;
 	min-height: sz(ct(voice-recorder, height, 48px));
 	padding: space(ct(voice-recorder, padding-y, 6px) ct(voice-recorder, padding-x, 8px));
-	border: 1px solid ct(voice-recorder, border, var(--rise-border));
+	border: 1px solid ct(voice-recorder, border, transparent);
 	border-radius: sz(ct(voice-recorder, radius, var(--rise-radius-lg)));
-	@include custom-bg(background-color, ct(voice-recorder, bg, var(--rise-bg)));
+	@include tonal-surface(muted);
+	@include custom-bg(background-color, ct(voice-recorder, bg, var(--rise-bg-muted)));
 	@include custom-text(color, ct(voice-recorder, text, var(--rise-text)));
 
 	&--soft {
-		border-color: transparent;
+		@include tonal-surface(elevated);
 		@include custom-bg(background-color, var(--rise-bg-elevated));
 	}
 
@@ -27,7 +28,7 @@
 		flex: none;
 		width: sz(10px);
 		height: sz(10px);
-		border-radius: var(--rise-radius-full);
+		border-radius: var(--rise-radius-xs);
 		background-color: ct(voice-recorder-dot, bg, var(--rise-error));
 
 		@include motion-safe {
@@ -47,6 +48,7 @@
 
 	&__time {
 		min-width: sz(36px);
+		font-family: var(--rise-font-mono);
 		font-variant-numeric: tabular-nums;
 		@include text-size(sm);
 	}
@@ -65,7 +67,7 @@
 		align-self: stretch;
 		min-width: 1px;
 		max-width: sz(4px);
-		border-radius: ct(voice-recorder-level, radius, var(--rise-radius-full));
+		border-radius: ct(voice-recorder-level, radius, calc(var(--rise-radius-xs) / 2));
 		@include custom-text(background-color, ct(voice-recorder-level, bg, var(--rise-primary)));
 		transform-origin: center;
 		transition: transform var(--rise-duration-fast) var(--rise-ease-out);
@@ -79,7 +81,7 @@
 		flex: 1 1 auto;
 		margin: 0;
 		@include text-size(sm);
-		color: ct(voice-recorder-error, text, var(--rise-error));
+		color: ct(voice-recorder-error, text, var(--rise-error-text));
 	}
 
 	&__status {

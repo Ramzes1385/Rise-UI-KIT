@@ -30,7 +30,7 @@
 		flex: 1 1 0;
 		align-self: stretch;
 		min-width: 1px;
-		border-radius: ct(waveform-bar, radius, var(--rise-radius-full));
+		border-radius: ct(waveform-bar, radius, calc(var(--rise-radius-xs) / 2));
 		background-color: var(--waveform-rest);
 		transform-origin: center;
 		transition:
