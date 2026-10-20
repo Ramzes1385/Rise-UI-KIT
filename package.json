@@ -1014,7 +1014,8 @@
       "src/composables/crypto/useCryptoPro/emulation/index.ts",
       "scripts/*.mjs",
       "build/packages/extract.mjs",
-      "src/scene3d/**/*.ts"
+      "src/scene3d/**/*.ts",
+      "src/components/BaseFlowMap/model/notations/services/servicesIcon.ts"
     ],
     "project": [
       "src/**/*.{ts,vue,mdx}",
