@@ -88,6 +88,16 @@ describe('useScenePointer: наведение', () => {
 		expect(options.setHover).toHaveBeenCalledTimes(1)
 	})
 
+	it('кадр, который отмена не остановила, наведение уже сброшенной точки не считает', () => {
+		vi.stubGlobal('cancelAnimationFrame', () => undefined)
+		const { api, options } = mount()
+		api.onPointerMove(move(1, 1))
+		api.onPointerLeave()
+		flush()
+		expect(options.pickAt).not.toHaveBeenCalled()
+		expect(options.setHover).toHaveBeenCalledExactlyOnceWith(null)
+	})
+
 	it('размонтирование отменяет ожидающий кадр', () => {
 		const { api, options, view } = mount()
 		api.onPointerMove(move(1, 1))

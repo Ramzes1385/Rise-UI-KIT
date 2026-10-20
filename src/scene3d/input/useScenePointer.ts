@@ -4,18 +4,21 @@ import type { Scene3DPointerOptions, Scene3DPointerSpot } from '../types/interna
 const DRAG_THRESHOLD = 4
 
 function useHoverFrame(options: Scene3DPointerOptions) {
+	let spot: Scene3DPointerSpot | null = null
 	let frame = 0
 
 	const pick = (at: Scene3DPointerSpot): string | null => options.markerAt?.(at.target) ?? options.pickAt(at.x, at.y)
 
-	function flush(at: Scene3DPointerSpot): void {
+	function flush(): void {
 		frame = 0
-		options.setHover(pick(at))
+		if (spot) options.setHover(pick(spot))
+		spot = null
 	}
 
 	function cancel(): void {
 		if (frame) cancelAnimationFrame(frame)
 		frame = 0
+		spot = null
 	}
 
 	onBeforeUnmount(cancel)
@@ -24,8 +27,8 @@ function useHoverFrame(options: Scene3DPointerOptions) {
 		pick,
 		cancel,
 		request(next: Scene3DPointerSpot): void {
-			if (frame) cancelAnimationFrame(frame)
-			frame = requestAnimationFrame(() => flush(next))
+			spot = next
+			if (!frame) frame = requestAnimationFrame(flush)
 		},
 	}
 }
