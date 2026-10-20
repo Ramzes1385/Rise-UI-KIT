@@ -1,9 +1,12 @@
+import '../../helpers/lazySettle.test-utils'
 import { vi } from 'vitest'
 import { defineComponent, h } from 'vue'
-import { render } from '@testing-library/vue'
 import BaseFlowMap from '../../../ui/BaseFlowMap.vue'
+import { configure, render } from '@testing-library/vue'
 import type { FlowMapData } from '../../../types/data/flowData.types'
 import type { BaseFlowMapProps } from '../../../types/BaseFlowMap.types'
+
+configure({ asyncUtilTimeout: 15000 })
 
 export const pinned = (x: number, y: number) => ({ position: { x, y }, isPinned: true })
 

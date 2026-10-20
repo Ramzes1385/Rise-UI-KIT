@@ -205,9 +205,10 @@ describe('конвейер команд', () => {
 	it('данные изменились, пока хук думал, — команда отменяется как устаревшая', async () => {
 		const { controller } = createHarness(services)
 		let release: () => void = () => undefined
-		controller.on('beforeCreate', () => new Promise<void>(resolve => (release = resolve)))
+		let isHooked = false
+		controller.on('beforeCreate', () => new Promise<void>(resolve => ((isHooked = true), (release = resolve))))
 		const pending = controller.addNode(node('x'))
-		await vi.waitFor(() => expect(release).not.toBeUndefined())
+		await vi.waitFor(() => expect(isHooked).toBe(true))
 		controller.applyRemote([{ type: 'root', patch: { title: 'Чужое' }, previous: {} }])
 		release()
 		const result = await pending

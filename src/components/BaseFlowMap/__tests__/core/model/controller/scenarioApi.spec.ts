@@ -30,8 +30,9 @@ describe('контроллер: события истории и сценари�
 	})
 
 	it('play, pause, stop меняют состояние и шлют scenario-change', async () => {
-		const { controller, eventsOf } = createHarness(data)
+		const { controller, eventsOf, model } = createHarness(data)
 		controller.play()
+		await model.scenario.load()
 		await nextTick()
 		expect(controller.getScenarioState()).toMatchObject({ scenario: 's1', status: 'playing', stepCount: 2 })
 		expect((eventsOf('scenario-change').at(-1) as FlowScenarioState).status).toBe('playing')
@@ -44,7 +45,8 @@ describe('контроллер: события истории и сценари�
 	})
 
 	it('seek, step и setSpeed доходят до сценария; смена шага шлёт scenario-step', async () => {
-		const { controller, eventsOf } = createHarness(data)
+		const { controller, eventsOf, model } = createHarness(data)
+		await model.scenario.load()
 		controller.setSpeed(2)
 		controller.seek({ step: 'x2' })
 		await nextTick()

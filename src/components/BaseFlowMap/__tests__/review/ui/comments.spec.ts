@@ -23,7 +23,7 @@ beforeEach(() => stubFrame(1200))
 describe('вкладка «Комментарии»', () => {
 	it('пусто: подсказка выбрать элемент и пустое состояние', async () => {
 		const user = userEvent.setup()
-		mountReview()
+		await mountReview()
 		await openComments(user)
 		expect(screen.getByText(UI_FLOW_REVIEW.COMMENT_HINT)).toBeInTheDocument()
 		expect(screen.getByText(UI_FLOW_REVIEW.EMPTY_COMMENTS)).toBeInTheDocument()
@@ -32,7 +32,7 @@ describe('вкладка «Комментарии»', () => {
 
 	it('без текущего пользователя комментировать нельзя даже с выбранным элементом', async () => {
 		const user = userEvent.setup()
-		const view = mountReview({ currentUser: undefined })
+		const view = await mountReview({ currentUser: undefined })
 		await openComments(user)
 		view.controller.select(['a'])
 		await waitFor(() => expect(screen.getByText(UI_FLOW_REVIEW.COMMENT_HINT)).toBeInTheDocument())
@@ -41,7 +41,7 @@ describe('вкладка «Комментарии»', () => {
 
 	it('выбран узел: поле «Комментарий к «Alpha»», кнопка неактивна, пока поле пусто', async () => {
 		const user = userEvent.setup()
-		const view = mountReview()
+		const view = await mountReview()
 		await openComments(user)
 		view.controller.select(['a'])
 		const input = await screen.findByRole('textbox', { name: formatMessage(UI_FLOW_REVIEW.COMMENT_ON, { name: 'Alpha' }) })
@@ -55,7 +55,7 @@ describe('вкладка «Комментарии»', () => {
 
 	it('отправка создаёт цепочку, чистит поле, шлёт update:comments и comment', async () => {
 		const user = userEvent.setup()
-		const view = mountReview()
+		const view = await mountReview()
 		await openComments(user)
 		view.controller.select(['e1'])
 		const input = await screen.findByRole('textbox', { name: formatMessage(UI_FLOW_REVIEW.COMMENT_ON, { name: 'заказ' }) })
@@ -71,7 +71,7 @@ describe('вкладка «Комментарии»', () => {
 
 	it('отправка пустого поля Enter-ом не создаёт цепочку', async () => {
 		const user = userEvent.setup()
-		const view = mountReview()
+		const view = await mountReview()
 		await openComments(user)
 		view.controller.select(['a'])
 		const input = await screen.findByRole('textbox')
@@ -81,7 +81,7 @@ describe('вкладка «Комментарии»', () => {
 
 	it('комментарий к группе: имя группы в подписи поля', async () => {
 		const user = userEvent.setup()
-		const view = mountReview({
+		const view = await mountReview({
 			data: {
 				version: 1,
 				nodes: [{ id: 'a', kind: 'service', label: 'Alpha', position: { x: 0, y: 0 }, isPinned: true }],
@@ -96,7 +96,7 @@ describe('вкладка «Комментарии»', () => {
 
 	it('карточка: адресат, последний текст, статус «новое / открыто / решено», число решённых скрывается переключателем', async () => {
 		const user = userEvent.setup()
-		mountReview({
+		await mountReview({
 			comments: [
 				thread('t1', { isUnread: true }),
 				thread('t2', { target: undefined, point: { x: 5, y: 5 } }),
@@ -117,7 +117,7 @@ describe('вкладка «Комментарии»', () => {
 
 	it('«Решено» и «Вернуть» меняют состояние цепочки и шлют comment', async () => {
 		const user = userEvent.setup()
-		const view = mountReview({ comments: [thread('t1')] })
+		const view = await mountReview({ comments: [thread('t1')] })
 		await openComments(user)
 		await user.click(screen.getByRole('button', { name: UI_FLOW_REVIEW.RESOLVE }))
 		expect(await screen.findByRole('button', { name: UI_FLOW_REVIEW.REOPEN })).toBeInTheDocument()
@@ -127,7 +127,7 @@ describe('вкладка «Комментарии»', () => {
 
 	it('«Показать» ведёт к элементу цепочки; у точки на холсте элемента нет', async () => {
 		const user = userEvent.setup()
-		const view = mountReview({ comments: [thread('t1'), thread('t2', { target: undefined, point: { x: 1, y: 1 } })] })
+		const view = await mountReview({ comments: [thread('t1'), thread('t2', { target: undefined, point: { x: 1, y: 1 } })] })
 		await openComments(user)
 		const buttons = screen.getAllByRole('button', { name: UI_FLOW_REVIEW.SHOW_ELEMENT })
 		await user.click(buttons[1])
@@ -138,7 +138,7 @@ describe('вкладка «Комментарии»', () => {
 
 	it('в широком виде заголовок раскрывает цепочку и помечает её прочитанной', async () => {
 		const user = userEvent.setup()
-		const view = mountReview({ comments: [thread('t1', { isUnread: true })] })
+		const view = await mountReview({ comments: [thread('t1', { isUnread: true })] })
 		await openComments(user)
 		const title = screen.getByRole('button', { name: 'Alpha' })
 		expect(title).toHaveAttribute('aria-expanded', 'false')
@@ -153,7 +153,7 @@ describe('вкладка «Комментарии»', () => {
 		vi.useFakeTimers({ shouldAdvanceTime: true })
 		try {
 			const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
-			mountReview({ comments: [thread('t1')] })
+			await mountReview({ comments: [thread('t1')] })
 			await openComments(user)
 			const title = screen.getByRole('button', { name: 'Alpha' })
 			await user.click(title)
@@ -184,14 +184,14 @@ describe('вкладка «Комментарии»', () => {
 	})
 
 	it('строка состояния: число и непрочитанные', async () => {
-		mountReview({ comments: [thread('t1', { isUnread: true }), thread('t2')] })
+		await mountReview({ comments: [thread('t1', { isUnread: true }), thread('t2')] })
 		const status = screen.getAllByRole('status').find(item => item.classList.contains('base-flow-map__review-status')) as HTMLElement
 		expect(status).toHaveTextContent(`${UI_FLOW_REVIEW.STATUS_COMMENTS}: 2`)
 		expect(status).toHaveTextContent('1 непрочитанная')
 	})
 
-	it('если всё прочитано, об этом сказано', () => {
-		mountReview({ comments: [thread('t1')] })
+	it('если всё прочитано, об этом сказано', async () => {
+		await mountReview({ comments: [thread('t1')] })
 		const status = screen.getAllByRole('status').find(item => item.classList.contains('base-flow-map__review-status')) as HTMLElement
 		expect(status).toHaveTextContent(UI_FLOW_REVIEW.ALL_READ)
 	})

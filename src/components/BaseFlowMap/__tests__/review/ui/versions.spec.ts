@@ -22,14 +22,14 @@ beforeEach(() => stubFrame(1200))
 describe('вкладка «Версии»', () => {
 	it('без версий — пустое состояние', async () => {
 		const user = userEvent.setup()
-		mountReview()
+		await mountReview()
 		await openVersions(user)
 		expect(screen.getByText(UI_FLOW_REVIEW.EMPTY_VERSIONS)).toBeInTheDocument()
 	})
 
 	it('список: новые сверху, у текущей значок «текущая» и нет кнопки, у остальных — «Сравнить с текущей»', async () => {
 		const user = userEvent.setup()
-		mountReview({ versions: versions(), data: withDelta() })
+		await mountReview({ versions: versions(), data: withDelta() })
 		await openVersions(user)
 		const cards = document.querySelectorAll('.base-flow-map__review-card')
 		expect(cards).toHaveLength(2)
@@ -48,7 +48,7 @@ describe('вкладка «Версии»', () => {
 
 	it('сравнение: полоса «Сравнение» со слоями и сводкой, кнопка нажата, метка «+» на холсте', async () => {
 		const user = userEvent.setup()
-		mountReview({ versions: versions(), data: withDelta() })
+		await mountReview({ versions: versions(), data: withDelta() })
 		await openVersions(user)
 		expect(screen.queryByRole('group', { name: UI_FLOW_REVIEW.COMPARE })).toBeNull()
 		await user.click(screen.getByRole('button', { name: UI_FLOW_REVIEW.COMPARE_WITH_CURRENT }))
@@ -68,7 +68,7 @@ describe('вкладка «Версии»', () => {
 
 	it('слои: «Было» показывает только убранное, «Стало» ничего; «Разница» возвращает всё', async () => {
 		const user = userEvent.setup()
-		mountReview({ versions: versions(), data: withDelta() })
+		await mountReview({ versions: versions(), data: withDelta() })
 		await openVersions(user)
 		await user.click(screen.getByRole('button', { name: UI_FLOW_REVIEW.COMPARE_WITH_CURRENT }))
 		const bar = screen.getByRole('group', { name: UI_FLOW_REVIEW.COMPARE })
@@ -85,7 +85,7 @@ describe('вкладка «Версии»', () => {
 
 	it('слой «Было» рисует убранные между версиями узлы призраками', async () => {
 		const user = userEvent.setup()
-		mountReview({ versions: [versions()[1], { ...versions()[0], id: 'v3', date: 3000, data: reviewData() }], data: reviewData() })
+		await mountReview({ versions: [versions()[1], { ...versions()[0], id: 'v3', date: 3000, data: reviewData() }], data: reviewData() })
 		await openVersions(user)
 		await user.click(screen.getByRole('button', { name: UI_FLOW_REVIEW.COMPARE_WITH_CURRENT }))
 		const bar = screen.getByRole('group', { name: UI_FLOW_REVIEW.COMPARE })
@@ -95,7 +95,7 @@ describe('вкладка «Версии»', () => {
 
 	it('«Сравнивается» повторным нажатием выключает сравнение; крестик в полосе — тоже', async () => {
 		const user = userEvent.setup()
-		mountReview({ versions: versions(), data: withDelta() })
+		await mountReview({ versions: versions(), data: withDelta() })
 		await openVersions(user)
 		await user.click(screen.getByRole('button', { name: UI_FLOW_REVIEW.COMPARE_WITH_CURRENT }))
 		await user.click(screen.getByRole('button', { name: UI_FLOW_REVIEW.COMPARING }))
@@ -108,7 +108,7 @@ describe('вкладка «Версии»', () => {
 
 	it('автор версии подписан текстом под заголовком, аватар уменьшен до 75 %, у версии без автора строки нет', async () => {
 		const user = userEvent.setup()
-		mountReview({ versions: versions(), data: withDelta() })
+		await mountReview({ versions: versions(), data: withDelta() })
 		await openVersions(user)
 		const cards = document.querySelectorAll('.base-flow-map__review-card')
 		const by = cards[0].querySelector('.base-flow-map__review-card-by') as HTMLElement
@@ -119,32 +119,32 @@ describe('вкладка «Версии»', () => {
 		expect(cards[1].querySelector('.base-flow-map__review-card-by')).toBeNull()
 	})
 
-	it('идентичные версии без правок вручную: сводки нет, compare пуст (данные приводятся к нотации)', () => {
+	it('идентичные версии без правок вручную: сводки нет, compare пуст (данные приводятся к нотации)', async () => {
 		const same = reviewData()
 		const list: FlowVersion[] = [
 			{ id: 'v1', label: 'v1', date: 1000, data: reviewData() },
 			{ id: 'v2', label: 'v2', date: 2000, data: same },
 		]
-		const view = mountReview({ versions: list, data: same, compareWith: 'v1' })
+		const view = await mountReview({ versions: list, data: same, compareWith: 'v1' })
 		expect(view.controller.compare('v1', 'v2')).toEqual([])
 		expect(view.controller.compare('v1')).toEqual([])
 		expect(screen.getByRole('group', { name: UI_FLOW_REVIEW.COMPARE }).querySelector('.base-flow-map__review-summary')).toBeNull()
 	})
 
-	it('версии без отличий: полоса есть, сводки нет', () => {
+	it('версии без отличий: полоса есть, сводки нет', async () => {
 		const same = reviewData({ edges: reviewData().edges.map(edge => ({ ...edge, kind: 'call' })) })
 		const list: FlowVersion[] = [
 			{ id: 'v1', label: 'v1', date: 1000, data: same },
 			{ id: 'v2', label: 'v2', date: 2000, data: same },
 		]
-		mountReview({ versions: list, data: same, compareWith: 'v1' })
+		await mountReview({ versions: list, data: same, compareWith: 'v1' })
 		const bar = screen.getByRole('group', { name: UI_FLOW_REVIEW.COMPARE })
 		expect(bar.querySelector('.base-flow-map__review-summary')).toBeNull()
 	})
 
 	it('compareWith из props открывает сравнение сразу, нужная версия отмечена в списке', async () => {
 		const user = userEvent.setup()
-		mountReview({ versions: versions(), data: withDelta(), compareWith: 'v1' })
+		await mountReview({ versions: versions(), data: withDelta(), compareWith: 'v1' })
 		expect(screen.getByRole('group', { name: UI_FLOW_REVIEW.COMPARE })).toBeInTheDocument()
 		await openVersions(user)
 		expect(screen.getByRole('button', { name: UI_FLOW_REVIEW.COMPARING })).toHaveAttribute('aria-pressed', 'true')

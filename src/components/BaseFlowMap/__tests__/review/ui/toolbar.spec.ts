@@ -12,16 +12,16 @@ const toolbar = () => screen.getByRole('toolbar', { name: UI_FLOW_REVIEW.FILTERS
 const titles = () => screen.queryAllByRole('listitem', { name: /Предложение:/ }).map(item => item.getAttribute('aria-label'))
 
 describe('панель фильтров', () => {
-	it('легенда доступна с клавиатуры: tabindex=0 и доступное имя', () => {
-		mountReview()
+	it('легенда доступна с клавиатуры: tabindex=0 и доступное имя', async () => {
+		await mountReview()
 		const legend = screen.getByRole('list', { name: UI_FLOW_REVIEW.LEGEND })
 		expect(legend).toHaveAttribute('tabindex', '0')
 		legend.focus()
 		expect(legend).toHaveFocus()
 	})
 
-	it('легенда: добавлено, удалено, переименовано, перемещено, комментарий', () => {
-		mountReview()
+	it('легенда: добавлено, удалено, переименовано, перемещено, комментарий', async () => {
+		await mountReview()
 		const legend = screen.getByRole('list', { name: UI_FLOW_REVIEW.LEGEND })
 		expect(
 			within(legend)
@@ -36,14 +36,14 @@ describe('панель фильтров', () => {
 		])
 	})
 
-	it('без предложений группы авторов нет', () => {
-		mountReview()
+	it('без предложений группы авторов нет', async () => {
+		await mountReview()
 		expect(within(toolbar()).queryByRole('group', { name: UI_FLOW_REVIEW.AUTHORS })).toBeNull()
 	})
 
 	it('авторы: кнопки с aria-pressed скрывают и возвращают предложения автора', async () => {
 		const user = userEvent.setup()
-		mountReview({ suggestions: [suggestion('s1', [renameA]), suggestion('s2', [moveB], { author: BORIS })] })
+		await mountReview({ suggestions: [suggestion('s1', [renameA]), suggestion('s2', [moveB], { author: BORIS })] })
 		const shown = screen.getByRole('button', { name: formatMessage(UI_FLOW_REVIEW.AUTHOR_SHOWN, { name: BORIS.name }) })
 		expect(shown).toHaveAttribute('aria-pressed', 'true')
 		await user.click(shown)
@@ -54,8 +54,8 @@ describe('панель фильтров', () => {
 		expect(titles()).toHaveLength(2)
 	})
 
-	it('аватары авторов и карточек предложений уменьшены до 75 %', () => {
-		mountReview({ suggestions: [suggestion('s1', [renameA]), suggestion('s2', [moveB], { author: BORIS })] })
+	it('аватары авторов и карточек предложений уменьшены до 75 %', async () => {
+		await mountReview({ suggestions: [suggestion('s1', [renameA]), suggestion('s2', [moveB], { author: BORIS })] })
 		const inToolbar = within(toolbar()).getByRole('group', { name: UI_FLOW_REVIEW.AUTHORS }).querySelectorAll('.base-avatar')
 		const inCards = document.querySelectorAll('.base-flow-map__review-card-head .base-avatar')
 		expect(inToolbar).toHaveLength(2)
@@ -65,7 +65,7 @@ describe('панель фильтров', () => {
 
 	it('«Только мои» и «Неразрешённые» сужают список, «Всё» возвращает', async () => {
 		const user = userEvent.setup()
-		mountReview({
+		await mountReview({
 			suggestions: [
 				suggestion('s1', [renameA]),
 				suggestion('s2', [moveB], { author: BORIS }),
@@ -83,7 +83,7 @@ describe('панель фильтров', () => {
 
 	it('«Только изменения» включается и приглушает остальное', async () => {
 		const user = userEvent.setup()
-		mountReview({ suggestions: [suggestion('s1', [renameA])] })
+		await mountReview({ suggestions: [suggestion('s1', [renameA])] })
 		const only = screen.getByRole('switch', { name: UI_FLOW_REVIEW.ONLY_CHANGED })
 		expect(only).not.toBeChecked()
 		await user.click(only)
@@ -92,14 +92,14 @@ describe('панель фильтров', () => {
 })
 
 describe('черновик', () => {
-	it('кнопок отправки нет, пока черновик пуст', () => {
-		mountReview()
+	it('кнопок отправки нет, пока черновик пуст', async () => {
+		await mountReview()
 		expect(screen.queryByRole('button', { name: UI_FLOW_REVIEW.DISCARD })).toBeNull()
 	})
 
 	it('правка попадает в черновик: «Отправить N предложений» отправляет, метки рисуются', async () => {
 		const user = userEvent.setup()
-		const view = mountReview()
+		const view = await mountReview()
 		await view.controller.updateNode('a', { label: 'Новое' })
 		await view.controller.updateNode('c', { label: 'Гамма' })
 		expect(view.controller.getData().nodes[0].label).toBe('Alpha')
@@ -119,7 +119,7 @@ describe('черновик', () => {
 
 	it('«Сбросить» убирает черновик и метки', async () => {
 		const user = userEvent.setup()
-		const view = mountReview()
+		const view = await mountReview()
 		await view.controller.updateNode('a', { label: 'Новое' })
 		await user.click(await screen.findByRole('button', { name: UI_FLOW_REVIEW.DISCARD }))
 		expect(screen.queryByRole('button', { name: /Отправить/ })).toBeNull()
@@ -127,7 +127,7 @@ describe('черновик', () => {
 	})
 
 	it('текущий пользователь подписан на метках черновика', async () => {
-		const view = mountReview()
+		const view = await mountReview()
 		await view.controller.updateNode('a', { label: 'Новое' })
 		await screen.findByRole('button', { name: /Отправить/ })
 		expect(document.querySelector('.base-flow-map__review-author')).toHaveTextContent(ANNA.name)

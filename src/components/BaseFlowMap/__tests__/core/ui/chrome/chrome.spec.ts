@@ -105,7 +105,7 @@ describe('BaseFlowMap поиск узла', () => {
 		const { rerender } = mountMap()
 		expect(screen.queryByPlaceholderText(UI_FLOW_MAP.SEARCH)).not.toBeInTheDocument()
 		await rerender({ panels: ['search'] })
-		expect(screen.getByPlaceholderText(UI_FLOW_MAP.SEARCH)).toBeInTheDocument()
+		expect(await screen.findByPlaceholderText(UI_FLOW_MAP.SEARCH)).toBeInTheDocument()
 		await rerender({ isLoading: true })
 		expect(screen.queryByPlaceholderText(UI_FLOW_MAP.SEARCH)).not.toBeInTheDocument()
 		await rerender({ isLoading: false, error: 'сбой' })
@@ -118,7 +118,7 @@ describe('BaseFlowMap поиск узла', () => {
 		await nextTick()
 		const controller = controllerOf(result as never)
 		controller.setViewport({ x: 0, y: 0, zoom: 0.5 })
-		const input = screen.getByPlaceholderText(UI_FLOW_MAP.SEARCH)
+		const input = await screen.findByPlaceholderText(UI_FLOW_MAP.SEARCH)
 		await fireEvent.focus(input)
 		await fireEvent.update(input, 'ALPH')
 		const option = await screen.findByRole('option', { name: /Alpha/ })
@@ -131,7 +131,7 @@ describe('BaseFlowMap поиск узла', () => {
 
 	it('пустой запрос и отсутствие совпадений результатов не дают', async () => {
 		mountMap({ panels: ['search'] })
-		const input = screen.getByPlaceholderText(UI_FLOW_MAP.SEARCH)
+		const input = await screen.findByPlaceholderText(UI_FLOW_MAP.SEARCH)
 		await fireEvent.focus(input)
 		await fireEvent.update(input, 'gam')
 		expect(await screen.findByRole('option', { name: /Gamma/ })).toBeInTheDocument()
@@ -145,7 +145,7 @@ describe('BaseFlowMap поиск узла', () => {
 
 	it('поиск находит узел по id, даже если подпись другая', async () => {
 		mountMap({ data: mapData({ nodes: [{ id: 'billing', kind: 'service', label: 'Касса' }], edges: [] }), panels: ['search'] })
-		const input = screen.getByPlaceholderText(UI_FLOW_MAP.SEARCH)
+		const input = await screen.findByPlaceholderText(UI_FLOW_MAP.SEARCH)
 		await fireEvent.focus(input)
 		await fireEvent.update(input, 'BILL')
 		expect(await screen.findByRole('option', { name: /Касса/ })).toBeInTheDocument()

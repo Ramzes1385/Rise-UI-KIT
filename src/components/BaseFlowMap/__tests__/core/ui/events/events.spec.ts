@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
-import { fireEvent, screen } from '@testing-library/vue'
+import { fireEvent, screen, waitFor } from '@testing-library/vue'
 import { controllerOf, fired, mapData, mountMap, pinned } from '../flowUi'
 
 const node = (name: RegExp) => screen.getByRole('graphics-object', { name })
@@ -152,7 +152,7 @@ describe('BaseFlowMap события элементов', () => {
 		const result = mountMap({ data: scenarioData(), scenario: 's1' })
 		const controller = controllerOf(result as never)
 		controller.step(1)
-		await nextTick()
+		await waitFor(() => expect(result.emitted()['scenario-step']).toBeDefined())
 		expect(result.emitted()['scenario-step']?.length).toBeGreaterThan(0)
 		const last = fired(result, 'scenario-step').at(-1)?.[0] as { stepIndex: number; scenario: string }
 		expect(last.scenario).toBe('s1')

@@ -1,3 +1,4 @@
+import '../helpers/lazySettle.test-utils'
 import { mount } from '@vue/test-utils'
 import BaseFlowMap from '../../ui/BaseFlowMap.vue'
 import FlowCanvas from '../../ui/canvas/FlowCanvas.vue'

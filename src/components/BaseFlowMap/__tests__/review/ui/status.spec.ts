@@ -11,8 +11,8 @@ beforeEach(() => stubFrame(1200))
 const status = () => screen.getAllByRole('status').find(item => item.classList.contains('base-flow-map__review-status')) as HTMLElement
 
 describe('строка состояния', () => {
-	it('считает ждущие, принятые и отклонённые предложения', () => {
-		mountReview({
+	it('считает ждущие, принятые и отклонённые предложения', async () => {
+		await mountReview({
 			suggestions: [
 				suggestion('s1', [renameA]),
 				suggestion('s2', [moveB]),
@@ -27,7 +27,7 @@ describe('строка состояния', () => {
 
 	it('числа обновляются после решения', async () => {
 		const user = userEvent.setup()
-		mountReview({ suggestions: [suggestion('s1', [renameA])] })
+		await mountReview({ suggestions: [suggestion('s1', [renameA])] })
 		await user.click(screen.getByRole('button', { name: UI_FLOW_REVIEW.DECLINE }))
 		expect(status()).toHaveTextContent(`${UI_FLOW_REVIEW.STATUS_WAITING}: 0`)
 		expect(status()).toHaveTextContent(`${UI_FLOW_REVIEW.STATUS_DECLINED_SHORT}: 1`)
@@ -39,7 +39,7 @@ describe('число привязок и скрытая внутренняя п�
 
 	it('внутренняя подписка flowReviewInternal не считается и не показывается: без обработчиков приложения — 0 и пустой список', async () => {
 		const user = userEvent.setup()
-		const view = mountReview()
+		const view = await mountReview()
 		expect(view.controller.getBindings().some(item => item.handler === 'flowReviewInternal')).toBe(true)
 		expect(count()).toHaveTextContent('0')
 		expect(count()).toHaveAttribute('aria-hidden', 'true')
@@ -51,7 +51,7 @@ describe('число привязок и скрытая внутренняя п�
 
 	it('число привязок видно сразу после монтирования и растёт после открытия окна; обработчик приложения на том же событии виден', async () => {
 		const user = userEvent.setup()
-		const view = mountReview({ plugins: [{ name: 'early', setup: controller => void controller.on('accept', () => undefined) }] })
+		const view = await mountReview({ plugins: [{ name: 'early', setup: controller => void controller.on('accept', () => undefined) }] })
 		expect(count()).toHaveTextContent('1')
 		view.controller.on('update:suggestions', () => undefined)
 		await user.click(within(status()).getByRole('button', { name: UI_FLOW_REVIEW.HOOKS }))
@@ -74,7 +74,7 @@ describe('хуки правок', () => {
 
 	it('окно открывается кнопкой с aria-expanded и озаглавлено', async () => {
 		const user = userEvent.setup()
-		mountReview()
+		await mountReview()
 		const { trigger, dialog } = await openHooks(user)
 		expect(trigger).toHaveAttribute('aria-expanded', 'true')
 		expect(within(dialog).getByText(UI_FLOW_REVIEW.HOOKS_TITLE)).toBeInTheDocument()
@@ -82,7 +82,7 @@ describe('хуки правок', () => {
 
 	it('стрелка «событие → обработчик» несёт класс для зеркала RTL', async () => {
 		const user = userEvent.setup()
-		const view = mountReview()
+		const view = await mountReview()
 		view.controller.on('accept', function onAccept(): void {})
 		const { dialog } = await openHooks(user)
 		const arrow = rowOf(dialog, 'accept').querySelector('.base-flow-map__review-arrow')
@@ -92,7 +92,7 @@ describe('хуки правок', () => {
 
 	it('обработчики приложения: событие, функция, отменяемость, число вызовов; выключатель', async () => {
 		const user = userEvent.setup()
-		const view = mountReview()
+		const view = await mountReview()
 		function onAccept(): void {}
 		view.controller.on('accept', onAccept)
 		view.controller.on('beforeAccept', () => undefined)
@@ -117,7 +117,7 @@ describe('хуки правок', () => {
 
 	it('Escape закрывает окно, при повторном открытии список обновлён; чужие события не показываются', async () => {
 		const user = userEvent.setup()
-		const view = mountReview()
+		const view = await mountReview()
 		view.controller.on('node-click', () => undefined)
 		const { trigger, dialog } = await openHooks(user)
 		expect(within(dialog).queryByText('node-click')).toBeNull()

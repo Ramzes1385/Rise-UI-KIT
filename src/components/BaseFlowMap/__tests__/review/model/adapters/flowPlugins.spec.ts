@@ -1,6 +1,6 @@
 import { nextTick } from 'vue'
 import { formatMessage } from '@/locales/state'
-import { UI_FLOW_REVIEW } from '@/locales/messages'
+import { UI_FLOW_MAP } from '@/locales/messages'
 import { createReviewHarness } from '../../fixtures/reviewHarness'
 import { setupFlowPlugins } from '../../../../model/controller/flowPlugins'
 import type { FlowMapController, FlowMapPlugin } from '../../../../types/api/flowController.types'
@@ -41,7 +41,7 @@ describe('setupFlowPlugins', () => {
 		])
 		expect(good).toHaveBeenCalledTimes(1)
 		expect(warn).toHaveBeenCalledTimes(1)
-		expect(warn).toHaveBeenCalledWith(prefixed(formatMessage(UI_FLOW_REVIEW.WARN_PLUGIN_FAILED, { name: 'bad', message: 'сломался' })))
+		expect(warn).toHaveBeenCalledWith(prefixed(formatMessage(UI_FLOW_MAP.WARN_PLUGIN_FAILED, { name: 'bad', message: 'сломался' })))
 		expect(() => off()).not.toThrow()
 	})
 
@@ -54,7 +54,7 @@ describe('setupFlowPlugins', () => {
 				},
 			},
 		])
-		expect(warn).toHaveBeenCalledWith(prefixed(formatMessage(UI_FLOW_REVIEW.WARN_PLUGIN_FAILED, { name: 'odd', message: 'текст' })))
+		expect(warn).toHaveBeenCalledWith(prefixed(formatMessage(UI_FLOW_MAP.WARN_PLUGIN_FAILED, { name: 'odd', message: 'текст' })))
 	})
 
 	it('повтор имени — предупреждение, действует последний плагин', () => {
@@ -70,7 +70,7 @@ describe('setupFlowPlugins', () => {
 		expect(second).toHaveBeenCalledTimes(1)
 		expect(other).toHaveBeenCalledTimes(1)
 		expect(warn).toHaveBeenCalledTimes(1)
-		expect(warn).toHaveBeenCalledWith(prefixed(formatMessage(UI_FLOW_REVIEW.WARN_PLUGIN_DUPLICATE, { name: 'same' })))
+		expect(warn).toHaveBeenCalledWith(prefixed(formatMessage(UI_FLOW_MAP.WARN_PLUGIN_DUPLICATE, { name: 'same' })))
 	})
 
 	it('три плагина с одним именем — два предупреждения', () => {
@@ -108,9 +108,7 @@ describe('setupFlowPlugins', () => {
 		])
 		off()
 		expect(order).toEqual(['c', 'a'])
-		expect(warn).toHaveBeenCalledWith(
-			prefixed(formatMessage(UI_FLOW_REVIEW.WARN_PLUGIN_FAILED, { name: 'b', message: 'не отключился' })),
-		)
+		expect(warn).toHaveBeenCalledWith(prefixed(formatMessage(UI_FLOW_MAP.WARN_PLUGIN_FAILED, { name: 'b', message: 'не отключился' })))
 	})
 })
 

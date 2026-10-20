@@ -53,7 +53,7 @@ describe('BaseFlowMap компактный вид', () => {
 			}),
 			scenario: 's',
 		})
-		expect(screen.getByRole('group', { name: UI_FLOW_SCENARIO.PANEL })).toBeInTheDocument()
+		expect(await screen.findByRole('group', { name: UI_FLOW_SCENARIO.PANEL })).toBeInTheDocument()
 		expect(screen.getByRole('button', { name: UI_FLOW_SCENARIO.PLAY })).toBeInTheDocument()
 	})
 

@@ -40,4 +40,13 @@ describe('гидрация карты поверх серверной разме
 		await vi.waitFor(() => expect(host.querySelector(INSPECTOR)).not.toBeNull(), { timeout: LOAD_TIMEOUT })
 		app.unmount()
 	})
+
+	it('mode: review с порога показывает панель «Правок» после загрузки; на сервере её нет', async () => {
+		const props = { mode: 'review', modes: ['view', 'review'], currentUser: { name: 'Анна' } } as Partial<BaseFlowMapProps>
+		const html = await renderToString(createSSRApp({ render: () => h(BaseFlowMap, { data: mapData(), ...props }) }))
+		expect(html).not.toContain('base-flow-map__review-panel')
+		const { host, app } = await hydrate(props)
+		await vi.waitFor(() => expect(host.querySelector('.base-flow-map__review-panel')).not.toBeNull(), { timeout: LOAD_TIMEOUT })
+		app.unmount()
+	})
 })

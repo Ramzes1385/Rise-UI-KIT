@@ -1,3 +1,4 @@
+import './helpers/lazySettle.test-utils'
 import '@testing-library/jest-dom/vitest'
 import { nextTick } from 'vue'
 import BaseFlowMap from '../ui/BaseFlowMap.vue'
@@ -29,7 +30,7 @@ describe('BaseFlowMap integration', () => {
 		await vi.waitFor(() => expect(api).toHaveFocus())
 		await fireEvent.keyDown(api, { key: 'Enter' })
 		expect(result.emitted()['update:selection'].at(-1)).toEqual([['api']])
-		expect(await screen.findByRole('region', { name: UI_FLOW_PANELS.DETAILS_NODE })).toHaveTextContent('API')
+		expect(await screen.findByRole('region', { name: UI_FLOW_PANELS.DETAILS_NODE }, { timeout: 5000 })).toHaveTextContent('API')
 		await fireEvent.keyDown(api, { key: 'Escape' })
 		expect(result.emitted()['update:selection'].at(-1)).toEqual([[]])
 	})

@@ -1,5 +1,16 @@
 import '@testing-library/jest-dom/vitest'
+import type { Component } from 'vue'
+import { flushPromises } from '@vue/test-utils'
 import { UI_FLOW_MAP } from '@/locales/messages'
+
+const layerStub = vi.hoisted(() => ({ value: null as Component | null }))
+
+vi.mock('../../../../ui/lazy/flowLazyLoaders', async importOriginal => {
+	const original = await importOriginal<typeof import('../../../../ui/lazy/flowLazyLoaders')>()
+	return { ...original, loadScenarioLayer: () => (layerStub.value ? Promise.resolve(layerStub.value) : original.loadScenarioLayer()) }
+})
+
+afterEach(() => (layerStub.value = null))
 import { defineComponent, h, nextTick } from 'vue'
 import { fireEvent, screen } from '@testing-library/vue'
 import { mapData, mountMap, pinned, sceneOf, stubFrame } from '../flowUi'
@@ -137,7 +148,7 @@ describe('BaseFlowMap холст', () => {
 		expect(screen.getByRole('region', { name: 'Заказы' })).toHaveAttribute('aria-busy', 'true')
 		expect(screen.queryByRole('graphics-document')).not.toBeInTheDocument()
 		await rerender({ isLoading: false, error: 'Сервер недоступен' })
-		expect(screen.getByText(UI_FLOW_MAP.ERROR_TITLE)).toBeInTheDocument()
+		expect(await screen.findByText(UI_FLOW_MAP.ERROR_TITLE)).toBeInTheDocument()
 		expect(screen.getByText('Сервер недоступен')).toBeInTheDocument()
 		expect(screen.queryByRole('graphics-document')).not.toBeInTheDocument()
 	})
@@ -278,13 +289,21 @@ describe('BaseFlowMap холст', () => {
 	it.each([
 		{ particles: false, expected: 'false' },
 		{ particles: 12, expected: '12' },
-	])('проп particles ($particles) доходит до слоя сценария через холст', ({ particles, expected }) => {
-		const layer = defineComponent({
+	])('проп particles ($particles) доходит до слоя сценария через холст', async ({ particles, expected }) => {
+		layerStub.value = defineComponent({
 			props: { particles: { type: [Boolean, Number], default: undefined } },
 			setup: props => () => h('g', { 'data-testid': 'layer', 'data-particles': String(props.particles) }),
 		})
-		mountMap({ particles }, { global: { stubs: { FlowScenarioLayer: layer } } })
-		expect(screen.getByTestId('layer')).toHaveAttribute('data-particles', expected)
+		const scenario = { id: 's', label: 'S', steps: [{ id: 'x', edge: 'e1' }] }
+		mountMap({ particles, data: mapData({ scenarios: [scenario] }) })
+		expect(await screen.findByTestId('layer')).toHaveAttribute('data-particles', expected)
+	})
+
+	it('слой сценария не рисуется, пока код сценария не загружен: без сценария и частиц его нет', async () => {
+		layerStub.value = defineComponent({ setup: () => () => h('g', { 'data-testid': 'layer' }) })
+		mountMap({ particles: false })
+		await flushPromises()
+		expect(screen.queryByTestId('layer')).not.toBeInTheDocument()
 	})
 
 	it('вид ghost и outline даёт свой класс корня', () => {

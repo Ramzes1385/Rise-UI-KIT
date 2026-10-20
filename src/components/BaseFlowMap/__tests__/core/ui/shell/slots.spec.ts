@@ -36,12 +36,12 @@ describe('слоты панелей проходят через BaseFlowMap: ш�
 		expect(screen.getByText('легенда true')).toBeInTheDocument()
 	})
 
-	it('scenario-step рисует каждый шаг сценария', () => {
+	it('scenario-step рисует каждый шаг сценария', async () => {
 		mountMap(
 			{ data: scenarioData(), scenario: 's' },
 			{ slots: { 'scenario-step': (slot: { index: number }) => h('i', `шаг ${slot.index}`) } },
 		)
-		expect(screen.getByText('шаг 0')).toBeInTheDocument()
+		expect(await screen.findByText('шаг 0')).toBeInTheDocument()
 		expect(screen.getByText('шаг 1')).toBeInTheDocument()
 	})
 

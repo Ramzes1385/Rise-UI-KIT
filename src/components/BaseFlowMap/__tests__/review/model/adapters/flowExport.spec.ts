@@ -36,7 +36,7 @@ describe('экспорт готовой карты через публичный
 	beforeEach(() => stubFrame(1200))
 
 	it('SVG содержит подписи узлов и разбирается как XML', async () => {
-		const { controller } = mountReview()
+		const { controller } = await mountReview()
 		const document = parse(await controller.exportSvg())
 		expect(document.querySelector('parsererror')).toBeNull()
 		const text = document.documentElement.textContent
@@ -59,7 +59,7 @@ describe('экспорт готовой карты через публичный
 		URL.revokeObjectURL = vi.fn()
 		vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({ drawImage: vi.fn() } as never)
 		vi.spyOn(HTMLCanvasElement.prototype, 'toBlob').mockImplementation(done => done(png))
-		const { controller } = mountReview()
+		const { controller } = await mountReview()
 		expect(await controller.exportPng({ pixelRatio: 1 })).toBe(png)
 		vi.unstubAllGlobals()
 	})

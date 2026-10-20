@@ -19,21 +19,21 @@ const pinName = (name: string, count: number) => formatMessage(UI_FLOW_REVIEW.PI
 beforeEach(() => stubFrame(1200))
 
 describe('булавки комментариев', () => {
-	it('вне режима «Правки» булавок нет', () => {
-		mountReview({ mode: 'view', comments: [thread('t1')] })
+	it('вне режима «Правки» булавок нет', async () => {
+		await mountReview({ mode: 'view', comments: [thread('t1')] })
 		expect(screen.queryByRole('button', { name: pinName(BORIS.name, 1) })).toBeNull()
 	})
 
-	it('булавка — кнопка с подписью: кто начал и сколько комментариев; на ней инициалы и число', () => {
-		mountReview({ comments: [thread('t1')] })
+	it('булавка — кнопка с подписью: кто начал и сколько комментариев; на ней инициалы и число', async () => {
+		await mountReview({ comments: [thread('t1')] })
 		const pin = screen.getByRole('button', { name: pinName(BORIS.name, 1) })
 		expect(pin).toHaveTextContent('Б')
 		expect(pin).toHaveTextContent('1')
 		expect(pin).not.toHaveClass('base-flow-map__review-pin--unread')
 	})
 
-	it('положение следует за масштабом и сдвигом: правый верхний угол узла', () => {
-		const view = mountReview({ comments: [thread('t1')] })
+	it('положение следует за масштабом и сдвигом: правый верхний угол узла', async () => {
+		const view = await mountReview({ comments: [thread('t1')] })
 		view.controller.setViewport({ x: 10, y: 20, zoom: 2 })
 		return waitFor(() => {
 			const pin = screen.getByRole('button', { name: pinName(BORIS.name, 1) })
@@ -42,8 +42,8 @@ describe('булавки комментариев', () => {
 		})
 	})
 
-	it('непрочитанная пульсирует, решённая гаснет и показывает галочку вместо числа', () => {
-		mountReview({
+	it('непрочитанная пульсирует, решённая гаснет и показывает галочку вместо числа', async () => {
+		await mountReview({
 			comments: [thread('t1', { isUnread: true }), thread('t2', { isResolved: true, target: { entity: 'node', id: 'b' } })],
 		})
 		const [unread, done] = screen.getAllByRole('button', { name: pinName(BORIS.name, 1) })
@@ -52,12 +52,12 @@ describe('булавки комментариев', () => {
 		expect(done).not.toHaveTextContent('1')
 	})
 
-	it('к связи, группе и точке холста булавки тоже ставятся; к чужому элементу — нет', () => {
+	it('к связи, группе и точке холста булавки тоже ставятся; к чужому элементу — нет', async () => {
 		const data = reviewData({
 			groups: [{ id: 'g', kind: 'zone', label: 'Зона' }],
 			nodes: reviewData().nodes.map(node => (node.id === 'a' ? { ...node, group: 'g' } : node)),
 		})
-		mountReview({
+		await mountReview({
 			data,
 			comments: [
 				thread('t1', { target: { entity: 'edge', id: 'e1' } }),
@@ -70,14 +70,14 @@ describe('булавки комментариев', () => {
 		expect(screen.getAllByRole('button', { name: pinName(BORIS.name, 1) })).toHaveLength(3)
 	})
 
-	it('цепочка без комментариев: булавка без инициалов', () => {
-		mountReview({ comments: [thread('t1', { comments: [] })] })
+	it('цепочка без комментариев: булавка без инициалов', async () => {
+		await mountReview({ comments: [thread('t1', { comments: [] })] })
 		expect(screen.getByRole('button', { name: pinName('', 0) })).toBeInTheDocument()
 	})
 
 	it('с клавиатуры: Enter открывает цепочку, Escape закрывает, фокус возвращается', async () => {
 		const user = userEvent.setup()
-		mountReview({ comments: [thread('t1', { isUnread: true })] })
+		await mountReview({ comments: [thread('t1', { isUnread: true })] })
 		const pin = screen.getByRole('button', { name: pinName(BORIS.name, 1) })
 		await user.tab()
 		pin.focus()
@@ -91,7 +91,7 @@ describe('булавки комментариев', () => {
 
 	it('открытие помечает цепочку прочитанной', async () => {
 		const user = userEvent.setup()
-		const view = mountReview({ comments: [thread('t1', { isUnread: true })] })
+		const view = await mountReview({ comments: [thread('t1', { isUnread: true })] })
 		await user.click(screen.getByRole('button', { name: pinName(BORIS.name, 1) }))
 		await screen.findByRole('region', { name: formatMessage(UI_FLOW_REVIEW.THREAD, { count: 1 }) })
 		expect((fired(view, 'update:comments').at(-1)?.[0] as FlowCommentThread[])[0].isUnread).toBe(false)
@@ -99,7 +99,7 @@ describe('булавки комментариев', () => {
 
 	it('ответ из окна цепочки уходит событиями update:comments и comment', async () => {
 		const user = userEvent.setup()
-		const view = mountReview({ comments: [thread('t1')] })
+		const view = await mountReview({ comments: [thread('t1')] })
 		await user.click(screen.getByRole('button', { name: pinName(BORIS.name, 1) }))
 		const dialog = await screen.findByRole('region', { name: formatMessage(UI_FLOW_REVIEW.THREAD, { count: 1 }) })
 		await user.type(within(dialog).getByRole('textbox', { name: UI_COMMENT_THREAD.NEW }), 'Ответ{Enter}')
@@ -112,7 +112,7 @@ describe('булавки комментариев', () => {
 
 	it('«Решено» в окне решает цепочку, потом предлагает «Вернуть»', async () => {
 		const user = userEvent.setup()
-		const view = mountReview({ comments: [thread('t1')] })
+		const view = await mountReview({ comments: [thread('t1')] })
 		await user.click(screen.getByRole('button', { name: pinName(BORIS.name, 1) }))
 		await user.click(await screen.findByRole('button', { name: UI_FLOW_REVIEW.RESOLVE }))
 		expect(await screen.findByRole('button', { name: UI_FLOW_REVIEW.REOPEN })).toBeInTheDocument()
@@ -123,7 +123,7 @@ describe('булавки комментариев', () => {
 
 	it('решённые булавки скрываются переключателем «Показывать решённые» на вкладке комментариев', async () => {
 		const user = userEvent.setup()
-		mountReview({ comments: [thread('t1', { isResolved: true })] })
+		await mountReview({ comments: [thread('t1', { isResolved: true })] })
 		expect(screen.getByRole('button', { name: pinName(BORIS.name, 1) })).toBeInTheDocument()
 		await user.click(screen.getByRole('tab', { name: new RegExp(UI_FLOW_REVIEW.TAB_COMMENTS) }))
 		await user.click(screen.getByRole('switch', { name: UI_FLOW_REVIEW.SHOW_RESOLVED }))

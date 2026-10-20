@@ -14,15 +14,15 @@ const card = (title: string) =>
 beforeEach(() => stubFrame(1200))
 
 describe('панель «Правки»', () => {
-	it('вне режима «Правки» панели и панели фильтров нет', () => {
-		mountReview({ mode: 'view', suggestions: [suggestion('s1', [renameA])] })
+	it('вне режима «Правки» панели и панели фильтров нет', async () => {
+		await mountReview({ mode: 'view', suggestions: [suggestion('s1', [renameA])] })
 		expect(screen.queryByRole('region', { name: UI_FLOW_REVIEW.PANEL })).toBeNull()
 		expect(screen.queryByRole('toolbar', { name: UI_FLOW_REVIEW.FILTERS })).toBeNull()
 		expect(document.querySelectorAll('.base-flow-map__review-mark')).toHaveLength(0)
 	})
 
-	it('вкладки с числами: ждущие предложения, комментарии, версии', () => {
-		mountReview({
+	it('вкладки с числами: ждущие предложения, комментарии, версии', async () => {
+		await mountReview({
 			suggestions: [suggestion('s1', [renameA]), suggestion('s2', [moveB], { status: 'declined' })],
 			comments: [{ id: 't1', comments: [{ id: 'c1', author: BORIS, text: 'Вопрос', date: 1 }] }],
 		})
@@ -45,15 +45,15 @@ describe('панель «Правки»', () => {
 })
 
 describe('вкладка «Предложения»', () => {
-	it('пусто — подсказка про черновик', () => {
-		mountReview()
+	it('пусто — подсказка про черновик', async () => {
+		await mountReview()
 		expect(screen.getByText(UI_FLOW_REVIEW.EMPTY_SUGGESTIONS)).toBeInTheDocument()
 		expect(screen.getByText(UI_FLOW_REVIEW.EMPTY_SUGGESTIONS_HINT)).toBeInTheDocument()
 		expect(screen.queryByRole('button', { name: /Принять все/ })).toBeNull()
 	})
 
-	it('карточка: автор, вид, сводка, поля было → стало, действия', () => {
-		mountReview({ suggestions: [suggestion('s1', [renameA])] })
+	it('карточка: автор, вид, сводка, поля было → стало, действия', async () => {
+		await mountReview({ suggestions: [suggestion('s1', [renameA])] })
 		const item = card('Предложение s1')
 		expect(within(item).getByText(ANNA.name)).toBeInTheDocument()
 		expect(within(item).getByText(UI_FLOW_REVIEW.KIND_RENAME)).toBeInTheDocument()
@@ -64,36 +64,36 @@ describe('вкладка «Предложения»', () => {
 		expect(within(item).getByRole('button', { name: UI_FLOW_REVIEW.DECLINE })).toBeInTheDocument()
 	})
 
-	it('стрелка «было → стало» несёт класс для зеркала RTL', () => {
-		mountReview({ suggestions: [suggestion('s1', [renameA])] })
+	it('стрелка «было → стало» несёт класс для зеркала RTL', async () => {
+		await mountReview({ suggestions: [suggestion('s1', [renameA])] })
 		const arrow = card('Предложение s1').querySelector('.base-flow-map__review-arrow')
 		expect(arrow).toHaveAttribute('aria-hidden', 'true')
 		expect(arrow).toHaveTextContent('→')
 	})
 
-	it('у предложения без подписи заголовок по умолчанию, у добавления нет строк полей', () => {
-		mountReview({ suggestions: [suggestion('s1', [addNodeD], { label: undefined })] })
+	it('у предложения без подписи заголовок по умолчанию, у добавления нет строк полей', async () => {
+		await mountReview({ suggestions: [suggestion('s1', [addNodeD], { label: undefined })] })
 		const item = screen.getByRole('listitem', { name: formatMessage(UI_FLOW_REVIEW.SUGGESTION_ARIA, { title: '', name: ANNA.name }) })
 		expect(within(item).getByText(UI_FLOW_REVIEW.SUGGESTION_UNTITLED)).toBeInTheDocument()
 		expect(within(item).getByText(UI_FLOW_REVIEW.KIND_ADD)).toBeInTheDocument()
 		expect(item.querySelector('.base-flow-map__review-fields')).toBeNull()
 	})
 
-	it('сводка пустая у предложения из одних полей корня', () => {
+	it('сводка пустая у предложения из одних полей корня', async () => {
 		const root = { type: 'root' as const, patch: { title: 'B' }, previous: { title: 'A' } }
-		mountReview({ suggestions: [suggestion('s1', [root])] })
+		await mountReview({ suggestions: [suggestion('s1', [root])] })
 		expect(card('Предложение s1').querySelector('.base-flow-map__review-card-summary')).toBeNull()
 	})
 
-	it('показывает не больше трёх полей', () => {
+	it('показывает не больше трёх полей', async () => {
 		const wide = { type: 'update' as const, entity: 'node' as const, id: 'a', patch: { a1: 1, a2: 2, a3: 3, a4: 4 }, previous: {} }
-		mountReview({ suggestions: [suggestion('s1', [wide])] })
+		await mountReview({ suggestions: [suggestion('s1', [wide])] })
 		expect(card('Предложение s1').querySelectorAll('.base-flow-map__review-fields li')).toHaveLength(3)
 	})
 
 	it('«Принять» применяет предложение, карточка становится «Принято», озвучка в live-регионе', async () => {
 		const user = userEvent.setup()
-		const view = mountReview({ suggestions: [suggestion('s1', [renameA, moveB])] })
+		const view = await mountReview({ suggestions: [suggestion('s1', [renameA, moveB])] })
 		await user.click(within(card('Предложение s1')).getByRole('button', { name: UI_FLOW_REVIEW.ACCEPT }))
 		await waitFor(() => expect(within(card('Предложение s1')).getByText(UI_FLOW_REVIEW.STATUS_ACCEPTED)).toBeInTheDocument())
 		expect(view.controller.getData().nodes[0].label).toBe('Альфа')
@@ -107,7 +107,7 @@ describe('вкладка «Предложения»', () => {
 
 	it('«Отклонить» помечает карточку «Отклонено» и озвучивает', async () => {
 		const user = userEvent.setup()
-		const view = mountReview({ suggestions: [suggestion('s1', [renameA])] })
+		const view = await mountReview({ suggestions: [suggestion('s1', [renameA])] })
 		await user.click(within(card('Предложение s1')).getByRole('button', { name: UI_FLOW_REVIEW.DECLINE }))
 		expect(within(card('Предложение s1')).getByText(UI_FLOW_REVIEW.STATUS_DECLINED)).toBeInTheDocument()
 		await waitFor(() => expect(live()).toHaveTextContent(formatMessage(UI_FLOW_REVIEW.ANNOUNCE_DECLINED, { label: 'Предложение s1' })))
@@ -121,7 +121,7 @@ describe('вкладка «Предложения»', () => {
 			{ id: 'v1', label: 'v1', date: 1000, data: reviewData() },
 			{ id: 'v2', label: 'v2', date: 2000, data: reviewData() },
 		]
-		const view = mountReview({ versions, suggestions: [suggestion('s1', [renameA], { baseVersion: 'v1' })] })
+		const view = await mountReview({ versions, suggestions: [suggestion('s1', [renameA], { baseVersion: 'v1' })] })
 		const item = card('Предложение s1')
 		const accept = within(item).getByRole('button', { name: UI_FLOW_REVIEW.ACCEPT })
 		expect(within(item).getByText(UI_FLOW_REVIEW.STALE)).toBeInTheDocument()
@@ -137,7 +137,7 @@ describe('вкладка «Предложения»', () => {
 
 	it('«Принять все: N» принимает все ждущие и актуальные', async () => {
 		const user = userEvent.setup()
-		const view = mountReview({
+		const view = await mountReview({
 			suggestions: [suggestion('s1', [renameA], { date: 2000 }), suggestion('s2', [moveB], { date: 1000 })],
 		})
 		await user.click(screen.getByRole('button', { name: 'Принять все: 2' }))
@@ -148,7 +148,7 @@ describe('вкладка «Предложения»', () => {
 
 	it('наведение и фокус на карточке подсвечивают её, уход снимает', async () => {
 		const user = userEvent.setup()
-		mountReview({ suggestions: [suggestion('s1', [renameA]), suggestion('s2', [moveB])] })
+		await mountReview({ suggestions: [suggestion('s1', [renameA]), suggestion('s2', [moveB])] })
 		const item = card('Предложение s1')
 		await user.hover(item)
 		expect(item).toHaveClass('base-flow-map__review-card--hot')
@@ -164,7 +164,7 @@ describe('вкладка «Предложения»', () => {
 
 	it('заголовок карточки показывает элемент на карте: фокус на нём', async () => {
 		const user = userEvent.setup()
-		const view = mountReview({ suggestions: [suggestion('s1', [moveB]), suggestion('s2', [addNodeD, addEdgeD])] })
+		const view = await mountReview({ suggestions: [suggestion('s1', [moveB]), suggestion('s2', [addNodeD, addEdgeD])] })
 		await user.click(screen.getByRole('button', { name: 'Предложение s1' }))
 		await waitFor(() => expect(fired(view, 'focus-change').at(-1)?.[0]).toMatchObject({ id: 'b' }))
 	})
@@ -172,14 +172,14 @@ describe('вкладка «Предложения»', () => {
 	it('заголовок карточки без видимых изменений ничего не делает', async () => {
 		const user = userEvent.setup()
 		const root = { type: 'root' as const, patch: { title: 'B' }, previous: { title: 'A' } }
-		const view = mountReview({ suggestions: [suggestion('s1', [root])] })
+		const view = await mountReview({ suggestions: [suggestion('s1', [root])] })
 		await user.click(screen.getByRole('button', { name: 'Предложение s1' }))
 		expect(fired(view, 'focus-change')).toHaveLength(0)
 	})
 
 	it('фокус на карточке приглушает остальные элементы карты', async () => {
 		const user = userEvent.setup()
-		mountReview({ suggestions: [suggestion('s1', [renameA])] })
+		await mountReview({ suggestions: [suggestion('s1', [renameA])] })
 		await user.hover(card('Предложение s1'))
 		await waitFor(() => expect(document.querySelector('.base-flow-map__review-mark--hot')).not.toBeNull())
 	})

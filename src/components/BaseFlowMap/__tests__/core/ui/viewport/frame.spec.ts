@@ -321,7 +321,6 @@ describe('useFlowPanels', () => {
 		const frame = runInHost(() => useFlowFrame({})).value
 		const flag = (value = false) => ref(value)
 		const parts = {
-			model: { mode: ref(mode) },
 			chrome: {
 				hasToolbar: flag(true),
 				hasMinimap: flag(true),
@@ -329,12 +328,16 @@ describe('useFlowPanels', () => {
 				hasScenario: flag(flags.scenario),
 				hasDetails: flag(flags.details),
 			},
-			state: { isEditing: flag(), isCompact: flag(), isGridOn: flag(true) },
+			modes: { isEditing: flag(mode === 'edit'), isReviewing: flag(mode === 'review'), isGridOn: flag(true) },
 			frame,
 		}
 		const props = reactive<{ sizeScale?: number }>({ sizeScale })
 		const panels = runInHost(() => useFlowPanels(props as never, parts as never)).value
-		return { frame, panels, parts, props }
+		const setMode = (next: 'view' | 'edit' | 'review') => {
+			parts.modes.isEditing.value = next === 'edit'
+			parts.modes.isReviewing.value = next === 'review'
+		}
+		return { frame, panels, parts, props, setMode }
 	}
 
 	const compactAt = (frame: ReturnType<typeof panelsOf>['frame'], root: number) => {
@@ -379,15 +382,15 @@ describe('useFlowPanels', () => {
 	})
 
 	it('режим, сценарий и sizeScale пересчитывают резерв на лету', () => {
-		const { frame, parts, props } = panelsOf('view')
+		const { frame, parts, props, setMode } = panelsOf('view')
 		expect(compactAt(frame, 1000)).toBe(false)
 		parts.chrome.hasScenario.value = true
 		expect(frame.isCompact.value).toBe(false)
-		parts.model.mode.value = 'edit'
+		setMode('edit')
 		expect(frame.isCompact.value).toBe(true)
 		props.sizeScale = 50
 		expect(frame.isCompact.value).toBe(false)
-		parts.model.mode.value = 'review'
+		setMode('review')
 		props.sizeScale = 150
 		expect(frame.isCompact.value).toBe(true)
 		props.sizeScale = 50
@@ -395,11 +398,11 @@ describe('useFlowPanels', () => {
 	})
 
 	it('панели прячутся в режиме правки и возвращаются в компактном виде', () => {
-		const { panels, parts } = panelsOf('view')
+		const { panels, parts, frame } = panelsOf('view')
 		expect(panels.hasLegend.value && panels.hasMinimap.value && panels.hasToolbar.value).toBe(true)
-		parts.state.isEditing.value = true
+		parts.modes.isEditing.value = true
 		expect([panels.hasLegend.value, panels.hasMinimap.value, panels.hasToolbar.value]).toEqual([false, false, false])
-		parts.state.isCompact.value = true
+		expect(compactAt(frame, 300)).toBe(true)
 		expect([panels.hasLegend.value, panels.hasMinimap.value, panels.hasToolbar.value]).toEqual([true, true, true])
 	})
 })

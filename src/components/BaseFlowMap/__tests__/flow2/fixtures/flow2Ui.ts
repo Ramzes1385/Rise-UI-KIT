@@ -1,3 +1,4 @@
+import '../../helpers/lazySettle.test-utils'
 import { vi } from 'vitest'
 import { render } from '@testing-library/vue'
 import BaseFlowMap from '../../../ui/BaseFlowMap.vue'

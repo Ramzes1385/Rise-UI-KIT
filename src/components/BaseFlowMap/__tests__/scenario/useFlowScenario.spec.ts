@@ -548,14 +548,20 @@ describe('useFlowScenario: автозапуск', () => {
 })
 
 describe('useFlowScenario: вне компонента', () => {
-	it('работает без provide подробностей; onMounted без компонента — ожидаемое предупреждение Vue', () => {
+	it('работает без provide подробностей; без компонента автозапуск идёт сразу и без предупреждения Vue', () => {
 		const warn = guard.warn()
 		const scope = effectScope()
 		const harness = scope.run(() => mountOutside())
 		expect(harness?.state.value.scenario).toBe('checkout')
-		expect(warn).toHaveBeenCalledTimes(1)
-		expect(String(warn.mock.calls[0][0])).toContain('onMounted')
-		warn.mockClear()
+		expect(warn).not.toHaveBeenCalled()
+		scope.stop()
+	})
+
+	it('сам драйвер всегда загружен: isLoaded истинно, load() сразу готов', async () => {
+		const scope = effectScope()
+		const harness = scope.run(() => mountOutside())!
+		expect(harness.isLoaded.value).toBe(true)
+		await expect(harness.load()).resolves.toBeUndefined()
 		scope.stop()
 	})
 })

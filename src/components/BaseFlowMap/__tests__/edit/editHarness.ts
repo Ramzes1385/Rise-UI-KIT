@@ -1,7 +1,8 @@
+import { expect } from 'vitest'
 import { BaseApp } from '@components/BaseApp'
-import { render } from '@testing-library/vue'
 import BaseFlowMap from '../../ui/BaseFlowMap.vue'
 import { screen, waitFor } from '@testing-library/vue'
+import { configure, render } from '@testing-library/vue'
 import { defineComponent, h, isVNode, nextTick } from 'vue'
 import { getFlowEditing } from '../../model/edit/useFlowEditing'
 import * as servicesModule from '../../model/notations/services'
@@ -13,6 +14,8 @@ import type { FlowMapController } from '../../types/api/flowController.types'
 import type { FlowEditContext } from '../../types/internal/edit/flowEditApi.types'
 import { controllerOf, mapData, mountMap, sceneView, stubFrame } from '../core/ui/flowUi'
 import type { FlowModelInternal } from '../../types/internal/core/flowRenderInternal.types'
+
+configure({ asyncUtilTimeout: 15000 })
 
 export { mapData, waitFor, screen }
 
@@ -135,6 +138,10 @@ export async function mountEdit(props: Partial<BaseFlowMapProps> = {}, options: 
 	const base = { mode: 'edit', modes: ['view', 'edit', 'review'], ...props } as Partial<BaseFlowMapProps>
 	const { result, ready } = renderMap(base, options)
 	await settle()
+	if (base.mode === 'edit' && (options.width ?? 1000) >= 700)
+		await waitFor(() => expect(result.container.querySelector('.base-flow-map__edit-status')).not.toBeNull())
+	if (base.mode === 'review') await waitFor(() => expect(result.container.querySelector('.base-flow-map__review')).not.toBeNull())
+	if ((options.width ?? 1000) < 700) await new Promise(resolve => setTimeout(resolve, 60))
 	const root = result.container.querySelector('.base-flow-map__viewport') as HTMLElement
 	const controller = ready() as FlowMapController
 	controller.setViewport({ x: 100, y: 100, zoom: 1 })

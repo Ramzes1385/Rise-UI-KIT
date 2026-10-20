@@ -6,35 +6,47 @@ import type { BaseFlowMapEmits, BaseFlowMapProps } from '../../../../../types/Ba
 function modelOf(mode: BaseFlowMapProps['mode']) {
 	const props = reactive({ mode, data: { version: 1, nodes: [], edges: [] } }) as unknown as BaseFlowMapProps
 	const { value } = runInHost(() => useBaseFlowMap(props, vi.fn() as unknown as BaseFlowMapEmits))
-	const edit = value.editing.context.env.state
+	const edit = () => value.editing.value?.context.env.state
 	return { props, map: value, edit }
 }
 
+const LOAD = { timeout: 15000 }
+const idle = () => new Promise(resolve => setTimeout(resolve, 30))
+
 describe('useBaseFlowMap: признаки режима', () => {
-	it('режим «Правка» включает правку и не включает ревью', () => {
+	it('режим «Правка» грузит только правку: до загрузки она не включена, после — включена целиком', async () => {
 		const { map, edit } = modelOf('edit')
-		expect(edit.isEditing.value).toBe(true)
-		expect(edit.isActive.value).toBe(true)
-		expect(map.review.isActive.value).toBe(false)
+		expect(map.isEditLoaded.value).toBe(false)
+		expect(edit()).toBeUndefined()
+		await vi.waitFor(() => expect(map.isEditLoaded.value).toBe(true), LOAD)
+		expect(edit()?.isEditing.value).toBe(true)
+		expect(edit()?.isActive.value).toBe(true)
+		expect(map.review.value).toBeNull()
+		expect(map.isReviewLoaded.value).toBe(false)
 	})
 
-	it('режим «Ревью» включает ревью и общую активность правки, но не саму правку', () => {
-		const { map, edit } = modelOf('review')
-		expect(edit.isEditing.value).toBe(false)
-		expect(edit.isActive.value).toBe(true)
-		expect(map.review.isActive.value).toBe(true)
+	it('режим «Ревью» грузит только ревью: оно активно, часть правки не создаётся', async () => {
+		const { map } = modelOf('review')
+		expect(map.isReviewLoaded.value).toBe(false)
+		await vi.waitFor(() => expect(map.isReviewLoaded.value).toBe(true), LOAD)
+		expect(map.review.value?.isActive.value).toBe(true)
+		expect(map.editing.value).toBeNull()
+		expect(map.isEditLoaded.value).toBe(false)
 	})
 
-	it('в режиме просмотра все признаки выключены, а при смене режима признаки следуют за ним', () => {
+	it('в режиме просмотра ничего не грузится, а при смене режима части подгружаются и признаки следуют за ним', async () => {
 		const { map, props, edit } = modelOf('view')
-		expect(edit.isActive.value).toBe(false)
-		expect(map.review.isActive.value).toBe(false)
+		await idle()
+		expect(map.editing.value).toBeNull()
+		expect(map.review.value).toBeNull()
 		props.mode = 'edit'
-		expect(edit.isEditing.value).toBe(true)
-		expect(map.review.isActive.value).toBe(false)
+		await vi.waitFor(() => expect(map.isEditLoaded.value).toBe(true), LOAD)
+		expect(edit()?.isEditing.value).toBe(true)
+		expect(map.review.value).toBeNull()
 		props.mode = 'review'
-		expect(edit.isEditing.value).toBe(false)
-		expect(edit.isActive.value).toBe(true)
-		expect(map.review.isActive.value).toBe(true)
+		await vi.waitFor(() => expect(map.isReviewLoaded.value).toBe(true), LOAD)
+		expect(edit()?.isEditing.value).toBe(false)
+		expect(edit()?.isActive.value).toBe(true)
+		expect(map.review.value?.isActive.value).toBe(true)
 	})
 })

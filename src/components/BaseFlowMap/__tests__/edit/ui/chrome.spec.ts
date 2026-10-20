@@ -143,7 +143,7 @@ describe('панель инструментов', () => {
 		const text = () => map.container.querySelector('.base-flow-map__zoom')?.textContent
 		expect(text()).toBe('100%')
 		await fireEvent.click(zoom[1])
-		await waitFor(() => expect(Number.parseInt(text() ?? '0')).toBeGreaterThan(100), { timeout: 3000 })
+		await waitFor(() => expect(Number.parseInt(text() ?? '0')).toBeGreaterThan(100), { timeout: 10000 })
 		await fireEvent.click(zoom[0])
 		await fireEvent.click(screen.getByRole('button', { name: 'Готово' }))
 		expect(map.emitted()['update:mode'].at(-1)).toEqual(['view'])

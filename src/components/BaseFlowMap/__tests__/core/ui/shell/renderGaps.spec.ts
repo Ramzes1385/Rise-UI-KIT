@@ -16,9 +16,9 @@ describe('сетка в режиме «Правка» (useBaseFlowMap.editClasse
 		stubFrame(1200)
 		const { container } = mountMap({ mode: 'edit' })
 		const stage = container.querySelector('.base-flow-map__stage') as HTMLElement
-		expect(stage).toHaveClass('base-flow-map__stage--edit')
+		await waitFor(() => expect(stage).toHaveClass('base-flow-map__stage--edit'))
 		expect(stage).not.toHaveClass('base-flow-map__stage--no-grid')
-		const grid = screen.getByRole('switch', { name: UI_FLOW_EDITOR.GRID })
+		const grid = await screen.findByRole('switch', { name: UI_FLOW_EDITOR.GRID })
 		await fireEvent.click(grid)
 		expect(stage).toHaveClass('base-flow-map__stage--no-grid')
 		await fireEvent.click(grid)
