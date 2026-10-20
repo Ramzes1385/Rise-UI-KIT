@@ -53,6 +53,23 @@ const THREE_RESTRICTED_PATTERNS = [
 	},
 ]
 
+// Первый вид BaseFlowMap: правка, «Правки», сценарий, поиск, подробности и экспорт — только через import() и загрузчики
+const FLOW_FIRST_VIEW_PATTERNS = [
+	{
+		regex: '^(?!.*/types/).*/(edit|review)/(?!use[A-Za-z]+Loader$)',
+		message: 'Правка и «Правки» грузятся через import(): статически можно только useFlow…Loader',
+	},
+	{
+		regex: '^(?!.*/types/).*/scenario/[A-Za-z]+\\.vue$',
+		message: 'Интерфейс сценария грузится через import() из ui/lazy/flowLazyLoaders',
+	},
+	{
+		regex: '(^|/)(FlowSearch|FlowDetails)(\\.vue)?$',
+		message: 'Поиск и подробности грузятся через import() из ui/lazy/flowLazyLoaders',
+	},
+	{ regex: '(^|/)flowExportSvg$', message: 'Экспорт грузится через import() в flowViewApi' },
+]
+
 export default tseslint.config(
 	{
 		ignores: ['dist/**', 'coverage/**', 'storybook-static/**', 'node_modules/**', '**/*.d.ts', 'build/**', 'scripts/**'],
@@ -170,6 +187,7 @@ export default tseslint.config(
 							regex: '^@/scene3d(?!/models/(presets|keywords)$)(/.*)?$',
 							message: 'Из 3D-ядра можно только @/scene3d/models/presets и @/scene3d/models/keywords (без three)',
 						},
+						...FLOW_FIRST_VIEW_PATTERNS,
 					],
 				},
 			],
@@ -179,30 +197,16 @@ export default tseslint.config(
 	// Первый вид BaseFlowMap: правка, правки, сценарий, поиск, подробности и экспорт — только через import() и загрузчики
 	{
 		files: ['src/components/BaseFlowMap/{model,ui}/**/*.{ts,vue}'],
-		ignores: ['src/components/BaseFlowMap/model/{edit,review}/**', 'src/components/BaseFlowMap/ui/{edit,review,scenario}/**'],
+		ignores: [
+			'src/components/BaseFlowMap/model/{edit,review}/**',
+			'src/components/BaseFlowMap/ui/{edit,review,scenario}/**',
+			'src/components/BaseFlowMap/model/notations/services/**',
+		],
 		rules: {
 			'no-restricted-imports': [
 				'error',
 				{
-					patterns: [
-						{
-							regex: '^three(/.*)?$',
-							message: 'three импортируется только из src/components/BaseImageMap3D и src/map3d.ts (вход /map3d)',
-						},
-						{
-							regex: '^(?!.*/types/).*/(edit|review)/(?!use[A-Za-z]+Loader$)',
-							message: 'Правка и «Правки» грузятся через import(): статически можно только useFlow…Loader',
-						},
-						{
-							regex: '^(?!.*/types/).*/scenario/[A-Za-z]+\\.vue$',
-							message: 'Интерфейс сценария грузится через import() из ui/lazy/flowLazyLoaders',
-						},
-						{
-							regex: '(^|/)(FlowSearch|FlowDetails)(\\.vue)?$',
-							message: 'Поиск и подробности грузятся через import() из ui/lazy/flowLazyLoaders',
-						},
-						{ regex: '(^|/)flowExportSvg$', message: 'Экспорт грузится через import() в flowViewApi' },
-					],
+					patterns: [...THREE_RESTRICTED_PATTERNS, ...FLOW_FIRST_VIEW_PATTERNS],
 				},
 			],
 		},
