@@ -39,10 +39,10 @@ const neutralOptions: Option[] = [
 	{ value: '#78716c', label: 'Stone — тёплый серый' },
 ]
 const fontOptions: Option[] = [
-	{ value: '', label: 'Как в ките — Inter' },
+	{ value: '', label: 'Как в ките — Rise Grotesk' },
 	{ value: 'system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif', label: 'Системный' },
 	{ value: 'Georgia, "Times New Roman", serif', label: 'С засечками' },
-	{ value: 'ui-monospace, "JetBrains Mono", SFMono-Regular, Menlo, monospace', label: 'Моноширинный' },
+	{ value: "'Rise Mono', monospace", label: 'Моноширинный — Rise Mono' },
 ]
 const roleOptions: Option[] = [
 	{ value: 'editor', label: 'Редактор' },

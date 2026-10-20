@@ -793,10 +793,6 @@
     "ci:validate": "npm run lint && npm run lint:styles && npm run lint:unused && npm run format:check && npm run typecheck && npm run test:unit && npm run pack:dry && npm run test:css-split && npm run test:subpaths -- --no-screenshot && npm run test:sizes && npm run test:ratchets && npm run test:folders && npm run test:custom-color",
     "ci:release": "npm run release"
   },
-  "dependencies": {
-    "@fontsource-variable/inter": "^5.2.8",
-    "@fontsource-variable/jetbrains-mono": "^5.2.8"
-  },
   "devDependencies": {
     "@commitlint/cli": "^21.0.2",
     "@commitlint/config-conventional": "^21.0.2",
@@ -1078,8 +1074,6 @@
       ]
     },
     "ignoreDependencies": [
-      "@fontsource-variable/inter",
-      "@fontsource-variable/jetbrains-mono",
       "@semantic-release/commit-analyzer",
       "@semantic-release/github",
       "@semantic-release/npm",

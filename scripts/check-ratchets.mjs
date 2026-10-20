@@ -5,6 +5,7 @@
  *    подгружает статическими `import`/`export … from` (динамические `import()` не считаются). Нужна сборка: `npm run build`.
  *    Подпути компонентов (`components/<Имя>/index.js`, build/config/subpaths.ts) — один бюджет на самый тяжёлый из них,
  *    CSS папок компонентов (`components/<Имя>/style.css`) — один бюджет на самый тяжёлый файл.
+ *    Шрифты кита (`fonts/*.woff2`, их подгружает CSS кита) — бюджет на сумму файлов группы.
  *    Больше бюджета — проверка падает. Бюджет поднимают осознанно (`--reset-size-budget`, строкой в DECISIONS).
  * 2. Число `--coverage.exclude` в каждом скрипте `test:*:coverage` — не больше базы.
  * 3. Число предупреждений `eslint "src/**\/*.{ts,vue}"` (то же, что `npm run lint`) — не больше базы.
@@ -29,11 +30,15 @@ const BASE_FILE = 'build/ratchets.json'
 const LINT_GLOB = 'src/**/*.{ts,vue}'
 const COVERAGE_SCRIPT = /^test:.*:coverage$/
 const COVERAGE_EXCLUDE = /--coverage\.exclude[=\s]/g
-/** Группы файлов с общим бюджетом по самому тяжёлому: ключ в ratchets.json → какие файлы dist в неё входят */
+/**
+ * Группы файлов с общим бюджетом: ключ в ratchets.json → какие файлы dist в неё входят. По умолчанию бюджет — на самый тяжёлый
+ * файл группы, `sum` — на сумму файлов; `single` — файл без чанков, которые он импортирует. Файл может входить в несколько групп.
+ */
 const SIZE_GROUPS = [
 	{ key: 'components/*/index.js', test: /^components\/[^/]+\/index\.js$/ },
 	{ key: 'components/*/style.css', test: /^components\/[^/]+\/style\.css$/, single: true },
 	{ key: 'tokens/*.json', test: /^tokens\/[^/]+\.json$/, single: true },
+	{ key: 'fonts/*.woff2', test: /^fonts\/[^/]+\.woff2$/, single: true, sum: true },
 ]
 const STATIC_IMPORT = /\b(?:import|export)\s*(?:[\w$*{},\s]*?\bfrom\s*)?["'](\.{1,2}\/[^"']+)["']/g
 
@@ -103,21 +108,39 @@ function componentCssFiles() {
 		.filter(file => existsSync(join(DIST, file)))
 }
 
-/** Размеры входов; у группы — самый тяжёлый файл, его имя — в `heaviest` */
+/** Шрифты кита в dist (`fonts/**\/*.woff2`): в exports их нет, их подгружает CSS кита */
+function fontFiles() {
+	const folder = join(DIST, 'fonts')
+	if (!existsSync(folder)) return []
+	return readdirSync(folder, { recursive: true })
+		.map(file => `fonts/${String(file).replaceAll('\\', '/')}`)
+		.filter(file => file.endsWith('.woff2'))
+		.sort()
+}
+
+/** Размеры входов; у группы — самый тяжёлый файл (его имя — в `heaviest`) или сумма файлов (их число — в `counts`) */
 function measureSizes(pkg) {
 	if (!existsSync(DIST)) throw new Error('нет dist/ — сначала `npm run build`')
 	const sizes = {}
 	const heaviest = {}
-	for (const entry of [...packageEntries(pkg), ...componentCssFiles()]) {
+	const counts = {}
+	for (const entry of [...packageEntries(pkg), ...componentCssFiles(), ...fontFiles()]) {
 		if (!existsSync(join(DIST, entry))) throw new Error(`вход ${entry} из exports не найден в dist/ — пересоберите пакет`)
-		const group = SIZE_GROUPS.find(({ test }) => test.test(entry))
-		const bytes = group?.single ? gzipSize(join(DIST, entry)) : staticGraph(entry).reduce((sum, file) => sum + gzipSize(file), 0)
-		const key = group?.key ?? entry
-		if (sizes[key] !== undefined && sizes[key] >= bytes) continue
-		sizes[key] = bytes
-		if (group) heaviest[key] = entry
+		const groups = SIZE_GROUPS.filter(({ test }) => test.test(entry))
+		const single = groups.some(group => group.single)
+		const bytes = single ? gzipSize(join(DIST, entry)) : staticGraph(entry).reduce((sum, file) => sum + gzipSize(file), 0)
+		for (const group of groups.length > 0 ? groups : [{ key: entry }]) {
+			if (group.sum) {
+				sizes[group.key] = (sizes[group.key] ?? 0) + bytes
+				counts[group.key] = (counts[group.key] ?? 0) + 1
+				continue
+			}
+			if (sizes[group.key] !== undefined && sizes[group.key] >= bytes) continue
+			sizes[group.key] = bytes
+			if (group.test) heaviest[group.key] = entry
+		}
 	}
-	return { sizes, heaviest }
+	return { sizes, heaviest, counts }
 }
 
 function countCoverageExcludes(pkg) {
@@ -152,14 +175,15 @@ function countLintWarnings() {
 
 const withMargin = bytes => Math.ceil(Math.max(bytes * (1 + SIZE_MARGIN), bytes + SIZE_MARGIN_MIN) / 1024) * 1024
 
-function checkSizes({ sizes, heaviest }, base, problems) {
+function checkSizes({ sizes, heaviest, counts }, base, problems) {
 	if (flag('reset-size-budget')) {
 		base.size = Object.fromEntries(Object.entries(sizes).map(([entry, bytes]) => [entry, { gzip: bytes, budget: withMargin(bytes) }]))
 		console.log('Бюджет размера записан заново: текущий размер + запас.')
 	}
 	for (const [entry, bytes] of Object.entries(sizes)) {
 		const limit = base.size?.[entry]?.budget
-		const line = `  ${entry}: ${kb(bytes)} gzip${heaviest[entry] ? ` (самый тяжёлый — ${heaviest[entry]})` : ''}`
+		const group = heaviest[entry] ? ` (самый тяжёлый — ${heaviest[entry]})` : counts[entry] ? ` (сумма ${counts[entry]} файлов)` : ''
+		const line = `  ${entry}: ${kb(bytes)} gzip${group}`
 		if (limit === undefined) {
 			problems.push(`размер: у входа ${entry} нет бюджета в ${BASE_FILE}`)
 			console.log(`${line} — нет бюджета`)

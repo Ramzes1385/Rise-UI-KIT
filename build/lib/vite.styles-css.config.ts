@@ -1,7 +1,7 @@
 /** Второй проход сборки пакета: `dist/styles.css` — входы и чанки как до подпутей (createLibBuildConfig без них), стили плеера исключены. */
 
 import { defineConfig } from 'vite'
-import { createLibBuildConfig } from '../config/build.lib'
+import { createLibBuildConfig, LIB_BASE } from '../config/build.lib'
 import { createCssConfig } from '../config/css'
 import { createResolveConfig } from '../config/resolve'
 import { createPlugins } from '../plugins'
@@ -13,5 +13,6 @@ export default defineConfig(({ mode }) => ({
 	css: createCssConfig(mode),
 	plugins: [...createPlugins(mode), ...createCssSplitPlugins('exclude'), createCssDedupePlugin(), createKeepCssPlugin('styles.css')],
 	build: createLibBuildConfig({ withSubpaths: false }),
+	base: LIB_BASE,
 	publicDir: false,
 }))

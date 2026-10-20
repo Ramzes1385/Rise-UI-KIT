@@ -18,8 +18,9 @@ export const theme = create({
 	appBorderColor: '#e4e4e7',
 	appBorderRadius: 6,
 
-	fontBase: "'Inter Variable', Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
-	fontCode: "'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace",
+	// Шрифты кита: в Docs (iframe превью) их @font-face приходят со стилями кита, в интерфейсе Storybook — родовые запасные
+	fontBase: "'Rise Grotesk', sans-serif",
+	fontCode: "'Rise Mono', monospace",
 
 	textColor: '#18181b',
 	textMutedColor: '#71717a',

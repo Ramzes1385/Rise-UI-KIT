@@ -17,9 +17,7 @@ import { applyStoryBrand, STORY_BRAND_DEFAULT, STORY_WAIT_TIMEOUT, StoryRouterLi
 import type { Decorator, Preview } from '@storybook/vue3-vite'
 import { theme as docsTheme } from './theme'
 
-// @font-face регистрируются до токенов, чтобы Inter/JetBrains Mono были доступны сразу:
-// иначе Linux CI рендерит DejaVu Sans, а Windows — Segoe UI, и visual-тесты получают лишний pixel-diff.
-import '../../src/styles/fonts/_fonts.scss'
+// Шрифты кита (@font-face Rise Grotesk и Rise Mono) приходят с kit.scss внутри index.scss — как у приложения со styles.css
 import '../../src/styles/index.scss'
 import './preview.scss'
 
@@ -39,15 +37,15 @@ setup(app => {
 // под нагрузкой открываются дольше, а короткий таймаут давал случайные падения
 configure({ asyncUtilTimeout: STORY_WAIT_TIMEOUT })
 
-/** Начертания, которые используют stories: латиница и кириллица, прямое и курсив, моноширинный */
-const FONT_SAMPLES = ['14px "Inter Variable"', 'italic 14px "Inter Variable"', '14px "JetBrains Mono Variable"']
+/** Начертания, которые используют stories: Rise Grotesk (латиница, кириллица и знаки клавиш — один файл на все насыщенности), Rise Mono обычный и полужирный */
+const FONT_SAMPLES = ['14px "Rise Grotesk"', '14px "Rise Mono"', '700 14px "Rise Mono"']
 
 /**
  * Шрифты загружаются до рендера story. Иначе подмена шрифта сдвигает раскладку уже во время play-функции:
  * например, прокрутка ленты BaseChat от смены высоты строк закрывала только что открытое меню сообщения.
  */
 async function loadFonts(): Promise<void> {
-	await Promise.all(FONT_SAMPLES.map(font => document.fonts.load(font, 'Aa Яя 09 Әә')))
+	await Promise.all(FONT_SAMPLES.map(font => document.fonts.load(font, 'Aa Яя 09 Әә ⌘')))
 }
 
 /** Внутренний объект Storybook: текущая отрисовка story и её настройки (`autoplay` — запускать ли play) */

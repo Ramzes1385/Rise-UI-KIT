@@ -8,7 +8,7 @@ const DEFAULT_WEIGHT = 600
 const LINE_RATIO = 1.35
 const PADDING_RATIO = 0.4
 const BASELINE_SHIFT = 0.03
-const FONT_FAMILY = 'Inter, "Segoe UI", system-ui, sans-serif'
+const FONT_FAMILY = "'Rise Grotesk', 'Rise CJK SC', 'Rise CJK JP', sans-serif"
 const TEXT_RENDER_ORDER = 3
 
 /** Строка шрифта холста для заданных веса и кегля */

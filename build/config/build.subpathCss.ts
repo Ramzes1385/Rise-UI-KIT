@@ -2,6 +2,7 @@
 
 import { resolve } from 'node:path'
 import type { BuildOptions } from 'vite'
+import { fontFileName } from './build.lib'
 import { readPublicComponents } from './subpaths'
 import { createSubpathCssGroups, TOKENS_ENTRY } from '../plugins/subpathCss'
 
@@ -28,7 +29,11 @@ export function createSubpathCssBuildConfig(): BuildOptions {
 		rollupOptions: {
 			external: ['vue', /^three(\/.*)?$/],
 			preserveEntrySignatures: 'allow-extension',
-			output: { codeSplitting: createSubpathCssGroups(components) },
+			output: {
+				codeSplitting: createSubpathCssGroups(components),
+				// CSS чанков — в корне, как `tokens.css`, который из них собирается: адреса шрифтов в нём `./fonts/…` (build.lib.ts, FONT_FILE)
+				assetFileNames: assetInfo => fontFileName(assetInfo.name) ?? '[name][extname]',
+			},
 		},
 
 		reportCompressedSize: false,

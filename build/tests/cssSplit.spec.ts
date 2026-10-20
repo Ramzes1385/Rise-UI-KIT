@@ -9,7 +9,10 @@ import { addMarker, isMediaStyle, stripBeforeMarker } from '../plugins/cssSplit'
 
 const SCRIPT = resolve(import.meta.dirname, '../../scripts/check-css-split.mjs')
 
-const TOKENS = ':root{--rise-color-primary-500:#f97316}[data-theme=dark]{--rise-bg:#000}'
+const FONTS =
+	'@font-face{font-family:Rise Grotesk;font-display:block;src:url(./fonts/rise-grotesk.woff2)format("woff2")}' +
+	'@font-face{font-family:Rise Mono;font-display:block;src:url(./fonts/rise-mono-400.woff2)format("woff2")}'
+const TOKENS = `:root{--rise-color-primary-500:#f97316}[data-theme=dark]{--rise-bg:#000}${FONTS}`
 const PLAYER = '.base-media-player{position:relative}.base-presentation-player{display:block}'
 
 describe('isMediaStyle', () => {
@@ -61,7 +64,9 @@ describe('check-css-split', () => {
 	beforeEach(() => {
 		root = mkdtempSync(join(tmpdir(), 'css-split-'))
 		for (const dir of MEDIA_STYLE_DIRS) mkdirSync(join(root, dir), { recursive: true })
-		mkdirSync(join(root, 'dist'))
+		mkdirSync(join(root, 'dist/fonts'), { recursive: true })
+		write('dist/fonts/rise-grotesk.woff2', 'wOF2')
+		write('dist/fonts/rise-mono-400.woff2', 'wOF2')
 		write(`${MEDIA_STYLE_DIRS[0]}Player.style.scss`, '.base-media-player {\n\tposition: relative;\n}\n')
 		write(`${MEDIA_STYLE_DIRS[1]}Presentation.style.scss`, '.base-presentation-player {\n\tdisplay: block;\n}\n')
 		write('dist/styles.css', `${TOKENS}.base-button{color:red}`)
@@ -157,6 +162,43 @@ describe('check-css-split', () => {
 		write('dist/styles.css', `/*$vite$:1*/${TOKENS}.base-button,.base-icon{color:red}`)
 
 		expect(run().status).toBe(0)
+	})
+
+	it('шрифты: без @font-face семейства кита в tokens.css проверка падает', () => {
+		write('dist/tokens.css', TOKENS.replace(/@font-face\{font-family:Rise Mono[^}]*\}/, ''))
+		write('dist/styles.css', `${TOKENS.replace(/@font-face\{font-family:Rise Mono[^}]*\}/, '')}.base-button{color:red}`)
+
+		const { status, output } = run()
+
+		expect(status).toBe(1)
+		expect(output).toContain('tokens.css: нет @font-face «Rise Mono»')
+		expect(output).toContain('styles.css: нет @font-face «Rise Mono»')
+	})
+
+	it('шрифты: url() без файла и font-display не block роняют проверку', () => {
+		rmSync(join(root, 'dist/fonts/rise-mono-400.woff2'))
+		write(
+			'dist/tokens.css',
+			TOKENS.replace('font-family:Rise Grotesk;font-display:block', 'font-family:Rise Grotesk;font-display:swap'),
+		)
+		write('dist/styles.css', `${TOKENS}.base-button{color:red}`)
+
+		const { output } = run()
+
+		expect(output).toContain('styles.css: url(./fonts/rise-mono-400.woff2) — файла нет в dist')
+		expect(output).toContain('tokens.css: @font-face «Rise Grotesk» с font-display: swap — нужен block')
+	})
+
+	it('шрифты: @font-face в CSS компонента роняет проверку, url() внутри data: URI — нет', () => {
+		const svg = `url("data:image/svg+xml,%3Csvg filter='url(%23n)'/%3E")`
+		write('dist/components/BaseButton/style.css', `.base-button{color:red;background:${svg}}${FONTS}`)
+		write('dist/styles.css', `${TOKENS}.base-button{color:red;background:${svg}}`)
+
+		const { status, output } = run()
+
+		expect(status).toBe(1)
+		expect(output).toContain('components/BaseButton/style.css: @font-face — шрифты кита объявляют только styles.css и tokens.css')
+		expect(output).not.toContain('%23n')
 	})
 
 	it('подпути: нет входа подпути или CSS, который он импортирует, — проверка падает', () => {

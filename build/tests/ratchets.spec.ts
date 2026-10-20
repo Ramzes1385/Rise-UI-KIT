@@ -153,6 +153,22 @@ describe('check-ratchets', () => {
 		expect(output).not.toContain('у входа components/BaseB/index.js нет бюджета')
 	})
 
+	it('шрифты кита — один бюджет на сумму файлов dist/fonts/*.woff2', () => {
+		mkdirSync(join(root, 'dist/fonts'), { recursive: true })
+		write('dist/fonts/rise-a.woff2', noise(4000))
+		write('dist/fonts/rise-b.woff2', noise(4000))
+		write('build/ratchets.json', { ...BASE, size: { ...BASE.size, 'fonts/*.woff2': { gzip: 0, budget: 4096 } } })
+
+		const { status, output } = run()
+
+		expect(status).toBe(1)
+		expect(output).toContain('(сумма 2 файлов)')
+		expect(output).toMatch(/размер: fonts\/\*\.woff2 — [\d.]+ КБ gzip, бюджет 4\.0 КБ/)
+
+		write('build/ratchets.json', { ...BASE, size: { ...BASE.size, 'fonts/*.woff2': { gzip: 0, budget: 8192 } } })
+		expect(run().status).toBe(0)
+	})
+
 	it('вход без бюджета и отсутствующий dist роняют проверку', () => {
 		write('build/ratchets.json', { ...BASE, size: { 'index.js': BASE.size['index.js'] } })
 

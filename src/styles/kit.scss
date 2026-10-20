@@ -1,8 +1,12 @@
-// Попадает в dist/styles.css: шрифт кита только на его собственных элементах (классы base-*), с нулевой специфичностью.
-// body, button и поля приложения кит не трогает — это решает приложение (README, «Шрифты»); @font-face подключает приложение.
+@use './fonts/fonts';
+
+// Попадает в dist/styles.css и tokens.css: @font-face шрифтов кита (fonts/_fonts.scss, файлы — dist/fonts) и шрифт кита только
+// на его собственных элементах (классы base-*), с нулевой специфичностью. body, button и поля приложения кит не трогает — это
+// решает приложение (README, «Шрифты»). Курсива у шрифтов кита нет: `<em>` и курсив Markdown — наклон, который рисует браузер
+// (font-synthesis: style); полужирный не синтезируется — начертания 300–700 есть в файлах.
 :where([class^='base-'], [class*=' base-']) {
 	font-family: var(--rise-font-sans);
-	font-synthesis: none;
+	font-synthesis: style;
 	text-rendering: optimizelegibility;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;

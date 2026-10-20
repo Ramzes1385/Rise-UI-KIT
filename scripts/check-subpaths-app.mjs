@@ -30,11 +30,15 @@
  * В каждом сценарии код компонента должен дойти до приложения (класс `base-button`/`base-select` в JS), а в браузере —
  * отрисоваться: так ловится тряска дерева, которая выбрасывает компонент целиком (импорт есть, а компонент `undefined`).
  *
+ * Шрифты кита (src/styles/fonts) приходят со стилями сами: в CSS каждого приложения есть `@font-face` Rise Grotesk и Rise Mono,
+ * в сборке — все woff2 из `dist/fonts` пакета; в браузере Rise Grotesk (латиница, кириллица, знаки клавиш) и Rise Mono (400 и 700)
+ * загружаются из сборки приложения (`document.fonts.load`, ответы 200).
+ *
  * Флаги: `--no-screenshot` — без снимков (нет Chromium для Playwright); `--keep` — не удалять временную папку.
  */
 
 import { execFileSync } from 'node:child_process'
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
@@ -258,6 +262,28 @@ const EN_TEXT = 'No data'
 
 const kb = bytes => `${(bytes / 1024).toFixed(1)} КБ`
 
+/** Семейства шрифтов кита и текст, который загружает все их файлы: латиница, кириллица, знак клавиши, ₽ */
+const FONT_SAMPLES = [
+	['16px "Rise Grotesk"', 'Aa Яя ⌘'],
+	['16px "Rise Mono"', 'Aa Яя ₽'],
+	['700 16px "Rise Mono"', 'Aa Яя'],
+]
+
+/** Предел, до которого Vite приложения вставляет ассет в CSS как data: URI (`build.assetsInlineLimit` по умолчанию) */
+const INLINE_LIMIT = 4096
+
+/**
+ * Файлы шрифтов пакета (`dist/fonts/*.woff2`): имя без расширения и встроит ли его Vite приложения в CSS (меньше INLINE_LIMIT).
+ * Остальные в сборке приложения лежат как `assets/<имя>-<хеш>.woff2`.
+ */
+function kitFonts() {
+	const dir = join(ROOT, 'dist/fonts')
+	if (!existsSync(dir)) return []
+	return readdirSync(dir)
+		.filter(name => name.endsWith('.woff2'))
+		.map(name => ({ name: name.slice(0, -'.woff2'.length), inlined: statSync(join(dir, name)).size < INLINE_LIMIT }))
+}
+
 function packTarball(dir) {
 	if (!existsSync(join(ROOT, 'dist/components/BaseButton/index.js'))) throw new Error('нет dist/ с подпутями — сначала `npm run build`')
 	const output = execFileSync('npm', ['pack', '--ignore-scripts', '--json', '--pack-destination', dir], { cwd: ROOT, encoding: 'utf8' })
@@ -320,6 +346,7 @@ async function buildScenario(app, scenario) {
 		allJs: all.text,
 		css: readOutput(out, '.css'),
 		cssInitial: initialCss(out),
+		fonts: readdirSync(join(out, 'assets')).filter(name => name.endsWith('.woff2')),
 	}
 }
 
@@ -356,6 +383,7 @@ function checkContent(results, problems) {
 	}
 	expect(problems, /base-roadmap__inspector/.test(roadmapEdit.allJs), 'subpath-roadmap-edit: нет кода правки (чанк по import())')
 	checkLazyCss(results, problems)
+	checkFontFiles(results, problems)
 	expect(problems, !/base-table|base-editor/.test(button.js.text), 'subpath-button: в JS есть код BaseTable или BaseEditor')
 	expect(problems, button.css.text.includes('.base-button'), 'subpath-button: в CSS нет .base-button')
 	expect(problems, button.css.text.includes('--rise-color-primary-500'), 'subpath-button: в CSS нет токенов (tokens.css)')
@@ -393,6 +421,25 @@ function checkLazyCss(results, problems) {
 		}
 		console.log(
 			`CSS ${prefix}: просмотр ${kb(view.css.gzip)}, с правкой ${kb(edit.css.gzip)} (стартовый ${kb(gzipSync(view.cssInitial).length)} и ${kb(gzipSync(edit.cssInitial).length)}).`,
+		)
+	}
+}
+
+/** Шрифты кита в сборке приложения: `@font-face` обоих семейств в CSS и все woff2 пакета среди ассетов */
+function checkFontFiles(results, problems) {
+	const fonts = kitFonts()
+	expect(problems, fonts.length > 0, 'шрифты: в dist/fonts пакета нет woff2 — сначала `npm run build`')
+	for (const result of Object.values(results)) {
+		for (const family of ['Rise Grotesk', 'Rise Mono']) {
+			const declared = new RegExp(`@font-face\\s*\\{[^}]*font-family:\\s*["']?${family}`).test(result.css.text)
+			expect(problems, declared, `${result.name}: в CSS приложения нет @font-face «${family}»`)
+		}
+		const missing = fonts.filter(({ name }) => !result.fonts.some(file => file.startsWith(`${name}-`)))
+		const lost = missing.filter(({ inlined }) => !inlined || !result.css.text.includes('data:font/woff2'))
+		expect(
+			problems,
+			lost.length === 0,
+			`${result.name}: в сборке приложения нет шрифтов кита: ${lost.map(({ name }) => name).join(', ')}`,
 		)
 	}
 }
@@ -439,6 +486,7 @@ async function screenshot(browser, result, file) {
 	const page = await browser.newPage({ viewport: result.viewport ?? { width: 400, height: 400 }, reducedMotion: 'reduce' })
 	page.on('pageerror', error => result.errors.push(error.message))
 	page.on('console', message => message.type() === 'error' && result.errors.push(message.text()))
+	page.on('response', response => response.url().endsWith('.woff2') && result.fontResponses.set(response.url(), response.status()))
 	try {
 		await page.goto(server.resolvedUrls.local[0])
 		const rendered = await page
@@ -458,12 +506,40 @@ async function screenshot(browser, result, file) {
 		}
 		if (result.after) await result.after(page)
 		if (result.applied) await page.locator(`.${result.applied}`).first().waitFor({ timeout: 5000 })
+		result.fontFaces = await page.evaluate(loadKitFonts, FONT_SAMPLES)
 		await page.screenshot({ path: file, animations: 'disabled' })
 		return readFileSync(file)
 	} finally {
 		await page.close()
 		await server.close()
 	}
+}
+
+/** В браузере: загружает начертания кита для образцов текста; у каждого — список загруженных FontFace (семейство, насыщенность, статус) */
+async function loadKitFonts(samples) {
+	const loaded = []
+	for (const [font, text] of samples) {
+		const faces = await document.fonts.load(font, text).catch(() => [])
+		loaded.push({ font, faces: faces.map(face => `${face.family} ${face.weight} ${face.status}`) })
+	}
+	return loaded
+}
+
+/** Шрифты кита в браузере: каждый образец загрузил свои начертания, файлы шрифтов пришли из сборки приложения с ответом 200 */
+function checkLoadedFonts(result, problems) {
+	for (const { font, faces } of result.fontFaces ?? []) {
+		const ok = faces.length > 0 && faces.every(face => face.endsWith(' loaded'))
+		expect(problems, ok, `${result.name}: шрифт ${font} не загрузился: ${faces.join('; ') || 'нет начертаний'}`)
+	}
+	const files = [...result.fontResponses]
+	const failed = files.filter(([, status]) => status !== 200)
+	expect(
+		problems,
+		failed.length === 0,
+		`${result.name}: файлы шрифтов с ошибкой: ${failed.map(([url, status]) => `${url} ${status}`).join('; ')}`,
+	)
+	const expected = kitFonts().filter(({ inlined }) => !inlined).length
+	expect(problems, files.length >= expected, `${result.name}: загружено ${files.length} файлов шрифтов из ${expected}`)
 }
 
 async function compareScreenshots(app, results, problems) {
@@ -473,10 +549,14 @@ async function compareScreenshots(app, results, problems) {
 	try {
 		for (const result of Object.values(results)) {
 			result.errors = []
+			result.fontResponses = new Map()
 			shots[result.name] = await screenshot(browser, result, join(app, `${result.name}.png`))
 			expect(problems, shots[result.name] !== null, `${result.name}: компонент не отрисовался в браузере (.${result.marker})`)
 			expect(problems, result.errors.length === 0, `${result.name}: ошибки в консоли браузера: ${result.errors.join('; ')}`)
+			checkLoadedFonts(result, problems)
 		}
+		const sample = Object.values(results)[0]
+		console.log(`Шрифты в браузере (${sample.name}): ${sample.fontFaces?.map(({ faces }) => faces.join(', ')).join('; ')}`)
 	} finally {
 		await browser.close()
 	}

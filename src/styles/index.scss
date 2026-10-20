@@ -1,11 +1,10 @@
 @use './variables';
-@use './fonts/fonts';
 @use './kit';
 
-// Только Storybook и playground: шрифт кита на всей странице. В пакет (dist/styles.css) входит лишь kit.scss.
+// Только Storybook и playground: шрифт кита на всей странице. В пакет (dist/styles.css) входит лишь kit.scss (с @font-face).
 :where(body, button, input, textarea, select) {
 	font-family: var(--rise-font-sans);
-	font-synthesis: none;
+	font-synthesis: style;
 	text-rendering: optimizelegibility;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;

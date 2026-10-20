@@ -24,6 +24,21 @@ function createLazyGroups(): NonNullable<NonNullable<BuildOptions['rollupOptions
 	}
 }
 
+/**
+ * Шрифты кита (src/styles/fonts, README «Шрифты»): `dist/fonts/<имя>.woff2` без хеша — все проходы сборки дают одно имя, и CSS
+ * любого прохода (`styles.css`, `tokens.css`) ссылается на файл, который положил основной проход. В `url()` исходника стоит
+ * `?no-inline`: в сборке библиотеки Vite иначе вставил бы шрифт в CSS как data: URI.
+ */
+const FONT_FILE = /\.woff2$/
+
+/** Имя файла шрифта в dist (`fonts/<имя>.woff2`) или `null`, если ассет не шрифт */
+export function fontFileName(name: string | undefined): string | null {
+	return name && FONT_FILE.test(name) ? 'fonts/[name][extname]' : null
+}
+
+/** `base` проходов сборки пакета: адреса шрифтов в CSS — относительно самого CSS (`./fonts/…`), а не от корня сайта приложения */
+export const LIB_BASE = './'
+
 /** Входы автоимпорта: `./resolver`, `./nuxt` и runtime-плагин Nuxt, который `./nuxt` подключает по пути рядом с собой */
 function createIntegrationEntries(): Record<string, string> {
 	return {
@@ -168,7 +183,7 @@ export function createLibBuildConfig({ withSubpaths }: { withSubpaths: boolean }
 						return 'icons.svg'
 					}
 
-					return 'assets/[name]-[hash][extname]'
+					return fontFileName(name) ?? 'assets/[name]-[hash][extname]'
 				},
 			},
 		},

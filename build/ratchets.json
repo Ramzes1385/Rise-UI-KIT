@@ -91,6 +91,10 @@
 		"components/*/style.css": {
 			"gzip": 7121,
 			"budget": 8192
+		},
+		"fonts/*.woff2": {
+			"gzip": 158147,
+			"budget": 174080
 		}
 	},
 	"coverageExcludes": {

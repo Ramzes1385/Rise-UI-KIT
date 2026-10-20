@@ -167,16 +167,7 @@ function main() {
 		const kit = join(app, 'node_modules', PACKAGE)
 		mkdirSync(kit, { recursive: true })
 		execFileSync('tar', ['-xzf', tarball, '-C', kit, '--strip-components=1'])
-		for (const name of [
-			'vue',
-			'vite',
-			'typescript',
-			'vue-tsc',
-			'sass-embedded',
-			'@vitejs/plugin-vue',
-			'@fontsource-variable/inter',
-			'@fontsource-variable/jetbrains-mono',
-		]) {
+		for (const name of ['vue', 'vite', 'typescript', 'vue-tsc', 'sass-embedded', '@vitejs/plugin-vue']) {
 			link(join(ROOT, 'node_modules', name), join(app, 'node_modules', name))
 		}
 		mkdirSync(join(app, 'node_modules/.bin'), { recursive: true })

@@ -103,7 +103,7 @@ export default defineConfig({
 	expect: {
 		timeout: 5_000,
 		toHaveScreenshot: {
-			// 15% покрывает кросс-платформенные отличия анти-алиасинга Inter Variable
+			// 15% покрывает кросс-платформенные отличия анти-алиасинга шрифтов кита
 			// (Windows: GDI ClearType, Linux: FreeType) и 1-2px дрожание размеров
 			// текста между двумя рендерами одной woff2 на разных OS. Реальные
 			// визуальные регрессии (layout-shift, color-shift, сломанные компоненты)

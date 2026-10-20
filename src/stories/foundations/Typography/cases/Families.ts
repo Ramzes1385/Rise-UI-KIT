@@ -5,11 +5,11 @@ import { staticStorySource, useStorySetup } from '@/stories/helpers'
 const template = `
 	<div>
 		<div class="fnd-type">
-			<span class="fnd-type__meta">--rise-font-sans<br />Inter Variable</span>
+			<span class="fnd-type__meta">--rise-font-sans<br />Rise Grotesk</span>
 			<span class="fnd-type__sample" style="font-size: 20px;">АБВГДЕЁЖЗ абвгдеёжз ABCDEFG abcdefg 0123456789</span>
 		</div>
 		<div class="fnd-type">
-			<span class="fnd-type__meta">--rise-font-mono<br />JetBrains Mono Variable</span>
+			<span class="fnd-type__meta">--rise-font-mono<br />Rise Mono</span>
 			<span class="fnd-type__sample" style="font-size: 18px; font-family: var(--rise-font-mono);">const theme = 'dark' // 0O 1lI</span>
 		</div>
 	</div>

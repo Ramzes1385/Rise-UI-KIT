@@ -9,12 +9,15 @@
  *    у каждого публичного компонента есть `components/<Имя>/index.js`, и все CSS, которые он импортирует, есть в dist;
  *    правила `tokens.css` + всех `style.css` — ровно правила `styles.css` (без компонентов вне подпутей: 3D-карта), с точностью
  *    до объявления: селектор и свойство в своём `@media`/`@supports`.
+ * 5. Шрифты кита (src/styles/fonts): `styles.css` и `tokens.css` объявляют `@font-face` семейств Rise Grotesk и Rise Mono
+ *    с `font-display: block`, остальной CSS пакета `@font-face` не повторяет, и у каждого `url()` в CSS пакета есть файл в dist
+ *    (адреса относительные: `./fonts/…` от файла CSS).
  *
  * Флаг `--root=<папка>` — корень репозитория (по умолчанию — родитель scripts/).
  */
 
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
-import { join, resolve } from 'node:path'
+import { dirname, join, resolve } from 'node:path'
 import { MEDIA_STYLE_DIRS } from '../build/config/cssSplit.ts'
 import { componentCssFile, readPublicComponents, subpathEntryName, TOKENS_CSS_FILE } from '../build/config/subpaths.ts'
 import { splitTopLevelBlocks } from '../build/plugins/cssDedupe.ts'
@@ -139,6 +142,62 @@ function checkSubpaths(styles, problems) {
 	return { files, rules: 0 }
 }
 
+/** Семейства шрифтов кита: их `@font-face` приходят вместе со стилями (`styles.css` или `tokens.css`) */
+const KIT_FONT_FAMILIES = ['Rise Grotesk', 'Rise Mono']
+const FONT_FACE = /@font-face\s*\{([^}]*)\}/g
+/** `url()` в кавычках или без: строка в кавычках захватывается целиком (data: URI с SVG внутри содержит свои `url(…)`) */
+const CSS_URL = /url\(\s*(?:"([^"]*)"|'([^']*)'|([^)'"\s]+))\s*\)/g
+const EXTERNAL_URL = /^(?:data:|https?:|#|\/\/)/
+
+function fontFaces(css) {
+	return [...css.matchAll(FONT_FACE)].map(([, body]) => ({
+		family: /font-family:\s*['"]?([^;'"]+?)['"]?\s*(?:;|$)/.exec(body)?.[1],
+		display: /font-display:\s*([\w-]+)/.exec(body)?.[1] ?? 'auto',
+	}))
+}
+
+/** CSS-файлы dist (пути от dist, через `/`) */
+function distCssFiles() {
+	if (!existsSync(DIST)) return []
+	return readdirSync(DIST, { recursive: true })
+		.map(file => String(file).replaceAll('\\', '/'))
+		.filter(file => file.endsWith('.css'))
+		.sort()
+}
+
+/** Шрифты: `@font-face` кита один раз — в `styles.css` и в `tokens.css`, с `font-display: block`; у каждого `url()` есть файл */
+function checkFonts(problems) {
+	const files = distCssFiles()
+	let urls = 0
+	for (const file of files) {
+		const css = readFileSync(join(DIST, file), 'utf8')
+		const faces = fontFaces(css)
+		const own = file === 'styles.css' || file === TOKENS_CSS_FILE
+		if (own) {
+			for (const family of KIT_FONT_FAMILIES) {
+				if (!faces.some(face => face.family === family))
+					problems.push(`${file}: нет @font-face «${family}» — шрифты кита не подключатся сами`)
+			}
+		} else if (faces.length > 0 && !file.startsWith('fonts/')) {
+			problems.push(`${file}: @font-face — шрифты кита объявляют только styles.css и ${TOKENS_CSS_FILE}`)
+		}
+		for (const face of faces) {
+			if (face.display !== 'block')
+				problems.push(`${file}: @font-face «${face.family}» с font-display: ${face.display} — нужен block`)
+		}
+		for (const [, double, single, bare] of css.matchAll(CSS_URL)) {
+			const url = double ?? single ?? bare
+			if (EXTERNAL_URL.test(url)) continue
+			urls++
+			if (!existsSync(resolve(DIST, dirname(file), url.split(/[?#]/)[0]))) problems.push(`${file}: url(${url}) — файла нет в dist`)
+		}
+	}
+	return {
+		urls,
+		fonts: existsSync(join(DIST, 'fonts')) ? readdirSync(join(DIST, 'fonts')).filter(name => name.endsWith('.woff2')).length : 0,
+	}
+}
+
 function read(name, problems) {
 	const file = join(DIST, name)
 	if (!existsSync(file)) {
@@ -168,14 +227,18 @@ function check() {
 		problems.push('media.layer.css не подключает ./media.css в слой rise')
 	}
 	const subpaths = checkSubpaths(styles, problems)
-	return { problems, classes, subpaths, sizes: { styles: styles?.length ?? 0, media: media?.length ?? 0 } }
+	const fonts = checkFonts(problems)
+	return { problems, classes, subpaths, fonts, sizes: { styles: styles?.length ?? 0, media: media?.length ?? 0 } }
 }
 
-const { problems, classes, subpaths, sizes } = check()
+const { problems, classes, subpaths, fonts, sizes } = check()
 console.log(`Разбиение CSS: styles.css ${sizes.styles} Б, media.css ${sizes.media} Б; классы плеера: ${classes.join(', ')}`)
 console.log(`Подпути: ${subpaths.files} файлов style.css компонентов, сверено правил со styles.css: ${subpaths.rules}`)
+console.log(`Шрифты: ${fonts.fonts} файлов в dist/fonts, адресов url() в CSS пакета: ${fonts.urls}`)
 if (problems.length > 0) {
 	console.error(problems.map(problem => `  ✗ ${problem}`).join('\n'))
 	process.exit(1)
 }
-console.log('Разбиение CSS: ✓ styles.css без плеера, media.css без токенов, CSS подпутей без токенов и совпадает со styles.css.')
+console.log(
+	'Разбиение CSS: ✓ styles.css без плеера, media.css без токенов, CSS подпутей без токенов и совпадает со styles.css, шрифты кита на месте.',
+)
