@@ -15,7 +15,25 @@ export function mountWith<T>(data: RoadmapData, progress: RoadmapProgress | unde
 	let captured: (Context & { extra: T }) | null = null
 	const Host = defineComponent({
 		props: { data: { type: Object, required: true }, progress: { type: Object, default: undefined } },
-		emits: ['update:progress', 'update:data'],
+		emits: [
+			'update:progress',
+			'update:data',
+			'update:selected',
+			'select',
+			'update:mode',
+			'update:expanded',
+			'update:filter',
+			'update:review',
+			'status-change',
+			'topic-complete',
+			'stage-complete',
+			'progress-error',
+			'progress-load',
+			'progress-save',
+			'mode-change',
+			'reorder',
+			'publish',
+		],
 		setup(props, { emit }) {
 			const model = useRoadmapModel(props as unknown as BaseRoadmapProps, emit as unknown as BaseRoadmapEmits)
 			const snapshot = useRoadmap3DSnapshot({ data: model.data, stageViews: model.stageViews })

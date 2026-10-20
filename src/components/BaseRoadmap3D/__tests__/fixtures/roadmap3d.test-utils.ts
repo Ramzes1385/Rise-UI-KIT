@@ -73,45 +73,71 @@ export function stubReducedMotion(isReduced: boolean): void {
 	}))
 }
 
+const EVENTS = [
+	'update:view',
+	'update:camera',
+	'update:focused',
+	'update:isTourPlaying',
+	'fallback',
+	'update:progress',
+	'update:data',
+	'update:selected',
+	'update:mode',
+	'status-change',
+	'reorder',
+]
+
 type Slots = Record<string, () => VNode>
+type RenderOptions = { isReady?: boolean; renderer?: ReturnType<typeof createFakeRenderer> }
+
+function eventListeners(events: Record<string, unknown[][]>) {
+	return Object.fromEntries(
+		EVENTS.map(name => [
+			`on${name.charAt(0).toUpperCase()}${name.slice(1).replace(/-(.)/g, (_, letter: string) => letter.toUpperCase())}`,
+			(...args: unknown[]) => (events[name] ??= []).push(args),
+		]),
+	)
+}
+
+async function mountRoadmap(flush: () => void, setup: { props: Record<string, unknown>; slots: Slots; options: RenderOptions }) {
+	const { props, slots, options } = setup
+	const renderer = options.renderer ?? createFakeRenderer()
+	const exposed = ref<BaseRoadmap3DExpose | null>(null)
+	const factory = vi.fn(() => renderer)
+	const events: Record<string, unknown[][]> = {}
+	const listeners = eventListeners(events)
+	const defaults = { data: DATA_ROADMAP_3D, progress: PROGRESS_ROADMAP_3D, rendererFactory: factory }
+	const Host = defineComponent({
+		setup:
+			(_, { attrs }) =>
+			() =>
+				h(BaseRoadmap3D, { ...defaults, ...listeners, ...attrs, ref: exposed }, slots),
+	})
+	const result = render(Host, { attrs: props })
+	const isReady = options.isReady ?? (props.view !== '2d' && !props.rendererFactory)
+	if (isReady) await waitFor(() => expect(renderer.setPixelRatio).toHaveBeenCalled())
+	await nextTick()
+	flush()
+	await nextTick()
+	return { ...result, renderer, factory, exposed, events }
+}
+
 export function useRoadmap3DEnvironment() {
 	const env = useMapEnvironment()
 	let now = 0
-	const callbacks = (): Array<Parameters<typeof requestAnimationFrame>[0]> =>
-		vi
-			.mocked(requestAnimationFrame)
-			.mock.calls.splice(0)
-			.map(([callback]) => callback)
 
 	function flush(frames = 1): void {
 		for (let index = 0; index < frames; index++) {
 			now += 16
-			callbacks().forEach(callback => callback(now))
+			const callbacks = vi.mocked(requestAnimationFrame).mock.calls.splice(0)
+			callbacks.forEach(([callback]) => callback(now))
 		}
 	}
 
-	async function renderRoadmap(props: Record<string, unknown> = {}, slots: Slots = {}) {
-		const renderer = createFakeRenderer()
-		const exposed = ref<BaseRoadmap3DExpose | null>(null)
-		const factory = vi.fn(() => renderer)
-		const Host = defineComponent({
-			setup:
-				(_, { attrs }) =>
-				() =>
-					h(
-						BaseRoadmap3D,
-						{ data: DATA_ROADMAP_3D, progress: PROGRESS_ROADMAP_3D, rendererFactory: factory, ...attrs, ref: exposed },
-						slots,
-					),
-		})
-		const result = render(Host, { attrs: props })
-		if (props.view !== '2d') await waitFor(() => expect(renderer.setPixelRatio).toHaveBeenCalled())
-		await nextTick()
-		flush()
-		await nextTick()
-		const sceneRoot = () => exposed.value?.getSceneContext()?.scene ?? null
-		return { ...result, renderer, factory, exposed, sceneRoot }
+	return {
+		...env,
+		flush,
+		renderRoadmap: (props: Record<string, unknown> = {}, slots: Slots = {}, options: RenderOptions = {}) =>
+			mountRoadmap(flush, { props, slots, options }),
 	}
-
-	return { ...env, flush, renderRoadmap }
 }
