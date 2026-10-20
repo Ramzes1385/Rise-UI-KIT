@@ -69,7 +69,7 @@ function expectValidValue(token: FlatToken, where: string): void {
 			expect(value, note).toMatch(HEX)
 			break
 		case 'dimension':
-			expect(value, note).toMatch(/^-?\d+(?:\.\d+)?(?:px|rem)$/)
+			expect(value, note).toMatch(where.startsWith('font.tracking.') ? /^-?\d+(?:\.\d+)?em$/ : /^-?\d+(?:\.\d+)?(?:px|rem)$/)
 			break
 		case 'duration':
 			expect(value, note).toMatch(/^\d+(?:\.\d+)?(?:ms|s)$/)
@@ -205,39 +205,45 @@ describe('экспорт токенов: значения совпадают с 
 		}
 	})
 
-	it('светлая семантика — ссылки на палитру, тёмная — на другие оттенки', () => {
+	it('светлая семантика — ссылки на палитру, тёмная — на другие оттенки и смеси шагов', () => {
 		const light = flatten(byPath('tokens/rise.light.json').document)
 		const dark = flatten(byPath('tokens/rise.dark.json').document)
 		expect(light.get('color.bg')?.$value).toBe('{palette.neutral.0}')
-		expect(dark.get('color.bg')?.$value).toBe('{palette.neutral.900}')
-		expect(light.get('color.primary')?.$value).toBe('{palette.primary.700}')
-		expect(dark.get('color.primary')?.$value).toBe('{palette.primary.400}')
+		expect(dark.get('color.bg-elevated')?.$value).toBe('{palette.neutral.900}')
+		expect(valueAt('', 'color.bg', dark)).toBe('#08090f')
+		expect(valueAt('', 'color.surface-raised', dark)).toBe('#1b1e29')
+		expect(light.get('color.primary')?.$value).toBe('{palette.primary.600}')
+		expect(dark.get('color.primary')?.$value).toBe('{palette.primary.500}')
 		expect(light.get('color.info')?.$value).toBe('{palette.info.600}')
-		expect(valueAt('', 'color.focus-ring', dark)).toBe(valueAt('', 'palette.primary.400', dark))
+		expect(light.get('color.field-bg')?.$value).toBe('{color.bg-elevated}')
+		expect(valueAt('', 'color.on-primary', light)).toBe('#0b0d14')
+		expect(valueAt('', 'color.focus-ring', dark)).toBe(valueAt('', 'palette.primary.500', dark))
+		expect(valueAt('', 'font.tracking.label', light)).toBe('0.12em')
 	})
 
 	it('minimal: чёрный бренд светлой темы и светлая кнопка тёмной (primaryDark)', () => {
 		const theme = createTheme(THEME_PRESETS.minimal)
 		const light = flatten(byPath('tokens/minimal.light.json').document)
 		const dark = flatten(byPath('tokens/minimal.dark.json').document)
-		expect(valueAt('', 'color.primary', light)).toBe(hex(theme.vars['--rise-color-primary-700']))
-		expect(valueAt('', 'color.primary', dark)).toBe(hex(theme.darkVars['--rise-color-primary-400']))
-		expect(valueAt('', 'color.primary', dark)).toBe('#fafafa')
+		expect(valueAt('', 'color.primary', light)).toBe(hex(theme.vars['--rise-color-primary-600']))
+		expect(valueAt('', 'color.on-primary', light)).toBe('#ffffff')
+		expect(valueAt('', 'color.primary', dark)).toBe(hex(theme.darkVars['--rise-color-primary-500']))
+		expect(valueAt('', 'color.primary', dark)).toBe('#e4e4e7')
 	})
 
 	it('color-mix считается в sRGB: мягкий фон тёмной роли и подложки медиа', () => {
 		const dark = flatten(byPath('tokens/rise.dark.json').document)
-		expect(valueAt('', 'color.primary-soft', dark)).toBe('#33271f')
-		expect(valueAt('', 'media.backdrop', dark)).toBe('#000000e0')
-		expect(valueAt('', 'media.text-toned', dark)).toBe('#ffffffd9')
+		expect(valueAt('', 'color.primary-soft', dark)).toBe('#2b1711')
+		expect(valueAt('', 'media.backdrop', dark)).toBe('#08090fe0')
+		expect(valueAt('', 'media.text-toned', dark)).toBe('#f3f5ffd9')
 	})
 
 	it('форма: скругление, плотность и производные размеры по литералам темы', () => {
 		const expected = {
-			rise: ['4px', '6px', '5px'],
-			corporate: ['2px', '3px', '3.75px'],
-			playful: ['14px', '21px', '6.25px'],
-			minimal: ['0px', '0px', '5px'],
+			rise: ['4px', '6px', '7px'],
+			corporate: ['2px', '3px', '5.25px'],
+			playful: ['8px', '12px', '8.75px'],
+			minimal: ['0px', '0px', '7px'],
 		}
 		for (const name of THEME_PRESET_NAMES) {
 			const tokens = flatten(byPath(`tokens/${name}.light.json`).document)
@@ -258,31 +264,17 @@ describe('экспорт токенов: значения совпадают с 
 			(valueAt('', 'shadow.sm', flatten(byPath(`tokens/${name}.${mode}.json`).document)) as { color: string }[]).map(
 				layer => layer.color,
 			)
-		expect(alpha('rise', 'light')).toEqual(['#0000001a', '#0000001a'])
-		expect(alpha('rise', 'dark')).toEqual(['#00000066', '#00000066'])
-		expect(alpha('corporate', 'light')).toEqual(['#0000000f', '#0000000f'])
-		expect(alpha('minimal', 'light')).toEqual(['#00000000', '#00000000'])
+		expect(alpha('rise', 'light')).toEqual(['#0b0d1414'])
+		expect(alpha('rise', 'dark')).toEqual(['#00000080'])
+		expect(alpha('corporate', 'light')).toEqual(['#0b0d140c'])
+		expect(alpha('minimal', 'light')).toEqual(['#0b0d1400'])
 		expect(valueAt('', 'shadow.strength', flatten(byPath('tokens/playful.light.json').document))).toBe(1.8)
 	})
 
 	it('шрифты, длительности и кривая — из литералов темы', () => {
 		const corporate = flatten(byPath('tokens/corporate.light.json').document)
-		expect(valueAt('', 'font.family.sans', corporate)).toEqual([
-			'system-ui',
-			'-apple-system',
-			'Segoe UI',
-			'Roboto',
-			'Arial',
-			'sans-serif',
-		])
-		expect(valueAt('', 'font.family.heading', corporate)).toEqual([
-			'system-ui',
-			'-apple-system',
-			'Segoe UI',
-			'Roboto',
-			'Arial',
-			'sans-serif',
-		])
+		expect(valueAt('', 'font.family.sans', corporate)).toEqual(['Rise Grotesk', 'sans-serif'])
+		expect(valueAt('', 'font.family.heading', corporate)).toEqual(['Rise Grotesk', 'sans-serif'])
 		expect(['fast', 'base', 'slow'].map(key => valueAt('', `duration.${key}`, corporate))).toEqual(['100ms', '150ms', '200ms'])
 		expect(valueAt('', 'easing.base', corporate)).toEqual([0.2, 0, 0, 1])
 		const minimal = flatten(byPath('tokens/minimal.dark.json').document)
@@ -290,7 +282,9 @@ describe('экспорт токенов: значения совпадают с 
 		expect(valueAt('', 'easing.base', minimal)).toEqual([0, 0, 1, 1])
 		expect(valueAt('', 'duration.loop', minimal)).toBe('1s')
 		const rise = flatten(byPath('tokens.json').document)
-		expect(valueAt('', 'font.family.mono', rise)).toContain('JetBrains Mono')
+		expect(valueAt('', 'font.family.mono', rise)).toEqual(['Rise Mono', 'monospace'])
+		expect(valueAt('', 'duration.slow', rise)).toBe('320ms')
+		expect(valueAt('', 'control.height', rise)).toBe('36px')
 		expect(valueAt('', 'font.size.base', rise)).toBe('16px')
 		expect(valueAt('', 'font.weight.semibold', rise)).toBe(600)
 		expect(valueAt('', 'z-index.toast', rise)).toBe(2000)

@@ -17,6 +17,7 @@ const RULES: readonly PathRule[] = [
 	{ pattern: /^font-(sans|heading|mono)$/, path: match => ['font', 'family', match[1]], type: 'fontFamily' },
 	{ pattern: /^font-size-(.+)$/, path: match => ['font', 'size', match[1]], type: 'dimension' },
 	{ pattern: /^line-height-(.+)$/, path: match => ['font', 'line-height', match[1]], type: 'dimension' },
+	{ pattern: /^tracking-(.+)$/, path: match => ['font', 'tracking', match[1]], type: 'dimension' },
 	{ pattern: /^font-weight-(.+)$/, path: match => ['font', 'weight', match[1]], type: 'fontWeight' },
 	{ pattern: /^radius$/, path: () => ['radius', 'base'], type: 'dimension' },
 	{ pattern: /^radius-(.+)$/, path: match => ['radius', match[1]], type: 'dimension' },
@@ -35,7 +36,7 @@ const RULES: readonly PathRule[] = [
 	{ pattern: /^code-(.+)$/, path: match => ['code', match[1]], type: 'color' },
 	{ pattern: /^flow-(.+)$/, path: match => ['flow', match[1]], type: 'color' },
 	{
-		pattern: /^(?:bg|text|border|on|overlay|focus-ring|primary|success|info|warning|error)(?:-.+)?$/,
+		pattern: /^(?:bg|surface|field|text|border|on|overlay|focus-ring|primary|success|info|warning|error)(?:-.+)?$/,
 		path: match => ['color', match[0]],
 		type: 'color',
 	},

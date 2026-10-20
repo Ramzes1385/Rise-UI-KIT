@@ -16,7 +16,7 @@ export type ThemePalette = Record<ThemeShade, string>
 /** Нейтральная палитра: оттенки 50…950 и `0` — фон светлой темы (`--rise-color-neutral-0`) */
 export type ThemeNeutralPalette = ThemePalette & { 0: string }
 
-/** Скругление темы → `--rise-radius`: `none` 0, `sm` 2px, `md` 4px (как в ките), `lg` 8px, `full` 14px (пилюли); число — пиксели */
+/** Скругление темы → `--rise-radius`: `none` 0, `sm` 2px, `md` 4px (как в ките), `lg` 8px, `full` 14px (пилюли — вне стиля кита); число — пиксели */
 export const THEME_RADII = ['none', 'sm', 'md', 'lg', 'full'] as const
 
 /** Именованное скругление */
@@ -49,6 +49,33 @@ export type ThemePresetName = (typeof THEME_PRESET_NAMES)[number]
 /** Режим, для которого считается контраст */
 export type ThemeMode = 'light' | 'dark'
 
+/** Текст на заливке роли: `dark` — нейтраль 950, `light` — белый */
+export type ThemeOnColor = 'dark' | 'light'
+
+/** Текст на главном оттенке палитры: `auto` — тёмный или белый по контрасту (светлый бренд затемняется), иначе — заданный */
+export type ThemePaletteText = ThemeOnColor | 'auto'
+
+/** Роль в светлой теме: текст на заливке (оттенок 600) и оттенок наведения — светлее (500) для тёмного текста, темнее (700) для белого */
+export interface ThemeLightRole {
+	/** Текст на заливке */
+	on: ThemeOnColor
+	/** Оттенок наведения */
+	hover: 500 | 700
+}
+
+/** Цвет роли в тёмной теме: шаг палитры, смесь двух шагов `[шаг, доля %, шаг]` в sRGB или литерал HEX */
+export type ThemeRoleColor = ThemeShade | readonly [ThemeShade, number, ThemeShade] | string
+
+/** Роль в тёмной теме: заливка, наведение и текст роли; текст на заливке — нейтраль 950 */
+export interface ThemeDarkRole {
+	/** Заливка `--rise-<роль>` */
+	fill: ThemeRoleColor
+	/** Наведение `--rise-<роль>-hover` */
+	hover: ThemeRoleColor
+	/** Текст роли `--rise-<роль>-text` */
+	text: ThemeRoleColor
+}
+
 /** Шрифты темы → `--rise-font-sans`, `--rise-font-heading`, `--rise-font-mono`; `@font-face` подключает приложение */
 export interface ThemeFonts {
 	/** Основной стек */
@@ -63,9 +90,12 @@ export interface ThemeFonts {
 export interface ThemeInput {
 	/** Имя темы → `[data-rise-theme="name"]`: латиница, цифры и дефис, с буквы */
 	name: string
-	/** Цвет бренда, HEX: встаёт на главный оттенок 700; светлый бренд затемняется до контраста 4.5:1 с белым */
+	/**
+	 * Цвет бренда, HEX: встаёт на главный оттенок 600. Текст на кнопке — тёмный, если бренд берёт с ним 4.5:1 и 3:1 к фону
+	 * поля, иначе белый; слишком светлый бренд затемняется до 3:1 к фону поля, средний — до 4.5:1 с белым
+	 */
 	primary: string
-	/** Свой цвет бренда для тёмного режима, HEX (чёрный бренд → светлая кнопка): оттенки 400 и 300 тёмной темы */
+	/** Свой цвет бренда для тёмного режима, HEX (чёрный бренд → светлая кнопка): оттенки 500, 400 и 300 тёмной темы */
 	primaryDark?: string
 	/** Нейтраль: `tinted` — серый с оттенком бренда (по умолчанию), `gray` — чистый серый, HEX — тон и хрома из цвета (slate, stone…) */
 	neutral?: 'tinted' | 'gray' | (string & {})
@@ -121,7 +151,7 @@ export interface ThemeContrastRow extends ThemeContrastPair {
 	ok: boolean
 }
 
-/** Палитра из одного цвета: оттенки, главный цвет и признак подстройки */
+/** Палитра из одного цвета: оттенки, главный цвет, текст на нём и признак подстройки */
 export interface ThemePaletteResult {
 	/** Оттенки 50…950 */
 	shades: ThemePalette
@@ -129,7 +159,9 @@ export interface ThemePaletteResult {
 	seed: string
 	/** Цвет главного оттенка — исходный или подстроенный под контраст */
 	main: string
-	/** Главный цвет пришлось сдвинуть по светлоте, чтобы взять контраст 4.5:1 */
+	/** Текст на главном оттенке: тёмный или белый */
+	on: ThemeOnColor
+	/** Главный цвет пришлось сдвинуть по светлоте, чтобы взять контраст */
 	adjusted: boolean
 }
 
@@ -141,7 +173,7 @@ export interface Theme {
 	css: string
 	/** Сиды основного правила: имя переменной → значение */
 	vars: Record<string, string>
-	/** Сиды тёмного режима (из `primaryDark`); пусто, если не задан */
+	/** Сиды тёмного режима: оттенки `primaryDark` и тёмные цвета роли, у которой в ките литералы (success); пусто, если не нужны */
 	darkVars: Record<string, string>
 	/** Контраст всех обязательных и справочных пар в светлом и тёмном режиме */
 	contrast: ThemeContrastRow[]

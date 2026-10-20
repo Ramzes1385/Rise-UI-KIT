@@ -1,106 +1,137 @@
-/** Утилиты: палитры кита и готовые темы — `rise` (вид кита), `corporate`, `playful`, `minimal` */
+/** Утилиты: палитры кита, роли в светлой и тёмной теме и готовые темы — `rise` (вид кита), `corporate`, `playful`, `minimal` */
 
-import type { ThemeInput, ThemeNeutralPalette, ThemePalette, ThemePresetName, ThemeRole } from './types/themeUtils.types'
+import type {
+	ThemeDarkRole,
+	ThemeInput,
+	ThemeLightRole,
+	ThemeNeutralPalette,
+	ThemePalette,
+	ThemePresetName,
+	ThemeRole,
+} from './types/themeUtils.types'
 
 /** Палитры кита дословно по `src/styles/_tokens.scss`; тест сверяет их с файлом */
 export const KIT_PALETTES: Record<ThemeRole, ThemePalette> & { neutral: ThemeNeutralPalette } = {
 	primary: {
-		50: '#fff7ed',
-		100: '#ffedd5',
-		200: '#fed7aa',
-		300: '#fdba74',
-		400: '#fb923c',
-		500: '#f97316',
-		600: '#ea580c',
-		700: '#c2410c',
-		800: '#9a3412',
-		900: '#7c2d12',
-		950: '#431407',
+		50: '#fff3eb',
+		100: '#ffe6d5',
+		200: '#ffc9a8',
+		300: '#ffa470',
+		400: '#ff8243',
+		500: '#ff6a1f',
+		600: '#ee5410',
+		700: '#c4400a',
+		800: '#9a2f07',
+		900: '#7a2608',
+		950: '#431204',
 	},
 	neutral: {
 		0: '#ffffff',
-		50: '#fafafa',
-		100: '#f4f4f5',
-		200: '#e4e4e7',
-		300: '#d4d4d8',
-		400: '#a1a1aa',
-		500: '#71717a',
-		600: '#52525b',
-		700: '#3f3f46',
-		800: '#27272a',
-		900: '#18181b',
-		950: '#09090b',
+		50: '#f5f6f9',
+		100: '#eceef3',
+		200: '#e1e4ea',
+		300: '#cdd2dc',
+		400: '#9aa2b4',
+		500: '#7e869a',
+		600: '#5b6276',
+		700: '#414859',
+		800: '#2a2f3d',
+		900: '#171a24',
+		950: '#0b0d14',
 	},
 	success: {
-		50: '#f0fdf4',
-		100: '#dcfce7',
-		200: '#bbf7d0',
-		300: '#86efac',
-		400: '#4ade80',
-		500: '#22c55e',
-		600: '#16a34a',
-		700: '#15803d',
-		800: '#166534',
-		900: '#14532d',
-		950: '#052e16',
+		50: '#e8f8f0',
+		100: '#d3f2e2',
+		200: '#a7e3c5',
+		300: '#6fd3a2',
+		400: '#2fbf7e',
+		500: '#12a666',
+		600: '#0b7f4e',
+		700: '#086b41',
+		800: '#065a37',
+		900: '#054a2e',
+		950: '#032a1a',
 	},
 	info: {
-		50: '#eff6ff',
-		100: '#dbeafe',
-		200: '#bfdbfe',
-		300: '#93c5fd',
-		400: '#60a5fa',
-		500: '#3b82f6',
-		600: '#2563eb',
-		700: '#1d4ed8',
-		800: '#1e40af',
-		900: '#1e3a8a',
-		950: '#172554',
+		50: '#eef3ff',
+		100: '#dde6ff',
+		200: '#bccdff',
+		300: '#8eabff',
+		400: '#6a8dff',
+		500: '#4f75ff',
+		600: '#2a55f0',
+		700: '#2143c4',
+		800: '#1c3596',
+		900: '#1a2e73',
+		950: '#111c45',
 	},
 	warning: {
-		50: '#fffbeb',
-		100: '#fef3c7',
-		200: '#fde68a',
-		300: '#fcd34d',
-		400: '#fbbf24',
-		500: '#f59e0b',
-		600: '#d97706',
-		700: '#b45309',
-		800: '#92400e',
-		900: '#78350f',
-		950: '#451a03',
+		50: '#fff6e0',
+		100: '#ffebb8',
+		200: '#ffd98a',
+		300: '#ffc457',
+		400: '#ffb224',
+		500: '#e89a00',
+		600: '#c77300',
+		700: '#a85c00',
+		800: '#7a4300',
+		900: '#5e3400',
+		950: '#361d00',
 	},
 	error: {
-		50: '#fef2f2',
-		100: '#fee2e2',
-		200: '#fecaca',
-		300: '#fca5a5',
-		400: '#f87171',
-		500: '#ef4444',
-		600: '#dc2626',
-		700: '#b91c1c',
-		800: '#991b1b',
-		900: '#7f1d1d',
-		950: '#450a0a',
+		50: '#ffeef0',
+		100: '#ffdce0',
+		200: '#ffb8c1',
+		300: '#ff9da9',
+		400: '#ff7a8a',
+		500: '#ff5468',
+		600: '#dc1f37',
+		700: '#b9152b',
+		800: '#9b0f22',
+		900: '#7a0c1b',
+		950: '#45060e',
 	},
 }
 
-/** Главный оттенок роли в светлом режиме (`$light-main-shade` в `_tokens.scss`): заливка кнопки, текст роли */
-export const KIT_MAIN_SHADES: Record<ThemeRole, 600 | 700> = { primary: 700, success: 700, info: 600, warning: 700, error: 600 }
+/** Главный оттенок роли в светлой теме (заливка `--rise-<роль>`): у всех ролей — 600 */
+export const KIT_MAIN_SHADES: Record<ThemeRole, 600> = { primary: 600, success: 600, info: 600, warning: 600, error: 600 }
 
-const KIT_FONT_SANS =
-	"'Inter Variable', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Source Han Sans SC', sans-serif"
-const KIT_FONT_MONO =
-	"'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, 'PingFang SC', 'Microsoft YaHei', 'Noto Sans Mono CJK SC', monospace"
+/**
+ * Роли кита в светлой теме (`$light-roles` в `_tokens.scss`): текст на заливке и оттенок наведения. Тёмный текст — наведение
+ * светлее (500), белый — темнее (700). Тема с брендом другой светлоты переопределяет их сидами `--rise-color-<роль>-on`/`-hover`.
+ */
+export const KIT_LIGHT_ROLES: Record<ThemeRole, ThemeLightRole> = {
+	primary: { on: 'dark', hover: 500 },
+	success: { on: 'light', hover: 700 },
+	info: { on: 'light', hover: 700 },
+	warning: { on: 'dark', hover: 500 },
+	error: { on: 'light', hover: 700 },
+}
+
+/**
+ * Роли кита в тёмной теме (`$dark-roles` в `_tokens.scss`): заливка, наведение и текст роли — шаг палитры, смесь двух шагов
+ * `[шаг, доля %, шаг]` или литерал HEX (цвет макета ярче любой смеси шагов). Текст на заливке — нейтраль 950.
+ */
+export const KIT_DARK_ROLES: Record<ThemeRole, ThemeDarkRole> = {
+	primary: { fill: 500, hover: 400, text: 300 },
+	success: { fill: '#2fd08a', hover: '#5cdda4', text: '#7fe6b8' },
+	info: { fill: 400, hover: 300, text: [200, 59, 300] },
+	warning: { fill: 400, hover: 300, text: [400, 54, 50] },
+	error: { fill: 500, hover: 400, text: 300 },
+}
+
+const KIT_FONT_SANS = "'Rise Grotesk', sans-serif"
+const KIT_FONT_MONO = "'Rise Mono', monospace"
 
 /**
  * Готовые темы: `rise` — вид кита (палитры как есть, генератор не используется), `corporate` — админки и таблицы,
- * `playful` — потребительские приложения, `minimal` — инструменты и документация. Тема — `createTheme(THEME_PRESETS.corporate)`.
+ * `playful` — потребительские приложения, `minimal` — инструменты и документация. Шрифты — только шрифты кита
+ * (Rise Grotesk, Rise Mono), скругления — без пилюль. Тема — `createTheme(THEME_PRESETS.corporate)`.
  */
 export const THEME_PRESETS: Record<ThemePresetName, ThemeInput> = {
 	rise: {
 		name: 'rise',
-		primary: '#c2410c',
+		primary: '#ee5410',
 		neutral: 'gray',
 		palettes: KIT_PALETTES,
 		radius: 'md',
@@ -115,7 +146,6 @@ export const THEME_PRESETS: Record<ThemePresetName, ThemeInput> = {
 		neutral: '#64748b',
 		radius: 'sm',
 		density: 'compact',
-		font: { sans: 'system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif' },
 		shadows: 'soft',
 		motion: 'subtle',
 	},
@@ -123,23 +153,19 @@ export const THEME_PRESETS: Record<ThemePresetName, ThemeInput> = {
 		name: 'playful',
 		primary: '#7c3aed',
 		neutral: 'tinted',
-		radius: 'full',
+		radius: 'lg',
 		density: 'comfortable',
-		font: { heading: '"Nunito", system-ui, sans-serif' },
 		shadows: 'strong',
 		motion: 'expressive',
 	},
 	minimal: {
 		name: 'minimal',
 		primary: '#18181b',
-		primaryDark: '#fafafa',
+		primaryDark: '#e4e4e7',
 		neutral: 'gray',
 		radius: 'none',
 		density: 'default',
-		font: {
-			sans: 'ui-monospace, "JetBrains Mono", SFMono-Regular, Menlo, monospace',
-			heading: 'ui-monospace, "JetBrains Mono", SFMono-Regular, Menlo, monospace',
-		},
+		font: { sans: KIT_FONT_MONO, heading: KIT_FONT_MONO, mono: KIT_FONT_MONO },
 		shadows: 'none',
 		motion: 'none',
 	},

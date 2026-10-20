@@ -12,12 +12,14 @@ const failures = (input: Parameters<typeof createTheme>[0]): string[] =>
 		.map(row => `${row.mode} ${row.fg} / ${row.bg} ${row.ratio}`)
 
 describe('createTheme', () => {
-	it('из одного цвета: палитра бренда и тонированная нейтраль, больше ничего', () => {
+	it('из одного цвета: палитра бренда с текстом и наведением кнопки и тонированная нейтраль, больше ничего', () => {
 		const theme = createTheme({ name: 'brand', primary: '#0f766e' })
 		expect(theme.name).toBe('brand')
-		expect(theme.vars['--rise-color-primary-700']).toBe('#0f766e')
+		expect(theme.vars['--rise-color-primary-600']).toBe('#0f766e')
+		expect(theme.vars['--rise-color-primary-on']).toBe('#ffffff')
+		expect(theme.vars['--rise-color-primary-hover']).toBe(theme.vars['--rise-color-primary-700'])
 		expect(theme.vars['--rise-color-neutral-0']).toBeDefined()
-		expect(Object.keys(theme.vars)).toHaveLength(11 + 12)
+		expect(Object.keys(theme.vars)).toHaveLength(11 + 2 + 12)
 		expect(theme.darkVars).toEqual({})
 		expect(theme.adjusted).toBe(false)
 		expect(theme.css.startsWith("[data-rise-theme='brand'][data-rise-theme] {\n\t--rise-color-primary-50: ")).toBe(true)
@@ -60,17 +62,21 @@ describe('createTheme', () => {
 		)
 	})
 
-	it('имена движения темы совпадают с пресетами useMotion, а standard — прежние значения кита', () => {
+	it('имена движения темы совпадают с пресетами useMotion, а standard — значения кита', () => {
 		expect(THEME_MOTIONS).toEqual([...MOTION_PRESETS])
 		const theme = createTheme({ name: 'x', primary: '#0f766e', motion: 'standard' })
 		expect(theme.vars['--rise-duration']).toBe('200ms')
-		expect(theme.vars['--rise-ease']).toBe('cubic-bezier(0.4, 0, 0.2, 1)')
+		expect(theme.vars['--rise-ease']).toBe('cubic-bezier(0.2, 0.8, 0.2, 1)')
 		expect(THEME_PRESETS.rise.motion).toBe('standard')
 	})
 
-	it('primaryDark даёт оттенки 400 и 300 только тёмному режиму, включая system', () => {
+	it('primaryDark даёт оттенки 500, 400 и 300 только тёмному режиму, включая system', () => {
 		const theme = createTheme({ name: 'x', primary: '#18181b', primaryDark: '#fafafa' })
-		expect(theme.darkVars).toEqual({ '--rise-color-primary-300': expect.any(String), '--rise-color-primary-400': '#fafafa' })
+		expect(theme.darkVars).toEqual({
+			'--rise-color-primary-300': expect.any(String),
+			'--rise-color-primary-400': expect.any(String),
+			'--rise-color-primary-500': '#fafafa',
+		})
 		expect(theme.css).toContain("[data-rise-theme='x'][data-rise-theme][data-theme='dark'] {")
 		expect(theme.css).toContain(
 			"@media (prefers-color-scheme: dark) {\n\t[data-rise-theme='x'][data-rise-theme][data-theme='system'] {",
@@ -81,14 +87,33 @@ describe('createTheme', () => {
 	it('тёмный бренд для тёмного режима осветляется до контраста и отмечается adjusted', () => {
 		const theme = createTheme({ name: 'x', primary: '#0f766e', primaryDark: '#000080' })
 		expect(theme.adjusted).toBe(true)
-		expect(contrastRatio(theme.darkVars['--rise-color-primary-400'], '#0a0a0a')).toBeGreaterThanOrEqual(4.5)
+		expect(contrastRatio(theme.darkVars['--rise-color-primary-500'], '#0b0d14')).toBeGreaterThanOrEqual(4.5)
 	})
 
 	it('цвета статусов из HEX — палитры на главных оттенках кита; без входа — не выводятся', () => {
-		const { vars } = createTheme({ name: 'x', primary: '#0f766e', info: '#0369a1', error: '#be123c' })
+		const { vars, darkVars } = createTheme({ name: 'x', primary: '#0f766e', info: '#0369a1', error: '#be123c' })
 		expect(vars['--rise-color-info-600']).toBe('#0369a1')
 		expect(vars['--rise-color-error-600']).toBe('#be123c')
-		expect(vars['--rise-color-success-700']).toBeUndefined()
+		expect(vars['--rise-color-success-600']).toBeUndefined()
+		expect(darkVars).toEqual({})
+	})
+
+	it('светлый бренд несёт тёмный текст и наводится светлее, тёмный — белый текст и наведение темнее', () => {
+		const amber = createTheme({ name: 'x', primary: '#ee5410' }).vars
+		expect(amber['--rise-color-primary-600']).toBe('#ee5410')
+		expect(amber['--rise-color-primary-on']).toBe(amber['--rise-color-neutral-950'])
+		expect(amber['--rise-color-primary-hover']).toBe(amber['--rise-color-primary-500'])
+		const navy = createTheme({ name: 'x', primary: '#1d4ed8' }).vars
+		expect(navy['--rise-color-primary-on']).toBe('#ffffff')
+		expect(navy['--rise-color-primary-hover']).toBe(navy['--rise-color-primary-700'])
+	})
+
+	it('success из HEX: тёмные цвета роли (в ките — литералы) — из её палитры, только тёмному режиму', () => {
+		const { vars, darkVars } = createTheme({ name: 'x', primary: '#0f766e', success: '#15803d' })
+		expect(darkVars['--rise-success']).toBe(vars['--rise-color-success-400'])
+		expect(darkVars['--rise-success-hover']).toBe(vars['--rise-color-success-300'])
+		expect(darkVars['--rise-success-text']).toMatch(/^#[0-9a-f]{6}$/)
+		expect(vars['--rise-success']).toBeUndefined()
 	})
 
 	it('готовые палитры берутся как есть вместо генератора', () => {
@@ -98,8 +123,9 @@ describe('createTheme', () => {
 			palettes: { primary: KIT_PALETTES.primary, warning: KIT_PALETTES.warning },
 		})
 		expect(adjusted).toBe(false)
-		expect(vars['--rise-color-primary-700']).toBe('#c2410c')
-		expect(vars['--rise-color-warning-700']).toBe('#b45309')
+		expect(vars['--rise-color-primary-700']).toBe('#c4400a')
+		expect(vars['--rise-color-warning-700']).toBe('#a85c00')
+		expect(vars['--rise-color-primary-on']).toBeUndefined()
 	})
 
 	it('tokens — поверх сгенерированного; значения без символов, которые ломают правило или тег style', () => {
@@ -163,6 +189,19 @@ describe('THEME_PRESETS', () => {
 	})
 
 	it('minimal в тёмном режиме — светлая кнопка из primaryDark', () => {
-		expect(createTheme(THEME_PRESETS.minimal).darkVars['--rise-color-primary-400']).toBe('#fafafa')
+		expect(createTheme(THEME_PRESETS.minimal).darkVars['--rise-color-primary-500']).toBe('#e4e4e7')
+	})
+
+	it('шрифты пресетов — только шрифты кита, скругления — без пилюль', () => {
+		for (const name of THEME_PRESET_NAMES) {
+			const { font = {}, radius } = THEME_PRESETS[name]
+			for (const stack of Object.values(font)) expect(stack).toMatch(/^'Rise (Grotesk|Mono)', (sans-serif|monospace)$/)
+			expect(radius).not.toBe('full')
+		}
+		expect(Object.values(THEME_PRESETS.minimal.font ?? {})).toEqual([
+			"'Rise Mono', monospace",
+			"'Rise Mono', monospace",
+			"'Rise Mono', monospace",
+		])
 	})
 })

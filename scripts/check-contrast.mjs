@@ -14,8 +14,9 @@ import { runnerImport } from 'vite'
 const ROOT = resolve(process.cwd())
 const KIT = 'kit'
 const MODES = ['light', 'dark']
-/** Смесь цветов генератор округляет до HEX — расхождение до 0.05 ожидаемо */
+/** Смесь цветов генератор округляет до HEX на каждом шаге (тёмные уровни — смесь смеси) — расхождение до 0.05 или 1 % ожидаемо */
 const RATIO_TOLERANCE = 0.05
+const RATIO_TOLERANCE_SHARE = 0.01
 
 const { css } = sass.compileString('@use "tokens";', { loadPaths: [resolve(ROOT, 'src/styles')], style: 'expanded' })
 
@@ -56,7 +57,10 @@ function parseHex(hex) {
 	return [0, 2, 4].map(i => parseInt(full.slice(i, i + 2), 16))
 }
 
-/** Разрешает значение токена в [r, g, b, a]. Поддерживает #hex, white/black/transparent, var(), color-mix(in srgb …). */
+/**
+ * Разрешает значение токена в [r, g, b, a]. Поддерживает #hex, white/black/transparent, var() с запасным значением
+ * (сиды темы `--rise-color-<роль>-on`/`-hover` кит читает с запасным), color-mix(in srgb …).
+ */
 function resolveColor(value, vars, depth = 0) {
 	if (depth > 20) throw new Error(`Слишком глубокая ссылка: ${value}`)
 	const v = value.trim()
@@ -64,9 +68,9 @@ function resolveColor(value, vars, depth = 0) {
 	if (v === 'white') return [255, 255, 255, 1]
 	if (v === 'black') return [0, 0, 0, 1]
 	if (v === 'transparent') return [0, 0, 0, 0]
-	const varMatch = /^var\((--[\w-]+)\)$/.exec(v)
+	const varMatch = /^var\((--[\w-]+)(?:,\s*(.+))?\)$/.exec(v)
 	if (varMatch) {
-		const next = vars[varMatch[1]]
+		const next = vars[varMatch[1]] ?? varMatch[2]
 		if (next === undefined) throw new Error(`Нет токена ${varMatch[1]}`)
 		return resolveColor(next, vars, depth + 1)
 	}
@@ -124,12 +128,14 @@ const LABELS = {
 	'muted-text-elevated': () => 'Вторичный текст на bg-elevated',
 	'dimmed-text': () => 'Плейсхолдер, неактивный текст',
 	'inverted-text': () => 'Текст на инвертированном фоне',
-	'field-border': () => 'Рамка поля ввода',
+	'field-border': () => 'Рамка варианта outline',
+	'control-border': () => 'Граница флажка и радио',
 	'focus-ring': () => 'Кольцо фокуса',
 	code: pair => `Подсветка кода: ${pair.fg.replace('--rise-code-', '')}`,
 	'on-role': role => `Текст на заливке ${role}`,
 	'on-role-hover': role => `Текст на заливке ${role} (hover)`,
-	'role-text': role => `Цвет ${role} как текст на фоне`,
+	'role-graphic-bg': role => `Заливка ${role} как графика на фоне`,
+	'role-text-bg': role => `Текст ${role} на фоне`,
 	'role-soft-text': role => `Текст на мягком фоне ${role}`,
 	'role-soft-hover-text': role => `Текст на мягком фоне ${role} (hover)`,
 	'role-on-soft': role => `Цвет ${role} на мягком фоне`,
@@ -179,7 +185,7 @@ for (const theme of themes) {
 			const ok = ratio >= pair.min
 			const informational = Boolean(pair.informational)
 			if (!ok && !informational) failures++
-			if (generated && Math.abs(generated[index].ratio - ratio) > RATIO_TOLERANCE) {
+			if (generated && Math.abs(generated[index].ratio - ratio) > Math.max(RATIO_TOLERANCE, ratio * RATIO_TOLERANCE_SHARE)) {
 				mismatches++
 				console.error(
 					`≠ ${theme} ${mode} ${pair.fg} на ${pair.bg}: генератор ${generated[index].ratio}, _tokens.scss ${ratio.toFixed(2)}`,
@@ -218,7 +224,7 @@ if (markdownIndex !== -1) {
 		`Сгенерировано \`node scripts/check-contrast.mjs${themes.length > 1 ? ' --theme=all' : ''} --markdown docs/design/contrast.md\` из \`src/styles/_tokens.scss\`` +
 			(themes.length > 1 ? ' и пресетов `THEME_PRESETS` (сиды темы поверх токенов кита).' : '.'),
 		'Пороги WCAG 2.2 AA: текст — 4.5:1, графика и кольцо фокуса — 3:1. «Справочно» — пары, которые не обязаны проходить порог',
-		'(плейсхолдеры и неактивный текст исключены из требования 1.4.3; рамка поля — декоративная, поле обозначено подписью и фоном).',
+		'(плейсхолдеры и неактивный текст исключены из требования 1.4.3; рамка варианта outline — декоративная, поле обозначено подписью и фоном).',
 		'',
 	]
 	for (const theme of themes) {

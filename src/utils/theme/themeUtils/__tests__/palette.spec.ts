@@ -4,20 +4,39 @@ import { createNeutralPalette, createPalette } from '../palette'
 import { contrastRatio, hexToOklch } from '@utils/theme/oklchUtils'
 
 describe('createPalette', () => {
-	it('бренд с контрастом 4.5:1 к белому встаёт ровно на 700 без подстройки', () => {
+	it('бренд с контрастом 4.5:1 к белому встаёт ровно на 600 без подстройки, текст белый', () => {
 		const result = createPalette('#7c3aed')
-		expect(result.shades[700]).toBe('#7c3aed')
+		expect(result.shades[600]).toBe('#7c3aed')
 		expect(result.main).toBe('#7c3aed')
+		expect(result.on).toBe('light')
 		expect(result.adjusted).toBe(false)
 	})
 
-	it('светлый бренд затемняется до 4.5:1 с белым и отмечается adjusted', () => {
+	it('бренд, который берёт 4.5:1 с тёмным текстом и 3:1 к фону поля, встаёт как есть с тёмным текстом', () => {
+		const result = createPalette('#ee5410')
+		expect(result.main).toBe('#ee5410')
+		expect(result.on).toBe('dark')
+		expect(result.adjusted).toBe(false)
+	})
+
+	it('светлый бренд затемняется до 3:1 к фону поля, несёт тёмный текст и отмечается adjusted', () => {
 		const result = createPalette('#FFE600')
 		expect(result.seed).toBe('#ffe600')
 		expect(result.adjusted).toBe(true)
 		expect(result.main).not.toBe('#ffe600')
-		expect(contrastRatio(result.main, '#ffffff')).toBeGreaterThanOrEqual(4.5)
-		expect(result.shades[700]).toBe(result.main)
+		expect(result.on).toBe('dark')
+		expect(contrastRatio(result.main, '#eceef3')).toBeGreaterThanOrEqual(3)
+		expect(contrastRatio(result.main, '#0b0d14')).toBeGreaterThanOrEqual(4.5)
+		expect(result.shades[600]).toBe(result.main)
+	})
+
+	it('заданный текст: dark осветляет до 4.5:1 с тёмным, light затемняет до 4.5:1 с белым', () => {
+		expect(contrastRatio(createPalette('#1d4ed8', 500, 'dark').main, '#0b0d14')).toBeGreaterThanOrEqual(4.5)
+		expect(contrastRatio(createPalette('#ee5410', 600, 'light').main, '#ffffff')).toBeGreaterThanOrEqual(4.5)
+	})
+
+	it('заливка тёмной темы (500) берёт 4.5:1 с тёмным текстом и у тёмного бренда', () => {
+		expect(contrastRatio(createPalette('#1e3a8a').shades[500], '#0b0d14')).toBeGreaterThanOrEqual(4.5)
 	})
 
 	it('оттенки идут от светлого к тёмному', () => {
@@ -34,7 +53,7 @@ describe('createPalette', () => {
 
 	it('у чёрного бренда тёмные оттенки не слипаются со светлыми, а 50 остаётся светлым фоном', () => {
 		const { shades } = createPalette('#000000')
-		expect(shades[700]).toBe('#000000')
+		expect(shades[600]).toBe('#000000')
 		expect(hexToOklch(shades[50]).l).toBeGreaterThanOrEqual(0.969)
 		expect(hexToOklch(shades[100]).l).toBeGreaterThanOrEqual(0.918)
 		expect(contrastRatio(shades[400], '#262626')).toBeGreaterThanOrEqual(4.5)
@@ -46,9 +65,11 @@ describe('createPalette', () => {
 		expect(contrastRatio(shades[800], shades[50])).toBeGreaterThanOrEqual(4.5)
 	})
 
-	it('белый бренд всё равно даёт кнопку с контрастом', () => {
+	it('белый бренд всё равно даёт кнопку с контрастом: тёмный текст и 3:1 к фону поля', () => {
 		const result = createPalette('#ffffff')
-		expect(contrastRatio(result.main, '#ffffff')).toBeGreaterThanOrEqual(4.5)
+		expect(result.on).toBe('dark')
+		expect(contrastRatio(result.main, '#0b0d14')).toBeGreaterThanOrEqual(4.5)
+		expect(contrastRatio(result.main, '#eceef3')).toBeGreaterThanOrEqual(3)
 	})
 })
 
@@ -76,9 +97,10 @@ describe('createNeutralPalette', () => {
 
 	it('текстовые оттенки берут 4.5:1 с фонами светлой и тёмной темы', () => {
 		const shades = createNeutralPalette('#64748b', '#1d4ed8')
-		expect(contrastRatio(shades[500], shades[0])).toBeGreaterThanOrEqual(4.5)
+		expect(contrastRatio(shades[600], shades[0])).toBeGreaterThanOrEqual(4.5)
 		expect(contrastRatio(shades[700], shades[0])).toBeGreaterThanOrEqual(4.5)
+		expect(contrastRatio(shades[500], shades[100])).toBeGreaterThanOrEqual(3)
 		expect(contrastRatio(shades[400], shades[900])).toBeGreaterThanOrEqual(4.5)
-		expect(contrastRatio(shades[200], shades[900])).toBeGreaterThanOrEqual(4.5)
+		expect(contrastRatio(shades[300], shades[900])).toBeGreaterThanOrEqual(4.5)
 	})
 })

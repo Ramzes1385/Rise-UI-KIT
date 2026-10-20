@@ -57,7 +57,8 @@
 	cursor: pointer;
 }
 
-// Иконочная кнопка панели инструментов 28x28 без рамки и фона; фон при наведении — `--rise-bg-elevated`.
+// Иконочная кнопка панели инструментов 28x28 без рамки и фона, радиус md; тональное наведение — `--rise-bg-elevated`,
+// нажатие — `--rise-bg-accented`, фокус с клавиатуры — кольцо `focus-ring`.
 @mixin tool-button {
 	position: relative;
 	display: inline-flex;
@@ -69,7 +70,7 @@
 	height: sz(28px);
 	padding: 0;
 	border: 1px solid transparent;
-	border-radius: sz(var(--rise-control-radius));
+	border-radius: sz(var(--rise-radius-md));
 	background-color: transparent;
 	box-shadow: none;
 	color: var(--rise-text);
@@ -79,7 +80,14 @@
 	@include hover {
 		border-color: transparent;
 		background-color: var(--rise-bg-elevated);
+		color: var(--rise-text-highlighted);
 	}
+
+	@include active {
+		background-color: var(--rise-bg-accented);
+	}
+
+	@include focus-ring;
 }
 
 // Разрядка подписей в верхнем регистре (`text-transform: uppercase`): для латиницы и кириллицы — `$value`, для китайского и
@@ -101,9 +109,48 @@
 	white-space: nowrap;
 }
 
+// Тонкая полоса прокрутки: бегунок `--rise-border-accented` на прозрачной дорожке; радиус бегунка xs — там, где браузер
+// даёт его задать (WebKit: Safari; Chromium и Firefox рисуют стандартную тонкую полосу по `scrollbar-color`).
 @mixin scrollbar-thin {
 	scrollbar-width: thin;
 	scrollbar-color: var(--rise-border-accented) transparent;
+
+	&::-webkit-scrollbar {
+		width: sz(8px);
+		height: sz(8px);
+	}
+
+	&::-webkit-scrollbar-track {
+		background-color: transparent;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		border-radius: var(--rise-radius-xs);
+		background-color: var(--rise-border-accented);
+	}
+}
+
+// Служебная подпись моно капсом (принцип 6): шапки таблиц, бейджи, подписи групп меню и показателей (Stat), служебные метки,
+// номера шагов и страниц, тайм-коды. Rise Mono 400, `--rise-text-muted`, цифры одной ширины; разрядка `--rise-tracking-label`
+// (у китайского и японского — без разрядки). $size — кегль: 11px, в шапке таблицы и бейдже — 10px (у бейджа `$tracking: 0.08em`).
+@mixin caps-label($size: 11px, $tracking: var(--rise-tracking-label)) {
+	font-family: var(--rise-font-mono);
+	font-size: sz($size);
+	line-height: sz(16px);
+	font-weight: var(--rise-font-weight-normal);
+	font-variant-numeric: tabular-nums;
+	text-transform: uppercase;
+	color: var(--rise-text-muted);
+	@include caps-tracking($tracking);
+}
+
+// Заголовок: Rise Grotesk 600, `--rise-text-highlighted`, разрядка `--rise-tracking-heading`; крупный (от 30px) — `heading(display)`.
+// Кегль задаёт компонент (`text-size`). У китайского и японского разрядки нет.
+@mixin heading($tracking: heading) {
+	font-family: var(--rise-font-heading);
+	font-weight: var(--rise-font-weight-semibold);
+	color: var(--rise-text-highlighted);
+	@include caps-tracking(var(--rise-tracking-#{$tracking}));
 }
 
 @function breakpoint($name) {
@@ -274,43 +321,144 @@
 	}
 }
 
+// Подпись поля: 13/18, 500, `--rise-text-highlighted`.
 @mixin field-label {
-	@include text-size(sm);
+	font-size: sz(13px);
+	line-height: sz(18px);
 	font-weight: var(--rise-font-weight-medium);
-	color: var(--rise-text);
+	color: var(--rise-text-highlighted);
 }
 
+// Звёздочка обязательного поля — цвет акцента, как в макете.
 @mixin field-required {
 	margin-inline-start: sz(2px);
-	color: var(--rise-error);
+	color: var(--rise-primary);
 }
 
+// Ошибка под полем: 12/16, `--rise-error-text` (текст роли, 4.5:1 к фону).
 @mixin field-error {
-	@include text-size(sm);
-	color: var(--rise-error);
+	@include text-size(xs);
+	color: var(--rise-error-text);
 }
 
+// Подсказка под полем: 12/16, `--rise-text-muted`.
 @mixin field-hint {
-	@include text-size(sm);
+	@include text-size(xs);
 	color: var(--rise-text-muted);
 }
 
-// $component — имя компонента для токенов уровня 3 (`input` → --rise-input-bg, -border, -border-focus, -radius)
+// Оболочка поля (SPEC 3, «Поля»): тональная заливка `--rise-field-bg` (контейнер поднимает её до `--rise-surface-raised`),
+// рамка 1px прозрачная — под фокус (`field-focus`: рамка акцента + кольцо 1px), ошибку и варианты (`field-variant`).
 // $component — имя поля (`input`, `select`, `textarea`…): поле читает свои токены `--rise-<поле>-*`, запасное значение —
 // общие токены полей `--rise-input-*`, затем семантика. Без имени — только семантика (поля вне Form A).
 @mixin field-box($component: null) {
 	@if $component == null {
-		border: 1px solid var(--rise-border-accented);
+		border: 1px solid transparent;
 		border-radius: sz(var(--rise-control-radius));
-		@include custom-bg(background-color, var(--rise-bg));
+		@include custom-bg(background-color, var(--rise-field-bg));
 		@include transition-colors;
 		@include field-focus(var(--rise-primary));
 	} @else {
-		border: 1px solid ct($component, border, var(--rise-input-border, var(--rise-border-accented)));
+		border: 1px solid ct($component, border, var(--rise-input-border, transparent));
 		border-radius: sz(ct($component, radius, var(--rise-input-radius, var(--rise-control-radius))));
-		@include custom-bg(background-color, ct($component, bg, var(--rise-input-bg, var(--rise-bg))));
+		@include custom-bg(background-color, ct($component, bg, var(--rise-input-bg, var(--rise-field-bg))));
 		@include transition-colors;
 		@include field-focus(ct($component, border-focus, var(--rise-input-border-focus, var(--rise-primary))));
+	}
+}
+
+// Вариант поля поверх `field-box` на той же оболочке: `&--soft &__wrapper { @include field-variant(input, soft); }`.
+// `default` — вид `field-box`; `soft` — `bg-muted`; `filled` — `bg-accented`; `outline` — прозрачный фон и рамка
+// `border-accented`; `ghost` — прозрачный, наведение и фокус — `bg-elevated`; `underline` — только нижняя линия, радиус 0;
+// `shadow` — `--rise-surface-floating` (светлая bg, тёмная bg-elevated) и `shadow-sm`. $component — как в `field-box`
+// (токен цвета фокуса), без имени — `null`. Варианты с рамкой и тенью повторяют фокус: их правило идёт позже правила оболочки.
+@mixin field-variant($component, $variant) {
+	$focus: var(--rise-primary);
+
+	@if $component != null {
+		$focus: ct($component, border-focus, var(--rise-input-border-focus, var(--rise-primary)));
+	}
+
+	@if $variant == soft {
+		@include custom-bg(background-color, var(--rise-bg-muted));
+	} @else if $variant == filled {
+		@include custom-bg(background-color, var(--rise-bg-accented));
+	} @else if $variant == outline {
+		border-color: var(--rise-border-accented);
+		@include custom-bg(background-color, transparent);
+		@include field-focus($focus);
+	} @else if $variant == ghost {
+		@include custom-bg(background-color, transparent);
+		@include custom-bg-hover(background-color, var(--rise-bg-elevated));
+
+		&:focus-within {
+			@include custom-bg(background-color, var(--rise-bg-elevated));
+		}
+	} @else if $variant == underline {
+		border-color: transparent transparent var(--rise-border-accented);
+		border-radius: 0;
+		@include custom-bg(background-color, transparent);
+
+		&:focus-within {
+			border-color: transparent transparent #{$focus};
+			box-shadow: 0 1px 0 0 #{$focus};
+		}
+	} @else if $variant == shadow {
+		@include custom-bg(background-color, var(--rise-surface-floating));
+		box-shadow: var(--rise-shadow-sm);
+		@include field-focus($focus);
+	} @else if $variant != default {
+		@error 'Unknown field variant "#{$variant}". Available: default, soft, filled, outline, ghost, underline, shadow.';
+	}
+}
+
+// Поля внутри тонального контейнера — на ступень светлее его фона (SPEC 3, «Контейнеры поднимают поля»): на обёртку
+// содержимого карточки `default`/`soft`, боковой панели, тональной секции. `tonal-surface` ставит то же сам.
+@mixin raised-fields {
+	--rise-field-bg: var(--rise-surface-raised);
+}
+
+$-tonal-surfaces: (
+	'page': (
+		var(--rise-bg),
+		var(--rise-bg-elevated),
+	),
+	'muted': (
+		var(--rise-bg-muted),
+		var(--rise-surface-raised),
+	),
+	'elevated': (
+		var(--rise-bg-elevated),
+		var(--rise-surface-raised),
+	),
+	'floating': (
+		var(--rise-surface-floating),
+		var(--rise-field-bg-floating),
+	),
+	'dialog': (
+		var(--rise-surface-dialog),
+		var(--rise-field-bg-floating),
+	),
+);
+
+// Поверхность уровня $level (принцип 1): фон без рамки и тени; поля внутри — на ступень светлее фона (`--rise-field-bg`),
+// кольца-разделители (группа аватаров, бегунок ползунка) — цвета фона (`--rise-surface-bg`). Уровни: `page` — как страница
+// (карточки `outline` и `shadow` — рамку и тень рисует компонент), `muted` — контейнер (карточка по умолчанию, панели),
+// `elevated` — карточка `soft`, `floating` — всплывающий слой (светлая bg, тёмная bg-elevated), `dialog` — окно и боковая
+// панель (светлая bg, тёмная bg-muted), `none` — без фона (`ghost`: поля и кольца — как у родителя). Фон — без `--custom-bg`:
+// компонент с пропом цвета ставит `custom-bg` после миксина.
+@mixin tonal-surface($level: muted) {
+	@if $level == none {
+		background-color: transparent;
+	} @else {
+		@if not map.has-key($-tonal-surfaces, $level) {
+			@error 'Unknown surface level "#{$level}". Available: none, #{map.keys($-tonal-surfaces)}.';
+		}
+
+		$surface: map.get($-tonal-surfaces, $level);
+		--rise-field-bg: #{list.nth($surface, 2)};
+		--rise-surface-bg: #{list.nth($surface, 1)};
+		background-color: list.nth($surface, 1);
 	}
 }
 
@@ -327,20 +475,33 @@
 	}
 }
 
-@mixin floating-surface {
-	background-color: var(--rise-bg);
-	color: var(--rise-text);
-	border: 1px solid var(--rise-border);
-	border-radius: sz(var(--rise-radius-md));
+// Всплывающая поверхность (меню, поповеры, выпадающие списки, тосты): без рамки, `tonal-surface(floating)` — светлая bg,
+// тёмная bg-elevated, поля внутри на ступень светлее; радиус lg, тень lg. Отступ $padding (4px, с плотностью `space()`) —
+// отдельным правилом с нулевой специфичностью (`:where()`): свой `padding` компонента сильнее при любом порядке; `null` — без
+// отступа. Объявления после `@include` Sass выводит вторым блоком того же селектора.
+@mixin floating-surface($padding: 4px) {
+	border: 0;
+	border-radius: sz(var(--rise-radius-lg));
 	box-shadow: var(--rise-shadow-lg);
+	color: var(--rise-text);
+	@include tonal-surface(floating);
+
+	@if $padding != null {
+		@at-root :where(#{&}) {
+			padding: space($padding);
+		}
+	}
 }
 
+// Пункт меню и списка: высота 32, отступ 0 8, радиус sm; наведение и фокус — `--rise-surface-floating-hover`
+// (светлая bg-elevated, тёмная bg-accented), фокус с клавиатуры — ещё и кольцо внутри пункта.
 @mixin menu-item {
 	display: flex;
 	align-items: center;
-	gap: sz(6px);
-	padding: sz(6px 8px);
-	border-radius: sz(var(--rise-radius-md));
+	gap: sz(10px);
+	min-height: sz(32px);
+	padding: sz(0 8px);
+	border-radius: sz(var(--rise-radius-sm));
 	@include text-size(sm);
 	color: var(--rise-text);
 	cursor: pointer;
@@ -348,7 +509,14 @@
 	@include transition-colors;
 
 	@include hover {
-		background-color: var(--rise-bg-elevated);
+		background-color: var(--rise-surface-floating-hover);
+		color: var(--rise-text-highlighted);
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--rise-focus-ring);
+		outline-offset: -2px;
+		background-color: var(--rise-surface-floating-hover);
 		color: var(--rise-text-highlighted);
 	}
 }

@@ -1,18 +1,22 @@
 /** Утилиты: тема из нескольких входов — сиды на `[data-rise-theme]`, CSS одной строкой и отчёт контраста */
 
-import { themeContrast } from './contrast'
-import { KIT_MAIN_SHADES } from './presets'
+import { roleColor, themeContrast } from './contrast'
 import { THEME_ROLES } from './types/themeUtils.types'
 import { contrastRatio } from '@utils/theme/oklchUtils'
+import { KIT_DARK_ROLES, KIT_MAIN_SHADES } from './presets'
 import { createNeutralPalette, createPalette } from './palette'
 import type {
 	Theme,
+	ThemeDarkRole,
 	ThemeDensity,
 	ThemeNeutralPalette,
 	ThemeFonts,
 	ThemeInput,
 	ThemeMotion,
+	ThemePaletteResult,
 	ThemeRadius,
+	ThemeRole,
+	ThemeShade,
 	ThemeShadows,
 	ThemeColorSeeds,
 	ThemeVars as Vars,
@@ -24,14 +28,18 @@ const SHADOWS: Record<ThemeShadows, number> = { none: 0, soft: 0.6, default: 1, 
 const MOTION: Record<ThemeMotion, [string, string, string, string]> = {
 	none: ['0.01ms', '0.01ms', '0.01ms', 'linear'],
 	subtle: ['100ms', '150ms', '200ms', 'cubic-bezier(0.2, 0, 0, 1)'],
-	standard: ['150ms', '200ms', '300ms', 'cubic-bezier(0.4, 0, 0.2, 1)'],
+	standard: ['140ms', '200ms', '320ms', 'cubic-bezier(0.2, 0.8, 0.2, 1)'],
 	expressive: ['200ms', '320ms', '450ms', 'cubic-bezier(0.34, 1.56, 0.64, 1)'],
 }
 const DURATIONS = ['--rise-duration-fast', '--rise-duration', '--rise-duration-slow'] as const
-const DARK_SHADES = [300, 400] as const
 const REDUCED_DURATION = '0.01ms'
 const TEXT_CONTRAST = 4.5
 const WHITE = '#ffffff'
+const DARK_TEXT_SHADE = 950
+const HOVER_SHADES = { dark: 500, light: 700 } as const
+/** Тёмная тема роли из сгенерированной палитры: литералы кита (у success) к чужому цвету роли не подходят */
+const GENERATED_DARK_ROLE: ThemeDarkRole = { fill: 400, hover: 300, text: [200, 59, 300] }
+const DARK_ROLE_TOKENS = { fill: '', hover: '-hover', text: '-text' } as const
 
 /** Имя темы для селектора: строчная латиница, цифры и дефис */
 function themeName(name: string): string {
@@ -53,21 +61,51 @@ function paletteVars(role: string, shades: Record<number, string>): Vars {
 	return Object.fromEntries(Object.entries(shades).map(([shade, color]) => [`--rise-color-${role}-${shade}`, color]))
 }
 
-function roleVars(input: ThemeInput): Vars {
+/**
+ * Сгенерированная палитра роли и её светлые сиды: текст на заливке (`--rise-color-<роль>-on`) и наведение
+ * (`--rise-color-<роль>-hover`) — по светлоте бренда, а не по таблице кита: тёмный текст — наведение светлее, белый — темнее
+ */
+function generatedVars(role: ThemeRole, palette: ThemePaletteResult, neutral: ThemeNeutralPalette): Vars {
+	return {
+		...paletteVars(role, palette.shades),
+		[`--rise-color-${role}-on`]: palette.on === 'dark' ? neutral[DARK_TEXT_SHADE] : WHITE,
+		[`--rise-color-${role}-hover`]: palette.shades[HOVER_SHADES[palette.on]],
+	}
+}
+
+/** Тёмные цвета роли, которые в ките — литералы (success): из сгенерированной палитры, только тёмному режиму */
+function generatedDarkVars(role: ThemeRole, shades: Record<number, string>): Vars {
 	const vars: Vars = {}
-	for (const role of THEME_ROLES.filter(item => item !== 'primary')) {
-		const ready = input.palettes?.[role]
-		const seed = input[role]
-		if (ready) Object.assign(vars, paletteVars(role, ready))
-		else if (seed) Object.assign(vars, paletteVars(role, createPalette(seed, KIT_MAIN_SHADES[role]).shades))
+	const read = (_role: string, shade: number): string => shades[shade]
+	for (const key of ['fill', 'hover', 'text'] as const) {
+		if (typeof KIT_DARK_ROLES[role][key] !== 'string') continue
+		vars[`--rise-${role}${DARK_ROLE_TOKENS[key]}`] = roleColor(GENERATED_DARK_ROLE[key], role, read)
 	}
 	return vars
 }
 
+function roleVars(input: ThemeInput, neutral: ThemeNeutralPalette): { vars: Vars; darkVars: Vars } {
+	const vars: Vars = {}
+	const darkVars: Vars = {}
+	for (const role of THEME_ROLES.filter(item => item !== 'primary')) {
+		const ready = input.palettes?.[role]
+		const seed = input[role]
+		if (ready) Object.assign(vars, paletteVars(role, ready))
+		else if (seed) {
+			const palette = createPalette(seed, KIT_MAIN_SHADES[role])
+			Object.assign(vars, generatedVars(role, palette, neutral))
+			Object.assign(darkVars, generatedDarkVars(role, palette.shades))
+		}
+	}
+	return { vars, darkVars }
+}
+
+/** Бренд тёмного режима: встаёт на заливку тёмной темы (500) с тёмным текстом; выводятся оттенки заливки, наведения и текста */
 function darkPrimaryVars(primaryDark: string | undefined): { vars: Vars; adjusted: boolean } {
 	if (!primaryDark) return { vars: {}, adjusted: false }
-	const result = createPalette(primaryDark, 400)
-	const shades = Object.fromEntries(DARK_SHADES.map(shade => [shade, result.shades[shade]]))
+	const [fill, hover, text] = [KIT_DARK_ROLES.primary.fill, KIT_DARK_ROLES.primary.hover, KIT_DARK_ROLES.primary.text] as ThemeShade[]
+	const result = createPalette(primaryDark, fill, 'dark')
+	const shades = Object.fromEntries([text, hover, fill].map(shade => [shade, result.shades[shade]]))
 	return { vars: paletteVars('primary', shades), adjusted: result.adjusted }
 }
 
@@ -77,14 +115,20 @@ function fitNeutral(neutral: ThemeNeutralPalette, main: string): ThemeNeutralPal
 }
 
 function colorSeeds(input: ThemeInput): ThemeColorSeeds {
-	const primary = input.palettes?.primary ? { shades: input.palettes.primary, adjusted: false } : createPalette(input.primary)
-	const neutral =
-		input.palettes?.neutral ?? fitNeutral(createNeutralPalette(input.neutral ?? 'tinted', input.primary), primary.shades[700])
+	const ready = input.palettes?.primary
+	const primary = ready ? null : createPalette(input.primary)
+	const main = ready ? ready[KIT_MAIN_SHADES.primary] : (primary as ThemePaletteResult).main
+	const neutral = input.palettes?.neutral ?? fitNeutral(createNeutralPalette(input.neutral ?? 'tinted', input.primary), main)
+	const roles = roleVars(input, neutral)
 	const dark = darkPrimaryVars(input.primaryDark)
 	return {
-		vars: { ...paletteVars('primary', primary.shades), ...paletteVars('neutral', neutral), ...roleVars(input) },
-		darkVars: dark.vars,
-		adjusted: primary.adjusted || dark.adjusted,
+		vars: {
+			...(primary ? generatedVars('primary', primary, neutral) : paletteVars('primary', ready as Record<number, string>)),
+			...paletteVars('neutral', neutral),
+			...roles.vars,
+		},
+		darkVars: { ...dark.vars, ...roles.darkVars },
+		adjusted: Boolean(primary?.adjusted) || dark.adjusted,
 	}
 }
 

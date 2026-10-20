@@ -34,14 +34,14 @@ const EASING_TOKENS: Record<MotionEasingName, string> = {
 const MOTION_DURATION_FALLBACK: Record<MotionPreset, Record<MotionDurationName, number>> = {
 	none: { fast: 0, base: 0, slow: 0, xslow: 0 },
 	subtle: { fast: 100, base: 140, slow: 200, xslow: 300 },
-	standard: { fast: 150, base: 200, slow: 300, xslow: 500 },
+	standard: { fast: 140, base: 200, slow: 320, xslow: 500 },
 	expressive: { fast: 180, base: 260, slow: 420, xslow: 700 },
 }
 
 const EASING_FALLBACK: Record<MotionEasingName, string> = {
-	base: 'cubic-bezier(0.4, 0, 0.2, 1)',
-	out: 'cubic-bezier(0, 0, 0.2, 1)',
-	in: 'cubic-bezier(0.4, 0, 1, 1)',
+	base: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
+	out: 'cubic-bezier(0.16, 1, 0.3, 1)',
+	in: 'cubic-bezier(0.7, 0, 0.84, 0)',
 	emphasized: 'cubic-bezier(0.2, 0, 0, 1)',
 	spring: 'cubic-bezier(0.2, 0, 0, 1)',
 }

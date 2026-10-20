@@ -57,8 +57,8 @@ describe('useMotion', () => {
 			expect(motion.preset.value).toBe('standard')
 			expect(motion.isReduced.value).toBe(false)
 			expect(motion.duration()).toBe(200)
-			expect(motion.duration('fast')).toBe(150)
-			expect(motion.duration('slow')).toBe(300)
+			expect(motion.duration('fast')).toBe(140)
+			expect(motion.duration('slow')).toBe(320)
 			expect(motion.duration('xslow')).toBe(500)
 		})
 
@@ -175,7 +175,7 @@ describe('useMotion', () => {
 
 		it('кривая — из токена', () => {
 			const { motion } = mountMotion()
-			expect(motion.easing().replace(/\s/g, '')).toBe('cubic-bezier(0.4,0,0.2,1)')
+			expect(motion.easing().replace(/\s/g, '')).toBe('cubic-bezier(0.2,0.8,0.2,1)')
 			expect(motion.easing('spring').replace(/\s/g, '')).toBe('cubic-bezier(0.2,0,0,1)')
 
 			root.style.setProperty('--rise-ease-spring', 'linear(0, 1)')
@@ -187,9 +187,9 @@ describe('useMotion', () => {
 			vi.stubGlobal('getComputedStyle', undefined)
 
 			expect(readMotionDuration(area('expressive'), 'fast')).toBe(180)
-			expect(readMotionEasing(null, 'out')).toBe('cubic-bezier(0, 0, 0.2, 1)')
-			expect(readMotionEasing(area('expressive'), 'in')).toBe('cubic-bezier(0.4, 0, 1, 1)')
-			expect(readMotionEasing()).toBe('cubic-bezier(0.4, 0, 0.2, 1)')
+			expect(readMotionEasing(null, 'out')).toBe('cubic-bezier(0.16, 1, 0.3, 1)')
+			expect(readMotionEasing(area('expressive'), 'in')).toBe('cubic-bezier(0.7, 0, 0.84, 0)')
+			expect(readMotionEasing()).toBe('cubic-bezier(0.2, 0.8, 0.2, 1)')
 		})
 	})
 
@@ -216,7 +216,7 @@ describe('useMotion', () => {
 
 			expect(readMotionPreset()).toBe('standard')
 			expect(isMotionReduced()).toBe(false)
-			expect(readMotionDuration(null, 'slow')).toBe(300)
+			expect(readMotionDuration(null, 'slow')).toBe(320)
 		})
 	})
 
