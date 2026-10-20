@@ -28,11 +28,12 @@
 	}
 
 	&--soft {
-		@include custom-bg(background-color, ct(result, bg, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg))));
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, ct(result, bg, var(--rise-bg-elevated)));
 	}
 
 	&--outline {
-		border-color: ct(result, border, var(--rise-border));
+		border-color: ct(result, border, var(--rise-border-accented));
 	}
 
 	&__icon-wrapper {
@@ -44,7 +45,7 @@
 		height: sz(ct(result, icon-wrapper-height, 64px));
 		padding: 0 sz(12px);
 		box-sizing: border-box;
-		border-radius: var(--rise-radius-full);
+		border-radius: sz(var(--rise-radius-lg));
 		@include custom-bg(background-color, var(--result-soft));
 		@include custom-text(color, var(--result-role-text));
 	}
@@ -57,10 +58,12 @@
 	& &__code {
 		@include inherit-custom-color;
 		color: inherit;
+		font-family: var(--rise-font-heading);
 		font-size: sz(var(--rise-font-size-2xl));
 		font-weight: var(--rise-font-weight-bold);
 		line-height: 1;
 		font-variant-numeric: tabular-nums;
+		letter-spacing: var(--rise-tracking-heading);
 	}
 
 	&__content {
@@ -74,6 +77,7 @@
 
 	& &__title {
 		@include inherit-custom-color;
+		@include heading;
 		margin: 0;
 		font-size: sz(ct(result, title-font-size, var(--rise-font-size-xl)));
 		line-height: sz(var(--rise-line-height-xl));

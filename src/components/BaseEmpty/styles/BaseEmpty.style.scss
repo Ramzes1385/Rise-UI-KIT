@@ -8,21 +8,23 @@
 	box-sizing: border-box;
 	width: 100%;
 	padding: space(ct(empty, padding-y, 32px) ct(empty, padding-x, 24px));
-	border: 1px dashed ct(empty, border, var(--rise-border-accented));
+	border: 1px solid ct(empty, border, transparent);
 	border-radius: sz(ct(empty, radius, var(--rise-radius-lg)));
 	text-align: center;
 	@include text-size(sm);
-	@include custom-bg(background-color, ct(empty, bg, transparent));
+	@include tonal-surface(muted);
+	@include custom-bg(background-color, ct(empty, bg, var(--rise-bg-muted)));
 	@include custom-text(color, ct(empty, text, var(--rise-text-muted)));
 
 	&--soft {
-		border-color: transparent;
-		@include custom-bg(background-color, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg)));
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, ct(empty, bg, var(--rise-bg-elevated)));
 	}
 
 	&--ghost {
 		padding: 0;
-		border-color: transparent;
+		@include tonal-surface(none);
+		@include custom-bg(background-color, ct(empty, bg, transparent));
 	}
 
 	&--compact {
@@ -30,7 +32,12 @@
 		gap: space(ct(empty, compact-gap, 8px));
 		padding: space(ct(empty, compact-padding-y, 8px) ct(empty, compact-padding-x, 12px));
 		border: none;
-		border-radius: 0;
+		border-radius: sz(var(--rise-radius-md));
+	}
+
+	&--compact &__icon-wrapper {
+		padding: 0;
+		background-color: transparent;
 	}
 
 	&--compact &__icon-wrapper .base-icon__svg {
@@ -51,6 +58,9 @@
 
 	&__icon-wrapper {
 		display: flex;
+		padding: sz(10px);
+		border-radius: sz(var(--rise-radius-lg));
+		background-color: var(--rise-field-bg);
 		@include custom-text(color, ct(empty, icon-text, var(--rise-text-dimmed)));
 	}
 
@@ -70,6 +80,7 @@
 
 	& &__title {
 		@include inherit-custom-color;
+		@include heading;
 		font-size: sz(ct(empty, title-font-size, var(--rise-font-size-sm)));
 		@include custom-text(color, ct(empty, title-text, var(--rise-text-highlighted)));
 	}

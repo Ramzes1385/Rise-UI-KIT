@@ -6,24 +6,26 @@
 	min-width: 0;
 	margin: 0;
 	overflow: hidden;
-	border: 1px solid ct(text-diff, border, var(--rise-border));
+	border: 1px solid ct(text-diff, border, transparent);
 	border-radius: sz(ct(text-diff, radius, var(--rise-radius-md)));
 	@include text-size(sm);
-	@include custom-bg(background-color, ct(text-diff, bg, var(--rise-bg)));
+	@include tonal-surface(muted);
+	@include custom-bg(background-color, ct(text-diff, bg, var(--rise-bg-muted)));
 	@include custom-text(color, ct(text-diff, text, var(--rise-text)));
 
 	&--soft {
-		border-color: transparent;
-		@include custom-bg(background-color, ct(text-diff, bg, var(--rise-bg-muted)));
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, ct(text-diff, bg, var(--rise-bg-elevated)));
 	}
 
 	&--outline {
 		border-color: ct(text-diff, border, var(--rise-border-accented));
+		@include tonal-surface(page);
 		@include custom-bg(background-color, ct(text-diff, bg, transparent));
 	}
 
 	&--ghost {
-		border-color: transparent;
+		@include tonal-surface(none);
 		@include custom-bg(background-color, transparent);
 	}
 
@@ -33,7 +35,7 @@
 		align-items: center;
 		gap: space(8px);
 		padding: space(ct(text-diff, summary-padding-y, 6px) ct(text-diff, summary-padding-x, 12px));
-		border-bottom: 1px solid ct(text-diff, border, var(--rise-border));
+		border-bottom: 1px solid var(--rise-border);
 		background-color: ct(text-diff, summary-bg, transparent);
 		font-weight: var(--rise-font-weight-medium);
 		@include text-size(xs);
@@ -64,10 +66,8 @@
 
 		th {
 			padding: space(6px 12px);
-			border-bottom: 1px solid ct(text-diff, border, var(--rise-border));
-			color: var(--rise-text-toned);
-			font-family: var(--rise-font-sans);
-			font-weight: var(--rise-font-weight-medium);
+			border-bottom: 1px solid var(--rise-border);
+			@include caps-label(10px);
 			text-align: start;
 		}
 	}
@@ -78,7 +78,7 @@
 	}
 
 	&__table--split th + th {
-		border-inline-start: 1px solid ct(text-diff, border, var(--rise-border));
+		border-inline-start: 1px solid var(--rise-border);
 	}
 
 	&__number,
@@ -91,7 +91,8 @@
 	&__number {
 		width: 1%;
 		padding: space(2px 8px);
-		color: var(--rise-text-toned);
+		color: var(--rise-text-dimmed);
+		font-variant-numeric: tabular-nums;
 		text-align: end;
 		white-space: nowrap;
 		vertical-align: top;
@@ -119,7 +120,7 @@
 	}
 
 	&__table--split &__number:nth-child(3) {
-		border-inline-start: 1px solid ct(text-diff, border, var(--rise-border));
+		border-inline-start: 1px solid var(--rise-border);
 	}
 
 	&__cell--added {
@@ -131,7 +132,7 @@
 	}
 
 	&__cell--empty {
-		background-color: var(--rise-bg-muted);
+		background-color: var(--rise-bg-elevated);
 	}
 
 	&__word {

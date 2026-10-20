@@ -10,18 +10,20 @@ $code-token-types: keyword, string, number, comment, function, tag, attribute, p
 	min-width: 0;
 	max-width: 100%;
 	overflow: hidden;
-	border: 1px solid ct(code, border, var(--rise-border));
+	border: 1px solid ct(code, border, transparent);
 	border-radius: sz(ct(code, radius, var(--rise-radius-md)));
+	@include tonal-surface(muted);
 	@include custom-bg(background-color, ct(code, bg, var(--rise-bg-muted)));
 	@include custom-text(color, ct(code, text, var(--rise-text-highlighted)));
 
 	&--soft {
-		border-color: transparent;
+		@include tonal-surface(elevated);
 		@include custom-bg(background-color, var(--rise-bg-elevated));
 	}
 
 	&--outline {
 		border-color: ct(code, border, var(--rise-border-accented));
+		@include tonal-surface(page);
 		@include custom-bg(background-color, var(--rise-bg));
 	}
 
@@ -32,7 +34,7 @@ $code-token-types: keyword, string, number, comment, function, tag, attribute, p
 		min-height: sz(ct(code, header-height, 32px));
 		padding-block: space(4px);
 		padding-inline: space(12px 4px);
-		border-bottom: 1px solid ct(code, border, var(--rise-border));
+		border-bottom: 1px solid var(--rise-border);
 		background-color: ct(code, header-bg, transparent);
 		color: ct(code, header-text, var(--rise-text-toned));
 		@include text-size(xs);
@@ -105,7 +107,8 @@ $code-token-types: keyword, string, number, comment, function, tag, attribute, p
 		flex-shrink: 0;
 		width: var(--base-code-number-width);
 		margin-inline-end: sz(16px);
-		color: var(--rise-text-toned);
+		color: var(--rise-text-dimmed);
+		font-variant-numeric: tabular-nums;
 		text-align: end;
 		user-select: none;
 	}

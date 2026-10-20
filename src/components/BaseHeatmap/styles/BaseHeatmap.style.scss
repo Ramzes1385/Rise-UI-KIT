@@ -1,6 +1,6 @@
 $heatmap-mark: var(--heatmap-color, #{ct(heatmap-mark, bg, var(--rise-chart-3))});
 $heatmap-empty: ct(heatmap-cell, bg, var(--rise-bg-elevated));
-$heatmap-radius: ct(heatmap-cell, radius, 2px);
+$heatmap-radius: ct(heatmap-cell, radius, var(--rise-radius-xs));
 $heatmap-levels: (
 	1: color-mix(in srgb, #{$heatmap-mark} 30%, #{$heatmap-empty}),
 	2: color-mix(in srgb, #{$heatmap-mark} 55%, #{$heatmap-empty}),

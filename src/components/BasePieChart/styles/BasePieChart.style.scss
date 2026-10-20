@@ -91,7 +91,10 @@
 		strong {
 			color: ct(pie-chart, center-text, var(--rise-text-highlighted));
 			@include text-size(lg);
+			font-family: var(--rise-font-heading);
 			font-weight: ct(pie-chart, center-font-weight, var(--rise-font-weight-semibold));
+			font-variant-numeric: tabular-nums;
+			letter-spacing: var(--rise-tracking-heading);
 		}
 
 		span {

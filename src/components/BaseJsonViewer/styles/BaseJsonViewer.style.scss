@@ -5,24 +5,26 @@
 	flex-direction: column;
 	box-sizing: border-box;
 	min-width: 0;
-	border: 1px solid ct(json-viewer, border, var(--rise-border));
+	border: 1px solid ct(json-viewer, border, transparent);
 	border-radius: sz(ct(json-viewer, radius, var(--rise-radius-md)));
 	@include text-size(sm);
-	@include custom-bg(background-color, ct(json-viewer, bg, var(--rise-bg)));
+	@include tonal-surface(muted);
+	@include custom-bg(background-color, ct(json-viewer, bg, var(--rise-bg-muted)));
 	@include custom-text(color, ct(json-viewer, text, var(--rise-text)));
 
 	&--soft {
-		border-color: transparent;
-		@include custom-bg(background-color, ct(json-viewer, bg, var(--rise-bg-muted)));
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, ct(json-viewer, bg, var(--rise-bg-elevated)));
 	}
 
 	&--outline {
 		border-color: ct(json-viewer, border, var(--rise-border-accented));
+		@include tonal-surface(page);
 		@include custom-bg(background-color, ct(json-viewer, bg, transparent));
 	}
 
 	&--ghost {
-		border-color: transparent;
+		@include tonal-surface(none);
 		@include custom-bg(background-color, transparent);
 	}
 
@@ -32,7 +34,7 @@
 		align-items: center;
 		gap: space(ct(json-viewer, toolbar-gap, 4px));
 		padding: space(4px);
-		border-bottom: 1px solid ct(json-viewer, border, var(--rise-border));
+		border-bottom: 1px solid var(--rise-border);
 		background-color: ct(json-viewer, toolbar-bg, transparent);
 	}
 
@@ -60,28 +62,28 @@
 	}
 
 	&__key {
-		color: ct(json-viewer, key-text, var(--rise-text-highlighted));
+		color: ct(json-viewer, key-text, var(--rise-code-property));
 	}
 
 	&__colon {
-		color: var(--rise-text-toned);
+		color: var(--rise-text-muted);
 	}
 
 	&__value--string {
-		color: var(--rise-success-text);
+		color: var(--rise-code-string);
 	}
 
 	&__value--number {
-		color: var(--rise-info-text);
+		color: var(--rise-code-number);
 	}
 
 	&__value--boolean {
-		color: var(--rise-warning-text);
+		color: var(--rise-code-keyword);
 	}
 
 	&__value--null,
 	&__value--object,
 	&__value--array {
-		color: var(--rise-text-toned);
+		color: var(--rise-code-comment);
 	}
 }

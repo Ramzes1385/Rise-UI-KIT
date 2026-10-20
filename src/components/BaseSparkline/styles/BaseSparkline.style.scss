@@ -40,7 +40,7 @@ $sparkline-mark: var(--sparkline-color, #{ct(sparkline-mark, bg, var(--rise-prim
 		inset-inline-start: $sparkline-x;
 		width: 8px;
 		height: 8px;
-		border-radius: 50%;
+		border-radius: var(--rise-radius-xs);
 		background-color: $sparkline-mark;
 		box-shadow: 0 0 0 2px ct(sparkline-dot, border, var(--rise-bg));
 		transform: translate(-50%, -50%);
@@ -75,10 +75,11 @@ $sparkline-mark: var(--sparkline-color, #{ct(sparkline-mark, bg, var(--rise-prim
 		flex-direction: column;
 		align-items: center;
 		padding: space(ct(sparkline-tooltip, padding-y, 4px) ct(sparkline-tooltip, padding-x, 8px));
-		border: 1px solid ct(sparkline-tooltip, border, var(--rise-border));
-		border-radius: sz(ct(sparkline-tooltip, radius, var(--rise-radius-sm)));
-		background-color: ct(sparkline-tooltip, bg, var(--rise-bg));
-		box-shadow: ct(sparkline-tooltip, shadow, var(--rise-shadow-md));
+		@include floating-surface(null);
+		border: 1px solid ct(sparkline-tooltip, border, transparent);
+		border-radius: sz(ct(sparkline-tooltip, radius, var(--rise-radius-md)));
+		background-color: ct(sparkline-tooltip, bg, var(--rise-surface-floating));
+		box-shadow: ct(sparkline-tooltip, shadow, var(--rise-shadow-lg));
 		color: ct(sparkline-tooltip, text, var(--rise-text-muted));
 		white-space: nowrap;
 		transform: translateX(-50%);

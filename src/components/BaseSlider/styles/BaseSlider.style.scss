@@ -274,7 +274,7 @@
 		top: sz(12px);
 		inset-inline-start: sz(12px);
 		z-index: 2;
-		border-radius: var(--rise-radius-full);
+		border-radius: sz(var(--rise-radius-md));
 	}
 
 	&__arrows {
@@ -292,7 +292,7 @@
 		--btn-pad-left: 5px;
 
 		flex: none;
-		border-radius: var(--rise-radius-full);
+		border-radius: sz(var(--rise-radius-md));
 		pointer-events: auto;
 	}
 
@@ -378,13 +378,13 @@
 			position: absolute;
 			top: 50%;
 			left: 50%;
-			width: calc(#{sz(8px)} + var(--base-slider-dot-x) * #{sz(16px)});
-			height: calc(#{sz(8px)} + var(--base-slider-dot-y) * #{sz(16px)});
-			border-radius: var(--rise-radius-full);
+			width: calc(#{sz(4px)} + var(--base-slider-dot-x) * #{sz(20px)});
+			height: calc(#{sz(4px)} + var(--base-slider-dot-y) * #{sz(20px)});
+			border-radius: var(--rise-radius-xs);
 			background-color: ct(slider, dot-bg, var(--rise-bg-accented));
 			transform: translate(-50%, -50%);
 			clip-path: inset(
-				calc(var(--base-slider-dot-y) * #{sz(8px)}) calc(var(--base-slider-dot-x) * #{sz(8px)}) round var(--rise-radius-full)
+				calc(var(--base-slider-dot-y) * #{sz(8px)}) calc(var(--base-slider-dot-x) * #{sz(8px)}) round var(--rise-radius-xs)
 			);
 			transition:
 				clip-path var(--rise-duration) var(--rise-ease),
@@ -395,7 +395,7 @@
 			content: '';
 			position: absolute;
 			inset: sz(-4px);
-			border-radius: var(--rise-radius-full);
+			border-radius: var(--rise-radius-xs);
 		}
 
 		&:focus-visible {
@@ -424,7 +424,7 @@
 		&--active {
 			&::before {
 				background-color: ct(slider, dot-bg-active, var(--rise-primary));
-				clip-path: inset(0 round var(--rise-radius-full));
+				clip-path: inset(0 round var(--rise-radius-xs));
 			}
 
 			&::after {
