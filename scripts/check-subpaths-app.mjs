@@ -14,6 +14,8 @@
  * - `subpath-date-picker` — `@ramzes1385/rise-ui-kit/BaseDatePicker`: компонент с календарём и разделами словаря дат;
  * - `config-subpath-ru` — кнопка + `createUiKitConfig` без языка (русский по умолчанию): в сборке нет ни раздела `text` словаря `ru`,
  *   ни словаря `en`; `config-subpath` и `config-root` подключают `en` (`registerLocale(en)`, `locale: 'en'`);
+ * - `bare-app` и `bare-app-en` — приложение без кита и с `registerLocale(en)`: разница gzip — вес словаря `en` (предел `EN_MAX`);
+ *   `config-subpath` и `config-root` сверяются с `JS_MAX` без него;
  * - `plugin` — `createUiKitPlugin` из корня: тяжёлые компоненты (BaseTable…) не в стартовом JS, а в чанке по `import()` (FOLLOW_UPS № 58);
  *   плагин подключает `en` сам;
  * - автоимпорт (без сети, на пакете из tarball): `RiseUiResolver` из `/resolver` отдаёт для каждого публичного компонента подпуть, который
@@ -89,6 +91,11 @@ ${en ? `import { en, registerLocale } from '${PACKAGE}'\nregisterLocale(en)\n` :
 	.mount('#app')
 `
 
+/** Приложение без кита и то же приложение с `registerLocale(en)`: разница gzip — вес словаря `en` отдельно от остального JS */
+const BARE_APP = withEn => `import { createApp, h } from 'vue'
+${withEn ? `import { en, registerLocale } from '${PACKAGE}'\nregisterLocale(en)\n` : ''}createApp({ render: () => h('main', { class: 'app-ready' }, 'ok') }).mount('#app')
+`
+
 const SCENARIOS = [
 	{ name: 'subpath-button', css: 'tokens.css', code: BUTTON_APP(`${PACKAGE}/BaseButton`), marker: 'base-button' },
 	{ name: 'root-button', css: 'styles.css', code: BUTTON_APP(PACKAGE), marker: 'base-button' },
@@ -116,6 +123,8 @@ const SCENARIOS = [
 		marker: 'base-button',
 		applied: 'base-button--soft',
 	},
+	{ name: 'bare-app', css: 'tokens.css', code: BARE_APP(false), marker: 'app-ready' },
+	{ name: 'bare-app-en', css: 'tokens.css', code: BARE_APP(true), marker: 'app-ready' },
 	{ name: 'plugin', css: 'styles.css', code: PLUGIN_APP, marker: 'base-button' },
 ]
 
@@ -134,6 +143,15 @@ const JS_MAX = {
 	'config-root': 60,
 	plugin: 500,
 }
+
+/** Сценарии, в которых `JS_MAX` считается без словаря `en`: его вес — отдельно, `EN_MAX` (решение 20.10 02:23) */
+const WITHOUT_EN = ['config-subpath', 'config-root']
+
+/**
+ * Предел веса словаря `en` (gzip, КБ) — разница `bare-app-en` и `bare-app`. `en` — полный пакет строк всех компонентов и растёт вместе
+ * с китом, поэтому у него свой предел: замер плюс запас на рост кита (≈10 КБ). Поднимать осознанно, строкой в DECISIONS.
+ */
+const EN_MAX = 45
 
 /** Строки словарей: `text.EMPTY` русского и английского — по ним видно, какие словари и разделы попали в сборку */
 const RU_TEXT = 'Нет данных'
@@ -239,21 +257,24 @@ function checkContent(results, problems) {
 
 /** Вес по храповику `JS_MAX` и словари: русские разделы — только прочитанные, английский — только после `registerLocale(en)` */
 function checkDictionaries(results, problems) {
+	const enSize = results['bare-app-en'].js.gzip - results['bare-app'].js.gzip
+	console.log(`Словарь en отдельно: ${kb(enSize)} (предел ${EN_MAX} КБ).`)
+	expect(problems, enSize <= EN_MAX * 1024, `словарь en: ${kb(enSize)} — больше предела ${EN_MAX} КБ (EN_MAX)`)
 	for (const [name, limit] of Object.entries(JS_MAX)) {
-		const size = results[name].js.gzip
+		const size = results[name].js.gzip - (WITHOUT_EN.includes(name) ? enSize : 0)
 		expect(
 			problems,
 			size <= limit * 1024,
-			`${name}: стартовый JS ${kb(size)} — больше предела ${limit} КБ (JS_MAX): в сборку попало лишнее`,
+			`${name}: стартовый JS ${WITHOUT_EN.includes(name) ? 'без en ' : ''}${kb(size)} — больше предела ${limit} КБ (JS_MAX): в сборку попало лишнее`,
 		)
 	}
 	for (const name of ['subpath-button', 'config-subpath-ru']) {
 		expect(problems, !results[name].allJs.includes(RU_TEXT), `${name}: в сборке раздел text словаря ru, хотя кнопка его не читает`)
 	}
-	for (const name of ['subpath-button', 'subpath-select', 'subpath-date-picker', 'config-subpath-ru']) {
+	for (const name of ['subpath-button', 'subpath-select', 'subpath-date-picker', 'config-subpath-ru', 'bare-app']) {
 		expect(problems, !results[name].allJs.includes(EN_TEXT), `${name}: в сборке словарь en без registerLocale(en)`)
 	}
-	for (const name of ['config-subpath', 'config-root', 'plugin']) {
+	for (const name of ['config-subpath', 'config-root', 'plugin', 'bare-app-en']) {
 		expect(problems, results[name].js.text.includes(EN_TEXT), `${name}: нет словаря en, хотя он подключён`)
 	}
 }
