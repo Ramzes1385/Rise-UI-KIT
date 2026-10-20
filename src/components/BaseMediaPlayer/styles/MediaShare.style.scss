@@ -1,8 +1,7 @@
 .base-media-player {
 	&__share .base-modal__content {
 		max-width: sz(560px);
-		border-color: var(--media-border);
-		border-radius: var(--media-radius);
+		border-radius: sz(var(--rise-radius-xl));
 		background-color: var(--media-panel-solid);
 		color: var(--media-text);
 	}
@@ -79,7 +78,7 @@
 		width: sz(72px);
 		padding: sz(6px) sz(2px);
 		border: 0;
-		border-radius: sz(10px);
+		border-radius: sz(var(--rise-radius-md));
 		background: none;
 		color: var(--media-text);
 		font: inherit;
@@ -91,7 +90,6 @@
 
 		@include hover {
 			.base-media-player__share-tile {
-				box-shadow: 0 8px 20px color-mix(in srgb, var(--media-share-color, var(--rise-media-highlight)) 40%, transparent);
 				transform: translateY(-3px) scale(1.06);
 			}
 
@@ -110,22 +108,16 @@
 		place-items: center;
 		width: sz(48px);
 		height: sz(48px);
-		border-radius: sz(14px);
+		border-radius: sz(var(--rise-radius-md));
 		background-color: var(--media-share-color, color-mix(in srgb, var(--rise-media-highlight) 12%, transparent));
 		color: var(--media-text);
-		transition:
-			transform var(--media-normal) var(--media-spring),
-			box-shadow var(--media-normal) var(--media-ease);
+		transition: transform var(--media-normal) var(--media-spring);
 
 		.base-media-player__icon {
 			width: sz(26px);
 			height: sz(26px);
 			transition: transform var(--media-normal) var(--media-spring);
 		}
-	}
-
-	&__share-tile--more {
-		box-shadow: inset 0 0 0 1px var(--media-border);
 	}
 
 	&__share-label {
@@ -153,8 +145,7 @@
 		z-index: 1;
 		width: sz(32px);
 		height: sz(32px);
-		border: 1px solid var(--media-border);
-		border-radius: sz(10px);
+		border-radius: sz(var(--rise-radius-md));
 		box-shadow: 0 4px 14px color-mix(in srgb, var(--rise-media-shade) 45%, transparent);
 		transition: transform var(--media-normal) var(--media-spring);
 
@@ -188,8 +179,8 @@
 		color: var(--media-text);
 
 		.base-input__wrapper {
-			border: 1px solid var(--media-border);
-			border-radius: sz(10px);
+			border-color: transparent;
+			border-radius: sz(var(--rise-radius-md));
 			background-color: color-mix(in srgb, var(--rise-media-highlight) 6%, transparent);
 		}
 
@@ -207,7 +198,7 @@
 	&__share-copy.base-button {
 		--custom-bg: var(--media-primary-strong);
 		--custom-bg-hover: color-mix(in oklab, var(--media-primary-strong) 88%, var(--rise-media-highlight));
-		--custom-text: var(--media-text);
+		--custom-text: var(--rise-media-text-inverted);
 		--btn-pad-top: 0px;
 		--btn-pad-bottom: 0px;
 		--btn-pad-left: 14px;
@@ -216,7 +207,7 @@
 		flex: none;
 		gap: sz(6px);
 		height: sz(38px);
-		border-radius: sz(10px);
+		border-radius: sz(var(--rise-radius-md));
 		font-size: sz(13px);
 		font-weight: var(--rise-font-weight-semibold);
 		transition:
@@ -236,6 +227,7 @@
 	&__share-copy--done.base-button {
 		--custom-bg: var(--rise-color-success-700);
 		--custom-bg-hover: var(--rise-color-success-700);
+		--custom-text: var(--media-text);
 	}
 
 	&__share-time.base-checkbox {
@@ -263,7 +255,7 @@
 	.base-media-player__share-tile {
 		width: sz(40px);
 		height: sz(40px);
-		border-radius: sz(12px);
+		border-radius: sz(var(--rise-radius-md));
 
 		.base-media-player__icon {
 			width: sz(22px);

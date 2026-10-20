@@ -16,7 +16,7 @@
 		width: min(#{sz(360px)}, calc(100vw - #{sz(32px)}));
 		aspect-ratio: var(--media-aspect, 16 / 9);
 		overflow: clip;
-		border-radius: sz(12px);
+		border-radius: sz(var(--rise-radius-xl));
 		background-color: var(--media-shade);
 		box-shadow: 0 16px 48px color-mix(in srgb, var(--rise-media-shade) 45%, transparent);
 
@@ -52,7 +52,7 @@
 		z-index: 8;
 		display: flex;
 		gap: sz(2px);
-		border-radius: sz(8px);
+		border-radius: sz(var(--rise-radius-md));
 		background-color: var(--rise-media-surface);
 		opacity: 0;
 		transition: opacity var(--media-normal) var(--media-ease);
@@ -150,7 +150,7 @@
 		display: flex;
 		gap: sz(4px);
 		padding: sz(3px);
-		border-radius: sz(10px);
+		border-radius: sz(var(--rise-radius-md));
 		background-color: color-mix(in srgb, var(--rise-media-highlight) 6%, transparent);
 	}
 
@@ -158,7 +158,7 @@
 		@include button-reset;
 		text-align: center;
 		padding: sz(6px) sz(12px);
-		border-radius: sz(8px);
+		border-radius: sz(var(--rise-radius-sm));
 		color: var(--media-muted);
 		font-size: sz(15px);
 		font-weight: var(--rise-font-weight-bold);
@@ -190,11 +190,8 @@
 	&__actors-title {
 		margin-block: 0 sz(8px);
 		margin-inline: sz(4px) 0;
+		@include caps-label;
 		color: var(--media-muted);
-		font-size: sz(var(--rise-font-size-xs));
-		font-weight: var(--rise-font-weight-bold);
-		text-transform: uppercase;
-		@include caps-tracking(0.04em);
 	}
 
 	&__actors-list {
@@ -210,7 +207,7 @@
 		align-items: center;
 		gap: sz(12px);
 		padding: sz(8px) sz(10px);
-		border-radius: sz(10px);
+		border-radius: sz(var(--rise-radius-md));
 		background-color: color-mix(in srgb, var(--rise-media-highlight) 5%, transparent);
 
 		@include motion-safe {
@@ -222,7 +219,7 @@
 	&__actor-photo.base-avatar {
 		width: sz(48px);
 		height: sz(48px);
-		border-radius: sz(12px);
+		border-radius: sz(var(--rise-radius-md));
 
 		.base-avatar__content {
 			background-color: color-mix(in srgb, var(--rise-media-highlight) 10%, transparent);
@@ -265,12 +262,10 @@
 		place-items: center;
 		width: sz(30px);
 		height: sz(30px);
-		border-radius: sz(9px);
+		border-radius: sz(var(--rise-radius-md));
 		background-color: var(--media-share-color);
 		color: var(--media-text);
-		transition:
-			transform var(--media-normal) var(--media-spring),
-			box-shadow var(--media-normal) var(--media-ease);
+		transition: transform var(--media-normal) var(--media-spring);
 		@include focus-ring;
 
 		.base-media-player__icon {
@@ -280,7 +275,6 @@
 
 		@include hover {
 			color: var(--media-text);
-			box-shadow: 0 6px 16px color-mix(in srgb, var(--media-share-color) 45%, transparent);
 			transform: translateY(-2px) scale(1.06);
 		}
 
@@ -302,27 +296,25 @@
 	&__episodes-tab {
 		flex: none;
 		padding: sz(6px) sz(14px);
-		border: 1px solid color-mix(in srgb, var(--rise-media-highlight) 12%, transparent);
-		border-radius: sz(8px);
-		background-color: transparent;
-		color: var(--media-muted);
+		border: 0;
+		border-radius: sz(var(--rise-radius-md));
+		background-color: color-mix(in srgb, var(--rise-media-highlight) 6%, transparent);
 		font: inherit;
-		font-size: sz(var(--rise-font-size-sm));
-		font-weight: var(--rise-font-weight-semibold);
+		@include caps-label;
+		color: var(--media-muted);
 		white-space: nowrap;
 		cursor: pointer;
-		@include transition(background-color, border-color, color);
+		@include transition(background-color, color);
 		@include focus-ring;
 
 		@include hover {
-			background-color: color-mix(in srgb, var(--rise-media-highlight) 6%, transparent);
+			background-color: color-mix(in srgb, var(--rise-media-highlight) 12%, transparent);
 			color: var(--media-text);
 		}
 
 		&[aria-pressed='true'] {
-			border-color: var(--media-primary-strong);
 			background-color: var(--media-primary-strong);
-			color: var(--media-text);
+			color: var(--rise-media-text-inverted);
 		}
 	}
 
@@ -347,7 +339,7 @@
 		width: 100%;
 		padding: sz(10px);
 		border: 2px solid transparent;
-		border-radius: sz(10px);
+		border-radius: sz(var(--rise-radius-md));
 		background-color: color-mix(in srgb, var(--rise-media-highlight) 5%, transparent);
 		color: inherit;
 		font: inherit;
@@ -377,9 +369,10 @@
 		justify-content: center;
 		width: sz(28px);
 		height: sz(28px);
-		border-radius: sz(6px);
+		border-radius: sz(var(--rise-radius-sm));
 		background-color: color-mix(in srgb, var(--rise-media-highlight) 10%, transparent);
 		color: var(--media-text);
+		font-family: var(--rise-font-mono);
 		font-size: sz(var(--rise-font-size-sm));
 		font-weight: var(--rise-font-weight-bold);
 		font-variant-numeric: tabular-nums;
@@ -387,7 +380,7 @@
 
 	&__episode-card--current &__episode-number {
 		background-color: var(--media-primary-strong);
-		color: var(--media-text);
+		color: var(--rise-media-text-inverted);
 	}
 
 	&__episode-cover {
@@ -396,7 +389,7 @@
 		width: sz(112px);
 		aspect-ratio: 16 / 9;
 		overflow: hidden;
-		border-radius: sz(6px);
+		border-radius: sz(var(--rise-radius-md));
 		background-image: linear-gradient(
 			135deg,
 			color-mix(in srgb, var(--rise-media-highlight) 22.75%, var(--rise-media-shade)),
@@ -416,8 +409,9 @@
 		inset-inline-end: sz(4px);
 		bottom: sz(4px);
 		padding: sz(1px) sz(5px);
-		border-radius: sz(4px);
+		border-radius: sz(var(--rise-radius-sm));
 		background-color: color-mix(in srgb, var(--rise-media-shade) 75%, transparent);
+		font-family: var(--rise-font-mono);
 		font-size: sz(11px);
 		font-weight: var(--rise-font-weight-semibold);
 		font-variant-numeric: tabular-nums;
@@ -483,8 +477,8 @@
 		color: var(--media-text);
 
 		.base-input__wrapper {
-			border: 1px solid var(--media-border);
-			border-radius: sz(8px);
+			border-color: transparent;
+			border-radius: sz(var(--rise-radius-md));
 			background-color: color-mix(in srgb, var(--rise-media-highlight) 6%, transparent);
 		}
 
@@ -515,7 +509,7 @@
 		flex: none;
 		gap: sz(6px);
 		height: sz(36px);
-		border-radius: sz(8px);
+		border-radius: sz(var(--rise-radius-md));
 		font-size: sz(13px);
 		font-weight: var(--rise-font-weight-semibold);
 
@@ -528,6 +522,7 @@
 	&__watch-button--primary.base-button {
 		--custom-bg: var(--media-primary-strong);
 		--custom-bg-hover: color-mix(in oklab, var(--media-primary-strong) 88%, var(--rise-media-highlight));
+		--custom-text: var(--rise-media-text-inverted);
 	}
 
 	&__watch-error {
@@ -538,11 +533,8 @@
 
 	&__watch-subtitle {
 		margin: sz(4px) 0 0;
+		@include caps-label;
 		color: var(--media-muted);
-		font-size: sz(var(--rise-font-size-xs));
-		font-weight: var(--rise-font-weight-semibold);
-		text-transform: uppercase;
-		@include caps-tracking(0.04em);
 	}
 
 	&__watch-members {
@@ -565,11 +557,11 @@
 	&__watch-avatar.base-avatar {
 		width: sz(32px);
 		height: sz(32px);
-		border-radius: sz(10px);
+		border-radius: sz(var(--rise-radius-md));
 
 		.base-avatar__content {
-			background-image: linear-gradient(135deg, var(--rise-media-accent-light), var(--media-primary-strong));
-			color: var(--media-text);
+			background-color: var(--media-primary-strong);
+			color: var(--rise-media-text-inverted);
 			font-size: sz(var(--rise-font-size-xs));
 			font-weight: var(--rise-font-weight-bold);
 		}
@@ -599,7 +591,7 @@
 
 		flex: none;
 		padding: sz(2px) sz(8px);
-		border-radius: sz(6px);
+		border-radius: calc(var(--rise-radius-sm) - 1px);
 		font-size: sz(11px);
 		font-weight: var(--rise-font-weight-semibold);
 	}
@@ -623,7 +615,6 @@
 		flex-direction: column;
 		box-sizing: border-box;
 		width: min(#{sz(340px)}, 86%);
-		border-inline-end: 1px solid var(--media-border);
 		background-color: color-mix(
 			in srgb,
 			color-mix(in srgb, var(--rise-media-highlight) 3.92%, var(--rise-media-shade)) 55%,
@@ -677,7 +668,7 @@
 		width: 100%;
 		padding: sz(10px) sz(12px);
 		overflow: hidden;
-		border-radius: sz(10px);
+		border-radius: sz(var(--rise-radius-md));
 		text-align: start;
 		@include transition(background-color, transform);
 		@include focus-ring(-2px);
@@ -695,9 +686,8 @@
 	&__chapter-mark {
 		width: sz(4px);
 		height: sz(28px);
-		border-radius: sz(2px);
+		border-radius: calc(var(--rise-radius-xs) / 2);
 		background-color: var(--segment-color);
-		box-shadow: 0 0 10px color-mix(in srgb, var(--segment-color) 60%, transparent);
 	}
 
 	&__chapter-name {
@@ -708,6 +698,7 @@
 
 	&__chapter-start {
 		color: var(--media-muted);
+		font-family: var(--rise-font-mono);
 		font-size: sz(13px);
 		font-variant-numeric: tabular-nums;
 	}

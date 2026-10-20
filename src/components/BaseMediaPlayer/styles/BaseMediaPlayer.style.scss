@@ -5,7 +5,7 @@
 	width: 100%;
 	overflow: clip;
 	border-radius: var(--media-radius);
-	--media-radius: #{sz(ct(media-player, radius, 12px))};
+	--media-radius: #{sz(ct(media-player, radius, var(--rise-radius-2xl)))};
 	--media-ease: var(--rise-ease-emphasized);
 	--media-spring: var(--rise-ease-spring);
 	--media-fast: calc(var(--rise-duration-fast) * 1.2);
@@ -16,7 +16,6 @@
 	--media-primary: var(--rise-media-accent);
 	--media-primary-strong: var(--rise-media-accent-strong);
 	--media-primary-soft: color-mix(in srgb, var(--media-primary) 22%, transparent);
-	--media-glow: color-mix(in srgb, var(--media-primary) 45%, transparent);
 	--media-accent: var(--media-primary);
 	--media-shade: var(--rise-media-shade);
 	--media-overlay: color-mix(in srgb, var(--rise-media-shade) 85%, transparent);
@@ -69,7 +68,7 @@
 		min-width: 0;
 		max-width: min(#{sz(500px)}, 100%);
 		padding: sz(8px) sz(16px);
-		border-radius: sz(8px);
+		border-radius: sz(var(--rise-radius-md));
 		background-image: linear-gradient(
 			dir-angle(90deg),
 			color-mix(in srgb, var(--rise-media-shade) 88%, transparent) 0%,
@@ -137,7 +136,7 @@
 			--tooltip-offset: #{sz(4px)};
 
 			padding: sz(4px) sz(8px);
-			border-radius: sz(var(--rise-radius-md));
+			border-radius: sz(var(--rise-radius-sm));
 			color: var(--media-text);
 			font-size: sz(13px);
 			font-weight: var(--rise-font-weight-medium);
@@ -168,8 +167,7 @@
 		width: max-content;
 		max-width: calc(100% - #{sz(24px)});
 		padding: sz(6px) sz(6px) sz(6px) sz(14px);
-		border: 1px solid var(--media-border);
-		border-radius: sz(10px);
+		border-radius: sz(var(--rise-radius-lg));
 		background-color: var(--media-panel);
 		box-shadow: 0 10px 30px color-mix(in srgb, var(--rise-media-shade) 45%, transparent);
 		font-size: sz(var(--rise-font-size-sm));
@@ -300,8 +298,7 @@
 		bottom: calc(100% + #{sz(10px)});
 		z-index: 2;
 		padding: sz(4px);
-		border: 1px solid var(--media-border);
-		border-radius: sz(8px);
+		border-radius: sz(var(--rise-radius-md));
 		background-color: var(--media-overlay);
 		box-shadow: 0 8px 20px color-mix(in srgb, var(--rise-media-shade) 40%, transparent);
 		@include text-size(xs);
@@ -321,8 +318,6 @@
 			box-sizing: border-box;
 			width: sz(12px);
 			height: sz(12px);
-			border-right: 1px solid var(--media-border);
-			border-bottom: 1px solid var(--media-border);
 			background-color: var(--media-overlay);
 			clip-path: polygon(100% 0, 100% 100%, 0 100%);
 			content: '';
@@ -342,7 +337,7 @@
 		width: sz(160px);
 		height: sz(90px);
 		overflow: hidden;
-		border-radius: sz(6px);
+		border-radius: sz(var(--rise-radius-md));
 		background-color: var(--rise-media-shade);
 	}
 
@@ -388,7 +383,7 @@
 
 	&__ad--clip &__ad-label {
 		background-color: var(--media-primary);
-		color: var(--media-text);
+		color: var(--rise-media-text-inverted);
 	}
 
 	&__ad--clip &__ad-progress {
@@ -436,9 +431,8 @@
 		padding: sz(2px) sz(8px);
 		border-radius: sz(var(--rise-radius-sm));
 		background-color: var(--rise-media-ad);
+		@include caps-label(10px, 0.08em);
 		color: var(--rise-media-shade);
-		@include text-size(xs);
-		font-weight: var(--rise-font-weight-semibold);
 	}
 
 	&__ad-link.base-link {
@@ -489,7 +483,7 @@
 		top: 50%;
 		width: sz(4px);
 		height: sz(10px);
-		border-radius: sz(2px);
+		border-radius: calc(var(--rise-radius-xs) / 2);
 		background-color: var(--rise-media-ad);
 		pointer-events: none;
 		transform: translate(-50%, -50%);
@@ -562,7 +556,7 @@
 		gap: sz(8px);
 		margin: auto 0;
 		padding: sz(8px) sz(16px);
-		border-radius: sz(10px);
+		border-radius: sz(var(--rise-radius-lg));
 		background-color: color-mix(in srgb, var(--rise-media-shade) 72%, transparent);
 		@include text-size(base);
 	}
@@ -609,7 +603,7 @@
 		--btn-pad-left: 6px;
 
 		flex: none;
-		border-radius: sz(8px);
+		border-radius: sz(var(--rise-radius-md));
 	}
 
 	&__slider {
@@ -628,37 +622,20 @@
 	&__slider-track {
 		position: relative;
 		width: 100%;
-		height: sz(5px);
+		height: sz(4px);
 		overflow: hidden;
-		border-radius: sz(3px);
+		border-radius: calc(var(--rise-radius-xs) / 2);
 		background-color: color-mix(in srgb, var(--rise-media-highlight) 20%, transparent);
 		@include transition(height);
 	}
 
 	&__slider:hover &__slider-track,
 	&__slider--dragging &__slider-track {
-		height: sz(7px);
+		height: sz(6px);
 	}
 
 	&__seek {
 		height: sz(20px);
-	}
-
-	&__seek &__slider-track,
-	&__seek:hover &__slider-track,
-	&__seek.base-media-player__slider--dragging &__slider-track {
-		height: sz(10px);
-		border-radius: sz(4px);
-	}
-
-	&__seek &__slider-track {
-		transform: scaleY(0.6);
-		transition: transform var(--media-normal) var(--media-ease);
-	}
-
-	&__seek:hover &__slider-track,
-	&__seek.base-media-player__slider--dragging &__slider-track {
-		transform: none;
 	}
 
 	&__slider-track--segmented {
@@ -690,7 +667,6 @@
 		width: 100%;
 		border-radius: 0;
 		background-color: ct(media-player, progress-bg, var(--media-primary));
-		box-shadow: 0 0 4px color-mix(in srgb, var(--rise-media-shade) 20%, transparent);
 		transform-origin: left center;
 	}
 
@@ -720,25 +696,24 @@
 
 		&:first-child {
 			border-inline-start-width: 0;
-			border-start-start-radius: sz(4px);
+			border-start-start-radius: calc(var(--rise-radius-xs) / 2);
 			border-start-end-radius: 0;
 			border-end-end-radius: 0;
-			border-end-start-radius: sz(4px);
+			border-end-start-radius: calc(var(--rise-radius-xs) / 2);
 		}
 
 		&:last-child {
 			border-inline-end-width: 0;
 			border-start-start-radius: 0;
-			border-start-end-radius: sz(4px);
-			border-end-end-radius: sz(4px);
+			border-start-end-radius: calc(var(--rise-radius-xs) / 2);
+			border-end-end-radius: calc(var(--rise-radius-xs) / 2);
 			border-end-start-radius: 0;
 		}
 	}
 
 	&__slider-segment--hovered {
 		z-index: 1;
-		filter: brightness(1.2) saturate(1.3);
-		transform: scaleY(1.3);
+		transform: scaleY(1.5);
 	}
 
 	&__slider-segment-fill {
@@ -774,19 +749,18 @@
 		box-sizing: border-box;
 		width: sz(12px);
 		height: sz(12px);
-		border-radius: sz(4px);
+		border-radius: sz(var(--rise-radius-xs));
 		background-color: var(--rise-media-highlight);
 		transform: translate(-50%, -50%);
 		@include focus-ring;
 	}
 
 	&__seek &__slider-thumb {
-		width: sz(18px);
-		height: sz(18px);
-		border-radius: sz(6px);
+		width: sz(16px);
+		height: sz(16px);
 		border: 2px solid var(--media-text);
+		border-radius: sz(var(--rise-radius-xs));
 		background-color: ct(media-player, thumb-bg, var(--media-primary));
-		box-shadow: 0 2px 4px color-mix(in srgb, var(--rise-media-shade) 30%, transparent);
 		transform: translate(-50%, -50%) scale(0);
 		transition: transform var(--media-normal) var(--media-spring);
 	}

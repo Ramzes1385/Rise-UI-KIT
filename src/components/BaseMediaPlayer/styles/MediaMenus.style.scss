@@ -10,8 +10,7 @@
 		bottom: calc(100% + #{sz(10px)});
 		z-index: 10;
 		overflow: hidden;
-		border: 1px solid var(--media-border);
-		border-radius: sz(ct(media-player, menu-radius, 10px));
+		border-radius: sz(ct(media-player, menu-radius, var(--rise-radius-lg)));
 		background-color: var(--media-panel);
 		box-shadow: 0 12px 36px color-mix(in srgb, var(--rise-media-shade) 45%, transparent);
 		color: var(--media-text);
@@ -102,10 +101,9 @@
 		border: 0;
 		border-bottom: 1px solid var(--media-border);
 		background-color: transparent;
-		color: var(--media-muted);
 		font: inherit;
-		font-size: sz(13px);
-		font-weight: var(--rise-font-weight-semibold);
+		@include caps-label;
+		color: var(--media-muted);
 		text-align: start;
 		white-space: nowrap;
 	}
@@ -213,12 +211,12 @@
 	}
 
 	&__speed-title {
+		@include caps-label;
 		color: var(--media-muted);
-		font-size: sz(13px);
-		font-weight: var(--rise-font-weight-semibold);
 	}
 
 	&__speed-value {
+		font-family: var(--rise-font-mono);
 		font-size: sz(22px);
 		font-weight: var(--rise-font-weight-bold);
 		font-variant-numeric: tabular-nums;
@@ -246,7 +244,7 @@
 		flex: none;
 		width: sz(28px);
 		height: sz(28px);
-		border-radius: sz(8px);
+		border-radius: sz(var(--rise-radius-md));
 
 		&.base-button--disabled {
 			--custom-bg-hover: var(--media-hover);
@@ -281,7 +279,7 @@
 
 		&::-webkit-slider-runnable-track {
 			height: sz(4px);
-			border-radius: sz(2px);
+			border-radius: calc(var(--rise-radius-xs) / 2);
 			background: linear-gradient(
 				dir-angle(90deg),
 				var(--media-primary) var(--speed-fill),
@@ -291,7 +289,7 @@
 
 		&::-moz-range-track {
 			height: sz(4px);
-			border-radius: sz(2px);
+			border-radius: calc(var(--rise-radius-xs) / 2);
 			background: linear-gradient(
 				dir-angle(90deg),
 				var(--media-primary) var(--speed-fill),
@@ -305,9 +303,8 @@
 			height: sz(16px);
 			margin-top: sz(-6px);
 			border: 2px solid var(--media-text);
-			border-radius: sz(5px);
+			border-radius: sz(var(--rise-radius-xs));
 			background-color: var(--media-primary);
-			box-shadow: 0 2px 4px color-mix(in srgb, var(--rise-media-shade) 30%, transparent);
 			appearance: none;
 		}
 
@@ -316,9 +313,8 @@
 			width: sz(16px);
 			height: sz(16px);
 			border: 2px solid var(--media-text);
-			border-radius: sz(5px);
+			border-radius: sz(var(--rise-radius-xs));
 			background-color: var(--media-primary);
-			box-shadow: 0 2px 4px color-mix(in srgb, var(--rise-media-shade) 30%, transparent);
 		}
 	}
 
@@ -341,7 +337,8 @@
 
 		min-width: sz(40px);
 		border: 0;
-		border-radius: sz(8px);
+		border-radius: sz(var(--rise-radius-md));
+		font-family: var(--rise-font-mono);
 		font-size: sz(13px);
 		font-weight: inherit;
 		line-height: normal;
@@ -349,6 +346,6 @@
 	}
 
 	&__speed-preset--active.base-button {
-		@include custom-button-colors(var(--media-primary-strong));
+		@include custom-button-colors(var(--media-primary-strong), $text: var(--rise-media-text-inverted));
 	}
 }

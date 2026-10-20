@@ -97,8 +97,10 @@
 
 	&__done-title {
 		margin: 0;
+		font-family: var(--rise-font-heading);
 		font-size: sz(ct(presentation-player, done-title-font-size, var(--rise-font-size-2xl)));
-		font-weight: ct(presentation-player, done-title-font-weight, var(--rise-font-weight-bold));
+		font-weight: ct(presentation-player, done-title-font-weight, var(--rise-font-weight-semibold));
+		@include caps-tracking(var(--rise-tracking-heading));
 	}
 
 	&__done-text {
