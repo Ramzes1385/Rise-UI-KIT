@@ -34,6 +34,9 @@ export const kkRoadmapReview = {
 		TITLE_MORE: '{title} және тағы {n}',
 		NOUN_STAGE: '{n} кезең|{n} кезең|{n} кезең|{n} кезең',
 		NOUN_TOPIC: '{n} тақырып|{n} тақырып|{n} тақырып|{n} тақырып',
+		/** Скрытые подписи к `<del>` и `<ins>` для программ чтения */
+		VALUE_WAS: 'болған',
+		VALUE_NOW: 'болады',
 		FIELD_TITLE: 'Атауы',
 		FIELD_DESCRIPTION: 'Сипаттама',
 		FIELD_HOURS: 'Сағат',

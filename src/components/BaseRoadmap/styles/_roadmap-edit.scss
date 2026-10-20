@@ -67,26 +67,6 @@
 		border-radius: 50%;
 	}
 
-	&__edit-reject {
-		display: flex;
-		gap: sz(10px);
-		align-items: flex-start;
-		padding: space(10px 14px);
-		color: var(--rise-text);
-		background-color: var(--rise-bg);
-		border: 1px solid var(--rise-error);
-		border-radius: sz(var(--rise-radius-md));
-	}
-
-	&__edit-reject-text {
-		display: flex;
-		flex: 1;
-		flex-direction: column;
-		gap: sz(2px);
-		min-width: 0;
-		font-size: sz(13px);
-	}
-
 	&__edit-stages,
 	&__edit-topics {
 		display: flex;

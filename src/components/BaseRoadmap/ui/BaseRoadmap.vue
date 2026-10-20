@@ -43,6 +43,7 @@
 					:is-disabled="isDisabled"
 					:draft-saved-at="draftSavedAt"
 					@publish="publish" />
+				<RoadmapLoadError v-else-if="editFailed" @retry="retryEdit" />
 				<div v-else class="base-roadmap__loading" role="group" :aria-label="UI_ROADMAP.LOADING">
 					<BaseSkeleton v-for="row in 3" :key="row" shape="rect" height="40" />
 				</div>
@@ -93,7 +94,11 @@
 							:data="data"
 							:target="reviewTarget"
 							:is-compact="isNarrow"
-							@show="showReviewTarget" />
+							:rejection="edit?.rejection.value"
+							:can-undo="edit?.history.state.value.canUndo"
+							@show="showReviewTarget"
+							@dismiss="edit?.dismissRejection()" />
+						<RoadmapLoadError v-else-if="reviewFailed" @retry="retryReview" />
 						<BaseSkeleton v-else shape="rect" height="120" />
 					</aside>
 					<aside v-else-if="isSidePanel && selected" class="base-roadmap__side" :aria-label="UI_ROADMAP.PANEL_LABEL">
@@ -168,6 +173,7 @@ import RoadmapSummary from './parts/RoadmapSummary.vue'
 import { BaseSkeleton } from '@components/BaseSkeleton'
 import { useBaseRoadmap } from '../model/useBaseRoadmap'
 import { BaseSegmented } from '@components/BaseSegmented'
+import RoadmapLoadError from './parts/RoadmapLoadError.vue'
 import { kitDefaults } from '@composables/base/useDefaults'
 import RoadmapTopicPanel from './parts/RoadmapTopicPanel.vue'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
@@ -242,6 +248,10 @@ const {
 	reviewTarget,
 	showReviewTarget,
 	edit,
+	editFailed,
+	reviewFailed,
+	retryEdit,
+	retryReview,
 	hasModes,
 	modeOptions,
 	changeMode,

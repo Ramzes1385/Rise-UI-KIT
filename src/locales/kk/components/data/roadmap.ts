@@ -66,6 +66,10 @@ export const kkRoadmap = {
 		LIVE_RESET: '{title}: белгі алынды · {done} / {of}',
 		EMPTY: 'Жолда әзірге кезеңдер жоқ',
 		LOADING: 'Жол жүктелуде',
+		LOAD_ERROR: 'Жүктеу мүмкін болмады',
+		LOAD_RETRY: 'Қайталау',
+		/** Предупреждение: чанк не загрузился; `{name}` — edit или review, `{error}` — текст ошибки */
+		LOAD_FAILED: 'BaseRoadmap: «{name}» бөлігін жүктеу мүмкін болмады: {error}',
 		STORAGE_UNAVAILABLE: 'Прогресс қоймасы қолжетімсіз',
 		HOOK_FAILED: 'BaseRoadmap: beforeStatusChange hook қатемен аяқталды — күйді өзгерту тоқтатылды: {error}',
 		CYCLE: 'BaseRoadmap: requires {path} цикл жасайды — байланыс ескерілмейді',

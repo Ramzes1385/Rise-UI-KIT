@@ -66,6 +66,10 @@ export const uzRoadmap = {
 		LIVE_RESET: '{title}: belgi olib tashlandi · {done} / {of}',
 		EMPTY: 'Yoʻlda hali bosqichlar yoʻq',
 		LOADING: 'Yoʻl yuklanmoqda',
+		LOAD_ERROR: 'Yuklab boʻlmadi',
+		LOAD_RETRY: 'Qayta urinish',
+		/** Предупреждение: чанк не загрузился; `{name}` — edit или review, `{error}` — текст ошибки */
+		LOAD_FAILED: 'BaseRoadmap: «{name}» boʻlagini yuklab boʻlmadi: {error}',
 		STORAGE_UNAVAILABLE: 'Progress saqlanadigan joy mavjud emas',
 		HOOK_FAILED: 'BaseRoadmap: beforeStatusChange hook xato bilan tugadi — holatni oʻzgartirish bekor qilindi: {error}',
 		CYCLE: 'BaseRoadmap: requires {path} sikl hosil qiladi — bogʻlanish hisobga olinmadi',

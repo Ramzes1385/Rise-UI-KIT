@@ -16,7 +16,9 @@ import type {
 } from '../../../types/internal/roadmapEdit.internal.types'
 
 function createState({ data, emit }: RoadmapEditContext): RoadmapEditState {
+	const effects = new WeakMap<readonly RoadmapChange[], () => void>()
 	return {
+		effects,
 		rejection: shallowRef<RoadmapRejection | null>(null),
 		liveText: shallowRef(''),
 		draft: shallowRef<RoadmapData | null>(null),
@@ -24,6 +26,7 @@ function createState({ data, emit }: RoadmapEditContext): RoadmapEditState {
 			apply: changes => {
 				data.value = applyRoadmapChanges(data.value, changes)
 				emit('update:data', data.value)
+				effects.get(changes)?.()
 			},
 		}),
 	}
@@ -51,7 +54,7 @@ export function createRoadmapEdit(context: RoadmapEditContext): RoadmapEditContr
 		announce: text => announceRoadmap(state, text),
 		dismissRejection: () => (state.rejection.value = null),
 		run,
-		applyChanges: (changes, label) => run({ name: 'review', label, build: () => changes }),
+		applyChanges: (changes, label, onStep) => run({ name: 'review', label, build: () => changes, onStep }),
 		templates: computed(() => mergeRoadmapTemplates(context.props.templates)),
 		find: id => findRoadmapEntity(context.data.value, id),
 		undo: stepper(state, 'undo'),

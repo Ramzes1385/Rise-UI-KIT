@@ -1,29 +1,32 @@
 import type { ComputedRef } from 'vue'
+import { createRoadmapLazy } from './roadmapLazy'
 import { getCurrentScope, shallowRef, watch } from 'vue'
 import type { RoadmapEditContext, RoadmapEditController, RoadmapEditLoader } from '../../../types/internal/roadmapEdit.internal.types'
 
 export function useRoadmapEditLoader(context: RoadmapEditContext, isEditing: ComputedRef<boolean>): RoadmapEditLoader {
 	const controller = shallowRef<RoadmapEditController | null>(null)
-	let pending: Promise<RoadmapEditController> | null = null
 	const scope = getCurrentScope()
-	function load(): Promise<RoadmapEditController> {
-		pending ??= import('./useRoadmapEdit').then(({ createRoadmapEdit }) => {
-			if (scope && !scope.active) return controller.value as RoadmapEditController
-			controller.value = scope?.run(() => createRoadmapEdit(context)) ?? createRoadmapEdit(context)
-			return controller.value
-		})
-		return pending
-	}
+	const { load, error, retry } = createRoadmapLazy(
+		() =>
+			import('./useRoadmapEdit').then(({ createRoadmapEdit }) => {
+				if (scope && !scope.active) return controller.value as RoadmapEditController
+				controller.value = scope?.run(() => createRoadmapEdit(context)) ?? createRoadmapEdit(context)
+				return controller.value
+			}),
+		'edit',
+	)
 	watch(
 		isEditing,
 		value => {
-			if (value) void load()
+			if (value) load().catch(() => undefined)
 		},
 		{ immediate: true },
 	)
 	return {
 		controller,
 		load,
+		error,
+		retry,
 		methods: {
 			addStage: (stage, index) => load().then(edit => edit.addStage(stage, index)),
 			addTopic: (stage, topic, index) => load().then(edit => edit.addTopic(stage, topic, index)),

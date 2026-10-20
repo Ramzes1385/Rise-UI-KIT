@@ -1,5 +1,6 @@
 <template>
 	<section class="base-roadmap__review" :class="isCompact && 'base-roadmap__review--compact'" :aria-label="UI_ROADMAP_REVIEW.PANEL">
+		<RoadmapRejectNotice v-if="rejection" :rejection="rejection" :can-undo="canUndo" @dismiss="emit('dismiss')" />
 		<BaseTabs v-model="tab" :items="tabs" is-full-width>
 			<template #panel-proposals>
 				<div class="base-roadmap__review-list">
@@ -34,9 +35,13 @@
 							<ul v-if="item.fields.length > 0" class="base-roadmap__review-fields">
 								<li v-for="row in item.fields" :key="row.key">
 									<span class="base-roadmap__review-field">{{ row.field }}</span>
-									<del>{{ row.before }}</del>
-									<span aria-hidden="true">&rarr;</span>
-									<ins>{{ row.after }}</ins>
+									<del
+										><span class="base-roadmap__sr">{{ UI_ROADMAP_REVIEW.VALUE_WAS }}: </span>{{ row.before }}</del
+									>
+									<span class="base-roadmap__review-arrow" aria-hidden="true">&rarr;</span>
+									<ins
+										><span class="base-roadmap__sr">{{ UI_ROADMAP_REVIEW.VALUE_NOW }}: </span>{{ row.after }}</ins
+									>
 								</li>
 							</ul>
 							<div v-if="item.isOpen" class="base-roadmap__review-card-actions">
@@ -121,7 +126,9 @@ import { UI_ROADMAP_REVIEW } from '@/locales/messages'
 import { BaseSegmented } from '@components/BaseSegmented'
 import type { RoadmapData } from '../../types/roadmapData.types'
 import { BaseCommentThread } from '@components/BaseCommentThread'
+import RoadmapRejectNotice from '../parts/RoadmapRejectNotice.vue'
 import { useRoadmapReviewPanel } from '../../model/review/useRoadmapReviewPanel'
+import type { RoadmapRejection } from '../../types/internal/roadmapEdit.internal.types'
 import type { RoadmapReviewState, RoadmapReviewTarget } from '../../types/internal/roadmapReview.types'
 
 const props = defineProps<{
@@ -129,10 +136,13 @@ const props = defineProps<{
 	data: RoadmapData
 	target?: RoadmapReviewTarget | null
 	isCompact?: boolean
+	rejection?: RoadmapRejection | null
+	canUndo?: boolean
 }>()
 
 const emit = defineEmits<{
 	show: [target: RoadmapReviewTarget]
+	dismiss: []
 }>()
 
 const {

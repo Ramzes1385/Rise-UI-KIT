@@ -66,6 +66,10 @@ export const zhRoadmap = {
 		LIVE_RESET: '{title}：已取消标记 · {done} / {of}',
 		EMPTY: '该路径还没有阶段',
 		LOADING: '正在加载路径',
+		LOAD_ERROR: '加载失败',
+		LOAD_RETRY: '重试',
+		/** Предупреждение: чанк не загрузился; `{name}` — edit или review, `{error}` — текст ошибки */
+		LOAD_FAILED: 'BaseRoadmap：无法加载“{name}”代码块：{error}',
 		STORAGE_UNAVAILABLE: '进度存储不可用',
 		HOOK_FAILED: 'BaseRoadmap：beforeStatusChange 钩子出错，状态变更已取消：{error}',
 		CYCLE: 'BaseRoadmap：requires {path} 形成循环，已忽略该关联',

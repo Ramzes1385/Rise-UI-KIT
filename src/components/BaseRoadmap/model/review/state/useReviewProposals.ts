@@ -68,7 +68,8 @@ export function useReviewProposals(context: RoadmapReviewContext): RoadmapReview
 		if (!proposal || proposal.status !== 'open') return false
 		if (isRoadmapProposalStale(options.data(), proposal.changes)) return false
 		const label = labelOf(proposal, context)
-		if ((await options.apply(proposal.changes, label)) === false) return false
+		const onStep = (direction: 'undo' | 'redo'): void => decide(id, direction === 'undo' ? 'open' : 'accepted')
+		if ((await options.apply(proposal.changes, label, onStep)) === false) return false
 		decide(id, 'accepted')
 		options.announce(formatMessage(UI_ROADMAP_REVIEW.ANNOUNCE_ACCEPTED, { label }))
 		return true

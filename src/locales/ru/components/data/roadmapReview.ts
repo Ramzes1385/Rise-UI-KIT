@@ -33,6 +33,9 @@ export const ruRoadmapReview = {
 	TITLE_MORE: '{title} и ещё {n}',
 	NOUN_STAGE: '{n} этап|{n} этапа|{n} этапов|{n} этапа',
 	NOUN_TOPIC: '{n} тема|{n} темы|{n} тем|{n} темы',
+	/** Скрытые подписи к `<del>` и `<ins>` для программ чтения */
+	VALUE_WAS: 'было',
+	VALUE_NOW: 'стало',
 	FIELD_TITLE: 'Название',
 	FIELD_DESCRIPTION: 'Описание',
 	FIELD_HOURS: 'Часы',

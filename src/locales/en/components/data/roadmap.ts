@@ -66,6 +66,10 @@ export const enRoadmap = {
 		LIVE_RESET: '{title}: mark cleared · {done} of {of}',
 		EMPTY: 'This path has no stages yet',
 		LOADING: 'Loading path',
+		LOAD_ERROR: 'Failed to load',
+		LOAD_RETRY: 'Retry',
+		/** Предупреждение: чанк не загрузился; `{name}` — edit или review, `{error}` — текст ошибки */
+		LOAD_FAILED: 'BaseRoadmap: failed to load the “{name}” chunk: {error}',
 		STORAGE_UNAVAILABLE: 'Progress storage is unavailable',
 		HOOK_FAILED: 'BaseRoadmap: the beforeStatusChange hook failed — status change cancelled: {error}',
 		CYCLE: 'BaseRoadmap: requires {path} forms a cycle — link ignored',

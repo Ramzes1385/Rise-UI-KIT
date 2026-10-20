@@ -56,7 +56,13 @@ async function prepare(context: RoadmapEditContext, command: RoadmapCommand, bui
 function commit(context: RoadmapEditContext, state: RoadmapEditState, task: { command: RoadmapCommand; changes: RoadmapChange[] }): void {
 	const { command, changes } = task
 	context.data.value = applyRoadmapChanges(context.data.value, changes)
-	state.history.push({ label: command.label, redo: changes, undo: invertRoadmapChanges(changes), mergeKey: command.mergeKey })
+	const undo = invertRoadmapChanges(changes)
+	const { onStep } = command
+	if (onStep && state.effects) {
+		state.effects.set(changes, () => onStep('redo'))
+		state.effects.set(undo, () => onStep('undo'))
+	}
+	state.history.push({ label: command.label, redo: changes, undo, mergeKey: command.mergeKey })
 	state.rejection.value = null
 	announceRoadmap(state, command.label)
 	context.emit('update:data', context.data.value)

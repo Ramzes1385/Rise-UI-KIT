@@ -34,6 +34,9 @@ export const uzRoadmapReview = {
 		TITLE_MORE: '{title} va yana {n} ta',
 		NOUN_STAGE: '{n} ta bosqich|{n} ta bosqich|{n} ta bosqich|{n} ta bosqich',
 		NOUN_TOPIC: '{n} ta mavzu|{n} ta mavzu|{n} ta mavzu|{n} ta mavzu',
+		/** Скрытые подписи к `<del>` и `<ins>` для программ чтения */
+		VALUE_WAS: 'avval',
+		VALUE_NOW: 'endi',
 		FIELD_TITLE: 'Nomi',
 		FIELD_DESCRIPTION: 'Tavsif',
 		FIELD_HOURS: 'Soat',

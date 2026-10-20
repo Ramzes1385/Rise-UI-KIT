@@ -11,19 +11,11 @@
 				<p v-if="editor.tool.value === 'link'" class="base-roadmap__edit-chip base-roadmap__edit-chip--link">
 					{{ editor.linkFrom.value ? UI_ROADMAP_EDIT.LINK_TARGET : UI_ROADMAP_EDIT.LINK_SOURCE }}
 				</p>
-				<div v-if="edit.rejection.value" class="base-roadmap__edit-reject" role="status">
-					<BaseIcon name="alert-triangle" />
-					<span class="base-roadmap__edit-reject-text">
-						<strong>{{
-							edit.rejection.value.code === 'cycle' ? UI_ROADMAP_EDIT.CYCLE_TITLE : UI_ROADMAP_EDIT.REJECT_TITLE
-						}}</strong>
-						<span>{{ edit.rejection.value.text }}</span>
-						<span v-if="edit.history.state.value.canUndo">{{ UI_ROADMAP_EDIT.REJECT_UNDO }} <BaseKbd value="Ctrl+Z" /></span>
-					</span>
-					<BaseButton variant="ghost" :aria-label="UI_ROADMAP_EDIT.REJECT_CLOSE" @click="edit.dismissRejection">
-						<BaseIcon name="x-mark" />
-					</BaseButton>
-				</div>
+				<RoadmapRejectNotice
+					v-if="edit.rejection.value"
+					:rejection="edit.rejection.value"
+					:can-undo="edit.history.state.value.canUndo"
+					@dismiss="edit.dismissRejection" />
 				<ol v-if="edit.viewData.value.stages.length" class="base-roadmap__edit-stages">
 					<RoadmapEditStage v-for="(stage, index) in edit.viewData.value.stages" :key="stage.id" :stage="stage" :index="index" />
 				</ol>
@@ -76,15 +68,13 @@
 
 <script setup lang="ts">
 import '../../styles/_roadmap-edit.scss'
-import { BaseKbd } from '@components/BaseKbd'
-import { BaseIcon } from '@components/BaseIcon'
 import RoadmapPalette from './RoadmapPalette.vue'
 import { BaseEmpty } from '@components/BaseEmpty'
-import { BaseButton } from '@components/BaseButton'
 import { UI_ROADMAP_EDIT } from '@/locales/messages'
 import RoadmapEditStage from './RoadmapEditStage.vue'
 import RoadmapInspector from './RoadmapInspector.vue'
 import { BaseConfirm } from '@components/BaseConfirm'
+import RoadmapRejectNotice from '../parts/RoadmapRejectNotice.vue'
 import { useRoadmapEditorView } from '../../model/edit/view/useRoadmapEditorView'
 import type { RoadmapEditorEmits, RoadmapEditorProps } from '../../types/internal/roadmapEditView.types'
 

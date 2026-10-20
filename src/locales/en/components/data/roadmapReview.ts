@@ -34,6 +34,9 @@ export const enRoadmapReview = {
 		TITLE_MORE: '{title} and {n} more',
 		NOUN_STAGE: '{n} stage|{n} stages|{n} stages|{n} stages',
 		NOUN_TOPIC: '{n} topic|{n} topics|{n} topics|{n} topics',
+		/** Скрытые подписи к `<del>` и `<ins>` для программ чтения */
+		VALUE_WAS: 'was',
+		VALUE_NOW: 'now',
 		FIELD_TITLE: 'Title',
 		FIELD_DESCRIPTION: 'Description',
 		FIELD_HOURS: 'Hours',

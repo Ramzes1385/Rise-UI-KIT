@@ -26,9 +26,14 @@ export interface RoadmapReviewOptions {
 	emitReview: (value: RoadmapReviewData) => void
 	/**
 	 * Применить принятое предложение через историю правки одним шагом.
-	 * `false` — применить не удалось (предложение остаётся открытым); `Promise` ждётся
+	 * `false` — применить не удалось (предложение остаётся открытым); `Promise` ждётся.
+	 * `onStep` история зовёт при отмене и повторе шага: статус предложения откатывается вместе с данными
 	 */
-	apply: (changes: RoadmapChange[], label: string) => boolean | void | Promise<boolean | void>
+	apply: (
+		changes: RoadmapChange[],
+		label: string,
+		onStep?: (direction: 'undo' | 'redo') => void,
+	) => boolean | void | Promise<boolean | void>
 	/** Озвучить действие в живом регионе */
 	announce: (text: string) => void
 	/** Часы — для тестов */

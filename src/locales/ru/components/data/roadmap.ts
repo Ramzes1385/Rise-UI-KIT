@@ -79,6 +79,10 @@ export const ruRoadmap = {
 	/** Нет этапов и загрузка */
 	EMPTY: 'В пути пока нет этапов',
 	LOADING: 'Загрузка пути',
+	LOAD_ERROR: 'Не удалось загрузить',
+	LOAD_RETRY: 'Повторить',
+	/** Предупреждение: чанк не загрузился; `{name}` — edit или review, `{error}` — текст ошибки */
+	LOAD_FAILED: 'BaseRoadmap: не удалось загрузить фрагмент «{name}»: {error}',
 	/** Ошибка `save` у `createLocalStorageProgress`, когда localStorage недоступен */
 	STORAGE_UNAVAILABLE: 'Хранилище прогресса недоступно',
 	/** Предупреждение: хук упал; `{error}` — текст ошибки */

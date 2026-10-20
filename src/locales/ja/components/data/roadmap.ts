@@ -66,6 +66,10 @@ export const jaRoadmap = {
 		LIVE_RESET: '{title}：マークを解除しました · {done} / {of}',
 		EMPTY: 'このパスにはまだステージがありません',
 		LOADING: 'パスを読み込み中',
+		LOAD_ERROR: '読み込めませんでした',
+		LOAD_RETRY: '再試行',
+		/** Предупреждение: чанк не загрузился; `{name}` — edit или review, `{error}` — текст ошибки */
+		LOAD_FAILED: 'BaseRoadmap：「{name}」の読み込みに失敗しました：{error}',
 		STORAGE_UNAVAILABLE: '進捗ストレージを利用できません',
 		HOOK_FAILED: 'BaseRoadmap：beforeStatusChange フックでエラーが発生したため、ステータス変更を取り消しました：{error}',
 		CYCLE: 'BaseRoadmap：requires {path} が循環しているため、この関連を無視しました',

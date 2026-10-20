@@ -34,6 +34,9 @@ export const jaRoadmapReview = {
 		TITLE_MORE: '{title} ほか {n} 件',
 		NOUN_STAGE: '{n} 個のステージ|{n} 個のステージ|{n} 個のステージ|{n} 個のステージ',
 		NOUN_TOPIC: '{n} 個のトピック|{n} 個のトピック|{n} 個のトピック|{n} 個のトピック',
+		/** Скрытые подписи к `<del>` и `<ins>` для программ чтения */
+		VALUE_WAS: '変更前',
+		VALUE_NOW: '変更後',
 		FIELD_TITLE: 'タイトル',
 		FIELD_DESCRIPTION: '説明',
 		FIELD_HOURS: '時間',

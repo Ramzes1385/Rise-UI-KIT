@@ -128,6 +128,13 @@
 		list-style: none;
 		font-size: sz(var(--rise-font-size-xs));
 
+		li {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: baseline;
+			gap: sz(2px 6px);
+		}
+
 		del {
 			color: var(--rise-error);
 		}
@@ -139,8 +146,14 @@
 	}
 
 	&__review-field {
-		margin-inline-end: sz(6px);
 		color: var(--rise-text-muted);
+	}
+
+	&__review-arrow {
+		[dir='rtl'] & {
+			display: inline-block;
+			transform: scaleX(-1);
+		}
 	}
 
 	&__review-composer {

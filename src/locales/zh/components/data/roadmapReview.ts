@@ -34,6 +34,9 @@ export const zhRoadmapReview = {
 		TITLE_MORE: '{title} 等另外 {n} 项',
 		NOUN_STAGE: '{n} 个阶段|{n} 个阶段|{n} 个阶段|{n} 个阶段',
 		NOUN_TOPIC: '{n} 个主题|{n} 个主题|{n} 个主题|{n} 个主题',
+		/** Скрытые подписи к `<del>` и `<ins>` для программ чтения */
+		VALUE_WAS: '原值',
+		VALUE_NOW: '新值',
 		FIELD_TITLE: '标题',
 		FIELD_DESCRIPTION: '描述',
 		FIELD_HOURS: '学时',

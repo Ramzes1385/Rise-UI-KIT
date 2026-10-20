@@ -22,6 +22,8 @@ export interface RoadmapCommand {
 	/** Склейка подряд идущих шагов (набор названия) */
 	mergeKey?: string
 	build: (data: RoadmapData) => RoadmapChange[] | RoadmapRejection
+	/** Зовётся при отмене и повторе шага вместе с данными */
+	onStep?: RoadmapStepEffect
 }
 
 /** Результат построения: изменения или отказ */
@@ -41,6 +43,9 @@ export interface RoadmapEditContext {
 	hooks: RoadmapHookBoard
 }
 
+/** Побочное действие шага истории: зовётся при отмене и повторе шага (статус принятого предложения) */
+export type RoadmapStepEffect = (direction: 'undo' | 'redo') => void
+
 /** Выполнить команду правки */
 export type RoadmapRunner = (command: RoadmapCommand) => Promise<boolean>
 
@@ -53,6 +58,8 @@ export interface RoadmapEditState {
 	liveText: ShallowRef<string>
 	draft: ShallowRef<RoadmapData | null>
 	history: CommandHistory<RoadmapChange>
+	/** Побочные действия шагов: ключ — массив изменений шага, который история отдаёт в `apply` */
+	effects?: WeakMap<readonly RoadmapChange[], () => void>
 }
 
 /** Загрузчик «Правки»: код правки приходит отдельным чанком при первом обращении */
@@ -81,7 +88,7 @@ export interface RoadmapEditController extends RoadmapEditExpose, RoadmapEditSta
 	/** Выполнить команду (с хуками и историей) */
 	run: (command: RoadmapCommand) => Promise<boolean>
 	/** Применить набор изменений одним шагом истории с подписью (принятое предложение «Правок») */
-	applyChanges: (changes: RoadmapChange[], label: string) => Promise<boolean>
+	applyChanges: (changes: RoadmapChange[], label: string, onStep?: RoadmapStepEffect) => Promise<boolean>
 	templates: ComputedRef<RoadmapTemplate[]>
 	/** Хуки: подписки приложения и их итоги — вкладка «Хуки» */
 	hooks: RoadmapHookBoard
@@ -101,6 +108,9 @@ export interface RoadmapModeState {
 export interface RoadmapEditLoader {
 	controller: ShallowRef<RoadmapEditController | null>
 	load: () => Promise<RoadmapEditController>
+	/** Чанк не загрузился: показать ошибку с повтором */
+	error: ShallowRef<boolean>
+	retry: () => void
 	methods: Omit<
 		BaseRoadmapExpose,
 		| 'on'
@@ -228,5 +238,16 @@ export type RoadmapEditorState = ReturnType<typeof import('../../model/edit/edit
 export interface RoadmapReviewLoader {
 	state: ShallowRef<RoadmapReviewState | null>
 	load: () => Promise<RoadmapReviewState>
+	error: ShallowRef<boolean>
+	retry: () => void
 	propose: BaseRoadmapExpose['propose']
+}
+
+/** Ленивая загрузка чанка с повтором: сбой сбрасывает ожидание, поднимает `error` и пишет предупреждение */
+export interface RoadmapLazy<T> {
+	load: () => Promise<T>
+	/** Последняя загрузка не удалась */
+	error: ShallowRef<boolean>
+	/** Повторить загрузку; сбой снова попадает в `error` */
+	retry: () => void
 }
