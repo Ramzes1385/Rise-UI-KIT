@@ -162,3 +162,50 @@ describe('createModeLoader: preload и prefetch', () => {
 		await expect(loader.load()).resolves.toEqual({ doubled: 14 })
 	})
 })
+
+describe('createModeLoader: error и retry', () => {
+	it('error ложно до сбоя, истинно после сбоя и сбрасывается успешной загрузкой', async () => {
+		const { module, options } = setup(false)
+		module.mockRejectedValueOnce(new Error('сеть'))
+		const loader = createModeLoader(options)
+		expect(loader.error.value).toBe(false)
+		await expect(loader.load()).rejects.toThrow('сеть')
+		expect(loader.error.value).toBe(true)
+		await loader.load()
+		expect(loader.error.value).toBe(false)
+		expect(loader.isLoaded.value).toBe(true)
+	})
+
+	it('retry сбрасывает error и повторяет запрос, когда режим запрошен', async () => {
+		const { module, options } = setup(true)
+		module.mockRejectedValueOnce(new Error('сеть'))
+		const loader = createModeLoader(options)
+		await vi.waitFor(() => expect(loader.error.value).toBe(true))
+		loader.retry()
+		expect(loader.error.value).toBe(false)
+		await vi.waitFor(() => expect(loader.isLoaded.value).toBe(true))
+		expect(module).toHaveBeenCalledTimes(2)
+	})
+
+	it('retry при незапрошенном режиме только сбрасывает error и ничего не грузит', async () => {
+		const { module, options } = setup(false)
+		module.mockRejectedValueOnce(new Error('сеть'))
+		const loader = createModeLoader(options)
+		await expect(loader.load()).rejects.toThrow('сеть')
+		loader.retry()
+		await new Promise(resolve => setTimeout(resolve, 0))
+		expect(loader.error.value).toBe(false)
+		expect(module).toHaveBeenCalledTimes(1)
+		expect(loader.isLoaded.value).toBe(false)
+	})
+
+	it('повторный сбой снова поднимает error', async () => {
+		const { module, options } = setup(true)
+		module.mockRejectedValue(new Error('сеть'))
+		const loader = createModeLoader(options)
+		await vi.waitFor(() => expect(loader.error.value).toBe(true))
+		loader.retry()
+		await vi.waitFor(() => expect(module).toHaveBeenCalledTimes(2))
+		await vi.waitFor(() => expect(loader.error.value).toBe(true))
+	})
+})

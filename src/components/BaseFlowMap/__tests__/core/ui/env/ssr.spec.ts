@@ -32,4 +32,16 @@ describe('BaseFlowMap SSR', () => {
 	it('сервер не показывает компактный вид: размер области неизвестен', async () => {
 		expect(await html()).not.toContain('base-flow-map--compact')
 	})
+
+	it('панель подробностей на сервере не трогает историю браузера', async () => {
+		const push = vi.spyOn(window.history, 'pushState')
+		vi.stubGlobal('window', undefined)
+		try {
+			expect(await html({ panels: ['details'], selection: ['a'] })).toContain('role="region"')
+		} finally {
+			vi.unstubAllGlobals()
+		}
+		expect(push).not.toHaveBeenCalled()
+		push.mockRestore()
+	})
 })
