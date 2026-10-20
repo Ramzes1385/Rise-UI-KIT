@@ -153,6 +153,8 @@ const SCENARIOS = [
  * (w16-lazy-locale; до него — в скобках): кнопка 27,8 (27,8); BaseSelect 53,7 (92,4); BaseDatePicker 68,1 (105,8); кнопка +
  * `createUiKitConfig` без языка 34,6 (77,9), с `registerLocale(en)` и `locale: 'en'` 54,2 / 54,4 из корня (77,9); плагин 454,0 (455,5).
  * Запас ≈10 %; поднимать осознанно, строкой в DECISIONS.
+ * 20.10 (subpaths-guards): `subpath-roadmap-edit` 90,5 КБ → предел 95 (замер плюс ≈5 %); `plugin` 500,3 → предел 525: полный плагин несёт все
+ * компоненты и вырос с фазой 2 карты и роадмапа (до этого предел 500 был красным уже без правки группы).
  */
 const JS_MAX = {
 	'subpath-button': 31,
@@ -161,7 +163,8 @@ const JS_MAX = {
 	'config-subpath-ru': 38,
 	'config-subpath': 60,
 	'config-root': 60,
-	plugin: 500,
+	'subpath-roadmap-edit': 95,
+	plugin: 525,
 }
 
 /** Сценарии, в которых `JS_MAX` считается без словаря `en`: его вес — отдельно, `EN_MAX` (решение 20.10 02:23) */
@@ -169,9 +172,10 @@ const WITHOUT_EN = ['config-subpath', 'config-root']
 
 /**
  * Предел веса словаря `en` (gzip, КБ) — разница `bare-app-en` и `bare-app`. `en` — полный пакет строк всех компонентов и растёт вместе
- * с китом, поэтому у него свой предел: замер плюс запас на рост кита (≈10 КБ). Поднимать осознанно, строкой в DECISIONS.
+ * с китом, поэтому у него свой предел: замер плюс ≈10 % (20.10: замер 31,5 КБ → 35; при пределе 45 рост на 13 КБ прошёл бы незамеченным).
+ * Поднимать осознанно, строкой в DECISIONS.
  */
-const EN_MAX = 45
+const EN_MAX = 35
 
 /** Строки словарей: `text.EMPTY` русского и английского — по ним видно, какие словари и разделы попали в сборку */
 const RU_TEXT = 'Нет данных'
@@ -252,7 +256,7 @@ function checkContent(results, problems) {
 	expect(problems, !/base-table/.test(plugin.js.text), 'plugin: BaseTable попал в стартовый JS приложения с createUiKitPlugin')
 	expect(problems, /base-table/.test(plugin.allJs), 'plugin: нет чанка BaseTable для import()')
 	const button = results['subpath-button']
-	for (const name of ['config-subpath', 'config-subpath-ru', 'config-root']) {
+	for (const name of ['config-subpath', 'config-subpath-ru', 'config-root', 'bare-app-en']) {
 		const config = results[name]
 		expect(problems, !/base-table|base-editor/.test(config.js.text), `${name}: в JS есть код BaseTable или BaseEditor`)
 		expect(
