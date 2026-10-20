@@ -44,7 +44,7 @@ function selectionOf(view: RoadmapStageView): Model3DSelection {
 }
 
 function stageItem(view: RoadmapStageView, island: IslandModel): Roadmap3DStageItem {
-	const place = island.layout.stages[view.index]
+	const place = island.layout.stages[view.index]!
 	return {
 		id: view.stage.id,
 		index: view.index,
@@ -56,7 +56,7 @@ function stageItem(view: RoadmapStageView, island: IslandModel): Roadmap3DStageI
 		hours: view.hours,
 		tint: stageTint(view.stage, view.index),
 		selection: selectionOf(view),
-		position: { x: place?.x ?? 0, z: -(place?.z ?? 0) },
+		position: { x: place.x, z: -place.z },
 		topics: view.topics.map(item => ({
 			id: item.topic.id,
 			title: item.topic.title,
@@ -71,7 +71,7 @@ function progressOf(views: readonly RoadmapStageView[], positions: number[], cur
 	if (views.length === 0) return 0
 	if (currentIndex < 0) return views.every(view => view.status === 'done') ? 1 : 0
 	const current = views[currentIndex]
-	return roadProgress(positions, currentIndex, current.total > 0 ? current.done / current.total : 0)
+	return roadProgress(positions, currentIndex, current.done / current.total)
 }
 
 export function buildRoadmap3DSnapshot(input: {

@@ -50,7 +50,7 @@ function useTour(emit: BaseRoadmap3DEmits, props: Roadmap3DProps, state: ReturnT
 		getRequested: () => props.isTourPlaying,
 		getCount: () => snapshot.value.stages.length,
 		getFocusedIndex: () => focus.indexOf(focus.focused.value),
-		focusAt: index => focus.focusStage(snapshot.value.stages[index]?.id ?? null),
+		focusAt: index => focus.focusStage(snapshot.value.stages[index]!.id),
 		onChange: isPlaying => emit('update:isTourPlaying', isPlaying),
 	})
 }

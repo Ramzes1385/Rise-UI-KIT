@@ -23,7 +23,7 @@ export function useRoadmap3DEdit(options: Roadmap3DEditOptions) {
 		if (isMoved)
 			options.announce(
 				formatMessage(UI_ROADMAP_3D.LIVE_MOVED, {
-					title: stageOf(id)?.title ?? '',
+					title: stageOf(id)!.title,
 					n: target + 1,
 					of: snapshot.value.stages.length,
 				}),

@@ -47,8 +47,7 @@ function useHooks(options: Roadmap3DSceneOptions, content: Readonly<{ value: Roa
 			offFrame = null
 		},
 		start: () => {
-			const current = context()
-			if (!current) return
+			const current = context()!
 			cleanup = props.onSceneReady?.(current)
 			if (props.onBeforeRender) offFrame = viewport.onBeforeRender(frame => props.onBeforeRender?.(current, frame))
 		},

@@ -1,5 +1,5 @@
 import type { VNode } from 'vue'
-import { expect, vi } from 'vitest'
+import { afterEach, expect, vi } from 'vitest'
 import BaseRoadmap3D from '../../ui/BaseRoadmap3D.vue'
 import { render, waitFor } from '@testing-library/vue'
 import { defineComponent, h, nextTick, ref } from 'vue'
@@ -125,6 +125,10 @@ async function mountRoadmap(flush: () => void, setup: { props: Record<string, un
 export function useRoadmap3DEnvironment() {
 	const env = useMapEnvironment()
 	let now = 0
+
+	afterEach(async () => {
+		await vi.dynamicImportSettled()
+	})
 
 	function flush(frames = 1): void {
 		for (let index = 0; index < frames; index++) {

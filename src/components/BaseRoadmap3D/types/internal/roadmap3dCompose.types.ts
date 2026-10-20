@@ -18,7 +18,6 @@ type Animate = (tick: Scene3DTick) => () => void
 
 /** Камера сцены: пресеты, поворот, масштаб и наезд на точку */
 export interface Roadmap3DCameraApi {
-	azimuth: () => number
 	isMaxZoom: Readonly<Ref<boolean>>
 	isMinZoom: Readonly<Ref<boolean>>
 	home: () => void

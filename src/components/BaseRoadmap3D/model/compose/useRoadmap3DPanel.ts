@@ -17,7 +17,7 @@ function stageInfo(view: RoadmapStageView, item: Roadmap3DStageItem, context: { 
 		hours: item.hours > 0 ? formatHours(item.hours) : '',
 		hasPrev: item.index > 0,
 		hasNext: item.index < context.total - 1,
-		unlock: view.status === 'locked' ? (firstUnmetTitle(view.stage.requires, context.views) ?? '') : '',
+		unlock: view.status === 'locked' ? firstUnmetTitle(view.stage.requires, context.views)! : '',
 	}
 }
 
@@ -42,8 +42,8 @@ export function useRoadmap3DPanel(options: Roadmap3DPanelOptions) {
 		return id === null ? undefined : flattenTopics(model.stageViews.value).find(entry => entry.view.topic.id === id)
 	})
 	const stage = computed(() => {
-		if (!view.value || !item.value) return null
-		return stageInfo(view.value, item.value, { total: snapshot.value.stages.length, views: model.stageViews.value })
+		if (!view.value) return null
+		return stageInfo(view.value, item.value!, { total: snapshot.value.stages.length, views: model.stageViews.value })
 	})
 	const topic = computed(() => {
 		const entry = selected.value

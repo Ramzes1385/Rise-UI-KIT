@@ -113,7 +113,6 @@ export function useRoadmap3DCamera(options: Roadmap3DCameraOptions): Roadmap3DCa
 
 	return {
 		...orbit,
-		azimuth: () => state.next()[3],
 		turn: orbit.rotate,
 		home,
 		setPreset,

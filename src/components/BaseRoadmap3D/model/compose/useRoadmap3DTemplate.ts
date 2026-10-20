@@ -29,7 +29,7 @@ function summaryText(value: RoadmapModel['summary']['value'], title: string | nu
 		doneText: summaryDoneText(value.done, value.total),
 		percentText: formatMessage(UI_ROADMAP.SUMMARY_PERCENT, { percent: formatNumber(value.percent) }),
 		leftText: value.hoursLeft > 0 ? formatMessage(UI_ROADMAP.SUMMARY_HOURS, { hours: formatNumber(Math.round(value.hoursLeft)) }) : '',
-		continueText: value.continueTopicId ? formatMessage(UI_ROADMAP.CONTINUE, { topic: title ?? '' }) : '',
+		continueText: value.continueTopicId ? formatMessage(UI_ROADMAP.CONTINUE, { topic: title! }) : '',
 	}
 }
 

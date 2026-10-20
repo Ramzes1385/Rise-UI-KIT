@@ -52,7 +52,7 @@ export function useRoadmap3DStage(options: Roadmap3DStageOptions) {
 	const { props, snapshot } = options
 	const built = shallowRef<Roadmap3DContent | null>(null)
 	const { viewport, camera } = useViewportCamera(options)
-	const size = () => ({ width: options.hostRef.value?.clientWidth ?? 0, height: options.hostRef.value?.clientHeight ?? 0 })
+	const size = () => ({ width: options.hostRef.value!.clientWidth, height: options.hostRef.value!.clientHeight })
 	const animate = reducedAnimate(viewport, options.isReducedMotion)
 	const labels = useSceneLabels(options.labelsRef)
 	const scene = useRoadmap3DScene({
