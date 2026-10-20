@@ -1,11 +1,11 @@
 /** Точечная установка (build/config/subpaths.ts): exports пакета, порядок CSS во входе подпути, метка токенов прохода CSS подпутей. */
 
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import type { Rollup } from 'vite'
 import { componentOfModule, readPublicComponents, subpathExports, withSubpathExports } from '../config/subpaths'
 import { createSubpathCssGroups, createSubpathScssOptions } from '../plugins/subpathCss'
-import { collectStyleComponents, createSubpathEntries } from '../plugins/subpaths'
+import { collectStyleComponents, createSubpathEntries, lazyChunkStyleComponents } from '../plugins/subpaths'
 
 const ROOT = resolve(import.meta.dirname, '../..')
 const pkg = JSON.parse(readFileSync(resolve(ROOT, 'package.json'), 'utf8')) as { exports: Record<string, unknown> }
@@ -81,8 +81,16 @@ describe('componentOfModule', () => {
 })
 
 function moduleGraph(graph: Record<string, string[]>, dynamic: Record<string, string[]> = {}): (id: string) => Rollup.ModuleInfo | null {
+	const importers: Record<string, string[]> = {}
+	for (const [from, targets] of Object.entries(dynamic)) for (const target of targets) (importers[target] ??= []).push(from)
 	return id =>
-		graph[id] ? ({ importedIds: graph[id], dynamicallyImportedIds: dynamic[id] ?? [] } as unknown as Rollup.ModuleInfo) : null
+		graph[id]
+			? ({
+					importedIds: graph[id],
+					dynamicallyImportedIds: dynamic[id] ?? [],
+					dynamicImporters: importers[id] ?? [],
+				} as unknown as Rollup.ModuleInfo)
+			: null
 }
 
 describe('collectStyleComponents', () => {
@@ -117,7 +125,7 @@ describe('collectStyleComponents', () => {
 	})
 })
 
-describe('collectStyleComponents: модули по import()', () => {
+describe('стили ленивых частей: у чанка, не у входа', () => {
 	const lazyRoot = '/r/src/components/BaseRoadmap/ui/RoadmapEdit.vue'
 	const lazyStyle = '/r/src/components/BaseRoadmap/styles/RoadmapEdit.style.scss'
 	const tabs = '/r/src/components/BaseTabs/ui/BaseTabs.vue'
@@ -126,40 +134,64 @@ describe('collectStyleComponents: модули по import()', () => {
 	const buttonStyle = '/r/src/components/BaseButton/styles/BaseButton.style.scss'
 	const view = '/r/src/components/BaseRoadmap/ui/BaseRoadmap.vue'
 	const viewStyle = '/r/src/components/BaseRoadmap/styles/BaseRoadmap.style.scss'
+	const entry = '\0virtual:rise-subpath/BaseRoadmap'
+	const graph = {
+		[entry]: [view],
+		[view]: [viewStyle, button],
+		[viewStyle]: [],
+		[button]: [buttonStyle],
+		[buttonStyle]: [],
+		[lazyRoot]: [lazyStyle, tabs, button],
+		[lazyStyle]: [],
+		[tabs]: [tabsStyle],
+		[tabsStyle]: [],
+	}
+	const publicComponents = new Set(['BaseRoadmap', 'BaseTabs', 'BaseButton'])
 
-	it('стили ленивой части идут после статических; компонент, уже подключённый статически, не дублируется', () => {
-		const getModuleInfo = moduleGraph(
-			{
-				entry: [view],
-				[view]: [viewStyle, button],
-				[viewStyle]: [],
-				[button]: [buttonStyle],
-				[buttonStyle]: [],
-				[lazyRoot]: [lazyStyle, tabs, button],
-				[lazyStyle]: [],
-				[tabs]: [tabsStyle],
-				[tabsStyle]: [],
-			},
-			{ [view]: [lazyRoot] },
-		)
-		expect(collectStyleComponents(getModuleInfo, 'entry')).toEqual(['BaseRoadmap', 'BaseButton', 'BaseTabs'])
+	it('вход не обходит модули по import(): CSS ленивой части ему не нужен', () => {
+		const getModuleInfo = moduleGraph(graph, { [view]: [lazyRoot] })
+		expect(collectStyleComponents(getModuleInfo, entry)).toEqual(['BaseRoadmap', 'BaseButton'])
 	})
 
-	it('import() внутри ленивого модуля тоже обходится, цикл через import() не зацикливает обход', () => {
-		const getModuleInfo = moduleGraph(
-			{ entry: [view], [view]: [], [lazyRoot]: [], [tabs]: [tabsStyle], [tabsStyle]: [] },
-			{ [view]: [lazyRoot], [lazyRoot]: [tabs, view], [tabs]: [lazyRoot] },
-		)
-		expect(collectStyleComponents(getModuleInfo, 'entry')).toEqual(['BaseTabs'])
+	it('ленивый чанк импортирует CSS того, чего нет у входа вызывающего компонента', () => {
+		const getModuleInfo = moduleGraph(graph, { [view]: [lazyRoot] })
+		expect(lazyChunkStyleComponents(getModuleInfo, lazyRoot, publicComponents)).toEqual(['BaseTabs'])
+	})
+
+	it('вызов не из папки публичного компонента (реестр плагина) — без CSS в чанке', () => {
+		const getModuleInfo = moduleGraph(graph, { '/r/src/plugin/registry.ts': [lazyRoot] })
+		expect(lazyChunkStyleComponents(getModuleInfo, lazyRoot, publicComponents)).toEqual([])
+	})
+
+	it('цикл через import() не зацикливает обход', () => {
+		const getModuleInfo = moduleGraph({ ...graph, [tabs]: [tabsStyle, lazyRoot] }, { [view]: [lazyRoot], [lazyRoot]: [view] })
+		expect(lazyChunkStyleComponents(getModuleInfo, lazyRoot, publicComponents)).toContain('BaseTabs')
 	})
 })
 
-describe.skipIf(!existsSync(resolve(ROOT, 'dist/components/BaseRoadmap/index.js')))('dist: CSS ленивых частей у входа подпути', () => {
-	it('вход BaseRoadmap подключает стили компонентов, которые берёт правка по import()', () => {
-		const entry = readFileSync(resolve(ROOT, 'dist/components/BaseRoadmap/index.js'), 'utf8')
-		for (const component of ['BaseTabs', 'BaseTextarea', 'BaseSelect', 'BaseInput', 'BaseInputNumber', 'BaseConfirm']) {
-			expect(entry, component).toContain(`import"../${component}/style.css"`)
+const DIST = resolve(ROOT, 'dist')
+
+describe.skipIf(!existsSync(resolve(DIST, 'components/BaseRoadmap/index.js')))('dist: CSS ленивых частей', () => {
+	const chunkOf = (pattern: RegExp): string => {
+		const name = readdirSync(resolve(DIST, 'chunks')).find(file => pattern.test(file))
+		return name ? readFileSync(resolve(DIST, 'chunks', name), 'utf8') : ''
+	}
+
+	it('вход BaseRoadmap не подключает стили компонентов правки: они у ленивого чанка', () => {
+		const entry = readFileSync(resolve(DIST, 'components/BaseRoadmap/index.js'), 'utf8')
+		const chunk = chunkOf(/^RoadmapEditor-.*\.js$/)
+		for (const component of ['BaseTabs', 'BaseTextarea']) {
+			expect(entry, component).not.toContain(`/${component}/style.css`)
+			expect(chunk, component).toContain(`/${component}/style.css"`)
 		}
+	})
+
+	it('вход BaseFlowMap не подключает стили инспектора и палитры: они у ленивых чанков', () => {
+		const entry = readFileSync(resolve(DIST, 'components/BaseFlowMap/index.js'), 'utf8')
+		const lazy = ['FlowEditInspector', 'FlowEditPalette'].map(name => chunkOf(new RegExp(`^${name}-.*\\.js$`))).join('\n')
+		const lazyCss = [...lazy.matchAll(/\/components\/(\w+)\/style\.css"/g)].map(match => match[1]!)
+		expect(lazyCss.length).toBeGreaterThan(0)
+		for (const component of lazyCss) expect(entry, component).not.toContain(`/${component}/style.css"`)
 	})
 })
 

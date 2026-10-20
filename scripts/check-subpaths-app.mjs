@@ -16,8 +16,9 @@
  *   ни словаря `en`; `config-subpath` и `config-root` подключают `en` (`registerLocale(en)`, `locale: 'en'`);
  * - `bare-app` и `bare-app-en` — приложение без кита и с `registerLocale(en)`: разница gzip — вес словаря `en` (предел `EN_MAX`);
  *   `config-subpath` и `config-root` сверяются с `JS_MAX` без него;
- * - `subpath-roadmap-edit` — `BaseRoadmap` с подпути в `mode: 'edit'` + `tokens.css`: правка и её внутренние компоненты грузятся по `import()`,
- *   их CSS (BaseTabs, BaseTextarea…) подключает вход подпути;
+ * - `subpath-roadmap-edit` / `subpath-flow-map-edit` — `BaseRoadmap` и `BaseFlowMap` с подпути в `mode: 'edit'` + `tokens.css`: правка (у карты — палитра
+ *   и инспектор) и её внутренние компоненты грузятся по `import()`, их CSS (BaseTabs, BaseTextarea…) подключают сами ленивые чанки: после показа правки
+ *   правила есть на странице и снимок верный; `subpath-roadmap-view` / `subpath-flow-map-view` — просмотр: этих стилей в стартовом CSS нет;
  * - `plugin` — `createUiKitPlugin` из корня: тяжёлые компоненты (BaseTable…) не в стартовом JS, а в чанке по `import()` (FOLLOW_UPS № 58);
  *   плагин подключает `en` сам;
  * - автоимпорт (без сети, на пакете из tarball): `RiseUiResolver` из `/resolver` отдаёт для каждого публичного компонента подпуть, который
@@ -100,6 +101,25 @@ const data = { version: 1, title: 'Путь', stages: [{ id: 's1', title: 'Ос�
 createApp({ render: () => h('main', { style: 'padding: 24px; width: 960px' }, [h(BaseRoadmap, { data, mode: 'edit', modes: ['view', 'edit'] })]) }).mount('#app')
 `
 
+/** BaseFlowMap в «Правке»: палитра и инспектор — чанки по `import()`, их CSS (BaseTabs, BaseInput…) подключают сами чанки */
+const FLOW_MAP_EDIT_APP = from => `import { createApp, h } from 'vue'
+import { BaseFlowMap } from '${from}'
+const data = {
+	version: 1,
+	title: 'Заказы',
+	nodes: [
+		{ id: 'web', kind: 'client', label: 'Сайт', position: { x: 0, y: 0 }, isPinned: true },
+		{ id: 'api', kind: 'gateway', label: 'API', position: { x: 300, y: 0 }, isPinned: true },
+	],
+	edges: [{ id: 'e1', source: 'web', target: 'api', label: 'HTTPS' }],
+}
+createApp({ render: () => h('main', { style: 'padding: 24px; width: 1500px; height: 640px' }, [h(BaseFlowMap, { data, mode: 'edit', modes: ['view', 'edit'] })]) }).mount('#app')
+`
+
+/** Просмотр BaseFlowMap и BaseRoadmap: ленивые части (правка, палитра, инспектор) не открываются, их CSS в стартовом CSS не нужен */
+const FLOW_MAP_VIEW_APP = from => FLOW_MAP_EDIT_APP(from).replace(", mode: 'edit', modes: ['view', 'edit']", '')
+const ROADMAP_VIEW_APP = from => ROADMAP_EDIT_APP(from).replace(", mode: 'edit', modes: ['view', 'edit']", '')
+
 /** Приложение без кита и то же приложение с `registerLocale(en)`: разница gzip — вес словаря `en` отдельно от остального JS */
 const BARE_APP = withEn => `import { createApp, h } from 'vue'
 ${withEn ? `import { en, registerLocale } from '${PACKAGE}'\nregisterLocale(en)\n` : ''}createApp({ render: () => h('main', { class: 'app-ready' }, 'ok') }).mount('#app')
@@ -141,8 +161,26 @@ const SCENARIOS = [
 		after: async page => {
 			await page.locator('[data-roadmap-topic] .base-roadmap__edit-pick').first().click()
 			await page.locator('.base-tabs').first().waitFor({ timeout: 5000 })
+			await waitStyleRules(page, ['.base-tabs', '.base-textarea'])
 		},
 	},
+	{ name: 'subpath-roadmap-view', css: 'tokens.css', code: ROADMAP_VIEW_APP(`${PACKAGE}/BaseRoadmap`), marker: 'base-roadmap' },
+	{
+		name: 'subpath-flow-map-edit',
+		css: 'tokens.css',
+		code: FLOW_MAP_EDIT_APP(`${PACKAGE}/BaseFlowMap`),
+		marker: 'base-flow-map',
+		viewport: { width: 1600, height: 800 },
+		// палитра и инспектор (выбранный узел) — чанки по import(): их стили приходят вместе с ними
+		after: async page => {
+			await page.locator('.base-flow-map__edit-palette').waitFor({ timeout: 5000 })
+			await page.locator('.base-flow-map__node').first().click()
+			await page.locator('section.base-flow-map__edit-inspector').waitFor({ timeout: 5000 })
+			await page.locator('.base-tabs').first().waitFor({ timeout: 5000 })
+			await waitStyleRules(page, ['.base-flow-map__edit-palette', '.base-flow-map__edit-inspector', '.base-tabs'])
+		},
+	},
+	{ name: 'subpath-flow-map-view', css: 'tokens.css', code: FLOW_MAP_VIEW_APP(`${PACKAGE}/BaseFlowMap`), marker: 'base-flow-map' },
 	{ name: 'bare-app', css: 'tokens.css', code: BARE_APP(false), marker: 'app-ready' },
 	{ name: 'bare-app-en', css: 'tokens.css', code: BARE_APP(true), marker: 'app-ready' },
 	{ name: 'plugin', css: 'styles.css', code: PLUGIN_APP, marker: 'base-button' },
@@ -211,6 +249,13 @@ function initialScripts(dir) {
 	return seen
 }
 
+/** Стартовый CSS: файлы из `<link rel="stylesheet">` страницы; CSS ленивых чанков приложение подтягивает при их загрузке */
+function initialCss(dir) {
+	const html = readFileSync(join(dir, 'index.html'), 'utf8')
+	const files = [...html.matchAll(/<link[^>]*rel="stylesheet"[^>]*href="\/assets\/([^"]+)"/g)].map(match => match[1])
+	return files.map(name => readFileSync(join(dir, 'assets', name), 'utf8')).join('\n')
+}
+
 function readOutput(dir, extension, only) {
 	const assets = join(dir, 'assets')
 	const files = readdirSync(assets).filter(name => name.endsWith(extension) && (!only || only.has(name)))
@@ -237,6 +282,7 @@ async function buildScenario(app, scenario) {
 		lazy: all.gzip - readOutput(out, '.js', initial).gzip,
 		allJs: all.text,
 		css: readOutput(out, '.css'),
+		cssInitial: initialCss(out),
 	}
 }
 
@@ -272,6 +318,7 @@ function checkContent(results, problems) {
 		expect(problems, roadmapEdit.css.text.includes(name), `subpath-roadmap-edit: в CSS нет ${name} (стили ленивой части правки)`)
 	}
 	expect(problems, /base-roadmap__inspector/.test(roadmapEdit.allJs), 'subpath-roadmap-edit: нет кода правки (чанк по import())')
+	checkLazyCss(results, problems)
 	expect(problems, !/base-table|base-editor/.test(button.js.text), 'subpath-button: в JS есть код BaseTable или BaseEditor')
 	expect(problems, button.css.text.includes('.base-button'), 'subpath-button: в CSS нет .base-button')
 	expect(problems, button.css.text.includes('--rise-color-primary-500'), 'subpath-button: в CSS нет токенов (tokens.css)')
@@ -282,6 +329,35 @@ function checkContent(results, problems) {
 	}
 	expect(problems, !/base-table|base-editor/.test(select.js.text), 'subpath-select: в JS есть код BaseTable или BaseEditor')
 	expect(problems, !select.css.text.includes('.base-table'), 'subpath-select: в CSS есть .base-table')
+}
+
+/** Стили компонентов, которые берёт только ленивая часть, приходят вместе с чанком: в стартовом CSS просмотра их нет, в CSS приложения с правкой — есть */
+function checkLazyCss(results, problems) {
+	const lazyOnly = {
+		'subpath-roadmap': ['.base-tabs', '.base-textarea'],
+		// стили самой карты (палитра, инспектор) лежат в её style.css целиком (≈3 КБ gzip, FOLLOW_UPS); ленивым чанкам принадлежат CSS чужих компонентов
+		'subpath-flow-map': ['.base-tabs', '.base-switch'],
+	}
+	for (const [prefix, selectors] of Object.entries(lazyOnly)) {
+		const view = results[`${prefix}-view`]
+		const edit = results[`${prefix}-edit`]
+		for (const selector of selectors) {
+			expect(
+				problems,
+				!view.cssInitial.includes(selector),
+				`${view.name}: в стартовом CSS просмотра есть ${selector} (стили ленивой части)`,
+			)
+			expect(problems, edit.css.text.includes(selector), `${edit.name}: в CSS приложения нет ${selector} (стили ленивой части)`)
+			expect(
+				problems,
+				!edit.cssInitial.includes(selector),
+				`${edit.name}: ${selector} в стартовом CSS — стили ленивой части должны приходить с чанком`,
+			)
+		}
+		console.log(
+			`CSS ${prefix}: просмотр ${kb(view.css.gzip)}, с правкой ${kb(edit.css.gzip)} (стартовый ${kb(gzipSync(view.cssInitial).length)} и ${kb(gzipSync(edit.cssInitial).length)}).`,
+		)
+	}
 }
 
 /** Вес по храповику `JS_MAX` и словари: русские разделы — только прочитанные, английский — только после `registerLocale(en)` */
@@ -308,10 +384,22 @@ function checkDictionaries(results, problems) {
 	}
 }
 
+/** Ждёт, пока в таблицах стилей страницы появятся правила с этими селекторами: CSS ленивого чанка подтягивается вместе с чанком */
+async function waitStyleRules(page, selectors) {
+	await page.waitForFunction(
+		list => {
+			const text = [...document.styleSheets].map(sheet => [...sheet.cssRules].map(rule => rule.cssText).join('\n')).join('\n')
+			return list.every(selector => text.includes(selector))
+		},
+		selectors,
+		{ timeout: 5000 },
+	)
+}
+
 /** Открывает приложение; у выпадающего списка — раскрывает его. Снимок — в `file`, без снимка — `null`, если компонент не отрисован */
 async function screenshot(browser, result, file) {
 	const server = await preview({ root: result.dir, configFile: false, logLevel: 'error', build: { outDir: '.' }, preview: { port: 0 } })
-	const page = await browser.newPage({ viewport: { width: 400, height: 400 }, reducedMotion: 'reduce' })
+	const page = await browser.newPage({ viewport: result.viewport ?? { width: 400, height: 400 }, reducedMotion: 'reduce' })
 	page.on('pageerror', error => result.errors.push(error.message))
 	page.on('console', message => message.type() === 'error' && result.errors.push(message.text()))
 	try {

@@ -8,7 +8,8 @@
  * В начало входа сборка дописывает `import '../<Папка>/style.css'` по одному на каждую папку компонента, чьи стили
  * статически подключает подпуть (своя и внутренние компоненты), — в порядке выполнения модулей ESM, как правила лежат
  * в `styles.css`. CSS импортирует только вход подпути, общие чанки — нет: `./components` и корень по-прежнему без CSS.
- * Стили модулей по `import()` (ленивые части компонента) подключаются тем же входом, после статических.
+ * Стили модулей по `import()` (ленивые части компонента) вход не подключает: их `style.css` импортирует сам ленивый чанк
+ * (то, чего нет у входа компонента, который вызывает `import()`), и приложение подтягивает CSS при загрузке чанка.
  * Сами `style.css` собирает отдельный проход (vite.subpath-css.config.ts): список папок он берёт из того же графа модулей.
  */
 
@@ -30,27 +31,42 @@ function isStyleModule(id: string): boolean {
 }
 
 /**
- * Папки компонентов, чьи стили подключает модуль `entryId`, в порядке выполнения ESM: сперва статический граф (зависимости раньше
- * импортёра, по порядку импортов), затем модули по `import()` в порядке обнаружения — их стили вход тоже подключает, иначе ленивая
- * часть (правка роадмапа) берёт внутренние компоненты кита без CSS: чанки CSS не подключают, подключает только вход подпути.
+ * Папки компонентов, чьи стили подключает модуль `entryId`, в порядке выполнения ESM: статический граф (зависимости раньше
+ * импортёра, по порядку импортов). Модули по `import()` в обход не входят: их стили подключает сам ленивый чанк
+ * (`lazyChunkStyleComponents`), поэтому приложение, открывшее только первый вид, не грузит CSS ленивой части.
  */
 export function collectStyleComponents(getModuleInfo: (id: string) => Rollup.ModuleInfo | null, entryId: string): string[] {
 	const order: string[] = []
 	const seen = new Set<string>()
-	const lazy: string[] = []
 	const visit = (id: string): void => {
 		if (seen.has(id)) return
 		seen.add(id)
 		const info = getModuleInfo(id)
 		if (!info) return
 		info.importedIds.forEach(visit)
-		lazy.push(...info.dynamicallyImportedIds)
 		const component = isStyleModule(id) ? componentOfModule(id) : null
 		if (component && !order.includes(component)) order.push(component)
 	}
 	visit(entryId)
-	for (let index = 0; index < lazy.length; index++) visit(lazy[index]!)
 	return order
+}
+
+/**
+ * Папки компонентов, чей CSS нужен ленивому чанку (цель `import()` — модуль `lazyId`) и которого нет у входа подпути компонента,
+ * вызывающего `import()`: ленивый чанк импортирует их `style.css` сам, и приложение подтягивает CSS вместе с чанком. Если чанк
+ * вызывают из нескольких компонентов, исключается только то, что есть у входов всех. Вызов не из папки публичного компонента
+ * (реестр плагина) — пусто: у плагина и корня есть `styles.css`.
+ */
+export function lazyChunkStyleComponents(
+	getModuleInfo: (id: string) => Rollup.ModuleInfo | null,
+	lazyId: string,
+	publicComponents: ReadonlySet<string>,
+): string[] {
+	const importers = getModuleInfo(lazyId)?.dynamicImporters ?? []
+	const owners = importers.map(id => componentOfModule(id))
+	if (!owners.length || owners.some(owner => !owner || !publicComponents.has(owner))) return []
+	const own = owners.map(owner => new Set(collectStyleComponents(getModuleInfo, `${RESOLVED_PREFIX}${owner}`)))
+	return collectStyleComponents(getModuleInfo, lazyId).filter(component => !own.every(set => set.has(component)))
 }
 
 function cssImports(entryFile: string, components: string[]): string {
@@ -74,9 +90,15 @@ export function createSubpathsPlugin(root: string = process.cwd()): Plugin {
 			return `export * from ${JSON.stringify(target)}\n`
 		},
 		generateBundle(_, bundle) {
+			const getInfo = (id: string): Rollup.ModuleInfo | null => this.getModuleInfo(id)
+			const publicComponents = new Set(readPublicComponents(root))
 			for (const file of Object.values(bundle)) {
-				if (file.type !== 'chunk' || !file.facadeModuleId?.startsWith(RESOLVED_PREFIX)) continue
-				const components = collectStyleComponents(id => this.getModuleInfo(id), file.facadeModuleId)
+				if (file.type !== 'chunk' || !file.facadeModuleId) continue
+				const isSubpath = file.facadeModuleId.startsWith(RESOLVED_PREFIX)
+				if (!isSubpath && !file.isDynamicEntry) continue
+				const components = isSubpath
+					? collectStyleComponents(getInfo, file.facadeModuleId)
+					: lazyChunkStyleComponents(getInfo, file.facadeModuleId, publicComponents)
 				file.code = `${cssImports(file.fileName, components)}${file.code}`
 			}
 		},

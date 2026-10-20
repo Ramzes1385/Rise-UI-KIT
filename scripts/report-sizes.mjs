@@ -5,7 +5,7 @@
  * Способ — мини-приложение Vite на компонент (пакет — ссылкой на корень репозитория, `vue` — из его node_modules, вывод в памяти):
  * сборщик приложения сам отсекает неиспользуемое из общих чанков `dist` (разделы словаря, утилиты), чего анализ графа чанков не видит.
  * JS — стартовый: вход и всё, что он импортирует статически, минус приложение с одним Vue (`createApp`); чанки по `import()` — отдельно.
- * CSS — стили компонента и тех, что он использует внутри, без `tokens.css` (он подключается один раз, его вес — в шапке таблицы).
+ * CSS — стартовый: стили компонента и тех, что он использует внутри, без `tokens.css` (он подключается один раз, его вес — в шапке таблицы).
  * gzip — уровень 9, по каждому файлу; при сложении файлов сжатие не пересчитывается.
  *
  *   node scripts/report-sizes.mjs          — пишет таблицу в docs/reference/SIZES.md (`npm run report:sizes`);
@@ -78,10 +78,16 @@ async function measure(app, code) {
 	const chunks = output.output.filter(item => item.type === 'chunk')
 	const initial = initialChunks(chunks)
 	const sum = items => items.reduce((total, item) => total + gzip(item.code ?? item.source), 0)
+	const assets = new Map(output.output.filter(item => item.type === 'asset').map(item => [item.fileName, item]))
+	// CSS стартовых чанков — то, что приложение грузит блокирующе; CSS ленивых чанков приходит вместе с ними и считается в «по import()»
+	const initialCss = new Set(
+		chunks.filter(chunk => initial.has(chunk.fileName)).flatMap(chunk => [...(chunk.viteMetadata?.importedCss ?? [])]),
+	)
+	const cssItems = [...assets.values()].filter(item => item.fileName.endsWith('.css'))
 	return {
 		js: sum(chunks.filter(chunk => initial.has(chunk.fileName))),
-		lazy: sum(chunks.filter(chunk => !initial.has(chunk.fileName))),
-		css: sum(output.output.filter(item => item.type === 'asset' && item.fileName.endsWith('.css'))),
+		lazy: sum(chunks.filter(chunk => !initial.has(chunk.fileName))) + sum(cssItems.filter(item => !initialCss.has(item.fileName))),
+		css: sum(cssItems.filter(item => initialCss.has(item.fileName))),
 	}
 }
 
@@ -97,7 +103,7 @@ function renderTable(rows, { vue, tokens }) {
 
 - **JS** — стартовый JS приложения минус приложение с одним Vue (${kb(vue)} КБ): код компонента, всего, что он использует внутри (BaseSelect — BaseDropdown, BaseInput, BaseIcon…), composables и русских строк тех разделов словаря, которые он читает;
 - **CSS** — стили компонента и внутренних компонентов, без \`tokens.css\` (токены и тема, ${kb(tokens)} КБ — подключаются один раз на приложение);
-- **по import()** — чанки, которые компонент подгружает по требованию (тяжёлые части, данные); в стартовый вес не входят.
+- **по import()** — чанки (JS и их CSS), которые компонент подгружает по требованию (тяжёлые части, данные); в стартовый вес не входят.
 
 Общий код (Vue-обвязка кита, composables, разделы словаря) у нескольких компонентов приложение получает один раз: вес двух компонентов вместе меньше суммы строк. Языки, кроме встроенного \`ru\`, не входят — словарь, подключённый \`registerLocale(en)\`, добавляет ≈20 КБ (README, «Языки»).
 
