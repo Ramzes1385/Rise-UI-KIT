@@ -14,7 +14,7 @@ import { useReducedMotion } from '@composables/app/useReducedMotion'
 import type { FlowEmit } from '../types/internal/core/flowModelCore.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
 import type { BaseFlowMapEmits, BaseFlowMapProps } from '../types/BaseFlowMap.types'
-import { loadEditUi, loadReviewUi, loadScenarioUi } from '../ui/lazy/flowLazyLoaders'
+import { loadEditKernel, loadEditUi, loadReviewUi, loadScenarioUi } from '../ui/lazy/flowLazyLoaders'
 
 export function useBaseFlowMap(props: BaseFlowMapProps, emit: BaseFlowMapEmits) {
 	const instance = getCurrentInstance()
@@ -36,7 +36,7 @@ export function useBaseFlowMap(props: BaseFlowMapProps, emit: BaseFlowMapEmits) 
 	const rendering = useFlowRendering(props, model, { frame, environment: { isReducedMotion, isVisible, announce } })
 	const modes = useFlowModes(props, {
 		...{ model, props, map: rendering.canvas.map, element: frame.element, announce },
-		...{ preload: loadEditUi, preloadReview: loadReviewUi },
+		...{ preload: loadEditUi, preloadLayer: loadEditKernel, preloadReview: loadReviewUi },
 	})
 	const { hasHeader, hasSearch, hasScenario, isEmpty } = rendering.chrome
 	const { hasToolbar, hasMinimap, hasLegend, hasDetails, editClasses } = useFlowPanels(props, {
@@ -54,6 +54,7 @@ export function useBaseFlowMap(props: BaseFlowMapProps, emit: BaseFlowMapEmits) 
 		editing: modes.edit.part,
 		review: modes.review.part,
 		isEditLoaded: modes.state.isEditLoaded,
+		isEditing: modes.state.isEditing,
 		isReviewLoaded: modes.state.isReviewLoaded,
 		isScenarioLoaded: modes.state.isScenarioLoaded,
 		announcement,

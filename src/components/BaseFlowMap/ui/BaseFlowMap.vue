@@ -23,9 +23,9 @@
 			<BaseResult status="error" :title="UI_FLOW_MAP.ERROR_TITLE" :description="error" is-live />
 		</div>
 		<div v-else class="base-flow-map__body">
-			<FlowEditPalette v-if="isEditLoaded" />
+			<FlowEditPalette v-if="isEditing" />
 			<div :class="['base-flow-map__stage', ...editClasses]">
-				<FlowEditToolbar v-if="isEditLoaded" />
+				<FlowEditToolbar v-if="isEditing" />
 				<FlowCanvas :particles="particles">
 					<template v-if="$slots.node" #node="slotProps"><slot name="node" v-bind="slotProps" /></template>
 					<template v-if="$slots['edge-label']" #edge-label="slotProps"><slot name="edge-label" v-bind="slotProps" /></template>
@@ -49,7 +49,7 @@
 				</FlowLegend>
 				<FlowScenarioPanel v-if="hasScenario && isCompact && isScenarioLoaded" />
 				<FlowReviewOverlay v-if="isReviewLoaded" />
-				<FlowEditStatus v-if="isEditLoaded" />
+				<FlowEditStatus v-if="isEditing" />
 				<FlowEditOverlay v-if="isEditLoaded" />
 			</div>
 			<aside v-if="!isCompact" class="base-flow-map__side">
@@ -62,7 +62,7 @@
 					<template v-if="$slots.details" #details="slotProps"><slot name="details" v-bind="slotProps" /></template>
 				</FlowDetails>
 				<FlowReviewPanel v-if="isReviewLoaded" />
-				<FlowEditInspector v-if="isEditLoaded">
+				<FlowEditInspector v-if="isEditing">
 					<template v-if="$slots['inspector-end']" #inspector-end="slotProps"
 						><slot name="inspector-end" v-bind="slotProps"
 					/></template>
@@ -73,7 +73,7 @@
 					<template v-if="$slots.details" #details="slotProps"><slot name="details" v-bind="slotProps" /></template>
 				</FlowDetails>
 				<FlowReviewPanel v-if="isReviewLoaded" />
-				<FlowEditInspector v-if="isEditLoaded">
+				<FlowEditInspector v-if="isEditing">
 					<template v-if="$slots['inspector-end']" #inspector-end="slotProps"
 						><slot name="inspector-end" v-bind="slotProps"
 					/></template>
@@ -179,6 +179,7 @@ const {
 	isEmpty,
 	editClasses,
 	isEditLoaded,
+	isEditing,
 	isReviewLoaded,
 	isScenarioLoaded,
 } = useBaseFlowMap(props, emit)

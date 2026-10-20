@@ -15,8 +15,10 @@ export interface FlowEditLoaderParts {
 	element: Readonly<Ref<HTMLElement | null>>
 	/** Пропсы карты */
 	props: Pick<BaseFlowMapProps, 'savedAt' | 'modes'>
-	/** Догрузить интерфейс «Правки» вместе с моделью: вид меняется целиком */
+	/** Догрузить палитру, панель, инспектор и статус: они нужны только в режиме `edit` */
 	preload?: () => Promise<unknown>
+	/** Догрузить слой холста вместе с моделью: нужен и в `edit`, и в `review` */
+	preloadLayer?: () => Promise<unknown>
 }
 
 /** Что нужно загрузчику «Правок» */

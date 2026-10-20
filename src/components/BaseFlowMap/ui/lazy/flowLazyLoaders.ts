@@ -13,6 +13,8 @@ export const loadSearch = () => import('../chrome/FlowSearch.vue')
 export const loadResult = () => import('@components/BaseResult').then(module => module.BaseResult)
 export const loadDetails = () => import('../panels/FlowDetails.vue')
 
+export const loadEditKernel = () => Promise.all([loadEditLayer(), loadEditOverlay()])
+
 export const loadEditUi = () =>
 	Promise.all([loadEditPalette, loadEditToolbar, loadEditStatus, loadEditOverlay, loadEditInspector, loadEditLayer].map(load => load()))
 
