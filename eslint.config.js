@@ -176,6 +176,38 @@ export default tseslint.config(
 		},
 	},
 
+	// Первый вид BaseFlowMap: правка, правки, сценарий, поиск, подробности и экспорт — только через import() и загрузчики
+	{
+		files: ['src/components/BaseFlowMap/{model,ui}/**/*.{ts,vue}'],
+		ignores: ['src/components/BaseFlowMap/model/{edit,review}/**', 'src/components/BaseFlowMap/ui/{edit,review,scenario}/**'],
+		rules: {
+			'no-restricted-imports': [
+				'error',
+				{
+					patterns: [
+						{
+							regex: '^three(/.*)?$',
+							message: 'three импортируется только из src/components/BaseImageMap3D и src/map3d.ts (вход /map3d)',
+						},
+						{
+							regex: '^(?!.*/types/).*/(edit|review)/(?!use[A-Za-z]+Loader$)',
+							message: 'Правка и «Правки» грузятся через import(): статически можно только useFlow…Loader',
+						},
+						{
+							regex: '^(?!.*/types/).*/scenario/[A-Za-z]+\\.vue$',
+							message: 'Интерфейс сценария грузится через import() из ui/lazy/flowLazyLoaders',
+						},
+						{
+							regex: '(^|/)(FlowSearch|FlowDetails)(\\.vue)?$',
+							message: 'Поиск и подробности грузятся через import() из ui/lazy/flowLazyLoaders',
+						},
+						{ regex: '(^|/)flowExportSvg$', message: 'Экспорт грузится через import() в flowViewApi' },
+					],
+				},
+			],
+		},
+	},
+
 	{
 		files: ['src/components/**/*.{ts,vue}'],
 		ignores: ['src/components/**/types/**/*.types.ts'],
