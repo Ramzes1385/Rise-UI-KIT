@@ -32,7 +32,15 @@ const AXE_SOURCE = readFileSync(AXE_PATH, 'utf-8')
 
 /** Правила уровня страницы: компонент рендерится изолированно, без <main>, заголовка h1 и lang (как в preview.ts). */
 const PAGE_LEVEL_RULES = ['html-has-lang', 'landmark-one-main', 'page-has-heading-one', 'region', 'bypass']
-const DONE_PHASES = ['played', 'completed', 'finished', 'errored', 'aborted']
+/**
+ * Конец play и конец рендера. Во время play Storybook перерисовывает историю (реактивные правки) и каждая перерисовка проходит
+ * `completing → completed → afterEach → finished`, поэтому первый `finished` приходит ещё посреди play. Настоящий конец play —
+ * фаза `played` (при исключении — `errored`, при отмене — `aborted`); после неё ждём `finished` и тишину в смене фаз.
+ */
+const PLAY_END_PHASES = ['played', 'errored', 'aborted']
+const FINAL_PHASES = ['finished', 'errored', 'aborted']
+/** Тишина (мс) без смены фаз рендера после конца play: перерисовка от последнего шага ещё может идти */
+const QUIET_MS = 300
 const FAILED_EVENTS = ['playFunctionThrewException', 'storyThrewException', 'storyErrored', 'unhandledErrorsWhilePlaying']
 const RENDER_TIMEOUT = 30_000
 const DEFAULT_WIDTH = 1100
@@ -133,9 +141,15 @@ function parseWidths(value) {
 /** Слушатель событий Storybook в iframe: ошибки play-функции приходят через канал аддонов. */
 const CHANNEL_LISTENER = `
 	window.__storyEvents = [];
+	window.__storyPlayEnded = false;
+	window.__storyPhaseAt = performance.now();
 	(function attach() {
 		const channel = window.__STORYBOOK_ADDONS_CHANNEL__;
 		if (!channel) return setTimeout(attach, 5);
+		channel.on('storyRenderPhaseChanged', ({ newPhase }) => {
+			window.__storyPhaseAt = performance.now();
+			if (${JSON.stringify(PLAY_END_PHASES)}.includes(newPhase)) window.__storyPlayEnded = true;
+		});
 		for (const name of ${JSON.stringify(FAILED_EVENTS)}) {
 			channel.on(name, (...args) => {
 				let details;
@@ -252,13 +266,14 @@ async function checkStory(page, options, story, theme, width) {
 		)
 		const phase = await page
 			.waitForFunction(
-				phases =>
-					phases.includes(window.__STORYBOOK_PREVIEW__?.currentRender?.phase) && window.__STORYBOOK_PREVIEW__.currentRender.phase,
-				DONE_PHASES,
-				{
-					timeout: RENDER_TIMEOUT,
-					polling: 50,
+				({ finalPhases, quietMs }) => {
+					const render = window.__STORYBOOK_PREVIEW__?.currentRender
+					// У истории с play ждём именно конец play: `finished` перерисовок во время play не считается
+					if (!render || (render.story?.playFunction && !window.__storyPlayEnded)) return false
+					return finalPhases.includes(render.phase) && performance.now() - window.__storyPhaseAt >= quietMs && render.phase
 				},
+				{ finalPhases: FINAL_PHASES, quietMs: QUIET_MS },
+				{ timeout: RENDER_TIMEOUT, polling: 50 },
 			)
 			.then(handle => handle.jsonValue())
 			.catch(() => 'timeout')
