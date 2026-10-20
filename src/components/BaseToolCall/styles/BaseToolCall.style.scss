@@ -1,6 +1,8 @@
 .base-tool-call {
 	@include custom-color-scope;
 	--tool-call-status: var(--rise-text-muted);
+	--tool-call-status-text: var(--rise-text-muted);
+	--tool-call-hover: var(--rise-bg-elevated);
 
 	display: flex;
 	flex-direction: column;
@@ -8,22 +10,26 @@
 	min-width: 0;
 	max-width: 100%;
 	overflow: hidden;
-	border: 1px solid ct(tool-call, border, var(--rise-border));
-	border-radius: sz(ct(tool-call, radius, var(--rise-radius-md)));
+	border: 1px solid ct(tool-call, border, transparent);
+	border-radius: sz(ct(tool-call, radius, var(--rise-radius-lg)));
 	@include text-size(sm);
 	@include custom-text(color, ct(tool-call, text, var(--rise-text)));
-	@include custom-bg(background-color, ct(tool-call, bg, var(--rise-bg)));
+	@include tonal-surface(muted);
+	@include custom-bg(background-color, ct(tool-call, bg, var(--rise-bg-muted)));
 
 	&--running {
 		--tool-call-status: var(--rise-primary);
+		--tool-call-status-text: var(--rise-primary-text);
 	}
 
 	&--success {
 		--tool-call-status: var(--rise-success);
+		--tool-call-status-text: var(--rise-success-text);
 	}
 
 	&--error {
 		--tool-call-status: var(--rise-error);
+		--tool-call-status-text: var(--rise-error-text);
 	}
 
 	&__trigger {
@@ -39,7 +45,7 @@
 		@include focus-ring(-2px);
 
 		@include hover {
-			background-color: ct(tool-call, trigger-bg-hover, var(--rise-bg-muted));
+			background-color: ct(tool-call, trigger-bg-hover, var(--tool-call-hover));
 		}
 	}
 
@@ -89,8 +95,8 @@
 
 	&__state {
 		flex: none;
-		color: var(--tool-call-status);
-		@include text-size(xs);
+		@include caps-label(10px);
+		color: var(--tool-call-status-text);
 	}
 
 	&--pending &__state,
@@ -128,7 +134,7 @@
 		gap: sz(ct(tool-call, content-gap, 10px));
 		overflow: hidden;
 		padding: space(10px ct(tool-call, padding-x, 12px) 12px);
-		border-top: 1px solid ct(tool-call, border, var(--rise-border));
+		border-top: 1px solid var(--rise-border);
 	}
 
 	&__section {
@@ -139,9 +145,8 @@
 	}
 
 	&__label {
+		@include caps-label(10px);
 		@include custom-text(color, var(--rise-text-muted));
-		@include text-size(xs);
-		font-weight: var(--rise-font-weight-medium);
 	}
 
 	&__code {
@@ -150,7 +155,7 @@
 		padding: sz(8px) sz(10px);
 		overflow: auto;
 		border-radius: sz(ct(tool-call, code-radius, var(--rise-radius-sm)));
-		background-color: ct(tool-call, code-bg, var(--rise-bg-muted));
+		background-color: ct(tool-call, code-bg, var(--rise-field-bg));
 		color: var(--rise-text-highlighted);
 		font-family: var(--rise-font-mono);
 		@include text-size(xs);
@@ -166,7 +171,6 @@
 		gap: sz(8px);
 		margin: 0;
 		padding: sz(8px) sz(10px);
-		border: 1px solid var(--rise-error-border);
 		border-radius: sz(var(--rise-radius-sm));
 		background-color: var(--rise-error-soft);
 		color: var(--rise-error-text);
@@ -175,23 +179,14 @@
 			flex: none;
 			width: sz(16px);
 			height: sz(16px);
-			color: var(--rise-error);
+			color: var(--rise-error-text);
 		}
 	}
 
 	&--soft {
-		border-color: transparent;
-		@include custom-bg(background-color, ct(tool-call, bg, var(--rise-bg-muted)));
-	}
-
-	&--soft &__trigger {
-		@include hover {
-			background-color: ct(tool-call, trigger-bg-hover, var(--rise-bg-elevated));
-		}
-	}
-
-	&--soft &__code {
-		background-color: ct(tool-call, code-bg, var(--rise-bg));
+		--tool-call-hover: var(--rise-bg-accented);
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, ct(tool-call, bg, var(--rise-bg-elevated)));
 	}
 
 	&--soft &__content,
@@ -207,12 +202,13 @@
 
 	&--outline {
 		border-color: ct(tool-call, border, var(--rise-border-accented));
+		@include tonal-surface(page);
 		@include custom-bg(background-color, transparent);
 	}
 
 	&--ghost {
-		border-color: transparent;
 		border-radius: 0;
+		@include tonal-surface(none);
 		@include custom-bg(background-color, transparent);
 	}
 

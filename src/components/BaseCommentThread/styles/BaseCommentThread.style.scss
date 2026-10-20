@@ -7,22 +7,22 @@
 	width: 100%;
 	min-width: 0;
 	padding: space(ct(comment-thread, padding, 16px));
-	border: 1px solid ct(comment-thread, border, var(--rise-border));
+	border: 1px solid ct(comment-thread, border, transparent);
 	border-radius: sz(ct(comment-thread, radius, var(--rise-radius-lg)));
 	box-shadow: ct(comment-thread, shadow, none);
-	@include custom-bg(background-color, ct(comment-thread, bg, var(--rise-bg)));
+	@include tonal-surface(muted);
+	@include custom-bg(background-color, ct(comment-thread, bg, var(--rise-bg-muted)));
 	@include custom-text(color, ct(comment-thread, text, var(--rise-text)));
 
 	&--ghost {
 		padding: 0;
-		border-color: transparent;
+		@include tonal-surface(none);
 		@include custom-bg(background-color, transparent);
 	}
 
 	&__count {
 		margin: 0;
-		color: var(--rise-text-highlighted);
-		font-weight: var(--rise-font-weight-semibold);
+		@include heading;
 		@include text-size(md);
 	}
 

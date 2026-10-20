@@ -1,7 +1,7 @@
 .base-emoji-picker {
 	@include custom-color-scope;
 	--emoji-cell: #{sz(36px)};
-	--emoji-font: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+	--emoji-font: sans-serif;
 
 	display: flex;
 	flex-direction: column;
@@ -9,11 +9,12 @@
 	width: calc(var(--emoji-columns, 8) * var(--emoji-cell) + #{space(16px)});
 	max-width: 100%;
 	overflow: hidden;
-	border: 1px solid ct(emoji-picker, border, var(--rise-border));
+	@include floating-surface(null);
+	border: 1px solid ct(emoji-picker, border, transparent);
 	border-radius: sz(ct(emoji-picker, radius, var(--rise-radius-lg)));
 	@include text-size(sm);
 	@include custom-text(color, ct(emoji-picker, text, var(--rise-text)));
-	@include custom-bg(background-color, ct(emoji-picker, bg, var(--rise-bg)));
+	@include custom-bg(background-color, ct(emoji-picker, bg, var(--rise-surface-floating)));
 
 	&__search.base-input {
 		width: auto;
@@ -49,7 +50,7 @@
 		@include focus-ring(-2px);
 
 		@include hover {
-			background-color: ct(emoji-picker, tab-bg-hover, var(--rise-bg-muted));
+			background-color: ct(emoji-picker, tab-bg-hover, var(--rise-surface-floating-hover));
 			opacity: 1;
 		}
 
@@ -74,10 +75,9 @@
 		z-index: 1;
 		margin: 0;
 		padding: sz(8px) sz(4px) sz(4px);
-		@include custom-bg(background-color, ct(emoji-picker, bg, var(--rise-bg)));
+		@include custom-bg(background-color, ct(emoji-picker, bg, var(--rise-surface-bg)));
+		@include caps-label(10px);
 		@include custom-text(color, ct(emoji-picker, heading-text, var(--rise-text-muted)));
-		@include text-size(xs);
-		font-weight: var(--rise-font-weight-medium);
 	}
 
 	&__items {
@@ -93,7 +93,7 @@
 		height: var(--emoji-cell);
 		padding: 0;
 		border: 0;
-		border-radius: sz(ct(emoji-picker, emoji-radius, var(--rise-radius-md)));
+		border-radius: sz(ct(emoji-picker, emoji-radius, var(--rise-radius-sm)));
 		background-color: transparent;
 		font-family: var(--emoji-font);
 		font-size: sz(ct(emoji-picker, emoji-font-size, 22px));
@@ -104,7 +104,7 @@
 		@include focus-ring(-2px);
 
 		@include hover {
-			background-color: ct(emoji-picker, emoji-bg-hover, var(--rise-bg-elevated));
+			background-color: ct(emoji-picker, emoji-bg-hover, var(--rise-surface-floating-hover));
 		}
 
 		@include motion-safe {
@@ -151,21 +151,26 @@
 	}
 
 	&--soft {
-		border-color: transparent;
-		@include custom-bg(background-color, var(--rise-bg-muted));
+		box-shadow: none;
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, var(--rise-bg-elevated));
 	}
 
 	&--soft &__heading {
-		@include custom-bg(background-color, var(--rise-bg-muted));
+		@include custom-bg(background-color, var(--rise-bg-elevated));
 	}
 
 	&--outline {
 		border-color: ct(emoji-picker, border, var(--rise-border-accented));
+		box-shadow: none;
+		@include tonal-surface(page);
+		@include custom-bg(background-color, var(--rise-bg));
 	}
 
 	&--ghost {
-		border-color: transparent;
 		border-radius: 0;
+		box-shadow: none;
+		@include tonal-surface(none);
 		@include custom-bg(background-color, transparent);
 	}
 

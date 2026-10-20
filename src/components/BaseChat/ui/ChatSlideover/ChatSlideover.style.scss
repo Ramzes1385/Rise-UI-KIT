@@ -36,9 +36,8 @@
 		}
 
 		&--active {
-			background-color: var(--rise-bg);
+			background-color: var(--rise-surface-selected);
 			color: var(--rise-text-highlighted);
-			box-shadow: var(--rise-shadow-xs);
 		}
 	}
 
@@ -62,9 +61,8 @@
 	}
 
 	&__name {
+		@include heading;
 		@include text-size(base);
-		font-weight: var(--rise-font-weight-semibold);
-		color: var(--rise-text-highlighted);
 		overflow-wrap: anywhere;
 	}
 
@@ -103,9 +101,7 @@
 
 	&__section-title {
 		margin: 0;
-		@include text-size(xs);
-		font-weight: var(--rise-font-weight-medium);
-		color: var(--rise-text-muted);
+		@include caps-label;
 	}
 
 	&__add-member {
@@ -193,7 +189,7 @@
 
 	&__dropdown-item--danger,
 	&__dropdown-item--danger &__dropdown-icon {
-		color: var(--rise-error);
+		color: var(--rise-error-text);
 	}
 
 	&__dropdown-item--danger {
@@ -213,9 +209,8 @@
 		gap: sz(12px);
 		margin: 0;
 		padding: sz(12px) sz(16px);
-		border: 1px solid var(--rise-border);
 		border-radius: sz(var(--rise-radius-lg));
-		background-color: var(--rise-bg-muted);
+		background-color: var(--rise-bg-elevated);
 	}
 
 	&__info-item {
@@ -228,8 +223,7 @@
 		display: flex;
 		align-items: center;
 		gap: sz(8px);
-		@include text-size(xs);
-		color: var(--rise-text-muted);
+		@include caps-label(10px);
 	}
 
 	&__info-icon {
@@ -301,9 +295,8 @@
 		align-items: center;
 		gap: sz(4px);
 		padding: sz(4px);
-		border: 1px solid var(--rise-border);
 		border-radius: sz(var(--rise-radius-md));
-		background-color: var(--rise-bg);
+		background-color: var(--rise-bg-elevated);
 	}
 
 	&__file-main {
@@ -333,7 +326,7 @@
 		width: sz(32px);
 		height: sz(32px);
 		border-radius: sz(var(--rise-radius-sm));
-		background-color: var(--rise-bg-elevated);
+		background-color: var(--rise-surface-raised);
 		color: var(--rise-text-toned);
 	}
 
@@ -368,16 +361,14 @@
 		align-items: center;
 		gap: sz(10px);
 		padding: sz(6px);
-		border: 1px solid var(--rise-border);
 		border-radius: sz(var(--rise-radius-md));
-		background-color: var(--rise-bg);
+		background-color: var(--rise-bg-elevated);
 		text-decoration: none;
 		@include transition-colors;
 		@include focus-ring;
 
 		@include hover {
-			border-color: var(--rise-border-accented);
-			background-color: var(--rise-bg-muted);
+			background-color: var(--rise-bg-accented);
 		}
 	}
 

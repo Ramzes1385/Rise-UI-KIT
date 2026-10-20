@@ -27,13 +27,13 @@
 		justify-content: center;
 		width: sz(32px);
 		height: sz(32px);
-		border-radius: sz(var(--rise-radius-md));
+		border-radius: sz(var(--rise-radius-sm));
 		@include text-size(lg);
 		@include transition-colors;
 		@include focus-ring(-2px);
 
 		@include hover {
-			background-color: var(--rise-bg-elevated);
+			background-color: var(--rise-surface-floating-hover);
 		}
 	}
 
@@ -56,7 +56,7 @@
 
 	&__item--danger,
 	&__item--danger &__icon {
-		color: var(--rise-error);
+		color: var(--rise-error-text);
 	}
 
 	&__item--danger {

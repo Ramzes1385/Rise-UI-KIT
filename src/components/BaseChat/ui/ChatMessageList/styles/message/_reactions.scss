@@ -20,8 +20,7 @@
 		gap: sz(4px);
 		height: sz(24px);
 		padding: 0 sz(8px);
-		border: 1px solid transparent;
-		border-radius: var(--rise-radius-full);
+		border-radius: sz(var(--rise-radius-sm));
 		background-color: var(--rise-bg-elevated);
 		@include text-size(xs);
 		font-weight: var(--rise-font-weight-medium);
@@ -35,7 +34,6 @@
 		}
 
 		&--active {
-			border-color: var(--rise-primary-border);
 			background-color: var(--rise-primary-soft);
 			color: var(--rise-primary-text);
 

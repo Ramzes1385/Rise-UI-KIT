@@ -6,13 +6,8 @@
 		display: inline-flex;
 		align-items: center;
 		gap: sz(4px);
-		@include text-size(xs);
-		color: var(--rise-text-muted);
+		@include caps-label(10px);
 		white-space: nowrap;
-	}
-
-	&__time {
-		font-variant-numeric: tabular-nums;
 	}
 
 	&__status-wrapper {
@@ -40,7 +35,7 @@
 	}
 
 	&__failed-btn--danger.base-button {
-		--custom-text: var(--rise-error);
+		--custom-text: var(--rise-error-text);
 		--custom-bg-hover: var(--rise-error-soft);
 		--custom-bg-active: var(--rise-error-soft-hover);
 	}

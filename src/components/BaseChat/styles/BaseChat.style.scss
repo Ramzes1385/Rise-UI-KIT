@@ -20,7 +20,7 @@
 		--chat-bubble-padding-y: #{ct(chat, bubble-padding-y, 8px)};
 		--chat-bubble-padding-x: #{ct(chat, bubble-padding-x, 12px)};
 		--chat-bubble-radius: #{ct(chat, bubble-radius, var(--rise-radius-lg))};
-		--chat-bubble-other-bg: #{ct(chat, bubble-bg, var(--rise-bg-elevated))};
+		--chat-bubble-other-bg: #{ct(chat, bubble-bg, var(--rise-bg-muted))};
 		--chat-bubble-other-border: #{ct(chat, bubble-border, transparent)};
 		--chat-bubble-me-bg: #{ct(chat, bubble-me-bg, var(--rise-primary-soft))};
 		--chat-bubble-me-border: #{ct(chat, bubble-border, transparent)};
@@ -62,9 +62,9 @@
 
 	&--modern .base-chat-message-list {
 		--chat-bubble-other-bg: #{ct(chat, bubble-bg, var(--rise-bg))};
-		--chat-bubble-other-border: #{ct(chat, bubble-border, var(--rise-border))};
+		--chat-bubble-other-border: #{ct(chat, bubble-border, var(--rise-border-accented))};
 		--chat-bubble-me-bg: #{ct(chat, bubble-me-bg, var(--rise-bg-muted))};
-		--chat-bubble-me-border: #{ct(chat, bubble-border, var(--rise-border))};
+		--chat-bubble-me-border: #{ct(chat, bubble-border, var(--rise-border-accented))};
 		--chat-bubble-shadow: #{ct(chat, bubble-shadow, var(--rise-shadow-xs))};
 		--chat-quote-bg: var(--rise-bg-elevated);
 	}

@@ -17,6 +17,7 @@
 		box-sizing: border-box;
 		min-width: 0;
 		@include field-box(prompt-input);
+		border-radius: sz(ct(prompt-input, radius, var(--rise-radius-lg)));
 	}
 
 	&__control {
@@ -78,7 +79,7 @@
 		flex: none;
 		width: sz(32px);
 		height: sz(32px);
-		border-radius: ct(prompt-input, button-radius, 50%);
+		border-radius: sz(ct(prompt-input, button-radius, var(--rise-radius-md)));
 
 		.base-icon {
 			width: sz(ct(prompt-input, button-icon-size, 16px));
@@ -96,17 +97,15 @@
 	}
 
 	&--outline &__box {
-		@include custom-bg(background-color, transparent);
+		@include field-variant(prompt-input, outline);
 	}
 
 	&--soft &__box {
-		border-color: transparent;
-		@include custom-bg(background-color, var(--rise-bg-elevated));
+		@include field-variant(prompt-input, soft);
 	}
 
 	&--ghost &__box {
-		border-color: transparent;
-		@include custom-bg(background-color, transparent);
+		@include field-variant(prompt-input, ghost);
 	}
 
 	&--error &__box {

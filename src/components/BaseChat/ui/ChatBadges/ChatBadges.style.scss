@@ -29,13 +29,11 @@
 		align-items: center;
 		height: sz(16px);
 		padding: 0 sz(5px);
-		border-radius: var(--rise-radius-full);
-		background-color: var(--rise-bg-muted);
-		@include text-size(xs);
-		font-weight: var(--rise-font-weight-medium);
+		border-radius: calc(var(--rise-radius-sm) - 1px);
+		background-color: var(--rise-bg-elevated);
+		@include caps-label(10px);
 		line-height: 1;
 		color: var(--rise-text-toned);
-		font-variant-numeric: tabular-nums;
 	}
 
 	&--labeled {
@@ -54,9 +52,8 @@
 		max-width: 100%;
 		padding-block: sz(4px);
 		padding-inline: sz(8px) sz(10px);
-		border: 1px solid var(--rise-border);
-		border-radius: var(--rise-radius-full);
-		background-color: var(--rise-bg-muted);
+		border-radius: sz(var(--rise-radius-sm));
+		background-color: var(--rise-bg-elevated);
 		@include text-size(xs);
 		color: var(--rise-text);
 	}

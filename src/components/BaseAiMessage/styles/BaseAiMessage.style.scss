@@ -18,16 +18,8 @@
 		width: sz(32px);
 		height: sz(32px);
 		overflow: hidden;
-		border-radius: sz(ct(ai-message, avatar-radius, 10px));
-		background-image: ct(
-			ai-message,
-			avatar-bg,
-			linear-gradient(
-				135deg,
-				var(--rise-primary),
-				color-mix(in oklab, var(--rise-primary) 60%, var(--rise-ai-message-avatar-end-bg, var(--rise-info)))
-			)
-		);
+		border-radius: sz(ct(ai-message, avatar-radius, var(--rise-radius-md)));
+		background: ct(ai-message, avatar-bg, var(--rise-primary));
 		color: var(--rise-on-primary);
 
 		.base-icon {
@@ -63,9 +55,8 @@
 	}
 
 	&__time {
+		@include caps-label(10px);
 		@include custom-text(color, var(--rise-text-muted));
-		@include text-size(xs);
-		font-variant-numeric: tabular-nums;
 	}
 
 	&--soft &__body,
@@ -75,7 +66,8 @@
 	}
 
 	&--soft &__body {
-		@include custom-bg(background-color, ct(ai-message, body-bg, var(--rise-bg-elevated)));
+		@include tonal-surface(muted);
+		@include custom-bg(background-color, ct(ai-message, body-bg, var(--rise-bg-muted)));
 	}
 
 	&--outline &__body {
@@ -109,15 +101,14 @@
 		gap: sz(8px);
 		margin: 0;
 		padding: sz(8px) sz(12px);
-		border: 1px solid var(--rise-error-border);
-		border-radius: sz(var(--rise-radius-md));
+		border-radius: sz(var(--rise-radius-lg));
 		background-color: var(--rise-error-soft);
 		color: var(--rise-error-text);
 
 		> .base-icon {
 			width: sz(16px);
 			height: sz(16px);
-			color: var(--rise-error);
+			color: var(--rise-error-text);
 		}
 	}
 

@@ -13,10 +13,7 @@
 		gap: sz(8px);
 		padding-block: sz(4px);
 		padding-inline: sz(12px) sz(4px);
-		border: 1px solid var(--rise-border);
-		border-radius: sz(var(--rise-radius-lg));
-		background-color: var(--rise-bg);
-		box-shadow: var(--rise-shadow-lg);
+		@include floating-surface(null);
 	}
 
 	&__info {
@@ -33,7 +30,7 @@
 	}
 
 	&__btn--danger.base-button {
-		--custom-text: var(--rise-error);
+		--custom-text: var(--rise-error-text);
 		--custom-bg-hover: var(--rise-error-soft);
 		--custom-bg-active: var(--rise-error-soft-hover);
 

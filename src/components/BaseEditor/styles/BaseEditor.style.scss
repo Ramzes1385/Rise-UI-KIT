@@ -27,12 +27,10 @@
 		flex-direction: column;
 		min-width: 0;
 		overflow: hidden;
-		border: 1px solid ct(editor, border, var(--rise-border-accented));
+		@include field-box(editor);
 		border-radius: sz(ct(editor, radius, var(--rise-control-radius)));
-		background-color: ct(editor, bg, var(--rise-bg));
 		box-shadow: ct(editor, shadow, none);
 		color: ct(editor, text, var(--rise-text));
-		@include transition-colors;
 	}
 
 	&__toolbar {
@@ -69,9 +67,7 @@
 		--btn-pad-bottom: 0px;
 		--btn-pad-left: 0px;
 
-		flex: none;
-		width: sz(28px);
-		height: sz(28px);
+		@include tool-button;
 	}
 
 	&__btn--active.base-button {
@@ -152,7 +148,7 @@
 		}
 
 		:where(a) {
-			color: var(--rise-primary);
+			color: var(--rise-primary-text);
 			text-decoration: underline;
 			text-decoration-thickness: 1px;
 			text-underline-offset: sz(3px);
@@ -186,9 +182,8 @@
 
 		:where(:not(pre) > code) {
 			padding: sz(1px 4px);
-			border: 1px solid var(--rise-border);
 			border-radius: sz(var(--rise-radius-sm));
-			background-color: var(--rise-bg-muted);
+			background-color: var(--rise-bg-accented);
 			color: var(--rise-text-highlighted);
 		}
 
@@ -196,9 +191,8 @@
 			margin: sz(12px) 0;
 			padding: sz(12px 16px);
 			overflow-x: auto;
-			border: 1px solid var(--rise-border);
 			border-radius: sz(var(--rise-radius-md));
-			background-color: var(--rise-bg-muted);
+			background-color: var(--rise-bg-accented);
 			color: var(--rise-text-highlighted);
 			font-family: var(--rise-font-mono);
 			@include text-size(sm);
@@ -236,9 +230,8 @@
 		min-width: sz(160px);
 		max-width: 100%;
 		min-height: sz(96px);
-		border: 1px dashed var(--rise-border-accented);
 		border-radius: sz(var(--rise-radius-md));
-		background-color: var(--rise-bg-muted);
+		background-color: var(--rise-bg-accented);
 		vertical-align: middle;
 		user-select: none;
 
@@ -317,21 +310,20 @@
 	}
 
 	&--outline &__frame {
-		background-color: transparent;
+		@include field-variant(editor, outline);
 	}
 
 	&--soft &__frame {
-		border-color: transparent;
-		background-color: color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg));
+		@include field-variant(editor, soft);
 	}
 
 	&--ghost &__frame {
-		border-color: transparent;
-		background-color: transparent;
+		@include field-variant(editor, ghost);
 	}
 
 	&--shadow &__frame {
-		box-shadow: ct(editor, shadow, var(--rise-shadow-xs));
+		@include field-variant(editor, shadow);
+		box-shadow: ct(editor, shadow, var(--rise-shadow-sm));
 	}
 
 	&--readonly &__frame {

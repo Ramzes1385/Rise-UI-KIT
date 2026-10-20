@@ -6,7 +6,7 @@
 	--chat-bubble-padding-y: 8px;
 	--chat-bubble-padding-x: 12px;
 	--chat-bubble-radius: var(--rise-radius-lg);
-	--chat-bubble-other-bg: var(--rise-bg-elevated);
+	--chat-bubble-other-bg: var(--rise-bg-muted);
 	--chat-bubble-other-border: transparent;
 	--chat-bubble-me-bg: var(--rise-primary-soft);
 	--chat-bubble-me-border: transparent;
@@ -16,7 +16,7 @@
 	--chat-item-padding-y: 4px;
 	--chat-item-radius: var(--rise-radius-md);
 	--chat-item-separator: none;
-	--chat-quote-bg: var(--rise-bg);
+	--chat-quote-bg: var(--rise-surface-raised);
 
 	position: relative;
 	display: flex;
@@ -44,7 +44,7 @@
 
 		&--context-active,
 		&--highlighted {
-			background-color: var(--rise-bg-muted);
+			background-color: var(--rise-bg-elevated);
 		}
 	}
 
@@ -56,7 +56,7 @@
 		cursor: pointer;
 
 		@include hover {
-			background-color: var(--rise-bg-muted);
+			background-color: var(--rise-bg-elevated);
 		}
 	}
 
@@ -88,7 +88,7 @@
 	&__avatar-button {
 		@include button-reset;
 		flex: none;
-		border-radius: var(--rise-radius-full);
+		border-radius: sz(var(--rise-radius-md));
 		@include focus-ring;
 	}
 
@@ -171,11 +171,10 @@
 		z-index: 1;
 		display: flex;
 		gap: sz(2px);
+		@include floating-surface(null);
 		padding: sz(2px);
-		border: 1px solid var(--rise-border);
 		border-radius: sz(var(--rise-radius-md));
-		background-color: var(--rise-bg);
-		box-shadow: var(--rise-shadow-sm);
+		box-shadow: var(--rise-shadow-md);
 		opacity: 0;
 		pointer-events: none;
 		@include transition(opacity);

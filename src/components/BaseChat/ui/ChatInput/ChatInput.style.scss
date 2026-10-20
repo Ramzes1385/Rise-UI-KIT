@@ -17,7 +17,7 @@
 	}
 
 	&__quick-reply-btn.base-button {
-		border-radius: var(--rise-radius-full);
+		border-radius: sz(var(--rise-radius-md));
 	}
 
 	&__reply-bar {
@@ -109,9 +109,8 @@
 		max-width: sz(220px);
 		padding-block: sz(3px);
 		padding-inline: sz(4px) sz(3px);
-		border: 1px solid var(--rise-border);
 		border-radius: sz(var(--rise-radius-md));
-		background-color: var(--rise-bg);
+		background-color: var(--rise-bg-muted);
 	}
 
 	&__preview-image {
@@ -236,7 +235,7 @@
 		gap: sz(8px);
 
 		&--active {
-			background-color: var(--rise-bg-elevated);
+			background-color: var(--rise-surface-floating-hover);
 			color: var(--rise-text-highlighted);
 		}
 	}

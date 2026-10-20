@@ -45,9 +45,8 @@
 	}
 
 	&__title {
-		@include text-size(xs);
-		font-weight: var(--rise-font-weight-medium);
-		color: var(--rise-primary);
+		@include caps-label(10px);
+		color: var(--rise-primary-text);
 		@include truncate;
 	}
 

@@ -10,9 +10,7 @@
 		align-items: center;
 		gap: sz(12px);
 		padding: sz(4px) sz(8px);
-		@include text-size(xs);
-		font-weight: var(--rise-font-weight-medium);
-		color: var(--rise-text-muted);
+		@include caps-label;
 		user-select: none;
 
 		&::before,
@@ -24,7 +22,7 @@
 		}
 
 		&--unread {
-			color: var(--rise-primary);
+			color: var(--rise-primary-text);
 
 			&::before,
 			&::after {
@@ -51,9 +49,9 @@
 
 		> * {
 			padding: sz(4px);
-			border-radius: var(--rise-radius-full);
-			background-color: var(--rise-bg-elevated);
-			box-shadow: var(--rise-shadow-sm);
+			border-radius: sz(var(--rise-radius-md));
+			background-color: var(--rise-surface-floating);
+			box-shadow: var(--rise-shadow-md);
 		}
 	}
 
