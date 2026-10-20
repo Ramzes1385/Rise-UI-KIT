@@ -34,8 +34,7 @@ function proportional(totals: readonly number[], limit: number): number[] {
 	const order = totals.map((_, index) => index).sort((a, b) => totals[b] - totals[a])
 	let left = limit - counts.reduce((acc, value) => acc + value, 0)
 	for (let step = 0; left !== 0 && step < limit * 2; step += 1) {
-		const index = left > 0 ? order[step % order.length] : order.find(at => counts[at] > 1)
-		if (index === undefined) break
+		const index = left > 0 ? order[step % order.length] : order.find(at => counts[at] > 1)!
 		counts[index] += Math.sign(left)
 		left -= Math.sign(left)
 	}

@@ -1,19 +1,20 @@
 import { useFlowMap3DStage } from './useFlowMap3DStage'
-import { useFlowMap3DEdit } from './edit/useFlowMap3DEdit'
+import { loadEditUi } from '../ui/lazy/flowMap3dLazyLoaders'
 import { useFlowMap3DSettings } from './ui/useFlowMap3DDock'
 import { useFlowMap3DParts } from './view/useFlowMap3DParts'
 import { useFlowMap3DCore } from './compose/useFlowMap3DCore'
 import { useFlowMap3DInput } from './compose/useFlowMap3DInput'
 import { useFlowMap3DShell } from './compose/useFlowMap3DShell'
-import { useEdit3DPanels } from './edit/panels/useEdit3DPanels'
+import { useScene3DModels } from '@/scene3d/models/useModels3D'
 import { FLOW_MAP_3D_PARTS } from '../types/BaseFlowMap3D.types'
 import { useFlowMap3DSnapshot } from './data/useFlowMap3DSnapshot'
 import { useFlowMap3DBindings } from './view/useFlowMap3DBindings'
 import { useFlowMap3DTemplate } from './compose/useFlowMap3DTemplate'
+import { useFlowMap3DEditLoader } from './edit/useFlowMap3DEditLoader'
+import { onBeforeUnmount, ref, shallowRef, useTemplateRef } from 'vue'
 import { SCENE_3D_CAMERA_PRESETS } from '@/scene3d/types/scene3d.types'
 import type { Scene3DCameraPreset } from '@/scene3d/types/scene3d.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
-import { onBeforeUnmount, reactive, ref, shallowRef, useTemplateRef } from 'vue'
 import type { BaseFlowMap3DEmits, FlowMap3DProps } from '../types/BaseFlowMap3D.types'
 import type { FlowMap3DComposeParts, FlowMap3DInput, FlowMap3DRefs } from '../types/internal/flowMap3dCompose.types'
 
@@ -33,7 +34,16 @@ function useRefs(): FlowMap3DRefs {
 function useParts(props: FlowMap3DProps, emit: BaseFlowMap3DEmits): FlowMap3DComposeParts {
 	const refs = useRefs()
 	const core = useFlowMap3DCore(props, emit, refs.rootRef)
-	return { props, emit, core, refs, settings: useFlowMap3DSettings(props, emit, core.model), hovered: ref(null), focused: ref(null) }
+	return {
+		props,
+		emit,
+		core,
+		refs,
+		settings: useFlowMap3DSettings(props, emit, core.model),
+		hovered: ref(null),
+		focused: ref(null),
+		appModels: useScene3DModels(),
+	}
 }
 
 function useStage(
@@ -74,25 +84,32 @@ export function useBaseFlowMap3D(props: FlowMap3DProps, emit: BaseFlowMap3DEmits
 	input.value = useFlowMap3DInput(parts, stage)
 	onBeforeUnmount(() => input.value?.keyboard.stop())
 	const shell = useFlowMap3DShell(parts, stage, input.value)
-	const edit = useFlowMap3DEdit(parts, { ...stage, snapshot }, input.value)
 	const template = useFlowMap3DTemplate(parts, stage, { snapshot, classes: base.classes })
-	const editPanels = useEdit3DPanels(parts, edit, template.ui)
+	const editor = useFlowMap3DEditLoader({
+		parts,
+		stage: { ...stage, snapshot },
+		input: input.value,
+		ui: template.ui,
+		preload: loadEditUi,
+	})
+	const { edit, panels: editPanels } = editor
 
 	return {
 		...base,
 		...useFlowMap3DParts(),
 		...template,
 		...input.value.pointer,
-		onClick: edit.guardClick(input.value.pointer.onClick),
-		edit: reactive(edit),
-		editPanels: reactive(editPanels),
-		modelInfo: (id: string) => ({ key: edit.palette.keyOf(id), title: edit.palette.titleOf(id) }),
+		onClick: (event: MouseEvent) => edit.value.guardClick(input.value!.pointer.onClick)(event),
+		edit,
+		editPanels,
+		isEditLoaded: editor.isLoaded,
+		modelInfo: (id: string) => ({ key: edit.value.palette.keyOf(id), title: edit.value.palette.titleOf(id) }),
 		rectOf: (id: string) => core.model.layout.value.nodes[id],
 		controller: shell.controller,
 		camera: stage.camera,
 		settings,
 		onKeydown: (event: KeyboardEvent) => {
-			if (!edit.onKeydown(event)) input.value?.keyboard.onKeydown(event)
+			if (!edit.value.onKeydown(event)) input.value?.keyboard.onKeydown(event)
 		},
 		listGroups: input.value.list.groups,
 		chooseNode: input.value.list.choose,

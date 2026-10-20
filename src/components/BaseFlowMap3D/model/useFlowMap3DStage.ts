@@ -111,7 +111,7 @@ export function useFlowMap3DStage(options: FlowMap3DStageOptions) {
 	const built = shallowRef<FlowMap3DContent | null>(null)
 	const frame = computed(() => sceneFrame(snapshot.value))
 	const viewport = useStageViewport(options, frame)
-	const size = () => ({ width: options.hostRef.value?.clientWidth ?? 0, height: options.hostRef.value?.clientHeight ?? 0 })
+	const size = () => ({ width: options.hostRef.value!.clientWidth, height: options.hostRef.value!.clientHeight })
 	const camera = useFlowMap3DCamera({
 		...viewport,
 		canvasRef: options.canvasRef,

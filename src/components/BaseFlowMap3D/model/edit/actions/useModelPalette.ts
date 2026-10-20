@@ -1,6 +1,5 @@
 import { computed, ref } from 'vue'
 import { modelTitle } from '@/scene3d/models/modelTitles'
-import { useScene3DModels } from '@/scene3d/models/useModels3D'
 import { MODEL3D_PRESET_IDS } from '@/scene3d/types/model3d.types'
 import type { Model3DDefinitions } from '@/scene3d/types/model3d.types'
 import { MODEL3D_PRESETS, fallbackForKind } from '@/scene3d/models/presets'
@@ -36,8 +35,7 @@ function iconOf(key: string): string {
 export function useModelPalette(options: FlowMap3DPaletteOptions) {
 	const isOpen = ref(false)
 	const url = ref('')
-	const appModels = useScene3DModels()
-	const definitions = (): Model3DDefinitions => ({ ...appModels, ...options.getModels() })
+	const definitions = (): Model3DDefinitions => ({ ...options.appModels, ...options.getModels() })
 
 	function keyOf(id: string): string {
 		const node = options.model.graph.value.nodes.get(id)

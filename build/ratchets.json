@@ -16,6 +16,10 @@
 			"gzip": 19703,
 			"budget": 22528
 		},
+		"flow3d.js": {
+			"gzip": 139500,
+			"budget": 153600
+		},
 		"icons.js": {
 			"gzip": 4867,
 			"budget": 6144

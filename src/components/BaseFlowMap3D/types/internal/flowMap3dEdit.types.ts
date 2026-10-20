@@ -8,10 +8,11 @@ import type { Model3DDefinitions } from '@/scene3d/types/model3d.types'
 import type { useFlowMap3DEdit } from '../../model/edit/useFlowMap3DEdit'
 import type { Color, Group, Line, LineDashedMaterial, Mesh } from 'three'
 import type { useConnectTool } from '../../model/edit/connect/useConnectTool'
+import type { useFlowMap3DEditKit } from '../../model/edit/useFlowMap3DEditKit'
 import type { Scene3DLabels } from '@/scene3d/types/internal/scene3dInternal.types'
-import type { FlowMap3DComposeParts, FlowMap3DStage } from './flowMap3dCompose.types'
 import type { FlowElementRef } from '@components/BaseFlowMap/types/data/flowReview.types'
 import type { FlowNode, FlowPoint } from '@components/BaseFlowMap/types/data/flowData.types'
+import type { FlowMap3DComposeParts, FlowMap3DInput, FlowMap3DStage } from './flowMap3dCompose.types'
 import type { FlowCommandResult, FlowMapController } from '@components/BaseFlowMap/types/api/flowController.types'
 import type { FlowModelInternal, FlowPickApi } from '@components/BaseFlowMap/types/internal/core/flowRenderInternal.types'
 import type { FlowMap3DCameraApi, FlowMap3DNodeItem, FlowMap3DSnapshot, FlowMap3DViewport } from './flowMap3dInternal.types'
@@ -205,6 +206,7 @@ export type FlowMap3DEditKeyboardParts = Pick<FlowMap3DEditParts, 'model' | 'cam
 export interface FlowMap3DPaletteOptions {
 	model: FlowModelInternal
 	getModels: () => Model3DDefinitions | undefined
+	appModels: Model3DDefinitions
 	getSelected: () => string | null
 	getResolved: (id: string) => string | null
 }
@@ -299,4 +301,16 @@ export interface FlowMap3DPanelContext {
 	edit: FlowMap3DEdit
 	ui: FlowMap3DEditUi
 	node: ComputedRef<FlowNode | null>
+}
+
+/** Загруженная «Правка» в 3D: правка и её панели */
+export type FlowMap3DEditKit = ReturnType<typeof useFlowMap3DEditKit>
+
+/** Вход загрузчика «Правки»: части компонента, сцена, ввод, классы и предзагрузка интерфейса */
+export interface FlowMap3DEditLoaderInput {
+	parts: FlowMap3DComposeParts
+	stage: FlowMap3DEditStage
+	input: FlowMap3DInput
+	ui: FlowMap3DEditUi
+	preload: () => Promise<unknown>
 }

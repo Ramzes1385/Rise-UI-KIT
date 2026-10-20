@@ -1,4 +1,4 @@
-import { onBeforeUnmount, watch } from 'vue'
+import { onScopeDispose, watch } from 'vue'
 import { useNodeDrag } from './drag/useNodeDrag'
 import { useEdit3DState } from './useEdit3DState'
 import { useEdit3DPointer } from './useEdit3DPointer'
@@ -14,11 +14,10 @@ import type { FlowMap3DEditOverlay, FlowMap3DEditStage } from '../../types/inter
 function useOverlay(parts: FlowMap3DComposeParts, stage: FlowMap3DEditStage): () => FlowMap3DEditOverlay | null {
 	let overlay: FlowMap3DEditOverlay | null = null
 	const host = parts.refs.viewportRef
-	onBeforeUnmount(() => overlay?.dispose())
+	onScopeDispose(() => overlay?.dispose())
 	return () => {
-		if (!host.value) return null
 		overlay ??= createEditOverlay(stage.viewport.scene, stage.viewport.invalidate)
-		const { resolve } = createPalette(host.value)
+		const { resolve } = createPalette(host.value!)
 		overlay.setColors({
 			valid: resolve('var(--rise-primary)'),
 			invalid: resolve('var(--rise-error)'),
@@ -49,6 +48,7 @@ export function useFlowMap3DEdit(parts: FlowMap3DComposeParts, stage: FlowMap3DE
 	const palette = useModelPalette({
 		model,
 		getModels: () => parts.props.models,
+		appModels: parts.appModels,
 		getSelected: () => state.selected()[0] ?? null,
 		getResolved: id => stage.scene.content.value?.nodes.registry.getHandle(id)?.preset ?? null,
 	})

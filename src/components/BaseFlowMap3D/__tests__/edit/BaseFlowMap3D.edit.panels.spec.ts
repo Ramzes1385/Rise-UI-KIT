@@ -9,6 +9,10 @@ const notice = () => document.querySelector('.base-flow-map-3d__notice')
 const inspector = () => screen.getByRole('region', { name: T.INSPECTOR })
 const palette = () => screen.getByRole('dialog', { name: T.PALETTE_TITLE })
 const swap = () => screen.getByRole('button', { name: new RegExp(T.EDIT_SWAP) })
+const openPalette = async (): Promise<void> => {
+	await fireEvent.click(swap())
+	await screen.findByRole('dialog', { name: T.PALETTE_TITLE })
+}
 
 describe('BaseFlowMap3D «Правка»: панель инструментов', () => {
 	it('кнопки недоступны без выбора и работают с выбранным узлом', async () => {
@@ -43,7 +47,7 @@ describe('BaseFlowMap3D «Правка»: замена модели', () => {
 	it('палитра открывается кнопкой, выбор ключа заменяет модель и закрывает палитру', async () => {
 		const map = await mountEdit({ data: LONE_DATA })
 		await map.select('a')
-		await fireEvent.click(swap())
+		await openPalette()
 		expect(swap()).toHaveAttribute('aria-expanded', 'true')
 		const cells = within(palette()).getAllByRole('button', { pressed: false })
 		const cell = cells.find(item => item.className.includes('palette-cell'))!
@@ -56,13 +60,13 @@ describe('BaseFlowMap3D «Правка»: замена модели', () => {
 	it('Escape закрывает палитру, крестик тоже', async () => {
 		const map = await mountEdit({ data: LONE_DATA })
 		await map.select('a')
-		await fireEvent.click(swap())
+		await openPalette()
 		await map.press('Escape')
 		expect(screen.queryByRole('dialog', { name: T.PALETTE_TITLE })).toBeNull()
-		await fireEvent.click(swap())
+		await openPalette()
 		await fireEvent.click(within(palette()).getByRole('button', { name: T.PALETTE_CLOSE }))
 		expect(screen.queryByRole('dialog', { name: T.PALETTE_TITLE })).toBeNull()
-		await fireEvent.click(swap())
+		await openPalette()
 		await fireEvent.keyDown(palette(), { key: 'Escape' })
 		expect(screen.queryByRole('dialog', { name: T.PALETTE_TITLE })).toBeNull()
 		await map.press('Escape')
@@ -71,7 +75,7 @@ describe('BaseFlowMap3D «Правка»: замена модели', () => {
 	it('свой GLB: адрес принимается, узел получает `url`; неверный адрес — предупреждение', async () => {
 		const map = await mountEdit({ data: LONE_DATA })
 		await map.select('a')
-		await fireEvent.click(swap())
+		await openPalette()
 		const field = within(palette()).getByLabelText(T.PALETTE_URL)
 		await fireEvent.update(field, 'ftp://x.example/model.glb')
 		await fireEvent.click(within(palette()).getByRole('button', { name: T.PALETTE_LOAD }))
@@ -86,7 +90,7 @@ describe('BaseFlowMap3D «Правка»: замена модели', () => {
 	it('палитра перечисляет модели схемы и «ещё в реестре» с текущей отметкой', async () => {
 		const map = await mountEdit({ data: LONE_DATA, models: { custom: { create: () => new Group() } } as never })
 		await map.select('a')
-		await fireEvent.click(swap())
+		await openPalette()
 		expect(within(palette()).getByText(T.PALETTE_SCHEME)).toBeInTheDocument()
 		expect(within(palette()).getByText(T.PALETTE_MORE)).toBeInTheDocument()
 		expect(within(palette()).getAllByRole('button', { pressed: true }).length).toBeGreaterThan(0)
@@ -140,13 +144,13 @@ describe('BaseFlowMap3D «Правка»: свойства узла', () => {
 		await fireEvent.click(within(inspector()).getByRole('button', { name: T.POSITION_ROTATE }))
 		await waitFor(() => expect(nodeOf(map.data(), 'b')?.model3d?.rotation).toBe(90))
 		await fireEvent.click(within(inspector()).getByRole('button', { name: T.MODEL_REPLACE }))
-		expect(palette()).toBeInTheDocument()
+		expect(await screen.findByRole('dialog', { name: T.PALETTE_TITLE })).toBeInTheDocument()
 	})
 
 	it('выделение, снятое при выходе из «Правки», убирает панели; кнопка «Правка» в панели режимов их возвращает', async () => {
 		const map = await mountEdit({ data: LONE_DATA })
 		await map.select('a')
-		await fireEvent.click(swap())
+		await openPalette()
 		await fireEvent.click(screen.getByRole('button', { name: T.EDIT, pressed: true }))
 		await waitFor(() => expect(screen.queryByRole('toolbar', { name: T.EDIT_TOOLBAR })).toBeNull())
 		expect(screen.queryByRole('dialog', { name: T.PALETTE_TITLE })).toBeNull()
@@ -167,6 +171,7 @@ describe('BaseFlowMap3D «Правка»: порог 768 px и 2D-правка',
 		expect(screen.queryByRole('toolbar', { name: T.EDIT_TOOLBAR })).toBeNull()
 		map.api().select(['a'])
 		await waitFor(() => expect(screen.getAllByText(T.SECTION_3D).length).toBeGreaterThan(0), { timeout: 8000 })
+		await waitFor(() => expect(screen.getAllByRole('button', { name: T.POSITION_ROTATE }).length).toBeGreaterThan(0), { timeout: 8000 })
 		await fireEvent.click(screen.getAllByRole('button', { name: T.POSITION_ROTATE })[0])
 		await waitFor(() => expect(nodeOf(map.api().getData(), 'a')?.model3d?.rotation).toBe(90))
 		const lift = screen.getAllByLabelText(T.FIELD_ELEVATION)[0]
@@ -183,7 +188,7 @@ describe('BaseFlowMap3D «Правка»: порог 768 px и 2D-правка',
 	it('клики и нажатия по панелям правки не доходят до сцены', async () => {
 		const map = await mountEdit({ data: LONE_DATA })
 		await map.select('a')
-		await fireEvent.click(swap())
+		await openPalette()
 		const targets = [palette(), inspector(), document.querySelector('.base-flow-map-3d__panels'), swap()] as HTMLElement[]
 		const reach = vi.fn()
 		const host = viewport()

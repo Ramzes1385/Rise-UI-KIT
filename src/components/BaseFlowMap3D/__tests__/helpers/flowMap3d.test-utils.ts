@@ -5,6 +5,7 @@ import { render, waitFor } from '@testing-library/vue'
 import { defineComponent, h, nextTick, ref } from 'vue'
 import { afterEach, beforeAll, beforeEach, expect, vi } from 'vitest'
 import type { BaseFlowMap3DExpose } from '../../types/BaseFlowMap3D.types'
+import { loadEditUi } from '../../ui/lazy/flowMap3dLazyLoaders'
 import type { FlowMapData } from '@components/BaseFlowMap/types/data/flowData.types'
 import { createFakeRenderer, TestResizeObserver } from '@components/BaseImageMap3D/__tests__/imageMap3d.test-utils'
 
@@ -177,5 +178,8 @@ async function warmTwoD(): Promise<void> {
 		import('@components/BaseFlowMap/ui/scenario/FlowScenarioPanel.vue'),
 		import('@components/BaseFlowMap/ui/panels/FlowDetails.vue'),
 		import('@components/BaseFlowMap/ui/panels/FlowLegend.vue'),
+		import('@components/BaseFlowMap/model/scenario/useFlowScenario'),
+		import('../../model/edit/useFlowMap3DEditKit'),
+		loadEditUi(),
 	])
 }

@@ -1,5 +1,6 @@
 import type { Ref, ShallowRef } from 'vue'
 import type { useFlowMap3DStage } from '../../model/useFlowMap3DStage'
+import type { Model3DDefinitions } from '@/scene3d/types/model3d.types'
 import type { useFlowMap3DSettings } from '../../model/ui/useFlowMap3DDock'
 import type { useFlowMap3DCore } from '../../model/compose/useFlowMap3DCore'
 import type { useFlowMap3DInput } from '../../model/compose/useFlowMap3DInput'
@@ -44,4 +45,6 @@ export interface FlowMap3DComposeParts {
 	refs: FlowMap3DRefs
 	hovered: Ref<string | null>
 	focused: Ref<string | null>
+	/** Модели приложения: читаются при создании компонента, до ленивой «Правки» */
+	appModels: Model3DDefinitions
 }

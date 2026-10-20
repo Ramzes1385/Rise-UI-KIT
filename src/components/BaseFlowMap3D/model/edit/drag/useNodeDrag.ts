@@ -22,9 +22,11 @@ function groundOf(parts: FlowMap3DDragParts, event: PointerEvent, session: Pick<
 	return groundPoint(view, { x: event.clientX, y: event.clientY }, session.item.base)
 }
 
-function showGhost(parts: FlowMap3DDragParts, session: FlowMap3DDragSession): void {
-	const { item, target } = session
-	if (!target) return
+function showGhost(
+	parts: FlowMap3DDragParts,
+	item: FlowMap3DDragSession['item'],
+	target: NonNullable<FlowMap3DDragSession['target']>,
+): void {
 	const size = footprintOf(item, parts.getSnapshot())
 	parts.getOverlay()?.showGhost({ x: target.x, z: target.z, y: item.base, size, height: item.height, isValid: target.isFree })
 }
@@ -38,8 +40,9 @@ function moveSession(parts: FlowMap3DDragParts, session: FlowMap3DDragSession, e
 	const point = groundOf(parts, event, session)
 	if (!point) return true
 	const view = { snapshot: parts.getSnapshot(), grid: gridStep(parts) }
-	session.target = targetAt(item, { x: point.x + offset.x, z: point.z + offset.z }, view)
-	showGhost(parts, session)
+	const target = targetAt(item, { x: point.x + offset.x, z: point.z + offset.z }, view)
+	session.target = target
+	showGhost(parts, item, target)
 	return true
 }
 

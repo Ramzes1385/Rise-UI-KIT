@@ -1,6 +1,6 @@
 import { watch } from 'vue'
 import { UI_FLOW_MAP_3D } from '@/locales/messages'
-import { computed, onBeforeUnmount, ref } from 'vue'
+import { computed, onScopeDispose, ref } from 'vue'
 import type { FlowMap3DComposeParts, FlowMap3DInput, FlowMap3DStage } from '../../types/internal/flowMap3dCompose.types'
 import type { FlowMap3DEditHistory, FlowMap3DEditNotice, FlowMap3DEditTool } from '../../types/internal/flowMap3dEdit.types'
 
@@ -9,7 +9,7 @@ const NOTICE_MS = 4000
 function useNotice(announce: (text: string) => void) {
 	const notice = ref<FlowMap3DEditNotice | null>(null)
 	let timer: ReturnType<typeof setTimeout> | undefined
-	onBeforeUnmount(() => clearTimeout(timer))
+	onScopeDispose(() => clearTimeout(timer))
 	function notify(next: FlowMap3DEditNotice): void {
 		notice.value = next
 		announce(next.text)
@@ -24,7 +24,7 @@ function useHistory(parts: FlowMap3DComposeParts) {
 	const count = ref(0)
 	const refresh = (): void => void (count.value = model.history.list().filter(item => !item.isUndone).length)
 	const off = model.controller.on('history-change', refresh)
-	onBeforeUnmount(off)
+	onScopeDispose(off)
 	return computed((): FlowMap3DEditHistory => {
 		const { canUndo, canRedo, undoLabel } = model.history.state.value
 		return { count: count.value, canUndo, canRedo, undoLabel: undoLabel ?? '' }

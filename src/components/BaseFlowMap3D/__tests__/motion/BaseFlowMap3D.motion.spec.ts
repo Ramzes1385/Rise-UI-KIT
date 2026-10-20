@@ -50,6 +50,7 @@ function visibleTokens(root: Object3D): number {
 }
 
 async function advance(times: number, ms = 100): Promise<void> {
+	await new Promise(resolve => setTimeout(resolve, 0))
 	for (let index = 0; index < times; index += 1) {
 		env.flushFrames(ms)
 		await nextTick()

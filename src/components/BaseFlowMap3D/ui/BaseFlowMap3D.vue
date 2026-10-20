@@ -39,7 +39,7 @@
 						><slot name="scenario-step" v-bind="slotProps"
 					/></template>
 					<template #inspector-end="slotProps">
-						<FlowInspector3DSlot v-bind="slotProps" :model-info="modelInfo" :rect-of="rectOf" />
+						<FlowInspector3DSlot v-if="isEditLoaded" v-bind="slotProps" :model-info="modelInfo" :rect-of="rectOf" />
 						<slot v-if="$slots['inspector-end']" name="inspector-end" v-bind="slotProps" />
 					</template>
 					<template v-if="$slots.empty" #empty><slot name="empty" /></template>
@@ -168,7 +168,7 @@
 			@camera="setCamera"
 			@particles="settings.hasParticles.value = !settings.hasParticles.value"
 			@layers="settings.setLayered(!settings.isLayered.value)"
-			@edit="setMode(edit.isActive ? 'view' : 'edit')" />
+			@edit="setMode(dock.isEditing ? 'view' : 'edit')" />
 		<div v-if="listGroups.length" class="base-flow-map-3d__list" :aria-label="UI_FLOW_MAP.LIST_TITLE">
 			<ul v-for="group in listGroups" :key="group.id" :aria-label="group.label">
 				<li v-for="entry in group.entries" :key="entry.id">
@@ -182,18 +182,16 @@
 
 <script setup lang="ts">
 import '../styles/BaseFlowMap3D.style.scss'
+import { defineAsyncComponent } from 'vue'
 import { BaseButton } from '@components/BaseButton'
 import FlowMap3DDock from './parts/FlowMap3DDock.vue'
 import FlowMap3DZoom from './parts/FlowMap3DZoom.vue'
-import FlowInspector3D from './parts/FlowInspector3D.vue'
-import FlowMap3DToolbar from './parts/FlowMap3DToolbar.vue'
-import FlowModelPalette from './parts/FlowModelPalette.vue'
 import { kitDefaults } from '@composables/base/useDefaults'
 import { useBaseFlowMap3D } from '../model/useBaseFlowMap3D'
 import FlowMap3DCompactScope from './FlowMap3DCompactScope.vue'
 import { UI_FLOW_MAP, UI_FLOW_MAP_3D } from '@/locales/messages'
-import FlowInspector3DSlot from './parts/FlowInspector3DSlot.vue'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import { loadEditInspector, loadEditInspectorSlot, loadEditPalette, loadEditToolbar } from './lazy/flowMap3dLazyLoaders'
 import type { BaseFlowMap3DEmits, BaseFlowMap3DExpose, BaseFlowMap3DProps, BaseFlowMap3DSlots } from '../types/BaseFlowMap3D.types'
 
 const props = withDefaults(
@@ -218,6 +216,11 @@ const props = withDefaults(
 		isLayered: undefined,
 	}),
 )
+
+const FlowMap3DToolbar = defineAsyncComponent(loadEditToolbar)
+const FlowModelPalette = defineAsyncComponent(loadEditPalette)
+const FlowInspector3D = defineAsyncComponent(loadEditInspector)
+const FlowInspector3DSlot = defineAsyncComponent(loadEditInspectorSlot)
 
 const emit = defineEmits<BaseFlowMap3DEmits>()
 
@@ -249,6 +252,7 @@ const {
 	twoDBindings,
 	edit,
 	editPanels,
+	isEditLoaded,
 	modelInfo,
 	rectOf,
 	listGroups,
