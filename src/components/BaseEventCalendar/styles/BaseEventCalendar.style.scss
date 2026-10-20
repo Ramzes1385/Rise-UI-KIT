@@ -6,6 +6,7 @@
 	--axis-width: #{sz(56px)};
 	--grid-line: #{ct(event-calendar, cell-border, var(--rise-border-muted))};
 	--grid-line-strong: var(--rise-border);
+	--event-grid-bg: var(--rise-surface-raised);
 
 	display: flex;
 	flex-direction: column;
@@ -15,25 +16,29 @@
 	min-width: 0;
 	container: base-event-calendar / inline-size;
 	padding: space(12px);
-	border: 1px solid ct(event-calendar, border, var(--rise-border));
+	border: 1px solid ct(event-calendar, border, transparent);
 	border-radius: sz(ct(event-calendar, radius, var(--rise-radius-lg)));
 	@include custom-text(color, var(--rise-text));
 	@include text-size(sm);
-	@include custom-bg(background-color, ct(event-calendar, bg, var(--rise-bg)));
+	@include tonal-surface(muted);
+	@include custom-bg(background-color, ct(event-calendar, bg, var(--rise-bg-muted)));
 
 	&--soft {
-		border-color: transparent;
+		@include tonal-surface(elevated);
 		@include custom-bg(background-color, ct(event-calendar, bg, var(--rise-bg-elevated)));
 	}
 
 	&--outline {
+		--event-grid-bg: var(--rise-bg);
 		border-color: ct(event-calendar, border, var(--rise-border-accented));
+		@include tonal-surface(page);
 		@include custom-bg(background-color, ct(event-calendar, bg, transparent));
 	}
 
 	&--ghost {
+		--event-grid-bg: var(--rise-bg);
 		padding: 0;
-		border-color: transparent;
+		@include tonal-surface(none);
 		@include custom-bg(background-color, transparent);
 	}
 
@@ -53,7 +58,7 @@
 	&__title {
 		flex: 1 1 auto;
 		min-width: 0;
-		font-weight: var(--rise-font-weight-semibold);
+		@include heading;
 		@include custom-text(color, var(--rise-text-highlighted));
 		@include text-size(lg);
 	}
@@ -87,6 +92,7 @@
 		display: grid;
 		border: 1px solid var(--grid-line);
 		border-radius: sz(var(--rise-radius-md));
+		background-color: var(--event-grid-bg);
 	}
 
 	&__weekdays,
@@ -110,10 +116,9 @@
 	&__weekday {
 		padding: space(6px 8px);
 		border-bottom: 1px solid var(--grid-line);
-		font-weight: var(--rise-font-weight-medium);
 		text-align: center;
-		@include text-size(xs);
-		@include custom-text(color, ct(event-calendar, header-text, var(--rise-text-toned)));
+		@include caps-label(10px);
+		@include custom-text(color, ct(event-calendar, header-text, var(--rise-text-muted)));
 	}
 
 	&__week + &__week &__day {
@@ -150,8 +155,9 @@
 		align-self: flex-end;
 		min-width: sz(24px);
 		padding: 0 sz(6px);
-		border-radius: sz(var(--rise-radius-full));
+		border-radius: sz(var(--rise-radius-sm));
 		line-height: sz(24px);
+		font-variant-numeric: tabular-nums;
 		text-align: center;
 	}
 
@@ -174,18 +180,18 @@
 		box-sizing: border-box;
 		min-width: 0;
 		padding: 0 space(ct(event-calendar, event-padding-x, 6px));
-		border-inline-start: sz(3px) solid var(--event-color);
 		border-radius: sz(ct(event-calendar, event-radius, var(--rise-radius-sm)));
+		box-shadow: inset dir-x(3px) 0 0 var(--event-color);
 		color: var(--rise-text);
 		text-align: start;
-		background-color: color-mix(in srgb, var(--event-color) 16%, var(--rise-bg));
+		background-color: color-mix(in srgb, var(--event-color) 16%, var(--event-grid-bg));
 		font-size: sz(ct(event-calendar, event-font-size, var(--rise-font-size-xs)));
 		line-height: sz(var(--rise-line-height-xs));
 		@include transition-colors;
 		@include focus-ring(1px);
 
 		@include hover {
-			background-color: color-mix(in srgb, var(--event-color) 28%, var(--rise-bg));
+			background-color: color-mix(in srgb, var(--event-color) 28%, var(--event-grid-bg));
 		}
 
 		&--bar {
@@ -198,22 +204,22 @@
 		}
 
 		&--timed {
-			border-inline-start-color: transparent;
+			box-shadow: none;
 			background-color: transparent;
 			@include custom-text(color, var(--rise-text));
 
 			&::before {
 				flex: none;
-				width: sz(8px);
-				height: sz(8px);
-				border-radius: sz(var(--rise-radius-full));
+				width: sz(6px);
+				height: sz(6px);
+				border-radius: var(--rise-radius-xs);
 				background-color: var(--event-color);
 				content: '';
 			}
 		}
 
 		&--continued {
-			border-inline-start-width: 0;
+			box-shadow: none;
 			border-start-start-radius: 0;
 			border-end-start-radius: 0;
 		}
@@ -240,8 +246,9 @@
 			min-height: sz(18px);
 			padding: sz(2px) space(ct(event-calendar, event-padding-x, 6px));
 			overflow: hidden;
-			border: 1px solid var(--rise-bg);
-			border-inline-start: sz(3px) solid var(--event-color);
+			box-shadow:
+				inset dir-x(3px) 0 0 var(--event-color),
+				0 0 0 1px var(--event-grid-bg);
 		}
 
 		&--block &-title,
@@ -317,7 +324,7 @@
 		padding: space(6px 8px);
 		border-radius: sz(var(--rise-radius-sm));
 		font-weight: var(--rise-font-weight-semibold);
-		@include custom-bg(background-color, var(--rise-bg-muted));
+		@include custom-bg(background-color, var(--rise-bg-elevated));
 	}
 
 	&__agenda-items {
@@ -344,6 +351,7 @@
 		flex-direction: column;
 		border: 1px solid var(--grid-line);
 		border-radius: sz(var(--rise-radius-md));
+		background-color: var(--event-grid-bg);
 	}
 
 	&__resource-head,
@@ -383,18 +391,18 @@
 		border-inline-start: 1px solid var(--grid-line);
 		font-weight: var(--rise-font-weight-medium);
 		text-align: center;
-		@include custom-text(color, ct(event-calendar, header-text, var(--rise-text-toned)));
+		@include caps-label(10px);
+		@include custom-text(color, ct(event-calendar, header-text, var(--rise-text-muted)));
 
 		&--today {
-			color: var(--rise-primary);
+			color: var(--rise-primary-text);
 		}
 	}
 
 	&__all-day-label {
 		padding: sz(4px);
 		text-align: end;
-		@include custom-text(color, var(--rise-text-toned));
-		@include text-size(xs);
+		@include caps-label(10px);
 	}
 
 	&__all-day-events {
@@ -450,7 +458,7 @@
 	&__work {
 		position: absolute;
 		inset-inline: 0;
-		@include custom-bg(background-color, var(--rise-bg));
+		@include custom-bg(background-color, var(--event-grid-bg));
 	}
 
 	&__now {
@@ -476,7 +484,7 @@
 	}
 
 	&__day--selected {
-		background-color: color-mix(in srgb, var(--rise-primary) 12%, var(--rise-bg));
+		background-color: color-mix(in srgb, var(--rise-primary) 12%, var(--event-grid-bg));
 	}
 
 	&__selection,
@@ -511,7 +519,9 @@
 	&__event--grabbed,
 	&__event--dragging {
 		z-index: 3;
-		box-shadow: var(--rise-shadow-md);
+		box-shadow:
+			inset dir-x(3px) 0 0 var(--event-color),
+			var(--rise-shadow-md);
 	}
 
 	&__event--dragging {

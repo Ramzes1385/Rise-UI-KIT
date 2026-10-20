@@ -14,7 +14,7 @@ $gantt-handle: sz(8px);
 	box-sizing: border-box;
 	min-width: 0;
 	overflow: hidden;
-	border: 1px solid ct(gantt, border, var(--rise-border));
+	border: 1px solid ct(gantt, border, transparent);
 	border-radius: sz(ct(gantt, radius, var(--rise-radius-lg)));
 	background-color: ct(gantt, bg, var(--rise-bg));
 	color: ct(gantt, text, var(--rise-text));
@@ -95,10 +95,9 @@ $gantt-handle: sz(8px);
 		display: flex;
 		height: var(--gantt-header-height);
 		border-bottom: 1px solid $gantt-row-border;
-		background-color: ct(gantt-header, bg, var(--rise-bg-elevated));
-		color: ct(gantt-header, text, var(--rise-text-toned));
-		font-size: sz(var(--rise-font-size-xs));
-		font-weight: var(--rise-font-weight-medium);
+		background-color: ct(gantt-header, bg, var(--rise-bg-muted));
+		@include caps-label(10px);
+		color: ct(gantt-header, text, var(--rise-text-muted));
 	}
 
 	&__header-name {
@@ -111,7 +110,7 @@ $gantt-handle: sz(8px);
 		box-sizing: border-box;
 		padding: sz(6px) sz(12px);
 		border-inline-end: 1px solid $gantt-row-border;
-		background-color: ct(gantt-header, bg, var(--rise-bg-elevated));
+		background-color: ct(gantt-header, bg, var(--rise-bg-muted));
 	}
 
 	&__sr-only {

@@ -8,25 +8,30 @@
 	min-width: 0;
 	max-width: 100%;
 	overflow: hidden;
-	border: 1px solid ct(file-manager, border, var(--rise-border));
+	border: 1px solid ct(file-manager, border, transparent);
 	border-radius: sz(ct(file-manager, radius, var(--rise-radius-lg)));
 	container-type: inline-size;
 	font-family: var(--rise-font-sans);
+	--file-manager-hover: var(--rise-bg-elevated);
 	@include text-size(sm);
-	@include custom-bg(background-color, ct(file-manager, bg, var(--rise-bg)));
+	@include tonal-surface(muted);
+	@include custom-bg(background-color, ct(file-manager, bg, var(--rise-bg-muted)));
 	@include custom-text(color, var(--rise-text));
 
 	&--outline {
-		border-color: var(--rise-border-accented);
+		border-color: ct(file-manager, border, var(--rise-border-accented));
+		@include tonal-surface(page);
+		@include custom-bg(background-color, ct(file-manager, bg, var(--rise-bg)));
 	}
 
 	&--soft {
-		border-color: transparent;
-		@include custom-bg(background-color, ct(file-manager, bg, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg))));
+		--file-manager-hover: var(--rise-bg-accented);
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, ct(file-manager, bg, var(--rise-bg-elevated)));
 	}
 
 	&--ghost {
-		border-color: transparent;
+		@include tonal-surface(none);
 		@include custom-bg(background-color, ct(file-manager, bg, transparent));
 	}
 
@@ -127,12 +132,12 @@
 		align-items: center;
 		padding: space(4px 12px);
 		border-bottom: 1px solid var(--rise-border);
-		@include custom-bg(background-color, ct(file-manager, bg, var(--rise-bg)));
+		@include custom-bg(background-color, ct(file-manager, bg, var(--rise-surface-bg, var(--rise-bg))));
 	}
 
 	& &__sort {
 		justify-self: start;
-		color: var(--rise-text-toned);
+		@include caps-label(10px);
 
 		&[aria-pressed='true'] {
 			color: var(--rise-text-highlighted);
@@ -170,7 +175,7 @@
 		box-sizing: border-box;
 		min-height: sz(36px);
 		padding: space(4px 8px);
-		border-radius: sz(ct(file-manager, entry-radius, var(--rise-radius-md)));
+		border-radius: sz(ct(file-manager, entry-radius, var(--rise-radius-sm)));
 		cursor: pointer;
 		user-select: none;
 		outline: none;
@@ -178,7 +183,7 @@
 		@include focus-ring(-2px);
 
 		@include hover {
-			background-color: ct(file-manager, entry-bg-hover, var(--rise-bg-elevated));
+			background-color: ct(file-manager, entry-bg-hover, var(--file-manager-hover));
 		}
 
 		&--selected {
@@ -210,7 +215,7 @@
 		&--overlay {
 			position: absolute;
 			z-index: 1;
-			@include custom-bg(background-color, ct(file-manager, bg, var(--rise-bg)));
+			@include custom-bg(background-color, ct(file-manager, bg, var(--rise-surface-bg, var(--rise-bg))));
 		}
 
 		&--inline {

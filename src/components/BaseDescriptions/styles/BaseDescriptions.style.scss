@@ -7,25 +7,27 @@
 	box-sizing: border-box;
 	min-width: 0;
 	padding: space(ct(descriptions, padding-y, 16px) ct(descriptions, padding-x, 16px));
-	border: 1px solid ct(descriptions, border, var(--rise-border));
+	border: 1px solid ct(descriptions, border, transparent);
 	border-radius: sz(ct(descriptions, radius, var(--rise-radius-lg)));
 	@include text-size(sm);
-	@include custom-bg(background-color, ct(descriptions, bg, var(--rise-bg)));
+	@include tonal-surface(muted);
+	@include custom-bg(background-color, ct(descriptions, bg, var(--rise-bg-muted)));
 	@include custom-text(color, ct(descriptions, text, var(--rise-text)));
 
 	&--soft {
-		border-color: transparent;
+		@include tonal-surface(elevated);
 		@include custom-bg(background-color, var(--rise-bg-elevated));
 	}
 
 	&--outline {
 		border-color: ct(descriptions, border, var(--rise-border-accented));
+		@include tonal-surface(page);
 		@include custom-bg(background-color, transparent);
 	}
 
 	&--ghost {
 		padding: 0;
-		border-color: transparent;
+		@include tonal-surface(none);
 		@include custom-bg(background-color, transparent);
 	}
 
@@ -40,8 +42,7 @@
 
 	&__title {
 		min-width: 0;
-		color: var(--rise-text-highlighted);
-		font-weight: var(--rise-font-weight-semibold);
+		@include heading;
 		@include text-size(md);
 	}
 
@@ -86,8 +87,9 @@
 				calc((100% - (var(--base-descriptions-span) - 1) * var(--base-descriptions-gap-x)) / var(--base-descriptions-span) * 0.4)
 			);
 		min-width: 0;
+		@include caps-label;
 		background-color: ct(descriptions, label-bg, transparent);
-		color: ct(descriptions, label-text, var(--rise-text-toned));
+		color: ct(descriptions, label-text, var(--rise-text-muted));
 		font-weight: ct(descriptions, label-font-weight, inherit);
 		overflow-wrap: break-word;
 	}

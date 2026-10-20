@@ -7,10 +7,11 @@
 	min-width: 0;
 	max-width: 100%;
 	padding: space(ct(checklist, padding-y, 16px) ct(checklist, padding-x, 16px));
-	border: 1px solid ct(checklist, border, var(--rise-border));
+	border: 1px solid ct(checklist, border, transparent);
 	border-radius: sz(ct(checklist, radius, var(--rise-radius-lg)));
 	@include text-size(sm);
-	@include custom-bg(background-color, ct(checklist, bg, var(--rise-bg)));
+	@include tonal-surface(muted);
+	@include custom-bg(background-color, ct(checklist, bg, var(--rise-bg-muted)));
 	@include custom-text(color, ct(checklist, text, var(--rise-text)));
 
 	&__header {
@@ -22,15 +23,15 @@
 
 	&__title {
 		min-width: 0;
-		color: var(--rise-text-highlighted);
+		@include heading;
 		@include text-size(md);
 		font-weight: ct(checklist, title-font-weight, var(--rise-font-weight-semibold));
 	}
 
 	&__count {
 		flex: none;
+		@include caps-label;
 		@include custom-text(color, var(--rise-text-muted));
-		font-variant-numeric: tabular-nums;
 	}
 
 	&__list {
@@ -48,7 +49,7 @@
 		align-items: flex-start;
 		gap: sz(10px);
 		padding: space(8px);
-		border-radius: sz(ct(checklist, item-radius, var(--rise-radius-md)));
+		border-radius: sz(ct(checklist, item-radius, var(--rise-radius-sm)));
 		@include transition-colors;
 	}
 
@@ -140,19 +141,20 @@
 	}
 
 	&--soft {
-		border-color: transparent;
-		@include custom-bg(background-color, ct(checklist, bg, var(--rise-bg-muted)));
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, ct(checklist, bg, var(--rise-bg-elevated)));
 	}
 
 	&--outline {
 		border-color: ct(checklist, border, var(--rise-border-accented));
+		@include tonal-surface(page);
 		@include custom-bg(background-color, ct(checklist, bg, transparent));
 	}
 
 	&--ghost {
 		padding: 0;
-		border-color: transparent;
 		border-radius: 0;
+		@include tonal-surface(none);
 		@include custom-bg(background-color, transparent);
 	}
 }

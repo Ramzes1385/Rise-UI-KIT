@@ -6,6 +6,7 @@
 	min-width: 0;
 	@include text-size(sm);
 	@include custom-text(color, var(--rise-text));
+	--kanban-card-bg: var(--rise-surface-raised);
 
 	&__board {
 		display: flex;
@@ -33,6 +34,7 @@
 		scroll-snap-align: start;
 		padding: space(ct(kanban, column-padding-y, 8px) ct(kanban, column-padding-x, 8px));
 		border-radius: sz(ct(kanban, column-radius, var(--rise-radius-lg)));
+		@include tonal-surface(muted);
 		@include custom-bg(background-color, ct(kanban, column-bg, var(--rise-bg-muted)));
 	}
 
@@ -57,11 +59,10 @@
 		flex: none;
 		min-width: sz(20px);
 		padding: 0 sz(8px);
-		border-radius: sz(var(--rise-radius-full));
+		border-radius: calc(var(--rise-radius-sm) - 1px);
 		background-color: var(--rise-bg-accented);
+		@include caps-label(10px);
 		color: var(--rise-text-toned);
-		@include text-size(xs);
-		font-variant-numeric: tabular-nums;
 		text-align: center;
 	}
 
@@ -69,7 +70,7 @@
 		flex: none;
 		width: sz(8px);
 		height: sz(8px);
-		border-radius: 50%;
+		border-radius: var(--rise-radius-xs);
 		background-color: var(--kanban-column-color);
 	}
 
@@ -200,11 +201,11 @@
 		gap: sz(6px);
 		box-sizing: border-box;
 		padding: space(10px 12px);
-		border: 1px solid ct(kanban, card-border, var(--rise-border));
+		border: 1px solid ct(kanban, card-border, transparent);
 		border-radius: sz(ct(kanban, card-radius, var(--rise-radius-md)));
-		background-color: ct(kanban, card-bg, var(--rise-bg));
+		background-color: ct(kanban, card-bg, var(--kanban-card-bg));
 		color: var(--rise-text);
-		box-shadow: ct(kanban, card-shadow, var(--rise-shadow-xs));
+		box-shadow: ct(kanban, card-shadow, none);
 		text-align: start;
 		user-select: none;
 	}
@@ -397,7 +398,7 @@
 	&__estimate {
 		min-width: sz(18px);
 		padding: 0 sz(5px);
-		border-radius: sz(var(--rise-radius-full));
+		border-radius: calc(var(--rise-radius-sm) - 1px);
 		background-color: var(--rise-bg-accented);
 		color: var(--rise-text-toned);
 		text-align: center;
@@ -435,16 +436,24 @@
 	}
 
 	&--soft &__column {
+		@include tonal-surface(elevated);
 		@include custom-bg(background-color, ct(kanban, column-bg, var(--rise-bg-elevated)));
 	}
 
+	&--outline,
+	&--ghost {
+		--kanban-card-bg: var(--rise-bg-muted);
+	}
+
 	&--outline &__column {
-		border: 1px solid ct(kanban, column-border, var(--rise-border));
+		border: 1px solid ct(kanban, column-border, var(--rise-border-accented));
+		@include tonal-surface(page);
 		@include custom-bg(background-color, ct(kanban, column-bg, transparent));
 	}
 
 	&--ghost &__column {
 		padding: 0;
+		@include tonal-surface(page);
 		@include custom-bg(background-color, ct(kanban, column-bg, transparent));
 	}
 

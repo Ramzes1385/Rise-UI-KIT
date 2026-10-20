@@ -8,6 +8,8 @@
 
 	&__item {
 		--timeline-color: var(--rise-primary);
+		--timeline-on: var(--rise-on-primary);
+		--timeline-text: var(--rise-primary-text);
 		position: relative;
 		display: flex;
 		gap: space(ct(timeline, item-gap, 12px));
@@ -19,23 +21,33 @@
 
 		&--success {
 			--timeline-color: var(--rise-success);
+			--timeline-on: var(--rise-on-success);
+			--timeline-text: var(--rise-success-text);
 		}
 
 		&--warning {
 			--timeline-color: var(--rise-warning);
+			--timeline-on: var(--rise-on-warning);
+			--timeline-text: var(--rise-warning-text);
 		}
 
 		&--error {
 			--timeline-color: var(--rise-error);
+			--timeline-on: var(--rise-on-error);
+			--timeline-text: var(--rise-error-text);
 		}
 
 		&--info {
 			--timeline-color: var(--rise-info);
+			--timeline-on: var(--rise-on-info);
+			--timeline-text: var(--rise-info-text);
 		}
 
 		&--neutral,
 		&--upcoming {
 			--timeline-color: var(--rise-border-accented);
+			--timeline-on: var(--rise-text-muted);
+			--timeline-text: var(--rise-text-muted);
 		}
 	}
 
@@ -49,15 +61,15 @@
 		width: sz(var(--timeline-marker));
 		height: sz(var(--timeline-marker));
 		border: 2px solid transparent;
-		border-radius: ct(timeline, marker-radius, 50%);
+		border-radius: sz(ct(timeline, marker-radius, var(--rise-radius-sm)));
 		background-color: ct(timeline, marker-bg, var(--timeline-color));
-		color: ct(timeline, marker-text, var(--rise-on-primary));
+		color: ct(timeline, marker-text, var(--timeline-on));
 	}
 
 	&__dot {
 		width: sz(ct(timeline, dot-height, 8px));
 		height: sz(ct(timeline, dot-height, 8px));
-		border-radius: 50%;
+		border-radius: var(--rise-radius-xs);
 		background-color: currentcolor;
 	}
 
@@ -79,8 +91,7 @@
 	}
 
 	&__date {
-		@include text-size(xs);
-		color: var(--rise-text-muted);
+		@include caps-label(10px);
 	}
 
 	&__date--side {
@@ -97,11 +108,8 @@
 
 	&__day {
 		margin-bottom: sz(2px);
-		@include text-size(xs);
-		font-weight: var(--rise-font-weight-semibold);
+		@include caps-label;
 		color: var(--rise-text-highlighted);
-		text-transform: uppercase;
-		@include caps-tracking(0.04em);
 	}
 
 	&__media {
@@ -131,14 +139,14 @@
 	}
 
 	&--soft &__marker {
-		background-color: ct(timeline, marker-bg, color-mix(in srgb, var(--timeline-color) 15%, var(--rise-bg)));
-		color: ct(timeline, marker-text, var(--timeline-color));
+		background-color: ct(timeline, marker-bg, color-mix(in srgb, var(--timeline-color) 15%, var(--rise-surface-bg)));
+		color: ct(timeline, marker-text, var(--timeline-text));
 	}
 
 	&--outline &__marker {
 		border-color: var(--timeline-color);
 		background-color: ct(timeline, marker-bg, var(--rise-bg));
-		color: ct(timeline, marker-text, var(--timeline-color));
+		color: ct(timeline, marker-text, var(--timeline-text));
 	}
 
 	&--horizontal {
