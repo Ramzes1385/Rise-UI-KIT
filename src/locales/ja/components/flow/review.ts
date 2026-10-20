@@ -96,7 +96,5 @@ export const jaFlowReview = {
 		ANNOUNCE_ACCEPTED: '承認：{label}',
 		ANNOUNCE_DECLINED: '却下：{label}',
 		ANNOUNCE_SENT: '送信した提案：{count}',
-		WARN_PLUGIN_FAILED: 'BaseFlowMap：プラグイン「{name}」でエラーが発生しました：{message}',
-		WARN_PLUGIN_DUPLICATE: 'BaseFlowMap：プラグイン「{name}」が重複しています。最後のものが有効です',
 	},
 }

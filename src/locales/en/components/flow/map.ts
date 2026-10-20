@@ -177,5 +177,7 @@ export const enFlowMap = {
 		LEVELS_ARIA: 'Level of detail',
 		/** Кнопка уровня: `{n}` — номер с 1, `{name}` — название уровня */
 		LEVEL_BUTTON: '{n} · {name}',
+		WARN_PLUGIN_FAILED: 'BaseFlowMap: plugin “{name}” threw an error: {message}',
+		WARN_PLUGIN_DUPLICATE: 'BaseFlowMap: plugin “{name}” is added twice — the last one wins',
 	},
 }

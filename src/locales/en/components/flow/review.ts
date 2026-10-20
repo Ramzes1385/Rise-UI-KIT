@@ -96,7 +96,5 @@ export const enFlowReview = {
 		ANNOUNCE_ACCEPTED: 'Accepted: {label}',
 		ANNOUNCE_DECLINED: 'Declined: {label}',
 		ANNOUNCE_SENT: 'Suggestions sent: {count}',
-		WARN_PLUGIN_FAILED: 'BaseFlowMap: plugin “{name}” threw an error: {message}',
-		WARN_PLUGIN_DUPLICATE: 'BaseFlowMap: plugin “{name}” is added twice — the last one wins',
 	},
 }

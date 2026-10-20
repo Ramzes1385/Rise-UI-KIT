@@ -87,6 +87,7 @@
 
 <script setup lang="ts">
 import '../styles/BaseFlowMap.style.scss'
+import { defineAsyncComponent } from 'vue'
 import FlowCanvas from './canvas/FlowCanvas.vue'
 import FlowHeader from './chrome/FlowHeader.vue'
 import FlowLegend from './panels/FlowLegend.vue'
@@ -104,17 +105,17 @@ import { kitDefaults } from '@composables/base/useDefaults'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseFlowMapEmits, BaseFlowMapProps, BaseFlowMapSlots } from '../types/BaseFlowMap.types'
 import {
-	FlowDetails,
-	FlowEditInspector,
-	FlowEditOverlay,
-	FlowEditPalette,
-	FlowEditStatus,
-	FlowEditToolbar,
-	FlowReviewOverlay,
-	FlowReviewPanel,
-	FlowScenarioPanel,
-	FlowSearch,
-} from './lazy/flowLazyParts'
+	loadDetails,
+	loadEditInspector,
+	loadEditOverlay,
+	loadEditPalette,
+	loadEditStatus,
+	loadEditToolbar,
+	loadReviewOverlay,
+	loadReviewPanel,
+	loadScenarioPanel,
+	loadSearch,
+} from './lazy/flowLazyLoaders'
 
 const props = withDefaults(
 	defineProps<BaseFlowMapProps>(),
@@ -138,6 +139,17 @@ const props = withDefaults(
 		isDisabled: false,
 	}),
 )
+
+const FlowDetails = defineAsyncComponent(loadDetails)
+const FlowEditInspector = defineAsyncComponent(loadEditInspector)
+const FlowEditOverlay = defineAsyncComponent(loadEditOverlay)
+const FlowEditPalette = defineAsyncComponent(loadEditPalette)
+const FlowEditStatus = defineAsyncComponent(loadEditStatus)
+const FlowEditToolbar = defineAsyncComponent(loadEditToolbar)
+const FlowReviewOverlay = defineAsyncComponent(loadReviewOverlay)
+const FlowReviewPanel = defineAsyncComponent(loadReviewPanel)
+const FlowScenarioPanel = defineAsyncComponent(loadScenarioPanel)
+const FlowSearch = defineAsyncComponent(loadSearch)
 
 const emit = defineEmits<BaseFlowMapEmits>()
 

@@ -177,5 +177,7 @@ export const kkFlowMap = {
 		LEVELS_ARIA: 'Егжей деңгейі',
 		/** Кнопка уровня: `{n}` — номер с 1, `{name}` — название уровня */
 		LEVEL_BUTTON: '{n} · {name}',
+		WARN_PLUGIN_FAILED: 'BaseFlowMap: «{name}» плагині қате шығарды: {message}',
+		WARN_PLUGIN_DUPLICATE: 'BaseFlowMap: «{name}» плагині қайта қосылған — соңғысы әрекет етеді',
 	},
 }

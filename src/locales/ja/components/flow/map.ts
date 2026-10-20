@@ -177,5 +177,7 @@ export const jaFlowMap = {
 		LEVELS_ARIA: '詳細レベル',
 		/** Кнопка уровня: `{n}` — номер с 1, `{name}` — название уровня */
 		LEVEL_BUTTON: '{n} · {name}',
+		WARN_PLUGIN_FAILED: 'BaseFlowMap：プラグイン「{name}」でエラーが発生しました：{message}',
+		WARN_PLUGIN_DUPLICATE: 'BaseFlowMap：プラグイン「{name}」が重複しています。最後のものが有効です',
 	},
 }

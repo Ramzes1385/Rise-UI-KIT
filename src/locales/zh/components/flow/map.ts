@@ -177,5 +177,7 @@ export const zhFlowMap = {
 		LEVELS_ARIA: '详细程度',
 		/** Кнопка уровня: `{n}` — номер с 1, `{name}` — название уровня */
 		LEVEL_BUTTON: '{n} · {name}',
+		WARN_PLUGIN_FAILED: 'BaseFlowMap：插件“{name}”抛出错误：{message}',
+		WARN_PLUGIN_DUPLICATE: 'BaseFlowMap：插件“{name}”被重复添加——以最后一个为准',
 	},
 }

@@ -96,7 +96,5 @@ export const uzFlowReview = {
 		ANNOUNCE_ACCEPTED: 'Qabul qilindi: {label}',
 		ANNOUNCE_DECLINED: 'Rad etildi: {label}',
 		ANNOUNCE_SENT: 'Yuborilgan takliflar: {count}',
-		WARN_PLUGIN_FAILED: 'BaseFlowMap: “{name}” plagini xato berdi: {message}',
-		WARN_PLUGIN_DUPLICATE: 'BaseFlowMap: “{name}” plagini qayta qoʻshilgan — oxirgisi amal qiladi',
 	},
 }

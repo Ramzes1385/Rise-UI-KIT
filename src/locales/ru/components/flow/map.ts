@@ -176,4 +176,6 @@ export const ruFlowMap = {
 	LEVELS_ARIA: 'Уровень детализации',
 	/** Кнопка уровня: `{n}` — номер с 1, `{name}` — название уровня */
 	LEVEL_BUTTON: '{n} · {name}',
+	WARN_PLUGIN_FAILED: 'BaseFlowMap: плагин «{name}» выбросил ошибку: {message}',
+	WARN_PLUGIN_DUPLICATE: 'BaseFlowMap: плагин «{name}» подключён повторно — действует последний',
 }

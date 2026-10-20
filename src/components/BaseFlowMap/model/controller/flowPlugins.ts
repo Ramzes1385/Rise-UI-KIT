@@ -1,5 +1,5 @@
 import { warn } from '@/locales/warn'
-import { UI_FLOW_REVIEW } from '@/locales/messages'
+import { UI_FLOW_MAP } from '@/locales/messages'
 import type { FlowMapController, FlowMapPlugin } from '../../types/api/flowController.types'
 
 function messageOf(error: unknown): string {
@@ -9,7 +9,7 @@ function messageOf(error: unknown): string {
 function lastByName(plugins: readonly FlowMapPlugin[]): FlowMapPlugin[] {
 	return plugins.filter((plugin, index) => {
 		const isLast = !plugins.slice(index + 1).some(other => other.name === plugin.name)
-		if (!isLast) warn(UI_FLOW_REVIEW.WARN_PLUGIN_DUPLICATE, { name: plugin.name })
+		if (!isLast) warn(UI_FLOW_MAP.WARN_PLUGIN_DUPLICATE, { name: plugin.name })
 		return isLast
 	})
 }
@@ -18,7 +18,7 @@ function runSetup(plugin: FlowMapPlugin, controller: FlowMapController): (() => 
 	try {
 		return plugin.setup?.(controller) || undefined
 	} catch (error) {
-		warn(UI_FLOW_REVIEW.WARN_PLUGIN_FAILED, { name: plugin.name, message: messageOf(error) })
+		warn(UI_FLOW_MAP.WARN_PLUGIN_FAILED, { name: plugin.name, message: messageOf(error) })
 		return undefined
 	}
 }
@@ -36,7 +36,7 @@ export function setupFlowPlugins(controller: FlowMapController, plugins: readonl
 			try {
 				dispose()
 			} catch (error) {
-				warn(UI_FLOW_REVIEW.WARN_PLUGIN_FAILED, { name: plugin.name, message: messageOf(error) })
+				warn(UI_FLOW_MAP.WARN_PLUGIN_FAILED, { name: plugin.name, message: messageOf(error) })
 			}
 		}
 	}

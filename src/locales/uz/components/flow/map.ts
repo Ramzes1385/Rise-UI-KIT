@@ -178,5 +178,7 @@ export const uzFlowMap = {
 		LEVELS_ARIA: 'Tafsilot darajasi',
 		/** Кнопка уровня: `{n}` — номер с 1, `{name}` — название уровня */
 		LEVEL_BUTTON: '{n} · {name}',
+		WARN_PLUGIN_FAILED: 'BaseFlowMap: “{name}” plagini xato berdi: {message}',
+		WARN_PLUGIN_DUPLICATE: 'BaseFlowMap: “{name}” plagini qayta qoʻshilgan — oxirgisi amal qiladi',
 	},
 }

@@ -95,6 +95,4 @@ export const ruFlowReview = {
 	ANNOUNCE_ACCEPTED: 'Принято: {label}',
 	ANNOUNCE_DECLINED: 'Отклонено: {label}',
 	ANNOUNCE_SENT: 'Отправлено предложений: {count}',
-	WARN_PLUGIN_FAILED: 'BaseFlowMap: плагин «{name}» выбросил ошибку: {message}',
-	WARN_PLUGIN_DUPLICATE: 'BaseFlowMap: плагин «{name}» подключён повторно — действует последний',
 }

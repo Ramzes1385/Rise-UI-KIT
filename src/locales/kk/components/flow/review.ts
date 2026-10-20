@@ -96,7 +96,5 @@ export const kkFlowReview = {
 		ANNOUNCE_ACCEPTED: 'Қабылданды: {label}',
 		ANNOUNCE_DECLINED: 'Қабылданбады: {label}',
 		ANNOUNCE_SENT: 'Жіберілген ұсыныстар: {count}',
-		WARN_PLUGIN_FAILED: 'BaseFlowMap: «{name}» плагині қате шығарды: {message}',
-		WARN_PLUGIN_DUPLICATE: 'BaseFlowMap: «{name}» плагині қайта қосылған — соңғысы әрекет етеді',
 	},
 }

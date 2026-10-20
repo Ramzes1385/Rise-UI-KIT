@@ -96,7 +96,5 @@ export const zhFlowReview = {
 		ANNOUNCE_ACCEPTED: '已接受：{label}',
 		ANNOUNCE_DECLINED: '已拒绝：{label}',
 		ANNOUNCE_SENT: '已发送建议：{count}',
-		WARN_PLUGIN_FAILED: 'BaseFlowMap：插件“{name}”抛出错误：{message}',
-		WARN_PLUGIN_DUPLICATE: 'BaseFlowMap：插件“{name}”被重复添加——以最后一个为准',
 	},
 }

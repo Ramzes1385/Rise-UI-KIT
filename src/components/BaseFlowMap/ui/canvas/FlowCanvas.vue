@@ -43,18 +43,23 @@
 <script setup lang="ts">
 import FlowEdges from './FlowEdges.vue'
 import FlowGroups from './FlowGroups.vue'
+import { defineAsyncComponent } from 'vue'
 import FlowMarkers from './FlowMarkers.vue'
 import FlowSvgNode from './FlowSvgNode.vue'
 import FlowHtmlNode from './FlowHtmlNode.vue'
 import { UI_FLOW_MAP } from '@/locales/messages'
 import FlowEdgeLabels from './FlowEdgeLabels.vue'
 import type { BaseFlowMapSlots } from '../../types/BaseFlowMap.types'
-import { FlowEditLayer, FlowReviewLayer, FlowScenarioLayer } from '../lazy/flowLazyParts'
+import { loadEditLayer, loadReviewLayer, loadScenarioLayer } from '../lazy/flowLazyLoaders'
 import { useFlowCanvasContext, useFlowChromeContext, useFlowModesContext } from '../../model/context/flowContext'
 
 defineProps<{ particles?: boolean | number }>()
 
 defineSlots<Pick<BaseFlowMapSlots, 'node' | 'edge-label' | 'group-label' | 'empty'>>()
+
+const FlowEditLayer = defineAsyncComponent(loadEditLayer)
+const FlowReviewLayer = defineAsyncComponent(loadReviewLayer)
+const FlowScenarioLayer = defineAsyncComponent(loadScenarioLayer)
 
 const canvas = useFlowCanvasContext()
 const chrome = useFlowChromeContext()

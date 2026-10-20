@@ -13,8 +13,8 @@ import { useFlowVisibility } from './viewport/useFlowVisibility'
 import { useReducedMotion } from '@composables/app/useReducedMotion'
 import type { FlowEmit } from '../types/internal/core/flowModelCore.types'
 import { useStandardBaseComponent } from '@composables/base/useBaseComponent'
-import { loadEditUi, loadReviewUi, loadScenarioUi } from '../ui/lazy/flowLazyParts'
 import type { BaseFlowMapEmits, BaseFlowMapProps } from '../types/BaseFlowMap.types'
+import { loadEditUi, loadReviewUi, loadScenarioUi } from '../ui/lazy/flowLazyLoaders'
 
 export function useBaseFlowMap(props: BaseFlowMapProps, emit: BaseFlowMapEmits) {
 	const instance = getCurrentInstance()
