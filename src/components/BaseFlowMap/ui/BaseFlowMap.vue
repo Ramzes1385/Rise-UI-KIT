@@ -95,7 +95,6 @@ import { UI_FLOW_MAP } from '@/locales/messages'
 import FlowToolbar from './chrome/FlowToolbar.vue'
 import FlowTooltip from './chrome/FlowTooltip.vue'
 import FlowMinimap from './panels/FlowMinimap.vue'
-import { BaseResult } from '@components/BaseResult'
 import FlowA11yList from './chrome/FlowA11yList.vue'
 import FlowLevelBar from './chrome/FlowLevelBar.vue'
 import { BaseSkeleton } from '@components/BaseSkeleton'
@@ -111,6 +110,7 @@ import {
 	loadEditPalette,
 	loadEditStatus,
 	loadEditToolbar,
+	loadResult,
 	loadReviewOverlay,
 	loadReviewPanel,
 	loadScenarioPanel,
@@ -149,6 +149,7 @@ const FlowEditToolbar = defineAsyncComponent(loadEditToolbar)
 const FlowReviewOverlay = defineAsyncComponent(loadReviewOverlay)
 const FlowReviewPanel = defineAsyncComponent(loadReviewPanel)
 const FlowScenarioPanel = defineAsyncComponent(loadScenarioPanel)
+const BaseResult = defineAsyncComponent(loadResult)
 const FlowSearch = defineAsyncComponent(loadSearch)
 
 const emit = defineEmits<BaseFlowMapEmits>()

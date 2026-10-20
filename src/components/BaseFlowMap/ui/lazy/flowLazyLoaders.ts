@@ -10,6 +10,7 @@ export const loadReviewLayer = () => import('../review/FlowReviewLayer.vue')
 export const loadScenarioPanel = () => import('../scenario/FlowScenarioPanel.vue')
 export const loadScenarioLayer = () => import('../scenario/FlowScenarioLayer.vue')
 export const loadSearch = () => import('../chrome/FlowSearch.vue')
+export const loadResult = () => import('@components/BaseResult').then(module => module.BaseResult)
 export const loadDetails = () => import('../panels/FlowDetails.vue')
 
 export const loadEditUi = () =>
