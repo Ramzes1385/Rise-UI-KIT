@@ -1,6 +1,6 @@
 $progress-stripe: color-mix(in srgb, var(--rise-on-primary) 20%, transparent);
 $progress-light: color-mix(in srgb, var(--progress-color) 35%, var(--rise-bg));
-$progress-radius: ct(progress, radius, var(--rise-radius-full));
+$progress-radius: sz(ct(progress, radius, calc(var(--rise-radius-xs) / 2)));
 
 .base-progress {
 	@include custom-color-scope;
@@ -40,7 +40,7 @@ $progress-radius: ct(progress, radius, var(--rise-radius-full));
 		position: relative;
 		container-type: inline-size;
 		width: 100%;
-		height: sz(ct(progress, height, 8px));
+		height: sz(ct(progress, height, 4px));
 		border-radius: $progress-radius;
 		background-color: ct(progress-track, bg, var(--rise-bg-accented));
 	}

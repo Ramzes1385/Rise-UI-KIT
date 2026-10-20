@@ -11,7 +11,7 @@
 	height: sz(ct(fab, height, 56px));
 	padding: 0;
 	border: 1px solid ct(fab, border, transparent);
-	border-radius: sz(ct(fab, radius, var(--rise-radius-full)));
+	border-radius: sz(ct(fab, radius, var(--rise-radius-xl)));
 	@include custom-bg(background-color, ct(fab, bg, var(--rise-primary)));
 	@include custom-text(color, ct(fab, text, var(--rise-on-primary)));
 	box-shadow: ct(fab, shadow, var(--rise-shadow-lg));
@@ -68,7 +68,7 @@
 
 	&--outline {
 		border-color: ct(fab, border, var(--rise-border-accented));
-		@include custom-bg(background-color, var(--rise-bg));
+		@include custom-bg(background-color, var(--rise-surface-floating));
 		@include custom-text(color, var(--rise-text-highlighted));
 
 		@include custom-bg-hover(background-color, var(--rise-bg-elevated));

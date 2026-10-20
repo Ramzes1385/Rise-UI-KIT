@@ -10,7 +10,7 @@ export type AlertType = (typeof ALERT_TYPES)[number]
 /**
  * Варианты отображения оповещения:
  * default — заливка цветом роли; soft — мягкий фон роли; outline — рамка роли;
- * ghost — только текст роли; shadow — нейтральная карточка с тенью и иконкой цвета роли.
+ * ghost — только текст роли; shadow — нейтральная карточка с тенью (без рамки) и иконкой цвета роли.
  */
 export const ALERT_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 

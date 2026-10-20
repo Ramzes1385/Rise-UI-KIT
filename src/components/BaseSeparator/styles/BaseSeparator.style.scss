@@ -54,9 +54,9 @@
 		align-items: center;
 		justify-content: center;
 		padding: sz(var(--sep-pad-y)) sz(var(--sep-pad-x));
-		font-size: sz(ct(separator-content, font-size, var(--rise-font-size-xs)));
-		line-height: sz(var(--rise-line-height-xs));
-		font-weight: ct(separator-content, font-weight, var(--rise-font-weight-medium));
+		@include caps-label;
+		font-size: sz(ct(separator-content, font-size, 11px));
+		font-weight: ct(separator-content, font-weight, var(--rise-font-weight-normal));
 		@include custom-text(color, ct(separator-content, text, var(--rise-text-muted)));
 		white-space: nowrap;
 	}

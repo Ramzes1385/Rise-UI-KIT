@@ -37,7 +37,7 @@
 		padding: space(ct(bank-card, padding-y, 16px) ct(bank-card, padding-x, 20px));
 		border-radius: sz(ct(bank-card, radius, var(--rise-radius-xl)));
 		background: var(--base-bank-card-bg);
-		box-shadow: ct(bank-card, shadow, var(--rise-shadow-md));
+		box-shadow: ct(bank-card, shadow, none);
 		color: ct(bank-card, text, var(--rise-color-neutral-50));
 	}
 
@@ -89,6 +89,10 @@
 		text-shadow: 0 1px 2px var(--rise-media-scrim);
 	}
 
+	&--full.base-bank-card--shadow {
+		box-shadow: ct(bank-card, shadow, var(--rise-shadow-md));
+	}
+
 	&--full.base-bank-card--expired {
 		filter: grayscale(0.6);
 	}
@@ -99,9 +103,9 @@
 		gap: sz(ct(bank-card, gap, 10px));
 		align-items: center;
 		padding: sz(ct(bank-card, padding-y, var(--rise-control-padding-y)) ct(bank-card, padding-x, var(--rise-control-padding-x)));
-		border: 1px solid ct(bank-card, border, var(--rise-border));
+		border: 1px solid ct(bank-card, border, transparent);
 		border-radius: sz(ct(bank-card, radius, var(--rise-radius-md)));
-		@include custom-bg(background-color, ct(bank-card, bg, var(--rise-bg)));
+		@include custom-bg(background-color, ct(bank-card, bg, var(--rise-bg-muted)));
 		@include custom-text(color, var(--rise-text));
 	}
 
@@ -117,7 +121,7 @@
 		isolation: isolate;
 		aspect-ratio: 85.6 / 53.98;
 		overflow: hidden;
-		border-radius: sz(var(--rise-radius-sm));
+		border-radius: sz(var(--rise-radius-xs));
 		background: var(--base-bank-card-bg);
 		color: var(--rise-color-neutral-50);
 		font-size: sz(var(--rise-font-size-xs));
@@ -144,7 +148,6 @@
 	}
 
 	&--compact.base-bank-card--soft {
-		border-color: transparent;
 		@include custom-bg(background-color, var(--rise-bg-elevated));
 	}
 
@@ -159,7 +162,11 @@
 	}
 
 	&--compact.base-bank-card--ghost {
-		border-color: transparent;
 		@include custom-bg(background-color, transparent);
+	}
+
+	&--compact.base-bank-card--shadow {
+		box-shadow: ct(bank-card, shadow, var(--rise-shadow-sm));
+		@include custom-bg(background-color, var(--rise-surface-floating));
 	}
 }

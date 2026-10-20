@@ -3,10 +3,11 @@ import type { CardBrandRef, CardExpiry } from '@utils/form/cardUtils'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /**
- * Варианты оформления строки `isCompact`: `default` — фон и рамка, `soft` — приглушённый фон, `outline` — только рамка,
- * `ghost` — без фона и рамки (для строк внутри своего списка). Полная карта всегда рисуется лицевой стороной с фоном по марке
+ * Варианты оформления строки `isCompact`: `default` — тональный фон без рамки, `soft` — более светлый тон, `outline` — только рамка,
+ * `ghost` — без фона и рамки (для строк внутри своего списка), `shadow` — фон поверхности и тень.
+ * Полная карта всегда рисуется лицевой стороной с фоном по марке: по умолчанию без тени, `shadow` добавляет её
  */
-export const BANK_CARD_VARIANTS = ['default', 'soft', 'outline', 'ghost'] as const
+export const BANK_CARD_VARIANTS = ['default', 'soft', 'outline', 'ghost', 'shadow'] as const
 
 /** Вариант оформления BaseBankCard */
 export type BankCardVariant = (typeof BANK_CARD_VARIANTS)[number]

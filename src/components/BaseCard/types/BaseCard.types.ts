@@ -4,8 +4,9 @@ import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /**
  * Варианты отображения карточки:
- * default — рамка, outline — рамка темнее (accented), soft — мягкий фон без рамки,
- * ghost — без фона и рамки, shadow — рамка и тень.
+ * default — плоская тональная поверхность (bg-muted) без рамки и тени, soft — более светлый тон (bg-elevated),
+ * outline — фон страницы и рамка border-accented, ghost — без фона и рамки, shadow — фон страницы и тень.
+ * Поля внутри тональной карточки на ступень светлее её фона (`--rise-field-bg`).
  */
 export const CARD_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
 

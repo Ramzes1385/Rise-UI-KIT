@@ -56,7 +56,7 @@ const props = withDefaults(
 	kitDefaults('BaseAvatar', {
 		variant: DEFAULT_VARIANT,
 		alt: '',
-		shape: 'circle',
+		shape: 'square',
 		isOnline: false,
 		ring: 'none',
 		mascot: 'none',

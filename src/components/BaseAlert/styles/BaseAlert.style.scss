@@ -57,9 +57,8 @@
 	}
 
 	&--shadow {
-		border-color: ct(alert, border, var(--rise-border));
-		box-shadow: ct(alert, shadow, var(--rise-shadow-sm));
-		@include custom-bg(background-color, var(--rise-bg));
+		box-shadow: ct(alert, shadow, var(--rise-shadow-md));
+		@include custom-bg(background-color, var(--rise-surface-floating));
 		@include custom-text(color, var(--rise-text));
 	}
 

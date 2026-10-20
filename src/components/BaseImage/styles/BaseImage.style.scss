@@ -146,7 +146,7 @@
 		align-items: center;
 		gap: sz(4px);
 		padding: sz(4px);
-		border-radius: ct(image, zoom-toolbar-radius, var(--rise-radius-full));
+		border-radius: sz(ct(image, zoom-toolbar-radius, var(--rise-radius-lg)));
 		background-color: ct(image, zoom-toolbar-bg, var(--rise-media-surface));
 		backdrop-filter: blur(8px);
 		transform: translateX(-50%);
@@ -166,7 +166,7 @@
 		--btn-pad-left: 5px;
 
 		flex: none;
-		border-radius: var(--rise-radius-full);
+		border-radius: sz(var(--rise-radius-md));
 	}
 
 	&-scale {
@@ -192,11 +192,11 @@
 		--btn-pad-right: 9px;
 		--btn-pad-bottom: 9px;
 		--btn-pad-left: 9px;
+		border-radius: sz(var(--rise-radius-md));
 
 		position: absolute;
 		top: 50%;
 		z-index: 1;
-		box-shadow: inset 0 0 0 1px var(--rise-media-border);
 		transform: translateY(-50%);
 	}
 
@@ -301,7 +301,6 @@
 			position: absolute;
 			inset: 0;
 			border-radius: inherit;
-			box-shadow: inset 0 0 0 1px var(--rise-media-border);
 		}
 
 		@include hover {
@@ -339,7 +338,6 @@
 	width: sz(200px);
 	height: sz(150px);
 	overflow: hidden;
-	border: 1px solid var(--rise-media-border);
 	border-radius: sz(var(--rise-radius-md));
 	background-color: var(--rise-media-surface);
 	cursor: pointer;

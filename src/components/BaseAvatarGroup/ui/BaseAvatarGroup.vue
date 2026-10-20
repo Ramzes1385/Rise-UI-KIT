@@ -51,7 +51,7 @@ const props = withDefaults(
 	kitDefaults('BaseAvatarGroup', {
 		variant: DEFAULT_VARIANT,
 		max: 4,
-		shape: 'circle',
+		shape: 'square',
 		sizeScale: SIZE_SCALE_DEFAULT,
 	}),
 )

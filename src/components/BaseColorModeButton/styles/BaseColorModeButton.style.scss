@@ -1,8 +1,8 @@
 .base-color-mode-button.base-button {
-	--btn-pad-top: #{ct(color-mode-button, padding, 7px)};
-	--btn-pad-right: #{ct(color-mode-button, padding, 7px)};
-	--btn-pad-bottom: #{ct(color-mode-button, padding, 7px)};
-	--btn-pad-left: #{ct(color-mode-button, padding, 7px)};
+	--btn-pad-top: #{ct(color-mode-button, padding, calc(var(--rise-control-padding-y) + 2px))};
+	--btn-pad-right: #{ct(color-mode-button, padding, calc(var(--rise-control-padding-y) + 2px))};
+	--btn-pad-bottom: #{ct(color-mode-button, padding, calc(var(--rise-control-padding-y) + 2px))};
+	--btn-pad-left: #{ct(color-mode-button, padding, calc(var(--rise-control-padding-y) + 2px))};
 
 	flex: none;
 

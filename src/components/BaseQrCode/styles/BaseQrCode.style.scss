@@ -21,7 +21,7 @@
 	}
 
 	&--outline &__box {
-		border: 1px solid ct(qr-code, border, var(--rise-border));
+		border: 1px solid ct(qr-code, border, var(--rise-border-accented));
 		padding: sz(ct(qr-code, padding, 4px));
 	}
 
@@ -47,8 +47,7 @@
 		align-items: center;
 		justify-content: center;
 		padding: sz(12px);
-		border: 1px dashed var(--rise-border-accented);
-		background-color: var(--rise-bg-muted);
+		background-color: var(--rise-bg-elevated);
 		color: var(--rise-text-toned);
 		text-align: center;
 		@include text-size(xs);

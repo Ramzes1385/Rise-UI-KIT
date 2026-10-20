@@ -1,7 +1,7 @@
 import type { UiProp } from '@composables/base/useUi'
 import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
-/** Варианты: default — заливка основным цветом; soft — мягкий основной цвет; outline — фон страницы и рамка */
+/** Варианты: default — заливка основным цветом; soft — мягкий основной цвет; outline — фон поверхности и рамка. Форма — скруглённый квадрат */
 export const FAB_VARIANTS = ['default', 'soft', 'outline'] as const
 
 /**

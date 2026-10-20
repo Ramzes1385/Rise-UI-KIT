@@ -3,9 +3,9 @@
 	position: relative;
 	display: inline-flex;
 	flex-shrink: 0;
-	width: sz(ct(avatar, width, 32px));
-	height: sz(ct(avatar, height, var(--rise-avatar-width, 32px)));
-	border-radius: var(--rise-radius-full);
+	width: sz(ct(avatar, width, 36px));
+	height: sz(ct(avatar, height, var(--rise-avatar-width, 36px)));
+	border-radius: sz(ct(avatar, radius, var(--rise-radius-md)));
 	vertical-align: middle;
 	@include focus-ring;
 
@@ -17,8 +17,8 @@
 		@include disabled-state;
 	}
 
-	&--square {
-		border-radius: sz(ct(avatar, radius, var(--rise-radius-md)));
+	&--circle {
+		border-radius: var(--rise-radius-full);
 	}
 
 	&__content {
@@ -30,11 +30,11 @@
 		height: 100%;
 		overflow: hidden;
 		border-radius: inherit;
-		@include custom-bg(background-color, ct(avatar, bg, var(--rise-bg-elevated)));
-		@include custom-text(color, ct(avatar, text, var(--rise-text-toned)));
-		font-size: sz(ct(avatar, font-size, var(--rise-font-size-base)));
-		line-height: sz(var(--rise-line-height-base));
-		font-weight: ct(avatar, font-weight, var(--rise-font-weight-medium));
+		@include custom-bg(background-color, ct(avatar, bg, var(--rise-bg-accented)));
+		@include custom-text(color, ct(avatar, text, var(--rise-text-highlighted)));
+		font-size: sz(ct(avatar, font-size, 13px));
+		line-height: sz(var(--rise-line-height-sm));
+		font-weight: ct(avatar, font-weight, var(--rise-font-weight-semibold));
 		white-space: nowrap;
 		user-select: none;
 	}
@@ -59,13 +59,13 @@
 
 	&--outline &__content {
 		border: 1px solid ct(avatar, border, var(--rise-border-accented));
-		@include custom-bg(background-color, var(--rise-bg));
-		@include custom-text(color, var(--rise-text-muted));
+		@include custom-bg(background-color, transparent);
+		@include custom-text(color, var(--rise-text-toned));
 	}
 
 	&--ghost &__content {
 		@include custom-bg(background-color, transparent);
-		@include custom-text(color, var(--rise-text-muted));
+		@include custom-text(color, var(--rise-text-toned));
 	}
 
 	&--shadow {
@@ -73,9 +73,8 @@
 	}
 
 	&--shadow &__content {
-		border: 1px solid ct(avatar, border, var(--rise-border));
-		@include custom-bg(background-color, var(--rise-bg));
-		@include custom-text(color, var(--rise-text-muted));
+		@include custom-bg(background-color, var(--rise-surface-floating));
+		@include custom-text(color, var(--rise-text-highlighted));
 	}
 
 	&__online {
@@ -85,8 +84,8 @@
 		box-sizing: border-box;
 		width: sz(10px);
 		height: sz(10px);
-		border: sz(2px) solid var(--rise-bg);
-		border-radius: var(--rise-radius-full);
+		border: sz(2px) solid var(--rise-surface-bg);
+		border-radius: sz(var(--rise-radius-xs));
 		background-color: ct(avatar, online-bg, var(--rise-success));
 	}
 }
@@ -120,14 +119,14 @@
 		}
 	}
 
-	&--square#{&}--ring-gradient::before,
-	&--square#{&}--ring-shimmer::before {
+	&:not(&--circle)#{&}--ring-gradient::before,
+	&:not(&--circle)#{&}--ring-shimmer::before {
 		border-radius: calc(#{sz(ct(avatar, radius, var(--rise-radius-md)))} + #{sz(3px)});
 	}
 
 	&--ring-gradient &__content,
 	&--ring-shimmer &__content {
-		box-shadow: 0 0 0 sz(1.5px) var(--rise-bg);
+		box-shadow: 0 0 0 sz(1.5px) var(--rise-surface-bg);
 	}
 
 	&--ring-shimmer::before {

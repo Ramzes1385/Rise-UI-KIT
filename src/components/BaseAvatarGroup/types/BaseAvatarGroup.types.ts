@@ -33,7 +33,7 @@ export interface BaseAvatarGroupProps extends BaseComponentProps<(typeof AVATAR_
 	items: AvatarGroupItem[]
 	/** Сколько аватаров показать; остальные — «+N» */
 	max?: number
-	/** Форма аватаров */
+	/** Форма аватаров: `square` — скруглённый квадрат (по умолчанию), `circle` — круг */
 	shape?: 'circle' | 'square'
 	/** Имя группы для скринридера, например «Участники» */
 	ariaLabel?: string

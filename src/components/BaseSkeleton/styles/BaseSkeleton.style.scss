@@ -14,7 +14,7 @@
 
 	&--circle {
 		aspect-ratio: 1;
-		border-radius: var(--rise-radius-full);
+		border-radius: sz(ct(skeleton, radius, var(--rise-radius-md)));
 	}
 
 	@include motion-safe {

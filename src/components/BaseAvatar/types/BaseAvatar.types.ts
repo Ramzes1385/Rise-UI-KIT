@@ -142,7 +142,7 @@ export interface BaseAvatarProps extends BaseComponentProps<
 	alt?: string
 	/** Имя, из которого берутся инициалы (до двух букв). Без имени показывается «?». */
 	name?: string
-	/** Форма: `circle` — круг, `square` — квадрат со скруглением. */
+	/** Форма: `square` — скруглённый квадрат (по умолчанию), `circle` — круг. */
 	shape?: (typeof AVATAR_SHAPES)[number]
 	/** Показывать точку статуса «в сети» в правом нижнем углу. Смена статуса — с коротким «pop» на токенах движения. */
 	isOnline?: boolean

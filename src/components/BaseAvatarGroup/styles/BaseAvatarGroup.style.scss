@@ -14,7 +14,7 @@
 		}
 
 		.base-avatar {
-			box-shadow: 0 0 0 2px ct(avatar-group, ring, var(--rise-bg));
+			box-shadow: 0 0 0 2px ct(avatar-group, ring, var(--rise-surface-bg));
 		}
 	}
 
@@ -23,14 +23,14 @@
 	}
 
 	&__item &__more.base-avatar {
-		width: sz(ct(avatar-group, more-width, 32px));
-		height: sz(ct(avatar-group, more-height, var(--rise-avatar-group-more-width, 32px)));
-		border-radius: var(--rise-radius-full);
-		background-color: ct(avatar-group, more-bg, var(--rise-bg-elevated));
+		width: sz(ct(avatar-group, more-width, 36px));
+		height: sz(ct(avatar-group, more-height, var(--rise-avatar-group-more-width, 36px)));
+		background-color: ct(avatar-group, more-bg, var(--rise-bg-accented));
 		color: ct(avatar-group, more-text, var(--rise-text-highlighted));
 		font-size: sz(ct(avatar-group, more-font-size, var(--rise-font-size-xs)));
 		line-height: sz(var(--rise-line-height-xs));
 		font-weight: ct(avatar-group, more-font-weight, var(--rise-font-weight-medium));
+		font-variant-numeric: tabular-nums;
 	}
 
 	&__item &__more &__count {
@@ -40,7 +40,7 @@
 		font-weight: ct(avatar-group, more-font-weight, var(--rise-font-weight-medium));
 	}
 
-	&__item &__more--square.base-avatar {
+	&__item &__more.base-avatar:not(.base-avatar--circle) {
 		border-radius: sz(ct(avatar-group, more-radius, var(--rise-radius-md)));
 	}
 }

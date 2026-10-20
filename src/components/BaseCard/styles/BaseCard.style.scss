@@ -10,40 +10,41 @@
 	box-sizing: border-box;
 	height: var(--card-height, auto);
 	overflow: hidden;
-	border: 1px solid ct(card, border, var(--rise-border));
+	border: 1px solid ct(card, border, transparent);
 	border-radius: sz(ct(card, radius, var(--rise-radius-lg)));
 	box-shadow: ct(card, shadow, none);
 	@include text-size(sm);
-	@include custom-bg(background-color, ct(card, bg, var(--rise-bg)));
+	@include tonal-surface(muted);
+	@include custom-bg(background-color, ct(card, bg, var(--rise-bg-muted)));
 	@include custom-text(color, ct(card, text, var(--rise-text)));
 	@include transition-colors;
 
-	&--outline {
-		border-color: ct(card, border, var(--rise-border-accented));
+	&--soft {
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, var(--rise-bg-elevated));
 	}
 
-	&--soft {
-		border-color: transparent;
-		@include custom-bg(background-color, color-mix(in srgb, var(--rise-bg-elevated) 50%, var(--rise-bg)));
+	&--outline {
+		border-color: ct(card, border, var(--rise-border-accented));
+		@include tonal-surface(page);
+		@include custom-bg(background-color, ct(card, bg, var(--rise-bg)));
 	}
 
 	&--ghost {
-		border-color: transparent;
+		@include tonal-surface(none);
 		@include custom-bg(background-color, transparent);
 	}
 
 	&--shadow {
-		box-shadow: ct(card, shadow, var(--rise-shadow-sm));
+		box-shadow: ct(card, shadow, var(--rise-shadow-md));
+		@include tonal-surface(floating);
+		@include custom-bg(background-color, ct(card, bg, var(--rise-surface-floating)));
 	}
 
 	&--hoverable {
 		cursor: pointer;
 		@include focus-ring;
-
-		@include hover {
-			border-color: ct(card, border-hover, var(--rise-border-accented));
-			box-shadow: ct(card, shadow-hover, var(--rise-shadow-sm));
-		}
+		@include custom-bg-hover(background-color, var(--rise-bg-elevated));
 
 		@include motion-safe {
 			transition-property:
@@ -55,14 +56,29 @@
 		}
 	}
 
-	&--disabled {
-		@include disabled-state;
+	&--soft#{&}--hoverable {
+		@include custom-bg-hover(background-color, var(--rise-bg-accented));
+	}
+
+	&--outline#{&}--hoverable {
+		@include hover {
+			border-color: ct(card, border-hover, var(--rise-border-control));
+		}
+		@include custom-bg-hover(background-color, var(--rise-bg-muted));
+	}
+
+	&--ghost#{&}--hoverable {
+		@include custom-bg-hover(background-color, var(--rise-bg-elevated));
 	}
 
 	&--shadow#{&}--hoverable {
 		@include hover {
-			box-shadow: ct(card, shadow-hover, var(--rise-shadow-md));
+			box-shadow: ct(card, shadow-hover, var(--rise-shadow-lg));
 		}
+	}
+
+	&--disabled {
+		@include disabled-state;
 	}
 
 	&__header {
@@ -89,6 +105,7 @@
 	& &__title {
 		@include inherit-custom-color;
 		@include text-size(base);
+		@include heading;
 		@include custom-text(color, var(--rise-text-highlighted));
 	}
 
