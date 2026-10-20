@@ -58,5 +58,16 @@ export const Edit: StoryObj<typeof meta> = {
 				timeout: STORY_WAIT_TIMEOUT,
 			},
 		)
+		await userEvent.click(within(edit).getByRole('button', { name: 'Добавить этап' }))
+		await waitFor(
+			() =>
+				expect(
+					canvas
+						.getAllByRole('status')
+						.map(item => item.textContent)
+						.join(' '),
+				).toMatch(/Этап 3 из 3: Новый этап/),
+			{ timeout: STORY_WAIT_TIMEOUT },
+		)
 	},
 }

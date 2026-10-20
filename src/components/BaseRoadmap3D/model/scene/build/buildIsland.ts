@@ -21,6 +21,7 @@ function layer(spec: {
 	hole?: readonly IslandPoint[]
 }): Mesh {
 	const { points, top, depth, materials, hole } = spec
+	if (points.length < 3) return new Mesh()
 	const shape = trace(new Shape(), points)
 	if (hole && hole.length > 2) shape.holes.push(trace(new Path(), hole))
 	const mesh = new Mesh(new ExtrudeGeometry(shape, { depth, bevelEnabled: false, curveSegments: 1 }), materials)

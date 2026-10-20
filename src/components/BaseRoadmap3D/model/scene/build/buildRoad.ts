@@ -21,7 +21,7 @@ export function buildRoad(road: readonly IslandPoint[], source: Roadmap3DPalette
 	const curb = createRoadMaterial(colors.curb, colors.curb, WIDTH.curb)
 	const base = createRoadMaterial(colors.road, colors.road, WIDTH.road)
 	const done = createRoadMaterial(colors.doneFrom, colors.doneTo, WIDTH.done)
-	const dash = createRibbonMaterial({ color: colors.curb, width: WIDTH.dash, dash: DASH })
+	const dash = createRibbonMaterial({ color: colors.dash, width: WIDTH.dash, dash: DASH })
 	const parts = [
 		{ geometry: curbGeometry, material: curb },
 		{ geometry: roadGeometry, material: base },
@@ -44,7 +44,7 @@ export function buildRoad(road: readonly IslandPoint[], source: Roadmap3DPalette
 		base.uniforms.uTo.value.copy(palette.road)
 		done.uniforms.uFrom.value.copy(palette.doneFrom)
 		done.uniforms.uTo.value.copy(palette.doneTo)
-		dash.uniforms.uColor.value.copy(palette.curb)
+		dash.uniforms.uColor.value.copy(palette.dash)
 	}
 
 	return {

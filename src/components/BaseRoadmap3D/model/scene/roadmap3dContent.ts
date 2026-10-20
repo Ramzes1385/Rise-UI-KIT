@@ -57,6 +57,7 @@ function createModels(options: Roadmap3DBuildOptions, getPalette: () => Roadmap3
 	options.snapshot.stages.forEach(item => {
 		const node = registry.add(item.id, item.selection)
 		node.position.set(item.position.x, PEDESTAL, item.position.z)
+		node.scale.setScalar(MODEL_SCALE)
 		models.add(node)
 	})
 	models.add(registry.object)
@@ -68,6 +69,7 @@ function createModels(options: Roadmap3DBuildOptions, getPalette: () => Roadmap3
 
 	function paint(items: readonly Roadmap3DStageItem[], states: Roadmap3DStates): void {
 		items.forEach(item => {
+			if (!keys.has(item.id)) return
 			registry.setState(item.id, {
 				isHovered: states.hover === item.id,
 				isSelected: states.selected === item.id,
@@ -86,7 +88,7 @@ function createModels(options: Roadmap3DBuildOptions, getPalette: () => Roadmap3
 
 	function refresh(items: readonly Roadmap3DStageItem[]): void {
 		items.forEach(item => {
-			if (keys.get(item.id) === selectionKey(item)) return
+			if (!keys.has(item.id) || keys.get(item.id) === selectionKey(item)) return
 			keys.set(item.id, selectionKey(item))
 			registry.update(item.id, item.selection)
 			tints.delete(item.id)
@@ -111,8 +113,18 @@ function anchorsOf(snapshot: Roadmap3DSnapshot, base: ReadonlyMap<string, Vector
 	return anchors
 }
 
+const LIGHT_BOOST = 1.8
+const MODEL_SCALE = 1.5
+
 function createLights(options: Roadmap3DBuildOptions, frame: Roadmap3DFrame) {
 	const lights = createSceneLights(options.palette.palette.isDark)
+	const setDark = lights.setDark
+	lights.setDark = isDark => {
+		setDark(isDark)
+		lights.key.intensity *= LIGHT_BOOST
+		lights.fill.intensity *= LIGHT_BOOST
+	}
+	lights.setDark(options.palette.palette.isDark)
 	lights.key.castShadow = options.detail.hasShadows
 	lights.fitShadow(frame.bounds)
 	return lights

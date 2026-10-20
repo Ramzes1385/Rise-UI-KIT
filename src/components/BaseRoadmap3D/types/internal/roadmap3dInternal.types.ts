@@ -68,6 +68,7 @@ export interface Roadmap3DColors {
 	rim: Color
 	road: Color
 	curb: Color
+	dash: Color
 	doneFrom: Color
 	doneTo: Color
 	success: Color

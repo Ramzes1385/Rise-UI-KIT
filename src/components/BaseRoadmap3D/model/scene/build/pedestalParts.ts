@@ -11,7 +11,8 @@ import type {
 } from '../../../types/internal/roadmap3dInternal.types'
 
 const RING = { inner: 1.0, outer: 1.14, segments: 56, lift: 0.1 }
-export const GEM = { radius: 0.12, orbit: 1.5, lift: 0.3, limit: 80 }
+export const GEM = { radius: 0.12, orbit: 2.15, lift: 0.3, limit: 80 }
+export const SCALE = 1.3
 const FULL = Math.PI * 2
 
 export function ringArc(share: number): RingGeometry {
@@ -47,6 +48,7 @@ export function createPedestalStage(
 ): Roadmap3DPedestalStage {
 	const group = new Group()
 	group.position.set(item.position.x, 0, item.position.z)
+	group.scale.set(SCALE, 1, SCALE)
 	const parts = {
 		group,
 		base: solid(geometry.base, 0.07),

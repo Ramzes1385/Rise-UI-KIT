@@ -8,9 +8,9 @@
 			{ 'base-roadmap-3d--compact': isCompact, 'base-roadmap-3d--disabled': isDisabled, 'base-roadmap-3d--panel': hasPanel },
 		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle, { height }]"
-		role="region"
-		:aria-roledescription="UI_ROADMAP_3D.ROLE"
-		:aria-label="label"
+		:role="shownView === '2d' ? undefined : 'region'"
+		:aria-roledescription="shownView === '2d' ? undefined : UI_ROADMAP_3D.ROLE"
+		:aria-label="shownView === '2d' ? undefined : label"
 		:aria-busy="isLoading || undefined"
 		:aria-disabled="isDisabled || undefined">
 		<header :class="[ui('header'), classes.header]">

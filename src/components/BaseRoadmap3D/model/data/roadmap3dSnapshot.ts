@@ -31,7 +31,7 @@ function toneOf(status: RoadmapStageStatus): Model3DTone {
 
 function percentOf(view: RoadmapStageView): number {
 	if (view.total > 0) return Math.round((view.done / view.total) * 100)
-	return view.status === 'done' ? 100 : 0
+	return 0
 }
 
 function selectionOf(view: RoadmapStageView): Model3DSelection {

@@ -23,6 +23,7 @@ function paintStages(
 	const colors = roadmapColors(palette)
 	items.forEach((item, index) => {
 		const stage = stages[index]
+		if (!stage) return
 		const tone = item.status === 'locked' ? colors.locked : palette.resolve(item.tint).clone()
 		stage.base.material.color.copy(colors.rim)
 		stage.tier.material.color.copy(tone)
@@ -77,7 +78,9 @@ export function buildPedestals(initial: readonly Roadmap3DStageItem[], source: R
 	const gems = gemPoints(initial)
 	const gemMesh = createGemMesh(gems)
 	group.add(gemMesh)
-	const anchors = new Map<string, Vector3>(initial.map(item => [item.id, new Vector3(item.position.x, PEDESTAL + 1.45, item.position.z)]))
+	const anchors = new Map<string, Vector3>(
+		initial.map(item => [item.id, new Vector3(item.position.x, PEDESTAL + 1.45 + (item.index % 2) * 0.9, item.position.z)]),
+	)
 	gems.forEach(gem => anchors.set(gem.id, gem.position.clone().setY(GEM.lift + 0.25)))
 	const state = {
 		palette: source,

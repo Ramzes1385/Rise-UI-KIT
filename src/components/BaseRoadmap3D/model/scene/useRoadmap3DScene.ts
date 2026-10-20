@@ -1,5 +1,5 @@
+import { PCFShadowMap } from 'three'
 import type { ShallowRef } from 'vue'
-import { PCFSoftShadowMap } from 'three'
 import { buildContent } from './roadmap3dContent'
 import { createRoadmapPalette } from './roadmap3dPalette'
 import { useSceneTheme } from '@/scene3d/theme/useSceneTheme'
@@ -15,7 +15,7 @@ function enableShadows(renderer: Scene3DRenderer, isOn: boolean): void {
 	const map = (renderer as unknown as { shadowMap?: { enabled: boolean; type: number } }).shadowMap
 	if (!map) return
 	map.enabled = isOn
-	map.type = PCFSoftShadowMap
+	map.type = PCFShadowMap
 }
 
 function structureOf(options: Roadmap3DSceneOptions): string {

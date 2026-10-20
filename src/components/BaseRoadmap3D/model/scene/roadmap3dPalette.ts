@@ -5,7 +5,6 @@ import type { Roadmap3DColors, Roadmap3DPalette } from '../../types/internal/roa
 
 const WHITE = new Color('#ffffff')
 const RIM_SHARE = 0.55
-const CLIFF_STEP = 0.2
 
 export function createRoadmapPalette(host: HTMLElement): Roadmap3DPalette {
 	const resolve = createColorResolver(host)
@@ -16,27 +15,45 @@ function mixColor(from: Color, to: Color, share: number): Color {
 	return from.clone().lerp(to, share)
 }
 
+const TOKENS = {
+	top: 'var(--rise-roadmap-3d-top, color-mix(in srgb, var(--rise-chart-1) 14%, var(--rise-bg-muted)))',
+	side: 'var(--rise-roadmap-3d-side, color-mix(in srgb, var(--rise-chart-7) 18%, color-mix(in srgb, var(--rise-chart-1) 14%, var(--rise-bg-muted))))',
+	cliffs: [
+		'var(--rise-roadmap-3d-cliff-1, color-mix(in srgb, var(--rise-chart-1) 38%, var(--rise-bg)))',
+		'var(--rise-roadmap-3d-cliff-2, color-mix(in srgb, var(--rise-chart-1) 62%, var(--rise-bg)))',
+		'var(--rise-roadmap-3d-cliff-3, color-mix(in srgb, var(--rise-chart-7) 70%, var(--rise-chart-1)))',
+	],
+	road: 'var(--rise-roadmap-3d-road, color-mix(in srgb, color-mix(in srgb, var(--rise-chart-1) 60%, var(--rise-chart-7)) 55%, black))',
+	curb: 'var(--rise-roadmap-3d-curb, color-mix(in srgb, var(--rise-chart-1) 30%, white))',
+	dash: 'var(--rise-roadmap-3d-dash, color-mix(in srgb, var(--rise-chart-1) 6%, white))',
+	done: 'var(--rise-roadmap-3d-done, var(--rise-chart-2))',
+	doneEnd: 'var(--rise-roadmap-3d-done-end, color-mix(in srgb, var(--rise-chart-5) 80%, var(--rise-chart-2)))',
+	mountain: 'var(--rise-roadmap-3d-mountain, color-mix(in srgb, var(--rise-chart-1) 50%, white))',
+}
+
 export function roadmapColors(source: Roadmap3DPalette): Roadmap3DColors {
 	const { colors } = source.palette
 	const pick = (css: string): Color => source.resolve(css).clone()
 	const bg = pick('var(--rise-bg)')
+	const top = pick(TOKENS.top)
 	return {
-		top: colors.islandTop,
-		side: mixColor(colors.islandTop, colors.cliff, 0.5),
-		cliffs: [0, 1, 2].map(step => colors.cliff.clone().multiplyScalar(1 - CLIFF_STEP * step)),
-		rim: mixColor(colors.islandTop, WHITE, RIM_SHARE),
-		road: colors.road,
-		curb: mixColor(bg, WHITE, 0.4),
-		doneFrom: pick('var(--rise-chart-2)'),
-		doneTo: pick('var(--rise-chart-5)'),
+		top,
+		side: pick(TOKENS.side),
+		cliffs: TOKENS.cliffs.map(pick),
+		rim: mixColor(top, WHITE, RIM_SHARE),
+		road: pick(TOKENS.road),
+		curb: pick(TOKENS.curb),
+		dash: pick(TOKENS.dash),
+		doneFrom: pick(TOKENS.done),
+		doneTo: pick(TOKENS.doneEnd),
 		success: pick('var(--rise-success)'),
 		primary: pick('var(--rise-primary)'),
 		onPrimary: pick('var(--rise-text-inverted)'),
-		locked: mixColor(colors.islandTop, colors.cliff, 0.6),
+		locked: mixColor(top, colors.cliff, 0.35),
 		neutral: pick('var(--rise-border-accented)'),
 		warning: pick('var(--rise-warning)'),
 		alternative: pick('var(--rise-chart-1)'),
-		mountain: mixColor(pick('var(--rise-chart-1)'), WHITE, 0.35),
+		mountain: pick(TOKENS.mountain),
 		snow: mixColor(bg, WHITE, 0.7),
 		trunk: mixColor(colors.cliff, WHITE, 0.4),
 		cones: ['var(--rise-chart-5)', 'var(--rise-chart-4)', 'var(--rise-chart-2)'].map(pick),

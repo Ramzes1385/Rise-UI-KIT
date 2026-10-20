@@ -13,7 +13,12 @@ function stepItems(stages: Roadmap3DStageItem[], focusedId: string | null) {
 		n: item.index + 1,
 		status: item.status,
 		isFocused: focusedId === item.id,
-		label: formatMessage(UI_ROADMAP_3D.LIVE_STAGE, { n: item.index + 1, of: stages.length, title: item.title, percent: item.percent }),
+		label: formatMessage(item.status === 'locked' ? UI_ROADMAP_3D.LIVE_LOCKED : UI_ROADMAP_3D.LIVE_STAGE, {
+			n: item.index + 1,
+			of: stages.length,
+			title: item.title,
+			percent: item.percent,
+		}),
 	}))
 }
 
