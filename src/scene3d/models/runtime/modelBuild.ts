@@ -64,7 +64,7 @@ export function attachInstance(entry: Model3DEntry, instance: Model3DInstance): 
 
 function builderOf(library: Model3DLibrary, id: string, warn: (message: string) => void): Model3DBuilder {
 	if (!isModel3DPreset(id)) warn(`Встроенной 3D-модели «${id}» нет, показан сервис`)
-	return library[id] ?? (library.server as Model3DBuilder)
+	return (isModel3DPreset(id) ? library[id] : undefined) ?? (library.server as Model3DBuilder)
 }
 
 /** Встроенная модель: фабрика библиотеки; её ещё нет в библиотеке — запасной `server`, неизвестный id — `server` и `warn` */

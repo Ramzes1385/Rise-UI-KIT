@@ -82,5 +82,5 @@ export function presetsOfSet(set: Model3DSet): Model3DPresetId[] {
 
 /** Запасная модель вида: неизвестный вид — `server` */
 export function fallbackForKind(kind: string | undefined): Model3DPresetId {
-	return (kind !== undefined && MODEL3D_KIND_FALLBACK[kind]) || 'server'
+	return kind !== undefined && Object.hasOwn(MODEL3D_KIND_FALLBACK, kind) ? MODEL3D_KIND_FALLBACK[kind] : 'server'
 }

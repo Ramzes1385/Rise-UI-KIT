@@ -59,8 +59,8 @@ function createHooks(rt: () => Model3DRuntime): Model3DHooks {
 function detach(rt: Model3DRuntime, entry: Model3DEntry): void {
 	if (entry.mode !== 'instanced') return
 	buildStandalone(rt, entry, false)
-	const group = rt.groups.get(entry.groupKey ?? '')
-	if (group) syncGroup(group, rt.entries)
+	// instanced-узел всегда в группе: группа уходит только в commitBucket (с пересборкой участников) и dispose (режим уже pending)
+	syncGroup(rt.groups.get(entry.groupKey!)!, rt.entries)
 }
 
 function wake(rt: Model3DRuntime): void {
