@@ -35,7 +35,7 @@ export interface RiseUiResolverOptions {
 
 /** Настройки `createUiKitConfig`, которые модуль Nuxt умеет передать в приложение: только значения, не функции и компоненты. */
 export interface RiseUiNuxtConfig {
-	/** Язык кита: `ru` (по умолчанию), `en`, `zh`, `ja`, `kk`, `uz` */
+	/** Язык кита: `ru` (по умолчанию), `en`, `zh`, `ja`, `kk`, `uz`; для `zh` и `ja` модуль подключает и шрифт иероглифов (`/fonts/zh.css`) */
 	locale?: Exclude<LocaleInput, UiKitLocale>
 	/** Пресет темы: `corporate`, `playful`, `minimal`, `rise` */
 	theme?: ThemePresetName

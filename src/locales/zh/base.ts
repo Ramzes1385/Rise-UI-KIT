@@ -206,8 +206,7 @@ export const zhBase = {
 		DASHBOARD_GRID_DUPLICATE_ID: 'BaseDashboardGrid：id “{id}”在布局中出现多次，重复项不会显示',
 		TOOLTIP_WRAPPERLESS_ROOT: 'BaseTooltip：使用 isWrapperless 时，trigger 插槽的根节点必须是元素，不能是文本或片段，提示框未绑定',
 		UNKNOWN_LOCALE: '未知语言“{locale}”。可用语言：{locales}；自定义语言请使用 registerLocale() 添加',
-		UNREGISTERED_LOCALE:
-			"语言“{locale}”未注册：请在启动时导入词典并注册一次 — import { {locale}, registerLocale } from '@ramzes1385/rise-ui-kit'; registerLocale({locale})。可用语言：{locales}",
+		UNREGISTERED_LOCALE: '语言“{locale}”未注册：请在启动时导入词典并注册一次 — {code}。可用语言：{locales}',
 		TOAST_WITHOUT_APP: 'useToast：未找到 <BaseApp>，通知未显示。请用 <BaseApp> 包裹应用。',
 		OVERLAY_WITHOUT_APP: 'useOverlay：未找到 <BaseApp>，浮层未显示。请用 <BaseApp> 包裹应用。',
 		EDITOR_UNSAFE_LINK: 'BaseEditor：未插入使用不安全协议的链接：{url}',

@@ -5,5 +5,5 @@ export const ruLocaleWarnings = {
 	UNKNOWN_LOCALE: 'Неизвестный язык «{locale}». Доступные: {locales}; свой язык — registerLocale()',
 	/** `setLocale` с кодом готового словаря кита, который не подключён через `registerLocale()` */
 	UNREGISTERED_LOCALE:
-		"Язык «{locale}» не подключён: импортируйте словарь и зарегистрируйте его один раз при старте — import { {locale}, registerLocale } from '@ramzes1385/rise-ui-kit'; registerLocale({locale}). Доступные: {locales}",
+		'Язык «{locale}» не подключён: импортируйте словарь и зарегистрируйте его один раз при старте — {code}. Доступные: {locales}',
 }

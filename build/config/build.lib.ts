@@ -2,6 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import type { BuildOptions } from 'vite'
 import { LAZY_COMPONENT_NAMES } from '../../src/plugin/registry/lazyNames'
+import { createLocaleFontEntries } from '../plugins/fonts'
 import { createSubpathEntries } from '../plugins/subpaths'
 
 /**
@@ -155,6 +156,8 @@ export function createLibBuildConfig({ withSubpaths }: { withSubpaths: boolean }
 				...(withSubpaths ? createIntegrationEntries() : {}),
 				// Подпути `./<Компонент>` (build/config/subpaths.ts): `components/<Компонент>/index.js`
 				...(withSubpaths ? createSubpathEntries() : {}),
+				// Словари `./locales/zh` и `./locales/ja` со шрифтом иероглифов (build/plugins/fonts.ts): `locales/zh.js`
+				...(withSubpaths ? createLocaleFontEntries() : {}),
 			},
 			formats: ['es'],
 			cssFileName: 'styles',

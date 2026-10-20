@@ -10,8 +10,11 @@
  *    правила `tokens.css` + всех `style.css` — ровно правила `styles.css` (без компонентов вне подпутей: 3D-карта), с точностью
  *    до объявления: селектор и свойство в своём `@media`/`@supports`.
  * 5. Шрифты кита (src/styles/fonts): `styles.css` и `tokens.css` объявляют `@font-face` семейств Rise Grotesk и Rise Mono
- *    с `font-display: block`, остальной CSS пакета `@font-face` не повторяет, и у каждого `url()` в CSS пакета есть файл в dist
- *    (адреса относительные: `./fonts/…` от файла CSS).
+ *    (и только их) с `font-display: block`, остальной CSS пакета `@font-face` не повторяет, и у каждого `url()` в CSS пакета есть
+ *    файл в dist (адреса относительные: `./fonts/…` от файла CSS).
+ * 6. Шрифты иероглифов (build/plugins/fonts.ts, CJK_FONTS): `fonts/cjk/zh.css` и `ja.css` объявляют Rise CJK SC и Rise CJK JP,
+ *    и каждый импортирует ровно один JS-файл пакета — вход словаря `locales/zh.js` (подпуть `./locales/zh`), а не общий чанк:
+ *    иначе файлы шрифта попали бы в сборку любого приложения, которое берёт что-то из корня пакета.
  *
  * Флаг `--root=<папка>` — корень репозитория (по умолчанию — родитель scripts/).
  */
@@ -21,6 +24,7 @@ import { dirname, join, resolve } from 'node:path'
 import { MEDIA_STYLE_DIRS } from '../build/config/cssSplit.ts'
 import { componentCssFile, readPublicComponents, subpathEntryName, TOKENS_CSS_FILE } from '../build/config/subpaths.ts'
 import { splitTopLevelBlocks } from '../build/plugins/cssDedupe.ts'
+import { CJK_FONTS } from '../build/plugins/fonts.ts'
 
 const rootArg = process.argv.slice(2).find(arg => arg.startsWith('--root='))
 const ROOT = resolve(rootArg ? rootArg.slice('--root='.length) : join(import.meta.dirname, '..'))
@@ -178,6 +182,9 @@ function checkFonts(problems) {
 				if (!faces.some(face => face.family === family))
 					problems.push(`${file}: нет @font-face «${family}» — шрифты кита не подключатся сами`)
 			}
+			for (const { family } of faces.filter(face => !KIT_FONT_FAMILIES.includes(face.family))) {
+				problems.push(`${file}: @font-face «${family}» — шрифты иероглифов подключает только словарь языка (fonts/cjk)`)
+			}
 		} else if (faces.length > 0 && !file.startsWith('fonts/')) {
 			problems.push(`${file}: @font-face — шрифты кита объявляют только styles.css и ${TOKENS_CSS_FILE}`)
 		}
@@ -195,6 +202,32 @@ function checkFonts(problems) {
 	return {
 		urls,
 		fonts: existsSync(join(DIST, 'fonts')) ? readdirSync(join(DIST, 'fonts')).filter(name => name.endsWith('.woff2')).length : 0,
+	}
+}
+
+/** Шрифты иероглифов: CSS языка объявляет своё семейство, и импортирует его только вход словаря этого языка (`locales/<код>.js`) */
+function checkCjkFonts(problems) {
+	const scripts = existsSync(DIST)
+		? readdirSync(DIST, { recursive: true })
+				.map(file => String(file).replaceAll('\\', '/'))
+				.filter(file => file.endsWith('.js'))
+				.sort()
+		: []
+	const sources = scripts.map(file => [file, readFileSync(join(DIST, file), 'utf8')])
+	for (const { code, family, css } of CJK_FONTS) {
+		const file = `fonts/${css}`
+		if (!existsSync(join(DIST, file))) {
+			problems.push(`нет dist/${file} — шрифт ${family} не собран`)
+			continue
+		}
+		if (!fontFaces(readFileSync(join(DIST, file), 'utf8')).some(face => face.family === family)) {
+			problems.push(`${file}: нет @font-face «${family}»`)
+		}
+		const importers = sources.filter(([, text]) => text.includes(file)).map(([name]) => name)
+		if (importers.length !== 1 || importers[0] !== `locales/${code}.js`) {
+			const found = importers.join(', ') || 'никто'
+			problems.push(`${file}: его импортирует только вход словаря locales/${code}.js, а импортирует: ${found}`)
+		}
 	}
 }
 
@@ -228,6 +261,7 @@ function check() {
 	}
 	const subpaths = checkSubpaths(styles, problems)
 	const fonts = checkFonts(problems)
+	checkCjkFonts(problems)
 	return { problems, classes, subpaths, fonts, sizes: { styles: styles?.length ?? 0, media: media?.length ?? 0 } }
 }
 

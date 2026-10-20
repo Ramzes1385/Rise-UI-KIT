@@ -22,7 +22,8 @@
  * - `plugin` — `createUiKitPlugin` из корня: тяжёлые компоненты (BaseTable…) не в стартовом JS, а в чанке по `import()` (FOLLOW_UPS № 58);
  *   плагин подключает `en` сам;
  * - автоимпорт (без сети, на пакете из tarball): `RiseUiResolver` из `/resolver` отдаёт для каждого публичного компонента подпуть, который
- *   есть в `exports` и в файлах пакета; `global.d.ts` перечисляет те же компоненты; модуль `/nuxt` ставит плагин, файл которого лежит в пакете.
+ *   есть в `exports` и в файлах пакета; `global.d.ts` перечисляет те же компоненты; модуль `/nuxt` ставит плагин, файл которого лежит в пакете,
+ *   а с языком `zh` или `ja` в настройках — CSS шрифта иероглифов из `exports` пакета.
  *   Сборка приложения с `unplugin-vue-components` и Nuxt тянет пакеты из реестра — `npm run test:autoimport` (scripts/check-autoimport-app.mjs).
  *
  * Стартовый JS каждого сценария ограничен храповиком `JS_MAX`; словари проверяются по строке `text.EMPTY` (`ru` и `en`).
@@ -32,7 +33,10 @@
  *
  * Шрифты кита (src/styles/fonts) приходят со стилями сами: в CSS каждого приложения есть `@font-face` Rise Grotesk и Rise Mono,
  * в сборке — все woff2 из `dist/fonts` пакета; в браузере Rise Grotesk (латиница, кириллица, знаки клавиш) и Rise Mono (400 и 700)
- * загружаются из сборки приложения (`document.fonts.load`, ответы 200).
+ * загружаются из сборки приложения (`document.fonts.load`, ответы 200). Шрифты иероглифов — только со словарём с подпути: `locale-zh`
+ * и `locale-ja` (кнопка + `registerLocale(zh)`, словарь из `/locales/zh`) получают `@font-face` Rise CJK SC / JP и нарезку, а браузер
+ * скачивает лишь куски со знаками на странице; у остальных сценариев (и у тех, что берут из корня `en`) ни CSS, ни файлов иероглифов
+ * в сборке нет.
  *
  * Флаги: `--no-screenshot` — без снимков (нет Chromium для Playwright); `--keep` — не удалять временную папку.
  */
@@ -87,6 +91,17 @@ createApp({
 		])
 	},
 }).mount('#app')
+`
+
+/** Кнопка с подписью на языке с иероглифами + словарь с подпути `/locales/<язык>`: шрифт языка (`fonts/cjk/<язык>.css`) приходит с ним */
+const LOCALE_APP = (code, label) => `import { createApp, h } from 'vue'
+import { BaseButton } from '${PACKAGE}/BaseButton'
+import { registerLocale, setLocale } from '${PACKAGE}'
+import { ${code} } from '${PACKAGE}/locales/${code}'
+registerLocale(${code})
+setLocale('${code}')
+document.documentElement.lang = '${code}'
+createApp({ render: () => h('main', { style: 'padding: 24px' }, [h(BaseButton, null, () => '${label}')]) }).mount('#app')
 `
 
 /** Кнопка + `createUiKitConfig`; `en` — английский язык: словарь `en` подключается явно (`registerLocale(en)`), как и все языки, кроме `ru` */
@@ -225,6 +240,20 @@ const SCENARIOS = [
 	{ name: 'bare-app', css: 'tokens.css', code: BARE_APP(false), marker: 'app-ready' },
 	{ name: 'bare-app-en', css: 'tokens.css', code: BARE_APP(true), marker: 'app-ready' },
 	{ name: 'plugin', css: 'styles.css', code: PLUGIN_APP, marker: 'base-button' },
+	{
+		name: 'locale-zh',
+		css: 'tokens.css',
+		code: LOCALE_APP('zh', '保存设置'),
+		marker: 'base-button',
+		cjk: { family: 'Rise CJK SC', dir: 'sc', text: '保存设置' },
+	},
+	{
+		name: 'locale-ja',
+		css: 'tokens.css',
+		code: LOCALE_APP('ja', '設定を保存'),
+		marker: 'base-button',
+		cjk: { family: 'Rise CJK JP', dir: 'jp', text: '設定を保存' },
+	},
 ]
 
 /**
@@ -268,6 +297,12 @@ const FONT_SAMPLES = [
 	['16px "Rise Mono"', 'Aa Яя ₽'],
 	['700 16px "Rise Mono"', 'Aa Яя'],
 ]
+
+/** Куски шрифта иероглифов в пакете (`dist/fonts/cjk/<папка>/*.woff2`) — имена без расширения */
+function cjkSlices(dir) {
+	const folder = join(ROOT, 'dist/fonts/cjk', dir)
+	return existsSync(folder) ? readdirSync(folder).filter(name => name.endsWith('.woff2')) : []
+}
 
 /** Предел, до которого Vite приложения вставляет ассет в CSS как data: URI (`build.assetsInlineLimit` по умолчанию) */
 const INLINE_LIMIT = 4096
@@ -434,6 +469,32 @@ function checkFontFiles(results, problems) {
 			const declared = new RegExp(`@font-face\\s*\\{[^}]*font-family:\\s*["']?${family}`).test(result.css.text)
 			expect(problems, declared, `${result.name}: в CSS приложения нет @font-face «${family}»`)
 		}
+		const cjkFiles = result.fonts.filter(file => file.startsWith('rise-cjk-'))
+		if (result.cjk) {
+			const declared = result.css.text.includes(result.cjk.family)
+			expect(
+				problems,
+				declared,
+				`${result.name}: в CSS приложения нет @font-face «${result.cjk.family}» — словарь не подключил шрифт`,
+			)
+			const slices = cjkSlices(result.cjk.dir).length
+			expect(
+				problems,
+				slices > 0 && cjkFiles.length === slices,
+				`${result.name}: в сборке ${cjkFiles.length} кусков шрифта из ${slices}`,
+			)
+		} else {
+			expect(
+				problems,
+				!result.css.text.includes('Rise CJK'),
+				`${result.name}: в CSS приложения шрифт иероглифов без словаря zh или ja`,
+			)
+			expect(
+				problems,
+				cjkFiles.length === 0,
+				`${result.name}: в сборке файлы шрифта иероглифов без словаря: ${cjkFiles.slice(0, 3).join(', ')}`,
+			)
+		}
 		const missing = fonts.filter(({ name }) => !result.fonts.some(file => file.startsWith(`${name}-`)))
 		const lost = missing.filter(({ inlined }) => !inlined || !result.css.text.includes('data:font/woff2'))
 		expect(
@@ -506,7 +567,8 @@ async function screenshot(browser, result, file) {
 		}
 		if (result.after) await result.after(page)
 		if (result.applied) await page.locator(`.${result.applied}`).first().waitFor({ timeout: 5000 })
-		result.fontFaces = await page.evaluate(loadKitFonts, FONT_SAMPLES)
+		const samples = result.cjk ? [...FONT_SAMPLES, [`16px "${result.cjk.family}"`, result.cjk.text]] : FONT_SAMPLES
+		result.fontFaces = await page.evaluate(loadKitFonts, samples)
 		await page.screenshot({ path: file, animations: 'disabled' })
 		return readFileSync(file)
 	} finally {
@@ -538,8 +600,17 @@ function checkLoadedFonts(result, problems) {
 		failed.length === 0,
 		`${result.name}: файлы шрифтов с ошибкой: ${failed.map(([url, status]) => `${url} ${status}`).join('; ')}`,
 	)
+	const cjk = files.filter(([url]) => /\/rise-cjk-/.test(url))
 	const expected = kitFonts().filter(({ inlined }) => !inlined).length
-	expect(problems, files.length >= expected, `${result.name}: загружено ${files.length} файлов шрифтов из ${expected}`)
+	expect(
+		problems,
+		files.length - cjk.length >= expected,
+		`${result.name}: загружено ${files.length - cjk.length} файлов шрифтов из ${expected}`,
+	)
+	if (!result.cjk) return
+	const slices = cjkSlices(result.cjk.dir).length
+	expect(problems, cjk.length > 0 && cjk.length < slices, `${result.name}: скачано ${cjk.length} кусков шрифта иероглифов из ${slices}`)
+	console.log(`${result.name}: для «${result.cjk.text}» скачано ${cjk.length} из ${slices} кусков ${result.cjk.family}`)
 }
 
 async function compareScreenshots(app, results, problems) {
@@ -643,6 +714,17 @@ async function checkAutoimport(app, problems) {
 		nuxt.options.css[0] === `${PACKAGE}/tokens.css` && nuxt.options.build.transpile[0] === PACKAGE,
 		'автоимпорт: модуль Nuxt не добавил токены и transpile',
 	)
+	for (const code of ['zh', 'ja']) {
+		const cjk = { options: { css: [], build: { transpile: [] }, plugins: [], runtimeConfig: { public: {} } }, hook() {} }
+		nuxtModule({ tokens: false, config: { locale: code } }, cjk)
+		const css = cjk.options.css[0] ?? ''
+		const target = css.startsWith(`${PACKAGE}/`) && exportedFile(`.${css.slice(PACKAGE.length)}`)
+		expect(
+			problems,
+			cjk.options.css.length === 1 && target && existsSync(file(target)),
+			`автоимпорт: модуль Nuxt с языком ${code} не подключил шрифт иероглифов из пакета: ${cjk.options.css.join(', ') || 'ничего'}`,
+		)
+	}
 	console.log(`Автоимпорт: ✓ ${components.length} компонентов резолвера, global.d.ts и модуль Nuxt совпадают с пакетом из tarball.`)
 }
 

@@ -1,8 +1,8 @@
-/** Утилиты: модуль Nuxt — автоимпорт компонентов кита, токены, транспиляция и плагин настроек; без зависимости от `@nuxt/kit` */
+/** Утилиты: модуль Nuxt — автоимпорт компонентов кита, токены, шрифт иероглифов, транспиляция и плагин настроек; без `@nuxt/kit` */
 
 import { fileURLToPath } from 'node:url'
 import { SUBPATH_COMPONENT_NAMES } from '../componentNames'
-import type { RiseUiNuxtComponent, RiseUiNuxtLike, RiseUiNuxtOptions } from '../types/integrations.types'
+import type { RiseUiNuxtComponent, RiseUiNuxtConfig, RiseUiNuxtLike, RiseUiNuxtOptions } from '../types/integrations.types'
 
 const PACKAGE = '@ramzes1385/rise-ui-kit'
 const CONFIG_KEY = 'riseUiKit'
@@ -51,6 +51,16 @@ function tokensFile(tokens: RiseUiNuxtOptions['tokens']): string | undefined {
 }
 
 /**
+ * Языки со своим шрифтом иероглифов. Словарь плагин Nuxt берёт из чанка, а не с подпути `/locales/zh`, который несёт шрифт, —
+ * поэтому CSS шрифта (`/fonts/zh.css`) модуль кладёт в `css` сам, только для языка из настроек: остальным приложениям файлы не нужны.
+ */
+const FONT_LOCALES: readonly string[] = ['zh', 'ja']
+
+function fontFile(locale: RiseUiNuxtConfig['locale']): string | undefined {
+	return locale && FONT_LOCALES.includes(locale) ? `${PACKAGE}/fonts/${locale}.css` : undefined
+}
+
+/**
  * Настройка Nuxt модулем. Отдельная функция, чтобы проверять её без Nuxt: принимает объект `nuxt` и путь к плагину.
  * Порядок опций: умолчания, ключ `riseUiKit` в `nuxt.config`, опции модуля (кортеж в `modules`).
  */
@@ -66,6 +76,8 @@ export function setupRiseUi(inlineOptions: RiseUiNuxtOptions, nuxt: RiseUiNuxtLi
 
 	const tokens = tokensFile(options.tokens)
 	if (tokens) pushOnce(nuxt.options.css, tokens)
+	const font = fontFile(options.config?.locale)
+	if (font) pushOnce(nuxt.options.css, font)
 	if (options.transpile) pushOnce(nuxt.options.build.transpile, PACKAGE)
 
 	const config = options.config

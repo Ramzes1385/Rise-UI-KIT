@@ -212,7 +212,7 @@ export const kkBase = {
 			'BaseTooltip: isWrapperless кезінде trigger слотының түбірі мәтін немесе фрагмент емес, элемент болуы тиіс — көмекші мәтін байланбады',
 		UNKNOWN_LOCALE: '«{locale}» тілі белгісіз. Қолжетімділері: {locales}; өз тіліңіз — registerLocale()',
 		UNREGISTERED_LOCALE:
-			"«{locale}» тілі қосылмаған: сөздікті импорттап, іске қосылғанда бір рет тіркеңіз — import { {locale}, registerLocale } from '@ramzes1385/rise-ui-kit'; registerLocale({locale}). Қолжетімділері: {locales}",
+			'«{locale}» тілі қосылмаған: сөздікті импорттап, іске қосылғанда бір рет тіркеңіз — {code}. Қолжетімділері: {locales}',
 		TOAST_WITHOUT_APP: 'useToast: <BaseApp> табылмады — хабарландыру көрсетілмеді. Қосымшаңызды <BaseApp> ішіне орналастырыңыз.',
 		OVERLAY_WITHOUT_APP: 'useOverlay: <BaseApp> табылмады — оверлей көрсетілмеді. Қосымшаңызды <BaseApp> ішіне орналастырыңыз.',
 		EDITOR_UNSAFE_LINK: 'BaseEditor: қауіпті схемасы бар сілтеме қойылмады: {url}',

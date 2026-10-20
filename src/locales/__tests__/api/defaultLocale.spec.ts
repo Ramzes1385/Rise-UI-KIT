@@ -62,18 +62,20 @@ describe('русский по умолчанию', () => {
 })
 
 describe('готовые словари подключаются через registerLocale', () => {
-	it('без регистрации доступен только ru; en и kk — предупреждение с подсказкой, как подключить', async () => {
+	it('без регистрации доступен только ru; en, kk и zh — предупреждение с подсказкой, как подключить (zh — с подпути)', async () => {
 		const state = await freshState()
 		const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
 
 		expect(state.localeCodes.value).toEqual(['ru'])
 		state.setLocale('en')
 		state.setLocale('kk')
+		state.setLocale('zh')
 
 		expect(state.getLocale().code).toBe('ru')
 		expect(warn.mock.calls.map(([message]) => message)).toEqual([
 			"[rise-ui-kit] Язык «en» не подключён: импортируйте словарь и зарегистрируйте его один раз при старте — import { en, registerLocale } from '@ramzes1385/rise-ui-kit'; registerLocale(en). Доступные: ru",
 			"[rise-ui-kit] Язык «kk» не подключён: импортируйте словарь и зарегистрируйте его один раз при старте — import { kk, registerLocale } from '@ramzes1385/rise-ui-kit'; registerLocale(kk). Доступные: ru",
+			"[rise-ui-kit] Язык «zh» не подключён: импортируйте словарь и зарегистрируйте его один раз при старте — import { registerLocale } from '@ramzes1385/rise-ui-kit'; import { zh } from '@ramzes1385/rise-ui-kit/locales/zh'; registerLocale(zh). Доступные: ru",
 		])
 	})
 

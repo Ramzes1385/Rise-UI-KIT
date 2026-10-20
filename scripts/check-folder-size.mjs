@@ -10,7 +10,17 @@ import { join, relative, resolve } from 'node:path'
 const MAX_FILES = 7
 
 /** Папки, которые раскладывать нельзя: путь от корня репозитория и причина */
-const ALLOWED = [{ dir: 'src/icons/svg', reason: 'набор значков: один файл — один значок, спрайт собирает build/plugins/sprite.ts' }]
+const ALLOWED = [
+	{ dir: 'src/icons/svg', reason: 'набор значков: один файл — один значок, спрайт собирает build/plugins/sprite.ts' },
+	{
+		dir: 'src/styles/fonts/cjk/sc',
+		reason: 'нарезка шрифта Rise CJK SC по unicode-range: части одного шрифта, их пишет build/fonts/build_fonts.py',
+	},
+	{
+		dir: 'src/styles/fonts/cjk/jp',
+		reason: 'нарезка шрифта Rise CJK JP по unicode-range: части одного шрифта, их пишет build/fonts/build_fonts.py',
+	},
+]
 
 const rootOption = process.argv.slice(2).find(arg => arg.startsWith('--root='))
 const ROOT = resolve(rootOption ? rootOption.slice('--root='.length) : join(import.meta.dirname, '..'))

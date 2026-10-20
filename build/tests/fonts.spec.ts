@@ -7,6 +7,7 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { brotliDecompressSync } from 'node:zlib'
+import { CJK_FONTS, createLocaleFontEntries } from '../plugins/fonts'
 
 const ROOT = resolve(import.meta.dirname, '../..')
 const FONTS = join(ROOT, 'src/styles/fonts')
@@ -125,13 +126,15 @@ const hex = (cps: Iterable<number>) => [...cps].map(cp => `U+${cp.toString(16).t
 
 const KIT_FACES = join(FONTS, '_fonts.scss')
 const KBD = join(ROOT, 'src/components/BaseKbd/model/useBaseKbd.ts')
+/** Шрифты иероглифов: CSS языка (build/plugins/fonts.ts, CJK_FONTS) */
+const CJK_FACES = { zh: join(FONTS, 'cjk/zh.css'), ja: join(FONTS, 'cjk/ja.css') }
 
 describe('шрифты кита', () => {
-	it('у каждого @font-face есть файл шрифта', () => {
-		const urls = [...readFileSync(KIT_FACES, 'utf8').matchAll(/url\('([^'?]+)/g)].map(([, url]) => url!)
+	it.each([KIT_FACES, ...Object.values(CJK_FACES)])('у каждого @font-face в %s есть файл шрифта', cssFile => {
+		const urls = [...readFileSync(cssFile, 'utf8').matchAll(/url\('([^'?]+)/g)].map(([, url]) => url!)
 
 		expect(urls.length).toBeGreaterThan(0)
-		expect(urls.filter(url => !existsSync(resolve(FONTS, url)))).toEqual([])
+		expect(urls.filter(url => !existsSync(resolve(dirname(cssFile), url)))).toEqual([])
 	})
 
 	it.each(['ru', 'en', 'kk', 'uz'])('словарь %s и клавиши BaseKbd — целиком шрифтами Rise Grotesk и Rise Mono', code => {
@@ -141,5 +144,53 @@ describe('шрифты кита', () => {
 			const covered = familyCoverage([KIT_FACES], family)
 			expect({ family, missing: hex([...chars].filter(cp => !covered.has(cp))) }).toEqual({ family, missing: [] })
 		}
+	})
+
+	it.each([
+		['zh', 'Rise CJK SC'],
+		['ja', 'Rise CJK JP'],
+	] as const)('словарь %s — целиком шрифтами кита и %s: и основным, и моноширинным стеком', (code, cjk) => {
+		const chars = sourceChars(filesIn(join(ROOT, 'src/locales', code), '.ts'))
+		const ideographs = familyCoverage([CJK_FACES[code]], cjk)
+
+		for (const family of ['Rise Grotesk', 'Rise Mono']) {
+			const covered = new Set([...familyCoverage([KIT_FACES], family), ...ideographs])
+			expect({ family, missing: hex([...chars].filter(cp => !covered.has(cp))) }).toEqual({ family, missing: [] })
+		}
+	})
+})
+
+describe('шрифт иероглифов приходит со словарём с подпути', () => {
+	const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8')) as { exports: Record<string, unknown>; sideEffects: string[] }
+
+	it.each(CJK_FONTS)(
+		'словарь $code — подпуть /locales/$code (вход сборки с CSS шрифта), только шрифт — /fonts/$code.css',
+		({ code, css }) => {
+			expect(createLocaleFontEntries()).toHaveProperty([`locales/${code}`])
+			expect(pkg.exports[`./locales/${code}`]).toEqual({
+				types: `./dist/locales/${code}/index.d.ts`,
+				import: `./dist/locales/${code}.js`,
+			})
+			expect(pkg.exports[`./fonts/${code}.css`]).toEqual({
+				types: './dist/styles.d.ts',
+				import: `./dist/fonts/${css}`,
+				default: `./dist/fonts/${css}`,
+			})
+		},
+	)
+
+	it('вход словаря — с побочным эффектом (sideEffects): иначе сборщик приложения обойдёт реэкспорт вместе с импортом CSS шрифта', () => {
+		expect(pkg.sideEffects).toContain('./dist/locales/*.js')
+	})
+
+	it('в корне пакета словарей zh и ja нет: оттуда приложение получило бы словарь без шрифта', () => {
+		const source = readFileSync(join(ROOT, 'src/index.ts'), 'utf8')
+		const exported = /export \{([^}]*)\} from '\.\/locales'/
+			.exec(source)![1]!
+			.split(',')
+			.map(name => name.trim())
+
+		expect(exported).toContain('registerLocale')
+		expect(exported.filter(name => CJK_FONTS.some(({ code }) => code === name))).toEqual([])
 	})
 })

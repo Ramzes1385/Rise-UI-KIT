@@ -213,7 +213,7 @@ export const uzBase = {
 			'BaseTooltip: isWrapperless boʻlganda trigger slotining ildizi matn yoki fragment emas, element boʻlishi kerak — maslahat bogʻlanmadi',
 		UNKNOWN_LOCALE: '«{locale}» tili nomaʼlum. Mavjudlari: {locales}; oʻz tilingiz — registerLocale()',
 		UNREGISTERED_LOCALE:
-			"«{locale}» tili ulanmagan: lugʻatni import qilib, ishga tushishda bir marta roʻyxatdan oʻtkazing — import { {locale}, registerLocale } from '@ramzes1385/rise-ui-kit'; registerLocale({locale}). Mavjudlari: {locales}",
+			'«{locale}» tili ulanmagan: lugʻatni import qilib, ishga tushishda bir marta roʻyxatdan oʻtkazing — {code}. Mavjudlari: {locales}',
 		TOAST_WITHOUT_APP: 'useToast: <BaseApp> topilmadi — bildirishnoma koʻrsatilmadi. Ilovani <BaseApp> ichiga oʻrang.',
 		OVERLAY_WITHOUT_APP: 'useOverlay: <BaseApp> topilmadi — overlay koʻrsatilmadi. Ilovani <BaseApp> ichiga oʻrang.',
 		EDITOR_UNSAFE_LINK: 'BaseEditor: xavfli sxemali havola qoʻyilmadi: {url}',

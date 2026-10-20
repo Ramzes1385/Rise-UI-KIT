@@ -2,7 +2,7 @@
 
 Шрифты Rise UI Kit — файлы `dist/fonts/**` пакета (исходники — `src/styles/fonts/**` в репозитории кита) — свободные шрифты по лицензии **SIL Open Font License 1.1** (OFL, текст ниже), а не по MIT, как остальной кит. По OFL их можно использовать, встраивать в сайты и приложения и распространять вместе с любым ПО; продавать сами шрифты отдельно нельзя, а изменённые версии остаются под OFL.
 
-Все файлы — подмножества или преобразованные копии оригиналов из репозитория [google/fonts](https://github.com/google/fonts) (каталог `ofl/`); собирает их `build/fonts/build_fonts.py` в репозитории кита (исходники сверяются по SHA-256).
+Все файлы — подмножества или преобразованные копии оригиналов из репозитория [google/fonts](https://github.com/google/fonts) (каталог `ofl/`); собирает их `build/fonts/build_fonts.py` в репозитории кита (исходники сверяются по SHA-256). Внутренние имена изменённых шрифтов, где это нужно, заменены, чтобы не использовать зарезервированные имена (OFL, п. 3).
 
 ## Rise Grotesk — `--rise-font-sans`
 
@@ -16,13 +16,24 @@
 | Файл | Шрифт | Авторские права | Изменения |
 |---|---|---|---|
 | `rise-mono-400.woff2`, `rise-mono-700.woff2` | Space Mono 1.003, Regular и Bold (`ofl/spacemono`) | Copyright 2016 The Space Mono Project Authors (https://github.com/googlefonts/spacemono) | переведены в WOFF2 |
-| `rise-mono-cyrillic-400.woff2`, `rise-mono-cyrillic-500.woff2` | IBM Plex Mono 2.3, Regular и Medium (`ofl/ibmplexmono`) | Copyright © 2017 IBM Corp. with Reserved Font Name "Plex" | подмножество: кириллица, ₽ № ₸ ʻ ʼ, стрелки; внутреннее имя — «Rise Mono Cyrillic» (имя «Plex» зарезервировано, OFL, п. 3); WOFF2 |
+| `rise-mono-cyrillic-400.woff2`, `rise-mono-cyrillic-700.woff2` | IBM Plex Mono 2.3, Regular и Bold (`ofl/ibmplexmono`) | Copyright © 2017 IBM Corp. with Reserved Font Name "Plex" | подмножество: кириллица, ₽ № ₸ ʻ ʼ, стрелки; внутреннее имя — «Rise Mono Cyrillic» (имя «Plex» зарезервировано, OFL, п. 3); WOFF2 |
 
 ## Знаки интерфейса — в обоих семействах
 
 | Файл | Шрифт | Авторские права | Изменения |
 |---|---|---|---|
-| `rise-symbols.woff2` | Noto Sans Symbols 2 2.008 (`ofl/notosanssymbols2`), Noto Sans Math 3.000 (`ofl/notosansmath`), Noto Sans Symbols 2.003 (`ofl/notosanssymbols`) | Copyright 2022 The Noto Project Authors (https://github.com/notofonts/symbols, https://github.com/notofonts/math) | 22 знака (клавиши ⌘ ⌥ ⌃ ⇧ ⇪ ⌫ ⌦ ↵ ⏎ ⎋ ⇥ ⇤, ⋮ ⋯, ∈ ∉ ∋ ∌ ∧ ∨, ✓ ✕) из трёх шрифтов в одном файле, начертание 400, без хинтинга; внутреннее имя — «Rise Symbols»; WOFF2 |
+| `rise-symbols.woff2` | Noto Sans Symbols 2 2.008 (`ofl/notosanssymbols2`), Noto Sans Math 3.000 (`ofl/notosansmath`), Noto Sans Symbols 2.003 (`ofl/notosanssymbols`) | Copyright 2022 The Noto Project Authors (https://github.com/notofonts/symbols, https://github.com/notofonts/math) | 60 знаков (клавиши ⌘ ⌥ ⌃ ⌄ ⇧ ⇪ ⌫ ⌦ ↵ ⏎ ⎋ ⇥ ⇤, ⋮ ⋯, ∈ ∉ ∋ ∌ ∧ ∨, отметки ✓ ✔ ✕ ✖ ✗ ✘, фигуры ● ○ ◆ ◇ ■ □ ▲ △ ▼ ▽ ▶ ▷ ◀ ◁ ★ ☆, стрелки ⇄ ⇅ ⇐ ⇒ ⇔ ⇑ ⇓ ⟵ ⟶ ↺ ↻, ⚠ ✎ ✉ ☰ ⏸ ⏹) из трёх шрифтов в одном файле, начертание 400, без хинтинга; внутреннее имя — «Rise Symbols»; WOFF2 |
+
+## Rise CJK SC и Rise CJK JP — китайский и японский
+
+Подключаются со словарями `zh` и `ja` (`dist/fonts/cjk/zh.css`, `ja.css`).
+
+| Файлы | Шрифт | Авторские права | Изменения |
+|---|---|---|---|
+| `cjk/sc/rise-cjk-sc-00.woff2` … `rise-cjk-sc-19.woff2` | Noto Sans SC 2.004, вариативный (`ofl/notosanssc`) | Copyright 2014-2021 Adobe (http://www.adobe.com/), with Reserved Font Name 'Source' | подмножество: GB2312 уровня 1, частотные иероглифы, пунктуация CJK, полноширинные формы и знаки словаря `zh` (4381 знак); ось wght — 400–700; без вертикальных форм и хинтинга; нарезка на 20 файлов по unicode-range; WOFF2. Имя «Source» не используется |
+| `cjk/jp/rise-cjk-jp-00.woff2` … `rise-cjk-jp-16.woff2` | Noto Sans JP 2.004, вариативный (`ofl/notosansjp`) | Copyright 2014-2021 Adobe (http://www.adobe.com/), with Reserved Font Name 'Source' | подмножество: дзёё-кандзи, JIS X 0208 уровня 1, частотные знаки, кана, пунктуация CJK, полноширинные формы и знаки словаря `ja` (3674 знака); ось wght — 400–700; без вертикальных форм и хинтинга; нарезка на 17 файлов по unicode-range; WOFF2. Имя «Source» не используется |
+
+Порядок частоты знаков для нарезки — файлы `slices/*_default.txt` репозитория [googlefonts/nam-files](https://github.com/googlefonts/nam-files) (Apache License 2.0); список дзёё-кандзи — по [x0213.org](https://x0213.org/joyo-kanji-code/index.en.html) (пакет npm `joyo-kanji`, MIT). Данные используются только при сборке подмножеств и в пакет не входят.
 
 ## SIL Open Font License 1.1
 

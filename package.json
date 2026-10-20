@@ -105,6 +105,24 @@
       "import": "./dist/media.layer.css",
       "default": "./dist/media.layer.css"
     },
+    "./locales/zh": {
+      "types": "./dist/locales/zh/index.d.ts",
+      "import": "./dist/locales/zh.js"
+    },
+    "./locales/ja": {
+      "types": "./dist/locales/ja/index.d.ts",
+      "import": "./dist/locales/ja.js"
+    },
+    "./fonts/zh.css": {
+      "types": "./dist/styles.d.ts",
+      "import": "./dist/fonts/cjk/zh.css",
+      "default": "./dist/fonts/cjk/zh.css"
+    },
+    "./fonts/ja.css": {
+      "types": "./dist/styles.d.ts",
+      "import": "./dist/fonts/cjk/ja.css",
+      "default": "./dist/fonts/cjk/ja.css"
+    },
     "./tokens.json": "./dist/tokens.json",
     "./tokens/*.json": "./dist/tokens/*.json",
     "./resolver": {
@@ -858,7 +876,8 @@
     "**/*.css",
     "**/*.scss",
     "**/*.vue",
-    "./dist/components/*/index.js"
+    "./dist/components/*/index.js",
+    "./dist/locales/*.js"
   ],
   "prettier": {
     "useTabs": true,

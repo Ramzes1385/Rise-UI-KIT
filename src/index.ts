@@ -16,7 +16,7 @@ export type {
 	UiKitDefaults,
 	UseLocaleReturn,
 } from './composables'
-export { defineLocale, en, formatMessage, ja, kk, LOCALES, pluralize, registerLocale, ru, setLocale, uz, zh } from './locales'
+export { defineLocale, en, formatMessage, kk, LOCALES, pluralize, registerLocale, ru, setLocale, uz } from './locales'
 export type {
 	CalendarNames,
 	CalendarPatterns,

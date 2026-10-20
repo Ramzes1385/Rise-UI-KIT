@@ -47,12 +47,24 @@ export const localeCodes = computed(() => [...new Set([DEFAULT_LOCALE.code, ...r
 /** Две строки раздела `warnings` для `setLocale`: русские — из `ruLocaleWarnings`, поэтому смена языка не тянет в сборку весь раздел */
 const LOCALE_WARNINGS = /* @__PURE__ */ localized('warnings', ruLocaleWarnings as UiKitLocale['warnings'])
 
+const PACKAGE = '@ramzes1385/rise-ui-kit'
+
+/** Словари с подпути `/locales/<код>`: вместе со словарём приходит шрифт иероглифов (build/plugins/fonts.ts), в корне пакета их нет */
+const SUBPATH_LOCALES: readonly string[] = ['zh', 'ja']
+
+/** Код подключения готового словаря для подсказки: `en`, `kk`, `uz` — из корня пакета, `zh` и `ja` — с подпути */
+function registerCode(locale: string): string {
+	const register = `registerLocale(${locale})`
+	if (!SUBPATH_LOCALES.includes(locale)) return `import { ${locale}, registerLocale } from '${PACKAGE}'; ${register}`
+	return `import { registerLocale } from '${PACKAGE}'; import { ${locale} } from '${PACKAGE}/locales/${locale}'; ${register}`
+}
+
 /** Предупреждение о неизвестном коде: у готового, но не подключённого словаря кита — подсказка, как его подключить */
 function warnUnknownLocale(locale: string): void {
 	const template = (KIT_LOCALE_CODES as readonly string[]).includes(locale)
 		? LOCALE_WARNINGS.UNREGISTERED_LOCALE
 		: LOCALE_WARNINGS.UNKNOWN_LOCALE
-	console.warn(`[rise-ui-kit] ${formatMessage(template, { locale, locales: localeCodes.value.join(', ') })}`)
+	console.warn(`[rise-ui-kit] ${formatMessage(template, { locale, locales: localeCodes.value.join(', '), code: registerCode(locale) })}`)
 }
 
 /**

@@ -36,8 +36,9 @@
 	descent-override: 29.2%;
 	line-gap-override: 0%;
 	unicode-range:
-		U+21B5, U+21E4-21E5, U+21E7, U+21EA, U+2208-2209, U+220B-220C, U+2227-2228, U+22EE-22EF, U+2303, U+2318, U+2325-2326, U+232B,
-		U+238B, U+23CE, U+2713, U+2715;
+		U+21B5, U+21BA-21BB, U+21C4-21C5, U+21D0-21D4, U+21E4-21E5, U+21E7, U+21EA, U+2208-2209, U+220B-220C, U+2227-2228, U+22EE-22EF,
+		U+2303-2304, U+2318, U+2325-2326, U+232B, U+238B, U+23CE, U+23F8-23F9, U+25A0-25A1, U+25B2-25B3, U+25B6-25B7, U+25BC-25BD,
+		U+25C0-25C1, U+25C6-25C7, U+25CB, U+25CF, U+2605-2606, U+2630, U+26A0, U+2709, U+270E, U+2713-2718, U+27F5-27F6;
 }
 
 @font-face {
@@ -46,14 +47,6 @@
 	font-weight: 400;
 	font-display: block;
 	src: url('./files/rise-mono-400.woff2?no-inline') format('woff2');
-}
-
-@font-face {
-	font-family: 'Rise Mono';
-	font-style: normal;
-	font-weight: 700;
-	font-display: block;
-	src: url('./files/rise-mono-700.woff2?no-inline') format('woff2');
 }
 
 @font-face {
@@ -74,9 +67,32 @@
 @font-face {
 	font-family: 'Rise Mono';
 	font-style: normal;
-	font-weight: 500 700;
+	font-weight: 400;
 	font-display: block;
-	src: url('./files/rise-mono-cyrillic-500.woff2?no-inline') format('woff2');
+	src: url('./files/rise-symbols.woff2?no-inline') format('woff2');
+	ascent-override: 112%;
+	descent-override: 36.1%;
+	line-gap-override: 0%;
+	unicode-range:
+		U+21B5, U+21BA-21BB, U+21C4-21C5, U+21D0-21D4, U+21E4-21E5, U+21E7, U+21EA, U+2208-2209, U+220B-220C, U+2227-2228, U+22EE-22EF,
+		U+2303-2304, U+2318, U+2325-2326, U+232B, U+238B, U+23CE, U+23F8-23F9, U+25A0-25A1, U+25B2-25B3, U+25B6-25B7, U+25BC-25BD,
+		U+25C0-25C1, U+25C6-25C7, U+25CB, U+25CF, U+2605-2606, U+2630, U+26A0, U+2709, U+270E, U+2713-2718, U+27F5-27F6;
+}
+
+@font-face {
+	font-family: 'Rise Mono';
+	font-style: normal;
+	font-weight: 700;
+	font-display: block;
+	src: url('./files/rise-mono-700.woff2?no-inline') format('woff2');
+}
+
+@font-face {
+	font-family: 'Rise Mono';
+	font-style: normal;
+	font-weight: 700;
+	font-display: block;
+	src: url('./files/rise-mono-cyrillic-700.woff2?no-inline') format('woff2');
 	size-adjust: 102%;
 	ascent-override: 109.8%;
 	descent-override: 35.39%;
@@ -89,13 +105,14 @@
 @font-face {
 	font-family: 'Rise Mono';
 	font-style: normal;
-	font-weight: 400 700;
+	font-weight: 700;
 	font-display: block;
 	src: url('./files/rise-symbols.woff2?no-inline') format('woff2');
 	ascent-override: 112%;
 	descent-override: 36.1%;
 	line-gap-override: 0%;
 	unicode-range:
-		U+21B5, U+21E4-21E5, U+21E7, U+21EA, U+2208-2209, U+220B-220C, U+2227-2228, U+22EE-22EF, U+2303, U+2318, U+2325-2326, U+232B,
-		U+238B, U+23CE, U+2713, U+2715;
+		U+21B5, U+21BA-21BB, U+21C4-21C5, U+21D0-21D4, U+21E4-21E5, U+21E7, U+21EA, U+2208-2209, U+220B-220C, U+2227-2228, U+22EE-22EF,
+		U+2303-2304, U+2318, U+2325-2326, U+232B, U+238B, U+23CE, U+23F8-23F9, U+25A0-25A1, U+25B2-25B3, U+25B6-25B7, U+25BC-25BD,
+		U+25C0-25C1, U+25C6-25C7, U+25CB, U+25CF, U+2605-2606, U+2630, U+26A0, U+2709, U+270E, U+2713-2718, U+27F5-27F6;
 }

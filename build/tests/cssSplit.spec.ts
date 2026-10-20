@@ -13,6 +13,8 @@ const FONTS =
 	'@font-face{font-family:Rise Grotesk;font-display:block;src:url(./fonts/rise-grotesk.woff2)format("woff2")}' +
 	'@font-face{font-family:Rise Mono;font-display:block;src:url(./fonts/rise-mono-400.woff2)format("woff2")}'
 const TOKENS = `:root{--rise-color-primary-500:#f97316}[data-theme=dark]{--rise-bg:#000}${FONTS}`
+const CJK_CSS = (family: string, dir: string, from = '.') =>
+	`@font-face{font-family:'${family}';font-display:block;src:url('${from}/${dir}/rise-cjk-${dir}-00.woff2') format('woff2');unicode-range:U+4E00}`
 const PLAYER = '.base-media-player{position:relative}.base-presentation-player{display:block}'
 
 describe('isMediaStyle', () => {
@@ -64,9 +66,20 @@ describe('check-css-split', () => {
 	beforeEach(() => {
 		root = mkdtempSync(join(tmpdir(), 'css-split-'))
 		for (const dir of MEDIA_STYLE_DIRS) mkdirSync(join(root, dir), { recursive: true })
-		mkdirSync(join(root, 'dist/fonts'), { recursive: true })
+		mkdirSync(join(root, 'dist/fonts/cjk/sc'), { recursive: true })
+		mkdirSync(join(root, 'dist/fonts/cjk/jp'), { recursive: true })
+		mkdirSync(join(root, 'dist/chunks'), { recursive: true })
 		write('dist/fonts/rise-grotesk.woff2', 'wOF2')
 		write('dist/fonts/rise-mono-400.woff2', 'wOF2')
+		write('dist/fonts/cjk/sc/rise-cjk-sc-00.woff2', 'wOF2')
+		write('dist/fonts/cjk/jp/rise-cjk-jp-00.woff2', 'wOF2')
+		write('dist/fonts/cjk/zh.css', CJK_CSS('Rise CJK SC', 'sc'))
+		write('dist/fonts/cjk/ja.css', CJK_CSS('Rise CJK JP', 'jp'))
+		mkdirSync(join(root, 'dist/locales'), { recursive: true })
+		write('dist/locales/zh.js', 'import"../fonts/cjk/zh.css";export{t as zh}from"../chunks/locale-zh-a1.js"')
+		write('dist/locales/ja.js', 'import"../fonts/cjk/ja.css";export{t as ja}from"../chunks/locale-ja-b2.js"')
+		write('dist/chunks/locale-zh-a1.js', 'export const t={}')
+		write('dist/chunks/locale-ja-b2.js', 'export const t={}')
 		write(`${MEDIA_STYLE_DIRS[0]}Player.style.scss`, '.base-media-player {\n\tposition: relative;\n}\n')
 		write(`${MEDIA_STYLE_DIRS[1]}Presentation.style.scss`, '.base-presentation-player {\n\tdisplay: block;\n}\n')
 		write('dist/styles.css', `${TOKENS}.base-button{color:red}`)
@@ -199,6 +212,31 @@ describe('check-css-split', () => {
 		expect(status).toBe(1)
 		expect(output).toContain('components/BaseButton/style.css: @font-face — шрифты кита объявляют только styles.css и tokens.css')
 		expect(output).not.toContain('%23n')
+	})
+
+	it('шрифты иероглифов: CSS языка импортирует только вход словаря, не общий чанк; @font-face Rise CJK — не в styles.css', () => {
+		write('dist/chunks/locale-zh-a1.js', 'import"../fonts/cjk/zh.css";export const t={}')
+		write('dist/styles.css', `${TOKENS}.base-button{color:red}${CJK_CSS('Rise CJK SC', 'sc', './fonts/cjk')}`)
+		rmSync(join(root, 'dist/locales/ja.js'))
+
+		const { status, output } = run()
+
+		expect(status).toBe(1)
+		expect(output).toContain(
+			'fonts/cjk/zh.css: его импортирует только вход словаря locales/zh.js, а импортирует: chunks/locale-zh-a1.js, locales/zh.js',
+		)
+		expect(output).toContain('fonts/cjk/ja.css: его импортирует только вход словаря locales/ja.js, а импортирует: никто')
+		expect(output).toContain('styles.css: @font-face «Rise CJK SC» — шрифты иероглифов подключает только словарь языка')
+	})
+
+	it('шрифты иероглифов: нет CSS языка или в нём нет семейства — проверка падает', () => {
+		rmSync(join(root, 'dist/fonts/cjk/ja.css'))
+		write('dist/fonts/cjk/zh.css', CJK_CSS('Rise CJK JP', 'sc'))
+
+		const { output } = run()
+
+		expect(output).toContain('нет dist/fonts/cjk/ja.css — шрифт Rise CJK JP не собран')
+		expect(output).toContain('fonts/cjk/zh.css: нет @font-face «Rise CJK SC»')
 	})
 
 	it('подпути: нет входа подпути или CSS, который он импортирует, — проверка падает', () => {

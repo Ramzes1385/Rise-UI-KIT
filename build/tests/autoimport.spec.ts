@@ -193,8 +193,20 @@ describe('модуль Nuxt (на заглушке nuxt)', () => {
 		const keyed = createNuxt({ riseUiKit: { prefix: 'Ui', tokens: 'layer', config: { locale: 'ja' } } })
 		setupRiseUi({ tokens: true }, keyed.nuxt, PLUGIN)
 		expect(keyed.extend()[0]!.pascalName).toBe('UiBaseAccordion')
-		expect(keyed.nuxt.options.css).toEqual(['@ramzes1385/rise-ui-kit/tokens.css'])
+		expect(keyed.nuxt.options.css).toEqual(['@ramzes1385/rise-ui-kit/tokens.css', '@ramzes1385/rise-ui-kit/fonts/ja.css'])
 		expect(keyed.nuxt.options.runtimeConfig.public.riseUiKit).toEqual({ locale: 'ja' })
+	})
+
+	it('язык zh или ja в config кладёт в css шрифт иероглифов (один раз, и без токенов); другие языки — нет', () => {
+		const zh = createNuxt()
+		setupRiseUi({ tokens: false, config: { locale: 'zh' } }, zh.nuxt, PLUGIN)
+		setupRiseUi({ tokens: false, config: { locale: 'zh' } }, zh.nuxt, PLUGIN)
+		expect(zh.nuxt.options.css).toEqual(['@ramzes1385/rise-ui-kit/fonts/zh.css'])
+		for (const locale of ['en', 'kk', 'ru', 'zh-TW']) {
+			const other = createNuxt()
+			setupRiseUi({ config: { locale } }, other.nuxt, PLUGIN)
+			expect(other.nuxt.options.css).toEqual(['@ramzes1385/rise-ui-kit/tokens.css'])
+		}
 	})
 
 	it('модуль — функция (options, nuxt) с getMeta: так Nuxt принимает модули без defineNuxtModule', async () => {

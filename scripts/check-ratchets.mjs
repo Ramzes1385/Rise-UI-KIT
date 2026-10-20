@@ -5,7 +5,8 @@
  *    подгружает статическими `import`/`export … from` (динамические `import()` не считаются). Нужна сборка: `npm run build`.
  *    Подпути компонентов (`components/<Имя>/index.js`, build/config/subpaths.ts) — один бюджет на самый тяжёлый из них,
  *    CSS папок компонентов (`components/<Имя>/style.css`) — один бюджет на самый тяжёлый файл.
- *    Шрифты кита (`fonts/*.woff2`, их подгружает CSS кита) — бюджет на сумму файлов группы.
+ *    Шрифты кита (`fonts/*.woff2`, их подгружает CSS кита) — бюджет на сумму файлов группы; шрифты иероглифов — на сумму по языку
+ *    (`fonts/cjk/sc`, `fonts/cjk/jp`) и на самый тяжёлый кусок (кусок словаря кита грузит любая страница на этом языке).
  *    Больше бюджета — проверка падает. Бюджет поднимают осознанно (`--reset-size-budget`, строкой в DECISIONS).
  * 2. Число `--coverage.exclude` в каждом скрипте `test:*:coverage` — не больше базы.
  * 3. Число предупреждений `eslint "src/**\/*.{ts,vue}"` (то же, что `npm run lint`) — не больше базы.
@@ -39,6 +40,9 @@ const SIZE_GROUPS = [
 	{ key: 'components/*/style.css', test: /^components\/[^/]+\/style\.css$/, single: true },
 	{ key: 'tokens/*.json', test: /^tokens\/[^/]+\.json$/, single: true },
 	{ key: 'fonts/*.woff2', test: /^fonts\/[^/]+\.woff2$/, single: true, sum: true },
+	{ key: 'fonts/cjk/sc/*.woff2', test: /^fonts\/cjk\/sc\/[^/]+\.woff2$/, single: true, sum: true },
+	{ key: 'fonts/cjk/jp/*.woff2', test: /^fonts\/cjk\/jp\/[^/]+\.woff2$/, single: true, sum: true },
+	{ key: 'fonts/cjk/*/*.woff2', test: /^fonts\/cjk\/[^/]+\/[^/]+\.woff2$/, single: true },
 ]
 const STATIC_IMPORT = /\b(?:import|export)\s*(?:[\w$*{},\s]*?\bfrom\s*)?["'](\.{1,2}\/[^"']+)["']/g
 

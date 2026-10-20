@@ -32,6 +32,14 @@
 			"gzip": 1188370,
 			"budget": 1307648
 		},
+		"locales/ja.js": {
+			"gzip": 47408,
+			"budget": 52224
+		},
+		"locales/zh.js": {
+			"gzip": 47211,
+			"budget": 52224
+		},
 		"map3d.js": {
 			"gzip": 141332,
 			"budget": 155648
@@ -93,8 +101,28 @@
 			"budget": 8192
 		},
 		"fonts/*.woff2": {
-			"gzip": 158147,
-			"budget": 174080
+			"gzip": 160987,
+			"budget": 177152
+		},
+		"fonts/cjk/sc/*.woff2": {
+			"gzip": 1244344,
+			"budget": 1369088
+		},
+		"fonts/cjk/jp/*.woff2": {
+			"gzip": 1005763,
+			"budget": 1106944
+		},
+		"fonts/cjk/*/*.woff2": {
+			"gzip": 218388,
+			"budget": 240640
+		},
+		"fonts/cjk/zh.css": {
+			"gzip": 12082,
+			"budget": 13312
+		},
+		"fonts/cjk/ja.css": {
+			"gzip": 10105,
+			"budget": 11264
 		}
 	},
 	"coverageExcludes": {

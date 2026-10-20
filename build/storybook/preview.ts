@@ -17,8 +17,11 @@ import { applyStoryBrand, STORY_BRAND_DEFAULT, STORY_WAIT_TIMEOUT, StoryRouterLi
 import type { Decorator, Preview } from '@storybook/vue3-vite'
 import { theme as docsTheme } from './theme'
 
-// Шрифты кита (@font-face Rise Grotesk и Rise Mono) приходят с kit.scss внутри index.scss — как у приложения со styles.css
+// Шрифты кита (@font-face Rise Grotesk и Rise Mono) приходят с kit.scss внутри index.scss — как у приложения со styles.css.
+// Шрифты иероглифов приложению подключает словарь zh или ja из пакета (build/plugins/fonts.ts); словари здесь из исходников — CSS напрямую
 import '../../src/styles/index.scss'
+import '../../src/styles/fonts/cjk/zh.css'
+import '../../src/styles/fonts/cjk/ja.css'
 import './preview.scss'
 
 type Theme = 'light' | 'dark'
