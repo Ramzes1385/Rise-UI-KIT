@@ -3533,3 +3533,14 @@ app.use(createUiKitConfig({ locale: 'en', theme: 'corporate' }))
 ## Стили ленивых частей карты и роадмапа (flow-size, CSS)
 
 Стили компонентов, которые берут только ленивые части BaseFlowMap и BaseRoadmap (правка, палитра, инспектор: BaseTabs, BaseTextarea, BaseSelect…), приходят вместе с их чанками, а не со входом подпути. Чанк подключает `components/<Имя>/style.layer.css` — те же правила внутри `@layer rise{…}`, поэтому они слабее любых неслойных стилей приложения и ничего не перебивают (в том числе при корне со `styles.css`). CSS первого вида: BaseFlowMap 8,1 КБ gzip (было 26,4), BaseRoadmap 14,5 КБ (было 21,3). Для приложений с подпутями и с корнем ничего делать не нужно. Новый файл пакета: `dist/components/<Имя>/style.layer.css`.
+
+## BaseRoadmap3D (новый)
+
+- **Новое, без ломки.** `BaseRoadmap3D` — роадмап в виде 3D-острова на three.js: дорога, пьедесталы этапов, машинка на текущем этапе, тур, панель этапа. Вход `@ramzes1385/rise-ui-kit/roadmap3d`; `three` — необязательный peer (`>=0.180.0 <0.200.0`), основной вход и `/components` его не тянут. Существующий `BaseRoadmap` и его вход не менялись.
+- **Данные и API те же, что у BaseRoadmap.** Пропсы `data`, `progress`, `storage`, `mode`, `selected`, `filter`, хуки и все события роадмапа работают так же (`v-model:data`, `v-model:progress`). Свои пропсы: `view` (`3d` | `2d`), `camera` (`iso`, `iso-90`, `iso-180`, `iso-270`, `top`, `perspective`), `focused` (id этапа), `isTourPlaying`, `models`, `quality` (`auto` | `low` | `high`), `rendererFactory`, `configureLoader`, `has2dToggle`, `hasTour`, `compactBreakpoint`, `height`. События: `update:view`, `update:camera`, `update:focused`, `update:isTourPlaying`, `fallback`.
+- **Фолбэк.** Нет WebGL, рендерер не создался, контекст потерян или модель не загрузилась — компонент показывает обычный `BaseRoadmap` (`layout="path"`) с теми же данными и событиями, событие `fallback` называет причину. На сервере (SSR) рисуется скрытый список этапов, без three.
+- **Правка.** Режим `edit` открывает правку этапа в панели (название, порядок, модель пьедестала, добавление и удаление): изменения идут командами роадмапа, история общая с 2D. Режим `review` показывает 2D-вид.
+- **Модели пьедесталов.** Встроенные 9 фигур и 35 моделей реестра ядра; поле этапа `model3d` (ключ, `tint`, URL GLB). GLB-кеш — общая библиотека страницы (`createModelLibrary`), две 3D-сцены на странице не грузят один файл дважды.
+- **Слоты.** Слоты BaseRoadmap; в 2D-виде они передаются 2D-роадмапу, `topic-details` и `material` ещё и панели темы.
+- **Словарь.** Раздел `roadmap3d` / `UI_ROADMAP_3D` на шести языках.
+- **Подключение.** `import { BaseRoadmap3D } from '@ramzes1385/rise-ui-kit/roadmap3d'`; `npm i three` в приложении. В автоимпорт Nuxt и резолвер компонент не входит (как `BaseImageMap3D`).

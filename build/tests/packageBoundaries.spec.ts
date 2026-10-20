@@ -19,6 +19,7 @@ const PUBLIC_ENTRIES = [
 	'icons/index.ts',
 	'components/BaseMediaPlayer/index.ts',
 	'map3d.ts',
+	'roadmap3d.ts',
 	'config.ts',
 	'resolver.ts',
 	'nuxt.ts',

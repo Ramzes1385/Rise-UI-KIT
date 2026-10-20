@@ -31,6 +31,7 @@
 	"include": [
 		"../../src/index.ts",
 		"../../src/map3d.ts",
+		"../../src/roadmap3d.ts",
 		"../../src/config.ts",
 		"../../src/resolver.ts",
 		"../../src/nuxt.ts",

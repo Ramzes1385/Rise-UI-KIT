@@ -140,6 +140,7 @@ const INTERACTIVE_COMPONENTS = new Set([
 	'BaseFileManager',
 	'BaseFormWizard',
 	'BaseRoadmap',
+	'BaseRoadmap3D',
 	'BaseFlowMap',
 ])
 
@@ -209,6 +210,7 @@ const INTERACTIVE_WITH_DISABLED = new Set([
 	'BaseFileManager',
 	'BaseFormWizard',
 	'BaseRoadmap',
+	'BaseRoadmap3D',
 	'BaseFlowMap',
 ])
 
@@ -265,6 +267,7 @@ const LOADING_COMPONENTS = new Set([
 	'BaseFileManager',
 	'BaseFormWizard',
 	'BaseRoadmap',
+	'BaseRoadmap3D',
 	'BaseFlowMap',
 ])
 
@@ -303,6 +306,7 @@ const EMPTY_COMPONENTS = new Set([
 	'BaseFileManager',
 	'BaseFormWizard',
 	'BaseRoadmap',
+	'BaseRoadmap3D',
 	'BaseFlowMap',
 ])
 
@@ -354,6 +358,7 @@ const LONG_CONTENT_COMPONENTS = new Set([
 	'BaseFileManager',
 	'BaseFormWizard',
 	'BaseRoadmap',
+	'BaseRoadmap3D',
 	'BaseFlowMap',
 ])
 

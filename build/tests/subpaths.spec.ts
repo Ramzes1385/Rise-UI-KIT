@@ -37,7 +37,7 @@ describe('публичные компоненты и exports', () => {
 	it('непубличное наружу не торчит: подпутей для плеера, 3D-карты и внутренних файлов нет', () => {
 		const subpaths = Object.keys(pkg.exports).filter(key => /^\.\/Base/.test(key))
 		expect(subpaths.sort()).toEqual(components.map(component => `./${component}`).sort())
-		for (const hidden of ['./BaseMediaPlayer', './BasePresentationPlayer', './BaseImageMap3D'])
+		for (const hidden of ['./BaseMediaPlayer', './BasePresentationPlayer', './BaseImageMap3D', './BaseRoadmap3D'])
 			expect(pkg.exports[hidden]).toBeUndefined()
 		// единственный шаблон — темы токенов для дизайна (`dist/tokens/<тема>.<режим>.json`, задача w16-security-tokens)
 		expect(Object.keys(pkg.exports).filter(key => key.includes('*'))).toEqual(['./tokens/*.json'])

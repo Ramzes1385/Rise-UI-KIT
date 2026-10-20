@@ -68,6 +68,10 @@
       "types": "./dist/map3d.d.ts",
       "import": "./dist/map3d.js"
     },
+    "./roadmap3d": {
+      "types": "./dist/roadmap3d.d.ts",
+      "import": "./dist/roadmap3d.js"
+    },
     "./config": {
       "types": "./dist/config.d.ts",
       "import": "./dist/config.js"
@@ -1007,6 +1011,7 @@
       "src/components/BaseCryptoProSign/model/emulation/cryptoProSignEmulation.ts",
       "src/components/BaseMediaPlayer/index.ts",
       "src/map3d.ts",
+      "src/roadmap3d.ts",
       "src/config.ts",
       "src/resolver.ts",
       "src/nuxt.ts",
