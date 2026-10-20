@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { MODEL3D_ANIMATIONS, MODEL3D_PRESET_IDS } from '../../types/model3d.types'
-import { collectPresetWordGroups, matchQuality, normalizeText, pickByWords, tokenize } from '../../models/keywords'
-import { MODEL3D_KIND_FALLBACK, MODEL3D_PRESETS, fallbackForKind, isModel3DPreset, presetsOfSet } from '../../models/presets'
+import { MODEL3D_ANIMATIONS, MODEL3D_PRESET_IDS } from '../../../types/model3d.types'
+import { collectPresetWordGroups, matchQuality, normalizeText, pickByWords, tokenize } from '../../../models/keywords'
+import { MODEL3D_KIND_FALLBACK, MODEL3D_PRESETS, fallbackForKind, isModel3DPreset, presetsOfSet } from '../../../models/presets'
 
 const pick = (text: string, sets: Parameters<typeof collectPresetWordGroups>[0] = ['service']) =>
 	pickByWords(text, collectPresetWordGroups(sets))

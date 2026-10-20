@@ -1,13 +1,13 @@
 import type { MeshStandardMaterial } from 'three'
 import { describe, expect, it, vi } from 'vitest'
 import type { BufferGeometry, Material } from 'three'
-import { MODEL3D_LIBRARY } from '../../models/library'
-import { boxModel, meshOf } from './modelsTestHelpers'
-import { INSTANCE_THRESHOLD } from '../../models/registry'
-import { resolveScenePalette } from '../../theme/scenePalette'
-import { createTestRegistry, node, runFrames } from './modelsTestKit'
-import { Color, Group, InstancedMesh, Matrix4, Mesh, Vector3 } from 'three'
-import type { Model3DRegistryOptions, Model3DSelection } from '../../types/internal/model3dInternal.types'
+import { boxModel, meshOf } from '../modelsTestHelpers'
+import { MODEL3D_LIBRARY } from '../../../models/library'
+import { INSTANCE_THRESHOLD } from '../../../models/registry'
+import { resolveScenePalette } from '../../../theme/scenePalette'
+import { BoxGeometry, Color, Group, InstancedMesh, Matrix4, Mesh, Vector3 } from 'three'
+import { createTestContext, createTestRegistry, node, runFrames } from '../modelsTestKit'
+import type { Model3DRegistryOptions, Model3DSelection } from '../../../types/internal/model3dInternal.types'
 
 const sel = (id: string, extra: Partial<Model3DSelection> = {}): Model3DSelection => ({
 	node: node(id, 'x'),
@@ -263,6 +263,64 @@ describe('инстансинг: порог 8', () => {
 	})
 })
 
+describe('состояние от компонента', () => {
+	it('registry.setState меняет вид узла; то же состояние повторно вид не пересчитывает', () => {
+		const { registry } = createTestRegistry()
+		registry.add('a', sel('a'))
+		registry.commit()
+		const state = {
+			isHovered: true,
+			isSelected: false,
+			isActive: false,
+			isDimmed: false,
+			isFocused: false,
+			tone: 'none',
+			isDragging: false,
+			isInvalid: false,
+		} as const
+		registry.setState('a', state)
+		const look = registry.getLook('a')
+		expect(look?.rings[0].id).toBe('hover')
+		registry.setState('a', { ...state })
+		expect(registry.getLook('a')).toBe(look)
+		registry.getHandle('a')!.setState({ isHovered: true })
+		expect(registry.getLook('a')).toBe(look)
+	})
+})
+
+describe('инстансинг: особые случаи моделей', () => {
+	it('модель с мешем вне частей собирается в группу', () => {
+		const stray = (_node: unknown, ctx: ReturnType<typeof createTestContext>) => {
+			const object = new Group()
+			const inPart = new Mesh(
+				ctx.geometry('t:a', () => new BoxGeometry()),
+				ctx.material('body'),
+			)
+			const outside = new Mesh(
+				ctx.geometry('t:b', () => new BoxGeometry()),
+				ctx.material('body'),
+			)
+			object.add(inPart, outside)
+			return { object, parts: { body: [inPart] } }
+		}
+		const { registry } = createTestRegistry({ library: { ...MODEL3D_LIBRARY, laptop: stray as never } })
+		for (let index = 0; index < 8; index += 1) registry.add(`n${index}`, sel(`n${index}`, { kindModel: 'laptop' }))
+		registry.commit()
+		expect(instanced(registry)).toHaveLength(2)
+	})
+
+	it('без instanceColor после setColorAt цвет экземпляра не падает', () => {
+		const spy = vi.spyOn(InstancedMesh.prototype, 'setColorAt').mockImplementation(function (this: InstancedMesh) {
+			return this
+		})
+		const { registry } = createTestRegistry()
+		fill(registry, 8)
+		registry.commit()
+		expect(() => registry.getHandle('n0')!.setState({ isHovered: true })).not.toThrow()
+		spy.mockRestore()
+	})
+})
+
 describe('вынос и возврат инстанса', () => {
 	function eight(extra: Partial<Model3DRegistryOptions> = {}) {
 		const setup = createTestRegistry({ getDuration: () => 200, ...extra })
@@ -507,8 +565,8 @@ describe('освобождение', () => {
 		const { registry } = createTestRegistry()
 		fill(registry, 2)
 		registry.commit()
-		const first = registry.getHandle('n0')!.object
-		const second = registry.getHandle('n1')!.object
+		const first = registry.getHandle('n0')!.object as Group
+		const second = registry.getHandle('n1')!.object as Group
 		const { spies } = spyAll(first)
 		registry.remove('n0')
 		spies.forEach(spy => expect(spy).not.toHaveBeenCalled())

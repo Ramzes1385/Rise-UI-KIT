@@ -1,9 +1,9 @@
-import { node } from './modelsTestKit'
+import { node } from '../modelsTestKit'
 import { describe, expect, it, vi } from 'vitest'
-import type { Model3DDefinitions } from '../../types/model3d.types'
-import type { Model3DSelection } from '../../types/internal/model3dInternal.types'
-import type { Model3DResolveOptions } from '../../types/internal/model3dRuntime.types'
-import { collectWordGroups, findDefinition, resolveModel } from '../../models/runtime/modelResolve'
+import type { Model3DDefinitions } from '../../../types/model3d.types'
+import type { Model3DSelection } from '../../../types/internal/model3dInternal.types'
+import type { Model3DResolveOptions } from '../../../types/internal/model3dRuntime.types'
+import { collectWordGroups, findDefinition, resolveModel } from '../../../models/runtime/modelResolve'
 
 function setup(extra: { component?: Model3DDefinitions; app?: Model3DDefinitions } & Partial<Model3DResolveOptions> = {}) {
 	const warn = vi.fn()
@@ -75,7 +75,7 @@ describe('порядок выбора модели (6.2)', () => {
 
 	it('3. modelResolver: ключ; null и undefined — дальше; неизвестный — warn и дальше', () => {
 		const answers: Array<string | null | undefined> = ['bank', null, undefined, 'ghost']
-		const modelResolver = vi.fn(() => answers.shift())
+		const modelResolver = vi.fn((_node: unknown) => answers.shift())
 		const { resolve, warn } = setup({ modelResolver })
 		expect(resolve()).toMatchObject({ key: 'bank', source: 'resolver' })
 		expect(resolve({ kindModel: 'db' }).source).toBe('kind')

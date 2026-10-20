@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import type { Model3DState } from '../../types/model3d.types'
-import { MODEL3D_TONE_CSS, describeLook, mergeState, restState, stateKey } from '../../models/behavior/modelStates'
+import type { Model3DState } from '../../../types/model3d.types'
+import { MODEL3D_TONE_CSS, describeLook, mergeState, restState, stateKey } from '../../../models/behavior/modelStates'
 
 const look = (patch: Partial<Model3DState> = {}) => describeLook({ ...restState(), ...patch })
 const ringIds = (patch: Partial<Model3DState>) => look(patch).rings.map(ring => ring.id)

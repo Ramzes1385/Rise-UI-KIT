@@ -1,10 +1,11 @@
 import type { Material } from 'three'
-import { boxModel } from './modelsTestHelpers'
+import { boxModel } from '../modelsTestHelpers'
 import { describe, expect, it, vi } from 'vitest'
-import { MODEL3D_LIBRARY } from '../../models/library'
-import { createTestRegistry, node, runFrames } from './modelsTestKit'
-import type { Model3DInstance, Model3DPart } from '../../types/model3d.types'
-import type { Model3DRegistryOptions } from '../../types/internal/model3dInternal.types'
+import { MODEL3D_LIBRARY } from '../../../models/library'
+import { pulseDecor } from '../../../models/behavior/modelRestyle'
+import { createTestRegistry, node, runFrames } from '../modelsTestKit'
+import type { Model3DInstance, Model3DPart } from '../../../types/model3d.types'
+import type { Model3DRegistryOptions } from '../../../types/internal/model3dInternal.types'
 import { BoxGeometry, Color, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial } from 'three'
 
 const resolveColor = (css: string) => new Color(css.startsWith('#') ? css : '#3366aa')
@@ -293,6 +294,13 @@ describe('кольца и светодиод', () => {
 		handle.setState({ isActive: true })
 		handle.setState({ isActive: false, isFocused: true })
 		expect(() => runFrames(loop, 2)).not.toThrow()
+	})
+})
+
+describe('pulseDecor напрямую', () => {
+	it('нет декора или активного кольца — ничего не делает', () => {
+		expect(() => pulseDecor({ decor: null } as never, 1, 1.6)).not.toThrow()
+		expect(() => pulseDecor({ decor: { rings: new Map() } } as never, 1, 1.6)).not.toThrow()
 	})
 })
 

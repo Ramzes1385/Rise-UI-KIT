@@ -1,18 +1,18 @@
 import { Group, Vector3 } from 'three'
-import { boxModel } from './modelsTestHelpers'
+import { boxModel } from '../modelsTestHelpers'
 import { describe, expect, it, vi } from 'vitest'
-import { MODEL3D_LIBRARY } from '../../models/library'
-import type { Model3DDefinition } from '../../types/model3d.types'
-import { createTestRegistry, node, runFrames } from './modelsTestKit'
-import type { Model3DEntry } from '../../types/internal/model3dInternal.types'
-import type { Model3DRegistryOptions } from '../../types/internal/model3dInternal.types'
+import { MODEL3D_LIBRARY } from '../../../models/library'
+import type { Model3DDefinition } from '../../../types/model3d.types'
+import { createTestRegistry, node, runFrames } from '../modelsTestKit'
+import type { Model3DEntry } from '../../../types/internal/model3dInternal.types'
+import type { Model3DRegistryOptions } from '../../../types/internal/model3dInternal.types'
 import {
 	DEFAULT_ANIMATION_MS,
 	defaultAnimationDuration,
 	defaultAnimationName,
 	parseDuration,
 	stepAnimations,
-} from '../../models/behavior/modelAnimations'
+} from '../../../models/behavior/modelAnimations'
 
 describe('parseDuration', () => {
 	it('ms и s', () => {

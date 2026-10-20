@@ -1,11 +1,11 @@
 import { Group } from 'three'
-import { node } from './modelsTestKit'
-import { makeScope } from './modelsTestHelpers'
+import { node } from '../modelsTestKit'
+import { makeScope } from '../modelsTestHelpers'
 import { describe, expect, it, vi } from 'vitest'
-import { restState } from '../../models/behavior/modelStates'
-import { createEntry, startLoad } from '../../models/behavior/registryOps'
-import type { Model3DRuntime } from '../../types/internal/model3dRuntime.types'
-import type { Model3DHooks, Model3DResolution } from '../../types/internal/model3dInternal.types'
+import { restState } from '../../../models/behavior/modelStates'
+import type { Model3DRuntime } from '../../../types/internal/model3dRuntime.types'
+import type { Model3DHooks, Model3DResolution } from '../../../types/internal/model3dInternal.types'
+import { applyLook, createEntry, settleEntry, startLoad } from '../../../models/behavior/registryOps'
 
 function runtime(warn = vi.fn()) {
 	const scope = makeScope({ warn })
@@ -68,5 +68,25 @@ describe('startLoad без загрузчика', () => {
 		rt.options.warn = undefined
 		const entry = entryFor({ key: 'a.glb', definition: { url: 'a.glb' }, source: 'url' })
 		expect(() => startLoad(rt, entry, null)).not.toThrow()
+	})
+})
+
+describe('защитные ветви', () => {
+	it('applyLook: узел в группе, которой уже нет, не падает', () => {
+		const { rt, entryFor } = runtime()
+		const entry = entryFor({ key: 'server', definition: { preset: 'server' }, source: 'shape' })
+		entry.mode = 'instanced'
+		entry.groupKey = 'ghost'
+		expect(() => applyLook(rt, entry)).not.toThrow()
+		entry.groupKey = null
+		expect(() => applyLook(rt, entry)).not.toThrow()
+	})
+
+	it('settleEntry: нет группы — узел остаётся как есть', () => {
+		const { rt, entryFor } = runtime()
+		const entry = entryFor({ key: 'server', definition: { preset: 'server' }, source: 'shape' })
+		entry.mode = 'object'
+		settleEntry(rt, entry)
+		expect(entry.mode).toBe('object')
 	})
 })

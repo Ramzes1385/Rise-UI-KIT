@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from 'vitest'
-import { countTriangles } from '../../models/library/parts'
-import { boxModel, makeScope, makeTarget } from './modelsTestHelpers'
-import { createModelContext } from '../../models/runtime/modelContext'
-import { BoxGeometry, Group, Mesh, MeshBasicMaterial, Vector3 } from 'three'
-import type { Model3DEntry } from '../../types/internal/model3dInternal.types'
+import { countTriangles } from '../../../models/library/parts'
+import { boxModel, makeScope, makeTarget } from '../modelsTestHelpers'
+import { createModelContext } from '../../../models/runtime/modelContext'
+import type { Model3DEntry } from '../../../types/internal/model3dInternal.types'
+import { BoxGeometry, Color, Group, Mesh, MeshBasicMaterial, Vector3 } from 'three'
 import {
 	attachInstance,
 	buildFactory,
@@ -12,7 +12,7 @@ import {
 	findDetail,
 	isSyncDefinition,
 	toInstance,
-} from '../../models/runtime/modelBuild'
+} from '../../../models/runtime/modelBuild'
 
 const mesh = () => new Mesh(new BoxGeometry(1, 1, 1), new MeshBasicMaterial())
 
@@ -167,12 +167,12 @@ describe('createModelContext', () => {
 	})
 
 	it('color отдаёт клон цвета', () => {
-		const shared = new Group()
-		const scope = makeScope({ resolveColor: () => (shared.userData.c ??= new Mesh().material.color.clone()) })
+		const shared = new Color('#123456')
+		const scope = makeScope({ resolveColor: () => shared })
 		const context = createModelContext(scope, makeTarget())
 		const color = context.color('red')
-		expect(color).not.toBe(shared.userData.c)
-		expect(color.getHex()).toBe(shared.userData.c.getHex())
+		expect(color).not.toBe(shared)
+		expect(color.getHex()).toBe(shared.getHex())
 	})
 
 	it('seed детерминирован по id узла и seed опций', () => {

@@ -1,13 +1,13 @@
 import { resolve } from 'node:path'
 import { readFileSync } from 'node:fs'
-import { flush } from './modelsTestHelpers'
-import { MODEL3D_LIBRARY } from '../../models/library'
+import { flush } from '../modelsTestHelpers'
+import { MODEL3D_LIBRARY } from '../../../models/library'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { GLTF } from 'three/addons/loaders/GLTFLoader.js'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
-import { createGltfLoader, gltfToInstance } from '../../models/runtime/modelGltf'
-import type { Model3DGltfSource } from '../../types/internal/model3dInternal.types'
-import { createTestContext, createTestRegistry, node, runFrames } from './modelsTestKit'
+import { createGltfLoader, gltfToInstance } from '../../../models/runtime/modelGltf'
+import type { Model3DGltfSource } from '../../../types/internal/model3dInternal.types'
+import { createTestContext, createTestRegistry, node, runFrames } from '../modelsTestKit'
 import { AnimationClip, AnimationMixer, BoxGeometry, Group, Mesh, MeshStandardMaterial } from 'three'
 
 function fakeScene(): Group {

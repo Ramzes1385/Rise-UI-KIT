@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest'
-import { resolveScenePalette } from '../../theme/scenePalette'
-import { createResourceCache } from '../../scene/resourceCache'
-import { createModelBank, roleColor } from '../../models/runtime/modelBank'
-import type { ScenePalette } from '../../types/internal/scene3dGeometry.types'
+import { resolveScenePalette } from '../../../theme/scenePalette'
+import { createResourceCache } from '../../../scene/resourceCache'
+import { createModelBank, roleColor } from '../../../models/runtime/modelBank'
+import type { ScenePalette } from '../../../types/internal/scene3dGeometry.types'
 import { BoxGeometry, Color, MeshBasicMaterial, MeshStandardMaterial } from 'three'
 
 function setup() {
