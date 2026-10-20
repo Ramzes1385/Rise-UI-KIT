@@ -59,7 +59,7 @@ const LAZY_SHARED_GROUPS = [
 	},
 	{
 		name: 'flow-map-shared',
-		test: /[\\/]BaseFlowMap[\\/](?:model[\\/](?:context[\\/]flowContext|scenario[\\/]scenarioContext|notations[\\/](?:resolveKind|registry)|layout[\\/](?:compound|placement|useFlowLayout)|render[\\/]shapes[\\/]flowShapes|execute[\\/]flowReject|data[\\/](?:flowDiff|flowGraph|flowIds|flowValidate|flowMigrate|flowNormalize))\.ts|ui[\\/]canvas[\\/]FlowSvgNode\.vue)/,
+		test: /[\\/]BaseFlowMap[\\/](?:model[\\/](?:context[\\/]flowContext|scenario[\\/]scenarioContext|notations[\\/](?:resolveKind|registry)|layout[\\/](?:compound|placement|useFlowLayout)|render[\\/]shapes[\\/]flowShapes|execute[\\/]flowReject|panels[\\/](?:detailsView|panelStatus)|data[\\/](?:flowDiff|flowGraph|flowIds|flowValidate|flowMigrate|flowNormalize))\.ts|ui[\\/]canvas[\\/]FlowSvgNode\.vue)/,
 		priority: 10,
 		entriesAware: true,
 	},

@@ -14,7 +14,10 @@ export function useFlowModes(
 	const isEditMode = computed(() => model.mode.value === 'edit')
 	const hasReviewData = computed(() => Boolean(props.suggestions?.length || props.comments?.length))
 	const isReviewMode = computed(() => model.mode.value === 'review')
-	const edit = useFlowEditLoader(parts, isEditMode)
+	const edit = useFlowEditLoader(
+		parts,
+		computed(() => isEditMode.value || isReviewMode.value),
+	)
 	const review = useFlowReviewLoader(
 		{ model, props, announce, preload: parts.preloadReview },
 		computed(() => isReviewMode.value || hasReviewData.value),

@@ -23,12 +23,17 @@ function useBackClose(isOpen: Ref<boolean>, close: () => void) {
 		if (window.history.state?.[HISTORY_FLAG]) window.history.back()
 	}
 
-	watch(isOpen, open => {
-		if (!open) return leave()
-		window.history.pushState({ [HISTORY_FLAG]: true }, '')
-		isPushed = true
-		window.addEventListener('popstate', onPop)
-	})
+	watch(
+		isOpen,
+		open => {
+			if (typeof window === 'undefined') return
+			if (!open) return leave()
+			window.history.pushState({ [HISTORY_FLAG]: true }, '')
+			isPushed = true
+			window.addEventListener('popstate', onPop)
+		},
+		{ immediate: true },
+	)
 	onBeforeUnmount(leave)
 }
 

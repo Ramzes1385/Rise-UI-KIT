@@ -68,7 +68,7 @@ function findChunkLoops(dist: string): string[] {
  * - `BaseFlowMap → FlowDetails`: панель деталей (ленивая) берёт из чанка `BaseFlowMap` общие функции карты;
  * - `useCryptoPro → plugin`: `plugin` статически импортирует `useCryptoPro`, а тот вызывает `plugin` по `import()`.
  */
-const KNOWN_LOOPS = ['chunks/BaseFlowMap → import() → chunks/FlowDetails', 'chunks/useCryptoPro → import() → chunks/plugin']
+const KNOWN_LOOPS = ['chunks/useCryptoPro → import() → chunks/plugin']
 
 const withoutHash = (edge: string) => edge.replace(/-[\w-]{8}\.js/g, '')
 
