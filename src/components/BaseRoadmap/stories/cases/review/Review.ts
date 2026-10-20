@@ -43,6 +43,10 @@ export const Review: StoryObj<typeof meta> = {
 		await expect(panel.getByRole('button', { name: 'Принять все: 3' })).toBeVisible()
 		await expect(panel.getAllByRole('button', { name: 'Принять' })).toHaveLength(4)
 
+		const rename = within(proposalCard(canvasElement, 'Переименовать'))
+		await expect(rename.getByText('Маршруты')).toBeVisible()
+		await expect(rename.getByText('Vue Router')).toBeVisible()
+		await expect(rename.getByText('→')).toBeVisible()
 		const stale = within(proposalCard(canvasElement, 'Увеличить оценку'))
 		await expect(stale.getByText('устарело')).toBeVisible()
 		await expect(stale.getByRole('button', { name: 'Принять' })).toHaveAttribute('aria-disabled', 'true')

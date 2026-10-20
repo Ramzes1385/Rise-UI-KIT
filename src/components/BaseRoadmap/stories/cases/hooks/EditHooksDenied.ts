@@ -54,6 +54,10 @@ export const EditHooksDenied: StoryObj<typeof meta> = {
 		await waitFor(() =>
 			expect(canvasElement.querySelector('.base-roadmap__edit-reject')).toHaveTextContent('Правка отменена обработчиком приложения'),
 		)
+		const notice = canvasElement.querySelector('.base-roadmap__edit-reject') as HTMLElement
+		await expect(notice).toBeVisible()
+		await expect(notice).not.toHaveAttribute('role')
+		await expect(within(notice).getByRole('button', { name: 'Закрыть сообщение' })).toBeVisible()
 		await expectStatus(canvasElement, /Тем 5 Изменений 0/)
 		await visible(() => canvasElement.querySelector('[data-roadmap-topic="template"] .base-roadmap__edit-pick') as HTMLElement)
 

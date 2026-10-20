@@ -17,7 +17,7 @@ export const ReviewStale: StoryObj<typeof meta> = {
 					'или место уже занято. Здесь две правки одного названия — «Vue Router» и «Навигация»: принятое первым делает',
 					'второе устаревшим. У такой карточки бейдж «устарело», «Принять» неактивна (но достаётся с клавиатуры), причина читается',
 					'через `aria-describedby`; «Принять все» считает и применяет только применимые. Отклонить устаревшее можно.',
-					'В RTL строка «поле → было → стало» с кириллицей остаётся одним отрезком LTR у правого края (двунаправленный текст, не дефект): `check-rtl` видит сдвиг `review-field`, при арабском или ивритском тексте порядок зеркалится.',
+					'Строка «поле → было → стало» — flex-ряд: в RTL порядок зеркалится вместе со стрелкой.',
 				].join('\n'),
 			},
 			source: storySource({ template: reviewTemplate, imports: reviewImports, models: reviewModels, types: reviewTypes }),
@@ -35,6 +35,8 @@ export const ReviewStale: StoryObj<typeof meta> = {
 		const first = proposalCard(canvasElement, 'Переименовать «Маршруты» в «Vue Router»')
 		const second = proposalCard(canvasElement, 'Переименовать «Маршруты» в «Навигация»')
 		await expect(panel.getByRole('button', { name: 'Принять все: 3' })).toBeVisible()
+		await expect(within(first).getByText('Маршруты')).toBeVisible()
+		await expect(within(first).getByText('Vue Router')).toBeVisible()
 		await expect(within(second).queryByText('устарело')).toBeNull()
 
 		await userEvent.click(within(first).getByRole('button', { name: 'Принять' }))

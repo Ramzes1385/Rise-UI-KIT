@@ -49,3 +49,4 @@ export const DefaultStatus = cases.DefaultStatus
 export const Review = cases.Review
 export const ReviewNarrow = cases.ReviewNarrow
 export const ReviewStale = cases.ReviewStale
+export const ReviewRejected = cases.ReviewRejected
