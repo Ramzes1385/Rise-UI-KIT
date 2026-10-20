@@ -62,11 +62,26 @@ describe('useRoadmapReview: предложения', () => {
 		state.propose([rename('a', 'Новая', 'Тема a')], 'Переименовать')
 		expect(await state.accept('p1')).toBe(true)
 		expect(apply).toHaveBeenCalledOnce()
-		expect(apply).toHaveBeenCalledWith([rename('a', 'Новая', 'Тема a')], 'Переименовать')
+		expect(apply).toHaveBeenCalledWith([rename('a', 'Новая', 'Тема a')], 'Переименовать', expect.any(Function))
 		expect(state.proposals.value[0].status).toBe('accepted')
 		expect(announce).toHaveBeenLastCalledWith(formatMessage(UI_ROADMAP_REVIEW.ANNOUNCE_ACCEPTED, { label: 'Переименовать' }))
 		expect(await state.accept('p1')).toBe(false)
 		expect(apply).toHaveBeenCalledOnce()
+	})
+
+	it('onStep: отмена шага возвращает предложение в open, повтор — в accepted; принять можно снова', async () => {
+		const { state, apply } = setup()
+		state.propose([rename('a', 'Новая', 'Тема a')], 'Переименовать')
+		expect(await state.accept('p1')).toBe(true)
+		const onStep = apply.mock.calls[0][2] as (direction: 'undo' | 'redo') => void
+		onStep('undo')
+		expect(state.proposals.value[0].status).toBe('open')
+		expect(await state.accept('p1')).toBe(true)
+		expect(apply).toHaveBeenCalledTimes(2)
+		expect(state.proposals.value[0].status).toBe('accepted')
+		onStep('undo')
+		onStep('redo')
+		expect(state.proposals.value[0].status).toBe('accepted')
 	})
 
 	it('accept: неизвестное, устаревшее и отклонённое применением (false) остаются открытыми', async () => {

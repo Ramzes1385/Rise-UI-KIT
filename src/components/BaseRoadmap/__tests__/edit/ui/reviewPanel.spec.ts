@@ -1,10 +1,12 @@
 import { formatMessage } from '@/locales/state'
+import userEvent from '@testing-library/user-event'
 import { enableAutoUnmount } from '@vue/test-utils'
 import { mountReview } from '../fixtures/renderEditor'
+import { deferred, editData } from '../fixtures/editFixtures'
 import { fireEvent, screen, within } from '@testing-library/vue'
 import type { BaseRoadmapExpose } from '../../../types/BaseRoadmap.types'
 import type { RoadmapReviewData } from '../../../types/roadmapEdit.types'
-import { UI_COMMENT_THREAD, UI_ROADMAP, UI_ROADMAP_REVIEW } from '@/locales/messages'
+import { UI_COMMENT_THREAD, UI_ROADMAP, UI_ROADMAP_EDIT, UI_ROADMAP_REVIEW } from '@/locales/messages'
 
 vi.setConfig({ testTimeout: 60_000 })
 enableAutoUnmount(afterEach)
@@ -268,6 +270,86 @@ describe('«Правки»: редкие случаи комментариев',
 		await fireEvent.submit(input.closest('form') as HTMLFormElement)
 		expect(input).toHaveValue('   ')
 		expect(screen.getByRole('tab', { name: `${UI_ROADMAP_REVIEW.TAB_COMMENTS} 2` })).toBeInTheDocument()
+	})
+})
+
+describe('«Правки»: отмена принятого', () => {
+	it('принять → undo: предложение снова открыто и принимается заново → redo: снова принято', async () => {
+		const { user, wrapper, onData } = await mountReview({ review: review() })
+		const api = wrapper.vm as unknown as BaseRoadmapExpose
+		const accept = () => within(card(/Переименовать тему a/)).getByRole('button', { name: UI_ROADMAP_REVIEW.ACCEPT })
+		await user.click(accept())
+		await vi.waitFor(() =>
+			expect(within(card(/Переименовать тему a/)).getByText(UI_ROADMAP_REVIEW.STATUS_ACCEPTED)).toBeInTheDocument(),
+		)
+		expect(api.undo()).toBe(true)
+		await vi.waitFor(() => expect(accept()).toBeEnabled())
+		expect(within(card(/Переименовать тему a/)).queryByText(UI_ROADMAP_REVIEW.STATUS_ACCEPTED)).not.toBeInTheDocument()
+		await user.click(accept())
+		await vi.waitFor(() =>
+			expect(within(card(/Переименовать тему a/)).getByText(UI_ROADMAP_REVIEW.STATUS_ACCEPTED)).toBeInTheDocument(),
+		)
+		expect(api.undo()).toBe(true)
+		await vi.waitFor(() => expect(accept()).toBeEnabled())
+		expect(api.redo()).toBe(true)
+		await vi.waitFor(() =>
+			expect(within(card(/Переименовать тему a/)).getByText(UI_ROADMAP_REVIEW.STATUS_ACCEPTED)).toBeInTheDocument(),
+		)
+		expect(onData).toHaveBeenLastCalledWith(expect.objectContaining({ stages: expect.any(Array) }))
+		expect(onData.mock.calls.at(-1)?.[0].stages[0].topics[0].title).toBe('Новая тема')
+	})
+})
+
+describe('«Правки»: видимая плашка отказа', () => {
+	const dismiss = () => screen.getByRole('button', { name: UI_ROADMAP_EDIT.REJECT_CLOSE })
+
+	it('хук отказал: плашка в панели без role=status, предложение открыто, закрывается через dismiss', async () => {
+		const { user, wrapper } = await mountReview({ review: review() })
+		;(wrapper.vm as unknown as BaseRoadmapExpose).on('beforeChange', () => false)
+		await user.click(within(card(/Переименовать тему a/)).getByRole('button', { name: UI_ROADMAP_REVIEW.ACCEPT }))
+		const title = await screen.findByText(UI_ROADMAP_EDIT.REJECT_TITLE)
+		const panel = screen.getByRole('region', { name: UI_ROADMAP_REVIEW.PANEL })
+		expect(panel).toContainElement(title)
+		expect(title.parentElement).toHaveTextContent(UI_ROADMAP_EDIT.REJECT_HOOK)
+		expect(title.closest('[role="status"]')).toBeNull()
+		expect(live().textContent).toContain(UI_ROADMAP_EDIT.REJECT_HOOK)
+		expect(within(card(/Переименовать тему a/)).getByRole('button', { name: UI_ROADMAP_REVIEW.ACCEPT })).toBeEnabled()
+		await user.click(dismiss())
+		expect(screen.queryByText(UI_ROADMAP_EDIT.REJECT_TITLE)).not.toBeInTheDocument()
+	})
+
+	it('данные изменились, пока хук ждал: плашка «устарело» с подсказкой про отмену не показывается без истории', async () => {
+		const gate = deferred<undefined>()
+		const started = vi.fn()
+		const { user, wrapper } = await mountReview({ review: review() })
+		;(wrapper.vm as unknown as BaseRoadmapExpose).on('beforeChange', () => {
+			started()
+			return gate.promise
+		})
+		await user.click(within(card(/Переименовать тему a/)).getByRole('button', { name: UI_ROADMAP_REVIEW.ACCEPT }))
+		await vi.waitFor(() => expect(started).toHaveBeenCalled())
+		await wrapper.setProps({ data: { ...editData(), title: 'Кто-то поменял' } })
+		gate.resolve(undefined)
+		const title = await screen.findByText(UI_ROADMAP_EDIT.REJECT_TITLE)
+		expect(title.parentElement).toHaveTextContent(UI_ROADMAP_EDIT.REJECT_STALE)
+		expect(title.closest('[role="status"]')).toBeNull()
+		expect(screen.queryByText(UI_ROADMAP_EDIT.REJECT_UNDO)).not.toBeInTheDocument()
+		await userEvent.setup().click(dismiss())
+		expect(screen.queryByText(UI_ROADMAP_EDIT.REJECT_TITLE)).not.toBeInTheDocument()
+	})
+})
+
+describe('«Правки»: подписи значений для скринридера', () => {
+	it('в строке полей у del и ins есть скрытые «было» и «стало»', async () => {
+		await mountReview({ review: review() })
+		const item = card(/Переименовать тему a/)
+		const row = within(item).getByText(UI_ROADMAP_REVIEW.FIELD_TITLE).closest('li') as HTMLElement
+		const [was, now] = Array.from(row.querySelectorAll('.base-roadmap__sr'))
+		expect(was).toHaveTextContent(`${UI_ROADMAP_REVIEW.VALUE_WAS}:`)
+		expect(was.closest('del')).toHaveTextContent('Тема a')
+		expect(now).toHaveTextContent(`${UI_ROADMAP_REVIEW.VALUE_NOW}:`)
+		expect(now.closest('ins')).toHaveTextContent('Новая тема')
+		expect(row.querySelector('[aria-hidden="true"]')).toHaveTextContent('→')
 	})
 })
 

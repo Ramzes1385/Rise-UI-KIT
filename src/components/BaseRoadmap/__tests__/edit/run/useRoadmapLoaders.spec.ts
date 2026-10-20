@@ -45,6 +45,8 @@ describe('загрузчики вне активной области и в ос
 		const editor: RoadmapEditLoader = {
 			controller: shallowRef(null),
 			load: () => Promise.resolve(createRoadmapEdit(ctx)),
+			error: shallowRef(false),
+			retry: vi.fn(),
 			methods: {} as never,
 		}
 		const loader = useRoadmapReviewLoader(
