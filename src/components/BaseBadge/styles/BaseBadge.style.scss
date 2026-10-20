@@ -4,22 +4,22 @@
 	--badge-on-role: var(--rise-on-primary);
 	--badge-soft: var(--rise-primary-soft);
 	--badge-role-text: var(--rise-primary-text);
-	--badge-role-border: var(--rise-border-accented);
+	--badge-role-border: currentcolor;
 
 	display: inline-flex;
 	align-items: center;
-	gap: sz(ct(badge, gap, 4px));
+	gap: sz(ct(badge, gap, 6px));
 	box-sizing: border-box;
 	max-width: 100%;
 	min-width: 0;
 	padding: sz(ct(badge, padding-y, 1px) ct(badge, padding-x, 7px));
 	border: 1px solid ct(badge, border, transparent);
-	border-radius: sz(ct(badge, radius, var(--rise-radius-sm)));
+	border-radius: sz(ct(badge, radius, calc(var(--rise-radius-sm) - 1px)));
 	box-shadow: ct(badge, shadow, none);
 	vertical-align: middle;
-	font-size: sz(ct(badge, font-size, var(--rise-font-size-xs)));
-	line-height: sz(var(--rise-line-height-xs));
-	font-weight: ct(badge, font-weight, var(--rise-font-weight-medium));
+	@include caps-label(10px, 0.08em);
+	font-size: sz(ct(badge, font-size, 10px));
+	font-weight: ct(badge, font-weight, var(--rise-font-weight-normal));
 	white-space: nowrap;
 	@include custom-bg(background-color, ct(badge, bg, var(--badge-role)));
 	@include custom-text(color, ct(badge, text, var(--badge-on-role)));
@@ -30,16 +30,15 @@
 			--badge-on-role: var(--rise-on-#{$role});
 			--badge-soft: var(--rise-#{$role}-soft);
 			--badge-role-text: var(--rise-#{$role}-text);
-			--badge-role-border: var(--rise-#{$role}-border);
 		}
 	}
 
 	&--status-neutral {
 		--badge-role: var(--rise-bg-inverted);
 		--badge-on-role: var(--rise-text-inverted);
-		--badge-soft: var(--rise-bg-accented);
-		--badge-role-text: var(--rise-text);
-		--badge-role-border: var(--rise-border-accented);
+		--badge-soft: var(--rise-bg-elevated);
+		--badge-role-text: var(--rise-text-toned);
+		--badge-role-border: currentcolor;
 	}
 
 	&--soft {
@@ -49,7 +48,7 @@
 
 	&--outline {
 		border-color: ct(badge, border, var(--badge-role-border));
-		@include custom-bg(background-color, var(--rise-bg));
+		@include custom-bg(background-color, transparent);
 		@include custom-text(color, var(--rise-text));
 	}
 
@@ -75,7 +74,7 @@
 		min-width: 0;
 		height: sz(ct(badge, dot-height, 8px));
 		padding: 0;
-		border-radius: var(--rise-radius-full);
+		border-radius: sz(var(--rise-radius-xs));
 	}
 
 	&--round {
@@ -83,7 +82,7 @@
 		min-width: sz(ct(badge, round-height, 18px));
 		height: sz(ct(badge, round-height, 18px));
 		padding: 0 sz(ct(badge, round-padding-x, 5px));
-		border-radius: var(--rise-radius-full);
+		border-radius: sz(ct(badge, radius, calc(var(--rise-radius-sm) - 1px)));
 	}
 
 	&--removable {
@@ -91,9 +90,8 @@
 	}
 
 	&--shadow {
-		border-color: ct(badge, border, var(--rise-border));
 		box-shadow: ct(badge, shadow, var(--rise-shadow-sm));
-		@include custom-bg(background-color, var(--rise-bg));
+		@include custom-bg(background-color, var(--rise-surface-floating));
 		@include custom-text(color, var(--rise-text-highlighted));
 	}
 

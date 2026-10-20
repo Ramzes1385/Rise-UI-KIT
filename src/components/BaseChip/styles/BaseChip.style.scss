@@ -14,11 +14,12 @@
 		height: sz(ct(chip, badge-height, 18px));
 		padding: 0 sz(ct(chip, badge-padding-x, 5px));
 		border: 1px solid ct(chip, badge-border, transparent);
-		border-radius: sz(ct(chip, badge-radius, var(--rise-radius-full)));
-		box-shadow: ct(chip, badge-shadow, 0 0 0 2px var(--rise-bg));
-		font-size: sz(ct(chip, badge-font-size, var(--rise-font-size-xs)));
+		border-radius: sz(ct(chip, badge-radius, calc(var(--rise-radius-sm) - 1px)));
+		box-shadow: ct(chip, badge-shadow, 0 0 0 2px var(--rise-surface-bg));
+		font-family: var(--rise-font-mono);
+		font-size: sz(ct(chip, badge-font-size, 10px));
 		line-height: sz(var(--rise-line-height-xs));
-		font-weight: ct(chip, badge-font-weight, var(--rise-font-weight-medium));
+		font-weight: ct(chip, badge-font-weight, var(--rise-font-weight-normal));
 		font-variant-numeric: tabular-nums;
 		white-space: nowrap;
 		@include custom-bg(background-color, ct(chip, badge-bg, var(--rise-primary)));
@@ -56,19 +57,18 @@
 
 	&--outline &__badge.base-badge {
 		border-color: ct(chip, badge-border, var(--rise-border-accented));
-		@include custom-bg(background-color, var(--rise-bg));
+		@include custom-bg(background-color, var(--rise-surface-bg));
 		@include custom-text(color, var(--rise-text));
 	}
 
 	&--ghost &__badge.base-badge {
-		@include custom-bg(background-color, var(--rise-bg));
+		@include custom-bg(background-color, var(--rise-surface-bg));
 		@include custom-text(color, var(--rise-text));
 	}
 
 	&--shadow &__badge.base-badge {
-		border-color: ct(chip, badge-border, var(--rise-border));
-		box-shadow: ct(chip, badge-shadow, (0 0 0 2px var(--rise-bg), var(--rise-shadow-sm)));
-		@include custom-bg(background-color, var(--rise-bg));
+		box-shadow: ct(chip, badge-shadow, (0 0 0 2px var(--rise-surface-bg), var(--rise-shadow-sm)));
+		@include custom-bg(background-color, var(--rise-surface-floating));
 		@include custom-text(color, var(--rise-text-highlighted));
 	}
 }

@@ -2,10 +2,10 @@
 	@include custom-color-scope;
 	@include reset-custom-color;
 
-	--tag-soft: #{ct(tag, bg, var(--rise-bg-muted))};
+	--tag-soft: #{ct(tag, bg, var(--rise-bg-elevated))};
 	--tag-soft-hover: #{ct(tag, bg-hover, var(--rise-bg-accented))};
-	--tag-text: #{ct(tag, text, var(--rise-text))};
-	--tag-border: #{ct(tag, border, var(--rise-border))};
+	--tag-text: #{ct(tag, text, var(--rise-text-highlighted))};
+	--tag-border: #{ct(tag, border, var(--rise-border-accented))};
 	--tag-solid: #{ct(tag, bg-selected, var(--rise-primary))};
 	--tag-solid-hover: var(--rise-primary-hover);
 	--tag-on-solid: #{ct(tag, text-selected, var(--rise-on-primary))};
@@ -15,8 +15,8 @@
 	box-sizing: border-box;
 	max-width: 100%;
 	min-width: 0;
-	border: 1px solid var(--tag-border);
-	border-radius: sz(ct(tag, radius, var(--rise-radius-full)));
+	border: 1px solid transparent;
+	border-radius: sz(ct(tag, radius, var(--rise-radius-sm)));
 	vertical-align: middle;
 	font-size: sz(ct(tag, font-size, var(--rise-font-size-sm)));
 	line-height: sz(var(--rise-line-height-sm));
@@ -39,11 +39,16 @@
 	}
 
 	&--outline {
-		@include custom-bg(background-color, var(--rise-bg));
+		border-color: var(--tag-border);
+		@include custom-bg(background-color, transparent);
 	}
 
 	&--interactive:not(&--disabled, &--selected):hover {
 		@include custom-bg(background-color, var(--tag-soft-hover));
+	}
+
+	&--outline#{&}--interactive:not(&--disabled, &--selected):hover {
+		@include custom-bg(background-color, var(--rise-bg-elevated));
 	}
 
 	&--selected {
@@ -67,7 +72,7 @@
 		align-items: center;
 		min-width: 0;
 		margin: 0;
-		padding: sz(ct(tag, padding-y, 2px)) sz(ct(tag, padding-x, 10px));
+		padding: sz(ct(tag, padding-y, 3px)) sz(ct(tag, padding-x, 10px));
 		border: 0;
 		border-radius: inherit;
 		background: none;
@@ -136,7 +141,7 @@
 		height: sz(20px);
 		margin-block: 0;
 		margin-inline: 0 sz(3px);
-		border-radius: var(--rise-radius-full);
+		border-radius: sz(var(--rise-radius-xs));
 		@include transition-colors;
 		@include focus-ring(0);
 

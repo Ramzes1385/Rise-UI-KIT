@@ -7,9 +7,10 @@ export const BUTTON_TYPES = ['button', 'submit', 'reset'] as const
 /**
  * Варианты отображения кнопки:
  * default — заливка основным цветом (главное действие), soft — мягкий фон основного цвета,
- * outline — нейтральная с рамкой, ghost — нейтральная без фона, shadow — нейтральная с тенью.
+ * tonal — нейтральная тональная заливка (вторичные действия: «Отмена», «Позже», панели инструментов),
+ * outline — прозрачная с рамкой, ghost — нейтральная без фона до наведения, shadow — нейтральная с тенью.
  */
-export const BUTTON_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
+export const BUTTON_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft', 'tonal'] as const
 
 /**
  * Части кнопки для пропа `ui` (БЭМ-элементы `.base-button__<часть>`, `root` — сама кнопка):
@@ -26,7 +27,7 @@ export interface BaseButtonProps extends BaseComponentProps<(typeof BUTTON_VARIA
 	 * Внутренние отступы. Число (px): Y = значение, X = значение × 2.
 	 * Объект { x, y, top, right, bottom, left } задаёт оси напрямую без умножения
 	 * (например { x: 25, y: 43 } → 43px сверху/снизу, 25px по бокам); стороны переопределяют оси.
-	 * По умолчанию — из темы: `--rise-control-padding-y` × `--rise-control-padding-x` (5px 10px, кнопка высотой 32px).
+	 * По умолчанию — из темы: `--rise-control-padding-y` × `--rise-control-padding-x` (7px 14px, кнопка высотой 36px).
 	 */
 	padding?: PaddingProp
 	/** Состояние загрузки */

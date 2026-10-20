@@ -27,7 +27,7 @@ $group-radius: sz(ct(button-group, radius, var(--rise-control-radius)));
 	}
 
 	&--horizontal > * + * {
-		margin-inline-start: ct(button-group, gap, -1px);
+		margin-inline-start: ct(button-group, gap, 2px);
 	}
 
 	&--horizontal > :first-child,
@@ -47,7 +47,7 @@ $group-radius: sz(ct(button-group, radius, var(--rise-control-radius)));
 	}
 
 	&--vertical > * + * {
-		margin-top: ct(button-group, gap, -1px);
+		margin-top: ct(button-group, gap, 2px);
 	}
 
 	&--vertical > :first-child {

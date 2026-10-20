@@ -3,7 +3,7 @@ import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 import type { DropdownMenuItem, DropdownMenuItems } from '@components/BaseDropdownMenu'
 
 /** Варианты — как у BaseButton: обе кнопки одного варианта */
-export const SPLIT_BUTTON_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
+export const SPLIT_BUTTON_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft', 'tonal'] as const
 
 /**
  * Части кнопки с меню для пропа `ui` (БЭМ-элементы `.base-split-button__<часть>`, `root` — группа из двух кнопок):

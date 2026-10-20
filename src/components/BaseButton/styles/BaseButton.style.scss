@@ -1,9 +1,9 @@
 .base-button {
 	@include custom-color-scope;
 	--btn-pad-top: #{ct(button, padding-y, var(--rise-control-padding-y))};
-	--btn-pad-right: #{ct(button, padding-x, var(--rise-control-padding-x))};
+	--btn-pad-right: #{ct(button, padding-x, calc(var(--rise-control-padding-x) + 2px))};
 	--btn-pad-bottom: #{ct(button, padding-y, var(--rise-control-padding-y))};
-	--btn-pad-left: #{ct(button, padding-x, var(--rise-control-padding-x))};
+	--btn-pad-left: #{ct(button, padding-x, calc(var(--rise-control-padding-x) + 2px))};
 
 	position: relative;
 	display: inline-flex;
@@ -35,26 +35,32 @@
 		@include custom-text(color, var(--rise-primary-text));
 	}
 
+	&--tonal {
+		@include custom-bg-all(background-color, var(--rise-bg-elevated), var(--rise-bg-accented), var(--rise-bg-accented));
+		@include custom-text(color, var(--rise-text-highlighted));
+	}
+
 	&--outline {
 		border-color: ct(button, border, var(--rise-border-accented));
-		@include custom-bg-all(background-color, var(--rise-bg), var(--rise-bg-elevated), var(--rise-bg-elevated));
-		@include custom-text(color, var(--rise-text));
+		@include custom-bg-all(background-color, transparent, var(--rise-bg-elevated), var(--rise-bg-elevated));
+		@include custom-text(color, var(--rise-text-highlighted));
 	}
 
 	&--ghost {
 		@include custom-bg-all(background-color, transparent, var(--rise-bg-elevated), var(--rise-bg-elevated));
 		@include custom-text(color, var(--rise-text));
+		@include custom-text-hover(color, var(--rise-text-highlighted));
 	}
 
 	&--shadow {
-		border-color: ct(button, border, var(--rise-border));
-		@include custom-bg-all(background-color, var(--rise-bg), var(--rise-bg-muted), var(--rise-bg-muted));
+		@include custom-bg-all(
+			background-color,
+			var(--rise-surface-floating),
+			var(--rise-surface-floating-hover),
+			var(--rise-surface-floating-hover)
+		);
 		@include custom-text(color, var(--rise-text-highlighted));
 		box-shadow: ct(button, shadow, var(--rise-shadow-sm));
-
-		@include hover {
-			box-shadow: ct(button, shadow-hover, var(--rise-shadow-md));
-		}
 	}
 
 	&--disabled {
@@ -110,7 +116,7 @@
 		height: sz(var(--rise-control-icon-size));
 		border: sz(2px) solid currentcolor;
 		border-bottom-color: transparent;
-		border-radius: var(--rise-radius-full);
+		border-radius: 50%;
 		animation: base-button-spin calc(var(--rise-duration-loop) * 0.8) linear infinite;
 	}
 }

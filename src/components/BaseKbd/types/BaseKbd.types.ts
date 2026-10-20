@@ -4,7 +4,7 @@ import type { BaseComponentProps } from '@composables/base/useBaseComponent'
 
 /**
  * Варианты оформления:
- * default — фон bg-elevated, рамка и нижняя «грань» клавиши; outline — только рамка; soft — только фон; ghost — только текст
+ * default — тональный фон bg-elevated, Rise Mono, без рамки; outline — прозрачный с рамкой; soft — более светлый фон bg-muted; ghost — только текст
  */
 export const KBD_VARIANTS = ['default', 'outline', 'soft', 'ghost'] as const
 
