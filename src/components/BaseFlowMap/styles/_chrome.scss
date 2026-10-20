@@ -14,6 +14,18 @@
 		background-color: var(--rise-bg);
 	}
 
+	&__load-error {
+		display: flex;
+		flex: none;
+		gap: sz(12px);
+		align-items: center;
+		justify-content: space-between;
+		padding: sz(8px 16px);
+		border-bottom: 1px solid var(--rise-border);
+		background-color: var(--rise-bg-muted);
+		color: var(--rise-text);
+	}
+
 	&__title {
 		margin: 0;
 		font-size: sz(var(--rise-font-size-lg));

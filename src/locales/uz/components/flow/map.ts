@@ -180,5 +180,9 @@ export const uzFlowMap = {
 		LEVEL_BUTTON: '{n} · {name}',
 		WARN_PLUGIN_FAILED: 'BaseFlowMap: “{name}” plagini xato berdi: {message}',
 		WARN_PLUGIN_DUPLICATE: 'BaseFlowMap: “{name}” plagini qayta qoʻshilgan — oxirgisi amal qiladi',
+		/** Сообщение при сбое загрузки «Правки» или «Правок» */
+		LOAD_ERROR: 'Yuklab boʻlmadi',
+		/** Кнопка повторной загрузки режима */
+		LOAD_RETRY: 'Qayta urinish',
 	},
 }

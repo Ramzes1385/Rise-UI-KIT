@@ -178,4 +178,8 @@ export const ruFlowMap = {
 	LEVEL_BUTTON: '{n} · {name}',
 	WARN_PLUGIN_FAILED: 'BaseFlowMap: плагин «{name}» выбросил ошибку: {message}',
 	WARN_PLUGIN_DUPLICATE: 'BaseFlowMap: плагин «{name}» подключён повторно — действует последний',
+	/** Сообщение при сбое загрузки «Правки» или «Правок» */
+	LOAD_ERROR: 'Не удалось загрузить',
+	/** Кнопка повторной загрузки режима */
+	LOAD_RETRY: 'Повторить',
 }

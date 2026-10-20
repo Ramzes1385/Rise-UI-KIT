@@ -1,6 +1,6 @@
 import { FLOW_SCENARIO_DETAILS } from './scenarioContext'
-import { computed, getCurrentInstance, provide } from 'vue'
 import { createModeLoader } from '../state/createModeLoader'
+import { computed, getCurrentInstance, provide, watch } from 'vue'
 import type { FlowScenarioAction, FlowScenarioState } from '../../types/data/flowScenario.types'
 import type { FlowModelEnvironment, FlowModelProps, FlowScenarioDriver } from '../../types/internal/flowModel.types'
 import type { FlowScenarioDetails, FlowScenarioModel, FlowScenarioPart } from '../../types/internal/flowScenarioInternal.types'
@@ -38,19 +38,23 @@ function forwardDetails(part: () => FlowScenarioPart | null): FlowScenarioDetail
 	}
 }
 
-export function useFlowScenarioLoader(
-	model: FlowScenarioModel,
-	props: FlowModelProps,
-	options: { environment: FlowModelEnvironment; preload?: () => Promise<unknown> },
-): FlowScenarioDriver {
-	const queue: Array<(driver: FlowScenarioPart) => void> = []
-	const isNeeded = computed(
+function isScenarioNeeded(model: FlowScenarioModel, props: FlowModelProps) {
+	return computed(
 		() =>
 			Boolean(props.scenario) ||
 			Boolean(props.isAutoplay) ||
 			(model.data.value.scenarios?.length ?? 0) > 0 ||
 			typeof model.notation.value.semantics?.simulate === 'function',
 	)
+}
+
+export function useFlowScenarioLoader(
+	model: FlowScenarioModel,
+	props: FlowModelProps,
+	options: { environment: FlowModelEnvironment; preload?: () => Promise<unknown> },
+): FlowScenarioDriver {
+	const queue: Array<(driver: FlowScenarioPart) => void> = []
+	const isNeeded = isScenarioNeeded(model, props)
 	const loader = createModeLoader({
 		isRequested: isNeeded,
 		preload: options.preload,
@@ -61,6 +65,7 @@ export function useFlowScenarioLoader(
 			return driver
 		},
 	})
+	watch(loader.error, failed => failed && (queue.length = 0), { flush: 'sync' })
 	if (getCurrentInstance())
 		provide(
 			FLOW_SCENARIO_DETAILS,

@@ -179,5 +179,9 @@ export const jaFlowMap = {
 		LEVEL_BUTTON: '{n} · {name}',
 		WARN_PLUGIN_FAILED: 'BaseFlowMap：プラグイン「{name}」でエラーが発生しました：{message}',
 		WARN_PLUGIN_DUPLICATE: 'BaseFlowMap：プラグイン「{name}」が重複しています。最後のものが有効です',
+		/** Сообщение при сбое загрузки «Правки» или «Правок» */
+		LOAD_ERROR: '読み込めませんでした',
+		/** Кнопка повторной загрузки режима */
+		LOAD_RETRY: '再試行',
 	},
 }

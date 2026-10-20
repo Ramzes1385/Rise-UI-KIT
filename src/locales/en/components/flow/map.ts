@@ -179,5 +179,9 @@ export const enFlowMap = {
 		LEVEL_BUTTON: '{n} · {name}',
 		WARN_PLUGIN_FAILED: 'BaseFlowMap: plugin “{name}” threw an error: {message}',
 		WARN_PLUGIN_DUPLICATE: 'BaseFlowMap: plugin “{name}” is added twice — the last one wins',
+		/** Сообщение при сбое загрузки «Правки» или «Правок» */
+		LOAD_ERROR: 'Failed to load',
+		/** Кнопка повторной загрузки режима */
+		LOAD_RETRY: 'Retry',
 	},
 }

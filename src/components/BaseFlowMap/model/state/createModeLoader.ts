@@ -9,6 +9,7 @@ export function createModeLoader<Module, State>(options: {
 	preload?: () => Promise<unknown>
 }): FlowModeLoader<State> {
 	const part = shallowRef<State | null>(null)
+	const error = shallowRef(false)
 	const scope = getCurrentScope()
 	let pending: Promise<State | null> | null = null
 
@@ -18,11 +19,13 @@ export function createModeLoader<Module, State>(options: {
 				if (scope && !scope.active) return null
 				const create = (): State => options.create(loaded)
 				part.value = scope ? (scope.run(create) ?? null) : create()
+				error.value = false
 				return part.value
 			})
-			.catch(error => {
+			.catch((reason: unknown) => {
 				pending = null
-				throw error
+				error.value = true
+				throw reason
 			})
 		return pending
 	}
@@ -39,5 +42,10 @@ export function createModeLoader<Module, State>(options: {
 		Promise.all([options.module(), options.preload?.()]).catch(() => undefined)
 	}
 
-	return { part, isLoaded: computed(() => part.value !== null), load, prefetch }
+	function retry(): void {
+		error.value = false
+		request()
+	}
+
+	return { part, error, retry, isLoaded: computed(() => part.value !== null), load, prefetch }
 }

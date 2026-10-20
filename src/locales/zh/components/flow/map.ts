@@ -179,5 +179,9 @@ export const zhFlowMap = {
 		LEVEL_BUTTON: '{n} · {name}',
 		WARN_PLUGIN_FAILED: 'BaseFlowMap：插件“{name}”抛出错误：{message}',
 		WARN_PLUGIN_DUPLICATE: 'BaseFlowMap：插件“{name}”被重复添加——以最后一个为准',
+		/** Сообщение при сбое загрузки «Правки» или «Правок» */
+		LOAD_ERROR: '加载失败',
+		/** Кнопка повторной загрузки режима */
+		LOAD_RETRY: '重试',
 	},
 }

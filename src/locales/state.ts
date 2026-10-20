@@ -1,9 +1,9 @@
 import { localized } from './localized'
 /** Язык кита: регистрация словарей, смена языка, подстановки и множественное число; язык задают `createUiKitPlugin({ locale })`, `<BaseApp locale>` и `setLocale()` */
 import { computed, shallowRef } from 'vue'
-import { ruLocaleWarnings } from './ru/rules/localeWarnings'
 import { KIT_LOCALE_CODES } from './types/locales.types'
 import { currentLocale, DEFAULT_LOCALE } from './current'
+import { ruLocaleWarnings } from './ru/rules/localeWarnings'
 import type { ActiveLocale, LocaleCore, LocaleInput, LocaleOverrides, UiKitLocale } from './types/locales.types'
 
 export { currentLocale } from './current'

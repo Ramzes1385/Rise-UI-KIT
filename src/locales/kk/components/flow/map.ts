@@ -179,5 +179,9 @@ export const kkFlowMap = {
 		LEVEL_BUTTON: '{n} · {name}',
 		WARN_PLUGIN_FAILED: 'BaseFlowMap: «{name}» плагині қате шығарды: {message}',
 		WARN_PLUGIN_DUPLICATE: 'BaseFlowMap: «{name}» плагині қайта қосылған — соңғысы әрекет етеді',
+		/** Сообщение при сбое загрузки «Правки» или «Правок» */
+		LOAD_ERROR: 'Жүктеу мүмкін болмады',
+		/** Кнопка повторной загрузки режима */
+		LOAD_RETRY: 'Қайталау',
 	},
 }

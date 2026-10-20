@@ -16,7 +16,7 @@ export interface FlowEditLoaderParts {
 	/** Пропсы карты */
 	props: Pick<BaseFlowMapProps, 'savedAt' | 'modes'>
 	/** Догрузить палитру, панель, инспектор и статус: они нужны только в режиме `edit` */
-	preload?: () => Promise<unknown>
+	preload: () => Promise<unknown>
 	/** Догрузить слой холста вместе с моделью: нужен и в `edit`, и в `review` */
 	preloadLayer?: () => Promise<unknown>
 }
@@ -39,6 +39,10 @@ export interface FlowModeLoader<State> {
 	part: ShallowRef<State | null>
 	/** Часть загружена и создана */
 	isLoaded: ComputedRef<boolean>
+	/** Загрузка не удалась; сбрасывается повтором и успешной загрузкой */
+	error: ShallowRef<boolean>
+	/** Повторить загрузку после сбоя */
+	retry: () => void
 	/** Загрузить часть (повторный вызов — тот же `import()`) */
 	load: () => Promise<State | null>
 	/** Скачать код заранее, ничего не создавая: следующая загрузка быстрая, вид не меняется */
@@ -65,4 +69,8 @@ export interface FlowModesState {
 	isReviewLoaded: ComputedRef<boolean>
 	/** Код сценария загружен: панель и слой можно показывать */
 	isScenarioLoaded: ComputedRef<boolean>
+	/** Не удалось загрузить «Правку» или «Правки» */
+	isLoadFailed: ComputedRef<boolean>
+	/** Повторить загрузку «Правки» и «Правок» */
+	retry: () => void
 }

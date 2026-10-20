@@ -15,6 +15,7 @@
 		:aria-busy="isLoading || undefined"
 		:aria-disabled="isDisabled || undefined">
 		<FlowHeader v-if="hasHeader" />
+		<FlowLoadError v-if="isLoadFailed" @retry="retryLoad" />
 		<div v-if="hasSearch && !isLoading && !error" class="base-flow-map__bar"><FlowSearch /></div>
 		<div v-if="isLoading" class="base-flow-map__state" role="status" :aria-label="UI_FLOW_MAP.LOADING">
 			<BaseSkeleton shape="rect" width="100%" height="100%" />
@@ -97,6 +98,7 @@ import FlowTooltip from './chrome/FlowTooltip.vue'
 import FlowMinimap from './panels/FlowMinimap.vue'
 import FlowA11yList from './chrome/FlowA11yList.vue'
 import FlowLevelBar from './chrome/FlowLevelBar.vue'
+import FlowLoadError from './chrome/FlowLoadError.vue'
 import { BaseSkeleton } from '@components/BaseSkeleton'
 import { useBaseFlowMap } from '../model/useBaseFlowMap'
 import FlowLiveRegion from './chrome/FlowLiveRegion.vue'
@@ -182,6 +184,8 @@ const {
 	isEditing,
 	isReviewLoaded,
 	isScenarioLoaded,
+	isLoadFailed,
+	retryLoad,
 } = useBaseFlowMap(props, emit)
 
 defineExpose(model.controller)

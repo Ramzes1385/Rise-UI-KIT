@@ -57,6 +57,8 @@ export function useBaseFlowMap(props: BaseFlowMapProps, emit: BaseFlowMapEmits) 
 		isEditing: modes.state.isEditing,
 		isReviewLoaded: modes.state.isReviewLoaded,
 		isScenarioLoaded: modes.state.isScenarioLoaded,
+		isLoadFailed: modes.state.isLoadFailed,
+		retryLoad: modes.state.retry,
 		announcement,
 		isCompact: frame.isCompact,
 		isMorphing: model.groups.isMorphing,
