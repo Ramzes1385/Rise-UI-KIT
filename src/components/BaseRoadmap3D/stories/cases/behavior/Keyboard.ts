@@ -1,7 +1,7 @@
 import { tabTo } from '@/stories/helpers'
-import { expect, waitFor } from 'storybook/test'
 import type meta from '../../BaseRoadmap3D.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
+import { expect, waitFor, within } from 'storybook/test'
 
 export const Keyboard: StoryObj<typeof meta> = {
 	tags: ['!autodocs'],
@@ -17,8 +17,19 @@ export const Keyboard: StoryObj<typeof meta> = {
 		const island = await canvas.findByRole('group', { name: 'Путь с клавиатуры' })
 		await tabTo(island, userEvent, 20)
 		await userEvent.keyboard('{ArrowRight}')
-		await waitFor(() => expect(canvas.getByRole('status')).toHaveTextContent(/Этап 1 из/))
+		await waitFor(() =>
+			expect(
+				canvas
+					.getAllByRole('status')
+					.map(item => item.textContent)
+					.join(' '),
+			).toMatch(/Этап \d из 6/),
+		)
+		await userEvent.keyboard('{Enter}')
+		const panel = await canvas.findByRole('region', { name: 'Подробности темы' })
+		await expect(within(panel).getByRole('heading', { level: 2 })).toBeVisible()
 		await userEvent.keyboard('{Escape}')
+		await waitFor(() => expect(canvas.queryByRole('region', { name: 'Подробности темы' })).toBeNull())
 		await expect(island).toHaveFocus()
 	},
 }
