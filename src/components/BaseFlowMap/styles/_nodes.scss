@@ -3,7 +3,7 @@
 
 .base-flow-map {
 	&__node {
-		--flow-node-line: var(--flow-node-stroke, #{ct(flow-map, node-border, var(--rise-border-accented))});
+		--flow-node-line: var(--flow-node-stroke, var(--rise-flow-map-node-border, transparent));
 
 		position: absolute;
 		inset-block-start: 0;
@@ -14,10 +14,10 @@
 		box-sizing: border-box;
 		padding: sz(0 12px);
 		border: 1px solid var(--flow-node-line);
-		border-radius: sz(ct(flow-map, node-radius, var(--rise-radius-lg)));
+		border-radius: sz(ct(flow-map, node-radius, var(--rise-radius-md)));
 		color: var(--flow-node-text, #{ct(flow-map, node-text, var(--rise-text-highlighted))});
-		background-color: var(--flow-node-fill, #{ct(flow-map, node-bg, var(--rise-bg))});
-		box-shadow: ct(flow-map, node-shadow, var(--rise-shadow-xs));
+		background-color: var(--flow-node-fill, #{ct(flow-map, node-bg, var(--rise-surface-raised))});
+		box-shadow: ct(flow-map, node-shadow, none);
 		outline: none;
 		pointer-events: auto;
 		cursor: pointer;
@@ -25,18 +25,22 @@
 		@include motion-safe {
 			transition:
 				opacity var(--rise-duration-fast),
+				background-color var(--rise-duration-fast),
 				border-color var(--rise-duration-fast),
 				box-shadow var(--rise-duration-fast);
 		}
 
-		&:hover,
+		&:hover {
+			background-color: var(--flow-node-fill, #{ct(flow-map, node-bg-hover, var(--rise-bg-elevated))});
+		}
+
 		&--highlighted {
 			border-color: ct(flow-map, node-border-hover, var(--rise-primary));
 		}
 
 		&--selected {
 			border-color: ct(flow-map, node-border-selected, var(--rise-primary));
-			box-shadow: 0 0 0 2px color-mix(in srgb, var(--rise-primary) 30%, transparent);
+			box-shadow: 0 0 0 1px ct(flow-map, node-border-selected, var(--rise-primary));
 		}
 
 		&:focus-visible,
@@ -133,11 +137,13 @@
 		inset-inline-end: sz(8px);
 		inline-size: sz(8px);
 		block-size: sz(8px);
-		border-radius: 50%;
+		border-radius: sz(1px);
 		background-color: var(--flow-status-color, var(--rise-text-dimmed));
 	}
 
 	&__node--svg {
+		--flow-node-line: var(--flow-node-stroke, #{ct(flow-map, node-border, var(--rise-border-accented))});
+
 		position: static;
 		display: block;
 		padding: 0;
@@ -145,8 +151,12 @@
 		background: none;
 		box-shadow: none;
 
+		&:hover {
+			background: none;
+		}
+
 		.base-flow-map__shape {
-			fill: var(--flow-node-fill, #{ct(flow-map, node-bg, var(--rise-bg))});
+			fill: var(--flow-node-fill, #{ct(flow-map, node-bg, var(--rise-surface-raised))});
 			stroke: var(--flow-node-line);
 			stroke-width: 1.5;
 			pointer-events: all;
@@ -183,7 +193,7 @@
 
 		&.base-flow-map__node--selected .base-flow-map__shape {
 			stroke: var(--rise-primary);
-			stroke-width: 2.5;
+			stroke-width: 2;
 		}
 	}
 }

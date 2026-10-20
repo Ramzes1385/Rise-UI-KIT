@@ -25,11 +25,9 @@
 		align-items: center;
 		gap: sz(8px 12px);
 		padding: sz(6px 10px);
-		border: 1px solid var(--rise-border);
 		border-radius: sz(var(--rise-radius-lg));
 		font-size: sz(var(--rise-font-size-sm));
-		background-color: var(--rise-bg);
-		box-shadow: var(--rise-shadow-xs);
+		@include tonal-surface(page);
 	}
 
 	&__review-legend {
@@ -60,8 +58,7 @@
 	}
 
 	&__review-caption {
-		font-size: sz(var(--rise-font-size-xs));
-		color: var(--rise-text-muted);
+		@include caps-label;
 	}
 
 	&__review-spacer {
@@ -75,7 +72,7 @@
 	&__review-author-btn {
 		padding: 0;
 		border: 2px solid transparent;
-		border-radius: 50%;
+		border-radius: sz(var(--rise-radius-md));
 		background: none;
 		cursor: pointer;
 
@@ -84,10 +81,7 @@
 			filter: grayscale(1);
 		}
 
-		&:focus-visible {
-			outline: 2px solid var(--rise-primary);
-			outline-offset: 2px;
-		}
+		@include focus-ring;
 	}
 
 	&__review-legend-item {
@@ -99,11 +93,7 @@
 	&__review-legend {
 		flex-wrap: nowrap;
 		overflow-x: auto;
-
-		&:focus-visible {
-			outline: 2px solid var(--rise-primary);
-			outline-offset: 2px;
-		}
+		@include focus-ring;
 	}
 
 	&__review-bar,
@@ -153,7 +143,7 @@
 
 		&--comment {
 			--flow-review-color: var(--rise-primary);
-			border-radius: 50%;
+			border-radius: sz(6px) sz(6px) sz(6px) 0;
 		}
 	}
 
@@ -225,14 +215,14 @@
 	}
 
 	&__review-glyph {
-		circle {
+		rect {
 			fill: var(--flow-review-color);
 		}
 
 		text {
 			font-size: sz(13px);
 			font-weight: 700;
-			fill: var(--rise-bg);
+			fill: var(--rise-surface-bg, var(--rise-bg));
 		}
 
 		.base-flow-map__review-author {
@@ -255,18 +245,19 @@
 		inline-size: sz(28px);
 		block-size: sz(28px);
 		padding: 0;
-		border: 2px solid var(--rise-bg);
-		border-radius: 50% 50% 50% 0;
+		border: 2px solid var(--rise-surface-bg, var(--rise-bg));
+		border-radius: sz(var(--rise-radius-md)) sz(var(--rise-radius-md)) sz(var(--rise-radius-md)) 0;
+		font-family: var(--rise-font-mono);
 		font-size: sz(11px);
-		font-weight: 600;
-		color: var(--rise-on-primary, #fff);
+		font-variant-numeric: tabular-nums;
+		color: var(--rise-on-primary);
 		background-color: var(--rise-primary);
-		box-shadow: var(--rise-shadow-sm);
 		cursor: pointer;
 		pointer-events: auto;
 		transform: translate(-4px, -100%);
 
 		&--done {
+			color: var(--rise-on-success);
 			background-color: var(--rise-success);
 		}
 
@@ -279,10 +270,7 @@
 			animation: base-flow-map-pin-pulse calc(var(--rise-duration-loop) * 1.6) var(--rise-ease) infinite;
 		}
 
-		&:focus-visible {
-			outline: 2px solid var(--rise-primary);
-			outline-offset: 3px;
-		}
+		@include focus-ring(3px);
 	}
 
 	&__review-pin-count {
@@ -293,11 +281,12 @@
 		place-items: center;
 		min-inline-size: sz(16px);
 		block-size: sz(16px);
-		border-radius: sz(8px);
+		border-radius: sz(3px);
+		font-family: var(--rise-font-mono);
 		font-size: sz(10px);
-		color: var(--rise-text);
-		background-color: var(--rise-bg);
-		box-shadow: var(--rise-shadow-xs);
+		font-variant-numeric: tabular-nums;
+		color: var(--rise-text-highlighted);
+		background-color: var(--rise-bg-elevated);
 	}
 
 	&__review-thread {
@@ -322,10 +311,9 @@
 		min-block-size: 40%;
 		padding: sz(8px 12px);
 		border-block-start: 1px solid var(--rise-border);
-		border-start-start-radius: sz(16px);
-		border-start-end-radius: sz(16px);
-		box-shadow: var(--rise-shadow-sm);
-		background-color: var(--rise-bg);
+		border-start-start-radius: sz(var(--rise-radius-xl));
+		border-start-end-radius: sz(var(--rise-radius-xl));
+		@include tonal-surface(page);
 		overflow: auto;
 	}
 
@@ -350,17 +338,18 @@
 		flex-direction: column;
 		gap: sz(6px);
 		padding: sz(10px 12px);
-		border: 1px solid var(--rise-border);
+		border: 1px solid transparent;
 		border-radius: sz(var(--rise-radius-lg));
-		background-color: var(--rise-bg);
+		@include tonal-surface(page);
 
 		&--hot {
 			border-color: var(--rise-primary);
-			box-shadow: var(--rise-shadow-sm);
+			box-shadow: 0 0 0 1px var(--rise-primary);
 		}
 
 		&--done {
 			border-style: dashed;
+			border-color: var(--rise-border-accented);
 
 			.base-flow-map__review-card-title {
 				font-weight: 500;
@@ -400,7 +389,7 @@
 
 	&__review-reason {
 		flex-basis: 100%;
-		color: var(--rise-warning);
+		color: var(--rise-warning-text);
 	}
 
 	&__review-card-title {
@@ -413,10 +402,7 @@
 		background: none;
 		cursor: pointer;
 
-		&:focus-visible {
-			outline: 2px solid var(--rise-primary);
-			outline-offset: 2px;
-		}
+		@include focus-ring;
 	}
 
 	&__review-fields {
@@ -436,12 +422,12 @@
 		}
 
 		del {
-			color: var(--rise-error);
+			color: var(--rise-error-text);
 		}
 
 		ins {
 			text-decoration: none;
-			color: var(--rise-success);
+			color: var(--rise-success-text);
 		}
 	}
 
@@ -484,11 +470,12 @@
 		min-inline-size: sz(18px);
 		block-size: sz(18px);
 		padding-inline: sz(5px);
-		border-radius: sz(9px);
-		font-size: sz(10.5px);
-		font-weight: 600;
-		color: var(--rise-primary);
-		background-color: var(--rise-primary-soft, color-mix(in srgb, var(--rise-primary) 12%, transparent));
+		border-radius: sz(3px);
+		font-family: var(--rise-font-mono);
+		font-size: sz(10px);
+		font-variant-numeric: tabular-nums;
+		color: var(--rise-primary-text);
+		background-color: var(--rise-primary-soft);
 	}
 
 	&__review-hooks {

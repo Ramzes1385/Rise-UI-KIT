@@ -53,18 +53,19 @@
 					rx="12" />
 				<path :d="layer.link.value.path" :stroke-width="2 * layer.scale.value" />
 			</g>
-			<circle
+			<rect
 				v-for="port in layer.ports.value"
 				:key="port.key"
 				class="base-flow-map__edit-port"
 				:class="{ 'base-flow-map__edit-port--hot': layer.hotPort.value === `${port.node}|${port.id}` }"
-				:cx="port.point.x"
-				:cy="port.point.y"
-				:r="5 * layer.scale.value"
+				:x="port.point.x - 5 * layer.scale.value"
+				:y="port.point.y - 5 * layer.scale.value"
+				:width="10 * layer.scale.value"
+				:height="10 * layer.scale.value"
 				:stroke-width="1.5 * layer.scale.value"
 				:data-edit-port="`${port.node}|${port.id}`">
 				<title v-if="port.label">{{ port.label }}</title>
-			</circle>
+			</rect>
 		</svg>
 	</Teleport>
 </template>

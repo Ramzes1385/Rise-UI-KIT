@@ -36,7 +36,7 @@
 				{{ item.text }}
 			</text>
 			<g class="base-flow-map__review-glyph" :transform="`translate(${item.glyphPoint.x} ${item.glyphPoint.y})`">
-				<circle r="9" />
+				<rect x="-9" y="-9" width="18" height="18" rx="3" />
 				<text text-anchor="middle" dominant-baseline="central">{{ item.glyph }}</text>
 				<text v-if="item.author" class="base-flow-map__review-author" x="14" dominant-baseline="central">{{ item.author }}</text>
 			</g>
