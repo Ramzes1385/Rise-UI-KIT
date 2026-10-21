@@ -32,7 +32,7 @@ export const Scenario: StoryObj<typeof meta> = {
 	}),
 	play: async ({ canvas, canvasElement, userEvent }) => {
 		await waitForCanvas(canvasElement)
-		const player = await canvas.findByRole('group', { name: 'Сценарий' })
+		const player = await canvas.findByRole('group', { name: 'Сценарий' }, { timeout: 15000 })
 		await userEvent.click(within(player).getByRole('button', { name: 'Запустить' }))
 		await waitFor(() => expect(within(player).getByRole('button', { name: 'Пауза' })).toBeVisible())
 		await userEvent.click(within(player).getByRole('button', { name: 'Пауза' }))

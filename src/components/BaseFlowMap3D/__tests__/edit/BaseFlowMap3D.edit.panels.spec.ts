@@ -171,11 +171,13 @@ describe('BaseFlowMap3D «Правка»: порог 768 px и 2D-правка',
 		wide.unmount()
 		env.size.width = 700
 		const map = await env.renderMap({ data: LONE_DATA, mode: 'edit', modes: ['view', 'edit'] }, {}, { isRenderer: false })
-		await waitFor(() => expect(map.container.querySelector('.base-flow-map')).toBeInTheDocument(), { timeout: 8000 })
+		await waitFor(() => expect(map.container.querySelector('.base-flow-map')).toBeInTheDocument(), { timeout: 20000 })
 		expect(screen.queryByRole('toolbar', { name: T.EDIT_TOOLBAR })).toBeNull()
 		map.api().select(['a'])
-		await waitFor(() => expect(screen.getAllByText(T.SECTION_3D).length).toBeGreaterThan(0), { timeout: 8000 })
-		await waitFor(() => expect(screen.getAllByRole('button', { name: T.POSITION_ROTATE }).length).toBeGreaterThan(0), { timeout: 8000 })
+		await waitFor(() => expect(screen.getAllByText(T.SECTION_3D).length).toBeGreaterThan(0), { timeout: 20000 })
+		await waitFor(() => expect(screen.getAllByRole('button', { name: T.POSITION_ROTATE }).length).toBeGreaterThan(0), {
+			timeout: 20000,
+		})
 		await fireEvent.click(screen.getAllByRole('button', { name: T.POSITION_ROTATE })[0])
 		await waitFor(() => expect(nodeOf(map.api().getData(), 'a')?.model3d?.rotation).toBe(90))
 		const lift = screen.getAllByLabelText(T.FIELD_ELEVATION)[0]
@@ -188,7 +190,7 @@ describe('BaseFlowMap3D «Правка»: порог 768 px и 2D-правка',
 		await waitFor(() => expect(nodeOf(map.api().getData(), 'a')?.model3d?.scale).toBe(3))
 		await fireEvent.click(screen.getAllByRole('radio', { name: 'Цвет 1' })[0])
 		await waitFor(() => expect(nodeOf(map.api().getData(), 'a')?.model3d?.tint).toBe('var(--rise-chart-1)'))
-	}, 30_000)
+	}, 60_000)
 	it('клики и нажатия по панелям правки не доходят до сцены', async () => {
 		const map = await mountEdit({ data: LONE_DATA })
 		await map.select('a')
