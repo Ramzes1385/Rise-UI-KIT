@@ -49,7 +49,7 @@ describe('resolveTagForms', () => {
 	it('перекрытый этап сжимается в кружок, цель и старт скрываются, вне экрана — скрыт', () => {
 		const forms = resolveTagForms([
 			entry('top', { rank: 0 }),
-			entry('stage', { order: 1 }),
+			entry('stage', { x: 170, order: 1 }),
 			entry('goal', { kind: 'goal', rank: 1, order: 2 }),
 			entry('start', { kind: 'start', rank: 4, order: 3 }),
 			entry('far', { x: 900, isVisible: false, order: 4 }),
@@ -59,21 +59,21 @@ describe('resolveTagForms', () => {
 
 	it('главные подписи не сжимаются, даже если пересекаются; порядок — по важности, потом по номеру', () => {
 		const forms = resolveTagForms([
-			entry('b', { rank: 3, order: 1 }),
+			entry('b', { rank: 3, order: 1, x: 170 }),
 			entry('a', { rank: 0, order: 5 }),
 			entry('c', { rank: 0, order: 6 }),
 		])
 		expect(Object.fromEntries(forms)).toEqual({ a: 'full', c: 'full', b: 'compact' })
 	})
 
-	it('кружок занимает место: следующая подпись рядом с ним получает кружок, а далёкая — полную форму', () => {
+	it('кружок занимает место: подпись, чей кружок упёрся бы в него, скрывается, а далёкая остаётся полной', () => {
 		const forms = resolveTagForms([
 			entry('top', { rank: 0, x: 100 }),
-			entry('near', { x: 120, order: 1 }),
-			entry('beside', { x: 126, order: 2, y: 100 }),
+			entry('near', { x: 170, order: 1 }),
+			entry('beside', { x: 176, order: 2 }),
 			entry('away', { x: 600, order: 3 }),
 		])
-		expect(Object.fromEntries(forms)).toEqual({ top: 'full', near: 'compact', beside: 'compact', away: 'full' })
+		expect(Object.fromEntries(forms)).toEqual({ top: 'full', near: 'compact', beside: 'hidden', away: 'full' })
 	})
 })
 
@@ -97,7 +97,7 @@ describe('layoutTags', () => {
 		const tags = buildTags(snapshot.value, IDLE, null)
 		const host = layer(tags, (_id, isCompact) => (isCompact ? 24 : 120))
 		const spots = new Map<string, Scene3DLabelSpot>([
-			['basics', spot(100, 100)],
+			['basics', spot(200, 100)],
 			['frame', spot(110, 100)],
 			['build', spot(500, 300)],
 			['ship', spot(900, 300, false)],
@@ -121,11 +121,13 @@ describe('layoutTags', () => {
 		expect(() => layoutTags(document.createElement('div'), tags, new Map([['basics', spot(1, 1)]]))).not.toThrow()
 	})
 
-	it('без текущего этапа соседей нет: все этапы одного ранга', () => {
+	it('без текущего этапа соседей нет; перекрытые подписи скрываются', () => {
 		const { snapshot } = mountSnapshot()
 		const tags = buildTags(snapshot.value, IDLE, null).map(tag => ({ ...tag, isCurrent: false }))
 		const host = layer(tags, () => 50)
 		layoutTags(host, tags, new Map(tags.map(tag => [tag.id, spot(100, 100)])))
-		expect(host.querySelectorAll(`.${ROADMAP_3D_COMPACT_CLASS}`).length).toBeGreaterThan(0)
+		expect(
+			[...host.querySelectorAll<HTMLElement>('[data-label-id]')].filter(item => item.style.visibility === 'hidden').length,
+		).toBeGreaterThan(0)
 	})
 })

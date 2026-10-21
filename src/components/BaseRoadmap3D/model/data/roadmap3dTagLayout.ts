@@ -11,6 +11,7 @@ export const ROADMAP_3D_COMPACT_CLASS = 'base-roadmap-3d__tag--compact'
 const LABEL_ID_SELECTOR = '[data-label-id]'
 const LABEL_ID_ATTRIBUTE = 'data-label-id'
 
+const HERE_BADGE = 30
 const RANK = { top: 0, goal: 1, neighbor: 2, stage: 3, start: 4 }
 
 export function tagRank(tag: Roadmap3DTag, currentIndex: number): number {
@@ -38,7 +39,7 @@ export function resolveTagForms(entries: readonly Roadmap3DTagEntry[]): Map<stri
 		else if (entry.rank === RANK.top || isFree(placed, full)) {
 			forms.set(entry.id, 'full')
 			placed.push(full)
-		} else if (entry.kind === 'stage') {
+		} else if (entry.kind === 'stage' && isFree(placed, rectOf(entry, entry.compact))) {
 			forms.set(entry.id, 'compact')
 			placed.push(rectOf(entry, entry.compact))
 		} else forms.set(entry.id, 'hidden')
@@ -71,7 +72,7 @@ export function layoutTags(layer: HTMLElement | null, tags: readonly Roadmap3DTa
 				order,
 				x: spot.x,
 				y: spot.y,
-				full: full.get(tag.id)!,
+				full: { ...full.get(tag.id)!, height: full.get(tag.id)!.height + (tag.isCurrent ? HERE_BADGE : 0) },
 				compact: compact.get(tag.id)!,
 				isVisible: spot.isVisible,
 			}
