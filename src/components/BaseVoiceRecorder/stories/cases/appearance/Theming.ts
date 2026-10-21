@@ -9,7 +9,7 @@ const ui = { root: 'story-themed-recorder', status: 'story-themed-status' }
 const template = `
 	<div class="story-stack">
 		<BaseVoiceRecorder v-bind="args" />
-		<div style="--rise-voice-recorder-bg: var(--rise-bg-muted); --rise-voice-recorder-border: var(--rise-primary); --rise-voice-recorder-radius: var(--rise-radius-2xl); --rise-voice-recorder-height: 56px; --rise-voice-recorder-padding-x: 16px;">
+		<div style="--rise-voice-recorder-bg: var(--rise-bg-elevated); --rise-voice-recorder-border: var(--rise-primary); --rise-voice-recorder-radius: var(--rise-radius-2xl); --rise-voice-recorder-height: 56px; --rise-voice-recorder-padding-x: 16px;">
 			<BaseVoiceRecorder v-bind="args" />
 		</div>
 		<BaseVoiceRecorder v-bind="args" :ui="ui" />
