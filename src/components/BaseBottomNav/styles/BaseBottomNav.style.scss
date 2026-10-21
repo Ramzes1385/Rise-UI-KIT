@@ -10,7 +10,7 @@
 	width: 100%;
 	padding-inline: env(safe-area-inset-left, 0) env(safe-area-inset-right, 0);
 	padding-bottom: env(safe-area-inset-bottom, 0);
-	border-top: 1px solid transparent;
+	border-top: 1px solid ct(bottom-nav, border, transparent);
 	border-radius: sz(var(--rise-radius-lg));
 	@include tonal-surface(muted);
 	@include custom-bg(background-color, ct(bottom-nav, bg, var(--rise-bg-muted)));
@@ -61,6 +61,7 @@
 		max-width: sz(480px);
 		margin-inline: auto;
 		border-radius: sz(ct(bottom-nav, bar-radius, var(--rise-radius-lg)));
+		border: 1px solid ct(bottom-nav, border, transparent);
 		box-shadow: ct(bottom-nav, bar-shadow, var(--rise-shadow-lg));
 		@include tonal-surface(floating);
 		@include custom-bg(background-color, ct(bottom-nav, bg, var(--rise-surface-floating)));

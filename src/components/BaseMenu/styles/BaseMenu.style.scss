@@ -6,6 +6,7 @@
 	padding: space(ct(menu, padding, 4px));
 	@include transition-colors;
 	@include floating-surface;
+	border: 1px solid ct(menu, border, transparent);
 	border-radius: sz(ct(menu, radius, var(--rise-radius-lg)));
 	box-shadow: ct(menu, shadow, var(--rise-shadow-lg));
 	@include custom-bg(background-color, ct(menu, bg, var(--rise-surface-floating)));

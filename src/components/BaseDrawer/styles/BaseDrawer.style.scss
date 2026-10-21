@@ -35,7 +35,7 @@
 		flex-direction: column;
 		box-sizing: border-box;
 		overflow: hidden;
-		border: 0;
+		border: 1px solid ct(drawer-panel, border, transparent);
 		@include tonal-surface(dialog);
 		@include custom-bg(background-color, ct(drawer-panel, bg, var(--rise-surface-dialog)));
 		@include custom-text(color, ct(drawer-panel, text, var(--rise-text)));

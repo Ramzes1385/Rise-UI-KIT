@@ -20,6 +20,15 @@
 		overflow: hidden;
 		border-radius: sz(ct(ai-message, avatar-radius, var(--rise-radius-md)));
 		background: ct(ai-message, avatar-bg, var(--rise-primary));
+		background-image: linear-gradient(
+			135deg,
+			#{ct(ai-message, avatar-bg, var(--rise-primary))},
+			color-mix(
+				in oklab,
+				#{ct(ai-message, avatar-bg, var(--rise-primary))} 60%,
+				#{ct(ai-message, avatar-end-bg, var(--rise-ai-message-avatar-bg, var(--rise-primary)))}
+			)
+		);
 		color: var(--rise-on-primary);
 
 		.base-icon {

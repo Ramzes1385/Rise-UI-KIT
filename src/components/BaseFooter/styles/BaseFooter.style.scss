@@ -78,6 +78,7 @@
 	&__column-title {
 		margin: 0 0 sz(12px);
 		@include caps-label;
+		font-weight: ct(footer-column-title, font-weight, var(--rise-font-weight-normal));
 		@include custom-text(color, ct(footer-column-title, text, var(--rise-text-muted)));
 	}
 

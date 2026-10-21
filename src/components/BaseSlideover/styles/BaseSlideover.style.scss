@@ -41,7 +41,7 @@
 		width: calc(#{sz(ct(slideover-panel, width, 420px))} * var(--slideover-width-scale, 1));
 		max-width: 100%;
 		overflow: hidden;
-		border: 0;
+		border: 1px solid ct(slideover-panel, border, transparent);
 		@include tonal-surface(dialog);
 		@include custom-bg(background-color, ct(slideover-panel, bg, var(--rise-surface-dialog)));
 		@include custom-text(color, ct(slideover-panel, text, var(--rise-text)));
@@ -139,6 +139,7 @@
 	}
 
 	&--ghost &__panel {
+		border-color: transparent;
 		@include custom-bg(background-color, transparent);
 		box-shadow: none;
 	}

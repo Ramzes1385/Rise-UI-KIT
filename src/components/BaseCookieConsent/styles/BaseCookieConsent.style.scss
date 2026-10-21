@@ -13,7 +13,7 @@
 	max-height: calc(100% - var(--consent-offset) * 2);
 	padding: space(ct(cookie-consent, padding-y, 16px) ct(cookie-consent, padding-x, 20px));
 	overflow-y: auto;
-	border: 0;
+	border: 1px solid ct(cookie-consent, border, transparent);
 	border-radius: sz(ct(cookie-consent, radius, var(--rise-radius-lg)));
 	@include tonal-surface(floating);
 	box-shadow: ct(cookie-consent, shadow, var(--rise-shadow-lg));

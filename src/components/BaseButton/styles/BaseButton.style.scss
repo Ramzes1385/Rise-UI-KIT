@@ -60,6 +60,10 @@
 		);
 		@include custom-text(color, var(--rise-text-highlighted));
 		box-shadow: ct(button, shadow, var(--rise-shadow-sm));
+
+		@include hover {
+			box-shadow: ct(button, shadow-hover, ct(button, shadow, var(--rise-shadow-sm)));
+		}
 	}
 
 	&--disabled {

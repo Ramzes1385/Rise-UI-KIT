@@ -120,6 +120,7 @@
 		margin: sz(12px) 0;
 		padding: space(8px 14px);
 		border-radius: sz(var(--rise-radius-md));
+		box-shadow: inset dir-x(sz(3px)) 0 0 ct(markdown, quote-border, transparent);
 		background-color: ct(markdown, quote-bg, var(--rise-field-bg));
 		@include custom-text(color, ct(markdown, quote-text, var(--rise-text-muted)));
 

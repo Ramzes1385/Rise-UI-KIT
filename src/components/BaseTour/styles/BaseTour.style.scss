@@ -127,6 +127,7 @@
 	flex-direction: column;
 	box-sizing: border-box;
 	@include floating-surface(null);
+	border: 1px solid ct(tour-card, border, transparent);
 	padding: space(ct(tour-card, padding, 16px));
 	border-radius: sz(ct(tour-card, radius, var(--rise-radius-lg)));
 	background-color: ct(tour-card, bg, var(--rise-surface-floating));

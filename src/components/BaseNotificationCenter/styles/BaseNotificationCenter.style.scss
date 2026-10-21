@@ -7,7 +7,7 @@
 	width: 100%;
 	min-width: 0;
 	padding: space(ct(notification-center, padding, 12px));
-	border: 0;
+	border: 1px solid ct(notification-center, border, transparent);
 	border-radius: sz(ct(notification-center, radius, var(--rise-radius-lg)));
 	@include tonal-surface(floating);
 	@include custom-bg(background-color, ct(notification-center, bg, var(--rise-surface-floating)));
@@ -16,6 +16,7 @@
 
 	&--ghost {
 		padding: 0;
+		border-color: transparent;
 		@include custom-bg(background-color, transparent);
 		box-shadow: none;
 	}
