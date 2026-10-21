@@ -486,8 +486,8 @@ function checkFontFiles(results, problems) {
 		} else {
 			expect(
 				problems,
-				!result.css.text.includes('Rise CJK'),
-				`${result.name}: в CSS приложения шрифт иероглифов без словаря zh или ja`,
+				!/@font-face\s*\{[^}]*Rise CJK/.test(result.css.text),
+				`${result.name}: в CSS приложения @font-face шрифта иероглифов без словаря zh или ja`,
 			)
 			expect(
 				problems,
