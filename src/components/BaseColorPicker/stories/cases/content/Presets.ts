@@ -1,7 +1,7 @@
 import { docsFrame } from '../../shared'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../BaseColorPicker.stories'
-import { screen, waitFor, expect } from 'storybook/test'
+import { screen, waitFor, expect, within } from 'storybook/test'
 
 const BRAND_PRESETS = [
 	'#0f172a',
@@ -39,6 +39,7 @@ export const Presets: StoryObj<typeof meta> = {
 		await waitFor(() => expect(screen.queryByRole('slider', { name: 'Насыщенность и яркость' })).not.toBeInTheDocument())
 
 		await userEvent.click(swatch)
-		await expect(await screen.findByRole('button', { name: 'Пресет #1d4ed8' })).toHaveAttribute('aria-pressed', 'true')
+		const presets = await screen.findByRole('group', { name: 'Пресеты' })
+		await expect(within(presets).getByRole('button', { name: 'Пресет #1d4ed8' })).toHaveAttribute('aria-pressed', 'true')
 	},
 }

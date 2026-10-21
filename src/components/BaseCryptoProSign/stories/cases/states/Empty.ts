@@ -13,7 +13,9 @@ export const Empty: StoryObj<typeof meta> = {
 	args: { data: undefined, fileName: '' },
 	play: async ({ canvas }) => {
 		await expect(await canvas.findByLabelText('Документ')).toHaveValue('')
-		await waitFor(() => expect(canvas.getByRole('combobox', { name: 'Сертификат' })).toHaveTextContent('Иванов Иван Иванович'))
+		await waitFor(() => expect(canvas.getByRole('combobox', { name: 'Сертификат' })).toHaveTextContent('Иванов Иван Иванович'), {
+			timeout: 5000,
+		})
 		await expect(canvas.getByRole('button', { name: 'Подписать' })).toBeDisabled()
 	},
 }

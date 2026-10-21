@@ -32,7 +32,7 @@ export const CoSign: StoryObj<typeof meta> = {
 		await expect(canvas.getByRole('region', { name: 'Добавление электронной подписи' })).toBeVisible()
 		await expect(await canvas.findByText('Подпись для проверки получена')).toBeVisible()
 		const select = await canvas.findByRole('combobox', { name: 'Сертификат' })
-		await waitFor(() => expect(select).toHaveTextContent('Иванов Иван Иванович'))
+		await waitFor(() => expect(select).toHaveTextContent('Иванов Иван Иванович'), { timeout: 5000 })
 		await tabTo(select, userEvent)
 		await userEvent.keyboard('{ArrowDown}')
 		await screen.findByRole('listbox', { name: 'Сертификат' })

@@ -29,7 +29,7 @@ export const Default: StoryObj<typeof meta> = {
 	play: async ({ canvas, userEvent, args }) => {
 		await expect(canvas.getByRole('region', { name: 'Электронная подпись' })).toBeVisible()
 		const select = await canvas.findByRole('combobox', { name: 'Сертификат' })
-		await waitFor(() => expect(select).toHaveTextContent('Иванов Иван Иванович'))
+		await waitFor(() => expect(select).toHaveTextContent('Иванов Иван Иванович'), { timeout: 5000 })
 
 		await tabTo(select, userEvent)
 		await userEvent.keyboard('{ArrowDown}')

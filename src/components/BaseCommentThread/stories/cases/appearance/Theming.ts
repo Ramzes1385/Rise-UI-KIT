@@ -13,7 +13,7 @@ const template = `
 		<div style="width: 360px">
 			<BaseCommentThread v-bind="args" :comments="comments" label="По умолчанию" />
 		</div>
-		<div style="width: 360px; --rise-comment-thread-bg: var(--rise-bg-muted); --rise-comment-thread-radius: var(--rise-radius-xl); --rise-comment-thread-padding: 24px; --rise-comment-thread-author-text: var(--rise-primary-text); --rise-comment-thread-shadow: var(--rise-shadow-md);">
+		<div style="width: 360px; --rise-comment-thread-bg: var(--rise-bg-elevated); --rise-comment-thread-radius: var(--rise-radius-xl); --rise-comment-thread-padding: 24px; --rise-comment-thread-author-text: var(--rise-primary-text); --rise-comment-thread-shadow: var(--rise-shadow-md);">
 			<BaseCommentThread v-bind="args" :comments="comments" label="Токены на контейнере" />
 		</div>
 		<div style="width: 360px">
