@@ -21,13 +21,14 @@ const template = `
 			<span class="fnd-role__sample" :style="{ background: 'var(--rise-' + item.role + '-hover)', color: 'var(--rise-on-' + item.role + ')' }">
 				Наведение <span class="fnd-role__token">-hover</span>
 			</span>
-			<span
-				class="fnd-role__sample"
-				:style="{ background: 'var(--rise-' + item.role + '-soft)', color: 'var(--rise-' + item.role + '-text)', boxShadow: 'inset 0 0 0 1px var(--rise-' + item.role + '-border)' }">
-				Мягкий фон <span class="fnd-role__token">-soft · -text · -border</span>
+			<span class="fnd-role__sample" :style="{ background: 'var(--rise-' + item.role + '-soft)', color: 'var(--rise-' + item.role + '-text)' }">
+				Мягкий фон <span class="fnd-role__token">-soft · -text</span>
 			</span>
-			<span class="fnd-role__sample" :style="{ color: 'var(--rise-' + item.role + ')', padding: '0 10px' }">
-				Текст на фоне <span class="fnd-role__token">--rise-{{ item.role }}</span>
+			<span class="fnd-role__sample" :style="{ color: 'var(--rise-' + item.role + '-text)', boxShadow: 'inset 0 0 0 1px var(--rise-' + item.role + '-border)' }">
+				Рамка варианта outline <span class="fnd-role__token">-border</span>
+			</span>
+			<span class="fnd-role__sample" :style="{ color: 'var(--rise-' + item.role + '-text)', padding: '0 10px' }">
+				Текст на фоне <span class="fnd-role__token">-text</span>
 			</span>
 		</div>
 	</div>
@@ -39,7 +40,7 @@ export const Roles: StoryObj<typeof meta> = {
 			description: {
 				story: [
 					'Цветовые роли. У каждой роли: основной цвет (`--rise-{роль}`), наведение (`-hover`), текст на заливке (`--rise-on-{роль}`),',
-					'мягкий фон (`-soft`, `-soft-hover`), текст на мягком фоне (`-text`) и тонкая рамка (`-border`).',
+					'мягкий фон (`-soft`, `-soft-hover`), текст на мягком фоне (`-text`) и рамка вариантов `outline` (`-border`).',
 				].join('\n'),
 			},
 			source: staticStorySource({ template, imports: [], script: `const roles = ${literal(ROLES)}` }),

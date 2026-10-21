@@ -25,7 +25,7 @@ const template = `
 					<template #left><BaseIcon name="rotate-ccw" /></template>
 					Повторить
 				</BaseButton>
-				<BaseButton variant="outline" @click="report">Сообщить о проблеме</BaseButton>
+				<BaseButton variant="tonal" @click="report">Сообщить о проблеме</BaseButton>
 			</template>
 		</BaseEmpty>
 		<p role="status" class="blk-muted">{{ message }}</p>

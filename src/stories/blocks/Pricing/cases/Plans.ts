@@ -20,7 +20,7 @@ const template = `
 		</header>
 		<ul class="blk-pricing__plans">
 			<li v-for="plan in plans" :key="plan.id">
-				<BaseCard :class="['blk-pricing__plan', { 'blk-pricing__plan--popular': plan.isPopular }]">
+				<BaseCard :variant="plan.isPopular ? 'outline' : 'default'" :class="['blk-pricing__plan', { 'blk-pricing__plan--popular': plan.isPopular }]">
 					<div class="blk-pricing__plan-head">
 						<h2 class="blk-pricing__name">{{ plan.name }}</h2>
 						<BaseBadge v-if="plan.isPopular" variant="soft" label="Популярный" />
@@ -37,7 +37,7 @@ const template = `
 						</li>
 					</ul>
 					<template #footer>
-						<BaseButton :variant="plan.isPopular ? 'default' : 'outline'" class="blk-pricing__action" @click="choose(plan)">
+						<BaseButton :variant="plan.isPopular ? 'default' : 'tonal'" class="blk-pricing__action" @click="choose(plan)">
 							{{ plan.monthly ? 'Выбрать «' + plan.name + '»' : 'Начать бесплатно' }}
 						</BaseButton>
 					</template>

@@ -28,7 +28,8 @@ export const Palettes: StoryObj<typeof meta> = {
 		docs: {
 			description: {
 				story: [
-					'Палитры ролей (оттенки Tailwind: orange, zinc, green, blue, amber, red). Чтобы сменить бренд,',
+					'Палитры ролей: «Космос» (`neutral`, холодная нейтральная) и «Янтарь» (`primary`, основная, шаг 600 — #EE5410),',
+					'«Ион» (`info`), «Аврора» (`success`), «Мёд» (`warning`) и «Плазма» (`error`). Чтобы сменить бренд,',
 					'переопределите `--rise-color-primary-50 … 950` на `:root` — семантические токены обеих тем пересчитаются.',
 				].join('\n'),
 			},

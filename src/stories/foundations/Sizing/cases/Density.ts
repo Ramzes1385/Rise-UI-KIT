@@ -5,7 +5,7 @@ import { BaseButton } from '@components/BaseButton'
 import type { StoryObj } from '@storybook/vue3-vite'
 import { isStoryBranded, staticStorySource, useStorySetup } from '@/stories/helpers'
 
-const STATE = { text: '', spacious: '' }
+const STATE = { text: '', compact: '' }
 
 const template = `
 	<div class="story-grid" style="--story-grid-min: 280px;">
@@ -14,9 +14,9 @@ const template = `
 			<BaseInput v-model="text" placeholder="Поле ввода" />
 			<BaseButton>Сохранить</BaseButton>
 		</div>
-		<div class="story-frame story-col" style="--rise-control-padding-y: 7px; --rise-control-padding-x: 12px;">
-			<span class="story-label">--rise-control-padding-y: 7px</span>
-			<BaseInput v-model="spacious" placeholder="Поле ввода" />
+		<div class="story-frame story-col" style="--rise-control-padding-y: 5px; --rise-control-padding-x: 10px;">
+			<span class="story-label">--rise-control-padding-y: 5px</span>
+			<BaseInput v-model="compact" placeholder="Поле ввода" />
 			<BaseButton>Сохранить</BaseButton>
 		</div>
 	</div>
@@ -28,13 +28,13 @@ export const Density: StoryObj<typeof meta> = {
 			description: {
 				story: [
 					'Плотность интерфейса без пропов: токены `--rise-control-padding-y/x`, заданные на контейнере (или на `:root`),',
-					'меняют высоту всех контролов внутри. Слева — по умолчанию (32px), справа — `--rise-control-padding-y: 7px` (36px).',
+					'меняют высоту всех контролов внутри. Слева — по умолчанию (36px, `--rise-control-padding-y: 7px`), справа — плотнее: `--rise-control-padding-y: 5px` (32px).',
 					'',
 					'```css',
-					'/* весь интерфейс просторнее: контролы 36px */',
+					'/* весь интерфейс плотнее: контролы 32px */',
 					':root {',
-					'  --rise-control-padding-y: 7px;',
-					'  --rise-control-padding-x: 12px;',
+					'  --rise-control-padding-y: 5px;',
+					'  --rise-control-padding-x: 10px;',
 					'}',
 					'```',
 				].join('\n'),
@@ -48,12 +48,12 @@ export const Density: StoryObj<typeof meta> = {
 		template,
 	}),
 	play: async ({ canvasElement }) => {
-		const [compact, spacious] = [...canvasElement.querySelectorAll('.base-button')].map(el =>
+		const [regular, compact] = [...canvasElement.querySelectorAll('.base-button')].map(el =>
 			Math.round(el.getBoundingClientRect().height),
 		)
-		await expect(spacious).toBeGreaterThan(compact)
+		await expect(compact).toBeLessThan(regular)
 		if (isStoryBranded()) return
+		await expect(regular).toBe(36)
 		await expect(compact).toBe(32)
-		await expect(spacious).toBe(36)
 	},
 }

@@ -10,6 +10,7 @@
 	margin: 0;
 	color: var(--rise-text-highlighted);
 	font-weight: var(--rise-font-weight-semibold);
+	letter-spacing: var(--rise-tracking-heading);
 	@include text-size(xl);
 }
 
@@ -30,10 +31,9 @@
 		width: 100%;
 		max-width: 400px;
 		padding: 32px;
-		border: 1px solid var(--rise-border);
 		border-radius: var(--rise-radius-lg);
-		background-color: var(--rise-bg);
-		box-shadow: var(--rise-shadow-sm);
+		background-color: var(--rise-bg-muted);
+		@include raised-fields;
 	}
 
 	&__header {
@@ -51,7 +51,7 @@
 		height: 40px;
 		border-radius: var(--rise-radius-lg);
 		background-color: var(--rise-primary);
-		color: var(--rise-text-inverted);
+		color: var(--rise-on-primary);
 		font-weight: var(--rise-font-weight-bold);
 		@include text-size(lg);
 	}
@@ -221,6 +221,7 @@
 		font-weight: var(--rise-font-weight-bold);
 		font-size: 96px;
 		font-variant-numeric: tabular-nums;
+		letter-spacing: var(--rise-tracking-display);
 		line-height: 1;
 	}
 
@@ -424,9 +425,9 @@
 		gap: 6px;
 		width: 100%;
 		padding: 8px;
-		border: 1px solid var(--rise-border);
+		border: 0;
 		border-radius: var(--rise-radius-lg);
-		background-color: var(--rise-bg);
+		background-color: var(--rise-bg-muted);
 		color: var(--rise-text);
 		font: inherit;
 		text-align: start;
@@ -439,7 +440,7 @@
 		}
 
 		&[aria-current='true'] {
-			border-color: var(--rise-primary);
+			background-color: var(--rise-primary-soft);
 		}
 	}
 

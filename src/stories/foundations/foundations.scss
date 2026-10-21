@@ -38,9 +38,8 @@
 	align-items: center;
 	gap: 12px;
 	padding: 8px;
-	border: 1px solid var(--rise-border);
 	border-radius: var(--rise-radius-lg);
-	background-color: var(--rise-bg);
+	background-color: var(--rise-bg-muted);
 
 	&__swatch {
 		flex-shrink: 0;
@@ -90,10 +89,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 4px;
-		font-family: var(--rise-font-mono);
-		font-size: 10px;
-		line-height: 14px;
-		color: var(--rise-text-muted);
+		@include caps-label(10px, 0.04em);
 		text-align: center;
 	}
 
@@ -109,8 +105,8 @@
 	flex-direction: column;
 	gap: 8px;
 	padding: 12px;
-	border: 1px solid var(--rise-border);
 	border-radius: var(--rise-radius-lg);
+	background-color: var(--rise-bg-muted);
 
 	&__name {
 		color: var(--rise-text-highlighted);
@@ -159,8 +155,7 @@
 	justify-content: center;
 	gap: 4px;
 	height: 96px;
-	background-color: var(--rise-bg);
-	border: 1px solid var(--rise-border);
+	background-color: var(--rise-bg-elevated);
 	color: var(--rise-text-muted);
 	font-family: var(--rise-font-mono);
 	@include text-size(xs);
@@ -169,6 +164,10 @@
 		color: var(--rise-text-highlighted);
 		font-family: var(--rise-font-sans);
 		font-weight: var(--rise-font-weight-semibold);
+	}
+
+	&--raised {
+		background-color: var(--rise-bg);
 	}
 }
 
@@ -182,10 +181,10 @@
 		flex-direction: column;
 		gap: 12px;
 		padding: 16px;
-		border: 1px solid var(--rise-border);
 		border-radius: var(--rise-radius-lg);
-		background-color: var(--rise-bg);
+		background-color: var(--rise-bg-muted);
 		color: var(--rise-text);
+		@include raised-fields;
 	}
 }
 
@@ -198,6 +197,10 @@
 	border-collapse: collapse;
 	color: var(--rise-text);
 	@include text-size(sm);
+
+	thead th {
+		@include caps-label(10px);
+	}
 
 	caption {
 		margin-bottom: 8px;
@@ -241,7 +244,7 @@
 	&__dot {
 		width: 16px;
 		height: 16px;
-		border-radius: var(--rise-radius-full);
+		border-radius: var(--rise-radius-xs);
 		background-color: var(--rise-primary);
 		animation: fnd-motion-travel var(--rise-duration-xslow) var(--fnd-ease) both;
 	}
@@ -285,11 +288,11 @@
 		gap: 12px;
 		min-width: 0;
 		padding: 16px;
-		border: 1px solid var(--rise-border);
 		border-radius: var(--rise-radius-lg);
-		background-color: var(--rise-bg);
+		background-color: var(--rise-bg-muted);
 		color: var(--rise-text);
 		font-family: var(--rise-font-sans);
+		@include raised-fields;
 	}
 
 	&__overlay {
@@ -309,8 +312,8 @@
 	&__scroll {
 		max-height: 360px;
 		overflow: auto;
-		border: 1px solid var(--rise-border);
-		border-radius: var(--rise-radius);
+		border-radius: var(--rise-radius-lg);
+		background-color: var(--rise-bg-muted);
 	}
 
 	&__table {
@@ -324,6 +327,10 @@
 			padding: 4px 12px;
 			border-bottom: 1px solid var(--rise-border);
 			text-align: start;
+		}
+
+		thead th {
+			@include caps-label(10px);
 		}
 	}
 

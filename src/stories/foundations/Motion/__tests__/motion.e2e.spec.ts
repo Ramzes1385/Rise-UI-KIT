@@ -63,7 +63,7 @@ test.describe('движение: пресеты и середина перехо
 	test('пресет на области пересчитывает токены', async ({ page }) => {
 		await openStory(page, 'foundations-motion--tokens')
 
-		await expect.poll(() => rowDurations(page, '--rise-duration-slow')).toEqual([0.01, 200, 300, 420])
+		await expect.poll(() => rowDurations(page, '--rise-duration-slow')).toEqual([0.01, 200, 320, 420])
 		await expect.poll(() => rowDurations(page, '--rise-duration-xslow')).toEqual([0.01, 300, 500, 700])
 		const spring = page
 			.getByRole('row', { name: /--rise-ease-spring/ })

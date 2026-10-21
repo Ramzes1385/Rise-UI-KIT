@@ -21,8 +21,8 @@ const template = `
 				<p class="blk-muted">Рады видеть вас снова</p>
 			</div>
 			<div class="blk-auth__social">
-				<BaseButton variant="outline" class="blk-auth__wide">GitHub</BaseButton>
-				<BaseButton variant="outline" class="blk-auth__wide">Google</BaseButton>
+				<BaseButton variant="tonal" class="blk-auth__wide">GitHub</BaseButton>
+				<BaseButton variant="tonal" class="blk-auth__wide">Google</BaseButton>
 			</div>
 			<BaseSeparator label="или по почте" />
 			<BaseForm :schema="schema" :state="state" aria-label="Вход" @submit="signIn">

@@ -40,8 +40,6 @@ const neutralOptions: Option[] = [
 ]
 const fontOptions: Option[] = [
 	{ value: '', label: 'Как в ките — Rise Grotesk' },
-	{ value: 'system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif', label: 'Системный' },
-	{ value: 'Georgia, "Times New Roman", serif', label: 'С засечками' },
 	{ value: "'Rise Mono', monospace", label: 'Моноширинный — Rise Mono' },
 ]
 const roleOptions: Option[] = [

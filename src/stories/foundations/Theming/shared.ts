@@ -13,7 +13,7 @@ const SAMPLE_TEMPLATE = `
 		<div class="story-row">
 			<BaseButton>Сохранить</BaseButton>
 			<BaseButton variant="soft">Черновик</BaseButton>
-			<BaseButton variant="outline">Отмена</BaseButton>
+			<BaseButton variant="tonal">Отмена</BaseButton>
 			<BaseBadge label="Новый" variant="soft" />
 		</div>
 		<BaseInput v-model="text" label="Имя" style="max-width: 280px;" />

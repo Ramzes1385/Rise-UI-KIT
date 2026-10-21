@@ -30,7 +30,7 @@ const template = `
 				<div class="blk-settings__fields">
 					<div class="blk-settings__avatar">
 						<BaseAvatar :name="state.name" :size-scale="150" />
-						<BaseButton variant="outline">Загрузить фото</BaseButton>
+						<BaseButton variant="tonal">Загрузить фото</BaseButton>
 						<BaseButton variant="ghost">Удалить фото</BaseButton>
 					</div>
 					<BaseFormField label="Имя" name="name" is-required>
@@ -81,7 +81,7 @@ const template = `
 						confirm-label="Удалить"
 						is-danger
 						@confirm="message = 'Запрос на удаление отправлен'">
-						<BaseButton variant="outline">Удалить аккаунт</BaseButton>
+						<BaseButton variant="tonal">Удалить аккаунт</BaseButton>
 					</BasePopconfirm>
 				</div>
 			</section>

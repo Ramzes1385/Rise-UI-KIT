@@ -10,12 +10,13 @@ interface TokenInfo {
 const SEMANTIC_GROUPS: { title: string; hint: string; tokens: TokenInfo[] }[] = [
 	{
 		title: 'Фон',
-		hint: 'bg — основной фон компонентов и страницы; muted/elevated/accented — приподнятые поверхности и состояния наведения.',
+		hint: 'Слои отделяет оттенок, а не рамка: страница → контейнер (muted) → поле, наведение (elevated) → нажатие, трек (accented).',
 		tokens: [
-			{ token: '--rise-bg', description: 'Фон страницы, карточек, полей' },
-			{ token: '--rise-bg-muted', description: 'Подвалы, второстепенные области' },
-			{ token: '--rise-bg-elevated', description: 'Наведение, заголовки таблиц' },
-			{ token: '--rise-bg-accented', description: 'Нажатие, трек слайдера' },
+			{ token: '--rise-bg', description: 'Фон страницы и окон' },
+			{ token: '--rise-bg-muted', description: 'Контейнер: карточка, панель, подвал' },
+			{ token: '--rise-bg-elevated', description: 'Поле, наведение, дорожка сегментов' },
+			{ token: '--rise-bg-accented', description: 'Нажатие, трек слайдера, выключенный переключатель' },
+			{ token: '--rise-surface-raised', description: 'Поле внутри тонального контейнера' },
 			{ token: '--rise-bg-inverted', description: 'Тултипы, инвертированные блоки' },
 		],
 	},
@@ -33,11 +34,12 @@ const SEMANTIC_GROUPS: { title: string; hint: string; tokens: TokenInfo[] }[] = 
 	},
 	{
 		title: 'Рамки',
-		hint: 'border — рамки поверхностей и разделители, accented — рамки полей ввода и нейтральных кнопок.',
+		hint: 'Рамки нужны разделителям и вариантам outline: у карточек, полей и кнопок по умолчанию их нет.',
 		tokens: [
-			{ token: '--rise-border', description: 'Карточки, разделители' },
+			{ token: '--rise-border', description: 'Разделители внутри поверхностей' },
 			{ token: '--rise-border-muted', description: 'Внутренние разделители' },
-			{ token: '--rise-border-accented', description: 'Поля ввода, outline-кнопки' },
+			{ token: '--rise-border-accented', description: 'Рамка вариантов outline' },
+			{ token: '--rise-border-control', description: 'Граница флажка и радио' },
 			{ token: '--rise-border-inverted', description: 'Рамки на инвертированном фоне' },
 		],
 	},
@@ -73,7 +75,9 @@ const template = `
 export const Semantic: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
-			description: { story: 'Семантические токены фона, текста и рамок с назначением. Эти имена используют стили компонентов.' },
+			description: {
+				story: 'Семантические токены фона, текста и рамок с назначением. Эти имена используют стили компонентов; в тёмной теме значения другие, имена те же.',
+			},
 			source: staticStorySource({ template, imports: [], script: `const groups = ${literal(SEMANTIC_GROUPS)}` }),
 		},
 	},

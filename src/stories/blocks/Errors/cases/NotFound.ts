@@ -22,7 +22,7 @@ const template = `
 				<BaseSearch v-model="query" :results="pages" placeholder="Поиск по сайту" @select="open" />
 			</div>
 			<template #actions>
-				<BaseButton variant="outline" @click="message = 'Возврат на предыдущую страницу'">
+				<BaseButton variant="tonal" @click="message = 'Возврат на предыдущую страницу'">
 					<template #left><BaseIcon name="arrow-left" /></template>
 					Назад
 				</BaseButton>

@@ -3,7 +3,7 @@ import type { StoryObj } from '@storybook/vue3-vite'
 import { literal, staticStorySource, useStorySetup } from '@/stories/helpers'
 
 const SIZES = [
-	{ name: '2xs', size: 10, line: 14, usage: 'Счётчики в бейджах xs' },
+	{ name: '2xs', size: 10, line: 14, usage: 'Бейджи и служебные подписи (моно капс)' },
 	{ name: 'xs', size: 12, line: 16, usage: 'Подписи, подсказки, бейджи' },
 	{ name: 'sm', size: 14, line: 20, usage: 'Текст контролов, таблиц, меню — основной размер' },
 	{ name: 'base', size: 16, line: 24, usage: 'Текст статей, заголовки карточек' },

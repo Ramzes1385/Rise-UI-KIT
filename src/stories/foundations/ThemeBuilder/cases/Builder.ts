@@ -23,7 +23,7 @@ const template = `
 	<div class="fnd-builder">
 		<section class="fnd-builder__inputs" aria-label="Входы темы">
 			<div class="story-row">
-				<BaseButton v-for="preset in presetOptions" :key="preset.value" variant="outline" @click="loadPreset(preset.value)">
+				<BaseButton v-for="preset in presetOptions" :key="preset.value" variant="tonal" @click="loadPreset(preset.value)">
 					{{ preset.label }}
 				</BaseButton>
 			</div>
@@ -44,7 +44,7 @@ const template = `
 				<div class="story-row">
 					<BaseButton>Сохранить</BaseButton>
 					<BaseButton variant="soft">Черновик</BaseButton>
-					<BaseButton variant="outline">Отмена</BaseButton>
+					<BaseButton variant="tonal">Отмена</BaseButton>
 				</div>
 				<BaseInput v-model="search" label="Поиск проекта" />
 				<BaseSelect v-model="role" :options="roleOptions" label="Роль" />
@@ -61,7 +61,7 @@ const template = `
 				<div class="story-row">
 					<BaseButton>Сохранить</BaseButton>
 					<BaseButton variant="soft">Черновик</BaseButton>
-					<BaseButton variant="outline">Отмена</BaseButton>
+					<BaseButton variant="tonal">Отмена</BaseButton>
 				</div>
 				<BaseInput v-model="search" label="Поиск проекта" />
 				<BaseSelect v-model="role" :options="roleOptions" label="Роль" />
@@ -99,7 +99,7 @@ const template = `
 		<section class="fnd-builder__code" aria-label="Код темы">
 			<div class="story-row">
 				<BaseButton @click="copy('js')">Скопировать JS</BaseButton>
-				<BaseButton variant="outline" @click="copy('css')">Скопировать CSS</BaseButton>
+				<BaseButton variant="tonal" @click="copy('css')">Скопировать CSS</BaseButton>
 				<span role="status" class="story-label">{{ copied }}</span>
 			</div>
 			<pre class="fnd-builder__pre" data-code="js" tabindex="0" aria-label="Код JS">{{ jsCode }}</pre>
@@ -236,7 +236,7 @@ export const Builder: StoryObj<typeof meta> = {
 		const jsCode = canvasElement.querySelector('[data-code="js"]')!.textContent!
 		const cssCode = canvasElement.querySelector('[data-code="css"]')!.textContent!
 		const input = parseJsCode(jsCode)
-		await expect(input).toMatchObject({ name: 'brand', primary: '#7c3aed', radius: 'full' })
+		await expect(input).toMatchObject({ name: 'brand', primary: '#7c3aed', radius: 'lg' })
 		for (const [panel, mode] of [
 			[light, 'light'],
 			[dark, 'dark'],

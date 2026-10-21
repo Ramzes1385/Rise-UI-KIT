@@ -23,7 +23,7 @@ export const Alignment: StoryObj<typeof meta> = {
 		docs: {
 			description: {
 				story: [
-					'Выравнивание: при одинаковом sizeScale кнопка, поле и селект одной высоты (32px при 100).',
+					'Выравнивание: при одинаковом sizeScale кнопка, поле и селект одной высоты (36px при 100).',
 					'Play-функция сверяет высоты — если стили компонента разойдутся со шкалой, проверка упадёт.',
 				].join('\n'),
 			},
@@ -44,7 +44,7 @@ export const Alignment: StoryObj<typeof meta> = {
 		const height = (selector: string) =>
 			Math.round((canvasElement.querySelector(selector) as HTMLElement).getBoundingClientRect().height)
 		const button = height('.base-button')
-		if (!isStoryBranded()) await expect(button).toBe(32)
+		if (!isStoryBranded()) await expect(button).toBe(36)
 		await expect(height('.base-input__wrapper')).toBe(button)
 		await expect(height('.base-select__trigger')).toBe(button)
 	},

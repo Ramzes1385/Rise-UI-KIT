@@ -26,7 +26,7 @@ const template = `
 			<BaseHeader title="Rise CRM" href="#overview">
 				<template #end>
 					<div class="blk-dash__header-end">
-						<BaseButton variant="outline" aria-keyshortcuts="Control+K Meta+K" @click="isPaletteOpen = true">
+						<BaseButton variant="tonal" aria-keyshortcuts="Control+K Meta+K" @click="isPaletteOpen = true">
 							Поиск
 							<span aria-hidden="true"><BaseKbd value="meta" /><BaseKbd value="K" /></span>
 						</BaseButton>
