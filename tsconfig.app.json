@@ -69,6 +69,7 @@
     "build/plugins/cssSplit.ts",
     "build/config/cssSplit.ts",
     "build/plugins/subpaths.ts",
+    "build/plugins/fonts.ts",
     "build/plugins/subpathCss.ts",
     "build/config/subpaths.ts",
     "build/config/css.ts",
