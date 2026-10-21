@@ -9,7 +9,7 @@ const ui = { root: 'story-themed-player', controls: 'story-themed-controls', tit
 const template = `
 	<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px">
 		<BaseMediaPlayer v-bind="args" title="По умолчанию" />
-		<div style="--rise-media-player-radius: var(--rise-radius-2xl); --rise-media-player-progress-bg: var(--rise-success); --rise-media-player-thumb-bg: var(--rise-success); --rise-media-player-title-font-size: var(--rise-font-size-sm); --rise-media-player-title-font-weight: var(--rise-font-weight-medium);">
+		<div style="--rise-media-player-radius: var(--rise-radius-md); --rise-media-player-progress-bg: var(--rise-success); --rise-media-player-thumb-bg: var(--rise-success); --rise-media-player-title-font-size: var(--rise-font-size-sm); --rise-media-player-title-font-weight: var(--rise-font-weight-medium);">
 			<BaseMediaPlayer v-bind="args" title="Токены на контейнере" />
 		</div>
 		<BaseMediaPlayer v-bind="args" title="Классы через ui" :ui="ui" />

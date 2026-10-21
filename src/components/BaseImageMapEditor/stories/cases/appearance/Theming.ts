@@ -9,7 +9,7 @@ const ui = { root: 'story-themed-editor', viewport: 'story-themed-viewport', pan
 const template = `
 	<div class="story-stack">
 		<BaseImageMapEditor v-bind="args" label="По умолчанию" />
-		<div style="--rise-image-map-editor-bg: var(--rise-bg-muted); --rise-image-map-editor-border: var(--rise-primary); --rise-image-map-editor-radius: var(--rise-radius-2xl); --rise-image-map-editor-padding: 16px; --rise-image-map-editor-viewport-bg: var(--rise-bg-accented); --rise-image-map-editor-heading-text: var(--rise-primary);">
+		<div style="--rise-image-map-editor-bg: var(--rise-bg-elevated); --rise-image-map-editor-border: var(--rise-primary); --rise-image-map-editor-radius: var(--rise-radius-2xl); --rise-image-map-editor-padding: 16px; --rise-image-map-editor-viewport-bg: var(--rise-bg-accented); --rise-image-map-editor-heading-text: var(--rise-primary);">
 			<BaseImageMapEditor v-bind="args" label="Токены на контейнере" />
 		</div>
 		<BaseImageMapEditor v-bind="args" label="Классы через ui" :ui="ui" />

@@ -9,7 +9,7 @@ const ui = { root: 'story-themed-player', time: 'story-themed-time' }
 const template = `
 	<div class="story-stack">
 		<BaseAudioPlayer v-bind="args" title="По умолчанию" />
-		<div style="--rise-audio-player-bg: var(--rise-bg-muted); --rise-audio-player-border: var(--rise-primary); --rise-audio-player-radius: var(--rise-radius-2xl); --rise-audio-player-padding-y: 16px; --rise-audio-player-button-radius: var(--rise-radius-md);">
+		<div style="--rise-audio-player-bg: var(--rise-bg-elevated); --rise-audio-player-border: var(--rise-primary); --rise-audio-player-radius: var(--rise-radius-2xl); --rise-audio-player-padding-y: 16px; --rise-audio-player-button-radius: var(--rise-radius-md);">
 			<BaseAudioPlayer v-bind="args" title="Токены на контейнере" />
 		</div>
 		<BaseAudioPlayer v-bind="args" title="Классы через ui" :ui="ui" />

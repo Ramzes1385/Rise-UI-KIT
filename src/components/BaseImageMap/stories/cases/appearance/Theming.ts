@@ -9,7 +9,7 @@ const ui = { root: 'story-themed-map', viewport: 'story-themed-viewport', marker
 const template = `
 	<div class="story-stack story-medium">
 		<BaseImageMap v-bind="args" />
-		<div style="--rise-image-map-bg: var(--rise-bg-muted); --rise-image-map-border: var(--rise-primary); --rise-image-map-radius: var(--rise-radius-2xl); --rise-image-map-padding: 16px; --rise-image-map-viewport-radius: var(--rise-radius-xl);">
+		<div style="--rise-image-map-bg: var(--rise-bg-elevated); --rise-image-map-border: var(--rise-primary); --rise-image-map-radius: var(--rise-radius-2xl); --rise-image-map-padding: 16px; --rise-image-map-viewport-radius: var(--rise-radius-xl);">
 			<BaseImageMap v-bind="args" />
 		</div>
 		<BaseImageMap v-bind="args" :ui="ui" />
