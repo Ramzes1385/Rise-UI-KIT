@@ -1633,6 +1633,12 @@
 | `--rise-roadmap-topic-done-bg` | topic-done | bg | — | `color-mix(in srgb, var(--rise-primary) 8%, var(--rise-surface-raised))` |
 | `--rise-roadmap-topic-radius` | topic | radius | — | `var(--rise-radius-md)` |
 
+## BaseRoadmap3D
+
+| Токен | Часть | Свойство | Состояние | По умолчанию |
+|---|---|---|---|---|
+| `--rise-roadmap-3d-bg` | корень | bg | — | `var(--rise-bg-muted)` |
+
 ## BaseScrollArea
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
