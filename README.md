@@ -158,14 +158,14 @@ createApp(App)
 |---|--:|--:|
 | BaseButton с подпути | 27,8 КБ | 27,8 КБ |
 | BaseButton + `createUiKitConfig` (тема, `defaults`) | 34,6 КБ | 77,9 КБ |
-| то же + `registerLocale(en)`, `locale: 'en'` | ≈64–66 КБ (34,6 + словарь `en` ≈29–31 КБ; сумма посчитана, не замерена) | 77,9 КБ |
-| BaseSelect с подпути | 53,7 КБ | 92,4 КБ |
-| BaseDatePicker с подпути | 68,1 КБ | 105,8 КБ |
-| `createUiKitPlugin` (все компоненты, `ru` и `en`) | 454,0 КБ | 455,5 КБ |
+| то же + `registerLocale(en)`, `locale: 'en'` | 67,8 КБ (34,6 + словарь `en` 33,3 КБ) | 77,9 КБ |
+| BaseSelect с подпути | 54,1 КБ | 92,4 КБ |
+| BaseDatePicker с подпути | 68,5 КБ | 105,8 КБ |
+| `createUiKitPlugin` (все компоненты, `ru` и `en`) | 502,6 КБ (+ 256,9 КБ по `import()`) | 455,5 КБ |
 
 Вес каждого компонента при импорте с подпути (JS и CSS, с учётом общих чанков) — таблица [docs/reference/SIZES.md](docs/reference/SIZES.md) (`npm run report:sizes`).
 
-- Подпуть есть у каждого компонента из `@ramzes1385/rise-ui-kit/components` (`/BaseButton`, `/BaseTable`, …) и отдаёт то же, что его раздел там: компонент, его константы и типы. Плеер и 3D-карта — по-прежнему `/media` и `/map3d`.
+- Подпуть есть у каждого компонента из `@ramzes1385/rise-ui-kit/components` (`/BaseButton`, `/BaseTable`, …) и отдаёт то же, что его раздел там: компонент, его константы и типы. Плеер и 3D-компоненты — по-прежнему отдельными входами: `/media`, `/map3d`, `/flow3d`, `/roadmap3d`.
 - CSS компонента JS подпути подключает сам — `styles.css` не нужен. Приложение на Vite 8: CSS всех компонентов `tokens.css` + BaseButton — 4,8 КБ gzip против 96,9 КБ у `styles.css`, с BaseSelect — 8,5 КБ.
 - Подпути, корень и `/components` делят один код: компонент из подпути и из корня — один и тот же, настройки кита (`defaults`, тема, язык) действуют на оба. Но `createUiKitPlugin` регистрирует все компоненты глобально, и их JS попадает в сборку (приложение с ним — 454,0 КБ gzip стартового JS против 27,8 КБ с одной кнопкой). При точечной установке настройки задаёт `createUiKitConfig` — тот же набор опций без регистрации компонентов (см. ниже).
 - Подключили `styles.css` — `tokens.css` уже не нужен (токены в нём есть). Стили компонентов с подпутей — без каскадного слоя; `tokens.layer.css` кладёт в слой `rise` только токены. Весь кит в слое — `styles.layer.css` и импорт из корня.
@@ -288,7 +288,7 @@ export default defineNuxtConfig({
 
 - Объявления — для имён по умолчанию (`BaseButton`). С `prefix` (`<UiBaseButton>`) их не хватает: `unplugin-vue-components` пишет свой `components.d.ts` с нужными именами (опция `dts`, по умолчанию включена при установленном TypeScript), Nuxt — свой `.nuxt/components.d.ts`.
 - Вместе с `components.d.ts` плагина объявления не конфликтуют: тип у обоих один и тот же.
-- Плеер (`/media`) и 3D-карта (`/map3d`) в `global` не входят — как и в `createUiKitPlugin`: их импортируют по имени.
+- Плеер (`/media`) и 3D-компоненты (`/map3d`, `/flow3d`, `/roadmap3d`) в `global` не входят — как и в `createUiKitPlugin`: их импортируют по имени.
 - Проверено `vue-tsc` 3.3 на пакете из `npm pack`: верный шаблон проходит, опечатка в пропе и неверное значение — ошибки (`npm run test:autoimport`).
 
 ### Шрифты
@@ -702,7 +702,7 @@ const size = utils.formatFileSize(1024) // то же, что formatFileSize(1024
 
 Видеоплеер `BaseMediaPlayer` и его типы — только из подпути `@ramzes1385/rise-ui-kit/media`: в корень пакета и в плагин он не входит, поэтому приложения без плеера его код не загружают. Стили плеера — отдельным файлом `@ramzes1385/rise-ui-kit/media.css` (см. «Подключение стилей»).
 
-Подпути из `package.json#exports`: `/components`, `/composables`, `/utils`, `/icons` (константы спрайта и `createIconPlugin`), `/media` (видеоплеер), `/map3d` (3D-карта этажей), `/styles` (`/styles.css`), `/media.css` (стили плеера), `/tokens.json` и `/tokens/<тема>.<режим>.json` (токены для дизайна), `/icons.svg`, а также подпуть на каждый компонент (`/BaseButton`, `/BaseSelect`, …) и `/tokens.css` для них (см. «Точечная установка»), `/config` (`createUiKitConfig`), `/resolver` (резолвер для `unplugin-vue-components`), `/nuxt` (модуль Nuxt) и `/global` (типы шаблонов) — см. «Автоимпорт» и «Типы в шаблонах».
+Подпути из `package.json#exports`: `/components`, `/composables`, `/utils`, `/icons` (константы спрайта и `createIconPlugin`), `/media` (видеоплеер), `/map3d` (3D-карта этажей), `/flow3d` (3D-схема процессов), `/roadmap3d` (3D-роадмап), `/styles` (`/styles.css`), `/media.css` (стили плеера), `/tokens.json` и `/tokens/<тема>.<режим>.json` (токены для дизайна), `/icons.svg`, а также подпуть на каждый компонент (`/BaseButton`, `/BaseSelect`, …) и `/tokens.css` для них (см. «Точечная установка»), `/config` (`createUiKitConfig`), `/resolver` (резолвер для `unplugin-vue-components`), `/nuxt` (модуль Nuxt) и `/global` (типы шаблонов) — см. «Автоимпорт» и «Типы в шаблонах».
 
 ### 3D-карта этажей
 
@@ -718,6 +718,8 @@ import { BaseImageMap3D } from '@ramzes1385/rise-ui-kit/map3d'
 ```
 
 Без `three` основной вход работает как прежде, а импорт `/map3d` не соберётся. Данные — тот же JSON, что у `BaseImageMap` и `BaseImageMapEditor`, плюс необязательные 3D-поля; без WebGL карта сама показывает 2D-план. Подробно — [docs/reference/MAP3D.md](docs/reference/MAP3D.md).
+
+Так же — только из своих подпутей и с тем же `three` — подключаются 3D-схема процессов `BaseFlowMap3D` (`@ramzes1385/rise-ui-kit/flow3d`) и 3D-роадмап `BaseRoadmap3D` (`@ramzes1385/rise-ui-kit/roadmap3d`). Справочник — [docs/reference/FLOW3D.md](docs/reference/FLOW3D.md).
 
 Не рекомендуется импортировать внутренние файлы из `dist` напрямую:
 
@@ -784,6 +786,7 @@ import { BaseButton } from '@ramzes1385/rise-ui-kit'
 | [Utils](docs/reference/UTILS.md) | Даты, файлы, цвета, субтитры, медиа, проверка ссылок, координаты `position: fixed` |
 | [Вес компонентов](docs/reference/SIZES.md) | JS и CSS (gzip) каждого компонента при импорте с подпути, с учётом общего кода |
 | [3D-карта этажей](docs/reference/MAP3D.md) | Вход `/map3d`: установка `three`, 3D-поля данных, модели GLB, камера, клавиатура, фолбэк на 2D |
+| [3D-схема и 3D-роадмап](docs/reference/FLOW3D.md) | Входы `/flow3d` и `/roadmap3d`: установка `three`, 3D-поля данных, модели, клавиатура, «Правка» в 3D, запасной 2D-вид |
 | [SEO-разметка](docs/reference/SEO.md) | Проп `seo`: JSON-LD schema.org у компонентов и проверка в Google Rich Results и Яндекс Вебмастере |
 | [Переход на 2.0](docs/v2/MIGRATION.md) | Что изменилось для приложения и что сделать при обновлении с 1.x |
 | [Что заметит приложение после редизайна](docs/design/CHANGES_FOR_APPS.md) | Значения по умолчанию, DOM, доступность, токены |
