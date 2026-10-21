@@ -79,6 +79,16 @@ describe('BaseButton unit', () => {
 
 			expect(container.firstElementChild?.classList.contains('base-button--soft')).toBe(true)
 		})
+
+		it('должен применять модификатор --tonal', () => {
+			const { container } = render(BaseButton, {
+				props: { variant: 'tonal' },
+				slots: { default: 'Кнопка' },
+			})
+
+			expect(container.firstElementChild?.classList.contains('base-button--tonal')).toBe(true)
+			expect(screen.getByRole('button', { name: 'Кнопка' })).toBeInTheDocument()
+		})
 	})
 
 	describe('пропс isDisabled', () => {

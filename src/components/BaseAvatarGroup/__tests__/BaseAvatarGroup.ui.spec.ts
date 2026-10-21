@@ -19,8 +19,9 @@ describe('BaseAvatarGroup: проп ui', () => {
 		expect(first.querySelector('.base-avatar-group__name')).toHaveAttribute('class', 'base-avatar-group__name')
 		expect(container.querySelector('.base-avatar-group__more')).toHaveClass(
 			'base-avatar',
+			'base-avatar--square',
 			'base-avatar-group__more',
-			'base-avatar-group__more--circle',
+			'base-avatar-group__more--square',
 		)
 		expect(container.querySelector('.base-avatar-group__more')?.parentElement).toHaveAttribute('class', 'base-avatar-group__item')
 		expect(container.querySelector('.base-avatar-group__count')).toHaveAttribute('class', 'base-avatar-group__count')
@@ -89,5 +90,24 @@ describe('BaseAvatarGroup: состав и «+N»', () => {
 		const { container } = render(BaseAvatarGroup, { props: { items: [{ name: 'Анна' }, { name: 'Анна' }] }, global })
 
 		expect(items(container)).toHaveLength(2)
+	})
+})
+
+describe('BaseAvatarGroup: умолчание формы', () => {
+	it('без пропса аватары и счётчик — square', () => {
+		const { container } = render(BaseAvatarGroup, { props: { items: PEOPLE, max: 2 }, global })
+		expect(container.querySelectorAll('.base-avatar--square').length).toBeGreaterThan(0)
+		expect(container.querySelector('.base-avatar--circle')).toBeNull()
+	})
+
+	it('defaults плагина с shape circle меняют умолчание, явный shape сильнее', () => {
+		const plugin = createUiKitPlugin({ defaults: { BaseAvatarGroup: { shape: 'circle' } } })
+		const byDefault = render(BaseAvatarGroup, { props: { items: PEOPLE, max: 2 }, global: { ...global, plugins: [plugin] } })
+		expect(byDefault.container.querySelector('.base-avatar-group__more')).toHaveClass('base-avatar-group__more--circle')
+		const explicit = render(BaseAvatarGroup, {
+			props: { items: PEOPLE, max: 2, shape: 'square' },
+			global: { ...global, plugins: [plugin] },
+		})
+		expect(explicit.container.querySelector('.base-avatar-group__more')).toHaveClass('base-avatar-group__more--square')
 	})
 })

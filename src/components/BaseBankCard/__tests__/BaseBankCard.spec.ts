@@ -23,6 +23,16 @@ describe('BaseBankCard unit', () => {
 		expect(container.querySelector('.base-bank-card')).toHaveClass('base-bank-card--soft')
 	})
 
+	it('вариант shadow добавляет модификатор --shadow', () => {
+		const { container } = render(BaseBankCard, { props: { variant: 'shadow' } })
+		expect(container.querySelector('.base-bank-card')).toHaveClass('base-bank-card--shadow')
+	})
+
+	it('по умолчанию модификатора --shadow нет', () => {
+		const { container } = render(BaseBankCard)
+		expect(container.querySelector('.base-bank-card')).not.toHaveClass('base-bank-card--shadow')
+	})
+
 	it('пишет --size-scale только при масштабе, отличном от 100', () => {
 		const { container } = render(BaseBankCard, { props: { sizeScale: 125 } })
 		expect((container.querySelector('.base-bank-card') as HTMLElement).style.getPropertyValue('--size-scale')).toBe('1.25')

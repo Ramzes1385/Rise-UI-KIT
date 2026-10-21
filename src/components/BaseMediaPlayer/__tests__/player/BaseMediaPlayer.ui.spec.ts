@@ -105,7 +105,7 @@ describe('BaseMediaPlayer: движение', () => {
 	}
 
 	it('длительность перехода боковой панели — от токенов движения, при пресете none — 0', () => {
-		expect(sidePanel().transitionDuration.value).toEqual({ enter: 720, leave: 240 })
+		expect(sidePanel().transitionDuration.value).toEqual({ enter: 768, leave: 240 })
 		document.documentElement.setAttribute('data-rise-motion', 'none')
 		expect(sidePanel().transitionDuration.value).toEqual({ enter: 0, leave: 0 })
 	})

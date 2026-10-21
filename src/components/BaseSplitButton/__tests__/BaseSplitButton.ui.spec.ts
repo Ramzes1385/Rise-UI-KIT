@@ -8,6 +8,16 @@ const PROPS = { label: 'Сохранить', items: ITEMS }
 
 const part = (name: string) => screen.getByRole('group').querySelector(`.base-split-button__${name}`)
 
+describe('BaseSplitButton: вариант tonal', () => {
+	it('модификатор --tonal получают и корень, и основная кнопка', () => {
+		render(BaseSplitButton, { props: { ...PROPS, variant: 'tonal' } })
+
+		expect(screen.getByRole('group')).toHaveClass('base-split-button--tonal')
+		expect(part('main')).toHaveClass('base-button--tonal')
+		expect(part('toggle')).toHaveClass('base-button--tonal')
+	})
+})
+
 describe('BaseSplitButton: проп ui', () => {
 	it('без ui — только классы кита (у кнопок — ещё классы BaseButton)', () => {
 		render(BaseSplitButton, { props: PROPS })

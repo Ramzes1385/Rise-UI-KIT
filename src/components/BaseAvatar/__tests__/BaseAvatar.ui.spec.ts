@@ -45,6 +45,30 @@ describe('BaseAvatar: проп ui', () => {
 	})
 })
 
+describe('BaseAvatar: умолчание формы', () => {
+	it('без пропса и defaults — square', () => {
+		const { container } = render(BaseAvatar, { props: { name: 'Анна' } })
+		expect(container.querySelector('.base-avatar')).toHaveClass('base-avatar--square')
+	})
+
+	it('defaults.BaseAvatar.shape из плагина меняет умолчание на circle', () => {
+		const { container } = render(BaseAvatar, {
+			props: { name: 'Анна' },
+			global: { plugins: [createUiKitPlugin({ defaults: { BaseAvatar: { shape: 'circle' } } })] },
+		})
+		expect(container.querySelector('.base-avatar')).toHaveClass('base-avatar--circle')
+		expect(container.querySelector('.base-avatar')).not.toHaveClass('base-avatar--square')
+	})
+
+	it('явный shape экземпляра сильнее defaults плагина', () => {
+		const { container } = render(BaseAvatar, {
+			props: { name: 'Анна', shape: 'square' },
+			global: { plugins: [createUiKitPlugin({ defaults: { BaseAvatar: { shape: 'circle' } } })] },
+		})
+		expect(container.querySelector('.base-avatar')).toHaveClass('base-avatar--square')
+	})
+})
+
 describe('BaseAvatar: появление фото', () => {
 	it('фото проявляется после загрузки: до load — без класса --loaded', async () => {
 		const { container } = render(BaseAvatar, { props: { src: SRC, alt: 'Анна' } })

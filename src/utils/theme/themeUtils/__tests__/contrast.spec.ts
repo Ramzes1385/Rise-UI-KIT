@@ -99,3 +99,39 @@ describe('themeContrast', () => {
 		expect(row?.ratio).toBe(1.92)
 	})
 })
+
+describe('resolveThemeColors: уровни поверхностей и рамки контролов', () => {
+	const LEVELS = ['--rise-surface-raised', '--rise-border-control', '--rise-bg-elevated', '--rise-bg-muted'] as const
+
+	it.each(['light', 'dark'] as const)('каждый уровень объявлен в %s-tokens кита и в теме', mode => {
+		const colors = resolveThemeColors({}, mode)
+		for (const token of LEVELS) {
+			expect(colors[token]).toMatch(/^#[0-9a-f]{6}$/)
+			expect(scssValue(`${mode}-tokens`, token)).toBeDefined()
+		}
+		for (const token of ['--rise-surface-floating', '--rise-surface-dialog', '--rise-field-bg-floating'])
+			expect(scssValue(`${mode}-tokens`, token)).toBeDefined()
+	})
+
+	it('в светлом режиме поднятая поверхность и рамка контрола — шаги 0 и 500 нейтрали кита', () => {
+		const colors = resolveThemeColors({}, 'light')
+		expect(scssValue('light-tokens', '--rise-surface-raised')).toBe("#{palette('neutral', 0)}")
+		expect(colors['--rise-surface-raised']).toBe(KIT_PALETTES.neutral[0])
+		expect(scssValue('light-tokens', '--rise-border-control')).toBe("#{palette('neutral', 500)}")
+		expect(colors['--rise-border-control']).toBe(KIT_PALETTES.neutral[500])
+	})
+
+	it('в тёмном режиме поднятая поверхность светлее подложки, а рамка контрола светлее поверхности', () => {
+		const colors = resolveThemeColors({}, 'dark')
+		const luma = (hex: string): number => parseInt(hex.slice(1, 3), 16) + parseInt(hex.slice(3, 5), 16) + parseInt(hex.slice(5, 7), 16)
+		expect(luma(colors['--rise-surface-raised'])).toBeGreaterThan(luma(colors['--rise-bg-elevated']))
+		expect(luma(colors['--rise-border-control'])).toBeGreaterThan(luma(colors['--rise-surface-raised']))
+	})
+
+	it('сид нейтрали переносится в поднятую поверхность и рамку контрола', () => {
+		const seeds = { '--rise-color-neutral-0': '#fefce8', '--rise-color-neutral-500': '#6b7280' }
+		const colors = resolveThemeColors(seeds, 'light')
+		expect(colors['--rise-surface-raised']).toBe('#fefce8')
+		expect(colors['--rise-border-control']).toBe('#6b7280')
+	})
+})

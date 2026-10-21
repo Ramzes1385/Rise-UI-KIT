@@ -248,7 +248,7 @@ describe('слой правки и поля напрямую', () => {
 		const map = await mountEdit({ data, notations: [propsNotation() as never] })
 		map.controller.select(['gw'])
 		await settle()
-		expect(map.container.querySelector('circle[data-edit-port="gw|in"] title')).toHaveTextContent('вход')
+		expect(map.container.querySelector('rect[data-edit-port="gw|in"] title')).toHaveTextContent('вход')
 		map.pointer('pointerdown', map.node('gw'), map.at(10, 310))
 		map.pointer('pointermove', window, map.at(442, 312))
 		await settle()

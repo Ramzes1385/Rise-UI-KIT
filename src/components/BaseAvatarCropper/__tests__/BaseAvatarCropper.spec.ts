@@ -24,7 +24,7 @@ const lastCrop = (emitted: Record<string, unknown[][]>) => emitted['update:crop'
 describe('BaseAvatarCropper unit', () => {
 	it('до загрузки: фото скрыто, ползунок недоступен, подсказка связана с областью', () => {
 		const { container } = render(BaseAvatarCropper, { props: { src: SRC } })
-		expect(container.firstElementChild).toHaveClass('base-avatar-cropper--loading', 'base-avatar-cropper--circle')
+		expect(container.firstElementChild).toHaveClass('base-avatar-cropper--loading', 'base-avatar-cropper--square')
 		const area = screen.getByRole('group', { name: 'Кадрирование фото' })
 		expect(area).toHaveAttribute('aria-roledescription', 'область кадрирования')
 		expect(area).toHaveAccessibleDescription(/Стрелки сдвигают фото/)

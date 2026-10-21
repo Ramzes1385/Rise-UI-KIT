@@ -39,7 +39,7 @@ describe('переворот надписи', () => {
 
 describe('groundFont', () => {
 	it('вес, кегль и семейство', () => {
-		expect(groundFont(700, 40)).toMatch(/^700 40px Inter/)
+		expect(groundFont(700, 40)).toMatch(/^700 40px 'Rise Grotesk'/)
 	})
 })
 

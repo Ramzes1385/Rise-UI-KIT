@@ -77,10 +77,10 @@ describe('BaseAvatar unit', () => {
 	})
 
 	describe('пропс shape', () => {
-		it('должен применять модификатор --circle по умолчанию', () => {
+		it('должен применять модификатор --square по умолчанию', () => {
 			const { container } = render(BaseAvatar)
 
-			expect(container.querySelector('.base-avatar')?.classList.contains('base-avatar--circle')).toBe(true)
+			expect(container.querySelector('.base-avatar')?.classList.contains('base-avatar--square')).toBe(true)
 		})
 
 		it('должен применять модификатор --square когда shape=square', () => {

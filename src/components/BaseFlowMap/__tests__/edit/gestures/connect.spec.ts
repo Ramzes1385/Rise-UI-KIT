@@ -5,7 +5,7 @@ import { editData, flush, liveText, mountEdit, screen, settle, waitFor, type Edi
 
 const guard = guardConsole()
 
-const port = (map: EditMap, id: string) => map.container.querySelector(`circle[data-edit-port="${id}|"]`) as SVGElement
+const port = (map: EditMap, id: string) => map.container.querySelector(`rect[data-edit-port="${id}|"]`) as SVGElement
 const edges = (map: EditMap) => map.data().edges
 const notices = () => screen.getByRole('status', { name: 'Уведомления правки' })
 
@@ -17,9 +17,9 @@ async function select(map: EditMap, ...ids: string[]) {
 describe('соединение мышью', () => {
 	it('порты видны у выделенного узла; тянем из порта — призрак, отпустили на узле — связь одним шагом', async () => {
 		const map = await mountEdit({ data: editData() })
-		expect(map.container.querySelectorAll('circle[data-edit-port]')).toHaveLength(0)
+		expect(map.container.querySelectorAll('rect[data-edit-port]')).toHaveLength(0)
 		await select(map, 'gw')
-		expect(map.container.querySelectorAll('circle[data-edit-port="gw|"]')).toHaveLength(4)
+		expect(map.container.querySelectorAll('rect[data-edit-port="gw|"]')).toHaveLength(4)
 		map.pointer('pointerdown', port(map, 'gw'), map.at(160, 28))
 		map.pointer('pointermove', window, map.at(480, 188))
 		await settle()

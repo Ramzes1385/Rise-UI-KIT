@@ -86,7 +86,7 @@ describe('BaseTransfer: движение переноса', () => {
 		expect(ghost.style.height).toBe('40px')
 		const call = animate.mock.calls[animate.mock.contexts.indexOf(ghost)]
 		expect(call[0]).toEqual([{ opacity: 1 }, { opacity: 0, transform: 'translateX(8px)' }])
-		expect(call[1]).toMatchObject({ duration: 150, fill: 'forwards' })
+		expect(call[1]).toMatchObject({ duration: 140, fill: 'forwards' })
 		expect(within(screen.getByRole('listbox', { name: 'Выбрано' })).getByRole('option', { name: /Борис/ })).toBeInTheDocument()
 		await waitFor(() => expect(ghosts()).toHaveLength(0))
 	})

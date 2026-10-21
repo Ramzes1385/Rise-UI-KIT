@@ -55,7 +55,7 @@ describe('BaseTable: сортировка (FLIP)', () => {
 		const call = animate.mock.calls.find((_, index) => animate.mock.contexts[index] === anna)!
 		expect(call).toEqual([
 			[{ transform: `translateY(${-2 * ROW_HEIGHT}px)` }, { transform: 'none' }],
-			{ duration: 300, easing: 'cubic-bezier(0.2,0,0,1)' },
+			{ duration: 320, easing: 'cubic-bezier(0.2,0,0,1)' },
 		])
 	})
 

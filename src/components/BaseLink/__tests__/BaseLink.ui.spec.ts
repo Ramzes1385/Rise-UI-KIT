@@ -62,7 +62,7 @@ describe('BaseLink: переход цвета и подчёркивания пр
 		expect(style.transitionProperty).toContain('text-decoration-color')
 		expect(style.transitionDuration).toBe('var(--rise-duration-fast)')
 		expect(style.transitionTimingFunction).toBe('var(--rise-ease)')
-		expect(transitionDuration(screen.getByRole('link'))).toBe('150ms')
+		expect(transitionDuration(screen.getByRole('link'))).toBe('140ms')
 	})
 
 	it.each([
