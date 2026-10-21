@@ -3,11 +3,11 @@
 import type {
 	ThemeDarkRole,
 	ThemeInput,
-	ThemeLightRole,
 	ThemeNeutralPalette,
 	ThemePalette,
 	ThemePresetName,
 	ThemeRole,
+	ThemeShade,
 } from './types/themeUtils.types'
 
 /** Палитры кита дословно по `src/styles/_tokens.scss`; тест сверяет их с файлом */
@@ -93,31 +93,23 @@ export const KIT_PALETTES: Record<ThemeRole, ThemePalette> & { neutral: ThemeNeu
 	},
 }
 
-/** Главный оттенок роли в светлой теме (заливка `--rise-<роль>`): у всех ролей — 600 */
-export const KIT_MAIN_SHADES: Record<ThemeRole, 600> = { primary: 600, success: 600, info: 600, warning: 600, error: 600 }
-
 /**
- * Роли кита в светлой теме (`$light-roles` в `_tokens.scss`): текст на заливке и оттенок наведения. Тёмный текст — наведение
- * светлее (500), белый — темнее (700). Тема с брендом другой светлоты переопределяет их сидами `--rise-color-<роль>-on`/`-hover`.
+ * Шаг заливки роли `--rise-<роль>` (`$role-fills` в `_tokens.scss`) — один и тот же в светлой и тёмной теме: на нём светлый
+ * текст (нейтраль 50) берёт 4.5:1. Наведение — следующий шаг, темнее. Генератор тем ставит сюда цвет роли
  */
-export const KIT_LIGHT_ROLES: Record<ThemeRole, ThemeLightRole> = {
-	primary: { on: 'dark', hover: 500 },
-	success: { on: 'light', hover: 700 },
-	info: { on: 'light', hover: 700 },
-	warning: { on: 'dark', hover: 500 },
-	error: { on: 'light', hover: 700 },
-}
+export const KIT_MAIN_SHADES: Record<ThemeRole, ThemeShade> = { primary: 700, success: 600, info: 600, warning: 700, error: 600 }
 
 /**
- * Роли кита в тёмной теме (`$dark-roles` в `_tokens.scss`): заливка, наведение и текст роли — шаг палитры, смесь двух шагов
- * `[шаг, доля %, шаг]` или литерал HEX (цвет макета ярче любой смеси шагов). Текст на заливке — нейтраль 950.
+ * Роли кита в тёмной теме (`$dark-roles` в `_tokens.scss`): яркий цвет роли для мягкого фона и рамки (`tint`) и текст роли —
+ * шаг палитры, смесь двух шагов `[шаг, доля %, шаг]` или литерал HEX (цвет макета ярче любой смеси шагов). Заливка, наведение
+ * и текст на заливке — как в светлой теме (`KIT_MAIN_SHADES`).
  */
 export const KIT_DARK_ROLES: Record<ThemeRole, ThemeDarkRole> = {
-	primary: { fill: 500, hover: 400, text: 300 },
-	success: { fill: '#2fd08a', hover: '#5cdda4', text: '#7fe6b8' },
-	info: { fill: 400, hover: 300, text: [200, 59, 300] },
-	warning: { fill: 400, hover: 300, text: [400, 54, 50] },
-	error: { fill: 500, hover: 400, text: 300 },
+	primary: { tint: 500, text: 300 },
+	success: { tint: '#2fd08a', text: '#7fe6b8' },
+	info: { tint: 400, text: [200, 59, 300] },
+	warning: { tint: 400, text: [400, 54, 50] },
+	error: { tint: 500, text: 300 },
 }
 
 const KIT_FONT_SANS = "'Rise Grotesk', sans-serif"

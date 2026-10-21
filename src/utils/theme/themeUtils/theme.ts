@@ -1,10 +1,10 @@
 /** Утилиты: тема из нескольких входов — сиды на `[data-rise-theme]`, CSS одной строкой и отчёт контраста */
 
-import { roleColor, themeContrast } from './contrast'
 import { THEME_ROLES } from './types/themeUtils.types'
 import { contrastRatio } from '@utils/theme/oklchUtils'
 import { KIT_DARK_ROLES, KIT_MAIN_SHADES } from './presets'
-import { createNeutralPalette, createPalette } from './palette'
+import { darkPageBackground, darkRoleTints, roleColor, themeContrast } from './contrast'
+import { adjacentShade, createNeutralPalette, createPalette, createRolePalette, liftFill } from './palette'
 import type {
 	Theme,
 	ThemeDarkRole,
@@ -13,9 +13,12 @@ import type {
 	ThemeFonts,
 	ThemeInput,
 	ThemeMotion,
+	ThemePalette,
 	ThemePaletteResult,
+	ThemePaletteText,
 	ThemeRadius,
 	ThemeRole,
+	ThemeRoleContext,
 	ThemeShade,
 	ThemeShadows,
 	ThemeColorSeeds,
@@ -35,11 +38,11 @@ const DURATIONS = ['--rise-duration-fast', '--rise-duration', '--rise-duration-s
 const REDUCED_DURATION = '0.01ms'
 const TEXT_CONTRAST = 4.5
 const WHITE = '#ffffff'
-const DARK_TEXT_SHADE = 950
-const HOVER_SHADES = { dark: 500, light: 700 } as const
 /** Тёмная тема роли из сгенерированной палитры: литералы кита (у success) к чужому цвету роли не подходят */
-const GENERATED_DARK_ROLE: ThemeDarkRole = { fill: 400, hover: 300, text: [200, 59, 300] }
-const DARK_ROLE_TOKENS = { fill: '', hover: '-hover', text: '-text' } as const
+const GENERATED_DARK_ROLE: ThemeDarkRole = { tint: 400, text: [200, 59, 300] }
+/** Яркий тон и текст `primary` тёмной темы из `primaryDark` — шаги его палитры под тёмный текст, как у кита */
+const DARK_TONE_SHADE = 500
+const DARK_TEXT_SHADE = 300
 
 /** Имя темы для селектора: строчная латиница, цифры и дефис */
 function themeName(name: string): string {
@@ -61,52 +64,100 @@ function paletteVars(role: string, shades: Record<number, string>): Vars {
 	return Object.fromEntries(Object.entries(shades).map(([shade, color]) => [`--rise-color-${role}-${shade}`, color]))
 }
 
+/** Текст на заливках ролей темы: выбор `text` (по умолчанию светлый), светлый и тёмный — нейтраль 50 и 950 темы, фон поля — её 100 */
+function roleContext(text: ThemePaletteText | undefined, neutral: ThemeNeutralPalette): ThemeRoleContext {
+	return { on: { text: text ?? 'light', light: neutral[50], dark: neutral[950], field: neutral[100] }, neutral }
+}
+
 /**
- * Сгенерированная палитра роли и её светлые сиды: текст на заливке (`--rise-color-<роль>-on`) и наведение
- * (`--rise-color-<роль>-hover`) — по светлоте бренда, а не по таблице кита: тёмный текст — наведение светлее, белый — темнее
+ * Сиды текста на заливке (`--rise-color-<роль>-on`) и наведения (`-hover`) — только у тёмного текста: нейтраль 950 и шаг светлее.
+ * Светлый текст (нейтраль 50 темы) и наведение на шаг темнее — умолчание кита, сиды не нужны
  */
-function generatedVars(role: ThemeRole, palette: ThemePaletteResult, neutral: ThemeNeutralPalette): Vars {
+function onVars(role: ThemeRole, palette: ThemePaletteResult, neutral: ThemeNeutralPalette): Vars {
+	if (palette.on === 'light') return {}
 	return {
-		...paletteVars(role, palette.shades),
-		[`--rise-color-${role}-on`]: palette.on === 'dark' ? neutral[DARK_TEXT_SHADE] : WHITE,
-		[`--rise-color-${role}-hover`]: palette.shades[HOVER_SHADES[palette.on]],
+		[`--rise-color-${role}-on`]: neutral[950],
+		[`--rise-color-${role}-hover`]: palette.shades[adjacentShade(KIT_MAIN_SHADES[role], -1)],
 	}
 }
 
-/** Тёмные цвета роли, которые в ките — литералы (success): из сгенерированной палитры, только тёмному режиму */
-function generatedDarkVars(role: ThemeRole, shades: Record<number, string>): Vars {
+/**
+ * Заливка со светлым текстом в тёмной теме: слишком тёмный цвет роли светлеет до 3:1 к поверхности тёмной темы
+ * (`--rise-bg-elevated`, нейтраль 900), наведение — шаг темнее новой заливки; сиды шагов только тёмному режиму. Светлая
+ * заливка под тёмный текст отделяется от тёмного фона сама
+ */
+function liftedFill(role: ThemeRole, palette: ThemePaletteResult, context: ThemeRoleContext): Vars {
+	const fill = palette.on === 'light' ? liftFill(palette.main, context.on, context.neutral[900]) : palette.main
+	if (fill === palette.main) return {}
+	const shade = KIT_MAIN_SHADES[role]
+	const hover = adjacentShade(shade, 1)
+	const shades = createRolePalette(fill, shade, { ...context.on, text: 'light' }).shades
+	return paletteVars(role, { [shade]: fill, [hover]: shades[hover] })
+}
+
+/** Тёмные цвета роли, которые в ките — литералы (success): мягкий фон, рамка и текст роли из сгенерированной палитры */
+function generatedDarkVars(role: ThemeRole, shades: ThemePalette, neutral: ThemeNeutralPalette): Vars {
+	const scheme = KIT_DARK_ROLES[role]
+	const read = (_role: string, shade: number): string => shades[shade as ThemeShade]
 	const vars: Vars = {}
-	const read = (_role: string, shade: number): string => shades[shade]
-	for (const key of ['fill', 'hover', 'text'] as const) {
-		if (typeof KIT_DARK_ROLES[role][key] !== 'string') continue
-		vars[`--rise-${role}${DARK_ROLE_TOKENS[key]}`] = roleColor(GENERATED_DARK_ROLE[key], role, read)
+	if (typeof scheme.tint === 'string') {
+		const tint = roleColor(GENERATED_DARK_ROLE.tint, role, read)
+		Object.assign(vars, darkRoleTints(role, tint, darkPageBackground(neutral[950])))
 	}
+	if (typeof scheme.text === 'string') vars[`--rise-${role}-text`] = roleColor(GENERATED_DARK_ROLE.text, role, read)
 	return vars
 }
 
-function roleVars(input: ThemeInput, neutral: ThemeNeutralPalette): { vars: Vars; darkVars: Vars } {
-	const vars: Vars = {}
-	const darkVars: Vars = {}
+/** Роль из HEX: палитра с цветом на шаге заливки, сиды тёмного текста, заливка тёмной темы и литералы её цветов (только тёмной) */
+function generatedRole(role: ThemeRole, seed: string, context: ThemeRoleContext): ThemeColorSeeds {
+	const palette = createRolePalette(seed, KIT_MAIN_SHADES[role], context.on)
+	return {
+		vars: { ...paletteVars(role, palette.shades), ...onVars(role, palette, context.neutral) },
+		darkVars: { ...liftedFill(role, palette, context), ...generatedDarkVars(role, palette.shades, context.neutral) },
+		adjusted: palette.adjusted,
+	}
+}
+
+function roleVars(input: ThemeInput, context: ThemeRoleContext): ThemeColorSeeds {
+	const seeds: ThemeColorSeeds = { vars: {}, darkVars: {}, adjusted: false }
 	for (const role of THEME_ROLES.filter(item => item !== 'primary')) {
 		const ready = input.palettes?.[role]
 		const seed = input[role]
-		if (ready) Object.assign(vars, paletteVars(role, ready))
+		if (ready) Object.assign(seeds.vars, paletteVars(role, ready))
 		else if (seed) {
-			const palette = createPalette(seed, KIT_MAIN_SHADES[role])
-			Object.assign(vars, generatedVars(role, palette, neutral))
-			Object.assign(darkVars, generatedDarkVars(role, palette.shades))
+			const generated = generatedRole(role, seed, context)
+			Object.assign(seeds.vars, generated.vars)
+			Object.assign(seeds.darkVars, generated.darkVars)
 		}
 	}
-	return { vars, darkVars }
+	return seeds
 }
 
-/** Бренд тёмного режима: встаёт на заливку тёмной темы (500) с тёмным текстом; выводятся оттенки заливки, наведения и текста */
-function darkPrimaryVars(primaryDark: string | undefined): { vars: Vars; adjusted: boolean } {
-	if (!primaryDark) return { vars: {}, adjusted: false }
-	const [fill, hover, text] = [KIT_DARK_ROLES.primary.fill, KIT_DARK_ROLES.primary.hover, KIT_DARK_ROLES.primary.text] as ThemeShade[]
-	const result = createPalette(primaryDark, fill, 'dark')
-	const shades = Object.fromEntries([text, hover, fill].map(shade => [shade, result.shades[shade]]))
-	return { vars: paletteVars('primary', shades), adjusted: result.adjusted }
+/**
+ * Свой бренд тёмного режима: заливка с текстом по `text` (светлый текст — заливка не темнее 3:1 к фону тёмной темы), сиды текста
+ * и наведения тёмной темы; яркий тон (500) и текст роли (300) — из палитры бренда под тёмный текст, как у кита
+ */
+function darkPrimarySeeds(primaryDark: string, context: ThemeRoleContext): ThemeColorSeeds {
+	const shade = KIT_MAIN_SHADES.primary
+	const palette = createRolePalette(primaryDark, shade, context.on)
+	const lifted = liftedFill('primary', palette, context)
+	const isLight = palette.on === 'light'
+	const fill = lifted[`--rise-color-primary-${shade}`] ?? palette.main
+	const hover = lifted[`--rise-color-primary-${adjacentShade(shade, 1)}`] ?? palette.shades[adjacentShade(shade, isLight ? 1 : -1)]
+	const tones = createPalette(primaryDark, DARK_TONE_SHADE, 'dark').shades
+	return {
+		vars: {},
+		darkVars: {
+			...paletteVars('primary', {
+				[DARK_TEXT_SHADE]: tones[DARK_TEXT_SHADE],
+				[DARK_TONE_SHADE]: tones[DARK_TONE_SHADE],
+				[shade]: fill,
+			}),
+			'--rise-color-primary-on': isLight ? context.neutral[50] : context.neutral[950],
+			'--rise-color-primary-hover': hover,
+		},
+		adjusted: fill !== palette.seed,
+	}
 }
 
 /** Тонированный фон светлой темы чуть темнее белого: если бренд на нём не берёт 4.5:1, фон — белый */
@@ -114,21 +165,28 @@ function fitNeutral(neutral: ThemeNeutralPalette, main: string): ThemeNeutralPal
 	return contrastRatio(main, neutral[0]) < TEXT_CONTRAST ? { ...neutral, 0: WHITE } : neutral
 }
 
-function colorSeeds(input: ThemeInput): ThemeColorSeeds {
+/** Нейтраль темы до подгонки фона под бренд: готовая палитра или генератор (`tinted` по умолчанию) */
+function baseNeutral(input: ThemeInput): ThemeNeutralPalette {
+	return input.palettes?.neutral ?? createNeutralPalette(input.neutral ?? 'tinted', input.primary)
+}
+
+function primarySeeds(input: ThemeInput, context: ThemeRoleContext): ThemeColorSeeds {
 	const ready = input.palettes?.primary
-	const primary = ready ? null : createPalette(input.primary)
-	const main = ready ? ready[KIT_MAIN_SHADES.primary] : (primary as ThemePaletteResult).main
-	const neutral = input.palettes?.neutral ?? fitNeutral(createNeutralPalette(input.neutral ?? 'tinted', input.primary), main)
-	const roles = roleVars(input, neutral)
-	const dark = darkPrimaryVars(input.primaryDark)
+	return ready ? { vars: paletteVars('primary', ready), darkVars: {}, adjusted: false } : generatedRole('primary', input.primary, context)
+}
+
+function colorSeeds(input: ThemeInput): ThemeColorSeeds {
+	const base = baseNeutral(input)
+	const context = roleContext(input.text, base)
+	const primary = primarySeeds(input, context)
+	const main = primary.vars[`--rise-color-primary-${KIT_MAIN_SHADES.primary}`]
+	const neutral = input.palettes?.neutral ?? fitNeutral(base, main)
+	const roles = roleVars(input, context)
+	const dark = input.primaryDark ? darkPrimarySeeds(input.primaryDark, context) : primary
 	return {
-		vars: {
-			...(primary ? generatedVars('primary', primary, neutral) : paletteVars('primary', ready as Record<number, string>)),
-			...paletteVars('neutral', neutral),
-			...roles.vars,
-		},
-		darkVars: { ...dark.vars, ...roles.darkVars },
-		adjusted: Boolean(primary?.adjusted) || dark.adjusted,
+		vars: { ...primary.vars, ...paletteVars('neutral', neutral), ...roles.vars },
+		darkVars: { ...dark.darkVars, ...roles.darkVars },
+		adjusted: primary.adjusted || dark.adjusted,
 	}
 }
 

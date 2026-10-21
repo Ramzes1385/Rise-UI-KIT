@@ -346,6 +346,6 @@
 	}
 
 	&__speed-preset--active.base-button {
-		@include custom-button-colors(var(--media-primary-strong), $text: var(--rise-media-text-inverted));
+		@include custom-button-colors(var(--media-primary-strong), $text: var(--media-text));
 	}
 }

@@ -1,6 +1,6 @@
 import { computed, ref, watchEffect } from 'vue'
 import { applyTheme } from '@composables/app/useTheme'
-import type { ThemeContrastRow, ThemeInput, ThemePresetName } from '@utils/theme/themeUtils'
+import type { ThemeContrastRow, ThemeInput, ThemePaletteText, ThemePresetName } from '@utils/theme/themeUtils'
 import {
 	createTheme,
 	THEME_DENSITIES,
@@ -37,6 +37,11 @@ const neutralOptions: Option[] = [
 	{ value: 'gray', label: 'Серый' },
 	{ value: '#64748b', label: 'Slate — сине-серый' },
 	{ value: '#78716c', label: 'Stone — тёплый серый' },
+]
+const textOptions: Option[] = [
+	{ value: 'light', label: 'Светлый' },
+	{ value: 'dark', label: 'Тёмный' },
+	{ value: 'auto', label: 'Авто' },
 ]
 const fontOptions: Option[] = [
 	{ value: '', label: 'Как в ките — Rise Grotesk' },
@@ -112,6 +117,12 @@ export function setup() {
 		}))
 	})
 	const failures = computed(() => theme.value.contrast.filter(row => !row.ok && !row.informational).length)
+	const textChoice = computed({
+		get: () => input.value.text ?? 'light',
+		set: (text: ThemePaletteText) => {
+			input.value = { ...input.value, text: text === 'light' ? undefined : text }
+		},
+	})
 	const fontSans = computed({
 		get: () => input.value.font?.sans ?? '',
 		set: (sans: string) => {
@@ -152,6 +163,7 @@ export function setup() {
 		cssCode,
 		contrast,
 		failures,
+		textChoice,
 		fontSans,
 		presetOptions,
 		radiusOptions,
@@ -159,6 +171,7 @@ export function setup() {
 		shadowOptions,
 		motionOptions,
 		neutralOptions,
+		textOptions,
 		fontOptions,
 		roleOptions,
 		tabs,

@@ -96,8 +96,8 @@
 		width: sz(80px);
 		height: sz(80px);
 		border-radius: sz(var(--rise-radius-xl));
-		background-color: var(--media-primary);
-		color: var(--rise-media-text-inverted);
+		background-color: var(--media-primary-strong);
+		color: var(--media-text);
 		pointer-events: auto;
 		transform: scale(1);
 		transition:
@@ -249,7 +249,7 @@
 		overflow: hidden;
 		border-radius: sz(var(--rise-radius-md));
 		background-color: var(--media-primary-strong);
-		color: var(--rise-media-text-inverted);
+		color: var(--media-text);
 
 		.base-media-player__icon {
 			width: sz(24px);
@@ -615,8 +615,8 @@
 
 	&__next-button--primary.base-button {
 		--custom-bg: var(--media-primary-strong);
-		--custom-bg-hover: color-mix(in oklab, var(--media-primary-strong) 88%, var(--rise-media-highlight));
-		--custom-text: var(--rise-media-text-inverted);
+		--custom-bg-hover: color-mix(in oklab, var(--media-primary-strong) 80%, var(--rise-media-shade));
+		--custom-text: var(--media-text);
 	}
 
 	&__stats {
@@ -706,7 +706,7 @@
 
 	&__stats-count.base-badge {
 		--custom-bg: var(--media-primary-strong);
-		--custom-text: var(--rise-media-text-inverted);
+		--custom-text: var(--media-text);
 
 		min-width: sz(18px);
 		padding: 0 sz(5px);

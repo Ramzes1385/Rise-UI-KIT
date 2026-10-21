@@ -18,10 +18,14 @@ describe('createTheme: сетка брендов', () => {
 		expect(failures).toEqual([])
 	})
 
-	it('с primaryDark и цветами статусов — тоже без провалов', () => {
-		const failures: string[] = []
-		for (const primary of BRANDS.filter((_, index) => index % 7 === 0)) {
-			const theme = createTheme({
+	it.each(['dark', 'auto'] as const)('text: %s — 216 брендов × 4 нейтрали без провалов в обоих режимах', text => {
+		const failures = BRANDS.flatMap(primary => NEUTRALS.flatMap(neutral => failuresOf({ name: 'grid', primary, neutral, text })))
+		expect(failures).toEqual([])
+	})
+
+	it.each(['light', 'dark', 'auto'] as const)('с primaryDark и цветами статусов — тоже без провалов (text: %s)', text => {
+		const failures = BRANDS.filter((_, index) => index % 7 === 0).flatMap(primary =>
+			failuresOf({
 				name: 'grid',
 				primary,
 				primaryDark: primary,
@@ -29,10 +33,9 @@ describe('createTheme: сетка брендов', () => {
 				info: primary,
 				warning: primary,
 				error: primary,
-			})
-			for (const row of theme.contrast)
-				if (!row.ok && !row.informational) failures.push(`${primary} ${row.mode} ${row.fg}/${row.bg} ${row.ratio}`)
-		}
+				text,
+			}),
+		)
 		expect(failures).toEqual([])
 	})
 })

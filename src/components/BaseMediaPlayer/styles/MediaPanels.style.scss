@@ -314,7 +314,7 @@
 
 		&[aria-pressed='true'] {
 			background-color: var(--media-primary-strong);
-			color: var(--rise-media-text-inverted);
+			color: var(--media-text);
 		}
 	}
 
@@ -380,7 +380,7 @@
 
 	&__episode-card--current &__episode-number {
 		background-color: var(--media-primary-strong);
-		color: var(--rise-media-text-inverted);
+		color: var(--media-text);
 	}
 
 	&__episode-cover {
@@ -521,8 +521,8 @@
 
 	&__watch-button--primary.base-button {
 		--custom-bg: var(--media-primary-strong);
-		--custom-bg-hover: color-mix(in oklab, var(--media-primary-strong) 88%, var(--rise-media-highlight));
-		--custom-text: var(--rise-media-text-inverted);
+		--custom-bg-hover: color-mix(in oklab, var(--media-primary-strong) 80%, var(--rise-media-shade));
+		--custom-text: var(--media-text);
 	}
 
 	&__watch-error {
@@ -561,7 +561,7 @@
 
 		.base-avatar__content {
 			background-color: var(--media-primary-strong);
-			color: var(--rise-media-text-inverted);
+			color: var(--media-text);
 			font-size: sz(var(--rise-font-size-xs));
 			font-weight: var(--rise-font-weight-bold);
 		}

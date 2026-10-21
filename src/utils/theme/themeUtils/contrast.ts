@@ -1,9 +1,10 @@
 /** Утилиты: семантические цвета темы в светлом и тёмном режиме и пары контраста WCAG 2.2 AA (общие с check-contrast.mjs) */
 
+import { adjacentShade } from './palette'
 import { THEME_ROLES } from './types/themeUtils.types'
 import { contrastRatio } from '@utils/theme/oklchUtils'
 import { hexToRgb, rgbToHex } from '@utils/data/colorUtils'
-import { KIT_DARK_ROLES, KIT_LIGHT_ROLES, KIT_MAIN_SHADES, KIT_PALETTES } from './presets'
+import { KIT_DARK_ROLES, KIT_MAIN_SHADES, KIT_PALETTES } from './presets'
 import type {
 	ThemeContrastPair,
 	ThemeContrastRow,
@@ -16,11 +17,12 @@ import type {
 
 const TEXT = 4.5
 const GRAPHIC = 3
-const WHITE = '#ffffff'
 const BLACK = '#000000'
 const PERCENT = 100
+const DARK_BG = 73
 const DARK_SOFT = 14
 const DARK_SOFT_HOVER = 20
+const DARK_BORDER = 35
 const RATIO_DECIMALS = 100
 const SURFACES = ['--rise-bg', '--rise-bg-muted', '--rise-bg-elevated'] as const
 const TEXT_SURFACES = [...SURFACES, '--rise-surface-raised'] as const
@@ -83,6 +85,7 @@ function basePairs(): ThemeContrastPair[] {
 		{ fg: '--rise-border-accented', bg: '--rise-bg', min: GRAPHIC, kind: 'field-border', informational: true },
 		{ fg: '--rise-focus-ring', bg: '--rise-bg', min: GRAPHIC, kind: 'focus-ring' },
 		{ fg: '--rise-focus-ring', bg: '--rise-bg-muted', min: GRAPHIC, kind: 'focus-ring' },
+		{ fg: '--rise-focus-ring', bg: '--rise-bg-elevated', min: GRAPHIC, kind: 'focus-ring' },
 	)
 	return list
 }
@@ -95,7 +98,8 @@ function codePairs(): ThemeContrastPair[] {
 
 /**
  * Пары контраста кита: текст — 4.5:1 (WCAG 1.4.3), графика, граница флажка и кольцо фокуса — 3:1 (1.4.11); справочные не валят
- * проверку. Заливка роли — графика (3:1 к фону): текстом роли служит `--rise-<роль>-text`
+ * проверку. Текст на заливке роли (`--rise-on-<роль>`) — 4.5:1 и к заливке, и к наведению; заливка роли — графика (3:1 к фону):
+ * текстом роли служит `--rise-<роль>-text`
  */
 export const THEME_CONTRAST_PAIRS: readonly ThemeContrastPair[] = [...basePairs(), ...codePairs(), ...THEME_ROLES.flatMap(rolePairs)]
 
@@ -113,6 +117,20 @@ export function roleColor(value: ThemeRoleColor, role: string, p: Shade): string
 	if (typeof value === 'number') return p(role, value)
 	if (typeof value === 'string') return value
 	return mix(p(role, value[0]), p(role, value[2]), value[1])
+}
+
+/** Фон тёмной темы `--rise-bg` — нейтраль 950, смешанная с чёрным, как в `dark-tokens` (`_tokens.scss`) */
+export function darkPageBackground(neutral950: string): string {
+	return mix(neutral950, BLACK, DARK_BG)
+}
+
+/** Мягкий фон, его наведение и рамка роли в тёмной теме — смесь яркого цвета роли с фоном 14, 20 и 35 %, как в `dark-tokens` */
+export function darkRoleTints(role: string, tint: string, bg: string): Colors {
+	return {
+		[`--rise-${role}-soft`]: mix(tint, bg, DARK_SOFT),
+		[`--rise-${role}-soft-hover`]: mix(tint, bg, DARK_SOFT_HOVER),
+		[`--rise-${role}-border`]: mix(tint, bg, DARK_BORDER),
+	}
 }
 
 function shadeReader(vars: Colors): Shade {
@@ -143,7 +161,7 @@ function lightNeutrals(p: Shade): Colors {
 function darkNeutrals(p: Shade): Colors {
 	const n = (shade: number): string => p('neutral', shade)
 	return {
-		'--rise-bg': mix(n(950), BLACK, 73),
+		'--rise-bg': darkPageBackground(n(950)),
 		'--rise-bg-muted': mix(n(900), n(950), 38),
 		'--rise-bg-elevated': n(900),
 		'--rise-bg-inverted': n(50),
@@ -159,32 +177,35 @@ function darkNeutrals(p: Shade): Colors {
 	}
 }
 
-/** Светлая роль: заливка 600, текст и наведение — сиды темы `--rise-color-<роль>-on`/`-hover` или таблица кита */
-function lightRole(role: ThemeRole, p: Shade, vars: Colors): Colors {
-	const scheme = KIT_LIGHT_ROLES[role]
+/**
+ * Заливка роли — шаг `KIT_MAIN_SHADES` в обеих темах; текст на ней и наведение — сиды темы `--rise-color-<роль>-on`/`-hover`
+ * или умолчание кита: нейтраль 50 и следующий шаг (темнее)
+ */
+function roleFill(role: ThemeRole, p: Shade, vars: Colors): Colors {
+	const shade = KIT_MAIN_SHADES[role]
 	return {
-		[`--rise-${role}`]: p(role, KIT_MAIN_SHADES[role]),
-		[`--rise-${role}-hover`]: vars[`--rise-color-${role}-hover`] ?? p(role, scheme.hover),
-		[`--rise-on-${role}`]: vars[`--rise-color-${role}-on`] ?? (scheme.on === 'dark' ? p('neutral', 950) : WHITE),
+		[`--rise-${role}`]: p(role, shade),
+		[`--rise-${role}-hover`]: vars[`--rise-color-${role}-hover`] ?? p(role, adjacentShade(shade, 1)),
+		[`--rise-on-${role}`]: vars[`--rise-color-${role}-on`] ?? p('neutral', 50),
+	}
+}
+
+function lightRole(role: ThemeRole, p: Shade, vars: Colors): Colors {
+	return {
+		...roleFill(role, p, vars),
 		[`--rise-${role}-soft`]: p(role, 50),
 		[`--rise-${role}-soft-hover`]: p(role, 100),
 		[`--rise-${role}-text`]: p(role, 800),
 	}
 }
 
-/** Тёмная роль: цвета по таблице кита (литерал из `darkVars` сильнее), мягкие фоны — смесь заливки с фоном */
+/** Тёмная роль: заливка как в светлой, мягкие фоны — смесь яркого цвета роли с фоном, текст роли — по таблице кита */
 function darkRole(role: ThemeRole, p: Shade, base: Colors): Colors {
 	const scheme = KIT_DARK_ROLES[role]
-	const pick = (token: string, value: ThemeRoleColor): string => base[token] ?? roleColor(value, role, p)
-	const fill = pick(`--rise-${role}`, scheme.fill)
-	const bg = base['--rise-bg']
 	return {
-		[`--rise-${role}`]: fill,
-		[`--rise-${role}-hover`]: pick(`--rise-${role}-hover`, scheme.hover),
-		[`--rise-on-${role}`]: p('neutral', 950),
-		[`--rise-${role}-soft`]: mix(fill, bg, DARK_SOFT),
-		[`--rise-${role}-soft-hover`]: mix(fill, bg, DARK_SOFT_HOVER),
-		[`--rise-${role}-text`]: pick(`--rise-${role}-text`, scheme.text),
+		...roleFill(role, p, base),
+		...darkRoleTints(role, roleColor(scheme.tint, role, p), base['--rise-bg']),
+		[`--rise-${role}-text`]: roleColor(scheme.text, role, p),
 	}
 }
 
@@ -198,16 +219,17 @@ function literalOverrides(vars: Colors): Colors {
 }
 
 /**
- * Семантические цвета темы в режиме — так же, как их считает `_tokens.scss` из сидов: светлый режим — заливка 600 и текст
- * с наведением по таблице кита или сидам темы, тёмный — таблица тёмных ролей, уровни фона смесью шагов нейтрали, мягкие
- * фоны — смесь заливки с фоном. Сиды, которых нет в `vars`, берутся из палитр кита.
+ * Семантические цвета темы в режиме — так же, как их считает `_tokens.scss` из сидов: заливка роли — шаг `KIT_MAIN_SHADES`
+ * в обоих режимах, текст на ней и наведение — сиды темы или нейтраль 50 и шаг темнее; светлый режим — мягкие фоны из шагов
+ * палитры, тёмный — уровни фона смесью шагов нейтрали, мягкие фоны — смесь яркого цвета роли с фоном. Сиды, которых нет
+ * в `vars`, берутся из палитр кита.
  */
 export function resolveThemeColors(vars: Colors, mode: ThemeMode): Colors {
 	const p = shadeReader(vars)
 	const isLight = mode === 'light'
 	const literals = literalOverrides(vars)
 	const neutrals = { ...(isLight ? lightNeutrals(p) : darkNeutrals(p)), ...literals }
-	const roles = THEME_ROLES.map(role => (isLight ? lightRole(role, p, vars) : darkRole(role, p, { ...neutrals, ...literals })))
+	const roles = THEME_ROLES.map(role => (isLight ? lightRole(role, p, vars) : darkRole(role, p, { ...vars, ...neutrals })))
 	const colors: Colors = Object.assign({}, neutrals, codeColors(mode), ...roles)
 	colors['--rise-focus-ring'] = colors['--rise-primary']
 	return { ...colors, ...literals }

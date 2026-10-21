@@ -1,10 +1,13 @@
 import { createTheme } from '../theme'
 import { describe, expect, it } from 'vitest'
 import { scssPalettes, scssValue } from './kitTokens'
-import { contrastRatio } from '@utils/theme/oklchUtils'
 import { KIT_PALETTES, THEME_PRESETS } from '../presets'
+import { darkPageBackground, darkRoleTints } from '../contrast'
+import { contrastRatio, relativeLuminance } from '@utils/theme/oklchUtils'
 import { THEME_MOTIONS, THEME_PRESET_NAMES } from '../types/themeUtils.types'
 import { MOTION_PRESETS } from '@composables/app/useMotion/types/useMotion.types'
+
+const luminance = (hex: string): number => relativeLuminance(hex)
 
 const failures = (input: Parameters<typeof createTheme>[0]): string[] =>
 	createTheme(input)
@@ -12,14 +15,14 @@ const failures = (input: Parameters<typeof createTheme>[0]): string[] =>
 		.map(row => `${row.mode} ${row.fg} / ${row.bg} ${row.ratio}`)
 
 describe('createTheme', () => {
-	it('из одного цвета: палитра бренда с текстом и наведением кнопки и тонированная нейтраль, больше ничего', () => {
+	it('из одного цвета: палитра бренда на шаге заливки 700 и тонированная нейтраль; светлый текст — умолчание кита, без сидов', () => {
 		const theme = createTheme({ name: 'brand', primary: '#0f766e' })
 		expect(theme.name).toBe('brand')
-		expect(theme.vars['--rise-color-primary-600']).toBe('#0f766e')
-		expect(theme.vars['--rise-color-primary-on']).toBe('#ffffff')
-		expect(theme.vars['--rise-color-primary-hover']).toBe(theme.vars['--rise-color-primary-700'])
+		expect(theme.vars['--rise-color-primary-700']).toBe('#0f766e')
+		expect(theme.vars['--rise-color-primary-on']).toBeUndefined()
+		expect(theme.vars['--rise-color-primary-hover']).toBeUndefined()
 		expect(theme.vars['--rise-color-neutral-0']).toBeDefined()
-		expect(Object.keys(theme.vars)).toHaveLength(11 + 2 + 12)
+		expect(Object.keys(theme.vars)).toHaveLength(11 + 12)
 		expect(theme.darkVars).toEqual({})
 		expect(theme.adjusted).toBe(false)
 		expect(theme.css.startsWith("[data-rise-theme='brand'][data-rise-theme] {\n\t--rise-color-primary-50: ")).toBe(true)
@@ -70,50 +73,104 @@ describe('createTheme', () => {
 		expect(THEME_PRESETS.rise.motion).toBe('standard')
 	})
 
-	it('primaryDark даёт оттенки 500, 400 и 300 только тёмному режиму, включая system', () => {
+	it('primaryDark даёт тёмному режиму заливку 700 со светлым текстом, наведение, яркий тон 500 и текст роли 300, включая system', () => {
 		const theme = createTheme({ name: 'x', primary: '#18181b', primaryDark: '#fafafa' })
-		expect(theme.darkVars).toEqual({
-			'--rise-color-primary-300': expect.any(String),
-			'--rise-color-primary-400': expect.any(String),
-			'--rise-color-primary-500': '#fafafa',
-		})
+		const { darkVars, vars } = theme
+		expect(Object.keys(darkVars)).toEqual([
+			'--rise-color-primary-300',
+			'--rise-color-primary-500',
+			'--rise-color-primary-700',
+			'--rise-color-primary-on',
+			'--rise-color-primary-hover',
+		])
+		expect(darkVars['--rise-color-primary-500']).toBe('#fafafa')
+		expect(darkVars['--rise-color-primary-on']).toBe(vars['--rise-color-neutral-50'])
+		expect(contrastRatio(darkVars['--rise-color-primary-700'], darkVars['--rise-color-primary-on'])).toBeGreaterThanOrEqual(4.5)
+		expect(contrastRatio(darkVars['--rise-color-primary-hover'], darkVars['--rise-color-primary-on'])).toBeGreaterThanOrEqual(4.5)
+		expect(contrastRatio(darkVars['--rise-color-primary-700'], vars['--rise-color-neutral-900'])).toBeGreaterThanOrEqual(3)
+		expect(luminance(darkVars['--rise-color-primary-hover'])).toBeLessThan(luminance(darkVars['--rise-color-primary-700']))
 		expect(theme.css).toContain("[data-rise-theme='x'][data-rise-theme][data-theme='dark'] {")
 		expect(theme.css).toContain(
 			"@media (prefers-color-scheme: dark) {\n\t[data-rise-theme='x'][data-rise-theme][data-theme='system'] {",
 		)
-		expect(theme.adjusted).toBe(false)
+		expect(theme.adjusted).toBe(true)
 	})
 
-	it('тёмный бренд для тёмного режима осветляется до контраста и отмечается adjusted', () => {
+	it('primaryDark с тёмным текстом: светлая кнопка тёмного режима, наведение светлее, текст — нейтраль 950', () => {
+		const { darkVars, vars } = createTheme({ name: 'x', primary: '#18181b', primaryDark: '#fafafa', text: 'dark' })
+		expect(darkVars['--rise-color-primary-on']).toBe(vars['--rise-color-neutral-950'])
+		expect(contrastRatio(darkVars['--rise-color-primary-700'], darkVars['--rise-color-primary-on'])).toBeGreaterThanOrEqual(4.5)
+		expect(luminance(darkVars['--rise-color-primary-hover'])).toBeGreaterThan(luminance(darkVars['--rise-color-primary-700']))
+	})
+
+	it('тёмный бренд для тёмного режима светлеет до 3:1 к фону тёмной темы и отмечается adjusted', () => {
 		const theme = createTheme({ name: 'x', primary: '#0f766e', primaryDark: '#000080' })
 		expect(theme.adjusted).toBe(true)
+		const fill = theme.darkVars['--rise-color-primary-700']
+		expect(contrastRatio(fill, theme.vars['--rise-color-neutral-900'])).toBeGreaterThanOrEqual(3)
+		expect(contrastRatio(fill, theme.darkVars['--rise-color-primary-on'])).toBeGreaterThanOrEqual(4.5)
 		expect(contrastRatio(theme.darkVars['--rise-color-primary-500'], '#0b0d14')).toBeGreaterThanOrEqual(4.5)
 	})
 
-	it('цвета статусов из HEX — палитры на главных оттенках кита; без входа — не выводятся', () => {
+	it('цвета статусов из HEX — палитры на шагах заливки кита (600); без входа — не выводятся', () => {
 		const { vars, darkVars } = createTheme({ name: 'x', primary: '#0f766e', info: '#0369a1', error: '#be123c' })
 		expect(vars['--rise-color-info-600']).toBe('#0369a1')
 		expect(vars['--rise-color-error-600']).toBe('#be123c')
 		expect(vars['--rise-color-success-600']).toBeUndefined()
+		expect(Object.keys(darkVars)).toEqual([
+			'--rise-color-info-600',
+			'--rise-color-info-700',
+			'--rise-color-error-600',
+			'--rise-color-error-700',
+		])
+	})
+
+	it('тёмный бренд светлеет в тёмной теме до 3:1 к поверхности (нейтраль 900), наведение — шаг темнее; только тёмному режиму', () => {
+		const { vars, darkVars } = createTheme({ name: 'x', primary: '#1d4ed8' })
+		expect(vars['--rise-color-primary-700']).toBe('#1d4ed8')
+		expect(Object.keys(darkVars)).toEqual(['--rise-color-primary-700', '--rise-color-primary-800'])
+		const [fill, hover] = [darkVars['--rise-color-primary-700'], darkVars['--rise-color-primary-800']]
+		expect(contrastRatio(fill, vars['--rise-color-neutral-900'])).toBeGreaterThanOrEqual(3)
+		expect(contrastRatio(fill, vars['--rise-color-neutral-50'])).toBeGreaterThanOrEqual(4.5)
+		expect(luminance(hover)).toBeLessThan(luminance(fill))
+	})
+
+	it('по умолчанию текст светлый: янтарный бренд темнеет до 4.5:1 с нейтралью 50 темы, наведение темнее, сидов нет', () => {
+		const amber = createTheme({ name: 'x', primary: '#ee5410' })
+		expect(amber.adjusted).toBe(true)
+		expect(amber.vars['--rise-color-primary-700']).not.toBe('#ee5410')
+		expect(contrastRatio(amber.vars['--rise-color-primary-700'], amber.vars['--rise-color-neutral-50'])).toBeGreaterThanOrEqual(4.5)
+		expect(luminance(amber.vars['--rise-color-primary-800'])).toBeLessThan(luminance(amber.vars['--rise-color-primary-700']))
+		expect(amber.vars['--rise-color-primary-on']).toBeUndefined()
+	})
+
+	it('text: dark — бренд как есть с тёмным текстом (нейтраль 950), наведение светлее; сиды -on и -hover', () => {
+		const { vars, darkVars, adjusted } = createTheme({ name: 'x', primary: '#ee5410', text: 'dark' })
+		expect(adjusted).toBe(false)
+		expect(vars['--rise-color-primary-700']).toBe('#ee5410')
+		expect(vars['--rise-color-primary-on']).toBe(vars['--rise-color-neutral-950'])
+		expect(vars['--rise-color-primary-hover']).toBe(vars['--rise-color-primary-600'])
+		expect(luminance(vars['--rise-color-primary-hover'])).toBeGreaterThan(luminance(vars['--rise-color-primary-700']))
 		expect(darkVars).toEqual({})
 	})
 
-	it('светлый бренд несёт тёмный текст и наводится светлее, тёмный — белый текст и наведение темнее', () => {
-		const amber = createTheme({ name: 'x', primary: '#ee5410' }).vars
-		expect(amber['--rise-color-primary-600']).toBe('#ee5410')
-		expect(amber['--rise-color-primary-on']).toBe(amber['--rise-color-neutral-950'])
-		expect(amber['--rise-color-primary-hover']).toBe(amber['--rise-color-primary-500'])
-		const navy = createTheme({ name: 'x', primary: '#1d4ed8' }).vars
-		expect(navy['--rise-color-primary-on']).toBe('#ffffff')
-		expect(navy['--rise-color-primary-hover']).toBe(navy['--rise-color-primary-700'])
+	it('text: auto — светлый текст, если бренд его держит, иначе тёмный; действует и на статусы из HEX', () => {
+		expect(createTheme({ name: 'x', primary: '#1d4ed8', text: 'auto' }).vars['--rise-color-primary-on']).toBeUndefined()
+		const { vars } = createTheme({ name: 'x', primary: '#ee5410', warning: '#f59e0b', text: 'auto' })
+		expect(vars['--rise-color-primary-on']).toBe(vars['--rise-color-neutral-950'])
+		expect(vars['--rise-color-warning-on']).toBe(vars['--rise-color-neutral-950'])
+		expect(vars['--rise-color-warning-hover']).toBe(vars['--rise-color-warning-600'])
 	})
 
-	it('success из HEX: тёмные цвета роли (в ките — литералы) — из её палитры, только тёмному режиму', () => {
+	it('success из HEX: мягкий фон, рамка и текст роли тёмной темы (в ките — литералы) — из её палитры, только тёмному режиму', () => {
 		const { vars, darkVars } = createTheme({ name: 'x', primary: '#0f766e', success: '#15803d' })
-		expect(darkVars['--rise-success']).toBe(vars['--rise-color-success-400'])
-		expect(darkVars['--rise-success-hover']).toBe(vars['--rise-color-success-300'])
-		expect(darkVars['--rise-success-text']).toMatch(/^#[0-9a-f]{6}$/)
+		const bg = darkPageBackground(vars['--rise-color-neutral-950'])
+		expect(darkVars).toEqual({
+			...darkRoleTints('success', vars['--rise-color-success-400'], bg),
+			'--rise-success-text': expect.stringMatching(/^#[0-9a-f]{6}$/),
+		})
 		expect(vars['--rise-success']).toBeUndefined()
+		expect(vars['--rise-color-success-600']).toBe('#15803d')
 	})
 
 	it('готовые палитры берутся как есть вместо генератора', () => {
@@ -139,13 +196,15 @@ describe('createTheme', () => {
 		expect(theme.css).not.toMatch(/<|\}\s*body/)
 	})
 
-	it('если бренд не берёт 4.5:1 на тонированном фоне, фон светлой темы — белый', () => {
-		expect(createTheme({ name: 'x', primary: '#00cc66' }).vars['--rise-color-neutral-0']).toBe('#ffffff')
+	it('если бренд не берёт 4.5:1 на тонированном фоне (светлая заливка под тёмный текст), фон светлой темы — белый', () => {
+		expect(createTheme({ name: 'x', primary: '#00cc66', text: 'dark' }).vars['--rise-color-neutral-0']).toBe('#ffffff')
+		expect(createTheme({ name: 'x', primary: '#00cc66' }).vars['--rise-color-neutral-0']).not.toBe('#ffffff')
 		expect(createTheme({ name: 'x', primary: '#7c3aed' }).vars['--rise-color-neutral-0']).not.toBe('#ffffff')
 	})
 
 	it('из любого цвета — без провалов контраста; пример светлого бренда', () => {
 		expect(failures({ name: 'x', primary: '#ffe600' })).toEqual([])
+		expect(failures({ name: 'x', primary: '#ffe600', text: 'dark' })).toEqual([])
 		expect(createTheme({ name: 'x', primary: '#ffe600' }).adjusted).toBe(true)
 	})
 })
@@ -188,8 +247,18 @@ describe('THEME_PRESETS', () => {
 		expect(vars['--rise-shadow-strength']).toBe('1')
 	})
 
-	it('minimal в тёмном режиме — светлая кнопка из primaryDark', () => {
-		expect(createTheme(THEME_PRESETS.minimal).darkVars['--rise-color-primary-500']).toBe('#e4e4e7')
+	it('minimal в тёмном режиме — кнопка из primaryDark со светлым текстом; яркий тон (мягкий фон) — сам primaryDark', () => {
+		const { darkVars } = createTheme(THEME_PRESETS.minimal)
+		expect(darkVars['--rise-color-primary-500']).toBe('#e4e4e7')
+		expect(contrastRatio(darkVars['--rise-color-primary-700'], darkVars['--rise-color-primary-on'])).toBeGreaterThanOrEqual(4.5)
+	})
+
+	it('тексты на заливках пресетов — светлые: нейтраль 50 темы в обоих режимах', () => {
+		for (const name of THEME_PRESET_NAMES) {
+			const theme = createTheme(THEME_PRESETS[name])
+			const on = theme.contrast.filter(row => row.kind === 'on-role')
+			for (const row of on) expect(luminance(row.fgColor), `${name} ${row.mode} ${row.fg}`).toBeGreaterThan(0.85)
+		}
 	})
 
 	it('шрифты пресетов — только шрифты кита, скругления — без пилюль', () => {

@@ -2,6 +2,8 @@
  * WCAG 2.2 AA: текст — 4.5:1 (1.4.3), графика/границы/кольцо фокуса — 3:1 (1.4.11); пары «справочно» не валят проверку.
  * Пары — `THEME_CONTRAST_PAIRS` из `src/utils/theme/themeUtils` (одни с `createTheme`). `--theme=<пресет>` проверяет тему
  * `THEME_PRESETS`: её сиды поверх `_tokens.scss`, как их применяет `[data-rise-theme]`; `--theme=all` — кит и все пресеты.
+ * Текст на заливке роли (`--rise-on-<роль>` к `--rise-<роль>` и к `-hover`) — обязательная пара 4.5:1 и правило кита: текст
+ * светлее заливки (светлый текст на цветных заливках во всех темах); тёмный текст на заливке — ошибка.
  * Для пресетов отчёт генератора (`createTheme().contrast`) сверяется с расчётом по `_tokens.scss`: расхождение — предупреждение
  * (генератор отстал от токенов кита — поправьте `resolveThemeColors`), провал порога — ошибка.
  */
@@ -162,8 +164,10 @@ function themeArgument() {
 
 const themes = themeArgument()
 const rows = []
+const ON_ROLE_KINDS = new Set(['on-role', 'on-role-hover'])
 let failures = 0
 let mismatches = 0
+let darkOnRole = 0
 
 /** Переменные режима: токены кита, поверх — сиды темы, как их применяет `[data-rise-theme]` на той же области. */
 function variables(theme, mode) {
@@ -185,6 +189,12 @@ for (const theme of themes) {
 			const ok = ratio >= pair.min
 			const informational = Boolean(pair.informational)
 			if (!ok && !informational) failures++
+			if (ON_ROLE_KINDS.has(pair.kind) && luminance(fg) <= luminance(bg)) {
+				darkOnRole++
+				console.error(
+					`✗ ${theme} ${mode} ${pair.fg} ${toHex(fg)} темнее заливки ${pair.bg} ${toHex(bg)}: текст на заливке — светлый`,
+				)
+			}
 			if (generated && Math.abs(generated[index].ratio - ratio) > Math.max(RATIO_TOLERANCE, ratio * RATIO_TOLERANCE_SHARE)) {
 				mismatches++
 				console.error(
@@ -225,6 +235,7 @@ if (markdownIndex !== -1) {
 			(themes.length > 1 ? ' и пресетов `THEME_PRESETS` (сиды темы поверх токенов кита).' : '.'),
 		'Пороги WCAG 2.2 AA: текст — 4.5:1, графика и кольцо фокуса — 3:1. «Справочно» — пары, которые не обязаны проходить порог',
 		'(плейсхолдеры и неактивный текст исключены из требования 1.4.3; рамка варианта outline — декоративная, поле обозначено подписью и фоном).',
+		'Текст на заливке роли (`--rise-on-<роль>`) — светлый во всех темах: 4.5:1 и к заливке, и к наведению; тёмный текст на заливке — ошибка.',
 		'',
 	]
 	for (const theme of themes) {
@@ -246,8 +257,9 @@ if (markdownIndex !== -1) {
 }
 
 if (mismatches) console.warn(`\n⚠ Отчёт генератора тем расходится с _tokens.scss: ${mismatches} пар — поправьте resolveThemeColors`)
-if (failures) {
-	console.error(`\n✗ Пар ниже порога: ${failures}`)
+if (failures || darkOnRole) {
+	if (failures) console.error(`\n✗ Пар ниже порога: ${failures}`)
+	if (darkOnRole) console.error(`\n✗ Тёмный текст на заливке роли: ${darkOnRole} пар`)
 	process.exit(1)
 }
-console.log(`\n✓ Все обязательные пары проходят WCAG AA: ${themes.join(', ')}`)
+console.log(`\n✓ Все обязательные пары проходят WCAG AA, текст на заливках ролей светлый: ${themes.join(', ')}`)

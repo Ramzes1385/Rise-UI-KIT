@@ -197,8 +197,8 @@
 
 	&__share-copy.base-button {
 		--custom-bg: var(--media-primary-strong);
-		--custom-bg-hover: color-mix(in oklab, var(--media-primary-strong) 88%, var(--rise-media-highlight));
-		--custom-text: var(--rise-media-text-inverted);
+		--custom-bg-hover: color-mix(in oklab, var(--media-primary-strong) 80%, var(--rise-media-shade));
+		--custom-text: var(--media-text);
 		--btn-pad-top: 0px;
 		--btn-pad-bottom: 0px;
 		--btn-pad-left: 14px;

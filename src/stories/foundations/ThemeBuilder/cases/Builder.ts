@@ -31,6 +31,7 @@ const template = `
 			<BaseColorPicker v-model="input.primary" label="Цвет бренда" />
 			<BaseCheckbox v-model="hasPrimaryDark" label="Свой цвет бренда в тёмной" />
 			<BaseColorPicker v-if="hasPrimaryDark" v-model="input.primaryDark" label="Цвет бренда в тёмной" />
+			<BaseSegmented v-model="textChoice" :options="textOptions" label="Текст на заливках" />
 			<BaseSelect v-model="input.neutral" :options="neutralOptions" label="Нейтраль" />
 			<BaseSegmented v-model="input.radius" :options="radiusOptions" label="Скругление" />
 			<BaseSegmented v-model="input.density" :options="densityOptions" label="Плотность" />
@@ -78,7 +79,7 @@ const template = `
 			<p class="story-label">
 				Контраст WCAG 2.2 AA — пары из scripts/check-contrast.mjs.
 				<BaseBadge :label="failures ? 'Ниже порога: ' + failures : 'Все пары проходят'" :variant="failures ? 'default' : 'soft'" />
-				<BaseBadge v-if="theme.adjusted" label="Бренд затемнён до 4.5:1" variant="outline" />
+				<BaseBadge v-if="theme.adjusted" label="Бренд подстроен под 4.5:1" variant="outline" />
 			</p>
 			<div class="fnd-builder__scroll" tabindex="0" aria-label="Таблица контраста">
 				<table class="fnd-builder__table">
@@ -176,6 +177,8 @@ export const Builder: StoryObj<typeof meta> = {
 					'становится брендом **Custom** в панели Storybook — так её можно примерить на любую историю.',
 					'',
 					'Кнопки пресетов загружают их входы; `rise` здесь — генератор от цвета кита (точные палитры кита — бренд **Rise**).',
+					'«Текст на заливках» — вход `text`: светлый (по умолчанию, нейтраль 50 темы; бренд темнеет до 4.5:1 с ним, в тёмной',
+					'теме слишком тёмный бренд светлеет до 3:1 к фону), тёмный (бренд светлеет, наведение светлее) или `auto`.',
 					'В превью два списка уведомлений с одним именем региона, поэтому правило axe `landmark-unique` у этой истории',
 					'выключено: в приложении регион уведомлений один.',
 				].join('\n'),
@@ -205,6 +208,7 @@ export const Builder: StoryObj<typeof meta> = {
 					'THEME_SHADOWS',
 					'type ThemeContrastRow',
 					'type ThemeInput',
+					'type ThemePaletteText',
 					'type ThemePresetName',
 				],
 				vue: ['computed', 'ref', 'watchEffect'],
@@ -249,5 +253,7 @@ export const Builder: StoryObj<typeof meta> = {
 		}
 
 		await waitFor(() => expect(getComputedStyle(save).backgroundColor).toBe(resolveColor(THEME_PRESETS.playful.primary)))
+		const lightText = getComputedStyle(light).getPropertyValue('--rise-color-neutral-50').trim()
+		await expect(getComputedStyle(save).color).toBe(resolveColor(lightText))
 	},
 }
