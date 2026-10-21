@@ -68,9 +68,7 @@ const toDarkText = (hex: string): string => reachContrast(hex, { bg: DARK_TEXT, 
 function autoFill(hex: string): { main: string; on: ThemeOnColor } {
 	if (contrastRatio(hex, WHITE) >= TEXT_CONTRAST) return { main: hex, on: 'light' }
 	if (contrastRatio(hex, DARK_TEXT) < TEXT_CONTRAST) return { main: toWhiteText(hex), on: 'light' }
-	const main = reachContrast(hex, { bg: FIELD_SURFACE, min: GRAPHIC_CONTRAST, direction: -1 })
-	if (contrastRatio(main, DARK_TEXT) >= TEXT_CONTRAST) return { main, on: 'dark' }
-	return { main: toWhiteText(main), on: 'light' }
+	return { main: reachContrast(hex, { bg: FIELD_SURFACE, min: GRAPHIC_CONTRAST, direction: -1 }), on: 'dark' }
 }
 
 function fill(hex: string, text: ThemePaletteText): { main: string; on: ThemeOnColor } {
