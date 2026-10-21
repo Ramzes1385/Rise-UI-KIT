@@ -1,5 +1,5 @@
 export { Default } from './Default'
-export { Square } from './appearance/Square'
+export { Circle } from './appearance/Circle'
 export { Result } from './behavior/Result'
 export { Variants } from './appearance/Variants'
 export { Sizes } from './appearance/Sizes'

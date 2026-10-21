@@ -12,7 +12,7 @@ export const Variants: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
 			description: {
-				story: 'Варианты оформления строки `isCompact`: `default`, `soft`, `outline`, `ghost`. Полная карта от варианта не зависит. Размер из Controls применяется ко всем.',
+				story: 'Варианты оформления строки `isCompact`: `default` (тон `bg-muted`), `soft` (`bg-elevated`), `outline` (рамка), `ghost` (без фона) и `shadow` (тень). Полная карта от варианта почти не зависит — тень ей даёт только `shadow` (история «Тень»). Размер из Controls применяется ко всем.',
 			},
 			source: storySource({ template, imports: ['BaseBankCard', 'BANK_CARD_VARIANTS'] }),
 		},

@@ -19,7 +19,7 @@ const PANEL_STYLE = [
 	'background: #202124',
 	'box-shadow: 0 12px 40px rgb(0 0 0 / 45%)',
 	'color: #e8eaed',
-	'font: 14px/1.4 system-ui, sans-serif',
+	'font: 14px/1.4 var(--rise-font-sans)',
 ].join(';')
 
 const ROW_STYLE = [

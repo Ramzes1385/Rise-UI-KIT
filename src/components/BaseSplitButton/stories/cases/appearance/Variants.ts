@@ -1,3 +1,4 @@
+import { expect } from 'storybook/test'
 import type { StoryObj } from '@storybook/vue3-vite'
 import type meta from '../../BaseSplitButton.stories'
 import BaseSplitButton from '../../../ui/BaseSplitButton.vue'
@@ -13,7 +14,9 @@ const template = `
 export const Variants: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
-			description: { story: 'Варианты — как у BaseButton.' },
+			description: {
+				story: 'Варианты — как у BaseButton: `default`, `ghost`, `outline`, `shadow`, `soft` и `tonal` — нейтральная заливка для вторичных действий.',
+			},
 			source: storySource({
 				template,
 				imports: ['BaseSplitButton'],
@@ -28,4 +31,7 @@ export const Variants: StoryObj<typeof meta> = {
 		setup: useStorySetup(args, { data: { variants }, slots: ['variant'] }),
 		template,
 	}),
+	play: async ({ canvasElement }) => {
+		for (const variant of variants) await expect(canvasElement.querySelector(`.base-split-button--${variant}`)).toBeInTheDocument()
+	},
 }

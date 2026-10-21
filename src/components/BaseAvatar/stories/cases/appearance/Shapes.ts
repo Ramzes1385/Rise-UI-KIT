@@ -21,7 +21,9 @@ export const Shapes: StoryObj<typeof meta> = {
 	parameters: {
 		controls: { include: ['variant', 'sizeScale', 'isOnline'] },
 		docs: {
-			description: { story: 'Формы: `circle` — для людей, `square` — для организаций, проектов и каналов.' },
+			description: {
+				story: 'Формы: по умолчанию `square` — скруглённый квадрат (радиус `md`), он подходит и людям, и организациям, проектам и каналам; `circle` — круглая форма, когда нужно подчеркнуть человека.',
+			},
 			source: storySource({
 				template,
 				imports: ['BaseAvatar'],

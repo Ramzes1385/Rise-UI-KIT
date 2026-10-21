@@ -11,7 +11,7 @@ const template = `
 		<BaseCard v-bind="args">
 			<template #header>
 				<div class="story-row" style="gap: 12px;">
-					<img :src="user.avatar" alt="" width="40" height="40" style="border-radius: var(--rise-radius-full);" />
+					<img :src="user.avatar" alt="" width="40" height="40" style="border-radius: var(--rise-radius-md);" />
 					<div>
 						<div style="color: var(--rise-text-highlighted); font-weight: var(--rise-font-weight-medium);">{{ user.name }}</div>
 						<div style="color: var(--rise-text-muted);">{{ user.role }}</div>

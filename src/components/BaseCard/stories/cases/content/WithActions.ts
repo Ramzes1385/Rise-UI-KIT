@@ -22,7 +22,7 @@ export const WithActions: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
 			description: {
-				story: 'Слот `actions` — кнопки справа в шапке. Кнопки высотой 32px стоят на строке заголовка и не увеличивают шапку.',
+				story: 'Слот `actions` — кнопки справа в шапке. Кнопки высотой 36px стоят на строке заголовка и не увеличивают шапку.',
 			},
 			source: storySource({ template, imports: ['BaseCard', 'BaseButton', 'BaseIcon'] }),
 		},

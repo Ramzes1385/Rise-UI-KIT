@@ -5,7 +5,7 @@ import type BaseAvatar from '../ui/BaseAvatar.vue'
 export const args = {
 	name: anna.name,
 	variant: 'default',
-	shape: 'circle',
+	shape: 'square',
 	isOnline: false,
 	ring: 'none',
 	mascot: 'none',

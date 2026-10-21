@@ -9,7 +9,7 @@ const variants = AVATAR_CROPPER_VARIANTS
 const template = `
 	<div class="story-row" style="align-items: flex-start">
 		<template v-for="variant in variants" :key="variant">
-			<BaseAvatarCropper v-bind="args" :variant="variant" :size="200" :label="'Вариант ' + variant + ', круг'" />
+			<BaseAvatarCropper v-bind="args" :variant="variant" :size="200" shape="circle" :label="'Вариант ' + variant + ', круг'" />
 			<BaseAvatarCropper v-bind="args" :variant="variant" :size="200" shape="square" :label="'Вариант ' + variant + ', квадрат'" />
 		</template>
 	</div>
@@ -18,7 +18,9 @@ const template = `
 export const Variants: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
-			description: { story: 'Варианты: default — область без рамки, outline — с рамкой accented. Круг и квадрат.' },
+			description: {
+				story: 'Варианты: default — область без рамки, outline — с рамкой accented. Круг (`circle`) и квадрат (по умолчанию).',
+			},
 			source: storySource({ template, imports: ['BaseAvatarCropper'], script: `const variants = ${literal(variants)}` }),
 		},
 		controls: { include: ['sizeScale'] },

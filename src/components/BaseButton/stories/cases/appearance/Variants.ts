@@ -1,9 +1,10 @@
+import { expect } from 'storybook/test'
 import type meta from '../../BaseButton.stories'
 import BaseButton from '../../../ui/BaseButton.vue'
 import type { StoryObj } from '@storybook/vue3-vite'
-import { literal, storySource, useStorySetup } from '@/stories/helpers'
+import { isStoryBranded, literal, resolveColor, storySource, useStorySetup } from '@/stories/helpers'
 
-const variants = ['default', 'soft', 'outline', 'ghost', 'shadow']
+const variants = ['default', 'soft', 'tonal', 'outline', 'ghost', 'shadow']
 
 const template = `
 	<div class="story-row">
@@ -16,7 +17,11 @@ export const Variants: StoryObj<typeof meta> = {
 	parameters: {
 		docs: {
 			description: {
-				story: 'Пять вариантов оформления. Остальные props из Controls (размер, состояния) применяются ко всем кнопкам.',
+				story: [
+					'Шесть вариантов оформления. `default` — заливка основного цвета; `soft` — мягкий тон основного цвета; `tonal` — нейтральная заливка',
+					'для вторичных действий («Отмена», «Позже», панели инструментов); `outline` — прозрачная с рамкой; `ghost` — без фона до наведения;',
+					'`shadow` — с тенью. Остальные props из Controls (размер, состояния) применяются ко всем кнопкам.',
+				].join('\n'),
 			},
 			source: storySource({ template, imports: ['BaseButton'], script: `const variants = ${literal(variants)}`, omit: ['variant'] }),
 		},
@@ -26,4 +31,12 @@ export const Variants: StoryObj<typeof meta> = {
 		setup: useStorySetup(args, { data: { variants } }),
 		template,
 	}),
+	play: async ({ canvas }) => {
+		const tonal = canvas.getByRole('button', { name: 'tonal' })
+		await expect(canvas.getAllByRole('button')).toHaveLength(variants.length)
+		await expect(getComputedStyle(tonal).backgroundColor).not.toBe(
+			getComputedStyle(canvas.getByRole('button', { name: 'default' })).backgroundColor,
+		)
+		if (!isStoryBranded()) await expect(getComputedStyle(tonal).backgroundColor).toBe(resolveColor('var(--rise-bg-elevated)'))
+	},
 }

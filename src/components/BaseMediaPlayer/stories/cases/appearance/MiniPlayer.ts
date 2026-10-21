@@ -7,7 +7,7 @@ import { literal, storySource, useStorySetup } from '@/stories/helpers'
 const paragraphs = Array.from({ length: 12 }, (_, index) => index + 1)
 
 const template = `
-	<div style="display: grid; gap: 16px; max-width: 720px; margin: 0 auto; padding: 16px 0 60vh; font: 15px/1.6 system-ui, sans-serif">
+	<div style="display: grid; gap: 16px; max-width: 720px; margin: 0 auto; padding: 16px 0 60vh; font: 15px/1.6 var(--rise-font-sans)">
 		<p>Запустите запись и прокрутите страницу: плеер переедет в угол окна.</p>
 		<BaseMediaPlayer v-bind="args" />
 		<p v-for="paragraph in paragraphs" :key="paragraph">

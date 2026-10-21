@@ -44,7 +44,7 @@ export const Rows: StoryObj<typeof meta> = {
 	}),
 	play: async ({ canvas }) => {
 		const heights = ['rows: 1', 'rows: 3', 'rows: 6'].map(label => canvas.getByLabelText(label).getBoundingClientRect().height)
-		if (!isStoryBranded()) await expect(heights.map(Math.round)).toEqual([32, 72, 132])
+		if (!isStoryBranded()) await expect(heights.map(Math.round)).toEqual([36, 76, 136])
 		await expect(heights[1]! > heights[0]! && heights[2]! > heights[1]!).toBe(true)
 	},
 }

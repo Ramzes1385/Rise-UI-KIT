@@ -1,6 +1,7 @@
 export { Default } from './Default'
 export { Variants } from './appearance/Variants'
 export { Sizes } from './appearance/Sizes'
+export { Shadow } from './appearance/Shadow'
 export { CustomColor } from './appearance/CustomColor'
 export { Cover } from './appearance/Cover'
 export { Expired } from './states/Expired'

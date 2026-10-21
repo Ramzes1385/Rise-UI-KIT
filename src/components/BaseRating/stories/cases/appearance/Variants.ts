@@ -23,7 +23,7 @@ export const Variants: StoryObj<typeof meta> = {
 		docs: {
 			description: {
 				story: [
-					'Пять вариантов. `default` — только звёзды; `outline` — ряд в коробке поля высотой 32px, как `BaseInput`;',
+					'Пять вариантов. `default` — только звёзды; `outline` — ряд в коробке поля высотой 36px, как `BaseInput`;',
 					'`soft` — мягкий фон; `ghost` — фон появляется при наведении; `shadow` — коробка поля с тенью.',
 				].join('\n'),
 			},

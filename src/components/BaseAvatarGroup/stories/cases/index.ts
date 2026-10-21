@@ -1,7 +1,7 @@
 export { Default } from './Default'
 export { Variants } from './appearance/Variants'
 export { Sizes } from './appearance/Sizes'
-export { Square } from './appearance/Square'
+export { Circle } from './appearance/Circle'
 export { NoSingleRest } from './content/NoSingleRest'
 export { Media } from './content/Media'
 export { Theming } from './appearance/Theming'

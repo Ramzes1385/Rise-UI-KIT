@@ -18,6 +18,7 @@ export default meta
 export const Default = cases.Default
 export const Variants = cases.Variants
 export const Sizes = cases.Sizes
+export const Shadow = cases.Shadow
 export const CustomColor = cases.CustomColor
 export const Cover = cases.Cover
 export const Expired = cases.Expired

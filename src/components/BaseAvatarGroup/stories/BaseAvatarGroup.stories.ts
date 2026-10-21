@@ -20,7 +20,7 @@ export default meta
 export const Default = cases.Default
 export const Variants = cases.Variants
 export const Sizes = cases.Sizes
-export const Square = cases.Square
+export const Circle = cases.Circle
 export const NoSingleRest = cases.NoSingleRest
 export const Media = cases.Media
 export const Theming = cases.Theming

@@ -16,7 +16,7 @@ const meta = {
 export default meta
 
 export const Default = cases.Default
-export const Square = cases.Square
+export const Circle = cases.Circle
 export const Result = cases.Result
 export const Variants = cases.Variants
 export const Sizes = cases.Sizes

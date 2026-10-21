@@ -22,7 +22,7 @@ export const Variants: StoryObj<typeof meta> = {
 		docs: {
 			description: {
 				story: [
-					'Три варианта: `default` — карточка с рамкой и тенью, `outline` — рамка без тени, `soft` — мягкий фон без рамки и тени.',
+					'Три варианта: `default` — тональная карточка с тенью (всплывающий слой), `outline` — рамка без тени, `soft` — мягкий фон без рамки и тени.',
 					'Фон окна отличается от фона страницы (в примере — приглушённый фон рамки).',
 				].join('\n'),
 			},
@@ -37,7 +37,7 @@ export const Variants: StoryObj<typeof meta> = {
 	play: async ({ canvas }) => {
 		const [base, outline, soft] = canvas.getAllByRole('region')
 		await expect(getComputedStyle(base).boxShadow).not.toBe('none')
-		await expect(getComputedStyle(outline).boxShadow).toBe('none')
+		await expect(getComputedStyle(outline).boxShadow).toContain('inset')
 		await expect(getComputedStyle(soft).boxShadow).toBe('none')
 	},
 }

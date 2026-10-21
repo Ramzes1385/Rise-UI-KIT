@@ -11,7 +11,7 @@ const template = `
 		<BaseAlert v-bind="args" icon="calendar" title="Встреча перенесена на 16:00" description="Ссылка на звонок прежняя." />
 		<BaseAlert v-bind="args" title="Иван Петров оставил комментарий">
 			<template #icon>
-				<img :src="avatar" alt="" width="20" height="20" style="border-radius: var(--rise-radius-full);" />
+				<img :src="avatar" alt="" width="20" height="20" style="border-radius: var(--rise-radius-md);" />
 			</template>
 			«Проверь, пожалуйста, цифры за май»
 		</BaseAlert>

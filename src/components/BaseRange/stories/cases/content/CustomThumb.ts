@@ -12,8 +12,8 @@ const template = `
 			<template #thumb="{ value }">
 				<span
 					style="display: flex; align-items: center; justify-content: center; min-width: 32px; height: 20px; padding: 0 6px;
-						border-radius: 9999px; background: var(--rise-primary); color: var(--rise-on-primary);
-						font-size: 12px; line-height: 16px; font-weight: 500; box-shadow: var(--rise-shadow-sm);">
+						border-radius: var(--rise-radius-xs); background: var(--rise-primary); color: var(--rise-on-primary);
+						font-size: 12px; line-height: 16px; font-weight: 500;">
 					{{ value }}
 				</span>
 			</template>

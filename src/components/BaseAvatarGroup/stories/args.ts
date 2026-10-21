@@ -5,7 +5,7 @@ import type BaseAvatarGroup from '../ui/BaseAvatarGroup.vue'
 export const args = {
 	items: PEOPLE,
 	max: 4,
-	shape: 'circle',
+	shape: 'square',
 	ariaLabel: 'Участники проекта',
 	variant: 'default',
 	sizeScale: 100,

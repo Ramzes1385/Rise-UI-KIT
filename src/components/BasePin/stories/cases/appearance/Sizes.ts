@@ -47,6 +47,6 @@ export const Sizes: StoryObj<typeof meta> = {
 					.querySelector('input')!
 					.getBoundingClientRect().height,
 		)
-		await expect(heights).toEqual([24, 32, 40])
+		await expect(heights).toEqual([27, 36, 45])
 	},
 }
