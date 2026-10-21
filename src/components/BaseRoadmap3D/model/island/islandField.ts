@@ -52,12 +52,18 @@ export function createValueNoise(rand: () => number, size: number): (x: number, 
 	}
 }
 
-export function segmentDistance(point: IslandPoint, a: IslandPoint, b: IslandPoint): number {
+function segmentDistanceSq(point: IslandPoint, a: IslandPoint, b: IslandPoint): number {
 	const dx = b.x - a.x
 	const dz = b.z - a.z
 	const lengthSq = dx * dx + dz * dz || 1
 	const t = Math.max(0, Math.min(1, ((point.x - a.x) * dx + (point.z - a.z) * dz) / lengthSq))
-	return Math.hypot(point.x - a.x - t * dx, point.z - a.z - t * dz)
+	const ex = point.x - a.x - t * dx
+	const ez = point.z - a.z - t * dz
+	return ex * ex + ez * ez
+}
+
+export function segmentDistance(point: IslandPoint, a: IslandPoint, b: IslandPoint): number {
+	return Math.sqrt(segmentDistanceSq(point, a, b))
 }
 
 function bucketKey(i: number, j: number): string {
@@ -88,35 +94,43 @@ export function createRoadBuckets(road: IslandPoint[], origin: IslandPoint): Roa
 export function roadDistance(buckets: RoadBuckets, point: IslandPoint): number {
 	const bi = Math.floor((point.x - buckets.x0) / ISLAND_CAP)
 	const bj = Math.floor((point.z - buckets.z0) / ISLAND_CAP)
-	let distance = ISLAND_CAP
+	let distanceSq = ISLAND_CAP * ISLAND_CAP
 	for (let dj = -1; dj <= 1; dj++) {
 		for (let di = -1; di <= 1; di++) {
-			const list = buckets.cells.get(bucketKey(bi + di, bj + dj)) ?? []
+			const list = buckets.cells.get(bucketKey(bi + di, bj + dj))
+			if (!list) continue
 			for (const index of list) {
-				distance = Math.min(distance, segmentDistance(point, buckets.road[index], buckets.road[index + 1]))
+				distanceSq = Math.min(distanceSq, segmentDistanceSq(point, buckets.road[index], buckets.road[index + 1]))
 			}
 		}
 	}
-	return distance
+	return Math.sqrt(distanceSq)
 }
 
-function pointsBounds(points: IslandPoint[]): { minX: number; maxX: number; minZ: number; maxZ: number } {
+function layoutBounds(layout: RoadLayout): { minX: number; maxX: number; minZ: number; maxZ: number } {
 	const bounds = { minX: Infinity, maxX: -Infinity, minZ: Infinity, maxZ: -Infinity }
-	for (const point of points) {
-		bounds.minX = Math.min(bounds.minX, point.x)
-		bounds.maxX = Math.max(bounds.maxX, point.x)
-		bounds.minZ = Math.min(bounds.minZ, point.z)
-		bounds.maxZ = Math.max(bounds.maxZ, point.z)
+	const include = (point: IslandPoint, radius: number) => {
+		bounds.minX = Math.min(bounds.minX, point.x - radius)
+		bounds.maxX = Math.max(bounds.maxX, point.x + radius)
+		bounds.minZ = Math.min(bounds.minZ, point.z - radius)
+		bounds.maxZ = Math.max(bounds.maxZ, point.z + radius)
 	}
+	for (const point of layout.road) include(point, 0)
+	for (const stage of layout.stages) include(stage, ISLAND_PEDESTAL_RADIUS)
+	include(layout.goal, ISLAND_GOAL_RADIUS)
 	return bounds
 }
 
+function ringDistance(point: IslandPoint, center: IslandPoint, radius: number): number {
+	const dx = point.x - center.x
+	const dz = point.z - center.z
+	return Math.sqrt(dx * dx + dz * dz) - radius
+}
+
 function solidDistance(layout: RoadLayout, buckets: RoadBuckets, point: IslandPoint): number {
-	let distance = roadDistance(buckets, point)
-	for (const stage of layout.stages) {
-		distance = Math.min(distance, Math.hypot(point.x - stage.x, point.z - stage.z) - ISLAND_PEDESTAL_RADIUS)
-	}
-	return Math.min(distance, Math.hypot(point.x - layout.goal.x, point.z - layout.goal.z) - ISLAND_GOAL_RADIUS)
+	let distance = Math.min(roadDistance(buckets, point), ringDistance(point, layout.goal, ISLAND_GOAL_RADIUS))
+	for (const stage of layout.stages) distance = Math.min(distance, ringDistance(point, stage, ISLAND_PEDESTAL_RADIUS))
+	return distance
 }
 
 function emptyField(cellSize: number): IslandField {
@@ -124,7 +138,7 @@ function emptyField(cellSize: number): IslandField {
 }
 
 function fieldFrame(layout: RoadLayout, cellSize: number): IslandField {
-	const bounds = pointsBounds([...layout.road, layout.goal])
+	const bounds = layoutBounds(layout)
 	const pad = ISLAND_MARGIN * 2
 	const x0 = bounds.minX - pad
 	const z0 = bounds.minZ - pad

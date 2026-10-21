@@ -5,6 +5,7 @@ import {
 	ROAD_MIN_PER_ROW,
 	ROAD_ROW_GAP,
 	ROAD_STAGE_GAP,
+	ROAD_STAGE_OFFSET,
 	clampPerRow,
 	createRoadLayout,
 	rowDirection,
@@ -82,7 +83,7 @@ describe('createRoadLayout', () => {
 			const layout = createRoadLayout(count, perRow)
 			expect(layout.stages).toHaveLength(count)
 			layout.stages.forEach(stage => {
-				expect(distanceToRoad(layout.road, { x: stage.x, z: stage.z + 1.4 })).toBeLessThan(1e-6)
+				expect(distanceToRoad(layout.road, { x: stage.x, z: stage.z + ROAD_STAGE_OFFSET })).toBeLessThan(1e-6)
 			})
 			const last = layout.stages[count - 1]
 			const end = layout.road[layout.road.length - 1]
@@ -100,7 +101,7 @@ describe('createRoadLayout', () => {
 
 	it('на границе ряда дорога делает поворот к следующему ряду', () => {
 		const layout = createRoadLayout(6, 3)
-		const turn = { x: layout.stages[2].x + ROAD_STAGE_GAP * 0.55, z: layout.stages[2].z + ROAD_ROW_GAP / 2 }
+		const turn = { x: layout.stages[2].x + ROAD_STAGE_GAP * 0.85, z: layout.stages[2].z + ROAD_ROW_GAP / 2 }
 		expect(distanceToRoad(layout.road, turn)).toBeLessThan(1e-6)
 	})
 })

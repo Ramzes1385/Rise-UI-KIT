@@ -15,11 +15,11 @@ import {
 } from '../../../model/island/islandDecor'
 
 const EXPECTED_HASH: Record<string, number> = {
-	'1-3': 753395532,
-	'2-3': 3148653614,
-	'6-3': 1741303644,
-	'12-3': 3212453478,
-	'24-4': 384874907,
+	'1-3': 3629174550,
+	'2-3': 2330784896,
+	'6-3': 2399658570,
+	'12-3': 3538877525,
+	'24-4': 3104065708,
 }
 
 const SEED = resolveSeed(undefined, 'Frontend-разработчик на Vue')

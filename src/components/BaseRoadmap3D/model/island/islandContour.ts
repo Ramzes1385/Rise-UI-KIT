@@ -114,7 +114,14 @@ export function traceContours(grid: IslandField, level = 0): IslandPoint[][] {
 
 export function traceContour(grid: IslandField, level = 0): IslandPoint[] {
 	let best: IslandPoint[] = []
-	for (const loop of traceContours(grid, level)) if (loop.length > best.length) best = loop
+	let bestArea = 0
+	for (const loop of traceContours(grid, level)) {
+		const area = Math.abs(contourArea(loop))
+		if (area > bestArea) {
+			best = loop
+			bestArea = area
+		}
+	}
 	return orientContour(best)
 }
 

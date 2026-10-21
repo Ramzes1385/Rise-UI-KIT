@@ -5,7 +5,7 @@ export const ROAD_ROW_GAP = 5.5
 export const ROAD_MIN_PER_ROW = 2
 export const ROAD_MAX_PER_ROW = 4
 const ROAD_DEFAULT_PER_ROW = 3
-const ROAD_STAGE_OFFSET = 1.4
+export const ROAD_STAGE_OFFSET = 2.3
 const ROAD_CURVE_SEGMENTS = 12
 
 export function clampPerRow(perRow: number): number {
@@ -26,12 +26,15 @@ export function stagePosition(index: number, perRow: number): IslandPoint {
 
 function controlPoints(stages: IslandPoint[], perRow: number): IslandPoint[] {
 	const last = stages.length - 1
-	const points: IslandPoint[] = [{ x: stages[0].x - ROAD_STAGE_GAP * 0.7, z: stages[0].z }]
+	const points: IslandPoint[] = [{ x: stages[0].x - ROAD_STAGE_GAP * 0.7, z: stages[0].z + ROAD_STAGE_OFFSET }]
 	stages.forEach((stage, index) => {
 		points.push({ x: stage.x, z: stage.z + ROAD_STAGE_OFFSET })
 		if (index < last && (index + 1) % perRow === 0) {
 			const side = rowDirection(Math.floor(index / perRow))
-			points.push({ x: stage.x + side * ROAD_STAGE_GAP * 0.55, z: stage.z + ROAD_ROW_GAP / 2 })
+			points.push(
+				{ x: stage.x + side * ROAD_STAGE_GAP * 0.85, z: stage.z + ROAD_ROW_GAP / 2 },
+				{ x: stage.x + side * ROAD_STAGE_GAP * 0.5, z: stage.z + ROAD_ROW_GAP + ROAD_STAGE_OFFSET },
+			)
 		}
 	})
 	const side = rowDirection(Math.floor(last / perRow))

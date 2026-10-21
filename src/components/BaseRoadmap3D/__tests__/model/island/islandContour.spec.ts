@@ -38,6 +38,17 @@ describe('contourArea / orientContour', () => {
 })
 
 describe('traceContour', () => {
+	it('внешним берегом берёт контур с наибольшей площадью, а не с наибольшим числом точек', () => {
+		const dot = circle(10, 15, 5)
+		const strip = (i: number, j: number) => Math.max(Math.abs(j - 2) - 0.8, 19 - i, i - 55)
+		const grid = gridOf(60, 30, (i, j) => Math.min(dot(i, j), strip(i, j)))
+		const loops = traceContours(grid)
+		expect(loops).toHaveLength(2)
+		const longest = loops.reduce((a, b) => (a.length > b.length ? a : b))
+		expect(Math.abs(contourArea(longest))).toBeLessThan(contourArea(traceContour(grid)))
+		expect(traceContour(grid).length).toBeLessThan(longest.length)
+	})
+
 	it('круг на синтетической сетке — один замкнутый контур нужного радиуса', () => {
 		const grid = gridOf(21, 21, circle(10, 10, 5))
 		const loops = traceContours(grid)
