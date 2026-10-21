@@ -5,10 +5,13 @@ import type { RoadmapStageStatus, RoadmapTopicStatus } from '@components/BaseRoa
 import type { Model3DGltfLoader, Model3DRegistry, Model3DSelection } from '@/scene3d/types/internal/model3dInternal.types'
 import type { Box3, Color, CylinderGeometry, Group, Mesh, MeshStandardMaterial, Object3D, RingGeometry, Vector3 } from 'three'
 import type {
+	CameraFraming,
+	Scene3DCameraPose,
 	Scene3DColorResolver,
 	Scene3DLabelItem,
 	Scene3DLoop,
 	Scene3DResourceCache,
+	Scene3DViewCamera,
 } from '@/scene3d/types/internal/scene3dInternal.types'
 
 /** Тема этапа в снимке: статус и вид для камня у пьедестала и бирки-фишки */
@@ -219,4 +222,52 @@ export interface Roadmap3DPedestalStage {
 export interface Roadmap3DGem {
 	id: string
 	position: Vector3
+}
+
+/** Точка кадра: мировые координаты и отступ в пикселях от края холста, который она должна сохранить */
+export interface Roadmap3DFitPoint {
+	x: number
+	y: number
+	z: number
+	padX: number
+	padY: number
+}
+
+/** Запрос расчёта зума кадра: камера, размер холста, рамка сцены, поза и снимок острова */
+export interface Roadmap3DFitRequest {
+	camera: Scene3DViewCamera
+	size: { width: number; height: number }
+	framing: CameraFraming
+	pose: Scene3DCameraPose
+	snapshot: Roadmap3DSnapshot
+}
+
+/** Вид подписи: полная, кружок с номером или скрыта */
+export type Roadmap3DTagForm = 'full' | 'compact' | 'hidden'
+
+/** Размер подписи на экране в пикселях */
+export interface Roadmap3DTagSize {
+	width: number
+	height: number
+}
+
+/** Подпись для разрежения: место на экране, размеры в двух видах, важность и видимость после проекции */
+export interface Roadmap3DTagEntry {
+	id: string
+	kind: Roadmap3DTag['kind']
+	rank: number
+	order: number
+	x: number
+	y: number
+	full: Roadmap3DTagSize
+	compact: Roadmap3DTagSize
+	isVisible: boolean
+}
+
+/** Прямоугольник подписи на экране в пикселях */
+export interface Roadmap3DTagRect {
+	left: number
+	right: number
+	top: number
+	bottom: number
 }

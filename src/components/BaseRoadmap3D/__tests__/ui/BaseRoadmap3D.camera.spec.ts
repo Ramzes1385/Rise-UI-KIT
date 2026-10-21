@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import userEvent from '@testing-library/user-event'
 import { fireEvent, screen, within } from '@testing-library/vue'
-import { mockWebGL } from '../../../BaseImageMap3D/__tests__/imageMap3d.test-utils'
+import { TestResizeObserver, mockWebGL } from '../../../BaseImageMap3D/__tests__/imageMap3d.test-utils'
 import { DATA_ROADMAP_3D, stagesData, stubReducedMotion, useRoadmap3DEnvironment } from '../fixtures/roadmap3d.test-utils'
 
 const env = useRoadmap3DEnvironment()
@@ -23,6 +23,45 @@ describe('BaseRoadmap3D: камера', () => {
 		const { events, exposed } = await env.renderRoadmap({ camera: 'top' })
 		exposed.value?.rotate(1)
 		expect(events['update:camera']).toBeUndefined()
+	})
+
+	it('смена размера холста пересчитывает кадр: остров заново вписывается в новый холст', async () => {
+		const { exposed } = await env.renderRoadmap()
+		env.flush(3)
+		const zoom = () => (exposed.value?.getSceneContext()?.camera as unknown as { zoom: number }).zoom
+		const before = zoom()
+		env.size.width = 420
+		TestResizeObserver.instances.forEach(observer =>
+			observer.callback(
+				[{ contentRect: { width: 420, height: env.size.height } } as ResizeObserverEntry],
+				observer as unknown as ResizeObserver,
+			),
+		)
+		await Promise.resolve()
+		await Promise.resolve()
+		env.flush(3)
+		expect(zoom()).not.toBe(before)
+	})
+
+	it('если зум менял пользователь, смена размера его не сбрасывает', async () => {
+		const user = userEvent.setup()
+		const { exposed } = await env.renderRoadmap()
+		env.flush(3)
+		await user.click(toolbar().getByRole('button', { name: 'Увеличить' }))
+		env.flush(30)
+		const zoom = () => (exposed.value?.getSceneContext()?.camera as unknown as { zoom: number }).zoom
+		const before = zoom()
+		env.size.width = 420
+		TestResizeObserver.instances.forEach(observer =>
+			observer.callback(
+				[{ contentRect: { width: 420, height: env.size.height } } as ResizeObserverEntry],
+				observer as unknown as ResizeObserver,
+			),
+		)
+		await Promise.resolve()
+		await Promise.resolve()
+		env.flush(3)
+		expect(zoom()).toBe(before)
 	})
 
 	it('смена вида камеры (изометрия → перспектива) меняет тип камеры сцены', async () => {

@@ -1,6 +1,7 @@
 import { computed, shallowRef, watch } from 'vue'
 import { buildLabelSet } from './data/roadmap3dTags'
 import { useCarMotion } from './motion/useCarMotion'
+import { layoutTags } from './data/roadmap3dTagLayout'
 import { fitViewCamera } from '@/scene3d/camera/cameraPose'
 import { useRoadmap3DScene } from './scene/useRoadmap3DScene'
 import { useRoadmap3DCamera } from './camera/useRoadmap3DCamera'
@@ -81,6 +82,12 @@ export function useRoadmap3DStage(options: Roadmap3DStageOptions) {
 		labels.setItems(content ? buildLabelSet(tags, content.anchors).items : [])
 		viewport.invalidate()
 	})
-	viewport.onFrame(() => labels.update(viewport.camera.value, size()))
+	let laidOut = labels.spots
+	viewport.onFrame(() => {
+		labels.update(viewport.camera.value, size())
+		if (labels.spots === laidOut) return
+		laidOut = labels.spots
+		layoutTags(options.labelsRef.value, options.tags.value, labels.spots)
+	})
 	return { viewport, camera, scene, labels, size, animate, car, content: built }
 }

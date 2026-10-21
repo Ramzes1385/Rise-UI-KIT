@@ -167,6 +167,14 @@
 			margin-block-start: sz(-12px);
 		}
 
+		&--compact {
+			padding: sz(2px);
+
+			.base-roadmap-3d__tag-text {
+				display: none;
+			}
+		}
+
 		&--start,
 		&--goal {
 			padding-inline: sz(10px);

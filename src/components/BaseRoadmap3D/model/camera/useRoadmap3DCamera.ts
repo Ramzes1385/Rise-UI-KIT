@@ -1,19 +1,19 @@
 import type { ComputedRef } from 'vue'
+import { solveFitZoom } from './roadmap3dFit'
 import { computed, nextTick, watch } from 'vue'
 import { OrthographicCamera, Vector3 } from 'three'
 import { useOrbitCamera } from '@/scene3d/camera/useOrbitCamera'
 import type { Scene3DCameraPreset } from '@/scene3d/types/scene3d.types'
+import { frameCenter, roadmapFrame, toFraming } from '../scene/roadmap3dSpace'
 import type { Roadmap3DFrame } from '../../types/internal/roadmap3dInternal.types'
+import { baseDistance, clampPose, visibleHalf } from '@/scene3d/camera/cameraPose'
 import type { Scene3DCameraPose } from '@/scene3d/types/internal/scene3dInternal.types'
-import { frameCenter, roadmapFrame, SLAB, STEP, toFraming } from '../scene/roadmap3dSpace'
-import { baseDistance, clampPose, frameHalf, visibleHalf } from '@/scene3d/camera/cameraPose'
 import type { Roadmap3DCameraApi, Roadmap3DCameraOptions } from '../../types/internal/roadmap3dCompose.types'
 import { nearestIsoPreset, presetCameraKind, presetPose, quarterTurnPose } from '@/scene3d/camera/cameraPresets'
 
 const FOCUS_FRAME = 11.5
 const FOCUS_HEIGHT = 0.6
-const FIT_MARGIN = 1.04
-const MAX_FIT = 3
+const FALLBACK_HEIGHT = 600
 
 function isIso(preset: Scene3DCameraPreset): boolean {
 	return preset.startsWith('iso')
@@ -23,27 +23,10 @@ function createHomePose(options: Roadmap3DCameraOptions, frame: ComputedRef<Road
 	function fitZoom(pose: Scene3DCameraPose): number {
 		const camera = options.camera.value
 		const canvas = options.canvasRef.value
-		const sized = canvas && canvas.clientHeight > 0 ? canvas.clientWidth / canvas.clientHeight : 0
-		const aspect = sized || (camera instanceof OrthographicCamera ? camera.right / Math.max(camera.top, 0.001) : camera.aspect)
-		const half = frameHalf(toFraming(frame.value), aspect)
-		const island = options.snapshot.value.island
-		const origin = center.value
-		const [azimuth, elevation] = [pose[3], Math.PI / 2 - pose[4]]
-		const extent = { sideways: 0, up: 0 }
-		const take = (point: { x: number; z: number }, height: number): void => {
-			const [dx, dz] = [point.x - origin.x, -point.z - origin.z]
-			const toward = dx * Math.sin(azimuth) + dz * Math.cos(azimuth)
-			extent.sideways = Math.max(extent.sideways, Math.abs(dx * Math.cos(azimuth) - dz * Math.sin(azimuth)))
-			extent.up = Math.max(extent.up, Math.abs(height * Math.cos(elevation) - toward * Math.sin(elevation)))
-		}
-		island.shoreline.forEach(point => {
-			take(point, -SLAB - STEP * 3)
-			take(point, 0)
-		})
-		island.mountains.forEach(mountain => take(mountain, mountain.height + 1.6))
-		const { sideways, up } = extent
-		const zoom = Math.min((half * aspect) / (sideways * FIT_MARGIN), half / (up * FIT_MARGIN))
-		return Math.min(Math.max(zoom, 1), MAX_FIT)
+		const sized = canvas && canvas.clientHeight > 0 ? { width: canvas.clientWidth, height: canvas.clientHeight } : null
+		const aspect = camera instanceof OrthographicCamera ? camera.right / Math.max(camera.top, 0.001) : camera.aspect
+		const size = sized ?? { width: FALLBACK_HEIGHT * aspect, height: FALLBACK_HEIGHT }
+		return solveFitZoom({ camera, size, framing: toFraming(frame.value), pose, snapshot: options.snapshot.value })
 	}
 	return (preset: Scene3DCameraPreset, azimuth?: number): Scene3DCameraPose => {
 		const pose = presetPose(preset, center.value, azimuth)
@@ -77,10 +60,12 @@ export function useRoadmap3DCamera(options: Roadmap3DCameraOptions): Roadmap3DCa
 		else state.jump(pose)
 	}
 
-	let fitted = homePose(options.preset.value)[5]
+	let fitted = 0
+	let isFirstFit = true
 	watch(options.fitted, () => {
 		const pose = state.next()
-		if (Math.abs(pose[5] - fitted) > 0.001) return
+		if (!isFirstFit && Math.abs(pose[5] - fitted) > 0.001) return
+		isFirstFit = false
 		const next = homePose(options.preset.value, pose[3])
 		fitted = next[5]
 		state.jump(next)

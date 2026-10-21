@@ -89,9 +89,7 @@ function priorityOf(tag: Roadmap3DTag): number {
 export function buildLabelSet(tags: Roadmap3DTag[], anchors: ReadonlyMap<string, Vector3>): Roadmap3DLabelSet {
 	const items: Scene3DLabelItem[] = tags.flatMap(tag => {
 		const anchor = anchors.get(tag.id)
-		return anchor
-			? [{ id: tag.id, anchor, priority: priorityOf(tag), isPinned: tag.isSelected || tag.kind === 'topic' || tag.kind === 'stage' }]
-			: []
+		return anchor ? [{ id: tag.id, anchor, priority: priorityOf(tag), isPinned: true }] : []
 	})
 	return { tags, items }
 }
