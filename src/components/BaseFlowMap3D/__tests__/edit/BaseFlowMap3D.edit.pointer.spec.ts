@@ -92,6 +92,12 @@ describe('BaseFlowMap3D «Правка»: перенос узла', () => {
 		expect(nodeOf(map.data(), 'a')!.position).toEqual({ x: 400, y: 400 })
 	})
 
+	it('движение указателя над сценой без инструмента «Связь» ничего не делает', async () => {
+		const map = await mountEdit({ data: LONE_DATA })
+		await pointer('pointermove', tagOf(map.container, 'a'), { x: 450, y: 280 })
+		expect(nodeOf(map.data(), 'a')!.position).toEqual({ x: 400, y: 400 })
+	})
+
 	it('после переноса щелчок по узлу гасится один раз; вне «Правки» щелчок проходит', async () => {
 		const onClick = vi.fn()
 		const map = await mountEdit({ data: LONE_DATA, onNodeClick: onClick })

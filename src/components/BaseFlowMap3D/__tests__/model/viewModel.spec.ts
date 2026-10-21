@@ -34,6 +34,27 @@ describe('useFlowMap3DBindings', () => {
 		handler('что-то')
 		expect(setMode.mock.calls).toEqual([['edit'], ['view']])
 	})
+
+	it('события 2D-карты пересылаются, данные и выделение уходят в модель', () => {
+		const emit = vi.fn()
+		const select = vi.fn()
+		const data = ref({ nodes: [] })
+		const bindings = useFlowMap3DBindings({
+			props: {},
+			emit,
+			model: { data, selection: ref([]), controller: { select } },
+			view: { mode: ref('view'), setMode: vi.fn() },
+			track: { viewport: vi.fn(), ready: vi.fn() },
+		} as never)
+		;(bindings.value.onNodeClick as (value: unknown) => void)({ id: 'a' })
+		expect(emit).toHaveBeenCalledWith('node-click', { id: 'a' })
+		const next = { nodes: [{ id: 'a' }] }
+		;(bindings.value['onUpdate:data'] as (value: unknown) => void)(next)
+		expect(data.value).toEqual(next)
+		expect(emit).toHaveBeenCalledWith('update:data', next)
+		;(bindings.value['onUpdate:selection'] as (ids: string[]) => void)(['a'])
+		expect(select).toHaveBeenCalledWith(['a'])
+	})
 })
 
 describe('useFlowMap3DContext', () => {
