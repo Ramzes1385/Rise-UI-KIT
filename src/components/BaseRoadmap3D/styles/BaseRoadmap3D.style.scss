@@ -120,7 +120,16 @@
 		touch-action: none;
 		user-select: none;
 		background: ct(roadmap-3d, bg, var(--rise-bg-muted));
-		@include focus-ring(-2px);
+
+		&:focus-visible::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			border-radius: inherit;
+			outline: 2px solid var(--rise-focus-ring);
+			outline-offset: -2px;
+			pointer-events: none;
+		}
 	}
 
 	&--ghost &__viewport {
