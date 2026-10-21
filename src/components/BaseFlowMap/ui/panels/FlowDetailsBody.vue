@@ -8,8 +8,8 @@
 					<BaseBadge variant="soft" status="neutral" :label="view.kind" />
 				</div>
 			</div>
-			<BaseBadge v-if="view.status" variant="soft" :status="view.status.badge" :style="{ color: view.status.color }">
-				<BaseIcon :name="view.status.icon" />
+			<BaseBadge v-if="view.status" variant="soft" :status="view.status.badge">
+				<BaseIcon :name="view.status.icon" :style="{ color: view.status.color }" />
 				{{ view.status.label }}
 			</BaseBadge>
 			<BaseButton v-if="hasClose" variant="ghost" :aria-label="labels.close" @click="emit('close')">

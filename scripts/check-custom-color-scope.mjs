@@ -15,7 +15,7 @@ const ALLOWED = {
 	BaseTooltip: 'корень — обёртка триггера без собственного вывода, всплывающая подсказка телепортируется',
 }
 
-const ROOT_CLASS_OVERRIDES = { BaseImageMap3D: 'base-image-map-3d', BaseRoadmap3D: 'base-roadmap-3d' }
+const ROOT_CLASS_OVERRIDES = { BaseFlowMap3D: 'base-flow-map-3d', BaseImageMap3D: 'base-image-map-3d', BaseRoadmap3D: 'base-roadmap-3d' }
 
 const rootOption = process.argv.slice(2).find(arg => arg.startsWith('--root='))
 const ROOT = resolve(rootOption ? rootOption.slice('--root='.length) : join(import.meta.dirname, '..'))

@@ -82,7 +82,7 @@
 				@click="onClick"
 				@wheel="camera.wheelZoom">
 				<canvas v-if="hasCanvas" ref="canvasRef" :class="[ui('canvas'), classes.canvas]" aria-hidden="true" />
-				<div ref="labelsRef" class="base-roadmap-3d__tags" aria-hidden="true">
+				<div ref="labelsRef" class="base-roadmap-3d__tags" dir="ltr" aria-hidden="true">
 					<div
 						v-for="tag in tags"
 						:key="tag.id"
