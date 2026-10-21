@@ -51,7 +51,7 @@ export const Theming: StoryObj<typeof meta> = {
 		await expect(part(themed, 'key').color).not.toBe(part(plain, 'key').color)
 		if (!isStoryBranded()) {
 			await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('12px')
-			await expect(part(plain, 'tree').paddingTop).toBe('0px')
+			await expect(part(plain, 'tree').paddingTop).toBe('4px')
 			await expect(part(themed, 'tree').paddingTop).toBe('12px')
 		}
 		await expect(classed).toHaveClass('base-json-viewer', 'story-themed-json')
