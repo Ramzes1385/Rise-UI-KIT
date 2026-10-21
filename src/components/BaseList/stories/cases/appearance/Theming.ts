@@ -10,7 +10,7 @@ const ui = { root: 'story-themed-list', viewport: 'story-themed-viewport', title
 const template = `
 	<div class="story-grid" style="--story-grid-min: 240px; align-items: start;">
 		<BaseList v-bind="args" label="По умолчанию" />
-		<div style="--rise-list-bg: var(--rise-bg-muted); --rise-list-border: var(--rise-primary); --rise-list-radius: var(--rise-radius-xl); --rise-list-shadow: var(--rise-shadow-md); --rise-list-item-radius: var(--rise-radius-lg); --rise-list-item-height: 48px; --rise-list-item-padding-x: 16px; --rise-list-item-bg-selected: var(--rise-success-soft);">
+		<div style="--rise-list-bg: var(--rise-bg-elevated); --rise-list-border: var(--rise-primary); --rise-list-radius: var(--rise-radius-xl); --rise-list-shadow: var(--rise-shadow-md); --rise-list-item-radius: var(--rise-radius-lg); --rise-list-item-height: 48px; --rise-list-item-padding-x: 16px; --rise-list-item-bg-selected: var(--rise-success-soft);">
 			<BaseList v-bind="args" label="Токены на контейнере" />
 		</div>
 		<BaseList v-bind="args" label="Классы через ui" :ui="ui" />

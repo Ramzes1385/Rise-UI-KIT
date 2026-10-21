@@ -15,7 +15,7 @@ export const CustomColor: StoryObj<typeof meta> = {
 	},
 	args: {
 		label: 'Новые сообщения',
-		color: { bg: { base: 'var(--rise-primary)' }, text: { base: 'var(--rise-primary)' } },
+		color: { bg: { base: 'var(--rise-primary-text)' }, text: { base: 'var(--rise-primary-text)' } },
 	},
 	play: async ({ canvas }) => {
 		const separator = canvas.getByRole('separator', { name: 'Новые сообщения' })

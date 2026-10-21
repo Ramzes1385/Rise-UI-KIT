@@ -12,7 +12,7 @@ const ui = { root: 'story-themed-mega-menu', bar: 'story-themed-bar', trigger: '
 const template = `
 	<div class="story-stack">
 		<BaseMegaMenu v-bind="args" :items="items" aria-label="По умолчанию" />
-		<div style="--rise-mega-menu-bg: var(--rise-bg-muted); --rise-mega-menu-border: var(--rise-primary-border); --rise-mega-menu-radius: var(--rise-radius-full); --rise-mega-menu-trigger-text: var(--rise-primary); --rise-mega-menu-trigger-font-weight: var(--rise-font-weight-semibold);">
+		<div style="--rise-mega-menu-bg: var(--rise-bg-elevated); --rise-mega-menu-border: var(--rise-primary-border); --rise-mega-menu-radius: var(--rise-radius-full); --rise-mega-menu-trigger-text: var(--rise-primary-text); --rise-mega-menu-trigger-font-weight: var(--rise-font-weight-semibold);">
 			<BaseMegaMenu v-bind="args" :items="items" aria-label="Токены на контейнере" />
 		</div>
 		<BaseMegaMenu v-bind="args" :items="items" aria-label="Классы через ui" :ui="ui" />

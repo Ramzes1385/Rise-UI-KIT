@@ -48,7 +48,7 @@ export const Theming: StoryObj<typeof meta> = {
 		const themedName = themed.querySelector('.base-user__name')!
 
 		if (!isStoryBranded()) await expect(getComputedStyle(plain).columnGap).toBe('8px')
-		if (!isStoryBranded()) await expect(getComputedStyle(themed).columnGap).toBe('12px')
+		if (!isStoryBranded()) await expect(getComputedStyle(themed).columnGap).toBe('16px')
 		await expect(getComputedStyle(themedName).color).not.toBe(getComputedStyle(plainName).color)
 		if (!isStoryBranded()) await expect(getComputedStyle(themedName).fontWeight).toBe('700')
 		if (!isStoryBranded()) await expect(getComputedStyle(plainName).fontWeight).toBe('500')

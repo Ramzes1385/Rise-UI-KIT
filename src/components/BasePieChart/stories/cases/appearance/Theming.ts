@@ -9,7 +9,7 @@ const ui = { root: 'story-themed-pie', legend: 'story-themed-legend', value: 'st
 const template = `
 	<div class="story-stack">
 		<BasePieChart v-bind="args" />
-		<div style="--rise-pie-chart-track-bg: var(--rise-primary-soft); --rise-pie-chart-center-text: var(--rise-primary); --rise-pie-chart-center-font-weight: var(--rise-font-weight-bold); --rise-pie-chart-value-text: var(--rise-primary); --rise-pie-chart-value-font-weight: var(--rise-font-weight-bold); --rise-pie-chart-item-radius: var(--rise-radius-full); --rise-pie-chart-item-padding-x: 12px; --rise-pie-chart-legend-gap: 2px; --rise-pie-chart-gap: 40px;">
+		<div style="--rise-pie-chart-track-bg: var(--rise-primary-soft); --rise-pie-chart-center-text: var(--rise-primary-text); --rise-pie-chart-center-font-weight: var(--rise-font-weight-bold); --rise-pie-chart-value-text: var(--rise-primary-text); --rise-pie-chart-value-font-weight: var(--rise-font-weight-bold); --rise-pie-chart-item-radius: var(--rise-radius-full); --rise-pie-chart-item-padding-x: 12px; --rise-pie-chart-legend-gap: 2px; --rise-pie-chart-gap: 40px;">
 			<BasePieChart v-bind="args" />
 		</div>
 		<BasePieChart v-bind="args" :ui="ui" />

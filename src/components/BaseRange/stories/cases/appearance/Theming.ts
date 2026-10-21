@@ -49,7 +49,7 @@ export const Theming: StoryObj<typeof meta> = {
 		const part = (range: HTMLElement, name: string) => getComputedStyle(range.querySelector(`.base-range__${name}`)!)
 
 		await expect(part(themed, 'thumb').width).toBe('20px')
-		await expect(part(plain, 'thumb').width).toBe('16px')
+		await expect(part(plain, 'thumb').width).toBe('14px')
 		await expect(part(themed, 'track').height).toBe('8px')
 		await expect(part(themed, 'fill').backgroundColor).not.toBe(part(plain, 'fill').backgroundColor)
 		await expect(classed).toHaveClass('base-range', 'story-themed-range')

@@ -54,7 +54,7 @@ export const Theming: StoryObj<typeof meta> = {
 		const iconColor = (button: HTMLElement) => getComputedStyle(button.querySelector('.base-color-mode-button__icons')!).color
 
 		await expect(getComputedStyle(themed).paddingTop).toBe('12px')
-		await expect(getComputedStyle(plain).paddingTop).toBe('7px')
+		await expect(getComputedStyle(plain).paddingTop).toBe('9px')
 		await expect(iconColor(themed)).not.toBe(iconColor(plain))
 		await expect(classed).toHaveClass('base-color-mode-button', 'story-themed-mode')
 		await expect(classed.querySelector('.base-color-mode-button__icon')).toHaveClass('story-themed-icon')

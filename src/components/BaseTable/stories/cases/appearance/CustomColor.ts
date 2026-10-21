@@ -12,7 +12,7 @@ const columns: TableColumn[] = [...COMPACT_COLUMNS, { key: 'actions', label: 'Д
 const template = `
 	<BaseTable v-bind="args" :columns="columns">
 		<template #cell-actions="{ row }">
-			<BaseButton variant="outline" :aria-label="'Открыть заказ ' + row.data.number" @click.stop>Открыть</BaseButton>
+			<BaseButton variant="tonal" :aria-label="'Открыть заказ ' + row.data.number" @click.stop>Открыть</BaseButton>
 		</template>
 	</BaseTable>
 `

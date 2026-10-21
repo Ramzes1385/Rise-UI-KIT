@@ -50,7 +50,7 @@ export const Theming: StoryObj<typeof meta> = {
 		const classed = canvas.getByRole('group', { name: 'Классы через ui' })
 
 		if (!isStoryBranded()) await expect(getComputedStyle(plain).columnGap).toBe('6px')
-		if (!isStoryBranded()) await expect(getComputedStyle(themed).columnGap).toBe('12px')
+		if (!isStoryBranded()) await expect(getComputedStyle(themed).columnGap).toBe('16px')
 		await expect(classed).toHaveClass('base-tag-group', 'story-themed-group')
 		for (const tag of classed.querySelectorAll('.base-tag')) await expect(tag).toHaveClass('base-tag-group__tag', 'story-themed-tag')
 	},

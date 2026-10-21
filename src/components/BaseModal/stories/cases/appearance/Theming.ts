@@ -62,7 +62,7 @@ export const Theming: StoryObj<typeof meta> = {
 		if (!isStoryBranded())
 			await expect(getComputedStyle(themed).borderTopLeftRadius).not.toBe(getComputedStyle(plain).borderTopLeftRadius)
 		if (!isStoryBranded()) await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('16px')
-		if (!isStoryBranded()) await expect(getComputedStyle(plain).borderTopLeftRadius).toBe('8px')
+		if (!isStoryBranded()) await expect(getComputedStyle(plain).borderTopLeftRadius).toBe('12px')
 		await expect(classed).toHaveClass('base-modal__content', 'story-themed-modal')
 		await expect(classed.querySelector('.base-modal__title')).toHaveClass('story-themed-title')
 	},

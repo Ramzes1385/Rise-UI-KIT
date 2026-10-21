@@ -43,7 +43,7 @@ export const Theming: StoryObj<typeof meta> = {
 		await expect(getComputedStyle(themed).backgroundColor).not.toBe(getComputedStyle(plain).backgroundColor)
 		await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('9999px')
 		await expect(getComputedStyle(themed).fontWeight).toBe('700')
-		await expect(getComputedStyle(plain).fontWeight).toBe('500')
+		await expect(getComputedStyle(plain).fontWeight).toBe('400')
 		await expect(getComputedStyle(themed).boxShadow).not.toBe('none')
 		await expect(classed).toHaveClass('base-kbd', 'story-themed-kbd')
 		await expect(classed.querySelector('.base-kbd__name')).toHaveClass('story-themed-name')

@@ -9,7 +9,7 @@ const ui = { root: 'story-themed-transfer', panel: 'story-themed-panel' }
 const template = `
 	<div class="story-stack">
 		<BaseTransfer v-bind="args" label="По умолчанию" />
-		<div style="--rise-transfer-panel-bg: var(--rise-bg-muted); --rise-transfer-panel-border: var(--rise-primary); --rise-transfer-panel-radius: var(--rise-radius-2xl); --rise-transfer-panel-padding: 16px; --rise-transfer-title-text: var(--rise-primary);">
+		<div style="--rise-transfer-panel-bg: var(--rise-bg-elevated); --rise-transfer-panel-border: var(--rise-primary); --rise-transfer-panel-radius: var(--rise-radius-2xl); --rise-transfer-panel-padding: 16px; --rise-transfer-title-text: var(--rise-primary-text);">
 			<BaseTransfer v-bind="args" label="Токены на контейнере" />
 		</div>
 		<BaseTransfer v-bind="args" label="Классы через ui" :ui="ui" />

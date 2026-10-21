@@ -51,7 +51,7 @@ export const Theming: StoryObj<typeof meta> = {
 		await expect(getComputedStyle(part(themed, 'line')).borderTopColor).not.toBe(getComputedStyle(part(plain, 'line')).borderTopColor)
 		await expect(getComputedStyle(part(themed, 'content')).color).not.toBe(getComputedStyle(part(plain, 'content')).color)
 		await expect(getComputedStyle(part(themed, 'content')).fontWeight).toBe('700')
-		await expect(getComputedStyle(part(plain, 'content')).fontWeight).toBe('500')
+		await expect(getComputedStyle(part(plain, 'content')).fontWeight).toBe('400')
 		await expect(classed).toHaveClass('base-separator', 'story-themed-separator')
 		await expect(classed.querySelectorAll('.story-themed-line')).toHaveLength(2)
 		await expect(part(classed, 'content')).toHaveClass('story-themed-content')

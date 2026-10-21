@@ -36,7 +36,7 @@ export const Theming: StoryObj<typeof meta> = {
 			description: {
 				story: [
 					'Перекраска без пропов. Токены `--rise-button-group-*` кит только читает: `radius` — скругление крайних кнопок,',
-					'`gap` — расстояние между кнопками (по умолчанию `-1px`: рамки соседей совпадают), `padding`, `bg` и `shadow` — подложка',
+					'`gap` — расстояние между кнопками (по умолчанию `2px`: между кнопками зазор), `padding`, `bg` и `shadow` — подложка',
 					'группы. Задайте их на `:root`, в теме или на контейнере — как здесь; отступ подложки умножается на `--rise-density`.',
 					'Вид самих кнопок — токены `--rise-button-*`. Проп `ui` добавляет классы к корню (`root`); глобально — `defaults.BaseButtonGroup.ui`.',
 				].join('\n'),
@@ -64,7 +64,7 @@ export const Theming: StoryObj<typeof meta> = {
 		if (!isStoryBranded()) await expect(getComputedStyle(themed).paddingTop).toBe('4px')
 		if (!isStoryBranded()) await expect(getComputedStyle(themed.querySelector('.base-button')!).borderStartStartRadius).toBe('9999px')
 		if (!isStoryBranded()) await expect(second(themed).marginInlineStart).toBe('4px')
-		if (!isStoryBranded()) await expect(second(plain).marginInlineStart).toBe('-1px')
+		if (!isStoryBranded()) await expect(second(plain).marginInlineStart).toBe('2px')
 		await expect(classed).toHaveClass('base-button-group', 'story-themed-group')
 	},
 }

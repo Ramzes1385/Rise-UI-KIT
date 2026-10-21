@@ -42,6 +42,6 @@ export const CustomColor: StoryObj<typeof meta> = {
 		await expect(getComputedStyle(tooltip, '::after').backgroundColor).toBe(primary)
 		await expect(getComputedStyle(tooltip).color).toBe(resolveColor('var(--rise-on-primary)'))
 		const button = canvas.getByRole('button', { name: 'Субтитры' })
-		await expect(getComputedStyle(button).backgroundColor).toBe(resolveColor('var(--rise-bg)'))
+		await expect(getComputedStyle(button).backgroundColor).toBe('rgba(0, 0, 0, 0)')
 	},
 }

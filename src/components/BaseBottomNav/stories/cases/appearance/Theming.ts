@@ -9,7 +9,7 @@ const ui = { root: 'story-themed-bottom-nav', label: 'story-themed-label' }
 const template = `
 	<div class="story-stack story-narrow">
 		<BaseBottomNav v-bind="args" aria-label="По умолчанию" />
-		<div style="--rise-bottom-nav-bg: var(--rise-bg-elevated); --rise-bottom-nav-text-active: var(--rise-primary); --rise-bottom-nav-indicator-bg: var(--rise-primary-soft); --rise-bottom-nav-height: 64px; --rise-bottom-nav-font-weight-active: var(--rise-font-weight-bold);">
+		<div style="--rise-bottom-nav-bg: var(--rise-bg-elevated); --rise-bottom-nav-text-active: var(--rise-primary-text); --rise-bottom-nav-indicator-bg: var(--rise-primary-soft); --rise-bottom-nav-height: 64px; --rise-bottom-nav-font-weight-active: var(--rise-font-weight-bold);">
 			<BaseBottomNav v-bind="args" aria-label="Токены на контейнере" />
 		</div>
 		<BaseBottomNav v-bind="args" aria-label="Классы через ui" :ui="ui" />

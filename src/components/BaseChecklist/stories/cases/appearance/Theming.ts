@@ -10,7 +10,7 @@ const models = { completed: 'completed' }
 const template = `
 	<div class="story-grid" style="--story-grid-min: 300px;">
 		<BaseChecklist v-bind="args" v-model:completed="completed" title="По умолчанию" />
-		<div style="--rise-checklist-bg: var(--rise-bg-muted); --rise-checklist-border: var(--rise-primary); --rise-checklist-radius: var(--rise-radius-xl); --rise-checklist-padding-x: 24px; --rise-checklist-padding-y: 24px; --rise-checklist-item-bg-active: var(--rise-bg); --rise-checklist-title-font-weight: var(--rise-font-weight-bold); --rise-checklist-label-text-checked: var(--rise-success-text);">
+		<div style="--rise-checklist-bg: var(--rise-bg-elevated); --rise-checklist-border: var(--rise-primary); --rise-checklist-radius: var(--rise-radius-xl); --rise-checklist-padding-x: 24px; --rise-checklist-padding-y: 24px; --rise-checklist-item-bg-active: var(--rise-bg); --rise-checklist-title-font-weight: var(--rise-font-weight-bold); --rise-checklist-label-text-checked: var(--rise-success-text);">
 			<BaseChecklist v-bind="args" v-model:completed="completed" title="Токены на контейнере" />
 		</div>
 		<BaseChecklist v-bind="args" v-model:completed="completed" title="Классы через ui" :ui="ui" />

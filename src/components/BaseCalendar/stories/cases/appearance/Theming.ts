@@ -13,7 +13,7 @@ const template = `
 			<span class="story-label">По умолчанию</span>
 			<BaseCalendar v-bind="args" v-model="date" />
 		</div>
-		<div class="story-col" style="--rise-card-bg: var(--rise-bg-muted); --rise-card-border: var(--rise-primary); --rise-card-radius: 16px; --rise-calendar-padding: 16px; --rise-calendar-header-text: var(--rise-primary-text); --rise-calendar-header-font-weight: var(--rise-font-weight-bold); --rise-calendar-day-radius: var(--rise-radius-md); --rise-calendar-day-height: 36px; --rise-calendar-day-bg-hover: var(--rise-primary-soft); --rise-calendar-day-bg-selected: var(--rise-success); --rise-calendar-day-text-selected: var(--rise-on-success); --rise-calendar-day-ring: var(--rise-primary);">
+		<div class="story-col" style="--rise-card-bg: var(--rise-bg-elevated); --rise-card-border: var(--rise-primary); --rise-card-radius: 16px; --rise-calendar-padding: 16px; --rise-calendar-header-text: var(--rise-primary-text); --rise-calendar-header-font-weight: var(--rise-font-weight-bold); --rise-calendar-day-radius: var(--rise-radius-md); --rise-calendar-day-height: 36px; --rise-calendar-day-bg-hover: var(--rise-primary-soft); --rise-calendar-day-bg-selected: var(--rise-success); --rise-calendar-day-text-selected: var(--rise-on-success); --rise-calendar-day-ring: var(--rise-primary);">
 			<span class="story-label">Токены на контейнере</span>
 			<BaseCalendar v-bind="args" v-model="date" />
 		</div>

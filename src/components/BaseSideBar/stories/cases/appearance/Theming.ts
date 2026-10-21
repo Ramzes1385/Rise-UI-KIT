@@ -10,7 +10,7 @@ const ui = { root: 'story-themed-side-bar', title: 'story-themed-title' }
 const template = `
 	<div class="story-row" style="align-items: stretch;">
 		<BaseSideBar v-bind="args" title="По умолчанию" style="height: 420px;" />
-		<div style="display: flex; height: 420px; --rise-side-bar-bg: var(--rise-bg-muted); --rise-side-bar-border: var(--rise-primary); --rise-side-bar-item-radius: var(--rise-radius-full); --rise-side-bar-item-bg-selected: var(--rise-primary); --rise-side-bar-item-text-selected: var(--rise-on-primary);">
+		<div style="display: flex; height: 420px; --rise-side-bar-bg: var(--rise-bg-elevated); --rise-side-bar-border: var(--rise-primary); --rise-side-bar-item-radius: var(--rise-radius-full); --rise-side-bar-item-bg-selected: var(--rise-primary); --rise-side-bar-item-text-selected: var(--rise-on-primary);">
 			<BaseSideBar v-bind="args" title="Токены на контейнере" />
 		</div>
 		<BaseSideBar v-bind="args" title="Классы через ui" :ui="ui" style="height: 420px;" />
@@ -62,7 +62,7 @@ export const Theming: StoryObj<typeof meta> = {
 		await expect(getComputedStyle(current(themed)).color).not.toBe(getComputedStyle(current(plain)).color)
 		if (!isStoryBranded()) {
 			await expect(getComputedStyle(current(themed)).borderTopLeftRadius).toBe('9999px')
-			await expect(getComputedStyle(current(plain)).borderTopLeftRadius).toBe('6px')
+			await expect(getComputedStyle(current(plain)).borderTopLeftRadius).toBe('4px')
 		}
 		await expect(classed).toHaveClass('base-side-bar', 'story-themed-side-bar')
 		await expect(canvas.getByText('Классы через ui')).toHaveClass('base-side-bar__title', 'story-themed-title')

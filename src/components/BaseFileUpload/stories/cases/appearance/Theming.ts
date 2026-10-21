@@ -9,7 +9,7 @@ const ui = { root: 'story-themed-upload', dropzone: 'story-themed-dropzone' }
 const template = `
 	<div class="story-stack">
 		<BaseFileUpload v-bind="args" label="По умолчанию" />
-		<div style="--rise-file-upload-dropzone-bg: var(--rise-bg-muted); --rise-file-upload-dropzone-border: var(--rise-primary); --rise-file-upload-dropzone-radius: var(--rise-radius-2xl); --rise-file-upload-dropzone-padding-y: 32px; --rise-file-upload-item-radius: var(--rise-radius-lg);">
+		<div style="--rise-file-upload-dropzone-bg: var(--rise-bg-elevated); --rise-file-upload-dropzone-border: var(--rise-primary); --rise-file-upload-dropzone-radius: var(--rise-radius-2xl); --rise-file-upload-dropzone-padding-y: 32px; --rise-file-upload-item-radius: var(--rise-radius-lg);">
 			<BaseFileUpload v-bind="args" label="Токены на контейнере" />
 		</div>
 		<BaseFileUpload v-bind="args" label="Классы через ui" :ui="ui" />

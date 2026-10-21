@@ -9,7 +9,7 @@ const ui = { root: 'story-themed-empty', title: 'story-themed-title', 'icon-wrap
 const template = `
 	<div class="story-grid" style="--story-grid-min: 240px; align-items: start;">
 		<BaseEmpty v-bind="args" title="По умолчанию" />
-		<div style="--rise-empty-bg: var(--rise-bg-muted); --rise-empty-border: var(--rise-primary); --rise-empty-radius: var(--rise-radius-xl); --rise-empty-padding-y: 24px; --rise-empty-gap: 8px; --rise-empty-icon-text: var(--rise-primary); --rise-empty-icon-size: 40px; --rise-empty-title-font-size: var(--rise-font-size-lg); --rise-empty-description-font-size: var(--rise-font-size-xs);">
+		<div style="--rise-empty-bg: var(--rise-bg-elevated); --rise-empty-border: var(--rise-primary); --rise-empty-radius: var(--rise-radius-xl); --rise-empty-padding-y: 24px; --rise-empty-gap: 8px; --rise-empty-icon-text: var(--rise-primary); --rise-empty-icon-size: 40px; --rise-empty-title-font-size: var(--rise-font-size-lg); --rise-empty-description-font-size: var(--rise-font-size-xs);">
 			<BaseEmpty v-bind="args" title="Токены на контейнере" />
 		</div>
 		<BaseEmpty v-bind="args" title="Классы через ui" :ui="ui" />

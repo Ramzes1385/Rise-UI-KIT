@@ -16,7 +16,7 @@ const template = `
 		<span class="story-label">По умолчанию</span>
 		<BaseTable v-bind="args" :columns="columns" :rows="rows" />
 		<span class="story-label">Токены на контейнере</span>
-		<div style="--rise-table-bg: var(--rise-bg-muted); --rise-table-border: var(--rise-primary); --rise-table-radius: var(--rise-radius-2xl); --rise-table-header-bg: var(--rise-primary); --rise-table-header-text: var(--rise-on-primary); --rise-table-header-font-weight: var(--rise-font-weight-bold); --rise-table-row-bg-selected: var(--rise-success-soft); --rise-table-cell-padding-x: 20px; --rise-table-cell-padding-y: 8px;">
+		<div style="--rise-table-bg: var(--rise-bg-elevated); --rise-table-border: var(--rise-primary); --rise-table-radius: var(--rise-radius-2xl); --rise-table-header-bg: var(--rise-primary); --rise-table-header-text: var(--rise-on-primary); --rise-table-header-font-weight: var(--rise-font-weight-bold); --rise-table-row-bg-selected: var(--rise-success-soft); --rise-table-cell-padding-x: 20px; --rise-table-cell-padding-y: 8px;">
 			<BaseTable v-bind="args" :columns="columns" :rows="rows" />
 		</div>
 		<span class="story-label">Классы через ui</span>
@@ -72,7 +72,7 @@ export const Theming: StoryObj<typeof meta> = {
 				style(plain, '.base-table__body').borderTopLeftRadius,
 			)
 		if (!isStoryBranded()) {
-			await expect(style(plain, '.base-table__td').paddingTop).toBe('12px')
+			await expect(style(plain, '.base-table__td').paddingTop).toBe('13.5px')
 			await expect(style(themed, '.base-table__td').paddingTop).toBe('8px')
 			await expect(style(plain, '.base-table__th').paddingInlineStart).toBe('16px')
 			await expect(style(themed, '.base-table__th').paddingInlineStart).toBe('20px')

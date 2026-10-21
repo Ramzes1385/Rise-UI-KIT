@@ -11,7 +11,7 @@ const ui = { root: 'story-themed-markdown', link: 'story-themed-link' }
 const template = `
 	<div style="display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr))">
 		<BaseMarkdown v-bind="args" :source="source" />
-		<div style="--rise-markdown-link-text: var(--rise-success); --rise-markdown-heading-text: var(--rise-primary); --rise-markdown-code-bg: var(--rise-bg-accented); --rise-markdown-quote-border: var(--rise-warning); --rise-markdown-radius: var(--rise-radius-xl); --rise-markdown-padding-x: 24px;">
+		<div style="--rise-markdown-link-text: var(--rise-success); --rise-markdown-heading-text: var(--rise-primary-text); --rise-markdown-code-bg: var(--rise-bg-accented); --rise-markdown-quote-border: var(--rise-warning); --rise-markdown-radius: var(--rise-radius-xl); --rise-markdown-padding-x: 24px;">
 			<BaseMarkdown v-bind="args" :source="source" />
 		</div>
 		<BaseMarkdown v-bind="args" :source="source" :ui="ui" />
@@ -53,7 +53,7 @@ export const Theming: StoryObj<typeof meta> = {
 		await expect(part(themed, 'link').color).not.toBe(part(plain, 'link').color)
 		await expect(part(themed, 'heading').color).not.toBe(part(plain, 'heading').color)
 		await expect(part(themed, 'code').backgroundColor).not.toBe(part(plain, 'code').backgroundColor)
-		await expect(part(themed, 'quote').borderInlineStartColor).not.toBe(part(plain, 'quote').borderInlineStartColor)
+		await expect(part(themed, 'quote').boxShadow).not.toBe(part(plain, 'quote').boxShadow)
 		if (!isStoryBranded()) await expect(getComputedStyle(themed).borderStartStartRadius).toBe('12px')
 		if (!isStoryBranded()) await expect(getComputedStyle(themed).paddingInlineStart).toBe('24px')
 		if (!isStoryBranded()) await expect(getComputedStyle(plain).paddingInlineStart).toBe('16px')

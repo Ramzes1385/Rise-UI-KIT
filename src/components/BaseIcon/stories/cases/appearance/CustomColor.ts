@@ -18,7 +18,7 @@ const template = `
 			<BaseIcon v-bind="args" :name="sample.name" :color="'var(' + sample.token + ')'" />
 			<span class="story-label">{{ sample.token }}</span>
 		</div>
-		<div class="story-row" style="gap: 6px; color: var(--rise-primary);">
+		<div class="story-row" style="gap: 6px; color: var(--rise-primary-text);">
 			<BaseIcon v-bind="args" name="star" />
 			<span>Без color — цвет текста вокруг</span>
 		</div>

@@ -10,7 +10,7 @@ const ui = { root: 'story-themed-json', toolbar: 'story-themed-toolbar', key: 's
 const template = `
 	<div class="story-grid" style="--story-grid-min: 280px; align-items: start;">
 		<BaseJsonViewer v-bind="args" label="По умолчанию" />
-		<div style="--rise-json-viewer-bg: var(--rise-bg-muted); --rise-json-viewer-border: var(--rise-primary); --rise-json-viewer-radius: var(--rise-radius-xl); --rise-json-viewer-toolbar-bg: var(--rise-primary-soft); --rise-json-viewer-toolbar-gap: 8px; --rise-json-viewer-padding-x: 12px; --rise-json-viewer-padding-y: 12px; --rise-json-viewer-key-text: var(--rise-primary-text);">
+		<div style="--rise-json-viewer-bg: var(--rise-bg-elevated); --rise-json-viewer-border: var(--rise-primary); --rise-json-viewer-radius: var(--rise-radius-xl); --rise-json-viewer-toolbar-bg: var(--rise-primary-soft); --rise-json-viewer-toolbar-gap: 8px; --rise-json-viewer-padding-x: 12px; --rise-json-viewer-padding-y: 12px; --rise-json-viewer-key-text: var(--rise-primary-text);">
 			<BaseJsonViewer v-bind="args" label="Токены на контейнере" />
 		</div>
 		<BaseJsonViewer v-bind="args" label="Классы через ui" :ui="ui" />
@@ -51,7 +51,7 @@ export const Theming: StoryObj<typeof meta> = {
 		await expect(part(themed, 'key').color).not.toBe(part(plain, 'key').color)
 		if (!isStoryBranded()) {
 			await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('12px')
-			await expect(part(plain, 'tree').paddingTop).toBe('4px')
+			await expect(part(plain, 'tree').paddingTop).toBe('0px')
 			await expect(part(themed, 'tree').paddingTop).toBe('12px')
 		}
 		await expect(classed).toHaveClass('base-json-viewer', 'story-themed-json')

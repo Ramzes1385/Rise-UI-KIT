@@ -9,7 +9,7 @@ const ui = { root: 'story-themed-card', body: 'story-themed-body' }
 const template = `
 	<div class="story-grid" style="--story-grid-min: 220px; align-items: start;">
 		<BaseCard v-bind="args" title="По умолчанию">Тело карточки</BaseCard>
-		<div style="--rise-card-bg: var(--rise-bg-muted); --rise-card-radius: var(--rise-radius-2xl); --rise-card-padding-y: 24px; --rise-card-header-bg: var(--rise-primary-soft);">
+		<div style="--rise-card-bg: var(--rise-bg-elevated); --rise-card-radius: var(--rise-radius-2xl); --rise-card-padding-y: 24px; --rise-card-header-bg: var(--rise-primary-soft);">
 			<BaseCard v-bind="args" title="Токены на контейнере">Тело карточки</BaseCard>
 		</div>
 		<div style="--rise-density: 0.75;">

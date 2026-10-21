@@ -15,7 +15,7 @@ const template = `
 			<span class="story-label">По умолчанию</span>
 			<BaseAccordion v-bind="args" />
 		</div>
-		<div class="story-col" style="--rise-accordion-header-text: var(--rise-primary); --rise-accordion-border: var(--rise-primary); --rise-accordion-header-padding-y: 20px; --rise-accordion-header-font-weight: var(--rise-font-weight-bold); --rise-accordion-content-text: var(--rise-text);">
+		<div class="story-col" style="--rise-accordion-header-text: var(--rise-primary-text); --rise-accordion-border: var(--rise-primary); --rise-accordion-header-padding-y: 20px; --rise-accordion-header-font-weight: var(--rise-font-weight-bold); --rise-accordion-content-text: var(--rise-text);">
 			<span class="story-label">Токены на контейнере</span>
 			<BaseAccordion v-bind="args" :items="themedItems" />
 		</div>

@@ -11,7 +11,7 @@ const template = `
 		<span class="story-label">По умолчанию</span>
 		<BaseFilterBuilder v-bind="args" />
 		<span class="story-label">Токены на контейнере</span>
-		<div style="--rise-filter-builder-bg: var(--rise-bg-muted); --rise-filter-builder-border: var(--rise-primary); --rise-filter-builder-radius: var(--rise-radius-xl); --rise-filter-builder-padding-x: 20px; --rise-filter-builder-padding-y: 16px; --rise-filter-builder-joiner-text: var(--rise-primary-text); --rise-filter-builder-field-radius: 999px; --rise-filter-builder-field-border: var(--rise-primary);">
+		<div style="--rise-filter-builder-bg: var(--rise-bg-elevated); --rise-filter-builder-border: var(--rise-primary); --rise-filter-builder-radius: var(--rise-radius-xl); --rise-filter-builder-padding-x: 20px; --rise-filter-builder-padding-y: 16px; --rise-filter-builder-joiner-text: var(--rise-primary-text); --rise-filter-builder-field-radius: 999px; --rise-filter-builder-field-border: var(--rise-primary);">
 			<BaseFilterBuilder v-bind="args" />
 		</div>
 		<span class="story-label">Классы через ui</span>

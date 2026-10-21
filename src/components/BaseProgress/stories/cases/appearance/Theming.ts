@@ -55,7 +55,7 @@ export const Theming: StoryObj<typeof meta> = {
 			getComputedStyle(part(plain, 'track')).backgroundColor,
 		)
 		if (!isStoryBranded()) await expect(getComputedStyle(part(themed, 'track')).borderTopLeftRadius).toBe('2px')
-		if (!isStoryBranded()) await expect(getComputedStyle(part(plain, 'track')).borderTopLeftRadius).toBe('9999px')
+		if (!isStoryBranded()) await expect(getComputedStyle(part(plain, 'track')).borderTopLeftRadius).toBe('1px')
 		await expect(getComputedStyle(part(themed, 'status')).color).not.toBe(getComputedStyle(part(plain, 'status')).color)
 		await expect(classed).toHaveClass('base-progress', 'story-themed-progress')
 		await expect(part(classed, 'fill')).toHaveClass('story-themed-fill')

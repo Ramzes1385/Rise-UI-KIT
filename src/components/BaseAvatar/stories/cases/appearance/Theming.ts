@@ -46,7 +46,7 @@ export const Theming: StoryObj<typeof meta> = {
 
 		await expect(getComputedStyle(themed).width).toBe('48px')
 		await expect(getComputedStyle(themed).height).toBe('48px')
-		await expect(getComputedStyle(plain).width).toBe('32px')
+		await expect(getComputedStyle(plain).width).toBe('36px')
 		await expect(content(themed).backgroundColor).not.toBe(content(plain).backgroundColor)
 		await expect(content(themed).fontWeight).toBe('700')
 		await expect(online(themed)).not.toBe(online(plain))

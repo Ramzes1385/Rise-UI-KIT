@@ -14,7 +14,7 @@ const template = `
 		<BaseFormField v-bind="args" label="По умолчанию">
 			<BaseInput v-model="plain" />
 		</BaseFormField>
-		<div style="--rise-form-field-gap: 12px; --rise-form-field-label-text: var(--rise-primary); --rise-form-field-label-font-weight: var(--rise-font-weight-semibold); --rise-form-field-description-text: var(--rise-text-toned);">
+		<div style="--rise-form-field-gap: 12px; --rise-form-field-label-text: var(--rise-primary-text); --rise-form-field-label-font-weight: var(--rise-font-weight-semibold); --rise-form-field-description-text: var(--rise-text-toned);">
 			<BaseFormField v-bind="args" label="Токены на контейнере">
 				<BaseInput v-model="themed" />
 			</BaseFormField>

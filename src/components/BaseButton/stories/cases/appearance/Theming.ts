@@ -9,7 +9,7 @@ const ui = { root: 'story-themed-button', label: 'story-themed-label' }
 const template = `
 	<div class="story-row">
 		<BaseButton v-bind="args">По умолчанию</BaseButton>
-		<div style="--rise-button-bg: var(--rise-success); --rise-button-bg-hover: var(--rise-success-hover); --rise-button-radius: var(--rise-radius-full); --rise-button-font-weight: var(--rise-font-weight-bold);">
+		<div style="--rise-button-bg: var(--rise-success); --rise-button-bg-hover: var(--rise-success-hover); --rise-button-text: var(--rise-on-success); --rise-button-radius: var(--rise-radius-full); --rise-button-font-weight: var(--rise-font-weight-bold);">
 			<BaseButton v-bind="args">Токены на контейнере</BaseButton>
 		</div>
 		<BaseButton v-bind="args" :ui="ui">Классы через ui</BaseButton>

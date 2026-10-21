@@ -9,7 +9,7 @@ const ui = { root: 'story-themed-signature', surface: 'story-themed-surface' }
 const template = `
 	<div class="story-stack">
 		<BaseSignaturePad v-bind="args" label="По умолчанию" />
-		<div style="--rise-signature-pad-surface-radius: var(--rise-radius-2xl); --rise-signature-pad-surface-bg: var(--rise-bg-elevated); --rise-signature-pad-surface-border: var(--rise-primary); --rise-signature-pad-text: var(--rise-primary);">
+		<div style="--rise-signature-pad-surface-radius: var(--rise-radius-2xl); --rise-signature-pad-surface-bg: var(--rise-primary-soft); --rise-signature-pad-surface-border: var(--rise-primary); --rise-signature-pad-text: var(--rise-primary-text);">
 			<BaseSignaturePad v-bind="args" label="Токены на контейнере" />
 		</div>
 		<BaseSignaturePad v-bind="args" label="Классы через ui" :ui="ui" />

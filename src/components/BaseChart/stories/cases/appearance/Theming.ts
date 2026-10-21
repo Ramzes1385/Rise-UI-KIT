@@ -10,7 +10,7 @@ const ui = { root: 'story-themed-chart', tooltip: 'story-themed-tooltip', legend
 const template = `
 	<div class="story-stack">
 		<BaseChart v-bind="args" label="По умолчанию" />
-		<div style="--rise-chart-axis-text: var(--rise-primary); --rise-chart-axis-font-size: var(--rise-font-size-sm); --rise-chart-grid-border: var(--rise-primary-soft); --rise-chart-tooltip-bg: var(--rise-bg-elevated); --rise-chart-tooltip-text: var(--rise-primary); --rise-chart-tooltip-border: var(--rise-primary); --rise-chart-tooltip-radius: var(--rise-radius-lg); --rise-chart-tooltip-shadow: var(--rise-shadow-lg); --rise-chart-tooltip-padding-x: 16px; --rise-chart-tooltip-padding-y: 10px; --rise-chart-legend-gap: 8px 24px; --rise-chart-legend-text: var(--rise-primary);">
+		<div style="--rise-chart-axis-text: var(--rise-primary-text); --rise-chart-axis-font-size: var(--rise-font-size-sm); --rise-chart-grid-border: var(--rise-primary-soft); --rise-chart-tooltip-bg: var(--rise-bg-elevated); --rise-chart-tooltip-text: var(--rise-primary-text); --rise-chart-tooltip-border: var(--rise-primary); --rise-chart-tooltip-radius: var(--rise-radius-lg); --rise-chart-tooltip-shadow: var(--rise-shadow-lg); --rise-chart-tooltip-padding-x: 16px; --rise-chart-tooltip-padding-y: 10px; --rise-chart-legend-gap: 8px 24px; --rise-chart-legend-text: var(--rise-primary-text);">
 			<BaseChart v-bind="args" label="Токены на контейнере" />
 		</div>
 		<BaseChart v-bind="args" label="Классы через ui" :ui="ui" />

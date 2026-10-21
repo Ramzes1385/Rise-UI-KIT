@@ -10,7 +10,7 @@ const ui = { root: 'story-themed-diff', summary: 'story-themed-summary', word: '
 const template = `
 	<div class="story-grid" style="--story-grid-min: 280px; align-items: start;">
 		<BaseTextDiff v-bind="args" label="По умолчанию" />
-		<div style="--rise-text-diff-bg: var(--rise-bg-muted); --rise-text-diff-border: var(--rise-primary); --rise-text-diff-radius: var(--rise-radius-xl); --rise-text-diff-summary-bg: var(--rise-primary-soft); --rise-text-diff-summary-padding-x: 16px; --rise-text-diff-summary-padding-y: 10px; --rise-text-diff-font-size: var(--rise-font-size-sm); --rise-text-diff-added-bg: var(--rise-info-soft); --rise-text-diff-removed-bg: var(--rise-warning-soft);">
+		<div style="--rise-text-diff-bg: var(--rise-bg-elevated); --rise-text-diff-border: var(--rise-primary); --rise-text-diff-radius: var(--rise-radius-xl); --rise-text-diff-summary-bg: var(--rise-primary-soft); --rise-text-diff-summary-padding-x: 16px; --rise-text-diff-summary-padding-y: 10px; --rise-text-diff-font-size: var(--rise-font-size-sm); --rise-text-diff-added-bg: var(--rise-info-soft); --rise-text-diff-removed-bg: var(--rise-warning-soft);">
 			<BaseTextDiff v-bind="args" label="Токены на контейнере" />
 		</div>
 		<BaseTextDiff v-bind="args" label="Классы через ui" :ui="ui" />

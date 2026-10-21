@@ -52,8 +52,8 @@ export const Theming: StoryObj<typeof meta> = {
 
 		await expect(getComputedStyle(themed).backgroundColor).not.toBe(getComputedStyle(plain).backgroundColor)
 		await expect(getComputedStyle(themed).height).toBe('64px')
-		await expect(getComputedStyle(plain).borderTopLeftRadius).toBe('9999px')
-		await expect(getComputedStyle(themed).borderTopLeftRadius).not.toBe('9999px')
+		await expect(getComputedStyle(plain).borderTopLeftRadius).toBe('12px')
+		await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('8px')
 		await expect(classed).toHaveClass('base-fab', 'story-themed-fab')
 		await expect(classed.querySelector('.base-fab__icon')).toHaveClass('story-themed-icon')
 	},

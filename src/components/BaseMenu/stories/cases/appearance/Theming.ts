@@ -14,7 +14,7 @@ const template = `
 			<span class="story-label">По умолчанию</span>
 			<BaseMenu v-bind="args" :items="items" />
 		</div>
-		<div class="story-col" style="--rise-menu-bg: var(--rise-bg-muted); --rise-menu-radius: var(--rise-radius-xl); --rise-menu-padding: 8px; --rise-menu-item-text: var(--rise-primary); --rise-menu-item-bg-hover: var(--rise-bg-accented);">
+		<div class="story-col" style="--rise-menu-bg: var(--rise-bg-muted); --rise-menu-radius: var(--rise-radius-xl); --rise-menu-padding: 8px; --rise-menu-item-text: var(--rise-primary-text); --rise-menu-item-bg-hover: var(--rise-bg-accented);">
 			<span class="story-label">Токены на контейнере</span>
 			<BaseMenu v-bind="args" :items="items" />
 		</div>

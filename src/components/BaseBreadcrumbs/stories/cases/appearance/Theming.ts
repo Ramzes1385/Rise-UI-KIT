@@ -9,7 +9,7 @@ const ui = { root: 'story-themed-breadcrumbs', link: 'story-themed-link', sep: '
 const template = `
 	<div class="story-stack">
 		<BaseBreadcrumbs v-bind="args" aria-label="По умолчанию" />
-		<div style="--rise-breadcrumbs-text: var(--rise-primary-text); --rise-breadcrumbs-current-text: var(--rise-primary); --rise-breadcrumbs-gap: 10px; --rise-breadcrumbs-font-weight: var(--rise-font-weight-bold);">
+		<div style="--rise-breadcrumbs-text: var(--rise-primary-text); --rise-breadcrumbs-current-text: var(--rise-primary-text); --rise-breadcrumbs-gap: 10px; --rise-breadcrumbs-font-weight: var(--rise-font-weight-bold);">
 			<BaseBreadcrumbs v-bind="args" aria-label="Токены на контейнере" />
 		</div>
 		<BaseBreadcrumbs v-bind="args" aria-label="Классы через ui" :ui="ui" />

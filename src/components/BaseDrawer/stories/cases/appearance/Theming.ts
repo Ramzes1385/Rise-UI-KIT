@@ -24,7 +24,7 @@ const template = `
 				<div id="drawer-theming-plain" />
 			</BaseApp>
 		</div>
-		<div class="story-frame story-medium" style="height: 280px; overflow: hidden; transform: translateZ(0); --rise-drawer-panel-bg: var(--rise-primary-soft); --rise-drawer-panel-text: var(--rise-primary-text); --rise-drawer-panel-radius: var(--rise-radius-xl); --rise-drawer-panel-padding-x: 28px; --rise-drawer-title-font-size: var(--rise-font-size-lg); --rise-drawer-handle-bg: var(--rise-primary);">
+		<div class="story-frame story-medium" style="height: 280px; overflow: hidden; transform: translateZ(0); --rise-drawer-panel-bg: var(--rise-primary-soft); --rise-drawer-panel-text: var(--rise-primary-text); --rise-drawer-panel-radius: var(--rise-radius-2xl); --rise-drawer-panel-padding-x: 28px; --rise-drawer-title-font-size: var(--rise-font-size-lg); --rise-drawer-handle-bg: var(--rise-primary);">
 			<BaseApp teleport-to="#drawer-theming-tokens" :toaster="{ ariaLabel: 'Уведомления: токены' }">
 				<BaseButton variant="outline" @click="openFrame = 'tokens'">Токены на контейнере</BaseButton>
 				<BaseDrawer v-bind="args" title="Токены на контейнере" :is-open="openFrame === 'tokens'" @update:is-open="openFrame = null">
@@ -89,13 +89,13 @@ export const Theming: StoryObj<typeof meta> = {
 
 		const plain = await open('По умолчанию')
 		const { backgroundColor, borderTopLeftRadius } = getComputedStyle(plain)
-		if (!isStoryBranded()) await expect(borderTopLeftRadius).toBe('16px')
+		if (!isStoryBranded()) await expect(borderTopLeftRadius).toBe('12px')
 		await close(plain)
 
 		const themed = await open('Токены на контейнере')
 		await expect(getComputedStyle(themed).backgroundColor).not.toBe(backgroundColor)
 		if (!isStoryBranded()) await expect(getComputedStyle(themed).borderTopLeftRadius).not.toBe(borderTopLeftRadius)
-		if (!isStoryBranded()) await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('12px')
+		if (!isStoryBranded()) await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('16px')
 		await close(themed)
 
 		const classed = await open('Классы через ui')

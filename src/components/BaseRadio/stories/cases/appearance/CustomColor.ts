@@ -3,7 +3,9 @@ import type meta from '../../BaseRadio.stories'
 import type { StoryObj } from '@storybook/vue3-vite'
 
 export const CustomColor: StoryObj<typeof meta> = {
-	parameters: { docs: { description: { story: 'Кастомный цвет через `color`: `bg` — заливка выбранного круга, `text` — цвет точки.' } } },
+	parameters: {
+		docs: { description: { story: 'Кастомный цвет через `color`: `bg` — цвет кольца выбранного круга, `text` — цвет точки.' } },
+	},
 	args: {
 		label: 'Тариф',
 		name: 'plan',
@@ -18,6 +20,6 @@ export const CustomColor: StoryObj<typeof meta> = {
 	argTypes: { modelValue: { control: 'inline-radio', options: ['basic', 'pro', 'team'] } },
 	play: async ({ canvas }) => {
 		const circle = canvas.getByRole('radio', { name: 'Профессиональный' }).nextElementSibling as HTMLElement
-		await expect(getComputedStyle(circle).backgroundColor).toBe('rgb(15, 118, 110)')
+		await expect(getComputedStyle(circle).borderTopColor).toBe('rgb(15, 118, 110)')
 	},
 }

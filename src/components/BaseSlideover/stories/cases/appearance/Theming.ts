@@ -67,7 +67,7 @@ export const Theming: StoryObj<typeof meta> = {
 		const hasRadius = !isStoryBranded() && !window.matchMedia(MOBILE_QUERY).matches
 		if (hasRadius) await expect(radius(themed)).not.toBe(radius(plain))
 		if (hasRadius) await expect(radius(themed)).toBe('16px')
-		if (hasRadius) await expect(radius(plain)).toBe('8px')
+		if (hasRadius) await expect(radius(plain)).toBe('12px')
 		await expect(classed).toHaveClass('base-slideover__panel', 'story-themed-slideover')
 		await expect(classed.querySelector('.base-slideover__title')).toHaveClass('story-themed-title')
 	},

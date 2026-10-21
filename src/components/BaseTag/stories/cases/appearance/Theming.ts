@@ -9,7 +9,7 @@ const ui = { root: 'story-themed-tag', text: 'story-themed-text' }
 const template = `
 	<div class="story-row">
 		<BaseTag v-bind="args" label="По умолчанию" />
-		<div style="--rise-tag-bg: var(--rise-success-soft); --rise-tag-text: var(--rise-success-text); --rise-tag-border: var(--rise-success-border); --rise-tag-radius: var(--rise-radius-sm); --rise-tag-font-weight: var(--rise-font-weight-bold);">
+		<div style="--rise-tag-bg: var(--rise-success-soft); --rise-tag-text: var(--rise-success-text); --rise-tag-border: var(--rise-success-border); --rise-tag-radius: var(--rise-radius-full); --rise-tag-font-weight: var(--rise-font-weight-bold);">
 			<BaseTag v-bind="args" label="Токены на контейнере" />
 		</div>
 		<BaseTag v-bind="args" label="Классы через ui" :ui="ui" />
@@ -47,8 +47,8 @@ export const Theming: StoryObj<typeof meta> = {
 		const classed = canvas.getByText('Классы через ui').closest('.base-tag')!
 
 		await expect(getComputedStyle(themed).backgroundColor).not.toBe(getComputedStyle(plain).backgroundColor)
-		if (!isStoryBranded()) await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('4px')
-		if (!isStoryBranded()) await expect(getComputedStyle(plain).borderTopLeftRadius).toBe('9999px')
+		if (!isStoryBranded()) await expect(getComputedStyle(themed).borderTopLeftRadius).toBe('9999px')
+		if (!isStoryBranded()) await expect(getComputedStyle(plain).borderTopLeftRadius).toBe('4px')
 		if (!isStoryBranded()) await expect(getComputedStyle(themed).fontWeight).toBe('700')
 		if (!isStoryBranded()) await expect(getComputedStyle(plain).fontWeight).toBe('500')
 		await expect(classed).toHaveClass('base-tag', 'story-themed-tag')
