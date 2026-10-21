@@ -31,6 +31,9 @@
 		border-radius: sz(ct(editor, radius, var(--rise-control-radius)));
 		box-shadow: ct(editor, shadow, none);
 		color: ct(editor, text, var(--rise-text));
+
+		--editor-custom-bg: var(--custom-bg, transparent);
+		--custom-bg: initial;
 	}
 
 	&__toolbar {
@@ -96,7 +99,7 @@
 		overflow-y: auto;
 		overflow-wrap: anywhere;
 		outline: none;
-		@include custom-bg(background-color, transparent);
+		background-color: var(--editor-custom-bg, transparent);
 		@include text-size(sm);
 		@include custom-text(color, var(--rise-text));
 		@include scrollbar-thin;
@@ -254,6 +257,7 @@
 
 	&__code.base-textarea {
 		@include inherit-custom-color;
+		--custom-bg: var(--editor-custom-bg, transparent);
 		flex: 1;
 		min-width: 0;
 	}
