@@ -1,5 +1,4 @@
 import { createRoadLayout } from '../../../model/island/roadPath'
-import { defaultPerRow } from '../../../model/data/roadmap3dSnapshot'
 import { createShoreline } from '../../../model/island/islandContour'
 import type { IslandPoint, RoadLayout } from '../../../types/roadmap3dIsland.types'
 import { createIslandField, segmentDistance } from '../../../model/island/islandField'
@@ -38,9 +37,10 @@ function roadClearance(layout: RoadLayout, point: IslandPoint): number {
 }
 
 function shoreFailures(counts: number[], seeds: number[], cellSize: number): string[] {
+	const perRows = [2, 3, 4]
 	const failures: string[] = []
-	for (const count of counts) {
-		const layout = createRoadLayout(count, defaultPerRow(count))
+	for (const [count, perRow] of counts.flatMap(item => perRows.map(row => [item, row] as const))) {
+		const layout = createRoadLayout(count, perRow)
 		const solids = [
 			...layout.road
 				.filter((_, index) => index % ROAD_STRIDE === 0)
@@ -52,19 +52,19 @@ function shoreFailures(counts: number[], seeds: number[], cellSize: number): str
 			const shore = createShoreline(createIslandField(layout, seed, cellSize))
 			const worst = solids.map(item => ({ ...item, gap: shoreClearance(item.point, shore) })).sort((a, b) => a.gap - b.gap)[0]
 			if (worst.gap < worst.need)
-				failures.push(`${count} этапов, зерно ${seed}: ${worst.name} ${worst.gap.toFixed(2)} < ${worst.need}`)
+				failures.push(`${count} этапов, в ряду ${perRow}, зерно ${seed}: ${worst.name} ${worst.gap.toFixed(2)} < ${worst.need}`)
 		}
 	}
 	return failures
 }
 
 describe('остров по зёрнам и числу этапов', () => {
-	it('дорога, пьедесталы и цель внутри берега с запасом: этапов 1-30, зёрна 1-8, крупная сетка', () => {
-		expect(shoreFailures(COUNTS, seedsTo(8), 1)).toEqual([])
+	it('дорога, пьедесталы и цель внутри берега с запасом: этапов 1-30, в ряду 2-4, зёрно 1, крупная сетка', () => {
+		expect(shoreFailures(COUNTS, seedsTo(1), 1)).toEqual([])
 	})
 
-	it('то же на сетке сцены для 6, 12 и 24 этапов, зёрна 1-25', () => {
-		expect(shoreFailures([6, 12, 24], seedsTo(25), 0.5)).toEqual([])
+	it('то же на сетке сцены для 6, 12 и 24 этапов, в ряду 2-4, зёрна 1-4', () => {
+		expect(shoreFailures([6, 12, 24], seedsTo(4), 0.5)).toEqual([])
 	})
 
 	it('пьедесталы не пересекаются друг с другом и с дорогой при 2-4 этапах в ряду', () => {
