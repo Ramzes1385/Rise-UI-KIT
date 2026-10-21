@@ -36,7 +36,7 @@ function topicInfo(entry: NonNullable<ReturnType<typeof flattenTopics>[number]>,
 export function useRoadmap3DPanel(options: Roadmap3DPanelOptions) {
 	const { model, snapshot, focus } = options
 	const view = computed(() => model.stageViews.value.find(item => item.stage.id === focus.focused.value) ?? null)
-	const item = computed(() => snapshot.value.stages.find(stage => stage.id === focus.focused.value) ?? null)
+	const item = computed(() => snapshot.value.stages.find(stage => stage.id === focus.focused.value))
 	const selected = computed(() => {
 		const id = model.selectedId.value
 		return id === null ? undefined : flattenTopics(model.stageViews.value).find(entry => entry.view.topic.id === id)

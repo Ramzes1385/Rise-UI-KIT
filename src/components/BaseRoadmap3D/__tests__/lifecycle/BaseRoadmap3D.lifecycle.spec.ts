@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { waitFor } from '@testing-library/vue'
 import { BufferGeometry, Material } from 'three'
-import { DATA_ROADMAP_3D, createFakeRenderer, useRoadmap3DEnvironment } from '../fixtures/roadmap3d.test-utils'
+import { DATA_ROADMAP_3D, createFakeRenderer, stubReducedMotion, useRoadmap3DEnvironment } from '../fixtures/roadmap3d.test-utils'
 
 const env = useRoadmap3DEnvironment()
 
@@ -38,6 +38,26 @@ describe('BaseRoadmap3D: жизненный цикл', () => {
 		await waitFor(() => expect(events.fallback?.[0]).toEqual(['error']))
 		await rerender({ data: { ...DATA_ROADMAP_3D, title: 'Другой' } })
 		await waitFor(() => expect(renderer.setPixelRatio).toHaveBeenCalled())
+	})
+
+	it('при «уменьшить движение» кадры сцены останавливаются при размонтировании без ошибок', async () => {
+		stubReducedMotion(true)
+		const { unmount } = await env.renderRoadmap()
+		env.flush(2)
+		expect(() => unmount()).not.toThrow()
+	})
+
+	it('смена темы без построенной сцены (рендерер не создался) ничего не перекрашивает и не падает', async () => {
+		const rendererFactory = vi.fn(() => {
+			throw new Error('нет контекста')
+		})
+		const { events } = await env.renderRoadmap({ rendererFactory })
+		await waitFor(() => expect(events.fallback?.[0]).toEqual(['error']))
+		document.documentElement.setAttribute('data-theme', 'dark')
+		await Promise.resolve()
+		await new Promise(resolve => setTimeout(resolve, 0))
+		document.documentElement.removeAttribute('data-theme')
+		expect(events.fallback?.[0]).toEqual(['error'])
 	})
 
 	it('потеря контекста WebGL без восстановления — запасной 2D-вид', async () => {

@@ -18,7 +18,7 @@ function reducedAnimate(viewport: ReturnType<typeof useScene3DViewport>, isReduc
 		if (!isReducedMotion()) return viewport.animate(tick)
 		tick(0, 0)
 		viewport.invalidate()
-		return () => undefined
+		return viewport.animate(() => false)
 	}
 }
 
