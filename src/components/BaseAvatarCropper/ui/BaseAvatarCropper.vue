@@ -58,19 +58,21 @@
 import '../styles/BaseAvatarCropper.style.scss'
 import { BaseRange } from '@components/BaseRange'
 import { UI_AVATAR_CROPPER } from '@/locales/messages'
+import { kitDefaults } from '@composables/base/useDefaults'
 import { useBaseAvatarCropper } from '../model/useBaseAvatarCropper'
 import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 import type { BaseAvatarCropperEmits, BaseAvatarCropperExpose, BaseAvatarCropperProps } from '../types/BaseAvatarCropper.types'
 
-const props = withDefaults(defineProps<BaseAvatarCropperProps>(), {
-	variant: 'default',
-	crop: undefined,
-	shape: 'square',
-	size: 280,
-	maxZoom: 4,
-	label: undefined,
-	sizeScale: SIZE_SCALE_DEFAULT,
-})
+const props = withDefaults(
+	defineProps<BaseAvatarCropperProps>(),
+	kitDefaults('BaseAvatarCropper', {
+		variant: 'default',
+		shape: 'square',
+		size: 280,
+		maxZoom: 4,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseAvatarCropperEmits>()
 

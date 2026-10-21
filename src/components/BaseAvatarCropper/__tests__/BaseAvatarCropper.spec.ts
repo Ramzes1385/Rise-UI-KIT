@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/vitest'
+import { createUiKitPlugin } from '@/plugin'
 import BaseAvatarCropper from '../ui/BaseAvatarCropper.vue'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import type { AvatarCrop } from '../types/BaseAvatarCropper.types'
@@ -20,6 +21,25 @@ function areaOf(): HTMLElement {
 }
 
 const lastCrop = (emitted: Record<string, unknown[][]>) => emitted['update:crop']?.at(-1)?.[0] as AvatarCrop | undefined
+
+describe('BaseAvatarCropper: умолчание формы', () => {
+	it('defaults.BaseAvatarCropper.shape из плагина меняет умолчание на circle', () => {
+		const { container } = render(BaseAvatarCropper, {
+			props: { src: SRC },
+			global: { plugins: [createUiKitPlugin({ defaults: { BaseAvatarCropper: { shape: 'circle' } } })] },
+		})
+		expect(container.firstElementChild).toHaveClass('base-avatar-cropper--circle')
+		expect(container.firstElementChild).not.toHaveClass('base-avatar-cropper--square')
+	})
+
+	it('явный shape экземпляра сильнее defaults плагина', () => {
+		const { container } = render(BaseAvatarCropper, {
+			props: { src: SRC, shape: 'square' },
+			global: { plugins: [createUiKitPlugin({ defaults: { BaseAvatarCropper: { shape: 'circle' } } })] },
+		})
+		expect(container.firstElementChild).toHaveClass('base-avatar-cropper--square')
+	})
+})
 
 describe('BaseAvatarCropper unit', () => {
 	it('до загрузки: фото скрыто, ползунок недоступен, подсказка связана с областью', () => {
