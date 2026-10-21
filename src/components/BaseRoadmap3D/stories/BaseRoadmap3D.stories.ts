@@ -34,4 +34,5 @@ export const Empty = cases.Empty
 export const WithError = cases.WithError
 export const Animations = cases.Animations
 export const LongContent = cases.LongContent
+export const Medium = cases.Medium
 export const Keyboard = cases.Keyboard

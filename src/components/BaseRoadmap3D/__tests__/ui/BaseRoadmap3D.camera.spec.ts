@@ -25,6 +25,42 @@ describe('BaseRoadmap3D: камера', () => {
 		expect(events['update:camera']).toBeUndefined()
 	})
 
+	it.each([12, 24])('замена 6 этапов на %i после монтирования пересчитывает кадр, как при первом показе', async count => {
+		type View = { camera: { zoom: number; position: { x: number; z: number } } }
+		const viewOf = (exposed: { value: { getSceneContext: () => unknown } | null }) => (exposed.value?.getSceneContext() as View).camera
+		const zoomOf = (exposed: { value: { getSceneContext: () => unknown } | null }) => viewOf(exposed).zoom
+		const fresh = await env.renderRoadmap({ data: stagesData(count) })
+		env.flush(3)
+		const expected = zoomOf(fresh.exposed)
+		const place = { ...viewOf(fresh.exposed).position }
+		fresh.unmount()
+		const { exposed, rerender } = await env.renderRoadmap({ data: stagesData(6) })
+		env.flush(3)
+		expect(zoomOf(exposed)).not.toBeCloseTo(expected, 3)
+		await rerender({ data: stagesData(count) })
+		await Promise.resolve()
+		await Promise.resolve()
+		env.flush(3)
+		expect(zoomOf(exposed)).toBeCloseTo(expected, 3)
+		expect(viewOf(exposed).position.x).toBeCloseTo(place.x, 2)
+		expect(viewOf(exposed).position.z).toBeCloseTo(place.z, 2)
+	})
+
+	it('если зум менял пользователь, замена этапов его не трогает', async () => {
+		const user = userEvent.setup()
+		const { exposed, rerender } = await env.renderRoadmap({ data: stagesData(6) })
+		env.flush(3)
+		await user.click(toolbar().getByRole('button', { name: 'Увеличить' }))
+		env.flush(30)
+		const zoom = () => (exposed.value?.getSceneContext() as unknown as { camera: { zoom: number } }).camera.zoom
+		const before = zoom()
+		await rerender({ data: stagesData(12) })
+		await Promise.resolve()
+		await Promise.resolve()
+		env.flush(3)
+		expect(zoom()).toBe(before)
+	})
+
 	it('смена размера холста пересчитывает кадр: остров заново вписывается в новый холст', async () => {
 		const { exposed } = await env.renderRoadmap()
 		env.flush(3)
