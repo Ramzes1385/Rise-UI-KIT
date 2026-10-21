@@ -892,3 +892,9 @@
 
 - ~~**Остров в кадре занимает ≈60 %**~~ — сделано в s3d-road-labels: зум считается по реальной проекции (`roadmap3dFit.ts`), общий `frameHalf` не менялся.
 - ~~**24 этапа: подпись цели и флаг обрезаются**~~ — сделано в s3d-road-labels: подпись цели и этапов входят в расчёт кадра, подписи разрежаются.
+
+## Задача 3D: хвосты проверки (s3d-wave3b)
+
+- **check-rtl:** у `data-baseflowmap3d--hooks` в RTL `page.goto` даёт `net::ERR_ABORTED`, RTL этой истории не сверен. Было и на d4504050: RTL-only ошибок 3.
+- **check-stories под нагрузкой:** `data-baseroadmap3d--animations` не успевает за 30 с (отдельно проходит); Edit3D ждал `onChange` без `waitFor` (исправлено в a63fa85d).
+- **Покрытие `src/scene3d`** проверялось узкой командой (только тесты `src/scene3d`): `cameraPose`, `projection`, `createRenderer`, `webglSupport`, `colorResolver` ниже 100 %. В волне 3а их покрывала широкая команда с тестами компонентов — нужна перепроверка широкой.
