@@ -1,5 +1,6 @@
 .base-editor {
 	@include custom-color-scope;
+	--editor-custom-bg: var(--custom-bg, transparent);
 	--editor-min-height: 160px;
 	--editor-max-height: 600px;
 
@@ -32,7 +33,6 @@
 		box-shadow: ct(editor, shadow, none);
 		color: ct(editor, text, var(--rise-text));
 
-		--editor-custom-bg: var(--custom-bg, transparent);
 		--custom-bg: initial;
 	}
 

@@ -56,7 +56,7 @@ export const Theming: StoryObj<typeof meta> = {
 		)
 		await expect(getComputedStyle(part(themed, 'title')).fontWeight).not.toBe(getComputedStyle(part(plain, 'title')).fontWeight)
 		if (!isStoryBranded()) {
-			await expect(getComputedStyle(plain).borderTopLeftRadius).toBe('12px')
+			await expect(getComputedStyle(plain).borderTopLeftRadius).toBe('16px')
 			await expect(getComputedStyle(part(plain, 'title')).fontSize).toBe('18px')
 			await expect(getComputedStyle(part(themed, 'title')).fontSize).toBe('14px')
 		}
