@@ -854,7 +854,7 @@
 
 | Токен | Часть | Свойство | Состояние | По умолчанию |
 |---|---|---|---|---|
-| `--rise-flow-map3-d-canvas-bg` | canvas | bg | — | `var(--rise-bg-muted)` |
+| `--rise-flow-map-3d-canvas-bg` | canvas | bg | — | `var(--rise-bg-muted)` |
 
 ## BaseFooter
 

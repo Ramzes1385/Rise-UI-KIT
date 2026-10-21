@@ -43,11 +43,11 @@ const args = process.argv.slice(2)
 const option = name => args.find(arg => arg.startsWith(`--${name}=`))?.slice(name.length + 3)
 const ROOT = resolve(option('root') ?? join(import.meta.dirname, '..'))
 
-/** `BaseDropdownMenu` → `dropdown-menu` */
+/** `BaseDropdownMenu` → `dropdown-menu`, `BaseFlowMap3D` → `flow-map-3d` (как блок BEM) */
 function tokenComponent(folder) {
 	return folder
 		.replace(/^Base/, '')
-		.replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+		.replace(/([a-z])([A-Z0-9])/g, '$1-$2')
 		.toLowerCase()
 }
 

@@ -65,6 +65,22 @@ describe('check-component-tokens', () => {
 		expect(output).toContain('6 в 3 компонентах')
 	})
 
+	it('3D-компонент: префикс как у блока BEM — `BaseFlowMap3D` → `flow-map-3d`, не токен BaseFlowMap', () => {
+		write(
+			'src/components/BaseFlowMap/styles/BaseFlowMap.style.scss',
+			'.m { background: var(--rise-flow-map-canvas-bg, var(--rise-bg-muted)); }\n',
+		)
+		write(
+			'src/components/BaseFlowMap3D/styles/BaseFlowMap3D.style.scss',
+			'.f { background: var(--rise-flow-map-3d-canvas-bg, var(--rise-bg-muted)); }\n',
+		)
+		expect(run('--write').status).toBe(0)
+		const doc = readFileSync(join(root, DOC), 'utf8')
+		expect(doc).toContain('## BaseFlowMap3D')
+		expect(doc).toContain('`--rise-flow-map-3d-canvas-bg`')
+		expect(run().status).toBe(0)
+	})
+
 	it('без таблицы или с устаревшей — ошибка с подсказкой', () => {
 		expect(run().output).toContain(`${DOC} устарел`)
 		run('--write')

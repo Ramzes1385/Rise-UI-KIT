@@ -16,7 +16,7 @@
 	border: 1px solid var(--rise-border);
 	border-radius: sz(var(--rise-radius-xl));
 	color: var(--rise-text);
-	background-color: var(--rise-flow-map3-d-canvas-bg, var(--rise-bg-muted));
+	background-color: var(--rise-flow-map-3d-canvas-bg, var(--rise-bg-muted));
 
 	&--disabled {
 		opacity: 0.6;
@@ -53,7 +53,7 @@
 	}
 
 	&__pane--in {
-		background-color: var(--rise-flow-map3-d-canvas-bg, var(--rise-bg-muted));
+		background-color: var(--rise-flow-map-3d-canvas-bg, var(--rise-bg-muted));
 	}
 
 	&__map {
