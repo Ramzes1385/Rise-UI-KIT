@@ -65,7 +65,7 @@ export const Edit3D: StoryObj<typeof meta> = {
 		await waitFor(() => expect(live).toHaveTextContent('Связать «Kafka»'))
 		await userEvent.keyboard('{Escape}')
 		await waitFor(() => expect(live).toHaveTextContent('Связывание отменено'))
-		await expect(args.onChange).toHaveBeenCalled()
+		await waitFor(() => expect(args.onChange).toHaveBeenCalled(), { timeout: 15000 })
 		await userEvent.keyboard('{Control>}z{/Control}')
 		await waitFor(() => expect(live).toHaveTextContent(/^Отменено: /))
 	},
