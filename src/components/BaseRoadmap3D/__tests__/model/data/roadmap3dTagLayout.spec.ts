@@ -114,6 +114,24 @@ describe('layoutTags', () => {
 		expect(el('__goal').style.visibility).toBe('')
 	})
 
+	it('второстепенная подпись, вылезающая за край слоя, скрывается, главная остаётся', () => {
+		const { snapshot } = mountSnapshot()
+		const tags = buildTags(snapshot.value, IDLE, null)
+		const host = layer(tags, () => 100)
+		Object.defineProperty(host, 'clientWidth', { get: () => 400 })
+		layoutTags(
+			host,
+			tags,
+			new Map([
+				['frame', spot(380, 100)],
+				['build', spot(380, 300)],
+			]),
+		)
+		const el = (id: string) => host.querySelector(`[data-label-id="${id}"]`) as HTMLElement
+		expect(el('frame').style.visibility).toBe('visible')
+		expect(el('build').style.visibility).toBe('hidden')
+	})
+
 	it('без слоя и без подписей в слое ничего не делает', () => {
 		const { snapshot } = mountSnapshot()
 		const tags = buildTags(snapshot.value, IDLE, null)

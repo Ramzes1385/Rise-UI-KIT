@@ -65,16 +65,19 @@ export function layoutTags(layer: HTMLElement | null, tags: readonly Roadmap3DTa
 	const forms = resolveTagForms(
 		rows.map((tag, order) => {
 			const spot = spots.get(tag.id)!
+			const rank = tagRank(tag, currentIndex)
+			const half = full.get(tag.id)!.width / 2
+			const isInside = !layer!.clientWidth || (spot.x - half >= 0 && spot.x + half <= layer!.clientWidth)
 			return {
 				id: tag.id,
 				kind: tag.kind,
-				rank: tagRank(tag, currentIndex),
+				rank,
 				order,
 				x: spot.x,
 				y: spot.y,
 				full: { ...full.get(tag.id)!, height: full.get(tag.id)!.height + (tag.isCurrent ? HERE_BADGE : 0) },
 				compact: compact.get(tag.id)!,
-				isVisible: spot.isVisible,
+				isVisible: spot.isVisible && (rank === RANK.top || isInside),
 			}
 		}),
 	)
