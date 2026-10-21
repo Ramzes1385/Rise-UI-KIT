@@ -35,7 +35,7 @@
 		</ul>
 		<div v-if="hasControls && status === 'ready'" class="base-map__controls" role="group" :aria-label="UI_MAP.CONTROLS">
 			<BaseButton
-				variant="outline"
+				variant="tonal"
 				:size-scale="sizeScale"
 				:aria-label="UI_MAP.ZOOM_IN"
 				:is-disabled="!canZoomIn"
@@ -44,7 +44,7 @@
 				<BaseIcon name="plus" :size-scale="calcIconScale('md', sizeScale)" />
 			</BaseButton>
 			<BaseButton
-				variant="outline"
+				variant="tonal"
 				:size-scale="sizeScale"
 				:aria-label="UI_MAP.ZOOM_OUT"
 				:is-disabled="!canZoomOut"
@@ -52,7 +52,7 @@
 				@click="zoomBy(-1)">
 				<BaseIcon name="minus" :size-scale="calcIconScale('md', sizeScale)" />
 			</BaseButton>
-			<BaseButton variant="outline" :size-scale="sizeScale" :aria-label="UI_MAP.LOCATE" :is-loading="isLocating" @click="locate">
+			<BaseButton variant="tonal" :size-scale="sizeScale" :aria-label="UI_MAP.LOCATE" :is-loading="isLocating" @click="locate">
 				<BaseIcon name="crosshair" :size-scale="calcIconScale('md', sizeScale)" />
 			</BaseButton>
 		</div>

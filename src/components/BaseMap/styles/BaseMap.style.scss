@@ -48,17 +48,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: sz(4px);
-
-		.base-button.base-button--outline {
-			border-color: transparent;
-			border-radius: sz(var(--rise-radius-md));
-			background-color: var(--rise-bg-elevated);
-			color: var(--rise-text-highlighted);
-
-			&:hover:not(:disabled, [aria-disabled='true']) {
-				background-color: var(--rise-bg-accented);
-			}
-		}
 	}
 
 	&__notice {
