@@ -37,11 +37,11 @@ describe('solveFitZoom', () => {
 		expect(allowedScale(points, probe, SIZE)).toBeLessThan(1.05)
 	})
 
-	it('на крошечном холсте зум не падает ниже 0,5', () => {
+	it('на крошечном холсте отступы урезаются, зум не падает ниже 0,5', () => {
 		const camera = new OrthographicCamera(-1, 1, 1, -1, 0.1, 1000)
 		const snapshot = snapshotOf({ version: 1, title: 'Один', stages: [{ id: 'a', title: 'A', topics: [] }] }, undefined)
 		const framing = toFraming(roadmapFrame(snapshot.island.bounds))
 		const pose = presetPose('iso', new Vector3())
-		expect(solveFitZoom({ camera, size: { width: 60, height: 40 }, framing, pose, snapshot })).toBe(0.5)
+		expect(solveFitZoom({ camera, size: { width: 60, height: 40 }, framing, pose, snapshot })).toBeGreaterThanOrEqual(0.5)
 	})
 })

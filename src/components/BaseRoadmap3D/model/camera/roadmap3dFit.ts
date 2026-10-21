@@ -7,6 +7,7 @@ import type { Roadmap3DFitPoint, Roadmap3DFitRequest, Roadmap3DSnapshot } from '
 const MIN_FIT = 0.5
 const MAX_FIT = 3
 const FIT_STEPS = 3
+const MAX_PAD_SHARE = 0.12
 const SHORE_PAD = { x: 14, y: 14 }
 const STAGE_PAD = { x: 60, y: 44 }
 const GOAL_PAD = { x: 110, y: 44 }
@@ -42,8 +43,8 @@ export function allowedScale(points: Roadmap3DFitPoint[], camera: Scene3DViewCam
 	let scale = Infinity
 	for (const item of points) {
 		spot.set(item.x, item.y, item.z).project(camera)
-		const sideways = (1 - (item.padX * 2) / size.width) / Math.max(Math.abs(spot.x), 1e-6)
-		const up = (1 - (item.padY * 2) / size.height) / Math.max(Math.abs(spot.y), 1e-6)
+		const sideways = (1 - (Math.min(item.padX, size.width * MAX_PAD_SHARE) * 2) / size.width) / Math.max(Math.abs(spot.x), 1e-6)
+		const up = (1 - (Math.min(item.padY, size.height * MAX_PAD_SHARE) * 2) / size.height) / Math.max(Math.abs(spot.y), 1e-6)
 		scale = Math.min(scale, sideways, up)
 	}
 	return scale
