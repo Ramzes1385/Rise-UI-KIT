@@ -51,6 +51,44 @@ function useFrame(options: Roadmap3DCameraOptions) {
 	return { frame, orbit, homePose }
 }
 
+function useHomeFit(context: {
+	options: Roadmap3DCameraOptions
+	state: ReturnType<typeof useOrbitCamera>['state']
+	homePose: ReturnType<typeof createHomePose>
+	move: (pose: Scene3DCameraPose, isAnimated: boolean) => void
+}) {
+	const { options, state, homePose, move } = context
+	let fitted = 0
+	let isFirstFit = true
+	const isZoomed = (): boolean => Math.abs(state.next()[5] - fitted) > 0.001
+
+	function applyHome(isAnimated: boolean): void {
+		const next = homePose(options.preset.value, state.next()[3])
+		fitted = next[5]
+		move(next, isAnimated)
+	}
+
+	watch(options.fitted, () => {
+		if (!isFirstFit && isZoomed()) return
+		isFirstFit = false
+		applyHome(false)
+	})
+
+	watch(
+		() => options.snapshot.value.island,
+		() => {
+			if (!isZoomed()) applyHome(false)
+		},
+	)
+
+	return {
+		home: (): void => applyHome(true),
+		remember: (pose: Scene3DCameraPose): void => {
+			fitted = pose[5]
+		},
+	}
+}
+
 export function useRoadmap3DCamera(options: Roadmap3DCameraOptions): Roadmap3DCameraApi {
 	const { frame, orbit, homePose } = useFrame(options)
 	const { state } = orbit
@@ -60,23 +98,14 @@ export function useRoadmap3DCamera(options: Roadmap3DCameraOptions): Roadmap3DCa
 		else state.jump(pose)
 	}
 
-	let fitted = 0
-	let isFirstFit = true
-	watch(options.fitted, () => {
-		const pose = state.next()
-		if (!isFirstFit && Math.abs(pose[5] - fitted) > 0.001) return
-		isFirstFit = false
-		const next = homePose(options.preset.value, pose[3])
-		fitted = next[5]
-		state.jump(next)
-	})
-
-	const home = (): void => move(homePose(options.preset.value, state.next()[3]), true)
+	const fit = useHomeFit({ options, state, homePose, move })
+	const { home } = fit
 
 	function setPreset(preset: Scene3DCameraPreset): void {
 		const isKindChange = presetCameraKind(preset) !== presetCameraKind(options.preset.value)
 		options.preset.value = preset
 		const pose = homePose(preset, state.next()[3])
+		fit.remember(pose)
 		if (!isKindChange) return move(pose, true)
 		void nextTick(() => nextTick(() => state.jump(pose)))
 	}

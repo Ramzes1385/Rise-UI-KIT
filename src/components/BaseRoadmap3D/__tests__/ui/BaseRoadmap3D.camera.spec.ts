@@ -46,6 +46,37 @@ describe('BaseRoadmap3D: камера', () => {
 		expect(viewOf(exposed).position.z).toBeCloseTo(place.z, 2)
 	})
 
+	it('замена этапов при открытом этапе: фокус сброшен, кадр — общий вид нового острова', async () => {
+		const fresh = await env.renderRoadmap({ data: stagesData(12) })
+		env.flush(3)
+		const view = (exposed: { value: { getSceneContext: () => unknown } | null }) =>
+			(exposed.value?.getSceneContext() as { camera: { zoom: number } }).camera
+		const expected = view(fresh.exposed).zoom
+		fresh.unmount()
+		const { exposed, rerender, events } = await env.renderRoadmap({ data: stagesData(6) })
+		env.flush(3)
+		exposed.value?.focusStage('s2')
+		await Promise.resolve()
+		env.flush(30)
+		expect(view(exposed).zoom).not.toBeCloseTo(expected, 3)
+		const next = stagesData(12)
+		await rerender({
+			data: {
+				...next,
+				stages: next.stages.map(stage => ({
+					...stage,
+					id: `n-${stage.id}`,
+					topics: stage.topics.map(topic => ({ ...topic, id: `n-${topic.id}` })),
+				})),
+			},
+		})
+		await Promise.resolve()
+		await Promise.resolve()
+		env.flush(30)
+		expect(events['update:focused']?.at(-1)).toEqual([null])
+		expect(view(exposed).zoom).toBeCloseTo(expected, 3)
+	})
+
 	it('если зум менял пользователь, замена этапов его не трогает', async () => {
 		const user = userEvent.setup()
 		const { exposed, rerender } = await env.renderRoadmap({ data: stagesData(6) })
