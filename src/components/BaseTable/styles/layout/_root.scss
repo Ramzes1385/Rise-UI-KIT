@@ -27,7 +27,7 @@
 
 		box-sizing: border-box;
 		width: 100%;
-		border: 1px solid transparent;
+		border: 1px solid ct(table, border, transparent);
 		border-radius: sz(ct(table, radius, var(--rise-radius-lg)));
 		background-color: var(--tbl-bg);
 		overflow: hidden;
@@ -50,7 +50,9 @@
 	}
 
 	&--bordered {
-		border-color: var(--rise-border-accented);
+		.base-table__body {
+			border-color: ct(table, border, var(--rise-border-accented));
+		}
 
 		.base-table__th + .base-table__th,
 		.base-table__td + .base-table__td {

@@ -107,7 +107,7 @@ $code-token-types: keyword, string, number, comment, function, tag, attribute, p
 		flex-shrink: 0;
 		width: var(--base-code-number-width);
 		margin-inline-end: sz(16px);
-		color: var(--rise-text-dimmed);
+		color: var(--rise-text-muted);
 		font-variant-numeric: tabular-nums;
 		text-align: end;
 		user-select: none;

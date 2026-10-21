@@ -111,6 +111,10 @@
 		--custom-bg-active: color-mix(in srgb, currentcolor 18%, transparent);
 	}
 
+	& &__accept-selected {
+		--custom-text: currentcolor;
+	}
+
 	&__actions {
 		display: flex;
 		flex-wrap: wrap;

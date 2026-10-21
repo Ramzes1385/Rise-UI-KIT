@@ -6,7 +6,7 @@
 	--axis-width: #{sz(56px)};
 	--grid-line: #{ct(event-calendar, cell-border, var(--rise-border-muted))};
 	--grid-line-strong: var(--rise-border);
-	--event-grid-bg: var(--rise-surface-raised);
+	--event-grid-bg: var(--custom-bg, var(--rise-surface-raised));
 
 	display: flex;
 	flex-direction: column;
@@ -29,14 +29,14 @@
 	}
 
 	&--outline {
-		--event-grid-bg: var(--rise-bg);
+		--event-grid-bg: var(--custom-bg, var(--rise-bg));
 		border-color: ct(event-calendar, border, var(--rise-border-accented));
 		@include tonal-surface(page);
 		@include custom-bg(background-color, ct(event-calendar, bg, transparent));
 	}
 
 	&--ghost {
-		--event-grid-bg: var(--rise-bg);
+		--event-grid-bg: var(--custom-bg, var(--rise-bg));
 		padding: 0;
 		@include tonal-surface(none);
 		@include custom-bg(background-color, transparent);
@@ -53,6 +53,11 @@
 		display: flex;
 		align-items: center;
 		gap: sz(4px);
+
+		.base-button {
+			--custom-text: inherit;
+			--custom-text-hover: inherit;
+		}
 	}
 
 	&__title {
@@ -182,7 +187,7 @@
 		padding: 0 space(ct(event-calendar, event-padding-x, 6px));
 		border-radius: sz(ct(event-calendar, event-radius, var(--rise-radius-sm)));
 		box-shadow: inset dir-x(3px) 0 0 var(--event-color);
-		color: var(--rise-text);
+		@include custom-text(color, var(--rise-text));
 		text-align: start;
 		background-color: color-mix(in srgb, var(--event-color) 16%, var(--event-grid-bg));
 		font-size: sz(ct(event-calendar, event-font-size, var(--rise-font-size-xs)));

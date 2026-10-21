@@ -236,6 +236,7 @@
 
 		:where(th) {
 			@include caps-label(10px);
+			@include custom-text(color, var(--rise-text-muted));
 			white-space: nowrap;
 		}
 
