@@ -361,7 +361,7 @@ const expand = useExpandTransition({ duration: 200 })
 //   @before-leave="expand.onBeforeLeave" @leave="expand.onLeave" @after-leave="expand.onAfterLeave">
 ```
 
-- `duration` — мс; по умолчанию — токен `--rise-duration-slow` элемента (300 мс в пресете `standard`, пресет `data-rise-motion` действует). Кривые — `--rise-ease-emphasized` (высота) и `--rise-ease` (прозрачность). `0`, системная настройка «уменьшить движение», пресет `none` и `reducedMotion: 'always'` — без анимации: элемент сразу в конечном состоянии.
+- `duration` — мс; по умолчанию — токен `--rise-duration-slow` элемента (320 мс в пресете `standard`, пресет `data-rise-motion` действует). Кривые — `--rise-ease-emphasized` (высота) и `--rise-ease` (прозрачность). `0`, системная настройка «уменьшить движение», пресет `none` и `reducedMotion: 'always'` — без анимации: элемент сразу в конечном состоянии.
 - Переход завершается по `transitionend` самого элемента (всплывшие от потомков не считаются) или по таймеру-страховке через `duration` + 50 мс, если событие не пришло. Новый переход того же элемента (свернули во время раскрытия) отменяет ожидание прежнего.
 
 ## useLoadingBar

@@ -1,5 +1,9 @@
 import { useExpandTransition } from '../useExpandTransition'
+import { readMotionDuration } from '@composables/app/useMotion'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+const SLOW_DURATION = readMotionDuration(document.documentElement, 'slow')
+const DEFAULT_HEIGHT_TRANSITION = `height ${SLOW_DURATION}ms var(--rise-ease-emphasized)`
 
 describe('useExpandTransition', () => {
 	let rafCallbacks: FrameRequestCallback[] = []
@@ -56,7 +60,7 @@ describe('useExpandTransition', () => {
 
 			expect(el.style.height).toBe('120px')
 			expect(el.style.opacity).toBe('1')
-			expect(el.style.transition).toContain('height 300ms var(--rise-ease-emphasized)')
+			expect(el.style.transition).toContain(DEFAULT_HEIGHT_TRANSITION)
 
 			el.dispatchEvent(new Event('transitionend'))
 
@@ -109,7 +113,7 @@ describe('useExpandTransition', () => {
 
 			expect(el.style.height).toBe('0px')
 			expect(el.style.opacity).toBe('0')
-			expect(el.style.transition).toContain('height 300ms var(--rise-ease-emphasized)')
+			expect(el.style.transition).toContain(DEFAULT_HEIGHT_TRANSITION)
 
 			el.dispatchEvent(new Event('transitionend'))
 
@@ -203,7 +207,7 @@ describe('useExpandTransition', () => {
 			onEnter(el, done)
 			flushRaf()
 
-			expect(el.style.transition).toContain('height 300ms var(--rise-ease-emphasized)')
+			expect(el.style.transition).toContain(DEFAULT_HEIGHT_TRANSITION)
 			expect(done).not.toHaveBeenCalled()
 		})
 
@@ -214,7 +218,7 @@ describe('useExpandTransition', () => {
 
 			onEnter(el, vi.fn())
 
-			expect(el.style.transition).toContain('height 300ms var(--rise-ease-emphasized)')
+			expect(el.style.transition).toContain(DEFAULT_HEIGHT_TRANSITION)
 		})
 	})
 
@@ -298,7 +302,7 @@ describe('useExpandTransition', () => {
 			flushRaf()
 			onLeave(el, leaveDone)
 			flushRaf()
-			vi.advanceTimersByTime(349)
+			vi.advanceTimersByTime(SLOW_DURATION + 49)
 
 			expect(enterDone).not.toHaveBeenCalled()
 			expect(el.style.height).toBe('0px')
